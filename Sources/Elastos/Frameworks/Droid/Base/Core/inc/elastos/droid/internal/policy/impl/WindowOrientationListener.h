@@ -3,9 +3,11 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Io::IPrintWriter;
+using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Hardware::ISensor;
 using Elastos::Droid::Hardware::ISensorEvent;
+using Elastos::Droid::Hardware::ISensorEventListener;
+using Elastos::Droid::Hardware::ISensorManager;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IHandler;
 

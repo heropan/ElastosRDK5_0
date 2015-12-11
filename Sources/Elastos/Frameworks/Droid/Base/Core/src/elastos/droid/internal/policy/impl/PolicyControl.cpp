@@ -64,7 +64,7 @@ String PolicyControl::Filter::ToString()
     return String("");
 }
 
-AutoPtr<Filter> PolicyControl::Filter::Parse(
+AutoPtr<PolicyControl::Filter> PolicyControl::Filter::Parse(
     /* [in] */ const String& value)
 {
     // ==================before translated======================
@@ -132,8 +132,7 @@ void PolicyControl::Filter::Dump(
 //=====================================================================
 //                            PolicyControl
 //=====================================================================
-CAR_SINGLETON_IMPL(PolicyControl)
-CAR_INTERFACE_IMPL(PolicyControl, Singleton, IPolicyControl)
+//CAR_INTERFACE_IMPL(PolicyControl, Object, IPolicyControl)
 
 String PolicyControl::TAG("PolicyControl");
 Boolean PolicyControl::DEBUG = false;
@@ -142,9 +141,9 @@ const String PolicyControl::NAME_IMMERSIVE_STATUS("immersive.status");
 const String PolicyControl::NAME_IMMERSIVE_NAVIGATION("immersive.navigation");
 const String PolicyControl::NAME_IMMERSIVE_PRECONFIRMATIONS("immersive.preconfirms");
 String PolicyControl::sSettingValue;
-AutoPtr<Filter> PolicyControl::sImmersivePreconfirmationsFilter;
-AutoPtr<Filter> PolicyControl::sImmersiveStatusFilter;
-AutoPtr<Filter> PolicyControl::sImmersiveNavigationFilter;
+AutoPtr<PolicyControl::Filter> PolicyControl::sImmersivePreconfirmationsFilter;
+AutoPtr<PolicyControl::Filter> PolicyControl::sImmersiveStatusFilter;
+AutoPtr<PolicyControl::Filter> PolicyControl::sImmersiveNavigationFilter;
 
 ECode PolicyControl::GetSystemUiVisibility(
     /* [in] */ IWindowState* win,

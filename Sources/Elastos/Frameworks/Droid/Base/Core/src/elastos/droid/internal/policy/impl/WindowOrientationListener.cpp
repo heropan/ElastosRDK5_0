@@ -1,5 +1,10 @@
 
 #include "elastos/droid/internal/policy/impl/WindowOrientationListener.h"
+#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/core/Math.h"
+
+using Elastos::Droid::Hardware::EIID_ISensorEventListener;
+using Elastos::Droid::Os::SystemProperties;
 
 namespace Elastos {
 namespace Droid {
@@ -10,7 +15,9 @@ namespace Impl {
 //=====================================================================
 //          WindowOrientationListener::SensorEventListenerImpl
 //=====================================================================
-const Float WindowOrientationListener::SensorEventListenerImpl::RADIANS_TO_DEGREES = (float) (180 / Math.PI);
+CAR_INTERFACE_IMPL(WindowOrientationListener::SensorEventListenerImpl, Object, ISensorEventListener)
+
+const Float WindowOrientationListener::SensorEventListenerImpl::RADIANS_TO_DEGREES = (Float) (180 / Elastos::Core::Math::PI);
 const Int64 WindowOrientationListener::SensorEventListenerImpl::NANOS_PER_MS;
 const Int32 WindowOrientationListener::SensorEventListenerImpl::ACCELEROMETER_DATA_X;
 const Int32 WindowOrientationListener::SensorEventListenerImpl::ACCELEROMETER_DATA_Y;
@@ -27,8 +34,8 @@ const Int64 WindowOrientationListener::SensorEventListenerImpl::MAX_FILTER_DELTA
 const Float WindowOrientationListener::SensorEventListenerImpl::FILTER_TIME_CONSTANT_MS = 200.0f;
 const Float WindowOrientationListener::SensorEventListenerImpl::NEAR_ZERO_MAGNITUDE = 1;
 const Float WindowOrientationListener::SensorEventListenerImpl::ACCELERATION_TOLERANCE = 4;
-const Float WindowOrientationListener::SensorEventListenerImpl::MIN_ACCELERATION_MAGNITUDE = SensorManager.STANDARD_GRAVITY - ACCELERATION_TOLERANCE;
-const Float WindowOrientationListener::SensorEventListenerImpl::MAX_ACCELERATION_MAGNITUDE = SensorManager.STANDARD_GRAVITY + ACCELERATION_TOLERANCE;
+const Float WindowOrientationListener::SensorEventListenerImpl::MIN_ACCELERATION_MAGNITUDE = ISensorManager::STANDARD_GRAVITY - ACCELERATION_TOLERANCE;
+const Float WindowOrientationListener::SensorEventListenerImpl::MAX_ACCELERATION_MAGNITUDE = ISensorManager::STANDARD_GRAVITY + ACCELERATION_TOLERANCE;
 const Int32 WindowOrientationListener::SensorEventListenerImpl::MAX_TILT;
 const Int32 WindowOrientationListener::SensorEventListenerImpl::ADJACENT_ORIENTATION_ANGLE_GAP;
 const Int32 WindowOrientationListener::SensorEventListenerImpl::TILT_HISTORY_SIZE;
@@ -45,7 +52,7 @@ ECode WindowOrientationListener::SensorEventListenerImpl::GetProposedRotationLoc
 
 ECode WindowOrientationListener::SensorEventListenerImpl::DumpLocked(
     /* [in] */ IPrintWriter* pw,
-    /* [in] */ String prefix)
+    /* [in] */ const String& prefix)
 {
     VALIDATE_NOT_NULL(pw);
     // ==================before translated======================
@@ -535,17 +542,31 @@ Float WindowOrientationListener::SensorEventListenerImpl::RemainingMS(
 //=====================================================================
 //                      WindowOrientationListener
 //=====================================================================
+static Boolean InitDefaultLOG()
+{
+    Boolean result = FALSE;
+    SystemProperties::GetBoolean(String("debug.orientation.log"), FALSE, &result);
+    return result;
+}
+
+CAR_INTERFACE_IMPL(WindowOrientationListener, Object, IWindowOrientationListener)
+
 const String WindowOrientationListener::TAG("WindowOrientationListener");
-const Boolean WindowOrientationListener::LOG = SystemProperties.getBoolean(
-             "debug.orientation.log", false);
+const Boolean WindowOrientationListener::LOG = InitDefaultLOG();
+//SystemProperties.getBoolean("debug.orientation.log", false);
 const Boolean WindowOrientationListener::USE_GRAVITY_SENSOR = false;
 
-WindowOrientationListener::WindowOrientationListener(
+WindowOrientationListener::WindowOrientationListener()
+{
+}
+
+ECode WindowOrientationListener::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IHandler* handler)
 {
     // ==================before translated======================
     // this(context, handler, SensorManager.SENSOR_DELAY_UI);
+    return NOERROR;
 }
 
 ECode WindowOrientationListener::Enable()
@@ -629,7 +650,7 @@ ECode WindowOrientationListener::CanDetectOrientation(
 
 ECode WindowOrientationListener::Dump(
     /* [in] */ IPrintWriter* pw,
-    /* [in] */ String prefix)
+    /* [in] */ const String& prefix)
 {
     VALIDATE_NOT_NULL(pw);
     // ==================before translated======================
@@ -649,12 +670,10 @@ ECode WindowOrientationListener::Dump(
     return NOERROR;
 }
 
-WindowOrientationListener::WindowOrientationListener(
+ECode WindowOrientationListener::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IHandler* handler,
     /* [in] */ Int32 rate)
-    : Sensor.TYPE_ACCELEROMETER);
-         if (mSensor != null)
 {
     // ==================before translated======================
     // mHandler = handler;
@@ -666,6 +685,7 @@ WindowOrientationListener::WindowOrientationListener(
     //     // Create listener only if sensors do exist
     //     mSensorEventListener = new SensorEventListenerImpl();
     // }
+    return NOERROR;
 }
 
 } // namespace Impl

@@ -1,8 +1,43 @@
 
 #include "elastos/droid/internal/policy/impl/EnableAccessibilityController.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/app/CActivityManager.h"
+#include "elastos/droid/content/CComponentName.h"
+//TODO #include "elastos/droid/media/CRingtoneManager.h"
+#include "elastos/droid/os/CServiceManager.h"
+//TODO #include "elastos/droid/provider/CSettingsGlobal.h"
+//TODO #include "elastos/droid/provider/CSettingsSecure.h"
+//TODO #include "elastos/droid/provider/CSettingsSystem.h"
+//TODO #include "elastos/droid/speech/tts/CTextToSpeech.h"
+#include "elastos/droid/view/accessibility/CAccessibilityManagerHelper.h"
 
+using Elastos::Droid::App::CActivityManager;
+using Elastos::Droid::Content::CComponentName;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::Pm::IServiceInfo;
+using Elastos::Droid::Content::Pm::IResolveInfo;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
+using Elastos::Droid::Content::Res::IResources;
+//TODO using Elastos::Droid::Media::CRingtoneManager;
+using Elastos::Droid::Media::IAudioManager;
+using Elastos::Droid::Os::CServiceManager;
+using Elastos::Droid::Os::IServiceManager;
 using Elastos::Droid::Os::EIID_IHandler;
+//TODO using Elastos::Droid::Provider::CSettingsGlobal;
+//TODO using Elastos::Droid::Provider::CSettingsSecure;
+//TODO using Elastos::Droid::Provider::CSettingsSystem;
+using Elastos::Droid::Provider::ISettingsGlobal;
+using Elastos::Droid::Provider::ISettingsSecure;
+using Elastos::Droid::Provider::ISettingsSystem;
+//TODO using Elastos::Droid::Speech::Tts::CTextToSpeech;
+using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Speech::Tts::EIID_ITextToSpeechOnInitListener;
+using Elastos::Droid::View::Accessibility::CAccessibilityManagerHelper;
+using Elastos::Droid::View::Accessibility::IAccessibilityManager;
+using Elastos::Droid::View::Accessibility::IAccessibilityManagerHelper;
+using Elastos::Utility::IList;
+using Elastos::Utility::IIterator;
+
 
 namespace Elastos {
 namespace Droid {
@@ -11,74 +46,78 @@ namespace Policy {
 namespace Impl {
 
 //=====================================================================
-//             EnableAccessibilityController::InnerHandler
+//             EnableAccessibilityController::SpeakHandler
 //=====================================================================
-CAR_INTERFACE_IMPL(EnableAccessibilityController::InnerHandler, Object, IHandler)
-EnableAccessibilityController::InnerHandler::InnerHandler(
-    /* [in] */ EnableAccessibilityController* owner)
-    : mOwner(owner)
+
+EnableAccessibilityController::SpeakHandler::SpeakHandler(
+    /* [in] */ EnableAccessibilityController* host)
+    : mHost(host)
 {
-    // ==================before translated======================
-    // mOwner = owner;
 }
 
-ECode EnableAccessibilityController::InnerHandler::HandleMessage(
-    /* [in] */ IMessage* message)
+ECode EnableAccessibilityController::SpeakHandler::HandleMessage(
+    /* [in] */ IMessage* msg)
 {
-    VALIDATE_NOT_NULL(message);
-    // ==================before translated======================
-    // switch (message.what) {
-    //     case MESSAGE_SPEAK_WARNING: {
-    //         String text = mContext.getString(R.string.continue_to_enable_accessibility);
-    //         mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
-    //     } break;
-    //     case MESSAGE_SPEAK_ENABLE_CANCELED: {
-    //         String text = mContext.getString(R.string.enable_accessibility_canceled);
-    //         mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
-    //     } break;
-    //     case MESSAGE_ENABLE_ACCESSIBILITY: {
-    //         enableAccessibility();
-    //         mTone.play();
-    //         mTts.speak(mContext.getString(R.string.accessibility_enabled),
-    //                 TextToSpeech.QUEUE_FLUSH, null);
-    //     } break;
-    // }
-    assert(0);
+    Int32 what = 0;
+    msg->GetWhat(&what);
+    switch (what) {
+        case EnableAccessibilityController::MESSAGE_SPEAK_WARNING:
+            {
+                String text;
+                mHost->mContext->GetString(R::string::continue_to_enable_accessibility, &text);
+                mHost->mTts->Speak(text, ITextToSpeech::QUEUE_FLUSH, NULL);
+            }
+            break;
+        case EnableAccessibilityController::MESSAGE_SPEAK_ENABLE_CANCELED:
+            {
+                String text;
+                mHost->mContext->GetString(R::string::enable_accessibility_canceled, &text);
+                mHost->mTts->Speak(text, ITextToSpeech::QUEUE_FLUSH, NULL);
+            }
+            break;
+        case EnableAccessibilityController::MESSAGE_ENABLE_ACCESSIBILITY:
+            {
+                mHost->EnableAccessibility();
+                mHost->mTone->Play();
+                String text;
+                mHost->mContext->GetString(R::string::accessibility_enabled, &text);
+                mHost->mTts->Speak(text, ITextToSpeech::QUEUE_FLUSH, NULL);
+            }
+            break;
+    }
     return NOERROR;
 }
 
 //=====================================================================
-//   EnableAccessibilityController::InnerTextToSpeechOnInitListener1
+//   EnableAccessibilityController::TtsShutdownOnInitListener
 //=====================================================================
-CAR_INTERFACE_IMPL(EnableAccessibilityController::InnerTextToSpeechOnInitListener1, Object, ITextToSpeechOnInitListener)
-EnableAccessibilityController::InnerTextToSpeechOnInitListener1::InnerTextToSpeechOnInitListener1(
-    /* [in] */ EnableAccessibilityController* owner)
-    : mOwner(owner)
+CAR_INTERFACE_IMPL(EnableAccessibilityController::TtsShutdownOnInitListener, Object, ITextToSpeechOnInitListener)
+
+EnableAccessibilityController::TtsShutdownOnInitListener::TtsShutdownOnInitListener(
+    /* [in] */ EnableAccessibilityController* host)
+    : mHost(host)
 {
-    // ==================before translated======================
-    // mOwner = owner;
 }
 
-ECode EnableAccessibilityController::InnerTextToSpeechOnInitListener1::OnInit(
+ECode EnableAccessibilityController::TtsShutdownOnInitListener::OnInit(
     /* [in] */ Int32 status)
 {
-    // ==================before translated======================
-    // if (mDestroyed) {
-    //     mTts.shutdown();
-    // }
-    assert(0);
+    if (mHost->mDestroyed) {
+        mHost->mTts->Shutdown();
+    }
     return NOERROR;
 }
-
 //=====================================================================
 //                    EnableAccessibilityController
 //=====================================================================
 CAR_INTERFACE_IMPL(EnableAccessibilityController, Object, IEnableAccessibilityController)
+
+const Int32 EnableAccessibilityController::SPEAK_WARNING_DELAY_MILLIS;
+const Int32 EnableAccessibilityController::ENABLE_ACCESSIBILITY_DELAY_MILLIS;
+
 const Int32 EnableAccessibilityController::MESSAGE_SPEAK_WARNING;
 const Int32 EnableAccessibilityController::MESSAGE_SPEAK_ENABLE_CANCELED;
 const Int32 EnableAccessibilityController::MESSAGE_ENABLE_ACCESSIBILITY;
-const Int32 EnableAccessibilityController::SPEAK_WARNING_DELAY_MILLIS;
-const Int32 EnableAccessibilityController::ENABLE_ACCESSIBILITY_DELAY_MILLIS;
 
 EnableAccessibilityController::EnableAccessibilityController()
 {
@@ -88,51 +127,113 @@ ECode EnableAccessibilityController::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IRunnable* onAccessibilityEnabledCallback)
 {
-    // ==================before translated======================
-    // mContext = context;
-    // mOnAccessibilityEnabledCallback = onAccessibilityEnabledCallback;
-    // mUserManager = (UserManager) mContext.getSystemService(Context.USER_SERVICE);
-    // mTts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
-    //     @Override
-    //     public void onInit(int status) {
-    //         if (mDestroyed) {
-    //             mTts.shutdown();
-    //         }
-    //     }
-    // });
-    // mTone = RingtoneManager.getRingtone(context, Settings.System.DEFAULT_NOTIFICATION_URI);
-    // mTone.setStreamType(AudioManager.STREAM_MUSIC);
-    // mTouchSlop = context.getResources().getDimensionPixelSize(
-    //         R.dimen.accessibility_touch_slop);
+    mContext = context;
+    mOnAccessibilityEnabledCallback = onAccessibilityEnabledCallback;
+    mDestroyed = FALSE;
+    mCanceled = FALSE;
+    mFirstPointerDownX = 0.0;
+    mFirstPointerDownY = 0.0;
+    mSecondPointerDownX = 0.0;
+    mSecondPointerDownY = 0.0;
+
+    // Init global variable.
+    mHandler = new SpeakHandler(this);
+
+    AutoPtr<IServiceManager> serviceManager;
+    CServiceManager::AcquireSingleton((IServiceManager**)&serviceManager);
+    AutoPtr<IInterface> service;
+    serviceManager->GetService(String("window"), (IInterface**)&service);
+    mWindowManager = IIWindowManager::Probe(service);
+
+    service = NULL;
+    serviceManager->GetService(String("accessibility"), (IInterface**)&service);
+    mAccessibilityManager = IIAccessibilityManager::Probe(service);
+
+    service = NULL;
+    mContext->GetSystemService(IContext::USER_SERVICE, (IInterface**)&service);
+    mUserManager = IUserManager::Probe(service);
+    AutoPtr<ITextToSpeechOnInitListener> ttsShutdownOnInitListener =
+            new TtsShutdownOnInitListener(this);
+    //TODO CTextToSpeech::New(context, ttsShutdownOnInitListener, (ITextToSpeech**)&mTts);
+
+    AutoPtr<ISettingsSystem> settingsSystem;
+    //TODO CSettingsSystem::AcquireSingleton((ISettingsSystem**)&settingsSystem);
+    AutoPtr<IUri> uri;
+    settingsSystem->GetDEFAULT_NOTIFICATION_URI((IUri**)&uri);
+    //TODO CRingtoneManager::GetRingtone(context, uri, (IRingtone**)&mTone);
+    mTone->SetStreamType(IAudioManager::STREAM_MUSIC);
+    AutoPtr<IResources> resources;
+    context->GetResources((IResources**)&resources);
+    Int32 touchSlop = 0;
+    resources->GetDimensionPixelSize(
+            R::dimen::accessibility_touch_slop, &touchSlop);
+    mTouchSlop = (Float)touchSlop;
     return NOERROR;
 }
 
 Boolean EnableAccessibilityController::CanEnableAccessibilityViaGesture(
-    /* [in] */ IContext* context)
+        /* [in] */ IContext* context)
 {
-    // ==================before translated======================
-    // AccessibilityManager accessibilityManager = AccessibilityManager.getInstance(context);
-    // // Accessibility is enabled and there is an enabled speaking
-    // // accessibility service, then we have nothing to do.
-    // if (accessibilityManager.isEnabled()
-    //         && !accessibilityManager.getEnabledAccessibilityServiceList(
-    //                 AccessibilityServiceInfo.FEEDBACK_SPOKEN).isEmpty()) {
-    //     return false;
-    // }
-    // // If the global gesture is enabled and there is a speaking service
-    // // installed we are good to go, otherwise there is nothing to do.
-    // return Settings.Global.getInt(context.getContentResolver(),
-    //         Settings.Global.ENABLE_ACCESSIBILITY_GLOBAL_GESTURE_ENABLED, 0) == 1
-    //         && !getInstalledSpeakingAccessibilityServices(context).isEmpty();
-    assert(0);
-    return FALSE;
+    AutoPtr<IAccessibilityManagerHelper> helper;
+    CAccessibilityManagerHelper::AcquireSingleton((IAccessibilityManagerHelper**)&helper);
+    AutoPtr<IAccessibilityManager> accessibilityManager;
+    helper->GetInstance(context, (IAccessibilityManager**)&accessibilityManager);
+    // Accessibility is enabled and there is an enabled speaking
+    // accessibility service, then we have nothing to do.
+    AutoPtr<IList> serviceList;
+    accessibilityManager->GetEnabledAccessibilityServiceList(
+                    IAccessibilityServiceInfo::FEEDBACK_SPOKEN, (IList**)&serviceList);
+    Boolean isEnabled = FALSE;
+    Int32 size = 0;
+    if ((accessibilityManager->IsEnabled(&isEnabled), isEnabled)
+            && (serviceList->GetSize(&size), size) > 0) {
+        return FALSE;
+    }
+    // If the global gesture is enabled and there is a speaking service
+    // installed we are good to go, otherwise there is nothing to do.
+    AutoPtr<IContentResolver> contentResolver;
+    context->GetContentResolver((IContentResolver**)&contentResolver);
+    AutoPtr<ISettingsGlobal> settingsGlobal;
+    //TODO CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
+    Int32 value = 0;
+    settingsGlobal->GetInt32(contentResolver,
+            ISettingsGlobal::ENABLE_ACCESSIBILITY_GLOBAL_GESTURE_ENABLED, 0, &value);
+    return value == 1 && !GetInstalledSpeakingAccessibilityServices(context)->IsEmpty();
+}
+
+AutoPtr< List< AutoPtr<IAccessibilityServiceInfo> > > EnableAccessibilityController::GetInstalledSpeakingAccessibilityServices(
+        /* [in] */ IContext* context)
+{
+    AutoPtr< List< AutoPtr<IAccessibilityServiceInfo> > > services = new List< AutoPtr<IAccessibilityServiceInfo> >();
+
+    AutoPtr<IAccessibilityManagerHelper> helper;
+    CAccessibilityManagerHelper::AcquireSingleton((IAccessibilityManagerHelper**)&helper);
+    AutoPtr<IAccessibilityManager> accessibilityManager;
+    helper->GetInstance(context, (IAccessibilityManager**)&accessibilityManager);
+
+    AutoPtr<IList> serviceList;
+    accessibilityManager->GetInstalledAccessibilityServiceList((IList**)&serviceList);
+
+    AutoPtr<IIterator> iterator;
+    serviceList->GetIterator((IIterator**)&iterator);
+    Boolean has = FALSE;
+    while (iterator->HasNext(&has), has) {
+        AutoPtr<IInterface> obj;
+        iterator->GetNext((IInterface**)&obj);
+        AutoPtr<IAccessibilityServiceInfo> service = IAccessibilityServiceInfo::Probe(obj);
+        Int32 feedbackType = 0;
+        service->GetFeedbackType(&feedbackType);
+        if ((feedbackType & IAccessibilityServiceInfo::FEEDBACK_SPOKEN) != 0) {
+            services->PushBack(service);
+        }
+    }
+
+    return services;
 }
 
 ECode EnableAccessibilityController::OnDestroy()
 {
-    // ==================before translated======================
-    // mDestroyed = true;
-    assert(0);
+    mDestroyed = TRUE;
     return NOERROR;
 }
 
@@ -140,23 +241,27 @@ ECode EnableAccessibilityController::OnInterceptTouchEvent(
     /* [in] */ IMotionEvent* event,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(event);
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // if (event.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN
-    //         && event.getPointerCount() == 2) {
-    //     mFirstPointerDownX = event.getX(0);
-    //     mFirstPointerDownY = event.getY(0);
-    //     mSecondPointerDownX = event.getX(1);
-    //     mSecondPointerDownY = event.getY(1);
-    //     mHandler.sendEmptyMessageDelayed(MESSAGE_SPEAK_WARNING,
-    //             SPEAK_WARNING_DELAY_MILLIS);
-    //     mHandler.sendEmptyMessageDelayed(MESSAGE_ENABLE_ACCESSIBILITY,
-    //            ENABLE_ACCESSIBILITY_DELAY_MILLIS);
-    //     return true;
-    // }
-    // return false;
-    assert(0);
+    Int32 eventType = 0;
+    Int32 count = 0;
+    if ((event->GetActionMasked(&eventType), eventType) == IMotionEvent::ACTION_POINTER_DOWN
+            && (event->GetPointerCount(&count), count) == 2) {
+        event->GetX(0, &mFirstPointerDownX);
+        event->GetY(0, &mFirstPointerDownY);
+        event->GetX(1, &mSecondPointerDownX);
+        event->GetY(1, &mSecondPointerDownY);
+
+        AutoPtr<IMessage> messageWarning;
+        mHandler->ObtainMessage(MESSAGE_SPEAK_WARNING, (IMessage**)&messageWarning);
+        Boolean isSuccess = FALSE;
+        mHandler->SendMessageDelayed(messageWarning, SPEAK_WARNING_DELAY_MILLIS, &isSuccess);
+        AutoPtr<IMessage> messageAccessibility;
+        mHandler->ObtainMessage(MESSAGE_ENABLE_ACCESSIBILITY, (IMessage**)&messageAccessibility);
+        mHandler->SendMessageDelayed(messageAccessibility,
+               ENABLE_ACCESSIBILITY_DELAY_MILLIS, &isSuccess);
+        *result = TRUE;
+    }
+    *result = FALSE;
     return NOERROR;
 }
 
@@ -164,154 +269,159 @@ ECode EnableAccessibilityController::OnTouchEvent(
     /* [in] */ IMotionEvent* event,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(event);
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // final int pointerCount = event.getPointerCount();
-    // final int action = event.getActionMasked();
-    // if (mCanceled) {
-    //     if (action == MotionEvent.ACTION_UP) {
-    //         mCanceled = false;
-    //     }
-    //     return true;
-    // }
-    // switch (action) {
-    //     case MotionEvent.ACTION_POINTER_DOWN: {
-    //         if (pointerCount > 2) {
-    //             cancel();
-    //         }
-    //     } break;
-    //     case MotionEvent.ACTION_MOVE: {
-    //         final float firstPointerMove = MathUtils.dist(event.getX(0),
-    //                 event.getY(0), mFirstPointerDownX, mFirstPointerDownY);
-    //         if (Math.abs(firstPointerMove) > mTouchSlop) {
-    //             cancel();
-    //         }
-    //         final float secondPointerMove = MathUtils.dist(event.getX(1),
-    //                 event.getY(1), mSecondPointerDownX, mSecondPointerDownY);
-    //         if (Math.abs(secondPointerMove) > mTouchSlop) {
-    //             cancel();
-    //         }
-    //     } break;
-    //     case MotionEvent.ACTION_POINTER_UP:
-    //     case MotionEvent.ACTION_CANCEL: {
-    //         cancel();
-    //     } break;
-    // }
-    // return true;
-    assert(0);
+    Int32 pointerCount = 0;
+    event->GetPointerCount(&pointerCount);
+    Int32 action = 0;
+    event->GetActionMasked(&action);
+    if (mCanceled) {
+        if (action == IMotionEvent::ACTION_UP) {
+            mCanceled = FALSE;
+        }
+        *result = TRUE;
+    }
+    switch (action) {
+        case IMotionEvent::ACTION_POINTER_DOWN:
+            {
+                if (pointerCount > 2) {
+                    Cancel();
+                }
+            }
+            break;
+        case IMotionEvent::ACTION_MOVE:
+            {
+                //TODO: MathUtils is not implement.
+                // Float firstPointerMove = MathUtils.dist(event.getX(0),
+                //         event.getY(0), mFirstPointerDownX, mFirstPointerDownY);
+                // if (Math.abs(firstPointerMove) > mTouchSlop) {
+                //     cancel();
+                // }
+                // final float secondPointerMove = MathUtils.dist(event.getX(1),
+                //         event.getY(1), mSecondPointerDownX, mSecondPointerDownY);
+                // if (Math.abs(secondPointerMove) > mTouchSlop) {
+                //     cancel();
+                // }
+            }
+            break;
+        case IMotionEvent::ACTION_POINTER_UP:
+        case IMotionEvent::ACTION_CANCEL:
+            {
+                Cancel();
+            }
+            break;
+    }
+    *result = TRUE;
     return NOERROR;
-}
-
-List<AutoPtr<IAccessibilityServiceInfo> > EnableAccessibilityController::GetInstalledSpeakingAccessibilityServices(
-    /* [in] */ IContext* context)
-{
-    // ==================before translated======================
-    // List<AccessibilityServiceInfo> services = new ArrayList<AccessibilityServiceInfo>();
-    // services.addAll(AccessibilityManager.getInstance(context)
-    //         .getInstalledAccessibilityServiceList());
-    // Iterator<AccessibilityServiceInfo> iterator = services.iterator();
-    // while (iterator.hasNext()) {
-    //     AccessibilityServiceInfo service = iterator.next();
-    //     if ((service.feedbackType & AccessibilityServiceInfo.FEEDBACK_SPOKEN) == 0) {
-    //         iterator.remove();
-    //     }
-    // }
-    // return services;
-    assert(0);
-    List<AutoPtr<IAccessibilityServiceInfo> > empty;
-    return empty;
 }
 
 void EnableAccessibilityController::Cancel()
 {
-    // ==================before translated======================
-    // mCanceled = true;
-    // if (mHandler.hasMessages(MESSAGE_SPEAK_WARNING)) {
-    //     mHandler.removeMessages(MESSAGE_SPEAK_WARNING);
-    // } else if (mHandler.hasMessages(MESSAGE_ENABLE_ACCESSIBILITY)) {
-    //     mHandler.sendEmptyMessage(MESSAGE_SPEAK_ENABLE_CANCELED);
-    // }
-    // mHandler.removeMessages(MESSAGE_ENABLE_ACCESSIBILITY);
-    assert(0);
+    mCanceled = TRUE;
+    Boolean has = FALSE;
+    if (mHandler->HasMessages(MESSAGE_SPEAK_WARNING, &has), has) {
+        mHandler->RemoveMessages(MESSAGE_SPEAK_WARNING);
+    }
+    else if (mHandler->HasMessages(MESSAGE_ENABLE_ACCESSIBILITY, &has), has) {
+        AutoPtr<IMessage> message;
+        mHandler->ObtainMessage(MESSAGE_SPEAK_ENABLE_CANCELED, (IMessage**)&message);
+        Boolean isSuccess = FALSE;
+        mHandler->SendMessage(message, &isSuccess);
+    }
+    mHandler->RemoveMessages(MESSAGE_ENABLE_ACCESSIBILITY);
 }
 
 void EnableAccessibilityController::EnableAccessibility()
 {
-    // ==================before translated======================
-    // List<AccessibilityServiceInfo> services = getInstalledSpeakingAccessibilityServices(
-    //         mContext);
-    // if (services.isEmpty()) {
-    //     return;
-    // }
-    // boolean keyguardLocked = false;
+    AutoPtr< List< AutoPtr<IAccessibilityServiceInfo> > > services = GetInstalledSpeakingAccessibilityServices(
+            mContext);
+    if (services->IsEmpty()) {
+        return;
+    }
+    Boolean keyguardLocked = FALSE;
     // try {
-    //     keyguardLocked = mWindowManager.isKeyguardLocked();
+    mWindowManager->IsKeyguardLocked(&keyguardLocked);
     // } catch (RemoteException re) {
-    //     /* ignore */
+        /* ignore */
     // }
-    //
-    // final boolean hasMoreThanOneUser = mUserManager.getUsers().size() > 1;
-    //
-    // AccessibilityServiceInfo service = services.get(0);
-    // boolean enableTouchExploration = (service.flags
-    //         & AccessibilityServiceInfo.FLAG_REQUEST_TOUCH_EXPLORATION_MODE) != 0;
-    // // Try to find a service supporting explore by touch.
-    // if (!enableTouchExploration) {
-    //     final int serviceCount = services.size();
-    //     for (int i = 1; i < serviceCount; i++) {
-    //         AccessibilityServiceInfo candidate = services.get(i);
-    //         if ((candidate.flags & AccessibilityServiceInfo
-    //                 .FLAG_REQUEST_TOUCH_EXPLORATION_MODE) != 0) {
-    //             enableTouchExploration = true;
-    //             service = candidate;
-    //             break;
-    //         }
-    //     }
-    // }
-    //
-    // ServiceInfo serviceInfo = service.getResolveInfo().serviceInfo;
-    // ComponentName componentName = new ComponentName(serviceInfo.packageName, serviceInfo.name);
-    // if (!keyguardLocked || !hasMoreThanOneUser) {
-    //     final int userId = ActivityManager.getCurrentUser();
-    //     String enabledServiceString = componentName.flattenToString();
-    //     ContentResolver resolver = mContext.getContentResolver();
-    //     // Enable one speaking accessibility service.
-    //     Settings.Secure.putStringForUser(resolver,
-    //             Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
-    //             enabledServiceString, userId);
-    //     // Allow the services we just enabled to toggle touch exploration.
-    //     Settings.Secure.putStringForUser(resolver,
-    //             Settings.Secure.TOUCH_EXPLORATION_GRANTED_ACCESSIBILITY_SERVICES,
-    //             enabledServiceString, userId);
-    //     // Enable touch exploration.
-    //     if (enableTouchExploration) {
-    //         Settings.Secure.putIntForUser(resolver, Settings.Secure.TOUCH_EXPLORATION_ENABLED,
-    //                 1, userId);
-    //     }
-    //     // Enable accessibility script injection (AndroidVox) for web content.
-    //     Settings.Secure.putIntForUser(resolver, Settings.Secure.ACCESSIBILITY_SCRIPT_INJECTION,
-    //             1, userId);
-    //     // Turn on accessibility mode last.
-    //     Settings.Secure.putIntForUser(resolver, Settings.Secure.ACCESSIBILITY_ENABLED,
-    //             1, userId);
-    // } else if (keyguardLocked) {
-    //     try {
-    //         mAccessibilityManager.temporaryEnableAccessibilityStateUntilKeyguardRemoved(
-    //                 componentName, enableTouchExploration);
-    //     } catch (RemoteException re) {
-    //         /* ignore */
-    //     }
-    // }
-    //
-    // mOnAccessibilityEnabledCallback.run();
-    assert(0);
+
+    AutoPtr<IList> users;
+    mUserManager->GetUsers((IList**)&users);
+    Int32 size = 0;
+    users->GetSize(&size);
+    Boolean hasMoreThanOneUser = size > 1;
+
+    AutoPtr<IAccessibilityServiceInfo> service = *(services->Begin());
+    Int32 flags = 0;
+    Boolean enableTouchExploration = ((service->GetFlags(&flags), flags)
+            & IAccessibilityServiceInfo::FLAG_REQUEST_TOUCH_EXPLORATION_MODE) != 0;
+    // Try to find a service supporting explore by touch.
+    if (!enableTouchExploration) {
+        List< AutoPtr<IAccessibilityServiceInfo> >::Iterator it = services->Begin();
+        for (; it != services->End(); ++it) {
+            AutoPtr<IAccessibilityServiceInfo> candidate = *it;
+            Int32 candidateFlags = 0;
+            if (((candidate->GetFlags(&candidateFlags), candidateFlags)
+                    & IAccessibilityServiceInfo::FLAG_REQUEST_TOUCH_EXPLORATION_MODE) != 0) {
+                enableTouchExploration = TRUE;
+                service = candidate;
+                break;
+            }
+        }
+    }
+
+    AutoPtr<IResolveInfo> resolveInfo;
+    service->GetResolveInfo((IResolveInfo**)&resolveInfo);
+    AutoPtr<IServiceInfo> serviceInfo;
+    resolveInfo->GetServiceInfo((IServiceInfo**)&serviceInfo);
+    String packageName;
+    AutoPtr<IPackageItemInfo> pii = IPackageItemInfo::Probe(serviceInfo);
+    pii->GetPackageName(&packageName);
+    String name;
+    pii->GetName(&name);
+    AutoPtr<IComponentName> componentName;
+    CComponentName::New(packageName, name, (IComponentName**)&componentName);
+    if (!keyguardLocked || !hasMoreThanOneUser) {
+        Int32 userId = CActivityManager::GetCurrentUser();
+        String enabledServiceString;
+        componentName->FlattenToString(&enabledServiceString);
+        AutoPtr<IContentResolver> resolver;
+        mContext->GetContentResolver((IContentResolver**)&resolver);
+        // Enable one speaking accessibility service.
+        AutoPtr<ISettingsSecure> settingsSecure;
+        //TODO CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
+        Boolean result = FALSE;
+        settingsSecure->PutStringForUser(resolver,
+                ISettingsSecure::ENABLED_ACCESSIBILITY_SERVICES,
+                enabledServiceString, userId, &result);
+        // Allow the services we just enabled to toggle touch exploration.
+        settingsSecure->PutStringForUser(resolver,
+                ISettingsSecure::TOUCH_EXPLORATION_GRANTED_ACCESSIBILITY_SERVICES,
+                enabledServiceString, userId, &result);
+        // Enable touch exploration.
+        if (enableTouchExploration) {
+            settingsSecure->PutInt32ForUser(resolver, ISettingsSecure::TOUCH_EXPLORATION_ENABLED,
+                    1, userId, &result);
+        }
+        // Enable accessibility script injection (AndroidVox) for web content.
+        settingsSecure->PutInt32ForUser(resolver, ISettingsSecure::ACCESSIBILITY_SCRIPT_INJECTION,
+                1, userId, &result);
+        // Turn on accessibility mode last.
+        settingsSecure->PutInt32ForUser(resolver, ISettingsSecure::ACCESSIBILITY_ENABLED,
+                1, userId, &result);
+    } else if (keyguardLocked) {
+        // try {
+        mAccessibilityManager->TemporaryEnableAccessibilityStateUntilKeyguardRemoved(
+                componentName, enableTouchExploration);
+        // } catch (RemoteException re) {
+            /* ignore */
+        // }
+    }
+
+    mOnAccessibilityEnabledCallback->Run();
 }
 
-} // namespace Impl
-} // namespace Policy
-} // namespace Internal
-} // namespace Droid
 } // namespace Elastos
-
-
+} // namespace Droid
+} // namespace Internal
+} // namespace Policy
+} // namespace Impl

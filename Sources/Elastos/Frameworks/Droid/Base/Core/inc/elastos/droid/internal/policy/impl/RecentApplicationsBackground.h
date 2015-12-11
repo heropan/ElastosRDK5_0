@@ -1,14 +1,10 @@
+
 #ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_RECENTAPPLICATIONSBACKGROUND_H__
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_RECENTAPPLICATIONSBACKGROUND_H__
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/LinearLayout.h"
 
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Graphics::ICanvas;
-using Elastos::Droid::Graphics::Drawable::IDrawable;
-using Elastos::Droid::Graphics::IRect;
-using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Widget::LinearLayout;
 
 namespace Elastos {
@@ -18,17 +14,19 @@ namespace Policy {
 namespace Impl {
 
 /**
-  * A vertical linear layout.  However, instead of drawing the background
-  * behnd the items, it draws the background outside the items based on the
-  * padding.  If there isn't enough room to draw both, it clips the background
-  * instead of the contents.
-  */
+ * A vertical linear layout.  However, instead of drawing the background
+ * behnd the items, it draws the background outside the items based on the
+ * padding.  If there isn't enough room to draw both, it clips the background
+ * instead of the contents.
+ */
 class RecentApplicationsBackground
     : public LinearLayout
     , public IRecentApplicationsBackground
 {
 public:
-    CAR_INTERFACE_DECL()
+    CAR_INTERFACE_DECL();
+
+    RecentApplicationsBackground();
 
     CARAPI constructor(
         /* [in] */ IContext* ctx);
@@ -65,25 +63,26 @@ protected:
     // @Override
     CARAPI OnDetachedFromWindow();
 
-private:
-    CARAPI_(void) Init();
+    CARAPI Init(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs = NULL);
 
     CARAPI_(void) GetChildBounds(
         /* [in] */ IRect* r);
 
 private:
     static const String TAG;
+
     Boolean mBackgroundSizeChanged;
     AutoPtr<IDrawable> mBackground;
     AutoPtr<IRect> mTmp0;
     AutoPtr<IRect> mTmp1;
 };
 
-} // namespace Impl
-} // namespace Policy
-} // namespace Internal
-} // namespace Droid
 } // namespace Elastos
+} // namespace Droid
+} // namespace Internal
+} // namespace Policy
+} // namespace Impl
 
 #endif // __ELASTOS_DROID_INTERNAL_POLICY_IMPL_RECENTAPPLICATIONSBACKGROUND_H__
-

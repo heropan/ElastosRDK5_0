@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CRECENTAPPLICATIONSDIALOG_H__
 
 #include "_Elastos_Droid_Internal_Policy_Impl_CRecentApplicationsDialog.h"
-//#include "elastos/droid/internal/policy/impl/RecentApplicationsDialog.h"
+#include "elastos/droid/internal/policy/impl/RecentApplicationsDialog.h"
 
 namespace Elastos {
 namespace Droid {
@@ -11,7 +11,7 @@ namespace Policy {
 namespace Impl {
 
 CarClass(CRecentApplicationsDialog)
-    //, public RecentApplicationsDialog
+    , public RecentApplicationsDialog
 {
 public:
     CAR_OBJECT_DECL()

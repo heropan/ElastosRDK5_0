@@ -14,8 +14,6 @@ BarController::InnerRunnable1::InnerRunnable1(
     /* [in] */ BarController* owner)
     : mOwner(owner)
 {
-    // ==================before translated======================
-    // mOwner = owner;
 }
 
 ECode BarController::InnerRunnable1::Run()

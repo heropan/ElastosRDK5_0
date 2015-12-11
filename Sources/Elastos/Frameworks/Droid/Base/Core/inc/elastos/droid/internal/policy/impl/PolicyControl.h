@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_POLICYCONTROL_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IArraySet;
@@ -34,8 +35,6 @@ namespace Impl {
   *   e.g. "immersive.status=apps:immersive.preconfirms=*"
   */
 class PolicyControl
-    : public Singleton
-    , public IPolicyControl
 {
 private:
     class Filter
@@ -73,8 +72,8 @@ private:
             /* [in] */ const String& packageName);
 
         CARAPI_(void) Dump(
-            /* [in] */ cosnt String& name,
-            /* [in] */ IArraySet<String>* set,
+            /* [in] */ const String& name,
+            /* [in] */ IArraySet* set,//String
             /* [in] */ IPrintWriter* pw);
 
     private:
@@ -85,57 +84,56 @@ private:
     };
 
 public:
-    CAR_SINGLETON_DECL()
 
-    CAR_INTERFACE_DECL()
+    //CAR_INTERFACE_DECL()
 
-    CARAPI GetSystemUiVisibility(
+    static CARAPI GetSystemUiVisibility(
         /* [in] */ IWindowState* win,
         /* [in] */ IWindowManagerLayoutParams* attrs,
         /* [out] */ Int32* res);
 
-    CARAPI GetWindowFlags(
+    static CARAPI GetWindowFlags(
         /* [in] */ IWindowState* win,
         /* [in] */ IWindowManagerLayoutParams* attrs,
         /* [out] */ Int32* res);
 
-    CARAPI AdjustClearableFlags(
+    static CARAPI AdjustClearableFlags(
         /* [in] */ IWindowState* win,
         /* [in] */ Int32 clearableFlags,
         /* [out] */ Int32* res);
 
-    CARAPI DisableImmersiveConfirmation(
+    static CARAPI DisableImmersiveConfirmation(
         /* [in] */ const String& pkg,
         /* [out] */ Boolean* res);
 
-    CARAPI ReloadFromSetting(
+    static CARAPI ReloadFromSetting(
         /* [in] */ IContext* context);
 
-    CARAPI Dump(
+    static CARAPI Dump(
         /* [in] */ const String& prefix,
         /* [in] */ IPrintWriter* pw);
 
 private:
-    CARAPI_(void) Dump(
+    static CARAPI_(void) Dump(
         /* [in] */ const String& name,
         /* [in] */ Filter* filter,
         /* [in] */ const String& prefix,
         /* [in] */ IPrintWriter* pw);
 
-    CARAPI_(void) SetFilters(
-        /* [in] */ String value);
+    static CARAPI_(void) SetFilters(
+        /* [in] */ const String& value);
 
 private:
-    String TAG;
-    Boolean DEBUG;
-    const String NAME_IMMERSIVE_FULL;
-    const String NAME_IMMERSIVE_STATUS;
-    const String NAME_IMMERSIVE_NAVIGATION;
-    const String NAME_IMMERSIVE_PRECONFIRMATIONS;
-    String sSettingValue;
-    AutoPtr<Filter> sImmersivePreconfirmationsFilter;
-    AutoPtr<Filter> sImmersiveStatusFilter;
-    AutoPtr<Filter> sImmersiveNavigationFilter;
+    static String TAG;
+    static Boolean DEBUG;
+    static const String NAME_IMMERSIVE_FULL;
+    static const String NAME_IMMERSIVE_STATUS;
+    static const String NAME_IMMERSIVE_NAVIGATION;
+    static const String NAME_IMMERSIVE_PRECONFIRMATIONS;
+    static String sSettingValue;
+    static AutoPtr<Filter> sImmersivePreconfirmationsFilter;
+    static AutoPtr<Filter> sImmersiveStatusFilter;
+    static AutoPtr<Filter> sImmersiveNavigationFilter;
 };
 
 } // namespace Impl

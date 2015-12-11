@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CWINDOWORIENTATIONLISTENER_H__
 
 #include "_Elastos_Droid_Internal_Policy_Impl_CWindowOrientationListener.h"
-//#include "elastos/droid/internal/policy/impl/WindowOrientationListener.h"
+#include "elastos/droid/internal/policy/impl/WindowOrientationListener.h"
 
 namespace Elastos {
 namespace Droid {
@@ -11,7 +11,7 @@ namespace Policy {
 namespace Impl {
 
 CarClass(CWindowOrientationListener)
-    //, public WindowOrientationListener
+    , public WindowOrientationListener
 {
 public:
     CAR_OBJECT_DECL()

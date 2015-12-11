@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CSYSTEMGESTURESPOINTEREVENTLISTENER_H__
 
 #include "_Elastos_Droid_Internal_Policy_Impl_CSystemGesturesPointerEventListener.h"
-//#include "elastos/droid/internal/policy/impl/SystemGesturesPointerEventListener.h"
+#include "elastos/droid/internal/policy/impl/SystemGesturesPointerEventListener.h"
 
 namespace Elastos {
 namespace Droid {
@@ -11,7 +11,7 @@ namespace Policy {
 namespace Impl {
 
 CarClass(CSystemGesturesPointerEventListener)
-    //, public SystemGesturesPointerEventListener
+    , public SystemGesturesPointerEventListener
 {
 public:
     CAR_OBJECT_DECL()

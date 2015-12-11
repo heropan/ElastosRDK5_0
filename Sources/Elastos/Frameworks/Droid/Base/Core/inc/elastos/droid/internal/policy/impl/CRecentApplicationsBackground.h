@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CRECENTAPPLICATIONSBACKGROUND_H__
 
 #include "_Elastos_Droid_Internal_Policy_Impl_CRecentApplicationsBackground.h"
-//#include "elastos/droid/internal/policy/impl/RecentApplicationsBackground.h"
+#include "elastos/droid/internal/policy/impl/RecentApplicationsBackground.h"
 
 namespace Elastos {
 namespace Droid {
@@ -11,7 +11,7 @@ namespace Policy {
 namespace Impl {
 
 CarClass(CRecentApplicationsBackground)
-    //, public RecentApplicationsBackground
+    , public RecentApplicationsBackground
 {
 public:
     CAR_OBJECT_DECL()

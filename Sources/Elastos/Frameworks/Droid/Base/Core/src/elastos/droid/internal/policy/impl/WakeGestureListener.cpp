@@ -1,7 +1,7 @@
 
 #include "elastos/droid/internal/policy/impl/WakeGestureListener.h"
 
-using Elastos::Droid::Hardware::EIID_ITriggerEvent;
+using Elastos::Droid::Hardware::EIID_ITriggerEventListener;
 using Elastos::Core::EIID_IRunnable;
 
 namespace Elastos {
@@ -120,7 +120,7 @@ ECode WakeGestureListener::CancelWakeUpTrigger()
 
 ECode WakeGestureListener::Dump(
     /* [in] */ IPrintWriter* pw,
-    /* [in] */ String prefix)
+    /* [in] */ const String& prefix)
 {
     VALIDATE_NOT_NULL(pw);
     // ==================before translated======================

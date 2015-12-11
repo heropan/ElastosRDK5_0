@@ -10,7 +10,7 @@ using Elastos::Droid::Hardware::ITriggerEvent;
 using Elastos::Droid::Hardware::ITriggerEventListener;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Core::IRunnable;
-using Elastos::Io::IPrintWriter;
+using Elastos::IO::IPrintWriter;
 
 namespace Elastos {
 namespace Droid {
@@ -81,7 +81,7 @@ public:
 
     virtual CARAPI Dump(
         /* [in] */ IPrintWriter* pw,
-        /* [in] */ String prefix);
+        /* [in] */ const String& prefix);
 
 private:
     static const String TAG;

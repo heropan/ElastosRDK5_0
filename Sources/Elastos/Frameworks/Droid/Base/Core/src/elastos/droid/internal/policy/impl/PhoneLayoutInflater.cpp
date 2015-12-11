@@ -11,65 +11,48 @@ namespace Impl {
 //                         PhoneLayoutInflater
 //=====================================================================
 CAR_INTERFACE_IMPL(PhoneLayoutInflater, LayoutInflater, IPhoneLayoutInflater)
-AutoPtr< ArrayOf<String> > PhoneLayoutInflater::sClassPrefixList = PhoneLayoutInflater::MiddleInitSclassprefixlist();
+
+
+static AutoPtr< ArrayOf<String> > sInit()
+{
+    AutoPtr< ArrayOf<String> > prefixs = ArrayOf<String>::Alloc(3);
+    (*prefixs)[0] = "Elastos.Droid.Widget.";
+    (*prefixs)[1] = "Elastos.Droid.Webkit.";
+    (*prefixs)[2] = "Elastos.Droid.app.";
+    return prefixs;
+}
+
+const AutoPtr< ArrayOf<String> > PhoneLayoutInflater::sClassPrefixList = sInit();
 
 PhoneLayoutInflater::PhoneLayoutInflater()
 {
 }
 
-CARAPI PhoneLayoutInflater::constructor(
+ECode PhoneLayoutInflater::constructor(
     /* [in] */ IContext* context)
 {
-    // ==================before translated======================
-    // super(context);
-    return NOERROR;
+    return LayoutInflater::constructor(context);
 }
 
 ECode PhoneLayoutInflater::OnCreateView(
-    /* [in] */  const String& name,
+    /* [in] */ const String& name,
     /* [in] */ IAttributeSet* attrs,
     /* [out] */ IView** view)
-
 {
     VALIDATE_NOT_NULL(view);
-    assert(0);
-    return NOERROR;
-}
 
-ECode PhoneLayoutInflater::CloneInContext(
-    /* [in] */ IContext* newContext,
-    /* [out] */ ILayoutInflater** result)
-{
-    VALIDATE_NOT_NULL(result);
-    assert(0);
-    return NOERROR;
-}
+    for (Int32 i = 0; i < sClassPrefixList->GetLength(); ++i) {
+        String prefix = (*sClassPrefixList)[i];
+        ECode ec = CreateView(name, prefix, attrs, view);
+        if (SUCCEEDED(ec) && (*view != NULL)) return ec;
+    }
 
-PhoneLayoutInflater::PhoneLayoutInflater(
-    /* [in] */ ILayoutInflater* original,
-    /* [in] */ IContext* newContext)
-{
-    // ==================before translated======================
-    // super(original, newContext);
-}
-
-AutoPtr< ArrayOf<String> > PhoneLayoutInflater::MiddleInitSclassprefixlist()
-{
-    // ==================before translated======================
-    // ->WWZ_SIGN: ARRAY_INIT_START {
-    // "android.widget.",
-    //          "android.webkit.",
-    //          "android.app."
-    // ->WWZ_SIGN: ARRAY_INIT_END }
-    assert(0);
-    AutoPtr< ArrayOf<String> > empty;
-    return empty;
+    return LayoutInflater::OnCreateView(name, attrs, view);
 }
 
 } // namespace Impl
 } // namespace Policy
 } // namespace Internal
-} // namespace Droid
+} // namepsace Droid
 } // namespace Elastos
-
 

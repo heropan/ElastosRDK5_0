@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CPOLICY_H__
 
 #include "_Elastos_Droid_Internal_Policy_Impl_CPolicy.h"
-//#include "elastos/droid/internal/policy/impl/Policy.h"
+#include "elastos/droid/internal/policy/impl/Policy.h"
 
 namespace Elastos {
 namespace Droid {
@@ -11,7 +11,7 @@ namespace Policy {
 namespace Impl {
 
 CarClass(CPolicy)
-    //, public Policy
+    , public Policy
 {
 public:
     CAR_OBJECT_DECL()

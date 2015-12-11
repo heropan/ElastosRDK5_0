@@ -1,5 +1,12 @@
 
 #include "elastos/droid/internal/policy/impl/RecentApplicationsBackground.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include <elastos/core/Math.h>
+
+using Elastos::Droid::Graphics::CPaint;
+using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
+using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
+using Elastos::Droid::View::IGravity;
 
 namespace Elastos {
 namespace Droid {
@@ -15,81 +22,35 @@ CAR_INTERFACE_IMPL(RecentApplicationsBackground, LinearLayout, IRecentApplicatio
 const String RecentApplicationsBackground::TAG("RecentApplicationsBackground");
 
 RecentApplicationsBackground::RecentApplicationsBackground()
+    : mBackgroundSizeChanged(FALSE)
 {
+    CRect::New((IRect**)&mTmp0);
+    CRect::New((IRect**)&mTmp1);
 }
 
-CARAPI RecentApplicationsBackground::constructor(
+ECode RecentApplicationsBackground::constructor(
     /* [in] */ IContext* ctx)
 {
-    // ==================before translated======================
-    // this(context, null);
-    // init();
-    return NOERROR;
+    return Init(ctx, NULL);
 }
 
-CARAPI RecentApplicationsBackground::constructor(
+ECode RecentApplicationsBackground::constructor(
     /* [in] */ IContext* ctx,
     /* [in] */ IAttributeSet* attrs)
 {
-    // ==================before translated======================
-    // super(context, attrs);
-    // init();
-    return NOERROR;
+    return Init(ctx, attrs);
 }
 
-ECode RecentApplicationsBackground::JumpDrawablesToCurrentState()
+ECode RecentApplicationsBackground::Init(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
 {
-    // ==================before translated======================
-    // super.jumpDrawablesToCurrentState();
-    // if (mBackground != null) mBackground.jumpToCurrentState();
-    assert(0);
-    return NOERROR;
-}
+    LinearLayout::constructor(context, attrs);
 
-ECode RecentApplicationsBackground::Draw(
-    /* [in] */ ICanvas* canvas)
-{
-    VALIDATE_NOT_NULL(canvas);
-    // ==================before translated======================
-    // final Drawable background = mBackground;
-    // if (background != null) {
-    //     if (mBackgroundSizeChanged) {
-    //         mBackgroundSizeChanged = false;
-    //         Rect chld = mTmp0;
-    //         Rect bkg = mTmp1;
-    //         mBackground.getPadding(bkg);
-    //         getChildBounds(chld);
-    //         // This doesn't clamp to this view's bounds, which is what we want,
-    //         // so that the drawing is clipped.
-    //         final int top = chld.top - bkg.top;
-    //         final int bottom = chld.bottom + bkg.bottom;
-    //         // The background here is a gradient that wants to
-    //         // extend the full width of the screen (whatever that
-    //         // may be).
-    //         int left, right;
-    //         if (false) {
-    //             // This limits the width of the drawable.
-    //             left = chld.left - bkg.left;
-    //             right = chld.right + bkg.right;
-    //         } else {
-    //             // This expands it to full width.
-    //             left = 0;
-    //             right = getRight();
-    //         }
-    //         background.setBounds(left, top, right, bottom);
-    //     }
-    // }
-    // mBackground.draw(canvas);
-    //
-    // if (false) {
-    //     android.graphics.Paint p = new android.graphics.Paint();
-    //     p.setColor(0x88ffff00);
-    //     canvas.drawRect(background.getBounds(), p);
-    // }
-    // canvas.drawARGB((int)(0.75*0xff), 0, 0, 0);
-    //
-    // super.draw(canvas);
-    assert(0);
+    GetBackground((IDrawable**)&mBackground);
+    SetBackgroundDrawable(NULL);
+    SetPadding(0, 0, 0, 0);
+    SetGravity(IGravity::CENTER);
     return NOERROR;
 }
 
@@ -99,88 +60,145 @@ Boolean RecentApplicationsBackground::SetFrame(
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom)
 {
-    // ==================before translated======================
-    // setWillNotDraw(false);
-    // if (mLeft != left || mRight != right || mTop != top || mBottom != bottom) {
-    //     mBackgroundSizeChanged = true;
-    // }
-    // return super.setFrame(left, top, right, bottom);
-    assert(0);
-    return FALSE;
+    SetWillNotDraw(FALSE);
+    if (mLeft != left || mRight != right || mTop != top || mBottom != bottom) {
+        mBackgroundSizeChanged = TRUE;
+    }
+    return LinearLayout::SetFrame(left, top, right, bottom);
 }
 
 Boolean RecentApplicationsBackground::VerifyDrawable(
     /* [in] */ IDrawable* who)
 {
-    // ==================before translated======================
-    // return who == mBackground || super.verifyDrawable(who);
-    assert(0);
-    return FALSE;
+    return who == mBackground || LinearLayout::VerifyDrawable(who);
+}
+
+ECode RecentApplicationsBackground::JumpDrawablesToCurrentState()
+{
+    LinearLayout::JumpDrawablesToCurrentState();
+    if (mBackground != NULL) {
+        mBackground->JumpToCurrentState();
+    }
+    return NOERROR;
 }
 
 ECode RecentApplicationsBackground::DrawableStateChanged()
 {
-    // ==================before translated======================
-    // Drawable d = mBackground;
-    // if (d != null && d.isStateful()) {
-    //     d.setState(getDrawableState());
-    // }
-    // super.drawableStateChanged();
-    assert(0);
-    return NOERROR;
+    AutoPtr<IDrawable> d = mBackground;
+    Boolean isStateful = FALSE;
+    if (d != NULL && (d->IsStateful(&isStateful), isStateful)) {
+        Boolean value = FALSE;
+        AutoPtr<ArrayOf<Int32> > drawableState;
+        GetDrawableState((ArrayOf<Int32>**)&drawableState);
+        d->SetState(drawableState, &value);
+    }
+    return LinearLayout::DrawableStateChanged();
+}
+
+ECode RecentApplicationsBackground::Draw(
+    /* [in] */ ICanvas* canvas)
+{
+    AutoPtr<IDrawable> background = mBackground;
+    if (background != NULL) {
+        if (mBackgroundSizeChanged) {
+            mBackgroundSizeChanged = FALSE;
+            AutoPtr<IRect> chld = mTmp0;
+            AutoPtr<IRect> bkg = mTmp1;
+            Boolean value = FALSE;
+            mBackground->GetPadding(bkg, &value);
+            GetChildBounds(chld);
+            // This doesn't clamp to this view's bounds, which is what we want,
+            // so that the drawing is clipped.
+            Int32 chldTop = 0;
+            chld->GetTop(&chldTop);
+            Int32 bkgTop = 0;
+            bkg->GetTop(&bkgTop);
+            const Int32 top = chldTop - bkgTop;
+            Int32 chldBottom = 0;
+            chld->GetBottom(&chldBottom);
+            Int32 bkgBottom = 0;
+            bkg->GetBottom(&bkgBottom);
+            const Int32 bottom = chldBottom + bkgBottom;
+            // The background here is a gradient that wants to
+            // extend the full width of the screen (whatever that
+            // may be).
+            Int32 left, right;
+            if (FALSE) {
+                // This limits the width of the drawable.
+                Int32 chldLeft = 0;
+                chld->GetLeft(&chldLeft);
+                Int32 bkgLeft = 0;
+                bkg->GetLeft(&bkgLeft);
+                left = chldLeft - bkgLeft;
+                Int32 chldRight = 0;
+                chld->GetRight(&chldRight);
+                Int32 bkgRight = 0;
+                bkg->GetRight(&bkgRight);
+                right = chldRight + bkgRight;
+            } else {
+                // This expands it to full width.
+                left = 0;
+                GetRight(&right);
+            }
+            background->SetBounds(left, top, right, bottom);
+        }
+    }
+    mBackground->Draw(canvas);
+
+    if (FALSE) {
+        AutoPtr<IPaint> p;
+        CPaint::New((IPaint**)&p);
+        p->SetColor(0x88ffff00);
+        AutoPtr<IRect> bounds;
+        background->GetBounds((IRect**)&bounds);
+        canvas->DrawRect(bounds, p);
+    }
+    canvas->DrawARGB((Int32)(0.75*0xff), 0, 0, 0);
+
+    return LinearLayout::Draw(canvas);
 }
 
 ECode RecentApplicationsBackground::OnAttachedToWindow()
 {
-    // ==================before translated======================
-    // super.onAttachedToWindow();
-    // mBackground.setCallback(this);
-    // setWillNotDraw(false);
-    assert(0);
-    return NOERROR;
+    LinearLayout::OnAttachedToWindow();
+    mBackground->SetCallback(THIS_PROBE(IDrawableCallback));
+    return SetWillNotDraw(FALSE);
 }
 
 ECode RecentApplicationsBackground::OnDetachedFromWindow()
 {
-    // ==================before translated======================
-    // super.onDetachedFromWindow();
-    // mBackground.setCallback(null);
-    assert(0);
-    return NOERROR;
-}
-
-void RecentApplicationsBackground::Init()
-{
-    // ==================before translated======================
-    // mBackground = getBackground();
-    // setBackgroundDrawable(null);
-    // setPadding(0, 0, 0, 0);
-    // setGravity(Gravity.CENTER);
-    assert(0);
+    LinearLayout::OnDetachedFromWindow();
+    return mBackground->SetCallback(NULL);
 }
 
 void RecentApplicationsBackground::GetChildBounds(
     /* [in] */ IRect* r)
 {
-    // ==================before translated======================
-    // r.left = r.top = Integer.MAX_VALUE;
-    // r.bottom = r.right = Integer.MIN_VALUE;
-    // final int N = getChildCount();
-    // for (int i=0; i<N; i++) {
-    //     View v = getChildAt(i);
-    //     if (v.getVisibility() == View.VISIBLE) {
-    //         r.left = Math.min(r.left, v.getLeft());
-    //         r.top = Math.min(r.top, v.getTop());
-    //         r.right = Math.max(r.right, v.getRight());
-    //         r.bottom = Math.max(r.bottom, v.getBottom());
-    //     }
-    // }
-    assert(0);
+    using Elastos::Core::Math;
+    r->SetLeft(Math::INT32_MAX_VALUE);
+    r->SetTop(Math::INT32_MAX_VALUE);
+    r->SetBottom(Math::INT32_MIN_VALUE);
+    r->SetRight(Math::INT32_MIN_VALUE);
+    Int32 count;
+    ViewGroup::GetChildCount(&count);
+    const Int32 N = count;
+    for (Int32 i = 0; i < N; i++) {
+        AutoPtr<IView> v;
+        GetChildAt(i, (IView**)&v);
+        Int32 visible = 0;
+        if ((v->GetVisibility(&visible), visible) == IView::VISIBLE) {
+            Int32 rLeft, rRight, rTop, rBottom;
+            Int32 vLeft, vRight, vTop, vBottom;
+            r->SetLeft(Math::Min((r->GetLeft(&rLeft), rLeft), (v->GetLeft(&vLeft), vLeft)));
+            r->SetTop(Math::Min((r->GetTop(&rTop), rTop), (v->GetTop(&vTop), vTop)));
+            r->SetRight(Math::Max((r->GetRight(&rRight), rRight), (v->GetRight(&vRight), vRight)));
+            r->SetBottom(Math::Max((r->GetBottom(&rBottom), rBottom), (v->GetBottom(&vBottom), vBottom)));
+        }
+    }
 }
 
-} // namespace Impl
-} // namespace Policy
-} // namespace Internal
-} // namespace Droid
 } // namespace Elastos
-
+} // namespace Droid
+} // namespace Internal
+} // namespace Policy
+} // namespace Impl

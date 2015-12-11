@@ -77,6 +77,12 @@ module
     interface Elastos.Droid.View.IWindow;
     interface Elastos.Droid.View.IWindowCallback;
     interface Elastos.Droid.View.IWindowManagerPolicy;
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.View.IViewGroup;
+    interface Elastos.Droid.View.IViewParent;
+    interface Elastos.Droid.View.IViewManager;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
+    interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
     interface Elastos.Droid.Widget.ILinearLayout;
 
     using interface Elastos.Core.IRunnable;
@@ -215,8 +221,6 @@ module
         }
 
         class CPhoneWindowSavedState {
-            constructor();
-
             constructor(
                 [in] IParcelable* state);
 
@@ -225,57 +229,60 @@ module
         }
 
         //class CPhoneWindowManager {
-        //    constructor();
 
         //    interface IPhoneWindowManager;
         //    interface IWindowManagerPolicy;
         //}
 
-        //class CPolicy {
-        //    constructor();
+        class CPolicy {
+            interface IIPolicy;
+        }
 
-        //    interface IIPolicy;
-        //}
+        singleton class CPolicyControl {
+            interface IPolicyControl;
+        }
 
-        //singleton class CPolicyControl {
+        class CRecentApplicationsBackground {
+            constructor(
+                [in] IContext* ctx);
 
-        //    interface IPolicyControl;
-        //}
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
 
-        //class CRecentApplicationsBackground {
-        //    constructor(
-        //        [in] IContext* ctx);
+            interface IRecentApplicationsBackground;
+            interface ILinearLayout;
+            interface IKeyEventCallback;
+            interface IView;
+            interface IViewGroup;
+            interface IViewParent;
+            interface IViewManager;
+            interface IAccessibilityEventSource;
+            interface IDrawableCallback;
+        }
 
-        //    constructor(
-        //        [in] IContext* ctx,
-        //        [in] IAttributeSet* attrs);
+        class CRecentApplicationsDialog {
+            constructor(
+                [in] IContext* ctx);
 
-        //    interface IRecentApplicationsBackground;
-        //    interface ILinearLayout;
-        //}
+            interface IRecentApplicationsDialog;
+            interface IViewOnClickListener;
+            interface IDialog;
+            interface IOnWindowDismissedCallback;
+            interface IViewOnCreateContextMenuListener;
+            interface IKeyEventCallback;
+            interface IWindowCallback;
+            interface IDialogInterface;
+        }
 
-        //class CRecentApplicationsDialog {
-        //    constructor(
-        //        [in] IContext* ctx);
+        class CSystemGesturesPointerEventListener {
+            constructor(
+                [in] IContext* ctx,
+                [in] ISystemGesturesPointerEventListenerCallbacks* cb);
 
-        //    interface IRecentApplicationsDialog;
-        //    interface IViewOnClickListener;
-        //    interface IDialog;
-        //    interface IOnWindowDismissedCallback;
-        //    interface IViewOnCreateContextMenuListener;
-        //    interface IKeyEventCallback;
-        //    interface IWindowCallback;
-        //    interface IDialogInterface;
-        //}
-
-        //class CSystemGesturesPointerEventListener {
-        //    constructor(
-        //        [in] IContext* ctx,
-        //        [in] ISystemGesturesPointerEventListenerCallbacks* cb);
-
-        //    interface ISystemGesturesPointerEventListener;
-        //    interface IPointerEventListener;
-        //}
+            interface ISystemGesturesPointerEventListener;
+            interface IPointerEventListener;
+        }
 
         ////class CWakeGestureListener {
         ////    constructor(

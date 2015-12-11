@@ -17,8 +17,8 @@ namespace Policy {
 namespace Impl {
 
 /**
-  * {@hide}
-  */
+    * {@hide}
+      */
 // Simple implementation of the policy interface that spawns the right
 // set of objects
 class Policy
@@ -30,36 +30,28 @@ public:
 
     Policy();
 
-    CARAPI constructor();
-
     CARAPI MakeNewWindow(
         /* [in] */ IContext* context,
-        /* [out] */ IWindow** result);
+        /* [out] */ IWindow** window);
 
     CARAPI MakeNewLayoutInflater(
         /* [in] */ IContext* context,
-        /* [out] */ ILayoutInflater** result);
+        /* [out] */ ILayoutInflater** inflater);
 
     CARAPI MakeNewWindowManager(
-        /* [out] */ IWindowManagerPolicy** result);
+        /* [out] */ IWindowManagerPolicy** wm);
 
     CARAPI MakeNewFallbackEventHandler(
         /* [in] */ IContext* context,
-        /* [out] */ IFallbackEventHandler** result);
-
-private:
-    static CARAPI_(AutoPtr<ArrayOf<String> >) MiddleInitPreloadClasses();
-
+        /* [out] */ IFallbackEventHandler** handler);
 private:
     static const String TAG;
-    static AutoPtr<ArrayOf<String> > preload_classes;
 };
 
 } // namespace Impl
 } // namespace Policy
 } // namespace Internal
-} // namespace Droid
+} // namepsace Droid
 } // namespace Elastos
 
 #endif // __ELASTOS_DROID_INTERNAL_POLICY_IMPL_POLICY_H__
-

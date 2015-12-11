@@ -1,5 +1,9 @@
 
 #include "elastos/droid/internal/policy/impl/Policy.h"
+#include "elastos/droid/internal/policy/impl/CPhoneWindow.h"
+#include "elastos/droid/internal/policy/impl/CPhoneLayoutInflater.h"
+//TODO #include "elastos/droid/internal/policy/impl/CPhoneWindowManager.h"
+#include "elastos/droid/internal/policy/impl/CPhoneFallbackEventHandler.h"
 
 using Elastos::Droid::Internal::Policy::EIID_IIPolicy;
 
@@ -13,84 +17,49 @@ namespace Impl {
 //                                Policy
 //=====================================================================
 CAR_INTERFACE_IMPL(Policy, Object, IIPolicy);
-
 const String Policy::TAG("PhonePolicy");
-AutoPtr<ArrayOf<String> > Policy::preload_classes = Policy::MiddleInitPreloadClasses();
 
 Policy::Policy()
 {
 }
 
-ECode Policy::constructor()
-{
-}
-
 ECode Policy::MakeNewWindow(
     /* [in] */ IContext* context,
-    /* [out] */ IWindow** result)
+    /* [out] */ IWindow** window)
 {
-    VALIDATE_NOT_NULL(context);
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return new PhoneWindow(context);
-    assert(0);
-    return NOERROR;
+    VALIDATE_NOT_NULL(window);
+    return CPhoneWindow::New(context, window);
 }
 
 ECode Policy::MakeNewLayoutInflater(
     /* [in] */ IContext* context,
-    /* [out] */ ILayoutInflater** result)
+    /* [out] */ ILayoutInflater** inflater)
 {
-    VALIDATE_NOT_NULL(context);
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return new PhoneLayoutInflater(context);
-    assert(0);
-    return NOERROR;
+    VALIDATE_NOT_NULL(inflater);
+    return CPhoneLayoutInflater::New(context, inflater);
 }
 
 ECode Policy::MakeNewWindowManager(
-    /* [out] */ IWindowManagerPolicy** result)
+    /* [out] */ IWindowManagerPolicy** wm)
 {
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return new PhoneWindowManager();
-    assert(0);
-    return NOERROR;
+    VALIDATE_NOT_NULL(wm);
+    return NOERROR;//TODO CPhoneWindowManager::New(wm);
 }
 
 ECode Policy::MakeNewFallbackEventHandler(
     /* [in] */ IContext* context,
-    /* [out] */ IFallbackEventHandler** result)
+    /* [out] */ IFallbackEventHandler** handler)
 {
-    VALIDATE_NOT_NULL(context);
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return new PhoneFallbackEventHandler(context);
-    assert(0);
+    VALIDATE_NOT_NULL(handler);
+    AutoPtr<IPhoneFallbackEventHandler> phoneHandler;
+    FAIL_RETURN(CPhoneFallbackEventHandler::New(context, (IPhoneFallbackEventHandler**)&phoneHandler));
+    *handler = (IFallbackEventHandler*)phoneHandler.Get();
+    REFCOUNT_ADD(*handler);
     return NOERROR;
-}
-
-AutoPtr<ArrayOf<String> > Policy::MiddleInitPreloadClasses()
-{
-    // ==================before translated======================
-    // ->WWZ_SIGN: ARRAY_INIT_START {
-    // "com.android.internal.policy.impl.PhoneLayoutInflater",
-    //          "com.android.internal.policy.impl.PhoneWindow",
-    //          "com.android.internal.policy.impl.PhoneWindow$1",
-    //          "com.android.internal.policy.impl.PhoneWindow$DialogMenuCallback",
-    //          "com.android.internal.policy.impl.PhoneWindow$DecorView",
-    //          "com.android.internal.policy.impl.PhoneWindow$PanelFeatureState",
-    //          "com.android.internal.policy.impl.PhoneWindow$PanelFeatureState$SavedState",
-    // ->WWZ_SIGN: ARRAY_INIT_END }
-    assert(0);
-    AutoPtr< ArrayOf<String> > empty;
-    return empty;
 }
 
 } // namespace Impl
 } // namespace Policy
 } // namespace Internal
-} // namespace Droid
+} // namepsace Droid
 } // namespace Elastos
-

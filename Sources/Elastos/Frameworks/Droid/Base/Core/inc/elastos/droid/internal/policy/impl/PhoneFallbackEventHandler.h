@@ -1,14 +1,16 @@
+
 #ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_PHONEFALLBACKEVENTHANDLER_H__
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_PHONEFALLBACKEVENTHANDLER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Droid::Content::IContext;
 using Elastos::Droid::App::IKeyguardManager;
 using Elastos::Droid::App::ISearchManager;
-using Elastos::Droid::View::IView;
+using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Media::IAudioManager;
+using Elastos::Droid::Os::IServiceManager;
 using Elastos::Droid::Telephony::ITelephonyManager;
+using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IFallbackEventHandler;
 using Elastos::Droid::View::IKeyEvent;
 
@@ -31,45 +33,45 @@ public:
     CARAPI constructor(
         /* [in] */ IContext* context);
 
-    virtual CARAPI SetView(
-        /* [in] */ IView* v);
+    CARAPI SetView(
+        /* [in] */ IView *v);
 
-    virtual CARAPI PreDispatchKeyEvent(
-        /* [in] */ IKeyEvent* event);
+    CARAPI PreDispatchKeyEvent(
+        /* [in] */ IKeyEvent *event);
 
-    virtual CARAPI DispatchKeyEvent(
-        /* [in] */ IKeyEvent* event,
-        /* [out] */ Boolean* result);
+    CARAPI DispatchKeyEvent(
+        /* [in] */ IKeyEvent *event,
+        /* [out] */ Boolean *res);
 
-    virtual CARAPI OnKeyDown(
+    CARAPI OnKeyDown(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event,
-        /* [out] */ Boolean* result);
+        /* [in] */ IKeyEvent *event,
+        /* [out] */ Boolean *res);
 
-    virtual CARAPI OnKeyUp(
+    CARAPI OnKeyUp(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event,
-        /* [out] */ Boolean* result);
+        /* [in] */ IKeyEvent *event,
+        /* [out] */ Boolean *res);
 
-    virtual CARAPI StartCallActivity();
+    CARAPI StartCallActivity();
 
-    virtual CARAPI GetSearchManager(
-        /* [out] */ ISearchManager** result);
+    CARAPI GetSearchManager(
+        /* [out] */ ISearchManager **sm);
 
-    virtual CARAPI GetTelephonyManager(
-        /* [out] */ ITelephonyManager** result);
+    CARAPI GetTelephonyManager(
+        /* [out] */ ITelephonyManager ** tm);
 
-    virtual CARAPI GetKeyguardManager(
-        /* [out] */ IKeyguardManager** result);
+    CARAPI GetKeyguardManager(
+        /* [out] */ IKeyguardManager **km);
 
-    virtual CARAPI GetAudioManager(
-        /* [out] */ IAudioManager** result);
+    CARAPI GetAudioManager(
+        /* [out] */ IAudioManager **am);
 
-    virtual CARAPI SendCloseSystemWindows();
+    CARAPI SendCloseSystemWindows();
 
 private:
-    CARAPI_(void) HandleMediaKeyEvent(
-        /* [in] */ IKeyEvent* keyEvent);
+    CARAPI HandleMediaKeyEvent(
+        /* [in] */ IKeyEvent *keyEvent);
 
 public:
     AutoPtr<IContext> mContext;
@@ -91,4 +93,3 @@ private:
 } // namespace Elastos
 
 #endif // __ELASTOS_DROID_INTERNAL_POLICY_IMPL_PHONEFALLBACKEVENTHANDLER_H__
-

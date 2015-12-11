@@ -15,6 +15,11 @@ CarClass(CPhoneLayoutInflater)
 {
 public:
     CAR_OBJECT_DECL()
+
+    CARAPI CloneInContext(
+        /* [in] */ IContext* newContext,
+        /* [out] */ ILayoutInflater** newInflater);
+
 };
 
 } // namespace Impl
