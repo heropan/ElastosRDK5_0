@@ -1,35 +1,53 @@
-#include "elastos/droid/widget/ActivityChooserModel.h"
+
+#include "elastos/droid/app/CActivityManagerHelper.h"
 #include "elastos/droid/content/CComponentName.h"
 #include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/pm/CApplicationInfo.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/utility/Xml.h"
+#include "elastos/droid/widget/ActivityChooserModel.h"
+#include "elastos/core/AutoLock.h"
 #include <elastos/core/Math.h>
-#include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Math::IBigDecimal;
-using Elastos::Math::CBigDecimal;
-using Elastos::Core::ISystem;
-using Elastos::Core::CSystem;
-using Elastos::Core::CBoolean;
-using Elastos::Core::IBoolean;
-using Elastos::Core::StringUtils;
-using Elastos::Core::StringBuilder;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
-using Elastos::IO::IFileOutputStream;
-using Elastos::Core::EIID_IComparable;
-
-using Elastos::IO::IFileInputStream;
-using Org::Xmlpull::V1::IXmlSerializer;
-using Elastos::Droid::Utility::Xml;
-using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::App::CActivityManagerHelper;
+using Elastos::Droid::App::IActivityManagerHelper;
 using Elastos::Droid::Content::CComponentName;
-using Elastos::Droid::Content::Pm::IActivityInfo;
 using Elastos::Droid::Content::CIntent;
-using Elastos::Droid::Widget::IActivitySorter;
-using Elastos::Droid::Database::EIID_IObservable;
+using Elastos::Droid::Content::Pm::CApplicationInfo;
+using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
 using Elastos::Droid::Database::EIID_IDataSetObservable;
+using Elastos::Droid::Database::EIID_IObservable;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Utility::Xml;
+using Elastos::Droid::Widget::EIID_IHistoricalRecord;
+using Elastos::Droid::Widget::IActivitySorter;
+using Elastos::Core::AutoLock;
+using Elastos::Core::CBoolean;
+using Elastos::Core::CString;
+using Elastos::Core::CSystem;
+using Elastos::Core::EIID_IComparable;
+using Elastos::Core::IBoolean;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::ISystem;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::IO::IFileInputStream;
+using Elastos::IO::IFileOutputStream;
+using Elastos::IO::IOutputStream;
+using Elastos::Math::CBigDecimal;
+using Elastos::Math::IBigDecimal;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::CCollections;
+using Elastos::Utility::ICollections;
+using Elastos::Utility::Logging::Logger;
+using Org::Kxml2::IO::CKXmlParser;
+using Org::Kxml2::IO::CKXmlSerializer;
+using Org::Xmlpull::V1::IXmlSerializer;
 
 namespace Elastos {
 namespace Droid {
@@ -48,13 +66,14 @@ const Int32 ActivityChooserModel::DEFAULT_ACTIVITY_INFLATION = 5;
 const Float ActivityChooserModel::DEFAULT_HISTORICAL_RECORD_WEIGHT = 1.0f;
 const String ActivityChooserModel::HISTORY_FILE_EXTENSION(".xml");
 const Int32 ActivityChooserModel::INVALID_INDEX = -1;
-Mutex ActivityChooserModel::sRegistryLock;
+Object ActivityChooserModel::sRegistryLock;
 HashMap<String, AutoPtr<IActivityChooserModel> > ActivityChooserModel::sDataModelRegistry;
 const Float ActivityChooserModel::DefaultSorter::WEIGHT_DECAY_COEFFICIENT = 0.95f;
 
-CAR_INTERFACE_IMPL(ActivityChooserModel::HistoricalRecord, IHistoricalRecord)
-CAR_INTERFACE_IMPL_2(ActivityChooserModel::ActivityResolveInfo, IActivityResolveInfo, IComparable)
-CAR_INTERFACE_IMPL(ActivityChooserModel::DefaultSorter, IActivitySorter)
+CAR_INTERFACE_IMPL(ActivityChooserModel::HistoricalRecord, Object, IHistoricalRecord)
+CAR_INTERFACE_IMPL(ActivityChooserModel::ActivityResolveInfo, Object, IActivityResolveInfo)
+CAR_INTERFACE_IMPL(ActivityChooserModel::DefaultSorter, Object, IActivitySorter)
+CAR_INTERFACE_IMPL(ActivityChooserModel, Object, IActivityChooserModel)
 
 ActivityChooserModel::HistoricalRecord::HistoricalRecord(
     /* [in] */ const String& activityName,
@@ -82,8 +101,10 @@ ECode ActivityChooserModel::HistoricalRecord::GetHashCode(
     Int32 prime = 31;
     Int32 result = 1;
     Int32 activityHash = 0;
-    if(mActivity != NULL)
-        mActivity->GetHashCode(&activityHash);
+    if(mActivity != NULL) {
+        IObject* objTmp = IObject::Probe(mActivity);
+        objTmp->GetHashCode(&activityHash);
+    }
     result = prime * result + activityHash;
     UInt64 tmp = *((UInt64*)(&mTime));
     result = prime * result + (Int32) (mTime ^ (tmp >> 32));
@@ -96,7 +117,7 @@ ECode ActivityChooserModel::HistoricalRecord::Equals(
     /* [in] */ IInterface* obj,
     /* [out] */ Boolean* res)
 {
-    if(obj == this) {
+    if(TO_IINTERFACE(obj) == TO_IINTERFACE(this)) {
         return TRUE;
     }
     if (obj == NULL) {
@@ -105,13 +126,16 @@ ECode ActivityChooserModel::HistoricalRecord::Equals(
     if (IHistoricalRecord::Probe(obj) == NULL) {
         return FALSE;
     }
-    HistoricalRecord* other = (HistoricalRecord*) obj;
-    Boolean activityEquals;
+
+    IObject* objTmp = IObject::Probe(obj);
+    HistoricalRecord* other = (HistoricalRecord*)objTmp;
+    Boolean activityEquals = FALSE;
     if (mActivity == NULL) {
         if (other->mActivity != NULL) {
             return FALSE;
         }
-    } else if (mActivity->Equals(other->mActivity, &activityEquals), !activityEquals) {
+    }
+    else if (objTmp->Equals(TO_IINTERFACE(other->mActivity), &activityEquals), !activityEquals) {
         return FALSE;
     }
     if (mTime != other->mTime) {
@@ -138,7 +162,8 @@ ECode ActivityChooserModel::HistoricalRecord::ToString(
     builder += "; weight:";
     AutoPtr<IBigDecimal> bigDecimal;
     CBigDecimal::New(mWeight, (IBigDecimal**)&bigDecimal);
-    bigDecimal->ToString(&strBuf);
+    IObject* objTmp = IObject::Probe(bigDecimal);
+    objTmp->ToString(&strBuf);
     builder += strBuf;
     builder += "]";
     *str = builder.ToString();
@@ -164,7 +189,7 @@ ECode ActivityChooserModel::ActivityResolveInfo::Equals(
     /* [in] */ IInterface* obj,
     /* [out] */ Boolean* rst)
 {
-    if (obj == this) {
+    if (TO_IINTERFACE(obj) == TO_IINTERFACE(this)) {
         return TRUE;
     }
     if (obj == NULL) {
@@ -194,182 +219,143 @@ ECode ActivityChooserModel::ActivityResolveInfo::CompareTo(
 ECode ActivityChooserModel::ActivityResolveInfo::ToString(
     /* [out] */ String* str)
 {
+    *str = "ActivityChooserModel::ActivityResolveInfo";
     return NOERROR;
 }
 
 ActivityChooserModel::DefaultSorter::DefaultSorter(
     /* [in] */ ActivityChooserModel* host)
+    : mHost(host)
 {
-    mHost = host;
 }
 
 ECode ActivityChooserModel::DefaultSorter::Sort(
     /* [in] */ IIntent* intent,
-    /* [in] */ IObjectContainer* activities,
-    /* [in] */ IObjectContainer* historicalRecords)
+    /* [in] */ IList* activities,
+    /* [in] */ IList* historicalRecords)
 {
-    mPackageNameToActivityMap.Clear();
-    AutoPtr<IObjectEnumerator> em;
-    activities->GetObjectEnumerator((IObjectEnumerator**)&em);
-    Int32 count;
-    activities->GetObjectCount(&count);
-    Boolean hasNext;
-    AutoPtr<ArrayOf<IActivityResolveInfo*> > infoArr = ArrayOf<IActivityResolveInfo*>::Alloc(count);
-    Int32 i = 0;
-    while (em->MoveNext(&hasNext), hasNext)
-    {
-        AutoPtr<IInterface> cur;
-        em->Current((IInterface**)&cur);
-        AutoPtr<IActivityResolveInfo> activityTemp = IActivityResolveInfo::Probe(cur);
-        assert(activityTemp != NULL);
-        AutoPtr<ActivityResolveInfo> activity = (ActivityResolveInfo*)activityTemp.Get();
-        AutoPtr<IActivityInfo> aInfo;
-        activity->mResolveInfo->GetActivityInfo((IActivityInfo**)&aInfo);
-        String packageName;
-        aInfo->GetPackageName(&packageName);
-        mPackageNameToActivityMap[packageName] = activity;
-        infoArr->Set(i++, activityTemp);
-        activities->Remove(cur);
+    HashMap< AutoPtr<IComponentName>, AutoPtr<ActivityResolveInfo> > componentNameToActivityMap = mPackageNameToActivityMap;
+    componentNameToActivityMap.Clear();
+
+    Int32 activityCount = 0;
+    activities->GetSize(&activityCount);
+
+    String packageName;
+    String name;
+    for (int i = 0; i < activityCount; ++i) {
+        AutoPtr<IInterface> interfaceTmp;
+        activities->Get(i, (IInterface**)&interfaceTmp);
+        IObject* objTmp = IObject::Probe(interfaceTmp);
+        ActivityResolveInfo* activity = (ActivityResolveInfo*)objTmp;
+        activity->mWeight = 0.0f;
+
+        AutoPtr<IActivityInfo> activityInfo;
+        activity->mResolveInfo->GetActivityInfo((IActivityInfo**)&activityInfo);
+        IPackageItemInfo* packageItemInfo = IPackageItemInfo::Probe(activityInfo);
+        packageItemInfo->GetPackageName(&packageName);
+        packageItemInfo->GetName(&name);
+
+        AutoPtr<IComponentName> componentName;
+        CComponentName::New(packageName, name, (IComponentName**)&componentName);
+        componentNameToActivityMap[componentName] = activity;
     }
 
-    historicalRecords->GetObjectCount(&count);
-    AutoPtr<ArrayOf<IHistoricalRecord*> > recordArr = ArrayOf<IHistoricalRecord*>::Alloc(count);
-    em = NULL;
-    historicalRecords->GetObjectEnumerator((IObjectEnumerator**)&em);
-    i = 0;
-    while (em->MoveNext(&hasNext), hasNext)
-    {
-        AutoPtr<IInterface> cur;
-        em->Current((IInterface**)&cur);
-        AutoPtr<IHistoricalRecord> record = IHistoricalRecord::Probe(cur);
-        recordArr->Set(i++, record);
-    }
-    Int32 lastShareIndex = count - 1;
-    Float nextRecordWeight = 1;
-    for (i = lastShareIndex; i >= 0; i--)
-    {
-        AutoPtr<IHistoricalRecord> recordTmp = (*recordArr)[i];
-        AutoPtr<HistoricalRecord> record = (HistoricalRecord*)recordTmp.Get();
-        String packageName;
-        record->mActivity->GetPackageName(&packageName);
-        HashMap<String, AutoPtr<ActivityResolveInfo> >::Iterator it =
-            mPackageNameToActivityMap.Find(packageName);
-        if(it != mPackageNameToActivityMap.End() && it->mSecond != NULL)
-        {
-            AutoPtr<ActivityResolveInfo> activity = it->mSecond;
-            it->mSecond->mWeight += record->mWeight * nextRecordWeight;
+    Int32 historicalRecordSize = 0;
+    historicalRecords->GetSize(&historicalRecordSize);
+    Int32 lastShareIndex = historicalRecordSize - 1;
+    float nextRecordWeight = 1;
+    for (int i = lastShareIndex; i >= 0; --i) {
+        AutoPtr<IInterface> interfaceTmp;
+        historicalRecords->Get(i, (IInterface**)&interfaceTmp);
+        IObject* objTmp = IObject::Probe(interfaceTmp);
+        HistoricalRecord* historicalRecord = (HistoricalRecord*)objTmp;
+
+        AutoPtr<IComponentName> componentName = historicalRecord->mActivity;
+        AutoPtr<ActivityResolveInfo> activity = componentNameToActivityMap[componentName];
+        if (activity != NULL) {
+            activity->mWeight += historicalRecord->mWeight * nextRecordWeight;
             nextRecordWeight = nextRecordWeight * WEIGHT_DECAY_COEFFICIENT;
         }
     }
 
-    Int32 size = infoArr->GetLength() - 1;
-    for(i = 0; i < size; i++)
-    {
-        for(Int32 j = 0; j < size -i; j++)
-        {
-            Int32 compare;
-            (*infoArr)[j]->CompareTo((*infoArr)[j+1], &compare);
-            if(compare > 0)
-            {
-                AutoPtr<IActivityResolveInfo> temp = (*infoArr)[j];
-                infoArr->Set(j, (*infoArr)[j+1]);
-                infoArr->Set(j+1, temp);
-            }
-        }
-    }
-    for(i = 0; i < infoArr->GetLength(); i++)
-    {
-        activities->Add((*infoArr)[i]);
-    }
+    AutoPtr<ICollections> connection;
+    CCollections::AcquireSingleton((ICollections**)&connection);
+    connection->Sort(activities);
     return NOERROR;
 }
 
 ActivityChooserModel::PersistHistoryAsyncTask::PersistHistoryAsyncTask(
     /* [in] */ ActivityChooserModel* host)
+    : mHost(host)
 {
-    mHost = host;
 }
 
-AutoPtr<IInterface> ActivityChooserModel::PersistHistoryAsyncTask::DoInBackground(
-    /* [in] */ ArrayOf<IInterface*>* args)
+ECode ActivityChooserModel::PersistHistoryAsyncTask::DoInBackground(
+    /* [in] */ ArrayOf<IInterface*>* args,
+    /* [out] */ IInterface** result)
 {
-    AutoPtr<IObjectContainer> historicalRecords = IObjectContainer::Probe((*args)[0]);
+    VALIDATE_NOT_NULL(args);
+    VALIDATE_NOT_NULL(result);
+
+    AutoPtr<IList> historicalRecords = IList::Probe((*args)[0]);
     assert(historicalRecords != NULL);
     String historyFileName;
     AutoPtr<ICharSequence> csq = ICharSequence::Probe((*args)[1]);
     csq->ToString(&historyFileName);
     AutoPtr<IFileOutputStream> fos;
-    AutoPtr<IObjectEnumerator> em;
-    Boolean hasNext;
 
     // try {
-    ECode ec = mHost->mContext->OpenFileOutput(historyFileName, IContext::MODE_PRIVATE, (IFileOutputStream**)&fos);
-    if(FAILED(ec))
-    {
-        return NULL;
-    }
+        ECode ec = mHost->mContext->OpenFileOutput(historyFileName, IContext::MODE_PRIVATE, (IFileOutputStream**)&fos);
+        if(FAILED(ec)) {
+            *result = NULL;
+            return NOERROR;
+        }
     // } catch (FileNotFoundException fnfe) {
         // Log.e(LOG_TAG, "Error writing historical recrod file: " + hostoryFileName, fnfe);
         // return null;
     // }
 
-    assert("TODO" && 0);
-    AutoPtr<IXmlSerializer> serializer;// = Xml::NewSerializer();
-
+    AutoPtr<IXmlSerializer> serializer;
+    CKXmlSerializer::New((IXmlSerializer**)&serializer);
     // try {
-        if (FAILED(serializer->SetOutput(fos, String(NULL)))) {
-            goto finally;
-        }
+        serializer->SetOutput(IOutputStream::Probe(fos), String(""));
+        serializer->StartDocument(String("UTF-8"), TRUE);
+        serializer->WriteStartTag(String(""), TAG_HISTORICAL_RECORDS);
 
-        if (FAILED(serializer->StartDocument(String("UTF-8"), TRUE))) {
-            goto finally;
-        }
-        if (FAILED(serializer->WriteStartTag(String(NULL), TAG_HISTORICAL_RECORDS))) {
-            goto finally;
-        }
+        Int32 recordCount = 0;
+        historicalRecords->GetSize(&recordCount);
+        for (Int32 idx=0; idx<recordCount; ++idx) {
+            AutoPtr<IInterface> interfaceTmp;
+            historicalRecords->Get(idx, (IInterface**)&interfaceTmp);
+            IObject* objTmp = IObject::Probe(interfaceTmp);
+            HistoricalRecord* record = (HistoricalRecord*)objTmp;
+            historicalRecords->Remove(interfaceTmp);
+            serializer->WriteStartTag(String(""), TAG_HISTORICAL_RECORD);
 
-        historicalRecords->GetObjectEnumerator((IObjectEnumerator**)&em);
-        while (em->MoveNext(&hasNext), hasNext) {
-            AutoPtr<IInterface> cur;
-            em->Current((IInterface**)&cur);
-            AutoPtr<IHistoricalRecord> recordTmp = IHistoricalRecord::Probe(cur);
-            AutoPtr<HistoricalRecord> record = (HistoricalRecord*)recordTmp.Get();
-            historicalRecords->Remove(cur);
-            if (FAILED(serializer->WriteStartTag(String(NULL), TAG_HISTORICAL_RECORD))) {
-                goto finally;
-            }
             String str;
             record->mActivity->FlattenToString(&str);
-            if (FAILED(serializer->WriteAttribute(String(NULL), ATTRIBUTE_ACTIVITY, str))) {
-                goto finally;
-            }
+            serializer->WriteAttribute(String(""), ATTRIBUTE_ACTIVITY, str);
+
             String time, weight;
             time = StringUtils::ToString(record->mTime);
-            weight = StringUtils::FloatToString(record->mWeight);
-            if (FAILED(serializer->WriteAttribute(String(NULL), ATTRIBUTE_TIME, time))) {
-                goto finally;
+            weight = StringUtils::ToString(record->mWeight);
+            serializer->WriteAttribute(String(""), ATTRIBUTE_TIME, time);
+            serializer->WriteAttribute(String(""), ATTRIBUTE_WEIGHT, weight);
+            serializer->WriteEndTag(String(""), TAG_HISTORICAL_RECORD);
+
+            if (DEBUG) {
+                String recordStr;
+                record->ToString(&recordStr);
+                Logger::I(mHost->TAG, String("Wrote ") + recordStr);
             }
-            if (FAILED(serializer->WriteAttribute(String(NULL), ATTRIBUTE_WEIGHT, weight))) {
-                goto finally;
-            }
-            if (FAILED(serializer->WriteEndTag(String(NULL), TAG_HISTORICAL_RECORD))) {
-                goto finally;
-            }
-            // if (DEBUG) {
-            //     Log.i(LOG_TAG, "Wrote " + record.toString());
-            // }
         }
 
-        if (FAILED(serializer->WriteEndTag(String(NULL), TAG_HISTORICAL_RECORDS))) {
-            goto finally;
-        }
-        if (FAILED(serializer->EndDocument())) {
-            goto finally;
-        }
+        serializer->WriteEndTag(String(""), TAG_HISTORICAL_RECORDS);
+        serializer->EndDocument();
 
-    //     if (DEBUG) {
-    //         Log.i(LOG_TAG, "Wrote " + recordCount + " historical records.");
-    //     }
+        if (DEBUG) {
+            Logger::I(mHost->TAG, String("Wrote ") + StringUtils::ToString(recordCount) + String(" historical records."));
+        }
     // } catch (IllegalArgumentException iae) {
     //     Log.e(LOG_TAG, "Error writing historical recrod file: " + mHistoryFileName, iae);
     // } catch (IllegalStateException ise) {
@@ -377,66 +363,29 @@ AutoPtr<IInterface> ActivityChooserModel::PersistHistoryAsyncTask::DoInBackgroun
     // } catch (IOException ioe) {
     //     Log.e(LOG_TAG, "Error writing historical recrod file: " + mHistoryFileName, ioe);
     // } finally {
-    finally:
-        mHost->mCanReadHistoricalData = TRUE;
-        if (fos != NULL) {
-            // try {
-                fos->Close();
-            // } catch (IOException e) {
-                /* ignore */
-            // }
-        }
+            mHost->mCanReadHistoricalData = TRUE;
+            if (fos != NULL) {
+                // try {
+                    IOutputStream::Probe(fos)->Close();
+                // } catch (IOException e) {
+                    /* ignore */
+                // }
+            }
     // }
-    return NULL;
+    *result = NULL;
+    return NOERROR;
 }
 
 ActivityChooserModel::DataModelPackageMonitor::DataModelPackageMonitor(
     /* [in] */ ActivityChooserModel* host)
+    : mHost(host)
 {
-    mHost = host;
 }
 
 ECode ActivityChooserModel::DataModelPackageMonitor::OnSomePackagesChanged()
 {
     mHost->mReloadActivities = TRUE;
     return NOERROR;
-}
-
-PInterface ActivityChooserModel::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)this;
-    } else if (riid == EIID_IObservable) {
-        return (IObservable*)this;
-    } else if (riid == EIID_IDataSetObservable) {
-        return (IDataSetObservable*)this;
-    } else if (riid == EIID_IActivityChooserModel) {
-        return (IActivityChooserModel*)this;
-    }
-    return NULL;
-}
-
-UInt32 ActivityChooserModel::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 ActivityChooserModel::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode ActivityChooserModel::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
-{
-    if (object == (IInterface*)(IActivityChooserModel*)this)
-    {
-        *iid = EIID_IActivityChooserModel;
-        return NOERROR;
-    }
-    return E_ILLEGAL_ARGUMENT_EXCEPTION;
 }
 
 AutoPtr<IActivityChooserModel> ActivityChooserModel::Get(
@@ -450,7 +399,8 @@ AutoPtr<IActivityChooserModel> ActivityChooserModel::Get(
     if(it != sDataModelRegistry.End() && it->mSecond != NULL)
     {
         dataModel = it->mSecond;
-    } else {
+    }
+    else {
         dataModel = new ActivityChooserModel(context, historyFileName);
         sDataModelRegistry[historyFileName] = dataModel;
     }
@@ -466,7 +416,7 @@ ECode ActivityChooserModel::SetIntent(
     /* [in] */ IIntent* intent)
 {
     AutoLock lock(mInstanceLock);
-    if (intent == mIntent) {
+    if (TO_IINTERFACE(intent) == TO_IINTERFACE(mIntent)) {
         return NOERROR;
     }
     mIntent = intent;
@@ -510,14 +460,11 @@ ECode ActivityChooserModel::GetActivityIndex(
 {
     AutoLock lock(mInstanceLock);
     EnsureConsistentState();
-    List<AutoPtr<ActivityResolveInfo> >::Iterator it =
-        mActivities.Begin();
+    List<AutoPtr<ActivityResolveInfo> >::Iterator it = mActivities.Begin();
     Int32 i = 0 ;
-    for (; it != mActivities.End(); it++, i++)
-    {
+    for (; it != mActivities.End(); it++, i++) {
         AutoPtr<ActivityResolveInfo> currentActivity = *it;
-        if (activity == currentActivity->mResolveInfo)
-        {
+        if (activity == currentActivity->mResolveInfo) {
             *rst = i;
             return NOERROR;
         }
@@ -537,22 +484,21 @@ ECode ActivityChooserModel::ChooseActivity(
     }
 
     EnsureConsistentState();
-
     AutoPtr<ActivityResolveInfo> chosenActivity = mActivities[index];
 
     AutoPtr<IComponentName> chosenName;
     AutoPtr<IActivityInfo> aInfo;
     chosenActivity->mResolveInfo->GetActivityInfo((IActivityInfo**)&aInfo);
+    IPackageItemInfo* packageItemInfo = IPackageItemInfo::Probe(aInfo);
     String packageName, name;
-    aInfo->GetPackageName(&packageName);
-    aInfo->GetName(&name);
+    packageItemInfo->GetPackageName(&packageName);
+    packageItemInfo->GetName(&name);
     CComponentName::New(packageName, name, (IComponentName**)&chosenName);
     AutoPtr<IIntent> choiceIntent;
     CIntent::New(mIntent, (IIntent**)&choiceIntent);
     choiceIntent->SetComponent(chosenName);
 
-    if (mActivityChoserModelPolicy != NULL)
-    {
+    if (mActivityChoserModelPolicy != NULL) {
         AutoPtr<IIntent> choiceIntentCopy;
         CIntent::New(choiceIntent, (IIntent**)&choiceIntent);
         Boolean handled;
@@ -610,16 +556,18 @@ ECode ActivityChooserModel::SetDefaultActivity(
         // Add a record with weight enough to boost the chosen at the top.
         weight = oldDefaultActivity->mWeight - newDefaultActivity->mWeight
             + DEFAULT_ACTIVITY_INFLATION;
-    } else {
+    }
+    else {
         weight = DEFAULT_HISTORICAL_RECORD_WEIGHT;
     }
 
     AutoPtr<IComponentName> defaultName;
     AutoPtr<IActivityInfo> aInfo;
     newDefaultActivity->mResolveInfo->GetActivityInfo((IActivityInfo**)&aInfo);
+    IPackageItemInfo* packageItemInfo = IPackageItemInfo::Probe(aInfo);
     String packageName, name;
-    aInfo->GetPackageName(&packageName);
-    aInfo->GetName(&name);
+    packageItemInfo->GetPackageName(&packageName);
+    packageItemInfo->GetName(&name);
     CComponentName::New(packageName, name, (IComponentName**)&defaultName);
     AutoPtr<ISystem> system;
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
@@ -716,7 +664,8 @@ ActivityChooserModel::ActivityChooserModel(
     context->GetApplicationContext((IContext**)&mContext);
     if (!TextUtils::IsEmpty(historyFileName) && !historyFileName.EndWith(HISTORY_FILE_EXTENSION)) {
         mHistoryFileName = historyFileName + HISTORY_FILE_EXTENSION;
-    } else {
+    }
+    else {
         mHistoryFileName = historyFileName;
     }
     mPackageMonitor->Register(mContext, NULL, TRUE);
@@ -732,17 +681,17 @@ ECode ActivityChooserModel::PersistHistoricalDataIfNeeded()
     }
     mHistoricalRecordsChanged = FALSE;
     if (!TextUtils::IsEmpty(mHistoryFileName)) {
-        AutoPtr<IObjectContainer> param1;
-        CObjectContainer::New((IObjectContainer**)&param1);
+        AutoPtr<IList> param1;
+        CArrayList::New((IList**)&param1);
         List<AutoPtr<HistoricalRecord> >::Iterator it = mHistoricalRecords.Begin();
         for (; it != mHistoricalRecords.End(); it++) {
-            param1->Add(*it);
+            param1->Add(TO_IINTERFACE(*it));
         }
         AutoPtr<ICharSequence> param2;
-        CStringWrapper::New(mHistoryFileName, (ICharSequence**)&param2);
-        AutoPtr<ArrayOf<IInterface*> > params = ArrayOf<IInterface*>::Alloc(2);
-        params->Set(0, param1);
-        params->Set(1, param2);
+        CString::New(mHistoryFileName, (ICharSequence**)&param2);
+        AutoPtr< ArrayOf<IInterface*> > params = ArrayOf<IInterface*>::Alloc(2);
+        params->Set(0, TO_IINTERFACE(param1));
+        params->Set(1, TO_IINTERFACE(param2));
         AutoPtr<PersistHistoryAsyncTask> task = new PersistHistoryAsyncTask(this);
         task->ExecuteOnExecutor(AsyncTask::SERIAL_EXECUTOR, params);
     }
@@ -763,13 +712,15 @@ ECode ActivityChooserModel::EnsureConsistentState()
 
 Boolean ActivityChooserModel::SortActivitiesIfNeeded()
 {
-    if (mActivitySorter != NULL && mIntent != NULL
-        && !mActivities.IsEmpty() && !mHistoricalRecords.IsEmpty()) {
-        AutoPtr<IObjectContainer> activities = TransfromList(mActivities);
-        AutoPtr<IObjectContainer> historicalRecords = TransfromList(mHistoricalRecords);
-        mActivitySorter->Sort(mIntent, activities, historicalRecords);
-        mActivities = TransfromContainer<ActivityResolveInfo, IActivityResolveInfo>(activities.Get());
-        mHistoricalRecords = TransfromContainer<HistoricalRecord, IHistoricalRecord>(historicalRecords.Get());
+    if (mActivitySorter != NULL && mIntent != NULL && !mActivities.IsEmpty() && !mHistoricalRecords.IsEmpty()) {
+        AutoPtr<IList> activities = TransfromList(mActivities);
+        AutoPtr<IList> historicalRecords = TransfromList(mHistoricalRecords);
+
+        AutoPtr<ICollections> connection;
+        CCollections::AcquireSingleton((ICollections**)&connection);
+        AutoPtr<IList> unmodifiableList;
+        connection->UnmodifiableList(historicalRecords, (IList**)&unmodifiableList);
+        mActivitySorter->Sort(mIntent, activities, unmodifiableList);
         return TRUE;
     }
     return FALSE;
@@ -782,19 +733,34 @@ Boolean ActivityChooserModel::LoadActivitiesIfNeeded()
         mActivities.Clear();
         AutoPtr<IPackageManager> pmgr;
         mContext->GetPackageManager((IPackageManager**)&pmgr);
-        AutoPtr<IObjectContainer> container;
-        pmgr->QueryIntentActivities(mIntent, 0, (IObjectContainer**)&container);
-        AutoPtr<IObjectEnumerator> em;
-        container->GetObjectEnumerator((IObjectEnumerator**)&em);
-        Boolean hasNext;
-        while(em->MoveNext(&hasNext), hasNext)
-        {
-            AutoPtr<IInterface> tmp;
-            em->Current((IInterface**)&tmp);
-            AutoPtr<IResolveInfo> rInfo = IResolveInfo::Probe(tmp);
-            assert(rInfo != NULL);
-            AutoPtr<ActivityResolveInfo> arInfo = new ActivityResolveInfo(rInfo, this);
-            mActivities.PushBack(arInfo);
+        AutoPtr<IList> container;
+        pmgr->QueryIntentActivities(mIntent, 0, (IList**)&container);
+
+        AutoPtr<IActivityManagerHelper> helper;
+        CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&helper);
+        String permission;
+        AutoPtr<IApplicationInfo> applicationInfo;
+        CApplicationInfo::New((IApplicationInfo**)&applicationInfo);
+        Int32 applicationUId;
+        applicationInfo->GetUid(&applicationUId);
+        Int32 checkPermissionRes = 0;
+
+        Int32 size = 0;
+        container->GetSize(&size);
+        for (Int32 idx=0; idx<size; ++idx) {
+            AutoPtr<IInterface> interfaceTmp;
+            container->Get(idx, (IInterface**)&interfaceTmp);
+            IResolveInfo* resolveInfo = IResolveInfo::Probe(interfaceTmp);
+
+            AutoPtr<IActivityInfo> activityInfo;
+            resolveInfo->GetActivityInfo((IActivityInfo**)&activityInfo);
+            activityInfo->GetPermission(&permission);
+            helper->CheckComponentPermission(permission, -1/*android.os.Process.myUid()*/, applicationUId,
+                FALSE/*activityInfo.exported*/, &checkPermissionRes);
+            if (checkPermissionRes == IPackageManager::PERMISSION_GRANTED) {
+                AutoPtr<ActivityResolveInfo> activityResolveInfo = new ActivityResolveInfo(resolveInfo, this);
+                mActivities.PushBack(activityResolveInfo);
+            }
         }
         return TRUE;
     }
@@ -803,9 +769,7 @@ Boolean ActivityChooserModel::LoadActivitiesIfNeeded()
 
 Boolean ActivityChooserModel::ReadHistoricalDataIfNeeded()
 {
-    if (mCanReadHistoricalData && mHistoricalRecordsChanged &&
-            !TextUtils::IsEmpty(mHistoryFileName))
-    {
+    if (mCanReadHistoricalData && mHistoricalRecordsChanged && !TextUtils::IsEmpty(mHistoryFileName)) {
         mCanReadHistoricalData = FALSE;
         mReadShareHistoryCalled = TRUE;
         ReadHistoricalDataImpl();
@@ -817,29 +781,24 @@ Boolean ActivityChooserModel::ReadHistoricalDataIfNeeded()
 Boolean ActivityChooserModel::AddHisoricalRecord(
     /* [in] */ IHistoricalRecord* historicalRecord)
 {
-    // final boolean added = mHistoricalRecords.add(historicalRecord);
-    // if (added) {
-        mHistoricalRecords.PushBack((HistoricalRecord*)historicalRecord);
-        mHistoricalRecordsChanged = TRUE;
-        PruneExcessiveHistoricalRecordsIfNeeded();
-        PersistHistoricalDataIfNeeded();
-        SortActivitiesIfNeeded();
-        NotifyChanged();
-    // }
+    mHistoricalRecords.PushBack((HistoricalRecord*)historicalRecord);
+    mHistoricalRecordsChanged = TRUE;
+    PruneExcessiveHistoricalRecordsIfNeeded();
+    PersistHistoricalDataIfNeeded();
+    SortActivitiesIfNeeded();
+    NotifyChanged();
     return TRUE;
 }
 
 ECode ActivityChooserModel::PruneExcessiveHistoricalRecordsIfNeeded()
 {
     Int32 pruneCount = mHistoricalRecords.GetSize() - mHistoryMaxSize;
-    if (pruneCount <= 0)
-    {
+    if (pruneCount <= 0) {
         return NOERROR;
     }
     mHistoricalRecordsChanged = TRUE;
     List<AutoPtr<HistoricalRecord> >::Iterator it = mHistoricalRecords.Begin();
-    for (Int32 i = 0; i < pruneCount; i++)
-    {
+    for (Int32 i = 0; i < pruneCount; ++i) {
         List<AutoPtr<HistoricalRecord> >::Iterator oldIt = it++;
         mHistoricalRecords.Erase(oldIt);
     }
@@ -850,7 +809,8 @@ ECode ActivityChooserModel::ReadHistoricalDataImpl()
 {
     AutoPtr<IFileInputStream> fis;
     FAIL_RETURN(mContext->OpenFileInput(mHistoryFileName, (IFileInputStream**)&fis));
-    AutoPtr<IXmlPullParser> parser = Xml::NewPullParser();
+    AutoPtr<IXmlPullParser> parser;
+    CKXmlParser::New((IXmlPullParser**)&parser);
     String nodeName;
     String activity;
     String parseTmp;
@@ -858,12 +818,9 @@ ECode ActivityChooserModel::ReadHistoricalDataImpl()
     Int64 time;
     Int32 type;
 
-    if (FAILED(parser->SetInput(fis, String(NULL)))) {
-        goto finally;
-    }
+    parser->SetInput(IInputStream::Probe(fis), String(""));
     type = IXmlPullParser::START_DOCUMENT;
-    while (type != IXmlPullParser::END_DOCUMENT && type != IXmlPullParser::START_TAG)
-    {
+    while (type != IXmlPullParser::END_DOCUMENT && type != IXmlPullParser::START_TAG) {
         if (FAILED(parser->Next(&type))) {
             goto finally;
         }
@@ -898,38 +855,37 @@ ECode ActivityChooserModel::ReadHistoricalDataImpl()
     }
     finally:
         if (fis != NULL) {
-            fis->Close();
+            IInputStream::Probe(fis)->Close();
         }
         return NOERROR;
 }
 
 template<typename T>
-AutoPtr<IObjectContainer> ActivityChooserModel::TransfromList(
+AutoPtr<IList> ActivityChooserModel::TransfromList(
         /* [in] */ List<AutoPtr<T> >& list)
 {
-    AutoPtr<IObjectContainer> container;
-    CObjectContainer::New((IObjectContainer**)&container);
+    AutoPtr<IList> container;
+    CArrayList::New((IList**)&container);
     typename List<AutoPtr<T> >::Iterator it = list.Begin();
-    for(; it != list.End(); it++)
-    {
-        container->Add(*it);
+    for(; it != list.End(); it++) {
+        container->Add(TO_IINTERFACE(*it));
     }
     return container;
 }
 
 template<typename T, typename IT>
 List<AutoPtr<T> > ActivityChooserModel::TransfromContainer(
-        /* [in] */ IObjectContainer* container)
+        /* [in] */ IList* container)
 {
-    List<AutoPtr<T> > list;
-    AutoPtr<IObjectEnumerator> em;
-    container->GetObjectEnumerator((IObjectEnumerator**)&em);
-    Boolean next = FALSE;
-    while(em->MoveNext(&next), next)
-    {
-        AutoPtr<IInterface> temp;
-        em->Current((IInterface**)&temp);
-        AutoPtr<T> obj = (T*)(IT::Probe(temp));
+    List< AutoPtr<T> > list;
+    AutoPtr<IList> em;
+    Int32 size = 0;
+    container->GetSize(&size);
+    for (Int32 idx=0; idx<size; ++idx) {
+        AutoPtr<IInterface> interfaceTmp;
+        container->Get(idx, (IInterface**)&interfaceTmp);
+        IObject* objTmp = IObject::Probe(interfaceTmp);
+        AutoPtr<T> obj = (T*)objTmp;
         list.PushBack(obj);
     }
     return list;

@@ -1,11 +1,11 @@
 
-#include "elastos/droid/widget/CEdgeEffect.h"
+#include "elastos/droid/widget/CActivityChooserView.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-CAR_OBJECT_IMPL(CEdgeEffect)
+CAR_OBJECT_IMPL(CActivityChooserView)
 
 }// namespace Widget
 }// namespace Droid

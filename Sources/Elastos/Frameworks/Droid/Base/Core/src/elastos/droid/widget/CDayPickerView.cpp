@@ -1,11 +1,11 @@
 
-#include "elastos/droid/widget/CChronometer.h"
+#include "elastos/droid/widget/CDayPickerView.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-CAR_OBJECT_IMPL(CChronometer)
+CAR_OBJECT_IMPL(CDayPickerView)
 
 } // namespace Widget
 } // namespace Droid

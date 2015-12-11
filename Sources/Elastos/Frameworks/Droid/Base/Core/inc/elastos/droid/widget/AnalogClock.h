@@ -2,26 +2,25 @@
 #ifndef __ELASTOS_DROID_WIDGET_ANALOGCLOCK_H__
 #define __ELASTOS_DROID_WIDGET_ANALOGCLOCK_H__
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/content/CIntentFilter.h"
-#include "elastos/droid/view/View.h"
-#include "elastos/droid/text/format/CTime.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/R.h"
+#include "elastos/droid/text/format/CTime.h"
+#include "elastos/droid/view/View.h"
 
-using Elastos::Droid::Text::Format::ITime;
-using Elastos::Droid::Text::Format::CTime;
-using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::BroadcastReceiver;
-using Elastos::Droid::Content::IPendingResult;
-using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Content::IPendingResult;
 using Elastos::Droid::Graphics::ICanvas;
-using Elastos::Droid::View::View;
 using Elastos::Droid::R;
+using Elastos::Droid::Text::Format::CTime;
+using Elastos::Droid::Text::Format::ITime;
+using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::View::View;
 
 namespace Elastos {
 namespace Droid {
@@ -31,15 +30,16 @@ namespace Widget {
  * This widget display an analogic clock with two hands for hours and
  * minutes.
  */
-class AnalogClock : public Elastos::Droid::View::View
+class AnalogClock
+    : public Elastos::Droid::View::View
+    , public IAnalogClock
 {
 private:
-    class IntentReceiver
-            : public BroadcastReceiver
+    class IntentBroadcastReceiver
+        : public BroadcastReceiver
     {
     public:
-
-        IntentReceiver(
+        IntentBroadcastReceiver(
             /* [in] */ AnalogClock* host);
 
         CARAPI OnReceive(
@@ -47,13 +47,7 @@ private:
             /* [in] */ IIntent* intent);
 
         CARAPI ToString(
-            /* [out] */ String* info)
-        {
-            VALIDATE_NOT_NULL(info);
-            *info = String("AnalogClock::IntentReceiver: ");
-            (*info).AppendFormat("%p", this);
-            return NOERROR;
-        }
+            /* [out] */ String* info);
 
         CARAPI GoAsync(
             /* [out] */ IPendingResult** pendingResult);
@@ -117,38 +111,35 @@ private:
 
         CARAPI GetDebugUnregister(
             /* [out] */ Boolean* debugUnregister);
+
     private:
         AnalogClock* mHost;
     };
+
 public:
+    CAR_INTERFACE_DECL()
+
     AnalogClock();
 
-    AnalogClock(
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    AnalogClock(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    AnalogClock(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyle);
 
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
+        /* [in] */ Int32 defStyle,
+        /* [in] */ Int32 defStyleRes);
 
 protected:
-
     virtual CARAPI OnAttachedToWindow();
 
     virtual CARAPI OnDetachedFromWindow();
@@ -172,32 +163,24 @@ private:
     CARAPI_(void) UpdateContentDescription(
         /* [in] */ ITime* time);
 
-    CARAPI InitImpl(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
 private:
-    AutoPtr<IBroadcastReceiver> mIntentReceiver;// = new BroadcastReceiver();
-
+    AutoPtr<IntentBroadcastReceiver> mIntentReceiver;
     AutoPtr<ITime> mCalendar;
-
     AutoPtr<IDrawable> mHourHand;
     AutoPtr<IDrawable> mMinuteHand;
     AutoPtr<IDrawable> mDial;
-
     Int32 mDialWidth;
     Int32 mDialHeight;
-
     Boolean mAttached;
-
-    AutoPtr<IHandler> mHandler;// = new Handler();
+    AutoPtr<IHandler> mHandler;
     Float mMinutes;
     Float mHour;
     Boolean mChanged;
-
 };
 
-}// namespace Widget
-}// namespace Droid
-}// namespace Elastos
-#endif
+} // namespace Widget
+} // namespace Droid
+} // namespace Elastos
+
+#endif // __ELASTOS_DROID_WIDGET_ANALOGCLOCK_H__
+

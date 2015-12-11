@@ -1,24 +1,76 @@
 
 module
 {
-    interface Elastos.Core.IInteger32;
+    interface Elastos.Utility.ILocale;
 
     namespace Elastos {
     namespace Droid {
     namespace Widget {
 
-    interface ITimePicker;
-
+    interface ITimePickerOnTimeChangedListener;
+    interface ITimePickerValidationCallback;
 
     /**
-     * A callback interface for updating input validity when the TimePicker
-     * when included into a Dialog.
+     * @Involve
+     * extends Elastos.Droid.View.IView
+     * extends Elastos.Droid.View.IViewGroup
+     * extends Elastos.Droid.Widget.IFrameLayout
      *
-     * @hide
+     * interface Elastos.Droid.View.IViewParent
+     * interface Elastos.Droid.View.IViewManager
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
+     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
-    interface ITimePickerValidationCallback {
-        OnValidationChanged(
-            [in] Boolean valid);
+    interface ITimePicker {
+		/**
+         * Set the current hour.
+         */
+        SetCurrentHour(
+            [in] Int32 currentHour);
+
+        /**
+         * @return The current hour in the range (0-23).
+         */
+        GetCurrentHour(
+            [out] Int32* hour);
+
+        /**
+         * Set the current minute (0-59).
+         */
+        SetCurrentMinute(
+            [in] Int32 currentMinute);
+
+        /**
+         * @return The current minute.
+         */
+        GetCurrentMinute(
+            [out] Int32* currentMinute);
+
+        /**
+         * Set whether in 24 hour or AM/PM mode.
+         *
+         * @param is24HourView True = 24 hour mode. False = AM/PM.
+         */
+        SetIs24HourView(
+            [in] Boolean is24HourView);
+
+        /**
+         * @return true if this is in 24 hour view else false.
+         */
+        Is24HourView(
+            [out] Boolean* res);
+
+		/**
+	     * Set the callback that indicates the time has been adjusted by the user.
+	     *
+	     * @param onTimeChangedListener the callback, should not be null.
+	     */
+		SetOnTimeChangedListener(
+			[in] ITimePickerOnTimeChangedListener* onTimeChangedListener);
+
+        SetValidationCallback(
+            [in] ITimePickerValidationCallback* validationCallback);
     }
 
     /**
@@ -37,66 +89,22 @@ module
     }
 
     /**
-     * @Involve
-     * extends Elastos.Droid.View.IView
-     * extends Elastos.Droid.View.IViewGroup
-     * extends Elastos.Droid.Widget.IFrameLayout
+     * A callback interface for updating input validity when the TimePicker
+     * when included into a Dialog.
      *
-     * interface Elastos.Droid.View.IViewParent
-     * interface Elastos.Droid.View.IViewManager
-     * interface Elastos.Droid.View.IKeyEventCallback
-     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
-     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
+     * @hide
      */
-    interface ITimePicker {
-        /**
-         * Set the callback that indicates the time has been adjusted by the user.
-         *
-         * @param onTimeChangedListener the callback, should not be null.
-         */
-        SetOnTimeChangedListener(
-            [in] ITimePickerOnTimeChangedListener* onTimeChangedListener);
+    interface ITimePickerValidationCallback {
+        OnValidationChanged(
+        	[in] Boolean valid);
+    }
 
-        /**
-         * @return The current hour in the range (0-23).
-         */
-        GetCurrentHour(
-            [out] Int32* hour);
-
-        /**
-         * Set the current hour.
-         */
-        SetCurrentHour(
-            [in] Int32 currentHour);
-
-        /**
-         * Set whether in 24 hour or AM/PM mode.
-         *
-         * @param is24HourView True = 24 hour mode. False = AM/PM.
-         */
-        SetIs24HourView(
-            [in] Boolean is24HourView);
-
-        /**
-         * @return true if this is in 24 hour view else false.
-         */
-        Is24HourView(
-            [out] Boolean* res);
-
-        /**
-         * @return The current minute.
-         */
-        GetCurrentMinute(
-            [out] Int32* currentMinute);
-
-        /**
-         * Set the current minute (0-59).
-         */
-        SetCurrentMinute(
-            [in] Int32 currentMinute);
-
-        SetValidationCallback(
-            [in] ITimePickerValidationCallback* validationCallback);
+    /**
+     * An abstract class which can be used as a start for TimePicker implementations
+     */
+    interface ITimePickerAbstractTimePickerDelegate {
+        SetCurrentLocale(
+        	[in] ILocale* locale);
     }
 
     } // namespace Widget

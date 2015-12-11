@@ -126,6 +126,9 @@ module
     merge("widget/ActionMenuPresenter.car");
     merge("widget/SimpleMonthView.car");
     merge("widget/SimpleMonthAdapter.car");
+    merge("widget/DayPickerView.car");
+    merge("widget/TimePickerClockDelegate.car");
+    merge("widget/TimePickerSpinnerDelegate.car");
 
    //  using interface Elastos.Core.ICharSequence;
     using interface Elastos.Utility.IList;
@@ -184,17 +187,32 @@ module
    //  interface Elastos.Droid.Media.IAudioService;
    //  interface Elastos.Droid.InputMethodService.IKeyboardView;
    //  interface Elastos.Droid.InputMethodService.IOnKeyboardActionListener;
-    interface Elastos.Droid.Widget.IAdapterView;
-    interface Elastos.Droid.Widget.IAdapterViewAnimator;
-    interface Elastos.Droid.Widget.IAdapterViewFlipper;
-    interface Elastos.Droid.Widget.ISimpleMonthView;
-    interface Elastos.Droid.Widget.IExpandableListAdapter;
-    interface Elastos.Droid.Widget.IExpandableListConnector;
-    interface Elastos.Droid.Widget.IExpandableListPosition;
-    interface Elastos.Droid.Widget.IExpandableListPositionHelper;
-    interface Elastos.Droid.Widget.IListPopupWindow;
-    interface Elastos.Droid.View.IViewGroupMarginLayoutParams;
-    interface Elastos.Droid.View.Animation.IInterpolator;
+   interface Elastos.Droid.Widget.IAdapterView;
+   interface Elastos.Droid.Widget.IAdapterViewAnimator;
+   interface Elastos.Droid.Widget.IAdapterViewFlipper;
+   interface Elastos.Droid.Widget.ISimpleMonthView;
+   interface Elastos.Droid.Widget.IExpandableListAdapter;
+   interface Elastos.Droid.Widget.IExpandableListConnector;
+   interface Elastos.Droid.Widget.IExpandableListPosition;
+   interface Elastos.Droid.Widget.IExpandableListPositionHelper;
+   interface Elastos.Droid.Widget.IListPopupWindow;
+   interface Elastos.Droid.Widget.IEdgeEffect;
+   interface Elastos.Droid.Widget.IActivityChooserView;
+   interface Elastos.Droid.Widget.IAnalogClock;
+   interface Elastos.Droid.Widget.IChronometer;
+   interface Elastos.Droid.Widget.IActivityChooserModelHelper;
+   interface Elastos.Droid.Widget.IDayPickerView;
+   interface Elastos.Droid.Widget.ITimePicker;
+   interface Elastos.Droid.Widget.ITimePickerClockDelegate;
+   interface Elastos.Droid.Widget.ITimePickerClockDelegateHelper;
+   interface Elastos.Droid.Widget.ITimePickerAbstractTimePickerDelegate;
+   interface Elastos.Droid.Widget.ITimePickerSpinnerDelegate;
+   interface Elastos.Droid.View.IViewGroupMarginLayoutParams;
+   interface Elastos.Droid.View.Animation.IInterpolator;
+   interface Elastos.Droid.View.IOnPreDrawListener;
+   interface Elastos.Droid.View.IKeyEventCallback;
+   interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
+   interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
 
     namespace Elastos {
     namespace Droid {
@@ -720,13 +738,13 @@ module
    //      interface IAccessibilityEventSource;
    //  }
 
-    [local]
-    class CEdgeEffect {
-        constructor(
-            [in] IContext* ctx);
+	[local]
+	class CEdgeEffect {
+		constructor(
+			[in] IContext* ctx);
 
-        interface IEdgeEffect;
-    }
+		interface IEdgeEffect;
+	}
 
    //  [local]
    //  class CDatePicker {
@@ -791,27 +809,33 @@ module
    //      interface IDoubleDigitManager;
    //  }
 
-   //  [local]
-   //  class CTimePicker {
-   //      constructor(
-   //          [in] IContext* ctx);
+	[local]
+	class CTimePicker {
+		constructor(
+			[in] IContext* context);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+		constructor(
+			[in] IContext* context,
+			[in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+		constructor(
+			[in] IContext* context,
+			[in] IAttributeSet* attrs,
+			[in] Int32 defStyleAttr);
 
-   //      interface ITimePicker;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+		constructor(
+			[in] IContext* context,
+			[in] IAttributeSet* attrs,
+			[in] Int32 defStyleAttr,
+			[in] Int32 defStyleRes);
+
+		interface ITimePicker;
+		interface IViewParent;
+		interface IViewManager;
+		interface IDrawableCallback;
+		interface IKeyEventCallback;
+		interface IAccessibilityEventSource;
+	}
 
     [local]
     class CImageButton {
@@ -1266,26 +1290,32 @@ module
         interface IFilterListener;
     }
 
-   //  [local]
-   //  class CChronometer {
-   //      constructor(
-   //          [in] IContext* ctx);
+	[local]
+	class CChronometer {
+		constructor(
+			[in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+		constructor(
+			[in] IContext* ctx,
+			[in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+		constructor(
+			[in] IContext* ctx,
+			[in] IAttributeSet* attrs,
+			[in] Int32 defStyle);
 
-   //      interface IChronometer;
-   //      interface IOnPreDrawListener;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+		constructor(
+			[in] IContext* ctx,
+			[in] IAttributeSet* attrs,
+			[in] Int32 defStyle,
+			[in] Int32 defStyleRes);
+
+		interface IChronometer;
+		interface IOnPreDrawListener;
+		interface IDrawableCallback;
+		interface IKeyEventCallback;
+		interface IAccessibilityEventSource;
+	}
 
    //  [local]
    //  class CCheckedTextView {
@@ -1309,25 +1339,31 @@ module
    //      interface IAccessibilityEventSource;
    //  }
 
-   //  [local]
-   //  class CAnalogClock {
-   //      constructor(
-   //          [in] IContext* ctx);
+	[local]
+	class CAnalogClock {
+		constructor(
+			[in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+		constructor(
+			[in] IContext* ctx,
+			[in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+		constructor(
+			[in] IContext* ctx,
+			[in] IAttributeSet* attrs,
+			[in] Int32 defStyle);
 
-   //      interface IAnalogClock;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+		constructor(
+			[in] IContext* ctx,
+			[in] IAttributeSet* attrs,
+			[in] Int32 defStyle,
+			[in] Int32 defStyleRes);
+
+		interface IAnalogClock;
+		interface IDrawableCallback;
+		interface IKeyEventCallback;
+		interface IAccessibilityEventSource;
+	}
 
    //  [local]
    //  class CCalendarView {
@@ -1494,9 +1530,9 @@ module
         interface IAccessibilityEventSource;
     }
 
-   //  singleton class CActivityChooserModelHelper {
-   //      interface IActivityChooserModelHelper;
-   //  }
+	singleton class CActivityChooserModelHelper {
+		interface IActivityChooserModelHelper;
+	}
 
 
     [local]
@@ -2698,6 +2734,62 @@ module
 
         interface ISimpleMonthView;
     }
+
+    [local]
+    class CActivityChooserView {
+		constructor(
+			[in] IContext* context);
+
+		constructor(
+			[in] IContext* context,
+			[in] IAttributeSet* attrs);
+
+		constructor(
+			[in] IContext* context,
+			[in] IAttributeSet* attrs,
+			[in] Int32 defStyleAttr);
+
+		constructor(
+			[in] IContext* context,
+			[in] IAttributeSet* attrs,
+			[in] Int32 defStyleAttr,
+			[in] Int32 defStyleRes);
+
+        interface IActivityChooserView;
+    }
+
+	[local]
+	class CDayPickerView {
+		constructor(
+			[in] IContext* context,
+			[in] IDatePickerController* attrs);
+
+		interface IDayPickerView;
+	}
+
+	[local]
+	class CTimePickerClockDelegate {
+		interface ITimePickerClockDelegate;
+	}
+
+	[local]
+	singleton class CTimePickerClockDelegateHelper {
+		interface ITimePickerClockDelegateHelper;
+	}
+
+	[local]
+	class CTimePickerSpinnerDelegate {
+		constructor(
+        	[in] ITimePicker* delegator,
+        	[in] IContext* context,
+        	[in] IAttributeSet* attrs,
+        	[in] Int32 defStyleAttr,
+        	[in] Int32 defStyleRes);
+
+		interface ITimePickerSpinnerDelegate;
+		interface ITimePickerAbstractTimePickerDelegate;
+		//interface IOnValueSelectedListener;
+	}
 
     } // namespace Widget
     } // namespace Droid

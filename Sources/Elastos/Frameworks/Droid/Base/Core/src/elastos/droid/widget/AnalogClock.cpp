@@ -1,28 +1,34 @@
 
+#include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/text/format/CDateUtils.h"
 #include "elastos/droid/widget/AnalogClock.h"
 #include <elastos/core/Math.h>
-#include "elastos/droid/content/CIntentFilter.h"
-#include "elastos/droid/text/format/CDateUtils.h"
 
-using namespace Elastos::Core;
+using Elastos::Droid::Content::EIID_IBroadcastReceiver;
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Text::Format::CDateUtils;
+using Elastos::Droid::Text::Format::IDateUtils;
+using Elastos::Core::CString;
+using Elastos::Utility::CTimeZoneHelper;
 using Elastos::Utility::ITimeZone;
 using Elastos::Utility::ITimeZoneHelper;
-using Elastos::Utility::CTimeZoneHelper;
-using Elastos::Droid::Text::Format::IDateUtils;
-using Elastos::Droid::Text::Format::CDateUtils;
-using Elastos::Droid::Content::EIID_IBroadcastReceiver;
-using Elastos::Core::CStringWrapper;
+using namespace Elastos::Core;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+CAR_INTERFACE_IMPL(AnalogClock, View, IAnalogClock)
 
-AnalogClock::IntentReceiver::IntentReceiver(
-    /* [in] */ AnalogClock* host) : mHost(host)
-{}
+AnalogClock::IntentBroadcastReceiver::IntentBroadcastReceiver(
+    /* [in] */ AnalogClock* host)
+    : mHost(host)
+{
+}
 
-ECode AnalogClock::IntentReceiver::OnReceive(
+ECode AnalogClock::IntentBroadcastReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
@@ -45,13 +51,22 @@ ECode AnalogClock::IntentReceiver::OnReceive(
     return NOERROR;
 }
 
-ECode AnalogClock::IntentReceiver::GoAsync(
+ECode AnalogClock::IntentBroadcastReceiver::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = String("AnalogClock::IntentBroadcastReceiver: ");
+    (*info).AppendFormat("%p", this);
+    return NOERROR;
+}
+
+ECode AnalogClock::IntentBroadcastReceiver::GoAsync(
     /* [out] */ IPendingResult** pendingResult)
 {
     return BroadcastReceiver::GoAsync(pendingResult);
 }
 
-ECode AnalogClock::IntentReceiver::PeekService(
+ECode AnalogClock::IntentBroadcastReceiver::PeekService(
     /* [in] */ IContext* myContext,
     /* [in] */ IIntent* service,
     /* [out] */ IBinder** binder)
@@ -59,44 +74,44 @@ ECode AnalogClock::IntentReceiver::PeekService(
     return BroadcastReceiver::PeekService(myContext, service, binder);
 }
 
-ECode AnalogClock::IntentReceiver::SetResultCode(
+ECode AnalogClock::IntentBroadcastReceiver::SetResultCode(
     /* [in] */ Int32 code)
 {
     return BroadcastReceiver::SetResultCode(code);
 }
 
-ECode AnalogClock::IntentReceiver::GetResultCode(
+ECode AnalogClock::IntentBroadcastReceiver::GetResultCode(
     /* [out] */ Int32* code)
 {
     return BroadcastReceiver::GetResultCode(code);
 }
 
-ECode AnalogClock::IntentReceiver::SetResultData(
+ECode AnalogClock::IntentBroadcastReceiver::SetResultData(
     /* [in] */ const String& data)
 {
     return BroadcastReceiver::SetResultData(data);
 }
 
-ECode AnalogClock::IntentReceiver::GetResultData(
+ECode AnalogClock::IntentBroadcastReceiver::GetResultData(
     /* [out] */ String* data)
 {
     return BroadcastReceiver::GetResultData(data);
 }
 
-ECode AnalogClock::IntentReceiver::SetResultExtras(
+ECode AnalogClock::IntentBroadcastReceiver::SetResultExtras(
     /* [in] */ IBundle* extras)
 {
     return BroadcastReceiver::SetResultExtras(extras);
 }
 
-ECode AnalogClock::IntentReceiver::GetResultExtras(
+ECode AnalogClock::IntentBroadcastReceiver::GetResultExtras(
     /* [in] */ Boolean makeMap,
     /* [out] */ IBundle** extras)
 {
     return BroadcastReceiver::GetResultExtras(makeMap, extras);
 }
 
-ECode AnalogClock::IntentReceiver::SetResult(
+ECode AnalogClock::IntentBroadcastReceiver::SetResult(
     /* [in] */ Int32 code,
     /* [in] */ const String& data,
     /* [in] */ IBundle* extras)
@@ -104,65 +119,65 @@ ECode AnalogClock::IntentReceiver::SetResult(
     return BroadcastReceiver::SetResult(code, data, extras);
 }
 
-ECode AnalogClock::IntentReceiver::GetAbortBroadcast(
+ECode AnalogClock::IntentBroadcastReceiver::GetAbortBroadcast(
     /* [out] */ Boolean* isAborted)
 {
     return BroadcastReceiver::GetAbortBroadcast(isAborted);
 }
 
-ECode AnalogClock::IntentReceiver::AbortBroadcast()
+ECode AnalogClock::IntentBroadcastReceiver::AbortBroadcast()
 {
     return BroadcastReceiver::AbortBroadcast();
 }
 
-ECode AnalogClock::IntentReceiver::ClearAbortBroadcast()
+ECode AnalogClock::IntentBroadcastReceiver::ClearAbortBroadcast()
 {
     return BroadcastReceiver::ClearAbortBroadcast();
 }
 
-ECode AnalogClock::IntentReceiver::IsOrderedBroadcast(
+ECode AnalogClock::IntentBroadcastReceiver::IsOrderedBroadcast(
     /* [out] */ Boolean* isOrdered)
 {
     return BroadcastReceiver::IsOrderedBroadcast(isOrdered);
 }
 
-ECode AnalogClock::IntentReceiver::IsInitialStickyBroadcast(
+ECode AnalogClock::IntentBroadcastReceiver::IsInitialStickyBroadcast(
     /* [out] */ Boolean* isInitial)
 {
     return BroadcastReceiver::IsInitialStickyBroadcast(isInitial);
 }
 
-ECode AnalogClock::IntentReceiver::SetOrderedHint(
+ECode AnalogClock::IntentBroadcastReceiver::SetOrderedHint(
     /* [in] */ Boolean isOrdered)
 {
     return BroadcastReceiver::SetOrderedHint(isOrdered);
 }
 
-ECode AnalogClock::IntentReceiver::SetPendingResult(
+ECode AnalogClock::IntentBroadcastReceiver::SetPendingResult(
     /* [in] */ IPendingResult* result)
 {
     return BroadcastReceiver::SetPendingResult(result);
 }
 
-ECode AnalogClock::IntentReceiver::GetPendingResult(
+ECode AnalogClock::IntentBroadcastReceiver::GetPendingResult(
     /* [out] */ IPendingResult** pendingResult)
 {
     return BroadcastReceiver::GetPendingResult(pendingResult);
 }
 
-ECode AnalogClock::IntentReceiver::GetSendingUserId(
+ECode AnalogClock::IntentBroadcastReceiver::GetSendingUserId(
     /* [out] */ Int32* userId)
 {
     return BroadcastReceiver::GetSendingUserId(userId);
 }
 
-ECode AnalogClock::IntentReceiver::SetDebugUnregister(
+ECode AnalogClock::IntentBroadcastReceiver::SetDebugUnregister(
     /* [in] */ Boolean debug)
 {
     return BroadcastReceiver::SetDebugUnregister(debug);
 }
 
-ECode AnalogClock::IntentReceiver::GetDebugUnregister(
+ECode AnalogClock::IntentBroadcastReceiver::GetDebugUnregister(
     /* [out] */ Boolean* debugUnregister)
 {
     return BroadcastReceiver::GetDebugUnregister(debugUnregister);
@@ -176,107 +191,60 @@ AnalogClock::AnalogClock()
     , mHour(0.0f)
     , mChanged(FALSE)
 {
-    mIntentReceiver = new IntentReceiver(this);
+    mIntentReceiver = new IntentBroadcastReceiver(this);
+    CHandler::New((IHandler**)&mHandler);
 }
 
-AnalogClock::AnalogClock(
-    /* [in] */ IContext* context)
-    : View(context, NULL)
-    , mDialWidth(0)
-    , mDialHeight(0)
-    , mAttached(FALSE)
-    , mMinutes(0.0f)
-    , mHour(0.0f)
-    , mChanged(FALSE)
-{
-    Init(context, NULL, 0);
-}
-
-AnalogClock::AnalogClock(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-    : View(context, attrs, 0)
-    , mDialWidth(0)
-    , mDialHeight(0)
-    , mAttached(FALSE)
-    , mMinutes(0.0f)
-    , mHour(0.0f)
-    , mChanged(FALSE)
-{
-    mIntentReceiver = new IntentReceiver(this);
-    Init(context, attrs, 0);
-}
-
-AnalogClock::AnalogClock(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : View(context, attrs, defStyle)
-    , mDialWidth(0)
-    , mDialHeight(0)
-    , mAttached(FALSE)
-    , mMinutes(0.0f)
-    , mHour(0.0f)
-    , mChanged(FALSE)
-{
-    mIntentReceiver = new IntentReceiver(this);
-    Init(context, attrs, defStyle);
-}
-
-
-ECode AnalogClock::Init(
+ECode AnalogClock::constructor(
     /* [in] */ IContext* context)
 {
-    return Init(context, NULL);
+    return constructor(context, NULL);
 }
 
-ECode AnalogClock::Init(
+ECode AnalogClock::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return Init(context, attrs, 0);
+    return constructor(context, attrs, 0);
 }
 
-ECode AnalogClock::Init(
+ECode AnalogClock::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle)
 {
-    View::Init(context, attrs, defStyle);
-    return InitImpl(context, attrs, defStyle);
+    return constructor(context, attrs, defStyle, 0);
 }
 
-ECode AnalogClock::InitImpl(
+ECode AnalogClock::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyle,
+    /* [in] */ Int32 defStyleRes)
 {
+    View::constructor(context, attrs, defStyle, defStyleRes);
     AutoPtr<IResources> r;
-    mContext->GetResources((IResources**)&r);
+    context->GetResources((IResources**)&r);
 
-    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
-            const_cast<Int32 *>(R::styleable::AnalogClock),
-            ARRAY_SIZE(R::styleable::AnalogClock));
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(const_cast<Int32 *>(R::styleable::AnalogClock),
+        ARRAY_SIZE(R::styleable::AnalogClock));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(
-        attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
-
+    context->ObtainStyledAttributes(attrs, attrIds, defStyle, defStyleRes, (ITypedArray**)&a);
     a->GetDrawable(R::styleable::AnalogClock_dial, (IDrawable**)&mDial);
     if (mDial == NULL) {
-        r->GetDrawable(R::drawable::clock_dial, (IDrawable**)&mDial);
+        context->GetDrawable(R::drawable::clock_dial, (IDrawable**)&mDial);
     }
 
     a->GetDrawable(R::styleable::AnalogClock_hand_hour, (IDrawable**)&mHourHand);
     if (mHourHand == NULL) {
-        r->GetDrawable(R::drawable::clock_hand_hour, (IDrawable**)&mHourHand);
+        context->GetDrawable(R::drawable::clock_hand_hour, (IDrawable**)&mHourHand);
     }
 
     a->GetDrawable(R::styleable::AnalogClock_hand_minute, (IDrawable**)&mMinuteHand);
     if (mMinuteHand == NULL) {
-        r->GetDrawable(R::drawable::clock_hand_minute, (IDrawable**)&mMinuteHand);
+        context->GetDrawable(R::drawable::clock_hand_minute, (IDrawable**)&mMinuteHand);
     }
 
-    //mCalendar = new Time();
     CTime::New((ITime**)&mCalendar);
     mDial->GetIntrinsicWidth(&mDialWidth);
     mDial->GetIntrinsicHeight(&mDialHeight);
@@ -296,17 +264,17 @@ ECode AnalogClock::OnAttachedToWindow()
         filter->AddAction(IIntent::ACTION_TIME_CHANGED);
         filter->AddAction(IIntent::ACTION_TIMEZONE_CHANGED);
         AutoPtr<IIntent> rst;
-        GetContext()->RegisterReceiver(mIntentReceiver, filter, String(NULL), mHandler, (IIntent**)&rst);
+
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
+        assert(0);
+        AutoPtr<IUserHandle> userHandle;// = android.os.Process.myUserHandle();
+        context->RegisterReceiverAsUser(mIntentReceiver, userHandle, filter, String(""), mHandler, (IIntent**)&rst);
     }
 
-    // NOTE: It's safe to do these after registering the receiver since the receiver always runs
-    // in the main thread, therefore the receiver can't run before this method returns.
-
-    // The time zone may have changed while the receiver wasn't registered, so update the Time
     if(mCalendar)
         mCalendar = NULL;
     CTime::New((ITime**)&mCalendar);
-    // Make sure we update to the current time
     OnTimeChanged();
     return NOERROR;
 }
@@ -315,7 +283,9 @@ ECode AnalogClock::OnDetachedFromWindow()
 {
     View::OnDetachedFromWindow();
     if (mAttached && mIntentReceiver) {
-        GetContext()->UnregisterReceiver(mIntentReceiver);
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
+        context->UnregisterReceiver(mIntentReceiver);
         delete mIntentReceiver;
         mAttached = FALSE;
     }
@@ -451,10 +421,11 @@ void AnalogClock::UpdateContentDescription(
     utils->FormatDateTime(mContext,
             millis, flags, &contentDescription);
     AutoPtr<ICharSequence> text;
-    CStringWrapper::New(contentDescription, (ICharSequence**)&text);
+    CString::New(contentDescription, (ICharSequence**)&text);
     SetContentDescription(text);
 }
 
 }// namespace Widget
 }// namespace Droid
 }// namespace Elastos
+
