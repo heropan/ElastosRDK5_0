@@ -14,7 +14,9 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class DigitalClock : public TextView
+class DigitalClock
+    : public TextView
+    , public IDigitalClock
 {
 private:
     class DigitalClockRunnable
@@ -45,20 +47,14 @@ private:
     };
 
 public:
-    DigitalClock(
-        /* [in] */ IContext* context);
+    CAR_INTERFACE_DECL()
 
-    DigitalClock(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-protected:
     DigitalClock();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
@@ -66,16 +62,14 @@ protected:
 
     CARAPI OnDetachedFromWindow();
 
-    virtual CARAPI OnInitializeAccessibilityEvent(
+    CARAPI OnInitializeAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
 
-    virtual CARAPI OnInitializeAccessibilityNodeInfo(
+    CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
 private:
     CARAPI_(void) InitClock();
-
-    CARAPI_(Boolean) Get24HourMode();
 
     CARAPI_(void) SetFormat();
 
@@ -84,9 +78,6 @@ public:
     String mFormat;
 
 private:
-    static const String m12;
-    static const String m24;
-
     AutoPtr<FormatChangeObserver> mFormatChangeObserver;
     AutoPtr<DigitalClockRunnable> mTicker;
     AutoPtr<IHandler> mHandler;

@@ -5,7 +5,6 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/RelativeLayout.h"
 
-using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Text::IInputFilter;
@@ -14,50 +13,55 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Widget::RelativeLayout;
 
+using Elastos::Core::ICharSequence;
+
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-
-class DialerFilter : public Elastos::Droid::Widget::RelativeLayout
+class DialerFilter
+    : public RelativeLayout
+    , public IDialerFilter
 {
 public:
+    CAR_INTERFACE_DECL()
+
     DialerFilter();
 
-    DialerFilter(
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    DialerFilter(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    CARAPI Init(
-        /* [in] */ IContext* context);
+    CARAPI IsQwertyKeyboard(
+        /* [out] */ Boolean* res);
 
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI_(Boolean) IsQwertyKeyboard();
-
-    virtual CARAPI_(Boolean) OnKeyDown(
+    CARAPI OnKeyDown(
         /* [in] */ Int32 keycode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) OnKeyUp(
+    CARAPI OnKeyUp(
         /* [in] */ Int32 keycode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
-    CARAPI_(Int32) GetMode();
+    CARAPI GetMode(
+        /* [out] */ Int32* mode);
 
     CARAPI SetMode(
         /* [in] */ Int32 newMode);
 
-    CARAPI_(AutoPtr<ICharSequence>) GetLetters();
+    CARAPI GetLetters(
+        /* [out] */ ICharSequence** letters);
 
-    CARAPI_(AutoPtr<ICharSequence>) GetDigits();
+    CARAPI GetDigits(
+        /* [out] */ ICharSequence** digits);
 
-    CARAPI_(AutoPtr<ICharSequence>) GetFilterText();
+    CARAPI GetFilterText(
+        /* [out] */ ICharSequence** text);
 
     CARAPI Append(
         /* [in] */ const String& text);
@@ -96,13 +100,6 @@ private:
     CARAPI SwapPrimaryAndHint(
         /* [in] */ Boolean makeLettersPrimary);
 
-public:
-    const static Int32 DIGITS_AND_LETTERS = 1;
-    const static Int32 DIGITS_AND_LETTERS_NO_DIGITS = 2;
-    const static Int32 DIGITS_AND_LETTERS_NO_LETTERS = 3;
-    const static Int32 DIGITS_ONLY = 4;
-    const static Int32 LETTERS_ONLY = 5;
-
 private:
     AutoPtr<IEditText> mLetters;
     AutoPtr<IEditText> mDigits;
@@ -115,7 +112,6 @@ private:
     Int32 mMode;
 
     Boolean mIsQwerty;
-
 };
 
 

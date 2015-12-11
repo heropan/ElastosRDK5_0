@@ -1,15 +1,24 @@
 
 #include "elastos/droid/widget/AlphabetIndexer.h"
-#include <elastos/core/Math.h>
 //#include "elastos/droid/text/Collator.h"
+#include "elastos/droid/utility/CSparseInt32Array.h"
 
-using Elastos::Core::CStringWrapper;
+#include <elastos/core/Math.h>
+
+using Elastos::Droid::Utility::CSparseInt32Array;
+
+using Elastos::Core::CString;
 using Elastos::Text::CCollatorHelper;
 using Elastos::Text::ICollatorHelper;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
+
+//========================================================================================
+//              AlphabetIndexer::
+//========================================================================================
+CAR_INTERFACE_IMPL_2(AlphabetIndexer, DataSetObserver, ISectionIndexer, IAlphabetIndexer)
 
 AlphabetIndexer::AlphabetIndexer()
     : mColumnIndex(0)
@@ -18,36 +27,7 @@ AlphabetIndexer::AlphabetIndexer()
 {
 }
 
-/**
- * Constructs the indexer.
- * @param cursor the cursor containing the data set
- * @param sortedColumnIndex the column number in the cursor that is sorted
- *        alphabetically
- * @param alphabet string containing the alphabet, with space as the first character.
- *        For example, use the string " ABCDEFGHIJKLMNOPQRSTUVWXYZ" for English indexing.
- *        The characters must be uppercase and be sorted in ascii/unicode order. Basically
- *        characters in the alphabet will show up as preview letters.
- */
-AlphabetIndexer::AlphabetIndexer(
-    /* [in] */ ICursor* cursor,
-    /* [in] */ Int32 sortedColumnIndex,
-    /* [in] */ ICharSequence* alphabet)
-    : mColumnIndex(0)
-    , mAlphabetLength(0)
-    , mAlphaMap(NULL)
-{
-    InitForInstance(cursor, sortedColumnIndex, alphabet);
-}
-
-ECode AlphabetIndexer::Init(
-    /* [in] */ ICursor* cursor,
-    /* [in] */ Int32 sortedColumnIndex,
-    /* [in] */ ICharSequence* alphabet)
-{
-    return InitForInstance(cursor, sortedColumnIndex, alphabet);
-}
-
-ECode AlphabetIndexer::InitForInstance(
+ECode AlphabetIndexer::constructor(
     /* [in] */ ICursor* cursor,
     /* [in] */ Int32 sortedColumnIndex,
     /* [in] */ ICharSequence* alphabet)
@@ -62,16 +42,16 @@ ECode AlphabetIndexer::InitForInstance(
         mAlphabet->SubSequence(i, i + 1, (ICharSequence**)&temp);
         temp->ToString(&(*mAlphabetArray)[i]);
     }
-    mAlphaMap = new HashMap<Int32, Int32>(mAlphabetLength);
+    CSparseInt32Array::New(mAlphabetLength, (ISparseInt32Array**)&mAlphaMap);
     if (cursor != NULL) {
         cursor->RegisterDataSetObserver(THIS_PROBE(IDataSetObserver));
     }
 
     // Get a Collator for the current locale for string comparisons.
-   AutoPtr<ICollatorHelper> helper;
-   CCollatorHelper::AcquireSingleton((ICollatorHelper**)&helper);
-   helper->GetInstance((ICollator**)&mCollator);
-   mCollator->SetStrength(ICollator::PRIMARY);
+    AutoPtr<ICollatorHelper> helper;
+    CCollatorHelper::AcquireSingleton((ICollatorHelper**)&helper);
+    helper->GetInstance((ICollator**)&mCollator);
+    mCollator->SetStrength(ICollator::PRIMARY);
     return NOERROR;
 }
 
@@ -80,27 +60,24 @@ AlphabetIndexer::~AlphabetIndexer()
     mAlphaMap = NULL;
 }
 
-/**
- * Returns the section array constructed from the alphabet provided in the constructor.
- * @return the section array
- */
-AutoPtr<ArrayOf<IInterface*> > AlphabetIndexer::GetSections()
+ECode AlphabetIndexer::GetSections(
+    /* [out, callee] */ ArrayOf<IInterface*>** sections)
 {
+    VALIDATE_NOT_NULL(sections)
+
     Int32 length = mAlphabetArray->GetLength();
     AutoPtr<ArrayOf<IInterface*> > result = ArrayOf<IInterface*>::Alloc(length);
     for (Int32 i = 0; i < length; ++i) {
         AutoPtr<ICharSequence> temp;
-        CStringWrapper::New((*mAlphabetArray)[i], (ICharSequence**)&temp);
+        CString::New((*mAlphabetArray)[i], (ICharSequence**)&temp);
         result->Set(i, temp);
     }
 
-    return result;
+    *sections = result;
+    REFCOUNT_ADD(*sections)
+    return NOERROR;
 }
 
-/**
- * Sets a new cursor as the data set and resets the cache of indices.
- * @param cursor the new cursor to use as the data set
- */
 ECode AlphabetIndexer::SetCursor(
     /* [in] */ ICursor* cursor)
 {
@@ -115,9 +92,6 @@ ECode AlphabetIndexer::SetCursor(
     return NOERROR;
 }
 
-/**
- * Default implementation compares the first character of word with letter.
- */
 Int32 AlphabetIndexer::Compare(
     /* [in] */ const String& word,
     /* [in] */ const String& letter)
@@ -125,54 +99,51 @@ Int32 AlphabetIndexer::Compare(
     String firstLetter;
     if (word.IsNullOrEmpty()) {
         firstLetter = String(" ");
-    } else {
+    }
+    else {
         firstLetter = word.Substring(0, 1);
     }
 
     Int32 result = 0;
     AutoPtr<ICharSequence> fcs;
     AutoPtr<ICharSequence> lcs;
-    CStringWrapper::New(firstLetter, (ICharSequence**)&fcs);
-    CStringWrapper::New(letter, (ICharSequence**)&lcs);
+    CString::New(firstLetter, (ICharSequence**)&fcs);
+    CString::New(letter, (ICharSequence**)&lcs);
     mCollator->Compare(fcs, lcs, &result);
     return result;
 }
 
-/**
- * Performs a binary search or cache lookup to find the first row that
- * matches a given section's starting letter.
- * @param sectionIndex the section to search for
- * @return the row index of the first occurrence, or the nearest next letter.
- * For instance, if searching for "T" and no "T" is found, then the first
- * row starting with "U" or any higher letter is returned. If there is no
- * data following "T" at all, then the list size is returned.
- */
-Int32 AlphabetIndexer::GetPositionForSection(
-    /* [in] */ Int32 sectionIndex)
+ECode AlphabetIndexer::GetPositionForSection(
+    /* [in] */ Int32 sectionIndex,
+    /* [out] */ Int32* position)
 {
-    AutoPtr<HashMap<Int32, Int32> > alphaMap = mAlphaMap;
+    VALIDATE_NOT_NULL(position)
+
+    AutoPtr<ISparseInt32Array> alphaMap = mAlphaMap;
     AutoPtr<ICursor> cursor = mDataCursor;
 
     if (cursor == NULL || mAlphabet == NULL) {
-        return 0;
+        *position = 0;
+        return NOERROR;
     }
 
     // Check bounds
     if (sectionIndex <= 0) {
-        return 0;
+        *position = 0;
+        return NOERROR;
     }
     if (sectionIndex >= mAlphabetLength) {
         sectionIndex = mAlphabetLength - 1;
     }
 
-    Int32 savedCursorPos;
+    Int32 savedCursorPos = 0;
     cursor->GetPosition(&savedCursorPos);
 
-    Int32 count;
+    Int32 count = 0;
     cursor->GetCount(&count);
     Int32 start = 0;
     Int32 end = count;
-    Int32 pos;
+    Int32 pos = 0;
 
     Char32 letter;
     mAlphabet->GetCharAt(sectionIndex, &letter);
@@ -181,13 +152,7 @@ Int32 AlphabetIndexer::GetPositionForSection(
     String targetLetter = String(&cTemp, 1);
     Int32 key = letter;
     // Check map
-    AlphaMapIterator it = alphaMap->Find(key);
-    if(it == alphaMap->End())
-    {
-        pos = Elastos::Core::Math::INT32_MIN_VALUE;
-    }else {
-        pos = it->mSecond;
-    }
+    alphaMap->Get(key, Elastos::Core::Math::INT32_MIN_VALUE, &pos);
     if (Elastos::Core::Math::INT32_MIN_VALUE != pos) {
         // Is it approximate? Using negative value to indicate that it's
         // an approximation and positive value when it is the accurate
@@ -195,24 +160,20 @@ Int32 AlphabetIndexer::GetPositionForSection(
         if (pos < 0) {
             pos = -pos;
             end = pos;
-        } else {
+        }
+        else {
             // Not approximate, this is the confirmed start of section, return it
-            return pos;
+            *position = pos;
+            return NOERROR;
         }
     }
 
     // Do we have the position of the previous section?
     if (sectionIndex > 0) {
-        Int32 prevLetter;
+        Int32 prevLetter = 0;
         mAlphabet->GetCharAt(sectionIndex - 1, (Char32*)&prevLetter);
-        Int32 prevLetterPos;
-        it = alphaMap->Find(prevLetter);
-        if(it == alphaMap->End())
-        {
-            prevLetterPos = Elastos::Core::Math::INT32_MIN_VALUE;
-        }else {
-            prevLetterPos = it->mSecond;
-        }
+        Int32 prevLetterPos = 0;
+        alphaMap->Get(prevLetter, Elastos::Core::Math::INT32_MIN_VALUE, &prevLetterPos);
         if (prevLetterPos != Elastos::Core::Math::INT32_MIN_VALUE) {
             start = Elastos::Core::Math::Abs(prevLetterPos);
         }
@@ -222,7 +183,7 @@ Int32 AlphabetIndexer::GetPositionForSection(
 
     pos = (end + start) / 2;
 
-    Boolean res;
+    Boolean res = FALSE;
     while (pos < end) {
         // Get letter at pos
         cursor->MoveToPosition(pos, &res);
@@ -231,7 +192,8 @@ Int32 AlphabetIndexer::GetPositionForSection(
         if (curName == NULL) {
             if (pos == 0) {
                 break;
-            } else {
+            }
+            else {
                 pos--;
                 continue;
             }
@@ -255,36 +217,38 @@ Int32 AlphabetIndexer::GetPositionForSection(
                     pos = count;
                     break;
                 }
-            } else {
+            }
+            else {
                 end = pos;
             }
-        } else {
+        }
+        else {
             // They're the same, but that doesn't mean it's the start
             if (start == pos) {
                 // This is it
                 break;
-            } else {
+            }
+            else {
                 // Need to go further lower to find the starting row
                 end = pos;
             }
         }
         pos = (start + end) / 2;
     }
-    (*alphaMap)[key] = pos;
+    alphaMap->Put(key, pos);
     cursor->MoveToPosition(savedCursorPos, &res);
-    return pos;
+    *position = pos;
+    return NOERROR;
 }
 
-/**
- * Returns the section index for a given position in the list by querying the item
- * and comparing it with all items in the section array.
- */
-Int32 AlphabetIndexer::GetSectionForPosition(
-    /* [in] */ Int32 position)
+ECode AlphabetIndexer::GetSectionForPosition(
+    /* [in] */ Int32 position,
+    /* [out] */ Int32* section)
 {
-    Int32 savedCursorPos;
-    Boolean res;
+    VALIDATE_NOT_NULL(section)
+    Int32 savedCursorPos = 0;
     mDataCursor->GetPosition(&savedCursorPos);
+    Boolean res = FALSE;
     mDataCursor->MoveToPosition(position, &res);
     String curName;
     mDataCursor->GetString(mColumnIndex, &curName);
@@ -297,26 +261,24 @@ Int32 AlphabetIndexer::GetSectionForPosition(
         char cTemp = (char)letter;
         String targetLetter = String(&cTemp, 1);
         if (Compare(curName, targetLetter) == 0) {
-            return i;
+            *section = i;
+            return NOERROR;
         }
     }
-    return 0; // Don't recognize the letter - falls under zero'th section
+    *section = 0; // Don't recognize the letter - falls under zero'th section
+    return NOERROR;
 }
 
-/*
- * @hide
- */
 ECode AlphabetIndexer::OnChanged()
 {
+    DataSetObserver::OnChanged();
     mAlphaMap->Clear();
     return NOERROR;
 }
 
-/*
- * @hide
- */
 ECode AlphabetIndexer::OnInvalidated()
 {
+    DataSetObserver::OnInvalidated();
     mAlphaMap->Clear();
     return NOERROR;
 }
@@ -324,4 +286,3 @@ ECode AlphabetIndexer::OnInvalidated()
 }// namespace Widget
 }// namespace Droid
 }// namespace Elastos
-

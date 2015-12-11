@@ -1,93 +1,76 @@
 
 #include "elastos/droid/widget/CheckedTextView.h"
+#include "elastos/droid/graphics/drawable/CDrawableHelper.h"
+#include "elastos/droid/view/CGravity.h"
 
-using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
+using Elastos::Droid::Graphics::Drawable::IDrawableHelper;
+using Elastos::Droid::Graphics::Drawable::CDrawableHelper;
 using Elastos::Droid::View::IGravity;
+using Elastos::Droid::View::CGravity;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+//========================================================================================
+//              CheckedTextView::
+//========================================================================================
 AutoPtr<ArrayOf<Int32> > CheckedTextView::CHECKED_STATE_SET = ArrayOf<Int32>::Alloc(1);
+
+CAR_INTERFACE_IMPL(CheckedTextView, TextView, ICheckedTextView)
 
 CheckedTextView::CheckedTextView()
     : mChecked(FALSE)
     , mCheckMarkResource(0)
+    , mHasCheckMarkTint(FALSE)
+    , mHasCheckMarkTintMode(FALSE)
     , mBasePadding(0)
     , mCheckMarkWidth(0)
-    , mNeedRequestlayout(0)
+    , mCheckMarkGravity(IGravity::END)
+    , mNeedRequestlayout(FALSE)
 {
     (*CHECKED_STATE_SET)[0] = R::attr::state_checked;
 }
 
-CheckedTextView::CheckedTextView(
-    /* [in] */ IContext* context)
-    : TextView(context)
-    , mChecked(FALSE)
-    , mCheckMarkResource(0)
-    , mBasePadding(0)
-    , mCheckMarkWidth(0)
-    , mNeedRequestlayout(0)
-{
-    (*CHECKED_STATE_SET)[0] = R::attr::state_checked;
-    Init(context);
-}
-
-CheckedTextView::CheckedTextView(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-    : TextView(context, attrs)
-    , mChecked(FALSE)
-    , mCheckMarkResource(0)
-    , mBasePadding(0)
-    , mCheckMarkWidth(0)
-    , mNeedRequestlayout(0)
-{
-    (*CHECKED_STATE_SET)[0] = R::attr::state_checked;
-    Init(context, attrs, R::attr::checkedTextViewStyle);
-}
-
-CheckedTextView::CheckedTextView(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : TextView(context, attrs, defStyle)
-    , mChecked(FALSE)
-    , mCheckMarkResource(0)
-    , mBasePadding(0)
-    , mCheckMarkWidth(0)
-    , mNeedRequestlayout(0)
-{
-    Init(context, attrs, defStyle);
-}
-
-ECode CheckedTextView::Init(
+ECode CheckedTextView::constructor(
     /* [in] */ IContext* context)
 {
-    return Init(context, NULL);
+    return constructor(context, NULL);
 }
 
-ECode CheckedTextView::Init(
+ECode CheckedTextView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return Init(context, attrs, R::attr::checkedTextViewStyle);
+    return constructor(context, attrs, R::attr::checkedTextViewStyle);
 }
 
-ECode CheckedTextView::Init(
+ECode CheckedTextView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr)
 {
-    TextView::Init(context, attrs, defStyle);
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode CheckedTextView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    TextView::constructor(context, attrs, defStyleAttr, defStyleRes);
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::CheckedTextView),
             ARRAY_SIZE(R::styleable::CheckedTextView));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(
-            attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+            attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 
     AutoPtr<IDrawable> d;
     a->GetDrawable(R::styleable::CheckedTextView_checkMark, (IDrawable**)&d);
@@ -95,11 +78,31 @@ ECode CheckedTextView::Init(
         SetCheckMarkDrawable(d);
     }
 
-    Boolean checked;
+    Boolean bMode = FALSE;
+    if ((a->HasValue(R::styleable::CheckedTextView_checkMarkTintMode, &bMode), bMode)) {
+        Int32 m = 0;
+        a->GetInt32(R::styleable::CheckedTextView_checkMarkTintMode, -1, &m);
+        AutoPtr<IDrawableHelper> hlp;
+        CDrawableHelper::AcquireSingleton((IDrawableHelper**)&hlp);
+        hlp->ParseTintMode(m, mCheckMarkTintMode, &mCheckMarkTintMode);
+        mHasCheckMarkTintMode = TRUE;
+    }
+
+    Boolean bTint = FALSE;
+    if ((a->HasValue(R::styleable::CheckedTextView_checkMarkTint, &bTint), bTint)) {
+        a->GetColorStateList(R::styleable::CheckedTextView_checkMarkTint, (IColorStateList**)&mCheckMarkTintList);
+        mHasCheckMarkTint = TRUE;
+    }
+
+    a->GetInt32(R::styleable::CheckedTextView_checkMarkGravity, IGravity::END, &mCheckMarkGravity);
+
+    Boolean checked = FALSE;
     a->GetBoolean(R::styleable::CheckedTextView_checked, FALSE, &checked);
     SetChecked(checked);
 
     a->Recycle();
+
+    ApplyCheckMarkTint();
 
     return NOERROR;
 }
@@ -111,35 +114,27 @@ ECode CheckedTextView::Toggle()
     return NOERROR;
 }
 
-Boolean CheckedTextView::IsChecked()
+ECode CheckedTextView::IsChecked(
+    /* [out] */ Boolean* isChecked)
 {
-    return mChecked;
+    VALIDATE_NOT_NULL(isChecked)
+    *isChecked = mChecked;
+    return NOERROR;
 }
 
-/**
- * <p>Changes the checked state of this text view.</p>
- *
- * @param checked true to check the text, FALSE to uncheck it
- */
 ECode CheckedTextView::SetChecked(
     /* [in] */ Boolean checked)
 {
     if (mChecked != checked) {
         mChecked = checked;
         RefreshDrawableState();
-        NotifyAccessibilityStateChanged();
+        NotifyViewAccessibilityStateChangedIfNeeded(
+            IAccessibilityEvent::CONTENT_CHANGE_TYPE_UNDEFINED);
     }
 
     return NOERROR;
 }
 
-
-/**
- * Set the checkmark to a given Drawable, identified by its resourece id. This will be drawn
- * when {@link #isChecked()} is true.
- *
- * @param resid The Drawable to use for the checkmark.
- */
 ECode CheckedTextView::SetCheckMarkDrawable(
     /* [in] */ Int32 resid)
 {
@@ -151,18 +146,15 @@ ECode CheckedTextView::SetCheckMarkDrawable(
 
     AutoPtr<IDrawable> d;
     if (mCheckMarkResource != 0) {
-        GetResources()->GetDrawable(mCheckMarkResource, (IDrawable**)&d);
+        AutoPtr<IContext> cxt;
+        GetContext((IContext**)&cxt);
+        cxt->GetDrawable(mCheckMarkResource, (IDrawable**)&d);
     }
     SetCheckMarkDrawable(d);
 
     return NOERROR;
 }
 
-/**
- * Set the checkmark to a given Drawable. This will be drawn when {@link #isChecked()} is true.
- *
- * @param d The Drawable to use for the checkmark.
- */
 ECode CheckedTextView::SetCheckMarkDrawable(
     /* [in] */ IDrawable* d)
 {
@@ -174,20 +166,25 @@ ECode CheckedTextView::SetCheckMarkDrawable(
     if (d != NULL) {
         d->SetCallback((IDrawableCallback*)this->Probe(EIID_IDrawableCallback));
 
-        Boolean res;
-        d->SetVisible(GetVisibility() == IView::VISIBLE, FALSE, &res);
+        Int32 vis = 0;
+        GetVisibility(&vis);
+        Boolean res = FALSE;
+        d->SetVisible(vis == IView::VISIBLE, FALSE, &res);
 
         d->SetState(CHECKED_STATE_SET, &res);
 
-        Int32 height;
+        Int32 height = 0;
         d->GetIntrinsicHeight(&height);
         SetMinHeight(height);
 
         d->GetIntrinsicWidth(&mCheckMarkWidth);
 
-        AutoPtr<ArrayOf<Int32> > drawableState = GetDrawableState();
+        AutoPtr<ArrayOf<Int32> > drawableState;
+        GetDrawableState((ArrayOf<Int32>**)&drawableState);
         d->SetState(drawableState, &res);
-    } else {
+        ApplyCheckMarkTint();
+    }
+    else {
         mCheckMarkWidth = 0;
     }
     mCheckMarkDrawable = d;
@@ -197,25 +194,97 @@ ECode CheckedTextView::SetCheckMarkDrawable(
     return NOERROR;
 }
 
-/**
- * Gets the checkmark drawable
- *
- * @return The drawable use to represent the checkmark, if any.
- *
- * @see #setCheckMarkDrawable(Drawable)
- * @see #setCheckMarkDrawable(int)
- *
- * @attr ref android.R.styleable#CheckedTextView_checkMark
- */
-AutoPtr<IDrawable> CheckedTextView::GetCheckMarkDrawable()
+ECode CheckedTextView::SetCheckMarkTintList(
+    /* [in] */ IColorStateList* tint)
 {
-    return mCheckMarkDrawable;
+    mCheckMarkTintList = tint;
+    mHasCheckMarkTint = TRUE;
+
+    ApplyCheckMarkTint();
+    return NOERROR;
 }
 
-/**
- * @hide
- */
-//@Override
+ECode CheckedTextView::GetCheckMarkTintList(
+    /* [out] */ IColorStateList** tint)
+{
+    VALIDATE_NOT_NULL(tint)
+
+    *tint = mCheckMarkTintList;
+    REFCOUNT_ADD(*tint)
+    return NOERROR;
+}
+
+ECode CheckedTextView::SetCheckMarkTintMode(
+    /* [in] */ PorterDuffMode tintMode)
+{
+    mCheckMarkTintMode = tintMode;
+    mHasCheckMarkTintMode = TRUE;
+
+    ApplyCheckMarkTint();
+    return NOERROR;
+}
+
+ECode CheckedTextView::GetCheckMarkTintMode(
+    /* [out] */ PorterDuffMode* tintMode)
+{
+    VALIDATE_NOT_NULL(tintMode)
+
+    *tintMode = mCheckMarkTintMode;
+    return NOERROR;
+}
+
+void CheckedTextView::ApplyCheckMarkTint()
+{
+    if (mCheckMarkDrawable != NULL && (mHasCheckMarkTint || mHasCheckMarkTintMode)) {
+        mCheckMarkDrawable->Mutate((IDrawable**)&mCheckMarkDrawable);
+
+        if (mHasCheckMarkTint) {
+            mCheckMarkDrawable->SetTintList(mCheckMarkTintList);
+        }
+
+        if (mHasCheckMarkTintMode) {
+            mCheckMarkDrawable->SetTintMode(mCheckMarkTintMode);
+        }
+    }
+}
+
+ECode CheckedTextView::SetVisibility(
+    /* [in] */ Int32 visibility)
+{
+    View::SetVisibility(visibility);
+
+    if (mCheckMarkDrawable != NULL) {
+        Boolean b = FALSE;
+        mCheckMarkDrawable->SetVisible(visibility == VISIBLE, FALSE, &b);
+    }
+    return NOERROR;
+}
+
+ECode CheckedTextView::JumpDrawablesToCurrentState()
+{
+    View::JumpDrawablesToCurrentState();
+
+    if (mCheckMarkDrawable != NULL) {
+        mCheckMarkDrawable->JumpToCurrentState();
+    }
+    return NOERROR;
+}
+
+Boolean CheckedTextView::VerifyDrawable(
+    /* [in] */ IDrawable* who)
+{
+    return who == mCheckMarkDrawable || View::VerifyDrawable(who);
+}
+
+ECode CheckedTextView::GetCheckMarkDrawable(
+    /* [out] */ IDrawable** drawable)
+{
+    VALIDATE_NOT_NULL(drawable)
+    *drawable = mCheckMarkDrawable;
+    REFCOUNT_ADD(*drawable)
+    return NOERROR;
+}
+
 void CheckedTextView::InternalSetPadding(
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
@@ -223,7 +292,7 @@ void CheckedTextView::InternalSetPadding(
     /* [in] */ Int32 bottom)
 {
     TextView::InternalSetPadding(left, top, right, bottom);
-    SetBasePadding(IsLayoutRtl());
+    SetBasePadding(IsCheckMarkAtStart());
 }
 
 //@Override
@@ -240,10 +309,11 @@ void CheckedTextView::UpdatePadding()
     ResetPaddingToInitialValues();
     Int32 newPadding = (mCheckMarkDrawable != NULL) ?
             mCheckMarkWidth + mBasePadding : mBasePadding;
-    if (IsLayoutRtl()) {
+    if (IsCheckMarkAtStart()) {
         mNeedRequestlayout |= (mPaddingLeft != newPadding);
         mPaddingLeft = newPadding;
-    } else {
+    }
+    else {
         mNeedRequestlayout |= (mPaddingRight != newPadding);
         mPaddingRight = newPadding;
     }
@@ -254,13 +324,26 @@ void CheckedTextView::UpdatePadding()
 }
 
 void CheckedTextView::SetBasePadding(
-    /* [in] */ Boolean isLayoutRtl)
+    /* [in] */ Boolean checkmarkAtStart)
 {
-    if (isLayoutRtl) {
+    if (checkmarkAtStart) {
         mBasePadding = mPaddingLeft;
-    } else {
+    }
+    else {
         mBasePadding = mPaddingRight;
     }
+}
+
+Boolean CheckedTextView::IsCheckMarkAtStart()
+{
+    Int32 dir = 0;
+    GetLayoutDirection(&dir);
+    AutoPtr<IGravity> gra;
+    CGravity::AcquireSingleton((IGravity**)&gra);
+    Int32 gravity = 0;
+    gra->GetAbsoluteGravity(mCheckMarkGravity, dir, &gravity);
+    Int32 hgrav = gravity & IGravity::HORIZONTAL_GRAVITY_MASK;
+    return hgrav == IGravity::LEFT;
 }
 
 void CheckedTextView::OnDraw(
@@ -271,36 +354,50 @@ void CheckedTextView::OnDraw(
     AutoPtr<IDrawable> checkMarkDrawable = mCheckMarkDrawable;
     if (checkMarkDrawable != NULL) {
         Int32 verticalGravity = GetGravity() & IGravity::VERTICAL_GRAVITY_MASK;
-        Int32 height;
+        Int32 height = 0;
         checkMarkDrawable->GetIntrinsicHeight(&height);
 
         Int32 y = 0;
 
         switch (verticalGravity) {
-            case IGravity::BOTTOM:
-                y = GetHeight() - height;
+            case IGravity::BOTTOM: {
+                Int32 h = 0;
+                GetHeight(&h);
+                y = h - height;
+            }
                 break;
-            case IGravity::CENTER_VERTICAL:
-                y = (GetHeight() - height) / 2;
+            case IGravity::CENTER_VERTICAL: {
+                Int32 h = 0;
+                GetHeight(&h);
+                y = (h - height) / 2;
+            }
                 break;
         }
 
-        Boolean isLayoutRtl = IsLayoutRtl();
-        Int32 width = GetWidth();
+        Boolean checkMarkAtStart = IsCheckMarkAtStart();
+        Int32 width = 0;
+        GetWidth(&width);
         Int32 top = y;
         Int32 bottom = top + height;
-        Int32 left;
-        Int32 right;
-        if (isLayoutRtl) {
+        Int32 left = 0;
+        Int32 right = 0;
+        if (checkMarkAtStart) {
             left = mBasePadding;
             right = left + mCheckMarkWidth;
-        } else {
+        }
+        else {
             right = width - mBasePadding;
             left = right - mCheckMarkWidth;
         }
-        checkMarkDrawable->SetBounds( left, top, right, bottom);
+        checkMarkDrawable->SetBounds(mScrollX + left, top, mScrollX + right, bottom);
 
         checkMarkDrawable->Draw(canvas);
+
+        AutoPtr<IDrawable> background;
+        GetBackground((IDrawable**)&background);
+        if (background != NULL) {
+            background->SetHotspotBounds(mScrollX + left, top, mScrollX + right, bottom);
+        }
     }
 }
 
@@ -313,7 +410,8 @@ ECode CheckedTextView::OnCreateDrawableState(
 
     AutoPtr<ArrayOf<Int32> > ds;
     TextView::OnCreateDrawableState(extraSpace + 1, (ArrayOf<Int32>**)&ds);
-    if (IsChecked()) {
+    Boolean bIsChecked = FALSE;
+    if ((IsChecked(&bIsChecked), bIsChecked)) {
         MergeDrawableStates(ds, CHECKED_STATE_SET);
     }
     *drawableState = ds;
@@ -326,9 +424,10 @@ ECode CheckedTextView::DrawableStateChanged()
     TextView::DrawableStateChanged();
 
     if (mCheckMarkDrawable != NULL) {
-        AutoPtr<ArrayOf<Int32> > myDrawableState = GetDrawableState();
+        AutoPtr<ArrayOf<Int32> > myDrawableState;
+        GetDrawableState((ArrayOf<Int32>**)&myDrawableState);
 
-        Boolean res;
+        Boolean res = FALSE;
         // Set the state of the Drawable
         mCheckMarkDrawable->SetState(myDrawableState, &res);
 
@@ -338,14 +437,26 @@ ECode CheckedTextView::DrawableStateChanged()
     return NOERROR;
 }
 
+ECode CheckedTextView::DrawableHotspotChanged(
+    /* [in] */ Float x,
+    /* [in] */ Float y)
+{
+    TextView::DrawableHotspotChanged(x, y);
+
+    if (mCheckMarkDrawable != NULL) {
+        mCheckMarkDrawable->SetHotspot(x, y);
+    }
+    return NOERROR;
+}
+
 ECode CheckedTextView::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
     TextView::OnInitializeAccessibilityEvent(event);
     String classNameStr("CheckedTextView");
     AutoPtr<ICharSequence> className;
-    FAIL_RETURN(CStringWrapper::New(classNameStr, (ICharSequence**)&className));
-    event->SetClassName(className);
+    FAIL_RETURN(CString::New(classNameStr, (ICharSequence**)&className));
+    IAccessibilityRecord::Probe(event)->SetClassName(className);
 
     return NOERROR;
 }
@@ -356,7 +467,7 @@ ECode CheckedTextView::OnInitializeAccessibilityNodeInfo(
     TextView::OnInitializeAccessibilityNodeInfo(info);
     String classNameStr("CheckedTextView");
     AutoPtr<ICharSequence> className;
-    FAIL_RETURN(CStringWrapper::New(classNameStr, (ICharSequence**)&className));
+    FAIL_RETURN(CString::New(classNameStr, (ICharSequence**)&className));
     info->SetClassName(className);
     info->SetCheckable(TRUE);
     info->SetChecked(mChecked);

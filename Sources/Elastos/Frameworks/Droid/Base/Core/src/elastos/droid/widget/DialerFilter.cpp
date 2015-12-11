@@ -2,7 +2,7 @@
 #include "elastos/droid/widget/DialerFilter.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/CKeyEventHelper.h"
-#include "elastos/droid/text/CAllCaps.h"
+#include "elastos/droid/text/CAllCapsFilter.h"
 #include "elastos/droid/text/Selection.h"
 #include "elastos/droid/text/method/CTextKeyListenerHelper.h"
 #include "elastos/droid/text/method/CDialerKeyListenerHelper.h"
@@ -11,8 +11,9 @@ using Elastos::Droid::View::IView;
 using Elastos::Droid::View::CKeyEventHelper;
 using Elastos::Droid::Text::IEditable;
 using Elastos::Droid::Text::ISpannable;
+using Elastos::Droid::Text::ISpanned;
 using Elastos::Droid::Text::EIID_ISpannable;
-using Elastos::Droid::Text::CAllCaps;
+using Elastos::Droid::Text::CAllCapsFilter;
 using Elastos::Droid::Text::Selection;
 using Elastos::Droid::Text::Method::IDialerKeyListenerHelper;
 using Elastos::Droid::Text::Method::ITextKeyListenerHelper;
@@ -26,61 +27,54 @@ using Elastos::Droid::Text::Method::CDialerKeyListenerHelper;
 using Elastos::Droid::View::IKeyEventCallback;
 using Elastos::Droid::View::EIID_IKeyEventCallback;
 using Elastos::Droid::View::IKeyEventHelper;
-using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Widget::RelativeLayout;
+
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+//=====================================================================
+//              DialerFilter::
+//=====================================================================
+CAR_INTERFACE_IMPL(DialerFilter, RelativeLayout, IDialerFilter)
+
 DialerFilter::DialerFilter()
 {
-
 }
 
-DialerFilter::DialerFilter(
+ECode DialerFilter::constructor(
     /* [in] */ IContext* context)
 {
-    Init(context);
+    return RelativeLayout::constructor(context);
 }
 
-DialerFilter::DialerFilter(
+ECode DialerFilter::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    Init(context, attrs);
-}
-
-ECode DialerFilter::Init(
-    /* [in] */ IContext* context)
-{
-    ASSERT_SUCCEEDED(RelativeLayout::Init(context));
-    return NOERROR;
-}
-
-ECode DialerFilter::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    ASSERT_SUCCEEDED(RelativeLayout::Init(context, attrs));
-    return NOERROR;
+    return RelativeLayout::constructor(context, attrs);
 }
 
 ECode DialerFilter::OnFinishInflate()
 {
     View::OnFinishInflate();
+
+    // Setup the filter view
     AutoPtr<IInputFilter> allCaps;
-    FAIL_RETURN(CAllCaps::New((IInputFilter**)&allCaps));
+    FAIL_RETURN(CAllCapsFilter::New((IInputFilter**)&allCaps));
     mInputFilters = ArrayOf<IInputFilter*>::Alloc(1);
     mInputFilters->Set(0, allCaps);
-    AutoPtr<IView> view = FindViewById(R::id::hint);
-    mHint = IEditText::Probe(view);
+    AutoPtr<IView> view;
+    FindViewById(R::id::hint, (IView**)&view);
 
+    mHint = IEditText::Probe(view);
     if(mHint == NULL) {
         return E_ILLEGAL_STATE_EXCEPTION;
     }
+    ITextView::Probe(mHint)->SetFilters(mInputFilters);
 
-    mHint->SetFilters(mInputFilters);
     mLetters = mHint;
     AutoPtr<ITextKeyListenerHelper> textKeyListenerHelper;
     FAIL_RETURN(CTextKeyListenerHelper::AcquireSingleton((ITextKeyListenerHelper**)&textKeyListenerHelper));
@@ -89,18 +83,21 @@ ECode DialerFilter::OnFinishInflate()
     AutoPtr<IKeyListener> keyListener;
     keyListener = (IKeyListener*)textKeyListener->Probe(EIID_IKeyListener);
     if(keyListener == NULL){
-        assert(0 && "keyListener is not null");
+        // assert(0 && "keyListener is not null");
+        return E_ILLEGAL_STATE_EXCEPTION;
     }
-    mLetters->SetKeyListener(keyListener);
-    mLetters->SetMovementMethod(NULL);
-    mLetters->SetFocusable(FALSE);
+    ITextView::Probe(mLetters)->SetKeyListener(keyListener);
+    ITextView::Probe(mLetters)->SetMovementMethod(NULL);
+    IView::Probe(mLetters)->SetFocusable(FALSE);
 
-    view = FindViewById(R::id::primary);
+    // Setup the digits view
+    FindViewById(R::id::primary, (IView**)&view);
     mPrimary = IEditText::Probe(view);
     if(mPrimary == NULL){
         return E_ILLEGAL_STATE_EXCEPTION;
     }
-    mPrimary->SetFilters(mInputFilters);
+    ITextView::Probe(mPrimary)->SetFilters(mInputFilters);
+
     mDigits = mPrimary;
     AutoPtr<IDialerKeyListenerHelper> dialerKeyListenerHelper;
     FAIL_RETURN(CDialerKeyListenerHelper::AcquireSingleton((IDialerKeyListenerHelper**)&dialerKeyListenerHelper));
@@ -109,20 +106,21 @@ ECode DialerFilter::OnFinishInflate()
     AutoPtr<IKeyListener> keyListener1;
     keyListener1 = (IKeyListener*)dialerKeyListener->Probe(EIID_IKeyListener);
     if(keyListener1 == NULL) {
-        assert(0 && "keyListener1 is not null");
+        return E_ILLEGAL_STATE_EXCEPTION;
     }
-    mDigits->SetKeyListener(keyListener1);
-    mDigits->SetMovementMethod(NULL);
-    mDigits->SetFocusable(FALSE);
+    ITextView::Probe(mDigits)->SetKeyListener(keyListener1);
+    ITextView::Probe(mDigits)->SetMovementMethod(NULL);
+    IView::Probe(mDigits)->SetFocusable(FALSE);
 
-    view = FindViewById(R::id::icon);
-    mIcon = (IImageView*)view->Probe(EIID_IImageView);
-    if(mIcon == NULL) {
+    // Look for an icon
+    FindViewById(R::id::icon, (IView**)&view);
+    mIcon = IImageView::Probe(view);
 
-    }
+    // Setup focus & highlight for this view
     SetFocusable(TRUE);
-    mIsQwerty = TRUE;
 
+    // XXX Force the mode to QWERTY for now, since 12-key isn't supported
+    mIsQwerty = TRUE;
     SetMode(DIGITS_AND_LETTERS);
     return NOERROR;
 }
@@ -133,20 +131,27 @@ void DialerFilter::OnFocusChanged(
     /* [in] */ IRect* previouslyFocusedRect)
 {
     RelativeLayout::OnFinishInflate();
+
     if(mIcon != NULL) {
-        mIcon->SetVisibility(focused ? IView::VISIBLE : IView::GONE);
+        IView::Probe(mIcon)->SetVisibility(focused ? IView::VISIBLE : IView::GONE);
     }
 }
 
-Boolean DialerFilter::IsQwertyKeyboard()
+ECode DialerFilter::IsQwertyKeyboard(
+    /* [out] */ Boolean* res)
 {
-    return mIsQwerty;
+    VALIDATE_NOT_NULL(res)
+    *res = mIsQwerty;
+    return NOERROR;
 }
 
-Boolean DialerFilter::OnKeyDown(
+ECode DialerFilter::OnKeyDown(
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Boolean handled = FALSE;
     AutoPtr<ICharSequence> sequence;
     Boolean keyEventResult = FALSE;
@@ -155,7 +160,8 @@ Boolean DialerFilter::OnKeyDown(
     IKeyEventCallback* mLettersCallback = (IKeyEventCallback*)mLetters->Probe(EIID_IKeyEventCallback);
     IKeyEventCallback* mDigitsCallback = (IKeyEventCallback*)mDigits->Probe(EIID_IKeyEventCallback);
     if (mLettersCallback == NULL || mDigitsCallback == NULL) {
-        return FALSE;
+        *result = FALSE;
+        return NOERROR;
     }
 
     switch(keyCode) {
@@ -177,10 +183,10 @@ Boolean DialerFilter::OnKeyDown(
             case DIGITS_AND_LETTERS_NO_DIGITS:
                 mLettersCallback->OnKeyDown(keyCode, event, &handled);
                 Int32 mLetterslen, mDigitslen;
-                mLetters->GetText((ICharSequence**)&sequence);
+                ITextView::Probe(mLetters)->GetText((ICharSequence**)&sequence);
                 sequence->GetLength(&mLetterslen);
                 sequence = NULL;
-                mDigits->GetText((ICharSequence**)&sequence);
+                ITextView::Probe(mDigits)->GetText((ICharSequence**)&sequence);
                 sequence->GetLength(&mDigitslen);
                 if(mLetterslen == mDigitslen) {
                     SetMode(DIGITS_AND_LETTERS);
@@ -190,10 +196,10 @@ Boolean DialerFilter::OnKeyDown(
             case DIGITS_AND_LETTERS_NO_LETTERS:
                 Int32 mLetterslen1, mDigitslen1;
                 sequence = NULL;
-                mLetters->GetText((ICharSequence**)&sequence);
+                ITextView::Probe(mLetters)->GetText((ICharSequence**)&sequence);
                 sequence->GetLength(&mLetterslen1);
                 sequence = NULL;
-                mDigits->GetText((ICharSequence**)&sequence);
+                ITextView::Probe(mDigits)->GetText((ICharSequence**)&sequence);
                 sequence->GetLength(&mDigitslen1);
                 if(mLetterslen1 == mDigitslen1) {
                     Boolean res = FALSE;
@@ -214,37 +220,37 @@ Boolean DialerFilter::OnKeyDown(
 
             default:
                 switch (mMode) {
-                    case DIGITS_AND_LETTERS:
+                    case DIGITS_AND_LETTERS: {
                         mLettersCallback->OnKeyDown(keyCode, event, &handled);
-                        Boolean result;
+                        Boolean result = FALSE;
                         FAIL_RETURN(CKeyEventHelper::AcquireSingleton((IKeyEventHelper**)&keyEventHelper));
                         keyEventHelper->IsModifierKey(keyCode, &result);
                         if(result) {
-                            Boolean discard;
+                            Boolean discard = FALSE;
                             mDigitsCallback->OnKeyDown(keyCode, event, &discard);
                             handled = TRUE;
                             break;
                         }
-                        Boolean isPrint;
+                        Boolean isPrint = FALSE;
                         event->IsPrintingKey(&isPrint);
                         if(isPrint || keyCode == IKeyEvent::KEYCODE_SPACE
                                 ||keyCode == IKeyEvent::KEYCODE_TAB) {
                             AutoPtr<IDialerKeyListenerHelper> helper;
                             FAIL_RETURN(CDialerKeyListenerHelper::AcquireSingleton((IDialerKeyListenerHelper**)&helper));
                             AutoPtr<ArrayOf<Char32> > CHARACTERS;
-
                             helper->GetCHARACTERS((ArrayOf<Char32>**)&CHARACTERS);
                             Char32 c;
-                            event->GetMatch(*CHARACTERS ,&c);
+                            event->GetMatch(CHARACTERS, &c);
                             if(c != 0) {
                                 mDigitsCallback->OnKeyDown(keyCode, event, &keyEventResult);
                                 handled &= keyEventResult;
-                            } else {
+                            }
+                            else {
                                 SetMode(DIGITS_AND_LETTERS_NO_DIGITS);
                             }
                         }
                         break;
-
+                    }
                     case DIGITS_AND_LETTERS_NO_LETTERS:
                     case DIGITS_ONLY:
                         mDigitsCallback->OnKeyDown(keyCode, event, &handled);
@@ -258,31 +264,42 @@ Boolean DialerFilter::OnKeyDown(
     }
 
     if (!handled) {
-        return RelativeLayout::OnKeyDown(keyCode, event);
-    } else {
-        return TRUE;
+        return View::OnKeyDown(keyCode, event, result);
+    }
+    else {
+        *result = TRUE;
+        return NOERROR;
     }
 }
 
-Boolean DialerFilter::OnKeyUp(
+ECode DialerFilter::OnKeyUp(
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     IKeyEventCallback* mLettersCallback = (IKeyEventCallback*)mLetters->Probe(EIID_IKeyEventCallback);
     IKeyEventCallback* mDigitsCallback = (IKeyEventCallback*)mDigits->Probe(EIID_IKeyEventCallback);
     if (mLettersCallback == NULL || mDigitsCallback == NULL) {
-        return FALSE;
+        *result = FALSE;
+        return NOERROR;
     }
 
-    Boolean a, b;
+    Boolean a = FALSE, b = FALSE;
     mLettersCallback->OnKeyDown(keyCode, event, &a);
     mDigitsCallback->OnKeyDown(keyCode, event, &b);
-    return a || b;
+    *result = a || b;
+    return NOERROR;
 }
 
-Int32 DialerFilter::GetMode()
+ECode DialerFilter::GetMode(
+    /* [out] */ Int32* mode)
 {
-    return mMode;
+    VALIDATE_NOT_NULL(mode)
+
+    *mode = mMode;
+    return NOERROR;
 }
 
 ECode DialerFilter::SetMode(
@@ -291,28 +308,28 @@ ECode DialerFilter::SetMode(
     switch (newMode) {
         case DIGITS_AND_LETTERS:
             MakeDigitsPrimary();
-            mLetters->SetVisibility(IView::VISIBLE);
-            mDigits->SetVisibility(IView::VISIBLE);
+            IView::Probe(mLetters)->SetVisibility(IView::VISIBLE);
+            IView::Probe(mDigits)->SetVisibility(IView::VISIBLE);
             break;
         case DIGITS_ONLY:
             MakeDigitsPrimary();
-            mLetters->SetVisibility(IView::GONE);
-            mDigits->SetVisibility(IView::VISIBLE);
+            IView::Probe(mLetters)->SetVisibility(IView::GONE);
+            IView::Probe(mDigits)->SetVisibility(IView::VISIBLE);
             break;
         case LETTERS_ONLY:
             MakeLettersPrimary();
-            mLetters->SetVisibility(IView::VISIBLE);
-            mDigits->SetVisibility(IView::GONE);
+            IView::Probe(mLetters)->SetVisibility(IView::VISIBLE);
+            IView::Probe(mDigits)->SetVisibility(IView::GONE);
             break;
         case DIGITS_AND_LETTERS_NO_LETTERS:
             MakeDigitsPrimary();
-            mLetters->SetVisibility(IView::INVISIBLE);
-            mDigits->SetVisibility(IView::VISIBLE);
+            IView::Probe(mLetters)->SetVisibility(IView::INVISIBLE);
+            IView::Probe(mDigits)->SetVisibility(IView::VISIBLE);
             break;
         case DIGITS_AND_LETTERS_NO_DIGITS:
             MakeLettersPrimary();
-            mLetters->SetVisibility(IView::VISIBLE);
-            mDigits->SetVisibility(IView::INVISIBLE);
+            IView::Probe(mLetters)->SetVisibility(IView::VISIBLE);
+            IView::Probe(mDigits)->SetVisibility(IView::INVISIBLE);
             break;
     }
     Int32 oldMode = mMode;
@@ -341,81 +358,103 @@ ECode DialerFilter::SwapPrimaryAndHint(
     /* [in] */ Boolean makeLettersPrimary)
 {
     AutoPtr<ICharSequence> csq;
-    mLetters->GetText((ICharSequence**)&csq);
+    ITextView::Probe(mLetters)->GetText((ICharSequence**)&csq);
     AutoPtr<IEditable> lettersText = IEditable::Probe(csq);
     csq = NULL;
-    mDigits->GetText((ICharSequence**)&csq);
+    ITextView::Probe(mDigits)->GetText((ICharSequence**)&csq);
     AutoPtr<IEditable> digitsText = IEditable::Probe(csq);
     AutoPtr<IKeyListener> lettersInput;
-    mLetters->GetKeyListener((IKeyListener**)&lettersInput);
+    ITextView::Probe(mLetters)->GetKeyListener((IKeyListener**)&lettersInput);
     AutoPtr<IKeyListener> digitsInput;
-    mDigits->GetKeyListener((IKeyListener**)&digitsInput);
+    ITextView::Probe(mDigits)->GetKeyListener((IKeyListener**)&digitsInput);
     if(makeLettersPrimary) {
         mLetters = mPrimary;
         mDigits = mHint;
-    } else {
+    }
+    else {
         mLetters = mHint;
         mDigits = mPrimary;
     }
 
-    mLetters->SetKeyListener(lettersInput);
-    mLetters->SetText(lettersText);
+    ITextView::Probe(mLetters)->SetKeyListener(lettersInput);
+    ITextView::Probe(mLetters)->SetText(ICharSequence::Probe(lettersText));
     csq = NULL;
-    mLetters->GetText((ICharSequence**)&csq);
+    ITextView::Probe(mLetters)->GetText((ICharSequence**)&csq);
     lettersText = IEditable::Probe(csq);
 
     Int32 len = 0;
-    Selection::SetSelection(lettersText, (lettersText->GetLength(&len), len));
+    ITextView::Probe(lettersText)->GetLength(&len);
+    Selection::SetSelection(ISpannable::Probe(lettersText), len);
 
-    mDigits->SetKeyListener(digitsInput);
-    mDigits->SetText(digitsText);
+    ITextView::Probe(mDigits)->SetKeyListener(digitsInput);
+    ITextView::Probe(mDigits)->SetText(ICharSequence::Probe(digitsText));
     csq = NULL;
-    mDigits->GetText((ICharSequence**)&csq);
+    ITextView::Probe(mDigits)->GetText((ICharSequence**)&csq);
     digitsText = IEditable::Probe(csq);
-    Selection::SetSelection(digitsText, (digitsText->GetLength(&len), len));
+    ITextView::Probe(digitsText)->GetLength(&len);
+    Selection::SetSelection(ISpannable::Probe(digitsText), len);
 
-    mPrimary->SetFilters(mInputFilters);
-    mHint->SetFilters(mInputFilters);
+    ITextView::Probe(mPrimary)->SetFilters(mInputFilters);
+    ITextView::Probe(mHint)->SetFilters(mInputFilters);
 
     return NOERROR;
 }
 
-AutoPtr<ICharSequence> DialerFilter::GetLetters()
+ECode DialerFilter::GetLetters(
+    /* [out] */ ICharSequence** letters)
 {
-    Int32 isVisibility;
-    mLetters->GetVisibility(&isVisibility);
+    VALIDATE_NOT_NULL(letters)
+
+    Int32 isVisibility = 0;
+    IView::Probe(mLetters)->GetVisibility(&isVisibility);
     if(isVisibility == IView::VISIBLE) {
         AutoPtr<ICharSequence> csq;
-        mLetters->GetText((ICharSequence**)&csq);
-        return csq;
-    } else {
+        ITextView::Probe(mLetters)->GetText((ICharSequence**)&csq);
+        *letters = csq;
+        REFCOUNT_ADD(*letters)
+        return NOERROR;
+    }
+    else {
         AutoPtr<ICharSequence> csq;
-        CStringWrapper::New(String(""), (ICharSequence**)&csq);
-        return csq;
+        CString::New(String(""), (ICharSequence**)&csq);
+        *letters = csq;
+        REFCOUNT_ADD(*letters)
+        return NOERROR;
     }
 }
 
-AutoPtr<ICharSequence> DialerFilter::GetDigits()
+ECode DialerFilter::GetDigits(
+    /* [out] */ ICharSequence** digits)
 {
-    Int32 isVisibility;
-    mDigits->GetVisibility(&isVisibility);
+    VALIDATE_NOT_NULL(digits)
+
+    Int32 isVisibility = 0;
+    IView::Probe(mDigits)->GetVisibility(&isVisibility);
     if(isVisibility == IView::VISIBLE) {
         AutoPtr<ICharSequence> csq;
-        mDigits->GetText((ICharSequence**)&csq);
-        return csq;
-    } else {
+        ITextView::Probe(mDigits)->GetText((ICharSequence**)&csq);
+        *digits = csq;
+        REFCOUNT_ADD(*digits)
+        return NOERROR;
+    }
+    else {
         AutoPtr<ICharSequence> csq;
-        CStringWrapper::New(String(""), (ICharSequence**)&csq);
-        return csq;
+        CString::New(String(""), (ICharSequence**)&csq);
+        *digits = csq;
+        REFCOUNT_ADD(*digits)
+        return NOERROR;
     }
 }
 
-AutoPtr<ICharSequence> DialerFilter::GetFilterText()
+ECode DialerFilter::GetFilterText(
+    /* [out] */ ICharSequence** text)
 {
+    VALIDATE_NOT_NULL(text)
     if(mMode != DIGITS_ONLY) {
-        return GetLetters();
-    } else {
-        return GetDigits();
+        return GetLetters(text);
+    }
+    else {
+        return GetDigits(text);
     }
 }
 
@@ -423,20 +462,20 @@ ECode DialerFilter::Append(
     /* [in] */ const String& text)
 {
     AutoPtr<ICharSequence> csq;
-    FAIL_RETURN(CStringWrapper::New(text, (ICharSequence**)&csq));
+    FAIL_RETURN(CString::New(text, (ICharSequence**)&csq));
 
     switch (mMode) {
         case DIGITS_AND_LETTERS:
-            mDigits->Append((ICharSequence*)csq);
-            mLetters->Append((ICharSequence*)csq);
+            ITextView::Probe(mDigits)->Append((ICharSequence*)csq);
+            ITextView::Probe(mLetters)->Append((ICharSequence*)csq);
             break;
         case DIGITS_AND_LETTERS_NO_LETTERS:
         case DIGITS_ONLY:
-            mDigits->Append((ICharSequence*)csq);
+            ITextView::Probe(mDigits)->Append((ICharSequence*)csq);
             break;
         case DIGITS_AND_LETTERS_NO_DIGITS:
         case LETTERS_ONLY:
-            mLetters->Append((ICharSequence*)csq);
+            ITextView::Probe(mLetters)->Append((ICharSequence*)csq);
             break;
     }
     return NOERROR;
@@ -445,19 +484,19 @@ ECode DialerFilter::Append(
 ECode DialerFilter::ClearText()
 {
     AutoPtr<ICharSequence> csq;
-    IEditable* text;
-    mLetters->GetText((ICharSequence**)&csq);
-    text = IEditable::Probe(csq);
+    ITextView::Probe(mLetters)->GetText((ICharSequence**)&csq);
+    AutoPtr<IEditable> text = IEditable::Probe(csq);
     if (text) text->Clear();
 
     csq = NULL;
-    mDigits->GetText((ICharSequence**)&csq);
+    ITextView::Probe(mDigits)->GetText((ICharSequence**)&csq);
     text = IEditable::Probe(csq);
     if (text) text->Clear();
 
     if(mIsQwerty) {
         SetMode(DIGITS_AND_LETTERS);
-    } else {
+    }
+    else {
         SetMode(DIGITS_ONLY);
     }
     return NOERROR;
@@ -467,14 +506,14 @@ ECode DialerFilter::SetLettersWatcher(
     /* [in] */ ITextWatcher* watcher)
 {
     AutoPtr<ICharSequence> text;
-    mLetters->GetText((ICharSequence**)&text);
+    ITextView::Probe(mLetters)->GetText((ICharSequence**)&text);
     AutoPtr<ISpannable> span = ISpannable::Probe(text);
     if (span == NULL) {
-        assert(0 && "span is not null");
+        return E_ILLEGAL_STATE_EXCEPTION;
     }
-    Int32 length;
+    Int32 length = 0;
     text->GetLength(&length);
-    span->SetSpan(watcher, 0, length, ISpannable::SPAN_INCLUSIVE_INCLUSIVE);
+    span->SetSpan(watcher, 0, length, ISpanned::SPAN_INCLUSIVE_INCLUSIVE);
     return NOERROR;
 }
 
@@ -482,14 +521,14 @@ ECode DialerFilter::SetDigitsWatcher(
     /* [in] */ ITextWatcher* watcher)
 {
     AutoPtr<ICharSequence> text;
-    mDigits->GetText((ICharSequence**)&text);
+    ITextView::Probe(mDigits)->GetText((ICharSequence**)&text);
     AutoPtr<ISpannable> span = ISpannable::Probe(text);
     if (span == NULL) {
-        assert(0 && "span is not null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    Int32 length;
+    Int32 length = 0;
     text->GetLength(&length);
-    span->SetSpan(watcher, 0, length, ISpannable::SPAN_INCLUSIVE_INCLUSIVE);
+    span->SetSpan(watcher, 0, length, ISpanned::SPAN_INCLUSIVE_INCLUSIVE);
     return NOERROR;
 }
 
@@ -498,7 +537,8 @@ ECode DialerFilter::SetFilterWatcher(
 {
     if(mMode != DIGITS_ONLY) {
         SetLettersWatcher(watcher);
-    } else {
+    }
+    else {
         SetDigitsWatcher(watcher);
     }
     return NOERROR;
@@ -509,9 +549,10 @@ ECode DialerFilter::RemoveFilterWatcher(
 {
     AutoPtr<ISpannable> text;
     if(mMode != DIGITS_ONLY) {
-        mLetters->GetText((ICharSequence**)&text);
-    } else {
-        mDigits->GetText((ICharSequence**)&text);
+        ITextView::Probe(mLetters)->GetText((ICharSequence**)&text);
+    }
+    else {
+        ITextView::Probe(mDigits)->GetText((ICharSequence**)&text);
     }
     text->RemoveSpan(watcher);
     return NOERROR;

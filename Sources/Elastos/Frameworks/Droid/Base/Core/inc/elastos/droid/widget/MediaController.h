@@ -1,14 +1,15 @@
 
-#ifndef __ELASTOS_DROID_WIDGET_MediaController_H__
-#define __ELASTOS_DROID_WIDGET_MediaController_H__
+#ifndef __ELASTOS_DROID_WIDGET_MEDIACONTROLLER_H__
+#define __ELASTOS_DROID_WIDGET_MEDIACONTROLLER_H__
 
 #include "elastos/droid/widget/FrameLayout.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
+
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Utility::IAttributeSet;
-using Elastos::Droid::Os::HandlerBase;
-using Elastos::Droid::Widget::IMediaPlayerControl;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IKeyEvent;
@@ -18,22 +19,28 @@ using Elastos::Droid::View::IViewOnClickListener;
 using Elastos::Droid::View::IWindowManager;
 using Elastos::Droid::View::IWindow;
 using Elastos::Droid::View::IWindowManagerLayoutParams;
-using Elastos::Droid::Widget::IProgressBar;
-using Elastos::Droid::Widget::IImageButton;
+using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IViewOnTouchListener;
 using Elastos::Droid::View::IViewOnLayoutChangeListener;
+using Elastos::Droid::Widget::IProgressBar;
+using Elastos::Droid::Widget::IImageButton;
 using Elastos::Droid::Widget::ISeekBar;
+using Elastos::Droid::Widget::IMediaPlayerControl;
+
+using Elastos::Core::StringBuilder;
+using Elastos::Utility::IFormatter;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-
-class MediaController : public FrameLayout
+class MediaController
+    : public FrameLayout
+    , public IMediaController
 {
 private:
-
-    class MyHandler : public HandlerBase
+    class MyHandler
+        : public Handler
     {
     public:
         MyHandler(
@@ -43,19 +50,20 @@ private:
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+
     private:
         MediaController* mHost;
     };
 
     class MediaControllerOnTouchListener
-        : public ElRefBase
+        : public Object
         , public IViewOnTouchListener
     {
     public:
+        CAR_INTERFACE_DECL()
+
         MediaControllerOnTouchListener(
             /* [in] */ MediaController* host);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI OnTouch(
             /* [in] */ IView* v,
@@ -63,18 +71,18 @@ private:
             /* [out] */ Boolean* res);
 
     private:
-        MediaController* host;
+        MediaController* mHost;
     };
 
     class MediaControllerOnLayoutChangeListener
-        : public ElRefBase
+        : public Object
         , public IViewOnLayoutChangeListener
     {
     public:
+        CAR_INTERFACE_DECL()
+
         MediaControllerOnLayoutChangeListener(
             /* [in] */ MediaController* host);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI OnLayoutChange(
             /* [in] */ IView* v,
@@ -88,69 +96,69 @@ private:
             /* [in] */ Int32 oldBottom);
 
     private:
-        MediaController* host;
+        MediaController* mHost;
     };
 
     class PauseOnClickListener
-        : public ElRefBase
+        : public Object
         , public IViewOnClickListener
     {
     public:
+        CAR_INTERFACE_DECL()
+
         PauseOnClickListener(
             /* [in] */ MediaController* host);
 
-        CAR_INTERFACE_DECL()
-
         CARAPI OnClick(
             /* [in] */ IView* v);
 
     private:
-        MediaController* host;
+        MediaController* mHost;
     };
 
     class FfwdOnClickListener
-        : public ElRefBase
+        : public Object
         , public IViewOnClickListener
     {
     public:
+        CAR_INTERFACE_DECL()
+
         FfwdOnClickListener(
             /* [in] */ MediaController* host);
 
-        CAR_INTERFACE_DECL()
-
         CARAPI OnClick(
             /* [in] */ IView* v);
 
     private:
-        MediaController* host;
+        MediaController* mHost;
     };
 
     class RewOnClickListener
-        : public ElRefBase
+        : public Object
         , public IViewOnClickListener
     {
     public:
+        CAR_INTERFACE_DECL()
+
         RewOnClickListener(
             /* [in] */ MediaController* host);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI OnClick(
             /* [in] */ IView* v);
 
     private:
-        MediaController* host;
+        MediaController* mHost;
     };
 
     class MediaControllerOnSeekBarChangeListener
-        : public ElRefBase
+        : public Object
         , public ISeekBarOnSeekBarChangeListener
     {
     public:
+        CAR_INTERFACE_DECL()
+
         MediaControllerOnSeekBarChangeListener(
             /* [in] */ MediaController* host);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI OnStartTrackingTouch(
             /* [in] */ ISeekBar* seekBar);
@@ -164,27 +172,26 @@ private:
             /* [in] */ ISeekBar* seekBar);
 
     private:
-        MediaController* host;
+        MediaController* mHost;
     };
 
 public:
-    MediaController(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
+    CAR_INTERFACE_DECL()
 
-    MediaController(
-        /* [in] */ IContext* context,
-        /* [in] */ Boolean useFastForWard = TRUE);
+    MediaController();
 
     ~MediaController();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ Boolean useFastForWard = TRUE);
+        /* [in] */ Boolean useFastForWard);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context);
 
     CARAPI OnFinishInflate();
 
@@ -199,18 +206,22 @@ public:
     CARAPI Show(
         /* [in] */ Int32 timeout);
 
-    CARAPI_(Boolean) IsShowing();
+    CARAPI IsShowing(
+        /* [out] */ Boolean* isShowing);
 
     CARAPI Hide();
 
-    CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* event);
+    CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
-    CARAPI_(Boolean) OnTrackballEvent(
-        /* [in] */ IMotionEvent* event);
+    CARAPI OnTrackballEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
-    CARAPI_(Boolean) DispatchKeyEvent(
-        /* [in] */ IKeyEvent* event);
+    CARAPI DispatchKeyEvent(
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
     CARAPI SetEnabled(
         /* [in] */ Boolean enabled);
@@ -226,32 +237,30 @@ public:
         /* [in] */ IViewOnClickListener* prev);
 
 protected:
-    MediaController();
-
     CARAPI_(AutoPtr<IView>) MakeControllerView();
 
 private:
-    CARAPI InitFloatingWindow();
+    CARAPI_(void) InitFloatingWindow();
 
-    CARAPI InitFloatingWindowLayout();
+    CARAPI_(void) InitFloatingWindowLayout();
 
-    CARAPI UpdateFloatingWindowLayout();
+    CARAPI_(void) UpdateFloatingWindowLayout();
 
-    CARAPI InitControllerView(
+    CARAPI_(void) InitControllerView(
         /* [in] */ IView* view);
 
-    CARAPI DisableUnsupportedButtons();
+    CARAPI_(void) DisableUnsupportedButtons();
 
     CARAPI_(String) StringForTime(
         /* [in] */ Int32 timeMs);
 
     CARAPI_(Int32) SetProgress();
 
-    CARAPI UpdatePausePlay();
+    CARAPI_(void) UpdatePausePlay();
 
-    CARAPI DoPauseResume();
+    CARAPI_(void) DoPauseResume();
 
-    CARAPI InstallPrevNextListeners();
+    CARAPI_(void) InstallPrevNextListeners();
 
     CARAPI HandleShowProgress();
 
@@ -271,10 +280,10 @@ private:
     Boolean mShowing;
     Boolean mDragging;
 
-    static const Int32 sDefaultTimeout = 3000;
-    static const Int32 FADE_OUT = 1;
-    static const Int32 SHOW_PROGRESS = 2;
-    const static String MEDIACONTROLLER_NAME;
+    static const Int32 sDefaultTimeout;
+    static const Int32 FADE_OUT;
+    static const Int32 SHOW_PROGRESS;
+    static const String MEDIACONTROLLER_NAME;
 
     Boolean mUseFastForward;
     Boolean mFromXml;
@@ -282,13 +291,15 @@ private:
     AutoPtr<IViewOnClickListener> mNextListener;
     AutoPtr<IViewOnClickListener> mPrevListener;
     AutoPtr<StringBuilder> mFormatBuilder;
-    //AutoPtr<IFormatter> mFormatter;
+    AutoPtr<IFormatter> mFormatter;
 
     AutoPtr<IImageButton> mPauseButton;
     AutoPtr<IImageButton> mFfwdButton;
     AutoPtr<IImageButton> mRewButton;
     AutoPtr<IImageButton> mNextButton;
     AutoPtr<IImageButton> mPrevButton;
+    AutoPtr<ICharSequence> mPlayDescription;
+    AutoPtr<ICharSequence> mPauseDescription;
     AutoPtr<IViewOnLayoutChangeListener> mLayoutChangeListener;
     AutoPtr<IViewOnTouchListener> mTouchListener;
     AutoPtr<IHandler> mHandler;
@@ -296,11 +307,10 @@ private:
     AutoPtr<ISeekBarOnSeekBarChangeListener> mSeekListener;
     AutoPtr<IViewOnClickListener> mRewListener;
     AutoPtr<IViewOnClickListener> mFfwdListener;
-
 };
 
 }// namespace Widget
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__ELASTOS_DROID_WIDGET_MediaController_H__
+#endif //__ELASTOS_DROID_WIDGET_MEDIACONTROLLER_H__

@@ -3,15 +3,16 @@
 #define __ELASTOS_DROID_WIDGET_ALPHABETINDEXER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/HashMap.h>
+#include "elastos/droid/database/DataSetObserver.h"
 
-using Elastos::Text::ICollator;
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::CObjectContainer;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Database::IDataSetObserver;
+using Elastos::Droid::Database::DataSetObserver;
 using Elastos::Droid::Database::EIID_IDataSetObserver;
+using Elastos::Droid::Utility::ISparseInt32Array;
+
+using Elastos::Core::ICharSequence;
+using Elastos::Text::ICollator;
 
 namespace Elastos {
 namespace Droid {
@@ -29,8 +30,13 @@ namespace Widget {
  * index of a given section (alphabet).
  */
 class AlphabetIndexer
+    : public DataSetObserver
+    , public ISectionIndexer
+    , public IAlphabetIndexer
 {
 public:
+    CAR_INTERFACE_DECL()
+
     AlphabetIndexer();
 
     /**
@@ -43,27 +49,25 @@ public:
      *        The characters must be uppercase and be sorted in ascii/unicode order. Basically
      *        characters in the alphabet will show up as preview letters.
      */
-    AlphabetIndexer(
+    CARAPI constructor(
         /* [in] */ ICursor* cursor,
         /* [in] */ Int32 sortedColumnIndex,
         /* [in] */ ICharSequence* alphabet);
 
     ~AlphabetIndexer();
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
-
     /**
      * Returns the section array constructed from the alphabet provided in the constructor.
      * @return the section array
      */
-    virtual CARAPI_(AutoPtr<ArrayOf<IInterface*> >) GetSections();
+    CARAPI GetSections(
+        /* [out, callee] */ ArrayOf<IInterface*>** sections);
 
     /**
      * Sets a new cursor as the data set and resets the cache of indices.
      * @param cursor the new cursor to use as the data set
      */
-    virtual CARAPI SetCursor(
+    CARAPI SetCursor(
         /* [in] */ ICursor* cursor);
 
     /**
@@ -75,28 +79,29 @@ public:
      * row starting with "U" or any higher letter is returned. If there is no
      * data following "T" at all, then the list size is returned.
      */
-    virtual CARAPI_(Int32) GetPositionForSection(
-        /* [in] */ Int32 sectionIndex);
+    CARAPI GetPositionForSection(
+        /* [in] */ Int32 sectionIndex,
+        /* [out] */ Int32* position);
 
     /**
      * Returns the section index for a given position in the list by querying the item
      * and comparing it with all items in the section array.
      */
-    virtual CARAPI_(Int32) GetSectionForPosition(
-        /* [in] */ Int32 position);
+    CARAPI GetSectionForPosition(
+        /* [in] */ Int32 position,
+        /* [out] */ Int32* section);
 
     /*
      * @hide
      */
-    virtual CARAPI OnChanged();
+    CARAPI OnChanged();
 
     /*
      * @hide
      */
-    virtual CARAPI OnInvalidated();
+    CARAPI OnInvalidated();
 
 protected:
-
     /**
      * Default implementation compares the first character of word with letter.
      */
@@ -104,18 +109,7 @@ protected:
         /* [in] */ const String& word,
         /* [in] */ const String& letter);
 
-    CARAPI Init(
-        /* [in] */ ICursor* cursor,
-        /* [in] */ Int32 sortedColumnIndex,
-        /* [in] */ ICharSequence* alphabet);
-
-private:
-    CARAPI InitForInstance(
-        /* [in] */ ICursor* cursor,
-        /* [in] */ Int32 sortedColumnIndex,
-        /* [in] */ ICharSequence* alphabet);
 protected:
-
     /**
      * Cursor that is used by the adapter of the list view.
      */
@@ -141,7 +135,7 @@ private:
      * This contains a cache of the computed indices so far. It will get reset whenever
      * the dataset changes or the cursor changes.
      */
-    AutoPtr< HashMap<Int32, Int32> > mAlphaMap;
+    AutoPtr<ISparseInt32Array> mAlphaMap;
 
     /**
      * Use a collator to compare strings in a localized manner.
@@ -152,8 +146,6 @@ private:
      * The section array converted from the alphabet string.
      */
     AutoPtr<ArrayOf<String> > mAlphabetArray;
-
-    typedef HashMap<Int32, Int32>::Iterator AlphaMapIterator;
 };
 
 }// namespace Elastos

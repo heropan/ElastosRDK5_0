@@ -5,33 +5,35 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/ActionProvider.h"
 
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IMenuItem;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::ISubMenu;
-using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::IContext;
+using Elastos::Droid::View::ActionProvider;
 using Elastos::Droid::View::IOnMenuItemClickListener;
 using Elastos::Droid::Widget::IOnChooseActivityListener;
 using Elastos::Droid::Widget::IActivityChooserModel;
 using Elastos::Droid::Widget::IOnShareTargetSelectedListener;
-using Elastos::Droid::View::ActionProvider;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class ShareActionProvider : public ActionProvider
+class ShareActionProvider
+    : public ActionProvider
+    , public IShareActionProvider
 {
 private:
     class ShareMenuItemOnMenuItemClickListener
-        : public IOnMenuItemClickListener
-        , public ElRefBase
+        : public Object
+        , public IOnMenuItemClickListener
     {
     public:
+        CAR_INTERFACE_DECL()
+
         ShareMenuItemOnMenuItemClickListener(
             /* [in] */ ShareActionProvider* host);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI OnMenuItemClick(
             /* [in] */ IMenuItem* item,
@@ -41,15 +43,15 @@ private:
         ShareActionProvider* mHost;
     };
 
-    class ShareAcitivityChooserModelPolicy
-        : public IOnChooseActivityListener
-        , public ElRefBase
+    class ShareActivityChooserModelPolicy
+        : public Object
+        , public IOnChooseActivityListener
     {
     public:
-        ShareAcitivityChooserModelPolicy(
-            /* [in] */ ShareActionProvider* host);
-
         CAR_INTERFACE_DECL()
+
+        ShareActivityChooserModelPolicy(
+            /* [in] */ ShareActionProvider* host);
 
         CARAPI OnChooseActivity(
             /* [in] */  IActivityChooserModel* host,
@@ -61,17 +63,21 @@ private:
     };
 
 public:
-    ShareActionProvider(
+    CAR_INTERFACE_DECL()
+
+    ShareActionProvider();
+
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
     CARAPI SetOnShareTargetSelectedListener(
         /* [in] */ IOnShareTargetSelectedListener* listener);
 
-    CARAPI_(AutoPtr<IView>) OnCreateActionView();
+    CARAPI OnCreateActionView(
+        /* [out] */ IView** view);
 
-    using ActionProvider::OnCreateActionView;
-
-    CARAPI_(Boolean) HasSubMenu();
+    CARAPI HasSubMenu(
+        /* [out] */ Boolean* res);
 
     CARAPI OnPrepareSubMenu(
         /* [in] */ ISubMenu* subMenu);
@@ -82,24 +88,43 @@ public:
     CARAPI SetShareIntent(
         /* [in] */ IIntent* shareIntent);
 
-    CARAPI SetActivityChooserPolicyIfNeeded();
-
-protected:
-    ShareActionProvider();
-
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
 private:
-    static const Int32 DEFAULT_INITIAL_ACTIVITY_COUNT = 4;
+    CARAPI_(void) SetActivityChooserPolicyIfNeeded();
+
+public:
+    /**
+     * The default name for storing share history.
+     */
     static const String DEFAULT_SHARE_HISTORY_FILE_NAME;
 
+private:
+    /**
+     * The default for the maximal number of activities shown in the sub-menu.
+     */
+    static const Int32 DEFAULT_INITIAL_ACTIVITY_COUNT;
+
+    /**
+     * The the maximum number activities shown in the sub-menu.
+     */
     Int32 mMaxShownActivityCount;
+
+    /**
+     * Listener for handling menu item clicks.
+     */
     AutoPtr<ShareMenuItemOnMenuItemClickListener> mOnMenuItemClickListener;
 
+    /**
+     * Context for accessing resources.
+     */
     AutoPtr<IContext> mContext;
+
+    /**
+     * The name of the file with share history data.
+     */
     String mShareHistoryFileName;
+
     AutoPtr<IOnShareTargetSelectedListener> mOnShareTargetSelectedListener;
+
     AutoPtr<IOnChooseActivityListener> mOnChooseActivityListener;
 };
 

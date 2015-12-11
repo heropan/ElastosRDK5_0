@@ -9,27 +9,30 @@
 #include "elastos/droid/database/ContentObserver.h"
 
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Utility::IAttributeSet;
-using Elastos::Text::IDateFormat;
-using Elastos::Utility::IDate;
-using Elastos::Droid::Widget::ITextView;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Utility::IAttributeSet;
-using Elastos::Droid::Widget::TextView;
-using Elastos::Text::CSimpleDateFormat;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Database::ContentObserver;
+using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::Widget::ITextView;
+using Elastos::Droid::Widget::TextView;
 
+using Elastos::Text::IDateFormat;
+using Elastos::Text::CSimpleDateFormat;
+using Elastos::Utility::IDate;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class DateTimeView : public Elastos::Droid::Widget::TextView
+class DateTimeView
+    : public TextView
+    , public IDateTimeView
 {
 private:
-    class DateTimeViewReceiver : public BroadcastReceiver
+    class DateTimeViewReceiver
+        : public BroadcastReceiver
     {
     public:
         DateTimeViewReceiver(
@@ -47,11 +50,13 @@ private:
             (*info).AppendFormat("%p", this);
             return NOERROR;
         }
+
     private:
         DateTimeView* mHost;
     };
 
-    class DateTimeViewObserver : public ContentObserver
+    class DateTimeViewObserver
+        : public ContentObserver
     {
     public:
         DateTimeViewObserver(
@@ -64,11 +69,14 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
 
-    DateTimeView(
+    DateTimeView();
+
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    DateTimeView(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
@@ -78,16 +86,6 @@ public:
     CARAPI Update();
 
 protected:
-    DateTimeView();
-
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-
     CARAPI OnAttachedToWindow();
 
     CARAPI OnDetachedFromWindow();

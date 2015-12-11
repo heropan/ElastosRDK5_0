@@ -13,6 +13,8 @@ namespace Droid {
 namespace Widget {
 
 class DoubleDigitManager
+    : public Object
+    , public IDoubleDigitManager
 {
 private:
     class DoubleDigitManagerRunnable
@@ -29,19 +31,16 @@ private:
     };
 
 public:
-    DoubleDigitManager(
+    CAR_INTERFACE_DECL()
+
+    DoubleDigitManager();
+
+    CARAPI constructor(
         /* [in] */ Int64 timeoutInMillis,
         /* [in] */ IDoubleDigitManagerCallBack* callBack);
 
     CARAPI ReportDigit(
             /* [in] */ Int32 digit);
-
-protected:
-    DoubleDigitManager();
-
-    CARAPI Init(
-        /* [in] */ Int64 timeoutInMillis,
-        /* [in] */ IDoubleDigitManagerCallBack* callBack);
 
 private:
     Int64 mTimeoutInMillins;

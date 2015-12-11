@@ -2,26 +2,99 @@
 #include "elastos/droid/widget/ShareActionProvider.h"
 #include "elastos/droid/utility/CTypedValue.h"
 #include "elastos/droid/R.h"
+
 #include <elastos/core/Math.h>
 
-using Elastos::Core::CStringWrapper;
-using Elastos::Droid::View::EIID_IOnMenuItemClickListener;
-using Elastos::Droid::View::IMenu;
-using Elastos::Droid::Utility::ITypedValue;
-using Elastos::Droid::Utility::CTypedValue;
 using Elastos::Droid::Content::Res::IResourcesTheme;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::IResolveInfo;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::Utility::ITypedValue;
+using Elastos::Droid::Utility::CTypedValue;
+using Elastos::Droid::View::EIID_IOnMenuItemClickListener;
+using Elastos::Droid::View::IMenu;
 using Elastos::Droid::View::EIID_IActionProvider;
+
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-const Int32 ShareActionProvider::DEFAULT_INITIAL_ACTIVITY_COUNT;
-const String ShareActionProvider::DEFAULT_SHARE_HISTORY_FILE_NAME = String("share_history.xml");
+//============================================================================
+//        ShareActionProvider::ShareActivityChooserModelPolicy
+//============================================================================
+CAR_INTERFACE_IMPL(ShareActionProvider::ShareActivityChooserModelPolicy, Object, IOnChooseActivityListener)
+
+ShareActionProvider::ShareActivityChooserModelPolicy::ShareActivityChooserModelPolicy(
+    /* [in] */ ShareActionProvider* host)
+    : mHost(host)
+{
+}
+
+ECode ShareActionProvider::ShareActivityChooserModelPolicy::OnChooseActivity(
+    /* [in] */  IActivityChooserModel* host,
+    /* [in] */  IIntent* intent,
+    /* [out] */  Boolean* res)
+{
+    VALIDATE_NOT_NULL(res)
+    if (mHost->mOnShareTargetSelectedListener != NULL) {
+        return mHost->mOnShareTargetSelectedListener->OnShareTargetSelected(
+                (IShareActionProvider*)mHost->Probe(EIID_IShareActionProvider), intent, res);
+    }
+    *res = FALSE;
+    return NOERROR;
+}
+
+//============================================================================
+//        ShareActionProvider::ShareMenuItemOnMenuItemClickListener
+//============================================================================
+CAR_INTERFACE_IMPL(ShareActionProvider::ShareMenuItemOnMenuItemClickListener, Object, IOnMenuItemClickListener)
+
+ShareActionProvider::ShareMenuItemOnMenuItemClickListener::ShareMenuItemOnMenuItemClickListener(
+    /* [in] */ ShareActionProvider* host)
+    : mHost(host)
+{
+}
+
+ECode ShareActionProvider::ShareMenuItemOnMenuItemClickListener::OnMenuItemClick(
+    /* [in] */ IMenuItem* item,
+    /* [out] */ Boolean* isConsumed)
+{
+    VALIDATE_NOT_NULL(isConsumed)
+
+    AutoPtr<IActivityChooserModelHelper> helper;
+    assert(0 && "TODO");
+    //CActivityChooserModelHelper::AcquireSingleton((IActivityChooserModelHelper**)&helper);
+    AutoPtr<IActivityChooserModel> dataModel;
+    helper->Get(mHost->mContext, mHost->mShareHistoryFileName, (IActivityChooserModel**)&dataModel);
+    Int32 itemId = 0;
+    item->GetItemId(&itemId);
+    AutoPtr<IIntent> launchIntent;
+    dataModel->ChooseActivity(itemId, (IIntent**)&launchIntent);
+    if (launchIntent != NULL) {
+        String action;
+        launchIntent->GetAction(&action);
+        if (IIntent::ACTION_SEND.Equals(action) ||
+                IIntent::ACTION_SEND_MULTIPLE.Equals(action)) {
+            launchIntent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_DOCUMENT |
+                    IIntent::FLAG_ACTIVITY_MULTIPLE_TASK);
+        }
+        mHost->mContext->StartActivity(launchIntent);
+    }
+    *isConsumed = TRUE;
+    return NOERROR;
+}
+
+//===============================================================
+// ShareActionProvider::
+//===============================================================
+const Int32 ShareActionProvider::DEFAULT_INITIAL_ACTIVITY_COUNT = 4;
+
+const String ShareActionProvider::DEFAULT_SHARE_HISTORY_FILE_NAME("share_history.xml");
+
+CAR_INTERFACE_IMPL(ShareActionProvider, ActionProvider, IShareActionProvider)
 
 ShareActionProvider::ShareActionProvider()
     : mMaxShownActivityCount(DEFAULT_INITIAL_ACTIVITY_COUNT)
@@ -30,18 +103,10 @@ ShareActionProvider::ShareActionProvider()
     mOnMenuItemClickListener = new ShareMenuItemOnMenuItemClickListener(this);
 }
 
-ShareActionProvider::ShareActionProvider(
-    /* [in] */ IContext* context)
-    : mMaxShownActivityCount(DEFAULT_INITIAL_ACTIVITY_COUNT)
-    , mShareHistoryFileName(DEFAULT_SHARE_HISTORY_FILE_NAME)
-{
-    mOnMenuItemClickListener = new ShareMenuItemOnMenuItemClickListener(this);
-    mContext = context;
-}
-
-ECode ShareActionProvider::Init(
+ECode ShareActionProvider::constructor(
     /* [in] */ IContext* context)
 {
+    ActionProvider::constructor(context);
     mContext = context;
     return NOERROR;
 }
@@ -54,49 +119,63 @@ ECode ShareActionProvider::SetOnShareTargetSelectedListener(
     return NOERROR;
 }
 
-AutoPtr<IView> ShareActionProvider::OnCreateActionView()
+ECode ShareActionProvider::OnCreateActionView(
+    /* [out] */ IView** view)
 {
-    AutoPtr<IActivityChooserModelHelper> helper;
-    assert(0 && "TODO");
-    //CActivityChooserModelHelper::AcquireSingleton((IActivityChooserModelHelper**)&helper);
-    AutoPtr<IActivityChooserModel> dataModel;
-    helper->Get(mContext, mShareHistoryFileName, (IActivityChooserModel**)&dataModel);
+    VALIDATE_NOT_NULL(view)
+
+    // Create the view and set its data model.
     AutoPtr<IActivityChooserView> activityChooserView;
     assert(0 && "TODO");
     //CActivityChooserView::New(mContext, (IActivityChooserView**)&activityChooserView);
-    activityChooserView->SetActivityChooserModel(dataModel);
+    Boolean bEdMod = FALSE;
+    if (!(IView::Probe(activityChooserView)->IsInEditMode(&bEdMod), bEdMod)) {
+        AutoPtr<IActivityChooserModelHelper> helper;
+        assert(0 && "TODO");
+        //CActivityChooserModelHelper::AcquireSingleton((IActivityChooserModelHelper**)&helper);
+        AutoPtr<IActivityChooserModel> dataModel;
+        helper->Get(mContext, mShareHistoryFileName, (IActivityChooserModel**)&dataModel);
+        activityChooserView->SetActivityChooserModel(dataModel);
+    }
 
+    // Lookup and set the expand action icon.
     AutoPtr<ITypedValue> outTypedValue;
     CTypedValue::New((ITypedValue**)&outTypedValue);
     AutoPtr<IResourcesTheme> theme;
     mContext->GetTheme((IResourcesTheme**)&theme);
     Boolean res = FALSE;
-    theme->ResolveAttribute(R::attr::actionModeShareDrawable, outTypedValue, true, &res);
+    theme->ResolveAttribute(R::attr::actionModeShareDrawable, outTypedValue, TRUE, &res);
 
     Int32 id = 0;
     outTypedValue->GetResourceId(&id);
-    AutoPtr<IResources> resources;
-    mContext->GetResources((IResources**)&resources);
     AutoPtr<IDrawable> drawable;
-    resources->GetDrawable(id, (IDrawable**)&drawable);
+    mContext->GetDrawable(id, (IDrawable**)&drawable);
     activityChooserView->SetExpandActivityOverflowButtonDrawable(drawable);
-    activityChooserView->SetProvider((IActionProvider*)this->Probe(EIID_IActionProvider));
+    activityChooserView->SetProvider(THIS_PROBE(IActionProvider));
 
+    // Set content description.
     activityChooserView->SetDefaultActionButtonContentDescription(R::string::shareactionprovider_share_with_application);
     activityChooserView->SetExpandActivityOverflowButtonContentDescription(R::string::shareactionprovider_share_with);
 
-    return activityChooserView;
+    *view = IView::Probe(activityChooserView);
+    REFCOUNT_ADD(*view)
+    return NOERROR;
 }
 
-Boolean ShareActionProvider::HasSubMenu()
+ECode ShareActionProvider::HasSubMenu(
+    /* [out] */ Boolean* res)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(res)
+    *res = TRUE;
+    return NOERROR;
 }
 
 ECode ShareActionProvider::OnPrepareSubMenu(
     /* [in] */ ISubMenu* subMenu)
 {
-    subMenu->Clear();
+    // Clear since the order of items may change.
+    IMenu::Probe(subMenu)->Clear();
+
     AutoPtr<IActivityChooserModelHelper> helper;
     assert(0 && "TODO");
     //CActivityChooserModelHelper::AcquireSingleton((IActivityChooserModelHelper**)&helper);
@@ -105,17 +184,19 @@ ECode ShareActionProvider::OnPrepareSubMenu(
 
     AutoPtr<IPackageManager> packageManager;
     mContext->GetPackageManager((IPackageManager**)&packageManager);
+
     Int32 expandedActivityCount = 0;
     dataModel->GetActivityCount(&expandedActivityCount);
     Int32 collapsedActivityCount = Elastos::Core::Math::Min(expandedActivityCount, mMaxShownActivityCount);
 
+    // Populate the sub-menu with a sub set of the activities.
     for (Int32 i = 0; i < collapsedActivityCount; i++) {
         AutoPtr<IResolveInfo> activity;
         dataModel->GetActivity(i, (IResolveInfo**)&activity);
         AutoPtr<ICharSequence> csq;
         activity->LoadLabel(packageManager, (ICharSequence**)&csq);
         AutoPtr<IMenuItem> item;
-        subMenu->Add(0, i, i, csq,(IMenuItem**)&item);
+        IMenu::Probe(subMenu)->Add(0, i, i, csq,(IMenuItem**)&item);
         AutoPtr<IDrawable> icon;
         activity->LoadIcon(packageManager, (IDrawable**)&icon);
         item->SetIcon(icon);
@@ -123,12 +204,13 @@ ECode ShareActionProvider::OnPrepareSubMenu(
     }
 
     if (collapsedActivityCount < expandedActivityCount) {
+        // Add a sub-menu for showing all activities as a list item.
         String str;
         mContext->GetString(R::string::activity_chooser_view_see_all, &str);
         AutoPtr<ICharSequence> strcsq;
-        CStringWrapper::New(str, (ICharSequence**)&strcsq);
+        CString::New(str, (ICharSequence**)&strcsq);
         AutoPtr<ISubMenu> expandedSubMenu;
-        subMenu->AddSubMenu(IMenu::NONE, collapsedActivityCount, collapsedActivityCount, strcsq, (ISubMenu**)&expandedSubMenu);
+        IMenu::Probe(subMenu)->AddSubMenu(IMenu::NONE, collapsedActivityCount, collapsedActivityCount, strcsq, (ISubMenu**)&expandedSubMenu);
 
         for (Int32 i = 0; i < expandedActivityCount; i++) {
             AutoPtr<IResolveInfo> activity;
@@ -136,7 +218,7 @@ ECode ShareActionProvider::OnPrepareSubMenu(
             AutoPtr<ICharSequence> lebel;
             activity->LoadLabel(packageManager, (ICharSequence**)&lebel);
             AutoPtr<IMenuItem> itemMenu;
-            expandedSubMenu->Add(0, i, i, lebel,(IMenuItem**)&itemMenu);
+            IMenu::Probe(expandedSubMenu)->Add(0, i, i, lebel,(IMenuItem**)&itemMenu);
             AutoPtr<IDrawable> drawable;
             activity->LoadIcon(packageManager, (IDrawable**)&drawable);
             itemMenu->SetIcon(drawable);
@@ -157,6 +239,14 @@ ECode ShareActionProvider::SetShareHistoryFileName(
 ECode ShareActionProvider::SetShareIntent(
     /* [in] */ IIntent* shareIntent)
 {
+    if (shareIntent != NULL) {
+        String action;
+        shareIntent->GetAction(&action);
+        if (IIntent::ACTION_SEND.Equals(action) || IIntent::ACTION_SEND_MULTIPLE.Equals(action)) {
+            shareIntent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_DOCUMENT |
+                    IIntent::FLAG_ACTIVITY_MULTIPLE_TASK);
+        }
+    }
     AutoPtr<IActivityChooserModelHelper> helper;
     assert(0 && "TODO");
     //CActivityChooserModelHelper::AcquireSingleton((IActivityChooserModelHelper**)&helper);
@@ -166,13 +256,13 @@ ECode ShareActionProvider::SetShareIntent(
     return NOERROR;
 }
 
-ECode ShareActionProvider::SetActivityChooserPolicyIfNeeded()
+void ShareActionProvider::SetActivityChooserPolicyIfNeeded()
 {
-    if (!mOnShareTargetSelectedListener) {
-        return NOERROR;
+    if (mOnShareTargetSelectedListener == NULL) {
+        return;
     }
-    if (!mOnChooseActivityListener) {
-        mOnChooseActivityListener = new ShareAcitivityChooserModelPolicy(this);
+    if (mOnChooseActivityListener == NULL) {
+        mOnChooseActivityListener = new ShareActivityChooserModelPolicy(this);
     }
     AutoPtr<IActivityChooserModelHelper> helper;
     assert(0 && "TODO");
@@ -180,69 +270,9 @@ ECode ShareActionProvider::SetActivityChooserPolicyIfNeeded()
     AutoPtr<IActivityChooserModel> dataModel;
     helper->Get(mContext, mShareHistoryFileName, (IActivityChooserModel**)&dataModel);
     dataModel->SetOnChooseActivityListener(mOnChooseActivityListener);
-    return NOERROR;
+    return;
 }
-
-//============================================================================
-//        ShareActionProvider::ShareMenuItemOnMenuItemClickListener
-//============================================================================
-CAR_INTERFACE_IMPL(ShareActionProvider::ShareMenuItemOnMenuItemClickListener, IOnMenuItemClickListener)
-
-ShareActionProvider::ShareMenuItemOnMenuItemClickListener::ShareMenuItemOnMenuItemClickListener(
-    /* [in] */ ShareActionProvider* host) :
-    mHost(host)
-{
-
-}
-
-ECode ShareActionProvider::ShareMenuItemOnMenuItemClickListener::OnMenuItemClick(
-    /* [in] */ IMenuItem* item,
-    /* [out] */ Boolean* isConsumed)
-{
-    AutoPtr<IActivityChooserModelHelper> helper;
-    assert(0 && "TODO");
-    //CActivityChooserModelHelper::AcquireSingleton((IActivityChooserModelHelper**)&helper);
-    AutoPtr<IActivityChooserModel> dataModel;
-    helper->Get(mHost->mContext, mHost->mShareHistoryFileName, (IActivityChooserModel**)&dataModel);
-    Int32 itemId;
-    item->GetItemId(&itemId);
-    AutoPtr<IIntent> launchIntent;
-    dataModel->ChooseActivity(itemId, (IIntent**)&launchIntent);
-    if (launchIntent) {
-        launchIntent->AddFlags(IIntent::FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-        mHost->mContext->StartActivity(launchIntent);
-    }
-    *isConsumed = TRUE;
-    return NOERROR;
-}
-
-//============================================================================
-//        ShareActionProvider::ShareAcitivityChooserModelPolicy
-//============================================================================
-CAR_INTERFACE_IMPL(ShareActionProvider::ShareAcitivityChooserModelPolicy, IOnChooseActivityListener)
-
-ShareActionProvider::ShareAcitivityChooserModelPolicy::ShareAcitivityChooserModelPolicy(
-    /* [in] */ ShareActionProvider* host) :
-    mHost(host)
-{
-
-}
-
-ECode ShareActionProvider::ShareAcitivityChooserModelPolicy::OnChooseActivity(
-    /* [in] */  IActivityChooserModel* host,
-    /* [in] */  IIntent* intent,
-    /* [out] */  Boolean* res)
-{
-    if (mHost->mOnShareTargetSelectedListener) {
-        mHost->mOnShareTargetSelectedListener->OnShareTargetSelected(
-            (IShareActionProvider*)mHost->Probe(EIID_IShareActionProvider), intent, res);
-    }
-    *res = FALSE;
-    return NOERROR;
-}
-
 
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
-
