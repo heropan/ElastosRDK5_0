@@ -1,5 +1,7 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.CoreLibrary.External.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/app/CWallpaperInfo.h"
 #include "elastos/droid/content/CComponentName.h"
 #include "elastos/droid/content/pm/CResolveInfo.h"

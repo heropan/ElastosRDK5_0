@@ -1,3 +1,6 @@
+
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/app/TabActivity.h"
 #include "elastos/droid/R.h"
 

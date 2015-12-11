@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_MEDIA_ROUTE_ACTION_PROVIDER_H__
 #define __ELASTOS_DROID_APP_MEDIA_ROUTE_ACTION_PROVIDER_H__
 
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/view/ActionProvider.h"
 
 using Elastos::Droid::Content::IContext;

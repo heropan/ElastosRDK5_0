@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_APP_FRAGMENT_TRANSACTION_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.Droid.App.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Utility::IPair;

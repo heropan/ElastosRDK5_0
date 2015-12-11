@@ -1,5 +1,6 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/app/CResultInfo.h"
 #include <elastos/utility/logging/Slogger.h>
 

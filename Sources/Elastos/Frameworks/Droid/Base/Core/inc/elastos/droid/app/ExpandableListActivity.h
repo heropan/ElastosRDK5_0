@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_EXPANDABLE_ACTIVITY_H__
 #define __ELASTOS_DROID_APP_EXPANDABLE_ACTIVITY_H__
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/app/Activity.h"
 
 using Elastos::Droid::Content::IIntent;

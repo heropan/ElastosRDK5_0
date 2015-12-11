@@ -3,6 +3,10 @@
 #define __ELASTOS_DROID_APP_VOICE_INTERACTOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Os.h"
+#define HASH_FOR_OS
+#include "elastos/droid/ext/frameworkhash.h"
 #include "elastos/droid/internal/os/CHandlerCaller.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>

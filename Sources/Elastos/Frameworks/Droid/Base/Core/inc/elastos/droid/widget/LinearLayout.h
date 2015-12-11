@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_LINEARLAYOUT_H__
 #define __ELASTOS_DROID_WIDGET_LINEARLAYOUT_H__
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/ViewGroup.h"
 
 using Elastos::Droid::View::IViewGroupLayoutParams;

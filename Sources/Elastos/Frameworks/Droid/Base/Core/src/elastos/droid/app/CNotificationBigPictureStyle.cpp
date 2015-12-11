@@ -1,3 +1,7 @@
+
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/app/CNotificationBigPictureStyle.h"
 #include "elastos/droid/app/CNotification.h"
 #include "elastos/droid/app/CNotificationBuilder.h"

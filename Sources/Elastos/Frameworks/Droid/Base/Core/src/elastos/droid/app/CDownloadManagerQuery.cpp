@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Provider.h"
 #include "elastos/droid/app/CDownloadManager.h"
 #include "elastos/droid/app/CDownloadManagerQuery.h"
 #include <elastos/core/StringBuilder.h>

@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Speech.h"
 #include "elastos/droid/app/SearchDialog.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/content/CIntent.h"

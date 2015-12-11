@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_TRANSITION_CTRANSITIONUTILS_H__
 #define __ELASTOS_DROID_TRANSITION_CTRANSITIONUTILS_H__
 
+#include "Elastos.Droid.Animation.h"
 #include "_Elastos_Droid_Transition_CTransitionUtils.h"
 #include <elastos/core/Object.h>
 #include <elastos/core/Singleton.h>

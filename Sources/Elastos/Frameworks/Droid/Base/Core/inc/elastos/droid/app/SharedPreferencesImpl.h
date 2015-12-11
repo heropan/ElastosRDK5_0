@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_APP_SHAREDPREFERENCES_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/os/Runnable.h"
 
 using Elastos::Droid::Content::ISharedPreferences;

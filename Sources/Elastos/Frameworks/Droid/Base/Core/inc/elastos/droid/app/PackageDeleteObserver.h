@@ -3,9 +3,13 @@
 #define __ELASTOS_DROID_APP_PACKAGE_DELETE_OBSERVER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::Pm::IIPackageDeleteObserver2;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

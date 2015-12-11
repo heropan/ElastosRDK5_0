@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_APP_FRAGMENTMANAGER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.App.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IBundle;

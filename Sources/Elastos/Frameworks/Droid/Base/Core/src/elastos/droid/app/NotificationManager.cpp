@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/app/NotificationManager.h"
 #include "elastos/droid/app/CNotificationBuilder.h"
 #include "elastos/droid/os/ServiceManager.h"

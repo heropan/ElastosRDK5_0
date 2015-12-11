@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/app/Service.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/R.h"

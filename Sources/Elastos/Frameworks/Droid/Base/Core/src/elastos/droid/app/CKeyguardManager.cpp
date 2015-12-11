@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/app/CKeyguardManager.h"
 #include "elastos/droid/app/CKeyguardManagerKeyguardLock.h"
 #include "elastos/droid/app/COnKeyguardExitResult.h"

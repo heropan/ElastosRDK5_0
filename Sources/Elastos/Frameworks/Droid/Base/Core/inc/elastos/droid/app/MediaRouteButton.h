@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_MEDIAROUTE_BUTTON_H__
 #define __ELASTOS_DROID_APP_MEDIAROUTE_BUTTON_H__
 
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/view/View.h"
 
 using Elastos::Droid::Content::IContext;

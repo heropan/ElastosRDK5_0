@@ -1,4 +1,7 @@
+
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/app/CContentProviderHolder.h"
 
 namespace Elastos {

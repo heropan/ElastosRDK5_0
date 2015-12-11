@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/app/VoiceInteractor.h"
 #include "elastos/droid/app/CVoiceInteractorCallback.h"
 #include "elastos/droid/internal/os/CHandlerCaller.h"

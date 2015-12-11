@@ -1,4 +1,7 @@
+
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Media.h"
 #include "elastos/droid/app/MediaRouteActionProvider.h"
 #include "elastos/droid/app/CMediaRouteButton.h"
 #include "elastos/droid/view/CViewGroupLayoutParams.h"

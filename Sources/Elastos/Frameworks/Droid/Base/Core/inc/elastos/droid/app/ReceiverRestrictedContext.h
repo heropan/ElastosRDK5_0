@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_RECEIVERRESTRICTEDCONTEXT_H__
 #define __ELASTOS_DROID_APP_RECEIVERRESTRICTEDCONTEXT_H__
 
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/content/ContextWrapper.h"
 
 using Elastos::Droid::Content::IServiceConnection;

@@ -1,3 +1,6 @@
+
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
 #include "elastos/droid/app/QueuedWork.h"
 #include <elastos/core/AutoLock.h>
 

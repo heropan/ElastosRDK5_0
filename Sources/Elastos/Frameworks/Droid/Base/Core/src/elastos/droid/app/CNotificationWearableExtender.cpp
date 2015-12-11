@@ -1,5 +1,7 @@
 
-
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/app/CNotificationWearableExtender.h"
 #include "elastos/droid/app/CNotification.h"
 #include "elastos/droid/os/CBundle.h"

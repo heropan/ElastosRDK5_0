@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_LISTGRAGMENT_H__
 #define __ELASTOS_DROID_APP_LISTGRAGMENT_H__
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/app/Fragment.h"
 #include "elastos/droid/os/Runnable.h"
 

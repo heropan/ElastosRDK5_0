@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/app/LauncherActivity.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/app/CLauncherActivityListItem.h"

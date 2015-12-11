@@ -1,4 +1,6 @@
+
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/app/CInstrumentationActivityMonitor.h"
 #include <elastos/core/AutoLock.h>
 

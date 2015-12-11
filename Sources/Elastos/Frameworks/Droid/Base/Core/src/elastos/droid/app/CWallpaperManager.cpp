@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/app/CWallpaperManager.h"
 #include "elastos/droid/app/CFastBitmapDrawable.h"
 #include "elastos/droid/os/SystemProperties.h"

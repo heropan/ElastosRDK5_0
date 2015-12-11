@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_DATABASE_SQLITE_SQLITEDEBUGHELPER_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Core.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/Object.h>
 

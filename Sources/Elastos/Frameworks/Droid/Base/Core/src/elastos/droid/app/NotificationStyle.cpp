@@ -1,6 +1,11 @@
+
+#include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/app/NotificationStyle.h"
 #include "elastos/droid/app/CNotificationBuilder.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/CoreUtils.h>
 

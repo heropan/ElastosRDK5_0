@@ -1,5 +1,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Provider.h"
 #include "elastos/droid/app/CDownloadManagerRequest.h"
 #include "elastos/droid/app/CDownloadManagerQuery.h"
 #include "elastos/droid/app/CDownloadManager.h"

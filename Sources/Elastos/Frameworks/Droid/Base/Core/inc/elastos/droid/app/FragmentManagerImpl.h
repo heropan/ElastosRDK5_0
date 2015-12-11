@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_FRAGMENTMANAGERIMPL_H__
 #define __ELASTOS_DROID_APP_FRAGMENTMANAGERIMPL_H__
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/app/FragmentManager.h"
 #include "elastos/droid/animation/AnimatorListenerAdapter.h"
 #include "elastos/droid/os/Runnable.h"

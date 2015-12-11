@@ -3,11 +3,14 @@
 #define __ELASTOS_DROID_APP_JOB_SCHEDULERIMPL_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.App.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::App::Job::IJobInfo;
 using Elastos::Droid::App::Job::IJobScheduler;
 using Elastos::Droid::App::Job::IIJobScheduler;
 
+using Elastos::Core::Object;
 using Elastos::Utility::IList;
 
 namespace Elastos {

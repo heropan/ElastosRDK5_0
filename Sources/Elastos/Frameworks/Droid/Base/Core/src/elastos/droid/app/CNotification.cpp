@@ -1,4 +1,8 @@
 
+#include "Elastos.CoreLibrary.Text.h"
+#include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/app/CNotification.h"
 #include "elastos/droid/app/CPendingIntentHelper.h"
 #include "elastos/droid/app/CPendingIntent.h"

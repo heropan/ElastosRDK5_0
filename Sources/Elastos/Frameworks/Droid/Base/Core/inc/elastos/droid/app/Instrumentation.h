@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_APP_INSTRUMENTATION_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/os/Runnable.h"
 #include <elastos/core/Thread.h>
 #include <elastos/utility/etl/List.h>
@@ -24,7 +27,6 @@ using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IIdleHandler;
 using Elastos::Droid::Os::IMessageQueue;
 using Elastos::Droid::Os::IUserHandle;
-using Elastos::Droid::Privacy::IPrivacySettingsManager;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IMotionEvent;
 
@@ -1078,10 +1080,6 @@ private:
     AutoPtr<IBundle> mPerfMetrics;
 
     AutoPtr<IUiAutomation> mUiAutomation;
-
-    //---------------------------------------------------------------------------------------------------------------------------------------------------------
-    AutoPtr<IPrivacySettingsManager> mPrvSvc;
-    //---------------------------------------------------------------------------------------------------------------------------------------------------------
 };
 
 } // namespace App

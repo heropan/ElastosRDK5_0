@@ -3,6 +3,10 @@
 #define __ELASTOS_DROID_APP_LOADEDPKG_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#define HASH_FOR_CONTENT
+#include "elastos/droid/ext/frameworkhash.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/os/Runnable.h"
 #include <elastos/utility/etl/HashMap.h>

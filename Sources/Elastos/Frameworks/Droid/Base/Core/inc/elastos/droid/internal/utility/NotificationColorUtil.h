@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_UTILITY_NOTIFICATIONCOLORUTIL_H__
 #define __ELASTOS_DROID_INTERNAL_UTILITY_NOTIFICATIONCOLORUTIL_H__
 
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/internal/utility/ImageUtils.h"
 
 using Elastos::Droid::Content::IContext;

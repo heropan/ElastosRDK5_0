@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_TIMEPICKER_DIALOG_H__
 #define __ELASTOS_DROID_APP_TIMEPICKER_DIALOG_H__
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/app/AlertDialog.h"
 
 using Elastos::Droid::Content::IContext;

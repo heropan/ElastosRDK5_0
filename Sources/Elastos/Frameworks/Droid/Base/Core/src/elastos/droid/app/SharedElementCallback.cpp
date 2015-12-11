@@ -1,3 +1,6 @@
+
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/app/SharedElementCallback.h"
 #include "elastos/droid/graphics/CMatrix.h"
 #include "elastos/droid/graphics/drawable/CBitmapDrawable.h"

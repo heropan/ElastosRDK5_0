@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Text.h"
 #include "elastos/droid/app/DatePickerDialog.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/view/LayoutInflater.h"

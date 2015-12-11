@@ -1,3 +1,8 @@
+
+#include "Elastos.CoreLibrary.External.h"
+#include "Elastos.Droid.Text.h"
+#include "Elastos.Droid.Utility.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/app/CSearchableInfo.h"
 #include "elastos/droid/utility/Xml.h"
 #include "elastos/droid/content/CComponentNameHelper.h"

@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_TRANSITION_TRANSITIONINFLATER_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.Droid.Transition.h"
 #include <elastos/core/Object.h>
 
 using Org::Xmlpull::V1::IXmlPullParser;

@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/app/CRemoteInputHelper.h"
 #include "elastos/droid/app/CRemoteInput.h"
 

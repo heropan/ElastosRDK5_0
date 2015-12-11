@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_FASTBITMAPDRAWABLE_H__
 #define __ELASTOS_DROID_APP_FASTBITMAPDRAWABLE_H__
 
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/graphics/drawable/Drawable.h"
 
 using Elastos::Droid::Graphics::IBitmap;

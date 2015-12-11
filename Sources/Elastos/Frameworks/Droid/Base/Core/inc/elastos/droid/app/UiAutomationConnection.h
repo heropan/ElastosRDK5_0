@@ -2,6 +2,8 @@
 #define __ELASTOS_DROID_APP_UIAUTOMATION_CONNECTION_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Os.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::AccessibilityService::IIAccessibilityServiceClient;

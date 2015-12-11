@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/app/DialogFragment.h"
 
 using Elastos::Droid::View::IWindow;

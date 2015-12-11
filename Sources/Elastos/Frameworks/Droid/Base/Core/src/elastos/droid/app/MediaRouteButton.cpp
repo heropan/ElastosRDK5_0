@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/app/MediaRouteButton.h"
 // #include "elastos/droid/internal/app/MediaRouteDialogPresenter.h"
 #include "elastos/droid/R.h"

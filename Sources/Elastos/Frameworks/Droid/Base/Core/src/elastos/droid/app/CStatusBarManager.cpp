@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/app/CStatusBarManager.h"
 #include "elastos/droid/os/ServiceManager.h"
 #include "elastos/droid/os/CBinder.h"

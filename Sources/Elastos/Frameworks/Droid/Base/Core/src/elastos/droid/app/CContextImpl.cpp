@@ -1,4 +1,9 @@
+
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Accounts.h"
+#include "Elastos.Droid.Location.h"
+#include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.Wifi.h"
 #include "elastos/droid/app/CContextImpl.h"
 #include "elastos/droid/app/ReceiverRestrictedContext.h"
 #include "elastos/droid/app/CReceiverRestrictedContext.h"

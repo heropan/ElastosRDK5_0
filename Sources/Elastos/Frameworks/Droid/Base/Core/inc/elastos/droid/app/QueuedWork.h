@@ -2,7 +2,9 @@
 #define __ELASTOS_DROID_APP_QUEUEDWORK_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Core::IRunnable;
 using Elastos::Utility::IQueue;
 using Elastos::Utility::Concurrent::IExecutorService;

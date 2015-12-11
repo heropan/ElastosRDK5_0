@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_FRAGMENT_BREADCRUMBS_H__
 #define __ELASTOS_DROID_APP_FRAGMENT_BREADCRUMBS_H__
 
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/view/ViewGroup.h"
 
 using Elastos::Droid::App::IFragmentManagerBackStackEntry;

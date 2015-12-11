@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/app/FragmentBreadCrumbs.h"
 #include "elastos/droid/app/CBackStackRecord.h"
 #include "elastos/droid/animation/CLayoutTransition.h"

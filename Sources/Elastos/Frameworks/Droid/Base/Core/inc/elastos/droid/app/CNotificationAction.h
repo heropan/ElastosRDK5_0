@@ -1,8 +1,10 @@
 #ifndef __ELASTOS_DROID_APP_CNOTIFICATIONACTION_H__
 #define __ELASTOS_DROID_APP_CNOTIFICATIONACTION_H__
 
-#include "_Elastos_Droid_App_CNotificationAction.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.App.h"
+#include <elastos/core/Object.h>
+#include "_Elastos_Droid_App_CNotificationAction.h"
 
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::App::IRemoteInput;

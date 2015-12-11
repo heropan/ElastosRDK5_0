@@ -1,3 +1,12 @@
+
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.CoreLibrary.Text.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Utility.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/app/CNotificationBuilder.h"
 #include "elastos/droid/app/CNotification.h"
 #include "elastos/droid/app/CNotificationAction.h"

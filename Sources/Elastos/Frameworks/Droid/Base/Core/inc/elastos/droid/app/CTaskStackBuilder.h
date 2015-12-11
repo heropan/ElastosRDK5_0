@@ -1,8 +1,9 @@
 #ifndef __ELASTOS_DROID_APP_CTASKSTACKBUILDER_H__
 #define __ELASTOS_DROID_APP_CTASKSTACKBUILDER_H__
 
-#include "_Elastos_Droid_App_CTaskStackBuilder.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Content.h"
+#include "_Elastos_Droid_App_CTaskStackBuilder.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 

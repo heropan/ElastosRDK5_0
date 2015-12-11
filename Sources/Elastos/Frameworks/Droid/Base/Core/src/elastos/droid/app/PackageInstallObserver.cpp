@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/app/PackageInstallObserver.h"
 
 namespace Elastos {

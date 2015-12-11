@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.Text.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/app/ProgressDialog.h"
 #include "elastos/droid/app/CProgressDialog.h"
 #include "elastos/droid/R.h"

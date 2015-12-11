@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Libcore.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/app/UiAutomation.h"
 #include "elastos/droid/app/CAccessibilityServiceClientImpl.h"
 #include "elastos/droid/app/ActivityManagerNative.h"

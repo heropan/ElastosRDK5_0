@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_DATABASE_SQLITE_SQLITEDATABASE_H__
 #define __ELASTOS_DROID_DATABASE_SQLITE_SQLITEDATABASE_H__
 
-#include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Database.h"
 #include "elastos/droid/database/sqlite/SQLiteDebug.h"
 #include "elastos/droid/database/sqlite/SQLiteClosable.h"
 #include <elastos/utility/etl/List.h>
