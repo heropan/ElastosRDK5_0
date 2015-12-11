@@ -1,4 +1,9 @@
 
+#include "Elastos.CoreLibrary.External.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/animation/AnimatorInflater.h"
 #include "elastos/droid/view/animation/AnimationUtils.h"
 #include "elastos/droid/animation/CAnimatorSet.h"

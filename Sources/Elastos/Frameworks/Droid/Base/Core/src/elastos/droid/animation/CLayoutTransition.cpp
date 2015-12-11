@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/animation/CLayoutTransition.h"
 #include "elastos/droid/animation/CObjectAnimatorHelper.h"
 #include "elastos/droid/animation/CValueAnimatorHelper.h"

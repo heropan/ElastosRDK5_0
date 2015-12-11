@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/animation/AnimatorSet.h"
 #include "elastos/droid/animation/ValueAnimator.h"
 #include "elastos/droid/animation/CAnimatorSet.h"

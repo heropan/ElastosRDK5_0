@@ -3,9 +3,11 @@
 #define  __ELASTOS_DROID_ANIMATION_RECTEVALUATOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Animation.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Graphics::IRect;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

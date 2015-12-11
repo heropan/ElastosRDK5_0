@@ -1,5 +1,4 @@
 
-#include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/animation/ValueAnimator.h"
 #include "elastos/droid/animation/CValueAnimator.h"
 #include "elastos/droid/animation/PropertyValuesHolder.h"

@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/animation/PropertyValuesHolder.h"
 #include "elastos/droid/animation/CInt32Evaluator.h"
 #include "elastos/droid/animation/CFloatEvaluator.h"

@@ -3,8 +3,10 @@
 #define  __ELASTOS_DROID_ANIMATION_INT32ARRAYEVALUATOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Animation.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

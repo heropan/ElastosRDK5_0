@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/animation/StateListAnimator.h"
 #include "elastos/droid/utility/StateSet.h"
 

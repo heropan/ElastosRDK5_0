@@ -2,8 +2,11 @@
 #ifndef  __ELASTOS_DROID_ANIMATION_CLAYOUTTRANSITION_H__
 #define  __ELASTOS_DROID_ANIMATION_CLAYOUTTRANSITION_H__
 
-#include "_Elastos_Droid_Animation_CLayoutTransition.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.View.h"
+#define HASH_FOR_VIEW
+#include "elastos/droid/ext/frameworkhash.h"
+#include "_Elastos_Droid_Animation_CLayoutTransition.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 #include "elastos/droid/animation/AnimatorListenerAdapter.h"

@@ -2,6 +2,7 @@
 #ifndef  __ELASTOS_DROID_ANIMATION_PROPERTYVALUESHOLDER_H__
 #define  __ELASTOS_DROID_ANIMATION_PROPERTYVALUESHOLDER_H__
 
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/animation/Int32KeyframeSet.h"
 #include "elastos/droid/animation/TypeConverter.h"
 #include <elastos/core/Object.h>

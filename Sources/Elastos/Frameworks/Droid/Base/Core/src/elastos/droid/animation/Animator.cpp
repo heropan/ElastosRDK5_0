@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/animation/Animator.h"
 #include <elastos/utility/etl/Algorithm.h>
 

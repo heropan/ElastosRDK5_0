@@ -3,7 +3,10 @@
 #define  __ELASTOS_DROID_ANIMATION_KEYFRAME_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Animation.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::EIID_IInteger32;

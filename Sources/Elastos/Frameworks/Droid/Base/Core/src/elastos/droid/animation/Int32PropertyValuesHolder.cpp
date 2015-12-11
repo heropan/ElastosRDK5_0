@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/animation/Int32PropertyValuesHolder.h"
 #include <elastos/core/AutoLock.h>
 
