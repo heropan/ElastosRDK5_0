@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/utility/MapCollections.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/Objects.h>

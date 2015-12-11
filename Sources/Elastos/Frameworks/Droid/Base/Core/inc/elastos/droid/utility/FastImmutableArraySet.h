@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_UTILITY_FAST_IMMUTABLE_ARRAYSET_H__
 #define __ELASTOS_DROID_UTILITY_FAST_IMMUTABLE_ARRAYSET_H__
 
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/AbstractSet.h>
 

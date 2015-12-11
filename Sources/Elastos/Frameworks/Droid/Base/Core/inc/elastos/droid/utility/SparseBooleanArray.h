@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_UTILITY_SPARSEBOOLEANARRAY_H__
 #define __ELASTOS_DROID_UTILITY_SPARSEBOOLEANARRAY_H__
 
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
