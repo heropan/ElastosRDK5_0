@@ -15,6 +15,9 @@ Int32Property::Int32Property(
     mName = name;
 }
 
+Int32Property::~Int32Property()
+{}
+
 ECode Int32Property::IsReadOnly(
     /* [out] */ Boolean* readOnly)
 {

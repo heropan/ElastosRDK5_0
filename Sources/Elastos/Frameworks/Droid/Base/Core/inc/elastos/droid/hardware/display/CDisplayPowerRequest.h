@@ -53,6 +53,60 @@ public:
         /* [in] */ Int32 policy,
         /* [out] */ String* result);
 
+    CARAPI SetPolicy(
+        /* [in] */ Int32 value);
+
+    CARAPI SetUseProximitySensor(
+        /* [in] */ Boolean value);
+
+    CARAPI SetScreenBrightness(
+        /* [in] */ Int32 value);
+
+    CARAPI SetScreenAutoBrightnessAdjustment(
+        /* [in] */ Float value);
+
+    CARAPI SetUseAutoBrightness(
+        /* [in] */ Boolean value);
+
+    CARAPI SetLowPowerMode(
+        /* [in] */ Boolean value);
+
+    CARAPI SetBlockScreenOn(
+        /* [in] */ Boolean value);
+
+    CARAPI SetDozeScreenBrightness(
+        /* [in] */ Int32 value);
+
+    CARAPI SetDozeScreenState(
+        /* [in] */ Int32 value);
+
+    CARAPI GetPolicy(
+        /* [out] */ Int32* value);
+
+    CARAPI GetUseProximitySensor(
+        /* [out] */ Boolean* value);
+
+    CARAPI GetScreenBrightness(
+        /* [out] */ Int32* value);
+
+    CARAPI GetScreenAutoBrightnessAdjustment(
+        /* [out] */ Float* value);
+
+    CARAPI GetUseAutoBrightness(
+        /* [out] */ Boolean* value);
+
+    CARAPI GetLowPowerMode(
+        /* [out] */ Boolean* value);
+
+    CARAPI GetBlockScreenOn(
+        /* [out] */ Boolean* value);
+
+    CARAPI GetDozeScreenBrightness(
+        /* [out] */ Int32* value);
+
+    CARAPI GetDozeScreenState(
+        /* [out] */ Int32* value);
+
 public:
     // The basic overall policy to apply: off, doze, dim or bright.
     Int32 mPolicy;

@@ -43,6 +43,7 @@ SOURCES += SparseArray.cpp
 SOURCES += SparseBooleanArray.cpp
 SOURCES += SparseInt32Array.cpp
 SOURCES += Spline.cpp
+SOURCES += CSplineHelper.cpp
 SOURCES += StateSet.cpp
 SOURCES += TimeUtils.cpp
 SOURCES += CTypedValue.cpp

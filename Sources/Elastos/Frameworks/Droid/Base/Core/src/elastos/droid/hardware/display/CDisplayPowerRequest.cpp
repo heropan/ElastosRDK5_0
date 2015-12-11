@@ -157,6 +157,141 @@ ECode CDisplayPowerRequest::PolicyToString(
     }
 }
 
+ECode CDisplayPowerRequest::SetPolicy(
+    /* [in] */ Int32 value)
+{
+    mPolicy = value;
+    return NOERROR;
+}
+
+ECode CDisplayPowerRequest::SetUseProximitySensor(
+    /* [in] */ Boolean value)
+{
+    mUseProximitySensor = value;
+    return NOERROR;
+}
+
+ECode CDisplayPowerRequest::SetScreenBrightness(
+    /* [in] */ Int32 value)
+{
+    mScreenBrightness = value;
+    return NOERROR;
+}
+
+ECode CDisplayPowerRequest::SetScreenAutoBrightnessAdjustment(
+    /* [in] */ Float value)
+{
+    mScreenAutoBrightnessAdjustment = value;
+    return NOERROR;
+}
+
+ECode CDisplayPowerRequest::SetUseAutoBrightness(
+    /* [in] */ Boolean value)
+{
+    mUseAutoBrightness = value;
+    return NOERROR;
+}
+
+ECode CDisplayPowerRequest::SetLowPowerMode(
+    /* [in] */ Boolean value)
+{
+    mLowPowerMode = value;
+    return NOERROR;
+}
+
+ECode CDisplayPowerRequest::SetBlockScreenOn(
+    /* [in] */ Boolean value)
+{
+    mBlockScreenOn = value;
+    return NOERROR;
+}
+
+ECode CDisplayPowerRequest::SetDozeScreenBrightness(
+    /* [in] */ Int32 value)
+{
+    mDozeScreenBrightness = value;
+    return NOERROR;
+}
+
+ECode CDisplayPowerRequest::SetDozeScreenState(
+    /* [in] */ Int32 value)
+{
+    mDozeScreenState = value;
+    return NOERROR;
+}
+
+ECode CDisplayPowerRequest::GetPolicy(
+    /* [out] */ Int32* value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = mPolicy;
+    return NOERROR;
+}
+
+ECode CDisplayPowerRequest::GetUseProximitySensor(
+    /* [out] */ Boolean* value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = mUseProximitySensor;
+    return NOERROR;
+}
+
+ECode CDisplayPowerRequest::GetScreenBrightness(
+    /* [out] */ Int32* value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = mScreenBrightness;
+    return NOERROR;
+}
+
+ECode CDisplayPowerRequest::GetScreenAutoBrightnessAdjustment(
+    /* [out] */ Float* value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = mScreenAutoBrightnessAdjustment;
+    return NOERROR;
+}
+
+ECode CDisplayPowerRequest::GetUseAutoBrightness(
+    /* [out] */ Boolean* value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = mUseAutoBrightness;
+    return NOERROR;
+}
+
+ECode CDisplayPowerRequest::GetLowPowerMode(
+    /* [out] */ Boolean* value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = mLowPowerMode;
+    return NOERROR;
+}
+
+ECode CDisplayPowerRequest::GetBlockScreenOn(
+    /* [out] */ Boolean* value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = mBlockScreenOn;
+    return NOERROR;
+}
+
+ECode CDisplayPowerRequest::GetDozeScreenBrightness(
+    /* [out] */ Int32* value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = mDozeScreenBrightness;
+    return NOERROR;
+}
+
+ECode CDisplayPowerRequest::GetDozeScreenState(
+    /* [out] */ Int32* value)
+{
+    VALIDATE_NOT_NULL(value)
+    *value = mDozeScreenState;
+    return NOERROR;
+}
+
 } // namespace Display
 } // namespace Hardware
 } // namepsace Droid

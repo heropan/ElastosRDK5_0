@@ -23,6 +23,7 @@ INCLUDES += $(PREBUILD_INC)/surfaceFlinger
 
 SOURCES = Elastos.Droid.Server.car
 SOURCES += CSystemServer.cpp
+SOURCES += SystemService.cpp
 #SOURCES += CAlarmManagerService.cpp
 #SOURCES += AttributeCache.cpp
 #SOURCES += CBootReceiver.cpp

@@ -42,23 +42,63 @@ module
         CopyFrom(
             [in] IDisplayPowerRequest* other);
 
-        Equals(
-            [in] IInterface* o,
-            [out] Boolean* result);
-
-        Equals(
-            [in] IDisplayPowerRequest* other,
-            [out] Boolean* result);
-
-        GetHashCode(
-            [out] Int32* hc);
-
-        ToString(
-            [out] String* result);
-
         PolicyToString(
             [in] Int32 policy,
             [out] String* result);
+
+        SetPolicy(
+            [in] Int32 value);
+
+        SetUseProximitySensor(
+            [in] Boolean value);
+
+        SetScreenBrightness(
+            [in] Int32 value);
+
+        SetScreenAutoBrightnessAdjustment(
+            [in] Float value);
+
+        SetUseAutoBrightness(
+            [in] Boolean value);
+
+        SetLowPowerMode(
+            [in] Boolean value);
+
+        SetBlockScreenOn(
+            [in] Boolean value);
+
+        SetDozeScreenBrightness(
+            [in] Int32 value);
+
+        SetDozeScreenState(
+            [in] Int32 value);
+
+        GetPolicy(
+            [out] Int32* value);
+
+        GetUseProximitySensor(
+            [out] Boolean* value);
+
+        GetScreenBrightness(
+            [out] Int32* value);
+
+        GetScreenAutoBrightnessAdjustment(
+            [out] Float* value);
+
+        GetUseAutoBrightness(
+            [out] Boolean* value);
+
+        GetLowPowerMode(
+            [out] Boolean* value);
+
+        GetBlockScreenOn(
+            [out] Boolean* value);
+
+        GetDozeScreenBrightness(
+            [out] Int32* value);
+
+        GetDozeScreenState(
+            [out] Int32* value);
     }
 
     /**

@@ -1,33 +1,35 @@
 
 #include "elastos/droid/server/display/DisplayPowerController.h"
+#include <elastos/droid/os/SystemClock.h>
+#include <elastos/droid/R.h>
+#include <elastos/droid/utility/MathUtils.h>
+#include <elastos/droid/utility/TimeUtils.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/StringUtils.h>
 
+// using Elastos::Droid::Server::LocalServices;
+// using Elastos::Droid::Server::Am::BatteryStatsService;
 
-using Elastos::Droid::Server::LocalServices;
-using Elastos::Droid::Server::Am::BatteryStatsService;
-using Elastos::Droid::Server::Lights::LightsManager;
-
-using Elastos::Droid::Internal::App::IBatteryStats;
-using Elastos::Droid::Animation::IAnimator;
-using Elastos::Droid::Animation::IObjectAnimator;
-using Elastos::Droid::Content::IContext;
+using Elastos::Droid::R;
 using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Hardware::ISensor;
-using Elastos::Droid::Hardware::ISensorEvent;
-using Elastos::Droid::Hardware::ISensorEventListener;
-using Elastos::Droid::Hardware::ISensorManager;
-using Elastos::Droid::Hardware::Display::IDisplayPowerCallbacks;
-using Elastos::Droid::Hardware::Display::IDisplayPowerRequest;
-using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::Os::ILooper;
-using Elastos::Droid::Os::IMessage;
-using Elastos::Droid::Os::IPowerManager;
+using Elastos::Droid::Animation::IObjectAnimatorHelper;
+using Elastos::Droid::Animation::CObjectAnimatorHelper;
+using Elastos::Droid::Animation::EIID_IAnimatorListener;
 using Elastos::Droid::Os::SystemClock;
-using Elastos::Droid::Utility::MathUtils;
-using Elastos::Droid::Utility::ISpline;
-using Elastos::Droid::Utility::TimeUtils;
-using Elastos::Droid::View::IDisplay;
-using Elastos::Droid::View::IWindowManagerPolicy;
+using Elastos::Droid::Os::IPowerManager;
+using Elastos::Droid::View::EIID_IScreenOnListener;
 
+using Elastos::Droid::Hardware::EIID_ISensorEventListener;
+using Elastos::Droid::Hardware::Display::CDisplayPowerRequest;
+using Elastos::Droid::Utility::ISplineHelper;
+using Elastos::Droid::Utility::CSplineHelper;
+using Elastos::Droid::Utility::IProperty;
+using Elastos::Droid::Utility::MathUtils;
+using Elastos::Droid::Utility::TimeUtils;
+
+using Elastos::Core::StringUtils;
+using Elastos::Utility::Logging::Slogger;
 using Elastos::IO::IPrintWriter;
 
 namespace Elastos {
@@ -35,1299 +37,1184 @@ namespace Droid {
 namespace Server {
 namespace Display {
 
-/**
- * Controls the power state of the display.
- *
- * Handles the proximity sensor, light sensor, and animations between states
- * including the screen off animation.
- *
- * This component acts independently of the rest of the power manager service.
- * In particular, it does not share any state and it only communicates
- * via asynchronous callbacks to inform the power manager that something has
- * changed.
- *
- * Everything this class does internally is serialized on its handler although
- * it may be accessed by other threads from the outside.
- *
- * Note that the power manager service guarantees that it will hold a suspend
- * blocker as Int64 as the display is not ready.  So most of the work done here
- * does not need to worry about holding a suspend blocker unless it happens
- * independently of the display ready signal.
-   *
- * For debugging, you can make the color fade and brightness animations run
- * slower by changing the "animator duration scale" option in Development Settings.
- */
-class DisplayPowerController
-    : public Object
-    , public IAutomaticBrightnessControllerCallbacks
+const String DisplayPowerController::TAG("DisplayPowerController");
+
+Boolean DisplayPowerController::DEBUG = FALSE;
+const Boolean DisplayPowerController::DEBUG_PRETEND_PROXIMITY_SENSOR_ABSENT = FALSE;
+
+const String DisplayPowerController::SCREEN_ON_BLOCKED_TRACE_NAME("Screen on blocked");
+const Boolean DisplayPowerController::USE_COLOR_FADE_ON_ANIMATION = FALSE;
+
+const Int32 DisplayPowerController::SCREEN_DIM_MINIMUM_REDUCTION = 10;
+
+const Int32 DisplayPowerController::COLOR_FADE_ON_ANIMATION_DURATION_MILLIS = 250;
+const Int32 DisplayPowerController::COLOR_FADE_OFF_ANIMATION_DURATION_MILLIS = 400;
+
+const Int32 DisplayPowerController::MSG_UPDATE_POWER_STATE = 1;
+const Int32 DisplayPowerController::MSG_PROXIMITY_SENSOR_DEBOUNCED = 2;
+const Int32 DisplayPowerController::MSG_SCREEN_ON_UNBLOCKED = 3;
+
+const Int32 DisplayPowerController::PROXIMITY_UNKNOWN = -1;
+const Int32 DisplayPowerController::PROXIMITY_NEGATIVE = 0;
+const Int32 DisplayPowerController::PROXIMITY_POSITIVE = 1;
+
+const Int32 DisplayPowerController::PROXIMITY_SENSOR_POSITIVE_DEBOUNCE_DELAY = 0;
+const Int32 DisplayPowerController::PROXIMITY_SENSOR_NEGATIVE_DEBOUNCE_DELAY = 250;
+
+const Float DisplayPowerController::TYPICAL_PROXIMITY_THRESHOLD = 5.0f;
+
+const Int32 DisplayPowerController::BRIGHTNESS_RAMP_RATE_FAST = 200;
+const Int32 DisplayPowerController::BRIGHTNESS_RAMP_RATE_SLOW = 40;
+
+//=================================================================
+// DisplayPowerController::DisplayControllerHandler
+//=================================================================
+
+DisplayPowerController::DisplayControllerHandler::DisplayControllerHandler(
+    /* [in] */ ILooper* looper,
+    /* [in] */ DisplayPowerController* host)
+    : Handler(looper, NULL, TRUE /*async*/)
+    , mHost(host)
 {
-private:
-    class DisplayControllerHandler
-        : public Handler
-    {
-        DisplayControllerHandler(
-            /* [in] */ ILooper* looper,
-            /* [in] */ DisplayPowerController* host)
-            : Handler(looper, NULL, TRUE /*async*/);
-        {
-        }
+}
 
-        //@Override
-        CARAPI HandleMessage(
-            /* [in] */ IMessage* msg)
-        {
-            switch (msg.what) {
-                case MSG_UPDATE_POWER_STATE:
-                    UpdatePowerState();
-                    break;
+ECode DisplayPowerController::DisplayControllerHandler::HandleMessage(
+    /* [in] */ IMessage* msg)
+{
+    Int32 what;
+    msg->GetWhat(&what);
+    switch (what) {
+        case DisplayPowerController::MSG_UPDATE_POWER_STATE:
+            mHost->UpdatePowerState();
+            break;
 
-                case MSG_PROXIMITY_SENSOR_DEBOUNCED:
-                    DebounceProximitySensor();
-                    break;
+        case DisplayPowerController::MSG_PROXIMITY_SENSOR_DEBOUNCED:
+            mHost->DebounceProximitySensor();
+            break;
 
-                case MSG_SCREEN_ON_UNBLOCKED:
-                    if (mPendingScreenOnUnblocker == msg.obj) {
-                        UnBlockScreenOn();
-                        UpdatePowerState();
-                    }
-                    break;
+        case DisplayPowerController::MSG_SCREEN_ON_UNBLOCKED: {
+            AutoPtr<IInterface> obj;
+            msg->GetObj((IInterface**)&obj);
+            ScreenOnUnblocker* sou = (ScreenOnUnblocker*)IScreenOnListener::Probe(obj);
+            if (mHost->mPendingScreenOnUnblocker.Get() == sou) {
+                mHost->UnBlockScreenOn();
+                mHost->UpdatePowerState();
             }
+            break;
         }
-    private:
-        DisplayPowerController* mHost;
-    };
+    }
+    return NOERROR;
+}
 
-    class SensorEventListener
-        : public Object
-        , public ISensorEventListener
-    {
-    public:
-        CAR_INTERFACE_DECL()
+//=================================================================
+// DisplayPowerController::SensorEventListener
+//=================================================================
 
-        SensorEventListener(
-            /* [in] */ DisplayPowerController* host);
+CAR_INTERFACE_IMPL(DisplayPowerController::SensorEventListener, \
+    Object, ISensorEventListener)
 
-        //@Override
-        CARAPI OnSensorChanged(
-            /* [in] */ ISensorEvent* event)
-        {
-            if (mProximitySensorEnabled) {
-                final Int64 time = SystemClock.uptimeMillis();
-                final Float distance = event.values[0];
-                Boolean positive = distance >= 0.0f && distance < mProximityThreshold;
-                HandleProximitySensorEvent(time, positive);
-            }
-        }
+DisplayPowerController::SensorEventListener::SensorEventListener(
+    /* [in] */ DisplayPowerController* host)
+    : mHost(host)
+{}
 
-        //@Override
-        CARAPI OnAccuracyChanged(
-            /* [in] */ ISensor* sensor,
-            /* [in] */ Int32 accuracy)
-        {
-            // Not used.
-        }
-    private:
-        DisplayPowerController* mHost;
-    };
+ECode DisplayPowerController::SensorEventListener::OnSensorChanged(
+    /* [in] */ ISensorEvent* event)
+{
+    if (mHost->mProximitySensorEnabled) {
+        AutoPtr<ArrayOf<Float> > values;
+        event->GetValues((ArrayOf<Float>**)&values);
+        Int64 time = SystemClock::GetUptimeMillis();
+        Float distance = (*values)[0];
+        Boolean positive = distance >= 0.0f && distance < mHost->mProximityThreshold;
+        mHost->HandleProximitySensorEvent(time, positive);
+    }
+    return NOERROR;
+}
 
-    class ScreenOnUnblocker
-        : public Object
-        , public IScreenOnListener
-    {
-    public:
-        CAR_INTERFACE_DECL()
+ECode DisplayPowerController::SensorEventListener::OnAccuracyChanged(
+    /* [in] */ ISensor* sensor,
+    /* [in] */ Int32 accuracy)
+{
+    // Not used.
+    return NOERROR;
+}
 
-        ScreenOnUnblocker(
-            /* [in] */ DisplayPowerController* host);
+//=================================================================
+// DisplayPowerController::ScreenOnUnblocker
+//=================================================================
 
-        //@Override
-        CARAPI OnScreenOn()
-        {
-            Message msg = mHandler.obtainMessage(MSG_SCREEN_ON_UNBLOCKED, this);
-            msg.setAsynchronous(TRUE);
-            mHandler.sendMessage(msg);
-        }
-    };
+CAR_INTERFACE_IMPL(DisplayPowerController::ScreenOnUnblocker, Object, IScreenOnListener)
 
-    class AnimatorListener
-        : public Object
-        , public IAnimatorListener
-    {
-    public:
-        CAR_INTERFACE_DECL()
+DisplayPowerController::ScreenOnUnblocker::ScreenOnUnblocker(
+    /* [in] */ DisplayPowerController* host)
+    : mHost(host)
+{}
 
-        AnimatorListener(
-            /* [in] */ DisplayPowerController* host);
+ECode DisplayPowerController::ScreenOnUnblocker::OnScreenOn()
+{
+    AutoPtr<IMessage> msg;
+    mHost->mHandler->ObtainMessage(
+        DisplayPowerController::MSG_SCREEN_ON_UNBLOCKED, THIS_PROBE(IInterface), (IMessage**)&msg);
+    msg->SetAsynchronous(TRUE);
+    Boolean bval;
+    mHost->mHandler->SendMessage(msg, &bval);
+    return NOERROR;
+}
 
-        //@Override
-        CARAPI OnAnimationStart(
-            /* [in] */ IAnimator* animation)
-        {
-        }
+//=================================================================
+// DisplayPowerController::AnimatorListener
+//=================================================================
 
-        //@Override
-        CARAPI OnAnimationEnd(
-            /* [in] */ IAnimator* animation)
-        {
-            SendUpdatePowerState();
-        }
-        //@Override
-        CARAPI OnAnimationRepeat(
-            /* [in] */ IAnimator* animation)
-        {
-        }
-        //@Override
-        CARAPI OnAnimationCancel(
-            /* [in] */ IAnimator* animation)
-        {
-        }
-    private:
-        DisplayPowerController* mHost;
-    };
+CAR_INTERFACE_IMPL(DisplayPowerController::AnimatorListener, Object, IAnimatorListener)
 
-    class RampAnimatorListener
-        : public Object
-        , public IRampAnimatorListener
-    {
-    public:
-        CAR_INTERFACE_DECL()
+DisplayPowerController::AnimatorListener::AnimatorListener(
+    /* [in] */ DisplayPowerController* host)
+    : mHost(host)
+{}
 
-        RampAnimatorListener(
-            /* [in] */ DisplayPowerController* host);
+ECode DisplayPowerController::AnimatorListener::OnAnimationStart(
+    /* [in] */ IAnimator* animation)
+{
+    return NOERROR;
+}
 
-        //@Override
-        CARAPI OnAnimationEnd()
-        {
-            SendUpdatePowerState();
-        }
-    private:
-        DisplayPowerController* mHost;
-    };
+ECode DisplayPowerController::AnimatorListener::OnAnimationEnd(
+    /* [in] */ IAnimator* animation)
+{
+    mHost->SendUpdatePowerState();
+    return NOERROR;
+}
 
-    class CleanListener
-        : public Runnable
-    {
-    public:
-        CleanListener(
-            /* [in] */ DisplayPowerController* host);
+ECode DisplayPowerController::AnimatorListener::OnAnimationRepeat(
+    /* [in] */ IAnimator* animation)
+{
+    return NOERROR;
+}
 
-        //@Override
-        CARAPI Run()
-        {
-            SendUpdatePowerState();
-        }
-    private:
-        DisplayPowerController* mHost;
-    };
+ECode DisplayPowerController::AnimatorListener::OnAnimationCancel(
+    /* [in] */ IAnimator* animation)
+{
+    return NOERROR;
+}
 
-    class OnStateChangedRunnable
-        : public Runnable
-    {
-    public:
-        OnStateChangedRunnable(
-            /* [in] */ DisplayPowerController* host);
+//=================================================================
+// DisplayPowerController::IRampAnimatorListener
+//=================================================================
 
-        //@Override
-        CARAPI Run()
-        {
-            mCallbacks.onStateChanged();
-            mCallbacks.releaseSuspendBlocker();
-        }
-    private:
-        DisplayPowerController* mHost;
-    };
+CAR_INTERFACE_IMPL(DisplayPowerController::RampAnimatorListener, Object, IRampAnimatorListener)
 
-    class OnProximityPositiveRunnable
-        : public Runnable
-    {
-    public:
-        OnProximityPositiveRunnable(
-            /* [in] */ DisplayPowerController* host);
+DisplayPowerController::RampAnimatorListener::RampAnimatorListener(
+    /* [in] */ DisplayPowerController* host)
+    : mHost(host)
+{}
 
-        //@Override
-        CARAPI Run()
-        {
-            mCallbacks.onProximityPositive();
-            mCallbacks.releaseSuspendBlocker();
-        }
-    private:
-        DisplayPowerController* mHost;
-    };
+ECode DisplayPowerController::RampAnimatorListener::OnAnimationEnd()
+{
+    return mHost->SendUpdatePowerState();
+}
 
-    class OnProximityNegativeRunnable
-        : public Runnable
-    {
-    public:
-        OnProximityNegativeRunnable(
-            /* [in] */ DisplayPowerController* host);
+//=================================================================
+// DisplayPowerController::CleanListener
+//=================================================================
 
-        //@Override
-        CARAPI Run()
-        {
-            mCallbacks.onProximityNegative();
-            mCallbacks.releaseSuspendBlocker();
-        }
-    private:
-        DisplayPowerController* mHost;
-    };
+DisplayPowerController::CleanListener::CleanListener(
+    /* [in] */ DisplayPowerController* host)
+    : mHost(host)
+{}
 
-public:
+ECode DisplayPowerController::CleanListener::Run()
+{
+    return mHost->SendUpdatePowerState();
+}
 
-    /**
-     * Creates the display power controller.
-     */
-    DisplayPowerController(
-        /* [in] */ IContext* context,
-        /* [in] */ DisplayPowerCallbacks* callbacks,
-        /* [in] */ IHandler* handler,
-        /* [in] */ ISensorManager* sensorManager,
-        /* [in] */ IDisplayBlanker* blanker)
-    {
-        mHandler = new DisplayControllerHandler(handler.getLooper());
-        mCallbacks = callbacks;
+//=================================================================
+// DisplayPowerController::OnStateChangedRunnable
+//=================================================================
 
-        mBatteryStats = BatteryStatsService.getService();
-        mLights = LocalServices.getService(LightsManager.class);
-        mSensorManager = sensorManager;
-        mWindowManagerPolicy = LocalServices.getService(WindowManagerPolicy.class);
-        mBlanker = blanker;
-        mContext = context;
+DisplayPowerController::OnStateChangedRunnable::OnStateChangedRunnable(
+    /* [in] */ DisplayPowerController* host)
+    : mHost(host)
+{}
 
-        final Resources resources = context.getResources();
-        final Int32 screenBrightnessSettingMinimum = ClampAbsoluteBrightness(resources.getInteger(
-                com.android.internal.R.integer.config_screenBrightnessSettingMinimum));
+ECode DisplayPowerController::OnStateChangedRunnable::Run()
+{
+    mHost->mCallbacks->OnStateChanged();
+    mHost->mCallbacks->ReleaseSuspendBlocker();
+    return NOERROR;
+}
 
-        mScreenBrightnessDozeConfig = ClampAbsoluteBrightness(resources.getInteger(
-                com.android.internal.R.integer.config_screenBrightnessDoze));
+//=================================================================
+// DisplayPowerController::OnProximityPositiveRunnable
+//=================================================================
+DisplayPowerController::OnProximityPositiveRunnable::OnProximityPositiveRunnable(
+    /* [in] */ DisplayPowerController* host)
+    : mHost(host)
+{}
 
-        mScreenBrightnessDimConfig = ClampAbsoluteBrightness(resources.getInteger(
-                com.android.internal.R.integer.config_screenBrightnessDim));
+ECode DisplayPowerController::OnProximityPositiveRunnable::Run()
+{
+    mHost->mCallbacks->OnProximityPositive();
+    mHost->mCallbacks->ReleaseSuspendBlocker();
+    return NOERROR;
+}
 
-        mScreenBrightnessDarkConfig = ClampAbsoluteBrightness(resources.getInteger(
-                com.android.internal.R.integer.config_screenBrightnessDark));
-        if (mScreenBrightnessDarkConfig > mScreenBrightnessDimConfig) {
-            Slog.w(TAG, "Expected config_screenBrightnessDark ("
-                    + mScreenBrightnessDarkConfig + ") to be less than or equal to "
-                    + "config_screenBrightnessDim (" + mScreenBrightnessDimConfig + ").");
-        }
-        if (mScreenBrightnessDarkConfig > mScreenBrightnessDimConfig) {
-            Slog.w(TAG, "Expected config_screenBrightnessDark ("
-                    + mScreenBrightnessDarkConfig + ") to be less than or equal to "
-                    + "config_screenBrightnessSettingMinimum ("
-                    + screenBrightnessSettingMinimum + ").");
-        }
+//=================================================================
+// DisplayPowerController::OnProximityNegativeRunnable
+//=================================================================
+DisplayPowerController::OnProximityNegativeRunnable::OnProximityNegativeRunnable(
+    /* [in] */ DisplayPowerController* host)
+    : mHost(host)
+{}
 
-        Int32 screenBrightnessRangeMinimum = Math.min(Math.min(
-                screenBrightnessSettingMinimum, mScreenBrightnessDimConfig),
-                mScreenBrightnessDarkConfig);
+ECode DisplayPowerController::OnProximityNegativeRunnable::Run()
+{
+    mHost->mCallbacks->OnProximityNegative();
+    mHost->mCallbacks->ReleaseSuspendBlocker();
+    return NOERROR;
+}
 
-        mScreenBrightnessRangeMaximum = PowerManager.BRIGHTNESS_ON;
+//=================================================================
+// DisplayPowerController
+//=================================================================
 
-        mUseSoftwareAutoBrightnessConfig = resources.getBoolean(
-                com.android.internal.R.bool.config_automatic_brightness_available);
-        if (mUseSoftwareAutoBrightnessConfig) {
-            Int32[] lux = resources.getIntArray(
-                    com.android.internal.R.array.config_autoBrightnessLevels);
-            Int32[] screenBrightness = resources.getIntArray(
-                    com.android.internal.R.array.config_autoBrightnessLcdBacklightValues);
-            Int32 lightSensorWarmUpTimeConfig = resources.getInteger(
-                    com.android.internal.R.integer.config_lightSensorWarmupTime);
+CAR_INTERFACE_IMPL(DisplayPowerController, Object, IAutomaticBrightnessControllerCallbacks)
 
-            Spline screenAutoBrightnessSpline = CreateAutoBrightnessSpline(lux, screenBrightness);
-            if (screenAutoBrightnessSpline == NULL) {
-                Slog.e(TAG, "Error in config.xml.  config_autoBrightnessLcdBacklightValues "
-                        + "(size " + screenBrightness.length + ") "
-                        + "must be monotic and have exactly one more entry than "
-                        + "config_autoBrightnessLevels (size " + lux.length + ") "
-                        + "which must be strictly increasing.  "
-                        + "Auto-brightness will be disabled.");
-                mUseSoftwareAutoBrightnessConfig = FALSE;
-            } else {
-                Int32 bottom = ClampAbsoluteBrightness(screenBrightness[0]);
-                if (mScreenBrightnessDarkConfig > bottom) {
-                    Slog.w(TAG, "config_screenBrightnessDark (" + mScreenBrightnessDarkConfig
-                            + ") should be less than or equal to the first value of "
-                            + "config_autoBrightnessLcdBacklightValues ("
-                            + bottom + ").");
-                }
-                if (bottom < screenBrightnessRangeMinimum) {
-                    screenBrightnessRangeMinimum = bottom;
-                }
-                mAutomaticBrightnessController = new AutomaticBrightnessController(this,
-                        handler.getLooper(), sensorManager, screenAutoBrightnessSpline,
-                        lightSensorWarmUpTimeConfig, screenBrightnessRangeMinimum,
-                        mScreenBrightnessRangeMaximum);
-            }
-        }
+DisplayPowerController::DisplayPowerController(
+    /* [in] */ IContext* context,
+    /* [in] */ IDisplayPowerCallbacks* callbacks,
+    /* [in] */ IHandler* handler,
+    /* [in] */ ISensorManager* sensorManager,
+    /* [in] */ IDisplayBlanker* blanker)
+    : mScreenBrightnessDozeConfig(0)
+    , mScreenBrightnessDimConfig(0)
+    , mScreenBrightnessDarkConfig(0)
+    , mScreenBrightnessRangeMinimum(0)
+    , mScreenBrightnessRangeMaximum(0)
+    , mUseSoftwareAutoBrightnessConfig(FALSE)
+    , mColorFadeFadesConfig(FALSE)
+    , mPendingWaitForNegativeProximityLocked(FALSE)
+    , mPendingRequestChangedLocked(FALSE)
+    , mDisplayReadyLocked(FALSE)
+    , mPendingUpdatePowerStateLocked(FALSE)
+    , mWaitingForNegativeProximity(FALSE)
+    , mProximityThreshold(0)
+    , mProximitySensorEnabled(FALSE)
+    , mProximity(DisplayPowerController::PROXIMITY_UNKNOWN)
+    , mPendingProximity(DisplayPowerController::PROXIMITY_UNKNOWN)
+    , mPendingProximityDebounceTime(-1)
+    , mScreenOffBecauseOfProximity(FALSE)
+    , mPendingScreenOff(FALSE)
+    , mUnfinishedBusiness(FALSE)
+    , mScreenOnBlockStartRealTime(0)
+    , mAppliedAutoBrightness(FALSE)
+    , mAppliedDimming(FALSE)
+    , mAppliedLowPower(FALSE)
+{
+    AutoPtr<ILooper> looper;
+    handler->GetLooper((ILooper**)&looper);
+    mHandler = new DisplayControllerHandler(looper, this);
+    mCallbacks = callbacks;
 
-        mScreenBrightnessRangeMinimum = screenBrightnessRangeMinimum;
+    // mBatteryStats = CBatteryStatsService::GetService();
+    // mLights = LocalServices::GetService(LightsManager.class);
+    mSensorManager = sensorManager;
+    // mWindowManagerPolicy = LocalServices::GetService(WindowManagerPolicy.class);
+    mBlanker = blanker;
+    mContext = context;
 
-        mColorFadeFadesConfig = resources.getBoolean(
-                com.android.internal.R.bool.config_animateScreenLights);
+    AutoPtr<IResources> resources;
+    context->GetResources((IResources**)&resources);
+    Int32 ival;
 
-        if (!DEBUG_PRETEND_PROXIMITY_SENSOR_ABSENT) {
-            mProximitySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-            if (mProximitySensor != NULL) {
-                mProximityThreshold = Math.min(mProximitySensor.getMaximumRange(),
-                        TYPICAL_PROXIMITY_THRESHOLD);
-            }
-        }
+    resources->GetInteger(R::integer::config_screenBrightnessSettingMinimum, &ival);
+    Int32 screenBrightnessSettingMinimum = ClampAbsoluteBrightness(ival);
 
+    resources->GetInteger(R::integer::config_screenBrightnessDoze, &ival);
+    mScreenBrightnessDozeConfig = ClampAbsoluteBrightness(ival);
+
+    resources->GetInteger(R::integer::config_screenBrightnessDim, &ival);
+    mScreenBrightnessDimConfig = ClampAbsoluteBrightness(ival);
+
+    resources->GetInteger(R::integer::config_screenBrightnessDark, &ival);
+    mScreenBrightnessDarkConfig = ClampAbsoluteBrightness(ival);
+    if (mScreenBrightnessDarkConfig > mScreenBrightnessDimConfig) {
+        Slogger::W(TAG, "Expected config_screenBrightnessDark (%d"
+            ") to be less than or equal to config_screenBrightnessDim (%d).",
+            mScreenBrightnessDarkConfig, mScreenBrightnessDimConfig);
+    }
+    if (mScreenBrightnessDarkConfig > mScreenBrightnessDimConfig) {
+        Slogger::W(TAG, "Expected config_screenBrightnessDark (%d"
+            ") to be less than or equal to config_screenBrightnessSettingMinimum (%d).",
+            mScreenBrightnessDarkConfig, screenBrightnessSettingMinimum);
     }
 
-    /**
-     * Returns TRUE if the proximity sensor screen-off function is available.
-     */
-    Boolean IsProximitySensorAvailable()
-    {
-        return mProximitySensor != NULL;
-    }
+    using Elastos::Core::Math;
+    Int32 screenBrightnessRangeMinimum = Math::Min(Math::Min(
+        screenBrightnessSettingMinimum, mScreenBrightnessDimConfig),
+        mScreenBrightnessDarkConfig);
 
-    /**
-     * Requests a new power state.
-     * The controller makes a copy of the provided object and then
-     * begins adjusting the power state to match what was requested.
-     *
-     * @param request The requested power state.
-     * @param waitForNegativeProximity If TRUE, issues a request to wait for
-     * negative proximity before turning the screen back on, assuming the screen
-     * was turned off by the proximity sensor.
-     * @return True if display is ready, FALSE if there are important changes that must
-     * be made asynchronously (such as turning the screen on), in which case the caller
-     * should grab a wake lock, watch for {@link DisplayPowerCallbacks#onStateChanged()}
-     * then try the request again later until the state converges.
-     */
-    Boolean RequestPowerState(
-        /* [in] */ IDisplayPowerRequest* request,
-        /* [in] */ Boolean waitForNegativeProximity)
-    {
-        if (DEBUG) {
-            Slog.d(TAG, "RequestPowerState: "
-                    + request + ", waitForNegativeProximity=" + waitForNegativeProximity);
+    mScreenBrightnessRangeMaximum = IPowerManager::BRIGHTNESS_ON;
+
+    resources->GetBoolean(R::bool_::config_automatic_brightness_available,
+        &mUseSoftwareAutoBrightnessConfig);
+    if (mUseSoftwareAutoBrightnessConfig) {
+        AutoPtr<ArrayOf<Int32> > lux;
+        resources->GetIntArray(R::array::config_autoBrightnessLevels, (ArrayOf<Int32>**)&lux);
+        AutoPtr<ArrayOf<Int32> > screenBrightness;
+        resources->GetIntArray(R::array::config_autoBrightnessLcdBacklightValues, (ArrayOf<Int32>**)&screenBrightness);
+        Int32 lightSensorWarmUpTimeConfig;
+        resources->GetInteger(R::integer::config_lightSensorWarmupTime, &lightSensorWarmUpTimeConfig);
+
+        AutoPtr<ISpline> screenAutoBrightnessSpline = CreateAutoBrightnessSpline(lux, screenBrightness);
+        if (screenAutoBrightnessSpline == NULL) {
+            Slogger::E(TAG, "Error in config.xml.  config_autoBrightnessLcdBacklightValues (size %d) "
+                "must be monotic and have exactly one more entry than config_autoBrightnessLevels (size %d) "
+                "which must be strictly increasing. Auto-brightness will be disabled.",
+                screenBrightness->GetLength(), lux->GetLength());
+            mUseSoftwareAutoBrightnessConfig = FALSE;
         }
-
-        synchronized (mLock) {
-            Boolean changed = FALSE;
-
-            if (waitForNegativeProximity
-                    && !mPendingWaitForNegativeProximityLocked) {
-                mPendingWaitForNegativeProximityLocked = TRUE;
-                changed = TRUE;
+        else {
+            Int32 bottom = ClampAbsoluteBrightness((*screenBrightness)[0]);
+            if (mScreenBrightnessDarkConfig > bottom) {
+                Slogger::W(TAG, "config_screenBrightnessDark (%d) should be less than or equal to"
+                    " the first value of config_autoBrightnessLcdBacklightValues (%d).",
+                    mScreenBrightnessDarkConfig, bottom );
             }
-
-            if (mPendingRequestLocked == NULL) {
-                mPendingRequestLocked = new DisplayPowerRequest(request);
-                changed = TRUE;
-            } else if (!mPendingRequestLocked.equals(request)) {
-                mPendingRequestLocked.copyFrom(request);
-                changed = TRUE;
+            if (bottom < screenBrightnessRangeMinimum) {
+                screenBrightnessRangeMinimum = bottom;
             }
-
-            if (changed) {
-                mDisplayReadyLocked = FALSE;
-            }
-
-            if (changed && !mPendingRequestChangedLocked) {
-                mPendingRequestChangedLocked = TRUE;
-                SendUpdatePowerStateLocked();
-            }
-
-            return mDisplayReadyLocked;
+            mAutomaticBrightnessController = new AutomaticBrightnessController(this,
+                looper, sensorManager, screenAutoBrightnessSpline,
+                lightSensorWarmUpTimeConfig, screenBrightnessRangeMinimum,
+                mScreenBrightnessRangeMaximum);
         }
     }
 
-    //@Override
-    CARAPI UpdateBrightness()
-    {
-        SendUpdatePowerState();
+    mScreenBrightnessRangeMinimum = screenBrightnessRangeMinimum;
+
+    resources->GetBoolean(R::bool_::config_animateScreenLights, &mColorFadeFadesConfig);
+
+    if (!DEBUG_PRETEND_PROXIMITY_SENSOR_ABSENT) {
+        mSensorManager->GetDefaultSensor(ISensor::TYPE_PROXIMITY, (ISensor**)&mProximitySensor);
+        if (mProximitySensor != NULL) {
+            Float fval;
+            mProximitySensor->GetMaximumRange(&fval);
+            mProximityThreshold = Math::Min(fval, TYPICAL_PROXIMITY_THRESHOLD);
+        }
+    }
+}
+
+Boolean DisplayPowerController::IsProximitySensorAvailable()
+{
+    return mProximitySensor != NULL;
+}
+
+Boolean DisplayPowerController::RequestPowerState(
+    /* [in] */ IDisplayPowerRequest* request,
+    /* [in] */ Boolean waitForNegativeProximity)
+{
+    if (DEBUG) {
+        Slogger::D(TAG, "RequestPowerState: %s, waitForNegativeProximity=%d",
+            Object::ToString(request).string(), waitForNegativeProximity);
     }
 
-    void Dump(
-        /* [in] */ IPrintWriter* pw)
-    {
-        synchronized (mLock) {
-            pw.println();
-            pw.println("Display Power Controller Locked State:");
-            pw.println("  mDisplayReadyLocked=" + mDisplayReadyLocked);
-            pw.println("  mPendingRequestLocked=" + mPendingRequestLocked);
-            pw.println("  mPendingRequestChangedLocked=" + mPendingRequestChangedLocked);
-            pw.println("  mPendingWaitForNegativeProximityLocked="
-                    + mPendingWaitForNegativeProximityLocked);
-            pw.println("  mPendingUpdatePowerStateLocked=" + mPendingUpdatePowerStateLocked);
+    synchronized(mLock) {
+        Boolean changed = FALSE;
+
+        if (waitForNegativeProximity
+                && !mPendingWaitForNegativeProximityLocked) {
+            mPendingWaitForNegativeProximityLocked = TRUE;
+            changed = TRUE;
         }
 
-        pw.println();
-        pw.println("Display Power Controller Configuration:");
-        pw.println("  mScreenBrightnessDozeConfig=" + mScreenBrightnessDozeConfig);
-        pw.println("  mScreenBrightnessDimConfig=" + mScreenBrightnessDimConfig);
-        pw.println("  mScreenBrightnessDarkConfig=" + mScreenBrightnessDarkConfig);
-        pw.println("  mScreenBrightnessRangeMinimum=" + mScreenBrightnessRangeMinimum);
-        pw.println("  mScreenBrightnessRangeMaximum=" + mScreenBrightnessRangeMaximum);
-        pw.println("  mUseSoftwareAutoBrightnessConfig=" + mUseSoftwareAutoBrightnessConfig);
-        pw.println("  mColorFadeFadesConfig=" + mColorFadeFadesConfig);
+        if (mPendingRequestLocked == NULL) {
+            CDisplayPowerRequest::New(request, (IDisplayPowerRequest**)&mPendingRequestLocked);
+            changed = TRUE;
+        }
+        else if (!Object::Equals(mPendingRequestLocked, request)) {
+            mPendingRequestLocked->CopyFrom(request);
+            changed = TRUE;
+        }
 
-        mHandler.runWithScissors(new Runnable() {
-            //@Override
-            public void run() {
-                DumpLocal(pw);
-            }
-        }, 1000);
-    }
+        if (changed) {
+            mDisplayReadyLocked = FALSE;
+        }
 
-private:
-    void SendUpdatePowerState()
-    {
-        synchronized (mLock) {
+        if (changed && !mPendingRequestChangedLocked) {
+            mPendingRequestChangedLocked = TRUE;
             SendUpdatePowerStateLocked();
         }
     }
+    return mDisplayReadyLocked;
+}
 
-    void SendUpdatePowerStateLocked()
-    {
-        if (!mPendingUpdatePowerStateLocked) {
-            mPendingUpdatePowerStateLocked = TRUE;
-            Message msg = mHandler.obtainMessage(MSG_UPDATE_POWER_STATE);
-            msg.setAsynchronous(TRUE);
-            mHandler.sendMessage(msg);
+ECode DisplayPowerController::UpdateBrightness()
+{
+    SendUpdatePowerState();
+    return NOERROR;
+}
+
+void DisplayPowerController::Dump(
+    /* [in] */ IPrintWriter* pw)
+{
+    // synchronized(mLock) {
+    //     pw.println();
+    //     pw.println("Display Power Controller Locked State:");
+    //     pw.println("  mDisplayReadyLocked=" + mDisplayReadyLocked);
+    //     pw.println("  mPendingRequestLocked=" + mPendingRequestLocked);
+    //     pw.println("  mPendingRequestChangedLocked=" + mPendingRequestChangedLocked);
+    //     pw.println("  mPendingWaitForNegativeProximityLocked="
+    //             + mPendingWaitForNegativeProximityLocked);
+    //     pw.println("  mPendingUpdatePowerStateLocked=" + mPendingUpdatePowerStateLocked);
+    // }
+
+    // pw.println();
+    // pw.println("Display Power Controller Configuration:");
+    // pw.println("  mScreenBrightnessDozeConfig=" + mScreenBrightnessDozeConfig);
+    // pw.println("  mScreenBrightnessDimConfig=" + mScreenBrightnessDimConfig);
+    // pw.println("  mScreenBrightnessDarkConfig=" + mScreenBrightnessDarkConfig);
+    // pw.println("  mScreenBrightnessRangeMinimum=" + mScreenBrightnessRangeMinimum);
+    // pw.println("  mScreenBrightnessRangeMaximum=" + mScreenBrightnessRangeMaximum);
+    // pw.println("  mUseSoftwareAutoBrightnessConfig=" + mUseSoftwareAutoBrightnessConfig);
+    // pw.println("  mColorFadeFadesConfig=" + mColorFadeFadesConfig);
+
+    // mHandler->RunWithScissors(new Runnable() {
+    //     //@Override
+    //     public void run() {
+    //         DumpLocal(pw);
+    //     }
+    // }, 1000);
+}
+
+
+ECode DisplayPowerController::SendUpdatePowerState()
+{
+    synchronized(mLock) {
+        return SendUpdatePowerStateLocked();
+    }
+    return NOERROR;
+}
+
+ECode DisplayPowerController::SendUpdatePowerStateLocked()
+{
+    if (!mPendingUpdatePowerStateLocked) {
+        mPendingUpdatePowerStateLocked = TRUE;
+        AutoPtr<IMessage> msg;
+        mHandler->ObtainMessage(MSG_UPDATE_POWER_STATE, (IMessage**)&msg);
+        msg->SetAsynchronous(TRUE);
+        Boolean bval;
+        return mHandler->SendMessage(msg, &bval);
+    }
+    return NOERROR;
+}
+
+void DisplayPowerController::Initialize()
+{
+    // Initialize the power state object for the default display.
+    // In the future, we might manage multiple displays independently.
+    // AutoPtr<ILight> light;
+    // mLights->GetLight(LightsManager::LIGHT_ID_BACKLIGHT, &light);
+    AutoPtr<ColorFade> colorFade = new ColorFade(IDisplay::DEFAULT_DISPLAY);
+    assert(0 && "TODO");
+    mPowerState = new DisplayPowerState(mBlanker, /*light,*/ colorFade);
+    IInterface* stateObj = TO_IINTERFACE(mPowerState);
+    IProperty* property = IProperty::Probe(DisplayPowerState::COLOR_FADE_LEVEL);
+
+    AutoPtr<IObjectAnimatorHelper> helper;
+    CObjectAnimatorHelper::AcquireSingleton((IObjectAnimatorHelper**)&helper);
+
+    AutoPtr<ArrayOf<Float> > params = ArrayOf<Float>::Alloc(2);
+    params->Set(0, 0.0f);
+    params->Set(1, 1.0f);
+    helper->OfFloat(stateObj, property, params, (IObjectAnimator**)&mColorFadeOnAnimator);
+    IAnimator* on = IAnimator::Probe(mColorFadeOnAnimator);
+    on->SetDuration(COLOR_FADE_ON_ANIMATION_DURATION_MILLIS);
+    on->AddListener(mAnimatorListener);
+
+    params->Set(0, 1.0f);
+    params->Set(1, 0.0f);
+    helper->OfFloat(stateObj, property, params, (IObjectAnimator**)&mColorFadeOffAnimator);
+
+    IAnimator* off = IAnimator::Probe(mColorFadeOffAnimator);
+    off->SetDuration(COLOR_FADE_OFF_ANIMATION_DURATION_MILLIS);
+    off->AddListener(mAnimatorListener);
+
+    mScreenBrightnessRampAnimator = new RampAnimator(
+        stateObj, DisplayPowerState::SCREEN_BRIGHTNESS);
+    mScreenBrightnessRampAnimator->SetListener(mRampAnimatorListener);
+
+    // Initialize screen state for battery stats.
+    // try {
+    mBatteryStats->NoteScreenState(mPowerState->GetScreenState());
+    mBatteryStats->NoteScreenBrightness(mPowerState->GetScreenBrightness());
+    // } catch (RemoteException ex) {
+    //     // same process
+    // }
+}
+
+void DisplayPowerController::UpdatePowerState()
+{
+    // Update the power state request.
+    Boolean mustNotify;
+    Boolean mustInitialize = FALSE;
+    Boolean autoBrightnessAdjustmentChanged = FALSE;
+
+    synchronized(mLock) {
+        mPendingUpdatePowerStateLocked = FALSE;
+        if (mPendingRequestLocked == NULL) {
+            return; // wait until first actual power request
         }
+
+        if (mPowerRequest == NULL) {
+            CDisplayPowerRequest::New(mPendingRequestLocked, (IDisplayPowerRequest**)&mPowerRequest);
+            mWaitingForNegativeProximity = mPendingWaitForNegativeProximityLocked;
+            mPendingWaitForNegativeProximityLocked = FALSE;
+            mPendingRequestChangedLocked = FALSE;
+            mustInitialize = TRUE;
+        }
+        else if (mPendingRequestChangedLocked) {
+            Float b1, b2;
+            mPowerRequest->GetScreenAutoBrightnessAdjustment(&b1);
+            mPendingRequestLocked->GetScreenAutoBrightnessAdjustment(&b2);
+            autoBrightnessAdjustmentChanged = (b1 != b1);
+            mPowerRequest->CopyFrom(mPendingRequestLocked);
+            mWaitingForNegativeProximity |= mPendingWaitForNegativeProximityLocked;
+            mPendingWaitForNegativeProximityLocked = FALSE;
+            mPendingRequestChangedLocked = FALSE;
+            mDisplayReadyLocked = FALSE;
+        }
+
+        mustNotify = !mDisplayReadyLocked;
     }
 
-    void Initialize()
-    {
-        // Initialize the power state object for the default display.
-        // In the future, we might manage multiple displays independently.
-        mPowerState = new DisplayPowerState(mBlanker,
-                mLights.getLight(LightsManager.LIGHT_ID_BACKLIGHT),
-                new ColorFade(Display.DEFAULT_DISPLAY));
-
-        mColorFadeOnAnimator = ObjectAnimator.ofFloat(
-                mPowerState, DisplayPowerState.COLOR_FADE_LEVEL, 0.0f, 1.0f);
-        mColorFadeOnAnimator.setDuration(COLOR_FADE_ON_ANIMATION_DURATION_MILLIS);
-        mColorFadeOnAnimator.addListener(mAnimatorListener);
-
-        mColorFadeOffAnimator = ObjectAnimator.ofFloat(
-                mPowerState, DisplayPowerState.COLOR_FADE_LEVEL, 1.0f, 0.0f);
-        mColorFadeOffAnimator.setDuration(COLOR_FADE_OFF_ANIMATION_DURATION_MILLIS);
-        mColorFadeOffAnimator.addListener(mAnimatorListener);
-
-        mScreenBrightnessRampAnimator = new RampAnimator<DisplayPowerState>(
-                mPowerState, DisplayPowerState.SCREEN_BRIGHTNESS);
-        mScreenBrightnessRampAnimator.setListener(mRampAnimatorListener);
-
-        // Initialize screen state for battery stats.
-        try {
-            mBatteryStats.noteScreenState(mPowerState.getScreenState());
-            mBatteryStats.noteScreenBrightness(mPowerState.getScreenBrightness());
-        } catch (RemoteException ex) {
-            // same process
-        }
+    // Initialize things the first time the power state is changed.
+    if (mustInitialize) {
+        Initialize();
     }
 
-    void UpdatePowerState()
-    {
-        // Update the power state request.
-        final Boolean mustNotify;
-        Boolean mustInitialize = FALSE;
-        Boolean autoBrightnessAdjustmentChanged = FALSE;
-
-        synchronized (mLock) {
-            mPendingUpdatePowerStateLocked = FALSE;
-            if (mPendingRequestLocked == NULL) {
-                return; // wait until first actual power request
-            }
-
-            if (mPowerRequest == NULL) {
-                mPowerRequest = new DisplayPowerRequest(mPendingRequestLocked);
-                mWaitingForNegativeProximity = mPendingWaitForNegativeProximityLocked;
-                mPendingWaitForNegativeProximityLocked = FALSE;
-                mPendingRequestChangedLocked = FALSE;
-                mustInitialize = TRUE;
-            } else if (mPendingRequestChangedLocked) {
-                autoBrightnessAdjustmentChanged = (mPowerRequest.screenAutoBrightnessAdjustment
-                        != mPendingRequestLocked.screenAutoBrightnessAdjustment);
-                mPowerRequest.copyFrom(mPendingRequestLocked);
-                mWaitingForNegativeProximity |= mPendingWaitForNegativeProximityLocked;
-                mPendingWaitForNegativeProximityLocked = FALSE;
-                mPendingRequestChangedLocked = FALSE;
-                mDisplayReadyLocked = FALSE;
-            }
-
-            mustNotify = !mDisplayReadyLocked;
-        }
-
-        // Initialize things the first time the power state is changed.
-        if (mustInitialize) {
-            Initialize();
-        }
-
-        // Compute the basic display state using the policy.
-        // We might override this below based on other factors.
-        Int32 state;
-        Int32 brightness = PowerManager.BRIGHTNESS_DEFAULT;
-        Boolean performScreenOffTransition = FALSE;
-        switch (mPowerRequest.policy) {
-            case DisplayPowerRequest.POLICY_OFF:
-                state = Display.STATE_OFF;
-                performScreenOffTransition = TRUE;
-                break;
-            case DisplayPowerRequest.POLICY_DOZE:
-                if (mPowerRequest.dozeScreenState != Display.STATE_UNKNOWN) {
-                    state = mPowerRequest.dozeScreenState;
-                } else {
-                    state = Display.STATE_DOZE;
-                }
-                brightness = mPowerRequest.dozeScreenBrightness;
-                break;
-            case DisplayPowerRequest.POLICY_DIM:
-            case DisplayPowerRequest.POLICY_BRIGHT:
-            default:
-                state = Display.STATE_ON;
-                break;
-        }
-        assert(state != Display.STATE_UNKNOWN);
-
-        // Apply the proximity sensor.
-        if (mProximitySensor != NULL) {
-            if (mPowerRequest.useProximitySensor && state != Display.STATE_OFF) {
-                SetProximitySensorEnabled(TRUE);
-                if (!mScreenOffBecauseOfProximity
-                        && mProximity == PROXIMITY_POSITIVE) {
-                    mScreenOffBecauseOfProximity = TRUE;
-                    SendOnProximityPositiveWithWakelock();
-                }
-            } else if (mWaitingForNegativeProximity
-                    && mScreenOffBecauseOfProximity
-                    && mProximity == PROXIMITY_POSITIVE
-                    && state != Display.STATE_OFF) {
-                SetProximitySensorEnabled(TRUE);
+    // Compute the basic display state using the policy.
+    // We might override this below based on other factors.
+    Int32 state;
+    Int32 brightness = IPowerManager::BRIGHTNESS_DEFAULT;
+    Boolean performScreenOffTransition = FALSE;
+    Int32 policy, screenState;
+    mPowerRequest->GetPolicy(&policy);
+    mPowerRequest->GetDozeScreenState(&screenState);
+    switch (policy) {
+        case IDisplayPowerRequest::POLICY_OFF:
+            state = IDisplay::STATE_OFF;
+            performScreenOffTransition = TRUE;
+            break;
+        case IDisplayPowerRequest::POLICY_DOZE:
+            if (screenState != IDisplay::STATE_UNKNOWN) {
+                state = screenState;
             } else {
-                SetProximitySensorEnabled(FALSE);
-                mWaitingForNegativeProximity = FALSE;
+                state = IDisplay::STATE_DOZE;
             }
-            if (mScreenOffBecauseOfProximity
-                    && mProximity != PROXIMITY_POSITIVE) {
-                mScreenOffBecauseOfProximity = FALSE;
-                SendOnProximityNegativeWithWakelock();
+            mPowerRequest->GetDozeScreenBrightness(&brightness);
+            break;
+        case IDisplayPowerRequest::POLICY_DIM:
+        case IDisplayPowerRequest::POLICY_BRIGHT:
+        default:
+            state = IDisplay::STATE_ON;
+            break;
+    }
+    assert(state != IDisplay::STATE_UNKNOWN);
+
+    // Apply the proximity sensor.
+    if (mProximitySensor != NULL) {
+        Boolean bval;
+        mPowerRequest->GetUseProximitySensor(&bval);
+        if (bval && state != IDisplay::STATE_OFF) {
+            SetProximitySensorEnabled(TRUE);
+            if (!mScreenOffBecauseOfProximity && mProximity == PROXIMITY_POSITIVE) {
+                mScreenOffBecauseOfProximity = TRUE;
+                SendOnProximityPositiveWithWakelock();
             }
-        } else {
+        }
+        else if (mWaitingForNegativeProximity
+            && mScreenOffBecauseOfProximity
+            && mProximity == PROXIMITY_POSITIVE
+            && state != IDisplay::STATE_OFF) {
+            SetProximitySensorEnabled(TRUE);
+        }
+        else {
+            SetProximitySensorEnabled(FALSE);
             mWaitingForNegativeProximity = FALSE;
         }
-        if (mScreenOffBecauseOfProximity) {
-            state = Display.STATE_OFF;
+        if (mScreenOffBecauseOfProximity
+                && mProximity != PROXIMITY_POSITIVE) {
+            mScreenOffBecauseOfProximity = FALSE;
+            SendOnProximityNegativeWithWakelock();
         }
+    }
+    else {
+        mWaitingForNegativeProximity = FALSE;
+    }
+    if (mScreenOffBecauseOfProximity) {
+        state = IDisplay::STATE_OFF;
+    }
 
-        // Animate the screen state change unless already animating.
-        // The transition may be deferred, so after this point we will use the
-        // actual state instead of the desired one.
-        AnimateScreenStateChange(state, performScreenOffTransition);
-        state = mPowerState.getScreenState();
+    // Animate the screen state change unless already animating.
+    // The transition may be deferred, so after this point we will use the
+    // actual state instead of the desired one.
+    AnimateScreenStateChange(state, performScreenOffTransition);
+    state = mPowerState->GetScreenState();
 
-        // Use zero brightness when screen is off.
-        if (state == Display.STATE_OFF) {
-            brightness = PowerManager.BRIGHTNESS_OFF;
+    // Use zero brightness when screen is off.
+    if (state == IDisplay::STATE_OFF) {
+        brightness = IPowerManager::BRIGHTNESS_OFF;
+    }
+
+    // Use default brightness when dozing unless overridden.
+    if (brightness < 0 && (state == IDisplay::STATE_DOZE
+        || state == IDisplay::STATE_DOZE_SUSPEND)) {
+        brightness = mScreenBrightnessDozeConfig;
+    }
+
+    // Configure auto-brightness.
+    Boolean autoBrightnessEnabled = FALSE;
+    if (mAutomaticBrightnessController != NULL) {
+        mPowerRequest->GetUseAutoBrightness(&autoBrightnessEnabled);
+        autoBrightnessEnabled |= state == IDisplay::STATE_ON && brightness < 0;
+        Float adjustment;
+        mPowerRequest->GetScreenAutoBrightnessAdjustment(&adjustment);
+        mAutomaticBrightnessController->Configure(autoBrightnessEnabled, adjustment);
+    }
+
+    // Apply auto-brightness.
+    Boolean slowChange = FALSE;
+    if (brightness < 0) {
+        if (autoBrightnessEnabled) {
+            brightness = mAutomaticBrightnessController->GetAutomaticScreenBrightness();
         }
-
-        // Use default brightness when dozing unless overridden.
-        if (brightness < 0 && (state == Display.STATE_DOZE
-                || state == Display.STATE_DOZE_SUSPEND)) {
-            brightness = mScreenBrightnessDozeConfig;
-        }
-
-        // Configure auto-brightness.
-        Boolean autoBrightnessEnabled = FALSE;
-        if (mAutomaticBrightnessController != NULL) {
-            autoBrightnessEnabled = mPowerRequest.useAutoBrightness
-                    && state == Display.STATE_ON && brightness < 0;
-            mAutomaticBrightnessController.configure(autoBrightnessEnabled,
-                    mPowerRequest.screenAutoBrightnessAdjustment);
-        }
-
-        // Apply auto-brightness.
-        Boolean slowChange = FALSE;
-        if (brightness < 0) {
-            if (autoBrightnessEnabled) {
-                brightness = mAutomaticBrightnessController.getAutomaticScreenBrightness();
+        if (brightness >= 0) {
+            // Use current auto-brightness value and slowly adjust to changes.
+            brightness = ClampScreenBrightness(brightness);
+            if (mAppliedAutoBrightness && !autoBrightnessAdjustmentChanged) {
+                slowChange = TRUE; // slowly adapt to auto-brightness
             }
-            if (brightness >= 0) {
-                // Use current auto-brightness value and slowly adjust to changes.
-                brightness = ClampScreenBrightness(brightness);
-                if (mAppliedAutoBrightness && !autoBrightnessAdjustmentChanged) {
-                    slowChange = TRUE; // slowly adapt to auto-brightness
-                }
-                mAppliedAutoBrightness = TRUE;
-            } else {
-                mAppliedAutoBrightness = FALSE;
-            }
-        } else {
+            mAppliedAutoBrightness = TRUE;
+        }
+        else {
             mAppliedAutoBrightness = FALSE;
         }
-
-        // Apply manual brightness.
-        // Use the current brightness setting from the request, which is expected
-        // provide a nominal default value for the case where auto-brightness
-        // is not ready yet.
-        if (brightness < 0) {
-            brightness = ClampScreenBrightness(mPowerRequest.screenBrightness);
-        }
-
-        // Apply dimming by at least some minimum amount when user activity
-        // timeout is about to expire.
-        if (mPowerRequest.policy == DisplayPowerRequest.POLICY_DIM) {
-            if (brightness > mScreenBrightnessRangeMinimum) {
-                brightness = Math.max(Math.min(brightness - SCREEN_DIM_MINIMUM_REDUCTION,
-                        mScreenBrightnessDimConfig), mScreenBrightnessRangeMinimum);
-            }
-            if (!mAppliedDimming) {
-                slowChange = FALSE;
-            }
-            mAppliedDimming = TRUE;
-        }
-
-        // If low power mode is enabled, cut the brightness level by half
-        // as Int64 as it is above the minimum threshold.
-        if (mPowerRequest.lowPowerMode) {
-            if (brightness > mScreenBrightnessRangeMinimum) {
-                brightness = Math.max(brightness / 2, mScreenBrightnessRangeMinimum);
-            }
-            if (!mAppliedLowPower) {
-                slowChange = FALSE;
-            }
-            mAppliedLowPower = TRUE;
-        }
-
-        // Animate the screen brightness when the screen is on or dozing.
-        // Skip the animation when the screen is off or suspended.
-        if (state == Display.STATE_ON || state == Display.STATE_DOZE) {
-            AnimateScreenBrightness(brightness,
-                    slowChange ? BRIGHTNESS_RAMP_RATE_SLOW : BRIGHTNESS_RAMP_RATE_FAST);
-        } else {
-            AnimateScreenBrightness(brightness, 0);
-        }
-
-        // Determine whether the display is ready for use in the newly requested state.
-        // Note that we do not wait for the brightness ramp animation to complete before
-        // reporting the display is ready because we only need to ensure the screen is in the
-        // right power state even as it continues to converge on the desired brightness.
-        final Boolean ready = mPendingScreenOnUnblocker == NULL
-                && !mColorFadeOnAnimator.isStarted()
-                && !mColorFadeOffAnimator.isStarted()
-                && mPowerState.waitUntilClean(mCleanListener);
-        final Boolean finished = ready
-                && !mScreenBrightnessRampAnimator.isAnimating();
-
-        // Grab a wake lock if we have unfinished business.
-        if (!finished && !mUnfinishedBusiness) {
-            if (DEBUG) {
-                Slog.d(TAG, "Unfinished business...");
-            }
-            mCallbacks.acquireSuspendBlocker();
-            mUnfinishedBusiness = TRUE;
-        }
-
-        // Notify the power manager when ready.
-        if (ready && mustNotify) {
-            // Send state change.
-            synchronized (mLock) {
-                if (!mPendingRequestChangedLocked) {
-                    mDisplayReadyLocked = TRUE;
-
-                    if (DEBUG) {
-                        Slog.d(TAG, "Display ready!");
-                    }
-                }
-            }
-            SendOnStateChangedWithWakelock();
-        }
-
-        // Release the wake lock when we have no unfinished business.
-        if (finished && mUnfinishedBusiness) {
-            if (DEBUG) {
-                Slog.d(TAG, "Finished business...");
-            }
-            mUnfinishedBusiness = FALSE;
-            mCallbacks.releaseSuspendBlocker();
-        }
+    }
+    else {
+        mAppliedAutoBrightness = FALSE;
     }
 
+    // Apply manual brightness.
+    // Use the current brightness setting from the request, which is expected
+    // provide a nominal default value for the case where auto-brightness
+    // is not ready yet.
+    Int32 ival;
+    if (brightness < 0) {
+        mPowerRequest->GetScreenBrightness(&ival);
+        brightness = ClampScreenBrightness(ival);
+    }
 
-    void BlockScreenOn()
-    {
-        if (mPendingScreenOnUnblocker == NULL) {
-            Trace.asyncTraceBegin(Trace.TRACE_TAG_POWER, SCREEN_ON_BLOCKED_TRACE_NAME, 0);
-            mPendingScreenOnUnblocker = new ScreenOnUnblocker();
-            mScreenOnBlockStartRealTime = SystemClock.elapsedRealtime();
-            Slog.i(TAG, "Blocking screen on until initial contents have been drawn.");
+    using Elastos::Core::Math;
+
+    // Apply dimming by at least some minimum amount when user activity
+    // timeout is about to expire.
+    mPowerRequest->GetPolicy(&ival);
+    if (ival == IDisplayPowerRequest::POLICY_DIM) {
+        if (brightness > mScreenBrightnessRangeMinimum) {
+            brightness = Math::Max(Math::Min(brightness - SCREEN_DIM_MINIMUM_REDUCTION,
+                    mScreenBrightnessDimConfig), mScreenBrightnessRangeMinimum);
         }
-    }
-
-    void UnBlockScreenOn()
-    {
-        if (mPendingScreenOnUnblocker != NULL) {
-            mPendingScreenOnUnblocker = NULL;
-            Int64 delay = SystemClock.elapsedRealtime() - mScreenOnBlockStartRealTime;
-            Slog.i(TAG, "Unblocked screen on after " + delay + " ms");
-            Trace.asyncTraceEnd(Trace.TRACE_TAG_POWER, SCREEN_ON_BLOCKED_TRACE_NAME, 0);
+        if (!mAppliedDimming) {
+            slowChange = FALSE;
         }
+        mAppliedDimming = TRUE;
     }
 
-    Boolean SetScreenState(
-        /* [in] */ Int32 state)
-    {
-        if (mPowerState.getScreenState() != state) {
-            final Boolean wasOn = (mPowerState.getScreenState() != Display.STATE_OFF);
-            mPowerState.SetScreenState(state);
-
-            // Tell battery stats about the transition.
-            try {
-                mBatteryStats.noteScreenState(state);
-            } catch (RemoteException ex) {
-                // same process
-            }
-
-            // Tell the window manager what's happening.
-            // Temporarily block turning the screen on until the window manager is ready
-            // by leaving a black surface covering the screen.  This surface is essentially
-            // the final state of the color fade animation.
-            Boolean isOn = (state != Display.STATE_OFF);
-            if (wasOn && !isOn) {
-                UnBlockScreenOn();
-                mWindowManagerPolicy.screenTurnedOff();
-            } else if (!wasOn && isOn) {
-                if (mPowerState.getColorFadeLevel() == 0.0f) {
-                    BlockScreenOn();
-                } else {
-                    UnBlockScreenOn();
-                }
-                mWindowManagerPolicy.screenTurningOn(mPendingScreenOnUnblocker);
-            }
+    // If low power mode is enabled, cut the brightness level by half
+    // as Int64 as it is above the minimum threshold.
+    Boolean lowPowerMode;
+    mPowerRequest->GetLowPowerMode(&lowPowerMode);
+    if (lowPowerMode) {
+        if (brightness > mScreenBrightnessRangeMinimum) {
+            brightness = Math::Max(brightness / 2, mScreenBrightnessRangeMinimum);
         }
-        return mPendingScreenOnUnblocker == NULL;
+        if (!mAppliedLowPower) {
+            slowChange = FALSE;
+        }
+        mAppliedLowPower = TRUE;
     }
 
-    Int32 ClampScreenBrightness(
-        /* [in] */ Int32 value)
-    {
-        return MathUtils.constrain(
-                value, mScreenBrightnessRangeMinimum, mScreenBrightnessRangeMaximum);
+    // Animate the screen brightness when the screen is on or dozing.
+    // Skip the animation when the screen is off or suspended.
+    if (state == IDisplay::STATE_ON || state == IDisplay::STATE_DOZE) {
+        AnimateScreenBrightness(brightness,
+                slowChange ? BRIGHTNESS_RAMP_RATE_SLOW : BRIGHTNESS_RAMP_RATE_FAST);
+    }
+    else {
+        AnimateScreenBrightness(brightness, 0);
     }
 
-    void AnimateScreenBrightness(
-        /* [in] */ Int32 target,
-        /* [in] */ Int32 rate)
-    {
+    // Determine whether the display is ready for use in the newly requested state.
+    // Note that we do not wait for the brightness ramp animation to complete before
+    // reporting the display is ready because we only need to ensure the screen is in the
+    // right power state even as it continues to converge on the desired brightness.
+    IAnimator* on = IAnimator::Probe(mColorFadeOnAnimator);
+    IAnimator* off = IAnimator::Probe(mColorFadeOffAnimator);
+    Boolean s1, s2;
+    Boolean ready = mPendingScreenOnUnblocker == NULL
+            && (on->IsStarted(&s1), !s1)
+            && (off->IsStarted(&s2), !s2)
+            && mPowerState->WaitUntilClean(mCleanListener);
+    Boolean finished = ready
+            && !mScreenBrightnessRampAnimator->IsAnimating();
+
+    // Grab a wake lock if we have unfinished business.
+    if (!finished && !mUnfinishedBusiness) {
         if (DEBUG) {
-            Slog.d(TAG, "Animating brightness: target=" + target +", rate=" + rate);
+            Slogger::D(TAG, "Unfinished business...");
         }
-        if (mScreenBrightnessRampAnimator.animateTo(target, rate)) {
-            try {
-                mBatteryStats.noteScreenBrightness(target);
-            } catch (RemoteException ex) {
-                // same process
-            }
-        }
+        mCallbacks->AcquireSuspendBlocker();
+        mUnfinishedBusiness = TRUE;
     }
 
-    void AnimateScreenStateChange(
-        /* [in] */ Int32 target,
-        /* [in] */ Boolean performScreenOffTransition)
-    {
-        // If there is already an animation in progress, don't interfere with it.
-        if (mColorFadeOnAnimator.isStarted()
-                || mColorFadeOffAnimator.isStarted()) {
+    // Notify the power manager when ready.
+    if (ready && mustNotify) {
+        // Send state change.
+        synchronized(mLock) {
+            if (!mPendingRequestChangedLocked) {
+                mDisplayReadyLocked = TRUE;
+
+                if (DEBUG) {
+                    Slogger::D(TAG, "Display ready!");
+                }
+            }
+        }
+        SendOnStateChangedWithWakelock();
+    }
+
+    // Release the wake lock when we have no unfinished business.
+    if (finished && mUnfinishedBusiness) {
+        if (DEBUG) {
+            Slogger::D(TAG, "Finished business...");
+        }
+        mUnfinishedBusiness = FALSE;
+        mCallbacks->ReleaseSuspendBlocker();
+    }
+}
+
+void DisplayPowerController::BlockScreenOn()
+{
+    if (mPendingScreenOnUnblocker == NULL) {
+       // Trace.asyncTraceBegin(Trace.TRACE_TAG_POWER, SCREEN_ON_BLOCKED_TRACE_NAME, 0);
+        mPendingScreenOnUnblocker = new ScreenOnUnblocker(this);
+        mScreenOnBlockStartRealTime = SystemClock::GetElapsedRealtime();
+        Slogger::I(TAG, "Blocking screen on until initial contents have been drawn.");
+    }
+}
+
+void DisplayPowerController::UnBlockScreenOn()
+{
+    if (mPendingScreenOnUnblocker != NULL) {
+        mPendingScreenOnUnblocker = NULL;
+        Int64 delay = SystemClock::GetElapsedRealtime() - mScreenOnBlockStartRealTime;
+        Slogger::I(TAG, "Unblocked screen on after %s ms", delay);
+       // Trace.asyncTraceEnd(Trace.TRACE_TAG_POWER, SCREEN_ON_BLOCKED_TRACE_NAME, 0);
+    }
+}
+
+Boolean DisplayPowerController::SetScreenState(
+    /* [in] */ Int32 state)
+{
+    if (mPowerState->GetScreenState() != state) {
+        Boolean wasOn = (mPowerState->GetScreenState() != IDisplay::STATE_OFF);
+        mPowerState->SetScreenState(state);
+
+        // Tell battery stats about the transition.
+        // try {
+            mBatteryStats->NoteScreenState(state);
+        // } catch (RemoteException ex) {
+        //     // same process
+        // }
+
+        // Tell the window manager what's happening.
+        // Temporarily block turning the screen on until the window manager is ready
+        // by leaving a black surface covering the screen.  This surface is essentially
+        // the state of the color fade animation.
+        Boolean isOn = (state != IDisplay::STATE_OFF);
+        if (wasOn && !isOn) {
+            UnBlockScreenOn();
+            mWindowManagerPolicy->ScreenTurnedOff();
+        }
+        else if (!wasOn && isOn) {
+            if (mPowerState->GetColorFadeLevel() == 0.0f) {
+                BlockScreenOn();
+            }
+            else {
+                UnBlockScreenOn();
+            }
+            mWindowManagerPolicy->ScreenTurningOn(mPendingScreenOnUnblocker);
+        }
+    }
+    return mPendingScreenOnUnblocker == NULL;
+}
+
+Int32 DisplayPowerController::ClampScreenBrightness(
+    /* [in] */ Int32 value)
+{
+    return MathUtils::Constrain(
+        value, mScreenBrightnessRangeMinimum, mScreenBrightnessRangeMaximum);
+}
+
+void DisplayPowerController::AnimateScreenBrightness(
+    /* [in] */ Int32 target,
+    /* [in] */ Int32 rate)
+{
+    if (DEBUG) {
+        Slogger::D(TAG, "Animating brightness: target=%d, rate=%d", target, rate);
+    }
+    if (mScreenBrightnessRampAnimator->AnimateTo(target, rate)) {
+        // try {
+            mBatteryStats->NoteScreenBrightness(target);
+        // } catch (RemoteException ex) {
+        //     // same process
+        // }
+    }
+}
+
+void DisplayPowerController::AnimateScreenStateChange(
+    /* [in] */ Int32 target,
+    /* [in] */ Boolean performScreenOffTransition)
+{
+    IAnimator* on = IAnimator::Probe(mColorFadeOnAnimator);
+    IAnimator* off = IAnimator::Probe(mColorFadeOffAnimator);
+    // If there is already an animation in progress, don't interfere with it.
+    Boolean s1, s2;
+    if ((on->IsStarted(&s1), s1)
+        || off->IsStarted(&s2), s2) {
+        return;
+    }
+
+    // If we were in the process of turning off the screen but didn't quite
+    // finish.  Then finish up now to prevent a jarring transition back
+    // to screen on if we skipped blocking screen on as usual.
+    if (mPendingScreenOff && target != IDisplay::STATE_OFF) {
+        SetScreenState(IDisplay::STATE_OFF);
+        mPendingScreenOff = FALSE;
+    }
+
+
+    if (target == IDisplay::STATE_ON) {
+        // Want screen on.  The contents of the screen may not yet
+        // be visible if the color fade has not been dismissed because
+        // its last frame of animation is solid black.
+        if (!SetScreenState(IDisplay::STATE_ON)) {
+            return; // screen on blocked
+        }
+        Boolean bval;
+        mPowerRequest->IsBrightOrDim(&bval);
+        if (USE_COLOR_FADE_ON_ANIMATION && bval) {
+            // Perform screen on animation.
+            if (mPowerState->GetColorFadeLevel() == 1.0f) {
+                mPowerState->DismissColorFade();
+            }
+            else if (mPowerState->PrepareColorFade(mContext,
+                mColorFadeFadesConfig ? ColorFade::MODE_FADE : ColorFade::MODE_WARM_UP)) {
+                on->Start();
+            }
+            else {
+                on->End();
+            }
+        } else {
+            // Skip screen on animation.
+            mPowerState->SetColorFadeLevel(1.0f);
+            mPowerState->DismissColorFade();
+        }
+    }
+    else if (target == IDisplay::STATE_DOZE) {
+        // Want screen dozing.
+        // Wait for brightness animation to complete beforehand when entering doze
+        // from screen on to prevent a perceptible jump because brightness may operate
+        // differently when the display is configured for dozing.
+        if (mScreenBrightnessRampAnimator->IsAnimating()
+            && mPowerState->GetScreenState() == IDisplay::STATE_ON) {
             return;
         }
 
-        // If we were in the process of turning off the screen but didn't quite
-        // finish.  Then finish up now to prevent a jarring transition back
-        // to screen on if we skipped blocking screen on as usual.
-        if (mPendingScreenOff && target != Display.STATE_OFF) {
-            SetScreenState(Display.STATE_OFF);
+        // Set screen state.
+        if (!SetScreenState(IDisplay::STATE_DOZE)) {
+            return; // screen on blocked
+        }
+
+        // Dismiss the black surface without fanfare.
+        mPowerState->SetColorFadeLevel(1.0f);
+        mPowerState->DismissColorFade();
+    }
+    else if (target == IDisplay::STATE_DOZE_SUSPEND) {
+        // Want screen dozing and suspended.
+        // Wait for brightness animation to complete beforehand unless already
+        // suspended because we may not be able to change it after suspension.
+        if (mScreenBrightnessRampAnimator->IsAnimating()
+                && mPowerState->GetScreenState() != IDisplay::STATE_DOZE_SUSPEND) {
+            return;
+        }
+
+        // If not already suspending, temporarily set the state to doze until the
+        // screen on is unblocked, then suspend.
+        if (mPowerState->GetScreenState() != IDisplay::STATE_DOZE_SUSPEND) {
+            if (!SetScreenState(IDisplay::STATE_DOZE)) {
+                return; // screen on blocked
+            }
+            SetScreenState(IDisplay::STATE_DOZE_SUSPEND); // already on so can't block
+        }
+
+        // Dismiss the black surface without fanfare.
+        mPowerState->SetColorFadeLevel(1.0f);
+        mPowerState->DismissColorFade();
+    }
+    else {
+        // Want screen off.
+        mPendingScreenOff = TRUE;
+        if (mPowerState->GetColorFadeLevel() == 0.0f) {
+            // Turn the screen off.
+            // A black surface is already hiding the contents of the screen.
+            SetScreenState(IDisplay::STATE_OFF);
             mPendingScreenOff = FALSE;
         }
-
-        if (target == Display.STATE_ON) {
-            // Want screen on.  The contents of the screen may not yet
-            // be visible if the color fade has not been dismissed because
-            // its last frame of animation is solid black.
-            if (!SetScreenState(Display.STATE_ON)) {
-                return; // screen on blocked
-            }
-            if (USE_COLOR_FADE_ON_ANIMATION && mPowerRequest.isBrightOrDim()) {
-                // Perform screen on animation.
-                if (mPowerState.getColorFadeLevel() == 1.0f) {
-                    mPowerState.dismissColorFade();
-                } else if (mPowerState.prepareColorFade(mContext,
-                        mColorFadeFadesConfig ?
-                                ColorFade.MODE_FADE :
-                                        ColorFade.MODE_WARM_UP)) {
-                    mColorFadeOnAnimator.start();
-                } else {
-                    mColorFadeOnAnimator.end();
-                }
-            } else {
-                // Skip screen on animation.
-                mPowerState.setColorFadeLevel(1.0f);
-                mPowerState.dismissColorFade();
-            }
-        } else if (target == Display.STATE_DOZE) {
-            // Want screen dozing.
-            // Wait for brightness animation to complete beforehand when entering doze
-            // from screen on to prevent a perceptible jump because brightness may operate
-            // differently when the display is configured for dozing.
-            if (mScreenBrightnessRampAnimator.isAnimating()
-                    && mPowerState.getScreenState() == Display.STATE_ON) {
-                return;
-            }
-
-            // Set screen state.
-            if (!SetScreenState(Display.STATE_DOZE)) {
-                return; // screen on blocked
-            }
-
-            // Dismiss the black surface without fanfare.
-            mPowerState.setColorFadeLevel(1.0f);
-            mPowerState.dismissColorFade();
-        } else if (target == Display.STATE_DOZE_SUSPEND) {
-            // Want screen dozing and suspended.
-            // Wait for brightness animation to complete beforehand unless already
-            // suspended because we may not be able to change it after suspension.
-            if (mScreenBrightnessRampAnimator.isAnimating()
-                    && mPowerState.getScreenState() != Display.STATE_DOZE_SUSPEND) {
-                return;
-            }
-
-            // If not already suspending, temporarily set the state to doze until the
-            // screen on is unblocked, then suspend.
-            if (mPowerState.getScreenState() != Display.STATE_DOZE_SUSPEND) {
-                if (!SetScreenState(Display.STATE_DOZE)) {
-                    return; // screen on blocked
-                }
-                SetScreenState(Display.STATE_DOZE_SUSPEND); // already on so can't block
-            }
-
-            // Dismiss the black surface without fanfare.
-            mPowerState.setColorFadeLevel(1.0f);
-            mPowerState.dismissColorFade();
-        } else {
-            // Want screen off.
-            mPendingScreenOff = TRUE;
-            if (mPowerState.getColorFadeLevel() == 0.0f) {
-                // Turn the screen off.
-                // A black surface is already hiding the contents of the screen.
-                SetScreenState(Display.STATE_OFF);
-                mPendingScreenOff = FALSE;
-            } else if (performScreenOffTransition
-                    && mPowerState.prepareColorFade(mContext,
-                            mColorFadeFadesConfig ?
-                                    ColorFade.MODE_FADE : ColorFade.MODE_COOL_DOWN)
-                    && mPowerState.getScreenState() != Display.STATE_OFF) {
-                // Perform the screen off animation.
-                mColorFadeOffAnimator.start();
-            } else {
-                // Skip the screen off animation and add a black surface to hide the
-                // contents of the screen.
-                mColorFadeOffAnimator.end();
-            }
+        else if (performScreenOffTransition
+                && mPowerState->PrepareColorFade(mContext,
+                    mColorFadeFadesConfig ? ColorFade::MODE_FADE : ColorFade::MODE_COOL_DOWN)
+                && mPowerState->GetScreenState() != IDisplay::STATE_OFF) {
+            // Perform the screen off animation.
+            off->Start();
+        }
+        else {
+            // Skip the screen off animation and add a black surface to hide the
+            // contents of the screen.
+            off->End();
         }
     }
+}
 
-    void SetProximitySensorEnabled(
-        /* [in] */ Boolean enable)
-    {
-        if (enable) {
-            if (!mProximitySensorEnabled) {
-                // Register the listener.
-                // Proximity sensor state already cleared initially.
-                mProximitySensorEnabled = TRUE;
-                mSensorManager.registerListener(mProximitySensorListener, mProximitySensor,
-                        SensorManager.SENSOR_DELAY_NORMAL, mHandler);
-            }
-        } else {
-            if (mProximitySensorEnabled) {
-                // Unregister the listener.
-                // Clear the proximity sensor state for next time.
-                mProximitySensorEnabled = FALSE;
-                mProximity = PROXIMITY_UNKNOWN;
-                mPendingProximity = PROXIMITY_UNKNOWN;
-                mHandler.removeMessages(MSG_PROXIMITY_SENSOR_DEBOUNCED);
-                mSensorManager.unregisterListener(mProximitySensorListener);
-                ClearPendingProximityDebounceTime(); // release wake lock (must be last)
-            }
+void DisplayPowerController::SetProximitySensorEnabled(
+    /* [in] */ Boolean enable)
+{
+    if (enable) {
+        if (!mProximitySensorEnabled) {
+            // Register the listener.
+            // Proximity sensor state already cleared initially.
+            mProximitySensorEnabled = TRUE;
+            Boolean bval;
+            mSensorManager->RegisterListener(mProximitySensorListener, mProximitySensor,
+                ISensorManager::SENSOR_DELAY_NORMAL, mHandler, &bval);
         }
     }
-
-    void HandleProximitySensorEvent(
-        /* [in] */ Int64 time,
-        /* [in] */ Boolean positive)
-    {
+    else {
         if (mProximitySensorEnabled) {
-            if (mPendingProximity == PROXIMITY_NEGATIVE && !positive) {
-                return; // no change
-            }
-            if (mPendingProximity == PROXIMITY_POSITIVE && positive) {
-                return; // no change
-            }
-
-            // Only accept a proximity sensor reading if it remains
-            // stable for the entire debounce delay.  We hold a wake lock while
-            // debouncing the sensor.
-            mHandler.removeMessages(MSG_PROXIMITY_SENSOR_DEBOUNCED);
-            if (positive) {
-                mPendingProximity = PROXIMITY_POSITIVE;
-                SetPendingProximityDebounceTime(
-                        time + PROXIMITY_SENSOR_POSITIVE_DEBOUNCE_DELAY); // acquire wake lock
-            } else {
-                mPendingProximity = PROXIMITY_NEGATIVE;
-                SetPendingProximityDebounceTime(
-                        time + PROXIMITY_SENSOR_NEGATIVE_DEBOUNCE_DELAY); // acquire wake lock
-            }
-
-            // Debounce the new sensor reading.
-            DebounceProximitySensor();
+            // Unregister the listener.
+            // Clear the proximity sensor state for next time.
+            mProximitySensorEnabled = FALSE;
+            mProximity = PROXIMITY_UNKNOWN;
+            mPendingProximity = PROXIMITY_UNKNOWN;
+            mHandler->RemoveMessages(MSG_PROXIMITY_SENSOR_DEBOUNCED);
+            mSensorManager->UnregisterListener(mProximitySensorListener);
+            ClearPendingProximityDebounceTime(); // release wake lock (must be last)
         }
     }
+}
 
-    void DebounceProximitySensor()
-    {
-        if (mProximitySensorEnabled
-                && mPendingProximity != PROXIMITY_UNKNOWN
-                && mPendingProximityDebounceTime >= 0) {
-            final Int64 now = SystemClock.uptimeMillis();
-            if (mPendingProximityDebounceTime <= now) {
-                // Sensor reading accepted.  Apply the change then release the wake lock.
-                mProximity = mPendingProximity;
-                UpdatePowerState();
-                ClearPendingProximityDebounceTime(); // release wake lock (must be last)
-            } else {
-                // Need to wait a little longer.
-                // Debounce again later.  We continue holding a wake lock while waiting.
-                Message msg = mHandler.obtainMessage(MSG_PROXIMITY_SENSOR_DEBOUNCED);
-                msg.setAsynchronous(TRUE);
-                mHandler.sendMessageAtTime(msg, mPendingProximityDebounceTime);
-            }
+void DisplayPowerController::HandleProximitySensorEvent(
+    /* [in] */ Int64 time,
+    /* [in] */ Boolean positive)
+{
+    if (mProximitySensorEnabled) {
+        if (mPendingProximity == PROXIMITY_NEGATIVE && !positive) {
+            return; // no change
         }
-    }
-
-    void ClearPendingProximityDebounceTime()
-    {
-        if (mPendingProximityDebounceTime >= 0) {
-            mPendingProximityDebounceTime = -1;
-            mCallbacks.releaseSuspendBlocker(); // release wake lock
-        }
-    }
-
-    void SetPendingProximityDebounceTime(
-        /* [in] */ Int64 debounceTime)
-    {
-        if (mPendingProximityDebounceTime < 0) {
-            mCallbacks.acquireSuspendBlocker(); // acquire wake lock
-        }
-        mPendingProximityDebounceTime = debounceTime;
-    }
-
-    void SendOnStateChangedWithWakelock()
-    {
-        mCallbacks.acquireSuspendBlocker();
-        mHandler.post(mOnStateChangedRunnable);
-    }
-
-    void SendOnProximityPositiveWithWakelock()
-    {
-        mCallbacks.acquireSuspendBlocker();
-        mHandler.post(mOnProximityPositiveRunnable);
-    }
-
-    void SendOnProximityNegativeWithWakelock()
-    {
-        mCallbacks.acquireSuspendBlocker();
-        mHandler.post(mOnProximityNegativeRunnable);
-    }
-
-    void DumpLocal(
-        /* [in] */ IPrintWriter* pw)
-    {
-        pw.println();
-        pw.println("Display Power Controller Thread State:");
-        pw.println("  mPowerRequest=" + mPowerRequest);
-        pw.println("  mWaitingForNegativeProximity=" + mWaitingForNegativeProximity);
-
-        pw.println("  mProximitySensor=" + mProximitySensor);
-        pw.println("  mProximitySensorEnabled=" + mProximitySensorEnabled);
-        pw.println("  mProximityThreshold=" + mProximityThreshold);
-        pw.println("  mProximity=" + ProximityToString(mProximity));
-        pw.println("  mPendingProximity=" + ProximityToString(mPendingProximity));
-        pw.println("  mPendingProximityDebounceTime="
-                + TimeUtils.formatUptime(mPendingProximityDebounceTime));
-        pw.println("  mScreenOffBecauseOfProximity=" + mScreenOffBecauseOfProximity);
-        pw.println("  mAppliedAutoBrightness=" + mAppliedAutoBrightness);
-        pw.println("  mAppliedDimming=" + mAppliedDimming);
-        pw.println("  mAppliedLowPower=" + mAppliedLowPower);
-        pw.println("  mPendingScreenOnUnblocker=" + mPendingScreenOnUnblocker);
-        pw.println("  mPendingScreenOff=" + mPendingScreenOff);
-
-        pw.println("  mScreenBrightnessRampAnimator.isAnimating()=" +
-                mScreenBrightnessRampAnimator.isAnimating());
-
-        if (mColorFadeOnAnimator != NULL) {
-            pw.println("  mColorFadeOnAnimator.isStarted()=" +
-                    mColorFadeOnAnimator.isStarted());
-        }
-        if (mColorFadeOffAnimator != NULL) {
-            pw.println("  mColorFadeOffAnimator.isStarted()=" +
-                    mColorFadeOffAnimator.isStarted());
+        if (mPendingProximity == PROXIMITY_POSITIVE && positive) {
+            return; // no change
         }
 
-        if (mPowerState != NULL) {
-            mPowerState.dump(pw);
+        // Only accept a proximity sensor reading if it remains
+        // stable for the entire debounce delay.  We hold a wake lock while
+        // debouncing the sensor.
+        mHandler->RemoveMessages(MSG_PROXIMITY_SENSOR_DEBOUNCED);
+        if (positive) {
+            mPendingProximity = PROXIMITY_POSITIVE;
+            SetPendingProximityDebounceTime(
+                time + PROXIMITY_SENSOR_POSITIVE_DEBOUNCE_DELAY); // acquire wake lock
+        }
+        else {
+            mPendingProximity = PROXIMITY_NEGATIVE;
+            SetPendingProximityDebounceTime(
+                time + PROXIMITY_SENSOR_NEGATIVE_DEBOUNCE_DELAY); // acquire wake lock
         }
 
-        if (mAutomaticBrightnessController != NULL) {
-            mAutomaticBrightnessController.dump(pw);
-        }
-
+        // Debounce the new sensor reading.
+        DebounceProximitySensor();
     }
+}
 
-    static String ProximityToString(
-        /* [in] */ Int32 state)
-    {
-        switch (state) {
-            case PROXIMITY_UNKNOWN:
-                return "Unknown";
-            case PROXIMITY_NEGATIVE:
-                return "Negative";
-            case PROXIMITY_POSITIVE:
-                return "Positive";
-            default:
-                return Integer.toString(state);
+void DisplayPowerController::DebounceProximitySensor()
+{
+    if (mProximitySensorEnabled
+            && mPendingProximity != PROXIMITY_UNKNOWN
+            && mPendingProximityDebounceTime >= 0) {
+        Int64 now = SystemClock::GetUptimeMillis();
+        if (mPendingProximityDebounceTime <= now) {
+            // Sensor reading accepted.  Apply the change then release the wake lock.
+            mProximity = mPendingProximity;
+            UpdatePowerState();
+            ClearPendingProximityDebounceTime(); // release wake lock (must be last)
         }
-    }
-
-    static AutoPtr<ISpline> CreateAutoBrightnessSpline(
-        /* [in] */ ArrayOf<Int32>* lux,
-        /* [in] */ ArrayOf<Int32>* brightness)
-    {
-        try {
-            final Int32 n = brightness.length;
-            Float[] x = new Float[n];
-            Float[] y = new Float[n];
-            y[0] = NormalizeAbsoluteBrightness(brightness[0]);
-            for (Int32 i = 1; i < n; i++) {
-                x[i] = lux[i - 1];
-                y[i] = NormalizeAbsoluteBrightness(brightness[i]);
-            }
-
-            Spline spline = Spline.createSpline(x, y);
-            if (DEBUG) {
-                Slog.d(TAG, "Auto-brightness spline: " + spline);
-                for (Float v = 1f; v < lux[lux.length - 1] * 1.25f; v *= 1.25f) {
-                    Slog.d(TAG, String.format("  %7.1f: %7.1f", v, spline.interpolate(v)));
-                }
-            }
-            return spline;
-        } catch (IllegalArgumentException ex) {
-            Slog.e(TAG, "Could not create auto-brightness spline.", ex);
-            return NULL;
+        else {
+            // Need to wait a little longer.
+            // Debounce again later.  We continue holding a wake lock while waiting.
+            AutoPtr<IMessage> msg;
+            mHandler->ObtainMessage(MSG_PROXIMITY_SENSOR_DEBOUNCED, (IMessage**)&msg);
+            msg->SetAsynchronous(TRUE);
+            Boolean bval;
+            mHandler->SendMessageAtTime(msg, mPendingProximityDebounceTime, &bval);
         }
     }
+}
 
-    static Float NormalizeAbsoluteBrightness(
-        /* [in] */ Int32 value)
-    {
-        return (Float)ClampAbsoluteBrightness(value) / PowerManager.BRIGHTNESS_ON;
+void DisplayPowerController::ClearPendingProximityDebounceTime()
+{
+    if (mPendingProximityDebounceTime >= 0) {
+        mPendingProximityDebounceTime = -1;
+        mCallbacks->ReleaseSuspendBlocker(); // release wake lock
+    }
+}
+
+void DisplayPowerController::SetPendingProximityDebounceTime(
+    /* [in] */ Int64 debounceTime)
+{
+    if (mPendingProximityDebounceTime < 0) {
+        mCallbacks->AcquireSuspendBlocker(); // acquire wake lock
+    }
+    mPendingProximityDebounceTime = debounceTime;
+}
+
+void DisplayPowerController::SendOnStateChangedWithWakelock()
+{
+    mCallbacks->AcquireSuspendBlocker();
+    Boolean bval;
+    mHandler->Post(mOnStateChangedRunnable, &bval);
+}
+
+void DisplayPowerController::SendOnProximityPositiveWithWakelock()
+{
+    mCallbacks->AcquireSuspendBlocker();
+    Boolean bval;
+    mHandler->Post(mOnProximityPositiveRunnable, &bval);
+}
+
+void DisplayPowerController::SendOnProximityNegativeWithWakelock()
+{
+    mCallbacks->AcquireSuspendBlocker();
+    Boolean bval;
+    mHandler->Post(mOnProximityNegativeRunnable, &bval);
+}
+
+void DisplayPowerController::DumpLocal(
+    /* [in] */ IPrintWriter* pw)
+{
+    // pw.println();
+    // pw.println("Display Power Controller Thread State:");
+    // pw.println("  mPowerRequest=" + mPowerRequest);
+    // pw.println("  mWaitingForNegativeProximity=" + mWaitingForNegativeProximity);
+
+    // pw.println("  mProximitySensor=" + mProximitySensor);
+    // pw.println("  mProximitySensorEnabled=" + mProximitySensorEnabled);
+    // pw.println("  mProximityThreshold=" + mProximityThreshold);
+    // pw.println("  mProximity=" + ProximityToString(mProximity));
+    // pw.println("  mPendingProximity=" + ProximityToString(mPendingProximity));
+    // pw.println("  mPendingProximityDebounceTime="
+    //         + TimeUtils.formatUptime(mPendingProximityDebounceTime));
+    // pw.println("  mScreenOffBecauseOfProximity=" + mScreenOffBecauseOfProximity);
+    // pw.println("  mAppliedAutoBrightness=" + mAppliedAutoBrightness);
+    // pw.println("  mAppliedDimming=" + mAppliedDimming);
+    // pw.println("  mAppliedLowPower=" + mAppliedLowPower);
+    // pw.println("  mPendingScreenOnUnblocker=" + mPendingScreenOnUnblocker);
+    // pw.println("  mPendingScreenOff=" + mPendingScreenOff);
+
+    // pw.println("  mScreenBrightnessRampAnimator->IsAnimating()=" +
+    //         mScreenBrightnessRampAnimator->IsAnimating());
+
+    // if (mColorFadeOnAnimator != NULL) {
+    //     pw.println("  mColorFadeOnAnimator.isStarted()=" +
+    //             mColorFadeOnAnimator.isStarted());
+    // }
+    // if (mColorFadeOffAnimator != NULL) {
+    //     pw.println("  mColorFadeOffAnimator.isStarted()=" +
+    //             mColorFadeOffAnimator.isStarted());
+    // }
+
+    // if (mPowerState != NULL) {
+    //     mPowerState->dump(pw);
+    // }
+
+    // if (mAutomaticBrightnessController != NULL) {
+    //     mAutomaticBrightnessController.dump(pw);
+    // }
+}
+
+String DisplayPowerController::ProximityToString(
+    /* [in] */ Int32 state)
+{
+    switch (state) {
+        case PROXIMITY_UNKNOWN:
+            return String("Unknown");
+        case PROXIMITY_NEGATIVE:
+            return String("Negative");
+        case PROXIMITY_POSITIVE:
+            return String("Positive");
     }
 
-    static Int32 ClampAbsoluteBrightness(
-        /* [in] */ Int32 value)
-    {
-        return MathUtils.constrain(value, PowerManager.BRIGHTNESS_OFF, PowerManager.BRIGHTNESS_ON);
+    return StringUtils::ToString(state);
+}
+
+AutoPtr<ISpline> DisplayPowerController::CreateAutoBrightnessSpline(
+    /* [in] */ ArrayOf<Int32>* lux,
+    /* [in] */ ArrayOf<Int32>* brightness)
+{
+    Int32 n = brightness->GetLength();
+    AutoPtr<ArrayOf<Float> > x = ArrayOf<Float>::Alloc(n);
+    AutoPtr<ArrayOf<Float> > y = ArrayOf<Float>::Alloc(n);
+    (*y)[0] = NormalizeAbsoluteBrightness((*brightness)[0]);
+    for (Int32 i = 1; i < n; i++) {
+        (*x)[i] = (*lux)[i - 1];
+        (*y)[i] = NormalizeAbsoluteBrightness((*brightness)[i]);
     }
 
-private:
-    static const String TAG = "DisplayPowerController";
+    AutoPtr<ISplineHelper> helper;
+    CSplineHelper::AcquireSingleton((ISplineHelper**)&helper);
+    AutoPtr<ISpline> spline;
+    helper->CreateSpline(x, y, (ISpline**)&spline);
+    if (DEBUG) {
+        Slogger::D(TAG, "Auto-brightness spline: %s", Object::ToString(spline).string());
+        Float iv;
+        for (Float v = 1.0f; v < (*lux)[lux->GetLength() - 1] * 1.25f; v *= 1.25f) {
+            spline->Interpolate(v, &iv);
+            Slogger::D(TAG, "  %7.1f: %7.1f", v, iv);
+        }
+    }
+    return spline;
+}
 
-    static Boolean DEBUG = FALSE;
-    static const Boolean DEBUG_PRETEND_PROXIMITY_SENSOR_ABSENT = FALSE;
+Float DisplayPowerController::NormalizeAbsoluteBrightness(
+    /* [in] */ Int32 value)
+{
+    return (Float)ClampAbsoluteBrightness(value) / IPowerManager::BRIGHTNESS_ON;
+}
 
-    static const String SCREEN_ON_BLOCKED_TRACE_NAME = "Screen on blocked";
+Int32 DisplayPowerController::ClampAbsoluteBrightness(
+    /* [in] */ Int32 value)
+{
+    return MathUtils::Constrain(value, IPowerManager::BRIGHTNESS_OFF, IPowerManager::BRIGHTNESS_ON);
+}
 
-    // If TRUE, uses the color fade on animation.
-    // We might want to turn this off if we cannot get a guarantee that the screen
-    // actually turns on and starts showing new content after the call to set the
-    // screen state returns.  Playing the animation can also be somewhat slow.
-    static const Boolean USE_COLOR_FADE_ON_ANIMATION = FALSE;
-
-    // The minimum reduction in brightness when dimmed.
-    static const Int32 SCREEN_DIM_MINIMUM_REDUCTION = 10;
-
-    static const Int32 COLOR_FADE_ON_ANIMATION_DURATION_MILLIS = 250;
-    static const Int32 COLOR_FADE_OFF_ANIMATION_DURATION_MILLIS = 400;
-
-    static const Int32 MSG_UPDATE_POWER_STATE = 1;
-    static const Int32 MSG_PROXIMITY_SENSOR_DEBOUNCED = 2;
-    static const Int32 MSG_SCREEN_ON_UNBLOCKED = 3;
-
-    static const Int32 PROXIMITY_UNKNOWN = -1;
-    static const Int32 PROXIMITY_NEGATIVE = 0;
-    static const Int32 PROXIMITY_POSITIVE = 1;
-
-    // Proximity sensor debounce delay in milliseconds for positive or negative transitions.
-    static const Int32 PROXIMITY_SENSOR_POSITIVE_DEBOUNCE_DELAY = 0;
-    static const Int32 PROXIMITY_SENSOR_NEGATIVE_DEBOUNCE_DELAY = 250;
-
-    // Trigger proximity if distance is less than 5 cm.
-    static const Float TYPICAL_PROXIMITY_THRESHOLD = 5.0f;
-
-    // Brightness animation ramp rate in brightness units per second.
-    static const Int32 BRIGHTNESS_RAMP_RATE_FAST = 200;
-    static const Int32 BRIGHTNESS_RAMP_RATE_SLOW = 40;
-
-    Object mLock;
-
-    AutoPtr<IContext> mContext;
-
-    // Our handler.
-    AutoPtr<DisplayControllerHandler> mHandler;
-
-    // Asynchronous callbacks into the power manager service.
-    // Only invoked from the handler thread while no locks are held.
-    AutoPtr<IDisplayPowerCallbacks> mCallbacks;
-
-    // Battery stats.
-    AutoPtr<IIBatteryStats> mBatteryStats;
-
-    // The lights service.
-    AutoPtr<ILightsManager> mLights;
-
-    // The sensor manager.
-    AutoPtr<ISensorManager> mSensorManager;
-
-    // The window manager policy.
-    AutoPtr<IWindowManagerPolicy> mWindowManagerPolicy;
-
-    // The display blanker.
-    AutoPtr<IDisplayBlanker> mBlanker;
-
-    // The proximity sensor, or NULL if not available or needed.
-    Sensor mProximitySensor;
-
-    // The doze screen brightness.
-    Int32 mScreenBrightnessDozeConfig;
-
-    // The dim screen brightness.
-    Int32 mScreenBrightnessDimConfig;
-
-    // The minimum screen brightness to use in a very dark room.
-    Int32 mScreenBrightnessDarkConfig;
-
-    // The minimum allowed brightness.
-    Int32 mScreenBrightnessRangeMinimum;
-
-    // The maximum allowed brightness.
-    Int32 mScreenBrightnessRangeMaximum;
-
-    // True if auto-brightness should be used.
-    Boolean mUseSoftwareAutoBrightnessConfig;
-
-    // True if we should fade the screen while turning it off, FALSE if we should play
-    // a stylish color fade animation instead.
-    Boolean mColorFadeFadesConfig;
-
-    // The pending power request.
-    // Initially NULL until the first call to RequestPowerState.
-    // Guarded by mLock.
-    AutoPtr<IDisplayPowerRequest> mPendingRequestLocked;
-
-    // True if a request has been made to wait for the proximity sensor to go negative.
-    // Guarded by mLock.
-    Boolean mPendingWaitForNegativeProximityLocked;
-
-    // True if the pending power request or wait for negative proximity flag
-    // has been changed since the last update occurred.
-    // Guarded by mLock.
-    Boolean mPendingRequestChangedLocked;
-
-    // Set to TRUE when the important parts of the pending power request have been applied.
-    // The important parts are mainly the screen state.  Brightness changes may occur
-    // concurrently.
-    // Guarded by mLock.
-    Boolean mDisplayReadyLocked;
-
-    // Set to TRUE if a power state update is required.
-    // Guarded by mLock.
-    Boolean mPendingUpdatePowerStateLocked;
-
-    /* The following state must only be accessed by the handler thread. */
-
-    // The currently requested power state.
-    // The power controller will progressively update its internal state to match
-    // the requested power state.  Initially NULL until the first update.
-    AutoPtr<DisplayPowerRequest> mPowerRequest;
-
-    // The current power state.
-    // Must only be accessed on the handler thread.
-    AutoPtr<IDisplayPowerState> mPowerState;
-
-    // True if the device should wait for negative proximity sensor before
-    // waking up the screen.  This is set to FALSE as soon as a negative
-    // proximity sensor measurement is observed or when the device is forced to
-    // go to sleep by the user.  While TRUE, the screen remains off.
-    Boolean mWaitingForNegativeProximity;
-
-    // The actual proximity sensor threshold value.
-    Float mProximityThreshold;
-
-    // Set to TRUE if the proximity sensor listener has been registered
-    // with the sensor manager.
-    Boolean mProximitySensorEnabled;
-
-    // The debounced proximity sensor state.
-    Int32 mProximity = PROXIMITY_UNKNOWN;
-
-    // The raw non-debounced proximity sensor state.
-    Int32 mPendingProximity = PROXIMITY_UNKNOWN;
-    Int64 mPendingProximityDebounceTime = -1; // -1 if fully debounced
-
-    // True if the screen was turned off because of the proximity sensor.
-    // When the screen turns on again, we report user activity to the power manager.
-    Boolean mScreenOffBecauseOfProximity;
-
-    // The currently active screen on unblocker.  This field is non-NULL whenever
-    // we are waiting for a callback to release it and unblock the screen.
-    AutoPtr<ScreenOnUnblocker> mPendingScreenOnUnblocker;
-
-    // True if we were in the process of turning off the screen.
-    // This allows us to recover more gracefully from situations where we abort
-    // turning off the screen.
-    Boolean mPendingScreenOff;
-
-    // True if we have unfinished business and are holding a suspend blocker.
-    Boolean mUnfinishedBusiness;
-
-    // The elapsed real time when the screen on was blocked.
-    Int64 mScreenOnBlockStartRealTime;
-
-    // Remembers whether certain kinds of brightness adjustments
-    // were recently applied so that we can decide how to transition.
-    Boolean mAppliedAutoBrightness;
-    Boolean mAppliedDimming;
-    Boolean mAppliedLowPower;
-
-    // The controller for the automatic brightness level.
-    AutomaticBrightnessController mAutomaticBrightnessController;
-
-    // Animators.
-    AutoPtr<IObjectAnimator> mColorFadeOnAnimator;
-    AutoPtr<IObjectAnimator> mColorFadeOffAnimator;
-    AutoPtr<RampAnimator> mScreenBrightnessRampAnimator;
-
-    AutoPtr<ISensorEventListener> mProximitySensorListener
-    AutoPtr<IAnimatorAnimatorListener> mAnimatorListener
-    AutoPtr<IRampAnimatorListener> mRampAnimatorListener
-    AutoPtr<IRunnable> mCleanListener
-    AutoPtr<IRunnable> mOnStateChangedRunnable
-    AutoPtr<IRunnable> mOnProximityPositiveRunnable
-    AutoPtr<IRunnable> mOnProximityNegativeRunnable
-};
 
 } // namespace Display
 } // namespace Server

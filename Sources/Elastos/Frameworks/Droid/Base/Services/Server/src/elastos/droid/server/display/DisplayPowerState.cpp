@@ -1,7 +1,8 @@
 
-#include "power/DisplayPowerState.h"
+#include "elastos/droid/server/display/DisplayPowerState.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/AsyncTask.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::EIID_IRunnable;
@@ -9,13 +10,13 @@ using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::IPowerManager;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::AsyncTask;
+using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::View::IChoreographerHelper;
 using Elastos::Droid::View::CChoreographerHelper;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::IFloat;
 using Elastos::Core::CFloat;
-using Elastos::Core::ECLSID_CInteger32;
 
 namespace Elastos {
 namespace Droid {
@@ -25,33 +26,11 @@ namespace Display {
 //=====================================================================
 //  DisplayPowerState::DisplayPowerStateFloatProperty
 //=====================================================================
-CAR_INTERFACE_IMPL_2(DisplayPowerState::DisplayPowerStateFloatProperty, Object, IFloatProperty, IProperty)
 
 DisplayPowerState::DisplayPowerStateFloatProperty::DisplayPowerStateFloatProperty(
     /* [in] */ const String& name)
+    : FloatProperty(name)
 {
-    mName = name;
-    mClsId = ECLSID_CFloat;
-}
-
-ECode DisplayPowerState::DisplayPowerStateFloatProperty::IsReadOnly(
-    /* [out] */ Boolean* readOnly)
-{
-    VALIDATE_NOT_NULL(readOnly)
-    *readOnly = FALSE;
-    return NOERROR;
-}
-
-ECode DisplayPowerState::DisplayPowerStateFloatProperty::Set(
-    /* [in] */ IInterface* obj,
-    /* [in] */ IInterface* value)
-{
-    if (IFloat::Probe(value) == NULL) {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    Float v;
-    IFloat::Probe(value)->GetValue(&v);
-    return SetValue(obj, v);
 }
 
 ECode DisplayPowerState::DisplayPowerStateFloatProperty::Get(
@@ -59,7 +38,7 @@ ECode DisplayPowerState::DisplayPowerStateFloatProperty::Get(
     /* [out] */ IInterface** rst)
 {
     VALIDATE_NOT_NULL(rst)
-    AutoPtr<DisplayPowerState> dps = (DisplayPowerState*)(obj);
+    AutoPtr<DisplayPowerState> dps = (DisplayPowerState*)IObject::Probe(obj);
     Float level = dps->GetColorFadeLevel();
     AutoPtr<IFloat> rstTmp;
     CFloat::New(level, (IFloat**)&rstTmp);
@@ -68,43 +47,11 @@ ECode DisplayPowerState::DisplayPowerStateFloatProperty::Get(
     return NOERROR;
 }
 
-ECode DisplayPowerState::DisplayPowerStateFloatProperty::GetName(
-    /* [out] */ String* name)
-{
-    VALIDATE_NOT_NULL(name)
-    *name = mName;
-    return NOERROR;
-}
-
-ECode DisplayPowerState::DisplayPowerStateFloatProperty::GetType(
-    /* [out] */ ClassID* id)
-{
-    VALIDATE_NOT_NULL(id)
-    *id = mClsId;
-    return NOERROR;
-}
-
-ECode DisplayPowerState::DisplayPowerStateFloatProperty::IsWriteOnly(
-    /* [out] */ Boolean* writeOnly)
-{
-    VALIDATE_NOT_NULL(writeOnly)
-    *writeOnly = FALSE;
-    return NOERROR;
-}
-
-ECode DisplayPowerState::DisplayPowerStateFloatProperty::ForbiddenOperate(
-    /* [out] */ Boolean* forbidden)
-{
-    VALIDATE_NOT_NULL(forbidden)
-    *forbidden = FALSE;
-    return NOERROR;
-}
-
 ECode DisplayPowerState::DisplayPowerStateFloatProperty::SetValue(
     /* [in] */ IInterface* obj,
     /* [in] */ Float value)
 {
-    AutoPtr<DisplayPowerState> dps = (DisplayPowerState*)(obj);
+    AutoPtr<DisplayPowerState> dps = (DisplayPowerState*)IObject::Probe(obj);
     dps->SetColorFadeLevel(value);
     return NOERROR;
 }
@@ -112,42 +59,18 @@ ECode DisplayPowerState::DisplayPowerStateFloatProperty::SetValue(
 //=====================================================================
 //  DisplayPowerState::DisplayPowerStateInt32Property
 //=====================================================================
-CAR_INTERFACE_IMPL_2(DisplayPowerState::DisplayPowerStateInt32Property, Object, IInt32Property, IProperty)
 
 DisplayPowerState::DisplayPowerStateInt32Property::DisplayPowerStateInt32Property(
     /* [in] */ const String& name)
+    : Int32Property(name)
 {
-    mName = name;
-    mClsId = ECLSID_CInteger32;
-}
-
-ECode DisplayPowerState::DisplayPowerStateInt32Property::IsReadOnly(
-    /* [out] */ Boolean* readOnly)
-{
-    VALIDATE_NOT_NULL(readOnly)
-    *readOnly = FALSE;
-    return NOERROR;
-}
-
-ECode DisplayPowerState::DisplayPowerStateInt32Property::Set(
-    /* [in] */ IInterface* obj,
-    /* [in] */ IInterface* value)
-{
-    IInteger32* iobj = IInteger32::Probe(value);
-    if (iobj == NULL) {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    Int32 v;
-    iobj->GetValue(&v);
-    return SetValue(obj, v);
 }
 
 ECode DisplayPowerState::DisplayPowerStateInt32Property::Get(
     /* [in] */ IInterface* obj,
     /* [out] */ IInterface** rst)
 {
-    AutoPtr<DisplayPowerState> dps = (DisplayPowerState*)(obj);
+    AutoPtr<DisplayPowerState> dps = (DisplayPowerState*)IObject::Probe(obj);
     Float level = dps->GetScreenBrightness();
     AutoPtr<IInteger32> rstTmp;
     CInteger32::New(level, (IInteger32**)&rstTmp);
@@ -156,47 +79,15 @@ ECode DisplayPowerState::DisplayPowerStateInt32Property::Get(
     return NOERROR;
 }
 
-
-ECode DisplayPowerState::DisplayPowerStateInt32Property::GetName(
-    /* [out] */ String* name)
-{
-    VALIDATE_NOT_NULL(name)
-    *name = mName;
-    return NOERROR;
-}
-
-ECode DisplayPowerState::DisplayPowerStateInt32Property::GetType(
-    /* [out] */ ClassID* id)
-{
-    VALIDATE_NOT_NULL(id)
-    *id = mClsId;
-    return NOERROR;
-}
-
-ECode DisplayPowerState::DisplayPowerStateInt32Property::IsWriteOnly(
-    /* [out] */ Boolean* writeOnly)
-{
-    VALIDATE_NOT_NULL(writeOnly)
-    *writeOnly = FALSE;
-    return NOERROR;
-}
-
-ECode DisplayPowerState::DisplayPowerStateInt32Property::ForbiddenOperate(
-    /* [out] */ Boolean* forbidden)
-{
-    VALIDATE_NOT_NULL(forbidden)
-    *forbidden = FALSE;
-    return NOERROR;
-}
-
 ECode DisplayPowerState::DisplayPowerStateInt32Property::SetValue(
     /* [in] */ IInterface* obj,
     /* [in] */ Int32 value)
 {
-    AutoPtr<DisplayPowerState> dps = (DisplayPowerState*)(obj);
+    AutoPtr<DisplayPowerState> dps = (DisplayPowerState*)IObject::Probe(obj);
     dps->SetScreenBrightness(value);
     return NOERROR;
 }
+
 //=====================================================================
 //  DisplayPowerState::PhotonicModulator::TaskRunnable
 //=====================================================================
@@ -207,14 +98,15 @@ DisplayPowerState::PhotonicModulator::TaskRunnable::TaskRunnable(
 
 ECode DisplayPowerState::PhotonicModulator::TaskRunnable::Run()
 {
+    Int32 state;
+    Boolean stateChanged;
+    Int32 backlight;
+    Boolean backlightChanged;
     for (;;) {
         // Get pending change.
-        Int32 state;
-        Boolean stateChanged;
-        Int32 backlight;
-        Boolean backlightChanged;
         {
-            AutoLock lock(mHost->mLock);
+            Object& obj = mHost->mLock;
+            AutoLock lock(obj);
             state = mHost->mPendingState;
             stateChanged = (state != mHost->mActualState);
             backlight = mHost->mPendingBacklight;
@@ -222,14 +114,14 @@ ECode DisplayPowerState::PhotonicModulator::TaskRunnable::Run()
             if (!stateChanged && !backlightChanged) {
                 // All changed applied, notify outer class and wait for more.
                 mHost->mChangeInProgress = false;
-                mHost->PostScreenUpdateThreadSafe();
+                mHost->mHost->PostScreenUpdateThreadSafe();
                 // try {
-                    mLock.Wait();
+                    mHost->mLock.Wait();
                 // } catch (InterruptedException ex) { }
                 continue;
             }
-            mActualState = state;
-            mActualBacklight = backlight;
+            mHost->mActualState = state;
+            mHost->mActualBacklight = backlight;
         }
 
         // Apply pending change.
@@ -237,15 +129,16 @@ ECode DisplayPowerState::PhotonicModulator::TaskRunnable::Run()
             Slogger::D(TAG, "Updating screen state: state=%d, backlight=%d", state, backlight);
         }
 
-        Boolean suspending = Display.isSuspendedState(state);
+        Boolean suspending = (state == IDisplay::STATE_OFF
+            || state == IDisplay::STATE_DOZE_SUSPEND);
         if (stateChanged && !suspending) {
-            RequestDisplayState(state);
+            mHost->RequestDisplayState(state);
         }
         if (backlightChanged) {
-            SetBrightness(backlight);
+            mHost->SetBrightness(backlight);
         }
         if (stateChanged && suspending) {
-            RequestDisplayState(state);
+            mHost->RequestDisplayState(state);
         }
     }
 
@@ -255,7 +148,7 @@ ECode DisplayPowerState::PhotonicModulator::TaskRunnable::Run()
 //=====================================================================
 //  DisplayPowerState::PhotonicModulator
 //=====================================================================
-const Boolean DisplayPowerState::PhotonicModulator::INITIAL_SCREEN_ON = IDisplay::STATE_OFF;
+const Int32 DisplayPowerState::PhotonicModulator::INITIAL_SCREEN_STATE = IDisplay::STATE_OFF;
 const Int32 DisplayPowerState::PhotonicModulator::INITIAL_BACKLIGHT = -1;
 
 DisplayPowerState::PhotonicModulator::PhotonicModulator(
@@ -297,24 +190,17 @@ Boolean DisplayPowerState::PhotonicModulator::SetState(
 void DisplayPowerState::PhotonicModulator::RequestDisplayState(
     /* [in] */ Int32 state)
 {
-    Trace.traceBegin(Trace.TRACE_TAG_POWER, "requestDisplayState("
-            + Display.stateToString(state) + ")");
-    try {
-        mBlanker.requestDisplayState(state);
-    } finally {
-        Trace.traceEnd(Trace.TRACE_TAG_POWER);
-    }
+    //Trace.traceBegin(Trace.TRACE_TAG_POWER, "requestDisplayState("
+            // + Display.stateToString(state) + ")");
+    mHost->mBlanker->RequestDisplayState(state);
 }
 
 void DisplayPowerState::PhotonicModulator::SetBrightness(
     /* [in] */ Int32 backlight)
 {
-    Trace.traceBegin(Trace.TRACE_TAG_POWER, "setBrightness(" + backlight + ")");
-    try {
-        mBacklight.setBrightness(backlight);
-    } finally {
-        Trace.traceEnd(Trace.TRACE_TAG_POWER);
-    }
+    //Trace.traceBegin(Trace.TRACE_TAG_POWER, "setBrightness(" + backlight + ")");
+    assert(0 && "TODO");
+    // mBacklight->SetBrightness(backlight);
 }
 
 //=====================================================================
@@ -369,14 +255,14 @@ const String DisplayPowerState::TAG("DisplayPowerState");
 static AutoPtr<IFloatProperty> InitFloatProperty(
     /* [in] */ const String& name)
 {
-    AutoPtr<IFloatProperty> fp = new DisplayPowerStateFloatProperty(name);
+    AutoPtr<IFloatProperty> fp = new DisplayPowerState::DisplayPowerStateFloatProperty(name);
     return fp;
 }
 
 static AutoPtr<IInt32Property> InitInt32Property(
     /* [in] */ const String& name)
 {
-    AutoPtr<IInt32Property> ip = new DisplayPowerStateInt32Property(name);
+    AutoPtr<IInt32Property> ip = new DisplayPowerState::DisplayPowerStateInt32Property(name);
     return ip;
 }
 
@@ -386,12 +272,11 @@ AutoPtr<IInt32Property> DisplayPowerState::SCREEN_BRIGHTNESS = InitInt32Property
 
 DisplayPowerState::DisplayPowerState(
     /* [in] */ IDisplayBlanker* blanker,
-    /* [in] */ LightsService::Light* backlight,
-    /* [in] */ ColorFade* electronBeam)
-    : mColorFade(electronBean)
-    , mBlanker(blanker)
-    , mBacklight(backlight)
-    , mColorFade(electronBeam)
+    ///* [in] */ LightsService::Light* backlight,
+    /* [in] */ ColorFade* colorFade)
+    : mBlanker(blanker)
+    //, mBacklight(backlight)
+    , mColorFade(colorFade)
     , mScreenState(IDisplay::STATE_ON)
     , mScreenBrightness(IPowerManager::BRIGHTNESS_ON)
     , mScreenReady(FALSE)
@@ -465,7 +350,7 @@ Boolean DisplayPowerState::PrepareColorFade(
     /* [in] */ IContext* context,
     /* [in] */ Int32 mode)
 {
-    if (!mColorFade->Prepare(mode)) {
+    if (!mColorFade->Prepare(context, mode)) {
         mColorFadePrepared = FALSE;
         mColorFadeReady = TRUE;
         return FALSE;

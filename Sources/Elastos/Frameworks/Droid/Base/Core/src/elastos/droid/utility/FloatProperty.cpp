@@ -15,6 +15,9 @@ FloatProperty::FloatProperty(
     mName = name;
 }
 
+FloatProperty::~FloatProperty()
+{}
+
 ECode FloatProperty::IsReadOnly(
     /* [out] */ Boolean* readOnly)
 {

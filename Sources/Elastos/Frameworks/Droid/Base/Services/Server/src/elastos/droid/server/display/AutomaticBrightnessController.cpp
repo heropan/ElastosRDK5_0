@@ -11,6 +11,8 @@ using Elastos::Droid::Os::IPowerManagerHelper;
 using Elastos::Droid::Os::CPowerManagerHelper;
 using Elastos::Droid::Text::Format::IDateUtils;
 using Elastos::Droid::Utility::MathUtils;
+using Elastos::Droid::Hardware::EIID_ISensorEventListener;
+using Elastos::Droid::Server::Twilight::EIID_ITwilightListener;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Slogger;
 
@@ -324,7 +326,7 @@ const Int64 AutomaticBrightnessController::TWILIGHT_ADJUSTMENT_TIME = IDateUtils
 const Int32 AutomaticBrightnessController::MSG_UPDATE_AMBIENT_LUX = 1;
 
 AutomaticBrightnessController::AutomaticBrightnessController(
-    /* [in] */ IAutomaticBrightnessControllerCallbacks callbacks,
+    /* [in] */ IAutomaticBrightnessControllerCallbacks* callbacks,
     /* [in] */ ILooper* looper,
     /* [in] */ ISensorManager* sensorManager,
     /* [in] */ ISpline* autoBrightnessSpline,
@@ -367,7 +369,8 @@ AutomaticBrightnessController::AutomaticBrightnessController(
     }
 
     if (USE_TWILIGHT_ADJUSTMENT) {
-        mTwilight->RegisterListener(mTwilightListener.Get(), mHandler);
+        assert(0 && "TODO");
+        // mTwilight->RegisterListener(mTwilightListener.Get(), mHandler);
     }
 }
 

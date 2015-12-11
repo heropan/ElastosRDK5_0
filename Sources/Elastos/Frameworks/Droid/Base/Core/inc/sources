@@ -1,5 +1,5 @@
 
-//EXPORT_HEADERS += elastos/droid/R.h
+EXPORT_HEADERS += elastos/droid/R.h
 //EXPORT_HEADERS += elastos/droid/app/Activity.h
 //EXPORT_HEADERS += elastos/droid/app/ListActivity.h
 //EXPORT_HEADERS += elastos/droid/app/Fragment.h
@@ -41,7 +41,8 @@ EXPORT_HEADERS += elastos/droid/utility/TimeUtils.h
 //EXPORT_HEADERS += elastos/droid/utility/ArrayUtils.h
 EXPORT_HEADERS += elastos/droid/utility/FloatMath.h
 //EXPORT_HEADERS += elastos/droid/utility/LruCache.h
-//EXPORT_HEADERS += elastos/droid/utility/Int32Property.h
+EXPORT_HEADERS += elastos/droid/utility/Int32Property.h
+EXPORT_HEADERS += elastos/droid/utility/FloatProperty.h
 //EXPORT_HEADERS += elastos/droid/text/TextUtils.h
 //EXPORT_HEADERS += elastos/droid/text/MeasuredText.h
 //EXPORT_HEADERS += elastos/droid/text/AndroidBidi.h

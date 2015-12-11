@@ -8,7 +8,7 @@ namespace Elastos {
 namespace Droid {
 namespace Utility {
 
-class Int32Property
+class ECO_PUBLIC Int32Property
     : public Object
     , public IInt32Property
     , public IProperty
@@ -18,6 +18,8 @@ public :
 
     Int32Property(
         /* [in] */ const String& name);
+
+    virtual ~Int32Property();
 
     CARAPI IsReadOnly(
         /* [out] */ Boolean* readOnly);
@@ -45,8 +47,9 @@ public :
     CARAPI SetValue(
         /* [in] */ IInterface* obj,
         /* [in] */ Int32 value) = 0;
+
 private:
-    String mName;
+    ECO_LOCAL String mName;
 };
 
 } // namespace Utility

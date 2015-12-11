@@ -247,6 +247,10 @@ module
         interface ICloneable;
     }
 
+    singleton class CSplineHelper {
+        interface ISplineHelper;
+    }
+
     [deprecated]
     class CMonotoneCubicSpline {
         constructor(
