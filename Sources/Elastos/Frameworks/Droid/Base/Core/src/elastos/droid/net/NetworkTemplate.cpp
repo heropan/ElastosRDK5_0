@@ -38,7 +38,7 @@ const AutoPtr<ArrayOf<Int32> > NetworkTemplate::DATA_USAGE_NETWORK_TYPES = Creat
 AutoPtr<ArrayOf<Int32> > NetworkTemplate::CreateDataUsageNetworkTypes()
 {
     AutoPtr<ArrayOf<Int32> > rev;
-    CResources::GetSystem()->GetIntArray(
+    CResources::GetSystem()->GetInt32Array(
             R::array::config_data_usage_network_types, (ArrayOf<Int32>**)&rev);
     return rev;
 }
@@ -161,7 +161,7 @@ ECode NetworkTemplate::constructor(
     mMatchRule = matchRule;
     mSubscriberId = subscriberId;
     mNetworkId = networkId;
-    CResources::GetSystem()->GetIntArray(R::array::config_data_usage_network_types, (ArrayOf<Int32>**)&DATA_USAGE_NETWORK_TYPES);
+    CResources::GetSystem()->GetInt32Array(R::array::config_data_usage_network_types, (ArrayOf<Int32>**)&DATA_USAGE_NETWORK_TYPES);
     return NOERROR;
 }
 

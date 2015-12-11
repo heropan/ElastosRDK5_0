@@ -14,6 +14,7 @@ using Elastos::Droid::Hardware::ISensorEventListener;
 using Elastos::Droid::Hardware::ISensorManager;
 using Elastos::Droid::Utility::ISpline;
 using Elastos::Droid::Server::Twilight::ITwilightListener;
+using Elastos::IO::IPrintWriter;
 
 namespace Elastos {
 namespace Droid {

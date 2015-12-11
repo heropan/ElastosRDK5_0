@@ -473,7 +473,7 @@ public:
      *
      * @return The int array associated with the resource.
      */
-    CARAPI GetIntArray(
+    CARAPI GetInt32Array(
         /* [in] */ Int32 id,
         /* [out, callee] */ ArrayOf<Int32>** ints);
 

@@ -1157,8 +1157,8 @@ ECode CGsmAlphabet::EnableCountrySpecificEncodings()
     // See comments in frameworks/base/core/res/res/values/config.xml for allowed values
     sEnabledSingleShiftTables = NULL;
     sEnabledLockingShiftTables = NULL;
-    r->GetIntArray(R::array::config_sms_enabled_single_shift_tables, (ArrayOf<Int32>**)&sEnabledSingleShiftTables);
-    r->GetIntArray(R::array::config_sms_enabled_locking_shift_tables, (ArrayOf<Int32>**)&sEnabledLockingShiftTables);
+    r->GetInt32Array(R::array::config_sms_enabled_single_shift_tables, (ArrayOf<Int32>**)&sEnabledSingleShiftTables);
+    r->GetInt32Array(R::array::config_sms_enabled_locking_shift_tables, (ArrayOf<Int32>**)&sEnabledLockingShiftTables);
 
     if (sEnabledSingleShiftTables->GetLength() > 0) {
         sHighestEnabledSingleShiftCode =

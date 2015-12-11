@@ -14,7 +14,6 @@ module
     merge("display/DisplayBlanker.car");
     merge("display/OverlayDisplayWindow.car");
     merge("display/RampAnimator.car");
-    merge("display/DisplayManagerService.car");
     merge("twilight/TwilightListener.car");
 
     merge("Exceptions.car");
@@ -26,6 +25,10 @@ module
     // merge("DeviceStorageMonitorService.car");
     // merge("dreams/DreamManagerService.car");
     // merge("search/Searchables.car");
+
+    using interface Elastos.Droid.Os.IBinder;
+    using interface Elastos.Droid.Media.Projection.IIMediaProjectionCallback;
+
 
     // using interface Elastos.Core.IRunnable;
     // using interface Elastos.IO.IFile;
@@ -67,7 +70,6 @@ module
     // using interface Elastos.Droid.Net.INetworkPolicyListener;
     // using interface Elastos.Droid.Net.IIThrottleManager;
     // using interface Elastos.Droid.Net.INetworkStatsSession;
-    // using interface Elastos.Droid.Os.IBinder;
     // using interface Elastos.Droid.Os.ILooper;
     // using interface Elastos.Droid.Os.IHandler;
     // using interface Elastos.Droid.Os.IIUserManager;
@@ -514,7 +516,7 @@ module
 
 //     } // namespace Connectivity
 
-//     namespace Display {
+    namespace Display {
 
 //     [local]
 //     class CDisplayManagerService {
@@ -523,10 +525,20 @@ module
 //             [in] IHandler* mainHandler,
 //             [in] IHandler* uiHandler);
 
-//         interface IIDisplayManager;
+//         interface IDisplayManagerService;
+//         interface ISystemService;
 //     }
 
-//     } // namespace Display
+        class CMediaProjectionCallback {
+            constructor(
+                [in] IBinder* appToken,
+                [in] IObject* displayAdapter);
+
+            interface IIMediaProjectionCallback;
+            interface IBinder;
+        }
+
+    } // namespace Display
 
 //     namespace Dreams {
 

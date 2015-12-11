@@ -738,7 +738,7 @@ ECode CResources::GetStringArray(
     return E_NOT_FOUND_EXCEPTION;
 }
 
-ECode CResources::GetIntArray(
+ECode CResources::GetInt32Array(
     /* [in] */ Int32 id,
     /* [out, callee] */ ArrayOf<Int32>** ints)
 {

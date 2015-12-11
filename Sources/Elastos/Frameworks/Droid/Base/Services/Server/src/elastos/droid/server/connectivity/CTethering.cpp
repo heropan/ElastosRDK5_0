@@ -1205,7 +1205,7 @@ void CTethering::UpdateConfiguration()
             R::array::config_tether_bluetooth_regexs, (ArrayOf<String>**)&tetherableBluetoothRegexs);
 
     AutoPtr< ArrayOf<Int32> > ifaceTypes;
-    resource->GetIntArray(
+    resource->GetInt32Array(
             R::array::config_tether_upstream_types, (ArrayOf<Int32>**)&ifaceTypes);
     for (Int32 i = 0; i != ifaceTypes->GetLength(); i++) {
         AutoPtr<IInteger32> type;

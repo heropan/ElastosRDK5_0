@@ -360,9 +360,9 @@ DisplayPowerController::DisplayPowerController(
         &mUseSoftwareAutoBrightnessConfig);
     if (mUseSoftwareAutoBrightnessConfig) {
         AutoPtr<ArrayOf<Int32> > lux;
-        resources->GetIntArray(R::array::config_autoBrightnessLevels, (ArrayOf<Int32>**)&lux);
+        resources->GetInt32Array(R::array::config_autoBrightnessLevels, (ArrayOf<Int32>**)&lux);
         AutoPtr<ArrayOf<Int32> > screenBrightness;
-        resources->GetIntArray(R::array::config_autoBrightnessLcdBacklightValues, (ArrayOf<Int32>**)&screenBrightness);
+        resources->GetInt32Array(R::array::config_autoBrightnessLcdBacklightValues, (ArrayOf<Int32>**)&screenBrightness);
         Int32 lightSensorWarmUpTimeConfig;
         resources->GetInteger(R::integer::config_lightSensorWarmupTime, &lightSensorWarmUpTimeConfig);
 

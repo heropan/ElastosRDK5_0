@@ -849,7 +849,7 @@ ECode CConnectivityService::constructor(
     }
 
     AutoPtr< ArrayOf<Int32> > protectedNetworks;
-    resources->GetIntArray(R::array::config_protectedNetworks, (ArrayOf<Int32>**)&protectedNetworks);
+    resources->GetInt32Array(R::array::config_protectedNetworks, (ArrayOf<Int32>**)&protectedNetworks);
     for (Int32 i = 0; i < protectedNetworks->GetLength(); i++) {
         Int32 p = (*protectedNetworks)[i];
         if ((*mNetConfigs)[p] != NULL &&

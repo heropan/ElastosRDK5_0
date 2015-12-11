@@ -2,11 +2,15 @@
 #define __ELASTOS_DROID_SERVER_DISPLAY_VIRTAUL_DISPLAYADAPTER_H__
 
 #include "elastos/droid/server/display/DisplayAdapter.h"
+#include "elastos/droid/server/display/DisplayDevice.h"
+#include "elastos/droid/server/display/DisplayDeviceInfo.h"
+#include "elastos/droid/os/Handler.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Hardware::Display::IIVirtualDisplayCallback;
 using Elastos::Droid::Media::Projection::IIMediaProjection;
 using Elastos::Droid::Media::Projection::IIMediaProjectionCallback;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IMessage;
@@ -48,6 +52,9 @@ public:
 
         //@Override
         CARAPI OnStop();
+
+        CARAPI ToString(
+            /* [out] */ String* str);
 
     private:
         AutoPtr<IBinder> mAppToken;
@@ -106,7 +113,7 @@ private:
             /* [in] */ VirtualDisplayAdapter* host);
 
         //@Override
-        CARAPI BinderDied();
+        CARAPI ProxyDied();
 
         CARAPI DestroyLocked();
 
@@ -135,6 +142,7 @@ private:
         CARAPI_(AutoPtr<DisplayDeviceInfo>) GetDisplayDeviceInfoLocked();
 
     private:
+        friend class VirtualDisplayAdapter;
         static const Int32 PENDING_SURFACE_CHANGE;
         static const Int32 PENDING_RESIZE;
 
@@ -148,7 +156,7 @@ private:
         Int32 mWidth;
         Int32 mHeight;
         Int32 mDensityDpi;
-        Surface mSurface;
+        AutoPtr<ISurface> mSurface;
         AutoPtr<DisplayDeviceInfo> mInfo;
         Int32 mDisplayState;
         Boolean mStopped;
@@ -160,7 +168,7 @@ public:
 
     // Called with SyncRoot lock held.
     VirtualDisplayAdapter(
-        /* [in] */ CDisplayManagerService.SyncRoot syncRoot,
+        /* [in] */ Object* syncRoot,
         /* [in] */ IContext* context,
         /* [in] */ IHandler* handler,
         /* [in] */ IDisplayAdapterListener* listener);
@@ -191,7 +199,7 @@ public:
         /* [in] */ IBinder* appToken);
 
 private:
-    void HandleBinderDiedLocked(
+    void HandleProxyDiedLocked(
         /* [in] */ IBinder* appToken);
 
     void HandleMediaProjectionStoppedLocked(

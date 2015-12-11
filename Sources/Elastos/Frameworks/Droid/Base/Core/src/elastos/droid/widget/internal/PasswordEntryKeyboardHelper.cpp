@@ -333,7 +333,7 @@ ECode PasswordEntryKeyboardHelper::SetVibratePattern(
     //try {
         AutoPtr<IResources> rs;
         mContext->GetResources((IResources**)&rs);
-        rs->GetIntArray(id, (ArrayOf<Int32>**)&tmpArray);
+        rs->GetInt32Array(id, (ArrayOf<Int32>**)&tmpArray);
     /*} catch (Resources.NotFoundException e) {
         if (id != 0) {
             Log.e(TAG, "Vibrate pattern missing", e);

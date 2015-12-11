@@ -621,7 +621,7 @@ AutoPtr< ArrayOf<Int64> > CNotificationManagerService::GetLongArray(
     /* [in] */ ArrayOf<Int64>* def)
 {
     AutoPtr< ArrayOf<Int32> > ar;
-    res->GetIntArray(resid, (ArrayOf<Int32>**)&ar);
+    res->GetInt32Array(resid, (ArrayOf<Int32>**)&ar);
 
     AutoPtr< ArrayOf<Int64> > result;
     if (ar == NULL) {

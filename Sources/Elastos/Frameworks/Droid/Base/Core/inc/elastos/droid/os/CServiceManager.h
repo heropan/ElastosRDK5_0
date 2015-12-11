@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Os_CServiceManager.h"
-#include <elastos/core/Object.h>
+#include <elastos/core/Singleton.h>
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;
@@ -15,13 +15,13 @@ namespace Droid {
 namespace Os {
 
 CarClass(CServiceManager)
-    , public Object
+    , public Singleton
     , public IServiceManager
 {
 public:
     CAR_INTERFACE_DECL()
 
-    CAR_OBJECT_DECL()
+    CAR_SINGLETON_DECL()
 
     CServiceManager();
 

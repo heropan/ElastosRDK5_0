@@ -443,7 +443,7 @@ module
          *
          * @return The int array associated with the resource.
          */
-        GetIntArray(
+        GetInt32Array(
             [in] Int32 id,
             [out, callee] ArrayOf<Int32>* ints);
 
