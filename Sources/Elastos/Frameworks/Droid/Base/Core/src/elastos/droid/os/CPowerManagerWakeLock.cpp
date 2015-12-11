@@ -1,5 +1,4 @@
 
-#include "_Elastos.Droid.Core.h"
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/os/CPowerManagerWakeLock.h"
 #include "elastos/droid/os/CPowerManager.h"

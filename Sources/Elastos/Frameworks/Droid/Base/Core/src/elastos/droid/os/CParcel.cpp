@@ -1,7 +1,6 @@
 
 #include "Elastos.CoreLibrary.IO.h"
 #include "Elastos.CoreLibrary.Utility.h"
-#include "_Elastos.Droid.Core.h"
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/CParcel.h"

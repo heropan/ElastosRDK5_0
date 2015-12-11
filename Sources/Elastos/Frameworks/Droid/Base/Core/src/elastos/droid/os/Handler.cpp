@@ -1,15 +1,11 @@
 
-#include "_Elastos.Droid.Core.h"
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Os.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/SystemClock.h"
-#ifdef DROID_CORE
 #include "elastos/droid/os/CMessengerImpl.h"
 #include "elastos/droid/os/CMessageHelper.h"
 #include "elastos/droid/os/CLooperHelper.h"
-#endif
-
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/AutoLock.h>

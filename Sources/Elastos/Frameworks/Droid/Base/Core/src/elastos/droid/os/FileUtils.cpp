@@ -1,7 +1,6 @@
 
 #include "Elastos.CoreLibrary.IO.h"
 #include "Elastos.CoreLibrary.Utility.Zip.h"
-#include "_Elastos.Droid.Core.h"
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Os.h"
 #include "elastos/droid/os/FileUtils.h"

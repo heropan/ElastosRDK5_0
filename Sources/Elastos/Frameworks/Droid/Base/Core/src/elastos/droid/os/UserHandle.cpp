@@ -1,13 +1,10 @@
 
 #include "Elastos.CoreLibrary.IO.h"
-#include "_Elastos.Droid.Core.h"
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/os/UserHandle.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/os/Binder.h"
-#ifdef DROID_CORE
 #include "elastos/droid/os/CUserHandle.h"
-#endif
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

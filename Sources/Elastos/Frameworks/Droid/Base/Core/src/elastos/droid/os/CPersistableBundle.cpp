@@ -1,6 +1,5 @@
 
 #include "Elastos.CoreLibrary.External.h"
-#include "_Elastos.Droid.Core.h"
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/os/CPersistableBundle.h"
 #include "elastos/droid/internal/utility/XmlUtils.h"

@@ -1,5 +1,4 @@
 
-#include "_Elastos.Droid.Core.h"
 #include "Elastos.Droid.Content.h"
 #include <binder/Parcel.h>
 #include <binder/IServiceManager.h>

@@ -1,7 +1,6 @@
 
-#include "_Elastos.Droid.Core.h"
-#include "Elastos.Droid.Os.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/graphics/BitmapRegionDecoder.h"
 #include "elastos/droid/content/res/CAssetManager.h"
 #include "elastos/droid/graphics/CRect.h"

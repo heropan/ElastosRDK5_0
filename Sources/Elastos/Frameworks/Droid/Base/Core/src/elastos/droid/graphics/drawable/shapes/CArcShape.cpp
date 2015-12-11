@@ -1,5 +1,4 @@
 
-#include "_Elastos.Droid.Core.h"
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.Os.h"

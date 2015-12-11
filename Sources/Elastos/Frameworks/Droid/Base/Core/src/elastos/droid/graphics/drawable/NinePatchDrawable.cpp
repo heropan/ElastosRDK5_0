@@ -1,5 +1,4 @@
 
-#include "_Elastos.Droid.Core.h"
 #include "Elastos.Droid.Os.h"
 #include "elastos/droid/graphics/drawable/NinePatchDrawable.h"
 #include "elastos/droid/graphics/drawable/CNinePatchDrawable.h"
