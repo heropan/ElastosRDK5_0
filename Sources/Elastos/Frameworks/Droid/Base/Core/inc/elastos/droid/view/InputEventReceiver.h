@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_INPUTEVENTRECEIVER_H__
 #define __ELASTOS_DROID_VIEW_INPUTEVENTRECEIVER_H__
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/NativeMessageQueue.h"
 #include <elastos/utility/etl/HashMap.h>

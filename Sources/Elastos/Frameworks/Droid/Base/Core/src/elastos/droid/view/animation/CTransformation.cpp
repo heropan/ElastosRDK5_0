@@ -1,4 +1,11 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.Accounts.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Location.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/animation/CTransformation.h"
 #include "elastos/droid/graphics/CRect.h"
 #include <elastos/core/StringBuilder.h>

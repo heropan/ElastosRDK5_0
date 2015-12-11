@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_BASEINPUTCONNECTION_H__
 #define  __ELASTOS_DROID_VIEW_INPUTMETHOD_BASEINPUTCONNECTION_H__
 
+#include "Elastos.Droid.Text.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/CKeyCharacterMap.h"
 

@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/animation/CValueAnimator.h"
 #include "elastos/droid/animation/CValueAnimatorHelper.h"
 #include "elastos/droid/app/CActivityManager.h"

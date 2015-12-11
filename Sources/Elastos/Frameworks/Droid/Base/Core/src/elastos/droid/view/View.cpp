@@ -1,4 +1,8 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Animation.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/View.h"
 /*#include "elastos/droid/view/ViewGroup.h"
 #include "elastos/droid/view/ViewRootImpl.h"

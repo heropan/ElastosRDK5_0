@@ -3,6 +3,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_View_CWindowManagerGlobalSessionCallback.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IBinder;
 

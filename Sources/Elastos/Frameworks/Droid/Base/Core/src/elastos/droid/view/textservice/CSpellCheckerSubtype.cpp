@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/view/textservice/CSpellCheckerSubtype.h"
 #include "elastos/droid/text/CTextUtils.h"
 #include <elastos/utility/Arrays.h>

@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_View_H__
 #define __ELASTOS_DROID_VIEW_View_H__
 
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Internal.h"
 #include "elastos/droid/graphics/CRect.h"

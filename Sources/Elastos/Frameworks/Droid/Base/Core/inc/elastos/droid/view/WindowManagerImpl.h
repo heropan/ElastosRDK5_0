@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_WINDOWMANAGERIMPL_H__
 #define __ELASTOS_DROID_VIEW_WINDOWMANAGERIMPL_H__
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/core/Object.h>
 

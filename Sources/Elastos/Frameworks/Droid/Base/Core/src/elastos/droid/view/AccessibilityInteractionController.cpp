@@ -1,5 +1,9 @@
 
-#include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Animation.h"
+#include "Elastos.Droid.Content.h"
+#define HASH_FOR_VIEW
+#include "elastos/droid/ext/frameworkhash.h"
 #include "elastos/droid/view/AccessibilityInteractionController.h"
 #include "elastos/droid/view/accessibility/CAccessibilityNodeInfo.h"
 #include "elastos/droid/view/accessibility/CAccessibilityInteractionClient.h"

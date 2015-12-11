@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_INPUTDEVICE_H__
 #define __ELASTOS_DROID_VIEW_INPUTDEVICE_H__
 
+#include "Elastos.Droid.View.h"
 #include <elastos/core/Object.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>

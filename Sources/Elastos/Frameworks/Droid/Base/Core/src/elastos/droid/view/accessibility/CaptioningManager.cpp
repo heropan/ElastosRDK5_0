@@ -1,4 +1,13 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Accounts.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Database.h"
+#include "Elastos.Droid.Location.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Provider.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/view/accessibility/CaptioningManager.h"
 #include "elastos/droid/view/accessibility/CCaptioningManagerCaptionStyle.h"

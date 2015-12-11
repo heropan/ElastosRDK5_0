@@ -2,7 +2,6 @@
 #ifndef __ELASTOS_DROID_VIEW_DISPLAY_H__
 #define __ELASTOS_DROID_VIEW_DISPLAY_H__
 
-#include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 

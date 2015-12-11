@@ -1,4 +1,10 @@
 
+#include "Elastos.Droid.Accounts.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Location.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/DisplayEventReceiver.h"
 #include "elastos/droid/os/Looper.h"
 #include <elastos/utility/logging/Logger.h>

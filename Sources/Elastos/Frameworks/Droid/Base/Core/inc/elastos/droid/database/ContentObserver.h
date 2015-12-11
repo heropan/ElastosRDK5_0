@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_CONTENTOBSERVER_H__
 #define __ELASTOS_DROID_DATABASE_CONTENTOBSERVER_H__
 
+#include "Elastos.Droid.Database.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Database.h"
 #include "elastos/droid/os/Runnable.h"

@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/graphics/Insets.h"
 #include "elastos/droid/graphics/CPointF.h"
 #include "elastos/droid/graphics/Color.h"

@@ -1,4 +1,12 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Accounts.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Location.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Utility.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/inputmethod/CInputMethodSubtypeHelper.h"
 #include "elastos/droid/view/inputmethod/CInputMethodSubtype.h"
 

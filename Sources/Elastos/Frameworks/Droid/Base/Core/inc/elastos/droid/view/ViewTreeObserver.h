@@ -2,7 +2,9 @@
 #ifndef __ELASTOS_DROID_VIEW_VIEWTREEOBSERVER_H__
 #define __ELASTOS_DROID_VIEW_VIEWTREEOBSERVER_H__
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::Graphics::IRect;

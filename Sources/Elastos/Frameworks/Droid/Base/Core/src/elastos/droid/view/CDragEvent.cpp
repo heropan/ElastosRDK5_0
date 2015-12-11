@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/view/CDragEvent.h"
 
 namespace Elastos {

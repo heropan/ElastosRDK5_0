@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_VIEW_TEXTSERVICE_SPELLCHECKERSESSION_H__
 #define __ELASTOS_DROID_VIEW_TEXTSERVICE_SPELLCHECKERSESSION_H__
 
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/os/Handler.h"
 
 #include <elastos/core/Object.h>

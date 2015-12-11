@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_RENDERNODEANIMATOR_H__
 #define __ELASTOS_DROID_VIEW_RENDERNODEANIMATOR_H__
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/animation/Animator.h"
 #include "elastos/droid/graphics/CanvasProperty.h"

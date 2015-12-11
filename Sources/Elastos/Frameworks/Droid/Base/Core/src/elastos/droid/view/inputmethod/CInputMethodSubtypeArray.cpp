@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.CoreLibrary.Utility.Zip.h"
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/view/inputmethod/CInputMethodSubtypeArray.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>

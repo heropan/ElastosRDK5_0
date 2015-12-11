@@ -1,4 +1,9 @@
 
+#include "Elastos.Droid.Accounts.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Location.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/TextureView.h"
 #include "elastos/droid/graphics/CBitmap.h"
 #include "elastos/droid/graphics/CCanvas.h"

@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_SELECTION_H__
 #define __ELASTOS_DROID_TEXT_SELECTION_H__
 
+#include "Elastos.Droid.Text.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Text.h"
 #include <elastos/core/Object.h>

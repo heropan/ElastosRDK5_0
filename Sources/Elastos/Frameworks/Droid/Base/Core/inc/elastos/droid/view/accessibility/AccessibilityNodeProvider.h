@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ACCESSIBILITY_ACCESSIBILITYNODEPROVIDER_H__
 #define __ELASTOS_DROID_VIEW_ACCESSIBILITY_ACCESSIBILITYNODEPROVIDER_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.View.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IBundle;

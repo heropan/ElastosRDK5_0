@@ -1,4 +1,10 @@
 
+#include "Elastos.Droid.Accounts.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Location.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/animation/CPathInterpolator.h"
 #include "elastos/droid/graphics/CPath.h"
 #include "elastos/droid/utility/PathParser.h"

@@ -2,7 +2,6 @@
 #define __ELASTOS_DROID_INTERNAL_OS_SOME_ARGS_H__
 
 #include <elastos/core/Object.h>
-#include "Elastos.Droid.Core_server.h"
 
 namespace Elastos {
 namespace Droid {

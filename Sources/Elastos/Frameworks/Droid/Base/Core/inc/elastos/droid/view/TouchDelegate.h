@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_VIEW_TOUCHDELEGATE_H__
 #define __ELASTOS_DROID_VIEW_TOUCHDELEGATE_H__
 
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.View.h"
 #include <elastos/core/Object.h>
 #include "elastos/droid/ext/frameworkext.h"
 

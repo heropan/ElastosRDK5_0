@@ -1,4 +1,10 @@
 
+#include "Elastos.Droid.Accounts.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Location.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/CViewBaseSavedState.h"
 #include "elastos/droid/view/CAbsSavedState.h"
 #include "elastos/droid/view/CView.h"

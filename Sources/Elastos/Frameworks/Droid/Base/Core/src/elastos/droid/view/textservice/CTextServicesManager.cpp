@@ -1,4 +1,10 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Accounts.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Location.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/textservice/CTextServicesManager.h"
 #include "elastos/droid/view/textservice/CSpellCheckerSession.h"
 #include "elastos/droid/view/textservice/CSpellCheckerSubtype.h"

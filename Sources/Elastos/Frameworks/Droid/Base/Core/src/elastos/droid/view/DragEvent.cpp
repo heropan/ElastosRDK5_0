@@ -1,3 +1,10 @@
+
+#include "Elastos.Droid.Accounts.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Location.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/DragEvent.h"
 #include "elastos/droid/content/CClipData.h"
 #include "elastos/droid/content/CClipDescription.h"

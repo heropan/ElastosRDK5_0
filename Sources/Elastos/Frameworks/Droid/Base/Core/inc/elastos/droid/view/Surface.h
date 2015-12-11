@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_Surface_H__
 #define __ELASTOS_DROID_VIEW_Surface_H__
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/Canvas.h"
 #include <elastos/core/Object.h>

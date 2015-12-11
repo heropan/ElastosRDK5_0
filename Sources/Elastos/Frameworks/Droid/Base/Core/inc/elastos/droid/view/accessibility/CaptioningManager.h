@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ACCESSIBILITY_CAPTIONINGMANAGER_H__
 #define __ELASTOS_DROID_VIEW_ACCESSIBILITY_CAPTIONINGMANAGER_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/database/ContentObserver.h"
 #include "elastos/droid/os/Runnable.h"
 #include <elastos/core/Object.h>

@@ -1,10 +1,15 @@
+
+#include "Elastos.Droid.Accounts.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Location.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/RenderNodeAnimator.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/view/ViewPropertyAnimator.h"
 #include "elastos/droid/animation/ValueAnimator.h"
-
 #include <elastos/utility/logging/Slogger.h>
-
 #include <hwui/Animator.h>
 
 using Elastos::Droid::Animation::ValueAnimator;

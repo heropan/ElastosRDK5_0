@@ -1,4 +1,10 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Accounts.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Location.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/CWindowId.h"
 #include "elastos/droid/view/WindowIdFocusObserver.h"
 #include <elastos/core/AutoLock.h>

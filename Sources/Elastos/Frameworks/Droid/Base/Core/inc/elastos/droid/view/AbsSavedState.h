@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ABSSAVEDSTATE_H__
 #define __ELASTOS_DROID_VIEW_ABSSAVEDSTATE_H__
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.View.h"
 #include <elastos/core/Object.h>

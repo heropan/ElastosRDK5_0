@@ -1,4 +1,8 @@
 
+#include "Elastos.Droid.Accounts.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Location.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/SurfaceView.h"
 #include "elastos/droid/view/ViewRootImpl.h"
 // #include "elastos/droid/view/CSurfaceView.h"
