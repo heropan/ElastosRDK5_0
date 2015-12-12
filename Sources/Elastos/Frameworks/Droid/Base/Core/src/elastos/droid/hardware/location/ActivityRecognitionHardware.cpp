@@ -1,8 +1,9 @@
 
+#include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/hardware/location/ActivityRecognitionHardware.h"
 #include "elastos/droid/hardware/location/ActivityRecognitionEvent.h"
 #include "elastos/droid/hardware/location/ActivityChangedEvent.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/Manifest.h"
 #include "elastos/droid/os/CRemoteCallbackList.h"
 #include "elastos/droid/text/TextUtils.h"

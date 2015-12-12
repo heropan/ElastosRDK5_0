@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/hardware/camera2/utils/TaskDrainer.h"
 #include "elastos/droid/internal/utility/Preconditions.h"
 #include <elastos/core/AutoLock.h>

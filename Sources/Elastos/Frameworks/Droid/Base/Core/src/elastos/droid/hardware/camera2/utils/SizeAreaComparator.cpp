@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/hardware/camera2/utils/SizeAreaComparator.h"
 #include "elastos/droid/hardware/camera2/utils/CSizeAreaComparator.h"
 #include "elastos/droid/internal/utility/Preconditions.h"

@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/hardware/display/DisplayManagerGlobal.h"
 #include "elastos/droid/hardware/display/WifiDisplayStatus.h"
 #include "elastos/droid/hardware/display/CDisplayManagerCallback.h"

@@ -1,7 +1,8 @@
 
+#include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Media.h"
 #include "elastos/droid/hardware/soundtrigger/SoundTriggerRecognitionEvent.h"
 //#include "elastos/droid/media/CAudioFormatBuilder.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/Arrays.h>
 

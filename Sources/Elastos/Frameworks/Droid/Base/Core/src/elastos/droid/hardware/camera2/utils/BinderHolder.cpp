@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/hardware/camera2/utils/BinderHolder.h"
 #include <elastos/core/StringBuffer.h>
 

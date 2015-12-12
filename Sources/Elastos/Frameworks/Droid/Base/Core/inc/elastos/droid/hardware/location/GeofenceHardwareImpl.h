@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_HARDWARE_LOCATION_GEOFENCEHARDWAREIMPL_H__
 
 #include "elastos/droid/os/Handler.h"
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Hardware.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 

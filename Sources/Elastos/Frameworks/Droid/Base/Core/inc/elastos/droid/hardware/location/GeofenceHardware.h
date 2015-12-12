@@ -2,7 +2,8 @@
 #ifndef __ELASTOS_DROID_HARDWARE_LOCATION_GEOFENCEHARDWARE_H__
 #define __ELASTOS_DROID_HARDWARE_LOCATION_GEOFENCEHARDWARE_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Hardware.h"
+#include "Elastos.Droid.Os.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 

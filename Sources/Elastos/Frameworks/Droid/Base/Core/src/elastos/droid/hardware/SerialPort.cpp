@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/hardware/SerialPort.h"
 #include <stdio.h>
 #include <sys/types.h>

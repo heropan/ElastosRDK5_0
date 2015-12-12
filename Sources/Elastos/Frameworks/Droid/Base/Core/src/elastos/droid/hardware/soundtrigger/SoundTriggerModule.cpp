@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Media.h"
 #include "elastos/droid/hardware/soundtrigger/SoundTriggerModule.h"
 #include "elastos/droid/hardware/soundtrigger/SoundTrigger.h"
 #include "elastos/droid/hardware/soundtrigger/CSoundTriggerConfidenceLevel.h"
@@ -395,7 +397,7 @@ static android::sp<android::SoundTrigger> getSoundTrigger(SoundTriggerModule* mo
         android::SoundTrigger* const st = reinterpret_cast<android::SoundTrigger*>(context);
         return android::sp<android::SoundTrigger>(st);
     }
-
+    return NULL;
 }
 
 static android::sp<android::SoundTrigger> setSoundTrigger(SoundTriggerModule* mode,
@@ -415,6 +417,7 @@ static android::sp<android::SoundTrigger> setSoundTrigger(SoundTriggerModule* mo
 
         return old;
     }
+    return NULL;
 }
 
 ECode SoundTriggerModule::NativeDetach()

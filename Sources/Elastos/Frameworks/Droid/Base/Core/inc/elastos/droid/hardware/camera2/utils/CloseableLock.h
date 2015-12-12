@@ -2,8 +2,10 @@
 #ifndef __ELASTOS_DROID_HARDWARE_CAMERA2_PARAMS_CLOSEABLELOCK_H__
 #define __ELASTOS_DROID_HARDWARE_CAMERA2_PARAMS_CLOSEABLELOCK_H__
 
-#include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
+#include "Elastos.Droid.Hardware.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;

@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/hardware/usb/UsbManager.h"
 #include "elastos/droid/hardware/usb/CUsbDeviceConnection.h"
 #include "elastos/droid/utility/CArrayMap.h"

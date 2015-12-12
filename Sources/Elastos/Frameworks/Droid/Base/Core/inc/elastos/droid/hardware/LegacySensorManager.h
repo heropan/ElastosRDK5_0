@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_HARDWARE_LEGACYSENSORMANAGER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Hardware.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/Object.h>

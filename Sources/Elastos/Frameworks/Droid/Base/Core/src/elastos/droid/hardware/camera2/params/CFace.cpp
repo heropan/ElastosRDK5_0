@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/hardware/camera2/params/CFace.h"
 #include <elastos/utility/Arrays.h>
 #include <elastos/utility/logging/Slogger.h>

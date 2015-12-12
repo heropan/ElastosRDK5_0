@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/hardware/display/CDisplayPowerRequest.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>

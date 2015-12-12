@@ -1,6 +1,7 @@
 
-#include "elastos/droid/hardware/soundtrigger/CSoundTriggerModuleProperties.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "elastos/droid/hardware/soundtrigger/CSoundTriggerModuleProperties.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

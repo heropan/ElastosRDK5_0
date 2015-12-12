@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_HARDWARE_LOCATION_GEOFENCEHARDWAREREQUESTPARCELABLE_H__
 
 #include "elastos/droid/hardware/location/GeofenceHardwareRequest.h"
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Hardware.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Hardware::Location::IGeofenceHardwareRequest;

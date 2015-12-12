@@ -3,6 +3,8 @@
 #define __ELASTOS_DROID_HARDWARE_CAMERA2_PARAMS_STREAMCONFIGURATIONMAP_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Hardware.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/utility/Range.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>

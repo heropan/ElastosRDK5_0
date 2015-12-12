@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
 #include "elastos/droid/hardware/camera2/utils/CloseableLock.h"
 #include <elastos/core/StringBuffer.h>
 #include <elastos/utility/logging/Slogger.h>

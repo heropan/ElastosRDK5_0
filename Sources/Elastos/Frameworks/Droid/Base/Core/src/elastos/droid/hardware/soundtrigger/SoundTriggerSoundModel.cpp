@@ -1,6 +1,7 @@
 
-#include "elastos/droid/hardware/soundtrigger/SoundTriggerSoundModel.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "elastos/droid/hardware/soundtrigger/SoundTriggerSoundModel.h"
 
 namespace Elastos {
 namespace Droid {

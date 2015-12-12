@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_SENSORMANAGER_H__
 #define __ELASTOS_DROID_HARDWARE_SENSORMANAGER_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/hardware/LegacySensorManager.h"
 #include <elastos/core/Object.h>
 

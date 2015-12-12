@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_HARDWARE_SOUNDTRIGGER_KEYPHRASEMETADATA_H__
 #define __ELASTOS_DROID_HARDWARE_SOUNDTRIGGER_KEYPHRASEMETADATA_H__
 
-#include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Hardware.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Utility::IArraySet;

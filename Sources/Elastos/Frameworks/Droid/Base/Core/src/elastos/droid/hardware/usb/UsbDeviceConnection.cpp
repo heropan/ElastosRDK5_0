@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/hardware/usb/UsbDeviceConnection.h"
 #include <usbhost/usbhost.h>
 

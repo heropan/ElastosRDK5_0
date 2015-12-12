@@ -2,9 +2,11 @@
 #ifndef __ELASTOS_DROID_HARDWARE_INPUT_INPUTDEVICEIDENTIFIER_H__
 #define __ELASTOS_DROID_HARDWARE_INPUT_INPUTDEVICEIDENTIFIER_H__
 
+#include "Elastos.Droid.Hardware.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Hardware::Input::IInputDeviceIdentifier;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

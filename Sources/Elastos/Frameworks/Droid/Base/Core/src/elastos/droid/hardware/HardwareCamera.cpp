@@ -1,4 +1,9 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/hardware/HardwareCamera.h"
 //#include "elastos/droid/app/CActivityThread.h"
 #include "elastos/droid/text/TextUtils.h"
@@ -56,6 +61,7 @@ using Elastos::Utility::IMapEntry;
 using Elastos::Utility::ISet;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::IIterator;
+using Elastos::Utility::CHashMap;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {

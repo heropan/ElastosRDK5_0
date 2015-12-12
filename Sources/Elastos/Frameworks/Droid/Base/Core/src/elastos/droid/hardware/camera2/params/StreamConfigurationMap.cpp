@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/hardware/camera2/params/StreamConfigurationMap.h"
 #include "elastos/droid/internal/utility/Preconditions.h"
 #include "elastos/droid/graphics/PixelFormat.h"

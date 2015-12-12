@@ -2,8 +2,9 @@
 #ifndef __ELASTOS_DROID_HARDWARE_USB_USBMANAGER_H__
 #define __ELASTOS_DROID_HARDWARE_USB_USBMANAGER_H__
 
-#include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Hardware.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::App::IPendingIntent;

@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/hardware/display/CVirtualDisplay.h"
 #include <elastos/core/StringBuilder.h>
 

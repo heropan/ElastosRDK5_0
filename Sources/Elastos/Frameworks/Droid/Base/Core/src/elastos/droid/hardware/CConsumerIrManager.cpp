@@ -1,8 +1,9 @@
 
+#include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/hardware/CConsumerIrManager.h"
 #include "elastos/droid/hardware/CCarrierFrequencyRange.h"
 #include "elastos/droid/os/ServiceManager.h"
-#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Droid::Os::ServiceManager;
 

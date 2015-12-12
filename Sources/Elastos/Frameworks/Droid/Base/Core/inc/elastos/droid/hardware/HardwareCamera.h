@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_HARDWARE_HARDWARECAMERA_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Hardware.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/core/AutoLock.h>
 #include <elastos/droid/os/Handler.h>
@@ -25,8 +26,6 @@ using Elastos::Core::IInteger32;
 using Elastos::Utility::IList;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::IHashMap;
-using Elastos::Utility::CHashMap;
-using Elastos::Utility::CHashMap;
 
 namespace Elastos {
 namespace Droid {

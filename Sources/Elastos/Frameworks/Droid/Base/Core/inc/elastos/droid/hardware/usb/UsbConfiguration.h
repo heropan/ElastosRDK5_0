@@ -3,9 +3,8 @@
 #define __ELASTOS_DROID_HARDWARE_USB_USBCONFIGURATION_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Hardware.h"
 #include <elastos/core/Object.h>
-
 
 namespace Elastos {
 namespace Droid {

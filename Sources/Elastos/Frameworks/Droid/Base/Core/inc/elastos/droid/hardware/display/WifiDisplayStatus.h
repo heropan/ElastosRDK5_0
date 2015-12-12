@@ -2,9 +2,8 @@
 #ifndef __ELASTOS_DROID_HARDWARE_DISPLAY_WIFIDISPLAYSTATUS_H__
 #define __ELASTOS_DROID_HARDWARE_DISPLAY_WIFIDISPLAYSTATUS_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Hardware.h"
 #include <elastos/core/Object.h>
-
 
 namespace Elastos {
 namespace Droid {

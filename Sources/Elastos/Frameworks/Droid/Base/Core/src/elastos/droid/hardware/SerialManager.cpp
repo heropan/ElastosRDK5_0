@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/hardware/SerialManager.h"
 #include "elastos/droid/hardware/SerialPort.h"
 

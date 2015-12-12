@@ -1,7 +1,8 @@
 
+#include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/hardware/location/GeofenceHardwareService.h"
 #include "elastos/droid/hardware/location/GeofenceHardwareImpl.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Binder.h"
 #include "elastos/droid/Manifest.h"
 

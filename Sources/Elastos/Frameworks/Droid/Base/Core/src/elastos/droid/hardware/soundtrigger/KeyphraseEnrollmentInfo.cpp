@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.External.h"
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/hardware/soundtrigger/KeyphraseEnrollmentInfo.h"
 #include "elastos/droid/hardware/soundtrigger/KeyphraseMetadata.h"
 #include "elastos/droid/ext/frameworkext.h"

@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/hardware/input/CInputManager.h"
 #include "elastos/droid/hardware/input/TouchCalibration.h"
 #include "elastos/droid/hardware/input/CInputManagerInputDevicesChangedListener.h"

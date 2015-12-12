@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/hardware/display/CDisplayManager.h"
 #include "elastos/droid/hardware/display/DisplayManagerGlobal.h"
 #include <elastos/core/AutoLock.h>

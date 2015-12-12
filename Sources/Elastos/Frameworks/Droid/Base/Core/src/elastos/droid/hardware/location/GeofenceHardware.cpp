@@ -1,8 +1,9 @@
 
+#include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Location.h"
 #include "elastos/droid/hardware/location/GeofenceHardware.h"
 #include "elastos/droid/hardware/location/GeofenceHardwareRequest.h"
 #include "elastos/droid/hardware/location/GeofenceHardwareRequestParcelable.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Build.h"
 #include <elastos/core/AutoLock.h>
 

@@ -1,6 +1,7 @@
 
-#include "elastos/droid/hardware/location/GeofenceHardwareMonitorEvent.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Location.h"
+#include "elastos/droid/hardware/location/GeofenceHardwareMonitorEvent.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_CAMERA2_PARAMS_LISTUTILS_H__
 #define __ELASTOS_DROID_HARDWARE_CAMERA2_PARAMS_LISTUTILS_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Hardware.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Utility::IList;
