@@ -40,6 +40,8 @@
 #include "elastos/droid/widget/CSearchViewSearchAutoComplete.h"
 #include "elastos/droid/widget/CSearchView.h"
 #include "elastos/droid/widget/CRadialTimePickerView.h"
+#include "elastos/droid/widget/CScrollView.h"
+#include "elastos/droid/widget/CScrollViewSavedState.h"
 
 namespace Elastos {
 namespace Droid {
@@ -86,6 +88,8 @@ CAR_OBJECT_IMPL(CAutoCompleteTextView);
 CAR_OBJECT_IMPL(CSearchViewSearchAutoComplete);
 CAR_OBJECT_IMPL(CSearchView);
 CAR_OBJECT_IMPL(CRadialTimePickerView);
+CAR_OBJECT_IMPL(CScrollView);
+CAR_OBJECT_IMPL(CScrollViewSavedState);
 
 } // namespace Widget
 } // namespace Droid
