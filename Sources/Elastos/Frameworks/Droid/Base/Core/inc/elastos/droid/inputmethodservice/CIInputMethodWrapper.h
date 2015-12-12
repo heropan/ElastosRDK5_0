@@ -2,8 +2,9 @@
 #ifndef __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_CIINPUTMETHODWRAPPER_H__
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_CIINPUTMETHODWRAPPER_H__
 
-#include "_Elastos_Droid_InputMethodService_CIInputMethodWrapper.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.View.h"
+#include "_Elastos_Droid_InputMethodService_CIInputMethodWrapper.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;

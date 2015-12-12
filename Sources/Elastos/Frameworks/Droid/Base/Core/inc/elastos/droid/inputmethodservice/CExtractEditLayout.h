@@ -1,7 +1,8 @@
 
 #ifndef __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_CEXTRACTEDITLAYOUT_H__
-#define  __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_CEXTRACTEDITLAYOUT_H__
+#define __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_CEXTRACTEDITLAYOUT_H__
 
+#include "Elastos.Droid.Internal.h"
 #include "_Elastos_Droid_InputMethodService_CExtractEditLayout.h"
 // #include "elastos/droid/widget/LinearLayout.h"
 #include "elastos/droid/view/ActionMode.h"

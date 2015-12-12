@@ -1,5 +1,8 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/inputmethodservice/CIInputMethodSessionWrapper.h"
 #include "elastos/droid/internal/os/CHandlerCaller.h"
 #include "elastos/droid/internal/os/SomeArgs.h"

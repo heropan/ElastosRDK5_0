@@ -1,5 +1,9 @@
 
-#ifdef DROID_CORE
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Text.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/inputmethodservice/InputMethodService.h"
 #include "elastos/droid/view/ViewTreeObserver.h"
 // #include "elastos/droid/view/CViewGroupLayoutParams.h"
@@ -11,14 +15,6 @@
 // #include "elastos/droid/app/CActivityManagerHelper.h"
 // #include "elastos/droid/provider/CSettingsGlobal.h"
 // using Elastos::Droid::View::Animation::AnimationUtils;
-
-#else
-#include "elastos/droid/inputmethodservice/InputMethodService.h"
-
-#define VALIDATE_NOT_NULL(x) if (!(x)) { return E_ILLEGAL_ARGUMENT_EXCEPTION; }
-using Elastos::Droid::View::Animation::CAnimationUtils;
-#endif
-
 #include <elastos/core/Character.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/logging/Logger.h>

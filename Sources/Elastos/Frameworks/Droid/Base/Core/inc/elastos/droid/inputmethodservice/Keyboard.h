@@ -3,6 +3,7 @@
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_KEYBOARD_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.InputMethodService.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

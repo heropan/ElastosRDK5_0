@@ -2,11 +2,8 @@
 #ifndef  __ELASTOS_DROID_INPUTMETHODSERVICE_ABSTRACTINPUTMETHODIMPL_H__
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_ABSTRACTINPUTMETHODIMPL_H__
 
-#ifdef DROID_CORE
+#include "Elastos.Droid.InputMethodService.h"
 #include "elastos/droid/inputmethodservice/AbstractInputMethodService.h"
-#else
-#include "AbstractInputMethodService.h"
-#endif
 
 using Elastos::Droid::InputMethodService::AbstractInputMethodService;
 using Elastos::Droid::InputMethodService::IAbstractInputMethodImpl;

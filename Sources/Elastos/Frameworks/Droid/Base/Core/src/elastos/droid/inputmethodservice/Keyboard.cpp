@@ -1,11 +1,11 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#ifdef DROID_CORE
+#include "Elastos.CoreLibrary.External.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/utility/CTypedValue.h"
 // #include "elastos/droid/text/TextUtils.h"
-#else
-// #include "TextUtils.h"
-#endif
 #include "elastos/droid/inputmethodservice/Keyboard.h"
 #include "elastos/droid/utility/Xml.h"
 #include "elastos/droid/R.h"

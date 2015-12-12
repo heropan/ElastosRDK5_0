@@ -2,11 +2,8 @@
 #ifndef  __ELASTOS_DROID_INPUTMETHODSERVICE_ABSTRACTINPUTMETHODSESSIONIMPL_H__
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_ABSTRACTINPUTMETHODSESSIONIMPL_H__
 
-#ifdef DROID_CORE
+#include "Elastos.Droid.InputMethodService.h"
 #include "elastos/droid/inputmethodservice/AbstractInputMethodService.h"
-#else
-#include "AbstractInputMethodService.h"
-#endif
 
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IMotionEvent;

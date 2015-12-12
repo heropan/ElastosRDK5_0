@@ -1,4 +1,8 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/inputmethodservice/KeyboardView.h"
 // #include "elastos/droid/graphics/CBitmapFactory.h"
 // #include "elastos/droid/graphics/CCanvas.h"

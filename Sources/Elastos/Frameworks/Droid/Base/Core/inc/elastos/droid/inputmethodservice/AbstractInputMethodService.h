@@ -4,6 +4,7 @@
 
 // #include "elastos/droid/app/Service.h"
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.Droid.View.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IIntent;
