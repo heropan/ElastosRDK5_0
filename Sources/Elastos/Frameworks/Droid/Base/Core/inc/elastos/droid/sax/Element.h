@@ -2,8 +2,11 @@
 #define __ELASTOS_DROID_SAX_ELEMENT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Sax.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
+using Elastos::Core::Object;
 using Elastos::Utility::Etl::List;
 using Org::Xml::Sax::ILocator;
 

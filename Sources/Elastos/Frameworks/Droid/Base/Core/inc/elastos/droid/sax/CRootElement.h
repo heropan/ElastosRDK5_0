@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_SAX_CROOTELEMENT_H__
 #define __ELASTOS_DROID_SAX_CROOTELEMENT_H__
 
+#include "Elastos.CoreLibrary.External.h"
 #include "_Elastos_Droid_Sax_CRootElement.h"
 #include "elastos/droid/sax/Element.h"
 #include "elastos/core/StringBuilder.h"
