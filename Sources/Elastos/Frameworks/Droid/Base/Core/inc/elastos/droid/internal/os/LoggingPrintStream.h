@@ -2,7 +2,10 @@
 #ifndef __ELASTOS_DROID_INTERNAL_OS_LOGGINGPRINTSTREAM_H__
 #define __ELASTOS_DROID_INTERNAL_OS_LOGGINGPRINTSTREAM_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Core.h"
+#include "Elastos.CoreLibrary.Core.h"
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/io/PrintStream.h>
 

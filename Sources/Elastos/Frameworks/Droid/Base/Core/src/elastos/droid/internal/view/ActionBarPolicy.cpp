@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/internal/view/ActionBarPolicy.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/R.h"

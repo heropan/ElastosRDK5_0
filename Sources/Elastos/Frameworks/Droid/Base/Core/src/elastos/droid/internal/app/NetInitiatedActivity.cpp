@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/internal/app/NetInitiatedActivity.h"
 #include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/location/LocationManager.h"

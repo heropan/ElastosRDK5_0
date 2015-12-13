@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/internal/http/multipart/MultipartEntity.h"
 #include "elastos/droid/internal/http/multipart/Part.h"
 #include <elastos/core/StringBuffer.h>

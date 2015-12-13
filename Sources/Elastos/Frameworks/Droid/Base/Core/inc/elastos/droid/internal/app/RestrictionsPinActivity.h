@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_RESTRICTIONSPINACTIVITY_H__
 #define __ELASTOS_DROID_INTERNAL_APP_RESTRICTIONSPINACTIVITY_H__
 
+#include "Elastos.Droid.Text.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/internal/app/AlertActivity.h"
 #include "elastos/droid/os/Runnable.h"
 

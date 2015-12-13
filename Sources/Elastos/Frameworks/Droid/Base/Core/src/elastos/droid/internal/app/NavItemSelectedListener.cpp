@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/internal/app/NavItemSelectedListener.h"
 
 using Elastos::Droid::Widget::EIID_IAdapterViewOnItemSelectedListener;

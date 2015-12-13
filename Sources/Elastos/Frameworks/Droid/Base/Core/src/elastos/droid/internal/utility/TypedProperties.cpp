@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/internal/utility/TypedProperties.h"
 #include "elastos/droid/internal/utility/CTypedProperties.h"
 #include <elastos/core/Math.h>

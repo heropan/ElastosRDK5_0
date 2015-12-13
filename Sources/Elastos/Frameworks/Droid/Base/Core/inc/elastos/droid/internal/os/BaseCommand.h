@@ -1,9 +1,11 @@
 #ifndef __ELASTOS_DROID_INTERNAL_OS_BASECOMMAND_H__
 #define __ELASTOS_DROID_INTERNAL_OS_BASECOMMAND_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Internal.h"
 #include <elastos/core/Object.h>
 #include <elastos/io/PrintWriter.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

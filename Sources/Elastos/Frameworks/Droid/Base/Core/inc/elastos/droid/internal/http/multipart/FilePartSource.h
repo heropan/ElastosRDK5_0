@@ -3,6 +3,8 @@
 #define __ELASTOS_DROID_INTERNAL_HTTP_MULTIPART_FILEPARTSOURCE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.Internal.h"
 #include <elastos/core/Object.h>
 
 using Elastos::IO::IFile;

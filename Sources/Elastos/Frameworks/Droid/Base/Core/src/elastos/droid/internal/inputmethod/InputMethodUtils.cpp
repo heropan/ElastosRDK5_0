@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/internal/inputmethod/InputMethodUtils.h"
 #include "elastos/droid/content/res/CResources.h"
 #include "elastos/droid/text/CSimpleStringSplitter.h"

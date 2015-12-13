@@ -1,9 +1,9 @@
 
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/internal/content/PackageMonitor.h"
-#ifdef DROID_CORE
 // #include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/os/CHandler.h"
-#endif
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
 

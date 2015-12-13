@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_VIEW_MENU_EXPANDEDMENUVIEW_H__
 #define __ELASTOS_DROID_INTERNAL_VIEW_MENU_EXPANDEDMENUVIEW_H__
 
+#include "Elastos.Droid.Widget.h"
 #if 0
 #include "elastos/droid/widget/ListView.h"
 #else

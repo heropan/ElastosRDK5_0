@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_OS_RUNTIMEINIT_H__
 #define __ELASTOS_DROID_INTERNAL_OS_RUNTIMEINIT_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Core.h"
 #include <elastos/core/Singleton.h>
 
 using Elastos::Core::Singleton;

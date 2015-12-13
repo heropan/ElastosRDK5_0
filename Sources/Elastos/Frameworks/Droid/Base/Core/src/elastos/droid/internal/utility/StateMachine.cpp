@@ -1,9 +1,9 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/internal/utility/StateMachine.h"
-#ifdef DROID_CORE
 #include "elastos/droid/os/CHandlerThread.h"
 #include "elastos/droid/os/CMessageHelper.h"
-#endif
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>

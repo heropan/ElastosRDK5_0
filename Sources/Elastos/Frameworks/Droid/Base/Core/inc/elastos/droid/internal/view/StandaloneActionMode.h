@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_VIEW_STANDALONEACTIONMODE_H__
 #define __ELASTOS_DROID_INTERNAL_VIEW_STANDALONEACTIONMODE_H__
 
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/view/ActionMode.h"
 
 using Elastos::Droid::View::ActionMode;

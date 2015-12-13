@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Libcore.h"
+#include "Elastos.CoreLibrary.Utility.Zip.h"
 #include "elastos/droid/internal/utility/CFileRotator.h"
 #include "elastos/droid/os/FileUtils.h"
 #include <elastos/core/StringUtils.h>

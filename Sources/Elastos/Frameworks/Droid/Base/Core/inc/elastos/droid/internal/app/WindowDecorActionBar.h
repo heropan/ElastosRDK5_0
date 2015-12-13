@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_WINDOWDECORACTIONBAR_H__
 #define __ELASTOS_DROID_INTERNAL_APP_WINDOWDECORACTIONBAR_H__
 
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/animation/AnimatorListenerAdapter.h"
 #include "elastos/droid/app/ActionBar.h"
 #include "elastos/droid/view/ActionMode.h"

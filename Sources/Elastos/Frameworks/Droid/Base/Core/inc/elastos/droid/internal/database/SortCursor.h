@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_INTERNAL_UTILITY_SORTCURSOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/database/AbstractCursor.h"
 
 using Elastos::Droid::Database::AbstractCursor;

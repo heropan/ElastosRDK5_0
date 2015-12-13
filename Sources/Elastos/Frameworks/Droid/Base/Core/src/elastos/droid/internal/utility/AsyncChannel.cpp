@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/internal/utility/AsyncChannel.h"
 #include "elastos/droid/os/CHandlerThread.h"
 #include "elastos/droid/os/CMessenger.h"

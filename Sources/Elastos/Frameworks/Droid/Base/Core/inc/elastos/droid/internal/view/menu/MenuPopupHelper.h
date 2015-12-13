@@ -3,7 +3,11 @@
 #define __ELASTOS_DROID_INTERNAL_VIEW_MENU_MENUPOPUPHELPER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 // #include "elastos/droid/widget/BaseAdapter.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IKeyEvent;
@@ -20,6 +24,7 @@ using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
 using Elastos::Droid::Widget::IAdapterView;
 using Elastos::Droid::Widget::IListPopupWindow;
 using Elastos::Droid::Widget::ISpinnerAdapter;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

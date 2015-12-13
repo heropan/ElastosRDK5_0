@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_INTERNAL_APP_PROCESSMAP_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Internal.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Utility::IArrayMap;

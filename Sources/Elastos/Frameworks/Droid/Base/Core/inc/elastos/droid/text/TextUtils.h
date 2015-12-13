@@ -1,9 +1,11 @@
 #ifndef __ELASTOS_DROID_TEXT_TEXTUTILS_H__
 #define __ELASTOS_DROID_TEXT_TEXTUTILS_H__
 
-#include "Elastos.Droid.Text.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Text.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::ILocale;
 using Elastos::Utility::IIterable;

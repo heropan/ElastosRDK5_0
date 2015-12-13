@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_TEXT_SPANSET_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Text.h"
 #include <elastos/core/Object.h>
 
 namespace Elastos {

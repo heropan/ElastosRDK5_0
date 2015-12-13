@@ -3,6 +3,12 @@
 #define __ELASTOS_DROID_INTERNAL_VIEW_MENU_MENUBUILDER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Utility.h"
+#include "Elastos.Droid.View.h"
 // #include "elastos/droid/widget/BaseAdapter.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>

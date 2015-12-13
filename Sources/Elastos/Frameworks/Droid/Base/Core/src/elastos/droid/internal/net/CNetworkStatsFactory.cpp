@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Libcore.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/internal/net/CNetworkStatsFactory.h"
 // #include "elastos/droid/os/CStrictMode.h"
 #include "elastos/droid/os/SystemClock.h"

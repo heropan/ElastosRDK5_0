@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/internal/utility/DumpUtils.h"
 #include "elastos/droid/internal/utility/CFastPrintWriter.h"
 

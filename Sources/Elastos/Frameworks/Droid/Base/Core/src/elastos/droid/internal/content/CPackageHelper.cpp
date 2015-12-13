@@ -1,5 +1,11 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.CoreLibrary.Libcore.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.CoreLibrary.Utility.Zip.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/internal/content/CPackageHelper.h"
 #include "elastos/droid/internal/content/CNativeLibraryHelper.h"
 #include "elastos/droid/internal/content/CNativeLibraryHelperHandle.h"

@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_INTERNAL_UTILITY_TYPEDPROPERTIES_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Internal.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/HashMap.h>
 

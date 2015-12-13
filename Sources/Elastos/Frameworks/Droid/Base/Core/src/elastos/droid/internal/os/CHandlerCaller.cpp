@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/internal/os/CHandlerCaller.h"
 #include "elastos/droid/os/Looper.h"
 #include "elastos/droid/internal/os/SomeArgs.h"

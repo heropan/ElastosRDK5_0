@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/internal/os/CBatterySipper.h"
 #include <elastos/core/Math.h>
 

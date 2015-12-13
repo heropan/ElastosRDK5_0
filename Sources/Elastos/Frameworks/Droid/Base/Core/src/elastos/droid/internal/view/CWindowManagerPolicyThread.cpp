@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/internal/view/CWindowManagerPolicyThread.h"
 #include "elastos/droid/internal/view/WindowManagerPolicyThread.h"
 

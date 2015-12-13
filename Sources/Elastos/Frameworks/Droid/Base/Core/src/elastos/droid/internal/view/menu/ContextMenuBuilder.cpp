@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/internal/view/menu/ContextMenuBuilder.h"
 #include "elastos/droid/internal/view/menu/CMenuDialogHelper.h"
 

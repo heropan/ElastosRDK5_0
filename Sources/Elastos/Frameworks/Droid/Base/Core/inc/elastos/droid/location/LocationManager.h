@@ -2,6 +2,8 @@
 #define __ELASTOS_DROID_LOCATION_LOCATIONMANAGER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Location.h"
+#define HASH_FOR_LOCATION
 #include "elastos/droid/ext/frameworkhash.h"
 #include "elastos/droid/os/Handler.h"
 #include <elastos/utility/etl/HashMap.h>

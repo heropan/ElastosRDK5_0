@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Libcore.h"
 #include "elastos/droid/internal/utility/SizedInputStream.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>

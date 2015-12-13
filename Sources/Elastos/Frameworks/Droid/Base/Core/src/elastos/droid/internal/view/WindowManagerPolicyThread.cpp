@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Core.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/internal/view/WindowManagerPolicyThread.h"
 
 namespace Elastos {

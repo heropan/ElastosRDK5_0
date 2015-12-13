@@ -1,9 +1,9 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
 #include "elastos/droid/internal/view/BaseSurfaceHolder.h"
-#ifdef DROID_CORE
 #include "elastos/droid/view/CSurface.h"
 #include "elastos/droid/graphics/CRect.h"
-#endif
 #include "elastos/droid/os/SystemClock.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/Thread.h>

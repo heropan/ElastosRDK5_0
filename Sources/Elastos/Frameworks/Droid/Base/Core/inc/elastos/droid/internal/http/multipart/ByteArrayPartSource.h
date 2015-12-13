@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_INTERNAL_HTTP_MULTIPART_BYTEARRAYPARTSOURCE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Internal.h"
 #include <elastos/core/Object.h>
-
 
 namespace Elastos {
 namespace Droid {

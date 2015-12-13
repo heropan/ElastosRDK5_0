@@ -3,7 +3,10 @@
 #define __ELASTOS_DROID_INTERNAL_VIEW_MENU_LISTMENUPRESENTER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Widget.h"
 // #include "elastos/droid/widget/BaseAdapter.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IBundle;
@@ -14,6 +17,7 @@ using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
 // using Elastos::Droid::Widget::BaseAdapter;
 using Elastos::Droid::Widget::IListAdapter;
 using Elastos::Droid::Widget::IAdapterView;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

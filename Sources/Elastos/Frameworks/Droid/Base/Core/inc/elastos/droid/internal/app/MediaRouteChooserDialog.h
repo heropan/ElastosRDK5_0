@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_MEDIAROUTECHOOSERDIALOG_H__
 #define __ELASTOS_DROID_INTERNAL_APP_MEDIAROUTECHOOSERDIALOG_H__
 
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/app/Dialog.h"
 #include "elastos/droid/widget/ArrayAdapter.h"
 

@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/internal/os/CTransferPipe.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/CParcelFileDescriptorHelper.h"

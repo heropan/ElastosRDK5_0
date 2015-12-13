@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_VIEW_ROTATIONPOLICY_H__
 #define __ELASTOS_DROID_INTERNAL_VIEW_ROTATIONPOLICY_H__
 
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/database/ContentObserver.h"
 
 using Elastos::Droid::Content::IContext;

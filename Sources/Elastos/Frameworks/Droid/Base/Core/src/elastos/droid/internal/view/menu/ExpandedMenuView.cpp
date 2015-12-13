@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/internal/view/menu/ExpandedMenuView.h"
 #include "elastos/droid/internal/view/menu/MenuBuilder.h"
 #include "elastos/droid/R.h"

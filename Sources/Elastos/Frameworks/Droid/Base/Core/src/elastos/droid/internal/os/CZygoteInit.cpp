@@ -1,5 +1,6 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/internal/os/CZygoteInit.h"
 #include "elastos/droid/internal/os/RuntimeInit.h"
 #include "elastos/droid/internal/os/Zygote.h"

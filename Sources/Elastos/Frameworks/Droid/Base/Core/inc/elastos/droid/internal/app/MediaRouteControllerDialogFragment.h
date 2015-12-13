@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_MEDIAROUTECONTROLLERDIALOGFRAGMENT_H__
 #define __ELASTOS_DROID_INTERNAL_APP_MEDIAROUTECONTROLLERDIALOGFRAGMENT_H__
 
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/app/DialogFragment.h"
 
 using Elastos::Droid::App::DialogFragment;

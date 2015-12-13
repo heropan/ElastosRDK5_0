@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_DISPLAYEVENTRECEIVER_H__
 #define __ELASTOS_DROID_VIEW_DISPLAYEVENTRECEIVER_H__
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/view/NativeDisplayEventReceiver.h"
 #include <elastos/core/Object.h>
 

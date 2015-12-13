@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/internal/utility/FastPrintWriter.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>

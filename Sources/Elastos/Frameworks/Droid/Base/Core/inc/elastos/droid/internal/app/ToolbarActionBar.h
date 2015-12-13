@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_TOOLBARACTIONBAR_H__
 #define __ELASTOS_DROID_INTERNAL_APP_TOOLBARACTIONBAR_H__
 
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/app/ActionBar.h"
 #include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/view/WindowCallbackWrapper.h"

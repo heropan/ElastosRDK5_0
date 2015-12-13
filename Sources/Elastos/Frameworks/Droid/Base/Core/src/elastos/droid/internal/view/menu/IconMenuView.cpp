@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/internal/view/menu/IconMenuView.h"
 #include "elastos/droid/internal/view/menu/CIconMenuItemView.h"
 #include "elastos/droid/internal/view/menu/MenuBuilder.h"

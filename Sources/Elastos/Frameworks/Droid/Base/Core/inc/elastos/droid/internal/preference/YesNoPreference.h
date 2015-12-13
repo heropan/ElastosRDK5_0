@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_PREFERENCE_YESNOPREFERENCE_H__
 #define __ELASTOS_DROID_INTERNAL_PREFERENCE_YESNOPREFERENCE_H__
 
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/preference/DialogPreference.h"
 #include "elastos/droid/preference/PreferenceBaseSavedState.h"
 

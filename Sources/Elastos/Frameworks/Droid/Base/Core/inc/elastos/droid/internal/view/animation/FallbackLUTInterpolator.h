@@ -3,6 +3,8 @@
 #define __ELASTOS_DROID_INTERNAL_VIEW_ANIMATION_FALLBACKLUTINTERPOLATOR_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.Droid.Animation.h"
+#include "Elastos.Droid.Internal.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Animation::ITimeInterpolator;

@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/internal/app/ProcessStats.h"
 #include "elastos/droid/internal/app/CProcessDataCollection.h"
 #include "elastos/droid/internal/app/CProcessMap.h"

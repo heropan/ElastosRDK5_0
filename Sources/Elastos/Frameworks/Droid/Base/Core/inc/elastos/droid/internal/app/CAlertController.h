@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_CALERTCONTROLLER_H__
 #define __ELASTOS_DROID_INTERNAL_APP_CALERTCONTROLLER_H__
 
+#include "Elastos.Droid.View.h"
 #include "_Elastos_Droid_Internal_App_CAlertController.h"
 #include "elastos/droid/os/Handler.h"
 // #include "elastos/droid/widget/ListView.h"

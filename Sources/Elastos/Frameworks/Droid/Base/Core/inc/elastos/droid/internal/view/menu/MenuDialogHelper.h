@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_INTERNAL_VIEW_MENU_MENUDIALOGHELPER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Internal.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::App::IAlertDialog;

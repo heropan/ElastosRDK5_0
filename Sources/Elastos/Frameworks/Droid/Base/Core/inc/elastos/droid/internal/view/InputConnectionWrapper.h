@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_INTERNAL_VIEW_INPUTCONNECTIONWRAPPER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.View.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IBinder;

@@ -1,17 +1,15 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/internal/utility/XmlUtils.h"
 #include "elastos/droid/utility/Xml.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
-
-#ifdef DROID_CORE
 #include "elastos/droid/graphics/CBitmapFactory.h"
 #include "elastos/droid/net/Uri.h"
 #include "elastos/droid/internal/utility/CFastXmlSerializer.h"
 #include "elastos/droid/utility/CBase64.h"
-#endif
 
 using Elastos::Droid::Graphics::BitmapCompressFormat_PNG;
 using Elastos::Droid::Graphics::CBitmapFactory;

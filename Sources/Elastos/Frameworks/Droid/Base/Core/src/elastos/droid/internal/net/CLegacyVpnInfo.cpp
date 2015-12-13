@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/internal/net/CLegacyVpnInfo.h"
 #include <elastos/utility/logging/Logger.h>
 

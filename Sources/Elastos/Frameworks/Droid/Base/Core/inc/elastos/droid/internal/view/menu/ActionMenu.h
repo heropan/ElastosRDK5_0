@@ -3,6 +3,8 @@
 #define __ELASTOS_DROID_INTERNAL_VIEW_MENU_ACTIONMENU_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.View.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 

@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/internal/app/ToolbarActionBar.h"
 // #include "elastos/droid/app/CActionBarLayoutParams.h"
 // #include "elastos/droid/internal/app/CNavItemSelectedListener.h"

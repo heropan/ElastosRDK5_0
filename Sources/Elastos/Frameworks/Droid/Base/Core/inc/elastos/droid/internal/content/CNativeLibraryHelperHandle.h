@@ -2,11 +2,13 @@
 #ifndef __ELASTOS_DROID_INTERNAL_CONTENT_CNATIVELIBRARYHELPERHANDLE_H__
 #define __ELASTOS_DROID_INTERNAL_CONTENT_CNATIVELIBRARYHELPERHANDLE_H__
 
-#include "_Elastos_Droid_Internal_Content_CNativeLibraryHelperHandle.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
+#include "_Elastos_Droid_Internal_Content_CNativeLibraryHelperHandle.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::Content::Pm::IPackageLite;
+using Elastos::Core::Object;
 using Elastos::Core::ICloseGuard;
 using Elastos::IO::IFile;
 using Elastos::IO::ICloseable;

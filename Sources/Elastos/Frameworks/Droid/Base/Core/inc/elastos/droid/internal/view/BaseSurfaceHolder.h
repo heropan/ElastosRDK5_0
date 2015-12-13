@@ -3,12 +3,15 @@
 #define __ELASTOS_DROID_VIEW_BASESURFACEHOLDER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.View.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::View::ISurface;
 using Elastos::Droid::View::ISurfaceHolder;
 using Elastos::Droid::View::ISurfaceHolderCallback;
+using Elastos::Core::Object;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::Concurrent::Locks::ILock;
 

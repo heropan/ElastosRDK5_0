@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/internal/app/HeavyWeightSwitcherActivity.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 #include "elastos/droid/utility/CTypedValue.h"

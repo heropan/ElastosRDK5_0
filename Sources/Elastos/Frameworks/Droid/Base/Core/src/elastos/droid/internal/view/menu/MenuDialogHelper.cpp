@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/internal/view/menu/MenuDialogHelper.h"
 #include "elastos/droid/internal/view/menu/CListMenuPresenter.h"
 // #include "elastos/droid/app/CAlertDialogBuilder.h"

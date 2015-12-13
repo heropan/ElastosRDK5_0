@@ -1,7 +1,10 @@
 #ifndef __ELASTOS_DROID_INTERNAL_OS_SOME_ARGS_H__
 #define __ELASTOS_DROID_INTERNAL_OS_SOME_ARGS_H__
 
+#include "Elastos.Droid.Internal.h"
 #include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/internal/utility/UserIcons.h"
 #include "elastos/droid/content/res/CResources.h"
 #include "elastos/droid/graphics/CBitmap.h"

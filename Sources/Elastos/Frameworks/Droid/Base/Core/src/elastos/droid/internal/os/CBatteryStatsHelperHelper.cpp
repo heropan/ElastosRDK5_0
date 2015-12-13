@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/internal/os/CBatteryStatsHelperHelper.h"
 #include "elastos/droid/internal/os/CBatteryStatsHelper.h"
 

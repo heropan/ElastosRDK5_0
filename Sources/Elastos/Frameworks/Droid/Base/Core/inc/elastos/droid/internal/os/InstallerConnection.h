@@ -2,10 +2,11 @@
 #ifndef __ELASTOS_DROID_INTERNAL_OS_INSTALLERCONNECTION_H__
 #define __ELASTOS_DROID_INTERNAL_OS_INSTALLERCONNECTION_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Core.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Net::ILocalSocket;
+using Elastos::Core::Object;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
 

@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/internal/inputmethod/InputMethodSubtypeSwitchingController.h"
 //#include "elastos/droid/internal/inputmethod/InputMethodUtils.h"
 #include "elastos/droid/text/TextUtils.h"

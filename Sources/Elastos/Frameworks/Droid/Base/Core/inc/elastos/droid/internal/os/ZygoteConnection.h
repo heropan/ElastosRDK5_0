@@ -2,12 +2,13 @@
 #ifndef __ELASTOS_DROID_INTERNAL_OS_ZYGOTECONNECTION_H__
 #define __ELASTOS_DROID_INTERNAL_OS_ZYGOTECONNECTION_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Core.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Net::ILocalSocket;
 using Elastos::Droid::Net::ICredentials;
+using Elastos::Core::Object;
 using Elastos::Core::IRunnable;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IDataOutputStream;

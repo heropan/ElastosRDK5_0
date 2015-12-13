@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/internal/os/storage/CExternalStorageFormatter.h"
 // #include "elastos/droid/app/CProgressDialog.h"
 #include "elastos/droid/content/CComponentName.h"

@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_OS_STORAGE_STORAGEEVENTLISTENER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Os.h"
 #include <elastos/core/Object.h>
 
 namespace Elastos {
@@ -24,8 +25,6 @@ public:
         /* [in] */ const String& path,
         /* [in] */ const String& oldState,
         /* [in] */ const String& newState);
-
-private:
 };
 
 } // namespace Storage

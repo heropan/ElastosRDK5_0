@@ -1,12 +1,14 @@
 #ifndef __ELASTOS_DROID_TEXT_FORMAT_DATEFORMAT_H__
 #define __ELASTOS_DROID_TEXT_FORMAT_DATEFORMAT_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.CoreLibrary.Text.h"
+#include "Elastos.Droid.Core.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Text::ISpannableStringBuilder;
 using Elastos::Core::ICharSequence;
+using Elastos::Text::IDateFormat;
 using Elastos::Utility::ICalendar;
 using Elastos::Utility::IDate;
 using Elastos::Utility::ILocale;
@@ -38,7 +40,7 @@ public:
      * @param context the application context
      * @return the {@link java.text.DateFormat} object that properly formats the time.
      */
-    static CARAPI_(AutoPtr<Elastos::Text::IDateFormat>) GetTimeFormat(
+    static CARAPI_(AutoPtr<IDateFormat>) GetTimeFormat(
         /* [in] */  IContext* context);
 
     /**
@@ -57,7 +59,7 @@ public:
      * @param context the application context
      * @return the {@link java.text.DateFormat} object that properly formats the date.
      */
-    static CARAPI_(AutoPtr<Elastos::Text::IDateFormat>) GetDateFormat(
+    static CARAPI_(AutoPtr<IDateFormat>) GetDateFormat(
         /* [in] */ IContext* context);
 
     /**
@@ -69,7 +71,7 @@ public:
      *              the current locale
      * @hide
      */
-    static CARAPI_(AutoPtr<Elastos::Text::IDateFormat>) GetDateFormatForSetting(
+    static CARAPI_(AutoPtr<IDateFormat>) GetDateFormatForSetting(
         /* [in] */ IContext* context,
         /* [in] */ const String& value);
 
@@ -79,7 +81,7 @@ public:
      * @param context the application context
      * @return the {@link java.text.DateFormat} object that formats the date in long form.
      */
-    static CARAPI_(AutoPtr<Elastos::Text::IDateFormat>) GetLongDateFormat(
+    static CARAPI_(AutoPtr<IDateFormat>) GetLongDateFormat(
         /* [in] */ IContext* context);
 
     /**
@@ -88,7 +90,7 @@ public:
      * @param context the application context
      * @return the {@link java.text.DateFormat} object that formats the date in long form.
      */
-    static CARAPI_(AutoPtr<Elastos::Text::IDateFormat>) GetMediumDateFormat(
+    static CARAPI_(AutoPtr<IDateFormat>) GetMediumDateFormat(
         /* [in] */ IContext* context);
 
     /**
@@ -223,7 +225,6 @@ private:
     static Object sLocaleLock;
     static AutoPtr<ILocale> sIs24HourLocale;
     static Boolean sIs24Hour;
-
 };
 
 } // namespace Format

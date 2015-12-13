@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Media.h"
 #include "elastos/droid/internal/app/MediaRouteChooserDialog.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/view/LayoutInflater.h"

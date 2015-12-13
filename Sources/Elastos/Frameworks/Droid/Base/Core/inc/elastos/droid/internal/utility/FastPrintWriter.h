@@ -2,6 +2,8 @@
 #define __ELASTOS_DROID_INTERNAL_UTILITY_FASTPRINTWRITER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Utility.h"
 #include <elastos/core/Object.h>
 #include <elastos/io/PrintWriter.h>
 

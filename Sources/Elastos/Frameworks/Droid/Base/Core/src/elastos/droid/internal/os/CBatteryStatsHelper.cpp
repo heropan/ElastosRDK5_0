@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Hardware.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/internal/os/CBatteryStatsHelper.h"
 #include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/os/CParcel.h"

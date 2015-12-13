@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/internal/utility/CMemInfoReader.h"
 // #include "elastos/droid/os/CDebug.h"
 // #include "elastos/droid/os/CStrictMode.h"

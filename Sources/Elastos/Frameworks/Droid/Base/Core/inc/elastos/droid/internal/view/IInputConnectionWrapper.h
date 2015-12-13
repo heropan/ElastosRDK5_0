@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_VIEW_IINPUTCONNECTIONWRQPPER_H__
 #define __ELASTOS_DROID_INTERNAL_VIEW_IINPUTCONNECTIONWRQPPER_H__
 
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/os/Handler.h"
 
 using Elastos::Droid::Os::Handler;

@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_INTERNAL_UTILITY_ASYNCCHANNEL_H__
 #define __ELASTOS_DROID_INTERNAL_UTILITY_ASYNCCHANNEL_H__
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/Runnable.h"
 #include <elastos/core/Object.h>

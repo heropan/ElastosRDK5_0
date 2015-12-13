@@ -2,6 +2,9 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_MEDIAROUTECONTROLLERDIALOG_H__
 #define __ELASTOS_DROID_INTERNAL_APP_MEDIAROUTECONTROLLERDIALOG_H__
 
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/app/Dialog.h"
 
 using Elastos::Droid::App::Dialog;

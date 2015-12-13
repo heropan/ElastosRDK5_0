@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_TRANSITION_CTRANSITIONMANAGER_H__
 #define __ELASTOS_DROID_TRANSITION_CTRANSITIONMANAGER_H__
 
+#include "Elastos.Droid.View.h"
 #include "_Elastos_Droid_Transition_CTransitionManager.h"
 #include "elastos/droid/transition/Transition.h"
 

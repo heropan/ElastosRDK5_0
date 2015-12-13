@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_OS_BACKGROUNDTHREAD_H__
 #define __ELASTOS_DROID_INTERNAL_OS_BACKGROUNDTHREAD_H__
 
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/os/HandlerThread.h"
 
 using Elastos::Droid::Os::HandlerThread;

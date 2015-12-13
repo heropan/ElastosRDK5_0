@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_INTERNAL_HTTP_MULTIPART_MULTIPARTENTITY_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Internal.h"
 #include <org/apache/http/entity/AbstractHttpEntity.h>
 
 using Elastos::IO::IInputStream;

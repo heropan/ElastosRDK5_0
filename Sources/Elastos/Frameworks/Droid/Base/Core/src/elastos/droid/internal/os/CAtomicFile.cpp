@@ -1,5 +1,7 @@
-#include "elastos/droid/internal/os/CAtomicFile.h"
+
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.CoreLibrary.IO.h"
+#include "elastos/droid/internal/os/CAtomicFile.h"
 #include "elastos/droid/os/FileUtils.h"
 
 using Elastos::IO::CFile;

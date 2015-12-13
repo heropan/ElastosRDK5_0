@@ -1,8 +1,9 @@
 
+#include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/internal/http/multipart/FilePart.h"
 #include "elastos/droid/internal/http/multipart/CFilePartSource.h"
 #include <elastos/utility/logging/Logger.h>
-#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::Utility::Logging::Logger;

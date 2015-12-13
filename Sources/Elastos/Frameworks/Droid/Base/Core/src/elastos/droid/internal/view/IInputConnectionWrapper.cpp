@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/internal/view/IInputConnectionWrapper.h"
 #include <elastos/utility/logging/Logger.h>
 #include "elastos/droid/os/Looper.h"

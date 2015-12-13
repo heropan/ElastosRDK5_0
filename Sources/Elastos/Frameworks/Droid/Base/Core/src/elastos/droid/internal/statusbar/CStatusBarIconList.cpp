@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/internal/statusbar/CStatusBarIconList.h"
 #include "elastos/droid/internal/statusbar/CStatusBarIcon.h"
 

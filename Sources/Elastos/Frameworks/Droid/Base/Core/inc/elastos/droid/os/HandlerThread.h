@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_OS_HANDLERTHREAD_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Os.h"
 #include <elastos/core/Thread.h>
 
 using Elastos::Core::Thread;

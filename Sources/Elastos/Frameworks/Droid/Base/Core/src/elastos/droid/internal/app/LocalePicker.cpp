@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Text.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/internal/app/LocalePicker.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 //#include "elastos/droid/app/backup/CBackupManagerHelper.h"

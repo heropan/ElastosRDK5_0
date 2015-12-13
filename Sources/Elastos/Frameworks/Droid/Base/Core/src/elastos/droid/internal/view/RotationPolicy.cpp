@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/internal/view/RotationPolicy.h"
 #include "elastos/droid/graphics/CPoint.h"
 // #include "elastos/droid/provider/Settings.h"

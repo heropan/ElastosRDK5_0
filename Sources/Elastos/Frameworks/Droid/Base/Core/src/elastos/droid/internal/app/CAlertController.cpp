@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/internal/app/CAlertController.h"
 #include "elastos/droid/os/CMessageHelper.h"
 #include "elastos/droid/text/TextUtils.h"

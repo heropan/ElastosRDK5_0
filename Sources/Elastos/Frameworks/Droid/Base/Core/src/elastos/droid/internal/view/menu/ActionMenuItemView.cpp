@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/internal/view/menu/ActionMenuItemView.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/text/TextUtils.h"

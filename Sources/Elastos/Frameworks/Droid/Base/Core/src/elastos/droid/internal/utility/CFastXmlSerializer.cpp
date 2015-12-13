@@ -1,6 +1,7 @@
 
-#include "elastos/droid/internal/utility/CFastXmlSerializer.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.IO.h"
+#include "elastos/droid/internal/utility/CFastXmlSerializer.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;

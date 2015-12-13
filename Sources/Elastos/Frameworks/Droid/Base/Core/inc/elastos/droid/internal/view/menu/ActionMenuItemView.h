@@ -1,6 +1,8 @@
 #ifndef __ELASTOS_DROID_INTERNAL_VIEW_MENU_ACTIONMENUITEMVIEW_H__
 #define __ELASTOS_DROID_INTERNAL_VIEW_MENU_ACTIONMENUITEMVIEW_H__
 
+#include "Elastos.Droid.Widget.h"
+
 #if 0
 #include "elastos/droid/widget/TextView.h"
 #else
