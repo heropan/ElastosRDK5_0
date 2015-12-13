@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/location/CLocationRequest.h"
 #include "elastos/droid/location/LocationRequest.h"
 #include "elastos/droid/os/SystemClock.h"

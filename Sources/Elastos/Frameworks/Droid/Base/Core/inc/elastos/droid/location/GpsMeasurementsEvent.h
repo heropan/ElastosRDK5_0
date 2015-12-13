@@ -3,8 +3,11 @@
 #define __ELASTOS_DROID_LOCATION_GPSMEASUREMENTEVENT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Location.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/Arrays.h>
 
+using Elastos::Core::Object;
 using Elastos::Utility::Arrays;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::IList;

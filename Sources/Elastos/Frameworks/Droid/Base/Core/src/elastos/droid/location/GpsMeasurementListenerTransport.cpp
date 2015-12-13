@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/location/GpsMeasurementListenerTransport.h"
 #include "elastos/droid/location/CGpsMeasurementListenerTransportListenerTransport.h"
 

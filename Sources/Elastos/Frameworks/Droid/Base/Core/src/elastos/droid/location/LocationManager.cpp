@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/location/LocationManager.h"
 #include "elastos/droid/location/CLocation.h"
 // #include "elastos/droid/location/CProviderProperties.h"

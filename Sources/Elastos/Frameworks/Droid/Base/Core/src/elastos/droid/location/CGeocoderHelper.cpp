@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/location/CGeocoderHelper.h"
 #include "elastos/droid/os/CServiceManager.h"
 

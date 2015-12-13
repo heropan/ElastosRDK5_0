@@ -3,8 +3,11 @@
 #define __ELASTOS_DROID_LOCATION_GEOCODERPARAMS_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Location.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
+using Elastos::Core::Object;
 using Elastos::Utility::ILocale;
 
 namespace Elastos {

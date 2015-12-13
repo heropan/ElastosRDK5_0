@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/location/SettingInjectorService.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/CMessage.h"

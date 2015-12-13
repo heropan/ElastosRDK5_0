@@ -3,10 +3,13 @@
 #define __ELASTOS_DROID_LOCATION_SETTINGINJECTORSERVICE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Location.h"
 // #include "elastos/droid/app/Service.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Os::IBinder;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

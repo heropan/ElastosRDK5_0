@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_INTERNAL_NET_CVPNCONFIG_H__
 #define __ELASTOS_DROID_INTERNAL_NET_CVPNCONFIG_H__
 
+#include "Elastos.Droid.App.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "_Elastos_Droid_Internal_Net_CVpnConfig.h"
 #include <elastos/core/Object.h>
 

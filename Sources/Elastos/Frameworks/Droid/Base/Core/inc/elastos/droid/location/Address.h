@@ -3,9 +3,12 @@
 #define __ELASTOS_DROID_LOCATION_ADDRESS_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Location.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Os::IBundle;
+using Elastos::Core::Object;
 using Elastos::Utility::ILocale;
 using Elastos::Utility::Etl::HashMap;
 

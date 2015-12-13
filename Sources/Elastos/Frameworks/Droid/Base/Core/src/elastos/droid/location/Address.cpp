@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/location/Address.h"
 #include "elastos/droid/os/CBundle.h"
 #include <elastos/core/Math.h>
