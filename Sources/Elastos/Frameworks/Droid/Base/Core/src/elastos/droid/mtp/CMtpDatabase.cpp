@@ -1,5 +1,12 @@
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Database.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Provider.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
 #include "elastos/droid/text/TextUtils.h"

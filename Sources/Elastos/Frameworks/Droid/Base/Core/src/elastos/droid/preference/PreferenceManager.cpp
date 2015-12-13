@@ -1,3 +1,7 @@
+
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.CoreLibrary.External.h"
 #include "elastos/droid/preference/CPreferenceInflater.h"
 #include "elastos/droid/preference/CPreferenceManager.h"
 #include "elastos/droid/preference/CPreferenceScreen.h"

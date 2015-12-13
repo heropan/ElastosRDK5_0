@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_OS_CBATTERYSIPPER_H__
 #define __ELASTOS_DROID_INTERNAL_OS_CBATTERYSIPPER_H__
 
+#include "Elastos.Droid.Os.h"
 #include "_Elastos_Droid_Internal_Os_CBatterySipper.h"
 #include <elastos/core/Object.h>
 

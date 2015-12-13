@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_PREFERENCE_PREFERENCE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.Preference.h"

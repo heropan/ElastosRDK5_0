@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/preference/CheckBoxPreference.h"
 #include "elastos/droid/R.h"
 

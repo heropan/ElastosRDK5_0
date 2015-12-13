@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_TEXT_STATICLAYOUT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/text/Layout.h"
 #include "elastos/droid/text/MeasuredText.h"
 

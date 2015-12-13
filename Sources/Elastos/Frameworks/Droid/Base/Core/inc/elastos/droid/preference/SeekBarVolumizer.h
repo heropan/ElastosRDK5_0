@@ -4,6 +4,10 @@
 #define  __ELASTOS_DROID_PREFERENCE_SEEKBARVOLUMIZER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Preference.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/database/ContentObserver.h"
 #include "elastos/droid/os/Handler.h"

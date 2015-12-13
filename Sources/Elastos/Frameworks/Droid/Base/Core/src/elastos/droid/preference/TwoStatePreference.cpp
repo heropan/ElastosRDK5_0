@@ -1,3 +1,7 @@
+
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/preference/CTwoStatePreferenceSavedState.h"
 #include "elastos/droid/preference/TwoStatePreference.h"
 #include "elastos/droid/R.h"

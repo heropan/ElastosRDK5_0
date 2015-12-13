@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/preference/DialogPreference.h"
 #include "elastos/droid/preference/CDialogPreferenceSavedState.h"
 // #include "elastos/droid/app/CAlertDialogBuilder.h"

@@ -4,6 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Location.h"
+#include "Elastos.Droid.Os.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IWorkSource;

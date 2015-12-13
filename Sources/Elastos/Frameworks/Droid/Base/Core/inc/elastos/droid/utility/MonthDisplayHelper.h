@@ -2,8 +2,9 @@
 #ifndef __ELASTOS_DROID_UTILITY_MONTH_DISPLAY_HELPER_H__
 #define __ELASTOS_DROID_UTILITY_MONTH_DISPLAY_HELPER_H__
 
-#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Utility.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Utility::ICalendar;

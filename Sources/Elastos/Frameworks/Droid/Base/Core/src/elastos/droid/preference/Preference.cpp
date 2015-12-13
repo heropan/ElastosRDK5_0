@@ -1,4 +1,8 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/preference/Preference.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/text/TextUtils.h"

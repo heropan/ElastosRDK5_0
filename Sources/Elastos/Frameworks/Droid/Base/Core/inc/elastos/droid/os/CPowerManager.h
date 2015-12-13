@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_OS_CPOWERMANAGER_H__
 #define __ELASTOS_DROID_OS_CPOWERMANAGER_H__
 
+#include "Elastos.Droid.Content.h"
 #include "_Elastos_Droid_Os_CPowerManager.h"
 #include "elastos/droid/os/CPowerManagerWakeLock.h"
 #include <elastos/core/Object.h>

@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Os.h"
+#include "Elastos.CoreLibrary.External.h"
 #include "elastos/droid/content/Intent.h"
 #include "elastos/droid/internal/utility/XmlUtils.h"
 #include "elastos/droid/preference/CPreferenceInflater.h"

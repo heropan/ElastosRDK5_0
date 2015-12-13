@@ -1,7 +1,10 @@
 
-#include <elastos/core/AutoLock.h>
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Utility.h"
+#include "Elastos.CoreLibrary.External.h"
 #include "elastos/droid/preference/GenericInflater.h"
 #include "elastos/droid/utility/Xml.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::IClassLoader;

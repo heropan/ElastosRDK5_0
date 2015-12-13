@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/preference/SwitchPreference.h"
 #include "elastos/droid/R.h"
 

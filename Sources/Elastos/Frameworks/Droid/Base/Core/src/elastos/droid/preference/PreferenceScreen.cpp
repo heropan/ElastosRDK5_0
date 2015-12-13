@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/preference/PreferenceScreen.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/preference/CPreferenceGroupAdapter.h"

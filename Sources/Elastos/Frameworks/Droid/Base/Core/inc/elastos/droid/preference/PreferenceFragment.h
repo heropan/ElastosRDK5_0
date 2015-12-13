@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_PREFERENCE_PREFERENCEFRAGMENT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Preference.h"
 #include "elastos/droid/app/Fragment.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/Runnable.h"

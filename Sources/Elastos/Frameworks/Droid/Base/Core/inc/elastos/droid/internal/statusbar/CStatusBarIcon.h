@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DINTERNAL_ROID_STATUSBAR_CSTATUSBARICON_H__
 #define __ELASTOS_DINTERNAL_ROID_STATUSBAR_CSTATUSBARICON_H__
 
+#include "Elastos.Droid.Os.h"
 #include "_Elastos_Droid_Internal_StatusBar_CStatusBarIcon.h"
 #include <elastos/core/Object.h>
 

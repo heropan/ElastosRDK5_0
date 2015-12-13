@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_PREFERENCE_PREFERENCEBASESAVEDSTATE_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include <elastos/coredef.h>
+#include "Elastos.Droid.Preference.h"
 #include "elastos/droid/view/AbsSavedState.h"
 
 using Elastos::Droid::Preference::IPreferenceBaseSavedState;

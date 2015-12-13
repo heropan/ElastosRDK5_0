@@ -1,4 +1,9 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Database.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Provider.h"
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/mtp/CMtpPropertyGroup.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>

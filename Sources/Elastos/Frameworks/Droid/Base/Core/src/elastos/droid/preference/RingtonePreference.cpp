@@ -1,3 +1,6 @@
+
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Media.h"
 #include "elastos/droid/content/CIntent.h"
 // #include "elastos/droid/media/CRingtoneManagerHelper.h"
 #include "elastos/droid/net/Uri.h"

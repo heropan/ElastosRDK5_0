@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_PREFERENCE_SEEKBARPREFERENCE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/preference/Preference.h"
 
 using Elastos::Core::IComparable;

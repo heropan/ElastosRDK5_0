@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/preference/PreferenceScreenSavedState.h"
 
 namespace Elastos {

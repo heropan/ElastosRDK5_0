@@ -1,5 +1,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Hardware.h"
 #include "elastos/droid/mtp/CMtpDevice.h"
 #include "elastos/droid/mtp/CMtpDeviceInfo.h"
 #include "elastos/droid/mtp/CMtpStorageInfo.h"

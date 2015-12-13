@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_LOCATION_GPSNAVIGATIONMESSAGELISTENERTRANSPORT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Location.h"
 #include "Elastos.Droid.Os.h"
 #include "elastos/droid/location/LocalListenerHelper.h"

@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/preference/SeekBarDialogPreference.h"
 #include "elastos/droid/R.h"
 

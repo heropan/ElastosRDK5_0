@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_OS_CUSERMANAGER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Content.h"
 #include "_Elastos_Droid_Os_CUserManager.h"
 #include <elastos/core/Object.h>
 

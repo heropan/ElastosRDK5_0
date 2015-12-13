@@ -2,8 +2,10 @@
 #ifndef __ELASTOS_DROID_TEXT_PACKEDINTVECTOR_H__
 #define __ELASTOS_DROID_TEXT_PACKEDINTVECTOR_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Core.h"
 #include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

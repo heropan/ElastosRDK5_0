@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/preference/PreferenceFragment.h"
 #include "elastos/droid/preference/CPreferenceManager.h"
 #include "elastos/droid/preference/DialogPreference.h"

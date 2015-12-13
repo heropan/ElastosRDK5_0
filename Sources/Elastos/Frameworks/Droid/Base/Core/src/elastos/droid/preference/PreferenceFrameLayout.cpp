@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/preference/CPreferenceFrameLayoutLayoutParams.h"
 #include "elastos/droid/preference/PreferenceFrameLayout.h"
 #include "elastos/droid/R.h"
