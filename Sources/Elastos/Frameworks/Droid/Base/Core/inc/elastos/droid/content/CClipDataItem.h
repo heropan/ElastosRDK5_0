@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCLIPDATAITEM_H__
 #define __ELASTOS_DROID_CONTENT_CCLIPDATAITEM_H__
 
+#include "Elastos.Droid.Net.h"
 #include "_Elastos_Droid_Content_CClipDataItem.h"
 #include <elastos/core/Object.h>
 

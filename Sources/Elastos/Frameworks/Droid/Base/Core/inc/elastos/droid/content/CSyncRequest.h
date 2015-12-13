@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_CONTENT_CSYNCREQUEST_H__
 #define __ELASTOS_DROID_CONTENT_CSYNCREQUEST_H__
 
+#include "Elastos.Droid.Accounts.h"
+#include "Elastos.Droid.Os.h"
 #include "_Elastos_Droid_Content_CSyncRequest.h"
 #include <elastos/core/Object.h>
 

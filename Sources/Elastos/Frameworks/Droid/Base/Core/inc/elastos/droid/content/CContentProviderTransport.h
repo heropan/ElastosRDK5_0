@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCONTENTPROVIDERTRANSPORT_H__
 #define __ELASTOS_DROID_CONTENT_CCONTENTPROVIDERTRANSPORT_H__
 
+#include "Elastos.Droid.App.h"
 #include "_Elastos_Droid_Content_CContentProviderTransport.h"
 #include <elastos/core/Object.h>
 
