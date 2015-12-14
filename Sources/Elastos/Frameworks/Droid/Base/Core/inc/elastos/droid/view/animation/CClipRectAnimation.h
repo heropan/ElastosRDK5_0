@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ANIMATION_CCLIPRECTANIMATION_H__
 #define __ELASTOS_DROID_VIEW_ANIMATION_CCLIPRECTANIMATION_H__
 
+#include "Elastos.Droid.Graphics.h"
 #include "_Elastos_Droid_View_Animation_CClipRectAnimation.h"
 #include "elastos/droid/view/animation/Animation.h"
 

@@ -2,8 +2,9 @@
 #ifndef __ELASTOS_DROID_VIEW_VIEWROOTIMPL_H__
 #define __ELASTOS_DROID_VIEW_VIEWROOTIMPL_H__
 
-#include "Elastos.Droid.Hardware.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Animation.h"
+#include "Elastos.Droid.Hardware.h"
 #include "elastos/droid/graphics/CRegion.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/os/Handler.h"

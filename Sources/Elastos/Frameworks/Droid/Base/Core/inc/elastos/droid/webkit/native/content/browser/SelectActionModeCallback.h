@@ -7,6 +7,7 @@
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SELECTACTIONMODECALLBACK_H_
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.View.h"
 
 using Elastos::Droid::Content::IClipboardManager;
 using Elastos::Droid::Content::IContext;

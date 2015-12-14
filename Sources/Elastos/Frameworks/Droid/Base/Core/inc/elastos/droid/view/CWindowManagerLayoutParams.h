@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CWINDOWMANAGERLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_VIEW_CWINDOWMANAGERLAYOUTPARAMS_H__
 
+#include "Elastos.Droid.Os.h"
 #include "_Elastos_Droid_View_CWindowManagerLayoutParams.h"
 #include "elastos/droid/view/ViewGroup.h"
 

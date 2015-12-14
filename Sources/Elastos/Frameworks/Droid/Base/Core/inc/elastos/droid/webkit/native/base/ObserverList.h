@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_BASE_OBSERVERLIST_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.Utility.h"
 
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::IIterable;

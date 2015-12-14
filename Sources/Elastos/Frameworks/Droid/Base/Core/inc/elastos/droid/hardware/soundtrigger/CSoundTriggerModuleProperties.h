@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_SOUNDTRIGGER_CSOUNDTRIGGERMODULEPROPERTIES_H__
 #define __ELASTOS_DROID_HARDWARE_SOUNDTRIGGER_CSOUNDTRIGGERMODULEPROPERTIES_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "_Elastos_Droid_Hardware_Soundtrigger_CSoundTriggerModuleProperties.h"
 #include <elastos/core/Object.h>
 

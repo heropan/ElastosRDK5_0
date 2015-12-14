@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_GRAPHICBUFFER_H__
 #define __ELASTOS_DROID_VIEW_GRAPHICBUFFER_H__
 
+#include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.View.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>

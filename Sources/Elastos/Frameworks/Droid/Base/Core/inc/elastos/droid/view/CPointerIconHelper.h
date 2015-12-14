@@ -2,12 +2,14 @@
 #ifndef __ELASTOS_DROID_VIEW_CPOINTERICONHELPER_H__
 #define __ELASTOS_DROID_VIEW_CPOINTERICONHELPER_H__
 
-#include "_Elastos_Droid_View_CPointerIconHelper.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "_Elastos_Droid_View_CPointerIconHelper.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

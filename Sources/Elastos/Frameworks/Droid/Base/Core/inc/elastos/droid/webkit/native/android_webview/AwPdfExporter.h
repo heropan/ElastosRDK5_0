@@ -1,6 +1,8 @@
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWPDFEXPORTER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWPDFEXPORTER_H__
+
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::ICancellationSignal;
 using Elastos::Droid::Os::IParcelFileDescriptor;
@@ -8,6 +10,7 @@ using Elastos::Droid::Os::IParcelFileDescriptor;
 // import android.print.PrintAttributes;
 using Elastos::Droid::View::IViewGroup;
 //TODO using Elastos::Droid::Webkit::IValueCallback;
+using Elastos::Core::Object;
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;

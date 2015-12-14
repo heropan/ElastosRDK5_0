@@ -4,6 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Hardware.h"
+#include "Elastos.CoreLibrary.IO.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/Object.h>
 
