@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_VIEW_DRAGEVENT_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.Droid.Content.h"
 #include <elastos/core/Object.h>
 #include <elastos/core/Mutex.h>
 

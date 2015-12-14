@@ -1,3 +1,6 @@
+
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/native/api/AwMotionEvent.h"
 #include "elastos/droid/webkit/native/api/MotionEvent_dec.h"
 //TODO #include "elastos/droid/view/CMotionEventHelper.h"

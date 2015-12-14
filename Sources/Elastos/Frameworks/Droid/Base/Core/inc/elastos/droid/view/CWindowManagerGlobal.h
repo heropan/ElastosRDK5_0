@@ -2,8 +2,10 @@
 #ifndef __ELASTOS_DROID_VIEW_CWINDOWMANAGERGLOBAL_H__
 #define __ELASTOS_DROID_VIEW_CWINDOWMANAGERGLOBAL_H__
 
-#include "_Elastos_Droid_View_CWindowManagerGlobal.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "_Elastos_Droid_View_CWindowManagerGlobal.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
@@ -11,6 +13,7 @@ using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::View::IIWindowSessionCallback;
 using Elastos::Droid::View::IWindowManagerGlobal;
+using Elastos::Core::Object;
 using Elastos::Core::IRunnable;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Utility::IArrayList;

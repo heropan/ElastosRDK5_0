@@ -1,10 +1,12 @@
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_JAVABROWSERVIEWRENDERERHELPER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_JAVABROWSERVIEWRENDERERHELPER_H__
+
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::ICanvas;
-
+using Elastos::Core::Object;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 
@@ -63,7 +65,6 @@ private:
         /* [in] */ IInterface* canvas,
         /* [in] */ Int32 scroll_x,
         /* [in] */ Int32 scroll_y);
-
 };
 
 } // namespace AndroidWebview

@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ANIMATION_SCALEANIMATION_H__
 #define __ELASTOS_DROID_VIEW_ANIMATION_SCALEANIMATION_H__
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/view/animation/Animation.h"
 
 using Elastos::Droid::Content::Res::IResources;

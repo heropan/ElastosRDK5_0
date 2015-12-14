@@ -2,8 +2,9 @@
 #ifndef __ELASTOS_DROID_VIEW_CPOINTERICON_H__
 #define __ELASTOS_DROID_VIEW_CPOINTERICON_H__
 
-#include "_Elastos_Droid_View_CPointerIcon.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Graphics.h"
+#include "_Elastos_Droid_View_CPointerIcon.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;

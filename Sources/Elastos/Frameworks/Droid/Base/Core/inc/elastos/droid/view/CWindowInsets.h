@@ -2,8 +2,9 @@
 #ifndef __ELASTOS_DROID_VIEW_CWINDOWINSETS_H__
 #define __ELASTOS_DROID_VIEW_CWINDOWINSETS_H__
 
-#include "_Elastos_Droid_View_CWindowInsets.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Graphics.h"
+#include "_Elastos_Droid_View_CWindowInsets.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Graphics::IRect;

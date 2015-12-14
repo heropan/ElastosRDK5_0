@@ -1,3 +1,6 @@
+
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/native/android_webview/AwPdfExporter.h"
 #include "elastos/droid/webkit/native/android_webview/api/AwPdfExporter_dec.h"
 

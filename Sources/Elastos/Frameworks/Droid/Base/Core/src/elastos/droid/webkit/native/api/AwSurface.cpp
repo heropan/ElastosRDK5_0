@@ -1,3 +1,6 @@
+
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/native/api/AwSurface.h"
 #include "elastos/droid/webkit/native/api/Surface_dec.h"
 //TODO #include "elastos/droid/view/CSurface.h"

@@ -1,8 +1,12 @@
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_PERMISSION_AWPERMISSIONREQUEST_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_PERMISSION_AWPERMISSIONREQUEST_H__
+
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Net.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Net::IUri;
+using Elastos::Core::Object;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 // import org.chromium.base.ThreadUtils;

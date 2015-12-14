@@ -1,5 +1,6 @@
 #ifndef __ELASTOS_DROID_WEBKIT_NATIVE_API_AWBYTEBUFFER_H__
 #define __ELASTOS_DROID_WEBKIT_NATIVE_API_AWBYTEBUFFER_H__
+
 #include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
@@ -8,7 +9,6 @@ namespace Webkit {
 namespace Api {
 
 class AwMotionEvent
-    : public Object
 {
 public:
     static CARAPI_(void*) ElaMotionEventCallback_Init();
@@ -395,11 +395,11 @@ private:
             /* [in] */ IInterface* obj,
             /* [in] */ IInterface* p0,
             /* [in] */ Int32 p1);
-
 };
 
 } //Api
 } //Webkit
 } //Droid
 } //Elastos
+
 #endif //__ELASTOS_DROID_WEBKIT_NATIVE_API_AWBYTEBUFFER_H__

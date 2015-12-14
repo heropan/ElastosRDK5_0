@@ -3,12 +3,13 @@
 #define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTMETHODMANAGER_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Utility.h"
 #include "_Elastos_Droid_View_InputMethod_CInputMethodManager.h"
 #include "elastos/droid/view/inputmethod/CControlledInputConnectionWrapper.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/utility/Pools.h"
-
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;

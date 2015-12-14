@@ -2,8 +2,9 @@
 #ifndef __ELASTOS_DROID_HARDWARE_DISPLAY_CDISPLAYMANAGER_H__
 #define __ELASTOS_DROID_HARDWARE_DISPLAY_CDISPLAYMANAGER_H__
 
-#include "_Elastos_Droid_Hardware_Display_CDisplayManager.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.View.h"
+#include "_Elastos_Droid_Hardware_Display_CDisplayManager.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>

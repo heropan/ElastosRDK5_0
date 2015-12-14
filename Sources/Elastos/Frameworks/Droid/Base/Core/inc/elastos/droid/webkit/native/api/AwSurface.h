@@ -1,5 +1,6 @@
 #ifndef __ELASTOS_DROID_WEBKIT_NATIVE_API_AWBYTEBUFFER_H__
 #define __ELASTOS_DROID_WEBKIT_NATIVE_API_AWBYTEBUFFER_H__
+
 #include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
@@ -8,7 +9,6 @@ namespace Webkit {
 namespace Api {
 
 class AwSurface
-    : public Object
 {
 public:
     static CARAPI_(void*) ElaSurfaceCallback_Init();
@@ -52,11 +52,11 @@ private:
 
     static CARAPI_(AutoPtr<IInterface>) Constructor(
         /* [in] */ IInterface* p0);
-
 };
 
 } //Api
 } //Webkit
 } //Droid
 } //Elastos
+
 #endif //__ELASTOS_DROID_WEBKIT_NATIVE_API_AWBYTEBUFFER_H__
