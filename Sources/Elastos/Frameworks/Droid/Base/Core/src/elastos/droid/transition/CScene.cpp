@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/transition/CScene.h"
 //#include "elastos/droid/utility/SparseArray.h"
 #include "elastos/droid/view/LayoutInflater.h"

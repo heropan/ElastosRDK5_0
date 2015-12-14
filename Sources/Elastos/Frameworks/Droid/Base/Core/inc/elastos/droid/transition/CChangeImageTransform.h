@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_TRANSITION_CCHANGEIMAGETRANSFORM_H__
 #define __ELASTOS_DROID_TRANSITION_CCHANGEIMAGETRANSFORM_H__
 
+#include "Elastos.Droid.Utility.h"
 #include "_Elastos_Droid_Transition_CChangeImageTransform.h"
 #include "elastos/droid/transition/Transition.h"
 

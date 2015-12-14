@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/transition/TransitionValuesMaps.h"
 //#include "elastos/droid/utility/CArrayMap.h"
 //#include "elastos/droid/utility/SparseArray.h"

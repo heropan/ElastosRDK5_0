@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/transition/CArcMotion.h"
 #include "elastos/droid/utility/FloatMath.h"
 #include "elastos/droid/R.h"

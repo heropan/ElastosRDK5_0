@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/transition/Transition.h"
 #include "elastos/droid/transition/CTransitionValues.h"
 #include "elastos/droid/transition/TransitionValuesMaps.h"

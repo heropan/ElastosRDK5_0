@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/transition/CPatternPathMotion.h"
 //#include "elastos/droid/graphics/CPathMeasure.h"
 //#include "elastos/droid/graphics/CPath.h"
