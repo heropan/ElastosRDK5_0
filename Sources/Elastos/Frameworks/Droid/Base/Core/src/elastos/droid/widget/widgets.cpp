@@ -53,6 +53,12 @@
 #include "elastos/droid/widget/CActionMenuViewLayoutParams.h"
 #include "elastos/droid/widget/CExpandableListView.h"
 #include "elastos/droid/widget/CListPopupWindow.h"
+#include "elastos/droid/widget/CMultiAutoCompleteTextView.h"
+#include "elastos/droid/widget/CCheckBox.h"
+#include "elastos/droid/widget/CTextSwitcher.h"
+#include "elastos/droid/widget/CSpace.h"
+#include "elastos/droid/widget/CSlidingDrawer.h"
+#include "elastos/droid/widget/CSpellChecker.h"
 
 namespace Elastos {
 namespace Droid {
@@ -112,6 +118,12 @@ CAR_OBJECT_IMPL(CActionMenuViewLayoutParams)
 CAR_OBJECT_IMPL(CActionMenuView)
 CAR_OBJECT_IMPL(CExpandableListView)
 CAR_OBJECT_IMPL(CListPopupWindow)
+CAR_OBJECT_IMPL(CMultiAutoCompleteTextView)
+CAR_OBJECT_IMPL(CCheckBox)
+CAR_OBJECT_IMPL(CTextSwitcher)
+CAR_OBJECT_IMPL(CSpace)
+CAR_OBJECT_IMPL(CSlidingDrawer)
+CAR_OBJECT_IMPL(CSpellChecker)
 
 } // namespace Widget
 } // namespace Droid

@@ -7,7 +7,6 @@
 #include "elastos/droid/os/CHandlerThread.h"
 #include "elastos/droid/os/Runnable.h"
 
-
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/HashSet.h>
@@ -17,6 +16,7 @@ using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::HashSet;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IHandlerCallback;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::CHandlerThread;
 using Elastos::Droid::Os::IHandlerThread;
@@ -36,6 +36,7 @@ namespace Widget {
 
 class RemoteViewsCacheKey
     : public Object
+    , public IRemoteViewsCacheKey
 {
 public:
     RemoteViewsCacheKey(
@@ -43,9 +44,15 @@ public:
         /* [in] */ Int32 widgetId,
         /* [in] */ Int32 userId);
 
+    CARAPI Equals(
+        /* [in] */ IInterface* other,
+        /* [out] */ Boolean* result);
+
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hashCode);
+
     AutoPtr<IIntentFilterComparison> mFilter;
     Int32 mWidgetId;
-    Int32 mUserId;
 };
 
 class RemoteViewsFrameLayout
@@ -74,9 +81,9 @@ template<> struct Hash<AutoPtr<Elastos::Droid::Widget::RemoteViewsCacheKey> >
 {
     size_t operator()(const AutoPtr<Elastos::Droid::Widget::RemoteViewsCacheKey> s) const
     {
-        Int32 filterHash;
-        s->mFilter->GetHashCode(&filterHash);
-        return (size_t)((s->mFilter == NULL ? 0 : filterHash) ^ (s->mWidgetId << 2) ^ (s->mUserId << 10));
+        Int32 hashCode;
+        s->GetHashCode(&hashCode);
+        return (size_t)hashCode;
     }
 };
 _ETL_NAMESPACE_END
@@ -91,11 +98,14 @@ namespace Widget {
 
 
 class CRemoteViewsAdapterServiceConnection;
-class RemoteViewsAdapter : public BaseAdapter
+class RemoteViewsAdapter
+    : public BaseAdapter
+    , public IRemoteViewsAdapter
+    , public IHandlerCallback
 {
 private:
     class RemoteViewsFrameLayoutRefSet
-        : public ElRefBase
+        : public Object
     {
     public:
         RemoteViewsFrameLayoutRefSet(
@@ -127,7 +137,7 @@ private:
         RemoteViewsFrameLayoutMap mViewToLinkedList;
     };
 
-    class RemoteViewsMetaData : public ElRefBase
+    class RemoteViewsMetaData : public Object
     {
     public:
         RemoteViewsMetaData();
@@ -146,6 +156,7 @@ private:
 
         CARAPI_(Boolean) IsViewTypeInRange(
             /* [in] */ Int32 typeId);
+
     private:
         CARAPI_(AutoPtr<RemoteViewsFrameLayout>) CreateLoadingView(
             /* [in] */ Int32 position,
@@ -155,6 +166,7 @@ private:
             /* [in] */ ILayoutInflater* layoutInflater,
             /* [in] */ IRemoteViewsOnClickHandler* handler);
         friend class RemoteViewsAdapter;
+
     public:
         Int32 mCount;
         Int32 mViewTypeCount;
@@ -165,12 +177,13 @@ private:
         AutoPtr<IRemoteViews> mUserLoadingView;
         AutoPtr<IRemoteViews> mFirstView;
         Int32 mFirstViewHeight;
+
     private:
         Object mLock;
         HashMap<Int32, Int32> mTypeIdIndexMap;
     };
 
-    class RemoteViewsIndexMetaData : public ElRefBase
+    class RemoteViewsIndexMetaData : public Object
     {
     public:
         RemoteViewsIndexMetaData(
@@ -186,7 +199,7 @@ private:
         friend class RemoteViewsAdapter;
     };
 
-    class FixedSizeRemoteViewsCache : public ElRefBase
+    class FixedSizeRemoteViewsCache : public Object
     {
     public:
         FixedSizeRemoteViewsCache(
@@ -324,65 +337,70 @@ private:
     };
 
 public:
-    RemoteViewsAdapter(
+    CAR_INTERFCE_DECL()
+
+    RemoteViewsAdapter();
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IIntent* intent,
         /* [in] */ IRemoteAdapterConnectionCallback* callback);
 
     ~RemoteViewsAdapter();
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    CARAPI HandleMessage(
+        /* [in] */ IMessage* msg,
+        /* [out]*/ Boolean* result);
 
-    Boolean HandleMessage(
-        /* [in] */ IMessage* msg);
-
-    CARAPI_(Boolean) IsDataReady();
+    CARAPI IsDataReady(
+        /* [out]*/ Boolean* ready);
 
     CARAPI SetRemoteViewsOnClickHandler(
         /* [in] */ IRemoteViewsOnClickHandler* handler);
 
     CARAPI SaveRemoteViewsCache();
 
-    CARAPI_(AutoPtr<IIntent>) GetRemoteViewsServiceIntent();
+    CARAPI GetRemoteViewsServiceIntent(
+        /* [out] */ IIntent** intent);
 
-    CARAPI_(Int32) GetCount();
+    CARAPI GetCount(
+        /* [out] */ Int32* count);
 
-    CARAPI_(AutoPtr<IInterface>) GetItem(
-        /* [in] */ Int32 position);
+    CARAPI GetItem(IInterface
+        /* [in] */ Int32 position,
+        /* [out] */ IInterface** intent);
 
-    CARAPI_(Int64) GetItemId(
-        /* [in] */ Int32 position);
+    CARAPI GetItemId(
+        /* [in] */ Int32 position,
+        /* [out] */ Int64 id);
 
-    CARAPI_(Int32) GetItemViewType(
-        /* [in] */ Int32 position);
+    CARAPI GetItemViewType(
+        /* [in] */ Int32 position,
+        /* [out] */ Int32* count);
 
     CARAPI SetVisibleRangeHint(
         /* [in] */ Int32 lowerBound,
         /* [in] */ Int32 upperBound);
 
-    CARAPI_(AutoPtr<IView>) GetView(
+    CARAPI GetView(
         /* [in] */ Int32 position,
         /* [in] */ IView* convertView,
-        /* [in] */ IViewGroup* parent);
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
 
-    CARAPI_(Int32) GetViewTypeCount();
+    CARAPI GetViewTypeCount(
+        /* [out] */ Int32* count);
 
-    CARAPI_(Boolean) HasStableIds();
+    CARAPI HasStableIds(
+        /* [out]*/ Boolean* result);
 
-    CARAPI_(Boolean) IsEmpty();
+    CARAPI IsEmpty(
+        /* [out]*/ Boolean* result);
 
     CARAPI NotifyDataSetChanged();
 
     CARAPI SuperNotifyDataSetChanged();
 
-protected:
-    RemoteViewsAdapter();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IIntent* intent,
-        /* [in] */ IRemoteAdapterConnectionCallback* callback);
 
 private:
     CARAPI LoadNextIndexInBackground();
@@ -417,6 +435,7 @@ public:
 private:
 
     static const String TAG;//= "RemoteViewsAdapter";
+    static const String MULTI_USER_PERM;
 
     // The max number of items in the cache
     static const Int32 sDefaultCacheSize = 40;

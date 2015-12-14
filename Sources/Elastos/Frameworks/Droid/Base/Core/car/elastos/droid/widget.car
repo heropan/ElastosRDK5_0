@@ -1430,37 +1430,6 @@ module
      }
 
     [local]
-    class CAutoCompleteTextView {
-        constructor(
-            [in] IContext* ctx);
-
-        constructor(
-            [in] IContext* ctx,
-            [in] IAttributeSet* attrs);
-
-        constructor(
-            [in] IContext* ctx,
-            [in] IAttributeSet* attrs,
-            [in] Int32 defStyleAttr);
-
-        constructor(
-            [in] IContext* ctx,
-            [in] IAttributeSet* attrs,
-            [in] Int32 defStyleAttr,
-            [in] Int32 defStyleRes);
-
-        interface IAutoCompleteTextView;
-        interface IEditText;
-        interface ITextView;
-        interface IView;
-        interface IOnPreDrawListener;
-        interface IDrawableCallback;
-        interface IKeyEventCallback;
-        interface IAccessibilityEventSource;
-        interface IFilterListener;
-    }
-
-    [local]
     class CRadialTimePickerView {
         constructor(
             [in] IContext* ctx,

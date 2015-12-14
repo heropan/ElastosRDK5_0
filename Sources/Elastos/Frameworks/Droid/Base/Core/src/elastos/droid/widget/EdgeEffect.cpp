@@ -27,14 +27,14 @@ namespace Droid {
 namespace Widget {
 
 const String EdgeEffect::TAG("EdgeEffect");
-const Int32 EdgeEffect::RECEDE_TIME = 600;
-const Int32 EdgeEffect::PULL_TIME = 167;
-const Int32 EdgeEffect::PULL_DECAY_TIME = 2000;
+const Int32 EdgeEffect::RECEDE_TIME;
+const Int32 EdgeEffect::PULL_TIME;
+const Int32 EdgeEffect::PULL_DECAY_TIME;
 const Float EdgeEffect::MAX_ALPHA = 0.5f;
 const Float EdgeEffect::MAX_GLOW_SCALE = 2.f;
 const Float EdgeEffect::PULL_GLOW_BEGIN = 0.f;
-const Int32 EdgeEffect::MIN_VELOCITY = 100;
-const Int32 EdgeEffect::MAX_VELOCITY = 10000;
+const Int32 EdgeEffect::MIN_VELOCITY;
+const Int32 EdgeEffect::MAX_VELOCITY;
 const Float EdgeEffect::EPSILON = 0.001f;
 const Double EdgeEffect::ANGLE = Elastos::Core::Math::PI / 6;
 const Float EdgeEffect::SIN = (Float) Elastos::Core::Math::Sin(ANGLE);
@@ -45,7 +45,7 @@ const Int32 EdgeEffect::STATE_ABSORB;
 const Int32 EdgeEffect::STATE_RECEDE;
 const Int32 EdgeEffect::STATE_PULL_DECAY;
 const Float EdgeEffect::PULL_DISTANCE_ALPHA_GLOW_FACTOR = 0.8f;
-const Int32 EdgeEffect::VELOCITY_GLOW_FACTOR = 6;
+const Int32 EdgeEffect::VELOCITY_GLOW_FACTOR;
 
 CAR_INTERFACE_IMPL(EdgeEffect, Object, IEdgeEffect);
 
@@ -68,9 +68,6 @@ EdgeEffect::EdgeEffect()
     ASSERT_SUCCEEDED(CRect::New((IRect**)&mBounds));
     ASSERT_SUCCEEDED(CPaint::New((IPaint**)&mPaint));
 }
-
-EdgeEffect::~EdgeEffect()
-{}
 
 ECode EdgeEffect::constructor(
     /* [in] */ IContext* context)
