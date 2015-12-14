@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Animation.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/CAccessibilityInteractionController.h"
 

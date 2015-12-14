@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_VIEW_SOUNDEFFECTCONSTANT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {

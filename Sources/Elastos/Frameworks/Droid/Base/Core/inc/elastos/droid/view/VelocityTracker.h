@@ -2,15 +2,15 @@
 #ifndef __ELASTOS_DROID_VIEW_VELOCITYTRACKER_H__
 #define __ELASTOS_DROID_VIEW_VELOCITYTRACKER_H__
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/utility/Pools.h"
 #include "elastos/droid/utility/Config.h"
-#include "elastos/droid/utility/Pools.h"
 
-using Elastos::Droid::Utility::Pools;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IVelocityTracker;
 using Elastos::Droid::View::EIID_IVelocityTracker;
+using Elastos::Droid::Utility::Pools;
 
 /**
  * Helper for tracking the velocity of touch events, for implementing

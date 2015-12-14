@@ -1,12 +1,13 @@
 
+#include "Elastos.CoreLibrary.External.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/view/MenuInflater.h"
 #include "elastos/droid/utility/Xml.h"
 #include "elastos/droid/R.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::IClassLoader;
-using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::R;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::Content::IContextWrapper;
 using Elastos::Droid::Content::Res::ITypedArray;
@@ -14,6 +15,9 @@ using Elastos::Droid::Content::Res::IXmlResourceParser;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Internal::View::Menu::IMenuItemImpl;
 using Elastos::Droid::Utility::Xml;
+using Elastos::Droid::R;
+using Elastos::Core::IClassLoader;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {

@@ -1,4 +1,8 @@
 
+#include "Elastos.CoreLibrary.External.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/internal/utility/XmlUtils.h"
 #include "elastos/droid/R.h"

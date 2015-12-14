@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_VIEWPROPERTYANIMATOR_H__
 #define __ELASTOS_DROID_VIEW_VIEWPROPERTYANIMATOR_H__
 
+#include "Elastos.Droid.Animation.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/view/View.h"

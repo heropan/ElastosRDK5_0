@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/view/ViewOutlineProvider.h"
 
 using Elastos::Droid::Graphics::Drawable::IDrawable;

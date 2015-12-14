@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/view/OrientationEventListener.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>

@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/view/SoundEffectConstants.h"
 
 using Elastos::Droid::View::IView;

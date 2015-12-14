@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_View_CWindowInsets.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Graphics::IRect;
 

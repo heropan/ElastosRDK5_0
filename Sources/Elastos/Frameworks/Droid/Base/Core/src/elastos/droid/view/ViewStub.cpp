@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/view/ViewStub.h"
 #include "elastos/droid/view/LayoutInflater.h"
 #include "elastos/droid/R.h"

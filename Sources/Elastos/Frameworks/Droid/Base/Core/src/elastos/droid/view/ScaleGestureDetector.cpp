@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/ScaleGestureDetector.h"
 #include "elastos/droid/view/CGestureDetector.h"

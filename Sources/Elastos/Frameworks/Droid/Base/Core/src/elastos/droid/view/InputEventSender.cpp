@@ -1,5 +1,6 @@
-#include "elastos/droid/view/InputEventSender.h"
 
+#include "Elastos.Droid.Os.h"
+#include "elastos/droid/view/InputEventSender.h"
 
 using Elastos::Core::CCloseGuard;
 
