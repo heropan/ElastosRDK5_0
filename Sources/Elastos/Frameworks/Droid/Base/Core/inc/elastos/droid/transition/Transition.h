@@ -2,9 +2,11 @@
 #ifndef __ELASTOS_DROID_TRANSITION_TRANSITION_H__
 #define __ELASTOS_DROID_TRANSITION_TRANSITION_H__
 
+#include "Elastos.Droid.Utility.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/animation/AnimatorListenerAdapter.h"
 #include "elastos/droid/transition/PathMotion.h"
-
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Animation::IAnimator;

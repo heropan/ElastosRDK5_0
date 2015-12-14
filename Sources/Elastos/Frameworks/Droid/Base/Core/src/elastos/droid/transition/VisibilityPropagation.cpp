@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.View.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/transition/VisibilityPropagation.h"
 #include "elastos/droid/transition/CTransitionValues.h"
 

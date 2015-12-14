@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/transition/CChangeImageTransform.h"
 #include "elastos/droid/transition/CTransitionValues.h"
 #include "elastos/droid/transition/CTransitionUtils.h"

@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/transition/CFade.h"
 #include "elastos/droid/animation/ObjectAnimator.h"
 

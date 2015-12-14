@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/transition/CTransitionUtils.h"
 #include "elastos/droid/transition/CTransitionSet.h"
 #include "elastos/droid/animation/CAnimatorSet.h"

@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_TRANSITION_VISIBILITYPROPAGATION_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.Droid.Transition.h"
 #include <elastos/core/Object.h>
 
 namespace Elastos {

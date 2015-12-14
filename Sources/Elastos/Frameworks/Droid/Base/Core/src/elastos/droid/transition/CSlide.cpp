@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/transition/CSlide.h"
 #include "elastos/droid/transition/CTransitionValues.h"
 #include "elastos/droid/transition/CSidePropagation.h"

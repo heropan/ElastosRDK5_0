@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/transition/CCircularPropagation.h"
 #include "elastos/droid/utility/FloatMath.h"
 
