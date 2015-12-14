@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_NET_LINKPROPERTIES_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Net::IInetAddress;
 using Elastos::Utility::IArrayList;

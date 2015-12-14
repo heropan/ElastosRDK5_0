@@ -1,5 +1,6 @@
 
 #include "elastos/droid/net/TrafficStats.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Droid::Content::IContext;
 

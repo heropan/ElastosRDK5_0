@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_OS_BINDER_H__
 #define __ELASTOS_DROID_OS_BINDER_H__
 
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 

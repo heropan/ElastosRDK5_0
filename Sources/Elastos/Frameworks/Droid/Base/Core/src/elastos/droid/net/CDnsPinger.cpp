@@ -1,4 +1,9 @@
 
+#include "Elastos.CoreLibrary.Net.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/net/CConnectivityManager.h"
 #include "elastos/droid/net/CConnectivityManagerHelper.h"

@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/net/http/RequestHandle.h"
 
 using Elastos::Droid::Net::IWebAddress;

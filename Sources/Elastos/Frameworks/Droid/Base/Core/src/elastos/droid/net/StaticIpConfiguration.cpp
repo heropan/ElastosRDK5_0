@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Net.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/net/StaticIpConfiguration.h"
 
 namespace Elastos {

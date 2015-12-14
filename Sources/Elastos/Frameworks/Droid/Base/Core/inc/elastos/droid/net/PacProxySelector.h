@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_PACPROXYSELECTOR_H__
 #define __ELASTOS_DROID_NET_PACPROXYSELECTOR_H__
 
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/net/ProxySelector.h>
 

@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/net/UrlQuerySanitizer.h"
 #include "elastos/droid/net/CUrlQuerySanitizerIllegalCharacterValueSanitizer.h"
 #include <elastos/core/Math.h>

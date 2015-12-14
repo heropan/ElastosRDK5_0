@@ -2,7 +2,9 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_X509TRUSTMANAGEREXTENSIONS_H__
 #define __ELASTOS_DROID_NET_HTTP_X509TRUSTMANAGEREXTENSIONS_H__
 
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Security::Cert::IX509Certificate;

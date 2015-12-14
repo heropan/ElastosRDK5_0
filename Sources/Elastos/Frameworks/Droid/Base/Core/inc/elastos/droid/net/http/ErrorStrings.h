@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_NET_HTTP_ERRORSTRINGS_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 

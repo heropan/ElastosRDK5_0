@@ -2,7 +2,9 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_REQUEST_H__
 #define __ELASTOS_DROID_NET_HTTP_REQUEST_H__
 
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/core/Object.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::Utility::IMap;

@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Security.h"
 #include "elastos/droid/net/http/DelegatingSSLSession.h"
 
 using Elastosx::Net::Ssl::EIID_ISSLSession;

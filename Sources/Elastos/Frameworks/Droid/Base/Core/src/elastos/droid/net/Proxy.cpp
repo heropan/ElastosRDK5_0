@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Apache.h"
 #include "elastos/droid/net/Proxy.h"
 #include "elastos/droid/net/CProxy.h"
 #include "elastos/droid/net/CPacProxySelector.h"

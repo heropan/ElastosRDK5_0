@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/net/NetworkFactory.h"
 #include "elastos/droid/net/CNetwork.h"
 #include "elastos/droid/net/CNetworkCapabilities.h"

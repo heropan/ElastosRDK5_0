@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_HTTPRESPONSECACHE_H__
 #define __ELASTOS_DROID_NET_HTTP_HTTPRESPONSECACHE_H__
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/net/ResponseCache.h>
 

@@ -1,4 +1,5 @@
 
+#include "_Elastos.Droid.Core.h"
 #include "elastos/droid/net/http/X509TrustManagerExtensions.h"
 
 using Elastosx::Net::Ssl::ISSLParameters;

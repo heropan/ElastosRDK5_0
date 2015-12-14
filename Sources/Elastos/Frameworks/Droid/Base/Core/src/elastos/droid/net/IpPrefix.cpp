@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Net.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/net/IpPrefix.h"
 #include "elastos/droid/net/NetworkUtils.h"
 #include <elastos/utility/Arrays.h>

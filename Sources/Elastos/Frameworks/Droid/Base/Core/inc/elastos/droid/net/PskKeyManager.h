@@ -2,7 +2,10 @@
 #ifndef __ELASTOS_DROID_NET_PSKKEYMANAGER_H__
 #define __ELASTOS_DROID_NET_PSKKEYMANAGER_H__
 
+#include "Elastos.CoreLibrary.Extensions.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Net::ISocket;
 using Elastosx::Crypto::ISecretKey;

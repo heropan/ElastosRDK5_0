@@ -1,4 +1,5 @@
 
+#include "_Elastos.Droid.Core.h"
 #include "elastos/droid/net/PskKeyManager.h"
 
 using Elastosx::Net::Ssl::EIID_IKeyManager;

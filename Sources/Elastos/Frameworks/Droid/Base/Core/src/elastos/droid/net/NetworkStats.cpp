@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/net/NetworkStats.h"
 #include "elastos/droid/internal/utility/ArrayUtils.h"
 #include "elastos/droid/net/CNetwork.h"

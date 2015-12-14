@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/net/EthernetManager.h"
 #include "elastos/droid/net/CIpConfiguration.h"
 

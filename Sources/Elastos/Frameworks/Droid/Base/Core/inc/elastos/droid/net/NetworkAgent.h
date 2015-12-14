@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_NETWORKAGENT_H__
 #define __ELASTOS_DROID_NET_NETWORKAGENT_H__
 
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Handler.h"
 

@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.Net.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "_Elastos.Droid.Core.h"
 #include "elastos/droid/net/CInterfaceConfiguration.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Logger.h>

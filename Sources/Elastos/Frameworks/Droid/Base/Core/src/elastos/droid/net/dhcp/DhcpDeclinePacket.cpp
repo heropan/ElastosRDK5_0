@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.CoreLibrary.Net.h"
 #include "elastos/droid/net/dhcp/DhcpDeclinePacket.h"
 
 namespace Elastos {

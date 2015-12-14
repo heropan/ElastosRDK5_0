@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "elastos/droid/net/CDhcpInfo.h"
 #include "elastos/droid/net/NetworkUtils.h"
 

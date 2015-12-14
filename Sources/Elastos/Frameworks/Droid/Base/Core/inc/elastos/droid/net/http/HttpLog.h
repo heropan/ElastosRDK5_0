@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_NET_HTTP_HTTPLOG_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {

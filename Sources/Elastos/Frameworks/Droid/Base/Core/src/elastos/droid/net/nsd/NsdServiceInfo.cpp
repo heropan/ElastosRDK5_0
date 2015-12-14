@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "elastos/droid/net/nsd/NsdServiceInfo.h"
 #include "elastos/droid/utility/CArrayMap.h"
 

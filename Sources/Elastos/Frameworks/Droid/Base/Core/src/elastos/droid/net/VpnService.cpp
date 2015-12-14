@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/net/VpnService.h"
 
 namespace Elastos {

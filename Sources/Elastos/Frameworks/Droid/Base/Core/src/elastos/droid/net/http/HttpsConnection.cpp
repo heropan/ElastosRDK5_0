@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Apache.h"
 #include "elastos/droid/net/http/HttpsConnection.h"
 #include "elastos/droid/net/ReturnOutValue.h"
 

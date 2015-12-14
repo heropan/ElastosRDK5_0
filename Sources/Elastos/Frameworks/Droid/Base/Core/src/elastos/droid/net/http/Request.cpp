@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.Apache.h"
+#include "_Elastos.Droid.Core.h"
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/net/http/Request.h"
 #include "elastos/droid/net/ReturnOutValue.h"
 

@@ -2,7 +2,10 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_DELEGATINGSSLSESSION_H__
 #define __ELASTOS_DROID_NET_HTTP_DELEGATINGSSLSESSION_H__
 
+#include "Elastos.CoreLibrary.Extensions.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Security::Cert::ICertificate;
 using Elastos::Security::IPrincipal;

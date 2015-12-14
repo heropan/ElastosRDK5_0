@@ -2,8 +2,10 @@
 #ifndef __ELASTOS_DROID_NET_DHCPRESULTS_H__
 #define __ELASTOS_DROID_NET_DHCPRESULTS_H__
 
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/net/StaticIpConfiguration.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Net::IInetAddress;
 

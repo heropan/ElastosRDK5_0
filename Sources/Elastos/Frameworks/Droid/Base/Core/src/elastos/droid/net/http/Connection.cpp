@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Apache.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/net/http/Connection.h"
 
 namespace Elastos {
