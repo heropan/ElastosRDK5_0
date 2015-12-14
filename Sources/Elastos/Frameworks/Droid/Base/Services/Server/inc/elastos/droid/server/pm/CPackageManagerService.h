@@ -83,92 +83,6 @@ namespace Droid {
 namespace Server {
 namespace Pm {
 
-class CPackageManagerService;
-
-class InstallArgs : public Object
-{
-public:
-    InstallArgs(
-        /* [in] */ IUri* packageURI,
-        /* [in] */ IPackageInstallObserver* observer,
-        /* [in] */ Int32 flags,
-        /* [in] */ const String& installerPackageName,
-        /* [in] */ IManifestDigest* manifestDigest,
-        /* [in] */ IUserHandle* user,
-        /* [in] */ CPackageManagerService* owner);
-
-    virtual ~InstallArgs() {};
-
-    virtual CARAPI_(void) CreateCopyFile() = 0;
-
-    virtual CARAPI CopyPkg(
-        /* [in] */ IMediaContainerService* imcs,
-        /* [in] */ Boolean temp,
-        /* [out] */ Int32* result) = 0;
-
-    virtual CARAPI_(Int32) DoPreInstall(
-        /* [in] */ Int32 status) = 0;
-
-    virtual CARAPI_(Boolean) DoRename(
-        /* [in] */ Int32 status,
-        /* [in] */ const String& pkgName,
-        /* [in] */ const String& oldCodePath) = 0;
-
-    virtual CARAPI_(Int32) DoPostInstall(
-        /* [in] */ Int32 status,
-        /* [in] */ Int32 uid) = 0;
-
-    virtual CARAPI_(String) GetCodePath() = 0;
-
-    virtual CARAPI_(String) GetResourcePath() = 0;
-
-    virtual CARAPI_(String) GetNativeLibraryPath() = 0;
-
-    // Need installer lock especially for dex file removal.
-    virtual CARAPI_(void) CleanUpResourcesLI() = 0;
-
-    virtual CARAPI_(Boolean) DoPostDeleteLI(
-        /* [in] */ Boolean del) = 0;
-
-    virtual CARAPI CheckFreeStorage(
-        /* [in] */ IMediaContainerService* imcs,
-        /* [out] */ Boolean* result) = 0;
-
-    /**
-     * Called before the source arguments are copied. This is used mostly
-     * for MoveParams when it needs to read the source file to put it in the
-     * destination.
-     */
-    virtual CARAPI_(Int32) DoPreCopy();
-
-    /**
-     * Called after the source arguments are copied. This is used mostly for
-     * MoveParams when it needs to read the source file to put it in the
-     * destination.
-     *
-     * @return
-     */
-    virtual CARAPI_(Int32) DoPostCopy(
-        /* [in] */ Int32 uid);
-
-    virtual CARAPI_(AutoPtr<IUserHandle>) GetUser();
-
-protected:
-    virtual CARAPI_(Boolean) IsFwdLocked();
-
-public:
-    AutoPtr<IPackageInstallObserver> mObserver;
-    // Always refers to PackageManager flags only
-    Int32 mFlags;
-    AutoPtr<IUri> mPackageURI;
-    String mInstallerPackageName;
-    AutoPtr<IManifestDigest> mManifestDigest;
-    AutoPtr<IUserHandle> mUser;
-    CPackageManagerService* mHost;
-    // for epk
-    Boolean mIsEpk;
-};
-
 /**
  * Keep track of all those .apks everywhere.
  *
@@ -182,6 +96,8 @@ adb shell am instrument -w -e class com.android.unit_tests.PackageManagerTests c
  * {@hide}
  */
 CarClass(CPackageManagerService)
+    : public Object
+    , public IIPackageManager
 {
 public:/* package */
     friend class CResourcesChangedReceiver;
@@ -560,7 +476,7 @@ public:/* package */
 
     class InstallParams : public HandlerParams
     {
-    public:
+    private:
         class CopyBroadcastReceiver : public BroadcastReceiver
         {
         public:
@@ -574,15 +490,6 @@ public:/* package */
             CARAPI OnReceive(
                 /* [in] */ IContext* context,
                 /* [in] */ IIntent* intent);
-
-            CARAPI ToString(
-                /* [out] */ String* info)
-            {
-                VALIDATE_NOT_NULL(info);
-                *info = String("CPackageManagerService::InstallParams::CopyBroadcastReceiver: ");
-                (*info).AppendFormat("%p", this);
-                return NOERROR;
-            }
         private:
             CPackageManagerService* mHost;
             Int32 mId;
@@ -640,74 +547,145 @@ public:/* package */
         Int32 mRet;
     };
 
-    /*
-     * Utility class used in movePackage api.
-     * srcArgs and targetArgs are not set for invalid flags and make
-     * sure to do null checks when invoking methods on them.
-     * We probably want to return ErrorPrams for both failed installs
-     * and moves.
-     */
-    class MoveParams : public HandlerParams
+    class InstallArgs : public Object
     {
     public:
-        MoveParams(
-            /* [in] */ InstallArgs* srcArgs,
-            /* [in] */ IPackageMoveObserver* observer,
-            /* [in] */ Int32 flags,
-            /* [in] */ const String& packageName,
-            /* [in] */ const String& dataDir,
-            /* [in] */ Int32 uid,
+        InstallArgs(
+            /* [in] */ OriginInfo* origin,
+            /* [in] */ IPackageInstallObserver2* observer,
+            /* [in] */ Int32 installFlags,
+            /* [in] */ const String& installerPackageName,
+            /* [in] */ IManifestDigest* manifestDigest,
             /* [in] */ IUserHandle* user,
+            /* [in] */ ArrayOf<String>* instructionSets,
+            /* [in] */ const String& abiOverride,
             /* [in] */ CPackageManagerService* owner);
 
-        //@Override
-        CARAPI HandleStartCopy();
+        CARAPI_(void) Init(
+            /* [in] */ OriginInfo* origin,
+            /* [in] */ IPackageInstallObserver2* observer,
+            /* [in] */ Int32 installFlags,
+            /* [in] */ const String& installerPackageName,
+            /* [in] */ IManifestDigest* manifestDigest,
+            /* [in] */ IUserHandle* user,
+            /* [in] */ ArrayOf<String>* instructionSets,
+            /* [in] */ const String& abiOverride,
+            /* [in] */ CPackageManagerService* owner);
 
-        //@Override
-        CARAPI_(void) HandleReturnCode();
+        virtual ~InstallArgs() {};
 
-        //@Override
-        CARAPI_(void) HandleServiceError();
+        virtual CARAPI CopyPkg(
+            /* [in] */ IIMediaContainerService* imcs,
+            /* [in] */ Boolean temp,
+            /* [out] */ Int32* result) = 0;
+
+        virtual CARAPI_(Int32) DoPreInstall(
+            /* [in] */ Int32 status) = 0;
+
+        /**
+         * Rename package into final resting place. All paths on the given
+         * scanned package should be updated to reflect the rename.
+         */
+        virtual CARAPI_(Boolean) DoRename(
+            /* [in] */ Int32 status,
+            /* [in] */ PackageParser::Package* pkg,
+            /* [in] */ const String& oldCodePath) = 0;
+
+        virtual CARAPI_(Int32) DoPostInstall(
+            /* [in] */ Int32 status,
+            /* [in] */ Int32 uid) = 0;
+
+        /** @see PackageSettingBase#codePathString */
+        virtual CARAPI_(String) GetCodePath() = 0;
+
+        /** @see PackageSettingBase#resourcePathString */
+        virtual CARAPI_(String) GetResourcePath() = 0;
+
+        virtual CARAPI_(String) GetLegacyNativeLibraryPath() = 0;
+
+        // Need installer lock especially for dex file removal.
+        virtual CARAPI CleanUpResourcesLI() = 0;
+
+        virtual CARAPI_(Boolean) DoPostDeleteLI(
+            /* [in] */ Boolean del) = 0;
+
+        virtual CARAPI CheckFreeStorage(
+            /* [in] */ IIMediaContainerService* imcs,
+            /* [out] */ Boolean* result) = 0;
+
+        /**
+         * Called before the source arguments are copied. This is used mostly
+         * for MoveParams when it needs to read the source file to put it in the
+         * destination.
+         */
+        CARAPI_(Int32) DoPreCopy();
+
+        /**
+         * Called after the source arguments are copied. This is used mostly for
+         * MoveParams when it needs to read the source file to put it in the
+         * destination.
+         *
+         * @return
+         */
+        CARAPI_(Int32) DoPostCopy(
+            /* [in] */ Int32 uid);
+
+        CARAPI_(AutoPtr<IUserHandle>) GetUser();
+
+    protected:
+        CARAPI_(Boolean) IsFwdLocked();
+
+        CARAPI_(Boolean) IsExternal();
 
     public:
-        AutoPtr<IPackageMoveObserver> mObserver;
-        Int32 mFlags;
-        String mPackageName;
-        AutoPtr<InstallArgs> mSrcArgs;
-        AutoPtr<InstallArgs> mTargetArgs;
-        Int32 mUid;
-        Int32 mRet;
+        /** @see InstallParams#origin */
+        AutoPtr<OriginInfo> mOrigin;
+
+        AutoPtr<IIPackageInstallObserver2> mObserver;
+        // Always refers to PackageManager flags only
+        Int32 mInstallFlags;
+        AutoPtr<IUri> mPackageURI;
+        String mInstallerPackageName;
+        AutoPtr<IManifestDigest> mManifestDigest;
+        AutoPtr<IUserHandle> mUser;
+        String mAbiOverride;
+
+        // The list of instruction sets supported by this app. This is currently
+        // only used during the rmdex() phase to clean up resources. We can get rid of this
+        // if we move dex files under the common app path.
+        /* nullable */ AutoPtr< ArrayOf<String> > mInstructionSets;
+
+        CPackageManagerService* mHost;
+        // for epk
+        Boolean mIsEpk;
     };
 
+    /**
+     * Logic to handle installation of non-ASEC applications, including copying
+     * and renaming logic.
+     */
     class FileInstallArgs : public InstallArgs
     {
     public:
+        /** New install */
         FileInstallArgs(
             /* [in] */ InstallParams* params,
             /* [in] */ CPackageManagerService* owner);
 
+        /** Existing install */
         FileInstallArgs(
-            /* [in] */ const String& fullCodePath,
-            /* [in] */ const String& fullResourcePath,
-            /* [in] */ const String& nativeLibraryPath,
-            /* [in] */ CPackageManagerService* owner);
-
-        FileInstallArgs(
-            /* [in] */ IUri* packageURI,
-            /* [in] */ const String& pkgName,
-            /* [in] */ const String& dataDir,
+            /* [in] */ const String& codePath,
+            /* [in] */ const String& resourcePath,
+            /* [in] */ const String& legacyNativeLibraryPath,
+            /* [in] */ ArrayOf<String>* instructionSets,
             /* [in] */ CPackageManagerService* owner);
 
         CARAPI CheckFreeStorage(
-            /* [in] */ IMediaContainerService* imcs,
+            /* [in] */ IIMediaContainerService* imcs,
             /* [out] */ Boolean* result);
 
-        CARAPI_(String) GetCodePath();
-
-        CARAPI_(void) CreateCopyFile();
-
         CARAPI CopyPkg(
-            /* [in] */ IMediaContainerService* imcs,
+            /* [in] */ IIMediaContainerService* imcs,
             /* [in] */ Boolean temp,
             /* [out] */ Int32* result);
 
@@ -716,77 +694,68 @@ public:/* package */
 
         CARAPI_(Boolean) DoRename(
             /* [in] */ Int32 status,
-            /* [in] */ const String& pkgName,
+            /* [in] */ PackageParser::Package* pkg,
             /* [in] */ const String& oldCodePath);
 
         CARAPI_(Int32) DoPostInstall(
             /* [in] */ Int32 status,
             /* [in] */ Int32 uid);
 
+        CARAPI_(String) GetCodePath();
+
         CARAPI_(String) GetResourcePath();
 
-        virtual CARAPI_(String) GetResourcePathFromCodePath();
-
         //@Override
-        CARAPI_(String) GetNativeLibraryPath();
+        CARAPI_(String) GetLegacyNativeLibraryPath();
 
-        CARAPI_(void) CleanUpResourcesLI();
+        CARAPI CleanUpResourcesLI();
 
         CARAPI_(Boolean) DoPostDeleteLI(
             /* [in] */ Boolean del);
 
     private:
-        CARAPI_(String) GetLibraryPathFromCodePath();
-
         CARAPI_(Boolean) CleanUp();
 
-        CARAPI_(Boolean) SetPermissions();
-
-    public:
-        AutoPtr<IFile> mInstallDir;
-        String mCodeFileName;
-        String mResourceFileName;
-        String mLibraryPath;
-        Boolean mCreated;
+    private:
+        AutoPtr<IFile> mCodeFile;
+        AutoPtr<IFile> mResourceFile;
+        AutoPtr<IFile> mLegacyNativeLibraryPath;
     };
 
+    /**
+     * Logic to handle installation of ASEC applications, including copying and
+     * renaming logic.
+     */
     class AsecInstallArgs : public InstallArgs
     {
     public:
-        friend class CPackageManagerService;
-
+        /** New install */
         AsecInstallArgs(
             /* [in] */ InstallParams* params,
             /* [in] */ CPackageManagerService* owner);
 
+        /** Existing install */
         AsecInstallArgs(
             /* [in] */ const String& fullCodePath,
-            /* [in] */ const String& fullResourcePath,
-            /* [in] */ const String& nativeLibraryPath,
+            /* [in] */ ArrayOf<String>* instructionSets,
             /* [in] */ Boolean isExternal,
             /* [in] */ Boolean isForwardLocked,
             /* [in] */ CPackageManagerService* owner);
 
         AsecInstallArgs(
             /* [in] */ const String& cid,
-            /* [in] */ Boolean isForwardLocked,
-            /* [in] */ CPackageManagerService* owner);
-
-        AsecInstallArgs(
-            /* [in] */ IUri* packageURI,
-            /* [in] */ const String& cid,
-            /* [in] */ Boolean isExternal,
+            /* [in] */ ArrayOf<String>* instructionSets,
             /* [in] */ Boolean isForwardLocked,
             /* [in] */ CPackageManagerService* owner);
 
         CARAPI_(void) CreateCopyFile();
 
         CARAPI CheckFreeStorage(
-            /* [in] */ IMediaContainerService* imcs,
+            /* [in] */ IIMediaContainerService* imcs,
             /* [out] */ Boolean* result);
 
         CARAPI CopyPkg(
-            /* [in] */ IMediaContainerService* imcs,
+            /* [in] */ IIMediaContainerService* imcs,
             /* [in] */ Boolean temp,
             /* [out] */ Int32* result);
 
@@ -794,21 +763,21 @@ public:/* package */
 
         CARAPI_(String) GetResourcePath();
 
-        CARAPI_(String) GetNativeLibraryPath();
+        CARAPI_(String) GetLegacyNativeLibraryPath();
 
         CARAPI_(Int32) DoPreInstall(
             /* [in] */ Int32 status);
 
         CARAPI_(Boolean) DoRename(
             /* [in] */ Int32 status,
-            /* [in] */ const String& pkgName,
+            /* [in] */ PackageParser::Package* pkg,
             /* [in] */ const String& oldCodePath);
 
         CARAPI_(Int32) DoPostInstall(
             /* [in] */ Int32 status,
             /* [in] */ Int32 uid);
 
-        CARAPI_(void) CleanUpResourcesLI();
+        CARAPI CleanUpResourcesLI();
 
         CARAPI_(Boolean) MatchContainer(
             /* [in] */ const String& app);
@@ -824,12 +793,15 @@ public:/* package */
             /* [in] */ Int32 uid);
 
     private:
-        CARAPI_(Boolean) IsExternal();
-
-        CARAPI_(void) SetCachePath(
-            /* [in] */ const String& newCachePath);
+        CARAPI_(void) SetMountPath(
+            /* [in] */ const String& mountPath);
 
         CARAPI_(void) CleanUp();
+
+        CARAPI_(AutoPtr<List<String> >) GetAllCodePaths();
+
+        CARAPI_(void) CleanUpResourcesLI(
+            /* [in] */ List<String>* allCodePaths);
 
     public:
         static const String RES_FILE_NAME;
@@ -838,18 +810,26 @@ public:/* package */
         String mCid;
         String mPackagePath;
         String mResourcePath;
-        String mLibraryPath;
+        String mLegacyNativeLibraryDir;
     };
 
     class PackageRemovedInfo;
 
-    class PackageInstalledInfo : public ElRefBase
+    class PackageInstalledInfo : public Object
     {
     public:
         PackageInstalledInfo()
             : mUid(0)
             , mReturnCode(0)
         {}
+
+        CARAPI_(void) SetError(
+            /* [in] */ Int32 code,
+            /* [in] */ const String& msg);
+
+        CARAPI_(void) SetError(
+            /* [in] */ const String& msg,
+            /* [in] */ ECode e/*PackageParserException e*/);
 
     public:
         String mName;
@@ -860,7 +840,12 @@ public:/* package */
         AutoPtr< ArrayOf<Int32> > mNewUsers;
         AutoPtr<PackageParser::Package> mPkg;
         Int32 mReturnCode;
+        String mReturnMsg;
         AutoPtr<PackageRemovedInfo> mRemovedInfo;
+
+        // In some error cases we want to convey more info back to the observer
+        String mOrigPackage;
+        String mOrigPermission;
     };
 
     class PackageRemovedInfo : public ElRefBase
@@ -1323,6 +1308,10 @@ public:
     CPackageManagerService();
 
     ~CPackageManagerService();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ IContext* context,
@@ -1890,7 +1879,7 @@ public:
     CARAPI_(String) GetAsecPackageName(
         /* [in] */ const String& packageCid);
 
-    static CARAPI_(String) GetApkName(
+    static CARAPI_(String) DeriveCodePathName(
         /* [in] */ const String& codePath);
 
     CARAPI DeletePackage(
@@ -2441,20 +2430,37 @@ private:
 
     CARAPI_(Int32) GetUnknownSourcesSettings();
 
+    /**
+     * Used during creation of InstallArgs
+     *
+     * @param installFlags package installation flags
+     * @return true if should be installed on external storage
+     */
     static CARAPI_(Boolean) InstallOnSd(
-        /* [in] */ Int32 flags);
+        /* [in] */ Int32 installFlags);
 
+    /**
+     * Used during creation of InstallArgs
+     *
+     * @param installFlags package installation flags
+     * @return true if should be installed as forward locked
+     */
     static CARAPI_(Boolean) InstallForwardLocked(
-        /* [in] */ Int32 flags);
+        /* [in] */ Int32 installFlags);
 
     CARAPI_(AutoPtr<InstallArgs>) CreateInstallArgs(
         /* [in] */ InstallParams* params);
 
-    CARAPI_(AutoPtr<InstallArgs>) CreateInstallArgs(
-        /* [in] */ Int32 flags,
-        /* [in] */ const String& fullCodePath,
-        /* [in] */ const String& fullResourcePath,
-        /* [in] */ const String& nativeLibraryPath);
+    /**
+     * Create args that describe an existing installed package. Typically used
+     * when cleaning up old installs, or used as a move source.
+     */
+    CARAPI_(AutoPtr<InstallArgs>) CreateInstallArgsForExisting(
+        /* [in] */ Int32 installFlags,
+        /* [in] */ const String& codePath,
+        /* [in] */ const String& resourcePath,
+        /* [in] */ const String& nativeLibraryRoot,
+        /* [in] */ ArrayOf<String>* instructionSets);
 
     CARAPI_(AutoPtr<InstallArgs>) CreateInstallArgs(
         /* [in] */ IUri* packageURI,
@@ -2465,10 +2471,17 @@ private:
     CARAPI_(Boolean) IsAsecExternal(
         /* [in] */ const String& cid);
 
+    static CARAPI MaybeThrowExceptionForMultiArchCopy(
+        /* [in] */ const String& message,
+        /* [in] */ Int32 copyRet);
+
     static CARAPI_(String) GetNextCodePath(
         /* [in] */ const String& oldCodePath,
         /* [in] */ const String& prefix,
         /* [in] */ const String& suffix);
+
+    CARAPI_(AutoPtr<IFile>) GetNextCodePath(
+        /* [in] */ const String& packageName);
 
     static CARAPI_(Boolean) IgnoreCodePath(
         /* [in] */ const String& fullPathStr);
@@ -2476,7 +2489,7 @@ private:
     CARAPI_(void) InstallNewPackageLI(
         /* [in] */ PackageParser::Package* pkg,
         /* [in] */ Int32 parseFlags,
-        /* [in] */ Int32 scanMode,
+        /* [in] */ Int32 scanFlags,
         /* [in] */ IUserHandle* user,
         /* [in] */ const String& installerPackageName,
         /* [in] */ PackageInstalledInfo* res,

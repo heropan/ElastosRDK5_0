@@ -24,3 +24,4 @@ SOURCES += SharedUserSetting.cpp
 SOURCES += PackageVerificationState.cpp
 SOURCES += PackageVerificationResponse.cpp
 SOURCES += BackgroundDexOptService.cpp
+SOURCES += CParcelFileDescriptorFactory.cpp

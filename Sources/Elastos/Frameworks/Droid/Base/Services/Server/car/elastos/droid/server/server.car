@@ -670,6 +670,13 @@ module
 //         interface IIPackageManager;
 //     }
 
+//     class CParcelFileDescriptorFactory {
+//         constructor(
+//             [in] IFile* codeFile);
+
+//         interface IIParcelFileDescriptorFactory;
+//     }
+
 //     class CResourcesChangedReceiver {
 //         constructor(
 //             [in] IIPackageManager* owner,
