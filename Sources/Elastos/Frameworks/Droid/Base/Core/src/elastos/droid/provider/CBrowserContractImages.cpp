@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/provider/BrowserContract.h"
 #include "elastos/droid/provider/CBrowserContractImages.h"
 

@@ -1,3 +1,10 @@
+
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Libcore.h"
+#include "Elastos.Droid.Database.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Provider.h"
 #include "elastos/droid/provider/DocumentsProvider.h"
 #include "elastos/droid/provider/DocumentsContract.h"
 #include "elastos/droid/content/CUriMatcher.h"

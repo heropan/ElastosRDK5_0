@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/provider/CUserDictionaryWords.h"
 #include "elastos/droid/provider/UserDictionary.h"
 

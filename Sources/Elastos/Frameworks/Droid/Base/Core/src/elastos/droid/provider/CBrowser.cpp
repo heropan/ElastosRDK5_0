@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/provider/Browser.h"
 #include "elastos/droid/provider/CBrowser.h"
 

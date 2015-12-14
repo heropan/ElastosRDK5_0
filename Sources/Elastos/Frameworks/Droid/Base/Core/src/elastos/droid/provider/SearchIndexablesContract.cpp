@@ -1,3 +1,6 @@
+
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Provider.h"
 #include "elastos/droid/provider/SearchIndexablesContract.h"
 
 using Elastos::Droid::Content::IContentResolver;
