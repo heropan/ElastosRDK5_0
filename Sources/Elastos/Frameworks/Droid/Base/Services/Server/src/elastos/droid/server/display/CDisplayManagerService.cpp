@@ -14,6 +14,7 @@
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/Thread.h>
 
+using Elastos::Droid::Manifest;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::Process;
 using Elastos::Droid::Os::IProcess;

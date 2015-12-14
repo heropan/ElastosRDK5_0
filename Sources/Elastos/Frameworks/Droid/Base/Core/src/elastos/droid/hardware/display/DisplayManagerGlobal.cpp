@@ -15,6 +15,7 @@ using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Media::Projection::IIMediaProjection;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -128,7 +129,7 @@ DisplayManagerGlobal::VirtualDisplayCallbackDelegate::VirtualDisplayCallbackDele
         looper = Looper::GetMyLooper();
     }
 
-    Handler(looper, NULL, TRUE /*async*/);
+    Handler::constructor(looper, NULL, TRUE /*async*/);
 }
 
 ECode DisplayManagerGlobal::VirtualDisplayCallbackDelegate::HandleMessage(
@@ -554,7 +555,7 @@ ECode DisplayManagerGlobal::CreateVirtualDisplay(
     AutoPtr<VirtualDisplayCallback> callbackWrapper = new VirtualDisplayCallback(cb, handler);
     AutoPtr<IMediaProjection> projec;
     assert(0 && "TODO projection->GetProjection");
-    AutoPtr<IMediaProjection> projectionToken;// = projection != NULL ?
+    AutoPtr<IIMediaProjection> projectionToken;// = projection != NULL ?
             //(projection->GetProjection((IMediaProjection**)&projec), projec) : NULL;
     Int32 displayId;
     //try {
