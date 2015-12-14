@@ -1,4 +1,3 @@
-
 #include "elastos/droid/provider/CDownloads.h"
 #include "elastos/droid/provider/CDownloadsImpl.h"
 
@@ -11,10 +10,9 @@ namespace Provider {
 const String CDownloads::QUERY_WHERE_CLAUSE = IDownloadsImpl::COLUMN_NOTIFICATION_PACKAGE + "=? AND "
         + IDownloadsImpl::COLUMN_NOTIFICATION_CLASS + "=?";
 
-ECode CDownloads::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CDownloads)
+
+CAR_INTERFACE_IMPL(CDownloads, Object, IDownloads)
 
 /**
  * Delete all the downloads for a package/class pair.
@@ -36,7 +34,6 @@ ECode CDownloads::RemoveAllDownloadsByPackage(
     Int32 res;
     return resolver->Delete(uri, QUERY_WHERE_CLAUSE, array, &res);
 }
-
 
 } //namespace Provider
 } //namespace Droid

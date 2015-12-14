@@ -1,16 +1,19 @@
-
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/CDownloadsImpl.h"
 #include <elastos/core/StringUtils.h>
 
-using Elastos::Core::StringUtils;
 using Elastos::Droid::App::IDownloadManagerRequest;
 using Elastos::Droid::Net::Uri;
+using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
+
+CAR_SINGLETON_IMPL(CDownloadsImpl)
+
+CAR_INTERFACE_IMPL(CDownloadsImpl, Object, IDownloadsImpl)
 
 ECode CDownloadsImpl::GetCONTENT_URI(
     /* [out] */ IUri** uri)
@@ -20,7 +23,7 @@ ECode CDownloadsImpl::GetCONTENT_URI(
     return Uri::Parse(String("content://downloads/my_downloads"), uri);
 }
 
-ECode CDownloadsImpl::GetALLDOWNLOADSCONTENTURI(
+ECode CDownloadsImpl::GetALL_DOWNLOADS_CONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -28,7 +31,7 @@ ECode CDownloadsImpl::GetALLDOWNLOADSCONTENTURI(
     return Uri::Parse(String("content://downloads/all_downloads"), uri);
 }
 
-ECode CDownloadsImpl::GetPUBLICLYACCESSIBLEDOWNLOADSURI(
+ECode CDownloadsImpl::GetPUBLICLY_ACCESSIBLE_DOWNLOADS_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -187,7 +190,7 @@ ECode CDownloadsImpl::StatusToString(
             *value = String("BLOCKED");
             break;
         default:
-            *value = StringUtils::Int32ToString(status);
+            *value = StringUtils::ToString(status);
             break;
     }
     return NOERROR;

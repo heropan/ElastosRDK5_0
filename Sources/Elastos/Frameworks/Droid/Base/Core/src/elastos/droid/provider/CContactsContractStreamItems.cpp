@@ -1,27 +1,27 @@
-
+#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/CContactsContractStreamItems.h"
 #include "elastos/droid/provider/ContactsContract.h"
-#include "elastos/droid/net/Uri.h"
 
+using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Net::Uri;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsContractStreamItems::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CContactsContractStreamItems)
+
+CAR_INTERFACE_IMPL_3(CContactsContractStreamItems, Singleton
+    , IContactsContractStreamItems
+    , IBaseColumns
+    , IContactsContractStreamItemsColumns)
 
 ECode CContactsContractStreamItems::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
-    AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
-    return Uri::WithAppendedPath(auUri, String("stream_items"), uri);
+    return Uri::WithAppendedPath(ContactsContract::AUTHORITY_URI.Get(), String("stream_items"), uri);
 }
 
 ECode CContactsContractStreamItems::GetCONTENTPHOTOURI(
@@ -39,9 +39,7 @@ ECode CContactsContractStreamItems::GetCONTENTLIMITURI(
 {
     VALIDATE_NOT_NULL(uri);
 
-    AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
-    return Uri::WithAppendedPath(auUri, String("stream_items_limit"), uri);
+    return Uri::WithAppendedPath(ContactsContract::AUTHORITY_URI.Get(), String("stream_items_limit"), uri);
 }
 
 } //Provider

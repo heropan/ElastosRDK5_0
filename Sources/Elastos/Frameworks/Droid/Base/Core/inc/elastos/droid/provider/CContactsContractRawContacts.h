@@ -1,15 +1,19 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTRAWCONTACTS_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTRAWCONTACTS_H__
 
 #include "_Elastos_Droid_Provider_CContactsContractRawContacts.h"
 #include "elastos/droid/content/CursorEntityIterator.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/net/Uri.h"
+#include <elastos/core/Singleton.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::CursorEntityIterator;
 using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::ICursorEntityIterator;
 using Elastos::Droid::Content::IEntity;
 using Elastos::Droid::Content::IEntityIterator;
+using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
@@ -17,44 +21,54 @@ namespace Droid {
 namespace Provider {
 
 CarClass(CContactsContractRawContacts)
+    , public Singleton
+    , public IContactsContractRawContacts
+    , public IBaseColumns
+    , public IContactsContractRawContactsColumns
+    , public IContactsContractContactOptionsColumns
+    , public IContactsContractContactNameColumns
+    , public IContactsContractSyncColumns
 {
 private:
     class EntityIteratorImpl
-        : public ElRefBase
-        , public CursorEntityIterator
+        : public CursorEntityIterator
     {
     public:
-        EntityIteratorImpl(
-            /* [in] */ ICursor* cursor);
+        CAR_INTERFACE_DECL()
+
+        EntityIteratorImpl();
 
         ~EntityIteratorImpl();
 
-        CARAPI_(PInterface) Probe(
-            /* [in]  */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
+        CARAPI constructor(
+            /* [in] */ ICursor* cursor);
 
         // @Override
         CARAPI GetEntityAndIncrementCursor(
             /* [in] */ ICursor* cursor,
             /* [out] */ IEntity** entity);
 
-    private:
-        static AutoPtr<ArrayOf<String> > DATA_KEYS;
+        //override
+        CARAPI HasNext(
+            /* [out] */ Boolean* result);
 
+        CARAPI GetNext(
+            /* [out] */ IInterface** object);
+
+        CARAPI Remove();
+
+        CARAPI Reset();
+
+        CARAPI Close();
+
+    private:
+        static const AutoPtr<ArrayOf<String> > DATA_KEYS;
     };
 
 public:
-    /**
-     * This utility class cannot be instantiated
-     */
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * The content:// style URI for this table, which requests a directory of

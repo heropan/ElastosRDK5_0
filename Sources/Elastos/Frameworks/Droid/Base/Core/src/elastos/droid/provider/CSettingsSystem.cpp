@@ -1,4 +1,3 @@
-
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/provider/CSettingsSystem.h"
 #include "elastos/droid/provider/Settings.h"
@@ -7,13 +6,17 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
+CAR_SINGLETON_IMPL(CSettingsSystem)
+
+CAR_INTERFACE_IMPL(CSettingsSystem, Singleton, ISettingsSystem)
+
 ECode CSettingsSystem::GetUriFor(
     /* [in] */ IUri* u,
     /* [in] */ const String& name,
     /* [out] */ IUri** value)
 {
     VALIDATE_NOT_NULL(value)
-    return Settings::System::GetUriFor(u, name, value);
+    return Settings::NameValueTable::GetUriFor(u, name, value);
 }
 
 ECode CSettingsSystem::GetContentUri(
@@ -71,17 +74,15 @@ ECode CSettingsSystem::GetVolumnSettings(
 }
 
 ECode CSettingsSystem::GetMovedKeys(
-    /* [in] */ IObjectContainer* outKeySet)
+    /* [in] */ IHashSet* outKeySet)
 {
-    Settings::System::GetMovedKeys(outKeySet);
-    return NOERROR;
+    return Settings::System::GetMovedKeys(outKeySet);
 }
 
 ECode CSettingsSystem::GetNonLegacyMovedKeys(
-    /* [in] */ IObjectContainer* outKeySet)
+    /* [in] */ IHashSet* outKeySet)
 {
-    Settings::System::GetNonLegacyMovedKeys(outKeySet);
-    return NOERROR;
+    return Settings::System::GetNonLegacyMovedKeys(outKeySet);
 }
 
 ECode CSettingsSystem::GetString(

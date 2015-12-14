@@ -1,16 +1,21 @@
-
 #include "elastos/droid/provider/CContactsContract.h"
+#include "elastos/droid/provider/ContactsContract.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
+CAR_SINGLETON_IMPL(CContactsContract)
+
+CAR_INTERFACE_IMPL(CContactsContract, Singleton, IContactsContract)
+
 ECode CContactsContract::GetAUTHORITY_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
-
-    return ContactsContract::GetAUTHORITY_URI(uri);
+    *uri = ContactsContract::AUTHORITY_URI;
+    REFCOUNT_ADD(*uri);
+    return NOERROR;
 }
 
 ECode CContactsContract::IsProfileId(
@@ -20,22 +25,6 @@ ECode CContactsContract::IsProfileId(
     VALIDATE_NOT_NULL(res);
 
     return ContactsContract::IsProfileId(id, res);
-}
-
-ECode CContactsContract::Snippetize(
-    /* [in] */ const String& content,
-    /* [in] */ const String& displayName,
-    /* [in] */ const String& query,
-    /* [in] */ Char32 snippetStartMatch,
-    /* [in] */ Char32 snippetEndMatch,
-    /* [in] */ const String& snippetEllipsis,
-    /* [in] */ Int32 snippetMaxTokens,
-    /* [out] */ String* snippet)
-{
-    VALIDATE_NOT_NULL(snippet);
-
-    return ContactsContract::Snippetize(content, displayName, query, snippetStartMatch,
-        snippetEndMatch, snippetEllipsis, snippetMaxTokens, snippet);
 }
 
 } //Provider

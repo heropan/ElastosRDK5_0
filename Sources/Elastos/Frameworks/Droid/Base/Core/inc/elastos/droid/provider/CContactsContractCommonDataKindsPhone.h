@@ -1,25 +1,28 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCOMMONDATAKINDSPHONE_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCOMMONDATAKINDSPHONE_H__
 
 #include "_Elastos_Droid_Provider_CContactsContractCommonDataKindsPhone.h"
+#include <elastos/core/Singleton.h>
 
-using Elastos::Core::ICharSequence;
-using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Net::IUri;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
 CarClass(CContactsContractCommonDataKindsPhone)
+    , public Singleton
+    , public IContactsContractCommonDataKindsPhone
+    , public IContactsContractDataColumnsWithJoins
+    , public IContactsContractCommonDataKindsCommonColumns
 {
 public:
-    /**
-     * This utility class cannot be instantiated
-     */
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * The content:// style URI for all data records of the

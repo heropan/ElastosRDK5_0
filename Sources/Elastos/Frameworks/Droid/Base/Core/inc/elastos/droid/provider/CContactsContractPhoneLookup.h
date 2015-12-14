@@ -1,8 +1,8 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTPHONELOOKUP_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTPHONELOOKUP_H__
 
 #include "_Elastos_Droid_Provider_CContactsContractPhoneLookup.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Net::IUri;
 
@@ -11,12 +11,17 @@ namespace Droid {
 namespace Provider {
 
 CarClass(CContactsContractPhoneLookup)
+    , public Singleton
+    , public IContactsContractPhoneLookup
+    , public IBaseColumns
+    , public IContactsContractPhoneLookupColumns
+    , public IContactsContractContactsColumns
+    , public IContactsContractContactOptionsColumns
 {
 public:
-    /**
-     * This utility class cannot be instantiated
-     */
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * The content:// style URI for this table. Append the phone number you want to lookup

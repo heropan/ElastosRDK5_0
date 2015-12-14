@@ -1,23 +1,27 @@
-
-#ifndef __ELASTOS_DROID_PROVIDER_CMEDIASTORE_H__
-#define __ELASTOS_DROID_PROVIDER_CMEDIASTORE_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CMEDIASTOREINTERNALTHUMBNAILS_H__
+#define __ELASTOS_DROID_PROVIDER_CMEDIASTOREINTERNALTHUMBNAILS_H__
 
 #include "_Elastos_Droid_Provider_CMediaStoreInternalThumbnails.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContentResolver;
-using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::IBitmapFactoryOptions;
-using Elastos::Droid::Database::ICursor;
+using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
 CarClass(CMediaStoreInternalThumbnails)
+    , public Singleton
+    , public IMediaStoreInternalThumbnails
 {
 public:
-    CMediaStoreInternalThumbnails();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * This method cancels the thumbnail request so clients waiting for getThumbnail will be
@@ -68,13 +72,16 @@ private:
         /* [in] */ IBitmapFactoryOptions* options);
 
 private:
-    AutoPtr<ArrayOf<String> > PROJECTION;
-    Object sThumbBufLock;
-    AutoPtr<ArrayOf<Byte> > sThumbBuf;
+    static const Int32 MINI_KIND;
+    static const Int32 FULL_SCREEN_KIND;
+    static const Int32 MICRO_KIND;
+    static const AutoPtr<ArrayOf<String> > PROJECTION;
+    static const Object sThumbBufLock;
+    static AutoPtr<ArrayOf<Byte> > sThumbBuf;
 };
 
 } //namespace Provider
 } //namespace Droid
 } //namespace Elastos
 
-#endif //__ELASTOS_DROID_PROVIDER_CMEDIASTORE_H__
+#endif //__ELASTOS_DROID_PROVIDER_CMEDIASTOREINTERNALTHUMBNAILS_H__

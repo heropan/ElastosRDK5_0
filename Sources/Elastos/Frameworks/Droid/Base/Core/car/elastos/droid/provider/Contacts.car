@@ -470,7 +470,7 @@ module {
         SetPhotoData(
             [in] IContentResolver* cr,
             [in] IUri* person,
-            [in] ArrayOf<Byte> data);
+            [in] ArrayOf<Byte>* data);
 
         /**
          * Opens an InputStream for the person's photo and returns the photo as a Bitmap.

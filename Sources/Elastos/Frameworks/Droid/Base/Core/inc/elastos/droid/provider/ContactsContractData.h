@@ -4,8 +4,8 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
 namespace Droid {

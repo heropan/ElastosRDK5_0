@@ -1,18 +1,21 @@
-
+#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/CContactsOrganizations.h"
 #include "elastos/droid/text/TextUtils.h"
-#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/R.h"
 
-using Elastos::Core::CString;
-using Elastos::Droid::R;
-using Elastos::Droid::Net::Uri;
-using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Net::Uri;
+using Elastos::Droid::R;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
+
+CAR_SINGLETON_IMPL(CContactsOrganizations)
+
+CAR_INTERFACE_IMPL_3(CContactsOrganizations, Singleton, IContactsOrganizations, IBaseColumns, IContactsOrganizationColumns)
 
 ECode CContactsOrganizations::constructor()
 {

@@ -1,8 +1,8 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTSYNCSTATE_H__
 #define __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTSYNCSTATE_H__
 
 #include "_Elastos_Droid_Provider_CCalendarContractSyncState.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Net::IUri;
 
@@ -16,12 +16,13 @@ namespace Provider {
  * @see SyncStateContract
  */
 CarClass(CCalendarContractSyncState)
+    , public Singleton
+    , public ICalendarContractSyncState
 {
 public:
-    /**
-     * This utility class cannot be instantiated
-     */
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * The content:// style URL for the top-level calendar authority

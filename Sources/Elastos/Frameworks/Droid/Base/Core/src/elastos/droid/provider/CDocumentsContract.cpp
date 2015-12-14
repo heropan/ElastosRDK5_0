@@ -1,15 +1,6 @@
 #include "elastos/droid/provider/CDocumentsContract.h"
 #include "elastos/droid/provider/DocumentsContract.h"
-
-
-
 #include "elastos/droid/os/ParcelFileDescriptor.h"
-
-
-
-
-
-
 
 namespace Elastos {
 namespace Droid {

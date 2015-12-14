@@ -1,4 +1,3 @@
-
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/provider/CSettingsNameValueTable.h"
 #include "elastos/droid/provider/Settings.h"
@@ -6,6 +5,10 @@
 namespace Elastos {
 namespace Droid {
 namespace Provider {
+
+CAR_SINGLETON_IMPL(CSettingsNameValueTable)
+
+CAR_INTERFACE_IMPL(CSettingsNameValueTable, Singleton, ISettingsNameValueTable)
 
 ECode CSettingsNameValueTable::GetUriFor(
     /* [in] */ IUri* uri,

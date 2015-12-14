@@ -2,8 +2,8 @@
 #include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/SearchRecentSuggestions.h"
 #include "elastos/droid/text/TextUtils.h"
-#include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringUtils.h>
 
 using Elastos::Droid::Content::CContentValues;
 using Elastos::Droid::Content::IContentResolver;
@@ -11,14 +11,14 @@ using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Content::ISearchRecentSuggestionsProvider;
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Text::TextUtils;
+using Elastos::Utility::Concurrent::CSemaphore;
+using Elastos::Utility::Concurrent::ISemaphore;
+using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::CSystem;
 using Elastos::Core::CThread;
 using Elastos::Core::ISystem;
 using Elastos::Core::IThread;
 using Elastos::Core::StringUtils;
-using Elastos::Utility::Concurrent::CSemaphore;
-using Elastos::Utility::Concurrent::ISemaphore;
-using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {

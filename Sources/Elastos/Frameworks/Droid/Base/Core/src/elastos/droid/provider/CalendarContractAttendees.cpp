@@ -1,12 +1,11 @@
-
-#include "elastos/droid/provider/CalendarContractAttendees.h"
 #include "elastos/droid/net/Uri.h"
-#include <elastos/core/StringUtils.h>
+#include "elastos/droid/provider/CalendarContractAttendees.h"
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
+using Elastos::Droid::Net::Uri;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
-using Elastos::Droid::Net::Uri;
 
 namespace Elastos {
 namespace Droid {

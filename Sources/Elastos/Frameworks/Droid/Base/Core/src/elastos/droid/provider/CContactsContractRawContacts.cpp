@@ -1,45 +1,46 @@
-
-#include "elastos/droid/provider/CContactsContractRawContacts.h"
-#include "elastos/droid/provider/ContactsContract.h"
-#include "elastos/droid/provider/ContactsContractData.h"
-#include "elastos/droid/provider/ContactsContractContacts.h"
-#include "elastos/droid/database/DatabaseUtils.h"
-#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/content/CContentValues.h"
 #include "elastos/droid/content/CEntity.h"
+#include "elastos/droid/content/CursorEntityIterator.h"
+#include "elastos/droid/database/DatabaseUtils.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/provider/CContactsContractRawContacts.h"
+#include "elastos/droid/provider/ContactsContract.h"
+#include "elastos/droid/provider/ContactsContractContacts.h"
+#include "elastos/droid/provider/ContactsContractData.h"
 
-using Elastos::Core::IInteger64;
-using Elastos::Core::CInteger64;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::CString;
-using Elastos::Core::EIID_IByte;
-using Elastos::Core::IArrayOf;
-using Elastos::Core::CArrayOf;
-using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Content::CContentValues;
 using Elastos::Droid::Content::CEntity;
+using Elastos::Droid::Content::CursorEntityIterator;
 using Elastos::Droid::Content::EIID_ICursorEntityIterator;
 using Elastos::Droid::Content::EIID_IEntityIterator;
+using Elastos::Droid::Content::IContentValues;
+using Elastos::Droid::Content::ICursorEntityIterator;
 using Elastos::Droid::Database::DatabaseUtils;
 using Elastos::Droid::Net::Uri;
+using Elastos::Utility::EIID_IIterator;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsContractRawContacts::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CContactsContractRawContacts)
+
+CAR_INTERFACE_IMPL_6(CContactsContractRawContacts, Singleton
+    , IContactsContractRawContacts
+    , IBaseColumns
+    , IContactsContractRawContactsColumns
+    , IContactsContractContactOptionsColumns
+    , IContactsContractContactNameColumns
+    , IContactsContractSyncColumns)
 
 ECode CContactsContractRawContacts::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
-    AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
-    return Uri::WithAppendedPath(auUri, String("raw_contacts"), uri);
+    return Uri::WithAppendedPath(ContactsContract::AUTHORITY_URI.Get(), String("raw_contacts"), uri);
 }
 
 ECode CContactsContractRawContacts::GetContactLookupUri(
@@ -65,12 +66,15 @@ ECode CContactsContractRawContacts::GetContactLookupUri(
         String lookupKey;
         FAIL_GOTO(cursor->GetString(1, &lookupKey), EXIT)
         FAIL_GOTO(ContactsContractContacts::GetLookupUri(contactId, lookupKey, uri), EXIT)
-        return cursor->Close();
+        // TODO
+        // cursor->Close();
+        return NOERROR;
     }
     //} finally {
 EXIT:
     if (cursor != NULL) {
-        FAIL_RETURN(cursor->Close())
+        //TODO
+        // FAIL_RETURN(cursor->Close())
     }
     //}
     *uri = NULL;
@@ -83,8 +87,11 @@ ECode CContactsContractRawContacts::NewEntityIterator(
 {
     VALIDATE_NOT_NULL(iterator);
 
-    AutoPtr<EntityIteratorImpl> impl = new EntityIteratorImpl(cursor);
-    *iterator = (IEntityIterator*)impl;
+    AutoPtr<EntityIteratorImpl> impl = new EntityIteratorImpl();
+    impl->constructor(cursor);
+
+    AutoPtr<ICursorEntityIterator> obj = (ICursorEntityIterator*)impl;
+    *iterator = IEntityIterator::Probe(obj);
     REFCOUNT_ADD(*iterator);
     return NOERROR;
 }
@@ -114,60 +121,20 @@ static AutoPtr<ArrayOf<String> > initDATAKEYS()
     return args;
 }
 
-AutoPtr<ArrayOf<String> > CContactsContractRawContacts::EntityIteratorImpl::DATA_KEYS = initDATAKEYS();
+const AutoPtr<ArrayOf<String> > CContactsContractRawContacts::EntityIteratorImpl::DATA_KEYS = initDATAKEYS();
 
-CContactsContractRawContacts::EntityIteratorImpl::EntityIteratorImpl(
-    /* [in] */ ICursor* cursor)
-    : CursorEntityIterator(cursor)
-{
-}
+CAR_INTERFACE_IMPL_3(CContactsContractRawContacts::EntityIteratorImpl, Object, ICursorEntityIterator, IEntityIterator, IIterator)
+
+CContactsContractRawContacts::EntityIteratorImpl::EntityIteratorImpl()
+{}
 
 CContactsContractRawContacts::EntityIteratorImpl::~EntityIteratorImpl()
+{}
+
+ECode CContactsContractRawContacts::EntityIteratorImpl::constructor(
+    /* [in] */ ICursor* cursor)
 {
-}
-
-PInterface CContactsContractRawContacts::EntityIteratorImpl::Probe(
-    /* [in]  */ REIID riid)
-{
-    if ( riid == EIID_IInterface) {
-        return (IInterface*)this;
-    }
-    else if (riid == EIID_ICursorEntityIterator) {
-        return (PInterface)(ICursorEntityIterator*)this;
-    }
-    else if (riid == EIID_IEntityIterator) {
-        return (IEntityIterator*)this;
-    }
-    return NULL;
-}
-
-UInt32 CContactsContractRawContacts::EntityIteratorImpl::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CContactsContractRawContacts::EntityIteratorImpl::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode CContactsContractRawContacts::EntityIteratorImpl::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-
-    if (pObject == (IInterface*)(ICursorEntityIterator*)this) {
-        *pIID = EIID_ICursorEntityIterator;
-    }
-    else if (pObject == (IInterface*)(IEntityIterator*)this) {
-        *pIID = EIID_IEntityIterator;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return  NOERROR;
+    return CursorEntityIterator::constructor(cursor);
 }
 
 ECode CContactsContractRawContacts::EntityIteratorImpl::GetEntityAndIncrementCursor(
@@ -191,10 +158,10 @@ ECode CContactsContractRawContacts::EntityIteratorImpl::GetEntityAndIncrementCur
     DatabaseUtils::CursorInt64ToContentValuesIfPresent(cursor, cv, DIRTY);
     DatabaseUtils::CursorInt64ToContentValuesIfPresent(cursor, cv, VERSION);
     DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, SOURCE_ID);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, SYNC1);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, SYNC2);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, SYNC3);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, SYNC4);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, IContactsContractBaseSyncColumns::SYNC1);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, IContactsContractBaseSyncColumns::SYNC2);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, IContactsContractBaseSyncColumns::SYNC3);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, IContactsContractBaseSyncColumns::SYNC4);
     DatabaseUtils::CursorInt64ToContentValuesIfPresent(cursor, cv, DELETED);
     DatabaseUtils::CursorInt64ToContentValuesIfPresent(cursor, cv, CONTACT_ID);
     DatabaseUtils::CursorInt64ToContentValuesIfPresent(cursor, cv, STARRED);
@@ -216,9 +183,7 @@ ECode CContactsContractRawContacts::EntityIteratorImpl::GetEntityAndIncrementCur
         FAIL_RETURN(cursor->GetColumnIndexOrThrow(IContactsContractContactsEntity::DATA_ID, &columnIndex))
         Int64 columnValue;
         FAIL_RETURN(cursor->GetInt64(columnIndex, &columnValue))
-        AutoPtr<IInteger64> value;
-        FAIL_RETURN(CInteger64::New(columnValue, (IInteger64**)&value))
-        FAIL_RETURN(cv->PutInt64(IBaseColumns::ID, value))
+        FAIL_RETURN(cv->Put(IBaseColumns::ID, columnValue))
         DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, IContactsContractDataColumns::RES_PACKAGE);
         DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, IContactsContractDataColumns::MIMETYPE);
         DatabaseUtils::CursorInt64ToContentValuesIfPresent(cursor, cv, IContactsContractDataColumns::IS_PRIMARY);
@@ -235,7 +200,6 @@ ECode CContactsContractRawContacts::EntityIteratorImpl::GetEntityAndIncrementCur
             String str;
             AutoPtr<ICharSequence> cstr;
             AutoPtr<ArrayOf<Byte> > blob;
-            AutoPtr<IArrayOf> array;
             switch (type) {
                 case ICursor::FIELD_TYPE_NULL:
                     // don't put anything
@@ -244,13 +208,11 @@ ECode CContactsContractRawContacts::EntityIteratorImpl::GetEntityAndIncrementCur
                 case ICursor::FIELD_TYPE_FLOAT:
                 case ICursor::FIELD_TYPE_STRING:
                     FAIL_RETURN(cursor->GetString(columnIndex, &str))
-                    FAIL_RETURN(CString::New(str, (ICharSequence**)&cstr))
-                    FAIL_RETURN(cv->PutString(key, cstr))
+                    FAIL_RETURN(cv->Put(key, str))
                     break;
                 case ICursor::FIELD_TYPE_BLOB:
                     FAIL_RETURN(cursor->GetBlob(columnIndex, (ArrayOf<Byte>**)&blob))
-                    FAIL_RETURN(CArrayOf::New(EIID_IByte, blob->GetLength(), (IArrayOf**)&array))
-                    FAIL_RETURN(cv->PutBytes(key, array))
+                    FAIL_RETURN(cv->Put(key, blob))
                     break;
                 default:
                     //throw new IllegalStateException("Invalid or unhandled data type");
@@ -258,10 +220,38 @@ ECode CContactsContractRawContacts::EntityIteratorImpl::GetEntityAndIncrementCur
             }
         }
         AutoPtr<IUri> _uri;
-        FAIL_RETURN(ContactsContractData::GetCONTENT_URI((IUri**)&_uri))
+        ContactsContractData::GetCONTENT_URI((IUri**)&_uri);
         FAIL_RETURN(contact->AddSubValue(_uri, cv))
     } while ((cursor->MoveToNext(&result), result));
 
+    return NOERROR;
+}
+
+//override
+ECode CContactsContractRawContacts::EntityIteratorImpl::HasNext(
+    /* [out] */ Boolean* result)
+{
+    return NOERROR;
+}
+
+ECode CContactsContractRawContacts::EntityIteratorImpl::GetNext(
+    /* [out] */ IInterface** object)
+{
+    return NOERROR;
+}
+
+ECode CContactsContractRawContacts::EntityIteratorImpl::Remove()
+{
+    return NOERROR;
+}
+
+ECode CContactsContractRawContacts::EntityIteratorImpl::Reset()
+{
+    return NOERROR;
+}
+
+ECode CContactsContractRawContacts::EntityIteratorImpl::Close()
+{
     return NOERROR;
 }
 

@@ -1,27 +1,30 @@
-
-#include "elastos/droid/provider/CCalendarContractCalendarEntity.h"
-#include "elastos/droid/provider/ContactsContract.h"
-#include "elastos/droid/database/DatabaseUtils.h"
 #include "elastos/droid/content/CContentValues.h"
 #include "elastos/droid/content/CEntity.h"
+#include "elastos/droid/database/DatabaseUtils.h"
 #include "elastos/droid/net/Uri.h"
+#include "elastos/droid/provider/CCalendarContractCalendarEntity.h"
+#include "elastos/droid/provider/ContactsContract.h"
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::StringBuilder;
-using Elastos::Droid::Net::Uri;
-using Elastos::Droid::Content::CEntity;
-using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Content::CContentValues;
+using Elastos::Droid::Content::CEntity;
 using Elastos::Droid::Content::EIID_ICursorEntityIterator;
 using Elastos::Droid::Content::EIID_IEntityIterator;
+using Elastos::Droid::Content::IContentValues;
+using Elastos::Droid::Content::ICursorEntityIterator;
+using Elastos::Droid::Content::IEntityIterator;
+using Elastos::Droid::Database::DatabaseUtils;
+using Elastos::Droid::Net::Uri;
+using Elastos::Utility::EIID_IIterator;
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-CCalendarContractCalendarEntity::EntityIteratorImpl::EntityIteratorImpl(
-    /* [in] */ ICursor* cursor)
-    : CursorEntityIterator(cursor)
+CAR_INTERFACE_IMPL_3(CCalendarContractCalendarEntity::EntityIteratorImpl, Object, ICursorEntityIterator, IEntityIterator, IIterator)
+
+CCalendarContractCalendarEntity::EntityIteratorImpl::EntityIteratorImpl()
 {
 }
 
@@ -29,48 +32,10 @@ CCalendarContractCalendarEntity::EntityIteratorImpl::~EntityIteratorImpl()
 {
 }
 
-PInterface CCalendarContractCalendarEntity::EntityIteratorImpl::Probe(
-    /* [in]  */ REIID riid)
+ECode CCalendarContractCalendarEntity::EntityIteratorImpl::constructor(
+    /* [in] */ ICursor* cursor)
 {
-    if ( riid == EIID_IInterface) {
-        return (IInterface*)this;
-    }
-    else if (riid == EIID_ICursorEntityIterator) {
-        return (PInterface)(ICursorEntityIterator*)this;
-    }
-    else if (riid == EIID_IEntityIterator) {
-        return (IEntityIterator*)this;
-    }
-    return NULL;
-}
-
-UInt32 CCalendarContractCalendarEntity::EntityIteratorImpl::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CCalendarContractCalendarEntity::EntityIteratorImpl::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode CCalendarContractCalendarEntity::EntityIteratorImpl::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-
-    if (pObject == (IInterface*)(ICursorEntityIterator*)this) {
-        *pIID = EIID_ICursorEntityIterator;
-    }
-    else if (pObject == (IInterface*)(IEntityIterator*)this) {
-        *pIID = EIID_IEntityIterator;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return  NOERROR;
+    return CursorEntityIterator::constructor(cursor);
 }
 
 ECode CCalendarContractCalendarEntity::EntityIteratorImpl::GetEntityAndIncrementCursor(
@@ -87,9 +52,7 @@ ECode CCalendarContractCalendarEntity::EntityIteratorImpl::GetEntityAndIncrement
     // Create the content value
     AutoPtr<IContentValues> cv;
     FAIL_RETURN(CContentValues::New((IContentValues**)&cv))
-    AutoPtr<IInteger64> id;
-    FAIL_RETURN(CInteger64::New(calendarId, (IInteger64**)&id))
-    FAIL_RETURN(cv->PutInt64(IBaseColumns::ID, id))
+    FAIL_RETURN(cv->Put(IBaseColumns::ID, calendarId))
 
     DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ACCOUNT_NAME);
     DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ACCOUNT_TYPE);
@@ -97,16 +60,16 @@ ECode CCalendarContractCalendarEntity::EntityIteratorImpl::GetEntityAndIncrement
     DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, _SYNC_ID);
     DatabaseUtils::CursorInt64ToContentValuesIfPresent(cursor, cv, DIRTY);
 
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, CAL_SYNC1);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, CAL_SYNC2);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, CAL_SYNC3);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, CAL_SYNC4);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, CAL_SYNC5);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, CAL_SYNC6);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, CAL_SYNC7);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, CAL_SYNC8);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, CAL_SYNC9);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, CAL_SYNC10);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractCalendarSyncColumns::CAL_SYNC1);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractCalendarSyncColumns::CAL_SYNC2);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractCalendarSyncColumns::CAL_SYNC3);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractCalendarSyncColumns::CAL_SYNC4);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractCalendarSyncColumns::CAL_SYNC5);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractCalendarSyncColumns::CAL_SYNC6);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractCalendarSyncColumns::CAL_SYNC7);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractCalendarSyncColumns::CAL_SYNC8);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractCalendarSyncColumns::CAL_SYNC9);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractCalendarSyncColumns::CAL_SYNC10);
 
     DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractCalendars::NAME);
     DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, CALENDAR_DISPLAY_NAME);
@@ -139,11 +102,13 @@ ECode CCalendarContractCalendarEntity::EntityIteratorImpl::GetEntityAndIncrement
     return NOERROR;
 }
 
-ECode CCalendarContractCalendarEntity::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CCalendarContractCalendarEntity)
 
+CAR_INTERFACE_IMPL_4(CCalendarContractCalendarEntity, Singleton
+    , ICalendarContractCalendarEntity
+    , IBaseColumns
+    , ICalendarContractSyncColumns
+    , ICalendarContractCalendarColumns)
 
 ECode CCalendarContractCalendarEntity::GetCONTENT_URI(
     /* [out] */ IUri** uri)
@@ -157,16 +122,46 @@ ECode CCalendarContractCalendarEntity::GetCONTENT_URI(
     return Uri::Parse(str, uri);
 }
 
-
 ECode CCalendarContractCalendarEntity::NewEntityIterator(
     /* [in] */ ICursor* cursor,
     /* [out] */ IEntityIterator** iter)
 {
     VALIDATE_NOT_NULL(iter);
 
-    AutoPtr<EntityIteratorImpl> impl = new EntityIteratorImpl(cursor);
-    *iter = (IEntityIterator*)impl;
+    AutoPtr<EntityIteratorImpl> impl = new EntityIteratorImpl();
+    impl->constructor(cursor);
+
+    AutoPtr<ICursorEntityIterator> obj = (ICursorEntityIterator*)impl;
+    *iter = IEntityIterator::Probe(obj);
     REFCOUNT_ADD(*iter);
+    return NOERROR;
+}
+
+//override
+ECode CCalendarContractCalendarEntity::EntityIteratorImpl::HasNext(
+    /* [out] */ Boolean* result)
+{
+    return NOERROR;
+}
+
+ECode CCalendarContractCalendarEntity::EntityIteratorImpl::GetNext(
+    /* [out] */ IInterface** object)
+{
+    return NOERROR;
+}
+
+ECode CCalendarContractCalendarEntity::EntityIteratorImpl::Remove()
+{
+    return NOERROR;
+}
+
+ECode CCalendarContractCalendarEntity::EntityIteratorImpl::Reset()
+{
+    return NOERROR;
+}
+
+ECode CCalendarContractCalendarEntity::EntityIteratorImpl::Close()
+{
     return NOERROR;
 }
 

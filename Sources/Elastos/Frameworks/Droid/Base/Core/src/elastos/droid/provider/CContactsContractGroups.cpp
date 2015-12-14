@@ -1,4 +1,3 @@
-
 #include "elastos/droid/provider/CContactsContractGroups.h"
 #include "elastos/droid/provider/ContactsContract.h"
 #include "elastos/droid/database/DatabaseUtils.h"
@@ -6,31 +5,36 @@
 #include "elastos/droid/content/CEntity.h"
 #include "elastos/droid/net/Uri.h"
 
-using Elastos::Droid::Net::Uri;
-using Elastos::Droid::Database::DatabaseUtils;
-using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Content::CContentValues;
+using Elastos::Droid::Content::CEntity;
 using Elastos::Droid::Content::EIID_ICursorEntityIterator;
 using Elastos::Droid::Content::EIID_IEntityIterator;
-using Elastos::Droid::Content::CEntity;
+using Elastos::Droid::Content::IContentValues;
+using Elastos::Droid::Content::ICursorEntityIterator;
+using Elastos::Droid::Content::IEntity;
+using Elastos::Droid::Content::IEntityIterator;
+using Elastos::Droid::Database::DatabaseUtils;
+using Elastos::Droid::Net::Uri;
+using Elastos::Utility::EIID_IIterator;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsContractGroups::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CContactsContractGroups)
+
+CAR_INTERFACE_IMPL_4(CContactsContractGroups, Singleton
+    , IContactsContractGroups
+    , IBaseColumns
+    , IContactsContractGroupsColumns
+    , IContactsContractSyncColumns)
 
 ECode CContactsContractGroups::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
-    AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
-    return Uri::WithAppendedPath(auUri, String("groups"), uri);
+    return Uri::WithAppendedPath(ContactsContract::AUTHORITY_URI.Get(), String("groups"), uri);
 }
 
 ECode CContactsContractGroups::GetCONTENTSUMMARYURI(
@@ -38,9 +42,7 @@ ECode CContactsContractGroups::GetCONTENTSUMMARYURI(
 {
     VALIDATE_NOT_NULL(uri);
 
-    AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
-    return Uri::WithAppendedPath(auUri, String("groups_summary"), uri);
+    return Uri::WithAppendedPath(ContactsContract::AUTHORITY_URI.Get(), String("groups_summary"), uri);
 }
 
 ECode CContactsContractGroups::NewEntityIterator(
@@ -49,64 +51,30 @@ ECode CContactsContractGroups::NewEntityIterator(
 {
     VALIDATE_NOT_NULL(iterator);
 
-    AutoPtr<EntityIteratorImpl> impl = new EntityIteratorImpl(cursor);
-    *iterator = (IEntityIterator*)impl;
+    AutoPtr<EntityIteratorImpl> impl = new EntityIteratorImpl();
+    impl->constructor(cursor);
+
+    AutoPtr<ICursorEntityIterator> obj = (ICursorEntityIterator*)impl;
+    *iterator = IEntityIterator::Probe(obj);
     REFCOUNT_ADD(*iterator);
     return NOERROR;
 }
 
-CContactsContractGroups::EntityIteratorImpl::EntityIteratorImpl(
+CContactsContractGroups::EntityIteratorImpl::constructor(
     /* [in] */ ICursor* cursor)
-    : CursorEntityIterator(cursor)
+{
+    return CursorEntityIterator::constructor(cursor);
+}
+
+CAR_INTERFACE_IMPL_3(CContactsContractGroups::EntityIteratorImpl, Object, ICursorEntityIterator, IEntityIterator, IIterator)
+
+
+CContactsContractGroups::EntityIteratorImpl::EntityIteratorImpl()
 {
 }
 
 CContactsContractGroups::EntityIteratorImpl::~EntityIteratorImpl()
 {
-}
-
-PInterface CContactsContractGroups::EntityIteratorImpl::Probe(
-    /* [in]  */ REIID riid)
-{
-    if ( riid == EIID_IInterface) {
-        return (IInterface*)this;
-    }
-    else if (riid == EIID_ICursorEntityIterator) {
-        return (PInterface)(ICursorEntityIterator*)this;
-    }
-    else if (riid == EIID_IEntityIterator) {
-        return (IEntityIterator*)this;
-    }
-    return NULL;
-}
-
-UInt32 CContactsContractGroups::EntityIteratorImpl::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CContactsContractGroups::EntityIteratorImpl::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode CContactsContractGroups::EntityIteratorImpl::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-
-    if (pObject == (IInterface*)(ICursorEntityIterator*)this) {
-        *pIID = EIID_ICursorEntityIterator;
-    }
-    else if (pObject == (IInterface*)(IEntityIterator*)this) {
-        *pIID = EIID_IEntityIterator;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return  NOERROR;
 }
 
 ECode CContactsContractGroups::EntityIteratorImpl::GetEntityAndIncrementCursor(
@@ -129,10 +97,10 @@ ECode CContactsContractGroups::EntityIteratorImpl::GetEntityAndIncrementCursor(
     DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, values, TITLE);
     DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, values, TITLE_RES);
     DatabaseUtils::CursorInt64ToContentValuesIfPresent(cursor, values, GROUP_VISIBLE);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, values, SYNC1);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, values, SYNC2);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, values, SYNC3);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, values, SYNC4);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, values, IContactsContractBaseSyncColumns::SYNC1);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, values, IContactsContractBaseSyncColumns::SYNC2);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, values, IContactsContractBaseSyncColumns::SYNC3);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, values, IContactsContractBaseSyncColumns::SYNC4);
     DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, values, SYSTEM_ID);
     DatabaseUtils::CursorInt64ToContentValuesIfPresent(cursor, values, DELETED);
     DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, values, NOTES);
@@ -142,6 +110,40 @@ ECode CContactsContractGroups::EntityIteratorImpl::GetEntityAndIncrementCursor(
     Boolean result;
     FAIL_RETURN(cursor->MoveToNext(&result))
     return CEntity::New(values, (IEntity**)&entity);
+}
+
+//override
+ECode CContactsContractGroups::EntityIteratorImpl::HasNext(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return CursorEntityIterator::HasNext(result);
+}
+
+ECode CContactsContractGroups::EntityIteratorImpl::GetNext(
+    /* [out] */ IInterface** object)
+{
+    VALIDATE_NOT_NULL(object);
+    AutoPtr<IEntity> entity;
+    CursorEntityIterator::GetNext((IEntity**)&entity);
+    *object = entity.Get();
+    REFCOUNT_ADD(*object);
+    return NOERROR;
+}
+
+ECode CContactsContractGroups::EntityIteratorImpl::Remove()
+{
+    return CursorEntityIterator::Remove();
+}
+
+ECode CContactsContractGroups::EntityIteratorImpl::Reset()
+{
+    return CursorEntityIterator::Reset();
+}
+
+ECode CContactsContractGroups::EntityIteratorImpl::Close()
+{
+    return CursorEntityIterator::Close();
 }
 
 } //Provider

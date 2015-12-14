@@ -1,19 +1,25 @@
-
-#include "elastos/droid/provider/CContactsContractContactsAggregationSuggestionsBuilder.h"
 #include "elastos/droid/provider/ContactsContractContacts.h"
+#include "elastos/droid/provider/CContactsContractContactsAggregationSuggestionsBuilder.h"
 #include "elastos/droid/text/TextUtils.h"
+#include <elastos/core/CoreUtils.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/coredef.h>
 
+using Elastos::Droid::Net::IUriBuilder;
+using Elastos::Droid::Text::TextUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
-using Elastos::Droid::Text::TextUtils;
-using Elastos::Droid::Net::IUriBuilder;
+using Elastos::Core::CoreUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
+
+CAR_OBJECT_IMPL(CContactsContractContactsAggregationSuggestionsBuilder)
+
+CAR_INTERFACE_IMPL(CContactsContractContactsAggregationSuggestionsBuilder, Object, IContactsContractContactsAggregationSuggestionsBuilder)
+
 
 ECode CContactsContractContactsAggregationSuggestionsBuilder::SetContactId(
     /* [in] */ Int64 contactId)
@@ -27,8 +33,8 @@ ECode CContactsContractContactsAggregationSuggestionsBuilder::AddParameter(
     /* [in] */ const String& value)
 {
     if (!TextUtils::IsEmpty(value)) {
-        mKinds->PushBack(kind);
-        mValues->PushBack(value);
+        mKinds->Add(CoreUtils::Convert(kind));
+        mValues->Add(CoreUtils::Convert(value));
     }
     return NOERROR;
 }
@@ -44,25 +50,26 @@ ECode CContactsContractContactsAggregationSuggestionsBuilder::Build(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
-
     AutoPtr<IUriBuilder> builder;
-    AutoPtr<IUri> _uri;
-    FAIL_RETURN(ContactsContractContacts::GetCONTENT_URI((IUri**)&_uri))
-    FAIL_RETURN(_uri->BuildUpon((IUriBuilder**)&builder))
-    FAIL_RETURN(builder->AppendEncodedPath(StringUtils::Int64ToString(mContactId)))
-    FAIL_RETURN(builder->AppendPath(IContactsContractContactsAggregationSuggestions::CONTENT_DIRECTORY))
+    ContactsContractContacts::CONTENT_URI->BuildUpon((IUriBuilder**)&builder);
+    builder->AppendEncodedPath(StringUtils::ToString(mContactId));
+    builder->AppendPath(IContactsContractContactsAggregationSuggestions::CONTENT_DIRECTORY);
     if (mLimit != 0) {
-        FAIL_RETURN(builder->AppendQueryParameter(String("limit"), StringUtils::Int32ToString(mLimit)))
+        FAIL_RETURN(builder->AppendQueryParameter(String("limit"), StringUtils::ToString(mLimit)))
     }
 
-    Int32 count = mKinds->GetSize();
+    Int32 count;
+    mKinds->GetSize(&count);
     for (Int32 i = 0; i < count; i++) {
-        StringBuilder build;
-        build += (*mKinds)[i];
-        build += ":";
-        build += (*mValues)[i];
-        String str = build.ToString();
-        FAIL_RETURN(builder->AppendQueryParameter(String("query"), str))
+        AutoPtr<IInterface> inter;
+        mKinds->Get(i, (IInterface**)&inter);
+        String str;
+        IObject::Probe(inter)->ToString(&str);
+        AutoPtr<IInterface> inter_;
+        mValues->Get(i, (IInterface**)&inter_);
+        String str_;
+        IObject::Probe(inter)->ToString(&str_);
+        FAIL_RETURN(builder->AppendQueryParameter(String("query"), str + str_))
     }
 
     return builder->Build((IUri**)&uri);

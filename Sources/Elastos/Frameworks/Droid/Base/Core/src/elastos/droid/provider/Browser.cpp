@@ -6,25 +6,25 @@
 #include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/Browser.h"
 #include "elastos/droid/provider/BrowserContract.h"
+#include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/CoreUtils.h>
 #include <elastos/core/StringUtils.h>
-#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Content::CContentUris;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::CContentValues;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IContentUris;
-using Elastos::Droid::Content::Intent;
 using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::Intent;
 using Elastos::Droid::Database::DatabaseUtils;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Net::Uri;
+using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::CoreUtils;
 using Elastos::Core::CSystem;
 using Elastos::Core::ISystem;
 using Elastos::Core::StringUtils;
-using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {

@@ -1,14 +1,17 @@
-
-#include <elastos/coredef.h>
-#include "elastos/droid/provider/CCallLog.h"
 #include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/provider/CCallLog.h"
+#include <elastos/coredef.h>
 
-using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Net::CUriHelper;
+using Elastos::Droid::Net::IUriHelper;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
+
+CAR_SINGLETON_IMPL(CCallLog)
+
+CAR_INTERFACE_IMPL(CCallLog, Singleton, ICallLog)
 
 static AutoPtr<IUri> initCONTENTURI()
 {
@@ -19,7 +22,7 @@ static AutoPtr<IUri> initCONTENTURI()
     return uri;
 }
 
-AutoPtr<IUri> CCallLog::CONTENT_URI = initCONTENTURI();
+const AutoPtr<IUri> CCallLog::CONTENT_URI = initCONTENTURI();
 
 ECode CCallLog::GetCONTENT_URI(
         /* [out] */ IUri** uri)

@@ -1,25 +1,37 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSPEOPLE_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSPEOPLE_H__
 
 #include "_Elastos_Droid_Provider_CContactsPeople.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Singleton.h>
 
-using Elastos::IO::IInputStream;
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::IBitmapFactoryOptions;
+using Elastos::Droid::Net::IUri;
+using Elastos::IO::IInputStream;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
 CarClass(CContactsPeople)
+    , public Singleton
+    , public IContactsPeople
+    , public IBaseColumns
+    , public ISyncConstValue
+    , public IContactsPeopleColumns
+    , public IContactsPhonesColumns
+    , public IContactsPresenceColumns
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     /**
      * no public constructor since this is a utility class
      * @deprecated see {@link android.provider.ContactsContract}
@@ -174,7 +186,7 @@ public:
     CARAPI SetPhotoData(
         /* [in] */ IContentResolver* cr,
         /* [in] */ IUri* person,
-        /* [in] */ const ArrayOf<Byte>& data);
+        /* [in] */ ArrayOf<Byte>* data);
 
     /**
      * Opens an InputStream for the person's photo and returns the photo as a Bitmap.

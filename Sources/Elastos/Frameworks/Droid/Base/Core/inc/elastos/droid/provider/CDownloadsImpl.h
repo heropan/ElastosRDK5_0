@@ -1,8 +1,8 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CDOWNLOADSIMPL_H__
 #define __ELASTOS_DROID_PROVIDER_CDOWNLOADSIMPL_H__
 
 #include "_Elastos_Droid_Provider_CDownloadsImpl.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Net::IUri;
 
@@ -11,8 +11,14 @@ namespace Droid {
 namespace Provider {
 
 CarClass(CDownloadsImpl)
+    , public Singleton
+    , public IDownloadsImpl
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     /**
      * The content:// URI to access downloads owned by the caller's UID.
      */
@@ -23,14 +29,14 @@ public:
      * The content URI for accessing all downloads across all UIDs (requires the
      * ACCESS_ALL_DOWNLOADS permission).
      */
-    CARAPI GetALLDOWNLOADSCONTENTURI(
+    CARAPI GetALL_DOWNLOADS_CONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**
      * The content URI for accessing publicly accessible downloads (i.e., it requires no
      * permissions to access this downloaded file)
      */
-    CARAPI GetPUBLICLYACCESSIBLEDOWNLOADSURI(
+    CARAPI GetPUBLICLY_ACCESSIBLE_DOWNLOADS_URI(
         /* [out] */ IUri** uri);
 
     /**

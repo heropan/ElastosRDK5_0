@@ -1,28 +1,24 @@
-
+#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/CContactsContractSyncState.h"
 #include "elastos/droid/provider/ContactsContract.h"
 #include "elastos/droid/provider/SyncStateContractHelpers.h"
-#include "elastos/droid/net/Uri.h"
 
+using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Net::Uri;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsContractSyncState::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CContactsContractSyncState)
+
+CAR_INTERFACE_IMPL_2(CContactsContractSyncState, Singleton, IContactsContractSyncState, ISyncStateContractColumns)
 
 ECode CContactsContractSyncState::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
-
-    AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
-    return Uri::WithAppendedPath(auUri, IContactsContractSyncState::CONTENT_DIRECTORY, uri);
+    return Uri::WithAppendedPath(ContactsContract::AUTHORITY_URI.Get(), IContactsContractSyncState::CONTENT_DIRECTORY, uri);
 }
 
 ECode CContactsContractSyncState::Get(
@@ -31,39 +27,43 @@ ECode CContactsContractSyncState::Get(
     /* [out] */ ArrayOf<Byte>** value)
 {
     VALIDATE_NOT_NULL(value);
-
     AutoPtr<IUri> uri;
-    FAIL_RETURN(GetCONTENT_URI((IUri**)&uri))
+    GetCONTENT_URI((IUri**)&uri);
     return SyncStateContractHelpers::Get(provider, uri, account, value);
 }
 
 /**
  * @see android.provider.SyncStateContract.Helpers#get
  */
-// public static Pair<Uri, byte[]> getWithUri(ContentProviderClient provider, Account account)
-//         throws RemoteException {
-//     return SyncStateContract.Helpers.getWithUri(provider, CONTENT_URI, account);
-// }
+ECode CContactsContractSyncState::GetWithUri(
+    /* [in] */ IContentProviderClient* provider,
+    /* [in] */ IAccount* account,
+    /* [out] */ IPair** value)
+{
+    VALIDATE_NOT_NULL(value);
+    AutoPtr<IUri> uri;
+    GetCONTENT_URI((IUri**)&uri);
+    return SyncStateContractHelpers::GetWithUri(provider, uri, account, value);
+}
 
 ECode CContactsContractSyncState::Set(
     /* [in] */ IContentProviderClient* provider,
     /* [in] */ IAccount* account,
-    /* [in] */ const ArrayOf<Byte>& data)
+    /* [in] */ ArrayOf<Byte>* data)
 {
     AutoPtr<IUri> uri;
-    FAIL_RETURN(GetCONTENT_URI((IUri**)&uri))
+    GetCONTENT_URI((IUri**)&uri);
     return SyncStateContractHelpers::Set(provider, uri, account, data);
 }
 
 ECode CContactsContractSyncState::NewSetOperation(
     /* [in] */ IAccount* account,
-    /* [in] */ const ArrayOf<Byte>& data,
+    /* [in] */ ArrayOf<Byte>* data,
     /* [out] */ IContentProviderOperation** operation)
 {
     VALIDATE_NOT_NULL(operation);
-
     AutoPtr<IUri> uri;
-    FAIL_RETURN(GetCONTENT_URI((IUri**)&uri))
+    GetCONTENT_URI((IUri**)&uri);
     return SyncStateContractHelpers::NewSetOperation(uri, account, data, operation);
 }
 

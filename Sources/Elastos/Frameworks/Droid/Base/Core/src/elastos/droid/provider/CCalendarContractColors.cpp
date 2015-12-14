@@ -1,19 +1,17 @@
-
 #include "elastos/droid/provider/CCalendarContractColors.h"
 #include "elastos/droid/net/Uri.h"
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::StringBuilder;
 using Elastos::Droid::Net::Uri;
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CCalendarContractColors::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CCalendarContractColors)
+
+CAR_INTERFACE_IMPL(CCalendarContractColors, Singleton, ICalendarContractColors)
 
 ECode CCalendarContractColors::GetCONTENT_URI(
     /* [out] */ IUri** uri)

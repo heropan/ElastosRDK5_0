@@ -1,21 +1,27 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTPROFILE_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTPROFILE_H__
 
 #include "_Elastos_Droid_Provider_CContactsContractProfile.h"
 #include "elastos/droid/provider/ContactsContractProfile.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
 CarClass(CContactsContractProfile)
+    , public Singleton
+    , public IContactsContractProfile
+    , public IBaseColumns
+    , public IContactsContractContactsColumns
+    , public IContactsContractContactOptionsColumns
+    , public IContactsContractContactNameColumns
+    , public IContactsContractContactStatusColumns
 {
 public:
-    /**
-     * This utility class cannot be instantiated
-     */
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * The content:// style URI for this table, which requests the contact entry
@@ -40,7 +46,7 @@ public:
      * that specific raw contact can be requested by appending the entity or data
      * path as well.
      */
-    CARAPI GetCONTENTRAWCONTACTSURI(
+    CARAPI GetCONTENT_RAW_CONTACTS_URI(
         /* [out] */ IUri** uri);
 
     /**

@@ -1,4 +1,3 @@
-
 #include "elastos/droid/provider/CContactsContractContactsAggregationSuggestions.h"
 #include "elastos/droid/provider/CContactsContractContactsAggregationSuggestionsBuilder.h"
 #include <elastos/coredef.h>
@@ -10,10 +9,9 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsContractContactsAggregationSuggestions::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CContactsContractContactsAggregationSuggestions)
+
+CAR_INTERFACE_IMPL(CContactsContractContactsAggregationSuggestions, Singleton, IContactsContractContactsAggregationSuggestions)
 
 ECode CContactsContractContactsAggregationSuggestions::Builder(
     /* [out] */ IContactsContractContactsAggregationSuggestionsBuilder** build)

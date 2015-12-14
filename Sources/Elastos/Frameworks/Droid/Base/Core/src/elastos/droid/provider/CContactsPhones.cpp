@@ -1,21 +1,19 @@
-
-#include "elastos/droid/provider/CContactsPhones.h"
 #include "elastos/droid/net/Uri.h"
+#include "elastos/droid/provider/CContactsPhones.h"
 #include "elastos/droid/R.h"
 
-using Elastos::Core::CString;
-using Elastos::Droid::R;
-using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Net::Uri;
+using Elastos::Droid::R;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsPhones::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CContactsPhones)
+
+CAR_INTERFACE_IMPL_4(CContactsPhones, Singleton, IContactsPhones, IBaseColumns, IContactsPhonesColumns, IContactsPeopleColumns)
 
 ECode CContactsPhones::GetCONTENT_URI(
     /* [out] */ IUri** uri)

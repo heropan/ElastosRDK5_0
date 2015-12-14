@@ -1,55 +1,65 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTCANLENDARENTITY_H__
 #define __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTCANLENDARENTITY_H__
 
 #include "_Elastos_Droid_Provider_CCalendarContractEventsEntity.h"
 #include "elastos/droid/content/CursorEntityIterator.h"
+#include <elastos/core/Singleton.h>
 
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Content::IEntity;
 using Elastos::Droid::Content::CursorEntityIterator;
 using Elastos::Droid::Content::IEntityIterator;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IContentProviderClient;
+using Elastos::Droid::Database::ICursor;
+using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
 CarClass(CCalendarContractEventsEntity)
+    , public Singleton
+    , public ICalendarContractEventsEntity
+    , public IBaseColumns
+    , public ICalendarContractSyncColumns
+    , public ICalendarContractEventsColumns
 {
 private:
     class EntityIteratorImpl
-        : public ElRefBase
-        , public CursorEntityIterator
+        : public CursorEntityIterator
     {
     public:
-        EntityIteratorImpl(
-            /* [in] */ ICursor* cursor,
-            /* [in] */ IContentResolver* resolver);
+        CAR_INTERFACE_DECL()
 
-        EntityIteratorImpl(
-            /* [in] */ ICursor* cursor,
-            /* [in] */ IContentProviderClient* provider);
+        EntityIteratorImpl();
 
         ~EntityIteratorImpl();
 
-        CARAPI_(PInterface) Probe(
-            /* [in]  */ REIID riid);
+        CARAPI constructor(
+            /* [in] */ ICursor* cursor,
+            /* [in] */ IContentResolver* resolver);
 
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
+        CARAPI constructor(
+            /* [in] */ ICursor* cursor,
+            /* [in] */ IContentProviderClient* provider);
 
         // @Override
         CARAPI GetEntityAndIncrementCursor(
             /* [in] */ ICursor* cursor,
             /* [out] */ IEntity** entity);
+
+        //override
+        CARAPI HasNext(
+            /* [out] */ Boolean* result);
+
+        CARAPI GetNext(
+            /* [out] */ IInterface** object);
+
+        CARAPI Remove();
+
+        CARAPI Reset();
+
+        CARAPI Close();
 
     private:
         AutoPtr<IContentResolver> mResolver;
@@ -72,15 +82,13 @@ private:
         static Int32 COLUMN_ID;
         static Int32 COLUMN_NAME;
         static Int32 COLUMN_VALUE;
-
         static String WHERE_EVENT_ID;
     };
 
 public:
-    /**
-     * This utility class cannot be instantiated
-     */
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * The content:// style URL for this table

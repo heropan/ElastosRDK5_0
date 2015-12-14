@@ -2,27 +2,37 @@
 #define __ELASTOS_DROID_PROVIDER_CSETTINGSGLOBAL_H__
 
 #include "_Elastos_Droid_Provider_CSettingsGlobal.h"
+#include <elastos/core/Singleton.h>
 
-using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
 CarClass(CSettingsGlobal)
+    , public Singleton
+    , public ISettingsGlobal
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI GetUriFor(
         /* [in] */ IUri* u,
         /* [in] */ const String& name,
         /* [out] */ IUri** value);
 
-    CARAPI GetContentUri(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
-    CARAPI GetSettingsToBackup(
+    CARAPI GetSETTINGS_TO_BACKUP(
         /* [out] */ ArrayOf<String>** array);
+
+    CARAPI GetMULTI_SIM_USER_PREFERRED_SUBS(
+        /* [out, callee] */ ArrayOf<String>** subs);
 
     /**
      * Get the key that retrieves a bluetooth headset's priority.
@@ -46,6 +56,14 @@ public:
      */
     CARAPI GetBluetoothInputDevicePriorityKey(
         /* [in] */ const String& address,
+        /* [out] */ String* key);
+
+    CARAPI GetBluetoothMapPriorityKey(
+        /* [in] */ const String& address,
+        /* [out] */ String* key);
+
+    CARAPI ZenModeToString(
+        /* [in] */ Int32 mode,
         /* [out] */ String* key);
 
     /**

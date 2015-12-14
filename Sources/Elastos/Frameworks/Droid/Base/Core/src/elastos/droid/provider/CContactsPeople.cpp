@@ -1,41 +1,53 @@
-
-#include "elastos/droid/provider/CContactsPeople.h"
-#include "elastos/droid/provider/CContactsGroups.h"
-#include "elastos/droid/provider/CContactsGroupMembership.h"
-#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/content/CContentUris.h"
 #include "elastos/droid/content/CContentValues.h"
 #include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/provider/CContactsGroupMembership.h"
+#include "elastos/droid/provider/CContactsGroups.h"
+#include "elastos/droid/provider/CContactsPeople.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 
-using Elastos::Core::ISystem;
-using Elastos::Core::CSystem;
-using Elastos::Core::CArrayOf;
-using Elastos::Core::CByte;
-using Elastos::Core::EIID_IByte;
-using Elastos::Core::CInteger64;
-using Elastos::Core::StringBuilder;
-using Elastos::Core::StringUtils;
-using Elastos::Core::CString;
-using Elastos::IO::IByteArrayInputStream;
-using Elastos::IO::CByteArrayInputStream;
-using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Content::CContentUris;
+using Elastos::Droid::Content::CContentValues;
 using Elastos::Droid::Content::IContentUris;
 using Elastos::Droid::Content::IContentValues;
-using Elastos::Droid::Content::CContentValues;
-using Elastos::Droid::Graphics::IBitmapFactory;
 using Elastos::Droid::Graphics::CBitmapFactory;
-using Elastos::Droid::Provider::IBaseColumns;
-using Elastos::Droid::Provider::IContactsGroups;
-using Elastos::Droid::Provider::CContactsGroups;
-using Elastos::Droid::Provider::IContactsGroupMembership;
-using Elastos::Droid::Provider::CContactsGroupMembership;
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Graphics::IBitmapFactory;
+using Elastos::Droid::Graphics::IBitmapFactoryOptions;
+using Elastos::Droid::Net::Uri;
+// using Elastos::Droid::Provider::CContactsGroupMembership;
+// using Elastos::Droid::Provider::CContactsGroups;
+// using Elastos::Droid::Provider::IBaseColumns;
+// using Elastos::Droid::Provider::IContactsGroupMembership;
+// using Elastos::Droid::Provider::IContactsGroups;
+using Elastos::IO::CByteArrayInputStream;
+using Elastos::IO::IByteArrayInputStream;
+using Elastos::IO::IInputStream;
+using Elastos::Core::CArrayOf;
+using Elastos::Core::CByte;
+using Elastos::Core::CInteger64;
+using Elastos::Core::CString;
+using Elastos::Core::CSystem;
+using Elastos::Core::EIID_IByte;
+using Elastos::Core::ISystem;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
+
+CAR_SINGLETON_IMPL(CContactsPeople)
+
+CAR_INTERFACE_IMPL_6(CContactsPeople, Singleton
+    , IContactsPeople
+    , IBaseColumns
+    , ISyncConstValue
+    , IContactsPeopleColumns
+    , IContactsPhonesColumns
+    , IContactsPresenceColumns)
 
 static AutoPtr<ArrayOf<String> > initGROUPSPROJECTION()
 {
@@ -110,9 +122,7 @@ ECode CContactsPeople::MarkAsContacted(
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
     Int64 now;
     system->GetCurrentTimeMillis(&now);
-    AutoPtr<IInteger64> num;
-    CInteger64::New(now, (IInteger64**)&num);
-    values->PutInt64(IContactsPeopleColumns::LAST_TIME_CONTACTED, num);
+    values->Put(IContactsPeopleColumns::LAST_TIME_CONTACTED, now);
     Int32 result;
     return resolver->Update(uri, values, String(NULL), NULL, &result);
 }
@@ -126,7 +136,7 @@ ECode CContactsPeople::TryGetMyContactsGroupId(
     AutoPtr<IContactsGroups> helper;
     CContactsGroups::AcquireSingleton((IContactsGroups**)&helper);
     AutoPtr<IUri> uri;
-    helper->GetCONTENTURI((IUri**)&uri);
+    helper->GetCONTENT_URI((IUri**)&uri);
     StringBuilder builder;
     builder += IContactsGroupsColumns::SYSTEM_ID;
     builder += "='";
@@ -141,11 +151,13 @@ ECode CContactsPeople::TryGetMyContactsGroupId(
         ECode ec = groupsCursor->MoveToFirst(&result);
         if (SUCCEEDED(ec) && result) {
             groupsCursor->GetInt64(0, id);
-            groupsCursor->Close();
+            // TODO
+            // groupsCursor->Close();
             return NOERROR;
         }
         //} finally {
-        groupsCursor->Close();
+        //TODO
+        // groupsCursor->Close();
         //}
     }
     *id = 0;
@@ -190,7 +202,8 @@ ECode CContactsPeople::AddToGroup(
             groupsCursor->GetInt64(0, &groupId);
         }
         //} finally {
-        groupsCursor->Close();
+        //TODO
+        // groupsCursor->Close();
         //}
     }
 
@@ -211,12 +224,8 @@ ECode CContactsPeople::AddToGroup(
 {
     AutoPtr<IContentValues> values;
     CContentValues::New((IContentValues**)&values);
-    AutoPtr<IInteger64> person;
-    CInteger64::New(personId, (IInteger64**)&person);
-    values->PutInt64(IContactsGroupMembership::PERSON_ID, person);
-    AutoPtr<IInteger64> group;
-    CInteger64::New(groupId, (IInteger64**)&group);
-    values->PutInt64(IContactsGroupMembership::GROUP_ID, group);
+    values->Put(IContactsGroupMembership::PERSON_ID, personId);
+    values->Put(IContactsGroupMembership::GROUP_ID, groupId);
 
     AutoPtr<IUri> _uri;
     AutoPtr<IContactsGroupMembership> helper;
@@ -277,21 +286,14 @@ ECode CContactsPeople::QueryGroups(
 ECode CContactsPeople::SetPhotoData(
     /* [in] */ IContentResolver* cr,
     /* [in] */ IUri* person,
-    /* [in] */ const ArrayOf<Byte>& data)
+    /* [in] */ ArrayOf<Byte>* data)
 {
     AutoPtr<IUri> photoUri;
     Uri::WithAppendedPath(person, IContactsPhotos::CONTENT_DIRECTORY, (IUri**)&photoUri);
 
     AutoPtr<IContentValues> values;
     CContentValues::New((IContentValues**)&values);
-    AutoPtr<IArrayOf> array;
-    CArrayOf::New(EIID_IByte, data.GetLength(), (IArrayOf**)&array);
-    for (Int32 i = 0; i < data.GetLength(); i++) {
-        AutoPtr<IByte> byteObj;
-        CByte::New(data[i], (IByte**)&byteObj);
-        array->Put(i, byteObj);
-    }
-    values->PutBytes(IContactsPhotosColumns::DATA, array);
+    values->Put(IContactsPhotosColumns::DATA, data);
     Int32 result;
     return cr->Update(photoUri, values, String(NULL), NULL, &result);
 }
@@ -310,14 +312,16 @@ ECode CContactsPeople::OpenContactPhotoInputStream(
     cr->Query(photoUri, args, String(NULL), NULL, String(NULL), (ICursor**)&cursor);
     Boolean result;
     if (cursor == NULL || (cursor->MoveToNext(&result), !result)) {
-        if (cursor != NULL) cursor->Close();
+        //TODO
+        // if (cursor != NULL) cursor->Close();
         *stream = NULL;
         return NOERROR;
     }
     AutoPtr<ArrayOf<Byte> > data;
     cursor->GetBlob(0, (ArrayOf<Byte>**)&data);
     if (data == NULL) {
-        if (cursor != NULL) cursor->Close();
+        //TODO
+        // if (cursor != NULL) cursor->Close();
         *stream = NULL;
         return NOERROR;
     }
@@ -325,7 +329,8 @@ ECode CContactsPeople::OpenContactPhotoInputStream(
     CByteArrayInputStream::New(data, (IByteArrayInputStream**)&_stream);
     *stream = IInputStream::Probe(_stream);
     REFCOUNT_ADD(*stream);
-    if (cursor != NULL) cursor->Close();
+    //TODO
+    // if (cursor != NULL) cursor->Close();
     return NOERROR;
 }
 

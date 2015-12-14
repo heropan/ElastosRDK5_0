@@ -1,8 +1,8 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCOMMONDATAKINDSCALLABLE_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCOMMONDATAKINDSCALLABLE_H__
 
 #include "_Elastos_Droid_Provider_CContactsContractCommonDataKindsCallable.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Net::IUri;
 
@@ -11,9 +11,15 @@ namespace Droid {
 namespace Provider {
 
 CarClass(CContactsContractCommonDataKindsCallable)
+    , public Singleton
+    , public IContactsContractCommonDataKindsCallable
+    , public IContactsContractDataColumnsWithJoins
+    , public IContactsContractCommonDataKindsCommonColumns
 {
 public:
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * Similar to {@link Phone#CONTENT_URI}, but returns callable data instead of only

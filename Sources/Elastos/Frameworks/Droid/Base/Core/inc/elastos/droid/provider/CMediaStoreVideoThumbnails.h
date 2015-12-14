@@ -1,21 +1,27 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CMEDIASTOREVIDEOTHUMBNAILS_H__
 #define __ELASTOS_DROID_PROVIDER_CMEDIASTOREVIDEOTHUMBNAILS_H__
 
 #include "_Elastos_Droid_Provider_CMediaStoreVideoThumbnails.h"
+#include <elastos/core/Singleton.h>
 
-using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::IBitmapFactoryOptions;
+using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
 CarClass(CMediaStoreVideoThumbnails)
+    , public Singleton
+    , public IMediaStoreVideoThumbnails
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     /**
      * The content:// style URI for the internal storage.
      */

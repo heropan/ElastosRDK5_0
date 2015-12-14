@@ -1,30 +1,25 @@
-
+#include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/CContactsContractDirectory.h"
 #include "elastos/droid/provider/ContactsContract.h"
-#include "elastos/droid/net/Uri.h"
-#include "elastos/droid/content/CContentValues.h"
 
-using Elastos::Droid::Net::Uri;
-using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Content::CContentValues;
+using Elastos::Droid::Content::IContentValues;
+using Elastos::Droid::Net::Uri;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsContractDirectory::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CContactsContractDirectory)
+
+CAR_INTERFACE_IMPL(CContactsContractDirectory, Singleton, IContactsContractDirectory)
 
 ECode CContactsContractDirectory::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
-
-    AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
-    return Uri::WithAppendedPath(auUri, String("directories"), uri);
+    return Uri::WithAppendedPath(ContactsContract::AUTHORITY_URI.Get(), String("directories"), uri);
 }
 
 ECode CContactsContractDirectory::NotifyDirectoryChange(
@@ -34,10 +29,10 @@ ECode CContactsContractDirectory::NotifyDirectoryChange(
     // No data needs to be sent back, because the provider can infer the calling
     // package from binder.
     AutoPtr<IContentValues> contentValues;
-    FAIL_RETURN(CContentValues::New((IContentValues**)&contentValues))
+    CContentValues::New((IContentValues**)&contentValues);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(GetCONTENT_URI((IUri**)&auUri))
+    GetCONTENT_URI((IUri**)&auUri);
     Int32 result;
     return resolver->Update(auUri, contentValues, String(NULL), NULL, &result);
 }

@@ -1,12 +1,12 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTEVENTDAS_H__
 #define __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTEVENTDAS_H__
 
 #include "_Elastos_Droid_Provider_CCalendarContractEventDays.h"
+#include <elastos/core/Singleton.h>
 
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Database::ICursor;
+using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
 namespace Droid {
@@ -16,12 +16,13 @@ namespace Provider {
  * Fields and helpers for querying for a list of days that contain events.
  */
 CarClass(CCalendarContractEventDays)
+    , public Singleton
+    , public ICalendarContractEventDays
 {
 public:
-    /**
-     * This utility class cannot be instantiated
-     */
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);

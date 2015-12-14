@@ -1,24 +1,25 @@
-
-#include "elastos/droid/provider/CContactsContractQuickContact.h"
-#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/provider/CContactsContractQuickContact.h"
+#include "elastos/droid/widget/Toast.h"
 
-using Elastos::Droid::Graphics::CRect;
-using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::App::EIID_IActivity;
 using Elastos::Droid::Content::CIntent;
-using Elastos::Droid::Content::Res::ICompatibilityInfo;
 using Elastos::Droid::Content::EIID_IContextWrapper;
 using Elastos::Droid::Content::IContextWrapper;
-using Elastos::Droid::App::EIID_IActivity;
+using Elastos::Droid::Content::Res::ICompatibilityInfo;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Widget::IToast;
+using Elastos::Droid::Widget::Toast;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsContractQuickContact::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CContactsContractQuickContact)
+
+CAR_INTERFACE_IMPL(CContactsContractQuickContact, Singleton, IContactsContractQuickContact)
 
 ECode CContactsContractQuickContact::ComposeQuickContactsIntent(
     /* [in] */ IContext* context,
@@ -37,7 +38,7 @@ ECode CContactsContractQuickContact::ComposeQuickContactsIntent(
     FAIL_RETURN(res->GetCompatibilityInfo((ICompatibilityInfo**)&ccInfo))
     FAIL_RETURN(ccInfo->GetApplicationScale(&appScale))
     AutoPtr<ArrayOf<Int32> > pos = ArrayOf<Int32>::Alloc(2);
-    FAIL_RETURN(target->GetLocationOnScreen(&(*pos)[0], &(*pos)[2]))
+    FAIL_RETURN(target->GetLocationOnScreen(pos.Get()))
 
     AutoPtr<IRect> rect;
     FAIL_RETURN(CRect::New((IRect**)&rect))
@@ -96,7 +97,8 @@ ECode CContactsContractQuickContact::ShowQuickContact(
     // Trigger with obtained rectangle
     AutoPtr<IIntent> intent;
     FAIL_RETURN(ComposeQuickContactsIntent(context, target, lookupUri, mode, excludeMimes, (IIntent**)&intent))
-    return context->StartActivity(intent);
+    StartActivityWithErrorToast(context, intent);
+    return NOERROR;
 }
 
 ECode CContactsContractQuickContact::ShowQuickContact(
@@ -108,7 +110,24 @@ ECode CContactsContractQuickContact::ShowQuickContact(
 {
     AutoPtr<IIntent> intent;
     FAIL_RETURN(ComposeQuickContactsIntent(context, target, lookupUri, mode, excludeMimes, (IIntent**)&intent))
-    return context->StartActivity(intent);
+    StartActivityWithErrorToast(context, intent);
+    return NOERROR;
+}
+
+void CContactsContractQuickContact::StartActivityWithErrorToast(
+    /* [in] */ IContext* context,
+    /* [in] */ IIntent* intent)
+{
+    // try {
+      ECode ec = context->StartActivity(intent);
+    // } catch (ActivityNotFoundException e) {
+      if (ec == (ECode)E_ACTIVITY_NOT_FOUND_EXCEPTION) {
+        AutoPtr<IToast> t;
+        Toast::MakeText(context, 0/*com.android.internal.R.string.quick_contacts_not_available*/,
+                        IToast::LENGTH_SHORT, (IToast**)&t);
+        t->Show();
+      }
+    // }
 }
 
 } //Provider

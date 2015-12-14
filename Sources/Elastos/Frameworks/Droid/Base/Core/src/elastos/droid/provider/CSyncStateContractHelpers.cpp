@@ -1,4 +1,3 @@
-
 #include "elastos/droid/provider/CSyncStateContractHelpers.h"
 
 namespace Elastos {

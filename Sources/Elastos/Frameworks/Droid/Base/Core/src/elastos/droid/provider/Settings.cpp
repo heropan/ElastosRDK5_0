@@ -1,64 +1,76 @@
-
-#include "elastos/droid/provider/Settings.h"
-#include "elastos/droid/utility/Config.h"
-#include "elastos/droid/os/SystemProperties.h"
+#include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/content/Intent.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/SystemProperties.h"
 #include "elastos/droid/os/UserHandle.h"
-#include "elastos/droid/net/Uri.h"
-#include "elastos/droid/privacy/CPrivacySettingsManager.h"
-#include "elastos/droid/content/Intent.h"
-#include "elastos/droid/content/CContentValues.h"
-#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/provider/Settings.h"
 #include "elastos/droid/text/TextUtils.h"
-#include <os/SystemProperties.h>
+#include "elastos/droid/utility/Config.h"
 #include <elastos/utility/logging/Slogger.h>
+//#include <elastos/utility/CHashSet.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/CoreUtils.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 
-using Elastos::Core::StringUtils;
-using Elastos::Core::StringBuilder;
-using Elastos::Core::CString;
-using Elastos::Core::IInteger32;
-using Elastos::Core::CInteger32;
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Content::CContentValues;
+using Elastos::Droid::Content::IContentValues;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIContentProvider;
 using Elastos::Droid::Content::Intent;
-using Elastos::Droid::Os::UserHandle;
-using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Droid::Database::ICursor;
+using Elastos::Droid::Internal::Widget::IILockSettings;
+using Elastos::Droid::Location::ILocationManager;
+using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IProcess;
 using Elastos::Droid::Os::Process;
+using Elastos::Droid::Os::UserHandle;
 using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::Os::SystemProperties;
-using Elastos::Droid::Provider::ISettingsGlobal;
-using Elastos::Droid::Net::Uri;
-using Elastos::Droid::Content::Pm::IActivityInfo;
 using Elastos::Droid::Privacy::IIPrivacySettingsManager;
-using Elastos::Droid::Privacy::CPrivacySettingsManager;
+using Elastos::Droid::Provider::ISettingsGlobal;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::View::IKeyEvent;
+//TODO using Elastos::Utility::CHashSet;
+using Elastos::Utility::Logging::Slogger;
+using Elastos::Core::CInteger32;
+using Elastos::Core::CoreUtils;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IInteger32;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-const String Settings::JID_RESOURCE_PREFIX = String("android");
+const String Settings::JID_RESOURCE_PREFIX("android");
 const String Settings::TAG("Settings");
 const Boolean Settings::LOCAL_LOGV = FALSE;
-
+Object Settings::mLocationSettingsLock;
 
 //================================================================================
 //              Settings::NameValueCache
 //================================================================================
+Object Settings::NameValueCache::mLock;
+
 static AutoPtr< ArrayOf<String> > InitSelectValue()
 {
     AutoPtr< ArrayOf<String> > array = ArrayOf<String>::Alloc(1);
     (*array)[0] = ISettingsNameValueTable::VALUE;
     return array;
 }
+
 const AutoPtr< ArrayOf<String> > Settings::NameValueCache::SELECT_VALUE = InitSelectValue();
+
 const String Settings::NameValueCache::NAME_EQ_PLACEHOLDER("name=?");
 
 Boolean Settings::NameValueTable::PutString(
@@ -75,10 +87,10 @@ Boolean Settings::NameValueTable::PutString(
 
     AutoPtr<ICharSequence> tmp;
     CString::New(name, (ICharSequence**)&tmp);
-    values->PutString(String("name"), tmp);
+    values->Put(String("name"), tmp);
     tmp = NULL;
     CString::New(value, (ICharSequence**)&tmp);
-    values->PutString(String("value"), tmp);
+    values->Put(String("value"), tmp);
     AutoPtr<IUri> outUri;
     resolver->Insert(uri, values,(IUri**)&outUri);
     return TRUE;
@@ -104,30 +116,36 @@ Settings::NameValueCache::NameValueCache(
     /* [in] */ const String& setCommand)
     : mVersionSystemProperty(versionSystemProperty)
     , mUri(uri)
-    , mValues(10)
     , mValuesVersion(0)
     , mContentProvider(NULL)
     , mCallGetCommand(getCommand)
     , mCallSetCommand(setCommand)
-{}
+{
+    assert(0 && "TODO");
+    // CHashMap::New((IHashMap**)&mValues);
+}
 
 ECode Settings::NameValueCache::LazyGetProvider(
     /* [in] */ IContentResolver* cr,
     /* [out] */ IIContentProvider** provider)
 {
-    VALIDATE_NOT_NULL(provider)
-    ECode ec = NOERROR;
-    {
-        AutoLock lock(mLock);
-        if (mContentProvider == NULL) {
+    VALIDATE_NOT_NULL(provider);
+    AutoPtr<IIContentProvider> cp;
+    //TODO
+    // ISynchronize* sync = ISynchronize::Probe(this);
+    // synchronized(sync) {
+        cp = mContentProvider;
+        if (cp == NULL) {
             String authority;
             mUri->GetAuthority(&authority);
-            ec = cr->AcquireProvider(authority, (IIContentProvider**)&mContentProvider);
+            cr->AcquireProvider(authority, (IIContentProvider**)&mContentProvider);
+            cp = mContentProvider;
         }
-    }
-    *provider = mContentProvider;
+    // }
+
+    *provider = cp;
     REFCOUNT_ADD(*provider)
-    return ec;
+    return NOERROR;
 }
 
 ECode Settings::NameValueCache::PutStringForUser(
@@ -150,7 +168,8 @@ ECode Settings::NameValueCache::PutStringForUser(
         *result = FALSE;
         return ec == (ECode)E_REMOTE_EXCEPTION ? NOERROR : ec;
     }
-    ec = cp->Call(mCallSetCommand, name, arg, (IBundle**)&tmp);
+    assert(0 && "TODO");
+    // ec = cp->Call(cr->GetPackageName(), name, arg, (IBundle**)&tmp);
     if (FAILED(ec)) {
         Slogger::W(TAG, "Can't set key %s in %p", name.string(), mUri.Get());
         *result = FALSE;
@@ -171,31 +190,36 @@ ECode Settings::NameValueCache::GetStringForUser(
     /* [out] */ String* value)
 {
     VALIDATE_NOT_NULL(value)
-
     Boolean isSelf = (userHandle == UserHandle::GetMyUserId());
     if (isSelf) {
-        Int64 newValuesVersion = SystemProperties::GetInt64(mVersionSystemProperty, 0);
+        Int64 newValuesVersion;
+        SystemProperties::GetInt64(mVersionSystemProperty, 0, &newValuesVersion);
 
         // Our own user's settings data uses a client-side cache
-        AutoLock lock(mLock);
-        if (mValuesVersion != newValuesVersion) {
-            if (LOCAL_LOGV || FALSE) {
-                String segment;
-                mUri->GetLastPathSegment(&segment);
-                Slogger::V(TAG, "invalidate [%s]: current %d != cached %d", segment.string(), newValuesVersion, mValuesVersion);
+        //TODO
+        // ISynchronize* sync = ISynchronize::Probe(this);
+        // synchronized(sync) {
+            if (mValuesVersion != newValuesVersion) {
+                if (LOCAL_LOGV || FALSE) {
+                    String segment;
+                    mUri->GetLastPathSegment(&segment);
+                    Slogger::V(TAG, "invalidate [%s]: current %d != cached %d", segment.string(), newValuesVersion, mValuesVersion);
+                }
+
+                mValues.Clear();
+                mValuesVersion = newValuesVersion;
             }
 
-            mValues.Clear();
-            mValuesVersion = newValuesVersion;
-        }
-
-        HashMap<String, String>::Iterator ator = mValues.Find(name);
-        if (ator != mValues.End()) {
-            *value = ator->mSecond; // Could be null, that's OK -- negative caching
-            return NOERROR;
-        }
-    }
-    else {
+            Boolean flag = FALSE;
+            mValues->ContainsKey(CoreUtils::Convert(name), &flag);
+            if (flag) {
+                AutoPtr<IInterface> interf;
+                mValues->Get(CoreUtils::Convert(name), (IInterface**)&interf);
+                AutoPtr<ICharSequence> cs = ICharSequence::Probe(interf);
+                return cs->ToString(value); // Could be null, that's OK -- negative caching
+            }
+        // }
+    } else {
         if (LOCAL_LOGV)
             Slogger::V(TAG, "get setting for user %d by user %d so skipping cache", userHandle, UserHandle::GetMyUserId());
     }
@@ -218,21 +242,21 @@ ECode Settings::NameValueCache::GetStringForUser(
             args->PutInt32(ISettings::CALL_METHOD_USER_KEY, userHandle);
         }
         AutoPtr<IBundle> b;
-        if (SUCCEEDED(cp->Call(mCallGetCommand, name, args, (IBundle**)&b)) && b != NULL) {
+        assert(0 && "TODO");// cr->GetPackageName()
+/*        if (SUCCEEDED(cp->Call(cr->GetPackageName(), name, args, (IBundle**)&b)) && b != NULL) {
             String _value;
             b->GetPairValue(&_value);
             // Don't update our cache for reads of other users' data
             if (isSelf) {
                 AutoLock lock(mLock);
-                mValues[name] = _value;
-            }
-            else {
+                (*mValues)[name] = _value;
+            } else {
                 if (LOCAL_LOGV)
                     Slogger::I(TAG, "call-query of user %d by %d so not updating cache", userHandle, UserHandle::GetMyUserId());
             }
             *value = _value;
             return NOERROR;
-        }
+        }*/
         // If the response Bundle is null, we fall through
         // to the query interface below.
         // } catch (RemoteException e) {
@@ -245,14 +269,17 @@ ECode Settings::NameValueCache::GetStringForUser(
     // try {
     AutoPtr< ArrayOf<String> > selectionArgs = ArrayOf<String>::Alloc(1);
     (*selectionArgs)[0] = name;
-    if (FAILED(cp->Query(mUri, SELECT_VALUE, NAME_EQ_PLACEHOLDER, selectionArgs, String(NULL), NULL, (ICursor**)&c))) {
+
+    assert(0 && "TODO"); // cr->GetPackageName()
+/*    if (FAILED(cp->Query(cr->GetPackageName(), mUri, SELECT_VALUE, NAME_EQ_PLACEHOLDER, selectionArgs, String(NULL), NULL, (ICursor**)&c))) {
         Slogger::W(TAG, "Can't get key %s from %p", name.string(), mUri.Get());
         if (c != NULL) {
-            c->Close();
+            assert(0 && "TODO");
+            // c->Close();
         }
         *value = String(NULL);  // Return null, but don't cache it.
         return NOERROR;
-    }
+    }*/
     if (c == NULL) {
         Slogger::W(TAG, "Can't get key %s from %p", name.string(), mUri.Get());
         *value = String(NULL);
@@ -267,7 +294,7 @@ ECode Settings::NameValueCache::GetStringForUser(
     }
     {
         AutoLock lock(mLock);
-        mValues[name] = _value;
+        mValues->Put((CoreUtils::Convert(name)).Get(), (CoreUtils::Convert(_value)).Get());
     }
     if (LOCAL_LOGV) {
         String segment;
@@ -275,7 +302,8 @@ ECode Settings::NameValueCache::GetStringForUser(
         Slogger::V(TAG, "cache miss [%s]: %s = %s", segment.string(), name.string(), (_value.IsNull()? "(null)" : _value.string()));
     }
     if (c != NULL) {
-        c->Close();
+        assert(0 && "TODO");
+        // c->Close();
     }
     *value = _value;
     return NOERROR;
@@ -321,104 +349,116 @@ const AutoPtr<IUri> Settings::System::CONTENT_URI = InitSystemCONTENTURI();
 const AutoPtr<Settings::NameValueCache> Settings::System::sNameValueCache = new Settings::NameValueCache(ISettingsSystem::SYS_PROP_SETTING_VERSION,
         CONTENT_URI, ISettings::CALL_METHOD_GET_SYSTEM, ISettings::CALL_METHOD_PUT_SYSTEM);
 
-HashSet<String> Settings::System::MOVED_TO_SECURE(30);
 
-Boolean Settings::System::InitMOVEDTOSECURE()
+static AutoPtr<IHashSet> InitSystemMOVED_TO_SECURE()
 {
-    MOVED_TO_SECURE.Insert(ISettingsSecure::ANDROID_ID);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::HTTP_PROXY);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::LOCATION_PROVIDERS_ALLOWED);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::LOCK_BIOMETRIC_WEAK_FLAGS);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::LOCK_PATTERN_ENABLED);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::LOCK_PATTERN_VISIBLE);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::LOGGING_ID);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::PARENTAL_CONTROL_ENABLED);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::PARENTAL_CONTROL_LAST_UPDATE);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::PARENTAL_CONTROL_REDIRECT_URL);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::SETTINGS_CLASSNAME);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::USE_GOOGLE_MAIL);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::WIFI_NETWORKS_AVAILABLE_REPEAT_DELAY);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::WIFI_NUM_OPEN_NETWORKS_KEPT);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::WIFI_ON);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::WIFI_WATCHDOG_ACCEPTABLE_PACKET_LOSS_PERCENTAGE);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::WIFI_WATCHDOG_AP_COUNT);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::WIFI_WATCHDOG_BACKGROUND_CHECK_DELAY_MS);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::WIFI_WATCHDOG_BACKGROUND_CHECK_ENABLED);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::WIFI_WATCHDOG_BACKGROUND_CHECK_TIMEOUT_MS);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::WIFI_WATCHDOG_INITIAL_IGNORED_PING_COUNT);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::WIFI_WATCHDOG_MAX_AP_CHECKS);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::WIFI_WATCHDOG_ON);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::WIFI_WATCHDOG_PING_COUNT);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::WIFI_WATCHDOG_PING_DELAY_MS);
-    MOVED_TO_SECURE.Insert(ISettingsSecure::WIFI_WATCHDOG_PING_TIMEOUT_MS);
-    return TRUE;
+    AutoPtr<IHashSet> hs;
+    assert(0 && "TODO");
+    // CHashSet::New(30, (IHashSet**)&hs);
+
+    hs->Add(CoreUtils::Convert(ISettingsSecure::ANDROID_ID));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::HTTP_PROXY));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::LOCATION_PROVIDERS_ALLOWED));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::LOCK_BIOMETRIC_WEAK_FLAGS));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::LOCK_PATTERN_ENABLED));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::LOCK_PATTERN_VISIBLE));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::LOGGING_ID));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::PARENTAL_CONTROL_ENABLED));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::PARENTAL_CONTROL_LAST_UPDATE));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::PARENTAL_CONTROL_REDIRECT_URL));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::SETTINGS_CLASSNAME));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::USE_GOOGLE_MAIL));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::WIFI_NETWORKS_AVAILABLE_REPEAT_DELAY));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::WIFI_NUM_OPEN_NETWORKS_KEPT));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::WIFI_ON));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::WIFI_WATCHDOG_ACCEPTABLE_PACKET_LOSS_PERCENTAGE));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::WIFI_WATCHDOG_AP_COUNT));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::WIFI_WATCHDOG_BACKGROUND_CHECK_DELAY_MS));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::WIFI_WATCHDOG_BACKGROUND_CHECK_ENABLED));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::WIFI_WATCHDOG_BACKGROUND_CHECK_TIMEOUT_MS));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::WIFI_WATCHDOG_INITIAL_IGNORED_PING_COUNT));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::WIFI_WATCHDOG_MAX_AP_CHECKS));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::WIFI_WATCHDOG_ON));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::WIFI_WATCHDOG_PING_COUNT));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::WIFI_WATCHDOG_PING_DELAY_MS));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::WIFI_WATCHDOG_PING_TIMEOUT_MS));
+
+    // At one time in System, then Global, but now back in Secure
+    hs->Add(CoreUtils::Convert(ISettingsSecure::INSTALL_NON_MARKET_APPS));
+    return hs;
 }
-const Boolean Settings::System::HASINITMOVEDTOSECURE = InitMOVEDTOSECURE();
 
-HashSet<String> Settings::System::MOVED_TO_GLOBAL;
-HashSet<String> Settings::System::MOVED_TO_SECURE_THEN_GLOBAL;
+const AutoPtr<IHashSet> Settings::System::MOVED_TO_SECURE = InitSystemMOVED_TO_SECURE();
 
-Boolean Settings::System::InitMOVEDTOGLOBALANDSECURE()
+static AutoPtr<IHashSet> initSystemMOVED_TO_SECURE_THEN_GLOBAL()
 {
+    AutoPtr<IHashSet> hs;
+    assert(0 && "TODO");
+    // CHashSet::New((IHashSet**)&hs);
     // these were originally in system but migrated to secure in the past,
     // so are duplicated in the Secure.* namespace
-    MOVED_TO_SECURE_THEN_GLOBAL.Insert(ISettingsGlobal::ADB_ENABLED);
-    MOVED_TO_SECURE_THEN_GLOBAL.Insert(ISettingsGlobal::BLUETOOTH_ON);
-    MOVED_TO_SECURE_THEN_GLOBAL.Insert(ISettingsGlobal::DATA_ROAMING);
-    MOVED_TO_SECURE_THEN_GLOBAL.Insert(ISettingsGlobal::DEVICE_PROVISIONED);
-    MOVED_TO_SECURE_THEN_GLOBAL.Insert(ISettingsGlobal::INSTALL_NON_MARKET_APPS);
-    MOVED_TO_SECURE_THEN_GLOBAL.Insert(ISettingsGlobal::USB_MASS_STORAGE_ENABLED);
-    MOVED_TO_SECURE_THEN_GLOBAL.Insert(ISettingsGlobal::HTTP_PROXY);
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::ADB_ENABLED));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::BLUETOOTH_ON));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DATA_ROAMING));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DEVICE_PROVISIONED));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::USB_MASS_STORAGE_ENABLED));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::HTTP_PROXY));
 
-    // these are moving directly from system to global
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::AIRPLANE_MODE_ON);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::AIRPLANE_MODE_RADIOS);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::AIRPLANE_MODE_TOGGLEABLE_RADIOS);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::AUTO_TIME);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::AUTO_TIME_ZONE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::CAR_DOCK_SOUND);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::CAR_UNDOCK_SOUND);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DESK_DOCK_SOUND);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DESK_UNDOCK_SOUND);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DOCK_SOUNDS_ENABLED);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::LOCK_SOUND);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::UNLOCK_SOUND);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::LOW_BATTERY_SOUND);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::POWER_SOUNDS_ENABLED);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::STAY_ON_WHILE_PLUGGED_IN);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WIFI_SLEEP_POLICY);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::MODE_RINGER);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WINDOW_ANIMATION_SCALE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::TRANSITION_ANIMATION_SCALE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::ANIMATOR_DURATION_SCALE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::FANCY_IME_ANIMATIONS);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::COMPATIBILITY_MODE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::EMERGENCY_TONE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::CALL_AUTO_RETRY);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DEBUG_APP);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WAIT_FOR_DEBUGGER);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::SHOW_PROCESSES);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::ALWAYS_FINISH_ACTIVITIES);
-    return TRUE;
+    return hs;
 }
-const Boolean Settings::System::HASINITMOVEDTOGLOBALANDSECURE = InitMOVEDTOGLOBALANDSECURE();
 
-AutoPtr< ArrayOf<Settings::System::KeyShortcutInfo*> > Settings::System::InitShortCutInfoArray()
+const AutoPtr<IHashSet> Settings::System::MOVED_TO_SECURE_THEN_GLOBAL =
+    initSystemMOVED_TO_SECURE_THEN_GLOBAL();
+
+static AutoPtr<IHashSet> InitSystemMOVED_TO_GLOBAL()
 {
-    AutoPtr< ArrayOf<KeyShortcutInfo*> > array = ArrayOf<KeyShortcutInfo*>::Alloc(4);
-    AutoPtr<KeyShortcutInfo> info1 = new KeyShortcutInfo(IKeyEvent::KEYCODE_PROG_RED, ISettingsSystem::SHORTCUT_KEY_0);
-    array->Set(0, info1);
-    AutoPtr<KeyShortcutInfo> info2 = new KeyShortcutInfo(IKeyEvent::KEYCODE_PROG_GREEN, ISettingsSystem::SHORTCUT_KEY_1);
-    array->Set(1, info2);
-    AutoPtr<KeyShortcutInfo> info3 = new KeyShortcutInfo(IKeyEvent::KEYCODE_PROG_YELLOW, ISettingsSystem::SHORTCUT_KEY_2);
-    array->Set(2, info3);
-    AutoPtr<KeyShortcutInfo> info4 = new KeyShortcutInfo(IKeyEvent::KEYCODE_PROG_BLUE, ISettingsSystem::SHORTCUT_KEY_3);
-    array->Set(3, info4);
-    return array;
+    AutoPtr<IHashSet> hs;
+    assert(0 && "TODO");
+    // CHashSet::New((IHashSet**)&hs);
+    // these are moving directly from system to global
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::AIRPLANE_MODE_ON));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::AIRPLANE_MODE_RADIOS));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::AIRPLANE_MODE_TOGGLEABLE_RADIOS));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::AUTO_TIME));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::AUTO_TIME_ZONE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::CAR_DOCK_SOUND));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::CAR_UNDOCK_SOUND));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DESK_DOCK_SOUND));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DESK_UNDOCK_SOUND));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DOCK_SOUNDS_ENABLED));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::LOCK_SOUND));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::UNLOCK_SOUND));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::LOW_BATTERY_SOUND));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::POWER_SOUNDS_ENABLED));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::STAY_ON_WHILE_PLUGGED_IN));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WIFI_SLEEP_POLICY));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::MODE_RINGER));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WINDOW_ANIMATION_SCALE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::TRANSITION_ANIMATION_SCALE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::ANIMATOR_DURATION_SCALE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::FANCY_IME_ANIMATIONS));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::COMPATIBILITY_MODE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::EMERGENCY_TONE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::CALL_AUTO_RETRY));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DEBUG_APP));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WAIT_FOR_DEBUGGER));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::SHOW_PROCESSES));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::ALWAYS_FINISH_ACTIVITIES));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::TZINFO_UPDATE_CONTENT_URL));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::TZINFO_UPDATE_METADATA_URL));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::SELINUX_UPDATE_CONTENT_URL));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::SELINUX_UPDATE_METADATA_URL));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::SMS_SHORT_CODES_UPDATE_CONTENT_URL));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::SMS_SHORT_CODES_UPDATE_METADATA_URL));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::CERT_PIN_UPDATE_CONTENT_URL));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::CERT_PIN_UPDATE_METADATA_URL));
+
+    return hs;
 }
-AutoPtr< ArrayOf<Settings::System::KeyShortcutInfo*> > Settings::System::sKeyShortcutInfoArray = InitShortCutInfoArray();
+
+const AutoPtr<IHashSet> Settings::System::MOVED_TO_GLOBAL = InitSystemMOVED_TO_GLOBAL();
 
 static AutoPtr<IUri> InitSystemDefaultUri(
     /* [in] */ const String& type)
@@ -450,146 +490,64 @@ static AutoPtr< ArrayOf<String> > InitSystemSettingsToBackup()
     (*array)[12] = ISettingsSystem::SCREEN_BRIGHTNESS_MODE;
     (*array)[13] = ISettingsSystem::SCREEN_AUTO_BRIGHTNESS_ADJ;
     (*array)[14] = ISettingsSystem::VIBRATE_INPUT_DEVICES;
-    (*array)[15] = ISettingsSystem::MODE_RINGER;                // moved to globa;
-    (*array)[16] = ISettingsSystem::MODE_RINGER_STREAMS_AFFECTED;
-    (*array)[17] = ISettingsSystem::MUTE_STREAMS_AFFECTED;
-    (*array)[18] = ISettingsSystem::VOLUME_VOICE;
-    (*array)[19] = ISettingsSystem::VOLUME_SYSTEM;
-    (*array)[20] = ISettingsSystem::VOLUME_RING;
-    (*array)[21] = ISettingsSystem::VOLUME_MUSIC;
-    (*array)[22] = ISettingsSystem::VOLUME_ALARM;
-    (*array)[23] = ISettingsSystem::VOLUME_NOTIFICATION;
-    (*array)[24] = ISettingsSystem::VOLUME_BLUETOOTH_SCO;
-    (*array)[25] = ISettingsSystem::VOLUME_VOICE + ISettingsSystem::APPEND_FOR_LAST_AUDIBLE;
-    (*array)[26] = ISettingsSystem::VOLUME_SYSTEM + ISettingsSystem::APPEND_FOR_LAST_AUDIBLE;
-    (*array)[27] = ISettingsSystem::VOLUME_RING + ISettingsSystem::APPEND_FOR_LAST_AUDIBLE;
-    (*array)[28] = ISettingsSystem::VOLUME_MUSIC + ISettingsSystem::APPEND_FOR_LAST_AUDIBLE;
-    (*array)[29] = ISettingsSystem::VOLUME_ALARM + ISettingsSystem::APPEND_FOR_LAST_AUDIBLE;
-    (*array)[30] = ISettingsSystem::VOLUME_NOTIFICATION + ISettingsSystem::APPEND_FOR_LAST_AUDIBLE;
-    (*array)[31] = ISettingsSystem::VOLUME_BLUETOOTH_SCO + ISettingsSystem::APPEND_FOR_LAST_AUDIBLE;
-    (*array)[32] = ISettingsSystem::TEXT_AUTO_REPLACE;
-    (*array)[33] = ISettingsSystem::TEXT_AUTO_CAPS;
-    (*array)[34] = ISettingsSystem::TEXT_AUTO_PUNCTUATE;
-    (*array)[35] = ISettingsSystem::TEXT_SHOW_PASSWORD;
-    (*array)[36] = ISettingsSystem::AUTO_TIME;                  // moved to globa;
-    (*array)[37] = ISettingsSystem::AUTO_TIME_ZONE;             // moved to globa;
-    (*array)[38] = ISettingsSystem::TIME_12_24;
-    (*array)[39] = ISettingsSystem::DATE_FORMAT;
-    (*array)[40] = ISettingsSystem::DTMF_TONE_WHEN_DIALING;
-    (*array)[41] = ISettingsSystem::DTMF_TONE_TYPE_WHEN_DIALING;
-    (*array)[42] = ISettingsSystem::HEARING_AID;
-    (*array)[43] = ISettingsSystem::TTY_MODE;
-    (*array)[44] = ISettingsSystem::SOUND_EFFECTS_ENABLED;
-    (*array)[45] = ISettingsSystem::HAPTIC_FEEDBACK_ENABLED;
-    (*array)[46] = ISettingsSystem::POWER_SOUNDS_ENABLED;       // moved to globa;
-    (*array)[47] = ISettingsSystem::DOCK_SOUNDS_ENABLED;        // moved to globa;
-    (*array)[48] = ISettingsSystem::LOCKSCREEN_SOUNDS_ENABLED;
-    (*array)[49] = ISettingsSystem::SHOW_WEB_SUGGESTIONS;
-    (*array)[50] = ISettingsSystem::NOTIFICATION_LIGHT_PULSE;
-    (*array)[51] = ISettingsSystem::SIP_CALL_OPTIONS;
-    (*array)[52] = ISettingsSystem::SIP_RECEIVE_CALLS;
-    (*array)[53] = ISettingsSystem::POINTER_SPEED;
-    (*array)[54] = ISettingsSystem::VIBRATE_WHEN_RINGING;
-    /* AW Code Begin */
-    (*array)[55] = ISettingsSystem::BRIGHT_SYSTEM_MODE;
-    (*array)[56] = ISettingsSystem::BRIGHTNESS_LIGHT_MODE;
-    (*array)[57] = ISettingsSystem::IS_SCAN_TF_CARD;
-    (*array)[58] = ISettingsSystem::DISPLAY_ADAPTION_MODE;
-    (*array)[59] = ISettingsSystem::DISPLAY_ADAPTION_ENABLE;
-    (*array)[60] = ISettingsSystem::SMART_BRIGHTNESS_ENABLE;
-    /* add by Gary. start {{----------------------------------- */
-    /* 2011-11-1 */
-    /* support shortcut keys with color keys for some specific websites and apps */
-    (*array)[61] = ISettingsSystem::SHORTCUT_KEY_0;
-    (*array)[62] = ISettingsSystem::SHORTCUT_KEY_1;
-    (*array)[63] = ISettingsSystem::SHORTCUT_KEY_2;
-    (*array)[64] = ISettingsSystem::SHORTCUT_KEY_3;
-    /* add by Gary. end   -----------------------------------}} */
-    (*array)[65] = ISettingsSystem::DISPLAY_ADAPTION_ENABLE;
-    /* add by Gary. start {{----------------------------------- */
-    /* 2011-12-6 */
-    /* adjust the display area */
-    (*array)[66] = ISettingsSystem::DISPLAY_AREA_RATIO;
-    /* add by Gary. end   -----------------------------------}} */
-
-    /* add by Gary. start {{----------------------------------- */
-    /* 2011-12-6 */
-    /* set gate for scaning usb host */
-    (*array)[67] = ISettingsSystem::IS_SCAN_USB_HOST;
-    /* add by Gary. end   -----------------------------------}} */
-    /* add by Gary. start {{----------------------------------- */
-    /* 2011-12-10 */
-    /* record the display format and the advance of the mouse in mouse mode */
-    (*array)[68] = ISettingsSystem::DISPLY_OUTPUT_FORMAT;
-    (*array)[69] = ISettingsSystem::MOUSE_ADVANCE;
-    /* add by Gary. end   -----------------------------------}} */
-
-    /* add by Gary. start {{----------------------------------- */
-    /* 2011-12-11 */
-    /* record the color parameters : brightness, contrast,and saturation */
-    (*array)[70] = ISettingsSystem::COLOR_BRIGHTNESS;
-    (*array)[71] = ISettingsSystem::COLOR_CONTRAST;
-    (*array)[72] = ISettingsSystem::COLOR_SATURATION;
-    /* add by Gary. end   -----------------------------------}} */
-
-    /* add by Gary. start {{----------------------------------- */
-    /* 2011-12-11 */
-    /* record the audio output type */
-    (*array)[73] = ISettingsSystem::AUDIO_OUTPUT_TYPE;
-    /* add by Gary. end   -----------------------------------}} */
-
-    /* add by Gary. start {{----------------------------------- */
-    /* 2012-2-27 */
-    /* record the audio output channel */
-    (*array)[74] = ISettingsSystem::AUDIO_OUTPUT_CHANNEL;
-    /* add by Gary. end   -----------------------------------}} */
-
-    /* add by Gary. start {{----------------------------------- */
-    /* 2011-12-17 */
-    /* directly power off when long press on the power key */
-    (*array)[75] = ISettingsSystem::DIRECTLY_POWER_OFF;
-    /* add by Gary. end   -----------------------------------}} */
-
-    /* add by Gary. start {{----------------------------------- */
-    /* 2012-4-27 */
-    /* add a switch to control BD folder play mode */
-    (*array)[76] = ISettingsSystem::BD_FOLDER_PLAY_MODE;
-    /* add by Gary. end   -----------------------------------}} */
-    (*array)[77] = ISettingsSystem::HDMI_OUTPUT_MODE;
-    /* AW Code Begin */
-    (*array)[78] = ISettingsSystem::BOOT_FAST_ENABLE;
-    (*array)[79] = ISettingsSystem::ENABLE_PASS_THROUGH;
+    (*array)[15] = ISettingsSystem::MODE_RINGER_STREAMS_AFFECTED;
+    (*array)[16] = ISettingsSystem::VOLUME_VOICE;
+    (*array)[17] = ISettingsSystem::VOLUME_SYSTEM;
+    (*array)[18] = ISettingsSystem::VOLUME_RING;
+    (*array)[19] = ISettingsSystem::VOLUME_MUSIC;
+    (*array)[20] = ISettingsSystem::VOLUME_ALARM;
+    (*array)[21] = ISettingsSystem::VOLUME_NOTIFICATION;
+    (*array)[22] = ISettingsSystem::VOLUME_BLUETOOTH_SCO;
+    (*array)[23] = ISettingsSystem::VOLUME_VOICE + ISettingsSystem::APPEND_FOR_LAST_AUDIBLE;
+    (*array)[24] = ISettingsSystem::VOLUME_SYSTEM + ISettingsSystem::APPEND_FOR_LAST_AUDIBLE;
+    (*array)[25] = ISettingsSystem::VOLUME_RING + ISettingsSystem::APPEND_FOR_LAST_AUDIBLE;
+    (*array)[26] = ISettingsSystem::VOLUME_MUSIC + ISettingsSystem::APPEND_FOR_LAST_AUDIBLE;
+    (*array)[27] = ISettingsSystem::VOLUME_ALARM + ISettingsSystem::APPEND_FOR_LAST_AUDIBLE;
+    (*array)[28] = ISettingsSystem::VOLUME_NOTIFICATION + ISettingsSystem::APPEND_FOR_LAST_AUDIBLE;
+    (*array)[29] = ISettingsSystem::VOLUME_BLUETOOTH_SCO + ISettingsSystem::APPEND_FOR_LAST_AUDIBLE;
+    (*array)[30] = ISettingsSystem::TEXT_AUTO_REPLACE;
+    (*array)[31] = ISettingsSystem::TEXT_AUTO_CAPS;
+    (*array)[32] = ISettingsSystem::TEXT_AUTO_PUNCTUATE;
+    (*array)[33] = ISettingsSystem::TEXT_SHOW_PASSWORD;
+    (*array)[34] = ISettingsSystem::AUTO_TIME;                  // moved to globa;
+    (*array)[35] = ISettingsSystem::AUTO_TIME_ZONE;             // moved to globa;
+    (*array)[36] = ISettingsSystem::TIME_12_24;
+    (*array)[37] = ISettingsSystem::DATE_FORMAT;
+    (*array)[38] = ISettingsSystem::DTMF_TONE_WHEN_DIALING;
+    (*array)[39] = ISettingsSystem::DTMF_TONE_TYPE_WHEN_DIALING;
+    (*array)[40] = ISettingsSystem::HEARING_AID;
+    (*array)[41] = ISettingsSystem::TTY_MODE;
+    (*array)[42] = ISettingsSystem::SOUND_EFFECTS_ENABLED;
+    (*array)[43] = ISettingsSystem::HAPTIC_FEEDBACK_ENABLED;
+    (*array)[44] = ISettingsSystem::POWER_SOUNDS_ENABLED;       // moved to globa;
+    (*array)[45] = ISettingsSystem::DOCK_SOUNDS_ENABLED;        // moved to globa;
+    (*array)[46] = ISettingsSystem::LOCKSCREEN_SOUNDS_ENABLED;
+    (*array)[47] = ISettingsSystem::SHOW_WEB_SUGGESTIONS;
+    (*array)[48] = ISettingsSystem::NOTIFICATION_LIGHT_PULSE;
+    (*array)[49] = ISettingsSystem::SIP_CALL_OPTIONS;
+    (*array)[50] = ISettingsSystem::SIP_RECEIVE_CALLS;
+    (*array)[51] = ISettingsSystem::POINTER_SPEED;
+    (*array)[52] = ISettingsSystem::VIBRATE_WHEN_RINGING;
+    (*array)[53] = ISettingsSystem::RINGTONE;
+    (*array)[54] = ISettingsSystem::NOTIFICATION_SOUND;
 
     return array;
 }
 
 const AutoPtr< ArrayOf<String> > Settings::System::SETTINGS_TO_BACKUP = InitSystemSettingsToBackup();
 
-void Settings::System::GetMovedKeys(
-    /* [in] */ IObjectContainer* outKeySet)
+ECode Settings::System::GetMovedKeys(
+    /* [in] */ IHashSet* outKeySet)
 {
-    HashSet<String>::Iterator it = MOVED_TO_GLOBAL.Begin();
-    for (; it != MOVED_TO_GLOBAL.End(); ++it) {
-        AutoPtr<ICharSequence> cs;
-        CString::New(*it, (ICharSequence**)&cs);
-        outKeySet->Add(cs);
-    }
-    for (it = MOVED_TO_SECURE_THEN_GLOBAL.Begin(); it != MOVED_TO_SECURE_THEN_GLOBAL.End(); ++it) {
-        AutoPtr<ICharSequence> cs;
-        CString::New(*it, (ICharSequence**)&cs);
-        outKeySet->Add(cs);
-    }
+    VALIDATE_NOT_NULL(outKeySet);
+    return outKeySet->AddAll(ICollection::Probe(Settings::System::MOVED_TO_GLOBAL));
 }
 
-void Settings::System::GetNonLegacyMovedKeys(
-    /* [in] */ IObjectContainer* outKeySet)
+ECode Settings::System::GetNonLegacyMovedKeys(
+    /* [in] */ IHashSet* outKeySet)
 {
-    HashSet<String>::Iterator it = MOVED_TO_GLOBAL.Begin();
-    for (; it != MOVED_TO_GLOBAL.End(); ++it) {
-        AutoPtr<ICharSequence> cs;
-        CString::New(*it, (ICharSequence**)&cs);
-        outKeySet->Add(cs);
-    }
+    VALIDATE_NOT_NULL(outKeySet);
+    return outKeySet->AddAll(ICollection::Probe(Settings::System::MOVED_TO_GLOBAL));
 }
 
 ECode Settings::System::GetString(
@@ -607,16 +565,22 @@ ECode Settings::System::GetStringForUser(
     /* [in] */ Int32 userHandle,
     /* [out] */ String* value)
 {
-    VALIDATE_NOT_NULL(value)
-    if (MOVED_TO_SECURE.Find(name) != MOVED_TO_SECURE.End()) {
+    VALIDATE_NOT_NULL(value);
+    Boolean flag = FALSE;
+    Settings::System::MOVED_TO_SECURE->Contains(CoreUtils::Convert(name), &flag);
+    if (flag) {
         Slogger::W(TAG, "Setting %s has moved from android.provider.Settings.System to android.provider.Settings.Secure, returning read-only value.", name.string());
         return Settings::Secure::GetStringForUser(resolver, name, userHandle, value);
     }
-    if (MOVED_TO_GLOBAL.Find(name) != MOVED_TO_GLOBAL.End() || MOVED_TO_SECURE_THEN_GLOBAL.Find(name) != MOVED_TO_SECURE_THEN_GLOBAL.End()) {
+
+    Boolean _flag = FALSE;
+    Settings::System::MOVED_TO_GLOBAL->Contains(CoreUtils::Convert(name), &flag);
+    Settings::System::MOVED_TO_SECURE_THEN_GLOBAL->Contains(CoreUtils::Convert(name), &_flag);
+
+    if (flag || _flag) {
         Slogger::W(TAG, "Setting %s has moved from android.provider.Settings.System to android.provider.Settings.Global, returning read-only value.", name.string());
         String str;
         FAIL_RETURN(Settings::Global::GetStringForUser(resolver, name, userHandle, &str))
-        Slogger::D(TAG, "now get:%s", str.string());
         *value = str;
         return NOERROR;
     }
@@ -640,13 +604,18 @@ ECode Settings::System::PutStringForUser(
     /* [in] */ Int32 userHandle,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result)
-    if (MOVED_TO_SECURE.Find(name) != MOVED_TO_SECURE.End()) {
+    VALIDATE_NOT_NULL(result);
+    Boolean flag = FALSE;
+    Settings::System::MOVED_TO_SECURE->Contains(CoreUtils::Convert(name), &flag);
+    if (flag) {
         Slogger::W(TAG, "Setting %s has moved from android.provider.Settings.System to android.provider.Settings.Secure, value is unchanged.", name.string());
         *result = FALSE;
         return NOERROR;
     }
-    if (MOVED_TO_GLOBAL.Find(name) != MOVED_TO_GLOBAL.End() || MOVED_TO_SECURE_THEN_GLOBAL.Find(name) != MOVED_TO_SECURE_THEN_GLOBAL.End()) {
+
+    Boolean _flag = FALSE;
+    Settings::System::MOVED_TO_SECURE_THEN_GLOBAL->Contains(CoreUtils::Convert(name), &_flag);
+    if (flag || _flag) {
         Slogger::W(TAG, "Setting %s has moved from android.provider.Settings.System to android.provider.Settings.Global, value is unchanged.", name.string());
         *result = FALSE;
         return NOERROR;
@@ -659,15 +628,20 @@ ECode Settings::System::GetUriFor(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri)
-    if (MOVED_TO_SECURE.Find(name) != MOVED_TO_SECURE.End()) {
+    Boolean flag = FALSE;
+    Settings::System::MOVED_TO_SECURE->Contains(CoreUtils::Convert(name), &flag);
+    if (flag) {
         Slogger::W(TAG, "Setting %s has moved from android.provider.Settings.System to android.provider.Settings.Secure, returning Secure URI.", name.string());
-        return Settings::Secure::GetUriFor(Settings::Secure::CONTENT_URI, name, uri);
+        return Settings::NameValueTable::GetUriFor(Settings::Secure::CONTENT_URI, name, uri);
     }
-    if (MOVED_TO_GLOBAL.Find(name) != MOVED_TO_GLOBAL.End() || MOVED_TO_SECURE_THEN_GLOBAL.Find(name) != MOVED_TO_SECURE_THEN_GLOBAL.End()) {
+    Settings::System::MOVED_TO_GLOBAL->Contains(CoreUtils::Convert(name), &flag);
+    Boolean _flag = FALSE;
+    Settings::System::MOVED_TO_SECURE_THEN_GLOBAL->Contains(CoreUtils::Convert(name), &_flag);
+    if (flag || _flag) {
         Slogger::W(TAG, "Setting %s has moved from android.provider.Settings.System to android.provider.Settings.Global, returning read-only global URI.", name.string());
-        return Settings::Global::GetUriFor(Settings::Global::CONTENT_URI, name, uri);
+        return Settings::NameValueTable::GetUriFor(Settings::Global::CONTENT_URI, name, uri);
     }
-    return GetUriFor(CONTENT_URI, name, uri);
+    return NameValueTable::GetUriFor(CONTENT_URI, name, uri);
 }
 
 ECode Settings::System::GetInt32(
@@ -694,10 +668,9 @@ ECode Settings::System::GetInt32ForUser(
     if (v.IsNull()) {
         *value = def;
         return NOERROR;
-    }
-    else {
-        Int32 _value;
-        if (FAILED(StringUtils::ParseInt32(v, &_value))) {
+    } else {
+        Int32 _value = StringUtils::ParseInt32(v);
+        if (value == 0) {
             *value = def;
             return NOERROR;
         }
@@ -727,10 +700,12 @@ ECode Settings::System::GetInt32ForUser(
     String v;
     FAIL_RETURN(GetStringForUser(cr, name, userHandle, &v))
     // try {
-    if (FAILED(StringUtils::ParseInt32(v, value))){
+    Int32 _value = StringUtils::ParseInt32(v);
+    if (_value == 0){
         *value = 0;
         return E_SETTING_NOT_FOUND_EXCEPTION;
     }
+    *value = _value;
     return NOERROR;
     // } catch (NumberFormatException e) {
     //     throw new SettingNotFoundException(name);
@@ -755,7 +730,7 @@ ECode Settings::System::PutInt32ForUser(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    return PutStringForUser(cr, name, StringUtils::Int32ToString(value), userHandle, result);
+    return PutStringForUser(cr, name, StringUtils::ToString(value), userHandle, result);
 }
 
 ECode Settings::System::GetInt64(
@@ -784,7 +759,8 @@ ECode Settings::System::GetInt64ForUser(
         _value = def;
     }
     else {
-        if (FAILED(StringUtils::ParseInt64(valString, &_value))) {
+        _value = StringUtils::ParseInt64(valString);
+        if (_value == 0) {
             _value = def;
         }
     }
@@ -814,9 +790,12 @@ ECode Settings::System::GetInt64ForUser(
     String valString;
     FAIL_RETURN(GetStringForUser(cr, name, userHandle, &valString))
     // try {
-    if (FAILED(StringUtils::ParseInt64(valString, value))) {
+    Int64 _value = StringUtils::ParseInt64(valString);
+
+    if (_value == 0) {
         return E_SETTING_NOT_FOUND_EXCEPTION;
     }
+    *value = _value;
     return NOERROR;
     // } catch (NumberFormatException e) {
     //     throw new SettingNotFoundException(name);
@@ -841,7 +820,7 @@ ECode Settings::System::PutInt64ForUser(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    return PutStringForUser(cr, name, StringUtils::Int64ToString(value), userHandle, result);
+    return PutStringForUser(cr, name, StringUtils::ToString(value), userHandle, result);
 }
 
 ECode Settings::System::GetFloat(
@@ -868,8 +847,8 @@ ECode Settings::System::GetFloatForUser(
         return NOERROR;
     }
     else {
-        Float _value;
-        if (FAILED(StringUtils::ParseFloat(v, &_value))) {
+        Float _value = StringUtils::ParseFloat(v);
+        if (_value == 0) {
             *value = def;
             return NOERROR;
         }
@@ -903,9 +882,11 @@ ECode Settings::System::GetFloatForUser(
         return E_SETTING_NOT_FOUND_EXCEPTION;
     }
     // try {
-    if (FAILED(StringUtils::ParseFloat(v, value))) {
+    Float _value = StringUtils::ParseFloat(v);
+    if (_value == 0) {
         return E_SETTING_NOT_FOUND_EXCEPTION;
     }
+    *value = _value;
     return NOERROR;
     // } catch (NumberFormatException e) {
     //     throw new SettingNotFoundException(name);
@@ -930,7 +911,7 @@ ECode Settings::System::PutFloatForUser(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    return PutStringForUser(cr, name, StringUtils::FloatToString(value), userHandle, result);
+    return PutStringForUser(cr, name, StringUtils::ToString(value), userHandle, result);
 }
 
 ECode Settings::System::GetConfiguration(
@@ -1025,17 +1006,6 @@ ECode Settings::System::SetShowGTalkServiceStatusForUser(
     return PutInt32ForUser(cr, ISettingsSystem::SHOW_GTALK_SERVICE_STATUS, flag ? 1 : 0, userHandle, &result);
 }
 
-String Settings::System::FindNameByKey(
-    /* [in] */ Int32 key)
-{
-    for (Int32 i = 0; i < sKeyShortcutInfoArray->GetLength(); i++) {
-        if ((*sKeyShortcutInfoArray)[i]->mKey == key)
-            return (*sKeyShortcutInfoArray)[i]->mName;
-    }
-
-    return String(NULL);
-}
-
 //================================================================================
 //              Settings::Secure
 //================================================================================
@@ -1071,24 +1041,33 @@ static AutoPtr< ArrayOf<String> > InitSecureSettingsToBackup()
     (*array)[12] = ISettingsSecure::TOUCH_EXPLORATION_ENABLED;
     (*array)[13] = ISettingsSecure::ACCESSIBILITY_ENABLED;
     (*array)[14] = ISettingsSecure::ACCESSIBILITY_SPEAK_PASSWORD;
-    (*array)[15] = ISettingsSecure::TTS_USE_DEFAULTS;
-    (*array)[16] = ISettingsSecure::TTS_DEFAULT_RATE;
-    (*array)[17] = ISettingsSecure::TTS_DEFAULT_PITCH;
-    (*array)[18] = ISettingsSecure::TTS_DEFAULT_SYNTH;
-    (*array)[19] = ISettingsSecure::TTS_DEFAULT_LANG;
-    (*array)[20] = ISettingsSecure::TTS_DEFAULT_COUNTRY;
-    (*array)[21] = ISettingsSecure::TTS_ENABLED_PLUGINS;
-    (*array)[22] = ISettingsSecure::TTS_DEFAULT_LOCALE;
-    (*array)[23] = ISettingsSecure::WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON;
-    (*array)[24] = ISettingsSecure::WIFI_NETWORKS_AVAILABLE_REPEAT_DELAY;
-    (*array)[25] = ISettingsSecure::WIFI_NUM_OPEN_NETWORKS_KEPT;
-    (*array)[26] = ISettingsSecure::MOUNT_PLAY_NOTIFICATION_SND;
-    (*array)[27] = ISettingsSecure::MOUNT_UMS_AUTOSTART;
-    (*array)[28] = ISettingsSecure::MOUNT_UMS_PROMPT;
-    (*array)[29] = ISettingsSecure::MOUNT_UMS_NOTIFY_ENABLED;
-    (*array)[30] = ISettingsSecure::UI_NIGHT_MODE;
-    (*array)[31] = ISettingsSecure::LOCK_SCREEN_OWNER_INFO;
-    (*array)[32] = ISettingsSecure::LOCK_SCREEN_OWNER_INFO_ENABLED;
+    (*array)[15] = ISettingsSecure::ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED;
+    (*array)[16] = ISettingsSecure::ACCESSIBILITY_CAPTIONING_ENABLED;
+    (*array)[17] = ISettingsSecure::ACCESSIBILITY_CAPTIONING_LOCALE;
+    (*array)[18] = ISettingsSecure::ACCESSIBILITY_CAPTIONING_BACKGROUND_COLOR;
+    (*array)[19] = ISettingsSecure::ACCESSIBILITY_CAPTIONING_FOREGROUND_COLOR;
+    (*array)[20] = ISettingsSecure::ACCESSIBILITY_CAPTIONING_EDGE_TYPE;
+    (*array)[21] = ISettingsSecure::ACCESSIBILITY_CAPTIONING_EDGE_COLOR;
+    (*array)[22] = ISettingsSecure::ACCESSIBILITY_CAPTIONING_TYPEFACE;
+    (*array)[23] = ISettingsSecure::ACCESSIBILITY_CAPTIONING_FONT_SCALE;
+    (*array)[24] = ISettingsSecure::TTS_USE_DEFAULTS;
+    (*array)[25] = ISettingsSecure::TTS_DEFAULT_RATE;
+    (*array)[26] = ISettingsSecure::TTS_DEFAULT_PITCH;
+    (*array)[27] = ISettingsSecure::TTS_DEFAULT_SYNTH;
+    (*array)[28] = ISettingsSecure::TTS_DEFAULT_LANG;
+    (*array)[29] = ISettingsSecure::TTS_DEFAULT_COUNTRY;
+    (*array)[30] = ISettingsSecure::TTS_ENABLED_PLUGINS;
+    (*array)[31] = ISettingsSecure::TTS_DEFAULT_LOCALE;
+    (*array)[32] = ISettingsSecure::WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON;
+    (*array)[33] = ISettingsSecure::WIFI_NETWORKS_AVAILABLE_REPEAT_DELAY;
+    (*array)[34] = ISettingsSecure::WIFI_NUM_OPEN_NETWORKS_KEPT;
+    (*array)[35] = ISettingsSecure::MOUNT_PLAY_NOTIFICATION_SND;
+    (*array)[36] = ISettingsSecure::MOUNT_UMS_AUTOSTART;
+    (*array)[37] = ISettingsSecure::MOUNT_UMS_PROMPT;
+    (*array)[38] = ISettingsSecure::MOUNT_UMS_NOTIFY_ENABLED;
+    (*array)[39] = ISettingsSecure::UI_NIGHT_MODE;
+    (*array)[40] = ISettingsSecure::SLEEP_TIMEOUT;
+
     return array;
 }
 const AutoPtr< ArrayOf<String> > Settings::Secure::SETTINGS_TO_BACKUP = InitSecureSettingsToBackup();
@@ -1096,158 +1075,178 @@ const AutoPtr< ArrayOf<String> > Settings::Secure::SETTINGS_TO_BACKUP = InitSecu
 const AutoPtr<Settings::NameValueCache> Settings::Secure::sNameValueCache = new Settings::NameValueCache(
         ISettingsSecure::SYS_PROP_SETTING_VERSION, CONTENT_URI, ISettings::CALL_METHOD_GET_SECURE, ISettings::CALL_METHOD_PUT_SECURE);
 
-AutoPtr<ILockSettings> Settings::Secure::sLockSettings;
+AutoPtr<IILockSettings> Settings::Secure::sLockSettings;
 Boolean Settings::Secure::sIsSystemProcess = FALSE;
 
-HashSet<String> Settings::Secure::MOVED_TO_LOCK_SETTINGS(3);
-HashSet<String> Settings::Secure::MOVED_TO_GLOBAL;
-
-Boolean Settings::Secure::InitHashSet()
+static AutoPtr<IHashSet> InitSecureMOVED_TO_LOCK_SETTINGS()
 {
-    MOVED_TO_LOCK_SETTINGS.Insert(ISettingsSecure::LOCK_PATTERN_ENABLED);
-    MOVED_TO_LOCK_SETTINGS.Insert(ISettingsSecure::LOCK_PATTERN_VISIBLE);
-    MOVED_TO_LOCK_SETTINGS.Insert(ISettingsSecure::LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED);
+    AutoPtr<IHashSet> hs;
+    assert(0 && "TODO");
+    // CHashSet::New(3, (IHashSet**)&hs);
 
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::ADB_ENABLED);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::ASSISTED_GPS_ENABLED);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::BLUETOOTH_ON);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::CDMA_CELL_BROADCAST_SMS);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::CDMA_ROAMING_MODE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::CDMA_SUBSCRIPTION_MODE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DATA_ACTIVITY_TIMEOUT_MOBILE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DATA_ACTIVITY_TIMEOUT_WIFI);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DATA_ROAMING);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DEVELOPMENT_SETTINGS_ENABLED);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DEVICE_PROVISIONED);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DISPLAY_DENSITY_FORCED);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DISPLAY_SIZE_FORCED);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DOWNLOAD_MAX_BYTES_OVER_MOBILE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DOWNLOAD_RECOMMENDED_MAX_BYTES_OVER_MOBILE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::INSTALL_NON_MARKET_APPS);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::MOBILE_DATA);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NETSTATS_DEV_BUCKET_DURATION);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NETSTATS_DEV_DELETE_AGE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NETSTATS_DEV_PERSIST_BYTES);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NETSTATS_DEV_ROTATE_AGE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NETSTATS_ENABLED);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NETSTATS_GLOBAL_ALERT_BYTES);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NETSTATS_POLL_INTERVAL);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NETSTATS_REPORT_XT_OVER_DEV);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NETSTATS_SAMPLE_ENABLED);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NETSTATS_TIME_CACHE_MAX_AGE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NETSTATS_UID_BUCKET_DURATION);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NETSTATS_UID_DELETE_AGE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NETSTATS_UID_PERSIST_BYTES);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NETSTATS_UID_ROTATE_AGE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NETSTATS_UID_TAG_BUCKET_DURATION);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NETSTATS_UID_TAG_DELETE_AGE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NETSTATS_UID_TAG_PERSIST_BYTES);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NETSTATS_UID_TAG_ROTATE_AGE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NETWORK_PREFERENCE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NITZ_UPDATE_DIFF);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NITZ_UPDATE_SPACING);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NTP_SERVER);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NTP_TIMEOUT);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::PDP_WATCHDOG_ERROR_POLL_COUNT);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::PDP_WATCHDOG_LONG_POLL_INTERVAL_MS);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::PDP_WATCHDOG_MAX_PDP_RESET_FAIL_COUNT);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::PDP_WATCHDOG_POLL_INTERVAL_MS);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::PDP_WATCHDOG_TRIGGER_PACKET_COUNT);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::SAMPLING_PROFILER_MS);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::SETUP_PREPAID_DATA_SERVICE_URL);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::SETUP_PREPAID_DETECTION_REDIR_HOST);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::SETUP_PREPAID_DETECTION_TARGET_URL);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::TETHER_DUN_APN);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::TETHER_DUN_REQUIRED);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::TETHER_SUPPORTED);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::THROTTLE_HELP_URI);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::THROTTLE_MAX_NTP_CACHE_AGE_SEC);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::THROTTLE_NOTIFICATION_TYPE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::THROTTLE_POLLING_SEC);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::THROTTLE_RESET_DAY);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::THROTTLE_THRESHOLD_BYTES);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::THROTTLE_VALUE_KBITSPS);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::USB_MASS_STORAGE_ENABLED);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::USE_GOOGLE_MAIL);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WEB_AUTOFILL_QUERY_URL);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WIFI_COUNTRY_CODE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WIFI_FRAMEWORK_SCAN_INTERVAL_MS);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WIFI_FREQUENCY_BAND);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WIFI_IDLE_MS);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WIFI_MAX_DHCP_RETRY_COUNT);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WIFI_MOBILE_DATA_TRANSITION_WAKELOCK_TIMEOUT_MS);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WIFI_NETWORKS_AVAILABLE_REPEAT_DELAY);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WIFI_NUM_OPEN_NETWORKS_KEPT);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WIFI_ON);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WIFI_P2P_DEVICE_NAME);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WIFI_SAVED_STATE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WIFI_SUPPLICANT_SCAN_INTERVAL_MS);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WIFI_SUSPEND_OPTIMIZATIONS_ENABLED);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WIFI_WATCHDOG_ON);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WIFI_WATCHDOG_POOR_NETWORK_TEST_ENABLED);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WIMAX_NETWORKS_AVAILABLE_NOTIFICATION_ON);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::PACKAGE_VERIFIER_ENABLE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::PACKAGE_VERIFIER_TIMEOUT);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::PACKAGE_VERIFIER_DEFAULT_RESPONSE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DATA_STALL_ALARM_NON_AGGRESSIVE_DELAY_IN_MS);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DATA_STALL_ALARM_AGGRESSIVE_DELAY_IN_MS);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::GPRS_REGISTER_CHECK_PERIOD_MS);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::WTF_IS_FATAL);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::BATTERY_DISCHARGE_DURATION_THRESHOLD);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::BATTERY_DISCHARGE_THRESHOLD);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::SEND_ACTION_APP_ERROR);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DROPBOX_AGE_SECONDS);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DROPBOX_MAX_FILES);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DROPBOX_QUOTA_KB);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DROPBOX_QUOTA_PERCENT);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DROPBOX_RESERVE_PERCENT);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DROPBOX_TAG_PREFIX);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::ERROR_LOGCAT_PREFIX);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::SYS_FREE_STORAGE_LOG_INTERVAL);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DISK_FREE_CHANGE_REPORTING_THRESHOLD);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::SYS_STORAGE_THRESHOLD_PERCENTAGE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::SYS_STORAGE_THRESHOLD_MAX_BYTES);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::SYS_STORAGE_FULL_THRESHOLD_BYTES);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::SYNC_MAX_RETRY_DELAY_IN_SECONDS);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::CONNECTIVITY_CHANGE_DELAY);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::CAPTIVE_PORTAL_DETECTION_ENABLED);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::CAPTIVE_PORTAL_SERVER);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::NSD_ON);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::SET_INSTALL_LOCATION);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DEFAULT_INSTALL_LOCATION);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::INET_CONDITION_DEBOUNCE_UP_DELAY);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::INET_CONDITION_DEBOUNCE_DOWN_DELAY);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::READ_EXTERNAL_STORAGE_ENFORCED_DEFAULT);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::HTTP_PROXY);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::GLOBAL_HTTP_PROXY_HOST);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::GLOBAL_HTTP_PROXY_PORT);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::GLOBAL_HTTP_PROXY_EXCLUSION_LIST);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::SET_GLOBAL_HTTP_PROXY);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::DEFAULT_DNS_SERVER);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::PREFERRED_NETWORK_MODE);
-    MOVED_TO_GLOBAL.Insert(ISettingsGlobal::PREFERRED_CDMA_SUBSCRIPTION);
-    return TRUE;
+    hs->Add(CoreUtils::Convert(ISettingsSecure::LOCK_PATTERN_ENABLED));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::LOCK_PATTERN_VISIBLE));
+    hs->Add(CoreUtils::Convert(ISettingsSecure::LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED));
+
+    return hs;
 }
-const Boolean Settings::Secure::sInited = Settings::Secure::InitHashSet();
-Mutex Settings::Secure::sSecureLock;
 
-const String Settings::Secure::PRIVACY_TAG("PM,SecureSettings");
-AutoPtr<IContext> Settings::Secure::sContext;
-AutoPtr<IPrivacySettingsManager> Settings::Secure::sPSetMan;
-Boolean Settings::Secure::sPrivacyMode = FALSE;
-AutoPtr<IIPackageManager> Settings::Secure::sPm;
+const AutoPtr<IHashSet> Settings::Secure::MOVED_TO_LOCK_SETTINGS = InitSecureMOVED_TO_LOCK_SETTINGS();
 
-void Settings::Secure::GetMovedKeys(
-    /* [in] */ IObjectContainer* outKeySet)
+static AutoPtr<IHashSet> initSecureMOVED_TO_GLOBAL()
 {
-    assert(outKeySet != NULL);
-    HashSet<String>::Iterator ator = MOVED_TO_GLOBAL.Begin();
-    for (; ator != MOVED_TO_GLOBAL.End(); ++ator) {
-        AutoPtr<ICharSequence> keyObj;
-        CString::New(*ator, (ICharSequence**)&keyObj);
-        outKeySet->Add(keyObj);
-    }
+    AutoPtr<IHashSet> hs;
+    assert(0 && "TODO");
+    // CHashSet::New((IHashSet**)&hs);
+
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::ADB_ENABLED));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::ASSISTED_GPS_ENABLED));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::BLUETOOTH_ON));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::BUGREPORT_IN_POWER_MENU));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::CDMA_CELL_BROADCAST_SMS));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::CDMA_ROAMING_MODE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::CDMA_SUBSCRIPTION_MODE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DATA_ACTIVITY_TIMEOUT_MOBILE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DATA_ACTIVITY_TIMEOUT_WIFI));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DATA_ROAMING));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DEVELOPMENT_SETTINGS_ENABLED));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DEVICE_PROVISIONED));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DISPLAY_DENSITY_FORCED));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DISPLAY_SIZE_FORCED));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DOWNLOAD_MAX_BYTES_OVER_MOBILE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DOWNLOAD_RECOMMENDED_MAX_BYTES_OVER_MOBILE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::MOBILE_DATA));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NETSTATS_DEV_BUCKET_DURATION));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NETSTATS_DEV_DELETE_AGE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NETSTATS_DEV_PERSIST_BYTES));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NETSTATS_DEV_ROTATE_AGE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NETSTATS_ENABLED));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NETSTATS_GLOBAL_ALERT_BYTES));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NETSTATS_POLL_INTERVAL));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NETSTATS_REPORT_XT_OVER_DEV));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NETSTATS_SAMPLE_ENABLED));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NETSTATS_TIME_CACHE_MAX_AGE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NETSTATS_UID_BUCKET_DURATION));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NETSTATS_UID_DELETE_AGE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NETSTATS_UID_PERSIST_BYTES));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NETSTATS_UID_ROTATE_AGE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NETSTATS_UID_TAG_BUCKET_DURATION));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NETSTATS_UID_TAG_DELETE_AGE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NETSTATS_UID_TAG_PERSIST_BYTES));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NETSTATS_UID_TAG_ROTATE_AGE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NETWORK_PREFERENCE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NITZ_UPDATE_DIFF));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NITZ_UPDATE_SPACING));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NTP_SERVER));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NTP_TIMEOUT));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::PDP_WATCHDOG_ERROR_POLL_COUNT));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::PDP_WATCHDOG_LONG_POLL_INTERVAL_MS));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::PDP_WATCHDOG_MAX_PDP_RESET_FAIL_COUNT));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::PDP_WATCHDOG_POLL_INTERVAL_MS));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::PDP_WATCHDOG_TRIGGER_PACKET_COUNT));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::SAMPLING_PROFILER_MS));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::SETUP_PREPAID_DATA_SERVICE_URL));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::SETUP_PREPAID_DETECTION_REDIR_HOST));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::SETUP_PREPAID_DETECTION_TARGET_URL));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::TETHER_DUN_APN));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::TETHER_DUN_REQUIRED));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::TETHER_SUPPORTED));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::USB_MASS_STORAGE_ENABLED));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::USE_GOOGLE_MAIL));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WIFI_COUNTRY_CODE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WIFI_FRAMEWORK_SCAN_INTERVAL_MS));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WIFI_FREQUENCY_BAND));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WIFI_IDLE_MS));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WIFI_MAX_DHCP_RETRY_COUNT));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WIFI_MOBILE_DATA_TRANSITION_WAKELOCK_TIMEOUT_MS));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WIFI_NETWORKS_AVAILABLE_REPEAT_DELAY));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WIFI_NUM_OPEN_NETWORKS_KEPT));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WIFI_ON));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WIFI_P2P_DEVICE_NAME));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WIFI_SAVED_STATE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WIFI_SUPPLICANT_SCAN_INTERVAL_MS));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WIFI_SUSPEND_OPTIMIZATIONS_ENABLED));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WIFI_ENHANCED_AUTO_JOIN));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WIFI_NETWORK_SHOW_RSSI));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WIFI_WATCHDOG_ON));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WIFI_WATCHDOG_POOR_NETWORK_TEST_ENABLED));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WIMAX_NETWORKS_AVAILABLE_NOTIFICATION_ON));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::PACKAGE_VERIFIER_ENABLE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::PACKAGE_VERIFIER_TIMEOUT));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::PACKAGE_VERIFIER_DEFAULT_RESPONSE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DATA_STALL_ALARM_NON_AGGRESSIVE_DELAY_IN_MS));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DATA_STALL_ALARM_AGGRESSIVE_DELAY_IN_MS));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::GPRS_REGISTER_CHECK_PERIOD_MS));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WTF_IS_FATAL));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::BATTERY_DISCHARGE_DURATION_THRESHOLD));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::BATTERY_DISCHARGE_THRESHOLD));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::SEND_ACTION_APP_ERROR));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DROPBOX_AGE_SECONDS));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DROPBOX_MAX_FILES));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DROPBOX_QUOTA_KB));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DROPBOX_QUOTA_PERCENT));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DROPBOX_RESERVE_PERCENT));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DROPBOX_TAG_PREFIX));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::ERROR_LOGCAT_PREFIX));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::SYS_FREE_STORAGE_LOG_INTERVAL));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DISK_FREE_CHANGE_REPORTING_THRESHOLD));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::SYS_STORAGE_THRESHOLD_PERCENTAGE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::SYS_STORAGE_THRESHOLD_MAX_BYTES));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::SYS_STORAGE_FULL_THRESHOLD_BYTES));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::SYNC_MAX_RETRY_DELAY_IN_SECONDS));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::CONNECTIVITY_CHANGE_DELAY));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::CAPTIVE_PORTAL_DETECTION_ENABLED));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::CAPTIVE_PORTAL_SERVER));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::NSD_ON));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::SET_INSTALL_LOCATION));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DEFAULT_INSTALL_LOCATION));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::INET_CONDITION_DEBOUNCE_UP_DELAY));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::INET_CONDITION_DEBOUNCE_DOWN_DELAY));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::READ_EXTERNAL_STORAGE_ENFORCED_DEFAULT));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::HTTP_PROXY));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::GLOBAL_HTTP_PROXY_HOST));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::GLOBAL_HTTP_PROXY_PORT));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::GLOBAL_HTTP_PROXY_EXCLUSION_LIST));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::SET_GLOBAL_HTTP_PROXY));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::DEFAULT_DNS_SERVER));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::PREFERRED_NETWORK_MODE));
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::WEBVIEW_DATA_REDUCTION_PROXY_KEY));
+
+    return hs;
+}
+
+const AutoPtr<IHashSet> Settings::Secure::MOVED_TO_GLOBAL = initSecureMOVED_TO_GLOBAL();
+
+static AutoPtr<ArrayOf<String> > initCLONE_TO_MANAGED_PROFILE()
+{
+    AutoPtr<ArrayOf<String> > args = ArrayOf<String>::Alloc(12);
+
+    (*args)[0] = ISettingsSecure::ACCESSIBILITY_ENABLED;
+    (*args)[1] = ISettingsSecure::ALLOW_MOCK_LOCATION;
+    (*args)[2] = ISettingsSecure::ALLOWED_GEOLOCATION_ORIGINS;
+    (*args)[3] = ISettingsSecure::DEFAULT_INPUT_METHOD;
+    (*args)[4] = ISettingsSecure::ENABLED_ACCESSIBILITY_SERVICES;
+    (*args)[5] = ISettingsSecure::ENABLED_INPUT_METHODS;
+    (*args)[6] = ISettingsSecure::LOCATION_MODE;
+    (*args)[7] = ISettingsSecure::LOCATION_PROVIDERS_ALLOWED;
+    (*args)[8] = ISettingsSecure::LOCK_SCREEN_ALLOW_PRIVATE_NOTIFICATIONS;
+    (*args)[9] = ISettingsSecure::SELECTED_INPUT_METHOD_SUBTYPE;
+    (*args)[10] = ISettingsSecure::SELECTED_SPELL_CHECKER;
+    (*args)[11] = ISettingsSecure::SELECTED_SPELL_CHECKER_SUBTYPE;
+
+    return args;
+}
+
+const AutoPtr<ArrayOf<String> > Settings::Secure::CLONE_TO_MANAGED_PROFILE = initCLONE_TO_MANAGED_PROFILE();
+
+Object Settings::Secure::sSecureLock;
+
+ECode Settings::Secure::GetMovedKeys(
+    /* [in] */ IHashSet* outKeySet)
+{
+    VALIDATE_NOT_NULL(outKeySet);
+    return outKeySet->AddAll(ICollection::Probe(Settings::Secure::MOVED_TO_GLOBAL));
 }
 
 ECode Settings::Secure::GetString(
@@ -1265,19 +1264,24 @@ ECode Settings::Secure::GetStringForUser(
     /* [in] */ Int32 userHandle,
     /* [out] */ String* value)
 {
-    if (MOVED_TO_GLOBAL.Find(name) != MOVED_TO_GLOBAL.End()) {
+    Boolean flag = FALSE;
+    Settings::Secure::MOVED_TO_GLOBAL->Contains(CoreUtils::Convert(name), &flag);
+    if (flag) {
         Slogger::W(TAG, "Setting %s has moved from android.provider.Settings.Secure to android.provider.Settings.Global.", name.string());
         return Settings::Global::GetStringForUser(resolver, name, userHandle, value);
     }
 
-    if (MOVED_TO_LOCK_SETTINGS.Find(name) != MOVED_TO_LOCK_SETTINGS.End()) {
-        {
-            AutoLock lock(sSecureLock);
+    Settings::Secure::MOVED_TO_LOCK_SETTINGS->Contains(CoreUtils::Convert(name), &flag);
+    if (flag) {
+        //TODO
+        // ISynchronize* sync = ISynchronize::Probe(sSecureLock);
+        // synchronized(sync)
+        // {
             if (sLockSettings == NULL) {
-                sLockSettings = (ILockSettings*)ServiceManager::GetService(String("lock_settings")).Get();
+                sLockSettings = (IILockSettings*)ServiceManager::GetService(String("lock_settings")).Get();
                 sIsSystemProcess = Process::MyUid() == IProcess::SYSTEM_UID;
             }
-        }
+        // }
         if (sLockSettings != NULL && !sIsSystemProcess) {
             // try {
             return sLockSettings->GetString(name, String("0"), userHandle, value);
@@ -1308,7 +1312,17 @@ ECode Settings::Secure::PutStringForUser(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    if (MOVED_TO_GLOBAL.Find(name) != MOVED_TO_GLOBAL.End()) {
+    if (ISettingsSecure::LOCATION_MODE.Equals(name)) {
+        // HACK ALERT: temporary hack to work around b/10491283.
+        // TODO: once b/10491283 fixed, remove this hack
+        Int32 iValue;
+        StringUtils::Parse(value, &iValue);
+        return SetLocationModeForUser(resolver, iValue, userHandle);
+    }
+
+    Boolean flag = FALSE;
+    Settings::Secure::MOVED_TO_GLOBAL->Contains(CoreUtils::Convert(name), &flag);
+    if (flag) {
         Slogger::W(TAG, "Setting %s has moved from android.provider.Settings.System to android.provider.Settings.Global", name.string());
         return Settings::Global::PutStringForUser(resolver, name, value, userHandle, result);
     }
@@ -1320,12 +1334,14 @@ ECode Settings::Secure::GetUriFor(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
-    if (MOVED_TO_GLOBAL.Find(name) != MOVED_TO_GLOBAL.End()) {
+    Boolean flag = FALSE;
+    Settings::Secure::MOVED_TO_GLOBAL->Contains(CoreUtils::Convert(name).Get(), &flag);
+    if (flag) {
         Slogger::W(TAG, "Setting %s has moved from android.provider.Settings.Secure to android.provider.Settings.Global, returning global URI.", name.string());
-        return Global::GetUriFor(Settings::Global::CONTENT_URI, name, uri);
+        return NameValueTable::GetUriFor(Settings::Global::CONTENT_URI, name, uri);
     }
 
-    return GetUriFor(CONTENT_URI, name, uri);
+    return NameValueTable::GetUriFor(CONTENT_URI, name, uri);
 }
 
 ECode Settings::Secure::GetInt32(
@@ -1346,16 +1362,23 @@ ECode Settings::Secure::GetInt32ForUser(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value)
+    if (ISettingsSecure::LOCATION_MODE.Equals(name)) {
+        // HACK ALERT: temporary hack to work around b/10491283.
+        // TODO: once b/10491283 fixed, remove this hack
+        return GetLocationModeForUser(cr, userHandle);
+    }
     String v;
     FAIL_RETURN(GetStringForUser(cr, name, userHandle, &v))
     // try {
     Int32 _value;
     if (v.IsNull()) {
         _value = def;
-    }
-    else {
-        if (FAILED(StringUtils::ParseInt32(v, &_value))) {
+        return NOERROR;
+    } else {
+        _value = StringUtils::ParseInt32(v);
+        if (_value == 0) {
             _value = def;
+            return NOERROR;
         }
     }
     *value = _value;
@@ -1380,13 +1403,20 @@ ECode Settings::Secure::GetInt32ForUser(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value)
+     if (ISettingsSecure::LOCATION_MODE.Equals(name)) {
+        // HACK ALERT: temporary hack to work around b/10491283.
+        // TODO: once b/10491283 fixed, remove this hack
+        return GetLocationModeForUser(cr, userHandle);
+    }
     *value = 0;
     String v;
     FAIL_RETURN(GetStringForUser(cr, name, userHandle, &v))
     // try {
-    if (FAILED(StringUtils::ParseInt32(v, value))) {
+    Int32 _value = StringUtils::ParseInt32(v);
+    if (_value == 0) {
         return E_SETTING_NOT_FOUND_EXCEPTION;
     }
+    *value = _value;
     return NOERROR;
     // } catch (NumberFormatException e) {
     //     throw new SettingNotFoundException(name);
@@ -1411,7 +1441,7 @@ ECode Settings::Secure::PutInt32ForUser(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    return PutStringForUser(cr, name, StringUtils::Int32ToString(value), userHandle, result);
+    return PutStringForUser(cr, name, StringUtils::ToString(value), userHandle, result);
 }
 
 ECode Settings::Secure::GetInt64(
@@ -1440,8 +1470,10 @@ ECode Settings::Secure::GetInt64ForUser(
         _value = def;
     }
     else {
-        if (FAILED(StringUtils::ParseInt64(valString, &_value))) {
+        _value = StringUtils::ParseInt64(valString);
+        if (_value == 0) {
             _value = def;
+            return NOERROR;
         }
     }
     *value = _value;
@@ -1470,9 +1502,11 @@ ECode Settings::Secure::GetInt64ForUser(
     String valString;
     FAIL_RETURN(GetStringForUser(cr, name, userHandle, &valString))
     // try {
-    if (FAILED(StringUtils::ParseInt64(valString, value))) {
+    Int64 _value = StringUtils::ParseInt64(valString);
+    if (_value == 0) {
         return E_SETTING_NOT_FOUND_EXCEPTION;
     }
+    *value = _value;
     return NOERROR;
     // } catch (NumberFormatException e) {
     //     throw new SettingNotFoundException(name);
@@ -1497,7 +1531,7 @@ ECode Settings::Secure::PutInt64ForUser(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    return PutStringForUser(cr, name, StringUtils::Int64ToString(value), userHandle, result);
+    return PutStringForUser(cr, name, StringUtils::ToString(value), userHandle, result);
 }
 
 ECode Settings::Secure::GetFloat(
@@ -1525,7 +1559,8 @@ ECode Settings::Secure::GetFloatForUser(
         _value = def;
     }
     else {
-        if (FAILED(StringUtils::ParseFloat(v, &_value))) {
+        _value = StringUtils::ParseFloat(v);
+        if (_value == 0) {
             _value = def;
         }
     }
@@ -1560,7 +1595,8 @@ ECode Settings::Secure::GetFloatForUser(
         // throw new SettingNotFoundException(name);
     }
     // try {
-    if (FAILED(StringUtils::ParseFloat(v, value))) {
+    Float _value = StringUtils::ParseFloat(v);
+    if (_value == 0) {
         return E_SETTING_NOT_FOUND_EXCEPTION;
     }
     return NOERROR;
@@ -1587,60 +1623,7 @@ ECode Settings::Secure::PutFloatForUser(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    return PutStringForUser(cr, name, StringUtils::FloatToString(value), userHandle, result);
-}
-
-AutoPtr< ArrayOf<String> > Settings::Secure::GetPackageName()
-{
-    // try{
-    AutoPtr< ArrayOf<String> > package_names;
-    if(sPm != NULL){
-        Int32 uid = Process::MyUid();
-        if (FAILED(sPm->GetPackagesForUid(uid, (ArrayOf<String>**)&package_names))) {
-            Slogger::E(PRIVACY_TAG, "something went wrong with getting package name");
-            return NULL;
-        }
-    }
-    else{
-        //todo: for java compatible
-        // mPm = IPackageManager.Stub.asInterface(ServiceManager.getService("package"));
-        sPm = (IIPackageManager*)ServiceManager::GetService(String("package")).Get();
-        Int32 uid = Process::MyUid();
-        if (FAILED(sPm->GetPackagesForUid(uid, (ArrayOf<String>**)&package_names))) {
-            Slogger::E(PRIVACY_TAG, "something went wrong with getting package name");
-            return NULL;
-        }
-    }
-    return package_names;
-    // }
-    // catch(Exception e){
-    //     e.printStackTrace();
-    //     Log.e(PRIVACY_TAG,"something went wrong with getting package name");
-    //     return null;
-    // }
-}
-
-void Settings::Secure::Initiate()
-{
-    // try{
-    sContext = NULL;
-    // pSetMan = new PrivacySettingsManager(context, IPrivacySettingsManager.Stub.asInterface(ServiceManager.getService("privacy")));
-    //todo: for java compatible
-    AutoPtr<IIPrivacySettingsManager> service = (IIPrivacySettingsManager*)ServiceManager::GetService(String("privacy")).Get();
-    if (FAILED(CPrivacySettingsManager::New(sContext, service, (IPrivacySettingsManager**)&sPSetMan))) {
-        Slogger::E(PRIVACY_TAG, "Something went wrong with initalize variables");
-        sPrivacyMode = FALSE;
-        return;
-    }
-    // mPm = IPackageManager.Stub.asInterface(ServiceManager.getService("package"));
-    sPm = (IIPackageManager*)ServiceManager::GetService(String("package")).Get();
-    sPrivacyMode = TRUE;
-    // }
-    // catch(Exception e){
-    //     e.printStackTrace();
-    //     Log.e(PRIVACY_TAG, "Something went wrong with initalize variables");
-    //     privacyMode = false;
-    // }
+    return PutStringForUser(cr, name, StringUtils::ToString(value), userHandle, result);
 }
 
 ECode Settings::Secure::IsLocationProviderEnabled(
@@ -1670,27 +1653,95 @@ ECode Settings::Secure::SetLocationProviderEnabled(
     /* [in] */ const String& provider,
     /* [in] */ Boolean enabled)
 {
-    return SetLocationProviderEnabledForUser(cr, provider, enabled, UserHandle::GetMyUserId());
+    Boolean ret = FALSE;
+    return SetLocationProviderEnabledForUser(cr, provider, enabled, UserHandle::GetMyUserId(), &ret);
 }
 
 ECode Settings::Secure::SetLocationProviderEnabledForUser(
     /* [in] */ IContentResolver* cr,
     /* [in] */ const String& _provider,
     /* [in] */ Boolean enabled,
-    /* [in] */ Int32 userId)
+    /* [in] */ Int32 userId,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // to ensure thread safety, we write the provider name with a '+' or '-'
     // and let the SettingsProvider handle it rather than reading and modifying
     // the list of enabled providers.
     String provider;
-    if (enabled) {
-        provider = String("+") + _provider;
-    }
-    else {
-        provider = String("-") + _provider;
-    }
-    Boolean result;
-    return PutStringForUser(cr, ISettingsSecure::LOCATION_PROVIDERS_ALLOWED, provider, userId, &result);
+    //TODO
+    // ISynchronize* sync = ISynchronize::Probe(mLocationSettingsLock);
+    // synchronized(sync) {
+        if (enabled) {
+            provider = String("+") + _provider;
+        } else {
+            provider = String("-") + _provider;
+        }
+    // }
+
+    return PutStringForUser(cr, ISettingsSecure::LOCATION_PROVIDERS_ALLOWED, provider, userId, result);
+}
+
+Boolean Settings::Secure::SetLocationModeForUser(
+    /* [in] */ IContentResolver* cr,
+    /* [in] */ Int32 mode,
+    /* [in] */ Int32 userId)
+{
+    //TODO
+    // ISynchronize* sync = ISynchronize::Probe(mLocationSettingsLock);
+    // synchronized(sync) {
+        Boolean gps = FALSE;
+        Boolean network = FALSE;
+        switch (mode) {
+            case ISettingsSecure::LOCATION_MODE_OFF:
+                break;
+            case ISettingsSecure::LOCATION_MODE_SENSORS_ONLY:
+                gps = TRUE;
+                break;
+            case ISettingsSecure::LOCATION_MODE_BATTERY_SAVING:
+                network = TRUE;
+                break;
+            case ISettingsSecure::LOCATION_MODE_HIGH_ACCURACY:
+                gps = TRUE;
+                network = TRUE;
+                break;
+            default:
+                Slogger::E("Settings::Secure", "Invalid location mode: %d" + mode);
+                return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        Boolean gpsSuccess = FALSE;
+        Settings::Secure::SetLocationProviderEnabledForUser(
+            cr, ILocationManager::GPS_PROVIDER, gps, userId, &gpsSuccess);
+        Boolean nlpSuccess = FALSE;
+        Settings::Secure::SetLocationProviderEnabledForUser(
+            cr, ILocationManager::NETWORK_PROVIDER, network, userId, &nlpSuccess);
+        return gpsSuccess && nlpSuccess;
+    // }
+}
+
+Int32 Settings::Secure::GetLocationModeForUser(
+    /* [in] */ IContentResolver* cr,
+    /* [in] */ Int32 userId)
+{
+    //TODO
+    // ISynchronize* sync = ISynchronize::Probe(mLocationSettingsLock);
+    // synchronized(sync) {
+        Boolean gpsEnabled = FALSE;
+        Settings::Secure::IsLocationProviderEnabledForUser(
+            cr, ILocationManager::GPS_PROVIDER, userId, &gpsEnabled);
+        Boolean networkEnabled = FALSE;
+        Settings::Secure::IsLocationProviderEnabledForUser(
+            cr, ILocationManager::NETWORK_PROVIDER, userId, &networkEnabled);
+        if (gpsEnabled && networkEnabled) {
+            return ISettingsSecure::LOCATION_MODE_HIGH_ACCURACY;
+        } else if (gpsEnabled) {
+            return ISettingsSecure::LOCATION_MODE_SENSORS_ONLY;
+        } else if (networkEnabled) {
+            return ISettingsSecure::LOCATION_MODE_BATTERY_SAVING;
+        } else {
+            return ISettingsSecure::LOCATION_MODE_OFF;
+        }
+    // }
 }
 
 //================================================================================
@@ -1710,8 +1761,8 @@ const AutoPtr<IUri> Settings::Global::CONTENT_URI = InitGlobalCONTENTURI();
 static AutoPtr< ArrayOf<String> > InitGlobalSettingsToBackup()
 {
     AutoPtr< ArrayOf<String> > array = ArrayOf<String>::Alloc(15);
-    (*array)[0] = ISettingsGlobal::STAY_ON_WHILE_PLUGGED_IN;
-    (*array)[1] = ISettingsGlobal::MODE_RINGER;
+    (*array)[0] = ISettingsGlobal::BUGREPORT_IN_POWER_MENU;
+    (*array)[1] = ISettingsGlobal::STAY_ON_WHILE_PLUGGED_IN;
     (*array)[2] = ISettingsGlobal::AUTO_TIME;
     (*array)[3] = ISettingsGlobal::AUTO_TIME_ZONE;
     (*array)[4] = ISettingsGlobal::POWER_SOUNDS_ENABLED;
@@ -1733,22 +1784,71 @@ const AutoPtr<Settings::NameValueCache> Settings::Global::sNameValueCache = new 
         ISettingsGlobal::SYS_PROP_SETTING_VERSION, CONTENT_URI,
         ISettings::CALL_METHOD_GET_GLOBAL, ISettings::CALL_METHOD_PUT_GLOBAL);
 
+static AutoPtr<IHashSet> initGlobalMOVED_TO_SECURE()
+{
+    AutoPtr<IHashSet> hs;
+    assert(0 && "TODO");
+    // CHashSet::New(1, (IHashSet**)&hs);
+    hs->Add(CoreUtils::Convert(ISettingsGlobal::INSTALL_NON_MARKET_APPS).Get());
+}
+
+const AutoPtr<IHashSet> Settings::Global::MOVED_TO_SECURE = initGlobalMOVED_TO_SECURE();
+
+static AutoPtr<ArrayOf<String> > initGloabalMULTI_SIM_USER_PREFERRED_SUBS()
+{
+    AutoPtr<ArrayOf<String> > str = ArrayOf<String>::Alloc(3);
+    (*str)[0] = String("user_preferred_sub1");
+    (*str)[1] = String("user_preferred_sub2");
+    (*str)[2] = String("user_preferred_sub3");
+    return str;
+}
+
+const AutoPtr<ArrayOf<String> > Settings::Global::MULTI_SIM_USER_PREFERRED_SUBS =
+    initGloabalMULTI_SIM_USER_PREFERRED_SUBS();
+
+ECode Settings::Global::ZenModeToString(
+    /* [in] */ Int32 mode,
+    /* [out] */ String* key)
+{
+    VALIDATE_NOT_NULL(key);
+    if (mode == ISettingsGlobal::ZEN_MODE_IMPORTANT_INTERRUPTIONS) {
+        *key = String("ZEN_MODE_IMPORTANT_INTERRUPTIONS");
+        return NOERROR;
+    }
+
+    if (mode == ISettingsGlobal::ZEN_MODE_NO_INTERRUPTIONS) {
+        *key = String("ZEN_MODE_NO_INTERRUPTIONS");
+        return NOERROR;
+    }
+    *key = String("ZEN_MODE_OFF");
+    return NOERROR;
+}
+
+ECode Settings::Global::GetBluetoothMapPriorityKey(
+    /* [in] */ const String& address,
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = ISettingsGlobal::BLUETOOTH_INPUT_DEVICE_PRIORITY_PREFIX + address.ToUpperCase(/*Locale.ROOT*/);
+    return NOERROR;
+}
+
 String Settings::Global::GetBluetoothHeadsetPriorityKey(
     /* [in] */ const String& address)
 {
-    return ISettingsGlobal::BLUETOOTH_HEADSET_PRIORITY_PREFIX + address.ToUpperCase();
+    return ISettingsGlobal::BLUETOOTH_HEADSET_PRIORITY_PREFIX + address.ToUpperCase(/*Locale.ROOT*/);
 }
 
 String Settings::Global::GetBluetoothA2dpSinkPriorityKey(
     /* [in] */ const String& address)
 {
-    return ISettingsGlobal::BLUETOOTH_A2DP_SINK_PRIORITY_PREFIX + address.ToUpperCase();
+    return ISettingsGlobal::BLUETOOTH_A2DP_SINK_PRIORITY_PREFIX + address.ToUpperCase(/*Locale.ROOT*/);
 }
 
 String Settings::Global::GetBluetoothInputDevicePriorityKey(
     /* [in] */ const String& address)
 {
-    return ISettingsGlobal::BLUETOOTH_INPUT_DEVICE_PRIORITY_PREFIX + address.ToUpperCase();
+    return ISettingsGlobal::BLUETOOTH_INPUT_DEVICE_PRIORITY_PREFIX + address.ToUpperCase(/*Locale.ROOT*/);
 }
 
 ECode Settings::Global::GetString(
@@ -1766,7 +1866,13 @@ ECode Settings::Global::GetStringForUser(
     /* [in] */ Int32 userHandle,
     /* [out] */ String* value)
 {
-    VALIDATE_NOT_NULL(value)
+    VALIDATE_NOT_NULL(value);
+    Boolean flag = FALSE;
+    MOVED_TO_SECURE->Contains(CoreUtils::Convert(name).Get(), &flag);
+    if (flag) {
+        Slogger::W(TAG, "Setting %s has moved from android.provider.Settings.Global to android.provider.Settings.Secure, returning read-only value.", name.string());
+        return Settings::Secure::GetStringForUser(resolver, name, userHandle, value);
+    }
     return sNameValueCache->GetStringForUser(resolver, name, userHandle, value);
 }
 
@@ -1799,7 +1905,7 @@ ECode Settings::Global::GetUriFor(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri)
-    return GetUriFor(CONTENT_URI, name, uri);
+    return NameValueTable::GetUriFor(CONTENT_URI, name, uri);
 }
 
 ECode Settings::Global::GetInt32(
@@ -1815,9 +1921,9 @@ ECode Settings::Global::GetInt32(
     Int32 _value;
     if (v.IsNull()) {
         _value = def;
-    }
-    else {
-        if (FAILED(StringUtils::ParseInt32(v, &_value))) {
+    } else {
+        _value = StringUtils::ParseInt32(v);
+        if (_value == 0) {
             _value = def;
         }
     }
@@ -1838,9 +1944,11 @@ ECode Settings::Global::GetInt32(
     String v;
     FAIL_RETURN(GetString(cr, name, &v))
     // try {
-    if (FAILED(StringUtils::ParseInt32(v, value))) {
+    Int32 _value = StringUtils::ParseInt32(v);
+    if (_value == 0) {
         return E_SETTING_NOT_FOUND_EXCEPTION;
     }
+    *value = _value;
     return NOERROR;
     // } catch (NumberFormatException e) {
     //     throw new SettingNotFoundException(name);
@@ -1854,7 +1962,7 @@ ECode Settings::Global::PutInt32(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    return PutString(cr, name, StringUtils::Int32ToString(value), result);
+    return PutString(cr, name, StringUtils::ToString(value), result);
 }
 
 ECode Settings::Global::GetInt64(
@@ -1872,7 +1980,8 @@ ECode Settings::Global::GetInt64(
         _value = def;
     }
     else {
-        if (FAILED(StringUtils::ParseInt64(valString, &_value))) {
+        _value = StringUtils::ParseInt64(valString);
+        if (_value == 0) {
             _value = def;
         }
     }
@@ -1893,9 +2002,11 @@ ECode Settings::Global::GetInt64(
     String valString;
     FAIL_RETURN(GetString(cr, name, &valString))
     // try {
-    if (FAILED(StringUtils::ParseInt64(valString, value))) {
+    Int64 _value = StringUtils::ParseInt64(valString);
+    if (_value == 0) {
         return E_SETTING_NOT_FOUND_EXCEPTION;
     }
+    *value = _value;
     return NOERROR;
     // } catch (NumberFormatException e) {
     //     throw new SettingNotFoundException(name);
@@ -1909,7 +2020,7 @@ ECode Settings::Global::PutInt64(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    return PutString(cr, name, StringUtils::Int64ToString(value), result);
+    return PutString(cr, name, StringUtils::ToString(value), result);
 }
 
 ECode Settings::Global::GetFloat(
@@ -1925,9 +2036,9 @@ ECode Settings::Global::GetFloat(
     Float _value;
     if (v.IsNull()) {
         _value = def;
-    }
-    else {
-        if (FAILED(StringUtils::ParseFloat(v, &_value))) {
+    } else {
+        _value = StringUtils::ParseFloat(v);
+        if (_value = 0) {
             _value = def;
         }
     }
@@ -1952,9 +2063,11 @@ ECode Settings::Global::GetFloat(
         // throw new SettingNotFoundException(name);
     }
     // try {
-    if (FAILED(StringUtils::ParseFloat(v, value))) {
+    Float _value = StringUtils::ParseFloat(v);
+    if (_value == 0) {
         return E_SETTING_NOT_FOUND_EXCEPTION;
     }
+    *value = _value;
     return NOERROR;
     // } catch (NumberFormatException e) {
     //     throw new SettingNotFoundException(name);
@@ -1968,7 +2081,7 @@ ECode Settings::Global::PutFloat(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    return PutString(cr, name, StringUtils::FloatToString(value), result);
+    return PutString(cr, name, StringUtils::ToString(value), result);
 }
 
 //================================================================================
@@ -2046,7 +2159,8 @@ ECode Settings::Bookmarks::GetIntentForShortcut(
     //     if (c != null) c.close();
     // }
     if (c != NULL) {
-        c->Close();
+        assert(0 && "TODO");
+        // c->Close();
     }
     *intent = _intent;
     REFCOUNT_ADD(*intent)
@@ -2075,31 +2189,21 @@ ECode Settings::Bookmarks::Add(
     AutoPtr<IContentValues> values;
     CContentValues::New((IContentValues**)&values);
     if (!title.IsNull()) {
-        AutoPtr<ICharSequence> cs;
-        CString::New(title, (ICharSequence**)&cs);
-        values->PutString(ISettingsBookmarks::TITLE, cs);
+        values->Put(ISettingsBookmarks::TITLE, title);
     }
     if (!folder.IsNull()) {
-        AutoPtr<ICharSequence> cs;
-        CString::New(folder, (ICharSequence**)&cs);
-        values->PutString(ISettingsBookmarks::FOLDER, cs);
+        values->Put(ISettingsBookmarks::FOLDER, folder);
     }
 
     String str;
     intent->ToUri(0, &str);
-    AutoPtr<ICharSequence> cs;
-    CString::New(str, (ICharSequence**)&cs);
-    values->PutString(ISettingsBookmarks::INTENT, cs);
+    values->Put(ISettingsBookmarks::INTENT, str);
 
     if (shortcut != 0) {
-        AutoPtr<IInteger32> integer;
-        CInteger32::New((Int32)shortcut, (IInteger32**)&integer);
-        values->PutInt32(ISettingsBookmarks::SHORTCUT, integer);
+        values->Put(ISettingsBookmarks::SHORTCUT, (Int32)shortcut);
     }
 
-    AutoPtr<IInteger32> integer;
-    CInteger32::New(ordering, (IInteger32**)&integer);
-    values->PutInt32(ISettingsBookmarks::ORDERING, integer);
+    values->Put(ISettingsBookmarks::ORDERING, ordering);
     return cr->Insert(CONTENT_URI, values, uri);
 }
 
@@ -2183,7 +2287,7 @@ ECode Settings::Bookmarks::GetTitle(
 String Settings::GetGTalkDeviceId(
     /* [in] */ Int64 androidId)
 {
-    return String("android-") + StringUtils::Int64ToHexString(androidId);
+    return String("android-") + StringUtils::ToHexString(androidId);
 }
 
 } //namespace Provider

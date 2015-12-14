@@ -1,20 +1,30 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTACTMETHODS_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTACTMETHODS_H__
 
 #include "_Elastos_Droid_Provider_CContactsContactMethods.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Core::ICharSequence;
-using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Net::IUri;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
 CarClass(CContactsContactMethods)
+    , public Object
+    , public IContactsContactMethods
+    , public IBaseColumns
+    , public IContactsContactMethodsColumns
+    , public IContactsPeopleColumns
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     /**
      * The content:// style URL for this table
      * @deprecated see {@link android.provider.ContactsContract}

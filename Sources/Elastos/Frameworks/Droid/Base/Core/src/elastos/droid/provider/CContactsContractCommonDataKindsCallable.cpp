@@ -1,7 +1,6 @@
-
+#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/CContactsContractCommonDataKindsCallable.h"
 #include "elastos/droid/provider/ContactsContractData.h"
-#include "elastos/droid/net/Uri.h"
 
 using Elastos::Droid::Net::Uri;
 
@@ -9,10 +8,12 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsContractCommonDataKindsCallable::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CContactsContractCommonDataKindsCallable)
+
+CAR_INTERFACE_IMPL_3(CContactsContractCommonDataKindsCallable, Singleton
+    , IContactsContractCommonDataKindsCallable
+    , IContactsContractDataColumnsWithJoins
+    , IContactsContractCommonDataKindsCommonColumns)
 
 ECode CContactsContractCommonDataKindsCallable::GetCONTENT_URI(
     /* [out] */ IUri** uri)

@@ -1,9 +1,10 @@
-
+#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/ContactsContractProfile.h"
 #include "elastos/droid/provider/ContactsContract.h"
-#include "elastos/droid/net/Uri.h"
+#include <elastos/core/Math.h>
 
 using Elastos::Droid::Net::Uri;
+using Elastos::Core::Math;
 
 namespace Elastos {
 namespace Droid {
@@ -13,10 +14,7 @@ ECode ContactsContractProfile::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
-
-    AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
-    return Uri::WithAppendedPath(auUri, String("profile"), uri);
+    return Uri::WithAppendedPath(ContactsContract::AUTHORITY_URI.Get(), String("profile"), uri);
 }
 
 ECode ContactsContractProfile::GetCONTENT_VCARD_URI(
@@ -45,7 +43,7 @@ ECode ContactsContractProfile::GetMINID(
 {
     VALIDATE_NOT_NULL(id);
 
-    *id = 0x7FFFFFFFFFFFFFFFL/*Long.MAX_VALUE*/ - (Int64) 0x7FFFFFFF/*Integer.MAX_VALUE*/;
+    *id = Elastos::Core::Math::INT64_MAX_VALUE - (Int64)Elastos::Core::Math::INT32_MAX_VALUE;
     return NOERROR;
 }
 

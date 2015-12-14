@@ -1,41 +1,40 @@
-
+#include "elastos/droid/app/CPendingIntentHelper.h"
+#include "elastos/droid/content/CContentUris.h"
+#include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/CCalendarContractCalendarAlerts.h"
 #include "elastos/droid/provider/CalendarContract.h"
-#include "elastos/droid/content/CContentValues.h"
-#include "elastos/droid/content/CContentUris.h"
-#include "elastos/droid/content/CIntent.h"
-#include "elastos/droid/text/format/DateUtils.h"
 #include "elastos/droid/text/format/CTime.h"
-#include "elastos/droid/app/CPendingIntentHelper.h"
-#include "elastos/droid/net/Uri.h"
-#include <elastos/core/StringUtils.h>
-#include <elastos/core/StringBuilder.h>
+#include "elastos/droid/text/format/DateUtils.h"
 #include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
-using Elastos::Core::StringBuilder;
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Core::StringUtils;
-using Elastos::Core::ISystem;
-using Elastos::Core::CSystem;
-using Elastos::Core::IInteger64;
-using Elastos::Core::CInteger64;
-using Elastos::Core::IInteger32;
-using Elastos::Core::CInteger32;
-using Elastos::Core::CString;
-using Elastos::Droid::Net::Uri;
+using Elastos::Droid::App::CPendingIntentHelper;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::App::IPendingIntentHelper;
-using Elastos::Droid::App::CPendingIntentHelper;
-using Elastos::Droid::Content::IContentUris;
 using Elastos::Droid::Content::CContentUris;
-using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::CIntent;
-using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Content::CContentValues;
+using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::IContentUris;
+using Elastos::Droid::Content::IContentValues;
+using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Database::ICursor;
-using Elastos::Droid::Text::Format::ITime;
+using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Text::Format::CTime;
+using Elastos::Droid::Text::Format::ITime;
 using Elastos::Droid::Text::Format::IDateUtils;
+using Elastos::Utility::Logging::Slogger;
+using Elastos::Core::CInteger32;
+using Elastos::Core::CInteger64;
+using Elastos::Core::CString;
+using Elastos::Core::CSystem;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::Core::IInteger32;
+using Elastos::Core::IInteger64;
+using Elastos::Core::ISystem;
 
 namespace Elastos {
 namespace Droid {
@@ -47,16 +46,20 @@ const String CCalendarContractCalendarAlerts::WHERE_ALARM_EXISTS = ICalendarCont
 const String CCalendarContractCalendarAlerts::WHERE_FINDNEXTALARMTIME = ICalendarContractCalendarAlertsColumns::ALARM_TIME + String(">=?");
 const String CCalendarContractCalendarAlerts::SORT_ORDER_ALARMTIME_ASC = ICalendarContractCalendarAlertsColumns::ALARM_TIME + String(" ASC");
 const String CCalendarContractCalendarAlerts::WHERE_RESCHEDULE_MISSED_ALARMS = ICalendarContractCalendarAlertsColumns::STATE + String("=")
-                + StringUtils::Int32ToString(ICalendarContractCalendarAlertsColumns::STATE_SCHEDULED)
+                + StringUtils::ToString(ICalendarContractCalendarAlertsColumns::STATE_SCHEDULED)
                 + String(" AND ") + ICalendarContractCalendarAlertsColumns::ALARM_TIME + String("<?")
                 + String(" AND ") + ICalendarContractCalendarAlertsColumns::ALARM_TIME + String(">?")
                 + String(" AND ") + END + String(">=?");
 const Boolean CCalendarContractCalendarAlerts::DEBUG = FALSE;
 
-ECode CCalendarContractCalendarAlerts::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CCalendarContractCalendarAlerts)
+
+CAR_INTERFACE_IMPL_5(CCalendarContractCalendarAlerts, Singleton
+    , ICalendarContractCalendarAlerts
+    , IBaseColumns
+    , ICalendarContractCalendarAlertsColumns
+    , ICalendarContractEventsColumns
+    , ICalendarContractCalendarColumns)
 
 ECode CCalendarContractCalendarAlerts::GetCONTENT_URI(
     /* [out] */ IUri** uri)
@@ -70,7 +73,7 @@ ECode CCalendarContractCalendarAlerts::GetCONTENT_URI(
     return Uri::Parse(str, uri);
 }
 
-ECode CCalendarContractCalendarAlerts::GetCONTENT_URIBYINSTANCE(
+ECode CCalendarContractCalendarAlerts::GetCONTENT_URI_BY_INSTANCE(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -94,47 +97,21 @@ ECode CCalendarContractCalendarAlerts::Insert(
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IContentValues> values;
-    FAIL_RETURN(CContentValues::New((IContentValues**)&values))
-
-    AutoPtr<IInteger64> ceventId;
-    FAIL_RETURN(CInteger64::New(eventId, (IInteger64**)&ceventId))
-    FAIL_RETURN(values->PutInt64(ICalendarContractCalendarAlertsColumns::EVENT_ID, ceventId))
-
-    AutoPtr<IInteger64> cbegin;
-    FAIL_RETURN(CInteger64::New(begin, (IInteger64**)&cbegin))
-    FAIL_RETURN(values->PutInt64(ICalendarContractCalendarAlertsColumns::BEGIN, cbegin))
-
-    AutoPtr<IInteger64> cend;
-    FAIL_RETURN(CInteger64::New(end, (IInteger64**)&cend))
-    FAIL_RETURN(values->PutInt64(ICalendarContractCalendarAlertsColumns::END, cend))
-
-    AutoPtr<IInteger64> calarmTime;
-    FAIL_RETURN(CInteger64::New(alarmTime, (IInteger64**)&calarmTime))
-    FAIL_RETURN(values->PutInt64(ICalendarContractCalendarAlertsColumns::ALARM_TIME, calarmTime))
+    CContentValues::New((IContentValues**)&values);
+    values->Put(ICalendarContractCalendarAlertsColumns::EVENT_ID, eventId);
+    values->Put(ICalendarContractCalendarAlertsColumns::BEGIN, begin);
+    values->Put(ICalendarContractCalendarAlertsColumns::END, end);
+    values->Put(ICalendarContractCalendarAlertsColumns::ALARM_TIME, alarmTime);
 
     AutoPtr<ISystem> system;
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
     Int64 now;
     system->GetCurrentTimeMillis(&now);
-    AutoPtr<IInteger64> ccreationtime;
-    FAIL_RETURN(CInteger64::New(now, (IInteger64**)&ccreationtime))
-    FAIL_RETURN(values->PutInt64(ICalendarContractCalendarAlertsColumns::CREATION_TIME, ccreationtime))
-
-    AutoPtr<IInteger32> creceivedtime;
-    FAIL_RETURN(CInteger32::New(0, (IInteger32**)&creceivedtime))
-    FAIL_RETURN(values->PutInt32(ICalendarContractCalendarAlertsColumns::RECEIVED_TIME, creceivedtime))
-
-    AutoPtr<IInteger32> cnotifytime;
-    FAIL_RETURN(CInteger32::New(0, (IInteger32**)&cnotifytime))
-    FAIL_RETURN(values->PutInt32(ICalendarContractCalendarAlertsColumns::NOTIFY_TIME, cnotifytime))
-
-    AutoPtr<ICharSequence> cstate;
-    FAIL_RETURN(CString::New(String(STATE_SCHEDULED), (ICharSequence**)&cstate))
-    FAIL_RETURN(values->PutString(ICalendarContractCalendarAlertsColumns::STATE, cstate))
-
-    AutoPtr<IInteger32> cminutes;
-    FAIL_RETURN(CInteger32::New(minutes, (IInteger32**)&cminutes))
-    FAIL_RETURN(values->PutInt32(ICalendarContractCalendarAlertsColumns::MINUTES, cminutes))
+    values->Put(ICalendarContractCalendarAlertsColumns::CREATION_TIME, now);
+    values->Put(ICalendarContractCalendarAlertsColumns::RECEIVED_TIME, 0);
+    values->Put(ICalendarContractCalendarAlertsColumns::NOTIFY_TIME, 0);
+    values->Put(ICalendarContractCalendarAlertsColumns::STATE, ICalendarContractCalendarAlertsColumns::STATE_SCHEDULED);
+    values->Put(ICalendarContractCalendarAlertsColumns::MINUTES, minutes);
 
     AutoPtr<IUri> _uri;
     FAIL_RETURN(GetCONTENT_URI((IUri**)&_uri))
@@ -172,7 +149,8 @@ ECode CCalendarContractCalendarAlerts::FindNextAlarmTime(
     //} finally {
 EXIT:
     if (cursor != NULL) {
-        FAIL_RETURN(cursor->Close())
+        //TODO
+        // FAIL_RETURN(cursor->Close())
     }
     //}
     *alarm = alarmTime;
@@ -212,7 +190,7 @@ ECode CCalendarContractCalendarAlerts::RescheduleMissedAlarms(
     if (DEBUG) {
         Int32 count;
         FAIL_RETURN(cursor->GetCount(&count))
-        Slogger::D(String("Calendar")/*TAG*/, String("missed alarms found: ") + StringUtils::Int32ToString(count));
+        Slogger::D(String("Calendar")/*TAG*/, String("missed alarms found: ") + StringUtils::ToString(count));
     }
 
     //try {
@@ -224,7 +202,7 @@ ECode CCalendarContractCalendarAlerts::RescheduleMissedAlarms(
         FAIL_GOTO(cursor->GetInt64(0, &newAlarmTime), EXIT)
         if (alarmTime != newAlarmTime) {
             if (DEBUG) {
-                Slogger::W(String("Calendar")/*TAG*/, String("rescheduling missed alarm. alarmTime: ") + StringUtils::Int64ToString(newAlarmTime));
+                Slogger::W(String("Calendar")/*TAG*/, String("rescheduling missed alarm. alarmTime: ") + StringUtils::ToString(newAlarmTime));
             }
             FAIL_GOTO(ScheduleAlarm(context, manager, newAlarmTime), EXIT)
             alarmTime = newAlarmTime;
@@ -232,8 +210,11 @@ ECode CCalendarContractCalendarAlerts::RescheduleMissedAlarms(
     }
     //} finally {
 EXIT:
-    return cursor->Close();
-    //}
+    {
+        // TODO
+        // return cursor->Close();
+        //}
+    }
 }
 
 ECode CCalendarContractCalendarAlerts::ScheduleAlarm(
@@ -247,7 +228,7 @@ ECode CCalendarContractCalendarAlerts::ScheduleAlarm(
         FAIL_RETURN(time->Set(alarmTime))
         String schedTime;
         FAIL_RETURN(time->Format(String(" %a, %b %d, %Y %I:%M%P"), &schedTime))
-        Slogger::D(String("Calendar")/*TAG*/, String("Schedule alarm at ") + StringUtils::Int32ToString(alarmTime) + String(" ") + schedTime);
+        Slogger::D(String("Calendar")/*TAG*/, String("Schedule alarm at ") + StringUtils::ToString(alarmTime) + String(" ") + schedTime);
     }
 
     if (manager == NULL) {
@@ -301,7 +282,8 @@ ECode CCalendarContractCalendarAlerts::IsAlarmExists(
     }
     //} finally {
     if (cursor != NULL) {
-        FAIL_RETURN(cursor->Close())
+        // TODO
+        // FAIL_RETURN(cursor->Close())
     }
     //}
     *isExit = found;

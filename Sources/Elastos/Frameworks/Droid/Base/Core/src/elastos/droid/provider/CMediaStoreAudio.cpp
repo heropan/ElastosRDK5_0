@@ -1,16 +1,18 @@
-
+#include "elastos/droid/database/DatabaseUtils.h"
 #include "elastos/droid/provider/CMediaStoreAudio.h"
 #include <elastos/core/StringBuilder.h>
-#include "elastos/droid/database/DatabaseUtils.h"
-#include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::StringUtils;
-using Elastos::Core::StringBuilder;
 using Elastos::Droid::Database::DatabaseUtils;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
+
+CAR_SINGLETON_IMPL(CMediaStoreAudio)
+
+CAR_INTERFACE_IMPL(CMediaStoreAudio, Singleton, IMediaStoreAudio)
 
 ECode CMediaStoreAudio::KeyFor(
     /* [in] */ const String& cname,

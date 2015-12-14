@@ -5,6 +5,8 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
+CAR_INTERFACE_IMPL(CursorEntityIterator, Object, ICursorEntityIterator)
+
 CursorEntityIterator::CursorEntityIterator()
     : mIsClosed(FALSE)
 {}

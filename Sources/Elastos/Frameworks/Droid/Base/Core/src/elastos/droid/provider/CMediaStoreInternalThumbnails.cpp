@@ -1,37 +1,56 @@
-
-#include "elastos/droid/provider/CMediaStoreInternalThumbnails.h"
-#include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/net/CUriHelper.h"
 #include "elastos/droid/content/CContentUris.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/CBitmapFactory.h"
-#include <elastos/utility/logging/Logger.h>
-#include <elastos/core/StringUtils.h>
-#include "elastos/droid/provider/CMediaStoreVideoMedia.h"
+#include "elastos/droid/net/CUriHelper.h"
+// #include "elastos/droid/media/CMiniThumbFile.h"
+#include "elastos/droid/media/ThumbnailUtils.h"
 #include "elastos/droid/provider/CMediaStoreImagesMedia.h"
-#include "elastos/droid/media/CMiniThumbFile.h"
+#include "elastos/droid/provider/CMediaStoreInternalThumbnails.h"
+#include "elastos/droid/provider/CMediaStoreVideoMedia.h"
+#include <elastos/utility/Arrays.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/StringUtils.h>
 
-using Elastos::Core::StringUtils;
-using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::Net::IUriHelper;
-using Elastos::Droid::Net::CUriHelper;
 using Elastos::Droid::Content::IContentUris;
 using Elastos::Droid::Content::CContentUris;
-using Elastos::Droid::Os::IParcelFileDescriptor;
-using Elastos::Droid::Graphics::IBitmapFactory;
 using Elastos::Droid::Graphics::CBitmapFactory;
+using Elastos::Droid::Graphics::IBitmapFactory;
+// using Elastos::Droid::Media::CMiniThumbFile;
+using Elastos::Droid::Media::ThumbnailUtils;
 using Elastos::Droid::Media::IMiniThumbFile;
-using Elastos::Droid::Media::CMiniThumbFile;
+using Elastos::Droid::Net::CUriHelper;
+using Elastos::Droid::Net::IUriHelper;
+using Elastos::Droid::Os::IParcelFileDescriptor;
+using Elastos::Utility::Arrays;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-CMediaStoreInternalThumbnails::CMediaStoreInternalThumbnails()
+CAR_SINGLETON_IMPL(CMediaStoreInternalThumbnails)
+
+CAR_INTERFACE_IMPL(CMediaStoreInternalThumbnails, Singleton, IMediaStoreInternalThumbnails)
+
+const Int32 CMediaStoreInternalThumbnails::MINI_KIND = 1;
+const Int32 CMediaStoreInternalThumbnails::FULL_SCREEN_KIND = 2;
+const Int32 CMediaStoreInternalThumbnails::MICRO_KIND = 3;
+
+static const AutoPtr<ArrayOf<String> > initPROJECTION()
 {
-    PROJECTION = ArrayOf<String>::Alloc(2);
-    PROJECTION->Set(0, IMediaStoreInternalThumbnails::ID);
-    PROJECTION->Set(1, IMediaStoreMediaColumns::DATA);
+    AutoPtr<ArrayOf<String> > str;
+    (*str)[0] = IBaseColumns::ID;
+    (*str)[1] = IMediaStoreMediaColumns::DATA;
+    return str;
 }
+
+const AutoPtr<ArrayOf<String> > CMediaStoreInternalThumbnails::PROJECTION = initPROJECTION();
+
+const Object CMediaStoreInternalThumbnails::sThumbBufLock;
+
+AutoPtr<ArrayOf<Byte> > CMediaStoreInternalThumbnails::sThumbBuf;
 
 AutoPtr<IBitmap> CMediaStoreInternalThumbnails::GetMiniThumbFromFile(
     /* [in] */ ICursor* c,
@@ -91,8 +110,8 @@ ECode CMediaStoreInternalThumbnails::CancelThumbnailRequest(
     baseUri->BuildUpon((IUriBuilder**)&ub);
 
     ub->AppendQueryParameter(String("cancel"), String("1"));
-    ub->AppendQueryParameter(String("orig_id"), StringUtils::Int64ToString(origId));
-    ub->AppendQueryParameter(String("group_id"), StringUtils::Int64ToString(groupId));
+    ub->AppendQueryParameter(String("orig_id"), StringUtils::ToString(origId));
+    ub->AppendQueryParameter(String("group_id"), StringUtils::ToString(groupId));
     ub->Build((IUri**)&cancelUri);
 
     AutoPtr<ICursor> c = NULL;
@@ -100,7 +119,8 @@ ECode CMediaStoreInternalThumbnails::CancelThumbnailRequest(
         cr->Query(cancelUri, PROJECTION.Get(), String(NULL), NULL, String(NULL), (ICursor**)&c);
     //}
     //finally {
-        if (c != NULL) c->Close();
+        assert(0 && "TODO");
+        // if (c != NULL) c->Close();
     //}
     return NOERROR;
 }
@@ -133,7 +153,7 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
         CMediaStoreImagesMedia::AcquireSingleton((IMediaStoreImagesMedia**)&media);
         media->GetEXTERNAL_CONTENT_URI((IUri**)&uri);
     }
-    CMiniThumbFile::New(uri, (IMiniThumbFile**)&thumbFile);
+    // CMiniThumbFile::New(uri, (IMiniThumbFile**)&thumbFile);
 
     AutoPtr<ICursor> c;
     // try {
@@ -141,8 +161,10 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
         thumbFile->GetMagic(origId, &magic);
         if (magic != 0) {
             if (kind == MICRO_KIND) {
-                {
-                    AutoLock lock(sThumbBufLock);
+                //TODO
+                // ISynchronized* sync = ISynchronized::Probe(sThumbBufLock);
+                // synchronized(sync)
+                // {
                     if (sThumbBuf == NULL) {
                         sThumbBuf = ArrayOf<Byte>::Alloc(IMiniThumbFile::BYTES_PER_MINTHUMB);
                     }
@@ -153,27 +175,28 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
                         ASSERT_SUCCEEDED(CBitmapFactory::AcquireSingleton(
                             (IBitmapFactory**)&factory));
 
-                        factory->DecodeByteArray(*sThumbBuf, 0, sThumbBuf->GetLength(), (IBitmap**)&bitmap);
+                        factory->DecodeByteArray(sThumbBuf.Get(), 0, sThumbBuf->GetLength(), (IBitmap**)&bitmap);
                         if (bitmap == NULL) {
                             // Logger::W(TAG, "couldn't decode byte array.");
                         }
                     }
-                }
-                *outBitmap = bitmap;
-                REFCOUNT_ADD(*outBitmap);
-                return NOERROR;
-            } else if (kind == MINI_KIND) {
-                String column = isVideo ? String("video_id=") : String("image_id=");
-                cr->Query(baseUri, PROJECTION.Get(), column + origId, NULL, String(NULL), (ICursor**)&c);
+                // }
+            }
 
-                Boolean bSucceeded;
-                if (c != NULL && (c->MoveToFirst(&bSucceeded), bSucceeded)) {
-                    bitmap = GetMiniThumbFromFile(c, baseUri, cr, options);
-                    if (bitmap != NULL) {
-                        *outBitmap = bitmap;
-                        REFCOUNT_ADD(*outBitmap);
-                        return NOERROR;
-                    }
+            *outBitmap = bitmap;
+            REFCOUNT_ADD(*outBitmap);
+            return NOERROR;
+        } else if (kind == MINI_KIND) {
+            String column = isVideo ? String("video_id=") : String("image_id=");
+            cr->Query(baseUri, PROJECTION.Get(), column + origId, NULL, String(NULL), (ICursor**)&c);
+
+            Boolean bSucceeded;
+            if (c != NULL && (c->MoveToFirst(&bSucceeded), bSucceeded)) {
+                bitmap = GetMiniThumbFromFile(c, baseUri, cr, options);
+                if (bitmap != NULL) {
+                    *outBitmap = bitmap;
+                    REFCOUNT_ADD(*outBitmap);
+                    return NOERROR;
                 }
             }
         }
@@ -184,12 +207,13 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
         baseUri->BuildUpon((IUriBuilder**)&ub);
 
         ub->AppendQueryParameter(String("blocking"), String("1"));
-        ub->AppendQueryParameter(String("orig_id"), StringUtils::Int64ToString(origId));
-        ub->AppendQueryParameter(String("group_id"), StringUtils::Int64ToString(groupId));
+        ub->AppendQueryParameter(String("orig_id"), StringUtils::ToString(origId));
+        ub->AppendQueryParameter(String("group_id"), StringUtils::ToString(groupId));
         ub->Build((IUri**)&blockingUri);
 
         if (c != NULL) {
-            c->Close();
+            assert(0 && "TODO");
+            // c->Close();
             c = NULL;
         }
         cr->Query(blockingUri, PROJECTION.Get(), String(NULL), NULL, String(NULL), (ICursor**)&c);
@@ -203,27 +227,31 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
         // Assuming thumbnail has been generated, at least original image exists.
         if (kind == MICRO_KIND) {
             {
-                AutoLock lock(sThumbBufLock);
-                if (sThumbBuf == NULL) {
-                    sThumbBuf = ArrayOf<Byte>::Alloc(IMiniThumbFile::BYTES_PER_MINTHUMB);
-                }
-
-                AutoPtr<ArrayOf<Byte> > miniThumb;
-                thumbFile->GetMiniThumbFromFile(origId, sThumbBuf.Get(), (ArrayOf<Byte>**)&miniThumb);
-
-                if (miniThumb != NULL) {
-
-                    AutoPtr<IBitmapFactory> factory;
-                    ASSERT_SUCCEEDED(CBitmapFactory::AcquireSingleton(
-                        (IBitmapFactory**)&factory));
-
-                    bitmap = NULL;
-                    factory->DecodeByteArray(*sThumbBuf, 0, sThumbBuf->GetLength(), (IBitmap**)&bitmap);
-
-                    if (bitmap == NULL) {
-                        //Log.w(TAG, "couldn't decode byte array.");
+                //TODO
+                // ISynchronized* sync = ISynchronized::Probe(sThumbBufLock);
+                // synchronized(sync)
+                // {
+                    if (sThumbBuf == NULL) {
+                        sThumbBuf = ArrayOf<Byte>::Alloc(IMiniThumbFile::BYTES_PER_MINTHUMB);
                     }
-                }
+                    Arrays::Fill(sThumbBuf.Get(), (Byte)0);
+                    AutoPtr<ArrayOf<Byte> > miniThumb;
+                    thumbFile->GetMiniThumbFromFile(origId, sThumbBuf.Get(), (ArrayOf<Byte>**)&miniThumb);
+
+                    if (miniThumb != NULL) {
+                        AutoPtr<IBitmapFactory> factory;
+                        ASSERT_SUCCEEDED(CBitmapFactory::AcquireSingleton(
+                            (IBitmapFactory**)&factory));
+
+                        bitmap = NULL;
+                        factory->DecodeByteArray(sThumbBuf.Get(), 0, sThumbBuf->GetLength(), (IBitmap**)&bitmap);
+
+                        if (bitmap == NULL) {
+                            //Log.w(TAG, "couldn't decode byte array.");
+                        }
+                    }
+
+                // }
             }
         } else if (kind == MINI_KIND) {
             Boolean bSucceeded;
@@ -244,10 +272,11 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
             AutoPtr<IUriBuilder> ub;
             baseUri->BuildUpon((IUriBuilder**)&ub);
 
-            ub->AppendPath(StringUtils::Int64ToString(origId));
+            ub->AppendPath(StringUtils::ToString(origId));
 
             String str;
-            ub->ToString(&str);
+            assert(0 && "TODO");
+            // ub->ToString(&str);
 
             String result;
             StringUtils::ReplaceFirst(str, String("thumbnails"), String("media"), &result);
@@ -257,7 +286,8 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
 
             if (filePath == NULL) {
                 if (c != NULL) {
-                    c->Close();
+                    assert(0 && "TODO");
+                    // c->Close();
                     c = NULL;
                 }
                 cr->Query(uri, PROJECTION.Get(), String(NULL), NULL, String(NULL), (ICursor**)&c);
@@ -279,7 +309,8 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
     //} catch (SQLiteException ex) {
         //Log.w(TAG, ex);
     //} finally {
-        if (c != NULL) c->Close();
+        assert(0 && "TODO");
+        // if (c != NULL) c->Close();
         // To avoid file descriptor leak in application process.
         thumbFile->Deactivate();
     //}

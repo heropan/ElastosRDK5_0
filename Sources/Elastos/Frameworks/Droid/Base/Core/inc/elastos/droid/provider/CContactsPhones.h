@@ -1,24 +1,28 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSPHONES_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSPHONES_H__
 
 #include "_Elastos_Droid_Provider_CContactsPhones.h"
+#include <elastos/core/Singleton.h>
 
-using Elastos::Core::ICharSequence;
-using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Net::IUri;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
 CarClass(CContactsPhones)
+    , public Singleton
+    , public IContactsPhones
+    , public IBaseColumns
+    , public IContactsPhonesColumns
+    , public IContactsPeopleColumns
 {
 public:
-    /**
-     * no public constructor since this is a utility class
-     */
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * The content:// style URL for this table

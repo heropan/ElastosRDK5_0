@@ -1,4 +1,3 @@
-
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/provider/CSettingsBookmarks.h"
 #include "elastos/droid/provider/Settings.h"
@@ -7,7 +6,11 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CSettingsBookmarks::GetContentUri(
+CAR_SINGLETON_IMPL(CSettingsBookmarks)
+
+CAR_INTERFACE_IMPL(CSettingsBookmarks, Singleton, ISettingsBookmarks)
+
+ECode CSettingsBookmarks::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri)

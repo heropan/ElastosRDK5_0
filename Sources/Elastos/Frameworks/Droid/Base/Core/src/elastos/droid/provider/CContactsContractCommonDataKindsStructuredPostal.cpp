@@ -1,21 +1,22 @@
-
+#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/CContactsContractCommonDataKindsStructuredPostal.h"
 #include "elastos/droid/provider/ContactsContractData.h"
-#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/R.h"
 
-using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Net::Uri;
+using Elastos::Droid::Text::TextUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsContractCommonDataKindsStructuredPostal::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CContactsContractCommonDataKindsStructuredPostal)
+
+CAR_INTERFACE_IMPL_3(CContactsContractCommonDataKindsStructuredPostal, Singleton
+    , IContactsContractCommonDataKindsStructuredPostal
+    , IContactsContractDataColumnsWithJoins
+    , IContactsContractCommonDataKindsCommonColumns)
 
 ECode CContactsContractCommonDataKindsStructuredPostal::GetCONTENT_URI(
     /* [out] */ IUri** uri)
@@ -58,7 +59,7 @@ ECode CContactsContractCommonDataKindsStructuredPostal::GetTypeLabel(
 {
     VALIDATE_NOT_NULL(lb);
 
-    if (type == TYPE_CUSTOM && !TextUtils::IsEmpty(label)) {
+    if (type == IContactsContractCommonDataKindsBaseTypes::TYPE_CUSTOM && !TextUtils::IsEmpty(label)) {
         *lb = label;
         REFCOUNT_ADD(*lb);
         return NOERROR;

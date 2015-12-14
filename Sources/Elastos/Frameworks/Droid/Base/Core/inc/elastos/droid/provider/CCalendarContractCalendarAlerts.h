@@ -1,13 +1,13 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTCALENDARALERTS_H__
 #define __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTCALENDARALERTS_H__
 
 #include "_Elastos_Droid_Provider_CCalendarContractCalendarAlerts.h"
+#include <elastos/core/Singleton.h>
 
-using Elastos::Droid::Net::IUri;
 using Elastos::Droid::App::IAlarmManager;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
 namespace Droid {
@@ -25,12 +25,17 @@ namespace Provider {
  * state of a reminder.
  */
 CarClass(CCalendarContractCalendarAlerts)
+    , public Singleton
+    , public ICalendarContractCalendarAlerts
+    , public IBaseColumns
+    , public ICalendarContractCalendarAlertsColumns
+    , public ICalendarContractEventsColumns
+    , public ICalendarContractCalendarColumns
 {
 public:
-    /**
-     * This utility class cannot be instantiated
-     */
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * The Uri for querying calendar alert information
@@ -45,7 +50,7 @@ public:
      * events with multiple alarms will appear just once, but multiple
      * instances of a repeating event will show up multiple times.
      */
-    CARAPI GetCONTENT_URIBYINSTANCE(
+    CARAPI GetCONTENT_URI_BY_INSTANCE(
         /* [out] */ IUri** uri);
 
     /**

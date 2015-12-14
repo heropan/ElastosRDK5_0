@@ -24,8 +24,8 @@ using Elastos::Droid::Graphics::IPoint;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Provider::IDocumentsContractRoot;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::IO::ICloseable;
 using Libcore::IO::CIoUtils;
+using Elastos::IO::ICloseable;
 using Libcore::IO::IIoUtils;
 
 namespace Elastos {

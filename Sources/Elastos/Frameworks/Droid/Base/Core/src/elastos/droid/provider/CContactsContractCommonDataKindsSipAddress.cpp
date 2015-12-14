@@ -1,4 +1,3 @@
-
 #include "elastos/droid/provider/CContactsContractCommonDataKindsSipAddress.h"
 #include "elastos/droid/text/TextUtils.h"
 #include <elastos/coredef.h>
@@ -10,10 +9,12 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsContractCommonDataKindsSipAddress::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CContactsContractCommonDataKindsSipAddress)
+
+CAR_INTERFACE_IMPL_3(CContactsContractCommonDataKindsSipAddress, Singleton
+    , IContactsContractCommonDataKindsSipAddress
+    , IContactsContractDataColumnsWithJoins
+    , IContactsContractCommonDataKindsCommonColumns)
 
 ECode CContactsContractCommonDataKindsSipAddress::GetTypeLabelResource(
     /* [in] */ Int32 type,
@@ -46,7 +47,7 @@ ECode CContactsContractCommonDataKindsSipAddress::GetTypeLabel(
 {
     VALIDATE_NOT_NULL(lb);
 
-    if (type == TYPE_CUSTOM && !TextUtils::IsEmpty(label)) {
+    if (type == IContactsContractCommonDataKindsBaseTypes::TYPE_CUSTOM && !TextUtils::IsEmpty(label)) {
         *lb = label;
         REFCOUNT_ADD(*lb);
         return NOERROR;

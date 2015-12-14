@@ -1,14 +1,16 @@
-
 #include "elastos/droid/provider/CCalendarContractAttendees.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CCalendarContractAttendees::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CCalendarContractAttendees)
+
+CAR_INTERFACE_IMPL_4(CCalendarContractAttendees, Singleton
+    , ICalendarContractAttendees
+    , IBaseColumns
+    , ICalendarContractAttendeesColumns
+    , ICalendarContractEventsColumns)
 
 ECode CCalendarContractAttendees::GetCONTENT_URI(
     /* [out] */ IUri** uri)

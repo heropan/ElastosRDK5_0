@@ -1,4 +1,3 @@
-
 #include "elastos/droid/provider/CContactsContractCommonDataKindsEvent.h"
 #include "elastos/droid/R.h"
 #include <elastos/coredef.h>
@@ -7,10 +6,12 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsContractCommonDataKindsEvent::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CContactsContractCommonDataKindsEvent)
+
+CAR_INTERFACE_IMPL_3(CContactsContractCommonDataKindsEvent, Singleton
+    , IContactsContractCommonDataKindsEvent
+    , IContactsContractDataColumnsWithJoins
+    , IContactsContractCommonDataKindsCommonColumns)
 
 ECode CContactsContractCommonDataKindsEvent::GetTypeResource(
     /* [in] */ IInteger32* type,

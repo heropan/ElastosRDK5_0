@@ -1,9 +1,9 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACT_H__
 #define __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACT_H__
 
 #include "_Elastos_Droid_Provider_CCalendarContract.h"
-#include "CalendarContract.h"
+#include "elastos/droid/provider/CalendarContract.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Net::IUri;
 
@@ -12,9 +12,13 @@ namespace Droid {
 namespace Provider {
 
 CarClass(CCalendarContract)
+    , public Singleton
+    , public ICalendarContract
 {
 public:
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * The content:// style URL for the top-level calendar authority

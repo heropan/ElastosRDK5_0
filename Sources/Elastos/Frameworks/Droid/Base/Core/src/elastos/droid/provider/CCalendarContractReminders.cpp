@@ -1,14 +1,17 @@
-
+#include "elastos/droid/provider/CalendarContractReminders.h"
 #include "elastos/droid/provider/CCalendarContractReminders.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CCalendarContractReminders::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CCalendarContractReminders)
+
+CAR_INTERFACE_IMPL_4(CCalendarContractReminders, Singleton
+    , ICalendarContractReminders
+    , IBaseColumns
+    , ICalendarContractRemindersColumns
+    , ICalendarContractEventsColumns)
 
 ECode CCalendarContractReminders::GetCONTENT_URI(
     /* [out] */ IUri** uri)

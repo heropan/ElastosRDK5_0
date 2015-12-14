@@ -1,9 +1,8 @@
-
-#include "elastos/droid/provider/CContactsContractCommonDataKindsPhone.h"
-#include "elastos/droid/provider/ContactsContractData.h"
 #include "elastos/droid/net/Uri.h"
-#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/provider/ContactsContractData.h"
+#include "elastos/droid/provider/CContactsContractCommonDataKindsPhone.h"
 #include "elastos/droid/R.h"
+#include "elastos/droid/text/TextUtils.h"
 
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Text::TextUtils;
@@ -12,10 +11,12 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsContractCommonDataKindsPhone::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CContactsContractCommonDataKindsPhone)
+
+CAR_INTERFACE_IMPL_3(CContactsContractCommonDataKindsPhone, Singleton
+    , IContactsContractCommonDataKindsPhone
+    , IContactsContractDataColumnsWithJoins
+    , IContactsContractCommonDataKindsCommonColumns)
 
 ECode CContactsContractCommonDataKindsPhone::GetCONTENT_URI(
     /* [out] */ IUri** uri)
@@ -151,7 +152,7 @@ ECode CContactsContractCommonDataKindsPhone::GetTypeLabel(
 {
     VALIDATE_NOT_NULL(lb);
 
-    if ((type == TYPE_CUSTOM || type == TYPE_ASSISTANT) && !TextUtils::IsEmpty(label)) {
+    if ((type == IContactsContractCommonDataKindsBaseTypes::TYPE_CUSTOM || type == TYPE_ASSISTANT) && !TextUtils::IsEmpty(label)) {
         *lb = label;
         REFCOUNT_ADD(*lb);
         return NOERROR;

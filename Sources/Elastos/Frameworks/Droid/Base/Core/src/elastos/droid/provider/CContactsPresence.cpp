@@ -1,13 +1,17 @@
-
+#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/CContactsPresence.h"
 #include "elastos/droid/R.h"
-#include "elastos/droid/net/Uri.h"
 
+using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Net::Uri;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
+
+CAR_SINGLETON_IMPL(CContactsPresence)
+
+CAR_INTERFACE_IMPL_4(CContactsPresence, Singleton, IContactsPresence, IBaseColumns, IContactsPresenceColumns, IContactsPeopleColumns)
 
 ECode CContactsPresence::constructor()
 {

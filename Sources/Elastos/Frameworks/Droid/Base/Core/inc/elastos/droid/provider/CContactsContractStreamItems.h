@@ -1,8 +1,8 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTSTREAMITEMS_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTSTREAMITEMS_H__
 
 #include "_Elastos_Droid_Provider_CContactsContractStreamItems.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Net::IUri;
 
@@ -11,9 +11,15 @@ namespace Droid {
 namespace Provider {
 
 CarClass(CContactsContractStreamItems)
+    , public Singleton
+    , public IContactsContractStreamItems
+    , public IBaseColumns
+    , public IContactsContractStreamItemsColumns
 {
 public:
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * The content:// style URI for this table, which handles social network stream

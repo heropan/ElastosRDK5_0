@@ -1,18 +1,17 @@
-
-#include "elastos/droid/provider/CalendarContractReminders.h"
 #include "elastos/droid/net/Uri.h"
-#include <elastos/core/StringUtils.h>
+#include "elastos/droid/provider/CalendarContractReminders.h"
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
+using Elastos::Droid::Net::Uri;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
-using Elastos::Droid::Net::Uri;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-const String CalendarContractReminders::REMINDERS_WHERE = String(ICalendarContractRemindersColumns::EVENT_ID) + String("=?");
+const String CalendarContractReminders::REMINDERS_WHERE = ICalendarContractRemindersColumns::EVENT_ID + String("=?");
 
 ECode CalendarContractReminders::GetCONTENT_URI(
     /* [out] */ IUri** uri)

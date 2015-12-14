@@ -1,8 +1,8 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CMEDIASTOREAUDIOALBUMS_H__
 #define __ELASTOS_DROID_PROVIDER_CMEDIASTOREAUDIOALBUMS_H__
 
 #include "_Elastos_Droid_Provider_CMediaStoreAudioAlbums.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Net::IUri;
 
@@ -11,8 +11,14 @@ namespace Droid {
 namespace Provider {
 
 CarClass(CMediaStoreAudioAlbums)
+    , public Singleton
+    , public IMediaStoreAudioAlbums
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     /**
      * The content:// style URI for the internal storage.
      */

@@ -1,4 +1,3 @@
-
 #include "elastos/droid/provider/CContactsContractCommonDataKindsEmail.h"
 #include "elastos/droid/provider/ContactsContractData.h"
 #include "elastos/droid/net/Uri.h"
@@ -12,10 +11,12 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsContractCommonDataKindsEmail::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CContactsContractCommonDataKindsEmail)
+
+CAR_INTERFACE_IMPL_3(CContactsContractCommonDataKindsEmail, Singleton
+    , IContactsContractCommonDataKindsEmail
+    , IContactsContractDataColumnsWithJoins
+    , IContactsContractCommonDataKindsCommonColumns)
 
 ECode CContactsContractCommonDataKindsEmail::GetCONTENT_URI(
     /* [out] */ IUri** uri)
@@ -79,7 +80,7 @@ ECode CContactsContractCommonDataKindsEmail::GetTypeLabel(
     /* [in] */ ICharSequence* label,
     /* [out] */ ICharSequence** lb)
 {
-    if (type == TYPE_CUSTOM && !TextUtils::IsEmpty(label)) {
+    if (type == IContactsContractCommonDataKindsBaseTypes::TYPE_CUSTOM && !TextUtils::IsEmpty(label)) {
         *lb = label;
         REFCOUNT_ADD(*lb);
         return NOERROR;
