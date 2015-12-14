@@ -79,10 +79,10 @@ private:
     AutoPtr< HashMap <Int32, AutoPtr<IInterface> > > mShortcutIntents;
 };
 
-} // namespace Elastos
-} // namespace Droid
-} // namespace Internal
-} // namespace Policy
 } // namespace Impl
+} // namespace Policy
+} // namespace Internal
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_INTERNAL_POLICY_IMPL_SHORTCUTMANAGER_H__

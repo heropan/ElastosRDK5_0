@@ -2,7 +2,6 @@
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_POLICYCONTROL_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IArraySet;
@@ -79,13 +78,11 @@ private:
     private:
         static const String ALL;
         static const String APPS;
-        /*const*/ AutoPtr<IArraySet> mWhitelist;
-        /*const*/ AutoPtr<IArraySet> mBlacklist;
+        AutoPtr<IArraySet> mWhitelist;
+        AutoPtr<IArraySet> mBlacklist;
     };
 
 public:
-
-    //CAR_INTERFACE_DECL()
 
     static CARAPI GetSystemUiVisibility(
         /* [in] */ IWindowState* win,

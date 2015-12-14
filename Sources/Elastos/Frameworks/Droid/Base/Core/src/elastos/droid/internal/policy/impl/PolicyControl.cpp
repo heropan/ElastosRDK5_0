@@ -1,5 +1,27 @@
-
+#include "elastos/droid/app/CActivityManagerHelper.h"
 #include "elastos/droid/internal/policy/impl/PolicyControl.h"
+//TODO #include "elastos/droid/provider/Settings.h"
+//TODO #include "elastos/io/CPrintWriter.h"
+//TODO #include "elastos/io/CStringWriter.h"
+#include "elastos/droid/utility/CArraySet.h"
+#include <elastos/utility/logging/Slogger.h>
+
+using Elastos::Droid::App::CActivityManagerHelper;
+using Elastos::Droid::App::IActivityManagerHelper;
+using Elastos::Droid::Content::IContentResolver;
+//TODO using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::Provider::ISettingsGlobal;
+using Elastos::Droid::Utility::CArraySet;
+using Elastos::Droid::View::IView;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::StringUtils;
+using Elastos::IO::CPrintWriter;
+using Elastos::IO::CStringWriter;
+using Elastos::IO::IStringWriter;
+using Elastos::IO::IWriter;
+using Elastos::Utility::ISet;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -17,17 +39,42 @@ ECode PolicyControl::Filter::Matches(
     /* [in] */ IWindowManagerLayoutParams* attrs,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(attrs);
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // if (attrs == null) return false;
-    // boolean isApp = attrs.type >= WindowManager.LayoutParams.FIRST_APPLICATION_WINDOW
-    //         && attrs.type <= WindowManager.LayoutParams.LAST_APPLICATION_WINDOW;
-    // if (isApp && mBlacklist.contains(APPS)) return false;
-    // if (onBlacklist(attrs.packageName)) return false;
-    // if (isApp && mWhitelist.contains(APPS)) return true;
-    // return onWhitelist(attrs.packageName);
-    assert(0);
+    if (attrs == NULL)
+    {
+        *result = FALSE;
+        return NOERROR;
+    }
+    Int32 type;
+    attrs->GetType(&type);
+    Boolean isApp = type >= IWindowManagerLayoutParams::FIRST_APPLICATION_WINDOW
+            && type <= IWindowManagerLayoutParams::LAST_APPLICATION_WINDOW;
+    AutoPtr<ICharSequence> apps;
+    CString::New(APPS, (ICharSequence**)&apps);
+    Boolean inBlacklist;
+    ISet* blSet = ISet::Probe(mBlacklist);
+    blSet->Contains(TO_IINTERFACE(apps), &inBlacklist);
+    if (isApp && inBlacklist)
+    {
+        *result = FALSE;
+        return NOERROR;
+    }
+    String pkName;
+    attrs->GetPackageName(&pkName);
+    if (OnBlacklist(pkName))
+    {
+        *result = FALSE;
+        return NOERROR;
+    }
+    Boolean inWhitelist = FALSE;
+    ISet* wlSet = ISet::Probe(mWhitelist);
+    wlSet->Contains(TO_IINTERFACE(apps), &inWhitelist);
+    if (isApp && inWhitelist)
+    {
+        *result = TRUE;
+        return NOERROR;
+    }
+    *result = OnWhitelist(pkName);
     return NOERROR;
 }
 
@@ -36,9 +83,7 @@ ECode PolicyControl::Filter::Matches(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return !onBlacklist(packageName) && onWhitelist(packageName);
-    assert(0);
+    *result = !OnBlacklist(packageName) && OnWhitelist(packageName);
     return NOERROR;
 }
 
@@ -46,71 +91,110 @@ ECode PolicyControl::Filter::Dump(
     /* [in] */ IPrintWriter* pw)
 {
     VALIDATE_NOT_NULL(pw);
-    // ==================before translated======================
-    // pw.print("Filter[");
-    // dump("whitelist", mWhitelist, pw); pw.print(',');
-    // dump("blacklist", mBlacklist, pw); pw.print(']');
-    assert(0);
+    pw->Print(String("Filter["));
+    Dump(String("whitelist"), mWhitelist, pw);
+    pw->Print(',');
+    Dump(String("blacklist"), mBlacklist, pw);
+    pw->Print(']');
     return NOERROR;
 }
 
 String PolicyControl::Filter::ToString()
 {
-    // ==================before translated======================
-    // StringWriter sw = new StringWriter();
-    // dump(new PrintWriter(sw, true));
-    // return sw.toString();
-    assert(0);
-    return String("");
+    AutoPtr<IStringWriter> sw;
+    CStringWriter::New((IStringWriter**)&sw);
+    AutoPtr<IPrintWriter> pw;
+    IWriter* w = IWriter::Probe(sw);
+    CPrintWriter::New(w, TRUE, (IPrintWriter**)&pw);
+    Dump(pw);
+    String res;
+    sw->ToString(&res);
+    return res;
 }
 
 AutoPtr<PolicyControl::Filter> PolicyControl::Filter::Parse(
     /* [in] */ const String& value)
 {
-    // ==================before translated======================
-    // if (value == null) return null;
-    // ArraySet<String> whitelist = new ArraySet<String>();
-    // ArraySet<String> blacklist = new ArraySet<String>();
-    // for (String token : value.split(",")) {
-    //     token = token.trim();
-    //     if (token.startsWith("-") && token.length() > 1) {
-    //         token = token.substring(1);
-    //         blacklist.add(token);
-    //     } else {
-    //         whitelist.add(token);
-    //     }
-    // }
-    // return new Filter(whitelist, blacklist);
-    assert(0);
-    AutoPtr<Filter> empty;
-    return empty;
+    if (value.IsNullOrEmpty()) return NULL;
+    AutoPtr<IArraySet> whitelist;// = new ArraySet<String>();
+    CArraySet::New((IArraySet**)&whitelist);
+    AutoPtr<IArraySet> blacklist;// = new ArraySet<String>();
+    CArraySet::New((IArraySet**)&blacklist);
+    AutoPtr<ArrayOf<String> > splitOut;
+    StringUtils::Split(value, String(","), (ArrayOf<String>**)&splitOut);
+    ISet* bSet = ISet::Probe(blacklist);
+    ISet* wSet = ISet::Probe(whitelist);
+    for (Int32 i = 0; i < splitOut->GetLength(); ++i)
+    {
+        String token = (*splitOut)[i].Trim();
+        if (token.StartWith("-") && token.GetLength() > 1)
+        {
+            token = token.Substring(1);
+            AutoPtr<ICharSequence> cs;
+            CString::New(token, (ICharSequence**)&cs);
+            bSet->Add(TO_IINTERFACE(cs));
+        }
+        else
+        {
+            AutoPtr<ICharSequence> cs;
+            CString::New(token, (ICharSequence**)&cs);
+            wSet->Add(TO_IINTERFACE(cs));
+        }
+    }
+    return new Filter(whitelist, blacklist);
 }
 
 PolicyControl::Filter::Filter(
     /* [in] */ IArraySet* whitelist,
     /* [in] */ IArraySet* blacklist)
 {
-    // ==================before translated======================
-    // mWhitelist = whitelist;
-    // mBlacklist = blacklist;
+    mWhitelist = whitelist;
+    mBlacklist = blacklist;
 }
 
 Boolean PolicyControl::Filter::OnBlacklist(
     /* [in] */ const String& packageName)
 {
-    // ==================before translated======================
-    // return mBlacklist.contains(packageName) || mBlacklist.contains(ALL);
-    assert(0);
-    return FALSE;
+    AutoPtr<ICharSequence> pncs;
+    CString::New(packageName, (ICharSequence**)&pncs);
+    Boolean res1;
+    ISet* blSet = ISet::Probe(mBlacklist);
+    blSet->Contains(pncs, &res1);
+    if (res1)
+    {
+        return TRUE;
+    }
+    else
+    {
+        AutoPtr<ICharSequence> allcs;
+        CString::New(ALL, (ICharSequence**)&allcs);
+        Boolean res2;
+        blSet->Contains(allcs, &res2);
+        return res2;
+    }
 }
 
 Boolean PolicyControl::Filter::OnWhitelist(
     /* [in] */ const String& packageName)
 {
-    // ==================before translated======================
-    // return mWhitelist.contains(ALL) || mWhitelist.contains(packageName);
-    assert(0);
-    return FALSE;
+    AutoPtr<ICharSequence> allcs;
+    CString::New(ALL, (ICharSequence**)&allcs);
+    Boolean res1;
+    ISet* wlSet = ISet::Probe(mWhitelist);
+    wlSet->Contains(allcs, &res1);
+    if (res1)
+    {
+        return TRUE;
+    }
+    else
+    {
+        AutoPtr<ICharSequence> pncs;
+        CString::New(packageName, (ICharSequence**)&pncs);
+        Boolean res2;
+        wlSet->Contains(pncs, &res2);
+        return res2;
+    }
+
 }
 
 void PolicyControl::Filter::Dump(
@@ -118,24 +202,30 @@ void PolicyControl::Filter::Dump(
     /* [in] */ IArraySet* set,
     /* [in] */ IPrintWriter* pw)
 {
-    // ==================before translated======================
-    // pw.print(name); pw.print("=(");
-    // final int n = set.size();
-    // for (int i = 0; i < n; i++) {
-    //     if (i > 0) pw.print(',');
-    //     pw.print(set.valueAt(i));
-    // }
-    // pw.print(')');
-    assert(0);
+    pw->Print(name);
+    pw->Print(String("=("));
+    Int32 n;
+    ISet* s = ISet::Probe(set);
+    s->GetSize(&n);
+    for (Int32 i = 0; i < n; i++)
+    {
+        if (i > 0) pw->Print(',');
+        AutoPtr<IInterface> iValue;
+        set->GetValueAt(i, (IInterface**)&iValue);
+        String value;
+        ICharSequence* csq = ICharSequence::Probe(iValue);
+        csq->ToString(&value);
+        pw->Print(value);
+    }
+    pw->Print(')');
 }
 
 //=====================================================================
 //                            PolicyControl
 //=====================================================================
-//CAR_INTERFACE_IMPL(PolicyControl, Object, IPolicyControl)
 
 String PolicyControl::TAG("PolicyControl");
-Boolean PolicyControl::DEBUG = false;
+Boolean PolicyControl::DEBUG = FALSE;
 const String PolicyControl::NAME_IMMERSIVE_FULL("immersive.full");
 const String PolicyControl::NAME_IMMERSIVE_STATUS("immersive.status");
 const String PolicyControl::NAME_IMMERSIVE_NAVIGATION("immersive.navigation");
@@ -151,25 +241,47 @@ ECode PolicyControl::GetSystemUiVisibility(
     /* [out] */ Int32* res)
 {
     VALIDATE_NOT_NULL(res);
-    // ==================before translated======================
-    // attrs = attrs != null ? attrs : win.getAttrs();
-    // int vis = win != null ? win.getSystemUiVisibility() : attrs.systemUiVisibility;
-    // if (sImmersiveStatusFilter != null && sImmersiveStatusFilter.matches(attrs)) {
-    //     vis |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-    //             | View.SYSTEM_UI_FLAG_FULLSCREEN
-    //             | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-    //     vis &= ~(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-    //             | View.STATUS_BAR_TRANSLUCENT);
-    // }
-    // if (sImmersiveNavigationFilter != null && sImmersiveNavigationFilter.matches(attrs)) {
-    //     vis |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-    //             | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-    //             | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-    //     vis &= ~(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-    //             | View.NAVIGATION_BAR_TRANSLUCENT);
-    // }
-    // return vis;
-    assert(0);
+    //attrs = attrs != null ? attrs : win.getAttrs();
+    if (attrs == NULL)
+    {
+        win->GetAttrs(&attrs);
+    }
+    Int32 vis;// = win != null ? win.getSystemUiVisibility() : attrs.systemUiVisibility;
+    if (win != NULL)
+    {
+        win->GetSystemUiVisibility(&vis);
+    }
+    else
+    {
+        attrs->GetSystemUiVisibility(&vis);
+    }
+    if (sImmersiveStatusFilter != NULL)
+    {
+        Boolean sfRes;
+        sImmersiveStatusFilter->Matches(attrs, &sfRes);
+        if (sfRes)
+        {
+            vis |= IView::SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | IView::SYSTEM_UI_FLAG_FULLSCREEN
+                | IView::SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+            vis &= ~(IView::SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | IView::STATUS_BAR_TRANSLUCENT);
+        }
+    }
+    if (sImmersiveNavigationFilter != NULL)
+    {
+        Boolean nfRes;
+        sImmersiveNavigationFilter->Matches(attrs, &nfRes);
+        if (nfRes)
+        {
+            vis |= IView::SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | IView::SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | IView::SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+            vis &= ~(IView::SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | IView::NAVIGATION_BAR_TRANSLUCENT);
+        }
+    }
+    *res = vis;
     return NOERROR;
 }
 
@@ -179,19 +291,34 @@ ECode PolicyControl::GetWindowFlags(
     /* [out] */ Int32* res)
 {
     VALIDATE_NOT_NULL(res);
-    // ==================before translated======================
-    // attrs = attrs != null ? attrs : win.getAttrs();
-    // int flags = attrs.flags;
-    // if (sImmersiveStatusFilter != null && sImmersiveStatusFilter.matches(attrs)) {
-    //     flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
-    //     flags &= ~(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
-    //             | WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-    // }
-    // if (sImmersiveNavigationFilter != null && sImmersiveNavigationFilter.matches(attrs)) {
-    //     flags &= ~WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION;
-    // }
-    // return flags;
-    assert(0);
+    //attrs = attrs != null ? attrs : win.getAttrs();
+    if (attrs == NULL)
+    {
+        win->GetAttrs(&attrs);
+    }
+    Int32 flags;
+    attrs->GetFlags(&flags);
+    if (sImmersiveStatusFilter != NULL)
+    {
+        Boolean sfRes;
+        sImmersiveStatusFilter->Matches(attrs, &sfRes);
+        if (sfRes)
+        {
+            flags |= IWindowManagerLayoutParams::FLAG_FULLSCREEN;
+            flags &= ~(IWindowManagerLayoutParams::FLAG_TRANSLUCENT_STATUS
+                    | IWindowManagerLayoutParams::FLAG_FORCE_NOT_FULLSCREEN);
+        }
+    }
+    if (sImmersiveNavigationFilter != NULL)
+    {
+        Boolean nfRes;
+        sImmersiveNavigationFilter->Matches(attrs, &nfRes);
+        if (nfRes)
+        {
+            flags &= ~IWindowManagerLayoutParams::FLAG_TRANSLUCENT_NAVIGATION;
+        }
+    }
+    *res = flags;
     return NOERROR;
 }
 
@@ -201,13 +328,21 @@ ECode PolicyControl::AdjustClearableFlags(
     /* [out] */ Int32* res)
 {
     VALIDATE_NOT_NULL(res);
-    // ==================before translated======================
-    // final LayoutParams attrs = win != null ? win.getAttrs() : null;
-    // if (sImmersiveStatusFilter != null && sImmersiveStatusFilter.matches(attrs)) {
-    //     clearableFlags &= ~View.SYSTEM_UI_FLAG_FULLSCREEN;
-    // }
-    // return clearableFlags;
-    assert(0);
+    AutoPtr<IWindowManagerLayoutParams> attrs;
+    if (win != NULL)
+    {
+        win->GetAttrs((IWindowManagerLayoutParams**)&attrs);
+    }
+    if (sImmersiveStatusFilter != NULL)
+    {
+        Boolean sfRes;
+        sImmersiveStatusFilter->Matches(attrs, &sfRes);
+        if (sfRes)
+        {
+            clearableFlags &= ~IView::SYSTEM_UI_FLAG_FULLSCREEN;
+        }
+    }
+    *res = clearableFlags;
     return NOERROR;
 }
 
@@ -220,7 +355,21 @@ ECode PolicyControl::DisableImmersiveConfirmation(
     // return (sImmersivePreconfirmationsFilter != null
     //         && sImmersivePreconfirmationsFilter.matches(pkg))
     //         || ActivityManager.isRunningInTestHarness();
-    assert(0);
+    if (sImmersivePreconfirmationsFilter != NULL)
+    {
+        Boolean pcfRes;
+        sImmersivePreconfirmationsFilter->Matches(pkg, &pcfRes);
+        if (pcfRes)
+        {
+            *res = TRUE;
+        }
+    }
+    else
+    {
+        AutoPtr<IActivityManagerHelper> amHelper;
+        CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&amHelper);
+        amHelper->IsRunningInTestHarness(res);
+    }
     return NOERROR;
 }
 
@@ -228,20 +377,18 @@ ECode PolicyControl::ReloadFromSetting(
     /* [in] */ IContext* context)
 {
     VALIDATE_NOT_NULL(context);
-    // ==================before translated======================
-    // if (DEBUG) Slog.d(TAG, "reloadFromSetting()");
-    // String value = null;
-    // try {
-    //     value = Settings.Global.getStringForUser(context.getContentResolver(),
-    //             Settings.Global.POLICY_CONTROL,
-    //             UserHandle.USER_CURRENT);
-    //     if (sSettingValue != null && sSettingValue.equals(value)) return;
-    //     setFilters(value);
-    //     sSettingValue = value;
-    // } catch (Throwable t) {
-    //     Slog.w(TAG, "Error loading policy control, value=" + value, t);
-    // }
-    assert(0);
+    if (DEBUG) Slogger::D(TAG, "reloadFromSetting()");
+    String value(NULL);
+    //try {
+    AutoPtr<IContentResolver> cResolver;
+    context->GetContentResolver((IContentResolver**)&cResolver);
+    //TODO value = Settings::Global::GetStringForUser(cResolver, ISettingsGlobal::POLICY_CONTROL, IUserHandle::USER_CURRENT);
+    if (!sSettingValue.IsNullOrEmpty() && sSettingValue.Equals(value)) return NOERROR;
+    SetFilters(value);
+    sSettingValue = value;
+    //} catch (Throwable t) {
+    //    Slog.w(TAG, "Error loading policy control, value=" + value, t);
+    //}
     return NOERROR;
 }
 
@@ -250,11 +397,9 @@ ECode PolicyControl::Dump(
     /* [in] */ IPrintWriter* pw)
 {
     VALIDATE_NOT_NULL(pw);
-    // ==================before translated======================
-    // dump("sImmersiveStatusFilter", sImmersiveStatusFilter, prefix, pw);
-    // dump("sImmersiveNavigationFilter", sImmersiveNavigationFilter, prefix, pw);
-    // dump("sImmersivePreconfirmationsFilter", sImmersivePreconfirmationsFilter, prefix, pw);
-    assert(0);
+    Dump(String("sImmersiveStatusFilter"), sImmersiveStatusFilter, prefix, pw);
+    Dump(String("sImmersiveNavigationFilter"), sImmersiveNavigationFilter, prefix, pw);
+    Dump(String("sImmersivePreconfirmationsFilter"), sImmersivePreconfirmationsFilter, prefix, pw);
     return NOERROR;
 }
 
@@ -264,58 +409,75 @@ void PolicyControl::Dump(
     /* [in] */ const String& prefix,
     /* [in] */ IPrintWriter* pw)
 {
-    // ==================before translated======================
-    // pw.print(prefix); pw.print("PolicyControl."); pw.print(name); pw.print('=');
-    // if (filter == null) {
-    //     pw.println("null");
-    // } else {
-    //     filter.dump(pw); pw.println();
-    // }
-    assert(0);
+    pw->Print(prefix);
+    pw->Print(String("PolicyControl."));
+    pw->Print(name);
+    pw->Print('=');
+    if (filter == NULL)
+    {
+        pw->Println(String("null"));
+    }
+    else
+    {
+        filter->Dump(pw);
+        pw->Println();
+    }
 }
 
 void PolicyControl::SetFilters(
     /* [in] */ const String& value)
 {
-    // ==================before translated======================
-    // if (DEBUG) Slog.d(TAG, "setFilters: " + value);
-    // sImmersiveStatusFilter = null;
-    // sImmersiveNavigationFilter = null;
-    // sImmersivePreconfirmationsFilter = null;
-    // if (value != null) {
-    //     String[] nvps = value.split(":");
-    //     for (String nvp : nvps) {
-    //         int i = nvp.indexOf('=');
-    //         if (i == -1) continue;
-    //         String n = nvp.substring(0, i);
-    //         String v = nvp.substring(i + 1);
-    //         if (n.equals(NAME_IMMERSIVE_FULL)) {
-    //             Filter f = Filter.parse(v);
-    //             sImmersiveStatusFilter = sImmersiveNavigationFilter = f;
-    //             if (sImmersivePreconfirmationsFilter == null) {
-    //                 sImmersivePreconfirmationsFilter = f;
-    //             }
-    //         } else if (n.equals(NAME_IMMERSIVE_STATUS)) {
-    //             Filter f = Filter.parse(v);
-    //             sImmersiveStatusFilter = f;
-    //         } else if (n.equals(NAME_IMMERSIVE_NAVIGATION)) {
-    //             Filter f = Filter.parse(v);
-    //             sImmersiveNavigationFilter = f;
-    //             if (sImmersivePreconfirmationsFilter == null) {
-    //                 sImmersivePreconfirmationsFilter = f;
-    //             }
-    //         } else if (n.equals(NAME_IMMERSIVE_PRECONFIRMATIONS)) {
-    //             Filter f = Filter.parse(v);
-    //             sImmersivePreconfirmationsFilter = f;
-    //         }
-    //     }
-    // }
-    // if (DEBUG) {
-    //     Slog.d(TAG, "immersiveStatusFilter: " + sImmersiveStatusFilter);
-    //     Slog.d(TAG, "immersiveNavigationFilter: " + sImmersiveNavigationFilter);
-    //     Slog.d(TAG, "immersivePreconfirmationsFilter: " + sImmersivePreconfirmationsFilter);
-    // }
-    assert(0);
+    if (DEBUG) Slogger::D(TAG, "setFilters: %s", value.string());
+    sImmersiveStatusFilter = NULL;
+    sImmersiveNavigationFilter = NULL;
+    sImmersivePreconfirmationsFilter = NULL;
+    if (!value.IsNullOrEmpty())
+    {
+        AutoPtr<ArrayOf<String> > splitOut;
+        StringUtils::Split(value, String(":"), (ArrayOf<String>**)&splitOut);
+        for (Int32 i = 0; i < splitOut->GetLength(); ++i)
+        {
+            String nvp= (*splitOut)[i];
+            Int32 index = nvp.IndexOf('=');
+            if (index == -1) continue;
+            String n = nvp.Substring(0, index);
+            String v = nvp.Substring(index + 1);
+            if (n.Equals(NAME_IMMERSIVE_FULL))
+            {
+                AutoPtr<Filter> f = Filter::Parse(v);
+                sImmersiveStatusFilter = sImmersiveNavigationFilter = f;
+                if (sImmersivePreconfirmationsFilter == NULL)
+                {
+                    sImmersivePreconfirmationsFilter = f;
+                }
+            }
+            else if (n.Equals(NAME_IMMERSIVE_STATUS))
+            {
+                AutoPtr<Filter> f = Filter::Parse(v);
+                sImmersiveStatusFilter = f;
+            }
+            else if (n.Equals(NAME_IMMERSIVE_NAVIGATION))
+            {
+                AutoPtr<Filter> f = Filter::Parse(v);
+                sImmersiveNavigationFilter = f;
+                if (sImmersivePreconfirmationsFilter == NULL)
+                {
+                    sImmersivePreconfirmationsFilter = f;
+                }
+            }
+            else if (n.Equals(NAME_IMMERSIVE_PRECONFIRMATIONS))
+            {
+                AutoPtr<Filter> f = Filter::Parse(v);
+                sImmersivePreconfirmationsFilter = f;
+            }
+        }
+    }
+    if (DEBUG)
+    {
+        Slogger::D(TAG, "immersiveStatusFilter: %s",  sImmersiveStatusFilter->ToString().string());
+        Slogger::D(TAG, "immersiveNavigationFilter: %s", sImmersiveNavigationFilter->ToString().string());
+        Slogger::D(TAG, "immersivePreconfirmationsFilter: %s", sImmersivePreconfirmationsFilter->ToString().string());
+    }
 }
 
 } // namespace Impl
