@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/service/media/MediaBrowserService.h"
 #include "elastos/droid/service/media/CMediaBrowserServiceResult.h"
 #include "elastos/droid/os/CBinderHelper.h"

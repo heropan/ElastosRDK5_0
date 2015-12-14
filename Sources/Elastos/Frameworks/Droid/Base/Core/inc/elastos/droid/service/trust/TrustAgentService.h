@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_SERVICE_TRUST_TRUSTAGENTSERVICE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Service.h"
 #include "elastos/droid/app/Service.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/Runnable.h"

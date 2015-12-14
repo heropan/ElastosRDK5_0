@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_MENUINFLATER_H__
 #define __ELASTOS_DROID_VIEW_MENUINFLATER_H__
 
+#include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.View.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>

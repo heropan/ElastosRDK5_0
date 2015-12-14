@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_SERVICE_DREAMS_DREAMSERVICE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Service.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/app/Service.h"
 #include "elastos/droid/os/Runnable.h"
 

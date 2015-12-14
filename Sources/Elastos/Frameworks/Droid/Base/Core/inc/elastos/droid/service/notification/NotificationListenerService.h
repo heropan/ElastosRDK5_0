@@ -2,6 +2,8 @@
 #define __ELASTOS_DROID_SERVICE_NOTIFICATION_NOTIFICATIONLISTENERERVICE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/app/Service.h"
 
 using Elastos::Droid::App::Service;

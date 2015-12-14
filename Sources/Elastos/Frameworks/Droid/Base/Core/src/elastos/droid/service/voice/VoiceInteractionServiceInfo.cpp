@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Utility.h"
+#include "Elastos.CoreLibrary.External.h"
 #include "elastos/droid/service/voice/VoiceInteractionServiceInfo.h"
 #include "elastos/droid/app/AppGlobals.h"
 #include "elastos/droid/content/pm/ServiceInfo.h"

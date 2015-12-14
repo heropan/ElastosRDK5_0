@@ -2,6 +2,9 @@
 #define __ELASTOS_DROID_SERVICE_VOICE_VOICEINTERACTIONSESSIONSERVICE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Service.h"
 #include "elastos/droid/app/Service.h"
 
 using Elastos::Droid::App::Service;

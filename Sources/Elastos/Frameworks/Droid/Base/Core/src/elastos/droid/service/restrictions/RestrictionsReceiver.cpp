@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/service/restrictions/RestrictionsReceiver.h"
 
 using Elastos::Droid::Content::IRestrictionsManager;

@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/service/notification/ConditionProviderService.h"
 #include "elastos/droid/os/ServiceManager.h"
 #include <elastos/utility/logging/Logger.h>

@@ -2,6 +2,8 @@
 #define __ELASTOS_DROID_SERVICE_NOTIFICATION_CONDITION_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Service.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Net::IUri;
