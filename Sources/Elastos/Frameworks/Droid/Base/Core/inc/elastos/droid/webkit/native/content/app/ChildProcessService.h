@@ -14,7 +14,6 @@ using Elastos::Droid::Graphics::ISurfaceTexture;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IParcelFileDescriptor;
-using Elastos::Droid::Os::IProcess;
 using Elastos::Droid::Os::Runnable;
 // import android.os.RemoteException;
 // import android.util.Log;

@@ -6,17 +6,18 @@ INCLUDES += $(MAKEDIR)/../../../../../inc
 INCLUDES += $(MAKEDIR)/../../../../../../../Core/inc/
 
 C_DEFINES += -DDROID_SERVER
+include $(MAKEDIR)/../../../../../../../../sources.inc
 
 SOURCES = display.cpp
 SOURCES += AutomaticBrightnessController.cpp
-#SOURCES += CDisplayManagerService.cpp
+SOURCES += CDisplayManagerService.cpp
 SOURCES += ColorFade.cpp
 SOURCES += DisplayAdapter.cpp
 SOURCES += DisplayDevice.cpp
 SOURCES += DisplayDeviceInfo.cpp
 SOURCES += DisplayPowerController.cpp
 SOURCES += DisplayPowerState.cpp
-#SOURCES += LocalDisplayAdapter.cpp
+SOURCES += LocalDisplayAdapter.cpp
 SOURCES += LogicalDisplay.cpp
 SOURCES += OverlayDisplayAdapter.cpp
 SOURCES += OverlayDisplayWindow.cpp

@@ -178,8 +178,6 @@ Boolean Process::ZygoteState::IsClosed()
 //===============================================================================
 // Process
 //===============================================================================
-CAR_INTERFACE_IMPL(Process, Object, IProcess)
-
 ECode Process::Start(
     /* [in] */ const String& processClass,
     /* [in] */ const String& niceName,

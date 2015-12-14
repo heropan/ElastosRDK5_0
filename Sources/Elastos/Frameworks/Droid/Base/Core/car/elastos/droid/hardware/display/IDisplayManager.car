@@ -3,7 +3,7 @@ module
 {
     interface Elastos.Droid.View.IDisplayInfo;
     interface Elastos.Droid.View.ISurface;
-    interface Elastos.Droid.Media.Projection.IMediaProjection;
+    interface Elastos.Droid.Media.Projection.IIMediaProjection;
     interface Elastos.Droid.Hardware.Display.IIVirtualDisplayCallback;
     interface Elastos.Droid.Hardware.Display.IIDisplayManagerCallback;
 
@@ -57,7 +57,7 @@ module
         // MediaProjection token for certain combinations of flags.
         CreateVirtualDisplay(
             [in] IIVirtualDisplayCallback* clbk,
-            [in] IMediaProjection* projectionToken,
+            [in] IIMediaProjection* projectionToken,
             [in] String packageName,
             [in] String name,
             [in] Int32 width,

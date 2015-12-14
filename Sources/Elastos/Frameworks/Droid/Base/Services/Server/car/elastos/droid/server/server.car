@@ -27,8 +27,9 @@ module
     // merge("search/Searchables.car");
 
     using interface Elastos.Droid.Os.IBinder;
+    using interface Elastos.Droid.Content.IContext;
+    using interface Elastos.Droid.Hardware.Display.IIDisplayManager;
     using interface Elastos.Droid.Media.Projection.IIMediaProjectionCallback;
-
 
     // using interface Elastos.Core.IRunnable;
     // using interface Elastos.IO.IFile;
@@ -52,7 +53,6 @@ module
     // using interface Elastos.Droid.AppWidget.IIAppWidgetService;
     // using interface Elastos.Droid.Content.IBroadcastReceiver;
     // using interface Elastos.Droid.Content.IClipboard;
-    // using interface Elastos.Droid.Content.IContext;
     // using interface Elastos.Droid.Content.IIntent;
     // using interface Elastos.Droid.Content.IIntentReceiver;
     // using interface Elastos.Droid.Content.IServiceConnection;
@@ -98,7 +98,6 @@ module
     // using interface Elastos.Droid.View.IInputFilter;
     // using interface Elastos.Droid.View.IIDisplayManagerAw;
     // using interface Elastos.Droid.Hardware.Display.IDisplayListener;
-    // using interface Elastos.Droid.Hardware.Display.IIDisplayManager;
     // using interface Elastos.Droid.Hardware.Input.IIInputManager;
     // using interface Elastos.Droid.Hardware.Input.IInputDeviceListener;
     // using interface Elastos.Droid.Hardware.Usb.IIUsbManager;
@@ -518,16 +517,21 @@ module
 
     namespace Display {
 
-//     [local]
-//     class CDisplayManagerService {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IHandler* mainHandler,
-//             [in] IHandler* uiHandler);
+        [local]
+        class CDisplayManagerService {
+            constructor(
+                [in] IContext* ctx);
 
-//         interface IDisplayManagerService;
-//         interface ISystemService;
-//     }
+            interface ISystemService;
+        }
+
+        class CDisplayManagerBinderService {
+            constructor(
+                [in] ISystemService* displayManagerService);
+
+            interface IIDisplayManager;
+            interface IBinder;
+        }
 
         class CMediaProjectionCallback {
             constructor(

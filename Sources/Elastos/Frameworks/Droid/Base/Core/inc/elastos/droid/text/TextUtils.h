@@ -14,10 +14,10 @@ namespace Text {
 
 class MeasuredText;
 
-class TextUtils
+class ECO_PUBLIC TextUtils
 {
 private:
-    class Reverser
+    class ECO_LOCAL Reverser
         : public Object
         , public ICharSequence
         , public IGetChars
@@ -592,20 +592,20 @@ public:
 //            = InputType_TYPE_TEXT_FLAG_CAP_SENTENCES;
 
 private:
-    TextUtils();
-    TextUtils(const TextUtils& other);
+    ECO_LOCAL TextUtils();
+    ECO_LOCAL TextUtils(const TextUtils& other);
 
-    static CARAPI WriteWhere(
+    ECO_LOCAL static CARAPI WriteWhere(
         /* [in] */ IParcel* p,
         /* [in] */ ISpanned* sp,
         /* [in] */ IInterface* o);
 
-    static CARAPI ReadSpan(
+    ECO_LOCAL static CARAPI ReadSpan(
         /* [in] */ IParcel* p,
         /* [in] */ ISpannable* sp,
         /* [in] */ IInterface* o);
 
-    static CARAPI_(Float) SetPara(
+    ECO_LOCAL static CARAPI_(Float) SetPara(
         /* [in] */ MeasuredText* mt,
         /* [in] */ ITextPaint* paint,
         /* [in] */ ICharSequence* text,
@@ -627,24 +627,24 @@ private:
      *
      * @hide
      */
-    static CARAPI_(Int32) GetLayoutDirectionFromFirstChar(
+    ECO_LOCAL static CARAPI_(Int32) GetLayoutDirectionFromFirstChar(
         /* [in] */ ILocale* locale);
 
 private:
-    static const String TAG;// = "TextUtils";
+    ECO_LOCAL static const String TAG;// = "TextUtils";
 
-    static const Char32 FIRST_RIGHT_TO_LEFT = 0x0590;//'\u0590';
+    ECO_LOCAL static const Char32 FIRST_RIGHT_TO_LEFT = 0x0590;//'\u0590';
 
-    static Object sLock;
+    ECO_LOCAL static Object sLock;
 
-    static AutoPtr< ArrayOf<Char32> > sTemp;
+    ECO_LOCAL static AutoPtr< ArrayOf<Char32> > sTemp;
 
-    static AutoPtr< ArrayOf<String> > EMPTY_STRING_ARRAY;
+    ECO_LOCAL static AutoPtr< ArrayOf<String> > EMPTY_STRING_ARRAY;
 
-    static const Char32 ZWNBS_CHAR = 0xFEFF;//'\uFEFF';
+    ECO_LOCAL static const Char32 ZWNBS_CHAR = 0xFEFF;//'\uFEFF';
 
-    static String ARAB_SCRIPT_SUBTAG;
-    static String HEBR_SCRIPT_SUBTAG;
+    ECO_LOCAL static String ARAB_SCRIPT_SUBTAG;
+    ECO_LOCAL static String HEBR_SCRIPT_SUBTAG;
 };
 
 } // namespace Text

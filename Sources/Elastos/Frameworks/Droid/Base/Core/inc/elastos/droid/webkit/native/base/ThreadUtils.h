@@ -7,7 +7,6 @@
 using Elastos::Core::IRunnable;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::ILooper;
-using Elastos::Droid::Os::IProcess;
 
 using Elastos::Utility::Concurrent::ICallable;
 // import java.util.concurrent.ExecutionException;

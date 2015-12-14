@@ -23,14 +23,14 @@ WifiDisplayStatus::WifiDisplayStatus()
 {
 }
 
-ECode WifiDisplayStatus::constrcutor()
+ECode WifiDisplayStatus::constructor()
 {
-    return constrcutor(FEATURE_STATE_UNAVAILABLE, SCAN_STATE_NOT_SCANNING,
+    return constructor(FEATURE_STATE_UNAVAILABLE, SCAN_STATE_NOT_SCANNING,
             DISPLAY_STATE_NOT_CONNECTED, NULL,
             WifiDisplay::EMPTY_ARRAY, NULL);
 }
 
-ECode WifiDisplayStatus::constrcutor(
+ECode WifiDisplayStatus::constructor(
     /* [in] */ Int32 featureState,
     /* [in] */ Int32 scanState,
     /* [in] */ Int32 activeDisplayState,

@@ -26,6 +26,12 @@ module
         SetValid(
             [in] Boolean valid);
 
+        SetDisplayId(
+            [in] Int32 displayId);
+
+        GetDisplayId(
+            [out] Int32* displayId);
+
         SetOrientation(
             [in] Int32 orientation);
 

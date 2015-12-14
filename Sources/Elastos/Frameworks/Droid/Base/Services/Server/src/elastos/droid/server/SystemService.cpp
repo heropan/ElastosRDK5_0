@@ -99,7 +99,7 @@ AutoPtr<IBinder> SystemService::GetBinderService(
 }
 
 void SystemService::PublishLocalService(
-    /* [in] */ const ClassID& type,
+    /* [in] */ const InterfaceID& type,
     /* [in] */ IInterface* service)
 {
     assert(0 && "TODO");
@@ -107,7 +107,7 @@ void SystemService::PublishLocalService(
 }
 
 AutoPtr<IInterface> SystemService::GetLocalService(
-    /* [in] */const ClassID& type)
+    /* [in] */const InterfaceID& type)
 {
     assert(0 && "TODO");
     // return LocalServices.getService(type);

@@ -714,6 +714,22 @@ module
             interface IParcelable;
         }
 
+        [deprecated]
+        class CWifiDisplayStatus {
+            constructor();
+
+            constructor(
+                [in] Int32 featureState,
+                [in] Int32 scanState,
+                [in] Int32 activeDisplayState,
+                [in] IWifiDisplay* activeDisplay,
+                [in] ArrayOf<IWifiDisplay*>* displays,
+                [in] IWifiDisplaySessionInfo* sessionInfo);
+
+            interface IWifiDisplayStatus;
+            interface IParcelable;
+        }
+
         class CDisplayViewport {
             constructor();
 

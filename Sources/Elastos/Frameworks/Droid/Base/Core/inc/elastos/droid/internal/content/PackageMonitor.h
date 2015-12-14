@@ -17,7 +17,6 @@ using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IHandlerThread;
 using Elastos::Droid::Os::ILooper;
-using Elastos::Droid::Os::IProcess;
 using Elastos::Droid::Os::IUserHandle;
 
 namespace Elastos {

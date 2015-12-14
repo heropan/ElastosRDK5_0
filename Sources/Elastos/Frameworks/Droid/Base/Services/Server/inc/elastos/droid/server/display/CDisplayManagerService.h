@@ -6,6 +6,8 @@
 #include "elastos/droid/server/SystemService.h"
 #include "elastos/droid/server/display/DisplayAdapter.h"
 #include "elastos/droid/server/display/DisplayDevice.h"
+#include "elastos/droid/server/display/DisplayPowerController.h"
+#include "elastos/droid/server/display/VirtualDisplayAdapter.h"
 #include "elastos/droid/server/display/WifiDisplayAdapter.h"
 #include "elastos/droid/server/display/LogicalDisplay.h"
 #include "elastos/droid/server/display/PersistentDataStore.h"
@@ -14,8 +16,19 @@
 
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::View::IWindowManagerInternal;
-using Elastos::Droid::Hardware::Display::IDisplayManagerCallback;
+using Elastos::Droid::Hardware::ISensorManager;
+using Elastos::Droid::Hardware::Input::IInputManagerInternal;
+using Elastos::Droid::Hardware::Display::IDisplayTransactionListener;
+using Elastos::Droid::Hardware::Display::IDisplayPowerRequest;
+using Elastos::Droid::Hardware::Display::IDisplayPowerCallbacks;
+using Elastos::Droid::Hardware::Display::IIVirtualDisplayCallback;
+using Elastos::Droid::Hardware::Display::IIDisplayManagerCallback;
 using Elastos::Droid::Hardware::Display::IIDisplayManager;
+using Elastos::Droid::Media::Projection::IIMediaProjection;
+using Elastos::Droid::Media::Projection::IIMediaProjectionManager;
+using Elastos::Utility::IList;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::Concurrent::ICopyOnWriteArrayList;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::IO::IFileDescriptor;
 
@@ -97,7 +110,11 @@ public:
     public:
         CAR_INTERFACE_DECL()
 
-        CARAPI constructor();
+        CARAPI constructor(
+            /* [in] */ ISystemService* displayManagerService);
+
+        CARAPI ToString(
+            /* [out] */ String* str);
 
         /**
          * Returns information about the specified logical display.
@@ -199,6 +216,8 @@ public:
 
         Boolean CanProjectSecureVideo(
             /* [in] */ IIMediaProjection* projection);
+    private:
+        CDisplayManagerService* mService;
     };
 
     class LocalService
@@ -207,6 +226,9 @@ public:
     {
     public:
         CAR_INTERFACE_DECL()
+
+        LocalService(
+            /* [in] */ CDisplayManagerService* host);
 
         // @Override
         CARAPI InitPowerManagement(
@@ -251,6 +273,8 @@ public:
             /* [in] */ Boolean hasContent,
             /* [in] */ Float requestedRefreshRate,
             /* [in] */ Boolean inTraversal);
+    private:
+        CDisplayManagerService* mHost;
     };
 
     class DisplayManagerHandler
@@ -302,7 +326,7 @@ public:
         CallbackRecord(
             /* [in] */ CDisplayManagerService* owner,
             /* [in] */ Int32 pid,
-            /* [in] */ IDisplayManagerCallback* callback);
+            /* [in] */ IIDisplayManagerCallback* callback);
 
         ~CallbackRecord();
 
@@ -317,7 +341,29 @@ public:
         Boolean mWifiDisplayScanRequested;
     private:
         CDisplayManagerService* mHost;
-        AutoPtr<IDisplayManagerCallback> mCallback;
+        AutoPtr<IIDisplayManagerCallback> mCallback;
+    };
+
+    class DisplayBlanker
+        : public Object
+        , public IDisplayBlanker
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        DisplayBlanker(
+            /* [in] */ CDisplayManagerService* host,
+            /* [in] */ IDisplayPowerCallbacks* callbacks);
+
+        // @Override
+        CARAPI RequestDisplayState(
+            /* [in] */ Int32 state);
+
+        CARAPI ToString(
+            /* [out] */ String* str);
+    private:
+        CDisplayManagerService* mHost;
+        AutoPtr<IDisplayPowerCallbacks> mCallbacks;
     };
 
 public:
@@ -369,12 +415,12 @@ private:
 
     // Binder call
     CARAPI GetDisplayIdsInternal(
-        /* [in] */ Int32 callingUid
+        /* [in] */ Int32 callingUid,
         /* [out, callee] */ ArrayOf<Int32>** displayIds);
 
     // Binder call
     CARAPI RegisterCallbackInternal(
-        /* [in] */ IDisplayManagerCallback* callback,
+        /* [in] */ IIDisplayManagerCallback* callback,
         /* [in] */ Int32 callingUid);
 
     CARAPI_(void) OnCallbackDied(
@@ -594,7 +640,7 @@ private:
     Int32 mNextNonDefaultDisplayId;
 
     // List of all display transaction listeners.
-    AutoPtr<ICopyOnWriteArrayList> mDisplayTransactionListeners;
+    AutoPtr<ICopyOnWriteArrayList> mDisplayTransactionListeners;//new CopyOnWriteArrayList<DisplayTransactionListener>();
 
     // Display power controller.
     AutoPtr<DisplayPowerController> mDisplayPowerController;

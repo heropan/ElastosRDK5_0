@@ -85,6 +85,21 @@ ECode DisplayViewport::SetValid(
     return NOERROR;
 }
 
+ECode DisplayViewport::SetDisplayId(
+    /* [in] */ Int32 displayId)
+{
+    mDisplayId = displayId;
+    return NOERROR;
+}
+
+ECode DisplayViewport::GetDisplayId(
+    /* [out] */ Int32* displayId)
+{
+    VALIDATE_NOT_NULL(displayId)
+    *displayId = mDisplayId;
+    return NOERROR;
+}
+
 ECode DisplayViewport::SetOrientation(
     /* [in] */ Int32 orientation)
 {

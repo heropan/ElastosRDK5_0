@@ -9,7 +9,6 @@
 
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::IBaseBundle;
-using Elastos::Droid::Os::IProcess;
 using Elastos::Droid::Os::ITrace;
 using Elastos::Core::StringUtils;
 

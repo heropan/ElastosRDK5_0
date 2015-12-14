@@ -1,27 +1,47 @@
 
 #include "elastos/droid/server/display/CDisplayManagerService.h"
-#include "elastos/droid/server/display/HeadlessDisplayAdapter.h"
+#include "elastos/droid/server/display/CDisplayManagerBinderService.h"
 #include "elastos/droid/server/display/LocalDisplayAdapter.h"
 #include "elastos/droid/server/display/WifiDisplayAdapter.h"
 #include "elastos/droid/server/display/OverlayDisplayAdapter.h"
 #include "elastos/droid/os/SystemClock.h"
-#include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/Manifest.h"
+#include <elastos/utility/Arrays.h>
 #include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/Thread.h>
 
-using Elastos::Droid::Os::Binder;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::Process;
+using Elastos::Droid::Os::IProcess;
+using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::Os::IBinderHelper;
+using Elastos::Droid::Os::CBinderHelper;
+using Elastos::Droid::Os::IServiceManager;
+using Elastos::Droid::Os::CServiceManager;
 using Elastos::Droid::Os::ISystemProperties;
 using Elastos::Droid::Os::CSystemProperties;
 using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::View::CDisplayInfo;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Hardware::Display::IDisplayManager;
+using Elastos::Droid::Hardware::Display::EIID_IDisplayManagerInternal;
+using Elastos::Droid::Hardware::Display::EIID_IIDisplayManager;
 using Elastos::Droid::Hardware::Display::IDisplayManagerGlobal;
+using Elastos::Droid::Hardware::Display::EIID_IDisplayViewport;
 using Elastos::Droid::Hardware::Display::CWifiDisplayStatus;
+using Elastos::Droid::Hardware::Display::CDisplayViewport;
 using Elastos::Core::Thread;
+using Elastos::Utility::Arrays;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::Concurrent::CCopyOnWriteArrayList;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -44,210 +64,235 @@ const Int32 CDisplayManagerService::MSG_UPDATE_VIEWPORT;
 // CDisplayManagerService::BinderService
 //==============================================================================
 
-CAR_INTERFACE_IMPL_2(BinderService, Object, IIDisplayManager, IBinder)
+CAR_INTERFACE_IMPL_2(CDisplayManagerService::BinderService, Object, IIDisplayManager, IBinder)
 
-CARAPI constructor();
+ECode CDisplayManagerService::BinderService::constructor(
+    /* [in] */ ISystemService* displayManagerService)
+{
+    mService = (CDisplayManagerService*)displayManagerService;
+    return NOERROR;
+}
 
-/**
- * Returns information about the specified logical display.
- *
- * @param displayId The logical display id.
- * @return The logical display info, or null if the display does not exist.  The
- * returned object must be treated as immutable.
- */
-// @Override // Binder call
-CARAPI GetDisplayInfo(
+ECode CDisplayManagerService::BinderService::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = "CDisplayManagerService::BinderService";
+    return NOERROR;
+}
+
+ECode CDisplayManagerService::BinderService::GetDisplayInfo(
     /* [in] */ Int32 displayId,
     /* [out] */ IDisplayInfo** info)
 {
-    final int callingUid = Binder.getCallingUid();
-    final long token = Binder.ClearCallingIdentity();
-    try {
-        return getDisplayInfoInternal(displayId, callingUid);
-    } finally {
-        Binder.RestoreCallingIdentity(token);
-    }
+    VALIDATE_NOT_NULL(info)
+
+    AutoPtr<IBinderHelper> binder;
+    CBinderHelper::AcquireSingleton((IBinderHelper**)&binder);
+    Int32 callingUid;
+    binder->GetCallingUid(&callingUid);
+    Int64 token;
+    binder->ClearCallingIdentity(&token);
+    mService->GetDisplayInfoInternal(displayId, callingUid, info);
+    binder->RestoreCallingIdentity(token);
+    return NOERROR;
 }
 
-/**
- * Returns the list of all display ids.
- */
-// @Override // Binder call
-CARAPI GetDisplayIds(
+ECode CDisplayManagerService::BinderService::GetDisplayIds(
     /* [out, callee] */ ArrayOf<Int32>** ids)
 {
-    final int callingUid = Binder.getCallingUid();
-    final long token = Binder.ClearCallingIdentity();
-    try {
-        return getDisplayIdsInternal(callingUid);
-    } finally {
-        Binder.RestoreCallingIdentity(token);
-    }
+    AutoPtr<IBinderHelper> binder;
+    CBinderHelper::AcquireSingleton((IBinderHelper**)&binder);
+    Int32 callingUid;
+    binder->GetCallingUid(&callingUid);
+    Int64 token;
+    binder->ClearCallingIdentity(&token);
+    mService->GetDisplayIdsInternal(callingUid, ids);
+    binder->RestoreCallingIdentity(token);
+    return NOERROR;
 }
 
-//@Override // Binder call
-CARAPI RegisterCallback(
+ECode CDisplayManagerService::BinderService::RegisterCallback(
     /* [in] */ IIDisplayManagerCallback* callback)
 {
-    if (callback == null) {
-        throw new IllegalArgumentException("listener must not be null");
+    if (callback == NULL) {
+        Slogger::E("CDisplayManagerService::BinderService", "listener must not be NULL");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    final int callingPid = Binder.getCallingPid();
-    final long token = Binder.ClearCallingIdentity();
-    try {
-        registerCallbackInternal(callback, callingPid);
-    } finally {
-        Binder.RestoreCallingIdentity(token);
-    }
+    AutoPtr<IBinderHelper> binder;
+    CBinderHelper::AcquireSingleton((IBinderHelper**)&binder);
+    Int32 callingPid;
+    binder->GetCallingPid(&callingPid);
+    Int64 token;
+    binder->ClearCallingIdentity(&token);
+    mService->RegisterCallbackInternal(callback, callingPid);
+    binder->RestoreCallingIdentity(token);
+    return NOERROR;
 }
 
-//@Override // Binder call
-CARAPI StartWifiDisplayScan()
+ECode CDisplayManagerService::BinderService::StartWifiDisplayScan()
 {
-    mContext.EnforceCallingOrSelfPermission(Manifest.permission.CONFIGURE_WIFI_DISPLAY,
-            "Permission required to start wifi display scans");
+    mService->mContext->EnforceCallingOrSelfPermission(
+        Manifest::permission::CONFIGURE_WIFI_DISPLAY,
+        String("Permission required to start wifi display scans"));
 
-    final int callingPid = Binder.getCallingPid();
-    final long token = Binder.ClearCallingIdentity();
-    try {
-        startWifiDisplayScanInternal(callingPid);
-    } finally {
-        Binder.RestoreCallingIdentity(token);
-    }
+    AutoPtr<IBinderHelper> binder;
+    CBinderHelper::AcquireSingleton((IBinderHelper**)&binder);
+    Int32 callingPid;
+    binder->GetCallingPid(&callingPid);
+    Int64 token;
+    binder->ClearCallingIdentity(&token);
+    mService->StartWifiDisplayScanInternal(callingPid);
+    binder->RestoreCallingIdentity(token);
+    return NOERROR;
 }
 
-//@Override // Binder call
-CARAPI StopWifiDisplayScan()
+ECode CDisplayManagerService::BinderService::StopWifiDisplayScan()
 {
-    mContext.EnforceCallingOrSelfPermission(Manifest.permission.CONFIGURE_WIFI_DISPLAY,
-            "Permission required to stop wifi display scans");
+    mService->mContext->EnforceCallingOrSelfPermission(
+        Manifest::permission::CONFIGURE_WIFI_DISPLAY,
+        String("Permission required to stop wifi display scans"));
 
-    final int callingPid = Binder.getCallingPid();
-    final long token = Binder.ClearCallingIdentity();
-    try {
-        stopWifiDisplayScanInternal(callingPid);
-    } finally {
-        Binder.RestoreCallingIdentity(token);
-    }
+    AutoPtr<IBinderHelper> binder;
+    CBinderHelper::AcquireSingleton((IBinderHelper**)&binder);
+    Int32 callingPid;
+    binder->GetCallingPid(&callingPid);
+    Int64 token;
+    binder->ClearCallingIdentity(&token);
+    mService->StopWifiDisplayScanInternal(callingPid);
+    binder->RestoreCallingIdentity(token);
+    return NOERROR;
 }
 
-//@Override // Binder call
-CARAPI ConnectWifiDisplay(
+ECode CDisplayManagerService::BinderService::ConnectWifiDisplay(
     /* [in] */ const String& address)
 {
-    if (address == null) {
-        throw new IllegalArgumentException("address must not be null");
+    if (address == NULL) {
+        Slogger::E("CDisplayManagerService::BinderService", "address must not be NULL");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mContext.EnforceCallingOrSelfPermission(Manifest.permission.CONFIGURE_WIFI_DISPLAY,
-            "Permission required to connect to a wifi display");
 
-    final long token = Binder.ClearCallingIdentity();
-    try {
-        connectWifiDisplayInternal(address);
-    } finally {
-        Binder.RestoreCallingIdentity(token);
-    }
+    mService->mContext->EnforceCallingOrSelfPermission(
+        Manifest::permission::CONFIGURE_WIFI_DISPLAY,
+        String("Permission required to connect to a wifi display"));
+
+    AutoPtr<IBinderHelper> binder;
+    CBinderHelper::AcquireSingleton((IBinderHelper**)&binder);
+    Int64 token;
+    binder->ClearCallingIdentity(&token);
+    mService->ConnectWifiDisplayInternal(address);
+    binder->RestoreCallingIdentity(token);
+    return NOERROR;
 }
 
-//@Override // Binder call
-CARAPI DisconnectWifiDisplay()
+ECode CDisplayManagerService::BinderService::DisconnectWifiDisplay()
 {
     // This request does not require special permissions.
     // Any app can request disconnection from the currently active wifi display.
     // This exception should no longer be needed once wifi display control moves
     // to the media router service.
 
-    final long token = Binder.ClearCallingIdentity();
-    try {
-        DisconnectWifiDisplayInternal();
-    } finally {
-        Binder.RestoreCallingIdentity(token);
-    }
+    AutoPtr<IBinderHelper> binder;
+    CBinderHelper::AcquireSingleton((IBinderHelper**)&binder);
+    Int64 token;
+    binder->ClearCallingIdentity(&token);
+    mService->DisconnectWifiDisplayInternal();
+    binder->RestoreCallingIdentity(token);
+    return NOERROR;
 }
 
-//@Override // Binder call
-CARAPI RenameWifiDisplay(
+ECode CDisplayManagerService::BinderService::RenameWifiDisplay(
     /* [in] */ const String& address,
     /* [in] */ const String& alias)
 {
-    if (address == null) {
-        throw new IllegalArgumentException("address must not be null");
+    if (address == NULL) {
+        Slogger::E("CDisplayManagerService::BinderService", "address must not be NULL");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mContext.EnforceCallingOrSelfPermission(Manifest.permission.CONFIGURE_WIFI_DISPLAY,
-            "Permission required to rename to a wifi display");
 
-    final long token = Binder.ClearCallingIdentity();
-    try {
-        RenameWifiDisplayInternal(address, alias);
-    } finally {
-        Binder.RestoreCallingIdentity(token);
-    }
+    mService->mContext->EnforceCallingOrSelfPermission(
+        Manifest::permission::CONFIGURE_WIFI_DISPLAY,
+        String("Permission required to rename to a wifi display"));
+
+    AutoPtr<IBinderHelper> binder;
+    CBinderHelper::AcquireSingleton((IBinderHelper**)&binder);
+    Int64 token;
+    binder->ClearCallingIdentity(&token);
+    mService->RenameWifiDisplayInternal(address, alias);
+    binder->RestoreCallingIdentity(token);
+    return NOERROR;
 }
 
-//@Override // Binder call
-CARAPI ForgetWifiDisplay(
+ECode CDisplayManagerService::BinderService::ForgetWifiDisplay(
     /* [in] */ const String& address)
 {
-    if (address == null) {
-        throw new IllegalArgumentException("address must not be null");
+    if (address == NULL) {
+        Slogger::E("CDisplayManagerService::BinderService", "address must not be NULL");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    mContext.EnforceCallingOrSelfPermission(Manifest.permission.CONFIGURE_WIFI_DISPLAY,
-            "Permission required to forget to a wifi display");
 
-    final long token = Binder.ClearCallingIdentity();
-    try {
-        ForgetWifiDisplayInternal(address);
-    } finally {
-        Binder.RestoreCallingIdentity(token);
-    }
+    mService->mContext->EnforceCallingOrSelfPermission(
+        Manifest::permission::CONFIGURE_WIFI_DISPLAY,
+        String("Permission required to forget to a wifi display"));
+
+    AutoPtr<IBinderHelper> binder;
+    CBinderHelper::AcquireSingleton((IBinderHelper**)&binder);
+    Int64 token;
+    binder->ClearCallingIdentity(&token);
+    mService->ForgetWifiDisplayInternal(address);
+    binder->RestoreCallingIdentity(token);
+    return NOERROR;
 }
 
-//@Override // Binder call
-CARAPI PauseWifiDisplay()
+ECode CDisplayManagerService::BinderService::PauseWifiDisplay()
 {
-    mContext.EnforceCallingOrSelfPermission(Manifest.permission.CONFIGURE_WIFI_DISPLAY,
-            "Permission required to pause a wifi display session");
+    mService->mContext->EnforceCallingOrSelfPermission(
+        Manifest::permission::CONFIGURE_WIFI_DISPLAY,
+        String("Permission required to pause a wifi display session"));
 
-    final long token = Binder.ClearCallingIdentity();
-    try {
-        PauseWifiDisplayInternal();
-    } finally {
-        Binder.RestoreCallingIdentity(token);
-    }
+    AutoPtr<IBinderHelper> binder;
+    CBinderHelper::AcquireSingleton((IBinderHelper**)&binder);
+    Int64 token;
+    binder->ClearCallingIdentity(&token);
+    mService->PauseWifiDisplayInternal();
+    binder->RestoreCallingIdentity(token);
+    return NOERROR;
 }
 
-//@Override // Binder call
-CARAPI ResumeWifiDisplay()
+ECode CDisplayManagerService::BinderService::ResumeWifiDisplay()
 {
-    mContext.EnforceCallingOrSelfPermission(Manifest.permission.CONFIGURE_WIFI_DISPLAY,
-            "Permission required to resume a wifi display session");
+    mService->mContext->EnforceCallingOrSelfPermission(
+        Manifest::permission::CONFIGURE_WIFI_DISPLAY,
+        String("Permission required to resume a wifi display session"));
 
-    final long token = Binder.ClearCallingIdentity();
-    try {
-        ResumeWifiDisplayInternal();
-    } finally {
-        Binder.RestoreCallingIdentity(token);
-    }
+    AutoPtr<IBinderHelper> binder;
+    CBinderHelper::AcquireSingleton((IBinderHelper**)&binder);
+    Int64 token;
+    binder->ClearCallingIdentity(&token);
+    mService->ResumeWifiDisplayInternal();
+    binder->RestoreCallingIdentity(token);
+    return NOERROR;
 }
 
-//@Override // Binder call
-CARAPI GetWifiDisplayStatus(
+ECode CDisplayManagerService::BinderService::GetWifiDisplayStatus(
     /* [out] */ IWifiDisplayStatus** status)
 {
+    VALIDATE_NOT_NULL(status)
+
     // This request does not require special permissions.
     // Any app can get information about available wifi displays.
 
-    final long token = Binder.ClearCallingIdentity();
-    try {
-        return GetWifiDisplayStatusInternal();
-    } finally {
-        Binder.RestoreCallingIdentity(token);
-    }
+    AutoPtr<IBinderHelper> binder;
+    CBinderHelper::AcquireSingleton((IBinderHelper**)&binder);
+    Int64 token;
+    binder->ClearCallingIdentity(&token);
+    mService->GetWifiDisplayStatusInternal(status);
+    binder->RestoreCallingIdentity(token);
+    return NOERROR;
 }
 
-//@Override // Binder call
-CARAPI CreateVirtualDisplay(
+ECode CDisplayManagerService::BinderService::CreateVirtualDisplay(
     /* [in] */ IIVirtualDisplayCallback* callback,
     /* [in] */ IIMediaProjection* projection,
     /* [in] */ const String& packageName,
@@ -259,285 +304,335 @@ CARAPI CreateVirtualDisplay(
     /* [in] */ Int32 flags,
     /* [out] */ Int32* result)
 {
-    final int callingUid = Binder.getCallingUid();
-    if (!validatePackageName(callingUid, packageName)) {
-        throw new SecurityException("packageName must match the calling uid");
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
+    AutoPtr<IBinderHelper> binder;
+    CBinderHelper::AcquireSingleton((IBinderHelper**)&binder);
+    Int32 callingUid;
+    binder->GetCallingUid(&callingUid);
+    if (!ValidatePackageName(callingUid, packageName)) {
+        Slogger::E("CDisplayManagerService", "packageName must match the calling uid");
+        return E_SECURITY_EXCEPTION;
     }
-    if (callback == null) {
-        throw new IllegalArgumentException("appToken must not be null");
+    if (callback == NULL) {
+        Slogger::E("CDisplayManagerService", "appToken must not be NULL");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    if (TextUtils.isEmpty(name)) {
-        throw new IllegalArgumentException("name must be non-null and non-empty");
+    if (TextUtils::IsEmpty(name)) {
+        Slogger::E("CDisplayManagerService", "name must be non-NULL and non-empty");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (width <= 0 || height <= 0 || densityDpi <= 0) {
-        throw new IllegalArgumentException("width, height, and densityDpi must be "
-                + "greater than 0");
+        Slogger::E("CDisplayManagerService", "width, height, and densityDpi must be greater than 0");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    if ((flags & DisplayManager.VIRTUAL_DISPLAY_FLAG_PUBLIC) != 0) {
-        flags |= DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR;
+    if ((flags & IDisplayManager::VIRTUAL_DISPLAY_FLAG_PUBLIC) != 0) {
+        flags |= IDisplayManager::VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR;
     }
-    if ((flags & DisplayManager.VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY) != 0) {
-        flags &= ~DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR;
+    if ((flags & IDisplayManager::VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY) != 0) {
+        flags &= ~IDisplayManager::VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR;
     }
 
-    if (projection != null) {
-        try {
-            if (!getProjectionService().isValidMediaProjection(projection)) {
-                throw new SecurityException("Invalid media projection");
-            }
-            flags = projection.applyVirtualDisplayFlags(flags);
-        } catch (RemoteException e) {
-            throw new SecurityException("unable to validate media projection or flags");
+    if (projection != NULL) {
+        // try {
+        AutoPtr<IIMediaProjectionManager> mpmgr = mService->GetProjectionService();
+        ECode ec = NOERROR;
+        Boolean bval;
+        mpmgr->IsValidMediaProjection(projection, &bval);
+        if (!bval) {
+            Slogger::E("CDisplayManagerService", "Invalid media projection");
+            return E_SECURITY_EXCEPTION;
+        }
+        ec = projection->ApplyVirtualDisplayFlags(flags, &flags);
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
+            Slogger::E("CDisplayManagerService", "unable to validate media projection or flags");
+            return E_SECURITY_EXCEPTION;
         }
     }
 
-    if (callingUid != Process.SYSTEM_UID &&
-            (flags & DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR) != 0) {
-        if (!canProjectVideo(projection)) {
-            throw new SecurityException("Requires CAPTURE_VIDEO_OUTPUT or "
-                    + "CAPTURE_SECURE_VIDEO_OUTPUT permission, or an appropriate "
-                    + "MediaProjection token in order to create a screen sharing virtual "
-                    + "display.");
+    if (callingUid != IProcess::SYSTEM_UID
+        && (flags & IDisplayManager::VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR) != 0) {
+        if (!CanProjectVideo(projection)) {
+            Slogger::E("CDisplayManagerService", "Requires CAPTURE_VIDEO_OUTPUT or "
+                "CAPTURE_SECURE_VIDEO_OUTPUT permission, or an appropriate "
+                "MediaProjection token in order to create a screen sharing virtual display.");
+            return E_SECURITY_EXCEPTION;
         }
     }
-    if ((flags & DisplayManager.VIRTUAL_DISPLAY_FLAG_SECURE) != 0) {
-        if (!canProjectSecureVideo(projection)) {
-            throw new SecurityException("Requires CAPTURE_SECURE_VIDEO_OUTPUT "
-                    + "or an appropriate MediaProjection token to create a "
-                    + "secure virtual display.");
+    if ((flags & IDisplayManager::VIRTUAL_DISPLAY_FLAG_SECURE) != 0) {
+        if (!CanProjectSecureVideo(projection)) {
+            Slogger::E("CDisplayManagerService", "Requires CAPTURE_SECURE_VIDEO_OUTPUT "
+                "or an appropriate MediaProjection token to create a secure virtual display.");
+            return E_SECURITY_EXCEPTION;
         }
     }
 
-    final long token = Binder.ClearCallingIdentity();
-    try {
-        return createVirtualDisplayInternal(callback, projection, callingUid,
-                packageName, name, width, height, densityDpi, surface, flags);
-    } finally {
-        Binder.RestoreCallingIdentity(token);
-    }
+    Int64 token;
+    binder->ClearCallingIdentity(&token);
+    *result = mService->CreateVirtualDisplayInternal(callback, projection, callingUid,
+        packageName, name, width, height, densityDpi, surface, flags);
+    binder->RestoreCallingIdentity(token);
+    return NOERROR;
 }
 
-//@Override // Binder call
-CARAPI ResizeVirtualDisplay(
+ECode CDisplayManagerService::BinderService::ResizeVirtualDisplay(
     /* [in] */ IIVirtualDisplayCallback* callback,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
     /* [in] */ Int32 densityDpi)
 {
-    final long token = Binder.ClearCallingIdentity();
-    try {
-        resizeVirtualDisplayInternal(callback.asBinder(), width, height, densityDpi);
-    } finally {
-        Binder.RestoreCallingIdentity(token);
-    }
+    AutoPtr<IBinderHelper> binder;
+    CBinderHelper::AcquireSingleton((IBinderHelper**)&binder);
+    Int64 token;
+    binder->ClearCallingIdentity(&token);
+    mService->ResizeVirtualDisplayInternal(IBinder::Probe(callback), width, height, densityDpi);
+    binder->RestoreCallingIdentity(token);
+    return NOERROR;
 }
 
-//@Override // Binder call
-CARAPI SetVirtualDisplaySurface(
+ECode CDisplayManagerService::BinderService::SetVirtualDisplaySurface(
     /* [in] */ IIVirtualDisplayCallback* callback,
     /* [in] */ ISurface* surface)
 {
-    final long token = Binder.ClearCallingIdentity();
-    try {
-        setVirtualDisplaySurfaceInternal(callback.asBinder(), surface);
-    } finally {
-        Binder.RestoreCallingIdentity(token);
-    }
+    AutoPtr<IBinderHelper> binder;
+    CBinderHelper::AcquireSingleton((IBinderHelper**)&binder);
+    Int64 token;
+    binder->ClearCallingIdentity(&token);
+    mService->SetVirtualDisplaySurfaceInternal(IBinder::Probe(callback), surface);
+    binder->RestoreCallingIdentity(token);
+    return NOERROR;
 }
 
-//@Override // Binder call
-CARAPI ReleaseVirtualDisplay(
+ECode CDisplayManagerService::BinderService::ReleaseVirtualDisplay(
     /* [in] */ IIVirtualDisplayCallback* callback)
 {
-    final long token = Binder.ClearCallingIdentity();
-    try {
-        releaseVirtualDisplayInternal(callback.asBinder());
-    } finally {
-        Binder.RestoreCallingIdentity(token);
-    }
+    AutoPtr<IBinderHelper> binder;
+    CBinderHelper::AcquireSingleton((IBinderHelper**)&binder);
+    Int64 token;
+    binder->ClearCallingIdentity(&token);
+    mService->ReleaseVirtualDisplayInternal(IBinder::Probe(callback));
+    binder->RestoreCallingIdentity(token);
+    return NOERROR;
 }
 
-//@Override // Binder call
-CARAPI Dump(
+ECode CDisplayManagerService::BinderService::Dump(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IPrintWriter* pw,
     /* [in] */ ArrayOf<String>* args)
 {
-    if (mContext == null
-            || mContext.checkCallingOrSelfPermission(Manifest.permission.DUMP)
-                    != PackageManager.PERMISSION_GRANTED) {
-        pw.println("Permission Denial: can't dump DisplayManager from from pid="
-                + Binder.getCallingPid() + ", uid=" + Binder.getCallingUid());
-        return;
-    }
+    assert(0 && "TODO");
+    // if (mContext == NULL
+    //     || mContext->CheckCallingOrSelfPermission(Manifest::permission::DUMP)
+    //                 != PackageManager.PERMISSION_GRANTED) {
+    //     pw.println("Permission Denial: can't dump DisplayManager from from pid="
+    //             + binder->GetCallingPid() + ", uid=" + binder->GetCallingUid());
+    //     return;
+    // }
 
-    final long token = Binder.ClearCallingIdentity();
-    try {
-        dumpInternal(pw);
-    } finally {
-        Binder.RestoreCallingIdentity(token);
-    }
+    // AutoPtr<IBinderHelper> binder;
+    // CBinderHelper::AcquireSingleton((IBinderHelper**)&binder);
+    // Int64 token;
+    // binder->ClearCallingIdentity(&token);
+    // mService->DumpInternal(pw);
+    // binder->RestoreCallingIdentity(token);
+    return NOERROR;
 }
 
-Boolean ValidatePackageName(
+Boolean CDisplayManagerService::BinderService::ValidatePackageName(
     /* [in] */ Int32 uid,
     /* [in] */ const String& packageName)
 {
-    if (packageName != null) {
-        String[] packageNames = mContext.getPackageManager().getPackagesForUid(uid);
-        if (packageNames != null) {
-            for (String n : packageNames) {
-                if (n.equals(packageName)) {
-                    return true;
+    if (packageName != NULL) {
+        AutoPtr<ArrayOf<String> > packageNames;
+        AutoPtr<IPackageManager> pm;
+        mService->mContext->GetPackageManager((IPackageManager**)&pm);
+        pm->GetPackagesForUid(uid, (ArrayOf<String>**)&packageNames);
+        if (packageNames != NULL) {
+            for (Int32 i = 0; i < packageNames->GetLength(); ++i) {
+                if ((*packageNames)[i].Equals(packageName)) {
+                    return TRUE;
                 }
             }
         }
     }
-    return false;
+    return FALSE;
 }
 
-Boolean CanProjectVideo(
+Boolean CDisplayManagerService::BinderService::CanProjectVideo(
     /* [in] */ IIMediaProjection* projection)
 {
-    if (projection != null) {
-        try {
-            if (projection.canProjectVideo()) {
-                return true;
-            }
-        } catch (RemoteException e) {
-            Slog.e(TAG, "Unable to query projection service for permissions", e);
+    if (projection != NULL) {
+        Boolean bval;
+        ECode ec = projection->CanProjectVideo(&bval);
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
+            Slogger::E("CDisplayManagerService", "Unable to query projection service for permissions");
+        }
+        if (bval) {
+            return TRUE;
         }
     }
-    if (mContext.checkCallingPermission(
-            android.Manifest.permission.CAPTURE_VIDEO_OUTPUT)
-            == PackageManager.PERMISSION_GRANTED) {
-        return true;
+    Int32 permission;
+    mService->mContext->CheckCallingPermission(
+        Manifest::permission::CAPTURE_VIDEO_OUTPUT, &permission);
+    if (permission == IPackageManager::PERMISSION_GRANTED) {
+        return TRUE;
     }
-    return canProjectSecureVideo(projection);
+    return CanProjectSecureVideo(projection);
 }
 
-Boolean CanProjectSecureVideo(
+Boolean CDisplayManagerService::BinderService::CanProjectSecureVideo(
     /* [in] */ IIMediaProjection* projection)
 {
-    if (projection != null) {
-        try {
-            if (projection.canProjectSecureVideo()){
-                return true;
-            }
-        } catch (RemoteException e) {
-            Slog.e(TAG, "Unable to query projection service for permissions", e);
+    Boolean bval = FALSE;
+    if (projection != NULL) {
+
+        ECode ec = projection->CanProjectSecureVideo(&bval);
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
+            Slogger::E("CDisplayManagerService", "Unable to query projection service for permissions");
+        }
+        if (bval) {
+            return TRUE;
         }
     }
-    return mContext.checkCallingPermission(
-            android.Manifest.permission.CAPTURE_SECURE_VIDEO_OUTPUT)
-            == PackageManager.PERMISSION_GRANTED;
+
+    Int32 permission;
+    mService->mContext->CheckCallingPermission(
+        Manifest::permission::CAPTURE_SECURE_VIDEO_OUTPUT, &permission);
+    bval = permission == IPackageManager::PERMISSION_GRANTED;
+    return NOERROR;
+}
+
+//==============================================================================
+// CDisplayManagerService::DisplayBlanker
+//==============================================================================
+CAR_INTERFACE_IMPL(CDisplayManagerService::DisplayBlanker, Object, IDisplayBlanker)
+
+CDisplayManagerService::DisplayBlanker::DisplayBlanker(
+    /* [in] */ CDisplayManagerService* host,
+    /* [in] */ IDisplayPowerCallbacks* callbacks)
+    : mHost(host)
+    , mCallbacks(callbacks)
+{
+}
+
+ECode CDisplayManagerService::DisplayBlanker::RequestDisplayState(
+    /* [in] */ Int32 state)
+{
+    // The order of operations is important for legacy reasons.
+    if (state == IDisplay::STATE_OFF) {
+        mHost->RequestGlobalDisplayStateInternal(state);
+    }
+
+    mCallbacks->OnDisplayStateChange(state);
+
+    if (state != IDisplay::STATE_OFF) {
+        mHost->RequestGlobalDisplayStateInternal(state);
+    }
+    return NOERROR;
+}
+
+ECode CDisplayManagerService::DisplayBlanker::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = "CDisplayManagerService::DisplayBlanker";
+    return NOERROR;
 }
 
 //==============================================================================
 // CDisplayManagerService::LocalService
 //==============================================================================
 
-CAR_INTERFACE_IMPL(LocalService, Object, IDisplayManagerInternal)
+CAR_INTERFACE_IMPL(CDisplayManagerService::LocalService::LocalService, Object, IDisplayManagerInternal)
 
-CARAPI constructor();
+CDisplayManagerService::LocalService::LocalService(
+    /* [in] */ CDisplayManagerService* host)
+    : mHost(host)
+{}
 
-// @Override
-CARAPI InitPowerManagement(
+ECode CDisplayManagerService::LocalService::InitPowerManagement(
     /* [in] */ IDisplayPowerCallbacks* callbacks,
     /* [in] */ IHandler* handler,
     /* [in] */ ISensorManager* sensorManager)
 {
-    synchronized (mSyncRoot) {
-        DisplayBlanker blanker = new DisplayBlanker() {
-            @Override
-            CARAPI requestDisplayState(int state) {
-                // The order of operations is important for legacy reasons.
-                if (state == Display.STATE_OFF) {
-                    requestGlobalDisplayStateInternal(state);
-                }
-
-                callbacks.onDisplayStateChange(state);
-
-                if (state != Display.STATE_OFF) {
-                    requestGlobalDisplayStateInternal(state);
-                }
-            }
-        };
-        mDisplayPowerController = new DisplayPowerController(
-                mContext, callbacks, handler, sensorManager, blanker);
+    Object* obj = mHost->mSyncRoot;
+    synchronized(obj) {
+        AutoPtr<IDisplayBlanker> blanker = new DisplayBlanker(mHost, callbacks);
+        mHost->mDisplayPowerController = new DisplayPowerController(
+            mHost->mContext, callbacks, handler, sensorManager, blanker);
     }
+    return NOERROR;
 }
 
-// @Override
-CARAPI RequestPowerState(
+ECode CDisplayManagerService::LocalService::RequestPowerState(
     /* [in] */ IDisplayPowerRequest* request,
     /* [in] */ Boolean waitForNegativeProximity,
     /* [out] */ Boolean* result)
 {
-    return mDisplayPowerController.requestPowerState(request,
-            waitForNegativeProximity);
+    VALIDATE_NOT_NULL(result)
+    *result = mHost->mDisplayPowerController->RequestPowerState(request, waitForNegativeProximity);
+    return NOERROR;
 }
 
-// @Override
-CARAPI IsProximitySensorAvailable(
+ECode CDisplayManagerService::LocalService::IsProximitySensorAvailable(
     /* [out] */ Boolean* result)
 {
-    return mDisplayPowerController.isProximitySensorAvailable();
+    VALIDATE_NOT_NULL(result)
+    *result = mHost->mDisplayPowerController->IsProximitySensorAvailable();
+    return NOERROR;
 }
 
-// @Override
-CARAPI GetDisplayInfo(
+ECode CDisplayManagerService::LocalService::GetDisplayInfo(
     /* [in] */ Int32 displayId,
     /* [out] */ IDisplayInfo** result)
 {
-    return GetDisplayInfoInternal(displayId, Process.myUid());
+    return mHost->GetDisplayInfoInternal(displayId, Process::MyUid(), result);
 }
 
-// @Override
-CARAPI RegisterDisplayTransactionListener(
+ECode CDisplayManagerService::LocalService::RegisterDisplayTransactionListener(
     /* [in] */ IDisplayTransactionListener* listener)
 {
-    if (listener == null) {
-        throw new IllegalArgumentException("listener must not be null");
+    if (listener == NULL) {
+        // throw new IllegalArgumentException("listener must not be NULL");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    RegisterDisplayTransactionListenerInternal(listener);
+    return mHost->RegisterDisplayTransactionListenerInternal(listener);
 }
 
-// @Override
-CARAPI UnregisterDisplayTransactionListener(
+ECode CDisplayManagerService::LocalService::UnregisterDisplayTransactionListener(
     /* [in] */ IDisplayTransactionListener* listener)
 {
-    if (listener == null) {
-        throw new IllegalArgumentException("listener must not be null");
+    if (listener == NULL) {
+        // throw new IllegalArgumentException("listener must not be NULL");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    UnregisterDisplayTransactionListenerInternal(listener);
+    return mHost->UnregisterDisplayTransactionListenerInternal(listener);
 }
 
-// @Override
-CARAPI SetDisplayInfoOverrideFromWindowManager(
+ECode CDisplayManagerService::LocalService::SetDisplayInfoOverrideFromWindowManager(
     /* [in] */ Int32 displayId,
     /* [in] */ IDisplayInfo* info)
 {
-    SetDisplayInfoOverrideFromWindowManagerInternal(displayId, info);
+    return mHost->SetDisplayInfoOverrideFromWindowManagerInternal(displayId, info);
 }
 
-// @Override
-CARAPI PerformTraversalInTransactionFromWindowManager()
+ECode CDisplayManagerService::LocalService::PerformTraversalInTransactionFromWindowManager()
 {
-    PerformTraversalInTransactionFromWindowManagerInternal();
+    return mHost->PerformTraversalInTransactionFromWindowManagerInternal();
 }
 
-// @Override
-CARAPI SetDisplayProperties(
+ECode CDisplayManagerService::LocalService::SetDisplayProperties(
     /* [in] */ Int32 displayId,
     /* [in] */ Boolean hasContent,
     /* [in] */ Float requestedRefreshRate,
     /* [in] */ Boolean inTraversal)
 {
-    SetDisplayPropertiesInternal(displayId, hasContent, requestedRefreshRate, inTraversal);
+    mHost->SetDisplayPropertiesInternal(displayId, hasContent, requestedRefreshRate, inTraversal);
+    return NOERROR;
 }
 
 //==============================================================================
@@ -607,7 +702,8 @@ ECode CDisplayManagerService::DisplayManagerHandler::HandleMessage(
         case MSG_UPDATE_VIEWPORT:
         {
             {
-                AutoLock lock(mHost->mSyncRoot);
+                Object* obj = mHost->mSyncRoot;
+                AutoLock lock(obj);
                 mHost->mTempDefaultViewport->CopyFrom(mHost->mDefaultViewport);
                 mHost->mTempExternalTouchViewport->CopyFrom(mHost->mExternalTouchViewport);
             }
@@ -661,7 +757,8 @@ ECode CDisplayManagerService::DisplayAdapterListener::OnDisplayDeviceEvent(
 
 ECode CDisplayManagerService::DisplayAdapterListener::OnTraversalRequested()
 {
-    AutoLock lock(mHost->mSyncRoot);
+    Object* obj = mHost->mSyncRoot;
+    AutoLock lock(obj);
     mHost->ScheduleTraversalLocked(FALSE);
     return NOERROR;
 }
@@ -669,12 +766,12 @@ ECode CDisplayManagerService::DisplayAdapterListener::OnTraversalRequested()
 //=====================================================================================
 // CDisplayManagerService::CallbackRecord
 //=====================================================================================
-CAR_INTERFACE_IMPL(CDisplayManagerService::CallbackRecord, IProxyDeathRecipient);
+CAR_INTERFACE_IMPL(CDisplayManagerService::CallbackRecord, Object, IProxyDeathRecipient);
 
 CDisplayManagerService::CallbackRecord::CallbackRecord(
     /* [in] */ CDisplayManagerService* owner,
     /* [in] */ Int32 pid,
-    /* [in] */ IDisplayManagerCallback* callback)
+    /* [in] */ IIDisplayManagerCallback* callback)
     : mPid(pid)
     , mWifiDisplayScanRequested(FALSE)
     , mHost(owner)
@@ -719,17 +816,23 @@ CDisplayManagerService::CDisplayManagerService()
     , mOnlyCore(FALSE)
     , mSingleDisplayDemoMode(FALSE)
     , mNextNonDefaultDisplayId(IDisplay::DEFAULT_DISPLAY + 1)
-    , mAllDisplayBlankStateFromPowerManager(0)
     , mGlobalDisplayState(IDisplay::STATE_UNKNOWN)
     , mPendingTraversal(FALSE)
     , mWifiDisplayScanRequestCount(0)
 {
-    mDefaultViewport = new CDisplayViewport();
-    mExternalTouchViewport = new CDisplayViewport();
+    CDisplayViewport::New((IDisplayViewport**)&mDefaultViewport);
+    CDisplayViewport::New((IDisplayViewport**)&mExternalTouchViewport);
+
     mPersistentDataStore = new PersistentDataStore();
     CDisplayInfo::New((IDisplayInfo**)&mTempDisplayInfo);
-    mTempDefaultViewport = new CDisplayViewport();
-    mTempExternalTouchViewport = new CDisplayViewport();
+
+    CDisplayViewport::New((IDisplayViewport**)&mTempDefaultViewport);
+    CDisplayViewport::New((IDisplayViewport**)&mTempExternalTouchViewport);
+
+    mSyncRoot = new SyncRoot();
+
+    CCopyOnWriteArrayList::New((ICopyOnWriteArrayList**)&mDisplayTransactionListeners);
+    CArrayList::New((IArrayList**)&mTempDisplayStateWorkQueue);
 }
 
 ECode CDisplayManagerService::constructor(
@@ -742,13 +845,12 @@ ECode CDisplayManagerService::constructor(
     assert(0 && "TODO");
     // looper = DisplayThread.get().getLooper();
 
-    mHandler = new DisplayManagerHandler(looper);
+    mHandler = new DisplayManagerHandler(looper, this);
     // mUiHandler = UiThread::GetHandler();
     mDisplayAdapterListener = new DisplayAdapterListener(this);
-    mSingleDisplayDemoMode = SystemProperties.getBoolean("persist.demo.singledisplay", false);
 
     AutoPtr<ISystemProperties> sysProp;
-    CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp)
+    CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     sysProp->GetBoolean(String("persist.demo.singledisplay"), FALSE, &mSingleDisplayDemoMode);
 
     return NOERROR;
@@ -759,9 +861,12 @@ ECode CDisplayManagerService::OnStart()
     Boolean bval;
     mHandler->SendEmptyMessage(MSG_REGISTER_DEFAULT_DISPLAY_ADAPTER, &bval);
 
-    PublishBinderService(Context.DISPLAY_SERVICE, new BinderService(),
-            true /*allowIsolated*/);
-    PublishLocalService(DisplayManagerInternal.class, new LocalService());
+    AutoPtr<IBinder> bs;
+    CDisplayManagerBinderService::New(this, (IBinder**)&bs);
+    PublishBinderService(IContext::DISPLAY_SERVICE, bs, TRUE /*allowIsolated*/);
+
+    AutoPtr<LocalService> ls = new LocalService(this);
+    PublishLocalService(EIID_IDisplayManagerInternal, TO_IINTERFACE(ls));
     return NOERROR;
 }
 
@@ -769,39 +874,50 @@ ECode CDisplayManagerService::OnBootPhase(
     /* [in] */ Int32 phase)
 {
     if (phase == PHASE_WAIT_FOR_DEFAULT_DISPLAY) {
-        synchronized (mSyncRoot) {
-            long timeout = SystemClock.uptimeMillis() + WAIT_FOR_DEFAULT_DISPLAY_TIMEOUT;
-            while (mLogicalDisplays.get(Display.DEFAULT_DISPLAY) == null) {
-                long delay = timeout - SystemClock.uptimeMillis();
+        ISynchronize* sync = ISynchronize::Probe(mTempDisplayStateWorkQueue);
+        synchronized(sync) {
+            Int64 timeout = SystemClock::GetUptimeMillis() + WAIT_FOR_DEFAULT_DISPLAY_TIMEOUT;
+            HashMap<Int32, AutoPtr<LogicalDisplay> >::Iterator it;
+            it = mLogicalDisplays.Find(IDisplay::DEFAULT_DISPLAY);
+            while (it == mLogicalDisplays.End()) {
+                Int64 delay = timeout - SystemClock::GetUptimeMillis();
                 if (delay <= 0) {
-                    throw new RuntimeException("Timeout waiting for default display "
-                            + "to be initialized.");
+                    Slogger::E(TAG, "Timeout waiting for default display to be initialized.");
+                    return E_RUNTIME_EXCEPTION;
                 }
                 if (DEBUG) {
-                    Slog.d(TAG, "waitForDefaultDisplay: waiting, timeout=" + delay);
+                    Slogger::D(TAG, "waitForDefaultDisplay: waiting, timeout=%ld", delay);
                 }
-                try {
-                    mSyncRoot.wait(delay);
-                } catch (InterruptedException ex) {
-                }
+                // try {
+                    mSyncRoot->Wait(delay);
+                // } catch (InterruptedException ex) {
+                // }
+
+                it = mLogicalDisplays.Find(IDisplay::DEFAULT_DISPLAY);
             }
         }
     }
+    return NOERROR;
 }
 
-ECode CDisplayManagerService::WindowManagerAndInputReady() {
-    synchronized (mSyncRoot) {
-        mWindowManagerInternal = LocalServices.getService(WindowManagerInternal.class);
-        mInputManagerInternal = LocalServices.getService(InputManagerInternal.class);
-        scheduleTraversalLocked(false);
+ECode CDisplayManagerService::WindowManagerAndInputReady()
+{
+    ISynchronize* sync = ISynchronize::Probe(mTempDisplayStateWorkQueue);
+    synchronized(sync) {
+        assert(0 && "TODO");
+        // mWindowManagerInternal = LocalServices.getService(WindowManagerInternal.class);
+        // mInputManagerInternal = LocalServices.getService(InputManagerInternal.class);
+        ScheduleTraversalLocked(FALSE);
     }
+    return NOERROR;
 }
 
 ECode CDisplayManagerService::SystemReady(
     /* [in] */ Boolean safeMode,
     /* [in] */ Boolean onlyCore)
 {
-    AutoLock lock(mSyncRoot);
+    Object* obj = (Object*)mSyncRoot.Get();
+    AutoLock lock(obj);
     mSafeMode = safeMode;
     mOnlyCore = onlyCore;
 
@@ -815,7 +931,7 @@ ECode CDisplayManagerService::RegisterDisplayTransactionListenerInternal(
     /* [in] */ IDisplayTransactionListener* listener)
 {
     // List is self-synchronized copy-on-write.
-    mDisplayTransactionListeners->Add(listener);
+    IList::Probe(mDisplayTransactionListeners)->Add(listener);
     return NOERROR;
 }
 
@@ -823,7 +939,7 @@ ECode CDisplayManagerService::UnregisterDisplayTransactionListenerInternal(
     /* [in] */ IDisplayTransactionListener* listener)
 {
     // List is self-synchronized copy-on-write.
-    mDisplayTransactionListeners->Remove(listener);
+    IList::Probe(mDisplayTransactionListeners)->Remove(listener);
     return NOERROR;
 }
 
@@ -831,7 +947,8 @@ ECode CDisplayManagerService::SetDisplayInfoOverrideFromWindowManagerInternal(
     /* [in] */ Int32 displayId,
     /* [in] */ IDisplayInfo* info)
 {
-    AutoLock lock(mSyncRoot);
+    Object* obj = (Object*)mSyncRoot.Get();
+    AutoLock lock(obj);
 
     HashMap<Int32, AutoPtr<LogicalDisplay> >::Iterator find = mLogicalDisplays.Find(displayId);
     if (find != mLogicalDisplays.End()) {
@@ -847,7 +964,8 @@ ECode CDisplayManagerService::SetDisplayInfoOverrideFromWindowManagerInternal(
 
 ECode CDisplayManagerService::PerformTraversalInTransactionFromWindowManagerInternal()
 {
-    AutoLock lock(mSyncRoot);
+    Object* obj = (Object*)mSyncRoot.Get();
+    AutoLock lock(obj);
     if (!mPendingTraversal) {
         return NOERROR;
     }
@@ -855,12 +973,16 @@ ECode CDisplayManagerService::PerformTraversalInTransactionFromWindowManagerInte
 
     PerformTraversalInTransactionLocked();
 
-    {
-        // List is self-synchronized copy-on-write.
-        List< AutoPtr<IDisplayTransactionListener> >::Iterator it;
-        for (it = mDisplayTransactionListeners.Begin(); it != mDisplayTransactionListeners.End(); ++it) {
-            (*it)->OnDisplayTransaction();
-        }
+    // List is self-synchronized copy-on-write.
+    IDisplayTransactionListener* listener;
+    AutoPtr<IIterator> it;
+    IList::Probe(mDisplayTransactionListeners)->GetIterator((IIterator**)&it);
+    Boolean hasNext;
+    while (it->HasNext(&hasNext)) {
+        AutoPtr<IInterface> obj;
+        it->GetNext((IInterface**)&obj);
+        listener = IDisplayTransactionListener::Probe(obj);
+        listener->OnDisplayTransaction();
     }
 
     return NOERROR;
@@ -869,28 +991,36 @@ ECode CDisplayManagerService::PerformTraversalInTransactionFromWindowManagerInte
 ECode CDisplayManagerService::RequestGlobalDisplayStateInternal(
         /* [in] */ Int32 state)
 {
-    synchronized (mTempDisplayStateWorkQueue) {
-        try {
-            // Update the display state within the lock.
-            synchronized (mSyncRoot) {
-                if (mGlobalDisplayState != state) {
-                    mGlobalDisplayState = state;
-                    updateGlobalDisplayStateLocked(mTempDisplayStateWorkQueue);
-                    scheduleTraversalLocked(false);
-                }
-            }
+    ISynchronize* sync = ISynchronize::Probe(mTempDisplayStateWorkQueue);
+    synchronized(sync) {
 
-            // Setting the display power state can take hundreds of milliseconds
-            // to complete so we defer the most expensive part of the work until
-            // after we have exited the critical section to avoid blocking other
-            // threads for a long time.
-            for (int i = 0; i < mTempDisplayStateWorkQueue.size(); i++) {
-                mTempDisplayStateWorkQueue.get(i).run();
+        // Update the display state within the lock.
+        Object* syncRoot = (Object*)mSyncRoot.Get();
+        synchronized(syncRoot) {
+            if (mGlobalDisplayState != state) {
+                mGlobalDisplayState = state;
+                UpdateGlobalDisplayStateLocked(IList::Probe(mTempDisplayStateWorkQueue));
+                ScheduleTraversalLocked(FALSE);
             }
-        } finally {
-            mTempDisplayStateWorkQueue.clear();
         }
+
+        // Setting the display power state can take hundreds of milliseconds
+        // to complete so we defer the most expensive part of the work until
+        // after we have exited the critical section to avoid blocking other
+        // threads for a Int64 time.
+        IRunnable* runnable;
+        Int32 size;
+        mTempDisplayStateWorkQueue->GetSize(&size);
+        for (Int32 i = 0; i < size; i++) {
+            AutoPtr<IInterface> obj;
+            mTempDisplayStateWorkQueue->Get(i, (IInterface**)&obj);
+            runnable = IRunnable::Probe(obj);
+            runnable->Run();
+        }
+
+        mTempDisplayStateWorkQueue->Clear();
     }
+    return NOERROR;
 }
 
 ECode CDisplayManagerService::GetDisplayInfoInternal(
@@ -898,16 +1028,24 @@ ECode CDisplayManagerService::GetDisplayInfoInternal(
     /* [in] */ Int32 callingUid,
     /* [out] */ IDisplayInfo** displayInfo)
 {
-    synchronized (mSyncRoot) {
-        LogicalDisplay display = mLogicalDisplays.get(displayId);
-        if (display != null) {
-            DisplayInfo info = display.getDisplayInfoLocked();
-            if (info.hasAccess(callingUid)) {
-                return info;
+    VALIDATE_NOT_NULL(displayInfo)
+    *displayInfo = NULL;
+
+    Object* syncRoot = (Object*)mSyncRoot.Get();
+    synchronized(syncRoot) {
+        Boolean access;
+        HashMap<Int32, AutoPtr<LogicalDisplay> >::Iterator it = mLogicalDisplays.Find(displayId);
+        if (it != mLogicalDisplays.End()) {
+            AutoPtr<IDisplayInfo> info = it->mSecond->GetDisplayInfoLocked();
+            info->HasAccess(callingUid, &access);
+            if (access) {
+                *displayInfo = info;
+                REFCOUNT_ADD(*displayInfo)
+                return NOERROR;
             }
         }
-        return null;
     }
+    return NOERROR;
 }
 
 ECode CDisplayManagerService::GetDisplayIdsInternal(
@@ -915,85 +1053,56 @@ ECode CDisplayManagerService::GetDisplayIdsInternal(
     /* [out, callee] */ ArrayOf<Int32>** displayIds)
 {
     VALIDATE_NOT_NULL(displayIds);
+    *displayIds = NULL;
 
-    synchronized (mSyncRoot) {
-        final int count = mLogicalDisplays.size();
-        int[] displayIds = new int[count];
-        int n = 0;
-        for (int i = 0; i < count; i++) {
-            LogicalDisplay display = mLogicalDisplays.valueAt(i);
-            DisplayInfo info = display.getDisplayInfoLocked();
-            if (info.hasAccess(callingUid)) {
-                displayIds[n++] = mLogicalDisplays.keyAt(i);
+    Object* syncRoot = (Object*)mSyncRoot.Get();
+    synchronized(syncRoot) {
+        Int32 count = mLogicalDisplays.GetSize();
+        AutoPtr<ArrayOf<Int32> > ids = ArrayOf<Int32>::Alloc(count);
+        Int32 n = 0;
+        Boolean access;
+        HashMap<Int32, AutoPtr<LogicalDisplay> >::Iterator it;
+        for (it = mLogicalDisplays.Begin(); it != mLogicalDisplays.End(); ++it) {
+            AutoPtr<IDisplayInfo> info = it->mSecond->GetDisplayInfoLocked();
+            info->HasAccess(callingUid, &access);
+            if (access) {
+                ids->Set(n++, it->mFirst);
             }
         }
+
         if (n != count) {
-            displayIds = Arrays.copyOfRange(displayIds, 0, n);
+            Arrays::CopyOfRange(ids, 0, n, displayIds);
         }
-        return displayIds;
+        else {
+            *displayIds = ids;
+            REFCOUNT_ADD(*displayIds);
+        }
     }
-
-    // AutoLock lock(mSyncRoot);
-    // Int32 count = mLogicalDisplays.GetSize();
-    // *displayIds = ArrayOf<Int32>::Alloc(count);
-    // if (*displayIds == NULL)
-    //     return E_OUT_OF_MEMORY_ERROR;
-
-    // REFCOUNT_ADD(*displayIds);
-    // HashMap<Int32, AutoPtr<LogicalDisplay> >::Iterator iter
-    //     = mLogicalDisplays.Begin();
-    // for (Int32 i = 0; i < count; ++iter, i++) {
-    //     (**displayIds)[i] = iter->mFirst;
-    // }
 
     return NOERROR;
 }
 
 ECode CDisplayManagerService::RegisterCallbackInternal(
-    /* [in] */ IDisplayManagerCallback* callback,
-    /* [in] */ Int32 callingUid)
+    /* [in] */ IIDisplayManagerCallback* callback,
+    /* [in] */ Int32 callingPid)
 {
-    // if (callback == NULL) {
-    //     Slogger::E(TAG, "listener must not be NULL");
-    //     return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    // }
-
-    // AutoLock lock(mSyncRoot);
-
-    // Int32 callingPid = Binder::GetCallingPid();
-    // HashMap<Int32, AutoPtr<CallbackRecord> >::Iterator find
-    //     = mCallbacks.Find(callingPid);
-    // if (find != mCallbacks.End()) {
-    //     Slogger::E(TAG, "The calling process has already "
-    //         "registered an IDisplayManagerCallback.");
-    //     return E_SECURITY_EXCEPTION;
-    // }
-
-    // AutoPtr<CallbackRecord> record = new CallbackRecord(this, callingPid, callback);
-
-    // AutoPtr<IProxy> proxy = (IProxy*)callback->Probe(EIID_IProxy);
-    // if (proxy != NULL && FAILED(proxy->LinkToDeath(record, 0))) {
-    //     return E_RUNTIME_EXCEPTION;
-    // }
-
-    // mCallbacks[callingPid] = record;
-
-    synchronized (mSyncRoot) {
-        if (mCallbacks.get(callingPid) != null) {
-            throw new SecurityException("The calling process has already "
-                    + "registered an IDisplayManagerCallback.");
+    Object* syncRoot = (Object*)mSyncRoot.Get();
+    synchronized(syncRoot) {
+        HashMap<Int32, AutoPtr<CallbackRecord> >::Iterator find = mCallbacks.Find(callingPid);
+        if (find != mCallbacks.End()) {
+            Slogger::E(TAG, "The calling process has already "
+                "registered an IIDisplayManagerCallback.");
+            return E_SECURITY_EXCEPTION;
         }
 
-        CallbackRecord record = new CallbackRecord(callingPid, callback);
-        try {
-            IBinder binder = callback.asBinder();
-            binder.linkToDeath(record, 0);
-        } catch (RemoteException ex) {
-            // give up
-            throw new RuntimeException(ex);
+        AutoPtr<CallbackRecord> record = new CallbackRecord(this, callingPid, callback);
+
+        AutoPtr<IProxy> proxy = (IProxy*)callback->Probe(EIID_IProxy);
+        if (proxy != NULL && FAILED(proxy->LinkToDeath(record, 0))) {
+            return E_RUNTIME_EXCEPTION;
         }
 
-        mCallbacks.put(callingPid, record);
+        mCallbacks[callingPid] = record;
     }
 
     return NOERROR;
@@ -1002,141 +1111,149 @@ ECode CDisplayManagerService::RegisterCallbackInternal(
 void CDisplayManagerService::OnCallbackDied(
     /* [in] */ CallbackRecord* record)
 {
-    synchronized (mSyncRoot) {
-        mCallbacks.remove(record.mPid);
-        stopWifiDisplayScanLocked(record);
-    }
-}
-
-ECode CDisplayManagerService::ScanWifiDisplays()
-{
-    if (DEBUG) Slogger::D(TAG, "ScanWifiDisplays");
-
-    Int64 token = Binder::ClearCallingIdentity();
-    {
-        AutoLock lock(mSyncRoot);
-        if (mWifiDisplayAdapter != NULL) {
-            mWifiDisplayAdapter->RequestScanLocked();
+    Object* syncRoot = (Object*)mSyncRoot.Get();
+    synchronized(syncRoot) {
+        HashMap<Int32, AutoPtr<CallbackRecord> >::Iterator find = mCallbacks.Find(record->mPid);
+        if (find != mCallbacks.End()) {
+            mCallbacks.Erase(find);
         }
+        StopWifiDisplayScanLocked(record);
     }
-    Binder::RestoreCallingIdentity(token);
-
-    return NOERROR;
 }
-
 
 ECode CDisplayManagerService::StartWifiDisplayScanInternal(
     /* [in] */ Int32 callingPid)
 {
-    synchronized (mSyncRoot) {
-        CallbackRecord record = mCallbacks.get(callingPid);
-        if (record == null) {
-            throw new IllegalStateException("The calling process has not "
-                    + "registered an IDisplayManagerCallback.");
+    ISynchronize* sync = ISynchronize::Probe(mTempDisplayStateWorkQueue);
+    synchronized(sync) {
+
+        HashMap<Int32, AutoPtr<CallbackRecord> >::Iterator find = mCallbacks.Find(callingPid);
+        if (find != mCallbacks.End()) {
+            Slogger::E(TAG, "The calling process has not registered an IIDisplayManagerCallback.");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
-        startWifiDisplayScanLocked(record);
+        StartWifiDisplayScanLocked(find->mSecond);
     }
+    return NOERROR;
 }
 
 ECode CDisplayManagerService::StartWifiDisplayScanLocked(
     /* [in] */ CallbackRecord* record)
 {
-    if (!record.mWifiDisplayScanRequested) {
-        record.mWifiDisplayScanRequested = true;
+    if (!record->mWifiDisplayScanRequested) {
+        record->mWifiDisplayScanRequested = TRUE;
         if (mWifiDisplayScanRequestCount++ == 0) {
-            if (mWifiDisplayAdapter != null) {
-                mWifiDisplayAdapter.requestStartScanLocked();
+            if (mWifiDisplayAdapter != NULL) {
+                mWifiDisplayAdapter->RequestStartScanLocked();
             }
         }
     }
+    return NOERROR;
 }
 
 ECode CDisplayManagerService::StopWifiDisplayScanInternal(
     /* [in] */ Int32 callingPid)
 {
-    synchronized (mSyncRoot) {
-        CallbackRecord record = mCallbacks.get(callingPid);
-        if (record == null) {
-            throw new IllegalStateException("The calling process has not "
-                    + "registered an IDisplayManagerCallback.");
+    ISynchronize* sync = ISynchronize::Probe(mTempDisplayStateWorkQueue);
+    synchronized(sync) {
+        HashMap<Int32, AutoPtr<CallbackRecord> >::Iterator find = mCallbacks.Find(callingPid);
+        if (find == mCallbacks.End()) {
+            Slogger::E(TAG, "The calling process has not registered an IIDisplayManagerCallback.");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
-        stopWifiDisplayScanLocked(record);
+        StopWifiDisplayScanLocked(find->mSecond);
     }
+
+    return NOERROR;
 }
 
 ECode CDisplayManagerService::StopWifiDisplayScanLocked(
     /* [in] */ CallbackRecord* record)
 {
-    if (record.mWifiDisplayScanRequested) {
-        record.mWifiDisplayScanRequested = false;
+    if (record->mWifiDisplayScanRequested) {
+        record->mWifiDisplayScanRequested = FALSE;
         if (--mWifiDisplayScanRequestCount == 0) {
-            if (mWifiDisplayAdapter != null) {
-                mWifiDisplayAdapter.requestStopScanLocked();
+            if (mWifiDisplayAdapter != NULL) {
+                mWifiDisplayAdapter->RequestStopScanLocked();
             }
-        } else if (mWifiDisplayScanRequestCount < 0) {
-            Slog.wtf(TAG, "mWifiDisplayScanRequestCount became negative: "
-                    + mWifiDisplayScanRequestCount);
+        }
+        else if (mWifiDisplayScanRequestCount < 0) {
+            // Slogger::Wtf(TAG, "mWifiDisplayScanRequestCount became negative: "
+            //         + mWifiDisplayScanRequestCount);
             mWifiDisplayScanRequestCount = 0;
         }
     }
+    return NOERROR;
 }
 
 ECode CDisplayManagerService::ConnectWifiDisplayInternal(
     /* [in] */ const String& address)
 {
-    synchronized (mSyncRoot) {
-        if (mWifiDisplayAdapter != null) {
-            mWifiDisplayAdapter.requestConnectLocked(address);
+    ISynchronize* sync = ISynchronize::Probe(mTempDisplayStateWorkQueue);
+    synchronized(sync) {
+        if (mWifiDisplayAdapter != NULL) {
+            mWifiDisplayAdapter->RequestConnectLocked(address);
         }
     }
+    return NOERROR;
 }
 
 ECode CDisplayManagerService::PauseWifiDisplayInternal()
 {
-    synchronized (mSyncRoot) {
-        if (mWifiDisplayAdapter != null) {
-            mWifiDisplayAdapter.requestPauseLocked();
+    ISynchronize* sync = ISynchronize::Probe(mTempDisplayStateWorkQueue);
+    synchronized(sync) {
+        if (mWifiDisplayAdapter != NULL) {
+            mWifiDisplayAdapter->RequestPauseLocked();
         }
     }
+    return NOERROR;
 }
 
 ECode CDisplayManagerService::ResumeWifiDisplayInternal()
 {
-    synchronized (mSyncRoot) {
-        if (mWifiDisplayAdapter != null) {
-            mWifiDisplayAdapter.requestResumeLocked();
+    ISynchronize* sync = ISynchronize::Probe(mTempDisplayStateWorkQueue);
+    synchronized(sync) {
+        if (mWifiDisplayAdapter != NULL) {
+            mWifiDisplayAdapter->RequestResumeLocked();
         }
     }
+    return NOERROR;
 }
 
 ECode CDisplayManagerService::DisconnectWifiDisplayInternal()
 {
-    synchronized (mSyncRoot) {
-        if (mWifiDisplayAdapter != null) {
-            mWifiDisplayAdapter.requestDisconnectLocked();
+    ISynchronize* sync = ISynchronize::Probe(mTempDisplayStateWorkQueue);
+    synchronized(sync) {
+        if (mWifiDisplayAdapter != NULL) {
+            mWifiDisplayAdapter->RequestDisconnectLocked();
         }
     }
+    return NOERROR;
 }
 
 ECode CDisplayManagerService::RenameWifiDisplayInternal(
     /* [in] */ const String& address,
     /* [in] */ const String& alias)
 {
-    synchronized (mSyncRoot) {
-        if (mWifiDisplayAdapter != null) {
-            mWifiDisplayAdapter.requestRenameLocked(address, alias);
+    ISynchronize* sync = ISynchronize::Probe(mTempDisplayStateWorkQueue);
+    synchronized(sync) {
+        if (mWifiDisplayAdapter != NULL) {
+            mWifiDisplayAdapter->RequestRenameLocked(address, alias);
         }
     }
+    return NOERROR;
 }
 
 ECode CDisplayManagerService::ForgetWifiDisplayInternal(
     /* [in] */ const String& address)
 {
-    synchronized (mSyncRoot) {
-        if (mWifiDisplayAdapter != null) {
-            mWifiDisplayAdapter.requestForgetLocked(address);
+    ISynchronize* sync = ISynchronize::Probe(mTempDisplayStateWorkQueue);
+    synchronized(sync) {
+        if (mWifiDisplayAdapter != NULL) {
+            mWifiDisplayAdapter->RequestForgetLocked(address);
         }
     }
+    return NOERROR;
 }
 
 ECode CDisplayManagerService::GetWifiDisplayStatusInternal(
@@ -1144,8 +1261,10 @@ ECode CDisplayManagerService::GetWifiDisplayStatusInternal(
 {
     VALIDATE_NOT_NULL(status);
 
-    synchronized (mSyncRoot) {
-        AutoLock lock(mSyncRoot);
+    ISynchronize* sync = ISynchronize::Probe(mTempDisplayStateWorkQueue);
+    synchronized(sync) {
+        Object* obj = (Object*)mSyncRoot.Get();
+    AutoLock lock(obj);
         if (mWifiDisplayAdapter != NULL) {
             AutoPtr<IWifiDisplayStatus> s = mWifiDisplayAdapter->GetWifiDisplayStatusLocked();
             *status = s;
@@ -1171,31 +1290,33 @@ Int32 CDisplayManagerService::CreateVirtualDisplayInternal(
     /* [in] */ ISurface* surface,
     /* [in] */ Int32 flags)
 {
-    synchronized (mSyncRoot) {
-        if (mVirtualDisplayAdapter == null) {
-            Slog.w(TAG, "Rejecting request to create private virtual display "
-                    + "because the virtual display adapter is not available.");
+    ISynchronize* sync = ISynchronize::Probe(mTempDisplayStateWorkQueue);
+    synchronized(sync) {
+        if (mVirtualDisplayAdapter == NULL) {
+            Slogger::W(TAG,
+                "Rejecting request to create private virtual display "
+                "because the virtual display adapter is not available.");
             return -1;
         }
 
-        DisplayDevice device = mVirtualDisplayAdapter.createVirtualDisplayLocked(
-                callback, projection, callingUid, packageName,
-                name, width, height, densityDpi, surface, flags);
-        if (device == null) {
+        AutoPtr<DisplayDevice> device = mVirtualDisplayAdapter->CreateVirtualDisplayLocked(
+            callback, projection, callingUid, packageName,
+            name, width, height, densityDpi, surface, flags);
+        if (device == NULL) {
             return -1;
         }
 
-        handleDisplayDeviceAddedLocked(device);
-        LogicalDisplay display = findLogicalDisplayForDeviceLocked(device);
-        if (display != null) {
-            return display.getDisplayIdLocked();
+        HandleDisplayDeviceAddedLocked(device);
+        AutoPtr<LogicalDisplay> display = FindLogicalDisplayForDeviceLocked(device);
+        if (display != NULL) {
+            return display->GetDisplayIdLocked();
         }
 
         // Something weird happened and the logical display was not created.
-        Slog.w(TAG, "Rejecting request to create virtual display "
-                + "because the logical display was not created.");
-        mVirtualDisplayAdapter.releaseVirtualDisplayLocked(callback.asBinder());
-        handleDisplayDeviceRemovedLocked(device);
+        Slogger::W(TAG, "Rejecting request to create virtual display "
+            "because the logical display was not created.");
+        mVirtualDisplayAdapter->ReleaseVirtualDisplayLocked(IBinder::Probe(callback));
+        HandleDisplayDeviceRemovedLocked(device);
     }
     return -1;
 }
@@ -1206,70 +1327,79 @@ ECode CDisplayManagerService::ResizeVirtualDisplayInternal(
     /* [in] */ Int32 height,
     /* [in] */ Int32 densityDpi)
 {
-    synchronized (mSyncRoot) {
-        if (mVirtualDisplayAdapter == null) {
-            return;
+    ISynchronize* sync = ISynchronize::Probe(mTempDisplayStateWorkQueue);
+    synchronized(sync) {
+        if (mVirtualDisplayAdapter == NULL) {
+            return NOERROR;
         }
 
-        mVirtualDisplayAdapter.resizeVirtualDisplayLocked(appToken, width, height, densityDpi);
+        mVirtualDisplayAdapter->ResizeVirtualDisplayLocked(appToken, width, height, densityDpi);
     }
+    return NOERROR;
 }
 
 ECode CDisplayManagerService::SetVirtualDisplaySurfaceInternal(
     /* [in] */ IBinder* appToken,
     /* [in] */ ISurface* surface)
 {
-    synchronized (mSyncRoot) {
-        if (mVirtualDisplayAdapter == null) {
-            return;
+    ISynchronize* sync = ISynchronize::Probe(mTempDisplayStateWorkQueue);
+    synchronized(sync) {
+        if (mVirtualDisplayAdapter == NULL) {
+            return NOERROR;
         }
 
-        mVirtualDisplayAdapter.setVirtualDisplaySurfaceLocked(appToken, surface);
+        mVirtualDisplayAdapter->SetVirtualDisplaySurfaceLocked(appToken, surface);
     }
+    return NOERROR;
 }
 
 ECode CDisplayManagerService::ReleaseVirtualDisplayInternal(
     /* [in] */ IBinder* appToken)
 {
-    synchronized (mSyncRoot) {
-        if (mVirtualDisplayAdapter == null) {
-            return;
+    ISynchronize* sync = ISynchronize::Probe(mTempDisplayStateWorkQueue);
+    synchronized(sync) {
+        if (mVirtualDisplayAdapter == NULL) {
+            return NOERROR;
         }
 
-        DisplayDevice device =
-                mVirtualDisplayAdapter.releaseVirtualDisplayLocked(appToken);
-        if (device != null) {
-            handleDisplayDeviceRemovedLocked(device);
+        AutoPtr<DisplayDevice> device = mVirtualDisplayAdapter->ReleaseVirtualDisplayLocked(appToken);
+        if (device != NULL) {
+            HandleDisplayDeviceRemovedLocked(device);
         }
     }
+    return NOERROR;
 }
 
 ECode CDisplayManagerService::RegisterDefaultDisplayAdapter()
 {
-    if (DEBUG) Slogger::D(TAG, "RegisterDefaultDisplayAdapter mHeadless: %d", mHeadless);
     // Register default display adapter.
-    AutoLock lock(mSyncRoot);
+    Object* obj = (Object*)mSyncRoot.Get();
+    AutoLock lock(obj);
 
     AutoPtr<LocalDisplayAdapter> adapter = new LocalDisplayAdapter(
-        &mSyncRoot, mContext, mHandler, mDisplayAdapterListener);
+        obj, mContext, mHandler, mDisplayAdapterListener);
     RegisterDisplayAdapterLocked(adapter);
+    return NOERROR;
 }
 
 ECode CDisplayManagerService::RegisterAdditionalDisplayAdapters()
 {
-    AutoLock lock(mSyncRoot);
+    Object* obj = (Object*)mSyncRoot.Get();
+    AutoLock lock(obj);
     Boolean result = ShouldRegisterNonEssentialDisplayAdaptersLocked();
     if (result) {
         RegisterOverlayDisplayAdapterLocked();
         RegisterWifiDisplayAdapterLocked();
     }
+    return NOERROR;
 }
 
 ECode CDisplayManagerService::RegisterOverlayDisplayAdapterLocked()
 {
     AutoPtr<OverlayDisplayAdapter> adapter = new OverlayDisplayAdapter(
-        &mSyncRoot, mContext, mHandler, mDisplayAdapterListener, mUiHandler);
+        (Object*)mSyncRoot.Get(), mContext, mHandler, mDisplayAdapterListener, mUiHandler);
     RegisterDisplayAdapterLocked(adapter);
+    return NOERROR;
 }
 
 ECode CDisplayManagerService::RegisterWifiDisplayAdapterLocked()
@@ -1290,17 +1420,19 @@ ECode CDisplayManagerService::RegisterWifiDisplayAdapterLocked()
     if (needRegister) {
         assert(mWifiDisplayAdapter == NULL);
         mWifiDisplayAdapter = new WifiDisplayAdapter(
-            &mSyncRoot, mContext, mHandler, mDisplayAdapterListener,
+            (Object*)mSyncRoot.Get(), mContext, mHandler, mDisplayAdapterListener,
             mPersistentDataStore);
         RegisterDisplayAdapterLocked(mWifiDisplayAdapter);
     }
+    return NOERROR;
 }
 
-ECode CDisplayManagerService::RegisterWifiDisplayAdapterLocked()
+ECode CDisplayManagerService::RegisterVirtualDisplayAdapterLocked()
 {
     mVirtualDisplayAdapter = new VirtualDisplayAdapter(
-            mSyncRoot, mContext, mHandler, mDisplayAdapterListener);
-    registerDisplayAdapterLocked(mVirtualDisplayAdapter);
+        (Object*)mSyncRoot.Get(), mContext, mHandler, mDisplayAdapterListener);
+    RegisterDisplayAdapterLocked(mVirtualDisplayAdapter);
+    return NOERROR;
 }
 
 Boolean CDisplayManagerService::ShouldRegisterNonEssentialDisplayAdaptersLocked()
@@ -1324,44 +1456,48 @@ void CDisplayManagerService::RegisterDisplayAdapterLocked(
 void CDisplayManagerService::HandleDisplayDeviceAdded(
    /* [in] */ DisplayDevice* device)
 {
-    synchronized (mSyncRoot) {
-        handleDisplayDeviceAddedLocked(device);
+    ISynchronize* sync = ISynchronize::Probe(mTempDisplayStateWorkQueue);
+    synchronized(sync) {
+        HandleDisplayDeviceAddedLocked(device);
     }
 }
 
 void CDisplayManagerService::HandleDisplayDeviceAddedLocked(
    /* [in] */ DisplayDevice* device)
 {
-    if (mDisplayDevices.contains(device)) {
-        Slog.w(TAG, "Attempted to add already added display device: "
-                + device.getDisplayDeviceInfoLocked());
+    AutoPtr<DisplayDevice> dd = device;
+    if (Find(mDisplayDevices.Begin(), mDisplayDevices.End(), dd) == mDisplayDevices.End()) {
+        Slogger::W(TAG, "Attempted to add already added display device: %s",
+            Object::ToString(device->GetDisplayDeviceInfoLocked()).string());
         return;
     }
 
-    Slog.i(TAG, "Display device added: " + device.getDisplayDeviceInfoLocked());
+    Slogger::I(TAG, "Display device added: %s",
+        Object::ToString(device->GetDisplayDeviceInfoLocked()).string());
 
-    mDisplayDevices.add(device);
-    addLogicalDisplayLocked(device);
-    Runnable work = updateDisplayStateLocked(device);
-    if (work != null) {
-        work.run();
+    mDisplayDevices.PushBack(dd);
+    AddLogicalDisplayLocked(device);
+    AutoPtr<IRunnable> work = UpdateDisplayStateLocked(device);
+    if (work != NULL) {
+        work->Run();
     }
-    scheduleTraversalLocked(false);
+    ScheduleTraversalLocked(FALSE);
 }
 
 void CDisplayManagerService::HandleDisplayDeviceChanged(
     /* [in] */ DisplayDevice* device)
 {
-    AutoLock lock(mSyncRoot);
+    Object* obj = (Object*)mSyncRoot.Get();
+    AutoLock lock(obj);
     if (Find(mDisplayDevices.Begin(), mDisplayDevices.End(),
         AutoPtr<DisplayDevice>(device)) == mDisplayDevices.End()) {
         Slogger::W(TAG, "Attempted to change non-existent display device: %s",
-            device->GetDisplayDeviceInfoLocked()->ToString().string());
+            Object::ToString(device->GetDisplayDeviceInfoLocked()).string());
         return;
     }
 
     Slogger::I(TAG, "Display device changed: %s",
-        device->GetDisplayDeviceInfoLocked()->ToString().string());
+        Object::ToString(device->GetDisplayDeviceInfoLocked()).string());
 
     device->ApplyPendingDisplayDeviceInfoChangesLocked();
     if (UpdateLogicalDisplaysLocked()) {
@@ -1372,53 +1508,41 @@ void CDisplayManagerService::HandleDisplayDeviceChanged(
 void CDisplayManagerService::HandleDisplayDeviceRemoved(
     /* [in] */ DisplayDevice* device)
 {
-    synchronized (mSyncRoot) {
-        handleDisplayDeviceRemovedLocked(device);
+    ISynchronize* sync = ISynchronize::Probe(mTempDisplayStateWorkQueue);
+    synchronized(sync) {
+        HandleDisplayDeviceRemovedLocked(device);
     }
 }
 
-void CDisplayManagerService::handleDisplayDeviceRemovedLocked(
+void CDisplayManagerService::HandleDisplayDeviceRemovedLocked(
     /* [in] */ DisplayDevice* device)
 {
-    // AutoLock lock(mSyncRoot);
-
-    // List<AutoPtr<DisplayDevice> >::Iterator find = Find(
-    //     mDisplayDevices.Begin(), mDisplayDevices.End(), AutoPtr<DisplayDevice>(device));
-    // if (find == mDisplayDevices.End()) {
-    //     Slogger::W(TAG, "Attempted to remove non-existent display device: %s",
-    //         device->GetDisplayDeviceInfoLocked()->ToString().string());
-    //     return;
-    // }
-
-    // mDisplayDevices.Erase(find);
-
-    // Slogger::I(TAG, "Display device removed: %s",
-    //     device->GetDisplayDeviceInfoLocked()->ToString().string());
-
-    // UpdateLogicalDisplaysLocked();
-    // ScheduleTraversalLocked(FALSE);
-
-    if (!mDisplayDevices.remove(device)) {
-        Slog.w(TAG, "Attempted to remove non-existent display device: "
-                + device.getDisplayDeviceInfoLocked());
+    AutoPtr<DisplayDevice> dd = device;
+    List<AutoPtr<DisplayDevice> >::Iterator find = Find(mDisplayDevices.Begin(), mDisplayDevices.End(),dd);
+    if (find == mDisplayDevices.End()) {
+        Slogger::W(TAG, "Attempted to remove non-existent display device: %s",
+            Object::ToString(device->GetDisplayDeviceInfoLocked()).string());
         return;
     }
 
-    Slog.i(TAG, "Display device removed: " + device.getDisplayDeviceInfoLocked());
+    mDisplayDevices.Erase(find);
 
-    updateLogicalDisplaysLocked();
-    scheduleTraversalLocked(false);
+    Slogger::I(TAG, "Display device removed: %s",
+        Object::ToString(device->GetDisplayDeviceInfoLocked()).string());
+
+    UpdateLogicalDisplaysLocked();
+    ScheduleTraversalLocked(FALSE);
 }
 
 void CDisplayManagerService::UpdateGlobalDisplayStateLocked(
     /* [in] */ IList* workQueue)
 {
-    final int count = mDisplayDevices.size();
-    for (int i = 0; i < count; i++) {
-        DisplayDevice device = mDisplayDevices.get(i);
-        Runnable runnable = updateDisplayStateLocked(device);
-        if (runnable != null) {
-            workQueue.add(runnable);
+    List< AutoPtr<DisplayDevice> >::Iterator it;
+    for (it = mDisplayDevices.Begin(); it != mDisplayDevices.End(); ++it) {
+        AutoPtr<DisplayDevice> device = *it;
+        AutoPtr<IRunnable> runnable = UpdateDisplayStateLocked(device);
+        if (runnable != NULL) {
+            workQueue->Add(TO_IINTERFACE(runnable));
         }
     }
 }
@@ -1428,11 +1552,11 @@ AutoPtr<IRunnable> CDisplayManagerService::UpdateDisplayStateLocked(
 {
     // Blank or unblank the display immediately to match the state requested
     // by the display power controller (if known).
-    DisplayDeviceInfo info = device.getDisplayDeviceInfoLocked();
-    if ((info.flags & DisplayDeviceInfo.FLAG_NEVER_BLANK) == 0) {
-        return device.requestDisplayStateLocked(mGlobalDisplayState);
+    AutoPtr<DisplayDeviceInfo> info = device->GetDisplayDeviceInfoLocked();
+    if ((info->mFlags & DisplayDeviceInfo::FLAG_NEVER_BLANK) == 0) {
+        return device->RequestDisplayStateLocked(mGlobalDisplayState);
     }
-    return null;
+    return NULL;
 }
 
 void CDisplayManagerService::AddLogicalDisplayLocked(
@@ -1443,13 +1567,14 @@ void CDisplayManagerService::AddLogicalDisplayLocked(
         & DisplayDeviceInfo::FLAG_DEFAULT_DISPLAY) != 0;
     if (isDefault && mLogicalDisplays.Find(IDisplay::DEFAULT_DISPLAY) != mLogicalDisplays.End()) {
         Slogger::W(TAG, "Ignoring attempt to add a second default display: %s"
-            , deviceInfo->ToString().string());
+            , Object::ToString(deviceInfo).string());
         isDefault = FALSE;
     }
 
     if (!isDefault && mSingleDisplayDemoMode) {
         Slogger::I(TAG, "Not creating a logical display for a secondary display "
-            " because single display demo mode is enabled: %s", deviceInfo->ToString().string());
+            " because single display demo mode is enabled: %s",
+            Object::ToString(deviceInfo).string());
         return;
     }
 
@@ -1461,7 +1586,8 @@ void CDisplayManagerService::AddLogicalDisplayLocked(
     if (!display->IsValidLocked()) {
         // This should never happen currently.
         Slogger::W(TAG, "Ignoring display device because the logical display "
-            "created from it was not considered valid: %s", deviceInfo->ToString().string());
+            "created from it was not considered valid: %s",
+            Object::ToString(deviceInfo).string());
         return;
     }
 
@@ -1469,7 +1595,7 @@ void CDisplayManagerService::AddLogicalDisplayLocked(
 
     // Wake up waitForDefaultDisplay.
     if (isDefault) {
-        mSyncRoot.NotifyAll();
+        mSyncRoot->NotifyAll();
     }
 
     SendDisplayEventLocked(displayId, IDisplayManagerGlobal::EVENT_DISPLAY_ADDED);
@@ -1504,13 +1630,12 @@ Boolean CDisplayManagerService::UpdateLogicalDisplaysLocked()
 
         mTempDisplayInfo->CopyFrom(display->GetDisplayInfoLocked());
         display->UpdateLocked(mDisplayDevices);
-        Boolean isEqual;
         if (!display->IsValidLocked()) {
             mLogicalDisplays.Erase(iter++);
             SendDisplayEventLocked(displayId, IDisplayManagerGlobal::EVENT_DISPLAY_REMOVED);
             changed = TRUE;
         }
-        else if (!(mTempDisplayInfo->Equals(display->GetDisplayInfoLocked(), &isEqual), isEqual)) {
+        else if (!Object::Equals(mTempDisplayInfo, display->GetDisplayInfoLocked())) {
             ++iter;
             SendDisplayEventLocked(displayId, IDisplayManagerGlobal::EVENT_DISPLAY_CHANGED);
             changed = TRUE;
@@ -1529,8 +1654,9 @@ void CDisplayManagerService::PerformTraversalInTransactionLocked()
     ClearViewportsLocked();
 
     // Configure each display device.
-    iter = mDisplayDevices.Begin();
-    for (; iter != mDisplayDevices.End(); ++iter) {
+    List< AutoPtr<DisplayDevice> >::Iterator iter;
+    for (iter = mDisplayDevices.Begin(); iter != mDisplayDevices.End(); ++iter) {
+
         ConfigureDisplayInTransactionLocked(*iter);
         (*iter)->PerformTraversalInTransactionLocked();
     }
@@ -1548,110 +1674,89 @@ void CDisplayManagerService::SetDisplayPropertiesInternal(
     /* [in] */ Float requestedRefreshRate,
     /* [in] */ Boolean inTraversal)
 {
-    synchronized (mSyncRoot) {
-        LogicalDisplay display = mLogicalDisplays.get(displayId);
-        if (display == null) {
+    ISynchronize* sync = ISynchronize::Probe(mTempDisplayStateWorkQueue);
+    synchronized(sync) {
+        HashMap<Int32, AutoPtr<LogicalDisplay> >::Iterator it;
+        it = mLogicalDisplays.Find(displayId);
+        if (it == mLogicalDisplays.End()) {
             return;
         }
-        if (display.hasContentLocked() != hasContent) {
+        AutoPtr<LogicalDisplay> display = it->mSecond;
+        if (display == NULL) {
+            return;
+        }
+        if (display->HasContentLocked() != hasContent) {
             if (DEBUG) {
-                Slog.d(TAG, "Display " + displayId + " hasContent flag changed: "
-                        + "hasContent=" + hasContent + ", inTraversal=" + inTraversal);
+                Slogger::D(TAG, "Display %d hasContent flag changed: hasContent=%d inTraversal=%d",
+                    displayId, hasContent, inTraversal);
             }
 
-            display.setHasContentLocked(hasContent);
-            scheduleTraversalLocked(inTraversal);
+            display->SetHasContentLocked(hasContent);
+            ScheduleTraversalLocked(inTraversal);
         }
-        if (display.getRequestedRefreshRateLocked() != requestedRefreshRate) {
+        if (display->GetRequestedRefreshRateLocked() != requestedRefreshRate) {
             if (DEBUG) {
-                Slog.d(TAG, "Display " + displayId + " has requested a new refresh rate: "
-                        + requestedRefreshRate + "fps");
+                Slogger::D(TAG, "Display %d has requested a new refresh rate: %f fps",
+                    displayId, requestedRefreshRate);
             }
-            display.setRequestedRefreshRateLocked(requestedRefreshRate);
-            scheduleTraversalLocked(inTraversal);
+            display->SetRequestedRefreshRateLocked(requestedRefreshRate);
+            ScheduleTraversalLocked(inTraversal);
         }
     }
 }
 
 void CDisplayManagerService::ClearViewportsLocked()
 {
-    mDefaultViewport->mValid = FALSE;
-    mExternalTouchViewport->mValid = FALSE;
+    mDefaultViewport->SetValid(FALSE);
+    mExternalTouchViewport->SetValid(FALSE);
 }
 
 void CDisplayManagerService::ConfigureDisplayInTransactionLocked(
     /* [in] */ DisplayDevice* device)
 {
-    // // Find the logical display that the display device is showing.
-    // AutoPtr<LogicalDisplay> display = FindLogicalDisplayForDeviceLocked(device);
-    // if (display != NULL && !display->HasContentLocked()) {
-    //     display = NULL;
-    // }
-    // if (display == NULL) {
-    //     HashMap<Int32, AutoPtr<LogicalDisplay> >::Iterator find =
-    //         mLogicalDisplays.Find(IDisplay::DEFAULT_DISPLAY);
-    //     if (find != mLogicalDisplays.End())
-    //         display = find->mSecond;
-    // }
-
-    // // Apply the logical display configuration to the display device.
-    // if (display == NULL) {
-    //     // TODO: no logical display for the device, blank it
-    //     Slogger::W(TAG, "Missing logical display to use for physical display device: %s"
-    //         , device->GetDisplayDeviceInfoLocked()->ToString().string());
-    //     return;
-    // }
-    // else {
-    //     Boolean isBlanked = (mAllDisplayBlankStateFromPowerManager
-    //         == DISPLAY_BLANK_STATE_BLANKED);
-    //     display->ConfigureDisplayInTransactionLocked(device, isBlanked);
-    // }
-
-    // // Update the viewports if needed.
-    // AutoPtr<DisplayDeviceInfo> info = device->GetDisplayDeviceInfoLocked();
-    // if (!mDefaultViewport->mValid
-    //     && (info->mFlags & DisplayDeviceInfo::FLAG_DEFAULT_DISPLAY) != 0) {
-    //     SetViewportLocked(mDefaultViewport, display, device);
-    // }
-    // if (!mExternalTouchViewport->mValid
-    //     && info->mTouch == DisplayDeviceInfo::TOUCH_EXTERNAL) {
-    //     SetViewportLocked(mExternalTouchViewport, display, device);
-    // }
-
-    final DisplayDeviceInfo info = device.getDisplayDeviceInfoLocked();
-    final boolean ownContent = (info.flags & DisplayDeviceInfo.FLAG_OWN_CONTENT_ONLY) != 0;
+    AutoPtr<DisplayDeviceInfo> info = device->GetDisplayDeviceInfoLocked();
+    Boolean ownContent = (info->mFlags & DisplayDeviceInfo::FLAG_OWN_CONTENT_ONLY) != 0;
 
     // Find the logical display that the display device is showing.
     // Certain displays only ever show their own content.
-    LogicalDisplay display = findLogicalDisplayForDeviceLocked(device);
+    AutoPtr<LogicalDisplay> display = FindLogicalDisplayForDeviceLocked(device);
     if (!ownContent) {
-        if (display != null && !display.hasContentLocked()) {
+        if (display != NULL && !display->HasContentLocked()) {
             // If the display does not have any content of its own, then
             // automatically mirror the default logical display contents.
-            display = null;
+            display = NULL;
         }
-        if (display == null) {
-            display = mLogicalDisplays.get(Display.DEFAULT_DISPLAY);
+        if (display == NULL) {
+            HashMap<Int32, AutoPtr<LogicalDisplay> >::Iterator it;
+            it = mLogicalDisplays.Find(IDisplay::DEFAULT_DISPLAY);
+            if (it != mLogicalDisplays.End()) {
+                display = it->mSecond;
+            }
         }
     }
 
     // Apply the logical display configuration to the display device.
-    if (display == null) {
+    if (display == NULL) {
         // TODO: no logical display for the device, blank it
-        Slog.w(TAG, "Missing logical display to use for physical display device: "
-                + device.getDisplayDeviceInfoLocked());
+        Slogger::W(TAG, "Missing logical display to use for physical display device: %s",
+            Object::ToString(device->GetDisplayDeviceInfoLocked()).string());
         return;
     }
-    display.configureDisplayInTransactionLocked(device, info.state == Display.STATE_OFF);
+
+    display->ConfigureDisplayInTransactionLocked(device, info->mState == IDisplay::STATE_OFF);
 
     // Update the viewports if needed.
-    if (!mDefaultViewport.valid
-            && (info.flags & DisplayDeviceInfo.FLAG_DEFAULT_DISPLAY) != 0) {
-        setViewportLocked(mDefaultViewport, display, device);
+    Boolean bval;
+    mDefaultViewport->IsValid(&bval);
+    if (!bval
+        && (info->mFlags & DisplayDeviceInfo::FLAG_DEFAULT_DISPLAY) != 0) {
+        SetViewportLocked(mDefaultViewport, display, device);
     }
-    if (!mExternalTouchViewport.valid
-            && info.touch == DisplayDeviceInfo.TOUCH_EXTERNAL) {
-        setViewportLocked(mExternalTouchViewport, display, device);
+
+    mExternalTouchViewport->IsValid(&bval);
+    if (!bval
+            && info->mTouch == DisplayDeviceInfo::TOUCH_EXTERNAL) {
+        SetViewportLocked(mExternalTouchViewport, display, device);
     }
 }
 
@@ -1660,8 +1765,9 @@ void CDisplayManagerService::SetViewportLocked(
     /* [in] */ LogicalDisplay* display,
     /* [in] */ DisplayDevice* device)
 {
-    viewport->mValid = TRUE;
-    viewport->mDisplayId = display->GetDisplayIdLocked();
+    viewport->SetValid(TRUE);
+    assert(0 && "TODO");
+    // viewport->SetDisplayId(display->GetDisplayIdLocked());
     device->PopulateViewportLocked(viewport);
 }
 
@@ -1719,7 +1825,8 @@ void CDisplayManagerService::DeliverDisplayEvent(
 
     // Grab the lock and copy the callbacks.
     {
-        AutoLock lock(mSyncRoot);
+        Object* obj = (Object*)mSyncRoot.Get();
+        AutoLock lock(obj);
         mTempCallbacks.Clear();
         HashMap<Int32, AutoPtr<CallbackRecord> >::Iterator iter;
         for (iter = mCallbacks.Begin(); iter != mCallbacks.End(); ++iter) {
@@ -1737,9 +1844,12 @@ void CDisplayManagerService::DeliverDisplayEvent(
 
 AutoPtr<IIMediaProjectionManager> CDisplayManagerService::GetProjectionService()
 {
-    if (mProjectionService == null) {
-        IBinder b = ServiceManager.getService(Context.MEDIA_PROJECTION_SERVICE);
-        mProjectionService = IMediaProjectionManager.Stub.asInterface(b);
+    if (mProjectionService == NULL) {
+        AutoPtr<IServiceManager> mgr;
+        CServiceManager::AcquireSingleton((IServiceManager**)&mgr);
+        AutoPtr<IInterface> obj;
+        mgr->GetService(IContext::MEDIA_PROJECTION_SERVICE, (IInterface**)&obj);
+        mProjectionService = IIMediaProjectionManager::Probe(obj);
     }
     return mProjectionService;
 }
@@ -1751,7 +1861,7 @@ ECode CDisplayManagerService::DumpInternal(
 {
     // pw.println("DISPLAY MANAGER (dumpsys display)");
 
-    // synchronized (mSyncRoot) {
+    // synchronized(mSyncRoot) {
     //     pw.println("  mOnlyCode=" + mOnlyCore);
     //     pw.println("  mSafeMode=" + mSafeMode);
     //     pw.println("  mPendingTraversal=" + mPendingTraversal);
@@ -1775,21 +1885,21 @@ ECode CDisplayManagerService::DumpInternal(
     //     pw.println();
     //     pw.println("Display Devices: size=" + mDisplayDevices.size());
     //     for (DisplayDevice device : mDisplayDevices) {
-    //         pw.println("  " + device.getDisplayDeviceInfoLocked());
+    //         pw.println("  " + device->GetDisplayDeviceInfoLocked());
     //         device.dumpLocked(ipw);
     //     }
 
-    //     final int logicalDisplayCount = mLogicalDisplays.size();
+    //     Int32 logicalDisplayCount = mLogicalDisplays.size();
     //     pw.println();
     //     pw.println("Logical Displays: size=" + logicalDisplayCount);
     //     for (int i = 0; i < logicalDisplayCount; i++) {
-    //         int displayId = mLogicalDisplays.keyAt(i);
+    //         Int32 displayId = mLogicalDisplays.keyAt(i);
     //         LogicalDisplay display = mLogicalDisplays.valueAt(i);
     //         pw.println("  Display " + displayId + ":");
     //         display.dumpLocked(ipw);
     //     }
 
-    //     final int callbackCount = mCallbacks.size();
+    //     Int32 callbackCount = mCallbacks.size();
     //     pw.println();
     //     pw.println("Callbacks: size=" + callbackCount);
     //     for (int i = 0; i < callbackCount; i++) {
@@ -1798,8 +1908,8 @@ ECode CDisplayManagerService::DumpInternal(
     //                 + ", mWifiDisplayScanRequested=" + callback.mWifiDisplayScanRequested);
     //     }
 
-    //     if (mDisplayPowerController != null) {
-    //         mDisplayPowerController.dump(pw);
+    //     if (mDisplayPowerController != NULL) {
+    //         mDisplayPowerController->dump(pw);
     //     }
     // }
     return NOERROR;

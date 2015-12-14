@@ -150,14 +150,14 @@ protected:
      * Publish the service so it is only accessible to the system process.
      */
     void PublishLocalService(
-        /* [in] */ const ClassID& type,
+        /* [in] */ const InterfaceID& type,
         /* [in] */ IInterface* service);
 
     /**
      * Get a local service by interface.
      */
     AutoPtr<IInterface> GetLocalService(
-        /* [in] */const ClassID& type);
+        /* [in] */const InterfaceID& type);
 
 private:
     AutoPtr<ISystemServiceManager> GetManager();
