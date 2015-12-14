@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/net/CUriBuilder.h"
 #include "elastos/droid/service/notification/Condition.h"
 #include <elastos/core/StringBuilder.h>

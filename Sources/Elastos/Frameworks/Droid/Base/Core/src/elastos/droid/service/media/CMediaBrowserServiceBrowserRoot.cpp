@@ -1,4 +1,6 @@
+
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/service/media/CMediaBrowserServiceBrowserRoot.h"
 
 namespace Elastos {

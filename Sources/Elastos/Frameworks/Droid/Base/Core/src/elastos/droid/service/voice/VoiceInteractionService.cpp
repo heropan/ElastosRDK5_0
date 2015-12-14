@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/content/CComponentName.h"
 #include "elastos/droid/service/voice/CAlwaysOnHotwordDetector.h"
 #include "elastos/droid/service/voice/VoiceInteractionService.h"

@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_SERVICE_FINGERPRINT_FINGERPRINTMANAGER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Service.h"
 #include "elastos/droid/os/Handler.h"
 
 using Elastos::Droid::Content::IContext;

@@ -3,6 +3,8 @@
 #define __ELASTOS_DROID_PREFERENCE_PREFERENCEACTIVITY_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.Droid.Preference.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/app/ListActivity.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/widget/ArrayAdapter.h"

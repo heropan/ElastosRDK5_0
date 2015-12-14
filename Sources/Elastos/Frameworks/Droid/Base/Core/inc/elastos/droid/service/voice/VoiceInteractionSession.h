@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_SERVICE_VOICE_VOICEINTERACTIONSESSION_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.InputMethodService.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/service/voice/VoiceInteractionSessionService.h"
 
 using Elastos::Droid::App::IDialog;

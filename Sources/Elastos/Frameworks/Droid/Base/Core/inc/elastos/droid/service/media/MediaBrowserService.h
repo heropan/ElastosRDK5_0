@@ -4,7 +4,10 @@
 // TODO: Need app/Service
 // #include "elastos/droid/app/Service.h"
 #include "elastos/droid/ext/frameworkext.h"
-
+#include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Service.h"
+#include "Elastos.Droid.Utility.h"
 #include "MediaBrowserServiceResult.h"
 
 using Elastos::Droid::Os::IBundle;

@@ -2,6 +2,9 @@
 #ifndef __ELASTOS_DROID_SERVICE_WALLPAPER_WALLPAPERSERVICE_H__
 #define __ELASTOS_DROID_SERVICE_WALLPAPER_WALLPAPERSERVICE_H__
 
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Service.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/app/Service.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/internal/view/BaseIWindow.h"

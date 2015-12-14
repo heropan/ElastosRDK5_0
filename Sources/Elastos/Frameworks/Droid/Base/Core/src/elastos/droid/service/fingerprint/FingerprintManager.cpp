@@ -1,3 +1,6 @@
+
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 #include "elastos/droid/os/CBinder.h"
 #include "elastos/droid/service/fingerprint/FingerprintManager.h"

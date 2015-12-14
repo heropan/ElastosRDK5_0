@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/service/notification/NotificationRankingUpdate.h"
 
 namespace Elastos {

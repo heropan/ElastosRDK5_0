@@ -2,6 +2,9 @@
 #define __ELASTOS_DROID_SERVICE_VOICE_ALWAYSONHOTWORDDETECTOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Hardware.h"
+#include "Elastos.Droid.Media.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/os/AsyncTask.h"
 #include "elastos/droid/os/Handler.h"
 

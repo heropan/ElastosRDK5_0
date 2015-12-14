@@ -1,3 +1,6 @@
+
+#include "Elastos.CoreLibrary.Text.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/service/textservice/CInternalISpellCheckerSession.h"
 #include "elastos/droid/service/textservice/CSpellCheckerServiceBinder.h"

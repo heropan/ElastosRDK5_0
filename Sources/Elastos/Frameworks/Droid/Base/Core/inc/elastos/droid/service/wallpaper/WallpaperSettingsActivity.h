@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_SERVICE_WALLPAPER_WALLPAPERSETTINGSACTIVITY_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Service.h"
 #include "elastos/droid/preference/PreferenceActivity.h"
 
 using Elastos::Droid::Os::IBundle;

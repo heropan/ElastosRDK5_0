@@ -3,8 +3,11 @@
 #define __ELASTOS_DROID_SERVICE_PERSISTENTDATA_PERSISTENTDATABLOCKMANAGER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Service.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Service::Persistentdata::IIPersistentDataBlockService;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
