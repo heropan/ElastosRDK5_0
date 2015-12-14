@@ -4,17 +4,12 @@
 
 #include "_Elastos_Droid_Media_CJetPlayer.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "CAudioTrack.h"
-#include <elastos/core/StringBuffer.h>
-#include "elastos/droid/os/HandlerBase.h"
-#include <media/JetPlayer.h>
-#include <elastos/core/Math.h>
+#include "elastos/droid/os/Handler.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Core::Math;
-using Elastos::Core::StringBuffer;
-using Elastos::IO::IFileDescriptor;
 using Elastos::Droid::Content::Res::IAssetFileDescriptor;
-
+using Elastos::Droid::Os::Handler;
+using Elastos::IO::IFileDescriptor;
 
 namespace Elastos {
 namespace Droid {
@@ -47,10 +42,12 @@ namespace Media {
  *
  */
 CarClass(CJetPlayer)
+    , public Object
+    , public IJetPlayer
 {
 private:
     class NativeEventHandler
-        : public HandlerBase
+        : public Handler
     {
     public:
         NativeEventHandler(
@@ -68,6 +65,10 @@ public:
     CJetPlayer();
 
     ~CJetPlayer();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor();
 
@@ -413,7 +414,7 @@ private:
     /**
      * Accessed by native methods: provides access to C++ JetPlayer object
      */
-    Int32 mNativePlayer;
+    Int64 mNativePlayer;
 };
 
 } // namespace Media

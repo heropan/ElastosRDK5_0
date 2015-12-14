@@ -54,7 +54,7 @@ ECode TvInputServiceSession::SetOverlayViewEnabledRunnable::Run()
 ECode TvInputServiceSession::NotifySessionEventRunnable::Run()
 {
     // try {
-    if (TvInputService::DEBUG) Logger::D(TvInputService::TAG, String("notifySessionEvent(") + mEventType + ")");
+    if (TvInputService::DEBUG) Logger::D(TvInputService::TAG, "notifySessionEvent(%s)", mEventType.string());
     return mHost->mSessionCallback->OnSessionEvent(mEventType, mEventArgs);
     // } catch (RemoteException e) {
     //     Log.w(TvInputService::TAG, "error in sending event (event=" + eventType + ")");
@@ -136,8 +136,10 @@ ECode TvInputServiceSession::NotifyContentBlockedRunnable::Run()
 ECode TvInputServiceSession::LayoutSurfaceRunnable::Run()
 {
     // try {
-    if (TvInputService::DEBUG) Logger::D(TvInputService::TAG,
-            String("layoutSurface (l=") + mLeft + ", t=" + mTop + ", r=" + mRight + ", b=" + mBottm + ",)");
+    if (TvInputService::DEBUG) {
+        Logger::D(TvInputService::TAG,
+            "layoutSurface (l=%d, t=%d, r=%d, b=%d,)", mLeft, mTop, mRight, mBottm);
+    }
     return mHost->mSessionCallback->OnLayoutSurface(mLeft, mTop, mRight, mBottm);
     // } catch (RemoteException e) {
     //     Log.w(TvInputService::TAG, "error in layoutSurface");
@@ -191,7 +193,7 @@ ECode TvInputServiceSession::NotifySessionEvent(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<NotifySessionEventRunnable> run
-         = new NotifySessionEventRunnable(this, eventType, eventArgs);
+             = new NotifySessionEventRunnable(this, eventType, eventArgs);
     RunOnMainThread(run);
     return NOERROR;
 }
@@ -200,7 +202,7 @@ ECode TvInputServiceSession::NotifyChannelRetuned(
     /* [in] */ IUri* channelUri)
 {
     AutoPtr<NotifyChannelRetunedRunnable> run
-         = new NotifyChannelRetunedRunnable(this, channelUri);
+             = new NotifyChannelRetunedRunnable(this, channelUri);
     RunOnMainThread(run);
     return NOERROR;
 }
@@ -231,7 +233,7 @@ ECode TvInputServiceSession::NotifyTracksChanged(
 
     // TODO: Validate the track list.
     AutoPtr<NotifyTracksChangedRunnable> run
-        = new NotifyTracksChangedRunnable(this, tracks);
+            = new NotifyTracksChangedRunnable(this, tracks);
     RunOnMainThread(run);
     return NOERROR;
 }
@@ -241,7 +243,7 @@ ECode TvInputServiceSession::NotifyTrackSelected(
     /* [in] */ const String& trackId)
 {
     AutoPtr<NotifyTrackSelectedRunnable> run
-        = new NotifyTrackSelectedRunnable(this, type, trackId);
+            = new NotifyTrackSelectedRunnable(this, type, trackId);
     RunOnMainThread(run);
     return NOERROR;
 }
@@ -249,7 +251,7 @@ ECode TvInputServiceSession::NotifyTrackSelected(
 ECode TvInputServiceSession::NotifyVideoAvailable()
 {
     AutoPtr<NotifyVideoAvailableRunnable> run
-        = new NotifyVideoAvailableRunnable(this);
+            = new NotifyVideoAvailableRunnable(this);
     RunOnMainThread(run);
     return NOERROR;
 }
@@ -263,7 +265,7 @@ ECode TvInputServiceSession::NotifyVideoUnavailable(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<NotifyVideoUnavailableRunnable> run
-        = new NotifyVideoUnavailableRunnable(this, reason);
+            = new NotifyVideoUnavailableRunnable(this, reason);
     RunOnMainThread(run);
     return NOERROR;
 }
@@ -271,7 +273,7 @@ ECode TvInputServiceSession::NotifyVideoUnavailable(
 ECode TvInputServiceSession::NotifyContentAllowed()
 {
     AutoPtr<NotifyContentAllowedRunnable> run
-        = new NotifyContentAllowedRunnable(this);
+            = new NotifyContentAllowedRunnable(this);
     RunOnMainThread(run);
     return NOERROR;
 }
@@ -280,7 +282,7 @@ ECode TvInputServiceSession::NotifyContentBlocked(
     /* [in] */ ITvContentRating* rating)
 {
     AutoPtr<NotifyContentBlockedRunnable> run
-        = new NotifyContentBlockedRunnable(this, rating);
+            = new NotifyContentBlockedRunnable(this, rating);
     RunOnMainThread(run);
     return NOERROR;
 }
@@ -296,7 +298,7 @@ ECode TvInputServiceSession::LayoutSurface(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<LayoutSurfaceRunnable> run
-        = new LayoutSurfaceRunnable(this, left, top, right, bottm);
+            = new LayoutSurfaceRunnable(this, left, top, right, bottm);
     RunOnMainThread(run);
     return NOERROR;
 }
@@ -450,8 +452,9 @@ ECode TvInputServiceSession::DispatchSurfaceChanged(
     /* [in] */ Int32 height)
 {
     if (TvInputService::DEBUG) {
-        Logger::D(TvInputService::TAG, String("dispatchSurfaceChanged(format=") + format + ", width=" + width
-                + ", height=" + height + ")");
+        Logger::D(TvInputService::TAG,
+                "dispatchSurfaceChanged(format=%d, width=%d, height=%d)",
+                format, width, height);
     }
     return OnSurfaceChanged(format, width, height);
 }
@@ -459,7 +462,7 @@ ECode TvInputServiceSession::DispatchSurfaceChanged(
 ECode TvInputServiceSession::SetStreamVolume(
     /* [in] */ Float volume)
 {
-    return OnSetStreamVolume(volume);;
+    return OnSetStreamVolume(volume);
 }
 
 ECode TvInputServiceSession::Tune(
@@ -519,6 +522,7 @@ ECode TvInputServiceSession::CreateOverlayView(
     if (!mOverlayViewEnabled) {
         return NOERROR;
     }
+    mOverlayView = NULL;
     OnCreateOverlayView((IView**)&mOverlayView);
     if (mOverlayView == NULL) {
         return NOERROR;
@@ -533,6 +537,7 @@ ECode TvInputServiceSession::CreateOverlayView(
             | IWindowManagerLayoutParams::FLAG_LAYOUT_NO_LIMITS
             | IWindowManagerLayoutParams::FLAG_NOT_TOUCHABLE;
 
+    mWindowParams = NULL;
     CWindowManagerLayoutParams::New(
             f->mRight - f->mLeft, f->mBottom - f->mTop,
             f->mLeft, f->mTop, type, flag, IPixelFormat::TRANSPARENT, (IWindowManagerLayoutParams**)&mWindowParams);
@@ -647,8 +652,7 @@ ECode TvInputServiceSession::DispatchInputEvent(
         }
     }
     Boolean b;
-    mOverlayView->IsAttachedToWindow(&b);
-    if (mOverlayView == NULL || !b) {
+    if (mOverlayView == NULL || (mOverlayView->IsAttachedToWindow(&b), !b)) {
         *result = ITvInputManagerSession::DISPATCH_NOT_HANDLED;
         return NOERROR;
     }
@@ -673,7 +677,6 @@ ECode TvInputServiceSession::DispatchInputEvent(
         *result = ITvInputManagerSession::DISPATCH_IN_PROGRESS;
         return NOERROR;
     }
-    return NOERROR;
 }
 
 void TvInputServiceSession::SetSessionCallback(

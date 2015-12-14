@@ -244,6 +244,9 @@ module
         EditMetadata(
             [out] IRemoteControllerMetadataEditor ** result);
 
+        StartListeningToSessions();
+
+        StopListeningToSessions();
     }
 
     } // namespace media

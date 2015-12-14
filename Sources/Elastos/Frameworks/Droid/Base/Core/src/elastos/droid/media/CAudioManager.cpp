@@ -1,46 +1,62 @@
-
+#include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/media/CAudioManager.h"
+#include "elastos/droid/media/CAudioManagerAudioFocusDispatcher.h"
+#include "elastos/droid/media/CAudioHandle.h"
+#include "elastos/droid/media/CAudioPort.h"
+#include "elastos/droid/media/CAudioPortConfig.h"
+#include "elastos/droid/media/session/CMediaSessionLegacyHelper.h"
+#include "elastos/droid/media/AudioSystem.h"
+#include "elastos/droid/os/CBinder.h"
+#include "elastos/droid/os/CServiceManager.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/os/SystemProperties.h"
+//TODO: Need Settings.h
+// #include "elastos/droid/provider/Settings.h"
 #include "elastos/droid/R.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/logging/Logger.h>
-#include <elastos/core/StringUtils.h>
-#include "elastos/droid/os/CBinder.h"
-#include "elastos/droid/os/SystemClock.h"
-#include "elastos/droid/os/CLooperHelper.h"
-#include "elastos/droid/os/CServiceManager.h"
-#include "elastos/droid/os/SystemProperties.h"
-#include "elastos/droid/content/CIntent.h"
-#include "elastos/droid/provider/Settings.h"
-#include "elastos/droid/media/CAudioSystemHelper.h"
-#include "elastos/droid/media/CMediaRecorder.h"
-#include "elastos/droid/media/CMediaPlayer.h"
-#include "elastos/droid/media/CAudioManagerAudioFocusDispatcher.h"
 
-using Elastos::Droid::Os::CBinder;
-using Elastos::Droid::Os::ILooper;
-using Elastos::Droid::Os::ILooperHelper;
-using Elastos::Droid::Os::CLooperHelper;
-using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::Os::IServiceManager;
-using Elastos::Droid::Os::CServiceManager;
-using Elastos::Droid::Os::SystemClock;
-using Elastos::Droid::Os::SystemProperties;
-using Elastos::Droid::View::IKeyEvent;
-using Elastos::Droid::Widget::IVolumePanel;
-using Elastos::Droid::View::IDisplayManagerAw;
-using Elastos::Droid::Provider::Settings;
-using Elastos::Droid::Provider::ISettingsSystem;
+using Elastos::Droid::App::IPendingIntentHelper;
+using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IContentResolver;
-using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::App::IPendingIntentHelper;
-using Elastos::Utility::Logging::Logger;
-using Elastos::Core::StringUtils;
-using Elastos::Core::ICharSequence;
+using Elastos::Droid::Media::AudioPolicy::IAudioPolicyConfig;
+using Elastos::Droid::Media::CAudioHandle;
+using Elastos::Droid::Media::CAudioPort;
+using Elastos::Droid::Media::CAudioPortConfig;
+using Elastos::Droid::Media::Session::CMediaSessionLegacyHelper;
+using Elastos::Droid::Media::Session::IMediaSessionLegacyHelper;
+using Elastos::Droid::Os::CBinder;
+using Elastos::Droid::Os::CServiceManager;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::ILooperHelper;
+using Elastos::Droid::Os::IServiceManager;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Os::Looper;
+using Elastos::Droid::Os::Process;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Os::SystemProperties;
+using Elastos::Droid::Provider::ISettingsSystem;
+//TODO: Need Settings.h
+// using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::Widget::IVolumePanel;
+using Elastos::Core::CInteger32;
 using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::StringUtils;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::Etl::List;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -59,14 +75,10 @@ const Int32 CAudioManager::DEFAULT_STREAM_VOLUME[] = {
     11  // STREAM_TTS
 };
 
+const Int32 CAudioManager::AUDIOPORT_GENERATION_INIT = 0;
 const String CAudioManager::TAG("CAudioManager");
-const Boolean CAudioManager::DEBUG = FALSE;
-
 const Int32 CAudioManager::RINGER_MODE_MAX = RINGER_MODE_NORMAL;
 AutoPtr<IIAudioService> CAudioManager::sService;
-
-const String CAudioManager::hdmiExpected  = String("audio.hdmi.expected");
-const String CAudioManager::hdmiAvailable  = String("audio.hdmi.available");
 
 //================================================================================
 //                      CAudioManager::FocusEventHandlerDelegate::MyHandler
@@ -82,9 +94,9 @@ ECode CAudioManager::FocusEventHandlerDelegate::MyHandler::HandleMessage(
     String info;
     seq->ToString(&info);
 
-    AutoPtr<IOnAudioFocusChangeListener> listener;
-    {
-        AutoLock lock(mHost->mOwner->mFocusListenerLock);
+    AutoPtr<IAudioManagerOnAudioFocusChangeListener> listener;
+    Object& lock = mHost->mOwner->mFocusListenerLock;
+    synchronized(lock) {
         listener = mHost->mOwner->FindFocusListener(info);
     }
     if (listener != NULL) {
@@ -100,12 +112,9 @@ CAudioManager::FocusEventHandlerDelegate::FocusEventHandlerDelegate(
     /* [in] */ CAudioManager* owner)
     : mOwner(owner)
 {
-    AutoPtr<ILooper> looper;
-    AutoPtr<ILooperHelper> looperHelper;
-    CLooperHelper::AcquireSingleton((ILooperHelper**)&looperHelper);
-    looperHelper->MyLooper((ILooper**)&looper);
+    AutoPtr<ILooper> looper = Looper::GetMyLooper();
     if (looper == NULL) {
-        looperHelper->GetMainLooper((ILooper**)&looper);
+        looper = Looper::GetMainLooper();
     }
 
     if (looper != NULL) {
@@ -125,14 +134,29 @@ AutoPtr<IHandler> CAudioManager::FocusEventHandlerDelegate::GetHandler()
 //================================================================================
 //                      CAudioManager::CAudioManager
 //================================================================================
+
+CAR_INTERFACE_IMPL(CAudioManager, Object, IAudioManager)
+
+CAR_OBJECT_IMPL(CAudioManager)
+
 CAudioManager::CAudioManager()
     : mVolumeKeyUpTime(0)
     , mUseMasterVolume(FALSE)
     , mUseVolumeKeySounds(FALSE)
+    , mUseFixedVolume(FALSE)
 {
+    CBinder::New((IBinder**)&mToken);
     CBinder::New((IBinder**)&mICallBack);
     mAudioFocusEventHandlerDelegate = new FocusEventHandlerDelegate(this);
     CAudioManagerAudioFocusDispatcher::New(THIS_PROBE(IAudioManager), (IIAudioFocusDispatcher**)&mAudioFocusDispatcher);
+
+    CInteger32::New(AUDIOPORT_GENERATION_INIT, (IInteger32**)&mAudioPortGeneration);
+    CArrayList::New((IArrayList**)&mAudioPortsCached);
+    CArrayList::New((IArrayList**)&mAudioPatchesCached);
+}
+
+CAudioManager::~CAudioManager()
+{
 }
 
 ECode CAudioManager::constructor(
@@ -143,6 +167,9 @@ ECode CAudioManager::constructor(
     mContext->GetResources((IResources**)&resources);
     resources->GetBoolean(R::bool_::config_useMasterVolume, &mUseMasterVolume);
     resources->GetBoolean(R::bool_::config_useVolumeKeySounds, &mUseVolumeKeySounds);
+
+    mAudioPortEventHandler = new AudioPortEventHandler(THIS_PROBE(IAudioManager));
+    resources->GetBoolean(R::bool_::config_useFixedVolume, &mUseFixedVolume);
     return NOERROR;
 }
 
@@ -166,6 +193,14 @@ AutoPtr<IIAudioService> CAudioManager::GetService()
     return sService;
 }
 
+ECode CAudioManager::DispatchMediaKeyEvent(
+    /* [in] */ IKeyEvent* keyEvent)
+{
+    AutoPtr<IMediaSessionLegacyHelper> helper;
+    CMediaSessionLegacyHelper::GetHelper(mContext, (IMediaSessionLegacyHelper**)&helper);
+    return helper->SendMediaButtonEvent(keyEvent, FALSE);
+}
+
 ECode CAudioManager::PreDispatchKeyEvent(
     /* [in] */ IKeyEvent* event,
     /* [in] */ Int32 stream)
@@ -179,7 +214,7 @@ ECode CAudioManager::PreDispatchKeyEvent(
     if (keyCode != IKeyEvent::KEYCODE_VOLUME_DOWN
         && keyCode != IKeyEvent::KEYCODE_VOLUME_UP
         && keyCode != IKeyEvent::KEYCODE_VOLUME_MUTE
-        && mVolumeKeyUpTime + IVolumePanel::PLAY_SOUND_DELAY
+        && mVolumeKeyUpTime + IAudioService::PLAY_SOUND_DELAY
             > SystemClock::GetUptimeMillis()) {
         /*
          * The user has hit another key during the delay (e.g., 300ms)
@@ -270,6 +305,14 @@ ECode CAudioManager::HandleKeyUp(
     return NOERROR;
 }
 
+ECode CAudioManager::IsVolumeFixed(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = mUseFixedVolume;
+    return NOERROR;
+}
+
 ECode CAudioManager::AdjustStreamVolume(
     /* [in] */ Int32 streamType,
     /* [in] */ Int32 direction,
@@ -278,12 +321,14 @@ ECode CAudioManager::AdjustStreamVolume(
     AutoPtr<IIAudioService> service = GetService();
     if (!service) return E_REMOTE_EXCEPTION;
 
+    String pkgName;
+    mContext->GetOpPackageName(&pkgName);
     ECode ec = NOERROR;
     if (mUseMasterVolume) {
-        ec = service->AdjustMasterVolume(direction, flags);
+        ec = service->AdjustMasterVolume(direction, flags, pkgName);
     }
     else {
-        ec = service->AdjustStreamVolume(streamType, direction, flags);
+        ec = service->AdjustStreamVolume(streamType, direction, flags, pkgName);
     }
     if (FAILED(ec)) {
         Logger::E(TAG, "Dead object in AdjustStreamVolume");
@@ -300,12 +345,16 @@ ECode CAudioManager::AdjustVolume(
     AutoPtr<IIAudioService> service = GetService();
     if (!service) return E_REMOTE_EXCEPTION;
 
+    String pkgName;
+    mContext->GetOpPackageName(&pkgName);
     ECode ec = NOERROR;
     if (mUseMasterVolume) {
-        ec = service->AdjustMasterVolume(direction, flags);
+        ec = service->AdjustMasterVolume(direction, flags, pkgName);
     }
     else {
-        ec = service->AdjustVolume(direction, flags);
+        AutoPtr<IMediaSessionLegacyHelper> helper;
+        CMediaSessionLegacyHelper::GetHelper(mContext, (IMediaSessionLegacyHelper**)&helper);
+        helper->SendAdjustVolumeBy(IAudioManager::USE_DEFAULT_STREAM_TYPE, direction, flags);
     }
 
     if (FAILED(ec)) {
@@ -324,13 +373,16 @@ ECode CAudioManager::AdjustSuggestedStreamVolume(
     AutoPtr<IIAudioService> service = GetService();
     if (!service) return E_REMOTE_EXCEPTION;
 
+    String pkgName;
+    mContext->GetOpPackageName(&pkgName);
     ECode ec = NOERROR;
     if (mUseMasterVolume) {
-        ec = service->AdjustMasterVolume(direction, flags);
+        ec = service->AdjustMasterVolume(direction, flags, pkgName);
     }
     else {
-        ec = service->AdjustSuggestedStreamVolume(
-            direction, suggestedStreamType, flags);
+        AutoPtr<IMediaSessionLegacyHelper> helper;
+        CMediaSessionLegacyHelper::GetHelper(mContext, (IMediaSessionLegacyHelper**)&helper);
+        ec = helper->SendAdjustVolumeBy(suggestedStreamType, direction, flags);
     }
 
     if (FAILED(ec)) {
@@ -347,8 +399,9 @@ ECode CAudioManager::AdjustMasterVolume(
     AutoPtr<IIAudioService> service = GetService();
     if (!service) return E_REMOTE_EXCEPTION;
 
-    ECode ec = NOERROR;
-    ec = service->AdjustMasterVolume(steps, flags);
+    String pkgName;
+    mContext->GetOpPackageName(&pkgName);
+    ECode ec = service->AdjustMasterVolume(steps, flags, pkgName);
     if (FAILED(ec)) {
         Logger::E(TAG, "Dead object in AdjustMasterVolume");
         return E_REMOTE_EXCEPTION;
@@ -489,6 +542,13 @@ ECode CAudioManager::GetMasterStreamType(
 ECode CAudioManager::SetRingerMode(
     /* [in] */ Int32 ringerMode)
 {
+    return SetRingerMode(ringerMode, TRUE /*checkZen*/);
+}
+
+ECode CAudioManager::SetRingerMode(
+    /* [in] */ Int32 ringerMode,
+    /* [in] */ Boolean checkZen)
+{
     Boolean result;
     IsValidRingerMode(ringerMode, &result);
     if (!result) return NOERROR;
@@ -496,7 +556,7 @@ ECode CAudioManager::SetRingerMode(
     AutoPtr<IIAudioService> service = GetService();
     if (!service) return E_REMOTE_EXCEPTION;
 
-    ECode ec = service->SetRingerMode(ringerMode);
+    ECode ec = service->SetRingerMode(ringerMode, checkZen);
     if (FAILED(ec)) {
         Logger::E(TAG, "Dead object in SetRingerMode");
         return E_REMOTE_EXCEPTION;
@@ -512,12 +572,14 @@ ECode CAudioManager::SetStreamVolume(
     AutoPtr<IIAudioService> service = GetService();
     if (!service) return E_REMOTE_EXCEPTION;
 
+    String pkgName;
+    mContext->GetOpPackageName(&pkgName);
     ECode ec = NOERROR;
     if (mUseMasterVolume) {
-        ec = service->SetMasterVolume(index, flags);
+        ec = service->SetMasterVolume(index, flags, pkgName);
     }
     else {
-        ec = service->SetStreamVolume(streamType, index, flags);
+        ec = service->SetStreamVolume(streamType, index, flags, pkgName);
     }
 
     if (FAILED(ec)) {
@@ -589,7 +651,9 @@ ECode CAudioManager::SetMasterVolume(
     AutoPtr<IIAudioService> service = GetService();
     if (!service) return E_REMOTE_EXCEPTION;
 
-    ECode ec = service->SetMasterVolume(index, flags);
+    String pkgName;
+    mContext->GetOpPackageName(&pkgName);
+    ECode ec = service->SetMasterVolume(index, flags, pkgName);
     if (FAILED(ec)) {
         Logger::E(TAG, "Dead object in SetMasterVolume");
         return E_REMOTE_EXCEPTION;
@@ -658,7 +722,9 @@ ECode CAudioManager::SetMasterMute(
     AutoPtr<IIAudioService> service = GetService();
     if (!service) return E_REMOTE_EXCEPTION;
 
-    ECode ec = service->SetMasterMute(state, flags, mICallBack);
+    String pkgName;
+    mContext->GetOpPackageName(&pkgName);
+    ECode ec = service->SetMasterMute(state, flags, pkgName, mICallBack);
     if (FAILED(ec)) {
         Logger::E(TAG, "Dead object in SetMasterMuteEx");
         return E_REMOTE_EXCEPTION;
@@ -798,12 +864,27 @@ ECode CAudioManager::StartBluetoothSco()
     AutoPtr<IIAudioService> service = GetService();
     if (!service) return E_REMOTE_EXCEPTION;
 
-    ECode ec = service->StartBluetoothSco(mICallBack);
+    AutoPtr<IApplicationInfo> ai;
+    mContext->GetApplicationInfo((IApplicationInfo**)&ai);
+    Int32 ver;
+    ai->GetTargetSdkVersion(&ver);
+    ECode ec = service->StartBluetoothSco(mICallBack, ver);
     if (FAILED(ec)) {
         Logger::E(TAG, "Dead object in StartBluetoothSco");
         return E_REMOTE_EXCEPTION;
     }
     return NOERROR;
+}
+
+ECode CAudioManager::StartBluetoothScoVirtualCall()
+{
+    AutoPtr<IIAudioService> service = GetService();
+
+    // try {
+    return service->StartBluetoothScoVirtualCall(mICallBack);
+    // } catch (RemoteException e) {
+    //     Log.e(TAG, "Dead object in startBluetoothScoVirtualCall", e);
+    // }
 }
 
 ECode CAudioManager::StopBluetoothSco()
@@ -864,29 +945,12 @@ ECode CAudioManager::IsBluetoothA2dpOn(
 
     Int32 state;
     String deviceAddress("");
-    AutoPtr<IAudioSystemHelper> audioSystemHelper;
-    CAudioSystemHelper::AcquireSingleton((IAudioSystemHelper**)&audioSystemHelper);
-    audioSystemHelper->GetDeviceConnectionState(DEVICE_OUT_BLUETOOTH_A2DP, deviceAddress, &state);
+    AudioSystem::GetDeviceConnectionState(DEVICE_OUT_BLUETOOTH_A2DP, deviceAddress, &state);
     if (state == IAudioSystem::DEVICE_STATE_UNAVAILABLE) {
         *result = FALSE;
     }
     else {
         *result = TRUE;
-    }
-    return NOERROR;
-}
-
-ECode CAudioManager::SetRemoteSubmixOn(
-    /* [in] */ Boolean on,
-    /* [in] */ Int32 address)
-{
-    AutoPtr<IIAudioService> service = GetService();
-    if (!service) return E_REMOTE_EXCEPTION;
-
-    ECode ec = service->SetRemoteSubmixOn(on, address);
-    if (FAILED(ec)) {
-        Logger::E(TAG, "Dead object in SetRemoteSubmixOn");
-        return E_REMOTE_EXCEPTION;
     }
     return NOERROR;
 }
@@ -905,10 +969,8 @@ ECode CAudioManager::IsWiredHeadsetOn(
     Int32 state1;
     Int32 state2;
     String deviceAddress("");
-    AutoPtr<IAudioSystemHelper> audioSystemHelper;
-    CAudioSystemHelper::AcquireSingleton((IAudioSystemHelper**)&audioSystemHelper);
-    audioSystemHelper->GetDeviceConnectionState(DEVICE_OUT_BLUETOOTH_A2DP, deviceAddress, &state1);
-    audioSystemHelper->GetDeviceConnectionState(DEVICE_OUT_BLUETOOTH_A2DP, deviceAddress, &state2);
+    AudioSystem::GetDeviceConnectionState(DEVICE_OUT_BLUETOOTH_A2DP, deviceAddress, &state1);
+    AudioSystem::GetDeviceConnectionState(DEVICE_OUT_BLUETOOTH_A2DP, deviceAddress, &state2);
     if (state1 == IAudioSystem::DEVICE_STATE_UNAVAILABLE &&
         state2 == IAudioSystem::DEVICE_STATE_UNAVAILABLE) {
         *result = FALSE;
@@ -922,11 +984,14 @@ ECode CAudioManager::IsWiredHeadsetOn(
 ECode CAudioManager::SetMicrophoneMute(
     /* [in] */ Boolean on)
 {
-    Int32 status;
-    AutoPtr<IAudioSystemHelper> audioSystemHelper;
-    CAudioSystemHelper::AcquireSingleton((IAudioSystemHelper**)&audioSystemHelper);
-    //status return command completion status see AUDIO_STATUS_OK, see AUDIO_STATUS_ERROR
-    return audioSystemHelper->MuteMicrophone(on);
+    AutoPtr<IIAudioService> service = GetService();
+    // try {
+    String pkgName;
+    mContext->GetOpPackageName(&pkgName);
+    return service->SetMicrophoneMute(on, pkgName);
+    // } catch (RemoteException e) {
+    //     Log.e(TAG, "Dead object in setMicrophoneMute", e);
+    // }
 }
 
 ECode CAudioManager::IsMicrophoneMute(
@@ -934,9 +999,7 @@ ECode CAudioManager::IsMicrophoneMute(
 {
     VALIDATE_NOT_NULL(result);
 
-    AutoPtr<IAudioSystemHelper> audioSystemHelper;
-    CAudioSystemHelper::AcquireSingleton((IAudioSystemHelper**)&audioSystemHelper);
-    return audioSystemHelper->IsMicrophoneMuted(result);
+    return AudioSystem::IsMicrophoneMuted(result);
 }
 
 ECode CAudioManager::SetMode(
@@ -957,6 +1020,7 @@ ECode CAudioManager::GetMode(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = 0;
 
     AutoPtr<IIAudioService> service = GetService();
     if (!service) return E_REMOTE_EXCEPTION;
@@ -992,45 +1056,48 @@ ECode CAudioManager::IsMusicActive(
 {
     VALIDATE_NOT_NULL(result);
 
-    AutoPtr<IAudioSystemHelper> audioSystemHelper;
-    CAudioSystemHelper::AcquireSingleton((IAudioSystemHelper**)&audioSystemHelper);
-    audioSystemHelper->IsStreamActive(STREAM_MUSIC, 0, result);
-    return NOERROR;
+    return AudioSystem::IsStreamActive(STREAM_MUSIC, 0, result);
 }
 
-ECode CAudioManager::IsSpeechRecognitionActive(
+ECode CAudioManager::IsMusicActiveRemotely(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
 
-    AutoPtr<IAudioSystemHelper> audioSystemHelper;
-    CAudioSystemHelper::AcquireSingleton((IAudioSystemHelper**)&audioSystemHelper);
-    audioSystemHelper->IsSourceActive(
-        IAudioSource::VOICE_RECOGNITION, result);
-    return NOERROR;
+    return AudioSystem::IsStreamActiveRemotely(STREAM_MUSIC, 0, result);
 }
 
-ECode CAudioManager::AdjustLocalOrRemoteStreamVolume(
-    /* [in] */ Int32 streamType,
-    /* [in] */ Int32 direction)
+ECode CAudioManager::IsAudioFocusExclusive(
+    /* [out] */ Boolean* result)
 {
-    if (streamType != STREAM_MUSIC) {
-        Logger::W(TAG, "AdjustLocalOrRemoteStreamVolume() doesn't support stream %d", streamType);
-    }
-
+    VALIDATE_NOT_NULL(result)
     AutoPtr<IIAudioService> service = GetService();
-    if (!service) return E_REMOTE_EXCEPTION;
 
     // try {
-    ECode ec = service->AdjustLocalOrRemoteStreamVolume(streamType, direction);
-    if (FAILED(ec)) {
-        Logger::E(TAG, "Dead object in AdjustLocalOrRemoteStreamVolume");
-        return E_REMOTE_EXCEPTION;
-    }
-    //} catch (RemoteException e) {
-    //    Log.e(TAG, "Dead object in adjustLocalOrRemoteStreamVolume", e);
-    //}
+    Int32 val;
+    service->GetCurrentAudioFocus(&val);
+    *result = val == IAudioManager::AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE;
     return NOERROR;
+    // } catch (RemoteException e) {
+    //     Log.e(TAG, "Dead object in isAudioFocusExclusive()", e);
+    //     return false;
+    // }
+}
+
+ECode CAudioManager::GenerateAudioSessionId(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    Int32 session;
+    AudioSystem::NewAudioSessionId(&session);
+    if (session > 0) {
+        *result = session;
+        return NOERROR;
+    } else {
+        Logger::E(TAG, "Failure to generate a new audio session ID");
+        *result = IAudioManager::ERROR;
+        return NOERROR;
+    }
 }
 
 ECode CAudioManager::SetParameter(
@@ -1044,12 +1111,9 @@ ECode CAudioManager::SetParameter(
 ECode CAudioManager::SetParameters(
     /* [in] */ const String& keyValuePairs)
 {
-    AutoPtr<IAudioSystemHelper> audioSystemHelper;
-    CAudioSystemHelper::AcquireSingleton((IAudioSystemHelper**)&audioSystemHelper);
     Int32 value;
     //value return keyValuePairs list of parameters key value pairs in the form: key1=value1;key2=value2;...
-    audioSystemHelper->SetParameters(keyValuePairs);
-    return NOERROR;
+    return AudioSystem::SetParameters(keyValuePairs);
 }
 
 ECode CAudioManager::GetParameters(
@@ -1058,10 +1122,7 @@ ECode CAudioManager::GetParameters(
 {
     VALIDATE_NOT_NULL(result);
 
-    AutoPtr<IAudioSystemHelper> audioSystemHelper;
-    CAudioSystemHelper::AcquireSingleton((IAudioSystemHelper**)&audioSystemHelper);
-    audioSystemHelper->GetParameters(keys, result);
-    return NOERROR;
+    return AudioSystem::GetParameters(keys, result);
 }
 
 ECode CAudioManager::PlaySoundEffect(
@@ -1071,7 +1132,11 @@ ECode CAudioManager::PlaySoundEffect(
         return NOERROR;
     }
 
-    if (!QuerySoundEffectsEnabled()) {
+    AutoPtr<IUserHandle> userH;
+    Process::MyUserHandle((IUserHandle**)&userH);
+    Int32 id;
+    userH->GetIdentifier(&id);
+    if (!QuerySoundEffectsEnabled(id)) {
         return NOERROR;
     }
 
@@ -1084,6 +1149,26 @@ ECode CAudioManager::PlaySoundEffect(
         return E_REMOTE_EXCEPTION;
     }
     return NOERROR;
+}
+
+ECode CAudioManager::PlaySoundEffect(
+    /* [in] */ Int32 effectType,
+    /* [in] */ Int32 userId)
+{
+    if (effectType < 0 || effectType >= NUM_SOUND_EFFECTS) {
+        return NOERROR;
+    }
+
+    if (!QuerySoundEffectsEnabled(userId)) {
+        return NOERROR;
+    }
+
+    AutoPtr<IIAudioService> service = GetService();
+    // try {
+    return service->PlaySoundEffect(effectType);
+    // } catch (RemoteException e) {
+    //     Log.e(TAG, "Dead object in playSoundEffect"+e);
+    // }
 }
 
 ECode CAudioManager::PlaySoundEffect(
@@ -1105,12 +1190,16 @@ ECode CAudioManager::PlaySoundEffect(
     return NOERROR;
 }
 
-Boolean CAudioManager::QuerySoundEffectsEnabled()
+Boolean CAudioManager::QuerySoundEffectsEnabled(
+    /* [in] */ Int32 user)
 {
     // todo: Eric audio service ready?
     AutoPtr<IContentResolver> contentResolver;
     mContext->GetContentResolver((IContentResolver**)&contentResolver);
-    return Settings::System::GetInt32(contentResolver, ISettingsSystem::SOUND_EFFECTS_ENABLED, 0) != 0;
+//TODO: Need Settings.h
+    // return Settings::System::GetInt32(contentResolver,
+    //         ISettingsSystem::SOUND_EFFECTS_ENABLED, 0, user) != 0;
+    return TRUE;
 }
 
 ECode CAudioManager::LoadSoundEffects()
@@ -1140,10 +1229,10 @@ ECode CAudioManager::UnloadSoundEffects()
     return NOERROR;
 }
 
-AutoPtr<IOnAudioFocusChangeListener> CAudioManager::FindFocusListener(
+AutoPtr<IAudioManagerOnAudioFocusChangeListener> CAudioManager::FindFocusListener(
     /* [in] */ const String& id)
 {
-    HashMap<String, AutoPtr<IOnAudioFocusChangeListener> >::Iterator it =
+    HashMap<String, AutoPtr<IAudioManagerOnAudioFocusChangeListener> >::Iterator it =
             mAudioFocusIdListenerMap.Find(id);
     if (it != mAudioFocusIdListenerMap.End()) {
         return it->mSecond;
@@ -1152,45 +1241,47 @@ AutoPtr<IOnAudioFocusChangeListener> CAudioManager::FindFocusListener(
 }
 
 String CAudioManager::GetIdForAudioFocusListener(
-    /* [in] */ IOnAudioFocusChangeListener* l)
+    /* [in] */ IAudioManagerOnAudioFocusChangeListener* l)
 {
     String msg("AudioManager:0x");
-    msg += StringUtils::Int32ToHexString((Int32)this);
+    msg += StringUtils::ToHexString((Int32)this);
     if (l != NULL) {
         msg += ", OnAudioFocusChangeListener:0x";
-        msg += StringUtils::Int32ToHexString((Int32)l);
+        msg += StringUtils::ToHexString((Int32)l);
     }
     return msg;
 }
 
 ECode CAudioManager::RegisterAudioFocusListener(
-    /* [in] */ IOnAudioFocusChangeListener* l)
+    /* [in] */ IAudioManagerOnAudioFocusChangeListener* l)
 {
     String key = GetIdForAudioFocusListener(l);
-    AutoLock lock(mFocusListenerLock);
-    HashMap<String, AutoPtr<IOnAudioFocusChangeListener> >::Iterator it =
-        mAudioFocusIdListenerMap.Find(key);
-    if (it != mAudioFocusIdListenerMap.End()) {
-        return NOERROR;
+    synchronized(mFocusListenerLock) {
+        HashMap<String, AutoPtr<IAudioManagerOnAudioFocusChangeListener> >::Iterator it =
+            mAudioFocusIdListenerMap.Find(key);
+        if (it != mAudioFocusIdListenerMap.End()) {
+            return NOERROR;
+        }
     }
     mAudioFocusIdListenerMap[key] = l;
     return NOERROR;
 }
 
 ECode CAudioManager::UnregisterAudioFocusListener(
-    /* [in] */ IOnAudioFocusChangeListener* l)
+    /* [in] */ IAudioManagerOnAudioFocusChangeListener* l)
 {
     String key = GetIdForAudioFocusListener(l);
-    AutoLock lock(mFocusListenerLock);
-    HashMap<String, AutoPtr<IOnAudioFocusChangeListener> >::Iterator it =
-    mAudioFocusIdListenerMap.Find(key);
-    if (it != mAudioFocusIdListenerMap.End())
-        mAudioFocusIdListenerMap.Erase(it);
+    synchronized(mFocusListenerLock) {
+        HashMap<String, AutoPtr<IAudioManagerOnAudioFocusChangeListener> >::Iterator it =
+        mAudioFocusIdListenerMap.Find(key);
+        if (it != mAudioFocusIdListenerMap.End())
+            mAudioFocusIdListenerMap.Erase(it);
+    }
     return NOERROR;
 }
 
 ECode CAudioManager::RequestAudioFocus(
-    /* [in] */ IOnAudioFocusChangeListener* l,
+    /* [in] */ IAudioManagerOnAudioFocusChangeListener* l,
     /* [in] */ Int32 streamType,
     /* [in] */ Int32 durationHint,
     /* [out] */ Int32* result)
@@ -1199,7 +1290,7 @@ ECode CAudioManager::RequestAudioFocus(
     *result = AUDIOFOCUS_REQUEST_FAILED;
 
     Int32 status = AUDIOFOCUS_REQUEST_FAILED;
-    if ((durationHint < AUDIOFOCUS_GAIN) || (durationHint > AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)) {
+    if ((durationHint < AUDIOFOCUS_GAIN) || (durationHint > AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE)) {
         Logger::E(TAG, "Invalid duration hint, audio focus request denied");
         *result = status;
         return NOERROR;
@@ -1213,7 +1304,7 @@ ECode CAudioManager::RequestAudioFocus(
     ECode ec = NOERROR;
     String packageName;
     do {
-        ec = mContext->GetPackageName(&packageName);
+        ec = mContext->GetOpPackageName(&packageName);
         if (FAILED(ec)) break;
 
         ec = service->RequestAudioFocus(streamType, durationHint, mICallBack,
@@ -1239,10 +1330,10 @@ ECode CAudioManager::RequestAudioFocusForCall(
     if (!service) return E_REMOTE_EXCEPTION;
 
     Int32 focus;
-    String callingPackageName("system");
+    String pkgName;
+    mContext->GetOpPackageName(&pkgName);
     ECode ec = service->RequestAudioFocus(streamType, durationHint, mICallBack, NULL,
-        IAudioService::IN_VOICE_COMM_FOCUS_ID,
-        callingPackageName /* dump-friendly package name */, &focus);
+            String("AudioFocus_For_Phone_Ring_And_Calls"), pkgName, &focus);
     if (FAILED(ec)) {
         Logger::E(TAG, "Can't call RequestAudioFocusForCall() on AudioService due to ");
         return E_REMOTE_EXCEPTION;
@@ -1256,7 +1347,7 @@ ECode CAudioManager::AbandonAudioFocusForCall()
     if (!service) return E_REMOTE_EXCEPTION;
 
     Int32 focus;
-    ECode ec = service->AbandonAudioFocus(NULL, IAudioService::IN_VOICE_COMM_FOCUS_ID, &focus);
+    ECode ec = service->AbandonAudioFocus(NULL, String("AudioFocus_For_Phone_Ring_And_Calls"), &focus);
     if (FAILED(ec)) {
         Logger::E(TAG, "Can't call AbandonAudioFocusForCall() on AudioService due to ");
         return E_REMOTE_EXCEPTION;
@@ -1265,7 +1356,7 @@ ECode CAudioManager::AbandonAudioFocusForCall()
 }
 
 ECode CAudioManager::AbandonAudioFocus(
-    /* [in] */ IOnAudioFocusChangeListener* l,
+    /* [in] */ IAudioManagerOnAudioFocusChangeListener* l,
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
@@ -1316,57 +1407,26 @@ ECode CAudioManager::RegisterMediaButtonEventReceiver(
     return RegisterMediaButtonIntent(pendingIntent, eventReceiver);
 }
 
-ECode CAudioManager::RegisterMediaButtonIntent(
-    /* [in] */ IPendingIntent* pi,
-    /* [in] */ IComponentName* eventReceiver)
-{
-    if ((pi == NULL) || (eventReceiver == NULL)) {
-        Logger::E(TAG, "Cannot call RegisterMediaButtonIntent() with a NULL parameter");
-        return NOERROR;
-    }
-
-    AutoPtr<IIAudioService> service = GetService();
-    if (!service) return E_REMOTE_EXCEPTION;
-
-    // pi != null
-    ECode ec = service->RegisterMediaButtonIntent(pi, eventReceiver);
-    if (FAILED(ec)) {
-        Logger::E(TAG, "Dead object in RegisterMediaButtonIntent");
-        return E_REMOTE_EXCEPTION;
-    }
-    return NOERROR;
-}
-
-ECode CAudioManager::RegisterMediaButtonEventReceiverForCalls(
-    /* [in] */ IComponentName* eventReceiver)
+ECode CAudioManager::RegisterMediaButtonEventReceiver(
+    /* [in] */ IPendingIntent* eventReceiver)
 {
     if (eventReceiver == NULL) {
         return NOERROR;
     }
-
-    AutoPtr<IIAudioService> service = GetService();
-    if (!service) return E_REMOTE_EXCEPTION;
-
-    // eventReceiver != NULL
-    ECode ec = service->RegisterMediaButtonEventReceiverForCalls(eventReceiver);
-    if (FAILED(ec)) {
-        Logger::E(TAG, "Dead object in RegisterMediaButtonEventReceiverForCalls");
-        return E_REMOTE_EXCEPTION;
-    }
-    return NOERROR;
+    return RegisterMediaButtonIntent(eventReceiver, NULL);
 }
 
-ECode CAudioManager::UnregisterMediaButtonEventReceiverForCalls()
+ECode CAudioManager::RegisterMediaButtonIntent(
+    /* [in] */ IPendingIntent* pi,
+    /* [in] */ IComponentName* eventReceiver)
 {
-    AutoPtr<IIAudioService> service = GetService();
-    if (!service) return E_REMOTE_EXCEPTION;
-
-    ECode ec = service->UnregisterMediaButtonEventReceiverForCalls();
-    if (FAILED(ec)) {
-        Logger::E(TAG, "Dead object in UnregisterMediaButtonEventReceiverForCalls");
-        return E_REMOTE_EXCEPTION;
+    if (pi == NULL) {
+        Logger::E(TAG, "Cannot call registerMediaButtonIntent() with a null parameter");
+        return NOERROR;
     }
-    return NOERROR;
+    AutoPtr<IMediaSessionLegacyHelper> helper;
+    CMediaSessionLegacyHelper::GetHelper(mContext, (IMediaSessionLegacyHelper**)&helper);
+    return helper->AddMediaButtonListener(pi, eventReceiver, mContext);
 }
 
 ECode CAudioManager::UnregisterMediaButtonEventReceiver(
@@ -1385,22 +1445,24 @@ ECode CAudioManager::UnregisterMediaButtonEventReceiver(
     pi->GetBroadcast(mContext,
         0/*requestCode, ignored*/, mediaButtonIntent,
         0/*flags*/, (IPendingIntent**)&pendingIntent);
-    return UnregisterMediaButtonIntent(pendingIntent, eventReceiver);
+    return UnregisterMediaButtonIntent(pendingIntent);
+}
+
+ECode CAudioManager::UnregisterMediaButtonEventReceiver(
+        /* [in] */ IPendingIntent* eventReceiver)
+{
+    if (eventReceiver == NULL) {
+        return NOERROR;
+    }
+    return UnregisterMediaButtonIntent(eventReceiver);
 }
 
 ECode CAudioManager::UnregisterMediaButtonIntent(
-    /* [in] */ IPendingIntent* pi,
-    /* [in] */ IComponentName* eventReceiver)
+    /* [in] */ IPendingIntent* pi)
 {
-    AutoPtr<IIAudioService> service = GetService();
-    if (!service) return E_REMOTE_EXCEPTION;
-
-    ECode ec = service->UnregisterMediaButtonIntent(pi, eventReceiver);
-    if (FAILED(ec)) {
-        Logger::E(TAG, "Dead object in UnregisterMediaButtonIntent");
-        return E_REMOTE_EXCEPTION;
-    }
-    return NOERROR;
+    AutoPtr<IMediaSessionLegacyHelper> helper;
+    CMediaSessionLegacyHelper::GetHelper(mContext, (IMediaSessionLegacyHelper**)&helper);
+    return helper->RemoveMediaButtonListener(pi);
 }
 
 ECode CAudioManager::RegisterRemoteControlClient(
@@ -1412,37 +1474,9 @@ ECode CAudioManager::RegisterRemoteControlClient(
         return NOERROR;
     }
 
-    AutoPtr<IIAudioService> service = GetService();
-    if (!service) return E_REMOTE_EXCEPTION;
-
-    ECode ec = NOERROR;
-    do {
-        Int32 rcseId;
-        AutoPtr<IIRemoteControlClient> remoteControlClient;
-        ec = rcClient->GetIRemoteControlClient((IIRemoteControlClient**)&remoteControlClient);
-        if (FAILED(ec)) break;
-
-        String packageName("");
-        ec = mContext->GetPackageName(&packageName);
-        if (FAILED(ec)) break;
-
-        ec = service->RegisterRemoteControlClient(
-                pendIntent,            /* mediaIntent   */
-                remoteControlClient,  /* rcClient      */
-                // used to match media button event receiver and audio focus
-                packageName,           /* packageName   */
-                &rcseId);
-        if (FAILED(ec)) break;
-
-        ec = rcClient->SetRcseId(rcseId);
-        if (FAILED(ec)) break;
-    } while(0);
-
-    if (FAILED(ec)) {
-        Logger::E(TAG, "Dead object in RegisterRemoteControlClient");
-        return E_REMOTE_EXCEPTION;
-    }
-    return NOERROR;
+    AutoPtr<IMediaSessionLegacyHelper> helper;
+    CMediaSessionLegacyHelper::GetHelper(mContext, (IMediaSessionLegacyHelper**)&helper);
+    return rcClient->RegisterWithSession(helper);
 }
 
 ECode CAudioManager::UnregisterRemoteControlClient(
@@ -1454,30 +1488,46 @@ ECode CAudioManager::UnregisterRemoteControlClient(
         return NOERROR;
     }
 
-    AutoPtr<IIAudioService> service = GetService();
-    if (!service) return E_REMOTE_EXCEPTION;
+    AutoPtr<IMediaSessionLegacyHelper> helper;
+    CMediaSessionLegacyHelper::GetHelper(mContext, (IMediaSessionLegacyHelper**)&helper);
+    return rcClient->UnregisterWithSession(helper);
+}
 
-    ECode ec = NOERROR;
-    do {
-        AutoPtr<IIRemoteControlClient> remoteControlClient;
-        ec = rcClient->GetIRemoteControlClient((IIRemoteControlClient**)&remoteControlClient);
-        if (FAILED(ec)) break;
+ECode CAudioManager::RegisterRemoteController(
+    /* [in] */ IRemoteController* rctlr,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
 
-        ec = service->UnregisterRemoteControlClient(
-            pendIntent, /* mediaIntent   */
-            remoteControlClient); /* rcClient      */
-        if (FAILED(ec)) break;
-    } while(0);
-
-    if (FAILED(ec)) {
-        Logger::E(TAG, "Dead object in UnregisterRemoteControlClient");
-        return E_REMOTE_EXCEPTION;
+    if (rctlr == NULL) {
+        *result = FALSE;
+        return NOERROR;
     }
+    rctlr->StartListeningToSessions();
+    *result = TRUE;
     return NOERROR;
+}
+
+ECode CAudioManager::UnregisterRemoteController(
+    /* [in] */ IRemoteController* rctlr)
+{
+    if (rctlr == NULL) {
+        return NOERROR;
+    }
+    return rctlr->StopListeningToSessions();
 }
 
 ECode CAudioManager::RegisterRemoteControlDisplay(
     /* [in] */ IIRemoteControlDisplay* rcd)
+{
+    // passing a negative value for art work width and height as they are unknown at this stage
+    return RegisterRemoteControlDisplay(rcd, /*w*/-1, /*h*/ -1);
+}
+
+ECode CAudioManager::RegisterRemoteControlDisplay(
+    /* [in] */ IIRemoteControlDisplay* rcd,
+    /* [in] */ Int32 w,
+    /* [in] */ Int32 h)
 {
     if (rcd == NULL) {
         return NOERROR;
@@ -1486,7 +1536,8 @@ ECode CAudioManager::RegisterRemoteControlDisplay(
     AutoPtr<IIAudioService> service = GetService();
     if (!service) return E_REMOTE_EXCEPTION;
 
-    ECode ec = service->RegisterRemoteControlDisplay(rcd);
+    Boolean b;
+    ECode ec = service->RegisterRemoteControlDisplay(rcd, w, h, &b);
     if (FAILED(ec)) {
         Logger::E(TAG, "Dead object in RegisterRemoteControlDisplay");
         return E_REMOTE_EXCEPTION;
@@ -1503,7 +1554,6 @@ ECode CAudioManager::UnregisterRemoteControlDisplay(
 
     AutoPtr<IIAudioService> service = GetService();
     if (!service) return E_REMOTE_EXCEPTION;
-
 
     ECode ec = service->UnregisterRemoteControlDisplay(rcd);
     if (FAILED(ec)) {
@@ -1533,6 +1583,69 @@ ECode CAudioManager::RemoteControlDisplayUsesBitmapSize(
     return NOERROR;
 }
 
+ECode CAudioManager::RemoteControlDisplayWantsPlaybackPositionSync(
+    /* [in] */ IIRemoteControlDisplay* rcd,
+    /* [in] */ Boolean wantsSync)
+{
+    if (rcd == NULL) {
+        return NOERROR;
+    }
+    AutoPtr<IIAudioService> service = GetService();
+    // try {
+    return service->RemoteControlDisplayWantsPlaybackPositionSync(rcd, wantsSync);
+    // } catch (RemoteException e) {
+    //     Log.e(TAG, "Dead object in remoteControlDisplayWantsPlaybackPositionSync " + e);
+    // }
+}
+
+ECode CAudioManager::RegisterAudioPolicy(
+    /* [in] */ IAudioPolicy* policy,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
+    if (policy == NULL) {
+        // throw new IllegalArgumentException("Illegal null AudioPolicy argument");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    AutoPtr<IIAudioService> service = GetService();
+    // try {
+    AutoPtr<IAudioPolicyConfig> config;
+    policy->GetConfig((IAudioPolicyConfig**)&config);
+    AutoPtr<IBinder> token;
+    policy->Token((IBinder**)&token);
+    Boolean b;
+    service->RegisterAudioPolicy(config, token, &b);
+    if (!b) {
+        *result = IAudioManager::ERROR;
+        return NOERROR;
+    }
+    // } catch (RemoteException e) {
+    //     Log.e(TAG, "Dead object in registerAudioPolicyAsync()", e);
+    //     return ERROR;
+    // }
+    *result = IAudioManager::SUCCESS;
+    return NOERROR;
+}
+
+ECode CAudioManager::UnregisterAudioPolicyAsync(
+    /* [in] */ IAudioPolicy* policy)
+{
+    if (policy == NULL) {
+        // throw new IllegalArgumentException("Illegal null AudioPolicy argument");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    AutoPtr<IIAudioService> service = GetService();
+    // try {
+    AutoPtr<IBinder> token;
+    policy->Token((IBinder**)&token);
+    return service->UnregisterAudioPolicyAsync(token);
+    // } catch (RemoteException e) {
+    //     Log.e(TAG, "Dead object in unregisterAudioPolicyAsync()", e);
+    // }
+}
+
 ECode CAudioManager::ReloadAudioSettings()
 {
     AutoPtr<IIAudioService> service = GetService();
@@ -1546,6 +1659,18 @@ ECode CAudioManager::ReloadAudioSettings()
     return NOERROR;
 }
 
+ECode CAudioManager::AvrcpSupportsAbsoluteVolume(
+    /* [in] */ const String& address,
+    /* [in] */ Boolean support)
+{
+    AutoPtr<IIAudioService> service = GetService();
+    // try {
+    return service->AvrcpSupportsAbsoluteVolume(address, support);
+    // } catch (RemoteException e) {
+    //     Log.e(TAG, "Dead object in avrcpSupportsAbsoluteVolume", e);
+    // }
+}
+
 ECode CAudioManager::IsSilentMode(
     /* [out] */ Boolean* result)
 {
@@ -1555,6 +1680,24 @@ ECode CAudioManager::IsSilentMode(
     GetRingerMode(&ringerMode);
     *result = (ringerMode == RINGER_MODE_SILENT)
         || (ringerMode == RINGER_MODE_VIBRATE);
+    return NOERROR;
+}
+
+ECode CAudioManager::IsOutputDevice(
+    /* [in] */ Int32 device,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = (device & IAudioSystem::DEVICE_BIT_IN) == 0;
+    return NOERROR;
+}
+
+ECode CAudioManager::IsInputDevice(
+    /* [in] */ Int32 device,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = (device & IAudioSystem::DEVICE_BIT_IN) == IAudioSystem::DEVICE_BIT_IN;
     return NOERROR;
 }
 
@@ -1573,9 +1716,7 @@ ECode CAudioManager::GetDevicesForStream(
         case STREAM_NOTIFICATION:
         case STREAM_DTMF:
         {
-            AutoPtr<IAudioSystemHelper> audioSystemHelper;
-            CAudioSystemHelper::AcquireSingleton((IAudioSystemHelper**)&audioSystemHelper);
-            return audioSystemHelper->GetDevicesForStream(streamType, result);
+            return AudioSystem::GetDevicesForStream(streamType, result);
         }
 
         default:
@@ -1603,6 +1744,7 @@ ECode CAudioManager::SetWiredDeviceConnectionState(
 ECode CAudioManager::SetBluetoothA2dpDeviceConnectionState(
     /* [in] */ IBluetoothDevice* device,
     /* [in] */ Int32 state,
+    /* [in] */ Int32 profile,
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
@@ -1612,7 +1754,7 @@ ECode CAudioManager::SetBluetoothA2dpDeviceConnectionState(
     if (!service) return E_REMOTE_EXCEPTION;
 
     Int32 delay;
-    ECode ec = service->SetBluetoothA2dpDeviceConnectionState(device, state, &delay);
+    ECode ec = service->SetBluetoothA2dpDeviceConnectionState(device, state, profile, &delay);
     if (FAILED(ec)) {
         Logger::E(TAG, "Dead object in SetBluetoothA2dpDeviceConnectionState ");
         *result = 0;
@@ -1651,9 +1793,7 @@ ECode CAudioManager::GetProperty(
 
     if (PROPERTY_OUTPUT_SAMPLE_RATE.Equals(key)) {
         Int32 outputSampleRate;
-        AutoPtr<IAudioSystemHelper> audioSystemHelper;
-        CAudioSystemHelper::AcquireSingleton((IAudioSystemHelper**)&audioSystemHelper);
-        audioSystemHelper->GetPrimaryOutputSamplingRate(&outputSampleRate);
+        AudioSystem::GetPrimaryOutputSamplingRate(&outputSampleRate);
         if (outputSampleRate > 0) {
             *result = StringUtils::ToString(outputSampleRate);
         }
@@ -1661,9 +1801,7 @@ ECode CAudioManager::GetProperty(
     }
     else if (PROPERTY_OUTPUT_FRAMES_PER_BUFFER.Equals(key)) {
         Int32 outputFramesPerBuffer;
-        AutoPtr<IAudioSystemHelper> audioSystemHelper;
-        CAudioSystemHelper::AcquireSingleton((IAudioSystemHelper**)&audioSystemHelper);
-        audioSystemHelper->GetPrimaryOutputFrameCount(&outputFramesPerBuffer);
+        AudioSystem::GetPrimaryOutputFrameCount(&outputFramesPerBuffer);
         if (outputFramesPerBuffer > 0) {
             *result = StringUtils::ToString(outputFramesPerBuffer);
         }
@@ -1675,262 +1813,352 @@ ECode CAudioManager::GetProperty(
     }
 }
 
-void CAudioManager::WriteFileVal(
-    /* [in] */ const String& filename,
-    /* [in] */ Int32 avail)
+ECode CAudioManager::GetOutputLatency(
+    /* [in] */ Int32 streamType,
+    /* [out] */ Int32* result)
 {
-    SystemProperties::Set(filename, StringUtils::Int32ToString(avail));
+    VALIDATE_NOT_NULL(result)
+    return AudioSystem::GetOutputLatency(streamType, result);
 }
 
-Int32 CAudioManager::ReadFileVal(
-    /* [in] */ const String& filename)
+ECode CAudioManager::SetVolumeController(
+    /* [in] */ IIVolumeController* controller)
 {
-    return SystemProperties::GetInt32(filename, 0);
+    // try {
+    return GetService()->SetVolumeController(controller);
+    // } catch (RemoteException e) {
+    //     Log.w(TAG, "Error setting volume controller", e);
+    // }
 }
 
-ECode CAudioManager::SetHdmiAvailable(
-    /* [in] */ Boolean val)
+ECode CAudioManager::NotifyVolumeControllerVisible(
+    /* [in] */ IIVolumeController* controller,
+    /* [in] */ Boolean visible)
 {
-    Int32 avail = (val == TRUE) ? 1 : 0;
-    WriteFileVal(hdmiAvailable, avail);
-    return NOERROR;
+    // try {
+    return GetService()->NotifyVolumeControllerVisible(controller, visible);
+    // } catch (RemoteException e) {
+    //     Log.w(TAG, "Error notifying about volume controller visibility", e);
+    // }
 }
 
-ECode CAudioManager::GetHdmiAvailable(
+ECode CAudioManager::IsStreamAffectedByRingerMode(
+    /* [in] */ Int32 streamType,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
-    Int32 ret = ReadFileVal(hdmiAvailable);
-    *result = (ret == 1) ? TRUE : FALSE;
-    return NOERROR;
+    VALIDATE_NOT_NULL(result)
+    // try {
+    return GetService()->IsStreamAffectedByRingerMode(streamType, result);
+    // } catch (RemoteException e) {
+    //     Log.w(TAG, "Error calling isStreamAffectedByRingerMode", e);
+    //     return false;
+    // }
 }
 
-ECode CAudioManager::GetHdmiExpected(
+ECode CAudioManager::DisableSafeMediaVolume()
+{
+    // try {
+    return GetService()->DisableSafeMediaVolume();
+    // } catch (RemoteException e) {
+    //     Log.w(TAG, "Error disabling safe media volume", e);
+    // }
+}
+
+ECode CAudioManager::SetHdmiSystemAudioSupported(
+    /* [in] */ Boolean on,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    // try {
+    return GetService()->SetHdmiSystemAudioSupported(on, result);
+    // } catch (RemoteException e) {
+    //     Log.w(TAG, "Error setting system audio mode", e);
+    //     return AudioSystem.DEVICE_NONE;
+    // }
+}
+
+ECode CAudioManager::IsHdmiSystemAudioSupported(
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
-    Int32 ret = ReadFileVal(hdmiExpected);
-    *result = (ret == 1) ? TRUE : FALSE;
-    return NOERROR;
+    VALIDATE_NOT_NULL(result)
+    // try {
+    return GetService()->IsHdmiSystemAudioSupported(result);
+    // } catch (RemoteException e) {
+    //     Log.w(TAG, "Error querying system audio mode", e);
+    //     return false;
+    // }
 }
 
-//static
-ECode CAudioManager::SetHdmiExpected(
-    /* [in] */ Boolean val)
+ECode CAudioManager::ListAudioPorts(
+    /* [in] */ IArrayList* ports,
+    /* [out] */ Int32* result)
 {
-    Int32 avail = (val == TRUE) ? 1 : 0;
-    WriteFileVal(hdmiExpected, avail);
-    return NOERROR;
+    VALIDATE_NOT_NULL(result)
+
+    return UpdateAudioPortCache(ports, NULL, result);
 }
 
-// static
-ECode CAudioManager::GetAudioDevices(
-    /* [in] */ const String& devType,
-    /* [out, callle] */ ArrayOf<String>** result)
+ECode CAudioManager::ListAudioDevicePorts(
+    /* [in] */ IArrayList* devices,
+    /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(result);
-    *result = NULL;
+    VALIDATE_NOT_NULL(result)
 
-    if (!devType.Equals(IAudioManager::AUDIO_INPUT_TYPE)
-        && !devType.Equals(IAudioManager::AUDIO_OUTPUT_TYPE)){
-        return NOERROR;
-    }
-
-    String listStr;
-    GetParameters(devType, &listStr);
-    if (listStr.IsNull()) {
-        return NOERROR;
-    }
-
-    Logger::D(TAG, "type %s list %s", devType.string(), listStr.string());
-    AutoPtr< ArrayOf<String> > audioList;
-    StringUtils::Split(listStr, ",", (ArrayOf<String>**)&audioList);
-
-    List<String> list;
-    Int32 length = (audioList != NULL) ? audioList->GetLength() : 0;
-    for (Int32 i = 0; i < length; ++i) {
-        if (!(*audioList)[i].IsNullOrEmpty()) {
-            list.PushBack((*audioList)[i]);
-        }
-    }
-
-    List<String>::Iterator it;
-    if (devType.Equals(IAudioManager::AUDIO_OUTPUT_ACTIVE)){
-        it = Find(list.Begin(), list.End(), IAudioManager::AUDIO_NAME_HDMI);
-        if (it == list.End()) {
-            Boolean temp = FALSE;
-            GetHdmiExpected(&temp);
-            if (temp) {
-                list.PushBack(AUDIO_NAME_HDMI);
+    AutoPtr<IArrayList> ports;
+    CArrayList::New((IArrayList**)&ports);
+    Int32 status;
+    UpdateAudioPortCache(ports, NULL, &status);
+    if (status == IAudioManager::SUCCESS) {
+        devices->Clear();
+        Int32 size;
+        ports->GetSize(&size);
+        for (Int32 i = 0; i < size; i++) {
+            AutoPtr<IInterface> obj;
+            ports->Get(i, (IInterface**)&obj);
+            if (IAudioDevicePort::Probe(obj) != NULL) {
+                devices->Add(obj);
             }
         }
     }
-
-    AutoPtr<ArrayOf<String> > audioDevList = ArrayOf<String>::Alloc(list.GetSize());
-    it = list.Begin();
-    for (Int32 i = 0; it != list.End(); ++it, ++i) {
-        audioList->Set(i, *it);
-    }
-
-    *result = audioDevList;
-    REFCOUNT_ADD(*result);
+    *result = status;
     return NOERROR;
 }
 
-// static
-ECode CAudioManager::GetActiveAudioDevices(
-    /* [in] */ const String& devType,
-    /* [out, callle] */ ArrayOf<String>** result)
+ECode CAudioManager::CreateAudioPatch(
+    /* [in] */ ArrayOf<IAudioPatch*>* patch,
+    /* [in] */ ArrayOf<IAudioPortConfig*>* sources,
+    /* [in] */ ArrayOf<IAudioPortConfig*>* sinks,
+    /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(result);
-    *result = NULL;
+    VALIDATE_NOT_NULL(result)
 
-    if (!devType.Equals(IAudioManager::AUDIO_INPUT_ACTIVE)
-        && !devType.Equals(IAudioManager::AUDIO_OUTPUT_ACTIVE)){
-        return NOERROR;
+    return AudioSystem::CreateAudioPatch(patch, sources, sinks, result);
+}
+
+ECode CAudioManager::ReleaseAudioPatch(
+    /* [in] */ IAudioPatch* patch,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    return AudioSystem::ReleaseAudioPatch(patch, result);
+}
+
+ECode CAudioManager::ListAudioPatches(
+    /* [in] */ IArrayList* patches,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    return UpdateAudioPortCache(NULL, patches, result);
+}
+
+ECode CAudioManager::SetAudioPortGain(
+    /* [in] */ IAudioPort* port,
+    /* [in] */ IAudioGainConfig* gain,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    if (port == NULL || gain == NULL) {
+        *result = IAudioManager::ERROR_BAD_VALUE;
     }
+    AutoPtr<IAudioPortConfig> activeConfig;
+    port->ActiveConfig((IAudioPortConfig**)&activeConfig);
+    Int32 samplingRate;
+    activeConfig->SamplingRate(&samplingRate);
+    Int32 channelMask;
+    activeConfig->ChannelMask(&channelMask);
+    Int32 format;
+    activeConfig->Format(&format);
+    AutoPtr<CAudioPortConfig> config;
+    CAudioPortConfig::NewByFriend(port, samplingRate,
+            channelMask, format, gain, (CAudioPortConfig**)&config);
+    config->mConfigMask = CAudioPortConfig::GAIN;
+    return AudioSystem::SetAudioPortConfig(config, result);
+}
 
-    String listStr;
-    GetParameters(devType, &listStr);
-    if (listStr.IsNull()) {
-        return NOERROR;
+ECode CAudioManager::RegisterAudioPortUpdateListener(
+    /* [in] */ IAudioManagerOnAudioPortUpdateListener* l)
+{
+    return mAudioPortEventHandler->RegisterListener(l);
+}
+
+ECode CAudioManager::UnregisterAudioPortUpdateListener(
+    /* [in] */ IAudioManagerOnAudioPortUpdateListener* l)
+{
+    return mAudioPortEventHandler->UnregisterListener(l);
+}
+
+ECode CAudioManager::ResetAudioPortGeneration(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    Int32 generation;
+    synchronized(mAudioPortGeneration) {
+        mAudioPortGeneration->GetValue(&generation);
+        mAudioPortGeneration = NULL;
+        CInteger32::New(AUDIOPORT_GENERATION_INIT, (IInteger32**)&mAudioPortGeneration);
     }
+    *result = generation;
+    return NOERROR;
+}
 
-    Logger::D(TAG, "type %s list %s", devType.string(), listStr.string());
-    AutoPtr< ArrayOf<String> > audioList;
-    StringUtils::Split(listStr, ",", (ArrayOf<String>**)&audioList);
+ECode CAudioManager::UpdateAudioPortCache(
+    /* [in] */ IArrayList* ports,
+    /* [in] */ IArrayList* patches,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
 
-    List<String> list;
-    Int32 length = (audioList != NULL) ? audioList->GetLength() : 0;
-    for (Int32 i = 0; i < length; ++i) {
-        if (!(*audioList)[i].IsNullOrEmpty()) {
-            list.PushBack((*audioList)[i]);
-        }
-    }
+    synchronized(mAudioPortGeneration) {
+        Int32 val;
+        mAudioPortGeneration->GetValue(&val);
+        if (val == AUDIOPORT_GENERATION_INIT) {
+            AutoPtr<ArrayOf<Int32> > patchGeneration = ArrayOf<Int32>::Alloc(1);
+            AutoPtr<ArrayOf<Int32> > portGeneration = ArrayOf<Int32>::Alloc(1);
+            Int32 status;
+            AutoPtr<IArrayList> newPorts;
+            CArrayList::New((IArrayList**)&newPorts);
+            AutoPtr<IArrayList> newPatches;
+            CArrayList::New((IArrayList**)&newPatches);
 
-    List<String>::Iterator it;
-    if (devType.Equals(IAudioManager::AUDIO_OUTPUT_ACTIVE)){
-        it = Find(list.Begin(), list.End(), IAudioManager::AUDIO_NAME_HDMI);
-        if (it == list.End()) {
-            Boolean temp = FALSE;
-            GetHdmiExpected(&temp);
-            if (temp) {
-                list.PushBack(AUDIO_NAME_HDMI);
+            do {
+                newPorts->Clear();
+                AudioSystem::ListAudioPorts(newPorts, portGeneration, &status);
+                if (status != SUCCESS) {
+                    *result = status;
+                    return NOERROR;
+                }
+                newPatches->Clear();
+                AudioSystem::ListAudioPatches(newPatches, patchGeneration, &status);
+                if (status != SUCCESS) {
+                    *result = status;
+                    return NOERROR;
+                }
+            } while ((*patchGeneration)[0] != (*portGeneration)[0]);
+
+            Int32 size;
+            newPatches->GetSize(&size);
+            for (Int32 i = 0; i < size; i++) {
+                AutoPtr<IInterface> obj;
+                newPatches->Get(i, (IInterface**)&obj);
+                AutoPtr<IAudioPatch> p = IAudioPatch::Probe(obj);
+                AutoPtr<ArrayOf<IAudioPortConfig*> > sources;
+                p->Sources((ArrayOf<IAudioPortConfig*>**)&sources);
+                for (Int32 j = 0; j < sources->GetLength(); j++) {
+                    AutoPtr<IInterface> o;
+                    newPatches->Get(i, (IInterface**)&o);
+                    AutoPtr<IAudioPatch> ap = IAudioPatch::Probe(o);
+                    AutoPtr<ArrayOf<IAudioPortConfig*> > array;
+                    ap->Sources((ArrayOf<IAudioPortConfig*>**)&array);
+                    AutoPtr<IAudioPortConfig> portCfg;
+                    UpdatePortConfig((*array)[j], newPorts, (IAudioPortConfig**)&portCfg);
+                    if (portCfg == NULL) {
+                        *result = IAudioManager::ERROR;
+                        return NOERROR;
+                    }
+                    array->Set(j , portCfg);
+                }
+
+                AutoPtr<ArrayOf<IAudioPortConfig*> > sinks;
+                p->Sinks((ArrayOf<IAudioPortConfig*>**)&sinks);
+                for (Int32 j = 0; j < sinks->GetLength(); j++) {
+                    AutoPtr<IInterface> o;
+                    newPatches->Get(i, (IInterface**)&o);
+                    AutoPtr<IAudioPatch> ap = IAudioPatch::Probe(o);
+                    AutoPtr<ArrayOf<IAudioPortConfig*> > array;
+                    ap->Sinks((ArrayOf<IAudioPortConfig*>**)&array);
+                    AutoPtr<IAudioPortConfig> portCfg;
+                    UpdatePortConfig((*array)[j], newPorts, (IAudioPortConfig**)&portCfg);
+                    if (portCfg == NULL) {
+                        *result = IAudioManager::ERROR;
+                        return NOERROR;
+                    }
+                    array->Set(j , portCfg);
+                }
             }
+
+            mAudioPortsCached = newPorts;
+            mAudioPatchesCached = newPatches;
+            mAudioPortGeneration = NULL;
+            CInteger32::New((*portGeneration)[0], (IInteger32**)&mAudioPortGeneration);
+        }
+        if (ports != NULL) {
+            ports->Clear();
+            ports->AddAll(ICollection::Probe(mAudioPortsCached));
+        }
+        if (patches != NULL) {
+            patches->Clear();
+            patches->AddAll(ICollection::Probe(mAudioPatchesCached));
         }
     }
-
-    AutoPtr<ArrayOf<String> > audioDevList = ArrayOf<String>::Alloc(list.GetSize());
-    it = list.Begin();
-    for (Int32 i = 0; it != list.End(); ++it, ++i) {
-        audioList->Set(i, *it);
-    }
-
-    *result = audioDevList;
-    REFCOUNT_ADD(*result);
+    *result = IAudioManager::SUCCESS;
     return NOERROR;
 }
 
-ECode CAudioManager::SetAudioDeviceActive(
-    /* [in] */ const ArrayOf<String>& _devices,
-    /* [in] */ const String& state)
+ECode CAudioManager::UpdatePortConfig(
+    /* [in] */ IAudioPortConfig* portCfg,
+    /* [in] */ IArrayList* ports,
+    /* [out] */ IAudioPortConfig** result)
 {
-    if (_devices.GetLength() == 0 ||
-        (!state.Equals(IAudioManager::AUDIO_INPUT_ACTIVE)
-        && !state.Equals(IAudioManager::AUDIO_OUTPUT_ACTIVE))){
-        return NOERROR;
-    }
+    VALIDATE_NOT_NULL(result)
 
-    AutoPtr<ArrayOf<String> > devices = _devices.Clone();
-
-    String audio;
-
-    AutoPtr<IContentResolver> contentResolver;
-    mContext->GetContentResolver((IContentResolver**)&contentResolver);
-    Int32 value = Settings::System::GetInt32(contentResolver, ISettingsSystem::ENABLE_PASS_THROUGH, 0);
-
-    Boolean enablePassThrough = (value == 1);
-    if (enablePassThrough && state.Equals(AUDIO_OUTPUT_ACTIVE)) {
+    AutoPtr<IAudioPort> port;
+    portCfg->Port((IAudioPort**)&port);
+    Int32 size;
+    ports->GetSize(&size);
+    Int32 k;
+    for (k = 0; k < size; k++) {
+        // compare handles because the port returned by JNI is not of the correct
+        // subclass
         AutoPtr<IInterface> obj;
-        mContext->GetSystemService(IContext::DISPLAY_SERVICE_AW, (IInterface**)&obj);
-        AutoPtr<IDisplayManagerAw> dm = IDisplayManagerAw::Probe(obj.Get());
-        Boolean hdmi;
-        GetHdmiAvailable(&hdmi);
-        Logger::D(TAG, "Hdmi status %d, size %d", hdmi, devices->GetLength());
-        Int32 count = devices->GetLength();
-        if(count > 0) {
-            Logger::D(TAG, "HDMI %s", (*devices)[0].string());
-        }
-
-        Boolean contains;
-        if (devices->Contains(IAudioManager::AUDIO_NAME_SPDIF)) {
-            audio = IAudioManager::AUDIO_NAME_SPDIF;
-            CMediaPlayer::SetRawDataMode(IMediaPlayer::AUDIO_DATA_MODE_SPDIF_RAW);
-        }
-        else if (devices->Contains(IAudioManager::AUDIO_NAME_HDMI)) {
-            if (hdmi) {
-                audio = IAudioManager::AUDIO_NAME_HDMI;
-                CMediaPlayer::SetRawDataMode(IMediaPlayer::AUDIO_DATA_MODE_HDMI_RAW);
-                SetHdmiExpected(FALSE);
-            }
-            else{
-                SetHdmiExpected(TRUE);
-            }
-        }
-        else {
-            audio = IAudioManager::AUDIO_NAME_CODEC;
-            CMediaPlayer::SetRawDataMode(IMediaPlayer::AUDIO_DATA_MODE_PCM);
+        ports->Get(k, (IInterface**)&obj);
+        AutoPtr<IAudioPort> p = IAudioPort::Probe(obj);
+        AutoPtr<IAudioHandle> handle;
+        p->Handle((IAudioHandle**)&handle);
+        AutoPtr<IAudioHandle> pHandle;
+        port->Handle((IAudioHandle**)&pHandle);
+        Boolean b;
+        ((CAudioHandle*)handle.Get())->Equals(pHandle, &b);
+        if (b) {
+            port = p;
+            break;
         }
     }
-    else {
-        if (state.Equals(IAudioManager::AUDIO_OUTPUT_ACTIVE)){
-            Boolean available;
-            GetHdmiAvailable(&available);
-
-            if (DEBUG) {
-                StringBuilder sb("hdmiAvailable=");
-                sb += available;
-                sb += " list={";
-                for (Int32 i = 0; i < devices->GetLength(); ++i) {
-                    if (i != 0)
-                        sb += ", ";
-                    sb += (*devices)[i];
-                }
-                sb += "}";
-                Logger::D(TAG, sb.ToString().string());
-            }
-
-            Int32 index = devices->IndexOf(IAudioManager::AUDIO_NAME_HDMI);
-            if (!available && index > 0) {
-                SetHdmiExpected(TRUE);
-                (*devices)[index] = NULL;
-            }
-            else {
-                SetHdmiExpected(FALSE);
-            }
-        }
-
-        StringBuilder sb;
-        Boolean first = TRUE;
-        for (Int32 i = 0; i < devices->GetLength(); ++i) {
-            if (!(*devices)[i].IsNullOrEmpty()) {
-                if (!first) {
-                    sb += ",";
-                }
-                else {
-                    first = FALSE;
-                }
-
-                sb += (*devices)[i];
-            }
-        }
-        audio = sb.ToString();
+    if (k == size) {
+        // this hould never happen
+        AutoPtr<IAudioHandle> handle;
+        port->Handle((IAudioHandle**)&handle);
+        Int32 id;
+        ((CAudioHandle*)handle.Get())->Id(&id);
+        Logger::E(TAG, "updatePortConfig port not found for handle: %d", id);
+        *result = NULL;
+        return NOERROR;
     }
-
-    if (!enablePassThrough) {
-        CMediaPlayer::SetRawDataMode(IMediaPlayer::AUDIO_DATA_MODE_PCM);
+    AutoPtr<IAudioGainConfig> gainCfg;
+    portCfg->Gain((IAudioGainConfig**)&gainCfg);
+    if (gainCfg != NULL) {
+        Int32 index;
+        gainCfg->Index(&index);
+        AutoPtr<IAudioGain> gain;
+        ((CAudioPort*)port.Get())->Gain(index, (IAudioGain**)&gain);
+        Int32 mode, channelMask, rampDurationMs;
+        gainCfg->Mode(&mode);
+        gainCfg->ChannelMask(&channelMask);
+        gainCfg->RampDurationMs(&rampDurationMs);
+        AutoPtr<ArrayOf<Int32> > values;
+        gainCfg->Values((ArrayOf<Int32>**)&values);
+        gain->BuildConfig(mode, channelMask, values, rampDurationMs,
+               (IAudioGainConfig**)&gainCfg);
     }
-    return SetParameter(state, audio);
+    Int32 samplingRate, channelMask, format;
+    portCfg->SamplingRate(&samplingRate);
+    portCfg->ChannelMask(&channelMask);
+    portCfg->Format(&format);
+    return port->BuildConfig(samplingRate,
+            channelMask, format, gainCfg, result);
 }
 
 } // namespace Media

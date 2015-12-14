@@ -19,8 +19,8 @@ ECode TvContractPrograms::GetCONTENT_URI(
 {
     AutoPtr<IUriHelper> uriHelper;
     CUriHelper::AcquireSingleton((IUriHelper**)&uriHelper);
-    return uriHelper->Parse(String("content://")
-    	 + ITvContract::AUTHORITY + "/" + TvContract::PATH_PROGRAM, uri);
+    return uriHelper->Parse(String("content://") +
+            ITvContract::AUTHORITY + "/" + TvContract::PATH_PROGRAM, uri);
 }
 
 } // namespace Tv

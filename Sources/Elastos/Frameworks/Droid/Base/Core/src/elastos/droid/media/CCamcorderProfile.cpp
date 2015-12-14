@@ -1,14 +1,14 @@
 #include "elastos/droid/media/CCamcorderProfile.h"
-#include "elastos/droid/hardware/CHardwareCameraHelper.h"
 #include "elastos/droid/hardware/CHardwareCamera.h"
+#include "elastos/droid/hardware/CHardwareCameraHelper.h"
 #include <media/MediaProfiles.h>
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::Hardware::IHardwareCameraHelper;
-using Elastos::Droid::Hardware::CHardwareCameraHelper;
 using Elastos::Droid::Hardware::CHardwareCamera;
+using Elastos::Droid::Hardware::CHardwareCameraHelper;
 using Elastos::Droid::Hardware::ICameraInfo;
+using Elastos::Droid::Hardware::IHardwareCameraHelper;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -17,9 +17,15 @@ namespace Media {
 static Object sLock;
 
 const Int32 CCamcorderProfile::QUALITY_LIST_START = ICamcorderProfile::QUALITY_LOW;
-const Int32 CCamcorderProfile::QUALITY_LIST_END = ICamcorderProfile::QUALITY_QVGA;
+const Int32 CCamcorderProfile::QUALITY_LIST_END = ICamcorderProfile::QUALITY_2160P;
 const Int32 CCamcorderProfile::QUALITY_TIME_LAPSE_LIST_START = ICamcorderProfile::QUALITY_TIME_LAPSE_LOW;
-const Int32 CCamcorderProfile::QUALITY_TIME_LAPSE_LIST_END = ICamcorderProfile::QUALITY_TIME_LAPSE_QVGA;
+const Int32 CCamcorderProfile::QUALITY_TIME_LAPSE_LIST_END = ICamcorderProfile::QUALITY_TIME_LAPSE_2160P;
+const Int32 CCamcorderProfile::QUALITY_HIGH_SPEED_LIST_START = ICamcorderProfile::QUALITY_HIGH_SPEED_LOW;
+const Int32 CCamcorderProfile::QUALITY_HIGH_SPEED_LIST_END = ICamcorderProfile::QUALITY_HIGH_SPEED_2160P;
+
+CAR_INTERFACE_IMPL(CCamcorderProfile, Object, ICamcorderProfile)
+
+CAR_OBJECT_IMPL(CCamcorderProfile)
 
 CCamcorderProfile::CCamcorderProfile()
     : mDuration(0)
@@ -35,8 +41,10 @@ CCamcorderProfile::CCamcorderProfile()
     , mAudioSampleRate(0)
     , mAudioChannels(0)
 {
-//    System.loadLibrary("media_jni");
-//    NativeInit();
+}
+
+CCamcorderProfile::~CCamcorderProfile()
+{
 }
 
 ECode CCamcorderProfile::constructor(
@@ -105,7 +113,9 @@ ECode CCamcorderProfile::Get(
     *result = NULL;
 
     if (!((quality >= QUALITY_LIST_START && quality <= QUALITY_LIST_END) ||
-          (quality >= QUALITY_TIME_LAPSE_LIST_START && quality <= QUALITY_TIME_LAPSE_LIST_END))) {
+            (quality >= QUALITY_TIME_LAPSE_LIST_START && quality <= QUALITY_TIME_LAPSE_LIST_END) ||
+            (quality >= QUALITY_HIGH_SPEED_LIST_START &&
+            quality <= QUALITY_HIGH_SPEED_LIST_END))) {
         Slogger::E("CCamcorderProfile", "Unsupported quality level:  %d", quality);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -349,17 +359,18 @@ ECode CCamcorderProfile::NativeGetCamcorderProfile(
 
     android::MediaProfiles* sProfiles = android::MediaProfiles::getInstance();
     android::camcorder_quality q = static_cast<android::camcorder_quality>(quality);
-    Int32 duration         = sProfiles->getCamcorderProfileParamByName("duration",    cameraId, q);
-    Int32 fileFormat       = sProfiles->getCamcorderProfileParamByName("file.format", cameraId, q);
-    Int32 videoCodec       = sProfiles->getCamcorderProfileParamByName("vid.codec",   cameraId, q);
-    Int32 videoBitRate     = sProfiles->getCamcorderProfileParamByName("vid.bps",     cameraId, q);
-    Int32 videoFrameRate   = sProfiles->getCamcorderProfileParamByName("vid.fps",     cameraId, q);
-    Int32 videoFrameWidth  = sProfiles->getCamcorderProfileParamByName("vid.width",   cameraId, q);
-    Int32 videoFrameHeight = sProfiles->getCamcorderProfileParamByName("vid.height",  cameraId, q);
-    Int32 audioCodec       = sProfiles->getCamcorderProfileParamByName("aud.codec",   cameraId, q);
-    Int32 audioBitRate     = sProfiles->getCamcorderProfileParamByName("aud.bps",     cameraId, q);
-    Int32 audioSampleRate  = sProfiles->getCamcorderProfileParamByName("aud.hz",      cameraId, q);
-    Int32 audioChannels    = sProfiles->getCamcorderProfileParamByName("aud.ch",      cameraId, q);
+// TODO: Need android::MediaProfiles::getCamcorderProfileParamByName
+    Int32 duration         ; //= sProfiles->getCamcorderProfileParamByName("duration",    cameraId, q);
+    Int32 fileFormat       ; //= sProfiles->getCamcorderProfileParamByName("file.format", cameraId, q);
+    Int32 videoCodec       ; //= sProfiles->getCamcorderProfileParamByName("vid.codec",   cameraId, q);
+    Int32 videoBitRate     ; //= sProfiles->getCamcorderProfileParamByName("vid.bps",     cameraId, q);
+    Int32 videoFrameRate   ; //= sProfiles->getCamcorderProfileParamByName("vid.fps",     cameraId, q);
+    Int32 videoFrameWidth  ; //= sProfiles->getCamcorderProfileParamByName("vid.width",   cameraId, q);
+    Int32 videoFrameHeight ; //= sProfiles->getCamcorderProfileParamByName("vid.height",  cameraId, q);
+    Int32 audioCodec       ; //= sProfiles->getCamcorderProfileParamByName("aud.codec",   cameraId, q);
+    Int32 audioBitRate     ; //= sProfiles->getCamcorderProfileParamByName("aud.bps",     cameraId, q);
+    Int32 audioSampleRate  ; //= sProfiles->getCamcorderProfileParamByName("aud.hz",      cameraId, q);
+    Int32 audioChannels    ; //= sProfiles->getCamcorderProfileParamByName("aud.ch",      cameraId, q);
 
     // Check on the values retrieved
     if (duration == -1 || fileFormat == -1 || videoCodec == -1 || audioCodec == -1 ||
@@ -404,7 +415,9 @@ Boolean CCamcorderProfile::NativeHasCamcorderProfile(
 
     android::MediaProfiles* sProfiles = android::MediaProfiles::getInstance();
     android::camcorder_quality q = static_cast<android::camcorder_quality>(quality);
-    return sProfiles->hasCamcorderProfile(cameraId, q);
+// TODO: Need android::MediaProfiles::hasCamcorderProfile
+    // return sProfiles->hasCamcorderProfile(cameraId, q);
+    return TRUE;
 }
 
 /*JNI Method*/
@@ -415,7 +428,9 @@ Boolean CCamcorderProfile::IsCamcorderQualityKnown(
     return ((quality >= android::CAMCORDER_QUALITY_LIST_START &&
              quality <= android::CAMCORDER_QUALITY_LIST_END) ||
             (quality >= android::CAMCORDER_QUALITY_TIME_LAPSE_LIST_START &&
-             quality <= android::CAMCORDER_QUALITY_TIME_LAPSE_LIST_END));
+             quality <= android::CAMCORDER_QUALITY_TIME_LAPSE_LIST_END) ||
+            (quality >= android::CAMCORDER_QUALITY_HIGH_SPEED_LIST_START &&
+             quality <= android::CAMCORDER_QUALITY_HIGH_SPEED_LIST_END));
 }
 
 } // namespace Media

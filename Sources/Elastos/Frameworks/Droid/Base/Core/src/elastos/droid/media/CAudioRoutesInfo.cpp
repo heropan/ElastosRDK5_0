@@ -1,18 +1,19 @@
 
 #include "elastos/droid/media/CAudioRoutesInfo.h"
-#include "elastos/droid/text/TextUtils.h"
-
-using Elastos::Droid::Text::TextUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
 
 const Int32 CAudioRoutesInfo::MAIN_SPEAKER = 0;
-const Int32 CAudioRoutesInfo::MAIN_HEADSET = 1<<0;
-const Int32 CAudioRoutesInfo::MAIN_HEADPHONES = 1<<1;
-const Int32 CAudioRoutesInfo::MAIN_DOCK_SPEAKERS = 1<<2;
-const Int32 CAudioRoutesInfo::MAIN_HDMI = 1<<3;
+const Int32 CAudioRoutesInfo::MAIN_HEADSET = 1 << 0;
+const Int32 CAudioRoutesInfo::MAIN_HEADPHONES = 1 << 1;
+const Int32 CAudioRoutesInfo::MAIN_DOCK_SPEAKERS = 1 << 2;
+const Int32 CAudioRoutesInfo::MAIN_HDMI = 1 << 3;
+
+CAR_INTERFACE_IMPL_2(CAudioRoutesInfo, Object, IAudioRoutesInfo, IParcelable)
+
+CAR_OBJECT_IMPL(CAudioRoutesInfo)
 
 CAudioRoutesInfo::CAudioRoutesInfo()
     : mMainType(MAIN_SPEAKER)
@@ -38,17 +39,18 @@ ECode CAudioRoutesInfo::constructor(
 ECode CAudioRoutesInfo::ReadFromParcel(
     /* [in] */ IParcel* src)
 {
-    mBluetoothName = NULL;
-    FAIL_RETURN(TextUtils::CHAR_SEQUENCE_CREATOR::CreateFromParcel(src, (ICharSequence**)&mBluetoothName));
     src->ReadInt32(&mMainType);
+    AutoPtr<IInterface> obj;
+    src->ReadInterfacePtr((Handle32*)&obj);
+    mBluetoothName = ICharSequence::Probe(obj);
     return NOERROR;
 }
 
 ECode CAudioRoutesInfo::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    TextUtils::WriteToParcel(mBluetoothName, dest);
     dest->WriteInt32(mMainType);
+    dest->WriteInterfacePtr(mBluetoothName);
     return NOERROR;
 }
 

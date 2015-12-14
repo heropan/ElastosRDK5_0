@@ -752,7 +752,6 @@ module
           UnflattenFromString(
               [in] String ratingString,
               [out] ITvContentRating ** result);
-
      }
 
      } // namespace Tv

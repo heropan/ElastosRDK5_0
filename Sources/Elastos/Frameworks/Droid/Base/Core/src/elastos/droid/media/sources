@@ -7,47 +7,100 @@ include $(MAKEDIR)/../../../../../../sources.inc
 INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../../inc/
 
-#SOURCES = CAmrInputStream.cpp
-#SOURCES += AmrInputStream.cpp
-#SOURCES += CAsyncPlayer.cpp
-#
+C_DEFINES += -DDROID_CORE
+
+SOURCES = CAmrInputStream.cpp
+SOURCES += CAsyncPlayer.cpp
+SOURCES += CAudioAttributesBuilder.cpp
+SOURCES += CAudioAttributesHelper.cpp
+SOURCES += CAudioAttributes.cpp
+SOURCES += CAudioDevice.cpp
+SOURCES += AudioPortConfig.cpp
+SOURCES += CAudioDevicePortConfig.cpp
+SOURCES += CAudioMixPortConfig.cpp
+SOURCES += AudioPort.cpp
+SOURCES += CAudioDevicePort.cpp
+SOURCES += CAudioMixPort.cpp
+SOURCES += CAudioFormatBuilder.cpp
+SOURCES += CAudioFormatHelper.cpp
+SOURCES += CAudioFormat.cpp
+SOURCES += CAudioGain.cpp
+SOURCES += CAudioGainConfig.cpp
+SOURCES += CAudioHandle.cpp
+SOURCES += CAudioManagerAudioFocusDispatcher.cpp
+SOURCES += CAudioManager.cpp
+SOURCES += CAudioPatch.cpp
+SOURCES += AudioPortEventHandler.cpp
+SOURCES += CAudioRecord.cpp
+SOURCES += CAudioRoutesInfo.cpp
+SOURCES += AudioSystem.cpp
+SOURCES += CAudioSystem.cpp
+SOURCES += CAudioTimestamp.cpp
+SOURCES += CAudioTrack.cpp
+SOURCES += CAudioTrackHelper.cpp
+SOURCES += CCamcorderProfile.cpp
+SOURCES += CCamcorderProfileHelper.cpp
+SOURCES += CameraProfile.cpp
+SOURCES += CCameraProfile.cpp
+SOURCES += CClosedCaptionRenderer.cpp
+SOURCES += DecoderCapabilities.cpp
+SOURCES += CDecoderCapabilities.cpp
+SOURCES += EncoderCapabilities.cpp
+SOURCES += CEncoderCapabilities.cpp
+SOURCES += CExifInterface.cpp
+SOURCES += CFace.cpp
+SOURCES += CFaceDetector.cpp
+SOURCES += FocusRequester.cpp
+SOURCES += Image.cpp
+SOURCES += CImageReader.cpp
+SOURCES += CJetPlayer.cpp
+SOURCES += CJetPlayerHelper.cpp
+SOURCES += CMediaActionSound.cpp
+
+SOURCES += MediaRouterSimpleCallback.cpp
+SOURCES += CMediaRouterSimpleCallback.cpp
+
+SOURCES += media.cpp
+
+
+
 #SOURCES += CAudioManagerAudioFocusDispatcher.cpp
 #SOURCES += CAudioManager.cpp
 #SOURCES += CAudioManagerHelper.cpp
-#
+
 #SOURCES += CAudioRecord.cpp
 #SOURCES += CAudioRecordHelper.cpp
-#
+
 #SOURCES += CAudioRoutesInfo.cpp
-#
+
 #SOURCES += CAudioService.cpp
 #SOURCES += CAudioServiceHelper.cpp
-#
+
 #SOURCES += CAudioSystem.cpp
 #SOURCES += CAudioSystemHelper.cpp
-#
+
 #SOURCES += CAudioTrack.cpp
 #SOURCES += CAudioTrackHelper.cpp
-#
+
 #SOURCES += CCamcorderProfile.cpp
 #SOURCES += CCamcorderProfileHelper.cpp
-#
+
 #SOURCES += CCameraProfileHelper.cpp
-#
+
 #SOURCES += CDecoderCapabilities.cpp
 #SOURCES += CDecoderCapabilitiesHelper.cpp
-#
+
 #SOURCES += CEncoderCapabilities.cpp
 #SOURCES += CEncoderCapabilitiesHelper.cpp
-#
+
 #SOURCES += CExifInterface.cpp
-#
+
 #SOURCES += CFace.cpp
 #SOURCES += CFaceDetector.cpp
-#
+
 #SOURCES += CJetPlayer.cpp
 #SOURCES += CJetPlayerHelper.cpp
-#
+
 #SOURCES += CMediaActionSound.cpp
 #SOURCES += CMediaCodecBufferInfo.cpp
 #SOURCES += CMediaCodecCryptoInfo.cpp

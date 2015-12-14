@@ -42,24 +42,24 @@ public:
         /* [in] */ IParcel* dest);
 
     CARAPI GetDeviceId(
-        /* [out] */ Int32 * result);
+        /* [out] */ Int32* result);
 
     CARAPI GetType(
-        /* [out] */ Int32 * result);
+        /* [out] */ Int32* result);
 
     CARAPI GetAudioType(
-        /* [out] */ Int32 * result);
+        /* [out] */ Int32* result);
 
     CARAPI GetAudioAddress(
-        /* [out] */ String * result);
+        /* [out] */ String* result);
 
     CARAPI GetHdmiPortId(
-        /* [out] */ Int32 * result);
+        /* [out] */ Int32* result);
 
     CARAPI ToString(
-        /* [out] */ String * result);
+        /* [out] */ String* result);
 
-public:
+private:
     static String TAG;
 
     Int32 mDeviceId;

@@ -180,7 +180,7 @@ ECode CTvInputManagerSession::ReleaseResources()
 }
 
 ECode CTvInputManagerSession::SetSurface(
-    /* [in] */ ISurface * surface)
+    /* [in] */ ISurface* surface)
 {
     if (mToken == NULL) {
         Logger::W(CTvInputManager::TAG, "The session has been already released");
@@ -229,14 +229,14 @@ ECode CTvInputManagerSession::SetStreamVolume(
 }
 
 ECode CTvInputManagerSession::Tune(
-    /* [in] */ IUri * channelUri)
+    /* [in] */ IUri* channelUri)
 {
     return Tune(channelUri, NULL);
 }
 
 ECode CTvInputManagerSession::Tune(
-    /* [in] */ IUri * channelUri,
-    /* [in] */ IBundle * params)
+    /* [in] */ IUri* channelUri,
+    /* [in] */ IBundle* params)
 {
     if (channelUri == NULL) {
         // throw new IllegalArgumentException("channelUri cannot be NULL");
@@ -309,7 +309,7 @@ ECode CTvInputManagerSession::SelectTrack(
 
 ECode CTvInputManagerSession::GetTracks(
     /* [in] */ Int32 type,
-    /* [out] */ IList ** result)
+    /* [out] */ IList** result)
 {
     VALIDATE_NOT_NULL(result)
     if (type == ITvTrackInfo::TYPE_AUDIO) {
@@ -338,12 +338,13 @@ ECode CTvInputManagerSession::GetTracks(
         return NOERROR;
     }
     // throw new IllegalArgumentException("invalid type: " + type);
+    *result = NULL;
     return E_ILLEGAL_ARGUMENT_EXCEPTION;
 }
 
 ECode CTvInputManagerSession::GetSelectedTrack(
     /* [in] */ Int32 type,
-    /* [out] */ String * result)
+    /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)
     if (type == ITvTrackInfo::TYPE_AUDIO) {
@@ -357,12 +358,13 @@ ECode CTvInputManagerSession::GetSelectedTrack(
         return NOERROR;
     }
     // throw new IllegalArgumentException("invalid type: " + type);
+    *result = String(NULL);
     return E_ILLEGAL_ARGUMENT_EXCEPTION;
 }
 
 ECode CTvInputManagerSession::SendAppPrivateCommand(
     /* [in] */ const String& action,
-    /* [in] */ IBundle * data)
+    /* [in] */ IBundle* data)
 {
     if (mToken == NULL) {
         Logger::W(CTvInputManager::TAG, "The session has been already released");
@@ -376,13 +378,15 @@ ECode CTvInputManagerSession::SendAppPrivateCommand(
 }
 
 ECode CTvInputManagerSession::DispatchInputEvent(
-    /* [in] */ IInputEvent * event,
-    /* [in] */ IInterface * token,
-    /* [in] */ ITvInputManagerSessionFinishedInputEventCallback * callback,
-    /* [in] */ IHandler * handler,
-    /* [out] */ Int32 * result)
+    /* [in] */ IInputEvent* event,
+    /* [in] */ IInterface* token,
+    /* [in] */ ITvInputManagerSessionFinishedInputEventCallback* callback,
+    /* [in] */ IHandler* handler,
+    /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
     if (event == NULL) {
         // throw new IllegalArgumentException("event cannot be NULL");
         return NOERROR;
@@ -436,8 +440,8 @@ ECode CTvInputManagerSession::SetMain()
 }
 
 ECode CTvInputManagerSession::CreateOverlayView(
-    /* [in] */ IView * view,
-    /* [in] */ IRect * frame)
+    /* [in] */ IView* view,
+    /* [in] */ IRect* frame)
 {
     if (view == NULL) {
         // throw new IllegalArgumentException("view cannot be NULL");
@@ -465,7 +469,7 @@ ECode CTvInputManagerSession::CreateOverlayView(
 }
 
 ECode CTvInputManagerSession::RelayoutOverlayView(
-    /* [in] */ IRect * frame)
+    /* [in] */ IRect* frame)
 {
     if (frame == NULL) {
         // throw new IllegalArgumentException("frame cannot be NULL");
@@ -496,7 +500,7 @@ ECode CTvInputManagerSession::RemoveOverlayView()
 }
 
 ECode CTvInputManagerSession::RequestUnblockContent(
-    /* [in] */ ITvContentRating * unblockedRating)
+    /* [in] */ ITvContentRating* unblockedRating)
 {
     if (mToken == NULL) {
         Logger::W(CTvInputManager::TAG, "The session has been already released");

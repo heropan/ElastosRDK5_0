@@ -17,8 +17,8 @@ using Elastos::Droid::Media::IMediaPlayerOnVideoSizeChangedListener;
 using Elastos::Droid::Media::EIID_IMediaPlayerOnVideoSizeChangedListener;
 using Elastos::Droid::Media::IMediaPlayerOnErrorListener;
 using Elastos::Droid::Media::EIID_IMediaPlayerOnErrorListener;
-using Elastos::Droid::Media::IOnAudioFocusChangeListener;
-using Elastos::Droid::Media::EIID_IOnAudioFocusChangeListener;
+using Elastos::Droid::Media::IAudioManagerOnAudioFocusChangeListener;
+using Elastos::Droid::Media::EIID_IAudioManagerOnAudioFocusChangeListener;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 
@@ -38,7 +38,7 @@ class MediaPlayerListener
     , public IMediaPlayerOnSeekCompleteListener
     , public IMediaPlayerOnVideoSizeChangedListener
     , public IMediaPlayerOnErrorListener
-    , public IOnAudioFocusChangeListener
+    , public IAudioManagerOnAudioFocusChangeListener
 {
 public:
     CAR_INTERFACE_DECL();

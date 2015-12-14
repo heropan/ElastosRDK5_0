@@ -22,32 +22,32 @@ module
          * Returns the audio port this AudioPortConfig is issued from.
          */
         Port(
-            [out] IAudioPort ** result);
+            [out] IAudioPort** result);
 
         /**
          * Sampling rate configured for this AudioPortConfig.
          */
         SamplingRate(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Channel mask configuration (e.g AudioFormat.CHANNEL_CONFIGURATION_STEREO).
          */
         ChannelMask(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Audio format configuration (e.g AudioFormat.ENCODING_PCM_16BIT).
          */
         Format(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * The gain configuration if this port supports gain control, null otherwise
          * @see AudioGainConfig.
          */
         Gain(
-            [out] IAudioGainConfig ** result);
+            [out] IAudioGainConfig** result);
 
     }
     } // namespace media

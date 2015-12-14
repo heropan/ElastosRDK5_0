@@ -39,13 +39,13 @@ private:
         {}
 
         CARAPI OnSessionCreated(
-            /* [in] */ ITvInputManagerSession * session);
+            /* [in] */ ITvInputManagerSession* session);
 
         CARAPI OnVideoAvailable(
-            /* [in] */ ITvInputManagerSession * session);
+            /* [in] */ ITvInputManagerSession* session);
 
         CARAPI OnVideoUnavailable(
-            /* [in] */ ITvInputManagerSession * session,
+            /* [in] */ ITvInputManagerSession* session,
             /* [in] */ Int32 reason);
 
     private:
@@ -57,11 +57,11 @@ public:
 
     TvInputServiceHardwareSession();
 
+    virtual ~TvInputServiceHardwareSession();
+
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
-
-    virtual ~TvInputServiceHardwareSession();
 
     /**
      * Creates a new HardwareSession.
@@ -81,7 +81,7 @@ public:
      * </p>
      */
     CARAPI GetHardwareInputId(
-        /* [out] */ String * result);
+        /* [out] */ String* result);
 
     /**
      * Called when the underlying hardware TV input session calls

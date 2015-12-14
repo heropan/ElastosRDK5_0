@@ -1,6 +1,8 @@
 
 module
 {
+    using interface Elastos.Utility.IArrayList;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -371,7 +373,7 @@ module
         IsStreamActiveRemotely(
             [in] Int32 stream,
             [in] Int32 inPastMs,
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         /*
          * Checks whether the specified audio source is active.
@@ -380,13 +382,13 @@ module
          */
         IsSourceActive(
             [in] Int32 source,
-            [out] Boolean *result);
+            [out] Boolean* result);
 
         /*
          * Returns a new unused audio session ID
          */
         NewAudioSessionId(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /*
          * Sets a group generic audio configuration parameters. The use of these parameters
@@ -482,43 +484,42 @@ module
 
         GetOutputLatency(
             [in] Int32 stream,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         SetLowRamDevice(
             [in] Boolean isLowRamDevice,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         CheckAudioFlinger(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         ListAudioPorts(
-            [in] ArrayOf<IAudioPort*> * ports,
-            [in] ArrayOf<Int32> * generation,
-            [out] Int32 * result);
+            [in] IArrayList* ports,
+            [in] ArrayOf<Int32>* generation,
+            [out] Int32* result);
 
         CreateAudioPatch(
-            [in] ArrayOf<IAudioPatch*> * patch,
-            [in] ArrayOf<IAudioPortConfig*> * sources,
-            [in] ArrayOf<IAudioPortConfig*> * sinks,
-            [out] Int32 * result);
+            [in] ArrayOf<IAudioPatch*>* patch,
+            [in] ArrayOf<IAudioPortConfig*>* sources,
+            [in] ArrayOf<IAudioPortConfig*>* sinks,
+            [out] Int32* result);
 
         ReleaseAudioPatch(
-            [in] IAudioPatch * patch,
-            [out] Int32 * result);
+            [in] IAudioPatch* patch,
+            [out] Int32* result);
 
         ListAudioPatches(
-            [in] ArrayOf<IAudioPatch*> * patches,
-            [in] ArrayOf<Int32> * generation,
-            [out] Int32 * result);
+            [in] IArrayList* patches,
+            [in] ArrayOf<Int32>* generation,
+            [out] Int32* result);
 
         SetAudioPortConfig(
-            [in] IAudioPortConfig * config,
-            [out] Int32 * result);
+            [in] IAudioPortConfig* config,
+            [out] Int32* result);
 
         GetAudioHwSyncForSession(
             [in] Int32 sessionId,
-            [out] Int32 * result);
-
+            [out] Int32* result);
     }
 
     } // namespace Media

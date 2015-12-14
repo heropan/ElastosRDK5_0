@@ -11,7 +11,7 @@
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Media::IAudioFormat;
-using Elastos::Droid::Media::IAudioSource;
+using Elastos::Droid::Media::IMediaRecorderAudioSource;
 using Elastos::Droid::Media::Audiofx::IAudioEffect;
 using Elastos::Droid::Media::Audiofx::IAudioEffectDescriptor;
 using Elastos::Droid::Media::IAudioRecordHelper;

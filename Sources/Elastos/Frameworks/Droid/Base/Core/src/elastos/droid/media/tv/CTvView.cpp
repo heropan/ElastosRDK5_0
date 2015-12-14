@@ -38,6 +38,7 @@ CAR_INTERFACE_IMPL(CTvView::SurfaceHolderCallback, Object, ISurfaceHolderCallbac
 ECode CTvView::SurfaceHolderCallback::SurfaceCreated(
     /* [in] */ ISurfaceHolder* holder)
 {
+    mHost->mSurface = NULL;
     holder->GetSurface((ISurface**)&mHost->mSurface);
     mHost->SetSessionSurface(mHost->mSurface);
     return NOERROR;
@@ -105,16 +106,24 @@ ECode CTvView::FinishedInputEventCallback::OnFinishedInputEvent(
 // CTvView::MySurfaceView
 //==============================================================================
 
-//TODO: Need SurfaceView
-// ECode CTvView::MySurfaceView::UpdateWindow(
-//     /* [in] */ Boolean force,
-//     /* [in] */ Boolean redrawNeeded)
-// {
-// //TODO: Need SurfaceView::UpdateWindow
-//     // mHost->UpdateWindow(force, redrawNeeded);
-//     mHost->RelayoutSessionOverlayView();
-//     return NOERROR;
-// }
+CTvView::MySurfaceView::MySurfaceView(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyle,
+    /* [in] */ CTvView* host)
+    : mHost(host)
+{
+    constructor(context, attrs, defStyle);
+}
+
+ECode CTvView::MySurfaceView::UpdateWindow(
+    /* [in] */ Boolean force,
+    /* [in] */ Boolean redrawNeeded)
+{
+    SurfaceView::UpdateWindow(force, redrawNeeded);
+    mHost->RelayoutSessionOverlayView();
+    return NOERROR;
+}
 
 //==============================================================================
 // CTvView::MySessionCallback
@@ -411,7 +420,7 @@ ECode CTvView::constructor(
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr)
 {
-    ViewGroup::constructor(context, attrs, defStyleAttr);
+    FAIL_RETURN(ViewGroup::constructor(context, attrs, defStyleAttr));
     mAttrs = attrs;
     mDefStyleAttr = defStyleAttr;
     ResetSurfaceView();
@@ -433,8 +442,7 @@ ECode CTvView::SetCallback(
 ECode CTvView::SetMain()
 {
     synchronized(sMainTvViewLock) {
-        IWeakReferenceSource* wrs = THIS_PROBE(IWeakReferenceSource);
-        wrs->GetWeakReference((IWeakReference**)&sMainTvView);
+        GetWeakReference((IWeakReference**)&sMainTvView);
         Boolean b;
         HasWindowFocus(&b);
         if (b && mSession != NULL) {
@@ -514,9 +522,8 @@ ECode CTvView::Tune(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     synchronized(sMainTvViewLock) {
-        if (sMainTvView.Get() == NULL) {
-            IWeakReferenceSource* wrs = THIS_PROBE(IWeakReferenceSource);
-            wrs->GetWeakReference((IWeakReference**)&sMainTvView);
+        if (sMainTvView == NULL) {
+            GetWeakReference((IWeakReference**)&sMainTvView);
         }
     }
     if (mSessionCallback != NULL && mSessionCallback->mInputId.Equals(inputId)) {
@@ -547,7 +554,7 @@ ECode CTvView::Reset()
 {
     if (DEBUG) Logger::D(TAG, "reset()");
     synchronized(sMainTvViewLock) {
-        if (sMainTvView.Get() != NULL) {
+        if (sMainTvView != NULL) {
             AutoPtr<ITvView> cs;
             sMainTvView->Resolve(EIID_ITvView, (IInterface**)&cs);
             if (cs != NULL) {
@@ -669,12 +676,14 @@ ECode CTvView::DispatchKeyEvent(
     ViewGroup::DispatchKeyEvent(event, &b);
     if (b) {
         *result = TRUE;
+        return NOERROR;
     }
     if (DEBUG) {
         // Logger::D(TAG, "dispatchKeyEvent(" + event + ")");
     }
     if (mSession == NULL) {
         *result = FALSE;
+        return NOERROR;
     }
     AutoPtr<IInputEvent> copiedEvent;
     IInputEvent::Probe(event)->Copy((IInputEvent**)&copiedEvent);
@@ -720,12 +729,14 @@ ECode CTvView::DispatchTrackballEvent(
     ViewGroup::DispatchTrackballEvent(event, &b);
     if (b) {
         *result = TRUE;
+        return NOERROR;
     }
     if (DEBUG) {
         // Logger::D(TAG, "dispatchTrackballEvent(" + event + ")");
     }
     if (mSession == NULL) {
         *result = FALSE;
+        return NOERROR;
     }
     AutoPtr<IInputEvent> copiedEvent;
     IInputEvent::Probe(event)->Copy((IInputEvent**)&copiedEvent);
@@ -745,12 +756,14 @@ ECode CTvView::DispatchGenericMotionEvent(
     ViewGroup::DispatchGenericMotionEvent(event, &b);
     if (b) {
         *result = TRUE;
+        return NOERROR;
     }
     if (DEBUG) {
         // Logger::D(TAG, "dispatchGenericMotionEvent(" + event + ")");
     }
     if (mSession == NULL) {
         *result = FALSE;
+        return NOERROR;
     }
     AutoPtr<IInputEvent> copiedEvent;
     IInputEvent::Probe(event)->Copy((IInputEvent**)&copiedEvent);
@@ -807,12 +820,11 @@ ECode CTvView::OnLayout(
             , left, top, right, bottom);
     }
     if (mUseRequestedSurfaceLayout) {
-        IView::Probe(mSurfaceView)->Layout(mSurfaceViewLeft, mSurfaceViewTop, mSurfaceViewRight,
+        return IView::Probe(mSurfaceView)->Layout(mSurfaceViewLeft, mSurfaceViewTop, mSurfaceViewRight,
                 mSurfaceViewBottom);
     } else {
-        IView::Probe(mSurfaceView)->Layout(0, 0, right - left, bottom - top);
+        return IView::Probe(mSurfaceView)->Layout(0, 0, right - left, bottom - top);
     }
-    return NOERROR;
 }
 
 void CTvView::OnMeasure(
@@ -864,8 +876,7 @@ void CTvView::ResetSurfaceView()
     mSurface = NULL;
     AutoPtr<IContext> ctx;
     GetContext((IContext**)&ctx);
-//TODO: Need SurfaceView
-    // mSurfaceView = new MySurfaceView(ctx, mAttrs, mDefStyleAttr, this);
+    mSurfaceView = new MySurfaceView(ctx, mAttrs, mDefStyleAttr, this);
 
     AutoPtr<ISurfaceHolder> holder;
     mSurfaceView->GetHolder((ISurfaceHolder**)&holder);
@@ -934,8 +945,7 @@ void CTvView::RemoveSessionOverlayView()
 void CTvView::RelayoutSessionOverlayView()
 {
     Boolean b;
-    IsAttachedToWindow(&b);
-    if (mSession == NULL || !b || !mOverlayViewCreated
+    if (mSession == NULL || (IsAttachedToWindow(&b),!b) || !mOverlayViewCreated
             || mWindowZOrder != ZORDER_MEDIA) {
         return;
     }
@@ -951,7 +961,7 @@ void CTvView::RelayoutSessionOverlayView()
 AutoPtr<IRect> CTvView::GetViewFrameOnScreen()
 {
     AutoPtr<ArrayOf<Int32> > location = ArrayOf<Int32>::Alloc(2);
-    GetLocationOnScreen((ArrayOf<Int32>**)&location);
+    GetLocationOnScreen((ArrayOf<Int32>*)location);
     Int32 width, height;
     GetWidth(&width);
     GetHeight(&height);

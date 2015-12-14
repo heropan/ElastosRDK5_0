@@ -4,17 +4,23 @@
 
 #include "_Elastos_Droid_Media_CAudioManager.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/media/AudioPortEventHandler.h"
+#include "elastos/droid/os/Handler.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Droid::Os::HandlerBase;
-using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::IComponentName;
-using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Bluetooth::IBluetoothDevice;
+using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Media::AudioPolicy::IAudioPolicy;
+using Elastos::Droid::Media::AudioPortEventHandler;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Core::IInteger32;
 using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -27,6 +33,8 @@ namespace Media {
  * an instance of this class.
  */
 CarClass(CAudioManager)
+    , public Object
+    , public IAudioManager
 {
 friend class CAudioManagerAudioFocusDispatcher;
 
@@ -34,21 +42,24 @@ private:
     /**
      * Helper class to handle the forwarding of audio focus events to the appropriate listener
      */
-    class FocusEventHandlerDelegate : public ElRefBase
+    class FocusEventHandlerDelegate
+         : public Object
     {
     private:
-        class MyHandler : public HandlerBase
+        class MyHandler
+            : public Handler
         {
         public:
             MyHandler(
                 /* [in] */ ILooper* looper,
                 /* [in] */ FocusEventHandlerDelegate* host)
-                : HandlerBase(looper)
+                : Handler(looper)
                 , mHost(host)
             {}
 
             CARAPI HandleMessage(
                 /* [in] */ IMessage* msg);
+
         private:
             FocusEventHandlerDelegate* mHost;
         };
@@ -68,8 +79,40 @@ private:
 public:
     CAudioManager();
 
+    virtual ~CAudioManager();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ IContext* context);
+
+    /**
+     * Sends a simulated key event for a media button.
+     * To simulate a key press, you must first send a KeyEvent built with a
+     * {@link KeyEvent#ACTION_DOWN} action, then another event with the {@link KeyEvent#ACTION_UP}
+     * action.
+     * <p>The key event will be sent to the current media key event consumer which registered with
+     * {@link AudioManager#registerMediaButtonEventReceiver(PendingIntent)}.
+     * @param keyEvent a {@link KeyEvent} instance whose key code is one of
+     *     {@link KeyEvent#KEYCODE_MUTE},
+     *     {@link KeyEvent#KEYCODE_HEADSETHOOK},
+     *     {@link KeyEvent#KEYCODE_MEDIA_PLAY},
+     *     {@link KeyEvent#KEYCODE_MEDIA_PAUSE},
+     *     {@link KeyEvent#KEYCODE_MEDIA_PLAY_PAUSE},
+     *     {@link KeyEvent#KEYCODE_MEDIA_STOP},
+     *     {@link KeyEvent#KEYCODE_MEDIA_NEXT},
+     *     {@link KeyEvent#KEYCODE_MEDIA_PREVIOUS},
+     *     {@link KeyEvent#KEYCODE_MEDIA_REWIND},
+     *     {@link KeyEvent#KEYCODE_MEDIA_RECORD},
+     *     {@link KeyEvent#KEYCODE_MEDIA_FAST_FORWARD},
+     *     {@link KeyEvent#KEYCODE_MEDIA_CLOSE},
+     *     {@link KeyEvent#KEYCODE_MEDIA_EJECT},
+     *     or {@link KeyEvent#KEYCODE_MEDIA_AUDIO_TRACK}.
+     */
+    CARAPI DispatchMediaKeyEvent(
+        /* [in] */ IKeyEvent* event);
 
     /**
      * @hide
@@ -91,6 +134,25 @@ public:
     CARAPI HandleKeyUp(
         /* [in] */ IKeyEvent* event,
         /* [in] */ Int32 stream);
+
+    /**
+     * Indicates if the device implements a fixed volume policy.
+     * <p>Some devices may not have volume control and may operate at a fixed volume,
+     * and may not enable muting or changing the volume of audio streams.
+     * This method will return true on such devices.
+     * <p>The following APIs have no effect when volume is fixed:
+     * <ul>
+     *   <li> {@link #adjustVolume(int, int)}
+     *   <li> {@link #adjustSuggestedStreamVolume(int, int, int)}
+     *   <li> {@link #adjustStreamVolume(int, int, int)}
+     *   <li> {@link #setStreamVolume(int, int, int)}
+     *   <li> {@link #setRingerMode(int)}
+     *   <li> {@link #setStreamSolo(int, boolean)}
+     *   <li> {@link #setStreamMute(int, boolean)}
+     * </ul>
+     */
+    CARAPI IsVolumeFixed(
+        /* [out] */ Boolean* result);
 
     /**
      * Adjusts the volume of a particular stream by one step in a direction.
@@ -232,6 +294,15 @@ public:
      */
     CARAPI SetRingerMode(
         /* [in] */ Int32 ringerMode);
+
+    /**
+     * @see #setRingerMode(int)
+     * @param checkZen  Update zen mode if necessary to compensate.
+     * @hide
+     */
+    CARAPI SetRingerMode(
+        /* [in] */ Int32 ringerMode,
+        /* [in] */ Boolean checkZen);
 
     /**
      * Sets the volume index for a particular stream.
@@ -505,6 +576,23 @@ public:
     CARAPI StartBluetoothSco();
 
     /**
+     * @hide
+     * Start bluetooth SCO audio connection in virtual call mode.
+     * <p>Requires Permission:
+     *   {@link android.Manifest.permission#MODIFY_AUDIO_SETTINGS}.
+     * <p>Similar to {@link #startBluetoothSco()} with explicit selection of virtual call mode.
+     * Telephony and communication applications (VoIP, Video Chat) should preferably select
+     * virtual call mode.
+     * Applications using voice input for search or commands should first try raw audio connection
+     * with {@link #startBluetoothSco()} and fall back to startBluetoothScoVirtualCall() in case of
+     * failure.
+     * @see #startBluetoothSco()
+     * @see #stopBluetoothSco()
+     * @see #ACTION_SCO_AUDIO_STATE_UPDATED
+     */
+    CARAPI StartBluetoothScoVirtualCall();
+
+    /**
      * Stop bluetooth SCO audio connection.
      * <p>Requires Permission:
      *   {@link android.Manifest.permission#MODIFY_AUDIO_SETTINGS}.
@@ -553,14 +641,6 @@ public:
      */
     CARAPI IsBluetoothA2dpOn(
         /* [out] */ Boolean* result);
-
-    /**
-     * @hide
-     * Signals whether remote submix audio rerouting is enabled.
-     */
-    CARAPI SetRemoteSubmixOn(
-        /* [in] */ Boolean on,
-        /* [in] */ Int32 address);
 
     /**
      * Sets audio routing to the wired headset on or off.
@@ -670,22 +750,40 @@ public:
 
     /**
      * @hide
-     * Checks whether speech recognition is active
-     * @return true if a recording with source {@link MediaRecorder.AudioSource#VOICE_RECOGNITION}
-     *    is underway.
+     * Checks whether any music or media is actively playing on a remote device (e.g. wireless
+     *   display). Note that BT audio sinks are not considered remote devices.
+     * @return true if {@link AudioManager#STREAM_MUSIC} is active on a remote device
      */
-    CARAPI IsSpeechRecognitionActive(
+    CARAPI IsMusicActiveRemotely(
         /* [out] */ Boolean* result);
 
     /**
      * @hide
-     * If the stream is active locally or remotely, adjust its volume according to the enforced
-     * priority rules.
-     * Note: only AudioManager.STREAM_MUSIC is supported at the moment
+     * Checks whether the current audio focus is exclusive.
+     * @return true if the top of the audio focus stack requested focus
+     *     with {@link #AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE}
      */
-    CARAPI AdjustLocalOrRemoteStreamVolume(
-        /* [in] */ Int32 streamType,
-        /* [in] */ Int32 direction);
+    CARAPI IsAudioFocusExclusive(
+        /* [out] */ Boolean* result);
+
+    /**
+     * Return a new audio session identifier not associated with any player or effect.
+     * An audio session identifier is a system wide unique identifier for a set of audio streams
+     * (one or more mixed together).
+     * <p>The primary use of the audio session ID is to associate audio effects to audio players,
+     * such as {@link MediaPlayer} or {@link AudioTrack}: all audio effects sharing the same audio
+     * session ID will be applied to the mixed audio content of the players that share the same
+     * audio session.
+     * <p>This method can for instance be used when creating one of the
+     * {@link android.media.audiofx.AudioEffect} objects to define the audio session of the effect,
+     * or to specify a session for a speech synthesis utterance
+     * in {@link android.speech.tts.TextToSpeech.Engine}.
+     * @return a new unclaimed and unused audio session identifier, or {@link #ERROR} when the
+     *   system failed to generate a new session, a condition in which audio playback or recording
+     *   will subsequently fail as well.
+     */
+    CARAPI GenerateAudioSessionId(
+        /* [out] */ Int32* result);
 
     /*
      * Sets a generic audio configuration parameter. The use of these parameters
@@ -758,6 +856,28 @@ public:
      *            {@link #FX_KEYPRESS_SPACEBAR},
      *            {@link #FX_KEYPRESS_DELETE},
      *            {@link #FX_KEYPRESS_RETURN},
+     *            {@link #FX_KEYPRESS_INVALID},
+     * @param userId The current user to pull sound settings from
+     * NOTE: This version uses the UI settings to determine
+     * whether sounds are heard or not.
+     * @hide
+     */
+    CARAPI PlaySoundEffect(
+        /* [in] */ Int32 effectType,
+        /* [in] */ Int32 userId);
+
+    /**
+     * Plays a sound effect (Key clicks, lid open/close...)
+     * @param effectType The type of sound effect. One of
+     *            {@link #FX_KEY_CLICK},
+     *            {@link #FX_FOCUS_NAVIGATION_UP},
+     *            {@link #FX_FOCUS_NAVIGATION_DOWN},
+     *            {@link #FX_FOCUS_NAVIGATION_LEFT},
+     *            {@link #FX_FOCUS_NAVIGATION_RIGHT},
+     *            {@link #FX_KEYPRESS_STANDARD},
+     *            {@link #FX_KEYPRESS_SPACEBAR},
+     *            {@link #FX_KEYPRESS_DELETE},
+     *            {@link #FX_KEYPRESS_RETURN},
      * @param volume Sound effect volume.
      * The volume value is a raw scalar so UI controls should be scaled logarithmically.
      * If a volume of -1 is specified, the AudioManager.STREAM_MUSIC stream volume minus 3dB will be used.
@@ -784,12 +904,12 @@ public:
     /**
      * @hide
      * Registers a listener to be called when audio focus changes. Calling this method is optional
-     * before calling {@link #requestAudioFocus(IOnAudioFocusChangeListener, Int32, Int32)}, as it
+     * before calling {@link #requestAudioFocus(IAudioManagerOnAudioFocusChangeListener, Int32, Int32)}, as it
      * will register the listener as well if it wasn't registered already.
      * @param l the listener to be notified of audio focus changes.
      */
     CARAPI RegisterAudioFocusListener(
-        /* [in] */ IOnAudioFocusChangeListener* l);
+        /* [in] */ IAudioManagerOnAudioFocusChangeListener* l);
 
     /**
      * @hide
@@ -797,7 +917,7 @@ public:
      * @param l the listener to unregister.
      */
     CARAPI UnregisterAudioFocusListener(
-        /* [in] */ IOnAudioFocusChangeListener* l);
+        /* [in] */ IAudioManagerOnAudioFocusChangeListener* l);
 
     /**
      *  Request audio focus.
@@ -814,7 +934,7 @@ public:
      *  @return {@link #AUDIOFOCUS_REQUEST_FAILED} or {@link #AUDIOFOCUS_REQUEST_GRANTED}
      */
     CARAPI RequestAudioFocus(
-        /* [in] */ IOnAudioFocusChangeListener* l,
+        /* [in] */ IAudioManagerOnAudioFocusChangeListener* l,
         /* [in] */ Int32 streamType,
         /* [in] */ Int32 durationHint,
         /* [out] */ Int32* result);
@@ -847,7 +967,7 @@ public:
      *  @return {@link #AUDIOFOCUS_REQUEST_FAILED} or {@link #AUDIOFOCUS_REQUEST_GRANTED}
      */
     CARAPI AbandonAudioFocus(
-        /* [in] */ IOnAudioFocusChangeListener* l,
+        /* [in] */ IAudioManagerOnAudioFocusChangeListener* l,
         /* [out] */ Int32* result);
 
     //====================================================================
@@ -862,26 +982,28 @@ public:
         /* [in] */ IComponentName* eventReceiver);
 
     /**
+     * Register a component to be the sole receiver of MEDIA_BUTTON intents.  This is like
+     * {@link #registerMediaButtonEventReceiver(android.content.ComponentName)}, but allows
+     * the buttons to go to any PendingIntent.  Note that you should only use this form if
+     * you know you will continue running for the full time until unregistering the
+     * PendingIntent.
+     * @param eventReceiver target that will receive media button intents.  The PendingIntent
+     * will be sent an {@link Intent#ACTION_MEDIA_BUTTON} event when a media button action
+     * occurs, with {@link Intent#EXTRA_KEY_EVENT} added and holding the key code of the
+     * media button that was pressed.
+     * @deprecated Use {@link MediaSession#setMediaButtonReceiver(PendingIntent)} instead.
+     */
+    // @Deprecated
+    CARAPI RegisterMediaButtonEventReceiver(
+        /* [in] */ IPendingIntent* eventReceiver);
+
+    /**
      * @hide
      * no-op if (pi == null) or (eventReceiver == null)
      */
     CARAPI RegisterMediaButtonIntent(
         /* [in] */ IPendingIntent* pi,
         /* [in] */ IComponentName* eventReceiver);
-
-    /**
-     * @hide
-     * Used internally by telephony package to register an intent receiver for ACTION_MEDIA_BUTTON.
-     * @param eventReceiver the component that will receive the media button key events,
-     *          no-op if eventReceiver is null
-     */
-    CARAPI RegisterMediaButtonEventReceiverForCalls(
-        /* [in] */ IComponentName* eventReceiver);
-
-    /**
-     * @hide
-     */
-    CARAPI UnregisterMediaButtonEventReceiverForCalls();
 
     /**
      * Unregister the receiver of MEDIA_BUTTON intents.
@@ -892,11 +1014,20 @@ public:
         /* [in] */ IComponentName* eventReceiver);
 
     /**
+     * Unregister the receiver of MEDIA_BUTTON intents.
+     * @param eventReceiver same PendingIntent that was registed with
+     *      {@link #registerMediaButtonEventReceiver(PendingIntent)}.
+     * @deprecated Use {@link MediaSession} instead.
+     */
+    // @Deprecated
+    CARAPI UnregisterMediaButtonEventReceiver(
+        /* [in] */ IPendingIntent* eventReceiver);
+
+    /**
      * @hide
      */
     CARAPI UnregisterMediaButtonIntent(
-        /* [in] */ IPendingIntent* pi,
-        /* [in] */ IComponentName* eventReceiver);
+        /* [in] */ IPendingIntent* pi);
 
     /**
      * Registers the remote control client for providing information to display on the remote
@@ -918,12 +1049,69 @@ public:
         /* [in] */ IRemoteControlClient* rcClient);
 
     /**
+     * Registers a {@link RemoteController} instance for it to receive media
+     * metadata updates and playback state information from applications using
+     * {@link RemoteControlClient}, and control their playback.
+     * <p>
+     * Registration requires the {@link OnClientUpdateListener} listener to be
+     * one of the enabled notification listeners (see
+     * {@link android.service.notification.NotificationListenerService}).
+     *
+     * @param rctlr the object to register.
+     * @return true if the {@link RemoteController} was successfully registered,
+     *         false if an error occurred, due to an internal system error, or
+     *         insufficient permissions.
+     * @deprecated Use
+     *             {@link MediaSessionManager#addOnActiveSessionsChangedListener(android.media.session.MediaSessionManager.OnActiveSessionsChangedListener, ComponentName)}
+     *             and {@link MediaController} instead.
+     */
+    // @Deprecated
+    CARAPI RegisterRemoteController(
+        /* [in] */ IRemoteController* rctlr,
+        /* [out] */ Boolean* result);
+
+    /**
+     * Unregisters a {@link RemoteController}, causing it to no longer receive
+     * media metadata and playback state information, and no longer be capable
+     * of controlling playback.
+     *
+     * @param rctlr the object to unregister.
+     * @deprecated Use
+     *             {@link MediaSessionManager#removeOnActiveSessionsChangedListener(android.media.session.MediaSessionManager.OnActiveSessionsChangedListener)}
+     *             instead.
+     */
+    // @Deprecated
+    CARAPI UnregisterRemoteController(
+        /* [in] */ IRemoteController* rctlr);
+
+    /**
      * @hide
      * Registers a remote control display that will be sent information by remote control clients.
-     * @param rcd
+     * Use this method if your IRemoteControlDisplay is not going to display artwork, otherwise
+     * use {@link #registerRemoteControlDisplay(IRemoteControlDisplay, int, int)} to pass the
+     * artwork size directly, or
+     * {@link #remoteControlDisplayUsesBitmapSize(IRemoteControlDisplay, int, int)} later if artwork
+     * is not yet needed.
+     * <p>Registration requires the {@link Manifest.permission#MEDIA_CONTENT_CONTROL} permission.
+     * @param rcd the IRemoteControlDisplay
      */
     CARAPI RegisterRemoteControlDisplay(
         /* [in] */ IIRemoteControlDisplay* rcd);
+
+    /**
+     * @hide
+     * Registers a remote control display that will be sent information by remote control clients.
+     * <p>Registration requires the {@link Manifest.permission#MEDIA_CONTENT_CONTROL} permission.
+     * @param rcd
+     * @param w the maximum width of the expected bitmap. Negative values indicate it is
+     *   useless to send artwork.
+     * @param h the maximum height of the expected bitmap. Negative values indicate it is
+     *   useless to send artwork.
+     */
+    CARAPI RegisterRemoteControlDisplay(
+        /* [in] */ IIRemoteControlDisplay* rcd,
+        /* [in] */ Int32 w,
+        /* [in] */ Int32 h);
 
     /**
      * @hide
@@ -946,6 +1134,48 @@ public:
         /* [in] */ IIRemoteControlDisplay* rcd,
         /* [in] */ Int32 w,
         /* [in] */ Int32 h);
+
+    /**
+     * @hide
+     * Controls whether a remote control display needs periodic checks of the RemoteControlClient
+     * playback position to verify that the estimated position has not drifted from the actual
+     * position. By default the check is not performed.
+     * The IRemoteControlDisplay must have been previously registered for this to have any effect.
+     * @param rcd the IRemoteControlDisplay for which the anti-drift mechanism will be enabled
+     *     or disabled. No effect is null.
+     * @param wantsSync if true, RemoteControlClient instances which expose their playback position
+     *     to the framework will regularly compare the estimated playback position with the actual
+     *     position, and will update the IRemoteControlDisplay implementation whenever a drift is
+     *     detected.
+     */
+    CARAPI RemoteControlDisplayWantsPlaybackPositionSync(
+        /* [in] */ IIRemoteControlDisplay* rcd,
+        /* [in] */ Boolean wantsSync);
+
+    /**
+     * @hide
+     * CANDIDATE FOR PUBLIC API
+     * Register the given {@link AudioPolicy}.
+     * This call is synchronous and blocks until the registration process successfully completed
+     * or failed to complete.
+     * @param policy the {@link AudioPolicy} to register.
+     * @return {@link #ERROR} if there was an error communicating with the registration service
+     *    or if the user doesn't have the required
+     *    {@link android.Manifest.permission#MODIFY_AUDIO_ROUTING} permission,
+     *    {@link #SUCCESS} otherwise.
+     */
+    CARAPI RegisterAudioPolicy(
+        /* [in] */ IAudioPolicy* policy,
+        /* [out] */ Int32* result);
+
+    /**
+     * @hide
+     * CANDIDATE FOR PUBLIC API
+     * @param policy the {@link AudioPolicy} to unregister.
+     */
+    CARAPI UnregisterAudioPolicyAsync(
+        /* [in] */ IAudioPolicy* policy);
+
     /**
      *  @hide
      *  Reload audio settings. This method is called by Settings backup
@@ -953,6 +1183,16 @@ public:
      *  to read and apply restored settings.
      */
     CARAPI ReloadAudioSettings();
+
+    /**
+     * @hide
+     * Notifies AudioService that it is connected to an A2DP device that supports absolute volume,
+     * so that AudioService can send volume change events to the A2DP device, rather than handling
+     * them.
+     */
+    CARAPI AvrcpSupportsAbsoluteVolume(
+        /* [in] */ const String& address,
+        /* [in] */ Boolean support);
 
     /**
      * Checks whether the phone is in silent mode, with or without vibrate.
@@ -1029,6 +1269,7 @@ public:
     CARAPI SetBluetoothA2dpDeviceConnectionState(
         /* [in] */ IBluetoothDevice* device,
         /* [in] */ Int32 state,
+        /* [in] */ Int32 profile,
         /* [out] */ Int32* result);
 
     /** {@hide} */
@@ -1048,6 +1289,179 @@ public:
         /* [out] */ String* result);
 
     /**
+     * Returns the estimated latency for the given stream type in milliseconds.
+     *
+     * DO NOT UNHIDE. The existing approach for doing A/V sync has too many problems. We need
+     * a better solution.
+     * @hide
+     */
+    CARAPI GetOutputLatency(
+        /* [in] */ Int32 streamType,
+        /* [out] */ Int32* result);
+
+    /**
+     * Registers a global volume controller interface.  Currently limited to SystemUI.
+     *
+     * @hide
+     */
+    CARAPI SetVolumeController(
+        /* [in] */ IIVolumeController* controller);
+
+    /**
+     * Notify audio manager about volume controller visibility changes.
+     * Currently limited to SystemUI.
+     *
+     * @hide
+     */
+    CARAPI NotifyVolumeControllerVisible(
+        /* [in] */ IIVolumeController* controller,
+        /* [in] */ Boolean visible);
+
+    /**
+     * Only useful for volume controllers.
+     * @hide
+     */
+    CARAPI IsStreamAffectedByRingerMode(
+        /* [in] */ Int32 streamType,
+        /* [out] */ Boolean* result);
+
+    /**
+     * Only useful for volume controllers.
+     * @hide
+     */
+    CARAPI DisableSafeMediaVolume();
+
+    /**
+     * Set Hdmi Cec system audio mode.
+     *
+     * @param on whether to be on system audio mode
+     * @return output device type. 0 (DEVICE_NONE) if failed to set device.
+     * @hide
+     */
+    CARAPI SetHdmiSystemAudioSupported(
+        /* [in] */ Boolean on,
+        /* [out] */ Int32* result);
+
+    /**
+     * Returns true if Hdmi Cec system audio mode is supported.
+     *
+     * @hide
+     */
+    CARAPI IsHdmiSystemAudioSupported(
+        /* [out] */ Boolean* result);
+
+    /**
+     * Returns a list of descriptors for all audio ports managed by the audio framework.
+     * Audio ports are nodes in the audio framework or audio hardware that can be configured
+     * or connected and disconnected with createAudioPatch() or releaseAudioPatch().
+     * See AudioPort for a list of attributes of each audio port.
+     * @param ports An AudioPort ArrayList where the list will be returned.
+     * @hide
+     */
+    CARAPI ListAudioPorts(
+        /* [in] */ IArrayList* ports,
+        /* [out] */ Int32* result);
+
+    /**
+     * Specialized version of listAudioPorts() listing only audio devices (AudioDevicePort)
+     * @see listAudioPorts(ArrayList<AudioPort>)
+     * @hide
+     */
+    CARAPI ListAudioDevicePorts(
+        /* [in] */ IArrayList* devices,
+        /* [out] */ Int32* result);
+
+    /**
+     * Create a connection between two or more devices. The framework will reject the request if
+     * device types are not compatible or the implementation does not support the requested
+     * configuration.
+     * NOTE: current implementation is limited to one source and one sink per patch.
+     * @param patch AudioPatch array where the newly created patch will be returned.
+     *              As input, if patch[0] is not null, the specified patch will be replaced by the
+     *              new patch created. This avoids calling releaseAudioPatch() when modifying a
+     *              patch and allows the implementation to optimize transitions.
+     * @param sources List of source audio ports. All must be AudioPort.ROLE_SOURCE.
+     * @param sinks   List of sink audio ports. All must be AudioPort.ROLE_SINK.
+     *
+     * @return - {@link #SUCCESS} if connection is successful.
+     *         - {@link #ERROR_BAD_VALUE} if incompatible device types are passed.
+     *         - {@link #ERROR_INVALID_OPERATION} if the requested connection is not supported.
+     *         - {@link #ERROR_PERMISSION_DENIED} if the client does not have permission to create
+     *         a patch.
+     *         - {@link #ERROR_DEAD_OBJECT} if the server process is dead
+     *         - {@link #ERROR} if patch cannot be connected for any other reason.
+     *
+     *         patch[0] contains the newly created patch
+     * @hide
+     */
+    CARAPI CreateAudioPatch(
+        /* [in] */ ArrayOf<IAudioPatch*>* patch,
+        /* [in] */ ArrayOf<IAudioPortConfig*>* sources,
+        /* [in] */ ArrayOf<IAudioPortConfig*>* sinks,
+        /* [out] */ Int32* result);
+
+    /**
+     * Releases an existing audio patch connection.
+     * @param patch The audio patch to disconnect.
+     * @return - {@link #SUCCESS} if disconnection is successful.
+     *         - {@link #ERROR_BAD_VALUE} if the specified patch does not exist.
+     *         - {@link #ERROR_PERMISSION_DENIED} if the client does not have permission to release
+     *         a patch.
+     *         - {@link #ERROR_DEAD_OBJECT} if the server process is dead
+     *         - {@link #ERROR} if patch cannot be released for any other reason.
+     * @hide
+     */
+    CARAPI ReleaseAudioPatch(
+        /* [in] */ IAudioPatch* patch,
+        /* [out] */ Int32* result);
+
+    /**
+     * List all existing connections between audio ports.
+     * @param patches An AudioPatch array where the list will be returned.
+     * @hide
+     */
+    CARAPI ListAudioPatches(
+        /* [in] */ IArrayList* patches,
+        /* [out] */ Int32* result);
+
+    /**
+     * Set the gain on the specified AudioPort. The AudioGainConfig config is build by
+     * AudioGain.buildConfig()
+     * @hide
+     */
+    CARAPI SetAudioPortGain(
+        /* [in] */ IAudioPort* port,
+        /* [in] */ IAudioGainConfig* gain,
+        /* [out] */ Int32* result);
+
+    /**
+     * Register an audio port list update listener.
+     * @hide
+     */
+    CARAPI RegisterAudioPortUpdateListener(
+        /* [in] */ IAudioManagerOnAudioPortUpdateListener* l);
+
+    /**
+     * Unregister an audio port list update listener.
+     * @hide
+     */
+    CARAPI UnregisterAudioPortUpdateListener(
+        /* [in] */ IAudioManagerOnAudioPortUpdateListener* l);
+
+    CARAPI ResetAudioPortGeneration(
+        /* [out] */ Int32* result);
+
+    CARAPI UpdateAudioPortCache(
+        /* [in] */ IArrayList* ports,
+        /* [in] */ IArrayList* patches,
+        /* [out] */ Int32* result);
+
+    CARAPI UpdatePortConfig(
+        /* [in] */ IAudioPortConfig* portCfg,
+        /* [in] */ IArrayList* ports,
+        /* [out] */ IAudioPortConfig** result);
+
+    /**
      * Checks valid ringer mode values.
      *
      * @return true if the ringer mode indicated is valid, false otherwise.
@@ -1060,48 +1474,20 @@ public:
         /* [out] */ Boolean* result);
 
     /**
-    * @hide
-    */
-    static CARAPI SetHdmiAvailable(
-        /* [in] */ Boolean val);
-
-    static CARAPI GetHdmiAvailable(
-        /* [out] */ Boolean* result);
-
-    /**
-    * @hide
-    */
-    static CARAPI GetHdmiExpected(
-        /* [out] */ Boolean* result);
-
-    /**
-    * @hide
-    */
-    static CARAPI SetHdmiExpected(
-        /* [in] */ Boolean val);
-
-    /* get audio devices list(the devices which are supported)
-    *  @param devType  the audio device type,maybe in/out
-    */
-    CARAPI GetAudioDevices(
-        /* [in] */ const String& devType,
-        /* [out, callle] */ ArrayOf<String>** result);
-
-    /* get current active devices */
-    /* @param devType  the audio device type
-    *  @return the current list of the active device
-    */
-    CARAPI GetActiveAudioDevices(
-        /* [in] */ const String& devType,
-        /* [out, callle] */ ArrayOf<String>** result);
-
-    /* set audio devices active
-     * @param devices
-     * @param state  must be AUDIO_INPUT_ACTIVE or AUDIO_OUTPUT_ACTIVE
+     * Return true if the device code corresponds to an output device.
+     * @hide
      */
-    CARAPI SetAudioDeviceActive(
-        /* [in] */ const ArrayOf<String>& devices,
-        /* [in] */ const String& state);
+    static CARAPI IsOutputDevice(
+        /* [in] */ Int32 device,
+        /* [out] */ Boolean* result);
+
+    /**
+     * Return true if the device code corresponds to an input device.
+     * @hide
+     */
+    static CARAPI IsInputDevice(
+        /* [in] */ Int32 device,
+        /* [out] */ Boolean* result);
 
 private:
     static CARAPI_(AutoPtr<IIAudioService>) GetService();
@@ -1109,38 +1495,36 @@ private:
     /**
      * Settings has an in memory cache, so this is fast.
      */
-    CARAPI_(Boolean) QuerySoundEffectsEnabled();
+    CARAPI_(Boolean) QuerySoundEffectsEnabled(
+            /* [in] */ Int32 user);
 
-    CARAPI_(AutoPtr<IOnAudioFocusChangeListener>) FindFocusListener(
+    CARAPI_(AutoPtr<IAudioManagerOnAudioFocusChangeListener>) FindFocusListener(
         /* [in] */ const String& id);
 
     CARAPI_(String) GetIdForAudioFocusListener(
-        /* [in] */ IOnAudioFocusChangeListener* l);
-
-    static CARAPI_(void) WriteFileVal(
-        /* [in] */ const String& filename,
-        /* [in] */ Int32 avail);
-
-    static CARAPI_(Int32) ReadFileVal(
-        /* [in] */ const String& filename);
+        /* [in] */ IAudioManagerOnAudioFocusChangeListener* l);
 
 public:
     /**  @hide Default volume index values for audio streams */
     static const Int32 DEFAULT_STREAM_VOLUME[];
 
+    static const Int32 AUDIOPORT_GENERATION_INIT;
+
+    AutoPtr<IInteger32> mAudioPortGeneration;
+    AutoPtr<IArrayList> mAudioPortsCached;
+    AutoPtr<IArrayList> mAudioPatchesCached;
+
 private:
-    static const String TAG;
-    static const Boolean DEBUG;
-
-    static const String hdmiExpected ;// = "audio.hdmi.expected";
-    static const String hdmiAvailable ; // = "audio.hdmi.available";
-
     AutoPtr<IContext> mContext;
     Int64 mVolumeKeyUpTime;
     Boolean mUseMasterVolume;
     Boolean mUseVolumeKeySounds;
+    Boolean mUseFixedVolume;
+    AutoPtr<IBinder> mToken;
+    static const String TAG;
+    AutoPtr<AudioPortEventHandler> mAudioPortEventHandler;
 
-  // maximum valid ringer mode value. Values must start from 0 and be contiguous.
+    // maximum valid ringer mode value. Values must start from 0 and be contiguous.
     static const Int32 RINGER_MODE_MAX;
 
     static AutoPtr<IIAudioService> sService;
@@ -1149,7 +1533,7 @@ private:
      * Map to convert focus event listener IDs, as used in the AudioService audio focus stack,
      * to actual listener objects.
      */
-    HashMap<String, AutoPtr<IOnAudioFocusChangeListener> > mAudioFocusIdListenerMap;
+    HashMap<String, AutoPtr<IAudioManagerOnAudioFocusChangeListener> > mAudioFocusIdListenerMap;
 
     /**
      * Lock to prevent concurrent changes to the list of focus listeners for this AudioManager

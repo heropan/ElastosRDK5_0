@@ -45,35 +45,31 @@ const Int32 CITvInputSessionWrapper::DO_RELAYOUT_OVERLAY_VIEW = 11;
 const Int32 CITvInputSessionWrapper::DO_REMOVE_OVERLAY_VIEW = 12;
 const Int32 CITvInputSessionWrapper::DO_REQUEST_UNBLOCK_CONTENT = 13;
 
-CAR_INTERFACE_IMPL_3(CITvInputSessionWrapper, Object, IITvInputSessionWrapper, IITvInputSession, IHandlerCallerCallback)
+CAR_INTERFACE_IMPL_2(CITvInputSessionWrapper, Object, IITvInputSession, IHandlerCallerCallback)
 
 CAR_OBJECT_IMPL(CITvInputSessionWrapper)
 
 CITvInputSessionWrapper::TvInputEventReceiver::TvInputEventReceiver(
-    /* [in] */ IInputChannel * inputChannel,
-    /* [in] */ ILooper * looper,
-    /* [in] */ ITvInputServiceSession * impl)
+    /* [in] */ IInputChannel* inputChannel,
+    /* [in] */ ILooper* looper,
+    /* [in] */ ITvInputServiceSession* impl)
+    : InputEventReceiver(inputChannel, looper)
+    , mImpl(impl)
 {
-    mImpl = impl;
-//TODO: Need InputEventReceiver.h
-    // InputEventReceiver(inputChannel, looper);
 }
 
 ECode CITvInputSessionWrapper::TvInputEventReceiver::OnInputEvent(
-    /* [in] */ IInputEvent * event)
+    /* [in] */ IInputEvent* event)
 {
     if (mImpl == NULL) {
         // The session has been finished.
-//TODO: Need InputEventReceiver.h
-        // return FinishInputEvent(event, FALSE);
-        return NOERROR;
+        return FinishInputEvent(event, FALSE);
     }
 
     Int32 handled;
     ((TvInputServiceSession*)mImpl.Get())->DispatchInputEvent(event, THIS_PROBE(IInputEventReceiver), &handled);
     if (handled != ITvInputManagerSession::DISPATCH_IN_PROGRESS) {
-//TODO: Need InputEventReceiver.h
-        // FinishInputEvent(event, handled == ITvInputManagerSession::DISPATCH_HANDLED);
+        FinishInputEvent(event, handled == ITvInputManagerSession::DISPATCH_HANDLED);
     }
     return NOERROR;
 }
@@ -87,11 +83,11 @@ CITvInputSessionWrapper::~CITvInputSessionWrapper()
 }
 
 ECode CITvInputSessionWrapper::constructor(
-    /* [in] */ IContext * context,
-    /* [in] */ ITvInputServiceSession * sessionImpl,
-    /* [in] */ IInputChannel * channel)
+    /* [in] */ IContext* context,
+    /* [in] */ ITvInputServiceSession* sessionImpl,
+    /* [in] */ IInputChannel* channel)
 {
-//TODO: Need CHandlerCaller
+//TODO: Need HandlerCaller(Context context, Looper looper, Callback callback, boolean asyncHandler)
     // CHandlerCaller::New(context, NULL, this, TRUE /* asyncHandler */, (IHandlerCaller**)&mCaller);
     mTvInputSessionImpl = sessionImpl;
     mChannel = channel;
@@ -104,7 +100,7 @@ ECode CITvInputSessionWrapper::constructor(
 }
 
 ECode CITvInputSessionWrapper::ExecuteMessage(
-    /* [in] */ IMessage * msg)
+    /* [in] */ IMessage* msg)
 {
     if (mTvInputSessionImpl == NULL) {
         return NOERROR;
@@ -125,8 +121,7 @@ ECode CITvInputSessionWrapper::ExecuteMessage(
             impl->ReleaseResources();
             mTvInputSessionImpl = NULL;
             if (mReceiver != NULL) {
-//TODO: Need InputEventReceiver.h
-                // mReceiver->Dispose();
+                mReceiver->Dispose();
                 mReceiver = NULL;
             }
             if (mChannel != NULL) {
@@ -232,15 +227,15 @@ ECode CITvInputSessionWrapper::ReleaseResources()
 ECode CITvInputSessionWrapper::SetMain(
     /* [in] */ Boolean isMain)
 {
-    AutoPtr<IMessage> msg;
     AutoPtr<IBoolean> b;
     CBoolean::New(isMain, (IBoolean**)&b);
+    AutoPtr<IMessage> msg;
     mCaller->ObtainMessageO(DO_SET_MAIN, b, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
 ECode CITvInputSessionWrapper::SetSurface(
-    /* [in] */ ISurface * surface)
+    /* [in] */ ISurface* surface)
 {
     AutoPtr<IMessage> msg;
     mCaller->ObtainMessageO(DO_SET_SURFACE, surface, (IMessage**)&msg);
@@ -261,16 +256,16 @@ ECode CITvInputSessionWrapper::DispatchSurfaceChanged(
 ECode CITvInputSessionWrapper::SetVolume(
     /* [in] */ Float volume)
 {
-    AutoPtr<IMessage> msg;
     AutoPtr<IFloat> f;
     CFloat::New(volume, (IFloat**)&f);
+    AutoPtr<IMessage> msg;
     mCaller->ObtainMessageO(DO_SET_STREAM_VOLUME, f, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
 ECode CITvInputSessionWrapper::Tune(
-    /* [in] */ IUri * channelUri,
-    /* [in] */ IBundle * params)
+    /* [in] */ IUri* channelUri,
+    /* [in] */ IBundle* params)
 {
     AutoPtr<IMessage> msg;
     mCaller->ObtainMessageOO(DO_TUNE, channelUri, params, (IMessage**)&msg);
@@ -280,9 +275,9 @@ ECode CITvInputSessionWrapper::Tune(
 ECode CITvInputSessionWrapper::SetCaptionEnabled(
     /* [in] */ Boolean enabled)
 {
-    AutoPtr<IMessage> msg;
     AutoPtr<IBoolean> b;
     CBoolean::New(enabled, (IBoolean**)&b);
+    AutoPtr<IMessage> msg;
     mCaller->ObtainMessageO(DO_SET_CAPTION_ENABLED, b, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
@@ -291,30 +286,30 @@ ECode CITvInputSessionWrapper::SelectTrack(
     /* [in] */ Int32 type,
     /* [in] */ const String& trackId)
 {
-    AutoPtr<IMessage> msg;
     AutoPtr<ICharSequence> csq;
     CString::New(trackId, (ICharSequence**)&csq);
     AutoPtr<IInteger32> i32;
     CInteger32::New(type, (IInteger32**)&i32);
+    AutoPtr<IMessage> msg;
     mCaller->ObtainMessageOO(DO_SELECT_TRACK, i32, csq, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
 ECode CITvInputSessionWrapper::AppPrivateCommand(
     /* [in] */ const String& action,
-    /* [in] */ IBundle * data)
+    /* [in] */ IBundle* data)
 {
-    AutoPtr<IMessage> msg;
     AutoPtr<ICharSequence> csq;
     CString::New(action, (ICharSequence**)&csq);
+    AutoPtr<IMessage> msg;
     mCaller->ObtainMessageOO(DO_APP_PRIVATE_COMMAND, csq,
                 data, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
 ECode CITvInputSessionWrapper::CreateOverlayView(
-    /* [in] */ IBinder * windowToken,
-    /* [in] */ IRect * frame)
+    /* [in] */ IBinder* windowToken,
+    /* [in] */ IRect* frame)
 {
     AutoPtr<IMessage> msg;
     mCaller->ObtainMessageOO(DO_CREATE_OVERLAY_VIEW, windowToken,
@@ -323,7 +318,7 @@ ECode CITvInputSessionWrapper::CreateOverlayView(
 }
 
 ECode CITvInputSessionWrapper::RelayoutOverlayView(
-    /* [in] */ IRect * frame)
+    /* [in] */ IRect* frame)
 {
     AutoPtr<IMessage> msg;
     mCaller->ObtainMessageO(DO_RELAYOUT_OVERLAY_VIEW, frame, (IMessage**)&msg);
@@ -340,9 +335,9 @@ ECode CITvInputSessionWrapper::RemoveOverlayView()
 ECode CITvInputSessionWrapper::RequestUnblockContent(
     /* [in] */ const String& unblockedRating)
 {
-    AutoPtr<IMessage> msg;
     AutoPtr<ICharSequence> csq;
     CString::New(unblockedRating, (ICharSequence**)&csq);
+    AutoPtr<IMessage> msg;
     mCaller->ObtainMessageO(DO_REQUEST_UNBLOCK_CONTENT, csq, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }

@@ -1,9 +1,9 @@
 
 module
 {
-    interface Elastos.Droid.View.ISurface;
-    interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Media.IImageReader;
+    interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.View.ISurface;
 
     namespace Elastos {
     namespace Droid {
@@ -18,7 +18,16 @@ module
          * @see Image
          */
         OnImageAvailable(
-            [in] IImageReader * reader);
+            [in] IImageReader* reader);
+    }
+
+    /**
+     * @Involve
+     * interface IImage
+     */
+    interface IImageReaderSurfaceImage {
+        GetReader(
+            [out] IImageReader** result);
     }
 
     /**
@@ -56,7 +65,7 @@ module
          * @return the expected width of an Image
          */
         GetWidth(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * The default height of {@link Image Images}, in pixels.
@@ -68,7 +77,7 @@ module
          * @return the expected height of an Image
          */
         GetHeight(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * The default {@link ImageFormat image format} of {@link Image Images}.
@@ -86,7 +95,7 @@ module
          * @see ImageFormat
          */
         GetImageFormat(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Maximum number of images that can be acquired from the ImageReader by any time (for example,
@@ -106,7 +115,7 @@ module
          * @see Image#close
          */
         GetMaxImages(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * <p>Get a {@link Surface} that can be used to produce {@link Image Images} for this
@@ -121,7 +130,7 @@ module
          * @return A {@link Surface} to use for a drawing target for various APIs.
          */
         GetSurface(
-            [out] ISurface ** result);
+            [out] ISurface** result);
 
         /**
          * <p>
@@ -156,7 +165,7 @@ module
          * @throws IllegalStateException if too many images are currently acquired
          */
         AcquireLatestImage(
-            [out] IImage ** result);
+            [out] IImage** result);
 
         /**
          * Don't throw IllegalStateException if there are too many images acquired.
@@ -166,7 +175,7 @@ module
          * @hide
          */
         AcquireNextImageNoThrowISE(
-            [out] IImage ** result);
+            [out] IImage** result);
 
         /**
          * <p>
@@ -197,7 +206,7 @@ module
          * @see #acquireLatestImage
          */
         AcquireNextImage(
-            [out] IImage ** result);
+            [out] IImage** result);
 
         /**
          * Register a listener to be invoked when a new image becomes available
@@ -212,9 +221,8 @@ module
          *            If no handler specified and the calling thread has no looper.
          */
         SetOnImageAvailableListener(
-            [in] IImageReaderOnImageAvailableListener * listener,
-            [in] IHandler * handler);
-
+            [in] IImageReaderOnImageAvailableListener* listener,
+            [in] IHandler* handler);
     }
 
     interface IImageReaderHelper {
@@ -253,8 +261,7 @@ module
             [in] Int32 height,
             [in] Int32 format,
             [in] Int32 maxImages,
-            [out] IImageReader ** result);
-
+            [out] IImageReader** result);
     }
 
     } // namespace media

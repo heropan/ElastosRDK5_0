@@ -99,7 +99,7 @@ module
             [in] Int32 mode);
 
         GetNumSubSamples(
-            [out] Int32 *result);
+            [out] Int32* result);
 
         GetNumBytesOfClearData(
             [out, callee] ArrayOf<Int32>* result);
@@ -114,7 +114,7 @@ module
             [out, callee] ArrayOf<Byte>* result);
 
         GetMode(
-            [out] Int32 *result);
+            [out] Int32* result);
     }
 
     interface IMediaCodecCallback {
@@ -125,7 +125,7 @@ module
          * @param index The index of the available input buffer.
          */
         OnInputBufferAvailable(
-            [in] IMediaCodec * codec,
+            [in] IMediaCodec* codec,
             [in] Int32 index);
 
         /**
@@ -136,9 +136,9 @@ module
          * @param info Info regarding the available output buffer {@link MediaCodec.BufferInfo}.
          */
         OnOutputBufferAvailable(
-            [in] IMediaCodec * codec,
+            [in] IMediaCodec* codec,
             [in] Int32 index,
-            [in] IMediaCodecBufferInfo * info);
+            [in] IMediaCodecBufferInfo* info);
 
         /**
          * Called when the MediaCodec encountered an error
@@ -147,7 +147,7 @@ module
          * @param e The {@link MediaCodec.CodecException} object describing the error.
          */
         OnError(
-            [in] IMediaCodec * codec,
+            [in] IMediaCodec* codec,
             [in] ECode e);
 
         /**
@@ -157,8 +157,8 @@ module
          * @param format The new output format.
          */
         OnOutputFormatChanged(
-            [in] IMediaCodec * codec,
-            [in] IMediaFormat * format);
+            [in] IMediaCodec* codec,
+            [in] IMediaFormat* format);
     }
 
     /**
@@ -167,19 +167,19 @@ module
      */
     interface IMediaCodecMediaImage {
         GetFormat(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         GetHeight(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         GetWidth(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         GetTimestamp(
-            [out] Int64 * result);
+            [out] Int64* result);
 
         GetPlanes(
-            [out, callee] ArrayOf<IImagePlane*> * result);
+            [out, callee] ArrayOf<IImagePlane*>* result);
 
         Close();
 
@@ -190,7 +190,7 @@ module
          * using coordinates in the largest-resolution plane.
          */
         SetCropRect(
-            [in] IRect * cropRect);
+            [in] IRect* cropRect);
     }
 
     /**
@@ -531,9 +531,9 @@ module
          * @throws IllegalStateException if not in the Initialized state.
          */
         Configure(
-            [in] IMediaFormat * format,
-            [in] ISurface * surface,
-            [in] IMediaCrypto * crypto,
+            [in] IMediaFormat* format,
+            [in] ISurface* surface,
+            [in] IMediaCrypto* crypto,
             [in] Int32 flags);
 
         /**
@@ -549,7 +549,7 @@ module
          * @throws IllegalStateException if not in the Configured state.
          */
         CreateInputSurface(
-            [out] ISurface ** result);
+            [out] ISurface** result);
 
         /**
          * After successfully configuring the component, call {@code start}.
@@ -667,7 +667,7 @@ module
         QueueSecureInputBuffer(
             [in] Int32 index,
             [in] Int32 offset,
-            [in] IMediaCodecCryptoInfo * info,
+            [in] IMediaCodecCryptoInfo* info,
             [in] Int64 presentationTimeUs,
             [in] Int32 flags);
 
@@ -684,7 +684,7 @@ module
          */
         DequeueInputBuffer(
             [in] Int64 timeoutUs,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Dequeue an output buffer, block at most "timeoutUs" microseconds.
@@ -697,9 +697,9 @@ module
          * @throws MediaCodec.CodecException upon codec error.
          */
         DequeueOutputBuffer(
-            [in] IMediaCodecBufferInfo * info,
+            [in] IMediaCodecBufferInfo* info,
             [in] Int64 timeoutUs,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * If you are done with a buffer, use this call to return the buffer to
@@ -797,7 +797,7 @@ module
          * @throws MediaCodec.CodecException upon codec error.
          */
         GetOutputFormat(
-            [out] IMediaFormat ** result);
+            [out] IMediaFormat** result);
 
         /**
          * Call this after {@link #configure} returns successfully to
@@ -810,7 +810,7 @@ module
          * @throws MediaCodec.CodecException upon codec error.
          */
         GetInputFormat(
-            [out] IMediaFormat ** result);
+            [out] IMediaFormat** result);
 
         /**
          * Returns the output format for a specific output buffer.
@@ -823,7 +823,7 @@ module
          */
         GetOutputFormat(
             [in] Int32 index,
-            [out] IMediaFormat ** result);
+            [out] IMediaFormat** result);
 
         /**
          * Retrieve the set of input buffers.  Call this after start()
@@ -842,7 +842,7 @@ module
          * @throws MediaCodec.CodecException upon codec error.
          */
         GetInputBuffers(
-            [out, callee] ArrayOf<IByteBuffer*> * result);
+            [out, callee] ArrayOf<IByteBuffer*>* result);
 
         /**
          * Retrieve the set of output buffers.  Call this after start()
@@ -865,7 +865,7 @@ module
          * @throws MediaCodec.CodecException upon codec error.
          */
         GetOutputBuffers(
-            [out, callee] ArrayOf<IByteBuffer*> * result);
+            [out, callee] ArrayOf<IByteBuffer*>* result);
 
         /**
          * Returns a {@link java.nio.Buffer#clear cleared}, writable ByteBuffer
@@ -887,7 +887,7 @@ module
          */
         GetInputBuffer(
             [in] Int32 index,
-            [out] IByteBuffer ** result);
+            [out] IByteBuffer** result);
 
         /**
          * Returns a writable Image object for a dequeued input buffer
@@ -910,7 +910,7 @@ module
          */
         GetInputImage(
             [in] Int32 index,
-            [out] IImage ** result);
+            [out] IImage** result);
 
         /**
          * Returns a read-only ByteBuffer for a dequeued output buffer
@@ -933,7 +933,7 @@ module
          */
         GetOutputBuffer(
             [in] Int32 index,
-            [out] IByteBuffer ** result);
+            [out] IByteBuffer** result);
 
         /**
          * Returns a read-only Image object for a dequeued output buffer
@@ -955,7 +955,7 @@ module
          */
         GetOutputImage(
             [in] Int32 index,
-            [out] IImage ** result);
+            [out] IImage** result);
 
         /**
          * If a surface has been specified in a previous call to {@link #configure}
@@ -972,14 +972,14 @@ module
          * @throws IllegalStateException if in the Uninitialized state.
          */
         GetName(
-            [out] String * result);
+            [out] String* result);
 
         /**
          * Communicate additional parameter changes to the component instance.
          * @throws IllegalStateException if in the Uninitialized state.
          */
         SetParameters(
-            [in] IBundle * params);
+            [in] IBundle* params);
 
         /**
          * Sets an asynchronous callback for actionable MediaCodec events.
@@ -998,7 +998,7 @@ module
          * @param cb The callback that will run.
          */
         SetCallback(
-            [in] IMediaCodecCallback * cb);
+            [in] IMediaCodecCallback* cb);
 
         /**
          * Get the codec info. If the codec was created by createDecoderByType
@@ -1007,7 +1007,7 @@ module
          * @throws IllegalStateException if in the Uninitialized state.
          */
         GetCodecInfo(
-            [out] IMediaCodecInfo ** result);
+            [out] IMediaCodecInfo** result);
 
     }
 
@@ -1039,7 +1039,7 @@ module
          */
         CreateDecoderByType(
             [in] String type,
-            [out] IMediaCodec ** result);
+            [out] IMediaCodec** result);
 
         /**
          * Instantiate an encoder supporting output data of the given mime type.
@@ -1050,7 +1050,7 @@ module
          */
         CreateEncoderByType(
             [in] String type,
-            [out] IMediaCodec ** result);
+            [out] IMediaCodec** result);
 
         /**
          * If you know the exact name of the component you want to instantiate
@@ -1063,7 +1063,7 @@ module
          */
         CreateByCodecName(
             [in] String name,
-            [out] IMediaCodec ** result);
+            [out] IMediaCodec** result);
 
     }
 

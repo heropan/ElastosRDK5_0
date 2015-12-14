@@ -1,5 +1,6 @@
 
 #include "elastos/droid/media/CExifInterface.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <Elastos.CoreLibrary.h>
@@ -22,16 +23,17 @@ extern "C" {
 }
 #endif
 
-using Elastos::Core::StringBuilder;
-using Elastos::Core::StringUtils;
-using Elastos::Text::IParsePosition;
 using Elastos::Text::CParsePosition;
-using Elastos::Text::ISimpleDateFormat;
+using Elastos::Text::IParsePosition;
 using Elastos::Text::CSimpleDateFormat;
+using Elastos::Text::IDateFormat;
+using Elastos::Text::ISimpleDateFormat;
 using Elastos::Utility::IDate;
+using Elastos::Utility::CTimeZoneHelper;
 using Elastos::Utility::ITimeZone;
 using Elastos::Utility::ITimeZoneHelper;
-using Elastos::Utility::CTimeZoneHelper;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -225,7 +227,11 @@ static int addKeyValueRational(char** buf, int bufLen, const char* key, rat_t va
 // CExifInterface
 //======================================================================================
 AutoPtr<ISimpleDateFormat> CExifInterface::sFormatter;
-Mutex CExifInterface::sLock;
+Object CExifInterface::sLock;
+
+CAR_INTERFACE_IMPL(CExifInterface, Object, IExifInterface)
+
+CAR_OBJECT_IMPL(CExifInterface)
 
 AutoPtr<ISimpleDateFormat> CExifInterface::GetFormatter()
 {
@@ -235,7 +241,7 @@ AutoPtr<ISimpleDateFormat> CExifInterface::GetFormatter()
         CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&helper);
         AutoPtr<ITimeZone> tz;
         helper->GetTimeZone(String("UTC"), (ITimeZone**)&tz);
-        sFormatter->SetTimeZone(tz);
+        IDateFormat::Probe(sFormatter)->SetTimeZone(tz);
     }
     return sFormatter;
 }
@@ -249,18 +255,16 @@ CExifInterface::~CExifInterface()
     mAttributes.Clear();
 }
 
-ECode CExifInterface::Init(
-    /* [in] */ const String& filename)
-{
-    mFilename = filename;
-    LoadAttributes();
-    return NOERROR;
-}
-
 ECode CExifInterface::constructor( // throws IOException
     /* [in] */ const String& filename)
 {
-    return Init(filename);
+    if (filename == NULL) {
+        // throw new IllegalArgumentException("filename cannot be null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mFilename = filename;
+    LoadAttributes();
+    return NOERROR;
 }
 
 ECode CExifInterface::GetAttribute(
@@ -343,8 +347,7 @@ void CExifInterface::LoadAttributes() // throws IOException
     mAttributes.Clear();
 
     String attrStr;
-    {
-        AutoLock lock(sLock);
+    synchronized(sLock) {
         attrStr = GetAttributesNative(mFilename);
     }
 
@@ -411,9 +414,7 @@ ECode CExifInterface::SaveAttributes() //throws IOException
     }
 
     String s = sb.ToString();
-    {
-        AutoLock lock(sLock);
-
+    synchronized(sLock) {
         SaveAttributesNative(mFilename, s);
         CommitChangesNative(mFilename);
     }
@@ -434,12 +435,23 @@ ECode CExifInterface::GetThumbnail(
 {
     VALIDATE_NOT_NULL(result);
 
-    AutoLock lock(sLock);
+    synchronized(sLock) {
+        AutoPtr<ArrayOf<Byte> > thumbnail = GetThumbnailNative(mFilename);
+        *result = thumbnail;
+        REFCOUNT_ADD(*result);
+        return NOERROR;
+    }
+}
 
-    AutoPtr<ArrayOf<Byte> > thumbnail = GetThumbnailNative(mFilename);
-    *result = thumbnail;
-    REFCOUNT_ADD(*result);
-    return NOERROR;
+ECode CExifInterface::GetThumbnailRange(
+    /* [out, callee] */ ArrayOf<Int64>** result)
+{
+    synchronized(sLock) {
+        AutoPtr<ArrayOf<Int64> > range = GetThumbnailRangeNative(mFilename);
+        *result = range;
+        REFCOUNT_ADD(*result)
+        return NOERROR;
+    }
 }
 
 ECode CExifInterface::GetLatLong(
@@ -512,7 +524,7 @@ ECode CExifInterface::GetDateTime(
     CParsePosition::New(0, (IParsePosition**)&pos);
     // try {
     AutoPtr<IDate> datetime;
-    FAIL_RETURN(GetFormatter()->Parse(dateTimeString, pos, (IDate**)&datetime));
+    FAIL_RETURN(IDateFormat::Probe(GetFormatter())->Parse(dateTimeString, pos, (IDate**)&datetime));
     if (datetime != NULL) {
         datetime->GetTime(result);
     }
@@ -549,7 +561,7 @@ ECode CExifInterface::GetGpsDateTime(
 
     // try {
     AutoPtr<IDate> datetime;
-    FAIL_RETURN(GetFormatter()->Parse(dateTimeString, pos, (IDate**)&datetime));
+    FAIL_RETURN(IDateFormat::Probe(GetFormatter())->Parse(dateTimeString, pos, (IDate**)&datetime));
     if (datetime != NULL) {
         datetime->GetTime(result);
     }
@@ -583,8 +595,8 @@ ECode CExifInterface::ConvertRationalLatLonToFloat(
     if (pair->GetLength() < 2) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    FAIL_RETURN(StringUtils::ParseDouble((*pair)[0].Trim(), &v1));
-    FAIL_RETURN(StringUtils::ParseDouble((*pair)[1].Trim(), &v2));
+    v1 = StringUtils::ParseDouble((*pair)[0].Trim());
+    v2 = StringUtils::ParseDouble((*pair)[1].Trim());
     Double degrees = v1 / v2;
 
     pair = NULL;
@@ -592,8 +604,8 @@ ECode CExifInterface::ConvertRationalLatLonToFloat(
     if (pair->GetLength() < 2) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    FAIL_RETURN(StringUtils::ParseDouble((*pair)[0].Trim(), &v1));
-    FAIL_RETURN(StringUtils::ParseDouble((*pair)[1].Trim(), &v2));
+    v1 = StringUtils::ParseDouble((*pair)[0].Trim());
+    v2 = StringUtils::ParseDouble((*pair)[1].Trim());
     Double minutes = v1 / v2;
 
     pair = NULL;
@@ -601,8 +613,8 @@ ECode CExifInterface::ConvertRationalLatLonToFloat(
     if (pair->GetLength() < 2) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    FAIL_RETURN(StringUtils::ParseDouble((*pair)[0].Trim(), &v1));
-    FAIL_RETURN(StringUtils::ParseDouble((*pair)[1].Trim(), &v2));
+    v1 = StringUtils::ParseDouble((*pair)[0].Trim());
+    v2 = StringUtils::ParseDouble((*pair)[1].Trim());
     Double seconds = v1 / v2;
 
     Double r = degrees + (minutes / 60.0) + (seconds / 3600.0);
@@ -1089,6 +1101,26 @@ AutoPtr< ArrayOf<Byte> > CExifInterface::GetThumbnailNative(
 noThumbnail:
     DiscardData();
     return NULL;
+}
+
+AutoPtr< ArrayOf<Int64> > CExifInterface::GetThumbnailRangeNative(
+    /* [in] */ const String& fileName)
+{
+    AutoPtr< ArrayOf<Int64> > resultArray;
+    if (!fileName.IsNull()) {
+        loadExifInfo(fileName, FALSE);
+        Section_t* ExifSection = FindSection(M_EXIF);
+        if (ExifSection == NULL || ImageInfo.ThumbnailSize == 0) {
+            goto done;
+        }
+
+        resultArray = ArrayOf<Int64>::Alloc(2);
+        (*resultArray)[0] = ExifSection->Offset + ImageInfo.ThumbnailOffset + 8;
+        (*resultArray)[1] = ImageInfo.ThumbnailSize;
+    }
+done:
+    DiscardData();
+    return resultArray;
 }
 
 } // namespace Media

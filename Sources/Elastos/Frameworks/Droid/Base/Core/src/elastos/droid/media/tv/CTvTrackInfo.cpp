@@ -32,7 +32,7 @@ ECode CTvTrackInfo::constructor(
     /* [in] */ Int32 videoWidth,
     /* [in] */ Int32 videoHeight,
     /* [in] */ Float videoFrameRate,
-    /* [in] */ IBundle * extra)
+    /* [in] */ IBundle* extra)
 {
     mType = type;
     mId = id;
@@ -79,7 +79,7 @@ ECode CTvTrackInfo::WriteToParcel(
 }
 
 ECode CTvTrackInfo::GetType(
-    /* [out] */ Int32 * result)
+    /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = mType;
@@ -87,7 +87,7 @@ ECode CTvTrackInfo::GetType(
 }
 
 ECode CTvTrackInfo::GetId(
-    /* [out] */ String * result)
+    /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = mId;
@@ -95,7 +95,7 @@ ECode CTvTrackInfo::GetId(
 }
 
 ECode CTvTrackInfo::GetLanguage(
-    /* [out] */ String * result)
+    /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = mLanguage;
@@ -103,9 +103,10 @@ ECode CTvTrackInfo::GetLanguage(
 }
 
 ECode CTvTrackInfo::GetAudioChannelCount(
-    /* [out] */ Int32 * result)
+    /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = 0;
     if (mType != ITvTrackInfo::TYPE_AUDIO) {
         // throw new IllegalStateException("Not an audio track");
         return E_ILLEGAL_STATE_EXCEPTION;
@@ -115,9 +116,10 @@ ECode CTvTrackInfo::GetAudioChannelCount(
 }
 
 ECode CTvTrackInfo::GetAudioSampleRate(
-    /* [out] */ Int32 * result)
+    /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = 0;
     if (mType != ITvTrackInfo::TYPE_AUDIO) {
         // throw new IllegalStateException("Not an audio track");
         return E_ILLEGAL_STATE_EXCEPTION;
@@ -127,9 +129,10 @@ ECode CTvTrackInfo::GetAudioSampleRate(
 }
 
 ECode CTvTrackInfo::GetVideoWidth(
-    /* [out] */ Int32 * result)
+    /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = 0;
     if (mType != ITvTrackInfo::TYPE_VIDEO) {
         // throw new IllegalStateException("Not a video track");
         return E_ILLEGAL_STATE_EXCEPTION;
@@ -139,9 +142,10 @@ ECode CTvTrackInfo::GetVideoWidth(
 }
 
 ECode CTvTrackInfo::GetVideoHeight(
-    /* [out] */ Int32 * result)
+    /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = 0;
     if (mType != ITvTrackInfo::TYPE_VIDEO) {
         // throw new IllegalStateException("Not a video track");
         return E_ILLEGAL_STATE_EXCEPTION;
@@ -151,9 +155,10 @@ ECode CTvTrackInfo::GetVideoHeight(
 }
 
 ECode CTvTrackInfo::GetVideoFrameRate(
-    /* [out] */ Float * result)
+    /* [out] */ Float* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = 0;
     if (mType != ITvTrackInfo::TYPE_VIDEO) {
         // throw new IllegalStateException("Not a video track");
         return E_ILLEGAL_STATE_EXCEPTION;
@@ -163,7 +168,7 @@ ECode CTvTrackInfo::GetVideoFrameRate(
 }
 
 ECode CTvTrackInfo::GetExtra(
-    /* [out] */ IBundle ** result)
+    /* [out] */ IBundle** result)
 {
     VALIDATE_NOT_NULL(result)
     *result = mExtra;

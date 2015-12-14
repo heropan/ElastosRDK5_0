@@ -4,8 +4,7 @@
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/graphics/drawable/CDrawableHelper.h"
 #include "elastos/droid/os/CUserHandle.h"
-//TODO: Need SparseInt32Array
-// #include "elastos/droid/utility/SparseInt32Array.h"
+#include "elastos/droid/utility/SparseInt32Array.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/utility/Xml.h"
 
@@ -20,9 +19,8 @@ using Elastos::Droid::Content::Res::IXmlResourceParser;
 using Elastos::Droid::Graphics::Drawable::IDrawableHelper;
 using Elastos::Droid::Graphics::Drawable::CDrawableHelper;
 using Elastos::Droid::Os::CUserHandle;
-//TODO: Need SparseInt32Array
-// using Elastos::Droid::Utility::SparseInt32Array;
 using Elastos::Droid::R;
+using Elastos::Droid::Utility::SparseInt32Array;
 using Elastos::Droid::Utility::Xml;
 using Elastos::Core::CString;
 using Elastos::IO::IInputStream;
@@ -39,8 +37,7 @@ String CTvInputInfo::TAG("TvInputInfo");
 static AutoPtr<ISparseInt32Array> Init()
 {
     AutoPtr<ISparseInt32Array> array;
-//TODO: Need SparseInt32Array
-    // array = new SparseInt32Array();
+    array = new SparseInt32Array();
     array->Put(ITvInputHardwareInfo::TV_INPUT_TYPE_OTHER_HARDWARE, ITvInputInfo::TYPE_OTHER);
     array->Put(ITvInputHardwareInfo::TV_INPUT_TYPE_TUNER, ITvInputInfo::TYPE_TUNER);
     array->Put(ITvInputHardwareInfo::TV_INPUT_TYPE_COMPOSITE, ITvInputInfo::TYPE_COMPOSITE);
@@ -78,7 +75,7 @@ CTvInputInfo::~CTvInputInfo()
 }
 
 ECode CTvInputInfo::constructor(
-    /* [in] */ IResolveInfo * service,
+    /* [in] */ IResolveInfo* service,
     /* [in] */ const String& id,
     /* [in] */ const String& parentId,
     /* [in] */ Int32 type)
@@ -130,7 +127,7 @@ ECode CTvInputInfo::WriteToParcel(
 }
 
 ECode CTvInputInfo::GetId(
-    /* [out] */ String * result)
+    /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = mId;
@@ -138,7 +135,7 @@ ECode CTvInputInfo::GetId(
 }
 
 ECode CTvInputInfo::GetParentId(
-    /* [out] */ String * result)
+    /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = mParentId;
@@ -146,7 +143,7 @@ ECode CTvInputInfo::GetParentId(
 }
 
 ECode CTvInputInfo::GetServiceInfo(
-    /* [out] */ IServiceInfo ** result)
+    /* [out] */ IServiceInfo** result)
 {
     VALIDATE_NOT_NULL(result)
     mService->GetServiceInfo(result);
@@ -154,7 +151,7 @@ ECode CTvInputInfo::GetServiceInfo(
 }
 
 ECode CTvInputInfo::GetComponent(
-    /* [out] */ IComponentName ** result)
+    /* [out] */ IComponentName** result)
 {
     VALIDATE_NOT_NULL(result)
     AutoPtr<IServiceInfo> si;
@@ -162,11 +159,11 @@ ECode CTvInputInfo::GetComponent(
     String pkgName, name;
     IPackageItemInfo::Probe(si)->GetPackageName(&pkgName);
     IPackageItemInfo::Probe(si)->GetName(&name);
-    return CComponentName::New(pkgName, name, (IComponentName**)&result);
+    return CComponentName::New(pkgName, name, result);
 }
 
 ECode CTvInputInfo::CreateSetupIntent(
-    /* [out] */ IIntent ** result)
+    /* [out] */ IIntent** result)
 {
     VALIDATE_NOT_NULL(result)
     if (!mSetupActivity.IsEmpty()) {
@@ -189,7 +186,7 @@ ECode CTvInputInfo::CreateSetupIntent(
 }
 
 ECode CTvInputInfo::CreateSettingsIntent(
-    /* [out] */ IIntent ** result)
+    /* [out] */ IIntent** result)
 {
     VALIDATE_NOT_NULL(result)
     if (!mSettingsActivity.IsEmpty()) {
@@ -212,7 +209,7 @@ ECode CTvInputInfo::CreateSettingsIntent(
 }
 
 ECode CTvInputInfo::GetType(
-    /* [out] */ Int32 * result)
+    /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = mType;
@@ -220,7 +217,7 @@ ECode CTvInputInfo::GetType(
 }
 
 ECode CTvInputInfo::GetHdmiDeviceInfo(
-    /* [out] */ IHdmiDeviceInfo ** result)
+    /* [out] */ IHdmiDeviceInfo** result)
 {
     VALIDATE_NOT_NULL(result)
     if (mType == ITvInputInfo::TYPE_HDMI) {
@@ -233,7 +230,7 @@ ECode CTvInputInfo::GetHdmiDeviceInfo(
 }
 
 ECode CTvInputInfo::IsPassthroughInput(
-    /* [out] */ Boolean * result)
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = (mType != ITvInputInfo::TYPE_TUNER);
@@ -241,7 +238,7 @@ ECode CTvInputInfo::IsPassthroughInput(
 }
 
 ECode CTvInputInfo::IsConnectedToHdmiSwitch(
-    /* [out] */ Boolean * result)
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = mIsConnectedToHdmiSwitch;
@@ -249,8 +246,8 @@ ECode CTvInputInfo::IsConnectedToHdmiSwitch(
 }
 
 ECode CTvInputInfo::IsHidden(
-    /* [in] */ IContext * context,
-    /* [out] */ Boolean * result)
+    /* [in] */ IContext* context,
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     Int32 myUserId = CUserHandle::GetMyUserId();
@@ -259,8 +256,8 @@ ECode CTvInputInfo::IsHidden(
 }
 
 ECode CTvInputInfo::LoadLabel(
-    /* [in] */ IContext * context,
-    /* [out] */ ICharSequence ** result)
+    /* [in] */ IContext* context,
+    /* [out] */ ICharSequence** result)
 {
     VALIDATE_NOT_NULL(result)
     if (mLabel.IsEmpty()) {
@@ -270,12 +267,11 @@ ECode CTvInputInfo::LoadLabel(
     } else {
         return CString::New(mLabel, result);
     }
-    return NOERROR;
 }
 
 ECode CTvInputInfo::LoadCustomLabel(
-    /* [in] */ IContext * context,
-    /* [out] */ ICharSequence ** result)
+    /* [in] */ IContext* context,
+    /* [out] */ ICharSequence** result)
 {
     VALIDATE_NOT_NULL(result)
     Int32 myUserId = CUserHandle::GetMyUserId();
@@ -284,12 +280,13 @@ ECode CTvInputInfo::LoadCustomLabel(
 }
 
 ECode CTvInputInfo::LoadIcon(
-    /* [in] */ IContext * context,
-    /* [out] */ IDrawable ** result)
+    /* [in] */ IContext* context,
+    /* [out] */ IDrawable** result)
 {
     VALIDATE_NOT_NULL(result)
     if (mIconUri == NULL) {
-        *result = LoadServiceIcon(context);
+        AutoPtr<IDrawable> d = LoadServiceIcon(context);
+        *result = d;
         REFCOUNT_ADD(*result)
         return NOERROR;
     }
@@ -305,7 +302,8 @@ ECode CTvInputInfo::LoadIcon(
     AutoPtr<IDrawable> drawable;
     helper->CreateFromStream(is, String(NULL), (IDrawable**)&drawable);
     if (drawable == NULL) {
-        *result = LoadServiceIcon(context);
+        AutoPtr<IDrawable> d = LoadServiceIcon(context);
+        *result = d;
         REFCOUNT_ADD(*result)
         return NOERROR;
     }
@@ -322,9 +320,9 @@ ECode CTvInputInfo::LoadIcon(
 }
 
 ECode CTvInputInfo::CreateTvInputInfo(
-    /* [in] */ IContext * context,
-    /* [in] */ IResolveInfo * service,
-    /* [out] */ ITvInputInfo ** result)
+    /* [in] */ IContext* context,
+    /* [in] */ IResolveInfo* service,
+    /* [out] */ ITvInputInfo** result)
 {
     VALIDATE_NOT_NULL(result)
 
@@ -342,13 +340,13 @@ ECode CTvInputInfo::CreateTvInputInfo(
 }
 
 ECode CTvInputInfo::CreateTvInputInfo(
-    /* [in] */ IContext * context,
-    /* [in] */ IResolveInfo * service,
-    /* [in] */ IHdmiDeviceInfo * hdmiDeviceInfo,
+    /* [in] */ IContext* context,
+    /* [in] */ IResolveInfo* service,
+    /* [in] */ IHdmiDeviceInfo* hdmiDeviceInfo,
     /* [in] */ const String& parentId,
     /* [in] */ const String& label,
-    /* [in] */ IUri * iconUri,
-    /* [out] */ ITvInputInfo ** result)
+    /* [in] */ IUri* iconUri,
+    /* [out] */ ITvInputInfo** result)
 {
     VALIDATE_NOT_NULL(result)
     Int32 addr;
@@ -366,8 +364,8 @@ ECode CTvInputInfo::CreateTvInputInfo(
     CComponentName::New(pkgName, name, (IComponentName**)&cn);
 
     AutoPtr<ITvInputInfo> input;
-    CreateTvInputInfo(context, service, GenerateInputIdForHdmiDevice(cn, hdmiDeviceInfo)
-        , parentId, TYPE_HDMI, label, iconUri, isConnectedToHdmiSwitch, (ITvInputInfo**)&input);
+    CreateTvInputInfo(context, service, GenerateInputIdForHdmiDevice(cn, hdmiDeviceInfo),
+            parentId, TYPE_HDMI, label, iconUri, isConnectedToHdmiSwitch, (ITvInputInfo**)&input);
     ((CTvInputInfo*)input.Get())->mHdmiDeviceInfo = hdmiDeviceInfo;
     *result = input;
     REFCOUNT_ADD(*result)
@@ -375,12 +373,12 @@ ECode CTvInputInfo::CreateTvInputInfo(
 }
 
 ECode CTvInputInfo::CreateTvInputInfo(
-    /* [in] */ IContext * context,
-    /* [in] */ IResolveInfo * service,
-    /* [in] */ ITvInputHardwareInfo * hardwareInfo,
+    /* [in] */ IContext* context,
+    /* [in] */ IResolveInfo* service,
+    /* [in] */ ITvInputHardwareInfo* hardwareInfo,
     /* [in] */ const String& label,
-    /* [in] */ IUri * iconUri,
-    /* [out] */ ITvInputInfo ** result)
+    /* [in] */ IUri* iconUri,
+    /* [out] */ ITvInputInfo** result)
 {
     VALIDATE_NOT_NULL(result)
     Int32 type;
@@ -397,8 +395,8 @@ ECode CTvInputInfo::CreateTvInputInfo(
     AutoPtr<IComponentName> cn;
     CComponentName::New(pkgName, name, (IComponentName**)&cn);
 
-    return CreateTvInputInfo(context, service, GenerateInputIdForHardware(cn, hardwareInfo)
-        , String(NULL), inputType, label, iconUri, FALSE, result);
+    return CreateTvInputInfo(context, service, GenerateInputIdForHardware(cn, hardwareInfo),
+            String(NULL), inputType, label, iconUri, FALSE, result);
 }
 
 ECode CTvInputInfo::GetHashCode(
@@ -414,12 +412,14 @@ ECode CTvInputInfo::Equals(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    if (o == THIS_PROBE(IInterface)) {
-        return TRUE;
+    if (THIS_PROBE(IInterface) == IInterface::Probe(o)) {
+        *result = TRUE;
+        return NOERROR;
     }
 
     if (ITvInputInfo::Probe(o) == NULL) {
-        return FALSE;
+        *result = FALSE;
+        return NOERROR;
     }
 
     AutoPtr<ITvInputInfo> obj = ITvInputInfo::Probe(o);
@@ -450,7 +450,7 @@ ECode CTvInputInfo::ToString(
 }
 
 AutoPtr<IDrawable> CTvInputInfo::LoadServiceIcon(
-    /* [in] */ IContext * context)
+    /* [in] */ IContext* context)
 {
     AutoPtr<IServiceInfo> si;
     mService->GetServiceInfo((IServiceInfo**)&si);
@@ -473,16 +473,19 @@ AutoPtr<IDrawable> CTvInputInfo::LoadServiceIcon(
 }
 
 ECode CTvInputInfo::CreateTvInputInfo(
-    /* [in] */ IContext * context,
-    /* [in] */ IResolveInfo * service,
+    /* [in] */ IContext* context,
+    /* [in] */ IResolveInfo* service,
     /* [in] */ const String& id,
     /* [in] */ const String& parentId,
     /* [in] */ Int32 inputType,
     /* [in] */ const String& label,
-    /* [in] */ IUri * iconUri,
+    /* [in] */ IUri* iconUri,
     /* [in] */ Boolean isConnectedToHdmiSwitch,
-    /* [out] */ ITvInputInfo ** result)
+    /* [out] */ ITvInputInfo** result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
     AutoPtr<IServiceInfo> si;
     service->GetServiceInfo((IServiceInfo**)&si);
     AutoPtr<IPackageManager> pm;
@@ -536,7 +539,6 @@ ECode CTvInputInfo::CreateTvInputInfo(
     input->mIsConnectedToHdmiSwitch = isConnectedToHdmiSwitch;
     *result = ITvInputInfo::Probe(input);
     REFCOUNT_ADD(*result)
-    return NOERROR;
     // } catch (NameNotFoundException e) {
     //     throw new XmlPullParserException("Unable to create context for: " + si.packageName);
     // } finally {
@@ -548,7 +550,7 @@ ECode CTvInputInfo::CreateTvInputInfo(
 }
 
 String CTvInputInfo::GenerateInputIdForComponentName(
-    /* [in] */ IComponentName * name)
+    /* [in] */ IComponentName* name)
 {
     String str;
     name->FlattenToShortString(&str);
@@ -556,8 +558,8 @@ String CTvInputInfo::GenerateInputIdForComponentName(
 }
 
 String CTvInputInfo::GenerateInputIdForHdmiDevice(
-    /* [in] */ IComponentName * name,
-    /* [in] */ IHdmiDeviceInfo * deviceInfo)
+    /* [in] */ IComponentName* name,
+    /* [in] */ IHdmiDeviceInfo* deviceInfo)
 {
     // Example of the format : "/HDMI%04X%02X"
     // String format = String.format("%s%s%%0%sX%%0%sX", DELIMITER_INFO_IN_ID, PREFIX_HDMI_DEVICE,
@@ -574,8 +576,8 @@ String CTvInputInfo::GenerateInputIdForHdmiDevice(
 }
 
 String CTvInputInfo::GenerateInputIdForHardware(
-    /* [in] */ IComponentName * name,
-    /* [in] */ ITvInputHardwareInfo * hardwareInfo)
+    /* [in] */ IComponentName* name,
+    /* [in] */ ITvInputHardwareInfo* hardwareInfo)
 {
     // return name.flattenToShortString() + String.format("%s%s%d",
     //         DELIMITER_INFO_IN_ID, PREFIX_HARDWARE_DEVICE, hardwareInfo.getDeviceId());

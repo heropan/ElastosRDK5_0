@@ -4,21 +4,65 @@
 
 #include "_Elastos_Droid_Media_CAsyncPlayer.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/List.h>
+#include <elastos/core/Object.h>
+#include <elastos/core/Thread.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::IPowerManagerWakeLock;
-using Elastos::Utility::Etl::List;
+using Elastos::Core::Thread;
+using Elastos::Utility::ILinkedList;
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
 
+/**
+ * Plays a series of audio URIs, but does all the hard work on another thread
+ * so that any slowness with preparing or loading doesn't block the calling thread.
+ */
 CarClass(CAsyncPlayer)
+    , public Object
+    , public IAsyncPlayer
 {
+private:
+    class Command
+         : public Object
+    {
+    public:
+        CARAPI ToString(
+            /* [out] */ String* result);
+
+    public:
+        Int32 mCode;
+        AutoPtr<IContext> mContext;
+        AutoPtr<IUri> mUri;
+        Boolean mLooping;
+        Int32 mStream;
+        Int64 mRequestTime;
+    };
+
+    class MyThread
+        : public Thread
+    {
+    public:
+        MyThread(
+            /* [in] */ CAsyncPlayer* owner);
+
+        CARAPI Run();
+
+    private:
+        CAsyncPlayer* mOwner;
+    };
+
 public:
     CAsyncPlayer();
+
+    virtual ~CAsyncPlayer();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     /**
      * Construct an AsyncPlayer object.
@@ -70,35 +114,8 @@ public:
         /* [in] */ IContext* context);
 
 private:
-    class Command : public ElRefBase
-    {
-    public:
-        CARAPI_(String) ToString();
-
-    public:
-        Int32 code;
-        AutoPtr<IContext> context;
-        AutoPtr<IUri> uri;
-        Boolean looping;
-        Int32 stream;
-        Int64 requestTime;
-    };
-
     CARAPI_(void) StartSound(
         /* [in] */ Command* cmd);
-
-    class MyThread
-        : public ThreadBase
-    {
-    public:
-        MyThread(
-            /* [in] */ CAsyncPlayer* owner);
-
-        virtual CARAPI Run();
-
-    private:
-        CAsyncPlayer* mOwner;
-    };
 
     CARAPI_(void) EnqueueLocked(
         /* [in] */ Command* cmd);
@@ -112,19 +129,17 @@ private:
     static const Int32 STOP;
     static const Boolean mDebug;
 
-    List< AutoPtr<Command> > mCmdQueue;
-    Object mCmdQueueLock;
+    AutoPtr<ILinkedList> mCmdQueue;
 
     String mTag;
     AutoPtr<MyThread> mThread;
     AutoPtr<IMediaPlayer> mPlayer;
 
-    //private PowerManager.WakeLock mWakeLock;
     AutoPtr<IPowerManagerWakeLock> mWakeLock;
 
     // The current state according to the caller.  Reality lags behind
     // because of the asynchronous nature of this class.
-    Int32 mState; // = STOP;
+    Int32 mState;
 };
 
 } // namespace Media

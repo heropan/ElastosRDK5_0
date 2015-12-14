@@ -32,26 +32,26 @@ public:
 
     CTvInputManagerHardware();
 
+    virtual ~CTvInputManagerHardware();
+
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
-
-    virtual ~CTvInputManagerHardware();
 
     CARAPI constructor(
         /* [in] */ IITvInputHardware* hardwareInterface);
 
     CARAPI SetSurface(
-        /* [in] */ ISurface * surface,
-        /* [in] */ ITvStreamConfig * config,
-        /* [out] */ Boolean * result);
+        /* [in] */ ISurface* surface,
+        /* [in] */ ITvStreamConfig* config,
+        /* [out] */ Boolean* result);
 
     CARAPI SetStreamVolume(
         /* [in] */ Float volume);
 
     CARAPI DispatchKeyEventToHdmi(
-        /* [in] */ IKeyEvent * event,
-        /* [out] */ Boolean * result);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
     CARAPI OverrideAudioSink(
         /* [in] */ Int32 audioType,

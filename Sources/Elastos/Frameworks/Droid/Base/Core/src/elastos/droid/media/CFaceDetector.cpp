@@ -25,6 +25,10 @@ namespace Media {
     }
 }*/
 
+CAR_INTERFACE_IMPL(CFaceDetector, Object, IFaceDetector)
+
+CAR_OBJECT_IMPL(CFaceDetector)
+
 CFaceDetector::CFaceDetector()
     : mFD(0)
     , mSDK(0)

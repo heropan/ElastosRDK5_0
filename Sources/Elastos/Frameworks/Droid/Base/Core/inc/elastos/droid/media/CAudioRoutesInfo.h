@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Media_CAudioRoutesInfo.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
 
@@ -11,28 +12,23 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 
+/**
+ * Information available from AudioService about the current routes.
+ * @hide
+ */
 CarClass(CAudioRoutesInfo)
+    , public Object
+    , public IAudioRoutesInfo
+    , public IParcelable
 {
-public:
-    class ParcelableCreatorAudioRoutesInfo
-        : public ElRefBase
-    {
-    public:
-        CAR_INTERFACE_DECL();
-
-        CARAPI CreateFromParcel(
-            /* [in] */ IParcel* in,
-            /* [out] */ IAudioRoutesInfo** result);
-
-        CARAPI NewArray(
-            /* [in] */ Int32 size,
-            /* [out] */ ArrayOf<IAudioRoutesInfo*>** result);
-    };
-
 public:
     CAudioRoutesInfo();
 
-    ~CAudioRoutesInfo();
+    virtual ~CAudioRoutesInfo();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor();
 
@@ -66,7 +62,7 @@ public:
 
 private:
     AutoPtr<ICharSequence> mBluetoothName;
-    Int32 mMainType; // = MAIN_SPEAKER;
+    Int32 mMainType;
 };
 
 } // namespace Media

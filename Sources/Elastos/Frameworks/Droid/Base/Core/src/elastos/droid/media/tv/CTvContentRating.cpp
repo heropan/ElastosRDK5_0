@@ -33,7 +33,7 @@ ECode CTvContentRating::constructor(
     /* [in] */ const String& domain,
     /* [in] */ const String& ratingSystem,
     /* [in] */ const String& rating,
-    /* [in] */ ArrayOf<String> * subRatings)
+    /* [in] */ ArrayOf<String>* subRatings)
 {
     mDomain = domain;
     mRatingSystem = ratingSystem;
@@ -53,7 +53,7 @@ ECode CTvContentRating::constructor(
 }
 
 ECode CTvContentRating::GetDomain(
-    /* [out] */ String * result)
+    /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = mDomain;
@@ -61,7 +61,7 @@ ECode CTvContentRating::GetDomain(
 }
 
 ECode CTvContentRating::GetRatingSystem(
-    /* [out] */ String * result)
+    /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = mRatingSystem;
@@ -69,7 +69,7 @@ ECode CTvContentRating::GetRatingSystem(
 }
 
 ECode CTvContentRating::GetMainRating(
-    /* [out] */ String * result)
+    /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = mRating;
@@ -77,7 +77,7 @@ ECode CTvContentRating::GetMainRating(
 }
 
 ECode CTvContentRating::GetSubRatings(
-    /* [out] */ IList ** result)
+    /* [out] */ IList** result)
 {
     VALIDATE_NOT_NULL(result)
     if (mSubRatings == NULL) {
@@ -92,7 +92,7 @@ ECode CTvContentRating::GetSubRatings(
 }
 
 ECode CTvContentRating::FlattenToString(
-    /* [out] */ String * result)
+    /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)
 
@@ -112,8 +112,8 @@ ECode CTvContentRating::FlattenToString(
 }
 
 ECode CTvContentRating::Contains(
-    /* [in] */ ITvContentRating * rating,
-    /* [out] */ Boolean * result)
+    /* [in] */ ITvContentRating* rating,
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = FALSE;
@@ -158,7 +158,7 @@ ECode CTvContentRating::Contains(
 }
 
 ECode CTvContentRating::GetHashCode(
-    /* [out] */ Int32 * result)
+    /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = mHashCode;
@@ -166,8 +166,8 @@ ECode CTvContentRating::GetHashCode(
 }
 
 ECode CTvContentRating::Equals(
-    /* [in] */ IInterface * obj,
-    /* [out] */ Boolean * result)
+    /* [in] */ IInterface* obj,
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     if(ITvContentRating::Probe(obj) == NULL) {
@@ -199,8 +199,8 @@ ECode CTvContentRating::CreateRating(
     /* [in] */ const String& domain,
     /* [in] */ const String& ratingSystem,
     /* [in] */ const String& rating,
-    /* [in] */ ArrayOf<String> * subRatings,
-    /* [out] */ ITvContentRating ** result)
+    /* [in] */ ArrayOf<String>* subRatings,
+    /* [out] */ ITvContentRating** result)
 {
     VALIDATE_NOT_NULL(result)
     *result = NULL;
@@ -222,7 +222,7 @@ ECode CTvContentRating::CreateRating(
 
 ECode CTvContentRating::UnflattenFromString(
     /* [in] */ const String& ratingString,
-    /* [out] */ ITvContentRating ** result)
+    /* [out] */ ITvContentRating** result)
 {
     VALIDATE_NOT_NULL(result)
     *result = NULL;

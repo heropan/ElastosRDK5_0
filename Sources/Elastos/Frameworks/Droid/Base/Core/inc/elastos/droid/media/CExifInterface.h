@@ -5,6 +5,7 @@
 #include "_Elastos_Droid_Media_CExifInterface.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Text::ISimpleDateFormat;
 using Elastos::Utility::Etl::HashMap;
@@ -14,14 +15,17 @@ namespace Droid {
 namespace Media {
 
 CarClass(CExifInterface)
+    , public Object
+    , public IExifInterface
 {
 public:
     CExifInterface();
 
-    ~CExifInterface();
+    virtual ~CExifInterface();
 
-    CARAPI Init(
-        /* [in] */ const String& filename);
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     /**
      * Reads Exif tags from the specified JPEG file.
@@ -99,6 +103,17 @@ public:
         /* [out, callee] */ ArrayOf<Byte>** result);
 
     /**
+     * Returns the offset and length of thumbnail inside the JPEG file, or
+     * {@code null} if there is no thumbnail.
+     *
+     * @return two-element array, the offset in the first value, and length in
+     *         the second, or {@code null} if no thumbnail was found.
+     * @hide
+     */
+    CARAPI GetThumbnailRange(
+        /* [out, callee] */ ArrayOf<Int64>** result);
+
+    /**
      * Stores the latitude and longitude value in a float array. The first element is
      * the latitude, and the second element is the longitude. Returns false if the
      * Exif tags are not available.
@@ -166,6 +181,9 @@ private:
         /* [in] */ const String& fileName);
 
     CARAPI_(AutoPtr< ArrayOf<Byte> >) GetThumbnailNative(
+        /* [in] */ const String& fileName);
+
+    CARAPI_(AutoPtr< ArrayOf<Int64> >) GetThumbnailRangeNative(
         /* [in] */ const String& fileName);
 
     static AutoPtr<ISimpleDateFormat> GetFormatter();

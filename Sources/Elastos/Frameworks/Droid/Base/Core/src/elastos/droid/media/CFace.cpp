@@ -4,6 +4,13 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 
+CAR_INTERFACE_IMPL(CFace, Object, IFace)
+
+CAR_OBJECT_IMPL(CFace)
+
+CFace::~CFace()
+{
+}
 
 CFace::CFace()
     : mConfidence(0)
@@ -14,6 +21,11 @@ CFace::CFace()
     , mPoseEulerY(0)
     , mPoseEulerZ(0)
 {
+}
+
+ECode CFace::constructor()
+{
+    return NOERROR;
 }
 
 ECode CFace::Confidence(

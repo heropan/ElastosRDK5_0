@@ -19,11 +19,11 @@ CarClass(CTvInputHardwareInfoBuilder)
 public:
     CTvInputHardwareInfoBuilder();
 
+    virtual ~CTvInputHardwareInfoBuilder();
+
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
-
-    virtual ~CTvInputHardwareInfoBuilder();
 
     CARAPI constructor();
 
@@ -43,9 +43,9 @@ public:
         /* [in] */ Int32 hdmiPortId);
 
     CARAPI Build(
-        /* [out] */ ITvInputHardwareInfo ** result);
+        /* [out] */ ITvInputHardwareInfo** result);
 
-public:
+private:
     String mAudioAddress;
     Int32 mAudioType;
     AutoPtr<IInteger32> mDeviceId;

@@ -1,80 +1,69 @@
 
-#include "elastos/droid/media/CCameraProfileHelper.h"
-#include "elastos/droid/utility/ArrayUtils.h"
-#include "elastos/droid/media/MediaProfiles.h"
-#include "elastos/droid/hardware/CHardwareCameraHelper.h"
 #include "elastos/droid/hardware/CHardwareCamera.h"
+#include "elastos/droid/hardware/HardwareCamera.h"
+#include "elastos/droid/media/CameraProfile.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/utility/Arrays.h>
+#include <media/MediaProfiles.h>
 
-using Elastos::Droid::Internal::Utility::ArrayUtils;
-using Elastos::Droid::Hardware::IHardwareCameraHelper;
-using Elastos::Droid::Hardware::CHardwareCameraHelper;
 using Elastos::Droid::Hardware::CHardwareCamera;
+using Elastos::Droid::Hardware::HardwareCamera;
 using Elastos::Droid::Hardware::ICameraInfo;
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
-/**
- * Returns a pre-defined still image capture (jpeg) quality level
- * used for the given quality level in the Camera application for
- * the first back-facing camera on the device. If the device has no
- * back-facing camera, this returns 0.
- *
- * @param quality The target quality level
- */
-ECode CCameraProfileHelper::GetJpegEncodingQualityParameter(
+
+ECode CameraProfile::GetJpegEncodingQualityParameter(
     /* [in] */ Int32 quality,
     /* [out] */ Int32* result)
 {
-    AutoPtr<IHardwareCameraHelper> hardwareCameraHelper;
-    CHardwareCameraHelper::AcquireSingleton((IHardwareCameraHelper**)&hardwareCameraHelper);
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
     Int32 numberOfCameras;
-    hardwareCameraHelper->GetNumberOfCameras(&numberOfCameras);
+    HardwareCamera::GetNumberOfCameras(&numberOfCameras);
 
     AutoPtr<ICameraInfo> cameraInfo = new CHardwareCamera::CameraInfo();
 
     for (Int32 i = 0; i < numberOfCameras; i++) {
-        hardwareCameraHelper->GetCameraInfo(i, cameraInfo);
+        HardwareCamera::GetCameraInfo(i, cameraInfo);
         Int32 facing;
         cameraInfo->GetFacing(&facing);
         if (facing == ICameraInfo::CAMERA_FACING_BACK) {
-            GetJpegEncodingQualityParameter(i, quality, result);
-            return NOERROR;
+            return GetJpegEncodingQualityParameter(i, quality, result);
         }
     }
     *result = 0;
     return NOERROR;
 }
 
-/**
- * Returns a pre-defined still image capture (jpeg) quality level
- * used for the given quality level in the Camera application for
- * the specified camera.
- *
- * @param cameraId The id of the camera
- * @param quality The target quality level
- */
-ECode CCameraProfileHelper::GetJpegEncodingQualityParameter(
+ECode CameraProfile::GetJpegEncodingQualityParameter(
     /* [in] */ Int32 cameraId,
     /* [in] */ Int32 quality,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
     if (quality < ICameraProfile::QUALITY_LOW || quality > ICameraProfile::QUALITY_HIGH) {
         //throw new IllegalArgumentException("Unsupported quality level: " + quality);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoLock lock(mCacheLock);
-    AutoPtr<ArrayOf<Int32> > levels = sCache[cameraId];
-    if (levels == NULL) {
-        levels = GetImageEncodingQualityLevels(cameraId);
-        sCache[cameraId] = levels;
+    synchronized(mCacheLock) {
+        AutoPtr<ArrayOf<Int32> > levels = sCache[cameraId];
+        if (levels == NULL) {
+            levels = GetImageEncodingQualityLevels(cameraId);
+            sCache[cameraId] = levels;
+        }
+        *result = (*levels)[quality];
     }
-    *result = (*levels)[quality];
     return NOERROR;
 }
 
-AutoPtr<ArrayOf<Int32> > CCameraProfileHelper::GetImageEncodingQualityLevels(
+AutoPtr<ArrayOf<Int32> > CameraProfile::GetImageEncodingQualityLevels(
     /* [in] */ Int32 cameraId)
 {
     Int32 nLevels = NativeGetNumImageEncodingQualityLevels(cameraId);
@@ -87,7 +76,7 @@ AutoPtr<ArrayOf<Int32> > CCameraProfileHelper::GetImageEncodingQualityLevels(
     for (Int32 i = 0; i < nLevels; ++i) {
         (*levels)[i] = NativeGetImageEncodingQualityLevel(cameraId, i);
     }
-    ArrayUtils::Sort(levels);  // Lower quality level ALWAYS comes before higher one
+    Arrays::Sort(levels);  // Lower quality level ALWAYS comes before higher one
     return levels;
 }
 
@@ -95,7 +84,7 @@ static Object sLock;
 android::MediaProfiles* sProfiles = NULL;
 
 // Methods implemented by JNI
-void CCameraProfileHelper::NativeInit()
+void CameraProfile::NativeInit()
 {
     ALOGV("native_init");
     AutoLock lock(sLock);
@@ -106,14 +95,14 @@ void CCameraProfileHelper::NativeInit()
     return;
 }
 
-Int32 CCameraProfileHelper::NativeGetNumImageEncodingQualityLevels(
+Int32 CameraProfile::NativeGetNumImageEncodingQualityLevels(
     /* [in] */ Int32 cameraId)
 {
     ALOGV("NativeGetNumImageEncodingQualityLevels");
     return sProfiles->getImageEncodingQualityLevels(cameraId).size();
 }
 
-Int32 CCameraProfileHelper::NativeGetImageEncodingQualityLevel(
+Int32 CameraProfile::NativeGetImageEncodingQualityLevel(
     /* [in] */ Int32 cameraId,
     /* [in] */ Int32 index)
 {

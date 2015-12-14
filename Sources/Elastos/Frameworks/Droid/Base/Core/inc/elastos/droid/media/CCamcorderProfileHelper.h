@@ -4,14 +4,21 @@
 
 #include "_Elastos_Droid_Media_CCamcorderProfileHelper.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
 
 CarClass(CCamcorderProfileHelper)
+    , public Singleton
+    , public ICamcorderProfileHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Returns the camcorder profile for the first back-facing camera on the
      * device at the given quality level. If the device has no back-facing

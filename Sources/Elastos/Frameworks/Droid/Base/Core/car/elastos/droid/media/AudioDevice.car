@@ -98,7 +98,7 @@ module
          * @return
          */
         IsInputDevice(
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         /**
          * @hide
@@ -106,7 +106,7 @@ module
          * @return
          */
         IsOutputDevice(
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         /**
          * @hide
@@ -114,7 +114,7 @@ module
          * @return
          */
         GetDeviceType(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * @hide
@@ -122,21 +122,19 @@ module
          * @return
          */
         GetAddress(
-            [out] String * result);
-
+            [out] String* result);
     }
 
     interface IAudioDeviceHelper {
         /** @hide */
         ConvertDeviceTypeToInternalDevice(
             [in] Int32 deviceType,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /** @hide */
         ConvertInternalDeviceToDeviceType(
             [in] Int32 intDevice,
-            [out] Int32 * result);
-
+            [out] Int32* result);
     }
 
     } // namespace media

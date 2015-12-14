@@ -104,11 +104,11 @@ private:
 public:
     CTvInputManagerSession();
 
+    virtual ~CTvInputManagerSession();
+
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
-
-    virtual ~CTvInputManagerSession();
 
     CARAPI constructor(
         /* [in] */ IBinder* token,
@@ -129,7 +129,7 @@ public:
      * @param surface A {@link android.view.Surface} used to render video.
      */
     CARAPI SetSurface(
-        /* [in] */ ISurface * surface);
+        /* [in] */ ISurface* surface);
 
     /**
      * Notifies of any structural changes (format or size) of the {@link Surface}
@@ -161,7 +161,7 @@ public:
      * @throws IllegalArgumentException if the argument is {@code null}.
      */
     CARAPI Tune(
-        /* [in] */ IUri * channelUri);
+        /* [in] */ IUri* channelUri);
 
     /**
      * Tunes to a given channel.
@@ -172,8 +172,8 @@ public:
      * @hide
      */
     CARAPI Tune(
-        /* [in] */ IUri * channelUri,
-        /* [in] */ IBundle * params);
+        /* [in] */ IUri* channelUri,
+        /* [in] */ IBundle* params);
 
     /**
      * Enables or disables the caption for this session.
@@ -207,7 +207,7 @@ public:
      */
     CARAPI GetTracks(
         /* [in] */ Int32 type,
-        /* [out] */ IList ** result);
+        /* [out] */ IList** result);
 
     /**
      * Returns the selected track for a given type. Returns {@code null} if the information is
@@ -218,7 +218,7 @@ public:
      */
     CARAPI GetSelectedTrack(
         /* [in] */ Int32 type,
-        /* [out] */ String * result);
+        /* [out] */ String* result);
 
     /**
      * Calls {@link TvInputService.Session#appPrivateCommand(String, Bundle)
@@ -249,11 +249,11 @@ public:
      * @hide
      */
     CARAPI DispatchInputEvent(
-        /* [in] */ IInputEvent * event,
-        /* [in] */ IInterface * token,
-        /* [in] */ ITvInputManagerSessionFinishedInputEventCallback * cb,
-        /* [in] */ IHandler * handler,
-        /* [out] */ Int32 * result);
+        /* [in] */ IInputEvent* event,
+        /* [in] */ IInterface* token,
+        /* [in] */ ITvInputManagerSessionFinishedInputEventCallback* cb,
+        /* [in] */ IHandler* handler,
+        /* [out] */ Int32* result);
 
     /**
      * Sets this as the main session. The main session is a session whose corresponding TV
@@ -276,8 +276,8 @@ public:
      * @throws IllegalStateException if {@code view} is not attached to a window.
      */
     CARAPI CreateOverlayView(
-        /* [in] */ IView * view,
-        /* [in] */ IRect * frame);
+        /* [in] */ IView* view,
+        /* [in] */ IRect* frame);
 
     /**
      * Relayouts the current overlay view.
@@ -286,7 +286,7 @@ public:
      * @throws IllegalArgumentException if the arguments is {@code null}.
      */
     CARAPI RelayoutOverlayView(
-        /* [in] */ IRect * frame);
+        /* [in] */ IRect* frame);
 
     /**
      * Removes the current overlay view.
@@ -297,7 +297,7 @@ public:
      * Requests to unblock content blocked by parental controls.
      */
     CARAPI RequestUnblockContent(
-        /* [in] */ ITvContentRating * unblockedRating);
+        /* [in] */ ITvContentRating* unblockedRating);
 
     CARAPI FinishedInputEvent(
         /* [in] */ Int32 seq,
@@ -310,7 +310,7 @@ public:
     CARAPI ReleaseInternal();
 
 private:
-    Boolean ContainsTrack(
+    CARAPI_(Boolean) ContainsTrack(
         /* [in] */ IList* tracks,
         /* [in] */ const String& trackId);
 

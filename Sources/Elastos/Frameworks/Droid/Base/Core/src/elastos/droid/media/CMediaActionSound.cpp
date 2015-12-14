@@ -1,6 +1,7 @@
 
 #include "elastos/droid/media/CMediaActionSound.h"
-#include "elastos/droid/media/CSoundPool.h"
+// TODO: Need CSoundPool
+// #include "elastos/droid/media/CSoundPool.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
@@ -24,7 +25,7 @@ const Int32 CMediaActionSound::SOUND_NOT_LOADED;
 //=====================================================================
 //          CMediaActionSound::SoundPoolOnLoadCompleteListener
 //=====================================================================
-CAR_INTERFACE_IMPL(CMediaActionSound::SoundPoolOnLoadCompleteListener, IOnLoadCompleteListener)
+CAR_INTERFACE_IMPL(CMediaActionSound::SoundPoolOnLoadCompleteListener, Object, ISoundPoolOnLoadCompleteListener)
 
 CMediaActionSound::SoundPoolOnLoadCompleteListener::SoundPoolOnLoadCompleteListener(
     /* [in] */ IWeakReference* host)
@@ -61,8 +62,17 @@ ECode CMediaActionSound::SoundPoolOnLoadCompleteListener::OnLoadComplete(
 //=====================================================================
 //          CMediaActionSound
 //=====================================================================
+
+CAR_INTERFACE_IMPL(CMediaActionSound, Object, IMediaActionSound)
+
+CAR_OBJECT_IMPL(CMediaActionSound)
+
 CMediaActionSound::CMediaActionSound()
     : mSoundIdToPlay(0)
+{
+}
+
+CMediaActionSound::~CMediaActionSound()
 {
 }
 
@@ -72,8 +82,8 @@ ECode CMediaActionSound::constructor()
     GetWeakReference((IWeakReference**)&weakHost);
     mLoadCompleteListener = new SoundPoolOnLoadCompleteListener(weakHost);
 
-    CSoundPool::New(NUM_MEDIA_SOUND_STREAMS, IAudioManager::STREAM_SYSTEM_ENFORCED, 0,
-        (ISoundPool**)&mSoundPool);
+// TODO: Need CSoundPool
+    // CSoundPool::New(NUM_MEDIA_SOUND_STREAMS, IAudioManager::STREAM_SYSTEM_ENFORCED, 0, (ISoundPool**)&mSoundPool);
     mSoundPool->SetOnLoadCompleteListener(mLoadCompleteListener);
 
     mSoundIds = ArrayOf<Int32>::Alloc(sizeof(SOUND_FILES));

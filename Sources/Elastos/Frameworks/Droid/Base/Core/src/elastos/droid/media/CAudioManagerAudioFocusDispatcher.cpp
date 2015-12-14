@@ -1,16 +1,29 @@
 
 #include "elastos/droid/media/CAudioManagerAudioFocusDispatcher.h"
-#include <elastos/utility/logging/Logger.h>
 #include "elastos/droid/media/CAudioManager.h"
+#include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Os::IHandler;
-using Elastos::Utility::Logging::Logger;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
+
+CAR_INTERFACE_IMPL_2(CAudioManagerAudioFocusDispatcher, Object, IIAudioFocusDispatcher, IBinder)
+
+CAR_OBJECT_IMPL(CAudioManagerAudioFocusDispatcher)
+
+CAudioManagerAudioFocusDispatcher::CAudioManagerAudioFocusDispatcher()
+{
+}
+
+CAudioManagerAudioFocusDispatcher::~CAudioManagerAudioFocusDispatcher()
+{
+}
 
 ECode CAudioManagerAudioFocusDispatcher::constructor(
     /* [in] */ IAudioManager* owner)
@@ -38,6 +51,14 @@ ECode CAudioManagerAudioFocusDispatcher::DispatchAudioFocusChange(
     handler->ObtainMessage(focusChange, seq, (IMessage**)&msg);
     Boolean result;
     return handler->SendMessage(msg, &result);
+}
+
+ECode CAudioManagerAudioFocusDispatcher::ToString(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = String("CAudioManagerAudioFocusDispatcher");
+    return NOERROR;
 }
 
 } // namespace Media

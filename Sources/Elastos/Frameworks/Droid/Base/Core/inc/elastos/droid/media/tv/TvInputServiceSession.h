@@ -7,6 +7,11 @@
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::View::IDispatcherState;
 using Elastos::Droid::View::IInputEvent;
 using Elastos::Droid::View::IInputEventReceiver;
@@ -16,11 +21,6 @@ using Elastos::Droid::View::ISurface;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IWindowManager;
 using Elastos::Droid::View::IWindowManagerLayoutParams;
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::Os::Runnable;
 using Elastos::Core::IRunnable;
 using Elastos::Utility::IList;
 
@@ -49,7 +49,7 @@ private:
             , mEnable(value)
         {}
 
-    CARAPI Run();
+        CARAPI Run();
 
     private:
         TvInputServiceSession* mHost;
@@ -69,7 +69,7 @@ private:
             , mEventArgs(eventArgs)
         {}
 
-    CARAPI Run();
+        CARAPI Run();
 
     private:
         TvInputServiceSession* mHost;
@@ -88,7 +88,7 @@ private:
             , mChannelUri(channelUri)
         {}
 
-    CARAPI Run();
+        CARAPI Run();
 
     private:
         TvInputServiceSession* mHost;
@@ -106,7 +106,7 @@ private:
             , mTracks(tracks)
         {}
 
-    CARAPI Run();
+        CARAPI Run();
 
     private:
         TvInputServiceSession* mHost;
@@ -126,7 +126,7 @@ private:
             , mTrackId(trackId)
         {}
 
-    CARAPI Run();
+        CARAPI Run();
 
     private:
         TvInputServiceSession* mHost;
@@ -143,7 +143,7 @@ private:
             : mHost(host)
         {}
 
-    CARAPI Run();
+        CARAPI Run();
 
     private:
         TvInputServiceSession* mHost;
@@ -160,7 +160,7 @@ private:
             , mReason(reason)
         {}
 
-    CARAPI Run();
+        CARAPI Run();
 
     private:
         TvInputServiceSession* mHost;
@@ -176,7 +176,7 @@ private:
             : mHost(host)
         {}
 
-    CARAPI Run();
+        CARAPI Run();
 
     private:
         TvInputServiceSession* mHost;
@@ -193,7 +193,7 @@ private:
             , mRating(rating)
         {}
 
-    CARAPI Run();
+        CARAPI Run();
 
     private:
         TvInputServiceSession* mHost;
@@ -217,7 +217,7 @@ private:
             , mBottm(bottm)
         {}
 
-    CARAPI Run();
+        CARAPI Run();
 
     private:
         TvInputServiceSession* mHost;
@@ -232,11 +232,11 @@ public:
 
     TvInputServiceSession();
 
+    virtual ~TvInputServiceSession();
+
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
-
-    virtual ~TvInputServiceSession();
 
     /**
      * Creates a new Session.
@@ -709,7 +709,7 @@ private:
         /* [in] */ IITvInputSessionCallback* callback);
 
     CARAPI_(void) RunOnMainThread(
-        /* [in] */ IRunnable * action);
+        /* [in] */ IRunnable* action);
 
 private:
     AutoPtr<IDispatcherState> mDispatcherState;

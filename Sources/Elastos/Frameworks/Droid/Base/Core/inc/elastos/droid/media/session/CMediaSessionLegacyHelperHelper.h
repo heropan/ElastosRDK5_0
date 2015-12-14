@@ -15,7 +15,7 @@ namespace Media {
 namespace Session {
 
 CarClass(CMediaSessionLegacyHelperHelper)
-    , public Object
+    , public Singleton
     , public IMediaSessionLegacyHelperHelper
 {
 public:

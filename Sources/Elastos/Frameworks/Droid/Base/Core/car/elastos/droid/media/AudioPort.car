@@ -25,93 +25,95 @@ module
      * @hide
      */
     interface IAudioPort {
-    /**
-     * For use by the audio framework.
-     */
-    const Int32 ROLE_NONE = 0;
-    /**
-     * The audio port is a source (produces audio)
-     */
-    const Int32 ROLE_SOURCE = 1;
-    /**
-     * The audio port is a sink (consumes audio)
-     */
-    const Int32 ROLE_SINK = 2;
+        /**
+         * For use by the audio framework.
+         */
+        const Int32 ROLE_NONE = 0;
+        /**
+         * The audio port is a source (produces audio)
+         */
+        const Int32 ROLE_SOURCE = 1;
+        /**
+         * The audio port is a sink (consumes audio)
+         */
+        const Int32 ROLE_SINK = 2;
 
-    /**
-     * audio port type for use by audio framework implementation
-     */
-    const Int32 TYPE_NONE = 0;
-    /**
-     */
-    const Int32 TYPE_DEVICE = 1;
-    /**
-     */
-    const Int32 TYPE_SUBMIX = 2;
-    /**
-     */
-    const Int32 TYPE_SESSION = 3;
+        /**
+         * audio port type for use by audio framework implementation
+         */
+        const Int32 TYPE_NONE = 0;
+        /**
+         */
+        const Int32 TYPE_DEVICE = 1;
+        /**
+         */
+        const Int32 TYPE_SUBMIX = 2;
+        /**
+         */
+        const Int32 TYPE_SESSION = 3;
 
-    /**
-     * Get the audio port role
-     */
-    Role(
-        [out] Int32 * result);
+        /**
+         * Get the audio port role
+         */
+        Role(
+            [out] Int32* result);
 
-    /**
-     * Get the list of supported sampling rates
-     * Empty array if sampling rate is not relevant for this audio port
-     */
-    SamplingRates(
-        [out, callee] ArrayOf<Int32> * result);
+        /**
+         * Get the list of supported sampling rates
+         * Empty array if sampling rate is not relevant for this audio port
+         */
+        SamplingRates(
+            [out, callee] ArrayOf<Int32>* result);
 
-    /**
-     * Get the list of supported channel mask configurations
-     * (e.g AudioFormat.CHANNEL_OUT_STEREO)
-     * Empty array if channel mask is not relevant for this audio port
-     */
-    ChannelMasks(
-        [out, callee] ArrayOf<Int32> * result);
+        /**
+         * Get the list of supported channel mask configurations
+         * (e.g AudioFormat.CHANNEL_OUT_STEREO)
+         * Empty array if channel mask is not relevant for this audio port
+         */
+        ChannelMasks(
+            [out, callee] ArrayOf<Int32>* result);
 
-    /**
-     * Get the list of supported audio format configurations
-     * (e.g AudioFormat.ENCODING_PCM_16BIT)
-     * Empty array if format is not relevant for this audio port
-     */
-    Formats(
-        [out, callee] ArrayOf<Int32> * result);
+        /**
+         * Get the list of supported audio format configurations
+         * (e.g AudioFormat.ENCODING_PCM_16BIT)
+         * Empty array if format is not relevant for this audio port
+         */
+        Formats(
+            [out, callee] ArrayOf<Int32>* result);
 
-    /**
-     * Get the list of gain descriptors
-     * Empty array if this port does not have gain control
-     */
-    Gains(
-        [out] IAudioGain ** result);
+        Handle(
+            [out] IAudioHandle** result);
 
-    /**
-     * Build a specific configuration of this audio port for use by methods
-     * like AudioManager.connectAudioPatch().
-     * @param channelMask The desired channel mask. AudioFormat.CHANNEL_OUT_DEFAULT if no change
-     * from active configuration requested.
-     * @param format The desired audio format. AudioFormat.ENCODING_DEFAULT if no change
-     * from active configuration requested.
-     * @param gain The desired gain. null if no gain changed requested.
-     */
-    buildConfig(
-        [in] Int32 samplingRate,
-        [in] Int32 channelMask,
-        [in] Int32 format,
-        [in] IAudioGainConfig * gain,
-        [out] IAudioPortConfig ** result);
+        /**
+         * Get the list of gain descriptors
+         * Empty array if this port does not have gain control
+         */
+        Gains(
+            [out, callee] ArrayOf<IAudioGain*>* result);
 
-    /**
-     * Get currently active configuration of this audio port.
-     */
-    activeConfig(
-        [out] IAudioPortConfig ** result);
+        /**
+         * Build a specific configuration of this audio port for use by methods
+         * like AudioManager.connectAudioPatch().
+         * @param channelMask The desired channel mask. AudioFormat.CHANNEL_OUT_DEFAULT if no change
+         * from active configuration requested.
+         * @param format The desired audio format. AudioFormat.ENCODING_DEFAULT if no change
+         * from active configuration requested.
+         * @param gain The desired gain. null if no gain changed requested.
+         */
+        BuildConfig(
+            [in] Int32 samplingRate,
+            [in] Int32 channelMask,
+            [in] Int32 format,
+            [in] IAudioGainConfig* gain,
+            [out] IAudioPortConfig** result);
 
-
+        /**
+         * Get currently active configuration of this audio port.
+         */
+        ActiveConfig(
+            [out] IAudioPortConfig** result);
     }
+
     } // namespace media
     } // namepsace Droid
     } // namespace Elastos

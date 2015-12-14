@@ -28,7 +28,7 @@ namespace Tv {
 CAR_INTERFACE_IMPL_2(TvInputService::TvInputServiceStub, Object, IITvInputService, IBinder)
 
 ECode TvInputService::TvInputServiceStub::RegisterCallback(
-    /* [in] */ IITvInputServiceCallback * cb)
+    /* [in] */ IITvInputServiceCallback* cb)
 {
     if (cb != NULL) {
         Boolean b;
@@ -38,7 +38,7 @@ ECode TvInputService::TvInputServiceStub::RegisterCallback(
 }
 
 ECode TvInputService::TvInputServiceStub::UnregisterCallback(
-    /* [in] */ IITvInputServiceCallback * cb)
+    /* [in] */ IITvInputServiceCallback* cb)
 {
     if (cb != NULL) {
         Boolean b;
@@ -48,8 +48,8 @@ ECode TvInputService::TvInputServiceStub::UnregisterCallback(
 }
 
 ECode TvInputService::TvInputServiceStub::CreateSession(
-    /* [in] */ IInputChannel * channel,
-    /* [in] */ IITvInputSessionCallback * cb,
+    /* [in] */ IInputChannel* channel,
+    /* [in] */ IITvInputSessionCallback* cb,
     /* [in] */ const String& inputId)
 {
     if (channel == NULL) {
@@ -72,7 +72,7 @@ ECode TvInputService::TvInputServiceStub::CreateSession(
 
 // For hardware TvInputService
 ECode TvInputService::TvInputServiceStub::NotifyHardwareAdded(
-    /* [in] */ ITvInputHardwareInfo * hardwareInfo)
+    /* [in] */ ITvInputHardwareInfo* hardwareInfo)
 {
     AutoPtr<IMessage> msg;
     mHost->mServiceHandler->ObtainMessage(ServiceHandler::DO_ADD_HARDWARE_TV_INPUT,
@@ -81,7 +81,7 @@ ECode TvInputService::TvInputServiceStub::NotifyHardwareAdded(
 }
 
 ECode TvInputService::TvInputServiceStub::NotifyHardwareRemoved(
-    /* [in] */ ITvInputHardwareInfo * hardwareInfo)
+    /* [in] */ ITvInputHardwareInfo* hardwareInfo)
 {
     AutoPtr<IMessage> msg;
     mHost->mServiceHandler->ObtainMessage(ServiceHandler::DO_REMOVE_HARDWARE_TV_INPUT,
@@ -90,7 +90,7 @@ ECode TvInputService::TvInputServiceStub::NotifyHardwareRemoved(
 }
 
 ECode TvInputService::TvInputServiceStub::NotifyHdmiDeviceAdded(
-    /* [in] */ IHdmiDeviceInfo * deviceInfo)
+    /* [in] */ IHdmiDeviceInfo* deviceInfo)
 {
     AutoPtr<IMessage> msg;
     mHost->mServiceHandler->ObtainMessage(ServiceHandler::DO_ADD_HDMI_TV_INPUT,
@@ -99,7 +99,7 @@ ECode TvInputService::TvInputServiceStub::NotifyHdmiDeviceAdded(
 }
 
 ECode TvInputService::TvInputServiceStub::NotifyHdmiDeviceRemoved(
-    /* [in] */ IHdmiDeviceInfo * deviceInfo)
+    /* [in] */ IHdmiDeviceInfo* deviceInfo)
 {
     AutoPtr<IMessage> msg;
     mHost->mServiceHandler->ObtainMessage(ServiceHandler::DO_REMOVE_HDMI_TV_INPUT,
@@ -237,7 +237,7 @@ ECode TvInputService::ServiceHandler::HandleMessage(
 
             String inputId;
             mHost->OnHardwareRemoved(hardwareInfo, &inputId);
-            if (inputId != NULL) {
+            if (!inputId.IsNull()) {
                 BroadcastRemoveTvInput(inputId);
             }
             return NOERROR;
@@ -264,7 +264,7 @@ ECode TvInputService::ServiceHandler::HandleMessage(
 
             String inputId;
             mHost->OnHdmiDeviceRemoved(deviceInfo, &inputId);
-            if (inputId != NULL) {
+            if (!inputId.IsNull()) {
                 BroadcastRemoveTvInput(inputId);
             }
             return NOERROR;
@@ -454,7 +454,7 @@ Boolean TvInputService::IsPassthroughInput(
     if (info != NULL) {
         Boolean b;
         info->IsPassthroughInput(&b);
-        if(b) {
+        if (b) {
             return TRUE;
         }
     }

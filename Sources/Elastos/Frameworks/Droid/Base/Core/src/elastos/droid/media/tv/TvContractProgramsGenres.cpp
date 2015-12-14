@@ -66,8 +66,8 @@ TvContractProgramsGenres::TvContractProgramsGenres()
 }
 
 ECode TvContractProgramsGenres::Encode(
-    /* [in] */ ArrayOf<String> * genres,
-    /* [out] */ String * result)
+    /* [in] */ ArrayOf<String>* genres,
+    /* [out] */ String* result)
 {
     StringBuilder sb;
     String separator("");
@@ -90,7 +90,7 @@ ECode TvContractProgramsGenres::Decode(
 
 ECode TvContractProgramsGenres::IsCanonical(
     /* [in] */ const String& genre,
-    /* [out] */ Boolean * result)
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     AutoPtr<ICharSequence> cs;

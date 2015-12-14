@@ -199,8 +199,8 @@ CAR_INTERFACE_IMPL_2(CTvInputManager::TvInputClient, Object, IITvInputClient, IB
 
 ECode CTvInputManager::TvInputClient::OnSessionCreated(
     /* [in] */ const String& inputId,
-    /* [in] */ IBinder * token,
-    /* [in] */ IInputChannel * channel,
+    /* [in] */ IBinder* token,
+    /* [in] */ IInputChannel* channel,
     /* [in] */ Int32 seq)
 {
     AutoPtr<ISparseArray> lock = mHost->mSessionCallbackRecordMap;
@@ -208,7 +208,9 @@ ECode CTvInputManager::TvInputClient::OnSessionCreated(
         AutoPtr<SessionCallbackRecord> record;
         mHost->mSessionCallbackRecordMap->Get(seq, (IInterface**)&record);
         if (record == NULL) {
-            // Logger::E(TAG, "Callback not found for " + token);
+            String str;
+            token->ToString(&str);
+            Logger::E(TAG, String("Callback not found for ") + str);
             return NOERROR;
         }
         AutoPtr<ITvInputManagerSession> session;
@@ -241,7 +243,7 @@ ECode CTvInputManager::TvInputClient::OnSessionReleased(
 
 ECode CTvInputManager::TvInputClient::OnSessionEvent(
     /* [in] */ const String& eventType,
-    /* [in] */ IBundle * eventArgs,
+    /* [in] */ IBundle* eventArgs,
     /* [in] */ Int32 seq)
 {
     AutoPtr<ISparseArray> lock = mHost->mSessionCallbackRecordMap;
@@ -258,7 +260,7 @@ ECode CTvInputManager::TvInputClient::OnSessionEvent(
 }
 
 ECode CTvInputManager::TvInputClient::OnChannelRetuned(
-    /* [in] */ IUri * channelUri,
+    /* [in] */ IUri* channelUri,
     /* [in] */ Int32 seq)
 {
     AutoPtr<ISparseArray> lock = mHost->mSessionCallbackRecordMap;
@@ -275,7 +277,7 @@ ECode CTvInputManager::TvInputClient::OnChannelRetuned(
 }
 
 ECode CTvInputManager::TvInputClient::OnTracksChanged(
-    /* [in] */ IList * tracks,
+    /* [in] */ IList* tracks,
     /* [in] */ Int32 seq)
 {
     AutoPtr<ISparseArray> lock = mHost->mSessionCallbackRecordMap;
@@ -508,7 +510,7 @@ ECode CTvInputManager::TvInputHardwareCallback::OnReleased()
 }
 
 ECode CTvInputManager::TvInputHardwareCallback::OnStreamConfigChanged(
-    /* [in] */ ArrayOf<ITvStreamConfig*> * configs)
+    /* [in] */ ArrayOf<ITvStreamConfig*>* configs)
 {
     return mCallback->OnStreamConfigChanged(configs);
 }
@@ -723,7 +725,7 @@ ECode CTvInputManager::constructor(
 }
 
 ECode CTvInputManager::GetTvInputList(
-    /* [out] */ IList ** result)
+    /* [out] */ IList** result)
 {
     VALIDATE_NOT_NULL(result)
     // try {
@@ -735,9 +737,10 @@ ECode CTvInputManager::GetTvInputList(
 
 ECode CTvInputManager::GetTvInputInfo(
     /* [in] */ const String& inputId,
-    /* [out] */ ITvInputInfo ** result)
+    /* [out] */ ITvInputInfo** result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = NULL;
     if (inputId == NULL) {
         // throw new IllegalArgumentException("inputId cannot be NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -751,9 +754,10 @@ ECode CTvInputManager::GetTvInputInfo(
 
 ECode CTvInputManager::GetInputState(
     /* [in] */ const String& inputId,
-    /* [out] */ Int32 * result)
+    /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = 0;
     if (inputId == NULL) {
         // throw new IllegalArgumentException("inputId cannot be NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -773,8 +777,8 @@ ECode CTvInputManager::GetInputState(
 }
 
 ECode CTvInputManager::RegisterCallback(
-    /* [in] */ ITvInputManagerTvInputCallback * callback,
-    /* [in] */ IHandler * handler)
+    /* [in] */ ITvInputManagerTvInputCallback* callback,
+    /* [in] */ IHandler* handler)
 {
     if (callback == NULL) {
         // throw new IllegalArgumentException("callback cannot be NULL");
@@ -792,7 +796,7 @@ ECode CTvInputManager::RegisterCallback(
 }
 
 ECode CTvInputManager::UnregisterCallback(
-    /* [in] */ ITvInputManagerTvInputCallback * callback)
+    /* [in] */ ITvInputManagerTvInputCallback* callback)
 {
     if (callback == NULL) {
         // throw new IllegalArgumentException("callback cannot be NULL");
@@ -815,7 +819,7 @@ ECode CTvInputManager::UnregisterCallback(
 }
 
 ECode CTvInputManager::IsParentalControlsEnabled(
-    /* [out] */ Boolean * result)
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     // try {
@@ -836,10 +840,11 @@ ECode CTvInputManager::SetParentalControlsEnabled(
 }
 
 ECode CTvInputManager::IsRatingBlocked(
-    /* [in] */ ITvContentRating * rating,
-    /* [out] */ Boolean * result)
+    /* [in] */ ITvContentRating* rating,
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = FALSE;
     if (rating == NULL) {
         // throw new IllegalArgumentException("rating cannot be NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -854,7 +859,7 @@ ECode CTvInputManager::IsRatingBlocked(
 }
 
 ECode CTvInputManager::GetBlockedRatings(
-    /* [out] */ IList ** result)
+    /* [out] */ IList** result)
 {
     VALIDATE_NOT_NULL(result)
     // try {
@@ -881,7 +886,7 @@ ECode CTvInputManager::GetBlockedRatings(
 }
 
 ECode CTvInputManager::AddBlockedRating(
-    /* [in] */ ITvContentRating * rating)
+    /* [in] */ ITvContentRating* rating)
 {
     if (rating == NULL) {
         // throw new IllegalArgumentException("rating cannot be NULL");
@@ -897,7 +902,7 @@ ECode CTvInputManager::AddBlockedRating(
 }
 
 ECode CTvInputManager::RemoveBlockedRating(
-    /* [in] */ ITvContentRating * rating)
+    /* [in] */ ITvContentRating* rating)
 {
     if (rating == NULL) {
         // throw new IllegalArgumentException("rating cannot be NULL");
@@ -913,7 +918,7 @@ ECode CTvInputManager::RemoveBlockedRating(
 }
 
 ECode CTvInputManager::GetTvContentRatingSystemList(
-    /* [out] */ IList ** result)
+    /* [out] */ IList** result)
 {
     VALIDATE_NOT_NULL(result)
     // try {
@@ -925,8 +930,8 @@ ECode CTvInputManager::GetTvContentRatingSystemList(
 
 ECode CTvInputManager::CreateSession(
     /* [in] */ const String& inputId,
-    /* [in] */ ITvInputManagerSessionCallback * callback,
-    /* [in] */ IHandler * handler)
+    /* [in] */ ITvInputManagerSessionCallback* callback,
+    /* [in] */ IHandler* handler)
 {
     if (inputId == NULL) {
         // throw new IllegalArgumentException("id cannot be NULL");
@@ -955,7 +960,7 @@ ECode CTvInputManager::CreateSession(
 
 ECode CTvInputManager::GetAvailableTvStreamConfigList(
     /* [in] */ const String& inputId,
-    /* [out] */ IList ** result)
+    /* [out] */ IList** result)
 {
     VALIDATE_NOT_NULL(result)
     // try {
@@ -967,9 +972,9 @@ ECode CTvInputManager::GetAvailableTvStreamConfigList(
 
 ECode CTvInputManager::CaptureFrame(
     /* [in] */ const String& inputId,
-    /* [in] */ ISurface * surface,
-    /* [in] */ ITvStreamConfig * config,
-    /* [out] */ Boolean * result)
+    /* [in] */ ISurface* surface,
+    /* [in] */ ITvStreamConfig* config,
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     // try {
@@ -980,7 +985,7 @@ ECode CTvInputManager::CaptureFrame(
 }
 
 ECode CTvInputManager::IsSingleSessionActive(
-    /* [out] */ Boolean * result)
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     // try {
@@ -992,7 +997,7 @@ ECode CTvInputManager::IsSingleSessionActive(
 }
 
 ECode CTvInputManager::GetHardwareList(
-    /* [out] */ IList ** result)
+    /* [out] */ IList** result)
 {
     VALIDATE_NOT_NULL(result)
     // try {
@@ -1004,9 +1009,9 @@ ECode CTvInputManager::GetHardwareList(
 
 ECode CTvInputManager::AcquireTvInputHardware(
     /* [in] */ Int32 deviceId,
-    /* [in] */ ITvInputManagerHardwareCallback * callback,
-    /* [in] */ ITvInputInfo * info,
-    /* [out] */ ITvInputManagerHardware ** result)
+    /* [in] */ ITvInputManagerHardwareCallback* callback,
+    /* [in] */ ITvInputInfo* info,
+    /* [out] */ ITvInputManagerHardware** result)
 {
     VALIDATE_NOT_NULL(result)
     // try {
@@ -1021,7 +1026,7 @@ ECode CTvInputManager::AcquireTvInputHardware(
 
 ECode CTvInputManager::ReleaseTvInputHardware(
     /* [in] */ Int32 deviceId,
-    /* [in] */ ITvInputManagerHardware * hardware)
+    /* [in] */ ITvInputManagerHardware* hardware)
 {
     // try {
     AutoPtr<CTvInputManagerHardware> h = (CTvInputManagerHardware*)hardware;

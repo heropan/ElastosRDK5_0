@@ -21,33 +21,33 @@ ECode TvInputManagerSessionCallback::constructor()
 }
 
 ECode TvInputManagerSessionCallback::OnSessionCreated(
-    /* [in] */ ITvInputManagerSession * session)
+    /* [in] */ ITvInputManagerSession* session)
 {
     return NOERROR;
 }
 
 ECode TvInputManagerSessionCallback::OnSessionReleased(
-    /* [in] */ ITvInputManagerSession * session)
+    /* [in] */ ITvInputManagerSession* session)
 {
     return NOERROR;
 }
 
 ECode TvInputManagerSessionCallback::OnChannelRetuned(
-    /* [in] */ ITvInputManagerSession * session,
-    /* [in] */ IUri * channelUri)
+    /* [in] */ ITvInputManagerSession* session,
+    /* [in] */ IUri* channelUri)
 {
     return NOERROR;
 }
 
 ECode TvInputManagerSessionCallback::OnTracksChanged(
-    /* [in] */ ITvInputManagerSession * session,
-    /* [in] */ IList * tracks)
+    /* [in] */ ITvInputManagerSession* session,
+    /* [in] */ IList* tracks)
 {
     return NOERROR;
 }
 
 ECode TvInputManagerSessionCallback::OnTrackSelected(
-    /* [in] */ ITvInputManagerSession * session,
+    /* [in] */ ITvInputManagerSession* session,
     /* [in] */ Int32 type,
     /* [in] */ const String& trackId)
 {
@@ -55,33 +55,33 @@ ECode TvInputManagerSessionCallback::OnTrackSelected(
 }
 
 ECode TvInputManagerSessionCallback::OnVideoAvailable(
-    /* [in] */ ITvInputManagerSession * session)
+    /* [in] */ ITvInputManagerSession* session)
 {
     return NOERROR;
 }
 
 ECode TvInputManagerSessionCallback::OnVideoUnavailable(
-    /* [in] */ ITvInputManagerSession * session,
+    /* [in] */ ITvInputManagerSession* session,
     /* [in] */ Int32 reason)
 {
     return NOERROR;
 }
 
 ECode TvInputManagerSessionCallback::OnContentAllowed(
-    /* [in] */ ITvInputManagerSession * session)
+    /* [in] */ ITvInputManagerSession* session)
 {
     return NOERROR;
 }
 
 ECode TvInputManagerSessionCallback::OnContentBlocked(
-    /* [in] */ ITvInputManagerSession * session,
-    /* [in] */ ITvContentRating * rating)
+    /* [in] */ ITvInputManagerSession* session,
+    /* [in] */ ITvContentRating* rating)
 {
     return NOERROR;
 }
 
 ECode TvInputManagerSessionCallback::OnLayoutSurface(
-    /* [in] */ ITvInputManagerSession * session,
+    /* [in] */ ITvInputManagerSession* session,
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,
@@ -91,9 +91,9 @@ ECode TvInputManagerSessionCallback::OnLayoutSurface(
 }
 
 ECode TvInputManagerSessionCallback::OnSessionEvent(
-    /* [in] */ ITvInputManagerSession * session,
+    /* [in] */ ITvInputManagerSession* session,
     /* [in] */ const String& eventType,
-    /* [in] */ IBundle * eventArgs)
+    /* [in] */ IBundle* eventArgs)
 {
     return NOERROR;
 }

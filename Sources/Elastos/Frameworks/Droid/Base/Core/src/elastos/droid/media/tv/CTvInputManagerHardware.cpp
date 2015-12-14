@@ -25,9 +25,9 @@ ECode CTvInputManagerHardware::constructor(
 }
 
 ECode CTvInputManagerHardware::SetSurface(
-    /* [in] */ ISurface * surface,
-    /* [in] */ ITvStreamConfig * config,
-    /* [out] */ Boolean * result)
+    /* [in] */ ISurface* surface,
+    /* [in] */ ITvStreamConfig* config,
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     // try {
@@ -48,8 +48,8 @@ ECode CTvInputManagerHardware::SetStreamVolume(
 }
 
 ECode CTvInputManagerHardware::DispatchKeyEventToHdmi(
-    /* [in] */ IKeyEvent * event,
-    /* [out] */ Boolean * result)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     // try {

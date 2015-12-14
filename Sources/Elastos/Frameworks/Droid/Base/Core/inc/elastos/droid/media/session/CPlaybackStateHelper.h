@@ -11,7 +11,7 @@ namespace Media {
 namespace Session {
 
 CarClass(CPlaybackStateHelper)
-    , public Object
+    , public Singleton
     , public IPlaybackStateHelper
 {
 public:

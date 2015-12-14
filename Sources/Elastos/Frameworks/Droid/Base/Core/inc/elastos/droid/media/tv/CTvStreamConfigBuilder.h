@@ -22,11 +22,11 @@ CarClass(CTvStreamConfigBuilder)
 public:
     CTvStreamConfigBuilder();
 
+    virtual ~CTvStreamConfigBuilder();
+
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
-
-    virtual ~CTvStreamConfigBuilder();
 
     CARAPI constructor();
 
@@ -46,8 +46,7 @@ public:
         /* [in] */ Int32 generation);
 
     CARAPI Build(
-        /* [out] */ ITvStreamConfig ** result);
-
+        /* [out] */ ITvStreamConfig** result);
 
 public:
     AutoPtr<IInteger32> mStreamId;

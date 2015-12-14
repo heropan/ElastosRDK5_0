@@ -2,11 +2,10 @@
 #include "elastos/droid/media/audiopolicy/CAudioMix.h"
 //TODO: Need CAudioSystemHelper
 //#include "elastos/droid/media/CAudioSystemHelper.h"
-//TODO: Need CAudioFormatBuilder
-//#include "elastos/droid/media/CAudioFormatBuilder.h"
+#include "elastos/droid/media/CAudioFormatBuilder.h"
 
 //using Elastos::Droid::Media::CAudioSystemHelper;
-//using Elastos::Droid::Media::CAudioFormatBuilder;
+using Elastos::Droid::Media::CAudioFormatBuilder;
 using Elastos::Droid::Media::IAudioSystemHelper;
 
 namespace Elastos {
@@ -114,11 +113,9 @@ ECode CAudioMixBuilder::Build(
             rate = 44100;
         }
         AutoPtr<IAudioFormatBuilder> builder;
-//TODO: Need CAudioFormatBuilder
-        // CAudioFormatBuilder::New((IAudioFormatBuilder**)&builder);
-        AutoPtr<IAudioFormatBuilder> builder2;
-        builder->SetSampleRate(rate, (IAudioFormatBuilder**)&builder2);
-        builder2->Build((IAudioFormat**)&mFormat);
+        CAudioFormatBuilder::New((IAudioFormatBuilder**)&builder);
+        builder->SetSampleRate(rate);
+        builder->Build((IAudioFormat**)&mFormat);
     }
     return CAudioMix::New(mRule, mFormat, mRouteFlags, result);
 }

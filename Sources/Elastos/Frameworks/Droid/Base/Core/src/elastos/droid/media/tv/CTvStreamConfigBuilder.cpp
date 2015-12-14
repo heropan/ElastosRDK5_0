@@ -56,9 +56,10 @@ ECode CTvStreamConfigBuilder::Generation(
 }
 
 ECode CTvStreamConfigBuilder::Build(
-    /* [out] */ ITvStreamConfig ** result)
+    /* [out] */ ITvStreamConfig** result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = NULL;
     if (mStreamId == NULL || mType == NULL || mMaxWidth == NULL
             || mMaxHeight == NULL || mGeneration == NULL) {
         // throw new UnsupportedOperationException();
@@ -73,6 +74,7 @@ ECode CTvStreamConfigBuilder::Build(
     mMaxHeight->GetValue(&config->mMaxHeight);
     mGeneration->GetValue(&config->mGeneration);
     *result = ITvStreamConfig::Probe(config);
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 

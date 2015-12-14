@@ -1305,7 +1305,7 @@ module
          * may be expected when unnecessary multiple instances are used
          * at the same time.
          */
-        ReleaseReSources();
+        ReleaseResources();
 
         /**
          * Resets the MediaPlayer to its uninitialized state. After calling

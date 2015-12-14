@@ -30,7 +30,7 @@ module
          * Get the device type (e.g AudioManager.DEVICE_OUT_SPEAKER)
          */
         Type(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Get the device address. Address format varies with the device type.
@@ -44,7 +44,7 @@ module
          * - Deivces that do not have an address will indicate an empty string "".
          */
         Address(
-            [out] String * result);
+            [out] String* result);
 
         /**
          * Build a specific configuration of this audio device port for use by methods
@@ -54,9 +54,8 @@ module
             [in] Int32 samplingRate,
             [in] Int32 channelMask,
             [in] Int32 format,
-            [in] IAudioGainConfig * gain,
-            [out] IAudioDevicePortConfig ** result);
-
+            [in] IAudioGainConfig* gain,
+            [out] IAudioDevicePortConfig** result);
     }
 
     } // namespace media

@@ -4,23 +4,21 @@
 #include "_Elastos_Droid_Media_Tv_CITvInputSessionWrapper.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
-//TODO: Need InputEventReceiver
-// #include "elastos/droid/view/InputEventReceiver.h"
+#include "elastos/droid/view/InputEventReceiver.h"
 
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Internal::Os::IHandlerCaller;
+using Elastos::Droid::Internal::Os::IHandlerCallerCallback;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Net::IUri;
-using Elastos::Droid::View::ISurface;
-using Elastos::Droid::View::IInputEvent;
 using Elastos::Droid::View::IInputChannel;
-//TODO: Need InputEventReceiver
-// using Elastos::Droid::View::InputEventReceiver;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Graphics::IRect;
-using Elastos::Droid::Internal::Os::IHandlerCaller;
-using Elastos::Droid::Internal::Os::IHandlerCallerCallback;
+using Elastos::Droid::View::IInputEvent;
+using Elastos::Droid::View::InputEventReceiver;
+using Elastos::Droid::View::ISurface;
 
 namespace Elastos {
 namespace Droid {
@@ -28,31 +26,28 @@ namespace Media {
 namespace Tv {
 
 /**
- * Implements the internal ITvInputSession interface to convert incoming calls on to it back to
- * calls on the public TvInputSession interface, scheduling them on the main thread of the process.
- *
- * @hide
- */
+* Implements the internal ITvInputSession interface to convert incoming calls on to it back to
+* calls on the public TvInputSession interface, scheduling them on the main thread of the process.
+*
+* @hide
+*/
 CarClass(CITvInputSessionWrapper)
     , public Object
-    , public IITvInputSessionWrapper
     , public IITvInputSession
     , public IHandlerCallerCallback
 {
 private:
-//TODO: Need InputEventReceiver.h
-        // : public InputEventReceiver
     class TvInputEventReceiver
-        : public Object
+        : public InputEventReceiver
     {
     public:
         TvInputEventReceiver(
-            /* [in] */ IInputChannel * inputChannel,
-            /* [in] */ ILooper * looper,
-            /* [in] */ ITvInputServiceSession * impl);
+            /* [in] */ IInputChannel* inputChannel,
+            /* [in] */ ILooper* looper,
+            /* [in] */ ITvInputServiceSession* impl);
 
         CARAPI OnInputEvent(
-            /* [in] */ IInputEvent * event);
+            /* [in] */ IInputEvent* event);
 
     private:
         AutoPtr<ITvInputServiceSession> mImpl;
@@ -61,19 +56,19 @@ private:
 public:
     CITvInputSessionWrapper();
 
+    virtual ~CITvInputSessionWrapper();
+
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
 
-    virtual ~CITvInputSessionWrapper();
-
     CARAPI constructor(
-        /* [in] */ IContext * context,
-        /* [in] */ ITvInputServiceSession * sessionImpl,
-        /* [in] */ IInputChannel * channel);
+        /* [in] */ IContext* context,
+        /* [in] */ ITvInputServiceSession* sessionImpl,
+        /* [in] */ IInputChannel* channel);
 
     CARAPI ExecuteMessage(
-        /* [in] */ IMessage * msg);
+        /* [in] */ IMessage* msg);
 
     CARAPI ReleaseResources();
 
@@ -81,7 +76,7 @@ public:
         /* [in] */ Boolean isMain);
 
     CARAPI SetSurface(
-        /* [in] */ ISurface * surface);
+        /* [in] */ ISurface* surface);
 
     CARAPI DispatchSurfaceChanged(
         /* [in] */ Int32 format,
@@ -94,8 +89,8 @@ public:
         /* [in] */ Float volume);
 
     CARAPI Tune(
-        /* [in] */ IUri * channelUri,
-        /* [in] */ IBundle * params);
+        /* [in] */ IUri* channelUri,
+        /* [in] */ IBundle* params);
 
     CARAPI SetCaptionEnabled(
         /* [in] */ Boolean enabled);
@@ -106,14 +101,14 @@ public:
 
     CARAPI AppPrivateCommand(
         /* [in] */ const String& action,
-        /* [in] */ IBundle * data);
+        /* [in] */ IBundle* data);
 
     CARAPI CreateOverlayView(
-        /* [in] */ IBinder * windowToken,
-        /* [in] */ IRect * frame);
+        /* [in] */ IBinder* windowToken,
+        /* [in] */ IRect* frame);
 
     CARAPI RelayoutOverlayView(
-        /* [in] */ IRect * frame);
+        /* [in] */ IRect* frame);
 
     CARAPI RemoveOverlayView();
 
@@ -144,7 +139,6 @@ private:
     AutoPtr<ITvInputServiceSession> mTvInputSessionImpl;
     AutoPtr<IInputChannel> mChannel;
     AutoPtr<TvInputEventReceiver> mReceiver;
-
 };
 
 } // namespace Tv

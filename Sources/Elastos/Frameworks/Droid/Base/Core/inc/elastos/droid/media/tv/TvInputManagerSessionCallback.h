@@ -25,9 +25,9 @@ class TvInputManagerSessionCallback
 public:
     TvInputManagerSessionCallback();
 
-    CAR_INTERFACE_DECL()
-
     virtual ~TvInputManagerSessionCallback();
+
+    CAR_INTERFACE_DECL()
 
     CARAPI constructor();
 
@@ -38,7 +38,7 @@ public:
      *            {@code null} if the creation request failed.
      */
     CARAPI OnSessionCreated(
-        /* [in] */ ITvInputManagerSession * session);
+        /* [in] */ ITvInputManagerSession* session);
 
     /**
      * This is called when {@link TvInputManager.Session} is released.
@@ -47,7 +47,7 @@ public:
      * @param session A {@link TvInputManager.Session} instance released.
      */
     CARAPI OnSessionReleased(
-        /* [in] */ ITvInputManagerSession * session);
+        /* [in] */ ITvInputManagerSession* session);
 
     /**
      * This is called when the channel of this session is changed by the underlying TV input
@@ -57,8 +57,8 @@ public:
      * @param channelUri The URI of a channel.
      */
     CARAPI OnChannelRetuned(
-        /* [in] */ ITvInputManagerSession * session,
-        /* [in] */ IUri * channelUri);
+        /* [in] */ ITvInputManagerSession* session,
+        /* [in] */ IUri* channelUri);
 
     /**
      * This is called when the track information of the session has been changed.
@@ -67,8 +67,8 @@ public:
      * @param tracks A list which includes track information.
      */
     CARAPI OnTracksChanged(
-        /* [in] */ ITvInputManagerSession * session,
-        /* [in] */ IList * tracks);
+        /* [in] */ ITvInputManagerSession* session,
+        /* [in] */ IList* tracks);
 
     /**
      * This is called when a track for a given type is selected.
@@ -81,7 +81,7 @@ public:
      *            track for a given type should be unselected.
      */
     CARAPI OnTrackSelected(
-        /* [in] */ ITvInputManagerSession * session,
+        /* [in] */ ITvInputManagerSession* session,
         /* [in] */ Int32 type,
         /* [in] */ const String& trackId);
 
@@ -91,7 +91,7 @@ public:
      * @param session A {@link TvInputManager.Session} associated with this callback.
      */
     CARAPI OnVideoAvailable(
-        /* [in] */ ITvInputManagerSession * session);
+        /* [in] */ ITvInputManagerSession* session);
 
     /**
      * This is called when the video is not available, so the TV input stops the playback.
@@ -106,7 +106,7 @@ public:
      * </ul>
      */
     CARAPI OnVideoUnavailable(
-        /* [in] */ ITvInputManagerSession * session,
+        /* [in] */ ITvInputManagerSession* session,
         /* [in] */ Int32 reason);
 
     /**
@@ -116,7 +116,7 @@ public:
      * @param session A {@link TvInputManager.Session} associated with this callback
      */
     CARAPI OnContentAllowed(
-        /* [in] */ ITvInputManagerSession * session);
+        /* [in] */ ITvInputManagerSession* session);
 
     /**
      * This is called when the current program content turns out to be not allowed to watch
@@ -126,8 +126,8 @@ public:
      * @param rating The content ration of the blocked program.
      */
     CARAPI OnContentBlocked(
-        /* [in] */ ITvInputManagerSession * session,
-        /* [in] */ ITvContentRating * rating);
+        /* [in] */ ITvInputManagerSession* session,
+        /* [in] */ ITvContentRating* rating);
 
     /**
      * This is called when {@link TvInputService.Session#layoutSurface} is called to change the
@@ -141,7 +141,7 @@ public:
      * @hide
      */
     CARAPI OnLayoutSurface(
-        /* [in] */ ITvInputManagerSession * session,
+        /* [in] */ ITvInputManagerSession* session,
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
         /* [in] */ Int32 right,
@@ -156,9 +156,9 @@ public:
      * @hide
      */
     CARAPI OnSessionEvent(
-        /* [in] */ ITvInputManagerSession * session,
+        /* [in] */ ITvInputManagerSession* session,
         /* [in] */ const String& eventType,
-        /* [in] */ IBundle * eventArgs);
+        /* [in] */ IBundle* eventArgs);
 };
 
 } // namespace Tv

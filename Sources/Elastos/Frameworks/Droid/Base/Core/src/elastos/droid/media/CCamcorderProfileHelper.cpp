@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 
+CAR_INTERFACE_IMPL(CCamcorderProfileHelper, Singleton, ICamcorderProfileHelper)
+
+CAR_SINGLETON_IMPL(CCamcorderProfileHelper)
+
 /*static*/
 ECode CCamcorderProfileHelper::Get(
     /* [in] */ Int32 quality,

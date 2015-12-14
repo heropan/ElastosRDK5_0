@@ -22,8 +22,7 @@ module
          * Returns the audio device port this AudioDevicePortConfig is issued from.
          */
         Port(
-            [out] IAudioDevicePort ** result);
-
+            [out] IAudioDevicePort** result);
     }
 
     } // namespace media

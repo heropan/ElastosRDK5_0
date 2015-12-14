@@ -1,9 +1,9 @@
 
 module
 {
+    interface Elastos.Droid.Media.IAudioTrack;
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.IO.IByteBuffer;
-    interface Elastos.Droid.Media.IAudioTrack;
 
     namespace Elastos {
     namespace Droid {
@@ -13,7 +13,7 @@ module
      * Interface definition for a callback to be invoked when the playback head position of
      * an AudioTrack has reached a notification marker or has increased by a certain period.
      */
-    interface IOnPlaybackPositionUpdateListener {
+    interface IAudioTrackOnPlaybackPositionUpdateListener {
         /**
          * Called on the listener to notify it that the previously set marker has been reached
          * by the playback head.
@@ -137,20 +137,20 @@ module
          * Returns the configured audio data sample rate in Hz
          */
         GetSampleRate(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Returns the current playback rate in Hz.
          */
         GetPlaybackRate(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Returns the configured audio data format. See {@link AudioFormat#ENCODING_PCM_16BIT}
          * and {@link AudioFormat#ENCODING_PCM_8BIT}.
          */
         GetAudioFormat(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Returns the type of audio stream this AudioTrack is configured for.
@@ -160,7 +160,7 @@ module
          * {@link AudioManager#STREAM_NOTIFICATION}, or {@link AudioManager#STREAM_DTMF}.
          */
         GetStreamType(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Returns the configured channel configuration.
@@ -168,13 +168,13 @@ module
          * and {@link AudioFormat#CHANNEL_OUT_STEREO}.
          */
         GetChannelConfiguration(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Returns the configured number of channels.
          */
         GetChannelCount(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Returns the state of the AudioTrack instance. This is useful after the
@@ -185,7 +185,7 @@ module
          * @see #STATE_UNINITIALIZED
          */
         GetState(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Returns the playback state of the AudioTrack instance.
@@ -194,7 +194,7 @@ module
          * @see #PLAYSTATE_PLAYING
          */
         GetPlayState(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Returns marker position expressed in frames.
@@ -202,14 +202,14 @@ module
          * or zero if marker is disabled.
          */
         GetNotificationMarkerPosition(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Returns the notification update period expressed in frames.
          * Zero means that no position update notifications are being delivered.
          */
         GetPositionNotificationPeriod(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Returns the playback head position expressed in frames.
@@ -220,7 +220,7 @@ module
          * It is reset to zero by flush(), reload(), and stop().
          */
         GetPlaybackHeadPosition(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Returns this track's estimated latency in milliseconds. This includes the latency due
@@ -231,7 +231,7 @@ module
          * @hide
          */
         GetLatency(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Returns the audio session ID.
@@ -239,7 +239,7 @@ module
          * @return the ID of the audio session this AudioTrack belongs to.
          */
         GetAudioSessionId(
-            [out] Int32 * result);
+            [out] Int32* result);
 
        /**
         * Poll for a timestamp on demand.
@@ -274,8 +274,8 @@ module
         // Add this text when the "on new timestamp" API is added:
         //   Use if you need to get the most recent timestamp outside of the event callback handler.
         GetTimestamp(
-            [in] IAudioTimestamp * timestamp,
-            [out] Boolean * result);
+            [in] IAudioTimestamp* timestamp,
+            [out] Boolean* result);
 
         //--------------------------------------------------------------------------
         // Initialization / configuration
@@ -288,7 +288,7 @@ module
          * @param listener
          */
         SetPlaybackPositionUpdateListener(
-            [in] IOnPlaybackPositionUpdateListener * listener);
+            [in] IAudioTrackOnPlaybackPositionUpdateListener* listener);
 
         /**
          * Sets the listener the AudioTrack notifies when a previously set marker is reached or
@@ -299,8 +299,8 @@ module
          * @param handler the Handler that will receive the event notification messages.
          */
         SetPlaybackPositionUpdateListener(
-            [in] IOnPlaybackPositionUpdateListener * listener,
-            [in] IHandler * handler);
+            [in] IAudioTrackOnPlaybackPositionUpdateListener* listener,
+            [in] IHandler* handler);
 
          /**
          * Sets the specified left and right output gain values on the AudioTrack.
@@ -320,7 +320,7 @@ module
         SetStereoVolume(
             [in] Float leftGain,
             [in] Float rightGain,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Sets the specified output gain value on all channels of this track.
@@ -338,7 +338,7 @@ module
          */
         SetVolume(
             [in] Float gain,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Sets the playback sample rate for this track. This sets the sampling rate at which
@@ -356,7 +356,7 @@ module
          */
         SetPlaybackRate(
             [in] Int32 sampleRateInHz,
-            [out] Int32 * result);
+            [out] Int32* result);
 
 
         /**
@@ -370,7 +370,7 @@ module
          */
         SetNotificationMarkerPosition(
             [in] Int32 markerInFrames,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Sets the period for the periodic notification event.
@@ -379,7 +379,7 @@ module
          */
         SetPositionNotificationPeriod(
             [in] Int32 periodInFrames,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Sets the playback head position.
@@ -393,7 +393,7 @@ module
          */
         SetPlaybackHeadPosition(
             [in] Int32 positionInFrames,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Sets the loop points and the loop count. The loop can be infinite.
@@ -418,7 +418,7 @@ module
             [in] Int32 startInFrames,
             [in] Int32 endInFrames,
             [in] Int32 loopCount,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         //---------------------------------------------------------
         // Transport control methods
@@ -482,11 +482,10 @@ module
          */
 
         Write(
-            [in] ArrayOf<Byte> * audioData,
+            [in] ArrayOf<Byte>* audioData,
             [in] Int32 offsetInBytes,
             [in] Int32 sizeInBytes,
-            [out] Int32 * result);
-
+            [out] Int32* result);
 
         /**
          * Writes the audio data to the audio sink for playback (streaming mode),
@@ -507,10 +506,10 @@ module
          */
 
         Write(
-            [in] ArrayOf<Int16> * audioData,
+            [in] ArrayOf<Int16>* audioData,
             [in] Int32 offsetInShorts,
             [in] Int32 sizeInShorts,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Writes the audio data to the audio sink for playback (streaming mode),
@@ -547,12 +546,11 @@ module
          *    the parameters don't resolve to valid data and indexes.
          */
         Write(
-            [in] ArrayOf<Float> *  audioData,
+            [in] ArrayOf<Float>* audioData,
             [in] Int32 offsetInFloats,
             [in] Int32 sizeInFloats,
             [in] Int32 writeMode,
-            [out] Int32 * result);
-
+            [out] Int32* result);
 
         /**
          * Writes the audio data to the audio sink for playback (streaming mode),
@@ -577,10 +575,10 @@ module
          *     {@link #ERROR_BAD_VALUE}, {@link #ERROR_INVALID_OPERATION}
          */
         Write(
-            [in] IByteBuffer * audioData,
+            [in] IByteBuffer* audioData,
             [in] Int32 sizeInBytes,
             [in] Int32 writeMode,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Notifies the native resource to reuse the audio data already loaded in the native
@@ -590,7 +588,7 @@ module
          *  {@link #ERROR_INVALID_OPERATION}
          */
         ReloadStaticData(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         //--------------------------------------------------------------------------
         // Audio effects management
@@ -615,7 +613,7 @@ module
          */
         AttachAuxEffect(
             [in] Int32 effectId,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Sets the send level of the audio track to the attached auxiliary effect
@@ -637,9 +635,7 @@ module
          */
         SetAuxEffectSendLevel(
             [in] Float level,
-            [out] Int32 * result);
-
-
+            [out] Int32* result);
     }
 
     interface IAudioTrackHelper {
@@ -653,7 +649,7 @@ module
          * @return the minimum value, which is the constant 0.0.
          */
         GetMinVolume(
-            [out] Float * result);
+            [out] Float* result);
 
         /**
          * Returns the maximum gain value, which is greater than or equal to 1.0.
@@ -664,14 +660,14 @@ module
          * @return the maximum value, which is greater than or equal to 1.0.
          */
         GetMaxVolume(
-            [out] Float * result);
+            [out] Float* result);
 
         /**
          *  Returns the output sample rate in Hz for the specified stream type.
          */
         GetNativeOutputSampleRate(
             [in] Int32 streamType,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Returns the minimum buffer size required for the successful creation of an AudioTrack
@@ -697,10 +693,8 @@ module
             [in] Int32 sampleRateInHz,
             [in] Int32 channelConfig,
             [in] Int32 audioFormat,
-            [out] Int32 * result);
-
+            [out] Int32* result);
     }
-
 
     } // namespace media
     } // namepsace Droid

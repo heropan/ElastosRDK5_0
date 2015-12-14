@@ -4,17 +4,24 @@
 
 #include "_Elastos_Droid_Media_CAudioSystem.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
 
 CarClass(CAudioSystem)
+    , public Singleton
+    , public IAudioSystem
 {
 public:
-    CAudioSystem();
+    CAR_INTERFACE_DECL();
 
-    static CARAPI GetNumStreamTypes(
+    CAR_SINGLETON_DECL()
+
+    CARAPI GetNumStreamTypes(
         /* [out] */ Int32* result);
 
     /*
@@ -24,7 +31,7 @@ public:
      *           <var>false</var> to turn mute off
      * @return command completion status see AUDIO_STATUS_OK, see AUDIO_STATUS_ERROR
      */
-    static CARAPI MuteMicrophone(
+    CARAPI MuteMicrophone(
         /* [in] */ Boolean on);
 
     /*
@@ -32,7 +39,7 @@ public:
      *
      * @return true if microphone is muted, false if it's not
      */
-    static CARAPI IsMicrophoneMuted(
+    CARAPI IsMicrophoneMuted(
         /* [out] */ Boolean* result);
 
     /*
@@ -40,19 +47,36 @@ public:
      *
      * return true if any track playing on this stream is active.
      */
-    static CARAPI IsStreamActive(
+    CARAPI IsStreamActive(
         /* [in] */ Int32 stream,
         /* [in] */ Int32 inPastMs,
         /* [out] */ Boolean* result);
+
+    /*
+     * Checks whether the specified stream type is active on a remotely connected device. The notion
+     * of what constitutes a remote device is enforced by the audio policy manager of the platform.
+     *
+     * return true if any track playing on this stream is active on a remote device.
+     */
+    CARAPI IsStreamActiveRemotely(
+        /* [in] */ Int32 stream,
+        /* [in] */ Int32 inPastMs,
+        /* [out] */ Boolean * result);
 
     /*
      * Checks whether the specified audio source is active.
      *
      * return true if any recorder using this source is currently recording
      */
-    static CARAPI IsSourceActive(
+    CARAPI IsSourceActive(
         /* [in] */ Int32 source,
         /* [out] */ Boolean* result);
+
+    /*
+     * Returns a new unused audio session ID
+     */
+    CARAPI NewAudioSessionId(
+        /* [out] */ Int32* result);
 
     /*
      * Sets a group generic audio configuration parameters. The use of these parameters
@@ -61,7 +85,7 @@ public:
      * param keyValuePairs  list of parameters key value pairs in the form:
      *    key1=value1;key2=value2;...
      */
-    static CARAPI SetParameters(
+    CARAPI SetParameters(
         /* [in] */ const String& keyValuePairs);
 
     /*
@@ -72,7 +96,7 @@ public:
      * return value: list of parameters key value pairs in the form:
      *    key1=value1;key2=value2;...
      */
-    static CARAPI GetParameters(
+    CARAPI GetParameters(
         /* [in] */ const String& keys,
         /* [out] */ String* result);
 
@@ -80,92 +104,110 @@ public:
      * Registers a callback to be invoked when an error occurs.
      * @param cb the callback to run
      */
-    static CARAPI SetErrorCallback(
+    CARAPI SetErrorCallback(
         /* [in] */ IAudioSystemErrorCallback* cb);
 
-    static CARAPI GetDeviceName(
+    CARAPI GetOutputDeviceName(
         /* [in] */ Int32 device,
         /* [out] */ String* result);
 
-    static CARAPI SetDeviceConnectionState(
+    CARAPI SetDeviceConnectionState(
         /* [in] */ Int32 device,
         /* [in] */ Int32 state,
         /* [in] */ const String& device_address);
 
-    static CARAPI GetDeviceConnectionState(
+    CARAPI GetDeviceConnectionState(
         /* [in] */ Int32 device,
         /* [in] */ const String& device_address,
         /* [out] */ Int32* result);
 
-    static CARAPI SetPhoneState(
+    CARAPI SetPhoneState(
         /* [in] */ Int32 state);
 
-    static CARAPI SetForceUse(
+    CARAPI SetForceUse(
         /* [in] */ Int32 usage,
         /* [in] */ Int32 config);
 
-    static CARAPI GetForceUse(
+    CARAPI GetForceUse(
         /* [in] */ Int32 usage,
         /* [out] */ Int32* result);
 
-    static CARAPI InitStreamVolume(
+    CARAPI InitStreamVolume(
         /* [in] */ Int32 stream,
         /* [in] */ Int32 indexMin,
         /* [in] */ Int32 indexMax);
 
-    static CARAPI SetStreamVolumeIndex(
+    CARAPI SetStreamVolumeIndex(
         /* [in] */ Int32 stream,
         /* [in] */ Int32 index,
         /* [in] */ Int32 device);
 
-    static CARAPI GetStreamVolumeIndex(
+    CARAPI GetStreamVolumeIndex(
         /* [in] */ Int32 stream,
         /* [in] */ Int32 device,
         /* [out] */ Int32* result);
 
-    static CARAPI SetMasterVolume(
+    CARAPI SetMasterVolume(
         /* [in] */ Float value);
 
-    static CARAPI GetMasterVolume(
+    CARAPI GetMasterVolume(
         /* [out] */ Float* result);
 
-    static CARAPI SetMasterMute(
+    CARAPI SetMasterMute(
         /* [in] */ Boolean mute);
 
-    static CARAPI GetMasterMute(
+    CARAPI GetMasterMute(
         /* [out] */ Boolean* result);
 
-    static CARAPI GetDevicesForStream(
+    CARAPI GetDevicesForStream(
         /* [in] */ Int32 stream,
         /* [out] */ Int32* result);
 
     // helpers for android.media.AudioManager.getProperty(), see description there for meaning
-    static CARAPI GetPrimaryOutputSamplingRate(
+    CARAPI GetPrimaryOutputSamplingRate(
         /* [out] */ Int32* result);
 
-    static CARAPI GetPrimaryOutputFrameCount(
+    CARAPI GetPrimaryOutputFrameCount(
         /* [out] */ Int32* result);
 
-    static CARAPI_(void) ErrorCallbackFromNative(
-        /* [in] */ Int32 error);
+    CARAPI GetOutputLatency(
+        /* [in] */ Int32 stream,
+        /* [out] */ Int32* result);
 
-    static CARAPI CheckAudioSystemCommand(
-        /* [in] */ Int32 status);
+    CARAPI SetLowRamDevice(
+        /* [in] */ Boolean isLowRamDevice,
+        /* [out] */ Int32* result);
 
-private:
-    // Expose only the getter method publicly so we can change it in the future
-    static const Int32 NUM_STREAM_TYPES;
+    CARAPI CheckAudioFlinger(
+        /* [out] */ Int32* result);
 
-    static AutoPtr<IAudioSystemErrorCallback> mErrorCallback;
-    static Boolean sInitAudioSystem;
+    CARAPI ListAudioPorts(
+        /* [in] */ IArrayList* ports,
+        /* [in] */ ArrayOf<Int32>* generation,
+        /* [out] */ Int32* result);
 
-    static const Int32 NUM_DEVICE_STATES;
+    CARAPI CreateAudioPatch(
+        /* [in] */ ArrayOf<IAudioPatch*>* patch,
+        /* [in] */ ArrayOf<IAudioPortConfig*>* sources,
+        /* [in] */ ArrayOf<IAudioPortConfig*>* sinks,
+        /* [out] */ Int32* result);
 
-    static const Int32 NUM_FORCE_CONFIG;
+    CARAPI ReleaseAudioPatch(
+        /* [in] */ IAudioPatch* patch,
+        /* [out] */ Int32* result);
 
-    static const Int32 NUM_FORCE_USE;
+    CARAPI ListAudioPatches(
+        /* [in] */ IArrayList* patches,
+        /* [in] */ ArrayOf<Int32>* generation,
+        /* [out] */ Int32* result);
 
-    static Object sStaticAudioSystemLock;
+    CARAPI SetAudioPortConfig(
+        /* [in] */ IAudioPortConfig* config,
+        /* [out] */ Int32* result);
+
+    CARAPI GetAudioHwSyncForSession(
+        /* [in] */ Int32 sessionId,
+        /* [out] */ Int32* result);
 };
 
 } // namespace Media

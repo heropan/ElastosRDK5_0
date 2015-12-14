@@ -1,9 +1,9 @@
 
 module
 {
-    interface Elastos.Droid.Os.IUserHandle;
-    interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Net.IUri;
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IUserHandle;
 
     namespace Elastos {
     namespace Droid {

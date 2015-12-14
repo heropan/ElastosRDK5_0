@@ -7,35 +7,35 @@ namespace Media {
 namespace Tv {
 
 CAR_SINGLETON_IMPL(CTvInputInfoTvInputSettings)
-CAR_INTERFACE_IMPL(CTvInputInfoTvInputSettings, Object, ITvInputInfoTvInputSettings);
+CAR_INTERFACE_IMPL(CTvInputInfoTvInputSettings, Singleton, ITvInputInfoTvInputSettings);
 
 ECode CTvInputInfoTvInputSettings::GetHiddenTvInputIds(
-    /* [in] */ IContext * context,
+    /* [in] */ IContext* context,
     /* [in] */ Int32 userId,
-    /* [out] */ ISet ** result)
+    /* [out] */ ISet** result)
 {
     return TvInputInfoTvInputSettings::GetHiddenTvInputIds(context, userId, result);
 }
 
 ECode CTvInputInfoTvInputSettings::GetCustomLabels(
-    /* [in] */ IContext * context,
+    /* [in] */ IContext* context,
     /* [in] */ Int32 userId,
-    /* [out] */ IMap ** result)
+    /* [out] */ IMap** result)
 {
     return TvInputInfoTvInputSettings::GetCustomLabels(context, userId, result);
 }
 
 ECode CTvInputInfoTvInputSettings::PutHiddenTvInputs(
-    /* [in] */ IContext * context,
-    /* [in] */ ISet * hiddenInputIds,
+    /* [in] */ IContext* context,
+    /* [in] */ ISet* hiddenInputIds,
     /* [in] */ Int32 userId)
 {
     return TvInputInfoTvInputSettings::PutHiddenTvInputs(context, hiddenInputIds, userId);
 }
 
 ECode CTvInputInfoTvInputSettings::PutCustomLabels(
-    /* [in] */ IContext * context,
-    /* [in] */ IMap * customLabels,
+    /* [in] */ IContext* context,
+    /* [in] */ IMap* customLabels,
     /* [in] */ Int32 userId)
 {
     return TvInputInfoTvInputSettings::PutCustomLabels(context, customLabels, userId);

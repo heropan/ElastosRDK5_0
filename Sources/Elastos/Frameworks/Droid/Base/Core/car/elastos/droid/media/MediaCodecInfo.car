@@ -20,7 +20,7 @@ module
          * Returns the range of supported bitrates in bits/second.
          */
         GetBitrateRange(
-            [out] IRange ** result);
+            [out] IRange** result);
 
         /**
          * Returns the array of supported sample rates if the codec
@@ -28,7 +28,7 @@ module
          * {@code null}.  The array is sorted in ascending order.
          */
         GetSupportedSampleRates(
-            [out, callee] ArrayOf<Int32> * result);
+            [out, callee] ArrayOf<Int32>* result);
 
         /**
          * Returns the array of supported sample rate ranges.  The
@@ -36,44 +36,44 @@ module
          * distinct.
          */
         GetSupportedSampleRateRanges(
-            [out, callee] ArrayOf<IRange*> * result);
+            [out, callee] ArrayOf<IRange*>* result);
 
         /**
          * Returns the maximum number of input channels supported.  The codec
          * supports any number of channels between 1 and this maximum value.
          */
         GetMaxInputChannelCount(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /** @hide */
         Init(
-            [in] IMediaFormat * info,
-            [in] IMediaCodecInfoCodecCapabilities * parent);
+            [in] IMediaFormat* info,
+            [in] IMediaCodecInfoCodecCapabilities* parent);
 
         /**
          * Query whether the sample rate is supported by the codec.
          */
         IsSampleRateSupported(
             [in] Int32 sampleRate,
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         /** @hide */
         SetDefaultFormat(
-            [in] IMediaFormat * format);
+            [in] IMediaFormat* format);
 
         /** @hide */
         SupportsFormat(
-            [in] IMediaFormat * format,
-            [out] Boolean * result);
+            [in] IMediaFormat* format,
+            [out] Boolean* result);
 
     }
 
     interface IMediaCodecInfoAudioCapabilitiesHelper {
         /** @hide */
         Create(
-            [in] IMediaFormat * info,
-            [in] IMediaCodecInfoCodecCapabilities * parent,
-            [out] IMediaCodecInfoAudioCapabilities ** result);
+            [in] IMediaFormat* info,
+            [in] IMediaCodecInfoCodecCapabilities* parent,
+            [out] IMediaCodecInfoAudioCapabilities** result);
     }
 
     /**
@@ -162,7 +162,7 @@ module
          */
         IsFeatureSupported(
             [in] String name,
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         /**
          * Query codec feature requirements.
@@ -172,15 +172,15 @@ module
          */
         IsFeatureRequired(
             [in] String name,
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         /** @hide */
         ValidFeatures(
-            [out, callee] ArrayOf<String> * result);
+            [out, callee] ArrayOf<String>* result);
 
         /** @hide */
         IsRegular(
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         /**
          * Query whether codec supports a given {@link MediaFormat}.
@@ -190,43 +190,43 @@ module
          *         and feature requests.
          */
         IsFormatSupported(
-            [in] IMediaFormat * format,
-            [out] Boolean * result);
+            [in] IMediaFormat* format,
+            [out] Boolean* result);
 
         /**
          * Returns a MediaFormat object with default values for configurations that have
          * defaults.
          */
         GetDefaultFormat(
-            [out] IMediaFormat ** result);
+            [out] IMediaFormat** result);
 
         /**
          * Returns the mime type for which this codec-capability object was created.
          */
         GetMimeType(
-            [out] String * result);
+            [out] String* result);
 
         /**
          * Returns the audio capabilities or {@code null} if this is not an audio codec.
          */
         GetAudioCapabilities(
-            [out] IMediaCodecInfoAudioCapabilities ** result);
+            [out] IMediaCodecInfoAudioCapabilities** result);
 
         /**
          * Returns the encoding capabilities or {@code null} if this is not an encoder.
          */
         GetEncoderCapabilities(
-            [out] IMediaCodecInfoEncoderCapabilities ** result);
+            [out] IMediaCodecInfoEncoderCapabilities** result);
 
         /**
          * Returns the video capabilities or {@code null} if this is not a video codec.
          */
         GetVideoCapabilities(
-            [out] IMediaCodecInfoVideoCapabilities ** result);
+            [out] IMediaCodecInfoVideoCapabilities** result);
 
         /** @hide */
         Dup(
-            [out] IMediaCodecInfoCodecCapabilities ** result);
+            [out] IMediaCodecInfoCodecCapabilities** result);
     }
 
     interface IMediaCodecInfoCodecCapabilitiesHelper {
@@ -239,7 +239,7 @@ module
             [in] String mime,
             [in] Int32 profile,
             [in] Int32 level,
-            [out] IMediaCodecInfoCodecCapabilities ** result);
+            [out] IMediaCodecInfoCodecCapabilities** result);
     }
 
     /**
@@ -250,19 +250,19 @@ module
          * Returns the range of supported bitrates in bits/second.
          */
         GetBitrateRange(
-            [out] IRange ** result);
+            [out] IRange** result);
 
         /**
          * Returns the range of supported video widths.
          */
         GetSupportedWidths(
-            [out] IRange ** result);
+            [out] IRange** result);
 
         /**
          * Returns the range of supported video heights.
          */
         GetSupportedHeights(
-            [out] IRange ** result);
+            [out] IRange** result);
 
         /**
          * Returns the alignment requirement for video width (in pixels).
@@ -271,7 +271,7 @@ module
          * multiple of.
          */
         GetWidthAlignment(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Returns the alignment requirement for video height (in pixels).
@@ -280,7 +280,7 @@ module
          * multiple of.
          */
         GetHeightAlignment(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Return the upper limit on the smaller dimension of width or height.
@@ -296,7 +296,7 @@ module
          * @hide
          */
         GetSmallerDimensionUpperLimit(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Returns the range of supported frame rates.
@@ -307,7 +307,7 @@ module
          * or the decoding of such material in non-realtime.
          */
         GetSupportedFrameRates(
-            [out] IRange ** result);
+            [out] IRange** result);
 
         /**
          * Returns the range of supported video widths for a video height.
@@ -315,7 +315,7 @@ module
          */
         GetSupportedWidthsFor(
             [in] Int32 height,
-            [out] IRange ** result);
+            [out] IRange** result);
 
         /**
          * Returns the range of supported video heights for a video width
@@ -323,7 +323,7 @@ module
          */
         GetSupportedHeightsFor(
             [in] Int32 width,
-            [out] IRange ** result);
+            [out] IRange** result);
 
         /**
          * Returns the range of supported video frame rates for a video size.
@@ -338,7 +338,7 @@ module
         GetSupportedFrameRatesFor(
             [in] Int32 width,
             [in] Int32 height,
-            [out] IRange ** result);
+            [out] IRange** result);
 
         /**
          * Returns whether a given video size ({@code width} and
@@ -348,7 +348,7 @@ module
             [in] Int32 width,
             [in] Int32 height,
             [in] Double frameRate,
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         /**
          * Returns whether a given video size ({@code width} and
@@ -357,44 +357,44 @@ module
         IsSizeSupported(
             [in] Int32 width,
             [in] Int32 height,
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         /**
          * @hide
          * @throws java.lang.ClassCastException */
         SupportsFormat(
-            [in] IMediaFormat * format,
-            [out] Boolean * result);
+            [in] IMediaFormat* format,
+            [out] Boolean* result);
 
         /** @hide */
         Init(
-            [in] IMediaFormat * info,
-            [in] IMediaCodecInfoCodecCapabilities * parent);
+            [in] IMediaFormat* info,
+            [in] IMediaCodecInfoCodecCapabilities* parent);
 
         /** @hide */
         GetBlockSize(
-            [out] ISize ** result);
+            [out] ISize** result);
 
         /** @hide */
         GetBlockCountRange(
-            [out] IRange ** result);
+            [out] IRange** result);
 
         /** @hide */
         GetBlocksPerSecondRange(
-            [out] IRange ** result);
+            [out] IRange** result);
 
         /** @hide */
         GetAspectRatioRange(
             [in] Boolean blocks,
-            [out] IRange ** result);
+            [out] IRange** result);
     }
 
     interface IMediaCodecInfoVideoCapabilitiesHelper {
         /** @hide */
         Create(
-            [in] IMediaFormat * info,
-            [in] IMediaCodecInfoCodecCapabilities * parent,
-            [out] IMediaCodecInfoVideoCapabilities ** result);
+            [in] IMediaFormat* info,
+            [in] IMediaCodecInfoCodecCapabilities* parent,
+            [out] IMediaCodecInfoVideoCapabilities** result);
 
     }
 
@@ -415,7 +415,7 @@ module
          * @hide
          */
         GetQualityRange(
-            [out] IRange ** result);
+            [out] IRange** result);
 
         /**
          * Returns the supported range of encoder complexity values.
@@ -426,37 +426,37 @@ module
          * ratio.  Use a lower value to save power and/or time.
          */
         GetComplexityRange(
-            [out] IRange ** result);
+            [out] IRange** result);
 
         /**
          * Query whether a bitrate mode is supported.
          */
         IsBitrateModeSupported(
             [in] Int32 mode,
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         /** @hide */
         Init(
-            [in] IMediaFormat * info,
-            [in] IMediaCodecInfoCodecCapabilities * parent);
+            [in] IMediaFormat* info,
+            [in] IMediaCodecInfoCodecCapabilities* parent);
 
         /** @hide */
         SetDefaultFormat(
-            [in] IMediaFormat * format);
+            [in] IMediaFormat* format);
 
         /** @hide */
         SupportsFormat(
-            [in] IMediaFormat * format,
-            [out] Boolean * result);
+            [in] IMediaFormat* format,
+            [out] Boolean* result);
 
     }
 
     interface IMediaCodecInfoEncoderCapabilitiesHelper {
         /** @hide */
         Create(
-            [in] IMediaFormat * info,
-            [in] IMediaCodecInfoCodecCapabilities * parent,
-            [out] IMediaCodecInfoEncoderCapabilities ** result);
+            [in] IMediaFormat* info,
+            [in] IMediaCodecInfoCodecCapabilities* parent,
+            [out] IMediaCodecInfoEncoderCapabilities** result);
     }
 
     /**
@@ -628,19 +628,19 @@ module
          * Retrieve the codec name.
          */
         GetName(
-            [out] String * result);
+            [out] String* result);
 
         /**
          * Query if the codec is an encoder.
          */
         IsEncoder(
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         /**
          * Query the media types supported by the codec.
          */
         GetSupportedTypes(
-            [out, callee] ArrayOf<String> * result);
+            [out, callee] ArrayOf<String>* result);
 
         /**
          * Enumerates the capabilities of the codec component. Since a single
@@ -650,12 +650,11 @@ module
          */
         GetCapabilitiesForType(
             [in] String type,
-            [out] IMediaCodecInfoCodecCapabilities ** result);
+            [out] IMediaCodecInfoCodecCapabilities** result);
 
         /** @hide */
         MakeRegular(
-            [out] IMediaCodecInfo ** result);
-
+            [out] IMediaCodecInfo** result);
     }
     } // namespace media
     } // namepsace Droid
