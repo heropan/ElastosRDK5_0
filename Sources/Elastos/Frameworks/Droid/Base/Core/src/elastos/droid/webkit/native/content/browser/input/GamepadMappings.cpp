@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/native/content/browser/input/GamepadMappings.h"
 #include "elastos/droid/webkit/native/content/browser/input/CanonicalAxisIndex.h"
 #include "elastos/droid/webkit/native/content/browser/input/CanonicalButtonIndex.h"

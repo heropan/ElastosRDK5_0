@@ -1,3 +1,6 @@
+
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/webkit/native/android_webview/AwAssets.h"
 #include "elastos/droid/webkit/native/android_webview/api/AwAssets_dec.h"
 #include <elastos/utility/logging/Logger.h>

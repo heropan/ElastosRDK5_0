@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/webkit/native/ui/autofill/AutofillPopup.h"
 #include "elastos/utility/Arrays.h"
 

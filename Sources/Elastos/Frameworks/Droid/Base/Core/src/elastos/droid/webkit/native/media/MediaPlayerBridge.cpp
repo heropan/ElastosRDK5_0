@@ -1,3 +1,9 @@
+
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/native/media/MediaPlayerBridge.h"
 #include "elastos/droid/webkit/native/media/api/MediaPlayerBridge_dec.h"
 

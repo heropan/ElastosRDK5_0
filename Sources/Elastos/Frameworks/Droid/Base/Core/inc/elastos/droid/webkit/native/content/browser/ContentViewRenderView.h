@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWRENDERVIEW_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWRENDERVIEW_H__
 
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/ext/frameworkext.h"
 //TODO #include "elastos/droid/widget/FrameLayout.h"
 #include "elastos/droid/os/Runnable.h"

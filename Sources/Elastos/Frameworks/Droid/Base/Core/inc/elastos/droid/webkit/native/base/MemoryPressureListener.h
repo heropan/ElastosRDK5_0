@@ -2,7 +2,9 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_MEMORYPRESSURELISTENER_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_MEMORYPRESSURELISTENER_H__
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::Content::IComponentCallbacks2;

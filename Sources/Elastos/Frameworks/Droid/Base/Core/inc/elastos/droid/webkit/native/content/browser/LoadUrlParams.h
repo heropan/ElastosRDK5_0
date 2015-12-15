@@ -8,6 +8,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/content_public/Referrer.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::IMap;
 using Elastos::Droid::Webkit::Content_Public::Referrer;

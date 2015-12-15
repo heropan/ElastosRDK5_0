@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/CHandler.h"
 //#include "elastos/droid/view/CChoreographerHelper.h"

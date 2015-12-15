@@ -1,8 +1,11 @@
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_JSRESULTHANDLER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_JSRESULTHANDLER_H__
+
+#include "Elastos.CoreLibrary.Core.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/android_webview/JsResultReceiver.h"
 #include "elastos/droid/webkit/native/android_webview/JsPromptResultReceiver.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::IRunnable;
 // import org.chromium.base.ThreadUtils;

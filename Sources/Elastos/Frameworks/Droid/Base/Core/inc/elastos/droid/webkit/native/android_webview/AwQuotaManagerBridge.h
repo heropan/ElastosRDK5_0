@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWQUOTAMANAGERBRIDGE_H__
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/Object.h>
 
 //TODO using Elastos::Droid::Webkit::IValueCallback;
 using Elastos::Droid::Utility::ISparseArray;

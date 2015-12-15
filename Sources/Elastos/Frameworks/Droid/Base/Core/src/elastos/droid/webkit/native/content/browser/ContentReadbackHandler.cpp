@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/webkit/native/content/browser/ContentReadbackHandler.h"
 #include "elastos/droid/webkit/native/content/api/ContentReadbackHandler_dec.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"

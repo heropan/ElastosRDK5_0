@@ -4,6 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Build.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::IList;
 using Elastos::Droid::Content::IContext;

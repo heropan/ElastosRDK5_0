@@ -1,4 +1,8 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
+#include "Elastos.Droid.Text.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/native/content/browser/input/InputDialogContainer.h"
 #include "elastos/droid/webkit/native/content/browser/input/ChromeDatePickerDialog.h"
 #include "elastos/droid/webkit/native/content/browser/input/DateDialogNormalizer.h"

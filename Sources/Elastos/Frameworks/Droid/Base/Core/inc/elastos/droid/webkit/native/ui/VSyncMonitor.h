@@ -5,7 +5,9 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_VSYNCMONITOR_H_
 #define _ELASTOS_DROID_WEBKIT_UI_VSYNCMONITOR_H_
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 // package org.chromium.ui;
 // import android.annotation.SuppressLint;

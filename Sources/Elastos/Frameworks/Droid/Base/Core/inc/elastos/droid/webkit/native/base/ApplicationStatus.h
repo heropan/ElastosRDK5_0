@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_APPLICATIONSTATUS_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_APPLICATIONSTATUS_H__
 
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/webkit/native/base/BaseChromiumApplication.h"
 #include "elastos/droid/webkit/native/base/ObserverList.h"
 #include "elastos/droid/os/Runnable.h"

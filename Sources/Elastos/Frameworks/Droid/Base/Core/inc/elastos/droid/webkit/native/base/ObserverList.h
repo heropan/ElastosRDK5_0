@@ -4,6 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.CoreLibrary.Utility.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::IIterable;

@@ -2,8 +2,10 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACCESSIBILITY_JELLYBEANBROWSERACCESSIBILITYMANAGER_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACCESSIBILITY_JELLYBEANBROWSERACCESSIBILITYMANAGER_H__
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/content/browser/accessibility/BrowserAccessibilityManager.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;

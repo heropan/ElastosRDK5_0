@@ -1,4 +1,10 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Utility.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/webkit/native/ui/base/WindowElastos.h"
 #include "elastos/droid/webkit/native/ui/api/WindowElastos_dec.h"
 //#include "elastos/droid/widget/CToastHelper.h"

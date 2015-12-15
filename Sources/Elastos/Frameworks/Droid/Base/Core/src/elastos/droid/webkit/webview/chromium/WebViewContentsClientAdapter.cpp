@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.Provider.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/graphics/CBitmapFactory.h"
 #include "elastos/droid/graphics/CCanvas.h"

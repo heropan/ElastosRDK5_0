@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Utility.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/graphics/PixelFormat.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/webkit/native/ui/gfx/DeviceDisplayInfo.h"

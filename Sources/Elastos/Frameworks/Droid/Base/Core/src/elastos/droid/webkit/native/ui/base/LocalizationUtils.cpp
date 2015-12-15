@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
 #include "elastos/droid/webkit/native/base/ApplicationStatus.h"
 #include "elastos/droid/webkit/native/ui/base/LocalizationUtils.h"

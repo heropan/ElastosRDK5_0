@@ -1,3 +1,9 @@
+
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Net.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/webkit/native/android_webview/ElastosProtocolHandler.h"
 #include "elastos/droid/webkit/native/android_webview/api/ElastosProtocolHandler_dec.h"
 //TODO #include "elastos/droid/net/CUriHelper.h"

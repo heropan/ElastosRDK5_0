@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/native/android_webview/ScrollAccessibilityHelper.h"
 #include "elastos/droid/os/CHandler.h"
 #include <elastos/utility/logging/Logger.h>

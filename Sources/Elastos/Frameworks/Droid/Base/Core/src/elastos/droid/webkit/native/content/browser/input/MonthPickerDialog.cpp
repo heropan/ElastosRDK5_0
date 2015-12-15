@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/webkit/native/content/browser/input/MonthPickerDialog.h"
 #include "elastos/droid/webkit/native/content/browser/input/MonthPicker.h"
 

@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Provider.h"
 #include "elastos/droid/webkit/native/android_webview/AwWebContentsDelegateAdapter.h"
 #include "elastos/droid/webkit/native/base/ContentUriUtils.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"

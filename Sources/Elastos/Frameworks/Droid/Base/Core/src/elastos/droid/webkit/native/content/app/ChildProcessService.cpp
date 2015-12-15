@@ -1,4 +1,8 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/native/content/app/ChildProcessService.h"
 #include "elastos/droid/webkit/native/content/api/ChildProcessService_dec.h"
 #include "elastos/droid/webkit/native/content/browser/ChildProcessConnection.h"

@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSSTATICS_H__
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/android_webview/ClientCertLookupTable.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::IRunnable;
 // import org.chromium.base.CalledByNative;

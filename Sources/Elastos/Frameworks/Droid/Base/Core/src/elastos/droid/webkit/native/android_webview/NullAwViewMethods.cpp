@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/webkit/native/android_webview/NullAwViewMethods.h"
 
 namespace Elastos {

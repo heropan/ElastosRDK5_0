@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/webkit/native/content/browser/SpeechRecognition.h"
 #include "elastos/droid/webkit/native/content/api/SpeechRecognition_dec.h"
 #include "elastos/droid/webkit/native/content/browser/SpeechRecognitionError.h"

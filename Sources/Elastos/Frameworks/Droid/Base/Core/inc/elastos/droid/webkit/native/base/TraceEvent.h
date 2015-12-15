@@ -2,7 +2,10 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_TRACEEVENT_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_TRACEEVENT_H__
 
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IMessageQueue;

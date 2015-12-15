@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/webkit/native/content/browser/input/DateDialogNormalizer.h"
 // TODO #include <elastos/utility/TimeZone.h>
 

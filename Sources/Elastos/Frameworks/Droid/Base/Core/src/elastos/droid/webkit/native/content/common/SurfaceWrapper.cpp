@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/native/content/common/SurfaceWrapper.h"
 
 namespace Elastos {

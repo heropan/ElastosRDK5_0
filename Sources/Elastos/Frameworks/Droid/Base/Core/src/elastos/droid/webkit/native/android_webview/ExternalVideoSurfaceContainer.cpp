@@ -1,3 +1,6 @@
+
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Hardware.h"
 #include "elastos/droid/webkit/native/android_webview/ExternalVideoSurfaceContainer.h"
 #include "elastos/droid/webkit/native/android_webview/api/ExternalVideoSurfaceContainer_dec.h"
 #include <elastos/core/Math.h>

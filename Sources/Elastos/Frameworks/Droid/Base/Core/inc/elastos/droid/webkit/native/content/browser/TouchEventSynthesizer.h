@@ -7,6 +7,7 @@
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_TOUCHEVENTSYNTHESIZER_H_
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IPointerCoords;

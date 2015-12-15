@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/webkit/native/content/browser/ContentVideoView.h"
 #include "elastos/droid/webkit/native/content/api/ContentVideoView_dec.h"
 #include <elastos/utility/logging/Logger.h>

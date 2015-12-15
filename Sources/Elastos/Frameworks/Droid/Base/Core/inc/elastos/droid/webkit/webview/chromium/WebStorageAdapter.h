@@ -17,6 +17,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_WEBSTORAGEADAPTER_H_
 #define _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_WEBSTORAGEADAPTER_H_
 
+#include "Elastos.Droid.Webkit.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/android_webview/AwQuotaManagerBridge.h"
 

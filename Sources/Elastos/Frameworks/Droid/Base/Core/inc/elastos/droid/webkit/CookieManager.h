@@ -2,7 +2,9 @@
 #ifndef __ELASTOS_DROID_WEBKIT_COOKIEMANAGER_H__
 #define __ELASTOS_DROID_WEBKIT_COOKIEMANAGER_H__
 
+#include "Elastos.Droid.Webkit.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Net::IWebAddress;
 using Elastos::Core::ICloneable;

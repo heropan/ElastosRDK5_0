@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_WINDOWCALLBACKWRAPPER_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_WINDOWCALLBACKWRAPPER_H__
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 // import android.annotation.SuppressLint;

@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/webkit/native/content/browser/NavigationEntry.h"
 
 namespace Elastos {

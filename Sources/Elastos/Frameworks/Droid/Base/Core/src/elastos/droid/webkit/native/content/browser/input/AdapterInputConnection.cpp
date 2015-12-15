@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/native/content/browser/input/AdapterInputConnection.h"
 #include "elastos/droid/webkit/native/content/browser/input/ImeAdapter.h"
 // TODO #include "elastos/droid/text/CSelection.h"

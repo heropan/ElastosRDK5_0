@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CHILDPROCESSCONNECTIONIMPL_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CHILDPROCESSCONNECTIONIMPL_H__
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/content/browser/ChildProcessConnection.h"
 #include "elastos/droid/webkit/native/content/browser/FileDescriptorInfo.h"

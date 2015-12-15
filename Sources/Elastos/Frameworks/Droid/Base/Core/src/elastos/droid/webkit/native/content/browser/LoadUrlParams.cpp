@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/webkit/native/content/browser/LoadUrlParams.h"
 #include "elastos/droid/webkit/native/content/api/LoadUrlParams_dec.h"
 #include "elastos/droid/webkit/native/content/browser/PageTransitionTypes.h"

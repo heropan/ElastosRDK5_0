@@ -5,6 +5,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/webkit/native/content/browser/WebContentsObserverElastos.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Pm::IPackageManager;

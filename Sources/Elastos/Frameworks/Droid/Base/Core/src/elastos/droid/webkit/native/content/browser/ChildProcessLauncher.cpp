@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/native/content/browser/ChildProcessLauncher.h"
 #include "elastos/droid/webkit/native/content/api/ChildProcessLauncher_dec.h"
 #include "elastos/droid/webkit/native/content/browser/BindingManagerImpl.h"

@@ -1,3 +1,8 @@
+
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Hardware.h"
 #include "elastos/droid/webkit/native/android_webview/DefaultVideoPosterRequestHandler.h"
 
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"

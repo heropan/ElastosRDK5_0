@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/webkit/native/ui/base/DeviceFormFactor.h"
 #include "elastos/droid/webkit/native/ui/api/DeviceFormFactor_dec.h"
 

@@ -6,6 +6,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_LOCATIONPROVIDERFACTORY_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_LOCATIONPROVIDERFACTORY_H_
 
+#include "Elastos.Droid.Location.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Runnable.h"
 

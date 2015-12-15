@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/webkit/webview/chromium/ResourceRewriter.h"
 
 using Elastos::Droid::Content::Res::IAssetManager;

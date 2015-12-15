@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_WEBRESOURCERESPONSE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::IMap;
 using Elastos::IO::IInputStream;

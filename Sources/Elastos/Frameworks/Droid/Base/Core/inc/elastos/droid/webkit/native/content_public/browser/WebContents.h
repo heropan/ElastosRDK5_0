@@ -4,6 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/content_public/browser/NavigationController.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {

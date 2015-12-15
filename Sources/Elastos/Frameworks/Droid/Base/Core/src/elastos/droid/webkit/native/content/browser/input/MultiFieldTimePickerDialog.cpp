@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/native/content/browser/input/MultiFieldTimePickerDialog.h"
 
 using Elastos::Droid::App::EIID_IAlertDialog;

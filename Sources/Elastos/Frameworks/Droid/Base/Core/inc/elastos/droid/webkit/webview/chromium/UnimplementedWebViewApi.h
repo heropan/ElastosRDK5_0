@@ -18,6 +18,7 @@
 #define _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_UNIMPLEMENTEDWEBVIEWAPI_H_
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 // package com.android.webview.chromium;
 // import android.util.Log;

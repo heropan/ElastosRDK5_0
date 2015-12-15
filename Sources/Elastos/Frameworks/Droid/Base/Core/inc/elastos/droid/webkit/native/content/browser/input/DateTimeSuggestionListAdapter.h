@@ -4,6 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 // TODO #include "elastos/droid/widget/ArrayAdapter.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::ILayoutInflater;

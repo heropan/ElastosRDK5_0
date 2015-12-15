@@ -6,7 +6,9 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_TIMEZONEMONITOR_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_TIMEZONEMONITOR_H_
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 // package org.chromium.content.browser;
 // import android.content.BroadcastReceiver;

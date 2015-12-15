@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/webkit/native/content/browser/input/WeekPicker.h"
 
 using Elastos::Utility::ICalendarHelper;

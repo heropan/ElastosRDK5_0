@@ -7,6 +7,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 //#include "elastos/droid/widget/Button.h"
+#include <elastos/core/Object.h>
 
 // package org.chromium.ui;
 // import android.content.Context;

@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/webkit/native/base/PerfTraceEvent.h"
 
 namespace Elastos {

@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Provider.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
 #include "elastos/droid/webkit/native/content/api/ContentViewCore_dec.h"
 #include "elastos/droid/webkit/native/content/browser/DeviceUtils.h"

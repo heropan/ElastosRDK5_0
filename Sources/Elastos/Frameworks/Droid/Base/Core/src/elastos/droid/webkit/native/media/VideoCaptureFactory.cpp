@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/webkit/native/media/VideoCaptureFactory.h"
 #include "elastos/droid/webkit/native/media/VideoCaptureElastos.h"
 #include "elastos/droid/webkit/native/media/VideoCaptureTango.h"

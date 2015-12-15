@@ -1,4 +1,8 @@
 
+#include "Elastos.CoreLibrary.Net.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Keystore.h"
+#include "_Elastos.Droid.Core.h"
 #include "elastos/droid/content/CIntent.h"
 //#include "elastos/droid/telephony/CTelephonyManager.h"
 #include "elastos/droid/webkit/native/net/ElastosNetworkLibrary.h"

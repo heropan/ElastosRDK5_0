@@ -8,6 +8,7 @@
 //#include "elastos/droid/webkit/native/content/browser/input/ImeAdapter.h"
 #include "elastos/droid/webkit/native/content/browser/input/InputMethodManagerWrapper.h"
 // TODO #include "elastos/droid/view/inputmethod/BaseInputConnection.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Os::SystemClock;

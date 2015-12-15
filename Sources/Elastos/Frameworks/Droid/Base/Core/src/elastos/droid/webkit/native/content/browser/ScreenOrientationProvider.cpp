@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/webkit/native/content/browser/ScreenOrientationProvider.h"
 #include "elastos/droid/webkit/native/content/api/ScreenOrientationProvider_dec.h"
 #include "elastos/droid/webkit/native/base/ApplicationStatus.h"

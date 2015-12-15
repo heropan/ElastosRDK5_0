@@ -2,8 +2,11 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTPOPUPDIALOG_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTPOPUPDIALOG_H__
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/content/browser/input/SelectPopup.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::App::IAlertDialog;
 using Elastos::Droid::Content::IContext;

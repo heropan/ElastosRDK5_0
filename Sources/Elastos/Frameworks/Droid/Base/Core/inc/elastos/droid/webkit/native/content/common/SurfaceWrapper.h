@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_COMMON_SURFACEWRAPPER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 // TODO using Elastos::Droid::Os::IParcel;
 // TODO using Elastos::Droid::Os::IParcelable;

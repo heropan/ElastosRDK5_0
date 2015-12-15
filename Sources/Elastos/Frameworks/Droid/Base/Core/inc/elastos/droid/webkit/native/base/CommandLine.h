@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_BASE_COMMANDLINE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 // import android.util.Log;
 

@@ -1,4 +1,8 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Utility.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/webkit/native/content/browser/input/InsertionHandleController.h"
 #include "elastos/droid/webkit/native/content/browser/input/HandleView.h"
 #include <elastos/core/Math.h>

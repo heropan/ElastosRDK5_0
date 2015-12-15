@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include <elastos/core/StringBuffer.h>
 #include <elastos/utility/logging/Slogger.h>
 //TODO #include "elastos/droid/content/CIntent.h"

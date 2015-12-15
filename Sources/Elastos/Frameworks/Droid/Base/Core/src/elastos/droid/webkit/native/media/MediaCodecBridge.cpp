@@ -1,3 +1,8 @@
+
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/native/media/MediaCodecBridge.h"
 #include "elastos/droid/webkit/native/media/api/MediaCodecBridge_dec.h"
 

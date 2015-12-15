@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_DATESORTER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Utility::ICalendar;

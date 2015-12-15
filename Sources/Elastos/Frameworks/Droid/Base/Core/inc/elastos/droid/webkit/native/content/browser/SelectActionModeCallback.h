@@ -8,6 +8,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.View.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IClipboardManager;
 using Elastos::Droid::Content::IContext;

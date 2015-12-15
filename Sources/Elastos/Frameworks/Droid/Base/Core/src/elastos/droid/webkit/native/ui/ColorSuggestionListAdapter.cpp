@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/text/TextUtils.h"
 //#include "elastos/droid/view/CViewGroupLayoutParams.h"
 #include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"

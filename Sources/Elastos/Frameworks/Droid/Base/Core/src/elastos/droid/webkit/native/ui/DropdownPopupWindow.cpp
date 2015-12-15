@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Utility.h"
 //#include "elastos/droid/view/View.h"
 #include "elastos/droid/webkit/native/ui/DropdownPopupWindow.h"
 //#include "elastos/droid/widget/CLinearLayoutLayoutParams.h"

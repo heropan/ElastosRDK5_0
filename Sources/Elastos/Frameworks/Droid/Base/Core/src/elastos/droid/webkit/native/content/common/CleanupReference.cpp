@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/webkit/native/content/common/ContentSwitches.h"
 #include "elastos/droid/webkit/native/content/common/CleanupReference.h"
 #include "elastos/droid/webkit/native/base/TraceEvent.h"

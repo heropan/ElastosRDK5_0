@@ -8,6 +8,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/content_public/browser/WebContents.h"
+#include <elastos/core/Object.h>
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;

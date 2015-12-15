@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Wifi.h"
 #include "elastos/droid/webkit/native/base/ApplicationState.h"
 #include "elastos/droid/webkit/native/base/ApplicationStatus.h"
 #include "elastos/droid/webkit/native/net/NetworkChangeNotifier.h"

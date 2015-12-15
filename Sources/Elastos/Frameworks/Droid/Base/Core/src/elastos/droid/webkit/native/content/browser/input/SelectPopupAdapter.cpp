@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/webkit/native/content/browser/input/SelectPopupAdapter.h"
 
 using Elastos::Droid::Widget::EIID_IArrayAdapter;

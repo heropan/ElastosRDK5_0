@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CONSOLEMESSAGE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {

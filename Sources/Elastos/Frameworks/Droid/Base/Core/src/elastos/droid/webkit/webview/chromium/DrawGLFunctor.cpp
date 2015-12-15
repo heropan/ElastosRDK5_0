@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/webview/chromium/DrawGLFunctor.h"
 
 using Elastos::Core::EIID_IRunnable;

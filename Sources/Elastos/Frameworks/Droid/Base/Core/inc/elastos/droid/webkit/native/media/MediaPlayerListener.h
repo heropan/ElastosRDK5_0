@@ -1,5 +1,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_MEDIA_MEDIAPLAYERLISTENER_H__
 #define __ELASTOS_DROID_WEBKIT_MEDIA_MEDIAPLAYERLISTENER_H__
+
+#include "Elastos.Droid.Media.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/media/MediaPlayerBridge.h"
 

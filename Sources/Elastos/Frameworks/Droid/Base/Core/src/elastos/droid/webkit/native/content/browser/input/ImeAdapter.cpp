@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Text.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/native/content/browser/input/ImeAdapter.h"
 #include "elastos/droid/webkit/native/content/api/ImeAdapter_dec.h"
 #include "elastos/droid/webkit/native/content/browser/input/InputDialogContainer.h"

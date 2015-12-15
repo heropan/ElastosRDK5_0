@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/native/content/browser/ScreenOrientationListener.h"
 #include "elastos/droid/webkit/native/ui/gfx/DeviceDisplayInfo.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"

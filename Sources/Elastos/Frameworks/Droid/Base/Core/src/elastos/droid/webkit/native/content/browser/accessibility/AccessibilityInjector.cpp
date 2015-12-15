@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Speech.h"
 #include "elastos/droid/webkit/native/content/browser/accessibility/AccessibilityInjector.h"
 #include "elastos/droid/webkit/native/content/browser/accessibility/JellyBeanAccessibilityInjector.h"
 #include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"

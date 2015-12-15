@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/webkit/native/content/browser/ActivityContentVideoViewClient.h"
 #include "elastos/droid/os/Build.h"
 //#include "elastos/droid/widget/CFrameLayoutLayoutParams.h"

@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Text.h"
 #include "elastos/droid/webkit/native/net/NetStringUtil.h"
 //#include "elastos/io/charset/CCodingErrorAction.h"
 

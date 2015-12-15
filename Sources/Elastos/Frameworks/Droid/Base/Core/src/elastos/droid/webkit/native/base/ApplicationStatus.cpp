@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/webkit/native/base/ApplicationStatus.h"
 #include "elastos/droid/webkit/native/base/api/ApplicationStatus_dec.h"
 #include "elastos/droid/webkit/native/base/ApplicationState.h"

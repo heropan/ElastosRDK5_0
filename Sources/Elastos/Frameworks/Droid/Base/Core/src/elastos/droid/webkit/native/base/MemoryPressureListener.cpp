@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/webkit/native/base/MemoryPressureListener.h"
 #include "elastos/droid/webkit/native/base/api/MemoryPressureListener_dec.h"
 #include "elastos/droid/webkit/native/base/MemoryPressureLevelList.h"

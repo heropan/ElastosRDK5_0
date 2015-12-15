@@ -1,3 +1,6 @@
+
+#include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/webkit/native/media/AudioManagerElastos.h"
 #include "elastos/droid/webkit/native/media/api/AudioManagerElastos_dec.h"
 #include "elastos/droid/os/Build.h"

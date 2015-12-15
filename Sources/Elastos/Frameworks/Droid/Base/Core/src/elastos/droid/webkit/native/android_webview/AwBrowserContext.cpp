@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/webkit/native/android_webview/AwBrowserContext.h"
 
 namespace Elastos {

@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/native/android_webview/AwLayoutSizer.h"
 //TODO #include "elastos/droid/view/View.h"
 

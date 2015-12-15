@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/webkit/native/content/browser/input/DateTimeSuggestionListAdapter.h"
 // TODO #include "elastos/droid/view/CLayoutInflaterHelper.h"
 

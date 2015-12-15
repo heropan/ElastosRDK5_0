@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"
 #include "elastos/droid/webkit/native/content/browser/LocationProviderAdapter.h"
 #include "elastos/droid/webkit/native/content/api/LocationProviderAdapter_dec.h"

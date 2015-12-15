@@ -1,3 +1,8 @@
+
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Net.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/webkit/native/android_webview/AwContents.h"
 #include "elastos/droid/webkit/native/android_webview/api/AwContents_dec.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"

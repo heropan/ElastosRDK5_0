@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Extensions.h"
+#include "Elastos.CoreLibrary.Security.h"
 #include "elastos/droid/webkit/native/content/browser/crypto/CipherFactory.h"
 #include "elastos/droid/webkit/native/content/browser/crypto/ByteArrayGenerator.h"
 #include "elastos/droid/os/AsyncTask.h"

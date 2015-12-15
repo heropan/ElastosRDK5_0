@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/Looper.h"
 #include "elastos/droid/text/TextUtils.h"

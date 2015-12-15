@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/webkit/native/content/browser/input/ChromeDatePickerDialog.h"
 
 namespace Elastos {

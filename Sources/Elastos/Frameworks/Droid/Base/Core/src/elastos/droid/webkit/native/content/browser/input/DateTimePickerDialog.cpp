@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Text.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/native/content/browser/input/DateTimePickerDialog.h"
 #include "elastos/droid/webkit/native/content/browser/input/DateDialogNormalizer.h"
 

@@ -7,6 +7,7 @@
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_DOWNLOADINFO_H_
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {

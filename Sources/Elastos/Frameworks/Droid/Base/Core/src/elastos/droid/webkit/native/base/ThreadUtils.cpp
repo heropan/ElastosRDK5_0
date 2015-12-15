@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"
 #include "elastos/droid/webkit/native/base/api/ThreadUtils_dec.h"
 

@@ -17,6 +17,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_WEBBACKFORWARDLISTCHROMIUM_H_
 #define _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_WEBBACKFORWARDLISTCHROMIUM_H_
 
+#include "Elastos.Droid.Webkit.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/content/browser/NavigationHistory.h"
 

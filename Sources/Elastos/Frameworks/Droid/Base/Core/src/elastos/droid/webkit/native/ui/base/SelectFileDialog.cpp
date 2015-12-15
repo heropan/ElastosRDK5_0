@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Provider.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/net/Uri.h"
 #include "elastos/droid/os/CEnvironment.h"

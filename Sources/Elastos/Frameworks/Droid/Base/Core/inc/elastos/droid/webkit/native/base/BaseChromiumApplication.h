@@ -2,10 +2,12 @@
 #ifndef __ELASTOS_DROID_WEBKIT_BASE_BASECHROMIUMAPPLICATION_H__
 #define __ELASTOS_DROID_WEBKIT_BASE_BASECHROMIUMAPPLICATION_H__
 
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/base/ObserverList.h"
 #include "elastos/droid/webkit/native/base/WindowCallbackWrapper.h"
 // TODO #include "elastos/droid/app/Application.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::App::IActivity;
 // TODO using Elastos::Droid::App::Application;

@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/webkit/webview/chromium/WebHistoryItemChromium.h"
 #include "elastos/core/AutoLock.h"
 

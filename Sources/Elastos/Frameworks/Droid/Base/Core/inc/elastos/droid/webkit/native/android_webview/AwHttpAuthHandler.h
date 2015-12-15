@@ -1,6 +1,8 @@
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWHTTPAUTHHANDLER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWHTTPAUTHHANDLER_H__
+
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;

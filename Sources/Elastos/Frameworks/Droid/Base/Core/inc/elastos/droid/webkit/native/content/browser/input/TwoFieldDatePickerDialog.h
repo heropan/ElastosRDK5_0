@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_TWOFIELDDATEPICKERDIALOG_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_TWOFIELDDATEPICKERDIALOG_H__
 
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/content/browser/input/TwoFieldDatePicker.h"
 

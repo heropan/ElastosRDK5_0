@@ -7,6 +7,7 @@
 #include "elastos/droid/webkit/native/content/browser/PositionObserver.h"
 #include "elastos/droid/webkit/native/content/browser/input/CursorController.h"
 #include "elastos/droid/webkit/native/content/browser/input/InsertionHandleController.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::ITypedArray;

@@ -1,3 +1,6 @@
+
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Provider.h"
 #include "elastos/droid/webkit/native/android_webview/AwSettings.h"
 #include "elastos/droid/webkit/native/android_webview/api/AwSettings_dec.h"
 #include "elastos/droid/webkit/native/android_webview/AwResource.h"

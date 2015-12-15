@@ -6,6 +6,8 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SCREENORIENTATIONLISTENER_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SCREENORIENTATIONLISTENER_H_
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Hardware.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/Runnable.h"

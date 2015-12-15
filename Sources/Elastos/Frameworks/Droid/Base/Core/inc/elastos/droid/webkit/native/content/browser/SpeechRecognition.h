@@ -6,7 +6,9 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SPEECHRECOGNITION_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_SPEECHRECOGNITION_H_
 
+#include "Elastos.Droid.Speech.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 // package org.chromium.content.browser;
 // import android.content.ComponentName;

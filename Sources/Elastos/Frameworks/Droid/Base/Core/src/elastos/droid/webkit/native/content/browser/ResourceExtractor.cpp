@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Preference.h"
 #include "elastos/droid/webkit/native/content/browser/ResourceExtractor.h"
 #include "elastos/droid/webkit/native/ui/base/LocalizationUtils.h"
 #include <elastos/core/StringUtils.h>

@@ -1,6 +1,8 @@
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWSCROLLOFFSETMANAGER_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWSCROLLOFFSETMANAGER_H__
+
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Graphics::IRect;
 //TODO using Elastos::Droid::Widget::IOverScroller;

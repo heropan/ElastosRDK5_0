@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/webkit/native/content/browser/PopupZoomer.h"
 //TODO #include ""elastos/droid/graphics/CCanvas.h"
 //TODO #include ""elastos/droid/graphics/CPaint.h"

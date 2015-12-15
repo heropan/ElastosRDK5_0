@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Text.h"
 #include "elastos/droid/webkit/native/content/browser/accessibility/BrowserAccessibilityManager.h"
 #include "elastos/droid/webkit/native/content/api/BrowserAccessibilityManager_dec.h"
 #include "elastos/droid/webkit/native/content/browser/accessibility/JellyBeanBrowserAccessibilityManager.h"

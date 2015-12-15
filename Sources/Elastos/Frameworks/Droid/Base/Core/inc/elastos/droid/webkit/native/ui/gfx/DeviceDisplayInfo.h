@@ -6,6 +6,7 @@
 #define _ELASTOS_DROID_WEBKIT_UI_GFX_DEVICEDISPLAYINFO_H_
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 // package org.chromium.ui.gfx;
 // import android.content.Context;

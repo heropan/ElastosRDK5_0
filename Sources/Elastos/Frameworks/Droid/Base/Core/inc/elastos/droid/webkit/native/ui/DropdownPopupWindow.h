@@ -5,6 +5,8 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_DROPDOWNPOPUPWINDOW_H_
 #define _ELASTOS_DROID_WEBKIT_UI_DROPDOWNPOPUPWINDOW_H_
 
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/ui/base/ViewElastosDelegate.h"
 //#include "elastos/droid/widget/ListPopupWindow.h"

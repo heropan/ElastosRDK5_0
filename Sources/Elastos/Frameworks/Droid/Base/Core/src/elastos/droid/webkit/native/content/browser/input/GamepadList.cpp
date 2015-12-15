@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/native/content/browser/input/GamepadList.h"
 #include "elastos/droid/webkit/native/content/api/GamepadList_dec.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"

@@ -1,3 +1,7 @@
+
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Hardware.h"
 #include "elastos/droid/webkit/native/media/UsbMidiDeviceFactoryElastos.h"
 #include "elastos/droid/webkit/native/media/api/UsbMidiDeviceFactoryElastos_dec.h"
 #include "elastos/droid/webkit/native/media/UsbMidiDeviceElastos.h"

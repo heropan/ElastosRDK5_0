@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWFORMDATABASE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-
+#include <elastos/core/Object.h>
 //import org.chromium.base.JNINamespace;
 
 namespace Elastos {
@@ -16,6 +16,7 @@ namespace AndroidWebview {
  */
 //@JNINamespace("android_webview")
 class AwFormDatabase
+    : public Object
 {
 public:
     static CARAPI_(Boolean) HasFormData();

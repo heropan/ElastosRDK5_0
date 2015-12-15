@@ -5,7 +5,9 @@
 #ifndef _ELASTOS_DROID_WEBKIT_UI_GL_SURFACETEXTURELISTENER_H_
 #define _ELASTOS_DROID_WEBKIT_UI_GL_SURFACETEXTURELISTENER_H_
 
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 // package org.chromium.ui.gl;
 // import android.graphics.SurfaceTexture;

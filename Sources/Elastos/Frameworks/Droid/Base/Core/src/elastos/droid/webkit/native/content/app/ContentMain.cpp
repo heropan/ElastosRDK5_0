@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/webkit/native/content/app/ContentMain.h"
 #include "elastos/droid/webkit/native/content/api/ContentMain_dec.h"
 

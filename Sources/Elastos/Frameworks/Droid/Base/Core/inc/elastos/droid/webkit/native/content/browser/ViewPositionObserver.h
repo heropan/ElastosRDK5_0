@@ -6,6 +6,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_VIEWPOSITIONOBSERVER_H_
 #define _ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_VIEWPOSITIONOBSERVER_H_
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/content/browser/PositionObserver.h"
 

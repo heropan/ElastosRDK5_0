@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.View.h"
 //#include "elastos/droid/view/CViewConfigurationHelper.h"
 #include "elastos/droid/webkit/native/ui/gfx/ViewConfigurationHelper.h"
 #include "elastos/droid/webkit/native/ui/api/ViewConfigurationHelper_dec.h"

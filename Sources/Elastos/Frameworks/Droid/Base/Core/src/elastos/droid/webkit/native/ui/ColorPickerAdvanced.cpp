@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/graphics/CColor.h"
 #include "elastos/droid/webkit/native/ui/ColorPickerAdvanced.h"
 #include "elastos/core/Math.h"

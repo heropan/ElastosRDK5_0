@@ -1,4 +1,8 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
 #include "elastos/droid/webkit/native/ui/DropdownAdapter.h"

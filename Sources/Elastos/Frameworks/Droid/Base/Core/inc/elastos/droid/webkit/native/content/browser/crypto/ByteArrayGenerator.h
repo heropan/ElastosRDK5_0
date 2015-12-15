@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CRYPTO_BYTEARRAYGENERATOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::IO::IFileInputStream;
 // import java.io.IOException;

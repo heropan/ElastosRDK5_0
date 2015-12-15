@@ -6,6 +6,7 @@
 #define _ELASTOS_DROID_WEBKIT_COMPONENTS_WEBCONTENTSDELEGATEANDROID_H_
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 // package org.chromium.components.web_contents_delegate_android;
 // import android.view.KeyEvent;

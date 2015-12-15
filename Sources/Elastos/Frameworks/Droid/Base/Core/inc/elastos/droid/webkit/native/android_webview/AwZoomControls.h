@@ -1,5 +1,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWZOOMCONTROLS_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWZOOMCONTROLS_H__
+
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"
 

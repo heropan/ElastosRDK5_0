@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CONTENT_APP_CONTENTAPPLICATION_H__
 #define __ELASTOS_DROID_WEBKIT_CONTENT_APP_CONTENTAPPLICATION_H__
 
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/webkit/native/base/BaseChromiumApplication.h"
 
 using Elastos::Droid::Os::IIdleHandler;

@@ -1,7 +1,10 @@
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWPICTURE_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWPICTURE_H__
+
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/ext/frameworkext.h"
 //TODO #include "elastos/droid/webkit/native/content/common/CleanupReference.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IPicture;

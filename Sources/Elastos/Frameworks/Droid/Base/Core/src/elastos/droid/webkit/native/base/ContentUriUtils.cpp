@@ -1,4 +1,8 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Database.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/webkit/native/base/ContentUriUtils.h"
 #include "elastos/droid/webkit/native/base/api/ContentUriUtils_dec.h"
 //#include "elastos/droid/net/CUriHelper.h"

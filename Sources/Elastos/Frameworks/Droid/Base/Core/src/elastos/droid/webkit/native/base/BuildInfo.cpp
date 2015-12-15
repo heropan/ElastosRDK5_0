@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/webkit/native/base/BuildInfo.h"
 #include "elastos/droid/webkit/native/base/api/BuildInfo_dec.h"
 #include "elastos/droid/os/Build.h"

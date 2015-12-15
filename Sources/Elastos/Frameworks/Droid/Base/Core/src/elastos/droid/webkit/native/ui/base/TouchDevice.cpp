@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/webkit/native/ui/base/TouchDevice.h"
 #include "elastos/droid/webkit/native/ui/api/TouchDevice_dec.h"
 

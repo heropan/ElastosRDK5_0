@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/webkit/native/content/browser/VibrationProvider.h"
 #include "elastos/droid/webkit/native/content/api/VibrationProvider_dec.h"
 #include <elastos/utility/logging/Slogger.h>

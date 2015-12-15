@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/webkit/native/content/browser/input/SelectPopupDialog.h"
 #include "elastos/droid/webkit/native/content/browser/input/SelectPopupAdapter.h"
 #include "elastos/droid/webkit/native/content/browser/ContentViewCore.h"

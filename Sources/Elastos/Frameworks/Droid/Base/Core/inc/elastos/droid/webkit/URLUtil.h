@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_URLUTIL_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "Elastos.Droid.Core_server.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::Regex::IPattern;
 

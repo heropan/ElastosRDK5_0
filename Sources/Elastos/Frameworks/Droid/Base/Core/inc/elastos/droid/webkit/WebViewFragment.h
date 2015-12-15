@@ -4,6 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 // TODO #include "elastos/droid/app/Fragment.h"
+#include <elastos/core/Object.h>
 
 // TODO using Elastos::Droid::App::Fragment;
 using Elastos::Droid::App::IActivity;

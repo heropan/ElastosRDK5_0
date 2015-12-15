@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_CLIENTCERTLOOKUPTABLE_H__
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/net/ElastosPrivateKey.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/Map.h>
 #include <elastos/utility/etl/Set.h>
 

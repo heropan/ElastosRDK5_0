@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/graphics/drawable/CGradientDrawable.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"

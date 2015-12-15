@@ -1,6 +1,8 @@
 #ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWASSETS_H__
 #define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWASSETS_H__
+
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 

@@ -6,6 +6,7 @@
 #define _ELASTOS_DROID_WEBKIT_NET_NETSTRINGUTIL_H_
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 // package org.chromium.net;
 // import org.chromium.base.CalledByNative;

@@ -1,3 +1,10 @@
+
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Opengl.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/native/media/VideoCapture.h"
 #include "elastos/droid/webkit/native/media/api/VideoCapture_dec.h"
 #include "elastos/droid/webkit/native/media/ImageFormat.h"

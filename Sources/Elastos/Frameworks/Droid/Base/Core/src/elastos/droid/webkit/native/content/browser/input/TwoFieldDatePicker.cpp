@@ -1,4 +1,8 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Text.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/native/content/browser/input/TwoFieldDatePicker.h"
 
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;

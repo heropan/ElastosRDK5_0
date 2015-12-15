@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/webkit/webview/chromium/FileChooserParamsAdapter.h"
 #include "elastos/core/StringUtils.h"

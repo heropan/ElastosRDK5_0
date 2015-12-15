@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/webkit/native/content/app/ChromiumLinkerParams.h"
 
 namespace Elastos {
