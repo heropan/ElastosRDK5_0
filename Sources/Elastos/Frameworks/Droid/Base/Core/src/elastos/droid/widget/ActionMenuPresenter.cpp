@@ -1,364 +1,174 @@
 
-#include "elastos/droid/view/menu/ActionMenuPresenter.h"
-#include "elastos/droid/view/menu/MenuItemImpl.h"
-#include "elastos/droid/view/menu/ActionMenuView.h"
-#include "elastos/droid/view/menu/CActionMenuView.h"
-#include "elastos/droid/view/menu/SubMenuBuilderBase.h"
-#include "elastos/droid/view/menu/CActionBarPolicy.h"
-#include "elastos/droid/view/menu/CActionMenuPresenterSavedState.h"
+#include "elastos/droid/widget/ActionMenuPresenter.h"
+#include "elastos/droid/internal/view/menu/MenuItemImpl.h"
+// #include "elastos/droid/widget/ActionMenuView.h"
+// #include "elastos/droid/widget/CActionMenuView.h"
+#include "elastos/droid/internal/view/ActionBarPolicy.h"
+#include "elastos/droid/internal/transition/ActionBarTransition.h"
+#include "elastos/droid/widget/CActionMenuPresenterSavedState.h"
 #include "elastos/droid/view/ActionProvider.h"
 #include "elastos/droid/view/SoundEffectConstants.h"
 #include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
-using Elastos::Core::EIID_IRunnable;
-using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
-using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
+using Elastos::Droid::Graphics::IMatrix;
+using Elastos::Droid::Internal::View::IActionBarPolicy;
+using Elastos::Droid::Internal::View::ActionBarPolicy;
+using Elastos::Droid::View::IViewGroupLayoutParams;
+using Elastos::Droid::Internal::View::Menu::MenuItemImpl;
+using Elastos::Droid::Internal::View::Menu::IActionMenuItemView;
+using Elastos::Droid::Internal::View::Menu::ISubMenuBuilder;
+using Elastos::Droid::Internal::View::Menu::IMenuBuilderItemInvoker;
+using Elastos::Droid::Internal::View::Menu::EIID_IMenuPresenterCallback;
+using Elastos::Droid::Internal::View::Menu::EIID_IPopupCallback;
+using Elastos::Droid::Internal::Transition::ActionBarTransition;
+using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Droid::View::ActionProvider;
 using Elastos::Droid::View::Accessibility::EIID_IAccessibilityEvent;
-using Elastos::Droid::Widget::EIID_IImageView;
-using Elastos::Droid::Widget::EIID_IImageButton;
+using Elastos::Droid::View::IMenu;
+using Elastos::Droid::View::IViewParent;
+using Elastos::Droid::View::IViewManager;
+using Elastos::Droid::View::IGravity;
+using Elastos::Droid::View::SoundEffectConstants;
+using Elastos::Droid::View::ISoundEffectConstants;
+using Elastos::Droid::View::EIID_ISubUiVisibilityListener;
+
+using Elastos::Utility::IIterator;
 
 namespace Elastos {
 namespace Droid {
-namespace View {
-namespace Menu {
+namespace Widget {
 
 String ActionMenuPresenter::TAG("ActionMenuPresenter");
 
-ActionMenuPresenter::_OverflowMenuButton::_OverflowMenuButton(
-    /* [in] */ ActionMenuPresenter* host)
-    : mHost(host)
-{}
-
-Boolean ActionMenuPresenter::_OverflowMenuButton::PerformClick()
+ActionMenuPresenter::MyForwardingListener::MyForwardingListener(
+    /* [in] */ IView* host,
+    /* [in] */ ActionMenuPresenter* hostEx)
+    // : ForwardingListener(host)
 {
-    if (ImageButton::PerformClick()) {
-        return TRUE;
-    }
-
-    PlaySoundEffect(SoundEffectConstants::CLICK);
-    mHost->ShowOverflowMenu();
-    return TRUE;
+    mHostEx = hostEx;
 }
 
-IVIEW_METHODS_IMPL(ActionMenuPresenter::OverflowMenuButton, ActionMenuPresenter::_OverflowMenuButton);
+ECode ActionMenuPresenter::MyForwardingListener::GetPopup(
+    /* [out] */ IListPopupWindow** window)
+{
+    if (mHostEx->mOverflowPopup == NULL) {
+        *window = NULL;
+        return NOERROR;
+    }
 
-IDRAWABLECALLBACK_METHODS_IMPL(ActionMenuPresenter::OverflowMenuButton, ActionMenuPresenter::_OverflowMenuButton);
+    return mHostEx->mOverflowPopup->GetPopup(window);
+}
 
-IKEYEVENTCALLBACK_METHODS_IMPL(ActionMenuPresenter::OverflowMenuButton, ActionMenuPresenter::_OverflowMenuButton);
+ECode ActionMenuPresenter::MyForwardingListener::OnForwardingStarted(
+    /* [out] */ Boolean* result)
+{
+    mHostEx->ShowOverflowMenu(result);
+    *result = TRUE;
+    return NOERROR;
+}
 
-IACCESSIBILITYEVENTSOURCE_METHODS_IMPL(ActionMenuPresenter::OverflowMenuButton, ActionMenuPresenter::_OverflowMenuButton);
+ECode ActionMenuPresenter::MyForwardingListener::OnForwardingStopped(
+    /* [out] */ Boolean* result)
+{
+    // Displaying the popup occurs asynchronously, so wait for
+    // the runnable to finish before deciding whether to stop
+    // forwarding.
+    if (mHostEx->mPostedOpenRunnable != NULL) {
+        *result = FALSE;
+        return NOERROR;
+    }
+
+    mHostEx->HideOverflowMenu(result);
+    *result = TRUE;
+    return NOERROR;
+}
+
+CAR_INTERFACE_IMPL(ActionMenuPresenter::OverflowMenuButton, ImageButton, IActionMenuChildView)
 
 ActionMenuPresenter::OverflowMenuButton::OverflowMenuButton(
     /* [in] */ IContext* context,
     /* [in] */ ActionMenuPresenter* host)
-    : _OverflowMenuButton(host)
 {
-    ImageButton::Init(context, NULL, R::attr::actionOverflowButtonStyle);
-
+    ImageButton::constructor(context, NULL, R::attr::actionOverflowButtonStyle);
+    mTempPts = ArrayOf<Float>::Alloc(2);
+    mHost = host;
     SetClickable(TRUE);
     SetFocusable(TRUE);
-    SetVisibility(VISIBLE);
+    SetVisibility(IView::VISIBLE);
     SetEnabled(TRUE);
+    // AutoPtr<MyForwardingListener> listener = new MyForwardingListener(this, mHost);
+    // SetOnTouchListener(listener); zhangjingcheng
 }
 
-void ActionMenuPresenter::OverflowMenuButton::OnMeasure(
-    /* [in] */ Int32 widthMeasureSpec,
-    /* [in] */ Int32 heightMeasureSpec)
+//@Override
+ECode ActionMenuPresenter::OverflowMenuButton::PerformClick(
+    /* [out] */ Boolean* res)
 {
-    if (MeasureSpec::GetMode(heightMeasureSpec) == MeasureSpec::AT_MOST) {
-        // Fill available height
-        heightMeasureSpec = MeasureSpec::MakeMeasureSpec(
-                MeasureSpec::GetSize(heightMeasureSpec), MeasureSpec::EXACTLY);
+    ImageButton::PerformClick(res);
+    if (*res) {
+        return NOERROR;
     }
 
-    ImageButton::OnMeasure(widthMeasureSpec, heightMeasureSpec);
-}
-
-PInterface ActionMenuPresenter::OverflowMenuButton::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IImageButton*)this;
-    }
-    else if (riid == EIID_IView) {
-        return (IView*)this;
-    }
-    else if (riid == EIID_IImageView) {
-        return (IImageButton*)this;
-    }
-    else if (riid == EIID_IImageButton) {
-        return (IImageButton*)this;
-    }
-    else if (riid == EIID_IDrawableCallback) {
-        return (IDrawableCallback*)this;
-    }
-    else if (riid == EIID_IKeyEventCallback) {
-        return (IKeyEventCallback*)this;
-    }
-    else if (riid == EIID_IAccessibilityEvent) {
-        return (IAccessibilityEvent*)this;
-    }
-    else if (riid == EIID_IActionMenuChildView) {
-        return (IActionMenuChildView*)this;
-    }
-    else if (riid == EIID_IWeakReferenceSource) {
-        return (IWeakReferenceSource*)this;
-    }
-    else if (riid == EIID_View) {
-        return reinterpret_cast<PInterface>((View*)(ImageButton*)this);
-    }
-
-    return NULL;
-}
-
-UInt32 ActionMenuPresenter::OverflowMenuButton::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 ActionMenuPresenter::OverflowMenuButton::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::GetWeakReference(
-    /* [out] */ IWeakReference** weakReference)
-{
-    VALIDATE_NOT_NULL(weakReference)
-    *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    REFCOUNT_ADD(*weakReference)
+    PlaySoundEffect(ISoundEffectConstants::CLICK);
+    mHost->ShowOverflowMenu(res);
+    *res = TRUE;
     return NOERROR;
 }
 
 ECode ActionMenuPresenter::OverflowMenuButton::NeedsDividerBefore(
-    /* [out] */ Boolean* need)
+    /* [out] */ Boolean* rst)
 {
-    assert(need != NULL);
-    *need = FALSE;
+    *rst = FALSE;
     return NOERROR;
 }
 
 ECode ActionMenuPresenter::OverflowMenuButton::NeedsDividerAfter(
-    /* [out] */ Boolean* need)
+    /* [out] */ Boolean* rst)
 {
-    assert(need != NULL);
-    *need = FALSE;
+    *rst = FALSE;
     return NOERROR;
 }
 
-ECode ActionMenuPresenter::OverflowMenuButton::GetAdjustViewBounds(
-        /* [out] */ Boolean* res)
+ECode ActionMenuPresenter::OverflowMenuButton::OnInitializeAccessibilityNodeInfo(
+    /* [in] */ IAccessibilityNodeInfo* info)
 {
-    VALIDATE_NOT_NULL(res);
-    *res = _OverflowMenuButton::GetAdjustViewBounds();
+    ImageButton::OnInitializeAccessibilityNodeInfo(info);
+    info->SetCanOpenPopup(TRUE);
     return NOERROR;
 }
 
-ECode ActionMenuPresenter::OverflowMenuButton::SetAdjustViewBounds(
-        /* [in] */ Boolean adjustViewBounds)
+Boolean ActionMenuPresenter::OverflowMenuButton::SetFrame(
+    /* [in] */ Int32 left,
+    /* [in] */ Int32 top,
+    /* [in] */ Int32 right,
+    /* [in] */ Int32 bottom)
 {
-    return _OverflowMenuButton::SetAdjustViewBounds(adjustViewBounds);
-}
+    Boolean changed = ImageButton::SetFrame(left, top, right, bottom);
 
-ECode ActionMenuPresenter::OverflowMenuButton::GetMaxWidth(
-        /* [out] */ Int32* width)
-{
-    VALIDATE_NOT_NULL(width);
-    *width = _OverflowMenuButton::GetMaxWidth();
-    return NOERROR;
-}
+    // Set up the hotspot bounds to be centered on the image.
+    AutoPtr<IDrawable> d;
+    GetDrawable((IDrawable**)&d);
+    AutoPtr<IDrawable> bg;
+    GetBackground((IDrawable**)&bg);
+    if (d != NULL && bg != NULL) {
+        AutoPtr<IRect> bounds;
+        d->GetBounds((IRect**)&bounds);
+        Int32 tmp;
+        bounds->GetCenterX(&tmp);
 
-ECode ActionMenuPresenter::OverflowMenuButton::SetMaxWidth(
-        /* [in] */ Int32 maxWidth)
-{
-    return _OverflowMenuButton::SetMaxWidth(maxWidth);
-}
+        (*mTempPts)[0] = tmp;
+        AutoPtr<IMatrix> matrix;
+        GetImageMatrix((IMatrix**)&matrix);
+        matrix->MapPoints(mTempPts);
+        Int32 w, h;
+        GetWidth(&w);
+        GetHeight(&h);
+        Int32 offset =  (Int32) (*mTempPts)[0] - w / 2;
+        bg->SetHotspotBounds(offset, 0, w + offset, h);
+    }
 
-ECode ActionMenuPresenter::OverflowMenuButton::GetMaxHeight(
-        /* [out] */ Int32* height)
-{
-    VALIDATE_NOT_NULL(height);
-    *height = _OverflowMenuButton::GetMaxHeight();
-    return NOERROR;
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::SetMaxHeight(
-        /* [in] */ Int32 maxHeight)
-{
-    return _OverflowMenuButton::SetMaxHeight(maxHeight);
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::GetDrawable(
-        /* [out] */ IDrawable** drawable)
-{
-    VALIDATE_NOT_NULL(drawable);
-    AutoPtr<IDrawable> dTemp = _OverflowMenuButton::GetDrawable();
-    *drawable = dTemp;
-    REFCOUNT_ADD(*drawable);
-    return NOERROR;
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::SetImageResource(
-        /* [in] */ Int32 resId)
-{
-    return _OverflowMenuButton::SetImageResource(resId);
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::SetImageURI(
-        /* [in] */ IUri* uri)
-{
-    return _OverflowMenuButton::SetImageURI(uri);
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::SetImageDrawable(
-        /* [in] */ IDrawable* drawable)
-{
-    return _OverflowMenuButton::SetImageDrawable(drawable);
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::SetImageBitmap(
-        /* [in] */ IBitmap* bm)
-{
-    return _OverflowMenuButton::SetImageBitmap(bm);
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::SetImageState(
-        /* [in] */ ArrayOf<Int32>* state,
-        /* [in] */ Boolean mg)
-{
-    return _OverflowMenuButton::SetImageState(state, mg);
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::SetImageLevel(
-        /* [in] */ Int32 level)
-{
-    return _OverflowMenuButton::SetImageLevel(level);
-}
-
- ECode ActionMenuPresenter::OverflowMenuButton::SetScaleType(
-        /* [in] */ ImageViewScaleType scaleType)
- {
-    return _OverflowMenuButton::SetScaleType(scaleType);
- }
-
-ECode ActionMenuPresenter::OverflowMenuButton::GetScaleType(
-        /* [out] */ ImageViewScaleType* scaleType)
-{
-    VALIDATE_NOT_NULL(scaleType);
-    *scaleType = _OverflowMenuButton::GetScaleType();
-    return NOERROR;
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::GetImageMatrix(
-        /* [out] */ IMatrix** matrix)
-{
-    VALIDATE_NOT_NULL(matrix);
-    AutoPtr<IMatrix> mTemp = _OverflowMenuButton::GetImageMatrix();
-    *matrix = mTemp;
-    REFCOUNT_ADD(*matrix);
-    return NOERROR;
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::SetImageMatrix(
-        /* [in] */ IMatrix* matrix)
-{
-    return _OverflowMenuButton::SetImageMatrix(matrix);
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::GetCropToPadding(
-        /* [out] */ Boolean* padding)
-{
-    VALIDATE_NOT_NULL(padding);
-    *padding = _OverflowMenuButton::GetCropToPadding();
-    return NOERROR;
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::SetCropToPadding(
-        /* [in] */ Boolean cropToPadding)
-{
-    return _OverflowMenuButton::SetCropToPadding(cropToPadding);
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::SetBaseline(
-        /* [in] */ Int32 baseline)
-{
-    return _OverflowMenuButton::SetBaseline(baseline);
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::SetBaselineAlignBottom(
-        /* [in] */ Boolean aligned)
-{
-    return _OverflowMenuButton::SetBaselineAlignBottom(aligned);
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::GetBaselineAlignBottom(
-        /* [out] */ Boolean* aligned)
-{
-    VALIDATE_NOT_NULL(aligned);
-    *aligned = _OverflowMenuButton::GetBaselineAlignBottom();
-    return NOERROR;
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::SetColorFilter(
-        /* [in] */ Int32 color)
-{
-    return _OverflowMenuButton::SetColorFilter(color);
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::SetColorFilter(
-        /* [in] */ Int32 color,
-        /* [in] */ PorterDuffMode mode)
-{
-    return _OverflowMenuButton::SetColorFilter(color, mode);
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::ClearColorFilter()
-{
-    return _OverflowMenuButton::ClearColorFilter();
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::GetColorFilter(
-        /* [out] */ IColorFilter** filter)
-{
-    VALIDATE_NOT_NULL(filter);
-    AutoPtr<IColorFilter> fTemp = _OverflowMenuButton::GetColorFilter();
-    *filter = fTemp;
-    REFCOUNT_ADD(*filter);
-    return NOERROR;
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::SetColorFilter(
-        /* [in] */ IColorFilter* cf)
-{
-    return _OverflowMenuButton::SetColorFilter(cf);
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::GetImageAlpha(
-        /* [out] */ Int32* alpha)
-{
-    VALIDATE_NOT_NULL(alpha);
-    *alpha = _OverflowMenuButton::GetImageAlpha();
-    return NOERROR;
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::SetImageAlpha(
-        /* [in] */ Int32 alpha)
-{
-    return _OverflowMenuButton::SetImageAlpha(alpha);
-}
-
-ECode ActionMenuPresenter::OverflowMenuButton::SetAlpha(
-        /* [in] */ Int32 alpha)
-{
-    return _OverflowMenuButton::SetAlpha(alpha);
+    return changed;
 }
 
 ActionMenuPresenter::OverflowPopup::OverflowPopup(
@@ -369,252 +179,33 @@ ActionMenuPresenter::OverflowPopup::OverflowPopup(
     /* [in] */ ActionMenuPresenter* host)
     : mHost(host)
 {
-    MenuPopupHelper::Init(context, menu, anchorView, overflowOnly);
+    MenuPopupHelper::constructor(context, menu, anchorView, overflowOnly, R::attr::actionOverflowMenuStyle);
+    SetGravity(IGravity::END);
     SetCallback(mHost->mPopupPresenterCallback);
 }
 
-ECode ActionMenuPresenter::OverflowPopup::GetWeakReference(
-    /* [out] */ IWeakReference** weakReference)
-{
-    VALIDATE_NOT_NULL(weakReference)
-    *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
-    REFCOUNT_ADD(*weakReference)
-    return NOERROR;
-}
-
-PInterface ActionMenuPresenter::OverflowPopup::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IMenuPopupHelper*)this;
-    }
-    else if (riid == EIID_IMenuPopupHelper) {
-        return (IMenuPopupHelper*)this;
-    }
-    else if (riid == EIID_IAdapterViewOnItemClickListener) {
-        return (IAdapterViewOnItemClickListener*)this;
-    }
-    else if (riid == EIID_IViewOnKeyListener) {
-        return (IViewOnKeyListener*)this;
-    }
-    else if (riid == EIID_IOnGlobalLayoutListener) {
-        return (IOnGlobalLayoutListener*)this;
-    }
-    else if (riid == EIID_IPopupWindowOnDismissListener) {
-        return (IPopupWindowOnDismissListener*)this;
-    }
-    else if (riid == EIID_IViewOnAttachStateChangeListener) {
-        return (IViewOnAttachStateChangeListener*)this;
-    }
-    else if (riid == EIID_IWeakReferenceSource) {
-        return (IWeakReferenceSource*)this;
-    }
-    else if (riid == EIID_IMenuPresenter) {
-        return (IMenuPresenter*)this;
-    }
-    return NULL;
-}
-
-UInt32 ActionMenuPresenter::OverflowPopup::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 ActionMenuPresenter::OverflowPopup::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode ActionMenuPresenter::OverflowPopup::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    return E_NOT_IMPLEMENTED;
-}
 
 ECode ActionMenuPresenter::OverflowPopup::OnDismiss()
 {
     MenuPopupHelper::OnDismiss();
-    mHost->mMenu->Close();
+    mHost->mMenu->Close(TRUE);
     mHost->mOverflowPopup = NULL;
     return NOERROR;
-}
-
-ECode ActionMenuPresenter::OverflowPopup::SetAnchorView(
-    /* [in] */ IView* anchor)
-{
-    return MenuPopupHelper::SetAnchorView(anchor);
-}
-
-ECode ActionMenuPresenter::OverflowPopup::SetForceShowIcon(
-    /* [in] */ Boolean forceShow)
-{
-    return MenuPopupHelper::SetForceShowIcon(forceShow);
-}
-
-ECode ActionMenuPresenter::OverflowPopup::Show()
-{
-    return MenuPopupHelper::Show();
-}
-
-ECode ActionMenuPresenter::OverflowPopup::TryShow(
-    /* [out] */ Boolean* rst)
-{
-    VALIDATE_NOT_NULL(rst);
-    *rst = MenuPopupHelper::TryShow();
-    return NOERROR;
-}
-
-ECode ActionMenuPresenter::OverflowPopup::Dismiss()
-{
-    return MenuPopupHelper::Dismiss();
-}
-
-ECode ActionMenuPresenter::OverflowPopup::IsShowing(
-    /* [out] */ Boolean* rst)
-{
-    VALIDATE_NOT_NULL(rst);
-    *rst = MenuPopupHelper::IsShowing();
-    return NOERROR;
-}
-
-ECode ActionMenuPresenter::OverflowPopup::OnItemClick(
-    /* [in] */ IAdapterView* parent,
-    /* [in] */ IView* view,
-    /* [in] */ Int32 position,
-    /* [in] */ Int64 id)
-{
-    return MenuPopupHelper::OnItemClick(parent, view, position, id);
-}
-
-ECode ActionMenuPresenter::OverflowPopup::OnKey(
-    /* [in] */ IView* v,
-    /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return MenuPopupHelper::OnKey(v, keyCode, event, result);
-}
-
-ECode ActionMenuPresenter::OverflowPopup::OnGlobalLayout()
-{
-    return MenuPopupHelper::OnGlobalLayout();
-}
-
-ECode ActionMenuPresenter::OverflowPopup::OnViewAttachedToWindow(
-            /* [in] */ IView* v)
-{
-    return MenuPopupHelper::OnViewAttachedToWindow(v);
-}
-
-ECode ActionMenuPresenter::OverflowPopup::OnViewDetachedFromWindow(
-    /* [in] */ IView* v)
-{
-    return MenuPopupHelper::OnViewDetachedFromWindow(v);
-}
-
-ECode ActionMenuPresenter::OverflowPopup::InitForMenu(
-    /* [in] */ IContext* context,
-    /* [in] */ IMenuBuilder* menu)
-{
-    return MenuPopupHelper::InitForMenu(context, menu);
-}
-
-ECode ActionMenuPresenter::OverflowPopup::GetMenuView(
-    /* [in] */ IViewGroup* root,
-    /* [out] */ IMenuView** view)
-{
-    return MenuPopupHelper::GetMenuView(root, view);
-}
-
-ECode ActionMenuPresenter::OverflowPopup::UpdateMenuView(
-    /* [in] */ Boolean cleared)
-{
-    return MenuPopupHelper::UpdateMenuView(cleared);
-}
-
-ECode ActionMenuPresenter::OverflowPopup::SetCallback(
-    /* [in] */ IMenuPresenterCallback* cb)
-{
-    return MenuPopupHelper::SetCallback(cb);
-}
-
-ECode ActionMenuPresenter::OverflowPopup::OnSubMenuSelected(
-    /* [in] */ ISubMenuBuilder* subMenu,
-    /* [out] */ Boolean* handled)
-{
-    VALIDATE_NOT_NULL(handled);
-    return MenuPopupHelper::OnSubMenuSelected(subMenu, handled);
-}
-
-ECode ActionMenuPresenter::OverflowPopup::OnCloseMenu(
-    /* [in] */ IMenuBuilder* menu,
-    /* [in] */ Boolean allMenusAreClosing)
-{
-    return MenuPopupHelper::OnCloseMenu(menu, allMenusAreClosing);
-}
-
-ECode ActionMenuPresenter::OverflowPopup::FlagActionItems(
-    /* [out] */ Boolean* shown)
-{
-    VALIDATE_NOT_NULL(shown);
-    return MenuPopupHelper::FlagActionItems(shown);
-}
-
-ECode ActionMenuPresenter::OverflowPopup::ExpandItemActionView(
-    /* [in] */ IMenuBuilder* menu,
-    /* [in] */ IMenuItemImpl* item,
-    /* [out] */ Boolean* expanded)
-{
-    VALIDATE_NOT_NULL(expanded);
-    return MenuPopupHelper::ExpandItemActionView(menu, item, expanded);
-}
-
-ECode ActionMenuPresenter::OverflowPopup::CollapseItemActionView(
-    /* [in] */ IMenuBuilder* menu,
-    /* [in] */ IMenuItemImpl* item,
-    /* [out] */ Boolean* collapsed)
-{
-    VALIDATE_NOT_NULL(collapsed);
-    return MenuPopupHelper::CollapseItemActionView(menu, item, collapsed);
-}
-
-ECode ActionMenuPresenter::OverflowPopup::GetId(
-    /* [out] */ Int32* id)
-{
-    VALIDATE_NOT_NULL(id);
-    return MenuPopupHelper::GetId(id);
-}
-
-ECode ActionMenuPresenter::OverflowPopup::OnSaveInstanceState(
-    /* [out] */ IParcelable** pa)
-{
-    VALIDATE_NOT_NULL(pa);
-    return MenuPopupHelper::OnSaveInstanceState(pa);
-}
-
-ECode ActionMenuPresenter::OverflowPopup::OnRestoreInstanceState(
-    /* [in] */ IParcelable* state)
-{
-    return MenuPopupHelper::OnRestoreInstanceState(state);
 }
 
 ActionMenuPresenter::ActionButtonSubmenu::ActionButtonSubmenu(
     /* [in] */ IContext* context,
     /* [in] */ ISubMenuBuilder* subMenu,
     /* [in] */ ActionMenuPresenter* host)
-    : MenuPopupHelper(context, subMenu)
-    , mHost(host)
 {
+    MenuPopupHelper::constructor(context, IMenuBuilder::Probe(subMenu), NULL, FALSE, R::attr::actionOverflowMenuStyle);
     mSubMenu = subMenu;
 
-    AutoPtr<IMenuItemImpl> item;
-    AutoPtr<ISubMenu> sm = ISubMenu::Probe(subMenu);
-    sm->GetItem((IMenuItem**)&item);
-
-    Boolean tmp = FALSE;
-    if (!(item->IsActionButton(&tmp), tmp)) {
+    AutoPtr<IMenuItem> menuItem;
+    subMenu->GetItem((IMenuItem**)&menuItem);
+    AutoPtr<IMenuItemImpl> item = IMenuItemImpl::Probe(menuItem);
+    Boolean isActionButton;
+    if (item->IsActionButton(&isActionButton), !isActionButton) {
         // Give a reasonable anchor to nested submenus.
         SetAnchorView(mHost->mOverflowButton == NULL ? IView::Probe(mHost->mMenuView) : mHost->mOverflowButton.Get());
     }
@@ -622,78 +213,22 @@ ActionMenuPresenter::ActionButtonSubmenu::ActionButtonSubmenu(
     SetCallback(mHost->mPopupPresenterCallback);
 
     Boolean preserveIconSpacing = FALSE;
-    Int32 count = 0;
-    subMenu->GetSize(&count);
+    Int32 count;
+    IMenu::Probe(subMenu)->GetSize(&count);
     for (Int32 i = 0; i < count; i++) {
         AutoPtr<IMenuItem> childItem;
-        subMenu->GetItem(i, (IMenuItem**)&childItem);
-
-        AutoPtr<IDrawable> icon;
-        if ((childItem->IsVisible(&tmp), tmp) && (childItem->GetIcon((IDrawable**)&icon), icon) != NULL) {
-            preserveIconSpacing = TRUE;
-            break;
+        IMenu::Probe(subMenu)->GetItem(i, (IMenuItem**)&childItem);
+        Boolean isVisible;
+        if (childItem->IsVisible(&isVisible), isVisible) {
+            AutoPtr<IDrawable> icon;
+            childItem->GetIcon((IDrawable**)&icon);
+            if (icon != NULL) {
+                preserveIconSpacing = TRUE;
+                break;
+            }
         }
     }
     SetForceShowIcon(preserveIconSpacing);
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::GetWeakReference(
-    /* [out] */ IWeakReference** weakReference)
-{
-    VALIDATE_NOT_NULL(weakReference)
-    *weakReference = new WeakReferenceImpl(THIS_PROBE(IInterface), CreateWeak(this));
-    REFCOUNT_ADD(*weakReference)
-    return NOERROR;
-}
-
-PInterface ActionMenuPresenter::ActionButtonSubmenu::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IMenuPopupHelper*)this;
-    }
-    else if (riid == EIID_IMenuPopupHelper) {
-        return (IMenuPopupHelper*)this;
-    }
-    else if (riid == EIID_IAdapterViewOnItemClickListener) {
-        return (IAdapterViewOnItemClickListener*)this;
-    }
-    else if (riid == EIID_IViewOnKeyListener) {
-        return (IViewOnKeyListener*)this;
-    }
-    else if (riid == EIID_IOnGlobalLayoutListener) {
-        return (IOnGlobalLayoutListener*)this;
-    }
-    else if (riid == EIID_IPopupWindowOnDismissListener) {
-        return (IPopupWindowOnDismissListener*)this;
-    }
-    else if (riid == EIID_IViewOnAttachStateChangeListener) {
-        return (IViewOnAttachStateChangeListener*)this;
-    }
-    else if (riid == EIID_IWeakReferenceSource) {
-        return (IWeakReferenceSource*)this;
-    }
-    else if (riid == EIID_IMenuPresenter) {
-        return (IMenuPresenter*)this;
-    }
-    return NULL;
-}
-
-UInt32 ActionMenuPresenter::ActionButtonSubmenu::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 ActionMenuPresenter::ActionButtonSubmenu::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode ActionMenuPresenter::ActionButtonSubmenu::OnDismiss()
@@ -704,187 +239,39 @@ ECode ActionMenuPresenter::ActionButtonSubmenu::OnDismiss()
     return NOERROR;
 }
 
-ECode ActionMenuPresenter::ActionButtonSubmenu::SetAnchorView(
-    /* [in] */ IView* anchor)
-{
-    return MenuPopupHelper::SetAnchorView(anchor);
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::SetForceShowIcon(
-    /* [in] */ Boolean forceShow)
-{
-    return MenuPopupHelper::SetForceShowIcon(forceShow);
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::Show()
-{
-    return MenuPopupHelper::Show();
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::TryShow(
-    /* [out] */ Boolean* rst)
-{
-    VALIDATE_NOT_NULL(rst);
-    *rst = MenuPopupHelper::TryShow();
-    return NOERROR;
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::Dismiss()
-{
-    return MenuPopupHelper::Dismiss();
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::IsShowing(
-    /* [out] */ Boolean* rst)
-{
-    VALIDATE_NOT_NULL(rst);
-    *rst = MenuPopupHelper::IsShowing();
-    return NOERROR;
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::OnItemClick(
-    /* [in] */ IAdapterView* parent,
-    /* [in] */ IView* view,
-    /* [in] */ Int32 position,
-    /* [in] */ Int64 id)
-{
-    return MenuPopupHelper::OnItemClick(parent, view, position, id);
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::OnKey(
-    /* [in] */ IView* v,
-    /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return MenuPopupHelper::OnKey(v, keyCode, event, result);
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::OnGlobalLayout()
-{
-    return MenuPopupHelper::OnGlobalLayout();
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::OnViewAttachedToWindow(
-    /* [in] */ IView* v)
-{
-    return MenuPopupHelper::OnViewAttachedToWindow(v);
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::OnViewDetachedFromWindow(
-    /* [in] */ IView* v)
-{
-    return MenuPopupHelper::OnViewDetachedFromWindow(v);
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::InitForMenu(
-    /* [in] */ IContext* context,
-    /* [in] */ IMenuBuilder* menu)
-{
-    return MenuPopupHelper::InitForMenu(context, menu);
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::GetMenuView(
-    /* [in] */ IViewGroup* root,
-    /* [out] */ IMenuView** view)
-{
-    return MenuPopupHelper::GetMenuView(root, view);
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::UpdateMenuView(
-    /* [in] */ Boolean cleared)
-{
-    return MenuPopupHelper::UpdateMenuView(cleared);
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::SetCallback(
-    /* [in] */ IMenuPresenterCallback* cb)
-{
-    return MenuPopupHelper::SetCallback(cb);
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::OnSubMenuSelected(
-    /* [in] */ ISubMenuBuilder* subMenu,
-    /* [out] */ Boolean* handled)
-{
-    VALIDATE_NOT_NULL(handled);
-    return MenuPopupHelper::OnSubMenuSelected(subMenu, handled);
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::OnCloseMenu(
-    /* [in] */ IMenuBuilder* menu,
-    /* [in] */ Boolean allMenusAreClosing)
-{
-    return MenuPopupHelper::OnCloseMenu(menu, allMenusAreClosing);
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::FlagActionItems(
-    /* [out] */ Boolean* shown)
-{
-    VALIDATE_NOT_NULL(shown);
-    return MenuPopupHelper::FlagActionItems(shown);
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::ExpandItemActionView(
-    /* [in] */ IMenuBuilder* menu,
-    /* [in] */ IMenuItemImpl* item,
-    /* [out] */ Boolean* expanded)
-{
-    VALIDATE_NOT_NULL(expanded);
-    return MenuPopupHelper::ExpandItemActionView(menu, item, expanded);
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::CollapseItemActionView(
-    /* [in] */ IMenuBuilder* menu,
-    /* [in] */ IMenuItemImpl* item,
-    /* [out] */ Boolean* collapsed)
-{
-    VALIDATE_NOT_NULL(collapsed);
-    return MenuPopupHelper::CollapseItemActionView(menu, item, collapsed);
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::GetId(
-    /* [out] */ Int32* id)
-{
-    VALIDATE_NOT_NULL(id);
-    return MenuPopupHelper::GetId(id);
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::OnSaveInstanceState(
-    /* [out] */ IParcelable** pa)
-{
-    VALIDATE_NOT_NULL(pa);
-    return MenuPopupHelper::OnSaveInstanceState(pa);
-}
-
-ECode ActionMenuPresenter::ActionButtonSubmenu::OnRestoreInstanceState(
-    /* [in] */ IParcelable* state)
-{
-    return MenuPopupHelper::OnRestoreInstanceState(state);
-}
+CAR_INTERFACE_IMPL(ActionMenuPresenter::PopupPresenterCallback, Object, IMenuPresenterCallback)
 
 ActionMenuPresenter::PopupPresenterCallback::PopupPresenterCallback(
     /* [in] */ ActionMenuPresenter* host)
-    : mHost(host)
-{}
-
-CAR_INTERFACE_IMPL(ActionMenuPresenter::PopupPresenterCallback, IMenuPresenterCallback)
+{
+    mHost = host;
+}
 
 ECode ActionMenuPresenter::PopupPresenterCallback::OnOpenSubMenu(
     /* [in] */ IMenuBuilder* subMenu,
     /* [out] */ Boolean* result)
 {
-    assert(result != NULL);
+    VALIDATE_NOT_NULL(result)
+
     *result = FALSE;
     if (subMenu == NULL) {
         return NOERROR;
     }
 
-    AutoPtr<IMenuItem> item;
-    AutoPtr<ISubMenu> sm = ISubMenu::Probe(subMenu);
-    sm->GetItem((IMenuItem**)&item);
-    item->GetItemId(&(mHost->mOpenSubMenuId));
+    AutoPtr<ISubMenuBuilder> sm = ISubMenuBuilder::Probe(subMenu);
+    if (sm != NULL) {
+        AutoPtr<IMenuItem> item;
+        sm->GetItem((IMenuItem**)&item);
+        item->GetItemId(&(mHost->mOpenSubMenuId));
+    }
+
+
+    AutoPtr<IMenuPresenterCallback> cb;
+    mHost->GetCallback((IMenuPresenterCallback**)&cb);
+    if (cb != NULL)
+    {
+        return cb->OnOpenSubMenu(subMenu, result);
+    }
     return NOERROR;
 }
 
@@ -894,14 +281,18 @@ ECode ActionMenuPresenter::PopupPresenterCallback::OnCloseMenu(
 {
     if (ISubMenuBuilder::Probe(menu) != NULL) {
         AutoPtr<IMenuBuilder> root;
-        ISubMenuBuilder::Probe(menu)->GetRootMenu((IMenuBuilder**)&root);
+        IMenuBuilder::Probe(menu)->GetRootMenu((IMenuBuilder**)&root);
         root->Close(FALSE);
     }
 
+    AutoPtr<IMenuPresenterCallback> cb;
+    mHost->GetCallback((IMenuPresenterCallback**)&cb);
+    if (cb != NULL)
+    {
+        return cb->OnCloseMenu(menu, allMenusAreClosing);
+    }
     return NOERROR;
 }
-
-CAR_INTERFACE_IMPL(ActionMenuPresenter::OpenOverflowRunnable, IRunnable)
 
 ActionMenuPresenter::OpenOverflowRunnable::OpenOverflowRunnable(
     /* [in] */ OverflowPopup* popup,
@@ -926,18 +317,93 @@ ECode ActionMenuPresenter::OpenOverflowRunnable::Run()
     return NOERROR;
 }
 
+CAR_INTERFACE_IMPL(ActionMenuPresenter::ActionMenuPopupCallback, Object, IPopupCallback)
+
+ActionMenuPresenter::ActionMenuPopupCallback::ActionMenuPopupCallback(
+    /* [in] */ ActionMenuPresenter* host)
+    : mHost(host)
+{}
+
+ECode ActionMenuPresenter::ActionMenuPopupCallback::GetPopup(
+    /* [out] */ IListPopupWindow** popup)
+{
+    VALIDATE_NOT_NULL(popup)
+
+    if (mHost->mActionButtonPopup != NULL) {
+        return mHost->mActionButtonPopup->GetPopup(popup);
+    }
+
+    *popup = NULL;
+    return NOERROR;
+}
+
+CAR_INTERFACE_IMPL(ActionMenuPresenter::SavedState, Object, IParcelable)
+
+ActionMenuPresenter::SavedState::SavedState()
+{}
+
+ECode ActionMenuPresenter::SavedState::constructor()
+{
+    mOpenSubMenuId = 0;
+    return NOERROR;
+}
+
+ECode ActionMenuPresenter::SavedState::ReadFromParcel(
+    /* [in] */ IParcel* source)
+{
+    return source->ReadInt32(&mOpenSubMenuId);
+}
+
+ECode ActionMenuPresenter::SavedState::WriteToParcel(
+    /* [in] */ IParcel* dest)
+{
+    return dest->WriteInt32(mOpenSubMenuId);
+}
+
+CAR_INTERFACE_IMPL(ActionMenuPresenter::MySubUiVisibilityListener, Object, ISubUiVisibilityListener)
+
+ActionMenuPresenter::MySubUiVisibilityListener::MySubUiVisibilityListener(
+    /* [in] */ ActionMenuPresenter* host)
+    : mHost(host)
+{}
+
+ECode ActionMenuPresenter::MySubUiVisibilityListener::OnSubUiVisibilityChanged(
+    /* [in] */ Boolean isVisible)
+{
+    if (isVisible) {
+        // Not a submenu, but treat it like one.
+        Boolean tmp = FALSE;
+        mHost->BaseMenuPresenter::OnSubMenuSelected(NULL, &tmp);
+    } else {
+        mHost->mMenu->Close(FALSE);
+    }
+
+    return NOERROR;
+}
+
+CAR_INTERFACE_IMPL(ActionMenuPresenter, BaseMenuPresenter, IActionMenuPresenter)
+
 ActionMenuPresenter::ActionMenuPresenter()
+    : mReserveOverflow(FALSE)
+    , mReserveOverflowSet(FALSE)
+    , mWidthLimit(0)
+    , mActionItemWidthLimit(0)
+    , mMaxItems(0)
+    , mMaxItemsSet(FALSE)
+    , mStrictWidthLimit(FALSE)
+    , mWidthLimitSet(FALSE)
+    , mExpandedActionViewsExclusive(FALSE)
+    , mMinCellSize(0)
 {
     mPopupPresenterCallback = new PopupPresenterCallback(this);
 }
 
-ActionMenuPresenter::ActionMenuPresenter(
+ECode ActionMenuPresenter::constructor(
     /* [in] */ IContext* context)
 {
-    BaseMenuPresenter::Init(context, R::layout::action_menu_layout,
+    BaseMenuPresenter::constructor(context, R::layout::action_menu_layout,
             R::layout::action_menu_item_layout);
-
-    mPopupPresenterCallback = new PopupPresenterCallback(this);
+    return NOERROR;
 }
 
 //@Override
@@ -951,8 +417,7 @@ ECode ActionMenuPresenter::InitForMenu(
     context->GetResources((IResources**)&res);
 
 
-    AutoPtr<IActionBarPolicy> abp;
-    CActionBarPolicy::New(context, (IActionBarPolicy**)&abp);
+    AutoPtr<IActionBarPolicy> abp = ActionBarPolicy::Get(context);
     if (!mReserveOverflowSet) {
         abp->ShowsOverflowMenuButton(&mReserveOverflow);
     }
@@ -970,7 +435,7 @@ ECode ActionMenuPresenter::InitForMenu(
     if (mReserveOverflow) {
         if (mOverflowButton == NULL) {
             mOverflowButton = new OverflowMenuButton(mSystemContext, this);
-            const Int32 spec = View::MeasureSpec::MakeMeasureSpec(0, View::MeasureSpec::UNSPECIFIED);
+            const Int32 spec = Elastos::Droid::View::View::MeasureSpec::MakeMeasureSpec(0, Elastos::Droid::View::View::MeasureSpec::UNSPECIFIED);
             mOverflowButton->Measure(spec, spec);
         }
 
@@ -987,7 +452,7 @@ ECode ActionMenuPresenter::InitForMenu(
     res->GetDisplayMetrics((IDisplayMetrics**)&metrics);
     Float density = 0.f;
     metrics->GetDensity(&density);
-    mMinCellSize = (Int32) (ActionMenuView::MIN_CELL_SIZE * density);
+    mMinCellSize = (Int32) (56 /* ActionMenuView::MIN_CELL_SIZE */ * density);
 
     // Drop a scrap view as it may no longer reflect the proper context/config.
     mScrapActionButtonView = NULL;
@@ -1004,41 +469,43 @@ ECode ActionMenuPresenter::OnConfigurationChanged(
     }
 
     if (mMenu != NULL) {
-        MenuBuilderBase* base = reinterpret_cast<MenuBuilderBase*>(mMenu->Probe(EIID_MenuBuilderBase));
-        assert(base != NULL);
-        base->OnItemsChanged(TRUE);
+        mMenu->OnItemsChanged(TRUE);
     }
 
     return NOERROR;
 }
 
-void ActionMenuPresenter::SetWidthLimit(
+ECode ActionMenuPresenter::SetWidthLimit(
     /* [in] */ Int32 width,
     /* [in] */ Boolean strict)
 {
     mWidthLimit = width;
     mStrictWidthLimit = strict;
     mWidthLimitSet = TRUE;
+    return NOERROR;
 }
 
-void ActionMenuPresenter::SetReserveOverflow(
+ECode ActionMenuPresenter::SetReserveOverflow(
     /* [in] */ Boolean reserveOverflow)
 {
     mReserveOverflow = reserveOverflow;
     mReserveOverflowSet = TRUE;
+    return NOERROR;
 }
 
-void ActionMenuPresenter::SetItemLimit(
+ECode ActionMenuPresenter::SetItemLimit(
     /* [in] */ Int32 itemCount)
 {
     mMaxItems = itemCount;
     mMaxItemsSet = TRUE;
+    return NOERROR;
 }
 
-void ActionMenuPresenter::SetExpandedActionViewsExclusive(
+ECode ActionMenuPresenter::SetExpandedActionViewsExclusive(
     /* [in] */ Boolean isExclusive)
 {
     mExpandedActionViewsExclusive = isExclusive;
+    return NOERROR;
 }
 
 ECode ActionMenuPresenter::GetMenuView(
@@ -1048,7 +515,7 @@ ECode ActionMenuPresenter::GetMenuView(
     assert(view != NULL);
     BaseMenuPresenter::GetMenuView(root, view);
     AutoPtr<IActionMenuView> temp = IActionMenuView::Probe(*view);
-    temp->SetPresenter((IActionMenuPresenter*)this->Probe(EIID_IActionMenuPresenter));
+    temp->SetPresenter(this);
     return NOERROR;
 }
 
@@ -1060,26 +527,24 @@ ECode ActionMenuPresenter::GetItemView(
 {
     assert(view != NULL && item != NULL);
     AutoPtr<IView> actionView;
-    item->GetActionView((IView**)&actionView);
+    IMenuItem::Probe(item)->GetActionView((IView**)&actionView);
 
     Boolean has = FALSE;
     if (actionView == NULL || (item->HasCollapsibleActionView(&has), has)) {
-        if (IActionMenuItemView::Probe(convertView) == NULL) {
-            convertView = NULL;
-        }
-
-        actionView = BaseMenuPresenter::GetItemView(item, convertView, parent);
+        BaseMenuPresenter::GetItemView(item, convertView, parent, (IView**)&actionView);
     }
 
     Boolean expanded = FALSE;
-    actionView->SetVisibility((item->IsActionViewExpanded(&expanded), expanded) ? IView::GONE : IView::VISIBLE);
+    actionView->SetVisibility((IMenuItem::Probe(item)->IsActionViewExpanded(&expanded), expanded) ? IView::GONE : IView::VISIBLE);
 
-    ActionMenuView* menuParent = reinterpret_cast<ActionMenuView*>(parent->Probe(EIID_ActionMenuView));
+    AutoPtr<IActionMenuView> menuParent = IActionMenuView::Probe(parent);
     AutoPtr<IViewGroupLayoutParams> lp;
     actionView->GetLayoutParams((IViewGroupLayoutParams**)&lp);
-    if (!menuParent->CheckLayoutParams(lp)) {
-        actionView->SetLayoutParams(menuParent->GenerateLayoutParams(lp));
-    }
+    // ActionMenuView* impl = (ActionMenuView*)menuParent.Get();
+    // if (!impl->CheckLayoutParams(lp)) {
+        // actionView->SetLayoutParams(impl->GenerateLayoutParams(lp));
+    // }
+    // zhangjingcheng
 
     *view = actionView;
     REFCOUNT_ADD(*view);
@@ -1087,7 +552,7 @@ ECode ActionMenuPresenter::GetItemView(
     return NOERROR;
 }
 
-void ActionMenuPresenter::BindItemView(
+ECode ActionMenuPresenter::BindItemView(
     /* [in] */ IMenuItemImpl* item,
     /* [in] */ IMenuItemView* itemView)
 {
@@ -1096,58 +561,84 @@ void ActionMenuPresenter::BindItemView(
     AutoPtr<IMenuBuilderItemInvoker> menuView = IMenuBuilderItemInvoker::Probe(mMenuView);
     AutoPtr<IActionMenuItemView> actionItemView = IActionMenuItemView::Probe(itemView);
     actionItemView->SetItemInvoker(menuView);
+
+    if (mPopupCallback == NULL) {
+        mPopupCallback = new ActionMenuPopupCallback(this);
+    }
+    return actionItemView->SetPopupCallback(mPopupCallback);
 }
 
-Boolean ActionMenuPresenter::ShouldIncludeItem(
+ECode ActionMenuPresenter::ShouldIncludeItem(
     /* [in] */ Int32 childIndex,
-    /* [in] */ IMenuItemImpl* item)
+    /* [in] */ IMenuItemImpl* item,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     assert(item != NULL);
-    Boolean tmp = FALSE;
-    return (item->IsActionButton(&tmp), tmp);
+    return item->IsActionButton(result);
 }
 
 ECode ActionMenuPresenter::UpdateMenuView(
     /* [in] */ Boolean cleared)
 {
-    BaseMenuPresenter::UpdateMenuView(cleared);
-    AutoPtr< List<AutoPtr<IMenuItemImpl> > > nonActionItems;
-    MenuBuilderBase* base = NULL;
-    if (mMenu != NULL) {
-        base = reinterpret_cast<MenuBuilderBase*>(mMenu->Probe(EIID_MenuBuilderBase));
-        assert(base != NULL);
+    AutoPtr<IView> mv = IView::Probe(mMenuView);
+    AutoPtr<IViewParent> tmp;
+    mv->GetParent((IViewParent**)&tmp);
+    AutoPtr<IViewGroup> menuViewParent = IViewGroup::Probe(tmp);
+    if (menuViewParent != NULL) {
+        ActionBarTransition::BeginDelayedTransition(menuViewParent);
+    }
 
-        AutoPtr< List<AutoPtr<IMenuItemImpl> > > actionItems = base->GetActionItems();
-        List<AutoPtr<IMenuItemImpl> >::Iterator it = actionItems->Begin();
-        for (; it != actionItems->End(); it++) {
+    BaseMenuPresenter::UpdateMenuView(cleared);
+    mv->RequestLayout();
+
+    if (mMenu != NULL) {
+        AutoPtr<IArrayList> actionItems;
+        mMenu->GetActionItems((IArrayList**)&actionItems);
+        AutoPtr<IIterator> it;
+        actionItems->GetIterator((IIterator**)&it);
+        Boolean hasNext;
+        while (it->HasNext(&hasNext), hasNext)
+        {
+            AutoPtr<IInterface> tmp;
+            it->GetNext((IInterface**)&tmp);
+            AutoPtr<IMenuItemImpl> impl = IMenuItemImpl::Probe(tmp);
             AutoPtr<IActionProvider> provider;
-            (*it)->GetActionProvider((IActionProvider**)&provider);
+            IMenuItem::Probe(impl)->GetActionProvider((IActionProvider**)&provider);
             if (provider != NULL) {
-                provider->SetSubUiVisibilityListener(
-                    (ISubUiVisibilityListener*)(this->Probe(EIID_ISubUiVisibilityListener)));
+                AutoPtr<ISubUiVisibilityListener> l = new MySubUiVisibilityListener(this);
+                provider->SetSubUiVisibilityListener(l);
             }
         }
-        nonActionItems = base->GetNonActionItems();
+    }
+
+    AutoPtr<IArrayList> nonActionItems;
+    if (mMenu != NULL) {
+        mMenu->GetNonActionItems((IArrayList**)&nonActionItems);
     }
 
     Boolean hasOverflow = FALSE;
     if (mReserveOverflow && nonActionItems != NULL) {
-        Int32 count = nonActionItems->GetSize();
+        Int32 count;
+        nonActionItems->GetSize(&count);
         if (count == 1) {
-            Boolean tmp = FALSE;
-            hasOverflow = !((*nonActionItems)[0]->IsActionViewExpanded(&tmp), tmp);
+            AutoPtr<IInterface> tmp;
+            nonActionItems->Get(0, (IInterface**)&tmp);
+            AutoPtr<IMenuItem> impl = IMenuItem::Probe(tmp);
+            hasOverflow = !(impl->IsActionViewExpanded(&hasOverflow), hasOverflow);
         } else {
             hasOverflow = count > 0;
         }
     }
 
+    if (mOverflowButton == NULL) {
+        mOverflowButton = new OverflowMenuButton(mSystemContext, this);
+    }
+
     AutoPtr<IViewGroup> parent;
     mOverflowButton->GetParent((IViewParent**)&parent);
     if (hasOverflow) {
-        if (mOverflowButton == NULL) {
-            mOverflowButton = new OverflowMenuButton(mSystemContext, this);
-        }
-
         if (parent.Get() != IViewGroup::Probe(mMenuView)) {
             if (parent != NULL) {
                 assert(IViewManager::Probe(parent) != NULL);
@@ -1155,9 +646,9 @@ ECode ActionMenuPresenter::UpdateMenuView(
             }
 
             AutoPtr<IActionMenuView> menuView = IActionMenuView::Probe(mMenuView);
-            AutoPtr<IViewGroupLayoutParams> lp;
-            menuView->GenerateOverflowButtonLayoutParams((IViewGroupLayoutParams**)&lp);
-            menuView->AddView(mOverflowButton, lp);
+            AutoPtr<IActionMenuViewLayoutParams> lp;
+            menuView->GenerateOverflowButtonLayoutParams((IActionMenuViewLayoutParams**)&lp);
+            IViewGroup::Probe(menuView)->AddView(mOverflowButton, IViewGroupLayoutParams::Probe(lp));
         }
     } else if (mOverflowButton != NULL && parent.Get() == IViewGroup::Probe(mMenuView)) {
         assert(IViewManager::Probe(parent) != NULL);
@@ -1181,21 +672,30 @@ Boolean ActionMenuPresenter::FilterLeftoverView(
     return BaseMenuPresenter::FilterLeftoverView(parent, childIndex);
 }
 
+ECode ActionMenuPresenter::FilterLeftoverView(
+    /* [in] */ IViewGroup* parent,
+    /* [in] */ Int32 childIndex,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    *result = FilterLeftoverView(parent, childIndex);
+    return NOERROR;
+}
+
 ECode ActionMenuPresenter::OnSubMenuSelected(
     /* [in] */ ISubMenuBuilder* subMenu,
     /* [out] */ Boolean* result)
 {
     assert(result != NULL && subMenu != NULL);
 
-    Boolean tmp = FALSE;
-    if (!(subMenu->HasVisibleItems(&tmp), tmp)) {
-        *result = FALSE;
+    if (IMenu::Probe(subMenu)->HasVisibleItems(result), !(*result)) {
         return NOERROR;
     }
 
     AutoPtr<ISubMenuBuilder> topSubMenu = subMenu;
     AutoPtr<IMenu> parentMenu;
-    while ((topSubMenu->GetParentMenu((IMenu**)&parentMenu), parentMenu) != mMenu) {
+    while ((topSubMenu->GetParentMenu((IMenu**)&parentMenu), parentMenu.Get()) != IMenu::Probe(mMenu)) {
         topSubMenu = ISubMenuBuilder::Probe(parentMenu);
         parentMenu = NULL;
     }
@@ -1213,7 +713,7 @@ ECode ActionMenuPresenter::OnSubMenuSelected(
     }
 
     item = NULL;
-    (ISubMenu::Probe(subMenu))->GetItem((IMenuItem**)&item);
+    ISubMenu::Probe(subMenu)->GetItem((IMenuItem**)&item);
     assert(item != NULL);
 
     item->GetItemId(&mOpenSubMenuId);
@@ -1221,7 +721,7 @@ ECode ActionMenuPresenter::OnSubMenuSelected(
     mActionButtonPopup->SetAnchorView(anchor);
     mActionButtonPopup->Show();
 
-    BaseMenuPresenter::OnSubMenuSelected(subMenu, &tmp);
+    BaseMenuPresenter::OnSubMenuSelected(subMenu, result);
 
     *result = TRUE;
     return NOERROR;
@@ -1244,7 +744,7 @@ AutoPtr<IView> ActionMenuPresenter::FindViewForItem(
         {
             AutoPtr<IMenuItemImpl> itemTemp;
             IMenuItemView::Probe(child)->GetItemData((IMenuItemImpl**)&itemTemp);
-            AutoPtr<IMenuItem> tmp = itemTemp;
+            AutoPtr<IMenuItem> tmp = IMenuItem::Probe(itemTemp);
             if(tmp.Get() == item)
             {
                 return child;
@@ -1255,89 +755,129 @@ AutoPtr<IView> ActionMenuPresenter::FindViewForItem(
     return NULL;
 }
 
-Boolean ActionMenuPresenter::ShowOverflowMenu()
+ECode ActionMenuPresenter::ShowOverflowMenu(
+    /* [out] */ Boolean* result)
 {
-    MenuBuilderBase* base = reinterpret_cast<MenuBuilderBase*>(mMenu->Probe(EIID_MenuBuilderBase));
-    if (mReserveOverflow && !IsOverflowMenuShowing() && mMenu != NULL && mMenuView != NULL &&
-            mPostedOpenRunnable == NULL && !base->GetNonActionItems()->IsEmpty()) {
+    if (mMenu == NULL || mMenuView == NULL || mPostedOpenRunnable == NULL) {
+        *result = FALSE;
+        return NOERROR;
+    }
+    AutoPtr<IArrayList> nonActionItems;
+    mMenu->GetNonActionItems((IArrayList**)&nonActionItems);
+    Boolean empty = TRUE;
+    if (nonActionItems != NULL) {
+        nonActionItems->IsEmpty(&empty);
+    }
+    Boolean overflowMenuShowing;
+    if (mReserveOverflow && (IsOverflowMenuShowing(&overflowMenuShowing), !overflowMenuShowing) && !empty) {
         AutoPtr<OverflowPopup> popup = new OverflowPopup(mContext, mMenu, mOverflowButton, TRUE, this);
         mPostedOpenRunnable = new OpenOverflowRunnable(popup, this);
         // Post this for later; we might still need a layout for the anchor to be right.
-        VIEW_PROBE(mMenuView)->Post(mPostedOpenRunnable);
+        Boolean tmp = FALSE;
+        IView::Probe(mMenuView)->Post(mPostedOpenRunnable, &tmp);
 
         // ActionMenuPresenter uses null as a callback argument here
         // to indicate overflow is opening.
-        Boolean tmp = FALSE;
         BaseMenuPresenter::OnSubMenuSelected(NULL, &tmp);
 
-        return TRUE;
+        *result = TRUE;
+        return NOERROR;
     }
 
-    return FALSE;
+    *result = FALSE;
+    return NOERROR;
 }
 
-Boolean ActionMenuPresenter::HideOverflowMenu()
+ECode ActionMenuPresenter::HideOverflowMenu(
+    /* [out] */ Boolean* result)
 {
     if (mPostedOpenRunnable != NULL && mMenuView != NULL) {
-        VIEW_PROBE(mMenuView)->RemoveCallbacks(mPostedOpenRunnable);
+        Boolean tmp = FALSE;
+        IView::Probe(mMenuView)->RemoveCallbacks(mPostedOpenRunnable, &tmp);
+
         mPostedOpenRunnable = NULL;
-        return TRUE;
+        *result = TRUE;
+        return NOERROR;
     }
 
     if (mOverflowPopup != NULL) {
         mOverflowPopup->Dismiss();
-        return TRUE;
+        *result = TRUE;
+        return NOERROR;
     }
 
-    return FALSE;
+    *result = FALSE;
+    return NOERROR;
 }
 
-Boolean ActionMenuPresenter::DismissPopupMenus()
+ECode ActionMenuPresenter::DismissPopupMenus(
+    /* [out] */ Boolean* result)
 {
-    Boolean result = HideOverflowMenu();
-    result |= HideSubMenus();
-    return result;
+    HideOverflowMenu(result);
+    Boolean tmp;
+    HideSubMenus(&tmp);
+    *result |= tmp;
+    return NOERROR;
 }
 
-Boolean ActionMenuPresenter::HideSubMenus()
+ECode ActionMenuPresenter::HideSubMenus(
+    /* [out] */ Boolean* result)
 {
     if (mActionButtonPopup != NULL) {
         mActionButtonPopup->Dismiss();
-        return TRUE;
+        *result = TRUE;
+        return NOERROR;
     }
-    return FALSE;
+    *result = FALSE;
+    return NOERROR;
 }
 
-Boolean ActionMenuPresenter::IsOverflowMenuShowing()
+ECode ActionMenuPresenter::IsOverflowMenuShowing(
+    /* [out] */ Boolean* result)
 {
     Boolean isShowing;
-    return mOverflowPopup != NULL && (mOverflowPopup->IsShowing(&isShowing), isShowing);
+    *result = mOverflowPopup != NULL && (mOverflowPopup->IsShowing(&isShowing), isShowing);
+    return NOERROR;
 }
 
-Boolean ActionMenuPresenter::IsOverflowReserved()
+ECode ActionMenuPresenter::IsOverflowMenuShowPending(
+    /* [out] */ Boolean* result)
 {
-    return mReserveOverflow;
+    Boolean overflowMenuShowing;
+    *result = mPostedOpenRunnable != NULL || (IsOverflowMenuShowing(&overflowMenuShowing), overflowMenuShowing);
+    return NOERROR;
+}
+
+ECode ActionMenuPresenter::IsOverflowReserved(
+    /* [out] */ Boolean* result)
+{
+    *result = mReserveOverflow;
+    return NOERROR;
 }
 
 ECode ActionMenuPresenter::FlagActionItems(
     /* [out] */ Boolean* result)
 {
-    assert(result != NULL);
+    VALIDATE_NOT_NULL(result)
 
-    MenuBuilderBase* base = reinterpret_cast<MenuBuilderBase*>(mMenu->Probe(EIID_MenuBuilderBase));
-    AutoPtr< List<AutoPtr<IMenuItemImpl> > > visibleItems = base->GetVisibleItems();
-    List<AutoPtr<IMenuItemImpl> >::Iterator it = visibleItems->Begin();
+    AutoPtr<IArrayList> visibleItems;
+    mMenu->GetVisibleItems((IArrayList**)&visibleItems);
+    AutoPtr<IIterator> it;
+    visibleItems->GetIterator((IIterator**)&it);
     Int32 maxActions = mMaxItems;
     Int32 widthLimit = mActionItemWidthLimit;
-    const Int32 querySpec = View::MeasureSpec::MakeMeasureSpec(0, View::MeasureSpec::UNSPECIFIED);
+    const Int32 querySpec = Elastos::Droid::View::View::MeasureSpec::MakeMeasureSpec(0, Elastos::Droid::View::View::MeasureSpec::UNSPECIFIED);
     AutoPtr<IViewGroup> parent = IViewGroup::Probe(mMenuView);
 
     Int32 requiredItems = 0;
     Int32 requestedItems = 0;
     Int32 firstActionWidth = 0;
     Boolean hasOverflow = FALSE;
-    for (; it != visibleItems->End(); it++) {
-        AutoPtr<IMenuItemImpl> item = *it;
+    Boolean hasNext = FALSE;
+    while (it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> next;
+        it->GetNext((IInterface**)&next);
+        AutoPtr<IMenuItemImpl> item = IMenuItemImpl::Probe(next);
 
         Boolean tmp = FALSE;
         if (item->RequiresActionButton(&tmp), tmp) {
@@ -1348,7 +888,7 @@ ECode ActionMenuPresenter::FlagActionItems(
             hasOverflow = TRUE;
         }
 
-        if (mExpandedActionViewsExclusive && (item->IsActionViewExpanded(&tmp), tmp)) {
+        if (mExpandedActionViewsExclusive && (IMenuItem::Probe(item)->IsActionViewExpanded(&tmp), tmp)) {
             // Overflow everything if we have an expanded action view and we're
             // space constrained.
             maxActions = 0;
@@ -1373,9 +913,12 @@ ECode ActionMenuPresenter::FlagActionItems(
     }
 
     // Flag as many more requested items as will fit.
-    it = visibleItems->Begin();
-    for (; it != visibleItems->End(); it++) {
-        AutoPtr<IMenuItemImpl> item = *it;
+    it = NULL;
+    visibleItems->GetIterator((IIterator**)&it);
+    while (it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> next;
+        it->GetNext((IInterface**)&next);
+        AutoPtr<IMenuItemImpl> item = IMenuItemImpl::Probe(next);
 
         Boolean tmp = FALSE;
         if (item->RequiresActionButton(&tmp), tmp) {
@@ -1386,8 +929,9 @@ ECode ActionMenuPresenter::FlagActionItems(
             }
 
             if (mStrictWidthLimit) {
-                cellsRemaining -= ActionMenuView::MeasureChildForCells(v,
-                        cellSize, cellsRemaining, querySpec, 0);
+                // cellsRemaining -= ActionMenuView::MeasureChildForCells(v,
+                //         cellSize, cellsRemaining, querySpec, 0);
+                // zhangjingcheng
             } else {
                 v->Measure(querySpec, querySpec);
             }
@@ -1401,7 +945,7 @@ ECode ActionMenuPresenter::FlagActionItems(
             }
 
             Int32 groupId = 0;
-            item->GetGroupId(&groupId);
+            IMenuItem::Probe(item)->GetGroupId(&groupId);
             if (groupId != 0) {
                 mActionButtonGroups[groupId] = TRUE;
             }
@@ -1411,7 +955,7 @@ ECode ActionMenuPresenter::FlagActionItems(
             // Items in a group with other items that already have an action slot
             // can break the max actions rule, but not the width limit.
             Int32 groupId = 0;
-            item->GetGroupId(&groupId);
+            IMenuItem::Probe(item)->GetGroupId(&groupId);
             Boolean inGroup = mActionButtonGroups[groupId];
             Boolean isAction = (maxActions > 0 || inGroup) && widthLimit > 0 &&
                     (!mStrictWidthLimit || cellsRemaining > 0);
@@ -1424,12 +968,12 @@ ECode ActionMenuPresenter::FlagActionItems(
                 }
 
                 if (mStrictWidthLimit) {
-                    const Int32 cells = ActionMenuView::MeasureChildForCells(v,
-                            cellSize, cellsRemaining, querySpec, 0);
-                    cellsRemaining -= cells;
-                    if (cells == 0) {
-                        isAction = FALSE;
-                    }
+                    // const Int32 cells = ActionMenuView::MeasureChildForCells(v,
+                    //         cellSize, cellsRemaining, querySpec, 0);
+                    // cellsRemaining -= cells;
+                    // if (cells == 0) {
+                    //     isAction = FALSE;
+                    // }
                 } else {
                     v->Measure(querySpec, querySpec);
                 }
@@ -1454,14 +998,19 @@ ECode ActionMenuPresenter::FlagActionItems(
             } else if (inGroup) {
                 // We broke the width limit. Demote the whole group, they all overflow now.
                 mActionButtonGroups[groupId] = FALSE;
-                List<AutoPtr<IMenuItemImpl> >::Iterator it2 = visibleItems->Begin();
-                for (; it2 != it; it2++) {
-                    AutoPtr<IMenuItemImpl> areYouMyGroupie = *it2;
+                AutoPtr<IIterator> it2;
+                visibleItems->GetIterator((IIterator**)&it2);
+                Boolean hasNext;
+                while(it2->HasNext(&hasNext), hasNext) {
+                    AutoPtr<IInterface> next;
+                    it2->GetNext((IInterface**)&next);
+                    AutoPtr<IMenuItemImpl> areYouMyGroupie = IMenuItemImpl::Probe(next);
+
                     Int32 id = 0;
-                    if ((areYouMyGroupie->GetGroupId(&id), id) == groupId) {
+                    if ((IMenuItem::Probe(areYouMyGroupie)->GetGroupId(&id), id) == groupId) {
                         // Give back the action slot
                         Boolean tmp = FALSE;
-                        if ((areYouMyGroupie->IsActionButton(&tmp), tmp)) maxActions++;
+                        if (areYouMyGroupie->IsActionButton(&tmp), tmp) maxActions++;
 
                         areYouMyGroupie->SetIsActionButton(FALSE);
                     }
@@ -1485,7 +1034,8 @@ ECode ActionMenuPresenter::OnCloseMenu(
     /* [in] */ IMenuBuilder* menu,
     /* [in] */ Boolean allMenusAreClosing)
 {
-    DismissPopupMenus();
+    Boolean tmp;
+    DismissPopupMenus(&tmp);
     BaseMenuPresenter::OnCloseMenu(menu, allMenusAreClosing);
     return NOERROR;
 }
@@ -1493,23 +1043,21 @@ ECode ActionMenuPresenter::OnCloseMenu(
 ECode ActionMenuPresenter::OnSaveInstanceState(
     /* [out] */ IParcelable** parcel)
 {
-    AutoPtr<IActionMenuPresenterSavedState> state;
-    CActionMenuPresenterSavedState::New((IActionMenuPresenterSavedState**)&state);
-    state->SetOpenSubMenuId(mOpenSubMenuId);
-    *parcel = IParcelable::Probe(state);
-    REFCOUNT_ADD(*parcel);
+    VALIDATE_NOT_NULL(parcel)
+
+    CActionMenuPresenterSavedState::New((IParcelable**)&parcel);
+    ((SavedState*)(*parcel))->mOpenSubMenuId = this->mOpenSubMenuId;
     return NOERROR;
 }
 
 ECode ActionMenuPresenter::OnRestoreInstanceState(
     /* [in] */ IParcelable* state)
 {
-    AutoPtr<IActionMenuPresenterSavedState> saved = IActionMenuPresenterSavedState::Probe(state);
-    Int32 openSubMenuId;
-    saved->GetOpenSubMenuId(&openSubMenuId);
-    if (openSubMenuId > 0) {
+    SavedState* saved = (SavedState*)state;
+
+    if (saved->mOpenSubMenuId > 0) {
         AutoPtr<IMenuItem> item;
-        mMenu->FindItem(openSubMenuId, (IMenuItem**)&item);
+        IMenu::Probe(mMenu)->FindItem(saved->mOpenSubMenuId, (IMenuItem**)&item);
         if (item != NULL) {
             AutoPtr<ISubMenu> mTemp;
             item->GetSubMenu((ISubMenu**)&mTemp);
@@ -1521,23 +1069,13 @@ ECode ActionMenuPresenter::OnRestoreInstanceState(
     return NOERROR;
 }
 
-ECode ActionMenuPresenter::OnSubUiVisibilityChanged(
-    /* [in] */ Boolean isVisible)
+ECode ActionMenuPresenter::SetMenuView(
+    /* [in] */ IActionMenuView* menuView)
 {
-    if (isVisible) {
-        // Not a submenu, but treat it like one.
-        Boolean tmp = FALSE;
-        BaseMenuPresenter::OnSubMenuSelected(NULL, &tmp);
-    } else {
-        MenuBuilderBase* base = reinterpret_cast<MenuBuilderBase*>(mMenu->Probe(EIID_MenuBuilderBase));;
-        assert(base != NULL);
-        base->Close(FALSE);
-    }
-
-    return NOERROR;
+    mMenuView = IMenuView::Probe(menuView);
+    return menuView->Initialize(mMenu);
 }
 
-} // namespace Menu
-} // namespace View
+} // namespace Widget
 } // namespace Droid
 } // namespace Elastos

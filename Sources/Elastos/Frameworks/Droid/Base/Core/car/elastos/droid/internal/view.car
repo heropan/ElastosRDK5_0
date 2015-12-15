@@ -7,7 +7,6 @@ module
     merge("view/menu/ActionMenu.car");
     merge("view/menu/ActionMenuItem.car");
     merge("view/menu/ActionMenuItemView.car");
-    merge("view/menu/BaseMenuPresenter.car");
     merge("view/menu/ContextMenuBuilder.car");
     merge("view/menu/ExpandedMenuView.car");
     merge("view/menu/IconMenuItemView.car");
@@ -18,7 +17,6 @@ module
     merge("view/menu/MenuDialogHelper.car");
     merge("view/menu/MenuItemImpl.car");
     merge("view/menu/MenuPopupHelper.car");
-    merge("view/menu/MenuView.car");
     merge("view/menu/SubMenuBuilder.car");
     merge("view/ActionBarPolicy.car");
     // merge("view/BaseIWindow.car");

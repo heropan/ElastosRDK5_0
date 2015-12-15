@@ -171,6 +171,10 @@ module
     merge("internal/view/BaseIWindow.car");
     merge("internal/view/IInputContext.car");
     merge("internal/view/IInputMethodClient.car");
+    merge("internal/view/menu/MenuBuilder.car");
+    merge("internal/view/menu/BaseMenuPresenter.car");
+    merge("internal/view/menu/MenuPresenter.car");
+    merge("internal/view/menu/MenuView.car");
 
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Core.ICloneable;
@@ -237,6 +241,7 @@ module
     interface Elastos.Droid.View.Internal.TextService.IISpellCheckerSessionListener;
     interface Elastos.Droid.View.Internal.TextService.IITextServicesSessionListener;
     interface Elastos.Droid.View.Internal.TextService.IITextServicesManager;
+    interface Elastos.Droid.Content.IContextWrapper;
 
     // interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnection;
     // interface Elastos.Droid.View.Accessibility.IAccessibilityManager;
@@ -1226,16 +1231,18 @@ module
         interface IAccessibilityEventSource;
     }
 
-    // [local]
-    // class CContextThemeWrapper {
-    //     constructor();
+    [local]
+    class CContextThemeWrapper {
+        constructor();
 
-    //     constructor(
-    //         [in] IContext* base,
-    //         [in] Int32 themeres);
+        constructor(
+            [in] IContext* base,
+            [in] Int32 themeres);
 
-    //     interface IContextThemeWrapper;
-    // }
+        interface IContextThemeWrapper;
+        interface IContextWrapper;
+        interface IContext;
+    }
 
     [local]
     class CGestureDetector {

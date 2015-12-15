@@ -1,6 +1,7 @@
 module
 {
     interface Elastos.Droid.Content.Res.IConfiguration;
+    interface Elastos.Droid.View.IViewGroup;
 
     namespace Elastos {
     namespace Droid {
@@ -36,6 +37,12 @@ module
          */
         ShowOverflowMenu(
             [out] Boolean* showOverflowMenu);
+
+
+        FilterLeftoverView(
+            [in] IViewGroup* parent,
+            [in] Int32 childIndex,
+            [out] Boolean* filterLeftoverView);
 
         /**
          * Hide the overflow menu if it is currently showing.
