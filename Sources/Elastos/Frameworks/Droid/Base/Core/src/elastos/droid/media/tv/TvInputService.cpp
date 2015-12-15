@@ -1,3 +1,9 @@
+
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Hardware.h"
+#include "Elastos.Droid.Media.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/media/tv/TvInputService.h"
 #include "elastos/droid/media/tv/CITvInputSessionWrapper.h"
 #include "elastos/droid/media/tv/TvInputServiceHardwareSession.h"

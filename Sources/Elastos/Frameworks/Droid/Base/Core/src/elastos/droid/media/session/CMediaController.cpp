@@ -1,3 +1,5 @@
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/media/session/CMediaController.h"
 #include "elastos/droid/media/session/CMediaControllerPlaybackInfo.h"
 #include "elastos/droid/media/session/CMediaControllerTransportControls.h"

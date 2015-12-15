@@ -1,3 +1,5 @@
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/media/tv/TvInputInfoTvInputSettings.h"
 #include "elastos/droid/net/CUriHelper.h"
 //TODO: Need Settings.h

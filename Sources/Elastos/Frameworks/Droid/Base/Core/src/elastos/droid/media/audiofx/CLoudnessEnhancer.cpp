@@ -1,3 +1,5 @@
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/media/audiofx/CLoudnessEnhancer.h"
 #include "elastos/droid/media/audiofx/CLoudnessEnhancerSettings.h"
 #include <elastos/core/AutoLock.h>

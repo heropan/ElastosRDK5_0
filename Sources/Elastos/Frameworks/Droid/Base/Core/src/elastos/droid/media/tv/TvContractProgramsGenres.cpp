@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Media.h"
 #include "elastos/droid/media/tv/TvContractProgramsGenres.h"
 #include "elastos/droid/net/CUriHelper.h"
 #include "elastos/droid/utility/CArraySet.h"

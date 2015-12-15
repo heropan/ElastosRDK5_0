@@ -1,3 +1,4 @@
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/media/tv/CTvTrackInfo.h"
 
 namespace Elastos {

@@ -1,3 +1,4 @@
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/media/audiofx/CEnvironmentalReverb.h"
 #include "elastos/droid/media/audiofx/CEnvironmentalReverbSettings.h"
 #include <elastos/core/AutoLock.h>

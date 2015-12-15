@@ -1,3 +1,4 @@
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/media/session/CMediaSessionManager.h"
 #include "elastos/droid/media/session/CMediaController.h"
 #include "elastos/droid/os/ServiceManager.h"

@@ -1,3 +1,4 @@
+#include "Elastos.Droid.Media.h"
 #include "elastos/droid/media/browse/MediaBrowserConnectionCallback.h"
 
 namespace Elastos {

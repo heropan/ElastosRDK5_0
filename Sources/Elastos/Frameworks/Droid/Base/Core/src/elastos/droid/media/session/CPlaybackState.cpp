@@ -1,3 +1,4 @@
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/media/session/CPlaybackState.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>

@@ -1,3 +1,5 @@
+#include "Elastos.Droid.Os.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/media/audiopolicy/CAudioPolicy.h"
 #include "elastos/droid/media/audiopolicy/CAudioPolicyConfig.h"
 //TODO: Need CBinder

@@ -1,3 +1,4 @@
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/media/audiofx/CLoudnessEnhancerSettings.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>

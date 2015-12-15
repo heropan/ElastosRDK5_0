@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_AUDIOEFFECT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Media.h"
 #include <elastos/core/Object.h>
 #include "elastos/droid/os/Handler.h"
 

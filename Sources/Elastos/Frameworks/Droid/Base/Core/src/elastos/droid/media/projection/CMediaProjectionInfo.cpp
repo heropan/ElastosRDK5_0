@@ -1,3 +1,4 @@
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/media/projection/CMediaProjectionInfo.h"
 #include <elastos/utility/Objects.h>
 

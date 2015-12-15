@@ -1,3 +1,5 @@
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/media/tv/CTvView.h"
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/os/CHandler.h"

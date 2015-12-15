@@ -1,3 +1,8 @@
+
+#include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/media/tv/TvInputServiceHardwareSession.h"
 #include "elastos/droid/media/tv/TvInputService.h"
 #include "elastos/droid/internal/os/SomeArgs.h"
@@ -40,7 +45,7 @@ ECode TvInputServiceHardwareSession::HardwareSessionCallback::OnSessionCreated(
 ECode TvInputServiceHardwareSession::HardwareSessionCallback::OnVideoAvailable(
     /* [in] */ ITvInputManagerSession * session)
 {
-    if (mHost->mHardwareSession == session) {
+    if (mHost->mHardwareSession.Get() == session) {
         mHost->OnHardwareVideoAvailable();
     }
     return NOERROR;
@@ -50,7 +55,7 @@ ECode TvInputServiceHardwareSession::HardwareSessionCallback::OnVideoUnavailable
     /* [in] */ ITvInputManagerSession * session,
     /* [in] */ Int32 reason)
 {
-    if (mHost->mHardwareSession == session) {
+    if (mHost->mHardwareSession.Get() == session) {
         mHost->OnHardwareVideoUnavailable(reason);
     }
     return NOERROR;

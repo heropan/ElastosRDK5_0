@@ -1,4 +1,6 @@
 #include "elastos/droid/media/audiofx/CAudioEffectDescriptor.h"
+#include "Elastos.CoreLibrary.Utility.h"
+
 
 using Elastos::Utility::IUUIDHelper;
 using Elastos::Utility::CUUIDHelper;
