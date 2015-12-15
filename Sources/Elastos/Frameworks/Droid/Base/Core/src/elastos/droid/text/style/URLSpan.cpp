@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/text/style/URLSpan.h"
 #include "elastos/droid/net/Uri.h"
 #include "elastos/droid/content/CIntent.h"

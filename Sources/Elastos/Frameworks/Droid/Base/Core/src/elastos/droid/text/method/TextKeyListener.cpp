@@ -1,3 +1,6 @@
+
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/text/method/TextKeyListener.h"
 #include "elastos/droid/text/method/CTextKeyListener.h"
 #include "elastos/droid/text/method/CQwertyKeyListener.h"

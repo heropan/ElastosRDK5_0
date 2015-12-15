@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/text/method/CPasswordTransformationMethod.h"
 #include "elastos/droid/text/method/CTextKeyListener.h"

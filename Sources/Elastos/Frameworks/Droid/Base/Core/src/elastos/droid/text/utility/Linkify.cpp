@@ -1,3 +1,7 @@
+
+#include "Elastos.CoreLibrary.Net.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/text/utility/Linkify.h"
 #include "elastos/droid/text/CSpannableString.h"
 //#include "elastos/droid/text/method/CLinkMovementMethod.h"

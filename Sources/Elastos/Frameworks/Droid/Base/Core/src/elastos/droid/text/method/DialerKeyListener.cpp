@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/text/method/DialerKeyListener.h"
 #include "elastos/droid/text/method/CDialerKeyListener.h"
 #include "elastos/droid/text/method/MetaKeyKeyListener.h"

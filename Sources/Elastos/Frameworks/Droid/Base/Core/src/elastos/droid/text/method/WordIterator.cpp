@@ -1,3 +1,6 @@
+
+#include "Elastos.CoreLibrary.Text.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/text/method/WordIterator.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/Character.h>

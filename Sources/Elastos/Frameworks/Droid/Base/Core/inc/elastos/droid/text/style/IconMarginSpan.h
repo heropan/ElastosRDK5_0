@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_IconMarginSpan_H__
 #define __ELASTOS_DROID_TEXT_STYLE_IconMarginSpan_H__
 
+#include "Elastos.Droid.Text.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 

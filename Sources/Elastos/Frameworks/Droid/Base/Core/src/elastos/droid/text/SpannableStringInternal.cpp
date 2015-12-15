@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Text.h"
 #include "elastos/droid/text/SpannableStringInternal.h"
 #include "elastos/droid/internal/utility/ArrayUtils.h"
 #include "elastos/droid/internal/utility/GrowingArrayUtils.h"

@@ -1,3 +1,6 @@
+
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/text/method/LinkMovementMethod.h"
 #include "elastos/droid/text/method/CLinkMovementMethod.h"
 #include "elastos/droid/text/Selection.h"

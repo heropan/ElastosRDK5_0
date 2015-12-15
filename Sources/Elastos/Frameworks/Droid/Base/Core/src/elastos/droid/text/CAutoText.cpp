@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/text/CAutoText.h"
 #include "elastos/droid/content/res/CResources.h"
 #include "elastos/droid/internal/utility/XmlUtils.h"

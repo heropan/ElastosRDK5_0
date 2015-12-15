@@ -1,3 +1,7 @@
+
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/text/style/ImageSpan.h"
 #include "elastos/droid/graphics/drawable/CBitmapDrawable.h"
 #include "elastos/droid/graphics/CBitmapFactory.h"

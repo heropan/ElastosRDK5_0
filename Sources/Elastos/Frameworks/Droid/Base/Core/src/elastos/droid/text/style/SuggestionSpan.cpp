@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/text/style/SuggestionSpan.h"
 #include "elastos/droid/text/CTextPaint.h"
 #include "elastos/droid/content/CIntent.h"

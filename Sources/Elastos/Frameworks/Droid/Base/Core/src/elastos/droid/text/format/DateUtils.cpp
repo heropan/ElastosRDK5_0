@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.Libcore.h"
 #include "elastos/droid/text/format/DateUtils.h"
 #include "elastos/droid/text/format/DateFormat.h"
 #include "elastos/droid/text/format/CTime.h"

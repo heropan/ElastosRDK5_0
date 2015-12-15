@@ -1,3 +1,7 @@
+
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/text/method/BaseMovementMethod.h"
 #include "elastos/droid/text/method/MetaKeyKeyListener.h"
 #include "elastos/droid/text/method/Touch.h"

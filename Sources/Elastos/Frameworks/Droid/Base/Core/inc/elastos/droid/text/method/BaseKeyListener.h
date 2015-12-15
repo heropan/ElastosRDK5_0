@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_METHOD_BASEKEYLISTENER_H__
 #define __ELASTOS_DROID_TEXT_METHOD_BASEKEYLISTENER_H__
 
+#include "Elastos.Droid.Text.h"
 #include "elastos/droid/text/method/MetaKeyKeyListener.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>

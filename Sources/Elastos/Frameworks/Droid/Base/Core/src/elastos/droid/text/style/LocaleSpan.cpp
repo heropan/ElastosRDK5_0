@@ -1,3 +1,6 @@
+
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/text/style/LocaleSpan.h"
 

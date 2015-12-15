@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/text/method/NumberKeyListener.h"
 #include "elastos/droid/text/CSpannableStringBuilder.h"
 #include "elastos/droid/text/Selection.h"

@@ -40,7 +40,7 @@ public:
      * @param context the application context
      * @return the {@link java.text.DateFormat} object that properly formats the time.
      */
-    static CARAPI_(AutoPtr<IDateFormat>) GetTimeFormat(
+    static CARAPI_(AutoPtr<Elastos::Text::IDateFormat>) GetTimeFormat(
         /* [in] */  IContext* context);
 
     /**
@@ -59,7 +59,7 @@ public:
      * @param context the application context
      * @return the {@link java.text.DateFormat} object that properly formats the date.
      */
-    static CARAPI_(AutoPtr<IDateFormat>) GetDateFormat(
+    static CARAPI_(AutoPtr<Elastos::Text::IDateFormat>) GetDateFormat(
         /* [in] */ IContext* context);
 
     /**
@@ -71,7 +71,7 @@ public:
      *              the current locale
      * @hide
      */
-    static CARAPI_(AutoPtr<IDateFormat>) GetDateFormatForSetting(
+    static CARAPI_(AutoPtr<Elastos::Text::IDateFormat>) GetDateFormatForSetting(
         /* [in] */ IContext* context,
         /* [in] */ const String& value);
 
@@ -81,7 +81,7 @@ public:
      * @param context the application context
      * @return the {@link java.text.DateFormat} object that formats the date in long form.
      */
-    static CARAPI_(AutoPtr<IDateFormat>) GetLongDateFormat(
+    static CARAPI_(AutoPtr<Elastos::Text::IDateFormat>) GetLongDateFormat(
         /* [in] */ IContext* context);
 
     /**
@@ -90,7 +90,7 @@ public:
      * @param context the application context
      * @return the {@link java.text.DateFormat} object that formats the date in long form.
      */
-    static CARAPI_(AutoPtr<IDateFormat>) GetMediumDateFormat(
+    static CARAPI_(AutoPtr<Elastos::Text::IDateFormat>) GetMediumDateFormat(
         /* [in] */ IContext* context);
 
     /**

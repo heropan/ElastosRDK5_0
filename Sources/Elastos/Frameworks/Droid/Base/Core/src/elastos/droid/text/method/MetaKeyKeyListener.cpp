@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/text/method/MetaKeyKeyListener.h"
 
 using Elastos::Droid::View::IKeyCharacterMap;

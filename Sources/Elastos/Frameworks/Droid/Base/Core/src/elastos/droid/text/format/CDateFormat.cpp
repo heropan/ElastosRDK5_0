@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.Libcore.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/text/format/CDateFormat.h"
 

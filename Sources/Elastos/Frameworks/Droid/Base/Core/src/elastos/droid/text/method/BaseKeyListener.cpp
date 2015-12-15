@@ -1,3 +1,6 @@
+
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include <elastos/core/Math.h>
 #include "elastos/droid/text/method/BaseKeyListener.h"
 #include "elastos/droid/text/TextUtils.h"

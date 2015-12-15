@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/text/style/EasyEditSpan.h"
 // #include "elastos/droid/app/CPendingIntent.h"
 

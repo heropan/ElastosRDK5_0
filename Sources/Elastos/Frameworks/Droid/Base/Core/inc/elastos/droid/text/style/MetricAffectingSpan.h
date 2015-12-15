@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_MetricAffectingSpan_H__
 #define __ELASTOS_DROID_TEXT_STYLE_MetricAffectingSpan_H__
 
+#include "Elastos.Droid.Text.h"
 #include "elastos/droid/text/style/CharacterStyle.h"
 
 using Elastos::Droid::Text::Style::IMetricAffectingSpan;

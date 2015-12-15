@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/text/TextDirectionHeuristics.h"
 #include "elastos/droid/text/TextUtils.h"
 

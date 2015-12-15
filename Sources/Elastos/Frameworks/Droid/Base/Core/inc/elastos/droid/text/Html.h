@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_Html_H__
 #define __ELASTOS_DROID_TEXT_Html_H__
 
+#include "Elastos.CoreLibrary.External.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 

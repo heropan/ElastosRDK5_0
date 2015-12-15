@@ -1,3 +1,7 @@
+
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Libcore.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/text/format/CTimeFormatter.h"
 #include "elastos/droid/content/res/CResourcesHelper.h"
 #include <elastos/core/AutoLock.h>

@@ -1,3 +1,6 @@
+
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/text/method/ArrowKeyMovementMethod.h"
 #include "elastos/droid/text/method/CArrowKeyMovementMethod.h"
 #include "elastos/droid/text/method/MetaKeyKeyListener.h"

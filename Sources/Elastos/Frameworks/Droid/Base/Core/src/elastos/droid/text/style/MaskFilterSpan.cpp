@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/text/style/MaskFilterSpan.h"
 
