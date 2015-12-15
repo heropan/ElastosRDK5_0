@@ -3,16 +3,19 @@
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/R.h"
+
 #include <elastos/core/Math.h>
+#include <elastos/core/CoreUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::R;
-using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::View::IViewTreeObserver;
 using Elastos::Droid::View::SoundEffectConstants;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 
 namespace Elastos {
 namespace Droid {
@@ -30,7 +33,12 @@ const Int32 SlidingDrawer::ANIMATION_FRAME_DURATION;
 const Int32 SlidingDrawer::EXPANDED_FULL_OPEN;
 const Int32 SlidingDrawer::COLLAPSED_FULL_CLOSED;
 
-CAR_INTERFACE_IMPL(SlidingDrawer::DrawerToggler, IViewOnClickListener)
+CAR_INTERFACE_IMPL(SlidingDrawer::DrawerToggler, Object, IViewOnClickListener)
+
+SlidingDrawer::SlidingHandler::SlidingHandler(
+    /* [in] */ SlidingDrawer* host)
+    : mHost(host)
+{}
 
 ECode SlidingDrawer::SlidingHandler::HandleMessage(
     /* [in] */ IMessage* msg)
@@ -46,6 +54,8 @@ ECode SlidingDrawer::SlidingHandler::HandleMessage(
 
     return NOERROR;
 }
+
+CAR_INTERFACE_IMPL(SlidingDrawer, ViewGroup, ISlidingDrawer)
 
 SlidingDrawer::SlidingDrawer()
     : mHandleId(0)
@@ -79,82 +89,96 @@ SlidingDrawer::SlidingDrawer()
     mHandler = new SlidingHandler(this);
 }
 
-SlidingDrawer::SlidingDrawer(
+ECode SlidingDrawer::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
-    : ViewGroup(context, attrs, 0)
-    , mHandleId(0)
-    , mContentId(0)
-    , mTracking(FALSE)
-    , mLocked(FALSE)
-    , mVertical(FALSE)
-    , mExpanded(FALSE)
-    , mBottomOffset(0)
-    , mTopOffset(0)
-    , mHandleHeight(0)
-    , mHandleWidth(0)
-    , mAnimatedAcceleration(0.f)
-    , mAnimatedVelocity(0.f)
-    , mAnimationPosition(0.f)
-    , mAnimationLastTime(0)
-    , mCurrentAnimationTime(0)
-    , mTouchDelta(0)
-    , mAnimating(FALSE)
-    , mAllowSingleTap(FALSE)
-    , mAnimateOnClick(FALSE)
-    , mTapThreshold(0)
-    , mMaximumTapVelocity(0)
-    , mMaximumMinorVelocity(0)
-    , mMaximumMajorVelocity(0)
-    , mMaximumAcceleration(0)
-    , mVelocityUnits(0)
 {
-    CRect::New((IRect**)&mFrame);
-    CRect::New((IRect**)&mInvalidate);
-    mHandler = new SlidingHandler(this);
-    ASSERT_SUCCEEDED(InitSelf(context, attrs));
+    return constructor(context, attrs, 0);
 }
 
-SlidingDrawer::SlidingDrawer(
+ECode SlidingDrawer::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : ViewGroup(context, attrs, defStyle)
-    , mHandleId(0)
-    , mContentId(0)
-    , mTracking(FALSE)
-    , mLocked(FALSE)
-    , mVertical(FALSE)
-    , mExpanded(FALSE)
-    , mBottomOffset(0)
-    , mTopOffset(0)
-    , mHandleHeight(0)
-    , mHandleWidth(0)
-    , mAnimatedAcceleration(0.f)
-    , mAnimatedVelocity(0.f)
-    , mAnimationPosition(0.f)
-    , mAnimationLastTime(0)
-    , mCurrentAnimationTime(0)
-    , mTouchDelta(0)
-    , mAnimating(FALSE)
-    , mAllowSingleTap(FALSE)
-    , mAnimateOnClick(FALSE)
-    , mTapThreshold(0)
-    , mMaximumTapVelocity(0)
-    , mMaximumMinorVelocity(0)
-    , mMaximumMajorVelocity(0)
-    , mMaximumAcceleration(0)
-    , mVelocityUnits(0)
+    /* [in] */ Int32 defStyleAttr)
 {
-    CRect::New((IRect**)&mFrame);
-    CRect::New((IRect**)&mInvalidate);
-    mHandler = new SlidingHandler(this);
-    ASSERT_SUCCEEDED(InitSelf(context, attrs, defStyle));
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode SlidingDrawer::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    FAIL_RETURN(ViewGroup::constructor(context, attrs, defStyleAttr, 0))
+    AutoPtr<ITypedArray> a;
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::SlidingDrawer),
+            ARRAY_SIZE(R::styleable::SlidingDrawer));
+    context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
+
+    Int32 orientation;
+    a->GetInt32(R::styleable::SlidingDrawer_orientation, ISlidingDrawer::ORIENTATION_VERTICAL, &orientation);
+    mVertical = orientation == ISlidingDrawer::ORIENTATION_VERTICAL;
+    Float temp;
+    a->GetDimension(R::styleable::SlidingDrawer_bottomOffset, 0.0f, &temp);
+    mBottomOffset = (Int32)temp;
+    a->GetDimension(R::styleable::SlidingDrawer_topOffset, 0.0f, &temp);
+    mTopOffset = (Int32)temp;
+    a->GetBoolean(R::styleable::SlidingDrawer_allowSingleTap, TRUE, &mAllowSingleTap);
+    a->GetBoolean(R::styleable::SlidingDrawer_animateOnClick, TRUE, &mAnimateOnClick);
+
+    Int32 handleId;
+    a->GetResourceId(R::styleable::SlidingDrawer_handle, 0, &handleId);
+    if (handleId == 0) {
+        SLOGGERE(TAG, String("The handle attribute is required and must refer ")
+                + "to a valid child.")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        // throw new IllegalArgumentException("The handle attribute is required and must refer "
+        //         + "to a valid child.");
+    }
+
+    Int32 contentId;
+    a->GetResourceId(R::styleable::SlidingDrawer_content, 0, &contentId);
+    if (contentId == 0) {
+        SLOGGERE(TAG, String("The content attribute is required and must refer ")
+            + "to a valid child.")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        // throw new IllegalArgumentException("The content attribute is required and must refer "
+        //         + "to a valid child.");
+    }
+
+    if (handleId == contentId) {
+        SLOGGERE(TAG, String("The content and handle attributes must refer ")
+            + "to different children.")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    mHandleId = handleId;
+    mContentId = contentId;
+
+    AutoPtr<IResources> res;
+    GetResources((IResources**)&res);
+    AutoPtr<IDisplayMetrics> dm;
+    res->GetDisplayMetrics((IDisplayMetrics**)&dm);
+    Float density;
+    dm->GetDensity(&density);
+    mTapThreshold = (Int32) (TAP_THRESHOLD * density + 0.5f);
+    mMaximumTapVelocity = (Int32) (MAXIMUM_TAP_VELOCITY * density + 0.5f);
+    mMaximumMinorVelocity = (Int32) (MAXIMUM_MINOR_VELOCITY * density + 0.5f);
+    mMaximumMajorVelocity = (Int32) (MAXIMUM_MAJOR_VELOCITY * density + 0.5f);
+    mMaximumAcceleration = (Int32) (MAXIMUM_ACCELERATION * density + 0.5f);
+    mVelocityUnits = (Int32) (VELOCITY_UNITS * density + 0.5f);
+
+    a->Recycle();
+
+    SetAlwaysDrawnWithCacheEnabled(FALSE);
+    return NOERROR;
 }
 
 ECode SlidingDrawer::OnFinishInflate()
 {
-    mHandle = FindViewById(mHandleId);
+    FindViewById(mHandleId, (IView**)&mHandle);
     if (mHandle == NULL) {
         SLOGGERD(TAG, String("The handle attribute is must refer to an")
                 + " existing child.");
@@ -163,7 +187,7 @@ ECode SlidingDrawer::OnFinishInflate()
     AutoPtr<DrawerToggler> toggler = new DrawerToggler(this);
     mHandle->SetOnClickListener(toggler);
 
-    mContent = FindViewById(mContentId);
+    FindViewById(mContentId, (IView**)&mContentId);
     if (mContent == NULL) {
         SLOGGERD(TAG, String("The content attribute is must refer to an")
                 + " existing child.");
@@ -212,7 +236,8 @@ void SlidingDrawer::OnMeasure(
 void SlidingDrawer::DispatchDraw(
     /* [in] */ ICanvas* canvas)
 {
-    Int64 drawingTime = GetDrawingTime();
+    Int64 drawingTime;
+    GetDrawingTime(&drawingTime);
     AutoPtr<IView> handle = mHandle;
     Boolean isVertical = mVertical;
 
@@ -247,7 +272,7 @@ void SlidingDrawer::DispatchDraw(
     }
 }
 
-void SlidingDrawer::OnLayout(
+ECode SlidingDrawer::OnLayout(
     /* [in] */ Boolean changed,
     /* [in] */ Int32 l,
     /* [in] */ Int32 t,
@@ -255,7 +280,7 @@ void SlidingDrawer::OnLayout(
     /* [in] */ Int32 b)
 {
     if (mTracking) {
-        return;
+        return NOERROR;
     }
 
     Int32 width = r - l;
@@ -297,13 +322,16 @@ void SlidingDrawer::OnLayout(
     handle->Layout(childLeft, childTop, childLeft + childWidth, childTop + childHeight);
     handle->GetHeight(&mHandleHeight);
     handle->GetWidth(&mHandleWidth);
+    return NOERROR;
 }
 
-Boolean SlidingDrawer::OnInterceptTouchEvent(
-    /* [in] */ IMotionEvent* event)
+ECode SlidingDrawer::OnInterceptTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
 {
     if (mLocked) {
-        return FALSE;
+        *result = FALSE;
+        return NOERROR;
     }
 
     Int32 action;
@@ -320,7 +348,8 @@ Boolean SlidingDrawer::OnInterceptTouchEvent(
     handle->GetHitRect(frame);
     Boolean isContains;
     if (!mTracking && !(frame->Contains((Int32) x, (Int32) y, &isContains), isContains)) {
-        return FALSE;
+        *result = FALSE;
+        return NOERROR;
     }
 
     if (action == IMotionEvent::ACTION_DOWN) {
@@ -349,14 +378,17 @@ Boolean SlidingDrawer::OnInterceptTouchEvent(
         mVelocityTracker->AddMovement(event);
     }
 
-    return TRUE;
+    *result = TRUE;
+    return NOERROR;
 }
 
-Boolean SlidingDrawer::OnTouchEvent(
-    /* [in] */ IMotionEvent* event)
+ECode SlidingDrawer::OnTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
 {
     if (mLocked) {
-        return TRUE;
+        *result = TRUE;
+        return NOERROR;
     }
 
     if (mTracking) {
@@ -443,7 +475,10 @@ Boolean SlidingDrawer::OnTouchEvent(
         }
     }
 
-    return mTracking || mAnimating || ViewGroup::OnTouchEvent(event);
+    ViewGroup::OnTouchEvent(event, result);
+    if (*result == FALSE)
+        *result = mTracking || mAnimating;
+    return NOERROR;
 }
 
 ECode SlidingDrawer::Toggle()
@@ -528,17 +563,15 @@ ECode SlidingDrawer::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
     ViewGroup::OnInitializeAccessibilityEvent(event);
-    AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("CSlidingDrawer"), (ICharSequence**)&seq);
-    return event->SetClassName(seq);
+    AutoPtr<ICharSequence> seq = CoreUtils::Convert(String("CSlidingDrawer"));
+    return IAccessibilityRecord::Probe(event)->SetClassName(seq);
 }
 
 ECode SlidingDrawer::OnInitializeAccessibilityNodeInfo(
     /* [in] */ IAccessibilityNodeInfo* info)
 {
     ViewGroup::OnInitializeAccessibilityNodeInfo(info);
-    AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("CSlidingDrawer"), (ICharSequence**)&seq);
+    AutoPtr<ICharSequence> seq = CoreUtils::Convert(String("CSlidingDrawer"));
     return info->SetClassName(seq);
 }
 
@@ -563,14 +596,18 @@ ECode SlidingDrawer::SetOnDrawerScrollListener(
     return NOERROR;
 }
 
-AutoPtr<IView> SlidingDrawer::GetHandle()
+ECode SlidingDrawer::GetHandle(
+    /* [out] */ IView** v)
 {
-    return mHandle;
+    *v = mHandle;
+    return NOERROR;
 }
 
-AutoPtr<IView> SlidingDrawer::GetContent()
+ECode SlidingDrawer::GetContent(
+    /* [out] */ IView** v)
 {
-    return mContent;
+    *v = mContent;
+    return NOERROR;
 }
 
 ECode SlidingDrawer::Unlock()
@@ -585,93 +622,17 @@ ECode SlidingDrawer::Lock()
     return NOERROR;
 }
 
-Boolean SlidingDrawer::IsOpened()
+ECode SlidingDrawer::IsOpened(
+    /* [out] */ Boolean* opened)
 {
-    return mExpanded;
-}
-
-Boolean SlidingDrawer::IsMoving()
-{
-    return mTracking || mAnimating;
-}
-
-ECode SlidingDrawer::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-{
-    ASSERT_SUCCEEDED(ViewGroup::Init(context, attrs, defStyle));
-    ASSERT_SUCCEEDED(InitSelf(context, attrs, defStyle));
+    *opened = mExpanded;
     return NOERROR;
 }
 
-
-
-ECode SlidingDrawer::InitSelf(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+ECode SlidingDrawer::IsMoving(
+    /* [out] */ Boolean* moving)
 {
-    AutoPtr<ITypedArray> a;
-    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
-            const_cast<Int32 *>(R::styleable::SlidingDrawer),
-            ARRAY_SIZE(R::styleable::SlidingDrawer));
-    context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
-
-    Int32 orientation;
-    a->GetInt32(R::styleable::SlidingDrawer_orientation, ISlidingDrawer::ORIENTATION_VERTICAL, &orientation);
-    mVertical = orientation == ISlidingDrawer::ORIENTATION_VERTICAL;
-    Float temp;
-    a->GetDimension(R::styleable::SlidingDrawer_bottomOffset, 0.0f, &temp);
-    mBottomOffset = (Int32)temp;
-    a->GetDimension(R::styleable::SlidingDrawer_topOffset, 0.0f, &temp);
-    mTopOffset = (Int32)temp;
-    a->GetBoolean(R::styleable::SlidingDrawer_allowSingleTap, TRUE, &mAllowSingleTap);
-    a->GetBoolean(R::styleable::SlidingDrawer_animateOnClick, TRUE, &mAnimateOnClick);
-
-    Int32 handleId;
-    a->GetResourceId(R::styleable::SlidingDrawer_handle, 0, &handleId);
-    if (handleId == 0) {
-        SLOGGERE(TAG, String("The handle attribute is required and must refer ")
-                + "to a valid child.")
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        // throw new IllegalArgumentException("The handle attribute is required and must refer "
-        //         + "to a valid child.");
-    }
-
-    Int32 contentId;
-    a->GetResourceId(R::styleable::SlidingDrawer_content, 0, &contentId);
-    if (contentId == 0) {
-        SLOGGERE(TAG, String("The content attribute is required and must refer ")
-            + "to a valid child.")
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        // throw new IllegalArgumentException("The content attribute is required and must refer "
-        //         + "to a valid child.");
-    }
-
-    if (handleId == contentId) {
-        SLOGGERE(TAG, String("The content and handle attributes must refer ")
-            + "to different children.")
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    mHandleId = handleId;
-    mContentId = contentId;
-
-    AutoPtr<IDisplayMetrics> dm;
-    GetResources()->GetDisplayMetrics((IDisplayMetrics**)&dm);
-    Float density;
-    dm->GetDensity(&density);
-    mTapThreshold = (Int32) (TAP_THRESHOLD * density + 0.5f);
-    mMaximumTapVelocity = (Int32) (MAXIMUM_TAP_VELOCITY * density + 0.5f);
-    mMaximumMinorVelocity = (Int32) (MAXIMUM_MINOR_VELOCITY * density + 0.5f);
-    mMaximumMajorVelocity = (Int32) (MAXIMUM_MAJOR_VELOCITY * density + 0.5f);
-    mMaximumAcceleration = (Int32) (MAXIMUM_ACCELERATION * density + 0.5f);
-    mVelocityUnits = (Int32) (VELOCITY_UNITS * density + 0.5f);
-
-    a->Recycle();
-
-    SetAlwaysDrawnWithCacheEnabled(FALSE);
+    *moving = mTracking || mAnimating;
     return NOERROR;
 }
 
@@ -718,8 +679,8 @@ ECode SlidingDrawer::PerformFling(
         }
     } else {
         Int32 height, width;
-        height = GetHeight();
-        width = GetWidth();
+        GetHeight(&height);
+        GetWidth(&width);
         if (!always && (velocity > mMaximumMajorVelocity ||
                 (position > (mVertical ? height : width) / 2 &&
                         velocity > -mMaximumMajorVelocity))) {
@@ -758,8 +719,11 @@ ECode SlidingDrawer::PrepareTracking(
     if (opening) {
         mAnimatedAcceleration = mMaximumAcceleration;
         mAnimatedVelocity = mMaximumMajorVelocity;
+        Int32 height, width;
+        GetHeight(&height);
+        GetWidth(&width);
         mAnimationPosition = mBottomOffset +
-                (mVertical ? GetHeight() - mHandleHeight : GetWidth() - mHandleWidth);
+                (mVertical ? height - mHandleHeight : width - mHandleWidth);
         MoveHandle((Int32) mAnimationPosition);
         mAnimating = TRUE;
         mHandler->RemoveMessages(MSG_ANIMATE);
@@ -819,7 +783,9 @@ ECode SlidingDrawer::MoveHandle(
             region->Union(frameLeft, frameTop - deltaY, frameRight, frameBottom - deltaY);
             Int32 contentHeight;
             mContent->GetHeight(&contentHeight);
-            region->Union(0, frameBottom - deltaY, GetWidth(),
+            Int32 width;
+            GetWidth(&width);
+            region->Union(0, frameBottom - deltaY, width,
                     frameBottom - deltaY + contentHeight);
 
             Invalidate(region);
@@ -861,8 +827,10 @@ ECode SlidingDrawer::MoveHandle(
             region->Union(frameLeft - deltaX, frameTop, frameRight - deltaX, frameBottom);
             Int32 contentWidth;
             mContent->GetWidth(&contentWidth);
+            Int32 height;
+            GetHeight(&height);
             region->Union(frameRight - deltaX, 0,
-                    frameRight - deltaX + contentWidth, GetHeight());
+                    frameRight - deltaX + contentWidth, height);
 
             Invalidate(region);
         }
@@ -940,7 +908,10 @@ ECode SlidingDrawer::DoAnimation()
 {
     if (mAnimating) {
         IncrementAnimation();
-        if (mAnimationPosition >= mBottomOffset + (mVertical ? GetHeight() : GetWidth()) - 1) {
+        Int32 width, height;
+        GetWidth(&width);
+        GetHeight(&height);
+        if (mAnimationPosition >= mBottomOffset + (mVertical ? height : width) - 1) {
             mAnimating = FALSE;
             CloseDrawer();
         } else if (mAnimationPosition < mTopOffset) {

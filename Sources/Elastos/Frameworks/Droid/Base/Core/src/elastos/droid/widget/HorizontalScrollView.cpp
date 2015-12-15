@@ -645,7 +645,7 @@ ECode HorizontalScrollView::OnTouchEvent(
             }
             Boolean finished = FALSE;
             mScroller->IsFinished(&finished);
-            if(mIsBeingDragged = !finished) {
+            if(mIsBeingDragged != finished) {
                 AutoPtr<IViewParent> parent;
                 GetParent((IViewParent**)&parent);
                 if(parent != NULL) {

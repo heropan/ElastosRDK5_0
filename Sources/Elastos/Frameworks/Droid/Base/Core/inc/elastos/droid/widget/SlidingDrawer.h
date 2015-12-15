@@ -5,9 +5,9 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/ViewGroup.h"
 #include "elastos/droid/view/VelocityTracker.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
 
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::ViewGroup;
 using Elastos::Droid::View::IViewGroup;
@@ -69,16 +69,16 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class SlidingDrawer : public ViewGroup
+class SlidingDrawer
+    : public ViewGroup
+    , public ISlidingDrawer
 {
 private:
-    class SlidingHandler : public HandlerBase
+    class SlidingHandler : public Handler
     {
     public:
         SlidingHandler(
-            /* [in] */ SlidingDrawer* host)
-            : mHost(host)
-        {}
+            /* [in] */ SlidingDrawer* host);
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
@@ -87,26 +87,24 @@ private:
     };
 
 public:
-    /**
-     * Creates a new SlidingDrawer from a specified set of attributes defined in XML.
-     *
-     * @param context The application's environment.
-     * @param attrs The attributes defined in XML.
-     */
-    SlidingDrawer(
+    CAR_INTERFACE_DECL()
+
+    SlidingDrawer();
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
-    /**
-     * Creates a new SlidingDrawer from a specified set of attributes defined in XML.
-     *
-     * @param context The application's environment.
-     * @param attrs The attributes defined in XML.
-     * @param defStyle The style to apply to this widget.
-     */
-    SlidingDrawer(
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     virtual CARAPI OnFinishInflate();
 
@@ -117,18 +115,20 @@ public:
     virtual CARAPI_(void) DispatchDraw(
         /* [in] */ ICanvas* canvas);
 
-    virtual CARAPI_(void) OnLayout(
+    virtual CARAPI OnLayout(
         /* [in] */ Boolean changed,
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
         /* [in] */ Int32 right,
         /* [in] */ Int32 bottom);
 
-    virtual CARAPI_(Boolean) OnInterceptTouchEvent(
-        /* [in] */ IMotionEvent* ev);
+    virtual CARAPI OnInterceptTouchEvent(
+        /* [in] */ IMotionEvent* ev,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* ev,
+        /* [out] */ Boolean* res);
 
     /**
      * Toggles the drawer open and close. Takes effect immediately.
@@ -229,7 +229,8 @@ public:
      * @return The AutoPtr<IView> reprenseting the handle of the drawer, identified by
      *         the "handle" id in XML.
      */
-    virtual CARAPI_(AutoPtr<IView>) GetHandle();
+    virtual CARAPI GetHandle(
+        /* [out] */ IView** handle);
 
     /**
      * Returns the content of the drawer.
@@ -237,7 +238,8 @@ public:
      * @return The AutoPtr<IView> reprenseting the content of the drawer, identified by
      *         the "content" id in XML.
      */
-    virtual CARAPI_(AutoPtr<IView>) GetContent();
+    virtual CARAPI GetContent(
+        /* [out] */ IView** handle);
 
     /**
      * Unlocks the SlidingDrawer so that touch events are processed.
@@ -257,28 +259,16 @@ public:
      *
      * @return True if the drawer is opened, false otherwise.
      */
-    virtual CARAPI_(Boolean) IsOpened();
+    virtual CARAPI IsOpened(
+        /* [out] */ Boolean* opened);
 
     /**
      * Indicates whether the drawer is scrolling or flinging.
      *
      * @return True if the drawer is scroller or flinging, false otherwise.
      */
-    virtual CARAPI_(Boolean) IsMoving();
-
-protected:
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle = 0);
-
-    SlidingDrawer();
-
-private:
-    CARAPI InitSelf(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle = 0);
+    virtual CARAPI IsMoving(
+        /* [out] */ Boolean* moving);
 
     CARAPI AnimateClose(
         /* [in] */ Int32 position);
@@ -311,10 +301,11 @@ private:
     CARAPI OpenDrawer();
 
     CARAPI HandleMessage();
+
 private:
     class DrawerToggler
         : public IViewOnClickListener
-        , public ElRefBase
+        , public Object
     {
     public:
         CAR_INTERFACE_DECL()

@@ -34,11 +34,8 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-extern "C" const InterfaceID EIID_RemoteViewsFrameLayout;
-extern "C" const InterfaceID EIID_RemoteViewsAdapter;
-
 class RemoteViewsCacheKey
-    : public ElRefBase
+    : public Object
 {
 public:
     RemoteViewsCacheKey(
@@ -53,41 +50,15 @@ public:
 
 class RemoteViewsFrameLayout
     : public FrameLayout
-    , public IFrameLayout
-    , public IViewParent
-    , public IViewManager
-    , public IDrawableCallback
-    , public IKeyEventCallback
-    , public IAccessibilityEventSource
-    , public IWeakReferenceSource
-    , public ElRefBase
+    , public IRemoteViewsFrameLayout
 {
 public:
-    IFRAMELAYOUT_METHODS_DECL()
-    IVIEW_METHODS_DECL()
-    IVIEWGROUP_METHODS_DECL()
-    IVIEWPARENT_METHODS_DECL()
-    IVIEWMANAGER_METHODS_DECL()
-    IDRAWABLECALLBACK_METHODS_DECL()
-    IKEYEVENTCALLBACK_METHODS_DECL()
-    IACCESSIBILITYEVENTSOURCE_METHODS_DECL()
+    CAR_INTERFCE_DECL()
 
-    RemoteViewsFrameLayout(
+    RemoteViewsFrameLayout();
+
+    CARAPI constructor(
         /* [in] */ IContext* context);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
-
-    CARAPI GetWeakReference(
-        /* [out] */ IWeakReference** weakReference);
 
     CARAPI OnRemoteViewsLoaded(
         /* [in] */ IRemoteViews* view,
