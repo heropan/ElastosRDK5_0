@@ -40,6 +40,7 @@ module
      * interface Elastos.Droid.View.IKeyEventCallback
      * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
      */
+     [local]
     interface IRemoteViewsFrameLayout {
         /**
          * Updates this RemoteViewsFrameLayout depending on the view that was loaded.
