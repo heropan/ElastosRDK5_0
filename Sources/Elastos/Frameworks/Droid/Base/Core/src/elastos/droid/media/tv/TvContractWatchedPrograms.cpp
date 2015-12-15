@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Media.h"
 #include "elastos/droid/media/tv/TvContractWatchedPrograms.h"
 #include "elastos/droid/net/CUriHelper.h"
 

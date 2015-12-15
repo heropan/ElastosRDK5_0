@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Media.h"
 #include "elastos/droid/media/tv/TvInputManagerSessionCallback.h"
 
 namespace Elastos {

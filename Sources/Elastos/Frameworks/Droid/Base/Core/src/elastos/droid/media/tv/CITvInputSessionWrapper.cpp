@@ -1,3 +1,9 @@
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/media/tv/CITvInputSessionWrapper.h"
 #include "elastos/droid/media/tv/TvInputServiceSession.h"
 #include "elastos/droid/internal/os/CHandlerCaller.h"
@@ -216,8 +222,7 @@ ECode CITvInputSessionWrapper::ExecuteMessage(
     system->GetCurrentTimeMillis(&endTime);
     Int64 duration = endTime - startTime;
     if (duration > MESSAGE_HANDLING_DURATION_THRESHOLD_MILLIS) {
-        Logger::W(TAG, String("Handling message (") + what + ") took too long time (duration="
-                + duration + "ms)");
+        Logger::W(TAG, "Handling message (%d) took too long time (duration=%ld ms)", what, duration);
     }
     return NOERROR;
 }

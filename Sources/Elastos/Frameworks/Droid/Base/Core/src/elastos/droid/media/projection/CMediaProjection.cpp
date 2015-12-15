@@ -1,3 +1,5 @@
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/media/projection/CMediaProjection.h"
 #include "elastos/droid/media/projection/CMediaProjectionCallback.h"
 #include "elastos/droid/utility/CArrayMap.h"

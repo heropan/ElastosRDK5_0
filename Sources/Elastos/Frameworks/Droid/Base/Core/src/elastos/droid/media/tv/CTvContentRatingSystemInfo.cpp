@@ -1,3 +1,5 @@
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/media/tv/CTvContentRatingSystemInfo.h"
 // TODO: Need CUriBuilder
 // #include "elastos/droid/net/CUriBuilder.h"

@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_MEDIA_BROWSE_MEDIABROWSERSUBSCRIPTIONCALLBACK_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Media.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Utility::IList;

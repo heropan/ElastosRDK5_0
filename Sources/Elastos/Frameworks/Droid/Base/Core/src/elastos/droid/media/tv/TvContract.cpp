@@ -1,3 +1,4 @@
+#include "Elastos.Droid.Media.h"
 #include "elastos/droid/content/CContentUris.h"
 #include "elastos/droid/media/tv/TvContract.h"
 #include "elastos/droid/media/tv/TvContractChannels.h"

@@ -1,3 +1,4 @@
+#include "Elastos.Droid.Media.h"
 #include "elastos/droid/media/projection/MediaProjectionCallback.h"
 
 namespace Elastos {

@@ -1,3 +1,6 @@
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Media.h"
 #include "elastos/droid/media/session/MediaSessionCallback.h"
 #include "elastos/droid/media/session/CMediaSession.h"
 

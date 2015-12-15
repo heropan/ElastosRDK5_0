@@ -1,3 +1,4 @@
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/media/audiopolicy/CAudioMixingRule.h"
 
 namespace Elastos {

@@ -1,4 +1,5 @@
-
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/os/CLooperHelper.h"
 #include "elastos/droid/media/audiofx/AudioEffect.h"
 #include "elastos/droid/media/audiofx/CAudioEffectDescriptor.h"

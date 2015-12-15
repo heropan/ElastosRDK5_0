@@ -1,3 +1,7 @@
+
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Media.h"
 #include "elastos/droid/media/tv/TvInputServiceSession.h"
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/media/tv/CTvContentRating.h"

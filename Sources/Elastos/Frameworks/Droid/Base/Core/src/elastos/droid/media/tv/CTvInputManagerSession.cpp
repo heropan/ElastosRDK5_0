@@ -1,3 +1,6 @@
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/media/tv/CTvInputManagerSession.h"
 #include "elastos/droid/media/tv/CTvInputManager.h"
 #include "elastos/droid/os/CLooperHelper.h"
