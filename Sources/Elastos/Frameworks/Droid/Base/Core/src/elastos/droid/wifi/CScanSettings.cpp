@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/wifi/CScanSettings.h"
 
 using Elastos::Utility::CArrayList;

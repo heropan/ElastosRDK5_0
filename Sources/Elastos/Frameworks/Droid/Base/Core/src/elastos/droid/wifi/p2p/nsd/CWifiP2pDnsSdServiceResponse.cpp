@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/wifi/p2p/nsd/CWifiP2pDnsSdServiceResponse.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>

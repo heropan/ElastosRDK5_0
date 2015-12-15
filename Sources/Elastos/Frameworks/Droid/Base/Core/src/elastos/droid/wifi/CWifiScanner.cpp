@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/os/CHandlerThread.h"
 #include "elastos/droid/wifi/CWifiScanner.h"
 #include "elastos/droid/wifi/CWifiScannerHotlistSettings.h"

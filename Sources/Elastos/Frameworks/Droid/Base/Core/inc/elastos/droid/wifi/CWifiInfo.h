@@ -5,6 +5,7 @@
 #include "_Elastos_Droid_Wifi_CWifiInfo.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
+#include "elastos/core/Object.h"
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Net::IInetAddress;

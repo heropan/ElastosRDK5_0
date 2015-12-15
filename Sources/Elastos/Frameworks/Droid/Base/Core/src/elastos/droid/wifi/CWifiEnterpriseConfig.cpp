@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.CoreLibrary.Security.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/wifi/CWifiEnterpriseConfig.h"
 #include "elastos/droid/wifi/CWifiEnterpriseConfigEap.h"

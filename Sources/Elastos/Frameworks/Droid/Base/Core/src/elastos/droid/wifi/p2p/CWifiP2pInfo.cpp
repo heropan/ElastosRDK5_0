@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Net.h"
 #include "elastos/droid/wifi/p2p/CWifiP2pInfo.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>

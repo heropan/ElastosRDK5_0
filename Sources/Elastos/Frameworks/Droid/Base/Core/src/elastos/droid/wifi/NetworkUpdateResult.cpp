@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Wifi.h"
 #include "elastos/droid/wifi/NetworkUpdateResult.h"
 
 namespace Elastos {

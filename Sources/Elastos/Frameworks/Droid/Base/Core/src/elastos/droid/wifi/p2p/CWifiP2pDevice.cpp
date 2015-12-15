@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/wifi/p2p/CWifiP2pDevice.h"
 #include "elastos/droid/wifi/p2p/CWifiP2pWfdInfo.h"
 #include "elastos/droid/ext/frameworkext.h"

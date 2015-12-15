@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/wifi/p2p/CWifiP2pGroup.h"
 #include <Elastos.CoreLibrary.h>
 #include <elastos/utility/logging/Slogger.h>

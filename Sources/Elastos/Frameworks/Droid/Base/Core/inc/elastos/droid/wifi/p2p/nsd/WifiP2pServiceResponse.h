@@ -2,7 +2,9 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PSERVICERESPONSEBASE_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PSERVICERESPONSEBASE_H__
 
+#include "Elastos.Droid.Wifi.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Droid::Wifi::P2p::IWifiP2pDevice;
 

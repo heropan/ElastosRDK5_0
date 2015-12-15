@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
 #include "elastos/droid/os/CHandlerThread.h"
 #include "elastos/droid/internal/utility/CAsyncChannel.h"
 #include "elastos/droid/wifi/CRttManager.h"

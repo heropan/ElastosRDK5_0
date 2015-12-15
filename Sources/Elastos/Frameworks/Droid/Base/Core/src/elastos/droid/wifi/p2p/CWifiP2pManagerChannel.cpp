@@ -1,3 +1,5 @@
+
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/wifi/p2p/CWifiP2pManagerChannel.h"
 #include <elastos/core/AutoLock.h>
