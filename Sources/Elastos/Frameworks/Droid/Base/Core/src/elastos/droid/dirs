@@ -24,6 +24,7 @@ DIRS += preference
 DIRS += provider
 DIRS += view
 DIRS += sax
+DIRS += server
 DIRS += service
 DIRS += systemui
 DIRS += text

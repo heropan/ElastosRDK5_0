@@ -8,6 +8,8 @@
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::App::IIActivityManager;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
 using Elastos::Core::IClassLoader;
 
 namespace Elastos {
@@ -203,7 +205,7 @@ public:
 
     virtual ~BroadcastReceiver();
 
-    virtual CARAPI Initialize();
+    CARAPI constructor();
 
     CARAPI ToString(
         /* [out] */ String* info);

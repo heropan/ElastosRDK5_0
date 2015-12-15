@@ -1,5 +1,6 @@
 
 EXPORT_HEADERS += elastos/droid/R.h
+
 //EXPORT_HEADERS += elastos/droid/app/Activity.h
 //EXPORT_HEADERS += elastos/droid/app/ListActivity.h
 //EXPORT_HEADERS += elastos/droid/app/Fragment.h
@@ -11,21 +12,31 @@ EXPORT_HEADERS += elastos/droid/app/Instrumentation.h
 //EXPORT_HEADERS += elastos/droid/app/Application.h
 //EXPORT_HEADERS += elastos/droid/app/backup/BackupAgent.h
 //EXPORT_HEADERS += elastos/droid/app/backup/BackupAgentHelper.h
+//EXPORT_HEADERS += elastos/droid/appwidget/AppWidgetProvider.h
+
 //EXPORT_HEADERS += elastos/droid/content/BroadcastReceiver.h
 //EXPORT_HEADERS += elastos/droid/content/ContentProvider.h
+//EXPORT_HEADERS += elastos/droid/database/sqlite/SQLiteOpenHelper.h
+//EXPORT_HEADERS += elastos/droid/database/ContentObserver.h
+
 EXPORT_HEADERS += elastos/droid/ext/frameworkdef.h
 EXPORT_HEADERS += elastos/droid/ext/frameworkext.h
 EXPORT_HEADERS += elastos/droid/ext/frameworkhash.h
+
 //EXPORT_HEADERS += elastos/droid/inputmethodservice/AbstractInputMethodService.h
 //EXPORT_HEADERS += elastos/droid/inputmethodservice/InputMethodService.h
 //EXPORT_HEADERS += elastos/droid/inputmethodservice/AbstractInputMethodImpl.h
 //EXPORT_HEADERS += elastos/droid/inputmethodservice/AbstractInputMethodSessionImpl.h
 //EXPORT_HEADERS += elastos/droid/inputmethodservice/Keyboard.h
 EXPORT_HEADERS += elastos/droid/internal/utility/XmlUtils.h
+
+//EXPORT_HEADERS += elastos/droid/Manifest.h
+
 EXPORT_HEADERS += elastos/droid/os/Build.h
 EXPORT_HEADERS += elastos/droid/os/Environment.h
 //EXPORT_HEADERS += elastos/droid/os/NativeMessageQueue.h
 EXPORT_HEADERS += elastos/droid/os/Handler.h
+EXPORT_HEADERS += elastos/droid/os/HandlerThread.h
 EXPORT_HEADERS += elastos/droid/os/Runnable.h
 //EXPORT_HEADERS += elastos/droid/os/HandlerRunnable.h
 //EXPORT_HEADERS += elastos/droid/os/SomeArgs.h
@@ -35,6 +46,13 @@ EXPORT_HEADERS += elastos/droid/os/SystemClock.h
 //EXPORT_HEADERS += elastos/droid/os/AsyncTask.h
 //EXPORT_HEADERS += elastos/droid/os/FileObserver.h
 //EXPORT_HEADERS += elastos/droid/os/storage/StorageResultCode.h
+
+EXPORT_HEADERS += elastos/droid/text/TextUtils.h
+//EXPORT_HEADERS += elastos/droid/text/MeasuredText.h
+//EXPORT_HEADERS += elastos/droid/text/AndroidBidi.h
+//EXPORT_HEADERS += elastos/droid/text/TextDirectionHeuristics.h
+//EXPORT_HEADERS += elastos/droid/text/method/MetaKeyKeyListener.h
+
 EXPORT_HEADERS += elastos/droid/utility/Xml.h
 EXPORT_HEADERS += elastos/droid/utility/MathUtils.h
 EXPORT_HEADERS += elastos/droid/utility/TimeUtils.h
@@ -44,22 +62,21 @@ EXPORT_HEADERS += elastos/droid/utility/FloatMath.h
 //EXPORT_HEADERS += elastos/droid/utility/LruCache.h
 EXPORT_HEADERS += elastos/droid/utility/Int32Property.h
 EXPORT_HEADERS += elastos/droid/utility/FloatProperty.h
-EXPORT_HEADERS += elastos/droid/text/TextUtils.h
-//EXPORT_HEADERS += elastos/droid/text/MeasuredText.h
-//EXPORT_HEADERS += elastos/droid/text/AndroidBidi.h
-//EXPORT_HEADERS += elastos/droid/text/TextDirectionHeuristics.h
-//EXPORT_HEADERS += elastos/droid/text/method/MetaKeyKeyListener.h
-//EXPORT_HEADERS += elastos/droid/database/sqlite/SQLiteOpenHelper.h
-//EXPORT_HEADERS += elastos/droid/database/ContentObserver.h
+
 //EXPORT_HEADERS += elastos/droid/view/InputFilter.h
 //EXPORT_HEADERS += elastos/droid/view/BaseSurfaceHolder.h
 //EXPORT_HEADERS += elastos/droid/view/InputEventReceiver.h
 //EXPORT_HEADERS += elastos/droid/view/NativeInputChannel.h
 //EXPORT_HEADERS += elastos/droid/view/SoundEffectConstants.h
 EXPORT_HEADERS += elastos/droid/view/WindowIdFocusObserver.h
-//EXPORT_HEADERS += elastos/droid/service/wallpaper/WallpaperService.h
-//EXPORT_HEADERS += elastos/droid/appwidget/AppWidgetProvider.h
+
 //EXPORT_HEADERS += elastos/droid/preference/PreferenceActivity.h
+EXPORT_HEADERS += elastos/droid/server/LocalServices.h
+//EXPORT_HEADERS += elastos/droid/service/wallpaper/WallpaperService.h
+//EXPORT_HEADERS += elastos/droid/text/method/BaseKeyListener.h
+//EXPORT_HEADERS += elastos/droid/text/method/NumberKeyListener.h
+//EXPORT_HEADERS += elastos/droid/text/method/TimeKeyListener.h
+
 //EXPORT_HEADERS += elastos/droid/webkit/WebViewClient.h
 //EXPORT_HEADERS += elastos/droid/webkit/WebChromeClient.h
 //EXPORT_HEADERS += elastos/droid/widget/ArrayAdapter.h
@@ -67,7 +84,3 @@ EXPORT_HEADERS += elastos/droid/view/WindowIdFocusObserver.h
 //EXPORT_HEADERS += elastos/droid/widget/Adapter.h
 //EXPORT_HEADERS += elastos/droid/widget/Filter.h
 //EXPORT_HEADERS += elastos/droid/widget/AdapterMacro.h
-//EXPORT_HEADERS += elastos/droid/text/method/BaseKeyListener.h
-//EXPORT_HEADERS += elastos/droid/text/method/NumberKeyListener.h
-//EXPORT_HEADERS += elastos/droid/text/method/TimeKeyListener.h
-//EXPORT_HEADERS += elastos/droid/Manifest.h

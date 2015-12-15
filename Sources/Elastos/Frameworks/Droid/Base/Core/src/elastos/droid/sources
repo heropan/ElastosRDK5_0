@@ -41,6 +41,7 @@ ELASTOS_LIBS += os/os.lib
 ELASTOS_LIBS += preference/preference.lib
 ELASTOS_LIBS += provider/provider.lib
 ELASTOS_LIBS += sax/sax.lib
+ELASTOS_LIBS += server/server.lib
 ELASTOS_LIBS += service/dreams/dreams.lib
 ELASTOS_LIBS += service/fingerprint/fingerprint.lib
 ELASTOS_LIBS += service/persistentdata/persistentdata.lib
