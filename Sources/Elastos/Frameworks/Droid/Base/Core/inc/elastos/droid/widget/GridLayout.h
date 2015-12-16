@@ -226,20 +226,20 @@ public:
 
         CARAPI_(Int32) GetMaxIndex();
 
-        AutoPtr< PackedMap<IGridLayoutSpec*, IBounds*> > CreateGroupBounds();
+        AutoPtr<PackedMap<AutoPtr<IGridLayoutSpec>, AutoPtr<IBounds> > > CreateGroupBounds();
 
         CARAPI_(void) ComputeGroupBounds();
 
-        AutoPtr< PackedMap<IInterval*, MutableInt*> > CreateLinks(
+        AutoPtr< PackedMap<AutoPtr<IInterval>, AutoPtr<MutableInt> > > CreateLinks(
             /* [in] */ Boolean min);
 
         CARAPI_(void) ComputeLinks(
-            /* [in] */ PackedMap<IInterval*, MutableInt*>* links,
+            /* [in] */ PackedMap<AutoPtr<IInterval>, AutoPtr<MutableInt> >* links,
             /* [in] */ Boolean min);
 
-        AutoPtr< PackedMap<IInterval*, MutableInt*> > GetForwardLinks();
+        AutoPtr< PackedMap<AutoPtr<IInterval>, AutoPtr<MutableInt> > > GetForwardLinks();
 
-        AutoPtr< PackedMap<IInterval*, MutableInt*> > GetBackwardLinks();
+        AutoPtr< PackedMap<AutoPtr<IInterval>, AutoPtr<MutableInt> > > GetBackwardLinks();
 
         CARAPI_(void) Include(
             /* [in] */ List< AutoPtr<Arc> >& arcs,
@@ -263,7 +263,7 @@ public:
 
         CARAPI_(void) AddComponentSizes(
             /* [in] */ List< AutoPtr<Arc> >& result,
-            /* [in] */ PackedMap<IInterval*, MutableInt*>* links);
+            /* [in] */ PackedMap<AutoPtr<IInterval>, AutoPtr<MutableInt> >* links);
 
         CARAPI_(AutoPtr< ArrayOf<Arc*> >) CreateArcs();
 
@@ -331,7 +331,7 @@ public:
         CARAPI_(void) SetOrderPreserved(
             /* [in] */ Boolean orderPreserved);
 
-        AutoPtr< PackedMap<IGridLayoutSpec*, IBounds*> > GetGroupBounds();
+        AutoPtr<PackedMap<AutoPtr<IGridLayoutSpec>, AutoPtr<IBounds> > > GetGroupBounds();
 
         CARAPI_(AutoPtr< ArrayOf<Arc*> >) GetArcs();
 
@@ -369,10 +369,10 @@ public:
         Boolean mHorizontal;
         Int32 mDefinedCount; //= UNDEFINED
         Boolean mGroupBoundsValid; //=FALSE
-        AutoPtr< PackedMap<IGridLayoutSpec*, IBounds*> > mGroupBounds;
-        AutoPtr< PackedMap<IInterval*, MutableInt*> > mForwardLinks;
+        AutoPtr<PackedMap<AutoPtr<IGridLayoutSpec>, AutoPtr<IBounds> > > mGroupBounds;
+        AutoPtr< PackedMap<AutoPtr<IInterval>, AutoPtr<MutableInt> > > mForwardLinks;
         Boolean mForwardLinksValid; // = FALSE;
-        AutoPtr< PackedMap<IInterval*, MutableInt*> > mBackwardLinks;
+        AutoPtr< PackedMap<AutoPtr<IInterval>, AutoPtr<MutableInt> > > mBackwardLinks;
         Boolean mBackwardLinksValid;// = false;
         AutoPtr< ArrayOf<Int32> > mLeadingMargins;
         Boolean mLeadingMarginsValid;// = false;

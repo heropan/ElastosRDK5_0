@@ -27,8 +27,6 @@ using Elastos::Core::CoreUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 
-// DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(GridLayout::Interval)
-
 namespace Elastos {
 namespace Droid {
 namespace Widget {
@@ -935,8 +933,8 @@ ECode GridLayout::OnLayout(
         AutoPtr<Alignment> hAlign = GetAlignment(columnSpecImpl->mAlignment, TRUE);
         AutoPtr<Alignment> vAlign = GetAlignment(rowSpecImpl->mAlignment, FALSE);
 
-        AutoPtr<Bounds> boundsX = (Bounds*)(mHorizontalAxis->GetGroupBounds()->GetValue(i));
-        AutoPtr<Bounds> boundsY = (Bounds*)(mVerticalAxis->GetGroupBounds()->GetValue(i));
+        AutoPtr<Bounds> boundsX = (Bounds*)(mHorizontalAxis->GetGroupBounds()->GetValue(i).Get());
+        AutoPtr<Bounds> boundsY = (Bounds*)(mVerticalAxis->GetGroupBounds()->GetValue(i).Get());
 
         Int32 gravityOffsetX = 0;
         hAlign->GetGravityOffset(c, cellWidth - boundsX->Size(TRUE), &gravityOffsetX);
@@ -1507,7 +1505,7 @@ Int32 GridLayout::Axis::GetMaxIndex()
     return mMaxIndex;
 }
 
-AutoPtr< GridLayout::PackedMap<IGridLayoutSpec*, IBounds*> > GridLayout::Axis::CreateGroupBounds()
+AutoPtr<GridLayout::PackedMap<AutoPtr<IGridLayoutSpec>, AutoPtr<IBounds> > > GridLayout::Axis::CreateGroupBounds()
 {
     Assoc<AutoPtr<IGridLayoutSpec>, AutoPtr<IBounds> >* assoc = Assoc<AutoPtr<IGridLayoutSpec>, AutoPtr<IBounds> >::Of(NULL, NULL);
     Int32 childCount;
@@ -1528,15 +1526,14 @@ AutoPtr< GridLayout::PackedMap<IGridLayoutSpec*, IBounds*> > GridLayout::Axis::C
     }
     AutoPtr<PackedMap<AutoPtr<IGridLayoutSpec>, AutoPtr<IBounds> > > map = assoc->Pack();
     delete assoc;
-    assert(0 && "TODO: luozhaohui");
-    return (PackedMap<IGridLayoutSpec*, IBounds*>*)(map.Get());
+    return map;
 }
 
 void GridLayout::Axis::ComputeGroupBounds()
 {
-    AutoPtr< ArrayOf<IBounds*> > values = mGroupBounds->mValues;
+    AutoPtr< ArrayOf<AutoPtr<IBounds> > > values = mGroupBounds->mValues;
     for (Int32 i = 0; i < values->GetLength(); i++) {
-        Bounds* bounds = (Bounds*)((*values)[i]);
+        Bounds* bounds = (Bounds*)((*values)[i].Get());
         bounds->Reset();
     }
     Int32 childCount;
@@ -1555,48 +1552,47 @@ void GridLayout::Axis::ComputeGroupBounds()
         AutoPtr<ArrayOf<Int32> > measurements = GetOriginalMeasurements();
         int size = (spec->mWeight == 0) ?
                 margin : (*measurements)[i] + (*deltas)[i];
-        IBounds* bounds = mGroupBounds->GetValue(i);
-        Bounds* boundsImp = (Bounds*)bounds;
+        AutoPtr<IBounds> bounds = mGroupBounds->GetValue(i);
+        Bounds* boundsImp = (Bounds*)bounds.Get();
         boundsImp->Include(mHost, c, spec, this, size);
     }
 }
 
-AutoPtr< GridLayout::PackedMap<IInterval*, GridLayout::MutableInt*> > GridLayout::Axis::CreateLinks(
+AutoPtr< GridLayout::PackedMap<AutoPtr<IInterval>, AutoPtr<GridLayout::MutableInt> > > GridLayout::Axis::CreateLinks(
     /* [in] */ Boolean min)
 {
     Assoc< AutoPtr<IInterval>, AutoPtr<MutableInt> >* result = Assoc< AutoPtr<IInterval>, AutoPtr<MutableInt> >::Of(NULL, NULL);
-    AutoPtr< ArrayOf<IGridLayoutSpec*> > keys = GetGroupBounds()->mKeys;
-    for (Int32 i = 0, N = keys->GetLength(); i < N; i++)
-    {
-        AutoPtr<Spec> sp = (Spec*)((*keys)[i]);
+    AutoPtr< ArrayOf<AutoPtr<IGridLayoutSpec> > > keys = GetGroupBounds()->mKeys;
+    for (Int32 i = 0, N = keys->GetLength(); i < N; i++) {
+        AutoPtr<Spec> sp = (Spec*)((*keys)[i].Get());
         AutoPtr<Interval> span = min ? sp->mSpan : sp->mSpan->Inverse();
         AutoPtr<MutableInt> mut = new MutableInt();
         result->Put(span.Get(), mut);
     }
     AutoPtr<PackedMap<AutoPtr<IInterval>, AutoPtr<MutableInt> > > map = result->Pack();
     delete result;
-    return (PackedMap<IInterval*, GridLayout::MutableInt*>*)(map.Get());;
+    return map;
 }
 
 void GridLayout::Axis::ComputeLinks(
-    /* [in] */ PackedMap<IInterval*, MutableInt*>* links,
+    /* [in] */ PackedMap<AutoPtr<IInterval>, AutoPtr<MutableInt> >* links,
     /* [in] */ Boolean min)
 {
-    AutoPtr< ArrayOf<MutableInt*> > spans = links->mValues;
+    AutoPtr< ArrayOf<AutoPtr<MutableInt> > > spans = links->mValues;
     for (Int32 i = 0; i < spans->GetLength(); i++) {
         (*spans)[i]->Reset();
     }
 
-    AutoPtr< ArrayOf<IBounds*> > bounds = GetGroupBounds()->mValues;
+    AutoPtr< ArrayOf<AutoPtr<IBounds> > > bounds = GetGroupBounds()->mValues;
     for (Int32 i = 0; i < bounds->GetLength(); i++) {
-        Bounds* boundsImpl = (Bounds*)((*bounds)[i]);
+        Bounds* boundsImpl = (Bounds*)((*bounds)[i].Get());
         Int32 size = boundsImpl->Size(min);
         AutoPtr<MutableInt> valueHolder = links->GetValue(i);
         valueHolder->mValue = Elastos::Core::Math::Max(valueHolder->mValue, min ? size : -size);
     }
 }
 
-AutoPtr< GridLayout::PackedMap<IInterval*, GridLayout::MutableInt*> > GridLayout::Axis::GetForwardLinks()
+AutoPtr< GridLayout::PackedMap<AutoPtr<IInterval>, AutoPtr<GridLayout::MutableInt> > > GridLayout::Axis::GetForwardLinks()
 {
     if (!mForwardLinks) {
         mForwardLinks = CreateLinks(TRUE);
@@ -1608,7 +1604,7 @@ AutoPtr< GridLayout::PackedMap<IInterval*, GridLayout::MutableInt*> > GridLayout
     return mForwardLinks;
 }
 
-AutoPtr< GridLayout::PackedMap<IInterval*, GridLayout::MutableInt*> > GridLayout::Axis::GetBackwardLinks()
+AutoPtr< GridLayout::PackedMap<AutoPtr<IInterval>, AutoPtr<GridLayout::MutableInt> > > GridLayout::Axis::GetBackwardLinks()
 {
     if (!mBackwardLinks) {
         mBackwardLinks = CreateLinks(FALSE);
@@ -1744,7 +1740,7 @@ AutoPtr< ArrayOf<GridLayout::Arc*> > GridLayout::Axis::TopologicalSort(
 
 void GridLayout::Axis::AddComponentSizes(
     /* [in] */ List< AutoPtr<Arc> >& result,
-    /* [in] */ PackedMap<IInterval*, MutableInt*>* links)
+    /* [in] */ PackedMap<AutoPtr<IInterval>, AutoPtr<MutableInt> >* links)
 {
     for (Int32 i = 0; i < links->mKeys->GetLength(); i++) {
         AutoPtr<IInterval> tmp = (*links->mKeys)[i];
@@ -2125,7 +2121,7 @@ void GridLayout::Axis::SetOrderPreserved(
     InvalidateStructure();
 }
 
-AutoPtr< GridLayout::PackedMap<IGridLayoutSpec*, IBounds*> > GridLayout::Axis::GetGroupBounds()
+AutoPtr<GridLayout::PackedMap<AutoPtr<IGridLayoutSpec>, AutoPtr<IBounds> > > GridLayout::Axis::GetGroupBounds()
 {
     if (!mGroupBounds) {
         mGroupBounds = CreateGroupBounds();
