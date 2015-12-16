@@ -6,6 +6,7 @@ module
     using interface Elastos.IO.ISerializable;
     using interface Elastos.Utility.IArrayList;
     using interface Org.Xmlpull.V1.IXmlPullParser;
+    using interface Org.Xmlpull.V1.IXmlSerializer;
 
     interface Elastos.Droid.Content.IClipData;
     interface Elastos.Droid.Content.IComponentName;
@@ -5146,6 +5147,12 @@ module
         ToUri(
             [in] Int32 flags,
             [out] String* str);
+
+        /**
+         * @hide
+         */
+        SaveToXml(
+            [in] IXmlSerializer* outXml);
 
         /**
          * Prepare this {@link Intent} to leave an app process.

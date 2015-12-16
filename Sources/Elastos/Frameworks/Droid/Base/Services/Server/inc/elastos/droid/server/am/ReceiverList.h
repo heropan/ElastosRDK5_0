@@ -69,7 +69,7 @@ public:
 
 
 #define HASH_FUNC_FOR_AUTOPTR_RECEIVERLIST
-DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Server::Am::ReceiverList)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Server::Am::ReceiverList)
 #endif
 
 

@@ -12,7 +12,7 @@ using Elastos::Droid::Content::IIntentFilterComparison;
 
 
 #define HASH_FUNC_FOR_AUTOPTR_USING_ADDR_PROCESSRECORD
-DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Server::Am::ProcessRecord)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Server::Am::ProcessRecord)
 #endif
 
 

@@ -228,7 +228,7 @@ private:
 
 
 #define HASH_FUNC_FOR_AUTOPTR_CSERVICERECORD
-DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Server::Am::CServiceRecord)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Server::Am::CServiceRecord)
 #endif
 
 #endif //__ELASTOS_DROID_SERVER_AM_CSERVICERECORD_H__

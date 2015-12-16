@@ -3,9 +3,11 @@
 #define __ELASTOS_DROID_SERVER_AM_CONNECTIONRECORD_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::App::IIServiceConnection;
+using Elastos::IO::IPrintWriter;
 
 namespace Elastos {
 namespace Droid {
@@ -29,13 +31,18 @@ public:
         /* [in] */ Int32 clientLabel,
         /* [in] */ IPendingIntent* clientIntent);
 
-    // void dump(PrintWriter pw, String prefix);
+    void Dump(
+        /* [in] */ IPrintWriter* pw,
+        /* [in] */ const String& prefix);
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 
     CARAPI_(String) ToString();
 
 public:
     AutoPtr<AppBindRecord> mBinding;    // weak-ref The application/service binding.
-    AutoPtr<ActivityRecord> mActivity;  // weak-ref If non-null, the owning activity.
+    ActivityRecord* mActivity;  // weak-ref If non-null, the owning activity.
     AutoPtr<IIServiceConnection> mConn;  // The client connection.
     Int32 mFlags;   // Binding options.
     Int32 mClientLabel;          // String resource labeling this client.
@@ -49,8 +56,6 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#define HASH_FUNC_FOR_AUTOPTR_CONNECTIONRECORD
-DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Server::Am::ConnectionRecord)
-#endif
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Server::Am::ConnectionRecord)
 
 #endif //__ELASTOS_DROID_SERVER_AM_CONNECTIONRECORD_H__

@@ -2,6 +2,76 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_ACTIVITYSTACK_H__
 #define __ELASTOS_DROID_SERVER_AM_ACTIVITYSTACK_H__
 
+#if 1
+using Elastos::Droid::Os::IHandler;
+
+namespace Elastos {
+namespace Droid {
+namespace Server {
+namespace Am {
+
+class ActivityStack : public Object
+{
+public:
+        // Ticks during which we check progress while waiting for an app to launch.
+    static const Int32 LAUNCH_TICK = 500;
+
+    // How long we wait until giving up on the last activity to pause.  This
+    // is short because it directly impacts the responsiveness of starting the
+    // next activity.
+    static const Int32 PAUSE_TIMEOUT = 500;
+
+    // How long we wait for the activity to tell us it has stopped before
+    // giving up.  This is a good amount of time because we really need this
+    // from the application in order to get its saved state.
+    static const Int32 STOP_TIMEOUT = 10*1000;
+
+    // How long we wait until giving up on an activity telling us it has
+    // finished destroying itself.
+    static const Int32 DESTROY_TIMEOUT = 10*1000;
+
+    // How long until we reset a task when the user returns to it.  Currently
+    // disabled.
+    static const Int64 ACTIVITY_INACTIVE_RESET_TIME = 0;
+
+    // How long between activity launches that we consider safe to not warn
+    // the user about an unexpected activity being launched on top.
+    static const Int64 START_WARN_TIME = 5*1000;
+
+    // Set to false to disable the preview that is shown while a new activity
+    // is being started.
+    static const Boolean SHOW_APP_STARTING_PREVIEW = TRUE;
+
+    // How long to wait for all background Activities to redraw following a call to
+    // convertToTranslucent().
+    static const Int64 TRANSLUCENT_CONVERSION_TIMEOUT = 2000;
+
+    static const Boolean SCREENSHOT_FORCE_565/* = ActivityManager.isLowRamDeviceStatic()*/;
+
+    static const Int32 SLEEP_TIMEOUT_MSG;
+    static const Int32 PAUSE_TIMEOUT_MSG;
+    static const Int32 IDLE_TIMEOUT_MSG;
+    static const Int32 IDLE_NOW_MSG;
+    static const Int32 LAUNCH_TIMEOUT_MSG;
+    static const Int32 DESTROY_TIMEOUT_MSG;
+    static const Int32 RESUME_TOP_ACTIVITY_MSG;
+    static const Int32 LAUNCH_TICK_MSG;
+    static const Int32 STOP_TIMEOUT_MSG;
+    static const Int32 DESTROY_ACTIVITIES_MSG;
+
+public:
+    AutoPtr<IHandler> mHandler;
+    Int64 mLaunchStartTime;
+    Int64 mFullyDrawnStartTime;
+};
+
+} // namespace Am
+} // namespace Server
+} // namespace Droid
+} // namespace Elastos
+
+#else
+
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 #include "elastos/droid/server/am/UserStartedState.h"
@@ -834,5 +904,5 @@ private:
 } // namespace Server
 } // namespace Droid
 } // namespace Elastos
-
+#endif
 #endif //__ELASTOS_DROID_SERVER_AM_ACTIVITYSTACK_H__

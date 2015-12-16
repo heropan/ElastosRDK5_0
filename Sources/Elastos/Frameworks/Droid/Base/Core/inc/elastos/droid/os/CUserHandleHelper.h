@@ -4,6 +4,9 @@
 #include "_Elastos_Droid_Os_CUserHandleHelper.h"
 #include <elastos/core/Singleton.h>
 
+using Elastos::Core::IStringBuilder;
+using Elastos::IO::IPrintWriter;
+
 namespace Elastos {
 namespace Droid {
 namespace Os {
@@ -83,6 +86,24 @@ public:
     CARAPI GetSharedAppGid(
         /* [in] */ Int32 id,
         /* [out] */ Int32* appGid);
+
+    /**
+     * Generate a text representation of the uid, breaking out its individual
+     * components -- user, app, isolated, etc.
+     * @hide
+     */
+    CARAPI FormatUid(
+        /* [in] */ IStringBuilder* sb,
+        /* [in] */ Int32 uid);
+
+    /**
+     * Generate a text representation of the uid, breaking out its individual
+     * components -- user, app, isolated, etc.
+     * @hide
+     */
+    CARAPI FormatUid(
+        /* [in] */ IPrintWriter* pw,
+        /* [in] */ Int32 uid);
 
     /**
      * Returns the user id of the current process

@@ -92,6 +92,20 @@ ECode CUserHandleHelper::GetSharedAppGid(
     return NOERROR;
 }
 
+ECode CUserHandleHelper::FormatUid(
+    /* [in] */ IStringBuilder* sb,
+    /* [in] */ Int32 uid)
+{
+    return UserHandle::FormatUid(sb, uid);
+}
+
+ECode CUserHandleHelper::FormatUid(
+    /* [in] */ IPrintWriter* pw,
+    /* [in] */ Int32 uid)
+{
+    return UserHandle::FormatUid(pw, uid);
+}
+
 ECode CUserHandleHelper::GetMyUserId(
     /* [out] */ Int32* myUserId)
 {

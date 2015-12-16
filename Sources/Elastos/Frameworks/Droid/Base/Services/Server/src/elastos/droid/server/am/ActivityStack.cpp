@@ -115,7 +115,7 @@ ECode ActivityStack::MyHandler::HandleMessage(
         case ActivityStack::PAUSE_TIMEOUT_MSG: {
             AutoPtr<IInterface> obj;
             msg->GetObj((IInterface**)&obj);
-            ActivityRecord* r = reinterpret_cast<ActivityRecord*>(obj->Probe(EIID_ActivityRecord));
+            ActivityRecord* r = (ActivityRecord*)IActivityRecord::Probe(obj);
             mHost->HandlePauseTimeout(r);
             break;
         }
@@ -123,7 +123,7 @@ ECode ActivityStack::MyHandler::HandleMessage(
         case ActivityStack::IDLE_TIMEOUT_MSG: {
             AutoPtr<IInterface> obj;
             msg->GetObj((IInterface**)&obj);
-            ActivityRecord* r = reinterpret_cast<ActivityRecord*>(obj->Probe(EIID_ActivityRecord));
+            ActivityRecord* r = (ActivityRecord*)IActivityRecord::Probe(obj);
             mHost->HandleIdleTimeout(r);
             break;
         }
@@ -131,7 +131,7 @@ ECode ActivityStack::MyHandler::HandleMessage(
         case ActivityStack::LAUNCH_TICK_MSG: {
             AutoPtr<IInterface> obj;
             msg->GetObj((IInterface**)&obj);
-            ActivityRecord* r = reinterpret_cast<ActivityRecord*>(obj->Probe(EIID_ActivityRecord));
+            ActivityRecord* r = (ActivityRecord*)IActivityRecord::Probe(obj);
             mHost->HandleLaunchTick(r);
             break;
         }
@@ -139,7 +139,7 @@ ECode ActivityStack::MyHandler::HandleMessage(
         case ActivityStack::DESTROY_TIMEOUT_MSG: {
             AutoPtr<IInterface> obj;
             msg->GetObj((IInterface**)&obj);
-            ActivityRecord* r = reinterpret_cast<ActivityRecord*>(obj->Probe(EIID_ActivityRecord));
+            ActivityRecord* r = (ActivityRecord*)IActivityRecord::Probe(obj);
 
             // We don't at this point know if the activity is fullscreen,
             // so we need to be conservative and assume it isn't.
@@ -153,7 +153,7 @@ ECode ActivityStack::MyHandler::HandleMessage(
             AutoPtr<IInterface> obj;
             msg->GetObj((IInterface**)&obj);
             if (obj != NULL) {
-                r = reinterpret_cast<ActivityRecord*>(obj->Probe(EIID_ActivityRecord));
+                r = (ActivityRecord*)IActivityRecord::Probe(obj);
             }
             mHost->ActivityIdleInternal(r != NULL ? IBinder::Probe(r->mAppToken) : NULL, FALSE, NULL);
             break;
@@ -172,7 +172,7 @@ ECode ActivityStack::MyHandler::HandleMessage(
         case ActivityStack::STOP_TIMEOUT_MSG: {
             AutoPtr<IInterface> obj;
             msg->GetObj((IInterface**)&obj);
-            ActivityRecord* r = reinterpret_cast<ActivityRecord*>(obj->Probe(EIID_ActivityRecord));
+            ActivityRecord* r = (ActivityRecord*)IActivityRecord::Probe(obj);
             mHost->HandleStopTimeout(r);
             break;
         }

@@ -7,44 +7,48 @@
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/core/StringBuilder.h>
-#include "elastos/droid/os/BatteryStatsImpl.h"
-#include "elastos/droid/server/am/ReceiverList.h"
-#include "elastos/droid/server/am/ConnectionRecord.h"
-#include "elastos/droid/server/am/ContentProviderRecord.h"
-#include "elastos/droid/server/am/CServiceRecord.h"
-#include "elastos/droid/server/am/ActivityRecord.h"
-#include "elastos/droid/server/am/BroadcastRecord.h"
+// #include "elastos/droid/server/am/ReceiverList.h"
+// #include "elastos/droid/server/am/ConnectionRecord.h"
+// #include "elastos/droid/server/am/ContentProviderRecord.h"
+// #include "elastos/droid/server/am/CServiceRecord.h"
+// #include "elastos/droid/server/am/ActivityRecord.h"
+// #include "elastos/droid/server/am/BroadcastRecord.h"
 
-using Elastos::Utility::Etl::List;
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::Etl::HashSet;
-using Elastos::Core::StringBuilder;
-using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Os::BatteryStatsImpl;
+using Elastos::Droid::App::IApplicationThread;
+using Elastos::Droid::App::IActivityManagerProcessErrorStateInfo;
+using Elastos::Droid::App::IDialog;
+using Elastos::Droid::App::IInstrumentationWatcher;
+using Elastos::Droid::App::IIUiAutomationConnection;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Res::ICompatibilityInfo;
-using Elastos::Droid::App::IApplicationThread;
-using Elastos::Droid::App::IDialog;
-using Elastos::Droid::App::IInstrumentationWatcher;
-using Elastos::Droid::App::IActivityManagerProcessErrorStateInfo;
+using Elastos::Droid::Internal::App::IProcessState;
+using Elastos::Droid::Internal::App::IProcessStateHolder;
+using Elastos::Droid::Internal::Os::IBatteryStatsImpl;
+using Elastos::Droid::Os::IBatteryStatsUidProc;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Utility::IArrayMap;
+using Elastos::Core::IRunnable;
+using Elastos::Core::StringBuilder;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::HashSet;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Am {
 
-extern const InterfaceID EIID_ProcessRecord;
+class ProcessStatsService;
 
 class ProcessRecord
     : public Object
-    , public IInterface
+    , public IProcessRecord
 {
 public:
     ProcessRecord(
-        /* [in] */ BatteryStatsImpl::Uid::Proc* batteryStats,
-        /* [in] */ IApplicationThread* appApartment,
+        /* [in] */ IBatteryStatsImpl* batteryStats,
         /* [in] */ IApplicationInfo* info,
         /* [in] */ const String& processName,
         /* [in] */ Int32 uid);
@@ -53,10 +57,19 @@ public:
 
     CAR_INTERFACE_DECL()
 
-    // void dump(PrintWriter pw, String prefix);
+    CARAPI_(void) Dump(
+        /* [in] */ IPrintWriter* pw,
+        /* [in] */ const String& prefix);
 
     CARAPI SetPid(
         /* [in] */ Int32 pid);
+
+    CARAPI_(void) MakeActive(
+        /* [in] */ IApplicationThread* thread,
+        /* [in] */ ProcessStatsService* tracker);
+
+    CARAPI_(void) MakeInactive(
+        /* [in] */ ProcessStatsService* tracker);
 
     /**
      * This method returns true if any of the activities within the process record are interesting
@@ -70,6 +83,13 @@ public:
 
     CARAPI UpdateHasAboveClientLocked();
 
+    CARAPI_(Int32) ModifyRawOomAdj(
+        /* [in] */ Int32 adj);
+
+    CARAPI_(void) Kill(
+        /* [in] */ const String& reason,
+        /* [in] */ Boolean noisy);
+
     CARAPI_(String) ToShortString();
 
     CARAPI ToShortString(
@@ -77,62 +97,87 @@ public:
 
     CARAPI_(String) ToString();
 
+    CARAPI ToString(
+        /* [out] */ String* str);
+
+    CARAPI_(String) MakeAdjReason();
+
     /*
      *  Return true if package has been added false if not
      */
     CARAPI_(Boolean) AddPackage(
-        /* [in] */ const String& cap);
+        /* [in] */ const String& pkg,
+        /* [in] */ Int32 versionCode,
+        /* [in] */ ProcessStatsService* tracker);
+
+    CARAPI_(Int32) GetSetAdjWithServices();
+
+    CARAPI_(void) ForceProcessStateUpTo(
+        /* [in] */ Int32 newState);
 
     /*
      *  Delete all packages from list except the package indicated in info
      */
-    CARAPI ResetPackageList();
+    CARAPI_(void) ResetPackageList(
+        /* [in] */ ProcessStatsService* tracker);
 
     CARAPI_(AutoPtr< ArrayOf<String> >) GetPackageList();
 
 public:
-    AutoPtr<BatteryStatsImpl::Uid::Proc> mBatteryStats; // where to collect runtime statistics
-    AutoPtr<IApplicationInfo> mInfo;
-    Boolean mIsolated;     // true if this is a special isolated process
-    Int32 mUid;              // uid of process; may be different from 'info' if isolated
-    Int32 mUserId;           // user of process.
-    String mProcessName;
+    AutoPtr<IBatteryStatsImpl> mBatteryStats; // where to collect runtime statistics
+    AutoPtr<IApplicationInfo> mInfo; // all about the first app in the process
+    Boolean mIsolated;      // true if this is a special isolated process
+    Int32 mUid;             // uid of process; may be different from 'info' if isolated
+    Int32 mUserId;          // user of process.
+    String mProcessName;    // name of the process
     // List of packages running in the process
-    HashSet<String> mPkgList;
+    AutoPtr<IArrayMap> mPkgList;
+    HashSet<String> mPkgDeps;   // additional packages we have a dependency on
     AutoPtr<IApplicationThread> mThread; // the actual proc...  may be null only if
                                 // 'persistent' is true (in which case we
                                 // are in the process of launching the app)
+    AutoPtr<IProcessState> mBaseProcessTracker;
+    AutoPtr<IBatteryStatsUidProc> mCurProcBatteryStats;
     Int32 mPid;
-    Boolean mStarting;                  // True if the process is being started
-    Int64 mLastActivityTime;    // For managing the LRU list
-    Int64 mLruWeight;                   // Weight for ordering in LRU list
+    Boolean mStarting;            // True if the process is being started
+    Int64 mLastActivityTime;      // For managing the LRU list
+    Int64 mLastPssTime;           // Last time we retrieved PSS data
+    Int64 mNextPssTime;           // Next time we want to request PSS data
+    Int64 mLastStateTime;         // Last time setProcState changed
+    Int64 mInitialIdlePss;        // Initial memory pss of process for idle maintenance.
+    Int64 mLastPss;               // Last computed memory pss.
+    Int64 mLastCachedPss;         // Last computed pss when in cached state.
     Int32 mMaxAdj;                  // Maximum OOM adjustment for this process
-    Int32 mHiddenAdj;               // If hidden, this is the adjustment to use
-    Int32 mClientHiddenAdj;        // If empty but hidden client, this is the adjustment to use
-    Int32 mEmptyAdj;               // If empty, this is the adjustment to use
     Int32 mCurRawAdj;               // Current OOM unlimited adjustment for this process
     Int32 mSetRawAdj;               // Last set OOM unlimited adjustment for this process
-    Int32 mNonStoppingAdj;         // Adjustment not counting any stopping activities
     Int32 mCurAdj;                  // Current OOM adjustment for this process
     Int32 mSetAdj;                  // Last set OOM adjustment for this process
     Int32 mCurSchedGroup;           // Currently desired scheduling class
     Int32 mSetSchedGroup;           // Last set to background scheduling class
     Int32 mTrimMemoryLevel;        // Last selected memory trimming level
-    Int32 mMemImportance;          // Importance constant computed from curAdj
+    Int32 mCurProcState;        // Currently computed process state: ActivityManager.PROCESS_STATE_*
+    Int32 mRepProcState;        // Last reported process state
+    Int32 mSetProcState;        // Last set process state in process tracker
+    Int32 mPssProcState;        // The proc state we are currently requesting pss for
     Boolean mServiceb;           // Process currently is on the service B list
-    Boolean mKeeping;               // Actively running code so don't kill due to that?
+    Boolean mServiceHighRam;     // We are forcing to service B list due to its RAM use
     Boolean mSetIsForeground;       // Running foreground UI when last set?
-    Boolean mHasActivities;      // Are there any activities running in this process?
+    Boolean mNotCachedSinceIdle; // Has this process not been in a cached state since last idle?
     Boolean mHasClientActivities;  // Are there any client services with activities?
+    Boolean mHasStartedServices; // Are there any started services running in this process?
     Boolean mForegroundServices;    // Running any services that are foreground?
     Boolean mForegroundActivities; // Running any activities that are foreground?
+    Boolean mRepForegroundActivities; // Last reported foreground activities.
     Boolean mSystemNoUi;         // This is a system process, but not currently showing UI.
     Boolean mHasShownUi;         // Has UI been shown in this process since it was started?
     Boolean mPendingUiClean;     // Want to clean up resources from showing UI?
     Boolean mHasAboveClient;     // Bound using BIND_ABOVE_CLIENT, so want to be lower
+    Boolean mTreatLikeActivity;  // Bound using BIND_TREAT_LIKE_ACTIVITY
     Boolean mBad;                   // True if disabled in the bad process list
-    Boolean mKilledBackground;   // True when proc has been killed due to too many bg
-    String mWaitingToKill;       // Process is waiting to be killed when in the bg; reason
+    Boolean mKilledByAm;         // True when proc has been killed by activity manager, not for RAM
+    Boolean mKilled;             // True once we know the process has been killed
+    Boolean mProcStateChanged;   // Keep track of whether we changed 'setAdj'.
+    String mWaitingToKill;       // Process is waiting to be killed when in the bg, and reason
     AutoPtr<IBinder> mForcingToForeground; // Token that is forcing this process to be foreground
     Int32 mAdjSeq;                 // Sequence id for identifying oom_adj assignment cycles
     Int32 mLruSeq;                  // Sequence id for identifying LRU update cycles
@@ -142,10 +187,11 @@ public:
     AutoPtr<IApplicationInfo> mInstrumentationInfo; // the application being instrumented
     String mInstrumentationProfileFile; // where to save profiling
     AutoPtr<IInstrumentationWatcher> mInstrumentationWatcher; // who is waiting
+    AutoPtr<IIUiAutomationConnection> mInstrumentationUiAutomationConnection; // Connection to use the UI introspection APIs.
     AutoPtr<IBundle> mInstrumentationArguments; // as given to us
     AutoPtr<IComponentName> mInstrumentationResultClass;// copy of instrumentationClass
     Boolean mUsingWrapper;       // Set to true when process was launched with a wrapper attached
-    AutoPtr<BroadcastRecord> mCurReceiver; // receiver currently running in the app
+    // AutoPtr<BroadcastRecord> mCurReceiver; // receiver currently running in the app
     Int64 mLastWakeTime;          // How long proc held wake lock at last check
     Int64 mLastCpuTime;           // How long proc has run CPU at last check
     Int64 mCurCpuTime;            // How long proc has run CPU most recently
@@ -153,32 +199,34 @@ public:
     Int64 mLastLowMemory;   // When we last told the app that memory is low
     Boolean mReportLowMemory;    // Set to true when waiting to report low mem
     Boolean mEmpty;              // Is this an empty background process?
-    Boolean mHidden;             // Is this a hidden process?
-    Int32 mLastPss;                // Last pss size reported by app.
+    Boolean mCached;             // Is this a cached process?
     String mAdjType;             // Debugging: primary thing impacting oom_adj.
     Int32 mAdjTypeCode;            // Debugging: adj code to report to app.
-    AutoPtr<IInterface> mAdjSource;   // Debugging: option dependent object.
-    Int32 mAdjSourceOom;           // Debugging: oom_adj of adjSource's process.
-    AutoPtr<IInterface> mAdjTarget;   // Debugging: target component impacting oom_adj.
+    AutoPtr<IInterface> mAdjSource;     // Debugging: option dependent object.
+    Int32 mAdjSourceProcState;          // Debugging: proc state of adjSource's process.
+    AutoPtr<IInterface> mAdjTarget;     // Debugging: target component impacting oom_adj.
+    AutoPtr<IRunnable> mCrashHandler;   // Optional local handler to be invoked in the process crash.
 
     // contains HistoryRecord objects
     List< AutoPtr<ActivityRecord> > mActivities;
-    // all ServiceRecord running in this process
-    HashSet< AutoPtr<CServiceRecord> > mServices;
-    // services that are currently executing code (need to remain foreground).
-    HashSet< AutoPtr<CServiceRecord> > mExecutingServices;
-    // All ConnectionRecord this process holds
-    HashSet< AutoPtr<ConnectionRecord> > mConnections;
-    // all IIntentReceivers that are registered from this process.
-    HashSet< AutoPtr<ReceiverList> > mReceivers;
-    // class (String) -> ContentProviderRecord
-    HashMap<String, AutoPtr<ContentProviderRecord> > mPubProviders;
-    // All ContentProviderRecord process is using
-    List< AutoPtr<CContentProviderConnection> > mConProviders;
+    // // all ServiceRecord running in this process
+    // HashSet< AutoPtr<CServiceRecord> > mServices;
+    // // services that are currently executing code (need to remain foreground).
+    // HashSet< AutoPtr<CServiceRecord> > mExecutingServices;
+    // // All ConnectionRecord this process holds
+    // HashSet< AutoPtr<ConnectionRecord> > mConnections;
+    // // all IIntentReceivers that are registered from this process.
+    // HashSet< AutoPtr<ReceiverList> > mReceivers;
+    // // class (String) -> ContentProviderRecord
+    // HashMap<String, AutoPtr<ContentProviderRecord> > mPubProviders;
+    // // All ContentProviderRecord process is using
+    // List< AutoPtr<CContentProviderConnection> > mConProviders;
 
+    Boolean mExecServicesFg;     // do we need to be executing services in the foreground?
     Boolean mPersistent;         // always keep this application running?
     Boolean mCrashing;           // are we in the process of crashing?
     AutoPtr<IDialog> mCrashDialog;         // dialog being displayed due to crash.
+    Boolean mForceCrashReport;   // suppress normal auto-dismiss of crash dialog & report UI?
     Boolean mNotResponding;      // does the app have a not responding dialog?
     AutoPtr<IDialog> mAnrDialog;           // dialog being displayed due to app not resp.
     Boolean mRemoved;            // has app package been removed from device?

@@ -15,7 +15,7 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-class AppGlobals
+class ECO_PUBLIC AppGlobals
 {
 public:
     /**

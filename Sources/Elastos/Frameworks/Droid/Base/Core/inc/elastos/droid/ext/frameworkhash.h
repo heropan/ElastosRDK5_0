@@ -8,6 +8,7 @@
 // Runtime
 //
 DEFINE_OBJECT_HASH_FUNC_FOR(IInterface)
+DEFINE_OBJECT_HASH_FUNC_FOR(IWeakReference)
 
 //
 // Accounts

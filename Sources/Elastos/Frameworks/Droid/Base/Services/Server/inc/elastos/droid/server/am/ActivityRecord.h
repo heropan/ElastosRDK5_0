@@ -3,39 +3,31 @@
 #define __ELASTOS_DROID_SERVER_AM_ACTIVITYRECORD_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/List.h>
-#include <elastos/utility/etl/HashSet.h>
-#include <elastos/core/StringBuilder.h>
-#include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/server/am/ActivityResult.h"
 #include "elastos/droid/server/am/ActivityState.h"
 #include "elastos/droid/server/am/ConnectionRecord.h"
 #include "elastos/droid/server/am/CPendingIntentRecord.h"
 #include "elastos/droid/server/am/TaskRecord.h"
-#include "elastos/droid/server/am/ActivityStack.h"
-//#include "elastos/droid/server/am/ProcessRecord.h"
-#include "elastos/droid/server/am/ThumbnailHolder.h"
 #include "elastos/droid/server/am/UriPermissionOwner.h"
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashSet.h>
 
-
-using Elastos::Utility::Etl::List;
-using Elastos::Utility::Etl::HashSet;
-using Elastos::Core::ICharSequence;
-using Elastos::IO::IPrintWriter;
-using Elastos::Droid::Os::SystemClock;
-using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Os::CBundle;
-using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Os::EIID_IBinder;
-using Elastos::Droid::View::IApplicationToken;
 using Elastos::Droid::App::IActivityOptions;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Content::Res::ICompatibilityInfo;
 using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::IPersistableBundle;
+using Elastos::Droid::View::IApplicationToken;
+using Elastos::Core::ICharSequence;
+using Elastos::IO::IPrintWriter;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashSet;
 
 
 namespace Elastos {
@@ -49,10 +41,9 @@ class ProcessRecord;
 
 class ActivityRecord
     : public Object
+    , public IActivityRecord
 {
 public:
-    CAR_INTERFACE_DECL()
-
     ActivityRecord(
         /* [in] */ CActivityManagerService* service,
         /* [in] */ ProcessRecord* caller,
@@ -71,6 +62,8 @@ public:
         /* [in] */ IBundle* options);
 
     ~ActivityRecord();
+
+    CAR_INTERFACE_DECL()
 
     CARAPI GetWeakReference(
         /* [out] */ IWeakReference** weakReference);
@@ -186,6 +179,7 @@ public:
     CARAPI WindowsGone();
 
     CARAPI KeyDispatchingTimedOut(
+        /* [in] */ const String& reason,
         /* [out] */ Boolean* result);
 
     /** Returns the key dispatching timeout for this application token. */
@@ -244,10 +238,10 @@ private:
         /* [in] */ Int32 taskId);
 
     static String ActivityTypeToString(
-        /* [in] */ Int32 type)
+        /* [in] */ Int32 type);
 
 public:
-    static const String TAG = ActivityManagerService::TAG;
+    static const String TAG;
     static const Boolean DEBUG_SAVED_STATE;
     static const String RECENTS_PACKAGE_NAME;
     static const String ACTIVITY_ICON_SUFFIX;
@@ -291,7 +285,7 @@ public:
     AutoPtr<ICharSequence> mNonLocalizedLabel;  // the label information from the package mgr.
     Int32 mLabelRes;           // the label information from the package mgr.
     Int32 mIcon;               // resource identifier of activity's icon.
-    *Int32 mLogo;               // resource identifier of activity's logo.
+    Int32 mLogo;               // resource identifier of activity's logo.
     Int32 mTheme;              // resource identifier of activity's theme.
     Int32 mRealTheme;          // actual theme resource we will use, never 0.
     Int32 mWindowFlags;        // custom window flags for preview window.
@@ -362,8 +356,6 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#define HASH_FUNC_FOR_AUTOPTR_ACTIVITYRECORD
-DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Server::Am::ActivityRecord)
-#endif
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Server::Am::ActivityRecord)
 
 #endif // __ELASTOS_DROID_SERVER_AM_ACTIVITYRECORD_H__

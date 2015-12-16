@@ -4,6 +4,8 @@
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 
+using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::View::EIID_IApplicationToken;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 
@@ -11,6 +13,9 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Am {
+
+CAR_INTERFACE_IMPL_2(CActivityRecordToken, Object, IApplicationToken, IBinder)
+CAR_OBJECT_IMPL(CActivityRecordToken)
 
 CActivityRecordToken::CActivityRecordToken()
 {
@@ -21,7 +26,7 @@ CActivityRecordToken::~CActivityRecordToken()
 }
 
 ECode CActivityRecordToken::constructor(
-    /* [in] */ Handle32 activity)
+    /* [in] */ IActivityRecord* activity)
 {
     ActivityRecord* a = (ActivityRecord*)activity;
     if (a) {
@@ -33,10 +38,10 @@ ECode CActivityRecordToken::constructor(
 AutoPtr<ActivityRecord> CActivityRecordToken::GetActivityRecord()
 {
     AutoPtr<ActivityRecord> activity;
-    AutoPtr<IObject> obj;
-    mWeakActivity->Resolve(EIID_IObject, (IInterface**)&obj);
+    AutoPtr<IActivityRecord> obj;
+    mWeakActivity->Resolve(EIID_IActivityRecord, (IInterface**)&obj);
     if (obj) {
-        activity = (ActivityRecord*)obj.Get());
+        activity = (ActivityRecord*)obj.Get();
     }
 
     return activity;
@@ -104,7 +109,7 @@ ECode CActivityRecordToken::ToString(
     VALIDATE_NOT_NULL(str);
     StringBuilder sb(128);
     sb += "Token{";
-    sb += StringUtils::Int32ToHexString(Int32(this));
+    sb += StringUtils::ToString(Int32(this), 16);
     sb += ", ActivityRecord:";
 
     AutoPtr<ActivityRecord> ar = GetActivityRecord();

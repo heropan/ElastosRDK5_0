@@ -1,6 +1,7 @@
 module
 {
     using interface Org.Xmlpull.V1.IXmlPullParser;
+    using interface Org.Xmlpull.V1.IXmlSerializer;
 
     namespace Elastos {
     namespace Droid {
@@ -22,6 +23,9 @@ module
         GetPersistableBundle(
             [in] String key,
             [out] IPersistableBundle** value);
+
+        SaveToXml(
+            [in] IXmlSerializer* outXml);
     }
 
     interface IPersistableBundleHelper {

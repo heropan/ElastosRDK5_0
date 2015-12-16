@@ -149,7 +149,7 @@ public:
 
 
 #define HASH_FUNC_FOR_AUTOPTR_CONTENTPROVIDERRECORD
-DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Server::Am::ContentProviderRecord)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Server::Am::ContentProviderRecord)
 #endif
 
 

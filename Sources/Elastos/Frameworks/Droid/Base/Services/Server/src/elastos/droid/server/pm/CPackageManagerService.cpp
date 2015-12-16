@@ -136,7 +136,7 @@ using Libcore::IO::CBufferedInputStream;
 
 #ifndef HASH_FUNC_FOR_AUTOPTR_ASECINSTALLARGS
 #define HASH_FUNC_FOR_AUTOPTR_ASECINSTALLARGS
-DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Server::Pm::CPackageManagerService::AsecInstallArgs)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Server::Pm::CPackageManagerService::AsecInstallArgs)
 #endif
 
 namespace Elastos {

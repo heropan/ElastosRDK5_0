@@ -288,9 +288,9 @@
 - Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid Elastos.Droid.Server.car
 #- Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid Elastos.Droid.System.eco
 #- Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid Org.Kxml2.IO.eco
-#  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/am
+  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/am
 #  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/connectivity
-> Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/display
+  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/display
 #  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/dreams
 #  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/input
 #  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/location

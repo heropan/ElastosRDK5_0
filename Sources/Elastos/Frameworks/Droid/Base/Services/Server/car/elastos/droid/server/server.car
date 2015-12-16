@@ -7,7 +7,10 @@ module
     // merge("power/ScreenOnBlocker.car");
     // merge("accessibility/EventStreamTransformation.car");
     // merge("accessibility/ScreenMagnifier.car");
-    // merge("am/UriPermissionOwnerExternalToken.car");
+    merge("am/ActivityRecord.car");
+    merge("am/PendingIntentRecord.car");
+    merge("am/ProcessRecord.car");
+    merge("am/UriPermissionOwnerExternalToken.car");
     merge("display/AutomaticBrightnessController.car");
     merge("display/WifiDisplayController.car");
     merge("display/DisplayAdapter.car");
@@ -58,7 +61,7 @@ module
     // using interface Elastos.Droid.Content.IServiceConnection;
     // using interface Elastos.Droid.Content.IComponentName;
     // using interface Elastos.Droid.Content.IContentService;
-    // using interface Elastos.Droid.Content.IIIntentSender;
+    using interface Elastos.Droid.Content.IIIntentSender;
     // using interface Elastos.Droid.Content.Pm.IIPackageManager;
     // using interface Elastos.Droid.Content.Pm.IRegisteredServicesCacheListener;
     // using interface Elastos.Droid.Location.IICountryDetector;
@@ -70,6 +73,7 @@ module
     // using interface Elastos.Droid.Net.INetworkPolicyListener;
     // using interface Elastos.Droid.Net.IIThrottleManager;
     // using interface Elastos.Droid.Net.INetworkStatsSession;
+    using interface Elastos.Droid.Os.IBinder;
     // using interface Elastos.Droid.Os.ILooper;
     // using interface Elastos.Droid.Os.IHandler;
     // using interface Elastos.Droid.Os.IIUserManager;
@@ -87,7 +91,7 @@ module
     // using interface Elastos.Droid.View.IIWindowManager;
     // using interface Elastos.Droid.View.IWindowManagerPolicyWindowManagerFuncs;
     // using interface Elastos.Droid.View.IWindowSession;
-    // using interface Elastos.Droid.View.IApplicationToken;
+    using interface Elastos.Droid.View.IApplicationToken;
     // using interface Elastos.Droid.View.IWindowManager;
     // using interface Elastos.Droid.View.IInputMethodCallback;
     // using interface Elastos.Droid.View.InputMethod.IInputMethod;
@@ -436,14 +440,6 @@ module
 //         interface IIntentReceiver;
 //     }
 
-//     class CActivityRecordToken {
-//         constructor(
-//             [in] Handle32 activity);
-
-//         interface IApplicationToken;
-//         interface IBinder;
-//     }
-
 //     class CBatteryStatsService {
 //         constructor(
 //             [in] String fileName);
@@ -466,25 +462,7 @@ module
 //         interface IBinder;
 //     }
 
-//     class CPendingIntentRecord {
-//         constructor(
-//             [in] Handle32 owner,
-//             [in] Handle32 k,
-//             [in] Int32 u);
-
-//         interface IIIntentSender;
-//         interface IBinder;
-//     }
-
 //     class CServiceRecord {
-//         interface IBinder;
-//     }
-
-//     class CUriPermissionOwnerExternalToken {
-//         constructor(
-//             [in] Handle32 owner);
-
-//         interface IUriPermissionOwnerExternalToken;
 //         interface IBinder;
 //     }
 
@@ -1217,4 +1195,42 @@ module
 //     } // namespace Widget
 //     } // namespace Droid
 //     } // namespace Elastos
+
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+    namespace Am {
+
+    class CActivityRecordToken {
+        constructor(
+            [in] IActivityRecord* activity);
+
+        interface IApplicationToken;
+        interface IBinder;
+    }
+
+    class CPendingIntentRecord {
+        constructor(
+            [in] Handle32 owner,
+            [in] Handle32 k,
+            [in] Int32 u);
+
+        interface IPendingIntentRecord;
+        interface IIIntentSender;
+        interface IBinder;
+    }
+
+    class CUriPermissionOwnerExternalToken {
+        constructor(
+            [in] Handle32 owner);
+
+        interface IUriPermissionOwnerExternalToken;
+        interface IBinder;
+    }
+
+    } // namespace Am
+    } // namespace Server
+    } // namepsace Droid
+    } // namespace Elastos
 }
