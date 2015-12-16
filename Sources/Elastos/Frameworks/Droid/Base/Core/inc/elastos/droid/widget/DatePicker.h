@@ -4,59 +4,326 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/FrameLayout.h"
-#include "elastos/droid/view/ViewBaseSavedState.h"
-#include <Elastos.CoreLibrary.h>
-#include <Elastos.CoreLibrary.h>
-#include <R.h>
+#include "elastos/droid/view/View.h"
+#include "elastos/droid/R.h"
 
+#include <Elastos.CoreLibrary.h>
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::View::IViewBaseSavedState;
+using Elastos::Droid::View::View;
+using Elastos::Droid::View::EIID_IViewBaseSavedState;
+using Elastos::Droid::Widget::FrameLayout;
+using Elastos::Droid::Widget::INumberPickerOnValueChangeListener;
 
 using Elastos::Utility::ILocale;
 using Elastos::Utility::ICalendar;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Utility::IAttributeSet;
-using Elastos::Droid::Widget::FrameLayout;
-using Elastos::Utility::Etl::HashMap;
 using Elastos::Text::IDateFormat;
-using Elastos::Droid::Widget::INumberPickerOnValueChangeListener;
-using Elastos::Droid::Widget::IOnDateChangedListener;
-using Elastos::Droid::View::IViewBaseSavedState;
-using Elastos::Droid::View::ViewBaseSavedState;
-using Elastos::Droid::View::EIID_IViewBaseSavedState;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class DatePicker : public Elastos::Droid::Widget::FrameLayout
+class DatePicker
+    : public FrameLayout
+    , public IDatePicker
 {
 public:
-    class DatePickerOnChangeListener
-    : public ElRefBase
-    , public INumberPickerOnValueChangeListener
+    /**
+     * An abstract class which can be used as a start for DatePicker implementations
+     */
+    class AbstractDatePickerDelegate
+        : public Object
+        , public IDatePickerDelegate
     {
     public:
-        DatePickerOnChangeListener(
-            /* [in] */ DatePicker* host);
-
         CAR_INTERFACE_DECL()
+
+        AbstractDatePickerDelegate(
+            /* [in] */ IDatePicker* delegator,
+            /* [in] */ IContext* context);
+
+        CARAPI SetValidationCallback(
+            /* [in] */ IDatePickerValidationCallback* callback);
+
+    protected:
+        CARAPI_(void) SetCurrentLocale(
+            /* [in] */ ILocale* locale);
+
+        CARAPI_(void) OnValidationChanged(
+            /* [in] */ Boolean valid);
+
+    protected:
+        // The delegator
+        AutoPtr<IDatePicker> mDelegator;
+
+        // The context
+        AutoPtr<IContext> mContext;
+
+        // The current locale
+        AutoPtr<ILocale> mCurrentLocale;
+
+        // Callbacks
+        AutoPtr<IDatePickerOnDateChangedListener> mOnDateChangedListener;
+        AutoPtr<IDatePickerValidationCallback> mValidationCallback;
+    };
+
+private:
+    /**
+     * A delegate implementing the basic DatePicker
+     */
+    class DatePickerSpinnerDelegate
+        : public AbstractDatePickerDelegate
+    {
+    public:
+        DatePickerSpinnerDelegate(
+            /* [in] */ IDatePicker* delegator,
+            /* [in] */ IContext* context,
+            /* [in] */ IAttributeSet* attrs,
+            /* [in] */ Int32 defStyleAttr,
+            /* [in] */ Int32 defStyleRes);
+
+        CARAPI Init(
+            /* [in] */ Int32 year,
+            /* [in] */ Int32 monthOfYear,
+            /* [in] */ Int32 dayOfMonth,
+            /* [in] */ IDatePickerOnDateChangedListener* onDateChangedListener);
+
+        CARAPI UpdateDate(
+            /* [in] */ Int32 year,
+            /* [in] */ Int32 month,
+            /* [in] */ Int32 dayOfMonth);
+
+        CARAPI GetYear(
+            /* [out] */ Int32* year);
+
+        CARAPI GetMonth(
+            /* [out] */ Int32* month);
+
+        CARAPI GetDayOfMonth(
+            /* [out] */ Int32* dayOfMonth);
+
+        CARAPI SetFirstDayOfWeek(
+            /* [in] */ Int32 firstDayOfWeek);
+
+        CARAPI GetFirstDayOfWeek(
+            /* [out] */ Int32* firstDayOfWeek);
+
+        CARAPI SetMinDate(
+            /* [in] */ Int64 minDate);
+
+        CARAPI GetMinDate(
+            /* [out] */ ICalendar** calendar);
+
+        CARAPI SetMaxDate(
+            /* [in] */ Int64 maxDate);
+
+        CARAPI GetMaxDate(
+            /* [out] */ ICalendar** maxDate);
+
+        CARAPI SetEnabled(
+            /* [in] */ Boolean enabled);
+
+        CARAPI IsEnabled(
+            /* [out] */ Boolean* enabled);
+
+        CARAPI GetCalendarView (
+            /* [out] */ ICalendarView** view);
+
+        CARAPI SetCalendarViewShown(
+            /* [in] */ Boolean shown);
+
+        CARAPI GetCalendarViewShown(
+            /* [out] */ Boolean* shown);
+
+        CARAPI SetSpinnersShown(
+            /* [in] */ Boolean shown);
+
+        CARAPI GetSpinnersShown(
+            /* [out] */ Boolean* shown);
+
+        CARAPI OnConfigurationChanged(
+            /* [in] */ IConfiguration* newConfig);
+
+        CARAPI OnSaveInstanceState(
+            /* [in] */ IParcelable* superState,
+            /* [out] */ IParcelable** result);
+
+        CARAPI OnRestoreInstanceState(
+            /* [in] */ IParcelable* state);
+
+        CARAPI DispatchPopulateAccessibilityEvent(
+            /* [in] */ IAccessibilityEvent* event,
+            /* [out] */ Boolean* rst);
+
+        CARAPI OnPopulateAccessibilityEvent(
+            /* [in] */ IAccessibilityEvent* event);
+
+        CARAPI OnInitializeAccessibilityEvent(
+            /* [in] */ IAccessibilityEvent* event);
+
+        CARAPI OnInitializeAccessibilityNodeInfo(
+            /* [in] */ IAccessibilityNodeInfo* info);
+
+        /**
+         * Sets the current locale.
+         *
+         * @param locale The current locale.
+         */
+        CARAPI SetCurrentLocale(
+            /* [in] */ ILocale* locale);
+
+        /**
+         * Tests whether the current locale is one where there are no real month names,
+         * such as Chinese, Japanese, or Korean locales.
+         */
+        CARAPI_(Boolean) UsingNumericMonths();
+
+        /**
+         * Gets a calendar for locale bootstrapped with the value of a given calendar.
+         *
+         * @param oldCalendar The old calendar.
+         * @param locale The locale.
+         */
+        CARAPI_(AutoPtr<ICalendar>) GetCalendarForLocale(
+            /* [in] */ ICalendar* oldCalendar,
+            /* [in] */ ILocale* locale);
+
+        /**
+         * Reorders the spinners according to the date format that is
+         * explicitly set by the user and if no such is set fall back
+         * to the current locale's default format.
+         */
+        CARAPI ReorderSpinners();
+
+        /**
+         * Parses the given <code>date</code> and in case of success sets the result
+         * to the <code>outDate</code>.
+         *
+         * @return True if the date was parsed.
+         */
+        CARAPI_(Boolean) ParseDate(
+            /* [in] */ const String& date,
+            /* [in] */ ICalendar* outDate);
+
+        CARAPI_(Boolean) IsNewDate(
+            /* [in] */ Int32 year,
+            /* [in] */ Int32 month,
+            /* [in] */ Int32 dayOfMonth);
+
+        CARAPI SetDate(
+            /* [in] */ Int32 year,
+            /* [in] */ Int32 month,
+            /* [in] */ Int32 dayOfMonth);
+
+        CARAPI UpdateSpinners();
+
+        /**
+         * Updates the calendar view with the current date.
+         */
+        CARAPI UpdateCalendarView();
+
+        /**
+         * Notifies the listener, if such, for a change in the selected date.
+         */
+        CARAPI NotifyDateChanged();
+
+        /**
+         * Sets the IME options for a spinner based on its ordering.
+         *
+         * @param spinner The spinner.
+         * @param spinnerCount The total spinner count.
+         * @param spinnerIndex The index of the given spinner.
+         */
+        CARAPI SetImeOptions(
+            /* [in] */ INumberPicker* spinner,
+            /* [in] */ Int32 spinnerCount,
+            /* [in] */ Int32 spinnerIndex);
+
+        CARAPI SetContentDescriptions();
+
+        CARAPI TrySetContentDescription(
+            /* [in] */ IView* root,
+            /* [in] */ Int32 viewId,
+            /* [in] */ Int32 contDescResId);
+
+        CARAPI UpdateInputState();
+
+    public:
+        static const String DATE_FORMAT;
+
+        static const Int32 DEFAULT_START_YEAR;
+
+        static const Int32 DEFAULT_END_YEAR;
+
+        static const Boolean DEFAULT_CALENDAR_VIEW_SHOWN;
+
+        static const Boolean DEFAULT_SPINNERS_SHOWN;
+
+        static const Boolean DEFAULT_ENABLED_STATE;
+
+        AutoPtr<ILinearLayout> mSpinners;
+
+        AutoPtr<INumberPicker> mDaySpinner;
+
+        AutoPtr<INumberPicker> mMonthSpinner;
+
+        AutoPtr<INumberPicker> mYearSpinner;
+
+        AutoPtr<IEditText> mDaySpinnerInput;
+
+        AutoPtr<IEditText> mMonthSpinnerInput;
+
+        AutoPtr<IEditText> mYearSpinnerInput;
+
+        AutoPtr<ICalendarView> mCalendarView;
+
+        AutoPtr<ArrayOf<String> > mShortMonths;
+
+        AutoPtr<IDateFormat> mDateFormat;
+
+        Int32 mNumberOfMonths;
+
+        AutoPtr<ICalendar> mTempDate;
+
+        AutoPtr<ICalendar> mMinDate;
+
+        AutoPtr<ICalendar> mMaxDate;
+
+        AutoPtr<ICalendar> mCurrentDate;
+
+        Boolean mIsEnabled;
+    };
+
+    class DatePickerOnChangeListener
+        : public Object
+        , public INumberPickerOnValueChangeListener
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        DatePickerOnChangeListener(
+            /* [in] */ DatePickerSpinnerDelegate* host);
 
         CARAPI OnValueChange(
             /* [in] */ INumberPicker* picker,
             /* [in] */ Int32 oldVal,
             /* [in] */ Int32 newVal);
+
     private:
-        DatePicker* mHost;
+        DatePickerSpinnerDelegate* mHost;
     };
 
-    class DatePickerOnDateChangeListener
-    : public ElRefBase
-    , public IOnDateChangeListener
+    class DatePickerOnDateChangeListener //CalendarView
+        : public Object
+        , public IOnDateChangeListener
     {
     public:
-        DatePickerOnDateChangeListener(
-            /* [in] */ DatePicker* host);
-
         CAR_INTERFACE_DECL()
+
+        DatePickerOnDateChangeListener(
+            /* [in] */ DatePickerSpinnerDelegate* host);
 
         OnSelectedDayChange(
             /* [in] */ ICalendarView* view,
@@ -65,26 +332,21 @@ public:
             /* [in] */ Int32 dayOfMonth);
 
     private:
-        DatePicker* mHost;
+        DatePickerSpinnerDelegate* mHost;
     };
 
-private:
     class DatePickerSavedState
-    : public ElRefBase
-    , public IViewBaseSavedState
-    , public ViewBaseSavedState
+        : public View::BaseSavedState
     {
     public:
-        DatePickerSavedState(
-            /* [in] */ IParcel* in);
-
         DatePickerSavedState(
             /* [in] */ IParcelable* superState,
             /* [in] */ Int32 year,
             /* [in] */ Int32 month,
             /* [in] */ Int32 day);
 
-        CAR_INTERFACE_DECL()
+        CARAPI ReadFromParcel(
+            /* [in] */ IParcel* in);
 
         CARAPI WriteToParcel(
             /* [in] */ IParcel* dest);
@@ -92,88 +354,117 @@ private:
         CARAPI GetSuperState(
             /* [out] */ IParcelable** state);
 
-    private:
+    public:
         Int32 mYear;
         Int32 mMonth;
         Int32 mDay;
     };
 
 public:
-    DatePicker(
-            /* [in] */ IContext* context,
-            /* [in] */ IAttributeSet* attrs = NULL,
-            /* [in] */ Int32 defStyle = R::attr::datePickerStyle);
+    CAR_INTERFACE_DECL()
 
-    CARAPI_(Int64) GetMinDate();
+    DatePicker();
 
-    virtual CARAPI SetMinDate(
-        /* [in] */ Int64 minDate);
+    CARAPI constructor(
+        /* [in] */ IContext* context);
 
-    CARAPI_(Int64) GetMaxDate();
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
 
-    virtual CARAPI SetMaxDate(
-        /* [in] */ Int64 maxDate);
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
 
-    virtual CARAPI SetEnabled(
-        /* [in] */ Boolean enabled);
-
-    virtual CARAPI_(Boolean) IsEnabled();
-
-    virtual CARAPI_(Boolean) DispatchPopulateAccessibilityEvent(
-        /* [in] */ IAccessibilityEvent* event);
-
-    virtual CARAPI OnPopulateAccessibilityEvent(
-        /* [in] */ IAccessibilityEvent* event);
-
-    virtual CARAPI OnInitializeAccessibilityEvent(
-        /* [in] */ IAccessibilityEvent* event);
-
-    virtual CARAPI OnInitializeAccessibilityNodeInfo(
-        /* [in] */ IAccessibilityNodeInfo* info);
-
-    CARAPI_(Boolean) GetCalendarViewShown();
-
-    CARAPI_(AutoPtr<ICalendarView>) GetCalendarView();
-
-    virtual CARAPI SetCalendarViewShown(
-        /* [in] */ Boolean shown);
-
-    CARAPI_(Boolean) GetSpinnersShown();
-
-    virtual CARAPI SetSpinnersShown(
-        /* [in] */ Boolean shown);
-
-    virtual CARAPI UpdateDate(
-        /* [in] */ Int32 year,
-        /* [in] */ Int32 month,
-        /* [in] */ Int32 dayOfMonth);
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     CARAPI Init(
         /* [in] */ Int32 year,
         /* [in] */ Int32 monthOfYear,
         /* [in] */ Int32 dayOfMonth,
-        /* [in] */ IOnDateChangedListener* onDateChangedListener);
+        /* [in] */ IDatePickerOnDateChangedListener* onDateChangedListener);
 
-    CARAPI_(Int32) GetYear();
+    CARAPI UpdateDate(
+        /* [in] */ Int32 year,
+        /* [in] */ Int32 month,
+        /* [in] */ Int32 dayOfMonth);
 
-    CARAPI_(Int32) GetMonth();
+    CARAPI GetYear(
+        /* [out] */ Int32* year);
 
-    CARAPI_(Int32) GetDayOfMonth();
+    CARAPI GetMonth(
+        /* [out] */ Int32* month);
+
+    CARAPI GetDayOfMonth(
+        /* [out] */ Int32* dayOfMonth);
+
+    CARAPI GetMinDate(
+        /* [out] */ Int64* calendar);
+
+    CARAPI SetMinDate(
+        /* [in] */ Int64 minDate);
+
+    CARAPI GetMaxDate(
+        /* [out] */ Int64* maxDate);
+
+    CARAPI SetMaxDate(
+        /* [in] */ Int64 maxDate);
+
+    CARAPI SetValidationCallback(
+        /* [in] */ IDatePickerValidationCallback* cb);
+
+    CARAPI SetEnabled(
+        /* [in] */ Boolean enabled);
+
+    CARAPI IsEnabled(
+        /* [out] */ Boolean* enabled);
+
+    CARAPI DispatchPopulateAccessibilityEvent(
+        /* [in] */ IAccessibilityEvent* event,
+        /* [out] */ Boolean* rst);
+
+    CARAPI OnPopulateAccessibilityEvent(
+        /* [in] */ IAccessibilityEvent* event);
+
+    CARAPI OnInitializeAccessibilityEvent(
+        /* [in] */ IAccessibilityEvent* event);
+
+    CARAPI OnInitializeAccessibilityNodeInfo(
+        /* [in] */ IAccessibilityNodeInfo* info);
+
+    CARAPI SetFirstDayOfWeek(
+        /* [in] */ Int32 firstDayOfWeek);
+
+    CARAPI GetFirstDayOfWeek(
+        /* [out] */ Int32* firstDayOfWeek);
+
+    CARAPI GetCalendarViewShown(
+        /* [out] */ Boolean* shown);
+
+    CARAPI GetCalendarView (
+        /* [out] */ ICalendarView** view);
+
+    CARAPI SetCalendarViewShown(
+        /* [in] */ Boolean shown);
+
+    CARAPI GetSpinnersShown(
+        /* [out] */ Boolean* shown);
+
+    CARAPI SetSpinnersShown(
+        /* [in] */ Boolean shown);
 
 protected:
-    DatePicker();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::datePickerStyle);
-
     virtual CARAPI_(void) OnConfigurationChanged(
         /* [in] */ IConfiguration* newConfig);
 
     /*protected void dispatchRestoreInstanceState(SparseArray<IParcelable> container);*/
     virtual CARAPI DispatchRestoreInstanceState(
-            /* [in] */ IObjectInt32Map* container);
+            /* [in] */ ISparseArray* container);
 
     virtual CARAPI_(AutoPtr<IParcelable>) OnSaveInstanceState();
 
@@ -181,102 +472,25 @@ protected:
             /* [in] */ IParcelable* state);
 
 private:
-    CARAPI SetCurrentLocale(
-            /* [in] */ ILocale* locale);
+    CARAPI_(AutoPtr<IDatePickerDelegate>) CreateSpinnerUIDelegate(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
-    CARAPI_(AutoPtr<ICalendar>) GetCalendarForLocale(
-            /* [in] */ ICalendar* oldCalendar,
-            /* [in] */ ILocale* locale);
-
-    CARAPI ReorderSpinners();
-
-    CARAPI SetCurrentLocale();
-
-    CARAPI_(Boolean) ParseDate(
-            /* [in] */ const String& date,
-            /* [in] */ ICalendar* outDate);
-
-    CARAPI_(Boolean) IsNewDate(
-            /* [in] */ Int32 year,
-            /* [in] */ Int32 month,
-            /* [in] */ Int32 dayOfMonth);
-
-    CARAPI SetDate(
-            /* [in] */ Int32 year,
-            /* [in] */ Int32 month,
-            /* [in] */ Int32 dayOfMonth);
-
-    CARAPI UpdateSpinners();
-
-    CARAPI UpdateCalendarView();
-
-    CARAPI NotifyDateChanged();
-
-    CARAPI SetImeOptions(
-            /* [in] */ INumberPicker* spinner,
-            /* [in] */ Int32 spinnerCount,
-            /* [in] */ Int32 spinnerIndex);
-
-    CARAPI SetContentDescriptions();
-
-    CARAPI TrySetContentDescription(
-            /* [in] */ IView* root,
-            /* [in] */ Int32 viewId,
-            /* [in] */ Int32 contDescResId);
-
-    CARAPI UpdateInputState();
+    CARAPI_(AutoPtr<IDatePickerDelegate>) CreateCalendarUIDelegate(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
 private:
+//    static const String LOG_TAG;
 
-    const static String DATE_FORMAT;
+    static const Int32 MODE_SPINNER;
+    static const Int32 MODE_CALENDAR;
 
-    const static Int32 DEFAULT_START_YEAR = 1900;
-
-    const static Int32 DEFAULT_END_YEAR = 2100;
-
-    const static Boolean DEFAULT_CALENDAR_VIEW_SHOWN = TRUE;
-
-    const static Boolean DEFAULT_SPINNERS_SHOWN = TRUE;
-
-    const static Boolean DEFAULT_ENABLED_STATE = TRUE;
-
-    const static String DATEPICKER_NAME;
-
-    AutoPtr<ILinearLayout> mSpinners;
-
-    AutoPtr<INumberPicker> mDaySpinner;
-
-    AutoPtr<INumberPicker> mMonthSpinner;
-
-    AutoPtr<INumberPicker> mYearSpinner;
-
-    AutoPtr<IEditText> mDaySpinnerInput;
-
-    AutoPtr<IEditText> mMonthSpinnerInput;
-
-    AutoPtr<IEditText> mYearSpinnerInput;
-
-    AutoPtr<ICalendarView> mCalendarView;
-
-    AutoPtr<ILocale> mCurrentLocale;
-
-    AutoPtr<IOnDateChangedListener> mOnDateChangedListener;
-
-    AutoPtr< ArrayOf<String> > mShortMonths;
-
-    AutoPtr<IDateFormat> mDateFormat;
-
-    Int32 mNumberOfMonths;
-
-    AutoPtr<ICalendar> mTempDate;
-
-    AutoPtr<ICalendar> mMinDate;
-
-    AutoPtr<ICalendar> mMaxDate;
-
-    AutoPtr<ICalendar> mCurrentDate;
-
-    Boolean mIsEnabled;
+    AutoPtr<IDatePickerDelegate> mDelegate;
 };
 
 } // namespace Widget

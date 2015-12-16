@@ -966,26 +966,29 @@ module
     }
 
    //  [local]
-   //  class CDatePicker {
-   //      constructor(
-   //          [in] IContext* ctx);
+    class CDatePicker {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyle);
 
-   //      interface IDatePicker;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        interface IDatePicker;
+        interface IFrameLayout;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
    //  [local]
     class CDigitalClock {
@@ -1015,6 +1018,8 @@ module
             [in] IAttributeSet* attrs);
 
         interface IDateTimeView;
+        interface ITextView;
+        interface IView;
         interface IOnPreDrawListener;
         interface IDrawableCallback;
         interface IKeyEventCallback;
@@ -1528,6 +1533,8 @@ module
             [in] Int32 defStyleRes);
 
         interface ICheckedTextView;
+        interface ITextView;
+        interface IView;
         interface ICheckable;
         interface IOnPreDrawListener;
         interface IDrawableCallback;
@@ -1582,6 +1589,9 @@ module
             [in] Int32 defStyleRes);
 
         interface ICalendarView;
+        interface IView;
+        interface IViewGroup;
+        interface IFrameLayout;
         interface IViewParent;
         interface IViewManager;
         interface IDrawableCallback;
