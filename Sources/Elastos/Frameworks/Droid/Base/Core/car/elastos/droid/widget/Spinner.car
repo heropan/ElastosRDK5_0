@@ -16,7 +16,12 @@ module
         SetAdapter(
             [in] IListAdapter* adapter);
 
-        Show();
+        /**
+         * Show the popup
+         */
+        Show(
+            [in] Int32 textDirection,
+            [in] Int32 textAlignment);
 
         Dismiss();
 
@@ -210,6 +215,22 @@ module
         GetPrompt(
             [out] ICharSequence** prompt);
     }
+
+    /**
+     * @Involve
+     * extends IListPopupWindow
+     * implements ISpinnerPopup
+     */
+    interface IDropdownPopup {}
+
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewBaseSavedState
+     * interface Elastos.Droid.View.IAbsSavedState
+     * interface Elastos.Droid.Os.IParcelable
+     * interface Elastos.Droid.Widget.IAbsSpinnerSavedState
+     */
+    interface ISpinnerSavedState {}
 
     } // namespace Widget
     } // namespace Droid

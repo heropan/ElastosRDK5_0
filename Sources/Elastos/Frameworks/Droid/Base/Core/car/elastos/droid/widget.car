@@ -143,7 +143,7 @@ module
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
    //  interface Elastos.Droid.Graphics.Drawable.IBitmapDrawable;
-   //  interface Elastos.Droid.Content.IDialogInterfaceOnClickListener;
+    interface Elastos.Droid.Content.IDialogInterfaceOnClickListener;
    //  interface Elastos.Droid.Animation.IAnimatorListener;
    //  interface Elastos.Droid.Animation.IAnimatorUpdateListener;
     interface Elastos.Droid.App.IITransientNotification;
@@ -172,7 +172,7 @@ module
     interface Elastos.Droid.View.IViewOnClickListener;
     interface Elastos.Droid.View.IViewOnTouchListener;
    //  interface Elastos.Droid.View.IViewOnCreateContextMenuListener;
-   //  interface Elastos.Droid.View.IViewOnLongClickListener;
+    interface Elastos.Droid.View.IViewOnLongClickListener;
     interface Elastos.Droid.Internal.View.Menu.IMenuPresenterCallback;
     interface Elastos.Droid.Internal.View.Menu.IMenuBuilderCallback;
     interface Elastos.Droid.View.IOnGlobalLayoutListener;
@@ -1375,15 +1375,17 @@ module
         interface IAccessibilityEventSource;
     }
 
-   //  class CAbsSpinnerSavedState {
-   //      constructor();
+    class CAbsSpinnerSavedState {
+        constructor();
 
-   //      constructor(
-   //          [in] IParcelable* superState);
+        constructor(
+            [in] IParcelable* superState);
 
-   //      interface IParcelable;
-   //      interface IAbsSpinnerSavedState;
-   //  }
+        interface IAbsSpinnerSavedState;
+        interface IViewBaseSavedState;
+        interface IAbsSavedState;
+        interface IParcelable;
+    }
 
    //  class CProgressBarSavedState {
    //      constructor();
@@ -1674,52 +1676,64 @@ module
         interface ICollapsibleActionView;
     }
 
-   //  [local]
-   //  class CZoomButton {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CZoomButton {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
 
-   //      interface IZoomButton;
-   //      interface IViewOnLongClickListener;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
 
-   //  [local]
-   //  class CZoomControls {
-   //      constructor(
-   //          [in] IContext* ctx);
+        interface IZoomButton;
+        interface IImageButton;
+        interface IImageView;
+        interface IView;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+        interface IViewOnLongClickListener;
+    }
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+    [local]
+    class CZoomControls {
+        constructor(
+            [in] IContext* ctx);
 
-   //      interface IZoomControls;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //  [local]
-   //  class CZoomButtonsController {
-   //      constructor(
-   //          [in] IView* ownerView);
+        interface IZoomControls;
+        interface ILinearLayout;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
-   //      interface IZoomButtonsController;
-   //      interface IViewOnTouchListener;
-   //  }
+    [local]
+    class CZoomButtonsController {
+        constructor(
+            [in] IView* ownerView);
+
+        interface IZoomButtonsController;
+        interface IViewOnTouchListener;
+    }
 
    //  class CTextViewSavedState {
    //      constructor(
@@ -2624,27 +2638,62 @@ module
    //      interface IParcelable;
    //  }
 
-   //  [local]
-   //  class CSpinner {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CSpinner {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] Int32 mode);
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 mode);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
 
-   //      interface IDialogInterfaceOnClickListener;
-   //      interface ISpinner;
-   //  }
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 mode);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes,
+            [in] Int32 mode);
+
+        interface ISpinner;
+        interface IAbsSpinner;
+        interface IAdapterView;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+        interface IDialogInterfaceOnClickListener;
+    }
+
+    class CSpinnerSavedState {
+        constructor();
+
+        constructor(
+            [in] IParcelable* superState);
+
+        interface ISpinnerSavedState;
+        interface IAbsSpinnerSavedState;
+        interface IViewBaseSavedState;
+        interface IAbsSavedState;
+        interface IParcelable;
+    }
 
     [local]
     class CRatingBar {
@@ -2732,22 +2781,26 @@ module
         interface IGridLayoutLayoutParams;
     }
 
-   //  [local]
-   //  class CViewFlipper {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CViewFlipper {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      interface IViewFlipper;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        interface IViewFlipper;
+        interface IViewAnimator;
+        interface IFrameLayout;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
    //  [local]
    //  class CVolumePanel {

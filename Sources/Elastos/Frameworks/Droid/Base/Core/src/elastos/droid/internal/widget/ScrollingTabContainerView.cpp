@@ -8,7 +8,7 @@
 #include "elastos/droid/view/animation/CDecelerateInterpolator.h"
 #include "elastos/droid/widget/CAbsListViewLayoutParams.h"
 #include "elastos/droid/widget/CLinearLayout.h"
-// #include "elastos/droid/widget/CSpinner.h"
+#include "elastos/droid/widget/CSpinner.h"
 // #include "elastos/droid/widget/Spinner.h"
 #include "elastos/droid/widget/CImageView.h"
 #include "elastos/droid/widget/CTextView.h"
@@ -39,6 +39,7 @@ using Elastos::Droid::Widget::CImageView;
 using Elastos::Droid::Widget::CTextView;
 using Elastos::Droid::Widget::CLinearLayout;
 using Elastos::Droid::Widget::CLinearLayoutLayoutParams;
+using Elastos::Droid::Widget::CSpinner;
 using Elastos::Droid::Widget::EIID_IAdapterViewOnItemClickListener;
 using Elastos::Droid::Widget::EIID_IAdapter;
 using Elastos::Droid::Widget::IBaseAdapter;
@@ -620,17 +621,17 @@ AutoPtr<ILinearLayout> ScrollingTabContainerView::CreateTabLayout()
 
 AutoPtr<ISpinner> ScrollingTabContainerView::CreateSpinner()
 {
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
     AutoPtr<ISpinner> spinner;
-    assert(0 && "TODO");
-    // CSpinner::New(GetContext(), NULL, R::attr::actionDropDownStyle, (ISpinner**)&spinner);
+    CSpinner::New(context, NULL, R::attr::actionDropDownStyle, (ISpinner**)&spinner);
 
     AutoPtr<ILinearLayoutLayoutParams> lp;
     CLinearLayoutLayoutParams::New(
         IViewGroupLayoutParams::WRAP_CONTENT, IViewGroupLayoutParams::MATCH_PARENT, (ILinearLayoutLayoutParams**)&lp);
 
     IView::Probe(spinner)->SetLayoutParams(IViewGroupLayoutParams::Probe(lp));
-    assert(0 && "TODO");
-    // reinterpret_cast<Spinner*>(spinner->Probe(EIID_Spinner))->SetOnItemClickListenerInt(THIS_PROBE(IAdapterViewOnItemClickListener));
+    IAdapterView::Probe(spinner)->SetOnItemClickListener(THIS_PROBE(IAdapterViewOnItemClickListener));
     return spinner;
 }
 

@@ -4,29 +4,30 @@
 
 #include "elastos/droid/widget/ViewAnimator.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
 
-using Elastos::Droid::Os::HandlerBase;
-using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::BroadcastReceiver;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Os::Handler;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class ViewFlipper: public ViewAnimator
+class ViewFlipper
+    : public ViewAnimator
+    , public IViewFlipper
 {
 private:
-    class MyHandler : public HandlerBase
+    class MyHandler : public Handler
     {
     public:
         MyHandler(
-            /* [in] */ ViewFlipper* host)
-            : mHost(host)
-        {}
+            /* [in] */ ViewFlipper* host);
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+
     private:
         ViewFlipper* mHost;
     };
@@ -42,19 +43,23 @@ private:
             /* [in] */ IIntent* intent);
 
         CARAPI ToString(
-            /* [out] */ String* info)
-        {
-            VALIDATE_NOT_NULL(info);
-            *info = String("ViewFlipper::FlipperReceiver: ");
-            (*info).AppendFormat("%p", this);
-            return NOERROR;
-        }
+            /* [out] */ String* info);
+
     private:
         ViewFlipper* mHost;
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     ViewFlipper();
+
+    CARAPI constructor(
+        /* [in] */ IContext* ctx);
+
+    CARAPI constructor(
+        /* [in] */ IContext* ctx,
+        /* [in] */ IAttributeSet* attrs);
 
     /**
      * How long to wait before flipping to the next view
@@ -102,13 +107,6 @@ public:
         /* [out] */ Boolean* start);
 
 protected:
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
     CARAPI OnAttachedToWindow();
 
     CARAPI OnDetachedFromWindow();

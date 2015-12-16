@@ -26,19 +26,45 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-extern "C" const InterfaceID EIID_DropdownPopup;
-extern "C" const InterfaceID EIID_Spinner;
-
-class Spinner : public AbsSpinner
+class Spinner
+    : public AbsSpinner
+    , public ISpinner
 {
-private:
-    class DropDownAdapter
-        : public IListAdapter
-        , public ISpinnerAdapter
-        , public ElRefBase
+public:
+    class SavedState
+        : public AbsSpinner::SavedState
+        , public ISpinnerSavedState
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
+
+        SavedState();
+
+        CARAPI constructor();
+
+        CARAPI constructor(
+            /* [in] */ IParcelable* superState);
+
+        // @Override
+        CARAPI WriteToParcel(
+            /* [in] */ IParcel* out);
+
+        CARAPI ReadFromParcel(
+            /* [in] */ IParcel* source);
+
+    public:
+        Boolean mShowDropdown;
+    };
+
+private:
+    class DropDownAdapter
+        : public Object
+        , public IListAdapter
+        , public IAdapter
+        , public ISpinnerAdapter
+    {
+    public:
+        CAR_INTERFACE_DECL();
 
         DropDownAdapter(
             /* [in] */ ISpinnerAdapter* adapter);
@@ -98,15 +124,15 @@ private:
     };
 
     class DialogPopup
-        : public ISpinnerPopup
+        : public Object
+        , public ISpinnerPopup
         , public IDialogInterfaceOnClickListener
-        , public ElRefBase
     {
     public:
+        CAR_INTERFACE_DECL();
+
         DialogPopup(
             /* [in] */ Spinner* host);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI Dismiss();
 
@@ -122,7 +148,9 @@ private:
         CARAPI GetHintText(
             /* [out] */ ICharSequence** csq);
 
-        CARAPI Show();
+        CARAPI Show(
+            /* [in] */ Int32 textDirection,
+            /* [in] */ Int32 textAlignment);
 
         CARAPI OnClick(
             /* [in] */ IDialogInterface* dialog,
@@ -153,52 +181,69 @@ private:
         Spinner* mHost;
     };
 
-    class _DropdownPopup;
+    class DropdownPopup;
     class ItemClickListener
-        : public IAdapterViewOnItemClickListener
-        , public ElRefBase
+        : public Object
+        , public IAdapterViewOnItemClickListener
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         ItemClickListener(
             /* [in] */ Spinner* spinnerHost,
-            /* [in] */ _DropdownPopup* popupHost);
+            /* [in] */ DropdownPopup* popupHost);
 
         ECode OnItemClick(
             /* [in] */ IAdapterView* parent,
             /* [in] */ IView* view,
             /* [in] */ Int32 position,
             /* [in] */ Int64 id);
+
     private:
         Spinner* mSpinnerHost;
-        _DropdownPopup* mPopupHost;
+        DropdownPopup* mPopupHost;
     };
 
     class GlobalLayoutListener
-        : public IOnGlobalLayoutListener
-        , public ElRefBase
+        : public Object
+        , public IOnGlobalLayoutListener
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         GlobalLayoutListener(
             /* [in] */ Spinner* spinnerHost,
-            /* [in] */ _DropdownPopup* popupHost);
+            /* [in] */ DropdownPopup* popupHost);
 
         CARAPI OnGlobalLayout();
 
     private:
         Spinner* mSpinnerHost;
-        _DropdownPopup* mPopupHost;
+        DropdownPopup* mPopupHost;
+    };
+
+    class GlobalLayoutListener2
+        : public Object
+        , public IOnGlobalLayoutListener
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        GlobalLayoutListener2(
+            /* [in] */ Spinner* host);
+
+        CARAPI OnGlobalLayout();
+
+    private:
+        Spinner* mHost;
     };
 
     class DismissListener
-        : public IPopupWindowOnDismissListener
-        , public ElRefBase
+        : public Object
+        , public IPopupWindowOnDismissListener
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         DismissListener(
             /* [in] */ Spinner* spinnerHost,
@@ -211,244 +256,157 @@ private:
         AutoPtr<GlobalLayoutListener> mLayoutListener;
     };
 
-    class _DropdownPopup : public ListPopupWindow
-    {
-    public:
-        _DropdownPopup(
-            /* [in] */ IContext* context,
-            /* [in] */ IAttributeSet* attrs,
-            /* [in] */ Int32 defStyle,
-            /* [in] */ Spinner* host);
-
-        CARAPI SetAdapter(
-            /* [in] */ IListAdapter* adapter);
-
-        CARAPI_(AutoPtr<ICharSequence>) GetHintText();
-
-        CARAPI SetPromptText(
-            /* [in] */ ICharSequence* hintText);
-
-        CARAPI Show();
-
-    public:
-        AutoPtr<ICharSequence> mHintText;
-        AutoPtr<IListAdapter> mAdapter;
-        Spinner* mHost;
-    };
-
     class DropdownPopup
-        : public _DropdownPopup
-        , public IListPopupWindow
+        : public ListPopupWindow
+        , public IDropdownPopup
         , public ISpinnerPopup
-        , public ElRefBase
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         DropdownPopup(
             /* [in] */ IContext* context,
             /* [in] */ IAttributeSet* attrs,
-            /* [in] */ Int32 defStyle,
+            /* [in] */ Int32 defStyleAttr,
+            /* [in] */ Int32 defStyleRes,
             /* [in] */ Spinner* host);
 
         CARAPI SetAdapter(
             /* [in] */ IListAdapter* adapter);
 
-        CARAPI SetPromptPosition(
-            /* [in] */ Int32 position);
-
-        CARAPI GetPromptPosition(
-            /* [out] */ Int32* position);
-
-        CARAPI SetModal(
-            /* [in] */ Boolean modal);
-
-        CARAPI IsModal(
-            /* [out] */ Boolean* modal);
-
-        CARAPI SetForceIgnoreOutsideTouch(
-            /* [in] */ Boolean forceIgnoreOutsideTouch);
-
-        CARAPI SetDropDownAlwaysVisible(
-            /* [in] */ Boolean dropDownAlwaysVisible);
-
-        CARAPI IsDropDownAlwaysVisible(
-            /* [out] */ Boolean* visible);
-
-        CARAPI SetSoftInputMode(
-            /* [in] */ Int32 mode);
-
-        CARAPI GetSoftInputMode(
-            /* [out] */ Int32* mode);
-
-        CARAPI SetListSelector(
-            /* [in] */ IDrawable* selector);
-
-        CARAPI GetBackground(
-            /* [out] */ IDrawable** d);
-
-        CARAPI SetBackgroundDrawable(
-            /* [in] */ IDrawable* d);
-
-        CARAPI SetAnimationStyle(
-            /* [in] */ Int32 animationStyle);
-
-        CARAPI GetAnimationStyle(
-            /* [out] */ Int32* style);
-
-        CARAPI GetAnchorView(
-            /* [out] */ IView** view);
-
-        CARAPI SetAnchorView(
-            /* [in] */ IView* anchor);
-
-        CARAPI GetHorizontalOffset(
-            /* [out] */ Int32* offset);
-
-        CARAPI SetHorizontalOffset(
-            /* [in] */ Int32 offset);
-
-        CARAPI GetVerticalOffset(
-            /* [out] */ Int32* offset);
-
-        CARAPI SetVerticalOffset(
-            /* [in] */ Int32 offset);
-
-        CARAPI GetWidth(
-            /* [out] */ Int32* width);
-
-        CARAPI SetWidth(
-            /* [in] */ Int32 width);
-
-        CARAPI SetContentWidth(
-            /* [in] */ Int32 width);
-
-        CARAPI GetHeight(
-            /* [out] */ Int32* height);
-
-        CARAPI SetHeight(
-            /* [in] */ Int32 height);
-
-        CARAPI SetOnItemClickListener(
-            /* [in] */ IAdapterViewOnItemClickListener* clickListener);
-
-        CARAPI SetOnItemSelectedListener(
-            /* [in] */ IAdapterViewOnItemSelectedListener* selectedListener);
-
-        CARAPI SetPromptView(
-            /* [in] */ IView* prompt);
-
-        CARAPI PostShow();
-
-        CARAPI Show();
-
-        CARAPI Dismiss();
-
-        CARAPI SetOnDismissListener(
-            /* [in] */ IPopupWindowOnDismissListener* listener);
-
-        CARAPI SetInputMethodMode(
-            /* [in] */ Int32 mode);
-
-        CARAPI GetInputMethodMode(
-            /* [out] */ Int32* mode);
-
-        CARAPI SetSelection(
-            /* [in] */ Int32 position);
-
-        CARAPI ClearListSelection();
-
-        CARAPI IsShowing(
-            /* [out] */ Boolean* showing);
-
-        CARAPI IsInputMethodNotNeeded(
-            /* [out] */ Boolean* needed);
-
-        CARAPI PerformItemClick(
-            /* [in] */ Int32 position,
-            /* [out] */ Boolean* click);
-
-        CARAPI GetSelectedItem(
-            /* [out] */ IInterface** item);
-
-        CARAPI GetSelectedItemPosition(
-            /* [out] */ Int32* position);
-
-        CARAPI GetSelectedItemId(
-            /* [out] */ Int64* id);
-
-        CARAPI GetSelectedView(
-            /* [out] */ IView** view);
-
-        CARAPI GetListView(
-            /* [out] */ IListView** view);
-
-        CARAPI SetListItemExpandMax(
-            /* [in] */ Int32 max);
-
-        CARAPI OnKeyDown(
-            /* [in] */ Int32 keyCode,
-            /* [in] */ IKeyEvent* event,
-            /* [out] */ Boolean* res);
-
-        CARAPI OnKeyUp(
-            /* [in] */ Int32 keyCode,
-            /* [in] */ IKeyEvent* event,
-            /* [out] */ Boolean* res);
-
-        CARAPI OnKeyPreIme(
-            /* [in] */ Int32 keyCode,
-            /* [in] */ IKeyEvent* event,
-            /* [out] */ Boolean* res);
+        CARAPI GetHintText(
+            /* [out] */ ICharSequence** csq);
 
         CARAPI SetPromptText(
             /* [in] */ ICharSequence* hintText);
 
-        CARAPI GetHintText(
-            /* [out] */ ICharSequence** csq);
+        CARAPI Show(
+            /* [in] */ Int32 textDirection,
+            /* [in] */ Int32 textAlignment);
+
+        virtual CARAPI Dismiss();
+
+        virtual CARAPI IsShowing(
+            /* [out] */ Boolean* result);
+
+        virtual CARAPI SetBackgroundDrawable(
+            /* [in] */ IDrawable* d);
+
+        virtual CARAPI SetVerticalOffset(
+            /* [in] */ Int32 offset);
+
+        virtual CARAPI SetHorizontalOffset(
+            /* [in] */ Int32 offset);
+
+        virtual CARAPI GetBackground(
+            /* [out] */ IDrawable** result);
+
+        virtual CARAPI GetVerticalOffset(
+            /* [out] */ Int32* result);
+
+        virtual CARAPI GetHorizontalOffset(
+            /* [out] */ Int32* result);
+
+    private:
+        CARAPI_(void) ComputeContentWidth();
+
+    private:
+        AutoPtr<ICharSequence> mHintText;
+        AutoPtr<IListAdapter> mAdapter;
+        Spinner* mHost;
+        friend class ItemClickListener;
+        friend class GlobalLayoutListener;
+    };
+
+    class SpinnerForwardingListener: public ListPopupWindow::ForwardingListener
+    {
+    public:
+        SpinnerForwardingListener(
+            /* [in] */ DropdownPopup* popup,
+            /* [in] */ Spinner* host);
+
+        // @Override
+        CARAPI GetPopup(
+            /* [out] */ IListPopupWindow** window);
+
+        // @Override
+        CARAPI OnForwardingStarted(
+            /* [out] */ Boolean* result);
+
+    private:
+        DropdownPopup* mData;
+        Spinner* mHost;
     };
 
 public:
-    Spinner(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::spinnerStyle,
-        /* [in] */ Int32 mode = MODE_THEME);
+    CAR_INTERFACE_DECL();
 
-    Spinner(
+    Spinner();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32 mode);
 
-    CARAPI_(void) SetPopupBackgroundDrawable(
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 mode);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes,
+        /* [in] */ Int32 mode);
+
+    CARAPI SetPopupBackgroundDrawable(
         /* [in] */ IDrawable* background);
 
-    CARAPI_(void) SetPopupBackgroundResource(
+    CARAPI SetPopupBackgroundResource(
         /* [in] */ Int32 resId);
 
-    CARAPI_(AutoPtr<IDrawable>) GetPopupBackground();
+    CARAPI GetPopupBackground(
+        /* [out] */ IDrawable** drawable);
 
-    CARAPI_(void) SetDropDownVerticalOffset(
+    CARAPI SetDropDownVerticalOffset(
         /* [in] */ Int32 pixels);
 
-    CARAPI_(Int32) GetDropDownVerticalOffset();
+    CARAPI GetDropDownVerticalOffset(
+        /* [out] */ Int32* offset);
 
-    CARAPI_(void) SetDropDownHorizontalOffset(
+    CARAPI SetDropDownHorizontalOffset(
         /* [in] */ Int32 pixels);
 
-    CARAPI_(Int32) GetDropDownHorizontalOffset();
+    CARAPI GetDropDownHorizontalOffset(
+        /* [out] */ Int32* offset);
 
-    CARAPI_(void) SetDropDownWidth(
+    CARAPI SetDropDownWidth(
         /* [in] */ Int32 pixels);
 
-    CARAPI_(Int32) GetDropDownWidth();
+    CARAPI GetDropDownWidth(
+        /* [out] */ Int32* width);
 
     CARAPI SetEnabled(
         /* [in] */ Boolean enabled);
 
-    CARAPI_(void) SetGravity(
+    CARAPI SetGravity(
         /* [in] */ Int32 gravity);
 
-    CARAPI_(Int32) GetGravity();
+    CARAPI GetGravity(
+        /* [out] */ Int32* gravity);
 
     CARAPI SetAdapter(
         /* [in] */ IAdapter* adapter);
@@ -462,9 +420,15 @@ public:
     CARAPI SetOnItemClickListenerInt(
         /* [in] */ IAdapterViewOnItemClickListener* l);
 
-    CARAPI_(Boolean) PerformClick();
+    // @Override
+    CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
-    CARAPI_(void) OnClick(
+    CARAPI PerformClick(
+        /* [out] */ Boolean* result);
+
+    CARAPI OnClick(
         /* [in] */ IDialogInterface* dialog,
         /* [in] */ Int32 which);
 
@@ -474,40 +438,34 @@ public:
     CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
-    CARAPI_(void) SetPrompt(
+    CARAPI SetPrompt(
         /* [in] */ ICharSequence* prompt);
 
-    CARAPI_(void) SetPromptId(
+    CARAPI SetPromptId(
         /* [in] */ Int32 promptId);
 
-    CARAPI_(AutoPtr<ICharSequence>) GetPrompt();
+    CARAPI GetPrompt(
+        /* [out] */ ICharSequence** seq);
 
     CARAPI_(Int32) MeasureContentWidth(
         /* [in] */ ISpinnerAdapter* adapter,
         /* [in] */ IDrawable* background);
 
+    // @Override
+    CARAPI_(AutoPtr<IParcelable>) OnSaveInstanceState();
+
+    // @Override
+    CARAPI_(void) OnRestoreInstanceState(
+        /* [in] */ IParcelable* state);
+
 protected:
-    Spinner();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::spinnerStyle,
-        /* [in] */ Int32 mode = MODE_THEME);
-
-    CARAPI InitImpl(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::spinnerStyle,
-        /* [in] */ Int32 mode = MODE_THEME);
-
     virtual CARAPI OnDetachedFromWindow();
 
     CARAPI_(void) OnMeasure(
         /* [in] */ Int32 widthMeasureSpec,
         /* [in] */ Int32 heightMeasureSpec);
 
-    CARAPI_(void) OnLayout(
+    CARAPI OnLayout(
         /* [in] */ Boolean changed,
         /* [in] */ Int32 l,
         /* [in] */ Int32 t,
@@ -521,22 +479,37 @@ protected:
     using AdapterView::Layout;
 
 private:
-    CARAPI_(AutoPtr<IView>) MakeAndAddView(
-        /* [in] */ Int32 position);
+    CARAPI_(AutoPtr<IView>) MakeView(
+        /* [in] */ Int32 position,
+        /* [in] */ Boolean addChild);
 
     CARAPI_(void) SetUpChild(
-        /* [in] */ IView* child);
+        /* [in] */ IView* child,
+        /* [in] */ Boolean addChild);
 
 private:
-    static const Int32 MAX_ITEMS_MEASURED = 15;
+    // Only measure this many items to get a decent max width.
+    static const Int32 MAX_ITEMS_MEASURED;
 
-    static const Int32 MODE_DIALOG = 0;
+    /**
+     * Use a dialog window for selecting spinner options.
+     */
+    static const Int32 MODE_DIALOG;
 
-    static const Int32 MODE_DROPDOWN = 1;
+    /**
+     * Use a dropdown anchored to the Spinner for selecting spinner options.
+     */
+    static const Int32 MODE_DROPDOWN;
 
-    static const Int32 MODE_THEME = -1;
+    /**
+     * Use the theme-supplied value to select the dropdown mode.
+     */
+    static const Int32 MODE_THEME;
 
-    static const String SPINNER_NAME;
+    static const String TAG;
+
+    /** Forwarding listener used to implement drag-to-open. */
+    AutoPtr<ListPopupWindow::ForwardingListener> mForwardingListener;
 
     AutoPtr<ISpinnerPopup> mPopup;
     AutoPtr<IListAdapter> mTempAdapter;

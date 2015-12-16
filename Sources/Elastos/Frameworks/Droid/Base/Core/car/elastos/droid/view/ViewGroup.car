@@ -330,6 +330,9 @@ module
         /**
          * @Involve
          * interface IView;
+         * interface IDrawableCallback;
+         * interface IKeyEventCallback;
+         * interface IAccessibilityEventSource;
          * interface IViewParent;
          * interface IViewManager;
          */

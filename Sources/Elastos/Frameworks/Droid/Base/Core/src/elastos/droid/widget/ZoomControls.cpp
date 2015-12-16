@@ -1,50 +1,38 @@
 
 #include "elastos/droid/widget/ZoomControls.h"
 #include "elastos/droid/view/animation/CAlphaAnimation.h"
+#include "elastos/droid/R.h"
 
-using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Droid::R;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Droid::View::Animation::CAlphaAnimation;
+using Elastos::Droid::View::Animation::IAlphaAnimation;
+using Elastos::Droid::View::Animation::IAnimation;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::EIID_IViewGroup;
-using Elastos::Droid::View::Animation::CAlphaAnimation;
-using Elastos::Droid::View::Animation::IAlphaAnimation;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+CAR_INTERFACE_IMPL(ZoomControls, LinearLayout, IZoomControls);
 ZoomControls::ZoomControls()
 {}
 
-ZoomControls::ZoomControls(
+ECode ZoomControls::constructor(
     /* [in] */ IContext* context)
-    : LinearLayout(context, NULL)
 {
-    ASSERT_SUCCEEDED(InitInternal(context));
+    return constructor(context, NULL);
 }
 
-ZoomControls::ZoomControls(
+ECode ZoomControls::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
-    : LinearLayout(context, attrs)
 {
-    ASSERT_SUCCEEDED(InitInternal(context, attrs));
-}
-
-ECode ZoomControls::Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs)
-{
-    ASSERT_SUCCEEDED(LinearLayout::Init(context, attrs));
-    ASSERT_SUCCEEDED(InitInternal(context, attrs));
-    return NOERROR;
-}
-
-ECode ZoomControls::InitInternal(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs)
-{
+    LinearLayout::constructor(context, attrs);
     SetFocusable(FALSE);
 
     AutoPtr<ILayoutInflater> inflater;
@@ -55,27 +43,28 @@ ECode ZoomControls::InitInternal(
     inflater->Inflate(R::layout::zoom_controls, THIS_PROBE(IViewGroup), // we are the parent
             TRUE, (IView**)&v);
 
-    mZoomIn = IZoomButton::Probe(FindViewById(R::id::zoomIn));
-    mZoomOut = IZoomButton::Probe(FindViewById(R::id::zoomOut));
+    AutoPtr<IView> view;
+    FindViewById(R::id::zoomIn, (IView**)&view);
+    mZoomIn = IZoomButton::Probe(view);
+
+    view = NULL;
+    FindViewById(R::id::zoomOut, (IView**)&view);
+    mZoomOut = IZoomButton::Probe(view);
     return NOERROR;
 }
 
 ECode ZoomControls::SetOnZoomInClickListener(
     /* [in] */ IViewOnClickListener* listener)
 {
-    return mZoomIn->SetOnClickListener(listener);
+    return IView::Probe(mZoomIn)->SetOnClickListener(listener);
 }
 
 ECode ZoomControls::SetOnZoomOutClickListener(
     /* [in] */ IViewOnClickListener* listener)
 {
-    return mZoomOut->SetOnClickListener(listener);
+    return IView::Probe(mZoomOut)->SetOnClickListener(listener);
 }
 
-/*
- * Sets how fast you get zoom events when the user holds down the
- * zoom in/out buttons.
- */
 ECode ZoomControls::SetZoomSpeed(
     /* [in] */ Int64 speed)
 {
@@ -84,11 +73,13 @@ ECode ZoomControls::SetZoomSpeed(
     return NOERROR;
 }
 
-// @Override
-Boolean ZoomControls::OnTouchEvent(
-    /* [in] */ IMotionEvent* event)
+ECode ZoomControls::OnTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(result);
+    *result = TRUE;
+    return NOERROR;
 }
 
 ECode ZoomControls::Show()
@@ -101,46 +92,45 @@ ECode ZoomControls::Hide()
     return Fade(IView::GONE, 1.0f, 0.0f);
 }
 
-
 ECode ZoomControls::SetIsZoomInEnabled(
     /* [in] */ Boolean isEnabled)
 {
-    return mZoomIn->SetEnabled(isEnabled);
+    return IView::Probe(mZoomIn)->SetEnabled(isEnabled);
 }
 
 ECode ZoomControls::SetIsZoomOutEnabled(
     /* [in] */ Boolean isEnabled)
 {
-    return mZoomOut->SetEnabled(isEnabled);
+    return IView::Probe(mZoomOut)->SetEnabled(isEnabled);
 }
 
-// @Override
-Boolean ZoomControls::HasFocus()
+ECode ZoomControls::HasFocus(
+    /* [out] */ Boolean* has)
 {
-    Boolean in, out;
-    mZoomIn->HasFocus(&in);
-    mZoomOut->HasFocus(&out);
-    return in || out;
+    VALIDATE_NOT_NULL(has);
+    Boolean in = FALSE, out = FALSE;
+    IView::Probe(mZoomIn)->HasFocus(&in);
+    IView::Probe(mZoomOut)->HasFocus(&out);
+    *has = in || out;
+    return NOERROR;
 }
 
-// @Override
 ECode ZoomControls::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
     LinearLayout::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(String("CZoomControls"), (ICharSequence**)&cs);
-    event->SetClassName(cs);
+    CString::New(String("CZoomControls"), (ICharSequence**)&cs);
+    IAccessibilityRecord::Probe(event)->SetClassName(cs);
     return NOERROR;
 }
 
-// @Override
 ECode ZoomControls::OnInitializeAccessibilityNodeInfo(
     /* [in] */ IAccessibilityNodeInfo* info)
 {
     LinearLayout::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(String("CZoomControls"), (ICharSequence**)&cs);
+    CString::New(String("CZoomControls"), (ICharSequence**)&cs);
     info->SetClassName(cs);
     return NOERROR;
 }
@@ -152,8 +142,8 @@ ECode ZoomControls::Fade(
 {
     AutoPtr<IAlphaAnimation> anim;
     CAlphaAnimation::New(startAlpha, endAlpha, (IAlphaAnimation**)&anim);
-    anim->SetDuration(500);
-    StartAnimation(anim);
+    IAnimation::Probe(anim)->SetDuration(500);
+    StartAnimation(IAnimation::Probe(anim));
     SetVisibility(visibility);
     return NOERROR;
 }

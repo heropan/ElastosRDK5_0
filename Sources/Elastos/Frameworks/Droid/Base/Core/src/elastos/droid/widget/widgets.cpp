@@ -59,6 +59,13 @@
 #include "elastos/droid/widget/CSpace.h"
 #include "elastos/droid/widget/CSlidingDrawer.h"
 #include "elastos/droid/widget/CSpellChecker.h"
+#include "elastos/droid/widget/CAbsSpinnerSavedState.h"
+#include "elastos/droid/widget/CSpinner.h"
+#include "elastos/droid/widget/CSpinnerSavedState.h"
+#include "elastos/droid/widget/CViewFlipper.h"
+#include "elastos/droid/widget/CZoomControls.h"
+#include "elastos/droid/widget/CZoomButton.h"
+#include "elastos/droid/widget/CZoomButtonsController.h"
 
 namespace Elastos {
 namespace Droid {
@@ -124,6 +131,13 @@ CAR_OBJECT_IMPL(CTextSwitcher)
 CAR_OBJECT_IMPL(CSpace)
 CAR_OBJECT_IMPL(CSlidingDrawer)
 CAR_OBJECT_IMPL(CSpellChecker)
+CAR_OBJECT_IMPL(CAbsSpinnerSavedState);
+CAR_OBJECT_IMPL(CSpinner);
+CAR_OBJECT_IMPL(CSpinnerSavedState);
+CAR_OBJECT_IMPL(CViewFlipper);
+CAR_OBJECT_IMPL(CZoomControls);
+CAR_OBJECT_IMPL(CZoomButton);
+CAR_OBJECT_IMPL(CZoomButtonsController);
 
 } // namespace Widget
 } // namespace Droid

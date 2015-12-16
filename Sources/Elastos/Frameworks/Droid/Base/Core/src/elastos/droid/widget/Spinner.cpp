@@ -1,627 +1,41 @@
 
 #include "elastos/droid/widget/Spinner.h"
-#include <elastos/core/Math.h>
-#include <elastos/utility/logging/Slogger.h>
+#include "elastos/droid/widget/CSpinnerSavedState.h"
+#include "elastos/droid/widget/TextView.h"
+#include "elastos/droid/app/CAlertDialogBuilder.h"
+#include "elastos/droid/os/Build.h"
 #include "elastos/droid/view/Gravity.h"
 #include "elastos/droid/view/CViewGroupLayoutParams.h"
-#include "elastos/droid/app/CAlertDialogBuilder.h"
-#include "elastos/droid/widget/TextView.h"
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::App::CAlertDialogBuilder;
+using Elastos::Droid::App::IDialog;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::Gravity;
 using Elastos::Droid::View::CViewGroupLayoutParams;
 using Elastos::Droid::View::IViewTreeObserver;
+using Elastos::Droid::View::EIID_IOnGlobalLayoutListener;
+using Elastos::Droid::View::EIID_IView;
+using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-//c86bee25-e75e-47b8-8f25-382d31ada6b0
-extern "C" const InterfaceID EIID_DropdownPopup =
-        { 0xc86bee25, 0xe75e, 0x47b8, { 0x8f, 0x25, 0x38, 0x2d, 0x31, 0xad, 0xa6, 0xb0 } };
-
-//d53105da-4e05-44d1-af84-708d464c18ba
-extern "C" const InterfaceID EIID_Spinner =
-        { 0xd53105da, 0x4e05, 0x44d1, { 0xaf, 0x84, 0x70, 0x8d, 0x46, 0x4c, 0x18, 0xba } };
-
-const Int32 Spinner::MAX_ITEMS_MEASURED;
-const Int32 Spinner::MODE_DIALOG;
-const Int32 Spinner::MODE_DROPDOWN;
-const Int32 Spinner::MODE_THEME;
-const String Spinner::SPINNER_NAME = String("Spinner");
-
-CAR_INTERFACE_IMPL(Spinner::ItemClickListener, IAdapterViewOnItemClickListener)
-CAR_INTERFACE_IMPL(Spinner::GlobalLayoutListener, IOnGlobalLayoutListener)
-CAR_INTERFACE_IMPL(Spinner::DismissListener, IPopupWindowOnDismissListener)
-CAR_INTERFACE_IMPL_2(Spinner::DialogPopup, ISpinnerPopup, IDialogInterfaceOnClickListener)
-
-Spinner::Spinner()
-    : mDropDownWidth(0)
-    , mGravity(0)
-{
-    CRect::New((IRect**)&mTempRect);
-}
-
-Spinner::Spinner(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle,
-    /* [in] */ Int32 mode)
-    : AbsSpinner(context, attrs, defStyle)
-    , mDropDownWidth(0)
-    , mGravity(0)
-{
-    CRect::New((IRect**)&mTempRect);
-    InitImpl(context, attrs, defStyle, mode);
-}
-
-Spinner::Spinner(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 mode)
-    : AbsSpinner(context, NULL, R::attr::spinnerStyle)
-    , mDropDownWidth(0)
-    , mGravity(0)
-{
-    CRect::New((IRect**)&mTempRect);
-    InitImpl(context, NULL, R::attr::spinnerStyle, mode);
-}
-
-ECode Spinner::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle,
-    /* [in] */ Int32 mode)
-{
-    AbsSpinner::Init(context, attrs, defStyle);
-    return InitImpl(context, attrs, defStyle, mode);
-}
-
-ECode Spinner::InitImpl(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle,
-    /* [in] */ Int32 mode)
-{
-    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
-            const_cast<Int32 *>(R::styleable::Spinner),
-            ARRAY_SIZE(R::styleable::Spinner));
-    AutoPtr<ITypedArray> a;
-    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
-
-    if (mode == MODE_THEME) {
-        a->GetInt32(R::styleable::Spinner_spinnerMode, MODE_DIALOG, &mode);
-    }
-
-    switch (mode) {
-        case MODE_DIALOG: {
-            mPopup = new DialogPopup(this);
-            break;
-        }
-
-        case MODE_DROPDOWN: {
-            AutoPtr<ISpinnerPopup> popup = new DropdownPopup(context, attrs, defStyle, this);
-            a->GetLayoutDimension(R::styleable::Spinner_dropDownWidth, IViewGroupLayoutParams::WRAP_CONTENT, &mDropDownWidth);
-            AutoPtr<IDrawable> d;
-            a->GetDrawable(R::styleable::Spinner_popupBackground, (IDrawable**)&d);
-            popup->SetBackgroundDrawable(d);
-            Int32 verticalOffset = 0;
-            a->GetDimensionPixelOffset(R::styleable::Spinner_dropDownVerticalOffset, 0, &verticalOffset);
-            if (verticalOffset != 0) {
-                popup->SetVerticalOffset(verticalOffset);
-            }
-
-            Int32 horizontalOffset = 0;
-            a->GetDimensionPixelOffset(R::styleable::Spinner_dropDownHorizontalOffset, 0, &horizontalOffset);
-            if (horizontalOffset != 0) {
-                popup->SetHorizontalOffset(horizontalOffset);
-            }
-            mPopup = popup;
-            break;
-        }
-    }
-
-    a->GetInt32(R::styleable::Spinner_gravity, IGravity::CENTER, &mGravity);
-    String prompt;
-    a->GetString(R::styleable::Spinner_prompt, &prompt);
-    AutoPtr<ICharSequence> cprompt;
-    CStringWrapper::New(prompt, (ICharSequence**)&cprompt);
-    mPopup->SetPromptText(cprompt);
-    a->GetBoolean(R::styleable::Spinner_disableChildrenWhenDisabled, FALSE, &mDisableChildrenWhenDisabled);
-
-    a->Recycle();
-
-    if (mTempAdapter) {
-        mPopup->SetAdapter(mTempAdapter);
-        mTempAdapter = NULL;
-    }
-
-    return NOERROR;
-}
-
-void Spinner::SetPopupBackgroundDrawable(
-    /* [in] */ IDrawable* background)
-{
-    if (!mPopup->Probe(EIID_DropdownPopup)) {
-        return;
-    }
-    AutoPtr<DropdownPopup> pop = reinterpret_cast<DropdownPopup*>(mPopup->Probe(EIID_DropdownPopup));
-    pop->SetBackgroundDrawable(background);
-}
-
-void Spinner::SetPopupBackgroundResource(
-    /* [in] */ Int32 resId)
-{
-    AutoPtr<IResources> resources;
-    GetContext()->GetResources((IResources**)&resources);
-    AutoPtr<IDrawable> drawable;
-    resources->GetDrawable(resId, (IDrawable**)&drawable);
-    SetPopupBackgroundDrawable(drawable);
-}
-
-AutoPtr<IDrawable> Spinner::GetPopupBackground()
-{
-    AutoPtr<IDrawable> d;
-    mPopup->GetBackground((IDrawable**)&d);
-    return d;
-}
-
-void Spinner::SetDropDownVerticalOffset(
-    /* [in] */ Int32 pixels)
-{
-    mPopup->SetVerticalOffset(pixels);
-}
-
-Int32 Spinner::GetDropDownVerticalOffset()
-{
-    Int32 offset = 0;
-    mPopup->GetVerticalOffset(&offset);
-    return offset;
-}
-
-void Spinner::SetDropDownHorizontalOffset(
-    /* [in] */ Int32 pixels)
-{
-    mPopup->SetHorizontalOffset(pixels);
-}
-
-Int32 Spinner::GetDropDownHorizontalOffset()
-{
-    Int32 offset = 0;
-    mPopup->GetHorizontalOffset(&offset);
-    return offset;
-}
-
-void Spinner::SetDropDownWidth(
-    /* [in] */ Int32 pixels)
-{
-    if (!mPopup->Probe(EIID_DropdownPopup)) {
-        return;
-    }
-    mDropDownWidth = pixels;
-}
-
-Int32 Spinner::GetDropDownWidth()
-{
-    return mDropDownWidth;
-}
-
-ECode Spinner::SetEnabled(
-    /* [in] */ Boolean enabled)
-{
-    AbsSpinner::SetEnabled(enabled);
-    if (mDisableChildrenWhenDisabled) {
-        Int32 count = GetChildCount();
-        for (Int32 i = 0; i < count; i++) {
-            GetChildAt(i)->SetEnabled(enabled);
-        }
-    }
-    return NOERROR;
-}
-
-void Spinner::SetGravity(
-    /* [in] */ Int32 gravity)
-{
-    if (mGravity != gravity) {
-        if ((gravity & IGravity::HORIZONTAL_GRAVITY_MASK) == 0) {
-            gravity |= IGravity::START;
-        }
-        mGravity = gravity;
-        RequestLayout();
-    }
-}
-
-Int32 Spinner::GetGravity()
-{
-    return mGravity;
-}
-
-ECode Spinner::SetAdapter(
-    /* [in] */ IAdapter* adapter)
-{
-    AutoPtr<ISpinnerAdapter> sa = ISpinnerAdapter::Probe(adapter);
-    if (sa == NULL) {
-        return NOERROR;
-    }
-
-    AbsSpinner::SetAdapter(sa);
-
-    if (mPopup) {
-        AutoPtr<IListAdapter> ad = new DropDownAdapter(sa);
-        mPopup->SetAdapter(ad);
-    }
-    else {
-        mTempAdapter = new DropDownAdapter(sa);
-    }
-    return NOERROR;
-}
-
-ECode Spinner::GetBaseline(
-    /* [out] */ Int32* baseline)
-{
-    VALIDATE_NOT_NULL(baseline);
-    *baseline = -1;
-
-    AutoPtr<IView> child;
-    Int32 count = 0;
-    mAdapter->GetCount(&count);
-    if (GetChildCount() > 0) {
-        child = GetChildAt(0);
-    }
-    else if (mAdapter && count > 0) {
-        child = MakeAndAddView(0);
-        mRecycler->Put(0, child);
-        RemoveAllViewsInLayout();
-    }
-
-    if (child) {
-        Int32 childBaseline = 0;
-        child->GetBaseline(&childBaseline);
-        Int32 top = 0;
-        child->GetTop(&top);
-        if (childBaseline >= 0) {
-            *baseline = top + childBaseline;
-        }
-    }
-
-    return NOERROR;
-}
-
-ECode Spinner::SetOnItemClickListener(
-    /* [in] */ IAdapterViewOnItemClickListener* l)
-{
-    //throw new RuntimeException("setOnItemClickListener cannot be used with a spinner.");
-    return E_RUNTIME_EXCEPTION;
-}
-
-ECode Spinner::SetOnItemClickListenerInt(
-    /* [in] */ IAdapterViewOnItemClickListener* l)
-{
-    return AbsSpinner::SetOnItemClickListener(l);
-}
-
-Boolean Spinner::PerformClick()
-{
-    Boolean handled = AbsSpinner::PerformClick();
-    if (!handled) {
-        handled = TRUE;
-        Boolean show = FALSE;
-        mPopup->IsShowing(&show);
-        if (!show) {
-            mPopup->Show();
-        }
-    }
-    return handled;
-}
-
-void Spinner::OnClick(
-    /* [in] */ IDialogInterface* dialog,
-    /* [in] */ Int32 which)
-{
-    SetSelection(which);
-    dialog->Dismiss();
-}
-
-ECode Spinner::OnInitializeAccessibilityEvent(
-    /* [in] */ IAccessibilityEvent* event)
-{
-    AbsSpinner::OnInitializeAccessibilityEvent(event);
-    AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("CSpinner"), (ICharSequence**)&seq);
-    return event->SetClassName(seq);
-}
-
-ECode Spinner::OnInitializeAccessibilityNodeInfo(
-    /* [in] */ IAccessibilityNodeInfo* info)
-{
-    AbsSpinner::OnInitializeAccessibilityNodeInfo(info);
-    AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("CSpinner"), (ICharSequence**)&seq);
-    return info->SetClassName(seq);
-}
-
-void Spinner::SetPrompt(
-    /* [in] */ ICharSequence* prompt)
-{
-    mPopup->SetPromptText(prompt);
-}
-
-void Spinner::SetPromptId(
-    /* [in] */ Int32 promptId)
-{
-    AutoPtr<ICharSequence> csq;
-    GetContext()->GetText(promptId, (ICharSequence**)&csq);
-    SetPrompt(csq);
-}
-
-AutoPtr<ICharSequence> Spinner::GetPrompt()
-{
-    AutoPtr<ICharSequence> csq;
-    mPopup->GetHintText((ICharSequence**)&csq);
-    return csq;
-}
-
-Int32 Spinner::MeasureContentWidth(
-    /* [in] */ ISpinnerAdapter* adapter,
-    /* [in] */ IDrawable* background)
-{
-    if (!adapter) {
-        return 0;
-    }
-    Int32 width = 0;
-    AutoPtr<IView> itemView;
-    Int32 itemType = 0;
-    Int32 widthMeasureSpec = View::MeasureSpec::MakeMeasureSpec(0, View::MeasureSpec::UNSPECIFIED);
-    Int32 heightMeasureSpec = View::MeasureSpec::MakeMeasureSpec(0, View::MeasureSpec::UNSPECIFIED);
-
-    Int32 start = Elastos::Core::Math::Max(0, GetSelectedItemPosition());
-    Int32 adc = 0;
-    adapter->GetCount(&adc);
-    Int32 end = Elastos::Core::Math::Min(adc, start + MAX_ITEMS_MEASURED);
-    Int32 count = end - start;
-    start = Elastos::Core::Math::Max(0, start - (MAX_ITEMS_MEASURED - count));
-
-    for (Int32 i = start; i < end; i++) {
-        Int32 positionType = 0;
-        adapter->GetItemViewType(i, &positionType);
-        if (positionType != itemType) {
-            itemType = positionType;
-            itemView = NULL;
-        }
-        adapter->GetView(i, itemView, (IViewGroup*)this->Probe(EIID_IViewGroup), (IView**)&itemView);
-
-        AutoPtr<IViewGroupLayoutParams> lp;
-        itemView->GetLayoutParams((IViewGroupLayoutParams**)&lp);
-        if (!lp) {
-            AutoPtr<IViewGroupLayoutParams> params;
-            CViewGroupLayoutParams::New(IViewGroupLayoutParams::WRAP_CONTENT, IViewGroupLayoutParams::WRAP_CONTENT,
-                (IViewGroupLayoutParams**)&params);
-            itemView->SetLayoutParams(params);
-        }
-        itemView->Measure(widthMeasureSpec, heightMeasureSpec);
-        Int32  mw = 0;
-        itemView->GetMeasuredWidth(&mw);
-        width = Elastos::Core::Math::Max(width, mw);
-    }
-
-    if (background) {
-        Boolean res;
-        background->GetPadding(mTempRect, &res);
-        AutoPtr<CRect> ct = (CRect*)mTempRect.Get();
-        width += ct->mLeft + ct->mRight;
-    }
-    return width;
-}
-
-ECode Spinner::OnDetachedFromWindow()
-{
-    AbsSpinner::OnDetachedFromWindow();
-
-    Boolean show = FALSE;
-    mPopup->IsShowing(&show);
-    if (mPopup && show) {
-        mPopup->Dismiss();
-    }
-    return NOERROR;
-}
-
-void Spinner::OnMeasure(
-    /* [in] */ Int32 widthMeasureSpec,
-    /* [in] */ Int32 heightMeasureSpec)
-{
-    AbsSpinner::OnMeasure(widthMeasureSpec, heightMeasureSpec);
-    if (mPopup && View::MeasureSpec::GetMode(widthMeasureSpec) == View::MeasureSpec::AT_MOST) {
-        Int32 measuredWidth = GetMeasuredWidth();
-        AutoPtr<ISpinnerAdapter> adapter = ISpinnerAdapter::Probe(GetAdapter());
-        SetMeasuredDimension(Elastos::Core::Math::Min(Elastos::Core::Math::Max(
-            measuredWidth, MeasureContentWidth(adapter, GetBackground())),
-            MeasureSpec::GetSize(widthMeasureSpec)), GetMeasuredHeight());
-    }
-}
-
-void Spinner::OnLayout(
-    /* [in] */ Boolean changed,
-    /* [in] */ Int32 l,
-    /* [in] */ Int32 t,
-    /* [in] */ Int32 r,
-    /* [in] */ Int32 b)
-{
-    AbsSpinner::OnLayout(changed, l, t, r, b);
-    mInLayout = TRUE;
-    Layout(0, FALSE);
-    mInLayout = FALSE;
-}
-
-void Spinner::Layout(
-    /* [in] */ Int32 delta,
-    /* [in] */ Boolean animate)
-{
-    Int32 childrenLeft = mSpinnerPadding->mLeft;
-    Int32 childrenWidth = mRight - mLeft - mSpinnerPadding->mLeft - mSpinnerPadding->mRight;
-
-    if (mDataChanged) {
-        HandleDataChanged();
-    }
-
-    if (mItemCount == 0) {
-        ResetList();
-        return;
-    }
-     if (mNextSelectedPosition >= 0) {
-        SetSelectedPositionInt(mNextSelectedPosition);
-    }
-
-    RecycleAllViews();
-    RemoveAllViewsInLayout();
-    mFirstPosition = mSelectedPosition;
-    AutoPtr<IView> sel = MakeAndAddView(mSelectedPosition);
-    if (sel != NULL) {
-        Int32 width = 0;
-        sel->GetMeasuredWidth(&width);
-        Int32 selectedOffset = childrenLeft;
-        Int32 layoutDirection = GetLayoutDirection();
-        Int32 absoluteGravity = Gravity::GetAbsoluteGravity(mGravity, layoutDirection);
-
-        switch (absoluteGravity & IGravity::HORIZONTAL_GRAVITY_MASK) {
-            case IGravity::CENTER_HORIZONTAL:
-                selectedOffset = childrenLeft + (childrenWidth / 2) - (width / 2);
-                break;
-            case IGravity::RIGHT:
-                selectedOffset = childrenLeft + childrenWidth - width;
-                break;
-        }
-
-        sel->OffsetLeftAndRight(selectedOffset);
-    }
-
-    mRecycler->Clear();
-    Invalidate();
-    CheckSelectionChanged();
-    mDataChanged = FALSE;
-    mNeedSync = FALSE;
-    SetNextSelectedPositionInt(mSelectedPosition);
-}
-
-AutoPtr<IView> Spinner::MakeAndAddView(
-    /* [in] */ Int32 position)
-{
-    AutoPtr<IView> child;
-    if (!mDataChanged) {
-        child = mRecycler->Get(position);
-        if (child) {
-            SetUpChild(child);
-            return child;
-        }
-    }
-    child = NULL;
-    mAdapter->GetView(position, NULL, THIS_PROBE(IViewGroup), (IView**)&child);
-    if (child == NULL) {
-        Slogger::E(SPINNER_NAME, "Failed to make child view!");
-    }
-    else {
-        SetUpChild(child);
-    }
-    return child;
-}
-
-void Spinner::SetUpChild(
-    /* [in] */ IView* child)
-{
-    assert(child != NULL);
-
-    AutoPtr<IViewGroupLayoutParams> lp;
-    child->GetLayoutParams((IViewGroupLayoutParams**)&lp);
-    if (!lp) {
-        GenerateDefaultLayoutParams((IViewGroupLayoutParams**)&lp);
-    }
-
-    AddViewInLayout(child, 0, lp);
-    child->SetSelected(HasFocus());
-    if (mDisableChildrenWhenDisabled) {
-        child->SetEnabled(IsEnabled());
-    }
-    Int32 h;
-    lp->GetHeight(&h);
-    Int32 childHeightSpec = ViewGroup::GetChildMeasureSpec(mHeightMeasureSpec,
-            mSpinnerPadding->mTop + mSpinnerPadding->mBottom, h);
-    Int32 w;
-    lp->GetWidth(&w);
-    Int32 childWidthSpec = ViewGroup::GetChildMeasureSpec(mWidthMeasureSpec,
-            mSpinnerPadding->mLeft + mSpinnerPadding->mRight, w);
-
-    child->Measure(childWidthSpec, childHeightSpec);
-
-    Int32 measuredHeight = 0;
-    child->GetMeasuredHeight(&measuredHeight);
-    Int32 childLeft = 0, childRight = 0;
-
-    Int32 childTop = mSpinnerPadding->mTop + ((GetMeasuredHeight() - mSpinnerPadding->mBottom -
-        mSpinnerPadding->mTop - measuredHeight) / 2);
-    Int32 childBottom = childTop + measuredHeight;
-    Int32 width = 0;
-    child->GetMeasuredWidth(&width);
-    childLeft = 0;
-    childRight = childLeft + width;
-
-    child->Layout(childLeft, childTop, childRight, childBottom);
-}
-
 //==========================================================================
 //                       Spinner::DropDownAdapter
 //==========================================================================
-
-PInterface Spinner::DropDownAdapter::Probe(
-    /* [in] */ REIID riid)
-{
-    if ( riid == EIID_IInterface) {
-        return (IInterface*)(IListAdapter *)this;
-    }
-    else if( riid == EIID_IAdapter) {
-        return (IAdapter*)(IListAdapter*)this;
-    }
-    else if(riid == EIID_IListAdapter) {
-        return (IListAdapter*)this;
-    }
-    else if ( riid == EIID_ISpinnerAdapter) {
-        return (ISpinnerAdapter*)this;
-    }
-    return NULL;
-}
-
-UInt32 Spinner::DropDownAdapter::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 Spinner::DropDownAdapter::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode Spinner::DropDownAdapter::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
-{
-    VALIDATE_NOT_NULL(iid);
-    if (object == (IInterface*)(IListAdapter *)this) {
-        *iid = EIID_IListAdapter;
-    }
-    if (object == (IInterface*)(ISpinnerAdapter *)this) {
-        *iid = EIID_ISpinnerAdapter;
-    }
-    else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return NOERROR;
-}
-
+CAR_INTERFACE_IMPL_3(Spinner::DropDownAdapter, Object, IListAdapter, IAdapter, ISpinnerAdapter);
 Spinner::DropDownAdapter::DropDownAdapter(
     /* [in] */ ISpinnerAdapter* adapter)
+    : mAdapter(adapter)
 {
-    mAdapter = adapter;
-
     AutoPtr<IListAdapter> la = IListAdapter::Probe(adapter);
     if (la) {
         mListAdapter = la;
@@ -635,7 +49,7 @@ ECode Spinner::DropDownAdapter::GetCount(
     *count = 0;
 
     if (mAdapter) {
-        mAdapter->GetCount(count);
+        IAdapter::Probe(mAdapter)->GetCount(count);
     }
     return NOERROR;
 }
@@ -648,7 +62,7 @@ ECode Spinner::DropDownAdapter::GetItem(
     *item = NULL;
 
     if (mAdapter) {
-        mAdapter->GetItem(position, item);
+        IAdapter::Probe(mAdapter)->GetItem(position, item);
     }
     return NOERROR;
 }
@@ -661,7 +75,7 @@ ECode Spinner::DropDownAdapter::GetItemId(
     *itemId = -1;
 
     if (mAdapter) {
-        mAdapter->GetItemId(position, itemId);
+        IAdapter::Probe(mAdapter)->GetItemId(position, itemId);
     }
     return NOERROR;
 }
@@ -698,7 +112,7 @@ ECode Spinner::DropDownAdapter::HasStableIds(
     *hasStableIds = FALSE;
 
     if (mAdapter) {
-        mAdapter->HasStableIds(hasStableIds);
+        IAdapter::Probe(mAdapter)->HasStableIds(hasStableIds);
     }
 
     return NOERROR;
@@ -708,7 +122,7 @@ ECode Spinner::DropDownAdapter::RegisterDataSetObserver(
     /* [in] */ IDataSetObserver* observer)
 {
     if (mAdapter) {
-        mAdapter->RegisterDataSetObserver(observer);
+        IAdapter::Probe(mAdapter)->RegisterDataSetObserver(observer);
     }
     return NOERROR;
 }
@@ -717,7 +131,7 @@ ECode Spinner::DropDownAdapter::UnregisterDataSetObserver(
     /* [in] */ IDataSetObserver* observer)
 {
     if (mAdapter) {
-        mAdapter->UnregisterDataSetObserver(observer);
+        IAdapter::Probe(mAdapter)->UnregisterDataSetObserver(observer);
     }
     return NOERROR;
 }
@@ -777,7 +191,7 @@ ECode Spinner::DropDownAdapter::IsEmpty(
 //==========================================================================
 //                       Spinner::DialogPopup
 //==========================================================================
-
+CAR_INTERFACE_IMPL_2(Spinner::DialogPopup, Object, ISpinnerPopup, IDialogInterfaceOnClickListener);
 Spinner::DialogPopup::DialogPopup(
     /* [in] */ Spinner* host)
     : mHost(host)
@@ -786,8 +200,10 @@ Spinner::DialogPopup::DialogPopup(
 
 ECode Spinner::DialogPopup::Dismiss()
 {
-    mPopup->Dismiss();
-    mPopup = NULL;
+    if (mPopup != NULL) {
+        IDialogInterface::Probe(mPopup)->Dismiss();
+        mPopup = NULL;
+    }
     return NOERROR;
 }
 
@@ -798,7 +214,7 @@ ECode Spinner::DialogPopup::IsShowing(
     *res = FALSE;
 
     if (mPopup) {
-        return mPopup->IsShowing(res);
+        return IDialog::Probe(mPopup)->IsShowing(res);
     }
     return NOERROR;
 }
@@ -826,17 +242,31 @@ ECode Spinner::DialogPopup::GetHintText(
     return NOERROR;
 }
 
-ECode Spinner::DialogPopup::Show()
+ECode Spinner::DialogPopup::Show(
+    /* [in] */ Int32 textDirection,
+    /* [in] */ Int32 textAlignment)
 {
+    if (mListAdapter == NULL) {
+        return NOERROR;
+    }
+
+    AutoPtr<IContext> context;
+    mHost->GetContext((IContext**)&context);
     AutoPtr<IAlertDialogBuilder> builder;
-    CAlertDialogBuilder::New(mHost->GetContext(), (IAlertDialogBuilder**)&builder);
+    CAlertDialogBuilder::New(context, (IAlertDialogBuilder**)&builder);
     if (mPrompt) {
         builder->SetTitle(mPrompt);
     }
-    builder->SetSingleChoiceItems(mListAdapter, mHost->GetSelectedItemPosition(), this);
 
-    mPopup = NULL;
-    builder->Show((IAlertDialog**)&mPopup);
+    Int32 position = 0;
+    mHost->GetSelectedItemPosition(&position);
+    builder->SetSingleChoiceItems(mListAdapter, position, this);
+    builder->Create((IAlertDialog**)&mPopup);
+    AutoPtr<IListView> listView;
+    mPopup->GetListView((IListView**)&listView);
+    IView::Probe(listView)->SetTextDirection(textDirection);
+    IView::Probe(listView)->SetTextAlignment(textAlignment);
+    IDialog::Probe(mPopup)->Show();
     return NOERROR;
 }
 
@@ -847,8 +277,9 @@ ECode Spinner::DialogPopup::OnClick(
     mHost->SetSelection(which);
     if (mHost->mOnItemClickListener) {
         Int64 id = 0;
-        mListAdapter->GetItemId(which, &id);
-        mHost->PerformItemClick(NULL, which, id);
+        IAdapter::Probe(mListAdapter)->GetItemId(which, &id);
+        Boolean result = FALSE;
+        mHost->PerformItemClick(NULL, which, id, &result);
     }
     Dismiss();
     return NOERROR;
@@ -857,21 +288,21 @@ ECode Spinner::DialogPopup::OnClick(
 ECode Spinner::DialogPopup::SetBackgroundDrawable(
     /* [in] */ IDrawable* bg)
 {
-    //Log.e(TAG, "Cannot set popup background for MODE_DIALOG, ignoring");
+    Logger::E(TAG, "Cannot set popup background for MODE_DIALOG, ignoring");
     return NOERROR;
 }
 
 ECode Spinner::DialogPopup::SetVerticalOffset(
     /* [in] */ Int32 px)
 {
-    //Log.e(TAG, "Cannot set vertical offset for MODE_DIALOG, ignoring");
+    Logger::E(TAG, "Cannot set vertical offset for MODE_DIALOG, ignoring");
     return NOERROR;
 }
 
 ECode Spinner::DialogPopup::SetHorizontalOffset(
     /* [in] */ Int32 px)
 {
-    //Log.e(TAG, "Cannot set horizontal offset for MODE_DIALOG, ignoring");
+    Logger::E(TAG, "Cannot set horizontal offset for MODE_DIALOG, ignoring");
     return NOERROR;
 }
 
@@ -902,12 +333,13 @@ ECode Spinner::DialogPopup::GetHorizontalOffset(
 //==========================================================================
 //                       Spinner::ItemClickListener
 //==========================================================================
+CAR_INTERFACE_IMPL(Spinner::ItemClickListener, Object, IAdapterViewOnItemClickListener);
 Spinner::ItemClickListener::ItemClickListener(
     /* [in] */ Spinner* spinnerHost,
-    /* [in] */ _DropdownPopup* popupHost)
+    /* [in] */ DropdownPopup* popupHost)
+    : mSpinnerHost(spinnerHost)
+    , mPopupHost(popupHost)
 {
-    mSpinnerHost = spinnerHost;
-    mPopupHost = popupHost;
 }
 
 ECode Spinner::ItemClickListener::OnItemClick(
@@ -918,9 +350,10 @@ ECode Spinner::ItemClickListener::OnItemClick(
 {
     mSpinnerHost->SetSelection(position);
     if (mSpinnerHost->mOnItemClickListener != NULL) {
-        Int64 id;
-        mPopupHost->mAdapter->GetItemId(position, &id);
-        mSpinnerHost->PerformItemClick(view, position, id);
+        Int64 id = 0;
+        IAdapter::Probe(mPopupHost->mAdapter)->GetItemId(position, &id);
+        Boolean tmp = FALSE;
+        mSpinnerHost->PerformItemClick(view, position, id, &tmp);
     }
     mPopupHost->Dismiss();
     return NOERROR;
@@ -929,12 +362,13 @@ ECode Spinner::ItemClickListener::OnItemClick(
 //==========================================================================
 //                       Spinner::GlobalLayoutListener
 //==========================================================================
+CAR_INTERFACE_IMPL(Spinner::GlobalLayoutListener, Object, IOnGlobalLayoutListener);
 Spinner::GlobalLayoutListener::GlobalLayoutListener(
     /* [in] */ Spinner* spinnerHost,
-    /* [in] */ _DropdownPopup* popupHost)
+    /* [in] */ DropdownPopup* popupHost)
+    : mSpinnerHost(spinnerHost)
+    , mPopupHost(popupHost)
 {
-    mSpinnerHost = spinnerHost;
-    mPopupHost = popupHost;
 }
 
 ECode Spinner::GlobalLayoutListener::OnGlobalLayout()
@@ -942,23 +376,60 @@ ECode Spinner::GlobalLayoutListener::OnGlobalLayout()
     if (!mSpinnerHost->IsVisibleToUser()) {
         mPopupHost->Dismiss();
     }
+    else {
+        mPopupHost->ComputeContentWidth();
+
+        // Use super.show here to update; we don't want to move the selected
+        // position or adjust other things that would be reset otherwise.
+        // DropdownPopup.super.show();
+        mPopupHost->ListPopupWindow::Show();
+    }
+
+    return NOERROR;
+}
+
+//==========================================================================
+//                       Spinner::GlobalLayoutListener2
+//==========================================================================
+CAR_INTERFACE_IMPL(Spinner::GlobalLayoutListener2, Object, IOnGlobalLayoutListener);
+Spinner::GlobalLayoutListener2::GlobalLayoutListener2(
+    /* [in] */ Spinner* host)
+    : mHost(host)
+{}
+
+ECode Spinner::GlobalLayoutListener2::OnGlobalLayout()
+{
+    Boolean showing = FALSE;
+    if (mHost->mPopup->IsShowing(&showing), !showing) {
+        Int32 dir = 0, align = 0;
+        mHost->GetTextDirection(&dir);
+        mHost->GetTextAlignment(&align);
+        mHost->mPopup->Show(dir, align);
+    }
+    AutoPtr<IViewTreeObserver> vto;
+    mHost->GetViewTreeObserver((IViewTreeObserver**)&vto);
+    if (vto != NULL) {
+        vto->RemoveOnGlobalLayoutListener(this);
+    }
     return NOERROR;
 }
 
 //==========================================================================
 //                       Spinner::DismissListener
 //==========================================================================
+CAR_INTERFACE_IMPL(Spinner::DismissListener, Object, IPopupWindowOnDismissListener);
 Spinner::DismissListener::DismissListener(
     /* [in] */ Spinner* spinnerHost,
     /* [in] */ GlobalLayoutListener* layoutListener)
+    : mSpinnerHost(spinnerHost)
+    , mLayoutListener(layoutListener)
 {
-    mSpinnerHost = spinnerHost;
-    mLayoutListener = layoutListener;
 }
 
 ECode Spinner::DismissListener::OnDismiss()
 {
-    AutoPtr<IViewTreeObserver> vto = mSpinnerHost->GetViewTreeObserver();
+    AutoPtr<IViewTreeObserver> vto;
+    mSpinnerHost->GetViewTreeObserver((IViewTreeObserver**)&vto);
     if (vto) {
         vto->RemoveGlobalOnLayoutListener(mLayoutListener);
     }
@@ -966,16 +437,18 @@ ECode Spinner::DismissListener::OnDismiss()
 }
 
 //==========================================================================
-//                       Spinner::_DropdownPopup
+//                       Spinner::DropdownPopup
 //==========================================================================
-Spinner::_DropdownPopup::_DropdownPopup(
+CAR_INTERFACE_IMPL_2(Spinner::DropdownPopup, ListPopupWindow, IDropdownPopup, ISpinnerPopup);
+Spinner::DropdownPopup::DropdownPopup(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes,
     /* [in] */ Spinner* host)
-    : ListPopupWindow(context, attrs, 0, defStyle)
-    , mHost(host)
+    : mHost(host)
 {
+    ListPopupWindow::constructor(context, attrs, defStyleAttr, defStyleRes);
     SetAnchorView((IView*)(mHost->Probe(EIID_IView)));
     SetModal(TRUE);
     SetPromptPosition(IListPopupWindow::POSITION_PROMPT_ABOVE);
@@ -983,7 +456,7 @@ Spinner::_DropdownPopup::_DropdownPopup(
     SetOnItemClickListener(listener);
 }
 
-ECode Spinner::_DropdownPopup::SetAdapter(
+ECode Spinner::DropdownPopup::SetAdapter(
     /* [in] */ IListAdapter* adapter)
 {
     ListPopupWindow::SetAdapter(adapter);
@@ -991,514 +464,883 @@ ECode Spinner::_DropdownPopup::SetAdapter(
     return NOERROR;
 }
 
-AutoPtr<ICharSequence> Spinner::_DropdownPopup::GetHintText()
+ECode Spinner::DropdownPopup::GetHintText(
+    /* [out] */ ICharSequence** csq)
 {
-    return mHintText;
-}
-
-ECode Spinner::_DropdownPopup::SetPromptText(
-    /* [in] */ ICharSequence* hintText)
-{
-    mHintText = hintText;
-    return NOERROR;
-}
-
-ECode Spinner::_DropdownPopup::Show()
-{
-    AutoPtr<IDrawable> background = GetBackground();
-
-    Int32 hOffset = 0;
-
-    if (background) {
-        Boolean rst;
-        background->GetPadding(mHost->mTempRect, &rst);
-        AutoPtr<CRect> cr = (CRect*)mTempRect.Get();
-        hOffset = mHost->IsLayoutRtl() ? cr->mRight : -(cr->mLeft);
-    }
-    else {
-        mTempRect->SetLeft(0);
-        mTempRect->SetRight(0);
-    }
-
-    Int32 spinnerPaddingLeft = mHost->GetPaddingLeft();
-    Int32 spinnerPaddingRight = mHost->GetPaddingRight();
-    Int32 spinnerWidth = mHost->GetWidth();
-
-    if (mHost->mDropDownWidth == IViewGroupLayoutParams::WRAP_CONTENT) {
-        Int32 contentWidth = mHost->MeasureContentWidth(ISpinnerAdapter::Probe(mAdapter), GetBackground());
-        AutoPtr<IResources> resources;
-        mHost->mContext->GetResources((IResources**)&resources);
-        AutoPtr<IDisplayMetrics> metrics;
-        resources->GetDisplayMetrics((IDisplayMetrics**)&metrics);
-        Int32 pixels = 0;
-        metrics->GetWidthPixels(&pixels);
-        AutoPtr<CRect> cr = (CRect*)(mTempRect.Get());
-        Int32 contentWidthLimit = pixels - cr->mLeft - cr->mRight;
-
-        if (contentWidth > contentWidthLimit) {
-            contentWidth = contentWidthLimit;
-        }
-        SetContentWidth(Elastos::Core::Math::Max(
-                       contentWidth, spinnerWidth - spinnerPaddingLeft - spinnerPaddingRight));
-    }
-    else if (mHost->mDropDownWidth == IViewGroupLayoutParams::MATCH_PARENT) {
-        SetContentWidth(spinnerWidth - spinnerPaddingLeft - spinnerPaddingRight);
-    }
-    else {
-        SetContentWidth(mHost->mDropDownWidth);
-    }
-
-    if (mHost->IsLayoutRtl()) {
-        hOffset += spinnerWidth - spinnerPaddingRight - mHost->GetWidth();
-    }
-    else {
-        hOffset += spinnerPaddingLeft;
-    }
-
-    SetHorizontalOffset(hOffset);
-    SetInputMethodMode(IListPopupWindow::INPUT_METHOD_NOT_NEEDED);
-    ListPopupWindow::Show();
-    GetListView()->SetChoiceMode(IListView::CHOICE_MODE_SINGLE);
-    mHost->SetSelection(mHost->GetSelectedItemPosition());
-
-    // Make sure we hide if our anchor goes away.
-    // TODO: This might be appropriate to push all the way down to PopupWindow,
-    // but it may have other side effects to investigate first. (Text editing handles, etc.)
-    AutoPtr<IViewTreeObserver> vto = mHost->GetViewTreeObserver();
-    if (vto) {
-        AutoPtr<GlobalLayoutListener> layoutListener = new GlobalLayoutListener(mHost, this);
-        vto->AddOnGlobalLayoutListener(layoutListener);
-        AutoPtr<IPopupWindowOnDismissListener> dismissListener = new DismissListener(mHost, layoutListener);
-        SetOnDismissListener(dismissListener);
-    }
-    return NOERROR;
-}
-
-//==========================================================================
-//                       Spinner::DropdownPopup
-//==========================================================================
-Spinner::DropdownPopup::DropdownPopup(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle,
-    /* [in] */ Spinner* host)
-    : _DropdownPopup(context, attrs, defStyle, host)
-{}
-
-PInterface Spinner::DropdownPopup::DropdownPopup::Probe(
-    /* [in] */ REIID riid)
-{
-    if ( riid == EIID_IInterface) {
-        return (IInterface*)(IListPopupWindow *)this;
-    }
-    else if ( riid == EIID_IListPopupWindow ) {
-        return (IListPopupWindow *)this;
-    }
-    else if ( riid == EIID_ISpinnerPopup ) {
-        return (ISpinnerPopup *)this;
-    }
-    else if ( riid == EIID_DropdownPopup) {
-        return reinterpret_cast<PInterface>(this);
-    }
-    return NULL;
-}
-
-UInt32 Spinner::DropdownPopup::DropdownPopup::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 Spinner::DropdownPopup::DropdownPopup::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode Spinner::DropdownPopup::DropdownPopup::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
-{
-    VALIDATE_NOT_NULL(iid);
-    if (object == (IInterface*)(IListPopupWindow *)this) {
-        *iid = EIID_IListPopupWindow;
-    }
-    if (object == (IInterface*)(ISpinnerPopup *)this) {
-        *iid = EIID_ISpinnerPopup;
-    }
-    if (object == reinterpret_cast<PInterface>(this)) {
-        *iid = EIID_DropdownPopup;
-    }
-    else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::SetAdapter(
-    /* [in] */ IListAdapter* adapter)
-{
-    return _DropdownPopup::SetAdapter(adapter);
-}
-
-ECode Spinner::DropdownPopup::SetPromptPosition(
-    /* [in] */ Int32 position)
-{
-    return _DropdownPopup::SetPromptPosition(position);
-}
-
-ECode Spinner::DropdownPopup::GetPromptPosition(
-    /* [out] */ Int32* position)
-{
-    VALIDATE_NOT_NULL(position);
-    *position = _DropdownPopup::GetPromptPosition();
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::SetModal(
-    /* [in] */ Boolean modal)
-{
-    return _DropdownPopup::SetModal(modal);
-}
-
-ECode Spinner::DropdownPopup::IsModal(
-    /* [out] */ Boolean* modal)
-{
-    VALIDATE_NOT_NULL(modal);
-    *modal = _DropdownPopup::IsModal();
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::SetForceIgnoreOutsideTouch(
-    /* [in] */ Boolean forceIgnoreOutsideTouch)
-{
-    return _DropdownPopup::SetForceIgnoreOutsideTouch(forceIgnoreOutsideTouch);
-}
-
-ECode Spinner::DropdownPopup::SetDropDownAlwaysVisible(
-    /* [in] */ Boolean dropDownAlwaysVisible)
-{
-    return _DropdownPopup::SetDropDownAlwaysVisible(dropDownAlwaysVisible);
-}
-
-ECode Spinner::DropdownPopup::IsDropDownAlwaysVisible(
-    /* [out] */ Boolean* visible)
-{
-    VALIDATE_NOT_NULL(visible);
-    *visible = _DropdownPopup::IsDropDownAlwaysVisible();
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::SetSoftInputMode(
-    /* [in] */ Int32 mode)
-{
-    return _DropdownPopup::SetSoftInputMode(mode);
-}
-
-ECode Spinner::DropdownPopup::GetSoftInputMode(
-    /* [out] */ Int32* mode)
-{
-    VALIDATE_NOT_NULL(mode);
-    *mode = _DropdownPopup::GetSoftInputMode();
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::SetListSelector(
-    /* [in] */ IDrawable* selector)
-{
-    return _DropdownPopup::SetListSelector(selector);
-}
-
-ECode Spinner::DropdownPopup::GetBackground(
-    /* [out] */ IDrawable** d)
-{
-    VALIDATE_NOT_NULL(d);
-    AutoPtr<IDrawable> drawable = _DropdownPopup::GetBackground();
-    *d = drawable;
-    REFCOUNT_ADD(*d);
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::SetBackgroundDrawable(
-    /* [in] */ IDrawable* d)
-{
-    return _DropdownPopup::SetBackgroundDrawable(d);
-}
-
-ECode Spinner::DropdownPopup::SetAnimationStyle(
-    /* [in] */ Int32 animationStyle)
-{
-    return _DropdownPopup::SetAnimationStyle(animationStyle);
-}
-
-ECode Spinner::DropdownPopup::GetAnimationStyle(
-    /* [out] */ Int32* style)
-{
-    VALIDATE_NOT_NULL(style);
-    *style = _DropdownPopup::GetAnimationStyle();
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::GetAnchorView(
-    /* [out] */ IView** view)
-{
-    VALIDATE_NOT_NULL(view);
-    AutoPtr<IView> v = _DropdownPopup::GetAnchorView();
-    *view = v;
-    REFCOUNT_ADD(*view);
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::SetAnchorView(
-        /* [in] */ IView* anchor)
-{
-    return _DropdownPopup::SetAnchorView(anchor);
-}
-
-ECode Spinner::DropdownPopup::GetHorizontalOffset(
-    /* [out] */ Int32* offset)
-{
-    VALIDATE_NOT_NULL(offset);
-    *offset = _DropdownPopup::GetHorizontalOffset();
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::SetHorizontalOffset(
-    /* [in] */ Int32 offset)
-{
-    return _DropdownPopup::SetHorizontalOffset(offset);
-}
-
-ECode Spinner::DropdownPopup::GetVerticalOffset(
-    /* [out] */ Int32* offset)
-{
-    VALIDATE_NOT_NULL(offset);
-    *offset = _DropdownPopup::GetVerticalOffset();
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::SetVerticalOffset(
-        /* [in] */ Int32 offset)
-{
-    return _DropdownPopup::SetVerticalOffset(offset);
-}
-
-ECode Spinner::DropdownPopup::GetWidth(
-    /* [out] */ Int32* width)
-{
-    VALIDATE_NOT_NULL(width);
-    *width = _DropdownPopup::GetWidth();
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::SetWidth(
-    /* [in] */ Int32 width)
-{
-    return _DropdownPopup::SetWidth(width);
-}
-
-ECode Spinner::DropdownPopup::SetContentWidth(
-    /* [in] */ Int32 width)
-{
-    return _DropdownPopup::SetContentWidth(width);
-}
-
-ECode Spinner::DropdownPopup::GetHeight(
-    /* [out] */ Int32* height)
-{
-    VALIDATE_NOT_NULL(height);
-    *height = _DropdownPopup::GetHeight();
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::SetHeight(
-    /* [in] */ Int32 height)
-{
-    return _DropdownPopup::SetHeight(height);
-}
-
-ECode Spinner::DropdownPopup::SetOnItemClickListener(
-    /* [in] */ IAdapterViewOnItemClickListener* clickListener)
-{
-    return _DropdownPopup::SetOnItemClickListener(clickListener);
-}
-
-ECode Spinner::DropdownPopup::SetOnItemSelectedListener(
-    /* [in] */ IAdapterViewOnItemSelectedListener* selectedListener)
-{
-    return _DropdownPopup::SetOnItemSelectedListener(selectedListener);
-}
-
-ECode Spinner::DropdownPopup::SetPromptView(
-    /* [in] */ IView* prompt)
-{
-    return _DropdownPopup::SetPromptView(prompt);
-}
-
-ECode Spinner::DropdownPopup::PostShow()
-{
-    return _DropdownPopup::PostShow();
-}
-
-ECode Spinner::DropdownPopup::Show()
-{
-    return _DropdownPopup::Show();
-}
-
-ECode Spinner::DropdownPopup::Dismiss()
-{
-    return _DropdownPopup::Dismiss();
-}
-
-ECode Spinner::DropdownPopup::SetOnDismissListener(
-    /* [in] */ IPopupWindowOnDismissListener* listener)
-{
-    return _DropdownPopup::SetOnDismissListener(listener);
-}
-
-ECode Spinner::DropdownPopup::SetInputMethodMode(
-    /* [in] */ Int32 mode)
-{
-    return _DropdownPopup::SetInputMethodMode(mode);
-}
-
-ECode Spinner::DropdownPopup::GetInputMethodMode(
-    /* [out] */ Int32* mode)
-{
-    VALIDATE_NOT_NULL(mode);
-    *mode = _DropdownPopup::GetInputMethodMode();
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::SetSelection(
-    /* [in] */ Int32 position)
-{
-    return _DropdownPopup::SetSelection(position);
-}
-
-ECode Spinner::DropdownPopup::ClearListSelection()
-{
-    return _DropdownPopup::ClearListSelection();
-}
-
-ECode Spinner::DropdownPopup::IsShowing(
-    /* [out] */ Boolean* showing)
-{
-    VALIDATE_NOT_NULL(showing);
-    *showing = _DropdownPopup::IsShowing();
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::IsInputMethodNotNeeded(
-    /* [out] */ Boolean* needed)
-{
-    VALIDATE_NOT_NULL(needed);
-    *needed = _DropdownPopup::IsInputMethodNotNeeded();
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::PerformItemClick(
-    /* [in] */ Int32 position,
-    /* [out] */ Boolean* click)
-{
-    VALIDATE_NOT_NULL(click);
-    *click = _DropdownPopup::PerformItemClick(position);
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::GetSelectedItem(
-    /* [out] */ IInterface** item)
-{
-    VALIDATE_NOT_NULL(item);
-    AutoPtr<IInterface> i = _DropdownPopup::GetSelectedItem();
-    *item = i;
-    REFCOUNT_ADD(*item);
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::GetSelectedItemPosition(
-    /* [out] */ Int32* position)
-{
-    VALIDATE_NOT_NULL(position);
-    *position = _DropdownPopup::GetSelectedItemPosition();
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::GetSelectedItemId(
-    /* [out] */ Int64* id)
-{
-    VALIDATE_NOT_NULL(id);
-    *id = _DropdownPopup::GetSelectedItemId();
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::GetSelectedView(
-    /* [out] */ IView** view)
-{
-    VALIDATE_NOT_NULL(view);
-    AutoPtr<IView> v = _DropdownPopup::GetSelectedView();
-    *view = v;
-    REFCOUNT_ADD(*view);
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::GetListView(
-    /* [out] */ IListView** view)
-{
-    VALIDATE_NOT_NULL(view);
-    AutoPtr<IListView> v = _DropdownPopup::GetListView();
-    *view = v;
-    REFCOUNT_ADD(*view);
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::SetListItemExpandMax(
-    /* [in] */ Int32 max)
-{
-    return _DropdownPopup::SetListItemExpandMax(max);
-}
-
-ECode Spinner::DropdownPopup::OnKeyDown(
-    /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event,
-    /* [out] */ Boolean* res)
-{
-    VALIDATE_NOT_NULL(res);
-    *res = _DropdownPopup::OnKeyDown(keyCode, event);
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::OnKeyUp(
-    /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event,
-    /* [out] */ Boolean* res)
-{
-    VALIDATE_NOT_NULL(res);
-    *res = _DropdownPopup::OnKeyUp(keyCode, event);
-    return NOERROR;
-}
-
-ECode Spinner::DropdownPopup::OnKeyPreIme(
-    /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event,
-    /* [out] */ Boolean* res)
-{
-    VALIDATE_NOT_NULL(res);
-    *res = _DropdownPopup::OnKeyPreIme(keyCode, event);
+    VALIDATE_NOT_NULL(csq);
+    *csq = mHintText;
+    REFCOUNT_ADD(*csq);
     return NOERROR;
 }
 
 ECode Spinner::DropdownPopup::SetPromptText(
     /* [in] */ ICharSequence* hintText)
 {
-    return _DropdownPopup::SetPromptText(hintText);
+    // Hint text is ignored for dropdowns, but maintain it here.
+    mHintText = hintText;
+    return NOERROR;
 }
 
-ECode Spinner::DropdownPopup::GetHintText(
-    /* [out] */ ICharSequence** csq)
+void Spinner::DropdownPopup::ComputeContentWidth()
 {
-    AutoPtr<ICharSequence> temp = _DropdownPopup::GetHintText();
-    *csq = temp;
-    REFCOUNT_ADD(*csq);
+    AutoPtr<IDrawable> background;
+    mHost->GetBackground((IDrawable**)&background);
+    Int32 hOffset = 0;
+    Boolean isLayoutRtl = FALSE;
+    if (background != NULL) {
+        Boolean isPadding = FALSE;
+        background->GetPadding(mHost->mTempRect, &isPadding);
+        mHost->IsLayoutRtl(&isLayoutRtl);
+        if (isLayoutRtl) {
+            mHost->mTempRect->GetRight(&hOffset);
+        }
+        else {
+            mHost->mTempRect->GetLeft(&hOffset);
+            hOffset = -hOffset;
+        }
+    }
+    else {
+        mHost->mTempRect->SetLeft(0);
+        mHost->mTempRect->SetRight(0);
+    }
+
+    Int32 spinnerPaddingLeft = 0;
+    mHost->GetPaddingLeft(&spinnerPaddingLeft);
+    Int32 spinnerPaddingRight = 0;
+    mHost->GetPaddingRight(&spinnerPaddingRight);
+    Int32 spinnerWidth = 0;
+    mHost->GetWidth(&spinnerWidth);
+
+    if (mHost->mDropDownWidth == IListPopupWindow::WRAP_CONTENT) {
+        AutoPtr<IDrawable> drawable;
+        mHost->GetBackground((IDrawable**)&drawable);
+        Int32 contentWidth = mHost->MeasureContentWidth(
+                ISpinnerAdapter::Probe(mAdapter), drawable);
+
+        AutoPtr<IResources> res;
+        mHost->mContext->GetResources((IResources**)&res);
+        AutoPtr<IDisplayMetrics> dm;
+        res->GetDisplayMetrics((IDisplayMetrics**)&dm);
+        Int32 widthPixels = 0;
+        dm->GetWidthPixels(&widthPixels);
+        Int32 left = 0, right = 0;
+        mHost->mTempRect->GetLeft(&left);
+        mHost->mTempRect->GetRight(&right);
+        Int32 contentWidthLimit = widthPixels - left - right;
+        if (contentWidth > contentWidthLimit) {
+            contentWidth = contentWidthLimit;
+        }
+        SetContentWidth(Elastos::Core::Math::Max(
+               contentWidth, spinnerWidth - spinnerPaddingLeft - spinnerPaddingRight));
+    }
+    else if (mHost->mDropDownWidth == IListPopupWindow::MATCH_PARENT) {
+        SetContentWidth(spinnerWidth - spinnerPaddingLeft - spinnerPaddingRight);
+    }
+    else {
+        SetContentWidth(mHost->mDropDownWidth);
+    }
+
+    if (mHost->IsLayoutRtl(&isLayoutRtl), isLayoutRtl) {
+        Int32 width = 0;
+        GetWidth(&width);
+        hOffset += spinnerWidth - spinnerPaddingRight - width;
+    }
+    else {
+        hOffset += spinnerPaddingLeft;
+    }
+    ListPopupWindow::SetHorizontalOffset(hOffset);
+}
+
+ECode Spinner::DropdownPopup::Show(
+    /* [in] */ Int32 textDirection,
+    /* [in] */ Int32 textAlignment)
+{
+    Boolean wasShowing = FALSE;
+    IsShowing(&wasShowing);
+
+    ComputeContentWidth();
+
+    SetInputMethodMode(IListPopupWindow::INPUT_METHOD_NOT_NEEDED);
+    ListPopupWindow::Show();
+    AutoPtr<IListView> listView;
+    GetListView((IListView**) &listView);
+    IAbsListView::Probe(listView)->SetChoiceMode(IAbsListView::CHOICE_MODE_SINGLE);
+    IView::Probe(listView)->SetTextDirection(textDirection);
+    IView::Probe(listView)->SetTextAlignment(textAlignment);
+    Int32 position = 0;
+    mHost->GetSelectedItemPosition(&position);
+    SetSelection(position);
+
+    if (wasShowing) {
+        // Skip setting up the layout/dismiss listener below. If we were previously
+        // showing it will still stick around.
+        return NOERROR;
+    }
+
+    // Make sure we hide if our anchor goes away.
+    // TODO: This might be appropriate to push all the way down to PopupWindow,
+    // but it may have other side effects to investigate first. (Text editing handles, etc.)
+    AutoPtr<IViewTreeObserver> vto;
+    mHost->GetViewTreeObserver((IViewTreeObserver**)&vto);
+    if (vto != NULL) {
+        AutoPtr<GlobalLayoutListener> layoutListener = new GlobalLayoutListener(mHost, this);
+        vto->AddOnGlobalLayoutListener(layoutListener);
+        AutoPtr<IPopupWindowOnDismissListener> dismiss = new DismissListener(mHost, layoutListener);
+        SetOnDismissListener(dismiss);
+    }
     return NOERROR;
+}
+
+ECode Spinner::DropdownPopup::Dismiss()
+{
+    return ListPopupWindow::Dismiss();
+}
+
+ECode Spinner::DropdownPopup::IsShowing(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return ListPopupWindow::IsShowing(result);
+}
+
+ECode Spinner::DropdownPopup::SetBackgroundDrawable(
+    /* [in] */ IDrawable* d)
+{
+    return ListPopupWindow::SetBackgroundDrawable(d);
+}
+
+ECode Spinner::DropdownPopup::SetVerticalOffset(
+    /* [in] */ Int32 offset)
+{
+    return ListPopupWindow::SetVerticalOffset(offset);
+}
+
+ECode Spinner::DropdownPopup::SetHorizontalOffset(
+    /* [in] */ Int32 offset)
+{
+    return ListPopupWindow::SetHorizontalOffset(offset);
+}
+
+ECode Spinner::DropdownPopup::GetBackground(
+    /* [out] */ IDrawable** result)
+{
+    VALIDATE_NOT_NULL(result);
+    return ListPopupWindow::GetBackground(result);
+}
+
+ECode Spinner::DropdownPopup::GetVerticalOffset(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return ListPopupWindow::GetVerticalOffset(result);
+}
+
+ECode Spinner::DropdownPopup::GetHorizontalOffset(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return ListPopupWindow::GetHorizontalOffset(result);
+}
+
+//==========================================================================
+//                       Spinner::SpinnerForwardingListener
+//==========================================================================
+Spinner::SpinnerForwardingListener::SpinnerForwardingListener(
+    /* [in] */ DropdownPopup* popup,
+    /* [in] */ Spinner* host)
+    : mData(popup)
+    , mHost(host)
+{
+    ForwardingListener::constructor((IView*)host->Probe(EIID_IView));
+}
+
+ECode Spinner::SpinnerForwardingListener::GetPopup(
+    /* [out] */ IListPopupWindow** window)
+{
+    VALIDATE_NOT_NULL(window);
+    *window = (IListPopupWindow*)mData->Probe(EIID_IListPopupWindow);
+    REFCOUNT_ADD(*window);
+    return NOERROR;
+}
+
+ECode Spinner::SpinnerForwardingListener::OnForwardingStarted(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    Boolean showing = FALSE;
+    if (mHost->mPopup->IsShowing(&showing), !showing) {
+        Int32 dir = 0, align = 0;
+        mHost->GetTextDirection(&dir);
+        mHost->GetTextAlignment(&align);
+        mHost->mPopup->Show(dir, align);
+    }
+    *result = TRUE;
+    return NOERROR;
+}
+
+//==========================================================================
+//                       Spinner::SavedState
+//==========================================================================
+CAR_INTERFACE_IMPL(Spinner::SavedState, AbsSpinner::SavedState, ISpinnerSavedState);
+Spinner::SavedState::SavedState()
+    : mShowDropdown(FALSE)
+{}
+
+ECode Spinner::SavedState::constructor()
+{
+    return NOERROR;
+}
+
+ECode Spinner::SavedState::constructor(
+    /* [in] */ IParcelable* superState)
+{
+    return AbsSpinner::SavedState::constructor(superState);
+}
+
+ECode Spinner::SavedState::WriteToParcel(
+    /* [in] */ IParcel* out)
+{
+    AbsSpinner::SavedState::WriteToParcel(out);
+    out->WriteBoolean(mShowDropdown);
+    return NOERROR;
+}
+
+ECode Spinner::SavedState::ReadFromParcel(
+    /* [in] */ IParcel* source)
+{
+    AbsSpinner::SavedState::ReadFromParcel(source);
+    source->ReadBoolean(&mShowDropdown);
+    return NOERROR;
+}
+
+const Int32 Spinner::MAX_ITEMS_MEASURED = 15;
+const Int32 Spinner::MODE_DIALOG = 0;
+const Int32 Spinner::MODE_DROPDOWN = 1;
+const Int32 Spinner::MODE_THEME = -1;
+const String Spinner::TAG("Spinner");
+
+CAR_INTERFACE_IMPL(Spinner, AbsSpinner, ISpinner);
+Spinner::Spinner()
+    : mDropDownWidth(0)
+    , mGravity(0)
+    , mDisableChildrenWhenDisabled(FALSE)
+{
+    CRect::New((IRect**)&mTempRect);
+}
+
+ECode Spinner::constructor(
+    /* [in] */ IContext* context)
+{
+    return constructor(context, (IAttributeSet*)NULL);
+}
+
+ECode Spinner::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ Int32 mode)
+{
+    return constructor(context, NULL, R::attr::spinnerStyle, mode);
+}
+
+ECode Spinner::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, R::attr::spinnerStyle);
+}
+
+ECode Spinner::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+{
+    return constructor(context, attrs, defStyleAttr, 0, MODE_THEME);
+}
+
+ECode Spinner::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 mode)
+{
+    return constructor(context, attrs, defStyleAttr, 0, mode);
+}
+
+ECode Spinner::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes,
+    /* [in] */ Int32 mode)
+{
+    AbsSpinner::constructor(context, attrs, defStyleAttr, defStyleRes);
+
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::Spinner),
+            ARRAY_SIZE(R::styleable::Spinner));
+    AutoPtr<ITypedArray> a;
+    FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
+
+    if (mode == MODE_THEME) {
+        a->GetInt32(R::styleable::Spinner_spinnerMode, MODE_DIALOG, &mode);
+    }
+
+    switch (mode) {
+        case MODE_DIALOG: {
+            mPopup = new DialogPopup(this);
+            break;
+        }
+
+        case MODE_DROPDOWN: {
+            AutoPtr<DropdownPopup> popup = new DropdownPopup(context, attrs, defStyleAttr, defStyleRes, this);
+            a->GetLayoutDimension(R::styleable::Spinner_dropDownWidth, IViewGroupLayoutParams::WRAP_CONTENT, &mDropDownWidth);
+            AutoPtr<IDrawable> d;
+            a->GetDrawable(R::styleable::Spinner_popupBackground, (IDrawable**)&d);
+            popup->SetBackgroundDrawable(d);
+            mPopup = popup;
+            mForwardingListener = new SpinnerForwardingListener(popup, this);
+            break;
+        }
+    }
+
+    a->GetInt32(R::styleable::Spinner_gravity, IGravity::CENTER, &mGravity);
+    String prompt;
+    a->GetString(R::styleable::Spinner_prompt, &prompt);
+    AutoPtr<ICharSequence> cprompt;
+    CString::New(prompt, (ICharSequence**)&cprompt);
+    mPopup->SetPromptText(cprompt);
+    a->GetBoolean(R::styleable::Spinner_disableChildrenWhenDisabled, FALSE, &mDisableChildrenWhenDisabled);
+
+    a->Recycle();
+
+    if (mTempAdapter) {
+        mPopup->SetAdapter(mTempAdapter);
+        mTempAdapter = NULL;
+    }
+
+    return NOERROR;
+}
+
+ECode Spinner::SetPopupBackgroundDrawable(
+    /* [in] */ IDrawable* background)
+{
+    if (!IDropdownPopup::Probe(mPopup)) {
+        return NOERROR;
+    }
+    mPopup->SetBackgroundDrawable(background);
+    return NOERROR;
+}
+
+ECode Spinner::SetPopupBackgroundResource(
+    /* [in] */ Int32 resId)
+{
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IDrawable> drawable;
+    context->GetDrawable(resId, (IDrawable**)&drawable);
+    SetPopupBackgroundDrawable(drawable);
+    return NOERROR;
+}
+
+ECode Spinner::GetPopupBackground(
+    /* [out] */ IDrawable** drawable)
+{
+    VALIDATE_NOT_NULL(drawable);
+    return mPopup->GetBackground(drawable);
+}
+
+ECode Spinner::SetDropDownVerticalOffset(
+    /* [in] */ Int32 pixels)
+{
+    return mPopup->SetVerticalOffset(pixels);
+}
+
+ECode Spinner::GetDropDownVerticalOffset(
+    /* [out] */ Int32* offset)
+{
+    VALIDATE_NOT_NULL(offset);
+    return mPopup->GetVerticalOffset(offset);
+}
+
+ECode Spinner::SetDropDownHorizontalOffset(
+    /* [in] */ Int32 pixels)
+{
+    return mPopup->SetHorizontalOffset(pixels);
+}
+
+ECode Spinner::GetDropDownHorizontalOffset(
+    /* [out] */ Int32* offset)
+{
+    VALIDATE_NOT_NULL(offset);
+    return mPopup->GetHorizontalOffset(offset);
+}
+
+ECode Spinner::SetDropDownWidth(
+    /* [in] */ Int32 pixels)
+{
+    if (!IDropdownPopup::Probe(mPopup)) {
+        return NOERROR;
+    }
+    mDropDownWidth = pixels;
+    return NOERROR;
+}
+
+ECode Spinner::GetDropDownWidth(
+    /* [out] */ Int32* width)
+{
+    VALIDATE_NOT_NULL(width);
+    *width = mDropDownWidth;
+    return NOERROR;
+}
+
+ECode Spinner::SetEnabled(
+    /* [in] */ Boolean enabled)
+{
+    AbsSpinner::SetEnabled(enabled);
+    if (mDisableChildrenWhenDisabled) {
+        Int32 count = 0;
+        GetChildCount(&count);
+        for (Int32 i = 0; i < count; i++) {
+            AutoPtr<IView> child;
+            GetChildAt(i, (IView**)&child);
+            child->SetEnabled(enabled);
+        }
+    }
+    return NOERROR;
+}
+
+ECode Spinner::SetGravity(
+    /* [in] */ Int32 gravity)
+{
+    if (mGravity != gravity) {
+        if ((gravity & IGravity::HORIZONTAL_GRAVITY_MASK) == 0) {
+            gravity |= IGravity::START;
+        }
+        mGravity = gravity;
+        RequestLayout();
+    }
+    return NOERROR;
+}
+
+ECode Spinner::GetGravity(
+    /* [out] */ Int32* gravity)
+{
+    VALIDATE_NOT_NULL(gravity);
+    *gravity = mGravity;
+    return NOERROR;
+}
+
+ECode Spinner::SetAdapter(
+    /* [in] */ IAdapter* adapter)
+{
+    AutoPtr<ISpinnerAdapter> sa = ISpinnerAdapter::Probe(adapter);
+    if (sa == NULL) {
+        return NOERROR;
+    }
+
+    AbsSpinner::SetAdapter(IAdapter::Probe(sa));
+    mRecycler->Clear();
+
+    Int32 targetSdkVersion = 0, count = 0;
+    AutoPtr<IApplicationInfo> info;
+    mContext->GetApplicationInfo((IApplicationInfo**)&info);
+    info->GetTargetSdkVersion(&targetSdkVersion);
+    if (targetSdkVersion >= Build::VERSION_CODES::LOLLIPOP
+            && adapter != NULL && (adapter->GetViewTypeCount(&count), count) != 1) {
+        // throw new IllegalArgumentException("Spinner adapter view type count must be 1");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    if (mPopup) {
+        AutoPtr<IListAdapter> ad = new DropDownAdapter(sa);
+        mPopup->SetAdapter(ad);
+    }
+    else {
+        mTempAdapter = new DropDownAdapter(sa);
+    }
+    return NOERROR;
+}
+
+ECode Spinner::GetBaseline(
+    /* [out] */ Int32* baseline)
+{
+    VALIDATE_NOT_NULL(baseline);
+    *baseline = -1;
+
+    AutoPtr<IView> child;
+    Int32 count = 0, cc = 0;
+    IAdapter::Probe(mAdapter)->GetCount(&count);
+    if ((GetChildCount(&cc), cc) > 0) {
+        GetChildAt(0, (IView**)&child);
+    }
+    else if (mAdapter && count > 0) {
+        child = MakeView(0, FALSE);
+        mRecycler->Put(0, child);
+    }
+
+    if (child) {
+        Int32 childBaseline = 0;
+        child->GetBaseline(&childBaseline);
+        Int32 top = 0;
+        child->GetTop(&top);
+        if (childBaseline >= 0) {
+            *baseline = top + childBaseline;
+        }
+    }
+
+    return NOERROR;
+}
+
+ECode Spinner::SetOnItemClickListener(
+    /* [in] */ IAdapterViewOnItemClickListener* l)
+{
+    //throw new RuntimeException("setOnItemClickListener cannot be used with a spinner.");
+    return E_RUNTIME_EXCEPTION;
+}
+
+ECode Spinner::SetOnItemClickListenerInt(
+    /* [in] */ IAdapterViewOnItemClickListener* l)
+{
+    return AbsSpinner::SetOnItemClickListener(l);
+}
+
+ECode Spinner::OnTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    if (mForwardingListener.Get() != NULL && (mForwardingListener->OnTouch(this, event, result), *result)) {
+        *result = TRUE;
+        return NOERROR;
+    }
+
+    return AbsSpinner::OnTouchEvent(event, result);
+}
+
+ECode Spinner::PerformClick(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    Boolean handled = FALSE;
+    AbsSpinner::PerformClick(&handled);
+    if (!handled) {
+        handled = TRUE;
+        Boolean show = FALSE;
+        mPopup->IsShowing(&show);
+        if (!show) {
+            Int32 dir = 0, align = 0;
+            GetTextDirection(&dir);
+            GetTextAlignment(&align);
+            mPopup->Show(dir, align);
+        }
+    }
+    *result = handled;
+    return NOERROR;
+}
+
+ECode Spinner::OnClick(
+    /* [in] */ IDialogInterface* dialog,
+    /* [in] */ Int32 which)
+{
+    SetSelection(which);
+    dialog->Dismiss();
+    return NOERROR;
+}
+
+ECode Spinner::OnInitializeAccessibilityEvent(
+    /* [in] */ IAccessibilityEvent* event)
+{
+    AbsSpinner::OnInitializeAccessibilityEvent(event);
+    AutoPtr<ICharSequence> seq;
+    CString::New(String("CSpinner"), (ICharSequence**)&seq);
+    return IAccessibilityRecord::Probe(event)->SetClassName(seq);
+}
+
+ECode Spinner::OnInitializeAccessibilityNodeInfo(
+    /* [in] */ IAccessibilityNodeInfo* info)
+{
+    AbsSpinner::OnInitializeAccessibilityNodeInfo(info);
+    AutoPtr<ICharSequence> seq;
+    CString::New(String("CSpinner"), (ICharSequence**)&seq);
+    info->SetClassName(seq);
+
+    if (mAdapter != NULL) {
+        info->SetCanOpenPopup(TRUE);
+    }
+    return NOERROR;
+}
+
+ECode Spinner::SetPrompt(
+    /* [in] */ ICharSequence* prompt)
+{
+    return mPopup->SetPromptText(prompt);
+}
+
+ECode Spinner::SetPromptId(
+    /* [in] */ Int32 promptId)
+{
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<ICharSequence> csq;
+    context->GetText(promptId, (ICharSequence**)&csq);
+    SetPrompt(csq);
+    return NOERROR;
+}
+
+ECode Spinner::GetPrompt(
+    /* [out] */ ICharSequence** seq)
+{
+    VALIDATE_NOT_NULL(seq);
+    return mPopup->GetHintText(seq);
+}
+
+Int32 Spinner::MeasureContentWidth(
+    /* [in] */ ISpinnerAdapter* adapter,
+    /* [in] */ IDrawable* background)
+{
+    if (!adapter) {
+        return 0;
+    }
+    Int32 width = 0;
+    AutoPtr<IView> itemView;
+    Int32 itemType = 0;
+    Int32 widthMeasureSpec = View::MeasureSpec::MakeMeasureSpec(0, View::MeasureSpec::UNSPECIFIED);
+    Int32 heightMeasureSpec = View::MeasureSpec::MakeMeasureSpec(0, View::MeasureSpec::UNSPECIFIED);
+
+    Int32 pos = 0;
+    GetSelectedItemPosition(&pos);
+    Int32 start = Elastos::Core::Math::Max(0, pos);
+    Int32 adc = 0;
+    IAdapter::Probe(adapter)->GetCount(&adc);
+    Int32 end = Elastos::Core::Math::Min(adc, start + MAX_ITEMS_MEASURED);
+    Int32 count = end - start;
+    start = Elastos::Core::Math::Max(0, start - (MAX_ITEMS_MEASURED - count));
+
+    for (Int32 i = start; i < end; i++) {
+        Int32 positionType = 0;
+        IAdapter::Probe(adapter)->GetItemViewType(i, &positionType);
+        if (positionType != itemType) {
+            itemType = positionType;
+            itemView = NULL;
+        }
+        IAdapter::Probe(adapter)->GetView(i, itemView, (IViewGroup*)this->Probe(EIID_IViewGroup), (IView**)&itemView);
+
+        AutoPtr<IViewGroupLayoutParams> lp;
+        itemView->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+        if (!lp) {
+            AutoPtr<IViewGroupLayoutParams> params;
+            CViewGroupLayoutParams::New(IViewGroupLayoutParams::WRAP_CONTENT, IViewGroupLayoutParams::WRAP_CONTENT,
+                (IViewGroupLayoutParams**)&params);
+            itemView->SetLayoutParams(params);
+        }
+        itemView->Measure(widthMeasureSpec, heightMeasureSpec);
+        Int32  mw = 0;
+        itemView->GetMeasuredWidth(&mw);
+        width = Elastos::Core::Math::Max(width, mw);
+    }
+
+    if (background) {
+        Boolean res;
+        background->GetPadding(mTempRect, &res);
+        AutoPtr<CRect> ct = (CRect*)mTempRect.Get();
+        width += ct->mLeft + ct->mRight;
+    }
+    return width;
+}
+
+AutoPtr<IParcelable> Spinner::OnSaveInstanceState()
+{
+    AutoPtr<IParcelable> ss;
+    CSpinnerSavedState::New(AbsSpinner::OnSaveInstanceState(), (IParcelable**)&ss);
+    Boolean tmp = FALSE;
+    ((CSpinnerSavedState*)ss.Get())->mShowDropdown = mPopup != NULL && (mPopup->IsShowing(&tmp), tmp);
+    return ss;
+}
+
+void Spinner::OnRestoreInstanceState(
+    /* [in] */ IParcelable* state)
+{
+    AutoPtr<SavedState> ss = (SavedState*) state;
+
+    AutoPtr<IParcelable> s;
+    ss->GetSuperState((IParcelable**)&s);
+    AbsSpinner::OnRestoreInstanceState(s);
+
+    if (ss->mShowDropdown) {
+        AutoPtr<IViewTreeObserver> vto;
+        GetViewTreeObserver((IViewTreeObserver**)&vto);
+        if (vto != NULL) {
+            AutoPtr<IOnGlobalLayoutListener> listener = new GlobalLayoutListener2(this);
+            vto->AddOnGlobalLayoutListener(listener);
+        }
+    }
+}
+
+ECode Spinner::OnDetachedFromWindow()
+{
+    AbsSpinner::OnDetachedFromWindow();
+
+    Boolean show = FALSE;
+    mPopup->IsShowing(&show);
+    if (mPopup && show) {
+        mPopup->Dismiss();
+    }
+    return NOERROR;
+}
+
+void Spinner::OnMeasure(
+    /* [in] */ Int32 widthMeasureSpec,
+    /* [in] */ Int32 heightMeasureSpec)
+{
+    AbsSpinner::OnMeasure(widthMeasureSpec, heightMeasureSpec);
+    if (mPopup && View::MeasureSpec::GetMode(widthMeasureSpec) == View::MeasureSpec::AT_MOST) {
+        Int32 measuredWidth = 0, measuredHeight = 0;
+        GetMeasuredWidth(&measuredWidth);
+        GetMeasuredHeight(&measuredHeight);
+        AutoPtr<IAdapter> a;
+        GetAdapter((IAdapter**)&a);
+        AutoPtr<ISpinnerAdapter> adapter = ISpinnerAdapter::Probe(a);
+
+        AutoPtr<IDrawable> drawable;
+        GetBackground((IDrawable**)&drawable);
+        SetMeasuredDimension(Elastos::Core::Math::Min(Elastos::Core::Math::Max(
+            measuredWidth, MeasureContentWidth(adapter, drawable)),
+            MeasureSpec::GetSize(widthMeasureSpec)), measuredHeight);
+    }
+}
+
+ECode Spinner::OnLayout(
+    /* [in] */ Boolean changed,
+    /* [in] */ Int32 l,
+    /* [in] */ Int32 t,
+    /* [in] */ Int32 r,
+    /* [in] */ Int32 b)
+{
+    AbsSpinner::OnLayout(changed, l, t, r, b);
+    mInLayout = TRUE;
+    Layout(0, FALSE);
+    mInLayout = FALSE;
+    return NOERROR;
+}
+
+void Spinner::Layout(
+    /* [in] */ Int32 delta,
+    /* [in] */ Boolean animate)
+{
+    Int32 childrenLeft = mSpinnerPadding->mLeft;
+    Int32 childrenWidth = mRight - mLeft - mSpinnerPadding->mLeft - mSpinnerPadding->mRight;
+
+    if (mDataChanged) {
+        HandleDataChanged();
+    }
+
+    if (mItemCount == 0) {
+        ResetList();
+        return;
+    }
+     if (mNextSelectedPosition >= 0) {
+        SetSelectedPositionInt(mNextSelectedPosition);
+    }
+
+    RecycleAllViews();
+    RemoveAllViewsInLayout();
+    mFirstPosition = mSelectedPosition;
+
+    if (mAdapter != NULL) {
+        AutoPtr<IView> sel = MakeView(mSelectedPosition, TRUE);
+        Int32 width = 0;
+        sel->GetMeasuredWidth(&width);
+        Int32 selectedOffset = childrenLeft;
+        Int32 layoutDirection = 0;
+        GetLayoutDirection(&layoutDirection);
+        Int32 absoluteGravity = Gravity::GetAbsoluteGravity(mGravity, layoutDirection);
+        switch (absoluteGravity & IGravity::HORIZONTAL_GRAVITY_MASK) {
+            case IGravity::CENTER_HORIZONTAL:
+                selectedOffset = childrenLeft + (childrenWidth / 2) - (width / 2);
+                break;
+            case IGravity::RIGHT:
+                selectedOffset = childrenLeft + childrenWidth - width;
+                break;
+        }
+
+        sel->OffsetLeftAndRight(selectedOffset);
+    }
+
+    // Flush any cached views that did not get reused above
+    mRecycler->Clear();
+    Invalidate();
+    CheckSelectionChanged();
+    mDataChanged = FALSE;
+    mNeedSync = FALSE;
+    SetNextSelectedPositionInt(mSelectedPosition);
+}
+
+AutoPtr<IView> Spinner::MakeView(
+    /* [in] */ Int32 position,
+    /* [in] */ Boolean addChild)
+{
+    AutoPtr<IView> child;
+    if (!mDataChanged) {
+        child = mRecycler->Get(position);
+        if (child) {
+            SetUpChild(child, addChild);
+            return child;
+        }
+    }
+    child = NULL;
+    // Nothing found in the recycler -- ask the adapter for a view
+    IAdapter::Probe(mAdapter)->GetView(position, NULL, THIS_PROBE(IViewGroup), (IView**)&child);
+
+    // Position the view
+    SetUpChild(child, addChild);
+    return child;
+}
+
+void Spinner::SetUpChild(
+    /* [in] */ IView* child,
+    /* [in] */ Boolean addChild)
+{
+    assert(child != NULL);
+
+    AutoPtr<IViewGroupLayoutParams> lp;
+    child->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+    if (!lp) {
+        GenerateDefaultLayoutParams((IViewGroupLayoutParams**)&lp);
+    }
+
+    if (addChild) {
+        AddViewInLayout(child, 0, lp);
+    }
+
+    Boolean value = FALSE;
+    child->SetSelected((HasFocus(&value), value));
+    if (mDisableChildrenWhenDisabled) {
+        child->SetEnabled((IsEnabled(&value), value));
+    }
+    Int32 h = 0;
+    lp->GetHeight(&h);
+    Int32 childHeightSpec = ViewGroup::GetChildMeasureSpec(mHeightMeasureSpec,
+            mSpinnerPadding->mTop + mSpinnerPadding->mBottom, h);
+    Int32 w = 0;
+    lp->GetWidth(&w);
+    Int32 childWidthSpec = ViewGroup::GetChildMeasureSpec(mWidthMeasureSpec,
+            mSpinnerPadding->mLeft + mSpinnerPadding->mRight, w);
+
+    child->Measure(childWidthSpec, childHeightSpec);
+
+    Int32 measuredHeight = 0, sh = 0;
+    child->GetMeasuredHeight(&measuredHeight);
+    Int32 childLeft = 0, childRight = 0;
+
+    GetMeasuredHeight(&sh);
+    Int32 childTop = mSpinnerPadding->mTop + ((sh - mSpinnerPadding->mBottom -
+        mSpinnerPadding->mTop - measuredHeight) / 2);
+    Int32 childBottom = childTop + measuredHeight;
+    Int32 width = 0;
+    child->GetMeasuredWidth(&width);
+    childLeft = 0;
+    childRight = childLeft + width;
+
+    child->Layout(childLeft, childTop, childRight, childBottom);
 }
 
 } // namespace Widget

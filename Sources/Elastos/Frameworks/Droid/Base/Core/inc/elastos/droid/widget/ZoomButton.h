@@ -7,17 +7,21 @@
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IView;
-using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
-using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
+using Elastos::Droid::View::IViewOnLongClickListener;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class ZoomButton : public ImageButton
+class ZoomButton
+    : public ImageButton
+    , public IZoomButton
+    , public IViewOnLongClickListener
 {
 private:
     class ZoomButtonRunnable
@@ -33,31 +37,70 @@ private:
         ZoomButton* mHost;
     };
 
-public:
-    ZoomButton(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = 0);
+    class LongClickListener
+        : public Object
+        , public IViewOnLongClickListener
+    {
+    public:
+        CAR_INTERFACE_DECL();
 
-    CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* event);
+        LongClickListener(
+            /* [in] */ ZoomButton* host);
+
+        CARAPI OnLongClick(
+            /* [in] */ IView* v,
+            /* [out] */ Boolean* result);
+
+    private:
+        ZoomButton* mHost;
+    };
+
+public:
+    CAR_INTERFACE_DECL();
+
+    ZoomButton();
+
+    CARAPI constructor(
+        /* [in] */ IContext* ctx);
+
+    CARAPI constructor(
+        /* [in] */ IContext* ctx,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
+        /* [in] */ IContext* ctx,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI constructor(
+        /* [in] */ IContext* ctx,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
+
+    CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
     CARAPI SetZoomSpeed(
         /* [in] */ Int64 speed);
 
-    CARAPI_(Boolean) OnLongClick(
-        /* [in] */ IView* v);
+    CARAPI OnLongClick(
+        /* [in] */ IView* v,
+        /* [out] */ Boolean* result);
 
-    CARAPI_(Boolean) OnKeyUp(
+    CARAPI OnKeyUp(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
     CARAPI SetEnabled(
         /* [in] */ Boolean enabled);
 
-    CARAPI_(Boolean) DispatchUnhandledMove(
+    CARAPI DispatchUnhandledMove(
         /* [in] */ IView* focused,
-        /* [in] */ Int32 direction);
+        /* [in] */ Int32 direction,
+        /* [out] */ Boolean* result);
 
     CARAPI OnInitializeAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
@@ -65,22 +108,13 @@ public:
     CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* event);
 
-protected:
-    ZoomButton();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = 0);
-
 private:
     AutoPtr<IHandler> mHandler;
     AutoPtr<IRunnable> mRunnable;
 
-    Int64 mZoomSpeed; //= 1000;
+    Int64 mZoomSpeed;
     Boolean mIsInLongpress;
 };
-
 
 } //namespace Widget
 } //namespace Droid
