@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_WEBVIEWFRAGMENT_H__
 #define __ELASTOS_DROID_WEBKIT_WEBVIEWFRAGMENT_H__
 
+#include "Elastos.Droid.Webkit.h"
 #include "elastos/droid/ext/frameworkext.h"
 // TODO #include "elastos/droid/app/Fragment.h"
 #include <elastos/core/Object.h>

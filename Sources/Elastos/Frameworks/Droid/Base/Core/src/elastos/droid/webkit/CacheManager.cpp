@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/webkit/CacheManager.h"
 #include "elastos/droid/webkit/DebugFlags.h"
 #include <elastos/utility/logging/Logger.h>

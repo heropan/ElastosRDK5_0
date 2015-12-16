@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/WebViewClient.h"
 //#include "elastos/droid/view/ViewRootImpl.h"
 

@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/webkit/FindActionModeCallback.h"
 #include "elastos/droid/webkit/CWebView.h"
 #include "elastos/droid/text/Selection.h"

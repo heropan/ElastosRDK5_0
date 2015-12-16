@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/webkit/CPlugin.h"
 
 namespace Elastos {

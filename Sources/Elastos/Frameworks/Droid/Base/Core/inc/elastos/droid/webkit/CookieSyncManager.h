@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_WEBKIT_COOKIESYNCMANAGER_H__
 #define __ELASTOS_DROID_WEBKIT_COOKIESYNCMANAGER_H__
 
+#include "Elastos.Droid.Webkit.h"
 #include "elastos/droid/ext/frameworkext.h"
-
 #include "elastos/droid/webkit/WebSyncManager.h"
 
 using Elastos::Droid::Content::IContext;

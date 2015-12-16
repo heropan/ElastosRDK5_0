@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Webkit.h"
 #include <dlfcn.h>
 #include <errno.h>
 #include <fcntl.h>
