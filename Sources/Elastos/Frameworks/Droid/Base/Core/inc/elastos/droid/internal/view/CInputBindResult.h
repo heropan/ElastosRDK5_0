@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_VIEW_CINPUTBINDRESULT_H__
 #define __ELASTOS_DROID_INTERNAL_VIEW_CINPUTBINDRESULT_H__
 
+#include "Elastos.Droid.View.h"
 #include "_Elastos_Droid_Internal_View_CInputBindResult.h"
 #include <elastos/core/Object.h>
 

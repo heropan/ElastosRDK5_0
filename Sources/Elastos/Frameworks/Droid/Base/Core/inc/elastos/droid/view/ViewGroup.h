@@ -4,6 +4,7 @@
 
 #include "Elastos.CoreLibrary.Utility.h"
 #include "Elastos.Droid.Animation.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/view/View.h"
 
 using Elastos::Droid::Animation::ITransitionListener;

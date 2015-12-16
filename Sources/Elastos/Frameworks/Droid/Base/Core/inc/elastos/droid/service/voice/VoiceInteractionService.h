@@ -1,6 +1,8 @@
 #ifndef __ELASTOS_DROID_SERVICE_VOICE_VOICEINTERACTIONSERVICE_H__
 #define __ELASTOS_DROID_SERVICE_VOICE_VOICEINTERACTIONSERVICE_H__
 
+#include "Elastos.Droid.Hardware.h"
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/app/Service.h"
 #include "elastos/droid/os/Handler.h"

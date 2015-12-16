@@ -1,7 +1,9 @@
 #ifndef __ELASTOS_DROID_SERVICE_NOTIFICATION_ZENMODECONFIG_H__
 #define __ELASTOS_DROID_SERVICE_NOTIFICATION_ZENMODECONFIG_H__
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Net::IUri;

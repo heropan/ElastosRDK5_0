@@ -1,5 +1,4 @@
 
-#include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/R.h"

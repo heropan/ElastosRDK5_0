@@ -2,6 +2,9 @@
 #ifndef __ELASTOS_DROID_NET_MOBILEDATASTATETRACKER_H__
 #define __ELASTOS_DROID_NET_MOBILEDATASTATETRACKER_H__
 
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
+#include "Elastos.Droid.Internal.h"
+#include "_Elastos.Droid.Core.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/net/BaseNetworkStateTracker.h"

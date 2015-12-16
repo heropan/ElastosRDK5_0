@@ -1,5 +1,4 @@
 
-#include "Elastos.Droid.Content.h"
 #include "elastos/droid/app/usage/CUsageStatsManager.h"
 #include "elastos/droid/app/usage/CUsageEvents.h"
 #include "elastos/droid/utility/CArrayMap.h"

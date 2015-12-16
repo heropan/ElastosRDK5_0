@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_TRANSITION_CTRANSITIONVALUES_H__
 #define __ELASTOS_DROID_TRANSITION_CTRANSITIONVALUES_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.View.h"
 #include "_Elastos_Droid_Transition_CTransitionValues.h"
 #include <elastos/core/Object.h>
 

@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_DIALOGPREFERENCESAVEDSTATE_H__
 #define __ELASTOS_DROID_PREFERENCE_DIALOGPREFERENCESAVEDSTATE_H__
 
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/preference/PreferenceBaseSavedState.h"
 
 using Elastos::Droid::Os::IBundle;

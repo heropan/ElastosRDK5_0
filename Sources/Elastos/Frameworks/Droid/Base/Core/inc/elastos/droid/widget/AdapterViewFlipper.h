@@ -18,6 +18,7 @@
 #define __ELASTOS_DROID_WIDGET_ADAPTERVIEWFLIPPER_H__
 
 #include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/AdapterViewAnimator.h"
 

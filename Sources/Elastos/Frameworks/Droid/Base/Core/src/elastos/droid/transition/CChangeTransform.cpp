@@ -1,6 +1,5 @@
 
 #include "Elastos.Droid.Content.h"
-#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/transition/CChangeTransform.h"
 #include "elastos/droid/transition/CTransitionValues.h"
 #include "elastos/droid/transition/CTransitionUtils.h"

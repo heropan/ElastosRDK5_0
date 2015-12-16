@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_PROJECTION_CMEDIAPROJECTION_H__
 #define __ELASTOS_DROID_MEDIA_PROJECTION_CMEDIAPROJECTION_H__
 
+#include "Elastos.Droid.Os.h"
 #include "_Elastos_Droid_Media_Projection_CMediaProjection.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>

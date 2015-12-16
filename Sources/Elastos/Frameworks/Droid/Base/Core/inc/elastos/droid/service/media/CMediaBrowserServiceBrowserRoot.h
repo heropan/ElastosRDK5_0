@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVICE_MEDIA_CMEDIABROWSERSERVICEBROWSERROOT_H__
 #define __ELASTOS_DROID_SERVICE_MEDIA_CMEDIABROWSERSERVICEBROWSERROOT_H__
 
+#include "Elastos.Droid.Os.h"
 #include "_Elastos_Droid_Service_Media_CMediaBrowserServiceBrowserRoot.h"
 #include <elastos/core/Object.h>
 

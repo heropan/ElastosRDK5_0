@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_SSLCERTIFICATE_H__
 #define __ELASTOS_DROID_NET_HTTP_SSLCERTIFICATE_H__
 
+#include "Elastos.CoreLibrary.Security.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "Elastos.Droid.Net.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>

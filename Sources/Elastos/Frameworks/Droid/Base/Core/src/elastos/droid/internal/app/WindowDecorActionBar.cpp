@@ -1,6 +1,4 @@
 
-#include "Elastos.CoreLibrary.Utility.h"
-#include "Elastos.Droid.Content.h"
 #include "elastos/droid/internal/app/WindowDecorActionBar.h"
 #include "elastos/droid/animation/CAnimatorSet.h"
 #include "elastos/droid/animation/ObjectAnimator.h"

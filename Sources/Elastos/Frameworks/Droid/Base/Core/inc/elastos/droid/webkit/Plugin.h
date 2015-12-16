@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_PLUGIN_H__
 #define __ELASTOS_DROID_WEBKIT_PLUGIN_H__
 
+#include "Elastos.Droid.App.h"
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Webkit.h"
 #include "elastos/droid/ext/frameworkext.h"

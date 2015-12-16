@@ -1,9 +1,7 @@
 
-#include "Elastos.Droid.Database.h"
-#include "Elastos.Droid.View.h"
-#include "Elastos.Droid.Widget.h"
 #include "Elastos.Droid.Content.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Database.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/SimpleExpandableListAdapter.h"
 
 using Elastos::Core::CString;

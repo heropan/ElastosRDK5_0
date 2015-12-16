@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_HTTPSCONNECTION_H__
 #define __ELASTOS_DROID_NET_HTTP_HTTPSCONNECTION_H__
 
+#include "Elastos.CoreLibrary.Apache.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/net/http/Connection.h"
 

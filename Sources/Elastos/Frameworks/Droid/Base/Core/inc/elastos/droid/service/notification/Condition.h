@@ -4,6 +4,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Net.h"
 #include "Elastos.Droid.Service.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Net::IUri;

@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_WEBVIEW_H__
 #define __ELASTOS_DROID_WEBKIT_WEBVIEW_H__
 
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/ext/frameworkext.h"
 // TODO #include "elastos/droid/widget/AbsoluteLayout.h"
 #include <elastos/core/Object.h>

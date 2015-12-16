@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_MTP_CMTPDATABASE_H__
 #define __ELASTOS_DROID_MTP_CMTPDATABASE_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Net.h"
 #include "_Elastos_Droid_Mtp_CMtpDatabase.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/BroadcastReceiver.h"

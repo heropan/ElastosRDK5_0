@@ -1,8 +1,4 @@
 
-#include "Elastos.CoreLibrary.Utility.Concurrent.h"
-#include "Elastos.Droid.Content.h"
-#include "Elastos.Droid.Internal.h"
-#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/net/nsd/NsdManager.h"
 
 using Elastos::Droid::Content::IContext;

@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_SERVICE_VOICE_VOICEINTERACTIONSERVICEINFO_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Service.h"
 #include <elastos/core/Object.h>
 

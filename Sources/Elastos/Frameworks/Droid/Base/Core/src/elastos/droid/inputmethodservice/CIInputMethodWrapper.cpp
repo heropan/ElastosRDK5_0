@@ -1,5 +1,4 @@
 
-#include "Elastos.Droid.Content.h"
 #include "elastos/droid/inputmethodservice/CIInputMethodWrapper.h"
 #include "elastos/droid/inputmethodservice/CIInputMethodSessionWrapper.h"
 #include "elastos/droid/internal/view/CInputConnectionWrapper.h"

@@ -1,5 +1,4 @@
 
-#include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.Media.h"
 #include "elastos/droid/internal/app/MediaRouteControllerDialog.h"
 #include "elastos/droid/R.h"

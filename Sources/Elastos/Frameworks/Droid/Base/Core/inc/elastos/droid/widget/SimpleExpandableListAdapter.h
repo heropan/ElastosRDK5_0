@@ -2,6 +2,8 @@
 #ifndef  __ELASTOS_DROID_WIDGET_SIMPLEEXPANDABLELISTADAPTER_H__
 #define  __ELASTOS_DROID_WIDGET_SIMPLEEXPANDABLELISTADAPTER_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/widget/BaseExpandableListAdapter.h"
 
 using Elastos::Droid::Content::IContext;

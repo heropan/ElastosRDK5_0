@@ -1,6 +1,5 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "Elastos.Droid.View.h"
 #include "elastos/droid/internal/view/CInputBindResult.h"
 
 namespace Elastos {

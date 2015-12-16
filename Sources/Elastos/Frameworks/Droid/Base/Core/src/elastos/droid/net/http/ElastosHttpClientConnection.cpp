@@ -1,5 +1,4 @@
 
-#include "Elastos.CoreLibrary.Net.h"
 #include "elastos/droid/net/http/ElastosHttpClientConnection.h"
 
 using Org::Apache::Http::EIID_IHttpConnection;

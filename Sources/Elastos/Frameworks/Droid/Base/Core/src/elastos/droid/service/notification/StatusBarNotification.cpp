@@ -1,5 +1,4 @@
 
-#include "Elastos.Droid.Os.h"
 #include "elastos/droid/app/CNotification.h"
 #include "elastos/droid/service/notification/CStatusBarNotification.h"
 #include "elastos/droid/service/notification/StatusBarNotification.h"

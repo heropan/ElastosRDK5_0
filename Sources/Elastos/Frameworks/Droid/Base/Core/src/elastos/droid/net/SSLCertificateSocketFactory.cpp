@@ -1,6 +1,4 @@
 
-#include "Elastos.CoreLibrary.Security.h"
-#include "_Elastos.Droid.Core.h"
 #include "elastos/droid/net/SSLCertificateSocketFactory.h"
 
 using Elastos::Droid::Os::ISystemProperties;

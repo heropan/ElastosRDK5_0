@@ -4,6 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Utility.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Utility::IArrayMap;

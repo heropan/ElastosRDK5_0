@@ -1,5 +1,4 @@
 
-#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/os/CMessage.h"
 #include "elastos/droid/service/voice/CAlwaysOnHotwordDetectorEventPayload.h"
 #include "elastos/droid/service/voice/CAlwaysOnHotwordDetectorSoundTriggerListener.h"

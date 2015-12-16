@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_NET_PROXYDATATRACKER_H__
 #define __ELASTOS_DROID_NET_PROXYDATATRACKER_H__
 
+#include "Elastos.CoreLibrary.Utility.Concurrent.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/net/BaseNetworkStateTracker.h"

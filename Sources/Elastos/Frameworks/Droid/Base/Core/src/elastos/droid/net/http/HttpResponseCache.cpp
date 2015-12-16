@@ -1,5 +1,4 @@
 
-#include "_Elastos.Droid.Core.h"
 #include "elastos/droid/net/http/HttpResponseCache.h"
 
 using Elastos::Droid::Content::IContext;

@@ -1,5 +1,4 @@
 
-#include "Elastos.CoreLibrary.Extensions.h"
 #include "elastos/droid/net/http/CertificateChainValidator.h"
 #include "elastos/droid/net/http/CCertificateChainValidator.h"
 

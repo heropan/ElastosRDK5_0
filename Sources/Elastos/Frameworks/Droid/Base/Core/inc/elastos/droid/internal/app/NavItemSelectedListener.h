@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_INTERNAL_APP_NAVITEMSELECTEDLISTENER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.App.h"
 #include "Elastos.Droid.Widget.h"
 #include <elastos/core/Object.h>
 

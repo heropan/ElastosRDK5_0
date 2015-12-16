@@ -1,6 +1,4 @@
 
-#include "Elastos.CoreLibrary.Security.h"
-#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/net/http/SslCertificate.h"
 
 using Elastos::Droid::Text::Format::IDateFormat;

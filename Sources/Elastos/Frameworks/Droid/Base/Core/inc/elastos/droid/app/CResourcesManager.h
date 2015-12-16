@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_APP_CRESOURCEMANAGER_H__
 #define __ELASTOS_DROID_APP_CRESOURCEMANAGER_H__
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Utility.h"
 #include "_Elastos_Droid_App_CResourcesManager.h"
 #include <elastos/core/Object.h>
 

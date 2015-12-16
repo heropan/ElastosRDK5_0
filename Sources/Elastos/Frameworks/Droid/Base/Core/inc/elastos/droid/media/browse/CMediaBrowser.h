@@ -1,6 +1,9 @@
 #ifndef __ELASTOS_DROID_MEDIA_BROWSE_CMEDIABROWSER_H__
 #define __ELASTOS_DROID_MEDIA_BROWSE_CMEDIABROWSER_H__
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Service.h"
 #include "_Elastos_Droid_Media_Browse_CMediaBrowser.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>

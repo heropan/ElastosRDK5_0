@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_CALERTCONTROLLERALERTPARAMS_H__
 #define __ELASTOS_DROID_INTERNAL_APP_CALERTCONTROLLERALERTPARAMS_H__
 
+#include "Elastos.Droid.Graphics.h"
 #include "_Elastos_Droid_Internal_App_CAlertControllerAlertParams.h"
 #include "elastos/droid/widget/ArrayAdapter.h"
 #include "elastos/droid/widget/CursorAdapter.h"

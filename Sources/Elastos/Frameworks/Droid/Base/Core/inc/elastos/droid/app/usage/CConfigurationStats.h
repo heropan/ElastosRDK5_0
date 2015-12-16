@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_USAGE_CCONFIGURATION_STATS_H__
 #define __ELASTOS_DROID_APP_USAGE_CCONFIGURATION_STATS_H__
 
+#include "Elastos.Droid.Content.h"
 #include "_Elastos_Droid_App_Usage_CConfigurationStats.h"
 #include <elastos/core/Object.h>
 

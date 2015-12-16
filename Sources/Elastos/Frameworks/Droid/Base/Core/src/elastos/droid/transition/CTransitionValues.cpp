@@ -1,6 +1,4 @@
 
-#include "Elastos.Droid.View.h"
-#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/transition/CTransitionValues.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>

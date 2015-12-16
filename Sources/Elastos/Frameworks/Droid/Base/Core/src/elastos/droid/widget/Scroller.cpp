@@ -1,5 +1,5 @@
+
 #include "Elastos.Droid.Widget.h"
-#include "Elastos.Droid.View.h"
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Utility.h"
 #include "Elastos.Droid.Animation.h"

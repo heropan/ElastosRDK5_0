@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_VOLUMEPREFERENCE_H__
 #define __ELASTOS_DROID_PREFERENCE_VOLUMEPREFERENCE_H__
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/preference/SeekBarDialogPreference.h"
 #include "elastos/droid/database/ContentObserver.h"

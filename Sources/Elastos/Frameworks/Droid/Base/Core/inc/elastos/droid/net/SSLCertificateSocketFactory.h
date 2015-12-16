@@ -2,7 +2,9 @@
 #ifndef __ELASTOS_DROID_NET_SSLCERTIFICATESOCKETFACTORY_H__
 #define __ELASTOS_DROID_NET_SSLCERTIFICATESOCKETFACTORY_H__
 
+#include "Elastos.CoreLibrary.Security.h"
 #include "Elastos.Droid.Net.h"
+#include "_Elastos.Droid.Core.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastosx/net/ssl/SSLSocketFactory.h>
 

@@ -2,6 +2,8 @@
 #ifndef  __ELASTOS_DROID_WIDGET_CURSORADAPTER_H__
 #define  __ELASTOS_DROID_WIDGET_CURSORADAPTER_H__
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/BaseAdapter.h"
 #include "elastos/droid/database/ContentObserver.h"

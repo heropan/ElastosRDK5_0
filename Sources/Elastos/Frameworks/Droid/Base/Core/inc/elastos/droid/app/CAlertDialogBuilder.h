@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CALERTDIALOGBUILDER_H__
 #define __ELASTOS_DROID_APP_CALERTDIALOGBUILDER_H__
 
+#include "Elastos.Droid.Internal.h"
 #include "_Elastos_Droid_App_CAlertDialogBuilder.h"
 #include <elastos/core/Object.h>
 

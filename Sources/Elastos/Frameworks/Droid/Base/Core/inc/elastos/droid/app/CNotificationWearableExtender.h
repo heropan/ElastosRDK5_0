@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_APP_CNOTIFICATION_WEARABLE_EXTENDER_H__
 #define __ELASTOS_DROID_APP_CNOTIFICATION_WEARABLE_EXTENDER_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Graphics.h"
 #include "_Elastos_Droid_App_CNotificationWearableExtender.h"
 #include <elastos/core/Object.h>
 

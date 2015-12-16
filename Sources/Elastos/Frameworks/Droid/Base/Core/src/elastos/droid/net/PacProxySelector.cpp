@@ -1,6 +1,4 @@
 
-#include "Elastos.CoreLibrary.Utility.h"
-#include "_Elastos.Droid.Core.h"
 #include "elastos/droid/net/PacProxySelector.h"
 #include "elastos/droid/net/ReturnOutValue.h"
 #include "elastos/droid/os/ServiceManager.h"

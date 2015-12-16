@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CPLUGINDATA_H__
 #define __ELASTOS_DROID_WEBKIT_CPLUGINDATA_H__
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "_Elastos_Droid_Webkit_CPluginData.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>

@@ -1,5 +1,4 @@
 
-#include "Elastos.CoreLibrary.Net.h"
 #include "Elastos.Droid.Utility.h"
 #include "elastos/droid/net/LinkAddress.h"
 #include "elastos/droid/net/ReturnOutValue.h"

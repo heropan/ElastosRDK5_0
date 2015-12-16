@@ -2,7 +2,9 @@
 #ifndef __ELASTOS_DROID_NET_NETWORKFACTORY_H__
 #define __ELASTOS_DROID_NET_NETWORKFACTORY_H__
 
+#include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Handler.h"
 

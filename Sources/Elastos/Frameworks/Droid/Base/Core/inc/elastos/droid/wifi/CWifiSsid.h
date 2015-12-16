@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_CWIFISSID_H__
 #define __ELASTOS_DROID_NET_WIFI_CWIFISSID_H__
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "_Elastos_Droid_Wifi_CWifiSsid.h"
 #include <elastos/core/Object.h>
 

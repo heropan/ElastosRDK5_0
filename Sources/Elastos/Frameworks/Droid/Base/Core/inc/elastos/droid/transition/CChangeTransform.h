@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_TRANSITION_CCHANGETRANSFORM_H__
 #define __ELASTOS_DROID_TRANSITION_CCHANGETRANSFORM_H__
 
+#include "Elastos.Droid.Graphics.h"
 #include "_Elastos_Droid_Transition_CChangeTransform.h"
 #include "elastos/droid/animation/AnimatorListenerAdapter.h"
 #include "elastos/droid/transition/Transition.h"

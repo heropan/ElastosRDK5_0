@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CACTIVITYMANAGERPRUNNINGAPPPROCESSINFO_H__
 #define __ELASTOS_DROID_APP_CACTIVITYMANAGERPRUNNINGAPPPROCESSINFO_H__
 
+#include "Elastos.Droid.Content.h"
 #include "_Elastos_Droid_App_CActivityManagerRunningAppProcessInfo.h"
 #include <elastos/core/Object.h>
 

@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_TRANSITION_CSCENE_H__
 #define __ELASTOS_DROID_TRANSITION_CSCENE_H__
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
 #include "_Elastos_Droid_Transition_CScene.h"
 
 #include <elastos/core/Object.h>

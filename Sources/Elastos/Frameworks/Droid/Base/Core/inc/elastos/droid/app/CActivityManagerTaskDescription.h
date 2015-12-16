@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_CACTIVITYMANAGER_TASKDESCRITION_H__
 #define __ELASTOS_DROID_APP_CACTIVITYMANAGER_TASKDESCRITION_H__
 
+#include "Elastos.Droid.Graphics.h"
 #include "_Elastos_Droid_App_CActivityManagerTaskDescription.h"
 #include <elastos/core/Object.h>
 

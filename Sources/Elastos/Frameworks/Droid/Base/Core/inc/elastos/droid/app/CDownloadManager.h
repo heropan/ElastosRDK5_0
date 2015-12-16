@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_APP_CDOWNLOADMANAGER_H__
 #define __ELASTOS_DROID_APP_CDOWNLOADMANAGER_H__
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Net.h"
 #include "_Elastos_Droid_App_CDownloadManager.h"
 #include "elastos/droid/database/CursorWrapper.h"
 

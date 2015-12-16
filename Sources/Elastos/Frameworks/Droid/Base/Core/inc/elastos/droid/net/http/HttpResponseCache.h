@@ -4,6 +4,7 @@
 
 #include "Elastos.CoreLibrary.IO.h"
 #include "Elastos.Droid.Net.h"
+#include "_Elastos.Droid.Core.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/net/ResponseCache.h>
 

@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_MTP_CMTPPROPERTYGROUP_H__
 #define __ELASTOS_DROID_MTP_CMTPPROPERTYGROUP_H__
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Net.h"
 #include "_Elastos_Droid_Mtp_CMtpPropertyGroup.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>

@@ -2,6 +2,7 @@
 #ifndef  __ELASTOS_DROID_INPUTMETHODSERVICE_CSOFTINPUTWINDOW_H__
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_CSOFTINPUTWINDOW_H__
 
+#include "Elastos.Droid.Graphics.h"
 #include "_Elastos_Droid_InputMethodService_CSoftInputWindow.h"
 // #include "elastos/droid/app/Dialog.h"
 #include <elastos/core/Object.h>

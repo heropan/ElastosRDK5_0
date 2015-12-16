@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CDOWNLOADMANAGERREQUEST_H__
 #define __ELASTOS_DROID_APP_CDOWNLOADMANAGERREQUEST_H__
 
+#include "Elastos.Droid.Net.h"
 #include "_Elastos_Droid_App_CDownloadManagerRequest.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>

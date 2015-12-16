@@ -1,5 +1,4 @@
 
-#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/wifi/CWifiSsid.h"
 #include <elastos/core/Character.h>

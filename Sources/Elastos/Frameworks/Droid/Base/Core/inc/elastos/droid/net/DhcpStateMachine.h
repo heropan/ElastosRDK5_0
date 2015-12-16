@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_DHCPSTATEMACHINE_H__
 #define __ELASTOS_DROID_NET_DHCPSTATEMACHINE_H__
 
+#include "Elastos.Droid.App.h"
 #include "Elastos.Droid.Net.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/internal/utility/State.h"

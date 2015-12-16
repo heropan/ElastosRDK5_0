@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_PREFERENCEINFLATER_H__
 #define __ELASTOS_DROID_PREFERENCE_PREFERENCEINFLATER_H__
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/preference/GenericInflater.h"
 

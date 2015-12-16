@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_NET_NETWORK_H__
 
 #include "Elastos.Droid.Net.h"
+#include "_Elastos.Droid.Core.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastosx/net/SocketFactory.h>
 

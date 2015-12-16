@@ -1,5 +1,4 @@
 
-#include "Elastos.CoreLibrary.Net.h"
 #include "elastos/droid/wifi/CWifiInfo.h"
 #include "elastos/droid/wifi/CScanResultHelper.h"
 #include "elastos/droid/wifi/CWifiSsidHelper.h"

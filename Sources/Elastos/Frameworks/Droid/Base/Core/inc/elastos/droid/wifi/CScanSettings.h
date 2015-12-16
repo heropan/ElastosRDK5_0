@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_CSCANSETTINGS_H__
 #define __ELASTOS_DROID_NET_WIFI_CSCANSETTINGS_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "_Elastos_Droid_Wifi_CScanSettings.h"
 #include <elastos/core/Object.h>
 

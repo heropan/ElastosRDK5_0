@@ -1,6 +1,5 @@
 
 #include "Elastos.CoreLibrary.Net.h"
-#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/net/CLinkProperties.h"
 #include "elastos/droid/net/CLinkPropertiesCompareResult.h"
 #include "elastos/droid/net/CProxyInfo.h"

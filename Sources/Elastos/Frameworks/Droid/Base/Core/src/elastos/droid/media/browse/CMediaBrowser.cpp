@@ -1,6 +1,4 @@
-#include "Elastos.Droid.Os.h"
-#include "Elastos.Droid.Content.h"
-#include "Elastos.Droid.Service.h"
+
 #include "Elastos.Droid.Utility.h"
 #include "Elastos.CoreLibrary.Utility.h"
 #include <elastos/utility/logging/Logger.h>

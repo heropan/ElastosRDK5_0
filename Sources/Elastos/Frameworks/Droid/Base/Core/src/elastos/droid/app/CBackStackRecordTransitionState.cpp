@@ -1,6 +1,4 @@
 
-#include "Elastos.Droid.Utility.h"
-#include "Elastos.Droid.View.h"
 #include "elastos/droid/app/CBackStackRecordTransitionState.h"
 
 namespace Elastos {

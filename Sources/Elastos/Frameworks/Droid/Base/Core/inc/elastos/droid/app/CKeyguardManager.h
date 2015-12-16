@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_CKEYGUARDMANAGER_H__
 #define __ELASTOS_DROID_APP_CKEYGUARDMANAGER_H__
 
+#include "Elastos.Droid.View.h"
 #include "_Elastos_Droid_App_CKeyguardManager.h"
 #include <elastos/core/Object.h>
 

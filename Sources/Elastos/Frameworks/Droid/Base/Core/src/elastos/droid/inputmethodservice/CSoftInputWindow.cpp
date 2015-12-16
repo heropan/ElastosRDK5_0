@@ -1,5 +1,4 @@
 
-#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/inputmethodservice/CSoftInputWindow.h"
 // #include "elastos/droid/view/CWindowManagerLayoutParams.h"
 

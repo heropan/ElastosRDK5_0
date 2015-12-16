@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CPENDINGINTENT_H__
 #define __ELASTOS_DROID_APP_CPENDINGINTENT_H__
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_App_CPendingIntent.h"
 #include <elastos/core/Object.h>

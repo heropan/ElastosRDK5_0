@@ -1,7 +1,10 @@
 #ifndef __ELASTOS_DROID_SERVICE_NOTIFICATION_STATUSBARNOTIFICATION_H__
 #define __ELASTOS_DROID_SERVICE_NOTIFICATION_STATUSBARNOTIFICATION_H__
 
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::App::INotification;
 using Elastos::Droid::Os::IUserHandle;

@@ -1,5 +1,4 @@
 
-#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/wifi/CWifiConfigurationKeyMgmt.h"
 #include "elastos/droid/wifi/CWifiConfigurationProtocol.h"

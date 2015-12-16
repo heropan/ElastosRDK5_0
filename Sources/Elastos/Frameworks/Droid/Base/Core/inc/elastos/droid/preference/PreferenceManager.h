@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_PREFERENCEMANAGER_H__
 #define __ELASTOS_DROID_PREFERENCE_PREFERENCEMANAGER_H__
 
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>

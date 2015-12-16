@@ -1,6 +1,5 @@
 
 #include "Elastos.Droid.Content.h"
-#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/internal/app/CAlertControllerAlertParams.h"
 #include "elastos/droid/internal/app/CAlertController.h"
 // #include "elastos/droid/widget/CSimpleCursorAdapter.h"

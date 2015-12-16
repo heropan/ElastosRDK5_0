@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_APP_CACTIVITYMANAGERTASKTHUMBNAIL_H__
 #define __ELASTOS_DROID_APP_CACTIVITYMANAGERTASKTHUMBNAIL_H__
 
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Os.h"
 #include "_Elastos_Droid_App_CActivityManagerTaskThumbnail.h"
 #include <elastos/core/Object.h>
 

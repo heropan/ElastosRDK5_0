@@ -1,6 +1,9 @@
 #ifndef __ELASTOS_DROID_MEDIA_SESSION_CMEDIASESSIONMANAGER_H__
 #define __ELASTOS_DROID_MEDIA_SESSION_CMEDIASESSIONMANAGER_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "_Elastos_Droid_Media_Session_CMediaSessionManager.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Runnable.h"

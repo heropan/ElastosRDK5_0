@@ -1,6 +1,5 @@
 
 #include "Elastos.Droid.View.h"
-#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/preference/EditTextPreference.h"
 #include "elastos/droid/preference/CEditTextPreferenceSavedState.h"
 #include "elastos/droid/text/TextUtils.h"

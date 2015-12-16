@@ -1,6 +1,5 @@
 
 #include "Elastos.CoreLibrary.Utility.h"
-#include "Elastos.Droid.Content.h"
 #include "elastos/droid/internal/view/menu/MenuItemImpl.h"
 #include "elastos/droid/internal/view/menu/MenuBuilder.h"
 #include "elastos/droid/view/LayoutInflater.h"

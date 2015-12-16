@@ -1,5 +1,4 @@
 
-#include "Elastos.Droid.Os.h"
 #include "elastos/droid/internal/app/RestrictionsPinActivity.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/CoreUtils.h>

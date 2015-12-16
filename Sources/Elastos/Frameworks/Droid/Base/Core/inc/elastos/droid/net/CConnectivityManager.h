@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CCONNECTIVITYMANAGER_H__
 #define __ELASTOS_DROID_NET_CCONNECTIVITYMANAGER_H__
 
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Net_CConnectivityManager.h"
 #include "elastos/droid/os/Handler.h"

@@ -1,5 +1,4 @@
 
-#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/net/http/Headers.h"
 
 using Elastos::Droid::Utility::ILog;

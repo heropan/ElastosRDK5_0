@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_EDITTEXTPREFERENCE_H__
 #define __ELASTOS_DROID_PREFERENCE_EDITTEXTPREFERENCE_H__
 
+#include "Elastos.Droid.Widget.h"
 #include <elastos/droid/ext/frameworkext.h>
 #include "elastos/droid/preference/DialogPreference.h"
 

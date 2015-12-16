@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CPROFILERINFO_H__
 #define __ELASTOS_DROID_APP_CPROFILERINFO_H__
 
+#include "Elastos.Droid.Os.h"
 #include "_Elastos_Droid_App_CProfilerInfo.h"
 #include <elastos/core/Object.h>
 

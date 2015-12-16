@@ -1,6 +1,4 @@
 
-#include "Elastos.Droid.Content.h"
-#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/internal/view/menu/ActionMenuItem.h"
 
 using Elastos::Core::CString;

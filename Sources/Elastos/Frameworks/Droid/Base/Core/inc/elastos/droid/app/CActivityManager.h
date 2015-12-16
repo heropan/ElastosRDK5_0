@@ -2,6 +2,9 @@
 #ifndef __ELASTOS_DROID_APP_CACTIVITYMANAGER_H__
 #define __ELASTOS_DROID_APP_CACTIVITYMANAGER_H__
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Os.h"
 #include "_Elastos_Droid_App_CActivityManager.h"
 #include <elastos/core/Object.h>
 

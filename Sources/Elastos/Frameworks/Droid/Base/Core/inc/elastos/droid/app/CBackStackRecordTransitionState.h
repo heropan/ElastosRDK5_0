@@ -1,6 +1,8 @@
 #ifndef __ELASTOS_DROID_APP_CBACKSTACKRECORD_TRANSITIONSTATE_H__
 #define __ELASTOS_DROID_APP_CBACKSTACKRECORD_TRANSITIONSTATE_H__
 
+#include "Elastos.Droid.Utility.h"
+#include "Elastos.Droid.View.h"
 #include "_Elastos_Droid_App_CBackStackRecordTransitionState.h"
 #include <elastos/core/Object.h>
 

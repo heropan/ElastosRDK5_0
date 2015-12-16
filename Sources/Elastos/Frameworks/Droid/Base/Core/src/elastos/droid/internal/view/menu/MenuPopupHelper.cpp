@@ -1,5 +1,4 @@
 
-#include "Elastos.Droid.Content.h"
 #include "elastos/droid/internal/view/menu/MenuPopupHelper.h"
 #include "elastos/droid/internal/view/menu/CListMenuItemView.h"
 #include "elastos/droid/internal/view/menu/CMenuPopupHelper.h"

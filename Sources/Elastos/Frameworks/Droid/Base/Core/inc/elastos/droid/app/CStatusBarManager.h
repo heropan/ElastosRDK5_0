@@ -1,6 +1,9 @@
 #ifndef __ELASTOS_DROID_APP_CSTATUSBARMANAGER_H__
 #define __ELASTOS_DROID_APP_CSTATUSBARMANAGER_H__
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Os.h"
 #include "_Elastos_Droid_App_CStatusBarManager.h"
 #include <elastos/core/Object.h>
 

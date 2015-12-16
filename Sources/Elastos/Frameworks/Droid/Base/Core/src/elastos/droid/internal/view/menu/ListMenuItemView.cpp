@@ -1,5 +1,4 @@
 
-#include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/internal/view/menu/ListMenuItemView.h"
 #include "elastos/droid/view/LayoutInflater.h"

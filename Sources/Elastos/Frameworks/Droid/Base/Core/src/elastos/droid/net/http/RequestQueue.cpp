@@ -1,6 +1,4 @@
 
-#include "Elastos.CoreLibrary.Apache.h"
-#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/net/http/RequestQueue.h"
 // #include "elastos/droid/net/GetValue.h"
 #include "elastos/droid/net/http/HttpLog.h"

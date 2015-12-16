@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_PREFERENCE_PREFERENCEGROUPADAPTER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.Preference.h"
 #include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/widget/BaseAdapter.h"

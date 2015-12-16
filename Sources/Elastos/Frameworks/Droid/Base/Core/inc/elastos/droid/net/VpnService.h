@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_NET_VPNSERVICE_H__
 #define __ELASTOS_DROID_NET_VPNSERVICE_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Internal.h"
 #include "Elastos.Droid.Net.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/app/Service.h"

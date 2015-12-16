@@ -1,5 +1,4 @@
 
-#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/preference/MultiSelectListPreferenceSavedState.h"
 
 using Elastos::Utility::CHashSet;

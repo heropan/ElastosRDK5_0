@@ -2,6 +2,8 @@
 #define __ELASTOS_DROID_MEDIA_TV_CTVINPUTMANAGER_H__
 
 #include "_Elastos_Droid_Media_Tv_CTvInputManager.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Net.h"
 #include "Elastos.Droid.Os.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Runnable.h"

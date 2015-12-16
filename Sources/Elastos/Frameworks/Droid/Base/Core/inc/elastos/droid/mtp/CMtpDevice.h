@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_MTP_CMTPDEVICE_H__
 #define __ELASTOS_DROID_MTP_CMTPDEVICE_H__
 
+#include "Elastos.Droid.Hardware.h"
 #include "_Elastos_Droid_Mtp_CMtpDevice.h"
 #include <elastos/core/Object.h>
 

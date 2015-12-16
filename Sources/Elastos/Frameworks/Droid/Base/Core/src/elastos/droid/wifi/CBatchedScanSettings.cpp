@@ -1,5 +1,4 @@
 
-#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/wifi/CBatchedScanSettings.h"
 #include <elastos/core/StringBuffer.h>
 #include <elastos/core/StringUtils.h>

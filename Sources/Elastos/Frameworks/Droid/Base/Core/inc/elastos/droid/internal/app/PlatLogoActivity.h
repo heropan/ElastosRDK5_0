@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_PLATLOGOACTIVITY_H__
 #define __ELASTOS_DROID_INTERNAL_APP_PLATLOGOACTIVITY_H__
 
+#include "Elastos.Droid.Animation.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/app/Activity.h"
 #include "elastos/droid/view/View.h"
 

@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_TRANSITION_CPATTERNPATHMOTION_H__
 #define __ELASTOS_DROID_TRANSITION_CPATTERNPATHMOTION_H__
 
+#include "Elastos.Droid.Graphics.h"
 #include "_Elastos_Droid_Transition_CPatternPathMotion.h"
 #include "elastos/droid/transition/PathMotion.h"
 

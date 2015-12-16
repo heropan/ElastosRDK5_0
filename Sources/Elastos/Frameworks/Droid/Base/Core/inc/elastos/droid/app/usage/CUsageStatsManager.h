@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_USAGE_CUSAGE_STATS_MANAGER_H__
 #define __ELASTOS_DROID_APP_USAGE_CUSAGE_STATS_MANAGER_H__
 
+#include "Elastos.Droid.Content.h"
 #include "_Elastos_Droid_App_Usage_CUsageStatsManager.h"
 #include <elastos/core/Object.h>
 
