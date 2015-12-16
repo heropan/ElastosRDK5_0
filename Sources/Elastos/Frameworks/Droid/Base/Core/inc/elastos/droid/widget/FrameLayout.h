@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_FRAMELAYOUT_H__
 #define __ELASTOS_DROID_WIDGET_FRAMELAYOUT_H__
 
-
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/view/ViewGroup.h"
 #include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
 

@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_SWITCH_H__
 #define __ELASTOS_DROID_WIDGET_SWITCH_H__
 
+#include "Elastos.Droid.Animation.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/CompoundButton.h"
 #include "elastos/droid/view/VelocityTracker.h"
