@@ -31,6 +31,8 @@ extern const _ELASTOS ClassID ECLSID_${name} = {
 ${ClassNamespaceEnd(class)}$^
 $   END DO ;; all classes
 
+${GenerateDependHeaderForModule(module)}
+
 $   WITH all interfaces DO
 ${InterfaceNamespaceBegin(interface)}$^
 $   WITH all interfaceconsts DO

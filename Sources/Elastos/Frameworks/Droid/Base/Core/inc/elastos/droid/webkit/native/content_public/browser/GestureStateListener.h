@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_WEBKIT_CONTENT_PUBLIC_BROWSER_GESTURESTATELISTENER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

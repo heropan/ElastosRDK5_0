@@ -2710,10 +2710,10 @@ void OutputInterface(InterfaceDirEntry* pItfDir, CLSModule* pModule)
                 fprintf(pFile, "    static const _ELASTOS Int64 %s;\n", pItfConst->mName);
                 break;
             case TYPE_FLOAT:
-                fprintf(pFile, "    static const _ELASTOS Float %s = %f;\n", pItfConst->mName, pItfConst->mV.mDoubleValue);
+                fprintf(pFile, "    static const _ELASTOS Float %s;\n", pItfConst->mName);
                 break;
             case TYPE_DOUBLE:
-                fprintf(pFile, "    static const _ELASTOS Double %s = %f;\n", pItfConst->mName, pItfConst->mV.mDoubleValue);
+                fprintf(pFile, "    static const _ELASTOS Double %s;\n", pItfConst->mName);
                 break;
             case TYPE_STRING:
                 fprintf(pFile, "    static const _ELASTOS String %s;\n", pItfConst->mName);
