@@ -742,7 +742,7 @@ ECode BitmapDrawable::Inflate(
 {
     FAIL_RETURN(Drawable::Inflate(r, parser, attrs));
 
-    Int32 size = ARRAY_SIZE(R::styleable::BitmapDrawable);
+    Int32 size = ArraySize(R::styleable::BitmapDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::BitmapDrawable, size);
 
@@ -867,7 +867,7 @@ ECode BitmapDrawable::ApplyTheme(
         return NOERROR;
     }
 
-    Int32 size = ARRAY_SIZE(R::styleable::BitmapDrawable);
+    Int32 size = ArraySize(R::styleable::BitmapDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::BitmapDrawable, size);
 

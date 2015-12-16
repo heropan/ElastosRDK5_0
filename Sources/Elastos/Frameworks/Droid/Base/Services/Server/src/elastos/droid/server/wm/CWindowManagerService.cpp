@@ -4959,7 +4959,7 @@ ECode CWindowManagerService::SetAppStartingWindow(
     if (theme != 0) {
         AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::Window),
-            ARRAY_SIZE(R::styleable::Window));
+            ArraySize(R::styleable::Window));
 
         AutoPtr<AttributeCache::Entry> ent = AttributeCache::GetInstance()->Get(
             , pkg, theme, attrIds, mCurrentUserId);

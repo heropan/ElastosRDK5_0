@@ -191,11 +191,9 @@ ECode KeyguardServiceDelegate::BindService(
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&userHandleHelper);
     AutoPtr<IUserHandle> userHandle;
     userHandleHelper->GetOWNER((IUserHandle**)&userHandle);
-    Int32 id = 0;
-    userHandle->GetIdentifier(&id);
     Boolean result = FALSE;
     ((Context*)context)->BindServiceAsUser(
-            intent, mKeyguardConnection,IContext::BIND_AUTO_CREATE, id, &result);
+        intent, mKeyguardConnection,IContext::BIND_AUTO_CREATE, userHandle, &result);
     if (!result) {
         if (DEBUG) Logger::V(TAG, "*** Keyguard: can't bind to %s", KEYGUARD_CLASS.string());
         mKeyguardState->showing = FALSE;

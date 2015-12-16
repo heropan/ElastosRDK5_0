@@ -1869,7 +1869,7 @@ public:
         /* [in] */ IIntent* service,
         /* [in] */ IServiceConnection* conn,
         /* [in] */ Int32 flags,
-        /* [in] */ Int32 userHandle,
+        /* [in] */ IUserHandle* userHandle,
         /* [out] */ Boolean* succeeded)
     {
         //Not implemented. Must override in a subclass.

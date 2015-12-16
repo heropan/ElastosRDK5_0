@@ -635,7 +635,7 @@ ECode WallpaperService::Engine::UpdateSurface(
 
             AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
                 const_cast<Int32 *>(R::styleable::Window),
-                ARRAY_SIZE(R::styleable::Window));
+                ArraySize(R::styleable::Window));
             const AutoPtr<ITypedArray> windowStyle;
             IContext::Probe(this)->ObtainStyledAttributes(attrIds.Get(), (ITypedArray**)&windowStyle);
             const AutoPtr<IDisplay> display;

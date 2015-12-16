@@ -412,7 +412,7 @@ Boolean ShapeDrawable::InflateTag(
     /* [in] */ IAttributeSet* attrs)
 {
     if (name.Equals("padding")) {
-        Int32 size = ARRAY_SIZE(R::styleable::ShapeDrawablePadding);
+        Int32 size = ArraySize(R::styleable::ShapeDrawablePadding);
         AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
         layout->Copy(R::styleable::ShapeDrawablePadding, size);
 
@@ -443,7 +443,7 @@ ECode ShapeDrawable::Inflate(
 {
     FAIL_RETURN(Drawable::Inflate(r, parser, attrs, theme));
 
-    Int32 size = ARRAY_SIZE(R::styleable::ShapeDrawable);
+    Int32 size = ArraySize(R::styleable::ShapeDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::ShapeDrawable, size);
 
@@ -485,7 +485,7 @@ ECode ShapeDrawable::ApplyTheme(
         return NOERROR;
     }
 
-    Int32 size = ARRAY_SIZE(R::styleable::ShapeDrawable);
+    Int32 size = ArraySize(R::styleable::ShapeDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::ShapeDrawable, size);
     AutoPtr<ITypedArray> a;

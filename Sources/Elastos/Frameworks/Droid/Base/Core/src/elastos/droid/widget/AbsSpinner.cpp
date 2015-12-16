@@ -128,7 +128,7 @@ ECode AbsSpinner::InitFromAttributes(
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::AbsSpinner),
-            ARRAY_SIZE(R::styleable::AbsSpinner));
+            ArraySize(R::styleable::AbsSpinner));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(
             attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);

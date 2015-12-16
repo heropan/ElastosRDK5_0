@@ -27,7 +27,7 @@ ECode ActionBarLayoutParams::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::ActionBar_LayoutParams),
-        ARRAY_SIZE(R::styleable::ActionBar_LayoutParams));
+        ArraySize(R::styleable::ActionBar_LayoutParams));
 
     AutoPtr<ITypedArray> a;
     ctx->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);

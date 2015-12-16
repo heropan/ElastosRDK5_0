@@ -63,7 +63,7 @@ Keyboard::Row::Row(
     , mMode(0)
     , mParent(parent)
 {
-    Int32 size = ARRAY_SIZE(R::styleable::Keyboard);
+    Int32 size = ArraySize(R::styleable::Keyboard);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::Keyboard, size);
 
@@ -84,7 +84,7 @@ Keyboard::Row::Row(
     a->Recycle();
     a = NULL;
 
-    size = ARRAY_SIZE(R::styleable::Keyboard_Row);
+    size = ArraySize(R::styleable::Keyboard_Row);
     layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::Keyboard_Row, size);
 
@@ -252,7 +252,7 @@ Keyboard::Key::Key(
     , mRepeatable(FALSE)
     , mKeyboard(parent->mParent)
 {
-    Int32 size = ARRAY_SIZE(R::styleable::Keyboard);
+    Int32 size = ArraySize(R::styleable::Keyboard);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::Keyboard, size);
 
@@ -270,7 +270,7 @@ Keyboard::Key::Key(
             mKeyboard->mDisplayWidth, parent->mDefaultHorizontalGap);
     a->Recycle();
     a = NULL;
-    size = ARRAY_SIZE(R::styleable::Keyboard_Key);
+    size = ArraySize(R::styleable::Keyboard_Key);
     layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::Keyboard_Key, size);
 
@@ -1293,7 +1293,7 @@ void Keyboard::ParseKeyboardAttributes(
     /* [in] */ IResources* res,
     /* [in] */ IXmlResourceParser* parser)
 {
-    Int32 size = ARRAY_SIZE(R::styleable::Keyboard);
+    Int32 size = ArraySize(R::styleable::Keyboard);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::Keyboard, size);
 

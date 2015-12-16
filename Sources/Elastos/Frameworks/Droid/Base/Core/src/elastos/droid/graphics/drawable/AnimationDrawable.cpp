@@ -236,7 +236,7 @@ ECode AnimationDrawable::Inflate(
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ IResourcesTheme* theme)
 {
-    Int32 size = ARRAY_SIZE(R::styleable::AnimationDrawable);
+    Int32 size = ArraySize(R::styleable::AnimationDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::AnimationDrawable, size);
 
@@ -273,7 +273,7 @@ ECode AnimationDrawable::Inflate(
         }
 
         a = NULL;
-        size = ARRAY_SIZE(R::styleable::AnimationDrawableItem);
+        size = ArraySize(R::styleable::AnimationDrawableItem);
         layout = ArrayOf<Int32>::Alloc(size);
         layout->Copy(R::styleable::AnimationDrawableItem, size);
 

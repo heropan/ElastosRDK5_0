@@ -134,7 +134,7 @@ ECode PreferenceFragment::OnCreateView(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::PreferenceFragment),
-            ARRAY_SIZE(R::styleable::PreferenceFragment));
+            ArraySize(R::styleable::PreferenceFragment));
     AutoPtr<ITypedArray> a;
     IContext::Probe(activity)->ObtainStyledAttributes(NULL, attrIds,
          R::attr::preferenceFragmentStyle, 0, (ITypedArray**)&a);

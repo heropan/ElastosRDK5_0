@@ -233,7 +233,7 @@ ECode ProgressBar::InitFromAttributes(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::ProgressBar),
-            ARRAY_SIZE(R::styleable::ProgressBar));
+            ArraySize(R::styleable::ProgressBar));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(
         attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);

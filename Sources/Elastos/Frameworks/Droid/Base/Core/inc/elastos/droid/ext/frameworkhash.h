@@ -29,6 +29,7 @@ DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Content::IComponentName)
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Content::IContext)
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Content::IServiceConnection)
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Content::ISharedPreferencesOnSharedPreferenceChangeListener)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Content::Pm::ISignature)
 
 //
 // Location

@@ -54,7 +54,7 @@ ECode WeightedLinearLayout::Init(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::WeightedLinearLayout),
-            ARRAY_SIZE(R::styleable::WeightedLinearLayout));
+            ArraySize(R::styleable::WeightedLinearLayout));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 

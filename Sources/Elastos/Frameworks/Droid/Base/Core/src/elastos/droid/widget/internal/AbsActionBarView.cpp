@@ -71,7 +71,7 @@ void AbsActionBarView::OnConfigurationChanged(
     AutoPtr<ITypedArray> a;
     AutoPtr<ArrayOf<Int32> > values = ArrayOf<Int32>::Alloc(
         const_cast<Int32*>(R::styleable::ActionBar),
-        ARRAY_SIZE(R::styleable::ActionBar));
+        ArraySize(R::styleable::ActionBar));
 
     GetContext()->ObtainStyledAttributes(NULL, values,
         R::attr::actionBarStyle, 0, (ITypedArray**)&a);

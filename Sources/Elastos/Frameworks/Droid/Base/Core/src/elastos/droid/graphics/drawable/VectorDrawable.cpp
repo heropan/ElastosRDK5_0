@@ -597,7 +597,7 @@ void VectorDrawable::VGroup::Inflate(
     /* [in] */ IResourcesTheme* theme)
 {
     AutoPtr<ITypedArray> a;
-    Int32 size = ARRAY_SIZE(R::styleable::VectorDrawableGroup);
+    Int32 size = ArraySize(R::styleable::VectorDrawableGroup);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::VectorDrawableGroup, size);
     ObtainAttributes(res, theme, attrs, layout, (ITypedArray**)&a);
@@ -646,7 +646,7 @@ void VectorDrawable::VGroup::ApplyTheme(
 
     AutoPtr<ITypedArray> a;
     Int32 size = 0;
-    size = ARRAY_SIZE(R::styleable::VectorDrawableGroup);
+    size = ArraySize(R::styleable::VectorDrawableGroup);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::VectorDrawableGroup, size);
     ((CResources::Theme*)t)->ResolveAttribute(mThemeAttrs, layout, (ITypedArray**)&a);
@@ -845,7 +845,7 @@ void VectorDrawable::VClipPath::Inflate(
     /* [in] */ IResourcesTheme* theme)
 {
     AutoPtr<ITypedArray> a;
-    Int32 size = ARRAY_SIZE(R::styleable::VectorDrawableClipPath);
+    Int32 size = ArraySize(R::styleable::VectorDrawableClipPath);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::VectorDrawableClipPath, size);
     ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);
@@ -962,7 +962,7 @@ void VectorDrawable::VFullPath::Inflate(
     /* [in] */ IResourcesTheme* theme)
 {
     AutoPtr<ITypedArray> a;
-    Int32 size = ARRAY_SIZE(R::styleable::VectorDrawablePath);
+    Int32 size = ArraySize(R::styleable::VectorDrawablePath);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::VectorDrawablePath, size);
     ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);
@@ -1018,7 +1018,7 @@ void VectorDrawable::VFullPath::ApplyTheme(
     }
 
     AutoPtr<ITypedArray> a;
-    Int32 size = ARRAY_SIZE(R::styleable::VectorDrawablePath);
+    Int32 size = ArraySize(R::styleable::VectorDrawablePath);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::VectorDrawablePath, size);
     ((CResources::Theme*)t)->ResolveAttribute(mThemeAttrs, layout, (ITypedArray**)&a);
@@ -1345,7 +1345,7 @@ ECode VectorDrawable::ApplyTheme(
     AutoPtr<VectorDrawableState> state = mVectorState;
     if (state.Get() != NULL && state->mThemeAttrs.Get() != NULL) {
         AutoPtr<ITypedArray> a;
-        Int32 size = ARRAY_SIZE(R::styleable::VectorDrawable);
+        Int32 size = ArraySize(R::styleable::VectorDrawable);
         AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
         layout->Copy(R::styleable::VectorDrawable, size);
         ((CResources::Theme*)t)->ResolveAttribute(state->mThemeAttrs, layout, (ITypedArray**)&a);
@@ -1445,7 +1445,7 @@ ECode VectorDrawable::Inflate(
     state->mVPathRenderer = pathRenderer;
 
     AutoPtr<ITypedArray> a;
-    Int32 size = ARRAY_SIZE(R::styleable::VectorDrawable);
+    Int32 size = ArraySize(R::styleable::VectorDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::VectorDrawable, size);
     ECode ec = ObtainAttributes(res, theme, attrs, layout, (ITypedArray**)&a);

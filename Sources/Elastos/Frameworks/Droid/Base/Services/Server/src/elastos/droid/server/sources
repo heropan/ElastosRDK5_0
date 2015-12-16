@@ -25,6 +25,7 @@ SOURCES = Elastos.Droid.Server.car
 SOURCES += CSystemServer.cpp
 SOURCES += SystemService.cpp
 SOURCES += ServiceThread.cpp
+SOURCES += ServiceWatcher.cpp
 
 #SOURCES += CAlarmManagerService.cpp
 #SOURCES += AttributeCache.cpp
@@ -37,7 +38,6 @@ SOURCES += ServiceThread.cpp
 #SOURCES += CDataActivityObserver.cpp
 #SOURCES += CConnectivityService.cpp
 #SOURCES += CSerialService.cpp
-#SOURCES += ServiceWatcher.cpp
 #SOURCES += CDiskStatsService.cpp
 #SOURCES += CUpdateLockService.cpp
 #SOURCES += CSamplingProfilerService.cpp

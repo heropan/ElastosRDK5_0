@@ -1,5 +1,6 @@
 
 #include "elastos/droid/server/SystemService.h"
+#include <elastos/droid/server/LocalServices.h>
 
 using Elastos::Droid::Os::IServiceManager;
 using Elastos::Droid::Os::CServiceManager;
@@ -82,44 +83,39 @@ void SystemService::PublishBinderService(
     /* [in] */ IBinder* service,
     /* [in] */ Boolean allowIsolated)
 {
-    assert(0 && "TODO");
     AutoPtr<IServiceManager> smgr;
-    // CServiceManager::AcquireSingleton((IServiceManager**)&smgr);
+    CServiceManager::AcquireSingleton((IServiceManager**)&smgr);
     smgr->AddService(name, service, allowIsolated);
 }
 
 AutoPtr<IBinder> SystemService::GetBinderService(
     /* [in] */ const String& name)
 {
-    assert(0 && "TODO");
     AutoPtr<IServiceManager> smgr;
-    // CServiceManager::AcquireSingleton((IServiceManager**)&smgr);
-    // return ServiceManager.getService(name);
-    return NULL;
+    CServiceManager::AcquireSingleton((IServiceManager**)&smgr);
+    AutoPtr<IInterface> obj;
+    smgr->GetService(name, (IInterface**)&obj);
+    return IBinder::Probe(obj);
 }
 
 void SystemService::PublishLocalService(
     /* [in] */ const InterfaceID& type,
     /* [in] */ IInterface* service)
 {
-    assert(0 && "TODO");
-    // LocalServices.addService(type, service);
+    LocalServices::AddService(type, service);
 }
 
 AutoPtr<IInterface> SystemService::GetLocalService(
     /* [in] */const InterfaceID& type)
 {
-    assert(0 && "TODO");
-    // return LocalServices.getService(type);
+    return LocalServices::GetService(type);
     return NULL;
 }
 
-
 AutoPtr<ISystemServiceManager> SystemService::GetManager()
 {
-    assert(0 && "TODO");
-    // return LocalServices.getService(SystemServiceManager.class);
-    return NULL;
+    AutoPtr<IInterface> obj = LocalServices::GetService(EIID_ISystemServiceManager);
+    return ISystemServiceManager::Probe(obj);
 }
 
 

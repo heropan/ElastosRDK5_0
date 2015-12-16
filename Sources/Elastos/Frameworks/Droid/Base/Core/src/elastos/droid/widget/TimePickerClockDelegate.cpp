@@ -516,7 +516,7 @@ ECode TimePickerClockDelegate::constructor(
     assert(0);
     TimePicker::AbstractTimePickerDelegate::constructor(delegator, context);
     AutoPtr< ArrayOf<Int32> > styleAttrs = ArrayOf<Int32>::Alloc(const_cast<Int32*>(R::styleable::TimePicker),
-        ARRAY_SIZE(R::styleable::TimePicker));
+        ArraySize(R::styleable::TimePicker));
     AutoPtr<ITypedArray> a;
     mContext->ObtainStyledAttributes(attrs, styleAttrs, defStyleAttr, defStyleRes, (ITypedArray**)&a);
     Int32 layoutResourceId = 0;

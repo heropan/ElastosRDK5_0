@@ -64,7 +64,7 @@ ECode SwitchPreference::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::SwitchPreference),
-            ARRAY_SIZE(R::styleable::SwitchPreference));
+            ArraySize(R::styleable::SwitchPreference));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
     String summaryOn;

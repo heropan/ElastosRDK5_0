@@ -998,7 +998,7 @@ ECode LayoutInflater::ParseViewTag(
     AutoPtr<ITypedArray> ta; // zhangjingcheng. wait
     // AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
     //     const_cast<Int32 *>(R::styleable::ViewTag),
-    //     ARRAY_SIZE(R::styleable::ViewTag));
+    //     ArraySize(R::styleable::ViewTag));
     // mContext->ObtainStyledAttributes(
     //         attrs, attrIds, (ITypedArray**)&ta); zhangjigcheng
     Int32 key;
@@ -1107,7 +1107,7 @@ ECode LayoutInflater::ParseInclude(
                 // one set on the <include /> tag itself.
                 AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
                     const_cast<Int32 *>(R::styleable::View),
-                    ARRAY_SIZE(R::styleable::View));
+                    ArraySize(R::styleable::View));
                 AutoPtr<ITypedArray> a;
                 mContext->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
                 Int32 id;

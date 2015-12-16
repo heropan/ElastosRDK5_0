@@ -1255,7 +1255,7 @@ void View::InitializeFadingEdge(
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::View),
-        ARRAY_SIZE(R::styleable::View));
+        ArraySize(R::styleable::View));
     AutoPtr<ITypedArray> array;
     ASSERT_SUCCEEDED(mContext->ObtainStyledAttributes(attrIds, (ITypedArray**)&array));
 
@@ -1432,7 +1432,7 @@ void View::InitializeScrollbars(
     // TypedArray with the right filter instead here.
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::View),
-        ARRAY_SIZE(R::styleable::View));
+        ArraySize(R::styleable::View));
     AutoPtr<ITypedArray> array;
     ASSERT_SUCCEEDED(mContext->ObtainStyledAttributes(attrIds, (ITypedArray**)&array));
 
@@ -17791,7 +17791,7 @@ ECode View::constructor(
     //printf("View::Init\n");
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::View),
-        ARRAY_SIZE(R::styleable::View));
+        ArraySize(R::styleable::View));
     AutoPtr<ITypedArray> a;
     ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
             attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));

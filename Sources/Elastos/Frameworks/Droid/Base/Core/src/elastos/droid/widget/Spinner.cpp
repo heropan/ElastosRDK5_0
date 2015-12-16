@@ -776,7 +776,7 @@ ECode Spinner::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::Spinner),
-            ARRAY_SIZE(R::styleable::Spinner));
+            ArraySize(R::styleable::Spinner));
     AutoPtr<ITypedArray> a;
     FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
 

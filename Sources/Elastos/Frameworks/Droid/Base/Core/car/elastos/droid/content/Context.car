@@ -2845,6 +2845,19 @@ module
             [out] Boolean* succeeded);
 
         /**
+         * Same as {@link #bindService(Intent, ServiceConnection, int)}, but with an explicit userHandle
+         * argument for use by system server and other multi-user aware code.
+         * @hide
+         */
+        //@SystemApi
+        BindServiceAsUser(
+            [in] IIntent* service,
+            [in] IServiceConnection* conn,
+            [in] Int32 flags,
+            [in] IUserHandle* user,
+            [out] Boolean* succeeded);
+
+        /**
          * Disconnect from an application service.  You will no longer receive
          * calls as the service is restarted, and the service is now allowed to
          * stop at any time.

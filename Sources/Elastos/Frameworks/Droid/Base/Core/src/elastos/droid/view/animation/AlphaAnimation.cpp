@@ -26,7 +26,7 @@ ECode AlphaAnimation::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::AlphaAnimation),
-            ARRAY_SIZE(R::styleable::AlphaAnimation));
+            ArraySize(R::styleable::AlphaAnimation));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 

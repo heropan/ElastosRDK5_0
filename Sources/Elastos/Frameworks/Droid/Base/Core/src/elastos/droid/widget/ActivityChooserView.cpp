@@ -1061,7 +1061,7 @@ ECode ActivityChooserView::constructor(
 
     ViewGroup::constructor(context, attrs, defStyleAttr, defStyleRes);
     AutoPtr< ArrayOf<Int32> > resAttrs = ArrayOf<Int32>::Alloc(const_cast<Int32*>(R::styleable::ActivityChooserView),
-        ARRAY_SIZE(R::styleable::ActivityChooserView));
+        ArraySize(R::styleable::ActivityChooserView));
     AutoPtr<ITypedArray> attributesArray;
     context->ObtainStyledAttributes(attrs, resAttrs, defStyleAttr, defStyleRes, (ITypedArray**)&attributesArray);
 

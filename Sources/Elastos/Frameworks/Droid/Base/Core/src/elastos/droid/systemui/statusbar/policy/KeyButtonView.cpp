@@ -142,7 +142,7 @@ ECode KeyButtonView::Init(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(SystemUIR::styleable::KeyButtonView),
-            ARRAY_SIZE(SystemUIR::styleable::KeyButtonView));
+            ArraySize(SystemUIR::styleable::KeyButtonView));
     AutoPtr<ITypedArray> a;
     FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
 

@@ -118,7 +118,7 @@ ECode FragmentBreadCrumbs::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::FragmentBreadCrumbs),
-        ARRAY_SIZE(R::styleable::FragmentBreadCrumbs));
+        ArraySize(R::styleable::FragmentBreadCrumbs));
     AutoPtr<ITypedArray>  a;
     context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 

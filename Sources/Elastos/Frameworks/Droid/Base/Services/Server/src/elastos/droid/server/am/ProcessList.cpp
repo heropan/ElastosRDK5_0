@@ -24,7 +24,7 @@ ProcessList::ProcessList()
             FOREGROUND_APP_ADJ, VISIBLE_APP_ADJ, PERCEPTIBLE_APP_ADJ,
             BACKUP_APP_ADJ, HIDDEN_APP_MIN_ADJ, HIDDEN_APP_MAX_ADJ
     };
-    Int32 size = ARRAY_SIZE(oomAdj);
+    Int32 size = ArraySize(oomAdj);
     mOomAdj = ArrayOf<Int32>::Alloc(size);
     mOomAdj->Copy(oomAdj, size);
 
@@ -33,7 +33,7 @@ ProcessList::ProcessList()
             8192, 12288, 16384,
             24576, 28672, 32768
     };
-    size = ARRAY_SIZE(oomMinFreeLow);
+    size = ArraySize(oomMinFreeLow);
     mOomMinFreeLow = ArrayOf<Int64>::Alloc(size);
     mOomMinFreeLow->Copy(oomMinFreeLow, size);
 
@@ -42,7 +42,7 @@ ProcessList::ProcessList()
             32768, 40960, 49152,
             57344, 65536, 81920
     };
-    size = ARRAY_SIZE(oomMinFreeHigh);
+    size = ArraySize(oomMinFreeHigh);
     mOomMinFreeHigh = ArrayOf<Int64>::Alloc(size);
     mOomMinFreeHigh->Copy(oomMinFreeHigh, size);
 

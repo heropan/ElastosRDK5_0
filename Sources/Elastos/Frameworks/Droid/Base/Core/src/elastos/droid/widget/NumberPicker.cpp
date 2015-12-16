@@ -1338,7 +1338,7 @@ ECode NumberPicker::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::NumberPicker),
-            ARRAY_SIZE(R::styleable::NumberPicker));
+            ArraySize(R::styleable::NumberPicker));
     AutoPtr<ITypedArray> attributesArray;
     FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&attributesArray));
 

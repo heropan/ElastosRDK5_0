@@ -1218,7 +1218,7 @@ void CInputManagerService::VisitKeyboardLayoutsInPackage(
             String label;
             Int32 keyboardLayoutResId;
 
-            Int32 size = ARRAY_SIZE(R::styleable::KeyboardLayout);
+            Int32 size = ArraySize(R::styleable::KeyboardLayout);
             AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
             layout->Copy(R::styleable::KeyboardLayout, size);
 

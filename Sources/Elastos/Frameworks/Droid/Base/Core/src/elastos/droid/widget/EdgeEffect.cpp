@@ -76,7 +76,7 @@ ECode EdgeEffect::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::EdgeEffect),
-            ARRAY_SIZE(R::styleable::EdgeEffect));
+            ArraySize(R::styleable::EdgeEffect));
 
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrIds, (ITypedArray**)&a);

@@ -50,7 +50,7 @@ void GridLayout::LayoutParams::ReInitSuper(
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::ViewGroup_MarginLayout),
-            ARRAY_SIZE(R::styleable::ViewGroup_MarginLayout));
+            ArraySize(R::styleable::ViewGroup_MarginLayout));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
     //try {
@@ -72,7 +72,7 @@ void GridLayout::LayoutParams::Init(
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::GridLayout_Layout),
-            ARRAY_SIZE(R::styleable::GridLayout_Layout));
+            ArraySize(R::styleable::GridLayout_Layout));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
@@ -396,7 +396,7 @@ ECode GridLayout::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::GridLayout),
-            ARRAY_SIZE(R::styleable::GridLayout));
+            ArraySize(R::styleable::GridLayout));
     AutoPtr<ITypedArray> a;
     FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
 

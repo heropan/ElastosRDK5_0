@@ -1910,7 +1910,7 @@ ECode CMountService::ReadStorageListLocked()
         if (element.IsNull()) break;
 
         if (TAG_STORAGE.Equals(element)) {
-            Int32 size = ARRAY_SIZE(R::styleable::Storage);
+            Int32 size = ArraySize(R::styleable::Storage);
             AutoPtr< ArrayOf<Int32> > storage = ArrayOf<Int32>::Alloc(size);
             storage->Copy(R::styleable::Storage, size);
             AutoPtr<ITypedArray> a;

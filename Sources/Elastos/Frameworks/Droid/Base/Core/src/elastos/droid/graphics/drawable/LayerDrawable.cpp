@@ -253,7 +253,7 @@ ECode LayerDrawable::Inflate(
     Drawable::Inflate(r, parser, attrs, theme);
     AutoPtr<ITypedArray> a;
 
-    Int32 size = ARRAY_SIZE(R::styleable::LayerDrawable);
+    Int32 size = ArraySize(R::styleable::LayerDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::LayerDrawable, size);
     ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);
@@ -315,7 +315,7 @@ ECode LayerDrawable::InflateLayers(
 
         AutoPtr<ChildDrawable> layer = new ChildDrawable();
         AutoPtr<ITypedArray> a;
-        Int32 size = ARRAY_SIZE(R::styleable::LayerDrawableItem);
+        Int32 size = ArraySize(R::styleable::LayerDrawableItem);
         AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
         layout->Copy(R::styleable::LayerDrawableItem, size);
         FAIL_RETURN(ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a));
@@ -385,7 +385,7 @@ ECode LayerDrawable::ApplyTheme(
 
     if (state->mThemeAttrs != NULL) {
         AutoPtr<ITypedArray> a;
-        Int32 size = ARRAY_SIZE(R::styleable::LayerDrawable);
+        Int32 size = ArraySize(R::styleable::LayerDrawable);
         AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
         layout->Copy(R::styleable::LayerDrawable, size);
         ((CResources::Theme*)t)->ResolveAttribute(state->mThemeAttrs, layout, (ITypedArray**)&a);
@@ -400,7 +400,7 @@ ECode LayerDrawable::ApplyTheme(
         if (layer->mThemeAttrs != NULL) {
             AutoPtr<ITypedArray> a;
 
-            Int32 size = ARRAY_SIZE(R::styleable::LayerDrawableItem);
+            Int32 size = ArraySize(R::styleable::LayerDrawableItem);
             AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
             layout->Copy(R::styleable::LayerDrawableItem, size);
             ((CResources::Theme*)t)->ResolveAttribute(layer->mThemeAttrs, layout, (ITypedArray**)&a);

@@ -157,7 +157,7 @@ ECode ScrollView::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::ScrollView),
-            ARRAY_SIZE(R::styleable::ScrollView));
+            ArraySize(R::styleable::ScrollView));
     AutoPtr<ITypedArray> a;
     FAIL_RETURN(context->ObtainStyledAttributes(
             attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));

@@ -97,7 +97,7 @@ ECode VoiceInteractionServiceInfo::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::VoiceInteractionService),
-        ARRAY_SIZE(R::styleable::VoiceInteractionService));
+        ArraySize(R::styleable::VoiceInteractionService));
     AutoPtr<ITypedArray> array;
     res->ObtainAttributes(attrs, attrIds, (ITypedArray**)&array);
     array->GetString(
