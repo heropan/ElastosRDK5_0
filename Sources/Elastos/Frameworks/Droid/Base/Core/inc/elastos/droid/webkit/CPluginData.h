@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Webkit_CPluginData.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::IO::IInputStream;
 using Elastos::Utility::IMap;

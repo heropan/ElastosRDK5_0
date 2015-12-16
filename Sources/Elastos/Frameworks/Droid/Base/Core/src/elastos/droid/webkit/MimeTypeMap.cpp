@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.Libcore.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/webkit/MimeTypeMap.h"
 #include "elastos/droid/webkit/URLUtil.h"
 #include "elastos/droid/text/TextUtils.h"

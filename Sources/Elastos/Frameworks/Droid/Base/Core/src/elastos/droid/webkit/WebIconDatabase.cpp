@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Webkit.h"
 #include "elastos/droid/webkit/WebIconDatabase.h"
 
 namespace Elastos {

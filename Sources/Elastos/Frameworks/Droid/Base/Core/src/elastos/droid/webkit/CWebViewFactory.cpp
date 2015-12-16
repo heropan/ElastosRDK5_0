@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/webkit/CWebViewFactory.h"
 #include "elastos/droid/webkit/WebViewFactory.h"
 

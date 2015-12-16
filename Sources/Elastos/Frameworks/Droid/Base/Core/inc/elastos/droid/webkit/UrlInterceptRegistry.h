@@ -4,6 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::IMap;

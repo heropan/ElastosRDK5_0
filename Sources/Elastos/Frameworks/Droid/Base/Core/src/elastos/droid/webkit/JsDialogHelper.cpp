@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/webkit/JsDialogHelper.h"
 #include "elastos/droid/webkit/URLUtil.h"
 #include <elastos/core/StringBuilder.h>

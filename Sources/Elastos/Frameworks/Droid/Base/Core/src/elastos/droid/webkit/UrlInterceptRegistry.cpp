@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Webkit.h"
 #include "elastos/droid/webkit/UrlInterceptRegistry.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/etl/Algorithm.h>

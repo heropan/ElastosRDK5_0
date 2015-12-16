@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_HTTPAUTHHANDLER_H__
 #define __ELASTOS_DROID_WEBKIT_HTTPAUTHHANDLER_H__
 
+#include "Elastos.Droid.Webkit.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Handler.h"
 

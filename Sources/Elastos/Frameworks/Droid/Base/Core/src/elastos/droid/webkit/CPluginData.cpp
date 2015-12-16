@@ -1,4 +1,6 @@
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/CPluginData.h"
 
