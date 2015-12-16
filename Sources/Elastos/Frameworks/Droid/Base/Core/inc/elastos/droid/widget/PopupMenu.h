@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_POPUPMENU_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/widget/ListPopupWindow.h"
 
 using Elastos::Droid::Content::IContext;

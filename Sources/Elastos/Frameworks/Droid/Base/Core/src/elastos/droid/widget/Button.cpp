@@ -1,4 +1,8 @@
 
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.Droid.Text.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/widget/Button.h"
 
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;

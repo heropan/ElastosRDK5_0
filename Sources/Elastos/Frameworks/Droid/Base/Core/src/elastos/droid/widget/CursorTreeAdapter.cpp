@@ -1,4 +1,8 @@
 
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/widget/CursorTreeAdapter.h"
 // #include "elastos/droid/widget/CCursorFilter.h"
 #include "elastos/droid/os/CHandler.h"

@@ -3,6 +3,8 @@
 #define __ELASTOS_DROID_WIDGET_OVERSCROLLER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.Droid.View.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;

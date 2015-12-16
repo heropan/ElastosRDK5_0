@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/widget/CExpandableListPosition.h"
 #include "elastos/droid/widget/ExpandableListPosition.h"
 #include "elastos/core/AutoLock.h"

@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.CoreLibrary.Libcore.h"
 #include "elastos/droid/widget/NumberPicker.h"
 #include "elastos/droid/content/res/CCompatibilityInfo.h"
 #include "elastos/droid/graphics/CPaint.h"

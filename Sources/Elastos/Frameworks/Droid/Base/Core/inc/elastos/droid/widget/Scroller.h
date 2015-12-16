@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_SCROLLER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {

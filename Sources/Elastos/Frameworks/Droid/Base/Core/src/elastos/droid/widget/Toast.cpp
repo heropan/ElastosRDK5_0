@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/Toast.h"
 #include "elastos/droid/widget/CToast.h"
 #include "elastos/droid/os/ServiceManager.h"

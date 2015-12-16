@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/AbsListView.h"
 #include "elastos/droid/widget/CAbsListViewLayoutParams.h"
 #include "elastos/droid/widget/CAbsListViewSavedState.h"

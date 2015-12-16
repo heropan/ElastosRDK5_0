@@ -18,6 +18,7 @@
 #define __ELASTOS_DROID_WIDGET_EXPANDABLELISTCONNECTOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/widget/BaseAdapter.h"
 #include "elastos/droid/widget/ExpandableListPosition.h"
 

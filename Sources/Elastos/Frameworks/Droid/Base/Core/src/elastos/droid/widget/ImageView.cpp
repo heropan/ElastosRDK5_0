@@ -1,4 +1,9 @@
 
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/widget/ImageView.h"
 #include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/graphics/CMatrix.h"

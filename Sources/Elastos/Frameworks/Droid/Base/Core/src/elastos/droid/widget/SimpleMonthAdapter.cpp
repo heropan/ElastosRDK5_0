@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/SimpleMonthAdapter.h"
 // #include "elastos/droid/widget/CSimpleMonthView.h"
 

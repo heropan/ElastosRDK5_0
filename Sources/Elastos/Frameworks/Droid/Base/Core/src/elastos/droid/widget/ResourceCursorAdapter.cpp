@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/ResourceCursorAdapter.h"
 
 namespace Elastos {

@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/LinearLayout.h"
 #include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
 #include "elastos/droid/R.h"

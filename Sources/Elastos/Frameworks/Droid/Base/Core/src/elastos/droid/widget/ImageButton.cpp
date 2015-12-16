@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/widget/ImageButton.h"
 #include "elastos/droid/R.h"
 

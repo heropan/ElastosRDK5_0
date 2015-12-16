@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/SeekBar.h"
 
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;

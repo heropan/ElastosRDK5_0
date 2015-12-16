@@ -1,4 +1,5 @@
-
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/animation/AnimatorInflater.h"
 #include "elastos/droid/animation/CObjectAnimatorHelper.h"
 #include "elastos/droid/content/CIntentFilterComparison.h"

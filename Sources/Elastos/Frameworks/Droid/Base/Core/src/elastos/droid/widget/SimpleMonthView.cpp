@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Text.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/graphics/CTypefaceHelper.h"
@@ -22,7 +25,6 @@ using Elastos::Droid::Text::Format::CDateFormat;
 using Elastos::Droid::Text::Format::CDateUtils;
 using Elastos::Droid::Text::Format::CTime;
 using Elastos::Droid::Text::Format::CTimeHelper;
-using Elastos::Droid::Text::Format::IDateFormat;
 using Elastos::Droid::Text::Format::IDateUtils;
 using Elastos::Droid::Text::Format::ITimeHelper;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeProvider;
@@ -242,6 +244,7 @@ AutoPtr<ICharSequence> SimpleMonthView::MonthViewTouchHelper::GetItemDescription
     //
     // return date;
 
+    using Elastos::Droid::Text::Format::IDateFormat;
     mTempCalendar->Set(mOwner->mYear, mOwner->mMonth, day);
     Int64 timeMillis = 0;
     mTempCalendar->GetTimeInMillis(&timeMillis);

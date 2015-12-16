@@ -1,4 +1,8 @@
 
+#include "Elastos.Droid.Text.h"
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.CoreLibrary.Libcore.h"
 #include "elastos/droid/widget/TextClock.h"
 #include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/os/CHandler.h"

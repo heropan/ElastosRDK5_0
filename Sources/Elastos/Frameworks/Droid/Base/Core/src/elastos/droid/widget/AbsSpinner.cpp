@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/AbsSpinner.h"
 #include "elastos/droid/widget/CArrayAdapter.h"
 #include "elastos/droid/view/CViewGroupLayoutParams.h"

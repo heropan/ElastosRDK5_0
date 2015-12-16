@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/RadioButton.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/CoreUtils.h>

@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/RadioGroup.h"
 #include "elastos/droid/widget/CRadioGroupLayoutParams.h"
 #include "elastos/droid/R.h"

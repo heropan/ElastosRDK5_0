@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/ToggleButton.h"
 
 using Elastos::Droid::Graphics::Drawable::ILayerDrawable;

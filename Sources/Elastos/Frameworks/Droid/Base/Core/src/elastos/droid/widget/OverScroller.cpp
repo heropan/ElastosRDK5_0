@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Animation.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/widget/OverScroller.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>

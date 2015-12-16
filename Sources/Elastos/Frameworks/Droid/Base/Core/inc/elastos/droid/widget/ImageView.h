@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_IMAGEVIEW_H__
 #define __ELASTOS_DROID_WIDGET_IMAGEVIEW_H__
 
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/graphics/CRectF.h"

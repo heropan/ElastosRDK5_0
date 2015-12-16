@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_RELATIVELAYOUT_H__
 #define __ELASTOS_DROID_WIDGET_RELATIVELAYOUT_H__
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/ViewGroup.h"
 #include "elastos/droid/utility/Pools.h"

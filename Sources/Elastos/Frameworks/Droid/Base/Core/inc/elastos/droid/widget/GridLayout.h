@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_WIDGET_GRIDLAYOUT_H__
 #define __ELASTOS_DROID_WIDGET_GRIDLAYOUT_H__
 
+#define HASH_FOR_WIDGET
+#include "elastos/droid/ext/frameworkhash.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/ViewGroup.h"
 #include <elastos/core/Math.h>
@@ -548,7 +550,6 @@ public:
         CARAPI Inverse(
             /* [out] */ IInterval** interval);
 
-
         CARAPI_(Int32) Size();
 
         CARAPI_(AutoPtr<Interval>) Inverse();
@@ -569,8 +570,8 @@ public:
     };
 
     class Spec
-        : public IGridLayoutSpec
-        , public Object
+        : public Object
+        , public IGridLayoutSpec
     {
         friend class GridLayout;
 
@@ -627,10 +628,9 @@ public:
     };
 
     class Alignment
-        : public IGridLayoutAlignment
-        , public Object
+        : public Object
+        , public IGridLayoutAlignment
     {
-
     public:
         Alignment();
 

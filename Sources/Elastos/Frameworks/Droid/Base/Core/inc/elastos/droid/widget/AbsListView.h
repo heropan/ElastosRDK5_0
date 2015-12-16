@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_ABSLISTVIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Text.h"
 #include "elastos/droid/widget/AdapterView.h"
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/view/VelocityTracker.h"

@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/widget/ListView.h"
 #include "elastos/droid/content/pm/CApplicationInfo.h"
 #include "elastos/droid/graphics/CPaint.h"

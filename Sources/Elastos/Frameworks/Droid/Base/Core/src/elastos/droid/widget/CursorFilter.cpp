@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.Droid.Database.h"
 #include "elastos/droid/widget/CursorFilter.h"
 
 using Elastos::Droid::Database::ICursor;

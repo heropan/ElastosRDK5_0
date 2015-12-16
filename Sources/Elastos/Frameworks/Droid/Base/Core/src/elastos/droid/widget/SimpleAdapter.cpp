@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/SimpleAdapter.h"
 #include "elastos/droid/net/Uri.h"
 #include "elastos/droid/os/ElDataInterface.h"

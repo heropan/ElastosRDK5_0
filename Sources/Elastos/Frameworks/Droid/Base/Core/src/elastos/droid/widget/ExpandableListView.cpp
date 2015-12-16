@@ -1,4 +1,5 @@
-
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/ExpandableListView.h"
 #include "elastos/droid/widget/CExpandableListContextMenuInfo.h"
 #include "elastos/droid/widget/CExpandableListViewSavedState.h"

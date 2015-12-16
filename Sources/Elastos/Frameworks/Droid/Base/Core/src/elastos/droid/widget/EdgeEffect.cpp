@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/EdgeEffect.h"
 #include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/graphics/CRect.h"

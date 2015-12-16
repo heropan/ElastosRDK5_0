@@ -1,4 +1,5 @@
-
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/ProgressBar.h"
 // #include "elastos/droid/widget/CProgressBarSavedState.h"
 #include "elastos/droid/graphics/drawable/Drawable.h"

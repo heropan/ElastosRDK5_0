@@ -2,6 +2,11 @@
 #ifndef __ELASTOS_DROID_WIDGET_LISTPOPUPWINDOW_H__
 #define __ELASTOS_DROID_WIDGET_LISTPOPUPWINDOW_H__
 
+#include "Elastos.Droid.Database.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Content.h"
 //#include "elastos/droid/animation/AnimatorListenerAdapter.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/utility/Int32Property.h"
@@ -34,7 +39,6 @@ using Elastos::Droid::Widget::IPopupWindow;
 using Elastos::Droid::Widget::IPopupWindowOnDismissListener;
 //using Elastos::Droid::Widget::ListView;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {

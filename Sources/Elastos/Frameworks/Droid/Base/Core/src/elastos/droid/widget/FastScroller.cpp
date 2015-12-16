@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/FastScroller.h"
 
 #include "elastos/droid/animation/CAnimatorSet.h"

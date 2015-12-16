@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/PopupMenu.h"
 #include "elastos/droid/internal/view/menu/CMenuBuilder.h"
 #include "elastos/droid/internal/view/menu/CMenuPopupHelper.h"

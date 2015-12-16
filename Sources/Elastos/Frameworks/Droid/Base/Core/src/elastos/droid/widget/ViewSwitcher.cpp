@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/ViewSwitcher.h"
 #include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
 

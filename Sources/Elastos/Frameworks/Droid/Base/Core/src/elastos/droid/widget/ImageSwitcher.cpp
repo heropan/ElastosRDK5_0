@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/ImageSwitcher.h"
 
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;

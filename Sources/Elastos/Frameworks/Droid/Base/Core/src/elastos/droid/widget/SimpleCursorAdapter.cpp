@@ -1,4 +1,5 @@
-
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/SimpleCursorAdapter.h"
 #include <elastos/core/StringUtils.h>
 #include "elastos/droid/net/CUriHelper.h"

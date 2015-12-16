@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/widget/ArrayAdapter.h"
 #include "elastos/droid/widget/CArrayAdapter.h"
 #include <elastos/core/StringUtils.h>

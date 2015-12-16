@@ -1,4 +1,8 @@
-
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Utility.h"
+#include "Elastos.Droid.Animation.h"
 #include "elastos/droid/widget/Scroller.h"
 #include "elastos/droid/view/ViewConfiguration.h"
 #include "elastos/droid/view/animation/AnimationUtils.h"

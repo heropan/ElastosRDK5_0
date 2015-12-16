@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/AbsoluteLayout.h"
 #include "elastos/droid/widget/CAbsoluteLayoutLayoutParams.h"
 #include "elastos/droid/R.h"

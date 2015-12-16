@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/RatingBar.h"
 #include "elastos/droid/graphics/drawable/shapes/CRectShape.h"
 #include "elastos/droid/R.h"

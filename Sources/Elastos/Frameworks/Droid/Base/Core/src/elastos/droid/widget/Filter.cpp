@@ -1,9 +1,8 @@
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/Filter.h"
 #include "elastos/droid/os/SystemClock.h"
-#ifdef DROID_CORE
 #include "elastos/droid/os/CHandlerThread.h"
-#endif
 #include <elastos/core/AutoLock.h>
 
 using Elastos::Droid::Os::IHandlerThread;

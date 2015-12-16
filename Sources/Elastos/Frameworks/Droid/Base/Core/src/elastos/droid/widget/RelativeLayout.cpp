@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/RelativeLayout.h"
 #include "elastos/droid/widget/CRelativeLayoutLayoutParams.h"
 #include "elastos/droid/R.h"

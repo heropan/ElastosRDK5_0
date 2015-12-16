@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/GridLayout.h"
 #include "elastos/droid/graphics/Insets.h"
 #include "elastos/droid/graphics/CPaint.h"
@@ -107,8 +109,8 @@ ECode GridLayout::LayoutParams::SetGravity(
 {
     AutoPtr<GridLayout::Spec> row = (GridLayout::Spec*)mRowSpec.Get();
     AutoPtr<GridLayout::Spec> col = (GridLayout::Spec*)mColumnSpec.Get();
-    mRowSpec = row->CopyWriteAlignment(GridLayout::GetAlignment(gravity, FALSE));
-    mColumnSpec = col->CopyWriteAlignment(GridLayout::GetAlignment(gravity, TRUE));
+    mRowSpec = IGridLayoutSpec::Probe(row->CopyWriteAlignment(GridLayout::GetAlignment(gravity, FALSE)));
+    mColumnSpec = IGridLayoutSpec::Probe(col->CopyWriteAlignment(GridLayout::GetAlignment(gravity, TRUE)));
     return NOERROR;
 }
 
@@ -1526,6 +1528,7 @@ AutoPtr< GridLayout::PackedMap<IGridLayoutSpec*, IBounds*> > GridLayout::Axis::C
     }
     AutoPtr<PackedMap<AutoPtr<IGridLayoutSpec>, AutoPtr<IBounds> > > map = assoc->Pack();
     delete assoc;
+    assert(0 && "TODO: luozhaohui");
     return (PackedMap<IGridLayoutSpec*, IBounds*>*)(map.Get());
 }
 

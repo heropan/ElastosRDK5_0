@@ -1,4 +1,7 @@
-
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/widget/ResourceCursorTreeAdapter.h"
 
 namespace Elastos {

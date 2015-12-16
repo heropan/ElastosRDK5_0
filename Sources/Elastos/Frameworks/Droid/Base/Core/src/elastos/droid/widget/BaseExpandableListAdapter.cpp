@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/BaseExpandableListAdapter.h"
 #include "elastos/droid/database/CDataSetObservable.h"
 

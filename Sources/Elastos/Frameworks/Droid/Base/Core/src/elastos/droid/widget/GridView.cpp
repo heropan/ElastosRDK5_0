@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/utility/MathUtils.h"
 #include "elastos/droid/view/SoundEffectConstants.h"
 #include "elastos/droid/view/CViewGroupLayoutParams.h"

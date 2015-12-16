@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_EDGEEFFECT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::Drawable::IDrawable;

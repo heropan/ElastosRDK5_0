@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/PopupWindow.h"
 #include <elastos/utility/logging/Logger.h>
 #include "elastos/droid/R.h"

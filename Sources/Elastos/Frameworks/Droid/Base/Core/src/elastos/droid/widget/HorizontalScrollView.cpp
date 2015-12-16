@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/HorizontalScrollView.h"
 #include "elastos/droid/widget/CHorizontalScrollViewSavedState.h"
 // #include "elastos/droid/widget/ScrollView.h"

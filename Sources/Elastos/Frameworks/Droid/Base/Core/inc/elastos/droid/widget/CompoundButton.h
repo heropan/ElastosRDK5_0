@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_COMPOUNDBUTTON_H__
 #define __ELASTOS_DROID_WIDGET_COMPOUNDBUTTON_H__
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/Button.h"
 #include "elastos/droid/view/View.h"
 
