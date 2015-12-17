@@ -47,7 +47,7 @@ ECode TextAppearanceSpan::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::TextAppearance),
-            ARRAY_SIZE(R::styleable::TextAppearance));
+            ArraySize(R::styleable::TextAppearance));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(appearance, attrIds, (ITypedArray**)&a);
 
@@ -90,7 +90,7 @@ ECode TextAppearanceSpan::constructor(
         a = NULL;
         attrIds = ArrayOf<Int32>::Alloc(
                 const_cast<Int32 *>(R::styleable::Theme),
-                ARRAY_SIZE(R::styleable::Theme));
+                ArraySize(R::styleable::Theme));
         context->ObtainStyledAttributes(R::style::Theme, attrIds, (ITypedArray**)&a);
 
         textColor = NULL;

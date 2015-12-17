@@ -17,8 +17,8 @@ AutoPtr<IDialerKeyListener> DialerKeyListener::sInstance;
 static AutoPtr<ArrayOf<Char32> > InitCHARACTERS()
 {
     Char32 ch[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '#', '*', '+', '-', '(', ')', ',', '/', 'N', '.', ' ', ';' };
-    AutoPtr<ArrayOf<Char32> > array = ArrayOf<Char32>::Alloc(ARRAY_SIZE(ch));
-    array->Copy(ch, ARRAY_SIZE(ch));
+    AutoPtr<ArrayOf<Char32> > array = ArrayOf<Char32>::Alloc(ArraySize(ch));
+    array->Copy(ch, ArraySize(ch));
     return array;
 }
 

@@ -122,7 +122,7 @@ ECode ImageView::InitFromAttributes(
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::ImageView),
-            ARRAY_SIZE(R::styleable::ImageView));
+            ArraySize(R::styleable::ImageView));
     AutoPtr<ITypedArray> a;
     FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
 

@@ -119,7 +119,7 @@ void MenuInflater::MenuState::ReadGroup(
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::MenuGroup),
-        ARRAY_SIZE(R::styleable::MenuGroup));
+        ArraySize(R::styleable::MenuGroup));
     AutoPtr<ITypedArray> a;
     mOwner->mContext->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
@@ -138,7 +138,7 @@ void MenuInflater::MenuState::ReadItem(
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::MenuItem),
-        ARRAY_SIZE(R::styleable::MenuItem));
+        ArraySize(R::styleable::MenuItem));
     AutoPtr<ITypedArray> a;
     mOwner->mContext->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 

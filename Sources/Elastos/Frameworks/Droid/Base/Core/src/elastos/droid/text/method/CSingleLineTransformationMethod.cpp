@@ -9,7 +9,7 @@ namespace Method {
 static AutoPtr<ArrayOf<Char32> > InitOriginal()
 {
     Char32 array[] = {'\n', '\r'};
-    AutoPtr<ArrayOf<Char32> > ch = ArrayOf<Char32>::Alloc(ARRAY_SIZE(array));
+    AutoPtr<ArrayOf<Char32> > ch = ArrayOf<Char32>::Alloc(ArraySize(array));
     (*ch)[0] = '\n';
     (*ch)[1] = '\r';
     return ch;
@@ -18,7 +18,7 @@ static AutoPtr<ArrayOf<Char32> > InitOriginal()
 static AutoPtr<ArrayOf<Char32> > InitReplacement()
 {
     Char32 array[] = {' ', 0xFEFF};
-    AutoPtr<ArrayOf<Char32> > ch = ArrayOf<Char32>::Alloc(ARRAY_SIZE(array));
+    AutoPtr<ArrayOf<Char32> > ch = ArrayOf<Char32>::Alloc(ArraySize(array));
     (*ch)[0] = ' ';
     (*ch)[1] = 0xFEFF;
     return ch;

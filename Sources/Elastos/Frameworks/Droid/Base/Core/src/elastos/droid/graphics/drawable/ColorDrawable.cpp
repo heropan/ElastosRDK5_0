@@ -270,7 +270,7 @@ ECode ColorDrawable::Inflate(
 {
     FAIL_RETURN(Drawable::Inflate(r, parser, attrs, theme));
 
-    Int32 size = ARRAY_SIZE(R::styleable::ColorDrawable);
+    Int32 size = ArraySize(R::styleable::ColorDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::ColorDrawable, size);
 
@@ -309,7 +309,7 @@ ECode ColorDrawable::ApplyTheme(
     }
 
     AutoPtr<ITypedArray> a;
-    Int32 size = ARRAY_SIZE(R::styleable::ColorDrawable);
+    Int32 size = ArraySize(R::styleable::ColorDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::ColorDrawable, size);
 

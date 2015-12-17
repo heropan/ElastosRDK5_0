@@ -34,7 +34,7 @@ ECode FrameLayout::LayoutParams::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::FrameLayout_Layout),
-            ARRAY_SIZE(R::styleable::FrameLayout_Layout));
+            ArraySize(R::styleable::FrameLayout_Layout));
     AutoPtr<ITypedArray> a;
     ASSERT_SUCCEEDED(c->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a));
     a->GetInt32(R::styleable::FrameLayout_Layout_layout_gravity, -1, &mGravity);
@@ -151,7 +151,7 @@ ECode FrameLayout::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::FrameLayout),
-            ARRAY_SIZE(R::styleable::FrameLayout));
+            ArraySize(R::styleable::FrameLayout));
     AutoPtr<ITypedArray> a;
     FAIL_RETURN(context->ObtainStyledAttributes(
             attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));

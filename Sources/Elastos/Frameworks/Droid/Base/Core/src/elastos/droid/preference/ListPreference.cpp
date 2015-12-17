@@ -60,7 +60,7 @@ ECode ListPreference::constructor(
 
     AutoPtr< ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::ListPreference),
-            ARRAY_SIZE(R::styleable::ListPreference));
+            ArraySize(R::styleable::ListPreference));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
     a->GetTextArray(R::styleable::ListPreference_entries, (ArrayOf<ICharSequence*>**)&mEntries);
@@ -73,7 +73,7 @@ ECode ListPreference::constructor(
     a = NULL;
     attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::Preference),
-            ARRAY_SIZE(R::styleable::Preference));
+            ArraySize(R::styleable::Preference));
     context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
     a->GetString(R::styleable::Preference_summary, &mSummary);
     a->Recycle();

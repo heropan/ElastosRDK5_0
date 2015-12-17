@@ -112,7 +112,7 @@ ECode SizeAdaptiveLayoutLayoutParams::InitImpl(
     //     }
     // }
 
-    Int32 size = ARRAY_SIZE(R::styleable::SizeAdaptiveLayout_Layout);
+    Int32 size = ArraySize(R::styleable::SizeAdaptiveLayout_Layout);
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(size);
     attrIds->Copy(R::styleable::SizeAdaptiveLayout_Layout, size);
 

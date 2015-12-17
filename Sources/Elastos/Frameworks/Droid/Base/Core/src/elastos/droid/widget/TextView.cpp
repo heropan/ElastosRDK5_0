@@ -1291,7 +1291,7 @@ ECode TextView::InitFromAttributes(
      */
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::TextViewAppearance),
-            ARRAY_SIZE(R::styleable::TextViewAppearance));
+            ArraySize(R::styleable::TextViewAppearance));
     AutoPtr<ITypedArray> a;
     theme->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 
@@ -1302,7 +1302,7 @@ ECode TextView::InitFromAttributes(
     if (ap != -1) {
         attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::TextAppearance),
-            ARRAY_SIZE(R::styleable::TextAppearance));
+            ArraySize(R::styleable::TextAppearance));
         theme->ObtainStyledAttributes(ap, attrIds, (ITypedArray**)&appearance);
     }
 
@@ -1407,7 +1407,7 @@ ECode TextView::InitFromAttributes(
     a = NULL;
     attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::TextView),
-            ARRAY_SIZE(R::styleable::TextView));
+            ArraySize(R::styleable::TextView));
     theme->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 
     //TODO  typedarray should has TextView_minHeight value, but now it has not
@@ -2072,7 +2072,7 @@ ECode TextView::InitFromAttributes(
     a = NULL;
     attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::View),
-        ARRAY_SIZE(R::styleable::View));
+        ArraySize(R::styleable::View));
     ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
             attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
 
@@ -3396,7 +3396,7 @@ ECode TextView::SetTextAppearance(
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::TextAppearance),
-        ARRAY_SIZE(R::styleable::TextAppearance));
+        ArraySize(R::styleable::TextAppearance));
     AutoPtr<ITypedArray> appearance;
     ASSERT_SUCCEEDED(context->ObtainStyledAttributes(resid, attrIds, (ITypedArray**)&appearance));
 
@@ -9810,7 +9810,7 @@ ECode TextView::GetTextColors(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::TextView),
-        ARRAY_SIZE(R::styleable::TextView));
+        ArraySize(R::styleable::TextView));
     AutoPtr<ITypedArray> a;
     ASSERT_SUCCEEDED(context->ObtainStyledAttributes(attrIds, (ITypedArray**)&a));
     AutoPtr<IColorStateList> colors;
@@ -9822,7 +9822,7 @@ ECode TextView::GetTextColors(
         if (ap != 0) {
             AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
                 const_cast<Int32 *>(R::styleable::TextAppearance),
-                ARRAY_SIZE(R::styleable::TextAppearance));
+                ArraySize(R::styleable::TextAppearance));
             AutoPtr<ITypedArray> appearance;
             ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
                     ap, attrIds, (ITypedArray**)&appearance));

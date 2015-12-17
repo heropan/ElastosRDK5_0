@@ -40,7 +40,7 @@ ECode RingtonePreference::constructor(
 
     AutoPtr<ArrayOf<Int32> > arrayAttrs = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::RingtonePreference),
-            ARRAY_SIZE(R::styleable::RingtonePreference));
+            ArraySize(R::styleable::RingtonePreference));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, arrayAttrs, defStyleAttr, defStyleRes, (ITypedArray**)&a);
     a->GetInt32(R::styleable::RingtonePreference_ringtoneType, IRingtoneManager::TYPE_RINGTONE, &mRingtoneType);

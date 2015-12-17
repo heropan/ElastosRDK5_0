@@ -155,7 +155,7 @@ ECode TextClock::constructor(
     AutoPtr<ITypedArray> a;
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::TextClock),
-            ARRAY_SIZE(R::styleable::TextClock));
+            ArraySize(R::styleable::TextClock));
     context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
     a->GetText(R::styleable::TextClock_format12Hour, (ICharSequence**)&mFormat12);
     a->GetText(R::styleable::TextClock_format24Hour, (ICharSequence**)&mFormat24);

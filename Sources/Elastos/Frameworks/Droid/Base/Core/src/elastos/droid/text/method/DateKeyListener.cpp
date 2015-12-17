@@ -10,8 +10,8 @@ static AutoPtr<ArrayOf<Char32> > InitCHARACTERS()
     Char32 ch[] = {
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
             '/', '-', '.'};
-    AutoPtr<ArrayOf<Char32> > chars = ArrayOf<Char32>::Alloc(ARRAY_SIZE(ch));
-    chars->Copy(ch, ARRAY_SIZE(ch));
+    AutoPtr<ArrayOf<Char32> > chars = ArrayOf<Char32>::Alloc(ArraySize(ch));
+    chars->Copy(ch, ArraySize(ch));
     return chars;
 }
 

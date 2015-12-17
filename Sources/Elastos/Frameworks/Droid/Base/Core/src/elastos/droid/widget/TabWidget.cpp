@@ -103,7 +103,7 @@ ECode TabWidget::InitFromAttributes(
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::TabWidget),
-        ARRAY_SIZE(R::styleable::TabWidget));
+        ArraySize(R::styleable::TabWidget));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(
         attrs, attrIds, defStyle, 0, (ITypedArray**)&a);

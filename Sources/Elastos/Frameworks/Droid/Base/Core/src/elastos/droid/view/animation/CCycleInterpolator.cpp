@@ -52,7 +52,7 @@ ECode CCycleInterpolator::constructor(
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::CycleInterpolator),
-            ARRAY_SIZE(R::styleable::CycleInterpolator));
+            ArraySize(R::styleable::CycleInterpolator));
     AutoPtr<ITypedArray> a;
     if (theme != NULL) {
         theme->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);

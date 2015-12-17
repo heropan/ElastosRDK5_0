@@ -193,13 +193,15 @@ EXTERN_C pthread_key_t *getTlSystemSlotBase();
 #define IS_ALIGNMENT(n, size)   (0 == ((size_t)(n) % (size)))
 #define IS_ALIGNMENT2(n, size)  (0 == ((size_t)(n) & ((size) - 1)))
 
-#ifndef ARRAY_SIZE
-#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
-#endif
-
 #define _MAX_PATH     260     /* max length of full pathname */
 
-template <class type>
+template<typename T, int N>
+CAR_INLINE int ArraySize(T (&)[N])
+{
+    return N;
+}
+
+template <typename type>
 CAR_INLINE const type &Max(const type &a, const type &b)
 {
     if (a > b)
@@ -208,7 +210,7 @@ CAR_INLINE const type &Max(const type &a, const type &b)
         return b;
 }
 
-template <class type>
+template <typename type>
 CAR_INLINE const type &Min(const type &a, const type &b)
 {
     if (a < b)
@@ -217,7 +219,7 @@ CAR_INLINE const type &Min(const type &a, const type &b)
         return b;
 }
 
-template <class type>
+template <typename type>
 CAR_INLINE void Swap(type &a, type &b)
 {
     type temp = a;
@@ -225,37 +227,37 @@ CAR_INLINE void Swap(type &a, type &b)
     b = temp;
 }
 
-template <class type>
+template <typename type>
 CAR_INLINE type RoundUp(type n, size_t size)
 {
     return ((n + size - 1) / size) * size;
 }
 
-template <class type>
+template <typename type>
 CAR_INLINE type RoundUp2(type n, size_t size)
 {
     return (n + size - 1) & ~(size - 1);
 }
 
-template <class type>
+template <typename type>
 CAR_INLINE type RoundDown(type n, size_t size)
 {
     return (n / size) * size;
 }
 
-template <class type>
+template <typename type>
 CAR_INLINE type RoundDown2(type n, size_t size)
 {
     return n & ~(size - 1);
 }
 
-template <class type>
+template <typename type>
 CAR_INLINE bool_t IsAlignment(type n, size_t size)
 {
     return 0 == ((size_t)n % size);
 }
 
-template <class type>
+template <typename type>
 CAR_INLINE bool_t IsAlignment2(type n, size_t size)
 {
     return 0 == ((size_t)n & (size - 1));

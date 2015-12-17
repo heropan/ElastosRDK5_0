@@ -38,7 +38,7 @@ ECode ViewAnimator::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::ViewAnimator),
-            ARRAY_SIZE(R::styleable::ViewAnimator));
+            ArraySize(R::styleable::ViewAnimator));
     AutoPtr<ITypedArray> a;
     FAIL_RETURN(context->ObtainStyledAttributes(
             attrs, attrIds, (ITypedArray**)&a));
@@ -77,7 +77,7 @@ void ViewAnimator::InitViewAnimator(
     // attribute to override.
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::FrameLayout),
-            ARRAY_SIZE(R::styleable::FrameLayout));
+            ArraySize(R::styleable::FrameLayout));
     AutoPtr<ITypedArray> a;
     ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
             attrs, attrIds, (ITypedArray**)&a));

@@ -136,7 +136,7 @@ ECode CompoundButton::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::CompoundButton),
-            ARRAY_SIZE(R::styleable::CompoundButton));
+            ArraySize(R::styleable::CompoundButton));
     AutoPtr<ITypedArray> a;
     ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
             attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));

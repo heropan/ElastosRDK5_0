@@ -117,7 +117,7 @@ ECode StateListDrawable::Inflate(
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::StateListDrawable),
-            ARRAY_SIZE(R::styleable::StateListDrawable));
+            ArraySize(R::styleable::StateListDrawable));
     AutoPtr<ITypedArray> a;
     FAIL_RETURN(ObtainAttributes(r, theme, attrs, attrIds, (ITypedArray**)&a));
 

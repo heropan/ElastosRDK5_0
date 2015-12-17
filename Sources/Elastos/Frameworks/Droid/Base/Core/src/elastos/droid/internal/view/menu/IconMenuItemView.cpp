@@ -59,7 +59,7 @@ ECode IconMenuItemView::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::MenuView),
-        ARRAY_SIZE(R::styleable::MenuView));
+        ArraySize(R::styleable::MenuView));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 

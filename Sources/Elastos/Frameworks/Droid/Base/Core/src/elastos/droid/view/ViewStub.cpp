@@ -58,7 +58,7 @@ ECode ViewStub::constructor(
     /* [in] */ Int32 defStyleRes)
 {
     AutoPtr< ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
-            const_cast<Int32 *>(R::styleable::ViewStub), ARRAY_SIZE(R::styleable::ViewStub));
+            const_cast<Int32 *>(R::styleable::ViewStub), ArraySize(R::styleable::ViewStub));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 
@@ -69,7 +69,7 @@ ECode ViewStub::constructor(
 
     a = NULL;
     attrIds = ArrayOf<Int32>::Alloc(
-            const_cast<Int32 *>(R::styleable::View), ARRAY_SIZE(R::styleable::View));
+            const_cast<Int32 *>(R::styleable::View), ArraySize(R::styleable::View));
     context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 
     a->GetResourceId(R::styleable::View_id, IView::NO_ID, &mID);

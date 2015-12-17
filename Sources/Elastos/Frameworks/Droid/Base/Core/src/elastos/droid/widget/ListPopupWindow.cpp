@@ -1358,7 +1358,7 @@ ECode ListPopupWindow::constructor(
     mContext = context;
 
     AutoPtr< ArrayOf<Int32> > attrsArray = ArrayOf<Int32>::Alloc(const_cast<Int32*>(R::styleable::ListPopupWindow),
-        ARRAY_SIZE(R::styleable::ListPopupWindow));
+        ArraySize(R::styleable::ListPopupWindow));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, attrsArray, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 

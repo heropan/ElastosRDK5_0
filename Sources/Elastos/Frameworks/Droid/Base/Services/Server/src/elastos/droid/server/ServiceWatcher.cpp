@@ -1,19 +1,33 @@
-#include "ServiceWatcher.h"
+#include "elastos/droid/server/ServiceWatcher.h"
 #include "elastos/droid/os/Handler.h"
-#include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/Arrays.h>
+#include <elastos/core/AutoLock.h>
 
+using Elastos::Droid::Os::IUserHandleHelper;
+using Elastos::Droid::Os::CUserHandleHelper;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Content::CIntentFilter;
+using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::EIID_IServiceConnection;
-using Elastos::Utility::Logging::Slogger;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::Arrays;
+using Elastos::Utility::IList;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
-namespace Location {
 
 const String ServiceWatcher::EXTRA_SERVICE_VERSION("serviceVersion");
+const String ServiceWatcher::EXTRA_SERVICE_IS_MULTIUSER("serviceIsMultiuser");
+const Boolean ServiceWatcher::DBG = FALSE;
 
-CAR_INTERFACE_IMPL(ServiceWatcher, IServiceConnection)
-
+//========================================================================
+// ServiceWatcher::ServiceWatcherPackageMonitor
+//========================================================================
 ServiceWatcher::ServiceWatcherPackageMonitor::ServiceWatcherPackageMonitor(
     /* [in] */ ServiceWatcher* host) : mHost(host)
 {}
@@ -22,14 +36,15 @@ ECode ServiceWatcher::ServiceWatcherPackageMonitor::OnPackageUpdateFinished(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 uid)
 {
-    AutoLock lock(mHost->mLock);
+    Object& obj = mHost->mLock;
+    AutoLock lock(obj);
     if(packageName.Equals(mHost->mPackageName)) {
         // package updated, make sure to rebind
         mHost->UnbindLocked();
     }
 
     // check the updated package in case it is better
-    mHost->BindBestPackageLocked(packageName);
+    mHost->BindBestPackageLocked(String(NULL));
     return NOERROR;
 }
 
@@ -37,14 +52,15 @@ ECode ServiceWatcher::ServiceWatcherPackageMonitor::OnPackageAdded(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 uid)
 {
-    AutoLock lock(mHost->mLock);
+    Object& obj = mHost->mLock;
+    AutoLock lock(obj);
 
     if (packageName.Equals(mHost->mPackageName)) {
         // package updated, make sure to rebind
         mHost->UnbindLocked();
     }
     // check the new package is case it is better
-    mHost->BindBestPackageLocked(packageName);
+    mHost->BindBestPackageLocked(String(NULL));
 
     return NOERROR;
 }
@@ -53,7 +69,8 @@ ECode ServiceWatcher::ServiceWatcherPackageMonitor::OnPackageRemoved(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 uid)
 {
-    AutoLock lock(mHost->mLock);
+    Object& obj = mHost->mLock;
+    AutoLock lock(obj);
 
     if (packageName.Equals(mHost->mPackageName)) {
         mHost->UnbindLocked();
@@ -64,9 +81,55 @@ ECode ServiceWatcher::ServiceWatcherPackageMonitor::OnPackageRemoved(
     return NOERROR;
 }
 
+ECode ServiceWatcher::ServiceWatcherPackageMonitor::OnPackageChanged(
+    /* [in] */ const String& packageName,
+    /* [in] */ Int32 uid,
+    /* [in] */ ArrayOf<String>* components,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    {
+        Object& obj = mHost->mLock;
+        AutoLock lock(obj);
+
+        if (packageName.Equals(mHost->mPackageName)) {
+            mHost->UnbindLocked();
+            // the currently bound package was removed,
+            // need to search for a new package
+            mHost->BindBestPackageLocked(String(NULL));
+        }
+    }
+
+    return PackageMonitor::OnPackageChanged(packageName, uid, components, result);
+}
+
+//========================================================================
+// ServiceWatcher::MyBroadcastReceiver
+//========================================================================
+ServiceWatcher::MyBroadcastReceiver::MyBroadcastReceiver(
+    /* [in] */ ServiceWatcher* host)
+    : mHost(host)
+{}
+
+ECode ServiceWatcher::MyBroadcastReceiver::OnReceive(
+    /* [in] */ IContext* context,
+    /* [in] */ IIntent* intent)
+{
+    String action;
+    intent->GetAction(&action);
+    if (IIntent::ACTION_USER_SWITCHED.Equals(action)) {
+        mHost->SwitchUser();
+    }
+    return NOERROR;
+}
+
+//========================================================================
+// ServiceWatcher
+//========================================================================
 List<HashSet<AutoPtr<ISignature> > > ServiceWatcher::GetSignatureSets(
     /* [in] */ IContext* context,
-    /* [in] */ List<String>* initialPackageNames) {
+    /* [in] */ List<String>* initialPackageNames)
+{
     AutoPtr<IPackageManager> pm;
     context->GetPackageManager((IPackageManager**)&pm);
     List<HashSet<AutoPtr<ISignature> > > sigSets;
@@ -79,8 +142,7 @@ List<HashSet<AutoPtr<ISignature> > > ServiceWatcher::GetSignatureSets(
         pm->GetPackageInfo(pkg, IPackageManager::GET_SIGNATURES, (IPackageInfo**)&packageInfo);
         AutoPtr<ArrayOf<ISignature*> > sigs;
         packageInfo->GetSignatures((ArrayOf<ISignature*>**)&sigs);
-        for(Int32 i = 0; i < sigs->GetLength(); i++)
-        {
+        for(Int32 i = 0; i < sigs->GetLength(); i++) {
             set.Insert((*sigs)[i]);
         }
         sigSets.PushBack(set);
@@ -88,28 +150,58 @@ List<HashSet<AutoPtr<ISignature> > > ServiceWatcher::GetSignatureSets(
     return sigSets;
 }
 
-
 ServiceWatcher::ServiceWatcher(
     /* [in] */ IContext* context,
     /* [in] */ const String& logTag,
     /* [in] */ const String& action,
-    /* [in] */ List<String>* initialPackageNames,
+    /* [in] */ Int32 overlaySwitchResId,
+    /* [in] */ Int32 defaultServicePackageNameResId,
+    /* [in] */ Int32 initialPackageNamesResId,
     /* [in] */ IRunnable* newServiceWork,
-    /* [in] */ IHandler* handler,
-    /* [in] */ Int32 userId)
+    /* [in] */ IHandler* handler)
     : mTag(logTag)
     , mVersion(0)
-    , mCurrentUserId(0)
+    , mIsMultiuser(Elastos::Core::Math::INT32_MIN_VALUE)
 {
     mContext = context;
+    mTag = logTag;
     mAction = action;
     mContext->GetPackageManager((IPackageManager**)&mPm);
     mNewServiceWork = newServiceWork;
     mHandler = handler;
-    mCurrentUserId = userId;
+
+    AutoPtr<IResources> resources;
+    context->GetResources((IResources**)&resources);
+
+    // Whether to enable service overlay.
+    Boolean enableOverlay;
+    resources->GetBoolean(overlaySwitchResId, &enableOverlay);
+    List<String> initialPackageNames;
+    if (enableOverlay) {
+        // A list of package names used to create the signatures.
+        AutoPtr<ArrayOf<String> > pkgs;
+        resources->GetStringArray(initialPackageNamesResId, (ArrayOf<String>**)&pkgs);
+        if (pkgs != NULL) {
+            for (Int32 i = 0; i < pkgs->GetLength(); ++i) {
+                initialPackageNames.PushBack((*pkgs)[i]);
+            }
+        }
+        mServicePackageName = NULL;
+        if (DBG) Logger::D(mTag, "Overlay enabled, packages=%s",
+            Arrays::ToString(pkgs).string());
+    }
+    else {
+        // The default package name that is searched for service implementation when overlay is
+        // disabled.
+        String servicePackageName;
+        resources->GetString(defaultServicePackageNameResId, &servicePackageName);
+        if (servicePackageName != NULL) initialPackageNames.PushBack(servicePackageName);
+        mServicePackageName = servicePackageName;
+        if (DBG) Logger::D(mTag, "Overlay disabled, default package=%s", servicePackageName.string());
+    }
+    mSignatureSets = GetSignatureSets(context, &initialPackageNames);
+
     mPackageMonitor = new ServiceWatcherPackageMonitor(this);
-    // TODO: temporary ignore
-    // mSignatureSets = GetSignatureSets(context, initialPackageNames);
 }
 
 Boolean ServiceWatcher::Start()
@@ -119,7 +211,24 @@ Boolean ServiceWatcher::Start()
         if (!BindBestPackageLocked(String(NULL))) return FALSE;
     }
 
-    mPackageMonitor->Register(mContext, NULL, UserHandle::ALL, TRUE);
+    // listen for user change
+    AutoPtr<IIntentFilter> intentFilter;
+    CIntentFilter::New((IIntentFilter**)&intentFilter);
+    intentFilter->AddAction(IIntent::ACTION_USER_SWITCHED);
+    AutoPtr<IBroadcastReceiver> br = new MyBroadcastReceiver(this);
+    AutoPtr<IUserHandleHelper> helper;
+    CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
+    AutoPtr<IUserHandle> all;
+    helper->GetALL((IUserHandle**)&all);
+    AutoPtr<IIntent> stickyIntent;
+    mContext->RegisterReceiverAsUser(br, all, intentFilter, String(NULL), mHandler,
+        (IIntent**)&stickyIntent);
+
+    // listen for relevant package changes if service overlay is enabled.
+    if (mServicePackageName == NULL) {
+        mPackageMonitor->Register(mContext, NULL, all, TRUE);
+    }
+
     return TRUE;
 }
 
@@ -128,66 +237,76 @@ Boolean ServiceWatcher::BindBestPackageLocked(
 {
     AutoPtr<IIntent> intent;
     CIntent::New(mAction, (IIntent**)&intent);
-    if (!justCheckThisPackage.IsNull())
-    {
+    if (!justCheckThisPackage.IsNull()) {
         intent->SetPackage(justCheckThisPackage);
     }
 
+
+
     AutoPtr<IIntent> paraIntent;
     CIntent::New(mAction, (IIntent**)&paraIntent);
-    AutoPtr<IObjectContainer> rInfos;
-    mPm->QueryIntentServicesAsUser(paraIntent, IPackageManager::GET_META_DATA, mCurrentUserId, (IObjectContainer**)&rInfos);
-    Int32 bestVersion = Math::INT32_MIN_VALUE;
-    String bestPackage = String(NULL);
-    AutoPtr<IObjectEnumerator> enu;
-    rInfos->GetObjectEnumerator((IObjectEnumerator**)&enu);
+    AutoPtr<IList> rInfos;
+    mPm->QueryIntentServicesAsUser(paraIntent, IPackageManager::GET_META_DATA,
+        IUserHandle::USER_OWNER, (IList**)&rInfos);
+    Int32 bestVersion = Elastos::Core::Math::INT32_MIN_VALUE;
+    String bestPackage;
+    Boolean bestIsMultiuser = FALSE;
+    if (rInfos != NULL) {
+        AutoPtr<IIterator> it;
+        rInfos->GetIterator((IIterator**)&it);
 
-    Boolean hasNext;
-    while(enu->MoveNext(&hasNext), hasNext)
-    {
-        AutoPtr<IInterface> infoTemp;
-        enu->Current((IInterface**)&infoTemp);
-        AutoPtr<IResolveInfo> rInfo = IResolveInfo::Probe(infoTemp);
-        AutoPtr<IServiceInfo> sInfo;
-        rInfo->GetServiceInfo((IServiceInfo**)&sInfo);
+        Boolean hasNext;
         String packageName;
-        sInfo->GetPackageName(&packageName);
+        while(it->HasNext(&hasNext), hasNext) {
+            AutoPtr<IInterface> obj;
+            it->GetNext((IInterface**)&obj);
+            AutoPtr<IResolveInfo> rInfo = IResolveInfo::Probe(obj);
+            AutoPtr<IServiceInfo> sInfo;
+            rInfo->GetServiceInfo((IServiceInfo**)&sInfo);
+            IPackageItemInfo::Probe(sInfo)->GetPackageName(&packageName);
 
+            AutoPtr<IPackageInfo> pInfo;
+            ECode ec = mPm->GetPackageInfo(packageName, IPackageManager::GET_SIGNATURES, (IPackageInfo**)&pInfo);
 
-        AutoPtr<IPackageInfo> pInfo;
-        ECode ec = mPm->GetPackageInfo(packageName, IPackageManager::GET_SIGNATURES, (IPackageInfo**)&pInfo);
-        AutoPtr<ArrayOf<ISignature*> > sigsTemp;
+            AutoPtr<ArrayOf<ISignature*> > sigsTemp;
+            pInfo->GetSignatures((ArrayOf<ISignature*>**)&sigsTemp);
+            if (!IsSignatureMatch(sigsTemp)) {
+    //            Log.w(mTag, packageName + " resolves service " + mAction +
+    //                  ", but has wrong signature, ignoring");
+                Logger::W(mTag, "%s resolves service , but has wrong signature, ignoring", packageName.string());
+                continue;
+            }
+            else if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
+                continue;
+            }
 
-        pInfo->GetSignatures((ArrayOf<ISignature*>**)&sigsTemp);
-        if (!IsSignatureMatch(sigsTemp) || ec != NOERROR) {
-//            Log.w(mTag, packageName + " resolves service " + mAction +
-//                  ", but has wrong signature, ignoring");
-            Slogger::W(mTag, "%s resolves service , but has wrong signature, ignoring", packageName.string());
-            continue;
+            Int32 version = Elastos::Core::Math::INT32_MIN_VALUE;
+            Boolean isMultiuser = FALSE;
+            AutoPtr<IBundle> metaData;
+            IPackageItemInfo::Probe(sInfo)->GetMetaData((IBundle**)&metaData);
+            if (metaData != NULL) {
+                metaData->GetInt32(EXTRA_SERVICE_VERSION, 0, &version);
+                metaData->GetBoolean(EXTRA_SERVICE_IS_MULTIUSER, 0, &isMultiuser);
+            }
+
+            if (version > mVersion) {
+                bestVersion = version;
+                bestPackage = packageName;
+                bestIsMultiuser = isMultiuser;
+            }
         }
 
-
-
-        Int32 version = 0;
-        AutoPtr<IBundle> metaData;
-        sInfo->GetMetaData((IBundle**)&metaData);
-        if (metaData != NULL) {
-            metaData->GetInt32(EXTRA_SERVICE_VERSION, 0, &version);
-        }
-
-        if (version > mVersion) {
-            bestVersion = version;
-            bestPackage = packageName;
-        }
+    //    if (DBG) Log.d(mTag, String.format("bindBestPackage for %s : %s found %d, %s", mAction,
+    //            (justCheckThisPackage == null ? "" : "(" + justCheckThisPackage + ") "),
+    //            rInfos.size(),
+    //            (bestPackage == null ? "no new best package" : "new best packge: " + bestPackage)));
+    }
+    else {
+        if (DBG) Logger::D(mTag, "Unable to query intent services for action: %s", mAction.string());
     }
 
-//    if (D) Log.d(mTag, String.format("bindBestPackage for %s : %s found %d, %s", mAction,
-//            (justCheckThisPackage == null ? "" : "(" + justCheckThisPackage + ") "),
-//            rInfos.size(),
-//            (bestPackage == null ? "no new best package" : "new best packge: " + bestPackage)));
-
     if (!bestPackage.IsNull()) {
-        BindToPackageLocked(bestPackage, bestVersion);
+        BindToPackageLocked(bestPackage, bestVersion, bestIsMultiuser);
         return TRUE;
     }
     return FALSE;
@@ -195,19 +314,20 @@ Boolean ServiceWatcher::BindBestPackageLocked(
 
 void ServiceWatcher::UnbindLocked()
 {
-    String pkg;
-    pkg = mPackageName;
-    mPackageName = String(NULL);
-    mVersion = Math::INT32_MIN_VALUE;
+    String pkg(mPackageName);
+    mPackageName = NULL;
+    mVersion = Elastos::Core::Math::INT32_MIN_VALUE;
+    mIsMultiuser = FALSE;
     if (!pkg.IsNull()) {
-//        if (D) Log.d(mTag, "unbinding " + pkg);
+        if (DBG) Logger::D(mTag, "unbinding %s", pkg.string());
         mContext->UnbindService(this);
     }
 }
 
 void ServiceWatcher::BindToPackageLocked(
     /* [in] */ const String& packageName,
-    /* [in] */ Int32 version)
+    /* [in] */ Int32 version,
+    /* [in] */ Boolean isMultiuser)
 {
     UnbindLocked();
     AutoPtr<IIntent> intent;
@@ -215,41 +335,48 @@ void ServiceWatcher::BindToPackageLocked(
     intent->SetPackage(packageName);
     mPackageName = packageName;
     mVersion = version;
-//    if (D) Log.d(mTag, "binding " + packageName + " (version " + version + ")");
+    // if (D) Log.d(mTag, "binding " + packageName + " (version " + version + ") ("
+    //         + (isMultiuser ? "multi" : "single") + "-user)");
+
+    AutoPtr<IUserHandleHelper> helper;
+    CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
+    AutoPtr<IUserHandle> user;
+    if (mIsMultiuser) {
+        helper->GetOWNER((IUserHandle**)&user);
+    }
+    else {
+        helper->GetCURRENT((IUserHandle**)&user);
+    }
+
     Boolean result;
-    mContext->BindService(intent, this, IContext::BIND_AUTO_CREATE | IContext::BIND_NOT_FOREGROUND
-            | IContext::BIND_NOT_VISIBLE, mCurrentUserId, &result);
+    mContext->BindServiceAsUser(intent, this,
+        IContext::BIND_AUTO_CREATE | IContext::BIND_NOT_FOREGROUND | IContext::BIND_NOT_VISIBLE,
+        user, &result);
 }
 
 Boolean ServiceWatcher::IsSignatureMatch(
     /* [in] */ ArrayOf<ISignature*>* signatures,
-    /* [in] */ List<HashSet<AutoPtr<ISignature> > > sigSets)
+    /* [in] */ const List<HashSet<AutoPtr<ISignature> > >& sigSets)
 {
     if (signatures == NULL) return FALSE;
 
     // build hashset of input to test against
     HashSet<AutoPtr<ISignature> > inputSet;
-
-    for (Int32 i = 0; i < signatures->GetLength(); i++)
-    {
+    for (Int32 i = 0; i < signatures->GetLength(); i++) {
         inputSet.Insert((*signatures)[i]);
     }
 
     // test input against each of the signature sets
-    List<HashSet<AutoPtr<ISignature> > >::Iterator it = sigSets.Begin();
-    for (; it != sigSets.End(); it++)
-    {
+    List<HashSet<AutoPtr<ISignature> > >::ConstIterator it = sigSets.Begin();
+    for (; it != sigSets.End(); it++) {
         Boolean hasFind = FALSE;
         HashSet<AutoPtr<ISignature> > set = *it;
         HashSet<AutoPtr<ISignature> >::Iterator outIterator = set.Begin();
-        for(; outIterator != set.End(); ++outIterator)
-        {
+        for(; outIterator != set.End(); ++outIterator) {
             hasFind= FALSE;
             HashSet<AutoPtr<ISignature> >::Iterator innerIterator = inputSet.Begin();
-            for(; innerIterator != inputSet.End(); ++innerIterator)
-            {
-                Boolean equals;
-                (*outIterator)->Equals(*innerIterator, &equals);
+            for(; innerIterator != inputSet.End(); ++innerIterator) {
+                Boolean equals = Object::Equals(*outIterator, *innerIterator);
                 if(equals) {
                     hasFind = TRUE;
                     break;
@@ -265,9 +392,7 @@ Boolean ServiceWatcher::IsSignatureMatch(
 Boolean ServiceWatcher::IsSignatureMatch(
     /* [in] */ ArrayOf<ISignature*>* signatures)
 {
-    // TODO: temporary ignore
-    // return IsSignatureMatch(signatures, mSignatureSets);
-    return TRUE;
+    return IsSignatureMatch(signatures, mSignatureSets);
 }
 
 ECode ServiceWatcher::OnServiceConnected(
@@ -278,15 +403,15 @@ ECode ServiceWatcher::OnServiceConnected(
     String packageName;
     name->GetPackageName(&packageName);
     if (packageName.Equals(mPackageName)) {
-        if (D) Slogger::D(mTag, "%s connected", packageName.string());
+        if (DBG) Logger::D(mTag, "%s connected", packageName.string());
         mBinder = binder;
         if (mHandler != NULL && mNewServiceWork != NULL) {
             Boolean rst;
-            mHandler->Post( mNewServiceWork, &rst);
+            mHandler->Post(mNewServiceWork, &rst);
         }
     }
     else {
-        Slogger::W(mTag, "unexpected onServiceConnected: %s", packageName.string());
+        Logger::W(mTag, "unexpected onServiceConnected: %s", packageName.string());
     }
     return NOERROR;
 }
@@ -297,7 +422,7 @@ ECode ServiceWatcher::OnServiceDisconnected(
     AutoLock lock(mLock);
     String packageName;
     name->GetPackageName(&packageName);
-    if (D) Slogger::D(mTag, "%s disconnected", packageName.string());
+    if (DBG) Logger::D(mTag, "%s disconnected", packageName.string());
 
     if (packageName.Equals(mPackageName)) {
         mBinder = NULL;
@@ -323,16 +448,15 @@ AutoPtr<IBinder> ServiceWatcher::GetBinder()
     return mBinder;
 }
 
-void ServiceWatcher::SwitchUser(
-    /* [in] */ Int32 userId)
+void ServiceWatcher::SwitchUser()
 {
     AutoLock lock(mLock);
-    UnbindLocked();
-    mCurrentUserId = userId;
-    BindBestPackageLocked(String(NULL));
+    if (!mIsMultiuser) {
+        UnbindLocked();
+        BindBestPackageLocked(mServicePackageName);
+    }
 }
 
-} // namespace Location
 } // namespace Server
 } // namespace Droid
 } // namespace Elastos

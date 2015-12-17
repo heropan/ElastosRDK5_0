@@ -277,7 +277,7 @@ ECode ExpandableListView::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::ExpandableListView),
-            ARRAY_SIZE(R::styleable::ExpandableListView));
+            ArraySize(R::styleable::ExpandableListView));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(
             attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);

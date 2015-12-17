@@ -75,7 +75,7 @@ ECode AbsSeekBar::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::SeekBar),
-            ARRAY_SIZE(R::styleable::SeekBar));
+            ArraySize(R::styleable::SeekBar));
     AutoPtr<ITypedArray> a;
 
     context->ObtainStyledAttributes(
@@ -113,7 +113,7 @@ ECode AbsSeekBar::constructor(
     a = NULL;
     attrIds = ArrayOf<Int32>::Alloc(
                 const_cast<Int32 *>(R::styleable::Theme),
-                ARRAY_SIZE(R::styleable::Theme));
+                ArraySize(R::styleable::Theme));
     FAIL_RETURN(context->ObtainStyledAttributes(
             attrs, attrIds, 0, 0, (ITypedArray**)&a));
     FAIL_RETURN(a->GetFloat(

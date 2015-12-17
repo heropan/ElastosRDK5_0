@@ -34,7 +34,7 @@ ECode CheckBoxPreference::constructor(
 
     AutoPtr< ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::CheckBoxPreference),
-            ARRAY_SIZE(R::styleable::CheckBoxPreference));
+            ArraySize(R::styleable::CheckBoxPreference));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 

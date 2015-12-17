@@ -114,7 +114,7 @@ ECode SlidingDrawer::constructor(
     AutoPtr<ITypedArray> a;
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::SlidingDrawer),
-            ARRAY_SIZE(R::styleable::SlidingDrawer));
+            ArraySize(R::styleable::SlidingDrawer));
     context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 
     Int32 orientation;

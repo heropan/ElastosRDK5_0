@@ -227,7 +227,7 @@ ECode AnalogClock::constructor(
     context->GetResources((IResources**)&r);
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(const_cast<Int32 *>(R::styleable::AnalogClock),
-        ARRAY_SIZE(R::styleable::AnalogClock));
+        ArraySize(R::styleable::AnalogClock));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, attrIds, defStyle, defStyleRes, (ITypedArray**)&a);
     a->GetDrawable(R::styleable::AnalogClock_dial, (IDrawable**)&mDial);

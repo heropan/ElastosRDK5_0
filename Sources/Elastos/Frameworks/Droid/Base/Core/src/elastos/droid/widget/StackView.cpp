@@ -156,7 +156,7 @@ ECode StackView::Init(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::StackView),
-            ARRAY_SIZE(R::styleable::StackView));
+            ArraySize(R::styleable::StackView));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 

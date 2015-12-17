@@ -139,7 +139,7 @@ ECode InsetDrawable::Inflate(
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ IResourcesTheme* theme) /*throws XmlPullParserException, IOException*/
 {
-    Int32 size = ARRAY_SIZE(R::styleable::InsetDrawable);
+    Int32 size = ArraySize(R::styleable::InsetDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::InsetDrawable, size);
     AutoPtr<ITypedArray> a;
@@ -257,7 +257,7 @@ ECode InsetDrawable::ApplyTheme(
     }
 
     AutoPtr<ITypedArray> a;
-    Int32 size = ARRAY_SIZE(R::styleable::InsetDrawable);
+    Int32 size = ArraySize(R::styleable::InsetDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::InsetDrawable, size);
     ((CResources::Theme*)t)->ResolveAttribute(state->mThemeAttrs, layout, (ITypedArray**)&a);

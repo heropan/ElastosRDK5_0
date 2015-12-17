@@ -68,7 +68,7 @@ static const String MUSIC_SUPPORTED_LIST[] = {
 static Boolean IsFileSupported(
     /* [in] */ const String& fileName)
 {
-    for (UInt32 i = 0; i < ARRAY_SIZE(MUSIC_SUPPORTED_LIST); ++i) {
+    for (UInt32 i = 0; i < ArraySize(MUSIC_SUPPORTED_LIST); ++i) {
         if (fileName.EndWithIgnoreCase(MUSIC_SUPPORTED_LIST[i])) {
             return TRUE;
         }

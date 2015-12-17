@@ -114,7 +114,7 @@ ECode ClipDrawable::Inflate(
 
     Int32 type;
 
-    Int32 size = ARRAY_SIZE(R::styleable::ClipDrawable);
+    Int32 size = ArraySize(R::styleable::ClipDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::ClipDrawable, size);
 

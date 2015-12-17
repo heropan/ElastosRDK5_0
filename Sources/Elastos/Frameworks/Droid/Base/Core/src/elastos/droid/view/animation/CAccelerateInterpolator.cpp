@@ -64,7 +64,7 @@ ECode CAccelerateInterpolator::constructor(
     AutoPtr<ITypedArray> a;
     AutoPtr< ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::AccelerateInterpolator),
-            ARRAY_SIZE(R::styleable::AccelerateInterpolator));
+            ArraySize(R::styleable::AccelerateInterpolator));
 
     if (theme != NULL) {
         theme->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);

@@ -16,7 +16,7 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
-class BroadcastReceiver
+class ECO_PUBLIC BroadcastReceiver
     : public Object
     , public IBroadcastReceiver
 {
@@ -488,11 +488,11 @@ public:
         /* [out] */ Boolean* debugUnregister);
 
 private:
-    CARAPI CheckSynchronousHint();
+    ECO_LOCAL CARAPI CheckSynchronousHint();
 
 private:
-    AutoPtr<IPendingResult> mPendingResult;
-    Boolean mDebugUnregister;
+    ECO_LOCAL AutoPtr<IPendingResult> mPendingResult;
+    ECO_LOCAL Boolean mDebugUnregister;
 
 };
 

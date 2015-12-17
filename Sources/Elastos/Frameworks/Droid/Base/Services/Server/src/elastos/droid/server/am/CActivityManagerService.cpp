@@ -278,7 +278,7 @@ static AutoPtr< ArrayOf<Int64> > InitDumpMemBuckets()
         1*1024*1024, 2*1024*1024, 5*1024*1024, 10*1024*1024, 20*1024*1024
     };
 
-    Int32 size = ARRAY_SIZE(DUMP_MEM_BUCKETS);
+    Int32 size = ArraySize(DUMP_MEM_BUCKETS);
     AutoPtr< ArrayOf<Int64> > array = ArrayOf<Int64>::Alloc(size);
     array->Copy(DUMP_MEM_BUCKETS, size);
     return array;
@@ -295,7 +295,7 @@ static AutoPtr< ArrayOf<Int32> > InitDumpMemOomAdj()
         ProcessList::SERVICE_B_ADJ, ProcessList::HIDDEN_APP_MAX_ADJ
     };
 
-    Int32 size = ARRAY_SIZE(DUMP_MEM_OOM_ADJ);
+    Int32 size = ArraySize(DUMP_MEM_OOM_ADJ);
     AutoPtr< ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(size);
     array->Copy(DUMP_MEM_OOM_ADJ, size);
     return array;

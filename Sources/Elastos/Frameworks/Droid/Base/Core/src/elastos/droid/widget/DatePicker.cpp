@@ -272,7 +272,7 @@ DatePicker::DatePickerSpinnerDelegate::DatePickerSpinnerDelegate(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::DatePicker),
-            ARRAY_SIZE(R::styleable::DatePicker));
+            ArraySize(R::styleable::DatePicker));
     AutoPtr<ITypedArray> attributesArray;
     context->ObtainStyledAttributes(attrs,
             attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&attributesArray);
@@ -1073,7 +1073,7 @@ ECode DatePicker::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::DatePicker),
-            ARRAY_SIZE(R::styleable::DatePicker));
+            ArraySize(R::styleable::DatePicker));
     AutoPtr<ITypedArray> a;
     FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
 

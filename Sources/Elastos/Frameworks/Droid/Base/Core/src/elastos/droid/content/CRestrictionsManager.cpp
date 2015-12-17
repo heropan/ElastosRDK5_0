@@ -228,7 +228,7 @@ ECode CRestrictionsManager::LoadManifestRestrictions(
                 AutoPtr<IAttributeSet> attrSet = Xml::AsAttributeSet(parser);
                 if (attrSet != NULL) {
                     assert(0 && "TODO");
-                    // Int32 size = ARRAY_SIZE(R::styleable::RestrictionEntry);
+                    // Int32 size = ArraySize(R::styleable::RestrictionEntry);
                     // AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
                     // layout->Copy(R::styleable::RestrictionEntry, size);
 

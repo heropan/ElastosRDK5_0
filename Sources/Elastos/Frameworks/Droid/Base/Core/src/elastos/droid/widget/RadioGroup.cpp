@@ -202,7 +202,7 @@ RadioGroup::constructor(
     // XML layout file
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::RadioGroup),
-            ARRAY_SIZE(R::styleable::RadioGroup));
+            ArraySize(R::styleable::RadioGroup));
     AutoPtr<ITypedArray> attributes;
     context->ObtainStyledAttributes(
             attrs, attrIds, R::attr::radioButtonStyle, 0, (ITypedArray**)&attributes);

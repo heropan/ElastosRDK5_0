@@ -11,7 +11,7 @@ AutoPtr<IHideReturnsTransformationMethod> HideReturnsTransformationMethod::sInst
 static AutoPtr<ArrayOf<Char32> > HInitOriginal()
 {
     Char32 array[] = { '\r' };
-    AutoPtr<ArrayOf<Char32> > ch = ArrayOf<Char32>::Alloc(ARRAY_SIZE(array));
+    AutoPtr<ArrayOf<Char32> > ch = ArrayOf<Char32>::Alloc(ArraySize(array));
     (*ch)[0] = '\r';
     return ch;
 }
@@ -19,7 +19,7 @@ static AutoPtr<ArrayOf<Char32> > HInitOriginal()
 static AutoPtr<ArrayOf<Char32> > HInitReplacement()
 {
     Char32 array[] = { 0xFEFF };
-    AutoPtr<ArrayOf<Char32> > ch = ArrayOf<Char32>::Alloc(ARRAY_SIZE(array));
+    AutoPtr<ArrayOf<Char32> > ch = ArrayOf<Char32>::Alloc(ArraySize(array));
     (*ch)[0] = 0xFEFF;
     return ch;
 }

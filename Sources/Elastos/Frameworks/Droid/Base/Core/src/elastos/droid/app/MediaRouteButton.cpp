@@ -169,7 +169,7 @@ ECode MediaRouteButton::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::MediaRouteButton),
-        ARRAY_SIZE(R::styleable::MediaRouteButton));
+        ArraySize(R::styleable::MediaRouteButton));
 
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
