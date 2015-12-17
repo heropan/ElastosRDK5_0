@@ -1,4 +1,5 @@
 #include "elastos/droid/ext/frameworkdef.h"
+#include <Elastos.Droid.App.h>
 #include "elastos/droid/server/am/CActivityRecordToken.h"
 #include "elastos/droid/server/am/ActivityRecord.h"
 #include <elastos/core/StringUtils.h>

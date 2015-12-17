@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_PM_BASEPERMISSION_H__
 #define __ELASTOS_DROID_SERVER_PM_BASEPERMISSION_H__
 
-#include "Elastos.Droid.Server_server.h"
+#include "Elastos.Droid.Server.h"
 #include "pm/PackageSettingBase.h"
 #include "elastos/droid/content/pm/PackageParser.h"
 

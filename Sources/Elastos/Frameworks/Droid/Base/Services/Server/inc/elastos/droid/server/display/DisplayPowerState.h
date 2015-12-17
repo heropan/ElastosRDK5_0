@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_POWER_DISPLAYPOWERSTATE_H__
 #define __ELASTOS_DROID_SERVER_POWER_DISPLAYPOWERSTATE_H__
 
-#include "Elastos.Droid.Server_server.h"
+#include "Elastos.Droid.Server.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/server/display/ColorFade.h"
 // #include "elastos/droid/server/LightsService.h"

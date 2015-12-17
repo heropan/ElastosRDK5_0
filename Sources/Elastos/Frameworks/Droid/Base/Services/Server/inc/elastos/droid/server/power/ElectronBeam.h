@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SERVER_POWER_ELECTRONBEAM_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "Elastos.Droid.Server_server.h"
+#include "Elastos.Droid.Server.h"
 #include "display/CDisplayManagerService.h"
 
 using Elastos::IO::IFloatBuffer;

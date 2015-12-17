@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_PM_SETTINGS_H__
 #define __ELASTOS_DROID_SERVER_PM_SETTINGS_H__
 
-#include "Elastos.Droid.Server_server.h"
+#include "Elastos.Droid.Server.h"
 #include "pm/PackageSetting.h"
 #include "pm/SharedUserSetting.h"
 #include "pm/PreferredIntentResolver.h"

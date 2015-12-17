@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_WINDOWBINDER_H__
 #define __ELASTOS_DROID_SERVER_WM_WINDOWBINDER_H__
 
-#include "Elastos.Droid.Server_server.h"
+#include "Elastos.Droid.Server.h"
 
 namespace Elastos {
 namespace Droid {

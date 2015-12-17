@@ -1,4 +1,6 @@
-
+#include <Elastos.Droid.Hardware.h>
+#include <Elastos.Droid.Utility.h>
+#include <Elastos.Droid.Text.h>
 #include "elastos/droid/server/display/AutomaticBrightnessController.h"
 #include <elastos/droid/os/SystemClock.h>
 #include <elastos/droid/utility/MathUtils.h>

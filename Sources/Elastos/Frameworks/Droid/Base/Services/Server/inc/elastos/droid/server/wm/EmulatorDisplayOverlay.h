@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_EMULATORDISPLAYOVERLAY_H__
 #define __ELASTOS_DROID_SERVER_WM_EMULATORDISPLAYOVERLAY_H__
 
-#include "Elastos.Droid.Server_server.h"
+#include "Elastos.Droid.Server.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_DISPLAY_PERSISTENTDATASTORE_H__
 #define __ELASTOS_DROID_SERVER_DISPLAY_PERSISTENTDATASTORE_H__
 
-#include "Elastos.Droid.Server_server.h"
+#include "Elastos.Droid.Server.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>

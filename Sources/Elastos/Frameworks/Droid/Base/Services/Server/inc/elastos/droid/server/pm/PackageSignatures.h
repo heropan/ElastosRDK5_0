@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SERVER_PM_PACKAGESIGNATURES_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "Elastos.Droid.Server_server.h"
+#include "Elastos.Droid.Server.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_WATERMARK_H__
 #define __ELASTOS_DROID_SERVER_WM_WATERMARK_H__
 
-#include "Elastos.Droid.Server_server.h"
+#include "Elastos.Droid.Server.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::View::IDisplay;

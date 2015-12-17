@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_STARTINGDATA_H__
 #define __ELASTOS_DROID_SERVER_WM_STARTINGDATA_H__
 
-#include "Elastos.Droid.Server_server.h"
+#include "Elastos.Droid.Server.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::Res::ICompatibilityInfo;

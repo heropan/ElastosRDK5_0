@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_DISPLAY_VIRTAUL_DISPLAYADAPTER_H__
 #define __ELASTOS_DROID_SERVER_DISPLAY_VIRTAUL_DISPLAYADAPTER_H__
 
+#include <Elastos.Droid.Media.h>
 #include "elastos/droid/server/display/DisplayAdapter.h"
 #include "elastos/droid/server/display/DisplayDevice.h"
 #include "elastos/droid/server/display/DisplayDeviceInfo.h"

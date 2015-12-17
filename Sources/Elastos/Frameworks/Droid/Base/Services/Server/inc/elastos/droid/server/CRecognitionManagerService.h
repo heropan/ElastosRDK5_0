@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Server_CRecognitionManagerService.h"
 #include "elastos/droid/ext/frameworkdef.h"
-#include "Elastos.Droid.Server_server.h"
+#include "Elastos.Droid.Server.h"
 #include "elastos/droid/content/PackageMonitor.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 

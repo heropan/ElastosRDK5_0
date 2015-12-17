@@ -1,7 +1,9 @@
 #ifndef __ELASTOS_DROID_SERVER_DISPLAY_DISPLAYPOWERCONTROLLER_H__
 #define __ELASTOS_DROID_SERVER_DISPLAY_DISPLAYPOWERCONTROLLER_H__
 
-#include "Elastos.Droid.Server_server.h"
+#include "Elastos.Droid.Server.h"
+#include <Elastos.Droid.Animation.h>
+#include <Elastos.Droid.View.h>
 #include "elastos/droid/server/display/DisplayPowerState.h"
 #include "elastos/droid/server/display/AutomaticBrightnessController.h"
 #include "elastos/droid/server/display/RampAnimator.h"

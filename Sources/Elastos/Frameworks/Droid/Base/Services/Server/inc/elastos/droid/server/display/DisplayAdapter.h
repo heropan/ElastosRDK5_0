@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_DISPLAY_DISPLAYADAPTER_H__
 #define __ELASTOS_DROID_SERVER_DISPLAY_DISPLAYADAPTER_H__
 
-#include "Elastos.Droid.Server_server.h"
+#include "Elastos.Droid.Server.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/Runnable.h"
 

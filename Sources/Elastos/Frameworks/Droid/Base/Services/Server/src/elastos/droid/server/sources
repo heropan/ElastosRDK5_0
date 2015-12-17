@@ -5,8 +5,8 @@ EXPORT_ALL_SYMBOLS=1
 
 C_DEFINES += -DDROID_SERVER
 
-IMPORTS = Elastos.CoreLibrary.eco
-IMPORTS = Elastos.Droid.Core.eco
+#IMPORTS = Elastos.CoreLibrary.eco
+#IMPORTS = Elastos.Droid.Core.eco
 
 VPATH := $(MAKEDIR)/../../../../../../Core/src/elastos/droid/
 
