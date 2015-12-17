@@ -3,11 +3,7 @@
 #define __EUNIT_TEXTUI_RESULTPRINTER_H__
 
 #include <elastos/coredef.h>
-#ifdef EUNIT
-#include "Eunit_server.h"
-#else
-#include <Eunit.h>
-#endif
+#include <_Eunit.h>
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;

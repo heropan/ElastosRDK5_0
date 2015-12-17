@@ -3,6 +3,7 @@
 #define __CTESTSUITE_H__
 
 #include <elastos/coredef.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "_Eunit_Framework_CTestSuite.h"
 #include "eunit/framework/TestCase.h"
 #include <elastos/utility/etl/List.h>

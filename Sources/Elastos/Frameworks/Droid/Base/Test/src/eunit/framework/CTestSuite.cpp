@@ -1,4 +1,5 @@
 
+#include <Elastos.CoreLibrary.Utility.h>
 #include "eunit/framework/CTestSuite.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/etl/Algorithm.h>

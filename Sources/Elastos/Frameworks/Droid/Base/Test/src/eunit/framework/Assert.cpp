@@ -1,4 +1,3 @@
-
 #include "eunit/framework/Assert.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>

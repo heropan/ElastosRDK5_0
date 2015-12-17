@@ -2,11 +2,7 @@
 #ifndef __EUNIT_FRAMEWORK_ASSERT_H__
 #define __EUNIT_FRAMEWORK_ASSERT_H__
 
-#ifdef EUNIT
-#include "Eunit_server.h"
-#else
-#include <Eunit.h>
-#endif
+#include <_Eunit.h>
 
 using namespace Elastos;
 

@@ -3,11 +3,7 @@
 #define __EUNIT_FRAMEWORK_TESTCASE_H__
 
 #include <elastos/coredef.h>
-#ifdef EUNIT
-#include "Eunit_server.h"
-#else
-#include <Eunit.h>
-#endif
+#include <_Eunit.h>
 #include "eunit/framework/Assert.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>

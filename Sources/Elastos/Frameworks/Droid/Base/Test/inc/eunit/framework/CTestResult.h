@@ -3,6 +3,7 @@
 #define __CTESTRESULT_H__
 
 #include "_Eunit_Framework_CTestResult.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include <elastos/coredef.h>
 #include <elastos/core/Object.h>
 

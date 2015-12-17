@@ -1,4 +1,6 @@
 
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "eunit/textui/ResultPrinter.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>

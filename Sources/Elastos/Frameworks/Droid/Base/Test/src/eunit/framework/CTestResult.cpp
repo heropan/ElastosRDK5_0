@@ -1,4 +1,5 @@
 
+#include <Elastos.CoreLibrary.Utility.h>
 #include "eunit/framework/CTestResult.h"
 #include <elastos/core/AutoLock.h>
 
