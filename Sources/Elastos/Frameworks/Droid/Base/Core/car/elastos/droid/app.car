@@ -175,6 +175,9 @@ module
     interface Elastos.Droid.Content.Pm.IProviderInfo;
     interface Elastos.Droid.Content.Pm.IResolveInfo;
     interface Elastos.Droid.Content.Pm.IApplicationInfo;
+    interface Elastos.Droid.Content.Pm.IIPackageDeleteObserver2;
+    interface Elastos.Droid.Content.Pm.IIPackageDeleteObserver;
+    interface Elastos.Droid.Content.Pm.IIPackageInstallObserver2;
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Graphics.IBitmap;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
@@ -1908,6 +1911,27 @@ module
         constructor();
 
         interface IResourcesManager;
+    }
+
+    class CPackageInstallObserver2 {
+        constructor(
+            [in] IPackageInstallObserver* host);
+
+        interface IIPackageInstallObserver2;
+    }
+
+    class CPackageDeleteObserver2 {
+        constructor(
+            [in] IPackageDeleteObserver* host);
+
+        interface IIPackageDeleteObserver2;
+    }
+
+    class CLegacyPackageDeleteObserver {
+        constructor(
+            [in] IIPackageDeleteObserver* ovserver);
+
+        interface IPackageDeleteObserver;
     }
 
     }

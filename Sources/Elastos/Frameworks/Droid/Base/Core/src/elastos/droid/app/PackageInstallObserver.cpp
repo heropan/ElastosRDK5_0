@@ -1,6 +1,7 @@
 
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/app/PackageInstallObserver.h"
+#include "elastos/droid/app/CPackageInstallObserver2.h"
 
 namespace Elastos {
 namespace Droid {
@@ -8,10 +9,9 @@ namespace App {
 
 CAR_INTERFACE_IMPL(PackageInstallObserver, Object, IPackageInstallObserver)
 
-PackageInstallObserver::~PackageInstallObserver()
+ECode PackageInstallObserver::constructor()
 {
-    assert(0 && "TODO");
-    // mBinder = new PackageInstallObserver2();
+    return CPackageInstallObserver2::New((IPackageInstallObserver*)this, (IIPackageInstallObserver2**)&mBinder);
 }
 
 ECode PackageInstallObserver::GetBinder(

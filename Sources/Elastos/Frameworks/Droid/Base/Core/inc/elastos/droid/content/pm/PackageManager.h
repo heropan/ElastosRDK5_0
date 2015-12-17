@@ -271,24 +271,16 @@ public:
         : public PackageDeleteObserver
     {
     public:
-        AutoPtr<IIPackageDeleteObserver> mLegacy;
-
-        LegacyPackageDeleteObserver(
-            /* [in] */ IIPackageDeleteObserver* legacy)
-            : mLegacy(legacy)
-        {}
+        CARAPI constructor(
+            /* [in] */ IIPackageDeleteObserver* legacy);
 
         CARAPI OnPackageDeleted(
             /* [in] */ const String& basePackageName,
             /* [in] */ Int32 returnCode,
-            /* [in] */ const String& msg)
-        {
-            if (mLegacy == NULL) return NOERROR;
-            // try {
-                return mLegacy->PackageDeleted(basePackageName, returnCode);
-            // } catch (RemoteException ignored) {
-            // }
-        }
+            /* [in] */ const String& msg);
+
+    private:
+        AutoPtr<IIPackageDeleteObserver> mLegacy;
     };
 
 public:

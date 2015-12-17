@@ -18,24 +18,12 @@ class PackageInstallObserver
     : public Object
     , public IPackageInstallObserver
 {
-    // private final IPackageInstallObserver2.Stub mBinder = new IPackageInstallObserver2.Stub() {
-    //     @Override
-    //     public void onUserActionRequired(Intent intent) {
-    //         PackageInstallObserver.this.onUserActionRequired(intent);
-    //     }
-
-    //     @Override
-    //     public void onPackageInstalled(String basePackageName, int returnCode,
-    //             String msg, Bundle extras) {
-    //         PackageInstallObserver.this.onPackageInstalled(basePackageName, returnCode, msg,
-    //                 extras);
-    //     }
-    // };
-
 public:
     CAR_INTERFACE_DECL()
 
-    virtual ~PackageInstallObserver();
+    CARAPI constructor();
+
+    virtual ~PackageInstallObserver() {}
 
     /** {@hide} */
     CARAPI GetBinder(

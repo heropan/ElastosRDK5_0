@@ -20,26 +20,16 @@ class PackageDeleteObserver
     : public Object
     , public IPackageDeleteObserver
 {
-    // private final IPackageDeleteObserver2.Stub mBinder = new IPackageDeleteObserver2.Stub() {
-    //     @Override
-    //     public void onUserActionRequired(Intent intent) {
-    //         PackageDeleteObserver.this.onUserActionRequired(intent);
-    //     }
-
-    //     @Override
-    //     public void onPackageDeleted(String basePackageName, int returnCode, String msg) {
-    //         PackageDeleteObserver.this.onPackageDeleted(basePackageName, returnCode, msg);
-    //     }
-    // };
-
 public:
+    CARAPI constructor();
+
     CAR_INTERFACE_DECL()
 
-    virtual ~PackageDeleteObserver();
+    virtual ~PackageDeleteObserver() {}
 
     /** {@hide} */
     CARAPI GetBinder(
-        /* [out] */ IIPackageDeleteObserver2** pio);
+        /* [out] */ IIPackageDeleteObserver2** observer);
 
     CARAPI OnUserActionRequired(
         /* [in] */ IIntent* intent);
