@@ -131,8 +131,6 @@
 > Elastos/Frameworks/Droid/DroidRuntime
 - Elastos/Frameworks/Droid/Base/Core/inc
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid Elastos.Droid.Core.car
-#- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid Elastos.CoreLibrary.eco
-#- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid Elastos.Droid.System.eco
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/os/storage
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/os
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/nsd
