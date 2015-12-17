@@ -1,4 +1,6 @@
-
+#include <Elastos.Droid.View.h>
+#include <Elastos.Droid.Graphics.h>
+#include <Elastos.Droid.Hardware.h>
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/server/display/DisplayDevice.h"
 

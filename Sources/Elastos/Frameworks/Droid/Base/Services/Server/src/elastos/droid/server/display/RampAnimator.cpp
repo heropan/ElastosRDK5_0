@@ -1,4 +1,6 @@
-
+#include <Elastos.Droid.View.h>
+#include <Elastos.Droid.Utility.h>
+#include <Elastos.Droid.Animation.h>
 #include "elastos/droid/server/display/RampAnimator.h"
 #include <elastos/core/Math.h>
 

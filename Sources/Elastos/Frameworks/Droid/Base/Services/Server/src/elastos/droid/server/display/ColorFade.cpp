@@ -1,6 +1,13 @@
 
+#include <Elastos.Droid.Opengl.h>
+#include <Elastos.Droid.View.h>
+#include <Elastos.Droid.Content.h>
+#include <Elastos.Droid.Os.h>
+#include <Elastos.Droid.Graphics.h>
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.Libcore.h>
 #include "elastos/droid/server/display/ColorFade.h"
-//#include "elastos/droid/server/LocalServices.h"
+#include "elastos/droid/server/LocalServices.h"
 #include <elastos/droid/utility/FloatMath.h>
 #include <elastos/droid/R.h>
 #include <elastos/utility/logging/Slogger.h>
@@ -14,6 +21,7 @@ using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Graphics::IPixelFormat;
 using Elastos::Droid::Graphics::ISurfaceTexture;
 using Elastos::Droid::Graphics::CSurfaceTexture;
+using Elastos::Droid::Hardware::Display::EIID_IDisplayManagerInternal;
 using Elastos::Droid::Hardware::Display::EIID_IDisplayTransactionListener;
 using Elastos::Droid::Opengl::IEGL14;
 using Elastos::Droid::Opengl::IGLES20;
@@ -147,8 +155,8 @@ ColorFade::ColorFade(
     , mProgram(0)
 {
     mDisplayId = displayId;
-    assert(0 && "TODO");
-    // mDisplayManagerInternal = LocalServices::GetService(DisplayManagerInternal.class);
+    AutoPtr<IInterface> obj = LocalServices::GetService(EIID_IDisplayManagerInternal);
+    mDisplayManagerInternal = IDisplayManagerInternal::Probe(obj);
 
     mTexNames = ArrayOf<Int32>::Alloc(1);
     mTexMatrix = ArrayOf<Float>::Alloc(16);

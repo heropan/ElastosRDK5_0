@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_SERVER_DISPLAY_COLOR_FADE_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
+#include <Elastos.Droid.Hardware.h>
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;

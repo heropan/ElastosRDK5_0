@@ -1,4 +1,7 @@
-
+#include <Elastos.Droid.Utility.h>
+#include <Elastos.Droid.Hardware.h>
+#include <Elastos.Droid.Content.h>
+#include <Elastos.Droid.Internal.h>
 #include "elastos/droid/server/display/DisplayPowerController.h"
 #include <elastos/droid/os/SystemClock.h>
 #include <elastos/droid/R.h>

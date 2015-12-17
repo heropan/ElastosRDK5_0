@@ -1,4 +1,5 @@
-
+#include <Elastos.Droid.Utility.h>
+#include <Elastos.Droid.Internal.h>
 #include "elastos/droid/server/display/PersistentDataStore.h"
 #include "elastos/droid/utility/Xml.h"
 #include "elastos/droid/internal/utility/XmlUtils.h"

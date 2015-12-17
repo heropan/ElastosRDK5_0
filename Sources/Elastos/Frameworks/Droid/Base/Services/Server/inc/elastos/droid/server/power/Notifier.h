@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SERVER_POWER_NOTIFIER_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "Elastos.Droid.Server.h"
+#include "_Elastos.Droid.Server.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/os/HandlerBase.h"
 

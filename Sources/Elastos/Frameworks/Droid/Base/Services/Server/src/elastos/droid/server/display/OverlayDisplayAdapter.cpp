@@ -1,4 +1,10 @@
 
+#include <Elastos.Droid.Content.h>
+#include <Elastos.Droid.Provider.h>
+#include <Elastos.Droid.Utility.h>
+#include <Elastos.Droid.Hardware.h>
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/server/display/OverlayDisplayAdapter.h"
 #include "elastos/droid/server/display/OverlayDisplayWindow.h"
 #include "elastos/droid/server/display/DisplayDeviceInfo.h"

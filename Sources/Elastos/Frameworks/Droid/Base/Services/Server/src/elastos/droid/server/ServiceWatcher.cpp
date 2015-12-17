@@ -1,3 +1,6 @@
+#include <Elastos.CoreLibrary.Utility.h>
+#define HASH_FOR_CONTENT
+#include <elastos/droid/ext/frameworkhash.h>
 #include "elastos/droid/server/ServiceWatcher.h"
 #include "elastos/droid/os/Handler.h"
 #include <elastos/utility/logging/Logger.h>

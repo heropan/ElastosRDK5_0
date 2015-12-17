@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_STRICTMODEFLASH_H__
 #define __ELASTOS_DROID_SERVER_WM_STRICTMODEFLASH_H__
 
-#include "Elastos.Droid.Server.h"
+#include "_Elastos.Droid.Server.h"
 
 using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::View::ISurfaceSession;

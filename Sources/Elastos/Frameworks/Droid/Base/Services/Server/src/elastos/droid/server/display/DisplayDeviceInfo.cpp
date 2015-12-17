@@ -1,4 +1,5 @@
-
+#include <Elastos.Droid.View.h>
+#include <Elastos.Droid.Utility.h>
 #include "elastos/droid/server/display/DisplayDeviceInfo.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>

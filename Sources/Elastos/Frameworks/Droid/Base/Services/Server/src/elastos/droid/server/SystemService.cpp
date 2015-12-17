@@ -1,4 +1,5 @@
-
+#include <Elastos.Droid.Os.h>
+#include <Elastos.Droid.Content.h>
 #include "elastos/droid/server/SystemService.h"
 #include <elastos/droid/server/LocalServices.h>
 

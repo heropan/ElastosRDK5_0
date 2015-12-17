@@ -1,4 +1,4 @@
-
+#include <Elastos.Droid.Content.h>
 #include "elastos/droid/server/display/LocalDisplayAdapter.h"
 #include <elastos/droid/R.h>
 #include <elastos/utility/logging/Slogger.h>

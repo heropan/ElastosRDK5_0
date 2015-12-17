@@ -1,4 +1,7 @@
 
+#include <Elastos.Droid.View.h>
+#include <Elastos.Droid.Utility.h>
+#include <Elastos.Droid.Hardware.h>
 #include "elastos/droid/server/display/VirtualDisplayAdapter.h"
 #include "elastos/droid/server/display/CMediaProjectionCallback.h"
 #include <elastos/core/AutoLock.h>

@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SERVER_PM_GRANTEDPERMISSIONS_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "Elastos.Droid.Server.h"
+#include "_Elastos.Droid.Server.h"
 #include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Utility::Etl::HashSet;

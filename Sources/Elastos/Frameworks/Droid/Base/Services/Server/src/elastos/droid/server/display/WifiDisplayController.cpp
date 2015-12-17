@@ -1,4 +1,12 @@
 
+#include <Elastos.Droid.Wifi.h>
+#include <Elastos.Droid.View.h>
+#include <Elastos.Droid.Os.h>
+#include <Elastos.Droid.Media.h>
+#include <Elastos.Droid.Hardware.h>
+#include <Elastos.Droid.Provider.h>
+#include <Elastos.CoreLibrary.Net.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/server/display/WifiDisplayController.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>

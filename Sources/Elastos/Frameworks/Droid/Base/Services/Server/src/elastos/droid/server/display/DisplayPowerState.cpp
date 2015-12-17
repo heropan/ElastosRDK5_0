@@ -1,4 +1,4 @@
-
+#include <Elastos.Droid.View.h>
 #include "elastos/droid/server/display/DisplayPowerState.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/AsyncTask.h"

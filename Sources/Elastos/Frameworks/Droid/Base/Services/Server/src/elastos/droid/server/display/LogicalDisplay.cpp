@@ -1,4 +1,4 @@
-
+#include <Elastos.Droid.View.h>
 #include "elastos/droid/server/display/LogicalDisplay.h"
 #include <elastos/utility/etl/Algorithm.h>
 #include <elastos/utility/Arrays.h>

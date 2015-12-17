@@ -1,4 +1,6 @@
-
+#include <Elastos.Droid.Hardware.h>
+#include <Elastos.Droid.Content.h>
+#include <Elastos.Droid.Widget.h>
 #include "elastos/droid/server/display/OverlayDisplayWindow.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>

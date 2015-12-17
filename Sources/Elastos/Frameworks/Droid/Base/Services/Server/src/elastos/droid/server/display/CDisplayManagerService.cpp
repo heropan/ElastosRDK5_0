@@ -1,4 +1,4 @@
-
+#include <Elastos.CoreLibrary.Utility.Concurrent.h>
 #include "elastos/droid/server/display/CDisplayManagerService.h"
 #include "elastos/droid/server/display/CDisplayManagerBinderService.h"
 #include "elastos/droid/server/display/LocalDisplayAdapter.h"

@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_SERVER_DISPLAY_CDISPLAYMANAGERSERVICE_H__
 
 #include "_Elastos_Droid_Server_Display_CDisplayManagerService.h"
+#include <Elastos.Droid.Hardware.h>
+#include <Elastos.CoreLibrary.Utility.h>
+#include <Elastos.CoreLibrary.Utility.Concurrent.h>
 #include "elastos/droid/server/SystemService.h"
 #include "elastos/droid/server/display/DisplayAdapter.h"
 #include "elastos/droid/server/display/DisplayDevice.h"

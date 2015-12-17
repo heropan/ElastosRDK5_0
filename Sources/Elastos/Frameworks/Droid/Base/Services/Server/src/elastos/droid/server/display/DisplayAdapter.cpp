@@ -1,4 +1,5 @@
 
+#include <Elastos.Droid.Content.h>
 #include "elastos/droid/server/display/DisplayAdapter.h"
 #include "elastos/droid/server/display/DisplayDevice.h"
 

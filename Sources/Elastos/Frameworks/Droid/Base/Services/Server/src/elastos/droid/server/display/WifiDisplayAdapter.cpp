@@ -1,4 +1,8 @@
 
+#include <Elastos.Droid.Wifi.h>
+#include <Elastos.Droid.View.h>
+#include <Elastos.Droid.Media.h>
+
 #include "elastos/droid/server/display/WifiDisplayAdapter.h"
 #include "elastos/droid/server/display/DisplayDeviceInfo.h"
 #include "elastos/droid/server/display/PersistentDataStore.h"
