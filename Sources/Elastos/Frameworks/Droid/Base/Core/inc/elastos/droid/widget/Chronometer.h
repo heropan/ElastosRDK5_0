@@ -18,7 +18,7 @@ namespace Droid {
 namespace Widget {
 
 class Chronometer
-    : public Object//TextView
+    : public TextView
     , public IChronometer
 {
 private:
@@ -134,7 +134,7 @@ public:
     virtual CARAPI SetStarted(
         /* [in] */ Boolean started);
 
-    virtual CARAPI_(void) DispatchChronometerTick();
+    virtual CARAPI DispatchChronometerTick();
 
     virtual CARAPI OnInitializeAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);

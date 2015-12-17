@@ -257,7 +257,9 @@ void CClosedCaptionRenderer::ClosedCaptionWidget::CCLineBox::OnMeasure(
 
     // set font scale in the X direction to match the required width
     SetScaleX(1.0f);
-    IPaint::Probe(GetPaint())->GetTextBounds(mDummyText, 0, mDummyText.GetLength(), mTextBounds);
+    AutoPtr<ITextPaint> paint;
+    GetPaint((ITextPaint**)&paint);
+    IPaint::Probe(paint)->GetTextBounds(mDummyText, 0, mDummyText.GetLength(), mTextBounds);
     Int32 actualTextWidth;
     mTextBounds->GetWidth(&actualTextWidth);
     Int32 requiredTextWidth = Elastos::Droid::View::View::MeasureSpec::GetSize(widthMeasureSpec);
@@ -288,7 +290,8 @@ void CClosedCaptionRenderer::ClosedCaptionWidget::CCLineBox::OnDraw(
 void CClosedCaptionRenderer::ClosedCaptionWidget::CCLineBox::DrawEdgeOutline(
     /* [in] */ ICanvas* c)
 {
-    AutoPtr<ITextPaint> textPaint = GetPaint();
+    AutoPtr<ITextPaint> textPaint;
+    GetPaint((ITextPaint**)&textPaint);
 
     PaintStyle previousStyle;
     IPaint::Probe(textPaint)->GetStyle(&previousStyle);
@@ -322,7 +325,8 @@ void CClosedCaptionRenderer::ClosedCaptionWidget::CCLineBox::DrawEdgeOutline(
 void CClosedCaptionRenderer::ClosedCaptionWidget::CCLineBox::DrawEdgeRaisedOrDepressed(
     /* [in] */ ICanvas* c)
 {
-    AutoPtr<ITextPaint> textPaint = GetPaint();
+    AutoPtr<ITextPaint> textPaint;
+    GetPaint((ITextPaint**)&textPaint);
 
     PaintStyle previousStyle;
     IPaint::Probe(textPaint)->GetStyle(&previousStyle);

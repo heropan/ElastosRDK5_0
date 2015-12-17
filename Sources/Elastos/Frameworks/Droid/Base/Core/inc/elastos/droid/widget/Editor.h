@@ -10,21 +10,20 @@
 #include "elastos/droid/text/style/CSuggestionSpan.h"
 
 #include "elastos/droid/widget/BaseAdapter.h"
+#include "elastos/droid/widget/PopupWindow.h"
 
 #include "elastos/droid/os/Runnable.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/HandlerRunnable.h"
+#include "elastos/droid/R.h"
 
-using Elastos::Core::ICharSequence;
-using Elastos::Core::IInteger32;
-using Elastos::Core::IComparator;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::IPath;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::HandlerRunnable;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::EIID_IBundle;
-using Elastos::Droid::Content::IContext;
-using namespace Elastos::Droid::Graphics;
 using Elastos::Droid::Text::ISpanWatcher;
 using Elastos::Droid::Text::ISpannable;
 using Elastos::Droid::Text::ISpannableStringBuilder;
@@ -55,6 +54,10 @@ using Elastos::Droid::View::InputMethod::IExtractedText;
 using Elastos::Droid::View::InputMethod::ICorrectionInfo;
 using Elastos::Droid::View::IMenu;
 using Elastos::Droid::View::IMenuItem;
+using Elastos::Droid::Widget::PopupWindow;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IInteger32;
+using Elastos::Core::IComparator;
 
 namespace Elastos {
 namespace Droid {
@@ -72,7 +75,8 @@ class HandleView;
 //              EditorRunnable
 //==============================================================================
 
-class ActionPopupShowerRunnable : public Runnable
+class ActionPopupShowerRunnable
+    : public Runnable
 {
 public:
     ActionPopupShowerRunnable(
@@ -85,7 +89,8 @@ private:
     AutoPtr<ActionPopupWindow> mHost;
 };
 
-class InsertionHandleViewHiderRunnable : public Runnable
+class InsertionHandleViewHiderRunnable
+    : public Runnable
 {
 public:
     InsertionHandleViewHiderRunnable(
@@ -99,7 +104,8 @@ private:
     InsertionHandleView* mHost;
 };
 
-class HidePopupRunnable : public Runnable
+class HidePopupRunnable
+    : public Runnable
 {
 public:
     HidePopupRunnable(
@@ -113,7 +119,8 @@ private:
     EasyEditSpanController* mHost;
 };
 
-class ShowSuggestionRunnable : public Runnable
+class ShowSuggestionRunnable
+    : public Runnable
 {
 public:
     ShowSuggestionRunnable(
@@ -130,7 +137,8 @@ private:
 //==============================================================================
 //              InputContentType
 //==============================================================================
-class InputContentType : public ElRefBase
+class InputContentType
+    : public Object
 {
 public:
     InputContentType();
@@ -148,7 +156,8 @@ public:
 //              InputMethodState
 //==============================================================================
 
-class InputMethodState  : public ElRefBase
+class InputMethodState
+    : public Object
 {
 public:
     InputMethodState();
@@ -170,11 +179,11 @@ public:
 //==============================================================================
 //              CustomPopupWindow
 //==============================================================================
-class _CustomPopupWindow
+class CustomPopupWindow
     : public PopupWindow
 {
 public:
-    _CustomPopupWindow(
+    CustomPopupWindow(
         /* [in] */ IContext* context,
         /* [in] */ Int32 defStyle,
         /* [in] */ Editor* editor,
@@ -187,49 +196,13 @@ private:
     SuggestionsPopupWindow* mOwner;
 };
 
-class CustomPopupWindow
-    : public ElRefBase
-    , public _CustomPopupWindow
-    , public IPopupWindow
-{
-public:
-    CAR_INTERFACE_DECL()
-    IPOPUPWINDOW_METHODS_DECL()
-
-    CustomPopupWindow(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 defStyle,
-        /* [in] */ Editor* editor,
-        /* [in] */ SuggestionsPopupWindow* owner);
-};
-
-//==============================================================================
-//              TextViewPositionListener
-//==============================================================================
-class TextViewPositionListener
-    : public ElRefBase
-{
-public:
-    virtual ~TextViewPositionListener() {}
-    virtual CARAPI_(void) UpdatePosition(
-        /* [in] */ Int32 parentPositionX,
-        /* [in] */ Int32 parentPositionY,
-        /* [in] */ Boolean parentPositionChanged,
-        /* [in] */ Boolean parentScrolled) = 0;
-};
-
 //==============================================================================
 //              MyPopupWindow
 //==============================================================================
 class MyPopupWindow
-    : public ElRefBase
-    , public PopupWindow
-    , public IPopupWindow
+    : public PopupWindow
 {
 public:
-    CAR_INTERFACE_DECL()
-    IPOPUPWINDOW_METHODS_DECL()
-
     MyPopupWindow(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs = NULL,
@@ -239,7 +212,9 @@ public:
 //==============================================================================
 //              PinnedPopupWindow
 //==============================================================================
-class PinnedPopupWindow : public TextViewPositionListener
+class PinnedPopupWindow
+    : public Object
+    , public ITextViewPositionListener
 {
 public:
     PinnedPopupWindow(
@@ -331,12 +306,9 @@ private:
 //              SuggestionInfo
 //==============================================================================
 class SuggestionInfo
-    : public ElRefBase
-    , public IInterface
+    : public Object
 {
 public:
-    CAR_INTERFACE_DECL()
-
     SuggestionInfo();
 
     // range of actual suggestion within text
@@ -356,11 +328,11 @@ public:
 //==============================================================================
 //              SuggestionAdapter
 //==============================================================================
-class _SuggestionAdapter
+class SuggestionAdapter
     : public BaseAdapter
 {
 public:
-    _SuggestionAdapter(
+    SuggestionAdapter(
         /* [in] */ Editor* editor,
         /* [in] */ SuggestionsPopupWindow* popupWindow);
 
@@ -382,33 +354,14 @@ private:
     AutoPtr<ILayoutInflater> mInflater;
 };
 
-class SuggestionAdapter
-    : public _SuggestionAdapter
-    , public IBaseAdapter
-    , public ISpinnerAdapter
-    , public ElRefBase
-{
-public:
-    CAR_INTERFACE_DECL()
-
-    IADAPTER_METHODS_DECL()
-    IBASEADAPTER_METHODS_DECL()
-    ILISTADAPTER_METHODS_DECL()
-    ISPINNERADAPTER_METHODS_DECL()
-
-    SuggestionAdapter(
-        /* [in] */ Editor* editor,
-        /* [in] */ SuggestionsPopupWindow* popupWindow);
-};
-
 //==============================================================================
 //              SuggestionSpanComparator
 //==============================================================================
 class SuggestionsPopupWindow;
 
 class SuggestionSpanComparator
-    : public IComparator
-    , public ElRefBase
+    : public Object
+    , public IComparator
 {
 public:
     CAR_INTERFACE_DECL()
@@ -486,9 +439,7 @@ private:
 
 private:
     friend class SuggestionSpanComparator;
-    friend class _CustomPopupWindow;
     friend class CustomPopupWindow;
-    friend class _SuggestionAdapter;
     friend class SuggestionAdapter;
 
     static const Int32 MAX_NUMBER_SUGGESTIONS;// = SuggestionSpan.SUGGESTIONS_MAX_SIZE;
@@ -510,7 +461,7 @@ private:
  * on which of these this TextView supports.
  */
 class SelectionActionModeCallback
-    : public ElRefBase
+    : public Object
     , public IActionModeCallback
 {
 public:
@@ -584,23 +535,11 @@ private:
 //==============================================================================
 
 class HandleView
-    : public Elastos::Droid::View::IView
-    , public Elastos::Droid::Graphics::Drawable::IDrawableCallback
-    , public Elastos::Droid::View::IKeyEventCallback
-    , public Elastos::Droid::View::Accessibility::IAccessibilityEventSource
-    , public Elastos::Droid::View::View
-    , public TextViewPositionListener
-    , public IWeakReferenceSource
+    : public Elastos::Droid::View::View
+    , public ITextViewPositionListener
 {
 public:
     CAR_INTERFACE_DECL()
-    IVIEW_METHODS_DECL()
-    IDRAWABLECALLBACK_METHODS_DECL()
-    IKEYEVENTCALLBACK_METHODS_DECL()
-    IACCESSIBILITYEVENTSOURCE_METHODS_DECL()
-
-    CARAPI GetWeakReference(
-        /* [out] */ IWeakReference** weakReference);
 
     HandleView(
         /* [in] */ IDrawable* drawableLtr,
@@ -734,11 +673,10 @@ private:
 //==============================================================================
 //              InsertionHandleView
 //==============================================================================
-class InsertionHandleView : public HandleView
+class InsertionHandleView
+    : public HandleView
 {
 public:
-    CAR_INTERFACE_DECL()
-
     InsertionHandleView(
         /* [in] */ IDrawable* drawable,
         /* [in] */ Editor* editor);
@@ -787,11 +725,10 @@ private:
 //==============================================================================
 //              SelectionStartHandleView
 //==============================================================================
-class SelectionStartHandleView : public HandleView
+class SelectionStartHandleView
+    : public HandleView
 {
 public:
-    CAR_INTERFACE_DECL()
-
     SelectionStartHandleView(
         /* [in] */ IDrawable* drawableLtr,
         /* [in] */ IDrawable* drawableRtl,
@@ -817,11 +754,10 @@ protected:
 //==============================================================================
 //              SelectionEndHandleView
 //==============================================================================
-class SelectionEndHandleView : public HandleView
+class SelectionEndHandleView
+    : public HandleView
 {
 public:
-    CAR_INTERFACE_DECL()
-
     SelectionEndHandleView(
         /* [in] */ IDrawable* drawableLtr,
         /* [in] */ IDrawable* drawableRtl,
@@ -853,7 +789,7 @@ protected:
  * A CursorController instance can be used to control a cursor in the text.
  */
 class CursorController
-    : public ElRefBase
+    : public Object
     , public IOnTouchModeChangeListener
 {
 public:
@@ -897,7 +833,8 @@ protected:
 //              InsertionPointCursorController
 //==============================================================================
 
-class InsertionPointCursorController : public CursorController
+class InsertionPointCursorController
+    : public CursorController
 {
 public:
     InsertionPointCursorController(
@@ -925,7 +862,8 @@ private:
 //              SelectionModifierCursorController
 //==============================================================================
 
-class SelectionModifierCursorController : public CursorController
+class SelectionModifierCursorController
+    : public CursorController
 {
 public:
     SelectionModifierCursorController(
@@ -985,8 +923,8 @@ private:
 //==============================================================================
 
 class PositionListener
-    : public IOnPreDrawListener
-    , public ElRefBase
+    : public Object
+    , public IOnPreDrawListener
 {
 public:
     CAR_INTERFACE_DECL()
@@ -998,11 +936,11 @@ public:
         /* [out] */ Boolean* result);
 
     CARAPI_(void) AddSubscriber(
-        /* [in] */ TextViewPositionListener* positionListener,
+        /* [in] */ ITextViewPositionListener* positionListener,
         /* [in] */ Boolean canMove);
 
     CARAPI_(void) RemoveSubscriber(
-        /* [in] */ TextViewPositionListener* positionListener);
+        /* [in] */ ITextViewPositionListener* positionListener);
 
     CARAPI_(Int32) GetPositionX();
 
@@ -1031,7 +969,8 @@ private:
 //==============================================================================
 //              CorrectionHighlighter
 //==============================================================================
-class CorrectionHighlighter : public ElRefBase
+class CorrectionHighlighter
+    : public Object
 {
 public:
     CorrectionHighlighter(
@@ -1067,11 +1006,11 @@ private:
 //==============================================================================
 //              ErrorPopup
 //==============================================================================
-class _ErrorPopup
+class ErrorPopup
     : public PopupWindow
 {
 public:
-    _ErrorPopup(
+    ErrorPopup(
         /* [in]*/ TextView* textView,
         /* [in]*/ Int32 width,
         /* [in]*/ Int32 height);
@@ -1098,22 +1037,6 @@ private:
     Int32 mPopupInlineErrorBackgroundId;// = 0;
     Int32 mPopupInlineErrorAboveBackgroundId;// = 0;
 };
-
-class ErrorPopup
-    : public ElRefBase
-    , public _ErrorPopup
-    , public IPopupWindow
-{
-public:
-    CAR_INTERFACE_DECL()
-    IPOPUPWINDOW_METHODS_DECL()
-
-    ErrorPopup(
-        /* [in]*/ TextView* textView,
-        /* [in]*/ Int32 width,
-        /* [in]*/ Int32 height);
-};
-
 
 //==============================================================================
 //              Blink
@@ -1144,7 +1067,7 @@ private:
 //==============================================================================
 
 class EasyEditSpanController
-    : public ElRefBase
+    : public Object
     , public ISpanWatcher
 {
 public:
@@ -1187,12 +1110,9 @@ private:
 //              DragLocalState
 //==============================================================================
 class DragLocalState
-    : public ElRefBase
-    , public IInterface
+    : public Object
 {
 public:
-    CAR_INTERFACE_DECL();
-
     DragLocalState(
         /* [in] */ TextView* sourceTextView,
         /* [in] */ Int32 start,
@@ -1205,7 +1125,7 @@ public:
 };
 
 class UserDictionaryListener
-    : public HandlerBase
+    : public Handler
 {
 public:
     UserDictionaryListener();
@@ -1240,7 +1160,8 @@ private:
  *
  * @hide
  */
-class Editor : public ElRefBase
+class Editor
+    : public Object
 {
 public:
     Editor(
@@ -1545,12 +1466,10 @@ private:
 
 private:
     friend class TextView;
-    friend class _CustomPopupWindow;
     friend class CustomPopupWindow;
     friend class PinnedPopupWindow;
     friend class EasyEditPopupWindow;
     friend class SuggestionsPopupWindow;
-    friend class _SuggestionAdapter;
     friend class SuggestionAdapter;
     friend class ActionPopupWindow;
     friend class HandleView;

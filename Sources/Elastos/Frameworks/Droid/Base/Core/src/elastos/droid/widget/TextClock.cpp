@@ -284,9 +284,10 @@ ECode TextClock::SetTimeZone(
     return NOERROR;
 }
 
-void TextClock::ChooseFormat()
+ECode TextClock::ChooseFormat()
 {
     ChooseFormat(TRUE);
+    return NOERROR;
 }
 
 ECode TextClock::GetFormat(

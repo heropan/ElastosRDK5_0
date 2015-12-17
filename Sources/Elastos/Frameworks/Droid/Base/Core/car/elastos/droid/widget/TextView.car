@@ -510,6 +510,16 @@ module
             [out] Float* size);
 
         /**
+         * @return the size (in scaled pixels) of thee default text size in this TextView.
+         * @hide
+         */
+        GetScaledTextSize(
+            [out] Float* size);
+
+        GetTypefaceStyle(
+            [out] Int32* style);
+
+        /**
          * Set the TextView's elegant height metrics flag. This setting selects font
          * variants that have not been compacted to fit Latin-based vertical
          * metrics, and also increases top and bottom bounds to provide more space.
@@ -1055,6 +1065,18 @@ module
          */
         SetMaxEms(
             [in] Int32 maxems);
+
+        /**
+         * @return the maximum width of the TextView, expressed in ems or -1 if the maximum width
+         * was set in pixels instead (using {@link #setMaxWidth(int)} or {@link #setWidth(int)}).
+         *
+         * @see #setMaxEms(int)
+         * @see #setEms(int)
+         *
+         * @attr ref android.R.styleable#TextView_maxEms
+         */
+        GetMaxEms(
+            [out] Int32* maxEms);
 
         /**
          * Makes the TextView at most this many pixels wide

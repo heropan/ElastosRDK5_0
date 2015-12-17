@@ -70,7 +70,8 @@ ECode MultiAutoCompleteTextView::EnoughToFilter(
     GetText((ICharSequence**)&seq);
     AutoPtr<IEditable> text = IEditable::Probe(seq);
 
-    Int32 end = GetSelectionEnd();
+    Int32 end;
+    GetSelectionEnd(&end);
     if(end < 0 || mTokenizer == NULL) {
         *enough = FALSE;
         return NOERROR;
@@ -153,7 +154,8 @@ void MultiAutoCompleteTextView::PerformFiltering(
 {
     Boolean enough;
     if(EnoughToFilter(&enough), enough) {
-        Int32 end = GetSelectionEnd();
+        Int32 end;
+        GetSelectionEnd(&end);
         Int32 start = 0;
         mTokenizer->FindTokenStart(text, end, &start);
 
@@ -183,7 +185,8 @@ void MultiAutoCompleteTextView::ReplaceText(
     /* [in] */ ICharSequence* text)
 {
     ClearComposingText();
-    Int32 end = GetSelectionEnd();
+    Int32 end;
+    GetSelectionEnd(&end);
     Int32 start = 0;
     AutoPtr<ICharSequence> chars;
     GetText((ICharSequence**)&chars);

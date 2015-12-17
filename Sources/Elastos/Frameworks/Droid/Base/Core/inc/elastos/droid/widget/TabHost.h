@@ -3,11 +3,13 @@
 #define __ELASTOS_DROID_WIDGET_TABHOST_H__
 
 #include "elastos/droid/widget/FrameLayout.h"
+#include "elastos/droid/R.h"
 
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::App::ILocalActivityManager;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IViewOnKeyListener;
+using Elastos::Droid::View::IOnTouchModeChangeListener;
 
 namespace Elastos {
 namespace Droid {
@@ -23,18 +25,16 @@ namespace Widget {
  * <p>See the <a href="{@docRoot}resources/tutorials/views/hello-tabwidget.html">Tab Layout
  * tutorial</a>.</p>
  */
-class TabHost : public FrameLayout // implements ViewTreeObserver.OnTouchModeChangeListener
+class TabHost
+    : public FrameLayout
+    , public ITabHost
+    , public IOnTouchModeChangeListener
 {
 private:
-    class IndicatorStrategy : public ElRefBase
+    class IndicatorStrategy
+        : public Object
     {
     public:
-        virtual PInterface Probe(
-            /* [in] */ REIID riid)
-        {
-            return NULL;
-        }
-
         /**
          * Return the view for the indicator.
          */
@@ -42,7 +42,8 @@ private:
             /* [out] */ IView** view) = 0;
     };
 
-    class ContentStrategy : public ElRefBase
+    class ContentStrategy
+        : public Object
     {
     public:
         /**
@@ -115,9 +116,6 @@ private:
     public:
         CARAPI CreateIndicatorView(
             /* [out] */ IView** view);
-
-        virtual PInterface Probe(
-            /* [in] */ REIID riid);
 
     private:
         ViewIndicatorStrategy(
@@ -201,7 +199,7 @@ private:
     };
 
     class TabKeyListener
-        : public ElRefBase
+        : public Object
         , public IViewOnKeyListener
     {
         friend class TabHost;
@@ -224,7 +222,7 @@ private:
     };
 
     class TabSelectionListener
-        : public ElRefBase
+        : public Object
         , public ITabWidgetOnTabSelectionChanged
     {
         friend class TabHost;
@@ -259,7 +257,7 @@ public:
      * 3) an {@link Intent} that launches an {@link android.app.Activity}.
      */
     class TabSpec
-        : public ElRefBase
+        : public Object
         , public ITabSpec
     {
         friend class TabHost;
@@ -323,12 +321,18 @@ public:
     };
 
 public:
-    TabHost(
+    CAR_INTERFACE_DECL()
+
+    TabHost();
+
+    constructor(
         /* [in] */ IContext* context);
 
-    TabHost(
+    constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr = R::attr::tabWidgetStyle,
+        /* [in] */ Int32 defStyleRes = 0);
 
     /**
      * Get a new {@link TabSpec} associated with this tab host.
@@ -424,7 +428,6 @@ public:
         /* [in] */ IAccessibilityNodeInfo* info);
 
 protected:
-    TabHost();
 
     //@Override
     virtual CARAPI OnAttachedToWindow();
@@ -432,16 +435,11 @@ protected:
     //@Override
     virtual CARAPI OnDetachedFromWindow();
 
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
     CARAPI InitFromAttributes(
         /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
 private:
     CARAPI_(void) InitTabHost();

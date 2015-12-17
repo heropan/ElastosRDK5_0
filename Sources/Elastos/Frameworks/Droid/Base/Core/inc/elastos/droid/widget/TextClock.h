@@ -307,7 +307,7 @@ public:
      *
      * Calling this method does not schedule or unschedule the time ticker.
      */
-    CARAPI_(void) ChooseFormat();
+    CARAPI ChooseFormat();
 
     /**
      * Returns the current format string. Always valid after constructor has

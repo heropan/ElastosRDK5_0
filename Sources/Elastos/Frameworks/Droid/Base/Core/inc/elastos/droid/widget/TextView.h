@@ -466,10 +466,6 @@ public:
 
     static CARAPI_(void) InitStatic();
 
-    /**
-     * {@inheritDoc}
-     */
-    virtual CARAPI_(Boolean) OnPreDraw();
 
     CARAPI OnPreDraw(
         /* [out] */ Boolean* res);
@@ -483,7 +479,7 @@ public:
      * @attr ref android.R.styleable#TextView_typeface
      * @attr ref android.R.styleable#TextView_textStyle
      */
-    virtual CARAPI SetTypeface(
+    CARAPI SetTypeface(
         /* [in] */ ITypeface* tf,
         /* [in] */ Int32 style);
 
@@ -495,16 +491,12 @@ public:
      * Note: The content of the return value should not be modified. If you want
      * a modifiable one, you should make your own copy first.
      */
-    virtual CARAPI_(AutoPtr<ICharSequence>) GetText();
-
     CARAPI GetText(
         /* [out] */ ICharSequence** text);
 
     /**
      * Returns the length, in characters, of the text managed by this TextView
      */
-    virtual CARAPI_(Int32) GetLength();
-
     CARAPI GetLength(
         /* [out] */ Int32* length);
 
@@ -514,8 +506,6 @@ public:
      *
      * @see #getText
      */
-    virtual CARAPI_(AutoPtr<IEditable>) GetEditableText();
-
     CARAPI GetEditableText(
         /* [out] */ IEditable** editable);
 
@@ -525,8 +515,6 @@ public:
      * than this height, and the layout may contain additional first-
      * or last-line padding.
      */
-    virtual CARAPI_(Int32) GetLineHeight();
-
     CARAPI GetLineHeight(
         /* [out] */ Int32* height);
 
@@ -534,8 +522,6 @@ public:
      * @return the Layout that is currently being used to display the text.
      * This can be null if the text or width has recently changes.
      */
-    CARAPI_(AutoPtr<ILayout>) GetLayout();
-
     CARAPI GetLayout(
         /* [out] */ ILayout** layout);
 
@@ -543,8 +529,6 @@ public:
      * @return the current key listener for this TextView.
      * This will frequently be null for non-EditText TextViews.
      */
-    CARAPI_(AutoPtr<IKeyListener>) GetKeyListener();
-
     CARAPI GetKeyListener(
         /* [out] */ IKeyListener** listener);
 
@@ -570,15 +554,13 @@ public:
      * @attr ref android.R.styleable#TextView_capitalize
      * @attr ref android.R.styleable#TextView_autoText
      */
-    virtual CARAPI SetKeyListener(
+    CARAPI SetKeyListener(
         /* [in] */ IKeyListener* input);
 
     /**
      * @return the movement method being used for this TextView.
      * This will frequently be null for non-EditText TextViews.
      */
-    CARAPI_(AutoPtr<IMovementMethod>) GetMovementMethod();
-
     CARAPI GetMovementMethod(
         /* [out] */ IMovementMethod** movement);
 
@@ -593,7 +575,7 @@ public:
      * {@link #setFocusable} again after calling this to get the focusability
      * back the way you want it.
      */
-    virtual CARAPI SetMovementMethod(
+    CARAPI SetMovementMethod(
         /* [in] */ IMovementMethod* movement);
 
     /**
@@ -601,8 +583,6 @@ public:
      * This will frequently be null except for single-line and password
      * fields.
      */
-    virtual CARAPI_(AutoPtr<ITransformationMethod>) GetTransformationMethod();
-
     CARAPI GetTransformationMethod(
         /* [out] */ ITransformationMethod** method);
 
@@ -613,15 +593,13 @@ public:
      * @attr ref android.R.styleable#TextView_password
      * @attr ref android.R.styleable#TextView_singleLine
      */
-    virtual CARAPI SetTransformationMethod(
+    CARAPI SetTransformationMethod(
         /* [in] */ ITransformationMethod* method);
 
     /**
      * Returns the top padding of the view, plus space for the top
      * Drawable if any.
      */
-    virtual CARAPI_(Int32) GetCompoundPaddingTop();
-
     CARAPI GetCompoundPaddingTop(
         /* [out] */ Int32* top);
 
@@ -629,8 +607,6 @@ public:
      * Returns the bottom padding of the view, plus space for the bottom
      * Drawable if any.
      */
-    virtual CARAPI_(Int32) GetCompoundPaddingBottom();
-
     CARAPI GetCompoundPaddingBottom(
         /* [out] */ Int32* bottom);
 
@@ -638,8 +614,6 @@ public:
      * Returns the left padding of the view, plus space for the left
      * Drawable if any.
      */
-    virtual CARAPI_(Int32) GetCompoundPaddingLeft();
-
     CARAPI GetCompoundPaddingLeft(
         /* [out] */ Int32* left);
 
@@ -647,8 +621,6 @@ public:
      * Returns the right padding of the view, plus space for the right
      * Drawable if any.
      */
-    virtual CARAPI_(Int32) GetCompoundPaddingRight();
-
     CARAPI GetCompoundPaddingRight(
         /* [out] */ Int32* right);
 
@@ -656,8 +628,6 @@ public:
      * Returns the start padding of the view, plus space for the start
      * Drawable if any.
      */
-    virtual CARAPI_(Int32) GetCompoundPaddingStart();
-
     CARAPI GetCompoundPaddingStart(
         /* [out] */ Int32* start);
 
@@ -665,8 +635,6 @@ public:
      * Returns the end padding of the view, plus space for the end
      * Drawable if any.
      */
-    virtual CARAPI_(Int32) GetCompoundPaddingEnd();
-
     CARAPI GetCompoundPaddingEnd(
         /* [out] */ Int32* end);
 
@@ -675,8 +643,6 @@ public:
      * top Drawable if any and any extra space to keep more than maxLines
      * of text from showing.  It is only valid to call this after measuring.
      */
-    virtual CARAPI_(Int32) GetExtendedPaddingTop();
-
     CARAPI GetExtendedPaddingTop(
         /* [out] */ Int32* top);
 
@@ -685,8 +651,6 @@ public:
      * bottom Drawable if any and any extra space to keep more than maxLines
      * of text from showing.  It is only valid to call this after measuring.
      */
-    virtual CARAPI_(Int32) GetExtendedPaddingBottom();
-
     CARAPI GetExtendedPaddingBottom(
         /* [out] */ Int32* bottom);
 
@@ -694,8 +658,6 @@ public:
      * Returns the total left padding of the view, including the left
      * Drawable if any.
      */
-    virtual CARAPI_(Int32) GetTotalPaddingLeft();
-
     CARAPI GetTotalPaddingLeft(
         /* [out] */ Int32* left);
 
@@ -703,8 +665,6 @@ public:
      * Returns the total right padding of the view, including the right
      * Drawable if any.
      */
-    virtual CARAPI_(Int32) GetTotalPaddingRight();
-
     CARAPI GetTotalPaddingRight(
         /* [out] */ Int32* right);
 
@@ -712,8 +672,6 @@ public:
      * Returns the total start padding of the view, including the start
      * Drawable if any.
      */
-    virtual CARAPI_(Int32) GetTotalPaddingStart();
-
     CARAPI GetTotalPaddingStart(
         /* [out] */ Int32* start);
 
@@ -721,8 +679,6 @@ public:
      * Returns the total end padding of the view, including the end
      * Drawable if any.
      */
-    virtual CARAPI_(Int32) GetTotalPaddingEnd();
-
     CARAPI GetTotalPaddingEnd(
         /* [out] */ Int32* end);
 
@@ -731,8 +687,6 @@ public:
      * Drawable if any, the extra space to keep more than maxLines
      * from showing, and the vertical offset for gravity, if any.
      */
-    virtual CARAPI_(Int32) GetTotalPaddingTop();
-
     CARAPI GetTotalPaddingTop(
         /* [out] */ Int32* top);
 
@@ -741,8 +695,6 @@ public:
      * Drawable if any, the extra space to keep more than maxLines
      * from showing, and the vertical offset for gravity, if any.
      */
-    virtual CARAPI_(Int32) GetTotalPaddingBottom();
-
     CARAPI GetTotalPaddingBottom(
         /* [out] */ Int32* bottom);
 
@@ -757,7 +709,7 @@ public:
      * @attr ref android.R.styleable#TextView_drawableRight
      * @attr ref android.R.styleable#TextView_drawableBottom
      */
-    virtual CARAPI SetCompoundDrawables(
+    CARAPI SetCompoundDrawables(
         /* [in] */ IDrawable* left,
         /* [in] */ IDrawable* top,
         /* [in] */ IDrawable* right,
@@ -779,7 +731,7 @@ public:
      * @attr ref android.R.styleable#TextView_drawableRight
      * @attr ref android.R.styleable#TextView_drawableBottom
      */
-    virtual CARAPI SetCompoundDrawablesWithIntrinsicBounds(
+    CARAPI SetCompoundDrawablesWithIntrinsicBounds(
         /* [in] */ Int32 left,
         /* [in] */ Int32 top,
         /* [in] */ Int32 right,
@@ -796,7 +748,7 @@ public:
      * @attr ref android.R.styleable#TextView_drawableRight
      * @attr ref android.R.styleable#TextView_drawableBottom
      */
-    virtual CARAPI SetCompoundDrawablesWithIntrinsicBounds(
+    CARAPI SetCompoundDrawablesWithIntrinsicBounds(
         /* [in] */ IDrawable* left,
         /* [in] */ IDrawable* top,
         /* [in] */ IDrawable* right,
@@ -813,7 +765,7 @@ public:
      * @attr ref android.R.styleable#TextView_drawableEnd
      * @attr ref android.R.styleable#TextView_drawableBottom
      */
-    virtual CARAPI SetCompoundDrawablesRelative(
+    CARAPI SetCompoundDrawablesRelative(
         /* [in] */ IDrawable* start,
         /* [in] */ IDrawable* top,
         /* [in] */ IDrawable* end,
@@ -835,7 +787,7 @@ public:
      * @attr ref android.R.styleable#TextView_drawableEnd
      * @attr ref android.R.styleable#TextView_drawableBottom
      */
-    virtual CARAPI SetCompoundDrawablesRelativeWithIntrinsicBounds(
+    CARAPI SetCompoundDrawablesRelativeWithIntrinsicBounds(
         /* [in] */ Int32 start,
         /* [in] */ Int32 top,
         /* [in] */ Int32 end,
@@ -852,7 +804,7 @@ public:
      * @attr ref android.R.styleable#TextView_drawableEnd
      * @attr ref android.R.styleable#TextView_drawableBottom
      */
-    virtual CARAPI SetCompoundDrawablesRelativeWithIntrinsicBounds(
+    CARAPI SetCompoundDrawablesRelativeWithIntrinsicBounds(
         /* [in] */ IDrawable* start,
         /* [in] */ IDrawable* top,
         /* [in] */ IDrawable* end,
@@ -861,10 +813,8 @@ public:
     /**
      * Returns drawables for the left, top, right, and bottom borders.
      */
-    virtual CARAPI_(AutoPtr<ArrayOf<IDrawable*> >) GetCompoundDrawables();
-
     CARAPI GetCompoundDrawables(
-        /* [out, callee] */ ArrayOf<IDrawable*>** drawables);
+        /* [out, callee] */ ArrayOf<IDrawable*>** result);
 
     /**
      * Returns drawables for the start, top, end, and bottom borders.
@@ -874,10 +824,8 @@ public:
      * @attr ref android.R.styleable#TextView_drawableEnd
      * @attr ref android.R.styleable#TextView_drawableBottom
      */
-    virtual CARAPI_(AutoPtr<ArrayOf<IDrawable*> >) GetCompoundDrawablesRelative();
-
     CARAPI GetCompoundDrawablesRelative(
-        /* [out, callee] */ ArrayOf<IDrawable*>** drawables);
+        /* [out, callee] */ ArrayOf<IDrawable*>** result);
 
     /**
      * Sets the size of the padding between the compound drawables and
@@ -885,14 +833,12 @@ public:
      *
      * @attr ref android.R.styleable#TextView_drawablePadding
      */
-    virtual CARAPI SetCompoundDrawablePadding(
+    CARAPI SetCompoundDrawablePadding(
         /* [in] */ Int32 pad);
 
     /**
      * Returns the padding between the compound drawables and the text.
      */
-    virtual CARAPI_(Int32) GetCompoundDrawablePadding();
-
     CARAPI GetCompoundDrawablePadding(
         /* [out] */ Int32* pad);
 
@@ -903,8 +849,6 @@ public:
      *
      * @attr ref android.R.styleable#TextView_autoLink
      */
-    virtual CARAPI_(Int32) GetAutoLinkMask();
-
     CARAPI GetAutoLinkMask(
         /* [out] */ Int32* mask);
 
@@ -912,7 +856,7 @@ public:
      * Sets the text color, size, style, hint color, and highlight color
      * from the specified TextAppearance resource.
      */
-    virtual CARAPI SetTextAppearance(
+    CARAPI SetTextAppearance(
         /* [in] */ IContext* context,
         /* [in] */ Int32 resid);
 
@@ -920,8 +864,6 @@ public:
      * Get the default {@link Locale} of the text in this TextView.
      * @return the default {@link Locale} of the text in this TextView.
      */
-    virtual CARAPI_(AutoPtr<ILocale>) GetTextLocale();
-
     CARAPI GetTextLocale(
         /* [out] */ ILocale** locale);
 
@@ -934,21 +876,21 @@ public:
      *
      * @see Paint#setTextLocale
      */
-    virtual CARAPI SetTextLocale(
+    CARAPI SetTextLocale(
         /* [in] */ ILocale* locale);
 
 
     /**
      * @return the size (in pixels) of the default text size in this TextView.
      */
-    virtual CARAPI_(Float) GetTextSize();
-
     CARAPI GetTextSize(
         /* [out] */ Float* size);
 
-    virtual CARAPI_(Float) GetScaledTextSize();
+    CARAPI GetScaledTextSize(
+        /* [out] */ Float* size);
 
-    virtual CARAPI_(Int32) GetTypefaceStyle();
+    CARAPI GetTypefaceStyle(
+        /* [out] */ Int32* style);
 
     /**
      * Set the default text size to the given value, interpreted as "scaled
@@ -959,7 +901,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_textSize
      */
-    virtual CARAPI SetTextSize(
+    CARAPI SetTextSize(
         /* [in] */ Float size);
 
     /**
@@ -971,7 +913,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_textSize
      */
-    virtual CARAPI SetTextSize(
+    CARAPI SetTextSize(
         /* [in] */ Int32 unit,
         /* [in] */ Float size);
 
@@ -979,8 +921,6 @@ public:
      * @return the extent by which text is currently being stretched
      * horizontally.  This will usually be 1.
      */
-    virtual CARAPI_(Float) GetTextScaleX();
-
     CARAPI GetTextScaleX(
         /* [out] */ Float* size);
 
@@ -989,7 +929,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_textScaleX
      */
-    virtual CARAPI SetTextScaleX(
+    CARAPI SetTextScaleX(
         /* [in] */ Float size);
 
     /**
@@ -1002,35 +942,29 @@ public:
      * @attr ref android.R.styleable#TextView_typeface
      * @attr ref android.R.styleable#TextView_textStyle
      */
-    virtual CARAPI SetTypeface(
+    CARAPI SetTypeface(
         /* [in] */ ITypeface* tf);
 
     /**
      * @return the current typeface and style in which the text is being
      * displayed.
      */
-    virtual CARAPI_(AutoPtr<ITypeface>) GetTypeface();
-
     CARAPI GetTypeface(
         /* [out] */ ITypeface** face);
 
-    virtual CARAPI SetElegantTextHeight(
+    CARAPI SetElegantTextHeight(
         /* [in] */ Boolean elegant);
-
-    virtual CARAPI_(Float) GetLetterSpacing();
 
     CARAPI GetLetterSpacing(
         /* [out] */ Float* spacing);
 
-    virtual CARAPI SetLetterSpacing(
+    CARAPI SetLetterSpacing(
         /* [in] */ Float letterSpacing);
-
-    virtual CARAPI_(String) GetFontFeatureSettings();
 
     CARAPI GetFontFeatureSettings(
         /* [out] */ String* settings);
 
-    virtual CARAPI SetFontFeatureSettings(
+    CARAPI SetFontFeatureSettings(
         /* [in] */ const String& fontFeatureSettings);
 
     /**
@@ -1039,7 +973,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_textColor
      */
-    virtual CARAPI SetTextColor(
+    CARAPI SetTextColor(
         /* [in] */ Int32 color);
 
     /**
@@ -1047,7 +981,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_textColor
      */
-    virtual CARAPI SetTextColor(
+    CARAPI SetTextColor(
         /* [in] */ IColorStateList* colors);
 
     /**
@@ -1055,8 +989,6 @@ public:
      *
      * @return Returns the set of text colors.
      */
-    virtual CARAPI_(AutoPtr<IColorStateList>) GetTextColors();
-
     CARAPI GetTextColors(
         /* [out] */ IColorStateList** colors);
 
@@ -1065,8 +997,6 @@ public:
      *
      * @return Returns the current text color.
      */
-    virtual CARAPI_(Int32) GetCurrentTextColor();
-
     CARAPI GetCurrentTextColor(
         /* [out] */ Int32* colors);
 
@@ -1075,7 +1005,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_textColorHighlight
      */
-    virtual CARAPI SetHighlightColor(
+    CARAPI SetHighlightColor(
         /* [in] */ Int32 color);
 
     /**
@@ -1085,8 +1015,6 @@ public:
      *
      * @attr ref android.R.styleable#TextView_textColorHighlight
      */
-    virtual CARAPI_(Int32) GetHighlightColor();
-
     CARAPI GetHighlightColor(
         /* [out] */ Int32* color);
 
@@ -1095,7 +1023,7 @@ public:
      * TextView gets focused. The default is true.
      * @hide
      */
-    virtual CARAPI SetShowSoftInputOnFocus(
+    CARAPI SetShowSoftInputOnFocus(
         /* [in] */ Boolean show);
 
     /**
@@ -1103,8 +1031,6 @@ public:
      * TextView gets focused. The default is true.
      * @hide
      */
-    virtual CARAPI_(Boolean) GetShowSoftInputOnFocus();
-
     CARAPI GetShowSoftInputOnFocus(
         /* [out] */ Boolean* show);
 
@@ -1117,7 +1043,7 @@ public:
      * @attr ref android.R.styleable#TextView_shadowDy
      * @attr ref android.R.styleable#TextView_shadowRadius
      */
-    virtual CARAPI SetShadowLayer(
+    CARAPI SetShadowLayer(
         /* [in] */ Float radius,
         /* [in] */ Float dx,
         /* [in] */ Float dy,
@@ -1132,8 +1058,6 @@ public:
      *
      * @attr ref android.R.styleable#TextView_shadowRadius
      */
-    virtual CARAPI_(Float) GetShadowRadius();
-
     CARAPI GetShadowRadius(
         /* [out] */ Float* radius);
 
@@ -1144,8 +1068,6 @@ public:
      *
      * @attr ref android.R.styleable#TextView_shadowDx
      */
-    virtual CARAPI_(Float) GetShadowDx();
-
     CARAPI GetShadowDx(
         /* [out] */ Float* dx);
 
@@ -1156,8 +1078,6 @@ public:
      *
      * @attr ref android.R.styleable#TextView_shadowDy
      */
-    virtual CARAPI_(Float) GetShadowDy();
-
     CARAPI GetShadowDy(
         /* [out] */ Float* dy);
 
@@ -1168,8 +1088,6 @@ public:
      *
      * @attr ref android.R.styleable#TextView_shadowColor
      */
-    virtual CARAPI_(Int32) GetShadowColor();
-
     CARAPI GetShadowColor(
         /* [out] */ Int32* color);
 
@@ -1177,8 +1095,6 @@ public:
      * @return the base paint used for the text.  Please use this only to
      * consult the Paint's properties and not to change them.
      */
-    virtual CARAPI_(AutoPtr<ITextPaint>) GetPaint();
-
     CARAPI GetPaint(
         /* [out] */ ITextPaint** paint);
 
@@ -1189,7 +1105,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_autoLink
      */
-    virtual CARAPI SetAutoLinkMask(
+    CARAPI SetAutoLinkMask(
         /* [in] */ Int32 mask);
 
     /**
@@ -1200,7 +1116,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_linksClickable
      */
-    virtual CARAPI SetLinksClickable(
+    CARAPI SetLinksClickable(
         /* [in] */ Boolean whether);
 
     /**
@@ -1211,8 +1127,6 @@ public:
      *
      * @attr ref android.R.styleable#TextView_linksClickable
      */
-    virtual CARAPI_(Boolean) GetLinksClickable();
-
     CARAPI GetLinksClickable(
         /* [out] */ Boolean* whether);
 
@@ -1224,17 +1138,15 @@ public:
      * or use {@link Spanned#getSpanStart} and {@link Spanned#getSpanEnd}
      * to find the region of the text they are attached to.
      */
-    virtual CARAPI_(AutoPtr< ArrayOf<IURLSpan*> >) GetUrls();
-
     CARAPI GetUrls(
-        /* [out, callee] */ ArrayOf<IURLSpan*>** urls);
+        /* [out, callee] */ ArrayOf<IURLSpan*>** result);
 
     /**
      * Sets the color of the hint text.
      *
      * @attr ref android.R.styleable#TextView_textColorHint
      */
-    virtual CARAPI SetHintTextColor(
+    CARAPI SetHintTextColor(
         /* [in] */ Int32 color);
 
     /**
@@ -1242,7 +1154,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_textColorHint
      */
-    virtual CARAPI SetHintTextColor(
+    CARAPI SetHintTextColor(
         /* [in] */ IColorStateList* colors);
 
     /**
@@ -1250,8 +1162,6 @@ public:
      *
      * @return Returns the list of hint text colors.
      */
-    virtual CARAPI_(AutoPtr<IColorStateList>) GetHintTextColors();
-
     CARAPI GetHintTextColors(
         /* [out] */ IColorStateList** colors);
 
@@ -1260,8 +1170,6 @@ public:
      *
      * @return Returns the current hint text color.
      */
-    virtual CARAPI_(Int32) GetCurrentHintTextColor();
-
     CARAPI GetCurrentHintTextColor(
         /* [out] */ Int32* color);
 
@@ -1270,7 +1178,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_textColorLink
      */
-    virtual CARAPI SetLinkTextColor(
+    CARAPI SetLinkTextColor(
         /* [in] */ Int32 color);
 
     /**
@@ -1278,7 +1186,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_textColorLink
      */
-    virtual CARAPI SetLinkTextColor(
+    CARAPI SetLinkTextColor(
         /* [in] */ IColorStateList* colors);
 
     /**
@@ -1286,8 +1194,6 @@ public:
      *
      * @return Returns the list of link text colors.
      */
-    virtual CARAPI_(AutoPtr<IColorStateList>) GetLinkTextColors();
-
     CARAPI GetLinkTextColors(
         /* [out] */ IColorStateList** colors);
 
@@ -1299,7 +1205,7 @@ public:
      * @see android.view.Gravity
      * @attr ref android.R.styleable#TextView_gravity
      */
-    virtual CARAPI SetGravity(
+    CARAPI SetGravity(
         /* [in] */ Int32 gravity);
 
     /**
@@ -1308,8 +1214,6 @@ public:
      * @see android.view.Gravity
      * @attr ref android.R.styleable#TextView_gravity
      */
-    virtual CARAPI_(Int32) GetGravity();
-
     CARAPI GetGravity(
         /* [out] */ Int32* gravity);
 
@@ -1317,8 +1221,6 @@ public:
      * @return the flags on the Paint being used to display the text.
      * @see Paint#getFlags
      */
-    virtual CARAPI_(Int32) GetPaintFlags();
-
     CARAPI GetPaintFlags(
         /* [out] */ Int32* flags);
 
@@ -1327,7 +1229,7 @@ public:
      * reflows the text if they are different from the old flags.
      * @see Paint#setFlags
      */
-    virtual CARAPI SetPaintFlags(
+    CARAPI SetPaintFlags(
         /* [in] */ Int32 flags);
 
     /**
@@ -1336,7 +1238,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_scrollHorizontally
      */
-    virtual CARAPI SetHorizontallyScrolling(
+    CARAPI SetHorizontallyScrolling(
         /* [in] */ Boolean whether);
 
     /**
@@ -1346,8 +1248,6 @@ public:
      * @attr ref android.R.styleable#TextView_scrollHorizontally
      * @hide
      */
-    virtual CARAPI_(Boolean) GetHorizontallyScrolling();
-
     CARAPI GetHorizontallyScrolling(
         /* [out] */ Boolean* whether);
 
@@ -1357,7 +1257,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_minLines
      */
-    virtual CARAPI SetMinLines(
+    CARAPI SetMinLines(
         /* [in] */ Int32 minlines);
 
     /**
@@ -1368,8 +1268,6 @@ public:
      *
      * @attr ref android.R.styleable#TextView_minLines
      */
-    virtual CARAPI_(Int32) GetMinLines();
-
     CARAPI GetMinLines(
         /* [out] */ Int32* minlines);
 
@@ -1378,7 +1276,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_minHeight
      */
-    virtual CARAPI SetMinHeight(
+    CARAPI SetMinHeight(
         /* [in] */ Int32 minHeight);
 
     /**
@@ -1389,8 +1287,6 @@ public:
      *
      * @attr ref android.R.styleable#TextView_minHeight
      */
-    virtual CARAPI_(Int32) GetMinHeight();
-
     CARAPI GetMinHeight(
         /* [out] */ Int32* minHeight);
 
@@ -1399,7 +1295,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_maxLines
      */
-    virtual CARAPI SetMaxLines(
+    CARAPI SetMaxLines(
         /* [in] */ Int32 maxlines);
 
     /**
@@ -1410,8 +1306,6 @@ public:
      *
      * @attr ref android.R.styleable#TextView_maxLines
      */
-    virtual CARAPI_(Int32) GetMaxLines();
-
     CARAPI GetMaxLines(
         /* [out] */ Int32* maxlines);
 
@@ -1420,7 +1314,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_maxHeight
      */
-    virtual CARAPI SetMaxHeight(
+    CARAPI SetMaxHeight(
         /* [in] */ Int32 maxHeight);
 
     /**
@@ -1431,8 +1325,6 @@ public:
      *
      * @attr ref android.R.styleable#TextView_maxHeight
      */
-    virtual CARAPI_(Int32) GetMaxHeight();
-
     CARAPI GetMaxHeight(
         /* [out] */ Int32* maxHeight);
 
@@ -1441,7 +1333,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_lines
      */
-    virtual CARAPI SetLines(
+    CARAPI SetLines(
         /* [in] */ Int32 lines);
 
     /**
@@ -1451,7 +1343,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_height
      */
-    virtual CARAPI SetHeight(
+    CARAPI SetHeight(
         /* [in] */ Int32 pixels);
 
     /**
@@ -1459,7 +1351,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_minEms
      */
-    virtual CARAPI SetMinEms(
+    CARAPI SetMinEms(
         /* [in] */ Int32 minems);
 
     /**
@@ -1471,8 +1363,6 @@ public:
      *
      * @attr ref android.R.styleable#TextView_minEms
      */
-    virtual CARAPI_(Int32) GetMinEms();
-
     CARAPI GetMinEms(
         /* [out] */ Int32* minems);
 
@@ -1481,7 +1371,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_minWidth
      */
-    virtual CARAPI SetMinWidth(
+    CARAPI SetMinWidth(
         /* [in] */ Int32 minpixels);
 
     /**
@@ -1493,8 +1383,6 @@ public:
      *
      * @attr ref android.R.styleable#TextView_minWidth
      */
-    virtual CARAPI_(Int32) GetMinWidth();
-
     CARAPI GetMinWidth(
         /* [out] */ Int32* minpixels);
 
@@ -1503,7 +1391,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_maxEms
      */
-    virtual CARAPI SetMaxEms(
+    CARAPI SetMaxEms(
         /* [in] */ Int32 maxems);
 
     /**
@@ -1515,14 +1403,15 @@ public:
      *
      * @attr ref android.R.styleable#TextView_maxEms
      */
-    virtual CARAPI_(Int32) GetMaxEms();
+    CARAPI GetMaxEms(
+        /* [out] */ Int32* ems);
 
     /**
      * Makes the TextView at most this many pixels wide
      *
      * @attr ref android.R.styleable#TextView_maxWidth
      */
-    virtual CARAPI SetMaxWidth(
+    CARAPI SetMaxWidth(
         /* [in] */ Int32 maxpixels);
 
     /**
@@ -1534,8 +1423,6 @@ public:
      *
      * @attr ref android.R.styleable#TextView_maxWidth
      */
-    virtual CARAPI_(Int32) GetMaxWidth();
-
     CARAPI GetMaxWidth(
         /* [out] */ Int32* maxpixels);
 
@@ -1544,7 +1431,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_ems
      */
-    virtual CARAPI SetEms(
+    CARAPI SetEms(
         /* [in] */ Int32 ems);
 
     /**
@@ -1554,7 +1441,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_width
      */
-    virtual CARAPI SetWidth(
+    CARAPI SetWidth(
         /* [in] */ Int32 pixels);
 
     /**
@@ -1564,7 +1451,7 @@ public:
      * @attr ref android.R.styleable#TextView_lineSpacingExtra
      * @attr ref android.R.styleable#TextView_lineSpacingMultiplier
      */
-    virtual CARAPI SetLineSpacing(
+    CARAPI SetLineSpacing(
         /* [in] */ Float add,
         /* [in] */ Float mult);
 
@@ -1578,8 +1465,6 @@ public:
      *
      * @attr ref android.R.styleable#TextView_lineSpacingMultiplier
      */
-    virtual CARAPI_(Float) GetLineSpacingMultiplier();
-
     CARAPI GetLineSpacingMultiplier(
         /* [out] */ Float* multiplier);
 
@@ -1593,8 +1478,6 @@ public:
      *
      * @attr ref android.R.styleable#TextView_lineSpacingExtra
      */
-    virtual CARAPI_(Float) GetLineSpacingExtra();
-
     CARAPI GetLineSpacingExtra(
         /* [out] */ Float* extra);
 
@@ -1603,7 +1486,7 @@ public:
      * display buffer, upgrading it to BufferType.EDITABLE if it was
      * not already editable.
      */
-    virtual CARAPI Append(
+    CARAPI Append(
         /* [in] */ ICharSequence* text);
 
     /**
@@ -1611,7 +1494,7 @@ public:
      * display buffer, upgrading it to BufferType.EDITABLE if it was
      * not already editable.
      */
-    virtual CARAPI Append(
+    CARAPI Append(
         /* [in] */ ICharSequence* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
@@ -1629,7 +1512,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_freezesText
      */
-    virtual CARAPI SetFreezesText(
+    CARAPI SetFreezesText(
         /* [in] */ Boolean freezesText);
 
     /**
@@ -1640,21 +1523,19 @@ public:
      *
      * @see #setFreezesText
      */
-    virtual CARAPI_(Boolean) GetFreezesText();
-
     CARAPI GetFreezesText(
         /* [out] */ Boolean* text);
 
     /**
      * Sets the Factory used to create new Editables.
      */
-    virtual CARAPI SetEditableFactory(
+    CARAPI SetEditableFactory(
         /* [in] */ IEditableFactory* factory);
 
     /**
      * Sets the Factory used to create new Spannables.
      */
-    virtual CARAPI SetSpannableFactory(
+    CARAPI SetSpannableFactory(
         /* [in] */ ISpannableFactory* factory);
 
     /**
@@ -1668,7 +1549,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_text
      */
-    virtual CARAPI SetText(
+    CARAPI SetText(
         /* [in] */ ICharSequence* text);
 
     /**
@@ -1679,7 +1560,7 @@ public:
      *
      * @see #setText(CharSequence)
      */
-    virtual CARAPI SetTextKeepState(
+    CARAPI SetTextKeepState(
         /* [in] */ ICharSequence* text);
 
     /**
@@ -1690,7 +1571,7 @@ public:
      * @attr ref android.R.styleable#TextView_text
      * @attr ref android.R.styleable#TextView_bufferType
      */
-    virtual CARAPI SetText(
+    CARAPI SetText(
         /* [in] */ ICharSequence* text,
         /* [in] */ BufferType type);
 
@@ -1701,7 +1582,7 @@ public:
      * since the TextView has no way to know that the text
      * has changed and that it needs to invalidate and re-layout.
      */
-    virtual CARAPI SetText(
+    CARAPI SetText(
         /* [in] */ ArrayOf<Char32>* text,
         /* [in] */ Int32 start,
         /* [in] */ Int32 len);
@@ -1712,14 +1593,14 @@ public:
      *
      * @see #setText(CharSequence, android.widget.TextView.BufferType)
      */
-    virtual CARAPI SetTextKeepState(
+    CARAPI SetTextKeepState(
         /* [in] */ ICharSequence* text,
         /* [in] */ BufferType type);
 
-    virtual CARAPI SetText(
+    CARAPI SetText(
         /* [in] */ Int32 resid);
 
-    virtual CARAPI SetText(
+    CARAPI SetText(
         /* [in] */ Int32 resid,
         /* [in] */ BufferType type);
 
@@ -1730,7 +1611,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_hint
      */
-    virtual CARAPI SetHint(
+    CARAPI SetHint(
         /* [in] */ ICharSequence* hint);
 
     /**
@@ -1739,7 +1620,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_hint
      */
-    virtual CARAPI SetHint(
+    CARAPI SetHint(
         /* [in] */ Int32 resid);
 
     /**
@@ -1748,8 +1629,6 @@ public:
      *
      * @attr ref android.R.styleable#TextView_hint
      */
-    virtual CARAPI_(AutoPtr<ICharSequence>) GetHint();
-
     CARAPI GetHint(
         /* [out] */ ICharSequence** hint);
 
@@ -1766,7 +1645,7 @@ public:
      * @see android.text.InputType
      * @attr ref android.R.styleable#TextView_inputType
      */
-    virtual CARAPI SetInputType(
+    CARAPI SetInputType(
         /* [in] */ Int32 type);
 
     /**
@@ -1776,7 +1655,7 @@ public:
      * @see android.text.InputType
      * @attr ref android.R.styleable#TextView_inputType
      */
-    virtual CARAPI SetRawInputType(
+    CARAPI SetRawInputType(
         /* [in] */ Int32 type);
 
     /**
@@ -1785,8 +1664,6 @@ public:
      * @see #setInputType(Int32)
      * @see android.text.InputType
      */
-    virtual CARAPI_(Int32) GetInputType();
-
     CARAPI GetInputType(
         /* [out] */ Int32* type);
 
@@ -1798,7 +1675,7 @@ public:
      * @see android.view.inputmethod.EditorInfo
      * @attr ref android.R.styleable#TextView_imeOptions
      */
-    virtual CARAPI SetImeOptions(
+    CARAPI SetImeOptions(
         /* [in] */ Int32 imeOptions);
 
     /**
@@ -1807,8 +1684,6 @@ public:
      * @see #setImeOptions(Int32)
      * @see android.view.inputmethod.EditorInfo
      */
-    virtual CARAPI_(Int32) GetImeOptions();
-
     CARAPI GetImeOptions(
         /* [out] */ Int32* options);
 
@@ -1822,7 +1697,7 @@ public:
      * @attr ref android.R.styleable#TextView_imeActionLabel
      * @attr ref android.R.styleable#TextView_imeActionId
      */
-    virtual CARAPI SetImeActionLabel(
+    CARAPI SetImeActionLabel(
         /* [in] */ ICharSequence* label,
         /* [in] */ Int32 actionId);
 
@@ -1832,8 +1707,6 @@ public:
      * @see #setImeActionLabel
      * @see android.view.inputmethod.EditorInfo
      */
-    virtual CARAPI_(AutoPtr<ICharSequence>) GetImeActionLabel();
-
     CARAPI GetImeActionLabel(
         /* [out] */ ICharSequence** label);
 
@@ -1843,8 +1716,6 @@ public:
      * @see #setImeActionLabel
      * @see android.view.inputmethod.EditorInfo
      */
-    virtual CARAPI_(Int32) GetImeActionId();
-
     CARAPI GetImeActionId(
         /* [out] */ Int32* id);
 
@@ -1856,7 +1727,7 @@ public:
      * into the text view, even if it is multi-line; holding down the ALT
      * modifier will, however, allow the user to insert a newline character.
      */
-    virtual CARAPI SetOnEditorActionListener(
+    CARAPI SetOnEditorActionListener(
         /* [in] */ IOnEditorActionListener* l);
 
     /**
@@ -1878,7 +1749,7 @@ public:
      *
      * @see #setOnEditorActionListener
      */
-    virtual CARAPI OnEditorAction(
+    CARAPI OnEditorAction(
         /* [in] */ Int32 actionCode);
 
     /**
@@ -1890,7 +1761,7 @@ public:
      * @see EditorInfo#privateImeOptions
      * @attr ref android.R.styleable#TextView_privateImeOptions
      */
-    virtual CARAPI SetPrivateImeOptions(
+    CARAPI SetPrivateImeOptions(
         /* [in] */ const String& type);
 
     /**
@@ -1899,8 +1770,6 @@ public:
      * @see #setPrivateImeOptions(String)
      * @see EditorInfo#privateImeOptions
      */
-    virtual CARAPI_(String) GetPrivateImeOptions();
-
     CARAPI GetPrivateImeOptions(
         /* [out] */ String* options);
 
@@ -1915,7 +1784,7 @@ public:
      * @see EditorInfo#extras
      * @attr ref android.R.styleable#TextView_editorExtras
      */
-    virtual CARAPI SetInputExtras(
+    CARAPI SetInputExtras(
         /* [in] */ Int32 xmlResId);
 
     /**
@@ -1928,9 +1797,6 @@ public:
      * @see EditorInfo#extras
      * @attr ref android.R.styleable#TextView_editorExtras
      */
-    virtual CARAPI_(AutoPtr<IBundle>) GetInputExtras(
-        /* [in] */ Boolean create);
-
     CARAPI GetInputExtras(
         /* [in] */ Boolean create,
         /* [out] */ IBundle** bundle);
@@ -1940,8 +1806,6 @@ public:
      * {@link #setError}, or <code>null</code> if no error was set
      * or if it the error was cleared by the widget after user input.
      */
-    virtual CARAPI_(AutoPtr<ICharSequence>) GetError();
-
     CARAPI GetError(
         /* [out] */ ICharSequence** error);
 
@@ -1953,7 +1817,7 @@ public:
      * <code>error</code> is <code>null</code>, the error message and icon
      * will be cleared.
      */
-    virtual CARAPI SetError(
+    CARAPI SetError(
         /* [in] */ ICharSequence* error);
 
     /**
@@ -1965,7 +1829,7 @@ public:
      * If the <code>error</code> is <code>null</code>, the error message will
      * be cleared (and you should provide a <code>null</code> icon as well).
      */
-    virtual CARAPI SetError(
+    CARAPI SetError(
         /* [in] */ ICharSequence* error,
         /* [in] */ IDrawable* icon);
 
@@ -1975,14 +1839,12 @@ public:
      *
      * @attr ref android.R.styleable#TextView_maxLength
      */
-    virtual CARAPI SetFilters(
+    CARAPI SetFilters(
         /* [in] */ ArrayOf<Elastos::Droid::Text::IInputFilter*>* filters);
 
     /**
      * Returns the current list of input filters.
      */
-    virtual CARAPI_(AutoPtr<ArrayOf<Elastos::Droid::Text::IInputFilter*> >) GetFilters();
-
     CARAPI GetFilters(
         /* [out, callee] */ ArrayOf<Elastos::Droid::Text::IInputFilter*>** filters);
 
@@ -2003,8 +1865,6 @@ public:
      *
      * @attr ref android.R.styleable#TextView_textIsSelectable
      */
-    virtual CARAPI_(Boolean) IsTextSelectable();
-
     CARAPI IsTextSelectable(
         /* [out] */ Boolean* selectable);
 
@@ -2020,15 +1880,13 @@ public:
      *
      * @param selectable Whether or not the content of this TextView should be selectable.
      */
-    virtual CARAPI SetTextIsSelectable(
+    CARAPI SetTextIsSelectable(
         /* [in] */ Boolean selectable);
 
     /**
      * Return the number of lines of text, or 0 if the internal Layout has not
      * been built.
      */
-    virtual CARAPI_(Int32) GetLineCount();
-
     CARAPI GetLineCount(
         /* [out] */ Int32* count);
 
@@ -2041,10 +1899,6 @@ public:
      * @param bounds Optional. If not null, it returns the extent of the line
      * @return the Y-coordinate of the baseline
      */
-    virtual CARAPI_(Int32) GetLineBounds(
-        /* [in] */ Int32 line,
-        /* [in] */ IRect* bounds);
-
     CARAPI GetLineBounds(
         /* [in] */ Int32 line,
         /* [in] */ IRect* bounds,
@@ -2055,22 +1909,18 @@ public:
      * can be recorded.
      * @hide
      */
-    virtual CARAPI ResetErrorChangedFlag();
+    CARAPI ResetErrorChangedFlag();
 
     /**
      * @hide
      */
-    virtual CARAPI HideErrorIfUnchanged();
+    CARAPI HideErrorIfUnchanged();
 
     /**
      * If this TextView contains editable content, extract a portion of it
      * based on the information in <var>request</var> in to <var>outText</var>.
      * @return Returns true if the text was successfully extracted, else false.
      */
-    virtual CARAPI_(Boolean) ExtractText(
-        /* [in] */ IExtractedTextRequest* request,
-        /* [in] */ IExtractedText* outText);
-
     CARAPI ExtractText(
         /* [in] */ IExtractedTextRequest* request,
         /* [in] */ IExtractedText* outText,
@@ -2080,13 +1930,13 @@ public:
      * Apply to this text view the given extracted text, as previously
      * returned by {@link #extractText(ExtractedTextRequest, ExtractedText)}.
      */
-    virtual CARAPI SetExtractedText(
+    CARAPI SetExtractedText(
         /* [in] */ IExtractedText* text);
 
     /**
      * @hide
      */
-    virtual CARAPI SetExtracting(
+    CARAPI SetExtracting(
         /* [in] */ IExtractedTextRequest* req);
 
     /**
@@ -2099,7 +1949,7 @@ public:
      *
      * @param text The auto complete text the user has selected.
      */
-    virtual CARAPI OnCommitCompletion(
+    CARAPI OnCommitCompletion(
         /* [in] */ ICompletionInfo* text);
 
     /**
@@ -2110,24 +1960,24 @@ public:
      *
      * @param info The auto correct info about the text that was corrected.
      */
-    virtual CARAPI OnCommitCorrection(
+    CARAPI OnCommitCorrection(
         /* [in] */ ICorrectionInfo* info);
 
-    virtual CARAPI BeginBatchEdit();
+    CARAPI BeginBatchEdit();
 
-    virtual CARAPI EndBatchEdit();
+    CARAPI EndBatchEdit();
 
     /**
      * Called by the framework in response to a request to begin a batch
      * of edit operations through a call to link {@link #beginBatchEdit()}.
      */
-    virtual CARAPI OnBeginBatchEdit();
+    CARAPI OnBeginBatchEdit();
 
     /**
      * Called by the framework in response to a request to end a batch
      * of edit operations through a call to link {@link #endBatchEdit}.
      */
-    virtual CARAPI OnEndBatchEdit();
+    CARAPI OnEndBatchEdit();
 
     /**
      * Called by the framework in response to a private command from the
@@ -2139,10 +1989,6 @@ public:
      * @param data Any additional data for the command.  This may be null.
      * @return Return true if you handled the command, else false.
      */
-    virtual CARAPI_(Boolean) OnPrivateIMECommand(
-        /* [in] */ const String& action,
-        /* [in] */ IBundle* data);
-
     CARAPI OnPrivateIMECommand(
         /* [in] */ const String& action,
         /* [in] */ IBundle* data,
@@ -2155,7 +2001,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_includeFontPadding
      */
-    virtual CARAPI SetIncludeFontPadding(
+    CARAPI SetIncludeFontPadding(
         /* [in] */ Boolean includepad);
 
     /**
@@ -2166,8 +2012,6 @@ public:
      *
      * @attr ref android.R.styleable#TextView_includeFontPadding
      */
-    virtual CARAPI_(Boolean) GetIncludeFontPadding();
-
     CARAPI GetIncludeFontPadding(
         /* [out] */ Boolean* padding);
 
@@ -2175,9 +2019,6 @@ public:
      * Move the point, specified by the offset, into the view if it is needed.
      * This has to be called after layout. Returns true if anything changed.
      */
-    virtual CARAPI_(Boolean) BringPointIntoView(
-        /* [in] */ Int32 offset);
-
     CARAPI BringPointIntoView(
         /* [in] */ Int32 offset,
         /* [out] */ Boolean* result);
@@ -2190,32 +2031,24 @@ public:
      *
      * @return True if the cursor was actually moved, false otherwise.
      */
-    virtual CARAPI_(Boolean) MoveCursorToVisibleOffset();
-
     CARAPI MoveCursorToVisibleOffset(
         /* [out] */ Boolean* result);
 
     /**
      * Convenience for {@link Selection#getSelectionStart}.
      */
-    virtual CARAPI_(Int32) GetSelectionStart();
-
     CARAPI GetSelectionStart(
         /* [out] */ Int32* start);
 
     /**
      * Convenience for {@link Selection#getSelectionEnd}.
      */
-    virtual CARAPI_(Int32) GetSelectionEnd();
-
     CARAPI GetSelectionEnd(
         /* [out] */ Int32* end);
 
     /**
      * Return true iff there is a selection inside this text view.
      */
-    virtual CARAPI_(Boolean) HasSelection();
-
     CARAPI HasSelection(
         /* [out] */ Boolean* result);
 
@@ -2225,7 +2058,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_singleLine
      */
-    virtual CARAPI SetSingleLine();
+    CARAPI SetSingleLine();
 
     /**
      * Sets the properties of this field to transform input to ALL CAPS
@@ -2239,7 +2072,7 @@ public:
      * @see #setTransformationMethod(TransformationMethod)
      * @attr ref android.R.styleable#TextView_textAllCaps
      */
-    virtual CARAPI SetAllCaps(
+    CARAPI SetAllCaps(
         /* [in] */ Boolean allCaps);
 
     /**
@@ -2252,7 +2085,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_singleLine
      */
-    virtual CARAPI SetSingleLine(
+    CARAPI SetSingleLine(
         /* [in] */ Boolean singleLine);
 
     /**
@@ -2264,7 +2097,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_ellipsize
      */
-    virtual CARAPI SetEllipsize(
+    CARAPI SetEllipsize(
         /* [in] */ TextUtilsTruncateAt where);
 
     /**
@@ -2273,7 +2106,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_marqueeRepeatLimit
      */
-    virtual CARAPI SetMarqueeRepeatLimit(
+    CARAPI SetMarqueeRepeatLimit(
         /* [in] */ Int32 marqueeLimit);
 
     /**
@@ -2287,8 +2120,6 @@ public:
      *
      * @attr ref android.R.styleable#TextView_marqueeRepeatLimit
      */
-    virtual CARAPI_(Int32) GetMarqueeRepeatLimit();
-
     CARAPI GetMarqueeRepeatLimit(
         /* [out] */ Int32* marqueeLimit);
 
@@ -2296,8 +2127,6 @@ public:
      * Returns where, if anywhere, words that are longer than the view
      * is wide should be ellipsized.
      */
-    virtual CARAPI_(TextUtilsTruncateAt) GetEllipsize();
-
     CARAPI GetEllipsize(
         /* [out] */ TextUtilsTruncateAt* size);
 
@@ -2307,7 +2136,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_selectAllOnFocus
      */
-    virtual CARAPI SetSelectAllOnFocus(
+    CARAPI SetSelectAllOnFocus(
         /* [in] */ Boolean selectAllOnFocus);
 
     /**
@@ -2315,7 +2144,7 @@ public:
      *
      * @attr ref android.R.styleable#TextView_cursorVisible
      */
-    virtual CARAPI SetCursorVisible(
+    CARAPI SetCursorVisible(
         /* [in] */ Boolean visible);
 
     /**
@@ -2325,8 +2154,6 @@ public:
      *
      * @attr ref android.R.styleable#TextView_cursorVisible
      */
-    virtual CARAPI_(Boolean) IsCursorVisible();
-
     CARAPI IsCursorVisible(
         /* [out] */ Boolean* visible);
 
@@ -2338,9 +2165,6 @@ public:
      * {@link android.R.id#paste}, {@link android.R.id#copyUrl},
      * or {@link android.R.id#switchInputMethod}.
      */
-    virtual CARAPI_(Boolean) OnTextContextMenuItem(
-        /* [in] */ Int32 id);
-
     CARAPI OnTextContextMenuItem(
         /* [in] */ Int32 id,
         /* [out] */ Boolean* result);
@@ -2354,7 +2178,7 @@ public:
      * if there are any text changed listeners forces the buffer type to
      * Editable if it would not otherwise be and does call this method.
      */
-    virtual CARAPI AddTextChangedListener(
+    CARAPI AddTextChangedListener(
         /* [in] */ ITextWatcher* watcher);
 
 
@@ -2363,7 +2187,7 @@ public:
      * methods are called
      * whenever this TextView's text changes.
      */
-    virtual CARAPI RemoveTextChangedListener(
+    CARAPI RemoveTextChangedListener(
         /* [in] */ ITextWatcher* watcher);
 
     /**
@@ -2371,7 +2195,7 @@ public:
      * BaseInputConnection.removeComposingSpans()} to remove any IME composing
      * state from this text view.
      */
-    virtual CARAPI ClearComposingText();
+    CARAPI ClearComposingText();
 
     /**
      * Returns true, only while processing a touch gesture, if the initial
@@ -2379,12 +2203,10 @@ public:
      * its selection changed.  Only valid while processing the touch gesture
      * of interest.
      */
-    virtual CARAPI_(Boolean) DidTouchFocusSelect();
-
     CARAPI DidTouchFocusSelect(
         /* [out] */ Boolean* result);
 
-    virtual CARAPI SetScroller(
+    CARAPI SetScroller(
         /* [in] */ IScroller* s);
 
     /**
@@ -2400,8 +2222,6 @@ public:
     // TODO: Support multi-locale
     // TODO: Update the text services locale immediately after the keyboard locale is switched
     // by catching intent of keyboard switch event
-    virtual CARAPI_(AutoPtr<ILocale>) GetTextServicesLocale();
-
     CARAPI GetTextServicesLocale(
         /* [out] */ ILocale** locale);
 
@@ -2410,8 +2230,6 @@ public:
      * Made available to achieve a consistent behavior.
      * @hide
      */
-    virtual CARAPI_(AutoPtr<IWordIterator>) GetWordIterator();
-
     CARAPI GetWordIterator(
         /* [out] */ IWordIterator** iterator);
 
@@ -2422,17 +2240,13 @@ public:
      *
      * @hide
      */
-    virtual CARAPI_(AutoPtr<ICharSequence>) GetTextForAccessibility();
-
     CARAPI GetTextForAccessibility(
-        /* [out] */ ICharSequence** text);
+        /* [out] */ ICharSequence** result);
 
     /**
      * Returns whether this text view is a current input method target.  The
      * default implementation just checks with {@link InputMethodManager}.
      */
-    virtual CARAPI_(Boolean) IsInputMethodTarget();
-
     CARAPI IsInputMethodTarget(
         /* [out] */ Boolean* result);
 
@@ -2458,8 +2272,6 @@ public:
      *
      * @return true if the suggestions popup window is enabled, based on the inputType.
      */
-    virtual CARAPI_(Boolean) IsSuggestionsEnabled();
-
     CARAPI IsSuggestionsEnabled(
         /* [out] */ Boolean* enabled);
 
@@ -2487,7 +2299,7 @@ public:
      * {@link android.R.attr#selectAllOnFocus} flag has been set. The content is highlighted in
      * that case, to allow for quick replacement.
      */
-    virtual CARAPI SetCustomSelectionActionModeCallback(
+    CARAPI SetCustomSelectionActionModeCallback(
         /* [in] */ IActionModeCallback* actionModeCallback);
 
     /**
@@ -2495,8 +2307,6 @@ public:
      *
      * @return The current custom selection callback.
      */
-    virtual CARAPI_(AutoPtr<IActionModeCallback>) GetCustomSelectionActionModeCallback();
-
     CARAPI GetCustomSelectionActionModeCallback(
         /* [out] */ IActionModeCallback** actionModeCallback);
 
@@ -2509,25 +2319,21 @@ public:
      * @return the character offset for the character whose position is closest to the specified
      *  position. Returns -1 if there is no layout.
      */
-    virtual CARAPI_(Int32) GetOffsetForPosition(
-        /* [in] */ Float x,
-        /* [in] */ Float y);
-
     CARAPI GetOffsetForPosition(
         /* [in] */ Float x,
         /* [in] */ Float y,
         /* [out] */ Int32* offset);
 
-    virtual CARAPI_(Int32) GetHorizontalOffsetForDrawables();
-
     CARAPI GetHorizontalOffsetForDrawables(
         /* [out] */ Int32* offset);
 
-    virtual CARAPI_(AutoPtr<ILocale>) GetSpellCheckerLocale();
+    virtual CARAPI GetSpellCheckerLocale(
+        /* [out] */ ILocale** local);
 
-    virtual CARAPI_(Boolean) PerformAccessibilityAction(
+    CARAPI PerformAccessibilityAction(
         /* [in] */ Int32 action,
-        /* [in] */ IBundle* arguments);
+        /* [in] */ IBundle* arguments,
+        /* [out] */ Boolean* res);
 
 public: /* override */
 
@@ -2559,7 +2365,8 @@ public: /* override */
     virtual CARAPI InvalidateDrawable(
         /* [in] */ IDrawable* drawable);
 
-    virtual CARAPI_(Boolean) HasOverlappingRendering();
+    virtual CARAPI HasOverlappingRendering(
+        /* [out] */ Boolean* res);
 
     virtual CARAPI GetFocusedRect(
         /* [in] */ IRect* r);
@@ -2588,14 +2395,16 @@ public: /* override */
         /* [in] */ IKeyEvent* event,
         /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) OnCheckIsTextEditor();
+    virtual CARAPI OnCheckIsTextEditor(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(AutoPtr<IInputConnection>) OnCreateInputConnection(
-        /* [in] */ IEditorInfo* outAttrs);
+    virtual CARAPI OnCreateInputConnection(
+        /* [in] */ IEditorInfo* outAttrs,
+        /* [out] */ IInputConnection** res);
 
     virtual CARAPI ComputeScroll();
 
-    virtual CARAPI_(void) Debug(
+    virtual CARAPI Debug(
         /* [in] */ Int32 depth);
 
     /**
@@ -2613,25 +2422,29 @@ public: /* override */
     virtual CARAPI SetSelected(
         /* [in] */ Boolean selected);
 
-    virtual CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) OnGenericMotionEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI OnGenericMotionEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI CancelLongPress();
 
-    virtual CARAPI_(Boolean) OnTrackballEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI OnTrackballEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI FindViewsWithText(
         /* [in, out] */ IArrayList* outViews,
         /* [in] */ ICharSequence* searched,
         /* [in] */ Int32 flags);
 
-    virtual CARAPI_(Boolean) OnKeyShortcut(
+    virtual CARAPI OnKeyShortcut(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI OnPopulateAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
@@ -2645,20 +2458,25 @@ public: /* override */
     virtual CARAPI SendAccessibilityEvent(
         /* [in] */ Int32 eventType);
 
-    virtual CARAPI_(Boolean) PerformLongClick();
+    virtual CARAPI PerformLongClick(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) OnDragEvent(
-        /* [in] */ IDragEvent* event);
+    virtual CARAPI OnDragEvent(
+        /* [in] */ IDragEvent* event,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI OnResolveDrawables(
         /* [in] */ Int32 layoutDirection);
 
-    virtual CARAPI_(AutoPtr<ICharSequence>) GetIterableTextForAccessibility();
+    virtual CARAPI GetIterableTextForAccessibility(
+        /* [out] */ ICharSequence** res);
 
-    virtual CARAPI_(AutoPtr<ITextSegmentIterator>) GetIteratorForGranularity(
-        /* [in] */ Int32 granularity);
+    virtual CARAPI GetIteratorForGranularity(
+        /* [in] */ Int32 granularity,
+        /* [out] */ ITextSegmentIterator** res);
 
-    virtual CARAPI_(Int32) GetAccessibilitySelectionStart();
+    virtual CARAPI GetAccessibilitySelectionStart(
+        /* [out] */ Int32* res);
 
     virtual CARAPI SetAccessibilitySelection(
         /* [in] */ Int32 start,
@@ -2667,9 +2485,11 @@ public: /* override */
     virtual CARAPI OnRtlPropertiesChanged(
         /* [in] */ Int32 layoutDirection);
 
-    virtual CARAPI_(Boolean) IsAccessibilitySelectionExtendable();
+    virtual CARAPI IsAccessibilitySelectionExtendable(
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Int32) GetAccessibilitySelectionEnd();
+    virtual CARAPI GetAccessibilitySelectionEnd(
+        /* [out] */ Int32* res);
 
 public: /*package*/
 
@@ -3015,25 +2835,6 @@ protected:
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyleAttr,
         /* [in] */ Int32 defStyleRes);
-
-     CARAPI Init(
-         /* [in] */ IContext* context);
-
-     CARAPI Init(
-         /* [in] */ IContext* context,
-         /* [in] */ IAttributeSet* attrs);
-
-     CARAPI Init(
-         /* [in] */ IContext* context,
-         /* [in] */ IAttributeSet* attrs,
-         /* [in] */ Int32 defStyleAttr);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyleAttr,
-        /* [in] */ Int32 defStyleRes);
-
 
 private:
     CARAPI_(void) SetTypefaceFromAttrs(

@@ -268,7 +268,8 @@ ECode AutoCompleteTextView::constructor(
 
     // Always turn on the auto complete input type flag, since it
     // makes no sense to use this widget without it.
-    Int32 inputType = GetInputType();
+    Int32 inputType;
+    GetInputType(&inputType);
     if ((inputType&IInputType::TYPE_MASK_CLASS)
             == IInputType::TYPE_CLASS_TEXT) {
         inputType |= IInputType::TYPE_TEXT_FLAG_AUTO_COMPLETE;

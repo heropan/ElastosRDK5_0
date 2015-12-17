@@ -26,6 +26,15 @@ module
     interface ITextModifyOperation {
     }
 
+    interface ITextViewPositionListener {
+        UpdatePosition(
+            [in] Int32 parentPositionX,
+            [in] Int32 parentPositionY,
+            [in] Boolean parentPositionChanged,
+            [in] Boolean parentScrolled);
+    }
+
+
     interface IEditor {
 
         SetError(

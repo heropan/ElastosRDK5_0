@@ -827,10 +827,10 @@ void Marquee::Start(
     if (textView->mLayout != NULL) {
         mStatus = MARQUEE_STARTING;
         mScroll = 0.0f;
-        Int32 w;
+        Int32 w, l, r;
         IVIEW_PROBE(textView)->GetWidth(&w);
-        Int32 l = textView->GetCompoundPaddingLeft();
-        Int32 r = textView->GetCompoundPaddingRight();
+        textView->GetCompoundPaddingLeft(&l);
+        textView->GetCompoundPaddingRight(&r);
         Int32 textWidth = w - l - r;
         Float lineWidth;
         textView->mLayout->GetLineWidth(0, &lineWidth);
@@ -927,9 +927,9 @@ ECode ChangeWatcher::BeforeTextChanged(
     CAccessibilityManager::GetInstance(mHost->mContext, (IAccessibilityManager**)&mgr);
     Boolean isEnabled = TRUE;
     mgr->IsEnabled(&isEnabled);
-
-    if (isEnabled &&
-        ((!mHost->IsPasswordInputType(mHost->GetInputType()) && !mHost->HasPasswordTransformationMethod())
+    Int32 inputType;
+    if (isEnabled && ((!mHost->IsPasswordInputType
+        ((mHost->GetInputType(&inputType), inputType)) && !mHost->HasPasswordTransformationMethod())
                     || mHost->ShouldSpeakPasswordsForAccessibility())) {
         mBeforeText = buffer;
     }
@@ -1801,7 +1801,7 @@ ECode TextView::InitFromAttributes(
         == (IInputType::TYPE_CLASS_TEXT | IInputType::TYPE_TEXT_VARIATION_WEB_PASSWORD);
     Boolean numberPasswordInputType = variation
         == (IInputType::TYPE_CLASS_NUMBER | IInputType::TYPE_NUMBER_VARIATION_PASSWORD);
-
+    Boolean isTextSelectable;
     if (inputMethod != NULL) {
         assert(0 && "TODO");
 //        Class<?> c;
@@ -1904,7 +1904,7 @@ ECode TextView::InitFromAttributes(
         /*mEditor->mKeyListener = IKeyListener::Probe(listener);
         mEditor->mInputType = inputType;*/
     }
-    else if (IsTextSelectable()) {
+    else if (IsTextSelectable(&isTextSelectable), isTextSelectable) {
         // Prevent text changes from keyboard.
         assert(0);
         /*if (mEditor != NULL) {
@@ -1974,7 +1974,8 @@ ECode TextView::InitFromAttributes(
 
     ApplySingleLine(singleLine, singleLine, singleLine);
 
-    AutoPtr<IKeyListener> keyListener = GetKeyListener();
+    AutoPtr<IKeyListener> keyListener;
+    GetKeyListener((IKeyListener**)&keyListener);
     if (singleLine && keyListener == NULL && ellipsize < 0) {
         ellipsize = Elastos::Droid::Text::TextUtilsTruncateAt_END; // END
     }
@@ -2081,7 +2082,8 @@ ECode TextView::InitFromAttributes(
     ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
             attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
 
-    keyListener = GetKeyListener();
+    keyListener = NULL;
+    GetKeyListener((IKeyListener**)&keyListener);
     Boolean focusable = mMovement != NULL || keyListener != NULL;
     Boolean isClickable, isLongClickable;
     Boolean clickable = focusable || (IsClickable(&isClickable), isClickable);
@@ -2297,11 +2299,6 @@ AutoPtr<IMovementMethod> TextView::GetDefaultMovementMethod()
     return NULL;
 }
 
-AutoPtr<ICharSequence> TextView::GetText()
-{
-    return mText;
-}
-
 ECode TextView::GetText(
     /* [out] */ ICharSequence** text)
 {
@@ -2311,24 +2308,12 @@ ECode TextView::GetText(
     return NOERROR;
 }
 
-Int32 TextView::GetLength()
-{
-    Int32 len;
-    mText->GetLength(&len);
-    return len;
-}
-
 ECode TextView::GetLength(
     /* [out] */ Int32* length)
 {
     VALIDATE_NOT_NULL(length)
     mText->GetLength(length);
     return NOERROR;
-}
-
-AutoPtr<IEditable> TextView::GetEditableText()
-{
-    return AutoPtr<IEditable>(IEditable::Probe(mText));
 }
 
 ECode TextView::GetEditableText(
@@ -2340,24 +2325,14 @@ ECode TextView::GetEditableText(
     return NOERROR;
 }
 
-Int32 TextView::GetLineHeight()
-{
-    Int32 spacing;
-    IPaint::Probe(mTextPaint)->GetFontMetricsInt(NULL, &spacing);
-    return Elastos::Core::Math::Round(spacing * mSpacingMult + mSpacingAdd);
-}
-
 ECode TextView::GetLineHeight(
     /* [out] */ Int32* height)
 {
     VALIDATE_NOT_NULL(height);
-    *height = GetLineHeight();
+    Int32 spacing;
+    IPaint::Probe(mTextPaint)->GetFontMetricsInt(NULL, &spacing);
+    *height = Elastos::Core::Math::Round(spacing * mSpacingMult + mSpacingAdd);
     return NOERROR;
-}
-
-AutoPtr<ILayout> TextView::GetLayout()
-{
-    return mLayout;
 }
 
 ECode TextView::GetLayout(
@@ -2407,19 +2382,17 @@ void TextView::SetUndoManager(
     }
 }
 
-AutoPtr<IKeyListener> TextView::GetKeyListener()
-{
-    assert(0);
-    //return mEditor == NULL ? NULL : mEditor->mKeyListener;
-    return NULL;
-}
-
 ECode TextView::GetKeyListener(
     /* [out] */ IKeyListener** listener)
 {
     VALIDATE_NOT_NULL(listener)
-    *listener = GetKeyListener();
-    REFCOUNT_ADD(*listener)
+    if (mEditor == NULL) {
+        *listener = NULL;
+    } else {
+        assert(0);
+        //*listener = mEditor->mKeyListener;
+        REFCOUNT_ADD(*listener)
+    }
     return NOERROR;
 }
 
@@ -2474,11 +2447,6 @@ void TextView::SetKeyListenerOnly(
     }*/
 }
 
-AutoPtr<IMovementMethod> TextView::GetMovementMethod()
-{
-    return mMovement;
-}
-
 ECode TextView::GetMovementMethod(
     /* [out] */ IMovementMethod** movement)
 {
@@ -2525,11 +2493,6 @@ void TextView::FixFocusableAndClickableSettings()
     }
 }
 
-AutoPtr<ITransformationMethod> TextView::GetTransformationMethod()
-{
-    return mTransformation;
-}
-
 ECode TextView::GetTransformationMethod(
     /* [out] */ ITransformationMethod** method)
 {
@@ -2559,7 +2522,9 @@ ECode TextView::SetTransformationMethod(
 
     ITransformationMethod2* method2 = ITransformationMethod2::Probe(method);
     if (method2) {
-        mAllowTransformationLengthChange = !IsTextSelectable() && !(IEditText::Probe(mText.Get()));
+        Boolean isTextSelectable;
+        IsTextSelectable(&isTextSelectable);
+        mAllowTransformationLengthChange = !isTextSelectable && !(IEditText::Probe(mText.Get()));
         method2->SetLengthChangesAllowed(mAllowTransformationLengthChange);
     } else {
         mAllowTransformationLengthChange = FALSE;
@@ -2573,33 +2538,18 @@ ECode TextView::SetTransformationMethod(
     return NOERROR;
 }
 
-Int32 TextView::GetCompoundPaddingTop()
-{
-    AutoPtr<Drawables> dr = mDrawables;
-    if (dr == NULL || dr->mDrawableTop == NULL) {
-        return mPaddingTop;
-    }
-    else {
-        return mPaddingTop + dr->mDrawablePadding + dr->mDrawableSizeTop;
-    }
-}
-
 ECode TextView::GetCompoundPaddingTop(
     /* [out] */ Int32* top)
 {
     VALIDATE_NOT_NULL(top)
-    *top = GetCompoundPaddingTop();
-    return NOERROR;
-}
-
-Int32 TextView::GetCompoundPaddingBottom()
-{
     AutoPtr<Drawables> dr = mDrawables;
-    if (dr == NULL || dr->mDrawableBottom == NULL) {
-        return mPaddingBottom;
+    if (dr == NULL || dr->mDrawableTop == NULL) {
+        *top = mPaddingTop;
+        return NOERROR;
     }
     else {
-        return mPaddingBottom + dr->mDrawablePadding + dr->mDrawableSizeBottom;
+        *top = mPaddingTop + dr->mDrawablePadding + dr->mDrawableSizeTop;
+        return NOERROR;
     }
 }
 
@@ -2607,18 +2557,14 @@ ECode TextView::GetCompoundPaddingBottom(
     /* [out] */ Int32* bottom)
 {
     VALIDATE_NOT_NULL(bottom)
-    *bottom = GetCompoundPaddingBottom();
-    return NOERROR;
-}
-
-Int32 TextView::GetCompoundPaddingLeft()
-{
     AutoPtr<Drawables> dr = mDrawables;
-    if (dr == NULL || dr->mDrawableLeft == NULL) {
-        return mPaddingLeft;
+    if (dr == NULL || dr->mDrawableBottom == NULL) {
+        *bottom = mPaddingBottom;
+        return NOERROR;
     }
     else {
-        return mPaddingLeft + dr->mDrawablePadding + dr->mDrawableSizeLeft;
+        *bottom = mPaddingBottom + dr->mDrawablePadding + dr->mDrawableSizeBottom;
+        return NOERROR;
     }
 }
 
@@ -2626,18 +2572,14 @@ ECode TextView::GetCompoundPaddingLeft(
     /* [out] */ Int32* left)
 {
     VALIDATE_NOT_NULL(left)
-    *left = GetCompoundPaddingLeft();
-    return NOERROR;
-}
-
-Int32 TextView::GetCompoundPaddingRight()
-{
     AutoPtr<Drawables> dr = mDrawables;
-    if (dr == NULL || dr->mDrawableRight == NULL) {
-        return mPaddingRight;
+    if (dr == NULL || dr->mDrawableLeft == NULL) {
+        *left = mPaddingLeft;
+        return NOERROR;
     }
     else {
-        return mPaddingRight + dr->mDrawablePadding + dr->mDrawableSizeRight;
+        *left = mPaddingLeft + dr->mDrawablePadding + dr->mDrawableSizeLeft;
+        return NOERROR;
     }
 }
 
@@ -2645,106 +2587,66 @@ ECode TextView::GetCompoundPaddingRight(
     /* [out] */ Int32* right)
 {
     VALIDATE_NOT_NULL(right)
-    *right = GetCompoundPaddingRight();
-    return NOERROR;
-}
-
-Int32 TextView::GetCompoundPaddingStart()
-{
-    ResolveDrawables();
-    Int32 direction;
-    switch(GetLayoutDirection(&direction), direction) {
-        default:
-        case IView::LAYOUT_DIRECTION_LTR:
-            return GetCompoundPaddingLeft();
-        case IView::LAYOUT_DIRECTION_RTL:
-            return GetCompoundPaddingRight();
+    AutoPtr<Drawables> dr = mDrawables;
+    if (dr == NULL || dr->mDrawableRight == NULL) {
+        *right = mPaddingRight;
+        return NOERROR;
     }
-    return 0;
+    else {
+        *right = mPaddingRight + dr->mDrawablePadding + dr->mDrawableSizeRight;
+        return NOERROR;
+    }
 }
 
 ECode TextView::GetCompoundPaddingStart(
     /* [out] */ Int32* start)
 {
     VALIDATE_NOT_NULL(start)
-    *start = GetCompoundPaddingStart();
-    return NOERROR;
-}
-
-Int32 TextView::GetCompoundPaddingEnd()
-{
     ResolveDrawables();
     Int32 direction;
     switch(GetLayoutDirection(&direction), direction) {
         default:
         case IView::LAYOUT_DIRECTION_LTR:
-            return GetCompoundPaddingRight();
+        {
+            return GetCompoundPaddingLeft(start);
+        }
         case IView::LAYOUT_DIRECTION_RTL:
-            return GetCompoundPaddingLeft();
+        {
+            return GetCompoundPaddingRight(start);
+        }
+
     }
-    return 0;
+    *start = 0;
+    return NOERROR;
 }
 
 ECode TextView::GetCompoundPaddingEnd(
     /* [out] */ Int32* end)
 {
     VALIDATE_NOT_NULL(end)
-    *end = GetCompoundPaddingEnd();
+    ResolveDrawables();
+    Int32 direction;
+    switch(GetLayoutDirection(&direction), direction) {
+        default:
+        case IView::LAYOUT_DIRECTION_LTR:
+        {
+            return GetCompoundPaddingRight(end);
+        }
+        case IView::LAYOUT_DIRECTION_RTL:
+        {
+            return GetCompoundPaddingLeft(end);
+        }
+    }
+    *end = 0;
     return NOERROR;
-}
-
-Int32 TextView::GetExtendedPaddingTop()
-{
-    if (mMaxMode != LINES) {
-        return GetCompoundPaddingTop();
-    }
-
-    if (!mLayout) {
-        AssumeLayout();
-    }
-
-    Int32 number;
-    mLayout->GetLineCount(&number);
-    if (number <= mMaximum) {
-        return GetCompoundPaddingTop();
-    }
-
-    Int32 top = GetCompoundPaddingTop();
-    Int32 bottom = GetCompoundPaddingBottom();
-    Int32 height;
-    GetHeight(&height);
-    Int32 viewht = height - top - bottom;
-    Int32 layoutht;
-    mLayout->GetLineTop(mMaximum, &layoutht);
-
-    if (layoutht >= viewht) {
-        return top;
-    }
-
-    Int32 gravity = mGravity & IGravity::VERTICAL_GRAVITY_MASK;
-    if (gravity == IGravity::TOP) {
-        return top;
-    }
-    else if (gravity == IGravity::BOTTOM) {
-        return top + viewht - layoutht;
-    }
-    else { // (gravity == IGravity::CENTER_VERTICAL)
-        return top + (viewht - layoutht) / 2;
-    }
 }
 
 ECode TextView::GetExtendedPaddingTop(
     /* [out] */ Int32* top)
 {
     VALIDATE_NOT_NULL(top)
-    *top = GetExtendedPaddingTop();
-    return NOERROR;
-}
-
-Int32 TextView::GetExtendedPaddingBottom()
-{
     if (mMaxMode != LINES) {
-        return GetCompoundPaddingBottom();
+        return GetCompoundPaddingTop(top);
     }
 
     if (!mLayout) {
@@ -2754,30 +2656,35 @@ Int32 TextView::GetExtendedPaddingBottom()
     Int32 number;
     mLayout->GetLineCount(&number);
     if (number <= mMaximum) {
-        return GetCompoundPaddingBottom();
+        return GetCompoundPaddingTop(top);
     }
 
-    Int32 top = GetCompoundPaddingTop();
-    Int32 bottom = GetCompoundPaddingBottom();
+    Int32 compoundPaddingTop, bottom;
+    GetCompoundPaddingTop(&compoundPaddingTop);
+    GetCompoundPaddingBottom(&bottom);
     Int32 height;
     GetHeight(&height);
-    Int32 viewht = height - top - bottom;
+    Int32 viewht = height - compoundPaddingTop - bottom;
     Int32 layoutht;
     mLayout->GetLineTop(mMaximum, &layoutht);
 
     if (layoutht >= viewht) {
-        return bottom;
+        *top = compoundPaddingTop;
+        return NOERROR;
     }
 
     Int32 gravity = mGravity & IGravity::VERTICAL_GRAVITY_MASK;
     if (gravity == IGravity::TOP) {
-        return bottom + viewht - layoutht;
+        *top = compoundPaddingTop;
+        return NOERROR;
     }
     else if (gravity == IGravity::BOTTOM) {
-        return bottom;
+        *top = compoundPaddingTop + viewht - layoutht;
+        return NOERROR;
     }
     else { // (gravity == IGravity::CENTER_VERTICAL)
-        return bottom + (viewht - layoutht) / 2;
+        *top = compoundPaddingTop + (viewht - layoutht) / 2;
+        return NOERROR;
     }
 }
 
@@ -2785,85 +2692,92 @@ ECode TextView::GetExtendedPaddingBottom(
     /* [out] */ Int32* bottom)
 {
     VALIDATE_NOT_NULL(bottom)
-    *bottom = GetExtendedPaddingBottom();
-    return NOERROR;
-}
+    if (mMaxMode != LINES) {
+        return GetCompoundPaddingBottom(bottom);
+    }
 
-Int32 TextView::GetTotalPaddingLeft()
-{
-    return GetCompoundPaddingLeft();
+    if (!mLayout) {
+        AssumeLayout();
+    }
+
+    Int32 number;
+    mLayout->GetLineCount(&number);
+    if (number <= mMaximum) {
+        return GetCompoundPaddingBottom(bottom);
+    }
+
+    Int32 top, compoundPaddingBottom;
+    GetCompoundPaddingTop(&top);
+    GetCompoundPaddingBottom(&compoundPaddingBottom);
+    Int32 height;
+    GetHeight(&height);
+    Int32 viewht = height - top - compoundPaddingBottom;
+    Int32 layoutht;
+    mLayout->GetLineTop(mMaximum, &layoutht);
+
+    if (layoutht >= viewht) {
+        *bottom = compoundPaddingBottom;
+        return NOERROR;
+    }
+
+    Int32 gravity = mGravity & IGravity::VERTICAL_GRAVITY_MASK;
+    if (gravity == IGravity::TOP) {
+        *bottom = compoundPaddingBottom + viewht - layoutht;
+        return NOERROR;
+    }
+    else if (gravity == IGravity::BOTTOM) {
+        *bottom = compoundPaddingBottom;
+        return NOERROR;
+    }
+    else { // (gravity == IGravity::CENTER_VERTICAL)
+        *bottom = compoundPaddingBottom + (viewht - layoutht) / 2;
+        return NOERROR;
+    }
 }
 
 ECode TextView::GetTotalPaddingLeft(
     /* [out] */ Int32* left)
 {
     VALIDATE_NOT_NULL(left)
-    *left = GetCompoundPaddingLeft();
-    return NOERROR;
-}
-
-Int32 TextView::GetTotalPaddingRight()
-{
-    return GetCompoundPaddingRight();
+    return GetCompoundPaddingLeft(left);
 }
 
 ECode TextView::GetTotalPaddingRight(
     /* [out] */ Int32* right)
 {
     VALIDATE_NOT_NULL(right)
-    *right = GetCompoundPaddingRight();
-    return NOERROR;
-}
-
-Int32 TextView::GetTotalPaddingStart()
-{
-    return GetCompoundPaddingStart();
+    return GetCompoundPaddingRight(right);
 }
 
 ECode TextView::GetTotalPaddingStart(
     /* [out] */ Int32* start)
 {
     VALIDATE_NOT_NULL(start)
-    *start = GetCompoundPaddingStart();
-    return NOERROR;
-}
-
-Int32 TextView::GetTotalPaddingEnd()
-{
-    return GetCompoundPaddingEnd();
+    return GetCompoundPaddingStart(start);
 }
 
 ECode TextView::GetTotalPaddingEnd(
     /* [out] */ Int32* end)
 {
     VALIDATE_NOT_NULL(end)
-    *end = GetCompoundPaddingEnd();
-    return NOERROR;
-}
-
-Int32 TextView::GetTotalPaddingTop()
-{
-    return GetExtendedPaddingTop() + GetVerticalOffset(TRUE);
+    return GetCompoundPaddingEnd(end);
 }
 
 ECode TextView::GetTotalPaddingTop(
     /* [out] */ Int32* top)
 {
     VALIDATE_NOT_NULL(top)
-    *top = GetTotalPaddingTop();
+    GetExtendedPaddingTop(top);
+    *top += GetVerticalOffset(TRUE);
     return NOERROR;
-}
-
-Int32 TextView::GetTotalPaddingBottom()
-{
-    return GetExtendedPaddingBottom() + GetBottomVerticalOffset(TRUE);
 }
 
 ECode TextView::GetTotalPaddingBottom(
     /* [out] */ Int32* bottom)
 {
     VALIDATE_NOT_NULL(bottom)
-    *bottom = GetTotalPaddingBottom();
+    GetExtendedPaddingBottom(bottom);
+    *bottom += GetBottomVerticalOffset(TRUE);
     return NOERROR;
 }
 
@@ -3254,9 +3168,11 @@ ECode TextView::SetCompoundDrawablesRelativeWithIntrinsicBounds(
     return SetCompoundDrawablesRelative(start, top, end, bottom);
 }
 
-AutoPtr<ArrayOf<IDrawable*> > TextView::GetCompoundDrawables()
+ECode TextView::GetCompoundDrawables(
+    /* [out, callee] */ ArrayOf<IDrawable*>** result)
 {
-    AutoPtr<ArrayOf<IDrawable*> > drawables = ArrayOf<IDrawable*>::Alloc(4);
+    VALIDATE_NOT_NULL(result)
+    AutoPtr< ArrayOf<IDrawable*> > drawables = ArrayOf<IDrawable*>::Alloc(4);
     AutoPtr<Drawables> dr = mDrawables;
     if (dr != NULL) {
         drawables->Set(0, dr->mDrawableLeft);
@@ -3269,20 +3185,15 @@ AutoPtr<ArrayOf<IDrawable*> > TextView::GetCompoundDrawables()
         drawables->Set(2, NULL);
         drawables->Set(3, NULL);
     }
-    return drawables;
-}
-
-ECode TextView::GetCompoundDrawables(
-    /* [out, callee] */ ArrayOf<IDrawable*>** drawables)
-{
-    VALIDATE_NOT_NULL(drawables)
-    *drawables = GetCompoundDrawables();
-    REFCOUNT_ADD(*drawables)
+    *result = drawables;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
-AutoPtr<ArrayOf<IDrawable*> > TextView::GetCompoundDrawablesRelative()
+ECode TextView::GetCompoundDrawablesRelative(
+    /* [out, callee] */ ArrayOf<IDrawable*>** result)
 {
+    VALIDATE_NOT_NULL(result)
     AutoPtr<ArrayOf<IDrawable*> > drawables = ArrayOf<IDrawable*>::Alloc(4);
     AutoPtr<Drawables> dr = mDrawables;
     if (dr != NULL) {
@@ -3296,15 +3207,8 @@ AutoPtr<ArrayOf<IDrawable*> > TextView::GetCompoundDrawablesRelative()
         drawables->Set(2, NULL);
         drawables->Set(3, NULL);
     }
-    return drawables;
-}
-
-ECode TextView::GetCompoundDrawablesRelative(
-    /* [out, callee] */ ArrayOf<IDrawable*>** drawables)
-{
-    VALIDATE_NOT_NULL(drawables)
-    *drawables = GetCompoundDrawablesRelative();
-    REFCOUNT_ADD(*drawables)
+    *result = drawables;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -3330,17 +3234,16 @@ ECode TextView::SetCompoundDrawablePadding(
     return NOERROR;
 }
 
-Int32 TextView::GetCompoundDrawablePadding()
-{
-    AutoPtr<Drawables> dr = mDrawables;
-    return dr != NULL ? dr->mDrawablePadding : 0;
-}
-
 ECode TextView::GetCompoundDrawablePadding(
     /* [out] */ Int32* pad)
 {
     VALIDATE_NOT_NULL(pad)
-    *pad = GetCompoundDrawablePadding();
+    AutoPtr<Drawables> dr = mDrawables;
+    if (dr != NULL) {
+        *pad = dr->mDrawablePadding;
+    } else {
+        *pad = 0;
+    }
     return NOERROR;
 }
 
@@ -3380,11 +3283,6 @@ ECode TextView::SetPaddingRelative(
     View::SetPaddingRelative(start, top, end, bottom);
     Invalidate();
     return NOERROR;
-}
-
-Int32 TextView::GetAutoLinkMask()
-{
-    return mAutoLinkMask;
 }
 
 Int32 TextView::GetAutoLinkMask(
@@ -3498,20 +3396,11 @@ ECode TextView::SetTextAppearance(
     return NOERROR;
 }
 
-AutoPtr<ILocale> TextView::GetTextLocale()
-{
-    AutoPtr<ILocale> locale;
-    IPaint::Probe(mTextPaint)->GetTextLocale((ILocale**)&locale);
-    return locale;
-}
-
 ECode TextView::GetTextLocale(
     /* [out] */ ILocale** locale)
 {
     VALIDATE_NOT_NULL(locale)
-    *locale = GetTextLocale();
-    REFCOUNT_ADD(*locale)
-    return NOERROR;
+    return IPaint::Probe(mTextPaint)->GetTextLocale(locale);
 }
 
 ECode TextView::SetTextLocale(
@@ -3520,35 +3409,32 @@ ECode TextView::SetTextLocale(
     return IPaint::Probe(mTextPaint)->SetTextLocale(locale);
 }
 
-Float TextView::GetTextSize()
-{
-    Float size;
-    IPaint::Probe(mTextPaint)->GetTextSize(&size);
-    return size;
-}
-
 ECode TextView::GetTextSize(
     /* [out] */ Float* size)
 {
     VALIDATE_NOT_NULL(size)
-    IPaint::Probe(mTextPaint)->GetTextSize(size);
+    return IPaint::Probe(mTextPaint)->GetTextSize(size);
+}
+
+ECode TextView::GetScaledTextSize(
+    /* [out] */ Float* size)
+{
+    VALIDATE_NOT_NULL(size)
+    Float textSize, density;
+    IPaint::Probe(mTextPaint)->GetTextSize(&textSize);
+    mTextPaint->GetDensity(&density);
+    *size = textSize / density;
     return NOERROR;
 }
 
-Float TextView::GetScaledTextSize()
+ECode TextView::GetTypefaceStyle(
+    /* [out] */ Int32* style)
 {
-    Float size, density;
-    IPaint::Probe(mTextPaint)->GetTextSize(&size);
-    mTextPaint->GetDensity(&density);
-    return size / density;
-}
-
-Int32 TextView::GetTypefaceStyle() {
+    VALIDATE_NOT_NULL(style)
     AutoPtr<ITypeface> typeface;
     IPaint::Probe(mTextPaint)->GetTypeface((ITypeface**)&typeface);
-    Int32 style;
-    typeface->GetStyle(&style);
-    return style;
+    typeface->GetStyle(style);
+    return NOERROR;
 }
 
 ECode TextView::SetTextSize(
@@ -3603,19 +3489,11 @@ void TextView::SetRawTextSize(
     }
 }
 
-Float TextView::GetTextScaleX()
-{
-    Float scaleX;
-    IPaint::Probe(mTextPaint)->GetTextScaleX(&scaleX);
-    return scaleX;
-}
-
 ECode TextView::GetTextScaleX(
     /* [out] */ Float* size)
 {
     VALIDATE_NOT_NULL(size)
-    IPaint::Probe(mTextPaint)->GetTextScaleX(size);
-    return NOERROR;
+    return IPaint::Probe(mTextPaint)->GetTextScaleX(size);
 }
 
 ECode TextView::SetTextScaleX(
@@ -3653,19 +3531,11 @@ ECode TextView::SetTypeface(
     return NOERROR;
 }
 
-AutoPtr<ITypeface> TextView::GetTypeface()
-{
-    AutoPtr<ITypeface> tyepface;
-    IPaint::Probe(mTextPaint)->GetTypeface((ITypeface**)&tyepface);
-    return tyepface;
-}
-
 ECode TextView::GetTypeface(
     /* [out] */ ITypeface** face)
 {
     VALIDATE_NOT_NULL(face)
-    IPaint::Probe(mTextPaint)->GetTypeface(face);
-    return NOERROR;
+    return IPaint::Probe(mTextPaint)->GetTypeface(face);
 }
 
 ECode TextView::SetElegantTextHeight(
@@ -3673,13 +3543,6 @@ ECode TextView::SetElegantTextHeight(
 {
     IPaint::Probe(mTextPaint)->SetElegantTextHeight(elegant);
     return NOERROR;
-}
-
-Float TextView::GetLetterSpacing()
-{
-    Float res;
-    IPaint::Probe(mTextPaint)->GetLetterSpacing(&res);
-    return res;
 }
 
 ECode TextView::GetLetterSpacing(
@@ -3707,19 +3570,11 @@ ECode TextView::SetLetterSpacing(
     return NOERROR;
 }
 
-String TextView::GetFontFeatureSettings()
-{
-    String res;
-    IPaint::Probe(mTextPaint)->GetFontFeatureSettings(&res);
-    return res;
-}
-
 ECode TextView::GetFontFeatureSettings(
     /* [out] */ String* settings)
 {
     VALIDATE_NOT_NULL(settings)
-    IPaint::Probe(mTextPaint)->GetFontFeatureSettings(settings);
-    return NOERROR;
+    return IPaint::Probe(mTextPaint)->GetFontFeatureSettings(settings);
 }
 
 ECode TextView::SetFontFeatureSettings(
@@ -3763,11 +3618,6 @@ ECode TextView::SetTextColor(
     return NOERROR;
 }
 
-AutoPtr<IColorStateList> TextView::GetTextColors()
-{
-    return mTextColor;
-}
-
 ECode TextView::GetTextColors(
     /* [out] */ IColorStateList** colors)
 {
@@ -3775,11 +3625,6 @@ ECode TextView::GetTextColors(
     *colors = mTextColor;
     REFCOUNT_ADD(*colors)
     return NOERROR;
-}
-
-Int32 TextView::GetCurrentTextColor()
-{
-    return mCurTextColor;
 }
 
 ECode TextView::GetCurrentTextColor(
@@ -3800,11 +3645,6 @@ ECode TextView::SetHighlightColor(
     return NOERROR;
 }
 
-Int32 TextView::GetHighlightColor()
-{
-    return mHighlightColor;
-}
-
 ECode TextView::GetHighlightColor(
     /* [out] */ Int32* color)
 {
@@ -3822,19 +3662,12 @@ ECode TextView::SetShowSoftInputOnFocus(
     return NOERROR;
 }
 
-Boolean TextView::GetShowSoftInputOnFocus()
-{
-    // When there is no Editor, return default TRUE value
-    assert(0);
-    //return mEditor == NULL || mEditor->mShowSoftInputOnFocus;
-    return FALSE;
-}
-
 ECode TextView::GetShowSoftInputOnFocus(
     /* [out] */ Boolean* show)
 {
     VALIDATE_NOT_NULL(show)
-    *show = GetShowSoftInputOnFocus();
+    assert(0);
+    //*show = mEditor == NULL || mEditor->mShowSoftInputOnFocus;
     return NOERROR;
 }
 
@@ -3859,68 +3692,43 @@ ECode TextView::SetShadowLayer(
     return NOERROR;
 }
 
-Float TextView::GetShadowRadius()
-{
-    return mShadowRadius;
-}
-
 ECode TextView::GetShadowRadius(
     /* [out] */ Float* radius)
 {
     VALIDATE_NOT_NULL(radius)
-    *radius = GetShadowRadius();
+    *radius = mShadowRadius;
     return NOERROR;
-}
-
-Float TextView::GetShadowDx()
-{
-    return mShadowDx;
 }
 
 ECode TextView::GetShadowDx(
     /* [out] */ Float* dx)
 {
     VALIDATE_NOT_NULL(dx)
-    *dx = GetShadowDx();
+    *dx = mShadowDx;
     return NOERROR;
-}
-
-Float TextView::GetShadowDy()
-{
-    return mShadowDy;
 }
 
 ECode TextView::GetShadowDy(
     /* [out] */ Float* dy)
 {
     VALIDATE_NOT_NULL(dy)
-    *dy = GetShadowDy();
+    *dy = mShadowDy;
     return NOERROR;
-}
-
-Int32 TextView::GetShadowColor()
-{
-    return  mShadowColor;
 }
 
 ECode TextView::GetShadowColor(
     /* [out] */ Int32* color)
 {
     VALIDATE_NOT_NULL(color)
-    *color = GetShadowColor();
+    *color = mShadowColor;
     return NOERROR;
-}
-
-AutoPtr<ITextPaint> TextView::GetPaint()
-{
-    return mTextPaint;
 }
 
 ECode TextView::GetPaint(
     /* [out] */ ITextPaint** paint)
 {
     VALIDATE_NOT_NULL(paint)
-    *paint = GetPaint();
+    *paint = mTextPaint;
     REFCOUNT_ADD(*paint)
     return NOERROR;
 }
@@ -3939,21 +3747,18 @@ ECode TextView::SetLinksClickable(
     return NOERROR;
 }
 
-Boolean TextView::GetLinksClickable()
-{
-    return mLinksClickable;
-}
-
 ECode TextView::GetLinksClickable(
     /* [out] */ Boolean* whether)
 {
     VALIDATE_NOT_NULL(whether)
-    *whether = GetLinksClickable();
+    *whether = mLinksClickable;
     return NOERROR;
 }
 
-AutoPtr< ArrayOf<IURLSpan*> > TextView::GetUrls()
+ECode TextView::GetUrls(
+    /* [out, callee] */ ArrayOf<IURLSpan*>** result)
 {
+    VALIDATE_NOT_NULL(result)
     AutoPtr< ArrayOf<IURLSpan*> > urls;
     AutoPtr<ISpanned> spanned = ISpanned::Probe(mText);
     if (spanned) {
@@ -3969,15 +3774,8 @@ AutoPtr< ArrayOf<IURLSpan*> > TextView::GetUrls()
         urls = ArrayOf<IURLSpan*>::Alloc(0);
     }
 
-    return urls;
-}
-
-ECode TextView::GetUrls(
-    /* [out, callee] */ ArrayOf<IURLSpan*>** urls)
-{
-    VALIDATE_NOT_NULL(urls)
-    *urls = GetUrls();
-    REFCOUNT_ADD(*urls)
+    *result = urls;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -4000,30 +3798,20 @@ ECode TextView::SetHintTextColor(
     return NOERROR;
 }
 
-AutoPtr<IColorStateList> TextView::GetHintTextColors()
-{
-    return mHintTextColor;
-}
-
 ECode TextView::GetHintTextColors(
     /* [out] */ IColorStateList** colors)
 {
     VALIDATE_NOT_NULL(colors)
-    *colors = GetHintTextColors();
+    *colors = mHintTextColor;
     REFCOUNT_ADD(*colors)
     return NOERROR;
-}
-
-Int32 TextView::GetCurrentHintTextColor()
-{
-    return mHintTextColor != NULL ? mCurHintTextColor : mCurTextColor;
 }
 
 ECode TextView::GetCurrentHintTextColor(
     /* [out] */ Int32* color)
 {
     VALIDATE_NOT_NULL(color)
-    *color = GetCurrentHintTextColor();
+    *color = mHintTextColor != NULL ? mCurHintTextColor : mCurTextColor;
     return NOERROR;
 }
 
@@ -4046,16 +3834,11 @@ ECode TextView::SetLinkTextColor(
     return NOERROR;
 }
 
-AutoPtr<IColorStateList> TextView::GetLinkTextColors()
-{
-    return mLinkTextColor;
-}
-
 ECode TextView::GetLinkTextColors(
     /* [out] */ IColorStateList** colors)
 {
     VALIDATE_NOT_NULL(colors)
-    *colors = GetLinkTextColors();
+    *colors = mLinkTextColor;
     REFCOUNT_ADD(*colors)
     return NOERROR;
 }
@@ -4088,40 +3871,28 @@ ECode TextView::SetGravity(
         Int32 want = 0, hintWant = 0;
         mLayout->GetWidth(&want);
         if (mHintLayout != NULL) mHintLayout->GetWidth(&hintWant);
-
+        Int32 compoundPaddingLeft, compoundPaddingRight;
+        GetCompoundPaddingLeft(&compoundPaddingLeft);
+        GetCompoundPaddingRight(&compoundPaddingRight);
         MakeNewLayout(want, hintWant, UNKNOWN_BORING, UNKNOWN_BORING,
-                mRight - mLeft - GetCompoundPaddingLeft() -
-                GetCompoundPaddingRight(), TRUE);
+                mRight - mLeft - compoundPaddingLeft - compoundPaddingRight, TRUE);
     }
     return NOERROR;
-}
-
-Int32 TextView::GetGravity()
-{
-    return mGravity;
 }
 
 ECode TextView::GetGravity(
     /* [out] */ Int32* gravity)
 {
     VALIDATE_NOT_NULL(gravity)
-    *gravity = GetGravity();
+    *gravity = mGravity;
     return NOERROR;
-}
-
-Int32 TextView::GetPaintFlags()
-{
-    Int32 flag;
-    IPaint::Probe(mTextPaint)->GetFlags(&flag);
-    return flag;
 }
 
 ECode TextView::GetPaintFlags(
     /* [out] */ Int32* flags)
 {
     VALIDATE_NOT_NULL(flags)
-    *flags = GetPaintFlags();
-    return NOERROR;
+    return IPaint::Probe(mTextPaint)->GetFlags(flags);
 }
 
 ECode TextView::SetPaintFlags(
@@ -4156,16 +3927,11 @@ ECode TextView::SetHorizontallyScrolling(
     return NOERROR;
 }
 
-Boolean TextView::GetHorizontallyScrolling()
-{
-    return mHorizontallyScrolling;
-}
-
 ECode TextView::GetHorizontallyScrolling(
     /* [out] */ Boolean* whether)
 {
     VALIDATE_NOT_NULL(whether)
-    *whether = GetHorizontallyScrolling();
+    *whether = mHorizontallyScrolling;
     return NOERROR;
 }
 
@@ -4180,16 +3946,11 @@ ECode TextView::SetMinLines(
     return NOERROR;
 }
 
-Int32 TextView::GetMinLines()
-{
-    return mMinMode == LINES ? mMinimum : -1;
-}
-
 ECode TextView::GetMinLines(
     /* [out] */ Int32* minlines)
 {
     VALIDATE_NOT_NULL(minlines)
-    *minlines = GetMinLines();
+    *minlines = mMinMode == LINES ? mMinimum : -1;
     return NOERROR;
 }
 
@@ -4204,16 +3965,11 @@ ECode TextView::SetMinHeight(
     return NOERROR;
 }
 
-Int32 TextView::GetMinHeight()
-{
-    return mMinMode == PIXELS ? mMinimum : -1;
-}
-
 ECode TextView::GetMinHeight(
    /* [out] */ Int32* minHeight)
 {
     VALIDATE_NOT_NULL(minHeight)
-    *minHeight = GetMinHeight();
+    *minHeight = mMinMode == PIXELS ? mMinimum : -1;
     return NOERROR;
 }
 
@@ -4228,16 +3984,11 @@ ECode TextView::SetMaxLines(
     return NOERROR;
 }
 
-Int32 TextView::GetMaxLines()
-{
-    return mMaxMode == LINES ? mMaximum : -1;
-}
-
 ECode TextView::GetMaxLines(
     /* [out] */ Int32* maxlines)
 {
     VALIDATE_NOT_NULL(maxlines)
-    *maxlines = GetMaxLines();
+    *maxlines = mMaxMode == LINES ? mMaximum : -1;
     return NOERROR;
 }
 
@@ -4252,16 +4003,11 @@ ECode TextView::SetMaxHeight(
     return NOERROR;
 }
 
-Int32 TextView::GetMaxHeight()
-{
-    return mMaxMode == PIXELS ? mMaximum : -1;
-}
-
 ECode TextView::GetMaxHeight(
     /* [out] */ Int32* maxHeight)
 {
     VALIDATE_NOT_NULL(maxHeight)
-    *maxHeight = GetMaxHeight();
+    *maxHeight = mMaxMode == PIXELS ? mMaximum : -1;
     return NOERROR;
 }
 
@@ -4298,16 +4044,11 @@ ECode TextView::SetMinEms(
     return NOERROR;
 }
 
-Int32 TextView::GetMinEms()
-{
-    return mMinWidthMode == EMS ? mMinWidth : -1;
-}
-
 ECode TextView::GetMinEms(
     /* [out] */ Int32* minems)
 {
     VALIDATE_NOT_NULL(minems)
-    *minems = GetMinEms();
+    *minems = mMinWidthMode == EMS ? mMinWidth : -1;
     return NOERROR;
 }
 
@@ -4322,16 +4063,11 @@ ECode TextView::SetMinWidth(
     return NOERROR;
 }
 
-Int32 TextView::GetMinWidth()
-{
-    return mMinWidthMode == PIXELS ? mMinWidth : -1;
-}
-
 ECode TextView::GetMinWidth(
     /* [out] */ Int32* minpixels)
 {
     VALIDATE_NOT_NULL(minpixels)
-    *minpixels = GetMinWidth();
+    *minpixels = mMinWidthMode == PIXELS ? mMinWidth : -1;
     return NOERROR;
 }
 
@@ -4346,9 +4082,12 @@ ECode TextView::SetMaxEms(
     return NOERROR;
 }
 
-Int32 TextView::GetMaxEms()
+ECode TextView::GetMaxEms(
+    /* [out] */ Int32* ems)
 {
-    return mMaxWidthMode == EMS ? mMaxWidth : -1;
+    VALIDATE_NOT_NULL(ems)
+    *ems = mMaxWidthMode == EMS ? mMaxWidth : -1;
+    return NOERROR;
 }
 
 ECode TextView::SetMaxWidth(
@@ -4362,16 +4101,11 @@ ECode TextView::SetMaxWidth(
     return NOERROR;
 }
 
-Int32 TextView::GetMaxWidth()
-{
-    return mMaxWidthMode == PIXELS ? mMaxWidth : -1;
-}
-
 ECode TextView::GetMaxWidth(
     /* [out] */ Int32* maxpixels)
 {
     VALIDATE_NOT_NULL(maxpixels)
-    *maxpixels = GetMaxWidth();
+    *maxpixels = mMaxWidthMode == PIXELS ? mMaxWidth : -1;
     return NOERROR;
 }
 
@@ -4415,29 +4149,19 @@ ECode TextView::SetLineSpacing(
     return NOERROR;
 }
 
-Float TextView::GetLineSpacingMultiplier()
-{
-    return mSpacingMult;
-}
-
 ECode TextView::GetLineSpacingMultiplier(
     /* [out] */ Float* multiplier)
 {
     VALIDATE_NOT_NULL(multiplier)
-    *multiplier = GetLineSpacingMultiplier();
+    *multiplier = mSpacingMult;
     return NOERROR;
-}
-
-Float TextView::GetLineSpacingExtra()
-{
-    return mSpacingAdd;
 }
 
 ECode TextView::GetLineSpacingExtra(
     /* [out] */ Float* extra)
 {
     VALIDATE_NOT_NULL(extra)
-    *extra = GetLineSpacingExtra();
+    *extra = mSpacingAdd;
     return NOERROR;
 }
 
@@ -4593,8 +4317,8 @@ AutoPtr<IParcelable> TextView::OnSaveInstanceState()
     Int32 end = 0;
 
     if (mText != NULL) {
-        start = GetSelectionStart();
-        end = GetSelectionEnd();
+        GetSelectionStart(&start);
+        GetSelectionEnd(&end);
         if (start >= 0 || end >= 0) {
             // Or save state if there is a selection
             save = TRUE;
@@ -4732,16 +4456,11 @@ ECode TextView::SetFreezesText(
     return NOERROR;
 }
 
-Boolean TextView::GetFreezesText()
-{
-    return mFreezesText;
-}
-
 ECode TextView::GetFreezesText(
     /* [out] */ Boolean* text)
 {
     VALIDATE_NOT_NULL(text)
-    *text = GetFreezesText();
+    *text = mFreezesText;
     return NOERROR;
 }
 
@@ -4795,7 +4514,8 @@ ECode TextView::SetText(
     }
 
     // If suggestions are not enabled, remove the suggestion spans from the text
-    if (!IsSuggestionsEnabled()) {
+    Boolean isSuggestionsEnabled;
+    if (IsSuggestionsEnabled(&isSuggestionsEnabled), !isSuggestionsEnabled) {
         text = RemoveSuggestionSpans(text);
         assert(text != NULL);
     }
@@ -4856,7 +4576,8 @@ ECode TextView::SetText(
         needEditableForNotification = TRUE;
     }
 
-    AutoPtr<IKeyListener> keyListener = GetKeyListener();
+    AutoPtr<IKeyListener> keyListener;
+    GetKeyListener((IKeyListener**)&keyListener);
     if (type == BufferType_EDITABLE || keyListener != NULL ||
         needEditableForNotification) {
         CreateEditorIfNeeded();
@@ -5033,8 +4754,8 @@ ECode TextView::SetTextKeepState(
     VALIDATE_NOT_NULL(text);
 
     Int32 start, end, len;
-    start = GetSelectionStart();
-    end = GetSelectionEnd();
+    GetSelectionStart(&start);
+    GetSelectionEnd(&end);
     text->GetLength(&len);
 
     FAIL_RETURN(SetText(text, type));
@@ -5116,16 +4837,11 @@ ECode TextView::SetHint(
     return SetHint(csq);
 }
 
-AutoPtr<ICharSequence> TextView::GetHint()
-{
-    return mHint;
-}
-
 ECode TextView::GetHint(
     /* [out] */ ICharSequence** hint)
 {
     VALIDATE_NOT_NULL(hint)
-    *hint = GetHint();
+    *hint = mHint;
     REFCOUNT_ADD(*hint)
     return NOERROR;
 }
@@ -5174,8 +4890,10 @@ AutoPtr<ICharSequence> TextView::RemoveSuggestionSpans(
 ECode TextView::SetInputType(
     /* [in] */ Int32 type)
 {
-    const Boolean wasPassword = IsPasswordInputType(GetInputType());
-    const Boolean wasVisiblePassword = IsVisiblePasswordInputType(GetInputType());
+    Int32 inputType;
+    GetInputType(&inputType);
+    const Boolean wasPassword = IsPasswordInputType(inputType);
+    const Boolean wasVisiblePassword = IsVisiblePasswordInputType(inputType);
     SetInputType(type, FALSE);
     const Boolean isPassword = IsPasswordInputType(type);
     const Boolean isVisiblePassword = IsVisiblePasswordInputType(type);
@@ -5213,8 +4931,8 @@ ECode TextView::SetInputType(
        // we are not in password mode.
        ApplySingleLine(singleLine, !isPassword, TRUE);
     }
-
-    if (!IsSuggestionsEnabled()) {
+    Boolean isSuggestionsEnabled;
+    if (IsSuggestionsEnabled(&isSuggestionsEnabled), isSuggestionsEnabled) {
         mText = RemoveSuggestionSpans(mText);
     }
 
@@ -5340,18 +5058,16 @@ void TextView::SetInputType(
     }
 }
 
-Int32 TextView::GetInputType()
-{
-    assert(0);
-    //return mEditor == NULL ? IInputType::TYPE_NULL : mEditor->mInputType;
-    return 0;
-}
-
 ECode TextView::GetInputType(
     /* [out] */ Int32* type)
 {
     VALIDATE_NOT_NULL(type)
-    *type = GetInputType();
+    if (mEditor == NULL) {
+        *type = IInputType::TYPE_NULL;
+    } else {
+        assert(0);
+        //*type = mEditor->mInputType;
+    }
     return NOERROR;
 }
 
@@ -5365,19 +5081,17 @@ ECode TextView::SetImeOptions(
     return NOERROR;
 }
 
-Int32 TextView::GetImeOptions()
-{
-    assert(0);
-    /*return (mEditor != NULL && mEditor->mInputContentType != NULL)
-            ? mEditor->mInputContentType->mImeOptions : IEditorInfo::IME_NULL;*/
-    return 0;
-}
-
 ECode TextView::GetImeOptions(
     /* [out] */ Int32* options)
 {
     VALIDATE_NOT_NULL(options)
-    *options = GetImeOptions();
+    assert(0);
+    /*if (mEditor != NULL && mEditor->mInputContentType != NULL) {
+        *options = mEditor->mInputContentType->mImeOptions;
+    } else {
+        *options = IEditorInfo::IME_NULL;
+    }*/
+
     return NOERROR;
 }
 
@@ -5393,36 +5107,30 @@ ECode TextView::SetImeActionLabel(
     return NOERROR;
 }
 
-AutoPtr<ICharSequence> TextView::GetImeActionLabel()
-{
-    assert(0);
-    /*return mEditor != NULL && mEditor->mInputContentType != NULL
-            ? mEditor->mInputContentType->mImeActionLabel : NULL;*/
-    return NULL;
-}
-
 ECode TextView::GetImeActionLabel(
     /* [out] */ ICharSequence** label)
 {
     VALIDATE_NOT_NULL(label)
-    *label = GetImeActionLabel();
-    REFCOUNT_ADD(*label)
-    return NOERROR;
-}
-
-Int32 TextView::GetImeActionId()
-{
     assert(0);
-    /*return mEditor != NULL && mEditor->mInputContentType != NULL
-            ? mEditor->mInputContentType->mImeActionId : 0;*/
-    return 0;
+   /* if (mEditor != NULL && mEditor->mInputContentType != NULL) {
+        *label = mEditor->mInputContentType->mImeActionLabel;
+        REFCOUNT_ADD(*label)
+    } else {
+        *label = NULL
+    }*/
+    return NOERROR;
 }
 
 ECode TextView::GetImeActionId(
     /* [out] */ Int32* id)
 {
     VALIDATE_NOT_NULL(id)
-    *id = GetImeActionId();
+    assert(0);
+    /*if (mEditor != NULL && mEditor->mInputContentType != NULL) {
+        *id = mEditor->mInputContentType->mImeActionId;
+    } else {
+        *id = 0;
+    }*/
     return NOERROR;
 }
 
@@ -5530,18 +5238,16 @@ ECode TextView::SetPrivateImeOptions(
     return NOERROR;
 }
 
-String TextView::GetPrivateImeOptions()
-{
-    assert(0);
-    /*return mEditor != NULL && mEditor->mInputContentType != NULL
-                    ? mEditor->mInputContentType->mPrivateImeOptions : String("");*/
-}
-
 ECode TextView::GetPrivateImeOptions(
     /* [out] */ String* options)
 {
     VALIDATE_NOT_NULL(options)
-    *options = GetPrivateImeOptions();
+    assert(0);
+    /*if(mEditor != NULL && mEditor->mInputContentType != NULL) {
+        *options = mEditor->mInputContentType->mPrivateImeOptions;
+    } else {
+        *options = String("");
+    }*/
     return NOERROR;
 }
 
@@ -5560,47 +5266,49 @@ ECode TextView::SetInputExtras(
     return res->ParseBundleExtras(parser, mEditor->mInputContentType->mExtras);*/
 }
 
-AutoPtr<IBundle> TextView::GetInputExtras(
-    /* [in] */ Boolean create)
-{
-    assert(0);
-    /*if (mEditor == NULL && !create) return NULL;
-    CreateEditorIfNeeded();
-
-    if (mEditor->mInputContentType == NULL) {
-        if (!create) return NULL;
-        mEditor->CreateInputContentTypeIfNeeded();
-    }
-    if (mEditor->mInputContentType->mExtras == NULL) {
-        if (!create) return NULL;
-        mEditor->mInputContentType->mExtras = NULL;
-        CBundle::New((IBundle**)&mEditor->mInputContentType->mExtras);
-    }
-    return mEditor->mInputContentType->mExtras;*/
-}
-
 ECode TextView::GetInputExtras(
     /* [in] */ Boolean create,
     /* [out] */ IBundle** bundle)
 {
     VALIDATE_NOT_NULL(bundle)
-    *bundle = GetInputExtras(create);
-    REFCOUNT_ADD(*bundle)
-    return NOERROR;
-}
-
-AutoPtr<ICharSequence> TextView::GetError()
-{
     assert(0);
-    //return mEditor == NULL ? NULL : mEditor->mError;
+    /*if (mEditor == NULL && !create) {
+        *bundle = NULL;
+        return NOERROR;
+    }
+    CreateEditorIfNeeded();
+
+    if (mEditor->mInputContentType == NULL) {
+        if (!create) {
+            *bundle = NULL;
+            return NOERROR;
+        }
+        mEditor->CreateInputContentTypeIfNeeded();
+    }
+    if (mEditor->mInputContentType->mExtras == NULL) {
+        if (!create) {
+            *bundle = NULL;
+            return NOERROR;
+        }
+        mEditor->mInputContentType->mExtras = NULL;
+        CBundle::New((IBundle**)&mEditor->mInputContentType->mExtras);
+    }
+    *bundle = mEditor->mInputContentType->mExtras;
+    REFCOUNT_ADD(*bundle)*/
+    return NOERROR;
 }
 
 ECode TextView::GetError(
     /* [out] */ ICharSequence** error)
 {
     VALIDATE_NOT_NULL(error)
-    *error = GetError();
-    REFCOUNT_ADD(*error)
+    if(mEditor == NULL) {
+        *error = NULL;
+    } else {
+        assert(0);
+        //*error = mEditor->mError;
+        REFCOUNT_ADD(*error)
+    }
     return NOERROR;
 }
 
@@ -5713,17 +5421,11 @@ ECode TextView::SetFilters(
     return NOERROR;
 }
 
-AutoPtr<ArrayOf<Elastos::Droid::Text::IInputFilter*> > TextView::GetFilters()
-{
-   return mFilters;
-}
-
 ECode TextView::GetFilters(
     /* [out, callee] */ ArrayOf<Elastos::Droid::Text::IInputFilter*>** filters)
 {
     VALIDATE_NOT_NULL(filters)
-    AutoPtr<ArrayOf<Elastos::Droid::Text::IInputFilter*> > temp = GetFilters();
-    *filters = temp;
+    *filters = mFilters;
     REFCOUNT_ADD(*filters);
     return NOERROR;
 }
@@ -5738,9 +5440,19 @@ Int32 TextView::GetBoxHeight(
     } else {
         opticalInsets = Elastos::Droid::Graphics::Insets::NONE;
     }
-    Int32 padding = (l == mHintLayout) ?
-            GetCompoundPaddingTop() + GetCompoundPaddingBottom() :
-            GetExtendedPaddingTop() + GetExtendedPaddingBottom();
+    Int32 padding;
+    if (l == mHintLayout) {
+        GetCompoundPaddingTop(&padding);
+        Int32 bottom;
+        GetCompoundPaddingBottom(&bottom);
+        padding += bottom;
+    } else {
+        Int32 extendedPaddingTop, extendedPaddingBottom;
+        GetExtendedPaddingTop(&extendedPaddingTop);
+        GetExtendedPaddingBottom(&extendedPaddingBottom);
+        padding = extendedPaddingTop + extendedPaddingBottom;
+    }
+
     Int32 top, bottom;
     opticalInsets->GetTop(&top);
     opticalInsets->GetBottom(&bottom);
@@ -5818,8 +5530,10 @@ void TextView::InvalidateCursorPath()
         InvalidateCursor();
     }
     else {
-        Int32 horizontalPadding = GetCompoundPaddingLeft();
-        Int32 verticalPadding = GetExtendedPaddingTop() + GetVerticalOffset(TRUE);
+        Int32 horizontalPadding, extendedPaddingTop;
+        GetCompoundPaddingLeft(&horizontalPadding);
+        GetExtendedPaddingTop(&extendedPaddingTop);
+        Int32 verticalPadding = extendedPaddingTop + GetVerticalOffset(TRUE);
         assert(0);
         if (0/*mEditor->mCursorCount == 0*/) {
             AutoLock lock(sTempRectLock);
@@ -5868,7 +5582,8 @@ void TextView::InvalidateCursorPath()
 
 void TextView::InvalidateCursor()
 {
-    Int32 where = GetSelectionEnd();
+    Int32 where;
+    GetSelectionEnd(&where);
 
     InvalidateCursor(where, where, where);
 }
@@ -5936,8 +5651,10 @@ ECode TextView::InvalidateRegion(
             }*/
         }
 
-        Int32 compoundPaddingLeft = GetCompoundPaddingLeft();
-        Int32 verticalPadding = GetExtendedPaddingTop() + GetVerticalOffset(TRUE);
+        Int32 compoundPaddingLeft, extendedPaddingTop;
+        GetCompoundPaddingLeft(&compoundPaddingLeft);
+        GetExtendedPaddingTop(&extendedPaddingTop);
+        Int32 verticalPadding = extendedPaddingTop + GetVerticalOffset(TRUE);
 
         Float left, right;
         if (lineStart == lineEnd && !invalidateCursor) {
@@ -5948,9 +5665,10 @@ ECode TextView::InvalidateRegion(
         } else {
             // Rectangle bounding box when the region spans several lines
             left = compoundPaddingLeft;
-            Int32 width;
+            Int32 width, compoundPaddingRight;
             GetWidth(&width);
-            right = width - GetCompoundPaddingRight();
+            GetCompoundPaddingRight(&compoundPaddingRight);
+            right = width - compoundPaddingRight;
         }
 
         Invalidate(mScrollX + left, verticalPadding + top,
@@ -5984,12 +5702,6 @@ ECode TextView::OnPreDraw(
     /* [out] */ Boolean* res)
 {
     VALIDATE_NOT_NULL(res)
-    *res = OnPreDraw();
-    return NOERROR;
-}
-
-Boolean TextView::OnPreDraw()
-{
     if (mLayout == NULL) {
         AssumeLayout();
     }
@@ -5999,7 +5711,8 @@ Boolean TextView::OnPreDraw()
          * CursorController (insertion point or selection limits).
          * For selection, ensure start or end is visible depending on controller's state.
          */
-        Int32 curs = GetSelectionEnd();
+        Int32 curs;
+        GetSelectionEnd(&curs);
         // Do not create the controller if it is not already created.
         assert(0);
         /*if (mEditor != NULL && mEditor->mSelectionModifierCursorController != NULL &&
@@ -6017,7 +5730,8 @@ Boolean TextView::OnPreDraw()
         }
 
         if (curs >= 0) {
-            BringPointIntoView(curs);
+            Boolean bringPointIntoView;
+            BringPointIntoView(curs, &bringPointIntoView);
         }
     }
     else {
@@ -6039,13 +5753,16 @@ Boolean TextView::OnPreDraw()
     // Phone specific code (there is no ExtractEditText on tablets).
     // ExtractEditText does not call onFocus when it is displayed, and mHasSelectionOnFocus can
     // not be set. Do the test here instead.
-    if (this->Probe(EIID_IExtractEditText) != NULL && HasSelection() && mEditor != NULL) {
+    Boolean hasSelection;
+    if (this->Probe(EIID_IExtractEditText) != NULL
+        && (HasSelection(&hasSelection), hasSelection) && mEditor != NULL) {
         assert(0);
         //mEditor->StartSelectionActionMode();
     }
 
     UnregisterForPreDraw();
-    return TRUE;
+    *res = TRUE;
+    return NOERROR;
 }
 
 ECode TextView::OnAttachedToWindow()
@@ -6101,7 +5818,9 @@ Boolean TextView::IsPaddingOffsetRequired()
 
 Int32 TextView::GetLeftPaddingOffset()
 {
-    return GetCompoundPaddingLeft() - mPaddingLeft +
+    Int32 compoundPaddingLeft;
+    GetCompoundPaddingLeft(&compoundPaddingLeft);
+    return compoundPaddingLeft - mPaddingLeft +
             (Int32)Elastos::Core::Math::Min(0.f, mShadowDx - mShadowRadius);
 }
 
@@ -6117,7 +5836,9 @@ Int32 TextView::GetBottomPaddingOffset()
 
 Int32 TextView::GetRightPaddingOffset()
 {
-    return -(GetCompoundPaddingRight() - mPaddingRight) +
+    Int32 compoundPaddingRight;
+    GetCompoundPaddingRight(&compoundPaddingRight);
+    return -(compoundPaddingRight - mPaddingRight) +
             (Int32)Elastos::Core::Math::Max(0.f, mShadowDx + mShadowRadius);
 }
 
@@ -6177,8 +5898,9 @@ ECode TextView::InvalidateDrawable(
         Drawables* drawables = mDrawables;
         if (drawables != NULL) {
             if (drawable == drawables->mDrawableLeft) {
-                Int32 compoundPaddingTop = GetCompoundPaddingTop();
-                Int32 compoundPaddingBottom = GetCompoundPaddingBottom();
+                Int32 compoundPaddingTop, compoundPaddingBottom;
+                GetCompoundPaddingTop(&compoundPaddingTop);
+                GetCompoundPaddingBottom(&compoundPaddingBottom);
                 Int32 vspace = mBottom - mTop - compoundPaddingBottom - compoundPaddingTop;
 
                 scrollX += mPaddingLeft;
@@ -6186,8 +5908,9 @@ ECode TextView::InvalidateDrawable(
                 handled = TRUE;
             }
             else if (drawable == drawables->mDrawableRight) {
-                Int32 compoundPaddingTop = GetCompoundPaddingTop();
-                Int32 compoundPaddingBottom = GetCompoundPaddingBottom();
+                Int32 compoundPaddingTop, compoundPaddingBottom;
+                GetCompoundPaddingTop(&compoundPaddingTop);
+                GetCompoundPaddingBottom(&compoundPaddingBottom);
                 Int32 vspace = mBottom - mTop - compoundPaddingBottom - compoundPaddingTop;
 
                 scrollX += (mRight - mLeft - mPaddingRight - drawables->mDrawableSizeRight);
@@ -6195,8 +5918,9 @@ ECode TextView::InvalidateDrawable(
                 handled = TRUE;
             }
             else if (drawable == drawables->mDrawableTop) {
-                Int32 compoundPaddingLeft = GetCompoundPaddingLeft();
-                Int32 compoundPaddingRight = GetCompoundPaddingRight();
+                Int32 compoundPaddingLeft, compoundPaddingRight;
+                GetCompoundPaddingLeft(&compoundPaddingLeft);
+                GetCompoundPaddingRight(&compoundPaddingRight);
                 Int32 hspace = mRight - mLeft - compoundPaddingRight - compoundPaddingLeft;
 
                 scrollX += compoundPaddingLeft + (hspace - drawables->mDrawableWidthTop) / 2;
@@ -6204,8 +5928,9 @@ ECode TextView::InvalidateDrawable(
                 handled = TRUE;
             }
             else if (drawable == drawables->mDrawableBottom) {
-                Int32 compoundPaddingLeft = GetCompoundPaddingLeft();
-                Int32 compoundPaddingRight = GetCompoundPaddingRight();
+                Int32 compoundPaddingLeft, compoundPaddingRight;
+                GetCompoundPaddingLeft(&compoundPaddingLeft);
+                GetCompoundPaddingRight(&compoundPaddingRight);
                 Int32 hspace = mRight - mLeft - compoundPaddingRight - compoundPaddingLeft;
 
                 scrollX += compoundPaddingLeft + (hspace - drawables->mDrawableWidthBottom) / 2;
@@ -6226,29 +5951,27 @@ ECode TextView::InvalidateDrawable(
     return NOERROR;
 }
 
-Boolean TextView::HasOverlappingRendering()
+ECode TextView::HasOverlappingRendering(
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     AutoPtr<IDrawable> background;
     GetBackground((IDrawable**)&background);
     AutoPtr<IDrawable> current;
     background->GetCurrent((IDrawable**)&current);
-    Boolean isHorizontalFadingEdgeEnabled;
-    return ((background && current) || ISpannable::Probe(mText) || HasSelection()
+    Boolean isHorizontalFadingEdgeEnabled, hasSelection;
+    *res = ((background && current) || ISpannable::Probe(mText)
+        || (HasSelection(&hasSelection), hasSelection)
         || (IsHorizontalFadingEdgeEnabled(&isHorizontalFadingEdgeEnabled), isHorizontalFadingEdgeEnabled));
-}
-
-Boolean TextView::IsTextSelectable()
-{
-    assert(0);
-    //return mEditor == NULL ? FALSE : mEditor->mTextIsSelectable;
-    return FALSE;
+    return NOERROR;
 }
 
 ECode TextView::IsTextSelectable(
     /* [out] */ Boolean* selectable)
 {
     VALIDATE_NOT_NULL(selectable)
-    *selectable = IsTextSelectable();
+    assert(0);
+    //*selectable = mEditor == NULL ? FALSE : mEditor->mTextIsSelectable;
     return NOERROR;
 }
 
@@ -6302,8 +6025,8 @@ ECode TextView::OnCreateDrawableState(
     assert(states != NULL);
     *drawableState = states;
     REFCOUNT_ADD(*drawableState);
-
-    if (IsTextSelectable()) {
+    Boolean isTextSelectable;
+    if (IsTextSelectable(&isTextSelectable), isTextSelectable) {
         // Disable pressed state, which was introduced when TextView was made clickable.
         // Prevents text color change.
         // setClickable(FALSE) would have a similar effect, but it also disables focus changes
@@ -6331,8 +6054,9 @@ AutoPtr<IPath> TextView::GetUpdatedHighlightPath()
     AutoPtr<IPath> highlight = NULL;
     AutoPtr<IPaint> highlightPaint = mHighlightPaint;
 
-    Int32 selStart = GetSelectionStart();
-    Int32 selEnd = GetSelectionEnd();
+    Int32 selStart, selEnd;
+    GetSelectionStart(&selStart);
+    GetSelectionEnd(&selEnd);
     Boolean isFocused, isPressed;
     if (mMovement != NULL && ((IsFocused(&isFocused), isFocused)
         || (IsPressed(&isPressed), isPressed)) && selStart >= 0) {
@@ -6376,16 +6100,11 @@ AutoPtr<IPath> TextView::GetUpdatedHighlightPath()
     return highlight;
 }
 
-Int32 TextView::GetHorizontalOffsetForDrawables()
-{
-    return 0;
-}
-
 ECode TextView::GetHorizontalOffsetForDrawables(
     /* [out] */ Int32* offset)
 {
     VALIDATE_NOT_NULL(offset)
-    *offset = GetHorizontalOffsetForDrawables();
+    *offset = 0;
     return NOERROR;
 }
 
@@ -6395,10 +6114,12 @@ void TextView::OnDraw(
     RestartMarqueeIfNeeded();
     // Draw the background for this view
     View::OnDraw(canvas);
-    Int32 compoundPaddingLeft = GetCompoundPaddingLeft();
-    Int32 compoundPaddingTop = GetCompoundPaddingTop();
-    Int32 compoundPaddingRight = GetCompoundPaddingRight();
-    Int32 compoundPaddingBottom = GetCompoundPaddingBottom();
+    Int32 compoundPaddingTop, compoundPaddingBottom;
+    GetCompoundPaddingTop(&compoundPaddingTop);
+    GetCompoundPaddingBottom(&compoundPaddingBottom);
+    Int32 compoundPaddingLeft, compoundPaddingRight;
+    GetCompoundPaddingLeft(&compoundPaddingLeft);
+    GetCompoundPaddingRight(&compoundPaddingRight);
     Int32 scrollX = mScrollX;
     Int32 scrollY = mScrollY;
     Int32 right = mRight;
@@ -6409,7 +6130,8 @@ void TextView::OnDraw(
 
     Boolean isLayoutRtl;
     IsLayoutRtl(&isLayoutRtl);
-    Int32 offset = GetHorizontalOffsetForDrawables();
+    Int32 offset;
+    GetHorizontalOffsetForDrawables(&offset);
     Int32 leftOffset = isLayoutRtl ? 0 : offset;
     Int32 rightOffset = isLayoutRtl ? offset : 0 ;
     AutoPtr<Drawables> dr = mDrawables;
@@ -6492,8 +6214,9 @@ void TextView::OnDraw(
     /*  Would be faster if we didn't have to do this. Can we chop the
         (displayable) text so that we don't need to do this ever?
     */
-    Int32 extendedPaddingTop = GetExtendedPaddingTop();
-    Int32 extendedPaddingBottom = GetExtendedPaddingBottom();
+    Int32 extendedPaddingTop, extendedPaddingBottom;
+    GetExtendedPaddingTop(&extendedPaddingTop);
+    GetExtendedPaddingBottom(&extendedPaddingBottom);
 
     Int32 vspace = mBottom - mTop - compoundPaddingBottom - compoundPaddingTop;
     Int32 maxScrollY;
@@ -6533,10 +6256,14 @@ void TextView::OnDraw(
     Int32 absoluteGravity = Gravity::GetAbsoluteGravity(mGravity, layoutDirection);
     if (mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE &&
         mMarqueeFadeMode != MARQUEE_FADE_SWITCH_SHOW_ELLIPSIS) {
-        if (!mSingleLine && GetLineCount() == 1 && CanMarquee() &&
+        Int32 linecount;
+        if (!mSingleLine && (GetLineCount(&linecount), linecount) == 1 && CanMarquee() &&
             (absoluteGravity & IGravity::HORIZONTAL_GRAVITY_MASK) != IGravity::LEFT) {
                 Int32 width = mRight - mLeft;
-                Int32 padding = GetCompoundPaddingLeft() + GetCompoundPaddingRight();
+                Int32 padding, compoundPaddingRight;
+                GetCompoundPaddingLeft(&padding);
+                GetCompoundPaddingRight(&compoundPaddingRight);
+                padding += compoundPaddingRight;
                 Float dx;
                 mLayout->GetLineRight(0, &dx);
                 dx = dx - (width - padding);
@@ -6582,12 +6309,14 @@ ECode TextView::GetFocusedRect(
         return View::GetFocusedRect(rect);
     }
 
-    Int32 selEnd = GetSelectionEnd();
+    Int32 selEnd;
+    GetSelectionEnd(&selEnd);
     if (selEnd < 0) {
         return View::GetFocusedRect(rect);
     }
 
-    Int32 selStart = GetSelectionStart();
+    Int32 selStart;
+    GetSelectionStart(&selStart);
     if (selStart < 0 || selStart >= selEnd) {
         Int32 line, l, t, r, b;
         mLayout->GetLineForOffset(selEnd, &line);
@@ -6636,58 +6365,31 @@ ECode TextView::GetFocusedRect(
     }
 
     // Adjust for padding and gravity.
-    Int32 paddingLeft = GetCompoundPaddingLeft();
-    Int32 paddingTop = GetExtendedPaddingTop();
+    Int32 paddingLeft, paddingTop;
+    GetCompoundPaddingLeft(&paddingLeft);
+    GetExtendedPaddingTop(&paddingTop);
     if ((mGravity & IGravity::VERTICAL_GRAVITY_MASK) != IGravity::TOP) {
         paddingTop += GetVerticalOffset(FALSE);
     }
     rect->Offset(paddingLeft, paddingTop);
 
-    Int32 paddingBottom = GetExtendedPaddingBottom();
-    Int32 b;
+    Int32 paddingBottom, b;
+    GetExtendedPaddingBottom(&paddingBottom);
     rect->GetBottom(&b);
     rect->SetBottom(b + paddingBottom);
     return NOERROR;
-}
-
-Int32 TextView::GetLineCount()
-{
-    Int32 count = 0;
-    if (mLayout != NULL) mLayout->GetLineCount(&count);
-    return count;
 }
 
 ECode TextView::GetLineCount(
     /* [out] */ Int32* count)
 {
     VALIDATE_NOT_NULL(count)
-    *count = GetLineCount();
+    if (mLayout != NULL) {
+        mLayout->GetLineCount(count);
+    } else {
+        *count = 0;
+    }
     return NOERROR;
-}
-
-Int32 TextView::GetLineBounds(
-    /* [in] */ Int32 line,
-    /* [in] */ IRect* bounds)
-{
-    if (mLayout == NULL) {
-        if (bounds != NULL) {
-            bounds->Set(0, 0, 0, 0);
-        }
-        return 0;
-    }
-    else {
-        Int32 baseline;
-        mLayout->GetLineBounds(line, bounds, &baseline);
-
-        Int32 voffset = GetExtendedPaddingTop();
-        if ((mGravity & IGravity::VERTICAL_GRAVITY_MASK) != IGravity::TOP) {
-            voffset += GetVerticalOffset(TRUE);
-        }
-        if (bounds != NULL) {
-            bounds->Offset(GetCompoundPaddingLeft(), voffset);
-        }
-        return baseline + voffset;
-    }
 }
 
 ECode TextView::GetLineBounds(
@@ -6696,8 +6398,28 @@ ECode TextView::GetLineBounds(
     /* [out] */ Int32* y)
 {
     VALIDATE_NOT_NULL(y)
-    *y = GetLineBounds(line, bounds);
-    return NOERROR;
+    if (mLayout == NULL) {
+        if (bounds != NULL) {
+            bounds->Set(0, 0, 0, 0);
+        }
+        *y = 0;
+        return NOERROR;
+    }
+    else {
+        Int32 baseline, voffset;
+        mLayout->GetLineBounds(line, bounds, &baseline);
+        GetExtendedPaddingTop(&voffset);
+        if ((mGravity & IGravity::VERTICAL_GRAVITY_MASK) != IGravity::TOP) {
+            voffset += GetVerticalOffset(TRUE);
+        }
+        if (bounds != NULL) {
+            Int32 compoundPaddingLeft;
+            GetCompoundPaddingLeft(&compoundPaddingLeft);
+            bounds->Offset(compoundPaddingLeft, voffset);
+        }
+        *y = baseline + voffset;
+        return NOERROR;
+    }
 }
 
 ECode TextView::GetBaseline(
@@ -6723,7 +6445,9 @@ ECode TextView::GetBaseline(
     }
 
     mLayout->GetLineBaseline(0, baseline);
-    *baseline += GetExtendedPaddingTop() + voffset;
+    Int32 extendedPaddingTop;
+    GetExtendedPaddingTop(&extendedPaddingTop);
+    *baseline += extendedPaddingTop + voffset;
 
     return NOERROR;
 }
@@ -6739,8 +6463,9 @@ Int32 TextView::GetFadeTop(
     }
 
     if (offsetRequired) voffset += GetTopPaddingOffset();
-
-    return GetExtendedPaddingTop() + voffset;
+    Int32 extendedPaddingTop;
+    GetExtendedPaddingTop(&extendedPaddingTop);
+    return extendedPaddingTop + voffset;
 }
 
 Int32 TextView::GetFadeHeight(
@@ -6883,7 +6608,8 @@ ECode TextView::OnKeyMultiple(
 
 Boolean TextView::ShouldAdvanceFocusOnEnter()
 {
-    AutoPtr<IKeyListener> keyListener = GetKeyListener();
+    AutoPtr<IKeyListener> keyListener;
+    GetKeyListener((IKeyListener**)&keyListener);
     if (keyListener == NULL) {
         return FALSE;
     }
@@ -6905,7 +6631,8 @@ Boolean TextView::ShouldAdvanceFocusOnEnter()
 
 Boolean TextView::ShouldAdvanceFocusOnTab()
 {
-    AutoPtr<IKeyListener> keyListener = GetKeyListener();
+    AutoPtr<IKeyListener> keyListener;
+    GetKeyListener((IKeyListener**)&keyListener);
     assert(0);
     /*if (keyListener != NULL && !mSingleLine && mEditor != NULL &&
             (mEditor->mInputType & IInputType::TYPE_MASK_CLASS) == IInputType::TYPE_CLASS_TEXT) {
@@ -7137,12 +6864,15 @@ ECode TextView::OnKeyUp(
                 */
                 Boolean clickListeners;
                 if (HasOnClickListeners(&clickListeners), !clickListeners) {
-                    if (mMovement != NULL && IEditable::Probe(mText)
-                        && mLayout != NULL && OnCheckIsTextEditor()) {
+                    Boolean onCheckIsTextEditor;
+                    if (mMovement != NULL && IEditable::Probe(mText) && mLayout != NULL
+                        && (OnCheckIsTextEditor(&onCheckIsTextEditor), onCheckIsTextEditor)) {
                         assert(0);
                         AutoPtr<IInputMethodManager> imm;// = CInputMethodManager::PeekInstance();
                         ViewClicked(imm);
-                        if (imm != NULL && GetShowSoftInputOnFocus()) {
+                        Boolean showSoftInputOnFocus;
+                        if (imm != NULL &&
+                            (GetShowSoftInputOnFocus(&showSoftInputOnFocus), showSoftInputOnFocus)) {
                             imm->ShowSoftInput(THIS_PROBE(IView), 0, &result);
                         }
                     }
@@ -7244,18 +6974,23 @@ ECode TextView::OnKeyUp(
     return View::OnKeyUp(keyCode, event, resValue);
 }
 
-Boolean TextView::OnCheckIsTextEditor()
+ECode TextView::OnCheckIsTextEditor(
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     assert(0);
-    //return mEditor != NULL && mEditor->mInputType != IInputType::TYPE_NULL;
-    return FALSE;
+    //*res = mEditor != NULL && mEditor->mInputType != IInputType::TYPE_NULL;
+    return NOERROR;
 }
 
-AutoPtr<IInputConnection> TextView::OnCreateInputConnection(
-   /* [in] */ IEditorInfo* outAttrs)
+ECode TextView::OnCreateInputConnection(
+    /* [in] */ IEditorInfo* outAttrs,
+    /* [out] */ IInputConnection** res)
 {
-    Boolean isEnabled;
-    if (OnCheckIsTextEditor() && (IsEnabled(&isEnabled), isEnabled)) {
+    VALIDATE_NOT_NULL(res)
+    Boolean isEnabled, onCheckIsTextEditor;
+    if ((OnCheckIsTextEditor(&onCheckIsTextEditor), onCheckIsTextEditor)
+        && (IsEnabled(&isEnabled), isEnabled)) {
         assert(0);
         /*mEditor->CreateInputMethodStateIfNeeded();
         outAttrs->SetInputType(GetInputType());
@@ -7320,26 +7055,24 @@ AutoPtr<IInputConnection> TextView::OnCreateInputConnection(
            AutoPtr<IInputConnection> ic;
            assert(0);
            //CEditableInputConnection::New(THIS_PROBE(ITextView), (IEditableInputConnection**)&ic);
-           outAttrs->SetInitialSelStart(GetSelectionStart());
-           outAttrs->SetInitialSelEnd(GetSelectionEnd());
+           Int32 start, end;
+           GetSelectionStart(&start);
+           GetSelectionEnd(&end);
+           outAttrs->SetInitialSelStart(start);
+           outAttrs->SetInitialSelEnd(end);
 
-           Int32 initialCapsMode = 0;
-           ic->GetCursorCapsMode(GetInputType(), &initialCapsMode);
+           Int32 initialCapsMode = 0, inputType;
+           GetInputType(&inputType);
+           ic->GetCursorCapsMode(inputType, &initialCapsMode);
            outAttrs->SetInitialCapsMode(initialCapsMode);
-           return ic;
+           *res = ic;
+           REFCOUNT_ADD(*res)
+           return NOERROR;
         }
     }
 
-    return NULL;
-}
-
-Boolean TextView::ExtractText(
-    /* [in] */ IExtractedTextRequest* request,
-    /* [in] */ IExtractedText* outText)
-{
-    CreateEditorIfNeeded();
-    assert(0);
-    //return mEditor->ExtractText(request, outText);
+    *res = NULL;
+    return NOERROR;
 }
 
 ECode TextView::ExtractText(
@@ -7348,7 +7081,8 @@ ECode TextView::ExtractText(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = ExtractText(request, outText);
+    assert(0);
+    //*result = mEditor->ExtractText(request, outText);
     return NOERROR;
 }
 
@@ -7374,7 +7108,8 @@ ECode TextView::SetExtractedText(
 {
     assert(text != NULL);
 
-    AutoPtr<IEditable> content = GetEditableText();
+    AutoPtr<IEditable> content;
+    GetEditableText((IEditable**)&content);
     AutoPtr<ICharSequence> tt;
     text->GetText((ICharSequence**)&tt);
     if (tt != NULL) {
@@ -7406,7 +7141,8 @@ ECode TextView::SetExtractedText(
     // avoid crashes.  If this is a partial update, it is possible that
     // the underlying text may have changed, causing us problems here.
     // Also we just don't want to trust clients to do the right thing.
-    AutoPtr<ICharSequence> sp = GetText();
+    AutoPtr<ICharSequence> sp;
+    GetText((ICharSequence**)&sp);
     AutoPtr<ISpannable> spannable = ISpannable::Probe(sp);
     Int32 N;
     sp->GetLength(&N);
@@ -7484,20 +7220,13 @@ ECode TextView::OnEndBatchEdit()
     return NOERROR;
 }
 
-Boolean TextView::OnPrivateIMECommand(
-    /* [in] */ const String& action,
-    /* [in] */ IBundle* data)
-{
-    return FALSE;
-}
-
 ECode TextView::OnPrivateIMECommand(
     /* [in] */ const String& action,
     /* [in] */ IBundle* data,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = OnPrivateIMECommand(action, data);
+    *result = FALSE;
     return NOERROR;
 }
 
@@ -7524,7 +7253,10 @@ void TextView::NullLayouts()
 
 void TextView::AssumeLayout()
 {
-    Int32 width = mRight - mLeft - GetCompoundPaddingLeft() - GetCompoundPaddingRight();
+    Int32 compoundPaddingLeft, compoundPaddingRight;
+    GetCompoundPaddingLeft(&compoundPaddingLeft);
+    GetCompoundPaddingRight(&compoundPaddingRight);
+    Int32 width = mRight - mLeft - compoundPaddingLeft - compoundPaddingRight;
 
     if (width < 1) {
         width = 0;
@@ -7631,7 +7363,8 @@ void TextView::MakeNewLayout(
     Int32 oldDir = 0;
     if (testDirChange) mLayout->GetParagraphDirection(0, &oldDir);
 
-    AutoPtr<IKeyListener> keyListener = GetKeyListener();
+    AutoPtr<IKeyListener> keyListener;
+    GetKeyListener((IKeyListener**)&keyListener);
     Boolean shouldEllipsize = mEllipsize !=
         Elastos::Droid::Text::TextUtilsTruncateAt_NONE && keyListener == NULL;
     Boolean switchEllipsize = mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE &&
@@ -7772,7 +7505,8 @@ AutoPtr<ILayout> TextView::MakeSingleLayout(
     AutoPtr<IBoringLayoutMetrics> boring = _boring;
     AutoPtr<ILayout> result;
     if (ISpannable::Probe(mText)) {
-        AutoPtr<IKeyListener> keyListener = GetKeyListener();
+        AutoPtr<IKeyListener> keyListener;
+        GetKeyListener((IKeyListener**)&keyListener);
         ASSERT_SUCCEEDED(CDynamicLayout::New(mText, mTransformed, mTextPaint, wantWidth,
             alignment, mTextDir, mSpacingMult, mSpacingAdd, mIncludePad,
             keyListener == NULL ? effectiveEllipsize : Elastos::Droid::Text::TextUtilsTruncateAt_NONE,
@@ -7857,7 +7591,8 @@ Boolean TextView::CompressText(
     // Only compress the text if it hasn't been compressed by the previous pass
     Float scaleX;
     IPaint::Probe(mTextPaint)->GetTextScaleX(&scaleX);
-    if (width > 0.0f && mLayout != NULL && GetLineCount() == 1 && !mUserSetTextScaleX &&
+    Int32 linecount;
+    if (width > 0.0f && mLayout != NULL && (GetLineCount(&linecount), linecount) == 1 && !mUserSetTextScaleX &&
             scaleX == 1.0f) {
         Float textWidth;
         mLayout->GetLineWidth(0, &textWidth);
@@ -7919,16 +7654,11 @@ ECode TextView::SetIncludeFontPadding(
     return NOERROR;
 }
 
-Boolean TextView::GetIncludeFontPadding()
-{
-    return mIncludePad;
-}
-
 ECode TextView::GetIncludeFontPadding(
     /* [out] */ Boolean* padding)
 {
     VALIDATE_NOT_NULL(padding)
-    *padding = GetIncludeFontPadding();
+    *padding = mIncludePad;
     return NOERROR;
 }
 
@@ -8018,17 +7748,24 @@ void TextView::OnMeasure(
                 width = hintWidth;
             }
         }
-        width += GetCompoundPaddingLeft() + GetCompoundPaddingRight();
+        Int32 compoundPaddingLeft, compoundPaddingRight;
+        GetCompoundPaddingLeft(&compoundPaddingLeft);
+        GetCompoundPaddingRight(&compoundPaddingRight);
+        width += compoundPaddingLeft + compoundPaddingRight;
 
         if (mMaxWidthMode == EMS) {
-            width = Elastos::Core::Math::Min(width, mMaxWidth * GetLineHeight());
+            Int32 lineHeight;
+            GetLineHeight(&lineHeight);
+            width = Elastos::Core::Math::Min(width, mMaxWidth * lineHeight);
         }
         else {
             width = Elastos::Core::Math::Min(width, mMaxWidth);
         }
 
         if (mMinWidthMode == EMS) {
-            width = Elastos::Core::Math::Max(width, mMinWidth * GetLineHeight());
+            Int32 lineHeight;
+            GetLineHeight(&lineHeight);
+            width = Elastos::Core::Math::Max(width, mMinWidth * lineHeight);
         }
         else {
             width = Elastos::Core::Math::Max(width, mMinWidth);
@@ -8041,7 +7778,10 @@ void TextView::OnMeasure(
             width = Elastos::Core::Math::Min(widthSize, width);
         }
     }
-    Int32 want = width - GetCompoundPaddingLeft() - GetCompoundPaddingRight();
+    Int32 compoundPaddingLeft, compoundPaddingRight;
+    GetCompoundPaddingLeft(&compoundPaddingLeft);
+    GetCompoundPaddingRight(&compoundPaddingRight);
+    Int32 want = width - compoundPaddingLeft - compoundPaddingRight;
     Int32 unpaddedWidth = want;
     if (mHorizontallyScrolling) want = VERY_WIDE;
     Int32 hintWant = want;
@@ -8050,16 +7790,21 @@ void TextView::OnMeasure(
         mHintLayout->GetWidth(&hintWidth);
     }
     if (mLayout == NULL) {
+        Int32 compoundPaddingLeft, compoundPaddingRight;
+        GetCompoundPaddingLeft(&compoundPaddingLeft);
+        GetCompoundPaddingRight(&compoundPaddingRight);
         MakeNewLayout(want, hintWant, boring, hintBoring,
-            width - GetCompoundPaddingLeft() - GetCompoundPaddingRight(), FALSE);
+            width - compoundPaddingLeft - compoundPaddingRight, FALSE);
     }
     else {
         Int32 layoutWidth, layoutEllipsizedWidth;
         mLayout->GetWidth(&layoutWidth);
         mLayout->GetEllipsizedWidth(&layoutEllipsizedWidth);
+        Int32 compoundPaddingLeft, compoundPaddingRight;
+        GetCompoundPaddingLeft(&compoundPaddingLeft);
+        GetCompoundPaddingRight(&compoundPaddingRight);
         Boolean layoutChanged = (layoutWidth != want) || (hintWidth != hintWant) ||
-            (layoutEllipsizedWidth !=
-            width - GetCompoundPaddingLeft() - GetCompoundPaddingRight());
+            (layoutEllipsizedWidth != width - compoundPaddingLeft - compoundPaddingRight);
 
         Boolean widthChanged = (mHint == NULL) &&
             (mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_NONE) &&
@@ -8070,8 +7815,11 @@ void TextView::OnMeasure(
             if (!maximumChanged && widthChanged) {
                 mLayout->IncreaseWidthTo(want);
             } else {
+                Int32 compoundPaddingLeft, compoundPaddingRight;
+                GetCompoundPaddingLeft(&compoundPaddingLeft);
+                GetCompoundPaddingRight(&compoundPaddingRight);
                 MakeNewLayout(want, hintWant, boring, hintBoring,
-                    width - GetCompoundPaddingLeft() - GetCompoundPaddingRight(), FALSE);
+                    width - compoundPaddingLeft - compoundPaddingRight, FALSE);
             }
         } else {
             // Nothing has changed
@@ -8096,8 +7844,10 @@ void TextView::OnMeasure(
     if (mAttachInfo != NULL) {
         Int32 count;
         mLayout->GetLineCount(&count);
-
-        Int32 unpaddedHeight = height - GetCompoundPaddingTop() - GetCompoundPaddingBottom();
+        Int32 compoundPaddingTop, compoundPaddingBottom;
+        GetCompoundPaddingTop(&compoundPaddingTop);
+        GetCompoundPaddingBottom(&compoundPaddingBottom);
+        Int32 unpaddedHeight = height - compoundPaddingTop - compoundPaddingBottom;
         if (mMaxMode == LINES && count > mMaximum) {
             Int32 pos;
             mLayout->GetLineTop(mMaximum, &pos);
@@ -8137,7 +7887,10 @@ Int32 TextView::GetDesiredHeight(
 
     Int32 linecount, pad, desired;
     layout->GetLineCount(&linecount);
-    pad = GetCompoundPaddingTop() + GetCompoundPaddingBottom();
+    GetCompoundPaddingTop(&pad);
+    Int32 compoundPaddingBottom;
+    GetCompoundPaddingBottom(&compoundPaddingBottom);
+    pad += compoundPaddingBottom;
     layout->GetLineTop(linecount, &desired);
 
     AutoPtr<Drawables> dr = mDrawables;
@@ -8173,7 +7926,9 @@ Int32 TextView::GetDesiredHeight(
 
     if (mMinMode == LINES) {
         if (linecount < mMinimum) {
-            desired += GetLineHeight() * (mMinimum - linecount);
+            Int32 lineHeight;
+            GetLineHeight(&lineHeight);
+            desired += lineHeight * (mMinimum - linecount);
         }
     }
     else {
@@ -8234,10 +7989,12 @@ void TextView::CheckForRelayout()
     Int32 lw, lh;
     mLayoutParams->GetWidth(&lw);
     mLayoutParams->GetHeight(&lh);
+    Int32 compoundPaddingLeft, compoundPaddingRight;
     if ((lw != IViewGroupLayoutParams::WRAP_CONTENT ||
         (mMaxWidthMode == mMinWidthMode && mMaxWidth == mMinWidth)) &&
         (mHint == NULL || mHintLayout != NULL) &&
-        (mRight - mLeft - GetCompoundPaddingLeft() - GetCompoundPaddingRight() > 0)) {
+        (mRight - mLeft - (GetCompoundPaddingLeft(&compoundPaddingLeft), compoundPaddingLeft)
+        - (GetCompoundPaddingRight(&compoundPaddingRight), compoundPaddingRight) > 0)) {
         // Static width, so try making a new text layout.
 
         Int32 oldht;
@@ -8254,9 +8011,12 @@ void TextView::CheckForRelayout()
          * changing (unless we do the RequestLayout(), in which case it
          * will happen at measure).
          */
+        Int32 compoundPaddingLeft, compoundPaddingRight;
+        GetCompoundPaddingLeft(&compoundPaddingLeft);
+        GetCompoundPaddingRight(&compoundPaddingRight);
         MakeNewLayout(
             want, hintWant, UNKNOWN_BORING, UNKNOWN_BORING,
-            mRight - mLeft - GetCompoundPaddingLeft() - GetCompoundPaddingRight(),
+            mRight - mLeft - compoundPaddingLeft - compoundPaddingRight,
             FALSE);
 
         if (mEllipsize != Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE) {
@@ -8309,7 +8069,8 @@ ECode TextView::OnLayout(
         mDeferScroll = -1;
         Int32 length;
         mText->GetLength(&length);
-        BringPointIntoView(Elastos::Core::Math::Min(curs, length));
+        Boolean bringPointIntoView;
+        BringPointIntoView(Elastos::Core::Math::Min(curs, length), &bringPointIntoView);
     }
 
     return NOERROR;
@@ -8332,10 +8093,14 @@ Boolean TextView::BringTextIntoView()
 
     LayoutAlignment a;
     layout->GetParagraphAlignment(line, &a);
-    Int32 dir;
+    Int32 dir, compoundPaddingLeft, compoundPaddingRight, extendedPaddingTop, extendedPaddingBottom;
     layout->GetParagraphDirection(line, &dir);
-    Int32 hspace = mRight - mLeft - GetCompoundPaddingLeft() - GetCompoundPaddingRight();
-    Int32 vspace = mBottom - mTop - GetExtendedPaddingTop() - GetExtendedPaddingBottom();
+    GetCompoundPaddingLeft(&compoundPaddingLeft);
+    GetCompoundPaddingRight(&compoundPaddingRight);
+    GetExtendedPaddingTop(&extendedPaddingTop);
+    GetExtendedPaddingBottom(&extendedPaddingBottom);
+    Int32 hspace = mRight - mLeft - compoundPaddingLeft - compoundPaddingRight;
+    Int32 vspace = mBottom - mTop - extendedPaddingTop - extendedPaddingBottom;
     Int32 ht;
     layout->GetHeight(&ht);
 
@@ -8407,20 +8172,26 @@ Boolean TextView::BringTextIntoView()
     return FALSE;
 }
 
-Boolean TextView::BringPointIntoView(
-    /* [in] */ Int32 offset)
+CARAPI TextView::BringPointIntoView(
+    /* [in] */ Int32 offset,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
     Boolean isLayoutRequested;
     if (IsLayoutRequested(&isLayoutRequested), isLayoutRequested) {
         mDeferScroll = offset;
-        return FALSE;
+        *result = FALSE;
+        return NOERROR;
     }
 
     Boolean changed = FALSE;
 
     AutoPtr<ILayout> layout = IsShowingHint() ? mHintLayout: mLayout;
 
-    if (layout == NULL) return changed;
+    if (layout == NULL) {
+        *result = changed;
+        return NOERROR;
+    }
 
     Int32 line = 0;
     layout->GetLineForOffset(offset, &line);
@@ -8473,11 +8244,14 @@ Boolean TextView::BringPointIntoView(
     layout->GetLineLeft(line, &lineLeft);
     Int32 left = (Int32) Elastos::Core::Math::Floor(lineLeft);
     Int32 right = (Int32) Elastos::Core::Math::Ceil(lineRight);
-    Int32 ht;
+    Int32 ht, compoundPaddingLeft, compoundPaddingRight, extendedPaddingTop, extendedPaddingBottom;
     layout->GetHeight(&ht);
-
-    Int32 hspace = mRight - mLeft - GetCompoundPaddingLeft() - GetCompoundPaddingRight();
-    Int32 vspace = mBottom - mTop - GetExtendedPaddingTop() - GetExtendedPaddingBottom();
+    GetCompoundPaddingLeft(&compoundPaddingLeft);
+    GetCompoundPaddingRight(&compoundPaddingRight);
+    GetExtendedPaddingTop(&extendedPaddingTop);
+    GetExtendedPaddingBottom(&extendedPaddingBottom);
+    Int32 hspace = mRight - mLeft - compoundPaddingLeft - compoundPaddingRight;
+    Int32 vspace = mBottom - mTop - extendedPaddingTop - extendedPaddingBottom;
 
     if (!mHorizontallyScrolling && right - left > hspace && right > x) {
         // If cursor has been clamped, make sure we don't scroll.
@@ -8622,27 +8396,24 @@ Boolean TextView::BringPointIntoView(
         }
     }
 
-    return changed;
-}
-
-ECode TextView::BringPointIntoView(
-    /* [in] */ Int32 offset,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result)
-    *result = BringPointIntoView(offset);
+    *result = changed;
     return NOERROR;
 }
 
-Boolean TextView::MoveCursorToVisibleOffset()
+ECode TextView::MoveCursorToVisibleOffset(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
     if (!(ISpannable::Probe(mText))) {
-        return FALSE;
+        *result = FALSE;
+        return NOERROR;
     }
-    Int32 start = GetSelectionStart();
-    Int32 end = GetSelectionEnd();
+    Int32 start, end;
+    GetSelectionStart(&start);
+    GetSelectionEnd(&end);
     if (start != end) {
-        return FALSE;
+        *result = FALSE;
+        return NOERROR;
     }
 
     //First: make sure the line is visible on screen:
@@ -8650,11 +8421,12 @@ Boolean TextView::MoveCursorToVisibleOffset()
     Int32 line;
     mLayout->GetLineForOffset(start, &line);
 
-    Int32 top;
+    Int32 top, bottom, extendedPaddingTop, extendedPaddingBottom;
     mLayout->GetLineTop(line, &top);
-    Int32 bottom;
     mLayout->GetLineTop(line + 1, &bottom);
-    Int32 vspace = mBottom - mTop - GetExtendedPaddingTop() - GetExtendedPaddingBottom();
+    GetExtendedPaddingTop(&extendedPaddingTop);
+    GetExtendedPaddingBottom(&extendedPaddingBottom);
+    Int32 vspace = mBottom - mTop - extendedPaddingTop - extendedPaddingBottom;
     Int32 vslack = (bottom - top) / 2;
     if (vslack > vspace / 4)
         vslack = vspace / 4;
@@ -8668,8 +8440,10 @@ Boolean TextView::MoveCursorToVisibleOffset()
     }
 
     //Next: make sure the character is visible on screen:
-
-    Int32 hspace = mRight - mLeft - GetCompoundPaddingLeft() - GetCompoundPaddingRight();
+    Int32 compoundPaddingLeft, compoundPaddingRight;
+    GetCompoundPaddingLeft(&compoundPaddingLeft);
+    GetCompoundPaddingRight(&compoundPaddingRight);
+    Int32 hspace = mRight - mLeft - compoundPaddingLeft - compoundPaddingRight;
     Int32 hs = mScrollX;
     Int32 leftChar;
     mLayout->GetOffsetForHorizontal(line, hs, &leftChar);
@@ -8689,16 +8463,10 @@ Boolean TextView::MoveCursorToVisibleOffset()
 
     if (newStart != start) {
         Selection::SetSelection(ISpannable::Probe(mText), newStart);
-        return TRUE;
+        *result = TRUE;
+        return NOERROR;
     }
-    return FALSE;
-}
-
-ECode TextView::MoveCursorToVisibleOffset(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result)
-    *result = MoveCursorToVisibleOffset();
+    *result = FALSE;
     return NOERROR;
 }
 
@@ -8725,10 +8493,12 @@ void TextView::GetInterestingRect(
     // Rectangle can can be expanded on first and last line to take
     // padding into account.
     // TODO Take left/right padding into account too?
-    Int32 count;
+    Int32 count, extendedPaddingTop, extendedPaddingBottom;
     mLayout->GetLineCount(&count);
-    if (line == 0) ((CRect*)r)->mTop -= GetExtendedPaddingTop();
-    if (line == count - 1) ((CRect*)r)->mBottom += GetExtendedPaddingBottom();
+    GetExtendedPaddingTop(&extendedPaddingTop);
+    GetExtendedPaddingBottom(&extendedPaddingBottom);
+    if (line == 0) ((CRect*)r)->mTop -= extendedPaddingTop;
+    if (line == count - 1) ((CRect*)r)->mBottom += extendedPaddingBottom;
 }
 
 void TextView::ConvertFromViewportToContentCoordinates(
@@ -8746,19 +8516,23 @@ void TextView::ConvertFromViewportToContentCoordinates(
 
 Int32 TextView::ViewportToContentHorizontalOffset()
 {
-    return GetCompoundPaddingLeft() - mScrollX;
+    Int32 compoundPaddingLeft;
+    GetCompoundPaddingLeft(&compoundPaddingLeft);
+    return compoundPaddingLeft - mScrollX;
 }
 
 Int32 TextView::ViewportToContentVerticalOffset()
 {
-    Int32 offset = GetExtendedPaddingTop() - mScrollY;
+    Int32 extendedPaddingTop;
+    GetExtendedPaddingTop(&extendedPaddingTop);
+    Int32 offset = extendedPaddingTop - mScrollY;
     if ((mGravity & IGravity::VERTICAL_GRAVITY_MASK) != IGravity::TOP) {
         offset += GetVerticalOffset(FALSE);
     }
     return offset;
 }
 
-void TextView::Debug(
+ECode TextView::Debug(
     /* [in] */ Int32 depth)
 {
     /*View::debug(depth);
@@ -8778,50 +8552,38 @@ void TextView::Debug(
     } else {
         output += "mText=NULL";
     }
-    Log::d(VIEW_LOG_TAG, output);*/
-}
-
-Int32 TextView::GetSelectionStart()
-{
-    AutoPtr<ICharSequence> text = GetText();
-    return Selection::GetSelectionStart(ICharSequence::Probe(text));
+    Log::d(VIEW_LOG_TAG, output);
+    return NOERROR;*/
 }
 
 ECode TextView::GetSelectionStart(
     /* [out] */ Int32* start)
 {
     VALIDATE_NOT_NULL(start)
-    *start = GetSelectionStart();
+    AutoPtr<ICharSequence> text;
+    GetText((ICharSequence**)&text);
+    *start = Selection::GetSelectionStart(ICharSequence::Probe(text));
     return NOERROR;
-}
-
-Int32 TextView::GetSelectionEnd()
-{
-    AutoPtr<ICharSequence> text = GetText();
-    return Selection::GetSelectionEnd(ICharSequence::Probe(text));
 }
 
 ECode TextView::GetSelectionEnd(
     /* [out] */ Int32* end)
 {
     VALIDATE_NOT_NULL(end)
-    *end = GetSelectionEnd();
+    AutoPtr<ICharSequence> text;
+    GetText((ICharSequence**)&text);
+    *end = Selection::GetSelectionEnd(ICharSequence::Probe(text));
     return NOERROR;
-}
-
-Boolean TextView::HasSelection()
-{
-    Int32 selectionStart = GetSelectionStart();
-    Int32 selectionEnd = GetSelectionEnd();
-
-    return selectionStart >= 0 && selectionStart != selectionEnd;
 }
 
 ECode TextView::HasSelection(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = HasSelection();
+    Int32 selectionStart, selectionEnd;
+    GetSelectionStart(&selectionStart);
+    GetSelectionEnd(&selectionEnd);
+    *result = selectionStart >= 0 && selectionStart != selectionEnd;
     return NOERROR;
 }
 
@@ -8922,22 +8684,12 @@ ECode TextView::SetMarqueeRepeatLimit(
     return NOERROR;
 }
 
-Int32 TextView::GetMarqueeRepeatLimit()
-{
-    return mMarqueeRepeatLimit;
-}
-
 ECode TextView::GetMarqueeRepeatLimit(
     /* [out] */ Int32* marqueeLimit)
 {
     VALIDATE_NOT_NULL(marqueeLimit)
     *marqueeLimit = mMarqueeRepeatLimit;
     return NOERROR;
-}
-
-TextUtilsTruncateAt TextView::GetEllipsize()
-{
-    return mEllipsize;
 }
 
 ECode TextView::GetEllipsize(
@@ -8979,24 +8731,21 @@ ECode TextView::SetCursorVisible(
     return NOERROR;
 }
 
-Boolean TextView::IsCursorVisible()
-{
-    // TRUE is the default value
-    assert(0);
-    //return mEditor == NULL ? TRUE : mEditor->mCursorVisible;
-}
-
 ECode TextView::IsCursorVisible(
     /* [out] */ Boolean* visible)
 {
     VALIDATE_NOT_NULL(visible)
-    *visible = IsCursorVisible();
+    assert(0);
+    //*visible = mEditor == NULL ? TRUE : mEditor->mCursorVisible;
     return NOERROR;
 }
 
 Boolean TextView::CanMarquee()
 {
-    Int32 width = (mRight - mLeft - GetCompoundPaddingLeft() - GetCompoundPaddingRight());
+    Int32 compoundPaddingLeft, compoundPaddingRight;
+    GetCompoundPaddingLeft(&compoundPaddingLeft);
+    GetCompoundPaddingRight(&compoundPaddingRight);
+    Int32 width = (mRight - mLeft - compoundPaddingLeft - compoundPaddingRight);
     Float lw, mlw;
     mLayout->GetLineWidth(0, &lw);
     return width > 0 && (lw > width ||
@@ -9007,19 +8756,23 @@ Boolean TextView::CanMarquee()
 void TextView::StartMarquee()
 {
     // Do not ellipsize EditText
-    AutoPtr<IKeyListener> keyListener = GetKeyListener();
+    AutoPtr<IKeyListener> keyListener;
+    GetKeyListener((IKeyListener**)&keyListener);
     if (keyListener != NULL) return;
 
-    Int32 width;
+    Int32 width, compoundPaddingLeft, compoundPaddingRight;
     GetWidth(&width);
-    if (CompressText(width - GetCompoundPaddingLeft() - GetCompoundPaddingRight())) {
+    GetCompoundPaddingLeft(&compoundPaddingLeft);
+    GetCompoundPaddingRight(&compoundPaddingRight);
+    if (CompressText(width - compoundPaddingLeft - compoundPaddingRight)) {
         return;
     }
     Boolean isFocused, isSelected;
+    Int32 linecount;
     if ((mMarquee == NULL || mMarquee->IsStopped())
         && ((IsFocused(&isFocused), isFocused)
         || (IsSelected(&isSelected), isSelected)) &&
-        GetLineCount() == 1 && CanMarquee()) {
+        (GetLineCount(&linecount), linecount) == 1 && CanMarquee()) {
 
         if (mMarqueeFadeMode == MARQUEE_FADE_SWITCH_SHOW_ELLIPSIS) {
             mMarqueeFadeMode = MARQUEE_FADE_SWITCH_SHOW_FADE;
@@ -9195,7 +8948,8 @@ void TextView::SendAfterTextChanged(
 void TextView::UpdateAfterEdit()
 {
     Invalidate();
-    Int32 curs = GetSelectionStart();
+    Int32 curs;
+    GetSelectionStart(&curs);
 
     if (curs >= 0 || (mGravity & IGravity::VERTICAL_GRAVITY_MASK) == IGravity::BOTTOM) {
         RegisterForPreDraw();
@@ -9207,7 +8961,8 @@ void TextView::UpdateAfterEdit()
         mHighlightPathBogus = TRUE;
         assert(0);
         //if (mEditor != NULL) mEditor->MakeBlink();
-        BringPointIntoView(curs);
+        Boolean bringPointIntoView;
+        BringPointIntoView(curs, &bringPointIntoView);
     }
 }
 
@@ -9488,9 +9243,11 @@ ECode TextView::SetSelected(
 }
 
 
-Boolean TextView::OnTouchEvent(
-    /* [in] */ IMotionEvent* event)
+ECode TextView::OnTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     Int32 action;
     event->GetActionMasked(&action);
 
@@ -9508,15 +9265,16 @@ Boolean TextView::OnTouchEvent(
     assert(0);
     /*if (mEditor != NULL && mEditor->mDiscardNextActionUp && action == IMotionEvent::ACTION_UP) {
         mEditor->mDiscardNextActionUp = FALSE;
-        return superResult;
+        *res = superResult;
+        return NOERROR;
     }*/
     assert(0);
     Boolean isFocused;
     Boolean touchIsFinished = (action == IMotionEvent::ACTION_UP) &&
             /*(mEditor == NULL || !mEditor->mIgnoreActionUpEvent) &&*/
         (IsFocused(&isFocused), isFocused);
-    Boolean isEnabled;
-     if ((mMovement != NULL || OnCheckIsTextEditor())
+    Boolean isEnabled, onCheckIsTextEditor;
+     if ((mMovement != NULL || (OnCheckIsTextEditor(&onCheckIsTextEditor), onCheckIsTextEditor))
         && (IsEnabled(&isEnabled), isEnabled)
         && ISpannable::Probe(mText) && mLayout != NULL) {
         AutoPtr<ISpannable> spannable = ISpannable::Probe(mText);
@@ -9527,14 +9285,18 @@ Boolean TextView::OnTouchEvent(
             handled |= mMovement->OnTouchEvent(THIS_PROBE(ITextView), spannable, event, &result);
         }
 
-        Boolean textIsSelectable = IsTextSelectable();
+        Boolean textIsSelectable;
+        IsTextSelectable(&textIsSelectable);
         if (touchIsFinished && mLinksClickable && mAutoLinkMask != 0 && textIsSelectable) {
             // The LinkMovementMethod which should handle taps on links has not been installed
             // on non editable text that support text selection.
             // We reproduce its behavior here to open links for these.
             AutoPtr<ArrayOf<IInterface*> > links;
-            ISpanned::Probe(spannable)->GetSpans(GetSelectionStart(),
-                    GetSelectionEnd(), EIID_IClickableSpan, (ArrayOf<IInterface*>**)&links);
+            Int32 selectionStart, selectionEnd;
+            GetSelectionStart(&selectionStart);
+            GetSelectionEnd(&selectionEnd);
+            ISpanned::Probe(spannable)->GetSpans(selectionStart,
+                    selectionEnd, EIID_IClickableSpan, (ArrayOf<IInterface*>**)&links);
 
             if (links->GetLength() > 0) {
                 AutoPtr<IClickableSpan> cs = IClickableSpan::Probe((*links)[0]);
@@ -9567,23 +9329,28 @@ Boolean TextView::OnTouchEvent(
         }
 
         if (handled) {
-            return TRUE;
+            *res = TRUE;
+            return NOERROR;
         }
     }
 
-    return superResult;
+    *res = superResult;
+    return NOERROR;
 }
 
-Boolean TextView::OnGenericMotionEvent(
-    /* [in] */ IMotionEvent* event)
+ECode TextView::OnGenericMotionEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     if (mMovement != NULL && ISpannable::Probe(mText) && mLayout != NULL) {
         AutoPtr<ISpannable> spannable = (ISpannable*)ISpannable::Probe(mText);
 //        try {
         Boolean result;
         ECode ec = mMovement->OnGenericMotionEvent(THIS_PROBE(ITextView), spannable, event, &result);
         if (!FAILED(ec) && result) {
-            return TRUE;
+            *res = TRUE;
+            return NOERROR;
         }
 //        } catch (AbstractMethodError ex) {
 //            // onGenericMotionEvent was added to the MovementMethod interface in API 12.
@@ -9591,29 +9358,23 @@ Boolean TextView::OnGenericMotionEvent(
 //            // interface directly.
 //        }
     }
-    Boolean res;
-    View::OnGenericMotionEvent(event, &res);
-    return res;
+    return View::OnGenericMotionEvent(event, res);
 }
 
 Boolean TextView::IsTextEditable()
 {
-    Boolean isEnabled;
+    Boolean isEnabled, onCheckIsTextEditor;
     return mText != NULL && IEditable::Probe(mText)
-        && OnCheckIsTextEditor() && (IsEnabled(&isEnabled), isEnabled);
-}
-
-Boolean TextView::DidTouchFocusSelect()
-{
-    assert(0);
-    return mEditor != NULL; //&& mEditor->mTouchFocusSelected;
+        && (OnCheckIsTextEditor(&onCheckIsTextEditor), onCheckIsTextEditor)
+        && (IsEnabled(&isEnabled), isEnabled);
 }
 
 ECode TextView::DidTouchFocusSelect(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = DidTouchFocusSelect();
+    assert(0);
+    //*result = mEditor != NULL && mEditor->mTouchFocusSelected;
     return NOERROR;
 }
 
@@ -9625,21 +9386,22 @@ ECode TextView::CancelLongPress()
     return ec;
 }
 
-Boolean TextView::OnTrackballEvent(
-    /* [in] */ IMotionEvent* event)
+ECode TextView::OnTrackballEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     if (mMovement != NULL && ISpannable::Probe(mText) && mLayout != NULL) {
-        Boolean res;
+        Boolean result;
         mMovement->OnTrackballEvent(
             THIS_PROBE(ITextView), ISpannable::Probe(mText),
-            event, &res);
-        if (res) {
-            return TRUE;
+            event, &result);
+        if (result) {
+            *res = TRUE;
+            return NOERROR;
         }
     }
-    Boolean result;
-    View::OnTrackballEvent(event, &result);
-    return result;
+    return View::OnTrackballEvent(event, res);
 }
 
 ECode TextView::SetScroller(
@@ -9652,6 +9414,7 @@ ECode TextView::SetScroller(
 Float TextView::GetLeftFadingEdgeStrength()
 {
     if (mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE) {
+        Int32 linecount;
         if (mMarquee != NULL && !mMarquee->IsStopped()) {
             AutoPtr<Marquee> marquee = mMarquee;
             if (marquee->ShouldDrawLeftFade()) {
@@ -9661,7 +9424,7 @@ Float TextView::GetLeftFadingEdgeStrength()
             } else {
                 return 0.0f;
             }
-        } else if (GetLineCount() == 1) {
+        } else if ((GetLineCount(&linecount), linecount) == 1) {
             Float lr, ll;
             mLayout->GetLineLeft(0, &ll);
             mLayout->GetLineRight(0, &lr);
@@ -9669,11 +9432,12 @@ Float TextView::GetLeftFadingEdgeStrength()
                 case IGravity::LEFT:
                     return 0.0f;
                 case IGravity::RIGHT: {
-                    Int32 length;
+                    Int32 length, compoundPaddingLeft, compoundPaddingRight;
                     GetHorizontalFadingEdgeLength(&length);
-                    return (lr - (mRight - mLeft) -
-                            GetCompoundPaddingLeft() - GetCompoundPaddingRight() -
-                            ll) / length;
+                    GetCompoundPaddingLeft(&compoundPaddingLeft);
+                    GetCompoundPaddingRight(&compoundPaddingRight);
+                    return (lr - (mRight - mLeft) - compoundPaddingLeft -
+                        compoundPaddingRight - ll) / length;
                 }
                 case IGravity::CENTER_HORIZONTAL:
                 case IGravity::FILL_HORIZONTAL:
@@ -9686,9 +9450,11 @@ Float TextView::GetLeftFadingEdgeStrength()
                         Float lineRight, lineLeft;
                         mLayout->GetLineRight(0, &lineRight);
                         mLayout->GetLineLeft(0, &lineLeft);
-                        Int32 length;
+                        Int32 length, compoundPaddingLeft, compoundPaddingRight;
                         GetHorizontalFadingEdgeLength(&length);
-                        return (lineRight - (mRight - mLeft) - GetCompoundPaddingLeft() - GetCompoundPaddingRight() -
+                        GetCompoundPaddingLeft(&compoundPaddingLeft);
+                        GetCompoundPaddingRight(&compoundPaddingRight);
+                        return (lineRight - (mRight - mLeft) - compoundPaddingLeft - compoundPaddingRight -
                             lineLeft) / length;
                     }
                 }
@@ -9702,12 +9468,13 @@ Float TextView::GetRightFadingEdgeStrength()
 {
     if (mEllipsize == Elastos::Droid::Text::TextUtilsTruncateAt_MARQUEE &&
             mMarqueeFadeMode != MARQUEE_FADE_SWITCH_SHOW_ELLIPSIS) {
+        Int32 linecount;
         if (mMarquee != NULL && !mMarquee->IsStopped()) {
             AutoPtr<Marquee> marquee = mMarquee;
             Int32 length;
             GetHorizontalFadingEdgeLength(&length);
             return (marquee->mMaxFadeScroll - marquee->mScroll) / length;
-        } else if (GetLineCount() == 1) {
+        } else if ((GetLineCount(&linecount), linecount) == 1) {
             Int32 textWidth = 0;
             Float lineWidth;
             mLayout->GetLineWidth(0, &lineWidth);
@@ -9715,10 +9482,12 @@ Float TextView::GetRightFadingEdgeStrength()
             Int32 layoutDirection;
             GetLayoutDirection(&layoutDirection);
             Int32 absoluteGravity = Gravity::GetAbsoluteGravity(mGravity, layoutDirection);
+            Int32 compoundPaddingLeft, compoundPaddingRight;
+            GetCompoundPaddingLeft(&compoundPaddingLeft);
+            GetCompoundPaddingRight(&compoundPaddingRight);
             switch (absoluteGravity & IGravity::HORIZONTAL_GRAVITY_MASK) {
                 case IGravity::LEFT: {
-                    textWidth = (mRight - mLeft) - GetCompoundPaddingLeft() -
-                            GetCompoundPaddingRight();
+                    textWidth = (mRight - mLeft) - compoundPaddingLeft - compoundPaddingRight;
                     Int32 length;
                     GetHorizontalFadingEdgeLength(&length);
                     return (lineWidth - textWidth) / length;
@@ -9736,7 +9505,7 @@ Float TextView::GetRightFadingEdgeStrength()
                         Int32 length;
                         GetHorizontalFadingEdgeLength(&length);
                         return (lineWidth - ((mRight - mLeft) -
-                            GetCompoundPaddingLeft() - GetCompoundPaddingRight())) / length;
+                            compoundPaddingLeft - compoundPaddingRight)) / length;
                     }
                 }
             }
@@ -9772,9 +9541,11 @@ Int32 TextView::ComputeVerticalScrollRange()
 
 Int32 TextView::ComputeVerticalScrollExtent()
 {
-    Int32 height;
+    Int32 height, compoundPaddingTop, compoundPaddingBottom;
     GetHeight(&height);
-    return height - GetCompoundPaddingTop() - GetCompoundPaddingBottom();
+    GetCompoundPaddingTop(&compoundPaddingTop);
+    GetCompoundPaddingBottom(&compoundPaddingBottom);
+    return height - compoundPaddingTop - compoundPaddingBottom;
 }
 
 ECode TextView::FindViewsWithText(
@@ -9862,43 +9633,46 @@ Int32 TextView::GetTextColor(
     }
 }
 
-Boolean TextView::OnKeyShortcut(
+ECode TextView::OnKeyShortcut(
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     switch (keyCode) {
     case IKeyEvent::KEYCODE_A:
         if (CanSelectText()) {
-            return OnTextContextMenuItem(R::id::selectAll);
+            OnTextContextMenuItem(R::id::selectAll, res);
+            return NOERROR;
         }
 
         break;
 
     case IKeyEvent::KEYCODE_X:
         if (CanCut()) {
-            return OnTextContextMenuItem(R::id::cut);
+            OnTextContextMenuItem(R::id::cut, res);
+            return NOERROR;
         }
 
         break;
 
     case IKeyEvent::KEYCODE_C:
         if (CanCopy()) {
-            return OnTextContextMenuItem(R::id::copy);
+            OnTextContextMenuItem(R::id::copy, res);
+            return NOERROR;
         }
 
         break;
 
     case IKeyEvent::KEYCODE_V:
         if (CanPaste()) {
-            return OnTextContextMenuItem(R::id::paste);
+            OnTextContextMenuItem(R::id::paste, res);
+            return NOERROR;
         }
 
         break;
     }
-
-    Boolean res;
-    View::OnKeyShortcut(keyCode, event, &res);
-    return res;
+    return View::OnKeyShortcut(keyCode, event, res);
 }
 
 Boolean TextView::CanSelectText()
@@ -9918,9 +9692,9 @@ Boolean TextView::TextCanBeSelected()
     if (mMovement == NULL || mMovement->CanSelectArbitrarily(&result), !result) {
         return FALSE;
     }
-    Boolean isEnabled;
-    return IsTextEditable() ||
-        (IsTextSelectable() && ISpannable::Probe(mText)
+    Boolean isTextSelectable, isEnabled;
+    return IsTextEditable() || ((IsTextSelectable(&isTextSelectable), isTextSelectable)
+        && ISpannable::Probe(mText)
         && (IsEnabled(&isEnabled), isEnabled));
 }
 
@@ -9943,19 +9717,20 @@ ECode TextView::GetTextServicesLocale(
     /* [out] */ ILocale** locale)
 {
     VALIDATE_NOT_NULL(locale)
-    *locale = GetTextServicesLocale();
+    AutoPtr<ILocale> temp = GetTextServicesLocale(FALSE);
+    *locale = temp;
     REFCOUNT_ADD(*locale)
     return NOERROR;
 }
 
-AutoPtr<ILocale> TextView::GetTextServicesLocale()
+ECode TextView::GetSpellCheckerLocale(
+    /* [out] */ ILocale** local)
 {
-    return GetTextServicesLocale(FALSE);
-}
-
-AutoPtr<ILocale> TextView::GetSpellCheckerLocale()
-{
-    return GetTextServicesLocale(true /* allowNullLocale */);
+    VALIDATE_NOT_NULL(local)
+    AutoPtr<ILocale> temp = GetTextServicesLocale(TRUE /* allowNullLocale */);
+    *local = temp;
+    REFCOUNT_ADD(*local)
+    return NOERROR;
 }
 
 void TextView::UpdateTextServicesLocaleAsync()
@@ -10003,22 +9778,17 @@ ECode TextView::OnLocaleChanged()
  * Made available to achieve a consistent behavior.
  * @hide
  */
-AutoPtr<IWordIterator> TextView::GetWordIterator()
-{
-    assert(0);
-    if (mEditor != NULL) {
-        //return mEditor->GetWordIterator();
-    } else {
-        return NULL;
-    }
-}
-
 ECode TextView::GetWordIterator(
     /* [out] */ IWordIterator** iterator)
 {
     VALIDATE_NOT_NULL(iterator)
-    *iterator = GetWordIterator();
-    REFCOUNT_ADD(*iterator)
+    if (mEditor != NULL) {
+        assert(0);
+        //*iterator = mEditor->GetWordIterator();
+        //REFCOUNT_ADD(*iterator)
+    } else {
+        *iterator = NULL;
+    }
     return NOERROR;
 }
 
@@ -10029,7 +9799,8 @@ ECode TextView::OnPopulateAccessibilityEvent(
 
     Boolean isPassword = HasPasswordTransformationMethod();
     if (!isPassword || ShouldSpeakPasswordsForAccessibility()) {
-        AutoPtr<ICharSequence> text = GetTextForAccessibility();
+        AutoPtr<ICharSequence> text;
+        GetTextForAccessibility((ICharSequence**)&text);
         if (!TextUtils::IsEmpty(text)) {
             AutoPtr<IList> list;
             IAccessibilityRecord::Probe(event)->GetText((IList**)&list);
@@ -10092,7 +9863,9 @@ ECode TextView::OnInitializeAccessibilityNodeInfo(
     info->SetPassword(isPassword);
 
     if (!isPassword || ShouldSpeakPasswordsForAccessibility()) {
-        info->SetText(GetTextForAccessibility());
+        AutoPtr<ICharSequence> text;
+        GetTextForAccessibility((ICharSequence**)&text);
+        info->SetText(text);
     }
 
     if (mBufferType == BufferType_EDITABLE) {
@@ -10151,11 +9924,12 @@ ECode TextView::OnInitializeAccessibilityNodeInfo(
     return NOERROR;
 }
 
-Boolean TextView::PerformAccessibilityAction(
+ECode TextView::PerformAccessibilityAction(
     /* [in] */ Int32 action,
-    /* [in] */ IBundle* arguments)
+    /* [in] */ IBundle* arguments,
+    /* [out] */ Boolean* res)
 {
-    Boolean result;
+    VALIDATE_NOT_NULL(res)
     switch (action) {
         case IAccessibilityNodeInfo::ACTION_CLICK:
         {
@@ -10176,10 +9950,11 @@ Boolean TextView::PerformAccessibilityAction(
             }
 
             // Simulate TextView.onTouchEvent for an ACTION_UP event.
-            Boolean isEnabled, isFocused;
-            if ((mMovement || OnCheckIsTextEditor())
+            Boolean isEnabled, isFocused, isTextSelectable, onCheckIsTextEditor;
+            if ((mMovement || (OnCheckIsTextEditor(&onCheckIsTextEditor), onCheckIsTextEditor))
                 && (IsEnabled(&isEnabled), isEnabled) && ISpannable::Probe(mText)
-                && mLayout && (IsTextEditable() || IsTextSelectable())
+                && mLayout && (IsTextEditable()
+                || (IsTextSelectable(&isTextSelectable), isTextSelectable))
                 && (IsFocused(&isFocused), isFocused)) {
                 // Show the IME, except when selecting in read-only text.
                 assert(0);
@@ -10193,48 +9968,57 @@ Boolean TextView::PerformAccessibilityAction(
                 }*/
             }
 
-            return handled;
+            *res = handled;
+            return NOERROR;
         }
         case IAccessibilityNodeInfo::ACTION_COPY:
         {
-            Boolean isFocused;
+            Boolean isFocused, onTextContextMenuItem;
             if ((IsFocused(&isFocused), isFocused) && CanCopy()) {
-                if (OnTextContextMenuItem(R::id::copy)) {
-                    return TRUE;
+                if (OnTextContextMenuItem(R::id::copy, &onTextContextMenuItem), onTextContextMenuItem) {
+                    *res = TRUE;
+                    return NOERROR;
                 }
             }
         }
-        return FALSE;
+        *res = FALSE;
+        return NOERROR;
 
         case IAccessibilityNodeInfo::ACTION_PASTE:
         {
-            Boolean isFocused;
+            Boolean isFocused, onTextContextMenuItem;
             if ((IsFocused(&isFocused), isFocused) && CanPaste()) {
-                if (OnTextContextMenuItem(R::id::paste)) {
-                    return TRUE;
+                if (OnTextContextMenuItem(R::id::paste, &onTextContextMenuItem), onTextContextMenuItem) {
+                    *res = TRUE;
+                    return NOERROR;
                 }
             }
         }
-        return FALSE;
+        *res = FALSE;
+        return NOERROR;
 
         case IAccessibilityNodeInfo::ACTION_CUT:
         {
-            Boolean isFocused;
+            Boolean isFocused, onTextContextMenuItem;
             if ((IsFocused(&isFocused), isFocused) && CanCut()) {
-                if (OnTextContextMenuItem(R::id::cut)) {
-                    return TRUE;
+                if (OnTextContextMenuItem(R::id::cut, &onTextContextMenuItem), onTextContextMenuItem) {
+                    *res = TRUE;
+                    return NOERROR;
                 }
             }
         }
-        return FALSE;
+        *res = FALSE;
+        return NOERROR;
 
         case IAccessibilityNodeInfo::ACTION_SET_SELECTION:
         {
             Boolean isFocused;
             if ((IsFocused(&isFocused), isFocused) && CanSelectText()) {
-                AutoPtr<ICharSequence> text = GetIterableTextForAccessibility();
+                AutoPtr<ICharSequence> text;
+                GetIterableTextForAccessibility((ICharSequence**)&text);
                 if (!text) {
-                    return FALSE;
+                    *res = FALSE;
+                    return NOERROR;
                 }
                 Int32 start = -1, end = -1;
                 if (arguments) {
@@ -10243,12 +10027,14 @@ Boolean TextView::PerformAccessibilityAction(
                     (IBaseBundle::Probe(arguments))->GetInt32(
                         IAccessibilityNodeInfo::ACTION_ARGUMENT_SELECTION_END_INT, -1, &end);
                 }
-
-                if ((GetSelectionStart() != start || GetSelectionEnd() != end)) {
+                Int32 selectionStart, selectionEnd;
+                if (((GetSelectionStart(&selectionStart), selectionStart) != start
+                    || (GetSelectionEnd(&selectionEnd), selectionEnd) != end)) {
                     // No arguments clears the selection.
                     if (start == end && end == -1) {
                         Selection::RemoveSelection(ISpannable::Probe(text));
-                        return TRUE;
+                        *res = TRUE;
+                        return NOERROR;
                     }
                     Int32 textLen;
                     text->GetLength(&textLen);
@@ -10259,16 +10045,17 @@ Boolean TextView::PerformAccessibilityAction(
                             assert(0);
                             //mEditor->StartSelectionActionMode();
                         }
-                        return TRUE;
+                        *res = TRUE;
+                        return NOERROR;
                     }
                 }
             }
         }
-        return FALSE;
+        *res = FALSE;
+        return NOERROR;
 
         default:
-            View::PerformAccessibilityAction(action, arguments, &result);
-            return result;
+            return View::PerformAccessibilityAction(action, arguments, res);
     }
 }
 
@@ -10284,21 +10071,17 @@ ECode TextView::SendAccessibilityEvent(
     return View::SendAccessibilityEvent(eventType);
 }
 
-AutoPtr<ICharSequence> TextView::GetTextForAccessibility()
-{
-    AutoPtr<ICharSequence> text = GetText();
-    if (TextUtils::IsEmpty(text)) {
-        text = GetHint();
-    }
-    return text;
-}
-
 ECode TextView::GetTextForAccessibility(
-    /* [out] */ ICharSequence** text)
+    /* [out] */ ICharSequence** result)
 {
-    VALIDATE_NOT_NULL(text)
-    *text = GetTextForAccessibility();
-    REFCOUNT_ADD(*text)
+    VALIDATE_NOT_NULL(result)
+    AutoPtr<ICharSequence> text;
+    GetText((ICharSequence**)&text);
+    if (TextUtils::IsEmpty(text)) {
+        GetHint((ICharSequence**)&text);
+    }
+    *result = text;
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -10318,21 +10101,17 @@ void TextView::SendAccessibilityEventTypeViewTextChanged(
     SendAccessibilityEventUnchecked(event);
 }
 
-Boolean TextView::IsInputMethodTarget()
-{
-    assert(0);
-    AutoPtr<IInputMethodManager> imm;// = CInputMethodManager::PeekInstance();
-    Boolean result = imm != NULL;
-    if (result)
-        imm->IsActive(THIS_PROBE(IView), &result);
-    return result;
-}
-
 ECode TextView::IsInputMethodTarget(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = IsInputMethodTarget();
+    assert(0);
+    AutoPtr<IInputMethodManager> imm;// = CInputMethodManager::PeekInstance();
+    Boolean temp = imm != NULL;
+    if (temp) {
+        imm->IsActive(THIS_PROBE(IView), &temp);
+    }
+    *result = temp;
     return NOERROR;
 }
 
@@ -10341,13 +10120,6 @@ ECode TextView::OnTextContextMenuItem(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = OnTextContextMenuItem(id);
-    return NOERROR;
-}
-
-Boolean TextView::OnTextContextMenuItem(
-    /* [in] */ Int32 id)
-{
     AutoPtr<IContext> c;
     GetContext((IContext**)&c);
     Int32 min = 0;
@@ -10356,8 +10128,9 @@ Boolean TextView::OnTextContextMenuItem(
 
     Boolean isFocused;
     if (IsFocused(&isFocused), isFocused) {
-        Int32 selStart = GetSelectionStart();
-        Int32 selEnd = GetSelectionEnd();
+        Int32 selStart, selEnd;
+        GetSelectionStart(&selStart);
+        GetSelectionEnd(&selEnd);
 
         min = Elastos::Core::Math::Max(0, Elastos::Core::Math::Min(selStart, selEnd));
         max = Elastos::Core::Math::Max(0, Elastos::Core::Math::Max(selStart, selEnd));
@@ -10368,39 +10141,44 @@ Boolean TextView::OnTextContextMenuItem(
              // This does not enter text selection mode. Text is highlighted, so that it can be
              // bulk edited, like selectAllOnFocus does. Returns true even if text is empty.
              SelectAllText();
-             return TRUE;
+             *result = TRUE;
+             return NOERROR;
 
          case R::id::paste:
              Paste(min, max);
-             return TRUE;
+             *result = TRUE;
+             return NOERROR;
 
          case R::id::cut: {
              assert(0 && "TODO");
-                 AutoPtr<IClipDataHelper> helper;
+                AutoPtr<IClipDataHelper> helper;
 //TODO                 CClipDataHelper::AcquireSingleton((IClipDataHelper**)&helper);
-                 assert(helper);
-                 AutoPtr<IClipData> data;
-                 helper->NewPlainText(NULL, GetTransformedText(min, max), (IClipData**)&data);
-                 SetPrimaryClip(data);
-                 DeleteText_internal(min, max);
-                 StopSelectionActionMode();
+                assert(helper);
+                AutoPtr<IClipData> data;
+                helper->NewPlainText(NULL, GetTransformedText(min, max), (IClipData**)&data);
+                SetPrimaryClip(data);
+                DeleteText_internal(min, max);
+                StopSelectionActionMode();
+                *result = TRUE;
+                return NOERROR;
              }
-             return TRUE;
 
          case R::id::copy: {
              assert(0 && "TODO");
-                 AutoPtr<IClipDataHelper> helper;
+                AutoPtr<IClipDataHelper> helper;
 //TODO                 CClipDataHelper::AcquireSingleton((IClipDataHelper**)&helper);
-                 assert(helper);
-                 AutoPtr<IClipData> data;
-                 helper->NewPlainText(NULL, GetTransformedText(min, max), (IClipData**)&data);
-                 SetPrimaryClip(data);
-                 StopSelectionActionMode();
+                assert(helper);
+                AutoPtr<IClipData> data;
+                helper->NewPlainText(NULL, GetTransformedText(min, max), (IClipData**)&data);
+                SetPrimaryClip(data);
+                StopSelectionActionMode();
+                *result = TRUE;
+                return NOERROR;
              }
-             return TRUE;
          }
 
-    return FALSE;
+    *result = FALSE;
+    return NOERROR;
 }
 
 AutoPtr<ICharSequence> TextView::GetTransformedText(
@@ -10412,11 +10190,13 @@ AutoPtr<ICharSequence> TextView::GetTransformedText(
     return RemoveSuggestionSpans(sub);
 }
 
-Boolean TextView::PerformLongClick()
+ECode TextView::PerformLongClick(
+    /* [out] */ Boolean* res)
 {
-    Boolean handled = FALSE, result;
-    View::PerformLongClick(&result);
-    if (result) {
+    VALIDATE_NOT_NULL(res)
+    Boolean handled = FALSE;
+    View::PerformLongClick(res);
+    if (*res) {
         handled = TRUE;
     }
 
@@ -10426,6 +10206,7 @@ Boolean TextView::PerformLongClick()
     }
 
     if (handled) {
+        Boolean result;
         PerformHapticFeedback(IHapticFeedbackConstants::LONG_PRESS, &result);
         assert(0);
         //if (mEditor != NULL) mEditor->mDiscardNextActionUp = TRUE;
@@ -10447,8 +10228,10 @@ void TextView::OnScrollChanged(
     }
 }
 
-Boolean TextView::IsSuggestionsEnabled()
+ECode TextView::IsSuggestionsEnabled(
+    /* [out] */ Boolean* enabled)
 {
+    VALIDATE_NOT_NULL(enabled)
     assert(0);
     /*if (mEditor == NULL) return FALSE;
     if ((mEditor->mInputType & IInputType::TYPE_MASK_CLASS) != IInputType::TYPE_CLASS_TEXT) {
@@ -10457,18 +10240,11 @@ Boolean TextView::IsSuggestionsEnabled()
     if ((mEditor->mInputType & IInputType::TYPE_TEXT_FLAG_NO_SUGGESTIONS) > 0) return FALSE;
 
     Int32 variation = mEditor->mInputType & IInputType::TYPE_MASK_VARIATION;
-    return (variation == IInputType::TYPE_TEXT_VARIATION_NORMAL ||
+    *enabled = (variation == IInputType::TYPE_TEXT_VARIATION_NORMAL ||
             variation == IInputType::TYPE_TEXT_VARIATION_EMAIL_SUBJECT ||
             variation == IInputType::TYPE_TEXT_VARIATION_LONG_MESSAGE ||
             variation == IInputType::TYPE_TEXT_VARIATION_SHORT_MESSAGE ||
             variation == IInputType::TYPE_TEXT_VARIATION_WEB_EDIT_TEXT);*/
-}
-
-ECode TextView::IsSuggestionsEnabled(
-    /* [out] */ Boolean* enabled)
-{
-    VALIDATE_NOT_NULL(enabled)
-    *enabled = IsSuggestionsEnabled();
     return NOERROR;
 }
 
@@ -10481,18 +10257,17 @@ ECode TextView::SetCustomSelectionActionModeCallback(
     return NOERROR;
 }
 
-AutoPtr<IActionModeCallback> TextView::GetCustomSelectionActionModeCallback()
-{
-    assert(0);
-    //return mEditor == NULL ? NULL : mEditor->mCustomSelectionActionModeCallback;
-}
-
 ECode TextView::GetCustomSelectionActionModeCallback(
     /* [out] */ IActionModeCallback** actionModeCallback)
 {
     VALIDATE_NOT_NULL(actionModeCallback)
-    *actionModeCallback = GetCustomSelectionActionModeCallback();
-    REFCOUNT_ADD(*actionModeCallback)
+    if (mEditor == NULL) {
+        *actionModeCallback = NULL;
+    } else {
+        assert(0);
+        //*actionModeCallback = mEditor->mCustomSelectionActionModeCallback;
+        REFCOUNT_ADD(*actionModeCallback)
+    }
     return NOERROR;
 }
 
@@ -10527,7 +10302,8 @@ Boolean TextView::CanCopy()
 
     Int32 tl;
     mText->GetLength(&tl);
-    if (tl > 0 && HasSelection() && mEditor) {
+    Boolean hasSelection;
+    if (tl > 0 && (HasSelection(&hasSelection), hasSelection) && mEditor) {
         return TRUE;
     }
 
@@ -10592,8 +10368,10 @@ void TextView::Paste(
                     editable->Replace(min, max, paste);
                     didFirst = TRUE;
                 } else {
-                    editable->Insert(GetSelectionEnd(), newlineCS);
-                    editable->Insert(GetSelectionEnd(), paste);
+                    Int32 end;
+                    GetSelectionEnd(&end);
+                    editable->Insert(end, newlineCS);
+                    editable->Insert(end, paste);
                 }
             }
         }
@@ -10615,35 +10393,32 @@ void TextView::SetPrimaryClip(
     LAST_CUT_OR_COPY_TIME = SystemClock::GetUptimeMillis();
 }
 
-Int32 TextView::GetOffsetForPosition(
-    /* [in] */ Float x,
-    /* [in] */ Float y)
-{
-    if (GetLayout() == NULL) return -1;
-    Int32 line = GetLineAtCoordinate(y);
-    Int32 offset = GetOffsetAtCoordinate(line, x);
-    return offset;
-}
-
 ECode TextView::GetOffsetForPosition(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [out] */ Int32* offset)
 {
     VALIDATE_NOT_NULL(offset)
-    *offset = GetOffsetForPosition(x, y);
+    AutoPtr<ILayout> layout;
+    GetLayout((ILayout**)&layout);
+    if (layout == NULL) return -1;
+    Int32 line = GetLineAtCoordinate(y);
+    *offset = GetOffsetAtCoordinate(line, x);
     return NOERROR;
 }
 
 Float TextView::ConvertToLocalHorizontalCoordinate(
     /* [in] */ Float x)
 {
-    x -= GetTotalPaddingLeft();
+    Int32 totalPaddingLeft;
+    GetTotalPaddingLeft(&totalPaddingLeft);
+    x -= totalPaddingLeft;
     // Clamp the position to inside of the view.
     x = Elastos::Core::Math::Max(0.0f, x);
-    Int32 width, scrollx;
+    Int32 width, scrollx, paddingRight;
     GetWidth(&width);
-    x = Elastos::Core::Math::Min((Float)(width - GetTotalPaddingRight() - 1.0), x);
+    GetTotalPaddingRight(&paddingRight);
+    x = Elastos::Core::Math::Min((Float)(width - paddingRight - 1.0), x);
     GetScrollX(&scrollx);
     x += scrollx;
     return x;
@@ -10652,15 +10427,19 @@ Float TextView::ConvertToLocalHorizontalCoordinate(
 Int32 TextView::GetLineAtCoordinate(
     /* [in] */ Float y)
 {
-    y -= GetTotalPaddingTop();
+    Int32 totalPaddingTop;
+    GetTotalPaddingTop(&totalPaddingTop);
+    y -= totalPaddingTop;
     // Clamp the position to inside of the view.
     y = Elastos::Core::Math::Max(0.0f, y);
-    Int32 height, scrolly;
+    Int32 height, scrolly, totalPaddingBottom;
     GetHeight(&height);
-    y = Elastos::Core::Math::Min((Float)(height - GetTotalPaddingBottom() - 1.0f), y);
+    GetTotalPaddingBottom(&totalPaddingBottom);
+    y = Elastos::Core::Math::Min((Float)(height - totalPaddingBottom - 1.0f), y);
     GetScrollY(&scrolly);
     y += scrolly;
-    AutoPtr<ILayout> layout = GetLayout();
+    AutoPtr<ILayout> layout;
+    GetLayout((ILayout**)&layout);
     Int32 result;
     layout->GetLineForVertical((Int32)y, &result);
     return result;
@@ -10671,48 +10450,58 @@ Int32 TextView::GetOffsetAtCoordinate(
     /* [in] */ Float x)
 {
     x = ConvertToLocalHorizontalCoordinate(x);
-    AutoPtr<ILayout> layout = GetLayout();
+    AutoPtr<ILayout> layout;
+    GetLayout((ILayout**)&layout);
     Int32 result;
     layout->GetOffsetForHorizontal(line, x, &result);
     return result;
 }
 
-Boolean TextView::OnDragEvent(
-    /* [in] */ IDragEvent* event)
+ECode TextView::OnDragEvent(
+    /* [in] */ IDragEvent* event,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     Int32 action;
     event->GetAction(&action);
     switch (action) {
         case IDragEvent::ACTION_DRAG_STARTED:{
             assert(0);
-            //return mEditor != NULL && mEditor->HasInsertionController();
+            //*res = mEditor != NULL && mEditor->HasInsertionController();
+            return NOERROR;
         }
 
         case IDragEvent::ACTION_DRAG_ENTERED: {
             Boolean focus;
             RequestFocus(&focus);
-            return TRUE;
+            *res = TRUE;
+            return NOERROR;
         }
 
         case IDragEvent::ACTION_DRAG_LOCATION: {
             Float x, y;
             event->GetX(&x);
             event->GetY(&y);
-            Int32 offset = GetOffsetForPosition(x, y);
+            Int32 offset;
+            GetOffsetForPosition(x, y, &offset);
             Selection::SetSelection(ISpannable::Probe(mText), offset);
-            return TRUE;
+            *res = TRUE;
+            return NOERROR;
         }
         case IDragEvent::ACTION_DROP: {
             assert(0);
             //if (mEditor != NULL) mEditor->OnDrop(event);
-            return TRUE;
+            *res = TRUE;
+            return NOERROR;
         }
         case IDragEvent::ACTION_DRAG_ENDED:
         case IDragEvent::ACTION_DRAG_EXITED:
         default:
-            return TRUE;
+            *res = TRUE;
+            return NOERROR;
     }
-    return FALSE;
+    *res = FALSE;
+    return NOERROR;
 }
 
 Boolean TextView::IsInBatchEditMode()
@@ -10854,67 +10643,85 @@ void TextView::CreateEditorIfNeeded()
     }
 }
 
-AutoPtr<ICharSequence> TextView::GetIterableTextForAccessibility()
+ECode TextView::GetIterableTextForAccessibility(
+    /* [out] */ ICharSequence** res)
 {
+    VALIDATE_NOT_NULL(res)
     if (!ISpannable::Probe(mText)) {
         SetText(mText, BufferType_SPANNABLE);
     }
-    return mText;
+    *res = mText;
+    REFCOUNT_ADD(*res)
+    return NOERROR;
 }
 
-AutoPtr<ITextSegmentIterator> TextView::GetIteratorForGranularity(
-    /* [in] */ Int32 granularity)
+ECode TextView::GetIteratorForGranularity(
+    /* [in] */ Int32 granularity,
+    /* [out] */ ITextSegmentIterator** res)
 {
+    VALIDATE_NOT_NULL(res)
     switch (granularity) {
         case IAccessibilityNodeInfo::MOVEMENT_GRANULARITY_LINE: {
-            AutoPtr<ICharSequence> text = GetIterableTextForAccessibility();
-            if (!TextUtils::IsEmpty(text) && GetLayout() != NULL) {
+            AutoPtr<ICharSequence> text;
+            GetIterableTextForAccessibility((ICharSequence**)&text);
+            AutoPtr<ILayout> layout;
+            if (!TextUtils::IsEmpty(text) && NULL != (GetLayout((ILayout**)&layout), layout)) {
                 assert(0 && "TODO");
 //TODO
 //                ILineTextSegmentIterator iterator =
 //                    AccessibilityIterators.LineTextSegmentIterator.getInstance();
 //                iterator->Initialize(text, GetLayout());
-//                return iterator;
+//                *res = iterator;
+//                return NOERROR;
             }
         } break;
         case IAccessibilityNodeInfo::MOVEMENT_GRANULARITY_PAGE: {
-            AutoPtr<ICharSequence> text = GetIterableTextForAccessibility();
-            if (!TextUtils::IsEmpty(text) && GetLayout() != NULL) {
+            AutoPtr<ICharSequence> text;
+            GetIterableTextForAccessibility((ICharSequence**)&text);
+            AutoPtr<ILayout> layout;
+            if (!TextUtils::IsEmpty(text) && NULL != (GetLayout((ILayout**)&layout), layout)) {
                 assert(0 && "TODO");
 //TODO
 //                IPageTextSegmentIterator iterator =
 //                    AccessibilityIterators.PageTextSegmentIterator.getInstance();
 //                iterator.Initialize(this);
-//                return iterator;
+//                *res = iterator;
+//                return NOERROR;
             }
         } break;
     }
-    AutoPtr<ITextSegmentIterator> iterator;
-    View::GetIteratorForGranularity(granularity, (ITextSegmentIterator**)&iterator);
+    return View::GetIteratorForGranularity(granularity, res);
+}
+
+ECode TextView::GetAccessibilitySelectionStart(
+    /* [out] */ Int32* res)
+{
+    VALIDATE_NOT_NULL(res)
+    return GetSelectionStart(res);
+}
+
+ECode TextView::IsAccessibilitySelectionExtendable(
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res)
+    *res = TRUE;
     return NOERROR;
 }
 
-Int32 TextView::GetAccessibilitySelectionStart()
+ECode TextView::GetAccessibilitySelectionEnd(
+    /* [out] */ Int32* res)
 {
-    return GetSelectionStart();
-}
-
-Boolean TextView::IsAccessibilitySelectionExtendable()
-{
-    return TRUE;
-}
-
-Int32 TextView::GetAccessibilitySelectionEnd()
-{
-    return GetSelectionEnd();
+    VALIDATE_NOT_NULL(res)
+    return GetSelectionEnd(res);
 }
 
 ECode TextView::SetAccessibilitySelection(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    if (GetAccessibilitySelectionStart() == start &&
-        GetAccessibilitySelectionEnd() == end) {
+    Int32 selectionStart, selectionEnd;
+    if ((GetAccessibilitySelectionStart(&selectionStart), selectionStart) == start &&
+        (GetAccessibilitySelectionEnd(&selectionEnd), selectionEnd) == end) {
         return NOERROR;
     }
     // Hide all selection controllers used for adjusting selection
@@ -10924,7 +10731,8 @@ ECode TextView::SetAccessibilitySelection(
         assert(0);
         //mEditor->HideControllers();
     }
-    AutoPtr<ICharSequence> text = GetIterableTextForAccessibility();
+    AutoPtr<ICharSequence> text;
+    GetIterableTextForAccessibility((ICharSequence**)&text);
     Int32 textLen;
     text->GetLength(&textLen);
     if (Elastos::Core::Math::Min(start, end) >= 0 && Elastos::Core::Math::Max(start, end) <= textLen) {

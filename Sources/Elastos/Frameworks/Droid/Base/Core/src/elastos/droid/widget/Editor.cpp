@@ -3,7 +3,7 @@
 #include <elastos/core/Math.h>
 #include <elastos/core/Character.h>
 #include "elastos/droid/R.h"
-#include "elastos/droid/utility/ArrayUtils.h"
+#include "elastos/droid/internal/utility/ArrayUtils.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/CMessenger.h"
 #include "elastos/droid/content/CIntent.h"
@@ -21,21 +21,21 @@
 #include "elastos/droid/view/LayoutInflater.h"
 #include "elastos/droid/view/CViewGroupLayoutParams.h"
 #include "elastos/droid/view/CViewConfigurationHelper.h"
-#include "elastos/droid/view/CDragShadowBuilder.h"
+//#include "elastos/droid/view/CDragShadowBuilder.h"
 #include "elastos/droid/view/inputmethod/CExtractedText.h"
 #include "elastos/droid/view/inputmethod/CInputMethodManager.h"
 #include "elastos/droid/widget/CLinearLayout.h"
 #include "elastos/droid/widget/TextView.h"
 #include "elastos/droid/widget/CPopupWindow.h"
 #include "elastos/droid/widget/CListView.h"
-#include "elastos/droid/widget/internal/CEditableInputConnection.h"
+//#include "elastos/droid/widget/internal/CEditableInputConnection.h"
 
 using Elastos::Core::Character;
 using Elastos::Core::EIID_IComparator;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 //using Elastos::Text::IBreakIterator;
 using Elastos::Droid::R;
@@ -75,8 +75,6 @@ using Elastos::Droid::Graphics::Color;
 using Elastos::Droid::Graphics::CPath;
 using Elastos::Droid::Graphics::CPaint;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
-using Elastos::Droid::View::EIID_ViewGroup;
-using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::EIID_IView;
 using Elastos::Droid::View::EIID_IViewGroup;
 using Elastos::Droid::View::EIID_IViewParent;
@@ -94,8 +92,8 @@ using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::EIID_IActionModeCallback;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::View::CViewGroupLayoutParams;
-using Elastos::Droid::View::CDragShadowBuilder;
-using Elastos::Droid::View::Accessibility::EIID_IAccessibilityEventSource;
+//using Elastos::Droid::View::CDragShadowBuilder;
+//using Elastos::Droid::View::Accessibility::EIID_IAccessibilityEventSource;
 using Elastos::Droid::View::InputMethod::IInputConnection;
 using Elastos::Droid::View::InputMethod::CExtractedText;
 using Elastos::Droid::View::InputMethod::IInputMethodManager;
@@ -103,7 +101,7 @@ using Elastos::Droid::View::InputMethod::CInputMethodManager;
 using Elastos::Droid::Widget::CListView;
 using Elastos::Droid::InputMethodService::EIID_IExtractEditText;
 using Elastos::Droid::InputMethodService::IExtractEditText;
-using Elastos::Droid::Widget::Internal::CEditableInputConnection;
+//using Elastos::Droid::Widget::Internal::CEditableInputConnection;
 
 
 #define ITEXTVIEW_PROBE(textView) ((ITextView*)((textView)->Probe(EIID_ITextView)))
@@ -192,18 +190,19 @@ InputMethodState::InputMethodState()
 //==============================================================================
 //              CustomPopupWindow
 //==============================================================================
-_CustomPopupWindow::_CustomPopupWindow(
+CustomPopupWindow::CustomPopupWindow(
     /* [in] */ IContext* context,
     /* [in] */ Int32 defStyle,
     /* [in] */ Editor* editor,
     /* [in] */ SuggestionsPopupWindow* owner)
-    : PopupWindow(context, NULL, defStyle)
+    : PopupWindow()
     , mEditor(editor)
     , mOwner(owner)
 {
+    constructor(context, NULL, defStyle);
 }
 
-ECode _CustomPopupWindow::Dismiss()
+ECode CustomPopupWindow::Dismiss()
 {
     PopupWindow::Dismiss();
 
@@ -226,31 +225,16 @@ ECode _CustomPopupWindow::Dismiss()
 
     return NOERROR;
 }
-
-CAR_INTERFACE_IMPL(CustomPopupWindow, IPopupWindow)
-IPOPUPWINDOW_METHODS_IMPL(CustomPopupWindow, _CustomPopupWindow)
-
-CustomPopupWindow::CustomPopupWindow(
-    /* [in] */ IContext* context,
-    /* [in] */ Int32 defStyle,
-    /* [in] */ Editor* editor,
-    /* [in] */ SuggestionsPopupWindow* owner)
-    : _CustomPopupWindow(context, defStyle, editor, owner)
-{
-}
-
 //==============================================================================
 //              MyPopupWindow
 //==============================================================================
-CAR_INTERFACE_IMPL(MyPopupWindow, IPopupWindow)
-IPOPUPWINDOW_METHODS_IMPL(MyPopupWindow, PopupWindow)
-
 MyPopupWindow::MyPopupWindow(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle)
-    : PopupWindow(context, attrs, defStyle)
+    : PopupWindow()
 {
+    constructor(context, attrs, defStyle);
 }
 
 //==============================================================================
@@ -268,7 +252,7 @@ PinnedPopupWindow::~PinnedPopupWindow()
 
 ECode PinnedPopupWindow::Init()
 {
-    CreatePopupWindow();
+    /*CreatePopupWindow();
 
     assert(mPopupWindow != NULL);
 
@@ -287,25 +271,25 @@ ECode PinnedPopupWindow::Init()
             (IViewGroupLayoutParams**)&wrapContent);
     mContentView->SetLayoutParams(wrapContent);
 
-    mPopupWindow->SetContentView((IView*)mContentView->Probe(EIID_IView));
+    mPopupWindow->SetContentView((IView*)mContentView->Probe(EIID_IView));*/
     return NOERROR;
 }
 
 ECode PinnedPopupWindow::Show()
 {
-    AutoPtr<PositionListener> pl = mEditor->GetPositionListener();
-    pl->AddSubscriber(this, FALSE /* offset is fixed */);
+    /*AutoPtr<PositionListener> pl = mEditor->GetPositionListener();
+    pl->AddSubscriber(this, FALSE);
 
     ComputeLocalPosition();
 
     AutoPtr<PositionListener> positionListener = mEditor->GetPositionListener();
-    UpdatePosition(positionListener->GetPositionX(), positionListener->GetPositionY());
+    UpdatePosition(positionListener->GetPositionX(), positionListener->GetPositionY());*/
     return NOERROR;
 }
 
 ECode PinnedPopupWindow::MeasureContent()
 {
-    AutoPtr<IResources> resources = mEditor->mTextView->GetResources();
+    /*AutoPtr<IResources> resources = mEditor->mTextView->GetResources();
     AutoPtr<IDisplayMetrics> displayMetrics;
     resources->GetDisplayMetrics((IDisplayMetrics**)&displayMetrics);
     Int32 width, height;
@@ -313,13 +297,13 @@ ECode PinnedPopupWindow::MeasureContent()
     displayMetrics->GetHeightPixels(&height);
     mContentView->Measure(
         View::View::MeasureSpec::MakeMeasureSpec(width, View::View::MeasureSpec::AT_MOST),
-        View::View::MeasureSpec::MakeMeasureSpec(height, View::View::MeasureSpec::AT_MOST));
+        View::View::MeasureSpec::MakeMeasureSpec(height, View::View::MeasureSpec::AT_MOST));*/
     return NOERROR;
 }
 
 ECode PinnedPopupWindow::ComputeLocalPosition()
 {
-    MeasureContent();
+    /*MeasureContent();
     Int32 width;
     mContentView->GetMeasuredWidth(&width);
     Int32 offset = GetTextOffset();
@@ -333,7 +317,7 @@ ECode PinnedPopupWindow::ComputeLocalPosition()
     Int32 line;
     layout->GetLineForOffset(offset, &line);
     mPositionY = GetVerticalLocalPosition(line);
-    mPositionY += mEditor->mTextView->ViewportToContentVerticalOffset();
+    mPositionY += mEditor->mTextView->ViewportToContentVerticalOffset();*/
     return NOERROR;
 }
 
@@ -341,7 +325,7 @@ void PinnedPopupWindow::UpdatePosition(
     /* [in] */ Int32 parentPositionX,
     /* [in] */ Int32 parentPositionY)
 {
-    Int32 positionX = parentPositionX + mPositionX;
+    /*Int32 positionX = parentPositionX + mPositionX;
     Int32 positionY = parentPositionY + mPositionY;
 
     positionY = ClipVertically(positionY);
@@ -364,14 +348,14 @@ void PinnedPopupWindow::UpdatePosition(
     else {
         mPopupWindow->ShowAtLocation((IView*)(mEditor->mTextView->Probe(EIID_IView)),
             IGravity::NO_GRAVITY, positionX, positionY);
-    }
+    }*/
 }
 
 ECode PinnedPopupWindow::Hide()
 {
-    mPopupWindow->Dismiss();
+    /*mPopupWindow->Dismiss();
     AutoPtr<PositionListener> positionListener = mEditor->GetPositionListener();
-    positionListener->RemoveSubscriber(this);
+    positionListener->RemoveSubscriber(this);*/
     return NOERROR;
 }
 
@@ -382,14 +366,14 @@ void PinnedPopupWindow::UpdatePosition(
     /* [in] */ Boolean parentScrolled)
 {
     // Either parentPositionChanged or parentScrolled is TRUE, check if still visible
-    if (IsShowing() && mEditor->IsOffsetVisible(GetTextOffset())) {
+    /*if (IsShowing() && mEditor->IsOffsetVisible(GetTextOffset())) {
         if (parentScrolled)
             ComputeLocalPosition();
         UpdatePosition(parentPositionX, parentPositionY);
     }
     else {
         Hide();
-    }
+    }*/
 }
 
 Boolean PinnedPopupWindow::IsShowing()
@@ -402,7 +386,7 @@ Boolean PinnedPopupWindow::IsShowing()
 //==============================================================================
 //              EasyEditPopupWindow
 //==============================================================================
-CAR_INTERFACE_IMPL(EasyEditPopupWindow, IViewOnClickListener)
+CAR_INTERFACE_IMPL(EasyEditPopupWindow, PinnedPopupWindow, IViewOnClickListener)
 
 const Int32 EasyEditPopupWindow::POPUP_TEXT_LAYOUT = R::layout::text_edit_action_popup_text;
 
@@ -415,16 +399,16 @@ EasyEditPopupWindow::EasyEditPopupWindow(
 
 ECode EasyEditPopupWindow::CreatePopupWindow()
 {
-    AutoPtr<IContext> context = mEditor->mTextView->GetContext();
+    /*AutoPtr<IContext> context = mEditor->mTextView->GetContext();
     mPopupWindow = new MyPopupWindow(context, NULL, R::attr::textSelectHandleWindowStyle);
     mPopupWindow->SetInputMethodMode(IPopupWindow::INPUT_METHOD_NOT_NEEDED);
-    mPopupWindow->SetClippingEnabled(TRUE);
+    mPopupWindow->SetClippingEnabled(TRUE);*/
     return NOERROR;
 }
 
 ECode EasyEditPopupWindow::InitContentView()
 {
-    AutoPtr<IContext> context = mEditor->mTextView->GetContext();
+    /*AutoPtr<IContext> context = mEditor->mTextView->GetContext();
 
     AutoPtr<ILinearLayout> linearLayout;
     CLinearLayout::New(context, (ILinearLayout**)&linearLayout);
@@ -447,7 +431,7 @@ ECode EasyEditPopupWindow::InitContentView()
     mDeleteTextView->SetLayoutParams(wrapContent);
     mDeleteTextView->SetText(R::string::delete_);
     mDeleteTextView->SetOnClickListener(this);
-    mContentView->AddView(mDeleteTextView);
+    mContentView->AddView(mDeleteTextView);*/
     return NOERROR;
 }
 
@@ -460,7 +444,7 @@ void EasyEditPopupWindow::SetEasyEditSpan(
 ECode EasyEditPopupWindow::OnClick(
     /* [in] */ IView* view)
 {
-    if (view == mDeleteTextView->Probe(EIID_IView)) {
+    /*if (view == mDeleteTextView->Probe(EIID_IView)) {
         AutoPtr<ICharSequence> text = mEditor->mTextView->GetText();
         if (text != NULL && IEditable::Probe(text)) {
             AutoPtr<IEditable> editable = IEditable::Probe(text);
@@ -472,20 +456,20 @@ ECode EasyEditPopupWindow::OnClick(
                 tv->DeleteText_internal(start, end);
             }
         }
-    }
+    }*/
     return NOERROR;
 }
 
 Int32 EasyEditPopupWindow::GetTextOffset()
 {
     // Place the pop-up at the end of the span
-    AutoPtr<ICharSequence> text = mEditor->mTextView->GetText();
+    /*AutoPtr<ICharSequence> text = mEditor->mTextView->GetText();
     if (text != NULL && IEditable::Probe(text)) {
         IEditable* editable = IEditable::Probe(text);
         Int32 end;
         editable->GetSpanEnd(mEasyEditSpan, &end);
         return end;
-    }
+    }*/
     return 0;
 }
 
@@ -493,9 +477,9 @@ Int32 EasyEditPopupWindow::GetVerticalLocalPosition(
     /* [in] */ Int32 line)
 {
     Int32 result = 0;
-    AutoPtr<ILayout> layout = mEditor->mTextView->GetLayout();
+    /*AutoPtr<ILayout> layout = mEditor->mTextView->GetLayout();
     if (layout)
-        layout->GetLineBottom(line, &result);
+        layout->GetLineBottom(line, &result);*/
     return result;
 }
 
@@ -509,8 +493,6 @@ Int32 EasyEditPopupWindow::ClipVertically(
 //==============================================================================
 //              SuggestionInfo
 //==============================================================================
-CAR_INTERFACE_IMPL(SuggestionInfo, IInterface)
-
 SuggestionInfo::SuggestionInfo()
     : mSuggestionStart(0)
     , mSuggestionEnd(0)
@@ -522,41 +504,41 @@ SuggestionInfo::SuggestionInfo()
 //              SuggestionAdapter
 //==============================================================================
 
-_SuggestionAdapter::_SuggestionAdapter(
+SuggestionAdapter::SuggestionAdapter(
     /* [in] */ Editor* editor,
     /* [in] */ SuggestionsPopupWindow* popupWindow)
     : mEditor(editor)
     , mPopupWindow(popupWindow)
 {
-    AutoPtr<IContext> context = mEditor->mTextView->GetContext();
-    context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&mInflater);
+    /*AutoPtr<IContext> context = mEditor->mTextView->GetContext();
+    context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&mInflater);*/
 }
 
-Int32 _SuggestionAdapter::GetCount()
+Int32 SuggestionAdapter::GetCount()
 {
     return mPopupWindow->mNumberOfSuggestions;
 }
 
-AutoPtr<IInterface> _SuggestionAdapter::GetItem(
+AutoPtr<IInterface> SuggestionAdapter::GetItem(
     /* [in] */ Int32 position)
 {
     AutoPtr<IInterface> obj = (IInterface*)((*mPopupWindow->mSuggestionInfos)[position]);
     return obj;
 }
 
-Int64 _SuggestionAdapter::GetItemId(
+Int64 SuggestionAdapter::GetItemId(
     /* [in] */ Int32 position)
 {
     Int64 id = position;
     return id;
 }
 
-AutoPtr<IView> _SuggestionAdapter::GetView(
+AutoPtr<IView> SuggestionAdapter::GetView(
     /* [in] */ Int32 position,
     /* [in] */ IView* convertView,
     /* [in] */ IViewGroup* parent)
 {
-    AutoPtr<ITextView> textView = ITextView::Probe(convertView);
+    /*AutoPtr<ITextView> textView = ITextView::Probe(convertView);
     if (textView == NULL) {
         TextView* tv = (TextView*)mEditor->mTextView->Probe(EIID_TextView);
         AutoPtr<IView> view;
@@ -573,65 +555,15 @@ AutoPtr<IView> _SuggestionAdapter::GetView(
     }
     else {
        textView->SetBackgroundColor(IColor::WHITE);
-    }
+    }*/
 
     return textView;
-}
-
-IADAPTER_METHODS_IMPL(SuggestionAdapter, _SuggestionAdapter)
-IBASEADAPTER_METHODS_IMPL(SuggestionAdapter, _SuggestionAdapter)
-ILISTADAPTER_METHODS_IMPL(SuggestionAdapter, _SuggestionAdapter)
-ISPINNERADAPTER_METHODS_IMPL(SuggestionAdapter, _SuggestionAdapter)
-
-PInterface SuggestionAdapter::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IBaseAdapter) {
-        return (IBaseAdapter*)this;
-    }
-    else if(riid == EIID_ISpinnerAdapter) {
-        return (ISpinnerAdapter*)this;
-    }
-    else if(riid == EIID_IAdapter) {
-        return (IAdapter*)(IBaseAdapter*)this;
-    }
-    else if (riid == EIID_IListAdapter) {
-        return (IListAdapter*)(IBaseAdapter*)this;
-    }
-    else {
-        return NULL;
-    }
-}
-
-SuggestionAdapter::SuggestionAdapter(
-    /* [in] */ Editor* editor,
-    /* [in] */ SuggestionsPopupWindow* popupWindow)
-    : _SuggestionAdapter(editor, popupWindow)
-{
-}
-
-UInt32 SuggestionAdapter::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 SuggestionAdapter::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode SuggestionAdapter::GetInterfaceID(
-    /* [in] */ IInterface *object,
-    /* [out] */ InterfaceID *pIID)
-{
-    assert(0);
-    return NOERROR;
 }
 
 //==============================================================================
 //              SuggestionSpanComparator
 //==============================================================================
-CAR_INTERFACE_IMPL(SuggestionSpanComparator, IComparator)
+CAR_INTERFACE_IMPL(SuggestionSpanComparator, Object, IComparator)
 
 SuggestionSpanComparator::SuggestionSpanComparator(
     /* [in] */ SuggestionsPopupWindow* host)
@@ -645,7 +577,7 @@ ECode SuggestionSpanComparator::Compare(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = -1;
+    /**result = -1;
 
     AutoPtr<ISuggestionSpan> span1 = ISuggestionSpan::Probe(lhs);
     AutoPtr<ISuggestionSpan> span2 = ISuggestionSpan::Probe(rhs);
@@ -679,7 +611,7 @@ ECode SuggestionSpanComparator::Compare(
     Int32 value1, value2;
     integer1->GetValue(&value1);
     integer2->GetValue(&value2);
-    *result = value1 - value2;
+    *result = value1 - value2;*/
     return NOERROR;
 }
 
@@ -691,7 +623,7 @@ const Int32 SuggestionsPopupWindow::MAX_NUMBER_SUGGESTIONS = ISuggestionSpan::SU
 const Int32 SuggestionsPopupWindow::ADD_TO_DICTIONARY = -1;
 const Int32 SuggestionsPopupWindow::DELETE_TEXT = -2;
 
-CAR_INTERFACE_IMPL(SuggestionsPopupWindow, IAdapterViewOnItemClickListener)
+CAR_INTERFACE_IMPL(SuggestionsPopupWindow, PinnedPopupWindow, IAdapterViewOnItemClickListener)
 
 SuggestionsPopupWindow::SuggestionsPopupWindow(
     /* [in] */ Editor* editor)
@@ -709,18 +641,18 @@ SuggestionsPopupWindow::~SuggestionsPopupWindow()
 
 ECode SuggestionsPopupWindow::CreatePopupWindow()
 {
-    AutoPtr<IContext> context = mEditor->mTextView->GetContext();
+    /*AutoPtr<IContext> context = mEditor->mTextView->GetContext();
     mPopupWindow = new CustomPopupWindow(
             context, R::attr::textSuggestionsWindowStyle, mEditor, this);
     mPopupWindow->SetInputMethodMode(IPopupWindow::INPUT_METHOD_NOT_NEEDED);
     mPopupWindow->SetFocusable(TRUE);
-    mPopupWindow->SetClippingEnabled(FALSE);
+    mPopupWindow->SetClippingEnabled(FALSE);*/
     return NOERROR;
 }
 
 ECode SuggestionsPopupWindow::InitContentView()
 {
-    AutoPtr<IContext> context = mEditor->mTextView->GetContext();
+    /*AutoPtr<IContext> context = mEditor->mTextView->GetContext();
     AutoPtr<IListView> listView;
     CListView::New(context, (IListView**)&listView);
 
@@ -734,7 +666,7 @@ ECode SuggestionsPopupWindow::InitContentView()
     for (Int32 i = 0; i < mSuggestionInfos->GetLength(); i++) {
         AutoPtr<SuggestionInfo> info = new SuggestionInfo();
         mSuggestionInfos->Set(i, info);
-    }
+    }*/
     return NOERROR;
 }
 
@@ -750,7 +682,7 @@ void SuggestionsPopupWindow::OnParentLostFocus()
 
 AutoPtr<ArrayOf<ISuggestionSpan*> > SuggestionsPopupWindow::GetSuggestionSpans()
 {
-    AutoPtr<ArrayOf<ISuggestionSpan*> > suggestionSpans;
+    /*AutoPtr<ArrayOf<ISuggestionSpan*> > suggestionSpans;
     Int32 pos = mEditor->mTextView->GetSelectionStart();
     AutoPtr<ICharSequence> text = mEditor->mTextView->GetText();
     if (text && ISpannable::Probe(text)) {
@@ -778,14 +710,14 @@ AutoPtr<ArrayOf<ISuggestionSpan*> > SuggestionsPopupWindow::GetSuggestionSpans()
         // misspelled) and to the length of the text that they cover (shorter first).
 //        Arrays.sort(suggestionSpans, mSuggestionSpanComparator);
         QuickSort(suggestionSpans, 0, suggestionSpans->GetLength() - 1);
-    }
+    }*/
 
     return suggestionSpans;
 }
 
 void SuggestionsPopupWindow::QuickSort(ArrayOf<ISuggestionSpan*>* array, Int32 low, Int32 high)
 {
-    if (array == NULL || low >= high || low < 0)
+    /*if (array == NULL || low >= high || low < 0)
         return;
 
     AutoPtr<ISuggestionSpan> privot = (*array)[low];
@@ -824,12 +756,12 @@ void SuggestionsPopupWindow::QuickSort(ArrayOf<ISuggestionSpan*>* array, Int32 l
     array->Set(i, privot);
 
     QuickSort(array, low, i - 1);
-    QuickSort(array, i + 1, high);
+    QuickSort(array, i + 1, high);*/
 }
 
 ECode SuggestionsPopupWindow::Show()
 {
-    AutoPtr<ICharSequence> text = mEditor->mTextView->GetText();
+    /*AutoPtr<ICharSequence> text = mEditor->mTextView->GetText();
     if (text && IEditable::Probe(text)) {
         return NOERROR;
     }
@@ -839,13 +771,13 @@ ECode SuggestionsPopupWindow::Show()
         mEditor->mTextView->SetCursorVisible(FALSE);
         mIsShowingUp = TRUE;
         PinnedPopupWindow::Show();
-    }
+    }*/
     return NOERROR;
 }
 
 ECode SuggestionsPopupWindow::MeasureContent()
 {
-    AutoPtr<IResources> resources = mEditor->mTextView->GetResources();
+    /*AutoPtr<IResources> resources = mEditor->mTextView->GetResources();
     AutoPtr<IDisplayMetrics> displayMetrics;
     resources->GetDisplayMetrics((IDisplayMetrics**)&displayMetrics);
     Int32 widthPixels, heightPixels;
@@ -889,7 +821,7 @@ ECode SuggestionsPopupWindow::MeasureContent()
         mEditor->mTempRect->GetRight(&right);
         width += left + right;
     }
-    mPopupWindow->SetWidth(width);
+    mPopupWindow->SetWidth(width);*/
     return NOERROR;
 }
 
@@ -912,14 +844,14 @@ Int32 SuggestionsPopupWindow::GetVerticalLocalPosition(
 Int32 SuggestionsPopupWindow::ClipVertically(
     /* [in] */ Int32 positionY)
 {
-    AutoPtr<IResources> resources = mEditor->mTextView->GetResources();
+    /*AutoPtr<IResources> resources = mEditor->mTextView->GetResources();
     AutoPtr<IDisplayMetrics> displayMetrics;
     resources->GetDisplayMetrics((IDisplayMetrics**)&displayMetrics);
     Int32 heightPixels;
     displayMetrics->GetHeightPixels(&heightPixels);
 
     Int32 height;
-    mContentView->GetMeasuredHeight(&height);
+    mContentView->GetMeasuredHeight(&height);*/
     return Elastos::Core::Math::Min(positionY, heightPixels - height);
 }
 
@@ -931,7 +863,7 @@ ECode SuggestionsPopupWindow::Hide()
 
 Boolean SuggestionsPopupWindow::UpdateSuggestions()
 {
-    AutoPtr<ICharSequence> text = mEditor->mTextView->GetText();
+    /*AutoPtr<ICharSequence> text = mEditor->mTextView->GetText();
     ISpannable* spannable = ISpannable::Probe(text);
     AutoPtr<ArrayOf<ISuggestionSpan*> > suggestionSpans = GetSuggestionSpans();
 
@@ -1069,7 +1001,7 @@ Boolean SuggestionsPopupWindow::UpdateSuggestions()
     spannable->SetSpan(mEditor->mSuggestionRangeSpan, spanUnionStart, spanUnionEnd,
         ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
 
-    mSuggestionsAdapter->NotifyDataSetChanged();
+    mSuggestionsAdapter->NotifyDataSetChanged();*/
     return TRUE;
 }
 
@@ -1078,7 +1010,7 @@ void SuggestionsPopupWindow::HighlightTextDifferences(
     /* [in] */ Int32 unionStart,
     /* [in] */ Int32 unionEnd)
 {
-    AutoPtr<ICharSequence> seq = mEditor->mTextView->GetText();
+    /*AutoPtr<ICharSequence> seq = mEditor->mTextView->GetText();
     ISpannable* text = ISpannable::Probe(seq);
     Int32 spanStart, spanEnd;
     text->GetSpanStart(suggestionInfo->mSuggestionSpan, &spanStart);
@@ -1104,7 +1036,7 @@ void SuggestionsPopupWindow::HighlightTextDifferences(
     cs = NULL;
     subStr = textAsString.Substring(spanEnd, unionEnd);
     CStringWrapper::New(subStr, (ICharSequence**)&cs);
-    suggestionInfo->mText->Append(cs);
+    suggestionInfo->mText->Append(cs);*/
 }
 
 ECode SuggestionsPopupWindow::OnItemClick(
@@ -1113,7 +1045,7 @@ ECode SuggestionsPopupWindow::OnItemClick(
     /* [in] */ Int32 position,
     /* [in] */ Int64 id)
 {
-    AutoPtr<IContext> context = mEditor->mTextView->GetContext();
+    /*AutoPtr<IContext> context = mEditor->mTextView->GetContext();
     AutoPtr<ICharSequence> seq = mEditor->mTextView->GetText();
     IEditable* editable = IEditable::Probe(seq);
 
@@ -1267,48 +1199,19 @@ ECode SuggestionsPopupWindow::OnItemClick(
         mEditor->mTextView->SetCursorPosition_internal(newCursorPosition, newCursorPosition);
     }
 
-    Hide();
+    Hide();*/
     return NOERROR;
 }
 
 //==============================================================================
 //              SelectionActionModeCallback
 //==============================================================================
+CAR_INTERFACE_IMPL(SelectionActionModeCallback, Object, IActionModeCallback)
+
 SelectionActionModeCallback::SelectionActionModeCallback(
     /* [in] */ Editor* editor)
     : mEditor(editor)
 {
-}
-
-PInterface SelectionActionModeCallback::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IActionModeCallback*)this;
-    }
-    else if (riid == EIID_IActionModeCallback) {
-        return (IInterface*)(IActionModeCallback*)this;
-    }
-
-    return NULL;
-}
-
-ECode SelectionActionModeCallback::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    assert(0);
-    return NOERROR;
-}
-
-UInt32 SelectionActionModeCallback::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 SelectionActionModeCallback::Release()
-{
-    return ElRefBase::Release();
 }
 
 ECode SelectionActionModeCallback::OnCreateActionMode(
@@ -1318,7 +1221,7 @@ ECode SelectionActionModeCallback::OnCreateActionMode(
 {
     assert(mode != NULL && menu != NULL && result != NULL);
 
-    AutoPtr<ITypedArray> styledAttributes;
+    /*AutoPtr<ITypedArray> styledAttributes;
     AutoPtr<ArrayOf<Int32> > values = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::SelectionModeDrawables),
         ArraySize(R::styleable::SelectionModeDrawables));
@@ -1410,7 +1313,7 @@ ECode SelectionActionModeCallback::OnCreateActionMode(
         return NOERROR;
     }
 
-    *result = FALSE;
+    *result = FALSE;*/
     return NOERROR;
 }
 
@@ -1420,11 +1323,11 @@ ECode SelectionActionModeCallback::OnPrepareActionMode(
     /* [out] */ Boolean* result)
 {
     assert(result != NULL);
-    if (mEditor->mCustomSelectionActionModeCallback != NULL) {
+    /*if (mEditor->mCustomSelectionActionModeCallback != NULL) {
         return mEditor->mCustomSelectionActionModeCallback->OnPrepareActionMode(mode, menu, result);
     }
 
-    *result = TRUE;
+    *result = TRUE;*/
     return NOERROR;
 }
 
@@ -1433,7 +1336,7 @@ ECode SelectionActionModeCallback::OnActionItemClicked(
     /* [in] */ IMenuItem* item,
     /* [out] */ Boolean* result)
 {
-    assert(result != NULL);
+    /*assert(result != NULL);
     if (mEditor->mCustomSelectionActionModeCallback != NULL) {
         Boolean state = FALSE;
         if ((mEditor->mCustomSelectionActionModeCallback->OnActionItemClicked(mode, item, &state), state)) {
@@ -1445,23 +1348,23 @@ ECode SelectionActionModeCallback::OnActionItemClicked(
     assert(item != NULL);
     Int32 id = 0;
     item->GetItemId(&id);
-    *result = mEditor->mTextView->OnTextContextMenuItem(id);
+    *result = mEditor->mTextView->OnTextContextMenuItem(id);*/
     return NOERROR;
 }
 
 ECode SelectionActionModeCallback::OnDestroyActionMode(
     /* [in] */ IActionMode* mode)
 {
-    if (mEditor->mCustomSelectionActionModeCallback != NULL) {
+    /*if (mEditor->mCustomSelectionActionModeCallback != NULL) {
         mEditor->mCustomSelectionActionModeCallback->OnDestroyActionMode(mode);
-    }
+    }*/
 
     /*
      * If we're ending this mode because we're detaching from a window,
      * we still have selection state to preserve. Don't clear it, we'll
      * bring back the selection mode when (if) we get reattached.
      */
-    if (!mEditor->mPreserveDetachedSelection) {
+    /*if (!mEditor->mPreserveDetachedSelection) {
         Selection::SetSelection(ISpannable::Probe(mEditor->mTextView->GetText()),
                 mEditor->mTextView->GetSelectionEnd());
         mEditor->mTextView->SetHasTransientState(FALSE);
@@ -1472,7 +1375,7 @@ ECode SelectionActionModeCallback::OnDestroyActionMode(
     }
 
     mEditor->mSelectionActionMode = NULL;
-    return NOERROR;
+    return NOERROR;*/
 }
 
 //==============================================================================
@@ -1481,7 +1384,7 @@ ECode SelectionActionModeCallback::OnDestroyActionMode(
 
 const Int32 ActionPopupWindow::POPUP_TEXT_LAYOUT = R::layout::text_edit_action_popup_text;
 
-CAR_INTERFACE_IMPL(ActionPopupWindow, IViewOnClickListener)
+CAR_INTERFACE_IMPL(ActionPopupWindow, PinnedPopupWindow, IViewOnClickListener)
 
 ActionPopupWindow::ActionPopupWindow(
     /* [in] */ Editor* editor)
@@ -1495,15 +1398,15 @@ ActionPopupWindow::~ActionPopupWindow()
 
 ECode ActionPopupWindow::CreatePopupWindow()
 {
-    AutoPtr<IContext> context = mEditor->mTextView->GetContext();
+    /*AutoPtr<IContext> context = mEditor->mTextView->GetContext();
     mPopupWindow = new MyPopupWindow(context, NULL, R::attr::textSelectHandleWindowStyle);
-    mPopupWindow->SetClippingEnabled(TRUE);
+    mPopupWindow->SetClippingEnabled(TRUE);*/
     return NOERROR;
 }
 
 ECode ActionPopupWindow::InitContentView()
 {
-    AutoPtr<IContext> context = mEditor->mTextView->GetContext();
+    /*AutoPtr<IContext> context = mEditor->mTextView->GetContext();
 
     AutoPtr<ILinearLayout> linearLayout;
     CLinearLayout::New(context, (ILinearLayout**)&linearLayout);
@@ -1532,14 +1435,14 @@ ECode ActionPopupWindow::InitContentView()
     mReplaceTextView->SetLayoutParams(wrapContent);
     mReplaceTextView->SetText(R::string::replace);
     mReplaceTextView->SetOnClickListener(this);
-    mContentView->AddView(mReplaceTextView);
+    mContentView->AddView(mReplaceTextView);*/
 
     return NOERROR;
 }
 
 ECode ActionPopupWindow::Show()
 {
-    Boolean canPaste = mEditor->mTextView->CanPaste();
+    /*Boolean canPaste = mEditor->mTextView->CanPaste();
     Boolean canSuggest = mEditor->mTextView->IsSuggestionsEnabled()
         && mEditor->IsCursorInsideSuggestionSpan();
     mPasteTextView->SetVisibility(canPaste ? IView::VISIBLE : IView::GONE);
@@ -1547,14 +1450,14 @@ ECode ActionPopupWindow::Show()
 
     if (!canPaste && !canSuggest) return NOERROR;
 
-    Show();
+    Show();*/
     return NOERROR;
 }
 
 ECode ActionPopupWindow::OnClick(
     /* [in] */ IView* view)
 {
-    if (view == mPasteTextView->Probe(EIID_IView) && mEditor->mTextView->CanPaste()) {
+    /*if (view == mPasteTextView->Probe(EIID_IView) && mEditor->mTextView->CanPaste()) {
         mEditor->mTextView->OnTextContextMenuItem(R::id::paste);
         Hide();
     } else if (view == mReplaceTextView->Probe(EIID_IView)) {
@@ -1564,7 +1467,7 @@ ECode ActionPopupWindow::OnClick(
         ISpannable* spannable = ISpannable::Probe(seq);
         Selection::SetSelection(spannable, middle);
         mEditor->ShowSuggestions();
-    }
+    }*/
     return NOERROR;
 }
 
@@ -1577,21 +1480,21 @@ Int32 ActionPopupWindow::GetVerticalLocalPosition(
     /* [in] */ Int32 line)
 {
     Int32 result = 0;
-    AutoPtr<ILayout> layout = mEditor->mTextView->GetLayout();
+    /*AutoPtr<ILayout> layout = mEditor->mTextView->GetLayout();
     if (layout) {
         layout->GetLineTop(line, &result);
     }
 
     Int32 h;
     mContentView->GetMeasuredHeight(&h);
-    result += h;
+    result += h;*/
     return result;
 }
 
 Int32 ActionPopupWindow::ClipVertically(
     /* [in] */ Int32 positionY)
 {
-    if (positionY < 0) {
+    /*if (positionY < 0) {
         Int32 offset = GetTextOffset();
         AutoPtr<ILayout> layout = mEditor->mTextView->GetLayout();
         Int32 line, top, bottom, h;
@@ -1609,7 +1512,7 @@ Int32 ActionPopupWindow::ClipVertically(
         Int32 height;
         handle->GetIntrinsicHeight(&height);
         positionY += height;
-    }
+    }*/
 
     return positionY;
 }
@@ -1621,62 +1524,6 @@ Int32 ActionPopupWindow::ClipVertically(
 const Int32 HandleView::HISTORY_SIZE;
 const Int32 HandleView::TOUCH_UP_FILTER_DELAY_AFTER;
 const Int32 HandleView::TOUCH_UP_FILTER_DELAY_BEFORE;
-
-IVIEW_METHODS_IMPL(HandleView, Elastos::Droid::View::View)
-IDRAWABLECALLBACK_METHODS_IMPL(HandleView, Elastos::Droid::View::View)
-IKEYEVENTCALLBACK_METHODS_IMPL(HandleView, Elastos::Droid::View::View)
-IACCESSIBILITYEVENTSOURCE_METHODS_IMPL(HandleView, Elastos::Droid::View::View)
-
-PInterface HandleView::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_View) {
-        return reinterpret_cast<PInterface>((View*)this);
-    }
-    else if (riid == EIID_IInterface) {
-        return (IInterface*)(IView*)this;
-    }
-    else if (riid == EIID_IDrawableCallback) {
-        return (IInterface*)(IDrawableCallback*)this;
-    }
-    else if (riid == EIID_IKeyEventCallback) {
-        return (IInterface*)(IKeyEventCallback*)this;
-    }
-    else if (riid == EIID_IAccessibilityEventSource) {
-        return (IInterface*)(IAccessibilityEventSource*)this;
-    }
-    else if (riid == EIID_IWeakReferenceSource) {
-        return (IInterface*)(IWeakReferenceSource*)this;
-    }
-    return NULL;
-}
-
-ECode HandleView::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* IID)
-{
-    assert(0);
-    return NOERROR;
-}
-
-UInt32 HandleView::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 HandleView::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode HandleView::GetWeakReference(
-    /* [out] */ IWeakReference** weakReference)
-{
-    VALIDATE_NOT_NULL(weakReference)
-    *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    REFCOUNT_ADD(*weakReference)
-    return NOERROR;
-}
 
 HandleView::HandleView(
     /* [in] */ IDrawable* drawableLtr,
@@ -1700,16 +1547,16 @@ HandleView::HandleView(
     , mPreviousOffsetIndex(0)
     , mNumberPreviousOffsets(0)
 {
-    mPreviousOffsetsTimes = ArrayOf<Int64>::Alloc(HISTORY_SIZE);
+    /*mPreviousOffsetsTimes = ArrayOf<Int64>::Alloc(HISTORY_SIZE);
     mPreviousOffsets = ArrayOf<Int32>::Alloc(HISTORY_SIZE);
 
     mDrawableLtr = drawableLtr;
-    mDrawableRtl = drawableRtl;
+    mDrawableRtl = drawableRtl;*/
 }
 
 void HandleView::Init()
 {
-    AutoPtr<IContext> context = mEditor->mTextView->GetContext();
+    /*AutoPtr<IContext> context = mEditor->mTextView->GetContext();
     CPopupWindow::New(context, NULL, R::attr::textSelectHandleWindowStyle,
             (IPopupWindow**)&mContainer);
     mContainer->SetSplitTouchEnabled(TRUE);
@@ -1722,38 +1569,38 @@ void HandleView::Init()
     Int32 handleHeight;
     mDrawable->GetIntrinsicHeight(&handleHeight);
     mTouchOffsetY = -0.3f * handleHeight;
-    mIdealVerticalOffset = 0.7f * handleHeight;
+    mIdealVerticalOffset = 0.7f * handleHeight;*/
 }
 
 void HandleView::UpdateDrawable()
 {
-    Int32 offset = GetCurrentCursorOffset();
+    /*Int32 offset = GetCurrentCursorOffset();
     AutoPtr<ILayout> layout = mEditor->mTextView->GetLayout();
     Boolean isRtlCharAtOffset;
     layout->IsRtlCharAt(offset, &isRtlCharAtOffset);
     mDrawable = isRtlCharAtOffset ? mDrawableRtl : mDrawableLtr;
-    mHotspotX = GetHotspotX(mDrawable, isRtlCharAtOffset);
+    mHotspotX = GetHotspotX(mDrawable, isRtlCharAtOffset);*/
 }
 
 void HandleView::StartTouchUpFilter(
     /* [in] */ Int32 offset)
 {
-    mNumberPreviousOffsets = 0;
-    AddPositionToTouchUpFilter(offset);
+    /*mNumberPreviousOffsets = 0;
+    AddPositionToTouchUpFilter(offset);*/
 }
 
 void HandleView::AddPositionToTouchUpFilter(
     /* [in] */ Int32 offset)
 {
-    mPreviousOffsetIndex = (mPreviousOffsetIndex + 1) % HISTORY_SIZE;
+    /*mPreviousOffsetIndex = (mPreviousOffsetIndex + 1) % HISTORY_SIZE;
     (*mPreviousOffsets)[mPreviousOffsetIndex] = offset;
     (*mPreviousOffsetsTimes)[mPreviousOffsetIndex] = SystemClock::GetUptimeMillis();
-    mNumberPreviousOffsets++;
+    mNumberPreviousOffsets++;*/
 }
 
 void HandleView::FilterOnTouchUp()
 {
-    Int64 now = SystemClock::GetUptimeMillis();
+    /*Int64 now = SystemClock::GetUptimeMillis();
     Int32 i = 0;
     Int32 index = mPreviousOffsetIndex;
     Int32 iMax = Elastos::Core::Math::Min(mNumberPreviousOffsets, HISTORY_SIZE);
@@ -1765,7 +1612,7 @@ void HandleView::FilterOnTouchUp()
     if (i > 0 && i < iMax &&
             (now - (*mPreviousOffsetsTimes)[index]) > TOUCH_UP_FILTER_DELAY_BEFORE) {
         PositionAtCursorOffset((*mPreviousOffsets)[index], FALSE);
-    }
+    }*/
 }
 
 Boolean HandleView::OffsetHasBeenChanged()
@@ -1777,45 +1624,45 @@ void HandleView::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
-    Int32 width, height;
+    /*Int32 width, height;
     mDrawable->GetIntrinsicWidth(&width);
     mDrawable->GetIntrinsicHeight(&height);
-    SetMeasuredDimension(width, height);
+    SetMeasuredDimension(width, height);*/
 }
 
 void HandleView::Show()
 {
-    if (IsShowing()) return;
+    /*if (IsShowing()) return;
 
     AutoPtr<PositionListener> listener = mEditor->GetPositionListener();
-    listener->AddSubscriber(this, TRUE /* local position may change */);
+    listener->AddSubscriber(this, TRUE);
 
     // Make sure the offset is always considered new, even when focusing at same position
     mPreviousOffset = -1;
     PositionAtCursorOffset(GetCurrentCursorOffset(), FALSE);
 
-    HideActionPopupWindow();
+    HideActionPopupWindow();*/
 }
 
 void HandleView::Dismiss()
 {
-    mIsDragging = FALSE;
+    /*mIsDragging = FALSE;
     mContainer->Dismiss();
-    OnDetached();
+    OnDetached();*/
 }
 
 void HandleView::Hide()
 {
-    Dismiss();
+    /*Dismiss();
 
     AutoPtr<PositionListener> listener = mEditor->GetPositionListener();
-    listener->RemoveSubscriber(this);
+    listener->RemoveSubscriber(this);*/
 }
 
 void HandleView::ShowActionPopupWindow(
     /* [in] */ Int32 delay)
 {
-    if (mActionPopupWindow == NULL) {
+    /*if (mActionPopupWindow == NULL) {
         mActionPopupWindow = new ActionPopupWindow(mEditor);
         mActionPopupWindow->Init();
     }
@@ -1827,30 +1674,30 @@ void HandleView::ShowActionPopupWindow(
         mEditor->mTextView->RemoveCallbacks(mActionPopupShower);
     }
 
-    mEditor->mTextView->PostDelayed(mActionPopupShower, delay);
+    mEditor->mTextView->PostDelayed(mActionPopupShower, delay);*/
 }
 
 void HandleView::HideActionPopupWindow()
 {
-    if (mActionPopupShower != NULL) {
+    /*if (mActionPopupShower != NULL) {
         mEditor->mTextView->RemoveCallbacks(mActionPopupShower);
     }
     if (mActionPopupWindow != NULL) {
         mActionPopupWindow->Hide();
-    }
+    }*/
 }
 
 Boolean HandleView::IsShowing()
 {
     Boolean isShowing;
-    mContainer->IsShowing(&isShowing);
+    //mContainer->IsShowing(&isShowing);
     return isShowing;
 }
 
 Boolean HandleView::IsVisible()
 {
     // Always show a dragging handle.
-     if (mIsDragging) {
+     /*if (mIsDragging) {
          return TRUE;
      }
 
@@ -1858,7 +1705,7 @@ Boolean HandleView::IsVisible()
          return FALSE;
      }
 
-     return mEditor->IsPositionVisible(mPositionX + mHotspotX, mPositionY);
+     return mEditor->IsPositionVisible(mPositionX + mHotspotX, mPositionY);*/
 }
 
 void HandleView::PositionAtCursorOffset(
@@ -1866,7 +1713,7 @@ void HandleView::PositionAtCursorOffset(
     /* [in] */ Boolean parentScrolled)
 {
     // A HandleView relies on the layout, which may be nulled by external methods
-    AutoPtr<ILayout> layout = mEditor->mTextView->GetLayout();
+    /*AutoPtr<ILayout> layout = mEditor->mTextView->GetLayout();
     if (layout == NULL) {
         // Will update controllers' state, hiding them and stopping selection mode if needed
         mEditor->PrepareCursorControllers();
@@ -1895,7 +1742,7 @@ void HandleView::PositionAtCursorOffset(
 
         mPreviousOffset = offset;
         mPositionHasChanged = TRUE;
-    }
+    }*/
 }
 
 void HandleView::UpdatePosition(
@@ -1904,7 +1751,7 @@ void HandleView::UpdatePosition(
     /* [in] */ Boolean parentPositionChanged,
     /* [in] */ Boolean parentScrolled)
 {
-    PositionAtCursorOffset(GetCurrentCursorOffset(), parentScrolled);
+    /*PositionAtCursorOffset(GetCurrentCursorOffset(), parentScrolled);
     if (parentPositionChanged || mPositionHasChanged) {
         if (mIsDragging) {
             // Update touchToWindow offset in case of parent scrolling while dragging
@@ -1936,20 +1783,20 @@ void HandleView::UpdatePosition(
         }
 
         mPositionHasChanged = FALSE;
-    }
+    }*/
 }
 
 void HandleView::OnDraw(
     /* [in] */ ICanvas* canvas)
 {
-    mDrawable->SetBounds(0, 0, mRight - mLeft, mBottom - mTop);
-    mDrawable->Draw(canvas);
+    /*mDrawable->SetBounds(0, 0, mRight - mLeft, mBottom - mTop);
+    mDrawable->Draw(canvas);*/
 }
 
 Boolean HandleView::OnTouchEvent(
     /* [in] */ IMotionEvent* event)
 {
-    Int32 mask;
+    /*Int32 mask;
     event->GetActionMasked(&mask);
     Float rawX, rawY;
     event->GetRawX(&rawX);
@@ -1996,13 +1843,13 @@ Boolean HandleView::OnTouchEvent(
         case IMotionEvent::ACTION_CANCEL:
             mIsDragging = FALSE;
             break;
-    }
+    }*/
     return TRUE;
 }
 
 Boolean HandleView::IsDragging()
 {
-    return mIsDragging;
+    //return mIsDragging;
 }
 
 void HandleView::OnHandleMoved()
@@ -2022,30 +1869,6 @@ void HandleView::OnDetached()
 const Int32 InsertionHandleView::DELAY_BEFORE_HANDLE_FADES_OUT = 4000;
 const Int32 InsertionHandleView::RECENT_CUT_COPY_DURATION = 15 * 1000; // seconds
 
-PInterface InsertionHandleView::Probe(
-    /* [in]  */ REIID riid)
-{
-    return HandleView::Probe(riid);
-}
-
-ECode InsertionHandleView::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    assert(0);
-    return NOERROR;
-}
-
-UInt32 InsertionHandleView::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 InsertionHandleView::Release()
-{
-    return ElRefBase::Release();
-}
-
 InsertionHandleView::InsertionHandleView(
     /* [in] */ IDrawable* drawable,
     /* [in] */ Editor* editor)
@@ -2057,7 +1880,7 @@ InsertionHandleView::InsertionHandleView(
 
 void InsertionHandleView::Show()
 {
-    HandleView::Show();
+    /*HandleView::Show();
 
     Int64 durationSinceCutOrCopy =
             SystemClock::GetUptimeMillis() - TextView::LAST_CUT_OR_COPY_TIME;
@@ -2065,7 +1888,7 @@ void InsertionHandleView::Show()
         ShowActionPopupWindow(0);
     }
 
-    HideAfterDelay();
+    HideAfterDelay();*/
 }
 
 void InsertionHandleView::ShowWithActionPopup()
@@ -2076,35 +1899,35 @@ void InsertionHandleView::ShowWithActionPopup()
 
 void InsertionHandleView::HideAfterDelay()
 {
-    if (mHider == NULL) {
+    /*if (mHider == NULL) {
         mHider = new InsertionHandleViewHiderRunnable(this);
     } else {
         RemoveHiderCallback();
     }
-    mEditor->mTextView->PostDelayed(mHider, DELAY_BEFORE_HANDLE_FADES_OUT);
+    mEditor->mTextView->PostDelayed(mHider, DELAY_BEFORE_HANDLE_FADES_OUT);*/
 }
 
 void InsertionHandleView::RemoveHiderCallback()
 {
-    if (mHider != NULL) {
+    /*if (mHider != NULL) {
         mEditor->mTextView->RemoveCallbacks(mHider);
-    }
+    }*/
 }
 
 Int32 InsertionHandleView::GetHotspotX(
     /* [in] */ IDrawable* drawable,
     /* [in] */ Boolean isRtlRun)
 {
-    assert(drawable);
+    /*assert(drawable);
     Int32 width;
     drawable->GetIntrinsicWidth(&width);
-    return width / 2;
+    return width / 2;*/
 }
 
 Boolean InsertionHandleView::OnTouchEvent(
     /* [in] */ IMotionEvent* ev)
 {
-    Boolean result = HandleView::OnTouchEvent(ev);
+    /*Boolean result = HandleView::OnTouchEvent(ev);
     AutoPtr<IContext> context = mEditor->mTextView->GetContext();
     Int32 mask;
     ev->GetActionMasked(&mask);
@@ -2150,21 +1973,21 @@ Boolean InsertionHandleView::OnTouchEvent(
             break;
     }
 
-    return result;
+    return result;*/
 }
 
 
 Int32 InsertionHandleView::GetCurrentCursorOffset()
 {
-    return mEditor->mTextView->GetSelectionStart();
+    //return mEditor->mTextView->GetSelectionStart();
 }
 
 void InsertionHandleView::UpdateSelection(
     /* [in] */ Int32 offset)
 {
-    AutoPtr<ICharSequence> text = mEditor->mTextView->GetText();
+    /*AutoPtr<ICharSequence> text = mEditor->mTextView->GetText();
     ISpannable* spannable = ISpannable::Probe(text);
-    Selection::SetSelection(spannable, offset);
+    Selection::SetSelection(spannable, offset);*/
 }
 
 void InsertionHandleView::UpdatePosition(
@@ -2190,30 +2013,6 @@ void InsertionHandleView::OnDetached()
 //              SelectionStartHandleView
 //==============================================================================
 
-PInterface SelectionStartHandleView::Probe(
-    /* [in]  */ REIID riid)
-{
-    return HandleView::Probe(riid);
-}
-
-ECode SelectionStartHandleView::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    assert(0);
-    return NOERROR;
-}
-
-UInt32 SelectionStartHandleView::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 SelectionStartHandleView::Release()
-{
-    return ElRefBase::Release();
-}
-
 SelectionStartHandleView::SelectionStartHandleView(
     /* [in] */ IDrawable* drawableLtr,
     /* [in] */ IDrawable* drawableRtl,
@@ -2226,42 +2025,42 @@ Int32 SelectionStartHandleView::GetHotspotX(
     /* [in] */ IDrawable* drawable,
     /* [in] */ Boolean isRtlRun)
 {
-    assert(drawable);
+    /*assert(drawable);
     Int32 width;
     drawable->GetIntrinsicWidth(&width);
     if (isRtlRun) {
         return width / 4;
     } else {
         return (width * 3) / 4;
-    }
+    }*/
 }
 
 Int32 SelectionStartHandleView::GetCurrentCursorOffset()
 {
-    return mEditor->mTextView->GetSelectionStart();
+    //return mEditor->mTextView->GetSelectionStart();
 }
 
 void SelectionStartHandleView::UpdateSelection(
     /* [in] */ Int32 offset)
 {
-    AutoPtr<ICharSequence> text = mEditor->mTextView->GetText();
+    /*AutoPtr<ICharSequence> text = mEditor->mTextView->GetText();
     ISpannable* spannable = ISpannable::Probe(text);
     Selection::SetSelection(spannable, offset, mEditor->mTextView->GetSelectionEnd());
-    UpdateDrawable();
+    UpdateDrawable();*/
 }
 
 void SelectionStartHandleView::UpdatePosition(
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
-    Int32 offset = mEditor->mTextView->GetOffsetForPosition(x, y);
+    /*Int32 offset = mEditor->mTextView->GetOffsetForPosition(x, y);
 
     // Handles can not cross and selection is at least one character
     Int32 selectionEnd = mEditor->mTextView->GetSelectionEnd();
     if (offset >= selectionEnd)
         offset = Elastos::Core::Math::Max(0, selectionEnd - 1);
 
-    PositionAtCursorOffset(offset, FALSE);
+    PositionAtCursorOffset(offset, FALSE);*/
 }
 
 AutoPtr<ActionPopupWindow> SelectionStartHandleView::GetActionPopupWindow()
@@ -2272,30 +2071,6 @@ AutoPtr<ActionPopupWindow> SelectionStartHandleView::GetActionPopupWindow()
 //==============================================================================
 //              SelectionEndHandleView
 //==============================================================================
-
-PInterface SelectionEndHandleView::Probe(
-    /* [in]  */ REIID riid)
-{
-    return HandleView::Probe(riid);
-}
-
-ECode SelectionEndHandleView::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    assert(0);
-    return NOERROR;
-}
-
-UInt32 SelectionEndHandleView::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 SelectionEndHandleView::Release()
-{
-    return ElRefBase::Release();
-}
 
 SelectionEndHandleView::SelectionEndHandleView(
     /* [in] */ IDrawable* drawableLtr,
@@ -2309,14 +2084,14 @@ Int32 SelectionEndHandleView::GetHotspotX(
     /* [in] */ IDrawable* drawable,
     /* [in] */ Boolean isRtlRun)
 {
-    assert(drawable);
+    /*assert(drawable);
     Int32 width;
     drawable->GetIntrinsicWidth(&width);
     if (isRtlRun) {
         return (width * 3) / 4;
     } else {
         return width / 4;
-    }
+    }*/
 }
 
 Int32 SelectionEndHandleView::GetCurrentCursorOffset()
@@ -2327,17 +2102,17 @@ Int32 SelectionEndHandleView::GetCurrentCursorOffset()
 void SelectionEndHandleView::UpdateSelection(
     /* [in] */ Int32 offset)
 {
-    AutoPtr<ICharSequence> text = mEditor->mTextView->GetText();
+    /*AutoPtr<ICharSequence> text = mEditor->mTextView->GetText();
     ISpannable* spannable = ISpannable::Probe(text);
     Selection::SetSelection(spannable, mEditor->mTextView->GetSelectionStart(), offset);
-    UpdateDrawable();
+    UpdateDrawable();*/
 }
 
 void SelectionEndHandleView::UpdatePosition(
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
-    Int32 offset = mEditor->mTextView->GetOffsetForPosition(x, y);
+    /*Int32 offset = mEditor->mTextView->GetOffsetForPosition(x, y);
 
     // Handles can not cross and selection is at least one character
     Int32 selectionStart = mEditor->mTextView->GetSelectionStart();
@@ -2345,7 +2120,7 @@ void SelectionEndHandleView::UpdatePosition(
         offset = Elastos::Core::Math::Min(selectionStart + 1, mEditor->mTextView->GetLength());
     }
 
-    PositionAtCursorOffset(offset, FALSE);
+    PositionAtCursorOffset(offset, FALSE);*/
 }
 
 void SelectionEndHandleView::SetActionPopupWindow(
@@ -2357,7 +2132,7 @@ void SelectionEndHandleView::SetActionPopupWindow(
 //==============================================================================
 //              CursorController
 //==============================================================================
-CAR_INTERFACE_IMPL(CursorController, IOnTouchModeChangeListener)
+CAR_INTERFACE_IMPL(CursorController, Object, IOnTouchModeChangeListener)
 
 CursorController::CursorController(
     /* [in] */ Editor* editor)
@@ -2402,37 +2177,37 @@ InsertionPointCursorController::InsertionPointCursorController(
 
 ECode InsertionPointCursorController::Show()
 {
-    AutoPtr<InsertionHandleView> handle = GetHandle();
-    handle->Show();
+    /*AutoPtr<InsertionHandleView> handle = GetHandle();
+    handle->Show();*/
     return NOERROR;
 }
 
 void InsertionPointCursorController::ShowWithActionPopup()
 {
-    AutoPtr<InsertionHandleView> handle = GetHandle();
-    handle->ShowWithActionPopup();
+    /*AutoPtr<InsertionHandleView> handle = GetHandle();
+    handle->ShowWithActionPopup();*/
 }
 
 ECode InsertionPointCursorController::Hide()
 {
-    if (mHandle != NULL) {
+    /*if (mHandle != NULL) {
         mHandle->Hide();
-    }
+    }*/
     return NOERROR;
 }
 
 ECode InsertionPointCursorController::OnTouchModeChanged(
     /* [in] */ Boolean isInTouchMode)
 {
-    if (!isInTouchMode) {
+    /*if (!isInTouchMode) {
         Hide();
-    }
+    }*/
     return NOERROR;
 }
 
 AutoPtr<InsertionHandleView> InsertionPointCursorController::GetHandle()
 {
-    if (mEditor->mSelectHandleCenter == NULL) {
+    /*if (mEditor->mSelectHandleCenter == NULL) {
         AutoPtr<IResources> resources = mEditor->mTextView->GetResources();
         resources->GetDrawable(
                 mEditor->mTextView->mTextSelectHandleRes,
@@ -2443,15 +2218,15 @@ AutoPtr<InsertionHandleView> InsertionPointCursorController::GetHandle()
                 mEditor->mSelectHandleCenter, mEditor);
         mHandle->Init();
     }
-    return mHandle;
+    return mHandle;*/
 }
 
 ECode InsertionPointCursorController::OnDetached()
 {
-    AutoPtr<IViewTreeObserver> observer = mEditor->mTextView->GetViewTreeObserver();
+    /*AutoPtr<IViewTreeObserver> observer = mEditor->mTextView->GetViewTreeObserver();
     observer->RemoveOnTouchModeChangeListener(this);
 
-    if (mHandle != NULL) mHandle->OnDetached();
+    if (mHandle != NULL) mHandle->OnDetached();*/
     return NOERROR;
 }
 
@@ -2475,18 +2250,18 @@ SelectionModifierCursorController::SelectionModifierCursorController(
 
 ECode SelectionModifierCursorController::Show()
 {
-    if (mEditor->mTextView->IsInBatchEditMode()) {
+    /*if (mEditor->mTextView->IsInBatchEditMode()) {
         return NOERROR;
     }
     InitDrawables();
     InitHandles();
-    mEditor->HideInsertionPointCursorController();
+    mEditor->HideInsertionPointCursorController();*/
     return NOERROR;
 }
 
 void SelectionModifierCursorController::InitDrawables()
 {
-    if (mEditor->mSelectHandleLeft == NULL) {
+    /*if (mEditor->mSelectHandleLeft == NULL) {
         AutoPtr<IResources> resources = mEditor->mTextView->GetResources();
         resources->GetDrawable(
                 mEditor->mTextView->mTextSelectHandleLeftRes,
@@ -2497,13 +2272,13 @@ void SelectionModifierCursorController::InitDrawables()
         resources->GetDrawable(
                 mEditor->mTextView->mTextSelectHandleRightRes,
                 (IDrawable**)&mEditor->mSelectHandleRight);
-    }
+    }*/
 }
 
 void SelectionModifierCursorController::InitHandles()
 {
     // Lazy object creation has to be done before updatePosition() is called.
-    if (mStartHandle == NULL) {
+    /*if (mStartHandle == NULL) {
         mStartHandle = new SelectionStartHandleView(
                 mEditor->mSelectHandleLeft, mEditor->mSelectHandleRight, mEditor);
         mStartHandle->Init();
@@ -2523,20 +2298,20 @@ void SelectionModifierCursorController::InitHandles()
     AutoPtr<ActionPopupWindow> popuoWindow = mStartHandle->GetActionPopupWindow();
     mEndHandle->SetActionPopupWindow(popuoWindow.Get());
 
-    mEditor->HideInsertionPointCursorController();
+    mEditor->HideInsertionPointCursorController();*/
 }
 
 ECode SelectionModifierCursorController::Hide()
 {
-    if (mStartHandle != NULL) mStartHandle->Hide();
-    if (mEndHandle != NULL) mEndHandle->Hide();
+    /*if (mStartHandle != NULL) mStartHandle->Hide();
+    if (mEndHandle != NULL) mEndHandle->Hide();*/
     return NOERROR;
 }
 
 void SelectionModifierCursorController::OnTouchEvent(
     /* [in] */ IMotionEvent* event)
 {
-    AutoPtr<IContext> context = mEditor->mTextView->GetContext();
+    /*AutoPtr<IContext> context = mEditor->mTextView->GetContext();
 
     // This is done even when the View does not have focus, so that Int64 presses can start
     // selection and tap can move cursor from this tap position.
@@ -2617,7 +2392,7 @@ void SelectionModifierCursorController::OnTouchEvent(
         case IMotionEvent::ACTION_UP:
             mPreviousTapUpTime = SystemClock::GetUptimeMillis();
             break;
-    }
+    }*/
 }
 
 /**
@@ -2626,7 +2401,7 @@ void SelectionModifierCursorController::OnTouchEvent(
 void SelectionModifierCursorController::UpdateMinAndMaxOffsets(
     /* [in] */ IMotionEvent* event)
 {
-    Int32 pointerCount;
+    /*Int32 pointerCount;
     event->GetPointerCount(&pointerCount);
     for (Int32 index = 0; index < pointerCount; index++) {
         Float x, y;
@@ -2635,7 +2410,7 @@ void SelectionModifierCursorController::UpdateMinAndMaxOffsets(
         Int32 offset = mEditor->mTextView->GetOffsetForPosition(x, y);
         if (offset < mMinTouchOffset) mMinTouchOffset = offset;
         if (offset > mMaxTouchOffset) mMaxTouchOffset = offset;
-    }
+    }*/
 }
 
 Int32 SelectionModifierCursorController::GetMinTouchOffset()
@@ -2664,19 +2439,19 @@ Boolean SelectionModifierCursorController::IsSelectionStartDragged()
 ECode SelectionModifierCursorController::OnTouchModeChanged(
     /* [in] */ Boolean isInTouchMode)
 {
-    if (!isInTouchMode) {
+    /*if (!isInTouchMode) {
         Hide();
-    }
+    }*/
     return NOERROR;
 }
 
 ECode SelectionModifierCursorController::OnDetached()
 {
-    AutoPtr<IViewTreeObserver> observer = mEditor->mTextView->GetViewTreeObserver();
+    /*AutoPtr<IViewTreeObserver> observer = mEditor->mTextView->GetViewTreeObserver();
     observer->RemoveOnTouchModeChangeListener(this);
 
     if (mStartHandle != NULL) mStartHandle->OnDetached();
-    if (mEndHandle != NULL) mEndHandle->OnDetached();
+    if (mEndHandle != NULL) mEndHandle->OnDetached();*/
     return NOERROR;
 }
 
@@ -2686,7 +2461,7 @@ ECode SelectionModifierCursorController::OnDetached()
 
 const Int32 PositionListener::MAXIMUM_NUMBER_OF_LISTENERS;
 
-CAR_INTERFACE_IMPL(PositionListener, IOnPreDrawListener);
+CAR_INTERFACE_IMPL(PositionListener, Object, IOnPreDrawListener);
 
 PositionListener::PositionListener(
     /* [in] */ Editor* editor)
@@ -2697,16 +2472,16 @@ PositionListener::PositionListener(
     , mScrollHasChanged(0)
     , mEditor(editor)
 {
-    mPositionListeners = ArrayOf<TextViewPositionListener*>::Alloc(MAXIMUM_NUMBER_OF_LISTENERS);
+    /*mPositionListeners = ArrayOf<ITextViewPositionListener*>::Alloc(MAXIMUM_NUMBER_OF_LISTENERS);
     mCanMove = ArrayOf<Boolean>::Alloc(MAXIMUM_NUMBER_OF_LISTENERS);
-    mTempCoords = ArrayOf<Int32>::Alloc(2);
+    mTempCoords = ArrayOf<Int32>::Alloc(2);*/
 }
 
 void PositionListener::AddSubscriber(
-    /* [in] */ TextViewPositionListener* positionListener,
+    /* [in] */ ITextViewPositionListener* positionListener,
     /* [in] */ Boolean canMove)
 {
-    if (mNumberOfListeners == 0) {
+    /*if (mNumberOfListeners == 0) {
         UpdatePosition();
         AutoPtr<IViewTreeObserver> observer = mEditor->mTextView->GetViewTreeObserver();
         observer->AddOnPreDrawListener(this);
@@ -2714,7 +2489,7 @@ void PositionListener::AddSubscriber(
 
     Int32 emptySlotIndex = -1;
     for (Int32 i = 0; i < MAXIMUM_NUMBER_OF_LISTENERS; i++) {
-        AutoPtr<TextViewPositionListener> listener = (*mPositionListeners)[i];
+        AutoPtr<ITextViewPositionListener> listener = (*mPositionListeners)[i];
         if (listener.Get() == positionListener) {
             return;
         } else if (emptySlotIndex < 0 && listener == NULL) {
@@ -2724,13 +2499,13 @@ void PositionListener::AddSubscriber(
 
     mPositionListeners->Set(emptySlotIndex, positionListener);
     (*mCanMove)[emptySlotIndex] = canMove;
-    mNumberOfListeners++;
+    mNumberOfListeners++;*/
 }
 
 void PositionListener::RemoveSubscriber(
-    /* [in] */ TextViewPositionListener* positionListener)
+    /* [in] */ ITextViewPositionListener* positionListener)
 {
-    for (Int32 i = 0; i < MAXIMUM_NUMBER_OF_LISTENERS; i++) {
+    /*for (Int32 i = 0; i < MAXIMUM_NUMBER_OF_LISTENERS; i++) {
         if ((*mPositionListeners)[i] == positionListener) {
             mPositionListeners->Set(i, NULL);
             mNumberOfListeners--;
@@ -2741,7 +2516,7 @@ void PositionListener::RemoveSubscriber(
     if (mNumberOfListeners == 0) {
         AutoPtr<IViewTreeObserver> observer = mEditor->mTextView->GetViewTreeObserver();
         observer->RemoveOnPreDrawListener(this);
-    }
+    }*/
 }
 
 Int32 PositionListener::GetPositionX()
@@ -2757,12 +2532,12 @@ Int32 PositionListener::GetPositionY()
 ECode PositionListener::OnPreDraw(
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
+    /*VALIDATE_NOT_NULL(result);
     UpdatePosition();
 
     for (Int32 i = 0; i < MAXIMUM_NUMBER_OF_LISTENERS; i++) {
         if (mPositionHasChanged || mScrollHasChanged || (*mCanMove)[i]) {
-            AutoPtr<TextViewPositionListener> positionListener = (*mPositionListeners)[i];
+            AutoPtr<ITextViewPositionListener> positionListener = (*mPositionListeners)[i];
             if (positionListener != NULL) {
                 positionListener->UpdatePosition(mPositionX, mPositionY,
                         mPositionHasChanged, mScrollHasChanged);
@@ -2771,13 +2546,13 @@ ECode PositionListener::OnPreDraw(
     }
 
     mScrollHasChanged = FALSE;
-    *result = TRUE;
+    *result = TRUE;*/
     return NOERROR;
 }
 
 void PositionListener::UpdatePosition()
 {
-    Int32 x, y;
+    /*Int32 x, y;
     mEditor->mTextView->GetLocationInWindow(&x, &y);
     (*mTempCoords)[0] = x;
     (*mTempCoords)[0] = y;
@@ -2785,7 +2560,7 @@ void PositionListener::UpdatePosition()
     mPositionHasChanged = x != mPositionX || y != mPositionY;
 
     mPositionX = x;
-    mPositionY = y;
+    mPositionY = y;*/
 }
 
 void PositionListener::OnScrollChanged()
@@ -2806,7 +2581,7 @@ CorrectionHighlighter::CorrectionHighlighter(
     , mFadingStartTime(0)
     , mEditor(editor)
 {
-    CPath::New((IPath**)&mPath);
+    /*CPath::New((IPath**)&mPath);
     CPaint::New((IPaint**)&mPaint);
 
     AutoPtr<IResources> resources = mEditor->mTextView->GetResources();
@@ -2815,13 +2590,13 @@ CorrectionHighlighter::CorrectionHighlighter(
     Float scale;
     info->GetApplicationScale(&scale);
     mPaint->SetCompatibilityScaling(scale);
-    mPaint->SetStyle(Elastos::Droid::Graphics::PaintStyle_FILL);
+    mPaint->SetStyle(Elastos::Droid::Graphics::PaintStyle_FILL);*/
 }
 
 void CorrectionHighlighter::Highlight(
     /* [in] */ ICorrectionInfo* info)
 {
-    assert(info);
+    /*assert(info);
     info->GetOffset(&mStart);
     AutoPtr<ICharSequence> next;
     info->GetNewText((ICharSequence**)&next);
@@ -2832,7 +2607,7 @@ void CorrectionHighlighter::Highlight(
 
     if (mStart < 0 || mEnd < 0) {
         StopAnimation();
-    }
+    }*/
 }
 
 void CorrectionHighlighter::Draw(
@@ -2840,7 +2615,7 @@ void CorrectionHighlighter::Draw(
     /* [in] */ Int32 cursorOffsetVertical)
 {
     assert(canvas);
-    if (UpdatePath() && UpdatePaint()) {
+    /*if (UpdatePath() && UpdatePaint()) {
         if (cursorOffsetVertical != 0) {
             canvas->Translate(0, cursorOffsetVertical);
         }
@@ -2854,12 +2629,12 @@ void CorrectionHighlighter::Draw(
     } else {
         StopAnimation();
         Invalidate(FALSE); // TODO invalidate cursor region only
-    }
+    }*/
 }
 
 Boolean CorrectionHighlighter::UpdatePaint()
 {
-    Int64 duration = SystemClock::GetUptimeMillis() - mFadingStartTime;
+    /*Int64 duration = SystemClock::GetUptimeMillis() - mFadingStartTime;
     if (duration > FADE_OUT_DURATION) return FALSE;
 
     Int32 highlightColorAlpha = Color::Alpha(mEditor->mTextView->mHighlightColor);
@@ -2867,13 +2642,13 @@ Boolean CorrectionHighlighter::UpdatePaint()
     Float coef = 1.0f - (Float) duration / FADE_OUT_DURATION;
     Int32 color = (mEditor->mTextView->mHighlightColor & 0x00FFFFFF) +
             ((Int32) (highlightColorAlpha * coef) << 24);
-    mPaint->SetColor(color);
+    mPaint->SetColor(color);*/
     return TRUE;
 }
 
 Boolean CorrectionHighlighter::UpdatePath()
 {
-    AutoPtr<ILayout> layout = mEditor->mTextView->GetLayout();
+    /*AutoPtr<ILayout> layout = mEditor->mTextView->GetLayout();
     if (layout == NULL) return FALSE;
 
     // Update in case text is edited while the animation is run
@@ -2882,14 +2657,14 @@ Boolean CorrectionHighlighter::UpdatePath()
     Int32 end = Elastos::Core::Math::Min(length, mEnd);
 
     mPath->Reset();
-    layout->GetSelectionPath(start, end, mPath);
+    layout->GetSelectionPath(start, end, mPath);*/
     return TRUE;
 }
 
 void CorrectionHighlighter::Invalidate(
     /* [in] */ Boolean delayed)
 {
-    AutoPtr<ILayout> layout = mEditor->mTextView->GetLayout();
+    /*AutoPtr<ILayout> layout = mEditor->mTextView->GetLayout();
     if (layout == NULL) return;
 
     if (mTempRectF == NULL) {
@@ -2910,18 +2685,18 @@ void CorrectionHighlighter::Invalidate(
     } else {
         mEditor->mTextView->PostInvalidate(
                 (Int32) l, (Int32) t, (Int32) r, (Int32) b);
-    }
+    }*/
 }
 
 void CorrectionHighlighter::StopAnimation()
 {
-    mEditor->mCorrectionHighlighter = NULL;
+    //mEditor->mCorrectionHighlighter = NULL;
 }
 
 //==============================================================================
 //              ErrorPopup
 //==============================================================================
-_ErrorPopup::_ErrorPopup(
+ErrorPopup::ErrorPopup(
     /* [in]*/ TextView* textView,
     /* [in]*/ Int32 width,
     /* [in]*/ Int32 height)
@@ -2934,15 +2709,15 @@ _ErrorPopup::_ErrorPopup(
     // Make sure the TextView has a background set as it will be used the first time it is
     // shown and positionned. Initialized with below background, which should have
     // dimensions identical to the above version for this to work (and is more likely).
-    mPopupInlineErrorBackgroundId = GetResourceId(mPopupInlineErrorBackgroundId,
+    /*mPopupInlineErrorBackgroundId = GetResourceId(mPopupInlineErrorBackgroundId,
             R::styleable::Theme_errorMessageBackground);
-    mView->SetBackgroundResource(mPopupInlineErrorBackgroundId);
+    mView->SetBackgroundResource(mPopupInlineErrorBackgroundId);*/
 }
 
-void _ErrorPopup::FixDirection(
+void ErrorPopup::FixDirection(
     /* [in]*/ Boolean above)
 {
-    mAbove = above;
+    /*mAbove = above;
 
     if (above) {
         mPopupInlineErrorAboveBackgroundId =
@@ -2954,14 +2729,14 @@ void _ErrorPopup::FixDirection(
     }
 
     mView->SetBackgroundResource(above ? mPopupInlineErrorAboveBackgroundId :
-        mPopupInlineErrorBackgroundId);
+        mPopupInlineErrorBackgroundId);*/
 }
 
-Int32 _ErrorPopup::GetResourceId(
+Int32 ErrorPopup::GetResourceId(
     /* [in]*/ Int32 currentId,
     /* [in]*/ Int32 index)
 {
-    if (currentId == 0) {
+    /*if (currentId == 0) {
         AutoPtr<IContext> context = mView->GetContext();
         AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
                 const_cast<Int32 *>(R::styleable::Theme),
@@ -2971,35 +2746,24 @@ Int32 _ErrorPopup::GetResourceId(
 
         styledAttributes->GetResourceId(index, 0, &currentId);
         styledAttributes->Recycle();
-    }
+    }*/
     return currentId;
 }
 
-ECode _ErrorPopup::Update(
+ECode ErrorPopup::Update(
     /* [in]*/ Int32 x,
     /* [in]*/ Int32 y,
     /* [in]*/ Int32 w,
     /* [in]*/ Int32 h,
     /* [in]*/ Boolean force)
 {
-    PopupWindow::Update(x, y, w, h, force);
+    /*PopupWindow::Update(x, y, w, h, force);
 
     Boolean above = IsAboveAnchor();
     if (above != mAbove) {
         FixDirection(above);
-    }
+    }*/
     return NOERROR;
-}
-
-CAR_INTERFACE_IMPL(ErrorPopup, IPopupWindow)
-IPOPUPWINDOW_METHODS_IMPL(ErrorPopup, _ErrorPopup)
-
-ErrorPopup::ErrorPopup(
-    /* [in]*/ TextView* textView,
-    /* [in]*/ Int32 width,
-    /* [in]*/ Int32 height)
-    : _ErrorPopup(textView, width, height)
-{
 }
 
 //==============================================================================
@@ -3019,7 +2783,7 @@ Blink::~Blink()
 
 ECode Blink::Run()
 {
-    if (mCancelled) {
+    /*if (mCancelled) {
        return NOERROR;
     }
 
@@ -3032,20 +2796,21 @@ ECode Blink::Run()
 
         Boolean result = FALSE;
         PostAtTime(this, SystemClock::GetUptimeMillis() + Editor::BLINK, &result);
-    }
+    }*/
 
     return NOERROR;
 }
 
 void Blink::Cancel()
 {
-    if (!mCancelled) {
+    /*if (!mCancelled) {
         RemoveCallbacks(this);
         mCancelled = TRUE;
-    }
+    }*/
 }
 
-void Blink::Uncancel() {
+void Blink::Uncancel()
+{
     mCancelled = FALSE;
 }
 
@@ -3053,7 +2818,7 @@ void Blink::Uncancel() {
 //              EasyEditSpanController
 //==============================================================================
 
-CAR_INTERFACE_IMPL(EasyEditSpanController, ISpanWatcher);
+CAR_INTERFACE_IMPL(EasyEditSpanController, Object, ISpanWatcher);
 
 EasyEditSpanController::EasyEditSpanController(
     /* [in] */ Editor* editor)
@@ -3067,7 +2832,7 @@ ECode EasyEditSpanController::OnSpanAdded(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    IEasyEditSpan* easyEditSpan = IEasyEditSpan::Probe(span);
+    /*IEasyEditSpan* easyEditSpan = IEasyEditSpan::Probe(span);
     if (easyEditSpan) {
         if (mPopupWindow == NULL) {
             mPopupWindow = new EasyEditPopupWindow(mEditor);
@@ -3103,7 +2868,7 @@ ECode EasyEditSpanController::OnSpanAdded(
 
         mEditor->mTextView->RemoveCallbacks(mHidePopup);
         mEditor->mTextView->PostDelayed(mHidePopup, DISPLAY_TIMEOUT_MS);
-    }
+    }*/
     return NOERROR;
 }
 
@@ -3113,9 +2878,9 @@ ECode EasyEditSpanController::OnSpanRemoved(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    if (mPopupWindow != NULL && span == mPopupWindow->mEasyEditSpan) {
+    /*if (mPopupWindow != NULL && span == mPopupWindow->mEasyEditSpan) {
         Hide();
-    }
+    }*/
     return NOERROR;
 }
 
@@ -3127,24 +2892,23 @@ ECode EasyEditSpanController::OnSpanChanged(
     /* [in] */ Int32 nstart,
     /* [in] */ Int32 nend)
 {
-    if (mPopupWindow != NULL && span == mPopupWindow->mEasyEditSpan) {
+    /*if (mPopupWindow != NULL && span == mPopupWindow->mEasyEditSpan) {
         text->RemoveSpan(mPopupWindow->mEasyEditSpan);
-    }
+    }*/
     return NOERROR;
 }
 
 void EasyEditSpanController::Hide()
 {
-    if (mPopupWindow != NULL) {
+    /*if (mPopupWindow != NULL) {
         mPopupWindow->Hide();
         mEditor->mTextView->RemoveCallbacks(mHidePopup);
-    }
+    }*/
 }
 
 //==============================================================================
 //              DragLocalState
 //==============================================================================
-CAR_INTERFACE_IMPL(DragLocalState, IInterface);
 
 DragLocalState::DragLocalState(
     /* [in] */ TextView* sourceTextView,
@@ -3169,21 +2933,21 @@ void UserDictionaryListener::WaitForUserDictionaryAdded(
     /* [in] */ Int32 spanStart,
     /* [in] */ Int32 spanEnd)
 {
-    mTextView = reinterpret_cast<TextView*>(tv->Probe(EIID_TextView));
+    /*mTextView = reinterpret_cast<TextView*>(tv->Probe(EIID_TextView));
     mOriginalWord = originalWord;
     mWordStart = spanStart;
-    mWordEnd = spanEnd;
+    mWordEnd = spanEnd;*/
 }
 
 ECode UserDictionaryListener::HandleMessage(
     /* [in] */ IMessage* msg)
 {
-    Int32 what;
+    /*Int32 what;
     msg->GetWhat(&what);
     switch(what)
     {
-        case 0 : /* CODE_WORD_ADDED */
-        case 2 : /* CODE_ALREADY_PRESENT */
+        case 0 :
+        case 2 :
         {
             AutoPtr<IInterface> obj;
             msg->GetObj((IInterface**)&obj);
@@ -3201,14 +2965,14 @@ ECode UserDictionaryListener::HandleMessage(
         }
         default:
             return NOERROR;
-    }
+    }*/
 }
 
 void UserDictionaryListener::OnUserDictionaryAdded(
     /* [in] */ const String& originalWord,
     /* [in] */ const String& addedWord)
 {
-    if(TextUtils::IsEmpty(mOriginalWord) || TextUtils::IsEmpty(addedWord))
+    /*if(TextUtils::IsEmpty(mOriginalWord) || TextUtils::IsEmpty(addedWord))
     {
         return;
     }
@@ -3238,7 +3002,7 @@ void UserDictionaryListener::OnUserDictionaryAdded(
     CStringWrapper::New(addedWord, (ICharSequence**)&cAddedWord);
     mTextView->ReplaceText_internal(mWordStart, mWordEnd, cAddedWord);
     Int32 newCursorPosition = mWordStart + addedWord.GetLength();
-    mTextView->SetCursorPosition_internal(newCursorPosition, newCursorPosition);
+    mTextView->SetCursorPosition_internal(newCursorPosition, newCursorPosition);*/
 }
 
 //==============================================================================
@@ -3280,9 +3044,9 @@ Editor::Editor(
     , mLastDownPositionY(0.0)
     , mCreatedWithASelection(FALSE)
 {
-    mTextView = textView;
+    /*mTextView = textView;
     mCursorDrawable = ArrayOf<IDrawable *>::Alloc(2);
-    mUserDictionaryListener = new UserDictionaryListener();
+    mUserDictionaryListener = new UserDictionaryListener();*/
 }
 
 Editor::~Editor()
@@ -3291,7 +3055,7 @@ Editor::~Editor()
 
 ECode Editor::OnAttachedToWindow()
 {
-    if (mShowErrorAfterAttach) {
+    /*if (mShowErrorAfterAttach) {
         ShowError();
         mShowErrorAfterAttach = FALSE;
     }
@@ -3309,8 +3073,7 @@ ECode Editor::OnAttachedToWindow()
     }
 
 
-    UpdateSpellCheckSpans(0, mTextView->GetLength(),
-            TRUE /* create the spell checker if needed */);
+    UpdateSpellCheckSpans(0, mTextView->GetLength(), TRUE);
 
     if (mTextView->HasTransientState() &&
             mTextView->GetSelectionStart() != mTextView->GetSelectionEnd()) {
@@ -3321,13 +3084,13 @@ ECode Editor::OnAttachedToWindow()
 
         // We had an active selection from before, start the selection mode.
         StartSelectionActionMode();
-    }
+    }*/
     return NOERROR;
 }
 
 ECode Editor::OnDetachedFromWindow()
 {
-    if (mError != NULL) {
+    /*if (mError != NULL) {
         HideError();
     }
 
@@ -3359,13 +3122,13 @@ ECode Editor::OnDetachedFromWindow()
     mPreserveDetachedSelection = TRUE;
     HideControllers();
     mPreserveDetachedSelection = FALSE;
-    mTemporaryDetach = FALSE;
+    mTemporaryDetach = FALSE;*/
     return NOERROR;
 }
 
 void Editor::ShowError()
 {
-    if (mTextView->GetWindowToken() == NULL) {
+    /*if (mTextView->GetWindowToken() == NULL) {
         mShowErrorAfterAttach = TRUE;
         return;
     }
@@ -3402,14 +3165,14 @@ void Editor::ShowError()
             GetErrorX(), GetErrorY());
     Boolean isAboveAnchor;
     mErrorPopup->IsAboveAnchor(&isAboveAnchor);
-    mErrorPopup->FixDirection(isAboveAnchor);
+    mErrorPopup->FixDirection(isAboveAnchor);*/
 }
 
 ECode Editor::SetError(
     /* [in] */ ICharSequence* error,
     /* [in] */ IDrawable* icon)
 {
-    mError = TextUtils::StringOrSpannedString(error);
+    /*mError = TextUtils::StringOrSpannedString(error);
     mErrorWasChanged = TRUE;
 
     if (mError == NULL) {
@@ -3429,14 +3192,14 @@ ECode Editor::SetError(
     else {
         SetErrorIcon(icon);
         ShowError();
-    }
+    }*/
     return NOERROR;
 }
 
 void Editor::SetErrorIcon(
     /* [in] */ IDrawable* icon)
 {
-    AutoPtr<Drawables> dr = mTextView->mDrawables;
+    /*AutoPtr<Drawables> dr = mTextView->mDrawables;
     if (dr == NULL) {
         mTextView->mDrawables = dr = new Drawables();
     }
@@ -3445,12 +3208,12 @@ void Editor::SetErrorIcon(
     dr->SetErrorDrawable(icon, tv);
     mTextView->ResetResolvedDrawables();
     mTextView->Invalidate();
-    mTextView->RequestLayout();
+    mTextView->RequestLayout();*/
 }
 
 void Editor::HideError()
 {
-    if (mErrorPopup != NULL) {
+    /*if (mErrorPopup != NULL) {
         Boolean bval;
         mErrorPopup->IsShowing(&bval);
         if (bval) {
@@ -3460,7 +3223,7 @@ void Editor::HideError()
         SetErrorIcon(NULL);
     }
 
-    mShowErrorAfterAttach = FALSE;
+    mShowErrorAfterAttach = FALSE;*/
 }
 
 Int32 Editor::GetErrorX()
@@ -3469,7 +3232,7 @@ Int32 Editor::GetErrorX()
      * The "25" is the distance between the point and the right edge
      * of the background
      */
-    AutoPtr<IResources> resources = mTextView->GetResources();
+    /*AutoPtr<IResources> resources = mTextView->GetResources();
     AutoPtr<IDisplayMetrics> metrics;
     resources->GetDisplayMetrics((IDisplayMetrics**)&metrics);
     Float scale;
@@ -3494,7 +3257,7 @@ Int32 Editor::GetErrorX()
             break;
     }
 
-    return errorX;
+    return errorX;*/
 }
 
 Int32 Editor::GetErrorY()
@@ -3503,7 +3266,7 @@ Int32 Editor::GetErrorY()
      * Compound, not extended, because the icon is not clipped
      * if the text height is smaller.
      */
-    Int32 compoundPaddingTop = mTextView->GetCompoundPaddingTop();
+    /*Int32 compoundPaddingTop = mTextView->GetCompoundPaddingTop();
     Int32 vspace = mTextView->GetBottom() - mTextView->GetTop() -
             mTextView->GetCompoundPaddingBottom() - compoundPaddingTop;
 
@@ -3522,31 +3285,27 @@ Int32 Editor::GetErrorY()
 
     Int32 icontop = compoundPaddingTop + (vspace - height) / 2;
 
-    /*
-     * The "2" is the distance between the point and the top edge
-     * of the background.
-     */
     AutoPtr<IResources> resources = mTextView->GetResources();
     AutoPtr<IDisplayMetrics> metrics;
     resources->GetDisplayMetrics((IDisplayMetrics**)&metrics);
     Float scale;
     metrics->GetDensity(&scale);
 
-    return icontop + height - mTextView->GetHeight() - (Int32) (2 * scale + 0.5f);
+    return icontop + height - mTextView->GetHeight() - (Int32) (2 * scale + 0.5f);*/
 }
 
 void Editor::CreateInputContentTypeIfNeeded()
 {
-    if (mInputContentType == NULL) {
+    /*if (mInputContentType == NULL) {
         mInputContentType = new InputContentType();
-    }
+    }*/
 }
 
 void Editor::CreateInputMethodStateIfNeeded()
 {
-    if (mInputMethodState == NULL) {
+    /*if (mInputMethodState == NULL) {
         mInputMethodState = new InputMethodState();
-    }
+    }*/
 }
 
 Boolean Editor::IsCursorVisible()
@@ -3557,7 +3316,7 @@ Boolean Editor::IsCursorVisible()
 
 void Editor::PrepareCursorControllers()
 {
-    Boolean windowSupportsHandles = FALSE;
+    /*Boolean windowSupportsHandles = FALSE;
 
     AutoPtr<IView> trv = mTextView->GetRootView();
     AutoPtr<IViewGroupLayoutParams> params;
@@ -3588,14 +3347,14 @@ void Editor::PrepareCursorControllers()
             mSelectionModifierCursorController->OnDetached();
             mSelectionModifierCursorController = NULL;
         }
-    }
+    }*/
 }
 
 void Editor::HideInsertionPointCursorController()
 {
-    if (mInsertionPointCursorController != NULL) {
+    /*if (mInsertionPointCursorController != NULL) {
         mInsertionPointCursorController->Hide();
-    }
+    }*/
 }
 
 void Editor::HideControllers()
@@ -3606,19 +3365,19 @@ void Editor::HideControllers()
 
 void Editor::HideSpanControllers()
 {
-    if (mEasyEditSpanController != NULL) {
+    /*if (mEasyEditSpanController != NULL) {
         mEasyEditSpanController->Hide();
-    }
+    }*/
 }
 
 void Editor::HideCursorControllers()
 {
-    if (mSuggestionsPopupWindow != NULL && !mSuggestionsPopupWindow->IsShowingUp()) {
+    /*if (mSuggestionsPopupWindow != NULL && !mSuggestionsPopupWindow->IsShowingUp()) {
         // Should be done before hide insertion point controller since it triggers a show of it
         mSuggestionsPopupWindow->Hide();
     }
     HideInsertionPointCursorController();
-    StopSelectionActionMode();
+    StopSelectionActionMode();*/
 }
 
 void Editor::UpdateSpellCheckSpans(
@@ -3642,29 +3401,29 @@ void Editor::UpdateSpellCheckSpans(
 void Editor::OnScreenStateChanged(
     /* [in] */ Int32 screenState)
 {
-    switch (screenState) {
+    /*switch (screenState) {
         case IView::SCREEN_STATE_ON:
             ResumeBlink();
             break;
         case IView::SCREEN_STATE_OFF:
             SuspendBlink();
             break;
-    }
+    }*/
 }
 
 void Editor::SuspendBlink()
 {
-    if (mBlink != NULL) {
+    /*if (mBlink != NULL) {
         mBlink->Cancel();
-    }
+    }*/
 }
 
 void Editor::ResumeBlink()
 {
-    if (mBlink != NULL) {
+    /*if (mBlink != NULL) {
         mBlink->Uncancel();
         MakeBlink();
-    }
+    }*/
 }
 
 void Editor::AdjustInputType(
@@ -3676,7 +3435,7 @@ void Editor::AdjustInputType(
     // mInputType has been set from inputType, possibly modified by mInputMethod.
     // Specialize mInputType to [web]password if we have a text class and the original input
     // type was a password.
-    if ((mInputType & IInputType::TYPE_MASK_CLASS) == IInputType::TYPE_CLASS_TEXT) {
+    /*if ((mInputType & IInputType::TYPE_MASK_CLASS) == IInputType::TYPE_CLASS_TEXT) {
         if (password || passwordInputType) {
             mInputType = (mInputType & ~(IInputType::TYPE_MASK_VARIATION))
                     | IInputType::TYPE_TEXT_VARIATION_PASSWORD;
@@ -3690,7 +3449,7 @@ void Editor::AdjustInputType(
             mInputType = (mInputType & ~(IInputType::TYPE_MASK_VARIATION))
                     | IInputType::TYPE_NUMBER_VARIATION_PASSWORD;
         }
-    }
+    }*/
 }
 
 void Editor::ChooseSize(
@@ -3698,7 +3457,7 @@ void Editor::ChooseSize(
     /* [in] */ ICharSequence* text,
     /* [in] */ TextView* tv)
 {
-    Int32 wid = tv->GetPaddingLeft() + tv->GetPaddingRight();
+    /*Int32 wid = tv->GetPaddingLeft() + tv->GetPaddingRight();
     Int32 ht = tv->GetPaddingTop() + tv->GetPaddingBottom();
 
     AutoPtr<IResources> resources = mTextView->GetResources();
@@ -3715,21 +3474,21 @@ void Editor::ChooseSize(
     for (Int32 i = 0; i < lineCount; i++) {
         layout->GetLineWidth(i, &lineWidth);
         max = Elastos::Core::Math::Max(max, lineWidth);
-    }
+    }*/
 
     /*
      * Now set the popup size to be big enough for the text plus the border capped
      * to DEFAULT_MAX_POPUP_WIDTH
      */
-    Int32 height;
+    /*Int32 height;
     layout->GetHeight(&height);
     pop->SetWidth(wid + (Int32) Elastos::Core::Math::Ceil(max));
-    pop->SetHeight(ht + height);
+    pop->SetHeight(ht + height);*/
 }
 
 void Editor::SetFrame()
 {
-    if (mErrorPopup != NULL) {
+    /*if (mErrorPopup != NULL) {
         AutoPtr<IView> cv;
         mErrorPopup->GetContentView((IView**)&cv);
         TextView* tv = reinterpret_cast<TextView*>(cv->Probe(EIID_TextView));
@@ -3740,23 +3499,23 @@ void Editor::SetFrame()
         mErrorPopup->GetHeight(&h);
         mErrorPopup->Update((IView*)(mTextView->Probe(EIID_IView)),
             GetErrorX(), GetErrorY(), w, h);
-    }
+    }*/
 }
 
 Boolean Editor::CanSelectText()
 {
-    return HasSelectionController() && mTextView->GetLength() != 0;
+    //return HasSelectionController() && mTextView->GetLength() != 0;
 }
 
 Boolean Editor::HasPasswordTransformationMethod()
 {
-    AutoPtr<ITransformationMethod> method = mTextView->GetTransformationMethod();
-    return IPasswordTransformationMethod::Probe(method) != NULL;
+    /*AutoPtr<ITransformationMethod> method = mTextView->GetTransformationMethod();
+    return IPasswordTransformationMethod::Probe(method) != NULL;*/
 }
 
 Boolean Editor::SelectCurrentWord()
 {
-    if (!CanSelectText()) {
+    /*if (!CanSelectText()) {
         return FALSE;
     }
 
@@ -3817,8 +3576,8 @@ Boolean Editor::SelectCurrentWord()
         wordIterator->GetBeginning(minOffset, &selectionStart);
         wordIterator->GetEnd(maxOffset, &selectionEnd);
 
-        if (selectionStart == -1 /*IBreakIterator::DONE*/
-               || selectionEnd == -1 /*IBreakIterator::DONE*/
+        if (selectionStart == -1 //IBreakIterator::DONE
+               || selectionEnd == -1 //IBreakIterator::DONE
                || selectionStart == selectionEnd) {
            // Possible when the word iterator does not properly handle the text's language
            Int64 range = GetCharRange(minOffset);
@@ -3829,7 +3588,7 @@ Boolean Editor::SelectCurrentWord()
 
     AutoPtr<ISpannable> spannable = ISpannable::Probe(text);
     Selection::SetSelection(spannable, selectionStart, selectionEnd);
-    return selectionEnd > selectionStart;
+    return selectionEnd > selectionStart;*/
 }
 
 void Editor::OnLocaleChanged()
@@ -3840,17 +3599,17 @@ void Editor::OnLocaleChanged()
 
 AutoPtr<IWordIterator> Editor::GetWordIterator()
 {
-    if (mWordIterator == NULL) {
+    /*if (mWordIterator == NULL) {
         AutoPtr<ILocale> locale = mTextView->GetTextServicesLocale();
         CWordIterator::New(locale, (IWordIterator**)&mWordIterator);
-    }
+    }*/
     return mWordIterator;
 }
 
 Int64 Editor::GetCharRange(
     /* [in] */ Int32 offset)
 {
-    AutoPtr<ICharSequence> text = mTextView->GetText();
+    /*AutoPtr<ICharSequence> text = mTextView->GetText();
     Int32 textLength = mTextView->GetLength();
     if (offset + 1 < textLength) {
         Char32 currentChar, nextChar;
@@ -3874,12 +3633,12 @@ Int64 Editor::GetCharRange(
     if (offset - 1 >= 0) {
         return TextUtils::PackRangeInInt64(offset - 1,  offset);
     }
-    return TextUtils::PackRangeInInt64(offset,  offset);
+    return TextUtils::PackRangeInInt64(offset,  offset);*/
 }
 
 Boolean Editor::TouchPositionIsInSelection()
 {
-    Int32 selectionStart = mTextView->GetSelectionStart();
+    /*Int32 selectionStart = mTextView->GetSelectionStart();
     Int32 selectionEnd = mTextView->GetSelectionEnd();
 
     if (selectionStart == selectionEnd) {
@@ -3898,15 +3657,15 @@ Boolean Editor::TouchPositionIsInSelection()
     Int32 minOffset = selectionController->GetMinTouchOffset();
     Int32 maxOffset = selectionController->GetMaxTouchOffset();
 
-    return ((minOffset >= selectionStart) && (maxOffset < selectionEnd));
+    return ((minOffset >= selectionStart) && (maxOffset < selectionEnd));*/
 }
 
 AutoPtr<PositionListener> Editor::GetPositionListener()
 {
-    if (mPositionListener == NULL) {
+    /*if (mPositionListener == NULL) {
         mPositionListener = new PositionListener(this);
     }
-    return mPositionListener;
+    return mPositionListener;*/
 }
 
 Boolean Editor::IsPositionVisible(
@@ -3914,7 +3673,7 @@ Boolean Editor::IsPositionVisible(
     /* [in] */ Int32 positionY)
 {
 //    synchronized(TEMP_POSITION)
-    {
+    /*{
         AutoLock lock(mTempPositionLock);
         AutoPtr<ArrayOf<Float> > position = TEMP_POSITION;
         (*position)[0] = positionX;
@@ -3963,7 +3722,7 @@ Boolean Editor::IsPositionVisible(
                 view = NULL;
             }
         }
-    }
+    }*/
 
     // We've been able to walk up the view hierarchy and the position was never clipped
     return TRUE;
@@ -3972,7 +3731,7 @@ Boolean Editor::IsPositionVisible(
 Boolean Editor::IsOffsetVisible(
     /* [in] */ Int32 offset)
 {
-    AutoPtr<ILayout> layout = mTextView->GetLayout();
+    /*AutoPtr<ILayout> layout = mTextView->GetLayout();
     if (layout == NULL) return FALSE;
 
     Int32 line, lineBottom;
@@ -3982,14 +3741,14 @@ Boolean Editor::IsOffsetVisible(
     layout->GetPrimaryHorizontal(offset, &hor);
     Int32 primaryHorizontal = (Int32) hor;
     return IsPositionVisible(primaryHorizontal + mTextView->ViewportToContentHorizontalOffset(),
-            lineBottom + mTextView->ViewportToContentVerticalOffset());
+            lineBottom + mTextView->ViewportToContentVerticalOffset());*/
 }
 
 Boolean Editor::IsPositionOnText(
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
-    AutoPtr<ILayout> layout = mTextView->GetLayout();
+    /*AutoPtr<ILayout> layout = mTextView->GetLayout();
     if (layout == NULL) return FALSE;
 
     Int32 line = mTextView->GetLineAtCoordinate(y);
@@ -4000,14 +3759,14 @@ Boolean Editor::IsPositionOnText(
     if (x < l) return FALSE;
     layout->GetLineRight(line, &r);
     if (x > r) return FALSE;
-    return TRUE;
+    return TRUE;*/
 }
 
 Boolean Editor::PerformLongClick(
     /* [in] */ Boolean handled)
 {
     // Long press in empty space moves cursor and shows the Paste affordance if available.
-    if (!handled && !IsPositionOnText(mLastDownPositionX, mLastDownPositionY) &&
+    /*if (!handled && !IsPositionOnText(mLastDownPositionX, mLastDownPositionY) &&
             mInsertionControllerEnabled) {
         Int32 offset = mTextView->GetOffsetForPosition(mLastDownPositionX,
                 mLastDownPositionY);
@@ -4051,22 +3810,22 @@ Boolean Editor::PerformLongClick(
         handled = StartSelectionActionMode();
     }
 
-    return handled;
+    return handled;*/
 }
 
 Int64 Editor::GetLastTouchOffsets()
 {
-    AutoPtr<SelectionModifierCursorController> selectionController = GetSelectionController();
+    /*AutoPtr<SelectionModifierCursorController> selectionController = GetSelectionController();
     Int32 minOffset = selectionController->GetMinTouchOffset();
     Int32 maxOffset = selectionController->GetMaxTouchOffset();
-    return TextUtils::PackRangeInInt64(minOffset, maxOffset);
+    return TextUtils::PackRangeInInt64(minOffset, maxOffset);*/
 }
 
 void Editor::OnFocusChanged(
     /* [in] */ Boolean focused,
     /* [in] */ Int32 direction)
 {
-    mShowCursor = SystemClock::GetUptimeMillis();
+    /*mShowCursor = SystemClock::GetUptimeMillis();
     EnsureEndedBatchEdit();
 
     AutoPtr<ICharSequence> text = mTextView->GetText();
@@ -4105,7 +3864,7 @@ void Editor::OnFocusChanged(
             // This special case ensure that we keep current selection in that case.
             // It would be better to know why the DecorView does not have focus at that time.
             if ((mTextView->Probe(EIID_IExtractEditText) || mSelectionMoved) &&
-                    selStart >= 0 && selEnd >= 0) {
+                    selStart >= 0 && selEnd >= 0) {*/
                 /*
                  * Someone intentionally set the selection, so let them
                  * do whatever it is that they wanted to do instead of
@@ -4115,7 +3874,7 @@ void Editor::OnFocusChanged(
                  * just setting the selection in theirs and we still
                  * need to go through that path.
                  */
-                Selection::SetSelection(spannable, selStart, selEnd);
+               /* Selection::SetSelection(spannable, selStart, selEnd);
             }
 
             if (mSelectAllOnFocus) {
@@ -4160,12 +3919,12 @@ void Editor::OnFocusChanged(
         if (mSelectionModifierCursorController != NULL) {
             mSelectionModifierCursorController->ResetTouchOffsets();
         }
-    }
+    }*/
 }
 
 void Editor::DowngradeEasyCorrectionSpans()
 {
-    AutoPtr<ICharSequence> text = mTextView->GetText();
+    /*AutoPtr<ICharSequence> text = mTextView->GetText();
     ISpannable* spannable = ISpannable::Probe(text);
     if (spannable) {
         Int32 length;
@@ -4187,25 +3946,25 @@ void Editor::DowngradeEasyCorrectionSpans()
                 }
             }
         }
-    }
+    }*/
 }
 
 void Editor::SendOnTextChanged(
     /* [in] */ Int32 start,
     /* [in] */ Int32 after)
 {
-    UpdateSpellCheckSpans(start, start + after, FALSE);
+    /*UpdateSpellCheckSpans(start, start + after, FALSE);
 
     // Hide the controllers as soon as text is modified (typing, procedural...)
     // We do not hide the span controllers, since they can be added when a new text is
     // inserted into the text view (voice IME).
-    HideCursorControllers();
+    HideCursorControllers();*/
 }
 
 Int32 Editor::GetLastTapPosition()
 {
     // No need to create the controller at that point, no last tap position saved
-    if (mSelectionModifierCursorController != NULL) {
+    /*if (mSelectionModifierCursorController != NULL) {
         Int32 lastTapPosition = mSelectionModifierCursorController->GetMinTouchOffset();
         if (lastTapPosition >= 0) {
             // Safety check, should not be possible.
@@ -4215,7 +3974,7 @@ Int32 Editor::GetLastTapPosition()
             }
             return lastTapPosition;
         }
-    }
+    }*/
 
     return -1;
 }
@@ -4223,7 +3982,7 @@ Int32 Editor::GetLastTapPosition()
 void Editor::OnWindowFocusChanged(
     /* [in] */ Boolean hasWindowFocus)
 {
-    if (hasWindowFocus) {
+    /*if (hasWindowFocus) {
         if (mBlink != NULL) {
             mBlink->Uncancel();
             MakeBlink();
@@ -4243,13 +4002,13 @@ void Editor::OnWindowFocusChanged(
 
         // Don't leave us in the middle of a batch edit. Same as in onFocusChanged
         EnsureEndedBatchEdit();
-    }
+    }*/
 }
 
 void Editor::OnTouchEvent(
     /* [in] */ IMotionEvent* event)
 {
-    assert(event);
+    /*assert(event);
 
     if (HasSelectionController()) {
         GetSelectionController()->OnTouchEvent(event);
@@ -4270,12 +4029,12 @@ void Editor::OnTouchEvent(
         // causes focus to move to the view.
         mTouchFocusSelected = FALSE;
         mIgnoreActionUpEvent = FALSE;
-    }
+    }*/
 }
 
 ECode Editor::BeginBatchEdit()
 {
-    mInBatchEditControllers = TRUE;
+   /* mInBatchEditControllers = TRUE;
     AutoPtr<InputMethodState> ims = mInputMethodState;
     if (ims != NULL) {
         Int32 nesting = ++ims->mBatchEditNesting;
@@ -4294,36 +4053,36 @@ ECode Editor::BeginBatchEdit()
             }
             mTextView->OnBeginBatchEdit();
         }
-    }
+    }*/
     return NOERROR;
 }
 
 ECode Editor::EndBatchEdit()
 {
-    mInBatchEditControllers = FALSE;
+    /*mInBatchEditControllers = FALSE;
     AutoPtr<InputMethodState> ims = mInputMethodState;
     if (ims != NULL) {
         Int32 nesting = --ims->mBatchEditNesting;
         if (nesting == 0) {
             FinishBatchEdit(ims);
         }
-    }
+    }*/
     return NOERROR;
 }
 
 void Editor::EnsureEndedBatchEdit()
 {
-    AutoPtr<InputMethodState> ims = mInputMethodState;
+    /*AutoPtr<InputMethodState> ims = mInputMethodState;
     if (ims != NULL && ims->mBatchEditNesting != 0) {
         ims->mBatchEditNesting = 0;
         FinishBatchEdit(ims);
-    }
+    }*/
 }
 
 void Editor::FinishBatchEdit(
     /* [in] */ InputMethodState* ims)
 {
-    mTextView->OnEndBatchEdit();
+    /*mTextView->OnEndBatchEdit();
 
     if (ims->mContentChanged || ims->mSelectionModeChanged) {
         mTextView->UpdateAfterEdit();
@@ -4331,15 +4090,15 @@ void Editor::FinishBatchEdit(
     } else if (ims->mCursorChanged) {
         // Cheezy way to get us to report the current cursor location.
         mTextView->InvalidateCursor();
-    }
+    }*/
 }
 
 Boolean Editor::ExtractText(
     /* [in] */ IExtractedTextRequest* request,
     /* [in] */ IExtractedText* outText)
 {
-    return ExtractTextInternal(request, EXTRACT_UNKNOWN, EXTRACT_UNKNOWN,
-            EXTRACT_UNKNOWN, outText);
+    /*return ExtractTextInternal(request, EXTRACT_UNKNOWN, EXTRACT_UNKNOWN,
+            EXTRACT_UNKNOWN, outText);*/
 }
 
 Boolean Editor::ExtractTextInternal(
@@ -4349,7 +4108,7 @@ Boolean Editor::ExtractTextInternal(
     /* [in] */ Int32 delta,
     /* [in] */ IExtractedText* outText)
 {
-    AutoPtr<ICharSequence> content = mTextView->GetText();
+    /*AutoPtr<ICharSequence> content = mTextView->GetText();
     if (content != NULL) {
         if (partialStartOffset != EXTRACT_NOTHING) {
             Int32 N;
@@ -4435,13 +4194,13 @@ Boolean Editor::ExtractTextInternal(
         outText->SetSelectionStart(mTextView->GetSelectionStart());
         outText->SetSelectionEnd(mTextView->GetSelectionEnd());
         return TRUE;
-    }
+    }*/
     return FALSE;
 }
 
 Boolean Editor::ReportExtractedText()
 {
-    AutoPtr<InputMethodState> ims = mInputMethodState;
+    /*AutoPtr<InputMethodState> ims = mInputMethodState;
     if (ims != NULL) {
         Boolean contentChanged = ims->mContentChanged;
         if (contentChanged || ims->mSelectionModeChanged) {
@@ -4480,7 +4239,7 @@ Boolean Editor::ReportExtractedText()
                 }
             }
         }
-    }
+    }*/
     return FALSE;
 }
 
@@ -4491,7 +4250,7 @@ void Editor::OnDraw(
     /* [in] */ IPaint* highlightPaint,
     /* [in] */ Int32 cursorOffsetVertical)
 {
-    assert(canvas != NULL);
+    /*assert(canvas != NULL);
     assert(layout != NULL);
     Int32 selectionStart = mTextView->GetSelectionStart();
     Int32 selectionEnd = mTextView->GetSelectionEnd();
@@ -4516,8 +4275,9 @@ void Editor::OnDraw(
                     AutoPtr<ICharSequence> text = mTextView->GetText();
                     ISpannable* spannable = ISpannable::Probe(text);
                     if (spannable) {
-                        candStart = CEditableInputConnection::GetComposingSpanStart(spannable);
-                        candEnd = CEditableInputConnection::GetComposingSpanEnd(spannable);
+                        assert(0);
+                        candStart = 0;//CEditableInputConnection::GetComposingSpanStart(spannable);
+                        candEnd = 0;//CEditableInputConnection::GetComposingSpanEnd(spannable);
                     }
                     imm->UpdateSelection(ITEXTVIEW_PROBE(mTextView),
                             selectionStart, selectionEnd, candStart, candEnd);
@@ -4569,7 +4329,7 @@ void Editor::OnDraw(
                 cursorOffsetVertical);
     } else {
         layout->Draw(canvas, highlight, highlightPaint, cursorOffsetVertical);
-    }
+    }*/
 }
 
 void Editor::DrawHardwareAccelerated(
@@ -4579,7 +4339,7 @@ void Editor::DrawHardwareAccelerated(
     /* [in] */ IPaint* highlightPaint,
     /* [in] */ Int32 cursorOffsetVertical)
 {
-    assert(layout);
+    /*assert(layout);
 
     Int64 lineRange;
     layout->GetLineRangeForDraw(canvas, &lineRange);
@@ -4682,14 +4442,14 @@ void Editor::DrawHardwareAccelerated(
             }
 //
 //            ((HardwareCanvas) canvas).drawDisplayList(blockDisplayList, NULL,
-//                    0 /* no child clipping, our TextView parent enforces it */);
+//                    0  no child clipping, our TextView parent enforces it );
 
             endOfPreviousBlock = blockEndLine;
         }
     } else {
         // Boring layout is used for empty and hint text
         layout->DrawText(canvas, firstLine, lastLine);
-    }
+    }*/
 }
 
 Int32 Editor::GetAvailableDisplayListIndex(
@@ -4697,7 +4457,7 @@ Int32 Editor::GetAvailableDisplayListIndex(
     /* [in] */ Int32 numberOfBlocks,
     /* [in] */ Int32 searchStartIndex)
 {
-    Int32 length = mTextDisplayLists->GetLength();
+    /*Int32 length = mTextDisplayLists->GetLength();
     for (Int32 i = searchStartIndex; i < length; i++) {
         Boolean blockIndexFound = FALSE;
         for (Int32 j = 0; j < numberOfBlocks; j++) {
@@ -4715,19 +4475,19 @@ Int32 Editor::GetAvailableDisplayListIndex(
     AutoPtr<ArrayOf<IDisplayList*> > displayLists = ArrayOf<IDisplayList*>::Alloc(newSize);
     displayLists->Copy(mTextDisplayLists, 0, length);
     mTextDisplayLists = displayLists;
-    return length;
+    return length;*/
 }
 
 void Editor::DrawCursor(
     /* [in] */ ICanvas* canvas,
     /* [in] */ Int32 cursorOffsetVertical)
 {
-    Boolean translate = cursorOffsetVertical != 0;
+    /*Boolean translate = cursorOffsetVertical != 0;
     if (translate) canvas->Translate(0, cursorOffsetVertical);
     for (Int32 i = 0; i < mCursorCount; i++) {
         (*mCursorDrawable)[i]->Draw(canvas);
     }
-    if (translate) canvas->Translate(0, -cursorOffsetVertical);
+    if (translate) canvas->Translate(0, -cursorOffsetVertical);*/
 }
 
 void Editor::InvalidateTextDisplayList(
@@ -4735,7 +4495,7 @@ void Editor::InvalidateTextDisplayList(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    if (mTextDisplayLists != NULL && IDynamicLayout::Probe(layout)) {
+    /*if (mTextDisplayLists != NULL && IDynamicLayout::Probe(layout)) {
         Int32 firstLine, lastLine;
         layout->GetLineForOffset(start, &firstLine);
         layout->GetLineForOffset(end, &lastLine);
@@ -4761,22 +4521,22 @@ void Editor::InvalidateTextDisplayList(
             if ((*blockEndLines)[i] >= lastLine) break;
             i++;
         }
-    }
+    }*/
 }
 
 void Editor::InvalidateTextDisplayList()
 {
-    if (mTextDisplayLists != NULL) {
+    /*if (mTextDisplayLists != NULL) {
         for (Int32 i = 0; i < mTextDisplayLists->GetLength(); i++) {
             if ((*mTextDisplayLists)[i] != NULL)
                 (*mTextDisplayLists)[i]->Invalidate();
         }
-    }
+    }*/
 }
 
 void Editor::UpdateCursorsPositions()
 {
-    if (mTextView->mCursorDrawableRes == 0) {
+    /*if (mTextView->mCursorDrawableRes == 0) {
         mCursorCount = 0;
         return;
     }
@@ -4806,7 +4566,7 @@ void Editor::UpdateCursorsPositions()
         Float hor;
         layout->GetSecondaryHorizontal(offset, &hor);
         UpdateCursorPosition(1, middle, bottom, hor);
-    }
+    }*/
 }
 
 Float Editor::GetPrimaryHorizontal(
@@ -4814,7 +4574,7 @@ Float Editor::GetPrimaryHorizontal(
     /* [in] */ ILayout* hintLayout,
     /* [in] */ Int32 offset)
 {
-    Float value = 0.0;
+    /*Float value = 0.0;
     VALIDATE_NOT_NULL(layout);
     AutoPtr<ICharSequence> text;
     layout->GetText((ICharSequence**)&text);
@@ -4828,12 +4588,12 @@ Float Editor::GetPrimaryHorizontal(
     }
 
     layout->GetPrimaryHorizontal(offset, &value);
-    return value;
+    return value;*/
 }
 
 Boolean Editor::StartSelectionActionMode()
 {
-    if (mSelectionActionMode != NULL) {
+    /*if (mSelectionActionMode != NULL) {
         // Selection action mode is already started
         return FALSE;
     }
@@ -4870,25 +4630,25 @@ Boolean Editor::StartSelectionActionMode()
         }
     }
 
-    return selectionStarted;
+    return selectionStarted;*/
 }
 
 Boolean Editor::ExtractedTextModeWillBeStarted()
 {
-    if (NULL == mTextView->Probe(EIID_IExtractEditText)) {
+    /*if (NULL == mTextView->Probe(EIID_IExtractEditText)) {
         AutoPtr<IInputMethodManager> imm = CInputMethodManager::PeekInstance();
         if (imm != NULL) {
             Boolean fullScreen;
             imm->IsFullscreenMode(&fullScreen);
             return fullScreen;
         }
-    }
+    }*/
     return FALSE;
 }
 
 Boolean Editor::IsCursorInsideSuggestionSpan()
 {
-    AutoPtr<ICharSequence> text = mTextView->GetText();
+    /*AutoPtr<ICharSequence> text = mTextView->GetText();
     ISpannable* spannable = ISpannable::Probe(text);
     if (!spannable) return FALSE;
 
@@ -4896,12 +4656,12 @@ Boolean Editor::IsCursorInsideSuggestionSpan()
     spannable->GetSpans(
             mTextView->GetSelectionStart(), mTextView->GetSelectionEnd(),
             EIID_ISuggestionSpan, (ArrayOf<IInterface*>**)&suggestionSpans);
-    return (suggestionSpans && suggestionSpans->GetLength() > 0);
+    return (suggestionSpans && suggestionSpans->GetLength() > 0);*/
 }
 
 Boolean Editor::IsCursorInsideEasyCorrectionSpan()
 {
-    AutoPtr<ICharSequence> text = mTextView->GetText();
+    /*AutoPtr<ICharSequence> text = mTextView->GetText();
     ISpannable* spannable = ISpannable::Probe(text);
     if (spannable) {
         Int32 length;
@@ -4925,14 +4685,14 @@ Boolean Editor::IsCursorInsideEasyCorrectionSpan()
                 }
             }
         }
-    }
+    }*/
     return FALSE;
 }
 
 void Editor::OnTouchUpEvent(
     /* [in] */ IMotionEvent* event)
 {
-    Boolean selectAllGotFocus = mSelectAllOnFocus && mTextView->DidTouchFocusSelect();
+    /*Boolean selectAllGotFocus = mSelectAllOnFocus && mTextView->DidTouchFocusSelect();
     HideControllers();
     AutoPtr<ICharSequence> text = mTextView->GetText();
     Int32 length;
@@ -4965,15 +4725,15 @@ void Editor::OnTouchUpEvent(
                 GetInsertionController()->Show();
             }
         }
-    }
+    }*/
 }
 
 void Editor::StopSelectionActionMode()
 {
-    if (mSelectionActionMode != NULL) {
+    /*if (mSelectionActionMode != NULL) {
         // This will hide the mSelectionModifierCursorController
         mSelectionActionMode->Finish();
-    }
+    }*/
 }
 
 Boolean Editor::HasInsertionController()
@@ -4988,7 +4748,7 @@ Boolean Editor::HasSelectionController()
 
 AutoPtr<InsertionPointCursorController> Editor::GetInsertionController()
 {
-    if (!mInsertionControllerEnabled) {
+    /*if (!mInsertionControllerEnabled) {
         return NULL;
     }
 
@@ -4999,12 +4759,12 @@ AutoPtr<InsertionPointCursorController> Editor::GetInsertionController()
         observer->AddOnTouchModeChangeListener(mInsertionPointCursorController);
     }
 
-    return mInsertionPointCursorController;
+    return mInsertionPointCursorController;*/
 }
 
 AutoPtr<SelectionModifierCursorController> Editor::GetSelectionController()
 {
-    if (!mSelectionControllerEnabled) {
+    /*if (!mSelectionControllerEnabled) {
         return NULL;
     }
 
@@ -5015,7 +4775,7 @@ AutoPtr<SelectionModifierCursorController> Editor::GetSelectionController()
         observer->AddOnTouchModeChangeListener(mSelectionModifierCursorController);
     }
 
-    return mSelectionModifierCursorController;
+    return mSelectionModifierCursorController;*/
 }
 
 void Editor::UpdateCursorPosition(
@@ -5024,7 +4784,7 @@ void Editor::UpdateCursorPosition(
     /* [in] */ Int32 bottom,
     /* [in] */ Float horizontal)
 {
-    if ((*mCursorDrawable)[cursorIndex] == NULL) {
+    /*if ((*mCursorDrawable)[cursorIndex] == NULL) {
         AutoPtr<IResources> resources = mTextView->GetResources();
         AutoPtr<IDrawable> cursor;
         resources->GetDrawable(mTextView->mCursorDrawableRes, (IDrawable**)&cursor);
@@ -5044,47 +4804,47 @@ void Editor::UpdateCursorPosition(
     mTempRect->Get(&l, &t, &r, &b);
     Int32 left = (Int32) (horizontal) - l;
     (*mCursorDrawable)[cursorIndex]->SetBounds(left, top - t, left + width,
-            bottom + b);
+            bottom + b);*/
 }
 
 ECode Editor::OnCommitCorrection(
     /* [in] */ ICorrectionInfo* info)
 {
-    if (mCorrectionHighlighter == NULL) {
+    /*if (mCorrectionHighlighter == NULL) {
         mCorrectionHighlighter = new CorrectionHighlighter(this);
     } else {
         mCorrectionHighlighter->Invalidate(FALSE);
     }
 
-    mCorrectionHighlighter->Highlight(info);
+    mCorrectionHighlighter->Highlight(info);*/
     return NOERROR;
 }
 
 void Editor::ShowSuggestions()
 {
-    if (mSuggestionsPopupWindow == NULL) {
+    /*if (mSuggestionsPopupWindow == NULL) {
         mSuggestionsPopupWindow = new SuggestionsPopupWindow(this);
         mSuggestionsPopupWindow->Init();
     }
     HideControllers();
-    mSuggestionsPopupWindow->Show();
+    mSuggestionsPopupWindow->Show();*/
 }
 
 Boolean Editor::AreSuggestionsShown()
 {
-    return mSuggestionsPopupWindow != NULL && mSuggestionsPopupWindow->IsShowing();
+    //return mSuggestionsPopupWindow != NULL && mSuggestionsPopupWindow->IsShowing();
 }
 
 void Editor::OnScrollChanged()
 {
-    if (mPositionListener != NULL) {
+    /*if (mPositionListener != NULL) {
         mPositionListener->OnScrollChanged();
-    }
+    }*/
 }
 
 Boolean Editor::ShouldBlink()
 {
-    if (!IsCursorVisible() || !mTextView->IsFocused()) return FALSE;
+    /*if (!IsCursorVisible() || !mTextView->IsFocused()) return FALSE;
 
     Int32 start = mTextView->GetSelectionStart();
     if (start < 0) return FALSE;
@@ -5092,12 +4852,12 @@ Boolean Editor::ShouldBlink()
     Int32 end = mTextView->GetSelectionEnd();
     if (end < 0) return FALSE;
 
-    return start == end;
+    return start == end;*/
 }
 
 void Editor::MakeBlink()
 {
-    if (ShouldBlink()) {
+    /*if (ShouldBlink()) {
         mShowCursor = SystemClock::GetUptimeMillis();
         if (mBlink == NULL) {
             mBlink = new Blink(this);
@@ -5111,13 +4871,13 @@ void Editor::MakeBlink()
         if (mBlink != NULL) {
             mBlink->RemoveCallbacks(mBlink);
         }
-    }
+    }*/
 }
 
 AutoPtr<IDragShadowBuilder> Editor::GetTextThumbnailBuilder(
     /* [in] */ ICharSequence* textIn)
 {
-    AutoPtr<IContext> context = mTextView->GetContext();
+    /*AutoPtr<IContext> context = mTextView->GetContext();
     AutoPtr<IView> view;
     View::View::Inflate(context, R::layout::text_drag_thumbnail, NULL, (IView**)&view);
     AutoPtr<ITextView> shadowView = (ITextView*)(view->Probe(EIID_ITextView));
@@ -5157,14 +4917,14 @@ AutoPtr<IDragShadowBuilder> Editor::GetTextThumbnailBuilder(
     shadowView->Invalidate();
 
     AutoPtr<IDragShadowBuilder> builder;
-    CDragShadowBuilder::New(shadowView, (IDragShadowBuilder**)&builder);
-    return builder;
+    //CDragShadowBuilder::New(shadowView, (IDragShadowBuilder**)&builder);
+    return builder;*/
 }
 
 void Editor::OnDrop(
     /* [in] */ IDragEvent* event)
 {
-    assert(event);
+    /*assert(event);
 
     AutoPtr<IContext> context = mTextView->GetContext();
     StringBuilder content("");
@@ -5241,13 +5001,13 @@ void Editor::OnDrop(
                 mTextView->DeleteText_internal(prevCharIdx, prevCharIdx + 1);
             }
         }
-    }
+    }*/
 }
 
 ECode Editor::AddSpanWatchers(
     /* [in] */ ISpannable* text)
 {
-    assert(text != NULL);
+    /*assert(text != NULL);
     Int32 textLength;
     text->GetLength(&textLength);
 
@@ -5258,7 +5018,7 @@ ECode Editor::AddSpanWatchers(
     if (mEasyEditSpanController == NULL) {
         mEasyEditSpanController = new EasyEditSpanController(this);
     }
-    text->SetSpan(mEasyEditSpanController, 0, textLength, ISpanned::SPAN_INCLUSIVE_INCLUSIVE);
+    text->SetSpan(mEasyEditSpanController, 0, textLength, ISpanned::SPAN_INCLUSIVE_INCLUSIVE);*/
     return NOERROR;
 }
 

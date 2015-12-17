@@ -163,6 +163,9 @@ module
          */
         FocusCurrentTab(
             [in] Int32 index);
+
+        SetTabSelectionListener(
+            [in] ITabWidgetOnTabSelectionChanged* listener);
     }
 
     } // namespace Widget

@@ -187,7 +187,7 @@ ECode Switch::SetSwitchTextAppearance(
         mTextColors = colors;
     }
     else {
-        mTextColors = GetTextColors();
+        GetTextColors((IColorStateList**)&mTextColors);
     }
 
     Int32 ts = 0;
@@ -894,8 +894,9 @@ ECode Switch::OnLayout(
         switchLeft = switchRight - mSwitchWidth + opticalInsetLeft + opticalInsetRight;
     }
 
-    Int32 switchTop = 0, switchBottom = 0;
-    switch (GetGravity() & IGravity::VERTICAL_GRAVITY_MASK) {
+    Int32 switchTop = 0, switchBottom = 0, gravity = 0;
+    GetGravity(&gravity);
+    switch (gravity & IGravity::VERTICAL_GRAVITY_MASK) {
         default:
         case IGravity::TOP:
             GetPaddingTop(&switchTop);
@@ -1098,7 +1099,9 @@ ECode Switch::GetCompoundPaddingLeft(
     Int32 _left;
     CompoundButton::GetCompoundPaddingLeft(&_left);
     Int32 padding = _left + mSwitchWidth;
-    if (!TextUtils::IsEmpty(GetText())) {
+    AutoPtr<ICharSequence> text;
+    GetText((ICharSequence**)&text);
+    if (!TextUtils::IsEmpty(text)) {
         padding += mSwitchPadding;
     }
     *left = padding;
@@ -1117,7 +1120,9 @@ ECode Switch::GetCompoundPaddingRight(
     Int32 _right;
     CompoundButton::GetCompoundPaddingRight(&_right);
     Int32 padding = _right + mSwitchWidth;
-    if (!TextUtils::IsEmpty(GetText())) {
+    AutoPtr<ICharSequence> text;
+    GetText((ICharSequence**)&text);
+    if (!TextUtils::IsEmpty(text)) {
         padding += mSwitchPadding;
     }
 

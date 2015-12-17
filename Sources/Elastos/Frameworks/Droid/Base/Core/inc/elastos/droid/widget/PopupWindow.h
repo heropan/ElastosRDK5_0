@@ -1075,6 +1075,8 @@ private:
     Boolean mOverlapAnchor;
 
     Boolean mPopupViewInitialLayoutDirectionInherited;
+
+    friend class ErrorPopup;
 };
 
 

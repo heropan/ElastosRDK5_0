@@ -145,6 +145,7 @@ ECode EditText::PerformAccessibilityAction(
     /* [in] */ IBundle* arguments,
     /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     switch (action) {
         case IAccessibilityNodeInfo::ACTION_SET_TEXT:
         {
@@ -158,10 +159,11 @@ ECode EditText::PerformAccessibilityAction(
             if (text != NULL && (text->GetLength(&len), len) > 0) {
                 SetSelection(len);
             }
-            return TRUE;
+            *res = TRUE;
+            return NOERROR;
         }
         default: {
-            return TextView::PerformAccessibilityAction(action, arguments);
+            return TextView::PerformAccessibilityAction(action, arguments, res);
         }
     }
 }

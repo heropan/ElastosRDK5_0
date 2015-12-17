@@ -61,11 +61,11 @@ protected:
     virtual void OnWindowVisibilityChanged(
         /* [in] */ Int32 visibility);
 
-    virtual void OnVisibilityChanged(
+    virtual CARAPI OnVisibilityChanged(
         /* [in] */ IView* changedView,
         /* [in] */ Int32 visibility);
 
-    virtual Int32 GetSuggestedMinimumWidth();
+    virtual CARAPI_(Int32) GetSuggestedMinimumWidth();
 
     void UpdateClock();
 

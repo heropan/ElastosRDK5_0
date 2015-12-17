@@ -437,7 +437,9 @@ void CompoundButton::OnDraw(
 {
     AutoPtr<IDrawable> buttonDrawable = mButtonDrawable;
     if (buttonDrawable != NULL) {
-        Int32 verticalGravity = GetGravity() & IGravity::VERTICAL_GRAVITY_MASK;
+        Int32 gravity;
+        GetGravity(&gravity);
+        Int32 verticalGravity = gravity & IGravity::VERTICAL_GRAVITY_MASK;
         Int32 drawableHeight;
         buttonDrawable->GetIntrinsicHeight(&drawableHeight);
 

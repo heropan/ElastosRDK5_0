@@ -263,11 +263,12 @@ void Chronometer::UpdateRunning()
     }
 }
 
-void Chronometer::DispatchChronometerTick()
+ECode Chronometer::DispatchChronometerTick()
 {
     if (mOnChronometerTickListener != NULL) {
         mOnChronometerTickListener->OnChronometerTick((IChronometer*)this->Probe(EIID_IChronometer));
     }
+    return NOERROR;
 }
 
 ECode Chronometer::OnInitializeAccessibilityEvent(

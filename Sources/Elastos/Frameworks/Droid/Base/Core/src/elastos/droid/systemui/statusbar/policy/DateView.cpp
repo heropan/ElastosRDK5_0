@@ -97,12 +97,13 @@ void DateView::OnWindowVisibilityChanged(
     SetUpdates();
 }
 
-void DateView::OnVisibilityChanged(
+ECode DateView::OnVisibilityChanged(
     /* [in] */ IView* changedView,
     /* [in] */ Int32 visibility)
 {
     TextView::OnVisibilityChanged(changedView, visibility);
     SetUpdates();
+    return NOERROR;
 }
 
 Int32 DateView::GetSuggestedMinimumWidth()
