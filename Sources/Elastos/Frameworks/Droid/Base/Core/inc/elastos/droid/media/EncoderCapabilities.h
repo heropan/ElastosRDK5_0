@@ -2,7 +2,9 @@
 #ifndef __ELASTOS_DROID_MEDIA_ENCODERCAPABILITIES_H__
 #define __ELASTOS_DROID_MEDIA_ENCODERCAPABILITIES_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::IList;
 

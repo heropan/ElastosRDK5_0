@@ -1,7 +1,11 @@
 #ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_BARCONTROLLER_H__
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_BARCONTROLLER_H__
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Internal::StatusBar::IIStatusBarService;
 using Elastos::Droid::Os::IHandler;

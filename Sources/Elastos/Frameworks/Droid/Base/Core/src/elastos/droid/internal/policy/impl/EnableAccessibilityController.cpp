@@ -1,4 +1,7 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Provider.h"
 #include "elastos/droid/internal/policy/impl/EnableAccessibilityController.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/app/CActivityManager.h"

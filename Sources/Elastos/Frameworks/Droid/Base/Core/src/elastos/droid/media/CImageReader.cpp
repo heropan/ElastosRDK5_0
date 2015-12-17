@@ -1,3 +1,4 @@
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/media/CImageReader.h"
 #include "elastos/droid/os/Looper.h"
 #include <elastos/core/AutoLock.h>

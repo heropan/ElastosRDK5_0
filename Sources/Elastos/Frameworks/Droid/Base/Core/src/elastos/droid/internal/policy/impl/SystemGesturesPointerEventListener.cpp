@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/internal/policy/impl/SystemGesturesPointerEventListener.h"
 
 using Elastos::Droid::View::EIID_IPointerEventListener;

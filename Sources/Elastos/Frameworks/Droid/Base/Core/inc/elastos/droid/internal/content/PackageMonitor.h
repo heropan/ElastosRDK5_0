@@ -2,16 +2,11 @@
 #ifndef __ELASTOS_DROID_INTERNAL_CONTENT_PACKAGEMONITOR_H__
 #define __ELASTOS_DROID_INTERNAL_CONTENT_PACKAGEMONITOR_H__
 
-<<<<<<< HEAD
-=======
-#include "elastos/droid/content/BroadcastReceiver.h"
->>>>>>> master
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Internal.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include <elastos/utility/etl/HashSet.h>
 
-using Elastos::Utility::Etl::HashSet;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IPendingResult;
 using Elastos::Droid::Content::IContext;
@@ -22,6 +17,7 @@ using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IHandlerThread;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IUserHandle;
+using Elastos::Utility::Etl::HashSet;
 
 namespace Elastos {
 namespace Droid {

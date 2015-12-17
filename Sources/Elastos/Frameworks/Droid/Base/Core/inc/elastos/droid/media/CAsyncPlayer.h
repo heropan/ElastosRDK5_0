@@ -2,6 +2,10 @@
 #ifndef __ELASTOS_DROID_MEDIA_CASYNCPLAYER_H__
 #define __ELASTOS_DROID_MEDIA_CASYNCPLAYER_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Os.h"
 #include "_Elastos_Droid_Media_CAsyncPlayer.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>

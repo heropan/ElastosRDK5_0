@@ -1,6 +1,10 @@
 #ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_PHONEWINDOW_H__
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_PHONEWINDOW_H__
 
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Transition.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/Window.h"
 #include "elastos/droid/widget/FrameLayout.h"

@@ -1,7 +1,7 @@
 
+#include "elastos/droid/internal/policy/impl/GlobalKeyManager.h"
 #include "elastos/droid/content/CComponentNameHelper.h"
 #include "elastos/droid/content/CIntent.h"
-#include "elastos/droid/internal/policy/impl/GlobalKeyManager.h"
 #include "elastos/droid/internal/utility/XmlUtils.h"
 #include "elastos/droid/os/CUserHandleHelper.h"
 #include "elastos/droid/utility/CSparseArray.h"

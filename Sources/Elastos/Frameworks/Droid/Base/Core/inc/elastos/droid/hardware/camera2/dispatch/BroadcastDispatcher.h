@@ -2,7 +2,8 @@
 #ifndef __ELASTOS_DROID_HARDWARE_CAMERA2_DISPATCH_BROADCASTDISPATCHER_H__
 #define __ELASTOS_DROID_HARDWARE_CAMERA2_DISPATCH_BROADCASTDISPATCHER_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Hardware.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 

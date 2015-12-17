@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Media.h"
 #include "elastos/droid/media/AudioSystem.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>

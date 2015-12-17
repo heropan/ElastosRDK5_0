@@ -2,7 +2,14 @@
 #ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_PHONEFALLBACKEVENTHANDLER_H__
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_PHONEFALLBACKEVENTHANDLER_H__
 
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.View.h"
+#include "_Elastos.Droid.Core.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::App::IKeyguardManager;
 using Elastos::Droid::App::ISearchManager;

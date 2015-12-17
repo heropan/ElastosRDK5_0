@@ -1,7 +1,11 @@
 #ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_LOGDECELERATEINTERPOLATOR_H__
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_LOGDECELERATEINTERPOLATOR_H__
 
+#include "Elastos.Droid.Animation.h"
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::View::Animation::IInterpolator;

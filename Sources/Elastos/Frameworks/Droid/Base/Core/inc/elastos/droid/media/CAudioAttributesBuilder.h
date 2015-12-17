@@ -1,6 +1,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CAUDIOATTRIBUTESBUILDER_H__
 #define __ELASTOS_DROID_MEDIA_CAUDIOATTRIBUTESBUILDER_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "_Elastos_Droid_Media_CAudioAttributesBuilder.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>

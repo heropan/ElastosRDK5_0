@@ -1,6 +1,8 @@
 #ifndef __ELASTOS_DROID_MEDIA_AUDIOPORTEVENTHANDLER_H__
 #define __ELASTOS_DROID_MEDIA_AUDIOPORTEVENTHANDLER_H__
 
+#include "Elastos.CoreLibrary.Utility.h"
+#include "Elastos.Droid.Media.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Handler.h"
 #include <elastos/core/Object.h>

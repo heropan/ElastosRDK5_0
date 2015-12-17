@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_MEDIA_CAUDIORECORD_H__
 #define __ELASTOS_DROID_MEDIA_CAUDIORECORD_H__
 
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.Content.h"
 #include "_Elastos_Droid_Media_CAudioRecord.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Handler.h"

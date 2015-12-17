@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CFACE_H__
 #define __ELASTOS_DROID_MEDIA_CFACE_H__
 
+#include "Elastos.Droid.Graphics.h"
 #include "_Elastos_Droid_Media_CFace.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>

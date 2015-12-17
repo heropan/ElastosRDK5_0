@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCONTENTPROVIDERHELPER_H__
 #define __ELASTOS_DROID_CONTENT_CCONTENTPROVIDERHELPER_H__
 
+#include "Elastos.Droid.Net.h"
 #include "_Elastos_Droid_Content_CContentProviderHelper.h"
 #include <elastos/core/Singleton.h>
 

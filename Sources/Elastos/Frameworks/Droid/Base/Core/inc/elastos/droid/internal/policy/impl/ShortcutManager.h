@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_SHORTCUTMANAGER_H__
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_SHORTCUTMANAGER_H__
 
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/database/ContentObserver.h"
 #include "elastos/droid/utility/SparseArray.h"
 #include <elastos/utility/etl/HashMap.h>

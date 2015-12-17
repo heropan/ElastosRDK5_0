@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Provider.h"
 #include "elastos/droid/internal/policy/impl/ShortcutManager.h"
 #include "elastos/droid/content/CIntentHelper.h"
 //TODO #include "elastos/droid/provider/CSettingsBookmarks.h"

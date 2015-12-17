@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CAUDIOTRACK_H__
 #define __ELASTOS_DROID_MEDIA_CAUDIOTRACK_H__
 
+#include "Elastos.Droid.Internal.h"
 #include "_Elastos_Droid_Media_CAudioTrack.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Handler.h"

@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_PHONELAYOUTINFLATER_H__
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_PHONELAYOUTINFLATER_H__
 
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/LayoutInflater.h"
 

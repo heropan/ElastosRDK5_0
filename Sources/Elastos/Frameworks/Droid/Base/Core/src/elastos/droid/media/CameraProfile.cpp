@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Media.h"
 #include "elastos/droid/hardware/CHardwareCamera.h"
 #include "elastos/droid/hardware/HardwareCamera.h"
 #include "elastos/droid/media/CameraProfile.h"

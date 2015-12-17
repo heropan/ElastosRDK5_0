@@ -1,7 +1,11 @@
 #ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_WAKEGESTURELISTENER_H__
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_WAKEGESTURELISTENER_H__
 
+#include "Elastos.Droid.Hardware.h"
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Hardware::ISensor;

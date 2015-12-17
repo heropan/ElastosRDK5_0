@@ -1,6 +1,8 @@
 #ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_KEYGUARD_KEYGUARDSHOWDELEGATE_H__
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_KEYGUARD_KEYGUARDSHOWDELEGATE_H__
 
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/core/Object.h>
 
