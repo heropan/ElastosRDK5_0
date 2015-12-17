@@ -35,7 +35,7 @@ public:
 
     CPhoneWindowRotationWatcher();
 
-    CARAPI constructor();
+    //CARAPI constructor();
 
     CARAPI OnRotationChanged(
         /* [in] */ Int32 rotation);

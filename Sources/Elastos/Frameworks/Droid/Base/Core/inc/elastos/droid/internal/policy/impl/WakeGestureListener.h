@@ -89,13 +89,13 @@ public:
 
 private:
     static const String TAG;
-    /*const*/ AutoPtr<ISensorManager> mSensorManager;
-    /*const*/ AutoPtr<IHandler> mHandler;
-    /*const*/ AutoPtr<Object> mLock;
+    AutoPtr<ISensorManager> mSensorManager;
+    AutoPtr<IHandler> mHandler;
+    AutoPtr<Object> mLock;
     Boolean mTriggerRequested;
     AutoPtr<ISensor> mSensor;
-    /*const*/ AutoPtr<ITriggerEventListener> mListener;
-    /*const*/ AutoPtr<IRunnable> mWakeUpRunnable;
+    AutoPtr<ITriggerEventListener> mListener;
+    AutoPtr<IRunnable> mWakeUpRunnable;
 };
 
 } // namespace Impl

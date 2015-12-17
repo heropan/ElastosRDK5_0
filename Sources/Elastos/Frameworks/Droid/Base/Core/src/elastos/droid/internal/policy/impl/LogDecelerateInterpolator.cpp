@@ -15,7 +15,6 @@ namespace Impl {
 //                      LogDecelerateInterpolator
 //=====================================================================
 CAR_INTERFACE_IMPL_3(LogDecelerateInterpolator, Object, ILogDecelerateInterpolator, IInterpolator, ITimeInterpolator)
-//CAR_INTERFACE_IMPL(LogDecelerateInterpolator, Object, ILogDecelerateInterpolator)//TODO should be replaced by the line above
 
 LogDecelerateInterpolator::LogDecelerateInterpolator()
 {
