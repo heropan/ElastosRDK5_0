@@ -1,5 +1,6 @@
 
 #include "elastos/droid/app/PackageDeleteObserver.h"
+#include "elastos/droid/app/CPackageDeleteObserver2.h"
 
 namespace Elastos {
 namespace Droid {
@@ -7,18 +8,17 @@ namespace App {
 
 CAR_INTERFACE_IMPL(PackageDeleteObserver, Object, IPackageDeleteObserver)
 
-PackageDeleteObserver::~PackageDeleteObserver()
+ECode PackageDeleteObserver::constructor()
 {
-    assert(0 && "TODO");
-    // mBinder = new PackageDeleteObserver2();
+    return CPackageDeleteObserver2::New((IPackageDeleteObserver*)this, (IIPackageDeleteObserver2**)&mBinder);
 }
 
 ECode PackageDeleteObserver::GetBinder(
-    /* [out] */ IIPackageDeleteObserver2** pio)
+    /* [out] */ IIPackageDeleteObserver2** observer)
 {
-    VALIDATE_NOT_NULL(pio)
-    *pio = mBinder;
-    REFCOUNT_ADD(*pio)
+    VALIDATE_NOT_NULL(observer)
+    *observer = mBinder;
+    REFCOUNT_ADD(*observer)
     return NOERROR;
 }
 

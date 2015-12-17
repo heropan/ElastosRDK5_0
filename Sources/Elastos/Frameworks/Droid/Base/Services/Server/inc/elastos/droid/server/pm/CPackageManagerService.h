@@ -310,32 +310,6 @@ public:/* package */
         CPackageManagerService* mHost;
     };
 
-    class DeletePackageRunnable : public Runnable
-    {
-    public:
-        DeletePackageRunnable(
-            /* [in] */ const String& packageName,
-            /* [in] */ IPackageDeleteObserver* observer,
-            /* [in] */ Int32 flags,
-            /* [in] */ Int32 uid,
-            /* [in] */ CPackageManagerService* host)
-            : mPackageName(packageName)
-            , mObserver(observer)
-            , mFlags(flags)
-            , mUid(uid)
-            , mHost(host)
-        {}
-
-        CARAPI Run();
-
-    private:
-        String mPackageName;
-        AutoPtr<IPackageDeleteObserver> mObserver;
-        Int32 mFlags;
-        Int32 mUid;
-        CPackageManagerService* mHost;
-    };
-
     class ProcessPendingInstallRunnable : public Runnable
     {
     public:
@@ -848,7 +822,7 @@ public:/* package */
         String mOrigPermission;
     };
 
-    class PackageRemovedInfo : public ElRefBase
+    class PackageRemovedInfo : public Object
     {
     public:
         PackageRemovedInfo(
@@ -926,46 +900,6 @@ private:
         CPackageManagerService* mHost;
 
         friend class WriteThread;
-    };
-
-    class NotifyRunnable : public Runnable
-    {
-    public:
-        NotifyRunnable(
-            /* [in] */ CPackageManagerService* owner,
-            /* [in] */ Int64 freeStorageSize,
-            /* [in] */ IPackageDataObserver* observer)
-            : mHost(owner)
-            , mFreeStorageSize(freeStorageSize)
-            , mObserver(observer)
-        {}
-
-        CARAPI Run();
-
-    private:
-        CPackageManagerService* mHost;
-        Int32 mFreeStorageSize;
-        AutoPtr<IPackageDataObserver> mObserver;
-    };
-
-    class FreeStorageRunnable : public Runnable
-    {
-    public:
-        FreeStorageRunnable(
-            /* [in] */ CPackageManagerService* owner,
-            /* [in] */ Int64 freeStorageSize,
-            /* [in] */ IIntentSender* pi)
-            : mHost(owner)
-            , mFreeStorageSize(freeStorageSize)
-            , mPi(pi)
-        {}
-
-        CARAPI Run();
-
-    private:
-        CPackageManagerService* mHost;
-        Int64 mFreeStorageSize;
-        AutoPtr<IIntentSender> mPi;
     };
 
     class ServiceIntentResolver
@@ -1124,6 +1058,46 @@ private:
         CPackageManagerService* mHost;
     };
 
+    class NotifyRunnable : public Runnable
+    {
+    public:
+        NotifyRunnable(
+            /* [in] */ CPackageManagerService* owner,
+            /* [in] */ Int64 freeStorageSize,
+            /* [in] */ IPackageDataObserver* observer)
+            : mHost(owner)
+            , mFreeStorageSize(freeStorageSize)
+            , mObserver(observer)
+        {}
+
+        CARAPI Run();
+
+    private:
+        CPackageManagerService* mHost;
+        Int32 mFreeStorageSize;
+        AutoPtr<IPackageDataObserver> mObserver;
+    };
+
+    class FreeStorageRunnable : public Runnable
+    {
+    public:
+        FreeStorageRunnable(
+            /* [in] */ CPackageManagerService* owner,
+            /* [in] */ Int64 freeStorageSize,
+            /* [in] */ IIntentSender* pi)
+            : mHost(owner)
+            , mFreeStorageSize(freeStorageSize)
+            , mPi(pi)
+        {}
+
+        CARAPI Run();
+
+    private:
+        CPackageManagerService* mHost;
+        Int64 mFreeStorageSize;
+        AutoPtr<IIntentSender> mPi;
+    };
+
     class ResolvePrioritySorter
         : public Object
         , public IComparator
@@ -1163,6 +1137,32 @@ private:
             /* [out] */ Int32* result);
     };
 
+    class DeletePackageRunnable : public Runnable
+    {
+    public:
+        DeletePackageRunnable(
+            /* [in] */ const String& packageName,
+            /* [in] */ IPackageDeleteObserver* observer,
+            /* [in] */ Int32 flags,
+            /* [in] */ Int32 uid,
+            /* [in] */ CPackageManagerService* host)
+            : mPackageName(packageName)
+            , mObserver(observer)
+            , mFlags(flags)
+            , mUid(uid)
+            , mHost(host)
+        {}
+
+        CARAPI Run();
+
+    private:
+        String mPackageName;
+        AutoPtr<IPackageDeleteObserver> mObserver;
+        Int32 mFlags;
+        Int32 mUid;
+        CPackageManagerService* mHost;
+    };
+
     class DeleteFilenameFilter
         : public ElRefBase
         , public IFilenameFilter
@@ -1176,9 +1176,7 @@ private:
         CAR_INTERFACE_DECL()
     };
 
-    class ClearRunnable
-        : public ElRefBase
-        , public IRunnable
+    class ClearRunnable : public Runnable
     {
     public:
         ClearRunnable(
@@ -1191,8 +1189,6 @@ private:
             , mObserver(observer)
             , mUserId(userId)
         {}
-
-        CAR_INTERFACE_DECL()
 
         CARAPI Run();
 
@@ -1275,22 +1271,11 @@ private:
     };
 
     class ClearStorageConnection
-        : public ElRefBase
+        : public Object
         , public IServiceConnection
     {
     public:
-        ClearStorageConnection() {}
-
-        CARAPI_(PInterface) Probe(
-            /* [in]  */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
+        CAR_INTERFACE_DECL()
 
         CARAPI OnServiceConnected(
             /* [in] */ IComponentName* name,
@@ -1300,8 +1285,7 @@ private:
             /* [in] */ IComponentName* name);
 
     public:
-        AutoPtr<IMediaContainerService> mContainerService;
-        Object mLock;
+        AutoPtr<IIMediaContainerService> mContainerService;
     };
 
 public:
@@ -1882,10 +1866,31 @@ public:
     static CARAPI_(String) DeriveCodePathName(
         /* [in] */ const String& codePath);
 
+    CARAPI DeletePackageAsUser(
+        /* [in] */ const String& packageName,
+        /* [in] */ IIPackageDeleteObserver* observer,
+        /* [in] */ Int32 userId,
+        /* [in] */ Int32 flags);
+
     CARAPI DeletePackage(
         /* [in] */ const String& packageName,
-        /* [in] */ IPackageDeleteObserver* observer,
+        /* [in] */ IIPackageDeleteObserver2* observer,
+        /* [in] */ Int32 userId,
         /* [in] */ Int32 flags);
+
+    CARAPI_(Boolean) LocationIsPrivileged(
+        /* [in] */ IFile* path);
+
+    CARAPI SetBlockUninstallForUser(
+        /* [in] */ const String& packageName,
+        /* [in] */ Boolean blockUninstall,
+        /* [in] */ Int32 userId,
+        /* [out] */ Boolean* result);
+
+    CARAPI GetBlockUninstallForUser(
+        /* [in] */ const String& packageName,
+        /* [in] */ Int32 userId,
+        /* [out] */ Boolean* result);
 
     CARAPI ClearApplicationUserData(
         /* [in] */ const String& packageName,
@@ -2495,10 +2500,14 @@ private:
         /* [in] */ PackageInstalledInfo* res,
         /* [in] */ ArrayOf<Byte>* readBuffer);
 
+    CARAPI_(Boolean) CheckUpgradeKeySetLP(
+        /* [in] */ PackageSetting* oldPS,
+        /* [in] */ PackageParser::Package* newPkg);
+
     CARAPI_(void) ReplacePackageLI(
         /* [in] */ PackageParser::Package* pkg,
         /* [in] */ Int32 parseFlags,
-        /* [in] */ Int32 scanMode,
+        /* [in] */ Int32 scanFlags,
         /* [in] */ IUserHandle* user,
         /* [in] */ const String& installerPackageName,
         /* [in] */ PackageInstalledInfo* res,
@@ -2508,8 +2517,10 @@ private:
         /* [in] */ PackageParser::Package* deletedPackage,
         /* [in] */ PackageParser::Package* pkg,
         /* [in] */ Int32 parseFlags,
-        /* [in] */ Int32 scanMode,
+        /* [in] */ Int32 scanFlags,
         /* [in] */ IUserHandle* user,
+        /* [in] */ ArrayOf<Int32>* allUsers,
+        /* [in] */ ArrayOf<Boolean>* perUserInstalled,
         /* [in] */ const String& installerPackageName,
         /* [in] */ PackageInstalledInfo* res,
         /* [in] */ ArrayOf<Byte>* readBuffer);
@@ -2518,14 +2529,13 @@ private:
         /* [in] */ PackageParser::Package* deletedPackage,
         /* [in] */ PackageParser::Package* pkg,
         /* [in] */ Int32 parseFlags,
-        /* [in] */ Int32 scanMode,
+        /* [in] */ Int32 scanFlags,
         /* [in] */ IUserHandle* user,
+        /* [in] */ ArrayOf<Int32>* allUsers,
+        /* [in] */ ArrayOf<Boolean>* perUserInstalled,
         /* [in] */ const String& installerPackageName,
         /* [in] */ PackageInstalledInfo* res,
         /* [in] */ ArrayOf<Byte>* readBuffer);
-
-    CARAPI_(Int32) MoveDexFilesLI(
-        /* [in] */ PackageParser::Package* newPackage);
 
     // for epk
     CARAPI_(Int32) MoveEcoFilesLI(
@@ -2534,11 +2544,12 @@ private:
     CARAPI_(void) UpdateSettingsLI(
         /* [in] */ PackageParser::Package* newPackage,
         /* [in] */ const String& installerPackageName,
+        /* [in] */ ArrayOf<Int32>* allUsers,
+        /* [in] */ ArrayOf<Boolean>* perUserInstalled,
         /* [in] */ PackageInstalledInfo* res);
 
     CARAPI_(void) InstallPackageLI(
         /* [in] */ InstallArgs* args,
-        /* [in] */ Boolean newInstall,
         /* [in] */ PackageInstalledInfo* res,
         /* [in] */ ArrayOf<Byte>* readBuffer);
 
@@ -2546,7 +2557,16 @@ private:
         /* [in] */ PackageParser::Package* pkg);
 
     static CARAPI_(Boolean) IsForwardLocked(
+        /* [in] */ IApplicationInfo* pkg);
+
+    static CARAPI_(Boolean) IsForwardLocked(
         /* [in] */ PackageSetting* ps);
+
+    static CARAPI_(Boolean) IsMultiArch(
+        /* [in] */ PackageSetting* info);
+
+    static CARAPI_(Boolean) IsMultiArch(
+        /* [in] */ IApplicationInfo* info);
 
     static CARAPI_(Boolean) IsExternal(
         /* [in] */ PackageParser::Package* pkg);
@@ -2554,7 +2574,13 @@ private:
     static CARAPI_(Boolean) IsExternal(
         /* [in] */ PackageSetting* ps);
 
+    static CARAPI_(Boolean) IsExternal(
+        /* [in] */ IApplicationInfo* info);
+
     static CARAPI_(Boolean) IsSystemApp(
+        /* [in] */ PackageParser::Package* pkg);
+
+    static CARAPI_(Boolean) IsPrivilegedApp(
         /* [in] */ PackageParser::Package* pkg);
 
     static CARAPI_(Boolean) IsSystemApp(
@@ -2564,6 +2590,18 @@ private:
         /* [in] */ PackageSetting* ps);
 
     static CARAPI_(Boolean) IsUpdatedSystemApp(
+        /* [in] */ PackageSetting* ps);
+
+    static CARAPI_(Boolean) IsUpdatedSystemApp(
+        /* [in] */ PackageParser::Package* pkg);
+
+    static CARAPI_(Boolean) IsUpdatedSystemApp(
+        /* [in] */ IApplicationInfo* info);
+
+    /**
+    *actions_code(songzhining, new_method)
+    */
+    static CARAPI_(Boolean) IsVendorApp(
         /* [in] */ PackageParser::Package* pkg);
 
     CARAPI_(Int32) PackageFlagsToInstallFlags(
@@ -2571,26 +2609,27 @@ private:
 
     CARAPI_(void) DeleteTempPackageFiles();
 
-    static CARAPI_(void) DeleteTempPackageFilesInDirectory(
-        /* [in] */ IFile* directory,
-        /* [in] */ IFilenameFilter* filter);
-
-    CARAPI_(AutoPtr<IFile>) CreateTempPackageFile(
-        /* [in] */ IFile* installDir);
+    CARAPI_(Boolean) IsPackageDeviceAdmin(
+        /* [in] */ const String& packageName,
+        /* [in] */ Int32 userId);
 
     CARAPI_(Int32) DeletePackageX(
         /* [in] */ const String& packageName,
-        /* [in] */ Int32 uid,
+        /* [in] */ Int32 userId,
         /* [in] */ Int32 flags);
 
     CARAPI_(void) RemovePackageDataLI(
         /* [in] */ PackageSetting* ps,
+        /* [in] */ ArrayOf<Int32>* allUserHandles,
+        /* [in] */ ArrayOf<Boolean>* perUserInstalled,
         /* [in] */ PackageRemovedInfo* outInfo,
         /* [in] */ Int32 flags,
         /* [in] */ Boolean writeSettings);
 
     CARAPI_(Boolean) DeleteSystemPackageLI(
         /* [in] */ PackageSetting* newPs,
+        /* [in] */ ArrayOf<Int32>* allUserHandles,
+        /* [in] */ ArrayOf<Boolean>* perUserInstalled,
         /* [in] */ Int32 flags,
         /* [in] */ PackageRemovedInfo* outInfo,
         /* [in] */ Boolean writeSettings,
@@ -2600,6 +2639,8 @@ private:
         /* [in] */ PackageSetting* ps,
         /* [in] */ Boolean deleteCodeAndResources,
         /* [in] */ Int32 flags,
+        /* [in] */ ArrayOf<Int32>* allUserHandles,
+        /* [in] */ ArrayOf<Boolean>* perUserInstalled,
         /* [in] */ PackageRemovedInfo* outInfo,
         /* [in] */ Boolean writeSettings);
 
@@ -2607,6 +2648,8 @@ private:
         /* [in] */ const String& packageName,
         /* [in] */ IUserHandle* user,
         /* [in] */ Boolean deleteCodeAndResources,
+        /* [in] */ ArrayOf<Int32>* allUserHandles,
+        /* [in] */ ArrayOf<Boolean>* perUserInstalled,
         /* [in] */ Int32 flags,
         /* [in] */ PackageRemovedInfo* outInfo,
         /* [in] */ Boolean writeSettings,
@@ -2682,12 +2725,6 @@ private:
     CARAPI_(Boolean) IsPermissionEnforcedLocked(
         /* [in] */ const String& permission,
         /* [in] */ Boolean enforcedDefault);
-
-    CARAPI_(void) HandleDeletePackage(
-        /* [in] */ const String& packageName,
-        /* [in] */ IPackageDeleteObserver* observer,
-        /* [in] */ Int32 flags,
-        /* [in] */ Int32 uid);
 
 public:/*package*/
     static const String TAG;
@@ -2984,6 +3021,8 @@ private:
     static AutoPtr<IComparator> mProviderInitOrderSorter;
 
     Boolean mMediaMounted;
+
+    Int32 mLastScanError;
 
     friend class PackageUsage;
     friend class PackageHandler;

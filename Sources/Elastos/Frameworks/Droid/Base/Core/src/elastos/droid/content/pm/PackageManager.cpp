@@ -28,6 +28,34 @@ namespace Droid {
 namespace Content {
 namespace Pm {
 
+//==============================================================================
+//                  PackageManager::LegacyPackageDeleteObserver
+//==============================================================================
+
+ECode PackageManager::LegacyPackageDeleteObserver::constructor(
+    /* [in] */ IIPackageDeleteObserver* legacy)
+{
+    PackageDeleteObserver::constructor();
+    mLegacy = legacy;
+}
+
+ECode PackageManager::LegacyPackageDeleteObserver::OnPackageDeleted(
+    /* [in] */ const String& basePackageName,
+    /* [in] */ Int32 returnCode,
+    /* [in] */ const String& msg)
+{
+    if (mLegacy == NULL) return NOERROR;
+    // try {
+    return mLegacy->PackageDeleted(basePackageName, returnCode);
+    // } catch (RemoteException ignored) {
+    // }
+}
+
+
+//==============================================================================
+//                  PackageManager
+//==============================================================================
+
 const String PackageManager::TAG("PackageManager");
 
 CAR_INTERFACE_IMPL(PackageManager, Object, IPackageManager)

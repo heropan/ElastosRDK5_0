@@ -83,6 +83,9 @@ SOURCES += CFragmentManagerImplHelper.cpp
 SOURCES += CFragmentManagerState.cpp
 SOURCES += CFragmentSavedState.cpp
 SOURCES += FragmentTransaction.cpp
+SOURCES += CPackageDeleteObserver2.cpp
+SOURCES += CLegacyPackageDeleteObserver.cpp
+SOURCES += CPackageInstallObserver2.cpp
 
 SOURCES += Instrumentation.cpp
 SOURCES += CInstrumentationHelper.cpp
