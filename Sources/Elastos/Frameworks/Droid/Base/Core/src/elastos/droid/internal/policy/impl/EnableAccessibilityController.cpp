@@ -420,8 +420,8 @@ void EnableAccessibilityController::EnableAccessibility()
     mOnAccessibilityEnabledCallback->Run();
 }
 
-} // namespace Elastos
-} // namespace Droid
-} // namespace Internal
-} // namespace Policy
 } // namespace Impl
+} // namespace Policy
+} // namespace Internal
+} // namespace Droid
+} // namespace Elastos

@@ -123,10 +123,10 @@ private:
     Float mSecondPointerDownY;
 };
 
-} // namespace Elastos
-} // namespace Droid
-} // namespace Internal
-} // namespace Policy
 } // namespace Impl
+} // namespace Policy
+} // namespace Internal
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_INTERNAL_POLICY_IMPL_ENABLEACCESSIBILITYCONTROLLER_H__

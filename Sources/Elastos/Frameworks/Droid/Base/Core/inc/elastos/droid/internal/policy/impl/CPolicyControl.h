@@ -3,6 +3,7 @@
 
 #include "_Elastos_Droid_Internal_Policy_Impl_CPolicyControl.h"
 #include "elastos/droid/internal/policy/impl/PolicyControl.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {

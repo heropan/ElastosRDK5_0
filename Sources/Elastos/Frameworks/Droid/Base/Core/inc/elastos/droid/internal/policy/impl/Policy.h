@@ -51,7 +51,7 @@ private:
 } // namespace Impl
 } // namespace Policy
 } // namespace Internal
-} // namepsace Droid
+} // namespace Droid
 } // namespace Elastos
 
 #endif // __ELASTOS_DROID_INTERNAL_POLICY_IMPL_POLICY_H__

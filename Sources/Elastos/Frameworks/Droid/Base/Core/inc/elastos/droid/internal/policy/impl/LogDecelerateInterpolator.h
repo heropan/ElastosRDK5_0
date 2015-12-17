@@ -3,8 +3,8 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 
-//TODO using Elastos::Droid::View::Animation::ITimeInterpolator;
-//TODO using Elastos::Droid::View::Animation::Interpolator;
+using Elastos::Droid::Animation::ITimeInterpolator;
+using Elastos::Droid::View::Animation::IInterpolator;
 
 namespace Elastos {
 namespace Droid {
@@ -15,8 +15,8 @@ namespace Impl {
 class LogDecelerateInterpolator
     : public Object
     , public ILogDecelerateInterpolator
-    //TODO , public IInterpolator
-    //TODO , public ITimeInterpolator
+    , public IInterpolator
+    , public ITimeInterpolator
 {
 public:
     CAR_INTERFACE_DECL()
@@ -44,7 +44,7 @@ private:
 private:
     Int32 mBase;
     Int32 mDrift;
-    /*const*/ Float mLogScale;
+    Float mLogScale;
 };
 
 } // namespace Impl

@@ -1,5 +1,29 @@
 
+#include "elastos/droid/content/CComponentNameHelper.h"
+#include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/internal/policy/impl/GlobalKeyManager.h"
+#include "elastos/droid/internal/utility/XmlUtils.h"
+#include "elastos/droid/os/CUserHandleHelper.h"
+#include "elastos/droid/utility/CSparseArray.h"
+#include "elastos/droid/view/CKeyEventHelper.h"
+#include "elastos/droid/R.h"
+
+using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::IComponentNameHelper;
+using Elastos::Droid::Content::CComponentNameHelper;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::IXmlResourceParser;
+using Elastos::Droid::Internal::Utility::XmlUtils;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Os::IUserHandleHelper;
+using Elastos::Droid::Os::CUserHandleHelper;
+using Elastos::Droid::Utility::CSparseArray;
+using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::View::IKeyEventHelper;
+using Elastos::Droid::View::CKeyEventHelper;
+using Elastos::IO::ICloseable;
 
 namespace Elastos {
 namespace Droid {
@@ -21,9 +45,8 @@ const Int32 GlobalKeyManager::GLOBAL_KEY_FILE_VERSION;
 GlobalKeyManager::GlobalKeyManager(
     /* [in] */ IContext* context)
 {
-    // ==================before translated======================
-    // mKeyMapping = new SparseArray<ComponentName>();
-    // loadGlobalKeys(context);
+    CSparseArray::New((ISparseArray**)&mKeyMapping);
+    LoadGlobalKeys(context);
 }
 
 ECode GlobalKeyManager::HandleGlobalKey(
@@ -35,19 +58,28 @@ ECode GlobalKeyManager::HandleGlobalKey(
     VALIDATE_NOT_NULL(context);
     VALIDATE_NOT_NULL(event);
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // if (mKeyMapping.size() > 0) {
-    //     ComponentName component = mKeyMapping.get(keyCode);
-    //     if (component != null) {
-    //         Intent intent = new Intent(Intent.ACTION_GLOBAL_BUTTON)
-    //                 .setComponent(component)
-    //                 .putExtra(Intent.EXTRA_KEY_EVENT, event);
-    //         context.sendBroadcastAsUser(intent, UserHandle.CURRENT, null);
-    //         return true;
-    //     }
-    // }
-    // return false;
-    assert(0);
+    Int32 size;
+    mKeyMapping->GetSize(&size);
+    if (size > 0)
+    {
+        AutoPtr<IInterface> iif;
+        mKeyMapping->Get(keyCode, (IInterface**)&iif);
+        IComponentName* component = IComponentName::Probe(iif);
+        if (component != NULL) {
+            AutoPtr<IIntent> intent;
+            CIntent::New(IIntent::ACTION_GLOBAL_BUTTON, (IIntent**)&intent);
+            intent->SetComponent(component);
+            IParcelable* eParcelable = IParcelable::Probe(event);
+            intent->PutExtra(IIntent::EXTRA_KEY_EVENT, eParcelable);
+            AutoPtr<IUserHandle> userHandle;
+            AutoPtr<IUserHandleHelper> userHandleHelper;
+            CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&userHandleHelper);
+            userHandleHelper->GetCURRENT((IUserHandle**)&userHandle);
+            context->SendBroadcastAsUser(intent, userHandle, String(NULL));
+            *result = TRUE;
+        }
+    }
+    *result = FALSE;
     return NOERROR;
 }
 
@@ -58,75 +90,103 @@ ECode GlobalKeyManager::ShouldHandleGlobalKey(
 {
     VALIDATE_NOT_NULL(event);
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mKeyMapping.get(keyCode) != null;
-    assert(0);
+    AutoPtr<IInterface> iif;
+    mKeyMapping->Get(keyCode, (IInterface**)&iif);
+    *result = (iif != NULL);
     return NOERROR;
 }
 
 ECode GlobalKeyManager::Dump(
-    /* [in] */ String prefix,
+    /* [in] */ const String& prefix,
     /* [in] */ IPrintWriter* pw)
 {
     VALIDATE_NOT_NULL(pw);
-    // ==================before translated======================
-    // final int numKeys = mKeyMapping.size();
-    // if (numKeys == 0) {
-    //     pw.print(prefix); pw.println("mKeyMapping.size=0");
-    //     return;
-    // }
-    // pw.print(prefix); pw.println("mKeyMapping={");
-    // for (int i = 0; i < numKeys; ++i) {
-    //     pw.print("  ");
-    //     pw.print(prefix);
-    //     pw.print(KeyEvent.keyCodeToString(mKeyMapping.keyAt(i)));
-    //     pw.print("=");
-    //     pw.println(mKeyMapping.valueAt(i).flattenToString());
-    // }
-    // pw.print(prefix); pw.println("}");
-    assert(0);
+    Int32 numKeys;
+    mKeyMapping->GetSize(&numKeys);
+    if (numKeys == 0) {
+        pw->Print(prefix);
+        pw->Println(String("mKeyMapping.size=0"));
+        return NOERROR;
+    }
+    pw->Print(prefix);
+    pw->Println(String("mKeyMapping={"));
+    for (Int32 i = 0; i < numKeys; ++i)
+    {
+        pw->Print(String("  "));
+        pw->Print(prefix);
+        Int32 keyValue;
+        mKeyMapping->KeyAt(i, &keyValue);
+        AutoPtr<IKeyEventHelper> keyEventHelper;
+        CKeyEventHelper::AcquireSingleton((IKeyEventHelper**)&keyEventHelper);
+        String keyCodeStr;
+        keyEventHelper->KeyCodeToString(keyValue, &keyCodeStr);
+        pw->Print(keyCodeStr);
+        pw->Print(String("="));
+        AutoPtr<IInterface> value;
+        mKeyMapping->ValueAt(i, (IInterface**)&value);
+        IComponentName* cn = IComponentName::Probe(value);
+        String valueStr;
+        cn->FlattenToString(&valueStr);
+        pw->Println(valueStr);
+    }
+    pw->Print(prefix);
+    pw->Println(String("}"));
     return NOERROR;
 }
 
 void GlobalKeyManager::LoadGlobalKeys(
     /* [in] */ IContext* context)
 {
-    // ==================before translated======================
-    // XmlResourceParser parser = null;
-    // try {
-    //     parser = context.getResources().getXml(com.android.internal.R.xml.global_keys);
-    //     XmlUtils.beginDocument(parser, TAG_GLOBAL_KEYS);
-    //     int version = parser.getAttributeIntValue(null, ATTR_VERSION, 0);
-    //     if (GLOBAL_KEY_FILE_VERSION == version) {
-    //         while (true) {
-    //             XmlUtils.nextElement(parser);
-    //             String element = parser.getName();
-    //             if (element == null) {
-    //                 break;
-    //             }
-    //             if (TAG_KEY.equals(element)) {
-    //                 String keyCodeName = parser.getAttributeValue(null, ATTR_KEY_CODE);
-    //                 String componentName = parser.getAttributeValue(null, ATTR_COMPONENT);
-    //                 int keyCode = KeyEvent.keyCodeFromString(keyCodeName);
-    //                 if (keyCode != KeyEvent.KEYCODE_UNKNOWN) {
-    //                     mKeyMapping.put(keyCode, ComponentName.unflattenFromString(
-    //                             componentName));
-    //                 }
-    //             }
-    //         }
-    //     }
-    // } catch (Resources.NotFoundException e) {
-    //     Log.w(TAG, "global keys file not found", e);
-    // } catch (XmlPullParserException e) {
-    //     Log.w(TAG, "XML parser exception reading global keys file", e);
-    // } catch (IOException e) {
-    //     Log.w(TAG, "I/O exception reading global keys file", e);
-    // } finally {
-    //     if (parser != null) {
-    //         parser.close();
-    //     }
-    // }
-    assert(0);
+    AutoPtr<IXmlResourceParser> parser;
+    //try {
+    AutoPtr<IResources> resources;
+    context->GetResources((IResources**)&resources);
+    resources->GetXml(R::xml::global_keys, (IXmlResourceParser**)&parser);
+
+    IXmlPullParser* xmlPullParser = IXmlPullParser::Probe(parser);
+    XmlUtils::BeginDocument(xmlPullParser, TAG_GLOBAL_KEYS);
+    Int32 version;
+    IAttributeSet* attributeSet = IAttributeSet::Probe(parser);
+    attributeSet->GetAttributeIntValue(String("NULL"), ATTR_VERSION, 0, &version);
+    if (GLOBAL_KEY_FILE_VERSION == version) {
+        AutoPtr<IKeyEventHelper> keyEventHelper;
+        CKeyEventHelper::AcquireSingleton((IKeyEventHelper**)&keyEventHelper);
+        AutoPtr<IComponentNameHelper> cnHelper;
+        CComponentNameHelper::AcquireSingleton((IComponentNameHelper**)&cnHelper);
+        while (TRUE) {
+            XmlUtils::NextElement(xmlPullParser);
+            String element;
+            xmlPullParser->GetName(&element);
+            if (element.IsNullOrEmpty()) {
+                break;
+            }
+            if (TAG_KEY.Equals(element)) {
+                String keyCodeName;
+                attributeSet->GetAttributeValue(String(NULL), ATTR_KEY_CODE, &keyCodeName);
+                String componentName;
+                attributeSet->GetAttributeValue(String(NULL), ATTR_COMPONENT, &componentName);
+                Int32 keyCode;
+                keyEventHelper->KeyCodeFromString(keyCodeName, &keyCode);
+                if (keyCode != IKeyEvent::KEYCODE_UNKNOWN) {
+                    AutoPtr<IComponentName> cn;
+                    cnHelper->UnflattenFromString(componentName, (IComponentName**)&cn);
+                    mKeyMapping->Put(keyCode, cn);
+                }
+            }
+        }
+    }
+    //} catch (Resources.NotFoundException e) {
+    //    Log.w(TAG, "global keys file not found", e);
+    //} catch (XmlPullParserException e) {
+    //    Log.w(TAG, "XML parser exception reading global keys file", e);
+    //} catch (IOException e) {
+    //    Log.w(TAG, "I/O exception reading global keys file", e);
+    //} finally {
+    if (parser != NULL) {
+        ICloseable* c = ICloseable::Probe(parser);
+        c->Close();
+    }
+    //}
 }
 
 } // namespace Impl

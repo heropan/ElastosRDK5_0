@@ -1,8 +1,9 @@
 
 #include "elastos/droid/internal/policy/impl/LogDecelerateInterpolator.h"
+#include "elastos/core/Math.h"
 
-//TODO using Elastos::Droid::View::Animation::EIID_ITimeInterpolator;
-//TODO using Elastos::Droid::View::Animation::EIID_Interpolator;
+using Elastos::Droid::Animation::EIID_ITimeInterpolator;
+using Elastos::Droid::View::Animation::EIID_IInterpolator;
 
 namespace Elastos {
 namespace Droid {
@@ -13,8 +14,8 @@ namespace Impl {
 //=====================================================================
 //                      LogDecelerateInterpolator
 //=====================================================================
-//TODO CAR_INTERFACE_IMPL_3(LogDecelerateInterpolator, Object, ILogDecelerateInterpolator, IInterpolator, ITimeInterpolator)
-CAR_INTERFACE_IMPL(LogDecelerateInterpolator, Object, ILogDecelerateInterpolator)//TODO should be replaced by the line above
+CAR_INTERFACE_IMPL_3(LogDecelerateInterpolator, Object, ILogDecelerateInterpolator, IInterpolator, ITimeInterpolator)
+//CAR_INTERFACE_IMPL(LogDecelerateInterpolator, Object, ILogDecelerateInterpolator)//TODO should be replaced by the line above
 
 LogDecelerateInterpolator::LogDecelerateInterpolator()
 {
@@ -24,11 +25,10 @@ ECode LogDecelerateInterpolator::constructor(
     /* [in] */ Int32 base,
     /* [in] */ Int32 drift)
 {
-    // ==================before translated======================
-    // mBase = base;
-    // mDrift = drift;
-    //
-    // mLogScale = 1f / computeLog(1, mBase, mDrift);
+    mBase = base;
+    mDrift = drift;
+
+    mLogScale = 1 / ComputeLog(1, mBase, mDrift);
     return NOERROR;
 }
 
@@ -37,12 +37,10 @@ ECode LogDecelerateInterpolator::GetInterpolation(
     /* [out] */ Float* output)
 {
     VALIDATE_NOT_NULL(output)
-    // ==================before translated======================
-    // return computeLog(t, mBase, mDrift) * mLogScale;
-    assert(0);
+    *output = ComputeLog(t, mBase, mDrift) * mLogScale;
     return NOERROR;
 }
-ECode HasNativeInterpolator(
+ECode LogDecelerateInterpolator::HasNativeInterpolator(
     /* [out] */ Boolean* res)
 {
     VALIDATE_NOT_NULL(res);
@@ -56,10 +54,7 @@ Float LogDecelerateInterpolator::ComputeLog(
     /* [in] */ Int32 base,
     /* [in] */ Int32 drift)
 {
-    // ==================before translated======================
-    // return (float) -Math.pow(base, -t) + 1 + (drift * t);
-    assert(0);
-    return 0.0f;
+    return (Float) -Elastos::Core::Math::Pow(base, -t) + 1 + (drift * t);
 }
 
 } // namespace Impl

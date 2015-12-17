@@ -2,8 +2,9 @@
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_IMMERSIVEMODECONFIRMATION_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/widget/FrameLayout.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/widget/FrameLayout.h"
 
 using Elastos::Droid::Animation::IAnimatorUpdateListener;
 using Elastos::Droid::Animation::IValueAnimator;
@@ -13,6 +14,7 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Graphics::Drawable::IColorDrawable;
 using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Utility::ISparseBooleanArray;
 using Elastos::Droid::View::IView;
@@ -41,12 +43,9 @@ class ImmersiveModeConfirmation
 {
 public:
     class H
-        : public Object
-        , public IHandler
+        : public Handler
     {
     public:
-        CAR_INTERFACE_DECL()
-
         H(
             /* [in] */ ImmersiveModeConfirmation* host);
 
@@ -54,11 +53,12 @@ public:
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
 
-    private:
-        ImmersiveModeConfirmation* mHost;
+    public:
         static const Int32 SHOW = 1;
         static const Int32 HIDE = 2;
         static const Int32 PANIC = 3;
+    private:
+        ImmersiveModeConfirmation* mOwner;
     };
 
 private:
@@ -137,8 +137,9 @@ private:
 
     public:
         ClingWindowView(
+            /* [in] */ ImmersiveModeConfirmation* owner,
             /* [in] */ IContext* context,
-            /* [in] */ Runnable* confirm);
+            /* [in] */ IRunnable* confirm);
 
         // @Override
         CARAPI OnAttachedToWindow();
@@ -153,11 +154,12 @@ private:
     private:
         static const Int32 BGCOLOR = 0x80000000;
         static const Int32 OFFSET_DP = 48;
-        /*const*/ AutoPtr<IRunnable> mConfirm;
-        /*const*/ AutoPtr<IColorDrawable> mColor;
+        ImmersiveModeConfirmation* mOwner;
+        AutoPtr<IRunnable> mConfirm;
+        AutoPtr<IColorDrawable> mColor;
         AutoPtr<IValueAnimator> mColorAnim;
         AutoPtr<IViewGroup> mClingLayout;
-        AutoPtr<Runnable> mUpdateLayoutRunnable;
+        AutoPtr<IRunnable> mUpdateLayoutRunnable;
         AutoPtr<IBroadcastReceiver> mReceiver;
     };
 
@@ -225,17 +227,17 @@ private:
     static const Boolean DEBUG_SHOW_EVERY_TIME;
     // super annoying, use with caution
     static const String CONFIRMED;
-    /*const*/ AutoPtr<IContext> mContext;
-    /*const*/ AutoPtr<H> mHandler;
-    /*const*/ Int64 mShowDelayMs;
-    /*const*/ Int64 mPanicThresholdMs;
-    /*const*/ AutoPtr<ISparseBooleanArray> mUserPanicResets;
+    AutoPtr<IContext> mContext;
+    AutoPtr<H> mHandler;
+    Int64 mShowDelayMs;
+    Int64 mPanicThresholdMs;
+    AutoPtr<ISparseBooleanArray> mUserPanicResets;
     Boolean mConfirmed;
     AutoPtr<ClingWindowView> mClingWindow;
     Int64 mPanicTime;
     AutoPtr<IWindowManager> mWindowManager;
     Int32 mCurrentUserId;
-    /*const*/ AutoPtr<IRunnable> mConfirm;
+    AutoPtr<IRunnable> mConfirm;
 };
 
 } // namespace Impl

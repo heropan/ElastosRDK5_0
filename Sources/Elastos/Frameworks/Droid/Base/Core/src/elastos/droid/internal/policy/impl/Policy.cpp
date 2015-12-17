@@ -61,5 +61,5 @@ ECode Policy::MakeNewFallbackEventHandler(
 } // namespace Impl
 } // namespace Policy
 } // namespace Internal
-} // namepsace Droid
+} // namespace Droid
 } // namespace Elastos

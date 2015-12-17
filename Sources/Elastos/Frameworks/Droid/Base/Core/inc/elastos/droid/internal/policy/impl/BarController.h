@@ -22,20 +22,24 @@ class BarController
     : public Object
     , public IBarController
 {
-private:
+public:
     class InnerRunnable1
         : public Object
         , public IRunnable
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerRunnable1(
-            /* [in] */ BarController* owner);
+            /* [in] */ BarController* owner,
+            /* [in] */ Int32 state);
 
         // @Override
         CARAPI Run();
 
     private:
         BarController* mOwner;
+        Int32 mState;
     };
 
 public:
