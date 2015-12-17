@@ -675,42 +675,42 @@ CarClass(CTvContentRating)
 public:
     CTvContentRating();
 
+    virtual ~CTvContentRating();
+
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
-
-    virtual ~CTvContentRating();
 
     CARAPI constructor(
         /* [in] */ const String& domain,
         /* [in] */ const String& ratingSystem,
         /* [in] */ const String& rating,
-        /* [in] */ ArrayOf<String> * subRatings);
+        /* [in] */ ArrayOf<String>* subRatings);
 
     /**
      * Returns the domain of this {@code TvContentRating} object.
      */
     CARAPI GetDomain(
-        /* [out] */ String * result);
+        /* [out] */ String* result);
 
     /**
      * Returns the rating system of this {@code TvContentRating} object.
      */
     CARAPI GetRatingSystem(
-        /* [out] */ String * result);
+        /* [out] */ String* result);
 
     /**
      * Returns the main rating of this {@code TvContentRating} object.
      */
     CARAPI GetMainRating(
-        /* [out] */ String * result);
+        /* [out] */ String* result);
 
     /**
      * Returns the unmodifiable sub-rating string {@link List} of this {@code TvContentRating}
      * object.
      */
     CARAPI GetSubRatings(
-        /* [out] */ IList ** result);
+        /* [out] */ IList** result);
 
     /**
      * Returns a string that unambiguously describes the rating information contained in a
@@ -722,7 +722,7 @@ public:
      * @see #unflattenFromString
      */
     CARAPI FlattenToString(
-        /* [out] */ String * result);
+        /* [out] */ String* result);
 
     /**
      * Returns {@code true} if this rating has the same main rating as the specified rating and when
@@ -739,7 +739,7 @@ public:
     // @SystemApi
     CARAPI Contains(
         /* [in] */ ITvContentRating * rating,
-        /* [out] */ Boolean * result);
+        /* [out] */ Boolean* result);
 
     CARAPI GetHashCode(
         /* [out] */ Int32* code);
@@ -763,8 +763,8 @@ public:
         /* [in] */ const String& domainStr,
         /* [in] */ const String& ratingSystem,
         /* [in] */ const String& rating,
-        /* [in] */ ArrayOf<String> * subRatings,
-        /* [out] */ ITvContentRating ** result);
+        /* [in] */ ArrayOf<String>* subRatings,
+        /* [out] */ ITvContentRating** result);
 
     /**
      * Recovers a {@code TvContentRating} object from the string that was previously created from
@@ -777,7 +777,7 @@ public:
      */
     static CARAPI UnflattenFromString(
         /* [in] */ const String& ratingString,
-        /* [out] */ ITvContentRating ** result);
+        /* [out] */ ITvContentRating** result);
 
 private:
     // TODO: Consider to use other DELIMITER. In some countries such as India may use this delimiter
@@ -789,7 +789,6 @@ private:
     String mRating;
     AutoPtr<ArrayOf<String> > mSubRatings;
     Int32 mHashCode;
-
 };
 
 } // namespace Tv

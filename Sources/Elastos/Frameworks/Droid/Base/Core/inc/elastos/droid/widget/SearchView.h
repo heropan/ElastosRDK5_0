@@ -19,22 +19,29 @@ using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IViewOnFocusChangeListener;
 using Elastos::Droid::View::IViewOnClickListener;
+using Elastos::Droid::View::IViewOnKeyListener;
+using Elastos::Droid::View::IViewOnLayoutChangeListener;
 using Elastos::Droid::View::IView;
+using Elastos::Droid::View::ICollapsibleActionView;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
 using Elastos::Droid::Widget::ISearchViewOnQueryTextListener;
 using Elastos::Droid::Widget::ISearchViewOnSuggestionListener;
 using Elastos::Droid::Widget::ICursorAdapter;
-using Elastos::Droid::Widget::IOnCloseListener;
+using Elastos::Droid::Widget::ISearchViewOnCloseListener;
 using Elastos::Droid::Widget::IAutoCompleteTextView;
 using Elastos::Droid::Widget::ISearchView;
 using Elastos::Core::ICharSequence;
+using Elastos::Utility::IWeakHashMap;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class SearchView : public LinearLayout
+class SearchView
+    : public LinearLayout
+    , public ISearchView
+    , public ICollapsibleActionView
 {
 private:
     class ShowImeRunnable
@@ -77,14 +84,14 @@ private:
     };
 
     class SearchViewClickListener
-        : public IViewOnClickListener
-        , public ElRefBase
+        : public Object
+        , public IViewOnClickListener
     {
     public:
         SearchViewClickListener(
             /* [in] */ SearchView* host);
 
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         CARAPI OnClick(
             /* [in] */ IView* v);
@@ -94,14 +101,14 @@ private:
     };
 
     class SearchViewKeyListener
-        : public IViewOnKeyListener
-        , public ElRefBase
+        : public Object
+        , public IViewOnKeyListener
     {
     public:
         SearchViewKeyListener(
             /* [in] */ SearchView* host);
 
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         CARAPI OnKey(
             /* [in] */ IView* v,
@@ -114,14 +121,14 @@ private:
     };
 
     class SearchViewEditorActionListener
-        : public IOnEditorActionListener
-        , public ElRefBase
+        : public Object
+        , public IOnEditorActionListener
     {
     public:
         SearchViewEditorActionListener(
             /* [in] */ SearchView* host);
 
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         CARAPI OnEditorAction(
             /* [in] */ ITextView* v,
@@ -134,8 +141,8 @@ private:
     };
 
     class SearchViewItemClickListener
-        : public IAdapterViewOnItemClickListener
-        , public ElRefBase
+        : public Object
+        , public IAdapterViewOnItemClickListener
     {
     public:
         SearchViewItemClickListener(
@@ -154,14 +161,14 @@ private:
     };
 
     class SearchViewItemSelectedListener
-        : public IAdapterViewOnItemSelectedListener
-        , ElRefBase
+        : public Object
+        , public IAdapterViewOnItemSelectedListener
     {
     public:
         SearchViewItemSelectedListener(
             /* [in] */ SearchView* host);
 
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         CARAPI OnItemSelected(
             /* [in] */ IAdapterView* parent,
@@ -177,14 +184,14 @@ private:
     };
 
     class SearchViewTextWatcher
-        : public ITextWatcher
-        , public ElRefBase
+        : public Object
+        , public ITextWatcher
     {
     public:
         SearchViewTextWatcher(
             /* [in] */ SearchView* host);
 
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         CARAPI BeforeTextChanged(
             /* [in] */ ICharSequence* s,
@@ -206,8 +213,8 @@ private:
     };
 
     class SearchViewFocusChangeListener
-        : public IViewOnFocusChangeListener
-        , ElRefBase
+        : public Object
+        , public IViewOnFocusChangeListener
     {
     public:
         SearchViewFocusChangeListener(
@@ -224,14 +231,14 @@ private:
     };
 
     class SearchViewLayoutChangeListener
-        : public IViewOnLayoutChangeListener
-        , public ElRefBase
+        : public Object
+        , public IViewOnLayoutChangeListener
     {
     public:
         SearchViewLayoutChangeListener(
             /* [in] */ SearchView* host);
 
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         OnLayoutChange(
             /* [in] */ IView* v,
@@ -251,24 +258,32 @@ private:
 public:
     class _SearchAutoComplete
         : public AutoCompleteTextView
+        , public ISearchViewSearchAutoComplete
     {
     public:
+        CAR_INTERFACE_DECL();
+
         _SearchAutoComplete();
 
-        _SearchAutoComplete(
+        CARAPI constructor(
             /* [in] */ IContext* context);
 
-        _SearchAutoComplete(
+        CARAPI constructor(
             /* [in] */ IContext* context,
             /* [in] */ IAttributeSet* attrs);
 
-        _SearchAutoComplete(
+        CARAPI constructor(
             /* [in] */ IContext* context,
             /* [in] */ IAttributeSet* attrs,
-            /* [in] */ Int32 defStyle);
+            /* [in] */ Int32 defStyleAttrs);
 
+        CARAPI constructor(
+            /* [in] */ IContext* context,
+            /* [in] */ IAttributeSet* attrs,
+            /* [in] */ Int32 defStyleAttrs,
+            /* [in] */ Int32 defStyleRes);
 
-        CARAPI_(void) SetSearchView(
+        CARAPI SetSearchView(
             /* [in] */ ISearchView* searchView);
 
         CARAPI SetThreshold(
@@ -279,28 +294,17 @@ public:
         CARAPI OnWindowFocusChanged(
             /* [in] */ Boolean hasWindowFocus);
 
-        CARAPI_(Boolean) EnoughToFilter();
+        CARAPI EnoughToFilter(
+            /* [out] */ Boolean* result);
 
-        CARAPI_(Boolean) OnKeyPreIme(
+        CARAPI OnKeyPreIme(
             /* [in] */ Int32 keyCode,
-            /* [in] */ IKeyEvent* event);
+            /* [in] */ IKeyEvent* event,
+            /* [out] */ Boolean* result);
 
         CARAPI_(Boolean) IsEmpty();
 
     protected:
-        CARAPI Init(
-            /* [in] */ IContext* context);
-
-        CARAPI Init(
-            /* [in] */ IContext* context,
-            /* [in] */ IAttributeSet* attrs);
-
-        CARAPI Init(
-            /* [in] */ IContext* context,
-            /* [in] */ IAttributeSet* attrs,
-            /* [in] */ Int32 defStyle);
-
-
         CARAPI_(void) ReplaceText(
             /* [in] */ ICharSequence* text);
 
@@ -316,9 +320,27 @@ public:
     };
 
 public:
-    SearchView(
+    CAR_INTERFACE_DECL();
+
+    SearchView();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL);
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttrs);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttrs,
+        /* [in] */ Int32 defStyleRes);
 
     CARAPI SetSearchableInfo(
         /* [in] */ ISearchableInfo* searchable);
@@ -329,16 +351,19 @@ public:
     CARAPI SetImeOptions(
         /* [in] */ Int32 imeOptions);
 
-    CARAPI_(Int32) GetImeOptions();
+    CARAPI GetImeOptions(
+        /* [out] */ Int32* imeOptions);
 
     CARAPI SetInputType(
         /* [in] */ Int32 inputType);
 
-    CARAPI_(Int32) GetInputType();
+    CARAPI GetInputType(
+        /* [out] */ Int32* type);
 
-    CARAPI_(Boolean) RequestFocus(
+    CARAPI RequestFocus(
         /* [in] */ Int32 direction,
-        /* [in] */ IRect* previouslyFocusedRect);
+        /* [in] */ IRect* previouslyFocusedRect,
+        /* [out] */ Boolean* result);
 
     CARAPI ClearFocus();
 
@@ -346,7 +371,7 @@ public:
         /* [in] */ ISearchViewOnQueryTextListener* listener);
 
     CARAPI SetOnCloseListener(
-        /* [in] */ IOnCloseListener* listener);
+        /* [in] */ ISearchViewOnCloseListener* listener);
 
     CARAPI SetOnQueryTextFocusChangeListener(
         /* [in] */ IViewOnFocusChangeListener* listener);
@@ -357,7 +382,8 @@ public:
     CARAPI SetOnSearchClickListener(
         /* [in] */ IViewOnClickListener* listener);
 
-    CARAPI_(AutoPtr<ICharSequence>) GetQuery();
+    CARAPI GetQuery(
+        /* [out] */ ICharSequence** str);
 
     CARAPI SetQuery(
         /* [in] */ ICharSequence* query,
@@ -366,44 +392,52 @@ public:
     CARAPI SetQueryHint(
         /* [in] */ ICharSequence* hint);
 
-    CARAPI_(AutoPtr<ICharSequence>) GetQueryHint();
+    CARAPI GetQueryHint(
+        /* [out] */ ICharSequence** hint);
 
     CARAPI SetIconifiedByDefault(
         /* [in] */ Boolean iconified);
 
-    CARAPI_(Boolean) IsIconfiedByDefault();
+    CARAPI IsIconfiedByDefault(
+        /* [out] */ Boolean* result);
 
     CARAPI SetIconified(
         /* [in] */ Boolean iconify);
 
-    CARAPI_(Boolean) IsIconified();
+    CARAPI IsIconified(
+        /* [out] */ Boolean* result);
 
     CARAPI SetSubmitButtonEnabled(
         /* [in] */ Boolean enabled);
 
-    CARAPI_(Boolean) IsSubmitButtonEnabled();
+    CARAPI IsSubmitButtonEnabled(
+        /* [out] */ Boolean* enabled);
 
     CARAPI SetQueryRefinementEnabled(
         /* [in] */ Boolean enable);
 
-    CARAPI_(Boolean) IsQueryRefinementEnabled();
+    CARAPI IsQueryRefinementEnabled(
+        /* [out] */ Boolean* enabled);
 
     CARAPI SetSuggestionsAdapter(
         /* [in] */ ICursorAdapter* adapter);
 
-    CARAPI_(AutoPtr<ICursorAdapter>) GetSuggestionsAdapter();
+    CARAPI GetSuggestionsAdapter(
+        /* [out] */ ICursorAdapter** adapter);
 
     CARAPI SetMaxWidth(
         /* [in] */ Int32 maxpixels);
 
-    CARAPI_(Int32) GetMaxWidth();
+    CARAPI GetMaxWidth(
+        /* [out] */ Int32* max);
 
     CARAPI_(void) OnQueryRefine(
         /* [in] */ ICharSequence* queryText);
 
-    CARAPI_(Boolean) OnKeyDown(
+    CARAPI OnKeyDown(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
     CARAPI_(Boolean) OnSuggestionsKey(
         /* [in] */ IView* v,
@@ -423,27 +457,21 @@ public:
     CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
-    CARAPI OnRtlPropertiesChanged(
-        /* [in] */ Int32 layoutDirection);
-
     CARAPI OnTextFocusChanged();
 
     static CARAPI_(Boolean) IsLandscapeMode(
         /* [in] */ IContext* context);
 
 protected:
-    SearchView();
+    CARAPI_(Int32) GetSuggestionRowLayout();
 
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL);
+    CARAPI_(Int32) GetSuggestionCommitIconResId();
 
     CARAPI_(void) OnMeasure(
         /* [in] */ Int32 widthMeasureSpec,
         /* [in] */ Int32 heightMeasureSpec);
 
     virtual CARAPI OnDetachedFromWindow();
-
 
 private:
     CARAPI_(Int32) GetPreferredWidth();
@@ -472,8 +500,6 @@ private:
     CARAPI_(String) GetActionKeyMessage(
         /* [in] */ ICursor* c,
         /* [in] */ IActionKeyInfo* actionKey);
-
-    CARAPI_(Int32) GetSearchIconId();
 
     CARAPI_(AutoPtr<ICharSequence>) GetDecoratedHint(
         /* [in] */ ICharSequence* hintText);
@@ -555,8 +581,28 @@ private:
     static const String IME_OPTION_NO_MICROPHONE;
     static const String SEARCHVIEW_NAME;
 
+    AutoPtr<ISearchViewSearchAutoComplete> mQueryTextView;
+    AutoPtr<IView> mSearchEditFrame;
+    AutoPtr<IView> mSearchPlate;
+    AutoPtr<IView> mSubmitArea;
+    AutoPtr<IImageView> mSearchButton;
+    AutoPtr<IImageView> mSubmitButton;
+    AutoPtr<IImageView> mCloseButton;
+    AutoPtr<IImageView> mVoiceButton;
+    AutoPtr<IImageView> mSearchHintIcon;
+    AutoPtr<IView> mDropDownAnchor;
+    Int32 mSearchIconResId;
+
+    // Resources used by SuggestionsAdapter to display suggestions.
+    Int32 mSuggestionRowLayout;
+    Int32 mSuggestionCommitIconResId;
+
+    // Intents used for voice searching.
+    AutoPtr<IIntent> mVoiceWebSearchIntent;
+    AutoPtr<IIntent> mVoiceAppSearchIntent;
+
     AutoPtr<ISearchViewOnQueryTextListener> mOnQueryChangeListener;
-    AutoPtr<IOnCloseListener> mOnCloseListener;
+    AutoPtr<ISearchViewOnCloseListener> mOnCloseListener;
     AutoPtr<IViewOnFocusChangeListener> mOnQueryTextFocusChangeListener;
     AutoPtr<ISearchViewOnSuggestionListener> mOnSuggestionListener;
     AutoPtr<IViewOnClickListener> mOnSearchClickListener;
@@ -564,16 +610,6 @@ private:
     Boolean mIconifiedByDefault;
     Boolean mIconified;
     AutoPtr<ICursorAdapter> mSuggestionsAdapter;
-    AutoPtr<IView> mSearchButton;
-    AutoPtr<IView> mSubmitButton;
-    AutoPtr<IView> mSearchPlate;
-    AutoPtr<IView> mSubmitArea;
-    AutoPtr<IImageView> mCloseButton;
-    AutoPtr<IView> mSearchEditFrame;
-    AutoPtr<IView> mVoiceButton;
-    AutoPtr<ISearchViewSearchAutoComplete> mQueryTextView;
-    AutoPtr<IView> mDropDownAnchor;
-    AutoPtr<IImageView> mSearchHintIcon;
     Boolean mSubmitButtonEnabled;
     AutoPtr<ICharSequence> mQueryHint;
     Boolean mQueryRefinement;
@@ -590,8 +626,6 @@ private:
     AutoPtr<IRunnable> mShowImeRunnable;
     AutoPtr<IRunnable> mUpdateDrawableStateRunnable;
     AutoPtr<IRunnable> mReleaseCursorRunnable;
-    AutoPtr<IIntent> mVoiceWebSearchIntent;
-    AutoPtr<IIntent> mVoiceAppSearchIntent;
 
     AutoPtr<IViewOnClickListener> mOnClickListener;
     AutoPtr<IViewOnKeyListener> mTextKeyListener;
@@ -600,6 +634,7 @@ private:
     AutoPtr<IAdapterViewOnItemSelectedListener> mOnItemSelectedListener;
     AutoPtr<ITextWatcher> mTextWatcher;
     // HashMap<String, IDrawableConstantState*> mOutsideDrawablesCache;
+    AutoPtr<IWeakHashMap> mOutsideDrawablesCache;
 };
 
 } //namespace Widget

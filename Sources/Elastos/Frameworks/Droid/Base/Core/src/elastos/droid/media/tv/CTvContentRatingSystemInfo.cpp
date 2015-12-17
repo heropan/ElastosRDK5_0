@@ -46,6 +46,7 @@ ECode CTvContentRatingSystemInfo::ReadFromParcel(
     AutoPtr<IInterface> obj;
     source->ReadInterfacePtr((Handle32*)(IInterface**)&obj);
     mXmlUri = IUri::Probe(obj);
+    obj = NULL;
     source->ReadInterfacePtr((Handle32*)(IInterface**)&obj);
     mApplicationInfo = IApplicationInfo::Probe(obj);
     return NOERROR;
@@ -84,7 +85,6 @@ ECode CTvContentRatingSystemInfo::CreateTvContentRatingSystemInfo(
     /* [out] */ ITvContentRatingSystemInfo ** result)
 {
     VALIDATE_NOT_NULL(result)
-    AutoPtr<IUri> uri;
     AutoPtr<IUriBuilder> builder;
 // TODO: Need CUriBuilder
     // CUriBuilder::New((IUriBuilder**)&builder);
@@ -93,6 +93,7 @@ ECode CTvContentRatingSystemInfo::CreateTvContentRatingSystemInfo(
     IPackageItemInfo::Probe(applicationInfo)->GetPackageName(&pkgName);
     builder->Authority(pkgName);
     builder->AppendPath(StringUtils::ToString(xmlResourceId));
+    AutoPtr<IUri> uri;
     builder->Build((IUri**)&uri);
     return CTvContentRatingSystemInfo::New(uri, applicationInfo, result);
 }

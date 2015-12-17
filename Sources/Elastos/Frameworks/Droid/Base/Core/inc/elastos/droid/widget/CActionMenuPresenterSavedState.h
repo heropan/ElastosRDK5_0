@@ -1,39 +1,21 @@
-#ifndef __ELASTOS_DROID_VIEW_MENU_CACTIONMENUPRESENTERSAVEDSTATE_H__
-#define __ELASTOS_DROID_VIEW_MENU_CACTIONMENUPRESENTERSAVEDSTATE_H__
+#ifndef __ELASTOS_DROID_WIDGET_CACTIONMENUPRESENTERSAVEDSTATE_H__
+#define __ELASTOS_DROID_WIDGET_CACTIONMENUPRESENTERSAVEDSTATE_H__
 
-#include "_Elastos_Droid_View_Menu_CActionMenuPresenterSavedState.h"
+#include "_Elastos_Droid_Widget_CActionMenuPresenterSavedState.h"
+#include "elastos/droid/widget/ActionMenuPresenter.h"
 
 namespace Elastos {
 namespace Droid {
-namespace View {
-namespace Menu {
+namespace Widget {
 
 CarClass(CActionMenuPresenterSavedState)
+    , public ActionMenuPresenter::SavedState
 {
 public:
-    CActionMenuPresenterSavedState();
-
-    CARAPI constructor();
-
-    CARAPI ReadFromParcel(
-        /* [in] */ IParcel *source);
-
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel *dest);
-
-    CARAPI SetOpenSubMenuId(
-        /* [in] */ Int32 menuId);
-
-    CARAPI GetOpenSubMenuId(
-        /* [in] */ Int32* menuId);
-
-private:
-    Int32 mOpenSubMenuId;
-
+    CAR_OBJECT_DECL()
 };
 
-}// namespace Menu
-}// namespace View
+}// namespace Widget
 }// namespace Droid
 }// namespace Elastos
 #endif

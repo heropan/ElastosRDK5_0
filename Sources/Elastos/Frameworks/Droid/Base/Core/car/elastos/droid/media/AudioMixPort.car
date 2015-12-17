@@ -27,9 +27,8 @@ module
             [in] Int32 samplingRate,
             [in] Int32 channelMask,
             [in] Int32 format,
-            [in] IAudioGainConfig * gain,
-            [out] IAudioMixPortConfig ** result);
-
+            [in] IAudioGainConfig* gain,
+            [out] IAudioMixPortConfig** result);
     }
     } // namespace media
     } // namepsace Droid

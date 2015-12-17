@@ -1,7 +1,7 @@
 
-#include "am/IntentBindRecord.h"
-#include "am/CServiceRecord.h"
-#include "am/ProcessRecord.h"
+#include "elastos/droid/server/am/IntentBindRecord.h"
+#include "elastos/droid/server/am/CServiceRecord.h"
+#include "elastos/droid/server/am/ProcessRecord.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 

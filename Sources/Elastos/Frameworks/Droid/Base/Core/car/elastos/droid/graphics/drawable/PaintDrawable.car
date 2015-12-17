@@ -13,7 +13,7 @@ module
         */
 
         /**
-        * A Drawable object that draws primitive shapes. A ShapeDrawable takes a Shape 
+        * A Drawable object that draws primitive shapes. A ShapeDrawable takes a Shape
         * object and manages its presence on the screen. If no Shape is given, then the
         * ShapeDrawable will default to a RectShape.
         * <p>
@@ -25,6 +25,7 @@ module
         */
         /**
          * @Involve
+         * interface IDrawable
          * interface IShapeDrawable
          */
         [deprecated]

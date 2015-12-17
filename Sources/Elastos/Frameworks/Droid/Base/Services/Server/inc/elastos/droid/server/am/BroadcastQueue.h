@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_BROADCASTQUEUE_H__
 #define __ELASTOS_DROID_SERVER_AM_BROADCASTQUEUE_H__
 
-#include "am/CActivityManagerService.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
 #include <elastos/utility/etl/List.h>
 #include "elastos/droid/os/HandlerBase.h"
 
@@ -34,7 +34,7 @@ class ProcessRecord;
  */
 class BroadcastQueue
     : public IInterface
-    , public ElRefBase
+    , public Object
 {
 private:
     class MyHandler : public HandlerBase
@@ -53,7 +53,7 @@ private:
     };
 
     class AppNotResponding
-        : public ElRefBase
+        : public Object
         , public IRunnable
     {
     public:

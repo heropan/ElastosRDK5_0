@@ -995,6 +995,46 @@ module
         CoerceToLocalContentProvider(
             [in] IIContentProvider* abstractInterface,
             [out] IContentProvider** localContentProvider);
+
+        /**
+         * Removes userId part from authority string. Expects format:
+         * userId@some.authority
+         * If there is no userId in the authority, it symply returns the argument
+         * @hide
+         */
+        GetAuthorityWithoutUserId(
+            [in] String auth,
+            [out] String* result);
+
+        /** @hide */
+        GetUriWithoutUserId(
+            [in] IUri* uri,
+            [out] IUri** result);
+
+        /** @hide */
+        UriHasUserId(
+            [in] IUri* uri,
+            [out] Boolean* result);
+
+        /** @hide */
+        MaybeAddUserId(
+            [in] IUri* uri,
+            [in] Int32 userId,
+            [out] IUri** result);
+
+        GetUserIdFromAuthority(
+            [in] String auth,
+            [in] Int32 defaultUserId,
+            [out] Int32* userId);
+
+        GetUserIdFromUri(
+            [in] IUri* uri,
+            [in] Int32 defaultUserId,
+            [out] Int32* userId);
+
+        GetUserIdFromUri(
+            [in] IUri* uri,
+            [out] Int32* userId);
     }
 
     /**

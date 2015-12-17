@@ -14,6 +14,7 @@ module
     interface Elastos.Droid.Media.IAudioPatch;
     interface Elastos.Droid.Media.IAudioPortConfig;
     interface Elastos.Droid.Media.IIVolumeController;
+    interface Elastos.Utility.IArrayList;
 
     namespace Elastos {
     namespace Droid {
@@ -23,7 +24,7 @@ module
      * Interface definition for a callback to be invoked when the audio focus of the system is
      * updated.
      */
-    interface IOnAudioFocusChangeListener {
+    interface IAudioManagerOnAudioFocusChangeListener {
         /**
          * Called on the listener to notify it the audio focus for this listener has been changed.
          * The focusChange value indicates whether the focus was gained,
@@ -46,20 +47,20 @@ module
      * @hide
      */
     [deprecated]
-    interface IOnAudioPortUpdateListener {
+    interface IAudioManagerOnAudioPortUpdateListener {
         /**
          * Callback method called upon audio port list update.
          * @param portList the updated list of audio ports
          */
         OnAudioPortListUpdate(
-            [in] ArrayOf<IAudioPort*> * portList);
+            [in] ArrayOf<IAudioPort*>* portList);
 
         /**
          * Callback method called upon audio patch list update.
          * @param patchList the updated list of audio patches
          */
         OnAudioPatchListUpdate(
-            [in] ArrayOf<IAudioPatch*> * patchList);
+            [in] ArrayOf<IAudioPatch*>* patchList);
 
         /**
          * Callback method called when the mediaserver dies
@@ -881,58 +882,6 @@ module
          */
         const Int32 AUDIOFOCUS_REQUEST_GRANTED = 1;
 
-        // FIXME remove because we are not using intents anymore between AudioService and RcDisplay
-        /**
-         * @hide
-         * Broadcast intent action indicating that the displays on the remote controls
-         * should be updated because a new remote control client is now active. If there is no
-         * {@link #EXTRA_REMOTE_CONTROL_CLIENT}, the remote control display should be cleared
-         * because there is no valid client to supply it with information.
-         *
-         * @see #EXTRA_REMOTE_CONTROL_CLIENT
-         */
-        const String REMOTE_CONTROL_CLIENT_CHANGED = "android.media.REMOTE_CONTROL_CLIENT_CHANGED";
-
-        // FIXME remove because we are not using intents anymore between AudioService and RcDisplay
-        /**
-         * @hide
-         * The IRemoteControlClientDispatcher monotonically increasing generation counter.
-         *
-         * @see #REMOTE_CONTROL_CLIENT_CHANGED_ACTION
-         */
-        const String EXTRA_REMOTE_CONTROL_CLIENT_GENERATION = "android.media.EXTRA_REMOTE_CONTROL_CLIENT_GENERATION";
-
-        // FIXME remove because we are not using intents anymore between AudioService and RcDisplay
-        /**
-         * @hide
-         * The name of the RemoteControlClient.
-         * This String is passed as the client name when calling methods from the
-         * IRemoteControlClientDispatcher interface.
-         *
-         * @see #REMOTE_CONTROL_CLIENT_CHANGED_ACTION
-         */
-        const String EXTRA_REMOTE_CONTROL_CLIENT_NAME = "android.media.EXTRA_REMOTE_CONTROL_CLIENT_NAME";
-
-        // FIXME remove because we are not using intents anymore between AudioService and RcDisplay
-        /**
-         * @hide
-         * The media button event receiver associated with the RemoteControlClient.
-         * The {@link android.content.ComponentName} value of the event receiver can be retrieved with
-         * {@link android.content.ComponentName#unflattenFromString(String)}
-         *
-         * @see #REMOTE_CONTROL_CLIENT_CHANGED_ACTION
-         */
-        const String EXTRA_REMOTE_CONTROL_EVENT_RECEIVER = "android.media.EXTRA_REMOTE_CONTROL_EVENT_RECEIVER";
-
-        // FIXME remove because we are not using intents anymore between AudioService and RcDisplay
-        /**
-         * @hide
-         * The flags describing what information has changed in the current remote control client.
-         *
-         * @see #REMOTE_CONTROL_CLIENT_CHANGED_ACTION
-         */
-        const String EXTRA_REMOTE_CONTROL_CLIENT_INFO_CHANGED = "android.media.EXTRA_REMOTE_CONTROL_CLIENT_INFO_CHANGED";
-
         // This section re-defines new output device constants from AudioSystem, because the AudioSystem
         // class is not used by other parts of the framework, which instead use definitions and methods
         // from AudioManager. AudioSystem is an internal class used by AudioManager and AudioService.
@@ -1213,7 +1162,7 @@ module
          * </ul>
          */
         IsVolumeFixed(
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         /**
          * Adjusts the volume of a particular stream by one step in a direction.
@@ -1825,7 +1774,7 @@ module
          * @return true if {@link AudioManager#STREAM_MUSIC} is active on a remote device
          */
         IsMusicActiveRemotely(
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         /**
          * @hide
@@ -1834,7 +1783,7 @@ module
          *     with {@link #AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE}
          */
         IsAudioFocusExclusive(
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         /**
          * Return a new audio session identifier not associated with any player or effect.
@@ -1853,7 +1802,7 @@ module
          *   will subsequently fail as well.
          */
         GenerateAudioSessionId(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /*
          * Sets a generic audio configuration parameter. The use of these parameters
@@ -1979,7 +1928,7 @@ module
          * @param l the listener to be notified of audio focus changes.
          */
         RegisterAudioFocusListener(
-            [in] IOnAudioFocusChangeListener* l);
+            [in] IAudioManagerOnAudioFocusChangeListener* l);
 
         /**
          * @hide
@@ -1987,7 +1936,7 @@ module
          * @param l the listener to unregister.
          */
         UnregisterAudioFocusListener(
-            [in] IOnAudioFocusChangeListener* l);
+            [in] IAudioManagerOnAudioFocusChangeListener* l);
 
         /**
          *  Request audio focus.
@@ -2004,7 +1953,7 @@ module
          *  @return {@link #AUDIOFOCUS_REQUEST_FAILED} or {@link #AUDIOFOCUS_REQUEST_GRANTED}
          */
         RequestAudioFocus(
-            [in] IOnAudioFocusChangeListener* l,
+            [in] IAudioManagerOnAudioFocusChangeListener* l,
             [in] Int32 streamType,
             [in] Int32 durationHint,
             [out] Int32* result);
@@ -2037,7 +1986,7 @@ module
          *  @return {@link #AUDIOFOCUS_REQUEST_FAILED} or {@link #AUDIOFOCUS_REQUEST_GRANTED}
          */
         AbandonAudioFocus(
-            [in] IOnAudioFocusChangeListener* l,
+            [in] IAudioManagerOnAudioFocusChangeListener* l,
             [out] Int32* result);
 
         //====================================================================
@@ -2065,7 +2014,7 @@ module
          */
         // @Deprecated
         RegisterMediaButtonEventReceiver(
-            [in] IPendingIntent * eventReceiver);
+            [in] IPendingIntent* eventReceiver);
 
         /**
          * @hide
@@ -2091,13 +2040,13 @@ module
          */
         // @Deprecated
         UnregisterMediaButtonEventReceiver(
-            [in] IPendingIntent * eventReceiver);
+            [in] IPendingIntent* eventReceiver);
 
         /**
          * @hide
          */
         UnregisterMediaButtonIntent(
-            [in] IPendingIntent * pi);
+            [in] IPendingIntent* pi);
 
         /**
          * Registers the remote control client for providing information to display on the remote
@@ -2109,7 +2058,7 @@ module
          */
         // @Deprecated
         RegisterRemoteControlClient(
-            [in] IRemoteControlClient * rcClient);
+            [in] IRemoteControlClient* rcClient);
 
         /**
          * Unregisters the remote control client that was providing information to display on the
@@ -2120,7 +2069,7 @@ module
          */
         // @Deprecated
         UnregisterRemoteControlClient(
-            [in] IRemoteControlClient * rcClient);
+            [in] IRemoteControlClient* rcClient);
 
         /**
          * Registers a {@link RemoteController} instance for it to receive media
@@ -2141,8 +2090,8 @@ module
          */
         // @Deprecated
         RegisterRemoteController(
-            [in] IRemoteController * rctlr,
-            [out] Boolean * result);
+            [in] IRemoteController* rctlr,
+            [out] Boolean* result);
 
         /**
          * Unregisters a {@link RemoteController}, causing it to no longer receive
@@ -2156,7 +2105,7 @@ module
          */
         // @Deprecated
         UnregisterRemoteController(
-            [in] IRemoteController * rctlr);
+            [in] IRemoteController* rctlr);
 
         /**
          * @hide
@@ -2170,7 +2119,7 @@ module
          * @param rcd the IRemoteControlDisplay
          */
         RegisterRemoteControlDisplay(
-            [in] IIRemoteControlDisplay * rcd);
+            [in] IIRemoteControlDisplay* rcd);
 
         /**
          * @hide
@@ -2183,7 +2132,7 @@ module
          *   useless to send artwork.
          */
         RegisterRemoteControlDisplay(
-            [in] IIRemoteControlDisplay * rcd,
+            [in] IIRemoteControlDisplay* rcd,
             [in] Int32 w,
             [in] Int32 h);
 
@@ -2193,7 +2142,7 @@ module
          * @param rcd
          */
         UnregisterRemoteControlDisplay(
-            [in] IIRemoteControlDisplay * rcd);
+            [in] IIRemoteControlDisplay* rcd);
 
         /**
          * @hide
@@ -2205,7 +2154,7 @@ module
          *   useless to send artwork.
          */
         RemoteControlDisplayUsesBitmapSize(
-            [in] IIRemoteControlDisplay * rcd,
+            [in] IIRemoteControlDisplay* rcd,
             [in] Int32 w,
             [in] Int32 h);
 
@@ -2223,7 +2172,7 @@ module
          *     detected.
          */
         RemoteControlDisplayWantsPlaybackPositionSync(
-            [in] IIRemoteControlDisplay * rcd,
+            [in] IIRemoteControlDisplay* rcd,
             [in] Boolean wantsSync);
 
         /**
@@ -2239,8 +2188,8 @@ module
          *    {@link #SUCCESS} otherwise.
          */
         RegisterAudioPolicy(
-            [in] IAudioPolicy * policy,
-            [out] Int32 * result);
+            [in] IAudioPolicy* policy,
+            [out] Int32* result);
 
         /**
          * @hide
@@ -2248,7 +2197,7 @@ module
          * @param policy the {@link AudioPolicy} to unregister.
          */
         UnregisterAudioPolicyAsync(
-            [in] IAudioPolicy * policy);
+            [in] IAudioPolicy* policy);
 
         /**
          *  @hide
@@ -2278,7 +2227,7 @@ module
          * @hide pending API Council approval
          */
         IsSilentMode(
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         /**
          * Return the enabled devices for the specified output stream type.
@@ -2326,7 +2275,7 @@ module
          */
         GetDevicesForStream(
             [in] Int32 streamType,
-            [out] Int32 * result);
+            [out] Int32* result);
 
          /**
          * Indicate wired accessory connection state change.
@@ -2352,14 +2301,14 @@ module
          * {@hide}
          */
         SetBluetoothA2dpDeviceConnectionState(
-            [in] IBluetoothDevice * device,
+            [in] IBluetoothDevice* device,
             [in] Int32 state,
             [in] Int32 profile,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /** {@hide} */
         GetRingtonePlayer(
-            [out] IIRingtonePlayer ** result);
+            [out] IIRingtonePlayer** result);
 
         /**
          * Returns the value of the property with the specified key.
@@ -2371,7 +2320,7 @@ module
          */
         GetProperty(
             [in] String key,
-            [out] String * result);
+            [out] String* result);
 
         /**
          * Returns the estimated latency for the given stream type in milliseconds.
@@ -2382,7 +2331,7 @@ module
          */
         GetOutputLatency(
             [in] Int32 streamType,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Registers a global volume controller interface.  Currently limited to SystemUI.
@@ -2390,7 +2339,7 @@ module
          * @hide
          */
         SetVolumeController(
-            [in] IIVolumeController * controller);
+            [in] IIVolumeController* controller);
 
         /**
          * Notify audio manager about volume controller visibility changes.
@@ -2399,7 +2348,7 @@ module
          * @hide
          */
         NotifyVolumeControllerVisible(
-            [in] IIVolumeController * controller,
+            [in] IIVolumeController* controller,
             [in] Boolean visible);
 
         /**
@@ -2408,7 +2357,7 @@ module
          */
         IsStreamAffectedByRingerMode(
             [in] Int32 streamType,
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         /**
          * Only useful for volume controllers.
@@ -2425,7 +2374,7 @@ module
          */
         SetHdmiSystemAudioSupported(
             [in] Boolean on,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Returns true if Hdmi Cec system audio mode is supported.
@@ -2434,7 +2383,7 @@ module
          */
         // @SystemApi
         IsHdmiSystemAudioSupported(
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         /**
          * Returns a list of descriptors for all audio ports managed by the audio framework.
@@ -2445,8 +2394,8 @@ module
          * @hide
          */
         ListAudioPorts(
-            [in] ArrayOf<IAudioPort*> * ports,
-            [out] Int32 * result);
+            [in] IArrayList* ports,
+            [out] Int32* result);
 
         /**
          * Specialized version of listAudioPorts() listing only audio devices (AudioDevicePort)
@@ -2454,8 +2403,8 @@ module
          * @hide
          */
         ListAudioDevicePorts(
-            [in] ArrayOf<IAudioPort*> * devices,
-            [out] Int32 * result);
+            [in] IArrayList* devices,
+            [out] Int32* result);
 
         /**
          * Create a connection between two or more devices. The framework will reject the request if
@@ -2481,10 +2430,10 @@ module
          * @hide
          */
         CreateAudioPatch(
-            [in] ArrayOf<IAudioPatch*> * patch,
-            [in] ArrayOf<IAudioPortConfig*> * sources,
-            [in] ArrayOf<IAudioPortConfig*> * sinks,
-            [out] Int32 * result);
+            [in] ArrayOf<IAudioPatch*>* patch,
+            [in] ArrayOf<IAudioPortConfig*>* sources,
+            [in] ArrayOf<IAudioPortConfig*>* sinks,
+            [out] Int32* result);
 
         /**
          * Releases an existing audio patch connection.
@@ -2498,8 +2447,8 @@ module
          * @hide
          */
         ReleaseAudioPatch(
-            [in] IAudioPatch * patch,
-            [out] Int32 * result);
+            [in] IAudioPatch* patch,
+            [out] Int32* result);
 
         /**
          * List all existing connections between audio ports.
@@ -2507,8 +2456,8 @@ module
          * @hide
          */
         ListAudioPatches(
-            [in] ArrayOf<IAudioPatch*> * patches,
-            [out] Int32 * result);
+            [in] IArrayList* patches,
+            [out] Int32* result);
 
         /**
          * Set the gain on the specified AudioPort. The AudioGainConfig config is build by
@@ -2516,24 +2465,31 @@ module
          * @hide
          */
         SetAudioPortGain(
-            [in] IAudioPort * port,
-            [in] IAudioGainConfig * gain,
-            [out] Int32 * result);
+            [in] IAudioPort* port,
+            [in] IAudioGainConfig* gain,
+            [out] Int32* result);
 
         /**
          * Register an audio port list update listener.
          * @hide
          */
         RegisterAudioPortUpdateListener(
-            [in] IOnAudioPortUpdateListener * l);
+            [in] IAudioManagerOnAudioPortUpdateListener* l);
 
         /**
          * Unregister an audio port list update listener.
          * @hide
          */
         UnregisterAudioPortUpdateListener(
-            [in] IOnAudioPortUpdateListener * l);
+            [in] IAudioManagerOnAudioPortUpdateListener* l);
 
+        ResetAudioPortGeneration(
+            [out] Int32* result);
+
+        UpdateAudioPortCache(
+            [in] IArrayList* ports,
+            [in] IArrayList* patches,
+            [out] Int32* result);
     }
 
     interface IAudioManagerHelper{
@@ -2554,15 +2510,16 @@ module
          * @hide
          */
         IsOutputDevice(
-            [in] Int32 device);
+            [in] Int32 device,
+            [out] Boolean* result);
 
         /**
          * Return true if the device code corresponds to an input device.
          * @hide
          */
         IsInputDevice(
-            [in] Int32 device);
-
+            [in] Int32 device,
+            [out] Boolean* result);
     }
 
     } // namespace media

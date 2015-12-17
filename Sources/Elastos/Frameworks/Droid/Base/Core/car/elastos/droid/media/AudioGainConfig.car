@@ -16,33 +16,39 @@ module
     interface IAudioGainConfig {
 
         /**
+         * get the index of the parent gain.
+         * frameworks use only.
+         */
+        Index(
+            [out] Int32* result);
+
+        /**
          * Bit field indicating requested modes of operation. See {@link AudioGain#MODE_JOINT},
          * {@link AudioGain#MODE_CHANNELS}, {@link AudioGain#MODE_RAMP}
          */
         Mode(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Indicates for which channels the gain is set.
          * See {@link AudioFormat#CHANNEL_OUT_STEREO}, {@link AudioFormat#CHANNEL_OUT_MONO} ...
          */
         ChannelMask(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Gain values for each channel in the order of bits set in
          * channelMask() from LSB to MSB
          */
         Values(
-            [out, callee] ArrayOf<Int32> * result);
+            [out, callee] ArrayOf<Int32>* result);
 
         /**
          * Ramp duration in milliseconds. N/A if mode() does not
          * specify MODE_RAMP.
          */
         RampDurationMs(
-            [out] Int32 * result);
-
+            [out] Int32* result);
     }
     } // namespace media
     } // namepsace Droid

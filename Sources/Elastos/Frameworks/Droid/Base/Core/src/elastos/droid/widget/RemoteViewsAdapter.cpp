@@ -11,6 +11,7 @@
 #include "elastos/droid/os/Looper.h"
 #include "elastos/droid/content/CIntentFilterComparison.h"
 #include "elastos/droid/R.h"
+#include "elastos/droid/Manifest.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
@@ -46,116 +47,53 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-// daa3894c-5246-483a-a18a-75cb3e153764
-extern "C" const InterfaceID EIID_RemoteViewsFrameLayout =
-        { 0xdaa3894c, 0x5246, 0x483a, { 0xa1, 0x8a, 0x75, 0xcb, 0x3e, 0x15, 0x37, 0x64 } };
-
-// 419078bd-95c2-45e8-a46e-cec95bc2216d
-extern "C" const InterfaceID EIID_RemoteViewsAdapter =
-        { 0x419078bd, 0x95c2, 0x45e8, { 0xa4, 0x6e, 0xce, 0xc9, 0x5b, 0xc2, 0x21, 0x6d } };
-
-
 /*--------------------------------RemoteViewsCacheKey--------------------------------*/
+CAR_INTERFACE_IMPL(RemoteViewsCacheKey, Object, IRemoteViewsCacheKey)
+
 RemoteViewsCacheKey::RemoteViewsCacheKey(
     /* [in] */ IIntentFilterComparison* filter,
-    /* [in] */ Int32 widgetId,
-    /* [in] */ Int32 userId)
+    /* [in] */ Int32 widgetId)
 {
     mFilter = filter;
     mWidgetId = widgetId;
-    mUserId = userId;
+}
+
+ECode RemoteViewsCacheKey::Equals(
+    /* [in] */ IInterface* other,
+    /* [out] */ Boolean* result)
+{
+    *result = FALSE;
+    AutoPtr<IRemoteViewsCacheKey> obj = IObject::Probe(other);
+    if (obj == NULL) return NOERROR;
+    RemoteViewsCacheKey* impl = (RemoteViewsCacheKey*)obj.Get();
+    if (mFilter != NULL)
+        IObject::Probe(mFilter)->Equals(impl->mFilter, result);
+    *result = *result & impl->mWidgetId == mWidgetId;
+    return NOERROR;
+}
+
+ECode RemoteViewsCacheKey::GetHashCode(
+    /* [out] */ Int32* hashCode)
+{
+    *hashCode == 0;
+    if (mFilter != NULL)
+    {
+        mFilter->GetHashCode(hashCode);
+    }
+    *hashCode = *hashCode ^ (widgetId << 2);
+    return NOERROR;
 }
 
 /*--------------------------------RemoteViewsFrameLayout--------------------------------*/
-IFRAMELAYOUT_METHODS_IMPL(RemoteViewsFrameLayout, FrameLayout)
-IVIEW_METHODS_IMPL(RemoteViewsFrameLayout, FrameLayout)
-IVIEWGROUP_METHODS_IMPL(RemoteViewsFrameLayout, FrameLayout)
-IVIEWPARENT_METHODS_IMPL(RemoteViewsFrameLayout, FrameLayout)
-IVIEWMANAGER_METHODS_IMPL(RemoteViewsFrameLayout, FrameLayout)
-IDRAWABLECALLBACK_METHODS_IMPL(RemoteViewsFrameLayout, FrameLayout)
-IKEYEVENTCALLBACK_METHODS_IMPL(RemoteViewsFrameLayout, FrameLayout)
-IACCESSIBILITYEVENTSOURCE_METHODS_IMPL(RemoteViewsFrameLayout, FrameLayout)
+CAR_INTERFACE_IMPL(RemoteViewsFrameLayout, FrameLayout, IRemoteViewsFrameLayout)
 
-RemoteViewsFrameLayout::RemoteViewsFrameLayout(
-    /* [in] */ IContext* context) : FrameLayout(context)
+RemoteViewsFrameLayout::RemoteViewsFrameLayout()
 {}
 
-PInterface RemoteViewsFrameLayout::Probe(
-    /* [in] */ REIID riid)
+ECode RemoteViewsFrameLayout::constrctor(
+    /* [in] */ IContext* context)
 {
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IFrameLayout*)this;
-    } else if (riid == EIID_IFrameLayout) {
-        return (IFrameLayout*)this;
-    } else if (riid == EIID_IViewGroup) {
-        return (IViewGroup*)(IFrameLayout*)this;
-    } else if (riid == EIID_IView) {
-        return (IView*)(IFrameLayout*)this;
-    } else if (riid == EIID_IViewParent) {
-        return (IViewParent*)this;
-    } else if (riid == EIID_IViewManager) {
-        return (IViewManager*)this;
-    } else if (riid == EIID_IDrawableCallback) {
-        return (IDrawableCallback*)this;
-    } else if (riid == EIID_IKeyEventCallback) {
-        return (IKeyEventCallback*)this;
-    } else if (riid == EIID_IAccessibilityEventSource) {
-        return (IAccessibilityEventSource*)this;
-    } else if (riid == EIID_IWeakReferenceSource) {
-        return (IWeakReferenceSource*)this;
-    } else if (riid == EIID_View) {
-        return reinterpret_cast<PInterface>((View*)(FrameLayout*)this);
-    } else if (riid == EIID_ViewGroup) {
-        return reinterpret_cast<PInterface>((ViewGroup*)(FrameLayout*)this);
-    } else if (riid == EIID_RemoteViewsFrameLayout) {
-        return reinterpret_cast<PInterface>(this);
-    }
-    return NULL;
-}
-
-UInt32 RemoteViewsFrameLayout::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 RemoteViewsFrameLayout::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode RemoteViewsFrameLayout::GetInterfaceID(
-    /* [in] */ IInterface *object,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (object == (IFrameLayout*)this) {
-        *pIID = EIID_IListView;
-    } else if (object == (IViewParent*)this) {
-        *pIID = EIID_IViewParent;
-    } else if (object == (IViewManager*)this) {
-        *pIID = EIID_IViewManager;
-    } else if (object == (IDrawableCallback*)this) {
-        *pIID = EIID_IDrawableCallback;
-    } else if (object == (IKeyEventCallback*)this) {
-        *pIID = EIID_IKeyEventCallback;
-    } else if (object == (IAccessibilityEventSource*)this) {
-        *pIID = EIID_IAccessibilityEventSource;
-    } else if (object == reinterpret_cast<PInterface>((View*)this)) {
-        *pIID = EIID_View;
-    } else if (object == reinterpret_cast<PInterface>((ViewGroup*)this)) {
-        *pIID = EIID_ViewGroup;
-    } else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return NOERROR;
-}
-
-ECode RemoteViewsFrameLayout::GetWeakReference(
-    /* [out] */ IWeakReference** weakReference)
-{
-    VALIDATE_NOT_NULL(weakReference)
-    *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    REFCOUNT_ADD(*weakReference)
-    return NOERROR;
+    return FrameLayout::constrctor(context);
 }
 
 ECode RemoteViewsFrameLayout::OnRemoteViewsLoaded(
@@ -784,6 +722,7 @@ ECode RemoteViewsAdapter::InnerRunnableEx5::Run()
 /*--------------------------------RemoteViewsAdapter--------------------------------*/
 
 const String RemoteViewsAdapter::TAG("RemoteViewsAdapter");
+const String RemoteViewsAdapter::MULTI_USER_PERM(Manifest::permission::INTERACT_ACROSS_USERS_FULL);
 
     // The max number of items in the cache
 const Int32 RemoteViewsAdapter::sDefaultCacheSize;
@@ -808,6 +747,8 @@ Mutex RemoteViewsAdapter::sCacheLock;
 AutoPtr<IHandlerThread> RemoteViewsAdapter::sCacheRemovalThread = NULL;
 AutoPtr<IHandler> RemoteViewsAdapter::sCacheRemovalQueue = NULL;
 
+CAR_INTERFACE_IMPL_2(RemoteViewsAdapter, BaseAdapter, IRemoteViewsAdapter, IHandlerCallback)
+
 RemoteViewsAdapter::RemoteViewsAdapter()
     : mAppWidgetId(0)
     , mVisibleWindowLowerBound(0)
@@ -817,18 +758,72 @@ RemoteViewsAdapter::RemoteViewsAdapter()
     , mUserId(0)
 {}
 
-RemoteViewsAdapter::RemoteViewsAdapter(
+ECode RemoteViewsAdapter::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent,
     /* [in] */ IRemoteAdapterConnectionCallback* callback)
-    : mAppWidgetId(0)
-    , mVisibleWindowLowerBound(0)
-    , mVisibleWindowUpperBound(0)
-    , mNotifyDataSetChangedAfterOnServiceConnected(FALSE)
-    , mDataReady(FALSE)
-    , mUserId(0)
 {
-    ASSERT_SUCCEEDED(Init(context, intent, callback));
+    mContext = context;
+    mIntent = intent;
+    intent->GetInt32Extra(RemoteViews::EXTRA_REMOTEADAPTER_APPWIDGET_ID, -1, &mAppWidgetId);
+    LayoutInflater::From(context, (ILayoutInflater**)&mLayoutInflater);
+    if (mIntent == NULL) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mRequestedViews = new RemoteViewsFrameLayoutRefSet(this);
+
+    // Strip the previously injected app widget id from service intent
+    Boolean hasExtra;
+    if (intent->HasExtra(RemoteViews::EXTRA_REMOTEADAPTER_APPWIDGET_ID, &hasExtra), hasExtra) {
+        intent->RemoveExtra(RemoteViews::EXTRA_REMOTEADAPTER_APPWIDGET_ID);
+    }
+
+    // Initialize the worker thread
+    CHandlerThread::New(String("RemoteViewsCache-loader"), (IHandlerThread**)&mWorkerThread);
+    mWorkerThread->Start();
+    AutoPtr<ILooper> looper;
+    mWorkerThread->GetLooper((ILooper**)&looper);
+    CHandler::New(looper, (IHandler**)&mWorkerQueue);
+    CHandler::New(Looper::GetMyLooper(), (IHandler**)&mMainQueue);
+
+    if (sCacheRemovalThread == NULL) {
+        CHandlerThread::New(String("RemoteViewsAdapter-cachePruner"), (IHandlerThread**)&sCacheRemovalThread);
+        sCacheRemovalThread->Start();
+        AutoPtr<ILooper> sLooper;
+        sCacheRemovalThread->GetLooper((ILooper**)&sLooper);
+        CHandler::New(sLooper, (IHandler**)&sCacheRemovalQueue);
+    }
+
+    // Initialize the cache and the service connection on startup
+    mCallback = callback;//new WeakReference<RemoteAdapterConnectionCallback>(callback);
+    CRemoteViewsAdapterServiceConnection::New(THIS_PROBE(IRemoteViewsAdapter), (IRemoteViewsAdapterServiceConnection**)&mServiceConnection);
+
+    AutoPtr<IIntentFilterComparison> comparison;
+    CIntentFilterComparison::New(mIntent, (IIntentFilterComparison**)&comparison);
+    AutoPtr<RemoteViewsCacheKey> key = new RemoteViewsCacheKey(comparison, mAppWidgetId);
+
+    {
+        AutoLock lock(sCacheLock);
+        CacheIterator it = sCachedRemoteViewsCaches.Find(key);
+        if (it != sCachedRemoteViewsCaches.End()) {
+
+            mCache = it->mSecond;
+            {
+                AutoLock lock(mCache->mMetaDataLock);
+                if (mCache->mMetaData->mCount > 0) {
+                    // As a precautionary measure, we verify that the meta data indicates a
+                    // non-zero count before declaring that data is ready.
+                    mDataReady = TRUE;
+                }
+            }
+        } else {
+            mCache = new FixedSizeRemoteViewsCache(sDefaultCacheSize);
+        }
+        if (!mDataReady) {
+            RequestBindService();
+        }
+    }
+    return NOERROR;
 }
 
 RemoteViewsAdapter::~RemoteViewsAdapter()
@@ -840,9 +835,11 @@ RemoteViewsAdapter::~RemoteViewsAdapter()
     }
 }
 
-Boolean RemoteViewsAdapter::IsDataReady()
+ECode RemoteViewsAdapter::IsDataReady(
+    /* [out] */ Boolean* ready)
 {
-    return mDataReady;
+    *ready = mDataReady;
+    return NOERROR;
 }
 
 ECode RemoteViewsAdapter::SetRemoteViewsOnClickHandler(
@@ -856,7 +853,7 @@ ECode RemoteViewsAdapter::SaveRemoteViewsCache()
 {
     AutoPtr<IIntentFilterComparison> comparison;
     CIntentFilterComparison::New(mIntent, (IIntentFilterComparison**)&comparison);
-    AutoPtr<RemoteViewsCacheKey> key = new RemoteViewsCacheKey(comparison, mAppWidgetId, mUserId);
+    AutoPtr<RemoteViewsCacheKey> key = new RemoteViewsCacheKey(comparison, mAppWidgetId);
     {
         // If we already have a remove runnable posted for this key, remove it.
         AutoLock lock(sCacheLock);
@@ -889,40 +886,50 @@ ECode RemoteViewsAdapter::SaveRemoteViewsCache()
     return NOERROR;
 }
 
-AutoPtr<IIntent> RemoteViewsAdapter::GetRemoteViewsServiceIntent()
+ECode RemoteViewsAdapter::GetRemoteViewsServiceIntent(
+    /* [out] */ IIntent** intent)
 {
-    return mIntent;
+    *intent = mIntent;
+    REFCOUNT_ADD(*intent)
+    return NOERROR;
 }
 
-Int32 RemoteViewsAdapter::GetCount()
+ECode RemoteViewsAdapter::GetCount(
+    /* [out] */ Int32* count)
 {
     AutoPtr<RemoteViewsMetaData> metaData = mCache->GetMetaData();
     {
         AutoLock lock(mCache->mMetaDataLock);
-        return metaData->mCount;
+        *count = metaData->mCount;
+        return NOERROR;
     }
 }
-AutoPtr<IInterface> RemoteViewsAdapter::GetItem(
-    /* [in] */ Int32 position)
+ECode RemoteViewsAdapter::GetItem(
+    /* [in] */ Int32 position,
+    /* [out] */ IInterface** item)
 {
     // Disallow arbitrary object to be associated with an item for the time being
-    return NULL;
+    *item = NULL;
+    return NOERROR;
 }
 
-Int64 RemoteViewsAdapter::GetItemId(
-    /* [in] */ Int32 position)
+ECode RemoteViewsAdapter::GetItemId(
+    /* [in] */ Int32 position,
+    /* [out] */ Int64* id)
 {
     AutoLock lock(mCacheLock);
     if (mCache->ContainsMetaDataAt(position)) {
-        return mCache->GetMetaDataAt(position)->mItemId;
+        *id = mCache->GetMetaDataAt(position)->mItemId;
     }
     else {
-        return 0;
+        *id = 0;
     }
+    return NOERROR;
 }
 
-Int32 RemoteViewsAdapter::GetItemViewType(
-    /* [in] */ Int32 position)
+ECode RemoteViewsAdapter::GetItemViewType(
+    /* [in] */ Int32 position,
+    /* [out] */ Int32* type)
 {
     Int32 typeId = 0;
     {
@@ -931,13 +938,15 @@ Int32 RemoteViewsAdapter::GetItemViewType(
             typeId = mCache->GetMetaDataAt(position)->mTypeId;
         }
         else {
-            return 0;
+            *type = 0;
+            return NOERROR;
         }
     }
     AutoPtr<RemoteViewsMetaData> metaData = mCache->GetMetaData();
     {
         AutoLock lock(mCache->mMetaDataLock);
-        return metaData->GetMappedViewType(typeId);
+        *type = metaData->GetMappedViewType(typeId);
+        return NOERROR;
     }
 }
 
@@ -950,10 +959,11 @@ ECode RemoteViewsAdapter::SetVisibleRangeHint(
     return NOERROR;
 }
 
-AutoPtr<IView> RemoteViewsAdapter::GetView(
+ECode RemoteViewsAdapter::GetView(
     /* [in] */ Int32 position,
     /* [in] */ IView* convertView,
-    /* [in] */ IViewGroup* parent)
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
 {
     Boolean isInCache = mCache->ContainsRemoteViewAt(position);
     Boolean isConnected;
@@ -1010,10 +1020,14 @@ AutoPtr<IView> RemoteViewsAdapter::GetView(
                                     mCache->mMetaDataLock, mLayoutInflater, mRemoteViewsOnClickHandler);
                         }
                         if (hasNewItems) LoadNextIndexInBackground();
-                        return loadingView;
+                        *view = loadingView;
+                        REFCOUNT_ADD(*view)
+                        return NOERROR;
                     }
                     if (hasNewItems) LoadNextIndexInBackground();
-                    return layout;
+                    *view = layout;
+                    REFCOUNT_ADD(*view)
+                    return NOERROR;
                 }
                 layout->RemoveAllViews();
             } else {
@@ -1028,7 +1042,9 @@ AutoPtr<IView> RemoteViewsAdapter::GetView(
             newView->SetTagInternal(R::id::rowTypeId, integer);
             layout->AddView(newView);
             if (hasNewItems) LoadNextIndexInBackground();
-            return layout;
+            *view = layout;
+            REFCOUNT_ADD(*view)
+            return NOERROR;
 
         // } catch (Exception e){
         //     // We have to make sure that we successfully inflated the RemoteViews, if not
@@ -1061,31 +1077,40 @@ AutoPtr<IView> RemoteViewsAdapter::GetView(
         mCache->QueueRequestedPositionToLoad(position);
         LoadNextIndexInBackground();
 
-        return loadingView;
+        *view = loadingView;
+        REFCOUNT_ADD(*view)
+        return NOERROR;
     }
 }
 
-Int32 RemoteViewsAdapter::GetViewTypeCount()
+ECode RemoteViewsAdapter::GetViewTypeCount(
+    /* [out] */ Int32* count)
 {
     AutoPtr<RemoteViewsMetaData> metaData = mCache->GetMetaData();
     {
         AutoLock lock(mCache->mMetaDataLock);
-        return metaData->mViewTypeCount;
+        *count = metaData->mViewTypeCount;
+        return NOERROR;
     }
 }
 
-Boolean RemoteViewsAdapter::HasStableIds()
+ECode RemoteViewsAdapter::HasStableIds(
+    /* [out] */ Boolean* result)
 {
     AutoPtr<RemoteViewsMetaData> metaData = mCache->GetMetaData();
     {
         AutoLock lock(mCache->mMetaDataLock);
-        return metaData->mHasStableIds;
+        *result = metaData->mHasStableIds;
+        return NOERROR;
     }
 }
 
-Boolean RemoteViewsAdapter::IsEmpty()
+ECode RemoteViewsAdapter::IsEmpty(
+    /* [out] */ Boolean* result)
 {
-    return GetCount() <= 0;;
+    GetCount(result)
+    *result = *result <= 0;;
+    return NOERROR;
 }
 
 ECode RemoteViewsAdapter::NotifyDataSetChanged()
@@ -1114,79 +1139,6 @@ ECode RemoteViewsAdapter::NotifyDataSetChanged()
 ECode RemoteViewsAdapter::SuperNotifyDataSetChanged()
 {
     return BaseAdapter::NotifyDataSetChanged();
-}
-
-ECode RemoteViewsAdapter::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IIntent* intent,
-    /* [in] */ IRemoteAdapterConnectionCallback* callback)
-{
-    mContext = context;
-    mIntent = intent;
-    intent->GetInt32Extra(RemoteViews::EXTRA_REMOTEADAPTER_APPWIDGET_ID, -1, &mAppWidgetId);
-    LayoutInflater::From(context, (ILayoutInflater**)&mLayoutInflater);
-    if (mIntent == NULL) {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    mRequestedViews = new RemoteViewsFrameLayoutRefSet(this);
-
-    if (Process::MyUid() == IProcess::SYSTEM_UID) {
-        // mUserId = new LockPatternUtils(context).getCurrentUser();
-    } else {
-        mUserId = UserHandle::GetMyUserId();
-    }
-    // Strip the previously injected app widget id from service intent
-    Boolean hasExtra;
-    if (intent->HasExtra(RemoteViews::EXTRA_REMOTEADAPTER_APPWIDGET_ID, &hasExtra), hasExtra) {
-        intent->RemoveExtra(RemoteViews::EXTRA_REMOTEADAPTER_APPWIDGET_ID);
-    }
-
-    // Initialize the worker thread
-    CHandlerThread::New(String("RemoteViewsCache-loader"), (IHandlerThread**)&mWorkerThread);
-    mWorkerThread->Start();
-    AutoPtr<ILooper> looper;
-    mWorkerThread->GetLooper((ILooper**)&looper);
-    CHandler::New(looper, (IHandler**)&mWorkerQueue);
-    CHandler::New(Looper::GetMyLooper(), (IHandler**)&mMainQueue);
-
-    if (sCacheRemovalThread == NULL) {
-        CHandlerThread::New(String("RemoteViewsAdapter-cachePruner"), (IHandlerThread**)&sCacheRemovalThread);
-        sCacheRemovalThread->Start();
-        AutoPtr<ILooper> sLooper;
-        sCacheRemovalThread->GetLooper((ILooper**)&sLooper);
-        CHandler::New(sLooper, (IHandler**)&sCacheRemovalQueue);
-    }
-
-    // Initialize the cache and the service connection on startup
-    mCallback = callback;//new WeakReference<RemoteAdapterConnectionCallback>(callback);
-    CRemoteViewsAdapterServiceConnection::New(THIS_PROBE(IRemoteViewsAdapter), (IRemoteViewsAdapterServiceConnection**)&mServiceConnection);
-
-    AutoPtr<IIntentFilterComparison> comparison;
-    CIntentFilterComparison::New(mIntent, (IIntentFilterComparison**)&comparison);
-    AutoPtr<RemoteViewsCacheKey> key = new RemoteViewsCacheKey(comparison, mAppWidgetId, mUserId);
-
-    {
-        AutoLock lock(sCacheLock);
-        CacheIterator it = sCachedRemoteViewsCaches.Find(key);
-        if (it != sCachedRemoteViewsCaches.End()) {
-
-            mCache = it->mSecond;
-            {
-                AutoLock lock(mCache->mMetaDataLock);
-                if (mCache->mMetaData->mCount > 0) {
-                    // As a precautionary measure, we verify that the meta data indicates a
-                    // non-zero count before declaring that data is ready.
-                    mDataReady = TRUE;
-                }
-            }
-        } else {
-            mCache = new FixedSizeRemoteViewsCache(sDefaultCacheSize);
-        }
-        if (!mDataReady) {
-            RequestBindService();
-        }
-    }
-    return NOERROR;
 }
 
 ECode RemoteViewsAdapter::LoadNextIndexInBackground()
@@ -1299,9 +1251,6 @@ ECode RemoteViewsAdapter::UpdateRemoteViews(
             return NOERROR;
         }
         remoteViews = IRemoteViews::Probe(parcelable);
-        AutoPtr<IUserHandle> handle;
-        CUserHandle::New(mUserId, (IUserHandle**)&handle);
-        remoteViews->SetUser(handle);
         pe =factory->GetItemId(position, &itemId);
         if(FAILED(pe))
         {

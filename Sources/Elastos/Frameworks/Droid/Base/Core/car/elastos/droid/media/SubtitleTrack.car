@@ -1,12 +1,11 @@
 
 module
 {
-//TODO: Need IVector
-    // interface Elastos.Utility.IVector;
     interface Elastos.Droid.Graphics.ICanvas;
     interface Elastos.Droid.Media.IMediaFormat;
     interface Elastos.Droid.Media.IMediaTimeProvider;
     interface Elastos.Droid.Media.ISubtitleTrackRenderingWidget;
+    using interface Elastos.Utility.IVector;
 
     namespace Elastos {
     namespace Droid {
@@ -22,7 +21,7 @@ module
          * @param renderingWidget the widget whose data has changed
          */
         OnChanged(
-            [in] ISubtitleTrackRenderingWidget * renderingWidget);
+            [in] ISubtitleTrackRenderingWidget* renderingWidget);
     }
 
     /**
@@ -36,7 +35,7 @@ module
          * @param callback update callback
          */
         SetOnChangedListener(
-            [in] ISubtitleTrackRenderingWidgetOnChangedListener * cb);
+            [in] ISubtitleTrackRenderingWidgetOnChangedListener* cb);
 
         /**
          * Sets the widget's size.
@@ -62,7 +61,7 @@ module
          * @param c canvas on which to render subtitles
          */
         Draw(
-            [in] ICanvas * c);
+            [in] ICanvas* c);
 
         /**
          * Called when the widget is attached to a window.
@@ -95,7 +94,7 @@ module
     interface ISubtitleTrack {
         /** @hide */
         GetFormat(
-            [out] IMediaFormat ** result);
+            [out] IMediaFormat** result);
 
         /**
          * Called when there is input data for the subtitle track.  The
@@ -116,7 +115,7 @@ module
          *              any of its cues (with this runID).
          */
         OnData(
-            [in] ArrayOf<Byte> * data,
+            [in] ArrayOf<Byte>* data,
             [in] Boolean eos,
             [in] Int64 runID);
 
@@ -131,7 +130,7 @@ module
          *         is visible at one time.
          */
         GetRenderingWidget(
-            [out] ISubtitleTrackRenderingWidget ** result);
+            [out] ISubtitleTrackRenderingWidget** result);
 
         /**
          * Called when the active cues have changed, and the contents of the subtitle
@@ -139,9 +138,8 @@ module
          *
          * @hide
          */
-//TODO: Need IVector
-        // UpdateView(
-        //     [in] IVector * activeCues);
+        UpdateView(
+            [in] IVector* activeCues);
 
         /** @hide */
         Show();
@@ -151,7 +149,7 @@ module
 
         /** @hide */
         SetTimeProvider(
-            [in] IMediaTimeProvider * timeProvider);
+            [in] IMediaTimeProvider* timeProvider);
 
         /** @hide update mRunsByEndTime with given end time */
         SetRunDiscardTimeMs(
@@ -160,7 +158,7 @@ module
 
         /** @hide whether this is a text track who fires events instead getting rendered */
         IsTimedText(
-            [out] Boolean * result);
+            [out] Boolean* result);
 
     }
     } // namespace media

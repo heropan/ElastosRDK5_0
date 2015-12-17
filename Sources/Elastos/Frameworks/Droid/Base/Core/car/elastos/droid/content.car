@@ -880,6 +880,11 @@ module
         class CUriPermission {
             constructor();
 
+            constructor(
+                [in] IUri* uri,
+                [in] Int32 modeFlags,
+                [in] Int64 persistedTime);
+
             interface IUriPermission;
             interface IParcelable;
         }

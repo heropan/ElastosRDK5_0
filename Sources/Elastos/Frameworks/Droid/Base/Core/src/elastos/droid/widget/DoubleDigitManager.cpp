@@ -9,20 +9,16 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+//===============================================================
+//        DoubleDigitManager::
+//===============================================================
+CAR_INTERFACE_IMPL(DoubleDigitManager, Object, IDoubleDigitManager)
+
 DoubleDigitManager::DoubleDigitManager()
 {
-
 }
 
-DoubleDigitManager::DoubleDigitManager(
-    /* [in] */ Int64 timeoutInMillis,
-    /* [in] */ IDoubleDigitManagerCallBack* callBack)
-{
-    mTimeoutInMillins = timeoutInMillis;
-    mCallBack = callBack;
-}
-
-ECode DoubleDigitManager::Init(
+ECode DoubleDigitManager::constructor(
     /* [in] */ Int64 timeoutInMillis,
     /* [in] */ IDoubleDigitManagerCallBack* callBack)
 {
@@ -34,7 +30,7 @@ ECode DoubleDigitManager::Init(
 ECode DoubleDigitManager::ReportDigit(
     /* [in] */ Int32 digit)
 {
-    if (!mIntermediateDigit) {
+    if (mIntermediateDigit == NULL) {
         CInteger32::New(digit, (IInteger32**)&mIntermediateDigit);
 
         AutoPtr<IHandler> handler;
@@ -43,19 +39,24 @@ ECode DoubleDigitManager::ReportDigit(
         Boolean post = FALSE;
         handler->PostDelayed(r, mTimeoutInMillins, &post);
 
-        Boolean res = FALSE, resault = FALSE;
-
+        Boolean res = FALSE;
         mCallBack->SingleDigitIntermediate(digit, &res);
-        Int32 intValue = 0;
-        mIntermediateDigit->GetValue(&intValue);
-        mCallBack->TwoDigitsFinal(intValue, digit, &resault);
-
         if (!res) {
+
+            // this wasn't a good candidate for the intermediate digit,
+            // make it the final digit (since there is no opportunity to
+            // reject the final digit).
             mIntermediateDigit = NULL;
             mCallBack->SingleDigitFinal(digit);
-        } else if (resault) {
-            mIntermediateDigit = NULL;
         }
+    }
+    else {
+        Int32 intValue = 0;
+        mIntermediateDigit->GetValue(&intValue);
+        Boolean resault = FALSE;
+        mCallBack->TwoDigitsFinal(intValue, digit, &resault);
+        if (resault)
+            mIntermediateDigit = NULL;
     }
     return NOERROR;
 }
@@ -71,7 +72,7 @@ DoubleDigitManager::DoubleDigitManagerRunnable::DoubleDigitManagerRunnable(
 
 ECode DoubleDigitManager::DoubleDigitManagerRunnable::Run()
 {
-    if (mHost->mIntermediateDigit) {
+    if (mHost->mIntermediateDigit != NULL) {
         Int32 value = 0;
         mHost->mIntermediateDigit->GetValue(&value);
         mHost->mCallBack->SingleDigitFinal(value);

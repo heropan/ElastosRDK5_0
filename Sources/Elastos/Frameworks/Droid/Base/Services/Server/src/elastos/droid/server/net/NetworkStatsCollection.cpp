@@ -34,7 +34,7 @@ using Elastos::Droid::Text::Format::IDateUtils;
 
 #ifndef HASH_FUNC_FOR_AUTOPTR_NETWORKIDENTITYSET
 #define HASH_FUNC_FOR_AUTOPTR_NETWORKIDENTITYSET
-DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Server::Net::NetworkIdentitySet)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Server::Net::NetworkIdentitySet)
 #endif
 
 

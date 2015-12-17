@@ -639,7 +639,7 @@ ECode AnimatorInflater::CreateAnimatorFromXml(
 
             AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
                     const_cast<Int32 *>(R::styleable::AnimatorSet),
-                    ARRAY_SIZE(R::styleable::AnimatorSet));
+                    ArraySize(R::styleable::AnimatorSet));
             if (theme != NULL) {
                 theme->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
             } else {
@@ -711,7 +711,7 @@ ECode AnimatorInflater::LoadAnimator(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::Animator),
-            ARRAY_SIZE(R::styleable::AnimatorSet));
+            ArraySize(R::styleable::AnimatorSet));
     if (theme != NULL) {
         ec = theme->ObtainStyledAttributes(attrs,attrIds, 0, 0, (ITypedArray**)&arrayAnimator);
         FAIL_GOTO(ec, error);
@@ -725,7 +725,7 @@ ECode AnimatorInflater::LoadAnimator(
         if (theme != NULL) {
             attrIds = ArrayOf<Int32>::Alloc(
                         const_cast<Int32 *>(R::styleable::Animator),
-                        ARRAY_SIZE(R::styleable::PropertyAnimator));
+                        ArraySize(R::styleable::PropertyAnimator));
             ec = theme->ObtainStyledAttributes(attrs,
                     attrIds, 0, 0, (ITypedArray**)&arrayObjectAnimator);
             FAIL_GOTO(ec, error);

@@ -1,7 +1,7 @@
 
-#include "am/CContentProviderConnection.h"
-#include "am/ProcessRecord.h"
-#include "am/ContentProviderRecord.h"
+#include "elastos/droid/server/am/CContentProviderConnection.h"
+#include "elastos/droid/server/am/ProcessRecord.h"
+#include "elastos/droid/server/am/ContentProviderRecord.h"
 #include "elastos/droid/os/SystemClock.h"
 
 using Elastos::Droid::Os::SystemClock;

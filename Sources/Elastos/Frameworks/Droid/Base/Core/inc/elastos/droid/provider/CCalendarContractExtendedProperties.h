@@ -1,9 +1,9 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTEXTENDEDPROPERTIES_H__
 #define __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTEXTENDEDPROPERTIES_H__
 
 #include "_Elastos_Droid_Provider_CCalendarContractExtendedProperties.h"
-#include "CalendarContractExtendedProperties.h"
+#include "elastos/droid/provider/CalendarContractExtendedProperties.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
@@ -21,12 +21,17 @@ namespace Provider {
  * </ul>
  */
 CarClass(CCalendarContractExtendedProperties)
+    , public Singleton
+    , public ICalendarContractExtendedProperties
+    , public IBaseColumns
+    , public ICalendarContractExtendedPropertiesColumns
+    , public ICalendarContractEventsColumns
 {
 public:
-    /**
-     * This utility class cannot be instantiated
-     */
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     // TODO: fill out this class when we actually start utilizing extendedproperties
     // in the calendar application.
 

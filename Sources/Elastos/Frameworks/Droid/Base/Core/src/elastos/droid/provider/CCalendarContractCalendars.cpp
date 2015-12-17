@@ -1,14 +1,21 @@
-
-#include "elastos/droid/provider/CCalendarContractCalendars.h"
 #include "elastos/droid/net/Uri.h"
+#include "elastos/droid/provider/CCalendarContractCalendars.h"
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::StringBuilder;
 using Elastos::Droid::Net::Uri;
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
+
+CAR_SINGLETON_IMPL(CCalendarContractCalendars)
+
+CAR_INTERFACE_IMPL_4(CCalendarContractCalendars, Singleton
+    , ICalendarContractCalendars
+    , IBaseColumns
+    , ICalendarContractSyncColumns
+    , ICalendarContractCalendarColumns)
 
 static AutoPtr<ArrayOf<String> > initSYNCWRITABLECOLUMNS()
 {
@@ -43,11 +50,6 @@ static AutoPtr<ArrayOf<String> > initSYNCWRITABLECOLUMNS()
 }
 
 AutoPtr<ArrayOf<String> > CCalendarContractCalendars::SYNC_WRITABLE_COLUMNS = initSYNCWRITABLECOLUMNS();
-
-ECode CCalendarContractCalendars::constructor()
-{
-    return NOERROR;
-}
 
 ECode CCalendarContractCalendars::GetCONTENT_URI(
     /* [out] */ IUri** uri)

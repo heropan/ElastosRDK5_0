@@ -5,12 +5,13 @@ module
     namespace Server {
     namespace Am {
 
+    /**
+     * @Involve
+     * interface IBinder
+     */
     interface IUriPermissionOwnerExternalToken {
         GetOwner(
             [out] Handle32 *owner);
-
-        GetHashCode(
-            [out] Int32 *hash);
     }
 
     } // namespace Am

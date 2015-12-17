@@ -71,7 +71,7 @@ ECode SyncAdaptersCache::ParseServiceAttributes(
     VALIDATE_NOT_NULL(syncAdapterType)
     *syncAdapterType = NULL;
 
-    Int32 size = ARRAY_SIZE(R::styleable::SyncAdapter);
+    Int32 size = ArraySize(R::styleable::SyncAdapter);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::SyncAdapter, size);
 

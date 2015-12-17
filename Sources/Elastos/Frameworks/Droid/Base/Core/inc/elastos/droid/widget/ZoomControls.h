@@ -4,10 +4,6 @@
 
 #include "elastos/droid/widget/LinearLayout.h"
 
-/**
- * The {@code ZoomControls} class displays a simple set of controls used for zooming and
- * provides callbacks to register for events. */
-
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::View::IMotionEvent;
@@ -19,13 +15,22 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class ZoomControls : public LinearLayout
+/**
+ * The {@code ZoomControls} class displays a simple set of controls used for zooming and
+ * provides callbacks to register for events. */
+class ZoomControls
+    : public LinearLayout
+    , public IZoomControls
 {
 public:
-    ZoomControls(
+    CAR_INTERFACE_DECL();
+
+    ZoomControls();
+
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    ZoomControls(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
@@ -43,13 +48,13 @@ public:
         /* [in] */ Int64 speed);
 
     // @Override
-    CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* event);
+    CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
     CARAPI Show();
 
     CARAPI Hide();
-
 
     CARAPI SetIsZoomInEnabled(
         /* [in] */ Boolean isEnabled);
@@ -58,7 +63,8 @@ public:
         /* [in] */ Boolean isEnabled);
 
     // @Override
-    CARAPI_(Boolean) HasFocus();
+    CARAPI HasFocus(
+        /* [out] */ Boolean* has);
 
     // @Override
     CARAPI OnInitializeAccessibilityEvent(
@@ -67,17 +73,6 @@ public:
     // @Override
     CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
-
-protected:
-    ZoomControls();
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL);
-
-    CARAPI InitInternal(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL);
 
 private:
     CARAPI Fade(
@@ -92,4 +87,5 @@ private:
 }// namespace Widget
 }// namespace Droid
 }// namespace Elastos
-#endif
+
+#endif // __ELASTOS_DROID_WIDGET_ZOOMCONTROLS_H__

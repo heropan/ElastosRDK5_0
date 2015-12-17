@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Media_CFace.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Graphics::IPointF;
 
@@ -16,9 +17,19 @@ namespace Media {
  * of a face in a bitmap.
  */
 CarClass(CFace)
+    , public Object
+    , public IFace
 {
 public:
     CFace();
+
+    virtual ~CFace();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor();
 
     /**
      * Returns a confidence factor between 0 and 1. This indicates how
@@ -54,6 +65,7 @@ public:
     CARAPI Pose(
         /* [in] */ Int32 euler,
         /* [out] */ Float* angle);
+
 public:
     Float mConfidence;
     Float mMidPointX;

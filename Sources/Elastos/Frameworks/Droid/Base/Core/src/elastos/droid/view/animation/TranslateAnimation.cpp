@@ -39,7 +39,7 @@ ECode TranslateAnimation::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::TranslateAnimation),
-            ARRAY_SIZE(R::styleable::TranslateAnimation));
+            ArraySize(R::styleable::TranslateAnimation));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 

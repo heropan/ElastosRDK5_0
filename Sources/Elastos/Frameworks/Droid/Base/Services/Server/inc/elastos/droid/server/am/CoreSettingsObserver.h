@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/database/ContentObserver.h"
-#include "am/CActivityManagerService.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
 
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Database::ContentObserver;

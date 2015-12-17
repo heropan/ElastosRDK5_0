@@ -24,7 +24,7 @@ namespace Droid {
 namespace Internal {
 namespace Utility {
 
-class XmlUtils
+class ECO_PUBLIC XmlUtils
 {
 public:
     static CARAPI SkipCurrentTag(
@@ -643,7 +643,7 @@ private:
      * @see #writeListXml
      * @see #readValueXml
      */
-    static CARAPI WriteValueXml(
+    ECO_LOCAL static CARAPI WriteValueXml(
         /* [in] */ IInterface* v,
         /* [in] */ const String& name,
         /* [in] */ IXmlSerializer* out,
@@ -663,7 +663,7 @@ private:
      *
      * @see #readListXml
      */
-    static CARAPI ReadThisListXml(
+    ECO_LOCAL static CARAPI ReadThisListXml(
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ const String& endTag,
         /* [in] */ ArrayOf<String>* name,
@@ -688,20 +688,20 @@ private:
      * @see #readSetXml
      * @hide
      */
-    static CARAPI ReadThisSetXml(
+    ECO_LOCAL static CARAPI ReadThisSetXml(
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ const String& endTag,
         /* [in] */ ArrayOf<String>* name,
         /* [in] */ IXmlUtilsReadMapCallback* callback,
         /* [out] */ IHashSet** set);
 
-    static CARAPI ReadThisValueXml(
+    ECO_LOCAL static CARAPI ReadThisValueXml(
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ ArrayOf<String>* name,
         /* [in] */ IXmlUtilsReadMapCallback* callback,
         /* [out] */ IInterface** ret);
 
-    static CARAPI ReadThisPrimitiveValueXml(
+    ECO_LOCAL static CARAPI ReadThisPrimitiveValueXml(
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ const String& tagName,
         /* [out] */ IInterface** ret);

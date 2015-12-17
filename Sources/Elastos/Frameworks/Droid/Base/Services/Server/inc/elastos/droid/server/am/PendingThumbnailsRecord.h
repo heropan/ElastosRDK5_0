@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashSet.h>
-#include "am/ActivityRecord.h"
+#include "elastos/droid/server/am/ActivityRecord.h"
 
 using Elastos::Utility::Etl::HashSet;
 using Elastos::Droid::App::IThumbnailReceiver;
@@ -18,7 +18,7 @@ namespace Am {
  * This class keeps track of calls to getTasks() that are still
  * waiting for thumbnail images.
  */
-class PendingThumbnailsRecord : public ElRefBase
+class PendingThumbnailsRecord : public Object
 {
 public:
 

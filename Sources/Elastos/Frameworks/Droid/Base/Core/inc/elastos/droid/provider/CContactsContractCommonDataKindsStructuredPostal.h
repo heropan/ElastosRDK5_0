@@ -1,24 +1,27 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCOMMONDATAKINDSSTRUCTUREDPOSTAL_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCOMMONDATAKINDSSTRUCTUREDPOSTAL_H__
 
 #include "_Elastos_Droid_Provider_CContactsContractCommonDataKindsStructuredPostal.h"
+#include <elastos/core/Singleton.h>
 
-using Elastos::Core::ICharSequence;
-using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Net::IUri;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
 CarClass(CContactsContractCommonDataKindsStructuredPostal)
+    , public Singleton
+    , public IContactsContractCommonDataKindsStructuredPostal
+    , public IContactsContractDataColumnsWithJoins
+    , public IContactsContractCommonDataKindsCommonColumns
 {
 public:
-    /**
-     * This utility class cannot be instantiated
-     */
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * The content:// style URI for all data records of the

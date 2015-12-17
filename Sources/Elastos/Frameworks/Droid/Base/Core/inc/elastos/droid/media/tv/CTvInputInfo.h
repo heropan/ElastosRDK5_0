@@ -10,8 +10,8 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::Pm::IResolveInfo;
 using Elastos::Droid::Content::Pm::IServiceInfo;
-using Elastos::Droid::Hardware::Hdmi::IHdmiDeviceInfo;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::Hardware::Hdmi::IHdmiDeviceInfo;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Utility::ISparseInt32Array;
 using Elastos::Core::ICharSequence;
@@ -32,11 +32,11 @@ CarClass(CTvInputInfo)
 public:
     CTvInputInfo();
 
+    virtual ~CTvInputInfo();
+
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
-
-    virtual ~CTvInputInfo();
 
     /**
      * Constructor.
@@ -47,7 +47,7 @@ public:
      * @param type The type of this TV input service.
      */
     CARAPI constructor(
-        /* [in] */ IResolveInfo * service,
+        /* [in] */ IResolveInfo* service,
         /* [in] */ const String& id,
         /* [in] */ const String& parentId,
         /* [in] */ Int32 type);
@@ -63,7 +63,7 @@ public:
      * implementing the TV input service.
      */
     CARAPI GetId(
-        /* [out] */ String * result);
+        /* [out] */ String* result);
 
     /**
      * Returns the parent input ID.
@@ -84,45 +84,45 @@ public:
      *         not specified.
      */
     CARAPI GetParentId(
-        /* [out] */ String * result);
+        /* [out] */ String* result);
 
     /**
      * Returns the information of the service that implements this TV input.
      */
     CARAPI GetServiceInfo(
-        /* [out] */ IServiceInfo ** result);
+        /* [out] */ IServiceInfo** result);
 
     /**
      * Returns the component of the service that implements this TV input.
      * @hide
      */
     CARAPI GetComponent(
-        /* [out] */ IComponentName ** result);
+        /* [out] */ IComponentName** result);
 
     /**
      * Returns an intent to start the setup activity for this TV input.
      */
     CARAPI CreateSetupIntent(
-        /* [out] */ IIntent ** result);
+        /* [out] */ IIntent** result);
 
     /**
      * Returns an intent to start the settings activity for this TV input.
      */
     CARAPI CreateSettingsIntent(
-        /* [out] */ IIntent ** result);
+        /* [out] */ IIntent** result);
 
     /**
      * Returns the type of this TV input.
      */
     CARAPI GetType(
-        /* [out] */ Int32 * result);
+        /* [out] */ Int32* result);
 
     /**
      * Returns the HDMI device information of this TV input.
      * @hide
      */
     CARAPI GetHdmiDeviceInfo(
-        /* [out] */ IHdmiDeviceInfo ** result);
+        /* [out] */ IHdmiDeviceInfo** result);
 
     /**
      * Returns {@code true} if this TV input is pass-though which does not have any real channels in
@@ -131,7 +131,7 @@ public:
      * @see TvContract#buildChannelUriForPassthroughInput(String)
      */
     CARAPI IsPassthroughInput(
-        /* [out] */ Boolean * result);
+        /* [out] */ Boolean* result);
 
     /**
      * Returns {@code true}, if a CEC device for this TV input is connected to an HDMI switch, i.e.,
@@ -139,7 +139,7 @@ public:
      * @hide
      */
     CARAPI IsConnectedToHdmiSwitch(
-        /* [out] */ Boolean * result);
+        /* [out] */ Boolean* result);
 
     /**
      * Checks if this TV input is marked hidden by the user in the settings.
@@ -150,8 +150,8 @@ public:
      * @hide
      */
     CARAPI IsHidden(
-        /* [in] */ IContext * context,
-        /* [out] */ Boolean * result);
+        /* [in] */ IContext* context,
+        /* [out] */ Boolean* result);
 
     /**
      * Loads the user-displayed label for this TV input.
@@ -161,8 +161,8 @@ public:
      *         a label, its name is returned.
      */
     CARAPI LoadLabel(
-        /* [in] */ IContext * context,
-        /* [out] */ ICharSequence ** result);
+        /* [in] */ IContext* context,
+        /* [out] */ ICharSequence** result);
 
     /**
      * Loads the custom label set by user in settings.
@@ -173,8 +173,8 @@ public:
      * @hide
      */
     CARAPI LoadCustomLabel(
-        /* [in] */ IContext * context,
-        /* [out] */ ICharSequence ** result);
+        /* [in] */ IContext* context,
+        /* [out] */ ICharSequence** result);
 
     /**
      * Loads the user-displayed icon for this TV input.
@@ -184,8 +184,8 @@ public:
      *         application's icon is returned. If it's unavailable too, {@code null} is returned.
      */
     CARAPI LoadIcon(
-        /* [in] */ IContext * context,
-        /* [out] */ IDrawable ** result);
+        /* [in] */ IContext* context,
+        /* [out] */ IDrawable** result);
 
     /**
      * Create a new instance of the TvInputInfo class,
@@ -195,9 +195,9 @@ public:
      * @hide
      */
     static CARAPI CreateTvInputInfo(
-        /* [in] */ IContext * context,
-        /* [in] */ IResolveInfo * service,
-        /* [out] */ ITvInputInfo ** result);
+        /* [in] */ IContext* context,
+        /* [in] */ IResolveInfo* service,
+        /* [out] */ ITvInputInfo** result);
 
     /**
      * Create a new instance of the TvInputInfo class, instantiating it from the given Context,
@@ -214,13 +214,13 @@ public:
      * @hide
      */
     static CARAPI CreateTvInputInfo(
-        /* [in] */ IContext * context,
-        /* [in] */ IResolveInfo * service,
-        /* [in] */ IHdmiDeviceInfo * hdmiDeviceInfo,
+        /* [in] */ IContext* context,
+        /* [in] */ IResolveInfo* service,
+        /* [in] */ IHdmiDeviceInfo* hdmiDeviceInfo,
         /* [in] */ const String& parentId,
         /* [in] */ const String& label,
-        /* [in] */ IUri * iconUri,
-        /* [out] */ ITvInputInfo ** result);
+        /* [in] */ IUri* iconUri,
+        /* [out] */ ITvInputInfo** result);
 
     /**
      * Create a new instance of the TvInputInfo class, instantiating it from the given Context,
@@ -236,12 +236,12 @@ public:
      * @hide
      */
     static CARAPI CreateTvInputInfo(
-        /* [in] */ IContext * context,
-        /* [in] */ IResolveInfo * service,
-        /* [in] */ ITvInputHardwareInfo * hardwareInfo,
+        /* [in] */ IContext* context,
+        /* [in] */ IResolveInfo* service,
+        /* [in] */ ITvInputHardwareInfo* hardwareInfo,
         /* [in] */ const String& label,
-        /* [in] */ IUri * iconUri,
-        /* [out] */ ITvInputInfo ** result);
+        /* [in] */ IUri* iconUri,
+        /* [out] */ ITvInputInfo** result);
 
     CARAPI GetHashCode(
         /* [out] */ Int32* code);
@@ -255,18 +255,18 @@ public:
 
 private:
     CARAPI_(AutoPtr<IDrawable>) LoadServiceIcon(
-        /* [in] */ IContext * context);
+        /* [in] */ IContext* context);
 
     static CARAPI CreateTvInputInfo(
-        /* [in] */ IContext * context,
-        /* [in] */ IResolveInfo * service,
+        /* [in] */ IContext* context,
+        /* [in] */ IResolveInfo* service,
         /* [in] */ const String& id,
         /* [in] */ const String& parentId,
         /* [in] */ Int32 inputType,
         /* [in] */ const String& label,
-        /* [in] */ IUri * iconUri,
+        /* [in] */ IUri* iconUri,
         /* [in] */ Boolean isConnectedToHdmiSwitch,
-        /* [out] */ ITvInputInfo ** result);
+        /* [out] */ ITvInputInfo** result);
 
     /**
      * Used to generate an input id from a ComponentName.
@@ -275,7 +275,7 @@ private:
      * @return the generated input id for the given {@code name}.
      */
     static CARAPI_(String) GenerateInputIdForComponentName(
-        /* [in] */ IComponentName * name);
+        /* [in] */ IComponentName* name);
 
     /**
      * Used to generate an input id from a ComponentName and HdmiDeviceInfo.
@@ -285,8 +285,8 @@ private:
      * @return the generated input id for the given {@code name} and {@code deviceInfo}.
      */
     static CARAPI_(String) GenerateInputIdForHdmiDevice(
-        /* [in] */ IComponentName * name,
-        /* [in] */ IHdmiDeviceInfo * deviceInfo);
+        /* [in] */ IComponentName* name,
+        /* [in] */ IHdmiDeviceInfo* deviceInfo);
 
     /**
      * Used to generate an input id from a ComponentName and TvInputHardwareInfo
@@ -296,8 +296,8 @@ private:
      * @return the generated input id for the given {@code name} and {@code hardwareInfo}.
      */
     static CARAPI_(String) GenerateInputIdForHardware(
-        /* [in] */ IComponentName * name,
-        /* [in] */ ITvInputHardwareInfo * hardwareInfo);
+        /* [in] */ IComponentName* name,
+        /* [in] */ ITvInputHardwareInfo* hardwareInfo);
 
 private:
     static Boolean DEBUG;

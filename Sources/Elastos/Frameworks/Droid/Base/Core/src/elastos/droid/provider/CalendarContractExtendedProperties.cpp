@@ -1,10 +1,9 @@
-
-#include "elastos/droid/provider/CalendarContractExtendedProperties.h"
 #include "elastos/droid/net/Uri.h"
+#include "elastos/droid/provider/CalendarContractExtendedProperties.h"
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::StringBuilder;
 using Elastos::Droid::Net::Uri;
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {

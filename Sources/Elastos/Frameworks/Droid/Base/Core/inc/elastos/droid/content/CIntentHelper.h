@@ -173,6 +173,10 @@ public:
         /* [in] */ IAttributeSet* attrs,
         /* [out] */ IIntent** intent);
 
+    CARAPI RestoreFromXml(
+        /* [in] */ IXmlPullParser* in,
+        /* [out] */ IIntent** intent);
+
     /**
      * Normalize a MIME data type.
      *

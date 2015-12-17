@@ -1,8 +1,8 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCOMMONDATAKINDSEVENT_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCOMMONDATAKINDSEVENT_H__
 
 #include "_Elastos_Droid_Provider_CContactsContractCommonDataKindsEvent.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::IInteger32;
 
@@ -11,12 +11,15 @@ namespace Droid {
 namespace Provider {
 
 CarClass(CContactsContractCommonDataKindsEvent)
+    , public Singleton
+    , public IContactsContractCommonDataKindsEvent
+    , public IContactsContractDataColumnsWithJoins
+    , public IContactsContractCommonDataKindsCommonColumns
 {
 public:
-    /**
-     * This utility class cannot be instantiated
-     */
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * Return the string resource that best describes the given

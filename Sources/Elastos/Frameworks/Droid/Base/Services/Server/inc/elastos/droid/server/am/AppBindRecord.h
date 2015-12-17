@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashSet.h>
-#include "am/ConnectionRecord.h"
+#include "elastos/droid/server/am/ConnectionRecord.h"
 
 using Elastos::Utility::Etl::HashSet;
 
@@ -20,7 +20,7 @@ class ProcessRecord;
 /**
  * An association between a service and one of its client applications.
  */
-class AppBindRecord : public ElRefBase
+class AppBindRecord : public Object
 {
 public:
     AppBindRecord(
@@ -28,11 +28,18 @@ public:
         /* [in] */ IntentBindRecord* intent,
         /* [in] */ ProcessRecord* client);
 
-    // void dump(PrintWriter pw, String prefix);
+    void Dump(
+        /* [in] */ IPrintWriter* pw,
+        /* [in] */ const String& prefix);
 
-    // void dumpInIntentBind(PrintWriter pw, String prefix);
+    void DumpInIntentBind(
+        /* [in] */ IPrintWriter* pw,
+        /* [in] */ const String& prefix);
 
     CARAPI_(String) ToString();
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 
 public:
     AutoPtr<CServiceRecord> mService;   // The running service.

@@ -148,7 +148,7 @@ ECode ActionMenuItemView::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::ActionMenuItemView),
-        ARRAY_SIZE(R::styleable::ActionMenuItemView));
+        ArraySize(R::styleable::ActionMenuItemView));
 
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);

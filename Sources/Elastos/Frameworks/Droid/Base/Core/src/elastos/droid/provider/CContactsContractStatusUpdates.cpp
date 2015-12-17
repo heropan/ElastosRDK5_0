@@ -1,29 +1,29 @@
-
-#include "elastos/droid/provider/CContactsContractStatusUpdates.h"
+#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/ContactsContract.h"
 #include "elastos/droid/provider/ContactsContractProfile.h"
-#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/provider/CContactsContractStatusUpdates.h"
 #include "elastos/droid/R.h"
 
+using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Net::Uri;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsContractStatusUpdates::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CContactsContractStatusUpdates)
+
+CAR_INTERFACE_IMPL_3(CContactsContractStatusUpdates, Singleton
+    , IContactsContractStatusUpdates
+    , IContactsContractStatusColumns
+    , IContactsContractPresenceColumns)
 
 ECode CContactsContractStatusUpdates::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
-    AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
-    return Uri::WithAppendedPath(auUri, String("status_updates"), uri);
+    return Uri::WithAppendedPath(ContactsContract::AUTHORITY_URI.Get(), String("status_updates"), uri);
 }
 
 ECode CContactsContractStatusUpdates::GetPROFILE_CONTENT_URI(

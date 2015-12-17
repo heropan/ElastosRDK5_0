@@ -30,15 +30,15 @@ String TvContract::PATH_PROGRAM("program");
 String TvContract::PATH_PASSTHROUGH("passthrough");
 
 ECode TvContract::BuildInputId(
-    /* [in] */ IComponentName * name,
-    /* [out] */ String * result)
+    /* [in] */ IComponentName* name,
+    /* [out] */ String* result)
 {
     return name->FlattenToShortString(result);
 }
 
 ECode TvContract::BuildChannelUri(
     /* [in] */ Int64 channelId,
-    /* [out] */ IUri ** result)
+    /* [out] */ IUri** result)
 {
     VALIDATE_NOT_NULL(result)
     AutoPtr<IContentUris> uris;
@@ -50,7 +50,7 @@ ECode TvContract::BuildChannelUri(
 
 ECode TvContract::BuildChannelUriForPassthroughInput(
     /* [in] */ const String& inputId,
-    /* [out] */ IUri ** result)
+    /* [out] */ IUri** result)
 {
     VALIDATE_NOT_NULL(result)
     AutoPtr<IUriBuilder> uriBuilder;
@@ -64,7 +64,7 @@ ECode TvContract::BuildChannelUriForPassthroughInput(
 
 ECode TvContract::BuildChannelLogoUri(
     /* [in] */ Int64 channelId,
-    /* [out] */ IUri ** result)
+    /* [out] */ IUri** result)
 {
     VALIDATE_NOT_NULL(result)
     AutoPtr<IUri> uri;
@@ -73,10 +73,11 @@ ECode TvContract::BuildChannelLogoUri(
 }
 
 ECode TvContract::BuildChannelLogoUri(
-    /* [in] */ IUri * channelUri,
-    /* [out] */ IUri ** result)
+    /* [in] */ IUri* channelUri,
+    /* [out] */ IUri** result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = NULL;
     Boolean b;
     IsChannelUriForTunerInput(channelUri, &b);
     if (!b) {
@@ -90,7 +91,7 @@ ECode TvContract::BuildChannelLogoUri(
 
 ECode TvContract::BuildChannelsUriForInput(
     /* [in] */ const String& inputId,
-    /* [out] */ IUri ** result)
+    /* [out] */ IUri** result)
 {
     VALIDATE_NOT_NULL(result)
     return BuildChannelsUriForInput(inputId, FALSE, result);
@@ -99,14 +100,14 @@ ECode TvContract::BuildChannelsUriForInput(
 ECode TvContract::BuildChannelsUriForInput(
     /* [in] */ const String& inputId,
     /* [in] */ Boolean browsableOnly,
-    /* [out] */ IUri ** result)
+    /* [out] */ IUri** result)
 {
     VALIDATE_NOT_NULL(result)
     AutoPtr<IUri> uri;
     TvContractChannels::GetCONTENT_URI((IUri**)&uri);
     AutoPtr<IUriBuilder> builder;
     uri->BuildUpon((IUriBuilder**)&builder);
-    if (inputId != NULL) {
+    if (!inputId.IsNull()) {
         builder->AppendQueryParameter(ITvContract::PARAM_INPUT, inputId);
     }
     builder->AppendQueryParameter(ITvContract::PARAM_BROWSABLE_ONLY, StringUtils::ToString(browsableOnly));
@@ -117,10 +118,11 @@ ECode TvContract::BuildChannelsUriForInput(
     /* [in] */ const String& inputId,
     /* [in] */ const String& genre,
     /* [in] */ Boolean browsableOnly,
-    /* [out] */ IUri ** result)
+    /* [out] */ IUri** result)
 {
     VALIDATE_NOT_NULL(result)
-    if (genre == NULL) {
+    *result = NULL;
+    if (genre.IsNull()) {
         return BuildChannelsUriForInput(inputId, browsableOnly, result);
     }
     Boolean b;
@@ -139,7 +141,7 @@ ECode TvContract::BuildChannelsUriForInput(
 
 ECode TvContract::BuildProgramUri(
     /* [in] */ Int64 programId,
-    /* [out] */ IUri ** result)
+    /* [out] */ IUri** result)
 {
     VALIDATE_NOT_NULL(result)
     AutoPtr<IContentUris> uris;
@@ -151,9 +153,10 @@ ECode TvContract::BuildProgramUri(
 
 ECode TvContract::BuildProgramsUriForChannel(
     /* [in] */ Int64 channelId,
-    /* [out] */ IUri ** result)
+    /* [out] */ IUri** result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = NULL;
     AutoPtr<IUri> uri;
     TvContractPrograms::GetCONTENT_URI((IUri**)&uri);
     AutoPtr<IUriBuilder> uriBuilder;
@@ -163,10 +166,11 @@ ECode TvContract::BuildProgramsUriForChannel(
 }
 
 ECode TvContract::BuildProgramsUriForChannel(
-    /* [in] */ IUri * channelUri,
-    /* [out] */ IUri ** result)
+    /* [in] */ IUri* channelUri,
+    /* [out] */ IUri** result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = NULL;
     Boolean b;
     IsChannelUriForTunerInput(channelUri, &b);
     if(!b) {
@@ -184,9 +188,10 @@ ECode TvContract::BuildProgramsUriForChannel(
     /* [in] */ Int64 channelId,
     /* [in] */ Int64 startTime,
     /* [in] */ Int64 endTime,
-    /* [out] */ IUri ** result)
+    /* [out] */ IUri** result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = NULL;
     AutoPtr<IUri> uri;
     BuildProgramsUriForChannel(channelId, (IUri**)&uri);
     AutoPtr<IUriBuilder> uriBuilder;
@@ -197,10 +202,10 @@ ECode TvContract::BuildProgramsUriForChannel(
 }
 
 ECode TvContract::BuildProgramsUriForChannel(
-    /* [in] */ IUri * channelUri,
+    /* [in] */ IUri* channelUri,
     /* [in] */ Int64 startTime,
     /* [in] */ Int64 endTime,
-    /* [out] */ IUri ** result)
+    /* [out] */ IUri** result)
 {
     VALIDATE_NOT_NULL(result)
     Boolean b;
@@ -218,7 +223,7 @@ ECode TvContract::BuildProgramsUriForChannel(
 
 ECode TvContract::BuildWatchedProgramUri(
     /* [in] */ Int64 watchedProgramId,
-    /* [out] */ IUri ** result)
+    /* [out] */ IUri** result)
 {
     VALIDATE_NOT_NULL(result)
     AutoPtr<IContentUris> uris;
@@ -229,8 +234,8 @@ ECode TvContract::BuildWatchedProgramUri(
 }
 
 ECode TvContract::IsChannelUri(
-    /* [in] */ IUri * uri,
-    /* [out] */ Boolean * result)
+    /* [in] */ IUri* uri,
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     Boolean b1, b2;
@@ -241,8 +246,8 @@ ECode TvContract::IsChannelUri(
 }
 
 ECode TvContract::IsChannelUriForTunerInput(
-    /* [in] */ IUri * uri,
-    /* [out] */ Boolean * result)
+    /* [in] */ IUri* uri,
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = IsTvUri(uri) && IsTwoSegmentUriStartingWith(uri, PATH_CHANNEL);
@@ -250,8 +255,8 @@ ECode TvContract::IsChannelUriForTunerInput(
 }
 
 ECode TvContract::IsChannelUriForPassthroughInput(
-    /* [in] */ IUri * uri,
-    /* [out] */ Boolean * result)
+    /* [in] */ IUri* uri,
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = IsTvUri(uri) && IsTwoSegmentUriStartingWith(uri, PATH_PASSTHROUGH);
@@ -259,8 +264,8 @@ ECode TvContract::IsChannelUriForPassthroughInput(
 }
 
 ECode TvContract::IsProgramUri(
-    /* [in] */ IUri * uri,
-    /* [out] */ Boolean * result)
+    /* [in] */ IUri* uri,
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = IsTvUri(uri) && IsTwoSegmentUriStartingWith(uri, PATH_PROGRAM);
@@ -268,18 +273,21 @@ ECode TvContract::IsProgramUri(
 }
 
 Boolean TvContract::IsTvUri(
-    /* [in] */ IUri * uri)
+    /* [in] */ IUri* uri)
 {
+    if (uri == NULL) {
+        return FALSE;
+    }
     String scheme;
     uri->GetScheme(&scheme);
     String auth;
     uri->GetAuthority(&auth);
-    return uri != NULL && IContentResolver::SCHEME_CONTENT.Equals(scheme)
+    return IContentResolver::SCHEME_CONTENT.Equals(scheme)
             && ITvContract::AUTHORITY.Equals(auth);
 }
 
 Boolean TvContract::IsTwoSegmentUriStartingWith(
-    /* [in] */ IUri * uri,
+    /* [in] */ IUri* uri,
     /* [in] */ const String& pathSegment)
 {
     AutoPtr<IList> pathSegments;

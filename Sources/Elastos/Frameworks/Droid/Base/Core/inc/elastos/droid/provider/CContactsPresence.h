@@ -1,8 +1,8 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSPRESENCE_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSPRESENCE_H__
 
 #include "_Elastos_Droid_Provider_CContactsPresence.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Widget::IImageView;
@@ -12,8 +12,17 @@ namespace Droid {
 namespace Provider {
 
 CarClass(CContactsPresence)
+    , public Singleton
+    , public IContactsPresence
+    , public IBaseColumns
+    , public IContactsPresenceColumns
+    , public IContactsPeopleColumns
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI constructor();
 
     /**

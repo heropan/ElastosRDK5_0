@@ -18,7 +18,7 @@ module
          * @hide
          */
         OnSubtitleTrackSelected(
-            [in] ISubtitleTrack * track);
+            [in] ISubtitleTrack* track);
     }
 
     /**
@@ -32,7 +32,7 @@ module
          * @hide
          */
         SetSubtitleWidget(
-            [in] ISubtitleTrackRenderingWidget * subtitleWidget);
+            [in] ISubtitleTrackRenderingWidget* subtitleWidget);
 
         /**
          * Anchors provide the looper on which all track visibility changes
@@ -40,7 +40,7 @@ module
          * @hide
          */
         GetSubtitleLooper(
-            [out] ILooper ** result);
+            [out] ILooper** result);
     }
 
     /**
@@ -60,8 +60,8 @@ module
          * renderer
          */
         Supports(
-            [in] IMediaFormat * format,
-            [out] Boolean * result);
+            [in] IMediaFormat* format,
+            [out] Boolean* result);
 
         /**
          * Called by {@link MediaPlayer}'s {@link SubtitleController} for each
@@ -76,8 +76,8 @@ module
          * and render the subtitle track.
          */
         CreateTrack(
-            [in] IMediaFormat * format,
-            [out] ISubtitleTrack ** result);
+            [in] IMediaFormat* format,
+            [out] ISubtitleTrack** result);
     }
 
     /**
@@ -94,13 +94,13 @@ module
          * manually via {@link #addTrack}.
          */
         GetTracks(
-            [out, callee] ArrayOf<ISubtitleTrack*> * result);
+            [out, callee] ArrayOf<ISubtitleTrack*>* result);
 
         /**
          * @return the currently selected subtitle track
          */
         GetSelectedTrack(
-            [out] ISubtitleTrack ** result);
+            [out] ISubtitleTrack** result);
 
         /**
          * Selects a subtitle track.  As a result, this track will receive
@@ -114,8 +114,8 @@ module
          * @return true if the track was successfully selected.
          */
         SelectTrack(
-            [in] ISubtitleTrack * track,
-            [out] Boolean * result);
+            [in] ISubtitleTrack* track,
+            [out] Boolean* result);
 
         /**
          * @return the default subtitle track based on system preferences, or null,
@@ -141,7 +141,7 @@ module
          * and FORCED=no.
          */
         GetDefaultTrack(
-            [out] ISubtitleTrack ** result);
+            [out] ISubtitleTrack** result);
 
         /** @hide - should be called from anchor thread */
         SelectDefaultTrack();
@@ -157,8 +157,8 @@ module
          * @return the created {@link SubtitleTrack} object
          */
         AddTrack(
-            [in] IMediaFormat * format,
-            [out] ISubtitleTrack ** result);
+            [in] IMediaFormat* format,
+            [out] ISubtitleTrack** result);
 
         /**
          * Show the selected (or default) subtitle track.
@@ -181,21 +181,21 @@ module
          *                 support for a subtitle format.
          */
         RegisterRenderer(
-            [in] ISubtitleControllerRenderer * renderer);
+            [in] ISubtitleControllerRenderer* renderer);
 
         /** @hide */
         HasRendererFor(
-            [in] IMediaFormat * format,
-            [out] Boolean * result);
+            [in] IMediaFormat* format,
+            [out] Boolean* result);
 
         /**
          *  @hide - called from anchor's looper (if any, both when unsetting and
          *  setting)
          */
         SetAnchor(
-            [in] ISubtitleControllerAnchor * anchor);
-
+            [in] ISubtitleControllerAnchor* anchor);
     }
+
     } // namespace media
     } // namepsace Droid
     } // namespace Elastos

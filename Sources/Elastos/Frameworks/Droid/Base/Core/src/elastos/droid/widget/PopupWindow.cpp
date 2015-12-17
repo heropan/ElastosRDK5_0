@@ -324,7 +324,7 @@ ECode PopupWindow::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::PopupWindow),
-            ARRAY_SIZE(R::styleable::PopupWindow));
+            ArraySize(R::styleable::PopupWindow));
     AutoPtr<ITypedArray> a;
     FAIL_RETURN(ctx->ObtainStyledAttributes(
             attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));

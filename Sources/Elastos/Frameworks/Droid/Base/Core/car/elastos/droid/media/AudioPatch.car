@@ -20,14 +20,13 @@ module
          * Retrieve the list of sources of this audio patch.
          */
         Sources(
-            [out, callee] ArrayOf<IAudioPortConfig*> * result);
+            [out, callee] ArrayOf<IAudioPortConfig*>* result);
 
         /**
          * Retreive the list of sinks of this audio patch.
          */
         Sinks(
-            [out, callee] ArrayOf<IAudioPortConfig*> * result);
-
+            [out, callee] ArrayOf<IAudioPortConfig*>* result);
     }
     } // namespace media
     } // namepsace Droid

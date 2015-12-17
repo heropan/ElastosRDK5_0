@@ -1,10 +1,9 @@
-
 #include "elastos/droid/provider/CCalendarContractEvents.h"
 #include "elastos/droid/net/Uri.h"
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::StringBuilder;
 using Elastos::Droid::Net::Uri;
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
@@ -66,10 +65,15 @@ AutoPtr<ArrayOf<String> > CCalendarContractEvents::PROVIDER_WRITABLE_COLUMNS = i
 AutoPtr<ArrayOf<String> > CCalendarContractEvents::SYNC_WRITABLE_COLUMNS = initSYNCWRITABLECOLUMNS();
 const String CCalendarContractEvents::DEFAULT_SORT_ORDER = String("");
 
-ECode CCalendarContractEvents::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CCalendarContractEvents)
+
+CAR_INTERFACE_IMPL_6(CCalendarContractEvents, Singleton
+    , ICalendarContractEvents
+    , IBaseColumns
+    , ICalendarContractSyncColumns
+    , ICalendarContractEventsColumns
+    , ICalendarContractCalendarColumns
+    , ICalendarContract)
 
 ECode CCalendarContractEvents::GetCONTENT_URI(
     /* [out] */ IUri** uri)

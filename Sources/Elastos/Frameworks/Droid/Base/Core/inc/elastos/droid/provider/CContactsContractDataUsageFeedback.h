@@ -1,8 +1,8 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTDATAUSAGEFEEDBACK_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTDATAUSAGEFEEDBACK_H__
 
 #include "_Elastos_Droid_Provider_CContactsContractDataUsageFeedback.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Net::IUri;
 
@@ -11,9 +11,13 @@ namespace Droid {
 namespace Provider {
 
 CarClass(CContactsContractDataUsageFeedback)
+    , public Singleton
+    , public IContactsContractDataUsageFeedback
 {
 public:
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * The content:// style URI for sending usage feedback.

@@ -408,6 +408,10 @@ module
         interface IXmlUtilsWriteMapCallback;
     }
 
+    singleton class CPersistableBundleHelper {
+        interface IPersistableBundleHelper;
+    }
+
     class CProcessStartResult {
         interface IProcessStartResult;
     }

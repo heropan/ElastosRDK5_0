@@ -12,7 +12,7 @@ namespace Droid {
 namespace Server {
 namespace Am {
 
-class ThumbnailHolder : public ElRefBase
+class ThumbnailHolder : public Object
 {
 public:
     AutoPtr<IBitmap> mLastThumbnail;         // Last thumbnail captured for this item.

@@ -1,24 +1,28 @@
 
-#include "elastos/droid/view/menu/ActionMenuView.h"
-#include "elastos/droid/view/menu/MenuBuilderBase.h"
-#include "elastos/droid/view/menu/CActionMenuItemView.h"
-#include "elastos/droid/view/menu/CActionMenuViewLayoutParams.h"
-#include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
-#include <elastos/core/Math.h>
+#include "elastos/droid/widget/ActionMenuView.h"
+#include "elastos/droid/widget/CActionMenuPresenter.h"
+#include "elastos/droid/widget/CActionMenuViewLayoutParams.h"
+#include "elastos/droid/view/CContextThemeWrapper.h"
+#include "elastos/droid/internal/view/menu/CMenuBuilder.h"
+
 #include "elastos/droid/R.h"
 
+#include <elastos/core/Math.h>
+
 using Elastos::Droid::R;
-using Elastos::Droid::Widget::EIID_ILinearLayoutLayoutParams;
-using Elastos::Droid::Widget::CLinearLayoutLayoutParams;
+using Elastos::Droid::View::CContextThemeWrapper;
+using Elastos::Droid::View::IGravity;
+using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Droid::Internal::View::Menu::CMenuBuilder;
+using Elastos::Droid::Internal::View::Menu::IMenuPresenter;
+using Elastos::Droid::Internal::View::Menu::IActionMenuItemView;
+using Elastos::Droid::Internal::View::Menu::EIID_IMenuPresenterCallback;
+using Elastos::Droid::Internal::View::Menu::EIID_IMenuView;
+using Elastos::Droid::Internal::View::Menu::EIID_IMenuBuilderItemInvoker;
 
 namespace Elastos {
 namespace Droid {
-namespace View {
-namespace Menu {
-
-// {7cac439f-9b11-4735-8ee1-d6b252b3b29f}
-extern "C" const InterfaceID EIID_ActionMenuView =
-        { 0x7cac439f, 0x9b11, 0x4735, { 0x8e, 0xe1, 0xd6, 0xb2, 0x52, 0xb3, 0xb2, 0x9f } };
+namespace Widget {
 
 static Int32 BitCount(Int64 v) {
     // Combines techniques from several sources
@@ -39,6 +43,193 @@ String ActionMenuView::TAG("ActionMenuView");
 const Int32 ActionMenuView::MIN_CELL_SIZE = 56; // dips
 const Int32 ActionMenuView::GENERATED_ITEM_PADDING = 4; // dips
 
+CAR_INTERFACE_IMPL(ActionMenuView::LayoutParams, LinearLayout::LayoutParams, IActionMenuViewLayoutParams)
+
+ActionMenuView::LayoutParams::LayoutParams()
+    : mIsOverflowButton(0)
+    , mCellsUsed(0)
+    , mExtraPixels(0)
+    , mExpandable(0)
+    , mPreventEdgeOffset(0)
+    , mExpanded(0)
+{}
+
+ECode ActionMenuView::LayoutParams::constructor(
+    /* [in] */ IContext* ctx,
+    /* [in] */ IAttributeSet* attrs)
+{
+    LinearLayout::LayoutParams::constructor(ctx, attrs);
+    return NOERROR;
+}
+
+ECode ActionMenuView::LayoutParams::constructor(
+    /* [in] */ IViewGroupLayoutParams* other)
+{
+    LinearLayout::LayoutParams::constructor(other);
+    return NOERROR;
+}
+
+ECode ActionMenuView::LayoutParams::constructor(
+    /* [in] */ IActionMenuViewLayoutParams* actLp)
+{
+    IViewGroupMarginLayoutParams* temp = IViewGroupMarginLayoutParams::Probe(actLp);
+    LinearLayout::LayoutParams::constructor(temp);
+    actLp->GetIsOverflowButton(&mIsOverflowButton);
+    return NOERROR;
+}
+
+ECode ActionMenuView::LayoutParams::constructor(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height)
+{
+    LinearLayout::LayoutParams::constructor(width, height);
+    mIsOverflowButton = FALSE;
+    return NOERROR;
+}
+
+ECode ActionMenuView::LayoutParams::constructor(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height,
+    /* [in] */ Boolean isOverflowButton)
+{
+    LinearLayout::LayoutParams::constructor(width, height);
+    mIsOverflowButton = isOverflowButton;
+    return NOERROR;
+}
+
+ECode ActionMenuView::LayoutParams::SetIsOverflowButton(
+    /* [in] */ Boolean isOverflow)
+{
+    mIsOverflowButton = isOverflow;
+    return NOERROR;
+}
+
+ECode ActionMenuView::LayoutParams::GetIsOverflowButton(
+    /* [out] */ Boolean* isOverflow)
+{
+    *isOverflow = mIsOverflowButton;
+    return NOERROR;
+}
+
+ECode ActionMenuView::LayoutParams::SetCellsUsed(
+    /* [in] */ Int32 cellsUsed)
+{
+    mCellsUsed = cellsUsed;
+    return NOERROR;
+}
+
+ECode ActionMenuView::LayoutParams::GetCellsUsed(
+    /* [out] */ Int32* cellsUsed)
+{
+    *cellsUsed = mCellsUsed;
+    return NOERROR;
+}
+
+ECode ActionMenuView::LayoutParams::SetExtraPixels(
+    /* [in] */ Int32 extraPixels)
+{
+    mExtraPixels = extraPixels;
+    return NOERROR;
+}
+
+ECode ActionMenuView::LayoutParams::GetExtraPixels(
+    /* [out] */ Int32* extraPixels)
+{
+    *extraPixels = mExtraPixels;
+    return NOERROR;
+}
+
+ECode ActionMenuView::LayoutParams::SetExpandable(
+    /* [in] */ Boolean expandable)
+{
+    mExpandable = expandable;
+    return NOERROR;
+}
+
+ECode ActionMenuView::LayoutParams::GetExpandable(
+    /* [out] */ Boolean* expandable)
+{
+    *expandable = mExpandable;
+    return NOERROR;
+}
+
+ECode ActionMenuView::LayoutParams::SetPreventEdgeOffset(
+    /* [in] */ Boolean preventEdgeOffset)
+{
+    mPreventEdgeOffset = preventEdgeOffset;
+    return NOERROR;
+}
+
+ECode ActionMenuView::LayoutParams::GetPreventEdgeOffset(
+    /* [out] */ Boolean* preventEdgeOffset)
+{
+    *preventEdgeOffset = mPreventEdgeOffset;
+    return NOERROR;
+}
+
+ECode ActionMenuView::LayoutParams::SetExpanded(
+    /* [in] */ Boolean expanded)
+{
+    mExpanded = expanded;
+    return NOERROR;
+}
+
+ECode ActionMenuView::LayoutParams::GetExpanded(
+    /* [out] */ Boolean* expanded)
+{
+    *expanded = mExpanded;
+    return NOERROR;
+}
+
+CAR_INTERFACE_IMPL(ActionMenuView::MenuBuilderCallback, Object, IActionMenuViewLayoutParams)
+
+ActionMenuView::MenuBuilderCallback::MenuBuilderCallback(
+    /* [in] */ ActionMenuView* host)
+    : mHost(host)
+{}
+
+ECode ActionMenuView::MenuBuilderCallback::OnMenuItemSelected(
+    /* [in] */ IMenuBuilder* menu,
+    /* [in] */ IMenuItem* item,
+    /* [out] */ Boolean* state)
+{
+    return mHost->mOnMenuItemClickListener != NULL &&
+            mHost->mOnMenuItemClickListener->OnMenuItemClick(item, state);
+}
+
+/**
+ * Called when the mode of the menu changes (for example, from icon to expanded).
+ *
+ * @param menu the menu that has changed modes
+ */
+ECode ActionMenuView::MenuBuilderCallback::OnMenuModeChange(
+    /* [in] */ IMenuBuilder* menu)
+{
+    if (mHost->mMenuBuilderCallback != NULL) {
+        mHost->mMenuBuilderCallback->OnMenuModeChange(menu);
+    }
+    return NOERROR;
+}
+
+CAR_INTERFACE_IMPL(ActionMenuView::ActionMenuPresenterCallback, Object, IMenuPresenterCallback)
+
+ECode ActionMenuView::ActionMenuPresenterCallback::OnCloseMenu(
+    /* [in] */ IMenuBuilder* menu,
+    /* [in] */ Boolean allMenusAreClosing)
+{
+    return NOERROR;
+}
+
+ECode ActionMenuView::ActionMenuPresenterCallback::OnOpenSubMenu(
+    /* [in] */ IMenuBuilder* subMenu,
+    /* [out] */ Boolean* handle)
+{
+    *handle = FALSE;
+    return NOERROR;
+}
+
+CAR_INTERFACE_IMPL_3(ActionMenuView, LinearLayout, IActionMenuView, IMenuView, IMenuBuilderItemInvoker)
+
 ActionMenuView::ActionMenuView()
     : mReserveOverflow(FALSE)
     , mFormatItems(FALSE)
@@ -50,18 +241,44 @@ ActionMenuView::ActionMenuView()
 {
 }
 
-ECode ActionMenuView::Init(
+ECode ActionMenuView::constructor(
     /* [in] */ IContext* context)
 {
     InitActionMenu(context, NULL);
     return NOERROR;
 }
 
-ECode ActionMenuView::Init(
+ECode ActionMenuView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
     InitActionMenu(context, attrs);
+    return NOERROR;
+}
+
+ECode ActionMenuView::SetPopupTheme(
+    /* [in] */ Int32 resId)
+{
+    if (mPopupTheme != resId) {
+        mPopupTheme = resId;
+        if (resId == 0) {
+            mPopupContext = mContext;
+        } else {
+            CContextThemeWrapper::New(mContext, resId, (IContext**)&mPopupContext);
+        }
+    }
+    return NOERROR;
+}
+
+/**
+ * @return resource identifier of the theme used to inflate popup menus, or
+ *         0 if menus are inflated against the action menu view theme
+ * @see #setPopupTheme(int)
+ */
+ECode ActionMenuView::GetPopupTheme(
+    /* [out] */ Int32* theme)
+{
+    *theme = mPopupTheme;
     return NOERROR;
 }
 
@@ -73,19 +290,7 @@ ECode ActionMenuView::SetPresenter(
         IWeakReferenceSource* wrs = IWeakReferenceSource::Probe(presenter);
         wrs->GetWeakReference((IWeakReference**)&mPresenter);
     }
-    return NOERROR;
-}
-
-Boolean ActionMenuView::IsExpandedFormat()
-{
-    return mFormatItems;
-}
-
-ECode ActionMenuView::SetMaxItemHeight(
-    /* [in] */ Int32 maxItemHeight)
-{
-    mMaxItemHeight = maxItemHeight;
-    RequestLayout();
+    presenter->SetMenuView(this);
     return NOERROR;
 }
 
@@ -95,13 +300,20 @@ void ActionMenuView::OnConfigurationChanged(
     LinearLayout::OnConfigurationChanged(newConfig);
     AutoPtr<IActionMenuPresenter> presenter = GetPresenter();
     if (presenter != NULL)
-        presenter->UpdateMenuView(FALSE);
+        IMenuPresenter::Probe(presenter)->UpdateMenuView(FALSE);
 
     Boolean rst = FALSE;
     if (presenter != NULL && (presenter->IsOverflowMenuShowing(&rst), rst)) {
         presenter->HideOverflowMenu(&rst);
         presenter->ShowOverflowMenu(&rst);
     }
+}
+
+ECode ActionMenuView::SetOnMenuItemClickListener(
+    /* [in] */ IActionMenuViewOnMenuItemClickListener* listener)
+{
+    mOnMenuItemClickListener = listener;
+    return NOERROR;
 }
 
 void ActionMenuView::OnMeasure(
@@ -118,22 +330,27 @@ void ActionMenuView::OnMeasure(
 
     // Special formatting can change whether items can fit as action buttons.
     // Kick the menu and update presenters when this changes.
-    const Int32 widthSize = MeasureSpec::GetMode(widthMeasureSpec);
+    const Int32 widthSize = MeasureSpec::GetSize(widthMeasureSpec);
     if (mFormatItems && mMenu != NULL && widthSize != mFormatItemsWidth) {
         mFormatItemsWidth = widthSize;
         mMenu->OnItemsChanged(TRUE);
     }
 
-    if (mFormatItems) {
+    Int32 childCount;
+    GetChildCount(&childCount);
+    if (mFormatItems && childCount> 0) {
         OnMeasureExactFormat(widthMeasureSpec, heightMeasureSpec);
     } else {
         // Previous measurement at exact format may have set margins - reset them.
-        const Int32 childCount = GetChildCount();
+        Int32 childCount;
+        GetChildCount(&childCount);
         for (Int32 i = 0; i < childCount; i++) {
-            AutoPtr<IView> child = GetChildAt(i);
+            AutoPtr<IView> child;
+            GetChildAt(i, (IView**)&child);
 
-            AutoPtr<IActionMenuViewLayoutParams> lp;
-            child->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+            AutoPtr<IViewGroupLayoutParams> temp;
+            child->GetLayoutParams((IViewGroupLayoutParams**)&temp);
+            AutoPtr<IViewGroupMarginLayoutParams> lp = IViewGroupMarginLayoutParams::Probe(temp);
             lp->SetLeftMargin(0);
             lp->SetRightMargin(0);
         }
@@ -151,8 +368,8 @@ void ActionMenuView::OnMeasureExactFormat(
     Int32 widthSize = MeasureSpec::GetSize(widthMeasureSpec);
     Int32 heightSize = MeasureSpec::GetSize(heightMeasureSpec);
 
-    const Int32 widthPadding = GetPaddingLeft() + GetPaddingRight();
-    const Int32 heightPadding = GetPaddingTop() + GetPaddingBottom();
+    const Int32 widthPadding = mPaddingLeft + mPaddingRight;
+    const Int32 heightPadding = mPaddingTop + mPaddingBottom;
 
     const Int32 itemHeightSpec = heightMode == MeasureSpec::EXACTLY
             ? MeasureSpec::MakeMeasureSpec(heightSize - heightPadding, MeasureSpec::EXACTLY)
@@ -183,9 +400,11 @@ void ActionMenuView::OnMeasureExactFormat(
     // This is used as a bitfield to locate the smallest items present. Assumes childCount < 64.
     Int64 smallestItemsAt = 0;
 
-    const Int32 childCount = GetChildCount();
+    Int32 childCount;
+    GetChildCount(&childCount);
     for (Int32 i = 0; i < childCount; i++) {
-        AutoPtr<IView> child = GetChildAt(i);
+        AutoPtr<IView> child;
+        GetChildAt(i, (IView**)&child);
 
         Int32 visiable = 0;
         if ((child->GetVisibility(&visiable), visiable) == IView::GONE) continue;
@@ -199,19 +418,20 @@ void ActionMenuView::OnMeasureExactFormat(
             child->SetPadding(mGeneratedItemPadding, 0, mGeneratedItemPadding, 0);
         }
 
-        AutoPtr<IActionMenuViewLayoutParams> lp;
-        child->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+        AutoPtr<IViewGroupLayoutParams> tmp;
+        child->GetLayoutParams((IViewGroupLayoutParams**)&tmp);
+        AutoPtr<IActionMenuViewLayoutParams> lp = IActionMenuViewLayoutParams::Probe(tmp);
+        AutoPtr<IViewGroupMarginLayoutParams> mlp = IViewGroupMarginLayoutParams::Probe(tmp);
 
         lp->SetExpanded(FALSE);
         lp->SetExtraPixels(0);
         lp->SetCellsUsed(0);
         lp->SetExpandable(FALSE);
-        lp->SetLeftMargin(0);
-        lp->SetRightMargin(0);
+        mlp->SetLeftMargin(0);
+        mlp->SetRightMargin(0);
 
         Boolean hasText;
         IActionMenuItemView::Probe(child)->HasText(&hasText);
-
 
         lp->SetPreventEdgeOffset(isGeneratedItem && hasText);
         // Overflow always gets 1 cell. No more, no less.
@@ -249,19 +469,21 @@ void ActionMenuView::OnMeasureExactFormat(
         Int64 minCellsAt = 0; // Bit locations are indices of relevant child views
         Int32 minCellsItemCount = 0;
         for (Int32 i = 0; i < childCount; i++) {
-            AutoPtr<IView> child = GetChildAt(i);
+            AutoPtr<IView> child;
+            GetChildAt(i, (IView**)&child);
 
-            AutoPtr<IActionMenuViewLayoutParams> lp;
+            AutoPtr<IViewGroupLayoutParams> lp;
             child->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+            AutoPtr<IActionMenuViewLayoutParams> alp = IActionMenuViewLayoutParams::Probe(lp);
 
             // Don't try to expand items that shouldn't.
             Boolean expandable;
-            lp->GetExpandable(&expandable);
+            alp->GetExpandable(&expandable);
             if (!expandable) continue;
 
             // Mark indices of children that can receive an extra cell.
             Int32 cellsUsed;
-            lp->GetCellsUsed(&cellsUsed);
+            alp->GetCellsUsed(&cellsUsed);
             if (cellsUsed < minCells) {
                 minCells = cellsUsed;
                 minCellsAt = 1 << i;
@@ -281,30 +503,32 @@ void ActionMenuView::OnMeasureExactFormat(
         minCells++;
 
         for (Int32 i = 0; i < childCount; i++) {
-            AutoPtr<IView> child = GetChildAt(i);
+            AutoPtr<IView> child;
+            GetChildAt(i, (IView**)&child);
 
-            AutoPtr<IActionMenuViewLayoutParams> lp;
+            AutoPtr<IViewGroupLayoutParams> lp;
             child->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+            AutoPtr<IActionMenuViewLayoutParams> alp = IActionMenuViewLayoutParams::Probe(lp);
 
             if ((minCellsAt & (1 << i)) == 0) {
                 // If this item is already at our small item count, mark it for later.
                 Int32 cellsUsed;
-                lp->GetCellsUsed(&cellsUsed);
+                alp->GetCellsUsed(&cellsUsed);
                 if (cellsUsed == minCells) smallestItemsAt |= 1 << i;
                 continue;
             }
 
             Boolean preventEdgeOffset;
-            lp->GetPreventEdgeOffset(&preventEdgeOffset);
+            alp->GetPreventEdgeOffset(&preventEdgeOffset);
             if (centerSingleExpandedItem && preventEdgeOffset && cellsRemaining == 1) {
                 // Add padding to this item such that it centers.
                 child->SetPadding(mGeneratedItemPadding + cellSize, 0, mGeneratedItemPadding, 0);
             }
 
             Int32 cellsUsed;
-            lp->GetCellsUsed(&cellsUsed);
-            lp->SetCellsUsed(++cellsUsed);
-            lp->SetExpanded(TRUE);
+            alp->GetCellsUsed(&cellsUsed);
+            alp->SetCellsUsed(++cellsUsed);
+            alp->SetExpanded(TRUE);
             cellsRemaining--;
         }
 
@@ -322,19 +546,26 @@ void ActionMenuView::OnMeasureExactFormat(
         if (!singleItem) {
             // The items at the far edges may only expand by half in order to pin to either side.
             if ((smallestItemsAt & 1) != 0) {
-                AutoPtr<IActionMenuViewLayoutParams> lp;
-                GetChildAt(0)->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+            AutoPtr<IView> child;
+            GetChildAt(0, (IView**)&child);
+            AutoPtr<IViewGroupLayoutParams> lp;
+            child->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+            AutoPtr<IActionMenuViewLayoutParams> alp = IActionMenuViewLayoutParams::Probe(lp);
 
                 Boolean preventEdgeOffset;
-                lp->GetPreventEdgeOffset(&preventEdgeOffset);
+                alp->GetPreventEdgeOffset(&preventEdgeOffset);
                 if (!preventEdgeOffset) expandCount -= 0.5f;
             }
+
             if ((smallestItemsAt & (1 << (childCount - 1))) != 0) {
-                AutoPtr<IActionMenuViewLayoutParams> lp;
-                GetChildAt(childCount - 1)->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+                AutoPtr<IView> preChild;
+                GetChildAt(childCount - 1, (IView**)&preChild);
+                AutoPtr<IViewGroupLayoutParams> preLp;
+                preChild->GetLayoutParams((IViewGroupLayoutParams**)&preLp);
+                AutoPtr<IActionMenuViewLayoutParams> preAlp = IActionMenuViewLayoutParams::Probe(preLp);
 
                 Boolean preventEdgeOffset;
-                lp->GetPreventEdgeOffset(&preventEdgeOffset);
+                preAlp->GetPreventEdgeOffset(&preventEdgeOffset);
                 if (!preventEdgeOffset) expandCount -= 0.5f;
             }
         }
@@ -344,39 +575,41 @@ void ActionMenuView::OnMeasureExactFormat(
 
         for (Int32 i = 0; i < childCount; i++) {
             if ((smallestItemsAt & (1 << i)) == 0) continue;
-            AutoPtr<IView> child = GetChildAt(i);
-            AutoPtr<IActionMenuViewLayoutParams> lp;
+            AutoPtr<IView> child;
+            GetChildAt(i, (IView**)&child);
+            AutoPtr<IViewGroupLayoutParams> lp;
             child->GetLayoutParams((IViewGroupLayoutParams**)&lp);
-
+            AutoPtr<IActionMenuViewLayoutParams> alp = IActionMenuViewLayoutParams::Probe(lp);
+            AutoPtr<IViewGroupMarginLayoutParams> mlp = IViewGroupMarginLayoutParams::Probe(lp);
             Boolean isOverflow;
             if (IActionMenuItemView::Probe(child) != NULL) {
                 // If this is one of our views, expand and measure at the larger size.
-                lp->SetExtraPixels(extraPixels);
-                lp->SetExpanded(TRUE);
+                alp->SetExtraPixels(extraPixels);
+                alp->SetExpanded(TRUE);
                 Boolean preventEdgeOffset;
-                lp->GetPreventEdgeOffset(&preventEdgeOffset);
+                alp->GetPreventEdgeOffset(&preventEdgeOffset);
                 if (i == 0 && !preventEdgeOffset) {
                     // First item getsAutoPtr<IView> child = GetChildAt(i); part of its new padding pushed out of sight.
                     // The last item will get this implicitly from layout.
-                    lp->SetLeftMargin(-extraPixels / 2);
+                    mlp->SetLeftMargin(-extraPixels / 2);
                 }
 
                 needsExpansion = TRUE;
 
-            } else if (lp->GetIsOverflowButton(&isOverflow), isOverflow) {
-                lp->SetExtraPixels(extraPixels);
-                lp->SetExpanded(TRUE);
-                lp->SetRightMargin(-extraPixels / 2);
+            } else if (alp->GetIsOverflowButton(&isOverflow), isOverflow) {
+                alp->SetExtraPixels(extraPixels);
+                alp->SetExpanded(TRUE);
+                mlp->SetRightMargin(-extraPixels / 2);
                 needsExpansion = TRUE;
             } else {
                 // If we don't know what it is, give it some margins instead
                 // and let it center within its space. We still want to pin
                 // against the edges.
                 if (i != 0) {
-                    lp->SetLeftMargin(extraPixels / 2);
+                    mlp->SetLeftMargin(extraPixels / 2);
                 }
                 if (i != childCount - 1) {
-                    lp->SetRightMargin(extraPixels / 2);
+                    mlp->SetRightMargin(extraPixels / 2);
                 }
             }
         }
@@ -387,18 +620,20 @@ void ActionMenuView::OnMeasureExactFormat(
     // Remeasure any items that have had extra space allocated to them.
     if (needsExpansion) {
         for (Int32 i = 0; i < childCount; i++) {
-            AutoPtr<IView> child = GetChildAt(i);
-            AutoPtr<IActionMenuViewLayoutParams> lp;
+            AutoPtr<IView> child;
+            GetChildAt(i, (IView**)&child);
+            AutoPtr<IViewGroupLayoutParams> lp;
             child->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+            AutoPtr<IActionMenuViewLayoutParams> alp = IActionMenuViewLayoutParams::Probe(lp);
 
             Boolean expanded;
-            lp->GetExpanded(&expanded);
+            alp->GetExpanded(&expanded);
             if (!expanded) continue;
 
             Int32 useds;
-            lp->GetCellsUsed(&useds);
+            alp->GetCellsUsed(&useds);
             Int32 extraPixels;
-            lp->GetExtraPixels(&extraPixels);
+            alp->GetExtraPixels(&extraPixels);
             const Int32 width = useds * cellSize + extraPixels;
             child->Measure(MeasureSpec::MakeMeasureSpec(width, MeasureSpec::EXACTLY),
                     itemHeightSpec);
@@ -420,8 +655,9 @@ Int32 ActionMenuView::MeasureChildForCells(
     /* [in] */ Int32 parentHeightMeasureSpec,
     /* [in] */ Int32 parentHeightPadding)
 {
-    AutoPtr<IActionMenuViewLayoutParams> lp;
+    AutoPtr<IViewGroupLayoutParams> lp;
     child->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+    AutoPtr<IActionMenuViewLayoutParams> alp = IActionMenuViewLayoutParams::Probe(lp);
 
     const Int32 childHeightSize = MeasureSpec::GetSize(parentHeightMeasureSpec) -
             parentHeightPadding;
@@ -449,17 +685,17 @@ Int32 ActionMenuView::MeasureChildForCells(
     }
 
     Boolean overflow;
-    const Boolean expandable = !(lp->GetIsOverflowButton(&overflow), overflow) && hasText;
-    lp->SetExpandable(expandable);
+    const Boolean expandable = !(alp->GetIsOverflowButton(&overflow), overflow) && hasText;
+    alp->SetExpandable(expandable);
 
-    lp->SetCellsUsed(cellsUsed);
+    alp->SetCellsUsed(cellsUsed);
     const Int32 targetWidth = cellsUsed * cellSize;
     child->Measure(MeasureSpec::MakeMeasureSpec(targetWidth, MeasureSpec::EXACTLY),
             childHeightSpec);
     return cellsUsed;
 }
 
-void ActionMenuView::OnLayout(
+ECode ActionMenuView::OnLayout(
     /* [in] */ Boolean changed,
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
@@ -467,32 +703,37 @@ void ActionMenuView::OnLayout(
     /* [in] */ Int32 bottom)
 {
     if (!mFormatItems) {
-        LinearLayout::OnLayout(changed, left, top, right, bottom);
-        return;
+        return LinearLayout::OnLayout(changed, left, top, right, bottom);
     }
 
-    const Int32 childCount = GetChildCount();
+    Int32 childCount;
+    GetChildCount(&childCount);
     const Int32 midVertical = (top + bottom) / 2;
-    const Int32 dividerWidth = GetDividerWidth();
+    Int32 dividerWidth;
+    GetDividerWidth(&dividerWidth);
     Int32 overflowWidth = 0;
     Int32 nonOverflowWidth = 0;
     Int32 nonOverflowCount = 0;
-    Int32 widthRemaining = right - left - GetPaddingRight() - GetPaddingLeft();
+    Int32 widthRemaining = right - left - mPaddingRight - mPaddingLeft;
     Boolean hasOverflow = FALSE;
-    Boolean isLayoutRtl = IsLayoutRtl();
+    Boolean isLayoutRtl;
+    IsLayoutRtl(&isLayoutRtl);
     for (Int32 i = 0; i < childCount; i++) {
-        AutoPtr<IView> v = GetChildAt(i);
+        AutoPtr<IView> v;
+        GetChildAt(i, (IView**)&v);
 
         Int32 visiable = 0;
         if ((v->GetVisibility(&visiable), visiable) == IView::GONE) {
             continue;
         }
 
-        AutoPtr<IActionMenuViewLayoutParams> p;
-        v->GetLayoutParams((IViewGroupLayoutParams**)&p);
+        AutoPtr<IViewGroupLayoutParams> lp;
+        v->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+        AutoPtr<IActionMenuViewLayoutParams> alp = IActionMenuViewLayoutParams::Probe(lp);
+        AutoPtr<IViewGroupMarginLayoutParams> mlp = IViewGroupMarginLayoutParams::Probe(lp);
 
         Boolean isOverflow;
-        p->GetIsOverflowButton(&isOverflow);
+        alp->GetIsOverflowButton(&isOverflow);
         if (isOverflow) {
             v->GetMeasuredWidth(&overflowWidth);
             if (HasDividerBeforeChildAt(i)) {
@@ -505,13 +746,15 @@ void ActionMenuView::OnLayout(
             Int32 l;
             if (isLayoutRtl) {
                 Int32 leftMargin;
-                p->GetLeftMargin(&leftMargin);
-                l = GetPaddingLeft() + leftMargin;
+                mlp->GetLeftMargin(&leftMargin);
+                l = mPaddingLeft + leftMargin;
                 r = l + overflowWidth;
             } else {
                 Int32 rightMargin;
-                p->GetRightMargin(&rightMargin);
-                r = GetWidth() - GetPaddingRight() - rightMargin;
+                mlp->GetRightMargin(&rightMargin);
+                Int32 w;
+                GetWidth(&w);
+                r = w - mPaddingRight - rightMargin;
                 l = r - overflowWidth;
             }
 
@@ -525,8 +768,8 @@ void ActionMenuView::OnLayout(
             Int32 mW = 0;
             v->GetMeasuredWidth(&mW);
             Int32 leftMargin, rightMargin;
-            p->GetLeftMargin(&leftMargin);
-            p->GetRightMargin(&rightMargin);
+            mlp->GetLeftMargin(&leftMargin);
+            mlp->GetRightMargin(&rightMargin);
             const Int32 size = mW + leftMargin + rightMargin;
             nonOverflowWidth += size;
             widthRemaining -= size;
@@ -539,7 +782,8 @@ void ActionMenuView::OnLayout(
 
     if (childCount == 1 && !hasOverflow) {
         // Center a single child
-        AutoPtr<IView> v = GetChildAt(0);
+        AutoPtr<IView> v;
+        GetChildAt(0, (IView**)&v);
         Int32 width = 0;
         v->GetMeasuredWidth(&width);
 
@@ -549,29 +793,33 @@ void ActionMenuView::OnLayout(
         const Int32 midHorizontal = (right - left) / 2;
         const Int32 l = midHorizontal - width / 2;
         const Int32 t = midVertical - height / 2;
-        v->Layout(l, t, l + width, t + height);
-        return;
+        return v->Layout(l, t, l + width, t + height);
     }
 
     const Int32 spacerCount = nonOverflowCount - (hasOverflow ? 0 : 1);
     const Int32 spacerSize = Elastos::Core::Math::Max(0, spacerCount > 0 ? widthRemaining / spacerCount : 0);
 
     if (isLayoutRtl) {
-        Int32 startRight = GetWidth() - GetPaddingRight();
+        Int32 w;
+        GetWidth(&w);
+        Int32 startRight = w - mPaddingRight;
         for (Int32 i = 0; i < childCount; i++) {
-            AutoPtr<IView> v = GetChildAt(i);
-            AutoPtr<IActionMenuViewLayoutParams> lp;
+            AutoPtr<IView> v;
+            GetChildAt(i, (IView**)&v);
+            AutoPtr<IViewGroupLayoutParams> lp;
             v->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+            AutoPtr<IActionMenuViewLayoutParams> alp = IActionMenuViewLayoutParams::Probe(lp);
+            AutoPtr<IViewGroupMarginLayoutParams> mlp = IViewGroupMarginLayoutParams::Probe(lp);
 
             Int32 visiable = 0;
             Boolean isOverflow;
-            lp->GetIsOverflowButton(&isOverflow);
+            alp->GetIsOverflowButton(&isOverflow);
             if ((v->GetVisibility(&visiable), visiable) == IView::GONE || isOverflow) {
                 continue;
             }
 
             Int32 rightMargin;
-            lp->GetRightMargin(&rightMargin);
+            mlp->GetRightMargin(&rightMargin);
             startRight -= rightMargin;
             Int32 width = 0;
             v->GetMeasuredWidth(&width);
@@ -582,15 +830,18 @@ void ActionMenuView::OnLayout(
             Int32 t = midVertical - height / 2;
             v->Layout(startRight - width, t, startRight, t + height);
             Int32 leftMargin;
-            lp->GetRightMargin(&leftMargin);
+            mlp->GetRightMargin(&leftMargin);
             startRight -= width + leftMargin + spacerSize;
         }
     } else {
-        Int32 startLeft = GetPaddingLeft();
+        Int32 startLeft = mPaddingLeft;
         for (Int32 i = 0; i < childCount; i++) {
-            AutoPtr<IView> v = GetChildAt(i);
-            AutoPtr<IActionMenuViewLayoutParams> lp;
-            v->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+            AutoPtr<IView> v;
+            GetChildAt(i, (IView**)&v);
+            AutoPtr<IViewGroupLayoutParams> tmp;
+            v->GetLayoutParams((IViewGroupLayoutParams**)&tmp);
+            AutoPtr<IActionMenuViewLayoutParams> lp = IActionMenuViewLayoutParams::Probe(tmp);
+            AutoPtr<IViewGroupMarginLayoutParams> mlp = IViewGroupMarginLayoutParams::Probe(tmp);
 
             Int32 visiable = 0;
             Boolean isOverflow;
@@ -600,7 +851,7 @@ void ActionMenuView::OnLayout(
             }
 
             Int32 leftMargin;
-            lp->GetRightMargin(&leftMargin);
+            mlp->GetRightMargin(&leftMargin);
             startLeft += leftMargin;
             Int32 width = 0;
             v->GetMeasuredWidth(&width);
@@ -611,10 +862,11 @@ void ActionMenuView::OnLayout(
             Int32 t = midVertical - height / 2;
             v->Layout(startLeft, t, startLeft + width, t + height);
             Int32 rightMargin;
-            lp->GetRightMargin(&rightMargin);
+            mlp->GetRightMargin(&rightMargin);
             startLeft += width + rightMargin + spacerSize;
         }
     }
+    return NOERROR;
 }
 
 ECode ActionMenuView::OnDetachedFromWindow()
@@ -627,9 +879,11 @@ ECode ActionMenuView::OnDetachedFromWindow()
     return NOERROR;
 }
 
-Boolean ActionMenuView::IsOverflowReserved()
+ECode ActionMenuView::IsOverflowReserved(
+    /* [out */ Boolean* reserveOverflow)
 {
-    return mReserveOverflow;
+    *reserveOverflow = mReserveOverflow;
+    return NOERROR;
 }
 
 ECode ActionMenuView::SetOverflowReserved(
@@ -640,14 +894,15 @@ ECode ActionMenuView::SetOverflowReserved(
 }
 
 ECode ActionMenuView::GenerateDefaultLayoutParams(
-    /* [out] */ ILinearLayoutLayoutParams** lp)
+    /* [out] */ IViewGroupLayoutParams** lp)
 {
-    assert(lp != NULL);
+    VALIDATE_NOT_NULL(lp)
+
     AutoPtr<IActionMenuViewLayoutParams> amvlp;
     CActionMenuViewLayoutParams::New(IViewGroupLayoutParams::WRAP_CONTENT,
         IViewGroupLayoutParams::WRAP_CONTENT, (IActionMenuViewLayoutParams**)&amvlp);
-    amvlp->SetGravity(IGravity::CENTER_VERTICAL);
-    *lp = amvlp.Get();
+    ILinearLayoutLayoutParams::Probe(amvlp)->SetGravity(IGravity::CENTER_VERTICAL);
+    *lp = IViewGroupLayoutParams::Probe(amvlp);
     REFCOUNT_ADD(*lp);
     return NOERROR;
 }
@@ -678,16 +933,19 @@ AutoPtr<IViewGroupLayoutParams> ActionMenuView::GenerateLayoutParams(
             CActionMenuViewLayoutParams::New(p, (IActionMenuViewLayoutParams**)&result);
         }
 
+        AutoPtr<ILinearLayoutLayoutParams> llp = ILinearLayoutLayoutParams::Probe(result);
+
         Int32 gravity;
-        result->GetGravity(&gravity);
+        llp->GetGravity(&gravity);
         if (gravity <= IGravity::NO_GRAVITY) {
-            result->SetGravity(IGravity::CENTER_VERTICAL);
+            llp->SetGravity(IGravity::CENTER_VERTICAL);
         }
-        return result;
+        AutoPtr<IViewGroupLayoutParams> vlp = IViewGroupLayoutParams::Probe(result);
+        return vlp;
     }
 
     AutoPtr<IViewGroupLayoutParams> ret;
-    GenerateDefaultLayoutParams((ILinearLayoutLayoutParams**)&ret);
+    GenerateDefaultLayoutParams((IViewGroupLayoutParams**)&ret);
     return ret;
 }
 
@@ -697,25 +955,28 @@ Boolean ActionMenuView::CheckLayoutParams(
     return p != NULL && IActionMenuViewLayoutParams::Probe(p) != NULL;
 }
 
-AutoPtr<IActionMenuViewLayoutParams> ActionMenuView::GenerateOverflowButtonLayoutParams()
+ECode ActionMenuView::GenerateOverflowButtonLayoutParams(
+    /* [out] */ IActionMenuViewLayoutParams** amlp)
 {
-    AutoPtr<IActionMenuViewLayoutParams> ret;
-    GenerateDefaultLayoutParams((ILinearLayoutLayoutParams**)&ret);
-    ret->SetIsOverflowButton(TRUE);
-    return ret;
+    AutoPtr<IViewGroupLayoutParams> lp;
+    GenerateDefaultLayoutParams((IViewGroupLayoutParams**)&lp);
+    *amlp = IActionMenuViewLayoutParams::Probe(lp);
+    REFCOUNT_ADD(*amlp)
+    return NOERROR;
 }
 
 ECode ActionMenuView::InvokeItem(
     /* [in] */ IMenuItemImpl* item,
     /* [out] */ Boolean* result)
 {
-    return mMenu->PerformItemAction(item, 0, result);
+    return mMenu->PerformItemAction(IMenuItem::Probe(item), 0, result);
 }
 
 ECode ActionMenuView::GetWindowAnimations(
     /* [out] */ Int32* animations)
 {
-    assert(animations != NULL);
+    VALIDATE_NOT_NULL(animations);
+
     *animations = 0;
     return NOERROR;
 }
@@ -727,6 +988,142 @@ ECode ActionMenuView::Initialize(
     return NOERROR;
 }
 
+ECode ActionMenuView::GetMenu(
+    /* [out] */ IMenu** menu)
+{
+    if (mMenu == NULL) {
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
+        CMenuBuilder::New(context, (IMenuBuilder**)&mMenu);
+        AutoPtr<MenuBuilderCallback> cb = new MenuBuilderCallback(this);
+        mMenu->SetCallback(cb);
+        AutoPtr<IActionMenuPresenter> tmp;
+        CActionMenuPresenter::New(context, (IActionMenuPresenter**)&tmp);
+        mPresenter = NULL;
+        IWeakReferenceSource::Probe(tmp)->GetWeakReference((IWeakReference**)&mPresenter);
+        tmp->SetReserveOverflow(TRUE);
+
+        AutoPtr<IMenuPresenterCallback> acb = new ActionMenuPresenterCallback();
+        IMenuPresenter::Probe(tmp)->SetCallback(mActionMenuPresenterCallback != NULL
+                ? mActionMenuPresenterCallback : acb);
+        mMenu->AddMenuPresenter(IMenuPresenter::Probe(tmp), mPopupContext);
+        tmp->SetMenuView(this);
+    }
+
+    *menu = IMenu::Probe(mMenu);
+    REFCOUNT_ADD(*menu)
+    return NOERROR;
+}
+
+    /**
+     * Must be called before the first call to getMenu()
+     * @hide
+     */
+ECode ActionMenuView::SetMenuCallbacks(
+    /* [in] */ IMenuPresenterCallback* pcb,
+    /* [in] */ IMenuBuilderCallback* mcb)
+{
+    mActionMenuPresenterCallback = pcb;
+    mMenuBuilderCallback = mcb;
+    return NOERROR;
+}
+
+    /**
+     * Returns the current menu or null if one has not yet been configured.
+     * @hide Internal use only for action bar integration
+     */
+ECode ActionMenuView::PeekMenu(
+    /* [out] */ IMenuBuilder** build)
+{
+    *build = mMenu;
+    return NOERROR;
+}
+
+    /**
+     * Show the overflow items from the associated menu.
+     *
+     * @return true if the menu was able to be shown, false otherwise
+     */
+ECode ActionMenuView::ShowOverflowMenu(
+    /* [out] */ Boolean* showOverflowMenu)
+{
+    *showOverflowMenu = FALSE;
+    AutoPtr<IActionMenuPresenter> presenter = GetPresenter();
+    if (presenter != NULL) {
+        presenter->ShowOverflowMenu(showOverflowMenu);
+    }
+    return NOERROR;
+}
+
+    /**
+     * Hide the overflow items from the associated menu.
+     *
+     * @return true if the menu was able to be hidden, false otherwise
+     */
+ECode ActionMenuView::HideOverflowMenu(
+    /* [out] */ Boolean* hideOverflowMenu)
+{
+    *hideOverflowMenu = FALSE;
+    AutoPtr<IActionMenuPresenter> presenter = GetPresenter();
+    if (presenter != NULL) {
+        presenter->HideOverflowMenu(hideOverflowMenu);
+    }
+    return NOERROR;
+}
+
+    /**
+     * Check whether the overflow menu is currently showing. This may not reflect
+     * a pending show operation in progress.
+     *
+     * @return true if the overflow menu is currently showing
+     */
+ECode ActionMenuView::IsOverflowMenuShowing(
+    /* [out] */ Boolean* isOverflowMenuShowing)
+{
+    *isOverflowMenuShowing = FALSE;
+    AutoPtr<IActionMenuPresenter> presenter = GetPresenter();
+    if (presenter != NULL) {
+        presenter->IsOverflowMenuShowing(isOverflowMenuShowing);
+    }
+    return NOERROR;
+}
+
+    /** @hide */
+ECode ActionMenuView::IsOverflowMenuShowPending(
+    /* [out] */ Boolean* isOverflowMenuShowPending)
+{
+    *isOverflowMenuShowPending = FALSE;
+    AutoPtr<IActionMenuPresenter> presenter = GetPresenter();
+    if (presenter != NULL) {
+        presenter->IsOverflowMenuShowPending(isOverflowMenuShowPending);
+    }
+    return NOERROR;
+}
+
+
+    /**
+     * Dismiss any popups associated with this menu view.
+     */
+ECode ActionMenuView::DismissPopupMenus()
+{
+    AutoPtr<IActionMenuPresenter> presenter = GetPresenter();
+    if (presenter != NULL) {
+        Boolean result;
+        return presenter->DismissPopupMenus(&result);
+    }
+    return NOERROR;
+}
+    /** @hide */
+ECode ActionMenuView::SetExpandedActionViewsExclusive(
+    /* [in] */ Boolean exclusive)
+{
+    AutoPtr<IActionMenuPresenter> presenter = GetPresenter();
+    if (presenter != NULL) {
+        return presenter->SetExpandedActionViewsExclusive(exclusive);
+    }
+    return NOERROR;
+}
+
 Boolean ActionMenuView::HasDividerBeforeChildAt(
     /* [in] */ Int32 childIndex)
 {
@@ -734,10 +1131,14 @@ Boolean ActionMenuView::HasDividerBeforeChildAt(
         return FALSE;
     }
 
-    AutoPtr<IView> childBefore = GetChildAt(childIndex - 1);
-    AutoPtr<IView> child = GetChildAt(childIndex);
+    AutoPtr<IView> childBefore;
+    GetChildAt(childIndex - 1, (IView**)&childBefore);
+    AutoPtr<IView> child;
+    GetChildAt(childIndex, (IView**)&child);
     Boolean result = FALSE;
-    if (childIndex < GetChildCount() && IActionMenuChildView::Probe(childBefore) != NULL) {
+    Int32 childCount;
+    GetChildCount(&childCount);
+    if (childIndex < childCount && IActionMenuChildView::Probe(childBefore) != NULL) {
         Boolean need = FALSE;
         IActionMenuChildView::Probe(childBefore)->NeedsDividerAfter(&need);
         result |= need;
@@ -751,17 +1152,19 @@ Boolean ActionMenuView::HasDividerBeforeChildAt(
     return result;
 }
 
-Boolean ActionMenuView::DispatchPopulateAccessibilityEvent(
-    /* [in] */ IAccessibilityEvent* event)
+ECode ActionMenuView::DispatchPopulateAccessibilityEvent(
+    /* [in] */ IAccessibilityEvent* event,
+    /* [out] */ Boolean* result)
 {
-    return FALSE;
+    *result = FALSE;
+    return NOERROR;
 }
 
 void ActionMenuView::InitActionMenu(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    LinearLayout::Init(context, attrs);
+    LinearLayout::constructor(context, attrs);
     SetBaselineAligned(FALSE);
 
     AutoPtr<IResources> res;
@@ -776,16 +1179,8 @@ void ActionMenuView::InitActionMenu(
 
     mMinCellSize = (Int32) (MIN_CELL_SIZE * density);
     mGeneratedItemPadding = (Int32) (GENERATED_ITEM_PADDING * density);
-
-    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
-        const_cast<Int32 *>(R::styleable::ActionBar),
-        ARRAY_SIZE(R::styleable::ActionBar));
-    AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(attrs, attrIds,
-            R::attr::actionBarStyle, 0, (ITypedArray**)&a);
-
-    a->GetDimensionPixelSize(R::styleable::ActionBar_height, 0, &mMaxItemHeight);
-    a->Recycle();
+    mPopupContext = context;
+    mPopupTheme = 0;
 }
 
 AutoPtr<IActionMenuPresenter> ActionMenuView::GetPresenter()
@@ -796,7 +1191,7 @@ AutoPtr<IActionMenuPresenter> ActionMenuView::GetPresenter()
     }
     return presenter;
 }
-} // namespace Menu
-} // namespace View
+
+} // namespace Widget
 } // namespace Droid
 } // namespace Elastos

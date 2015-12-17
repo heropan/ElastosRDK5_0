@@ -1,44 +1,50 @@
+
 #include "elastos/droid/widget/ZoomButtonsController.h"
 #include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/R.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/view/CViewConfiguration.h"
 #include "elastos/droid/view/CMotionEventHelper.h"
 #include "elastos/droid/view/CViewGroupLayoutParams.h"
 #include "elastos/droid/view/CWindowManagerLayoutParams.h"
 #include "elastos/droid/view/ViewRootImpl.h"
-#include "elastos/droid/graphics/CRect.h"
-#include <elastos/utility/logging/Logger.h>
 #include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Graphics::IPixelFormat;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
-using Elastos::Droid::View::EIID_View;
-using Elastos::Droid::View::ViewRootImpl;
-using Elastos::Droid::View::IMotionEvent;
-using Elastos::Droid::View::IMotionEventHelper;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::R;
+using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::View::CMotionEventHelper;
 using Elastos::Droid::View::CViewConfiguration;
-using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::CViewGroupLayoutParams;
+using Elastos::Droid::View::CWindowManagerLayoutParams;
+using Elastos::Droid::View::IDispatcherState;
+using Elastos::Droid::View::ViewRootImpl;
+using Elastos::Droid::View::IViewManager;
+using Elastos::Droid::View::IInputEvent;
+using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::IMotionEventHelper;
+using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IViewGroupLayoutParams;
-using Elastos::Droid::View::EIID_View;
+using Elastos::Droid::View::IViewOnTouchListener;
+using Elastos::Droid::View::IViewRootImpl;
+using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::EIID_IView;
-using Elastos::Droid::View::EIID_ViewGroup;
 using Elastos::Droid::View::EIID_IViewGroup;
 using Elastos::Droid::View::EIID_IViewParent;
 using Elastos::Droid::View::EIID_IViewManager;
 using Elastos::Droid::View::EIID_IKeyEventCallback;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::View::EIID_IViewOnTouchListener;
-using Elastos::Droid::View::CWindowManagerLayoutParams;
 using Elastos::Droid::View::IWindowManagerLayoutParams;
 using Elastos::Droid::View::Accessibility::EIID_IAccessibilityEventSource;
-
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -46,26 +52,20 @@ namespace Widget {
 
 const String ZoomButtonsController::TAG("ZoomButtonsController");
 const Int32 ZoomButtonsController::ZOOM_CONTROLS_TIMEOUT = (Int32)CViewConfiguration::GetZoomControlsTimeout();
-const Int32 ZoomButtonsController::ZOOM_CONTROLS_TOUCH_PADDING;
-const Int32 ZoomButtonsController::MSG_POST_CONFIGURATION_CHANGED;
-const Int32 ZoomButtonsController::MSG_DISMISS_ZOOM_CONTROLS;
-const Int32 ZoomButtonsController::MSG_POST_SET_VISIBLE;
+const Int32 ZoomButtonsController::ZOOM_CONTROLS_TOUCH_PADDING = 20;
+const Int32 ZoomButtonsController::MSG_POST_CONFIGURATION_CHANGED = 2;
+const Int32 ZoomButtonsController::MSG_DISMISS_ZOOM_CONTROLS = 3;
+const Int32 ZoomButtonsController::MSG_POST_SET_VISIBLE = 4;
 
-IVIEW_METHODS_IMPL(ZoomButtonsController::Container, ZoomButtonsController::_Container)
-IVIEWGROUP_METHODS_IMPL(ZoomButtonsController::Container, ZoomButtonsController::_Container)
-IVIEWPARENT_METHODS_IMPL(ZoomButtonsController::Container, ZoomButtonsController::_Container)
-IVIEWMANAGER_METHODS_IMPL(ZoomButtonsController::Container, ZoomButtonsController::_Container)
-IDRAWABLECALLBACK_METHODS_IMPL(ZoomButtonsController::Container, ZoomButtonsController::_Container)
-IKEYEVENTCALLBACK_METHODS_IMPL(ZoomButtonsController::Container, ZoomButtonsController::_Container)
-IACCESSIBILITYEVENTSOURCE_METHODS_IMPL(ZoomButtonsController::Container, ZoomButtonsController::_Container)
-IFRAMELAYOUT_METHODS_IMPL(ZoomButtonsController::Container, ZoomButtonsController::_Container)
-
-CAR_INTERFACE_IMPL(ZoomButtonsController::MyClickListener, IViewOnClickListener)
+ZoomButtonsController::MyHandler::MyHandler(
+    /* [in] */ ZoomButtonsController* host)
+    : mHost(host)
+{}
 
 ECode ZoomButtonsController::MyHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
-    Int32 what;
+    Int32 what = 0;
     msg->GetWhat(&what);
 
     switch(what) {
@@ -96,6 +96,7 @@ ECode ZoomButtonsController::MyHandler::HandleMessage(
     return NOERROR;
 }
 
+CAR_INTERFACE_IMPL(ZoomButtonsController::MyClickListener, Object, IViewOnClickListener);
 ZoomButtonsController::MyClickListener::MyClickListener(
     /* [in] */ ZoomButtonsController* host,
     /* [in] */ Boolean onZoom)
@@ -107,8 +108,9 @@ ECode ZoomButtonsController::MyClickListener::OnClick(
     /* [in] */ IView* v)
 {
     mHost->DismissControlsDelayed(ZoomButtonsController::ZOOM_CONTROLS_TIMEOUT);
-    if(mHost->mCallback)
+    if(mHost->mCallback) {
         mHost->mCallback->OnZoom(mOnZoom);
+    }
     return NOERROR;
 }
 
@@ -121,94 +123,30 @@ ECode ZoomButtonsController::MyRunnable::Run()
 {
     mHost->RefreshPositioningVariables();
 
-    if(mHost->mCallback != NULL)
-    {
+    if(mHost->mCallback != NULL) {
         return mHost->mCallback->OnVisibilityChanged(TRUE);
     }
     return NOERROR;
 }
 
-PInterface ZoomButtonsController::Container::Probe(
-    /* [in] */ REIID riid)
+ZoomButtonsController::Container::Container(
+    /* [in] */ IContext* context,
+    /* [in] */ ZoomButtonsController* controller)
+    : mController(controller)
 {
-    if (riid == EIID_IInterface) {
-        return (IInterface*)(IFrameLayout*)this;
-    } else if (riid == EIID_IFrameLayout) {
-        return (IFrameLayout*)this;
-    } else if (riid == EIID_IViewGroup) {
-        return (IFrameLayout*)this;
-    } else if (riid == EIID_IView) {
-        return (IFrameLayout*)this;
-    } else if (riid == EIID_IViewParent) {
-        return (IViewParent*)this;
-    } else if (riid == EIID_IViewManager) {
-        return (IViewManager*)this;
-    } else if (riid == EIID_IDrawableCallback) {
-        return (IDrawableCallback*)this;
-    } else if (riid == EIID_IKeyEventCallback) {
-        return (IKeyEventCallback*)this;
-    } else if (riid == EIID_IAccessibilityEventSource) {
-        return (IAccessibilityEventSource*)this;
-    } else if (riid == EIID_IWeakReferenceSource) {
-        return (IWeakReferenceSource*)this;
-    } else if (riid == EIID_View) {
-        return reinterpret_cast<PInterface>((View*)(_Container*)this);
-    } else if (riid == EIID_ViewGroup) {
-        return reinterpret_cast<PInterface>((ViewGroup*)(_Container*)this);
-    }
-    return NULL;
+    FrameLayout::constructor(context);
 }
 
-UInt32 ZoomButtonsController::Container::AddRef()
+ECode ZoomButtonsController::Container::DispatchKeyEvent(
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
-    return ElRefBase::AddRef();
-}
+    VALIDATE_NOT_NULL(result);
+    *result = TRUE;
+    if (!mController->OnContainerKey(event)) {
+        return FrameLayout::DispatchKeyEvent(event, result);
+    }
 
-UInt32 ZoomButtonsController::Container::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode ZoomButtonsController::Container::GetInterfaceID(
-    /* [in] */ IInterface *object,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (object == (IFrameLayout*)this) {
-        *pIID = EIID_IFrameLayout;
-    }
-    else if (object == (IViewParent*)this) {
-        *pIID = EIID_IViewParent;
-    }
-    else if (object == (IViewManager*)this) {
-        *pIID = EIID_IViewManager;
-    }
-    else if (object == (IDrawableCallback*)this) {
-        *pIID = EIID_IDrawableCallback;
-    }
-    else if (object == (IKeyEventCallback*)this) {
-        *pIID = EIID_IKeyEventCallback;
-    }
-    else if (object == (IAccessibilityEventSource*)this) {
-        *pIID = EIID_IAccessibilityEventSource;
-    }
-    else if (object == reinterpret_cast<PInterface>((View*)this)) {
-        *pIID = EIID_View;
-    }
-    else if (object == reinterpret_cast<PInterface>((ViewGroup*)this)) {
-        *pIID = EIID_ViewGroup;
-    }
-    else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return NOERROR;
-}
-
-ECode ZoomButtonsController::Container::GetWeakReference(
-    /* [out] */ IWeakReference** weakReference)
-{
-    VALIDATE_NOT_NULL(weakReference)
-    *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 
@@ -229,6 +167,16 @@ ECode ZoomButtonsController::MyBroadcastReceiver::OnReceive(
     return NOERROR;
 }
 
+ECode ZoomButtonsController::MyBroadcastReceiver::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = String("ZoomButtonsController::MyBroadcastReceiver: ");
+    (*info).AppendFormat("%p", this);
+    return NOERROR;
+}
+
+CAR_INTERFACE_IMPL_2(ZoomButtonsController, Object, IZoomButtonsController, IViewOnTouchListener);
 ZoomButtonsController::ZoomButtonsController()
     : mTouchPaddingScaledSq(0)
     , mAutoDismissControls(TRUE)
@@ -245,21 +193,7 @@ ZoomButtonsController::ZoomButtonsController()
     mHandler = new MyHandler(this);
 }
 
-ZoomButtonsController::ZoomButtonsController(
-    /* [in] */ IView* ownerView)
-{
-    mOwnerViewRawLocation = ArrayOf<Int32>::Alloc(2);
-    mContainerRawLocation = ArrayOf<Int32>::Alloc(2);
-    mTouchTargetWindowLocation = ArrayOf<Int32>::Alloc(2);
-    CRect::NewByFriend((CRect**)&mTempRect);
-    mTempIntArray = ArrayOf<Int32>::Alloc(2);
-    CIntentFilter::New(IIntent::ACTION_CONFIGURATION_CHANGED, (IIntentFilter**)&mConfigurationChangedFilter);
-    mConfigurationChangedReceiver = new MyBroadcastReceiver(this);
-    mHandler = new MyHandler(this);
-    Init(ownerView);
-}
-
-ECode ZoomButtonsController::Init(
+ECode ZoomButtonsController::constructor(
     /* [in] */ IView* ownerView)
 {
     ownerView->GetContext((IContext**)&mContext);
@@ -294,11 +228,6 @@ ECode ZoomButtonsController::SetZoomOutEnabled(
    return mControls->SetIsZoomOutEnabled(enabled);
 }
 
-/**
- * Sets the delay between zoom callbacks as the user holds a zoom button.
- *
- * @param speed The delay in milliseconds between zoom callbacks.
- */
 ECode ZoomButtonsController::SetZoomSpeed(
         /* [in] */ Int64 speed)
 {
@@ -308,22 +237,22 @@ ECode ZoomButtonsController::SetZoomSpeed(
 AutoPtr<ZoomButtonsController::Container> ZoomButtonsController::CreateContainer()
 {
     AutoPtr<IWindowManagerLayoutParams> lp;
-    CWindowManagerLayoutParams::New(IWindowManagerLayoutParams::WRAP_CONTENT,
-        IWindowManagerLayoutParams::WRAP_CONTENT, (IWindowManagerLayoutParams**)&lp);
+    CWindowManagerLayoutParams::New(IViewGroupLayoutParams::WRAP_CONTENT,
+        IViewGroupLayoutParams::WRAP_CONTENT, (IWindowManagerLayoutParams**)&lp);
     lp->SetGravity(IGravity::TOP | IGravity::START);
     lp->SetFlags(IWindowManagerLayoutParams::FLAG_NOT_TOUCHABLE |
          IWindowManagerLayoutParams::FLAG_NOT_FOCUSABLE |
          IWindowManagerLayoutParams::FLAG_LAYOUT_NO_LIMITS |
          IWindowManagerLayoutParams::FLAG_ALT_FOCUSABLE_IM);
-    lp->SetHeight(IWindowManagerLayoutParams::WRAP_CONTENT);
-    lp->SetWidth(IWindowManagerLayoutParams::WRAP_CONTENT);
+    IViewGroupLayoutParams::Probe(lp)->SetHeight(IViewGroupLayoutParams::WRAP_CONTENT);
+    IViewGroupLayoutParams::Probe(lp)->SetWidth(IViewGroupLayoutParams::WRAP_CONTENT);
     lp->SetType(IWindowManagerLayoutParams::TYPE_APPLICATION_PANEL);
     lp->SetFormat(IPixelFormat::TRANSLUCENT);
     lp->SetWindowAnimations(R::style::Animation_ZoomButtons);
     mContainerLayoutParams = lp;
 
     AutoPtr<Container> container = new Container(mContext, this);
-    container->SetLayoutParams(lp);
+    container->SetLayoutParams(IViewGroupLayoutParams::Probe(lp));
     container->SetMeasureAllChildren(TRUE);
 
     AutoPtr<IInterface> sTemp;
@@ -362,27 +291,34 @@ ECode ZoomButtonsController::SetFocusable(
 
     mContainerLayoutParams->GetFlags(&now);
     if ((now != oldFlags) && mIsVisible) {
-        mWindowManager->UpdateViewLayout(mContainer, mContainerLayoutParams);
+        IViewManager::Probe(mWindowManager)->UpdateViewLayout(mContainer, IViewGroupLayoutParams::Probe(mContainerLayoutParams));
     }
     return NOERROR;
 }
 
-Boolean ZoomButtonsController::IsAutoDismissed()
+ECode ZoomButtonsController::IsAutoDismissed(
+    /* [out] */ Boolean* dismissed)
 {
-    return mAutoDismissControls;
+    VALIDATE_NOT_NULL(dismissed);
+    *dismissed = mAutoDismissControls;
+    return NOERROR;
 }
 
 ECode ZoomButtonsController::SetAutoDismissed(
         /* [in] */ Boolean autoDismiss)
 {
-    if (mAutoDismissControls != autoDismiss)
+    if (mAutoDismissControls != autoDismiss) {
         mAutoDismissControls = autoDismiss;
+    }
     return NOERROR;
 }
 
-Boolean ZoomButtonsController::IsVisible()
+ECode ZoomButtonsController::IsVisible(
+    /* [out] */ Boolean* visible)
 {
-    return mIsVisible;
+    VALIDATE_NOT_NULL(visible);
+    *visible = mIsVisible;
+    return NOERROR;
 }
 
 ECode ZoomButtonsController::SetVisible(
@@ -422,7 +358,7 @@ ECode ZoomButtonsController::SetVisible(
             mContainerLayoutParams->SetToken(b);
         }
 
-        IViewManager::Probe(mWindowManager)->AddView(mContainer, mContainerLayoutParams);
+        IViewManager::Probe(mWindowManager)->AddView(mContainer, IViewGroupLayoutParams::Probe(mContainerLayoutParams));
 
         if (mPostedVisibleInitializer == NULL) {
             mPostedVisibleInitializer = new MyRunnable(this);
@@ -463,14 +399,22 @@ ECode ZoomButtonsController::SetVisible(
     return NOERROR;
 }
 
-AutoPtr<IViewGroup> ZoomButtonsController::GetContainer()
+ECode ZoomButtonsController::GetContainer(
+    /* [out] */ IViewGroup** container)
 {
-    return mContainer;
+    VALIDATE_NOT_NULL(container);
+    *container = mContainer;
+    REFCOUNT_ADD(*container);
+    return NOERROR;
 }
 
-AutoPtr<IView> ZoomButtonsController::GetZoomControls()
+ECode ZoomButtonsController::GetZoomControls(
+    /* [out] */ IView** view)
 {
-    return mControls;
+    VALIDATE_NOT_NULL(view);
+    *view = IView::Probe(mControls);
+    REFCOUNT_ADD(*view);
+    return NOERROR;
 }
 
 ECode ZoomButtonsController::DismissControlsDelayed(
@@ -502,31 +446,30 @@ ECode ZoomButtonsController::RefreshPositioningVariables()
     containerOwnerYOffset = ownerHeight - containerOwnerYOffset;
 
     // Calculate the owner view's bounds
-    mOwnerView->GetLocationOnScreen(&(*mOwnerViewRawLocation)[0], &(*mOwnerViewRawLocation)[1]);
+    mOwnerView->GetLocationOnScreen(mOwnerViewRawLocation);
     (*mContainerRawLocation)[0] = (*mOwnerViewRawLocation)[0];
     (*mContainerRawLocation)[1] = (*mOwnerViewRawLocation)[1] + containerOwnerYOffset;
 
     AutoPtr<ArrayOf<Int32> > ownerViewWindowLoc = mTempIntArray;
-    mOwnerView->GetLocationInWindow(&(*ownerViewWindowLoc)[0], &(*ownerViewWindowLoc)[1]);
+    mOwnerView->GetLocationInWindow(ownerViewWindowLoc);
 
     // lp.x and lp.y should be relative to the owner's window top-left
     mContainerLayoutParams->SetX((*ownerViewWindowLoc)[0]);
-    mContainerLayoutParams->SetWidth(ownerWidth);
+    IViewGroupLayoutParams::Probe(mContainerLayoutParams)->SetWidth(ownerWidth);
     mContainerLayoutParams->SetY((*ownerViewWindowLoc)[1] + containerOwnerYOffset);
     if (mIsVisible) {
-        mWindowManager->UpdateViewLayout(mContainer, mContainerLayoutParams);
+        IViewManager::Probe(mWindowManager)->UpdateViewLayout(mContainer,
+                IViewGroupLayoutParams::Probe(mContainerLayoutParams));
     }
     return NOERROR;
 }
 
-/* This will only be called when the container has focus. */
 Boolean ZoomButtonsController::OnContainerKey(
     /* [in] */ IKeyEvent* event)
 {
     Int32 keyCode;
     event->GetKeyCode(&keyCode);
     if (IsInterestingKey(keyCode)) {
-
         if (keyCode == IKeyEvent::KEYCODE_BACK) {
             Int32 action, repeatCount;
             Boolean tracking, canceled;
@@ -547,18 +490,20 @@ Boolean ZoomButtonsController::OnContainerKey(
                 return TRUE;
             }
 
-        } else {
+        }
+        else {
             DismissControlsDelayed(ZOOM_CONTROLS_TIMEOUT);
         }
 
         // Let the container handle the key
         return FALSE;
 
-    } else {
-
-        AutoPtr<ViewRootImpl> viewRoot = reinterpret_cast<Elastos::Droid::View::View*>((mOwnerView)->Probe(EIID_View))->GetViewRootImpl();
+    }
+    else {
+        AutoPtr<IViewRootImpl> viewRoot;
+        mOwnerView->GetViewRootImpl((IViewRootImpl**)&viewRoot);
         if (viewRoot != NULL) {
-            viewRoot->DispatchKey(event);
+            viewRoot->DispatchInputEvent(IInputEvent::Probe(event));
         }
 
         // We gave the key to the owner, don't let the container handle this key
@@ -583,10 +528,6 @@ Boolean ZoomButtonsController::IsInterestingKey(
     }
 }
 
-/**
- * @hide The ZoomButtonsController implements the OnTouchListener, but this
- *       does not need to be shown in its public API.
- */
 ECode ZoomButtonsController::OnTouch(
     /* [in] */ IView* v,
     /* [in] */ IMotionEvent* event,
@@ -662,10 +603,11 @@ ECode ZoomButtonsController::OnTouch(
         }
         Boolean retValue;
         targetView->DispatchTouchEvent(containerEvent, &retValue);
-        containerEvent->Recycle();
+        IInputEvent::Probe(containerEvent)->Recycle();
         *result = retValue;
 
-    } else {
+    }
+    else {
         *result = FALSE;
     }
     return NOERROR;
@@ -676,7 +618,7 @@ ECode ZoomButtonsController::SetTouchTargetView(
 {
     mTouchTargetView = view;
     if (view != NULL) {
-        view->GetLocationInWindow(&(*mTouchTargetWindowLocation)[0], &(*mTouchTargetWindowLocation)[1]);
+        view->GetLocationInWindow(mTouchTargetWindowLocation);
     }
     return NOERROR;
 }
@@ -744,7 +686,6 @@ ECode ZoomButtonsController::OnPostConfigurationChanged()
     RefreshPositioningVariables();
     return NOERROR;
 }
-
 
 }// namespace Widget
 }// namespace Droid

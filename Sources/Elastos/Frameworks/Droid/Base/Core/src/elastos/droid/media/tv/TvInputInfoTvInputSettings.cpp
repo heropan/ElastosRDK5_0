@@ -31,9 +31,9 @@ String TvInputInfoTvInputSettings::TV_INPUT_SEPARATOR(":");
 String TvInputInfoTvInputSettings::CUSTOM_NAME_SEPARATOR(",");
 
 ECode TvInputInfoTvInputSettings::GetHiddenTvInputIds(
-    /* [in] */ IContext * context,
+    /* [in] */ IContext* context,
     /* [in] */ Int32 userId,
-    /* [out] */ ISet ** result)
+    /* [out] */ ISet** result)
 {
     AutoPtr<IContentResolver> cr;
     context->GetContentResolver((IContentResolver**)&cr);
@@ -66,9 +66,9 @@ ECode TvInputInfoTvInputSettings::GetHiddenTvInputIds(
 }
 
 ECode TvInputInfoTvInputSettings::GetCustomLabels(
-    /* [in] */ IContext * context,
+    /* [in] */ IContext* context,
     /* [in] */ Int32 userId,
-    /* [out] */ IMap ** result)
+    /* [out] */ IMap** result)
 {
     AutoPtr<IContentResolver> cr;
     context->GetContentResolver((IContentResolver**)&cr);
@@ -106,8 +106,8 @@ ECode TvInputInfoTvInputSettings::GetCustomLabels(
 }
 
 ECode TvInputInfoTvInputSettings::PutHiddenTvInputs(
-    /* [in] */ IContext * context,
-    /* [in] */ ISet * hiddenInputIds,
+    /* [in] */ IContext* context,
+    /* [in] */ ISet* hiddenInputIds,
     /* [in] */ Int32 userId)
 {
     StringBuilder builder;
@@ -136,11 +136,12 @@ ECode TvInputInfoTvInputSettings::PutHiddenTvInputs(
     Boolean b;
 //TODO: Need Settings.h
     // Settings::Secure::PutStringForUser(cr, ISettingsSecure::TV_INPUT_HIDDEN_INPUTS, s, userId, &b);
+    return NOERROR;
 }
 
 ECode TvInputInfoTvInputSettings::PutCustomLabels(
-    /* [in] */ IContext * context,
-    /* [in] */ IMap * customLabels,
+    /* [in] */ IContext* context,
+    /* [in] */ IMap* customLabels,
     /* [in] */ Int32 userId)
 {
     StringBuilder builder;
@@ -170,10 +171,11 @@ ECode TvInputInfoTvInputSettings::PutCustomLabels(
     Boolean b;
 //TODO: Need Settings.h
     // Settings::Secure::PutStringForUser(cr, ISettingsSecure::TV_INPUT_CUSTOM_LABELS, s, userId, &b);
+    return NOERROR;
 }
 
 Boolean TvInputInfoTvInputSettings::IsHidden(
-    /* [in] */ IContext * context,
+    /* [in] */ IContext* context,
     /* [in] */ const String& inputId,
     /* [in] */ Int32 userId)
 {
@@ -187,7 +189,7 @@ Boolean TvInputInfoTvInputSettings::IsHidden(
 }
 
 String TvInputInfoTvInputSettings::GetCustomLabel(
-    /* [in] */ IContext * context,
+    /* [in] */ IContext* context,
     /* [in] */ const String& inputId,
     /* [in] */ Int32 userId)
 {

@@ -1,16 +1,19 @@
-
-#include "elastos/droid/provider/CMediaStoreFiles.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/provider/CMediaStoreFiles.h"
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::StringBuilder;
-using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Net::CUriHelper;
+using Elastos::Droid::Net::IUriHelper;
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
+
+CAR_SINGLETON_IMPL(CMediaStoreFiles)
+
+CAR_INTERFACE_IMPL(CMediaStoreFiles, Singleton, IMediaStoreFiles)
 
 ECode CMediaStoreFiles::GetContentUri(
     /* [in] */ const String& volumeName,

@@ -2567,22 +2567,26 @@ public: /* override */
     virtual CARAPI GetBaseline(
         /* [out] */ Int32* baseline);
 
-    virtual CARAPI_(Boolean) OnKeyPreIme(
+    virtual CARAPI OnKeyPreIme(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) OnKeyDown(
+    virtual CARAPI OnKeyDown(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) OnKeyMultiple(
+    virtual CARAPI OnKeyMultiple(
         /* [in] */ Int32 keyCode,
         /* [in] */ Int32 repeatCount,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) OnKeyUp(
+    virtual CARAPI OnKeyUp(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
     virtual CARAPI_(Boolean) OnCheckIsTextEditor();
 

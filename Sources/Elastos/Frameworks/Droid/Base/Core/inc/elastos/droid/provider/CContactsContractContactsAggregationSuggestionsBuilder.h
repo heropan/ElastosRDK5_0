@@ -1,15 +1,12 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCONTACTSAGGREGATIONSUGGESTIONSBUILDER_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCONTACTSAGGREGATIONSUGGESTIONSBUILDER_H__
 
-#define __USE_MALLOC
-#endif
-
 #include "_Elastos_Droid_Provider_CContactsContractContactsAggregationSuggestionsBuilder.h"
-#include <elastos/utility/etl/List.h>
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Net::IUri;
-using Elastos::Utility::Etl::List;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -22,8 +19,14 @@ namespace Provider {
  * @hide
  */
 CarClass(CContactsContractContactsAggregationSuggestionsBuilder)
+    , public Object
+    , public IContactsContractContactsAggregationSuggestionsBuilder
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     /**
      * Optional existing contact ID.  If it is not provided, the search
      * will be based exclusively on the values supplied with {@link #addParameter}.
@@ -53,8 +56,8 @@ public:
 
 private:
     Int64 mContactId;
-    AutoPtr< List<String> > mKinds;
-    AutoPtr< List<String> > mValues;
+    AutoPtr<IList> mKinds;
+    AutoPtr<IList> mValues;
     Int32 mLimit;
 };
 

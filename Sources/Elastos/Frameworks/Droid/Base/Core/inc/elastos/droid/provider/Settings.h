@@ -2,24 +2,23 @@
 #define __ELASTOS_DROID_PROVIDER_SETTINGS_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/HashMap.h>
-#include <elastos/utility/etl/HashSet.h>
+#include <elastos/utility/HashMap.h>
 
-using Elastos::Utility::Etl::HashSet;
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::ICharSequence;
-using Elastos::Droid::Content::IIContentProvider;
 using Elastos::Droid::Content::IContentResolver;
-using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::IIContentProvider;
+using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Pm::IIPackageManager;
 using Elastos::Droid::Content::Pm::IResolveInfo;
 using Elastos::Droid::Database::ICursor;
+using Elastos::Droid::Internal::Widget::IILockSettings;
 using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Internal::Widget::ILockSettings;
 using Elastos::Droid::Privacy::IPrivacySettingsManager;
+using Elastos::Utility::IHashMap;
+using Elastos::Utility::IHashSet;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
@@ -27,26 +26,9 @@ namespace Provider {
 
 class Settings
 {
-public:
-    class NameValueTable
-    {
-    public:
-        static CARAPI GetUriFor(
-            /* [in] */ IUri* uri,
-            /* [in] */ const String& name,
-            /* [out] */ IUri** value);
-
-    protected:
-        static CARAPI_(Boolean) PutString(
-            /* [in] */ IContentResolver* resolver,
-            /* [in] */ IUri* uri,
-            /* [in] */ const String& name,
-            /* [in] */ const String& value);
-    };
-
 private:
     // Thread-safe.
-    class NameValueCache : public ElRefBase
+    class NameValueCache : public Object
     {
     public:
         NameValueCache(
@@ -79,7 +61,7 @@ private:
         static const AutoPtr< ArrayOf<String> > SELECT_VALUE;
         static const String NAME_EQ_PLACEHOLDER;
         // Must synchronize on 'this' to access mValues and mValuesVersion.
-        HashMap<String, String> mValues;
+        AutoPtr<IHashMap> mValues;
 
         Int64 mValuesVersion;
 
@@ -87,38 +69,38 @@ private:
 
         // The method we'll call (or null, to not use) on the provider
         // for the fast path of retrieving settings.
-        String mCallGetCommand;
-        String mCallSetCommand;
-        Object mLock;
+        const String mCallGetCommand;
+        const String mCallSetCommand;
+        static Object mLock;
     };
 
 public:
+    class NameValueTable
+    {
+    public:
+        static CARAPI GetUriFor(
+            /* [in] */ IUri* uri,
+            /* [in] */ const String& name,
+            /* [out] */ IUri** value);
+
+    protected:
+        static CARAPI_(Boolean) PutString(
+            /* [in] */ IContentResolver* resolver,
+            /* [in] */ IUri* uri,
+            /* [in] */ const String& name,
+            /* [in] */ const String& value);
+    };
+
     class System : public NameValueTable
     {
-    private:
-        class KeyShortcutInfo : public ElRefBase
-        {
-        public:
-            KeyShortcutInfo(
-                /* [in] */ Int32 key,
-                /* [in] */ const String& name)
-                : mKey(key)
-                , mName(name)
-            {}
-
-        public:
-            Int32 mKey;
-            String mName;
-        };
-
     public:
         /** @hide */
-        static CARAPI_(void) GetMovedKeys(
-            /* [in] */ IObjectContainer* outKeySet);
+        static CARAPI GetMovedKeys(
+            /* [in] */ IHashSet* outKeySet);
 
         /** @hide */
-        static CARAPI_(void) GetNonLegacyMovedKeys(
-            /* [in] */ IObjectContainer* outKeySet);
+        static CARAPI GetNonLegacyMovedKeys(
+            /* [in] */ IHashSet* outKeySet);
 
         static const AutoPtr< ArrayOf<String> > SETTINGS_TO_BACKUP;
 
@@ -484,15 +466,10 @@ public:
             /* [in] */ Boolean flag,
             /* [in] */ Int32 userHandle);
 
-        static CARAPI_(String) FindNameByKey(
-            /* [in] */ Int32 key);
-
     private:
         static CARAPI_(Boolean) InitMOVEDTOSECURE();
 
         static CARAPI_(Boolean) InitMOVEDTOGLOBALANDSECURE();
-
-        static CARAPI_(AutoPtr< ArrayOf<KeyShortcutInfo*> >) InitShortCutInfoArray();
 
     public:
         /**
@@ -533,23 +510,17 @@ public:
 
     private:
         static const AutoPtr<NameValueCache> sNameValueCache;
-
-        static HashSet<String> MOVED_TO_SECURE;
-        static const Boolean HASINITMOVEDTOSECURE;
-        static HashSet<String> MOVED_TO_GLOBAL;
-        static HashSet<String> MOVED_TO_SECURE_THEN_GLOBAL;
-        static const Boolean HASINITMOVEDTOGLOBALANDSECURE;
-
-        static AutoPtr< ArrayOf<KeyShortcutInfo*> > sKeyShortcutInfoArray;
-
+        static const AutoPtr<IHashSet> MOVED_TO_SECURE;
+        static const AutoPtr<IHashSet> MOVED_TO_GLOBAL;
+        static const AutoPtr<IHashSet> MOVED_TO_SECURE_THEN_GLOBAL;
     };
 
     class Secure : public NameValueTable
     {
     public:
         /** @hide */
-        static CARAPI_(void) GetMovedKeys(
-            /* [in] */ IObjectContainer* outKeySet);
+        static CARAPI GetMovedKeys(
+            /* [in] */ IHashSet* outKeySet);
 
         /**
          * Look up a name in the database.
@@ -888,27 +859,25 @@ public:
          * @param userId the userId for which to enable/disable providers
          * @hide
          */
+        // @Deprecated
         static CARAPI SetLocationProviderEnabledForUser(
             /* [in] */ IContentResolver* cr,
             /* [in] */ const String& provider,
             /* [in] */ Boolean enabled,
-            /* [in] */ Int32 userId);
+            /* [in] */ Int32 userId,
+            /* [out] */ Boolean* result);
 
     private:
         static CARAPI_(Boolean) InitHashSet();
 
-        /**
-        * {@hide}
-        * @return package names of current process which is using this object or null if something went wrong
-        */
-        static CARAPI_(AutoPtr< ArrayOf<String> >) GetPackageName();
+        static Boolean SetLocationModeForUser(
+            /* [in] */ IContentResolver* cr,
+            /* [in] */ Int32 mode,
+            /* [in] */ Int32 userId);
 
-        /**
-        * {@hide}
-        * This method sets up all variables which are needed for privacy mode! It also writes to privacyMode, if everything was successfull or not!
-        * -> privacyMode = true ok! otherwise false!
-        */
-        static CARAPI_(void) Initiate();
+        static Int32 GetLocationModeForUser(
+            /* [in] */ IContentResolver* cr,
+            /* [in] */ Int32 userId);
 
     public:
         static const AutoPtr<IUri> CONTENT_URI;
@@ -924,30 +893,31 @@ public:
          */
         static const AutoPtr< ArrayOf<String> > SETTINGS_TO_BACKUP;
 
+        static const AutoPtr<ArrayOf<String> > CLONE_TO_MANAGED_PROFILE;
+
     private:
         // Populated lazily, guarded by class object:
         static const AutoPtr<NameValueCache> sNameValueCache;
-        static AutoPtr<ILockSettings> sLockSettings;
+        //assert(0 && "TODO");
+        static AutoPtr<IILockSettings> sLockSettings;
 
         static Boolean sIsSystemProcess;
-        static HashSet<String> MOVED_TO_LOCK_SETTINGS;
-        static HashSet<String> MOVED_TO_GLOBAL;
-        const static Boolean sInited;
+        static const AutoPtr<IHashSet> MOVED_TO_LOCK_SETTINGS;
+        static const AutoPtr<IHashSet> MOVED_TO_GLOBAL;
         static Object sSecureLock;
-
-        static const String PRIVACY_TAG;
-        static AutoPtr<IContext> sContext;
-
-        static AutoPtr<IPrivacySettingsManager> sPSetMan;
-
-        static Boolean sPrivacyMode;
-
-        static AutoPtr<IIPackageManager> sPm;
     };
 
     class Global : public NameValueTable
     {
     public:
+        static CARAPI ZenModeToString(
+            /* [in] */ Int32 mode,
+            /* [out] */ String* key);
+
+        static CARAPI GetBluetoothMapPriorityKey(
+            /* [in] */ const String& address,
+            /* [out] */ String* result);
+
         /**
          * Get the key that retrieves a bluetooth headset's priority.
          * @hide
@@ -1222,11 +1192,13 @@ public:
          *
          * @hide
          */
-        static const AutoPtr< ArrayOf<String> > SETTINGS_TO_BACKUP;
+        static const AutoPtr<ArrayOf<String> > SETTINGS_TO_BACKUP;
+        static const AutoPtr<ArrayOf<String> > MULTI_SIM_USER_PREFERRED_SUBS;
 
     private:
         // Populated lazily, guarded by class object:
         static const AutoPtr<NameValueCache> sNameValueCache;
+        static const AutoPtr<IHashSet> MOVED_TO_SECURE;
     };
 
     class Bookmarks
@@ -1328,6 +1300,7 @@ private:
     static const String JID_RESOURCE_PREFIX;
     static const String TAG;
     static const Boolean LOCAL_LOGV;
+    static Object mLocationSettingsLock;
 };
 
 } //namespace Provider

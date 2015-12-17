@@ -15,7 +15,7 @@ namespace Server {
 namespace Am {
 
 class DeviceMonitor
-    : public ElRefBase
+    : public Object
 {
 private:
     class MonitorThread

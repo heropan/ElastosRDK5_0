@@ -1,36 +1,42 @@
-
-#include "elastos/droid/provider/CMediaStoreImagesMedia.h"
-#include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/net/CUriHelper.h"
 #include "elastos/droid/content/CContentUris.h"
 #include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CBitmap.h"
 #include "elastos/droid/graphics/CBitmapFactory.h"
 #include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/provider/CMediaStoreImagesMedia.h"
 #include "elastos/droid/provider/CMediaStoreImagesThumbnails.h"
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::IO::IInputStream;
-using Elastos::IO::IOutputStream;
-using Elastos::IO::IFileInputStream;
-using Elastos::IO::CFileInputStream;
-using Elastos::Core::CInteger32;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::CString;
-using Elastos::Core::StringBuilder;
-using Elastos::Droid::Net::IUriHelper;
-using Elastos::Droid::Net::CUriHelper;
-using Elastos::Droid::Graphics::IMatrix;
-using Elastos::Droid::Graphics::CMatrix;
-using Elastos::Droid::Graphics::IBitmapFactory;
-using Elastos::Droid::Graphics::CBitmapFactory;
-using Elastos::Droid::Content::IContentValues;
+using Elastos::Droid::Content::CContentUris;
 using Elastos::Droid::Content::CContentValues;
 using Elastos::Droid::Content::IContentUris;
-using Elastos::Droid::Content::CContentUris;
+using Elastos::Droid::Content::IContentValues;
+using Elastos::Droid::Graphics::CBitmap;
+using Elastos::Droid::Graphics::CBitmapFactory;
+using Elastos::Droid::Graphics::CMatrix;
+using Elastos::Droid::Graphics::IBitmapFactory;
+using Elastos::Droid::Graphics::IMatrix;
+using Elastos::Droid::Net::CUriHelper;
+using Elastos::Droid::Net::IUriHelper;
+using Elastos::IO::CFileInputStream;
+using Elastos::IO::ICloseable;
+using Elastos::IO::IFileInputStream;
+using Elastos::IO::IInputStream;
+using Elastos::IO::IOutputStream;
+using Elastos::Core::CInteger32;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
+
+CAR_SINGLETON_IMPL(CMediaStoreImagesMedia)
+
+CAR_INTERFACE_IMPL(CMediaStoreImagesMedia, Singleton, IMediaStoreImagesMedia)
 
 ECode CMediaStoreImagesMedia::GetINTERNAL_CONTENT_URI(
     /* [out] */ IUri** uri)
@@ -121,7 +127,7 @@ ECode CMediaStoreImagesMedia::InsertImage(
 
     //} finally {
         //try {
-            stream->Close();
+            ICloseable::Probe(stream)->Close();
         /*} catch (IOException e) {
         }*/
     //}
@@ -150,23 +156,17 @@ AutoPtr<IBitmap> CMediaStoreImagesMedia::StoreThumbnail(
 
     matrix->SetScale(scaleX, scaleY);
 
-    AutoPtr<IBitmapFactory> factory;
-    ASSERT_SUCCEEDED(CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory));
-
     AutoPtr<IBitmap> thumb;
-    factory->CreateBitmap(source, 0, 0, w, h, matrix, TRUE, (IBitmap**)&thumb);
+    CBitmap::CreateBitmap(source, 0, 0, w, h, matrix, TRUE, (IBitmap**)&thumb);
 
     AutoPtr<IContentValues> values;
     CContentValues::New(4, (IContentValues**)&values);
-    AutoPtr<IInteger32> iKind, iId, iHeight, iWidth;
-    CInteger32::New(kind, (IInteger32**)&iKind);
-    values->PutInt32(IMediaStoreImagesThumbnails::KIND, iKind);
-    CInteger32::New((Int32)id, (IInteger32**)&iId);
-    values->PutInt32(IMediaStoreImagesThumbnails::IMAGE_ID, iId);
-    CInteger32::New((thumb->GetHeight(&h), h), (IInteger32**)&iHeight);
-    values->PutInt32(IMediaStoreImagesThumbnails::HEIGHT, iHeight);
-    CInteger32::New((thumb->GetWidth(&w), w), (IInteger32**)&iWidth);
-    values->PutInt32(IMediaStoreImagesThumbnails::WIDTH, iWidth);
+    values->Put(IMediaStoreImagesThumbnails::KIND, kind);
+    values->Put(IMediaStoreImagesThumbnails::IMAGE_ID, (Int32)id);
+    thumb->GetHeight(&h);
+    values->Put(IMediaStoreImagesThumbnails::HEIGHT, h);
+    thumb->GetWidth(&w);
+    values->Put(IMediaStoreImagesThumbnails::WIDTH, w);
 
     AutoPtr<IUri> url;
     AutoPtr<IMediaStoreImagesThumbnails> helper;
@@ -199,18 +199,13 @@ ECode CMediaStoreImagesMedia::InsertImage(
     /* [in] */ const String& description,
     /* [out] */ String* urlvalue)
 {
+    VALIDATE_NOT_NULL(urlvalue);
     AutoPtr<IContentValues> values;
     CContentValues::New((IContentValues**)&values);
 
-    AutoPtr<ICharSequence> csTitle;
-    CString::New(title, (ICharSequence**)&csTitle);
-    values->PutString(IMediaStoreImagesMedia::TITLE, csTitle);
-    AutoPtr<ICharSequence> csDescription;
-    CString::New(description, (ICharSequence**)&csDescription);
-    values->PutString(IMediaStoreImagesMedia::DESCRIPTION, csDescription);
-    AutoPtr<ICharSequence> csImage;
-    CString::New(String("image/jpeg"), (ICharSequence**)&csImage);
-    values->PutString(IMediaStoreImagesMedia::MIME_TYPE, csImage);
+    values->Put(IMediaStoreMediaColumns::TITLE, title);
+    values->Put(IMediaStoreImagesImageColumns::DESCRIPTION, description);
+    values->Put(IMediaStoreMediaColumns::MIME_TYPE, String("image/jpeg"));
 
     AutoPtr<IUri> url;
     String stringUrl;    /* value to be returned */
@@ -258,7 +253,8 @@ ECode CMediaStoreImagesMedia::InsertImage(
     }*/
 
     if (url != NULL) {
-        url->ToString(&stringUrl);
+        assert(0 && "TODO");
+        // url->ToString(&stringUrl);
     }
 
     *urlvalue = stringUrl;

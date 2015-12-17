@@ -16,7 +16,7 @@ namespace Am {
 extern "C" const InterfaceID EIID_AppErrorResult;
 
 class AppErrorResult
-    : public ElRefBase
+    : public Object
     , public IInterface
     , public Object
 {

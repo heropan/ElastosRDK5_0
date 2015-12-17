@@ -59,8 +59,46 @@ namespace Widget {
  * Layout tutorial</a>.</p>
  */
 
-class TableLayout : public LinearLayout
+class TableLayout
+    : public LinearLayout
+    , public ITableLayout
 {
+public:
+    class LayoutParams
+        : public LinearLayout::LayoutParams
+        , public ITableLayoutLayoutParams
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        CARAPI constructor(
+            /* [in] */ IContext* c,
+            /* [in] */ IAttributeSet* attrs);
+
+        CARAPI constructor(
+            /* [in] */ Int32 w,
+            /* [in] */ Int32 h);
+
+        CARAPI constructor(
+            /* [in] */ Int32 w,
+            /* [in] */ Int32 h,
+            /* [in] */ Float initWeight);
+
+        CARAPI constructor();
+
+        CARAPI constructor(
+            /* [in] */ IViewGroupLayoutParams* p);
+
+        CARAPI constructor(
+            /* [in] */ IViewGroupMarginLayoutParams* source);
+
+    protected:
+        virtual CARAPI SetBaseAttributes(
+            /* [in] */ ITypedArray* a,
+            /* [in] */ Int32 widthAttr,
+            /* [in] */ Int32 heightAttr);
+    };
+
 private:
     /**
      * <p>A pass-through listener acts upon the events and dispatches them
@@ -68,25 +106,16 @@ private:
      * hierarchy change listener without preventing the user to setup his.</p>
      */
     class PassThroughHierarchyChangeListener
-        : public ElRefBase
+        : public Object
         , public IViewGroupOnHierarchyChangeListener
     {
         friend class TableLayout;
 
     public:
+        CAR_INTERFACE_DECL()
+
         PassThroughHierarchyChangeListener(
             /* [in] */ TableLayout* owner);
-
-        CARAPI_(PInterface) Probe(
-            /* [in]  */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
 
         /**
          * {@inheritDoc}
@@ -108,12 +137,16 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * <p>Creates a new TableLayout for the given context.</p>
      *
      * @param context the application environment
      */
-    TableLayout(
+    TableLayout();
+
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
     /**
@@ -123,7 +156,7 @@ public:
      * @param context the application environment
      * @param attrs a collection of attributes
      */
-    TableLayout(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
@@ -147,7 +180,8 @@ public:
      *
      * @return true if all columns are shrinkable, false otherwise
      */
-    virtual CARAPI_(Boolean) IsShrinkAllColumns();
+    virtual CARAPI IsShrinkAllColumns(
+        /* [out]*/ Boolean* isShrinkAllColumns);
 
     /**
      * <p>Convenience method to mark all columns as shrinkable.</p>
@@ -164,7 +198,8 @@ public:
      *
      * @return true if all columns are stretchable, false otherwise
      */
-    virtual CARAPI_(Boolean) IsStretchAllColumns();
+    virtual CARAPI IsStretchAllColumns(
+        /* [out] */ Boolean* isStretchAllColumns);
 
     /**
      * <p>Convenience method to mark all columns as stretchable.</p>
@@ -199,8 +234,9 @@ public:
      * @param columnIndex the index of the column
      * @return true if the column is collapsed, false otherwise
      */
-    virtual CARAPI_(Boolean) IsColumnCollapsed(
-        /* [in] */ Int32 columnIndex);
+    virtual CARAPI IsColumnCollapsed(
+        /* [in] */ Int32 columnIndex,
+        /* [out] */ Boolean* isCollapsed);
 
     /**
      * <p>Makes the given column stretchable or not. When stretchable, a column
@@ -224,8 +260,9 @@ public:
      * @param columnIndex the index of the column
      * @return true if the column is stretchable, false otherwise
      */
-    virtual CARAPI_(Boolean) IsColumnStretchable(
-        /* [in] */ Int32 columnIndex);
+    virtual CARAPI IsColumnStretchable(
+        /* [in] */ Int32 columnIndex,
+        /* [out] */ Boolean* isColumnStretchable);
 
     /**
      * <p>Makes the given column shrinkable or not. When a row is too wide, the
@@ -249,8 +286,9 @@ public:
      * @param columnIndex the index of the column
      * @return true if the column is shrinkable, false otherwise. Default is false.
      */
-    virtual CARAPI_(Boolean) IsColumnShrinkable(
-        /* [in] */ Int32 columnIndex);
+    virtual CARAPI IsColumnShrinkable(
+        /* [in] */ Int32 columnIndex,
+        /* [out] */ Boolean* isColumnShrinkable);
 
     using LinearLayout::AddView;
 
@@ -322,15 +360,6 @@ public:
         /* [in] */ IAccessibilityNodeInfo* info);
 
 protected:
-    TableLayout();
-
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
     /**
      * {@inheritDoc}
      */
@@ -343,7 +372,7 @@ protected:
      * {@inheritDoc}
      */
     //@Override
-    virtual CARAPI_(void) OnLayout(
+    virtual CARAPI OnLayout(
         /* [in] */ Boolean changed,
         /* [in] */ Int32 l,
         /* [in] */ Int32 t,
@@ -356,7 +385,8 @@ protected:
      * and a height of {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}.
      */
     //@Override
-    virtual CARAPI_(AutoPtr<ILinearLayoutLayoutParams>) GenerateDefaultLayoutParams();
+    CARAPI GenerateDefaultLayoutParams(
+        /* [out] */ IViewGroupLayoutParams** lp);
 
     /**
      * {@inheritDoc}

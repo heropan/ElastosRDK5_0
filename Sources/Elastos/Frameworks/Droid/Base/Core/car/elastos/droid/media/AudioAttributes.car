@@ -191,14 +191,14 @@ module
          * @return one of the values that can be set in {@link Builder#setContentType(int)}
          */
         GetContentType(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Return the usage.
          * @return one of the values that can be set in {@link Builder#setUsage(int)}
          */
         GetUsage(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * @hide
@@ -208,14 +208,14 @@ module
          *    negative value if none has been set.
          */
         GetCapturePreset(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Return the flags.
          * @return a combined mask of all flags
          */
         GetFlags(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * @hide
@@ -224,7 +224,7 @@ module
          * @return a combined mask of all flags
          */
         GetAllFlags(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * @hide
@@ -232,7 +232,11 @@ module
          * @return a read-only set of all tags stored as strings.
          */
         GetTags(
-            [out] ISet ** result);
+            [out] ISet** result);
+
+        /** @hide */
+        UsageToString(
+            [out] String* result);
     }
 
     interface IAudioAttributesHelper {
@@ -240,17 +244,17 @@ module
         /** @hide */
         UsageToString(
             [in] Int32 usage,
-            [out] String * result);
+            [out] String* result);
 
         /** @hide */
         UsageForLegacyStreamType(
             [in] Int32 streamType,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /** @hide */
         ToLegacyStreamType(
-            [in] IAudioAttributes * aa,
-            [out] Int32 * result);
+            [in] IAudioAttributes* aa,
+            [out] Int32* result);
 
     }
 
@@ -263,7 +267,7 @@ module
          */
         // @SuppressWarnings("unchecked") // for cloning of mTags
         Build(
-            [out] IAudioAttributes ** result);
+            [out] IAudioAttributes** result);
 
         /**
          * Sets the attribute describing what is the intended use of the the audio signal,
@@ -285,8 +289,7 @@ module
          * @return the same Builder instance.
          */
         SetUsage(
-            [in] Int32 usage,
-            [out] IAudioAttributesBuilder ** result);
+            [in] Int32 usage);
 
         /**
          * Sets the attribute describing the content type of the audio signal, such as speech,
@@ -300,8 +303,7 @@ module
          * @return the same Builder instance.
          */
         SetContentType(
-            [in] Int32 contentType,
-            [out] IAudioAttributesBuilder ** result);
+            [in] Int32 contentType);
 
         /**
          * Sets the combination of flags.
@@ -309,8 +311,7 @@ module
          * @return the same Builder instance.
          */
         SetFlags(
-            [in] Int32 flags,
-            [out] IAudioAttributesBuilder ** result);
+            [in] Int32 flags);
 
         /**
          * @hide
@@ -319,8 +320,7 @@ module
          * @return the same Builder instance.
          */
         AddTag(
-            [in] String tag,
-            [out] IAudioAttributesBuilder ** result);
+            [in] String tag);
 
         /**
          * Sets attributes as inferred from the legacy stream types.
@@ -333,8 +333,7 @@ module
          * @return the same Builder instance.
          */
         SetLegacyStreamType(
-            [in] Int32 streamType,
-            [out] IAudioAttributesBuilder ** result);
+            [in] Int32 streamType);
 
         /**
          * @hide
@@ -343,8 +342,7 @@ module
          * @return the same Builder instance.
          */
         SetInternalLegacyStreamType(
-            [in] Int32 streamType,
-            [out] IAudioAttributesBuilder ** result);
+            [in] Int32 streamType);
 
         /**
          * @hide
@@ -358,8 +356,7 @@ module
          * @return the same Builder instance.
          */
         SetCapturePreset(
-            [in] Int32 preset,
-            [out] IAudioAttributesBuilder ** result);
+            [in] Int32 preset);
 
         /**
          * @hide
@@ -369,9 +366,7 @@ module
          * @return the same Builder instance.
          */
         SetInternalCapturePreset(
-            [in] Int32 preset,
-            [out] IAudioAttributesBuilder ** result);
-
+            [in] Int32 preset);
     }
 
     } // namespace media

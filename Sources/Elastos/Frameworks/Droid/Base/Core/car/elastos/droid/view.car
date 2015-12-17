@@ -233,6 +233,7 @@ module
     interface Elastos.Droid.View.Internal.TextService.IISpellCheckerSessionListener;
     interface Elastos.Droid.View.Internal.TextService.IITextServicesSessionListener;
     interface Elastos.Droid.View.Internal.TextService.IITextServicesManager;
+    interface Elastos.Droid.Content.IContextWrapper;
 
     // interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnection;
     // interface Elastos.Droid.View.Accessibility.IAccessibilityManager;
@@ -1221,17 +1222,6 @@ module
         interface IKeyEventCallback;
         interface IAccessibilityEventSource;
     }
-
-    // [local]
-    // class CContextThemeWrapper {
-    //     constructor();
-
-    //     constructor(
-    //         [in] IContext* base,
-    //         [in] Int32 themeres);
-
-    //     interface IContextThemeWrapper;
-    // }
 
     [local]
     class CGestureDetector {

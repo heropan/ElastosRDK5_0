@@ -1,13 +1,12 @@
-
-#include "elastos/droid/provider/CCalendarContractInstances.h"
 #include "elastos/droid/content/CContentUris.h"
 #include "elastos/droid/net/Uri.h"
+#include "elastos/droid/provider/CCalendarContractInstances.h"
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::StringBuilder;
-using Elastos::Droid::Net::Uri;
-using Elastos::Droid::Content::IContentUris;
 using Elastos::Droid::Content::CContentUris;
+using Elastos::Droid::Content::IContentUris;
+using Elastos::Droid::Net::Uri;
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
@@ -24,10 +23,13 @@ const String CCalendarContractInstances::WHERE_CALENDARS_SELECTED = ICalendarCon
 const AutoPtr<ArrayOf<String> > CCalendarContractInstances::WHERE_CALENDARS_ARGS = initWHERECALENDARSARGS();
 const String CCalendarContractInstances::DEFAULT_SORT_ORDER = String("begin ASC");
 
-ECode CCalendarContractInstances::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CCalendarContractInstances)
+
+CAR_INTERFACE_IMPL_4(CCalendarContractInstances, Singleton
+    , ICalendarContractInstances
+    , IBaseColumns
+    , ICalendarContractEventsColumns
+    , ICalendarContractCalendarColumns)
 
 ECode CCalendarContractInstances::GetCONTENT_URI(
     /* [out] */ IUri** uri)
@@ -41,7 +43,7 @@ ECode CCalendarContractInstances::GetCONTENT_URI(
     return Uri::Parse(str, uri);
 }
 
-ECode CCalendarContractInstances::GetCONTENTBYDAYURI(
+ECode CCalendarContractInstances::GetCONTENT_BY_DAY_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -53,7 +55,7 @@ ECode CCalendarContractInstances::GetCONTENTBYDAYURI(
     return Uri::Parse(str, uri);
 }
 
-ECode CCalendarContractInstances::GetCONTENTSEARCHURI(
+ECode CCalendarContractInstances::GetCONTENT_SEARCH_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -65,7 +67,7 @@ ECode CCalendarContractInstances::GetCONTENTSEARCHURI(
     return Uri::Parse(str, uri);
 }
 
-ECode CCalendarContractInstances::GetCONTENTSEARCHBYDAYURI(
+ECode CCalendarContractInstances::GetCONTENT_SEARCH_BY_DAY_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -111,7 +113,7 @@ ECode CCalendarContractInstances::Query(
     VALIDATE_NOT_NULL(cursor);
 
     AutoPtr<IUri> _uri;
-    FAIL_RETURN(GetCONTENTSEARCHURI((IUri**)&_uri))
+    FAIL_RETURN(GetCONTENT_SEARCH_URI((IUri**)&_uri))
     AutoPtr<IUriBuilder> builder;
     FAIL_RETURN(_uri->BuildUpon((IUriBuilder**)&builder))
     AutoPtr<IContentUris> helper;

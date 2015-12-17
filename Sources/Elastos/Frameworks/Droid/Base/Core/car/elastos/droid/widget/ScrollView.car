@@ -144,6 +144,15 @@ module
             [in] Int32 velocityY);
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewBaseSavedState
+     * interface Elastos.Droid.View.IAbsSavedState
+     * interface IParcelable
+     */
+    interface IScrollViewSavedState {
+    }
+
     } // namespace Widget
     } // namespace Droid
     } // namespace Elastos

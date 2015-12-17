@@ -1,28 +1,36 @@
-
+#include "elastos/droid/media/CAudioAttributesBuilder.h"
+#include "elastos/droid/media/CAudioFormat.h"
+#include "elastos/droid/media/CAudioFormatBuilder.h"
 #include "elastos/droid/media/CAudioRecord.h"
-#include "elastos/droid/media/CMediaRecorder.h"
-#include "elastos/droid/media/CMediaRecorderHelper.h"
-#include <media/AudioRecord.h>
-#include "elastos/droid/os/CLooperHelper.h"
+//TODO: Need CMediaRecorder.h
+// #include "elastos/droid/media/CMediaRecorder.h"
+#include "elastos/droid/media/AudioSystem.h"
+#include "elastos/droid/os/CBinder.h"
+#include "elastos/droid/os/Looper.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/os/ServiceManager.h"
-#include "elastos/droid/privacy/CPrivacySettingsManager.h"
-#include <elastos/core/StringUtils.h>
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
+#include <media/AudioRecord.h>
 
-using Elastos::Droid::Os::ServiceManager;
+using Elastos::Droid::Media::CAudioAttributesBuilder;
+using Elastos::Droid::Media::CAudioFormat;
+using Elastos::Droid::Media::CAudioFormatBuilder;
+//TODO: Need CMediaRecorder.h
+// using Elastos::Droid::Media::CMediaRecorder;
+using Elastos::Droid::Os::CBinder;
 using Elastos::Droid::Os::EIID_IHandler;
-using Elastos::Droid::Os::ILooperHelper;
-using Elastos::Droid::Os::CLooperHelper;
+using Elastos::Droid::Os::Looper;
 using Elastos::Droid::Os::Process;
-using Elastos::Droid::Privacy::IPrivacySettings;
-using Elastos::Droid::Privacy::CPrivacySettingsManager;
-using Elastos::Droid::Privacy::IIPrivacySettingsManager;
-using Elastos::Utility::Logging::Logger;
+using Elastos::Droid::Os::ServiceManager;
+using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
-
+using Elastos::Utility::IIterator;
+using Elastos::Utility::ISet;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -39,26 +47,13 @@ namespace Media {
 #define AUDIORECORD_ERROR_SETUP_NATIVEINITFAILED    -20
 
 const String CAudioRecord::TAG("CAudioRecord");
-const String CAudioRecord::PRIVACY_TAG("PM,AudioRecord");
 
 const Int32 CAudioRecord::NATIVE_EVENT_MARKER = 2;
 const Int32 CAudioRecord::NATIVE_EVENT_NEW_POS = 3;
-const Int32 CAudioRecord::IS_ALLOWED = -1;
-const Int32 CAudioRecord::IS_NOT_ALLOWED = -2;
-const Int32 CAudioRecord::GOT_ERROR = -3;
 
 //------------------------------------
 //    CAudioRecord::NativeEventHandler
 //------------------------------------
-
-CAudioRecord::NativeEventHandler::NativeEventHandler(
-    /* [in] */ IAudioRecord* recorder,
-    /* [in] */ ILooper* looper,
-    /* [in] */ CAudioRecord* owner)
-    : HandlerBase(looper)
-{
-    mAudioRecord = recorder;
-}
 
 ECode CAudioRecord::NativeEventHandler::HandleMessage(
     /* [in] */ IMessage* msg)
@@ -68,21 +63,21 @@ ECode CAudioRecord::NativeEventHandler::HandleMessage(
 
     AutoPtr<IAudioRecordOnRecordPositionUpdateListener> listener;
 
-    {
-        AutoLock lock(mOwner->mPositionListenerLock);
+    Object& lock = mOwner->mPositionListenerLock;
+    synchronized(lock) {
         listener = mOwner->mPositionListener;
     }
 
     switch(what) {
         case NATIVE_EVENT_MARKER: {
             if (listener != NULL) {
-                listener->OnMarkerReached(mAudioRecord);
+                listener->OnMarkerReached(IAudioRecord::Probe(mOwner));
             }
             break;
         }
         case NATIVE_EVENT_NEW_POS: {
             if (listener != NULL) {
-                listener->OnPeriodicNotification(mAudioRecord);
+                listener->OnPeriodicNotification(IAudioRecord::Probe(mOwner));
             }
             break;
         }
@@ -99,21 +94,26 @@ ECode CAudioRecord::NativeEventHandler::HandleMessage(
 //    CAudioRecord
 //------------------------------------
 
+CAR_INTERFACE_IMPL(CAudioRecord, Object, IAudioRecord)
+
+CAR_OBJECT_IMPL(CAudioRecord)
+
 CAudioRecord::CAudioRecord()
     : mNativeRecorderInJavaObj(0)
     , mNativeCallbackCookie(0)
-    , mSampleRate(22050)
-    , mChannelCount(1)
-    , mChannels(IAudioFormat::CHANNEL_IN_MONO)
-    , mChannelConfiguration(IAudioFormat::CHANNEL_IN_MONO)
-    , mAudioFormat(IAudioFormat::ENCODING_PCM_16BIT)
-    , mRecordSource(IAudioSource::DEFAULT)
+    , mSampleRate(0)
+    , mChannelCount(0)
+    , mChannelMask(0)
+    , mAudioFormat(0)
+    , mRecordSource(0)
     , mState(STATE_UNINITIALIZED)
     , mRecordingState(RECORDSTATE_STOPPED)
     , mNativeBufferSizeInBytes(0)
-    , mSessionId(0)
-    , mPrivacyMode(FALSE)
-{}
+    , mSessionId(IAudioSystem::AUDIO_SESSION_ALLOCATE)
+    , mIsSubmixFullVolume(FALSE)
+{
+    CBinder::New((IBinder**)&mICallBack);
+}
 
 CAudioRecord::~CAudioRecord()
 {
@@ -122,7 +122,8 @@ CAudioRecord::~CAudioRecord()
 
 void CAudioRecord::Finalize()
 {
-    Native_finalize();
+    // will cause stop() to be called, and if appropriate, will handle fixed volume recording
+    ReleaseResources();
 }
 
 ECode CAudioRecord::constructor(
@@ -132,44 +133,117 @@ ECode CAudioRecord::constructor(
     /* [in] */ Int32 audioFormat,
     /* [in] */ Int32 bufferSizeInBytes)
 {
-    mState = STATE_UNINITIALIZED;
+    AutoPtr<IAudioAttributesBuilder> aaBuilder;
+    CAudioAttributesBuilder::New((IAudioAttributesBuilder**)&aaBuilder);
+    aaBuilder->SetInternalCapturePreset(audioSource);
+    AutoPtr<IAudioAttributes> aa;
+    aaBuilder->Build((IAudioAttributes**)&aa);
+
+    AutoPtr<IAudioFormatBuilder> afBuilder;
+    CAudioFormatBuilder::New((IAudioFormatBuilder**)&afBuilder);
+    Int32 val;
+    GetChannelMaskFromLegacyConfig(channelConfig,
+            TRUE/*allow legacy configurations*/, &val);
+    afBuilder->SetChannelMask(val);
+    afBuilder->SetEncoding(audioFormat);
+    afBuilder->SetSampleRate(sampleRateInHz);
+    AutoPtr<IAudioFormat> af;
+    afBuilder->Build((IAudioFormat**)&af);
+    return constructor(aa, af, bufferSizeInBytes, IAudioManager::AUDIO_SESSION_ID_GENERATE);
+}
+
+ECode CAudioRecord::constructor(
+    /* [in] */ IAudioAttributes* attributes,
+    /* [in] */ IAudioFormat* format,
+    /* [in] */ Int32 bufferSizeInBytes,
+    /* [in] */ Int32 sessionId)
+{
     mRecordingState = RECORDSTATE_STOPPED;
 
-    AutoPtr<ILooperHelper> looperHelper;
-    CLooperHelper::AcquireSingleton((ILooperHelper**)&looperHelper);
-    looperHelper->MyLooper((ILooper**)&mInitializationLooper);
-    // remember which looper is associated with the AudioRecord instanciation
-    if (mInitializationLooper == NULL) {
-        looperHelper->GetMainLooper((ILooper**)&mInitializationLooper);
+    if (attributes == NULL) {
+        // throw new IllegalArgumentException("Illegal NULL AudioAttributes");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    if (format == NULL) {
+        // throw new IllegalArgumentException("Illegal NULL AudioFormat");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    FAIL_RETURN(AudioParamCheck(audioSource, sampleRateInHz, channelConfig, audioFormat));
+    // remember which looper is associated with the AudioRecord instanciation
+    if ((mInitializationLooper = Looper::GetMyLooper()) == NULL) {
+        mInitializationLooper = Looper::GetMainLooper();
+    }
+
+    mAudioAttributes = attributes;
+
+    // is this AudioRecord using REMOTE_SUBMIX at full volume?
+    Int32 val;
+    mAudioAttributes->GetCapturePreset(&val);
+    if (val == IMediaRecorderAudioSource::REMOTE_SUBMIX) {
+        AutoPtr<ISet> tags;
+        mAudioAttributes->GetTags((ISet**)&tags);
+        AutoPtr<IIterator> tagsIter;
+        tags->GetIterator((IIterator**)&tagsIter);
+        Boolean b;
+        while (tagsIter->HasNext(&b), b) {
+            AutoPtr<IInterface> obj;
+            tagsIter->GetNext((IInterface**)&obj);
+            String str;
+            ICharSequence::Probe(obj)->ToString(&str);
+            if(str.EqualsIgnoreCase(SUBMIX_FIXED_VOLUME)) {
+                mIsSubmixFullVolume = TRUE;
+                Logger::V(TAG, "Will record from REMOTE_SUBMIX at full fixed volume");
+                break;
+            }
+        }
+    }
+
+    Int32 mask;
+    format->GetPropertySetMask(&mask);
+    Int32 rate = 0;
+    if ((mask & IAudioFormat::AUDIO_FORMAT_HAS_PROPERTY_SAMPLE_RATE) != 0)
+    {
+        format->GetSampleRate(&rate);
+    }
+    else {
+        AudioSystem::GetPrimaryOutputSamplingRate(&rate);
+        if (rate <= 0) {
+            rate = 44100;
+        }
+    }
+
+    Int32 encoding = IAudioFormat::ENCODING_DEFAULT;
+    if ((mask & IAudioFormat::AUDIO_FORMAT_HAS_PROPERTY_ENCODING) != 0)
+    {
+        format->GetEncoding(&encoding);
+    }
+
+    Int32 preset;
+    attributes->GetCapturePreset(&preset);
+    AudioParamCheck(preset, rate, encoding);
+
+    Int32 cMask;
+    format->GetChannelMask(&cMask);
+    CAudioFormat::ChannelCountFromInChannelMask(cMask, &mChannelCount);
+    GetChannelMaskFromLegacyConfig(cMask, FALSE, &mChannelMask);
 
     FAIL_RETURN(AudioBuffSizeCheck(bufferSizeInBytes));
 
     // native initialization
     AutoPtr< ArrayOf<Int32> > session = ArrayOf<Int32>::Alloc(1);
-    (*session)[0] = 0;
+    (*session)[0] = sessionId;
 
     //TODO: update native initialization when information about hardware init failure
     //      due to capture device already open is available.
-    Int32 initResult = Native_setup(THIS_PROBE(IAudioRecord), mRecordSource, mSampleRate,
-        mChannels, mAudioFormat, mNativeBufferSizeInBytes, session);
+    Int32 initResult = Native_setup(THIS_PROBE(IAudioRecord), mAudioAttributes, mSampleRate,
+        mChannelMask, mAudioFormat, mNativeBufferSizeInBytes, session);
 
     if (initResult != SUCCESS) {
         Loge(String("Error code ")
-            + StringUtils::Int32ToString(initResult)
+            + StringUtils::ToString(initResult)
             + String(" when initializing native AudioRecord object."));
         return NOERROR; // with mState == STATE_UNINITIALIZED
     }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //BEGIN PRIVACY
-
-    Initiate();
-
-    //END PRIVACY
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     mSessionId = (*session)[0];
     mState = STATE_INITIALIZED;
@@ -181,45 +255,16 @@ ECode CAudioRecord::constructor(
 //--------------------
 ECode CAudioRecord::StartRecording() // throws IllegalStateException
 {
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //BEGIN PRIVACY
-    //now check if everything was ok in constructor!
-
-    if(!mPrivacyMode){
-        Initiate();
+    if (mState != STATE_INITIALIZED) {
+        // throw new IllegalStateException("startRecording() called on an "
+        //         + "uninitialized AudioRecord.");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-
-    if ((mState != STATE_INITIALIZED) || (CheckIfPackagesAllowed() == IS_NOT_ALLOWED)) { //If applicaton is not allowed -> throw exception!
-        DataAccess(FALSE);
-        AutoPtr< ArrayOf<String> > packageName = GetPackageName();
-        if (packageName != NULL && packageName->GetLength() > 0) {
-            AutoPtr<IPrivacySettings> ps;
-            mPrivacySettingsManager->GetSettings((*packageName)[0], Process::MyUid(), (IPrivacySettings**)&ps);
-            mPrivacySettingsManager->Notification((*packageName)[0], 0,
-                IPrivacySettings::EMPTY, IPrivacySettings::DATA_RECORD_AUDIO,
-                String(NULL), ps);
-            // throw(new IllegalStateException("startRecording() called on an "+"uninitialized AudioRecord."));
-            return E_ILLEGAL_STATE_EXCEPTION;
-        }
-    }
-
-    DataAccess(TRUE);
-    AutoPtr< ArrayOf<String> > packageName = GetPackageName();
-    if (packageName != NULL && packageName->GetLength() > 0) {
-        AutoPtr<IPrivacySettings> ps;
-        mPrivacySettingsManager->GetSettings((*packageName)[0], Process::MyUid(), (IPrivacySettings**)&ps);
-        mPrivacySettingsManager->Notification((*packageName)[0], 0,
-            IPrivacySettings::REAL, IPrivacySettings::DATA_RECORD_AUDIO,
-            String(NULL), ps);
-    }
-    //END PRIVACY
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // start recording
-    {
-        AutoLock lock(mRecordingStateLock);
-
+    synchronized(mRecordingStateLock) {
         if (Native_start(IMediaSyncEvent::SYNC_EVENT_NONE, 0) == SUCCESS) {
+            HandleFullVolumeRec(TRUE);
             mRecordingState = RECORDSTATE_RECORDING;
         }
     }
@@ -241,10 +286,10 @@ ECode CAudioRecord::StartRecording( // throws IllegalStateException
     Int32 tempValue2;
     syncEvent->GetType(&tempValue1);
     syncEvent->GetAudioSessionId(&tempValue2);
-    {
-        AutoLock lock(mRecordingStateLock);
 
+    synchronized(mRecordingStateLock) {
         if (Native_start(tempValue1, tempValue2) == SUCCESS) {
+            HandleFullVolumeRec(TRUE);
             mRecordingState = RECORDSTATE_RECORDING;
         }
     }
@@ -259,8 +304,8 @@ ECode CAudioRecord::Stop() // throws IllegalStateException
     }
 
     // stop recording
-    {
-        AutoLock lock(mRecordingStateLock);
+    synchronized(mRecordingStateLock) {
+        HandleFullVolumeRec(FALSE);
 
         Native_stop();
         mRecordingState = RECORDSTATE_STOPPED;
@@ -285,7 +330,8 @@ ECode CAudioRecord::Read(
     }
 
     if ((audioData == NULL) || (offsetInBytes < 0 ) || (sizeInBytes < 0)
-        || (offsetInBytes + sizeInBytes > audioData->GetLength())) {
+         || (offsetInBytes + sizeInBytes < 0)  // detect integer overflow
+         || (offsetInBytes + sizeInBytes > audioData->GetLength())) {
         *result = ERROR_BAD_VALUE;
         return NOERROR;
     }
@@ -308,7 +354,8 @@ ECode CAudioRecord::Read(
     }
 
     if ( (audioData == NULL) || (offsetInShorts < 0 ) || (sizeInShorts < 0)
-        || (offsetInShorts + sizeInShorts > audioData->GetLength())) {
+         || (offsetInShorts + sizeInShorts < 0)  // detect integer overflow
+         || (offsetInShorts + sizeInShorts > audioData->GetLength())) {
         *result = ERROR_BAD_VALUE;
         return NOERROR;
     }
@@ -351,20 +398,18 @@ ECode CAudioRecord::SetRecordPositionUpdateListener(
     /* [in] */ IAudioRecordOnRecordPositionUpdateListener* listener,
     /* [in] */ IHandler* handler)
 {
-    {
-        AutoLock lock(mPositionListenerLock);
-
+    synchronized(mPositionListenerLock) {
         mPositionListener = listener;
 
         if (listener != NULL) {
             if (handler != NULL) {
                 AutoPtr<ILooper> looper;
                 handler->GetLooper((ILooper**)&looper);
-                mEventHandler = new NativeEventHandler(this, looper, this);
+                mEventHandler = new NativeEventHandler(looper, this);
             }
             else {
                 // no given handler, use the looper the AudioRecord was created in
-                mEventHandler = new NativeEventHandler(this, mInitializationLooper, this);
+                mEventHandler = new NativeEventHandler(mInitializationLooper, this);
             }
         }
         else {
@@ -379,6 +424,10 @@ ECode CAudioRecord::SetNotificationMarkerPosition(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
+    if (mState == IAudioRecord::STATE_UNINITIALIZED) {
+        *result = IAudioRecord::ERROR_INVALID_OPERATION;
+        return NOERROR;
+    }
     *result = Native_set_marker_pos(markerInFrames);
     return NOERROR;
 }
@@ -388,140 +437,31 @@ ECode CAudioRecord::SetPositionNotificationPeriod(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
+    if (mState == IAudioRecord::STATE_UNINITIALIZED) {
+        *result = IAudioRecord::ERROR_INVALID_OPERATION;
+        return NOERROR;
+    }
     *result = Native_set_pos_update_period(periodInFrames);
     return NOERROR;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//BEGIN PRIVACY
-AutoPtr<ArrayOf<String> > CAudioRecord::GetPackageName()
-{
-    // try{
-    if (mPackageManager == NULL){
-        AutoPtr<IInterface> b = ServiceManager::GetService(String("package"));
-        mPackageManager = IIPackageManager::Probe(b);
-        assert(mPackageManager != NULL);
-    }
-
-    AutoPtr< ArrayOf<String> > packageNames;
-    Int32 uid = Process::MyUid();
-    mPackageManager->GetPackagesForUid(uid, (ArrayOf<String>**)&packageNames);
-    return packageNames;
-    // }
-    // catch(Exception e){
-        // e.printStackTrace();
-        Logger::E(PRIVACY_TAG,"something went wrong with getting package name");
-        // return null;
-    // }
-}
-
-void CAudioRecord::Initiate()
-{
-    // try{
-    AutoPtr<IInterface> b = ServiceManager::GetService(String("privacy"));
-    AutoPtr<IIPrivacySettingsManager> psm = IIPrivacySettingsManager::Probe(b);
-
-    mContext = NULL;
-    ECode ec = CPrivacySettingsManager::New(mContext, psm, (IPrivacySettingsManager**)&mPrivacySettingsManager);
-    if (mPackageManager == NULL){
-        b = ServiceManager::GetService(String("package"));
-        mPackageManager = IIPackageManager::Probe(b);
-    }
-    mPrivacyMode = TRUE;
-    if (FAILED(ec)) {
-        Logger::E(PRIVACY_TAG, "Something went wrong with initalize variables");
-        mPrivacyMode = FALSE;
-    }
-
-    // }
-    // catch(Exception e){
-    //     e.printStackTrace();
-    //     Log.e(PRIVACY_TAG, "Something went wrong with initalize variables");
-    //     mPrivacyMode = false;
-    // }
-}
-
-Int32 CAudioRecord::CheckIfPackagesAllowed()
-{
-    // try{
-    //boolean isAllowed = false;
-    if (mPrivacySettingsManager != NULL) {
-        AutoPtr< ArrayOf<String> > packageNames = GetPackageName();
-        if (packageNames != NULL) {
-            Byte t;
-            Int32 uid = Process::MyUid();
-            for (Int32 i = 0; i < packageNames->GetLength(); i++){
-                AutoPtr< IPrivacySettings > pSet;
-                mPrivacySettingsManager->GetSettings((*packageNames)[i], uid, (IPrivacySettings**)&pSet);
-                if (pSet != NULL) {
-                    pSet->GetRecordAudioSetting(&t);
-                    if (t != IPrivacySettings::REAL) {
-                        //if pSet is NULL, we allow application to access to mic
-                        return IS_NOT_ALLOWED;
-                    }
-                    pSet = NULL;
-                }
-            }
-            return IS_ALLOWED;
-        }
-        else{
-           Logger::E(PRIVACY_TAG, "return GOT_ERROR, because packageNames are NULL");
-            return GOT_ERROR;
-        }
-    }
-    else{
-        Logger::E(PRIVACY_TAG,"return GOT_ERROR, because mPrivacySettingsManager is NULL");
-        return GOT_ERROR;
-    }
-    // }
-    // catch (Exception e){
-    //     e.printStackTrace();
-    //     Log.e(PRIVACY_TAG,"Got exception in checkIfPackagesAllowed");
-    //     return GOT_ERROR;
-    // }
-    return 0;
-}
-
-void CAudioRecord::DataAccess(
-    /* [in] */ Boolean success)
-{
-    AutoPtr< ArrayOf<String> > packageNames = GetPackageName();
-    if(success && packageNames != NULL){
-        for (Int32 i = 0; i < packageNames->GetLength();i++) {
-            Logger::I(PRIVACY_TAG, "Allowed Package: -%s- accessing microphone.",
-                (*packageNames)[i].string());
-        }
-    }
-    else if (packageNames != NULL){
-        for (Int32 i = 0; i < packageNames->GetLength();i++) {
-            Logger::I(PRIVACY_TAG, "Blocked Package: -%s- accessing microphone.",
-                (*packageNames)[i].string());
-        }
-    }
-}
-//END PRIVACY
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 ECode CAudioRecord::AudioParamCheck(
     /* [in] */ Int32 audioSource,
     /* [in] */ Int32 sampleRateInHz,
-    /* [in] */ Int32 channelConfig,
     /* [in] */ Int32 audioFormat)
 {
     //--------------
     // audio source
-    AutoPtr<IMediaRecorderHelper> mediaRecorderHelper;
-    CMediaRecorderHelper::AcquireSingleton((IMediaRecorderHelper**)&mediaRecorderHelper);
     Int32 tempValue;
-    if ( (audioSource < IAudioSource::DEFAULT) ||
-         (audioSource > (mediaRecorderHelper->GetAudioSourceMax(&tempValue), tempValue)) ) {
+    if ( (audioSource < IMediaRecorderAudioSource::DEFAULT) ||
+//TODO: Need CMediaRecorder.h
+         // (audioSource > (CMediaRecorder::GetAudioSourceMax(&tempValue), tempValue)) &&
+         (audioSource != IMediaRecorderAudioSource::HOTWORD) ) {
         //throw (new IllegalArgumentException("Invalid audio source."));
         Logger::E(TAG, "Invalid audio source.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    else {
-        mRecordSource = audioSource;
-    }
+    mRecordSource = audioSource;
 
     //--------------
     // sample rate
@@ -531,39 +471,7 @@ ECode CAudioRecord::AudioParamCheck(
         Logger::E(TAG, "Hz is not a supported sample rate.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    else {
-        mSampleRate = sampleRateInHz;
-    }
-
-    //--------------
-    // channel config
-    mChannelConfiguration = channelConfig;
-
-    switch (channelConfig) {
-        case IAudioFormat::CHANNEL_IN_DEFAULT: // AudioFormat.CHANNEL_CONFIGURATION_DEFAULT
-        case IAudioFormat::CHANNEL_IN_MONO:
-        case IAudioFormat::CHANNEL_CONFIGURATION_MONO: {
-            mChannelCount = 1;
-            mChannels = IAudioFormat::CHANNEL_IN_MONO;
-            break;
-        }
-
-        case IAudioFormat::CHANNEL_IN_STEREO:
-        case IAudioFormat::CHANNEL_CONFIGURATION_STEREO: {
-            mChannelCount = 2;
-            mChannels = IAudioFormat::CHANNEL_IN_STEREO;
-            break;
-        }
-
-        default: {
-            mChannelCount = 0;
-            mChannels = IAudioFormat::CHANNEL_INVALID;
-            mChannelConfiguration = IAudioFormat::CHANNEL_INVALID;
-            //throw (new IllegalArgumentException("Unsupported channel configuration."));
-            Logger::E(TAG, "Unsupported channel configuration.");
-            return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        }
-    }
+    mSampleRate = sampleRateInHz;
 
     //--------------
     // audio format
@@ -579,7 +487,6 @@ ECode CAudioRecord::AudioParamCheck(
         }
         default:
         {
-            mAudioFormat = IAudioFormat::ENCODING_INVALID;
             /*throw (new IllegalArgumentException("Unsupported sample encoding."
                     + " Should be ENCODING_PCM_8BIT or ENCODING_PCM_16BIT."));*/
             Logger::E(TAG, "Unsupported sample encoding. Should be ENCODING_PCM_8BIT or ENCODING_PCM_16BIT.");
@@ -594,8 +501,9 @@ ECode CAudioRecord::AudioBuffSizeCheck(
 {
     // NB: this section is only valid with PCM data.
     // To update when supporting compressed formats
-    Int32 frameSizeInBytes = mChannelCount
-        * (mAudioFormat == IAudioFormat::ENCODING_PCM_8BIT ? 1 : 2);
+    Int32 val;
+    CAudioFormat::GetBytesPerSample(mAudioFormat, &val);
+    Int32 frameSizeInBytes = mChannelCount * val;
     if ((audioBufferSize % frameSizeInBytes != 0) || (audioBufferSize < 1)) {
         Logger::E(TAG, "Invalid audio buffer size.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -644,7 +552,7 @@ ECode CAudioRecord::GetChannelConfiguration(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = mChannelConfiguration;
+    *result = mChannelMask;
     return NOERROR;
 }
 
@@ -668,7 +576,9 @@ ECode CAudioRecord::GetRecordingState(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = mRecordingState;
+    synchronized (mRecordingStateLock) {
+        *result = mRecordingState;
+    }
     return NOERROR;
 }
 
@@ -707,6 +617,7 @@ ECode CAudioRecord::GetMinBufferSize(
         }
         case IAudioFormat::CHANNEL_IN_STEREO:
         case IAudioFormat::CHANNEL_CONFIGURATION_STEREO:
+        case (IAudioFormat::CHANNEL_IN_FRONT | IAudioFormat::CHANNEL_IN_BACK):
         {
             channelCount = 2;
             break;
@@ -751,6 +662,62 @@ ECode CAudioRecord::GetAudioSessionId(
     return NOERROR;
 }
 
+void CAudioRecord::HandleFullVolumeRec(
+    /* [in] */ Boolean starting)
+{
+    if (!mIsSubmixFullVolume) {
+        return;
+    }
+
+    AutoPtr<IInterface> b = ServiceManager::GetService(IContext::AUDIO_SERVICE);
+    assert(b != NULL);
+    AutoPtr<IIAudioService> ias = IIAudioService::Probe(b);
+    // try {
+    ias->ForceRemoteSubmixFullVolume(starting, mICallBack);
+    // } catch (RemoteException e) {
+    //     Log.e(TAG, "Error talking to AudioService when handling full submix volume", e);
+    // }
+}
+
+ECode CAudioRecord::GetChannelMaskFromLegacyConfig(
+    /* [in] */ Int32 inChannelConfig,
+    /* [in] */ Boolean allowLegacyConfig,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
+    Int32 mask;
+    switch (inChannelConfig) {
+    case IAudioFormat::CHANNEL_IN_DEFAULT: // IAudioFormat::CHANNEL_CONFIGURATION_DEFAULT
+    case IAudioFormat::CHANNEL_IN_MONO:
+    case IAudioFormat::CHANNEL_CONFIGURATION_MONO:
+        mask = IAudioFormat::CHANNEL_IN_MONO;
+        break;
+    case IAudioFormat::CHANNEL_IN_STEREO:
+    case IAudioFormat::CHANNEL_CONFIGURATION_STEREO:
+        mask = IAudioFormat::CHANNEL_IN_STEREO;
+        break;
+    case (IAudioFormat::CHANNEL_IN_FRONT | IAudioFormat::CHANNEL_IN_BACK):
+        mask = inChannelConfig;
+        break;
+    default:
+        // throw new IllegalArgumentException("Unsupported channel configuration.");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    if (!allowLegacyConfig && ((inChannelConfig == IAudioFormat::CHANNEL_CONFIGURATION_MONO)
+            || (inChannelConfig == IAudioFormat::CHANNEL_CONFIGURATION_STEREO))) {
+        // only happens with the constructor that uses AudioAttributes and AudioFormat
+        // throw new IllegalArgumentException("Unsupported deprecated configuration.");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    *result = mask;
+    return NOERROR;
+}
+
+//TODO: Need JNI
 //---------------------------------------------------------
 // Java methods called from the native side
 //--------------------
@@ -830,113 +797,113 @@ void CAudioRecord::recorderCallback(Int32 event, void* user, void *info)
 
 Int32 CAudioRecord::Native_setup(
     /* [in] */ IInterface* audiorecord_this,
-    /* [in] */ Int32 recordSource,
+    /* [in] */ IInterface* attributes,
     /* [in] */ Int32 sampleRate,
-    /* [in] */ Int32 channels,
+    /* [in] */ Int32 channelMask,
     /* [in] */ Int32 audioFormat,
     /* [in] */ Int32 buffSizeInBytes,
     /* [in] */ ArrayOf<Int32>* session)
 {
-    //LOGV(">> Entering android_media_AudioRecord_setup");
-    //LOGV("sampleRate=%d, audioFormat=%d, channels=%x, buffSizeInBytes=%d",
-    //     sampleRateInHertz, audioFormat, channels,     buffSizeInBytes);
+   //  //LOGV(">> Entering android_media_AudioRecord_setup");
+   //  //LOGV("sampleRate=%d, audioFormat=%d, channels=%x, buffSizeInBytes=%d",
+   //  //     sampleRateInHertz, audioFormat, channels,     buffSizeInBytes);
 
-    if (!audio_is_input_channel(channels)) {
-        Logger::E(TAG, "Error creating AudioRecord: channel count is not 1 or 2.");
-        return AUDIORECORD_ERROR_SETUP_INVALIDCHANNELMASK;
-    }
-    uint32_t nbChannels = popcount(channels);
+   //  if (!audio_is_input_channel(channels)) {
+   //      Logger::E(TAG, "Error creating AudioRecord: channel count is not 1 or 2.");
+   //      return AUDIORECORD_ERROR_SETUP_INVALIDCHANNELMASK;
+   //  }
+   //  uint32_t nbChannels = popcount(channels);
 
-    // compare the format against the Java constants
-    if ((audioFormat != IAudioFormat::ENCODING_PCM_16BIT)
-        && (audioFormat != IAudioFormat::ENCODING_PCM_8BIT)) {
-        Logger::E(TAG, "Error creating AudioRecord: unsupported audio format.");
-        return AUDIORECORD_ERROR_SETUP_INVALIDFORMAT;
-    }
+   //  // compare the format against the Java constants
+   //  if ((audioFormat != IAudioFormat::ENCODING_PCM_16BIT)
+   //      && (audioFormat != IAudioFormat::ENCODING_PCM_8BIT)) {
+   //      Logger::E(TAG, "Error creating AudioRecord: unsupported audio format.");
+   //      return AUDIORECORD_ERROR_SETUP_INVALIDFORMAT;
+   //  }
 
-   Int32 bytesPerSample = audioFormat == IAudioFormat::ENCODING_PCM_16BIT ? 2 : 1;
-   audio_format_t format = audioFormat == IAudioFormat::ENCODING_PCM_16BIT ?
-           AUDIO_FORMAT_PCM_16_BIT : AUDIO_FORMAT_PCM_8_BIT;
+   // Int32 bytesPerSample = audioFormat == IAudioFormat::ENCODING_PCM_16BIT ? 2 : 1;
+   // audio_format_t format = audioFormat == IAudioFormat::ENCODING_PCM_16BIT ?
+   //         AUDIO_FORMAT_PCM_16_BIT : AUDIO_FORMAT_PCM_8_BIT;
 
-    if (buffSizeInBytes == 0) {
-        Logger::E(TAG, "Error creating AudioRecord: frameCount is 0.");
-        return AUDIORECORD_ERROR_SETUP_ZEROFRAMECOUNT;
-    }
-    Int32 frameSize = nbChannels * bytesPerSample;
-    size_t frameCount = buffSizeInBytes / frameSize;
+   //  if (buffSizeInBytes == 0) {
+   //      Logger::E(TAG, "Error creating AudioRecord: frameCount is 0.");
+   //      return AUDIORECORD_ERROR_SETUP_ZEROFRAMECOUNT;
+   //  }
+   //  Int32 frameSize = nbChannels * bytesPerSample;
+   //  size_t frameCount = buffSizeInBytes / frameSize;
 
-    if (recordSource >= AUDIO_SOURCE_CNT) {
-        Logger::E(TAG, "Error creating AudioRecord: unknown source.");
-        return AUDIORECORD_ERROR_SETUP_INVALIDSOURCE;
-    }
+   //  if (recordSource >= AUDIO_SOURCE_CNT) {
+   //      Logger::E(TAG, "Error creating AudioRecord: unknown source.");
+   //      return AUDIORECORD_ERROR_SETUP_INVALIDSOURCE;
+   //  }
 
-    if (session == NULL) {
-        ALOGE("Error creating AudioRecord: invalid session ID pointer");
-        return AUDIORECORD_ERROR;
-    }
+   //  if (session == NULL) {
+   //      ALOGE("Error creating AudioRecord: invalid session ID pointer");
+   //      return AUDIORECORD_ERROR;
+   //  }
 
-    Int32 sessionId = (*session)[0];
+   //  Int32 sessionId = (*session)[0];
 
-    audiorecord_callback_cookie *lpCallbackData = NULL;
-    android::AudioRecord* lpRecorder = NULL;
+   //  audiorecord_callback_cookie *lpCallbackData = NULL;
+   //  android::AudioRecord* lpRecorder = NULL;
 
-    // create an uninitialized AudioRecord object
-    lpRecorder = new android::AudioRecord();
-        if(lpRecorder == NULL) {
-        Logger::E(TAG, "Error creating AudioRecord instance.");
-        return AUDIORECORD_ERROR_SETUP_NATIVEINITFAILED;
-    }
+   //  // create an uninitialized AudioRecord object
+   //  lpRecorder = new android::AudioRecord();
+   //      if(lpRecorder == NULL) {
+   //      Logger::E(TAG, "Error creating AudioRecord instance.");
+   //      return AUDIORECORD_ERROR_SETUP_NATIVEINITFAILED;
+   //  }
 
-    // create the callback information:
-    // this data will be passed with every AudioRecord callback
-    lpCallbackData = new audiorecord_callback_cookie;
-    // we use a weak reference so the AudioRecord object can be garbage collected.
-    // lpCallbackData->audioRecord_ref = env->NewGlobalRef(weak_this);
-    GetWeakReference((IWeakReference**)&lpCallbackData->mAudioRecordRef);
-    lpCallbackData->mBusy = FALSE;
-    lpRecorder->set((audio_source_t)recordSource,
-       sampleRate,
-       format,        // word length, PCM
-       channels,
-       frameCount,
-       recorderCallback,// callback_t
-       lpCallbackData,// void* user
-       0,             // notificationFrames,
-       TRUE,         // threadCanCallJava)
-       sessionId);
+   //  // create the callback information:
+   //  // this data will be passed with every AudioRecord callback
+   //  lpCallbackData = new audiorecord_callback_cookie;
+   //  // we use a weak reference so the AudioRecord object can be garbage collected.
+   //  // lpCallbackData->audioRecord_ref = env->NewGlobalRef(weak_this);
+   //  GetWeakReference((IWeakReference**)&lpCallbackData->mAudioRecordRef);
+   //  lpCallbackData->mBusy = FALSE;
+   //  lpRecorder->set((audio_source_t)recordSource,
+   //     sampleRate,
+   //     format,        // word length, PCM
+   //     channels,
+   //     frameCount,
+   //     recorderCallback,// callback_t
+   //     lpCallbackData,// void* user
+   //     0,             // notificationFrames,
+   //     TRUE,         // threadCanCallJava)
+   //     sessionId);
 
-    if(lpRecorder->initCheck() != android::NO_ERROR) {
-        Logger::E(TAG, "Error creating AudioRecord instance: initialization check failed.");
-        goto native_init_failure;
-    }
+   //  if(lpRecorder->initCheck() != android::NO_ERROR) {
+   //      Logger::E(TAG, "Error creating AudioRecord instance: initialization check failed.");
+   //      goto native_init_failure;
+   //  }
 
-    // read the audio session ID back from AudioRecord in case a new session was created during set()
-    (*session)[0] = lpRecorder->getSessionId();
+   //  // read the audio session ID back from AudioRecord in case a new session was created during set()
+   //  (*session)[0] = lpRecorder->getSessionId();
 
-    // {   // scope for the lock
-    //     AutoLock l(sLock);
-    //     sAudioRecordCallBackCookies.add(lpCallbackData);
-    // }
+   //  // {   // scope for the lock
+   //  //     AutoLock l(sLock);
+   //  //     sAudioRecordCallBackCookies.add(lpCallbackData);
+   //  // }
 
-    // save our newly created C++ AudioRecord in the "nativeRecorderInJavaObj" field
-    // of the Java object
-    mNativeRecorderInJavaObj = (Int32)lpRecorder;
+   //  // save our newly created C++ AudioRecord in the "nativeRecorderInJavaObj" field
+   //  // of the Java object
+   //  mNativeRecorderInJavaObj = (Int32)lpRecorder;
 
-    // save our newly created callback information in the "nativeCallbackCookie" field
-    // of the Java object (in mNativeCallbackCookie) so we can free the memory in finalize()
-    mNativeCallbackCookie = (Int32)lpCallbackData;
+   //  // save our newly created callback information in the "nativeCallbackCookie" field
+   //  // of the Java object (in mNativeCallbackCookie) so we can free the memory in finalize()
+   //  mNativeCallbackCookie = (Int32)lpCallbackData;
 
     return AUDIORECORD_SUCCESS;
 
-    // failure:
-native_init_failure:
-    delete lpCallbackData;
-    delete lpRecorder;
+//     // failure:
+// native_init_failure:
+//     delete lpCallbackData;
+//     delete lpRecorder;
 
-    mNativeRecorderInJavaObj = 0;
-    mNativeCallbackCookie = 0;
+//     mNativeRecorderInJavaObj = 0;
+//     mNativeCallbackCookie = 0;
 
-    return AUDIORECORD_ERROR_SETUP_NATIVEINITFAILED;
+//     return AUDIORECORD_ERROR_SETUP_NATIVEINITFAILED;
 }
 
 void CAudioRecord::Native_finalize()
@@ -946,29 +913,29 @@ void CAudioRecord::Native_finalize()
 
 void CAudioRecord::Native_release()
 {
-    // serialize access. Ugly, but functional.
-    AutoLock lock(&_m_syncLock);
+    // // serialize access. Ugly, but functional.
+    // AutoLock lock(&_m_syncLock);
 
-    android::AudioRecord* lpRecorder = (android::AudioRecord *)mNativeRecorderInJavaObj;
-    audiorecord_callback_cookie* lpCookie = (audiorecord_callback_cookie *)mNativeCallbackCookie;
+    // android::AudioRecord* lpRecorder = (android::AudioRecord *)mNativeRecorderInJavaObj;
+    // audiorecord_callback_cookie* lpCookie = (audiorecord_callback_cookie *)mNativeCallbackCookie;
 
-    // reset the native resources in the Java object so any attempt to access
-    // them after a call to release fails.
-    mNativeRecorderInJavaObj = 0;
-    mNativeCallbackCookie = 0;
+    // // reset the native resources in the Java object so any attempt to access
+    // // them after a call to release fails.
+    // mNativeRecorderInJavaObj = 0;
+    // mNativeCallbackCookie = 0;
 
-    // delete the AudioRecord object
-    if (lpRecorder) {
-        // LOGV("About to delete lpRecorder: %x\n", (int)lpRecorder);
-        lpRecorder->stop();
-        delete lpRecorder;
-    }
+    // // delete the AudioRecord object
+    // if (lpRecorder) {
+    //     // LOGV("About to delete lpRecorder: %x\n", (int)lpRecorder);
+    //     lpRecorder->stop();
+    //     delete lpRecorder;
+    // }
 
-    // delete the callback information
-    if (lpCookie) {
-        // LOGV("deleting lpCookie: %x\n", (int)lpCookie);
-        delete lpCookie;
-    }
+    // // delete the callback information
+    // if (lpCookie) {
+    //     // LOGV("deleting lpCookie: %x\n", (int)lpCookie);
+    //     delete lpCookie;
+    // }
 }
 
 Int32 CAudioRecord::Native_start(
@@ -1140,22 +1107,23 @@ Int32 CAudioRecord::Native_get_min_buff_size(
     /* [in] */ Int32 channelCount,
     /* [in] */ Int32 audioFormat)
 {
-    // LOGV(">> android_media_AudioRecord_get_min_buff_size(%d, %d, %d)", sampleRateInHertz, nbChannels, audioFormat);
+    // // LOGV(">> android_media_AudioRecord_get_min_buff_size(%d, %d, %d)", sampleRateInHertz, nbChannels, audioFormat);
 
-    Int32 frameCount = 0;
-    android::status_t result = android::AudioRecord::getMinFrameCount(&frameCount,
-            sampleRateInHz,
-            (audioFormat == IAudioFormat::ENCODING_PCM_16BIT ?
-            AUDIO_FORMAT_PCM_16_BIT : AUDIO_FORMAT_PCM_8_BIT),
-            channelCount);
+    // Int32 frameCount = 0;
+    // android::status_t result = android::AudioRecord::getMinFrameCount(&frameCount,
+    //         sampleRateInHz,
+    //         (audioFormat == IAudioFormat::ENCODING_PCM_16BIT ?
+    //         AUDIO_FORMAT_PCM_16_BIT : AUDIO_FORMAT_PCM_8_BIT),
+    //         channelCount);
 
-    if (result == android::BAD_VALUE) {
-        return 0;
-    }
-    if (result != android::NO_ERROR) {
-        return -1;
-    }
-    return frameCount * channelCount * (audioFormat == IAudioFormat::ENCODING_PCM_16BIT ? 2 : 1);
+    // if (result == android::BAD_VALUE) {
+    //     return 0;
+    // }
+    // if (result != android::NO_ERROR) {
+    //     return -1;
+    // }
+    // return frameCount * channelCount * (audioFormat == IAudioFormat::ENCODING_PCM_16BIT ? 2 : 1);
+    return 0;
 }
 
 //-------------------------------------------------
@@ -1164,14 +1132,14 @@ Int32 CAudioRecord::Native_get_min_buff_size(
 void CAudioRecord::Logd(
     /* [in] */ const String& msg)
 {
-    Logger::D(TAG, String("[ android.media.AudioRecord ] ") + msg);
+    Logger::D(TAG, msg);
 }
 
 /*static*/
 void CAudioRecord::Loge(
     /* [in] */ const String& msg)
 {
-    Logger::E(TAG, String("[ android.media.AudioRecord ] ") + msg);
+    Logger::E(TAG, msg);
 }
 
 } // namespace Media

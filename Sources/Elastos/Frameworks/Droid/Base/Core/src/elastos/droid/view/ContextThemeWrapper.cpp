@@ -27,8 +27,7 @@ ContextThemeWrapper::~ContextThemeWrapper()
 
 ECode ContextThemeWrapper::constructor()
 {
-    FAIL_RETURN(ContextWrapper::constructor(NULL));
-    return NOERROR;
+    return ContextWrapper::constructor(NULL);
 }
 
 ECode ContextThemeWrapper::constructor(

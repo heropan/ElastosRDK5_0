@@ -17,7 +17,7 @@ namespace Utility {
 /**
  * XML utility methods.
  */
-class Xml
+class ECO_PUBLIC Xml
 {
 public:
     /** Factory for xml serializers. Initialized on demand. */
@@ -122,7 +122,8 @@ public:
         /* [in] */ IXmlPullParser* parser);
 
 private:
-    Xml();
+    ECO_LOCAL Xml();
+    ECO_LOCAL Xml(const Xml&);
 };
 
 } // namespace Utility

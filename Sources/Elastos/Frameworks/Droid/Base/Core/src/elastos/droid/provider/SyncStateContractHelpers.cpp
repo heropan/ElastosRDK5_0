@@ -1,21 +1,24 @@
+<<<<<<< HEAD
 
 #include "Elastos.Droid.Accounts.h"
 #include "Elastos.Droid.Database.h"
 #include "Elastos.Droid.Net.h"
 #include "Elastos.Droid.Provider.h"
+=======
+#include "elastos/droid/content/CContentProviderOperationHelper.h"
+>>>>>>> master
 #include "elastos/droid/content/CContentUris.h"
 #include "elastos/droid/content/CContentValues.h"
-#include "elastos/droid/content/CContentProviderOperationHelper.h"
 #include "elastos/droid/provider/SyncStateContractHelpers.h"
 #include "elastos/droid/utility/CPair.h"
 
 using Elastos::Droid::Content::CContentUris;
-using Elastos::Droid::Content::IContentUris;
-using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Content::CContentValues;
-using Elastos::Droid::Content::IContentProviderOperationHelper;
 using Elastos::Droid::Content::CContentProviderOperationHelper;
 using Elastos::Droid::Content::IContentProviderOperationBuilder;
+using Elastos::Droid::Content::IContentProviderOperationHelper;
+using Elastos::Droid::Content::IContentUris;
+using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Utility::CPair;
 using Elastos::Droid::Utility::IPair;
@@ -73,6 +76,7 @@ ECode SyncStateContractHelpers::Get(
     }
     //} finally {
 EXIT:
+    //TODO
     // FAIL_RETURN(c->Close())
     //}
     *value = NULL;

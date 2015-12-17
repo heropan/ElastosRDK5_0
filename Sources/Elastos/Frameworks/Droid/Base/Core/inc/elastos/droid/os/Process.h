@@ -15,9 +15,7 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
-class Process
-    : public Object
-    , public IProcess
+class ECO_PUBLIC Process
 {
 public:
     /**
@@ -56,7 +54,6 @@ public:
     };
 
 public:
-    CAR_INTERFACE_DECL()
 
    /**
      * Start a new process.
@@ -474,12 +471,15 @@ public:
     static CARAPI RemoveAllProcessGroups();
 
 private:
+    ECO_LOCAL Process();
+    ECO_LOCAL Process(const Process&);
+
     /**
      * Queries the zygote for the list of ABIS it supports.
      *
      * @throws ZygoteStartFailedEx if the query failed.
      */
-    static CARAPI GetAbiList(
+    ECO_LOCAL static CARAPI GetAbiList(
         /* [in] */ IBufferedWriter* writer,
         /* [in] */ IDataInputStream* inputStream,
         /* [out] */ String* result);
@@ -488,11 +488,11 @@ private:
      * Tries to open socket to Zygote process if not already open. If
      * already open, does nothing.  May block and retry.
      */
-    static CARAPI OpenZygoteSocketIfNeeded(
+    ECO_LOCAL static CARAPI OpenZygoteSocketIfNeeded(
         /* [in] */ const String& abi,
         /* [out] */ ZygoteState** state);
 
-    static CARAPI OpenJavaZygoteSocketIfNeeded(
+    ECO_LOCAL static CARAPI OpenJavaZygoteSocketIfNeeded(
         /* [in] */ const String& abi,
         /* [out] */ ZygoteState** state);
 
@@ -503,12 +503,12 @@ private:
      *
      * @throws ZygoteStartFailedEx if process start failed for any reason
      */
-    static CARAPI ZygoteSendArgsAndGetResult(
+    ECO_LOCAL static CARAPI ZygoteSendArgsAndGetResult(
         /* [in] */ ZygoteState* state,
         /* [in] */ List<String>* args,
         /* [out] */ IProcessStartResult** result);
 
-    static CARAPI JavaZygoteSendArgsAndGetResult(
+    ECO_LOCAL static CARAPI JavaZygoteSendArgsAndGetResult(
         /* [in] */ ZygoteState* state,
         /* [in] */ List<String>* args,
         /* [out] */ IProcessStartResult** result);
@@ -532,7 +532,7 @@ private:
      * @return An object that describes the result of the attempt to start the process.
      * @throws ZygoteStartFailedEx if process start failed for any reason
      */
-    static CARAPI StartViaZygote(
+    ECO_LOCAL static CARAPI StartViaZygote(
         /* [in] */ const String& processClass,
         /* [in] */ const String& niceName,
         /* [in] */ Int32 uid,

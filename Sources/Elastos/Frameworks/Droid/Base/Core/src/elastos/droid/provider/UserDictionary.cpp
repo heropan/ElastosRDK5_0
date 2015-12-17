@@ -5,8 +5,8 @@
 #include "elastos/droid/provider/UserDictionary.h"
 #include "elastos/droid/text/TextUtils.h"
 
-using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::CContentValues;
+using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Net::IUri;

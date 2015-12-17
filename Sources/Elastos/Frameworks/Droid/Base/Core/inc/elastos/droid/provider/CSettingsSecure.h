@@ -3,17 +3,24 @@
 
 #include "_Elastos_Droid_Provider_CSettingsSecure.h"
 #include "elastos/droid/provider/Settings.h"
+#include <elastos/core/Singleton.h>
 
-using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-CarClass(CSettingsSecure), public Settings::Secure
+CarClass(CSettingsSecure)
+    , public Singleton
+    , public Settings::Secure
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI GetUriFor(
         /* [in] */ IUri* u,
         /* [in] */ const String& name,
@@ -27,7 +34,7 @@ public:
 
     /** @hide */
     CARAPI GetMovedKeys(
-        /* [in] */ IObjectContainer* outKeySet);
+        /* [in] */ IHashSet* outKeySet);
 
     /**
      * Look up a name in the database.
@@ -381,6 +388,9 @@ public:
         /* [in] */ const String& provider,
         /* [in] */ Boolean enabled,
         /* [in] */ Int32 userId);
+
+    CARAPI GetCLONE_TO_MANAGED_PROFILE(
+        /* [out, callee] */ ArrayOf<String>** array);
 };
 
 } //namespace Provider

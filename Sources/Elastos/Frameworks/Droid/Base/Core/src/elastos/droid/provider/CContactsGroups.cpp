@@ -1,12 +1,15 @@
-
-#include "elastos/droid/provider/CContactsGroups.h"
 #include "elastos/droid/net/Uri.h"
+#include "elastos/droid/provider/CContactsGroups.h"
 
 using Elastos::Droid::Net::Uri;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
+
+CAR_SINGLETON_IMPL(CContactsGroups)
+
+CAR_INTERFACE_IMPL_4(CContactsGroups, Singleton, IContactsGroups, IBaseColumns, ISyncConstValue, IContactsGroupsColumns)
 
 ECode CContactsGroups::constructor()
 {

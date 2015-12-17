@@ -65,7 +65,6 @@ using Elastos::Droid::Widget::IImageView;
 using Elastos::Droid::Widget::ITextView;
 using Elastos::Droid::Widget::IAdapterView;
 using Elastos::Droid::Widget::EIID_IRemoteViews;
-using Elastos::Droid::Widget::EIID_RemoteViews;
 using Elastos::Droid::Widget::CRemoteViews;
 using Elastos::Droid::App::IActivityOptionsHelper;
 using Elastos::Droid::App::CActivityOptionsHelper;
@@ -79,10 +78,6 @@ using Elastos::Utility::Logging::Slogger;
 namespace Elastos {
 namespace Droid {
 namespace Widget {
-
-//0c9ce335-e934-4473-aef9-a9379eebee53
-extern "C" const InterfaceID EIID_RemoteViews =
-        { 0x0c9ce335, 0xe934, 0x4473, { 0xae, 0xf9, 0xa9, 0x37, 0x9e, 0xeb, 0xee, 0x53 } };
 
 static AutoPtr<IRemoteViewsOnClickHandler> InitHandler()
 {

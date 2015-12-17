@@ -2733,7 +2733,7 @@ ECode Intent::ParseIntent(
 {
     VALIDATE_NOT_NULL(_intent);
 
-    Int32 size = ARRAY_SIZE(R::styleable::Intent);
+    Int32 size = ArraySize(R::styleable::Intent);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::Intent, size);
 
@@ -2778,7 +2778,7 @@ ECode Intent::ParseIntent(
         String nodeName;
         parser->GetName(&nodeName);
         if (nodeName.Equals(TAG_CATEGORIES)) {
-            size = ARRAY_SIZE(R::styleable::IntentCategory);
+            size = ArraySize(R::styleable::IntentCategory);
             layout = ArrayOf<Int32>::Alloc(size);
             layout->Copy(R::styleable::IntentCategory, size);
 

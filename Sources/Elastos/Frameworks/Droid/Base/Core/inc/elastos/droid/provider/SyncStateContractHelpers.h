@@ -1,4 +1,3 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_SYNCSTATECONTRACTHELPERS_H__
 #define __ELASTOS_DROID_PROVIDER_SYNCSTATECONTRACTHELPERS_H__
 
@@ -94,6 +93,12 @@ public:
         /* [in] */ IUri* uri,
         /* [in] */ ArrayOf<Byte>* data,
         /* [out] */ IContentProviderOperation** operation);
+
+public:
+    /**
+     * The content:// style URI for this table
+     */
+    static const AutoPtr<IUri> CONTENT_URI;
 
 private:
     static AutoPtr<ArrayOf<String> > DATA_PROJECTION;

@@ -1,13 +1,12 @@
-
-#include "elastos/droid/provider/CCalendarContractEventDays.h"
 #include "elastos/droid/content/CContentUris.h"
 #include "elastos/droid/net/Uri.h"
+#include "elastos/droid/provider/CCalendarContractEventDays.h"
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::StringBuilder;
-using Elastos::Droid::Net::Uri;
-using Elastos::Droid::Content::IContentUris;
 using Elastos::Droid::Content::CContentUris;
+using Elastos::Droid::Content::IContentUris;
+using Elastos::Droid::Net::Uri;
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
@@ -15,10 +14,9 @@ namespace Provider {
 
 const String CCalendarContractEventDays::SELECTION = String("selected=1");
 
-ECode CCalendarContractEventDays::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CCalendarContractEventDays)
+
+CAR_INTERFACE_IMPL(CCalendarContractEventDays, Singleton, ICalendarContractEventDays)
 
 ECode CCalendarContractEventDays::GetCONTENT_URI(
     /* [out] */ IUri** uri)
@@ -56,7 +54,7 @@ ECode CCalendarContractEventDays::Query(
     FAIL_RETURN(helper->AppendId(builder, endDay))
     AutoPtr<IUri> uri;
     FAIL_RETURN(builder->Build((IUri**)&uri))
-    return cr->Query(uri, projection, SELECTION, NULL /* selection args */, STARTDAY, cursor);
+    return cr->Query(uri, projection, SELECTION, NULL /* selection args */, ICalendarContractEventDaysColumns::STARTDAY, cursor);
 }
 
 } //Provider

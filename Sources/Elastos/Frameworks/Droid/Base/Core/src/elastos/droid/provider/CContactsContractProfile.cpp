@@ -1,15 +1,20 @@
-
 #include "elastos/droid/provider/CContactsContractProfile.h"
 #include "elastos/droid/provider/ContactsContract.h"
+#include "elastos/droid/provider/ContactsContractProfile.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsContractProfile::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CContactsContractProfile)
+
+CAR_INTERFACE_IMPL_6(CContactsContractProfile, Singleton
+    , IContactsContractProfile
+    , IBaseColumns
+    , IContactsContractContactsColumns
+    , IContactsContractContactOptionsColumns
+    , IContactsContractContactNameColumns
+    , IContactsContractContactStatusColumns)
 
 ECode CContactsContractProfile::GetCONTENT_URI(
     /* [out] */ IUri** uri)
@@ -28,7 +33,7 @@ ECode CContactsContractProfile::GetCONTENT_VCARD_URI(
 
 }
 
-ECode CContactsContractProfile::GetCONTENTRAWCONTACTSURI(
+ECode CContactsContractProfile::GetCONTENT_RAW_CONTACTS_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);

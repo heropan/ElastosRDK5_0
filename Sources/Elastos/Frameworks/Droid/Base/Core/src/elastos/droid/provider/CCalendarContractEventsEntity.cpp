@@ -1,26 +1,30 @@
-
-#include "elastos/droid/provider/CCalendarContractEventsEntity.h"
-#include "elastos/droid/provider/CalendarContractExtendedProperties.h"
-#include "elastos/droid/provider/CalendarContractReminders.h"
-#include "elastos/droid/provider/CalendarContractAttendees.h"
-#include "elastos/droid/provider/ContactsContract.h"
-#include "elastos/droid/database/DatabaseUtils.h"
 #include "elastos/droid/content/CContentValues.h"
 #include "elastos/droid/content/CEntity.h"
+#include "elastos/droid/database/DatabaseUtils.h"
 #include "elastos/droid/net/Uri.h"
+#include "elastos/droid/provider/CalendarContractAttendees.h"
+#include "elastos/droid/provider/CalendarContractExtendedProperties.h"
+#include "elastos/droid/provider/CalendarContractReminders.h"
+#include "elastos/droid/provider/CCalendarContractEventsEntity.h"
+#include "elastos/droid/provider/ContactsContract.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 
-using Elastos::Core::StringBuilder;
-using Elastos::Core::StringUtils;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::CString;
-using Elastos::Droid::Net::Uri;
-using Elastos::Droid::Content::CEntity;
-using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Content::CContentValues;
+using Elastos::Droid::Content::CEntity;
 using Elastos::Droid::Content::EIID_ICursorEntityIterator;
 using Elastos::Droid::Content::EIID_IEntityIterator;
+using Elastos::Droid::Content::IContentValues;
+using Elastos::Droid::Content::ICursorEntityIterator;
+using Elastos::Droid::Content::IEntity;
+using Elastos::Droid::Content::IEntityIterator;
+using Elastos::Droid::Database::DatabaseUtils;
+using Elastos::Droid::Net::Uri;
+using Elastos::Utility::EIID_IIterator;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -83,72 +87,28 @@ Int32 CCalendarContractEventsEntity::EntityIteratorImpl::COLUMN_VALUE = 2;
 
 String CCalendarContractEventsEntity::EntityIteratorImpl::WHERE_EVENT_ID = String("event_id=?");
 
-CCalendarContractEventsEntity::EntityIteratorImpl::EntityIteratorImpl(
-    /* [in] */ ICursor* cursor,
-    /* [in] */ IContentResolver* resolver)
-    : CursorEntityIterator(cursor)
-    , mResolver(resolver)
-    , mProvider(NULL)
-{
+CAR_INTERFACE_IMPL_3(CCalendarContractEventsEntity::EntityIteratorImpl, Object, ICursorEntityIterator, IEntityIterator, IIterator)
 
-}
-
-CCalendarContractEventsEntity::EntityIteratorImpl::EntityIteratorImpl(
-    /* [in] */ ICursor* cursor,
-    /* [in] */ IContentProviderClient* provider)
-    : CursorEntityIterator(cursor)
-    , mResolver(NULL)
-    , mProvider(provider)
-{
-
-}
+CCalendarContractEventsEntity::EntityIteratorImpl::EntityIteratorImpl()
+{}
 
 CCalendarContractEventsEntity::EntityIteratorImpl::~EntityIteratorImpl()
+{}
+
+ECode CCalendarContractEventsEntity::EntityIteratorImpl::constructor(
+    /* [in] */ ICursor* cursor,
+    /* [in] */ IContentResolver* resolver)
 {
+    mResolver = resolver;
+    return CursorEntityIterator::constructor(cursor);
 }
 
-PInterface CCalendarContractEventsEntity::EntityIteratorImpl::Probe(
-    /* [in]  */ REIID riid)
+ECode CCalendarContractEventsEntity::EntityIteratorImpl::constructor(
+    /* [in] */ ICursor* cursor,
+    /* [in] */ IContentProviderClient* provider)
 {
-    if ( riid == EIID_IInterface) {
-        return (IInterface*)this;
-    }
-    else if (riid == EIID_ICursorEntityIterator) {
-        return (PInterface)(ICursorEntityIterator*)this;
-    }
-    else if (riid == EIID_IEntityIterator) {
-        return (IEntityIterator*)this;
-    }
-    return NULL;
-}
-
-UInt32 CCalendarContractEventsEntity::EntityIteratorImpl::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CCalendarContractEventsEntity::EntityIteratorImpl::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode CCalendarContractEventsEntity::EntityIteratorImpl::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-
-    if (pObject == (IInterface*)(ICursorEntityIterator*)this) {
-        *pIID = EIID_ICursorEntityIterator;
-    }
-    else if (pObject == (IInterface*)(IEntityIterator*)this) {
-        *pIID = EIID_IEntityIterator;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return  NOERROR;
+    mProvider = provider;
+    return CursorEntityIterator::constructor(cursor);
 }
 
 ECode CCalendarContractEventsEntity::EntityIteratorImpl::GetEntityAndIncrementCursor(
@@ -163,9 +123,7 @@ ECode CCalendarContractEventsEntity::EntityIteratorImpl::GetEntityAndIncrementCu
 
     AutoPtr<IContentValues> cv;
     CContentValues::New((IContentValues**)&cv);
-    AutoPtr<IInteger64> id;
-    CInteger64::New(eventId, (IInteger64**)&id);
-    cv->PutInt64(IBaseColumns::ID, id);
+    cv->Put(IBaseColumns::ID, eventId);
 
     DatabaseUtils::CursorInt32ToContentValuesIfPresent(cursor, cv, CALENDAR_ID);
     DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, TITLE);
@@ -205,26 +163,26 @@ ECode CCalendarContractEventsEntity::EntityIteratorImpl::GetEntityAndIncrementCu
     DatabaseUtils::CursorInt64ToContentValuesIfPresent(cursor, cv, DIRTY);
     DatabaseUtils::CursorInt64ToContentValuesIfPresent(cursor, cv, LAST_SYNCED);
     DatabaseUtils::CursorInt32ToContentValuesIfPresent(cursor, cv, DELETED);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, SYNC_DATA1);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, SYNC_DATA2);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, SYNC_DATA3);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, SYNC_DATA4);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, SYNC_DATA5);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, SYNC_DATA6);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, SYNC_DATA7);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, SYNC_DATA8);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, SYNC_DATA9);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, SYNC_DATA10);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, CAL_SYNC1);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, CAL_SYNC2);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, CAL_SYNC3);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, CAL_SYNC4);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, CAL_SYNC5);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, CAL_SYNC6);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, CAL_SYNC7);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, CAL_SYNC8);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, CAL_SYNC9);
-    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, CAL_SYNC10);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractEventsColumns::SYNC_DATA1);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractEventsColumns::SYNC_DATA2);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractEventsColumns::SYNC_DATA3);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractEventsColumns::SYNC_DATA4);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractEventsColumns::SYNC_DATA5);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractEventsColumns::SYNC_DATA6);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractEventsColumns::SYNC_DATA7);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractEventsColumns::SYNC_DATA8);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractEventsColumns::SYNC_DATA9);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractEventsColumns::SYNC_DATA10);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractCalendarSyncColumns::CAL_SYNC1);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractCalendarSyncColumns::CAL_SYNC2);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractCalendarSyncColumns::CAL_SYNC3);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractCalendarSyncColumns::CAL_SYNC4);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractCalendarSyncColumns::CAL_SYNC5);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractCalendarSyncColumns::CAL_SYNC6);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractCalendarSyncColumns::CAL_SYNC7);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractCalendarSyncColumns::CAL_SYNC8);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractCalendarSyncColumns::CAL_SYNC9);
+    DatabaseUtils::CursorStringToContentValuesIfPresent(cursor, cv, ICalendarContractCalendarSyncColumns::CAL_SYNC10);
 
     // Create the Entity from the ContentValue
     AutoPtr<IEntity> _entity;
@@ -250,18 +208,15 @@ ECode CCalendarContractEventsEntity::EntityIteratorImpl::GetEntityAndIncrementCu
         CContentValues::New((IContentValues**)&reminderValues);
         Int32 minutus;
         subCursor->GetInt32(COLUMN_MINUTES, &minutus);
-        AutoPtr<IInteger32> cminutus;
-        CInteger32::New(minutus, (IInteger32**)&cminutus);
-        reminderValues->PutInt32(ICalendarContractRemindersColumns::MINUTES, cminutus);
+        reminderValues->Put(ICalendarContractRemindersColumns::MINUTES, minutus);
         Int32 method;
         subCursor->GetInt32(COLUMN_MINUTES, &method);
-        AutoPtr<IInteger32> cmethod;
-        CInteger32::New(method, (IInteger32**)&cmethod);
-        reminderValues->PutInt32(ICalendarContractRemindersColumns::METHOD, cmethod);
+        reminderValues->Put(ICalendarContractRemindersColumns::METHOD, method);
         _entity->AddSubValue(remindUri, reminderValues);
     }
     //} finally {
-    subCursor->Close();
+    //TODO
+    // subCursor->Close();
     //}
 
     subCursor = NULL;
@@ -282,50 +237,37 @@ ECode CCalendarContractEventsEntity::EntityIteratorImpl::GetEntityAndIncrementCu
         CContentValues::New((IContentValues**)&attendeeValues);
         String name;
         subCursor->GetString(COLUMN_ATTENDEE_NAME, &name);
-        AutoPtr<ICharSequence> cname;
-        CString::New(name , (ICharSequence**)&cname);
-        attendeeValues->PutString(ICalendarContractAttendeesColumns::ATTENDEE_NAME, cname);
+        attendeeValues->Put(ICalendarContractAttendeesColumns::ATTENDEE_NAME, name);
 
         String email;
         subCursor->GetString(COLUMN_ATTENDEE_EMAIL, &email);
-        AutoPtr<ICharSequence> cemail;
-        CString::New(email , (ICharSequence**)&cemail);
-        attendeeValues->PutString(ICalendarContractAttendeesColumns::ATTENDEE_EMAIL, cemail);
+        attendeeValues->Put(ICalendarContractAttendeesColumns::ATTENDEE_EMAIL, email);
 
         Int32 relationship;
         subCursor->GetInt32(COLUMN_ATTENDEE_RELATIONSHIP, &relationship);
-        AutoPtr<IInteger32> _relationship;
-        CInteger32::New(relationship, (IInteger32**)&_relationship);
-        attendeeValues->PutInt32(ICalendarContractAttendeesColumns::ATTENDEE_RELATIONSHIP, _relationship);
+        attendeeValues->Put(ICalendarContractAttendeesColumns::ATTENDEE_RELATIONSHIP, relationship);
 
         Int32 type;
         subCursor->GetInt32(COLUMN_ATTENDEE_TYPE, &type);
-        AutoPtr<IInteger32> _type;
-        CInteger32::New(type, (IInteger32**)&_type);
-        attendeeValues->PutInt32(ICalendarContractAttendeesColumns::ATTENDEE_TYPE, _type);
+        attendeeValues->Put(ICalendarContractAttendeesColumns::ATTENDEE_TYPE, type);
 
         Int32 status;
         subCursor->GetInt32(COLUMN_ATTENDEE_STATUS, &status);
-        AutoPtr<IInteger32> _status;
-        CInteger32::New(status, (IInteger32**)&_status);
-        attendeeValues->PutInt32(ICalendarContractAttendeesColumns::ATTENDEE_STATUS, _status);
+        attendeeValues->Put(ICalendarContractAttendeesColumns::ATTENDEE_STATUS, status);
 
         String identity;
         subCursor->GetString(COLUMN_ATTENDEE_IDENTITY, &identity);
-        AutoPtr<ICharSequence> cidentity;
-        CString::New(identity , (ICharSequence**)&cidentity);
-        attendeeValues->PutString(ICalendarContractAttendeesColumns::ATTENDEE_IDENTITY, cidentity);
+        attendeeValues->Put(ICalendarContractAttendeesColumns::ATTENDEE_IDENTITY, identity);
 
         String nameSpace;
         subCursor->GetString(COLUMN_ATTENDEE_ID_NAMESPACE, &nameSpace);
-        AutoPtr<ICharSequence> cnamespace;
-        CString::New(nameSpace , (ICharSequence**)&cnamespace);
-        attendeeValues->PutString(ICalendarContractAttendeesColumns::ATTENDEE_ID_NAMESPACE, cnamespace);
+        attendeeValues->Put(ICalendarContractAttendeesColumns::ATTENDEE_ID_NAMESPACE, nameSpace);
 
         _entity->AddSubValue(attendeesUri, attendeeValues);
     }
     //} finally {
-    subCursor->Close();
+    // TODO
+    // subCursor->Close();
     //}
 
     subCursor = NULL;
@@ -344,23 +286,18 @@ ECode CCalendarContractEventsEntity::EntityIteratorImpl::GetEntityAndIncrementCu
         CContentValues::New((IContentValues**)&extendedValues);
         String id;
         subCursor->GetString(COLUMN_ID, &id);
-        AutoPtr<ICharSequence> cid;
-        CString::New(id , (ICharSequence**)&cid);
-        extendedValues->PutString(IBaseColumns::ID, cid);
+        extendedValues->Put(IBaseColumns::ID, id);
         String name;
         subCursor->GetString(COLUMN_NAME, &name);
-        AutoPtr<ICharSequence> cname;
-        CString::New(name , (ICharSequence**)&cname);
-        extendedValues->PutString(ICalendarContractExtendedPropertiesColumns::NAME, cname);
+        extendedValues->Put(ICalendarContractExtendedPropertiesColumns::NAME, name);
         String value;
         subCursor->GetString(COLUMN_VALUE, &value);
-        AutoPtr<ICharSequence> cvalue;
-        CString::New(value , (ICharSequence**)&cvalue);
-        extendedValues->PutString(ICalendarContractExtendedPropertiesColumns::VALUE, cvalue);
+        extendedValues->Put(ICalendarContractExtendedPropertiesColumns::VALUE, value);
         _entity->AddSubValue(propertiesUri, extendedValues);
     }
     //} finally {
-    subCursor->Close();
+    // TODO
+    // subCursor->Close();
     //}
 
     cursor->MoveToNext(&result);
@@ -370,11 +307,46 @@ ECode CCalendarContractEventsEntity::EntityIteratorImpl::GetEntityAndIncrementCu
     return NOERROR;
 }
 
-ECode CCalendarContractEventsEntity::constructor()
+ECode CCalendarContractEventsEntity::EntityIteratorImpl::HasNext(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
+    return CursorEntityIterator::HasNext(result);
+}
+
+ECode CCalendarContractEventsEntity::EntityIteratorImpl::GetNext(
+    /* [out] */ IInterface** object)
+{
+    VALIDATE_NOT_NULL(object);
+    AutoPtr<IEntity> entity;
+    CursorEntityIterator::GetNext((IEntity**)&entity);
+    *object = entity.Get();
+    REFCOUNT_ADD(*object);
     return NOERROR;
 }
 
+ECode CCalendarContractEventsEntity::EntityIteratorImpl::Remove()
+{
+    return CursorEntityIterator::Remove();
+}
+
+ECode CCalendarContractEventsEntity::EntityIteratorImpl::Reset()
+{
+    return CursorEntityIterator::Reset();
+}
+
+ECode CCalendarContractEventsEntity::EntityIteratorImpl::Close()
+{
+    return CursorEntityIterator::Close();
+}
+
+CAR_SINGLETON_IMPL(CCalendarContractEventsEntity)
+
+CAR_INTERFACE_IMPL_4(CCalendarContractEventsEntity, Singleton
+    , ICalendarContractEventsEntity
+    , IBaseColumns
+    , ICalendarContractSyncColumns
+    , ICalendarContractEventsColumns)
 
 ECode CCalendarContractEventsEntity::GetCONTENT_URI(
     /* [out] */ IUri** uri)
@@ -396,8 +368,10 @@ ECode CCalendarContractEventsEntity::NewEntityIterator(
 {
     VALIDATE_NOT_NULL(iterator);
 
-    AutoPtr<EntityIteratorImpl> impl = new EntityIteratorImpl(cursor, resolver);
-    *iterator = (IEntityIterator*)impl;
+    AutoPtr<EntityIteratorImpl> impl = new EntityIteratorImpl();
+    impl->constructor(cursor, resolver);
+    AutoPtr<ICursorEntityIterator> obj = (ICursorEntityIterator*)impl;
+    *iterator = IEntityIterator::Probe(impl);
     REFCOUNT_ADD(*iterator);
     return NOERROR;
 }
@@ -409,8 +383,11 @@ ECode CCalendarContractEventsEntity::NewEntityIterator(
 {
     VALIDATE_NOT_NULL(iterator);
 
-    AutoPtr<EntityIteratorImpl> impl = new EntityIteratorImpl(cursor, provider);
-    *iterator = (IEntityIterator*)impl;
+    AutoPtr<EntityIteratorImpl> impl = new EntityIteratorImpl();
+    impl->constructor(cursor, provider);
+
+    AutoPtr<ICursorEntityIterator> obj = (ICursorEntityIterator*)impl;
+    *iterator = IEntityIterator::Probe(impl);
     REFCOUNT_ADD(*iterator);
     return NOERROR;
 }

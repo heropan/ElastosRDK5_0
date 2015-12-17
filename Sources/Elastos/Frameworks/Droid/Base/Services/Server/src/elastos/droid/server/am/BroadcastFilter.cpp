@@ -1,7 +1,7 @@
 
-#include "am/CActivityManagerService.h"
-#include "am/BroadcastFilter.h"
-#include "am/ReceiverList.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
+#include "elastos/droid/server/am/BroadcastFilter.h"
+#include "elastos/droid/server/am/ReceiverList.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 

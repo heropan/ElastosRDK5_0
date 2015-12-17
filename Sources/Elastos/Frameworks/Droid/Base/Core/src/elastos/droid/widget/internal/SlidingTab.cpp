@@ -489,7 +489,7 @@ ECode SlidingTab::InitFromResource(
     // Allocate a temporary once that can be used everywhere.
     CRect::New((IRect**)&mTmpRect);
 
-    Int32 size = ARRAY_SIZE(R::styleable::AbsListView);
+    Int32 size = ArraySize(R::styleable::AbsListView);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::SlidingTab, size);
 

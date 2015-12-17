@@ -1,5 +1,5 @@
 
-#include "am/LaunchWarningWindow.h"
+#include "elastos/droid/server/am/LaunchWarningWindow.h"
 #include "elastos/droid/R.h"
 
 using Elastos::Core::CString;

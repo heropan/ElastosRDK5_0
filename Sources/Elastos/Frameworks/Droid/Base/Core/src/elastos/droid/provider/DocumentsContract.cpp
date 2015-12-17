@@ -9,18 +9,17 @@
 #include "elastos/droid/content/CContentProviderClient.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/content/res/CAssetFileDescriptor.h"
-// #include "elastos/droid/media/CExifInterface.h"
-// #include "elastos/droid/net/CUriBuilder.h"
-
 #include "elastos/droid/graphics/BitmapFactory.h"
 #include "elastos/droid/graphics/CBitmap.h"
 #include "elastos/droid/graphics/CBitmapFactoryOptions.h"
 #include "elastos/droid/graphics/CMatrix.h"
+// #include "elastos/droid/media/CExifInterface.h"
+// #include "elastos/droid/net/CUriBuilder.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/ParcelFileDescriptor.h"
 #include "elastos/droid/system/Os.h"
-#include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/Math.h>
 
 using Elastos::Droid::Content::CContentProviderClient;
 using Elastos::Droid::Content::IContentResolver;
@@ -32,7 +31,6 @@ using Elastos::Droid::Content::Pm::IProviderInfo;
 using Elastos::Droid::Content::Pm::IResolveInfo;
 using Elastos::Droid::Content::Res::CAssetFileDescriptor;
 using Elastos::Droid::Content::Res::IAssetFileDescriptor;
-
 using Elastos::Droid::Graphics::BitmapFactory;
 using Elastos::Droid::Graphics::CBitmap;
 using Elastos::Droid::Graphics::CBitmapFactoryOptions;
@@ -41,7 +39,6 @@ using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::IBitmapFactory;
 using Elastos::Droid::Graphics::IBitmapFactoryOptions;
 using Elastos::Droid::Graphics::IMatrix;
-
 using Elastos::Droid::Media::IExifInterface;
 using Elastos::Droid::Net::ITrafficStats;
 using Elastos::Droid::Net::IUriBuilder;
@@ -54,12 +51,12 @@ using Elastos::Droid::Os::ParcelFileDescriptor;
 using Elastos::Droid::Provider::IDocumentsContract;
 using Elastos::IO::CBufferedInputStream;
 using Elastos::IO::CFileInputStream;
+using Libcore::IO::CIoUtils;
 using Elastos::IO::IBufferedInputStream;
 using Elastos::IO::IFile;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::IInputStream;
-using Libcore::IO::CIoUtils;
 using Libcore::IO::IIoUtils;
 
 using Elastos::Utility::IList;

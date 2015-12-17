@@ -1,8 +1,8 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTCOLORS_H__
 #define __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTCOLORS_H__
 
 #include "_Elastos_Droid_Provider_CCalendarContractColors.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Net::IUri;
 
@@ -19,12 +19,13 @@ namespace Provider {
  * have been removed from the {@link Calendars} or {@link Events} tables.
  */
 CarClass(CCalendarContractColors)
+    , public Singleton
+    , public ICalendarContractColors
 {
 public:
-    /**
-     * This utility class cannot be instantiated
-     */
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * The content:// style URL for the top-level calendar authority

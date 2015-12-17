@@ -10,7 +10,7 @@
 #include "elastos/droid/view/accessibility/CAccessibilityEvent.h"
 #include "elastos/droid/view/animation/AnimationUtils.h"
 #include "elastos/droid/view/CViewGroupMarginLayoutParams.h"
-// #include "elastos/droid/widget/CEdgeEffect.h"
+#include "elastos/droid/widget/CEdgeEffect.h"
 #include "elastos/droid/widget/COverScroller.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
@@ -33,7 +33,7 @@ using Elastos::Droid::View::CMotionEvent;
 using Elastos::Droid::View::IInputDevice;
 using Elastos::Droid::View::IViewBaseSavedState;
 using Elastos::Droid::View::CViewGroupMarginLayoutParams;
-// using Elastos::Droid::Widget::CEdgeEffect;
+using Elastos::Droid::Widget::CEdgeEffect;
 // using Elastos::Droid::Widget::ScrollView;
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
@@ -163,7 +163,7 @@ ECode HorizontalScrollView::constructor(
     AutoPtr<ITypedArray> a;
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::HorizontalScrollView),
-            ARRAY_SIZE(R::styleable::HorizontalScrollView));
+            ArraySize(R::styleable::HorizontalScrollView));
     FAIL_RETURN(context->ObtainStyledAttributes(attrs,
             attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
 
@@ -646,7 +646,7 @@ ECode HorizontalScrollView::OnTouchEvent(
             }
             Boolean finished = FALSE;
             mScroller->IsFinished(&finished);
-            if(mIsBeingDragged = !finished) {
+            if(mIsBeingDragged != finished) {
                 AutoPtr<IViewParent> parent;
                 GetParent((IViewParent**)&parent);
                 if(parent != NULL) {
@@ -1787,12 +1787,11 @@ ECode HorizontalScrollView::SetOverScrollMode(
 {
     if (overScrollMode != IView::OVER_SCROLL_NEVER) {
         if (mEdgeGlowLeft == NULL) {
-            assert(0 && "TODO");
             AutoPtr<IContext> ctx;
             GetContext((IContext**)&ctx);
-            // CEdgeEffect::New(ctx, (IEdgeEffect**)&mEdgeGlowLeft);
-            // mEdgeGlowRight = NULL;
-            // CEdgeEffect::New(ctx, (IEdgeEffect**)&mEdgeGlowRight);
+            CEdgeEffect::New(ctx, (IEdgeEffect**)&mEdgeGlowLeft);
+            mEdgeGlowRight = NULL;
+            CEdgeEffect::New(ctx, (IEdgeEffect**)&mEdgeGlowRight);
         }
     }
     else {

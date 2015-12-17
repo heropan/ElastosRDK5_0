@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_SERVER_AM_ACTIVITYRESULT_H__
 
 #include "Elastos.Droid.Server_server.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::App::IResultInfo;
 using Elastos::Droid::Content::IIntent;
@@ -14,7 +15,7 @@ namespace Am {
 
 class ActivityRecord;
 
-class ActivityResult : public ElRefBase
+class ActivityResult : public Object
 {
 public:
     ActivityResult(

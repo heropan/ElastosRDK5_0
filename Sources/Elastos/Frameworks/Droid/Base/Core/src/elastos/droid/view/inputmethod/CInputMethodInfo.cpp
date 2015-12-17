@@ -403,7 +403,7 @@ ECode CInputMethodInfo::Init(
         return E_XML_PULL_PARSER_EXCEPTION;
     }
 
-    Int32 size = ARRAY_SIZE(R::styleable::InputMethod);
+    Int32 size = ArraySize(R::styleable::InputMethod);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::InputMethod, size);
 
@@ -427,7 +427,7 @@ ECode CInputMethodInfo::Init(
                 Logger::E(TAG, "Meta-data in input-method does not start with subtype tag");
                 return E_XML_PULL_PARSER_EXCEPTION;
             }
-            size = ARRAY_SIZE(R::styleable::InputMethod_Subtype);
+            size = ArraySize(R::styleable::InputMethod_Subtype);
             layout = ArrayOf<Int32>::Alloc(size);
             layout->Copy(R::styleable::InputMethod_Subtype, size);
 

@@ -1,8 +1,8 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTSTATUSUPDATES_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTSTATUSUPDATES_H__
 
 #include "_Elastos_Droid_Provider_CContactsContractStatusUpdates.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Net::IUri;
 
@@ -11,12 +11,15 @@ namespace Droid {
 namespace Provider {
 
 CarClass(CContactsContractStatusUpdates)
+    , public Singleton
+    , public IContactsContractStatusUpdates
+    , public IContactsContractStatusColumns
+    , public IContactsContractPresenceColumns
 {
 public:
-    /**
-     * This utility class cannot be instantiated
-     */
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * The content:// style URI for this table

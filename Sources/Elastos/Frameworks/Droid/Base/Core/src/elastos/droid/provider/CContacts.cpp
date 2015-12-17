@@ -1,6 +1,5 @@
-
-#include "elastos/droid/provider/CContacts.h"
 #include "elastos/droid/net/Uri.h"
+#include "elastos/droid/provider/CContacts.h"
 
 using Elastos::Droid::Net::Uri;
 
@@ -8,7 +7,11 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-const CString CContacts::TAG = "Contacts";
+CAR_SINGLETON_IMPL(CContacts)
+
+CAR_INTERFACE_IMPL(CContacts, Singleton, IContacts)
+
+const String CContacts::TAG("Contacts");
 
 ECode CContacts::constructor()
 {

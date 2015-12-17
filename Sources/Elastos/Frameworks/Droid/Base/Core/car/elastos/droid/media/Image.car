@@ -1,8 +1,8 @@
 
 module
 {
-    interface Elastos.IO.IByteBuffer;
     interface Elastos.Droid.Graphics.IRect;
+    interface Elastos.IO.IByteBuffer;
 
     namespace Elastos {
     namespace Droid {
@@ -16,7 +16,8 @@ module
          * pixels in the image. The row stride is always greater than 0.</p>
          */
         GetRowStride(
-            [out] Int32 * result);
+            [out] Int32* result);
+
         /**
          * <p>The distance between adjacent pixel samples, in bytes.</p>
          *
@@ -26,7 +27,8 @@ module
          * The pixel stride is always greater than 0.</p>
          */
         GetPixelStride(
-            [out] Int32 * result);
+            [out] Int32* result);
+
         /**
          * <p>Get a direct {@link java.nio.ByteBuffer ByteBuffer}
          * containing the frame data.</p>
@@ -39,7 +41,7 @@ module
          * @return the byte buffer containing the image data for this plane.
          */
         GetBuffer(
-            [out] IByteBuffer ** result);
+            [out] IByteBuffer** result);
     }
 
     /**
@@ -118,21 +120,21 @@ module
          * @see android.graphics.ImageFormat
          */
         GetFormat(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * The width of the image in pixels. For formats where some color channels
          * are subsampled, this is the width of the largest-resolution plane.
          */
         GetWidth(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * The height of the image in pixels. For formats where some color channels
          * are subsampled, this is the height of the largest-resolution plane.
          */
         GetHeight(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Get the timestamp associated with this frame.
@@ -144,7 +146,7 @@ module
          * </p>
          */
         GetTimestamp(
-            [out] Int64 * result);
+            [out] Int64* result);
 
         /**
          * Get the crop rectangle associated with this frame.
@@ -153,7 +155,7 @@ module
          * using coordinates in the largest-resolution plane.
          */
         GetCropRect(
-            [out] IRect ** result);
+            [out] IRect** result);
 
         /**
          * Set the crop rectangle associated with this frame.
@@ -162,16 +164,14 @@ module
          * using coordinates in the largest-resolution plane.
          */
         SetCropRect(
-            [in] IRect * cropRect);
+            [in] IRect* cropRect);
 
         /**
          * Get the array of pixel planes for this Image. The number of planes is
          * determined by the format of the Image.
          */
         GetPlanes(
-            [out, callee] ArrayOf<IImagePlane*> * result);
-
-
+            [out, callee] ArrayOf<IImagePlane*>* result);
     }
     } // namespace media
     } // namepsace Droid

@@ -33,3 +33,4 @@ ELASTOS_LIBS += soundtrigger/soundtrigger.lib
 ELASTOS_LIBS += location/location.lib
 ELASTOS_LIBS += camera2/params/params.lib
 ELASTOS_LIBS += camera2/utils/utils.lib
+ELASTOS_LIBS += camera2/dispatch/dispatch.lib

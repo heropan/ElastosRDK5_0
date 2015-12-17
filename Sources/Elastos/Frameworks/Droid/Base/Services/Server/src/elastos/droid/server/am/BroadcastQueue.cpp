@@ -1,8 +1,8 @@
 
-#include "am/BroadcastQueue.h"
-#include "am/BroadcastRecord.h"
-#include "am/ProcessRecord.h"
-#include "am/BroadcastFilter.h"
+#include "elastos/droid/server/am/BroadcastQueue.h"
+#include "elastos/droid/server/am/BroadcastRecord.h"
+#include "elastos/droid/server/am/ProcessRecord.h"
+#include "elastos/droid/server/am/BroadcastFilter.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/UserHandle.h"
 #include "elastos/droid/os/Handler.h"

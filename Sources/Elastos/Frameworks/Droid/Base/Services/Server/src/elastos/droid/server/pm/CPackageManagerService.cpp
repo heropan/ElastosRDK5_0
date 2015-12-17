@@ -3,6 +3,7 @@
 #include "pm/CResourcesChangedReceiver.h"
 #include "pm/PackageSetting.h"
 #include "pm/SELinuxMMAC.h"
+#include "pm/CParcelFileDescriptorFactory.h"
 #include "SystemConfig.h"
 #include "ServiceThread.h"
 #include "CDeviceStorageMonitorService.h"
@@ -16,6 +17,7 @@
 #include "elastos/droid/os/UserHandle.h"
 #include "elastos/droid/os/Binder.h"
 #include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/Environment.h"
 #include "elastos/droid/net/Uri.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "util/Xml.h"
@@ -67,10 +69,7 @@ using Elastos::Droid::Provider::ISettingsGlobal;
 using Elastos::Droid::Provider::CSettingsGlobal;
 using Elastos::Droid::Os::Binder;
 using Elastos::Droid::Os::CBundle;
-using Elastos::Droid::Os::IEnvironment;
-using Elastos::Droid::Os::IUserEnvironment;
-using Elastos::Droid::Os::CEnvironment;
-using Elastos::Droid::Os::CUserEnvironment;
+using Elastos::Droid::Os::Environment;
 using Elastos::Droid::Os::FileUtils;
 using Elastos::Droid::Os::Process;
 using Elastos::Droid::Os::SELinux;
@@ -137,7 +136,7 @@ using Libcore::IO::CBufferedInputStream;
 
 #ifndef HASH_FUNC_FOR_AUTOPTR_ASECINSTALLARGS
 #define HASH_FUNC_FOR_AUTOPTR_ASECINSTALLARGS
-DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Server::Pm::CPackageManagerService::AsecInstallArgs)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Server::Pm::CPackageManagerService::AsecInstallArgs)
 #endif
 
 namespace Elastos {
@@ -1053,59 +1052,10 @@ void CPackageManagerService::PackageHandler::DoHandleMessage(
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// InstallArgs
 
-InstallArgs::InstallArgs(
-    /* [in] */ IUri* packageURI,
-    /* [in] */ IPackageInstallObserver* observer,
-    /* [in] */ Int32 flags,
-    /* [in] */ const String& installerPackageName,
-    /* [in] */ IManifestDigest* manifestDigest,
-    /* [in] */ IUserHandle* user,
-    /* [in] */ CPackageManagerService* owner)
-    : mObserver(observer)
-    , mFlags(flags)
-    , mPackageURI(packageURI)
-    , mInstallerPackageName(installerPackageName)
-    , mManifestDigest(manifestDigest)
-    , mUser(user)
-    , mHost(owner)
-    , mIsEpk(FALSE)
-{
-    // for epk
-    if (packageURI != NULL) {
-        String path;
-        packageURI->GetPath(&path);
-        if (path.EndWith(".epk"))
-            mIsEpk = TRUE;
-    }
-}
-
-Int32 InstallArgs::DoPreCopy()
-{
-    return IPackageManager::INSTALL_SUCCEEDED;
-}
-
-Int32 InstallArgs::DoPostCopy(
-    /* [in] */ Int32 uid)
-{
-    return IPackageManager::INSTALL_SUCCEEDED;
-}
-
-Boolean InstallArgs::IsFwdLocked()
-{
-    return (mFlags & IPackageManager::INSTALL_FORWARD_LOCK) != 0;
-}
-
-AutoPtr<IUserHandle> InstallArgs::GetUser()
-{
-    return mUser;
-}
-
-
-////////////////////////////////////////////////////////////////////////////////
-// CPackageManagerService::ActivityIntentResolver
+//==============================================================================
+//                  CPackageManagerService::ActivityIntentResolver
+//==============================================================================
 
 CPackageManagerService::ActivityIntentResolver::ActivityIntentResolver(
     /* [in] */ CPackageManagerService* owner)
@@ -1113,12 +1063,6 @@ CPackageManagerService::ActivityIntentResolver::ActivityIntentResolver(
     , mFlags(0)
     , mHost(owner)
 {}
-
-CPackageManagerService::ActivityIntentResolver::~ActivityIntentResolver()
-{
-    mActivities.Clear();
-    mHost = NULL;
-}
 
 AutoPtr<List< AutoPtr<IResolveInfo> > >
 CPackageManagerService::ActivityIntentResolver::QueryIntent(
@@ -1132,7 +1076,7 @@ CPackageManagerService::ActivityIntentResolver::QueryIntent(
     return Super::QueryIntent(intent, resolvedType, defaultOnly, userId);
 }
 
-AutoPtr<List< AutoPtr<IResolveInfo> > >
+AutoPtr<List<AutoPtr<IResolveInfo> > >
 CPackageManagerService::ActivityIntentResolver::QueryIntent(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& resolvedType,
@@ -1145,12 +1089,12 @@ CPackageManagerService::ActivityIntentResolver::QueryIntent(
         (flags & IPackageManager::MATCH_DEFAULT_ONLY) != 0, userId);
 }
 
-AutoPtr<List< AutoPtr<IResolveInfo> > >
+AutoPtr<List<AutoPtr<IResolveInfo> > >
 CPackageManagerService::ActivityIntentResolver::QueryIntentForPackage(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& resolvedType,
     /* [in] */ Int32 flags,
-    /* [in] */ List< AutoPtr<PackageParser::Activity> >* packageActivities,
+    /* [in] */ List<AutoPtr<PackageParser::Activity> >* packageActivities,
     /* [in] */ Int32 userId)
 {
     if (!sUserManager->Exists(userId)) return NULL;
@@ -1159,23 +1103,23 @@ CPackageManagerService::ActivityIntentResolver::QueryIntentForPackage(
     }
     mFlags = flags;
     Boolean defaultOnly = (flags & IPackageManager::MATCH_DEFAULT_ONLY) != 0;
-    List< AutoPtr< ArrayOf<PackageParser::ActivityIntentInfo*> > > listCut;
+    List<AutoPtr<ArrayOf<PackageParser::ActivityIntentInfo*> > > listCut;
 
-    List< AutoPtr<PackageParser::Activity> >::Iterator it;
+    List<AutoPtr<PackageParser::Activity> >::Iterator it;
     for (it = packageActivities->Begin(); it != packageActivities->End(); ++it) {
-        List< AutoPtr<PackageParser::ActivityIntentInfo> >& intentFilters = (*it)->mIntents;
+        List<AutoPtr<PackageParser::ActivityIntentInfo> >& intentFilters = (*it)->mIntents;
         if (!intentFilters.IsEmpty()) {
             AutoPtr< ArrayOf<PackageParser::ActivityIntentInfo*> > array =
                     ArrayOf<PackageParser::ActivityIntentInfo*>::Alloc(intentFilters.GetSize());
             Int32 i;
-            List< AutoPtr<PackageParser::ActivityIntentInfo> >::Iterator ait;
+            List<AutoPtr<PackageParser::ActivityIntentInfo> >::Iterator ait;
             for (ait = intentFilters.Begin(), i = 0; ait != intentFilters.End(); ++ait, ++i) {
                 array->Set(i, *ait);
             }
             listCut.PushBack(array);
         }
     }
-    AutoPtr<List< AutoPtr<IResolveInfo> > > result =
+    AutoPtr<List<AutoPtr<IResolveInfo> > > result =
             Super::QueryIntentFromList(intent, resolvedType, defaultOnly, &listCut, userId);
     return result;
 }
@@ -1195,11 +1139,10 @@ void CPackageManagerService::ActivityIntentResolver::AddActivity(
 //         (a.info.nonLocalizedLabel != null ? a.info.nonLocalizedLabel : a.info.name) + ":");
 //     if (DEBUG_SHOW_INFO)
 //         Log.v(TAG, "    Class=" + a.info.name);
-    List< AutoPtr<PackageParser::ActivityIntentInfo> >::Iterator it;
+    List<AutoPtr<PackageParser::ActivityIntentInfo> >::Iterator it;
     for (it = a->mIntents.Begin(); it != a->mIntents.End(); ++it) {
         AutoPtr<PackageParser::ActivityIntentInfo> intent = *it;
-        if (!systemApp && intent->GetPriority() > 0 &&
-                CString("activity").Equals(type)) {
+        if (!systemApp && intent->GetPriority() > 0 && String("activity").Equals(type)) {
             intent->SetPriority(0);
 //             Log.w(TAG, "Package " + a.info.applicationInfo.packageName + " has activity "
 //                     + a.className + " with priority > 0, forcing to 0");
@@ -1226,7 +1169,7 @@ void CPackageManagerService::ActivityIntentResolver::RemoveActivity(
 //                         : a.info.name) + ":");
 //         Log.v(TAG, "    Class=" + a.info.name);
 //     }
-    List< AutoPtr<PackageParser::ActivityIntentInfo> >::Iterator it;
+    List<AutoPtr<PackageParser::ActivityIntentInfo> >::Iterator it;
     for (it = a->mIntents.Begin(); it != a->mIntents.End(); ++it) {
 //        if (DEBUG_SHOW_INFO) {
 //            Log.v(TAG, "    IntentFilter:");
@@ -1238,14 +1181,14 @@ void CPackageManagerService::ActivityIntentResolver::RemoveActivity(
 
 Boolean CPackageManagerService::ActivityIntentResolver::AllowFilterResult(
     /* [in] */ PackageParser::ActivityIntentInfo* filter,
-    /* [in] */ List< AutoPtr<IResolveInfo> >* dest)
+    /* [in] */ List<AutoPtr<IResolveInfo> >* dest)
 {
     AutoPtr<IActivityInfo> filterAi = filter->mActivity->mInfo;
     String filterAiName;
     filterAi->GetName(&filterAiName);
     String filterAiPackageName;
     filterAi->GetPackageName(&filterAiPackageName);
-    List< AutoPtr<IResolveInfo> >::ReverseIterator iter = dest->RBegin();
+    List<AutoPtr<IResolveInfo> >::ReverseIterator iter = dest->RBegin();
     for (; iter != dest->REnd(); ++iter) {
         AutoPtr<IActivityInfo> destAi;
         (*iter)->GetActivityInfo((IActivityInfo**)&destAi);
@@ -1287,10 +1230,11 @@ Boolean CPackageManagerService::ActivityIntentResolver::IsFilterStopped(
     return FALSE;
 }
 
-String CPackageManagerService::ActivityIntentResolver::PackageForFilter(
+Boolean CPackageManagerService::ActivityIntentResolver::IsPackageForFilter(
+    /* [in] */ const String& packageName,
     /* [in] */ PackageParser::ActivityIntentInfo* info)
 {
-    return info->mActivity->mOwner->mPackageName;
+    return packageName.Equals(info->mActivity->mOwner->mPackageName);
 }
 
 AutoPtr<IResolveInfo> CPackageManagerService::ActivityIntentResolver::NewResult(
@@ -1328,9 +1272,7 @@ AutoPtr<IResolveInfo> CPackageManagerService::ActivityIntentResolver::NewResult(
     res->SetActivityInfo(ai);
 
     if ((mFlags & IPackageManager::GET_RESOLVED_FILTER) != 0) {
-        AutoPtr<IIntentFilter> filter;
-        CIntentFilter::New(info, (IIntentFilter**)&filter);
-        res->SetFilter(filter);
+        res->SetFilter((IIntentFilter*)info->Probe(EIID_IIntentFilter));
     }
     res->SetPriority(info->GetPriority());
     res->SetPreferredOrder(activity->mOwner->mPreferredOrder);
@@ -1340,7 +1282,12 @@ AutoPtr<IResolveInfo> CPackageManagerService::ActivityIntentResolver::NewResult(
     res->SetIsDefault(info->mHasDefault);
     res->SetLabelRes(info->mLabelRes);
     res->SetNonLocalizedLabel(info->mNonLocalizedLabel);
-    res->SetIcon(info->mIcon);
+    if (userNeedsBadging(userId)) {
+        res->SetNoResourceId(TRUE);
+    }
+    else {
+        res->SetIcon(info->mIcon);
+    }
     AutoPtr<IApplicationInfo> appInfo;
     ai->GetApplicationInfo((IApplicationInfo**)&appInfo);
     res->SetSystem(CPackageManagerService::IsSystemApp(appInfo));
@@ -1348,7 +1295,7 @@ AutoPtr<IResolveInfo> CPackageManagerService::ActivityIntentResolver::NewResult(
 }
 
 void CPackageManagerService::ActivityIntentResolver::SortResults(
-    /* [in] */ List< AutoPtr<IResolveInfo> >* results)
+    /* [in] */ List<AutoPtr<IResolveInfo> >* results)
 {
 //      Collections.sort(results, mResolvePrioritySorter);
 }
@@ -1358,16 +1305,18 @@ void CPackageManagerService::ActivityIntentResolver::DumpFilter(
     /* [in] */ const String& prefix,
     /* [in] */ PackageParser::ActivityIntentInfo* filter)
 {
-    out->PrintString(prefix);
-    out->PrintInt32((Int32)filter->mActivity);
-    out->PrintChar(' ');
-    out->PrintString(filter->mActivity->GetComponentShortName());
-    out->PrintString(String(" filter "));
-    out->PrintInt32ln((Int32)filter);
+    out->Print(prefix);
+    out->Print((Int32)filter->mActivity);
+    out->Print(' ');
+    out->Print(filter->mActivity->PrintComponentShortName(out));
+    out->Print(String(" filter "));
+    out->Println((Int32)filter);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// CPackageManagerService::ServiceIntentResolver
+
+//==============================================================================
+//                  CPackageManagerService::ServiceIntentResolver
+//==============================================================================
 
 CPackageManagerService::ServiceIntentResolver::ServiceIntentResolver(
     /* [in] */ CPackageManagerService* owner)
@@ -1376,13 +1325,7 @@ CPackageManagerService::ServiceIntentResolver::ServiceIntentResolver(
     , mHost(owner)
 {}
 
-CPackageManagerService::ServiceIntentResolver::~ServiceIntentResolver()
-{
-    mServices.Clear();
-    mHost = NULL;
-}
-
-AutoPtr<List< AutoPtr<IResolveInfo> > >
+AutoPtr<List<AutoPtr<IResolveInfo> > >
 CPackageManagerService::ServiceIntentResolver::QueryIntent(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& resolvedType,
@@ -1393,7 +1336,7 @@ CPackageManagerService::ServiceIntentResolver::QueryIntent(
     return Super::QueryIntent(intent, resolvedType, defaultOnly, userId);
 }
 
-AutoPtr<List< AutoPtr<IResolveInfo> > >
+AutoPtr<List<AutoPtr<IResolveInfo> > >
 CPackageManagerService::ServiceIntentResolver::QueryIntent(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& resolvedType,
@@ -1403,7 +1346,7 @@ CPackageManagerService::ServiceIntentResolver::QueryIntent(
     if (!sUserManager->Exists(userId)) return NULL;
     mFlags = flags;
     return Super::QueryIntent(intent, resolvedType,
-        (flags & IPackageManager::MATCH_DEFAULT_ONLY) != 0, userId);
+            (flags & IPackageManager::MATCH_DEFAULT_ONLY) != 0, userId);
 }
 
 AutoPtr<List< AutoPtr<IResolveInfo> > >
@@ -1411,7 +1354,7 @@ CPackageManagerService::ServiceIntentResolver::QueryIntentForPackage(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& resolvedType,
     /* [in] */ Int32 flags,
-    /* [in] */ List< AutoPtr<PackageParser::Service> >* packageServices,
+    /* [in] */ List<AutoPtr<PackageParser::Service> >* packageServices,
     /* [in] */ Int32 userId)
 {
     if (!sUserManager->Exists(userId)) return NULL;
@@ -1420,24 +1363,24 @@ CPackageManagerService::ServiceIntentResolver::QueryIntentForPackage(
     }
     mFlags = flags;
     Boolean defaultOnly = (flags & IPackageManager::MATCH_DEFAULT_ONLY) != 0;
-    List< AutoPtr< ArrayOf<PackageParser::ServiceIntentInfo*> > > listCut;
+    List<AutoPtr< ArrayOf<PackageParser::ServiceIntentInfo*> > > listCut;
 
-    List< AutoPtr<PackageParser::ServiceIntentInfo> > intentFilters;
-    List< AutoPtr<PackageParser::Service> >::Iterator it;
+    List<AutoPtr<PackageParser::ServiceIntentInfo> > intentFilters;
+    List<AutoPtr<PackageParser::Service> >::Iterator it;
     for (it = packageServices->Begin(); it != packageServices->End(); ++it) {
         List< AutoPtr<PackageParser::ServiceIntentInfo> >& intentFilters = (*it)->mIntents;
         if (!intentFilters.IsEmpty()) {
             AutoPtr< ArrayOf<PackageParser::ServiceIntentInfo*> > array =
                     ArrayOf<PackageParser::ServiceIntentInfo*>::Alloc(intentFilters.GetSize());
             Int32 i;
-            List< AutoPtr<PackageParser::ServiceIntentInfo> >::Iterator ait;
+            List<AutoPtr<PackageParser::ServiceIntentInfo> >::Iterator ait;
             for (ait = intentFilters.Begin(), i = 0; ait != intentFilters.End(); ++ait, ++i) {
                 array->Set(i, *ait);
             }
             listCut.PushBack(array);
         }
     }
-    AutoPtr<List< AutoPtr<IResolveInfo> > > result =
+    AutoPtr<List<AutoPtr<IResolveInfo> > > result =
             Super::QueryIntentFromList(intent, resolvedType, defaultOnly, &listCut, userId);
     listCut.Clear();
     return result;
@@ -1477,7 +1420,7 @@ void CPackageManagerService::ServiceIntentResolver::RemoveService(
 //                ? s.info.nonLocalizedLabel : s.info.name) + ":");
 //        Log.v(TAG, "    Class=" + s.info.name);
 //    }
-    List< AutoPtr<PackageParser::ServiceIntentInfo> >::Iterator it;
+    List<AutoPtr<PackageParser::ServiceIntentInfo> >::Iterator it;
     for (it = s->mIntents.Begin(); it != s->mIntents.End(); ++it) {
 //        if (DEBUG_SHOW_INFO) {
 //            Log.v(TAG, "    IntentFilter:");
@@ -1487,10 +1430,9 @@ void CPackageManagerService::ServiceIntentResolver::RemoveService(
     }
 }
 
-//@Override
 Boolean CPackageManagerService::ServiceIntentResolver::AllowFilterResult(
     /* [in] */ PackageParser::ServiceIntentInfo* filter,
-    /* [in] */ List< AutoPtr<IResolveInfo> >* dest)
+    /* [in] */ List<AutoPtr<IResolveInfo> >* dest)
 {
     AutoPtr<IServiceInfo> filterSi = filter->mService->mInfo;
     String filterSiName;
@@ -1528,7 +1470,7 @@ Boolean CPackageManagerService::ServiceIntentResolver::IsFilterStopped(
     if (!sUserManager->Exists(userId)) return TRUE;
     AutoPtr<PackageParser::Package> p = filter->mService->mOwner;
     if (p != NULL) {
-        AutoPtr<PackageSetting> ps = reinterpret_cast<PackageSetting*>(p->mExtras->Probe(EIID_PackageSetting));;
+        AutoPtr<PackageSetting> ps = reinterpret_cast<PackageSetting*>(p->mExtras->Probe(EIID_PackageSetting));
         if (ps != NULL) {
             // System apps are never considered stopped for purposes of
             // filtering, because there may be no way for the user to
@@ -1540,11 +1482,11 @@ Boolean CPackageManagerService::ServiceIntentResolver::IsFilterStopped(
     return FALSE;
 }
 
-//@Override
-String CPackageManagerService::ServiceIntentResolver::PackageForFilter(
+Boolean CPackageManagerService::ServiceIntentResolver::IsPackageForFilter(
+    /* [in] */ const String& packageName,
     /* [in] */ PackageParser::ServiceIntentInfo* info)
 {
-    return info->mService->mOwner->mPackageName;
+    return packageName.Equals(info->mService->mOwner->mPackageName);
 }
 
 AutoPtr<IResolveInfo> CPackageManagerService::ServiceIntentResolver::NewResult(
@@ -1577,9 +1519,7 @@ AutoPtr<IResolveInfo> CPackageManagerService::ServiceIntentResolver::NewResult(
     CResolveInfo::New((IResolveInfo**)&res);
     res->SetServiceInfo(si);
     if ((mFlags & IPackageManager::GET_RESOLVED_FILTER) != 0) {
-        AutoPtr<IIntentFilter> filter;
-        CIntentFilter::New(info, (IIntentFilter**)&filter);
-        res->SetFilter(filter);
+        res->SetFilter((IIntentFilter*)info->Probe(EIID_IIntentFilter));
     }
     res->SetPriority(info->GetPriority());
     res->SetPreferredOrder(service->mOwner->mPreferredOrder);
@@ -1602,180 +1542,436 @@ void CPackageManagerService::ServiceIntentResolver::SortResults(
 //      Collections.sort(results, mResolvePrioritySorter);
 }
 
-// @Override
 void CPackageManagerService::ServiceIntentResolver::DumpFilter(
     /* [in] */ IPrintWriter* out,
     /* [in] */ const String& prefix,
     /* [in] */ PackageParser::ServiceIntentInfo* filter)
 {
-    out->PrintString(prefix);
-    out->PrintInt32((Int32)filter->mService);
-    out->PrintChar(' ');
-    out->PrintString(filter->mService->GetComponentShortName());
-    out->PrintString(String(" filter "));
-    out->PrintInt32ln((Int32)filter);
+    out->Print(prefix);
+    out->Print((Int32)filter->mService);
+    out->Print(' ');
+    out->Print(filter->mService->PrintComponentShortName(out));
+    out->Print(String(" filter "));
+    out->Println((Int32)filter);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// CPackageManagerService::AppDirObserver
 
-CPackageManagerService::AppDirObserver::AppDirObserver(
-    /* [in] */ const String& path,
-    /* [in] */ Int32 mask,
-    /* [in] */ Boolean isrom,
+//==============================================================================
+//                  CPackageManagerService::ProviderIntentResolver
+//==============================================================================
+
+CPackageManagerService::ProviderIntentResolver::ProviderIntentResolver(
     /* [in] */ CPackageManagerService* owner)
-    : FileObserver(path, mask)
-    , mRootDir(path)
-    , mIsRom(isrom)
+    : mFlags(0)
     , mHost(owner)
 {}
 
-ECode CPackageManagerService::AppDirObserver::OnEvent(
-    /* [in] */ Int32 event,
-    /* [in] */ const String& path)
+AutoPtr<List<AutoPtr<IResolveInfo> > >
+CPackageManagerService::ProviderIntentResolver::QueryIntent(
+    /* [in] */ IIntent* intent,
+    /* [in] */ const String& resolvedType,
+    /* [in] */ Boolean defaultOnly,
+    /* [in] */ Int32 userId)
 {
-    String removedPackage;
-    Int32 removedAppId = -1;
-    AutoPtr< ArrayOf<Int32> > removedUsers;
-    String addedPackage;
-    Int32 addedAppId = -1;
-    AutoPtr< ArrayOf<Int32> > addedUsers;
+    mFlags = defaultOnly ? IPackageManager::MATCH_DEFAULT_ONLY : 0;
+    return super::QueryIntent(intent, resolvedType, defaultOnly, userId);
+}
 
-    // TODO post a message to the handler to obtain serial ordering
-    {
-        AutoLock lock(mHost->mInstallLock);
+AutoPtr<List<AutoPtr<IResolveInfo> > >
+CPackageManagerService::ProviderIntentResolver::QueryIntent(
+    /* [in] */ IIntent* intent,
+    /* [in] */ const String& resolvedType,
+    /* [in] */ Int32 flags,
+    /* [in] */ Int32 userId)
+{
+    if (!sUserManager->Exists(userId)) return NULL;
+    mFlags = flags;
+    return Super::QueryIntent(intent, resolvedType,
+            (flags & IPackageManager::MATCH_DEFAULT_ONLY) != 0, userId);
+}
 
-        String fullPathStr;
-        AutoPtr<IFile> fullPath;
-        if (!path.IsNull()) {
-            CFile::New(mRootDir, path, (IFile**)&fullPath);
-            fullPath->GetPath(&fullPathStr);
-        }
+AutoPtr<List< AutoPtr<IResolveInfo> > >
+CPackageManagerService::ProviderIntentResolver::QueryIntentForPackage(
+    /* [in] */ IIntent* intent,
+    /* [in] */ const String& resolvedType,
+    /* [in] */ Int32 flags,
+    /* [in] */ List<AutoPtr<PackageParser::Service> >* packageServices,
+    /* [in] */ Int32 userId)
+{
+    if (!sUserManager->Exists(userId)) return NULL;
+    if (packageServices == NULL) return NULL;
+    mFlags = flags;
+    Boolean defaultOnly = (flags & IPackageManager::MATCH_DEFAULT_ONLY) != 0;
+    List<AutoPtr< ArrayOf<PackageParser::ProviderIntentInfo*> > > listCut;
 
-        if (DEBUG_APP_DIR_OBSERVER)
-            Logger::V(TAG, "File %s changed: %d", fullPathStr.string(), event);
-
-        if (!IsPackageFilename(path)) {
-            if (DEBUG_APP_DIR_OBSERVER)
-                Logger::V(TAG, "Ignoring change of non-package file: %s", fullPathStr.string());
-            return NOERROR;
-        }
-
-        // Ignore packages that are being installed or
-        // have just been installed.
-        if (mHost->IgnoreCodePath(fullPathStr)) {
-            return NOERROR;
-        }
-        AutoPtr<PackageParser::Package> p;
-        AutoPtr<PackageSetting> ps;
-        {
-            AutoLock l(mHost->mPackagesLock);
-
-            HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it
-                = mHost->mAppDirs.Find(fullPathStr);
-            if (it != mHost->mAppDirs.End()) {
-                p = it->mSecond;
+    List<AutoPtr<PackageParser::ProviderIntentInfo> > intentFilters;
+    List<AutoPtr<PackageParser::Service> >::Iterator it;
+    for (it = packageServices->Begin(); it != packageServices->End(); ++it) {
+        intentFilters = (*it)->mIntents;
+        if (!intentFilters.IsEmpty()) {
+            AutoPtr< ArrayOf<PackageParser::ProviderIntentInfo*> > array =
+                    ArrayOf<PackageParser::ProviderIntentInfo*>::Alloc(intentFilters.GetSize());
+            Int32 i;
+            List<AutoPtr<PackageParser::ProviderIntentInfo> >::Iterator ait;
+            for (ait = intentFilters.Begin(), i = 0; ait != intentFilters.End(); ++ait, ++i) {
+                array->Set(i, *ait);
             }
-            if (p != NULL) {
-                String pkg;
-                p->mApplicationInfo->GetPackageName(&pkg);
-                HashMap<String, AutoPtr<PackageSetting> >::Iterator pit =
-                        mHost->mSettings->mPackages.Find(pkg);
-                if (pit != mHost->mSettings->mPackages.End()) {
-                    ps = pit->mSecond;
-                }
-                if (ps != NULL) {
-                    removedUsers = ps->QueryInstalledUsers(*sUserManager->GetUserIds(), TRUE);
-                }
-                else {
-                    removedUsers = sUserManager->GetUserIds();
-                }
-            }
-            addedUsers = sUserManager->GetUserIds();
-        }
-        if ((event & REMOVE_EVENTS) != 0) {
-            if (ps != NULL) {
-                mHost->RemovePackageLI(ps, TRUE);
-                removedPackage = ps->mName;
-                removedAppId = ps->mAppId;
-            }
-        }
-
-        if ((event & ADD_EVENTS) != 0) {
-            if (p == NULL) {
-                AutoPtr<ArrayOf<Byte> > readBuffer = ArrayOf<Byte>::Alloc(PackageParser::CERTIFICATE_BUFFER_SIZE);
-                if (readBuffer == NULL) {
-                    Slogger::E(TAG, "AppDirObserver::OnEvent out of memory!");
-                    return E_OUT_OF_MEMORY_ERROR;
-                }
-                AutoPtr<ISystem> system;
-                Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-                Int64 now;
-                system->GetCurrentTimeMillis(&now);
-                p = mHost->ScanPackageLI(fullPath,
-                    (mIsRom ? PackageParser::PARSE_IS_SYSTEM
-                            | PackageParser::PARSE_IS_SYSTEM_DIR: 0) |
-                    PackageParser::PARSE_CHATTY |
-                    PackageParser::PARSE_MUST_BE_APK,
-                    SCAN_MONITOR | SCAN_NO_PATHS | SCAN_UPDATE_TIME,
-                    now, UserHandle::ALL, readBuffer);
-                if (p != NULL) {
-                    /*
-                     * TODO this seems dangerous as the package may have
-                     * changed since we last acquired the mPackages
-                     * lock.
-                     */
-                    {
-                        AutoLock l(mHost->mPackagesLock);
-
-                        mHost->UpdatePermissionsLPw(p->mPackageName, p,
-                            p->mPermissions.Begin() != p->mPermissions.End() ? UPDATE_PERMISSIONS_ALL : 0);
-                    }
-                    p->mApplicationInfo->GetPackageName(&addedPackage);
-                    Int32 uid;
-                    p->mApplicationInfo->GetUid(&uid);
-                    addedAppId = UserHandle::GetAppId(uid);
-                }
-            }
-        }
-
-        {
-            AutoLock l(mHost->mPackagesLock);
-
-            mHost->mSettings->WriteLPr();
+            listCut.PushBack(array);
         }
     }
+    return Super::QueryIntentFromList(intent, resolvedType, defaultOnly, &listCut, userId);
+}
 
-    if (!removedPackage.IsNull()) {
-        AutoPtr<IBundle> extras;
-        CBundle::New(1, (IBundle**)&extras);
-        extras->PutInt32(IIntent::EXTRA_UID, removedAppId);
-        extras->PutBoolean(IIntent::EXTRA_DATA_REMOVED, FALSE);
-        mHost->SendPackageBroadcast(IIntent::ACTION_PACKAGE_REMOVED, removedPackage,
-                extras, String(NULL), NULL, removedUsers);
-    }
-    if (!addedPackage.IsNull()) {
-        AutoPtr<IBundle> extras;
-        CBundle::New(1, (IBundle**)&extras);
-        extras->PutInt32(IIntent::EXTRA_UID, addedAppId);
-        mHost->SendPackageBroadcast(IIntent::ACTION_PACKAGE_REMOVED, addedPackage,
-                extras, String(NULL), NULL, addedUsers);
+void CPackageManagerService::ProviderIntentResolver::AddProvider(
+    /* [in] */ PackageParser::Provider* p)
+{
+    if (mHost->mProviders->ContainsKey(p->GetComponentName())) {
+        // Slogger::W(TAG, "Provider " + p.getComponentName() + " already defined; ignoring");
+        return;
     }
 
+    mProviders->Put(p->GetComponentName(), p);
+    if (DEBUG_SHOW_INFO) {
+        AutoPtr<ICharSequence> cs;
+        IPackageItemInfo::Probe(p->mInfo)->GetNonLocalizedLabel((ICharSequence**)&cs);
+        String str;
+        if (cs) {
+            cs->ToString(&str);
+        }
+        else {
+            IPackageItemInfo::Probe(p->mInfo)->GetName(&str);
+        }
+        Logger::V(TAG, "  %s:", str.string());
+        IPackageItemInfo::Probe(p->mInfo)->GetName(&str);
+        Logger::V(TAG, "    Class=%s", str.string());
+    }
+    List<AutoPtr<PackageParser::ProviderIntentInfo> >::Iterator it;
+    for (it = p->mIntents.Begin(); it != p->mIntents.End(); ++it) {
+        // if (DEBUG_SHOW_INFO) {
+        //     Log.v(TAG, "    IntentFilter:");
+        //     intent.dump(new LogPrinter(Log.VERBOSE, TAG), "      ");
+        // }
+        // if (!intent.debugCheck()) {
+        //     Log.w(TAG, "==> For Provider " + p.info.name);
+        // }
+        AddFilter(*it);
+    }
+}
+
+void CPackageManagerService::ProviderIntentResolver::RemoveProvider(
+    /* [in] */ PackageParser::Provider* p)
+{
+    mProviders.Erase(p->GetComponentName());
+    // if (DEBUG_SHOW_INFO) {
+    //     Log.v(TAG, "  " + (p.info.nonLocalizedLabel != null
+    //             ? p.info.nonLocalizedLabel : p.info.name) + ":");
+    //     Log.v(TAG, "    Class=" + p.info.name);
+    // }
+    List<AutoPtr<PackageParser::ProviderIntentInfo> >::Iterator it;
+    for (it = p->mIntents.Begin(); it != p->mIntents.End(); ++it) {
+        // if (DEBUG_SHOW_INFO) {
+        //     Log.v(TAG, "    IntentFilter:");
+        //     intent.dump(new LogPrinter(Log.VERBOSE, TAG), "      ");
+        // }
+        RemoveFilter(*it);
+    }
+}
+
+Boolean CPackageManagerService::ProviderIntentResolver::AllowFilterResult(
+    /* [in] */ PackageParser::ProviderIntentInfo* filter,
+    /* [in] */ List<AutoPtr<IResolveInfo> >* dest)
+{
+    AutoPtr<IProviderInfo> filterPi = filter->mProvider->mInfo;
+    List<AutoPtr<IResolveInfo> >::ReverseIterator rit = dest->RBegin();
+    for (; rit != dest->REnd(); ++rit) {
+        AutoPtr<IProviderInfo> destPi;
+        (*rit)->GetProviderInfo((IProviderInfo**)&destPi);
+        String destPiName, filterPiName;
+        destPi->GetName(&destPiName);
+        filterPi->GetName(&filterPiName);
+        String destPiPkgName, filterPiPkgName;
+        destPi->GetPackageName(&destPiPkgName);
+        filterPi->GetPackageName(&filterPiPkgName);
+        if (destPiName == filterPiName && destPiPkgName == filterPiPkgName) {
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+
+AutoPtr< ArrayOf<PackageParser::ProviderIntentInfo*> >
+CPackageManagerService::ProviderIntentResolver::NewArray(
+    /* [in] */ Int32 size)
+{
+    return ArrayOf<PackageParser::ProviderIntentInfo*>::Alloc(size);
+}
+
+Boolean CPackageManagerService::ProviderIntentResolver::IsFilterStopped(
+    /* [in] */ PackageParser::ProviderIntentInfo* filter,
+    /* [in] */ Int32 userId)
+{
+    if (!sUserManager->Exists(userId)) return TRUE;
+    AutoPtr<PackageParser::Package> p = filter->mProvider->mOwner;
+    if (p != NULL) {
+        AutoPtr<PackageSetting> ps = reinterpret_cast<PackageSetting*>(p->mExtras->Probe(EIID_PackageSetting));
+        if (ps != NULL) {
+            // System apps are never considered stopped for purposes of
+            // filtering, because there may be no way for the user to
+            // actually re-launch them.
+            return (ps->mPkgFlags & IApplicationInfo::FLAG_SYSTEM) == 0
+                    && ps->GetStopped(userId);
+        }
+    }
+    return FALSE;
+}
+
+Boolean CPackageManagerService::ProviderIntentResolver::IsPackageForFilter(
+    /* [in] */ const String& packageName,
+    /* [in] */ PackageParser::ProviderIntentInfo* info)
+{
+    return packageName.Equals(info->mProvider->mOwner->mPackageName);
+}
+
+AutoPtr<IResolveInfo> CPackageManagerService::ProviderIntentResolver::NewResult(
+    /* [in] */ PackageParser::ProviderIntentInfo* info,
+    /* [in] */ Int32 match,
+    /* [in] */ Int32 userId)
+{
+    if (!sUserManager->Exists(userId)) return NULL;
+    if (!mHost->mSettings->IsEnabledLPr(info->mProvider->mInfo, mFlags, userId)) {
+        return NULL;
+    }
+    AutoPtr<PackageParser::Provider> provider = info->mProvider;
+    AutoPtr<IApplicationInfo> appInfo;
+    provider->mInfo->GetApplicationInfo((IApplicationInfo**)&appInfo);
+    Int32 flags;
+    if (mHost->mSafeMode && (appInfo->GetFlags(&flags), (flags & IApplicationInfo::FLAG_SYSTEM) == 0) {
+        return NULL;
+    }
+    AutoPtr<PackageSetting> ps = reinterpret_cast<PackageSetting*>(provider->mOwner->mExtras->Probe(EIID_PackageSetting));
+    if (ps == NULL) {
+        return NULL;
+    }
+    AutoPtr<IProviderInfo> pi = PackageParser::GenerateProviderInfo(provider, mFlags,
+            ps->ReadUserState(userId), userId);
+    if (pi == NULL) {
+        return NULL;
+    }
+    AutoPtr<IResolveInfo> res;
+    CResolveInfo::New((IResolveInfo**)&res);
+    res->SetProviderInfo(pi);
+    if ((mFlags & IPackageManager::GET_RESOLVED_FILTER) != 0) {
+        res->SetFilter((IIntentFilter*)filter->Probe(EIID_IIntentFilter));
+    }
+    res->SetPriority(info->GetPriority());
+    res->SetPreferredOrder(provider->mOwner->mPreferredOrder);
+    res->SetMatch(match);
+    res->SetIsDefault(info->mHasDefault);
+    res->SetLabelRes(info->mLabelRes);
+    res->SetNonLocalizedLabel(info->mNonLocalizedLabel);
+    res->SetIcon(info->mIcon);
+    appInfo = NULL;
+    pi->GetApplicationInfo((IApplicationInfo**)&appInfo);
+    res->SetSystem(CPackageManagerService::IsSystemApp(srvAppInfo));
+    return res;
+}
+
+void CPackageManagerService::ProviderIntentResolver::SortResults(
+    /* [in] */ List< AutoPtr<IResolveInfo> >* results)
+{
+    // Collections.sort(results, mResolvePrioritySorter);
+}
+
+void CPackageManagerService::ProviderIntentResolver::DumpFilter(
+    /* [in] */ IPrintWriter* out,
+    /* [in] */ const String& prefix,
+    /* [in] */ PackageParser::ProviderIntentInfo* filter)
+{
+    out->Print(prefix);
+    out->Print((Int32)filter->mProvider);
+    out->Print(' ');
+    out->Print(filter->mService->PrintComponentShortName(out));
+    out->Print(String(" filter "));
+    out->Println((Int32)filter);
+}
+
+
+//==============================================================================
+//                  CPackageManagerService::ResolvePrioritySorter
+//==============================================================================
+
+CAR_INTERFACE_IMPL(CPackageManagerService::ResolvePrioritySorter, Object, IComparator)
+
+ECode CPackageManagerService::ResolvePrioritySorter::Compare(
+    /* [in] */ IInterface* lhs,
+    /* [in] */ IInterface* rhs,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    AutoPtr<IResolveInfo> r1 = IResolveInfo::Probe(lhs);
+    AutoPtr<IResolveInfo> r2 = IResolveInfo::Probe(rhs);
+    Int32 v1, v2;
+    r1->GetPriority(&v1);
+    r2->GetPriority(&v2);
+    //System.out.println("Comparing: q1=" + q1 + " q2=" + q2);
+    if (v1 != v2) {
+        *result = (v1 > v2) ? -1 : 1;
+        return NOERROR;
+    }
+    r1->GetPreferredOrder(&v1);
+    r2->GetPreferredOrder(&v2);
+    if (v1 != v2) {
+        *result = (v1 > v2) ? -1 : 1;
+        return NOERROR;
+    }
+    Boolean b1, b2;
+    r1->GetIsDefault(&b1);
+    r2->GetIsDefault(&b2);
+    if (b1 != b2) {
+        *result = b1 ? -1 : 1;
+        return NOERROR;
+    }
+    r1->GetMatch(&v1);
+    r2->GetMatch(&v2);
+    //System.out.println("Comparing: m1=" + m1 + " m2=" + m2);
+    if (v1 != v2) {
+        *result = (v1 > v2) ? -1 : 1;
+        return NOERROR;
+    }
+    r1->GetSystem(&b1);
+    r2->GetSystem(&b2);
+    if (b1 != b2) {
+        *result = b1 ? -1 : 1;
+        return NOERROR;
+    }
+    *result = 0;
     return NOERROR;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// CPackageManagerService::HandlerParams
+
+//==============================================================================
+//                  CPackageManagerService::ProviderInitOrderSorter
+//==============================================================================
+
+CAR_INTERFACE_IMPL(CPackageManagerService::ProviderInitOrderSorter, Object, IComparator)
+
+ECode CPackageManagerService::ProviderInitOrderSorter::Compare(
+    /* [in] */ IInterface* lhs,
+    /* [in] */ IInterface* rhs,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    AutoPtr<IProviderInfo> p1 = IProviderInfo::Probe(lhs);
+    AutoPtr<IProviderInfo> p2 = IProviderInfo::Probe(rhs);
+    Int32 v1, v2;
+    p1->GetInitOrder(&v1);
+    p2->GetInitOrder(&v2);
+    *result = (v1 > v2) ? -1 : ((v1 < v2) ? 1 : 0);
+    return NOERROR;
+}
+
+
+//==============================================================================
+//                  CPackageManagerService::ProcessPendingInstallRunnable
+//==============================================================================
+
+ECode CPackageManagerService::ProcessPendingInstallRunnable::Run()
+{
+    mHost->mHandler->RemoveCallbacks(this);
+    // Result object to be returned
+    AutoPtr<PackageInstalledInfo> res = new PackageInstalledInfo();
+    res->mReturnCode = currentStatus;
+    res->mUid = -1;
+    res->mPkg = NULL;
+    res->mRemovedInfo = new PackageRemovedInfo(mHost);
+    if (res->mReturnCode == IPackageManager::INSTALL_SUCCEEDED) {
+        args->DoPreInstall(res->mReturnCode);
+        synchronized (mHost->mInstallLock) {
+            InstallPackageLI(args, TRUE, res);
+        }
+        args->DoPostInstall(res->mReturnCode, res->mUid);
+    }
+
+    // A restore should be performed at this point if (a) the install
+    // succeeded, (b) the operation is not an update, and (c) the new
+    // package has not opted out of backup participation.
+    Boolean update = res->mRemovedInfo->mRemovedPackage != NULL;
+    Int32 flags = 0;
+    if (res->mPkg != NULL) {
+        res->mPkg->mApplicationInfo->GetFlags(&flags);
+    }
+    Boolean doRestore = !update && ((flags & IApplicationInfo::FLAG_ALLOW_BACKUP) != 0);
+
+    // Set up the post-install work request bookkeeping.  This will be used
+    // and cleaned up by the post-install event handling regardless of whether
+    // there's a restore pass performed.  Token values are >= 1.
+    Int32 token;
+    if (mHost->mNextInstallToken < 0) mHost->mNextInstallToken = 1;
+    token = mHost->mNextInstallToken++;
+
+    AutoPtr<PostInstallData> data = new PostInstallData(args, res);
+    mHost->mRunningInstalls[token] = data;
+    if (DEBUG_INSTALL)
+        Logger::V(TAG, "+ starting restore round-trip %d", token);
+
+    if (res->mReturnCode == IPackageManager::INSTALL_SUCCEEDED && doRestore) {
+        // Pass responsibility to the Backup Manager.  It will perform a
+        // restore if appropriate, then pass responsibility back to the
+        // Package Manager to run the post-install observer callbacks
+        // and broadcasts.
+        AutoPtr<IIBackupManager> bm = IIBackupManager::Probe(
+                ServiceManager::GetService(IContext::BACKUP_SERVICE));
+        if (bm != NULL) {
+            if (DEBUG_INSTALL)
+                Logger::V(TAG, "token %d to BM for possible restore", token);
+
+            String packageName;
+            res->mPkg->mApplicationInfo->GetPackageName(&packageName);
+            if (FAILED(bm->RestoreAtInstall(packageName, token))) {
+                Slogger::E(TAG, "Exception trying to enqueue restore");
+                doRestore = FALSE;
+            }
+        }
+        else {
+            Slogger::E(TAG, "Backup Manager not found!");
+            doRestore = FALSE;
+        }
+    }
+
+    if (!doRestore) {
+        // No restore possible, or the Backup Manager was mysteriously not
+        // available -- just fire the post-install work request directly.
+        if (DEBUG_INSTALL)
+            Logger::V(TAG, "No restore - queue post-install for %d", token);
+
+        AutoPtr<IMessage> msg;
+        mHost->mHandler->ObtainMessage(POST_INSTALL, (IMessage**)&msg);
+        msg->SetArg1(token);
+        Boolean result;
+        mHost->mHandler->SendMessage(msg, &result);
+    }
+    return NOERROR;
+}
+
+
+//==============================================================================
+//                  CPackageManagerService::HandlerParams
+//==============================================================================
 
 const Int32 CPackageManagerService::HandlerParams::MAX_RETRIES;
+
+AutoPtr<IUserHandle> CPackageManagerService::HandlerParams::GetUser()
+{
+    return mUser;
+}
 
 Boolean CPackageManagerService::HandlerParams::StartCopy()
 {
     Boolean res;
 //      try {
-    if (DEBUG_INSTALL)
-        Slogger::I(TAG, "startCopy");
+    if (DEBUG_INSTALL) Slogger::I(TAG, "startCopy %p: %p", mUser.Get(), this);
 
     if (++mRetries > MAX_RETRIES) {
         Slogger::W(TAG, "Failed to invoke remote methods on default container service. Giving up");
@@ -1814,8 +2010,10 @@ void CPackageManagerService::HandlerParams::ServiceError()
     HandleReturnCode();
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// CPackageManagerService::MeasureParams
+
+//==============================================================================
+//                  CPackageManagerService::MeasureParams
+//==============================================================================
 
 CPackageManagerService::MeasureParams::MeasureParams(
     /* [in] */ IPackageStats* stats,
@@ -1827,11 +2025,23 @@ CPackageManagerService::MeasureParams::MeasureParams(
     , mObserver(observer)
 {}
 
-//@Override
+ECode CPackageManagerService::MeasureParams::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+    Int32 hashCode;
+    system->IdentityHashCode((IObject*)this, &hashCode);
+    String pkgN;
+    mStats->GetPackageName(&pkgN);
+    *str = String("MeasureParams{") + StringUtils::ToHexString(hashCode) + pkgN + "}";
+    return NOERROR;
+}
+
 ECode CPackageManagerService::MeasureParams::HandleStartCopy()
 {
-    {
-        AutoLock lock(mHost->mInstallLock);
+    synchronized (mHost->mInstallLock) {
         String packageName;
         mStats->GetPackageName(&packageName);
         Int32 userHandle;
@@ -1839,81 +2049,48 @@ ECode CPackageManagerService::MeasureParams::HandleStartCopy()
         mSuccess = mHost->GetPackageSizeInfoLI(packageName, userHandle, mStats);
     }
 
-    Boolean mounted = FALSE;
-    AutoPtr<IEnvironment> env;
-    CEnvironment::AcquireSingleton((IEnvironment**)&env);
-    Boolean isEmulated = FALSE;
-    env->IsExternalStorageEmulated(&isEmulated);
-    if (isEmulated) {
-        mounted = true;
-    } else {
-        String status;
-        env->GetExternalStorageState(&status);
-        mounted = (IEnvironment::MEDIA_MOUNTED.Equals(status)
-                || IEnvironment::MEDIA_MOUNTED_READ_ONLY.Equals(status));
+    if (mSuccess) {
+        Boolean mounted;
+        if (env->IsExternalStorageEmulated()) {
+            mounted = TRUE;
+        }
+        else {
+            String status;
+            env->GetExternalStorageState(&status);
+            mounted = (IEnvironment::MEDIA_MOUNTED.Equals(status)
+                    || IEnvironment::MEDIA_MOUNTED_READ_ONLY.Equals(status));
+        }
+
+        if (mounted) {
+            Int32 userHandle;
+            mStats->GetUserHandle(&userHandle);
+            AutoPtr<UserEnvironment> userEnv = new Environment::UserEnvironment(userHandle);
+
+            String pkgN;
+            mStats->GetPackageName(&pkgN);
+            mStats->SetExternalCacheSize(mHost->CalculateDirectorySize(mContainerService,
+                    userEnv->BuildExternalStorageAppCacheDirs(pkgN));
+
+            mStats->SetExternalDataSize(CalculateDirectorySize(mContainerService,
+                    userEnv->BuildExternalStorageAppDataDirs(pkgN));
+
+            // Always subtract cache size, since it's a subdirectory
+            Int32 size, cacheSize;
+            mStats->GetExternalCodeSize(&size);
+            mStats->GetExternalCacheSize(&cacheSize);
+            size -= cacheSize;
+            mStats->SetExternalDataSize(size);
+
+            mStats->SetExternalMediaSize(CalculateDirectorySize(mContainerService,
+                    userEnv->BuildExternalStorageAppMediaDirs(pkgN));
+
+            mStats->SetExternalObbSize(CalculateDirectorySize(mContainerService,
+                    userEnv->BuildExternalStorageAppObbDirs(pkgN));
+        }
     }
-
-    if (mounted) {
-        Int32 userHandle;
-        mStats->GetUserHandle(&userHandle);
-        AutoPtr<IUserEnvironment> userEnv;
-        CUserEnvironment::New(userHandle, (IUserEnvironment**)&userEnv);
-
-        String packageName;
-        mStats->GetPackageName(&packageName);
-        AutoPtr<IFile> externalCacheDir;
-        userEnv->GetExternalStorageAppCacheDirectory(packageName, (IFile**)&externalCacheDir);
-        String ecdPath;
-        externalCacheDir->GetPath(&ecdPath);
-        Int64 externalCacheSize = 0;
-        if (FAILED(mHost->mContainerService->CalculateDirectorySize(ecdPath, &externalCacheSize))) {
-            return E_REMOTE_EXCEPTION;
-        }
-        mStats->SetExternalCacheSize(externalCacheSize);
-
-        AutoPtr<IFile> externalDataDir;
-        userEnv->GetExternalStorageAppDataDirectory(packageName, (IFile**)&externalDataDir);
-        String eddPath;
-        externalDataDir->GetPath(&eddPath);
-        Int64 externalDataSize = 0;
-        if (FAILED(mHost->mContainerService->CalculateDirectorySize(eddPath, &externalDataSize))) {
-            return E_REMOTE_EXCEPTION;
-        }
-
-        AutoPtr<IFile> ecdpFile;
-        externalCacheDir->GetParentFile((IFile**)&ecdpFile);
-        Boolean isEqual = FALSE;
-        ecdpFile->Equals(externalDataDir, &isEqual);
-        if (isEqual) {
-            externalDataSize -= externalCacheSize;
-        }
-        mStats->SetExternalDataSize(externalDataSize);
-
-        AutoPtr<IFile> externalMediaDir;
-        userEnv->GetExternalStorageAppMediaDirectory(packageName, (IFile**)&externalMediaDir);
-        String emdPath;
-        externalMediaDir->GetPath(&emdPath);
-        Int64 externalAppMediaSize = 0;
-        if (FAILED(mHost->mContainerService->CalculateDirectorySize(emdPath, &externalAppMediaSize))) {
-            return E_REMOTE_EXCEPTION;
-        }
-        mStats->SetExternalMediaSize(externalAppMediaSize);
-
-        AutoPtr<IFile> externalObbDir;
-        userEnv->GetExternalStorageAppObbDirectory(packageName, (IFile**)&externalObbDir);
-        String eobbPath;
-        externalObbDir->GetPath(&eobbPath);
-        Int64 externalObbSize = 0;
-        if (FAILED(mHost->mContainerService->CalculateDirectorySize(eobbPath, &externalObbSize))) {
-            return E_REMOTE_EXCEPTION;
-        }
-        mStats->SetExternalObbSize(externalObbSize);
-    }
-
     return NOERROR;
 }
 
-//@Override
 void CPackageManagerService::MeasureParams::HandleReturnCode()
 {
     if (mObserver != NULL) {
@@ -1927,7 +2104,6 @@ void CPackageManagerService::MeasureParams::HandleReturnCode()
     }
 }
 
-//@Override
 void CPackageManagerService::MeasureParams::HandleServiceError()
 {
     String packageName;
@@ -1935,22 +2111,119 @@ void CPackageManagerService::MeasureParams::HandleServiceError()
     Slogger::E(TAG, "Could not measure application %s external storage", packageName.string());
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// CPackageManagerService::InstallParams
+
+//==============================================================================
+//                  CPackageManagerService::OriginInfo
+//==============================================================================
+
+CPackageManagerService::OriginInfo::OriginInfo(
+    /* [in] */ IFile* file,
+    /* [in] */ const String& cid,
+    /* [in] */ Boolean staged,
+    /* [in] */ Boolean existing)
+    : mFile(file)
+    , mCid(cid)
+    , mStaged(staged)
+    , mExisting(existing)
+{
+    if (!cid.IsNull()) {
+        mResolvedPath = PackageHelper::GetSdDir(cid);
+        CFile::New(mResolvedPath, (IFile**)&mResolvedFile);
+    }
+    else if (file != NULL) {
+        mFile->GetAbsolutePath(&mResolvedPath);
+        mResolvedFile = mFile;
+    }
+    else {
+        mResolvedPath = String(NULL);
+        mResolvedFile = NULL;
+    }
+}
+
+AutoPtr<OriginInfo> CPackageManagerService::OriginInfo::FromNothing()
+{
+    return new OriginInfo(NULL, String(NULL), FALSE, FALSE);
+}
+
+AutoPtr<OriginInfo> CPackageManagerService::OriginInfo::FromUntrustedFile(
+    /* [in] */ IFile* file)
+{
+    return new OriginInfo(file, String(NULL), FALSE, FALSE);
+}
+
+AutoPtr<OriginInfo> CPackageManagerService::OriginInfo::FromExistingFile(
+    /* [in] */ IFile* file)
+{
+    return new OriginInfo(file, String(NULL), FALSE, TRUE);
+}
+
+AutoPtr<OriginInfo> CPackageManagerService::OriginInfo::FromStagedFile(
+    /* [in] */ IFile* file)
+{
+    return new OriginInfo(file, String(NULL), TRUE, FALSE);
+}
+
+AutoPtr<OriginInfo> CPackageManagerService::OriginInfo::FromStagedContainer(
+    /* [in] */ const String& cid)
+{
+    return new OriginInfo(NULL, cid, TRUE, FALSE);
+}
+
+
+//==============================================================================
+//                  CPackageManagerService::InstallParams::CopyBroadcastReceiver
+//==============================================================================
 
 ECode CPackageManagerService::InstallParams::CopyBroadcastReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
-    Int32 timeout = mHost->GetVerificationTimeout();
     AutoPtr<IMessage> msg;
     mHost->mHandler->ObtainMessage(CHECK_PENDING_VERIFICATION, (IMessage**)&msg);
     msg->SetArg1(mId);
     Boolean result;
-    mHost->mHandler->SendMessageDelayed(msg, timeout, &result);
+    mHost->mHandler->SendMessageDelayed(msg, mHost->GetVerificationTimeout(), &result);
 
     //[Added by wanli]: Release mPendingResult, because there is a circle.
     return BroadcastReceiver::SetPendingResult(NULL);
+}
+
+
+//==============================================================================
+//                  CPackageManagerService::InstallParams
+//==============================================================================
+
+CPackageManagerService::InstallParams::InstallParams(
+    /* [in] */ OriginInfo* origin,
+    /* [in] */ IIPackageInstallObserver2* observer,
+    /* [in] */ Int32 installFlags,
+    /* [in] */ const String& installerPackageName,
+    /* [in] */ IVerificationParams* verificationParams,
+    /* [in] */ IUserHandle* user,
+    /* [in] */ const String& packageAbiOverride,
+    /* [in] */ CPackageManagerService* owner)
+    : HandlerParams(user, owner)
+    , mObserver(observer)
+    , mInstallFlags(installFlags)
+    , mInstallerPackageName(installerPackageName)
+    , mVerificationParams(verificationParams)
+    , mPackageAbiOverride(packageAbiOverride)
+    , mRet(0)
+{}
+
+ECode CPackageManagerService::InstallParams::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    AutoPtr<ISystem> sys;
+    CSystem::AcquireSingleton((ISystem**)&sys);
+    Int32 hashCode;
+    sys->IdentityHashCode((IObject*)this, &hashCode);
+    String fileStr;
+    IObject::Probe(mOrigin->mFile)->ToString(&fileStr);
+    *str = String("InstallParams{") + StringUtils::ToHexString(hashCode)
+            + " file=" + fileStr + " cid=" + mOrigin->mCid + "}";
+    return NOERROR;
 }
 
 AutoPtr<IManifestDigest> CPackageManagerService::InstallParams::GetManifestDigest()
@@ -1964,17 +2237,15 @@ AutoPtr<IManifestDigest> CPackageManagerService::InstallParams::GetManifestDiges
 }
 
 Int32 CPackageManagerService::InstallParams::InstallLocationPolicy(
-    /* [in] */ IPackageInfoLite* pkgLite,
-    /* [in] */ Int32 flags)
+    /* [in] */ IPackageInfoLite* pkgLite)
 {
     String packageName;
     pkgLite->GetPackageName(&packageName);
     Int32 installLocation;
     pkgLite->GetInstallLocation(&installLocation);
-    Boolean onSd = (flags & IPackageManager::INSTALL_EXTERNAL) != 0;
-    {
-        AutoLock lock(mHost->mPackagesLock);
-
+    Boolean onSd = (mInstallFlags & IPackageManager::INSTALL_EXTERNAL) != 0;
+    // reader
+    synchronized (mHost->mPackagesLock) {
         AutoPtr<PackageParser::Package> pkg;
         HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it
                 = mHost->mPackages.Find(packageName);
@@ -1982,9 +2253,9 @@ Int32 CPackageManagerService::InstallParams::InstallLocationPolicy(
             pkg = it->mSecond;
         }
         if (pkg != NULL) {
-            if ((flags & IPackageManager::INSTALL_REPLACE_EXISTING) != 0) {
+            if ((mInstallFlags & IPackageManager::INSTALL_REPLACE_EXISTING) != 0) {
                 // Check for downgrading.
-                if ((flags & IPackageManager::INSTALL_ALLOW_DOWNGRADE) == 0) {
+                if ((mInstallFlags & IPackageManager::INSTALL_ALLOW_DOWNGRADE) == 0) {
                     Int32 versionCode;
                     pkgLite->GetVersionCode(&versionCode);
                     if (versionCode < pkg->mVersionCode) {
@@ -2045,8 +2316,26 @@ Int32 CPackageManagerService::InstallParams::InstallLocationPolicy(
 ECode CPackageManagerService::InstallParams::HandleStartCopy()
 {
     Int32 ret = IPackageManager::INSTALL_SUCCEEDED;
-    Boolean onSd = (mFlags & IPackageManager::INSTALL_EXTERNAL) != 0;
-    Boolean onInt = (mFlags & IPackageManager::INSTALL_INTERNAL) != 0;
+
+    // If we're already staged, we've firmly committed to an install location
+    if (mOrigin->mStaged) {
+        if (mOrigin->mFile != NULL) {
+            mInstallFlags |= IPackageManager::INSTALL_INTERNAL;
+            mInstallFlags &= ~IPackageManager::INSTALL_EXTERNAL;
+        }
+        else if (!mOrigin->mCid.IsNull()) {
+            installFlags |= IPackageManager::INSTALL_EXTERNAL;
+            installFlags &= ~IPackageManager::INSTALL_INTERNAL;
+        }
+        else {
+            Slogger::E(CPackageManagerService::TAG, "Invalid stage location");
+            return E_ILLEGAL_STATE_EXCEPTION;
+        }
+    }
+
+    Boolean onSd = (installFlags & IPackageManager::INSTALL_EXTERNAL) != 0;
+    Boolean onInt = (installFlags & IPackageManager::INSTALL_INTERNAL) != 0;
+
     AutoPtr<IPackageInfoLite> pkgLite;
 
     if (onInt && onSd) {
@@ -2055,114 +2344,46 @@ ECode CPackageManagerService::InstallParams::HandleStartCopy()
         ret = IPackageManager::INSTALL_FAILED_INVALID_INSTALL_LOCATION;
     }
     else {
-        Int64 lowThreshold = 0;
+        pkgLite = mHost->mContainerService->GetMinimalPackageInfo(mOrigin->mResolvedPath, mInstallFlags,
+                mPackageAbiOverride);
 
-        AutoPtr<IInterface> service = ServiceManager::GetService(IDeviceStorageMonitorService::SERVICE);
-        AutoPtr<IDeviceStorageMonitorService> dsm = IDeviceStorageMonitorService::Probe(service);
-        if (dsm == NULL) {
-            Logger::W(TAG, "Couldn't get low memory threshold; no free limit imposed");
-            lowThreshold = 0L;
-        } else {
-            dsm->GetMemoryLowThreshold(&lowThreshold);
+        /*
+         * If we have too little free space, try to free cache
+         * before giving up.
+         */
+        Int32 recommendedInstallLocation;
+        if (!mOrigin->mStaged &&
+                (pkgLite->GetRecommendedInstallLocation(&recommendedInstallLocation),
+                        recommendedInstallLocation == IPackageHelper::RECOMMEND_FAILED_INSUFFICIENT_STORAGE) {
+            // TODO: focus freeing disk space on the target device
+            AutoPtr<IStorageManagerHelper> helper;
+            CStorageManagerHelper::AcquireSingleton((IStorageManagerHelper**)&helper);
+            AutoPtr<IStorageManager> storage;
+            helper->From(mHost->mContext, (IStorageManager**)&storage);
+            Int64 lowThreshold;
+            storage->GetStorageLowBytes(Environment::GetDataDirectory(), &lowThreshold);
+
+            Int64 sizeBytes;
+            mHot->mContainerService->CalculateInstalledSize(
+                    mOrigin->mResolvedPath, CPackageManagerService::IsForwardLocked(), packageAbiOverride, &sizeBytes);
+
+            if (mHost->mInstaller->FreeCache(sizeBytes + lowThreshold) >= 0) {
+                mHost->mContainerService->GetMinimalPackageInfo(mOrigin->mResolvedPath,
+                        mInstallFlags, mPackageAbiOverride, (IPackageInfoLite**)&pkgLite);
+            }
+
+            /*
+             * The cache free must have deleted the file we
+             * downloaded to install.
+             *
+             * TODO: fix the "freeCache" call to not delete
+             *       the file we care about.
+             */
+            if (pkgLite->GetRecommendedInstallLocation(&recommendedInstallLocation),
+                    recommendedInstallLocation == IPackageHelper::RECOMMEND_FAILED_INVALID_URI) {
+                pkgLite->SetRecommendedInstallLocation(IPackageHelper::RECOMMEND_FAILED_INSUFFICIENT_STORAGE);
+            }
         }
-
-        // try {
-            FAIL_RETURN(mHost->mContext->GrantUriPermission(DEFAULT_CONTAINER_PACKAGE, mPackageURI,
-                IIntent::FLAG_GRANT_READ_URI_PERMISSION));
-
-            AutoPtr<IFile> packageFile;
-            String scheme;
-            mPackageURI->GetScheme(&scheme);
-            if (mEncryptionParams != NULL || !scheme.Equals("file")) {
-                mTempPackage = mHost->CreateTempPackageFile(mHost->mDrmAppPrivateInstallDir);
-                if (mTempPackage != NULL) {
-                    AutoPtr<IParcelFileDescriptorHelper> ph;
-                    CParcelFileDescriptorHelper::AcquireSingleton((IParcelFileDescriptorHelper**)&ph);
-                    AutoPtr<IParcelFileDescriptor> out;
-                    if (FAILED(ph->Open(mTempPackage, IParcelFileDescriptor::MODE_READ_WRITE,
-                        (IParcelFileDescriptor**)&out))) {
-                        out = NULL;
-                        Slogger::E(TAG, "Failed to create temporary file for : %p", mPackageURI.Get());
-                    }
-
-                    // Make a temporary file for decryption.
-                    if (FAILED(mHost->mContainerService->CopyResource(mPackageURI, mEncryptionParams, out, &ret))) {
-                        mHost->mContext->RevokeUriPermission(mPackageURI, IIntent::FLAG_GRANT_READ_URI_PERMISSION);
-                        return E_REMOTE_EXCEPTION;
-                    }
-                    AutoPtr<IIoUtils> ioUtils;
-                    CIoUtils::AcquireSingleton((IIoUtils**)&ioUtils);
-                    ioUtils->CloseQuietly(ICloseable::Probe(out));
-
-                    packageFile = mTempPackage;
-
-                    String path;
-                    packageFile->GetAbsolutePath(&path);
-                    FileUtils::SetPermissions(
-                        path, FileUtils::sS_IRUSR | FileUtils::sS_IWUSR | FileUtils::sS_IRGRP
-                        | FileUtils::sS_IROTH, -1, -1);
-                }
-                else {
-                    packageFile = NULL;
-                }
-            }
-            else {
-                String path;
-                mPackageURI->GetPath(&path);
-                CFile::New(path, (IFile**)&packageFile);
-            }
-
-            if (packageFile != NULL) {
-                // Remote call to find out default install location
-                String packageFilePath;
-                packageFile->GetAbsolutePath(&packageFilePath);
-                if (FAILED(mHost->mContainerService->GetMinimalPackageInfo(
-                    packageFilePath, mFlags, lowThreshold, (IPackageInfoLite**)&pkgLite)))  {
-                    mHost->mContext->RevokeUriPermission(mPackageURI, IIntent::FLAG_GRANT_READ_URI_PERMISSION);
-                    return E_REMOTE_EXCEPTION;
-                }
-
-                /*
-                 * If we have too little free space, try to free cache
-                 * before giving up.
-                 */
-                Int32 recommendedInstallLocation;
-                pkgLite->GetRecommendedInstallLocation(&recommendedInstallLocation);
-                if (recommendedInstallLocation
-                    == IPackageHelper::RECOMMEND_FAILED_INSUFFICIENT_STORAGE) {
-                    Int64 size;
-                    if (FAILED(mHost->mContainerService->CalculateInstalledSize(
-                        packageFilePath, IsForwardLocked(), &size)))  {
-                        mHost->mContext->RevokeUriPermission(mPackageURI, IIntent::FLAG_GRANT_READ_URI_PERMISSION);
-                        return E_REMOTE_EXCEPTION;
-                    }
-
-                    if (mHost->mInstaller->FreeCache(size + lowThreshold) >= 0) {
-                        pkgLite = NULL;
-                        if (FAILED(mHost->mContainerService->GetMinimalPackageInfo(
-                            packageFilePath, mFlags, lowThreshold, (IPackageInfoLite**)&pkgLite)))  {
-                            mHost->mContext->RevokeUriPermission(mPackageURI, IIntent::FLAG_GRANT_READ_URI_PERMISSION);
-                            return E_REMOTE_EXCEPTION;
-                        }
-                    }
-                    /*
-                     * The cache free must have deleted the file we
-                     * downloaded to install.
-                     *
-                     * TODO: fix the "freeCache" call to not delete
-                     *       the file we care about.
-                     */
-                    pkgLite->GetRecommendedInstallLocation(&recommendedInstallLocation);
-                    if (recommendedInstallLocation
-                            == IPackageHelper::RECOMMEND_FAILED_INVALID_URI) {
-                        pkgLite->SetRecommendedInstallLocation(
-                            IPackageHelper::RECOMMEND_FAILED_INSUFFICIENT_STORAGE);
-                    }
-                }
-            }
-        // } finally {
-            mHost->mContext->RevokeUriPermission(mPackageURI, IIntent::FLAG_GRANT_READ_URI_PERMISSION);
-        // }
     }
 
     if (ret == IPackageManager::INSTALL_SUCCEEDED) {
@@ -2188,7 +2409,7 @@ ECode CPackageManagerService::InstallParams::HandleStartCopy()
         }
         else {
             // Override with defaults if needed.
-            loc = InstallLocationPolicy(pkgLite, mFlags);
+            loc = InstallLocationPolicy(pkgLite);
             if (loc == IPackageHelper::RECOMMEND_FAILED_VERSION_DOWNGRADE) {
                 ret = IPackageManager::INSTALL_FAILED_VERSION_DOWNGRADE;
             }
@@ -2196,14 +2417,14 @@ ECode CPackageManagerService::InstallParams::HandleStartCopy()
                 // Override install location with flags
                 if (loc == IPackageHelper::RECOMMEND_INSTALL_EXTERNAL) {
                     // Set the flag to install on external media.
-                    mFlags |= IPackageManager::INSTALL_EXTERNAL;
-                    mFlags &= ~IPackageManager::INSTALL_INTERNAL;
+                    mInstallFlags |= IPackageManager::INSTALL_EXTERNAL;
+                    mInstallFlags &= ~IPackageManager::INSTALL_INTERNAL;
                 }
                 else {
                     // Make sure the flag for installing on external
                     // media is unset
-                    mFlags |= IPackageManager::INSTALL_INTERNAL;
-                    mFlags &= ~IPackageManager::INSTALL_EXTERNAL;
+                    mInstallFlags |= IPackageManager::INSTALL_INTERNAL;
+                    mInstallFlags &= ~IPackageManager::INSTALL_EXTERNAL;
                 }
             }
         }
@@ -2218,7 +2439,7 @@ ECode CPackageManagerService::InstallParams::HandleStartCopy()
         Int32 userIdentifier;
         GetUser()->GetIdentifier(&userIdentifier);
         if (userIdentifier == IUserHandle::USER_ALL
-                && ((mFlags & IPackageManager::INSTALL_FROM_ADB) != 0)) {
+                && ((mInstallFlags & IPackageManager::INSTALL_FROM_ADB) != 0)) {
             userIdentifier = IUserHandle::USER_OWNER;
         }
 
@@ -2230,11 +2451,14 @@ ECode CPackageManagerService::InstallParams::HandleStartCopy()
         if (mHost->mRequiredVerifierPackage != NULL) {
             mHost->GetPackageUid(mHost->mRequiredVerifierPackage, userIdentifier, &requiredUid);
         }
-        if (requiredUid != -1 && mHost->IsVerificationEnabled(mFlags)) {
+        if (!mOrigin->mExisting && requiredUid != -1
+                && mHost->IsVerificationEnabled(userIdentifier, mInstallFlags)) {
             AutoPtr<IIntent> verification;
-            CIntent::New(
-                    IIntent::ACTION_PACKAGE_NEEDS_VERIFICATION, (IIntent**)&verification);
-            verification->SetDataAndType(GetPackageUri(), PACKAGE_MIME_TYPE);
+            CIntent::New(IIntent::ACTION_PACKAGE_NEEDS_VERIFICATION, (IIntent**)&verification);
+            AutoPtr<IFile> f;
+            CFile::New(mOrigin->mResolvedPath, (IFile**)&f);
+            AutoPtr<IUri> u = Uri::FromFile(f);
+            verification->SetDataAndType(u, CPackageManagerService::PACKAGE_MIME_TYPE);
             verification->AddFlags(IIntent::FLAG_GRANT_READ_URI_PERMISSION);
 
             AutoPtr<IObjectContainer> receivers;
@@ -2264,7 +2488,7 @@ ECode CPackageManagerService::InstallParams::HandleStartCopy()
             verification->PutExtra(IPackageManager::EXTRA_VERIFICATION_INSTALLER_PACKAGE,
                     mInstallerPackageName);
 
-            verification->PutExtra(IPackageManager::EXTRA_VERIFICATION_INSTALL_FLAGS, mFlags);
+            verification->PutExtra(IPackageManager::EXTRA_VERIFICATION_INSTALL_FLAGS, mInstallFlags);
 
             String pkgName;
             pkgLite->GetPackageName(&pkgName);
@@ -2381,15 +2605,6 @@ void CPackageManagerService::InstallParams::HandleReturnCode()
     // will succeed.
     if (mArgs != NULL) {
         mHost->ProcessPendingInstall(mArgs, mRet);
-
-        if (mTempPackage != NULL) {
-            Boolean result;
-            if (mTempPackage->Delete(&result), !result) {
-                String path;
-                mTempPackage->GetAbsolutePath(&path);
-                Slogger::W(TAG, "Couldn't delete temporary file: %s", path.string());
-            }
-        }
     }
 }
 
@@ -2401,7 +2616,7 @@ void CPackageManagerService::InstallParams::HandleServiceError()
 
 Boolean CPackageManagerService::InstallParams::IsForwardLocked()
 {
-    return (mFlags & IPackageManager::INSTALL_FORWARD_LOCK) != 0;
+    return (mInstallFlags & IPackageManager::INSTALL_FORWARD_LOCK) != 0;
 }
 
 AutoPtr<IUri> CPackageManagerService::InstallParams::GetPackageUri()
@@ -2416,303 +2631,232 @@ AutoPtr<IUri> CPackageManagerService::InstallParams::GetPackageUri()
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// CPackageManagerService::MoveParams
-CPackageManagerService::MoveParams::MoveParams(
-    /* [in] */ InstallArgs* srcArgs,
-    /* [in] */ IPackageMoveObserver* observer,
-    /* [in] */ Int32 flags,
-    /* [in] */ const String& packageName,
-    /* [in] */ const String& dataDir,
-    /* [in] */ Int32 uid,
+
+//==============================================================================
+//                  CPackageManagerService::InstallArgs
+//==============================================================================
+
+CPackageManagerService::InstallArgs::InstallArgs(
+    /* [in] */ OriginInfo* origin,
+    /* [in] */ IPackageInstallObserver2* observer,
+    /* [in] */ Int32 installFlags,
+    /* [in] */ const String& installerPackageName,
+    /* [in] */ IManifestDigest* manifestDigest,
     /* [in] */ IUserHandle* user,
+    /* [in] */ ArrayOf<String>* instructionSets,
+    /* [in] */ const String& abiOverride,
     /* [in] */ CPackageManagerService* owner)
-    : HandlerParams(user, owner)
+    : mOrigin(origin)
     , mObserver(observer)
-    , mFlags(flags)
-    , mPackageName(packageName)
-    , mSrcArgs(srcArgs)
-    , mUid(uid)
-    , mRet(0)
+    , mInstallFlags(installFlags)
+    , mInstallerPackageName(installerPackageName)
+    , mManifestDigest(manifestDigest)
+    , mUser(user)
+    , mAbiOverride(abiOverride)
+    , mInstructionSets(instructionSets)
+    , mHost(owner)
+    , mIsEpk(FALSE)
 {
-    if (srcArgs != NULL) {
-        AutoPtr<IFile> file;
-        CFile::New(srcArgs->GetCodePath(), (IFile**)&file);
-        AutoPtr<IUri> packageUri;
-        ASSERT_SUCCEEDED(Uri::FromFile(file, (IUri**)&packageUri));
-        mTargetArgs = mHost->CreateInstallArgs(packageUri, flags, packageName, dataDir);
+    // for epk
+    if (packageURI != NULL) {
+        String path;
+        packageURI->GetPath(&path);
+        if (path.EndWith(".epk"))
+            mIsEpk = TRUE;
     }
 }
 
-//@Override
-ECode CPackageManagerService::MoveParams::HandleStartCopy()
+CPackageManagerService::InstallArgs::Init(
+    /* [in] */ OriginInfo* origin,
+    /* [in] */ IPackageInstallObserver2* observer,
+    /* [in] */ Int32 installFlags,
+    /* [in] */ const String& installerPackageName,
+    /* [in] */ IManifestDigest* manifestDigest,
+    /* [in] */ IUserHandle* user,
+    /* [in] */ ArrayOf<String>* instructionSets,
+    /* [in] */ const String& abiOverride,
+    /* [in] */ CPackageManagerService* owner)
 {
-    mRet = IPackageManager::INSTALL_FAILED_INSUFFICIENT_STORAGE;
-    // Check for storage space on target medium
-    Boolean result;
-    FAIL_RETURN(mTargetArgs->CheckFreeStorage(mHost->mContainerService, &result));
-    if (!result) {
-        Slogger::W(TAG, "Insufficient storage to install");
-        return NOERROR;
+    mOrigin = origin;
+    mObserver = observer;
+    mInstallFlags = installFlags;
+    mInstallerPackageName = installerPackageName;
+    mManifestDigest = manifestDigest;
+    mUser = user;
+    mAbiOverride = abiOverride;
+    mInstructionSets = instructionSets;
+    mHost = owner;
+    // for epk
+    if (packageURI != NULL) {
+        String path;
+        packageURI->GetPath(&path);
+        if (path.EndWith(".epk"))
+            mIsEpk = TRUE;
     }
-
-    mRet = mSrcArgs->DoPreCopy();
-    if (mRet != IPackageManager::INSTALL_SUCCEEDED) {
-        return NOERROR;
-    }
-
-    FAIL_RETURN(mTargetArgs->CopyPkg(mHost->mContainerService, FALSE, &mRet));
-    if (mRet != IPackageManager::INSTALL_SUCCEEDED) {
-        mSrcArgs->DoPostCopy(mUid);
-        return NOERROR;
-    }
-
-    mRet = mSrcArgs->DoPostCopy(mUid);
-    if (mRet != IPackageManager::INSTALL_SUCCEEDED) {
-        return NOERROR;
-    }
-
-    mRet = mTargetArgs->DoPreInstall(mRet);
-    if (mRet != IPackageManager::INSTALL_SUCCEEDED) {
-        return NOERROR;
-    }
-
-    if (CPackageManagerService::DEBUG_SD_INSTALL) {
-        AutoPtr<StringBuilder> builder = new StringBuilder();
-        if (mSrcArgs != NULL) {
-            builder->AppendCStr("src: ");
-            builder->AppendString(mSrcArgs->GetCodePath());
-        }
-        if (mTargetArgs != NULL) {
-            builder->AppendCStr(" target : ");
-            builder->AppendString(mTargetArgs->GetCodePath());
-        }
-        Logger::I(TAG, builder->ToString());
-    }
-
-    return NOERROR;
 }
 
-//@Override
-void CPackageManagerService::MoveParams::HandleReturnCode()
+Int32 CPackageManagerService::InstallArgs::DoPreCopy()
 {
-    mTargetArgs->DoPostInstall(mRet, mUid);
-    Int32 currentStatus = IPackageManager::MOVE_FAILED_INTERNAL_ERROR;
-    if (mRet == IPackageManager::INSTALL_SUCCEEDED) {
-        currentStatus = IPackageManager::MOVE_SUCCEEDED;
-    }
-    else if (mRet == IPackageManager::INSTALL_FAILED_INSUFFICIENT_STORAGE){
-        currentStatus = IPackageManager::MOVE_FAILED_INSUFFICIENT_STORAGE;
-    }
-    mHost->ProcessPendingMove(this, currentStatus);
+    return IPackageManager::INSTALL_SUCCEEDED;
 }
 
-//@Override
-void CPackageManagerService::MoveParams::HandleServiceError()
+Int32 CPackageManagerService::InstallArgs::DoPostCopy(
+    /* [in] */ Int32 uid)
 {
-    mRet = IPackageManager::INSTALL_FAILED_INTERNAL_ERROR;
+    return IPackageManager::INSTALL_SUCCEEDED;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// CPackageManagerService::FileInstallArgs
+Boolean CPackageManagerService::InstallArgs::IsFwdLocked()
+{
+    return (mInstallFlags & IPackageManager::INSTALL_FORWARD_LOCK) != 0;
+}
+
+AutoPtr<IUserHandle> CPackageManagerService::InstallArgs::GetUser()
+{
+    return mUser;
+}
+
+
+//==============================================================================
+//                  CPackageManagerService::FileInstallArgs
+//==============================================================================
 
 CPackageManagerService::FileInstallArgs::FileInstallArgs(
     /* [in] */ InstallParams* params,
     /* [in] */ CPackageManagerService* owner)
-    : InstallArgs(params->mPackageURI, params->mObserver,
-              params->mFlags, params->mInstallerPackageName,
-              params->GetManifestDigest(), params->GetUser(), owner)
-    , mCreated(FALSE)
-{}
-
-CPackageManagerService::FileInstallArgs::FileInstallArgs(
-    /* [in] */ const String& fullCodePath,
-    /* [in] */ const String& fullResourcePath,
-    /* [in] */ const String& nativeLibraryPath,
-    /* [in] */ CPackageManagerService* owner)
-    : InstallArgs(NULL, NULL, 0, String(NULL), NULL, NULL, owner)
-    , mCreated(FALSE)
+    : InstallArgs(
+        params->mOrigin,
+        params->mObserver,
+        params->mInstallFlags,
+        params->mInstallerPackageName,
+        params->GetManifestDigest(),
+        params->GetUser(),
+        NULL,
+        params->mPackageAbiOverride,
+        owner)
 {
-    AutoPtr<IFile> codeFile;
-    CFile::New(fullCodePath, (IFile**)&codeFile);
-    codeFile->GetParentFile((IFile**)&mInstallDir);
-    mCodeFileName = fullCodePath;
-    mResourceFileName = fullResourcePath;
-    mLibraryPath = nativeLibraryPath;
+    if (IsFwdLocked()) {
+        Slogger::E(CPackageManagerService::TAG, "Forward locking only supported in ASEC");
+        assert(0);
+        // throw new IllegalArgumentException("Forward locking only supported in ASEC");
+    }
 }
 
 CPackageManagerService::FileInstallArgs::FileInstallArgs(
-    /* [in] */ IUri* packageURI,
-    /* [in] */ const String& pkgName,
-    /* [in] */ const String& dataDir,
+    /* [in] */ const String& codePath,
+    /* [in] */ const String& resourcePath,
+    /* [in] */ const String& legacyNativeLibraryPath,
+    /* [in] */ ArrayOf<String>* instructionSets,
     /* [in] */ CPackageManagerService* owner)
-    : InstallArgs(packageURI, NULL, 0, String(NULL), NULL, NULL, owner)
-    , mCreated(FALSE)
+    : InstallArgs(
+        OriginInfo::FromNothing(),
+        NULL,
+        0,
+        String(NULL),
+        NULL,
+        NULL,
+        instructionSets,
+        String(NULL),
+        owner)
 {
-    mInstallDir = IsFwdLocked() ? mHost->mDrmAppPrivateInstallDir : mHost->mAppInstallDir;
-    String name = mHost->GetNextCodePath(String(NULL), pkgName, String(".apk"));
-    AutoPtr<IFile> codeFile;
-    CFile::New(mInstallDir, name + ".apk", (IFile**)&codeFile);
-    codeFile->GetPath(&mCodeFileName);
-    mResourceFileName = GetResourcePathFromCodePath();
-    AutoPtr<IFile> library;
-    CFile::New(owner->mAppLibInstallDir, pkgName, (IFile**)&library);
-    library->GetPath(&mLibraryPath);
+    if (!codePath.IsNull()) {
+        CFile::New(codePath, (IFile**)&mCodeFile);
+    }
+    if (!resourcePath.IsNull()) {
+        CFile::New(resourcePath, (IFile**)&mResourceFile);
+    }
+    if (!legacyNativeLibraryPath.IsNull()) {
+        CFile::New(legacyNativeLibraryPath, (IFile**)&mLegacyNativeLibraryPath);
+    }
 }
 
 ECode CPackageManagerService::FileInstallArgs::CheckFreeStorage(
-    /* [in] */ IMediaContainerService* imcs,
+    /* [in] */ IIMediaContainerService* imcs,
     /* [out] */ Boolean* result)
 {
-    assert(result != NULL);
-    Int64 lowThreshold;
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    String absolutePath;
+    mOrigin->mFile->GetAbsolutePath(&absolutePath);
+    Int64 sizeBytes;
+    FAIL_RETURN(imcs->CalculateInstalledSize(absolutePath, IsFwdLocked(), mAbiOverride, &sizeBytes))
 
-    AutoPtr<IInterface> service = ServiceManager::GetService(IDeviceStorageMonitorService::SERVICE);
-    AutoPtr<IDeviceStorageMonitorService> dsm = IDeviceStorageMonitorService::Probe(service);
-    if (dsm == NULL) {
-        Logger::W(TAG, "Couldn't get low memory threshold; no free limit imposed");
-        lowThreshold = 0L;
-    } else {
-        Boolean islow;
-        if (dsm->IsMemoryLow(&islow), islow) {
-            Logger::W(TAG, "Memory is reported as being too low; aborting package install");
-            *result = FALSE;
-            return NOERROR;
-        }
-
-        dsm->GetMemoryLowThreshold(&lowThreshold);
-    }
-
-   // try {
-    mHost->mContext->GrantUriPermission(
-            DEFAULT_CONTAINER_PACKAGE, mPackageURI, IIntent::FLAG_GRANT_READ_URI_PERMISSION);
-    Boolean ret;
-    imcs->CheckInternalFreeStorage(mPackageURI, IsFwdLocked(), lowThreshold, &ret);
-    mHost->mContext->RevokeUriPermission(mPackageURI, IIntent::FLAG_GRANT_READ_URI_PERMISSION);
-    *result = ret;
+    AutoPtr<IStorageManagerHelper> helper;
+    CStorageManagerHelper::AcquireSingleton((IStorageManagerHelper**)&helper);
+    AutoPtr<IStorageManager> storage;
+    helper->From(mHost->mContext, (IStorageManager**)&storage);
+    Int64 bytes;
+    storage->GetstorageBytesUntilLow(Environment::GetDataDirectory(), &bytes);
+    *result = (sizeBytes <= bytes);
     return NOERROR;
-    // } finally {
-    // mHost->mContext->RevokeUriPermission(packageURI, IIntent::FLAG_GRANT_READ_URI_PERMISSION);
-    // }
-}
-
-String CPackageManagerService::FileInstallArgs::GetCodePath()
-{
-    return mCodeFileName;
-}
-
-void CPackageManagerService::FileInstallArgs::CreateCopyFile()
-{
-    mInstallDir = IsFwdLocked() ? mHost->mDrmAppPrivateInstallDir : mHost->mAppInstallDir;
-    mHost->CreateTempPackageFile(mInstallDir)->GetPath(&mCodeFileName);
-    mResourceFileName = GetResourcePathFromCodePath();
-    mLibraryPath = GetLibraryPathFromCodePath();
-    mCreated = TRUE;
 }
 
 ECode CPackageManagerService::FileInstallArgs::CopyPkg(
-    /* [in] */ IMediaContainerService* imcs,
+    /* [in] */ IIMediaContainerService* imcs,
     /* [in] */ Boolean temp,
     /* [out] */ Int32* result)
 {
-    assert(result != NULL);
-    if (temp) {
-        // Generate temp file name
-        CreateCopyFile();
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
+    if (mOrigin->mStaged) {
+        Slogger::D(TAG, "%p already staged; skipping copy");
+        mCodeFile = mOrigin->mFile;
+        mResourceFile = mOrigin->mFile;
+        *result = PackageManager.INSTALL_SUCCEEDED;
+        return NOERROR;
     }
 
-    // Get a ParcelFileDescriptor to write to the output file
-    AutoPtr<IFile> codeFile;
-    CFile::New(mCodeFileName, (IFile**)&codeFile);
-    if (!mCreated) {
-//        try {
-        Boolean succeeded;
-        if (SUCCEEDED(codeFile->CreateNewFile(&succeeded)) && succeeded) {
-            // Set permissions
-            if (!SetPermissions()) {
-                // Failed setting permissions.
-                *result = IPackageManager::INSTALL_FAILED_INSUFFICIENT_STORAGE;
-                return NOERROR;
-            }
-        }
-        else {
-//            Slogger::W(TAG, "Failed to create file " + codeFile);
-            *result = IPackageManager::INSTALL_FAILED_INSUFFICIENT_STORAGE;
-            return NOERROR;
-        }
-//        } catch (IOException e) {
-//           Slog.w(TAG, "Failed to create file " + codeFile);
-//           return IPackageManager.INSTALL_FAILED_INSUFFICIENT_STORAGE;
-//        }
-    }
-    AutoPtr<IParcelFileDescriptor> out;
-//    try {
-    AutoPtr<IParcelFileDescriptorHelper> helper;
-    CParcelFileDescriptorHelper::AcquireSingleton((IParcelFileDescriptorHelper**)&helper);
-    ECode ec = helper->Open(codeFile, IParcelFileDescriptor::MODE_READ_WRITE, (IParcelFileDescriptor**)&out);
-    if (FAILED(ec)) {
-        Slogger::E(TAG, "Failed to create file descritpor for : %s", mCodeFileName.string());
+    // try {
+    AutoPtr<IFile> tempDir;
+    if (FAILED(mHost->mInstallerService->AllocateInternalStageDirLegacy((IFile**)tempDir))) {
+        Slogger::W(TAG, "Failed to create copy file:");
         *result = IPackageManager::INSTALL_FAILED_INSUFFICIENT_STORAGE;
         return NOERROR;
     }
-//    } catch (FileNotFoundException e) {
-//        Slog.e(TAG, "Failed to create file descritpor for : " + codeFileName);
-//        return IPackageManager.INSTALL_FAILED_INSUFFICIENT_STORAGE;
-//    }
-    // Copy the resource now
-    Int32 ret = IPackageManager::INSTALL_FAILED_INSUFFICIENT_STORAGE;
-//    try {
-    FAIL_RETURN(mHost->mContext->GrantUriPermission(DEFAULT_CONTAINER_PACKAGE, mPackageURI,
-        IIntent::FLAG_GRANT_READ_URI_PERMISSION));
-    imcs->CopyResource(mPackageURI, NULL, out, &ret);
-    AutoPtr<IIoUtils> ioUtils;
-    CIoUtils::AcquireSingleton((IIoUtils**)&ioUtils);
-    ioUtils->CloseQuietly(ICloseable::Probe(out));
+    mCodeFile = tempDir;
+    mResourceFile = tempDir;
+    // } catch (IOException e) {
+    //     Slog.w(TAG, "Failed to create copy file: " + e);
+    //     return PackageManager.INSTALL_FAILED_INSUFFICIENT_STORAGE;
+    // }
 
-    mHost->mContext->RevokeUriPermission(mPackageURI, IIntent::FLAG_GRANT_READ_URI_PERMISSION);
-
-    if (IsFwdLocked()) {
-        AutoPtr<IFile> destResourceFile;
-        CFile::New(GetResourcePath(), (IFile**)&destResourceFile);
-
-        // Copy the public files
-        // try {
-            PackageHelper::ExtractPublicFiles(mCodeFileName, destResourceFile);
-        // } catch (IOException e) {
-        //     Slog.e(TAG, "Couldn't create a new zip file for the public parts of a"
-        //             + " forward-locked app.");
-        //     destResourceFile.delete();
-        //     return PackageManager.INSTALL_FAILED_INSUFFICIENT_STORAGE;
-        // }
-    }
-
-    AutoPtr<IFile> nativeLibraryFile;
-    CFile::New(GetNativeLibraryPath(), (IFile**)&nativeLibraryFile);
-    String path;
-    nativeLibraryFile->GetPath(&path);
-    Slogger::I(TAG, "Copying native libraries to %s", path.string());
-
-    Boolean isExist;
-    nativeLibraryFile->Exists(&isExist);
-    if (isExist) {
-        AutoPtr<INativeLibraryHelper> nlHelper;
-        CNativeLibraryHelper::AcquireSingleton((INativeLibraryHelper**)&nlHelper);
-        Boolean res;
-        nlHelper->RemoveNativeBinariesFromDirLI(nativeLibraryFile, &res);
-        nativeLibraryFile->Delete(&res);
-    }
-
-    Int32 copyRet;
-    if (FAILED(CopyNativeLibrariesForInternalApp(codeFile, nativeLibraryFile, &copyRet))) {
-        Slogger::E(TAG, "Copying native libraries failed");
-        ret = IPackageManager::INSTALL_FAILED_INTERNAL_ERROR;
-    }
-
-    if (copyRet != IPackageManager::INSTALL_SUCCEEDED) {
-        *result = copyRet;
+    AutoPtr<IIParcelFileDescriptorFactory> target;
+    CParcelFileDescriptorFactory::New(mCodeFile, (IIParcelFileDescriptorFactory**)&target);
+    Int32 ret = IPackageManager::INSTALL_SUCCEEDED;
+    String absolutePath;
+    mOrigin->mFile->GetAbsolutePath(&absolutePath);
+    imcs->CopyPackage(absolutePath, target, &ret);
+    if (ret != IPackageManager::INSTALL_SUCCEEDED) {
+        Slogger::E(TAG, "Failed to copy package");
+        *result = ret;
         return NOERROR;
     }
 
+    AutoPtr<IFile> libraryRoot;
+    CFile::New(mCodeFile, INativeLibraryHelper::LIB_DIR_NAME, (IFile**)&libraryRoot);
+    AutoPtr<INativeLibraryHelperHandle> handle;
+    // try {
+    AutoPtr<INativeLibraryHelperHandleHelper> helper;
+    CNativeLibraryHelperHandleHelper::AcquireSingleton((INativeLibraryHelperHandleHelper**)&helper);
+    if (FAILED(helper->Create(mCodeFile, (INativeLibraryHelperHandle**)&handle))) {
+        Slogger::E(CPackageManagerService::TAG, "Copying native libraries failed");
+        ret = IPackageManager::INSTALL_FAILED_INTERNAL_ERROR;
+        goto fail;
+    }
+    AutoPtr<INativeLibraryHelper> libHelper;
+    CNativeLibraryHelper::AcquireSingleton((INativeLibraryHelper**)&libHelper);
+    libHelper->CopyNativeBinariesWithOverride(handle, libraryRoot, abiOverride, &ret);
+    // } catch (IOException e) {
+    //     Slog.e(TAG, "Copying native libraries failed", e);
+    //     ret = PackageManager.INSTALL_FAILED_INTERNAL_ERROR;
+    // } finally {
+    //     IoUtils.closeQuietly(handle);
+    // }
+fail:
+    AutoPtr<IIoUtils> ioUtils;
+    CIoUtils::AcquireSingleton((IIoUtils**)&ioUtils);
+    ioUtils->CloseQuietly(handle);
     *result = ret;
     return NOERROR;
 }
@@ -2728,7 +2872,7 @@ Int32 CPackageManagerService::FileInstallArgs::DoPreInstall(
 
 Boolean CPackageManagerService::FileInstallArgs::DoRename(
     /* [in] */ Int32 status,
-    /* [in] */ const String& pkgName,
+    /* [in] */ PackageParser::Package* pkg,
     /* [in] */ const String& oldCodePath)
 {
     if (status != IPackageManager::INSTALL_SUCCEEDED) {
@@ -2736,66 +2880,46 @@ Boolean CPackageManagerService::FileInstallArgs::DoRename(
         return FALSE;
     }
     else {
-        AutoPtr<IFile> oldCodeFile;
-        AutoPtr<IFile> oldResourceFile;
-        AutoPtr<IFile> oldLibraryFile;
-        CFile::New(GetCodePath(), (IFile**)&oldCodeFile);
-        CFile::New(GetResourcePath(), (IFile**)&oldResourceFile);
-        CFile::New(GetNativeLibraryPath(), (IFile**)&oldLibraryFile);
+        AutoPtr<IFile> beforeCodeFile = mCodeFile;
+        AutoPtr<IFile> afterCodeFile = GetNextCodePath(pkg->mPackageName);
 
-        // for epk
-        String suffix(".apk");
-        if (mIsEpk)
-            suffix = ".epk";
-
-        // Rename APK file based on packageName
-        String apkName = mHost->GetNextCodePath(oldCodePath, pkgName, suffix);
-        AutoPtr<IFile> newCodeFile;
-        CFile::New(mInstallDir, apkName + suffix, (IFile**)&newCodeFile);
-        Boolean succeeded;
-        if (oldCodeFile->RenameTo(newCodeFile, &succeeded), !succeeded) {
+        Slogger::D(TAG, "Renaming %p to %p", beforeCodeFile.Get(), afterCodeFile.Get());
+        // try {
+        String absolutePath, absolutePath1;
+        beforeCodeFile->GetAbsolutePath(&absolutePath);
+        afterCodeFile->GetAbsolutePath(&absolutePath1);
+        if (FAILED(Os::Rename(absolutePath, absolutePath1))) {
+            Slogger::D(CPackageManagerService::TAG, "Failed to rename");
             return FALSE;
         }
-        newCodeFile->GetPath(&mCodeFileName);
+        // } catch (ErrnoException e) {
+        //     Slog.d(TAG, "Failed to rename", e);
+        //     return false;
+        // }
 
-        // Rename public resource file if it's forward-locked.
-        AutoPtr<IFile> newResFile;
-        CFile::New(GetResourcePathFromCodePath(), (IFile**)&newResFile);
-        if (IsFwdLocked() && (oldResourceFile->RenameTo(newResFile, &succeeded), !succeeded)) {
-            return FALSE;
-        }
-        newResFile->GetPath(&mResourceFileName);
-
-        // Rename library path
-        AutoPtr<IFile> newLibraryFile;
-        CFile::New(GetLibraryPathFromCodePath(), (IFile**)&newLibraryFile);
-        Boolean isExist;
-        if (newLibraryFile->Exists(&isExist), isExist) {
-            AutoPtr<INativeLibraryHelper> nlHelper;
-            CNativeLibraryHelper::AcquireSingleton((INativeLibraryHelper**)&nlHelper);
-            Boolean res;
-            nlHelper->RemoveNativeBinariesFromDirLI(newLibraryFile, &res);
-            newLibraryFile->Delete(&succeeded);
-        }
-
-        if (oldLibraryFile->RenameTo(newLibraryFile, &succeeded), !succeeded) {
-            String oldPath, newPath;
-            oldLibraryFile->GetPath(&oldPath);
-            newLibraryFile->GetPath(&newPath);
-            Slogger::E(TAG, "Cannot rename native library directory %s to %s",
-                oldPath.string(), newPath.string());
-            return FALSE;
-        }
-        newLibraryFile->GetPath(&mLibraryPath);
-
-        // Attempt to set permissions
-        if (!SetPermissions()) {
+        if (!SELinux::RestoreconRecursive(afterCodeFile)) {
+            Slogger::D(CPackageManagerService::TAG, "Failed to restorecon");
             return FALSE;
         }
 
-        if (!SELinux::Restorecon(newCodeFile)) {
-            return FALSE;
-        }
+        // Reflect the rename internally
+        mCodeFile = afterCodeFile;
+        mResourceFile = afterCodeFile;
+
+        // Reflect the rename in scanned details
+        afterCodeFile->GetAbsolutePath(&pkg->mCodePath);
+        pkg->mBaseCodePath = FileUtils::RewriteAfterRename(beforeCodeFile, afterCodeFile,
+                pkg->mBaseCodePath);
+        pkg->mSplitCodePaths = FileUtils::RewriteAfterRename(beforeCodeFile, afterCodeFile,
+                pkg->mSplitCodePaths);
+
+        // Reflect the rename in app info
+        pkg->mApplicationInfo->SetCodePath(pkg->mCodePath);
+        pkg->mApplicationInfo->SetBaseCodePath(pkg->mBaseCodePath);
+        pkg->mApplicationInfo->SetSplitCodePaths(pkg->mSplitCodePaths);
+        pkg->mApplicationInfo->SetResourcePath(pkg->mCodePath);
+        pkg->mApplicationInfo->SetBaseResourcePath(pkg->mBaseCodePath);
+        pkg->mApplicationInfo->SetSplitResourcePaths(pkg->mSplitCodePaths);
 
         return TRUE;
     }
@@ -2811,131 +2935,96 @@ Int32 CPackageManagerService::FileInstallArgs::DoPostInstall(
     return status;
 }
 
+String CPackageManagerService::FileInstallArgs::GetCodePath()
+{
+    String str(NULL);
+    if (mCodeFile != NULL) {
+        mCodeFile->GetAbsolutePath(&str);
+    }
+    return str;
+}
+
 String CPackageManagerService::FileInstallArgs::GetResourcePath()
 {
-    return mResourceFileName;
+    String str(NULL);
+    if (mResourceFile != NULL) {
+        mResourceFile->GetAbsolutePath(&str);
+    }
+    return str;
 }
 
-String CPackageManagerService::FileInstallArgs::GetResourcePathFromCodePath()
+String CPackageManagerService::FileInstallArgs::GetLegacyNativeLibraryPath()
 {
-    String codePath = GetCodePath();
-    if (IsFwdLocked()) {
-        StringBuilder sb;
-
-        String path;
-        mHost->mAppInstallDir->GetPath(&path);
-        sb.Append(path);
-        sb.AppendChar('/');
-        sb.Append(GetApkName(codePath));
-        sb.Append(".zip");
-
-        /*
-         * If our APK is a temporary file, mark the resource as a
-         * temporary file as well so it can be cleaned up after
-         * catastrophic failure.
-         */
-        if (codePath.EndWith(".tmp")) {
-            sb.Append(".tmp");
-        }
-
-        return sb.ToString();
+    String str(NULL);
+    if (mLegacyNativeLibraryPath != NULL) {
+        mLegacyNativeLibraryPath->GetAbsolutePath(&str);
     }
-    else {
-        return codePath;
-    }
-}
-
-String CPackageManagerService::FileInstallArgs::GetLibraryPathFromCodePath()
-{
-    AutoPtr<IFile> file;
-    CFile::New(mHost->mAppLibInstallDir, GetApkName(GetCodePath()), (IFile**)&file);
-    String path;
-    file->GetPath(&path);
-    return path;
-}
-
-String CPackageManagerService::FileInstallArgs::GetNativeLibraryPath()
-{
-    if (mLibraryPath.IsNull()) {
-        mLibraryPath = GetLibraryPathFromCodePath();
-    }
-    return mLibraryPath;
+    return str;
 }
 
 Boolean CPackageManagerService::FileInstallArgs::CleanUp()
 {
-    Boolean ret = TRUE;
-    String sourceDir = GetCodePath();
-    String publicSourceDir = GetResourcePath();
-    if (!sourceDir.IsNull()) {
-        AutoPtr<IFile> sourceFile;
-        CFile::New(sourceDir, (IFile**)&sourceFile);
-        Boolean result;
-        if (sourceFile->Exists(&result), !result) {
-            Slogger::W(TAG, "Package source %s does not exist.", sourceDir.string());
-            ret = FALSE;
-        }
-        // Delete application's code and resources
-        sourceFile->Delete(&result);
-    }
-    if (!publicSourceDir.IsNull() && !publicSourceDir.Equals(sourceDir)) {
-        AutoPtr<IFile> publicSourceFile;
-        CFile::New(publicSourceDir, (IFile**)&publicSourceFile);
-        Boolean result;
-        if (publicSourceFile->Exists(&result), !result) {
-            Slogger::W(TAG, "Package public source %s does not exist.", publicSourceDir.string());
-        }
-        else {
-            publicSourceFile->Delete(&result);
-        }
+    Boolean exists;
+    if (mCodeFile == NULL || (mCodeFile->Exists(&exists), !exists)) {
+        return FALSE;
     }
 
-    if (mLibraryPath != NULL) {
-        AutoPtr<IFile> nativeLibraryFile;
-        CFile::New(mLibraryPath, (IFile**)&nativeLibraryFile);
-        AutoPtr<INativeLibraryHelper> nlHelper;
-        CNativeLibraryHelper::AcquireSingleton((INativeLibraryHelper**)&nlHelper);
-        Boolean res;
-        nlHelper->RemoveNativeBinariesFromDirLI(nativeLibraryFile, &res);
-        nativeLibraryFile->Delete(&res);
-        if (!res) {
-            Slogger::W(TAG, "Couldn't delete native library directory %s", mLibraryPath.string());
-        }
+    Boolean isDirectory;
+    if (mCodeFile->IsDirectory(&isDirectory), isDirectory) {
+        FileUtils::DeleteContents(codeFile);
+    }
+    mCodeFile->Delete();
+
+    if (mResourceFile != NULL && !FileUtils::Contains(mCodeFile, mResourceFile)) {
+        mResourceFile->Delete();
     }
 
-    return ret;
-}
-
-void CPackageManagerService::FileInstallArgs::CleanUpResourcesLI()
-{
-    String sourceDir = GetCodePath();
-    if (CleanUp()) {
-        Int32 retCode = mHost->mInstaller->Rmdex(sourceDir);
-        if (retCode < 0) {
-           Slogger::W(TAG, "Couldn't remove dex file for package:"
-                " at location %s, recode = %d", sourceDir.string(), retCode);
-            // we don't consider this to be a failure of the core package deletion
+    if (mLegacyNativeLibraryPath != NULL && !FileUtils::Contains(mCodeFile, mLegacyNativeLibraryPath)) {
+        if (!FileUtils::DeleteContents(mLegacyNativeLibraryPath)) {
+            Slogger::W(TAG, "Couldn't delete native library directory %p", mLegacyNativeLibraryPath.Get());
         }
+        mLegacyNativeLibraryPath->delete();
     }
-}
 
-Boolean CPackageManagerService::FileInstallArgs::SetPermissions()
-{
-    // TODO Do this in a more elegant way later on. for now just a hack
-    if (!IsFwdLocked()) {
-        Int32 filePermissions = FileUtils::sS_IRUSR | FileUtils::sS_IWUSR
-            | FileUtils::sS_IRGRP | FileUtils::sS_IROTH;
-        Int32 retCode = FileUtils::SetPermissions(GetCodePath(), filePermissions, -1, -1);
-        if (retCode != 0) {
-//            Slog.e(TAG, "Couldn't set new package file permissions for " +
-//                    getCodePath()
-//                    + ". The return code was: " + retCode);
-            // TODO Define new internal error
-            return FALSE;
-        }
-        return TRUE;
-    }
     return TRUE;
+}
+
+ECode CPackageManagerService::FileInstallArgs::CleanUpResourcesLI()
+{
+    // Try enumerating all code paths before deleting
+    AutoPtr<List<String> > allCodePaths;
+    Boolean exists;
+    if (mCodeFile != NULL && (mCodeFile->Exists(&exists), exists)) {
+        // try {
+        AutoPtr<PackageLite> pkg = PackageParser::ParsePackageLite(mCodeFile, 0);
+        allCodePaths = pkg->GetAllCodePaths();
+        // } catch (PackageParserException e) {
+        //     // Ignored; we tried our best
+        // }
+    }
+
+    CleanUp();
+
+    if (allCodePaths->Begin() != allCodePaths->End()) {
+        if (mInstructionSets == NULL) {
+            Slogger::E(CPackageManagerService::TAG, "instructionSet == null");
+            return E_ILLEGAL_STATE_EXCEPTION;
+        }
+        AutoPtr< ArrayOf <String> > dexCodeInstructionSets
+                = CPackageManagerService::GetDexCodeInstructionSets(instructionSets);
+        List<String>::Iterator it = allCodePaths->Begin();
+        for (; it != allCodePaths->End(); ++it) {
+            String codePath = *it;
+            for (Int32 i = 0; i < dexCodeInstructionSets->GetLength(); ++i) {
+                Int32 retCode = mHost->mInstaller->Rmdex(codePath, (*dexCodeInstructionSets)[i]);
+                if (retCode < 0) {
+                    Slogger::W(CPackageManagerService::TAG, "Couldn't remove dex file for package:  at location %s, retcode=%d"
+                            , codePath.string(), retCode);
+                    // we don't consider this to be a failure of the core package deletion
+                }
+            }
+        }
+    }
 }
 
 Boolean CPackageManagerService::FileInstallArgs::DoPostDeleteLI(
@@ -2946,95 +3035,117 @@ Boolean CPackageManagerService::FileInstallArgs::DoPostDeleteLI(
     return TRUE;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// CPackageManagerService::AsecInstallArgs
 
-const String CPackageManagerService::AsecInstallArgs::RES_FILE_NAME = String("pkg.apk");
-const String CPackageManagerService::AsecInstallArgs::PUBLIC_RES_FILE_NAME = String("res.zip");
+//==============================================================================
+//                  CPackageManagerService::FileInstallArgs
+//==============================================================================
+
+const String CPackageManagerService::AsecInstallArgs::RES_FILE_NAME("pkg.apk");
+const String CPackageManagerService::AsecInstallArgs::PUBLIC_RES_FILE_NAME("res.zip");
 
 CPackageManagerService::AsecInstallArgs::AsecInstallArgs(
     /* [in] */ InstallParams* params,
     /* [in] */ CPackageManagerService* owner)
-    : InstallArgs(params->GetPackageUri(), params->mObserver, params->mFlags,
-            params->mInstallerPackageName, params->GetManifestDigest(),
-            params->GetUser(), owner)
-{}
+{
+    AutoPtr<IManifestDigest> dig = params->GetManifestDigest();
+    Init(params->mOrigin, params->mObserver, params->mInstallFlags,
+            params->mInstallerPackageName, dig,
+            params->GetUser(), NULL /* instruction sets */,
+            params->mPackageAbiOverride, owner)
+}
 
 CPackageManagerService::AsecInstallArgs::AsecInstallArgs(
-    /* [in] */ const String& fullCodePath,
-    /* [in] */ const String& fullResourcePath,
-    /* [in] */ const String& nativeLibraryPath,
+    /* [in] */ const String& _fullCodePath,
+    /* [in] */ ArrayOf<String>* instructionSets,
     /* [in] */ Boolean isExternal,
     /* [in] */ Boolean isForwardLocked,
     /* [in] */ CPackageManagerService* owner)
-    : InstallArgs(NULL, NULL, (isExternal ? IPackageManager::INSTALL_EXTERNAL : 0)
-            | (isForwardLocked ? IPackageManager::INSTALL_FORWARD_LOCK : 0),
-            String(NULL), NULL, NULL, owner)
 {
+    String fullCodePath = _fullCodePath;
+    AutoPtr<OriginInfo> origin = OriginInfo::FromNothing();
+    Init(origin, NULL,
+            (isExternal ? INSTALL_EXTERNAL : 0) | (isForwardLocked ? INSTALL_FORWARD_LOCK : 0),
+            String(NULL), NULL, NULL,
+            instructionSets, String(NULL), owner);
+    // Hackily pretend we're still looking at a full code path
+    if (!fullCodePath.EndWith(RES_FILE_NAME)) {
+        AutoPtr<IFile> f;
+        CFile::New(fullCodePath, RES_FILE_NAME, (IFile**)&f);
+        f->GetAbsolutePath(&fullCodePath);
+    }
+
     // Extract cid from fullCodePath
     Int32 eidx = fullCodePath.LastIndexOf("/");
     String subStr1 = fullCodePath.Substring(0, eidx);
     Int32 sidx = subStr1.LastIndexOf("/");
-    mCid = subStr1.Substring(sidx + 1, eidx);
-    SetCachePath(subStr1);
+    mCid = subStr1.Substring(sidx+1, eidx);
+    SetMountPath(subStr1);
 }
 
 CPackageManagerService::AsecInstallArgs::AsecInstallArgs(
     /* [in] */ const String& cid,
     /* [in] */ Boolean isForwardLocked,
+    /* [in] */ ArrayOf<String>* instructionSets,
     /* [in] */ CPackageManagerService* owner)
-    : InstallArgs(NULL, NULL, (owner->IsAsecExternal(cid) ? IPackageManager::INSTALL_EXTERNAL : 0)
-            | (isForwardLocked ? IPackageManager::INSTALL_FORWARD_LOCK : 0),
-            String(NULL), NULL, NULL, owner)
-    , mCid(cid)
 {
-    SetCachePath(PackageHelper::GetSdDir(cid));
+    AutoPtr<OriginInfo> origin = OriginInfo::FromNothing();
+    Init(origin, NULL, (IsAsecExternal(cid) ? INSTALL_EXTERNAL : 0)
+            | (isForwardLocked ? INSTALL_FORWARD_LOCK : 0), String(NULL), NULL, NULL,
+            instructionSets, String(NULL), owner);
+    mCid = cid;
+    SetMountPath(PackageHelper::GetSdDir(cid));
 }
-
-CPackageManagerService::AsecInstallArgs::AsecInstallArgs(
-    /* [in] */ IUri* packageURI,
-    /* [in] */ const String& cid,
-    /* [in] */ Boolean isExternal,
-    /* [in] */ Boolean isForwardLocked,
-    /* [in] */ CPackageManagerService* owner)
-    : InstallArgs(packageURI, NULL, (isExternal ? IPackageManager::INSTALL_EXTERNAL : 0)
-            | (isForwardLocked ? IPackageManager::INSTALL_FORWARD_LOCK : 0),
-            String(NULL), NULL, NULL, owner)
-    , mCid(cid)
-{}
 
 void CPackageManagerService::AsecInstallArgs::CreateCopyFile()
 {
-    mCid = GetTempContainerId();
+    mCid = mHost->mInstallerService->AllocateExternalStageCidLegacy();
 }
 
 ECode CPackageManagerService::AsecInstallArgs::CheckFreeStorage(
-    /* [in] */ IMediaContainerService* imcs,
+    /* [in] */ IIMediaContainerService* imcs,
     /* [out] */ Boolean* result)
 {
-    assert(result != NULL);
-    // try {
-    mHost->mContext->GrantUriPermission(CPackageManagerService::DEFAULT_CONTAINER_PACKAGE, mPackageURI,
-            IIntent::FLAG_GRANT_READ_URI_PERMISSION);
-    imcs->CheckExternalFreeStorage(mPackageURI, IsFwdLocked(), result);
-    mHost->mContext->RevokeUriPermission(mPackageURI, IIntent::FLAG_GRANT_READ_URI_PERMISSION);
-    return NOERROR;
-    // } finally {
-    //     mContext.revokeUriPermission(packageURI, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-    // }
-}
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    Int64 sizeBytes;
+    FAIL_RETURN(imcs->CalculateInstalledSize(packagePath, IsFwdLocked(),
+            abiOverride, &sizeBytes))
 
-Boolean CPackageManagerService::AsecInstallArgs::IsExternal()
-{
-    return (mFlags & IPackageManager::INSTALL_EXTERNAL) != 0;
+    AutoPtr<IFile> target;
+    if (IsExternal()) {
+        AutoPtr<UserEnvironment> env = new UserEnvironment(IUserHandle::USER_OWNER);
+        target = env->GetExternalStorageDirectory();
+    }
+    else {
+        target = Environment::GetDataDirectory();
+    }
+
+    AutoPtr<IStorageManagerHelper> helper;
+    CStorageManagerHelper::AcquireSingleton((IStorageManagerHelper**)&helper);
+    AutoPtr<IStorageManager> storage;
+    helper->From(mHost->mContext, (IStorageManager**)&storage);
+    Int64 bytes;
+    storage->GetstorageBytesUntilLow(target, &bytes);
+    *result = (sizeBytes <= bytes);
+    return NOERROR;
 }
 
 ECode CPackageManagerService::AsecInstallArgs::CopyPkg(
-    /* [in] */ IMediaContainerService* imcs,
+    /* [in] */ IIMediaContainerService* imcs,
     /* [in] */ Boolean temp,
     /* [out] */ Int32* result)
 {
-    assert(result != NULL);
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
+    if (mOrigin->mStaged) {
+        Slogger::D(TAG, "%s already staged; skipping copy", mOrigin->mCid.string());
+        mCid = mOrigin->mCid;
+        SetMountPath(PackageHelper::GetSdDir(cid));
+        *result = IPackageManager::INSTALL_SUCCEEDED;
+        return NOERROR;
+    }
+
     if (temp) {
         CreateCopyFile();
     }
@@ -3046,25 +3157,20 @@ ECode CPackageManagerService::AsecInstallArgs::CopyPkg(
         PackageHelper::DestroySdDir(mCid);
     }
 
-    String newCachePath;
-    // // try {
-    mHost->mContext->GrantUriPermission(DEFAULT_CONTAINER_PACKAGE, mPackageURI,
-            IIntent::FLAG_GRANT_READ_URI_PERMISSION);
-    imcs->CopyResourceToContainer(mPackageURI, mCid, mHost->GetEncryptKey(),
-            RES_FILE_NAME, PUBLIC_RES_FILE_NAME, IsExternal(), IsFwdLocked(), &newCachePath);
-    // // } finally {
-    mHost->mContext->RevokeUriPermission(mPackageURI, IIntent::FLAG_GRANT_READ_URI_PERMISSION);
-    // // }
+    String absolutePath;
+    mOrigin->mFile->GetAbsolutePath(&absolutePath);
+    String newMountPath;
+    FAIL_RETURN(imcs->CopyPackageToContainer(absolutePath, mCid,
+            mHost->GetEncryptKey(), IsExternal(), IsFwdLocked(),
+            CPackageManagerService::DeriveAbiOverride(abiOverride, NULL /* settings */), &newMountPath))
 
-    if (!newCachePath.IsNull()) {
-        SetCachePath(newCachePath);
+    if (!newMountPath.IsNull()) {
+        SetMountPath(newMountPath);
         *result = IPackageManager::INSTALL_SUCCEEDED;
-        return NOERROR;
-    }
-    else {
+    } else {
         *result = IPackageManager::INSTALL_FAILED_CONTAINER_ERROR;
-        return NOERROR;
     }
+    return NOERROR;
 }
 
 String CPackageManagerService::AsecInstallArgs::GetCodePath()
@@ -3077,9 +3183,9 @@ String CPackageManagerService::AsecInstallArgs::GetResourcePath()
     return mResourcePath;
 }
 
-String CPackageManagerService::AsecInstallArgs::GetNativeLibraryPath()
+String CPackageManagerService::AsecInstallArgs::GetLegacyNativeLibraryPath()
 {
-    return mLibraryPath;
+    return mLegacyNativeLibraryPath;
 }
 
 Int32 CPackageManagerService::AsecInstallArgs::DoPreInstall(
@@ -3092,10 +3198,10 @@ Int32 CPackageManagerService::AsecInstallArgs::DoPreInstall(
     else {
         Boolean mounted = PackageHelper::IsContainerMounted(mCid);
         if (!mounted) {
-            String newCachePath = PackageHelper::MountSdDir(mCid,
+            String newMountPath = PackageHelper::MountSdDir(mCid,
                     mHost->GetEncryptKey(), IProcess::SYSTEM_UID);
-            if (!newCachePath.IsNull()) {
-                SetCachePath(newCachePath);
+            if (!newMountPath.IsNull()) {
+                SetMountPath(newMountPath);
             }
             else {
                 return IPackageManager::INSTALL_FAILED_CONTAINER_ERROR;
@@ -3107,11 +3213,11 @@ Int32 CPackageManagerService::AsecInstallArgs::DoPreInstall(
 
 Boolean CPackageManagerService::AsecInstallArgs::DoRename(
     /* [in] */ Int32 status,
-    /* [in] */ const String& pkgName,
+    /* [in] */ PackageParser::Package* pkg,
     /* [in] */ const String& oldCodePath)
 {
-    String newCacheId = GetNextCodePath(oldCodePath, pkgName, String("/") + RES_FILE_NAME);
-    String newCachePath;
+    String newCacheId = GetNextCodePath(oldCodePath, pkg->mPackageName, String("/") + RES_FILE_NAME);
+    String newMountPath = NULL;
     if (PackageHelper::IsContainerMounted(mCid)) {
         // Unmount the container
         if (!PackageHelper::UnMountSdDir(mCid)) {
@@ -3136,41 +3242,71 @@ Boolean CPackageManagerService::AsecInstallArgs::DoRename(
     }
     if (!PackageHelper::IsContainerMounted(newCacheId)) {
         Slogger::W(TAG, "Mounting container %s", newCacheId.string());
-        newCachePath = PackageHelper::MountSdDir(newCacheId,
+        newMountPath = PackageHelper::MountSdDir(newCacheId,
                 mHost->GetEncryptKey(), IProcess::SYSTEM_UID);
     }
     else {
         newCachePath = PackageHelper::GetSdDir(newCacheId);
     }
-    if (newCachePath.IsNull()) {
+    if (newMountPath.IsNull()) {
         Slogger::W(TAG, "Failed to get cache path for %s", newCacheId.string());
         return FALSE;
     }
     Slogger::I(TAG, "Succesfully renamed %s to %s at new path: %s",
-            mCid.string(), newCacheId.string(), newCachePath.string());
+            mCid.string(), newCacheId.string(), newMountPath.string());
     mCid = newCacheId;
-    SetCachePath(newCachePath);
+
+    AutoPtr<IFile> beforeCodeFile;
+    CFile::New(mPackagePath, (IFile**)&beforeCodeFile);
+    SetMountPath(newMountPath);
+    AutoPtr<IFile> afterCodeFile;
+    CFile::New(mPackagePath, (IFile**)&afterCodeFile);
+
+    // Reflect the rename in scanned details
+    afterCodeFile->GetAbsolutePath(&pkg->mCodePath);
+    pkg->mBaseCodePath = FileUtils::RewriteAfterRename(beforeCodeFile, afterCodeFile,
+            pkg->mBaseCodePath);
+    pkg->mSplitCodePaths = FileUtils::RewriteAfterRename(beforeCodeFile, afterCodeFile,
+            pkg->mSplitCodePaths);
+
+    // Reflect the rename in app info
+    pkg->mApplicationInfo->SetCodePath(pkg->mCodePath);
+    pkg->mApplicationInfo->SetBaseCodePath(pkg->mBaseCodePath);
+    pkg->mApplicationInfo->SetSplitCodePaths(pkg->mSplitCodePaths);
+    pkg->mApplicationInfo->SetResourcePath(pkg->mCodePath);
+    pkg->mApplicationInfo->SetBaseResourcePath(pkg->mBaseCodePath);
+    pkg->mApplicationInfo->SetSplitResourcePaths(pkg->mSplitCodePaths);
     return TRUE;
 }
 
-void CPackageManagerService::AsecInstallArgs::SetCachePath(
-    /* [in] */ const String& newCachePath)
+void CPackageManagerService::AsecInstallArgs::SetMountPath(
+    /* [in] */ const String& mountPath)
 {
-    AutoPtr<IFile> cachePath, libFile, resFile;
-    CFile::New(newCachePath, (IFile**)&cachePath);
-    CFile::New(cachePath, LIB_DIR_NAME, (IFile**)&libFile);
-    libFile->GetPath(&mLibraryPath);
-    CFile::New(cachePath, RES_FILE_NAME, (IFile**)&resFile);
-    resFile->GetPath(&mPackagePath);
+    AutoPtr<IFile> mountFile, monolithicFile;
+    CFile::New(mountPath, (IFile**)&mountFile);
 
-    if (IsFwdLocked()) {
-        AutoPtr<IFile> pubResFile;
-        CFile::New(cachePath, PUBLIC_RES_FILE_NAME, (IFile**)&pubResFile);
-        pubResFile->GetPath(&mResourcePath);
+    CFile::New(mountFile, RES_FILE_NAME, (IFile**)&mountFile);
+    Boolean exists;
+    if (monolithicFile->Exists(&exists), exists) {
+        monolithicFile->GetAbsolutePath(&mPackagePath);
+        if (IsFwdLocked()) {
+            AutoPtr<IFile> f;
+            CFile::New(mountFile, PUBLIC_RES_FILE_NAME, (IFile**)&f);
+            f->GetAbsolutePath(&mResourcePath);
+        }
+        else {
+            mResourcePath = mPackagePath;
+        }
     }
     else {
+        mountFile->GetAbsolutePath(&mPackagePath);
         mResourcePath = mPackagePath;
     }
+
+    AutoPtr<IFile> f;
+    CFile::New(mountFile, LIB_DIR_NAME, (IFile**)&f);
+    CFile::New(mountFile, LIB_DIR_NAME, (IFile**)&f);
+    f->GetAbsolutePath(&mLegacyNativeLibraryPath);
 }
 
 Int32 CPackageManagerService::AsecInstallArgs::DoPostInstall(
@@ -3215,17 +3351,55 @@ void CPackageManagerService::AsecInstallArgs::CleanUp()
     PackageHelper::DestroySdDir(mCid);
 }
 
-void CPackageManagerService::AsecInstallArgs::CleanUpResourcesLI()
+AutoPtr<List<String> > CPackageManagerService::AsecInstallArgs::GetAllCodePaths()
 {
-    String sourceFile = GetCodePath();
-    // Remove dex file
-    Int32 retCode = mHost->mInstaller->Rmdex(sourceFile);
-    if (retCode < 0) {
-        Slogger::W(TAG, "Couldn't remove dex file for package: at location %s, retcode=%d",
-                sourceFile.string(), retCode);
-        // we don't consider this to be a failure of the core package deletion
+    AutoPtr<IFile> codeFile;
+    CFile::New(GetCodePath(), (IFile**)&codeFile);
+    Boolean exists;
+    if (codeFile != NULL && (codeFile->Exists(&exists), exists)) {
+        // try {
+        AutoPtr<PackageLite> pkg = PackageParser::ParsePackageLite(codeFile, 0);
+        return pkg->GetAllCodePaths();
+        // } catch (PackageParserException e) {
+        //     // Ignored; we tried our best
+        // }
     }
+    return new List<String>();
+}
+
+ECode CPackageManagerService::AsecInstallArgs::CleanUpResourcesLI()
+{
+    // Enumerate all code paths before deleting
+    AutoPtr<List<String> > paths = GetAllCodePaths();
+    return CleanUpResourcesLI(paths);
+}
+
+ECode CPackageManagerService::AsecInstallArgs::CleanUpResourcesLI(
+    /* [in] */ List<String>* allCodePaths)
+{
     CleanUp();
+
+    if (allCodePaths->Begin() != allCodePaths->End()) {
+        if (mInstructionSets == NULL) {
+            Slogger::E(CPackageManagerService::TAG, "instructionSet == null");
+            return E_ILLEGAL_STATE_EXCEPTION;
+        }
+        AutoPtr< ArrayOf<String> > dexCodeInstructionSets
+                = CPackageManagerService::GetDexCodeInstructionSets(mInstructionSets);
+        List<String>::Iterator it = allCodePaths->End();
+        for (; it != allCodePaths->End(); ++it) {
+            String codePath = *it;
+            for (Int32 i = 0; i < dexCodeInstructionSets->GetLength(); ++i) {
+                Int32 retCode = mHost->mInstaller->Rmdex(codePath, (*dexCodeInstructionSets)[i]);
+                if (retCode < 0) {
+                    Slogger::W(TAG, "Couldn't remove dex file for package:  at location %s, retcode=%d"
+                            , mCodePath.string(), retCode);
+                    // we don't consider this to be a failure of the core package deletion
+                }
+            }
+        }
+    }
+    return NOERROR;
 }
 
 Boolean CPackageManagerService::AsecInstallArgs::MatchContainer(
@@ -3245,16 +3419,20 @@ String CPackageManagerService::AsecInstallArgs::GetPackageName()
 Boolean CPackageManagerService::AsecInstallArgs::DoPostDeleteLI(
     /* [in] */ Boolean del)
 {
+    if (DEBUG_SD_INSTALL) Slogger::I(CPackageManagerService::TAG, "doPostDeleteLI() del=%d", del);
+    AutoPtr<List<String> > allCodePaths = GetAllCodePaths();
     Boolean ret = FALSE;
     Boolean mounted = PackageHelper::IsContainerMounted(mCid);
     if (mounted) {
         // Unmount first
-        ret = PackageHelper::UnMountSdDir(mCid);
+        if (PackageHelper::UnMountSdDir(cid)) {
+            mounted = FALSE;
+        }
     }
-    if (ret && del) {
-        CleanUpResourcesLI();
+    if (!mounted && del) {
+        CleanUpResourcesLI(allCodePaths);
     }
-    return ret;
+    return !mounted;
 }
 
 Int32 CPackageManagerService::AsecInstallArgs::DoPreCopy()
@@ -3284,6 +3462,30 @@ Int32 CPackageManagerService::AsecInstallArgs::DoPostCopy(
 
     return IPackageManager::INSTALL_SUCCEEDED;
 }
+
+
+//==============================================================================
+//                  CPackageManagerService::PackageInstalledInfo
+//==============================================================================
+
+void CPackageManagerService::PackageInstalledInfo::SetError(
+    /* [in] */ Int32 code,
+    /* [in] */ const String& msg)
+{
+    mReturnCode = code;
+    mReturnMsg = msg;
+    Slogger::W(CPackageManagerService::TAG, "%s", msg.string());
+}
+
+void CPackageManagerService::PackageInstalledInfo::SetError(
+    /* [in] */ const String& msg,
+    /* [in] */ ECode e/*PackageParserException e*/)
+{
+    // mReturnCode = e.error;
+    // mReturnMsg = ExceptionUtils.getCompleteMessage(msg, e);
+    Slogger::W(CPackageManagerService::TAG, "%s, 0x%08x", msg.string(), e);
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CPackageManagerService::PackageRemovedInfo
@@ -3793,6 +3995,18 @@ const Int32 CPackageManagerService::DEX_OPT_FAILED;
 const Int32 CPackageManagerService::UPDATE_PERMISSIONS_ALL;
 const Int32 CPackageManagerService::UPDATE_PERMISSIONS_REPLACE_PKG;
 const Int32 CPackageManagerService::UPDATE_PERMISSIONS_REPLACE_ALL;
+
+AutoPtr<IComparator> InitResolvePrioritySorter()
+{
+    return (IComparator*)new ResolvePrioritySorter();
+}
+static AutoPtr<IComparator> mResolvePrioritySorter = InitResolvePrioritySorter();
+
+AutoPtr<IComparator> InitProviderInitOrderSorter()
+{
+    return (IComparator*)new ProviderInitOrderSorter();
+}
+static AutoPtr<IComparator> mProviderInitOrderSorter = InitProviderInitOrderSorter();
 const String CPackageManagerService::SD_ENCRYPTION_KEYSTORE_NAME;
 const String CPackageManagerService::SD_ENCRYPTION_ALGORITHM;
 
@@ -3820,7 +4034,6 @@ CPackageManagerService::CPackageManagerService()
     CResolveInfo::New((IResolveInfo**)&mResolveInfo);
     mDefContainerConn = new DefaultContainerConnection(this);
     mProviders = new ProviderIntentResolver();
-    CArrayMap::New((IArrayMap**)&mAppOpPermissionPackages);
     CSparseBooleanArray::New((ISparseBooleanArray**)&mUserNeedsBadging);
     mPendingBroadcasts = new PendingPackageBroadcasts();
     mPackageUsage = new PackageUsage(this);
@@ -3828,6 +4041,10 @@ CPackageManagerService::CPackageManagerService()
 
 CPackageManagerService::~CPackageManagerService()
 {}
+
+CAR_INTERFACE_IMPL(CPackageManagerService, Object, IIPackageManager)
+
+CAR_OBJECT_IMPL(CPackageManagerService)
 
 AutoPtr<IBundle> CPackageManagerService::ExtrasForInstallResult(
     /* [in] */ PackageInstalledInfo* res)
@@ -3959,7 +4176,7 @@ ECode CPackageManagerService::constructor(
     String separateProcesses;
     sysProp->Get(String("debug.separate_processes"), &separateProcesses);
     if (!separateProcesses.IsNullOrEmpty()) {
-        if (CString("*").Equals(separateProcesses)) {
+        if (String("*").Equals(separateProcesses)) {
             mDefParseFlags = PackageParser::PARSE_IGNORE_PROCESSES;
             mSeparateProcesses = NULL;
             Slogger::W(TAG, "Running with debug.separate_processes: * (ALL)");
@@ -4669,7 +4886,7 @@ void CPackageManagerService::ReadPermissionsFromXml(
 
         String name;
         parser->GetName(&name);
-        if (CString("group").Equals(name)) {
+        if (String("group").Equals(name)) {
             String gidStr;
             parser->GetAttributeValue(String(NULL), String("gid"), &gidStr);
             if (!gidStr.IsNull()) {
@@ -4684,7 +4901,7 @@ void CPackageManagerService::ReadPermissionsFromXml(
             FAIL_GOTO(XmlUtils::SkipCurrentTag(parser), Exception);
             continue;
         }
-        else if (CString("permission").Equals(name)) {
+        else if (String("permission").Equals(name)) {
             String perm;
             parser->GetAttributeValue(String(NULL), String("name"), &perm);
             if (perm.IsNull()) {
@@ -4695,7 +4912,7 @@ void CPackageManagerService::ReadPermissionsFromXml(
             }
             ReadPermission(parser, perm);
         }
-        else if (CString("assign-permission").Equals(name)) {
+        else if (String("assign-permission").Equals(name)) {
             String perm;
             parser->GetAttributeValue(String(NULL), String("name"), &perm);
             if (perm.IsNull()) {
@@ -4732,7 +4949,7 @@ void CPackageManagerService::ReadPermissionsFromXml(
             perms->Insert(perm);
             FAIL_GOTO(XmlUtils::SkipCurrentTag(parser), Exception);
         }
-        else if (CString("library").Equals(name)) {
+        else if (String("library").Equals(name)) {
             String lname, lfile;
             parser->GetAttributeValue(String(NULL), String("name"), &lname);
             parser->GetAttributeValue(String(NULL), String("file"), &lfile);
@@ -4751,7 +4968,7 @@ void CPackageManagerService::ReadPermissionsFromXml(
             FAIL_GOTO(XmlUtils::SkipCurrentTag(parser), Exception);
             continue;
         }
-        else if (CString("feature").Equals(name)) {
+        else if (String("feature").Equals(name)) {
             String fname;
             parser->GetAttributeValue(String(NULL), String("name"), &fname);
             if (fname.IsNull()) {
@@ -4810,7 +5027,7 @@ void CPackageManagerService::ReadPermission(
 
         String tagName;
         parser->GetName(&tagName);
-        if (CString("group").Equals(tagName)) {
+        if (String("group").Equals(tagName)) {
             String gidStr;
             parser->GetAttributeValue(String(NULL), String("gid"), &gidStr);
             if (!gidStr.IsNull()) {
@@ -11289,41 +11506,414 @@ ECode CPackageManagerService::ScanPackageDirtyLI(
     REFCOUNT_ADD(*outPkg)
     return NOERROR;
 }
-// begin from this
+
 void CPackageManagerService::AdjustCpuAbisForSharedUserLPw(
     /* [in] */ HashSet<AutoPtr<PackageSetting> >& packagesForUser,
     /* [in] */ PackageParser::Package* scannedPackage,
     /* [in] */ Boolean forceDexOpt,
-    /* [in] */ Boolean deferDexOpt);
+    /* [in] */ Boolean deferDexOpt)
+{
+    String requiredInstructionSet(NULL);
+    if (scannedPackage != NULL &&
+            (scannedPackage->mApplicationInfo->GetPrimaryCpuAbi(&primaryCpuAbi), !primaryCpuAbi.IsNull())) {
+        assert(0);
+        // requiredInstructionSet = VMRuntime.getInstructionSet(
+        //          scannedPackage.applicationInfo.primaryCpuAbi);
+    }
+
+    AutoPtr<PackageSetting> requirer;
+    HashSet<AutoPtr<PackageSetting> >::Iterator pkgForUserIt = packagesForUser.Begin();
+    for (; pkgForUserIt != packagesForUser.End(); ++pkgForUserIt) {
+        AutoPtr<PackageSetting> ps = *pkgForUserIt;
+        // If packagesForUser contains scannedPackage, we skip it. This will happen
+        // when scannedPackage is an update of an existing package. Without this check,
+        // we will never be able to change the ABI of any package belonging to a shared
+        // user, even if it's compatible with other packages.
+        if (scannedPackage == NULL || !scannedPackage->mPackageName.Equals(ps->mName)) {
+            if (ps->mPrimaryCpuAbiString.IsNull()) {
+                continue;
+            }
+            // TODO
+            String instructionSet;/* = VMRuntime.getInstructionSet(ps.primaryCpuAbiString);*/
+            if (!requiredInstructionSet.IsNull() && !instructionSet.Equals(requiredInstructionSet)) {
+                // We have a mismatch between instruction sets (say arm vs arm64) warn about
+                // this but there's not much we can do.
+                String str;
+                if (requirer) {
+                    requirer->ToString(&str);
+                }
+                else str("[caller]");
+                String psStr;
+                ps->ToString(&psStr);
+                String errorMessage = String("Instruction set mismatch, ")
+                        + str + " requires " + requiredInstructionSet + " whereas " + psStr
+                        + " requires " + instructionSet;
+                Slogger::W(TAG, "%s", errorMessage.string());
+            }
+
+            if (requiredInstructionSet.IsNull()) {
+                requiredInstructionSet = instructionSet;
+                requirer = ps;
+            }
+        }
+    }
+
+    if (!requiredInstructionSet.IsNull()) {
+        String adjustedAbi;
+        if (requirer != NULL) {
+            // requirer != null implies that either scannedPackage was null or that scannedPackage
+            // did not require an ABI, in which case we have to adjust scannedPackage to match
+            // the ABI of the set (which is the same as requirer's ABI)
+            adjustedAbi = requirer->mPrimaryCpuAbiString;
+            if (scannedPackage != NULL) {
+                scannedPackage->mApplicationInfo->SetPrimaryCpuAbi(adjustedAbi);
+            }
+        }
+        else {
+            // requirer == null implies that we're updating all ABIs in the set to
+            // match scannedPackage.
+            scannedPackage->mApplicationInfo->GetPrimaryCpuAbi(&adjustedAbi);
+        }
+
+        pkgForUserIt = packagesForUser.Begin();
+        for (; pkgForUserIt != packagesForUser.End(); ++pkgForUserIt) {
+            AutoPtr<PackageSetting> ps = *pkgForUserIt;
+            if (scannedPackage == NULL || !scannedPackage->mPackageName.Equals(ps->mName)) {
+                if (!ps->mPrimaryCpuAbiString.IsNull()) {
+                    continue;
+                }
+
+                ps->mPrimaryCpuAbiString = adjustedAbi;
+                if (ps->mPkg != NULL && ps->mPkg->mApplicationInfo != NULL) {
+                    ps->mPkg->mApplicationInfo->SetPrimaryCpuAbi(adjustedAbi);
+                    Slogger::I(TAG, "Adjusting ABI for : %s to %s", ps->mName.string(), adjustedAbi.string());
+
+                    if (PerformDexOptLI(ps->mPkg, NULL /* instruction sets */, forceDexOpt,
+                            deferDexOpt, TRUE) == DEX_OPT_FAILED) {
+                        ps->mPrimaryCpuAbiString = NULL;
+                        ps->mPkg->mApplicationInfo->SetPrimaryCpuAbi(String(NULL));
+                        return;
+                    }
+                    else {
+                        mInstaller->Rmdex(ps->mCodePathString,
+                                GetDexCodeInstructionSet(GetPreferredInstructionSet()));
+                    }
+                }
+            }
+        }
+    }
+}
 
 void CPackageManagerService::SetUpCustomResolverActivity(
-    /* [in] */ PackageParser::Package* pkg);
+    /* [in] */ PackageParser::Package* pkg)
+{
+    synchronized (mPackagesLock) {
+        mResolverReplaced = TRUE;
+        // Set up information for custom user intent resolution activity.
+        mResolveActivity->SetApplicationInfo(pkg->mApplicationInfo);
+        String className;
+        mCustomResolverComponentName->GetClassName(&className);
+        mResolveActivity->SetName(className);
+        String packageName;
+        pkg->mApplicationInfo->GetPackageName(&packageName);
+        mResolveActivity->SetPackageName(packageName);
+        mResolveActivity->SetProcessName(String(NULL));
+        mResolveActivity->SetLaunchMode(IActivityInfo::LAUNCH_MULTIPLE);
+        mResolveActivity->SetFlags(IActivityInfo::FLAG_EXCLUDE_FROM_RECENTS |
+                IActivityInfo::FLAG_FINISH_ON_CLOSE_SYSTEM_DIALOGS);
+        mResolveActivity->SetTheme(0);
+        mResolveActivity->SetExported(TRUE);
+        mResolveActivity->SetEnabled(TRUE);
+        mResolveInfo->SetActivityInfo(mResolveActivity);
+        mResolveInfo->SetPriority(0);
+        mResolveInfo->SetPreferredOrder(0);
+        mResolveInfo->SetMatch(0);
+        mResolveComponentName = mCustomResolverComponentName;
+        Slogger::I(TAG, "Replacing default ResolverActivity with custom activity: %p", mResolveComponentName.Get());
+    }
+}
 
 String CPackageManagerService::CalculateBundledApkRoot(
-    /* [in] */ const String& codePathString);
+    /* [in] */ const String& codePathString)
+{
+    AutoPtr<IFile> codePath;
+    CFile::New(codePathString, (IFile**)&codePath);
+    AutoPtr<IFile> codeRoot;
+    AutoPtr<IEnvironment> env;
+    CEnvironment::AcquireSingleton((IEnvironment**)&env);
+    AutoPtr<IFile> rootDir, oemDir, vendorDir;;
+    if (env->GetRootDirectory((IFile**)&rootDir), FileUtils::Contains(rootDir, codePath)) {
+        codeRoot = rootDir;
+    }
+    else if (Environment->GetOemDirectory((IFile**)&oemDir), FileUtils::Contains(oemDir, codePath)) {
+        codeRoot = oemDir;
+    }
+    else if (Environment->GetVendorDirectory((IFile**)&vendorDir), FileUtils::Contains(vendorDir, codePath)) {
+        codeRoot = vendorDir;
+    }
+    else {
+        // Unrecognized code path; take its top real segment as the apk root:
+        // e.g. /something/app/blah.apk => /something
+        // try {
+        AutoPtr<IFile> f;
+        codePath->GetCanonicalFile((IFile**)&f);
+        AutoPtr<IFile> parent;
+        f->GetParentFile((IFile**)&parent);    // non-null because codePath is a file
+        AutoPtr<IFile> tmp;
+        while (parent->GetParentFile((IFile**)&tmp), tmp != NULL) {
+            f = parent;
+            parent = tmp;
+        }
+        codeRoot = f;
+        Slogger::W(TAG, "Unrecognized code path %p - using %p", codePath.Get(), codeRoot.Get());
+        // } catch (IOException e) {
+        //     // Can't canonicalize the code path -- shenanigans?
+        //     Slog.w(TAG, "Can't canonicalize code path " + codePath);
+        //     return Environment.getRootDirectory().getPath();
+        // }
+    }
+    String str;
+    codeRoot->GetPath(&str);
+    return str;
+}
 
 void CPackageManagerService::SetNativeLibraryPaths(
-    /* [in] */ PackageParser::Package* pkg);
+    /* [in] */ PackageParser::Package* pkg)
+{
+    AutoPtr<IApplicationInfo> info = pkg->mApplicationInfo;
+    String codePath = pkg->mCodePath;
+    AutoPtr<IFile> codeFile;
+    CFile::New(codePath, (IFile**)&codeFile);
+    Boolean bundledApp = IsSystemApp(info) && !IsUpdatedSystemApp(info);
+    Boolean asecApp = IsForwardLocked(info) || IsExternal(info);
+
+    info->SetNativeLibraryRootDir(String(NULL));
+    info->SetNativeLibraryRootRequiresIsa(FALSE);
+    info->SetNativeLibraryDir(String(NULL));
+    info->SetSecondaryNativeLibraryDir(String(NULL));
+
+    if (IsApkFile(codeFile)) {
+        // Monolithic install
+        if (bundledApp) {
+            // If "/system/lib64/apkname" exists, assume that is the per-package
+            // native library directory to use; otherwise use "/system/lib/apkname".
+            String apkRoot = CalculateBundledApkRoot(info.sourceDir);
+            // TODO
+            Boolean is64Bit = FALSE;/* = VMRuntime.is64BitInstructionSet(
+                    getPrimaryInstructionSet(info));*/
+
+            // This is a bundled system app so choose the path based on the ABI.
+            // if it's a 64 bit abi, use lib64 otherwise use lib32. Note that this
+            // is just the default path.
+            String apkName = DeriveCodePathName(codePath);
+            String libDir = is64Bit ? LIB64_DIR_NAME : LIB_DIR_NAME;
+            AutoPtr<IEnvironment> env;
+            CEnvironment::AcquireSingleton((IEnvironment**)&env);
+            AutoPtr<IFile> apkRootF;
+            CFile::New(apkRoot, (IFile**)&apkRootF);
+            AutoPtr<ArrayOf<String> > attrs = ArrayOf<String>::Alloc(2);
+            (*attrs)[0] = libDir;
+            (*attrs)[1] = apkName;
+            AutoPtr<IFile> path;
+            env->BuildPath(apkRootF, attrs, (IFile**)&path);
+            String absPath;
+            path->GetAbsolutePath(&absPath);
+            info->SetNativeLibraryRootDir(absPath);
+
+            String secondaryCpuAbi;
+            if (info->GetSecondaryCpuAbi(&secondaryCpuAbi) !secondaryCpuAbi.IsNull()) {
+                String secondaryLibDir = is64Bit ? LIB_DIR_NAME : LIB64_DIR_NAME;
+                attrs = ArrayOf<String>::Alloc(2);
+                (*attrs)[0] = secondaryLibDir;
+                (*attrs)[1] = apkName;
+                path = NULL;
+                env->BuildPath(apkRootF, attrs, (IFile**)&path);
+                path->GetAbsolutePath(&absPath);
+                info->SetSecondaryNativeLibraryDir(absPath);
+            }
+        }
+        else if (asecApp) {
+            AutoPtr<IFile> parentF;
+            codeFile->GetParentFile((IFile**)&parentF);
+            AutoPtr<IFile> f;
+            CFile::Mew(parentF, LIB_DIR_NAME, (IFile**)&f);
+            string absolutePath;
+            f->GetAbsolutePath(&absolutePath);
+            info->SetNativeLibraryRootDir(absolutePath);
+        }
+        else {
+            String apkName = DeriveCodePathName(codePath);
+            AutoPtr<IFile> f;
+            CFile::New(mAppLib32InstallDir, apkName, (IFile**)&f);
+            String absolutePath;
+            f->GetAbsolutePath(&absolutePath);
+            info->SetNativeLibraryRootDir(absolutePath);
+        }
+
+        info->SetNativeLibraryRootRequiresIsa(FALSE);
+        String rootDir;
+        info->GetNativeLibraryRootDir(&rootDir);
+        info->SetNativeLibraryDir(rootDir);
+    }
+    else {
+        // Cluster install
+        String apkName = DeriveCodePathName(codePath);
+        AutoPtr<IFile> f;
+        CFile::New(codeFile, LIB_DIR_NAME, (IFile**)&f);
+        String absolutePath;
+        f->GetAbsolutePath(&absolutePath);
+        info->SetNativeLibraryRootDir(absolutePath);
+        info->SetNativeLibraryRootRequiresIsa(TRUE);
+
+        f = NULL;
+        CFile::New(absolutePath, GetPrimaryInstructionSet(info), (IFile**)&f);
+        f->GetAbsolutePath(&absolutePath);
+        info->SetNativeLibraryDir(absolutePath);
+
+        String secondaryCpuAbi;
+        if (info->GetSecondaryCpuAbi, !secondaryCpuAbi.IsNull()) {
+            assert(0);
+            // info.secondaryNativeLibraryDir = new File(info.nativeLibraryRootDir,
+            //         VMRuntime.getInstructionSet(info.secondaryCpuAbi)).getAbsolutePath();
+        }
+    }
+}
 
 void CPackageManagerService::SetBundledAppAbisAndRoots(
     /* [in] */ PackageParser::Package* pkg,
-    /* [in] */ PackageSetting* pkgSetting);
+    /* [in] */ PackageSetting* pkgSetting)
+{
+    String codePath;
+    pkg->mApplicationInfo->GetCodePath(&codePath);
+    String apkName = DeriveCodePathName(codePath);
+
+    // If "/system/lib64/apkname" exists, assume that is the per-package
+    // native library directory to use; otherwise use "/system/lib/apkname".
+    String sourceDir;
+    pkg->mApplicationInfo->GetSourceDir(&sourceDir);
+    String apkRoot = CalculateBundledApkRoot(sourceDir);
+    SetBundledAppAbi(pkg, apkRoot, apkName);
+    // pkgSetting might be null during rescan following uninstall of updates
+    // to a bundled app, so accommodate that possibility.  The settings in
+    // that case will be established later from the parsed package.
+    //
+    // If the settings aren't null, sync them up with what we've just derived.
+    // note that apkRoot isn't stored in the package settings.
+    if (pkgSetting != NULL) {
+        pkg->mApplicationInfo->GetPrimaryCpuAbi(&pkgSetting->mPrimaryCpuAbiString);
+        pkg->mApplicationInfo->GetSecondaryCpuAbi(&pkgSetting->mSecondaryCpuAbiString);
+    }
+}
 
 void CPackageManagerService::SetBundledAppAbi(
     /* [in] */ PackageParser::Package* pkg,
     /* [in] */ const String& apkRoot,
-    /* [in] */ const String& apkName);
+    /* [in] */ const String& apkName)
+{
+    AutoPtr<IFile> codeFile;
+    CFile::New(pkg->mCodePath, (IFile**)&codeFile);
+
+    Boolean has64BitLibs;
+    Boolean has32BitLibs;
+    if (IsApkFile(codeFile)) {
+        // Monolithic install
+        AutoPtr<IFile> lib64F;
+        CFile::New(LIB64_DIR_NAME, apkName, (IFile**)&lib64F);
+        String lib64Path;
+        lib64F->GetPath(&lib64Path);
+        AutoPtr<IFile> apkRootF;
+        CFile::New(apkRoot, lib64Path, (IFile**)&apkRootF);
+        apkRootF->Exists(&has64BitLibs);
+        AutoPtr<IFile> libF;
+        CFile::New(LIB_DIR_NAME, apkName, (IFile**)&libF);
+        String libPath;
+        libF->GetPath(&libPath);
+        AutoPtr<IFile> apkRootF1;
+        CFile::New(apkRoot, libPath, (IFile**)&apkRootF1);
+        apkRootF1->Exists(&has32BitLibs);
+    }
+    else {
+        // Cluster install
+        AutoPtr<IFile> rootDir;
+        CFile::New(codeFile, LIB_DIR_NAME, (IFile**)&rootDir);
+        if (!ArrayUtils::IsEmpty(Build::SUPPORTED_64_BIT_ABIS)
+                && !TextUtils::IsEmpty((*Build::SUPPORTED_64_BIT_ABIS)[0])) {
+            // TODO
+            String isa = NULL;/*VMRuntime.getInstructionSet(Build.SUPPORTED_64_BIT_ABIS[0]);*/
+            AutoPtr<IFile> rootDirF;
+            CFile::New(rootDir, isa, (IFile**)&rootDirF);
+            rootDirF->Exists(&has64BitLibs);
+        }
+        else {
+            has64BitLibs = FALSE;
+        }
+        if (!ArrayUtils::IsEmpty(Build::SUPPORTED_32_BIT_ABIS)
+                && !TextUtils::IsEmpty((*Build::SUPPORTED_32_BIT_ABIS)[0])) {
+            // TODO
+            String isa = NULL;/*VMRuntime.getInstructionSet(Build.SUPPORTED_32_BIT_ABIS[0]);*/
+            AutoPtr<IFile> rootDirF;
+            CFile::New(rootDir, isa, (IFile**)&rootDirF);
+            rootDirF->Exists(&has32BitLibs);
+        }
+        else {
+            has32BitLibs = FALSE;
+        }
+    }
+
+    if (has64BitLibs && !has32BitLibs) {
+        // The package has 64 bit libs, but not 32 bit libs. Its primary
+        // ABI should be 64 bit. We can safely assume here that the bundled
+        // native libraries correspond to the most preferred ABI in the list.
+
+        pkg->mApplicationInfo->SetPrimaryCpuAbi((*Build::SUPPORTED_64_BIT_ABIS)[0]);
+        pkg->mApplicationInfo->SetSecondaryCpuAbi(String(NULL));
+    }
+    else if (has32BitLibs && !has64BitLibs) {
+        // The package has 32 bit libs but not 64 bit libs. Its primary
+        // ABI should be 32 bit.
+
+        pkg->mApplicationInfo->SetPrimaryCpuAbi((*Build::SUPPORTED_32_BIT_ABIS)[0]);
+        pkg->mApplicationInfo->SetSecondaryCpuAbi(String(NULL));
+    }
+    else if (has32BitLibs && has64BitLibs) {
+        // The application has both 64 and 32 bit bundled libraries. We check
+        // here that the app declares multiArch support, and warn if it doesn't.
+        //
+        // We will be lenient here and record both ABIs. The primary will be the
+        // ABI that's higher on the list, i.e, a device that's configured to prefer
+        // 64 bit apps will see a 64 bit primary ABI,
+
+        Int32 flags
+        if ((pkg->mApplicationInfo->GetFlags(&flags), (flags & IApplicationInfo::FLAG_MULTIARCH) == 0) {
+            Slogger::E(TAG, "Package: %p has multiple bundled libs, but is not multiarch.", pkg);
+        }
+        // TODO
+        // if (VMRuntime.is64BitInstructionSet(GetPreferredInstructionSet())) {
+        //     pkg->mApplicationInfo->SetPrimaryCpuAbi((*Build::SUPPORTED_64_BIT_ABIS)[0]);
+        //     pkg->mApplicationInfo->SetSecondaryCpuAbi((*Build::SUPPORTED_32_BIT_ABIS)[0]);
+        // }
+        // else {
+        //     pkg->mApplicationInfo->SetPrimaryCpuAbi((*Build::SUPPORTED_32_BIT_ABIS)[0]);
+        //     pkg->mApplicationInfo->SetSecondaryCpuAbi((*Build::SUPPORTED_64_BIT_ABIS)[0]);
+        // }
+    }
+    else {
+        pkg->mApplicationInfo->SetPrimaryCpuAbi(String(NULL));
+        pkg->mApplicationInfo->SetSecondaryCpuAbi(String(NULL));
+    }
+}
 
 void CPackageManagerService::KillApplication(
     /* [in] */ const String& pkgName,
-    /* [in] */ Int32 appId)
+    /* [in] */ Int32 appId,
+    /* [in] */ const String& reason)
 {
     // Request the ActivityManager to kill the process(only for existing packages)
     // so that we do not end up in a confused state while the user is still using the older
     // version of the application while the new one gets installed.
     AutoPtr<IIActivityManager> am = ActivityManagerNative::GetDefault();
     if (am != NULL) {
-        am->KillApplicationWithAppId(pkgName, appId);
+        am->KillApplicationWithAppId(pkgName, appId, reason);
     }
 }
 
@@ -11331,22 +11921,18 @@ void CPackageManagerService::RemovePackageLI(
     /* [in] */ PackageSetting* ps,
     /* [in] */ Boolean chatty)
 {
-//    if (DEBUG_INSTALL) {
-//        if (chatty)
-//            Log.d(TAG, "Removing package " + ps.name);
-//    }
-
-    // writer
-    AutoLock lock(mPackagesLock);
-
-    mPackages.Erase(ps->mName);
-    if (!ps->mCodePathString.IsNull()) {
-        mAppDirs.Erase(ps->mCodePathString);
+    if (DEBUG_INSTALL) {
+        if (chatty)
+            Logger::D(TAG, "Removing package %s", ps->mName.string());
     }
 
-    AutoPtr<PackageParser::Package> pkg = ps->mPkg;
-    if (pkg != NULL) {
-        CleanPackageDataStructuresLILPw(pkg, chatty);
+    // writer
+    synchronized (mPackagesLock) {
+        mPackages.Erase(ps->mName);
+        AutoPtr<PackageParser::Package> pkg = ps->mPkg;
+        if (pkg != NULL) {
+            CleanPackageDataStructuresLILPw(pkg, chatty);
+        }
     }
 }
 
@@ -11354,21 +11940,18 @@ void CPackageManagerService::RemoveInstalledPackageLI(
     /* [in] */ PackageParser::Package* pkg,
     /* [in] */ Boolean chatty)
 {
-//    if (DEBUG_INSTALL) {
-//        if (chatty)
-//            Log.d(TAG, "Removing package " + pkg->mApplicationInfo->packageName);
-//    }
+    if (DEBUG_INSTALL) {
+        if (chatty)
+            Log.d(TAG, "Removing package " + pkg->mApplicationInfo->packageName);
+    }
 
     // writer
-    AutoLock lock(mPackagesLock);
-
-    String pkgName;
-    pkg->mApplicationInfo->GetPackageName(&pkgName);
-    mPackages.Erase(pkgName);
-    if (!pkg->mPath.IsNull()) {
-        mAppDirs.Erase(pkg->mPath);
+    synchronized (mPackagesLock) {
+        String pkgName;
+        pkg->mApplicationInfo->GetPackageName(&pkgName);
+        mPackages.Erase(pkgName);
+        CleanPackageDataStructuresLILPw(pkg, chatty);
     }
-    CleanPackageDataStructuresLILPw(pkg, chatty);
 }
 
 void CPackageManagerService::CleanPackageDataStructuresLILPw(
@@ -11379,15 +11962,9 @@ void CPackageManagerService::CleanPackageDataStructuresLILPw(
     List< AutoPtr<PackageParser::Provider> >::Iterator it;
     for (it = pkg->mProviders.Begin(); it != pkg->mProviders.End(); ++it) {
         AutoPtr<PackageParser::Provider> p = *it;
-        AutoPtr<IComponentName> component;
-        String pkgName, name;
-        p->mInfo->GetPackageName(&pkgName);
-        p->mInfo->GetName(&name);
-        CComponentName::New(pkgName, name, (IComponentName**)&component);
-        mProvidersByComponent.Erase(component);
+        mProviders->RemoveProvider(p);
         String authority;
-        p->mInfo->GetAuthority(&authority);
-        if (authority.IsNull()) {
+        if (p->mInfo->GetAuthority(&authority), authority.IsNull()) {
             /* There was another ContentProvider with this authority when
              * this app was installed so this authority is null,
              * Ignore it as we don't have to unregister the provider.
@@ -11398,28 +11975,28 @@ void CPackageManagerService::CleanPackageDataStructuresLILPw(
         StringUtils::Split(authority, String(";"), (ArrayOf<String>**)&names);
         for (Int32 j = 0; j < names->GetLength(); j++) {
             HashMap<String, AutoPtr<PackageParser::Provider> >::Iterator pIt =
-                    mProviders.Find((*names)[j]);
+                    mProvidersByAuthority.Find((*names)[j]);
             if (pIt != mProviders.End()) {
                 if (pIt->mSecond.Get() == p.Get()) {
-                    mProviders.Erase(pIt);
+                    mProvidersByAuthority.Erase(pIt);
                     if (DEBUG_REMOVE) {
                         Boolean syncable;
                         p->mInfo->GetIsSyncable(&syncable);
                         if (chatty)
                             Logger::D(TAG, "Unregistered content provider: %s, className = %s, isSyncable = %d",
-                                (*names)[j].string(), name.string(), syncable);
+                                    (*names)[j].string(), name.string(), syncable);
                     }
                 }
             }
         }
-        if (chatty) {
+        if (DEBUG_REMOVE && chatty) {
             if (r == NULL) {
                 r = new StringBuilder(256);
             }
             else {
                 r->AppendChar(' ');
             }
-            r->AppendString(name);
+            r->Append(name);
         }
     }
     if (r != NULL) {
@@ -11440,7 +12017,7 @@ void CPackageManagerService::CleanPackageDataStructuresLILPw(
             }
             String sname;
             s->mInfo->GetName(&sname);
-            r->AppendString(sname);
+            r->Append(sname);
         }
     }
     if (r != NULL) {
@@ -11452,7 +12029,7 @@ void CPackageManagerService::CleanPackageDataStructuresLILPw(
     for (reIt = pkg->mReceivers.Begin(); reIt != pkg->mReceivers.End(); ++reIt) {
         AutoPtr<PackageParser::Activity> a = *reIt;
         mReceivers->RemoveActivity(a, String("receiver"));
-        if (chatty) {
+        if (DEBUG_REMOVE && chatty) {
             if (r == NULL) {
                 r = new StringBuilder(256);
             }
@@ -11461,7 +12038,7 @@ void CPackageManagerService::CleanPackageDataStructuresLILPw(
             }
             String aname;
             a->mInfo->GetName(&aname);
-            r->AppendString(aname);
+            r->Append(aname);
         }
     }
     if (r != NULL) {
@@ -11473,7 +12050,7 @@ void CPackageManagerService::CleanPackageDataStructuresLILPw(
     for (aIt = pkg->mActivities.Begin(); aIt != pkg->mActivities.End(); ++aIt) {
         AutoPtr<PackageParser::Activity> a = *aIt;
         mActivities->RemoveActivity(a, String("activity"));
-        if (chatty) {
+        if (DEBUG_REMOVE && chatty) {
             if (r == NULL) {
                 r = new StringBuilder(256);
             }
@@ -11482,7 +12059,7 @@ void CPackageManagerService::CleanPackageDataStructuresLILPw(
             }
             String aname;
             a->mInfo->GetName(&aname);
-            r->AppendString(aname);
+            r->Append(aname);
         }
     }
     if (r != NULL) {
@@ -11504,14 +12081,54 @@ void CPackageManagerService::CleanPackageDataStructuresLILPw(
         }
         if (bp != NULL && bp->mPerm.Get() == p.Get()) {
             bp->mPerm = NULL;
-            if (chatty) {
+            if (DEBUG_REMOVE && chatty) {
                 if (r == NULL) {
                     r = new StringBuilder(256);
                 }
                 else {
                     r->AppendChar(' ');
                 }
-                r->AppendString(pname);
+                r->Append(pname);
+            }
+        }
+        Int32 protectionLevel;
+        if (p->mInfo->GetProtectionLevel(&protectionLevel),
+                (protectionLevel & IPermissionInfo::PROTECTION_FLAG_APPOP) != 0) {
+            AutoPtr<HashSet<String> > appOpPerms;
+            HashMap<String, AutoPtr<HashSet<String> > >::Iterator pkgIt = mAppOpPermissionPackages.Find(pname);
+            if (pkgIt != mAppOpPermissionPackages.End()) {
+                appOpPerms = pkgIt->mSecond;
+            }
+            if (appOpPerms != NULL) {
+                appOpPerms->Erase(pkg->mPackageName);
+            }
+        }
+    }
+    if (r != NULL) {
+        if (DEBUG_REMOVE) Logger::D(TAG, "  Permissions: %s", r->ToString().string());
+    }
+
+    N = pkg.requestedPermissions.size();
+    r = NULL;
+    List<String>::Iterator permissionIt = pkg->mRequestedPermissions.Begin();
+    for (; permissionIt != pkg->mRequestedPermissions.End(); ++permissionIt) {
+        String perm = *permissionIt;
+        AutoPtr<BasePermission> bp;
+        HashMap<String, AutoPtr<BasePermission> >::Iterator basePermissionIt = mSettings->mPermissions.Find(perm);
+        if (basePermissionIt @= mSettings->mPermissions.End()) {
+            bp = basePermissionIt->mSecond;
+        }
+        if (bp != NULL && (bp->mProtectionLevel & IPermissionInfo::PROTECTION_FLAG_APPOP) != 0) {
+            AutoPtr<HashSet<String> > appOpPerms;
+            HashMap<String, AutoPtr<HashSet<String> > >::Iterator pkgIt = mAppOpPermissionPackages.Find(perm);
+            if (pkgIt != mAppOpPermissionPackages.End()) {
+                appOpPerms = pkgIt->mSecond;
+            }
+            if (appOpPerms != NULL) {
+                appOpPerms->Erase(pkg->mPackageName);
+                if (appOpPerms->Begin() == appOpPerms->End()) {
+                    mAppOpPermissionPackages.Erase(perm);
+                }
             }
         }
     }
@@ -11524,7 +12141,7 @@ void CPackageManagerService::CleanPackageDataStructuresLILPw(
     for (iIt = pkg->mInstrumentation.Begin(); iIt != pkg->mInstrumentation.End(); ++iIt) {
         AutoPtr<PackageParser::Instrumentation> a = *iIt;
         mInstrumentation.Erase(a->GetComponentName());
-        if (chatty) {
+        if (DEBUG_REMOVE && chatty) {
             if (r == NULL) {
                 r = new StringBuilder(256);
             }
@@ -11533,18 +12150,44 @@ void CPackageManagerService::CleanPackageDataStructuresLILPw(
             }
             String aname;
             a->mInfo->GetName(&aname);
-            r->AppendString(aname);
+            r->Append(aname);
         }
     }
     if (r != NULL) {
         if (DEBUG_REMOVE) Logger::D(TAG, "  Instrumentation: %s", r->ToString().string());
     }
-}
 
-Boolean CPackageManagerService::IsPackageFilename(
-    /* [in] */ const String& name)
-{
-    return !name.IsNull() && (name.EndWith(".apk") || name.EndWith(".epk"));
+    r = NULL;
+    Int32 flags;
+    if ((pkg->mApplicationInfo->GetFlags(&flags), (flags & IApplicationInfo::FLAG_SYSTEM) != 0) {
+        // Only system apps can hold shared libraries.
+        if (pkg->mLibraryNames != NULL) {
+            List<String>::Iterator libNameIt = pkg->mLibraryNames->Begin();
+            for (; libNameIt != pkg->mLibraryNames->End(); ++libNameIt) {
+                String name = *libNameIt;
+                AutoPtr<SharedLibraryEntry> cur;
+                HashMap<String, AutoPtr<SharedLibraryEntry> >::Iterator sharedLibIt = mSharedLibraries.Find(name);
+                if (sharedLibIt != mSharedLibraries.End()) {
+                    cur = sharedLibIt->mSecond();
+                }
+                if (cur != NULL && cur->mApk != NULL && cur->mApk.Equals(pkg->mPackageName)) {
+                    mSharedLibraries.Erase(name);
+                    if (DEBUG_REMOVE && chatty) {
+                        if (r == NULL) {
+                            r = new StringBuilder(256);
+                        }
+                        else {
+                            r->AppendChar(' ');
+                        }
+                        r->Append(name);
+                    }
+                }
+            }
+        }
+    }
+    if (r != NULL) {
+        if (DEBUG_REMOVE) Logger::D(TAG, "  Libraries: %s", r->ToString().string());
+    }
 }
 
 Boolean CPackageManagerService::HasPermission(
@@ -11654,19 +12297,20 @@ void CPackageManagerService::UpdatePermissionsLPw(
         for (it = mPackages.Begin(); it != mPackages.End(); ++it) {
             AutoPtr<PackageParser::Package> pkg = it->mSecond;
             if (pkg.Get() != pkgInfo) {
-                GrantPermissionsLPw(pkg, (flags & UPDATE_PERMISSIONS_REPLACE_ALL) != 0);
+                GrantPermissionsLPw(pkg, (flags & UPDATE_PERMISSIONS_REPLACE_ALL) != 0, changingPkg);
             }
         }
     }
 
     if (pkgInfo != NULL) {
-        GrantPermissionsLPw(pkgInfo, (flags & UPDATE_PERMISSIONS_REPLACE_PKG) != 0);
+        GrantPermissionsLPw(pkgInfo, (flags & UPDATE_PERMISSIONS_REPLACE_PKG) != 0, changingPkg);
     }
 }
 
 void CPackageManagerService::GrantPermissionsLPw(
     /* [in] */ PackageParser::Package* pkg,
-    /* [in] */ Boolean replace)
+    /* [in] */ Boolean replace,
+    /* [in] */ const String& packageOfInterest)
 {
     AutoPtr<PackageSetting> ps = reinterpret_cast<PackageSetting*>(pkg->mExtras->Probe(EIID_PackageSetting));
     if (ps == NULL) {
@@ -11696,150 +12340,125 @@ void CPackageManagerService::GrantPermissionsLPw(
     List<String>::Iterator rpit;
     for (rpit = pkg->mRequestedPermissions.Begin(); rpit != pkg->mRequestedPermissions.End(); ++rpit) {
         String name = *rpit;
+        Boolean required = pkg->mRequestedPermissionsRequired[i];
         AutoPtr<BasePermission> bp;
-        HashMap< String, AutoPtr<BasePermission> >::Iterator it =
-                mSettings->mPermissions.Find(name);
+        HashMap< String, AutoPtr<BasePermission> >::Iterator it = mSettings->mPermissions.Find(name);
         if (it != mSettings->mPermissions.End()) {
             bp = it->mSecond;
         }
-//         if (DEBUG_INSTALL) {
-//             if (gp != ps) {
-//                 Log.i(TAG, "Package " + pkg.packageName + " checking " + name + ": " + bp);
-//             }
-//         }
-        if (bp != NULL && bp->mPackageSetting != NULL) {
-            String perm = bp->mName;
-            Boolean allowed = FALSE;
-            Boolean allowedSig = FALSE;
-            Int32 level = bp->mProtectionLevel & IPermissionInfo::PROTECTION_MASK_BASE;
-            if (level == IPermissionInfo::PROTECTION_NORMAL
+        if (DEBUG_INSTALL) {
+            if (gp != ps) {
+                Logger::I(TAG, "Package %s checking %s: %p", pkg->mPackageName.string(), name.string(), bp.Get());
+            }
+        }
+        if (bp == NULL || bp->mPackageSetting == NULL) {
+            if (packageOfInterest.IsNull() || packageOfInterest.Equals(pkg->mPackageName)) {
+                Slogger::W(TAG, "Unknown permission %s in package %s", name.string(), pkg->mPackageName.string());
+            }
+            continue;
+        }
+
+        String perm = bp->mName;
+        Boolean allowed;
+        Boolean allowedSig = FALSE;
+        if ((bp->mProtectionLevel & IPermissionInfo::PROTECTION_FLAG_APPOP) != 0) {
+            // Keep track of app op permissions.
+            AutoPtr<HashSet<String> > pkgs;
+            HashMap<String, AutoPtr<HashSet<String> > >::Iterator pkgIt = mAppOpPermissionPackages.Find(bp->mName);
+            if (pkgIt != mAppOpPermissionPackages.End()) {
+                pkgs = pkgIt->mSecond;
+            }
+            if (pkgs == NULL) {
+                pkgs = new HashSet<String>();
+                mAppOpPermissionPackages[bp->mName] = pkgs;
+            }
+            pkgs->Insert(pkg->mPackageName);
+        }
+        Int32 level = bp->mProtectionLevel & IPermissionInfo::PROTECTION_MASK_BASE;
+        if (level == IPermissionInfo::PROTECTION_NORMAL
                 || level == IPermissionInfo::PROTECTION_DANGEROUS) {
-                allowed = TRUE;
-            }
-            else if (bp->mPackageSetting == NULL) {
-                // This permission is invalid; skip it.
-                allowed = FALSE;
-            }
-            else if (level == IPermissionInfo::PROTECTION_SIGNATURE) {
-                allowed = (CompareSignatures(
-                    bp->mPackageSetting->mSignatures->mSignatures, pkg->mSignatures)
-                            == IPackageManager::SIGNATURE_MATCH)
-                    || (CompareSignatures(mPlatformPackage->mSignatures, pkg->mSignatures)
-                            == IPackageManager::SIGNATURE_MATCH);
-                allowed = TRUE;
-                if (!allowed && (bp->mProtectionLevel
-                        & IPermissionInfo::PROTECTION_FLAG_SYSTEM) != 0) {
-                    if (IsSystemApp(pkg)) {
-                        // For updated system applications, a system permission
-                        // is granted only if it had been defined by the original application.
-                        if (IsUpdatedSystemApp(pkg)) {
-                            AutoPtr<PackageSetting> sysPs = mSettings->GetDisabledSystemPkgLPr(pkg->mPackageName);
-                            AutoPtr<GrantedPermissions> origGp = sysPs->mSharedUser != NULL
-                                ? (GrantedPermissions*)sysPs->mSharedUser
-                                : (GrantedPermissions*)sysPs;
-                            if (origGp->mGrantedPermissions.Find(perm) != origGp->mGrantedPermissions.End()) {
-                                allowed = TRUE;
-                            }
-                            else {
-                                allowed = FALSE;
-                            }
-                        }
-                        else {
-                            allowed = TRUE;
-                        }
-                    }
-                }
-                if (!allowed && (bp->mProtectionLevel
-                            & IPermissionInfo::PROTECTION_FLAG_DEVELOPMENT) != 0) {
-                        // For development permissions, a development permission
-                        // is granted only if it was already granted.
-                    if (origPermissions->Find(perm) != origPermissions->End()) {
-                        allowed = TRUE;
-                    }
-                    else {
-                        allowed = FALSE;
-                    }
-                }
-                if (allowed) {
-                    allowedSig = TRUE;
-                }
-            }
-            else {
-                allowed = FALSE;
-            }
-//             if (DEBUG_INSTALL) {
-//                 if (gp != ps) {
-//                     Log.i(TAG, "Package " + pkg.packageName + " granting " + perm);
-//                 }
-//             }
+            // We grant a normal or dangerous permission if any of the following
+            // are true:
+            // 1) The permission is required
+            // 2) The permission is optional, but was granted in the past
+            // 3) The permission is optional, but was requested by an
+            //    app in /system (not /data)
+            //
+            // Otherwise, reject the permission.
+            allowed = (required || (origPermissions->Find(perm) != origPermissions->End())
+                    || (IsSystemApp(ps) && !IsUpdatedSystemApp(ps)));
+        }
+        else if (bp->mPackageSetting == NULL) {
+            // This permission is invalid; skip it.
+            allowed = FALSE;
+        }
+        else if (level == IPermissionInfo::PROTECTION_SIGNATURE) {
+            allowed = GrantSignaturePermission(perm, pkg, bp, origPermissions);
             if (allowed) {
-                if ((ps->mPkgFlags & IApplicationInfo::FLAG_SYSTEM) == 0
-                        && ps->mPermissionsFixed) {
-                    // If this is an existing, non-system package, then
-                    // we can't add any new permissions to it.
-                    if (!allowedSig && gp->mGrantedPermissions.Find(perm)
-                            == gp->mGrantedPermissions.End()) {
-                        allowed = FALSE;
-                        // Except...  if this is a permission that was added
-                        // to the platform (note: need to only do this when
-                        // updating the platform).
-                        Int32 NP = PackageParser::NEW_PERMISSIONS->GetLength();
-                        for (Int32 ip = 0; ip < NP; ip++) {
-                            AutoPtr<PackageParser::NewPermissionInfo> npi
-                                        = (*PackageParser::NEW_PERMISSIONS)[ip];
-                            Int32 pkgSdkVersion;
-                            pkg->mApplicationInfo->GetTargetSdkVersion(&pkgSdkVersion);
-                            if (npi->mName.Equals(perm) && pkgSdkVersion < npi->mSdkVersion) {
-                                allowed = TRUE;
-                                Logger::I(TAG, "Auto-granting %s to old pkg %s",
-                                        perm.string(), pkg->mPackageName.string());
-                                break;
-                            }
-                        }
-                    }
+                allowedSig = TRUE;
+            }
+        }
+        else {
+            allowed = FALSE;
+        }
+        if (DEBUG_INSTALL) {
+            if (gp != ps) {
+                Logger::I(TAG, "Package %s granting %s", pkg->mPackageName.string(), perm.string());
+            }
+        }
+        if (allowed) {
+            if (!iIsSystemApp(ps) && ps->mPermissionsFixed) {
+                // If this is an existing, non-system package, then
+                // we can't add any new permissions to it.
+                if (!allowedSig && gp->mGrantedPermissions.Find(perm) == gp->mGrantedPermissions.End()) {
+                    // Except...  if this is a permission that was added
+                    // to the platform (note: need to only do this when
+                    // updating the platform).
+                    allowed = IsNewPlatformPermissionForPackage(perm, pkg);
                 }
-                if (allowed) {
-                    if (gp->mGrantedPermissions.Find(perm) == gp->mGrantedPermissions.End()) {
-                        changedPermission = TRUE;
-                        gp->mGrantedPermissions.Insert(perm);
-                        gp->mGids = AppendInts(gp->mGids, bp->mGids);
-                    }
-                    else if (!ps->mHaveGids) {
-                        gp->mGids = AppendInts(gp->mGids, bp->mGids);
-                    }
+            }
+            if (allowed) {
+                if (gp->mGrantedPermissions.Find(perm) == gp->mGrantedPermissions.End()) {
+                    changedPermission = TRUE;
+                    gp->mGrantedPermissions.Insert(perm);
+                    gp->mGids = AppendInts(gp->mGids, bp->mGids);
                 }
-                else {
-                    Slogger::I(TAG, "Not granting permission \
-                        %s to package %s because it was previously installed without",
-                        perm.string(), pkg->mPackageName.string());
+                else if (!ps->mHaveGids) {
+                    gp->mGids = appendInts(gp->mGids, bp->mGids);
                 }
             }
             else {
-                HashSet<String>::Iterator it = gp->mGrantedPermissions.Find(perm);
-                if (it != gp->mGrantedPermissions.End()) {
-                    gp->mGrantedPermissions.Erase(it);
-                    changedPermission = TRUE;
-                    gp->mGids = RemoveInts(gp->mGids, bp->mGids);
-                    Slogger::I(TAG, "Un-granting permission %s from package %s (protectionLevel=%d \
-                         flags=0x%08x)",perm.string(), pkg->mPackageName.string(),
-                         bp->mProtectionLevel, ps->mPkgFlags);
-                }
-                else {
-                    Slogger::I(TAG, "Not granting permission %s to package %s (protectionLevel=%d \
-                        flags=0x%08x)", perm.string(), pkg->mPackageName.string(),
-                        bp->mProtectionLevel, ps->mPkgFlags);
+                if (packageOfInterest.IsNull() || packageOfInterest.Equals(pkg->mPackageName)) {
+                    Slogger::W(TAG, "Not granting permission %s to package %s because it was previously installed without",
+                            perm.string(), pkg->mPackageName.string());
                 }
             }
         }
         else {
-                Slogger::I(TAG, "Unknown permission %s in package %s ",
-                    name.string(), pkg->mPackageName.string());
+            if (gp->mGrantedPermissions.Find(perm) != gp->mGrantedPermissions.End()) {
+                gp->mGrantedPermissions.Erase(perm);
+                changedPermission = TRUE;
+                gp->mGids = RemoveInts(gp->mGids, bp->mGids);
+                Int32 flags;
+                pkg->mApplicationInfo->GetFlags(&flags);
+                Slogger::I(TAG, "Un-granting permission %s from package %s (protectionLevel=%d flags=0x%d)",
+                        perm.string(), pkg->mPackageName.string(), bp->mProtectionLevel, flags);
+            }
+            else if ((bp->mProtectionLevel & IPermissionInfo::PROTECTION_FLAG_APPOP) == 0) {
+                // Don't print warning for app op permissions, since it is fine for them
+                // not to be granted, there is a UI for the user to decide.
+                if (packageOfInterest.IsNull() || packageOfInterest.Equals(pkg->mPackageName)) {
+                    Int32 flags;
+                    pkg->mApplicationInfo->GetFlags(&flags);
+                    Slogger::W(TAG, "Not granting permission %s to package %s (protectionLevel=%d flags=0x%d)",
+                            perm.string(), pkg->mPackageName.string(), bp->mProtectionLevel, flags);
+                }
+            }
         }
     }
 
-    if (((changedPermission || replace) && !ps->mPermissionsFixed &&
-        ((ps->mPkgFlags & IApplicationInfo::FLAG_SYSTEM) == 0)) ||
-        ((ps->mPkgFlags & IApplicationInfo::FLAG_UPDATED_SYSTEM_APP) != 0)) {
+    if ((changedPermission || replace) && !ps->mPermissionsFixed &&
+            !IsSystemApp(ps) || IsUpdatedSystemApp(ps)) {
         // This is the first that we have heard about this package, so the
         // permissions we have now selected are fixed until explicitly
         // changed.
@@ -11850,6 +12469,82 @@ void CPackageManagerService::GrantPermissionsLPw(
     if (isNewOrigPermissions) {
         delete origPermissions;
     }
+}
+
+Boolean CPackageManagerService::IsNewPlatformPermissionForPackage(
+    /* [in] */ const String& perm,
+    /* [in] */ PackageParser::Package* pkg)
+{
+    Boolean allowed = FALSE;
+    for (Int32 ip = 0; ip < PackageParser::NEW_PERMISSIONS->GetLength(); ip++) {
+        AutoPtr<PackageParser::NewPermissionInfo> npi = (*PackageParser::NEW_PERMISSIONS)[ip];
+        if (npi->mName.Equals(perm)
+                && pkg->mApplicationInfo->mTargetSdkVersion < npi->mSdkVersion) {
+            allowed = TRUE;
+            Logger::I(TAG, "Auto-granting %s to old pkg %s", perm.string(), pkg->mPackageName.string());
+            break;
+        }
+    }
+    return allowed;
+}
+
+Boolean CPackageManagerService::GrantSignaturePermission(
+    /* [in] */ const String& perm,
+    /* [in] */ PackageParser::Package* pkg,
+    /* [in] */ BasePermission* bp,
+    /* [in] */ HashSet<String>* origPermissions)
+{
+    Boolean allowed;
+    allowed = (CompareSignatures(bp->mPackageSetting->mSignatures->mSignatures, pkg->mSignatures)
+                    == IPackageManager::SIGNATURE_MATCH)
+            || (compareSignatures(mPlatformPackage->mSignatures, pkg->mSignatures)
+                    == IPackageManager::SIGNATURE_MATCH);
+    if (!allowed && (bp->mProtectionLevel
+            & IPermissionInfo::PROTECTION_FLAG_SYSTEM) != 0) {
+        if (IsSystemApp(pkg)) {
+            // For updated system applications, a system permission
+            // is granted only if it had been defined by the original application.
+            if (IsUpdatedSystemApp(pkg)) {
+                AutoPtr<PackageSetting> sysPs = mSetting->GetDisabledSystemPkgLPr(pkg->mPackageName);
+                AutoPtr<GrantedPermissions> origGp = sysPs->mSharedUser != NULL
+                        ? sysPs->mSharedUser : (GrantedPermissions*)sysPs.Get();
+
+                if (origGp->mGrantedPermissions.Find(perm) != origGp->mGrantedPermissions.End()) {
+                    // If the original was granted this permission, we take
+                    // that grant decision as read and propagate it to the
+                    // update.
+                    allowed = TRUE;
+                }
+                else {
+                    // The system apk may have been updated with an older
+                    // version of the one on the data partition, but which
+                    // granted a new system permission that it didn't have
+                    // before.  In this case we do want to allow the app to
+                    // now get the new permission if the ancestral apk is
+                    // privileged to get it.
+                    if (sysPs->mPkg != NULL && sysPs->IsPrivileged()) {
+                        List<String>::Iterator permIt = sysPs->mPkg->mRequestedPermissions.Begin();
+                        for (; permIt != sysPs->mPkg->mRequestedPermissions.End(); ++permIt) {
+                            if (perm.Equals(*permIt)) {
+                                allowed = TRUE;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                allowed = IsPrivilegedApp(pkg);
+            }
+        }
+    }
+    if (!allowed && (bp->mProtectionLevel
+            & IPermissionInfo::PROTECTION_FLAG_DEVELOPMENT) != 0) {
+        // For development permissions, a development permission
+        // is granted only if it was already granted.
+        allowed = (origPermissions->Find(perm) != origPermissions->End());
+    }
+    return allowed;
 }
 
 void CPackageManagerService::SendPackageBroadcast(
@@ -11878,7 +12573,7 @@ void CPackageManagerService::SendPackageBroadcast(
         for (Int32 i = 0; i < length; i++) {
             Int32 id = (*userIds)[i];
             AutoPtr<IUri> uri = !pkg.IsNull() ? (Uri::FromParts(
-                String("package"), pkg, String(NULL), (IUri**)&uri), uri) : NULL;
+                    String("package"), pkg, String(NULL), (IUri**)&uri), uri) : NULL;
             AutoPtr<IIntent> intent;
             CIntent::New(action, uri, (IIntent**)&intent);
             if (extras != NULL) {
@@ -11905,16 +12600,12 @@ void CPackageManagerService::SendPackageBroadcast(
             // }
             Int32 res;
             am->BroadcastIntent(NULL, intent, String(NULL), finishedReceiver,
-                0, String(NULL), NULL, String(NULL), finishedReceiver != NULL, FALSE, id, &res);
+                    0, String(NULL), NULL, String(NULL), IAppOpsManager::OP_NONE,
+                    finishedReceiver != NULL, FALSE, id, &res);
         }
     }
 }
 
-/**
- * Check if the external storage media is available. This is true if there
- * is a mounted external storage medium or if the external storage is
- * emulated.
- */
 Boolean CPackageManagerService::IsExternalMediaAvailable()
 {
     if (mMediaMounted) {
@@ -11937,34 +12628,21 @@ ECode CPackageManagerService::NextPackageToClean(
     *nextPackage = NULL;
 
     // writer
-    AutoLock lock(mPackagesLock);
-
-    if (!IsExternalMediaAvailable()) {
-        // If the external storage is no longer mounted at this point,
-        // the caller may not have been able to delete all of this
-        // packages files and can not delete any more.  Bail.
-        return NOERROR;
-    }
-    List< AutoPtr<IPackageCleanItem> >& pkgs = mSettings->mPackagesToBeCleaned;
-    if (lastPackage != NULL) {
-        List< AutoPtr<IPackageCleanItem> >::Iterator first = pkgs.Begin();
-        List< AutoPtr<IPackageCleanItem> >::Iterator last = pkgs.End();
-        while (first != last) {
-            List< AutoPtr<IPackageCleanItem> >::Iterator next = first;
-            ++next;
-            Boolean result = FALSE;
-            (*first)->Equals(lastPackage, &result);
-            if (result) {
-                pkgs.Erase(first);
-                break;
-            }
-            first = next;
+    synchronized (mPackagesLock) {
+        if (!IsExternalMediaAvailable()) {
+            // If the external storage is no longer mounted at this point,
+            // the caller may not have been able to delete all of this
+            // packages files and can not delete any more.  Bail.
+            return NOERROR;
         }
-    }
-    if (pkgs.Begin() != pkgs.End()) {
-        *nextPackage = *pkgs.Begin();
-        REFCOUNT_ADD(*nextPackage);
-        return NOERROR;
+        List<AutoPtr<IPackageCleanItem> > pkgs = mSettings->mPackagesToBeCleaned;
+        if (lastPackage != NULL) {
+            pkgs.Erase(lastPackage);
+        }
+        if (pkgs.Begin() != pkgs.End()) {
+            *nextPackage = *pkgs.Begin();
+            REFCOUNT_ADD(*nextPackage)
+        }
     }
 
     return NOERROR;
@@ -11975,28 +12653,24 @@ void CPackageManagerService::SchedulePackageCleaning(
     /* [in] */ Int32 userId,
     /* [in] */ Boolean andCode)
 {
-    // if (false) {
-    //     RuntimeException here = new RuntimeException("here");
-    //     here.fillInStackTrace();
-    //     Slog.d(TAG, "Schedule cleaning " + packageName + " user=" + userId
-    //             + " andCode=" + andCode, here);
-    // }
-
-    AutoPtr<ICharSequence> seq;
-    CString::New(packageName, (ICharSequence**)&seq);
     AutoPtr<IMessage> msg;
     mHandler->ObtainMessage(START_CLEANING_PACKAGE,
-        userId, andCode ? 1 : 0, seq, (IMessage**)&msg);
-    Boolean result;
-    mHandler->SendMessage(msg, &result);
+            userId, andCode ? 1 : 0, packageName, (IMessage**)&msg);
+    if (mSystemReady) {
+        msg->SendToTarget();
+    }
+    else {
+        if (mPostSystemReadyMessages == NULL) {
+            CArrayList::New((IArrayList**)&mPostSystemReadyMessages);
+        }
+        mPostSystemReadyMessages->Add(msg);
+    }
 }
 
 void CPackageManagerService::StartCleaningPackages()
 {
     // reader
-    {
-        AutoLock lock(mPackagesLock);
-
+    synchronized (mPackagesLock) {
         if (!IsExternalMediaAvailable()) {
             return;
         }
@@ -12015,94 +12689,283 @@ void CPackageManagerService::StartCleaningPackages()
 }
 
 ECode CPackageManagerService::InstallPackage(
-    /* [in] */ IUri* packageURI,
-    /* [in] */ IPackageInstallObserver* observer,
-    /* [in] */ Int32 flags)
-{
-    return InstallPackage(packageURI, observer, flags, String(NULL));
-}
-
-ECode CPackageManagerService::InstallPackage(
-    /* [in] */ IUri* packageURI,
-    /* [in] */ IPackageInstallObserver* observer,
-    /* [in] */ Int32 flags,
-    /* [in] */ const String& installerPackageName)
-{
-    return InstallPackageWithVerification(packageURI, observer, flags,
-            installerPackageName, NULL, NULL, NULL);
-}
-
-ECode CPackageManagerService::InstallPackageWithVerification(
-    /* [in] */ IUri* packageURI,
-    /* [in] */ IPackageInstallObserver* observer,
-    /* [in] */ Int32 flags,
-    /* [in] */ const String& installerPackageName,
-    /* [in] */ IUri* verificationURI,
-    /* [in] */ IManifestDigest* manifestDigest,
-    /* [in] */ IContainerEncryptionParams* encryptionParams)
-{
-    AutoPtr<IVerificationParams> verificationParams;
-    CVerificationParams::New(verificationURI, NULL, NULL,
-            IVerificationParams::NO_UID, manifestDigest, (IVerificationParams**)&verificationParams);
-    return InstallPackageWithVerificationAndEncryption(packageURI, observer, flags,
-            installerPackageName, verificationParams, encryptionParams);
-}
-
-ECode CPackageManagerService::InstallPackageWithVerificationAndEncryption(
-    /* [in] */ IUri* packageURI,
-    /* [in] */ IPackageInstallObserver* observer,
+    /* [in] */ const String& originPath,
+    /* [in] */ IIPackageInstallObserver2* observer,
     /* [in] */ Int32 flags,
     /* [in] */ const String& installerPackageName,
     /* [in] */ IVerificationParams* verificationParams,
-    /* [in] */ IContainerEncryptionParams* encryptionParams)
+    /* [in] */ const String& packageAbiOverride)
+{
+    return InstallPackageAsUser(originPath, observer, installFlags, installerPackageName,
+            verificationParams, packageAbiOverride, UserHandle::GetCallingUserId());
+}
+
+ECode CPackageManagerService::InstallPackageAsUser(
+    /* [in] */ const String& originPath,
+    /* [in] */ IIPackageInstallObserver2* observer,
+    /* [in] */ Int32 flags,
+    /* [in] */ const String& installerPackageName,
+    /* [in] */ IVerificationParams* verificationParams,
+    /* [in] */ const String& packageAbiOverride,
+    /* [in] */ Int32 userId)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-        Elastos::Droid::Manifest::permission::INSTALL_PACKAGES,
-        String(NULL)));
+            Elastos::Droid::Manifest::permission::INSTALL_PACKAGES, String(NULL)))
 
-    Int32 uid = Binder::GetCallingUid();
-    AutoPtr<IUserHandle> user;
-    if ((flags & IPackageManager::INSTALL_ALL_USERS) != 0) {
-        user = UserHandle::ALL;
-    }
-    else {
-        CUserHandle::New(UserHandle::GetUserId(uid), (IUserHandle**)&user);
-    }
+    Int32 callingUid = Binder::GetCallingUid();
+    FAIL_RETURN(EnforceCrossUserPermission(callingUid, userId, TRUE, TRUE, String("installPackageAsUser")))
 
-    Int32 filteredFlags;
-
-    if (uid == IProcess::SHELL_UID || uid == 0) {
-        if (DEBUG_INSTALL) {
-            Slogger::V(TAG, "Install from ADB");
+    if (IsUserRestricted(userId, IUserManager::DISALLOW_INSTALL_APPS)) {
+        // try {
+        if (observer != NULL) {
+            observer->OnPackageInstalled(String(""), INSTALL_FAILED_USER_RESTRICTED, String(NULL), NULL);
         }
-        filteredFlags = flags | IPackageManager::INSTALL_FROM_ADB;
+        // } catch (RemoteException re) {
+        // }
+        return NOERROR;
+    }
+
+    if ((callingUid == IProcess::SHELL_UID) || (callingUid == IProcess::ROOT_UID)) {
+        installFlags |= IPackageManager::INSTALL_FROM_ADB;
+
     }
     else {
-        filteredFlags = flags & ~IPackageManager::INSTALL_FROM_ADB;
+        // Caller holds INSTALL_PACKAGES permission, so we're less strict
+        // about installerPackageName.
+
+        installFlags &= ~IPackageManager::INSTALL_FROM_ADB;
+        installFlags &= ~IPackageManager::INSTALL_ALL_USERS;
     }
 
-    verificationParams->SetInstallerUid(uid);
+    AutoPtr<IUserHandle> user;
+    if ((installFlags & IPackageManager::INSTALL_ALL_USERS) != 0) {
+        AutoPtr<IUserHandleHelper> helper;
+        CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
+        helper->GetAll((IUserHandle**)&user);
+    }
+    else {
+        CUserHandle::New(userId, (IUserHandle**)&user);
+    }
 
-    AutoPtr<InstallParams> installParams = new InstallParams(
-        packageURI, observer, filteredFlags, installerPackageName,
-        verificationParams, encryptionParams, user, this);
+    verificationParams->SetInstallerUid(callingUid);
+
+    AutoPtr<IFile> originFile;
+    CFile::New(originPath, (IFile**)&originFile);
+    AutoPtr<OriginInfo> origin = OriginInfo::FromUntrustedFile(originFile);
 
     AutoPtr<IMessage> msg;
     mHandler->ObtainMessage(INIT_COPY, (IMessage**)&msg);
-    msg->SetObj(installParams);
+    AutoPtr<InstallParams> params = new InstallParams(origin, observer, installFlags,
+            installerPackageName, verificationParams, user, packageAbiOverride);
+    msg->SetObj((IInterface*)params);
     Boolean result;
-    return mHandler->SendMessage(msg, &result);
+    mHandler->SendMessage(msg, &result);
 }
 
-ECode CPackageManagerService::InstallExistingPackage(
+void CPackageManagerService::InstallStage(
     /* [in] */ const String& packageName,
-    /* [out] */ Int32* result)
+    /* [in] */ IFile* stagedDir,
+    /* [in] */ const String& stagedCid,
+    /* [in] */ IIPackageInstallObserver2* observer,
+    /* [in] */ IPackageInstallerSessionParams* params,
+    /* [in] */ const String& installerPackageName,
+    /* [in] */ Int32 installerUid,
+    /* [in] */ IUserHandle* user)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::INSTALL_PACKAGES,
-            String(NULL)));
+    AutoPtr<IVerificationParams> verifParams;
+    AutoPtr<IUri> oriUri, referrerUri;
+    params->GetOriginatingURI((IUri**)&oriUri);
+    params->GetReferrerUri((IUri**)&referrerUri);
+    CVerificationParams::New(NULL, oriUri, referrerUri, installerUid, NULL);
+
+    AutoPtr<OriginInfo> origin;
+    if (stagedDir != NULL) {
+        origin = OriginInfo::FromStagedFile(stagedDir);
+    }
+    else {
+        origin = OriginInfo::FromStagedContainer(stagedCid);
+    }
+
+    AutoPtr<IMessage> msg;
+    mHandler->ObtainMessage(INIT_COPY, (IMessage**)&msg);
+    Int32 installFlags;
+    params->GetInstallFlags(&installFlags);
+    String abiOverride;
+    params->GetAbiOverride(&abiOverride);
+    AutoPtr<InstallParams> params = new InstallParams(origin, observer, installFlags,
+            installerPackageName, verificationParams, user, abiOverride);
+    msg->SetObj((IInterface*)params);
+    Boolean result;
+    mHandler->SendMessage(msg, &result);
+}
+
+void CPackageManagerService::SendPackageAddedForUser(
+    /* [in] */ const String& packageName,
+    /* [in] */ PackageSetting* pkgSetting,
+    /* [in] */ Int32 userId)
+{
+    AutoPtr<IBundle> extras;
+    CBundle(1, (IBundle**)&extras);
+    extras->PutInt32(IIntent::EXTRA_UID, UserHandle::GetUid(userId, pkgSetting->mAppId));
+
+    AutoPtr< ArrayOf<Int32> > userIds = ArrayOf<Int32>::Alloc(1);
+    (*userIds)[0] = userId;
+    SendPackageBroadcast(IIntent::ACTION_PACKAGE_ADDED, packageName, extras, String(NULL), NULL, userIds);
+    // try {
+    AutoPtr<IIActivityManager> am = ActivityManagerNative::GetDefault();
+    Boolean isSystem = IsSystemApp(pkgSetting) || IsUpdatedSystemApp(pkgSetting);
+    Boolean isUserRunning;
+    if (isSystem && (am->IsUserRunning(userId, FALSE, &isUserRunning), isUserRunning)) {
+        // The just-installed/enabled app is bundled on the system, so presumed
+        // to be able to run automatically without needing an explicit launch.
+        // Send it a BOOT_COMPLETED if it would ordinarily have gotten one.
+        AutoPtr<IIntent> bcIntent;
+        CIntent::New(IIntent::ACTION_BOOT_COMPLETED, (IIntent**)&bcIntent);
+        bcIntent->AddFlags(IIntent::FLAG_INCLUDE_STOPPED_PACKAGES)
+        bcIntent->SetPackage(packageName);
+        Boolean result;
+        if (FAILED(am->BroadcastIntent(NULL, bcIntent, String(NULL), NULL, 0, String(NULL),
+                NULL, String(NULL), IAppOpsManager::OP_NONE, FALSE, FALSE, userId, &result))) {
+            Slogger::W(TAG, "Unable to bootstrap installed package");
+        }
+    }
+    // } catch (RemoteException e) {
+    //     // shouldn't happen
+    //     Slog.w(TAG, "Unable to bootstrap installed package", e);
+    // }
+}
+
+ECode CPackageManagerService::SetApplicationHiddenSettingAsUser(
+    /* [in] */ const String& packageName,
+    /* [in] */ Boolean hide,
+    /* [in] */ Int32 userId,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+            Elastos::Core::Manifest::permission::MANAGE_USERS, String(NULL)))
     AutoPtr<PackageSetting> pkgSetting;
     Int32 uid = Binder::GetCallingUid();
-    Int32 userId = UserHandle::GetUserId(uid);
+    FAIL_RETURN(EnforceCrossUserPermission(uid, userId, TRUE, TRUE,
+            String("setApplicationHiddenSetting for user ") + StringUtils::ToString(userId)))
+
+    if (hidden && IsPackageDeviceAdmin(packageName, userId)) {
+        Slogger::W(TAG, "Not hiding package %s: has active device admin", packageName.string());
+        return NOERROR;
+    }
+
+    Int64 callingId = Binder::ClearCallingIdentity();
+    // try {
+    Boolean sendAdded = FALSE;
+    Boolean sendRemoved = FALSE;
+    // writer
+    synchronized (mPackagesLock) {
+        HashMap<String, AutoPtr<PackageSetting> >::Iterator it = mSettings->mPackages.Find(packageName);
+        if (it != mSettings->mPackages.End()) {
+            pkgSetting = it->mSecond;
+        }
+        if (pkgSetting == NULL) {
+            Binder::RestoreCallingIdentity(callingId);
+            return NOERROR;
+        }
+        if (pkgSetting->GetHidden(userId) != hidden) {
+            pkgSetting->SetHidden(hidden, userId);
+            mSettings->WritePackageRestrictionsLPr(userId);
+            if (hidden) {
+                sendRemoved = TRUE;
+            }
+            else {
+                sendAdded = TRUE;
+            }
+        }
+    }
+    if (sendAdded) {
+        SendPackageAddedForUser(packageName, pkgSetting, userId);
+        *result = TRUE;
+        Binder::RestoreCallingIdentity(callingId);
+        return NOERROR
+    }
+    if (sendRemoved) {
+        KillApplication(packageName, UserHandle::GetUid(userId, pkgSetting->mAppId),
+                String("hiding pkg"));
+        SendApplicationHiddenForUser(packageName, pkgSetting, userId);
+    }
+    // } finally {
+    //     Binder.restoreCallingIdentity(callingId);
+    // }
+    Binder::RestoreCallingIdentity(callingId);
+    *result = FALSE;
+    return NOERROR;
+}
+
+void CPackageManagerService::SendApplicationHiddenForUser(
+    /* [in] */ const String& packageName,
+    /* [in] */ PackageSetting* pkgSetting,
+    /* [in] */ Int32 userId)
+{
+    AutoPtr<PackageRemovedInfo> info = new PackageRemovedInfo();
+    info->mRemovedPackage = packageName;
+    info->mRemovedUsers = ArrayOf<Int32>::Alloc(1);
+    (*info->mRemovedUsers)[0] = userId;
+    info->mUid = UserHandle::GetUid(userId, pkgSetting->mAppId);
+    info->SendBroadcast(FALSE, FALSE, FALSE);
+}
+
+ECode CPackageManagerService::GetApplicationHiddenSettingAsUser(
+    /* [in] */ const String& packageName,
+    /* [in] */ Int32 userId,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+            Elastos::Core::Manifest::permission::MANAGE_USERS, String(NULL)))
+    FAIL_RETURN(EnforceCrossUserPermission(Binder::GetCallingUid(), userId, TRUE,
+            FALSE, String("getApplicationHidden for user ") + StringUtils::ToString(userId)))
+    AutoPtr<PackageSetting> pkgSetting;
+    Int64 callingId = Binder::ClearCallingIdentity();
+    // try {
+    // writer
+    synchronized (mPackagesLock) {
+        HashMap<String, AutoPtr<PackageSetting> >::Iterator it = mSettings->mPackages.Find(packageName);
+        if (it != mSettings->mPackages.End()) {
+            pkgSetting = it->mSecond;
+        }
+        if (pkgSetting == NULL) {
+            *result = TRUE;
+            Binder::RestoreCallingIdentity(callingId);
+            return NOERROR;
+        }
+        *result = pkgSetting->GetHidden(userId);
+    }
+    // } finally {
+    //     Binder.restoreCallingIdentity(callingId);
+    // }
+    Binder::RestoreCallingIdentity(callingId);
+    return NOERROR;
+}
+
+ECode CPackageManagerService::InstallExistingPackageAsUser(
+    /* [in] */ const String& packageName,
+    /* [in] */ Int32 userId,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+            Elastos::Droid::Manifest::permission::INSTALL_PACKAGES, String(NULL)))
+    AutoPtr<PackageSetting> pkgSetting;
+    Int32 uid = Binder::GetCallingUid();
+    FAIL_RETURN(EnforceCrossUserPermission(uid, userId, TRUE, TRUE,
+            String("installExistingPackage for user " + StringUtils::ToString(userId))))
+    if (IsUserRestricted(userId, UserManager.DISALLOW_INSTALL_APPS)) {
+        *result = IPackageManager::INSTALL_FAILED_USER_RESTRICTED;
+        return NOERROR;
+    }
 
     Int64 callingId = Binder::ClearCallingIdentity();
     // try {
@@ -12111,8 +12974,7 @@ ECode CPackageManagerService::InstallExistingPackage(
     CBundle::New(1, (IBundle**)&extras);
 
     // writer
-    {
-        AutoLock lock(mPackagesLock);
+    synchronized (mPackagesLock) {
         HashMap<String, AutoPtr<PackageSetting> >::Iterator psIt = mSettings->mPackages.Find(packageName);
         if (psIt != mSettings->mPackages.End()) pkgSetting = psIt->mSecond;
         if (pkgSetting == NULL) {
@@ -12121,19 +12983,16 @@ ECode CPackageManagerService::InstallExistingPackage(
             return NOERROR;
         }
         if (!pkgSetting->GetInstalled(userId)) {
-                pkgSetting->SetInstalled(TRUE, userId);
-                mSettings->WritePackageRestrictionsLPr(userId);
-                extras->PutInt32(IIntent::EXTRA_UID, UserHandle::GetUid(userId, pkgSetting->mAppId));
-                sendAdded = TRUE;
+            pkgSetting->SetInstalled(TRUE, userId);
+            pkgSetting->SetHidden(FALSE, userId);
+            mSettings->WritePackageRestrictionsLPr(userId);
+            sendAdded = TRUE;
         }
     }
 
-        if (sendAdded) {
-            AutoPtr<ArrayOf<Int32> > idArray = ArrayOf<Int32>::Alloc(1);
-            idArray->Set(0, userId);
-            SendPackageBroadcast(IIntent::ACTION_PACKAGE_ADDED,
-                    packageName, extras, String(NULL), NULL, idArray);
-        }
+    if (sendAdded) {
+        SendPackageAddedForUser(packageName, pkgSetting, userId);
+    }
     // } finally {
     Binder::RestoreCallingIdentity(callingId);
     // }
@@ -12142,13 +13001,26 @@ ECode CPackageManagerService::InstallExistingPackage(
     return NOERROR;
 }
 
+Boolean CPackageManagerService::IsUserRestricted(
+    /* [in] */ Int32 userId,
+    /* [in] */ const String& restrictionKey)
+{
+    AutoPtr<IBundle> restrictions = sUserManager->GetUserRestrictions(userId);
+    Boolean value;
+    if (restrictions->GetBoolean(restrictionKey, FALSE, &value), value) {
+        Logger::W(TAG, "User is restricted: %s", restrictionKey.string());
+        return TRUE;
+    }
+    return FALSE;
+}
+
 ECode CPackageManagerService::VerifyPendingInstall(
     /* [in] */ Int32 id,
     /* [in] */ Int32 verificationCode)
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::PACKAGE_VERIFICATION_AGENT,
-            String("Only package verification agents can verify applications")));
+            String("Only package verification agents can verify applications")))
 
     AutoPtr<PackageVerificationResponse> response = new PackageVerificationResponse(
             verificationCode, Binder::GetCallingUid());
@@ -12168,7 +13040,7 @@ ECode CPackageManagerService::ExtendVerificationTimeout(
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::PACKAGE_VERIFICATION_AGENT,
-            String("Only package verification agents can extend verification timeouts")));
+            String("Only package verification agents can extend verification timeouts")))
 
     HashMap<Int32, AutoPtr<PackageVerificationState> >::Iterator sIt = mPendingVerification.Find(id);
     AutoPtr<PackageVerificationState> state;
@@ -12195,7 +13067,7 @@ ECode CPackageManagerService::ExtendVerificationTimeout(
         msg->SetObj(response);
         msg->SetArg1(id);
         Boolean result;
-        return mHandler->SendMessageDelayed(msg, millisecondsToDelay, &result);
+        mHandler->SendMessageDelayed(msg, millisecondsToDelay, &result);
     }
     return NOERROR;
 }
@@ -12220,11 +13092,11 @@ ECode CPackageManagerService::BroadcastPackageVerified(
 
 AutoPtr<IComponentName> CPackageManagerService::MatchComponentForVerifier(
     /* [in] */ const String& packageName,
-    /* [in] */ List< AutoPtr<IResolveInfo> >* receivers)
+    /* [in] */ List<AutoPtr<IResolveInfo> >* receivers)
 {
     AutoPtr<IActivityInfo> targetReceiver;
 
-    List< AutoPtr<IResolveInfo> >::Iterator it;
+    List<AutoPtr<IResolveInfo> >::Iterator it;
     for (it = receivers->Begin(); it != receivers->End(); ++it) {
         AutoPtr<IResolveInfo> info = *it;
         AutoPtr<IActivityInfo> actInfo;
@@ -12234,8 +13106,7 @@ AutoPtr<IComponentName> CPackageManagerService::MatchComponentForVerifier(
         }
 
         String pkgName;
-        actInfo->GetPackageName(&pkgName);
-        if (packageName.Equals(pkgName)) {
+        if (actInfo->GetPackageName(&pkgName), packageName.Equals(pkgName)) {
             targetReceiver = actInfo;
             break;
         }
@@ -12295,55 +13166,56 @@ AutoPtr<List<AutoPtr<IComponentName> > > CPackageManagerService::MatchVerifiers(
 Int32 CPackageManagerService::GetUidForVerifier(
     /* [in] */ IVerifierInfo* verifierInfo)
 {
-    AutoLock lock(mPackagesLock);
-    String vPkgName;
-    verifierInfo->GetPackageName(&vPkgName);
-    HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it = mPackages.Find(vPkgName);
-    AutoPtr<PackageParser::Package> pkg;
-    if (it != mPackages.End()) pkg = it->mSecond;
-    if (pkg == NULL) {
-        return -1;
+    synchronized (mPackages) {
+        String vPkgName;
+        verifierInfo->GetPackageName(&vPkgName);
+        HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it = mPackages.Find(vPkgName);
+        AutoPtr<PackageParser::Package> pkg;
+        if (it != mPackages.End()) pkg = it->mSecond;
+        if (pkg == NULL) {
+            return -1;
+        }
+        else if (pkg->mSignatures->GetLength() != 1) {
+            Slogger::I(TAG, "Verifier package %s has more than one signature; ignoring", vPkgName.string());
+            return -1;
+        }
+
+        /*
+         * If the public key of the package's signature does not match
+         * our expected public key, then this is a different package and
+         * we should skip.
+         */
+
+        AutoPtr<ArrayOf<Byte> > expectedPublicKey;
+        // try {
+        AutoPtr<ISignature> verifierSig = (*pkg->mSignatures)[0];
+        AutoPtr<IPublicKey> publicKey;
+        if (FAILED(verifierSig->GetPublicKey((IPublicKey**)&publicKey)) ) return -1;
+        if (FAILED(publicKey->GetEncoded((ArrayOf<Byte>**)&expectedPublicKey)) ) return -1;
+        // } catch (CertificateException e) {
+        //     return -1;
+        // }
+        AutoPtr<IPublicKey> infoPublicKey;
+        verifierInfo->GetPublicKey((IPublicKey**)&infoPublicKey);
+        AutoPtr<ArrayOf<Byte> > actualPublicKey;
+        infoPublicKey->GetEncoded((ArrayOf<Byte>**)&actualPublicKey);
+
+        if (!Arrays::Equals(actualPublicKey, expectedPublicKey)) {
+            Slogger::I(TAG, "Verifier package %s does not have the expected public key; ignoring",
+                    verifierInfo->mPackageName.string());
+            return -1;
+        }
+
+        Int32 uid;
+        pkg->mApplicationInfo->GetUid(&uid);
+        return uid;
     }
-    else if (pkg->mSignatures->GetLength() != 1) {
-        Slogger::I(TAG, "Verifier package %s has more than one signature; ignoring", vPkgName.string());
-        return -1;
-    }
-
-    /*
-     * If the public key of the package's signature does not match
-     * our expected public key, then this is a different package and
-     * we should skip.
-     */
-
-    AutoPtr<ArrayOf<Byte> > expectedPublicKey;
-    // try {
-    AutoPtr<ISignature> verifierSig = (*pkg->mSignatures)[0];
-    AutoPtr<IPublicKey> publicKey;
-    if (FAILED(verifierSig->GetPublicKey((IPublicKey**)&publicKey)) ) return -1;
-// TODO: Need function IPublicKey::GetEncoded
-// if (FAILED(publicKey->GetEncoded((ArrayOf<Byte>**)&expectedPublicKey)) ) return -1;
-    // } catch (CertificateException e) {
-    //     return -1;
-    // }
-// AutoPtr<IPublicKey> infoPublicKey;
-// verifierInfo->GetPublicKey((IPublicKey**)&infoPublicKey);
-// AutoPtr<ArrayOf<Byte> > actualPublicKey;
-// infoPublicKey->GetEncoded((ArrayOf<Byte>**)&actualPublicKey);
-
-//     if (!actualPublicKey->Equals(expectedPublicKey)) {
-//         Slogger::I(TAG, "Verifier package %s does not have the expected public key; ignoring", vPkgName.string());
-//         return -1;
-//     }
-
-    Int32 uid;
-    pkg->mApplicationInfo->GetUid(&uid);
-    return uid;
 }
 
 ECode CPackageManagerService::FinishPackageInstall(
     /* [in] */ Int32 token)
 {
-    FAIL_RETURN(EnforceSystemOrRoot(String("Only the system is allowed to finish installs")));
+    FAIL_RETURN(EnforceSystemOrRoot(String("Only the system is allowed to finish installs")))
 
     if (DEBUG_INSTALL) {
         Slogger::V(TAG, "BM finishing package install for %d", token);
@@ -12383,11 +13255,14 @@ Int32 CPackageManagerService::GetDefaultVerificationResponse()
 }
 
 Boolean CPackageManagerService::IsVerificationEnabled(
-    /* [in] */ Int32 flags)
+    /* [in] */ Int32 flags,
+    /* [in] */ Int32 installFlags)
 {
     if (!DEFAULT_VERIFY_ENABLE) {
         return FALSE;
     }
+
+    Boolean ensureVerifyAppsEnabled = IsUserRestricted(userId, IUserManager::ENSURE_VERIFY_APPS);
 
     AutoPtr<IContentResolver> resolver;
     mContext->GetContentResolver((IContentResolver**)&resolver);
@@ -12395,27 +13270,31 @@ Boolean CPackageManagerService::IsVerificationEnabled(
     CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&sGlobal);
 
     // Check if installing from ADB
-    if ((flags & IPackageManager::INSTALL_FROM_ADB) != 0) {
+    if ((installFlags & IPackageManager::INSTALL_FROM_ADB) != 0) {
         // Do not run verification in a test harness environment
         AutoPtr<IActivityManagerHelper> amHelper;
         CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&amHelper);
         Boolean isRunning;
-        amHelper->IsRunningInTestHarness(&isRunning);
-        if (isRunning) {
+        if (amHelper->IsRunningInTestHarness(&isRunning), isRunning) {
             return FALSE;
+        }
+        if (ensureVerifyAppsEnabled) {
+            return TRUE;
         }
         // Check if the developer does not want package verification for ADB installs
         Int32 value;
-        sGlobal->GetInt32(resolver,
-                ISettingsGlobal::PACKAGE_VERIFIER_INCLUDE_ADB, 1, &value);
+        sGlobal->GetInt32(resolver, ISettingsGlobal::PACKAGE_VERIFIER_INCLUDE_ADB, 1, &value);
         if (value == 0) {
             return FALSE;
         }
     }
 
+    if (ensureVerifyAppsEnabled) {
+        return TRUE;
+    }
+
     Int32 ivalue;
-    sGlobal->GetInt32(resolver,
-            ISettingsGlobal::PACKAGE_VERIFIER_ENABLE, 1, &ivalue);
+    sGlobal->GetInt32(resolver, ISettingsGlobal::PACKAGE_VERIFIER_ENABLE, 1, &ivalue);
     return ivalue == 1;
 }
 
@@ -12438,97 +13317,87 @@ ECode CPackageManagerService::SetInstallerPackageName(
 {
     const Int32 uid = Binder::GetCallingUid();
     // writer
-    AutoLock lock(mPackagesLock);
-    HashMap<String, AutoPtr<PackageSetting> >::Iterator it = mSettings->mPackages.Find(targetPackage);
-    AutoPtr<PackageSetting> targetPackageSetting;
-    if (it != mSettings->mPackages.End()) targetPackageSetting = it->mSecond;
-    if (targetPackageSetting == NULL) {
-        // throw new IllegalArgumentException("Unknown target package: " + targetPackage);
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    AutoPtr<PackageSetting> installerPackageSetting;
-    if (!installerPackageName.IsNull()) {
-        it = mSettings->mPackages.Find(installerPackageName);
-        if (it != mSettings->mPackages.End()) {
-            installerPackageSetting = it->mSecond;
-        }
-        if (installerPackageSetting == NULL) {
-            // throw new IllegalArgumentException("Unknown installer package: "
-            //         + installerPackageName);
+    synchronized (mPackagesLock) {
+        HashMap<String, AutoPtr<PackageSetting> >::Iterator it = mSettings->mPackages.Find(targetPackage);
+        AutoPtr<PackageSetting> targetPackageSetting;
+        if (it != mSettings->mPackages.End()) targetPackageSetting = it->mSecond;
+        if (targetPackageSetting == NULL) {
+            Slogger::E(TAG, "Unknown target package: %s", targetPackage.string());
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
-    }
-    else {
-        installerPackageSetting = NULL;
-    }
 
-    AutoPtr<ArrayOf<ISignature*> > callerSignature;
-    AutoPtr<IInterface> obj = mSettings->GetUserIdLPr(uid);
-    if (obj != NULL) {
-        if (obj->Probe(EIID_SharedUserSetting) != NULL) {
-            SharedUserSetting* sus = reinterpret_cast<SharedUserSetting*>(obj->Probe(EIID_SharedUserSetting));
-            callerSignature = sus->mSignatures->mSignatures;
-        }
-        else if (obj->Probe(EIID_PackageSetting) != NULL) {
-            PackageSetting* ps = reinterpret_cast<PackageSetting*>(obj->Probe(EIID_PackageSetting));
-            callerSignature = ps->mSignatures->mSignatures;
+        AutoPtr<PackageSetting> installerPackageSetting;
+        if (!installerPackageName.IsNull()) {
+            it = mSettings->mPackages.Find(installerPackageName);
+            if (it != mSettings->mPackages.End()) {
+                installerPackageSetting = it->mSecond;
+            }
+            if (installerPackageSetting == NULL) {
+                Slogger::E(TAG, "Unknown installer package: %s", installerPackageName.string());
+                return E_ILLEGAL_ARGUMENT_EXCEPTION;
+            }
         }
         else {
-            // throw new SecurityException("Bad object " + obj + " for uid " + uid);
-            return E_SECURITY_EXCEPTION;
+            installerPackageSetting = NULL;
         }
-    }
-    else {
-        // throw new SecurityException("Unknown calling uid " + uid);
-        return E_SECURITY_EXCEPTION;
-    }
 
-    // Verify: can't set installerPackageName to a package that is
-    // not signed with the same cert as the caller.
-    if (installerPackageSetting != NULL) {
-        if (CompareSignatures(callerSignature,
-                installerPackageSetting->mSignatures->mSignatures)
-                != IPackageManager::SIGNATURE_MATCH) {
-            // throw new SecurityException(
-            //         "Caller does not have same cert as new installer package "
-            //         + installerPackageName);
-            return E_SECURITY_EXCEPTION;
-        }
-    }
-
-    // Verify: if target already has an installer package, it must
-    // be signed with the same cert as the caller.
-    if (!targetPackageSetting->mInstallerPackageName.IsNull()) {
-        HashMap<String, AutoPtr<PackageSetting> >::Iterator sit = mSettings->mPackages.Find(
-                targetPackageSetting->mInstallerPackageName);
-        AutoPtr<PackageSetting> setting;
-        if (sit != mSettings->mPackages.End()) setting = sit->mSecond;
-        // If the currently set package isn't valid, then it's always
-        // okay to change it.
-        if (setting != NULL) {
-            if (CompareSignatures(callerSignature,
-                    setting->mSignatures->mSignatures)
-                    != IPackageManager::SIGNATURE_MATCH) {
-                // throw new SecurityException(
-                //         "Caller does not have same cert as old installer package "
-                //         + targetPackageSetting.installerPackageName);
+        AutoPtr<ArrayOf<ISignature*> > callerSignature;
+        AutoPtr<IInterface> obj = mSettings->GetUserIdLPr(uid);
+        if (obj != NULL) {
+            if (obj->Probe(EIID_SharedUserSetting) != NULL) {
+                SharedUserSetting* sus = reinterpret_cast<SharedUserSetting*>(obj->Probe(EIID_SharedUserSetting));
+                callerSignature = sus->mSignatures->mSignatures;
+            }
+            else if (obj->Probe(EIID_PackageSetting) != NULL) {
+                PackageSetting* ps = reinterpret_cast<PackageSetting*>(obj->Probe(EIID_PackageSetting));
+                callerSignature = ps->mSignatures->mSignatures;
+            }
+            else {
+                Slogger::E(TAG, "Bad object %p for uid %d", obj.Get(), uid);
                 return E_SECURITY_EXCEPTION;
             }
         }
+        else {
+            Slogger::E(TAG, "Bad Unknown calling uid %d", uid);
+            return E_SECURITY_EXCEPTION;
+        }
+
+        // Verify: can't set installerPackageName to a package that is
+        // not signed with the same cert as the caller.
+        if (installerPackageSetting != NULL) {
+            if (CompareSignatures(callerSignature,
+                    installerPackageSetting->mSignatures->mSignatures)
+                    != IPackageManager::SIGNATURE_MATCH) {
+                Slogger::E(TAG, "Caller does not have same cert as new installer package %s",
+                        installerPackageName.string());
+                return E_SECURITY_EXCEPTION;
+            }
+        }
+
+        // Verify: if target already has an installer package, it must
+        // be signed with the same cert as the caller.
+        if (!targetPackageSetting->mInstallerPackageName.IsNull()) {
+            HashMap<String, AutoPtr<PackageSetting> >::Iterator sit = mSettings->mPackages.Find(
+                    targetPackageSetting->mInstallerPackageName);
+            AutoPtr<PackageSetting> setting;
+            if (sit != mSettings->mPackages.End()) setting = sit->mSecond;
+            // If the currently set package isn't valid, then it's always
+            // okay to change it.
+            if (setting != NULL) {
+                if (CompareSignatures(callerSignature,
+                        setting->mSignatures->mSignatures)
+                        != IPackageManager::SIGNATURE_MATCH) {
+                    Slogger::E(TAG, "Caller does not have same cert as old installer package %s",
+                            targetPackageSetting->mInstallerPackageName.string());
+                    return E_SECURITY_EXCEPTION;
+                }
+            }
+        }
+
+        // Okay!
+        targetPackageSetting->mInstallerPackageName = installerPackageName;
+        ScheduleWriteSettingsLocked();
     }
-
-    // Okay!
-    targetPackageSetting->mInstallerPackageName = installerPackageName;
-    ScheduleWriteSettingsLocked();
-    return NOERROR;
-}
-
-ECode CPackageManagerService::ProcessPendingInstallRunnable::Run()
-{
-    AutoPtr<InstallArgs> args = mInstallArgs;
-    mHost->mHandler->RemoveCallbacks(this);
-    mHost->HandlePendingInstallRun(args, mCurrentStatus);
     return NOERROR;
 }
 
@@ -12542,114 +13411,57 @@ ECode CPackageManagerService::ProcessPendingInstall(
     return mHandler->Post(runnable, &result);
 }
 
-void CPackageManagerService::HandlePendingInstallRun(
-    /* [in] */ InstallArgs* args,
-    /* [in] */ Int32 currentStatus)
+Int64 CPackageManagerService::CalculateDirectorySize(
+    /* [in] */ IIMediaContainerService* mcs,
+    /* [in] */ ArrayOf<IFile*>* paths)
 {
-    // Result object to be returned
-    AutoPtr<PackageInstalledInfo> res = new PackageInstalledInfo();
-    res->mReturnCode = currentStatus;
-    res->mUid = -1;
-    res->mPkg = NULL;
-    res->mRemovedInfo = new PackageRemovedInfo(this);
-    if (res->mReturnCode == IPackageManager::INSTALL_SUCCEEDED) {
-        args->DoPreInstall(res->mReturnCode);
-        {
-            AutoLock lock(mInstallLock);
-            AutoPtr<ArrayOf<Byte> > readBuffer = ArrayOf<Byte>::Alloc(PackageParser::CERTIFICATE_BUFFER_SIZE);
-            if (readBuffer == NULL) {
-                Slogger::E(TAG, "Failed install package: out of memory!");
-                return;
-            }
-            InstallPackageLI(args, TRUE, res, readBuffer);
-        }
-        args->DoPostInstall(res->mReturnCode, res->mUid);
+    Int64 result = 0;
+    for (Int32 i = 0; i < paths->GetLength(); ++i) {
+        String absolutePath;
+        (*paths)[i]->GetAbsolutePath(&absolutePath);
+        Int64 value;
+        mcs->CalculateDirectorySize(absolutePath, &value);
+        result += value;
     }
+    return result;
+}
 
-    // A restore should be performed at this point if (a) the install
-    // succeeded, (b) the operation is not an update, and (c) the new
-    // package has a backupAgent defined.
-    Boolean update = res->mRemovedInfo->mRemovedPackage != NULL;
-    String backupAgentName;
-    Boolean doRestore = (!update
-        && res->mPkg != NULL
-        && (res->mPkg->mApplicationInfo->GetBackupAgentName(&backupAgentName),
-            !backupAgentName.IsNull()));
-
-    // Set up the post-install work request bookkeeping.  This will be used
-    // and cleaned up by the post-install event handling regardless of whether
-    // there's a restore pass performed.  Token values are >= 1.
-    Int32 token;
-    if (mNextInstallToken < 0)
-        mNextInstallToken = 1;
-    token = mNextInstallToken++;
-
-    AutoPtr<PostInstallData> data = new PostInstallData(args, res);
-    mRunningInstalls[token] = data;
-    if (DEBUG_INSTALL)
-        Logger::V(TAG, "+ starting restore round-trip %d", token);
-
-    if (res->mReturnCode == IPackageManager::INSTALL_SUCCEEDED && doRestore) {
-        // Pass responsibility to the Backup Manager.  It will perform a
-        // restore if appropriate, then pass responsibility back to the
-        // Package Manager to run the post-install observer callbacks
-        // and broadcasts.
-        AutoPtr<IIBackupManager> bm = IIBackupManager::Probe(
-                ServiceManager::GetService(IContext::BACKUP_SERVICE));
-        if (bm != NULL) {
-            if (DEBUG_INSTALL)
-                Logger::V(TAG, "token %d to BM for possible restore", token);
-
-            String packageName;
-            res->mPkg->mApplicationInfo->GetPackageName(&packageName);
-            if (FAILED(bm->RestoreAtInstall(packageName, token))) {
-                Slogger::E(TAG, "Exception trying to enqueue restore");
-                doRestore = FALSE;
-            }
-        }
-        else {
-            Slogger::E(TAG, "Backup Manager not found!");
-            doRestore = FALSE;
-        }
-    }
-
-    if (!doRestore) {
-        // No restore possible, or the Backup Manager was mysteriously not
-        // available -- just fire the post-install work request directly.
-        if (DEBUG_INSTALL)
-            Logger::V(TAG, "No restore - queue post-install for %d", token);
-
-        AutoPtr<IMessage> msg;
-        mHandler->ObtainMessage(POST_INSTALL, (IMessage**)&msg);
-        msg->SetArg1(token);
-        Boolean result;
-        mHandler->SendMessage(msg, &result);
+void CPackageManagerService::ClearDirectory(
+    /* [in] */ IIMediaContainerService* mcs,
+    /* [in] */ ArrayOf<IFile*>* paths)
+{
+    for (Int32 i = 0; i < paths->GetLength(); ++i) {
+        // try {
+        String absolutePath;
+        (*paths)[i]->GetAbsolutePath(&absolutePath);
+        mcs->ClearDirectory(absolutePath);
+        // } catch (RemoteException e) {
+        // }
     }
 }
 
 Boolean CPackageManagerService::InstallOnSd(
-    /* [in] */ Int32 flags)
+    /* [in] */ Int32 installFlags)
 {
-    if ((flags & IPackageManager::INSTALL_INTERNAL) != 0) {
+    if ((installFlags & IPackageManager::INSTALL_INTERNAL) != 0) {
         return FALSE;
     }
-    if ((flags & IPackageManager::INSTALL_EXTERNAL) != 0) {
+    if ((installFlags & IPackageManager::INSTALL_EXTERNAL) != 0) {
         return TRUE;
     }
     return FALSE;
 }
 
 Boolean CPackageManagerService::InstallForwardLocked(
-    /* [in] */ Int32 flags)
+    /* [in] */ Int32 installFlags)
 {
-    return (flags & IPackageManager::INSTALL_FORWARD_LOCK) != 0;
+    return (installFlags & IPackageManager::INSTALL_FORWARD_LOCK) != 0;
 }
 
-AutoPtr<InstallArgs>
-CPackageManagerService::CreateInstallArgs(
+AutoPtr<InstallArgs> CPackageManagerService::CreateInstallArgs(
     /* [in] */ InstallParams* params)
 {
-    if (InstallOnSd(params->mFlags) || params->IsForwardLocked()) {
+    if (InstallOnSd(params->mInstallFlags) || params->IsForwardLocked()) {
         return new AsecInstallArgs(params, this);
     }
     else {
@@ -12657,21 +13469,21 @@ CPackageManagerService::CreateInstallArgs(
     }
 }
 
-AutoPtr<InstallArgs>
-CPackageManagerService::CreateInstallArgs(
-    /* [in] */ Int32 flags,
-    /* [in] */ const String& fullCodePath,
-    /* [in] */ const String& fullResourcePath,
-    /* [in] */ const String& nativeLibraryPath)
+AutoPtr<InstallArgs> CPackageManagerService::CreateInstallArgsForExisting(
+    /* [in] */ Int32 installFlags,
+    /* [in] */ const String& codePath,
+    /* [in] */ const String& resourcePath,
+    /* [in] */ const String& nativeLibraryRoot,
+    /* [in] */ ArrayOf<String>* instructionSets)
 {
     Boolean isInAsec;
     String path;
-    if (InstallOnSd(flags)) {
+    if (InstallOnSd(installFlags)) {
         /* Apps on SD card are always in ASEC containers. */
         isInAsec = TRUE;
     }
-    else if (InstallForwardLocked(flags)
-            && (mDrmAppPrivateInstallDir->GetAbsolutePath(&path), !fullCodePath.StartWith(path))) {
+    else if (InstallForwardLocked(installFlags)
+            && (mDrmAppPrivateInstallDir->GetAbsolutePath(&path), !codePath.StartWith(path))) {
         /*
          * Forward-locked apps are only in ASEC containers if they're the
          * new style
@@ -12683,11 +13495,12 @@ CPackageManagerService::CreateInstallArgs(
     }
 
     if (isInAsec) {
-        return new AsecInstallArgs(fullCodePath, fullResourcePath, nativeLibraryPath,
-                InstallOnSd(flags), InstallForwardLocked(flags), this);
+        return new AsecInstallArgs(codePath, instructionSets,
+                InstallOnSd(installFlags), InstallForwardLocked(installFlags), this);
     }
     else {
-        return new FileInstallArgs(fullCodePath, fullResourcePath, nativeLibraryPath, this);
+        return new FileInstallArgs(codePath, resourcePath, nativeLibraryRoot,
+                instructionSets, this);
     }
 }
 
@@ -12719,6 +13532,20 @@ Boolean CPackageManagerService::IsAsecExternal(
     return !asecPath.StartWith(mAsecInternalPath);
 }
 
+ECode CPackageManagerService::MaybeThrowExceptionForMultiArchCopy(
+    /* [in] */ const String& message,
+    /* [in] */ Int32 copyRet)
+{
+    if (copyRet < 0) {
+        if (copyRet != IPackageManager::NO_NATIVE_LIBRARIES &&
+                copyRet != IPackageManager::INSTALL_FAILED_NO_MATCHING_ABIS) {
+            Slogger::E(TAG, "%s", message.string());
+            return E_PACKAGE_MANAGER_EXCEPTION;
+        }
+    }
+    return NOERROR;
+}
+
 String CPackageManagerService::CidFromCodePath(
     /* [in] */ const String& fullCodePath)
 {
@@ -12738,7 +13565,6 @@ String CPackageManagerService::GetAsecPackageName(
     return packageCid.Substring(0, idx);
 }
 
-// Utility method used to create code paths based on package name and available index.
 String CPackageManagerService::GetNextCodePath(
     /* [in] */ const String& oldCodePath,
     /* [in] */ const String& prefix,
@@ -12757,7 +13583,7 @@ String CPackageManagerService::GetNextCodePath(
         // If oldCodePath already contains prefix find out the
         // ending index to either increment or decrement.
         Int32 sidx = subStr.LastIndexOf(prefix);
-        if (sidx != -1) {
+        if (!suffix.IsNull() && subStr.EndWith(suffix)) {
             subStr = subStr.Substring(sidx + prefix.GetLength());
             if (!subStr.IsNull()) {
                 if (subStr.StartWith(INSTALL_PACKAGE_SUFFIX)) {
@@ -12780,10 +13606,24 @@ String CPackageManagerService::GetNextCodePath(
     return prefix + idxStr;
 }
 
+AutoPtr<IFile> CPackageManagerService::GetNextCodePath(
+    /* [in] */ const String& packageName)
+{
+    Int32 suffix = 1;
+    AutoPtr<IFile> result;
+    Boolean exists;
+    do {
+        result = NULL;
+        CFile::New(mAppInstallDir, packageName + "-" + StringUtils::ToString(suffix), (IFile**)&result);
+        suffix++;
+    } while (result->Exists(), exists);
+    return result;
+}
+
 Boolean CPackageManagerService::IgnoreCodePath(
     /* [in] */ const String& fullPathStr)
 {
-    String apkName = GetApkName(fullPathStr);
+    String apkName = DeriveCodePathName(fullPathStr);
     Int32 idx = apkName.LastIndexOf(INSTALL_PACKAGE_SUFFIX);
     if (idx != -1 && ((idx + 1) < apkName.GetLength())) {
         // Make sure the package ends with a numeral
@@ -12795,28 +13635,34 @@ Boolean CPackageManagerService::IgnoreCodePath(
     return FALSE;
 }
 
-String CPackageManagerService::GetApkName(
+String CPackageManagerService::DeriveCodePathName(
     /* [in] */ const String& codePath)
 {
     if (codePath.IsNull()) {
         return String(NULL);
     }
-    Int32 sidx = codePath.LastIndexOf("/");
-    Int32 eidx = codePath.LastIndexOf(".");
-    if (eidx == -1) {
-        eidx = codePath.GetLength();
+    AutoPtr<IFile> codeFile;
+    CFile::New(codePath, (IFile**)&codeFile);
+    String name;
+    codeFile->GetName(&name);
+    Boolean isDirectory;
+    if (codeFile->IsDirectory(&isDirectory), isDirectory) {
+        return name;
     }
-    else if (eidx == 0) {
-        // Slog.w(TAG, " Invalid code path, "+ codePath + " Not a valid apk name");
+    else if (name.EndWith(".apk") || name.EndWith(".tmp")) {
+        Int32 lastDot = name.LastIndexOf('.');
+        return name.Substring(0, lastDot);
+    }
+    else {
+        Slogger::W(TAG, "Odd, %s doesn't look like an APK", codePath.string());
         return String(NULL);
     }
-    return codePath.Substring(sidx + 1, eidx);
 }
 
 void CPackageManagerService::InstallNewPackageLI(
     /* [in] */ PackageParser::Package* pkg,
     /* [in] */ Int32 parseFlags,
-    /* [in] */ Int32 scanMode,
+    /* [in] */ Int32 scanFlags,
     /* [in] */ IUserHandle* user,
     /* [in] */ const String& installerPackageName,
     /* [in] */ PackageInstalledInfo* res,
@@ -12825,11 +13671,10 @@ void CPackageManagerService::InstallNewPackageLI(
     // Remember this for later, in case we need to rollback this install
     String pkgName = pkg->mPackageName;
 
+    if (DEBUG_INSTALL) Slogger::D(TAG, "installNewPackageLI: %p", pkg);
     Boolean dataDirExists;
     GetDataPathForPackage(pkg->mPackageName, 0)->Exists(&dataDirExists);
-    {
-        AutoLock lock(mPackagesLock);
-
+    synchronized(mPackagesLock) {
         if (mSettings->mRenamedPackages.Find(pkgName) != mSettings->mRenamedPackages.End()) {
             // A package with the same name is already installed, though
             // it has been renamed to an older name.  The package we
@@ -12838,48 +13683,53 @@ void CPackageManagerService::InstallNewPackageLI(
 //             Slog.w(TAG, "Attempt to re-install " + pkgName
 //                     + " without first uninstalling package running as "
 //                     + mSettings.mRenamedPackages.get(pkgName));
-            res->mReturnCode = IPackageManager::INSTALL_FAILED_ALREADY_EXISTS;
+            String value(NULL);
+            HashMap<String, String>::Iterator it = mSettings->mRenamedPackages.Find(pkgName);
+            if (it != mSettings->mRenamedPackages.End()) {
+                value = it->mSecond;
+            }
+            res->SetError(IPackageManager::INSTALL_FAILED_ALREADY_EXISTS,
+                    String("Attempt to re-install ") + pkgName
+                    + " without first uninstalling package running as " + value);
+
             return;
         }
-        if (mPackages.Find(pkgName) != mPackages.End()
-            || mAppDirs.Find(pkg->mPath) != mAppDirs.End()) {
+        if (mPackages.Find(pkgName) != mPackages.End()) {
             // Don't allow installation over an existing package with the same name.
-//             Slog.w(TAG, "Attempt to re-install " + pkgName
-//                     + " without first uninstalling.");
-            res->mReturnCode = IPackageManager::INSTALL_FAILED_ALREADY_EXISTS;
+            res->SetError(IPackageManager::INSTALL_FAILED_ALREADY_EXISTS, "Attempt to re-install " + pkgName
+                    + " without first uninstalling.");
             return;
         }
     }
 
-    AutoPtr<ISystem> system;
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-    Int64 now;
-    system->GetCurrentTimeMillis(&now);
-    mLastScanError = IPackageManager::INSTALL_SUCCEEDED;
-    AutoPtr<PackageParser::Package> newPackage = ScanPackageLI(pkg, parseFlags, scanMode,
-        now, user, readBuffer);
-    if (newPackage == NULL) {
-//         Slog.w(TAG, "Package couldn't be installed in " + pkg.mPath);
-        if ((res->mReturnCode = mLastScanError) == IPackageManager::INSTALL_SUCCEEDED) {
-            res->mReturnCode = IPackageManager::INSTALL_FAILED_INVALID_APK;
-        }
+    // try {
+    AutoPtr<ISystem> sys;
+    CSystem::AcquireSingleton((ISystem**)&sys);
+    Int64 millis;
+    sys->GetCurrentTimeMillis(&millis);
+    AutoPtr<PackageParser::Package> newPackage;
+    ECode ec = ScanPackageLI(pkg, parseFlags, scanFlags, millis, user,
+            (PackageParser::Package**)&newPackage);
+    if (FAILED(ec)) {
+        res->SetError("Package couldn't be installed in " + pkg->mCodePath, ec);
     }
-    else {
-        UpdateSettingsLI(newPackage, installerPackageName, res);
-        // delete the partially installed application. the data directory will have to be
-        // restored if it was already existing
-        if (res->mReturnCode != IPackageManager::INSTALL_SUCCEEDED) {
-            // remove package from internal structures.  Note that we want deletePackageX to
-            // delete the package data and cache directories that it created in
-            // scanPackageLocked, unless those directories existed before we even tried to
-            // install.
-            DeletePackageLI(pkgName, UserHandle::ALL, FALSE,
-                dataDirExists ? IPackageManager::DELETE_KEEP_DATA : 0,
-                res->mRemovedInfo, TRUE, readBuffer);
-        }
-    }
-}
 
+    UpdateSettingsLI(newPackage, installerPackageName, NULL, NULL, res);
+    // delete the partially installed application. the data directory will have to be
+    // restored if it was already existing
+    if (res->mReturnCode != IPackageManager::INSTALL_SUCCEEDED) {
+        // remove package from internal structures.  Note that we want deletePackageX to
+        // delete the package data and cache directories that it created in
+        // scanPackageLocked, unless those directories existed before we even tried to
+        // install.
+        DeletePackageLI(pkgName, IUserHandle::ALL, FALSE, NULL, NULL,
+                dataDirExists ? IPackageManager::DELETE_KEEP_DATA : 0, res->mRemovedInfo, TRUE);
+    }
+    // } catch (PackageManagerException e) {
+    //     res.setError("Package couldn't be installed in " + pkg.codePath, e);
+    // }
+}
+// begin from this
 void CPackageManagerService::ReplacePackageLI(
     /* [in] */ PackageParser::Package* pkg,
     /* [in] */ Int32 parseFlags,

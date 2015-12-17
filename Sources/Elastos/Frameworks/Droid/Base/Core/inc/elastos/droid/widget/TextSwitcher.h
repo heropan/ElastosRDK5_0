@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_TEXTSWITCHER_H__
 #define __ELASTOS_DROID_WIDGET_TEXTSWITCHER_H__
 
-#include "ViewSwitcher.h"
+#include "elastos/droid/widget/ViewSwitcher.h"
 
 namespace Elastos {
 namespace Droid {
@@ -14,19 +14,21 @@ namespace Widget {
  *
  * A TextSwitcher is useful to animate a label on screen. Whenever
  * {@link #setText(CharSequence)} is called, TextSwitcher animates the current text
- * out and animates the new text in. 
+ * out and animates the new text in.
  */
-class TextSwitcher : public ViewSwitcher
+class TextSwitcher
+    : public ViewSwitcher
+    , public ITextSwitcher
 {
-
 public:
+    CAR_INTERFACE_DECL()
 
     /**
      * Creates a new empty TextSwitcher.
      *
      * @param context the application's environment
      */
-    TextSwitcher(
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
     /**
@@ -36,7 +38,7 @@ public:
      * @param context the application environment
      * @param attrs a collection of attributes
      */
-    TextSwitcher(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
@@ -75,16 +77,6 @@ public:
 
     CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
-protected:
-
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    TextSwitcher();
 };
 
 }// namespace Elastos

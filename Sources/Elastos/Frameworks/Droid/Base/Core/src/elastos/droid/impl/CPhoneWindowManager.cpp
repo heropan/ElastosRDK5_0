@@ -6691,7 +6691,7 @@ AutoPtr< ArrayOf<Int64> > CPhoneWindowManager::GetLongIntArray(
     /* [in] */ Int32 resid)
 {
     AutoPtr< ArrayOf<Int32> > ar;
-    r->GetIntArray(resid, (ArrayOf<Int32>**)&ar);
+    r->GetInt32Array(resid, (ArrayOf<Int32>**)&ar);
     if (ar == NULL) {
         return NULL;
     }

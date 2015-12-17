@@ -1,35 +1,37 @@
+
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/DateTimeView.h"
-#include "elastos/droid/text/format/DateFormat.h"
 #include "elastos/droid/text/format/CTime.h"
+#include "elastos/droid/text/format/CDateFormat.h"
 #include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/content/CIntent.h"
-#include "elastos/droid/provider/Settings.h"
-#include <elastos/utility/logging/Slogger.h>
+//#include "elastos/droid/provider/Settings.h"
 #include "elastos/droid/R.h"
 
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Core::CStringWrapper;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::ISystem;
-using Elastos::Core::CSystem;
+#include <elastos/utility/logging/Slogger.h>
+
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IContentResolver;
-using Elastos::Droid::Text::Format::DateFormat;
 using Elastos::Droid::Text::Format::ITime;
 using Elastos::Droid::Text::Format::CTime;
+using Elastos::Droid::Net::IUri;
+//using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::Provider::ISettingsSystem;
+using Elastos::Droid::Widget::TextView;
+
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::ISystem;
+using Elastos::Core::CSystem;
 using Elastos::Text::ISimpleDateFormat;
 using Elastos::Text::IDateFormatHelper;
 using Elastos::Text::CDateFormatHelper;
 using Elastos::Utility::IDate;
 using Elastos::Utility::CDate;
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Provider::Settings;
-using Elastos::Droid::Provider::ISettingsSystem;
-using Elastos::Droid::Widget::TextView;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -41,6 +43,57 @@ const Int64 DateTimeView::TWENTY_FOUR_HOURS_IN_MILLIS = 24 * 60 * 60 * 1000;
 const Int32 DateTimeView::SHOW_TIME = 0;
 const Int32 DateTimeView::SHOW_MONTH_DAY_YEAR = 1;
 
+//=====================================================================
+//              DateTimeView::DateTimeViewReceiver
+//=====================================================================
+DateTimeView::DateTimeViewReceiver::DateTimeViewReceiver(
+    /* [in] */ DateTimeView* host) :
+    mHost(host)
+{
+}
+
+ECode DateTimeView::DateTimeViewReceiver::OnReceive(
+    /* [in] */ IContext* context,
+    /* [in] */ IIntent* intent)
+{
+    String action;
+    intent->GetAction(&action);
+    if (action.Equals(IIntent::ACTION_TIME_TICK)) {
+        AutoPtr<ISystem> system;
+        CSystem::AcquireSingleton((ISystem**)&system);
+        Int64 now = 0;
+        system->GetCurrentTimeMillis(&now);
+        if (now < mHost->mUpdateTimeMillis) {
+            return NOERROR;
+        }
+    }
+    mHost->mLastFormat = NULL;
+    mHost->Update();
+    return NOERROR;
+}
+
+//=====================================================================
+//              DateTimeView::DateTimeViewObserver
+//=====================================================================
+DateTimeView::DateTimeViewObserver::DateTimeViewObserver(
+    /* [in] */ DateTimeView* host) :
+    mHost(host)
+{
+}
+
+ECode DateTimeView::DateTimeViewObserver::OnChange(
+    /* [in] */ Boolean selfChange)
+{
+    mHost->mLastFormat = NULL;
+    mHost->Update();
+    return NOERROR;
+}
+
+//========================================================================================
+//              DateTimeView::
+//========================================================================================
+CAR_INTERFACE_IMPL(DateTimeView, TextView, IDateTimeView)
+
 DateTimeView::DateTimeView()
     : mAttachedToWindow(FALSE)
     , mTimeMillis(0)
@@ -49,38 +102,17 @@ DateTimeView::DateTimeView()
     mBroadcastReceiver = new DateTimeViewReceiver(this);
 }
 
-DateTimeView::DateTimeView(
-    /* [in] */ IContext* context)
-    : mAttachedToWindow(FALSE)
-    , mTimeMillis(0)
-    , mLastDisplay(-1)
-{
-    Init(context);
-}
-
-DateTimeView::DateTimeView(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-    : mAttachedToWindow(FALSE)
-    , mTimeMillis(0)
-    , mLastDisplay(-1)
-{
-    Init(context, attrs);
-}
-
-ECode DateTimeView::Init(
+ECode DateTimeView::constructor(
     /* [in] */ IContext* context)
 {
-    TextView::Init(context);
-    return NOERROR;
+    return TextView::constructor(context);
 }
 
-ECode DateTimeView::Init(
+ECode DateTimeView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    TextView::Init(context, attrs);
-    return NOERROR;
+    return TextView::constructor(context, attrs);
 }
 
 ECode DateTimeView::OnAttachedToWindow()
@@ -127,8 +159,8 @@ ECode DateTimeView::Update()
     }
 
     AutoPtr<ISystem> system;
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-    Int64 start;
+    CSystem::AcquireSingleton((ISystem**)&system);
+    Int64 start = 0;
     system->GetCurrentTimeMillis(&start);
 
     Int32 display = 0;
@@ -137,7 +169,7 @@ ECode DateTimeView::Update()
     ASSERT_SUCCEEDED(CTime::New((ITime**)&time));
     time->Set(mTimeMillis);
     time->SetSecond(0);
-    Int32 hour;
+    Int32 hour = 0;
     time->GetHour(&hour);
     time->SetHour(hour-12);
     Int64 twelveHoursBefore = 0;
@@ -151,13 +183,13 @@ ECode DateTimeView::Update()
     time->SetMinute(0);
     Int64 midnightBefore = 0;
     time->ToMillis(FALSE, &midnightBefore);
-    Int32 monthDay;
+    Int32 monthDay = 0;
     time->GetMonthDay(&monthDay);
     time->SetMonthDay(monthDay + 1);
-    Int64 midnightAfter;
+    Int64 midnightAfter = 0;
     time->ToMillis(FALSE, &midnightAfter);
 
-    Int64 nowMillis;
+    Int64 nowMillis = 0;
     system->GetCurrentTimeMillis(&nowMillis);
     time->Set(nowMillis);
     time->SetSecond(0);
@@ -192,10 +224,10 @@ ECode DateTimeView::Update()
 
     assert(format != NULL);
     String text;
-    format->FormatDate(mTime, &text);
+    format->Format(mTime, &text);
 
     AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(text, (ICharSequence**)&seq));
+    FAIL_RETURN(CString::New(text, (ICharSequence**)&seq));
     TextView::SetText(seq);
 
     if (display == SHOW_TIME) {
@@ -204,42 +236,37 @@ ECode DateTimeView::Update()
     else {
         if (mTimeMillis < nowMillis) {
             mUpdateTimeMillis = 0;
-        } else {
+        }
+        else {
             mUpdateTimeMillis = twelveHoursBefore < midnightBefore ? twelveHoursBefore : midnightBefore;
         }
     }
-    // Int64 finish;
-    // system->GetNanoTime(&finish);
+
+    Int64 finish = 0;
+    system->GetNanoTime(&finish);
     return NOERROR;
 }
 
 AutoPtr<IDateFormat> DateTimeView::GetTimeFormat()
 {
-    Int32 res;
-    AutoPtr<IContext> context = GetContext();
-    if (DateFormat::Is24HourFormat(context)) {
-        res = R::string::twenty_four_hour_time_format;
-    }
-    else {
-        res = R::string::twelve_hour_time_format;
-    }
-
-    String format;
-    context->GetString(res, &format);
-
-    AutoPtr<ISimpleDateFormat> sf;
-    CSimpleDateFormat::New(format, (ISimpleDateFormat**)&sf);
-    AutoPtr<IDateFormat> timeFormat = IDateFormat::Probe(sf.Get());
-    return timeFormat;
+    AutoPtr<IContext> cxt;
+    GetContext((IContext**)&cxt);
+    AutoPtr<Elastos::Droid::Text::Format::IDateFormat> df;
+    Elastos::Droid::Text::Format::CDateFormat::AcquireSingleton((Elastos::Droid::Text::Format::IDateFormat**)&df);
+    AutoPtr<IDateFormat> obj;
+    df->GetTimeFormat(cxt, (IDateFormat**)&obj);
+    return obj;
 }
 
 AutoPtr<IDateFormat> DateTimeView::GetDateFormat()
 {
     AutoPtr<IContentResolver> resolver;
-    AutoPtr<IContext> context = GetContext();
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
     context->GetContentResolver((IContentResolver**)&resolver);
     String format;
-    Settings::System::GetString(resolver, ISettingsSystem::DATE_FORMAT, &format);
+    assert(0 && "TODO");
+//    Settings::System::GetString(resolver, ISettingsSystem::DATE_FORMAT, &format);
 
     AutoPtr<IDateFormat> df;
     if (format.IsNullOrEmpty()) {
@@ -249,9 +276,9 @@ AutoPtr<IDateFormat> DateTimeView::GetDateFormat()
     }
     else {
         //try {
-            AutoPtr<ISimpleDateFormat> sf;
-            CSimpleDateFormat::New(format, (ISimpleDateFormat**)&sf);
-            df = IDateFormat::Probe(sf.Get());
+        AutoPtr<ISimpleDateFormat> sf;
+        CSimpleDateFormat::New(format, (ISimpleDateFormat**)&sf);
+        df = IDateFormat::Probe(sf.Get());
        /* } catch (IllegalArgumentException e) {
             return DateFormat.getDateInstance(DateFormat.SHORT);
         }*/
@@ -262,7 +289,7 @@ AutoPtr<IDateFormat> DateTimeView::GetDateFormat()
 ECode DateTimeView::RegisterReceivers()
 {
     AutoPtr<IContext> context;
-    context = GetContext();
+    GetContext((IContext**)&context);
     AutoPtr<IIntentFilter> filter;
     ASSERT_SUCCEEDED(CIntentFilter::New((IIntentFilter**)&filter));
     AutoPtr<IIntent> intent;
@@ -276,7 +303,8 @@ ECode DateTimeView::RegisterReceivers()
     context->RegisterReceiver(mBroadcastReceiver, filter, (IIntent**)&registerIntent);
 
     AutoPtr<IUri> uri;
-    Settings::System::GetUriFor(ISettingsSystem::DATE_FORMAT, (IUri**)&uri);
+    assert(0 && "TODO");
+//    Settings::System::GetUriFor(ISettingsSystem::DATE_FORMAT, (IUri**)&uri);
 
     AutoPtr<IContentResolver> resolver;
     context->GetContentResolver((IContentResolver**)&resolver);
@@ -287,58 +315,12 @@ ECode DateTimeView::RegisterReceivers()
 ECode DateTimeView::UnRegisterReceivers()
 {
     AutoPtr<IContext> context;
-    context = GetContext();
+    GetContext((IContext**)&context);
     context->UnregisterReceiver(mBroadcastReceiver);
 
     AutoPtr<IContentResolver> resolver;
     context->GetContentResolver((IContentResolver**)&resolver);
     resolver->UnregisterContentObserver(mContentObserver);
-    return NOERROR;
-}
-
-//=====================================================================
-//              DateTimeView::DateTimeViewReceiver
-//=====================================================================
-DateTimeView::DateTimeViewReceiver::DateTimeViewReceiver(
-    /* [in] */ DateTimeView* host) :
-    mHost(host)
-{
-}
-
-ECode DateTimeView::DateTimeViewReceiver::OnReceive(
-    /* [in] */ IContext* context,
-    /* [in] */ IIntent* intent)
-{
-    String action;
-    intent->GetAction(&action);
-    if (action.Equals(IIntent::ACTION_TIME_TICK)) {
-        AutoPtr<ISystem> system;
-        Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-        Int64 now;
-        system->GetCurrentTimeMillis(&now);
-        if (now < mHost->mUpdateTimeMillis) {
-            return NOERROR;
-        }
-    }
-    mHost->mLastFormat = NULL;
-    mHost->Update();
-    return NOERROR;
-}
-
-//=====================================================================
-//              DateTimeView::DateTimeViewObserver
-//=====================================================================
-DateTimeView::DateTimeViewObserver::DateTimeViewObserver(
-    /* [in] */ DateTimeView* host) :
-    mHost(host)
-{
-}
-
-ECode DateTimeView::DateTimeViewObserver::OnChange(
-    /* [in] */ Boolean selfChange)
-{
-    mHost->mLastFormat = NULL;
-    mHost->Update();
     return NOERROR;
 }
 

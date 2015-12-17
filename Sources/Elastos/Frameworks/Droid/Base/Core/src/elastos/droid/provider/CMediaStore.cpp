@@ -1,30 +1,31 @@
-
-#include "elastos/droid/provider/CMediaStore.h"
-#include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/net/CUriHelper.h"
 #include "elastos/droid/content/CContentUris.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/provider/CMediaStore.h"
+#include "elastos/droid/provider/CMediaStoreImagesMedia.h"
+#include "elastos/droid/provider/CMediaStoreVideoMedia.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
-#include "elastos/droid/provider/CMediaStoreVideoMedia.h"
-#include "elastos/droid/provider/CMediaStoreImagesMedia.h"
-#include "elastos/droid/media/CMiniThumbFile.h"
 
-using Elastos::Core::StringUtils;
-using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::Net::IUriHelper;
-using Elastos::Droid::Net::CUriHelper;
-using Elastos::Droid::Content::IContentUris;
 using Elastos::Droid::Content::CContentUris;
-using Elastos::Droid::Os::IParcelFileDescriptor;
-using Elastos::Droid::Graphics::IBitmapFactory;
+using Elastos::Droid::Content::IContentUris;
 using Elastos::Droid::Graphics::CBitmapFactory;
+using Elastos::Droid::Graphics::IBitmapFactory;
 using Elastos::Droid::Media::IMiniThumbFile;
-using Elastos::Droid::Media::CMiniThumbFile;
+using Elastos::Droid::Net::CUriHelper;
+using Elastos::Droid::Net::IUriHelper;
+using Elastos::Droid::Os::IParcelFileDescriptor;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
+
+CAR_SINGLETON_IMPL(CMediaStore)
+
+CAR_INTERFACE_IMPL(CMediaStore, Singleton, IMediaStore)
 
 const String CMediaStore::TAG("CMediaStore");
 const String CMediaStore::CONTENT_AUTHORITY_SLASH = String("content://") + IMediaStore::AUTHORITY + "/";
@@ -63,7 +64,8 @@ ECode CMediaStore::GetVersion(
                 return NOERROR;
             }
         // } finally {
-            c->Close();
+            assert(0 && "TODO");
+            // c->Close();
         // }
     }
     return NOERROR;

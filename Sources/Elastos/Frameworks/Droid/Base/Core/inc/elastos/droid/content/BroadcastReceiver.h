@@ -8,13 +8,15 @@
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::App::IIActivityManager;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
 using Elastos::Core::IClassLoader;
 
 namespace Elastos {
 namespace Droid {
 namespace Content {
 
-class BroadcastReceiver
+class ECO_PUBLIC BroadcastReceiver
     : public Object
     , public IBroadcastReceiver
 {
@@ -203,7 +205,7 @@ public:
 
     virtual ~BroadcastReceiver();
 
-    virtual CARAPI Initialize();
+    CARAPI constructor();
 
     CARAPI ToString(
         /* [out] */ String* info);
@@ -486,11 +488,11 @@ public:
         /* [out] */ Boolean* debugUnregister);
 
 private:
-    CARAPI CheckSynchronousHint();
+    ECO_LOCAL CARAPI CheckSynchronousHint();
 
 private:
-    AutoPtr<IPendingResult> mPendingResult;
-    Boolean mDebugUnregister;
+    ECO_LOCAL AutoPtr<IPendingResult> mPendingResult;
+    ECO_LOCAL Boolean mDebugUnregister;
 
 };
 

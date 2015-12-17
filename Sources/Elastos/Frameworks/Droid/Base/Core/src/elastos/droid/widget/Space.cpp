@@ -8,62 +8,46 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+CAR_INTERFACE_IMPL(Space, Elastos::Droid::View::View, ISpace)
+
 Space::Space()
 {}
 
-Space::Space(
+ECode Space::constructor(
     /* [in] */ IContext* context)
 {
-    InitImpl(context, NULL, 0);
+    return constructor(context, NULL);
 }
 
-Space::Space(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
+ECode Space::constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs)
 {
-    InitImpl(context, attrs, 0);
+    return constructor(context, attrs, 0);
 }
 
-Space::Space(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+ECode Space::constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr)
 {
-    InitImpl(context, attrs, defStyle);
+    return constructor(context, attrs, defStyleAttr, 0);
 }
 
-ECode Space::Init(
-    /* [in] */ IContext* context)
+ECode Space::constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes)
 {
-    return Init(context, NULL);
-}
-
-ECode Space::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    return Init(context, attrs, 0);
-}
-
-ECode Space::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-{
-    ASSERT_SUCCEEDED(View::Init(context, attrs, defStyle));
-    return InitImpl(context, attrs, defStyle);
-}
-
-ECode Space::InitImpl(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-{
-    if (GetVisibility() == IView::VISIBLE) {
+    FAIL_RETURN(View::constructor(context, attrs, defStyleAttr, defStyleRes))
+    Int32 visibility;
+    if ((GetVisibility(&visibility), visibility) == VISIBLE) {
         SetVisibility(IView::INVISIBLE);
     }
     return NOERROR;
 }
+
 
 /**
  * Draw nothing.

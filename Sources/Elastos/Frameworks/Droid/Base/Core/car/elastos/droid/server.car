@@ -1,0 +1,18 @@
+module
+{
+    interface Elastos.Droid.Content.IBroadcastReceiver;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+
+    class CBootReceiver {
+        constructor();
+
+        interface IBroadcastReceiver;
+    }
+
+    }  // namespace Server
+    }  // namespace Droid
+    }  // namespace Elastos
+}

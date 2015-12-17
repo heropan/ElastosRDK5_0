@@ -1,7 +1,7 @@
 
-#include "am/ProviderMap.h"
-#include "am/ContentProviderRecord.h"
-#include "am/ProcessRecord.h"
+#include "elastos/droid/server/am/ProviderMap.h"
+#include "elastos/droid/server/am/ContentProviderRecord.h"
+#include "elastos/droid/server/am/ProcessRecord.h"
 #include <elastos/utility/logging/Slogger.h>
 #include "elastos/droid/os/Binder.h"
 #include "elastos/droid/os/UserHandle.h"

@@ -29,7 +29,6 @@ module
     merge("../../../car/elastos/droid/internal/logging.car");
     merge("../../../car/elastos/droid/internal/net.car");
     merge("../../../car/elastos/droid/internal/os.car");
-    merge("../../../car/elastos/droid/internal/policy.car");
     merge("../../../car/elastos/droid/internal/statusbar.car");
     merge("../../../car/elastos/droid/internal/telephony.car");
     merge("../../../car/elastos/droid/internal/textservice.car");
@@ -103,6 +102,10 @@ module
     merge("../../../car/elastos/droid/app.car");
     }
 
+    submodule Elastos.Droid.Internal {
+    merge("../../../car/elastos/droid/internal/policy.car");
+    }
+
     submodule Elastos.Droid.AppWidget {
     merge("../../../car/elastos/droid/appwidget.car");
     }
@@ -130,6 +133,8 @@ module
     submodule Elastos.Droid.Transition {
     merge("../../../car/elastos/droid/transition.car");
     }
+
+    //merge("../../../car/elastos/droid/server.car");
 
     submodule Elastos.Droid.Internal {
     merge("../../../car/elastos/droid/internal/database.car");

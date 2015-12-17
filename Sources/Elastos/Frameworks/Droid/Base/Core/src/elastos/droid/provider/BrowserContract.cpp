@@ -1,10 +1,10 @@
 
 #include "Elastos.Droid.Database.h"
 #include "Elastos.Droid.Provider.h"
-#include "elastos/droid/provider/BrowserContract.h"
 #include "elastos/droid/content/CContentUris.h"
 #include "elastos/droid/content/CContentValues.h"
 #include "elastos/droid/net/Uri.h"
+#include "elastos/droid/provider/BrowserContract.h"
 #include "elastos/droid/provider/SyncStateContractHelpers.h"
 
 using Elastos::Droid::Content::CContentUris;

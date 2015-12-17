@@ -6,7 +6,7 @@ namespace Droid {
 namespace Media {
 namespace Session {
 
-CAR_INTERFACE_IMPL(CPlaybackStateHelper, Object, IPlaybackStateHelper)
+CAR_INTERFACE_IMPL(CPlaybackStateHelper, Singleton, IPlaybackStateHelper)
 
 CAR_SINGLETON_IMPL(CPlaybackStateHelper)
 

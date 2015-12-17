@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_AM_RECEIVERLIST_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "am/BroadcastFilter.h"
+#include "elastos/droid/server/am/BroadcastFilter.h"
 #include <Elastos.Droid.Core.h>
 #include <elastos/utility/etl/List.h>
 
@@ -69,7 +69,7 @@ public:
 
 
 #define HASH_FUNC_FOR_AUTOPTR_RECEIVERLIST
-DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Server::Am::ReceiverList)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Server::Am::ReceiverList)
 #endif
 
 

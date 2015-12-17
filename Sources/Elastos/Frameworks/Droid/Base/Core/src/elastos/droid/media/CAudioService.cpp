@@ -2794,7 +2794,7 @@ ECode CAudioService::constructor(
 
     resources->GetBoolean(R::bool_::config_useMasterVolume, &mUseMasterVolume);
     RestoreMasterVolume();
-    resources->GetIntArray(R::array::config_masterVolumeRamp, (ArrayOf<Int32>**)&mMasterVolumeRamp);
+    resources->GetInt32Array(R::array::config_masterVolumeRamp, (ArrayOf<Int32>**)&mMasterVolumeRamp);
 
     mMainRemote = new RemotePlaybackState(-1,
         MAX_STREAM_VOLUME[IAudioManager::STREAM_MUSIC],

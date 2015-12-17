@@ -2,6 +2,10 @@
 #ifndef __ELASTOS_DROID_INTERNAL_CONTENT_PACKAGEMONITOR_H__
 #define __ELASTOS_DROID_INTERNAL_CONTENT_PACKAGEMONITOR_H__
 
+<<<<<<< HEAD
+=======
+#include "elastos/droid/content/BroadcastReceiver.h"
+>>>>>>> master
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Internal.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
@@ -17,7 +21,6 @@ using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IHandlerThread;
 using Elastos::Droid::Os::ILooper;
-using Elastos::Droid::Os::IProcess;
 using Elastos::Droid::Os::IUserHandle;
 
 namespace Elastos {
@@ -29,16 +32,16 @@ namespace Content {
  * Helper class for monitoring the state of packages: adding, removing,
  * updating, and disappearing and reappearing on the SD card.
  */
-class PackageMonitor
+class ECO_PUBLIC PackageMonitor
     : public BroadcastReceiver
     , public IPackageMonitor
 {
 public:
+    CAR_INTERFACE_DECL()
+
     PackageMonitor();
 
-    ~PackageMonitor();
-
-    CAR_INTERFACE_DECL()
+    virtual ~PackageMonitor();
 
     CARAPI Register(
         /* [in] */ IContext* context,
@@ -171,29 +174,29 @@ public:
 
 private:
     //not yet implemented
-    CARAPI_(Boolean) IsPackageUpdating(
+    ECO_LOCAL CARAPI_(Boolean) IsPackageUpdating(
         /* [in] */ const String& packageName);
 
-    CARAPI_(String) GetPackageName(
+    ECO_LOCAL CARAPI_(String) GetPackageName(
         /* [in] */ IIntent* intent);
 
 private:
-    static AutoPtr<IIntentFilter> sPackageFilt;
-    static AutoPtr<IIntentFilter> sNonDataFilt;
-    static AutoPtr<IIntentFilter> sExternalFilt;
+    ECO_LOCAL static AutoPtr<IIntentFilter> sPackageFilt;
+    ECO_LOCAL static AutoPtr<IIntentFilter> sNonDataFilt;
+    ECO_LOCAL static AutoPtr<IIntentFilter> sExternalFilt;
 
 private:
-    HashSet<String> mUpdatingPackages;
-    AutoPtr<IContext> mRegisteredContext;
-    AutoPtr<IHandler> mRegisteredHandler;
-    AutoPtr<ArrayOf<String> > mDisappearingPackages;
-    AutoPtr<ArrayOf<String> > mAppearingPackages;
-    AutoPtr<ArrayOf<String> > mModifiedPackages;
-    Int32 mChangeType;
-    Int32 mChangeUserId;
-    Boolean mSomePackagesChanged;
-    AutoPtr<ArrayOf<String> > mTempArray;
-    Object mUpdatingPackagesLock;
+    ECO_LOCAL HashSet<String> mUpdatingPackages;
+    ECO_LOCAL AutoPtr<IContext> mRegisteredContext;
+    ECO_LOCAL AutoPtr<IHandler> mRegisteredHandler;
+    ECO_LOCAL AutoPtr<ArrayOf<String> > mDisappearingPackages;
+    ECO_LOCAL AutoPtr<ArrayOf<String> > mAppearingPackages;
+    ECO_LOCAL AutoPtr<ArrayOf<String> > mModifiedPackages;
+    ECO_LOCAL Int32 mChangeType;
+    ECO_LOCAL Int32 mChangeUserId;
+    ECO_LOCAL Boolean mSomePackagesChanged;
+    ECO_LOCAL AutoPtr<ArrayOf<String> > mTempArray;
+    ECO_LOCAL Object mUpdatingPackagesLock;
 
 };
 

@@ -453,7 +453,7 @@ ECode RotateDrawable::Inflate(
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ IResourcesTheme* theme)
 {
-    Int32 size = ARRAY_SIZE(R::styleable::RotateDrawable);
+    Int32 size = ArraySize(R::styleable::RotateDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::RotateDrawable, size);
 

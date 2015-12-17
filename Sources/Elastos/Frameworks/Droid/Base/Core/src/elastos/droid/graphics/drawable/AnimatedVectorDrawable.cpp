@@ -320,7 +320,7 @@ ECode AnimatedVectorDrawable::Inflate(
             String tagName;
             parser->GetName(&tagName);
             if (ANIMATED_VECTOR.Equals(tagName)) {
-                Int32 size = ARRAY_SIZE(R::styleable::AnimatedVectorDrawable);
+                Int32 size = ArraySize(R::styleable::AnimatedVectorDrawable);
                 AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
                 layout->Copy(R::styleable::AnimatedVectorDrawable, size);
 
@@ -341,7 +341,7 @@ ECode AnimatedVectorDrawable::Inflate(
                 }
                 a->Recycle();
             } else if (TARGET.Equals(tagName)) {
-                Int32 size = ARRAY_SIZE(R::styleable::AnimatedVectorDrawableTarget);
+                Int32 size = ArraySize(R::styleable::AnimatedVectorDrawableTarget);
                 AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
                 layout->Copy(R::styleable::AnimatedVectorDrawableTarget, size);
 

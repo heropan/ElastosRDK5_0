@@ -1,8 +1,8 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CMEDIASTOREAUDIOMEDIA_H__
 #define __ELASTOS_DROID_PROVIDER_CMEDIASTOREAUDIOMEDIA_H__
 
 #include "_Elastos_Droid_Provider_CMediaStoreAudioMedia.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Net::IUri;
 
@@ -11,8 +11,14 @@ namespace Droid {
 namespace Provider {
 
 CarClass(CMediaStoreAudioMedia)
+    , public Singleton
+    , public IMediaStoreAudioMedia
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     /**
      * The content:// style URI for the internal storage.
      */
@@ -40,6 +46,11 @@ public:
     CARAPI GetContentUriForPath(
         /* [in] */ const String& path,
         /* [out] */ IUri** uri);
+
+private:
+    static AutoPtr<ArrayOf<String> > initEXTERNAL_PATHS();
+private:
+    static const AutoPtr<ArrayOf<String> > EXTERNAL_PATHS;
 };
 
 } //namespace Provider

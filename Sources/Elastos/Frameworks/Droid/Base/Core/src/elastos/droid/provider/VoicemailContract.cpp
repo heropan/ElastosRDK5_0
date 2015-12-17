@@ -1,7 +1,7 @@
 
 #include "Elastos.Droid.Provider.h"
-#include "elastos/droid/provider/VoicemailContract.h"
 #include "elastos/droid/net/Uri.h"
+#include "elastos/droid/provider/VoicemailContract.h"
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Net::IUriBuilder;

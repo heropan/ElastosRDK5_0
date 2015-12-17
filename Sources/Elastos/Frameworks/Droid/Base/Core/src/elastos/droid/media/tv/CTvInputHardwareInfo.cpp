@@ -89,6 +89,7 @@ ECode CTvInputHardwareInfo::GetHdmiPortId(
     /* [out] */ Int32 * result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = 0;
     if (mType != ITvInputHardwareInfo::TV_INPUT_TYPE_HDMI) {
         // throw new IllegalStateException();
         return E_ILLEGAL_STATE_EXCEPTION;

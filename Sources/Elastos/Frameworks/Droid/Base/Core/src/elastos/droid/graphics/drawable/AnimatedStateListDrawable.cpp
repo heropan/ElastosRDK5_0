@@ -486,7 +486,7 @@ ECode AnimatedStateListDrawable::Inflate(
     /* [in] */ /*@Nullable*/ IResourcesTheme* theme) /*throws XmlPullParserException, IOException*/
 {
     AutoPtr<ITypedArray> a;
-    Int32 size = ARRAY_SIZE(R::styleable::AnimatedStateListDrawable);
+    Int32 size = ArraySize(R::styleable::AnimatedStateListDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::AnimatedStateListDrawable, size);
     FAIL_RETURN(ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a));

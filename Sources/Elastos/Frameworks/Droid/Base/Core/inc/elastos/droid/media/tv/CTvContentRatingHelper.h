@@ -11,7 +11,7 @@ namespace Media {
 namespace Tv {
 
 CarClass(CTvContentRatingHelper)
-    , public Object
+    , public Singleton
     , public ITvContentRatingHelper
 {
 public:

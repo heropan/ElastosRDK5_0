@@ -1835,7 +1835,7 @@ AutoPtr<AppWidgetServiceImpl::Provider> AppWidgetServiceImpl::ParseProviderInfoX
     AutoPtr<ITypedArray> sa;
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::AppWidgetProviderInfo),
-            ARRAY_SIZE(R::styleable::AppWidgetProviderInfo));
+            ArraySize(R::styleable::AppWidgetProviderInfo));
     res->ObtainAttributes(attrs, attrIds, (ITypedArray**)&sa);
 
     // These dimensions has to be resolved in the application's context.

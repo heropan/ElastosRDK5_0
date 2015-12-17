@@ -7,8 +7,7 @@ namespace Droid {
 namespace Server {
 namespace Am {
 
-
-typedef enum ActivityState
+enum ActivityState
 {
     ActivityState_INITIALIZING,
     ActivityState_RESUMED,
@@ -19,7 +18,7 @@ typedef enum ActivityState
     ActivityState_FINISHING,
     ActivityState_DESTROYING,
     ActivityState_DESTROYED
-} ActivityState;
+};
 
 } // namespace Am
 } // namespace Server

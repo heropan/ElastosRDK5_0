@@ -28,11 +28,11 @@ CarClass(CTvContentRatingSystemInfo)
 public:
     CTvContentRatingSystemInfo();
 
+    virtual ~CTvContentRatingSystemInfo();
+
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
-
-    virtual ~CTvContentRatingSystemInfo();
 
     /**
      * @hide
@@ -80,7 +80,6 @@ public:
     AutoPtr<IUri> mXmlUri;
 
     AutoPtr<IApplicationInfo> mApplicationInfo;
-
 };
 
 } // namespace Tv

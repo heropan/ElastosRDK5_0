@@ -2,23 +2,30 @@
 #define __ELASTOS_DROID_PROVIDER_CSETTINGSBOOKMARKS_H__
 
 #include "_Elastos_Droid_Provider_CSettingsBookmarks.h"
+#include <elastos/core/Singleton.h>
 
-using Elastos::Core::ICharSequence;
-using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContentResolver;
-using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Database::ICursor;
+using Elastos::Droid::Net::IUri;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
 CarClass(CSettingsBookmarks)
+    , public Singleton
+    , public ISettingsBookmarks
 {
 public:
-    CARAPI GetContentUri(
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**

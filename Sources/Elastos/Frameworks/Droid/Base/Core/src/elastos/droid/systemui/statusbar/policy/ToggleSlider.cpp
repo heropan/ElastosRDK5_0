@@ -90,7 +90,7 @@ ECode ToggleSlider::InitImpl(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(SystemUIR::styleable::ToggleSlider),
-            ARRAY_SIZE(SystemUIR::styleable::ToggleSlider));
+            ArraySize(SystemUIR::styleable::ToggleSlider));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
 

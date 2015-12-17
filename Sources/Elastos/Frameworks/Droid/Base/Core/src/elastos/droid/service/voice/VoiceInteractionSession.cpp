@@ -817,7 +817,7 @@ ECode VoiceInteractionSession::InitViews()
     mInitialized = TRUE;
     AutoPtr< ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::VoiceInteractionSession),
-        ARRAY_SIZE(R::styleable::VoiceInteractionSession));
+        sizeof(R::styleable::VoiceInteractionSession)/sizeof(R::styleable::VoiceInteractionSession[0]));
     mContext->ObtainStyledAttributes(attrIds, (ITypedArray**)&mThemeAttrs);
     mInflater->Inflate(R::layout::voice_interaction_session, NULL, (IView**)&mRootView);
     mRootView->SetSystemUiVisibility(

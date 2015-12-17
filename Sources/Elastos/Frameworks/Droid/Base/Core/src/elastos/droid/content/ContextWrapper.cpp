@@ -645,7 +645,7 @@ ECode ContextWrapper::BindServiceAsUser(
     /* [in] */ IIntent* service,
     /* [in] */ IServiceConnection* conn,
     /* [in] */ Int32 flags,
-    /* [in] */ Int32 userHandle,
+    /* [in] */ IUserHandle* userHandle,
     /* [out] */ Boolean* succeeded)
 {
     return ((Context*)mBase.Get())->BindServiceAsUser(service, conn, flags, userHandle, succeeded);

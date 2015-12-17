@@ -27,7 +27,7 @@ const Int32 MediaPlayerListener::MEDIA_ERROR_TIMED_OUT;
 CAR_INTERFACE_IMPL_7(MediaPlayerListener, Object, IMediaPlayerOnPreparedListener, IMediaPlayerOnCompletionListener,
         IMediaPlayerOnBufferingUpdateListener, IMediaPlayerOnSeekCompleteListener,
         IMediaPlayerOnVideoSizeChangedListener,
-        IMediaPlayerOnErrorListener, IOnAudioFocusChangeListener);
+        IMediaPlayerOnErrorListener, IAudioManagerOnAudioFocusChangeListener);
 
 MediaPlayerListener::MediaPlayerListener(
     /* [in] */ Int64 nativeMediaPlayerListener,

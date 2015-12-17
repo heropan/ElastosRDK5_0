@@ -1,9 +1,14 @@
-
+#include "elastos/droid/media/CAudioFormat.h"
+#include "elastos/droid/media/CAudioTrack.h"
 #include "elastos/droid/media/CJetPlayer.h"
 #include "elastos/droid/os/Looper.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
+#include <media/JetPlayer.h>
 
 using Elastos::Droid::Os::Looper;
+using Elastos::Core::Math;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -42,7 +47,7 @@ AutoPtr<IJetPlayer> CJetPlayer::singletonRef;
 CJetPlayer::NativeEventHandler::NativeEventHandler(
     /* [in] */ IWeakReference* jet,
     /* [in] */ ILooper* looper)
-    : HandlerBase(looper)
+    : Handler(looper)
     , mWeakHost(jet)
 {
 }
@@ -58,19 +63,16 @@ ECode CJetPlayer::NativeEventHandler::HandleMessage(
         return NOERROR;
     }
 
-    Int32 what, arg1, arg2;
-    msg->GetWhat(&what);
-    msg->GetArg1(&arg1);
-    msg->GetArg2(&arg2);
-
+    CJetPlayer* jetPlayer = (CJetPlayer*)jet.Get();
+    Object& lock = jetPlayer->mEventListenerLock;
     AutoPtr<IOnJetEventListener> listener;
-
-    {
-        CJetPlayer* jetPlayer = (CJetPlayer*)jet.Get();
-        AutoLock lock(&jetPlayer->mEventListenerLock);
+    synchronized (lock) {
         listener = jetPlayer->mJetEventListener;
     }
 
+    Int32 what, arg1;
+    msg->GetWhat(&what);
+    msg->GetArg1(&arg1);
     switch (what) {
         case CJetPlayer::JET_EVENT:
             if (listener != NULL) {
@@ -88,12 +90,14 @@ ECode CJetPlayer::NativeEventHandler::HandleMessage(
             }
             return NOERROR;
 
-        case CJetPlayer::JET_USERID_UPDATE:
+        case CJetPlayer::JET_USERID_UPDATE: {
+            Int32 arg2;
+            msg->GetArg2(&arg2);
             if (listener != NULL) {
                 listener->OnJetUserIdUpdate(jet, arg1, arg2);
             }
             return NOERROR;
-
+        }
         case CJetPlayer::JET_NUMQUEUEDSEGMENT_UPDATE:
             if (listener != NULL) {
                 listener->OnJetNumQueuedSegmentUpdate(jet, arg1);
@@ -121,6 +125,11 @@ ECode CJetPlayer::NativeEventHandler::HandleMessage(
 //===========================================================================
 //                  CJetPlayer
 //===========================================================================
+
+CAR_INTERFACE_IMPL(CJetPlayer, Object, IJetPlayer)
+
+CAR_OBJECT_IMPL(CJetPlayer)
+
 CJetPlayer::CJetPlayer()
     : mNativePlayer(0)
 {}
@@ -157,8 +166,11 @@ ECode CJetPlayer::constructor()
      * bytes to frame conversion: sample format is ENCODING_PCM_16BIT, 2 channels
      * 1200 == minimum buffer size in frames on generation 1 hardware
      */
+    Int32 val;
+    CAudioFormat::GetBytesPerSample(IAudioFormat::ENCODING_PCM_16BIT, &val);
     using Elastos::Core::Math;
-    NativeSetup(CJetPlayer::GetMaxTracks(), Math::Max(1200, buffSizeInBytes / 4));
+    NativeSetup(CJetPlayer::GetMaxTracks(), Math::Max(1200, buffSizeInBytes /
+            (val * 2 /*channels*/)));
     return NOERROR;
 }
 
@@ -323,26 +335,25 @@ ECode CJetPlayer::SetEventListener(
     /* [in] */ IOnJetEventListener* listener,
     /* [in] */ IHandler* handler)
 {
-    AutoLock lock(mEventListenerLock);
+    synchronized(mEventListenerLock) {
+        mJetEventListener = listener;
 
-    mJetEventListener = listener;
+        if (listener == NULL) {
+            mEventHandler = NULL;
+            return NOERROR;
+        }
 
-    if (listener == NULL) {
-        mEventHandler = NULL;
-        return NOERROR;
+        AutoPtr<IWeakReference> wr;
+        GetWeakReference((IWeakReference**)&wr);
+        if (handler != NULL) {
+            AutoPtr<ILooper> looper;
+            handler->GetLooper((ILooper**)&looper);
+            mEventHandler = new NativeEventHandler(wr, looper);
+        }
+        else {
+            mEventHandler = new NativeEventHandler(wr, mInitializationLooper);
+        }
     }
-
-    AutoPtr<IWeakReference> wr;
-    GetWeakReference((IWeakReference**)&wr);
-    if (handler != NULL) {
-        AutoPtr<ILooper> looper;
-        handler->GetLooper((ILooper**)&looper);
-        mEventHandler = new NativeEventHandler(wr, looper);
-    }
-    else {
-        mEventHandler = new NativeEventHandler(wr, mInitializationLooper);
-    }
-
     return NOERROR;
 }
 
@@ -423,14 +434,8 @@ void CJetPlayer::NativeFinalize()
     android::JetPlayer* lpJet = (android::JetPlayer*)mNativePlayer;
 
     if (lpJet != NULL) {
-        IWeakReference* wr = (IWeakReference*)lpJet->getUserData();
-        if (wr) {
-            wr->Release();
-        }
-
         lpJet->release();
         delete lpJet;
-        mNativePlayer = 0;
     }
 
     // LOGV("android_media_JetPlayer_finalize(): exiting.");

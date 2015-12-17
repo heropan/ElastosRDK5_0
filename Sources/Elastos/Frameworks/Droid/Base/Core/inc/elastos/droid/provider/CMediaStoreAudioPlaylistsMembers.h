@@ -1,19 +1,25 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CMEDIASTOREAUDIOPLAYLISTSMEMBERS_H__
 #define __ELASTOS_DROID_PROVIDER_CMEDIASTOREAUDIOPLAYLISTSMEMBERS_H__
 
 #include "_Elastos_Droid_Provider_CMediaStoreAudioPlaylistsMembers.h"
+#include <elastos/core/Singleton.h>
 
-using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
 CarClass(CMediaStoreAudioPlaylistsMembers)
+    , public Singleton
+    , public IMediaStoreAudioPlaylistsMembers
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI GetContentUri(
         /* [in] */ const String& volumeName,
         /* [in] */ Int64 playlistId,

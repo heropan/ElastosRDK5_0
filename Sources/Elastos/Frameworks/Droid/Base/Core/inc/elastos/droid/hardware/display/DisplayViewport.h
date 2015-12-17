@@ -47,6 +47,12 @@ public:
     CARAPI SetValid(
         /* [in] */ Boolean valid);
 
+    CARAPI SetDisplayId(
+        /* [in] */ Int32 displayId);
+
+    CARAPI GetDisplayId(
+        /* [out] */ Int32* displayId);
+
     CARAPI SetOrientation(
         /* [in] */ Int32 orientation);
 

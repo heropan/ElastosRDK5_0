@@ -5,12 +5,14 @@
 #include "elastos/droid/widget/AdapterView.h"
 #include <elastos/utility/etl/HashMap.h>
 #include "elastos/droid/R.h"
+#include "elastos/droid/view/View.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::R;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::EIID_IViewGroup;
+using Elastos::Droid::View::View;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Core::CString;
 using Elastos::Utility::Etl::HashMap;
@@ -30,6 +32,39 @@ class AbsSpinner
     , public IAbsSpinner
 {
 public:
+    class SavedState
+        : public View::BaseSavedState
+        , public IAbsSpinnerSavedState
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        SavedState();
+
+        CARAPI constructor();
+
+        /**
+         * Constructor called from {@link AbsSpinner#onSaveInstanceState()}
+         */
+        CARAPI constructor(
+            /* [in] */ IParcelable* superState);
+
+        CARAPI ReadFromParcel(
+            /* [in] */ IParcel* source);
+
+        // @Override
+        CARAPI WriteToParcel(
+            /* [in] */ IParcel* out);
+
+        // @Override
+        CARAPI ToString(
+            /* [out] */ String* str);
+
+    public:
+        Int64 mSelectedId;
+        Int32 mPosition;
+    };
+
     class RecycleBin : public Object
     {
     public:

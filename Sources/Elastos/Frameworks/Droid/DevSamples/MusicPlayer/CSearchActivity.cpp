@@ -81,7 +81,7 @@ Int32 CSearchActivity::ContentAdapter::mImage[] = {
     R::drawable::btn_search
 };
 
-Int32 CSearchActivity::ContentAdapter::mImageLength = ARRAY_SIZE(CSearchActivity::ContentAdapter::mImage);
+Int32 CSearchActivity::ContentAdapter::mImageLength = ArraySize(CSearchActivity::ContentAdapter::mImage);
 
 CSearchActivity::ContentAdapter::ContentAdapter(
     /* [in] */ CSearchActivity* activity)

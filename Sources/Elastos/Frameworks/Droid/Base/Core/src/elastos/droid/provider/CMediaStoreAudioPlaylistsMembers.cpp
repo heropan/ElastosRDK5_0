@@ -1,23 +1,26 @@
-
-#include "elastos/droid/provider/CMediaStoreAudioPlaylistsMembers.h"
-#include "elastos/droid/ext/frameworkext.h"
-#include <elastos/core/StringUtils.h>
-#include "elastos/droid/net/CUriHelper.h"
 #include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/provider/CMediaStoreAudioPlaylistsMembers.h"
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
-using Elastos::Core::StringBuilder;
-using Elastos::Core::CInteger32;
-using Elastos::Core::StringUtils;
-using Elastos::Droid::Net::IUriHelper;
+using Elastos::Droid::Content::CContentValues;
+using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Net::CUriHelper;
 using Elastos::Droid::Net::IUriBuilder;
-using Elastos::Droid::Content::IContentValues;
-using Elastos::Droid::Content::CContentValues;
+using Elastos::Droid::Net::IUriHelper;
+using Elastos::Core::CInteger32;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
+
+CAR_SINGLETON_IMPL(CMediaStoreAudioPlaylistsMembers)
+
+CAR_INTERFACE_IMPL(CMediaStoreAudioPlaylistsMembers, Singleton, IMediaStoreAudioPlaylistsMembers)
 
 ECode CMediaStoreAudioPlaylistsMembers::GetContentUri(
     /* [in] */ const String& volumeName,
@@ -53,7 +56,7 @@ ECode CMediaStoreAudioPlaylistsMembers::MoveItem(
 
     AutoPtr<IUriBuilder> builder;
     uri->BuildUpon((IUriBuilder**)&builder);
-    builder->AppendEncodedPath(StringUtils::Int32ToString(from));
+    builder->AppendEncodedPath(StringUtils::ToString(from));
     builder->AppendQueryParameter(String("move"), String("true"));
     uri = NULL;
     builder->Build((IUri**)&uri);
@@ -62,7 +65,7 @@ ECode CMediaStoreAudioPlaylistsMembers::MoveItem(
     CContentValues::New((IContentValues**)&values);
     AutoPtr<IInteger32> iTo;
     CInteger32::New(to, (IInteger32**)&iTo);
-    values->PutInt32(IMediaStoreAudioPlaylistsMembers::PLAY_ORDER, iTo);
+    values->Put(IMediaStoreAudioPlaylistsMembers::PLAY_ORDER, iTo);
     Int32 rows;
     res->Update(uri, values, String(NULL), NULL, &rows);
     *result = rows != 0;

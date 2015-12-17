@@ -1,10 +1,13 @@
-
-#include <elastos/coredef.h>
 #include "elastos/droid/provider/CContactsContactMethodsHelper.h"
+#include <elastos/coredef.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
+
+CAR_SINGLETON_IMPL(CContactsContactMethodsHelper)
+
+CAR_INTERFACE_IMPL(CContactsContactMethodsHelper, Singleton, IContactsContactMethodsHelper)
 
 ECode CContactsContactMethodsHelper::GetCONTENT_URI(
     /* [out] */ IUri** uri)

@@ -1,33 +1,35 @@
 #ifndef __ELASTOS_DROID_SERVER_DISPLAY_DISPLAYPOWERCONTROLLER_H__
 #define __ELASTOS_DROID_SERVER_DISPLAY_DISPLAYPOWERCONTROLLER_H__
 
-#include "elastos/droid/ext/frameworkdef.h"
 #include "Elastos.Droid.Server_server.h"
+#include "elastos/droid/server/display/DisplayPowerState.h"
+#include "elastos/droid/server/display/AutomaticBrightnessController.h"
+#include "elastos/droid/server/display/RampAnimator.h"
+#include <elastos/droid/os/Handler.h>
+#include <elastos/droid/os/Runnable.h>
 
-using Elastos::Droid::Server::LocalServices;
-using Elastos::Droid::Server::Am::BatteryStatsService;
-using Elastos::Droid::Server::Lights::LightsManager;
+// using Elastos::Droid::Server::Lights::ILightsManager;
 
-using Elastos::Droid::Internal::App::IBatteryStats;
 using Elastos::Droid::Animation::IAnimator;
+using Elastos::Droid::Animation::IAnimatorListener;
 using Elastos::Droid::Animation::IObjectAnimator;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Hardware::ISensor;
 using Elastos::Droid::Hardware::ISensorEvent;
 using Elastos::Droid::Hardware::ISensorEventListener;
 using Elastos::Droid::Hardware::ISensorManager;
 using Elastos::Droid::Hardware::Display::IDisplayPowerCallbacks;
 using Elastos::Droid::Hardware::Display::IDisplayPowerRequest;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::IPowerManager;
-using Elastos::Droid::Os::SystemClock;
-using Elastos::Droid::Utility::MathUtils;
 using Elastos::Droid::Utility::ISpline;
-using Elastos::Droid::Utility::TimeUtils;
+using Elastos::Droid::Internal::App::IIBatteryStats;
 using Elastos::Droid::View::IDisplay;
+using Elastos::Droid::View::IScreenOnListener;
 using Elastos::Droid::View::IWindowManagerPolicy;
 
 using Elastos::IO::IPrintWriter;
@@ -67,6 +69,7 @@ private:
     class DisplayControllerHandler
         : public Handler
     {
+    public:
         DisplayControllerHandler(
             /* [in] */ ILooper* looper,
             /* [in] */ DisplayPowerController* host);
@@ -112,6 +115,8 @@ private:
 
         //@Override
         CARAPI OnScreenOn();
+    private:
+        DisplayPowerController* mHost;
     };
 
     class AnimatorListener
@@ -212,13 +217,14 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
 
     /**
      * Creates the display power controller.
      */
     DisplayPowerController(
         /* [in] */ IContext* context,
-        /* [in] */ DisplayPowerCallbacks* callbacks,
+        /* [in] */ IDisplayPowerCallbacks* callbacks,
         /* [in] */ IHandler* handler,
         /* [in] */ ISensorManager* sensorManager,
         /* [in] */ IDisplayBlanker* blanker);
@@ -253,14 +259,13 @@ public:
         /* [in] */ IPrintWriter* pw);
 
 private:
-    void SendUpdatePowerState();
+    CARAPI SendUpdatePowerState();
 
-    void SendUpdatePowerStateLocked();
+    CARAPI SendUpdatePowerStateLocked();
 
     void Initialize();
 
     void UpdatePowerState();
-
 
     void BlockScreenOn();
 
@@ -319,7 +324,7 @@ private:
 private:
     static const String TAG;
 
-    static Boolean DEBUG = FALSE;
+    static Boolean DEBUG;
     static const Boolean DEBUG_PRETEND_PROXIMITY_SENSOR_ABSENT;
 
     static const String SCREEN_ON_BLOCKED_TRACE_NAME;
@@ -370,7 +375,7 @@ private:
     AutoPtr<IIBatteryStats> mBatteryStats;
 
     // The lights service.
-    AutoPtr<ILightsManager> mLights;
+    // AutoPtr<ILightsManager> mLights;
 
     // The sensor manager.
     AutoPtr<ISensorManager> mSensorManager;
@@ -382,7 +387,7 @@ private:
     AutoPtr<IDisplayBlanker> mBlanker;
 
     // The proximity sensor, or NULL if not available or needed.
-    Sensor mProximitySensor;
+    AutoPtr<ISensor> mProximitySensor;
 
     // The doze screen brightness.
     Int32 mScreenBrightnessDozeConfig;
@@ -435,11 +440,11 @@ private:
     // The currently requested power state.
     // The power controller will progressively update its internal state to match
     // the requested power state.  Initially NULL until the first update.
-    AutoPtr<DisplayPowerRequest> mPowerRequest;
+    AutoPtr<IDisplayPowerRequest> mPowerRequest;
 
     // The current power state.
     // Must only be accessed on the handler thread.
-    AutoPtr<IDisplayPowerState> mPowerState;
+    AutoPtr<DisplayPowerState> mPowerState;
 
     // True if the device should wait for negative proximity sensor before
     // waking up the screen.  This is set to FALSE as soon as a negative
@@ -455,11 +460,11 @@ private:
     Boolean mProximitySensorEnabled;
 
     // The debounced proximity sensor state.
-    Int32 mProximity = PROXIMITY_UNKNOWN;
+    Int32 mProximity;
 
     // The raw non-debounced proximity sensor state.
-    Int32 mPendingProximity = PROXIMITY_UNKNOWN;
-    Int64 mPendingProximityDebounceTime = -1; // -1 if fully debounced
+    Int32 mPendingProximity;
+    Int64 mPendingProximityDebounceTime; // -1 if fully debounced
 
     // True if the screen was turned off because of the proximity sensor.
     // When the screen turns on again, we report user activity to the power manager.
@@ -487,20 +492,20 @@ private:
     Boolean mAppliedLowPower;
 
     // The controller for the automatic brightness level.
-    AutomaticBrightnessController mAutomaticBrightnessController;
+    AutoPtr<AutomaticBrightnessController> mAutomaticBrightnessController;
 
     // Animators.
     AutoPtr<IObjectAnimator> mColorFadeOnAnimator;
     AutoPtr<IObjectAnimator> mColorFadeOffAnimator;
     AutoPtr<RampAnimator> mScreenBrightnessRampAnimator;
 
-    AutoPtr<ISensorEventListener> mProximitySensorListener
-    AutoPtr<IAnimatorAnimatorListener> mAnimatorListener
-    AutoPtr<IRampAnimatorListener> mRampAnimatorListener
-    AutoPtr<IRunnable> mCleanListener
-    AutoPtr<IRunnable> mOnStateChangedRunnable
-    AutoPtr<IRunnable> mOnProximityPositiveRunnable
-    AutoPtr<IRunnable> mOnProximityNegativeRunnable
+    AutoPtr<ISensorEventListener> mProximitySensorListener;
+    AutoPtr<IAnimatorListener> mAnimatorListener;
+    AutoPtr<IRampAnimatorListener> mRampAnimatorListener;
+    AutoPtr<IRunnable> mCleanListener;
+    AutoPtr<IRunnable> mOnStateChangedRunnable;
+    AutoPtr<IRunnable> mOnProximityPositiveRunnable;
+    AutoPtr<IRunnable> mOnProximityNegativeRunnable;
 };
 
 } // namespace Display

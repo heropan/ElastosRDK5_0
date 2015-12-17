@@ -3,24 +3,153 @@
 #define __ELASTOS_DROID_SERVER_AM_CACTIVITYMANAGERSERVICE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+
+#if 1
+namespace Elastos {
+namespace Droid {
+namespace Server {
+namespace Am {
+
+class UriPermission;
+
+class CActivityManagerService : public Object
+{
+public:
+    static const String TAG;
+    static const String TAG_MU;
+    static const Boolean DEBUG;
+    static const Boolean localLOGV;
+    static const Boolean DEBUG_SWITCH = FALSE;
+    static const Boolean DEBUG_TASKS;
+    static const Boolean DEBUG_THUMBNAILS;
+    static const Boolean DEBUG_PAUSE;
+    static const Boolean DEBUG_OOM_ADJ;
+    static const Boolean DEBUG_TRANSITION;
+    static const Boolean DEBUG_BROADCAST;
+    static const Boolean DEBUG_BACKGROUND_BROADCAST;
+    static const Boolean DEBUG_BROADCAST_LIGHT;
+    static const Boolean DEBUG_SERVICE;
+    static const Boolean DEBUG_SERVICE_EXECUTING;
+    static const Boolean DEBUG_VISBILITY;
+    static const Boolean DEBUG_PROCESSES;
+    static const Boolean DEBUG_PROCESS_OBSERVERS;
+    static const Boolean DEBUG_CLEANUP;
+    static const Boolean DEBUG_PROVIDER;
+    static const Boolean DEBUG_URI_PERMISSION;
+    static const Boolean DEBUG_USER_LEAVING;
+    static const Boolean DEBUG_RESULTS;
+    static const Boolean DEBUG_BACKUP;
+    static const Boolean DEBUG_CONFIGURATION;
+    static const Boolean DEBUG_POWER;
+    static const Boolean DEBUG_POWER_QUICK;
+    static const Boolean DEBUG_MU;
+    static const Boolean VALIDATE_TOKENS;
+    static const Boolean SHOW_ACTIVITY_START_TIME = FALSE;
+
+    // Control over CPU and battery monitoring.
+    static const Int64 BATTERY_STATS_TIME;      // write battery stats every 30 minutes.
+    static const Boolean MONITOR_CPU_USAGE;
+    static const Int64 MONITOR_CPU_MIN_TIME;        // don't sample cpu less than every 5 seconds.
+    static const Int64 MONITOR_CPU_MAX_TIME;    // wait possibly forever for next cpu sample.
+    static const Boolean MONITOR_THREAD_CPU_USAGE;
+
+    // The flags that are set for all calls we make to the package manager.
+    static const Int32 STOCK_PM_FLAGS;
+
+    static const Boolean IS_USER_BUILD;
+
+    // Maximum number of recent tasks that we can remember.
+    static const Int32 MAX_RECENT_TASKS = 20;
+
+    // Amount of time after a call to stopAppSwitches() during which we will
+    // prevent further untrusted switches from happening.
+    static const Int64 APP_SWITCH_DELAY_TIME = 5 * 1000;
+
+    // How long we wait for a launched process to attach to the activity manager
+    // before we decide it's never going to come up for real.
+    static const Int32 PROC_START_TIMEOUT = 10 * 1000;
+
+    // How long we wait for a launched process to attach to the activity manager
+    // before we decide it's never going to come up for real, when the process was
+    // started with a wrapper for instrumentation (such as Valgrind) because it
+    // could take much longer than usual.
+    static const Int32 PROC_START_TIMEOUT_WITH_WRAPPER = 300 * 1000;
+
+    // How long to wait after going idle before forcing apps to GC.
+    static const Int32 GC_TIMEOUT = 5 * 1000;
+
+    // The minimum amount of time between successive GC requests for a process.
+    static const Int32 GC_MIN_INTERVAL = 60  *1000;
+
+    // The rate at which we check for apps using excessive power -- 15 mins.
+    static const Int32 POWER_CHECK_DELAY;
+
+    // The minimum sample duration we will allow before deciding we have
+    // enough data on wake locks to start killing things.
+    static const Int32 WAKE_LOCK_MIN_CHECK_DURATION;
+
+    // The minimum sample duration we will allow before deciding we have
+    // enough data on CPU usage to start killing things.
+    static const Int32 CPU_MIN_CHECK_DURATION;
+
+    // How long we allow a receiver to run before giving up on it.
+    static const Int32 BROADCAST_FG_TIMEOUT;
+    static const Int32 BROADCAST_BG_TIMEOUT;
+
+    // How long we wait until we timeout on key dispatching.
+    static const Int32 KEY_DISPATCHING_TIMEOUT;
+
+    // How long we wait until we timeout on key dispatching during instrumentation.
+    static const Int32 INSTRUMENTATION_KEY_DISPATCHING_TIMEOUT;
+
+    // Amount of time we wait for observers to handle a user switch before
+    // giving up on them and unfreezing the screen.
+    static const Int32 USER_SWITCH_TIMEOUT;
+
+    // Maximum number of users we allow to be running at a time.
+    static const Int32 MAX_RUNNING_USERS;
+
+    static const Int32 MY_PID;
+
+    static const AutoPtr< ArrayOf<String> > EMPTY_STRING_ARRAY;
+
+    CARAPI RemoveUriPermissionIfNeededLocked(
+        /* [in] */ UriPermission* perm)
+    {
+        return NOERROR;
+    }
+
+    CARAPI_(Boolean) IsSleeping()
+    {
+        return FALSE;
+    }
+};
+
+} // namespace Am
+} // namespace Server
+} // namespace Droid
+} // namespace Elastos
+
+#else
+
 #include "_Elastos_Droid_Server_Am_CActivityManagerService.h"
 #include "ProcessMap.h"
 #include "IntentResolver.h"
 #include "wm/CWindowManagerService.h"
-#include "am/ContentProviderRecord.h"
-#include "am/CPendingIntentRecord.h"
-#include "am/CBatteryStatsService.h"
-#include "am/CUsageStatsService.h"
-#include "am/CoreSettingsObserver.h"
-#include "am/BackupRecord.h"
-#include "am/ProviderMap.h"
-#include "am/UriPermission.h"
-#include "am/UriPermissionOwner.h"
-#include "am/PendingThumbnailsRecord.h"
-#include "am/ActivityRecord.h"
-#include "am/ProcessRecord.h"
-#include "am/ProcessList.h"
-#include "am/CompatModePackages.h"
+#include "elastos/droid/server/am/ContentProviderRecord.h"
+#include "elastos/droid/server/am/CPendingIntentRecord.h"
+#include "elastos/droid/server/am/CBatteryStatsService.h"
+#include "elastos/droid/server/am/CUsageStatsService.h"
+#include "elastos/droid/server/am/CoreSettingsObserver.h"
+#include "elastos/droid/server/am/BackupRecord.h"
+#include "elastos/droid/server/am/ProviderMap.h"
+#include "elastos/droid/server/am/UriPermission.h"
+#include "elastos/droid/server/am/UriPermissionOwner.h"
+#include "elastos/droid/server/am/PendingThumbnailsRecord.h"
+#include "elastos/droid/server/am/ActivityRecord.h"
+#include "elastos/droid/server/am/ProcessRecord.h"
+#include "elastos/droid/server/am/ProcessList.h"
+#include "elastos/droid/server/am/CompatModePackages.h"
 #include "elastos/droid/os/FileObserver.h"
 #include "elastos/droid/os/HandlerBase.h"
 #include "pm/CUserManagerService.h"
@@ -194,7 +323,7 @@ public:
      * Description of a request to start a new activity, which has been held
      * due to app switches being disabled.
      */
-    class PendingActivityLaunch : public ElRefBase
+    class PendingActivityLaunch : public Object
     {
     public:
         PendingActivityLaunch();
@@ -210,7 +339,7 @@ public:
      * link on it).
      */
     class ForegroundToken
-        : public ElRefBase
+        : public Object
         , public IProxyDeathRecipient
     {
     public:
@@ -224,7 +353,7 @@ public:
         AutoPtr<IBinder> mToken;
     };
 
-    class ProcessChangeItem : public ElRefBase
+    class ProcessChangeItem : public Object
     {
     public:
         ProcessChangeItem();
@@ -264,7 +393,7 @@ public:
         CActivityManagerService* mHost;
     };
 
-    class ItemMatcher : public ElRefBase
+    class ItemMatcher : public Object
     {
     public:
         ItemMatcher();
@@ -289,7 +418,7 @@ public:
         Boolean mAll;
     };
 
-    class MemItem : public ElRefBase
+    class MemItem : public Object
     {
     public:
         MemItem(
@@ -334,7 +463,7 @@ public:
      * indirect content-provider access.
      * @see #ActivityManagerService.openContentUri()
      */
-    class Identity : public ElRefBase
+    class Identity : public Object
     {
     public:
         Identity(
@@ -347,7 +476,7 @@ public:
 
 private:
     class AppDeathRecipient
-        : public ElRefBase
+        : public Object
         , public IProxyDeathRecipient
     {
     public:
@@ -369,7 +498,7 @@ private:
     };
 
     class SwitchUserIntentReceiver
-        : public ElRefBase
+        : public Object
         , public IIntentReceiver
     {
     public:
@@ -400,7 +529,7 @@ private:
     };
 
     class NeedStartIntentReceiver
-        : public ElRefBase
+        : public Object
         , public IIntentReceiver
     {
     public:
@@ -452,7 +581,7 @@ private:
     };
 
     class ShowRunnable
-        : public ElRefBase
+        : public Object
         , public IRunnable
     {
     public:
@@ -473,7 +602,7 @@ private:
     };
 
     class ShowLaunchWarningLockedRunnable
-        : public ElRefBase
+        : public Object
         , public IRunnable
     {
     public:
@@ -537,7 +666,7 @@ private:
     };
 
     // class FinisherReceiver
-    //     : public ElRefBase
+    //     : public Object
     //     , public IIntentReceiver
     // {
     // public:
@@ -568,7 +697,7 @@ private:
     // };
 
     // class PerformReceiveRunnable
-    //     : public ElRefBase
+    //     : public Object
     //     , public IRunnable
     // {
     // public:
@@ -592,7 +721,7 @@ private:
     // };
 
     class ErrorMsgButtonOnClickListener
-        : public ElRefBase
+        : public Object
         , public IDialogInterfaceOnClickListener
     {
     public:
@@ -612,7 +741,7 @@ private:
     };
 
     // class SystemBroadcastReceiver
-    //     : public ElRefBase
+    //     : public Object
     //     , public IIntentReceiver
     // {
     // public:
@@ -695,7 +824,7 @@ private:
     };
 
     class StopUserLockedRunnable
-        : public ElRefBase
+        : public Object
         , public IRunnable
     {
     public:
@@ -716,7 +845,7 @@ private:
     };
 
     class DispatchUserSwitchCallback
-        : public ElRefBase
+        : public Object
         , public IRemoteCallback
     {
     public:
@@ -2881,7 +3010,7 @@ public:
     /**
      * Set of IntentSenderRecord objects that are currently active.
      */
-    typedef HashMap< AutoPtr<CPendingIntentRecordKey>, AutoPtr<IWeakReference> > PendingIntentRecordHashMap;
+    typedef HashMap< AutoPtr<CPendingIntentRecord::Key>, AutoPtr<IWeakReference> > PendingIntentRecordHashMap;
     PendingIntentRecordHashMap mIntentSenderRecords;
 
      /**
@@ -3273,5 +3402,6 @@ private:
 } // namespace Server
 } // namespace Droid
 } // namespace Elastos
+#endif
 
 #endif // __ELASTOS_DROID_SERVER_AM_CACTIVITYMANAGERSERVICE_H__

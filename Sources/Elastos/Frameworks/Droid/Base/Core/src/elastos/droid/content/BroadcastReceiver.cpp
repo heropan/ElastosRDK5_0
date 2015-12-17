@@ -301,7 +301,7 @@ BroadcastReceiver::BroadcastReceiver()
 BroadcastReceiver::~BroadcastReceiver()
 {}
 
-ECode BroadcastReceiver::Initialize()
+ECode BroadcastReceiver::constructor()
 {
     return NOERROR;
 }

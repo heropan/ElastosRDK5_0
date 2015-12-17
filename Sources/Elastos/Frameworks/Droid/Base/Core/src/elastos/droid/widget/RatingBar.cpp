@@ -61,7 +61,7 @@ ECode RatingBar::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::RatingBar),
-            ARRAY_SIZE(R::styleable::RatingBar));
+            ArraySize(R::styleable::RatingBar));
 
     AutoPtr<ITypedArray> a;
     FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));

@@ -341,7 +341,7 @@ ECode CWallpaperInfo::constructor(
     }
 
     AutoPtr<ITypedArray> sa;
-    Int32 size = ARRAY_SIZE(R::styleable::Wallpaper);
+    Int32 size = ArraySize(R::styleable::Wallpaper);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::Wallpaper, size);
     ASSERT_SUCCEEDED(res->ObtainAttributes(attrs, layout, (ITypedArray**)&sa));

@@ -1,8 +1,8 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTCALENDARS_H__
 #define __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTCALENDARS_H__
 
 #include "_Elastos_Droid_Provider_CCalendarContractCalendars.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Net::IUri;
 
@@ -107,12 +107,16 @@ namespace Provider {
  * </ul>
  */
 CarClass(CCalendarContractCalendars)
+    , public Singleton
+    , public ICalendarContractCalendars
+    , public IBaseColumns
+    , public ICalendarContractSyncColumns
+    , public ICalendarContractCalendarColumns
 {
 public:
-    /**
-     * This utility class cannot be instantiated
-     */
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * The content:// style URL for accessing Calendars

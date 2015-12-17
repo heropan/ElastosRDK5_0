@@ -1052,7 +1052,7 @@ ECode GradientDrawable::Inflate(
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ IResourcesTheme* theme)
 {
-    Int32 size = ARRAY_SIZE(R::styleable::GradientDrawable);
+    Int32 size = ArraySize(R::styleable::GradientDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::GradientDrawable, size);
 
@@ -1129,7 +1129,7 @@ ECode GradientDrawable::ApplyThemeChildElements(
     if (st->mAttrSize != NULL) {
         AutoPtr<ITypedArray> a;
 
-        Int32 size = ARRAY_SIZE(R::styleable::GradientDrawableSize);
+        Int32 size = ArraySize(R::styleable::GradientDrawableSize);
         AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
         layout->Copy(R::styleable::GradientDrawableSize, size);
         ((CResources::Theme*)t)->ResolveAttribute(st->mAttrSize, layout, (ITypedArray**)&a);
@@ -1141,7 +1141,7 @@ ECode GradientDrawable::ApplyThemeChildElements(
     }
 
     if (st->mAttrGradient != NULL) {
-        Int32 size = ARRAY_SIZE(R::styleable::GradientDrawableGradient);
+        Int32 size = ArraySize(R::styleable::GradientDrawableGradient);
         AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
         layout->Copy(R::styleable::GradientDrawableGradient, size);
         AutoPtr<ITypedArray> a;
@@ -1161,7 +1161,7 @@ ECode GradientDrawable::ApplyThemeChildElements(
     }
 
     if (st->mAttrSolid != NULL) {
-        Int32 size = ARRAY_SIZE(R::styleable::GradientDrawableSolid);
+        Int32 size = ArraySize(R::styleable::GradientDrawableSolid);
         AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
         layout->Copy(R::styleable::GradientDrawableSolid, size);
 
@@ -1175,7 +1175,7 @@ ECode GradientDrawable::ApplyThemeChildElements(
     }
 
     if (st->mAttrStroke != NULL) {
-        Int32 size = ARRAY_SIZE(R::styleable::GradientDrawableStroke);
+        Int32 size = ArraySize(R::styleable::GradientDrawableStroke);
         AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
         layout->Copy(R::styleable::GradientDrawableStroke, size);
 
@@ -1189,7 +1189,7 @@ ECode GradientDrawable::ApplyThemeChildElements(
     }
 
     if (st->mAttrCorners != NULL) {
-        Int32 size = ARRAY_SIZE(R::styleable::DrawableCorners);
+        Int32 size = ArraySize(R::styleable::DrawableCorners);
         AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
         layout->Copy(R::styleable::DrawableCorners, size);
 
@@ -1203,7 +1203,7 @@ ECode GradientDrawable::ApplyThemeChildElements(
     }
 
     if (st->mAttrPadding != NULL) {
-        Int32 size = ARRAY_SIZE(R::styleable::GradientDrawablePadding);
+        Int32 size = ArraySize(R::styleable::GradientDrawablePadding);
         AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
         layout->Copy(R::styleable::GradientDrawablePadding, size);
 
@@ -1246,7 +1246,7 @@ ECode GradientDrawable::InflateChildElements(
         parser->GetName(&name);
 
         if (name.Equals("size")) {
-            Int32 size = ARRAY_SIZE(R::styleable::GradientDrawableSize);
+            Int32 size = ArraySize(R::styleable::GradientDrawableSize);
             AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
             layout->Copy(R::styleable::GradientDrawableSize, size);
             ECode ec = ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);
@@ -1260,7 +1260,7 @@ ECode GradientDrawable::InflateChildElements(
                 return ec;
             }
         } else if (name.Equals("gradient")) {
-            Int32 size = ARRAY_SIZE(R::styleable::GradientDrawableGradient);
+            Int32 size = ArraySize(R::styleable::GradientDrawableGradient);
             AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
             layout->Copy(R::styleable::GradientDrawableGradient, size);
             ECode ec = ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);
@@ -1274,7 +1274,7 @@ ECode GradientDrawable::InflateChildElements(
                 return ec;
             }
         } else if (name.Equals("solid")) {
-            Int32 size = ARRAY_SIZE(R::styleable::GradientDrawableSolid);
+            Int32 size = ArraySize(R::styleable::GradientDrawableSolid);
             AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
             layout->Copy(R::styleable::GradientDrawableSolid, size);
             ECode ec = ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);
@@ -1288,7 +1288,7 @@ ECode GradientDrawable::InflateChildElements(
                 return ec;
             }
         } else if (name.Equals("stroke")) {
-            Int32 size = ARRAY_SIZE(R::styleable::GradientDrawableStroke);
+            Int32 size = ArraySize(R::styleable::GradientDrawableStroke);
             AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
             layout->Copy(R::styleable::GradientDrawableStroke, size);
             ECode ec = ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);
@@ -1302,7 +1302,7 @@ ECode GradientDrawable::InflateChildElements(
                 return ec;
             }
         } else if (name.Equals("corners")) {
-            Int32 size = ARRAY_SIZE(R::styleable::DrawableCorners);
+            Int32 size = ArraySize(R::styleable::DrawableCorners);
             AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
             layout->Copy(R::styleable::DrawableCorners, size);
             ECode ec = ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);
@@ -1316,7 +1316,7 @@ ECode GradientDrawable::InflateChildElements(
                 return ec;
             }
         } else if (name.Equals("padding")) {
-            Int32 size = ARRAY_SIZE(R::styleable::GradientDrawablePadding);
+            Int32 size = ArraySize(R::styleable::GradientDrawablePadding);
             AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
             layout->Copy(R::styleable::GradientDrawablePadding, size);
             ECode ec = ObtainAttributes(r, theme, attrs, layout, (ITypedArray**)&a);

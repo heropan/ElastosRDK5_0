@@ -24,11 +24,11 @@ public:
 
     CTvStreamConfig();
 
+    virtual ~CTvStreamConfig();
+
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
-
-    virtual ~CTvStreamConfig();
 
     CARAPI constructor();
 
@@ -39,24 +39,24 @@ public:
         /* [in] */ IParcel* dest);
 
     CARAPI GetStreamId(
-        /* [out] */ Int32 * result);
+        /* [out] */ Int32* result);
 
     CARAPI GetType(
-        /* [out] */ Int32 * result);
+        /* [out] */ Int32* result);
 
     CARAPI GetMaxWidth(
-        /* [out] */ Int32 * result);
+        /* [out] */ Int32* result);
 
     CARAPI GetMaxHeight(
-        /* [out] */ Int32 * result);
+        /* [out] */ Int32* result);
 
     CARAPI GetGeneration(
-        /* [out] */ Int32 * result);
+        /* [out] */ Int32* result);
 
     CARAPI ToString(
-        /* [out] */ String * result);
+        /* [out] */ String* result);
 
-public:
+private:
     static String TAG;
 
     Int32 mStreamId;

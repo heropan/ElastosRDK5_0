@@ -1,4 +1,9 @@
 
+
+#
+# 请保持字母顺序
+#
+
 DIRS += accessibilityservice
 DIRS += app
 DIRS += animation
@@ -19,6 +24,7 @@ DIRS += preference
 DIRS += provider
 DIRS += view
 DIRS += sax
+DIRS += server
 DIRS += service
 #DIRS += systemui
 DIRS += text

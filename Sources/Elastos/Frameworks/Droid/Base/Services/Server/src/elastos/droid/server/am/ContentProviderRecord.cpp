@@ -1,8 +1,8 @@
 
-#include "am/CActivityManagerService.h"
-#include "am/ContentProviderRecord.h"
-#include "am/ProcessRecord.h"
-#include "am/CContentProviderConnection.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
+#include "elastos/droid/server/am/ContentProviderRecord.h"
+#include "elastos/droid/server/am/ProcessRecord.h"
+#include "elastos/droid/server/am/CContentProviderConnection.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 #include "elastos/droid/os/UserHandle.h"

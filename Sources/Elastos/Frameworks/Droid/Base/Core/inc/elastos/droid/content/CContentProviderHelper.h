@@ -5,6 +5,8 @@
 #include "_Elastos_Droid_Content_CContentProviderHelper.h"
 #include <elastos/core/Singleton.h>
 
+using Elastos::Droid::Net::IUri;
+
 namespace Elastos {
 namespace Droid {
 namespace Content {
@@ -34,6 +36,46 @@ public:
     CARAPI CoerceToLocalContentProvider(
         /* [in] */ IIContentProvider* abstractInterface,
         /* [out] */ IContentProvider** localContentProvider);
+
+    /**
+     * Removes userId part from authority string. Expects format:
+     * userId@some.authority
+     * If there is no userId in the authority, it symply returns the argument
+     * @hide
+     */
+    CARAPI GetAuthorityWithoutUserId(
+        /* [in] */ const String& auth,
+        /* [out] */ String* result);
+
+    /** @hide */
+    CARAPI GetUriWithoutUserId(
+        /* [in] */ IUri* uri,
+        /* [out] */ IUri** result);
+
+    /** @hide */
+    CARAPI UriHasUserId(
+        /* [in] */ IUri* uri,
+        /* [out] */ Boolean* result);
+
+    /** @hide */
+    CARAPI MaybeAddUserId(
+        /* [in] */ IUri* uri,
+        /* [in] */ Int32 userId,
+        /* [out] */ IUri** result);
+
+    CARAPI GetUserIdFromAuthority(
+        /* [in] */ const String& auth,
+        /* [in] */ Int32 defaultUserId,
+        /* [out] */ Int32* userId);
+
+    CARAPI GetUserIdFromUri(
+        /* [in] */ IUri* uri,
+        /* [in] */ Int32 defaultUserId,
+        /* [out] */ Int32* userId);
+
+    CARAPI GetUserIdFromUri(
+        /* [in] */ IUri* uri,
+        /* [out] */ Int32* userId);
 
 };
 

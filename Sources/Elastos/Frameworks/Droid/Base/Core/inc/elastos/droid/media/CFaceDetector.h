@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Media_CFaceDetector.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Graphics::IPointF;
 using Elastos::Droid::Graphics::IBitmap;
@@ -17,11 +18,17 @@ namespace Media {
  * {@link android.graphics.Bitmap} graphic object.
  */
 CarClass(CFaceDetector)
+    , public Object
+    , public IFaceDetector
 {
 public:
     CFaceDetector();
 
     ~CFaceDetector();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     /**
      * Creates a FaceDetector, configured with the size of the images to
@@ -81,9 +88,9 @@ private:
     CARAPI_(void) fft_destroy();
 
 private:
-    Int32  mFD;
-    Int32  mSDK;
-    Int32  mDCR;
+    Int64  mFD;
+    Int64  mSDK;
+    Int64  mDCR;
     Int32  mWidth;
     Int32  mHeight;
     Int32  mMaxFaces;

@@ -1,11 +1,23 @@
 
-#include "elastos/droid/widget/Chronometer.h"
 #include "elastos/droid/os/SystemClock.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/text/format/CFormatter.h"
 #include "elastos/droid/text/format/DateUtils.h"
+#include "elastos/droid/widget/Chronometer.h"
+#include "elastos/core/AutoLock.h"
 
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Text::Format::DateUtils;
-using Elastos::Core::CStringWrapper;
+using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Droid::View::IView;
+using Elastos::Core::AutoLock;
+using Elastos::Core::CString;
+using Elastos::Core::IAppendable;
+using Elastos::Utility::CFormatter;
+using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::ILocaleHelper;
 
 namespace Elastos {
 namespace Droid {
@@ -14,9 +26,19 @@ namespace Widget {
 const String Chronometer::TAG("Chronometer");
 const Int32 Chronometer::TICK_WHAT;
 
-ECode Chronometer::MyHandler::HandleMessage(
+CAR_INTERFACE_IMPL(Chronometer, Object, IChronometer)
+
+Chronometer::InnerHandler::InnerHandler(
+    /* [in] */ Chronometer* host)
+    : mHost(host)
+{
+    assert(mHost);
+}
+
+ECode Chronometer::InnerHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
+    VALIDATE_NOT_NULL(msg);
     if (mHost->mRunning) {
         mHost->UpdateText(SystemClock::GetElapsedRealtime());
         mHost->DispatchChronometerTick();
@@ -24,7 +46,6 @@ ECode Chronometer::MyHandler::HandleMessage(
         Boolean result;
         SendEmptyMessageDelayed(Chronometer::TICK_WHAT, 1000, &result);
     }
-
     return NOERROR;
 }
 
@@ -37,41 +58,45 @@ Chronometer::Chronometer()
    , mRecycle(8)
 {
     mFormatterArgs = ArrayOf<IInterface*>::Alloc(1);
-    mHandler = new MyHandler(this);
+    mHandler = new InnerHandler(this);
 }
 
-Chronometer::~Chronometer()
+ECode Chronometer::constructor(
+    /* [in] */ IContext* context)
 {
+    return constructor(context, NULL, 0);
 }
 
-Chronometer::Chronometer(
+ECode Chronometer::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : TextView(context, attrs, defStyle)
-    , mBase(0)
-    , mVisible(FALSE)
-    , mStarted(FALSE)
-    , mRunning(FALSE)
-    , mLogged(FALSE)
-    , mRecycle(8)
+    /* [in] */ IAttributeSet* attrs)
 {
-    mFormatterArgs = ArrayOf<IInterface*>::Alloc(1);
-    mHandler = new MyHandler(this);
-    ASSERT_SUCCEEDED(InitInternal(context, attrs, defStyle));
+    return constructor(context, attrs, 0);
 }
 
-ECode Chronometer::InitInternal(
+ECode Chronometer::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle)
 {
-    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
-            const_cast<Int32 *>(R::styleable::Chronometer),
-            ARRAY_SIZE(R::styleable::Chronometer));
+    return constructor(context, attrs, defStyle, 0);
+}
+
+ECode Chronometer::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyle,
+    /* [in] */ Int32 defStyleRes)
+{
+    VALIDATE_NOT_NULL(context);
+    VALIDATE_NOT_NULL(attrs);
+
+    //TextView::constructor(context, attrs, defStyle, defStyleRes);
+    AutoPtr< ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+        const_cast<Int32 *>(R::styleable::Chronometer),
+        ArraySize(R::styleable::Chronometer));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(
-            attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, defStyle, defStyleRes, (ITypedArray**)&a);
 
     String str;
     a->GetString(R::styleable::Chronometer_format, &str);
@@ -82,48 +107,27 @@ ECode Chronometer::InitInternal(
     return NOERROR;
 }
 
-
-ECode Chronometer::Init(
-    /* [in] */ IContext* context)
-{
-    return Init(context, NULL, 0);
-}
-
-ECode Chronometer::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    return Init(context, attrs, 0);
-}
-
-ECode Chronometer::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-{
-    ASSERT_SUCCEEDED(TextView::Init(context, attrs, defStyle));
-    ASSERT_SUCCEEDED(InitInternal(context, attrs, defStyle));
-    return NOERROR;
-}
-
 void Chronometer::Init()
 {
     mBase = SystemClock::GetElapsedRealtime();
     UpdateText(mBase);
 }
 
-ECode Chronometer::SetBase(Int64 base)
+ECode Chronometer::SetBase(
+    /* [in] */ Int64 base)
 {
     mBase = base;
     DispatchChronometerTick();
     UpdateText(SystemClock::GetElapsedRealtime());
-
     return NOERROR;
 }
 
-Int64 Chronometer::GetBase()
+ECode Chronometer::GetBase(
+    /* [out] */ Int64* result)
 {
-    return mBase;
+    VALIDATE_NOT_NULL(result);
+    *result = mBase;
+    return NOERROR;
 }
 
 ECode Chronometer::SetFormat(
@@ -133,33 +137,38 @@ ECode Chronometer::SetFormat(
     if (!format.IsNull() && mFormatBuilder == NULL) {
         mFormatBuilder = new StringBuilder(format.GetByteLength() * 2);
     }
-
     return NOERROR;
 }
 
-String Chronometer::GetFormat()
+ECode Chronometer::GetFormat(
+    /* [out] */ String* result)
 {
-    return mFormat;
+    VALIDATE_NOT_NULL(result);
+    *result = mFormat;
+    return NOERROR;
 }
 
 ECode Chronometer::SetOnChronometerTickListener(
     /* [in] */ IOnChronometerTickListener* listener)
 {
+    VALIDATE_NOT_NULL(listener);
     mOnChronometerTickListener = listener;
-
     return NOERROR;
 }
 
-AutoPtr<IOnChronometerTickListener> Chronometer::GetOnChronometerTickListener()
+ECode Chronometer::GetOnChronometerTickListener(
+    /* [out] */ IOnChronometerTickListener** result)
 {
-    return mOnChronometerTickListener;
+    VALIDATE_NOT_NULL(result);
+    *result = mOnChronometerTickListener;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
 }
 
 ECode Chronometer::Start()
 {
     mStarted = TRUE;
     UpdateRunning();
-
     return NOERROR;
 }
 
@@ -167,7 +176,6 @@ ECode Chronometer::Stop()
 {
     mStarted = FALSE;
     UpdateRunning();
-
     return NOERROR;
 }
 
@@ -176,13 +184,12 @@ ECode Chronometer::SetStarted(
 {
     mStarted = started;
     UpdateRunning();
-
     return NOERROR;
 }
 
 ECode Chronometer::OnDetachedFromWindow()
 {
-    TextView::OnDetachedFromWindow();
+    //TextView::OnDetachedFromWindow();
     mVisible = FALSE;
     UpdateRunning();
     return NOERROR;
@@ -191,42 +198,51 @@ ECode Chronometer::OnDetachedFromWindow()
 void Chronometer::OnWindowVisibilityChanged(
     /* [in] */ Int32 visibility)
 {
-    TextView::OnWindowVisibilityChanged(visibility);
+    //TextView::OnWindowVisibilityChanged(visibility);
     mVisible = visibility == IView::VISIBLE;
     UpdateRunning();
 }
 
+//synchronized
 void Chronometer::UpdateText(
     /* [in] */ Int64 now)
 {
+    AutoLock lock(this);
     Int64 seconds = now - mBase;
     seconds /= 1000;
     String sRecycle;
     mRecycle.ToString(&sRecycle);
     String text = DateUtils::FormatElapsedTime(sRecycle, seconds);
 
-    //if (mFormat != NULL) {
-        //AutoPtr<ILocale> loc;// = Locale.getDefault();
-        //Boolean res;
-        //if (mFormatter == NULL || (!loc->Equals(mFormatterLocale, &res), res)) {
-        //    mFormatterLocale = loc;
-        //    //mFormatter = new Formatter(mFormatBuilder, loc);
-        //}
-        //mFormatBuilder.setLength(0);
-        //mFormatterArgs[0] = text;
+    if (mFormat != NULL) {
+        AutoPtr<ILocale> loc;
+        AutoPtr<ILocaleHelper> helper;
+        CLocaleHelper::AcquireSingleton((ILocaleHelper**)&helper);
+        helper->GetDefault((ILocale**)&loc);
+
+        Boolean res;
+        loc->Equals(TO_IINTERFACE(mFormatterLocale), &res);
+        if (mFormatter == NULL || !res) {
+            mFormatterLocale = loc;
+            CFormatter::New(IAppendable::Probe(mFormatBuilder), loc, (IFormatter**)&mFormatter);
+        }
+        mFormatBuilder->SetLength(0);
+        AutoPtr<ICharSequence> charSequence;
+        CString::New(text, (ICharSequence**)&charSequence);
+        (*mFormatterArgs)[0] = TO_IINTERFACE(charSequence);
         //try {
-            //mFormatter.format(mFormat, mFormatterArgs);
-            //text = mFormatBuilder.toString();
+            mFormatter->Format(mFormat, mFormatterArgs);
+            mFormatBuilder->ToString(&text);
         /*} catch (IllegalFormatException ex) {
             if (!mLogged) {
                 Log.w(TAG, "Illegal format string: " + mFormat);
                 mLogged = TRUE;
             }
         }*/
-    //}
+    }
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(text, (ICharSequence**)&seq);
-    SetText(seq);
+    CString::New(text, (ICharSequence**)&seq);
+    //SetText(seq);
 }
 
 void Chronometer::UpdateRunning()
@@ -256,25 +272,30 @@ void Chronometer::DispatchChronometerTick()
 ECode Chronometer::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
-    TextView::OnInitializeAccessibilityEvent(event);
+    VALIDATE_NOT_NULL(event);
+    //TextView::OnInitializeAccessibilityEvent(event);
     String classNameStr("Chronometer");
     AutoPtr<ICharSequence> className;
-    FAIL_RETURN(CStringWrapper::New(classNameStr, (ICharSequence**)&className));
-    event->SetClassName(className);
+    FAIL_RETURN(CString::New(classNameStr, (ICharSequence**)&className));
+
+    IAccessibilityRecord* record = IAccessibilityRecord::Probe(event);
+    record->SetClassName(className);
     return NOERROR;
 }
 
 ECode Chronometer::OnInitializeAccessibilityNodeInfo(
     /* [in] */ IAccessibilityNodeInfo* info)
 {
-    TextView::OnInitializeAccessibilityNodeInfo(info);
+    VALIDATE_NOT_NULL(info);
+    //TextView::OnInitializeAccessibilityNodeInfo(info);
     String classNameStr("Chronometer");
     AutoPtr<ICharSequence> className;
-    FAIL_RETURN(CStringWrapper::New(classNameStr, (ICharSequence**)&className));
+    FAIL_RETURN(CString::New(classNameStr, (ICharSequence**)&className));
     info->SetClassName(className);
     return NOERROR;
 }
 
-}// namespace Elastos
-}// namespace Droid
 }// namespace Widget
+}// namespace Droid
+}// namespace Elastos
+

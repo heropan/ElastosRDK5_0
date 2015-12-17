@@ -1,17 +1,20 @@
-
-#include "elastos/droid/provider/CMediaStoreImagesThumbnails.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/provider/CMediaStoreImagesThumbnails.h"
 #include "elastos/droid/provider/CMediaStoreInternalThumbnails.h"
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::StringBuilder;
-using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Net::CUriHelper;
+using Elastos::Droid::Net::IUriHelper;
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
+
+CAR_SINGLETON_IMPL(CMediaStoreImagesThumbnails)
+
+CAR_INTERFACE_IMPL(CMediaStoreImagesThumbnails, Singleton, IMediaStoreImagesThumbnails)
 
 ECode CMediaStoreImagesThumbnails::GetINTERNAL_CONTENT_URI(
     /* [out] */ IUri** uri)

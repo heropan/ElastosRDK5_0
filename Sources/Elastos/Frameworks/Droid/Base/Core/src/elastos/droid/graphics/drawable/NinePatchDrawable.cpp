@@ -617,7 +617,7 @@ ECode NinePatchDrawable::Inflate(
 {
     Drawable::Inflate(r, parser, attrs, theme);
 
-    Int32 size = ARRAY_SIZE(R::styleable::NinePatchDrawable);
+    Int32 size = ArraySize(R::styleable::NinePatchDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::NinePatchDrawable, size);
 
@@ -730,7 +730,7 @@ ECode NinePatchDrawable::ApplyTheme(
     }
 
     AutoPtr<ITypedArray> a;
-    Int32 size = ARRAY_SIZE(R::styleable::NinePatchDrawable);
+    Int32 size = ArraySize(R::styleable::NinePatchDrawable);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::NinePatchDrawable, size);
     ((CResources::Theme*)t)->ResolveAttribute(state->mThemeAttrs, layout, (ITypedArray**)&a);

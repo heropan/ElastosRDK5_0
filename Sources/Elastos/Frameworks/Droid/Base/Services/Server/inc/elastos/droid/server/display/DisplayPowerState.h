@@ -1,26 +1,29 @@
 #ifndef __ELASTOS_DROID_SERVER_POWER_DISPLAYPOWERSTATE_H__
 #define __ELASTOS_DROID_SERVER_POWER_DISPLAYPOWERSTATE_H__
 
-#include "elastos/droid/ext/frameworkdef.h"
 #include "Elastos.Droid.Server_server.h"
-#include "power/ElectronBeam.h"
-#include "LightsService.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/server/display/ColorFade.h"
+// #include "elastos/droid/server/LightsService.h"
+#include <elastos/droid/utility/Int32Property.h>
+#include <elastos/droid/utility/FloatProperty.h>
+#include <elastos/core/Thread.h>
 
-using Elastos::Core::IRunnable;
-using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::View::IChoreographer;
+using Elastos::Droid::Utility::FloatProperty;
+using Elastos::Droid::Utility::Int32Property;
 using Elastos::Droid::Utility::IFloatProperty;
 using Elastos::Droid::Utility::IInt32Property;
-using Elastos::Droid::Utility::EIID_IFloatProperty;
-using Elastos::Droid::Utility::EIID_IInt32Property;
-using Elastos::Droid::Utility::EIID_IProperty;
-using Elastos::Core::ECLSID_CFloat;
+
+using Elastos::Core::Thread;
+using Elastos::Core::IRunnable;
+using Elastos::IO::IPrintWriter;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
-namespace Power {
+namespace Display {
 
 /**
  * Controls the display power state.
@@ -42,12 +45,46 @@ namespace Power {
 class DisplayPowerState
     : public Object
 {
+public:
+    class DisplayPowerStateFloatProperty
+        : public FloatProperty
+    {
+    public :
+
+        DisplayPowerStateFloatProperty(
+            /* [in] */ const String& name);
+
+        CARAPI Get(
+            /* [in] */ IInterface* obj,
+            /* [out] */ IInterface** rst);
+
+        CARAPI SetValue(
+            /* [in] */ IInterface* obj,
+            /* [in] */ Float value);
+    };
+
+    class DisplayPowerStateInt32Property
+        : public Int32Property
+    {
+    public :
+        DisplayPowerStateInt32Property(
+            /* [in] */ const String& name);
+
+        CARAPI Get(
+            /* [in] */ IInterface* obj,
+            /* [out] */ IInterface** rst);
+
+        CARAPI SetValue(
+            /* [in] */ IInterface* obj,
+            /* [in] */ Int32 value);
+    };
+
 private:
     /**
      * Updates the state of the screen and backlight asynchronously on a separate thread.
      */
     class PhotonicModulator
-        : public Handler
+        : public Thread
     {
     private:
         class TaskRunnable
@@ -70,7 +107,7 @@ private:
             /* [in] */ DisplayPowerState* host);
 
         CARAPI_(Boolean) SetState(
-            /* [in] */ Boolean on,
+            /* [in] */ Int32 on,
             /* [in] */ Int32 backlight);
 
         // CARAPI_(void) Dump(
@@ -83,8 +120,10 @@ private:
             /* [in] */ Int32 backlight);
 
     private:
-        static const Int32 INITIAL_SCREEN_ON;// = FALSE;    // unknown, assume off
-        static const Int32 INITIAL_BACKLIGHT;// = -1;// unknown
+        friend class TaskRunnable;
+
+        static const Int32 INITIAL_SCREEN_STATE;
+        static const Int32 INITIAL_BACKLIGHT;
 
         Object mLock;
 
@@ -128,94 +167,12 @@ private:
         DisplayPowerState* mHost;
     };
 
-    class DisplayPowerStateFloatProperty
-        : public ElRefBase
-        , public IFloatProperty
-    {
-    public :
-        CAR_INTERFACE_DECL()
-
-        DisplayPowerStateFloatProperty(
-            /* [in] */ const String& name);
-
-        CARAPI IsReadOnly(
-            /* [out] */ Boolean* readOnly);
-
-        CARAPI Set(
-            /* [in] */ IInterface* obj,
-            /* [in] */ IInterface* value);
-
-        CARAPI Get(
-            /* [in] */ IInterface* obj,
-            /* [out] */ IInterface** rst);
-
-        CARAPI GetName(
-            /* [out] */ String* name);
-
-        CARAPI GetType(
-            /* [out] */ ClassID* id);
-
-        CARAPI IsWriteOnly(
-            /* [out] */ Boolean* writeOnly);
-
-        CARAPI ForbiddenOperate(
-            /* [out] */ Boolean* forbidden);
-
-        CARAPI SetValue(
-            /* [in] */ IInterface* obj,
-            /* [in] */ Float value);
-    private:
-        String mName;
-        ClassID mClsId;
-    };
-
-    class DisplayPowerStateInt32Property
-        : public ElRefBase
-        , public IInt32Property
-    {
-    public :
-        CAR_INTERFACE_DECL()
-
-        DisplayPowerStateInt32Property(
-            /* [in] */ const String& name);
-
-        CARAPI IsReadOnly(
-            /* [out] */ Boolean* readOnly);
-
-        CARAPI Set(
-            /* [in] */ IInterface* obj,
-            /* [in] */ IInterface* value);
-
-        CARAPI Get(
-            /* [in] */ IInterface* obj,
-            /* [out] */ IInterface** rst);
-
-        CARAPI GetName(
-            /* [out] */ String* name);
-
-        CARAPI GetType(
-            /* [out] */ ClassID* info);
-
-        CARAPI IsWriteOnly(
-            /* [out] */ Boolean* writeOnly);
-
-        CARAPI ForbiddenOperate(
-            /* [out] */ Boolean* forbidden);
-
-        CARAPI SetValue(
-            /* [in] */ IInterface* obj,
-            /* [in] */ Int32 value);
-    private:
-        String mName;
-        ClassID mClsId;
-    };
-
 public:
     CAR_INTERFACE_DECL()
 
     DisplayPowerState(
         /* [in] */ IDisplayBlanker* blanker,
-        /* [in] */ LightsService::Light* backlight,
+        ///* [in] */ LightsService::Light* backlight,
         /* [in] */ ColorFade* electronBeam);
 
     /**
@@ -305,34 +262,8 @@ public:
     const static String fName;
     const static String iName;
 
-    static AutoPtr<IFloatProperty> ELECTRON_BEAM_LEVEL;
+    static AutoPtr<IFloatProperty> COLOR_FADE_LEVEL;
     static AutoPtr<IInt32Property> SCREEN_BRIGHTNESS;
-
-    // static final FloatProperty<DisplayPowerState> ELECTRON_BEAM_LEVEL =
-    //         new FloatProperty<DisplayPowerState>("electronBeamLevel") {
-    //     @Override
-    //     public void setValue(DisplayPowerState object, float value) {
-    //         object.setColorFadeLevel(value);
-    //     }
-
-    //     @Override
-    //     public Float get(DisplayPowerState object) {
-    //         return object.getColorFadeLevel();
-    //     }
-    // };
-
-    // static final IntProperty<DisplayPowerState> SCREEN_BRIGHTNESS =
-    //         new IntProperty<DisplayPowerState>("screenBrightness") {
-    //     @Override
-    //     public void setValue(DisplayPowerState object, int value) {
-    //         object.setScreenBrightness(value);
-    //     }
-
-    //     @Override
-    //     public Integer get(DisplayPowerState object) {
-    //         return object.getScreenBrightness();
-    //     }
-    // };
 
 private:
     static const String TAG;// = "DisplayPowerState";
@@ -342,9 +273,9 @@ private:
     AutoPtr<IHandler> mHandler;
     AutoPtr<IChoreographer> mChoreographer;
     AutoPtr<IDisplayBlanker> mBlanker;
-    AutoPtr<LightsService::Light> mBacklight;
+    // AutoPtr<LightsService::Light> mBacklight;
     AutoPtr<ColorFade> mColorFade;
-    AutoPtr<IPhotonicModulator> mPhotonicModulator;
+    AutoPtr<PhotonicModulator> mPhotonicModulator;
 
     Int32 mScreenState;
     Int32 mScreenBrightness;
@@ -365,7 +296,7 @@ private:
     friend class ColorFadeDrawRunnable;
 };
 
-} // namespace Power
+} // namespace Display
 } // namespace Server
 } // namespace Droid
 } // namespace Elastos

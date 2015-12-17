@@ -6,7 +6,6 @@ namespace Droid {
 namespace Database {
 
 CAR_INTERFACE_IMPL(DataSetObserver, Object, IDataSetObserver)
-
 ECode DataSetObserver::OnChanged()
 {
     // Do nothing

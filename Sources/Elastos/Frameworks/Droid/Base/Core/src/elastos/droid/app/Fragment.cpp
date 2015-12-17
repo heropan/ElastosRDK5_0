@@ -1408,7 +1408,7 @@ ECode Fragment::OnInflate(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::Fragment),
-            ARRAY_SIZE(R::styleable::Fragment));
+            ArraySize(R::styleable::Fragment));
     AutoPtr<ITypedArray> a;
     ctx->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
 

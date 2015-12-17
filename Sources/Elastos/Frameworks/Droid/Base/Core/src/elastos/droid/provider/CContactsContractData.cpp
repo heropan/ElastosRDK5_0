@@ -1,9 +1,14 @@
-
 #include "elastos/droid/provider/CContactsContractData.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
+
+CAR_SINGLETON_IMPL(CContactsContractData)
+
+CAR_INTERFACE_IMPL_2(CContactsContractData, Singleton
+    , IContactsContractData
+    , IContactsContractDataColumnsWithJoins)
 
 ECode CContactsContractData::constructor()
 {

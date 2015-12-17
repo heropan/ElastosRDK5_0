@@ -5,23 +5,34 @@ module
     // merge("NetworkManagementService.car");
     // merge("power/SuspendBlocker.car");
     // merge("power/ScreenOnBlocker.car");
-    // merge("power/DisplayBlanker.car");
     // merge("accessibility/EventStreamTransformation.car");
     // merge("accessibility/ScreenMagnifier.car");
-    // merge("am/UriPermissionOwnerExternalToken.car");
+    merge("am/ActivityRecord.car");
+    merge("am/PendingIntentRecord.car");
+    merge("am/ProcessRecord.car");
+    merge("am/UriPermissionOwnerExternalToken.car");
     merge("display/AutomaticBrightnessController.car");
     merge("display/WifiDisplayController.car");
     merge("display/DisplayAdapter.car");
     merge("display/DisplayBlanker.car");
     merge("display/OverlayDisplayWindow.car");
     merge("display/RampAnimator.car");
-    merge("display/DisplayManagerService.car");
+    merge("twilight/TwilightListener.car");
+
     merge("Exceptions.car");
     merge("SystemServer.car");
+    merge("SystemService.car");
+    merge("SystemServiceManager.car");
+
     // merge("RecognitionManagerService.car");
     // merge("DeviceStorageMonitorService.car");
     // merge("dreams/DreamManagerService.car");
     // merge("search/Searchables.car");
+
+    using interface Elastos.Droid.Os.IBinder;
+    using interface Elastos.Droid.Content.IContext;
+    using interface Elastos.Droid.Hardware.Display.IIDisplayManager;
+    using interface Elastos.Droid.Media.Projection.IIMediaProjectionCallback;
 
     // using interface Elastos.Core.IRunnable;
     // using interface Elastos.IO.IFile;
@@ -45,13 +56,12 @@ module
     // using interface Elastos.Droid.AppWidget.IIAppWidgetService;
     // using interface Elastos.Droid.Content.IBroadcastReceiver;
     // using interface Elastos.Droid.Content.IClipboard;
-    // using interface Elastos.Droid.Content.IContext;
     // using interface Elastos.Droid.Content.IIntent;
     // using interface Elastos.Droid.Content.IIntentReceiver;
     // using interface Elastos.Droid.Content.IServiceConnection;
     // using interface Elastos.Droid.Content.IComponentName;
     // using interface Elastos.Droid.Content.IContentService;
-    // using interface Elastos.Droid.Content.IIIntentSender;
+    using interface Elastos.Droid.Content.IIIntentSender;
     // using interface Elastos.Droid.Content.Pm.IIPackageManager;
     // using interface Elastos.Droid.Content.Pm.IRegisteredServicesCacheListener;
     // using interface Elastos.Droid.Location.IICountryDetector;
@@ -63,7 +73,7 @@ module
     // using interface Elastos.Droid.Net.INetworkPolicyListener;
     // using interface Elastos.Droid.Net.IIThrottleManager;
     // using interface Elastos.Droid.Net.INetworkStatsSession;
-    // using interface Elastos.Droid.Os.IBinder;
+    using interface Elastos.Droid.Os.IBinder;
     // using interface Elastos.Droid.Os.ILooper;
     // using interface Elastos.Droid.Os.IHandler;
     // using interface Elastos.Droid.Os.IIUserManager;
@@ -81,7 +91,7 @@ module
     // using interface Elastos.Droid.View.IIWindowManager;
     // using interface Elastos.Droid.View.IWindowManagerPolicyWindowManagerFuncs;
     // using interface Elastos.Droid.View.IWindowSession;
-    // using interface Elastos.Droid.View.IApplicationToken;
+    using interface Elastos.Droid.View.IApplicationToken;
     // using interface Elastos.Droid.View.IWindowManager;
     // using interface Elastos.Droid.View.IInputMethodCallback;
     // using interface Elastos.Droid.View.InputMethod.IInputMethod;
@@ -92,7 +102,6 @@ module
     // using interface Elastos.Droid.View.IInputFilter;
     // using interface Elastos.Droid.View.IIDisplayManagerAw;
     // using interface Elastos.Droid.Hardware.Display.IDisplayListener;
-    // using interface Elastos.Droid.Hardware.Display.IIDisplayManager;
     // using interface Elastos.Droid.Hardware.Input.IIInputManager;
     // using interface Elastos.Droid.Hardware.Input.IInputDeviceListener;
     // using interface Elastos.Droid.Hardware.Usb.IIUsbManager;
@@ -431,14 +440,6 @@ module
 //         interface IIntentReceiver;
 //     }
 
-//     class CActivityRecordToken {
-//         constructor(
-//             [in] Handle32 activity);
-
-//         interface IApplicationToken;
-//         interface IBinder;
-//     }
-
 //     class CBatteryStatsService {
 //         constructor(
 //             [in] String fileName);
@@ -461,25 +462,7 @@ module
 //         interface IBinder;
 //     }
 
-//     class CPendingIntentRecord {
-//         constructor(
-//             [in] Handle32 owner,
-//             [in] Handle32 k,
-//             [in] Int32 u);
-
-//         interface IIIntentSender;
-//         interface IBinder;
-//     }
-
 //     class CServiceRecord {
-//         interface IBinder;
-//     }
-
-//     class CUriPermissionOwnerExternalToken {
-//         constructor(
-//             [in] Handle32 owner);
-
-//         interface IUriPermissionOwnerExternalToken;
 //         interface IBinder;
 //     }
 
@@ -510,19 +493,34 @@ module
 
 //     } // namespace Connectivity
 
-//     namespace Display {
+    namespace Display {
 
-//     [local]
-//     class CDisplayManagerService {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IHandler* mainHandler,
-//             [in] IHandler* uiHandler);
+        [local]
+        class CDisplayManagerService {
+            constructor(
+                [in] IContext* ctx);
 
-//         interface IIDisplayManager;
-//     }
+            interface ISystemService;
+        }
 
-//     } // namespace Display
+        class CDisplayManagerBinderService {
+            constructor(
+                [in] ISystemService* displayManagerService);
+
+            interface IIDisplayManager;
+            interface IBinder;
+        }
+
+        class CMediaProjectionCallback {
+            constructor(
+                [in] IBinder* appToken,
+                [in] IObject* displayAdapter);
+
+            interface IIMediaProjectionCallback;
+            interface IBinder;
+        }
+
+    } // namespace Display
 
 //     namespace Dreams {
 
@@ -648,6 +646,13 @@ module
 //             [in] Boolean onlyCore);
 
 //         interface IIPackageManager;
+//     }
+
+//     class CParcelFileDescriptorFactory {
+//         constructor(
+//             [in] IFile* codeFile);
+
+//         interface IIParcelFileDescriptorFactory;
 //     }
 
 //     class CResourcesChangedReceiver {
@@ -1190,4 +1195,42 @@ module
 //     } // namespace Widget
 //     } // namespace Droid
 //     } // namespace Elastos
+
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+    namespace Am {
+
+    class CActivityRecordToken {
+        constructor(
+            [in] IActivityRecord* activity);
+
+        interface IApplicationToken;
+        interface IBinder;
+    }
+
+    class CPendingIntentRecord {
+        constructor(
+            [in] Handle32 owner,
+            [in] Handle32 k,
+            [in] Int32 u);
+
+        interface IPendingIntentRecord;
+        interface IIIntentSender;
+        interface IBinder;
+    }
+
+    class CUriPermissionOwnerExternalToken {
+        constructor(
+            [in] Handle32 owner);
+
+        interface IUriPermissionOwnerExternalToken;
+        interface IBinder;
+    }
+
+    } // namespace Am
+    } // namespace Server
+    } // namepsace Droid
+    } // namespace Elastos
 }

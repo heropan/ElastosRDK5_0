@@ -2760,7 +2760,7 @@ ECode AbsListView::constructor(
     mOwnerThread = Thread::GetCurrentThread();
 
     SetVerticalScrollBarEnabled(TRUE);
-    Int32 size = ARRAY_SIZE(R::styleable::View);
+    Int32 size = ArraySize(R::styleable::View);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::View, size);
 
@@ -2799,7 +2799,7 @@ ECode AbsListView::constructor(
 
     mOwnerThread = Thread::GetCurrentThread();
 
-    Int32 size = ARRAY_SIZE(R::styleable::AbsListView);
+    Int32 size = ArraySize(R::styleable::AbsListView);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::AbsListView, size);
 

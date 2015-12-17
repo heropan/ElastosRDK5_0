@@ -1,4 +1,3 @@
-
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/provider/CSettingsSecure.h"
 #include "elastos/droid/provider/Settings.h"
@@ -7,13 +6,17 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
+CAR_SINGLETON_IMPL(CSettingsSecure)
+
+CAR_INTERFACE_IMPL(CSettingsSecure, Singleton, ISettingsSecure)
+
 ECode CSettingsSecure::GetUriFor(
     /* [in] */ IUri* u,
     /* [in] */ const String& name,
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri)
-    return Settings::Secure::GetUriFor(u, name, uri);
+    return Settings::NameValueTable::GetUriFor(u, name, uri);
 }
 
 ECode CSettingsSecure::GetContentUri(
@@ -35,10 +38,9 @@ ECode CSettingsSecure::GetSettingsToBackup(
 }
 
 ECode CSettingsSecure::GetMovedKeys(
-    /* [in] */ IObjectContainer* outKeySet)
+    /* [in] */ IHashSet* outKeySet)
 {
-    Settings::Secure::GetMovedKeys(outKeySet);
-    return NOERROR;
+    return Settings::Secure::GetMovedKeys(outKeySet);
 }
 
 ECode CSettingsSecure::GetString(
@@ -305,7 +307,17 @@ ECode CSettingsSecure::SetLocationProviderEnabledForUser(
     /* [in] */ Boolean enabled,
     /* [in] */ Int32 userId)
 {
-    return Settings::Secure::SetLocationProviderEnabledForUser(cr, provider, enabled, userId);
+    Boolean ret = FALSE;
+    return Settings::Secure::SetLocationProviderEnabledForUser(cr, provider, enabled, userId, &ret);
+}
+
+ECode CSettingsSecure::GetCLONE_TO_MANAGED_PROFILE(
+        /* [out, callee] */ ArrayOf<String>** array)
+{
+    VALIDATE_NOT_NULL(array);
+    *array = Settings::Secure::CLONE_TO_MANAGED_PROFILE;
+    REFCOUNT_ADD(*array);
+    return NOERROR;
 }
 
 } //namespace Provider

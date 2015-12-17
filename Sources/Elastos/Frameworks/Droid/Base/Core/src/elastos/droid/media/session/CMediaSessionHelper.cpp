@@ -6,7 +6,7 @@ namespace Droid {
 namespace Media {
 namespace Session {
 
-CAR_INTERFACE_IMPL(CMediaSessionHelper, Object, IMediaSessionHelper)
+CAR_INTERFACE_IMPL(CMediaSessionHelper, Singleton, IMediaSessionHelper)
 
 CAR_SINGLETON_IMPL(CMediaSessionHelper)
 

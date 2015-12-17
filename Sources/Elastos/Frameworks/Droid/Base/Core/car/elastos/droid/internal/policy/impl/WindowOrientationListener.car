@@ -52,7 +52,7 @@ module
          * @return The proposed rotation, or -1 if unknown.
          */
          GetProposedRotation(
-                 [out] Int32* res);
+             [out] Int32* res);
 
         /**
          * Returns true if sensor is enabled and false otherwise

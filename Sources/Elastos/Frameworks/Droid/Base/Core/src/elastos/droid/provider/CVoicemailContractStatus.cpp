@@ -1,7 +1,7 @@
 
 #include "Elastos.Droid.Net.h"
-#include "elastos/droid/provider/VoicemailContract.h"
 #include "elastos/droid/provider/CVoicemailContractStatus.h"
+#include "elastos/droid/provider/VoicemailContract.h"
 
 namespace Elastos {
 namespace Droid {

@@ -3,43 +3,47 @@
 #include "elastos/droid/widget/MediaController.h"
 #include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
 #include "elastos/droid/view/CWindowManagerLayoutParams.h"
-#include "elastos/droid/impl/CPolicyManager.h"
+//#include "elastos/droid/impl/CPolicyManager.h"
 #include "elastos/droid/R.h"
-#include <elastos/utility/logging/Logger.h>
-#include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::CStringWrapper;
-using Elastos::Core::StringBuilder;
-using Elastos::Utility::Logging::Logger;
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Droid::Graphics::IPixelFormat;
 using Elastos::Droid::Internal::Policy::IPolicyManager;
-using Elastos::Droid::Internal::Policy::CPolicyManager;
+//using Elastos::Droid::Internal::Policy::CPolicyManager;
 using Elastos::Droid::Media::IAudioManager;
 using Elastos::Droid::View::EIID_IView;
 using Elastos::Droid::View::EIID_IViewOnTouchListener;
+using Elastos::Droid::View::EIID_IViewOnClickListener;
+using Elastos::Droid::View::EIID_IViewOnLayoutChangeListener;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::CWindowManagerLayoutParams;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+
+using Elastos::Core::CString;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::IInteger32;
+using Elastos::Core::CInteger32;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-const Int32 MediaController::sDefaultTimeout;
-const Int32 MediaController::FADE_OUT;
-const Int32 MediaController::SHOW_PROGRESS;
-const String MediaController::MEDIACONTROLLER_NAME = String("MediaController");
+const Int32 MediaController::sDefaultTimeout = 3000;
+const Int32 MediaController::FADE_OUT = 1;
+const Int32 MediaController::SHOW_PROGRESS = 2;
+const String MediaController::MEDIACONTROLLER_NAME("MediaController");
 
-CAR_INTERFACE_IMPL(MediaController::MediaControllerOnTouchListener, IViewOnTouchListener)
-CAR_INTERFACE_IMPL(MediaController::MediaControllerOnLayoutChangeListener, IViewOnTouchListener)
-CAR_INTERFACE_IMPL(MediaController::PauseOnClickListener, IViewOnTouchListener)
-CAR_INTERFACE_IMPL(MediaController::FfwdOnClickListener, IViewOnTouchListener)
-CAR_INTERFACE_IMPL(MediaController::RewOnClickListener, IViewOnTouchListener)
-CAR_INTERFACE_IMPL(MediaController::MediaControllerOnSeekBarChangeListener, IViewOnTouchListener)
-
+//==============================================================================
+//            MediaController::MyHandler
+//==============================================================================
 ECode MediaController::MyHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
-    Int32 what;
+    Int32 what = 0;
     msg->GetWhat(&what);
 
     switch(what) {
@@ -54,6 +58,197 @@ ECode MediaController::MyHandler::HandleMessage(
 
     return NOERROR;
 }
+
+//==============================================================================================
+//          MediaController::MediaControllerOnTouchListener
+//==============================================================================================
+CAR_INTERFACE_IMPL(MediaController::MediaControllerOnTouchListener, Object, IViewOnTouchListener)
+
+MediaController::MediaControllerOnTouchListener::MediaControllerOnTouchListener(
+    /* [in] */ MediaController* host)
+    : mHost(host)
+{
+}
+
+ECode MediaController::MediaControllerOnTouchListener::OnTouch(
+    /* [in] */ IView* v,
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* res)
+{
+    VALIDATE_NOT_NULL(res)
+    Int32 action = 0;
+    event->GetAction(&action);
+    if(action == IMotionEvent::ACTION_DOWN) {
+        if(mHost->mShowing) {
+            mHost->Hide();
+        }
+    }
+    *res = FALSE;
+    return NOERROR;
+}
+
+//==============================================================================================
+//          MediaController::MediaControllerOnLayoutChangeListener
+//==============================================================================================
+CAR_INTERFACE_IMPL(MediaController::MediaControllerOnLayoutChangeListener, Object, IViewOnLayoutChangeListener)
+
+MediaController::MediaControllerOnLayoutChangeListener::MediaControllerOnLayoutChangeListener(
+    /* [in] */ MediaController* host)
+    : mHost(host)
+{
+}
+
+ECode MediaController::MediaControllerOnLayoutChangeListener::OnLayoutChange(
+    /* [in] */ IView* v,
+    /* [in] */ Int32 left,
+    /* [in] */ Int32 top,
+    /* [in] */ Int32 right,
+    /* [in] */ Int32 bottom,
+    /* [in] */ Int32 oldLeft,
+    /* [in] */ Int32 oldTop,
+    /* [in] */ Int32 oldRight,
+    /* [in] */ Int32 oldBottom)
+{
+    mHost->UpdateFloatingWindowLayout();
+    if(mHost->mShowing) {
+        IViewManager::Probe(mHost->mWindowManager)->UpdateViewLayout(mHost->mDecor, IViewGroupLayoutParams::Probe(mHost->mDecorLayoutParams));
+    }
+    return NOERROR;
+}
+
+//==============================================================================================
+//          MediaController::PauseOnClickListener
+//==============================================================================================
+CAR_INTERFACE_IMPL(MediaController::PauseOnClickListener, Object, IViewOnClickListener)
+
+MediaController::PauseOnClickListener::PauseOnClickListener(
+    /* [in] */ MediaController* host)
+    : mHost(host)
+{
+}
+
+ECode MediaController::PauseOnClickListener::OnClick(
+    /* [in] */ IView* v)
+{
+    mHost->DoPauseResume();
+    mHost->Show(mHost->sDefaultTimeout);
+    return NOERROR;
+}
+
+//==============================================================================================
+//          MediaController::FfwdOnClickListener
+//==============================================================================================
+CAR_INTERFACE_IMPL(MediaController::FfwdOnClickListener, Object, IViewOnClickListener)
+
+MediaController::FfwdOnClickListener::FfwdOnClickListener(
+    /* [in] */ MediaController* host)
+    : mHost(host)
+{
+}
+
+ECode MediaController::FfwdOnClickListener::OnClick(
+    /* [in] */ IView* v)
+{
+    Int32 pos = 0;
+    mHost->mPlayer->GetCurrentPosition(&pos);
+    pos += 15000; // milliseconds
+    mHost->mPlayer->SeekTo(pos);
+    mHost->SetProgress();
+
+    mHost->Show(mHost->sDefaultTimeout);
+    return NOERROR;
+}
+
+//==============================================================================================
+//          MediaController::RewOnClickListener
+//==============================================================================================
+CAR_INTERFACE_IMPL(MediaController::RewOnClickListener, Object, IViewOnClickListener)
+
+MediaController::RewOnClickListener::RewOnClickListener(
+    /* [in] */ MediaController* host)
+    : mHost(host)
+{
+}
+
+ECode MediaController::RewOnClickListener::OnClick(
+    /* [in] */ IView* v)
+{
+    Int32 pos = 0;
+    mHost->mPlayer->GetCurrentPosition(&pos);
+    pos -= 5000; // milliseconds
+    mHost->mPlayer->SeekTo(pos);
+    mHost->SetProgress();
+
+    mHost->Show(mHost->sDefaultTimeout);
+    return NOERROR;
+}
+
+//==============================================================================================
+//          MediaController::MediaControllerOnSeekBarChangeListener
+//==============================================================================================
+CAR_INTERFACE_IMPL(MediaController::MediaControllerOnSeekBarChangeListener, Object, ISeekBarOnSeekBarChangeListener)
+
+MediaController::MediaControllerOnSeekBarChangeListener::MediaControllerOnSeekBarChangeListener(
+    /* [in] */ MediaController* host)
+    : mHost(host)
+{
+}
+
+ECode MediaController::MediaControllerOnSeekBarChangeListener::OnStartTrackingTouch(
+    /* [in] */ ISeekBar* seekBar)
+{
+    mHost->Show(3600000);
+    mHost->mDragging = TRUE;
+
+    // By removing these pending progress messages we make sure
+    // that a) we won't update the progress while the user adjusts
+    // the seekbar and b) once the user is done dragging the thumb
+    // we will post one of these messages to the queue again and
+    // this ensures that there will be exactly one message queued up.
+    mHost->mHandler->RemoveMessages(MediaController::SHOW_PROGRESS);
+    return NOERROR;
+}
+
+ECode MediaController::MediaControllerOnSeekBarChangeListener::OnProgressChanged(
+    /* [in] */ ISeekBar* seekBar,
+    /* [in] */ Int32 progress,
+    /* [in] */ Boolean fromUser)
+{
+    if(!fromUser) {
+        return NOERROR;
+    }
+    Int32 duration = 0;
+    mHost->mPlayer->GetDuration(&duration);
+    Int64 newPosition = (duration * progress) / 1000L;
+    mHost->mPlayer->SeekTo((Int32)newPosition);
+    if(mHost->mCurrentTime != NULL) {
+        AutoPtr<ICharSequence> csq;
+        CString::New(mHost->StringForTime(Int32(newPosition)), (ICharSequence**)&csq);
+        mHost->mCurrentTime->SetText(csq);
+    }
+    return NOERROR;
+}
+
+ECode MediaController::MediaControllerOnSeekBarChangeListener::OnStopTrackingTouch(
+    /* [in] */ ISeekBar* seekBar)
+{
+    mHost->mDragging = FALSE;
+    mHost->SetProgress();
+    mHost->UpdatePausePlay();
+    mHost->Show(sDefaultTimeout);
+
+    // Ensure that progress is properly updated in the future,
+    // the call to show() does not guarantee this because it is a
+    // no-op if we are already showing.
+    Boolean result = FALSE;
+    mHost->mHandler->SendEmptyMessage(MediaController::SHOW_PROGRESS, &result);
+    return NOERROR;
+}
+
+//==============================================================================
+//            MediaController::
+//==============================================================================
+CAR_INTERFACE_IMPL(MediaController, FrameLayout, IMediaController)
 
 MediaController::MediaController()
     : mShowing(FALSE)
@@ -71,65 +266,35 @@ MediaController::MediaController()
     mFfwdListener = new FfwdOnClickListener(this);
 }
 
-MediaController::MediaController(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs)
-    : mShowing(FALSE)
-    , mDragging(FALSE)
-    , mUseFastForward(FALSE)
-    , mFromXml(FALSE)
-    , mListenersSet(FALSE)
-{
-    mLayoutChangeListener = new MediaControllerOnLayoutChangeListener(this);
-    mTouchListener = new MediaControllerOnTouchListener(this);
-    mHandler = new MyHandler(this);
-    mPauseListener = new PauseOnClickListener(this);
-    mSeekListener = new MediaControllerOnSeekBarChangeListener(this);
-    mRewListener = new RewOnClickListener(this);
-    mFfwdListener = new FfwdOnClickListener(this);
-    Init(context, attrs);
-}
-
-MediaController::MediaController(
-        /* [in] */ IContext* context,
-        /* [in] */ Boolean useFastForWard)
-    : mShowing(FALSE)
-    , mDragging(FALSE)
-    , mUseFastForward(FALSE)
-    , mFromXml(FALSE)
-    , mListenersSet(FALSE)
-{
-    mLayoutChangeListener = new MediaControllerOnLayoutChangeListener(this);
-    mTouchListener = new MediaControllerOnTouchListener(this);
-    mHandler = new MyHandler(this);
-    mPauseListener = new PauseOnClickListener(this);
-    mSeekListener = new MediaControllerOnSeekBarChangeListener(this);
-    mRewListener = new RewOnClickListener(this);
-    mFfwdListener = new FfwdOnClickListener(this);
-    Init(context, useFastForWard);
-}
-
 MediaController::~MediaController()
 {
 }
 
-ECode MediaController::Init(
+ECode MediaController::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    FrameLayout::Init(context, attrs);
-    mRoot = (IView*)this->Probe(EIID_IView);
+    FrameLayout::constructor(context, attrs);
+    mRoot = THIS_PROBE(IView);
     mContext = context;
     mUseFastForward = TRUE;
     mFromXml = TRUE;
     return NOERROR;
 }
 
-ECode MediaController::Init(
+ECode MediaController::OnFinishInflate()
+{
+    if (mRoot != NULL) {
+        InitControllerView(mRoot);
+    }
+    return NOERROR;
+}
+
+ECode MediaController::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Boolean useFastForWard)
 {
-    FrameLayout::Init(context);
+    FrameLayout::constructor(context);
     mContext = context;
     mUseFastForward = useFastForWard;
     InitFloatingWindowLayout();
@@ -137,12 +302,75 @@ ECode MediaController::Init(
     return NOERROR;
 }
 
-ECode MediaController::OnFinishInflate()
+ECode MediaController::constructor(
+    /* [in] */ IContext* context)
 {
-    if (mRoot) {
-        InitControllerView(mRoot);
-    }
-    return NOERROR;
+    return constructor(context, TRUE);
+}
+
+void MediaController::InitFloatingWindow()
+{
+    mContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&mWindowManager);
+    AutoPtr<IPolicyManager> policy;
+    assert(0 && "TODO");
+//    CPolicyManager::AcquireSingleton((IPolicyManager**)&policy);
+    policy->MakeNewWindow(mContext, (IWindow**)&mWindow);
+    mWindow->SetWindowManager(mWindowManager, NULL, String(NULL));
+    Boolean result = FALSE;
+    mWindow->RequestFeature(IWindow::FEATURE_NO_TITLE, &result);
+    mWindow->GetDecorView((IView**)&mDecor);
+    mDecor->SetOnTouchListener(mTouchListener);
+    mWindow->SetContentView(THIS_PROBE(IView));
+    mWindow->SetBackgroundDrawableResource(R::color::transparent);
+
+    // While the media controller is up, the volume control keys should
+    // affect the media stream type
+    mWindow->SetVolumeControlStream(IAudioManager::STREAM_MUSIC);
+
+    SetFocusable(TRUE);
+    SetFocusableInTouchMode(TRUE);
+    SetDescendantFocusability(IViewGroup::FOCUS_AFTER_DESCENDANTS);
+    Boolean b = FALSE;
+    View::RequestFocus(&b);
+}
+
+void MediaController::InitFloatingWindowLayout()
+{
+    CWindowManagerLayoutParams::New((
+        IWindowManagerLayoutParams**)&mDecorLayoutParams);
+    CWindowManagerLayoutParams* cp = (CWindowManagerLayoutParams*)mDecorLayoutParams.Get();
+    cp->mGravity = IGravity::TOP | IGravity::LEFT;
+    cp->mHeight = IViewGroupLayoutParams::WRAP_CONTENT;
+    cp->SetX(0);
+    cp->SetFormat(IPixelFormat::TRANSLUCENT);
+    cp->mType = IWindowManagerLayoutParams::TYPE_APPLICATION_PANEL;
+    cp->mFlags |= IWindowManagerLayoutParams::FLAG_ALT_FOCUSABLE_IM
+        | IWindowManagerLayoutParams::FLAG_NOT_TOUCH_MODAL
+        | IWindowManagerLayoutParams::FLAG_SPLIT_TOUCH;
+    cp->mToken = NULL;
+    cp->SetWindowAnimations(0); // android.R.style.DropDownAnimationDown;
+}
+
+void MediaController::UpdateFloatingWindowLayout()
+{
+    AutoPtr<ArrayOf<Int32> > anchorPos = ArrayOf<Int32>::Alloc(2);
+    mAnchor->GetLocationOnScreen(anchorPos);
+
+    // we need to know the size of the controller so we can properly position it
+    // within its space
+    Int32 w = 0, h = 0, mesH = 0;
+    mAnchor->GetWidth(&w);
+    mAnchor->GetHeight(&h);
+    mDecor->GetMeasuredHeight(&mesH);
+
+    assert(0 && "TODO");
+    // mDecor->Measure(MeasureSpec.makeMeasureSpec(w, IMeasureSpec::AT_MOST),
+    //             MeasureSpec.makeMeasureSpec(h, IMeasureSpec::AT_MOST));
+
+    CWindowManagerLayoutParams* cp = (CWindowManagerLayoutParams*)mDecorLayoutParams.Get();
+    cp->mWidth = w;
+    cp->SetX((*anchorPos)[0] + (w - cp->mWidth) / 2);
+    cp->SetY((*anchorPos)[1] + h - mesH);
 }
 
 ECode MediaController::SetMediaPlayer(
@@ -157,20 +385,108 @@ ECode MediaController::SetAnchorView(
         /* [in] */ IView* view)
 {
     AutoPtr<MediaControllerOnLayoutChangeListener> mLayoutChangeListener = new MediaControllerOnLayoutChangeListener(this);
-    if(mAnchor) {
+    if(mAnchor != NULL) {
         mAnchor->RemoveOnLayoutChangeListener(mLayoutChangeListener);
     }
     mAnchor = view;
-    if(mAnchor) {
+    if(mAnchor != NULL) {
         mAnchor->AddOnLayoutChangeListener(mLayoutChangeListener);
     }
     AutoPtr<IFrameLayoutLayoutParams> frameParams;
     FAIL_RETURN(CFrameLayoutLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT,
          IViewGroupLayoutParams::MATCH_PARENT, (IFrameLayoutLayoutParams**)&frameParams));
+
     RemoveAllViews();
     AutoPtr<IView> v = MakeControllerView();
-    AddView(v, frameParams);
+    AddView(v, IViewGroupLayoutParams::Probe(frameParams));
     return NOERROR;
+}
+
+AutoPtr<IView> MediaController::MakeControllerView()
+{
+    mRoot = NULL;
+    AutoPtr<IInterface> p;
+    mContext->GetSystemService(
+            IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&p);
+    AutoPtr<ILayoutInflater> inflate = ILayoutInflater::Probe(p);
+    inflate->Inflate(R::layout::media_controller, NULL, (IView**)&mRoot);
+
+    InitControllerView(mRoot);
+
+    return mRoot;
+}
+
+void MediaController::InitControllerView(
+    /* [in] */ IView* view)
+{
+    AutoPtr<IResources> res;
+    mContext->GetResources((IResources**)&res);
+    res->GetText(R::string::lockscreen_transport_play_description, (ICharSequence**)&mPlayDescription);
+    res->GetText(R::string::lockscreen_transport_pause_description, (ICharSequence**)&mPauseDescription);
+    mPauseButton = NULL;
+    view->FindViewById(R::id::pause, (IView**)&mPauseButton);
+    if (mPauseButton != NULL) {
+        Boolean result = FALSE;
+        IView::Probe(mPauseButton)->RequestFocus(&result);
+        AutoPtr<PauseOnClickListener> mPauseListener = new PauseOnClickListener(this);
+        IView::Probe(mPauseButton)->SetOnClickListener(mPauseListener);
+    }
+
+    mFfwdButton = NULL;
+    view->FindViewById(R::id::ffwd, (IView**)&mFfwdButton);
+    if (mFfwdButton != NULL) {
+        AutoPtr<FfwdOnClickListener> mFfwdListener = new FfwdOnClickListener(this);
+        IView::Probe(mFfwdButton)->SetOnClickListener(mFfwdListener);
+        if (!mFromXml) {
+            IView::Probe(mFfwdButton)->SetVisibility(mUseFastForward ? IView::VISIBLE : IView::GONE);
+        }
+    }
+
+    mRewButton = NULL;
+    view->FindViewById(R::id::rew, (IView**)&mRewButton);
+    if (mRewButton != NULL) {
+        AutoPtr<RewOnClickListener> mRewListener = new RewOnClickListener(this);
+        IView::Probe(mRewButton)->SetOnClickListener(mRewListener);
+        if (!mFromXml) {
+            IView::Probe(mRewButton)->SetVisibility(mUseFastForward ? IView::VISIBLE : IView::GONE);
+        }
+    }
+
+    // By default these are hidden. They will be enabled when setPrevNextListeners() is called
+    mNextButton = NULL;
+    view->FindViewById(R::id::next, (IView**)&mNextButton);
+    if (mNextButton != NULL && !mFromXml && !mListenersSet) {
+        IView::Probe(mNextButton)->SetVisibility(IView::GONE);
+    }
+
+    mPrevButton = NULL;
+    view->FindViewById(R::id::prev, (IView**)&mPrevButton);
+    if (mPrevButton != NULL && !mFromXml && !mListenersSet) {
+        IView::Probe(mPrevButton)->SetVisibility(IView::GONE);
+    }
+
+    AutoPtr<IView> p;
+    view->FindViewById(R::id::mediacontroller_progress, (IView**)&p);
+    mProgress = IProgressBar::Probe(p);
+    if (mProgress != NULL) {
+        if (ISeekBar::Probe(mProgress) != NULL) {
+            AutoPtr<ISeekBar> seeker = ISeekBar::Probe(mProgress);
+            AutoPtr<MediaControllerOnSeekBarChangeListener> mSeekListener = new MediaControllerOnSeekBarChangeListener(this);
+            seeker->SetOnSeekBarChangeListener(mSeekListener);
+        }
+        mProgress->SetMax(1000);
+    }
+
+    AutoPtr<IView> t, ct;
+    view->FindViewById(R::id::time, (IView**)&t);
+    mEndTime = ITextView::Probe(t);
+    view->FindViewById(R::id::time_current, (IView**)&ct);
+    mCurrentTime = ITextView::Probe(ct);
+    mFormatBuilder = new StringBuilder();
+    assert(0 && "TODO");
+    //mFormatter = new Formatter(mFormatBuilder, Local.getDefault());
+
+    InstallPrevNextListeners();
 }
 
 ECode MediaController::Show()
@@ -178,19 +494,38 @@ ECode MediaController::Show()
     return Show(sDefaultTimeout);
 }
 
-ECode MediaController::Show(
-        /* [in] */ Int32 timeout)
+void MediaController::DisableUnsupportedButtons()
 {
-    if(!mShowing && mAnchor) {
+    Boolean canPause = FALSE;
+    mPlayer->CanPause(&canPause);
+    if(mPauseButton != NULL && !canPause) {
+        IView::Probe(mPauseButton)->SetEnabled(FALSE);
+    }
+    Boolean canSeekBackward = FALSE;
+    mPlayer->CanSeekBackward(&canSeekBackward);
+    if(mRewButton != NULL && !canSeekBackward) {
+        IView::Probe(mRewButton)->SetEnabled(FALSE);
+    }
+    Boolean canSeekForward = FALSE;
+    mPlayer->CanSeekForward(&canSeekForward);
+    if(mFfwdButton != NULL && !canSeekForward) {
+        IView::Probe(mFfwdButton)->SetEnabled(FALSE);
+    }
+}
+
+ECode MediaController::Show(
+    /* [in] */ Int32 timeout)
+{
+    if(!mShowing && mAnchor != NULL) {
         SetProgress();
-        if(mPauseButton) {
+        if(mPauseButton != NULL) {
             Boolean res = FALSE;
-            mPauseButton->RequestFocus(&res);
+            IView::Probe(mPauseButton)->RequestFocus(&res);
         }
 
         DisableUnsupportedButtons();
         UpdateFloatingWindowLayout();
-        mWindowManager->AddView(mDecor, mDecorLayoutParams);
+        IViewManager::Probe(mWindowManager)->AddView(mDecor, IViewGroupLayoutParams::Probe(mDecorLayoutParams));
         mShowing = TRUE;
     }
     UpdatePausePlay();
@@ -198,9 +533,11 @@ ECode MediaController::Show(
     // cause the progress bar to be updated even if mShowing
     // was already true.  This happens, for example, if we're
     // paused with the progress bar showing the user hits play.
-    Boolean result;
+    Boolean result = FALSE;
     mHandler->SendEmptyMessage(SHOW_PROGRESS, &result);
 
+    AutoPtr<IMessage> msg;
+    mHandler->ObtainMessage(FADE_OUT, (IMessage**)&msg);
     if (timeout != 0) {
         mHandler->RemoveMessages(FADE_OUT);
         mHandler->SendEmptyMessageDelayed(FADE_OUT, timeout, &result);
@@ -209,21 +546,24 @@ ECode MediaController::Show(
     return NOERROR;
 }
 
-Boolean MediaController::IsShowing()
+ECode MediaController::IsShowing(
+    /* [out] */ Boolean* isShowing)
 {
-    return mShowing;
+    VALIDATE_NOT_NULL(isShowing)
+    *isShowing = mShowing;
+    return NOERROR;
 }
 
 ECode MediaController::Hide()
 {
-
-    if (mAnchor == NULL)
+    if (mAnchor == NULL) {
         return NOERROR;
+    }
 
     if (mShowing) {
         //try {
         mHandler->RemoveMessages(SHOW_PROGRESS);
-        mWindowManager->RemoveView(mDecor);
+        IViewManager::Probe(mWindowManager)->RemoveView(mDecor);
         //} catch (IllegalArgumentException ex) {
         //    Log.w("MediaController", "already removed");
         //}
@@ -233,23 +573,117 @@ ECode MediaController::Hide()
     return NOERROR;
 }
 
-Boolean MediaController::OnTouchEvent(
-        /* [in] */ IMotionEvent* event)
+String MediaController::StringForTime(
+    /* [in] */ Int32 timeMs)
 {
-    Show(sDefaultTimeout);
-    return TRUE;
+    Int32 totalSeconds = timeMs / 1000;
+    Int32 seconds = totalSeconds % 60;
+    Int32 minutes = (totalSeconds / 60) % 60;
+    Int32 hours = totalSeconds / 3600;
+    AutoPtr<IInteger32> h;
+    CInteger32::New(hours, (IInteger32**)&h);
+    AutoPtr<IInteger32> m;
+    CInteger32::New(minutes, (IInteger32**)&m);
+    AutoPtr<IInteger32> s;
+    CInteger32::New(seconds, (IInteger32**)&s);
+
+    mFormatBuilder->SetLength(0);
+    if (hours > 0) {
+        AutoPtr<ArrayOf<IInterface*> > arr = ArrayOf<IInterface*>::Alloc(3);
+        (*arr)[0] = h;
+        (*arr)[1] = m;
+        (*arr)[2] = s;
+        mFormatter->Format(String("%d:%02d:%02d"), arr);
+        String str;
+        mFormatter->ToString(&str);
+        return str;
+    }
+    else {
+        AutoPtr<ArrayOf<IInterface*> > arr = ArrayOf<IInterface*>::Alloc(2);
+        (*arr)[0] = m;
+        (*arr)[1] = s;
+        mFormatter->Format(String("%02d:%02d"), arr);
+        String str;
+        mFormatter->ToString(&str);
+        return str;
+    }
 }
 
-Boolean MediaController::OnTrackballEvent(
-        /* [in] */ IMotionEvent* event)
+Int32 MediaController::SetProgress()
 {
-    Show(sDefaultTimeout);
-    return FALSE;
+    if (mPlayer == NULL || mDragging) {
+        return 0;
+    }
+    Int32 position = 0, duration = 0;
+    mPlayer->GetCurrentPosition(&position);
+    mPlayer->GetDuration(&duration);
+    if (mProgress != NULL) {
+        if (duration > 0) {
+            // use long to avoid overflow
+            Int64 pos = 1000L * position / duration;
+            mProgress->SetProgress((Int32)pos);
+        }
+        Int32 percent = 0;
+        mPlayer->GetBufferPercentage(&percent);
+        mProgress->SetSecondaryProgress(percent * 10);
+    }
+
+    if (mEndTime != NULL) {
+        AutoPtr<ICharSequence> charS;
+        ASSERT_SUCCEEDED(CString::New(
+                StringForTime(duration), (ICharSequence**)&charS));
+        mEndTime->SetText(charS);
+    }
+    if (mCurrentTime != NULL) {
+        AutoPtr<ICharSequence> charS;
+        ASSERT_SUCCEEDED(CString::New(
+                StringForTime(position), (ICharSequence**)&charS));
+        mCurrentTime->SetText(charS);
+    }
+
+    return position;
 }
 
-Boolean MediaController::DispatchKeyEvent(
-        /* [in] */ IKeyEvent* event)
+ECode MediaController::OnTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+    Int32 act = 0;
+    event->GetAction(&act);
+    switch (act) {
+        case IMotionEvent::ACTION_DOWN:
+            Show(0); // show until hide is called
+            break;
+        case IMotionEvent::ACTION_UP:
+            Show(sDefaultTimeout); // start timeout
+            break;
+        case IMotionEvent::ACTION_CANCEL:
+            Hide();
+            break;
+        default:
+            break;
+    }
+    *result = TRUE;
+    return NOERROR;
+}
+
+ECode MediaController::OnTrackballEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    Show(sDefaultTimeout);
+    *result = FALSE;
+    return NOERROR;
+}
+
+ECode MediaController::DispatchKeyEvent(
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+
     Int32 keyCode = 0;
     event->GetKeyCode(&keyCode);
     Int32 repeatCount = 0;
@@ -267,325 +701,70 @@ Boolean MediaController::DispatchKeyEvent(
         if(uniqueDown) {
             DoPauseResume();
             Show(sDefaultTimeout);
-            if(mPauseButton) {
+            if(mPauseButton != NULL) {
                 Boolean res = FALSE;
-                mPauseButton->RequestFocus(&res);
+                IView::Probe(mPauseButton)->RequestFocus(&res);
             }
         }
-        return TRUE;
-    } else if (keyCode == IKeyEvent::KEYCODE_MEDIA_PLAY_PAUSE) {
+        *result = TRUE;
+        return NOERROR;
+    }
+    else if (keyCode == IKeyEvent::KEYCODE_MEDIA_PLAY_PAUSE) {
         if(uniqueDown && !isPlaying) {
             mPlayer->Start();
             UpdatePausePlay();
+            Show(sDefaultTimeout);
         }
-        return TRUE;
-    } else if (keyCode == IKeyEvent::KEYCODE_MEDIA_STOP
+        *result = TRUE;
+        return NOERROR;
+    }
+    else if (keyCode == IKeyEvent::KEYCODE_MEDIA_STOP
         || keyCode == IKeyEvent::KEYCODE_MEDIA_PAUSE) {
         if(uniqueDown && !isPlaying) {
             mPlayer->Pause();
             UpdatePausePlay();
             Show(sDefaultTimeout);
         }
-        return TRUE;
-    } else if (keyCode == IKeyEvent::KEYCODE_VOLUME_DOWN
+        *result = TRUE;
+        return NOERROR;
+    }
+    else if (keyCode == IKeyEvent::KEYCODE_VOLUME_DOWN
         || keyCode == IKeyEvent::KEYCODE_VOLUME_UP
         || keyCode == IKeyEvent::KEYCODE_VOLUME_MUTE
         || keyCode == IKeyEvent::KEYCODE_CAMERA) {
-        return FrameLayout::DispatchKeyEvent(event);
-    } else if (keyCode == IKeyEvent::KEYCODE_BACK
+        return FrameLayout::DispatchKeyEvent(event, result);
+    }
+    else if (keyCode == IKeyEvent::KEYCODE_BACK
         || keyCode == IKeyEvent::KEYCODE_MENU) {
         if(uniqueDown) {
             Hide();
         }
-        return TRUE;
-    }
-    Show(sDefaultTimeout);
-    return FrameLayout::DispatchKeyEvent(event);
-}
-
-ECode MediaController::SetEnabled(
-        /* [in] */ Boolean enabled)
-{
-    if (mPauseButton) {
-        mPauseButton->SetEnabled(enabled);
-    }
-    if (mFfwdButton) {
-        mFfwdButton->SetEnabled(enabled);
-    }
-    if (mRewButton) {
-        mRewButton->SetEnabled(enabled);
-    }
-    if (mNextButton) {
-        mNextButton->SetEnabled(enabled && mNextListener != NULL);
-    }
-    if (mPrevButton) {
-        mPrevButton->SetEnabled(enabled && mPrevListener != NULL);
-    }
-    if (mProgress) {
-        mProgress->SetEnabled(enabled);
-    }
-    DisableUnsupportedButtons();
-    return FrameLayout::SetEnabled(enabled);
-}
-
-ECode MediaController::OnInitializeAccessibilityEvent(
-        /* [in] */ IAccessibilityEvent* event)
-{
-    FrameLayout::OnInitializeAccessibilityEvent(event);
-    AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(MEDIACONTROLLER_NAME, (ICharSequence**)&seq));
-    event->SetClassName(seq);
-    return NOERROR;
-}
-
-ECode MediaController::OnInitializeAccessibilityNodeInfo(
-        /* [in] */ IAccessibilityNodeInfo* info)
-{
-    FrameLayout::OnInitializeAccessibilityNodeInfo(info);
-    AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(MEDIACONTROLLER_NAME, (ICharSequence**)&seq));
-    info->SetClassName(seq);
-    return NOERROR;
-}
-
-
-AutoPtr<IView> MediaController::MakeControllerView()
-{
-    mRoot = NULL;
-    AutoPtr<ILayoutInflater> inflate;
-    mContext->GetSystemService(
-            IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inflate);
-    inflate->Inflate(R::layout::media_controller, NULL, (IView**)&mRoot);
-
-    InitControllerView(mRoot);
-
-    return mRoot;
-}
-
-ECode MediaController::InitFloatingWindow()
-{
-    FAIL_RETURN(mContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&mWindowManager));
-    AutoPtr<IPolicyManager> policy;
-    FAIL_RETURN(CPolicyManager::AcquireSingleton((IPolicyManager**)&policy));
-    FAIL_RETURN(policy->MakeNewWindow(mContext, (IWindow**)&mWindow));
-    mWindow->SetWindowManager(mWindowManager, NULL, String(NULL));
-    Boolean result = FALSE;
-    mWindow->RequestFeature(IWindow::FEATURE_NO_TITLE, &result);
-    FAIL_RETURN(mWindow->GetDecorView((IView**)&mDecor));
-    AutoPtr<MediaControllerOnTouchListener> mTouchListener = new MediaControllerOnTouchListener(this);
-    mDecor->SetOnTouchListener(mTouchListener);
-    mWindow->SetContentView((IView*)this->Probe(EIID_IView));
-    FAIL_RETURN(mWindow->SetBackgroundDrawableResource(R::color::transparent));
-
-    mWindow->SetVolumeControlStream(IAudioManager::STREAM_MUSIC);
-
-    SetFocusable(TRUE);
-    SetFocusableInTouchMode(TRUE);
-    SetDescendantFocusability(IViewGroup::FOCUS_AFTER_DESCENDANTS);
-    View::RequestFocus();
-
-    return NOERROR;
-}
-
-ECode MediaController::InitFloatingWindowLayout()
-{
-    FAIL_RETURN(CWindowManagerLayoutParams::New((
-        IWindowManagerLayoutParams**)&mDecorLayoutParams));
-    CWindowManagerLayoutParams* cp = (CWindowManagerLayoutParams*)mDecorLayoutParams.Get();
-    cp->mGravity = IGravity::TOP;
-    cp->mHeight = IViewGroupLayoutParams::WRAP_CONTENT;
-    cp->SetX(0);
-    cp->SetFormat(IPixelFormat::TRANSLUCENT);
-    cp->mType = IWindowManagerLayoutParams::TYPE_APPLICATION_PANEL;
-    cp->mFlags |= IWindowManagerLayoutParams::FLAG_ALT_FOCUSABLE_IM
-        | IWindowManagerLayoutParams::FLAG_NOT_TOUCH_MODAL
-        | IWindowManagerLayoutParams::FLAG_SPLIT_TOUCH;
-    cp->mToken = NULL;
-    cp->SetWindowAnimations(0);
-
-    return NOERROR;
-}
-
-ECode MediaController::UpdateFloatingWindowLayout()
-{
-    Int32 anchorPos[2];
-    mAnchor->GetLocationOnScreen(anchorPos, anchorPos + 1);
-    CWindowManagerLayoutParams* cp = (CWindowManagerLayoutParams*)mDecorLayoutParams.Get();
-    mAnchor->GetWidth(&(cp->mWidth));
-    Int32 height = 0;
-    mAnchor->GetHeight(&height);
-    cp->SetY(anchorPos[1] + height);
-
-    return NOERROR;
-}
-
-ECode MediaController::InitControllerView(
-    /* [in] */ IView* view)
-{
-    mPauseButton = NULL;
-    FAIL_RETURN(view->FindViewById(R::id::pause, (IView**)&mPauseButton));
-    if (mPauseButton != NULL) {
-        Boolean result = FALSE;
-        mPauseButton->RequestFocus(&result);
-        AutoPtr<PauseOnClickListener> mPauseListener = new PauseOnClickListener(this);
-        mPauseButton->SetOnClickListener(mPauseListener);
-    }
-
-    mFfwdButton = NULL;
-    FAIL_RETURN(view->FindViewById(R::id::ffwd, (IView**)&mFfwdButton));
-    if (mFfwdButton != NULL) {
-        AutoPtr<FfwdOnClickListener> mFfwdListener = new FfwdOnClickListener(this);
-        mFfwdButton->SetOnClickListener(mFfwdListener);
-        if (!mFromXml) {
-            mFfwdButton->SetVisibility(mUseFastForward ? IView::VISIBLE : IView::GONE);
-        }
-    }
-
-    mRewButton = NULL;
-    FAIL_RETURN(view->FindViewById(R::id::rew, (IView**)&mRewButton));
-    if (mRewButton != NULL) {
-        AutoPtr<RewOnClickListener> mRewListener = new RewOnClickListener(this);
-        mRewButton->SetOnClickListener(mRewListener);
-        if (!mFromXml) {
-            mRewButton->SetVisibility(mUseFastForward ? IView::VISIBLE : IView::GONE);
-        }
-    }
-
-    mNextButton = NULL;
-    FAIL_RETURN(view->FindViewById(R::id::next, (IView**)&mNextButton));
-    if (mNextButton != NULL && !mFromXml && !mListenersSet) {
-        mNextButton->SetVisibility(IView::GONE);
-    }
-
-    mPrevButton = NULL;
-    FAIL_RETURN(view->FindViewById(R::id::prev, (IView**)&mPrevButton));
-    if (mPrevButton != NULL && !mFromXml && !mListenersSet) {
-        mPrevButton->SetVisibility(IView::GONE);
-    }
-
-    mProgress = NULL;
-    FAIL_RETURN(view->FindViewById(R::id::mediacontroller_progress, (IView**)&mProgress));
-    if (mProgress != NULL) {
-        ISeekBar* pSeekBar = (ISeekBar*)mProgress->Probe(EIID_ISeekBar);
-        if (pSeekBar) {
-            AutoPtr<MediaControllerOnSeekBarChangeListener> mSeekListener = new MediaControllerOnSeekBarChangeListener(this);
-            pSeekBar->SetOnSeekBarChangeListener(mSeekListener);
-        }
-        mProgress->SetMax(1000);
-    }
-
-    mEndTime = NULL;
-    mCurrentTime = NULL;
-    FAIL_RETURN(view->FindViewById(R::id::time, (IView**)&mEndTime));
-    FAIL_RETURN(view->FindViewById(R::id::time_current, (IView**)&mCurrentTime));
-    mFormatBuilder = new StringBuilder();
-    //assert(0 && "TODO");
-    //mFormatter = new Formatter(mFormatBuilder, Local.getDefault());
-
-    InstallPrevNextListeners();
-
-    return NOERROR;
-}
-
-ECode MediaController::DisableUnsupportedButtons()
-{
-    //try{
-        Boolean canPause = FALSE;
-        mPlayer->CanPause(&canPause);
-        if(mPauseButton && !canPause) {
-            mPauseButton->SetEnabled(FALSE);
-        }
-        Boolean canSeekBackward = FALSE;
-        mPlayer->CanSeekBackward(&canSeekBackward);
-        if(mRewButton && !canSeekBackward) {
-            mRewButton->SetEnabled(FALSE);
-        }
-        Boolean canSeekForward = FALSE;
-        mPlayer->CanSeekForward(&canSeekForward);
-        if(mFfwdButton && !canSeekForward) {
-            mFfwdButton->SetEnabled(FALSE);
-        }
-    //} catch {
-
-    //}
-    return NOERROR;
-}
-
-String MediaController::StringForTime(
-        /* [in] */ Int32 timeMs)
-{
-    Int32 totalSeconds = timeMs / 1000;
-    Int32 seconds = totalSeconds % 60;
-    Int32 minutes = (totalSeconds / 60) % 60;
-    Int32 hours = totalSeconds / 3600;
-
-    String result("");
-    if (hours > 0) {
-        result.AppendFormat("%d", hours);
-        result += ":";
-        result.AppendFormat("%2d", minutes);
-        result += ":";
-        result.AppendFormat("%2d", seconds);
-    }
-    else {
-        result.AppendFormat("%2d", minutes);
-        result += ":";
-        result.AppendFormat("%2d", seconds);
-    }
-
-    return result;
-}
-
-Int32 MediaController::SetProgress()
-{
-    if (mPlayer == NULL || mDragging) {
-        return 0;
-    }
-    Int32 position, duration;
-    mPlayer->GetCurrentPosition(&position);
-    mPlayer->GetDuration(&duration);
-    if (mProgress != NULL) {
-        if (duration > 0) {
-            Int32 pos = 1000L * position / duration;
-            mProgress->SetProgress(pos);
-        }
-        Int32 percent;
-        mPlayer->GetBufferPercentage(&percent);
-        mProgress->SetSecondaryProgress(percent * 10);
-    }
-
-    if (mEndTime != NULL) {
-        AutoPtr<ICharSequence> charS;
-        ASSERT_SUCCEEDED(CStringWrapper::New(
-                StringForTime(duration), (ICharSequence**)&charS));
-        mEndTime->SetText(charS);
-    }
-    if (mCurrentTime != NULL) {
-        AutoPtr<ICharSequence> charS;
-        ASSERT_SUCCEEDED(CStringWrapper::New(
-                StringForTime(position), (ICharSequence**)&charS));
-        mCurrentTime->SetText(charS);
-    }
-
-    return 0;
-}
-
-ECode MediaController::UpdatePausePlay()
-{
-    if(!mRoot || !mPauseButton) {
+        *result = TRUE;
         return NOERROR;
     }
+    Show(sDefaultTimeout);
+    return FrameLayout::DispatchKeyEvent(event, result);
+}
+
+void MediaController::UpdatePausePlay()
+{
+    if(mRoot == NULL || mPauseButton == NULL) {
+        return;
+    }
+
     Boolean isPlaying = FALSE;
     mPlayer->IsPlaying(&isPlaying);
     if(isPlaying) {
-        mPauseButton->SetImageResource(R::drawable::ic_media_pause);
-    } else {
-        mPauseButton->SetImageResource(R::drawable::ic_media_play);
+        IImageView::Probe(mPauseButton)->SetImageResource(R::drawable::ic_media_pause);
+        IView::Probe(mPauseButton)->SetContentDescription(mPauseDescription);
     }
-    return NOERROR;
+    else {
+        IImageView::Probe(mPauseButton)->SetImageResource(R::drawable::ic_media_play);
+        IView::Probe(mPauseButton)->SetContentDescription(mPlayDescription);
+    }
 }
 
-ECode MediaController::DoPauseResume()
+void MediaController::DoPauseResume()
 {
     Boolean isPlaying = FALSE;
     mPlayer->IsPlaying(&isPlaying);
@@ -596,27 +775,69 @@ ECode MediaController::DoPauseResume()
         mPlayer->Start();
     }
     UpdatePausePlay();
+}
 
+ECode MediaController::SetEnabled(
+    /* [in] */ Boolean enabled)
+{
+    if (mPauseButton != NULL) {
+        IView::Probe(mPauseButton)->SetEnabled(enabled);
+    }
+    if (mFfwdButton != NULL) {
+        IView::Probe(mFfwdButton)->SetEnabled(enabled);
+    }
+    if (mRewButton != NULL) {
+        IView::Probe(mRewButton)->SetEnabled(enabled);
+    }
+    if (mNextButton != NULL) {
+        IView::Probe(mNextButton)->SetEnabled(enabled && mNextListener != NULL);
+    }
+    if (mPrevButton != NULL) {
+        IView::Probe(mPrevButton)->SetEnabled(enabled && mPrevListener != NULL);
+    }
+    if (mProgress != NULL) {
+        IView::Probe(mProgress)->SetEnabled(enabled);
+    }
+    DisableUnsupportedButtons();
+    return FrameLayout::SetEnabled(enabled);
+}
+
+ECode MediaController::OnInitializeAccessibilityEvent(
+    /* [in] */ IAccessibilityEvent* event)
+{
+    FrameLayout::OnInitializeAccessibilityEvent(event);
+    AutoPtr<ICharSequence> seq;
+    FAIL_RETURN(CString::New(MEDIACONTROLLER_NAME, (ICharSequence**)&seq));
+    IAccessibilityRecord::Probe(event)->SetClassName(seq);
     return NOERROR;
 }
 
-ECode MediaController::InstallPrevNextListeners()
+ECode MediaController::OnInitializeAccessibilityNodeInfo(
+    /* [in] */ IAccessibilityNodeInfo* info)
+{
+    FrameLayout::OnInitializeAccessibilityNodeInfo(info);
+    AutoPtr<ICharSequence> seq;
+    FAIL_RETURN(CString::New(MEDIACONTROLLER_NAME, (ICharSequence**)&seq));
+    info->SetClassName(seq);
+    return NOERROR;
+}
+
+void MediaController::InstallPrevNextListeners()
 {
     if (mNextButton != NULL) {
-        mNextButton->SetOnClickListener(mNextListener);
-        mNextButton->SetEnabled(mNextListener != NULL);
+        IView::Probe(mNextButton)->SetOnClickListener(mNextListener);
+        IView::Probe(mNextButton)->SetEnabled(mNextListener != NULL);
     }
 
     if (mPrevButton != NULL) {
-        mPrevButton->SetOnClickListener(mPrevListener);
-        mPrevButton->SetEnabled(mPrevListener != NULL);
+        IView::Probe(mPrevButton)->SetOnClickListener(mPrevListener);
+        IView::Probe(mPrevButton)->SetEnabled(mPrevListener != NULL);
     }
-    return NOERROR;
 }
 
 ECode MediaController::SetPrevNextListeners(
-        /* [in] */ IViewOnClickListener* next,
-        /* [in] */ IViewOnClickListener* prev)
+    /* [in] */ IViewOnClickListener* next,
+    /* [in] */ IViewOnClickListener* prev)
 {
     mNextListener = next;
     mPrevListener = prev;
@@ -626,10 +847,10 @@ ECode MediaController::SetPrevNextListeners(
         InstallPrevNextListeners();
 
         if (mNextButton != NULL && !mFromXml) {
-            mNextButton->SetVisibility(IView::VISIBLE);
+            IView::Probe(mNextButton)->SetVisibility(IView::VISIBLE);
         }
         if (mPrevButton != NULL && !mFromXml) {
-            mPrevButton->SetVisibility(IView::VISIBLE);
+            IView::Probe(mPrevButton)->SetVisibility(IView::VISIBLE);
         }
     }
 
@@ -641,183 +862,9 @@ ECode MediaController::HandleShowProgress()
     Int32 pos = SetProgress();
     Boolean isPlaying = FALSE;
     if (!mDragging && mShowing && (mPlayer->IsPlaying(&isPlaying), isPlaying)) {
-        Boolean result;
+        Boolean result = FALSE;
         mHandler->SendEmptyMessageDelayed(SHOW_PROGRESS, 1000 - (pos % 1000), &result);
     }
-    return NOERROR;
-}
-
-//==============================================================================================
-//          MediaController::MediaControllerOnTouchListener
-//==============================================================================================
-
-MediaController::MediaControllerOnTouchListener::MediaControllerOnTouchListener(
-    /* [in] */ MediaController* host) :
-    host(host)
-{
-}
-
-ECode MediaController::MediaControllerOnTouchListener::OnTouch(
-    /* [in] */ IView* v,
-    /* [in] */ IMotionEvent* event,
-    /* [out] */ Boolean* res)
-{
-    Int32 action = 0;
-    event->GetAction(&action);
-    if(action == IMotionEvent::ACTION_DOWN) {
-        if(host->mShowing) {
-            host->Hide();
-        }
-    }
-    *res = FALSE;
-    return NOERROR;
-}
-
-//==============================================================================================
-//          MediaController::MediaControllerOnLayoutChangeListener
-//==============================================================================================
-
-MediaController::MediaControllerOnLayoutChangeListener::MediaControllerOnLayoutChangeListener(
-    /* [in] */ MediaController* host) :
-    host(host)
-{
-
-}
-
-ECode MediaController::MediaControllerOnLayoutChangeListener::OnLayoutChange(
-    /* [in] */ IView* v,
-    /* [in] */ Int32 left,
-    /* [in] */ Int32 top,
-    /* [in] */ Int32 right,
-    /* [in] */ Int32 bottom,
-    /* [in] */ Int32 oldLeft,
-    /* [in] */ Int32 oldTop,
-    /* [in] */ Int32 oldRight,
-    /* [in] */ Int32 oldBottom)
-{
-    host->UpdateFloatingWindowLayout();
-    if(host->mShowing) {
-        host->mWindowManager->UpdateViewLayout(host->mDecor, host->mDecorLayoutParams);
-    }
-    return NOERROR;
-}
-
-//==============================================================================================
-//          MediaController::PauseOnClickListener
-//==============================================================================================
-
-MediaController::PauseOnClickListener::PauseOnClickListener(
-    /* [in] */ MediaController* host) :
-    host(host)
-{
-
-}
-
-ECode MediaController::PauseOnClickListener::OnClick(
-    /* [in] */ IView* v)
-{
-    host->DoPauseResume();
-    host->Show(host->sDefaultTimeout);
-    return NOERROR;
-}
-
-//==============================================================================================
-//          MediaController::FfwdOnClickListener
-//==============================================================================================
-
-MediaController::FfwdOnClickListener::FfwdOnClickListener(
-    /* [in] */ MediaController* host) :
-    host(host)
-{
-
-}
-
-ECode MediaController::FfwdOnClickListener::OnClick(
-    /* [in] */ IView* v)
-{
-    Int32 pos = 0;
-    host->mPlayer->GetCurrentPosition(&pos);
-    pos += 15000;
-    host->mPlayer->SeekTo(pos);
-    host->SetProgress();
-
-    host->Show(host->sDefaultTimeout);
-    return NOERROR;
-}
-
-//==============================================================================================
-//          MediaController::RewOnClickListener
-//==============================================================================================
-
-MediaController::RewOnClickListener::RewOnClickListener(
-    /* [in] */ MediaController* host) :
-    host(host)
-{
-
-}
-
-ECode MediaController::RewOnClickListener::OnClick(
-    /* [in] */ IView* v)
-{
-    Int32 pos = 0;
-    host->mPlayer->GetCurrentPosition(&pos);
-    pos -= 5000;
-    host->mPlayer->SeekTo(pos);
-    host->SetProgress();
-
-    host->Show(host->sDefaultTimeout);
-    return NOERROR;
-}
-
-//==============================================================================================
-//          MediaController::MediaControllerOnSeekBarChangeListener
-//==============================================================================================
-
-MediaController::MediaControllerOnSeekBarChangeListener::MediaControllerOnSeekBarChangeListener(
-    /* [in] */ MediaController* host) :
-    host(host)
-{
-}
-
-ECode MediaController::MediaControllerOnSeekBarChangeListener::OnStartTrackingTouch(
-    /* [in] */ ISeekBar* seekBar)
-{
-    host->Show(3600000);
-    host->mDragging = TRUE;
-    host->mHandler->RemoveMessages(MediaController::SHOW_PROGRESS);
-    return NOERROR;
-}
-
-ECode MediaController::MediaControllerOnSeekBarChangeListener::OnProgressChanged(
-    /* [in] */ ISeekBar* seekBar,
-    /* [in] */ Int32 progress,
-    /* [in] */ Boolean fromUser)
-{
-    if(!fromUser) {
-        return NOERROR;
-    }
-    Int32 duration = 0;
-    host->mPlayer->GetDuration(&duration);
-    Int64 newPosition = (duration * progress) / 1000L;
-    host->mPlayer->SeekTo((Int32)newPosition);
-    if(host->mCurrentTime) {
-        AutoPtr<ICharSequence> csq;
-        CStringWrapper::New(host->StringForTime(Int32(newPosition)), (ICharSequence**)&csq);
-        host->mCurrentTime->SetText(csq);
-    }
-    return NOERROR;
-}
-
-ECode MediaController::MediaControllerOnSeekBarChangeListener::OnStopTrackingTouch(
-    /* [in] */ ISeekBar* seekBar)
-{
-    host->mDragging = FALSE;
-    host->SetProgress();
-    host->UpdatePausePlay();
-    host->Show(sDefaultTimeout);
-
-    Boolean result;
-    host->mHandler->SendEmptyMessage(MediaController::SHOW_PROGRESS, &result);
     return NOERROR;
 }
 

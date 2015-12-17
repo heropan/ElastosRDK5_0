@@ -1,6 +1,6 @@
 
-#include "am/CShutdownReceiver.h"
-#include "am/CActivityManagerService.h"
+#include "elastos/droid/server/am/CShutdownReceiver.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
 
 namespace Elastos {
 namespace Droid {

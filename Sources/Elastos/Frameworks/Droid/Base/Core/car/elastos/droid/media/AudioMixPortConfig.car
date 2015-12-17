@@ -17,7 +17,7 @@ module
          * Returns the audio mix port this AudioMixPortConfig is issued from.
          */
         Port(
-            [out] IAudioMixPort ** result);
+            [out] IAudioMixPort** result);
 
     }
     } // namespace media

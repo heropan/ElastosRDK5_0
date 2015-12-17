@@ -2,22 +2,59 @@
 #include "elastos/droid/server/display/AutomaticBrightnessController.h"
 #include <elastos/droid/os/SystemClock.h>
 #include <elastos/droid/utility/MathUtils.h>
+#include <elastos/droid/utility/TimeUtils.h>
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/Arrays.h>
 
 using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Os::IPowerManager;
 using Elastos::Droid::Os::IPowerManagerHelper;
 using Elastos::Droid::Os::CPowerManagerHelper;
 using Elastos::Droid::Text::Format::IDateUtils;
 using Elastos::Droid::Utility::MathUtils;
+using Elastos::Droid::Utility::TimeUtils;
+using Elastos::Droid::Hardware::EIID_ISensorEventListener;
+using Elastos::Droid::Server::Twilight::EIID_ITwilightListener;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::Arrays;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Display {
+
+static Boolean InitUSE_TWILIGHT_ADJUSTMENT()
+{
+    AutoPtr<IPowerManagerHelper> helper;
+    CPowerManagerHelper::AcquireSingleton((IPowerManagerHelper**)&helper);
+    Boolean bval;
+    helper->UseTwilightAdjustmentFeature(&bval);
+    return bval;
+}
+const String AutomaticBrightnessController::TAG("AutomaticBrightnessController");
+
+const Boolean AutomaticBrightnessController::DEBUG = FALSE;
+const Boolean AutomaticBrightnessController::DEBUG_PRETEND_LIGHT_SENSOR_ABSENT = FALSE;
+
+const Boolean AutomaticBrightnessController::USE_SCREEN_AUTO_BRIGHTNESS_ADJUSTMENT = TRUE;
+const Float AutomaticBrightnessController::SCREEN_AUTO_BRIGHTNESS_ADJUSTMENT_MAX_GAMMA = 3.0f;
+const Int32 AutomaticBrightnessController::LIGHT_SENSOR_RATE_MILLIS = 1000;
+const Int32 AutomaticBrightnessController::AMBIENT_LIGHT_HORIZON = 10000;
+const Int64 AutomaticBrightnessController::BRIGHTENING_LIGHT_DEBOUNCE = 4000;
+const Int64 AutomaticBrightnessController::DARKENING_LIGHT_DEBOUNCE = 8000;
+const Float AutomaticBrightnessController::BRIGHTENING_LIGHT_HYSTERESIS = 0.10f;
+const Float AutomaticBrightnessController::DARKENING_LIGHT_HYSTERESIS = 0.20f;
+const Int32 AutomaticBrightnessController::WEIGHTING_INTERCEPT = 10000;//AMBIENT_LIGHT_HORIZON;
+const Int64 AutomaticBrightnessController::AMBIENT_LIGHT_PREDICTION_TIME_MILLIS = 100;
+
+const Boolean AutomaticBrightnessController::USE_TWILIGHT_ADJUSTMENT = InitUSE_TWILIGHT_ADJUSTMENT();
+
+const Float AutomaticBrightnessController::TWILIGHT_ADJUSTMENT_MAX_GAMMA = 1.5f;
+const Int64 AutomaticBrightnessController::TWILIGHT_ADJUSTMENT_TIME = IDateUtils::HOUR_IN_MILLIS * 2;
+const Int32 AutomaticBrightnessController::MSG_UPDATE_AMBIENT_LUX = 1;
 
 //=============================================================================
 // AutomaticBrightnessController::AutomaticBrightnessHandler
@@ -58,7 +95,7 @@ AutomaticBrightnessController::MySensorEventListener::MySensorEventListener(
 ECode AutomaticBrightnessController::MySensorEventListener::OnSensorChanged(
     /* [in] */ ISensorEvent* event)
 {
-    if (mLightSensorEnabled) {
+    if (mHost->mLightSensorEnabled) {
         Int64 time = SystemClock::GetUptimeMillis();
         AutoPtr<ArrayOf<Float> > values;
         event->GetValues((ArrayOf<Float>**)&values);
@@ -293,38 +330,8 @@ ECode AutomaticBrightnessController::AmbientLightRingBuffer::OffsetOf(
 // AutomaticBrightnessController
 //=============================================================================
 
-static Boolean InitUSE_TWILIGHT_ADJUSTMENT()
-{
-    AutoPtr<IPowerManagerHelper> helper;
-    IPowerManagerHelper::AcquireSinglton((IPowerManagerHelper**)&helper);
-    Boolean bval;
-    helper->UseTwilightAdjustmentFeature(&bval);
-    return bval;
-}
-const String AutomaticBrightnessController::TAG("AutomaticBrightnessController");
-
-const Boolean AutomaticBrightnessController::DEBUG = FALSE;
-const Boolean AutomaticBrightnessController::DEBUG_PRETEND_LIGHT_SENSOR_ABSENT = FALSE;
-
-const Boolean AutomaticBrightnessController::USE_SCREEN_AUTO_BRIGHTNESS_ADJUSTMENT = TRUE;
-const Float AutomaticBrightnessController::SCREEN_AUTO_BRIGHTNESS_ADJUSTMENT_MAX_GAMMA = 3.0f;
-const Int32 AutomaticBrightnessController::LIGHT_SENSOR_RATE_MILLIS = 1000;
-const Int32 AutomaticBrightnessController::AMBIENT_LIGHT_HORIZON = 10000;
-const Int64 AutomaticBrightnessController::BRIGHTENING_LIGHT_DEBOUNCE = 4000;
-const Int64 AutomaticBrightnessController::DARKENING_LIGHT_DEBOUNCE = 8000;
-const Float AutomaticBrightnessController::BRIGHTENING_LIGHT_HYSTERESIS = 0.10f;
-const Float AutomaticBrightnessController::DARKENING_LIGHT_HYSTERESIS = 0.20f;
-const Int32 AutomaticBrightnessController::WEIGHTING_INTERCEPT = 10000;//AMBIENT_LIGHT_HORIZON;
-const Int64 AutomaticBrightnessController::AMBIENT_LIGHT_PREDICTION_TIME_MILLIS = 100;
-
-const Boolean USE_TWILIGHT_ADJUSTMENT = InitUSE_TWILIGHT_ADJUSTMENT();
-
-const Float AutomaticBrightnessController::TWILIGHT_ADJUSTMENT_MAX_GAMMA = 1.5f;
-const Int64 AutomaticBrightnessController::TWILIGHT_ADJUSTMENT_TIME = IDateUtils::HOUR_IN_MILLIS * 2;
-const Int32 AutomaticBrightnessController::MSG_UPDATE_AMBIENT_LUX = 1;
-
 AutomaticBrightnessController::AutomaticBrightnessController(
-    /* [in] */ IAutomaticBrightnessControllerCallbacks callbacks,
+    /* [in] */ IAutomaticBrightnessControllerCallbacks* callbacks,
     /* [in] */ ILooper* looper,
     /* [in] */ ISensorManager* sensorManager,
     /* [in] */ ISpline* autoBrightnessSpline,
@@ -367,7 +374,8 @@ AutomaticBrightnessController::AutomaticBrightnessController(
     }
 
     if (USE_TWILIGHT_ADJUSTMENT) {
-        mTwilight->RegisterListener(mTwilightListener.Get(), mHandler);
+        assert(0 && "TODO");
+        // mTwilight->RegisterListener(mTwilightListener.Get(), mHandler);
     }
 }
 
@@ -420,10 +428,11 @@ Boolean AutomaticBrightnessController::SetLightSensorEnabled(
 {
     if (enable) {
         if (!mLightSensorEnabled) {
+            Boolean bval;
             mLightSensorEnabled = TRUE;
             mLightSensorEnableTime = SystemClock::GetUptimeMillis();
             mSensorManager->RegisterListener(mLightSensorListener, mLightSensor,
-                    LIGHT_SENSOR_RATE_MILLIS * 1000, mHandler);
+                    LIGHT_SENSOR_RATE_MILLIS * 1000, mHandler, &bval);
             return TRUE;
         }
     }
@@ -613,7 +622,7 @@ void AutomaticBrightnessController::UpdateAmbientLux(
     nextTransitionTime =
             nextTransitionTime > time ? nextTransitionTime : time + LIGHT_SENSOR_RATE_MILLIS;
     if (DEBUG) {
-        Slogger::D(TAG, "UpdateAmbientLux: Scheduling ambient lux update for %ld %s"
+        Slogger::D(TAG, "UpdateAmbientLux: Scheduling ambient lux update for %ld %s",
             nextTransitionTime, TimeUtils::FormatUptime(nextTransitionTime).string());
     }
     Boolean bval;
@@ -628,7 +637,8 @@ void AutomaticBrightnessController::UpdateAutoBrightness(
     }
 
     using Elastos::Core::Math;
-    Float value = mScreenAutoBrightnessSpline->Interpolate(mAmbientLux);
+    Float value;
+    mScreenAutoBrightnessSpline->Interpolate(mAmbientLux, &value);
     Float gamma = 1.0f;
 
     if (USE_SCREEN_AUTO_BRIGHTNESS_ADJUSTMENT
@@ -637,7 +647,7 @@ void AutomaticBrightnessController::UpdateAutoBrightness(
                 Math::Min(1.0f, Math::Max(-1.0f, -mScreenAutoBrightnessAdjustment)));
         gamma *= adjGamma;
         if (DEBUG) {
-            Slogger::D(TAG, "UpdateAutoBrightness: adjGamma=" + adjGamma);
+            Slogger::D(TAG, "UpdateAutoBrightness: adjGamma=%f", adjGamma);
         }
     }
 
@@ -668,7 +678,7 @@ void AutomaticBrightnessController::UpdateAutoBrightness(
 
     if (gamma != 1.0f) {
         Float in = value;
-        value = MathUtils::pow(value, gamma);
+        value = MathUtils::Pow(value, gamma);
         if (DEBUG) {
             Slogger::D(TAG, "UpdateAutoBrightness: gamma=%f, in= %f, out=%f",
                 gamma, in, value);

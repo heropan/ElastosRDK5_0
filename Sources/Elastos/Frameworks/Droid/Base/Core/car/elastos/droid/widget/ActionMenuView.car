@@ -73,6 +73,8 @@ module
      * interface Elastos.Droid.View.IKeyEventCallback
      * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
      * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
+     * interface Elastos.Droid.Internal.View.Menu.IMenuBuilderItemInvoker
+     * interface Elastos.Droid.Internal.View.Menu.IMenuView
      */
 
     [local]
@@ -192,7 +194,8 @@ module
         DismissPopupMenus();
 
         DispatchPopulateAccessibilityEvent(
-            [in] IAccessibilityEvent* event);
+            [in] IAccessibilityEvent* event,
+            [out] Boolean* result);
 
         /** @hide */
         SetExpandedActionViewsExclusive(

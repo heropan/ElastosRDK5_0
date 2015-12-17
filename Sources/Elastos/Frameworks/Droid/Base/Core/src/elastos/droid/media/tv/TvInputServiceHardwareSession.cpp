@@ -19,7 +19,7 @@ namespace Media {
 namespace Tv {
 
 ECode TvInputServiceHardwareSession::HardwareSessionCallback::OnSessionCreated(
-    /* [in] */ ITvInputManagerSession * session)
+    /* [in] */ ITvInputManagerSession* session)
 {
     mHost->mHardwareSession = session;
     AutoPtr<SomeArgs> args = SomeArgs::Obtain();
@@ -43,7 +43,7 @@ ECode TvInputServiceHardwareSession::HardwareSessionCallback::OnSessionCreated(
 }
 
 ECode TvInputServiceHardwareSession::HardwareSessionCallback::OnVideoAvailable(
-    /* [in] */ ITvInputManagerSession * session)
+    /* [in] */ ITvInputManagerSession* session)
 {
     if (mHost->mHardwareSession.Get() == session) {
         mHost->OnHardwareVideoAvailable();
@@ -52,7 +52,7 @@ ECode TvInputServiceHardwareSession::HardwareSessionCallback::OnVideoAvailable(
 }
 
 ECode TvInputServiceHardwareSession::HardwareSessionCallback::OnVideoUnavailable(
-    /* [in] */ ITvInputManagerSession * session,
+    /* [in] */ ITvInputManagerSession* session,
     /* [in] */ Int32 reason)
 {
     if (mHost->mHardwareSession.Get() == session) {
@@ -79,7 +79,7 @@ ECode TvInputServiceHardwareSession::constructor(
 }
 
 ECode TvInputServiceHardwareSession::GetHardwareInputId(
-    /* [out] */ String * result)
+    /* [out] */ String* result)
 {
     return NOERROR;
 }

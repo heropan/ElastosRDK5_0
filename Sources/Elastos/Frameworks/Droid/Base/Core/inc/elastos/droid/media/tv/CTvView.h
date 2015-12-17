@@ -3,13 +3,16 @@
 
 #include "_Elastos_Droid_Media_Tv_CTvView.h"
 #include "elastos/droid/ext/frameworkext.h"
-//TODO: Need SurfaceView
-// #include "elastos/droid/view/SurfaceView.h"
+#include "elastos/droid/view/SurfaceView.h"
 #include "elastos/droid/view/ViewGroup.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::View::IInputEvent;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IMotionEvent;
@@ -18,13 +21,8 @@ using Elastos::Droid::View::ISurfaceHolder;
 using Elastos::Droid::View::ISurfaceHolderCallback;
 using Elastos::Droid::View::ISurfaceView;
 using Elastos::Droid::View::IView;
-//TODO: Need SurfaceView
-// using Elastos::Droid::View::SurfaceView;
+using Elastos::Droid::View::SurfaceView;
 using Elastos::Droid::View::ViewGroup;
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Utility::IList;
 
 namespace Elastos {
@@ -135,27 +133,23 @@ private:
         CTvView* mHost;
     };
 
-//TODO: Need SurfaceView
-    // class MySurfaceView
-    //     : public SurfaceView
-    // {
-    // public:
-    //     MySurfaceView(
-    //         /* [in] */ IContext* context,
-    //         /* [in] */ IAttributeSet* attrs,
-    //         /* [in] */ Int32 defStyle,
-    //         /* [in] */ CTvView* host)
-    //         : SurfaceView(context, attrs, defStyle)
-    //         , mHost(host)
-    //     {}
+    class MySurfaceView
+        : public SurfaceView
+    {
+    public:
+        MySurfaceView(
+            /* [in] */ IContext* context,
+            /* [in] */ IAttributeSet* attrs,
+            /* [in] */ Int32 defStyle,
+            /* [in] */ CTvView* host);
 
-    //     CARAPI UpdateWindow(
-    //         /* [in] */ Boolean force,
-    //         /* [in] */ Boolean redrawNeeded);
+        CARAPI UpdateWindow(
+            /* [in] */ Boolean force,
+            /* [in] */ Boolean redrawNeeded);
 
-    // private:
-    //     CTvView* mHost;
-    // };
+    private:
+        CTvView* mHost;
+    };
 
     class MySessionCallback
         : public Object
@@ -311,11 +305,11 @@ private:
 public:
     CTvView();
 
+    virtual ~CTvView();
+
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
-
-    virtual ~CTvView();
 
     CARAPI constructor(
         /* [in] */ IContext* context);

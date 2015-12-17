@@ -18,33 +18,44 @@ namespace Widget {
  * something other than {@link android.widget.ListView#CHOICE_MODE_NONE CHOICE_MODE_NONE}.
  *
  */
-class CheckedTextView : public TextView
+class CheckedTextView
+    : public TextView
+    , public ICheckedTextView
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CheckedTextView();
 
-    CheckedTextView(
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    CheckedTextView(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    CheckedTextView(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
+        /* [in] */ Int32 defStyleAttr);
 
-    virtual CARAPI Toggle();
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
-    virtual CARAPI_(Boolean) IsChecked();
+    CARAPI Toggle();
+
+    CARAPI IsChecked(
+        /* [out] */ Boolean* isChecked);
 
     /**
      * <p>Changes the checked state of this text view.</p>
      *
      * @param checked true to check the text, false to uncheck it
      */
-    virtual CARAPI SetChecked(
+    CARAPI SetChecked(
         /* [in] */ Boolean checked);
 
 
@@ -54,7 +65,7 @@ public:
      *
      * @param resid The Drawable to use for the checkmark.
      */
-    virtual CARAPI SetCheckMarkDrawable(
+    CARAPI SetCheckMarkDrawable(
         /* [in] */ Int32 resid);
 
     /**
@@ -62,10 +73,28 @@ public:
      *
      * @param d The Drawable to use for the checkmark.
      */
-    virtual CARAPI SetCheckMarkDrawable(
+    CARAPI SetCheckMarkDrawable(
         /* [in] */ IDrawable* d);
 
-    virtual CARAPI_(AutoPtr<IDrawable>) GetCheckMarkDrawable();
+    CARAPI GetCheckMarkDrawable(
+        /* [out] */ IDrawable** drawable);
+
+    CARAPI SetCheckMarkTintList(
+        /* [in] */ IColorStateList* tint);
+
+    CARAPI GetCheckMarkTintList(
+        /* [out] */ IColorStateList** tint);
+
+    CARAPI SetCheckMarkTintMode(
+        /* [in] */ PorterDuffMode tintMode);
+
+    CARAPI GetCheckMarkTintMode(
+        /* [out] */ PorterDuffMode* tintMode);
+
+    CARAPI JumpDrawablesToCurrentState();
+
+    CARAPI SetVisibility(
+        /* [in] */ Int32 visibility);
 
     virtual CARAPI_(void) OnDraw(
         /* [in] */ ICanvas* canvas);
@@ -85,18 +114,6 @@ public:
     virtual CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
-
 protected:
     //@Override
     CARAPI_(void) InternalSetPadding(
@@ -105,18 +122,37 @@ protected:
         /* [in] */ Int32 right,
         /* [in] */ Int32 bottom);
 
+    CARAPI_(Boolean) VerifyDrawable(
+        /* [in] */ IDrawable* who);
+
+    CARAPI DrawableHotspotChanged(
+        /* [in] */ Float x,
+        /* [in] */ Float y);
+
 private:
     CARAPI_(void) UpdatePadding();
 
     CARAPI_(void) SetBasePadding(
         /* [in] */ Boolean isLayoutRtl);
 
+    CARAPI_(void) ApplyCheckMarkTint();
+
+    CARAPI_(Boolean) IsCheckMarkAtStart();
+
 private:
     Boolean mChecked;
+
     Int32 mCheckMarkResource;
     AutoPtr<IDrawable> mCheckMarkDrawable;
+    AutoPtr<IColorStateList> mCheckMarkTintList;
+    PorterDuffMode mCheckMarkTintMode;
+    Boolean mHasCheckMarkTint;
+    Boolean mHasCheckMarkTintMode;
+
     Int32 mBasePadding;
     Int32 mCheckMarkWidth;
+    Int32 mCheckMarkGravity;
+
     Boolean mNeedRequestlayout;
 
     static AutoPtr<ArrayOf<Int32> > CHECKED_STATE_SET;

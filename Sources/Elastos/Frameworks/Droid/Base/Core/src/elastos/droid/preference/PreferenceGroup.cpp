@@ -36,7 +36,7 @@ ECode PreferenceGroup::constructor(
     FAIL_RETURN(Preference::constructor(context, attrs, defStyleAttr, defStyleRes));
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::PreferenceGroup),
-            ARRAY_SIZE(R::styleable::PreferenceGroup));
+            ArraySize(R::styleable::PreferenceGroup));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
     a->GetBoolean(R::styleable::PreferenceGroup_orderingFromXml,

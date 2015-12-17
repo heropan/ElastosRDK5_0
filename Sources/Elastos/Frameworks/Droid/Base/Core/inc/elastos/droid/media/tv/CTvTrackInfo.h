@@ -25,11 +25,11 @@ public:
 
     CTvTrackInfo();
 
+    virtual ~CTvTrackInfo();
+
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
-
-    virtual ~CTvTrackInfo();
 
     CARAPI constructor(
         /* [in] */ Int32 type,
@@ -53,61 +53,61 @@ public:
      * {@link #TYPE_AUDIO}, {@link #TYPE_VIDEO} and {@link #TYPE_SUBTITLE}.
      */
     CARAPI GetType(
-        /* [out] */ Int32 * result);
+        /* [out] */ Int32* result);
 
     /**
      * Returns the ID of the track.
      */
     CARAPI GetId(
-        /* [out] */ String * result);
+        /* [out] */ String* result);
 
     /**
      * Returns the language information encoded by either ISO 639-1 or ISO 639-2/T. If the language
      * is unknown or could not be determined, the corresponding value will be {@code null}.
      */
     CARAPI GetLanguage(
-        /* [out] */ String * result);
+        /* [out] */ String* result);
 
     /**
      * Returns the audio channel count. Valid only for {@link #TYPE_AUDIO} tracks.
      */
     CARAPI GetAudioChannelCount(
-        /* [out] */ Int32 * result);
+        /* [out] */ Int32* result);
 
     /**
      * Returns the audio sample rate, in the unit of Hz. Valid only for {@link #TYPE_AUDIO} tracks.
      */
     CARAPI GetAudioSampleRate(
-        /* [out] */ Int32 * result);
+        /* [out] */ Int32* result);
 
     /**
      * Returns the width of the video, in the unit of pixels. Valid only for {@link #TYPE_VIDEO}
      * tracks.
      */
     CARAPI GetVideoWidth(
-        /* [out] */ Int32 * result);
+        /* [out] */ Int32* result);
 
     /**
      * Returns the height of the video, in the unit of pixels. Valid only for {@link #TYPE_VIDEO}
      * tracks.
      */
     CARAPI GetVideoHeight(
-        /* [out] */ Int32 * result);
+        /* [out] */ Int32* result);
 
     /**
      * Returns the frame rate of the video, in the unit of fps (frames per second). Valid only for
      * {@link #TYPE_VIDEO} tracks.
      */
     CARAPI GetVideoFrameRate(
-        /* [out] */ Float * result);
+        /* [out] */ Float* result);
 
     /**
      * Returns the extra information about the current track.
      */
     CARAPI GetExtra(
-        /* [out] */ IBundle ** result);
+        /* [out] */ IBundle** result);
 
-public:
+private:
     Int32 mType;
     String mId;
     String mLanguage;

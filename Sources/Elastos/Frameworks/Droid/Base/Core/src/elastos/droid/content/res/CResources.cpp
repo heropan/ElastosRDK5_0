@@ -742,7 +742,7 @@ ECode CResources::GetStringArray(
     return E_NOT_FOUND_EXCEPTION;
 }
 
-ECode CResources::GetIntArray(
+ECode CResources::GetInt32Array(
     /* [in] */ Int32 id,
     /* [out, callee] */ ArrayOf<Int32>** ints)
 {
@@ -1745,7 +1745,7 @@ ECode CResources::ParseBundleExtra(
 
     assert(attrs != NULL);
 
-    Int32 size = ARRAY_SIZE(R::styleable::Extra);
+    Int32 size = ArraySize(R::styleable::Extra);
     AutoPtr<ArrayOf<Int32> > layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::Extra, size);
 

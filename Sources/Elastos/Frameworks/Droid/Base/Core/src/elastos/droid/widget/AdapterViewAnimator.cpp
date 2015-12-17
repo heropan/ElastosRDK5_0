@@ -250,7 +250,7 @@ ECode AdapterViewAnimator::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::AdapterViewAnimator),
-            ARRAY_SIZE(R::styleable::AdapterViewAnimator));
+            ArraySize(R::styleable::AdapterViewAnimator));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, 0, (ITypedArray**)&a);
     Int32 resource = 0;

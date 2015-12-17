@@ -3,18 +3,73 @@
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/AbsSpinner.h"
 #include "elastos/droid/widget/CArrayAdapter.h"
+#include "elastos/droid/widget/CAbsSpinnerSavedState.h"
 #include "elastos/droid/view/CViewGroupLayoutParams.h"
-// #include "elastos/droid/widget/CAbsSpinnerSavedState.h"
 #include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Droid::View::CViewGroupLayoutParams;
 using Elastos::Droid::View::IViewGroupLayoutParams;
-// using Elastos::Droid::Widget::CAbsSpinnerSavedState;
+using Elastos::Core::CSystem;
+using Elastos::Core::ISystem;
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
+
+CAR_INTERFACE_IMPL(AbsSpinner::SavedState, BaseSavedState, IAbsSpinnerSavedState);
+AbsSpinner::SavedState::SavedState()
+    : mSelectedId(0)
+    , mPosition(0)
+{}
+
+ECode AbsSpinner::SavedState::constructor()
+{
+    return NOERROR;
+}
+
+ECode AbsSpinner::SavedState::constructor(
+    /* [in] */ IParcelable* superState)
+{
+    return BaseSavedState::constructor(superState);
+}
+
+ECode AbsSpinner::SavedState::ReadFromParcel(
+    /* [in] */ IParcel* source)
+{
+    BaseSavedState::ReadFromParcel(source);
+    source->ReadInt64(&mSelectedId);
+    source->ReadInt32(&mPosition);
+    return NOERROR;
+}
+
+ECode AbsSpinner::SavedState::WriteToParcel(
+    /* [in] */ IParcel* out)
+{
+    BaseSavedState::WriteToParcel(out);
+    out->WriteInt64(mSelectedId);
+    out->WriteInt32(mPosition);
+    return NOERROR;
+}
+
+ECode AbsSpinner::SavedState::ToString(
+    /* [out] */ String* str)
+{
+    StringBuilder sb("AbsSpinner.SavedState{");
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+    Int32 hashCode;
+    system->IdentityHashCode(THIS_PROBE(IAbsSpinnerSavedState), &hashCode);
+    sb.Append(hashCode);
+    sb.Append(" selectedId=");
+    sb.Append(mSelectedId);
+    sb.Append(" position=");
+    sb.Append(mPosition);
+    sb.Append("}");
+    return sb.ToString(str);
+}
 
 CAR_INTERFACE_IMPL(AbsSpinner, AdapterView, IAbsSpinner);
 AbsSpinner::AbsSpinner()
@@ -75,7 +130,7 @@ ECode AbsSpinner::InitFromAttributes(
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::AbsSpinner),
-            ARRAY_SIZE(R::styleable::AbsSpinner));
+            ArraySize(R::styleable::AbsSpinner));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(
             attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);

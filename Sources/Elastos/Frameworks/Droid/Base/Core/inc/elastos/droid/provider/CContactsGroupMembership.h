@@ -1,8 +1,8 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSGROUPMEMBERSHIP_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSGROUPMEMBERSHIP_H__
 
 #include "_Elastos_Droid_Provider_CContactsGroupMembership.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Net::IUri;
 
@@ -11,8 +11,16 @@ namespace Droid {
 namespace Provider {
 
 CarClass(CContactsGroupMembership)
+    , public Singleton
+    , public IContactsGroupMembership
+    , public IBaseColumns
+    , public IContactsGroupsColumns
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     /**
      * no public constructor since this is a utility class
      */

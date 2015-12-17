@@ -1,23 +1,29 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CMEDIASTORE_H__
 #define __ELASTOS_DROID_PROVIDER_CMEDIASTORE_H__
 
 #include "_Elastos_Droid_Provider_CMediaStore.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IContentResolver;
-using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::IBitmapFactoryOptions;
-using Elastos::Droid::Database::ICursor;
+using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
 CarClass(CMediaStore)
+    , public Singleton
+    , public IMediaStore
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     /**
      * Uri for querying the state of the media scanner.
      */

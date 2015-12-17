@@ -1,13 +1,16 @@
 
 #include "elastos/droid/widget/ViewFlipper.h"
 #include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/os/Process.h"
 #include "elastos/droid/R.h"
 
-using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::CIntentFilter;
-using Elastos::Droid::View::EIID_View;
-using Elastos::Droid::View::EIID_ViewGroup;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Os::Process;
+using Elastos::Droid::R;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -18,16 +21,21 @@ const Boolean ViewFlipper::LOGD = FALSE;
 const Int32 ViewFlipper::DEFAULT_INTERVAL = 3000;
 const Int32 ViewFlipper::FLIP_MSG = 1;
 
+ViewFlipper::MyHandler::MyHandler(
+    /* [in] */ ViewFlipper* host)
+    : mHost(host)
+{}
+
 ECode ViewFlipper::MyHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
-    Int32 what;
+    Int32 what = 0;
     msg->GetWhat(&what);
 
     if (what == ViewFlipper::FLIP_MSG) {
         if (mHost->mRunning) {
             mHost->ShowNext();
-            Boolean result FALSE;
+            Boolean result = FALSE;
             SendEmptyMessageDelayed(ViewFlipper::FLIP_MSG, mHost->mFlipInterval, &result);
         }
     }
@@ -57,6 +65,16 @@ ECode ViewFlipper::FlipperReceiver::OnReceive(
     return NOERROR;
 }
 
+ECode ViewFlipper::FlipperReceiver::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = String("ViewFlipper::FlipperReceiver: ");
+    (*info).AppendFormat("%p", this);
+    return NOERROR;
+}
+
+CAR_INTERFACE_IMPL(ViewFlipper, ViewAnimator, IViewFlipper);
 ViewFlipper::ViewFlipper()
     : mFlipInterval(DEFAULT_INTERVAL)
     , mAutoStart(FALSE)
@@ -69,21 +87,21 @@ ViewFlipper::ViewFlipper()
     mHandler = new MyHandler(this);
 }
 
-ECode ViewFlipper::Init(
+ECode ViewFlipper::constructor(
     /* [in] */ IContext* ctx)
 {
-    return ViewAnimator::Init(ctx);
+    return ViewAnimator::constructor(ctx);
 }
 
-ECode ViewFlipper::Init(
+ECode ViewFlipper::constructor(
     /* [in] */ IContext* ctx,
     /* [in] */ IAttributeSet* attrs)
 {
-    FAIL_RETURN(ViewAnimator::Init(ctx, attrs));
+    FAIL_RETURN(ViewAnimator::constructor(ctx, attrs));
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::ViewFlipper),
-            ARRAY_SIZE(R::styleable::ViewFlipper));
+            ArraySize(R::styleable::ViewFlipper));
     AutoPtr<ITypedArray> a;
     ctx->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
     a->GetInt32(R::styleable::ViewFlipper_flipInterval, DEFAULT_INTERVAL, &mFlipInterval);
@@ -101,8 +119,20 @@ ECode ViewFlipper::OnAttachedToWindow()
     CIntentFilter::New((IIntentFilter**)&filter);
     filter->AddAction(IIntent::ACTION_SCREEN_OFF);
     filter->AddAction(IIntent::ACTION_USER_PRESENT);
+
+    // OK, this is gross but needed. This class is supported by the
+    // remote views machanism and as a part of that the remote views
+    // can be inflated by a context for another user without the app
+    // having interact users permission - just for loading resources.
+    // For exmaple, when adding widgets from a user profile to the
+    // home screen. Therefore, we register the receiver as the current
+    // user not the one the context is for.
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IUserHandle> uh;
+    Process::MyUserHandle((IUserHandle**)&uh);
     AutoPtr<IIntent> intent;
-    GetContext()->RegisterReceiver(mReceiver, filter, (IIntent**)&intent);
+    context->RegisterReceiverAsUser(mReceiver, uh, filter, String(NULL), mHandler, (IIntent**)&intent);
 
     if (mAutoStart) {
         // Automatically start when requested
@@ -116,7 +146,9 @@ ECode ViewFlipper::OnDetachedFromWindow()
     ViewAnimator::OnDetachedFromWindow();
     mVisible = FALSE;
 
-    GetContext()->UnregisterReceiver(mReceiver);
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    context->UnregisterReceiver(mReceiver);
     UpdateRunning();
     return NOERROR;
 }
@@ -155,8 +187,8 @@ ECode ViewFlipper::OnInitializeAccessibilityEvent(
 {
     ViewAnimator::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> name;
-    CStringWrapper::New(String("CViewFlipper"), (ICharSequence**)&name);
-    event->SetClassName(name);
+    CString::New(String("CViewFlipper"), (ICharSequence**)&name);
+    IAccessibilityRecord::Probe(event)->SetClassName(name);
     return NOERROR;
 }
 
@@ -165,7 +197,7 @@ ECode ViewFlipper::OnInitializeAccessibilityNodeInfo(
 {
     ViewAnimator::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> name;
-    CStringWrapper::New(String("CViewFlipper"), (ICharSequence**)&name);
+    CString::New(String("CViewFlipper"), (ICharSequence**)&name);
     info->SetClassName(name);
     return NOERROR;
 }
@@ -199,6 +231,7 @@ void ViewFlipper::UpdateRunning(
 ECode ViewFlipper::IsFlipping(
     /* [out] */ Boolean* flipping)
 {
+    VALIDATE_NOT_NULL(flipping);
     *flipping = mStarted;
     return NOERROR;
 }
@@ -213,6 +246,7 @@ ECode ViewFlipper::SetAutoStart(
 ECode ViewFlipper::IsAutoStart(
     /* [out] */ Boolean* start)
 {
+    VALIDATE_NOT_NULL(start);
     *start = mAutoStart;
     return NOERROR;
 }

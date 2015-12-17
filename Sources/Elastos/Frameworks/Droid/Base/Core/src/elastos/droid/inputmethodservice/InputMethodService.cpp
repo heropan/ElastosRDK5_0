@@ -609,7 +609,7 @@ void InputMethodService::InitViews()
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::InputMethodService),
-            ARRAY_SIZE(R::styleable::InputMethodService));
+            ArraySize(R::styleable::InputMethodService));
     // AbstractInputMethodService::ObtainStyledAttributes(attrIds, (ITypedArray**)&mThemeAttrs);
     mInflater->Inflate(R::layout::input_method, NULL, (IView**)&mRootView);
     mRootView->SetSystemUiVisibility(

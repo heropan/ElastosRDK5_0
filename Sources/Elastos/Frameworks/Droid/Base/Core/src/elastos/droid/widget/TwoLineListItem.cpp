@@ -43,7 +43,7 @@ ECode TwoLineListItem::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::TwoLineListItem),
-            ARRAY_SIZE(R::styleable::TwoLineListItem));
+            ArraySize(R::styleable::TwoLineListItem));
     AutoPtr<ITypedArray> a;
     FAIL_RETURN(context->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
 

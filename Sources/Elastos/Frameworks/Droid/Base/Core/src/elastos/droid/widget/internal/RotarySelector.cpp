@@ -140,7 +140,7 @@ ECode RotarySelector::InternalInit(
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::RotarySelector),
-        ARRAY_SIZE(R::styleable::RotarySelector));
+        ArraySize(R::styleable::RotarySelector));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
     a->GetInt32(R::styleable::RotarySelector_orientation, IRotarySelector::HORIZONTAL, &mOrientation);

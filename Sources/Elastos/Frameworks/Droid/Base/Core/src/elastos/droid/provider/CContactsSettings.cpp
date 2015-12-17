@@ -1,18 +1,21 @@
-
-#include "elastos/droid/provider/CContactsSettings.h"
-#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/provider/CContactsSettings.h"
 #include <elastos/coredef.h>
 
-using Elastos::Core::CString;
-using Elastos::Droid::Net::Uri;
-using Elastos::Droid::Database::ICursor;
-using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Content::CContentValues;
+using Elastos::Droid::Content::IContentValues;
+using Elastos::Droid::Database::ICursor;
+using Elastos::Droid::Net::Uri;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
+
+CAR_SINGLETON_IMPL(CContactsSettings)
+
+CAR_INTERFACE_IMPL_3(CContactsSettings, Singleton, IBaseColumns, IContactsSettings, IContactsSettingsColumns)
 
 ECode CContactsSettings::constructor()
 {
@@ -80,7 +83,8 @@ ECode CContactsSettings::GetSetting(
     }
     //} finally {
 EXIT:
-    return cursor->Close();
+    assert(0 && "TODO");
+    // return cursor->Close();
     //}
 }
 
@@ -100,10 +104,10 @@ ECode CContactsSettings::SetSetting(
     //values.put(_SYNC_ACCOUNT_TYPE, account.mType);
     AutoPtr<ICharSequence> keyStr;
     FAIL_RETURN(CString::New(key, (ICharSequence**)&keyStr))
-    FAIL_RETURN(values->PutString(IContactsSettingsColumns::KEY, keyStr))
+    FAIL_RETURN(values->Put(IContactsSettingsColumns::KEY, keyStr))
     AutoPtr<ICharSequence> valueStr;
     FAIL_RETURN(CString::New(value, (ICharSequence**)&valueStr))
-    FAIL_RETURN(values->PutString(IContactsSettingsColumns::VALUE, valueStr))
+    FAIL_RETURN(values->Put(IContactsSettingsColumns::VALUE, valueStr))
     AutoPtr<IUri> uri;
     FAIL_RETURN(GetCONTENT_URI((IUri**)&uri))
     Int32 result;

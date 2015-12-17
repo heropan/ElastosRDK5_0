@@ -5,9 +5,9 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Singleton.h>
 
-using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IContentProviderClient;
 using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IAssetFileDescriptor;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::IPoint;

@@ -6,6 +6,15 @@
 #include <elastos/droid/os/Handler.h>
 
 using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Hardware::ISensor;
+using Elastos::Droid::Hardware::ISensorEvent;
+using Elastos::Droid::Hardware::ISensorEventListener;
+using Elastos::Droid::Hardware::ISensorManager;
+using Elastos::Droid::Utility::ISpline;
+using Elastos::Droid::Server::Twilight::ITwilightListener;
+using Elastos::IO::IPrintWriter;
 
 namespace Elastos {
 namespace Droid {
@@ -124,7 +133,7 @@ private:
 
 public:
     AutomaticBrightnessController(
-        /* [in] */ IAutomaticBrightnessControllerCallbacks callbacks,
+        /* [in] */ IAutomaticBrightnessControllerCallbacks* callbacks,
         /* [in] */ ILooper* looper,
         /* [in] */ ISensorManager* sensorManager,
         /* [in] */ ISpline* autoBrightnessSpline,
@@ -265,7 +274,7 @@ private:
     AutoPtr<ISensor> mLightSensor;
 
     // The twilight service.
-    AutoPtr<ITwilightManager> mTwilight;
+    // AutoPtr<ITwilightManager> mTwilight;
 
     // The auto-brightness spline adjustment.
     // The brightness values have been scaled to a range of 0..1.

@@ -4,17 +4,20 @@
 
 #include "_Elastos_Droid_Media_CMediaActionSound.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
 
 CarClass(CMediaActionSound)
+    , public Object
+    , public IMediaActionSound
 {
 private:
     class SoundPoolOnLoadCompleteListener
-        : public ElRefBase
-        , public IOnLoadCompleteListener
+        : public Object
+        , public ISoundPoolOnLoadCompleteListener
     {
     public:
         CAR_INTERFACE_DECL()
@@ -32,6 +35,12 @@ private:
 
 public:
     CMediaActionSound();
+
+    virtual ~CMediaActionSound();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     /**
      * Construct a new MediaActionSound instance. Only a single instance is
@@ -105,7 +114,7 @@ private:
     static const String TAG;
     static const Int32 SOUND_NOT_LOADED = -1;
 
-    AutoPtr<IOnLoadCompleteListener> mLoadCompleteListener;
+    AutoPtr<ISoundPoolOnLoadCompleteListener> mLoadCompleteListener;
 
 };
 

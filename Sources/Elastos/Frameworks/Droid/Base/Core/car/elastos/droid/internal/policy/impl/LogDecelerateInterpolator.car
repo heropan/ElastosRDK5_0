@@ -10,7 +10,8 @@ module
 
     /**
      * @Involve
-     * interface IInterpolator
+     * interface Elastos.Droid.View.Animation.IInterpolator
+     * interface Elastos.Droid.Animation.ITimeInterpolator
      */
     [local]
     interface ILogDecelerateInterpolator {

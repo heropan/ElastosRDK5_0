@@ -1095,8 +1095,7 @@ module
         /**
          * Called when the device has turned the screen off.
          */
-        ScreenTurnedOff(
-            [in] Int32 why);
+        ScreenTurnedOff();
 
         /**
          * Called when the device is about to turn on the screen to show content.

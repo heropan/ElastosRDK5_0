@@ -1,31 +1,35 @@
-
-#include "elastos/droid/provider/CContactsContactMethods.h"
-#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/content/CContentValues.h"
 #include "elastos/droid/content/CContentUris.h"
-#include <elastos/core/StringUtils.h>
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/provider/CContactsContactMethods.h"
 #include "elastos/droid/R.h"
+#include <elastos/core/StringUtils.h>
 
-using Elastos::Core::IDouble;
-using Elastos::Core::CDouble;
-using Elastos::Core::StringUtils;
-using Elastos::Core::IInteger32;
-using Elastos::Core::CInteger32;
-using Elastos::Core::IInteger64;
-using Elastos::Core::CInteger64;
-using Elastos::Core::CString;
-using Elastos::Droid::R;
-using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Content::CContentUris;
 using Elastos::Droid::Content::IContentUris;
 using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Content::CContentValues;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Net::Uri;
+using Elastos::Droid::R;
+using Elastos::Core::CDouble;
+using Elastos::Core::CInteger64;
+using Elastos::Core::CInteger32;
+using Elastos::Core::CString;
+using Elastos::Core::IDouble;
+using Elastos::Core::IInteger32;
+using Elastos::Core::IInteger64;
+using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
+
+CAR_OBJECT_IMPL(CContactsContactMethods)
+
+CAR_INTERFACE_IMPL_4(CContactsContactMethods, Object, IContactsContactMethods, IBaseColumns, IContactsContactMethodsColumns, IContactsPeopleColumns)
 
 ECode CContactsContactMethods::GetCONTENT_URI(
     /* [out] */ IUri** uri)
@@ -49,7 +53,7 @@ ECode CContactsContactMethods::EncodePredefinedImProtocol(
 {
     VALIDATE_NOT_NULL(value);
 
-    *value = String("pre:") + StringUtils::Int32ToString(protocol);
+    *value = String("pre:") + StringUtils::ToString(protocol);
     return NOERROR;
 }
 
@@ -73,8 +77,7 @@ ECode CContactsContactMethods::DecodeImProtocol(
     }
 
     if (encodedString.StartWith("pre:")) {
-        Int32 num;
-        FAIL_RETURN(StringUtils::ParseInt32(encodedString.Substring(4), &num))
+        Int32 num = StringUtils::ParseInt32(encodedString.Substring(4));
         AutoPtr<IInteger32> result;
         FAIL_RETURN(CInteger32::New(num, (IInteger32**)&result))
         *value = (IInterface*)result;
@@ -226,25 +229,20 @@ ECode CContactsContactMethods::AddPostalLocation(
     AutoPtr<IContentValues> values;
     FAIL_RETURN(CContentValues::New(2, (IContentValues**)&values))
 
-    AutoPtr<IDouble> _latitude, _longitude;
-    FAIL_RETURN(CDouble::New(latitude, (IDouble**)&_latitude))
-    FAIL_RETURN(CDouble::New(longitude, (IDouble**)&_longitude))
-    FAIL_RETURN(values->PutDouble(POSTAL_LOCATION_LATITUDE, _latitude))
-    FAIL_RETURN(values->PutDouble(POSTAL_LOCATION_LONGITUDE, _longitude))
+    values->Put(POSTAL_LOCATION_LATITUDE, latitude);
+    values->Put(POSTAL_LOCATION_LONGITUDE, longitude);
 
     AutoPtr<IUri> loc, curi;
-    FAIL_RETURN(GetCONTENT_URI((IUri**)&curi))
-    FAIL_RETURN(resolver->Insert(curi, values, (IUri**)&loc))
+    GetCONTENT_URI((IUri**)&curi);
+    resolver->Insert(curi, values, (IUri**)&loc);
     Int64 locId;
     AutoPtr<IContentUris> helper;
-    FAIL_RETURN(CContentUris::AcquireSingleton((IContentUris**)&helper))
-    FAIL_RETURN(helper->ParseId(loc, &locId))
+    CContentUris::AcquireSingleton((IContentUris**)&helper);
+    helper->ParseId(loc, &locId);
 
     // Update the postal address
-    FAIL_RETURN(values->Clear())
-    AutoPtr<IInteger64> int64;
-    FAIL_RETURN(CInteger64::New(locId, (IInteger64**)&int64))
-    FAIL_RETURN(values->PutInt64(AUX_DATA, int64))
+    values->Clear();
+    values->Put(AUX_DATA, locId);
 
     AutoPtr<IUri> newUri;
     FAIL_RETURN(helper->WithAppendedId(curi, postalId, (IUri**)&newUri))

@@ -302,7 +302,7 @@ void FastScroller::SetStyle(
     IView::Probe(mList)->GetContext((IContext**)&context);
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::FastScroll),
-            ARRAY_SIZE(R::styleable::FastScroll));
+            ArraySize(R::styleable::FastScroll));
     AutoPtr<ITypedArray> ta;
 
     context->ObtainStyledAttributes(

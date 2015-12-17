@@ -1,16 +1,34 @@
-
+#include "elastos/droid/app/CActivityThread.h"
+#include "elastos/droid/media/CAudioAttributes.h"
+#include "elastos/droid/media/CAudioAttributesBuilder.h"
+#include "elastos/droid/media/CAudioFormat.h"
+#include "elastos/droid/media/CAudioFormatBuilder.h"
 #include "elastos/droid/media/CAudioTrack.h"
+#include "elastos/droid/media/CAudioTimestamp.h"
+#include "elastos/droid/media/AudioSystem.h"
 //#include "elastos/droid/media/ElAudioSystem.h"
-#include <media/AudioTrack.h>
-#include <media/AudioSystem.h>
-#include <binder/MemoryHeapBase.h>
-#include <binder/MemoryBase.h>
 #include "elastos/droid/os/Looper.h"
-#include <system/audio.h>
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/ServiceManager.h"
+
+#include <binder/MemoryBase.h>
+#include <binder/MemoryHeapBase.h>
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
+#include <media/AudioSystem.h>
+#include <media/AudioTrack.h>
+#include <system/audio.h>
 
+using Elastos::Droid::App::CActivityThread;
+using Elastos::Droid::App::IAppOpsManager;
+using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::Looper;
+using Elastos::Droid::Os::Process;
+using Elastos::Droid::Os::ServiceManager;
+using Elastos::IO::IBuffer;
+using Elastos::IO::INioUtils;
+using Elastos::IO::CNioUtils;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -19,8 +37,12 @@ namespace Media {
 
 const String CAudioTrack::TAG("CAudioTrack");
 
-const Float CAudioTrack::VOLUME_MIN = 0.0f;
-const Float CAudioTrack::VOLUME_MAX = 1.0f;
+const Float CAudioTrack::GAIN_MIN = 0.0f;
+const Float CAudioTrack::GAIN_MAX = 1.0f;
+
+const Int32 CAudioTrack::SAMPLE_RATE_HZ_MIN = 4000;
+const Int32 CAudioTrack::SAMPLE_RATE_HZ_MAX = 96000;
+const Int32 CAudioTrack::CHANNEL_COUNT_MAX = 8;
 
 const Int32 CAudioTrack::ERROR_NATIVESETUP_AUDIOSYSTEM         = -16;
 const Int32 CAudioTrack::ERROR_NATIVESETUP_INVALIDCHANNELMASK  = -17;
@@ -38,20 +60,13 @@ const Int32 CAudioTrack::SUPPORTED_OUT_CHANNELS =
     IAudioFormat::CHANNEL_OUT_LOW_FREQUENCY |
     IAudioFormat::CHANNEL_OUT_BACK_LEFT |
     IAudioFormat::CHANNEL_OUT_BACK_RIGHT |
-    IAudioFormat::CHANNEL_OUT_BACK_CENTER;
-
+    IAudioFormat::CHANNEL_OUT_BACK_CENTER |
+    IAudioFormat::CHANNEL_OUT_SIDE_LEFT |
+    IAudioFormat::CHANNEL_OUT_SIDE_RIGHT;
 
 //===================================================================================
 //              CAudioTrack::EventHandler
 //===================================================================================
-
-CAudioTrack::EventHandler::EventHandler(
-    /* [in] */ ILooper* looper,
-    /* [in] */ CAudioTrack* track)
-    : HandlerBase(looper)
-    , mAudioTrack(track)
-{
-}
 
 ECode CAudioTrack::EventHandler::HandleMessage(
     /* [in] */ IMessage* msg)
@@ -63,29 +78,21 @@ ECode CAudioTrack::EventHandler::HandleMessage(
     Int32 what;
     msg->GetWhat(&what);
 
-    AutoPtr<IOnPlaybackPositionUpdateListener> listener;
-
-    {
-        AutoLock lock(mAudioTrack->mPositionListenerLock);
-        listener = mAudioTrack->mPositionListener;
-    }
-
     switch(what) {
     case CAudioTrack::NATIVE_EVENT_MARKER:
-        if (listener != NULL) {
-            listener->OnMarkerReached(
-                (IAudioTrack*)(mAudioTrack->Probe(EIID_IAudioTrack)));
+        if (mListener != NULL) {
+            mListener->OnMarkerReached(
+                IAudioTrack::Probe(mAudioTrack));
         }
         break;
     case CAudioTrack::NATIVE_EVENT_NEW_POS:
-        if (listener != NULL) {
-            listener->OnPeriodicNotification(
-                (IAudioTrack*)(mAudioTrack->Probe(EIID_IAudioTrack)));
+        if (mListener != NULL) {
+            mListener->OnPeriodicNotification(
+                IAudioTrack::Probe(mAudioTrack));
         }
         break;
     default:
-        Logger::E(CAudioTrack::TAG, "[ android.media.AudioTrack.NativeEventHandler ] "
-            "Unknown event type: %d", what);
+        Logger::E(CAudioTrack::TAG, "Unknown event type: %d", what);
         break;
     }
     return NOERROR;
@@ -97,6 +104,7 @@ ECode CAudioTrack::EventHandler::HandleMessage(
 
 CAudioTrack::NativeEventHandlerDelegate::NativeEventHandlerDelegate(
     /* [in] */ CAudioTrack* track,
+    /* [in] */ IAudioTrackOnPlaybackPositionUpdateListener* listener,
     /* [in] */ IHandler* handler)
     : mAudioTrack(track)
 {
@@ -113,7 +121,7 @@ CAudioTrack::NativeEventHandlerDelegate::NativeEventHandlerDelegate(
     // construct the event handler with this looper
     if (looper != NULL) {
         // implement the event handler delegate
-        mHandler = new EventHandler(looper, mAudioTrack);
+        mHandler = new EventHandler(looper, mAudioTrack, listener);
     }
     else {
         mHandler = NULL;
@@ -129,10 +137,15 @@ AutoPtr<IHandler> CAudioTrack::NativeEventHandlerDelegate::GetHandler()
 //              CAudioTrack
 //===================================================================================
 
+CAR_INTERFACE_IMPL(CAudioTrack, Object, IAudioTrack)
+
+CAR_OBJECT_IMPL(CAudioTrack)
+
 CAudioTrack::CAudioTrack()
     : mState(STATE_UNINITIALIZED)
     , mPlayState(PLAYSTATE_STOPPED)
     , mNativeBufferSizeInBytes(0)
+    , mNativeBufferSizeInFrames(0)
     , mSampleRate(22050)
     , mChannelCount(1)
     , mChannels(IAudioFormat::CHANNEL_OUT_MONO)
@@ -140,7 +153,7 @@ CAudioTrack::CAudioTrack()
     , mDataLoadMode(MODE_STREAM)
     , mChannelConfiguration(IAudioFormat::CHANNEL_OUT_MONO)
     , mAudioFormat(IAudioFormat::ENCODING_PCM_16BIT)
-    , mSessionId(0)
+    , mSessionId(IAudioSystem::AUDIO_SESSION_ALLOCATE)
     , mNativeTrack(0)
     , mNativeData(0)
 {}
@@ -159,7 +172,7 @@ ECode CAudioTrack::constructor(
     /* [in] */ Int32 mode)
 {
     return constructor(streamType, sampleRateInHz, channelConfig,
-        audioFormat, bufferSizeInBytes, mode, 0);
+        audioFormat, bufferSizeInBytes, mode, IAudioSystem::AUDIO_SESSION_ALLOCATE);
 }
 
 ECode CAudioTrack::constructor(
@@ -171,17 +184,83 @@ ECode CAudioTrack::constructor(
     /* [in] */ Int32 mode,
     /* [in] */ Int32 sessionId)
 {
-    mState = STATE_UNINITIALIZED;
+    // mState already == STATE_UNINITIALIZED
+    AutoPtr<IAudioAttributesBuilder> aaBuilder;
+    CAudioAttributesBuilder::New((IAudioAttributesBuilder**)&aaBuilder);
+    aaBuilder->SetLegacyStreamType(streamType);
+    AutoPtr<IAudioAttributes> aa;
+    aaBuilder->Build((IAudioAttributes**)&aa);
 
-    // remember which looper is associated with the AudioTrack instantiation
-    mInitializationLooper = Looper::GetMyLooper();
-    if (mInitializationLooper == NULL) {
-        mInitializationLooper = Looper::GetMainLooper();
+    AutoPtr<IAudioFormatBuilder> afBuilder;
+    CAudioFormatBuilder::New((IAudioFormatBuilder**)&afBuilder);
+    afBuilder->SetChannelMask(channelConfig);
+    afBuilder->SetEncoding(audioFormat);
+    afBuilder->SetSampleRate(sampleRateInHz);
+    AutoPtr<IAudioFormat> af;
+    afBuilder->Build((IAudioFormat**)&af);
+
+    return constructor(aa, af, bufferSizeInBytes, mode, sessionId);
+}
+
+ECode CAudioTrack::constructor(
+    /* [in] */ IAudioAttributes* attributes,
+    /* [in] */ IAudioFormat* format,
+    /* [in] */ Int32 bufferSizeInBytes,
+    /* [in] */ Int32 mode,
+    /* [in] */ Int32 sessionId)
+{
+    // mState already == STATE_UNINITIALIZED
+
+    if (attributes == NULL) {
+        // throw new IllegalArgumentException("Illegal NULL AudioAttributes");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    if (format == NULL) {
+        // throw new IllegalArgumentException("Illegal NULL AudioFormat");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    FAIL_RETURN(AudioParamCheck(streamType, sampleRateInHz, channelConfig, audioFormat, mode));
+    // remember which looper is associated with the AudioTrack instantiation
+    AutoPtr<ILooper> looper;
+    if ((looper = Looper::GetMyLooper()) == NULL) {
+        looper = Looper::GetMainLooper();
+    }
+
+    Int32 mask;
+    format->GetPropertySetMask(&mask);
+    Int32 rate = 0;
+    if ((mask & IAudioFormat::AUDIO_FORMAT_HAS_PROPERTY_SAMPLE_RATE) != 0)
+    {
+        format->GetSampleRate(&rate);
+    } else {
+         AudioSystem::GetPrimaryOutputSamplingRate(&rate);
+        if (rate <= 0) {
+            rate = 44100;
+        }
+    }
+    Int32 channelMask = IAudioFormat::CHANNEL_OUT_FRONT_LEFT | IAudioFormat::CHANNEL_OUT_FRONT_RIGHT;
+    if ((mask & IAudioFormat::AUDIO_FORMAT_HAS_PROPERTY_CHANNEL_MASK) != 0)
+    {
+        format->GetChannelMask(&channelMask);
+    }
+    Int32 encoding = IAudioFormat::ENCODING_DEFAULT;
+    if ((mask & IAudioFormat::AUDIO_FORMAT_HAS_PROPERTY_ENCODING) != 0) {
+        format->GetEncoding(&encoding);
+    }
+
+    FAIL_RETURN(AudioParamCheck(rate, channelMask, encoding, mode));
+    mStreamType = IAudioSystem::STREAM_DEFAULT;
 
     FAIL_RETURN(AudioBuffSizeCheck(bufferSizeInBytes));
+
+    mInitializationLooper = looper;
+    AutoPtr<IInterface> b = ServiceManager::GetService(IContext::APP_OPS_SERVICE);
+    assert(b != NULL);
+    mAppOps = IIAppOpsService::Probe(b);
+
+    AutoPtr<IAudioAttributesBuilder> aaBuilder;
+    CAudioAttributesBuilder::New(attributes, (IAudioAttributesBuilder**)&aaBuilder);
+    aaBuilder->Build((IAudioAttributes**)&mAttributes);
 
     if (sessionId < 0) {
         Logger::E(TAG, "Invalid audio session ID: %d", sessionId);
@@ -191,7 +270,7 @@ ECode CAudioTrack::constructor(
 
     Int32 session[] = { sessionId };
     // native initialization
-    Int32 initResult = NativeSetup(mStreamType, mSampleRate, mChannels,
+    Int32 initResult = NativeSetup(THIS_PROBE(IAudioTrack), mAttributes, mSampleRate, mChannels,
             mAudioFormat, mNativeBufferSizeInBytes, mDataLoadMode, session);
     if (initResult != IAudioTrack::SUCCESS) {
         Logger::E(TAG, "Error code %d  when initializing AudioTrack.", initResult);
@@ -210,40 +289,20 @@ ECode CAudioTrack::constructor(
     return NOERROR;
 }
 
-// Convenience method for the constructor's parameter checks.
-// This is where constructor IllegalArgumentException-s are thrown
-// postconditions:
-//    mStreamType is valid
-//    mChannelCount is valid
-//    mChannels is valid
-//    mAudioFormat is valid
-//    mSampleRate is valid
-//    mDataLoadMode is valid
 ECode CAudioTrack::AudioParamCheck(
-    /* [in] */ Int32 streamType,
     /* [in] */ Int32 sampleRateInHz,
     /* [in] */ Int32 channelConfig,
     /* [in] */ Int32 audioFormat,
     /* [in] */ Int32 mode)
 {
-    using Elastos::Core::Math;
-
     //--------------
-    // stream type
-    if( (streamType != IAudioManager::STREAM_ALARM)
-        && (streamType != IAudioManager::STREAM_MUSIC)
-        && (streamType != IAudioManager::STREAM_RING)
-        && (streamType != IAudioManager::STREAM_SYSTEM)
-        && (streamType != IAudioManager::STREAM_VOICE_CALL)
-        && (streamType != IAudioManager::STREAM_NOTIFICATION)
-        && (streamType != IAudioManager::STREAM_BLUETOOTH_SCO)
-        && (streamType != IAudioManager::STREAM_DTMF)) {
-        Logger::E(TAG, "Invalid stream type. %d", streamType);
+    // sample rate, note these values are subject to change
+    if (sampleRateInHz < SAMPLE_RATE_HZ_MIN || sampleRateInHz > SAMPLE_RATE_HZ_MAX) {
+        // throw new IllegalArgumentException(sampleRateInHz
+        //         + "Hz is not a supported sample rate.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    else {
-        mStreamType = streamType;
-    }
+    mSampleRate = sampleRateInHz;
 
     //--------------
     // sample rate, note these values are subject to change
@@ -274,44 +333,35 @@ ECode CAudioTrack::AudioParamCheck(
     default:
         if (!IsMultichannelConfigSupported(channelConfig)) {
             // input channel configuration features unsupported channels
-            mChannelCount = 0;
-            mChannels = IAudioFormat::CHANNEL_INVALID;
-            mChannelConfiguration = IAudioFormat::CHANNEL_CONFIGURATION_INVALID;
             //throw(new IllegalArgumentException("Unsupported channel configuration."));
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
-        else {
-            mChannels = channelConfig;
-            mChannelCount = Math::BitCount(channelConfig);
-        }
+        mChannels = channelConfig;
+        mChannelCount = Elastos::Core::Math::BitCount(channelConfig);
     }
 
     //--------------
     // audio format
-    switch (audioFormat) {
-    case IAudioFormat::ENCODING_DEFAULT:
-        mAudioFormat = IAudioFormat::ENCODING_PCM_16BIT;
-        break;
-    case IAudioFormat::ENCODING_PCM_16BIT:
-    case IAudioFormat::ENCODING_PCM_8BIT:
-        mAudioFormat = audioFormat;
-        break;
-    default:
-        mAudioFormat = IAudioFormat::ENCODING_INVALID;
-        Logger::E(TAG, "Unsupported sample encoding."
-            " Should be ENCODING_PCM_8BIT or ENCODING_PCM_16BIT.");
+    if (audioFormat == IAudioFormat::ENCODING_DEFAULT) {
+        audioFormat = IAudioFormat::ENCODING_PCM_16BIT;
+    }
+
+    Boolean b;
+    if (!CAudioFormat::IsValidEncoding(audioFormat, &b), b) {
+        // throw new IllegalArgumentException("Unsupported audio encoding.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    mAudioFormat = audioFormat;
 
     //--------------
     // audio load mode
-    if ( (mode != MODE_STREAM) && (mode != MODE_STATIC) ) {
-        Logger::E(TAG, "Invalid mode.");
+    CAudioFormat::IsEncodingLinearPcm(mAudioFormat, &b);
+    if (((mode != MODE_STREAM) && (mode != MODE_STATIC)) ||
+            ((mode != MODE_STREAM) && !b)) {
+        // throw new IllegalArgumentException("Invalid mode.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    else {
-        mDataLoadMode = mode;
-    }
+    mDataLoadMode = mode;
     return NOERROR;
 }
 
@@ -321,6 +371,12 @@ Boolean CAudioTrack::IsMultichannelConfigSupported(
     // check for unsupported channels
     if ((channelConfig & SUPPORTED_OUT_CHANNELS) != channelConfig) {
         Logger::E(TAG, "Channel configuration features unsupported channels");
+        return FALSE;
+    }
+    Int32 channelCount = Elastos::Core::Math::BitCount(channelConfig);
+    if (channelCount > CHANNEL_COUNT_MAX) {
+        Logger::E(TAG, "Channel configuration contains too many channels %d > %d",
+                channelCount, CHANNEL_COUNT_MAX);
         return FALSE;
     }
 
@@ -341,6 +397,13 @@ Boolean CAudioTrack::IsMultichannelConfigSupported(
             return FALSE;
         }
     }
+    Int32 sidePair =
+            IAudioFormat::CHANNEL_OUT_SIDE_LEFT | IAudioFormat::CHANNEL_OUT_SIDE_RIGHT;
+    if ((channelConfig & sidePair) != 0
+            && (channelConfig & sidePair) != sidePair) {
+        Logger::E(TAG, "Side channels can't be used independently");
+        return FALSE;
+    }
     return TRUE;
 }
 
@@ -349,14 +412,23 @@ ECode CAudioTrack::AudioBuffSizeCheck(
 {
     // NB: this section is only valid with PCM data.
     //     To update when supporting compressed formats
-    Int32 frameSizeInBytes = mChannelCount *
-        (mAudioFormat == IAudioFormat::ENCODING_PCM_8BIT ? 1 : 2);
+    Int32 frameSizeInBytes;
+    Boolean b;
+    if (CAudioFormat::IsEncodingLinearPcm(mAudioFormat, &b), b) {
+        Int32 val;
+        CAudioFormat::GetBytesPerSample(mAudioFormat, &val);
+        frameSizeInBytes = mChannelCount * val;
+    }
+    else {
+        frameSizeInBytes = 1;
+    }
     if ((audioBufferSize % frameSizeInBytes != 0) || (audioBufferSize < 1)) {
         Logger::E(TAG, "Invalid audio buffer size.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     mNativeBufferSizeInBytes = audioBufferSize;
+    mNativeBufferSizeInFrames = audioBufferSize / frameSizeInBytes;
     return NOERROR;
 }
 
@@ -383,7 +455,7 @@ ECode CAudioTrack::GetMinVolume(
     /* [out] */ Float* minVolume)
 {
     VALIDATE_NOT_NULL(minVolume);
-    *minVolume = VOLUME_MIN;
+    *minVolume = GAIN_MIN;
     return NOERROR;
 }
 
@@ -391,7 +463,7 @@ ECode CAudioTrack::GetMaxVolume(
     /* [out] */ Float* maxVolume)
 {
     VALIDATE_NOT_NULL(maxVolume);
-    *maxVolume = VOLUME_MAX;
+    *maxVolume = GAIN_MAX;
     return NOERROR;
 }
 
@@ -456,8 +528,7 @@ ECode CAudioTrack::GetPlayState(
     /* [out] */ Int32* state)
 {
     VALIDATE_NOT_NULL(state);
-    {
-        AutoLock lock(&mPlayStateLock);
+    synchronized (mPlayStateLock) {
         *state = mPlayState;
     }
     return NOERROR;
@@ -496,6 +567,14 @@ ECode CAudioTrack::GetPlaybackHeadPosition(
     return NOERROR;
 }
 
+ECode CAudioTrack::GetLatency(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = NativeGetLatency();
+    return NOERROR;
+}
+
 ECode CAudioTrack::GetNativeOutputSampleRate(
     /* [in] */ Int32 streamType,
     /* [out] */ Int32* rate)
@@ -528,28 +607,33 @@ ECode CAudioTrack::GetMinBufferSize(
         Logger::E(TAG, "getMinBufferSize(): Invalid channel configuration.");
         *size = IAudioTrack::ERROR_BAD_VALUE;
         return NOERROR;
-    }
+        }
         else {
             channelCount = Elastos::Core::Math::BitCount(channelConfig);
-            return NOERROR;
         }
      }
 
-    if ((audioFormat != IAudioFormat::ENCODING_PCM_16BIT)
-            && (audioFormat != IAudioFormat::ENCODING_PCM_8BIT)) {
+    // if ((audioFormat != IAudioFormat::ENCODING_PCM_16BIT)
+    //         && (audioFormat != IAudioFormat::ENCODING_PCM_8BIT)) {
+    //     Logger::E(TAG, "getMinBufferSize(): Invalid audio format.");
+    //     *size = IAudioTrack::ERROR_BAD_VALUE;
+    //     return NOERROR;
+    // }
+    Boolean b;
+    if (!CAudioFormat::IsValidEncoding(audioFormat, &b), b) {
         Logger::E(TAG, "getMinBufferSize(): Invalid audio format.");
         *size = IAudioTrack::ERROR_BAD_VALUE;
         return NOERROR;
     }
 
-    if ( (sampleRateInHz < 4000) || (sampleRateInHz > 48000) ) {
+    if ( (sampleRateInHz < SAMPLE_RATE_HZ_MIN) || (sampleRateInHz > SAMPLE_RATE_HZ_MAX) ) {
         Logger::E(TAG, "getMinBufferSize(): %d Hz is not a supported sample rate.", sampleRateInHz);
         *size = IAudioTrack::ERROR_BAD_VALUE;
         return NOERROR;
     }
 
     Int32 bufferSize = NativeGetMinBuffSize(sampleRateInHz, channelCount, audioFormat);
-    if ((bufferSize == -1) || (bufferSize == 0)) {
+    if (bufferSize <= 0) {
         Logger::E(TAG, "getMinBufferSize(): error querying hardware");
         *size = IAudioTrack::ERROR;
         return NOERROR;
@@ -568,63 +652,100 @@ ECode CAudioTrack::GetAudioSessionId(
     return NOERROR;
 }
 
+ECode CAudioTrack::GetTimestamp(
+    /* [in] */ IAudioTimestamp* timestamp,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    if (timestamp == NULL) {
+        // throw new IllegalArgumentException();
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    // It's unfortunate, but we have to either create garbage every time or use synchronized
+    AutoPtr<ArrayOf<Int64> > longArray = ArrayOf<Int64>::Alloc(2);
+    Int32 ret = NativeGetTimestamp(longArray);
+    if (ret != IAudioTrack::SUCCESS) {
+        *result = FALSE;
+        return NOERROR;
+    }
+    ((CAudioTimestamp*)timestamp)->mFramePosition = (*longArray)[0];
+    ((CAudioTimestamp*)timestamp)->mNanoTime = (*longArray)[1];
+    *result = TRUE;
+    return NOERROR;
+}
+
 //--------------------------------------------------------------------------
 // Initialization / configuration
 //--------------------
 ECode CAudioTrack::SetPlaybackPositionUpdateListener(
-    /* [in] */ IOnPlaybackPositionUpdateListener *listener)
+    /* [in] */ IAudioTrackOnPlaybackPositionUpdateListener *listener)
 {
     return SetPlaybackPositionUpdateListener(listener, NULL);
 }
 
 ECode CAudioTrack::SetPlaybackPositionUpdateListener(
-    /* [in] */ IOnPlaybackPositionUpdateListener *listener,
+    /* [in] */ IAudioTrackOnPlaybackPositionUpdateListener *listener,
     /* [in] */ IHandler *handler)
 {
-    {
-        AutoLock lock(&mPositionListenerLock);
-
-        mPositionListener = listener;
-    }
     if (listener != NULL) {
-        mEventHandlerDelegate = new NativeEventHandlerDelegate(this, handler);
+        mEventHandlerDelegate = new NativeEventHandlerDelegate(this, listener, handler);
+    }
+    else {
+        mEventHandlerDelegate = NULL;
     }
     return NOERROR;
 }
 
+ECode CAudioTrack::ClampGainOrLevel(
+    /* [in] */ Float gainOrLevel,
+    /* [out] */ Float* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
+    if (Elastos::Core::Math::IsNaN(gainOrLevel)) {
+        // throw new IllegalArgumentException();
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    if (gainOrLevel < GAIN_MIN) {
+        gainOrLevel = GAIN_MIN;
+    } else if (gainOrLevel > GAIN_MAX) {
+        gainOrLevel = GAIN_MAX;
+    }
+    *result = gainOrLevel;
+    return NOERROR;
+}
+
 ECode CAudioTrack::SetStereoVolume(
-    /* [in] */ Float leftVolume,
-    /* [in] */ Float rightVolume,
+    /* [in] */ Float leftGain,
+    /* [in] */ Float rightGain,
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    if (mState != STATE_INITIALIZED) {
+    if (IsRestricted()) {
+        *result = IAudioTrack::SUCCESS;
+        return NOERROR;
+    }
+    if (mState == STATE_UNINITIALIZED) {
         *result = IAudioTrack::ERROR_INVALID_OPERATION;
         return NOERROR;
     }
 
-    // clamp the volumes
-    Float minVolume, maxVolume;
-    GetMinVolume(&minVolume);
-    GetMaxVolume(&maxVolume);
+    ClampGainOrLevel(leftGain, &leftGain);
+    ClampGainOrLevel(rightGain, &rightGain);
 
-    if (leftVolume < minVolume) {
-        leftVolume = minVolume;
-    }
-    if (leftVolume > maxVolume) {
-        leftVolume = maxVolume;
-    }
-    if (rightVolume < minVolume) {
-        rightVolume = minVolume;
-    }
-    if (rightVolume > maxVolume) {
-        rightVolume = maxVolume;
-    }
-
-    NativeSetVolume(leftVolume, rightVolume);
+    NativeSetVolume(leftGain, rightGain);
 
     *result = IAudioTrack::SUCCESS;
     return NOERROR;
+}
+
+ECode CAudioTrack::SetVolume(
+    /* [in] */ Float gain,
+    /* [out] */ Int32* result)
+{
+    return SetStereoVolume(gain, gain, result);
 }
 
 ECode CAudioTrack::SetPlaybackRate(
@@ -649,7 +770,7 @@ ECode CAudioTrack::SetNotificationMarkerPosition(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    if (mState != STATE_INITIALIZED) {
+    if (mState == STATE_UNINITIALIZED) {
         *result = IAudioTrack::ERROR_INVALID_OPERATION;
         return NOERROR;
     }
@@ -662,7 +783,7 @@ ECode CAudioTrack::SetPositionNotificationPeriod(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    if (mState != STATE_INITIALIZED) {
+    if (mState == STATE_UNINITIALIZED) {
         *result = IAudioTrack::ERROR_INVALID_OPERATION;
         return NOERROR;
     }
@@ -675,14 +796,18 @@ ECode CAudioTrack::SetPlaybackHeadPosition(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(&mPositionListenerLock);
-
-    if ((mPlayState == PLAYSTATE_STOPPED) || (mPlayState == PLAYSTATE_PAUSED)) {
-        *result = NativeSetPosition(positionInFrames);
-    }
-    else {
+    Int32 state;
+    GetPlayState(&state);
+    if (mDataLoadMode == MODE_STREAM || mState != STATE_INITIALIZED ||
+            state == PLAYSTATE_PLAYING) {
         *result = IAudioTrack::ERROR_INVALID_OPERATION;
+        return NOERROR;
     }
+    if (!(0 <= positionInFrames && positionInFrames <= mNativeBufferSizeInFrames)) {
+        *result = IAudioTrack::ERROR_BAD_VALUE;
+        return NOERROR;
+    }
+    *result = NativeSetPosition(positionInFrames);
     return NOERROR;
 }
 
@@ -693,9 +818,17 @@ ECode CAudioTrack::SetLoopPoints(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    if (mDataLoadMode == MODE_STREAM) {
-        *result = IAudioTrack::ERROR_INVALID_OPERATION;
-        return NOERROR;
+    Int32 state;
+    GetPlayState(&state);
+    if (mDataLoadMode == MODE_STREAM || mState != STATE_INITIALIZED ||
+            state == PLAYSTATE_PLAYING) {
+        *result = ERROR_INVALID_OPERATION;
+    }
+    if (loopCount == 0) {
+        ;   // explicitly allowed as an exception to the loop region range check
+    } else if (!(0 <= startInFrames && startInFrames < mNativeBufferSizeInFrames &&
+            startInFrames < endInFrames && endInFrames <= mNativeBufferSizeInFrames)) {
+        *result = ERROR_BAD_VALUE;
     }
     *result = NativeSetLoop(startInFrames, endInFrames, loopCount);
     return NOERROR;
@@ -722,11 +855,30 @@ ECode CAudioTrack::Play()
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-    AutoLock lock(&mPlayStateLock);
-
-    NativeStart();
-    mPlayState = PLAYSTATE_PLAYING;
+    if (IsRestricted()) {
+        Int32 result;
+        SetVolume(0, &result);
+    }
+    synchronized(mPlayStateLock) {
+        NativeStart();
+        mPlayState = PLAYSTATE_PLAYING;
+    }
     return NOERROR;
+}
+
+Boolean CAudioTrack::IsRestricted()
+{
+    // try {
+    Int32 usage;
+    CAudioAttributes::UsageForLegacyStreamType(mStreamType, &usage);
+    String str = CActivityThread::GetCurrentPackageName();
+    Int32 mode;
+    mAppOps->CheckAudioOperation(IAppOpsManager::OP_PLAY_AUDIO, usage,
+            Process::MyUid(), str, &mode);
+    return mode != IAppOpsManager::MODE_ALLOWED;
+    // } catch (RemoteException e) {
+    //     return false;
+    // }
 }
 
 ECode CAudioTrack::Stop()
@@ -737,10 +889,10 @@ ECode CAudioTrack::Stop()
     }
 
     // stop playing
-    AutoLock lock(&mPlayStateLock);
-
-    NativeStop();
-    mPlayState = PLAYSTATE_STOPPED;
+    synchronized(mPlayStateLock) {
+        NativeStop();
+        mPlayState = PLAYSTATE_STOPPED;
+    }
     return NOERROR;
 }
 
@@ -753,10 +905,10 @@ ECode CAudioTrack::Pause()
     //logd("pause()");
 
     // pause playback
-    AutoLock lock(&mPlayStateLock);
-
-    NativePause();
-    mPlayState = PLAYSTATE_PAUSED;
+    synchronized(mPlayStateLock) {
+        NativePause();
+        mPlayState = PLAYSTATE_PAUSED;
+    }
     return NOERROR;
 }
 
@@ -776,25 +928,33 @@ ECode CAudioTrack::Write(
     /* [in] */ ArrayOf<Byte>* audioData,
     /* [in] */ Int32 offsetInBytes,
     /* [in] */ Int32 sizeInBytes,
-    /* [out] */ Int32* num)
+    /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(num);
-    if ((mDataLoadMode == MODE_STATIC) && (mState == STATE_NO_STATIC_DATA) && (sizeInBytes > 0)) {
-        mState = STATE_INITIALIZED;
-    }
+    VALIDATE_NOT_NULL(result);
 
-    if (mState != STATE_INITIALIZED) {
-        *num = IAudioTrack::ERROR_INVALID_OPERATION;
+    if (mState == STATE_UNINITIALIZED || mAudioFormat == IAudioFormat::ENCODING_PCM_FLOAT) {
+        *result = ERROR_INVALID_OPERATION;
         return NOERROR;
     }
 
     if ( (audioData == NULL) || (offsetInBytes < 0 ) || (sizeInBytes < 0)
-            || (offsetInBytes + sizeInBytes > audioData->GetLength() )) {
-        *num = IAudioTrack::ERROR_BAD_VALUE;
+            || (offsetInBytes + sizeInBytes < 0)    // detect integer overflow
+            || (offsetInBytes + sizeInBytes > audioData->GetLength())) {
+        *result = ERROR_BAD_VALUE;
         return NOERROR;
     }
 
-    *num = NativeWriteByte(audioData, offsetInBytes, sizeInBytes, mAudioFormat);
+    Int32 ret = NativeWriteByte(audioData, offsetInBytes, sizeInBytes, mAudioFormat,
+            TRUE /*isBlocking*/);
+
+    if ((mDataLoadMode == MODE_STATIC)
+            && (mState == STATE_NO_STATIC_DATA)
+            && (ret > 0)) {
+        // benign race with respect to other APIs that read mState
+        mState = STATE_INITIALIZED;
+    }
+
+    *result = ret;
     return NOERROR;
 }
 
@@ -802,27 +962,148 @@ ECode CAudioTrack::Write(
     /* [in] */ ArrayOf<Int16>* audioData,
     /* [in] */ Int32 offsetInShorts,
     /* [in] */ Int32 sizeInShorts,
-    /* [out] */ Int32* num)
+    /* [out] */ Int32* result)
 {
-    VALIDATE_NOT_NULL(num);
-    if ((mDataLoadMode == MODE_STATIC)
-        && (mState == STATE_NO_STATIC_DATA)
-        && (sizeInShorts > 0)) {
-        mState = STATE_INITIALIZED;
-    }
-
-    if (mState != STATE_INITIALIZED) {
-        *num = IAudioTrack::ERROR_INVALID_OPERATION;
+    VALIDATE_NOT_NULL(result);
+    if (mState == STATE_UNINITIALIZED || mAudioFormat == IAudioFormat::ENCODING_PCM_FLOAT) {
+        *result = ERROR_INVALID_OPERATION;
         return NOERROR;
     }
 
     if ( (audioData == NULL) || (offsetInShorts < 0 ) || (sizeInShorts < 0)
+            || (offsetInShorts + sizeInShorts < 0)  // detect integer overflow
             || (offsetInShorts + sizeInShorts > audioData->GetLength())) {
-        *num = IAudioTrack::ERROR_BAD_VALUE;
+        *result = ERROR_BAD_VALUE;
         return NOERROR;
     }
 
-    *num = NativeWriteInt16(audioData, offsetInShorts, sizeInShorts, mAudioFormat);
+    Int32 ret = NativeWriteInt16(audioData, offsetInShorts, sizeInShorts, mAudioFormat);
+
+    if ((mDataLoadMode == MODE_STATIC)
+            && (mState == STATE_NO_STATIC_DATA)
+            && (ret > 0)) {
+        // benign race with respect to other APIs that read mState
+        mState = STATE_INITIALIZED;
+    }
+
+    *result = ret;
+    return NOERROR;
+}
+
+ECode CAudioTrack::Write(
+    /* [in] */ ArrayOf<Float>* audioData,
+    /* [in] */ Int32 offsetInFloats,
+    /* [in] */ Int32 sizeInFloats,
+    /* [in] */ Int32 writeMode,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
+    if (mState == STATE_UNINITIALIZED) {
+        Logger::E(TAG, "AudioTrack.write() called in invalid state STATE_UNINITIALIZED");
+        *result = ERROR_INVALID_OPERATION;
+        return NOERROR;
+    }
+
+    if (mAudioFormat != IAudioFormat::ENCODING_PCM_FLOAT) {
+        Logger::E(TAG, "AudioTrack.write(float[] ...) requires format ENCODING_PCM_FLOAT");
+        *result = ERROR_INVALID_OPERATION;
+        return NOERROR;
+    }
+
+    if ((writeMode != WRITE_BLOCKING) && (writeMode != WRITE_NON_BLOCKING)) {
+        Logger::E(TAG, "AudioTrack.write() called with invalid blocking mode");
+        *result = ERROR_BAD_VALUE;
+        return NOERROR;
+    }
+
+    if ( (audioData == NULL) || (offsetInFloats < 0 ) || (sizeInFloats < 0)
+            || (offsetInFloats + sizeInFloats < 0)  // detect integer overflow
+            || (offsetInFloats + sizeInFloats > audioData->GetLength())) {
+        Logger::E(TAG, "AudioTrack.write() called with invalid array, offset, or size");
+        *result = ERROR_BAD_VALUE;
+        return NOERROR;
+    }
+
+    Int32 ret = NativeWriteFloat(audioData, offsetInFloats, sizeInFloats, mAudioFormat,
+            writeMode == WRITE_BLOCKING);
+
+    if ((mDataLoadMode == MODE_STATIC)
+            && (mState == STATE_NO_STATIC_DATA)
+            && (ret > 0)) {
+        // benign race with respect to other APIs that read mState
+        mState = STATE_INITIALIZED;
+    }
+
+    *result = ret;
+    return NOERROR;
+}
+
+ECode CAudioTrack::Write(
+    /* [in] */ IByteBuffer* audioData,
+    /* [in] */ Int32 sizeInBytes,
+    /* [in] */ Int32 writeMode,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
+    if (mState == STATE_UNINITIALIZED) {
+        Logger::E(TAG, "AudioTrack.write() called in invalid state STATE_UNINITIALIZED");
+        *result = ERROR_INVALID_OPERATION;
+        return NOERROR;
+    }
+
+    if ((writeMode != WRITE_BLOCKING) && (writeMode != WRITE_NON_BLOCKING)) {
+        Logger::E(TAG, "AudioTrack.write() called with invalid blocking mode");
+        *result = ERROR_BAD_VALUE;
+        return NOERROR;
+    }
+
+    Int32 remaining;
+    IBuffer::Probe(audioData)->GetRemaining(&remaining);
+    if ( (audioData == NULL) || (sizeInBytes < 0) || (sizeInBytes > remaining)) {
+        Logger::E(TAG, "AudioTrack.write() called with invalid size (%d) value", sizeInBytes);
+        *result = ERROR_BAD_VALUE;
+        return NOERROR;
+    }
+
+    Boolean b;
+    IBuffer::Probe(audioData)->IsDirect(&b);
+    Int32 position;
+    IBuffer::Probe(audioData)->GetPosition(&position);
+    Int32 ret = 0;
+    if (b) {
+        ret = NativeWriteNativeBytes(audioData,
+                position, sizeInBytes, mAudioFormat,
+                writeMode == WRITE_BLOCKING);
+    }
+    else {
+        AutoPtr<INioUtils> helper;
+        CNioUtils::AcquireSingleton((INioUtils**)&helper);
+        AutoPtr<ArrayOf<Byte> > array;
+        helper->GetUnsafeArray(audioData, (ArrayOf<Byte>**)&array);
+        Int32 val;
+        helper->GetUnsafeArrayOffset(audioData, &val);
+        ret = NativeWriteByte(array,
+                val + position,
+                sizeInBytes, mAudioFormat,
+                writeMode == WRITE_BLOCKING);
+    }
+
+    if ((mDataLoadMode == MODE_STATIC)
+            && (mState == STATE_NO_STATIC_DATA)
+            && (ret > 0)) {
+        // benign race with respect to other APIs that read mState
+        mState = STATE_INITIALIZED;
+    }
+
+    if (ret > 0) {
+        IBuffer::Probe(audioData)->SetPosition(position + ret);
+    }
+
+    *result = ret;
     return NOERROR;
 }
 
@@ -830,7 +1111,7 @@ ECode CAudioTrack::ReloadStaticData(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    if (mDataLoadMode == MODE_STREAM) {
+    if (mDataLoadMode == MODE_STREAM || mState != STATE_INITIALIZED) {
         *result = IAudioTrack::ERROR_INVALID_OPERATION;
         return NOERROR;
     }
@@ -846,7 +1127,7 @@ ECode CAudioTrack::AttachAuxEffect(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    if (mState != STATE_INITIALIZED) {
+    if (mState == STATE_UNINITIALIZED) {
         *result = IAudioTrack::ERROR_INVALID_OPERATION;
         return NOERROR;
     }
@@ -859,23 +1140,19 @@ ECode CAudioTrack::SetAuxEffectSendLevel(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    if (mState != STATE_INITIALIZED) {
-        *result = IAudioTrack::ERROR_INVALID_OPERATION;
+
+    if (IsRestricted()) {
+        *result = SUCCESS;
         return NOERROR;
     }
-
-    // clamp the level
-    Float minVolume, maxVolume;
-    GetMinVolume(&minVolume);
-    GetMaxVolume(&maxVolume);
-    if (level < minVolume) {
-        level = minVolume;
+    if (mState == STATE_UNINITIALIZED) {
+        *result = ERROR_INVALID_OPERATION;
+        return NOERROR;
     }
-    if (level > maxVolume) {
-        level = maxVolume;
-    }
-    NativeSetAuxEffectSendLevel(level);
-    *result = IAudioTrack::SUCCESS;
+    Float val;
+    ClampGainOrLevel(level, &val);
+    Int32 err = NativeSetAuxEffectSendLevel(val);
+    *result = err == 0 ? SUCCESS : ERROR;
     return NOERROR;
 }
 
@@ -892,13 +1169,15 @@ ECode CAudioTrack::PostEventFromNative(
 
     AutoPtr<CAudioTrack> track = (CAudioTrack*)iat;
 
-    if (track->mEventHandlerDelegate != NULL) {
-        AutoPtr<IHandler> handler = track->mEventHandlerDelegate->GetHandler();
-        AutoPtr<IMessage> message;
-        handler->ObtainMessage(what, arg1, arg2, obj, (IMessage**)&message);
-
-        Boolean bval;
-        return handler->SendMessage(message, &bval);
+    AutoPtr<NativeEventHandlerDelegate> delegate = track->mEventHandlerDelegate;
+    if (delegate != NULL) {
+        AutoPtr<IHandler> handler = delegate->GetHandler();
+        if (handler != NULL) {
+            AutoPtr<IMessage> m;
+            handler->ObtainMessage(what, arg1, arg2, obj, (IMessage**)&m);
+            Boolean b;
+            handler->SendMessage(m, &b);
+        }
     }
     return NOERROR;
 }
@@ -1012,190 +1291,194 @@ static void audioCallback(int event, void* user, void *info)
     }
 }
 
+//TODO: Need JNI
+
 Int32 CAudioTrack::NativeSetup(
-    /* [in] */ Int32 streamType,
-    /* [in] */ Int32 sampleRateInHertz,
-    /* [in] */ Int32 channels,
+    /* [in] */ IInterface* audiotrack_this,
+    /* [in] */ IInterface* attributes,
+    /* [in] */ Int32 sampleRate,
+    /* [in] */ Int32 channelMask,
     /* [in] */ Int32 audioFormat,
     /* [in] */ Int32 buffSizeInBytes,
-    /* [in] */ Int32 memoryMode,
+    /* [in] */ Int32 mode,
     /* [in] */ Int32* nSession)
 {
-    //LOGV("sampleRate=%d, audioFormat(from Java)=%d, channels=%x, buffSize=%d",sampleRateInHertz, audioFormat, channels, buffSizeInBytes);
-    int afSampleRate;
-    int afFrameCount;
+//     //LOGV("sampleRate=%d, audioFormat(from Java)=%d, channels=%x, buffSize=%d",sampleRateInHertz, audioFormat, channels, buffSizeInBytes);
+//     int afSampleRate;
+//     int afFrameCount;
 
-    if (android::AudioSystem::getOutputFrameCount(&afFrameCount, (audio_stream_type_t)streamType) != android::NO_ERROR) {
-        //LOGE("Error creating AudioTrack: Could not get AudioSystem frame count.");
-        return ERROR_NATIVESETUP_AUDIOSYSTEM;
-    }
-    if (android::AudioSystem::getOutputSamplingRate(&afSampleRate, (audio_stream_type_t)streamType) != android::NO_ERROR) {
-        //LOGE("Error creating AudioTrack: Could not get AudioSystem sampling rate.");
-        return ERROR_NATIVESETUP_AUDIOSYSTEM;
-    }
+//     if (android::AudioSystem::getOutputFrameCount(&afFrameCount, (audio_stream_type_t)streamType) != android::NO_ERROR) {
+//         //LOGE("Error creating AudioTrack: Could not get AudioSystem frame count.");
+//         return ERROR_NATIVESETUP_AUDIOSYSTEM;
+//     }
+//     if (android::AudioSystem::getOutputSamplingRate(&afSampleRate, (audio_stream_type_t)streamType) != android::NO_ERROR) {
+//         //LOGE("Error creating AudioTrack: Could not get AudioSystem sampling rate.");
+//         return ERROR_NATIVESETUP_AUDIOSYSTEM;
+//     }
 
-    // Java channel masks don't map directly to the native definition, but it's a simple shift
-    // to skip the two deprecated channel configurations "default" and "mono".
-    uint32_t nativeChannelMask = ((uint32_t)channels) >> 2;
+//     // Java channel masks don't map directly to the native definition, but it's a simple shift
+//     // to skip the two deprecated channel configurations "default" and "mono".
+//     uint32_t nativeChannelMask = ((uint32_t)channels) >> 2;
 
-    if (!audio_is_output_channel(nativeChannelMask)) {
-        // ALOGE("Error creating AudioTrack: invalid channel mask.");
-        return ERROR_NATIVESETUP_INVALIDCHANNELMASK;
-    }
+//     if (!audio_is_output_channel(nativeChannelMask)) {
+//         // ALOGE("Error creating AudioTrack: invalid channel mask.");
+//         return ERROR_NATIVESETUP_INVALIDCHANNELMASK;
+//     }
 
-    Int32 nbChannels = popcount(nativeChannelMask);
+//     Int32 nbChannels = popcount(nativeChannelMask);
 
-    // check the stream type
-    audio_stream_type_t atStreamType;
-    switch (streamType) {
-    case AUDIO_STREAM_VOICE_CALL:
-    case AUDIO_STREAM_SYSTEM:
-    case AUDIO_STREAM_RING:
-    case AUDIO_STREAM_MUSIC:
-    case AUDIO_STREAM_ALARM:
-    case AUDIO_STREAM_NOTIFICATION:
-    case AUDIO_STREAM_BLUETOOTH_SCO:
-    case AUDIO_STREAM_DTMF:
-        atStreamType = (audio_stream_type_t)streamType;
-        break;
-    default:
-        // ALOGE("Error creating AudioTrack: unknown stream type.");
-        return ERROR_NATIVESETUP_INVALIDSTREAMTYPE;
-    }
+//     // check the stream type
+//     audio_stream_type_t atStreamType;
+//     switch (streamType) {
+//     case AUDIO_STREAM_VOICE_CALL:
+//     case AUDIO_STREAM_SYSTEM:
+//     case AUDIO_STREAM_RING:
+//     case AUDIO_STREAM_MUSIC:
+//     case AUDIO_STREAM_ALARM:
+//     case AUDIO_STREAM_NOTIFICATION:
+//     case AUDIO_STREAM_BLUETOOTH_SCO:
+//     case AUDIO_STREAM_DTMF:
+//         atStreamType = (audio_stream_type_t)streamType;
+//         break;
+//     default:
+//         // ALOGE("Error creating AudioTrack: unknown stream type.");
+//         return ERROR_NATIVESETUP_INVALIDSTREAMTYPE;
+//     }
 
-    // check the format.
-    // This function was called from Java, so we compare the format against the Java constants
-    if ((audioFormat != IAudioFormat::ENCODING_PCM_16BIT) && (audioFormat != IAudioFormat::ENCODING_PCM_8BIT)) {
-        //LOGE("Error creating AudioTrack: unsupported audio format.");
-        return ERROR_NATIVESETUP_INVALIDFORMAT;
-    }
+//     // check the format.
+//     // This function was called from Java, so we compare the format against the Java constants
+//     if ((audioFormat != IAudioFormat::ENCODING_PCM_16BIT) && (audioFormat != IAudioFormat::ENCODING_PCM_8BIT)) {
+//         //LOGE("Error creating AudioTrack: unsupported audio format.");
+//         return ERROR_NATIVESETUP_INVALIDFORMAT;
+//     }
 
-    // for the moment 8bitPCM in MODE_STATIC is not supported natively in the AudioTrack C++ class
-    // so we declare everything as 16bitPCM, the 8->16bit conversion for MODE_STATIC will be handled
-    // in android_media_AudioTrack_native_write()
-    if ((audioFormat == IAudioFormat::ENCODING_PCM_8BIT)
-        && (memoryMode == MODE_STATIC)) {
-        //LOGV("android_media_AudioTrack_native_setup(): requesting MODE_STATIC for 8bit \ buff size of %dbytes, switching to 16bit, buff size of %dbytes",buffSizeInBytes, 2*buffSizeInBytes);
-        audioFormat = IAudioFormat::ENCODING_PCM_16BIT;
-        // we will need twice the memory to store the data
-        buffSizeInBytes *= 2;
-    }
+//     // for the moment 8bitPCM in MODE_STATIC is not supported natively in the AudioTrack C++ class
+//     // so we declare everything as 16bitPCM, the 8->16bit conversion for MODE_STATIC will be handled
+//     // in android_media_AudioTrack_native_write()
+//     if ((audioFormat == IAudioFormat::ENCODING_PCM_8BIT)
+//         && (memoryMode == MODE_STATIC)) {
+//         //LOGV("android_media_AudioTrack_native_setup(): requesting MODE_STATIC for 8bit \ buff size of %dbytes, switching to 16bit, buff size of %dbytes",buffSizeInBytes, 2*buffSizeInBytes);
+//         audioFormat = IAudioFormat::ENCODING_PCM_16BIT;
+//         // we will need twice the memory to store the data
+//         buffSizeInBytes *= 2;
+//     }
 
-    // compute the frame count
-    Int32 bytesPerSample = audioFormat == IAudioFormat::ENCODING_PCM_16BIT ? 2 : 1;
-    audio_format_t format = audioFormat == IAudioFormat::ENCODING_PCM_16BIT ?
-            AUDIO_FORMAT_PCM_16_BIT : AUDIO_FORMAT_PCM_8_BIT;
-    Int32 frameCount = buffSizeInBytes / (nbChannels * bytesPerSample);
+//     // compute the frame count
+//     Int32 bytesPerSample = audioFormat == IAudioFormat::ENCODING_PCM_16BIT ? 2 : 1;
+//     audio_format_t format = audioFormat == IAudioFormat::ENCODING_PCM_16BIT ?
+//             AUDIO_FORMAT_PCM_16_BIT : AUDIO_FORMAT_PCM_8_BIT;
+//     Int32 frameCount = buffSizeInBytes / (nbChannels * bytesPerSample);
 
-    AudioTrackJniStorage* lpJniStorage = new AudioTrackJniStorage();
+//     AudioTrackJniStorage* lpJniStorage = new AudioTrackJniStorage();
 
-    // initialize the callback information:
-    // this data will be passed with every AudioTrack callback
-    // we use a weak reference so the AudioTrack object can be garbage collected.
-    lpJniStorage->mCallbackData.mAudioTrackRef = this;
+//     // initialize the callback information:
+//     // this data will be passed with every AudioTrack callback
+//     // we use a weak reference so the AudioTrack object can be garbage collected.
+//     lpJniStorage->mCallbackData.mAudioTrackRef = this;
 
-    lpJniStorage->mStreamType = atStreamType;
+//     lpJniStorage->mStreamType = atStreamType;
 
-    if (nSession == NULL) {
-    //    LOGE("Error creating AudioTrack: invalid session ID pointer");
-        delete lpJniStorage;
-        return IAudioTrack::ERROR;
-    }
+//     if (nSession == NULL) {
+//     //    LOGE("Error creating AudioTrack: invalid session ID pointer");
+//         delete lpJniStorage;
+//         return IAudioTrack::ERROR;
+//     }
 
-    Int32 sessionId = nSession[0];
+//     Int32 sessionId = nSession[0];
 
-    // create the native AudioTrack object
-    android::AudioTrack* lpTrack = new android::AudioTrack();
-    if (lpTrack == NULL) {
-    //    LOGE("Error creating uninitialized AudioTrack");
-        goto native_track_failure;
-    }
+//     // create the native AudioTrack object
+//     android::AudioTrack* lpTrack = new android::AudioTrack();
+//     if (lpTrack == NULL) {
+//     //    LOGE("Error creating uninitialized AudioTrack");
+//         goto native_track_failure;
+//     }
 
-    // initialize the native AudioTrack object
-    if (memoryMode == MODE_STREAM) {
+//     // initialize the native AudioTrack object
+//     if (memoryMode == MODE_STREAM) {
 
-        lpTrack->set(
-            atStreamType,// stream type
-            sampleRateInHertz,
-            format,// word length, PCM
-            nativeChannelMask,
-            frameCount,
-            AUDIO_OUTPUT_FLAG_NONE,// flags
-            audioCallback, &(lpJniStorage->mCallbackData),//callback, callback data (user)
-            0,// notificationFrames == 0 since not using EVENT_MORE_DATA to feed the AudioTrack
-            0,// shared mem
-            true,// thread can call Java
-            sessionId);// audio session ID
-    }
-    else if (memoryMode == MODE_STATIC) {
-        // AudioTrack is using shared memory
+//         lpTrack->set(
+//             atStreamType,// stream type
+//             sampleRateInHertz,
+//             format,// word length, PCM
+//             nativeChannelMask,
+//             frameCount,
+//             AUDIO_OUTPUT_FLAG_NONE,// flags
+//             audioCallback, &(lpJniStorage->mCallbackData),//callback, callback data (user)
+//             0,// notificationFrames == 0 since not using EVENT_MORE_DATA to feed the AudioTrack
+//             0,// shared mem
+//             true,// thread can call Java
+//             sessionId);// audio session ID
+//     }
+//     else if (memoryMode == MODE_STATIC) {
+//         // AudioTrack is using shared memory
 
-        if (!lpJniStorage->AllocSharedMem(buffSizeInBytes)) {
-        //    LOGE("Error creating AudioTrack in static mode: error creating mem heap base");
-            goto native_init_failure;
-        }
+//         if (!lpJniStorage->AllocSharedMem(buffSizeInBytes)) {
+//         //    LOGE("Error creating AudioTrack in static mode: error creating mem heap base");
+//             goto native_init_failure;
+//         }
 
-        lpTrack->set(
-            atStreamType,// stream type
-            sampleRateInHertz,
-            format,// word length, PCM
-            nativeChannelMask,
-            frameCount,
-            AUDIO_OUTPUT_FLAG_NONE,// flags
-            audioCallback, &(lpJniStorage->mCallbackData),//callback, callback data (user));
-            0,// notificationFrames == 0 since not using EVENT_MORE_DATA to feed the AudioTrack
-            lpJniStorage->mMemBase,// shared mem
-            true,// thread can call Java
-            sessionId);// audio session ID
-    }
+//         lpTrack->set(
+//             atStreamType,// stream type
+//             sampleRateInHertz,
+//             format,// word length, PCM
+//             nativeChannelMask,
+//             frameCount,
+//             AUDIO_OUTPUT_FLAG_NONE,// flags
+//             audioCallback, &(lpJniStorage->mCallbackData),//callback, callback data (user));
+//             0,// notificationFrames == 0 since not using EVENT_MORE_DATA to feed the AudioTrack
+//             lpJniStorage->mMemBase,// shared mem
+//             true,// thread can call Java
+//             sessionId);// audio session ID
+//     }
 
-    if (lpTrack->initCheck() != android::NO_ERROR) {
-        //LOGE("Error initializing AudioTrack");
-        goto native_init_failure;
-    }
+//     if (lpTrack->initCheck() != android::NO_ERROR) {
+//         //LOGE("Error initializing AudioTrack");
+//         goto native_init_failure;
+//     }
 
-    // read the audio session ID back from AudioTrack in case we create a new session
-    nSession[0] = lpTrack->getSessionId();
+//     // read the audio session ID back from AudioTrack in case we create a new session
+//     nSession[0] = lpTrack->getSessionId();
 
-    // save our newly created C++ AudioTrack in the "nativeTrackInJavaObj" field
-    // of the Java object (in mNativeTrackInJavaObj)
-    mNativeTrack = (Int32)lpTrack;
+//     // save our newly created C++ AudioTrack in the "nativeTrackInJavaObj" field
+//     // of the Java object (in mNativeTrackInJavaObj)
+//     mNativeTrack = (Int32)lpTrack;
 
-    // save the JNI resources so we can free them later
-    //LOGV("storing lpJniStorage: %x\n", (int)lpJniStorage);
-    mNativeData = (Int32)lpJniStorage;
+//     // save the JNI resources so we can free them later
+//     //LOGV("storing lpJniStorage: %x\n", (int)lpJniStorage);
+//     mNativeData = (Int32)lpJniStorage;
 
-    return IAudioTrack::SUCCESS;
+//     return IAudioTrack::SUCCESS;
 
-    // failures:
-native_init_failure:
-    delete lpTrack;
-    mNativeTrack = 0;
+//     // failures:
+// native_init_failure:
+//     delete lpTrack;
+//     mNativeTrack = 0;
 
-native_track_failure:
-    delete lpJniStorage;
-    mNativeData = 0;
-    return ERROR_NATIVESETUP_NATIVEINITFAILED;
+// native_track_failure:
+//     delete lpJniStorage;
+//     mNativeData = 0;
+//     return ERROR_NATIVESETUP_NATIVEINITFAILED;
+    return 0;
 }
 
 void CAudioTrack::NativeFinalize()
 {
-    //LOGV("android_media_AudioTrack_native_finalize jobject: %x\n", (int)thiz);
+    // //LOGV("android_media_AudioTrack_native_finalize jobject: %x\n", (int)thiz);
 
-    // delete the AudioTrack object
-    android::AudioTrack* lpTrack = (android::AudioTrack *)mNativeTrack;
-    if (lpTrack) {
-        //LOGV("deleting lpTrack: %x\n", (int)lpTrack);
-        lpTrack->stop();
-        delete lpTrack;
-    }
+    // // delete the AudioTrack object
+    // android::AudioTrack* lpTrack = (android::AudioTrack *)mNativeTrack;
+    // if (lpTrack) {
+    //     //LOGV("deleting lpTrack: %x\n", (int)lpTrack);
+    //     lpTrack->stop();
+    //     delete lpTrack;
+    // }
 
-    // delete the JNI data
-    AudioTrackJniStorage* pJniStorage = (AudioTrackJniStorage *)mNativeData;
-    if (pJniStorage) {
-        //LOGV("deleting pJniStorage: %x\n", (int)pJniStorage);
-        delete pJniStorage;
-    }
+    // // delete the JNI data
+    // AudioTrackJniStorage* pJniStorage = (AudioTrackJniStorage *)mNativeData;
+    // if (pJniStorage) {
+    //     //LOGV("deleting pJniStorage: %x\n", (int)pJniStorage);
+    //     delete pJniStorage;
+    // }
 }
 
 void CAudioTrack::NativeRelease()
@@ -1288,7 +1571,8 @@ Int32 CAudioTrack::NativeWriteByte(
     /* [in] */ ArrayOf<Byte>* audioData,
     /* [in] */ Int32 offsetInBytes,
     /* [in] */ Int32 sizeInBytes,
-    /* [in] */ Int32 javaAudioFormat)
+    /* [in] */ Int32 javaAudioFormat,
+    /* [in] */ Boolean isBlocking)
 {
     Byte* cAudioData = NULL;
     android::AudioTrack *lpTrack = NULL;
@@ -1323,9 +1607,30 @@ Int32 CAudioTrack::NativeWriteInt16(
     /* [in] */ Int32 sizeInShorts,
     /* [in] */ Int32 javaAudioFormat)
 {
-    return (NativeWriteByte((ArrayOf<Byte>*)javaAudioData,
-            offsetInShorts * 2, sizeInShorts * 2, javaAudioFormat)
-            / 2);
+    // return (NativeWriteByte((ArrayOf<Byte>*)javaAudioData,
+    //         offsetInShorts * 2, sizeInShorts * 2, javaAudioFormat)
+    //         / 2);
+    return 0;
+}
+
+Int32 CAudioTrack::NativeWriteFloat(
+    /* [in] */ ArrayOf<Float>* audioData,
+    /* [in] */ Int32 offsetInFloats,
+    /* [in] */ Int32 sizeInFloats,
+    /* [in] */ Int32 format,
+    /* [in] */ Boolean isBlocking)
+{
+    return 0;
+}
+
+Int32 CAudioTrack::NativeWriteNativeBytes(
+    /* [in] */ IInterface* audioData,
+    /* [in] */ Int32 positionInBytes,
+    /* [in] */ Int32 sizeInBytes,
+    /* [in] */ Int32 format,
+    /* [in] */ Boolean blocking)
+{
+    return 0;
 }
 
 Int32 CAudioTrack::NativeReloadStatic()
@@ -1431,6 +1736,17 @@ Int32 CAudioTrack::NativeGetPosition()
     return (Int32)position;
 }
 
+Int32 CAudioTrack::NativeGetLatency()
+{
+    return 0;
+}
+
+Int32 CAudioTrack::NativeGetTimestamp(
+    /* [in] */ ArrayOf<Int64>* longArray)
+{
+    return 0;
+}
+
 Int32 CAudioTrack::NativeSetLoop(
     /* [in] */ Int32 loopStart,
     /* [in] */ Int32 loopEnd,
@@ -1445,34 +1761,35 @@ Int32 CAudioTrack::NativeSetLoop(
 Int32 CAudioTrack::NativeGetOutputSampleRate(
    /* [in] */ Int32 javaStreamType)
 {
-    Int32 afSamplingRate;
-    // convert the stream type from Java to native value
-    // FIXME: code duplication with android_media_AudioTrack_native_setup()
-    audio_stream_type_t nativeStreamType;
-    switch (javaStreamType) {
-    case AUDIO_STREAM_VOICE_CALL:
-    case AUDIO_STREAM_SYSTEM:
-    case AUDIO_STREAM_RING:
-    case AUDIO_STREAM_MUSIC:
-    case AUDIO_STREAM_ALARM:
-    case AUDIO_STREAM_NOTIFICATION:
-    case AUDIO_STREAM_BLUETOOTH_SCO:
-    case AUDIO_STREAM_DTMF:
-        nativeStreamType = (audio_stream_type_t) javaStreamType;
-        break;
-    default:
-        nativeStreamType = AUDIO_STREAM_DEFAULT;
-        break;
-    }
+    // Int32 afSamplingRate;
+    // // convert the stream type from Java to native value
+    // // FIXME: code duplication with android_media_AudioTrack_native_setup()
+    // audio_stream_type_t nativeStreamType;
+    // switch (javaStreamType) {
+    // case AUDIO_STREAM_VOICE_CALL:
+    // case AUDIO_STREAM_SYSTEM:
+    // case AUDIO_STREAM_RING:
+    // case AUDIO_STREAM_MUSIC:
+    // case AUDIO_STREAM_ALARM:
+    // case AUDIO_STREAM_NOTIFICATION:
+    // case AUDIO_STREAM_BLUETOOTH_SCO:
+    // case AUDIO_STREAM_DTMF:
+    //     nativeStreamType = (audio_stream_type_t) javaStreamType;
+    //     break;
+    // default:
+    //     nativeStreamType = AUDIO_STREAM_DEFAULT;
+    //     break;
+    // }
 
-    if (android::AudioSystem::getOutputSamplingRate(&afSamplingRate, nativeStreamType) != android::NO_ERROR) {
-        // LOGE("AudioSystem::getOutputSamplingRate() for stream type %d failed in AudioTrack JNI",
-        //     nativeStreamType);
-        return DEFAULT_OUTPUT_SAMPLE_RATE;
-    }
-    else {
-        return afSamplingRate;
-    }
+    // if (android::AudioSystem::getOutputSamplingRate(&afSamplingRate, nativeStreamType) != android::NO_ERROR) {
+    //     // LOGE("AudioSystem::getOutputSamplingRate() for stream type %d failed in AudioTrack JNI",
+    //     //     nativeStreamType);
+    //     return DEFAULT_OUTPUT_SAMPLE_RATE;
+    // }
+    // else {
+    //     return afSamplingRate;
+    // }
+    return 0;
 }
 
 // returns the minimum required size for the successful creation of a streaming AudioTrack
@@ -1482,12 +1799,13 @@ Int32 CAudioTrack::NativeGetMinBuffSize(
     /* [in] */ Int32 nbChannels,
     /* [in] */ Int32 audioFormat)
 {
-    Int32 frameCount = 0;
-    if (android::AudioTrack::getMinFrameCount(&frameCount, AUDIO_STREAM_DEFAULT,
-            sampleRateInHertz) != android::NO_ERROR) {
-        return -1;
-    }
-    return frameCount * nbChannels * (audioFormat == IAudioFormat::ENCODING_PCM_16BIT ? 2 : 1);
+    // Int32 frameCount = 0;
+    // if (android::AudioTrack::getMinFrameCount(&frameCount, AUDIO_STREAM_DEFAULT,
+    //         sampleRateInHertz) != android::NO_ERROR) {
+    //     return -1;
+    // }
+    // return frameCount * nbChannels * (audioFormat == IAudioFormat::ENCODING_PCM_16BIT ? 2 : 1);
+    return 0;
 }
 
 Int32 CAudioTrack::NativeAttachAuxEffect(
@@ -1499,7 +1817,7 @@ Int32 CAudioTrack::NativeAttachAuxEffect(
     return AndroidMediaTranslateErrorCode(lpTrack->attachAuxEffect(effectId));
 }
 
-void CAudioTrack::NativeSetAuxEffectSendLevel(
+Int32 CAudioTrack::NativeSetAuxEffectSendLevel(
     /* [in] */ Float level)
 {
     android::AudioTrack* lpTrack = (android::AudioTrack *)mNativeTrack;

@@ -29,9 +29,9 @@ public:
 
     WifiDisplayStatus();
 
-    CARAPI constrcutor();
+    CARAPI constructor();
 
-    CARAPI constrcutor(
+    CARAPI constructor(
         /* [in] */ Int32 featureState,
         /* [in] */ Int32 scanState,
         /* [in] */ Int32 activeDisplayState,

@@ -1,23 +1,27 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTQUICKCONTACT_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTQUICKCONTACT_H__
 
 #include "_Elastos_Droid_Provider_CContactsContractQuickContact.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::View::IView;
-using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::View::IView;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
 CarClass(CContactsContractQuickContact)
+    , public Singleton
+    , public IContactsContractQuickContact
 {
 public:
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * Constructs the QuickContacts intent with a view's rect.
@@ -105,6 +109,11 @@ public:
         /* [in] */ IUri* lookupUri,
         /* [in] */ Int32 mode,
         /* [in] */ ArrayOf<String>* excludeMimes);
+
+private:
+    CARAPI_(void) StartActivityWithErrorToast(
+        /* [in] */ IContext* context,
+        /* [in] */ IIntent* intent);
 };
 
 } //Provider

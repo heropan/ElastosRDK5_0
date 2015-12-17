@@ -21,7 +21,7 @@ CRemoteViewsAdapterServiceConnection::MyRunnable::MyRunnable(
 
 ECode CRemoteViewsAdapterServiceConnection::MyRunnable::Run()
 {
-    RemoteViewsAdapter* adpImpl = reinterpret_cast<RemoteViewsAdapter*>(mAdapter->Probe(EIID_RemoteViewsAdapter));
+    RemoteViewsAdapter* adpImpl = (RemoteViewsAdapter*)mAdapter.Get();
     if (adpImpl->mNotifyDataSetChangedAfterOnServiceConnected) {
         // Handle queued notifyDataSetChanged() if necessary
         adpImpl->OnNotifyDataSetChanged();
@@ -123,16 +123,13 @@ ECode CRemoteViewsAdapterServiceConnection::Bind(
         AutoPtr<IAppWidgetManager> mgr;
         CAppWidgetManager::GetInstance(ctx, (IAppWidgetManager**)&mgr);
         ECode pe;
-        if (Process::MyUid() == IProcess::SYSTEM_UID && ((adapter = mAdapter) != NULL)) {
-            RemoteViewsAdapter* rp = reinterpret_cast<RemoteViewsAdapter*>(adapter->Probe(EIID_RemoteViewsAdapter));
-            AutoPtr<IUserHandle> uhandle;
-            CUserHandle::New(rp->mUserId, (IUserHandle**)&uhandle);
-            pe = mgr->BindRemoteViewsService(appWidgetId, intent, this, uhandle);
+        if ((adapter = mAdapter) != NULL) {
+            String opPkgName;
+            ctx->GetOpPackageName(&opPkgName);
+            pe = mgr->BindRemoteViewsService(opPkgName, appWidgetId, intent, this);
         }
         else {
-            AutoPtr<IUserHandle> uhandle;
-            Process::MyUserHandle((IUserHandle**)&uhandle);
-            pe = mgr->BindRemoteViewsService(appWidgetId, intent, this, uhandle);
+            SLOGGERE("RemoteViewsAdapterServiceConnection", "bind: adapter was null");
         }
         if (FAILED(pe)) {
             SLOGGERE("RemoteViewsAdapterServiceConnection", "Bind() : Error system server dead?")
@@ -156,15 +153,12 @@ ECode CRemoteViewsAdapterServiceConnection::Unbind(
         AutoPtr<IAppWidgetManager> mgr;
         CAppWidgetManager::GetInstance(ctx, (IAppWidgetManager**)&mgr);
         ECode pe;
-        if (Process::MyUid() == IProcess::SYSTEM_UID && ((adapter = mAdapter) != NULL)) {
-            RemoteViewsAdapter* rp = reinterpret_cast<RemoteViewsAdapter*>(adapter->Probe(EIID_RemoteViewsAdapter));
-            AutoPtr<IUserHandle> uhandle;
-            CUserHandle::New(rp->mUserId, (IUserHandle**)&uhandle);
-            pe = mgr->UnbindRemoteViewsService(appWidgetId, intent, uhandle);
+        if ((adapter = mAdapter) != NULL) {
+            String opPkgName;
+            ctx->GetOpPackageName(&opPkgName);
+            pe = mgr->UnbindRemoteViewsService(opPkgName, appWidgetId, intent);
         } else {
-            AutoPtr<IUserHandle> uhandle;
-            Process::MyUserHandle((IUserHandle**)&uhandle);
-            pe = mgr->UnbindRemoteViewsService(appWidgetId, intent, uhandle);
+            SLOGGERE("RemoteViewsAdapterServiceConnection", "unbind: adapter was null");
         }
         if (FAILED(pe)) {
             SLOGGERE("RemoteViewsAdapterServiceConnection", "Unbind() : Error system server dead?")
@@ -208,7 +202,7 @@ ECode CRemoteViewsAdapterServiceConnection::OnServiceConnected(
     // if (adapter == null) return;
 
     // Queue up work that we need to do for the callback to run
-    RemoteViewsAdapter* adapter = reinterpret_cast<RemoteViewsAdapter*>(mAdapter->Probe(EIID_RemoteViewsAdapter));
+    RemoteViewsAdapter* adapter = (RemoteViewsAdapter*)mAdapter.Get();
     if(adapter == NULL) return NOERROR;
     AutoPtr<IRunnable> r = new MyRunnable(mAdapter);
     Boolean rst;
@@ -229,7 +223,7 @@ ECode CRemoteViewsAdapterServiceConnection::OnServiceDisconnected()
     mRemoteViewsFactory = NULL;
 
     // Clear the main/worker queues
-    RemoteViewsAdapter* adapter = reinterpret_cast<RemoteViewsAdapter*>(mAdapter->Probe(EIID_RemoteViewsAdapter));
+    RemoteViewsAdapter* adapter = (RemoteViewsAdapter*)mAdapter.Get();
     if (adapter == NULL) return NOERROR;
     AutoPtr<IRunnable> r = new MyRunnable(mAdapter);
     Boolean rst;

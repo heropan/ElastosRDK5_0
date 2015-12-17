@@ -6,6 +6,7 @@ module
     using interface Elastos.IO.ISerializable;
     using interface Elastos.Utility.IArrayList;
     using interface Org.Xmlpull.V1.IXmlPullParser;
+    using interface Org.Xmlpull.V1.IXmlSerializer;
 
     interface Elastos.Droid.Content.IClipData;
     interface Elastos.Droid.Content.IComponentName;
@@ -5148,6 +5149,12 @@ module
             [out] String* str);
 
         /**
+         * @hide
+         */
+        SaveToXml(
+            [in] IXmlSerializer* outXml);
+
+        /**
          * Prepare this {@link Intent} to leave an app process.
          *
          * @hide
@@ -5331,6 +5338,11 @@ module
             [in] IResources* resources,
             [in] IXmlPullParser* parser,
             [in] IAttributeSet* attrs,
+            [out] IIntent** intent);
+
+        /** @hide */
+        RestoreFromXml(
+            [in] IXmlPullParser* parser,
             [out] IIntent** intent);
 
         /**

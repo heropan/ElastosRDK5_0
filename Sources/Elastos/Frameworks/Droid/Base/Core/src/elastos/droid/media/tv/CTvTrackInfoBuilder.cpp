@@ -37,7 +37,7 @@ ECode CTvTrackInfoBuilder::constructor(
         // throw new IllegalArgumentException("Unknown type: " + type);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    if (id == NULL) {
+    if (id.IsNull()) {
         // throw new IllegalArgumentException("id cannot be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -109,13 +109,13 @@ ECode CTvTrackInfoBuilder::SetVideoFrameRate(
 }
 
 ECode CTvTrackInfoBuilder::SetExtra(
-    /* [in] */ IBundle * extra)
+    /* [in] */ IBundle* extra)
 {
     return CBundle::New(extra, (IBundle**)&mExtra);
 }
 
 ECode CTvTrackInfoBuilder::Build(
-    /* [out] */ ITvTrackInfo ** result)
+    /* [out] */ ITvTrackInfo** result)
 {
     return CTvTrackInfo::New(mType, mId, mLanguage, mAudioChannelCount, mAudioSampleRate,
             mVideoWidth, mVideoHeight, mVideoFrameRate, mExtra, result);

@@ -2,67 +2,55 @@
 #ifndef __ELASTOS_DROID_WIDGET_ZOOMBUTTONSCONTROLLER_H__
 #define __ELASTOS_DROID_WIDGET_ZOOMBUTTONSCONTROLLER_H__
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/FrameLayout.h"
-
-
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/os/Runnable.h"
-#include "elastos/droid/os/HandlerBase.h"
-#include "elastos/droid/R.h"
+#include "elastos/droid/os/Handler.h"
 
-using Elastos::Droid::R;
-using Elastos::Droid::Os::Runnable;
-using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::BroadcastReceiver;
-using Elastos::Droid::View::IViewOnTouchListener;
+using Elastos::Droid::Os::Runnable;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::View::IViewOnClickListener;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IWindowManager;
 using Elastos::Droid::View::IWindowManagerLayoutParams;
-using Elastos::Droid::View::IViewManager;
-using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::View::IViewGroup;
-using Elastos::Droid::View::IKeyEventCallback;
-using Elastos::Droid::View::IGravity;
-using Elastos::Droid::View::Accessibility::IAccessibilityEventSource;
-using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
+using Elastos::Droid::View::IViewOnTouchListener;
+using Elastos::Droid::View::IView;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
 class ZoomButtonsController
+    : public Object
+    , public IZoomButtonsController
+    , public IViewOnTouchListener
 {
 private:
-    class MyHandler : public HandlerBase
+    class MyHandler : public Handler
     {
     public:
         MyHandler(
-            /* [in] */ ZoomButtonsController* host)
-            : mHost(host)
-        {}
+            /* [in] */ ZoomButtonsController* host);
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+
     private:
         ZoomButtonsController* mHost;
     };
 
-    class _Container
+    class Container
         : public FrameLayout
     {
     public:
-        _Container(
+        Container(
             /* [in] */ IContext* context,
-            /* [in] */ ZoomButtonsController* controller)
-            : FrameLayout(context)
-            , mController(controller)
-        {
-        }
+            /* [in] */ ZoomButtonsController* controller);
 
         /*
          * Need to override this to intercept the key events. Otherwise, we
@@ -70,56 +58,12 @@ private:
          * ViewGroup gives it to the focused View instead of calling the key
          * listener, and so we wouldn't get the events.
          */
-        virtual CARAPI_(Boolean) DispatchKeyEvent(
-            /* [in] */ IKeyEvent* event)
-        {
-            return mController->OnContainerKey(event) ?
-                    TRUE : FrameLayout::DispatchKeyEvent(event);
-        }
+        virtual CARAPI DispatchKeyEvent(
+            /* [in] */ IKeyEvent* event,
+            /* [out] */ Boolean* result);
+
     protected:
         ZoomButtonsController* mController;
-    };
-
-    class Container
-        : public _Container
-        , public IFrameLayout
-        , public IViewParent
-        , public IViewManager
-        , public IDrawableCallback
-        , public IKeyEventCallback
-        , public IAccessibilityEventSource
-        , public IWeakReferenceSource
-        , public ElRefBase
-    {
-    public:
-        Container(
-            /* [in] */ IContext* context,
-            /* [in] */ ZoomButtonsController* controller)
-            : _Container(context, controller)
-        {}
-
-        IVIEW_METHODS_DECL()
-        IVIEWGROUP_METHODS_DECL()
-        IVIEWPARENT_METHODS_DECL()
-        IVIEWMANAGER_METHODS_DECL()
-        IDRAWABLECALLBACK_METHODS_DECL()
-        IKEYEVENTCALLBACK_METHODS_DECL()
-        IACCESSIBILITYEVENTSOURCE_METHODS_DECL()
-        IFRAMELAYOUT_METHODS_DECL()
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
-
-        CARAPI GetWeakReference(
-            /* [out] */ IWeakReference** weakReference);
     };
 
     class MyBroadcastReceiver : public BroadcastReceiver
@@ -133,23 +77,18 @@ private:
             /* [in] */ IIntent* intent);
 
         CARAPI ToString(
-            /* [out] */ String* info)
-        {
-            VALIDATE_NOT_NULL(info);
-            *info = String("ZoomButtonsController::MyBroadcastReceiver: ");
-            (*info).AppendFormat("%p", this);
-            return NOERROR;
-        }
+            /* [out] */ String* info);
+
     private:
         ZoomButtonsController* mHost;
     };
 
     class MyClickListener
-        : public IViewOnClickListener
-        , public ElRefBase
+        : public Object
+        , public IViewOnClickListener
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         MyClickListener(
             /* [in] */ ZoomButtonsController* host,
@@ -157,6 +96,7 @@ private:
 
         CARAPI OnClick(
             /* [in] */ IView* v);
+
     private:
         ZoomButtonsController* mHost;
         Boolean mOnZoom;
@@ -173,7 +113,20 @@ private:
     private:
         ZoomButtonsController* mHost;
     };
+
 public:
+    CAR_INTERFACE_DECL();
+
+    /**
+     * Constructor for the {@link ZoomButtonsController}.
+     *
+     * @param ownerView The view that is being zoomed by the zoom controls. The
+     *            zoom controls will be displayed aligned with this view.
+     */
+    ZoomButtonsController();
+
+    CARAPI constructor(
+        /* [in] */ IView* ownerView);
 
     /**
      * @hide The ZoomButtonsController implements the OnTouchListener, but this
@@ -184,19 +137,6 @@ public:
         /* [in] */ IMotionEvent* event,
         /* [out] */ Boolean* result);
 
-    /**
-     * Constructor for the {@link ZoomButtonsController}.
-     *
-     * @param ownerView The view that is being zoomed by the zoom controls. The
-     *            zoom controls will be displayed aligned with this view.
-     */
-    ZoomButtonsController();
-
-    ZoomButtonsController(
-        /* [in] */ IView* ownerView);
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
     /**
      * Whether to enable the zoom in control.
      *
@@ -244,7 +184,8 @@ public:
      *
      * @return Whether the zoom controls will be auto dismissed after showing.
      */
-    Boolean IsAutoDismissed();
+    CARAPI IsAutoDismissed(
+        /* [out] */ Boolean* dismissed);
 
     /**
      * Sets whether the zoom controls will be automatically dismissed after
@@ -258,7 +199,8 @@ public:
      *
      * @return Whether the zoom controls are visible to the user.
      */
-    Boolean IsVisible();
+    CARAPI IsVisible(
+        /* [out] */ Boolean* visible);
 
     /**
      * Sets whether the zoom controls should be visible to the user.
@@ -277,22 +219,20 @@ public:
      * @return The container of the zoom controls. It will be a layout that
      *         respects the gravity of a child's layout parameters.
      */
-    CARAPI_(AutoPtr<IViewGroup>) GetContainer();
+    CARAPI GetContainer(
+        /* [out] */ IViewGroup** container);
 
     /**
      * Gets the view for the zoom controls.
      *
      * @return The zoom controls view.
      */
-    AutoPtr<IView> GetZoomControls();
+    CARAPI GetZoomControls(
+        /* [out] */ IView** view);
 
     /* This will only be called when the container has focus. */
     Boolean OnContainerKey(
         /* [in] */ IKeyEvent* event);
-
-protected:
-    CARAPI Init(
-        /* [in] */ IView* ownerView);
 
 private:
     AutoPtr<Container> CreateContainer();
@@ -326,17 +266,17 @@ private:
 
     static const Int32 ZOOM_CONTROLS_TIMEOUT;// = (Int32) ViewConfiguration.getZoomControlsTimeout();
 
-    static const Int32 ZOOM_CONTROLS_TOUCH_PADDING = 20;
+    static const Int32 ZOOM_CONTROLS_TOUCH_PADDING;
 
     /** When configuration changes, this is called after the UI thread is idle. */
-    static const Int32 MSG_POST_CONFIGURATION_CHANGED = 2;
+    static const Int32 MSG_POST_CONFIGURATION_CHANGED;
     /** Used to delay the zoom controller dismissal. */
-    static const Int32 MSG_DISMISS_ZOOM_CONTROLS = 3;
+    static const Int32 MSG_DISMISS_ZOOM_CONTROLS;
     /**
      * If setVisible(true) is called and the owner view's window token is null,
      * we delay the setVisible(true) call until it is not null.
      */
-    static const Int32 MSG_POST_SET_VISIBLE = 4;
+    static const Int32 MSG_POST_SET_VISIBLE;
 
     Int32 mTouchPaddingScaledSq;
 
@@ -410,4 +350,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif
+#endif // __ELASTOS_DROID_WIDGET_ZOOMBUTTONSCONTROLLER_H__

@@ -1,12 +1,11 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CALENDARCONTRACTREMENDERS_H__
 #define __ELASTOS_DROID_PROVIDER_CALENDARCONTRACTREMENDERS_H__
 
 #include "elastos/droid/ext/frameworkext.h"
 
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Database::ICursor;
+using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
 namespace Droid {

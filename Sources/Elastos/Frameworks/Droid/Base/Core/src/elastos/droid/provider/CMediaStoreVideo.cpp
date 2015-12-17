@@ -1,10 +1,13 @@
-
-#include "elastos/droid/provider/CMediaStoreVideo.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/provider/CMediaStoreVideo.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
+
+CAR_SINGLETON_IMPL(CMediaStoreVideo)
+
+CAR_INTERFACE_IMPL(CMediaStoreVideo, Singleton, IMediaStoreVideo)
 
 ECode CMediaStoreVideo::Query(
     /* [in] */ IContentResolver* cr,

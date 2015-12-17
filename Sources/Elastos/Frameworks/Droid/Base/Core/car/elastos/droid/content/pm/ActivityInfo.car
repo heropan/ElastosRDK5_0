@@ -17,6 +17,7 @@ module
      */
     /**
      * @Involve
+     * interface Elastos.Droid.Content.Pm.IPackageItemInfo
      * interface Elastos.Droid.Content.Pm.IComponentInfo
      */
     interface IActivityInfo {

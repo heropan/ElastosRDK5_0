@@ -318,7 +318,7 @@ ECode RelativeLayout::LayoutParams::InitFromAttributes(
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::RelativeLayout_Layout),
-            ARRAY_SIZE(R::styleable::RelativeLayout_Layout));
+            ArraySize(R::styleable::RelativeLayout_Layout));
     AutoPtr<ITypedArray> a;
     ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
             attrs, attrIds, (ITypedArray**)&a));
@@ -753,7 +753,7 @@ ECode RelativeLayout::InitFromAttributes(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::RelativeLayout),
-            ARRAY_SIZE(R::styleable::RelativeLayout));
+            ArraySize(R::styleable::RelativeLayout));
     AutoPtr<ITypedArray> a;
     FAIL_RETURN(context->ObtainStyledAttributes(
             attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));

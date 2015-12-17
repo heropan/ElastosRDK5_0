@@ -10,7 +10,7 @@ module
     namespace Droid {
     namespace Media {
 
-    interface IAudioSource {
+    interface IMediaRecorderAudioSource {
         /* Do not change these values without updating their counterparts
          * in system/core/include/system/audio.h!
          */
@@ -67,9 +67,22 @@ module
          * </p>
          */
         const Int32 REMOTE_SUBMIX = 8;
+
+        /**
+         * Audio source for preemptible, low-priority software hotword detection
+         * It presents the same gain and pre processing tuning as {@link #VOICE_RECOGNITION}.
+         * <p>
+         * An application should use this audio source when it wishes to do
+         * always-on software hotword detection, while gracefully giving in to any other application
+         * that might want to read from the microphone.
+         * </p>
+         * This is a hidden audio source.
+         * @hide
+         */
+        const Int32 HOTWORD = 1999;
     }
 
-    interface IVideoSource {
+    interface IMediaRecorderVideoSource {
         /* Do not change these values without updating their counterparts
          * in include/media/mediarecorder.h!
          */
@@ -96,7 +109,7 @@ module
         const Int32 SURFACE = 2;
     }
 
-    interface IOutputFormat {
+    interface IMediaRecorderOutputFormat {
        /* Do not change these values without updating their counterparts
         * in include/media/mediarecorder.h!
         */
@@ -137,7 +150,7 @@ module
         const Int32 WEBM = 9;
     }
 
-    interface IAudioEncoder {
+    interface IMediaRecorderAudioEncoder {
         /* Do not change these values without updating their counterparts
          * in include/media/mediarecorder.h!
          */
@@ -156,7 +169,7 @@ module
         const Int32 VORBIS = 6;
     }
 
-    interface IVideoEncoder {
+    interface IMediaRecorderVideoEncoder {
       /* Do not change these values without updating their counterparts
        * in include/media/mediarecorder.h!
        */

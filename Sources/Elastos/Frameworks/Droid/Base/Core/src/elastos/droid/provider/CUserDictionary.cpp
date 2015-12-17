@@ -1,7 +1,7 @@
 #include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/CUserDictionary.h"
 #include "elastos/droid/provider/UserDictionary.h"
-#include "elastos/droid/net/Uri.h"
 
 using Elastos::Droid::Content::CContentValues;
 using Elastos::Droid::Content::IContentValues;

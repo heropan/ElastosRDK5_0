@@ -1,5 +1,19 @@
 
-#include "am/CActivityManagerService.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
+#if 1
+namespace Elastos {
+namespace Droid {
+namespace Server {
+namespace Am {
+const String CActivityManagerService::TAG("CActivityManagerService");
+
+} // namespace Am
+} // namespace Server
+} // namespace Droid
+} // namespace Elastos
+
+#else
+
 #include <elastos/utility/etl/Algorithm.h>
 #include <unistd.h>
 #include <elastos/utility/logging/Slogger.h>
@@ -24,37 +38,37 @@
 #include "elastos/droid/app/AppGlobals.h"
 #include "elastos/droid/view/LayoutInflater.h"
 //#include "elastos/droid/view/WindowManagerPolicy.h"
-#include "am/ActivityRecord.h"
-#include "am/ActivityStack.h"
-#include "am/ActiveServices.h"
-#include "am/AppErrorResult.h"
-#include "am/AppErrorDialog.h"
-#include "am/AppBindRecord.h"
-#include "am/CompatModeDialog.h"
-#include "am/FactoryErrorDialog.h"
-#include "am/AppNotRespondingDialog.h"
-#include "am/StrictModeViolationDialog.h"
-#include "am/BroadcastFilter.h"
-#include "am/BroadcastQueue.h"
-#include "am/BroadcastRecord.h"
-#include "am/CPendingIntentRecord.h"
-#include "am/CContentProviderConnection.h"
-#include "am/PendingThumbnailsRecord.h"
-#include "am/LaunchWarningWindow.h"
-#include "am/ProcessList.h"
-#include "am/ProcessRecord.h"
-#include "am/ProviderMap.h"
-#include "am/ReceiverList.h"
-#include "am/UserStartedState.h"
-#include "am/CUsageStatsService.h"
-#include "am/CShutdownReceiver.h"
-#include "am/CStoppingReceiver.h"
-#include "am/TaskRecord.h"
-#include "am/ActivityState.h"
-//#include "am/SystemServer.h"
-//#include "am/CServiceRestarter.h"
+#include "elastos/droid/server/am/ActivityRecord.h"
+#include "elastos/droid/server/am/ActivityStack.h"
+#include "elastos/droid/server/am/ActiveServices.h"
+#include "elastos/droid/server/am/AppErrorResult.h"
+#include "elastos/droid/server/am/AppErrorDialog.h"
+#include "elastos/droid/server/am/AppBindRecord.h"
+#include "elastos/droid/server/am/CompatModeDialog.h"
+#include "elastos/droid/server/am/FactoryErrorDialog.h"
+#include "elastos/droid/server/am/AppNotRespondingDialog.h"
+#include "elastos/droid/server/am/StrictModeViolationDialog.h"
+#include "elastos/droid/server/am/BroadcastFilter.h"
+#include "elastos/droid/server/am/BroadcastQueue.h"
+#include "elastos/droid/server/am/BroadcastRecord.h"
+#include "elastos/droid/server/am/CPendingIntentRecord.h"
+#include "elastos/droid/server/am/CContentProviderConnection.h"
+#include "elastos/droid/server/am/PendingThumbnailsRecord.h"
+#include "elastos/droid/server/am/LaunchWarningWindow.h"
+#include "elastos/droid/server/am/ProcessList.h"
+#include "elastos/droid/server/am/ProcessRecord.h"
+#include "elastos/droid/server/am/ProviderMap.h"
+#include "elastos/droid/server/am/ReceiverList.h"
+#include "elastos/droid/server/am/UserStartedState.h"
+#include "elastos/droid/server/am/CUsageStatsService.h"
+#include "elastos/droid/server/am/CShutdownReceiver.h"
+#include "elastos/droid/server/am/CStoppingReceiver.h"
+#include "elastos/droid/server/am/TaskRecord.h"
+#include "elastos/droid/server/am/ActivityState.h"
+//#include "elastos/droid/server/am/SystemServer.h"
+//#include "elastos/droid/server/am/CServiceRestarter.h"
 //#include "wm/CWindowManagerService.h"
-#include "am/AppWaitingForDebuggerDialog.h"
+#include "elastos/droid/server/am/AppWaitingForDebuggerDialog.h"
 #include "elastos/droid/app/NotificationManager.h"
 #include "elastos/droid/net/Uri.h"
 #include "util/TimeUtils.h"
@@ -264,7 +278,7 @@ static AutoPtr< ArrayOf<Int64> > InitDumpMemBuckets()
         1*1024*1024, 2*1024*1024, 5*1024*1024, 10*1024*1024, 20*1024*1024
     };
 
-    Int32 size = ARRAY_SIZE(DUMP_MEM_BUCKETS);
+    Int32 size = ArraySize(DUMP_MEM_BUCKETS);
     AutoPtr< ArrayOf<Int64> > array = ArrayOf<Int64>::Alloc(size);
     array->Copy(DUMP_MEM_BUCKETS, size);
     return array;
@@ -281,7 +295,7 @@ static AutoPtr< ArrayOf<Int32> > InitDumpMemOomAdj()
         ProcessList::SERVICE_B_ADJ, ProcessList::HIDDEN_APP_MAX_ADJ
     };
 
-    Int32 size = ARRAY_SIZE(DUMP_MEM_OOM_ADJ);
+    Int32 size = ArraySize(DUMP_MEM_OOM_ADJ);
     AutoPtr< ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(size);
     array->Copy(DUMP_MEM_OOM_ADJ, size);
     return array;
@@ -1294,14 +1308,12 @@ ECode CActivityManagerService::MyHandler::HandleMessage(
     }
     break;
     case CActivityManagerService::WAIT_FOR_DEBUGGER_MSG: {
-        AutoPtr<ProcessRecord> pr = reinterpret_cast<ProcessRecord*>(
-            obj->Probe(EIID_ProcessRecord));
+        AutoPtr<ProcessRecord> pr = (ProcessRecord*)IProcessRecord::Probe(obj)
         mHost->HandleWaitForDebuggerMsg(pr, arg1);
     }
     break;
     case CActivityManagerService::SERVICE_TIMEOUT_MSG: {
-        AutoPtr<ProcessRecord> pr = reinterpret_cast<ProcessRecord*>(
-            obj->Probe(EIID_ProcessRecord));
+        AutoPtr<ProcessRecord> pr = (ProcessRecord*)IProcessRecord::Probe(obj)
         mHost->HandleServiceTimeoutMsg(pr);
     }
     break;
@@ -1327,8 +1339,7 @@ ECode CActivityManagerService::MyHandler::HandleMessage(
     }
     break;
     case CActivityManagerService::PROC_START_TIMEOUT_MSG: {
-        AutoPtr<ProcessRecord> pr = reinterpret_cast<ProcessRecord*>(
-            obj->Probe(EIID_ProcessRecord));
+        AutoPtr<ProcessRecord> pr = (ProcessRecord*)IProcessRecord::Probe(obj)
         mHost->HandleProcStartTimeoutMsg(pr);
     }
     break;
@@ -1350,8 +1361,7 @@ ECode CActivityManagerService::MyHandler::HandleMessage(
     }
     break;
     case CActivityManagerService::POST_HEAVY_NOTIFICATION_MSG: {
-        AutoPtr<ActivityRecord> ar = reinterpret_cast<ActivityRecord*>(
-            obj->Probe(EIID_ActivityRecord));
+        AutoPtr<ActivityRecord> ar = (ActivityRecord*)IActivityRecord::Probe(obj);
         assert(ar != NULL);
         mHost->HandlePostHeavyNotificationMsg(ar);
     }
@@ -1365,8 +1375,7 @@ ECode CActivityManagerService::MyHandler::HandleMessage(
     }
     break;
     case CActivityManagerService::SHOW_COMPAT_MODE_DIALOG_MSG: {
-        AutoPtr<ActivityRecord> ar = reinterpret_cast<ActivityRecord*>(
-            obj->Probe(EIID_ActivityRecord));
+        AutoPtr<ActivityRecord> ar = (ActivityRecord*)IActivityRecord::Probe(obj);
         mHost->HandleShowCompatModeDialogMsg(ar);
     }
     break;
@@ -3382,10 +3391,9 @@ ECode CActivityManagerService::SetRequestedOrientation(
     const Int64 origId = Binder::ClearCallingIdentity();
     mWindowManager->SetAppOrientation(r->mAppToken, requestedOrientation);
     AutoPtr<IConfiguration> config;
-    Boolean res;
     mWindowManager->UpdateOrientationFromAppTokens(
             mConfiguration,
-            (r->MayFreezeScreenLocked(r->mApp, &res), res)
+            r->MayFreezeScreenLocked(r->mApp)
                 ? IBinder::Probe(r->mAppToken) : NULL,
             (IConfiguration**)&config);
     if (config != NULL) {
@@ -5933,7 +5941,7 @@ ECode CActivityManagerService::GetIntentSenderLocked(
     flags &= ~(IPendingIntent::FLAG_NO_CREATE | IPendingIntent::FLAG_CANCEL_CURRENT
             | IPendingIntent::FLAG_UPDATE_CURRENT);
 
-    AutoPtr<CPendingIntentRecordKey> key = new CPendingIntentRecordKey(type, packageName, activity, resultWho,
+    AutoPtr<CPendingIntentRecord::Key> key = new CPendingIntentRecord::Key(type, packageName, activity, resultWho,
             requestCode, intents, resolvedTypes, flags, options, userId);
     typename PendingIntentRecordHashMap::Iterator it = mIntentSenderRecords.Find(key);
     AutoPtr<IWeakReference> ref = (it != mIntentSenderRecords.End()) ? it->mSecond : NULL;
@@ -7095,7 +7103,8 @@ ECode CActivityManagerService::NewUriPermissionOwner(
     FAIL_RETURN(EnforceNotIsolatedCaller(String("newUriPermissionOwner")));
     AutoLock lock(mLock);
     AutoPtr<UriPermissionOwner> owner = new UriPermissionOwner(this, (Handle32)&name);
-    *token = owner->GetExternalTokenLocked();
+    AutoPtr<IBinder> temp = owner->GetExternalTokenLocked();
+    *token = temp;
     REFCOUNT_ADD(*token);
 
     return NOERROR;
@@ -11358,14 +11367,14 @@ ECode CActivityManagerService::GetRunningAppProcesses(
                         app->mPid, app->GetPackageList(), (IActivityManagerRunningAppProcessInfo**)&currApp);
                 FillInProcMemInfo(app, currApp);
                 if (app->mAdjSource != NULL) {
-                    if (app->mAdjSource->Probe(EIID_ProcessRecord) != NULL) {
-                        ProcessRecord* pr = reinterpret_cast<ProcessRecord*>(app->mAdjSource->Probe(EIID_ProcessRecord));
+                    if (IProcessRecord::Probe(app->mAdjSource) != NULL) {
+                        ProcessRecord* pr = (ProcessRecord*)IProcessRecord::Probe(app->mAdjSource);
                         currApp->SetImportanceReasonPid(pr->mPid);
                         currApp->SetImportanceReasonImportance(OomAdjToImportance(
                                     app->mAdjSourceOom, NULL));
                     }
-                    else if (app->mAdjSource->Probe(EIID_ActivityRecord) != NULL) {
-                        ActivityRecord* r = reinterpret_cast<ActivityRecord*>(app->mAdjSource->Probe(EIID_ActivityRecord));
+                    else if (IActivityRecord::Probe(app->mAdjSource) != NULL) {
+                        ActivityRecord* r = (ActivityRecord*)IActivityRecord::Probe(app->mAdjSource);
                         if (r->mApp != NULL) currApp->SetImportanceReasonPid(r->mApp->mPid);
                     }
                 }
@@ -15894,8 +15903,7 @@ ECode CActivityManagerService::TargetTaskAffinityMatchesActivity(
 {
     VALIDATE_NOT_NULL(result);
 
-    AutoPtr<ActivityRecord> srec;
-    ActivityRecord::ForToken(token, (ActivityRecord**)&srec);
+    AutoPtr<ActivityRecord> srec = ActivityRecord::ForToken(token);
     *result = srec != NULL && srec->mTask->mAffinity != NULL &&
             srec->mTask->mAffinity.Equals(destAffinity);
     return NOERROR;
@@ -15915,8 +15923,7 @@ ECode CActivityManagerService::NavigateUpTo(
 
     {
         AutoLock lock(mLock);
-        AutoPtr<ActivityRecord> srec;
-        ActivityRecord::ForToken(token, (ActivityRecord**)&srec);
+        AutoPtr<ActivityRecord> srec = ActivityRecord::ForToken(token);
         if (srec == NULL) {
             *result = FALSE;
             return NOERROR;
@@ -16038,8 +16045,7 @@ ECode CActivityManagerService::GetLaunchedFromUid(
     /* [in] */ IBinder* activityToken,
     /* [out] */ Int32* result)
 {
-    AutoPtr<ActivityRecord> srec;
-    ActivityRecord::ForToken(activityToken, (ActivityRecord**)&srec);
+    AutoPtr<ActivityRecord> srec = ActivityRecord::ForToken(activityToken);
     if (srec == NULL) {
         *result = -1;
     }
@@ -18633,7 +18639,7 @@ void CActivityManagerService::HandleShowErrorMsg(
         StringObjectHashMap::Iterator it = data->Find(String("app"));
         AutoPtr<ProcessRecord> proc;
         if (it != data->End()) {
-            proc = reinterpret_cast<ProcessRecord*>(it->mSecond->Probe(EIID_ProcessRecord));
+            proc = (ProcessRecord*)IProcessRecord::Probe(it->mSecond);
         }
 
         it = data->Find(String("result"));
@@ -18687,8 +18693,7 @@ void CActivityManagerService::HandleShowNotRespondingMsg(
         AutoPtr<ProcessRecord> proc;
         StringObjectHashMap::Iterator it = data->Find(String("app"));
         if (it != data->End()) {
-            proc = reinterpret_cast<ProcessRecord*>(
-                it->mSecond->Probe(EIID_ProcessRecord));
+            proc = (ProcessRecord*)IProcessRecord::Probe(it->mSecond);
         }
 
         if (proc != NULL && proc->mAnrDialog != NULL) {
@@ -18711,7 +18716,7 @@ void CActivityManagerService::HandleShowNotRespondingMsg(
         AutoPtr<ActivityRecord> record;
         it = data->Find(String("activity"));
         if (it != data->End()) {
-            record = reinterpret_cast<ActivityRecord*>(it->mSecond->Probe(EIID_ActivityRecord));
+            record = (ActivityRecord*)IActivityRecord::Probe(it->mSecond);
         }
         if (mShowDialogs) {
            AutoPtr<AppNotRespondingDialog> appDialog = new AppNotRespondingDialog(this,
@@ -18742,8 +18747,7 @@ void CActivityManagerService::HandleShowStrictModeViolationMsg(
             return;
         }
 
-        AutoPtr<ProcessRecord> proc = reinterpret_cast<ProcessRecord*>(
-            it->mSecond->Probe(EIID_ProcessRecord));
+        AutoPtr<ProcessRecord> proc = (ProcessRecord*)IProcessRecord::Probe(it->mSecond);
         assert(proc != NULL);
         if (proc->mCrashDialog != NULL) {
             Slogger::E(TAG, "App already has strict mode dialog: %p", proc.Get());
@@ -19125,8 +19129,9 @@ void CActivityManagerService::HandleReportMemUsage()
     thread->Start();
 }
 
-
 } // namespace Am
 } // namespace Server
 } // namespace Droid
 } // namespace Elastos
+
+#endif

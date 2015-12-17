@@ -4,15 +4,24 @@
 
 #include "_Elastos_Droid_Media_CCamcorderProfile.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
 
 CarClass(CCamcorderProfile)
+    , public Object
+    , public ICamcorderProfile
 {
 public:
     CCamcorderProfile();
+
+    virtual ~CCamcorderProfile();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ Int32 duration,
@@ -45,16 +54,20 @@ public:
      *
      * Quality levels QUALITY_LOW, QUALITY_HIGH are guaranteed to be supported, while
      * other levels may or may not be supported. The supported levels can be checked using
-     * {@link #hasProfile(Int32, Int32)}.
+     * {@link #hasProfile(int, int)}.
      * QUALITY_LOW refers to the lowest quality available, while QUALITY_HIGH refers to
      * the highest quality available.
-     * QUALITY_LOW/QUALITY_HIGH have to match one of qcif, cif, 480p, 720p, or 1080p.
-     * E.g. if the device supports 480p, 720p, and 1080p, then low is 480p and high is
-     * 1080p.
+     * QUALITY_LOW/QUALITY_HIGH have to match one of qcif, cif, 480p, 720p, 1080p or 2160p.
+     * E.g. if the device supports 480p, 720p, 1080p and 2160p, then low is 480p and high is
+     * 2160p.
      *
      * The same is true for time lapse quality levels, i.e. QUALITY_TIME_LAPSE_LOW,
      * QUALITY_TIME_LAPSE_HIGH are guaranteed to be supported and have to match one of
-     * qcif, cif, 480p, 720p, or 1080p.
+     * qcif, cif, 480p, 720p, 1080p, or 2160p.
+     *
+     * For high speed quality levels, they may or may not be supported. If a subset of the levels
+     * are supported, QUALITY_HIGH_SPEED_LOW and QUALITY_HIGH_SPEED_HIGH are guaranteed to be
+     * supported and have to match one of 480p, 720p, or 1080p.
      *
      * A camcorder recording session with higher quality level usually has higher output
      * bit rate, better video and/or audio recording quality, larger video frame
@@ -70,6 +83,7 @@ public:
      * @see #QUALITY_480P
      * @see #QUALITY_720P
      * @see #QUALITY_1080P
+     * @see #QUALITY_2160P
      * @see #QUALITY_TIME_LAPSE_LOW
      * @see #QUALITY_TIME_LAPSE_HIGH
      * @see #QUALITY_TIME_LAPSE_QCIF
@@ -77,7 +91,14 @@ public:
      * @see #QUALITY_TIME_LAPSE_480P
      * @see #QUALITY_TIME_LAPSE_720P
      * @see #QUALITY_TIME_LAPSE_1080P
-     */
+     * @see #QUALITY_TIME_LAPSE_2160P
+     * @see #QUALITY_HIGH_SPEED_LOW
+     * @see #QUALITY_HIGH_SPEED_HIGH
+     * @see #QUALITY_HIGH_SPEED_480P
+     * @see #QUALITY_HIGH_SPEED_720P
+     * @see #QUALITY_HIGH_SPEED_1080P
+     * @see #QUALITY_HIGH_SPEED_2160P
+    */
     static CARAPI Get(
         /* [in] */ Int32 cameraId,
         /* [in] */ Int32 quality,
@@ -255,12 +276,16 @@ public:
 
 private:
     // Start and end of quality list
-    static const Int32 QUALITY_LIST_START;// = ICamcorderProfile::QUALITY_LOW;
-    static const Int32 QUALITY_LIST_END;// = ICamcorderProfile::QUALITY_QVGA;
+    static const Int32 QUALITY_LIST_START;
+    static const Int32 QUALITY_LIST_END;
 
     // Start and end of timelapse quality list
-    static const Int32 QUALITY_TIME_LAPSE_LIST_START;// = ICamcorderProfile::QUALITY_TIME_LAPSE_LOW;
-    static const Int32 QUALITY_TIME_LAPSE_LIST_END;// = ICamcorderProfile::QUALITY_TIME_LAPSE_QVGA;
+    static const Int32 QUALITY_TIME_LAPSE_LIST_START;
+    static const Int32 QUALITY_TIME_LAPSE_LIST_END;
+
+    // Start and end of high speed quality list
+    static const Int32 QUALITY_HIGH_SPEED_LIST_START;
+    static const Int32 QUALITY_HIGH_SPEED_LIST_END;
 };
 
 } // namespace Media

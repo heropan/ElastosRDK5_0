@@ -3,19 +3,24 @@
 #define __ELASTOS_DROID_MEDIA_CAUDIORECORD_H__
 
 #include "_Elastos_Droid_Media_CAudioRecord.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/Handler.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Droid::Os::HandlerBase;
-using Elastos::IO::IByteBuffer;
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Privacy::IPrivacySettingsManager;
 using Elastos::Droid::Content::Pm::IIPackageManager;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Privacy::IPrivacySettingsManager;
+using Elastos::IO::IByteBuffer;
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
 
 CarClass(CAudioRecord)
+    , public Object
+    , public IAudioRecord
 {
 private:
     //---------------------------------------------------------
@@ -26,34 +31,42 @@ private:
      * (potentially) handled in a different thread
      */
     class NativeEventHandler
-        : public HandlerBase
+        : public Handler
     {
     public:
         NativeEventHandler(
-            /* [in] */ IAudioRecord* recorder,
             /* [in] */ ILooper* looper,
-            /* [in] */ CAudioRecord* owner);
+            /* [in] */ CAudioRecord* owner)
+            : Handler(looper)
+            , mOwner(owner)
+        {}
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
 
     private:
-        AutoPtr<IAudioRecord> mAudioRecord;
         CAudioRecord* mOwner;
     };
 
 public:
     CAudioRecord();
 
-    ~CAudioRecord();
+    virtual ~CAudioRecord();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     //---------------------------------------------------------
     // Constructor, Finalize
-    //---------------------------------------------------------
+    //--------------------
     /**
      * Class constructor.
-     * @param audioSource the recording source. See {@link MediaRecorder.AudioSource} for
-     *    recording source definitions.
+     * Though some invalid parameters will result in an {@link IllegalArgumentException} exception,
+     * other errors do not.  Thus you should call {@link #getState()} immediately after construction
+     * to confirm that the object is usable.
+     * @param audioSource the recording source (also referred to as capture preset).
+     *    See {@link MediaRecorder.AudioSource} for the capture preset definitions.
      * @param sampleRateInHz the sample rate expressed in Hertz. 44100Hz is currently the only
      *   rate that is guaranteed to work on all devices, but other rates such as 22050,
      *   16000, and 11025 may work on some devices.
@@ -77,6 +90,33 @@ public:
         /* [in] */ Int32 channelConfig,
         /* [in] */ Int32 audioFormat,
         /* [in] */ Int32 bufferSizeInBytes);
+
+    /**
+     * @hide
+     * CANDIDATE FOR PUBLIC API
+     * Class constructor with {@link AudioAttributes} and {@link AudioFormat}.
+     * @param attributes a non-null {@link AudioAttributes} instance. Use
+     *     {@link AudioAttributes.Builder#setCapturePreset(int)} for configuring the capture
+     *     preset for this instance.
+     * @param format a non-null {@link AudioFormat} instance describing the format of the data
+     *     that will be recorded through this AudioRecord. See {@link AudioFormat.Builder} for
+     *     configuring the audio format parameters such as encoding, channel mask and sample rate.
+     * @param bufferSizeInBytes the total size (in bytes) of the buffer where audio data is written
+     *   to during the recording. New audio data can be read from this buffer in smaller chunks
+     *   than this size. See {@link #getMinBufferSize(int, int, int)} to determine the minimum
+     *   required buffer size for the successful creation of an AudioRecord instance. Using values
+     *   smaller than getMinBufferSize() will result in an initialization failure.
+     * @param sessionId ID of audio session the AudioRecord must be attached to, or
+     *   {@link AudioManager#AUDIO_SESSION_ID_GENERATE} if the session isn't known at construction
+     *   time. See also {@link AudioManager#generateAudioSessionId()} to obtain a session ID before
+     *   construction.
+     * @throws IllegalArgumentException
+     */
+    CARAPI constructor(
+        /* [in] */ IAudioAttributes* attributes,
+        /* [in] */ IAudioFormat* format,
+        /* [in] */ Int32 bufferSizeInBytes,
+        /* [in] */ Int32 sessionId);
 
     /**
      * Releases the native AudioRecord resources.
@@ -313,34 +353,6 @@ protected:
     CARAPI_(void) Finalize();
 
 private:
-    /**
-     * {@hide}
-     * @return package names of current process which is using this object or null if something went wrong
-     */
-    CARAPI_( AutoPtr< ArrayOf< String > > ) GetPackageName();
-
-    /**
-     * {@hide}
-     * This method sets up all variables which are needed for privacy mode! It also writes to privacyMode, if everything was successfull or not!
-     * -> privacyMode = true ok! otherwise false!
-     * CALL THIS METHOD IN CONSTRUCTOR!
-     */
-    CARAPI_(void) Initiate();
-
-    /**
-     * {@hide}
-     * This method should be used, because in some devices the uid has more than one package within!
-     * @return IS_ALLOWED (-1) if all packages allowed, IS_NOT_ALLOWED(-2) if one of these packages not allowed, GOT_ERROR (-3) if something went wrong
-     */
-    CARAPI_(Int32) CheckIfPackagesAllowed();
-
-    /**
-     * Loghelper method, true = access successful, false = blocked access
-     * {@hide}
-     */
-    CARAPI_(void) DataAccess(
-        /* [in] */ Boolean success);
-
     // Convenience method for the constructor's parameter checks.
     // This is where constructor IllegalArgumentException-s are thrown
     // postconditions:
@@ -352,7 +364,6 @@ private:
     CARAPI AudioParamCheck(
         /* [in] */ Int32 audioSource,
         /* [in] */ Int32 sampleRateInHz,
-        /* [in] */ Int32 channelConfig,
         /* [in] */ Int32 audioFormat);
 
     // Convenience method for the contructor's audio buffer size check.
@@ -363,6 +374,17 @@ private:
     //    mNativeBufferSizeInBytes is valid (multiple of frame size, positive)
     CARAPI AudioBuffSizeCheck(
         /* [in] */ Int32 audioBufferSize);
+
+    CARAPI_(void) HandleFullVolumeRec(
+        /* [in] */ Boolean starting);
+
+    // Convenience method for the constructor's parameter checks.
+    // This, getChannelMaskFromLegacyConfig and audioBuffSizeCheck are where constructor
+    // IllegalArgumentException-s are thrown
+    static CARAPI GetChannelMaskFromLegacyConfig(
+        /* [in] */ Int32 inChannelConfig,
+        /* [in] */ Boolean allowLegacyConfig,
+        /* [out] */ Int32* result);
 
     //---------------------------------------------------------
     // Java methods called from the native side
@@ -382,9 +404,9 @@ private:
 
     CARAPI_(Int32) Native_setup(
         /* [in] */ IInterface* audiorecord_this,
-        /* [in] */ Int32 recordSource,
+        /* [in] */ IInterface* attributes,
         /* [in] */ Int32 sampleRate,
-        /* [in] */ Int32 nbChannels,
+        /* [in] */ Int32 channelMask,
         /* [in] */ Int32 audioFormat,
         /* [in] */ Int32 buffSizeInBytes,
         /* [in] */ ArrayOf<Int32>* sessionId);
@@ -450,7 +472,7 @@ private:
      */
     static const Int32 NATIVE_EVENT_NEW_POS;
 
-    static const String TAG; // = "AudioRecord-Java";
+    static const String TAG;
 
     //---------------------------------------------------------
     // Used exclusively by native code
@@ -459,13 +481,13 @@ private:
      * Accessed by native methods: provides access to C++ AudioRecord object
      */
     //@SuppressWarnings("unused")
-    Int32 mNativeRecorderInJavaObj;
+    Int64 mNativeRecorderInJavaObj;
 
     /**
      * Accessed by native methods: provides access to the callback data.
      */
     //@SuppressWarnings("unused")
-    Int32 mNativeCallbackCookie;
+    Int64 mNativeCallbackCookie;
 
 
     //---------------------------------------------------------
@@ -474,44 +496,39 @@ private:
     /**
      * The audio data sampling rate in Hz.
      */
-    Int32 mSampleRate; // = 22050;
+    Int32 mSampleRate;
 
     /**
      * The number of input audio channels (1 is mono, 2 is stereo)
      */
-    Int32 mChannelCount; // = 1;
+    Int32 mChannelCount;
 
     /**
      * The audio channel mask
      */
-    Int32 mChannels; // = AudioFormat.CHANNEL_IN_MONO;
-
-    /**
-     * The current audio channel configuration
-     */
-    Int32 mChannelConfiguration; // = AudioFormat.CHANNEL_IN_MONO;
+    Int32 mChannelMask;
 
     /**
      * The encoding of the audio samples.
      * @see AudioFormat#ENCODING_PCM_8BIT
      * @see AudioFormat#ENCODING_PCM_16BIT
      */
-    Int32 mAudioFormat; // = AudioFormat.ENCODING_PCM_16BIT;
+    Int32 mAudioFormat;
 
     /**
      * Where the audio data is recorded from.
      */
-    Int32 mRecordSource; // = MediaRecorder.AudioSource.DEFAULT;
+    Int32 mRecordSource;
 
     /**
      * Indicates the state of the AudioRecord instance.
      */
-    Int32 mState; // = STATE_UNINITIALIZED;
+    Int32 mState;
 
     /**
      * Indicates the recording state of the AudioRecord instance.
      */
-    Int32 mRecordingState; // = RECORDSTATE_STOPPED;
+    Int32 mRecordingState;
 
     /**
      * Lock to make sure mRecordingState updates are reflecting the actual state of the object.
@@ -524,7 +541,7 @@ private:
      *  @see #setRecordPositionUpdateListener(OnRecordPositionUpdateListener)
      *  @see #setRecordPositionUpdateListener(OnRecordPositionUpdateListener, Handler)
      */
-    AutoPtr<IAudioRecordOnRecordPositionUpdateListener> mPositionListener; // = NULL;
+    AutoPtr<IAudioRecordOnRecordPositionUpdateListener> mPositionListener;
 
     /**
      * Lock to protect position listener updates against event notifications
@@ -534,35 +551,30 @@ private:
     /**
      * Handler for marker events coming from the native code
      */
-    AutoPtr<NativeEventHandler> mEventHandler; // = NULL;
+    AutoPtr<NativeEventHandler> mEventHandler;
 
     /**
      * Looper associated with the thread that creates the AudioRecord instance
      */
-    AutoPtr<ILooper> mInitializationLooper;// = NULL;
+    AutoPtr<ILooper> mInitializationLooper;
 
     /**
      * Size of the native audio buffer.
      */
-    Int32 mNativeBufferSizeInBytes; // = 0;
+    Int32 mNativeBufferSizeInBytes;
 
     /**
      * Audio session ID
      */
-    Int32 mSessionId; // = 0;
+    Int32 mSessionId;
 
-    static const Int32 IS_ALLOWED;
-    static const Int32 IS_NOT_ALLOWED;
-    static const Int32 GOT_ERROR;
+    /**
+     * AudioAttributes
+     */
+    AutoPtr<IAudioAttributes> mAudioAttributes;
+    Boolean mIsSubmixFullVolume;
 
-    static const String PRIVACY_TAG;// = "PM,AudioRecord";
-    AutoPtr< IContext > mContext;
-
-    AutoPtr< IPrivacySettingsManager > mPrivacySettingsManager;
-
-    Boolean mPrivacyMode;// = FALSE;
-
-    AutoPtr<IIPackageManager> mPackageManager;
+    AutoPtr<IBinder> mICallBack;
 };
 
 } // namespace Media

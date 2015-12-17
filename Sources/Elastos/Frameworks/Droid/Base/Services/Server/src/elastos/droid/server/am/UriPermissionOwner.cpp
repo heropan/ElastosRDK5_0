@@ -1,8 +1,8 @@
 
 #include <elastos/core/StringBuilder.h>
-#include "am/UriPermissionOwner.h"
-#include "am/CActivityManagerService.h"
-#include "am/CUriPermissionOwnerExternalToken.h"
+#include "elastos/droid/server/am/UriPermissionOwner.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
+#include "elastos/droid/server/am/CUriPermissionOwnerExternalToken.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Os::EIID_IBinder;
@@ -19,33 +19,41 @@ namespace Am {
 
 UriPermissionOwner::UriPermissionOwner(
     /* [in] */ CActivityManagerService* service,
-    /* [in] */ Handle32 owner)
+    /* [in] */ IObject* owner,
+    /* [in] */ Boolean strongOwner)
     : mService(service)
     , mOwner(owner)
+    , mStrongOwner(strongOwner)
 {
+    if (mStrongOwner)
+        mOwner->AddRef();
 }
 
 UriPermissionOwner::~UriPermissionOwner()
 {
+    if (mStrongOwner)
+        mOwner->Release();
 }
 
 AutoPtr<IBinder> UriPermissionOwner::GetExternalTokenLocked()
 {
     if (mExternalToken == NULL) {
-        AutoPtr<IUriPermissionOwnerExternalToken> tmp;
-        CUriPermissionOwnerExternalToken::New((Handle32)this, (IUriPermissionOwnerExternalToken**)&tmp);
-        IWeakReferenceSource::Probe(tmp.Get())->GetWeakReference((IWeakReference**)&mExternalToken);
+        AutoPtr<IBinder> token;
+        CUriPermissionOwnerExternalToken::New((Handle32)this, (IBinder**)&token);
+        // this method is only called by CActivityManagerService::NewUriPermissionOwner,
+        // in NewUriPermissionOwner, token hold owner's reference. add by xihao
+        //
+        // mExternalToken = IUriPermissionOwnerExternalToken::Probe(token);
+        return token;
     }
-    AutoPtr<IInterface> tmp;
-    mExternalToken->Resolve(EIID_IInterface, (IInterface**)&tmp);
 
-    return IBinder::Probe(tmp);
+    return IBinder::Probe(mExternalToken);
 }
 
 AutoPtr<UriPermissionOwner> UriPermissionOwner::FromExternalToken(
     /* [in] */ IBinder* token)
 {
-    Handle32 owner = NULL;
+    Handle32 owner = 0;
     if (IUriPermissionOwnerExternalToken::Probe(token) != NULL) {
         IUriPermissionOwnerExternalToken::Probe(token)->GetOwner(&owner);
     }
@@ -62,87 +70,47 @@ ECode UriPermissionOwner::RemoveUriPermissionsLocked()
 ECode UriPermissionOwner::RemoveUriPermissionsLocked(
     /* [in] */ Int32 mode)
 {
-    if ((mode & IIntent::FLAG_GRANT_READ_URI_PERMISSION) != 0
-            && mReadUriPermissions != NULL) {
-        HashSet< AutoPtr<UriPermission> >::Iterator it = mReadUriPermissions->Begin();
-        for (; it != mReadUriPermissions->End(); it++) {
-            (*it)->mReadOwners.Erase(this);
-            if ((*it)->mReadOwners.IsEmpty() && ((*it)->mGlobalModeFlags
-                    & IIntent::FLAG_GRANT_READ_URI_PERMISSION) == 0) {
-                (*it)->mModeFlags &= ~IIntent::FLAG_GRANT_READ_URI_PERMISSION;
-                mService->RemoveUriPermissionIfNeededLocked(*it);
-            }
-        }
-
-        mReadUriPermissions = NULL;
-    }
-    if ((mode & IIntent::FLAG_GRANT_WRITE_URI_PERMISSION) != 0
-            && mWriteUriPermissions != NULL) {
-        HashSet< AutoPtr<UriPermission> >::Iterator it = mWriteUriPermissions->Begin();
-        for (; it != mWriteUriPermissions->End(); it++) {
-            (*it)->mWriteOwners.Erase(this);
-            if ((*it)->mWriteOwners.IsEmpty() && ((*it)->mGlobalModeFlags
-                    & IIntent::FLAG_GRANT_WRITE_URI_PERMISSION) == 0) {
-                (*it)->mModeFlags &= ~IIntent::FLAG_GRANT_WRITE_URI_PERMISSION;
-                mService->RemoveUriPermissionIfNeededLocked(*it);
-            }
-        }
-
-        mWriteUriPermissions = NULL;
-    }
-    return NOERROR;
+    return RemoveUriPermissionLocked(NULL, mode);
 }
 
 ECode UriPermissionOwner::RemoveUriPermissionLocked(
-    /* [in] */ IUri* uri,
+    /* [in] */ GrantUri* grantUri,
     /* [in] */ Int32 mode)
 {
     if ((mode & IIntent::FLAG_GRANT_READ_URI_PERMISSION) != 0
-            && mReadUriPermissions != NULL) {
-        HashSet< AutoPtr<UriPermission> >::Iterator it = mReadUriPermissions->Begin();
-        while (it != mReadUriPermissions->End()) {
+            && mReadPerms != NULL) {
+        HashSet< AutoPtr<UriPermission> >::Iterator it = mReadPerms->Begin();
+        while (it != mReadPerms->End()) {
             UriPermission* perm = (*it);
-            Boolean result;
-            uri->Equals(perm->mUri, &result);
-            if (result) {
-                perm->mReadOwners.Erase(this);
-                if (perm->mReadOwners.IsEmpty() && (perm->mGlobalModeFlags
-                        & IIntent::FLAG_GRANT_READ_URI_PERMISSION) == 0) {
-                    perm->mModeFlags &= ~IIntent::FLAG_GRANT_READ_URI_PERMISSION;
-                    mService->RemoveUriPermissionIfNeededLocked(perm);
-                }
-                mReadUriPermissions->Erase(it++);
+            if (grantUri == NULL || grantUri->Equals(perm->mUri)) {
+                perm->RemoveReadOwner(this);
+                mService->RemoveUriPermissionIfNeededLocked(perm);
+                mReadPerms->Erase(it++);
             }
             else {
                 it++;
             }
         }
-        if (mReadUriPermissions->IsEmpty()) {
-            mReadUriPermissions = NULL;
+        if (mReadPerms->IsEmpty()) {
+            mReadPerms = NULL;
         }
     }
     if ((mode & IIntent::FLAG_GRANT_WRITE_URI_PERMISSION) != 0
-            && mWriteUriPermissions != NULL) {
-        HashSet< AutoPtr<UriPermission> >::Iterator it = mWriteUriPermissions->Begin();
-        while (it != mWriteUriPermissions->End()) {
+            && mWritePerms != NULL) {
+        HashSet< AutoPtr<UriPermission> >::Iterator it = mWritePerms->Begin();
+        while (it != mWritePerms->End()) {
             UriPermission* perm = (*it);
-            Boolean result;
-            uri->Equals(perm->mUri, &result);
-            if (result) {
-                perm->mWriteOwners.Erase(this);
-                if (perm->mWriteOwners.IsEmpty() && (perm->mGlobalModeFlags
-                        & IIntent::FLAG_GRANT_WRITE_URI_PERMISSION) == 0) {
-                    perm->mModeFlags &= ~IIntent::FLAG_GRANT_WRITE_URI_PERMISSION;
-                    mService->RemoveUriPermissionIfNeededLocked(perm);
-                }
-                mWriteUriPermissions->Erase(it++);
+            if (grantUri == NULL || grantUri->Equals(perm->mUri)) {
+                perm->RemoveWriteOwner(this);
+                mService->RemoveUriPermissionIfNeededLocked(perm);
+                mWritePerms->Erase(it++);
             }
             else {
                 ++it;
             }
         }
-        if (mWriteUriPermissions->IsEmpty()) {
-            mWriteUriPermissions = NULL;
+        if (mWritePerms->IsEmpty()) {
+            mWritePerms = NULL;
         }
     }
     return NOERROR;
@@ -151,20 +119,20 @@ ECode UriPermissionOwner::RemoveUriPermissionLocked(
 ECode UriPermissionOwner::AddReadPermission(
     /* [in] */ UriPermission* perm)
 {
-    if (mReadUriPermissions == NULL) {
-        mReadUriPermissions = new HashSet<AutoPtr<UriPermission> >();
+    if (mReadPerms == NULL) {
+        mReadPerms = new HashSet<AutoPtr<UriPermission> >();
     }
-    mReadUriPermissions->Insert(perm);
+    mReadPerms->Insert(perm);
     return NOERROR;
 }
 
 ECode UriPermissionOwner::AddWritePermission(
     /* [in] */ UriPermission* perm)
 {
-    if (mWriteUriPermissions == NULL) {
-        mWriteUriPermissions = new HashSet< AutoPtr<UriPermission> >();
+    if (mWritePerms == NULL) {
+        mWritePerms = new HashSet< AutoPtr<UriPermission> >();
     }
-    mWriteUriPermissions->Insert(perm);
+    mWritePerms->Insert(perm);
     return NOERROR;
 }
 
@@ -172,10 +140,10 @@ ECode UriPermissionOwner::RemoveReadPermission(
     /* [in] */ UriPermission* perm)
 {
     if (perm != NULL) {
-        if (mReadUriPermissions != NULL) {
-            mReadUriPermissions->Erase(perm);
-            if (mReadUriPermissions->IsEmpty()) {
-                mReadUriPermissions = NULL;
+        if (mReadPerms != NULL) {
+            mReadPerms->Erase(perm);
+            if (mReadPerms->IsEmpty()) {
+                mReadPerms = NULL;
             }
         }
     }
@@ -186,13 +154,37 @@ ECode UriPermissionOwner::RemoveWritePermission(
     /* [in] */ UriPermission* perm)
 {
     if (perm != NULL) {
-        if (mWriteUriPermissions != NULL) {
-            mWriteUriPermissions->Erase(perm);
-            if (mWriteUriPermissions->IsEmpty()) {
-                mWriteUriPermissions = NULL;
+        if (mWritePerms != NULL) {
+            mWritePerms->Erase(perm);
+            if (mWritePerms->IsEmpty()) {
+                mWritePerms = NULL;
             }
         }
     }
+    return NOERROR;
+}
+
+void UriPermissionOwner::Dump(
+        /* [in] */ IPrintWriter* pw,
+        /* [in] */ const String& prefix)
+{
+    if (mReadPerms != NULL) {
+        pw->Print(prefix);
+        pw->Print(String("readUriPermissions="));
+        pw->Println(/*mReadPerms*/);
+    }
+    if (mWritePerms != NULL) {
+        pw->Print(prefix);
+        pw->Print(String("writeUriPermissions="));
+        pw->Println(/*mWritePerms*/);
+    }
+}
+
+ECode UriPermissionOwner::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = ToString();
     return NOERROR;
 }
 

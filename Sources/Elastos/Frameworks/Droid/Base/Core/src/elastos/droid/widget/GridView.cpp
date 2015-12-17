@@ -68,7 +68,7 @@ ECode GridView::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::GridView),
-            ARRAY_SIZE(R::styleable::GridView));
+            ArraySize(R::styleable::GridView));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(
             attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);

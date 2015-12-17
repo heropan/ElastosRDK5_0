@@ -1,7 +1,7 @@
-
+DIRS += camera2
 DIRS += display
 DIRS += input
 DIRS += usb
 DIRS += soundtrigger
 DIRS += location
-DIRS += camera2
+

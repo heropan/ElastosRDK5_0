@@ -17,28 +17,28 @@ module
     interface IFocusRequester {
         HasSameClient(
             [in] String otherClient,
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         HasSameBinder(
-            [in] IBinder * ib,
-            [out] Boolean * result);
+            [in] IBinder* ib,
+            [out] Boolean* result);
 
         HasSamePackage(
             [in] String pack,
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         HasSameUid(
             [in] Int32 uid,
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         GetGainRequest(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         GetStreamType(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         Dump(
-            [in] IPrintWriter * pw);
+            [in] IPrintWriter* pw);
 
         ReleaseResources();
 
@@ -50,7 +50,6 @@ module
 
         HandleFocusLoss(
             [in] Int32 focusLoss);
-
     }
     } // namespace media
     } // namepsace Droid

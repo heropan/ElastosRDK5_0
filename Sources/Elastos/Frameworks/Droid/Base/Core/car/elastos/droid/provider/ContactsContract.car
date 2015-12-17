@@ -184,31 +184,6 @@ module {
         IsProfileId(
             [in] Int64 id,
             [out] Boolean* res);
-
-        /**
-         * Creates a snippet out of the given content that matches the given query.
-         * @param content - The content to use to compute the snippet.
-         * @param displayName - Display name for the contact - if this already contains the search
-         *        content, no snippet should be shown.
-         * @param query - String to search for in the content.
-         * @param snippetStartMatch - Marks the start of the matching string in the snippet.
-         * @param snippetEndMatch - Marks the end of the matching string in the snippet.
-         * @param snippetEllipsis - Ellipsis string appended to the end of the snippet (if too long).
-         * @param snippetMaxTokens - Maximum number of words from the snippet that will be displayed.
-         * @return The computed snippet, or null if the snippet could not be computed or should not be
-         *         shown.
-         *
-         *  @hide
-         */
-        Snippetize(
-            [in] String content,
-            [in] String displayName,
-            [in] String query,
-            [in] Char32 snippetStartMatch,
-            [in] Char32 snippetEndMatch,
-            [in] String snippetEllipsis,
-            [in] Int32 snippetMaxTokens,
-            [out] String* snippet);
     }
 
     /**
@@ -650,6 +625,7 @@ module {
      * @Involve
      * interface ISyncStateContractColumns
      */
+    [deprecated]
     interface IContactsContractProfileSyncState {
         const String CONTENT_DIRECTORY = "syncstate";
                 //ISyncStateContractConstants::CONTENT_DIRECTORY;
@@ -679,14 +655,14 @@ module {
         Set(
             [in] IContentProviderClient* provider,
             [in] IAccount* account,
-            [in] ArrayOf<Byte> data);
+            [in] ArrayOf<Byte>* data);
 
         /**
          * @see android.provider.SyncStateContract.Helpers#newSetOperation
          */
         NewSetOperation(
             [in] IAccount* account,
-            [in] ArrayOf<Byte> data,
+            [in] ArrayOf<Byte>* data,
             [out] IContentProviderOperation** operation);
     }
 
@@ -882,6 +858,12 @@ module {
          * <P>Type: TEXT</P>
          */
         const String PHOTO_THUMBNAIL_URI = "photo_thumb_uri";
+
+        /**
+         * Flag that reflects whether the contact exists inside the default directory.
+         * Ie, whether the contact is designed to only be visible outside search.
+         */
+        const String IN_DEFAULT_DIRECTORY = "in_default_directory";
 
         /**
          * Flag that reflects the {@link Groups#GROUP_VISIBLE} state of any
@@ -1135,14 +1117,33 @@ module {
     interface IContactsContractContactCounts {
 
         /**
-         * Add this query parameter to a URI to get back row counts grouped by
-         * the address book index as cursor extras. For most languages it is the
-         * first letter of the sort key. This parameter does not affect the main
-         * content of the cursor.
+         * Add this query parameter to a URI to get back row counts grouped by the address book
+         * index as cursor extras. For most languages it is the first letter of the sort key. This
+         * parameter does not affect the main content of the cursor.
          *
-         * @hide
+         * <p>
+         * <pre>
+         * Example:
+         *
+         * import android.provider.ContactsContract.Contacts;
+         *
+         * Uri uri = Contacts.CONTENT_URI.buildUpon()
+         *          .appendQueryParameter(Contacts.EXTRA_ADDRESS_BOOK_INDEX, "true")
+         *          .build();
+         * Cursor cursor = getContentResolver().query(uri,
+         *          new String[] {Contacts.DISPLAY_NAME},
+         *          null, null, null);
+         * Bundle bundle = cursor.getExtras();
+         * if (bundle.containsKey(Contacts.EXTRA_ADDRESS_BOOK_INDEX_TITLES) &&
+         *         bundle.containsKey(Contacts.EXTRA_ADDRESS_BOOK_INDEX_COUNTS)) {
+         *     String sections[] =
+         *             bundle.getStringArray(Contacts.EXTRA_ADDRESS_BOOK_INDEX_TITLES);
+         *     int counts[] = bundle.getIntArray(Contacts.EXTRA_ADDRESS_BOOK_INDEX_COUNTS);
+         * }
+         * </pre>
+         * </p>
          */
-        const String ADDRESS_BOOK_INDEX_EXTRAS = "address_book_index_extras";
+        const String EXTRA_ADDRESS_BOOK_INDEX = "android.provider.extra.ADDRESS_BOOK_INDEX";
 
         /**
          * The array of address book index titles, which are returned in the
@@ -1151,7 +1152,7 @@ module {
          *
          * @hide
          */
-        const String EXTRA_ADDRESS_BOOK_INDEX_TITLES = "address_book_index_titles";
+        const String EXTRA_ADDRESS_BOOK_INDEX_TITLES = "android.provider.extra.ADDRESS_BOOK_INDEX_TITLES";
 
         /**
          * The array of group counts for the corresponding group.  Contains the same number
@@ -1160,7 +1161,7 @@ module {
          *
          * @hide
          */
-        const String EXTRA_ADDRESS_BOOK_INDEX_COUNTS = "address_book_index_counts";
+        const String EXTRA_ADDRESS_BOOK_INDEX_COUNTS = "android.provider.extra.ADDRESS_BOOK_INDEX_COUNTS";
     }
 
     /**
@@ -1385,6 +1386,7 @@ module {
      */
     [local]
     interface IContactsContractContacts {
+
         /**
         * Boolean parameter that may be used with {@link #CONTENT_VCARD_URI}
         * and {@link #CONTENT_MULTI_VCARD_URI} to indicate that the returned
@@ -1413,9 +1415,30 @@ module {
         const String CONTENT_VCARD_TYPE = "text/x-vcard";
 
         /**
+         * Mimimal ID for corp contacts returned from
+         * {@link PhoneLookup#ENTERPRISE_CONTENT_FILTER_URI}.
+         *
+         * @hide
+         */
+        const Int64 ENTERPRISE_CONTACT_ID_BASE = 1000000000; // slightly smaller than 2 ** 30
+
+        /**
          * The content:// style URI for this table
          */
         GetCONTENT_URI(
+            [out] IUri** uri);
+
+        /**
+         * Special contacts URI to refer to contacts on the corp profile from the personal
+         * profile.
+         *
+         * It's supported only by a few specific places for referring to contact pictures that
+         * are in the corp provider for enterprise caller-ID.  Contact picture URIs returned from
+         * {@link PhoneLookup#ENTERPRISE_CONTENT_FILTER_URI} may contain this kind of URI.
+         *
+         * @hide
+         */
+        GetCORP_CONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -1464,7 +1487,7 @@ module {
          *
          * @hide
          */
-        GetCONTENT_MULTIVCARD_URI(
+        GetCONTENT_MULTI_VCARD_URI(
             [out] IUri** uri);
 
         /**
@@ -1904,11 +1927,16 @@ module {
      * {@link #CONTENT_LOOKUP_URI}.
      * </p>
      */
+     /**
+     * @Involve
+     * interface IContactsContractDataColumnsWithJoins
+     * interface IBaseColumns
+     * interface IContactsContractContactsColumns
+     * interface IContactsContractContactOptionsColumns
+     * interface IContactsContractContactStatusColumn
+     */
     interface IContactsContractContactsAggregationSuggestions
-            /* extends IBaseColumns,
-            IContactsContractContactsColumns,
-            IContactsContractContactOptionsColumns,
-            IContactsContractContactStatusColumns */ {
+    {
         /**
          * The directory twig for this sub-table. The URI can be followed by an optional
          * type-to-filter, similar to
@@ -2017,9 +2045,13 @@ module {
      * {@link #CONTENT_LOOKUP_URI}.
      * </p>
      */
+    /**
+     * @Involve
+     * interface IBaseColumns
+     * interface IContactsContractDataColumnsWithJoins
+     */
     interface IContactsContractContactsPhoto
-            /* extends IBaseColumns,
-            IContactsContractDataColumnsWithJoins*/ {
+    {
         /**
          * The directory twig for this sub-table
          */
@@ -2119,7 +2151,7 @@ module {
          * that specific raw contact can be requested by appending the entity or data
          * path as well.
          */
-        GetCONTENTRAWCONTACTSURI(
+        GetCONTENT_RAW_CONTACTS_URI(
             [out] IUri** uri);
 
         /**
@@ -2134,6 +2166,33 @@ module {
          */
         GetMINID(
             [out] Int64* id);
+    }
+
+    interface IContactsContractDeletedContactsColumns {
+        /**
+         * A reference to the {@link ContactsContract.Contacts#_ID} that was deleted.
+         * <P>Type: INTEGER</P>
+         */
+        const String CONTACT_ID = "contact_id";
+
+        /**
+         * Time (milliseconds since epoch) that the contact was deleted.
+         */
+        const String CONTACT_DELETED_TIMESTAMP = "contact_deleted_timestamp";
+
+    }
+
+    interface IContactsContractDeletedContacts {
+
+        /**
+         * The content:// style URI for this table, which requests a directory of raw contact rows
+         * matching the selection criteria.
+         */
+        GetCONTENT_URI(
+            [out] IUri** uri);
+
+        GetDAYS_KEPT_MILLISECONDS(
+            [out] Int64* result);
     }
 
     interface IContactsContractRawContactsColumns {
@@ -2696,9 +2755,13 @@ module {
      * {@link ContactsContract.Data} rows. To access this directory
      * append {@link Data#CONTENT_DIRECTORY} to the raw contact URI.
      */
+    /**
+     * @Involve
+     * interface IBaseColumns
+     * interface IContactsContractDataColumns
+     */
     interface IContactsContractRawContactsData
-        /* extends IBaseColumns,
-        IContactsContractDataColumns*/ {
+    {
         /**
          * The directory twig for this sub-table
          */
@@ -3526,16 +3589,18 @@ module {
      *
      * @see ContactsContract.Data
      */
+    /**
+     * @Involve
+     * interface IBaseColumns
+     * interface IContactsContractDataColumns
+     * interface IContactsContractStatusColumns
+     * interface IContactsContractRawContactsColumns
+     * interface IContactsContractContactsColumns
+     * interface IContactsContractContactNameColumns
+     * interface IContactsContractContactOptionsColumns
+     * interface IContactsContractContactStatusColumns
+     */
     interface IContactsContractDataColumnsWithJoins
-        /* extends
-        IBaseColumns,
-        IContactsContractDataColumns,
-        IContactsContractStatusColumns,
-        IContactsContractRawContactsColumns,
-        IContactsContractContactsColumns,
-        IContactsContractContactNameColumns,
-        IContactsContractContactOptionsColumns,
-        IContactsContractContactStatusColumns*/
     {}
 
     /**
@@ -4048,8 +4113,12 @@ module {
      * </tr>
      * </table>
      */
+    /**
+     * @Involve
+     * interface IContactsContractDataColumnsWithJoins
+     */
     interface IContactsContractData
-            /* extends IContactsContractDataColumnsWithJoins */ {
+    {
 
         /**
          * The MIME type of the results from {@link #CONTENT_URI}.
@@ -4764,8 +4833,12 @@ module {
     /**
      * Columns common across the specific types.
      */
-    interface IContactsContractCommonDataKindsCommonColumns extends
-            IContactsContractCommonDataKindsBaseTypes {
+    /**
+     * @Involve
+     * interface IContactsContractCommonDataKindsBaseTypes
+     */
+    interface IContactsContractCommonDataKindsCommonColumns
+    {
         /**
          * The data for the contact method.
          * <P>Type: TEXT</P>
@@ -4850,8 +4923,12 @@ module {
      * </tr>
      * </table>
      */
-    interface IContactsContractCommonDataKindsStructuredName extends
-            IContactsContractDataColumnsWithJoins {
+    /**
+     * @Involve
+     * interface IContactsContractDataColumnsWithJoins
+     */
+    interface IContactsContractCommonDataKindsStructuredName
+    {
         /** MIME type used when storing this in data table. */
         const String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/name";
 
@@ -4993,9 +5070,13 @@ module {
      * </tr>
      * </table>
      */
+    /**
+     * @Involve
+     * interface IContactsContractDataColumnsWithJoins
+     * interface IContactsContractCommonDataKindsCommonColumns
+     */
     interface IContactsContractCommonDataKindsNickname
-            /* extends IContactsContractDataColumnsWithJoins,
-            IContactsContractCommonDataKindsCommonColumns*/ {
+    {
         /** MIME type used when storing this in data table. */
         const String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/nickname";
 
@@ -6034,8 +6115,12 @@ module {
      * </tr>
      * </table>
      */
-    interface IContactsContractCommonDataKindsPhoto extends
-            IContactsContractDataColumnsWithJoins {
+    /**
+     * @Involve
+     * interface IContactsContractDataColumnsWithJoins
+     */
+    interface IContactsContractCommonDataKindsPhoto
+    {
         /** MIME type used when storing this in data table. */
         const String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/photo";
 
@@ -6129,8 +6214,12 @@ module {
      * </tr>
      * </table>
      */
-    interface IContactsContractCommonDataKindsGroupMembership extends
-            IContactsContractDataColumnsWithJoins {
+    /**
+     * @Involve
+     * interface IContactsContractDataColumnsWithJoins
+     */
+    interface IContactsContractCommonDataKindsGroupMembership
+    {
         /** MIME type used when storing this in data table. */
         const String CONTENT_ITEM_TYPE =
                 "vnd.android.cursor.item/group_membership";
@@ -6304,8 +6393,12 @@ module {
      * to the same person.
      * </p>
      */
-    interface IContactsContractCommonDataKindsIdentity extends
-            IContactsContractDataColumnsWithJoins {
+    /**
+     * @Involve
+     * interface IContactsContractDataColumnsWithJoins
+     */
+    interface IContactsContractCommonDataKindsIdentity
+    {
         /** MIME type used when storing this in data table. */
         const String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/identity";
 
@@ -7301,6 +7394,13 @@ module {
                 "android.provider.Contacts.SEARCH_SUGGESTION_CREATE_CONTACT_CLICKED";
 
         /**
+         * This is the intent that is fired when the contacts database is created. <p> The
+         * READ_CONTACT permission is required to receive these broadcasts.
+         */
+        const String CONTACTS_DATABASE_CREATED =
+                "android.provider.Contacts.DATABASE_CREATED";
+
+        /**
          * Starts an Activity that lets the user pick a contact to attach an image to.
          * After picking the contact it launches the image cropper in face detection mode.
          */
@@ -7515,6 +7615,12 @@ module {
                 "com.android.contacts.action.LIST_FREQUENT";
 
         /**
+         * The action for the "Join Contact" picker.
+         */
+        const String PICK_JOIN_CONTACT_ACTION =
+                "com.android.contacts.action.JOIN_CONTACT";
+
+        /**
          * The action for the "strequent" contacts list tab. It first lists the starred
          * contacts in alphabetical order and then the frequent contacts in descending
          * order of the number of times they have been contacted.
@@ -7546,6 +7652,9 @@ module {
          */
         const String FILTER_TEXT_EXTRA_KEY =
                 "com.android.contacts.extra.FILTER_TEXT";
+
+        const String TARGET_CONTACT_ID_EXTRA_KEY =
+                "com.android.contacts.action.CONTACT_ID";
     }
 
     /**

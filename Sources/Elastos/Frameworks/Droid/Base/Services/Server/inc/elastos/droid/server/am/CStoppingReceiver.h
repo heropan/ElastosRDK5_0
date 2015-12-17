@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Server_Am_CStoppingReceiver.h"
-#include "am/UserStartedState.h"
+#include "elastos/droid/server/am/UserStartedState.h"
 
 namespace Elastos {
 namespace Droid {

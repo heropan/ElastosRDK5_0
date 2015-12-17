@@ -2,20 +2,33 @@
 #ifndef __ELASTOS_DROID_SERVER_DISPLAY_CDISPLAYMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_DISPLAY_CDISPLAYMANAGERSERVICE_H__
 
-#include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_Server_Display_CDisplayManagerService.h"
+#include "elastos/droid/server/SystemService.h"
 #include "elastos/droid/server/display/DisplayAdapter.h"
 #include "elastos/droid/server/display/DisplayDevice.h"
+#include "elastos/droid/server/display/DisplayPowerController.h"
+#include "elastos/droid/server/display/VirtualDisplayAdapter.h"
 #include "elastos/droid/server/display/WifiDisplayAdapter.h"
 #include "elastos/droid/server/display/LogicalDisplay.h"
 #include "elastos/droid/server/display/PersistentDataStore.h"
 #include "elastos/droid/os/Handler.h"
 #include <elastos/utility/etl/HashMap.h>
-#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::Handler;
-using Elastos::Droid::Hardware::Display::IDisplayManagerCallback;
+using Elastos::Droid::View::IWindowManagerInternal;
+using Elastos::Droid::Hardware::ISensorManager;
+using Elastos::Droid::Hardware::Input::IInputManagerInternal;
+using Elastos::Droid::Hardware::Display::IDisplayTransactionListener;
+using Elastos::Droid::Hardware::Display::IDisplayPowerRequest;
+using Elastos::Droid::Hardware::Display::IDisplayPowerCallbacks;
+using Elastos::Droid::Hardware::Display::IIVirtualDisplayCallback;
+using Elastos::Droid::Hardware::Display::IIDisplayManagerCallback;
 using Elastos::Droid::Hardware::Display::IIDisplayManager;
+using Elastos::Droid::Media::Projection::IIMediaProjection;
+using Elastos::Droid::Media::Projection::IIMediaProjectionManager;
+using Elastos::Utility::IList;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::Concurrent::ICopyOnWriteArrayList;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::IO::IFileDescriptor;
 
@@ -64,14 +77,206 @@ namespace Display {
  * </p><p>
  * Where things get tricky is that the display manager is not allowed to make
  * any potentially reentrant calls, especially into the window manager.  We generally
- * aCARAPI_(void) this by making all potentially reentrant out-calls asynchronous.
+ * avoid this by making all potentially reentrant out-calls asynchronous.
  * </p>
  */
 CarClass(CDisplayManagerService)
-    , public Object
-    , public IIDisplayManager
+    , public SystemService
 {
-private:
+public:
+    /**
+     * This is the object that everything in the display manager locks on.
+     * We make it an inner class within the {@link DisplayManagerService} to so that it is
+     * clear that the object belongs to the display manager service and that it is
+     * a unique object with a special purpose.
+     */
+    class SyncRoot : public Object
+    {
+    public:
+        CARAPI ToString(
+            /* [out] */ String* str)
+        {
+            VALIDATE_NOT_NULL(str)
+            *str = "CDisplayManagerService::SyncRoot";
+            return NOERROR;
+        }
+    };
+
+    class BinderService
+        : public Object
+        , public IIDisplayManager
+        , public IBinder
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        CARAPI constructor(
+            /* [in] */ ISystemService* displayManagerService);
+
+        CARAPI ToString(
+            /* [out] */ String* str);
+
+        /**
+         * Returns information about the specified logical display.
+         *
+         * @param displayId The logical display id.
+         * @return The logical display info, or null if the display does not exist.  The
+         * returned object must be treated as immutable.
+         */
+        // @Override // Binder call
+        CARAPI GetDisplayInfo(
+            /* [in] */ Int32 displayId,
+            /* [out] */ IDisplayInfo** info);
+
+        /**
+         * Returns the list of all display ids.
+         */
+        // @Override // Binder call
+        CARAPI GetDisplayIds(
+            /* [out, callee] */ ArrayOf<Int32>** ids);
+
+        //@Override // Binder call
+        CARAPI RegisterCallback(
+            /* [in] */ IIDisplayManagerCallback* callback);
+
+        //@Override // Binder call
+        CARAPI StartWifiDisplayScan();
+
+        //@Override // Binder call
+        CARAPI StopWifiDisplayScan();
+
+        //@Override // Binder call
+        CARAPI ConnectWifiDisplay(
+            /* [in] */ const String& address);
+
+        //@Override // Binder call
+        CARAPI DisconnectWifiDisplay();
+
+        //@Override // Binder call
+        CARAPI RenameWifiDisplay(
+            /* [in] */ const String& address,
+            /* [in] */ const String& alias);
+
+        //@Override // Binder call
+        CARAPI ForgetWifiDisplay(
+            /* [in] */ const String& address);
+
+        //@Override // Binder call
+        CARAPI PauseWifiDisplay();
+
+        //@Override // Binder call
+        CARAPI ResumeWifiDisplay();
+
+        //@Override // Binder call
+        CARAPI GetWifiDisplayStatus(
+            /* [out] */ IWifiDisplayStatus** status);
+
+        //@Override // Binder call
+        CARAPI CreateVirtualDisplay(
+            /* [in] */ IIVirtualDisplayCallback* callback,
+            /* [in] */ IIMediaProjection* projection,
+            /* [in] */ const String& packageName,
+            /* [in] */ const String& name,
+            /* [in] */ Int32 width,
+            /* [in] */ Int32 height,
+            /* [in] */ Int32 densityDpi,
+            /* [in] */ ISurface* surface,
+            /* [in] */ Int32 flags,
+            /* [out] */ Int32* result);
+
+        //@Override // Binder call
+        CARAPI ResizeVirtualDisplay(
+            /* [in] */ IIVirtualDisplayCallback* callback,
+            /* [in] */ Int32 width,
+            /* [in] */ Int32 height,
+            /* [in] */ Int32 densityDpi);
+
+        //@Override // Binder call
+        CARAPI SetVirtualDisplaySurface(
+            /* [in] */ IIVirtualDisplayCallback* callback,
+            /* [in] */ ISurface* surface);
+
+        //@Override // Binder call
+        CARAPI ReleaseVirtualDisplay(
+            /* [in] */ IIVirtualDisplayCallback* callback);
+
+        //@Override // Binder call
+        CARAPI Dump(
+            /* [in] */ IFileDescriptor* fd,
+            /* [in] */ IPrintWriter* pw,
+            /* [in] */ ArrayOf<String>* args);
+
+    private:
+        Boolean ValidatePackageName(
+            /* [in] */ Int32 uid,
+            /* [in] */ const String& packageName);
+
+        Boolean CanProjectVideo(
+            /* [in] */ IIMediaProjection* projection);
+
+        Boolean CanProjectSecureVideo(
+            /* [in] */ IIMediaProjection* projection);
+    private:
+        CDisplayManagerService* mService;
+    };
+
+    class LocalService
+        : public Object
+        , public IDisplayManagerInternal
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        LocalService(
+            /* [in] */ CDisplayManagerService* host);
+
+        // @Override
+        CARAPI InitPowerManagement(
+            /* [in] */ IDisplayPowerCallbacks* callbacks,
+            /* [in] */ IHandler* handler,
+            /* [in] */ ISensorManager* sensorManager);
+
+        // @Override
+        CARAPI RequestPowerState(
+            /* [in] */ IDisplayPowerRequest* request,
+            /* [in] */ Boolean waitForNegativeProximity,
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI IsProximitySensorAvailable(
+            /* [out] */ Boolean* result);
+
+        // @Override
+        CARAPI GetDisplayInfo(
+            /* [in] */ Int32 displayId,
+            /* [out] */ IDisplayInfo** result);
+
+        // @Override
+        CARAPI RegisterDisplayTransactionListener(
+            /* [in] */ IDisplayTransactionListener* listener);
+
+        // @Override
+        CARAPI UnregisterDisplayTransactionListener(
+            /* [in] */ IDisplayTransactionListener* listener);
+
+        // @Override
+        CARAPI SetDisplayInfoOverrideFromWindowManager(
+            /* [in] */ Int32 displayId,
+            /* [in] */ IDisplayInfo* info);
+
+        // @Override
+        CARAPI PerformTraversalInTransactionFromWindowManager();
+
+        // @Override
+        CARAPI SetDisplayProperties(
+            /* [in] */ Int32 displayId,
+            /* [in] */ Boolean hasContent,
+            /* [in] */ Float requestedRefreshRate,
+            /* [in] */ Boolean inTraversal);
+    private:
+        CDisplayManagerService* mHost;
+    };
+
     class DisplayManagerHandler
         : public Handler
     {
@@ -121,7 +326,7 @@ private:
         CallbackRecord(
             /* [in] */ CDisplayManagerService* owner,
             /* [in] */ Int32 pid,
-            /* [in] */ IDisplayManagerCallback* callback);
+            /* [in] */ IIDisplayManagerCallback* callback);
 
         ~CallbackRecord();
 
@@ -131,44 +336,53 @@ private:
         CARAPI_(void) NotifyDisplayEventAsync(
             /* [in] */ Int32 displayId,
             /* [in] */ Int32 event);
-
+    public:
+        Int32 mPid;
+        Boolean mWifiDisplayScanRequested;
     private:
         CDisplayManagerService* mHost;
-        const Int32 mPid;
-        AutoPtr<IDisplayManagerCallback> mCallback;
+        AutoPtr<IIDisplayManagerCallback> mCallback;
+    };
+
+    class DisplayBlanker
+        : public Object
+        , public IDisplayBlanker
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        DisplayBlanker(
+            /* [in] */ CDisplayManagerService* host,
+            /* [in] */ IDisplayPowerCallbacks* callbacks);
+
+        // @Override
+        CARAPI RequestDisplayState(
+            /* [in] */ Int32 state);
+
+        CARAPI ToString(
+            /* [out] */ String* str);
+    private:
+        CDisplayManagerService* mHost;
+        AutoPtr<IDisplayPowerCallbacks> mCallbacks;
     };
 
 public:
-    CAR_INTERFACE_DECL()
-
     CAR_OBJECT_DECL()
 
     CDisplayManagerService();
 
     CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IHandler* mainHandler,
-        /* [in] */ IHandler* uiHandler);
+        /* [in] */ IContext* context);
 
-    /**
-     * Pauses the boot process to wait for the first display to be initialized.
-     */
-    CARAPI WaitForDefaultDisplay(
-        /* [out] */ Boolean* res);
+    //@Override
+    CARAPI OnStart();
 
-    /**
-     * Called during initialization to associate the display manager with the
-     * window manager.
-     */
-    CARAPI SetWindowManager(
-        /* [in] */ IDisplayManagerServiceWindowManagerFuncs* windowManagerFuncs);
+    //@Override
+    CARAPI OnBootPhase(
+        /* [in] */ Int32 phase);
 
-    /**
-     * Called during initialization to associate the display manager with the
-     * input manager.
-     */
-    CARAPI SetInputManager(
-        /* [in] */ IDisplayManagerServiceInputManagerFuncs* inputManagerFuncs);
+    // TODO: Use dependencies or a boot phase
+    CARAPI WindowManagerAndInputReady();
 
     /**
      * Called when the system is ready to go.
@@ -177,146 +391,107 @@ public:
         /* [in] */ Boolean safeMode,
         /* [in] */ Boolean onlyCore);
 
-    /**
-     * Returns TRUE if the device is headless.
-     *
-     * @return True if the device is headless.
-     */
-    CARAPI IsHeadless(
-        /* [out] */ Boolean* res);
-
-    /**
-     * Registers a display transaction listener to provide the client a chance to
-     * update its surfaces within the same transaction as any display layout updates.
-     *
-     * @param listener The listener to register.
-     */
-    CARAPI RegisterDisplayTransactionListener(
+private:
+    CARAPI RegisterDisplayTransactionListenerInternal(
         /* [in] */ IDisplayTransactionListener* listener);
 
-    /**
-     * Unregisters a display transaction listener to provide the client a chance to
-     * update its surfaces within the same transaction as any display layout updates.
-     *
-     * @param listener The listener to unregister.
-     */
-    CARAPI UnregisterDisplayTransactionListener(
+    CARAPI UnregisterDisplayTransactionListenerInternal(
         /* [in] */ IDisplayTransactionListener* listener);
 
-    /**
-     * Overrides the display information of a particular logical display.
-     * This is used by the window manager to control the size and characteristics
-     * of the default display.  It is expected to apply the requested change
-     * to the display information synchronously so that applications will immediately
-     * observe the new state.
-     *
-     * @param displayId The logical display id.
-     * @param info The new data to be stored.
-     */
-    CARAPI SetDisplayInfoOverrideFromWindowManager(
+    CARAPI SetDisplayInfoOverrideFromWindowManagerInternal(
         /* [in] */ Int32 displayId,
         /* [in] */ IDisplayInfo* info);
 
-    /**
-     * Called by the window manager to perform traversals while holding a
-     * surface flinger transaction.
-     */
-    CARAPI PerformTraversalInTransactionFromWindowManager();
+    CARAPI PerformTraversalInTransactionFromWindowManagerInternal();
 
-    /**
-     * Called by the power manager to blank all displays.
-     */
-    CARAPI BlankAllDisplaysFromPowerManager();
+    CARAPI RequestGlobalDisplayStateInternal(
+        /* [in] */ Int32 state);
 
-    /**
-     * Called by the power manager to unblank all displays.
-     */
-    CARAPI UnblankAllDisplaysFromPowerManager();
-
-    /**
-     * Returns information about the specified logical display.
-     *
-     * @param displayId The logical display id.
-     * @return The logical display info, or NULL if the display does not exist.  The
-     * returned object must be treated as immutable.
-     */
-    //@Override // Binder call
-    CARAPI GetDisplayInfo(
+    // Binder call
+    CARAPI GetDisplayInfoInternal(
         /* [in] */ Int32 displayId,
+        /* [in] */ Int32 callingUid,
         /* [out] */ IDisplayInfo** displayInfo);
 
-    /**
-     * Returns the list of all display ids.
-     */
-    //@Override // Binder call
-    CARAPI GetDisplayIds(
+    // Binder call
+    CARAPI GetDisplayIdsInternal(
+        /* [in] */ Int32 callingUid,
         /* [out, callee] */ ArrayOf<Int32>** displayIds);
 
-    //@Override // Binder call
-    CARAPI RegisterCallback(
-        /* [in] */ IDisplayManagerCallback* callback);
+    // Binder call
+    CARAPI RegisterCallbackInternal(
+        /* [in] */ IIDisplayManagerCallback* callback,
+        /* [in] */ Int32 callingUid);
 
-    //@Override // Binder call
-    CARAPI ScanWifiDisplays();
+    CARAPI_(void) OnCallbackDied(
+        /* [in] */ CallbackRecord* record);
 
-    //@Override // Binder call
-    CARAPI ConnectWifiDisplay(
+    CARAPI StartWifiDisplayScanInternal(
+        /* [in] */ Int32 callingPid);
+
+    CARAPI StartWifiDisplayScanLocked(
+        /* [in] */ CallbackRecord* record);
+
+    CARAPI StopWifiDisplayScanInternal(
+        /* [in] */ Int32 callingPid);
+
+    CARAPI StopWifiDisplayScanLocked(
+        /* [in] */ CallbackRecord* record);
+
+    CARAPI ConnectWifiDisplayInternal(
         /* [in] */ const String& address);
 
-    //@Override // Binder call
-    CARAPI DisconnectWifiDisplay();
+    CARAPI PauseWifiDisplayInternal();
 
-    //@Override // Binder call
-    CARAPI RenameWifiDisplay(
+    CARAPI ResumeWifiDisplayInternal();
+
+    CARAPI DisconnectWifiDisplayInternal();
+
+    CARAPI RenameWifiDisplayInternal(
         /* [in] */ const String& address,
         /* [in] */ const String& alias);
 
-    //@Override // Binder call
-    CARAPI ForgetWifiDisplay(
+    CARAPI ForgetWifiDisplayInternal(
         /* [in] */ const String& address);
 
-    //@Override // Binder call
-    CARAPI GetWifiDisplayStatus(
+    // Binder call
+    CARAPI GetWifiDisplayStatusInternal(
         /* [out] */ IWifiDisplayStatus** status);
 
-    /**
-     * Tells the display manager whether there is interesting unique content on the
-     * specified logical display.  This is used to control automatic mirroring.
-     * <p>
-     * If the display has unique content, then the display manager arranges for it
-     * to be presented on a physical display if appropriate.  Otherwise, the display manager
-     * may choose to make the physical display mirror some other logical display.
-     * </p>
-     *
-     * @param displayId The logical display id to update.
-     * @param hasContent True if the logical display has content.
-     * @param inTraversal True if called from WindowManagerService during a window traversal prior
-     * to call to performTraversalInTransactionFromWindowManager.
-     */
-    CARAPI SetDisplayHasContent(
-        /* [in] */ Int32 displayId,
-        /* [in] */ Boolean hasContent,
-        /* [in] */ Boolean inTraversal);
+    Int32 CreateVirtualDisplayInternal(
+        /* [in] */ IIVirtualDisplayCallback* callback,
+        /* [in] */ IIMediaProjection* projection,
+        /* [in] */ Int32 callingUid,
+        /* [in] */ const String& packageName,
+        /* [in] */ const String& name,
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height,
+        /* [in] */ Int32 densityDpi,
+        /* [in] */ ISurface* surface,
+        /* [in] */ Int32 flags);
 
-    //@Override // Binder call
-    CARAPI Dump(
-        /* [in] */ IFileDescriptor* fd,
-        /* [in] */ IPrintWriter* pw,
-        /* [in] */ ArrayOf<String>* args);
+    CARAPI ResizeVirtualDisplayInternal(
+        /* [in] */ IBinder* appToken,
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height,
+        /* [in] */ Int32 densityDpi);
 
-private:
-    CARAPI_(void) OnCallbackDied(
-        /* [in] */ Int32 pid);
+    CARAPI SetVirtualDisplaySurfaceInternal(
+        /* [in] */ IBinder* appToken,
+        /* [in] */ ISurface* surface);
 
-    CARAPI_(Boolean) CanCallerConfigureWifiDisplay();
+    CARAPI ReleaseVirtualDisplayInternal(
+        /* [in] */ IBinder* appToken);
 
-    CARAPI_(void) RegisterDefaultDisplayAdapter();
+    CARAPI RegisterDefaultDisplayAdapter();
 
-    CARAPI_(void) RegisterAdditionalDisplayAdapters();
+    CARAPI RegisterAdditionalDisplayAdapters();
 
-    CARAPI_(void) RegisterOverlayDisplayAdapterLocked();
+    CARAPI RegisterOverlayDisplayAdapterLocked();
 
-    CARAPI_(void) RegisterWifiDisplayAdapterLocked();
+    CARAPI RegisterWifiDisplayAdapterLocked();
+
+    CARAPI RegisterVirtualDisplayAdapterLocked();
 
     CARAPI_(Boolean) ShouldRegisterNonEssentialDisplayAdaptersLocked();
 
@@ -326,10 +501,22 @@ private:
     CARAPI_(void) HandleDisplayDeviceAdded(
        /* [in] */ DisplayDevice* device);
 
+    CARAPI_(void) HandleDisplayDeviceAddedLocked(
+       /* [in] */ DisplayDevice* device);
+
     CARAPI_(void) HandleDisplayDeviceChanged(
         /* [in] */ DisplayDevice* device);
 
     CARAPI_(void) HandleDisplayDeviceRemoved(
+        /* [in] */ DisplayDevice* device);
+
+    CARAPI_(void) HandleDisplayDeviceRemovedLocked(
+        /* [in] */ DisplayDevice* device);
+
+    void UpdateGlobalDisplayStateLocked(
+        /* [in] */ IList* workQueue);
+
+    AutoPtr<IRunnable> UpdateDisplayStateLocked(
         /* [in] */ DisplayDevice* device);
 
     // Adds a new logical display based on the given display device.
@@ -349,6 +536,12 @@ private:
     CARAPI_(Boolean) UpdateLogicalDisplaysLocked();
 
     CARAPI_(void) PerformTraversalInTransactionLocked();
+
+    CARAPI_(void) SetDisplayPropertiesInternal(
+        /* [in] */ Int32 displayId,
+        /* [in] */ Boolean hasContent,
+        /* [in] */ Float requestedRefreshRate,
+        /* [in] */ Boolean inTraversal);
 
     CARAPI_(void) ClearViewportsLocked();
 
@@ -371,6 +564,14 @@ private:
     // later time to apply changes to surfaces and displays.
     CARAPI_(void) ScheduleTraversalLocked(
         /* [in] */ Boolean inTraversal);
+
+    AutoPtr<IIMediaProjectionManager> GetProjectionService();
+
+    // Binder call
+    CARAPI DumpInternal(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IPrintWriter* pw,
+        /* [in] */ ArrayOf<String>* args);
 
     // Runs on Handler thread.
     // Delivers display event notifications to callbacks.
@@ -408,21 +609,18 @@ private:
     static const Int32 MSG_REQUEST_TRAVERSAL = 4;
     static const Int32 MSG_UPDATE_VIEWPORT = 5;
 
-    static const Int32 DISPLAY_BLANK_STATE_UNKNOWN = 0;
-    static const Int32 DISPLAY_BLANK_STATE_BLANKED = 1;
-    static const Int32 DISPLAY_BLANK_STATE_UNBLANKED = 2;
-
     AutoPtr<IContext> mContext;
-    Boolean mHeadless;
     AutoPtr<DisplayManagerHandler> mHandler;
     AutoPtr<IHandler> mUiHandler;
     AutoPtr<DisplayAdapterListener> mDisplayAdapterListener;
-    AutoPtr<IDisplayManagerServiceWindowManagerFuncs> mWindowManagerFuncs;
-    AutoPtr<IDisplayManagerServiceInputManagerFuncs> mInputManagerFuncs;
+    AutoPtr<IWindowManagerInternal> mWindowManagerInternal;
+    AutoPtr<IInputManagerInternal> mInputManagerInternal;
+    AutoPtr<IIMediaProjectionManager> mProjectionService;
 
-    // The synchronization root for the display manager.
-    // This lock guards most of the display manager's state.
-    Object mSyncRoot;
+    // NOTE: This is synchronized on while holding WindowManagerService.mWindowMap so never call
+    // into WindowManagerService methods that require mWindowMap while holding this unless you are
+    // very very sure that no deadlock can occur.
+    AutoPtr<SyncRoot> mSyncRoot;
 
     // True if the display manager service should pretend there is only one display
     // and only tell applications about the existence of the default logical display.
@@ -437,19 +635,19 @@ private:
     // List of all currently connected display devices.
     List< AutoPtr<DisplayDevice> > mDisplayDevices;
 
-    // List of all removed display devices.
-    List< AutoPtr<DisplayDevice> > mRemovedDisplayDevices;
-
     // List of all logical displays indexed by logical display id.
     HashMap<Int32, AutoPtr<LogicalDisplay> > mLogicalDisplays;
     Int32 mNextNonDefaultDisplayId;
 
     // List of all display transaction listeners.
-    List< AutoPtr<IDisplayTransactionListener> > mDisplayTransactionListeners;
-    Object mDisplayTransactionListenersLock;
+    AutoPtr<ICopyOnWriteArrayList> mDisplayTransactionListeners;//new CopyOnWriteArrayList<DisplayTransactionListener>();
 
-    // Set to TRUE if all displays have been blanked by the power manager.
-    Int32 mAllDisplayBlankStateFromPowerManager;
+    // Display power controller.
+    AutoPtr<DisplayPowerController> mDisplayPowerController;
+
+    // The overall display state, independent of changes that might influence one
+    // display or another in particular.
+    Int32 mGlobalDisplayState;
 
     // Set to TRUE when there are pending display changes that have yet to be applied
     // to the surface flinger state.
@@ -457,6 +655,12 @@ private:
 
     // The Wifi display adapter, or NULL if not registered.
     AutoPtr<WifiDisplayAdapter> mWifiDisplayAdapter;
+
+    // The number of active wifi display scan requests.
+    Int32 mWifiDisplayScanRequestCount;
+
+    // The virtual display adapter, or null if not registered.
+    AutoPtr<VirtualDisplayAdapter> mVirtualDisplayAdapter;
 
     // Viewports of the default display and the display that should receive touch
     // input from an external source.  Used by the input system.
@@ -477,6 +681,12 @@ private:
     // input system.  May be used outside of the lock but only on the handler thread.
     AutoPtr<IDisplayViewport> mTempDefaultViewport;
     AutoPtr<IDisplayViewport> mTempExternalTouchViewport;
+
+    // Temporary list of deferred work to perform when setting the display state.
+    // Only used by requestDisplayState.  The field is self-synchronized and only
+    // intended for use inside of the requestGlobalDisplayStateInternal function.
+    AutoPtr<IArrayList> mTempDisplayStateWorkQueue;// = new ArrayList<Runnable>();
+
 };
 
 } // namespace Display

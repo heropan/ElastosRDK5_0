@@ -1,9 +1,11 @@
 #include "elastos/droid/ext/frameworkdef.h"
-#include "am/CActivityRecordToken.h"
-#include "am/ActivityRecord.h"
+#include "elastos/droid/server/am/CActivityRecordToken.h"
+#include "elastos/droid/server/am/ActivityRecord.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 
+using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::View::EIID_IApplicationToken;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 
@@ -11,6 +13,9 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Am {
+
+CAR_INTERFACE_IMPL_2(CActivityRecordToken, Object, IApplicationToken, IBinder)
+CAR_OBJECT_IMPL(CActivityRecordToken)
 
 CActivityRecordToken::CActivityRecordToken()
 {
@@ -21,7 +26,7 @@ CActivityRecordToken::~CActivityRecordToken()
 }
 
 ECode CActivityRecordToken::constructor(
-    /* [in] */ Handle32 activity)
+    /* [in] */ IActivityRecord* activity)
 {
     ActivityRecord* a = (ActivityRecord*)activity;
     if (a) {
@@ -33,10 +38,10 @@ ECode CActivityRecordToken::constructor(
 AutoPtr<ActivityRecord> CActivityRecordToken::GetActivityRecord()
 {
     AutoPtr<ActivityRecord> activity;
-    AutoPtr<IInterface> obj;
-    mWeakActivity->Resolve(EIID_IInterface, (IInterface**)&obj);
+    AutoPtr<IActivityRecord> obj;
+    mWeakActivity->Resolve(EIID_IActivityRecord, (IInterface**)&obj);
     if (obj) {
-        activity = reinterpret_cast<ActivityRecord*>(obj->Probe(EIID_ActivityRecord));
+        activity = (ActivityRecord*)obj.Get();
     }
 
     return activity;
@@ -70,13 +75,14 @@ ECode CActivityRecordToken::WindowsGone()
 }
 
 ECode CActivityRecordToken::KeyDispatchingTimedOut(
+    /* [in] */ const String& reason,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<ActivityRecord> ar = GetActivityRecord();
     if (ar != NULL) {
-        return ar->KeyDispatchingTimedOut(result);
+        return ar->KeyDispatchingTimedOut(reason, result);
     }
 
     *result = FALSE;
@@ -101,27 +107,21 @@ ECode CActivityRecordToken::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
-    if (!mStringName.IsNull()) {
-        *str = mStringName;
-        return NOERROR;
-    }
     StringBuilder sb(128);
     sb += "Token{";
-    sb += StringUtils::Int32ToHexString(Int32(this));
+    sb += StringUtils::ToString(Int32(this), 16);
     sb += ", ActivityRecord:";
 
     AutoPtr<ActivityRecord> ar = GetActivityRecord();
     if (ar != NULL) {
-        String astr;
-        ar->ToString(&astr);
-        sb += astr;
+        sb += ar->ToString();
     }
     else {
         sb += "NULL";
     }
 
     sb += "}";
-    *str = mStringName = sb.ToString();
+    *str = sb.ToString();
     return NOERROR;
 }
 

@@ -63,7 +63,7 @@ ECode COvershootInterpolator::constructor(
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::OvershootInterpolator),
-            ARRAY_SIZE(R::styleable::OvershootInterpolator));
+            ArraySize(R::styleable::OvershootInterpolator));
     AutoPtr<ITypedArray> a;
     if (theme != NULL) {
         theme->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);

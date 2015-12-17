@@ -1,8 +1,7 @@
-
-#include "elastos/droid/provider/CContactsContractRawContactsEntity.h"
+#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/ContactsContract.h"
 #include "elastos/droid/provider/ContactsContractProfile.h"
-#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/provider/CContactsContractRawContactsEntity.h"
 
 using Elastos::Droid::Net::Uri;
 
@@ -10,19 +9,20 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsContractRawContactsEntity::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CContactsContractRawContactsEntity)
+
+CAR_INTERFACE_IMPL_4(CContactsContractRawContactsEntity, Singleton
+    , IContactsContractRawContactsEntityEx
+    , IBaseColumns
+    , IContactsContractDataColumns
+    , IContactsContractRawContactsColumns)
 
 ECode CContactsContractRawContactsEntity::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
-    AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
-    return Uri::WithAppendedPath(auUri, String("raw_contact_entities"), uri);
+    return Uri::WithAppendedPath(ContactsContract::AUTHORITY_URI.Get(), String("raw_contact_entities"), uri);
 }
 
 /**

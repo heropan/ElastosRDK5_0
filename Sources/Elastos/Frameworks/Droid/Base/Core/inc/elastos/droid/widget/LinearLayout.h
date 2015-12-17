@@ -441,6 +441,8 @@ public:
         /* [in] */ Int32 r,
         /* [in] */ Int32 b);
 
+    using ViewGroup::GetChildCount;
+
 protected:
     virtual CARAPI_(void) OnMeasure(
         /* [in] */ Int32 widthMeasureSpec,

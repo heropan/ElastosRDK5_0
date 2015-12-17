@@ -564,7 +564,7 @@ ECode KeyboardView::InitInternal(
     AutoPtr<ITypedArray> a;
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::KeyboardView),
-            ARRAY_SIZE(R::styleable::KeyboardView));
+            ArraySize(R::styleable::KeyboardView));
     context->ObtainStyledAttributes(attrs, attrIds,
             defStyleAttr, defStyleRes, (ITypedArray**)&a);
 

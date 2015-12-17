@@ -2,18 +2,26 @@
 #define __ELASTOS_DROID_PROVIDER_CSETTINGSSYSTEM_H__
 
 #include "_Elastos_Droid_Provider_CSettingsSystem.h"
+#include "elastos/droid/provider/Settings.h"
+#include <elastos/core/Singleton.h>
 
-using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
 CarClass(CSettingsSystem)
+    , public Singleton
+    , public Settings::System
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI GetUriFor(
         /* [in] */ IUri* u,
         /* [in] */ const String& name,
@@ -39,11 +47,11 @@ public:
 
     /** @hide */
     CARAPI GetMovedKeys(
-        /* [in] */ IObjectContainer* outKeySet);
+        /* [in] */ IHashSet* outKeySet);
 
     /** @hide */
     CARAPI GetNonLegacyMovedKeys(
-        /* [in] */ IObjectContainer* outKeySet);
+        /* [in] */ IHashSet* outKeySet);
 
     /**
      * Look up a name in the database.

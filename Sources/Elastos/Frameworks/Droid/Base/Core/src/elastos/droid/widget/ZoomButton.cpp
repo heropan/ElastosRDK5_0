@@ -2,51 +2,107 @@
 #include "elastos/droid/widget/ZoomButton.h"
 #include "elastos/droid/os/CHandler.h"
 
-using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Droid::View::IViewOnLongClickListener;
 using Elastos::Droid::View::EIID_IViewOnLongClickListener;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-ZoomButton::ZoomButton(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : mZoomSpeed(100)
+//=============================================================================
+//                  ZoomButton::ZoomButtonRunnable
+//=============================================================================
+ZoomButton::ZoomButtonRunnable::ZoomButtonRunnable(
+    /* [in] */ ZoomButton* host)
+    : mHost(host)
 {
-    mRunnable = new ZoomButtonRunnable(this);
-    Init(context, attrs, defStyle);
 }
 
-ZoomButton::ZoomButton()
-    : mZoomSpeed(100)
+ECode ZoomButton::ZoomButtonRunnable::Run()
 {
-    mRunnable = new ZoomButtonRunnable(this);
-}
-
-ECode ZoomButton::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-{
-    ImageButton::Init(context, attrs, defStyle);
-    CHandler::New((IHandler**)&mHandler);
-    SetOnLongClickListener((IViewOnLongClickListener*)this->Probe(EIID_IViewOnLongClickListener));
+    Boolean value = FALSE;
+    mHost->HasOnClickListeners(&value);
+    if (value && mHost->mIsInLongpress && (mHost->IsEnabled(&value), value)) {
+        mHost->CallOnClick(&value);
+        mHost->mHandler->PostDelayed(this, mHost->mZoomSpeed, &value);
+    }
     return NOERROR;
 }
 
-Boolean ZoomButton::OnTouchEvent(
-    /* [in] */ IMotionEvent* event)
+//=============================================================================
+//                  ZoomButton::LongClickListener
+//=============================================================================
+CAR_INTERFACE_IMPL(ZoomButton::LongClickListener, Object, IViewOnLongClickListener);
+ZoomButton::LongClickListener::LongClickListener(
+    /* [in] */ ZoomButton* host)
+    : mHost(host)
+{}
+
+ECode ZoomButton::LongClickListener::OnLongClick(
+    /* [in] */ IView* v,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
+    return mHost->OnLongClick(v, result);
+}
+
+
+CAR_INTERFACE_IMPL_2(ZoomButton, ImageButton, IZoomButton, IViewOnLongClickListener);
+ZoomButton::ZoomButton()
+    : mZoomSpeed(1000)
+    , mIsInLongpress(FALSE)
+{
+    mRunnable = new ZoomButtonRunnable(this);
+}
+
+ECode ZoomButton::constructor(
+    /* [in] */ IContext* context)
+{
+    return constructor(context, NULL);
+}
+
+ECode ZoomButton::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return constructor(context, attrs, 0);
+}
+
+ECode ZoomButton::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+{
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode ZoomButton::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    ImageButton::constructor(context, attrs, defStyleAttr, defStyleRes);
+    CHandler::New((IHandler**)&mHandler);
+    AutoPtr<IViewOnLongClickListener> listener = new LongClickListener(this);
+    SetOnLongClickListener(listener);
+    return NOERROR;
+}
+
+ECode ZoomButton::OnTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
     Int32 action = 0;
     event->GetAction(&action);
     if (action == IMotionEvent::ACTION_CANCEL || action == IMotionEvent::ACTION_UP) {
         mIsInLongpress = FALSE;
     }
-    return ImageButton::OnTouchEvent(event);
+    return ImageButton::OnTouchEvent(event, result);
 }
 
 ECode ZoomButton::SetZoomSpeed(
@@ -56,21 +112,26 @@ ECode ZoomButton::SetZoomSpeed(
     return NOERROR;
 }
 
-Boolean ZoomButton::OnLongClick(
-    /* [in] */ IView* v)
+ECode ZoomButton::OnLongClick(
+    /* [in] */ IView* v,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     mIsInLongpress = TRUE;
     Boolean res = FALSE;
     mHandler->Post(mRunnable, &res);
-    return TRUE;
+    *result = TRUE;
+    return NOERROR;
 }
 
-Boolean ZoomButton::OnKeyUp(
+ECode ZoomButton::OnKeyUp(
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     mIsInLongpress = FALSE;
-    return ImageButton::OnKeyUp(keyCode, event);
+    return ImageButton::OnKeyUp(keyCode, event, result);
 }
 
 ECode ZoomButton::SetEnabled(
@@ -83,12 +144,14 @@ ECode ZoomButton::SetEnabled(
     return NOERROR;
 }
 
-Boolean ZoomButton::DispatchUnhandledMove(
+ECode ZoomButton::DispatchUnhandledMove(
     /* [in] */ IView* focused,
-    /* [in] */ Int32 direction)
+    /* [in] */ Int32 direction,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     ClearFocus();
-    return ImageButton::DispatchUnhandledMove(focused, direction);
+    return ImageButton::DispatchUnhandledMove(focused, direction, result);
 }
 
 ECode ZoomButton::OnInitializeAccessibilityEvent(
@@ -96,8 +159,8 @@ ECode ZoomButton::OnInitializeAccessibilityEvent(
 {
     ImageButton::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(String("CZoomButton"), (ICharSequence**)&seq));
-    event->SetClassName(seq);
+    FAIL_RETURN(CString::New(String("CZoomButton"), (ICharSequence**)&seq));
+    IAccessibilityRecord::Probe(event)->SetClassName(seq);
     return NOERROR;
 }
 
@@ -106,28 +169,8 @@ ECode ZoomButton::OnInitializeAccessibilityNodeInfo(
 {
     ImageButton::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(String("CZoomButton"), (ICharSequence**)&seq));
+    FAIL_RETURN(CString::New(String("CZoomButton"), (ICharSequence**)&seq));
     info->SetClassName(seq);
-    return NOERROR;
-}
-
-//=============================================================================
-//                  ZoomButton::ZoomButtonRunnable
-//=============================================================================
-ZoomButton::ZoomButtonRunnable::ZoomButtonRunnable(
-    /* [in] */ ZoomButton* host)
-    : mHost(host)
-{
-
-}
-
-ECode ZoomButton::ZoomButtonRunnable::Run()
-{
-    if (mHost->HasOnClickListeners() && mHost->mIsInLongpress && mHost->IsEnabled()) {
-        mHost->CallOnClick();
-        Boolean res = FALSE;
-        mHost->mHandler->PostDelayed(this, mHost->mZoomSpeed, &res);
-    }
     return NOERROR;
 }
 

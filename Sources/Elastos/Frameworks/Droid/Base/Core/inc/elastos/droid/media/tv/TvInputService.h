@@ -9,12 +9,12 @@
 using Elastos::Droid::App::Service;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Hardware::Hdmi::IHdmiDeviceInfo;
-using Elastos::Droid::View::IInputChannel;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::IRemoteCallbackList;
+using Elastos::Droid::View::IInputChannel;
 
 namespace Elastos {
 namespace Droid {
@@ -129,9 +129,9 @@ public:
 
     TvInputService();
 
-    CAR_INTERFACE_DECL()
-
     virtual ~TvInputService();
+
+    CAR_INTERFACE_DECL()
 
     CARAPI constructor();
 

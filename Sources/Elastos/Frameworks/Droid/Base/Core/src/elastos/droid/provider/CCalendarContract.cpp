@@ -1,6 +1,5 @@
-
-#include "elastos/droid/provider/CCalendarContract.h"
 #include "elastos/droid/net/Uri.h"
+#include "elastos/droid/provider/CCalendarContract.h"
 
 using Elastos::Droid::Net::Uri;
 
@@ -8,10 +7,9 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CCalendarContract::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CCalendarContract)
+
+CAR_INTERFACE_IMPL(CCalendarContract, Singleton, ICalendarContract)
 
 ECode CCalendarContract::GetCONTENT_URI(
     /* [out] */ IUri** uri)

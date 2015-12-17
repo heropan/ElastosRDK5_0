@@ -343,7 +343,7 @@ Int32 MediaPlayerBridge::GetDuration()
 //@CalledByNative
 void MediaPlayerBridge::ReleaseReSources()
 {
-    GetLocalPlayer()->ReleaseReSources();
+    GetLocalPlayer()->ReleaseResources();
 }
 
 //@CalledByNative

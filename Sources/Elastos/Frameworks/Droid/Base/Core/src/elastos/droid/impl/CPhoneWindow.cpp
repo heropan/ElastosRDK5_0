@@ -1410,7 +1410,7 @@ void CPhoneWindow::PanelFeatureState::SetStyle(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::Theme),
-            ARRAY_SIZE(R::styleable::Theme));
+            ArraySize(R::styleable::Theme));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrIds, (ITypedArray**)&a);
 

@@ -1,21 +1,27 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTACTMETHODSHELPER_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTACTMETHODSHELPER_H__
 
-#include "CContactsContactMethods.h"
 #include "_Elastos_Droid_Provider_CContactsContactMethodsHelper.h"
+#include "elastos/droid/provider/CContactsContactMethods.h"
+#include <elastos/core/Singleton.h>
 
-using Elastos::Core::ICharSequence;
-using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Net::IUri;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
 CarClass(CContactsContactMethodsHelper)
+    , public Singleton
+    , public IContactsContactMethodsHelper
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     /**
      * The content:// style URL for this table
      * @deprecated see {@link android.provider.ContactsContract}

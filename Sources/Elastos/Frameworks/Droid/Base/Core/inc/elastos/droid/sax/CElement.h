@@ -19,9 +19,6 @@ CarClass(CElement)
 {
 public:
     CAR_OBJECT_DECL();
-
-    CElement();
-    virtual ~CElement();
 };
 
 } // namespace Os

@@ -27,6 +27,30 @@ module
         DeferNotifyDataSetChanged();
     }
 
+    /**
+     * A FrameLayout which contains a loading view, and manages the re/applying of RemoteViews when
+     * they are loaded.
+     */
+    /**
+     * @Involve
+     * extends Elastos.Droid.Widget.IFrameLayout
+     * interface Elastos.Droid.Widget.IViewGroup
+     * interface Elastos.Droid.View.IViewParent
+     * interface Elastos.Droid.View.IViewManager
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
+     */
+     [local]
+    interface IRemoteViewsFrameLayout {
+        /**
+         * Updates this RemoteViewsFrameLayout depending on the view that was loaded.
+         * @param view the RemoteViews that was loaded. If null, the RemoteViews was not loaded
+         *             successfully.
+         */
+        OnRemoteViewsLoaded(
+            [in] IRemoteViews* view,
+            [in] IRemoteViewsOnClickHandler* handler);
+    }
 
     /**
      * An adapter to a RemoteViewsService which fetches and caches RemoteViews

@@ -4,6 +4,7 @@
 #include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/view/Gravity.h"
+#include "elastos/droid/widget/ActionMenuPresenter.h"
 #include <elastos/core/Math.h>
 #include "elastos/droid/R.h"
 using Elastos::Droid::View::Gravity;
@@ -37,7 +38,7 @@ ECode LinearLayout::LayoutParams::constructor(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::LinearLayout_Layout),
-            ARRAY_SIZE(R::styleable::LinearLayout_Layout));
+            ArraySize(R::styleable::LinearLayout_Layout));
     AutoPtr<ITypedArray> a;
     ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
             attrs, attrIds, (ITypedArray**)&a));
@@ -182,7 +183,7 @@ ECode LinearLayout::InitFromAttributes(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::LinearLayout),
-            ARRAY_SIZE(R::styleable::LinearLayout));
+            ArraySize(R::styleable::LinearLayout));
     AutoPtr<ITypedArray> a;
     FAIL_RETURN(context->ObtainStyledAttributes(
             attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));

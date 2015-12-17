@@ -22,11 +22,11 @@ CarClass(CTvTrackInfoBuilder)
 public:
     CTvTrackInfoBuilder();
 
+    virtual ~CTvTrackInfoBuilder();
+
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
-
-    virtual ~CTvTrackInfoBuilder();
 
     /**
      * Create a {@link Builder}. Any field that should be included in the {@link TvTrackInfo}
@@ -98,7 +98,7 @@ public:
      * @param extra The extra information.
      */
     CARAPI SetExtra(
-        /* [in] */ IBundle * extra);
+        /* [in] */ IBundle* extra);
 
     /**
      * Creates a {@link TvTrackInfo} instance with the specified fields.
@@ -108,7 +108,7 @@ public:
     CARAPI Build(
         /* [out] */ ITvTrackInfo ** result);
 
-public:
+private:
     String mId;
     String mLanguage;
     Int32 mType;

@@ -1,41 +1,60 @@
-
+#include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/content/ContentProvider.h"
+#include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/CCalls.h"
 #include "elastos/droid/provider/CContactsContractDataUsageFeedback.h"
 #include "elastos/droid/provider/CContactsContractCommonDataKindsCallable.h"
 #include "elastos/droid/provider/CContactsContractCommonDataKindsPhone.h"
-#include "elastos/droid/net/CUriHelper.h"
-#include "elastos/droid/net/Uri.h"
-#include "elastos/droid/content/CContentValues.h"
+#include "elastos/droid/provider/ContactsContractData.h"
+#include "elastos/droid/text/TextUtils.h"
+// #include "elastos/droid/telephony/CPhoneNumberUtils.h" //TODO
 #include <elastos/coredef.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 
-using Elastos::Core::StringBuilder;
-using Elastos::Core::StringUtils;
-using Elastos::Core::CString;
-using Elastos::Core::IInteger32;
-using Elastos::Core::CInteger32;
-using Elastos::Core::IInteger64;
-using Elastos::Core::CInteger64;
-using Elastos::Droid::Database::ICursor;
-using Elastos::Droid::Net::Uri;
-using Elastos::Droid::Net::IUriHelper;
-using Elastos::Droid::Net::CUriHelper;
-using Elastos::Droid::Net::IUriBuilder;
+using Elastos::Droid::Content::CContentValues;
+using Elastos::Droid::Content::ContentProvider;
+using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IContentValues;
-using Elastos::Droid::Content::CContentValues;
+using Elastos::Droid::Content::Pm::IUserInfo;
+using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Internal::Telephony::IPhoneConstants;
-using Elastos::Droid::Provider::IContactsContractDataUsageFeedback;
-using Elastos::Droid::Provider::CContactsContractDataUsageFeedback;
-using Elastos::Droid::Provider::IContactsContractCommonDataKindsCallable;
+using Elastos::Droid::Location::ICountry;
+using Elastos::Droid::Location::ICountryDetector;
+using Elastos::Droid::Net::CUriHelper;
+using Elastos::Droid::Net::IUriBuilder;
+using Elastos::Droid::Net::IUriHelper;
+using Elastos::Droid::Net::Uri;
+using Elastos::Droid::Os::IUserManager;
+using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Provider::CContactsContractCommonDataKindsCallable;
-using Elastos::Droid::Provider::IContactsContractCommonDataKindsPhone;
 using Elastos::Droid::Provider::CContactsContractCommonDataKindsPhone;
+using Elastos::Droid::Provider::CContactsContractDataUsageFeedback;
+using Elastos::Droid::Provider::IContactsContractDataUsageFeedback;
+using Elastos::Droid::Provider::IContactsContractCommonDataKindsCallable;
+using Elastos::Droid::Provider::IContactsContractCommonDataKindsPhone;
+// using Elastos::Droid::Telephony::CPhoneNumberUtils;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Core::CInteger32;
+using Elastos::Core::CInteger64;
+using Elastos::Core::CString;
+using Elastos::Core::IInteger32;
+using Elastos::Core::IInteger64;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
+
+CAR_SINGLETON_IMPL(CCalls)
+
+CAR_INTERFACE_IMPL(CCalls, Singleton, ICalls)
+
+const Int32 CCalls::MIN_DURATION_FOR_NORMALIZED_NUMBER_UPDATE_MS = 1000 * 10;
 
 static AutoPtr<IUri> initCONTENTURI()
 {
@@ -90,7 +109,7 @@ ECode CCalls::GetCONTENT_FILTER_URI(
     return NOERROR;
 }
 
-ECode CCalls::GetCONTENT_URIWITHVOICEMAIL(
+ECode CCalls::GetCONTENT_URI_WITH_VOICEMAIL(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -106,81 +125,105 @@ ECode CCalls::AddCall(
     /* [in] */ const String& number,
     /* [in] */ Int32 presentation,
     /* [in] */ Int32 callType,
+    /* [in] */ Int32 features,
+    /* [in] */ IPhoneAccountHandle* accountHandle,
     /* [in] */ Int64 start,
     /* [in] */ Int32 duration,
+    /* [in] */ Int64 dataUsage,
     /* [out] */ IUri** uri)
 {
+    assert(0 && "TODO"); // IPhoneAccountHandle
+    // return AddCall(ci, context, number, presentation, callType, features, accountHandle,
+    //                 start, duration, dataUsage, FALSE);
+}
+
+ECode CCalls::AddCall(
+    /* [in] */ ICallerInfo* ci,
+    /* [in] */ IContext* context,
+    /* [in] */ const String& number,
+    /* [in] */ Int32 presentation,
+    /* [in] */ Int32 callType,
+    /* [in] */ Int32 features,
+    /* [in] */ IPhoneAccountHandle* accountHandle,
+    /* [in] */ Int64 start,
+    /* [in] */ Int32 duration,
+    /* [in] */ Int64 dataUsage,
+    /* [in] */ Boolean addForAllUsers,
+    /* [out] */ IUri** uri)
+{
+    assert(0 && "TODO");// IPhoneAccountHandle
+/*
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IContentResolver> resolver;
-    FAIL_RETURN(context->GetContentResolver((IContentResolver**)&resolver))
+    context->GetContentResolver((IContentResolver**)&resolver);
+    Int32 numberPresentation = ICalls::PRESENTATION_ALLOWED;
 
-    // If this is a private number then set the number to Private, otherwise check
-    // if the number field is empty and set the number to Unavailable
-    String _number = number;
+    // Remap network specified number presentation types
+    // PhoneConstants.PRESENTATION_xxx to calllog number presentation types
+    // Calls.PRESENTATION_xxx, in order to insulate the persistent calllog
+    // from any future radio changes.
+    // If the number field is empty set the presentation type to Unknown.
+    // String _number = number;
     if (presentation == IPhoneConstants::PRESENTATION_RESTRICTED) {
-        _number = ICallerInfo::PRIVATE_NUMBER;
-        if (ci != NULL) FAIL_RETURN(ci->SetName(String("")))
-    }
-    else if (presentation == IPhoneConstants::PRESENTATION_PAYPHONE) {
-        _number = ICallerInfo::PAYPHONE_NUMBER;
-        if (ci != NULL) FAIL_RETURN(ci->SetName(String("")))
-    }
-    else if (_number.IsEmpty()
+        numberPresentation = ICalls::PRESENTATION_RESTRICTED;
+    } else if (presentation == IPhoneConstants::PRESENTATION_PAYPHONE) {
+        numberPresentation = ICalls::PRESENTATION_PAYPHONE;
+    } else if (TextUtils::IsEmpty(number)
             || presentation == IPhoneConstants::PRESENTATION_UNKNOWN) {
-        _number = ICallerInfo::UNKNOWN_NUMBER;
-        if (ci != NULL) FAIL_RETURN(ci->SetName(String("")))
+        numberPresentation = ICalls::PRESENTATION_UNKNOWN;
+    }
+    if (numberPresentation != ICalls::PRESENTATION_ALLOWED) {
+        if (ci != NULL) {
+            ci->SetName(String(""));
+        }
+    }
+
+    // accountHandle information
+    String accountComponentString;
+    String accountId;
+    if (accountHandle != NULL) {
+        AutoPtr<IComponentName> icn;
+        accountHandle->GetComponentName(&icn);
+        icn->FlattenToString(&accountComponentString);
+        accountHandle->GetId(&accountId);
     }
 
     AutoPtr<IContentValues> values;
-    FAIL_RETURN(CContentValues::New(5, (IContentValues**)&values))
+    CContentValues::New(6, (IContentValues**)&values);
+    values->Put(NUMBER, number);
+    values->Put(NUMBER_PRESENTATION, StringUtils::ToString(numberPresentation));
+    values->Put(TYPE, StringUtils::ToString(callType));
+    values->Put(FEATURES, features);
+    values->Put(DATE, StringUtils::ToString(start));
+    values->Put(DURATION, StringUtils::ToString(duration));
+    if (dataUsage != NULL) {
+        values->Put(DATA_USAGE, dataUsage);
+    }
+    values->Put(PHONE_ACCOUNT_COMPONENT_NAME, accountComponentString);
+    values->Put(PHONE_ACCOUNT_ID, accountId);
+    values->Put(NEW, StringUtils::ToString(1));
 
-    AutoPtr<ICharSequence> csq;
-    FAIL_RETURN(CString::New(_number, (ICharSequence**)&csq))
-    FAIL_RETURN(values->PutString(ICalls::NUMBER, csq))
-
-    AutoPtr<IInteger32> integer32_1;
-    FAIL_RETURN(CInteger32::New(callType, (IInteger32**)&integer32_1))
-    FAIL_RETURN(values->PutInt32(ICalls::TYPE, integer32_1))
-
-    AutoPtr<IInteger64> integer64_1;
-    FAIL_RETURN(CInteger64::New(start, (IInteger64**)&integer64_1))
-    FAIL_RETURN(values->PutInt64(ICalls::DATE, integer64_1))
-
-    AutoPtr<IInteger64> integer64_2;
-    FAIL_RETURN(CInteger64::New(duration, (IInteger64**)&integer64_2))
-    FAIL_RETURN(values->PutInt64(ICalls::DURATION, integer64_2))
-
-    AutoPtr<IInteger32> integer32_2;
-    FAIL_RETURN(CInteger32::New(1, (IInteger32**)&integer32_2))
-    FAIL_RETURN(values->PutInt32(ICalls::NEW, integer32_2))
     if (callType == ICalls::MISSED_TYPE) {
-        AutoPtr<IInteger32> integer32;
-        FAIL_RETURN(CInteger32::New(0, (IInteger32**)&integer32))
-        FAIL_RETURN(values->PutInt32(ICalls::IS_READ, integer32))
+        values->Put(ICalls::IS_READ, StringUtils::ToString(0));
     }
     if (ci != NULL) {
         String name;
-        FAIL_RETURN(ci->GetName(&name))
+        ci->GetName(&name);
         AutoPtr<ICharSequence> csqName;
-        FAIL_RETURN(CString::New(name, (ICharSequence**)&csqName))
-        FAIL_RETURN(values->PutString(ICalls::CACHED_NAME, csqName))
+        values->Put(ICalls::CACHED_NAME, csqName);
 
         Int32 type;
-        FAIL_RETURN(ci->GetNumberType(&type))
-        AutoPtr<IInteger32> integer32;
-        FAIL_RETURN(CInteger32::New(type, (IInteger32**)&integer32))
-        FAIL_RETURN(values->PutInt32(ICalls::CACHED_NUMBER_TYPE, integer32))
+        ci->GetNumberType(&type);
+        values->Put(ICalls::CACHED_NUMBER_TYPE, type);
 
         String lable;
-        FAIL_RETURN(ci->GetNumberLabel(&lable))
-        AutoPtr<ICharSequence> csqLable;
-        FAIL_RETURN(CString::New(lable, (ICharSequence**)&csqLable))
-        FAIL_RETURN(values->PutString(ICalls::CACHED_NUMBER_LABEL, csqLable))
+        ci->GetNumberLabel(&lable);
+        values->Put(ICalls::CACHED_NUMBER_LABEL, lable);
     }
 
     Int64 pId;
-    FAIL_RETURN(ci->GetPerson_id(&pId))
+    ci->GetContactIdOrZero(&pId);
     if ((ci != NULL) && (pId > 0)) {
         // Update usage information for the number associated with the contact ID.
         // We need to use both the number and the ID for obtaining a data ID since other
@@ -191,7 +234,7 @@ ECode CCalls::AddCall(
         // We should prefer normalized one (probably coming from
         // Phone.NORMALIZED_NUMBER column) first. If it isn't available try others.
         String normalNum;
-        FAIL_RETURN(ci->GetNormalizedNumber(&normalNum))
+        ci->GetNormalizedNumber(&normalNum);
         if (!normalNum.IsNull()) {
             const String normalizedPhoneNumber = normalNum;
             AutoPtr<IUri> uri;
@@ -211,8 +254,7 @@ ECode CCalls::AddCall(
             builder += " =?";
             String selection = builder.ToString();
             FAIL_RETURN(resolver->Query(uri, projection, selection, selectionArgs, String(NULL), (ICursor**)&cursor))
-        }
-        else {
+        } else {
             String pNumber;
             FAIL_RETURN(ci->GetPhoneNumber(&pNumber))
             const String phoneNumber = !pNumber.IsNull() ? pNumber : _number;
@@ -237,43 +279,81 @@ ECode CCalls::AddCall(
             Boolean isFirst;
             FAIL_GOTO(cursor->MoveToFirst(&isFirst), EXIT)
             if (count > 0 && isFirst) {
-                AutoPtr<IUri> uri;
-                AutoPtr<IContactsContractDataUsageFeedback> helper;
-                FAIL_GOTO(CContactsContractDataUsageFeedback::AcquireSingleton((IContactsContractDataUsageFeedback**)&helper), EXIT)
-                FAIL_GOTO(helper->GetFEEDBACKURI((IUri**)&uri), EXIT)
-                AutoPtr<IUriBuilder> builder;
-                FAIL_GOTO(uri->BuildUpon((IUriBuilder**)&builder), EXIT)
-                String path;
-                FAIL_GOTO(cursor->GetString(0, &path), EXIT)
-                FAIL_GOTO(builder->AppendPath(path), EXIT)
-                FAIL_GOTO(builder->AppendQueryParameter(IContactsContractDataUsageFeedback::USAGE_TYPE, IContactsContractDataUsageFeedback::USAGE_TYPE_CALL), EXIT)
-                AutoPtr<IUri> feedbackUri;
-                FAIL_GOTO(builder->Build((IUri**)&feedbackUri), EXIT)
+                String dataId;
+                cursor->GetString(0, &dataId);
+                String normalizedNum;
+                ci->GetNormalizedNumber(&normalizedNum);
 
-                AutoPtr<IContentValues> _values;
-                FAIL_GOTO(CContentValues::New((IContentValues**)&_values), EXIT)
-                Int32 res;
-                FAIL_GOTO(resolver->Update(feedbackUri, _values, String(NULL), NULL, &res), EXIT)
+                if (duration >= CCalls::MIN_DURATION_FOR_NORMALIZED_NUMBER_UPDATE_MS
+                        && callType == OUTGOING_TYPE
+                        && TextUtils::IsEmpty(normalizedNum)) {
+                    UpdateNormalizedNumber(context, resolver, dataId, number);
+                }
             }
             //} finally {
-EXIT:
-            FAIL_RETURN(cursor->Close())
+    EXIT:
+            assert(0 && "TODO");
+            // FAIL_RETURN(cursor->Close())
             //}
         }
     }
 
     AutoPtr<IUri> result;
-    FAIL_RETURN(resolver->Insert(CONTENT_URI, values, (IUri**)&result))
-    FAIL_RETURN(RemoveExpiredEntries(context))
+     if (addForAllUsers) {
+        // Insert the entry for all currently running users, in order to trigger any
+        // ContentObservers currently set on the call log.
+        AutoPtr<IUserManager> userManager;
+        AutoPtr<IInterface> interUserManager
+        context->GetSystemService(IContext::USER_SERVICE, (IInterface**)&interUserManager);
+        userManager = IUserManager::Probe(interUserManager);
+        AutoPtr<IList> users;
+        userManager->GetUsers(TRUE, (IList**)&users);
+        Int32 currentUserId;
+        userManager->GetUserHandle(&currentUserId);
+        Int32 count;
+        users->GetSize(&count);
+        for (Int32 i = 0; i < count; i++) {
+            AutoPtr<IInterface> obj;
+            users->Get(i, (IInterface**)&obj);
+            AutoPtr<IUserInfo> user = IUserInfo::Probe(obj);
+
+            AutoPtr<IUserHandle> userHandle;
+            user->GetUserHandle((IUserHandle**)&userHandle);
+
+            Boolean flag = FALSE;
+            userManager->IsUserRunning(userHandle, &flag);
+
+            Boolean bHasUserRes = FALSE;
+            userManager->HasUserRestriction(IUserManager::DISALLOW_OUTGOING_CALLS, userHandle.Get(), &bHasUserRes);
+
+            Boolean isManagedProfile = FALSE;
+            user->IsManagedProfile(&IsManagedProfile);
+            if (flag && !bHasUserRes && !isManagedProfile) {
+                Int32 id;
+                user->GetId(&id);
+                AutoPtr<IUri> iur;
+                AddEntryAndRemoveExpiredEntries(context,
+                        ContentProvider::MaybeAddUserId(CONTENT_URI.Get(), id), values, (IUri**)&iur);
+                if (id == currentUserId) {
+                    result = iur;
+                }
+            }
+        }
+    } else {
+        result = AddEntryAndRemoveExpiredEntries(context, CONTENT_URI.Get(), values);
+    }
+
     *uri = result;
     REFCOUNT_ADD(*uri);
     return NOERROR;
+*/
 }
 
 ECode CCalls::GetLastOutgoingCall(
     /* [in] */ IContext* context,
     /* [out] */ String* call)
 {
+    VALIDATE_NOT_NULL(call);
     AutoPtr<IContentResolver> resolver;
     FAIL_RETURN(context->GetContentResolver((IContentResolver**)&resolver))
     AutoPtr<ICursor> c = NULL;
@@ -300,17 +380,24 @@ ECode CCalls::GetLastOutgoingCall(
     //} finally {
 EXIT:
     if (c != NULL) {
-        FAIL_RETURN(c->Close())
+        //TODO
+        // FAIL_RETURN(c->Close())
     }
     //}
     return NOERROR;
 }
 
-ECode CCalls::RemoveExpiredEntries(
-    /* [in] */ IContext* context)
+ECode CCalls::AddEntryAndRemoveExpiredEntries(
+    /* [in] */ IContext* context,
+    /* [in] */ IUri* uri,
+    /* [in] */ IContentValues* values,
+    /* [out] */ IUri** ret)
 {
+    VALIDATE_NOT_NULL(ret);
     AutoPtr<IContentResolver> resolver;
-    FAIL_RETURN(context->GetContentResolver((IContentResolver**)&resolver))
+    context->GetContentResolver((IContentResolver**)&resolver);
+    AutoPtr<IUri> result;
+    resolver->Insert(uri, values, (IUri**)&result);
     Int32 num;
 
     StringBuilder builder;
@@ -320,7 +407,76 @@ ECode CCalls::RemoveExpiredEntries(
     builder += " LIMIT -1 OFFSET 500)";
     String where = builder.ToString();
 
-    return resolver->Delete(CONTENT_URI, where, NULL, &num);
+    resolver->Delete(CCalls::CONTENT_URI.Get(), where, NULL, &num);
+    *ret = result;
+    REFCOUNT_ADD(*ret);
+    return NOERROR;
+}
+
+void CCalls::UpdateDataUsageStatForData(
+    /* [in] */ IContentResolver* resolver,
+    /* [in] */ const String& dataId)
+{
+    assert(0 && "TODO");
+   // final Uri feedbackUri = DataUsageFeedback.FEEDBACK_URI.buildUpon()
+   //                  .appendPath(dataId)
+   //                  .appendQueryParameter(DataUsageFeedback.USAGE_TYPE,
+   //                              DataUsageFeedback.USAGE_TYPE_CALL)
+   //                  .build();
+   //  resolver.update(feedbackUri, new ContentValues(), null, null);
+}
+
+void CCalls::UpdateNormalizedNumber(
+    /* [in] */ IContext* context,
+    /* [in] */ IContentResolver* resolver,
+    /* [in] */ const String& dataId,
+    /* [in] */ const String& number)
+{
+    if (TextUtils::IsEmpty(number) || TextUtils::IsEmpty(dataId)) {
+        return;
+    }
+
+    String countryIso = GetCurrentCountryIso(context);
+    if (TextUtils::IsEmpty(countryIso)) {
+        return;
+    }
+
+    String currentCountry = GetCurrentCountryIso(context);
+
+    String normalizedNumber;
+    //assert(0 && "TODO");
+    // CPhoneNumberUtils::FormatNumberToE164(number, currentCountry, &normalizedNumber);
+    if (TextUtils::IsEmpty(normalizedNumber)) {
+        return;
+    }
+
+    AutoPtr<IContentValues> values;
+    CContentValues::New((IContentValues**)&values);
+    assert(0 && "TODO");
+    // values->Put(Phone.NORMALIZED_NUMBER, normalizedNumber);
+    AutoPtr<IUri> uri;
+    ContactsContractData::GetCONTENT_URI((IUri**)&uri);
+    AutoPtr<ArrayOf<String> > dstr = ArrayOf<String>::Alloc(1);
+    (*dstr)[0] = dataId;
+    Int32 ret;
+    resolver->Update(uri.Get(), values.Get(), IBaseColumns::ID + String("=?"), dstr.Get(), &ret);
+}
+
+String CCalls::GetCurrentCountryIso(
+    /* [in] */ IContext* context)
+{
+    String countryIso;
+    AutoPtr<IInterface> obj;
+    context->GetSystemService(IContext::COUNTRY_DETECTOR, (IInterface**)&obj);
+    AutoPtr<ICountryDetector> detector = ICountryDetector::Probe(obj);
+    if (detector != NULL) {
+        AutoPtr<ICountry> country;
+        detector->DetectCountry((ICountry**)&country);
+        if (country != NULL) {
+            country->GetCountryIso(&countryIso);
+        }
+    }
+    return countryIso;
 }
 
 } //Provider

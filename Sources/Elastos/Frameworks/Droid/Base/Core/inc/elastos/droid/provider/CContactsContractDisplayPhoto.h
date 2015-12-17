@@ -1,8 +1,8 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTDISPLAYPHOTO_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTDISPLAYPHOTO_H__
 
 #include "_Elastos_Droid_Provider_CContactsContractDisplayPhoto.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Net::IUri;
 
@@ -11,12 +11,13 @@ namespace Droid {
 namespace Provider {
 
 CarClass(CContactsContractDisplayPhoto)
+    , public Singleton
+    , public IContactsContractDisplayPhoto
 {
 public:
-    /**
-     * no public constructor since this is a utility class
-     */
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * The content:// style URI for this class, which allows access to full-size photos,

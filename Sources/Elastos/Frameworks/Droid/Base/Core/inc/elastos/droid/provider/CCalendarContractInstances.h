@@ -1,13 +1,14 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTINSTANCES_H__
 #define __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTINSTANCES_H__
 
 #include "_Elastos_Droid_Provider_CCalendarContractInstances.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Singleton.h>
 
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Net::IUriBuilder;
-using Elastos::Droid::Database::ICursor;
-using Elastos::Droid::Content::IContentResolver;
 
 namespace Elastos {
 namespace Droid {
@@ -20,12 +21,16 @@ namespace Provider {
  * way to query event occurrences.
  */
 CarClass(CCalendarContractInstances)
+    , public Singleton
+    , public ICalendarContractInstances
+    , public IBaseColumns
+    , public ICalendarContractEventsColumns
+    , public ICalendarContractCalendarColumns
 {
 public:
-    /**
-     * This utility class cannot be instantiated
-     */
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * The content:// style URL for querying an instance range. The begin
@@ -40,7 +45,7 @@ public:
      * Day. The start and end day should be added as path segments if this
      * is used directly.
      */
-    CARAPI GetCONTENTBYDAYURI(
+    CARAPI GetCONTENT_BY_DAY_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -48,7 +53,7 @@ public:
      * term. The begin, end, and search string should be appended as path
      * segments if this is used directly.
      */
-    CARAPI GetCONTENTSEARCHURI(
+    CARAPI GetCONTENT_SEARCH_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -56,7 +61,7 @@ public:
      * term. The start day, end day, and search string should be appended as
      * path segments if this is used directly.
      */
-    CARAPI GetCONTENTSEARCHBYDAYURI(
+    CARAPI GetCONTENT_SEARCH_BY_DAY_URI(
         /* [out] */ IUri** uri);
 
     /**

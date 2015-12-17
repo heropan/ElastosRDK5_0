@@ -1,4 +1,3 @@
-
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/provider/CSettingsGlobal.h"
 #include "elastos/droid/provider/Settings.h"
@@ -7,16 +6,20 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
+CAR_SINGLETON_IMPL(CSettingsGlobal)
+
+CAR_INTERFACE_IMPL(CSettingsGlobal, Singleton, ISettingsGlobal)
+
 ECode CSettingsGlobal::GetUriFor(
     /* [in] */ IUri* u,
     /* [in] */ const String& name,
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri)
-    return Settings::Global::GetUriFor(u, name, uri);
+    return Settings::NameValueTable::GetUriFor(u, name, uri);
 }
 
-ECode CSettingsGlobal::GetContentUri(
+ECode CSettingsGlobal::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri)
@@ -25,12 +28,21 @@ ECode CSettingsGlobal::GetContentUri(
     return NOERROR;
 }
 
-ECode CSettingsGlobal::GetSettingsToBackup(
+ECode CSettingsGlobal::GetSETTINGS_TO_BACKUP(
     /* [out] */ ArrayOf<String>** array)
 {
     VALIDATE_NOT_NULL(array)
     *array = Settings::Global::SETTINGS_TO_BACKUP;
     REFCOUNT_ADD(*array)
+    return NOERROR;
+}
+
+ECode CSettingsGlobal::GetMULTI_SIM_USER_PREFERRED_SUBS(
+    /* [out, callee] */ ArrayOf<String>** subs)
+{
+    VALIDATE_NOT_NULL(subs);
+    *subs = Settings::Global::MULTI_SIM_USER_PREFERRED_SUBS;
+    REFCOUNT_ADD(*subs);
     return NOERROR;
 }
 
@@ -59,6 +71,22 @@ ECode CSettingsGlobal::GetBluetoothInputDevicePriorityKey(
     VALIDATE_NOT_NULL(key)
     *key = Settings::Global::GetBluetoothInputDevicePriorityKey(address);
     return NOERROR;
+}
+
+ECode CSettingsGlobal::GetBluetoothMapPriorityKey(
+    /* [in] */ const String& address,
+    /* [out] */ String* key)
+{
+    VALIDATE_NOT_NULL(key);
+    return Settings::Global::GetBluetoothMapPriorityKey(address, key);
+}
+
+ECode CSettingsGlobal::ZenModeToString(
+    /* [in] */ Int32 mode,
+    /* [out] */ String* key)
+{
+    VALIDATE_NOT_NULL(key);
+    return Settings::Global::ZenModeToString(mode, key);
 }
 
 ECode CSettingsGlobal::GetString(

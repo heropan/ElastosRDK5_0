@@ -192,33 +192,12 @@ module
     interface Elastos.Droid.View.IView;
     interface Elastos.Core.ICharSequence;
     interface Elastos.Core.IRunnable;
+    interface Elastos.IO.ICloseable;
+    interface Elastos.IO.IInputStream;
     interface Elastos.Utility.IArrayList;
     interface Elastos.Utility.IList;
     interface Elastos.Utility.IUUID;
 
-//        // media/media/AmrInputStream
-//        class CAmrInputStream {
-//            constructor(
-//                [in] IInputStream* inputStream);
-//
-//            interface IAmrInputStream;
-//        }
-//
-//        // media/media/AsyncPlayer
-//        class CAsyncPlayer {
-//            constructor(
-//                [in] String tag);
-//
-//            interface IAsyncPlayer;
-//        }
-//
-//        class CAudioManagerAudioFocusDispatcher {
-//            constructor(
-//                [in] IAudioManager* owner);
-//
-//            interface IIAudioFocusDispatcher;
-//        }
-//
 //        // media/media/AudioManager
 //        [local]
 //        class CAudioManager {
@@ -746,10 +725,389 @@ module
 //
 //            interface IMediaMetadataRetriever;
 //        }
-//
-//    } // namespace media
-//    } // namepsace Droid
-//    } // namespace Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Media {
+
+    class CAmrInputStream {
+        constructor(
+            [in] IInputStream* inputStream);
+
+        interface IAmrInputStream;
+        interface IInputStream;
+        interface ICloseable;
+    }
+
+    class CAsyncPlayer {
+        constructor(
+            [in] String tag);
+
+        interface IAsyncPlayer;
+    }
+
+    class CAudioAttributesBuilder {
+        constructor();
+
+        constructor(
+            [in] IAudioAttributes* aa);
+
+        interface IAudioAttributesBuilder;
+    }
+
+    class CAudioAttributes {
+        constructor();
+
+        interface IAudioAttributes;
+        interface IParcelable;
+    }
+
+    singleton class CAudioAttributesHelper {
+        interface IAudioAttributesHelper;
+    }
+
+    class CAudioDevice {
+        constructor(
+            [in] IAudioDevicePortConfig* config);
+
+        interface IAudioDevice;
+    }
+
+    class CAudioPortConfig {
+        constructor(
+            [in] IAudioPort* port,
+            [in] Int32 samplingRate,
+            [in] Int32 channelMask,
+            [in] Int32 format,
+            [in] IAudioGainConfig* gain);
+
+        interface IAudioPortConfig;
+    }
+
+    class CAudioDevicePortConfig {
+        constructor(
+            [in] IAudioDevicePort* devicePort,
+            [in] Int32 samplingRate,
+            [in] Int32 channelMask,
+            [in] Int32 format,
+            [in] IAudioGainConfig* gain);
+
+        constructor(
+            [in] IAudioDevicePortConfig* config);
+
+        interface IAudioDevicePortConfig;
+    }
+
+    class CAudioMixPortConfig {
+        constructor(
+            [in] IAudioMixPort* mixPort,
+            [in] Int32 samplingRate,
+            [in] Int32 channelMask,
+            [in] Int32 format,
+            [in] IAudioGainConfig* gain);
+
+        interface IAudioMixPortConfig;
+    }
+
+    [deprecated]
+    class CAudioPort {
+        constructor(
+            [in] IAudioHandle* handle,
+            [in] Int32 role,
+            [in] ArrayOf<Int32>* samplingRates,
+            [in] ArrayOf<Int32>* channelMasks,
+            [in] ArrayOf<Int32>* formats,
+            [in] ArrayOf<IAudioGain*>* gains);
+
+        interface IAudioPort;
+    }
+
+    [deprecated]
+    class CAudioDevicePort {
+        constructor(
+            [in] IAudioHandle* handle,
+            [in] ArrayOf<Int32>* samplingRates,
+            [in] ArrayOf<Int32>* channelMasks,
+            [in] ArrayOf<Int32>* formats,
+            [in] ArrayOf<IAudioGain*>* gains,
+            [in] Int32 type,
+            [in] String address);
+
+        interface IAudioDevicePort;
+    }
+
+    [deprecated]
+    class CAudioMixPort {
+        constructor(
+            [in] IAudioHandle* handle,
+            [in] Int32 role,
+            [in] ArrayOf<Int32>* samplingRates,
+            [in] ArrayOf<Int32>* channelMasks,
+            [in] ArrayOf<Int32>* formats,
+            [in] ArrayOf<IAudioGain*>* gains);
+
+        interface IAudioMixPort;
+    }
+
+    class CAudioFormatBuilder {
+        constructor();
+
+        constructor(
+            [in] IAudioFormat* af);
+
+        interface IAudioFormatBuilder;
+    }
+
+    class CAudioFormat {
+        constructor();
+
+        constructor(
+            [in] Int32 ignoredArgument);
+
+        constructor(
+            [in] Int32 encoding,
+            [in] Int32 sampleRate,
+            [in] Int32 channelMask);
+
+        interface IAudioFormat;
+    }
+
+    singleton class CAudioFormatHelper {
+        interface IAudioFormatHelper;
+    }
+
+    class CAudioGain {
+        constructor(
+            [in] Int32 index,
+            [in] Int32 mode,
+            [in] Int32 channelMask,
+            [in] Int32 minValue,
+            [in] Int32 maxValue,
+            [in] Int32 defaultValue,
+            [in] Int32 stepValue,
+            [in] Int32 rampDurationMinMs,
+            [in] Int32 rampDurationMaxMs);
+
+        interface IAudioGain;
+    }
+
+    [deprecated]
+    class CAudioGainConfig {
+        constructor(
+            [in] Int32 index,
+            [in] IAudioGain* gain,
+            [in] Int32 mode,
+            [in] Int32 channelMask,
+            [in] ArrayOf<Int32>* values,
+            [in] Int32 rampDurationMs);
+
+        interface IAudioGainConfig;
+    }
+
+    class CAudioHandle {
+        constructor(
+            [in] Int32 id);
+
+        interface IAudioHandle;
+    }
+
+   class CAudioManagerAudioFocusDispatcher {
+       constructor(
+           [in] IAudioManager* owner);
+
+       interface IIAudioFocusDispatcher;
+       interface IBinder;
+   }
+
+    class CAudioManager {
+        constructor(
+            [in] IContext* context);
+
+        interface IAudioManager;
+    }
+
+    [deprecated]
+    class CAudioPatch {
+        constructor(
+            [in] IAudioHandle* patchHandle,
+            [in] ArrayOf<IAudioPortConfig*>* sources,
+            [in] ArrayOf<IAudioPortConfig*>* sinks);
+
+        interface IAudioPatch;
+    }
+
+    class CAudioRecord {
+        constructor(
+            [in] Int32 audioSource,
+            [in] Int32 sampleRateInHz,
+            [in] Int32 channelConfig,
+            [in] Int32 audioFormat,
+            [in] Int32 bufferSizeInBytes);
+
+        constructor(
+            [in] IAudioAttributes* attributes,
+            [in] IAudioFormat* format,
+            [in] Int32 bufferSizeInBytes,
+            [in] Int32 sessionId);
+
+        interface IAudioRecord;
+    }
+
+    class CAudioRoutesInfo {
+        constructor();
+
+        constructor(
+            [in] IAudioRoutesInfo* o);
+
+        interface IAudioRoutesInfo;
+    }
+
+    singleton class CAudioSystem {
+        interface IAudioSystem;
+    }
+
+    class CAudioTimestamp {
+        constructor();
+
+        interface IAudioTimestamp;
+    }
+
+    class CAudioTrack {
+        constructor(
+            [in] Int32 streamType,
+            [in] Int32 sampleRateInHz,
+            [in] Int32 channelConfig,
+            [in] Int32 audioFormat,
+            [in] Int32 bufferSizeInBytes,
+            [in] Int32 mode);
+
+        constructor(
+            [in] Int32 streamType,
+            [in] Int32 sampleRateInHz,
+            [in] Int32 channelConfig,
+            [in] Int32 audioFormat,
+            [in] Int32 bufferSizeInBytes,
+            [in] Int32 mode,
+            [in] Int32 sessionId);
+
+        constructor(
+            [in] IAudioAttributes* attributes,
+            [in] IAudioFormat* format,
+            [in] Int32 bufferSizeInBytes,
+            [in] Int32 mode,
+            [in] Int32 sessionId);
+
+        interface IAudioTrack;
+    }
+
+    singleton class CAudioTrackHelper {
+        interface IAudioTrackHelper;
+    }
+
+    class CCamcorderProfile {
+        constructor(
+            [in] Int32 duration,
+            [in] Int32 quality,
+            [in] Int32 fileFormat,
+            [in] Int32 videoCodec,
+            [in] Int32 videoBitRate,
+            [in] Int32 videoFrameRate,
+            [in] Int32 videoWidth,
+            [in] Int32 videoHeight,
+            [in] Int32 audioCodec,
+            [in] Int32 audioBitRate,
+            [in] Int32 audioSampleRate,
+            [in] Int32 audioChannels);
+
+        interface ICamcorderProfile;
+    }
+
+    singleton class CCamcorderProfileHelper {
+        interface ICamcorderProfileHelper;
+    }
+
+    singleton class CCameraProfile {
+        interface ICameraProfile;
+    }
+
+    class CClosedCaptionRenderer {
+        constructor(
+            [in] IContext* context);
+
+        interface IClosedCaptionRenderer;
+        interface ISubtitleControllerRenderer;
+    }
+
+    singleton class CDecoderCapabilities {
+        interface IDecoderCapabilities;
+    }
+
+    singleton class CEncoderCapabilities {
+        interface IEncoderCapabilities;
+    }
+
+    class CExifInterface {
+        constructor(
+            [in] String filename);
+
+        interface IExifInterface;
+    }
+
+    class CFace {
+        constructor();
+
+        interface IFace;
+    }
+
+    class CFaceDetector {
+        constructor(
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] Int32 maxFaces);
+
+        interface IFaceDetector;
+    }
+
+    class CImageReader {
+        constructor(
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] Int32 format,
+            [in] Int32 maxImages);
+
+        interface IImageReader;
+// TODO: Need IAutoCloseable
+//        interface IAutoCloseable;
+    }
+
+    class CJetPlayer {
+        constructor();
+
+        interface IJetPlayer;
+    }
+
+    singleton class CJetPlayerHelper {
+        interface IJetPlayerHelper;
+    }
+
+    class CMediaActionSound {
+        constructor();
+
+        interface IMediaActionSound;
+    }
+
+
+
+    class CMediaRouterSimpleCallback {
+        constructor();
+
+        interface IMediaRouterSimpleCallback;
+        interface IMediaRouterCallback;
+    }
+
+    } // namespace media
+    } // namepsace Droid
+    } // namespace Elastos
 
     namespace Elastos {
     namespace Droid {
@@ -758,11 +1116,11 @@ module
 
     class CAudioEffectDescriptor {
         constructor(
-        [in] String type,
-        [in] String uuid,
-        [in] String connectMode,
-        [in] String name,
-        [in] String implementor);
+            [in] String type,
+            [in] String uuid,
+            [in] String connectMode,
+            [in] String name,
+            [in] String implementor);
 
         interface IAudioEffectDescriptor;
     }

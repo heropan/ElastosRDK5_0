@@ -1,6 +1,39 @@
 
 #include "elastos/droid/widget/SpellChecker.h"
 
+#include "elastos/droid/text/method/CWordIterator.h"
+#include "elastos/droid/text/Selection.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/widget/TextView.h"
+#include "elastos/droid/internal/utility/ArrayUtils.h"
+#include "elastos/droid/internal/utility/GrowingArrayUtils.h"
+#include "elastos/droid/text/style/CSpellCheckSpan.h"
+#include "elastos/droid/text/style/CSuggestionSpan.h"
+#include "elastos/droid/view/textservice/CTextInfo.h"
+
+#include <elastos/core/Math.h>
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Internal::Utility::ArrayUtils;
+using Elastos::Droid::Internal::Utility::GrowingArrayUtils;
+using Elastos::Droid::Text::ISpannable;
+using Elastos::Droid::Text::Selection;
+using Elastos::Droid::Text::ISelectionPositionIterator;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Text::Method::CWordIterator;
+using Elastos::Droid::Text::Style::CSpellCheckSpan;
+using Elastos::Droid::Text::Style::CSuggestionSpan;
+using Elastos::Droid::Text::Style::EIID_ISpellCheckSpan;
+using Elastos::Droid::Text::Style::EIID_ISuggestionSpan;
+using Elastos::Droid::Text::ISpannableStringBuilder;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::TextService::ISpellCheckerSubtype;
+using Elastos::Droid::View::TextService::EIID_ISpellCheckerSessionListener;
+using Elastos::Droid::View::TextService::CTextInfo;
+using Elastos::Droid::View::TextService::ITextInfo;
+
+using Elastos::Core::ICharSequence;
+
 namespace Elastos {
 namespace Droid {
 namespace Widget {
@@ -15,121 +48,34 @@ const Int32 SpellChecker::MIN_SENTENCE_LENGTH;
 const Int32 SpellChecker::USE_SPAN_RANGE;
 const Int32 SpellChecker::SUGGESTION_SPAN_CACHE_SIZE;
 
-SpellChecker::SpellChecker ()
-    : mSpanSequenceCounter(0)
-{
-    mSpellParsers = ArrayOf<SpellParser>::Alloc(0);
-}
+CAR_INTERFACE_IMPL(SpellChecker::MySpellCheckerSessionListener, Object, ISpellCheckerSessionListener)
 
-SpellChecker::SpellChecker (
-    /* [in] */ ITextView* textView)
-    : mSpanSequenceCounter(0)
-{
-    /*mSpellParsers = ArrayOf<SpellParser>::Alloc(0);
-    mTextView = textView;
-    Int32 size = ArrayUtils::IdealObjectArraySize(1);
-    mIds = ArrayOf<Int32>::Alloc(size);
-    mSpellCheckSpans = ArrayOf<ISpellCheckSpan>::Alloc(size);
-    AutoPtr<ILocale> locale;
-    mTextView->GetTextServicesLocale((ILocale**)&locale);
-    SetLocale(locale);*/
-    //mCookie = GetHashCode();
-}
+SpellChecker::MySpellCheckerSessionListener::MySpellCheckerSessionListener(
+    /* [in] */ SpellChecker* host)
+    : mHost(host)
+{}
 
-void SpellChecker::CloseSession()
-{
-    /*if (mSpellCheckerSession) {
-        mSpellCheckerSession->OnClose();
-    }
-    Int32 length = mSpellParsers->GetLength();
-    for (Int32 i = 0; i < length; i++) {
-        mSpellParsers[i]->Stop();
-    }
-    if (mSpellRunnable) {
-        mTextView->RemoveCallbacks(mSpellRunnable);
-    }*/
-}
-
-void SpellChecker::OnSpellCheckSpanRemoved(
-    /* [in] */ ISpellCheckSpan* spellCheckSpan)
-{
-    /*for (Int32 i = 0; i < mLength; i++) {
-        if ((*mSpellCheckSpans)[i] == spellCheckSpan) {
-            (*mIds)[i] = -1;
-            return;
-        }
-    }*/
-}
-
-void SpellChecker::OnSelectionChanged()
-{
-    //SpellCheck();
-}
-
-void SpellChecker::SpellCheck(
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 end)
-{
-    /*AutoPtr<ILocale> locale;
-    mTextView->GetTextServicesLocale((ILocale**)&locale);
-    Boolean isSessionActive = IsSessionActive();
-    Boolean equals = FALSE;
-    mCurrentLocale->Equals(locale, &equals);
-    if (!mCurrentLocale || !equals) {
-        SetLocale(locale);
-        start = 0;
-        AutoPtr<ICharSequence> csq;
-        mTextView->GetText((ICharSequence**)&csq);
-        csq->GetLength(&end);
-    } else {
-        Boolean spellCheckerActivated = FALSE;
-        mTextServicesManager->IsSpellCheckerEnabled(&spellCheckerActivated);
-        if (isSessionActive != spellCheckerActivated) {
-            ResetSession();
-        }
-    }
-
-    if (!isSessionActive) return;
-
-    Int32 length = mSpellParsers->GetLength();
-    for (Int32 i = 0; i < length; i++) {
-        AutoPtr<SpellParser> spellParser = (*mSpellParsers)[i];
-        if (spellParser->IsFinished()) {
-            spellParser->Parse(start, end);
-            return;
-        }
-    }
-
-    AutoPtr< ArrayOf<SpellParser> > newSpellParsers = ArrayOf<SpellParser>::Alloc(length + 1);
-    mSpellParsers->Copy(0, newSpellParsers, 0, length);
-    mSpellParsers = newSpellParsers;
-
-    AutoPtr<SpellParser> spellParser = new SpellParser();
-    (*mSpellParsers)[length] = spellParser;
-    spellParser->Parse(start, end);*/
-}
-
-void SpellChecker::OnGetSuggestions(
+ECode SpellChecker::MySpellCheckerSessionListener::OnGetSuggestions(
     /* [in] */ ArrayOf<ISuggestionsInfo*>* results)
 {
-    /*AutoPtr<ICharSequence> csq;
-    mTextView->GetText((ICharSequence**)&csq);
+    AutoPtr<ICharSequence> csq;
+    mHost->mTextView->GetText((ICharSequence**)&csq);
     AutoPtr<IEditable> editable = IEditable::Probe(csq);
     for (Int32 i = 0; i < results->GetLength(); ++i) {
-        AutoPtr<ISpellCheckSpan> spellCheckSpan = OnGetSuggestionsInternal((*results)[i], USE_SPAN_RANGE, USE_SPAN_RANGE);
+        AutoPtr<ISpellCheckSpan> spellCheckSpan = mHost->OnGetSuggestionsInternal((*results)[i], USE_SPAN_RANGE, USE_SPAN_RANGE);
         if (spellCheckSpan) {
-            AutoPtr<IInterface> interface = spellCheckSpan->Probe(EIID_IInterface);
-            editable->RemoveSpan(interface);
+            ISpannable::Probe(editable)->RemoveSpan(spellCheckSpan);
         }
     }
-    ScheduleNewSpellCheck();*/
+    mHost->ScheduleNewSpellCheck();
+    return NOERROR;
 }
 
-void SpellChecker::onGetSentenceSuggestions(
+ECode SpellChecker::MySpellCheckerSessionListener::OnGetSentenceSuggestions(
     /* [in] */ ArrayOf<ISentenceSuggestionsInfo*>* results)
 {
-    /*AutoPtr<ICharSequence> csq;
-    mTextView->GetText((ICharSequence**)&csq);
+    AutoPtr<ICharSequence> csq;
+    mHost->mTextView->GetText((ICharSequence**)&csq);
     AutoPtr<IEditable> editable = IEditable::Probe(csq);
 
     for (Int32 i = 0; i < results->GetLength(); ++i) {
@@ -150,85 +96,185 @@ void SpellChecker::onGetSentenceSuggestions(
             Int32 offset = 0, length = 0;
             ssi->GetOffsetAt(j, &offset);
             ssi->GetLengthAt(j, &length);
-            AutoPtr<ISpellCheckSpan> scs = OnGetSuggestionsInternal(suggestionsInfo, offset, length);
+            AutoPtr<ISpellCheckSpan> scs = mHost->OnGetSuggestionsInternal(suggestionsInfo, offset, length);
 
             if (!spellCheckSpan && scs) {
                 spellCheckSpan = scs;
             }
         }
         if (spellCheckSpan) {
-            AutoPtr<IInterface> interface = spellCheckSpan->Probe(EIID_IInterface);
-            editable->RemoveSpan(interface);
+            ISpannable::Probe(editable)->RemoveSpan(spellCheckSpan);
         }
     }
-    ScheduleNewSpellCheck();*/
+    mHost->ScheduleNewSpellCheck();
+    return NOERROR;
+}
+
+CAR_INTERFACE_IMPL(SpellChecker, Object, ISpellChecker)
+
+SpellChecker::SpellChecker ()
+    : mIsSentenceSpellCheckSupported(FALSE)
+    , mCookie(0)
+    , mLength(0)
+    , mSpanSequenceCounter(0)
+    , mSuggestionSpanCache(SUGGESTION_SPAN_CACHE_SIZE)
+{
+    mSpellParsers = ArrayOf<SpellParser*>::Alloc(0);
+}
+
+ECode SpellChecker::constructor (
+    /* [in] */ ITextView* textView)
+{
+    mTextView = textView;
+    Int32 size = 1;
+    mIds = ArrayUtils::NewUnpaddedInt32Array(size);
+    mSpellCheckSpans = ArrayOf<ISpellCheckSpan*>::Alloc(mIds->GetLength());
+    AutoPtr<ILocale> locale;
+    mTextView->GetTextServicesLocale((ILocale**)&locale);
+    SetLocale(locale);
+    GetHashCode(&mCookie);
+    return NOERROR;
+}
+
+ECode SpellChecker::CloseSession()
+{
+    if (mSpellCheckerSession != NULL) {
+        mSpellCheckerSession->Close();
+    }
+    Int32 length = mSpellParsers->GetLength();
+    for (Int32 i = 0; i < length; i++) {
+        (*mSpellParsers)[i]->Stop();
+    }
+    if (mSpellRunnable) {
+        Boolean result;
+        IView::Probe(mTextView)->RemoveCallbacks(mSpellRunnable, &result);
+    }
+    return NOERROR;
+}
+
+ECode SpellChecker::OnSpellCheckSpanRemoved(
+    /* [in] */ ISpellCheckSpan* spellCheckSpan)
+{
+    for (Int32 i = 0; i < mLength; i++) {
+        if ((*mSpellCheckSpans)[i] == spellCheckSpan) {
+            (*mIds)[i] = -1;
+            return NOERROR;
+        }
+    }
+    return NOERROR;
+}
+
+ECode SpellChecker::OnSelectionChanged()
+{
+    SpellCheck();
+    return NOERROR;
+}
+
+ECode SpellChecker::SpellCheck(
+    /* [in] */ Int32 start,
+    /* [in] */ Int32 end)
+{
+    AutoPtr<ILocale> locale;
+    mTextView->GetTextServicesLocale((ILocale**)&locale);
+    Boolean isSessionActive = IsSessionActive();
+    Boolean equals = FALSE;
+    mCurrentLocale->Equals(locale, &equals);
+    if (!mCurrentLocale || !equals) {
+        SetLocale(locale);
+        start = 0;
+        AutoPtr<ICharSequence> csq;
+        mTextView->GetText((ICharSequence**)&csq);
+        csq->GetLength(&end);
+    } else {
+        Boolean spellCheckerActivated = FALSE;
+        mTextServicesManager->IsSpellCheckerEnabled(&spellCheckerActivated);
+        if (isSessionActive != spellCheckerActivated) {
+            ResetSession();
+        }
+    }
+
+    if (!isSessionActive) return NOERROR;
+
+    Int32 length = mSpellParsers->GetLength();
+    for (Int32 i = 0; i < length; i++) {
+        AutoPtr<SpellParser> spellParser = (*mSpellParsers)[i];
+        if (spellParser->IsFinished()) {
+            spellParser->Parse(start, end);
+            return NOERROR;
+        }
+    }
+
+    AutoPtr< ArrayOf<SpellParser*> > newSpellParsers = ArrayOf<SpellParser*>::Alloc(length + 1);
+    newSpellParsers->Copy(0, mSpellParsers, 0, length);
+    mSpellParsers = newSpellParsers;
+
+    AutoPtr<SpellParser> spellParser = new SpellParser(this);
+    mSpellParsers->Set(length, spellParser);
+    spellParser->Parse(start, end);
+    return NOERROR;
 }
 
 void SpellChecker::ResetSession()
 {
-    /*CloseSession();
+    CloseSession();
     AutoPtr<IContext> context;
-    mTextView->GetContext((IContext**)&context);
-    AutoPtr<IInterface> interface;
-    context->GetSystemService(IContext::TEXT_SERVICES_MANAGER_SERVICE, (IInterface**)&interface);
-    mTextServicesManager = ITextServicesManager::Probe(interface);
+    IView::Probe(mTextView)->GetContext((IContext**)&context);
+    AutoPtr<IInterface> tmp;
+    context->GetSystemService(IContext::TEXT_SERVICES_MANAGER_SERVICE, (IInterface**)&tmp);
+    mTextServicesManager = ITextServicesManager::Probe(tmp);
 
     Boolean enabled = FALSE;
     mTextServicesManager->IsSpellCheckerEnabled(&enabled);
     AutoPtr<ISpellCheckerSubtype> type;
-    mTextServicesManager->GetCurrentSpellCheckerSubtype(true, (ISpellCheckerSubtype**)&type);
+    mTextServicesManager->GetCurrentSpellCheckerSubtype(TRUE, (ISpellCheckerSubtype**)&type);
     if (!enabled || !type) {
         mSpellCheckerSession = NULL;
     } else {
+        AutoPtr<ISpellCheckerSessionListener> l = new MySpellCheckerSessionListener(this);
         mTextServicesManager->NewSpellCheckerSession(NULL, mCurrentLocale,
-            (ISpellCheckerSessionListener*)this->Probe(EIID_ISpellCheckerSessionListener), FALSE, (ISpellCheckerSession**)&mSpellCheckerSession);
+            l, FALSE, (ISpellCheckerSession**)&mSpellCheckerSession);
         mIsSentenceSpellCheckSupported = TRUE;
     }
 
     for (Int32 i = 0; i < mLength; i++) {
-        mIds[i] = -1;
+        (*mIds)[i] = -1;
     }
     mLength = 0;
     AutoPtr<ICharSequence> csq;
     mTextView->GetText((ICharSequence**)&csq);
     AutoPtr<IEditable> editable = IEditable::Probe(csq);
-    mTextView->RemoveMisspelledSpans(editable);*/
-    //mSuggestionSpanCache.evictAll();
+    ((TextView*)mTextView.Get())->RemoveMisspelledSpans(ISpannable::Probe(editable));
+    mSuggestionSpanCache.EvictAll();
 }
 
 void SpellChecker::SetLocale(
     /* [in] */ ILocale* locale)
 {
-    /*mCurrentLocale = locale;
+    mCurrentLocale = locale;
     ResetSession();
 
     CWordIterator::New(locale, (IWordIterator**)&mWordIterator);
-    mTextView->OnLocaleChanged();*/
+    mTextView->OnLocaleChanged();
 }
 
 Boolean SpellChecker::IsSessionActive()
 {
-    //return mSpellCheckerSession != NULL;
+    return mSpellCheckerSession != NULL;
 }
 
 Int32 SpellChecker::NextSpellCheckSpanIndex()
 {
-    /*for (Int32 i = 0; i < mLength; i++) {
+    for (Int32 i = 0; i < mLength; i++) {
         if ((*mIds)[i] < 0) return i;
     }
 
-    if (mLength == mSpellCheckSpans->GetLength()) {
-        Int32 newSize = mLength * 2;
-        AutoPtr<ArrayOf<Int32> > newIds = ArrayOf<Int32>::Alloc(newSize);
-        AutoPtr< ArrayOf<ISpellCheckSpan> > newSpellCheckSpans = ArrayOf<ISpellCheckSpan>::Alloc(newSize);
-        mIds->Copy(0, newIds, 0, mLength);
-        mSpellCheckSpans->Copy(0, newSpellCheckSpans, 0, mLength);
-        mIds = newIds;
-        mSpellCheckSpans = newSpellCheckSpans;
-    }
-    CSpellCheckSpan::New((ISpellCheckSpan**)&((*mSpellCheckSpans)[mLength]));
+    mIds = GrowingArrayUtils::Append(mIds, mLength, 0);
+    AutoPtr<ISpellCheckSpan> tmp;
+    CSpellCheckSpan::New((ISpellCheckSpan**)&tmp);
+    mSpellCheckSpans = GrowingArrayUtils::Append(
+            mSpellCheckSpans, mLength, tmp.Get());
     mLength++;
-    return mLength - 1;*/
+    return mLength - 1;
 
 }
 
@@ -237,24 +283,23 @@ void SpellChecker::AddSpellCheckSpan(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    /*Int32 index = NextSpellCheckSpanIndex();
+    Int32 index = NextSpellCheckSpanIndex();
     AutoPtr<ISpellCheckSpan> spellCheckSpan = (*mSpellCheckSpans)[index];
-    AutoPtr<IInterface> interface = spellCheckSpan->Probe(EIID_IInterface);
-    editable->SetSpan(interface, start, end, ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
+    ISpannable::Probe(editable)->SetSpan(spellCheckSpan, start, end, ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
     spellCheckSpan->SetSpellCheckInProgress(FALSE);
-    (*mIds)[index] = mSpanSequenceCounter++;*/
+    (*mIds)[index] = mSpanSequenceCounter++;
 }
 
 void SpellChecker::SpellCheck()
 {
-    /*if (!mSpellCheckerSession) return;
+    if (!mSpellCheckerSession) return;
     AutoPtr<ICharSequence> csq;
     mTextView->GetText((ICharSequence**)&csq);
     AutoPtr<IEditable> editable = IEditable::Probe(csq);
-    Int32 selectionStart = Selection::GetSelectionStart(editable);
-    Int32 selectionEnd = Selection::GetSelectionEnd(editable);
+    Int32 selectionStart = Selection::GetSelectionStart(ICharSequence::Probe(editable));
+    Int32 selectionEnd = Selection::GetSelectionEnd(ICharSequence::Probe(editable));
 
-    AutoPtr< ArrayOf<ITextInfo> > textInfos = ArrayOf<ITextInfo>::Alloc(mLength);
+    AutoPtr< ArrayOf<ITextInfo*> > textInfos = ArrayOf<ITextInfo*>::Alloc(mLength);
     Int32 textInfosCount = 0;
 
     for (Int32 i = 0; i < mLength; i++) {
@@ -263,10 +308,9 @@ void SpellChecker::SpellCheck()
         spellCheckSpan->IsSpellCheckInProgress(&res);
         if ((*mIds)[i] < 0 || res) continue;
 
-        AutoPtr<IInterface> interface = spellCheckSpan->Probe(EIID_IInterface);
         Int32 start = 0, end = 0;
-        editable->GetSpanStart(interface, &start);
-        editable->GetSpanEnd(interface, &end);
+        ISpanned::Probe(editable)->GetSpanStart(spellCheckSpan, &start);
+        ISpanned::Probe(editable)->GetSpanEnd(spellCheckSpan, &end);
         Boolean isEditing = FALSE;
         if (mIsSentenceSpellCheckSupported) {
             isEditing = selectionEnd <= start || selectionStart > end;
@@ -278,22 +322,24 @@ void SpellChecker::SpellCheck()
             String word = String(NULL);
             if (ISpannableStringBuilder::Probe(editable)) {
                 AutoPtr<ISpannableStringBuilder> sb = ISpannableStringBuilder::Probe(editable);
-                sb->SubString(start, end, &word);
+                sb->Substring(start, end, &word);
             } else {
                 AutoPtr<ICharSequence> chars;
-                editable->SubSequence(start, end, (ICharSequence**)&chars);
+                ICharSequence::Probe(editable)->SubSequence(start, end, (ICharSequence**)&chars);
                 chars->ToString(&word);
             }
 
             spellCheckSpan->SetSpellCheckInProgress(TRUE);
-            CTextInfo::New(word, mCookie, (*mIds)[i], (ITextInfo**)&((*textInfos)[textInfosCount++]));
+            AutoPtr<ITextInfo> info;
+            CTextInfo::New(word, mCookie, (*mIds)[i], (ITextInfo**)&info);
+            textInfos->Set(textInfosCount++, info);
         }
     }
 
     if (textInfosCount > 0) {
         if (textInfosCount < textInfos->GetLength()) {
-            AutoPtr< ArrayOf<ITextInfo> > textInfosCopy = ArrayOf<ITextInfo>::Alloc(textInfosCount);
-            textInfos->Copy(0, textInfosCopy, 0, textInfosCount);
+            AutoPtr< ArrayOf<ITextInfo*> > textInfosCopy = ArrayOf<ITextInfo*>::Alloc(textInfosCount);
+            textInfosCopy->Copy(0, textInfos, 0, textInfosCount);
             textInfos = textInfosCopy;
         }
 
@@ -302,7 +348,7 @@ void SpellChecker::SpellCheck()
         } else {
             mSpellCheckerSession->GetSuggestions(textInfos, ISuggestionSpan::SUGGESTIONS_MAX_SIZE, FALSE);
         }
-    }*/
+    }
 }
 
 AutoPtr<ISpellCheckSpan> SpellChecker::OnGetSuggestionsInternal(
@@ -310,7 +356,7 @@ AutoPtr<ISpellCheckSpan> SpellChecker::OnGetSuggestionsInternal(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)
 {
-    /*Int32 cookie = 0;
+    Int32 cookie = 0;
     suggestionsInfo->GetCookie(&cookie);
     if (!suggestionsInfo || cookie != mCookie) {
         return NULL;
@@ -334,9 +380,8 @@ AutoPtr<ISpellCheckSpan> SpellChecker::OnGetSuggestionsInternal(
             } else {
                 if (mIsSentenceSpellCheckSupported) {
                     Int32 spellCheckSpanStart = 0, spellCheckSpanEnd = 0, start = 0, end = 0;
-                    AutoPtr<IInterface> interface = spellCheckSpan->Probe(EIID_IInterface);
-                    editable->GetSpanStart(interface, &spellCheckSpanStart);
-                    editable->GetSpanEnd(interface, &spellCheckSpanEnd);
+                    ISpanned::Probe(editable)->GetSpanStart(spellCheckSpan, &spellCheckSpanStart);
+                    ISpanned::Probe(editable)->GetSpanEnd(spellCheckSpan, &spellCheckSpanEnd);
 
                     if (offset != USE_SPAN_RANGE && length != USE_SPAN_RANGE) {
                         start = spellCheckSpanStart + offset;
@@ -348,31 +393,30 @@ AutoPtr<ISpellCheckSpan> SpellChecker::OnGetSuggestionsInternal(
 
                     if (spellCheckSpanStart >= 0 && spellCheckSpanEnd > spellCheckSpanStart && end > start) {
                         Int64 key = TextUtils::PackRangeInInt64(start, end);
-                        AutoPtr<ISuggestionSpan> tempSuggestionSpan ;//= mSuggestionSpanCache.get(key);
+                        AutoPtr<ISuggestionSpan> tempSuggestionSpan = mSuggestionSpanCache.Get(key);
 
                         if (tempSuggestionSpan) {
-                            AutoPtr<IInterface> i = tempSuggestionSpan->Probe(EIID_IInterface);
-                            editable->RemoveSpan(i);
-                            //mSuggestionSpanCache.remove(key);
+                            ISpannable::Probe(editable)->RemoveSpan(tempSuggestionSpan);
+                            mSuggestionSpanCache.Remove(key);
                         }
                     }
                 }
             }
             return spellCheckSpan;
         }
-    }*/
+    }
     return NULL;
 }
 
 void SpellChecker::ScheduleNewSpellCheck()
 {
-    /*if (!mSpellRunnable) {
-        mSpellRunnable = new SpellCheckerRunnable();
-    } else {
-        mTextView->RemoveCallbacks(mSpellRunnable);
-    }
     Boolean res = FALSE;
-    mTextView->PostDelayed(mSpellRunnable, SPELL_PAUSE_DURATION, &res);*/
+    if (!mSpellRunnable) {
+        mSpellRunnable = new SpellCheckerRunnable(this);
+    } else {
+        IView::Probe(mTextView)->RemoveCallbacks(mSpellRunnable, &res);
+    }
+    IView::Probe(mTextView)->PostDelayed(mSpellRunnable, SPELL_PAUSE_DURATION, &res);
 }
 
 void SpellChecker::CreateMisspelledSuggestionSpan(
@@ -382,10 +426,9 @@ void SpellChecker::CreateMisspelledSuggestionSpan(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)
 {
-    /*AutoPtr<IInterface> interface = spellCheckSpan->Probe(EIID_IInterface);
     Int32 spellCheckSpanStart = 0, spellCheckSpanEnd = 0;
-    editable->GetSpanStart(interface, &spellCheckSpanStart);
-    editable->GetSpanEnd(interface, &spellCheckSpanEnd);
+    ISpanned::Probe(editable)->GetSpanEnd(spellCheckSpan, &spellCheckSpanStart);
+    ISpanned::Probe(editable)->GetSpanEnd(spellCheckSpan, &spellCheckSpanEnd);
 
     if (spellCheckSpanStart < 0 || spellCheckSpanEnd <= spellCheckSpanStart) return;
 
@@ -407,27 +450,24 @@ void SpellChecker::CreateMisspelledSuggestionSpan(
             suggestionsInfo->GetSuggestionAt(i, &((*suggestions)[i]));
         }
     } else {
-        assert(0 && "TODO");
-        //suggestions = ArrayUtils.emptyArray(String.class);
+        suggestions = ArrayOf<String>::Alloc(0);
     }
 
     AutoPtr<IContext> context;
-    mTextView->GetContext((IContext**)&context);
+    IView::Probe(mTextView)->GetContext((IContext**)&context);
     AutoPtr<ISuggestionSpan> suggestionSpan;
     CSuggestionSpan::New(context, suggestions, ISuggestionSpan::FLAG_EASY_CORRECT | ISuggestionSpan::FLAG_MISSPELLED, (ISuggestionSpan**)&suggestionSpan);
 
     if (mIsSentenceSpellCheckSupported) {
-        Int64 key == TextUtils::PackRangeInInt64(start, end);
-        AutoPtr<ISuggestionSpan> tempSuggestionSpan;// = mSuggestionSpanCache.get(key);
+        Int64 key = TextUtils::PackRangeInInt64(start, end);
+        AutoPtr<ISuggestionSpan> tempSuggestionSpan = mSuggestionSpanCache.Get(key);
         if (tempSuggestionSpan) {
-            AutoPtr<IInterface> i = tempSuggestionSpan->Probe(EIID_IInterface);
-            editable->RemoveSpan(i);
+            ISpannable::Probe(editable)->RemoveSpan(tempSuggestionSpan);
         }
         //mSuggestionSpanCache.put(key, suggestionSpan);
     }
-    AutoPtr<IInterface> in = suggestionSpan->Probe(EIID_IInterface);
-    editable->SetSpan(in, start, end, ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
-    mTextView->InvalidateRegion(start, end, FALSE);*/
+    ISpannable::Probe(editable)->SetSpan(suggestionSpan, start, end, ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
+    mTextView->InvalidateRegion(start, end, FALSE);
 }
 
 //=====================================================================
@@ -436,20 +476,20 @@ void SpellChecker::CreateMisspelledSuggestionSpan(
 SpellChecker::SpellCheckerRunnable::SpellCheckerRunnable(
     /* [in] */ SpellChecker* host)
     : mHost(host)
-{
-
-}
+{}
 
 ECode SpellChecker::SpellCheckerRunnable::Run()
 {
-    /*Int32 length = mHost->mSpellParsers->GetLength();
+    AutoPtr<ArrayOf<SpellParser*> > parsers = mHost->mSpellParsers;
+    Int32 length = parsers->GetLength();
     for (Int32 i = 0; i < length; i++) {
-        AutoPtr<SpellParser> spellParser = (*mSpellParsers)[i];
+        AutoPtr<SpellParser> spellParser = (*parsers)[i];
         if (!spellParser->IsFinished()) {
             spellParser->Parse();
-            break;
+            break; // run one spell parser at a time to bound running time
         }
-    }*/
+    }
+    return NOERROR;
 }
 
 
@@ -460,14 +500,14 @@ SpellChecker::SpellParser::SpellParser(
     /* [in] */ SpellChecker* host)
     : mHost(host)
 {
-    //mRange = new Object();
+    mRange = new Object();
 }
 
 void SpellChecker::SpellParser::Parse(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    /*Int32 max = 0;
+    Int32 max = 0;
     mHost->mTextView->GetLength(&max);
     Int32 parseEnd = 0;
     if (end > max) {
@@ -478,54 +518,51 @@ void SpellChecker::SpellParser::Parse(
 
     if (parseEnd > start) {
         AutoPtr<ICharSequence> csq;
-        mHost->GetText((ICharSequence**)&csq);
+        mHost->mTextView->GetText((ICharSequence**)&csq);
         SetRangeSpan(IEditable::Probe(csq), start, parseEnd);
         Parse();
-    }*/
+    }
 }
 
 Boolean SpellChecker::SpellParser::IsFinished()
 {
-    /*AutoPtr<ICharSequence> csq;
-    mHost->GetText((ICharSequence**)&csq);
+    AutoPtr<ICharSequence> csq;
+    mHost->mTextView->GetText((ICharSequence**)&csq);
     AutoPtr<IEditable> editable = IEditable::Probe(csq);
     Int32 start = 0;
-    editable->GetSpanStart(mRange, &start);
-    return start < 0;*/
+    ISpanned::Probe(editable)->GetSpanStart(mRange, &start);
+    return start < 0;
 }
 
 void SpellChecker::SpellParser::Stop()
 {
-    /*AutoPtr<ICharSequence> csq;
-    mHost->GetText((ICharSequence**)&csq);
-    RemoveRangeSpan(IEditable::Probe(csq));*/
+    AutoPtr<ICharSequence> csq;
+    mHost->mTextView->GetText((ICharSequence**)&csq);
+    RemoveRangeSpan(IEditable::Probe(csq));
 }
 
 void SpellChecker::SpellParser::Parse()
 {
-    /*AutoPtr<ICharSequence> csq;
-    mHost->GetText((ICharSequence**)&csq);
+    AutoPtr<ICharSequence> csq;
+    mHost->mTextView->GetText((ICharSequence**)&csq);
     AutoPtr<IEditable> editable = IEditable::Probe(csq);
     Int32 start = 0;
+    ISpanned::Probe(editable)->GetSpanStart(mRange, &start);
     if (mHost->mIsSentenceSpellCheckSupported) {
-        Int32 span = 0;
-        editable->GetSpanStart(mRange, &span);
-        start = Elastos::Core::Math::Max(0, span - mHost->MIN_SENTENCE_LENGTH);
-    } else {
-        start = span;
+        start = Elastos::Core::Math::Max(0, start - mHost->MIN_SENTENCE_LENGTH);
     }
 
     Int32 end = 0;
-    editable->GetSpanEnd(mRange, &end);
+    ISpanned::Probe(editable)->GetSpanEnd(mRange, &end);
 
     Int32 wordIteratorWindowEnd = Elastos::Core::Math::Min(end, start + mHost->WORD_ITERATOR_INTERVAL);
-    mHost->mWordIterator->SetCharSequence(editable, start, wordIteratorWindowEnd);
+    mHost->mWordIterator->SetCharSequence(ICharSequence::Probe(editable), start, wordIteratorWindowEnd);
 
     Int32 wordStart = 0, wordEnd = 0;
-    mHost->mWordIterator->Preceding(start, &wordStart);
+    ISelectionPositionIterator::Probe(mHost->mWordIterator)->Preceding(start, &wordStart);
 
     if (wordStart == IBreakIterator::DONE) {
-        mHost->mWordIterator->Following(start, &wordEnd);
+        ISelectionPositionIterator::Probe(mHost->mWordIterator)->Following(start, &wordEnd);
         if (wordEnd != IBreakIterator::DONE) {
             mHost->mWordIterator->GetBeginning(wordEnd, &wordStart);
         }
@@ -538,10 +575,10 @@ void SpellChecker::SpellParser::Parse()
         return;
     }
 
-    AutoPtr< ArrayOf<ISpellCheckSpan> > spellCheckSpans;
-    Editable->GetSpans(start - 1, end + 1, EIID_SpellCheckSpan, (ArrayOf<ISpellCheckSpan>**)&spellCheckSpan);
-    AutoPtr< ArrayOf<ISuggestionSpan> > suggestionSpans;
-    Editable->GetSpans(start - 1, end + 1, EIID_SuggestionSpan, (ArrayOf<ISpellCheckSpan>**)&suggestionSpans);
+    AutoPtr< ArrayOf<ISpellCheckSpan*> > spellCheckSpans;
+    ISpanned::Probe(editable)->GetSpans(start - 1, end + 1, EIID_ISpellCheckSpan, (ArrayOf<IInterface*>**)&spellCheckSpans);
+    AutoPtr< ArrayOf<ISuggestionSpan*> > suggestionSpans;
+    ISpanned::Probe(editable)->GetSpans(start - 1, end + 1, EIID_ISuggestionSpan, (ArrayOf<IInterface*>**)&suggestionSpans);
 
     Int32 wordCount = 0;
     Boolean scheduleOtherSpellCheck = FALSE;
@@ -551,10 +588,10 @@ void SpellChecker::SpellParser::Parse()
             scheduleOtherSpellCheck = TRUE;
         }
         Int32 spellCheckEnd = 0;
-        mHost->mWordIterator->Preceding(wordIteratorWindowEnd, &spellCheckEnd);
+        ISelectionPositionIterator::Probe(mHost->mWordIterator)->Preceding(wordIteratorWindowEnd, &spellCheckEnd);
         Boolean correct = spellCheckEnd != IBreakIterator::DONE;
         if (correct) {
-            mWordIterator ->GetEnd(spellCheckEnd, &spellCheckEnd);
+            mHost->mWordIterator->GetEnd(spellCheckEnd, &spellCheckEnd);
             correct = spellCheckEnd != IBreakIterator::DONE;
         }
 
@@ -567,15 +604,16 @@ void SpellChecker::SpellParser::Parse()
             Int32 spellCheckStart = wordStart;
             Boolean createSpellCheckSpan = TRUE;
             for (Int32 i = 0; i < mHost->mLength; ++i) {
-                AutoPtr<ISpellCheckSpan> spellCheckSpan = (*mHost->mSpellCheckSpans)[i];
+                AutoPtr<ArrayOf<ISpellCheckSpan*> > spans = mHost->mSpellCheckSpans;
+                AutoPtr<ISpellCheckSpan> spellCheckSpan = (*spans)[i];
                 Boolean inProgress = FALSE;
                 spellCheckSpan->IsSpellCheckInProgress(&inProgress);
                 if ((*mHost->mIds)[i] < 0 || inProgress) {
                     continue;
                 }
                 Int32 spanStart = 0, spanEnd = 0;
-                editable->GetSpanStart(spellCheckSpan->Probe(EIID_IInterface), &spanStart);
-                editable->GetSpanEnd(spellCheckSpan->Probe(EIID_IInterface), &spanEnd);
+                ISpanned::Probe(editable)->GetSpanStart(spellCheckSpan, &spanStart);
+                ISpanned::Probe(editable)->GetSpanEnd(spellCheckSpan, &spanEnd);
                 if (spanEnd < spellCheckStart || spellCheckEnd < spanStart) {
                     continue;
                 }
@@ -584,7 +622,7 @@ void SpellChecker::SpellParser::Parse()
                     break;
                 }
 
-                editable->RemoveSpan(spellCheckSpan->Probe(EIID_IInterface));
+                ISpannable::Probe(editable)->RemoveSpan(spellCheckSpan);
                 spellCheckStart = Elastos::Core::Math::Min(spanStart, spellCheckStart);
                 spellCheckEnd = Elastos::Core::Math::Max(spanEnd, spellCheckEnd);
             }
@@ -597,7 +635,7 @@ void SpellChecker::SpellParser::Parse()
                 break;
             }
             if (createSpellCheckSpan) {
-                AddSpellCheckSpan(editable, spellCheckStart, spellCheckEnd);
+                mHost->AddSpellCheckSpan(editable, spellCheckStart, spellCheckEnd);
             }
         } while(FALSE);
         wordStart = spellCheckEnd;
@@ -609,20 +647,20 @@ void SpellChecker::SpellParser::Parse()
                     break;
                 }
                 if (wordStart < start && wordEnd > start) {
-                    RemoveSpansAt(editable, start, spellCheckSpans);
-                    RemoveSpansAt(editable, start, suggestionSpans);
+                    RemoveSpansAt(editable, start, (ArrayOf<IInterface*>*)spellCheckSpans.Get());
+                    RemoveSpansAt(editable, start, (ArrayOf<IInterface*>*)suggestionSpans.Get());
                 }
 
                 if (wordStart < end && wordEnd > end) {
-                    RemoveSpansAt(editable, end, spellCheckSpans);
-                    RemoveSpansAt(editable, end, suggestionSpans);
+                    RemoveSpansAt(editable, end, (ArrayOf<IInterface*>*)spellCheckSpans.Get());
+                    RemoveSpansAt(editable, end, (ArrayOf<IInterface*>*)suggestionSpans.Get());
                 }
 
                 Boolean createSpellCheckSpan = TRUE;
                 if (wordEnd == start) {
                     for (Int32 i = 0; i < spellCheckSpans->GetLength(); i++) {
                         Int32 spanEnd = 0;
-                        editable->GetSpanEnd(((*spellCheckSpans)[i])->Probe(EIID_IInterface), &spanEnd);
+                        ISpanned::Probe(editable)->GetSpanEnd((*spellCheckSpans)[i], &spanEnd);
                         if (spanEnd == start) {
                             createSpellCheckSpan = FALSE;
                             break;
@@ -633,7 +671,7 @@ void SpellChecker::SpellParser::Parse()
                 if (wordStart == end) {
                     for (Int32 i = 0; i < spellCheckSpans->GetLength(); i++) {
                         Int32 spanStart = 0;
-                        editable->GetSpanStart(((*spellCheckSpans)[i])->Probe(EIID_IInterface), &spanStart);
+                        ISpanned::Probe(editable)->GetSpanStart((*spellCheckSpans)[i], &spanStart);
                         if (spanStart == end) {
                             createSpellCheckSpan = FALSE;
                             break;
@@ -641,17 +679,17 @@ void SpellChecker::SpellParser::Parse()
                     }
                 }
                 if (createSpellCheckSpan) {
-                    AddSpellCheckSpan(editable, wordStart, wordEnd);
+                    mHost->AddSpellCheckSpan(editable, wordStart, wordEnd);
                 }
                 wordCount++;
             }
             Int32 originalWordEnd = wordEnd;
-            mHost->mWordIterator->Following(wordEnd, &wordEnd);
+            ISelectionPositionIterator::Probe(mHost->mWordIterator)->Following(wordEnd, &wordEnd);
             if ((wordIteratorWindowEnd < end) &&
                 (wordEnd == IBreakIterator::DONE ||wordEnd >= wordIteratorWindowEnd)) {
                 wordIteratorWindowEnd = Elastos::Core::Math::Min(end, originalWordEnd + mHost->WORD_ITERATOR_INTERVAL);
                 mHost->mWordIterator->SetCharSequence(ICharSequence::Probe(editable), originalWordEnd, wordIteratorWindowEnd);
-                mHost->mWordIterator->Following(originalWordEnd, &wordEnd);
+                ISelectionPositionIterator::Probe(mHost->mWordIterator)->Following(originalWordEnd, &wordEnd);
             }
 
             if (wordEnd == IBreakIterator::DONE) break;
@@ -666,7 +704,7 @@ void SpellChecker::SpellParser::Parse()
         RemoveRangeSpan(editable);
     }
 
-    mHost->SpellCheck();*/
+    mHost->SpellCheck();
 }
 
 void SpellChecker::SpellParser::SetRangeSpan(
@@ -674,13 +712,13 @@ void SpellChecker::SpellParser::SetRangeSpan(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    //editable->SetSpan(mRange, start, end, ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
+    ISpannable::Probe(editable)->SetSpan(mRange, start, end, ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
 }
 
 void SpellChecker::SpellParser::RemoveRangeSpan (
     /* [in] */ IEditable* editable)
 {
-    //editable->RemoveSpan(mRange);
+    ISpannable::Probe(editable)->RemoveSpan(mRange);
 }
 
 void SpellChecker::SpellParser::RemoveSpansAt(
@@ -688,7 +726,17 @@ void SpellChecker::SpellParser::RemoveSpansAt(
     /* [in] */ Int32 offset,
     /* [in] */ ArrayOf<IInterface*>* spans)
 {
-    assert(0 && "TODO");
+    Int32 length = spans->GetLength();
+    for (Int32 i = 0; i < length; i++) {
+        AutoPtr<IInterface> span = (*spans)[i];
+        Int32 start;
+        ISpanned::Probe(editable)->GetSpanStart(span, &start);
+        if (start > offset) continue;
+        Int32 end;
+        ISpanned::Probe(editable)->GetSpanEnd(span, &end);
+        if (end < offset) continue;
+        ISpannable::Probe(editable)->RemoveSpan(span);
+    }
 }
 
 } // namespace Widget

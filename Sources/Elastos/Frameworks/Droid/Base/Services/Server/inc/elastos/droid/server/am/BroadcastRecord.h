@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_SERVER_AM_BROADCASTRECORD_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "am/BroadcastFilter.h"
-#include "am/BroadcastQueue.h"
+#include "elastos/droid/server/am/BroadcastFilter.h"
+#include "elastos/droid/server/am/BroadcastQueue.h"
 #include <Elastos.Droid.Core.h>
 #include <elastos/utility/etl/List.h>
 
@@ -34,7 +34,7 @@ class BroadcastFilterList
 /**
  * An active intent broadcast.
  */
-class BroadcastRecord : public ElRefBase
+class BroadcastRecord : public Object
 {
 public:
     BroadcastRecord(

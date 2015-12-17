@@ -1,7 +1,12 @@
 
 #include "elastos/droid/server/display/VirtualDisplayAdapter.h"
+#include "elastos/droid/server/display/CMediaProjectionCallback.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Hardware::Display::IDisplayManager;
+using Elastos::Droid::Media::Projection::EIID_IIMediaProjectionCallback;
 using Elastos::Droid::Utility::CArrayMap;
 using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::View::ISurface;
@@ -10,6 +15,7 @@ using Elastos::Droid::View::ISurfaceControlHelper;
 using Elastos::Droid::View::CSurfaceControlHelper;
 
 using Elastos::IO::IPrintWriter;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -32,8 +38,9 @@ ECode VirtualDisplayAdapter::MediaProjectionCallback::constructor(
     /* [in] */ IBinder* appToken,
     /* [out] */ IObject* displayAdapter)
 {
-    mAppToken = appToken;.
+    mAppToken = appToken;
     mDisplayAdapter = (VirtualDisplayAdapter*)displayAdapter;
+    return NOERROR;
 }
 
 ECode VirtualDisplayAdapter::MediaProjectionCallback::OnStop()
@@ -42,6 +49,14 @@ ECode VirtualDisplayAdapter::MediaProjectionCallback::OnStop()
     synchronized(obj) {
         mDisplayAdapter->HandleMediaProjectionStoppedLocked(mAppToken);
     }
+    return NOERROR;
+}
+
+ECode VirtualDisplayAdapter::MediaProjectionCallback::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = "VirtualDisplayAdapter::MediaProjectionCallback";
     return NOERROR;
 }
 
@@ -67,37 +82,40 @@ VirtualDisplayAdapter::Callback::Callback(
 ECode VirtualDisplayAdapter::Callback::HandleMessage(
     /* [in] */ IMessage* msg)
 {
-    try {
-        switch (msg.what) {
-            case MSG_ON_DISPLAY_PAUSED:
-                mCallback->OnPaused();
-                break;
-            case MSG_ON_DISPLAY_RESUMED:
-                mCallback->OnResumed();
-                break;
-            case MSG_ON_DISPLAY_STOPPED:
-                mCallback->OnStopped();
-                break;
-        }
-    } catch (RemoteException e) {
-        Slog.w(TAG, "Failed to notify listener of virtual display event.", e);
+    Int32 what;
+    msg->GetWhat(&what);
+
+    switch (what) {
+        case MSG_ON_DISPLAY_PAUSED:
+            mCallback->OnPaused();
+            break;
+        case MSG_ON_DISPLAY_RESUMED:
+            mCallback->OnResumed();
+            break;
+        case MSG_ON_DISPLAY_STOPPED:
+            mCallback->OnStopped();
+            break;
     }
+
     return NOERROR;
 }
 
 ECode VirtualDisplayAdapter::Callback::DispatchDisplayPaused()
 {
-    return SendEmptyMessage(MSG_ON_DISPLAY_PAUSED);
+    Boolean bval;
+    return SendEmptyMessage(MSG_ON_DISPLAY_PAUSED, &bval);
 }
 
 ECode VirtualDisplayAdapter::Callback::DispatchDisplayResumed()
 {
-    return SendEmptyMessage(MSG_ON_DISPLAY_RESUMED);
+    Boolean bval;
+    return SendEmptyMessage(MSG_ON_DISPLAY_RESUMED, &bval);
 }
 
 ECode VirtualDisplayAdapter::Callback::DispatchDisplayStopped()
 {
-    return SendEmptyMessage(MSG_ON_DISPLAY_STOPPED);
+    Boolean bval;
+    return SendEmptyMessage(MSG_ON_DISPLAY_STOPPED, &bval);
 }
 
 //===================================================================
@@ -121,7 +139,7 @@ VirtualDisplayAdapter::VirtualDisplayDevice::VirtualDisplayDevice(
     /* [in] */ Int32 flags,
     /* [in] */ Callback* callback,
     /* [in] */ VirtualDisplayAdapter* host)
-    : DisplayDevice((DisplayAdapter*)host, displayToken);
+    : DisplayDevice((DisplayAdapter*)host, displayToken)
 {
     mAppToken = appToken;
     mOwnerUid = ownerUid;
@@ -133,16 +151,17 @@ VirtualDisplayAdapter::VirtualDisplayDevice::VirtualDisplayDevice(
     mSurface = surface;
     mFlags = flags;
     mCallback = callback;
-    mDisplayState = Display.STATE_UNKNOWN;
+    mDisplayState = IDisplay::STATE_UNKNOWN;
     mPendingChanges |= PENDING_SURFACE_CHANGE;
     mStopped = FALSE;
 }
 
-ECode VirtualDisplayAdapter::VirtualDisplayDevice::BinderDied()
+ECode VirtualDisplayAdapter::VirtualDisplayDevice::ProxyDied()
 {
-    synchronized (GetSyncRoot()) {
-        if (mSurface != NULL) {
-            HandleBinderDiedLocked(mAppToken);
+    Object* obj = mHost->GetSyncRoot();
+    synchronized(obj) {
+        if (mSurface.Get() != NULL) {
+            mHost->HandleProxyDiedLocked(mAppToken);
         }
     }
     return NOERROR;
@@ -154,8 +173,11 @@ ECode VirtualDisplayAdapter::VirtualDisplayDevice::DestroyLocked()
         mSurface->ReleaseSurface();
         mSurface = NULL;
     }
-    SurfaceControl.destroyDisplay(getDisplayTokenLocked());
-    mCallback.DispatchDisplayStopped();
+
+    AutoPtr<ISurfaceControlHelper> helper;
+    CSurfaceControlHelper::AcquireSingleton((ISurfaceControlHelper**)&helper);
+    helper->DestroyDisplay(GetDisplayTokenLocked());
+    mCallback->DispatchDisplayStopped();
     return NOERROR;
 }
 
@@ -164,10 +186,10 @@ AutoPtr<IRunnable> VirtualDisplayAdapter::VirtualDisplayDevice::RequestDisplaySt
 {
     if (state != mDisplayState) {
         mDisplayState = state;
-        if (state == Display.STATE_OFF) {
-            mCallback.DispatchDisplayPaused();
+        if (state == IDisplay::STATE_OFF) {
+            mCallback->DispatchDisplayPaused();
         } else {
-            mCallback.DispatchDisplayResumed();
+            mCallback->DispatchDisplayResumed();
         }
     }
     return NULL;
@@ -176,10 +198,12 @@ AutoPtr<IRunnable> VirtualDisplayAdapter::VirtualDisplayDevice::RequestDisplaySt
 void VirtualDisplayAdapter::VirtualDisplayDevice::PerformTraversalInTransactionLocked()
 {
     if ((mPendingChanges & PENDING_RESIZE) != 0) {
-        SurfaceControl.setDisplaySize(getDisplayTokenLocked(), mWidth, mHeight);
+        AutoPtr<ISurfaceControlHelper> helper;
+        CSurfaceControlHelper::AcquireSingleton((ISurfaceControlHelper**)&helper);
+        helper->SetDisplaySize(GetDisplayTokenLocked(), mWidth, mHeight);
     }
     if ((mPendingChanges & PENDING_SURFACE_CHANGE) != 0) {
-        setSurfaceInTransactionLocked(mSurface);
+        SetSurfaceInTransactionLocked(mSurface);
     }
     mPendingChanges = 0;
 }
@@ -187,11 +211,11 @@ void VirtualDisplayAdapter::VirtualDisplayDevice::PerformTraversalInTransactionL
 ECode VirtualDisplayAdapter::VirtualDisplayDevice::SetSurfaceLocked(
     /* [in] */ ISurface* surface)
 {
-    if (!mStopped && mSurface != surface) {
+    if (!mStopped && mSurface.Get() != surface) {
         if ((mSurface != NULL) != (surface != NULL)) {
-            SendDisplayDeviceEventLocked(this, DISPLAY_DEVICE_EVENT_CHANGED);
+            mHost->SendDisplayDeviceEventLocked(this, DISPLAY_DEVICE_EVENT_CHANGED);
         }
-        SendTraversalRequestLocked();
+        mHost->SendTraversalRequestLocked();
         mSurface = surface;
         mInfo = NULL;
         mPendingChanges |= PENDING_SURFACE_CHANGE;
@@ -205,8 +229,8 @@ ECode VirtualDisplayAdapter::VirtualDisplayDevice::ResizeLocked(
     /* [in] */ Int32 densityDpi)
 {
     if (mWidth != width || mHeight != height || mDensityDpi != densityDpi) {
-        SendDisplayDeviceEventLocked(this, DISPLAY_DEVICE_EVENT_CHANGED);
-        SendTraversalRequestLocked();
+        mHost->SendDisplayDeviceEventLocked(this, DISPLAY_DEVICE_EVENT_CHANGED);
+        mHost->SendTraversalRequestLocked();
         mWidth = width;
         mHeight = height;
         mDensityDpi = densityDpi;
@@ -228,7 +252,7 @@ void VirtualDisplayAdapter::VirtualDisplayDevice::DumpLocked(
 {
     // super.dumpLocked(pw);
     // pw.println("mFlags=" + mFlags);
-    // pw.println("mDisplayState=" + Display.stateToString(mDisplayState));
+    // pw.println("mDisplayState=" + IDisplay::stateToString(mDisplayState));
     // pw.println("mStopped=" + mStopped);
 }
 
@@ -236,36 +260,36 @@ AutoPtr<DisplayDeviceInfo> VirtualDisplayAdapter::VirtualDisplayDevice::GetDispl
 {
     if (mInfo == NULL) {
         mInfo = new DisplayDeviceInfo();
-        mInfo.name = mName;
-        mInfo.width = mWidth;
-        mInfo.height = mHeight;
-        mInfo.refreshRate = 60;
-        mInfo.densityDpi = mDensityDpi;
-        mInfo.xDpi = mDensityDpi;
-        mInfo.yDpi = mDensityDpi;
-        mInfo.presentationDeadlineNanos = 1000000000L / (Int32) mInfo.refreshRate; // 1 frame
-        mInfo.flags = 0;
-        if ((mFlags & DisplayManager.VIRTUAL_DISPLAY_FLAG_PUBLIC) == 0) {
-            mInfo.flags |= DisplayDeviceInfo.FLAG_PRIVATE
-                    | DisplayDeviceInfo.FLAG_NEVER_BLANK;
+        mInfo->mName = mName;
+        mInfo->mWidth = mWidth;
+        mInfo->mHeight = mHeight;
+        mInfo->mRefreshRate = 60;
+        mInfo->mDensityDpi = mDensityDpi;
+        mInfo->mXDpi = mDensityDpi;
+        mInfo->mYDpi = mDensityDpi;
+        mInfo->mPresentationDeadlineNanos = 1000000000L / (Int32) mInfo->mRefreshRate; // 1 frame
+        mInfo->mFlags = 0;
+        if ((mFlags & IDisplayManager::VIRTUAL_DISPLAY_FLAG_PUBLIC) == 0) {
+            mInfo->mFlags |= DisplayDeviceInfo::FLAG_PRIVATE
+                    | DisplayDeviceInfo::FLAG_NEVER_BLANK;
         }
-        if ((mFlags & DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR) != 0) {
-            mInfo.flags &= ~DisplayDeviceInfo.FLAG_NEVER_BLANK;
+        if ((mFlags & IDisplayManager::VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR) != 0) {
+            mInfo->mFlags &= ~DisplayDeviceInfo::FLAG_NEVER_BLANK;
         } else {
-            mInfo.flags |= DisplayDeviceInfo.FLAG_OWN_CONTENT_ONLY;
+            mInfo->mFlags |= DisplayDeviceInfo::FLAG_OWN_CONTENT_ONLY;
         }
 
-        if ((mFlags & DisplayManager.VIRTUAL_DISPLAY_FLAG_SECURE) != 0) {
-            mInfo.flags |= DisplayDeviceInfo.FLAG_SECURE;
+        if ((mFlags & IDisplayManager::VIRTUAL_DISPLAY_FLAG_SECURE) != 0) {
+            mInfo->mFlags |= DisplayDeviceInfo::FLAG_SECURE;
         }
-        if ((mFlags & DisplayManager.VIRTUAL_DISPLAY_FLAG_PRESENTATION) != 0) {
-            mInfo.flags |= DisplayDeviceInfo.FLAG_PRESENTATION;
+        if ((mFlags & IDisplayManager::VIRTUAL_DISPLAY_FLAG_PRESENTATION) != 0) {
+            mInfo->mFlags |= DisplayDeviceInfo::FLAG_PRESENTATION;
         }
-        mInfo.type = Display.TYPE_VIRTUAL;
-        mInfo.touch = DisplayDeviceInfo.TOUCH_NONE;
-        mInfo.state = mSurface != NULL ? Display.STATE_ON : Display.STATE_OFF;
-        mInfo.ownerUid = mOwnerUid;
-        mInfo.ownerPackageName = mOwnerPackageName;
+        mInfo->mType = IDisplay::TYPE_VIRTUAL;
+        mInfo->mTouch = DisplayDeviceInfo::TOUCH_NONE;
+        mInfo->mState = mSurface != NULL ? IDisplay::STATE_ON : IDisplay::STATE_OFF;
+        mInfo->mOwnerUid = mOwnerUid;
+        mInfo->mOwnerPackageName = mOwnerPackageName;
     }
     return mInfo;
 }
@@ -278,14 +302,14 @@ const String VirtualDisplayAdapter::TAG("VirtualDisplayAdapter");
 const Boolean VirtualDisplayAdapter::DEBUG = FALSE;
 
 VirtualDisplayAdapter::VirtualDisplayAdapter(
-    /* [in] */ CDisplayManagerService.SyncRoot syncRoot,
+    /* [in] */ Object* syncRoot,
     /* [in] */ IContext* context,
     /* [in] */ IHandler* handler,
     /* [in] */ IDisplayAdapterListener* listener)
-    : DisplayAdapter(syncRoot, context, handler, listener, TAG);
+    : DisplayAdapter(syncRoot, context, handler, listener, TAG)
 {
     mHandler = handler;
-    CArrayMap::New((IArrayMap**)&mVirtualDisplayDevices)
+    CArrayMap::New((IArrayMap**)&mVirtualDisplayDevices);
 }
 
 AutoPtr<DisplayDevice> VirtualDisplayAdapter::CreateVirtualDisplayLocked(
@@ -300,23 +324,42 @@ AutoPtr<DisplayDevice> VirtualDisplayAdapter::CreateVirtualDisplayLocked(
     /* [in] */ ISurface* surface,
     /* [in] */ Int32 flags)
 {
-    Boolean secure = (flags & DisplayManager.VIRTUAL_DISPLAY_FLAG_SECURE) != 0;
-    IBinder appToken = callback.asBinder();
-    IBinder displayToken = SurfaceControl.createDisplay(name, secure);
-    VirtualDisplayDevice device = new VirtualDisplayDevice(displayToken, appToken,
-            ownerUid, ownerPackageName, name, width, height, densityDpi, surface, flags,
-            new Callback(callback, mHandler));
+    AutoPtr<ISurfaceControlHelper> helper;
+    CSurfaceControlHelper::AcquireSingleton((ISurfaceControlHelper**)&helper);
 
-    mVirtualDisplayDevices.put(appToken, device);
+    Boolean secure = (flags & IDisplayManager::VIRTUAL_DISPLAY_FLAG_SECURE) != 0;
+    IBinder* appToken = IBinder::Probe(callback);
 
-    try {
-        if (projection != NULL) {
-            projection.registerCallback(new MediaProjectionCallback(appToken));
-        }
-        appToken.linkToDeath(device, 0);
-    } catch (RemoteException ex) {
-        mVirtualDisplayDevices.remove(appToken);
-        device.DestroyLocked();
+    AutoPtr<IBinder> displayToken;
+    helper->CreateDisplay(name, secure, (IBinder**)&displayToken);
+    AutoPtr<Callback> cb = new Callback(callback, mHandler, this);
+    AutoPtr<VirtualDisplayDevice> device = new VirtualDisplayDevice(
+        displayToken, appToken, ownerUid, ownerPackageName, name,
+        width, height, densityDpi, surface, flags, cb, this);
+
+    mVirtualDisplayDevices->Put(TO_IINTERFACE(appToken), TO_IINTERFACE(device));
+
+    // try {
+    AutoPtr<IProxy> proxy = (IProxy*)appToken->Probe(EIID_IProxy);
+    ECode ec = NOERROR;
+    if (projection != NULL) {
+        AutoPtr<IIMediaProjectionCallback> mpcb;
+        assert(0 && "TODO");
+        // CMediaProjectionCallback::New(appToken, IObject::Probe(this),
+        //     (IIMediaProjectionCallback**)&mpcb);
+        ec = projection->RegisterCallback(mpcb);
+        FAIL_GOTO(ec, _EXIT_)
+    }
+
+    if (proxy != NULL) {
+        ec = proxy->LinkToDeath(device, 0);
+        FAIL_GOTO(ec, _EXIT_)
+    }
+
+_EXIT_:
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
+        mVirtualDisplayDevices->Remove(TO_IINTERFACE(appToken));
+        device->DestroyLocked();
         return NULL;
     }
 
@@ -331,9 +374,12 @@ ECode VirtualDisplayAdapter::ResizeVirtualDisplayLocked(
     /* [in] */ Int32 height,
     /* [in] */ Int32 densityDpi)
 {
-    VirtualDisplayDevice device = mVirtualDisplayDevices.get(appToken);
-    if (device != NULL) {
-        device.ResizeLocked(width, height, densityDpi);
+    AutoPtr<IInterface> obj;
+    mVirtualDisplayDevices->Get(TO_IINTERFACE(appToken), (IInterface**)&obj);
+
+    if (obj != NULL) {
+        VirtualDisplayDevice* device = (VirtualDisplayDevice*)IObject::Probe(obj);
+        device->ResizeLocked(width, height, densityDpi);
     }
     return NOERROR;
 }
@@ -342,9 +388,12 @@ ECode VirtualDisplayAdapter::SetVirtualDisplaySurfaceLocked(
     /* [in] */ IBinder* appToken,
     /* [in] */ ISurface* surface)
 {
-    VirtualDisplayDevice device = mVirtualDisplayDevices.get(appToken);
-    if (device != NULL) {
-        device.SetSurfaceLocked(surface);
+    AutoPtr<IInterface> obj;
+    mVirtualDisplayDevices->Get(TO_IINTERFACE(appToken), (IInterface**)&obj);
+
+    if (obj != NULL) {
+        VirtualDisplayDevice* device = (VirtualDisplayDevice*)IObject::Probe(obj);
+        device->SetSurfaceLocked(surface);
     }
     return NOERROR;
 }
@@ -352,10 +401,17 @@ ECode VirtualDisplayAdapter::SetVirtualDisplaySurfaceLocked(
 AutoPtr<DisplayDevice> VirtualDisplayAdapter::ReleaseVirtualDisplayLocked(
     /* [in] */ IBinder* appToken)
 {
-    VirtualDisplayDevice device = mVirtualDisplayDevices.remove(appToken);
+    AutoPtr<IInterface> obj;
+    mVirtualDisplayDevices->Get(TO_IINTERFACE(appToken), (IInterface**)&obj);
+    VirtualDisplayDevice* device = (VirtualDisplayDevice*)IObject::Probe(obj);
     if (device != NULL) {
-        device.DestroyLocked();
-        appToken.unlinkToDeath(device, 0);
+        device->DestroyLocked();
+
+        AutoPtr<IProxy> proxy = (IProxy*)appToken->Probe(EIID_IProxy);
+        if (proxy != NULL) {
+            Boolean bval;
+            proxy->UnlinkToDeath(device, 0, &bval);
+        }
     }
 
     // Return the display device that was removed without actually sending the
@@ -363,14 +419,17 @@ AutoPtr<DisplayDevice> VirtualDisplayAdapter::ReleaseVirtualDisplayLocked(
     return device;
 }
 
-void VirtualDisplayAdapter::HandleBinderDiedLocked(
+void VirtualDisplayAdapter::HandleProxyDiedLocked(
     /* [in] */ IBinder* appToken)
 {
-    VirtualDisplayDevice device = mVirtualDisplayDevices.remove(appToken);
-    if (device != NULL) {
-        Slog.i(TAG, "Virtual display device released because application token died: "
-                + device.mOwnerPackageName);
-        device.DestroyLocked();
+    AutoPtr<IInterface> obj;
+    mVirtualDisplayDevices->Remove(TO_IINTERFACE(appToken), (IInterface**)&obj);
+
+    if (obj != NULL) {
+        VirtualDisplayDevice* device = (VirtualDisplayDevice*)IObject::Probe(obj);
+        Slogger::I(TAG, "Virtual display device released because application token died: %s",
+            device->mOwnerPackageName.string());
+        device->DestroyLocked();
         SendDisplayDeviceEventLocked(device, DISPLAY_DEVICE_EVENT_REMOVED);
     }
 }
@@ -378,11 +437,14 @@ void VirtualDisplayAdapter::HandleBinderDiedLocked(
 void VirtualDisplayAdapter::HandleMediaProjectionStoppedLocked(
     /* [in] */ IBinder* appToken)
 {
-    VirtualDisplayDevice device = mVirtualDisplayDevices.remove(appToken);
-    if (device != NULL) {
-        Slog.i(TAG, "Virtual display device released because media projection stopped: "
-                + device.mName);
-        device.StopLocked();
+    AutoPtr<IInterface> obj;
+    mVirtualDisplayDevices->Remove(TO_IINTERFACE(appToken), (IInterface**)&obj);
+
+    if (obj != NULL) {
+        VirtualDisplayDevice* device = (VirtualDisplayDevice*)IObject::Probe(obj);
+        Slogger::I(TAG, "Virtual display device released because media projection stopped: %s",
+            device->mName.string());
+        device->StopLocked();
     }
 }
 

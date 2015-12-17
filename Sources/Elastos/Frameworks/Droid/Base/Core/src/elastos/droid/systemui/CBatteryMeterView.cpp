@@ -351,7 +351,7 @@ AutoPtr<ArrayOf<Float> > CBatteryMeterView::LoadBoltPoints(
 {
     assert(0 && "TODO");
     AutoPtr<ArrayOf<Int32> > pts;
-//    res->GetIntArray(R::array::batterymeter_bolt_points, (ArrayOf<Int32>**)&pts);
+//    res->GetInt32Array(R::array::batterymeter_bolt_points, (ArrayOf<Int32>**)&pts);
     Int32 maxX = 0, maxY = 0;
     for (Int32 i = 0; i < pts->GetLength(); i += 2) {
         maxX = Elastos::Core::Math::Max(maxX, (*pts)[i]);

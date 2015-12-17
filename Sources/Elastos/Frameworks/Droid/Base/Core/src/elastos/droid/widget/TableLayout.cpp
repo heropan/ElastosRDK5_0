@@ -1,10 +1,11 @@
 
 #include "elastos/droid/widget/TableLayout.h"
-#include "elastos/droid/widget/TableLayoutLayoutParams.h"
-#include "elastos/droid/widget/CTableLayoutLayoutParams.h"
-#include "elastos/droid/widget/TableRow.h"
-#include <elastos/core/StringUtils.h>
+// #include "elastos/droid/widget/CTableLayoutLayoutParams.h"
+// #include "elastos/droid/widget/TableRow.h" zhangjingcheng
+
+#include <elastos/core/CoreUtils.h>
 #include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
 #include "elastos/droid/R.h"
 
 using Elastos::Utility::Regex::IPattern;
@@ -13,57 +14,83 @@ using Elastos::Utility::Regex::CPatternHelper;
 using Elastos::Utility::Regex::IMatcher;
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
 using Elastos::Droid::R;
 using Elastos::Droid::View::EIID_IViewGroupOnHierarchyChangeListener;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
+
+CAR_INTERFACE_IMPL(TableLayout::LayoutParams, LinearLayout::LayoutParams, ITableLayoutLayoutParams)
+
+ECode TableLayout::LayoutParams::constructor(
+    /* [in] */ IContext* c,
+    /* [in] */ IAttributeSet* attrs)
+{
+    return LinearLayout::LayoutParams::constructor(c, attrs);
+}
+
+ECode TableLayout::LayoutParams::constructor(
+    /* [in] */ Int32 w,
+    /* [in] */ Int32 h)
+{
+    return LinearLayout::LayoutParams::constructor(IViewGroupLayoutParams::MATCH_PARENT, h);
+}
+
+ECode TableLayout::LayoutParams::constructor(
+    /* [in] */ Int32 w,
+    /* [in] */ Int32 h,
+    /* [in] */ Float initWeight)
+{
+    return LinearLayout::LayoutParams::constructor(IViewGroupLayoutParams::MATCH_PARENT, h, initWeight);
+}
+
+ECode TableLayout::LayoutParams::constructor()
+{
+    return LinearLayout::LayoutParams::constructor(IViewGroupLayoutParams::MATCH_PARENT, WRAP_CONTENT);
+}
+
+ECode TableLayout::LayoutParams::constructor(
+    /* [in] */ IViewGroupLayoutParams* p)
+{
+    return LinearLayout::LayoutParams::constructor(p);
+}
+
+ECode TableLayout::LayoutParams::constructor(
+    /* [in] */ IViewGroupMarginLayoutParams* source)
+{
+    return LinearLayout::LayoutParams::constructor(source);
+}
+
+ECode TableLayout::LayoutParams::SetBaseAttributes(
+    /* [in] */ ITypedArray* a,
+    /* [in] */ Int32 widthAttr,
+    /* [in] */ Int32 heightAttr)
+{
+    mWidth = IViewGroupLayoutParams::MATCH_PARENT;
+
+    Boolean res;
+    a->HasValue(heightAttr, &res);
+    if (res) {
+        FAIL_RETURN(a->GetLayoutDimension(heightAttr, String("layout_height"), &mHeight));
+    }
+    else {
+        mHeight = IViewGroupLayoutParams::WRAP_CONTENT;
+    }
+    return NOERROR;
+}
+
 //==============================================================================
 //     TableLayout::PassThroughHierarchyChangeListener
 //==============================================================================
+CAR_INTERFACE_IMPL(TableLayout::PassThroughHierarchyChangeListener, Object, IViewGroupOnHierarchyChangeListener)
 
 TableLayout::PassThroughHierarchyChangeListener::PassThroughHierarchyChangeListener(
     /* [in] */ TableLayout* owner)
     : mOwner(owner)
 {
-}
-
-PInterface TableLayout::PassThroughHierarchyChangeListener::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IInterface*)this;
-    }
-    else if (riid == EIID_IViewGroupOnHierarchyChangeListener) {
-        return (IViewGroupOnHierarchyChangeListener*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 TableLayout::PassThroughHierarchyChangeListener::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 TableLayout::PassThroughHierarchyChangeListener::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode TableLayout::PassThroughHierarchyChangeListener::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (pObject == (IInterface*)this) {
-        *pIID = EIID_IViewGroupOnHierarchyChangeListener;
-        return NOERROR;
-    }
-
-    return E_ILLEGAL_ARGUMENT_EXCEPTION;
 }
 
 /**
@@ -115,14 +142,12 @@ TableLayout::TableLayout()
  *
  * @param context the application environment
  */
-TableLayout::TableLayout(
+ECode TableLayout::constructor(
     /* [in] */ IContext* context)
-    : LinearLayout(context)
-    , mShrinkAllColumns(FALSE)
-    , mStretchAllColumns(FALSE)
-    , mInitialized(FALSE)
 {
+    FAIL_RETURN(LinearLayout::constructor(context))
     InitTableLayout();
+    return NOERROR;
 }
 
 /**
@@ -132,16 +157,14 @@ TableLayout::TableLayout(
  * @param context the application environment
  * @param attrs a collection of attributes
  */
-TableLayout::TableLayout(
+ECode TableLayout::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
-    : LinearLayout(context, attrs)
-    , mShrinkAllColumns(FALSE)
-    , mStretchAllColumns(FALSE)
-    , mInitialized(FALSE)
 {
-    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs));
+    FAIL_RETURN(LinearLayout::constructor(context, attrs))
+    FAIL_RETURN(InitFromAttributes(context, attrs))
     InitTableLayout();
+    return NOERROR;
 }
 
 TableLayout::~TableLayout()
@@ -157,7 +180,7 @@ ECode TableLayout::InitFromAttributes(
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::TableLayout),
-        ARRAY_SIZE(R::styleable::TableLayout));
+        ArraySize(R::styleable::TableLayout));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
 
@@ -191,24 +214,6 @@ ECode TableLayout::InitFromAttributes(
 
     a->Recycle();
 
-    return NOERROR;
-}
-
-ECode TableLayout::Init(
-    /* [in] */ IContext* context)
-{
-    FAIL_RETURN(LinearLayout::Init(context));
-    InitTableLayout();
-    return NOERROR;
-}
-
-ECode TableLayout::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    FAIL_RETURN(LinearLayout::Init(context, attrs));
-    FAIL_RETURN(InitFromAttributes(context, attrs));
-    InitTableLayout();
     return NOERROR;
 }
 
@@ -296,9 +301,12 @@ ECode TableLayout::SetOnHierarchyChangeListener(
 void TableLayout::RequestRowsLayout()
 {
     if (mInitialized) {
-        Int32 count = GetChildCount();
+        Int32 count;
+        GetChildCount(&count);
         for (Int32 i = 0; i < count; i++) {
-            GetChildAt(i)->RequestLayout();
+            AutoPtr<IView> v;
+            GetChildAt(i, (IView**)&v);
+            v->RequestLayout();
         }
     }
 }
@@ -310,9 +318,12 @@ void TableLayout::RequestRowsLayout()
 ECode TableLayout::RequestLayout()
 {
     if (mInitialized) {
-        Int32 count = GetChildCount();
+        Int32 count;
+        GetChildCount(&count);
         for (Int32 i = 0; i < count; i++) {
-            GetChildAt(i)->ForceLayout();
+            AutoPtr<IView> v;
+            GetChildAt(i, (IView**)&v);
+            v->ForceLayout();
         }
     }
 
@@ -324,9 +335,11 @@ ECode TableLayout::RequestLayout()
  *
  * @return TRUE if all columns are shrinkable, FALSE otherwise
  */
-Boolean TableLayout::IsShrinkAllColumns()
+ECode TableLayout::IsShrinkAllColumns(
+    /* [out] */ Boolean* result)
 {
-    return mShrinkAllColumns;
+    *result = mShrinkAllColumns;
+    return NOERROR;
 }
 
 /**
@@ -349,9 +362,11 @@ ECode TableLayout::SetShrinkAllColumns(
  *
  * @return TRUE if all columns are stretchable, FALSE otherwise
  */
-Boolean TableLayout::IsStretchAllColumns()
+ECode TableLayout::IsStretchAllColumns(
+    /* [out] */ Boolean* result)
 {
-    return mStretchAllColumns;
+    *result = mStretchAllColumns;
+    return NOERROR;
 }
 
 /**
@@ -389,11 +404,13 @@ ECode TableLayout::SetColumnCollapsed(
     // update the collapse status of the column
     (*mCollapsedColumns)[columnIndex] = isCollapsed;
 
-    Int32 count = GetChildCount();
+    Int32 count;
+    GetChildCount(&count);
     for (Int32 i = 0; i < count; i++) {
-        AutoPtr<IView> view = GetChildAt(i);
+        AutoPtr<IView> view;
+        GetChildAt(i, (IView**)&view);
         if (ITableRow::Probe(view) != NULL) {
-            (reinterpret_cast<TableRow*>(view->Probe(EIID_TableRow)))->SetColumnCollapsed(columnIndex, isCollapsed);
+            // ((TableRow*)view)->SetColumnCollapsed(columnIndex, isCollapsed);
         }
     }
 
@@ -408,10 +425,12 @@ ECode TableLayout::SetColumnCollapsed(
  * @param columnIndex the index of the column
  * @return TRUE if the column is collapsed, FALSE otherwise
  */
-Boolean TableLayout::IsColumnCollapsed(
-    /* [in] */ Int32 columnIndex)
+ECode TableLayout::IsColumnCollapsed(
+    /* [in] */ Int32 columnIndex,
+    /* [in] */ Boolean* result)
 {
-    return mCollapsedColumns && (*mCollapsedColumns)[columnIndex];
+    *result = mCollapsedColumns && (*mCollapsedColumns)[columnIndex];
+    return NOERROR;
 }
 
 /**
@@ -442,10 +461,12 @@ ECode TableLayout::SetColumnStretchable(
  * @param columnIndex the index of the column
  * @return TRUE if the column is stretchable, FALSE otherwise
  */
-Boolean TableLayout::IsColumnStretchable(
-    /* [in] */ Int32 columnIndex)
+ECode TableLayout::IsColumnStretchable(
+    /* [in] */ Int32 columnIndex,
+    /* [out] */ Boolean* isColumnStretchable)
 {
-    return mStretchAllColumns || (mStretchableColumns && (*mStretchableColumns)[columnIndex]);
+    *isColumnStretchable = mStretchAllColumns || (mStretchableColumns && (*mStretchableColumns)[columnIndex]);
+    return NOERROR;
 }
 
 /**
@@ -476,10 +497,12 @@ ECode TableLayout::SetColumnShrinkable(
  * @param columnIndex the index of the column
  * @return TRUE if the column is shrinkable, FALSE otherwise. Default is FALSE.
  */
-Boolean TableLayout::IsColumnShrinkable(
-    /* [in] */ Int32 columnIndex)
+ECode TableLayout::IsColumnShrinkable(
+    /* [in] */ Int32 columnIndex,
+    /* [out] */ Boolean* isColumnShrinkable)
 {
-    return mShrinkAllColumns || (mShrinkableColumns && (*mShrinkableColumns)[columnIndex]);
+    *isColumnShrinkable = mShrinkAllColumns || (mShrinkableColumns && (*mShrinkableColumns)[columnIndex]);
+    return NOERROR;
 }
 
 /**
@@ -496,7 +519,7 @@ void TableLayout::TrackCollapsedColumns(
     /* [in] */ IView* child)
 {
     if (ITableRow::Probe(child) != NULL) {
-        TableRow* row = reinterpret_cast<TableRow*>(child->Probe(EIID_TableRow));
+        // TableRow* row = (TableRow*)child;
         HashMap<Int32, Boolean>::Iterator it = mCollapsedColumns->Begin();
         for (; it != mCollapsedColumns->End(); ++it) {
             Int32 columnIndex = it->mFirst;
@@ -505,7 +528,7 @@ void TableLayout::TrackCollapsedColumns(
             // collapsed; otherwise, this might affect the default
             // visibility of the row's children
             if (isCollapsed) {
-                row->SetColumnCollapsed(columnIndex, isCollapsed);
+                // row->SetColumnCollapsed(columnIndex, isCollapsed);
             }
         }
     }
@@ -581,7 +604,7 @@ void TableLayout::OnMeasure(
 /**
  * {@inheritDoc}
  */
-void TableLayout::OnLayout(
+ECode TableLayout::OnLayout(
     /* [in] */ Boolean changed,
     /* [in] */ Int32 l,
     /* [in] */ Int32 t,
@@ -589,7 +612,8 @@ void TableLayout::OnLayout(
     /* [in] */ Int32 b)
 {
     // enforce vertical layout
-    LayoutVertical();
+    LayoutVertical(l, t, r, b);
+    return NOERROR;
 }
 
 /**
@@ -606,7 +630,7 @@ void TableLayout::MeasureChildBeforeLayout(
     // when the measured child is a table row, we force the width of its
     // children with the widths computed in findLargestCells()
     if (ITableRow::Probe(child) != NULL) {
-        (reinterpret_cast<TableRow*>(child->Probe(EIID_TableRow)))->SetColumnsWidthConstraints(mMaxWidths);
+        // ((TableRow*)child)->SetColumnsWidthConstraints(mMaxWidths);
     }
 
     LinearLayout::MeasureChildBeforeLayout(child, childIndex,
@@ -644,9 +668,11 @@ void TableLayout::FindLargestCells(
     // but never shrinks. Unused extra cells in the array are just ignored
     // this behavior avoids to unnecessary grow the array after the first
     // layout operation
-    Int32 count = GetChildCount();
+    Int32 count;
+    GetChildCount(&count);
     for (Int32 i = 0; i < count; i++) {
-        AutoPtr<IView> child = GetChildAt(i);
+        AutoPtr<IView> child;
+        GetChildAt(i, (IView**)&child);
 
         Int32 visible;
         child->GetVisibility(&visible);
@@ -655,12 +681,12 @@ void TableLayout::FindLargestCells(
         }
 
         if (ITableRow::Probe(child) != NULL) {
-            TableRow* row = reinterpret_cast<TableRow*>(child->Probe(EIID_TableRow));
+            // TableRow* row = (TableRow*)child;
             // forces the row's height
-            AutoPtr<IViewGroupLayoutParams> layoutParams = row->GetLayoutParams();
+            AutoPtr<IViewGroupLayoutParams> layoutParams;// = row->GetLayoutParams();
             layoutParams->SetHeight(IViewGroupLayoutParams::WRAP_CONTENT);
 
-            AutoPtr<ArrayOf<Int32> > widths = row->GetColumnsWidths(widthMeasureSpec);
+            AutoPtr<ArrayOf<Int32> > widths;// = row->GetColumnsWidths(widthMeasureSpec);
             Int32 newLength = widths->GetLength();
             // this is the first row, we just need to copy the values
             if (firstRow) {
@@ -750,9 +776,11 @@ void TableLayout::MutateColumnsWidth(
 
     // Column's widths are changed: force child table rows to re-measure.
     // (done by super.measureVertical after shrinkAndStretchColumns.)
-    Int32 nbChildren = GetChildCount();
+    Int32 nbChildren;
+    GetChildCount(&nbChildren);
     for (Int32 i = 0; i < nbChildren; i++) {
-        AutoPtr<IView> child = GetChildAt(i);
+        AutoPtr<IView> child;
+        GetChildAt(i, (IView**)&child);
         if (ITableRow::Probe(child) != NULL) {
             child->ForceLayout();
         }
@@ -806,11 +834,14 @@ ECode TableLayout::GenerateLayoutParams(
     /* [in] */ IAttributeSet* attrs,
     /* [out] */ IViewGroupLayoutParams** params)
 {
-    VALIDATE_NOT_NULL(params);
+    VALIDATE_NOT_NULL(params)
+
+    AutoPtr<IContext> ctx;
+    GetContext((IContext**)&ctx);
     AutoPtr<ITableLayoutLayoutParams> lp;
-    FAIL_RETURN(CTableLayoutLayoutParams::New(GetContext(), attrs, (ITableLayoutLayoutParams**)&lp));
-    *params = IViewGroupLayoutParams::Probe(lp);
-    REFCOUNT_ADD(*params);
+    // FAIL_RETURN(CTableLayoutLayoutParams::New(ctx, attrs, (ITableLayoutLayoutParams**)&lp));
+    // *params = IViewGroupLayoutParams::Probe(lp);
+    // REFCOUNT_ADD(*params);
     return NOERROR;
 }
 
@@ -819,11 +850,16 @@ ECode TableLayout::GenerateLayoutParams(
  * {@link android.view.ViewGroup.LayoutParams#MATCH_PARENT},
  * and a height of {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}.
  */
-AutoPtr<ILinearLayoutLayoutParams> TableLayout::GenerateDefaultLayoutParams()
+ECode TableLayout::GenerateDefaultLayoutParams(
+        /* [out] */ IViewGroupLayoutParams** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     AutoPtr<ITableLayoutLayoutParams> lp;
-    CTableLayoutLayoutParams::New((ITableLayoutLayoutParams**)&lp);
-    return lp;
+    // CTableLayoutLayoutParams::New((ITableLayoutLayoutParams**)&lp);
+    // *result = IViewGroupLayoutParams::Probe(lp);
+    // REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 /**
@@ -842,25 +878,24 @@ AutoPtr<IViewGroupLayoutParams> TableLayout::GenerateLayoutParams(
     /* [in] */ IViewGroupLayoutParams* p)
 {
     AutoPtr<ITableLayoutLayoutParams> lp;
-    CTableLayoutLayoutParams::New(p, (ITableLayoutLayoutParams**)&lp);
-    return lp;
+    // CTableLayoutLayoutParams::New(p, (ITableLayoutLayoutParams**)&lp);
+    // return lp;
+    return NULL;
 }
 
 ECode TableLayout::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
     LinearLayout::OnInitializeAccessibilityEvent(event);
-    AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("CTableLayout"), (ICharSequence**)&seq);
-    return event->SetClassName(seq);
+    AutoPtr<ICharSequence> seq = CoreUtils::Convert(String("CTableLayout"));
+    return IAccessibilityRecord::Probe(event)->SetClassName(seq);
 }
 
 ECode TableLayout::OnInitializeAccessibilityNodeInfo(
     /* [in] */ IAccessibilityNodeInfo* info)
 {
     LinearLayout::OnInitializeAccessibilityNodeInfo(info);
-    AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("CTableLayout"), (ICharSequence**)&seq);
+    AutoPtr<ICharSequence> seq = CoreUtils::Convert(String("CTableLayout"));
     return info->SetClassName(seq);
 }
 

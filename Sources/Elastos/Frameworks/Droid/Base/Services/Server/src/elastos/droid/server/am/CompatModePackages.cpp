@@ -1,5 +1,5 @@
 
-#include "am/CompatModePackages.h"
+#include "elastos/droid/server/am/CompatModePackages.h"
 #include "elastos/droid/app/AppGlobals.h"
 #include "elastos/droid/os/Handler.h"
 #include "util/Xml.h"

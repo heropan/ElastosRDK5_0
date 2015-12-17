@@ -51,52 +51,52 @@ module
      * Bit field indicating supported modes of operation
      */
     Mode(
-        [out] Int32 * result);
+        [out] Int32* result);
 
     /**
      * Indicates for which channels the gain can be controlled
      * (e.g. AudioFormat.CHANNEL_OUT_STEREO)
      */
     ChannelMask(
-        [out] Int32 * result);
+        [out] Int32* result);
 
     /**
      * Minimum gain value in millibel
      */
     MinValue(
-        [out] Int32 * result);
+        [out] Int32* result);
 
     /**
      * Maximum gain value in millibel
      */
     MaxValue(
-        [out] Int32 * result);
+        [out] Int32* result);
 
     /**
      * Default gain value in millibel
      */
     DefaultValue(
-        [out] Int32 * result);
+        [out] Int32* result);
 
     /**
      * Granularity of gain control in millibel
      */
     StepValue(
-        [out] Int32 * result);
+        [out] Int32* result);
 
     /**
      * Minimum ramp duration in milliseconds
      * 0 if MODE_RAMP not set
      */
     RampDurationMinMs(
-        [out] Int32 * result);
+        [out] Int32* result);
 
     /**
      * Maximum ramp duration in milliseconds
      * 0 if MODE_RAMP not set
      */
     RampDurationMaxMs(
-        [out] Int32 * result);
+        [out] Int32* result);
 
     /**
      * Build a valid gain configuration for this gain controller for use by
@@ -110,9 +110,9 @@ module
     BuildConfig(
         [in] Int32 mode,
         [in] Int32 channelMask,
-        [in] ArrayOf<Int32> * values,
+        [in] ArrayOf<Int32>* values,
         [in] Int32 rampDurationMs,
-        [out] IAudioGainConfig ** result);
+        [out] IAudioGainConfig** result);
     }
 
     } // namespace media

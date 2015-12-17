@@ -61,6 +61,7 @@ SOURCES += CParcelUuidHelper.cpp
 SOURCES += PatternMatcher.cpp
 SOURCES += PerformanceCollector.cpp
 SOURCES += CPersistableBundle.cpp
+SOURCES += CPersistableBundleHelper.cpp
 SOURCES += CPowerManager.cpp
 SOURCES += CPowerManagerWakeLock.cpp
 SOURCES += CPowerManagerHelper.cpp

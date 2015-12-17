@@ -44,38 +44,38 @@ private:
             /* [in] */ IHandler* handler,
             /* [in] */ CTvInputManager* host);
 
-        PostSessionCreated(
+        CARAPI PostSessionCreated(
             /* [in] */ ITvInputManagerSession* session);
 
-        PostSessionReleased();
+        CARAPI PostSessionReleased();
 
-        PostChannelRetuned(
+        CARAPI PostChannelRetuned(
             /* [in] */ IUri* channelUri);
 
-        PostTracksChanged(
+        CARAPI PostTracksChanged(
             /* [in] */ IList* tracks);
 
-        PostTrackSelected(
+        CARAPI PostTrackSelected(
             /* [in] */ Int32 type,
             /* [in] */ const String& trackId);
 
-        PostVideoAvailable();
+        CARAPI PostVideoAvailable();
 
-        PostVideoUnavailable(
+        CARAPI PostVideoUnavailable(
             /* [in] */ Int32 reason);
 
-        PostContentAllowed();
+        CARAPI PostContentAllowed();
 
-        PostContentBlocked(
+        CARAPI PostContentBlocked(
             /* [in] */ ITvContentRating* rating);
 
-        PostLayoutSurface(
+        CARAPI PostLayoutSurface(
             /* [in] */ Int32 left,
             /* [in] */ Int32 top,
             /* [in] */ Int32 right,
             /* [in] */ Int32 bottom);
 
-        PostSessionEvent(
+        CARAPI PostSessionEvent(
             /* [in] */ const String& eventType,
             /* [in] */ IBundle* eventArgs);
 
@@ -95,20 +95,20 @@ private:
             /* [in] */ IHandler* handler,
             /* [in] */ CTvInputManager* host);
 
-        GetCallback(
+        CARAPI GetCallback(
             /* [out] */ ITvInputManagerTvInputCallback** result);
 
-        PostInputStateChanged(
+        CARAPI PostInputStateChanged(
             /* [in] */ const String& inputId,
             /* [in] */ Int32 state);
 
-        PostInputAdded(
+        CARAPI PostInputAdded(
             /* [in] */ const String& inputId);
 
-        PostInputRemoved(
+        CARAPI PostInputRemoved(
             /* [in] */ const String& inputId);
 
-        PostInputUpdated(
+        CARAPI PostInputUpdated(
             /* [in] */ const String& inputId);
 
     public:
@@ -122,13 +122,13 @@ private:
     {
     public:
         PostSessionCreatedRunnable(
-        /* [in] */ SessionCallbackRecord* host,
-        /* [in] */ ITvInputManagerSession* session)
+            /* [in] */ SessionCallbackRecord* host,
+            /* [in] */ ITvInputManagerSession* session)
             : mHost(host)
             , mSession(session)
         {}
 
-        virtual CARAPI Run();
+        CARAPI Run();
 
     private:
         SessionCallbackRecord* mHost;
@@ -140,11 +140,11 @@ private:
     {
     public:
         PostSessionReleasedRunnable(
-        /* [in] */ SessionCallbackRecord* host)
+            /* [in] */ SessionCallbackRecord* host)
             : mHost(host)
         {}
 
-        virtual CARAPI Run();
+        CARAPI Run();
 
     private:
         SessionCallbackRecord* mHost;
@@ -155,13 +155,13 @@ private:
     {
     public:
         PostChannelRetunedRunnable(
-        /* [in] */ SessionCallbackRecord* host,
-        /* [in] */ IUri* channelUri)
+            /* [in] */ SessionCallbackRecord* host,
+            /* [in] */ IUri* channelUri)
             : mHost(host)
             , mChannelUri(channelUri)
         {}
 
-        virtual CARAPI Run();
+        CARAPI Run();
 
     private:
         SessionCallbackRecord* mHost;
@@ -173,13 +173,13 @@ private:
     {
     public:
         PostTracksChangedRunnable(
-        /* [in] */ SessionCallbackRecord* host,
-        /* [in] */ IList* tracks)
+            /* [in] */ SessionCallbackRecord* host,
+            /* [in] */ IList* tracks)
             : mHost(host)
             , mTracks(tracks)
         {}
 
-        virtual CARAPI Run();
+        CARAPI Run();
 
     private:
         SessionCallbackRecord* mHost;
@@ -191,15 +191,15 @@ private:
     {
     public:
         PostTrackSelectedRunnable(
-        /* [in] */ SessionCallbackRecord* host,
-        /* [in] */ Int32 type,
-        /* [in] */ const String& trackId)
+            /* [in] */ SessionCallbackRecord* host,
+            /* [in] */ Int32 type,
+            /* [in] */ const String& trackId)
             : mHost(host)
             , mType(type)
             , mTrackId(trackId)
         {}
 
-        virtual CARAPI Run();
+        CARAPI Run();
 
     private:
         SessionCallbackRecord* mHost;
@@ -212,11 +212,11 @@ private:
     {
     public:
         PostVideoAvailableRunnable(
-        /* [in] */ SessionCallbackRecord* host)
+            /* [in] */ SessionCallbackRecord* host)
             : mHost(host)
         {}
 
-        virtual CARAPI Run();
+        CARAPI Run();
 
     private:
         SessionCallbackRecord* mHost;
@@ -227,13 +227,13 @@ private:
     {
     public:
         PostVideoUnavailableRunnable(
-        /* [in] */ SessionCallbackRecord* host,
-        /* [in] */ Int32 reason)
+            /* [in] */ SessionCallbackRecord* host,
+            /* [in] */ Int32 reason)
             : mHost(host)
             , mReason(reason)
         {}
 
-        virtual CARAPI Run();
+        CARAPI Run();
 
     private:
         SessionCallbackRecord* mHost;
@@ -245,11 +245,11 @@ private:
     {
     public:
         PostContentAllowedRunnable(
-        /* [in] */ SessionCallbackRecord* host)
+            /* [in] */ SessionCallbackRecord* host)
             : mHost(host)
         {}
 
-        virtual CARAPI Run();
+        CARAPI Run();
 
     private:
         SessionCallbackRecord* mHost;
@@ -260,13 +260,13 @@ private:
     {
     public:
         PostContentBlockedRunnable(
-        /* [in] */ SessionCallbackRecord* host,
-        /* [in] */ ITvContentRating* rating)
+            /* [in] */ SessionCallbackRecord* host,
+            /* [in] */ ITvContentRating* rating)
             : mHost(host)
             , mRating(rating)
         {}
 
-        virtual CARAPI Run();
+        CARAPI Run();
 
     private:
         SessionCallbackRecord* mHost;
@@ -278,11 +278,11 @@ private:
     {
     public:
         PostLayoutSurfaceRunnable(
-        /* [in] */ SessionCallbackRecord* host,
-        /* [in] */ Int32 left,
-        /* [in] */ Int32 top,
-        /* [in] */ Int32 right,
-        /* [in] */ Int32 bottom)
+            /* [in] */ SessionCallbackRecord* host,
+            /* [in] */ Int32 left,
+            /* [in] */ Int32 top,
+            /* [in] */ Int32 right,
+            /* [in] */ Int32 bottom)
             : mHost(host)
             , mLeft(left)
             , mTop(top)
@@ -290,7 +290,7 @@ private:
             , mBottom(bottom)
         {}
 
-        virtual CARAPI Run();
+        CARAPI Run();
 
     private:
         SessionCallbackRecord* mHost;
@@ -305,15 +305,15 @@ private:
     {
     public:
         PostSessionEventRunnable(
-        /* [in] */ SessionCallbackRecord* host,
-        /* [in] */ const String& eventType,
-        /* [in] */ IBundle* eventArgs)
+            /* [in] */ SessionCallbackRecord* host,
+            /* [in] */ const String& eventType,
+            /* [in] */ IBundle* eventArgs)
             : mHost(host)
             , mEventType(eventType)
             , mEventArgs(eventArgs)
         {}
 
-        virtual CARAPI Run();
+        CARAPI Run();
 
     private:
         SessionCallbackRecord* mHost;
@@ -326,15 +326,15 @@ private:
     {
     public:
         PostInputStateChangedRunnable(
-        /* [in] */ TvInputCallbackRecord* host,
-        /* [in] */ const String& inputId,
-        /* [in] */ Int32 state)
+            /* [in] */ TvInputCallbackRecord* host,
+            /* [in] */ const String& inputId,
+            /* [in] */ Int32 state)
             : mHost(host)
             , mInputId(inputId)
             , mState(state)
         {}
 
-        virtual CARAPI Run();
+        CARAPI Run();
 
     private:
         TvInputCallbackRecord* mHost;
@@ -347,13 +347,13 @@ private:
     {
     public:
         PostInputAddedRunnable(
-        /* [in] */ TvInputCallbackRecord* host,
-        /* [in] */ const String& inputId)
+            /* [in] */ TvInputCallbackRecord* host,
+            /* [in] */ const String& inputId)
             : mHost(host)
             , mInputId(inputId)
         {}
 
-        virtual CARAPI Run();
+        CARAPI Run();
 
     private:
         TvInputCallbackRecord* mHost;
@@ -365,13 +365,13 @@ private:
     {
     public:
         PostInputRemovedRunnable(
-        /* [in] */ TvInputCallbackRecord* host,
-        /* [in] */ const String& inputId)
+            /* [in] */ TvInputCallbackRecord* host,
+            /* [in] */ const String& inputId)
             : mHost(host)
             , mInputId(inputId)
         {}
 
-        virtual CARAPI Run();
+        CARAPI Run();
 
     private:
         TvInputCallbackRecord* mHost;
@@ -383,13 +383,13 @@ private:
     {
     public:
         PostInputUpdatedRunnable(
-        /* [in] */ TvInputCallbackRecord* host,
-        /* [in] */ const String& inputId)
+            /* [in] */ TvInputCallbackRecord* host,
+            /* [in] */ const String& inputId)
             : mHost(host)
             , mInputId(inputId)
         {}
 
-        virtual CARAPI Run();
+        CARAPI Run();
 
     private:
         TvInputCallbackRecord* mHost;
@@ -530,11 +530,11 @@ public:
 
     CTvInputManager();
 
+    virtual ~CTvInputManager();
+
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
-
-    virtual ~CTvInputManager();
 
     CARAPI constructor(
         /* [in] */ IITvInputManager* service,

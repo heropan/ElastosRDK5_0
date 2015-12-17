@@ -1,7 +1,6 @@
-
-#include "elastos/droid/provider/CContactsContractDisplayPhoto.h"
-#include "elastos/droid/provider/ContactsContract.h"
 #include "elastos/droid/net/Uri.h"
+#include "elastos/droid/provider/ContactsContract.h"
+#include "elastos/droid/provider/CContactsContractDisplayPhoto.h"
 
 using Elastos::Droid::Net::Uri;
 
@@ -9,19 +8,16 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsContractDisplayPhoto::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CContactsContractDisplayPhoto)
+
+CAR_INTERFACE_IMPL(CContactsContractDisplayPhoto, Singleton, IContactsContractDisplayPhoto)
 
 ECode CContactsContractDisplayPhoto::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
-    AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
-    return Uri::WithAppendedPath(auUri, String("display_photo"), uri);
+    return Uri::WithAppendedPath(ContactsContract::AUTHORITY_URI.Get(), String("display_photo"), uri);
 }
 
 ECode CContactsContractDisplayPhoto::GetCONTENTMAXDIMENSIONSURI(
@@ -29,9 +25,7 @@ ECode CContactsContractDisplayPhoto::GetCONTENTMAXDIMENSIONSURI(
 {
     VALIDATE_NOT_NULL(uri);
 
-    AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
-    return Uri::WithAppendedPath(auUri, String("photo_dimensions"), uri);
+    return Uri::WithAppendedPath(ContactsContract::AUTHORITY_URI.Get(), String("photo_dimensions"), uri);
 }
 
 } //Provider

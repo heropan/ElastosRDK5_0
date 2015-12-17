@@ -112,6 +112,12 @@ module
 
     merge("hardware/camera2/dispatch/Dispatchable.car");
     merge("hardware/camera2/dispatch/MethodNameInvoker.car");
+    merge("hardware/camera2/dispatch/ArgumentReplacingDispatcher.car");
+    merge("hardware/camera2/dispatch/BroadcastDispatcher.car");
+    merge("hardware/camera2/dispatch/DuckTypingDispatcher.car");
+    merge("hardware/camera2/dispatch/HandlerDispatcher.car");
+    merge("hardware/camera2/dispatch/InvokeDispatcher.car");
+    merge("hardware/camera2/dispatch/NullDispatcher.car");
 
     merge("hardware/camera2/impl/CallbackProxies.car");
     merge("hardware/camera2/impl/CameraMetadataNative.car");
@@ -272,6 +278,127 @@ module
         }
 
     namespace Camera2 {
+    namespace Dispatch {
+        class CNullDispatcher {
+            constructor();
+
+            interface INullDispatcher;
+            interface IDispatchable;
+        }
+
+        class CInvokeDispatcher {
+            constructor();
+
+            constructor(
+                [in] IInterface* target);
+
+            interface IInvokeDispatcher;
+            interface IDispatchable;
+        }
+
+        [local]
+        class CHandlerDispatcher {
+            constructor();
+
+            /**
+             * Create a dispatcher that forwards it's dispatch calls by posting
+             * them onto the {@code handler} as a {@code Runnable}.
+             *
+             * @param dispatchTarget the destination whose method calls will be redirected into the handler
+             * @param handler all calls into {@code dispatchTarget} will be posted onto this handler
+             * @param <T> the type of the element you want to wrap.
+             * @return a dispatcher that will forward it's dispatch calls to a handler
+             */
+            constructor(
+                [in] IDispatchable* dispatchTarget,
+                [in] IHandler* handler);
+
+            interface IHandlerDispatcher;
+            interface IDispatchable;
+        }
+
+        [local]
+        class CArgumentReplacingDispatcher {
+            constructor();
+
+            /**
+             * Create a new argument replacing dispatcher; dispatches are forwarded to {@code target}
+             * after the argument is replaced.
+             *
+             * <p>For example, if a method {@code onAction(T1 a, Integer b, T2 c)} is invoked, and we wanted
+             * to replace all occurrences of {@code b} with {@code 0xDEADBEEF}, we would set
+             * {@code argumentIndex = 1} and {@code replaceWith = 0xDEADBEEF}.</p>
+             *
+             * <p>If a method dispatched has less arguments than {@code argumentIndex}, it is
+             * passed through with the arguments unchanged.</p>
+             *
+             * @param target destination dispatch type, methods will be redirected to this dispatcher
+             * @param argumentIndex the numeric index of the argument {@code >= 0}
+             * @param replaceWith arguments matching {@code argumentIndex} will be replaced with this object
+             */
+            constructor(
+                [in] IDispatchable* target,
+                [in] Int32 argumentIndex,
+                [in] IInterface* replaceWith);
+
+            interface IArgumentReplacingDispatcher;
+            interface IDispatchable;
+        }
+
+        [local]
+        class CDuckTypingDispatcher {
+            constructor();
+
+            /**
+             * Create a new duck typing dispatcher.
+             *
+             * @param target destination dispatch type, methods will be redirected to this dispatcher
+             * @param targetClass destination dispatch class, methods will be converted to this class's
+             */
+            constructor(
+                [in] IDispatchable* target,
+                [in] IClassInfo* targetClass);
+
+            interface IDuckTypingDispatcher;
+            interface IDispatchable;
+        }
+
+        [deprecated, local]
+        class CBroadcastDispatcher {
+            constructor();
+
+            /**
+             * Create a broadcast dispatcher from the supplied dispatch targets.
+             *
+             * @param dispatchTargets one or more targets to dispatch to
+             */
+            //@SafeVarargs
+            constructor(
+                [in] ArrayOf<IDispatchable*>* dispatchTargets);
+
+            interface IBroadcastDispatcher;
+            interface IDispatchable;
+        }
+
+        [local]
+        class CMethodNameInvoker {
+            constructor();
+
+            /**
+             * Create a new method name invoker.
+             *
+             * @param target destination dispatch type, invokes will be redirected to this dispatcher
+             * @param targetClass destination dispatch class, the invoked methods will be from this class
+             */
+            constructor(
+                [in] IDispatchable* target,
+                [in] IClassInfo* targetClass);
+
+            interface IMethodNameInvoker;
+        }
+
+    } //namespace Dispatch
+
     namespace Params {
         [deprecated]
         class CBlackLevelPattern {
@@ -584,6 +711,22 @@ module
                 [in] String ip);
 
             interface IWifiDisplaySessionInfo;
+            interface IParcelable;
+        }
+
+        [deprecated]
+        class CWifiDisplayStatus {
+            constructor();
+
+            constructor(
+                [in] Int32 featureState,
+                [in] Int32 scanState,
+                [in] Int32 activeDisplayState,
+                [in] IWifiDisplay* activeDisplay,
+                [in] ArrayOf<IWifiDisplay*>* displays,
+                [in] IWifiDisplaySessionInfo* sessionInfo);
+
+            interface IWifiDisplayStatus;
             interface IParcelable;
         }
 

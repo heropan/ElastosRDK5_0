@@ -33,7 +33,7 @@ typedef struct InterfacePack
 
 CAR_INTERFACE_IMPL(CServiceManager, Object, IServiceManager)
 
-CAR_OBJECT_IMPL(CServiceManager)
+CAR_SINGLETON_IMPL(CServiceManager)
 
 CServiceManager::CServiceManager() :
     mServiceCache(11)

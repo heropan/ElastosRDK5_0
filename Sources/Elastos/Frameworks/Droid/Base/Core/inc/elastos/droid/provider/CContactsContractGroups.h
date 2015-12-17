@@ -1,55 +1,64 @@
-
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTGROUPS_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTGROUPS_H__
 
 #include "_Elastos_Droid_Provider_CContactsContractGroups.h"
 #include "elastos/droid/content/CursorEntityIterator.h"
+#include <elastos/core/Singleton.h>
 
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Database::ICursor;
-using Elastos::Droid::Content::IEntity;
 using Elastos::Droid::Content::CursorEntityIterator;
+using Elastos::Droid::Content::IEntity;
 using Elastos::Droid::Content::IEntityIterator;
+using Elastos::Droid::Database::ICursor;
+using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
 namespace Droid {
 namespace Provider {
 
 CarClass(CContactsContractGroups)
+    , public Singleton
+    , public IContactsContractGroups
+    , public IBaseColumns
+    , public IContactsContractGroupsColumns
+    , public IContactsContractSyncColumns
 {
 private:
     class EntityIteratorImpl
-        : public ElRefBase
-        , public CursorEntityIterator
+        : public CursorEntityIterator
     {
     public:
-        EntityIteratorImpl(
-            /* [in] */ ICursor* cursor);
+        CAR_INTERFACE_DECL()
+
+        EntityIteratorImpl();
 
         ~EntityIteratorImpl();
 
-        CARAPI_(PInterface) Probe(
-            /* [in]  */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
+        CARAPI constructor(
+            /* [in] */ ICursor* cursor);
 
         // @Override
         CARAPI GetEntityAndIncrementCursor(
             /* [in] */ ICursor* cursor,
             /* [out] */ IEntity** entity);
+
+        //override
+        CARAPI HasNext(
+            /* [out] */ Boolean* result);
+
+        CARAPI GetNext(
+            /* [out] */ IInterface** object);
+
+        CARAPI Remove();
+
+        CARAPI Reset();
+
+        CARAPI Close();
     };
 
 public:
-    /**
-     * This utility class cannot be instantiated
-     */
-    CARAPI constructor();
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * The content:// style URI for this table

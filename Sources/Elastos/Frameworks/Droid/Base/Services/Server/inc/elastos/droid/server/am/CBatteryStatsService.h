@@ -24,7 +24,7 @@ CarClass(CBatteryStatsService)
 {
 private:
     class BluetoothProfileServiceListener
-        : public ElRefBase
+        : public Object
         , public IBluetoothProfileServiceListener
     {
     public:

@@ -49,7 +49,7 @@ RecentsScrollViewPerformanceHelper::RecentsScrollViewPerformanceHelper(
     mScrollView = scrollView;
     AutoPtr<ArrayOf<Int32> > attrViews = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::View),
-            ARRAY_SIZE(R::styleable::View));
+            ArraySize(R::styleable::View));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(attrs, attrViews, (ITypedArray**)&a);
     AutoPtr<IViewConfiguration> vc;

@@ -1296,7 +1296,7 @@ ECode TextView::InitFromAttributes(
      */
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::TextViewAppearance),
-            ARRAY_SIZE(R::styleable::TextViewAppearance));
+            ArraySize(R::styleable::TextViewAppearance));
     AutoPtr<ITypedArray> a;
     theme->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 
@@ -1307,7 +1307,7 @@ ECode TextView::InitFromAttributes(
     if (ap != -1) {
         attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::TextAppearance),
-            ARRAY_SIZE(R::styleable::TextAppearance));
+            ArraySize(R::styleable::TextAppearance));
         theme->ObtainStyledAttributes(ap, attrIds, (ITypedArray**)&appearance);
     }
 
@@ -1412,7 +1412,7 @@ ECode TextView::InitFromAttributes(
     a = NULL;
     attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::TextView),
-            ARRAY_SIZE(R::styleable::TextView));
+            ArraySize(R::styleable::TextView));
     theme->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 
     //TODO  typedarray should has TextView_minHeight value, but now it has not
@@ -2077,7 +2077,7 @@ ECode TextView::InitFromAttributes(
     a = NULL;
     attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::View),
-        ARRAY_SIZE(R::styleable::View));
+        ArraySize(R::styleable::View));
     ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
             attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
 
@@ -3401,7 +3401,7 @@ ECode TextView::SetTextAppearance(
 {
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::TextAppearance),
-        ARRAY_SIZE(R::styleable::TextAppearance));
+        ArraySize(R::styleable::TextAppearance));
     AutoPtr<ITypedArray> appearance;
     ASSERT_SUCCEEDED(context->ObtainStyledAttributes(resid, attrIds, (ITypedArray**)&appearance));
 
@@ -6754,10 +6754,12 @@ Int32 TextView::GetFadeHeight(
     return 0;
 }
 
-Boolean TextView::OnKeyPreIme(
+ECode TextView::OnKeyPreIme(
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     if (keyCode == IKeyEvent::KEYCODE_BACK) {
         assert(0);
         Boolean isInSelectionMode;// = mEditor != NULL && mEditor->mSelectionActionMode != NULL;
@@ -6772,7 +6774,8 @@ Boolean TextView::OnKeyPreIme(
                 if (state != NULL) {
                     state->StartTracking(event, THIS_PROBE(IInterface));
                 }
-                return TRUE;
+                *result = TRUE;
+                return NOERROR;
             } else if (action == IKeyEvent::ACTION_UP) {
                 AutoPtr<IDispatcherState> state;
                 GetKeyDispatcherState((IDispatcherState**)&state);
@@ -6784,35 +6787,39 @@ Boolean TextView::OnKeyPreIme(
                 event->IsCanceled(&cancel);
                 if (track && !cancel) {
                     StopSelectionActionMode();
-                    return TRUE;
+                    *result = TRUE;
+                    return NOERROR;
                 }
             }
         }
     }
-    Boolean result;
-    View::OnKeyPreIme(keyCode, event, &result);
-    return result;
+
+    return View::OnKeyPreIme(keyCode, event, result);
 }
 
-Boolean TextView::OnKeyDown(
+ECode TextView::OnKeyDown(
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     Int32 which = DoKeyDown(keyCode, event, NULL);
     if (which == 0) {
         // Go through default dispatching.
-        Boolean result;
-        View::OnKeyDown(keyCode, event, &result);
-        return result;
+        return View::OnKeyDown(keyCode, event, result);
     }
-    return TRUE;
+    *result = TRUE;
+    return NOERROR;
 }
 
-Boolean TextView::OnKeyMultiple(
+ECode TextView::OnKeyMultiple(
     /* [in] */ Int32 keyCode,
     /* [in] */ Int32 repeatCount,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
     AutoPtr<IKeyEvent> down;
     assert(0);
     //CKeyEvent::ChangeAction(event, IKeyEvent::ACTION_DOWN, (IKeyEvent**)&down);
@@ -6820,13 +6827,12 @@ Boolean TextView::OnKeyMultiple(
     Int32 which = DoKeyDown(keyCode, down, event);
     if (which == 0) {
         // Go through default dispatching.
-        Boolean result;
-        View::OnKeyMultiple(keyCode, repeatCount, event, &result);
-        return result;
+        return View::OnKeyMultiple(keyCode, repeatCount, event, result);
     }
     if (which == -1) {
         // Consumed the whole thing.
-        return TRUE;
+        *result = TRUE;
+        return NOERROR;
     }
 
     repeatCount--;
@@ -6871,7 +6877,8 @@ Boolean TextView::OnKeyMultiple(
         }
     }
 
-    return TRUE;
+    *result = TRUE;
+    return NOERROR;
 }
 
 Boolean TextView::ShouldAdvanceFocusOnEnter()
@@ -7092,15 +7099,15 @@ ECode TextView::HideErrorIfUnchanged()
     return NOERROR;
 }
 
-Boolean TextView::OnKeyUp(
+ECode TextView::OnKeyUp(
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* resValue)
 {
+    VALIDATE_NOT_NULL(resValue);
     Boolean isEnabled;
     if (IsEnabled(&isEnabled), !isEnabled) {
-        Boolean result;
-        View::OnKeyUp(keyCode, event, &result);
-        return result;
+        return View::OnKeyUp(keyCode, event, resValue);
     }
 
     Boolean res;
@@ -7141,9 +7148,8 @@ Boolean TextView::OnKeyUp(
                     }
                 }
             }
-            Boolean res;
-            View::OnKeyUp(keyCode, event, &res);
-            return res;
+
+            return View::OnKeyUp(keyCode, event, resValue);
         }
 
         case IKeyEvent::KEYCODE_ENTER:
@@ -7156,7 +7162,8 @@ Boolean TextView::OnKeyUp(
                     mEditor->mInputContentType->mOnEditorActionListener->OnEditorAction(
                             THIS_PROBE(ITextView), IEditorInfo::IME_NULL, event, &result);
                     if (result) {
-                        return TRUE;
+                        *resValue = TRUE;
+                        return NOERROR;
                     }
                 }*/
 
@@ -7212,9 +7219,7 @@ Boolean TextView::OnKeyUp(
                         }
                 }
 
-                Boolean res;
-                View::OnKeyUp(keyCode, event, &res);
-                return res;
+                return View::OnKeyUp(keyCode, event, resValue);
             }
             break;
     }
@@ -7222,19 +7227,21 @@ Boolean TextView::OnKeyUp(
     /*if (mEditor != NULL && mEditor->mKeyListener != NULL) {
         Boolean res;
         mEditor->mKeyListener->OnKeyUp(THIS_PROBE(IView), IEditable::Probe(mText), keyCode, event, &res);
-        if (res)
-            return TRUE;
+        if (res) {
+            *resValue = TRUE;
+            return NOERROR;
+        }
     }*/
 
     if (mMovement != NULL && mLayout != NULL) {
         Boolean res;
         mMovement->OnKeyUp(THIS_PROBE(ITextView), ISpannable::Probe(mText), keyCode, event, &res);
-        if (res)
-            return TRUE;
+        if (res) {
+            *resValue = TRUE;
+            return NOERROR;
+        }
     }
-    Boolean lastResult;
-    View::OnKeyUp(keyCode, event, &lastResult);
-    return lastResult;
+    return View::OnKeyUp(keyCode, event, resValue);
 }
 
 Boolean TextView::OnCheckIsTextEditor()
@@ -9808,7 +9815,7 @@ ECode TextView::GetTextColors(
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::TextView),
-        ARRAY_SIZE(R::styleable::TextView));
+        ArraySize(R::styleable::TextView));
     AutoPtr<ITypedArray> a;
     ASSERT_SUCCEEDED(context->ObtainStyledAttributes(attrIds, (ITypedArray**)&a));
     AutoPtr<IColorStateList> colors;
@@ -9820,7 +9827,7 @@ ECode TextView::GetTextColors(
         if (ap != 0) {
             AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
                 const_cast<Int32 *>(R::styleable::TextAppearance),
-                ARRAY_SIZE(R::styleable::TextAppearance));
+                ArraySize(R::styleable::TextAppearance));
             AutoPtr<ITypedArray> appearance;
             ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
                     ap, attrIds, (ITypedArray**)&appearance));

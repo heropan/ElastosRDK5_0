@@ -1,8 +1,7 @@
-
 #include "elastos/droid/provider/CContactsContractCommonDataKindsOrganization.h"
-#include "elastos/droid/text/TextUtils.h"
-#include <elastos/coredef.h>
 #include "elastos/droid/R.h"
+#include "elastos/droid/text/TextUtils.h"
+// #include <elastos/coredef.h>
 
 using Elastos::Droid::Text::TextUtils;
 
@@ -10,10 +9,12 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsContractCommonDataKindsOrganization::constructor()
-{
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CContactsContractCommonDataKindsOrganization)
+
+CAR_INTERFACE_IMPL_3(CContactsContractCommonDataKindsOrganization, Singleton
+    , IContactsContractCommonDataKindsOrganization
+    , IContactsContractDataColumnsWithJoins
+    , IContactsContractCommonDataKindsCommonColumns)
 
 ECode CContactsContractCommonDataKindsOrganization::GetTypeLabelResource(
     /* [in] */ Int32 type,
@@ -43,7 +44,7 @@ ECode CContactsContractCommonDataKindsOrganization::GetTypeLabel(
 {
     VALIDATE_NOT_NULL(lb);
 
-    if (type == TYPE_CUSTOM && !TextUtils::IsEmpty(label)) {
+    if (type == IContactsContractCommonDataKindsBaseTypes::TYPE_CUSTOM && !TextUtils::IsEmpty(label)) {
         *lb = label;
         REFCOUNT_ADD(*lb);
         return NOERROR;
