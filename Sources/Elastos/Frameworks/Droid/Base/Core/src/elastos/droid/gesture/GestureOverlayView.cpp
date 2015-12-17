@@ -2,7 +2,7 @@
 //#include "elastos/droid/Widget/FrameLayout.h"
 //#include "elastos/droid/View/Animation/AnimationUtils.h"
 #include "elastos/droid/ext/frameworkdef.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/gesture/GestureOverlayView.h"
 #include "elastos/droid/gesture/GestureStroke.h"

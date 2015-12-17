@@ -177,9 +177,9 @@ private:
         /* [in] */ IIntent* intent);
 
 private:
-    ECO_LOCAL static AutoPtr<IIntentFilter> sPackageFilt;
-    ECO_LOCAL static AutoPtr<IIntentFilter> sNonDataFilt;
-    ECO_LOCAL static AutoPtr<IIntentFilter> sExternalFilt;
+    static AutoPtr<IIntentFilter> sPackageFilt;
+    static AutoPtr<IIntentFilter> sNonDataFilt;
+    static AutoPtr<IIntentFilter> sExternalFilt;
 
 private:
     ECO_LOCAL HashSet<String> mUpdatingPackages;

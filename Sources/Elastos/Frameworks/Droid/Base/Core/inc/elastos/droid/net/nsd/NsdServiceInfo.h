@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_NSD_NSDSERVICEINFO_H__
 #define __ELASTOS_DROID_NET_NSD_NSDSERVICEINFO_H__
 
-#include "Elastos.CoreLibrary.Net.h"
+#include <Elastos.CoreLibrary.Net.h>
 #include "Elastos.Droid.Net.h"
 #include "Elastos.Droid.Utility.h"
 #include "elastos/droid/ext/frameworkext.h"

@@ -1,3 +1,6 @@
+
+#include "Elastos.Droid.Net.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/provider/ContactsContractContacts.h"
 #include "elastos/droid/provider/CContactsContractContactsAggregationSuggestionsBuilder.h"
 #include "elastos/droid/text/TextUtils.h"

@@ -1,6 +1,6 @@
 
-#include "Elastos.CoreLibrary.Utility.h"
-#include "Elastos.CoreLibrary.Utility.Concurrent.h"
+#include <Elastos.CoreLibrary.Utility.h>
+#include <Elastos.CoreLibrary.Utility.Concurrent.h>
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.Opengl.h"

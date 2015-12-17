@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_MEDIA_CEXIFINTERFACE_H__
 #define __ELASTOS_DROID_MEDIA_CEXIFINTERFACE_H__
 
-#include "Elastos.CoreLibrary.Text.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Text.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "_Elastos_Droid_Media_CExifInterface.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>

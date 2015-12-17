@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/widget/ScrollView.h"
 // #include "elastos/droid/os/CStrictMode.h";
 #include "elastos/droid/widget/COverScroller.h"

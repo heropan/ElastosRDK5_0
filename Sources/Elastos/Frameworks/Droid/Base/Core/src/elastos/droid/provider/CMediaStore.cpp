@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Database.h"
 #include "elastos/droid/content/CContentUris.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/graphics/CBitmapFactory.h"

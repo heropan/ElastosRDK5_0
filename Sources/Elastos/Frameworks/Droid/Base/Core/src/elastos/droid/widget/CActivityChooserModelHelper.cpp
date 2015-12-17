@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/ActivityChooserModel.h"
 #include "elastos/droid/widget/CActivityChooserModelHelper.h"
 

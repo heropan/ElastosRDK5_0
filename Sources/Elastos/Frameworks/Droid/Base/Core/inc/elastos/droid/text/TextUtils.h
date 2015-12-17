@@ -634,20 +634,20 @@ private:
         /* [in] */ ILocale* locale);
 
 private:
-    ECO_LOCAL static const String TAG;// = "TextUtils";
+    static const String TAG;// = "TextUtils";
 
-    ECO_LOCAL static const Char32 FIRST_RIGHT_TO_LEFT = 0x0590;//'\u0590';
+    static const Char32 FIRST_RIGHT_TO_LEFT = 0x0590;//'\u0590';
 
-    ECO_LOCAL static Object sLock;
+    static Object sLock;
 
-    ECO_LOCAL static AutoPtr< ArrayOf<Char32> > sTemp;
+    static AutoPtr< ArrayOf<Char32> > sTemp;
 
-    ECO_LOCAL static AutoPtr< ArrayOf<String> > EMPTY_STRING_ARRAY;
+    static AutoPtr< ArrayOf<String> > EMPTY_STRING_ARRAY;
 
-    ECO_LOCAL static const Char32 ZWNBS_CHAR = 0xFEFF;//'\uFEFF';
+    static const Char32 ZWNBS_CHAR = 0xFEFF;//'\uFEFF';
 
-    ECO_LOCAL static String ARAB_SCRIPT_SUBTAG;
-    ECO_LOCAL static String HEBR_SCRIPT_SUBTAG;
+    static String ARAB_SCRIPT_SUBTAG;
+    static String HEBR_SCRIPT_SUBTAG;
 };
 
 } // namespace Text

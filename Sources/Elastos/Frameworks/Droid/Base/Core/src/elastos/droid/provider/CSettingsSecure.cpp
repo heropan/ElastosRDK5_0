@@ -1,4 +1,5 @@
 #include "elastos/droid/ext/frameworkdef.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/provider/CSettingsSecure.h"
 #include "elastos/droid/provider/Settings.h"
 

@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_ANALOGCLOCK_H__
 #define __ELASTOS_DROID_WIDGET_ANALOGCLOCK_H__
 
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/ext/frameworkext.h"

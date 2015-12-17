@@ -2,7 +2,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_CCONTENTSETTINGSADAPTER_H_
 #define _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_CCONTENTSETTINGSADAPTER_H_
 
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Content.h"
 #include "_Elastos_Droid_Webkit_Webview_Chromium_CWebViewChromiumFactoryProvider.h"
 #include "elastos/droid/webkit/webview/chromium/WebViewChromiumFactoryProvider.h"

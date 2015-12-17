@@ -1,6 +1,6 @@
 
-#include "Elastos.CoreLibrary.Core.h"
-#include "Elastos.CoreLibrary.Net.h"
+#include <Elastos.CoreLibrary.Core.h>
+#include <Elastos.CoreLibrary.Net.h>
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/text/format/Formatter.h"
 #include "elastos/droid/R.h"

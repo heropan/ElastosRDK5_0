@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Animation.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/RadialTimePickerView.h"
 #include "elastos/droid/widget/CTextView.h"
 #include "elastos/droid/animation/CAnimatorSet.h"

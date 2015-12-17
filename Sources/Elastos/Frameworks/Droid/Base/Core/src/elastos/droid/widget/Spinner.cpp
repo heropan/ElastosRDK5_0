@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/Spinner.h"
 #include "elastos/droid/widget/CSpinnerSavedState.h"
 #include "elastos/droid/widget/TextView.h"

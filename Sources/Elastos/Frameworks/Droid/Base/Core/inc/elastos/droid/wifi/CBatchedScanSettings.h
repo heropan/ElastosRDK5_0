@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_CBATCHEDSCANSETTINGS_H__
 #define __ELASTOS_DROID_NET_WIFI_CBATCHEDSCANSETTINGS_H__
 
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "_Elastos_Droid_Wifi_CBatchedScanSettings.h"
 #include <elastos/core/Object.h>
 

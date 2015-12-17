@@ -1,6 +1,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Location.h"
 #include "elastos/droid/hardware/location/GeofenceHardwareImpl.h"

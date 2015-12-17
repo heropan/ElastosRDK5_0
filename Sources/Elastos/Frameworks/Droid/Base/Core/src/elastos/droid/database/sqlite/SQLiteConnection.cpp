@@ -1,6 +1,6 @@
 
-#include "Elastos.CoreLibrary.Text.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Text.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Utility.h"
 #include "elastos/droid/database/sqlite/SQLiteConnection.h"
 #include "elastos/droid/database/sqlite/SQLiteConnectionPool.h"

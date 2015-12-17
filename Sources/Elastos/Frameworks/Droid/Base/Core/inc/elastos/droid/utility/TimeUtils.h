@@ -146,18 +146,18 @@ public:
     static const Int64 NANOS_PER_MS;// = 1000000;
 
 private:
-    ECO_LOCAL static const Boolean DBG;// = false;
-    ECO_LOCAL static const String TAG;// = "TimeUtils";
+    static const Boolean DBG;// = false;
+    static const String TAG;// = "TimeUtils";
 
     /** Cached results of getTineZones */
-    ECO_LOCAL static Object sLastLockObj;
-    ECO_LOCAL static AutoPtr<ArrayOf<ITimeZone *> > sLastZones;
-    ECO_LOCAL static String sLastCountry;
+    static Object sLastLockObj;
+    static AutoPtr<ArrayOf<ITimeZone *> > sLastZones;
+    static String sLastCountry;
 
     /** Cached results of getTimeZonesWithUniqueOffsets */
-    ECO_LOCAL static Object sLastUniqueLockObj;
-    ECO_LOCAL static AutoPtr<ArrayOf<ITimeZone *> > sLastUniqueZoneOffsets;
-    ECO_LOCAL static String sLastUniqueCountry;
+    static Object sLastUniqueLockObj;
+    static AutoPtr<ArrayOf<ITimeZone *> > sLastUniqueZoneOffsets;
+    static String sLastUniqueCountry;
 
 };
 

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_NSD_NSDMANAGER_H__
 #define __ELASTOS_DROID_NET_NSD_NSDMANAGER_H__
 
-#include "Elastos.CoreLibrary.Utility.Concurrent.h"
+#include <Elastos.CoreLibrary.Utility.Concurrent.h>
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Internal.h"
 #include "Elastos.Droid.Net.h"

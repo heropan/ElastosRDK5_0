@@ -1,5 +1,5 @@
 
-#include "Elastos.CoreLibrary.External.h"
+#include <Elastos.CoreLibrary.External.h>
 #include "Elastos.Droid.Text.h"
 #include "Elastos.Droid.Utility.h"
 #include "Elastos.Droid.View.h"

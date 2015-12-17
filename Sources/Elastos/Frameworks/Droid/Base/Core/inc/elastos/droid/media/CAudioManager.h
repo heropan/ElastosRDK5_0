@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CAUDIOMANAGER_H__
 #define __ELASTOS_DROID_MEDIA_CAUDIOMANAGER_H__
 
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.App.h"
 #include "Elastos.Droid.View.h"
 #include "_Elastos_Droid_Media_CAudioManager.h"

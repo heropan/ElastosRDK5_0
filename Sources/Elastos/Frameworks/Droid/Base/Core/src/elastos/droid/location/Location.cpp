@@ -1,6 +1,6 @@
 
-#include "Elastos.CoreLibrary.Text.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Text.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/location/Location.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/SystemClock.h"

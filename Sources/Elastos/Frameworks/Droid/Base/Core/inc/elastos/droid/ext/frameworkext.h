@@ -7,7 +7,7 @@
 using namespace Elastos;
 #endif
 
-#include "Elastos.Droid.Core.h"
+#include <Elastos.Droid.Core.h>
 
 extern "C" const Elastos::ClassID ECLSID_CDummyObject;
 

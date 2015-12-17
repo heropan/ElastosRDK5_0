@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_SIMPLEMONTHADAPTER_H__
 #define __ELASTOS_DROID_WIDGET_SIMPLEMONTHADAPTER_H__
 
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/BaseAdapter.h"
 

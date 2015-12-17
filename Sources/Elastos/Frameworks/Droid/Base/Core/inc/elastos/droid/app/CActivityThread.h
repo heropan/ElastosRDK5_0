@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_CACTIVITYTHREAD_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #define HASH_FOR_APP
 #define HASH_FOR_OS
 #define HASH_FOR_CONTENT

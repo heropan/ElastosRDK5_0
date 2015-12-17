@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/CContactsPhones.h"
 #include "elastos/droid/R.h"

@@ -4,7 +4,7 @@
 
 #include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.Os.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "_Elastos_Droid_View_CWindowInfo.h"
 #include "elastos/droid/utility/Pools.h"
 

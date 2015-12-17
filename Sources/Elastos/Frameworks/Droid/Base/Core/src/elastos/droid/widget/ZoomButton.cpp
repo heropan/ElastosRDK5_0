@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/ZoomButton.h"
 #include "elastos/droid/os/CHandler.h"
 

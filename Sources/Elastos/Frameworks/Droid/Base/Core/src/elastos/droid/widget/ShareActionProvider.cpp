@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/ShareActionProvider.h"
 #include "elastos/droid/utility/CTypedValue.h"
 #include "elastos/droid/R.h"

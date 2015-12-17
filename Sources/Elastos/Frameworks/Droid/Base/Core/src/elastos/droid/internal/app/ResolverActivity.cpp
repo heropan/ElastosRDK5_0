@@ -1,5 +1,5 @@
 
-#include "Elastos.CoreLibrary.Text.h"
+#include <Elastos.CoreLibrary.Text.h>
 #include "Elastos.Droid.Provider.h"
 #include "elastos/droid/internal/app/ResolverActivity.h"
 #include "elastos/droid/app/ActivityManagerNative.h"

@@ -1,3 +1,4 @@
+#include "Elastos.Droid.Database.h"
 #include "elastos/droid/content/CContentValues.h"
 #include "elastos/droid/content/CEntity.h"
 #include "elastos/droid/database/DatabaseUtils.h"

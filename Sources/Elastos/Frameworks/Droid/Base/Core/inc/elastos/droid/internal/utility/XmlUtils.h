@@ -1,10 +1,10 @@
 #ifndef __ELASTOS_DROID_INTERNAL_UTILITY_XMLUTILS_H__
 #define __ELASTOS_DROID_INTERNAL_UTILITY_XMLUTILS_H__
 
-#include "Elastos.CoreLibrary.External.h"
-#include "Elastos.CoreLibrary.Core.h"
-#include "Elastos.CoreLibrary.IO.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.External.h>
+#include <Elastos.CoreLibrary.Core.h>
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.Net.h"
 

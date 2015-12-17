@@ -1,8 +1,8 @@
 #include "Elastos.Droid.Net.h"
 #include "Elastos.Droid.Utility.h"
 #include "Elastos.Droid.Hardware.h"
-#include "Elastos.CoreLibrary.IO.h"
-#include "Elastos.CoreLibrary.External.h"
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.External.h>
 #include "elastos/droid/media/tv/CTvInputInfo.h"
 #include "elastos/droid/media/tv/TvInputInfoTvInputSettings.h"
 #include "elastos/droid/content/CComponentName.h"

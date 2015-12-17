@@ -2,7 +2,10 @@
 #ifndef  __ELASTOS_DROID_WIDGET_RADIATIMEPICKERVIEW_H__
 #define  __ELASTOS_DROID_WIDGET_RADIATIMEPICKERVIEW_H__
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/View.h"
+#include "Elastos.Droid.Animation.h"
+#include <Elastos.CoreLibrary.Utility.h>
 
 using Elastos::Droid::Animation::IAnimatorSet;
 using Elastos::Droid::Animation::IObjectAnimator;
@@ -26,7 +29,7 @@ using Elastos::Droid::View::View;
  * @hide
  */
 class RadialTimePickerView
-    : public View
+    : public Elastos::Droid::View::View
     , public IRadialTimePickerView
     , public IViewOnTouchListener
 {

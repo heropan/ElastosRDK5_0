@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Widget.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/widget/ActionMenuPresenter.h"
 #include "elastos/droid/internal/view/menu/MenuItemImpl.h"
 // #include "elastos/droid/widget/ActionMenuView.h"

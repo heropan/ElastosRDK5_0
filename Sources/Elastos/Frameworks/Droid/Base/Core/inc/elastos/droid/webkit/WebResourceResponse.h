@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_WEBKIT_WEBRESOURCERESPONSE_H__
 #define __ELASTOS_DROID_WEBKIT_WEBRESOURCERESPONSE_H__
 
-#include "Elastos.CoreLibrary.IO.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Webkit.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>

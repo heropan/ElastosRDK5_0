@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/CheckedTextView.h"
 #include "elastos/droid/graphics/drawable/CDrawableHelper.h"
 #include "elastos/droid/view/CGravity.h"

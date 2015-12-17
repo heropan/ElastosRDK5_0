@@ -1,5 +1,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Media.h"
 #include "elastos/droid/widget/MediaController.h"
 #include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
 #include "elastos/droid/view/CWindowManagerLayoutParams.h"

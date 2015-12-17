@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_DAYPICKERVIEW_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <Elastos.CoreLibrary.Text.h>
 #include "elastos/droid/widget/ListView.h"
 
 using Elastos::Droid::Content::IContext;

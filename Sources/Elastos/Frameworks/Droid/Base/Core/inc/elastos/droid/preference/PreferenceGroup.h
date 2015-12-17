@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_PREFERENCE_PREFERENCEGROUP_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/preference/Preference.h"
 
 using Elastos::Droid::Preference::IGenericInflaterParent;

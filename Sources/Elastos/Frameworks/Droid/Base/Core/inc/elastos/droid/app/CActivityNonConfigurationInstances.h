@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CACTIVITYNONCONFIGURATIONINSTANCES_H__
 #define __ELASTOS_DROID_APP_CACTIVITYNONCONFIGURATIONINSTANCES_H__
 
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Utility.h"
 #include "_Elastos_Droid_App_CActivityNonConfigurationInstances.h"
 #include <elastos/core/Object.h>

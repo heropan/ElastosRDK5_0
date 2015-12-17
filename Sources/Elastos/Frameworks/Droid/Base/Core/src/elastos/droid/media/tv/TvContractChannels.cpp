@@ -1,6 +1,6 @@
 
 #include "Elastos.Droid.Media.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/media/tv/TvContractChannels.h"
 #include "elastos/droid/media/tv/TvContract.h"
 #include "elastos/droid/net/CUriHelper.h"

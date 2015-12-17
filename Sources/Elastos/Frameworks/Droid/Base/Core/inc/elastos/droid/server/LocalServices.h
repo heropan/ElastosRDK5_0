@@ -3,7 +3,9 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashMap;
 
 _ETL_NAMESPACE_BEGIN
@@ -67,8 +69,8 @@ private:
     ECO_LOCAL LocalServices(const LocalServices&);
 
 private:
-    ECO_LOCAL static Object sLock;
-    ECO_LOCAL static HashMap<InterfaceID, AutoPtr<IInterface> > sLocalServiceObjects;
+    static Object sLock;
+    static HashMap<InterfaceID, AutoPtr<IInterface> > sLocalServiceObjects;
 };
 
 } // namespace Server

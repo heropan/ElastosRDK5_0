@@ -1,4 +1,5 @@
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/CDownloadsImpl.h"
 #include <elastos/core/StringUtils.h>

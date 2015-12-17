@@ -1,6 +1,6 @@
 
-#include "Elastos.CoreLibrary.IO.h"
-#include "Elastos.CoreLibrary.Utility.Concurrent.h"
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.Utility.Concurrent.h>
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/webkit/native/media/VideoCaptureTango.h"

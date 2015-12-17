@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_DIGITALCLOCK_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/widget/TextView.h"
 #include "elastos/droid/database/ContentObserver.h"
 #include "elastos/droid/os/Runnable.h"

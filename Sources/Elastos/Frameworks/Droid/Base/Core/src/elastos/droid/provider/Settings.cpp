@@ -1,3 +1,9 @@
+
+#include "Elastos.Droid.Provider.h"
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Database.h"
+#include "Elastos.Droid.Location.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/content/CContentValues.h"
 #include "elastos/droid/content/Intent.h"
 #include "elastos/droid/net/Uri.h"

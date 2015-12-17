@@ -1,4 +1,9 @@
-
+#define HASH_FOR_CONTENT
+#include "elastos/droid/ext/frameworkhash.h"
+#include "Elastos.Droid.Widget.h"
+#include <Elastos.CoreLibrary.External.h>
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/app/CActivityManagerHelper.h"
 #include "elastos/droid/content/CComponentName.h"
 #include "elastos/droid/content/CIntent.h"

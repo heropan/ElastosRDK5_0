@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.Widget.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/os/CHandler.h"
 #include "elastos/droid/text/format/CDateUtils.h"

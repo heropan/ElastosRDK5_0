@@ -1,6 +1,6 @@
 
-#include "Elastos.CoreLibrary.External.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.External.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.Net.h"
 #include "Elastos.Droid.Provider.h"

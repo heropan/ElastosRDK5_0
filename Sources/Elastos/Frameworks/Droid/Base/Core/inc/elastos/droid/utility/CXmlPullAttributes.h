@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_UTILITY_CXMLPULLATTRIBUTES_H__
 #define __ELASTOS_DROID_UTILITY_CXMLPULLATTRIBUTES_H__
 
-#include "Elastos.CoreLibrary.External.h"
+#include <Elastos.CoreLibrary.External.h>
 #include "_Elastos_Droid_Utility_CXmlPullAttributes.h"
 #include <elastos/core/Object.h>
 

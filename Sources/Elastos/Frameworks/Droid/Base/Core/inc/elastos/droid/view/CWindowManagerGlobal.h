@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_CWINDOWMANAGERGLOBAL_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "_Elastos_Droid_View_CWindowManagerGlobal.h"
 #include <elastos/core/Object.h>
 

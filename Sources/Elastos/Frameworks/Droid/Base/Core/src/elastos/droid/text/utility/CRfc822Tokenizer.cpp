@@ -1,5 +1,5 @@
 
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/text/utility/CRfc822Tokenizer.h"
 #include "elastos/droid/text/utility/CRfc822Token.h"
 

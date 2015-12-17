@@ -3,7 +3,7 @@
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.Text.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/widget/EditText.h"
 #include "elastos/droid/text/Selection.h"
 #include "elastos/droid/text/method/CArrowKeyMovementMethod.h"

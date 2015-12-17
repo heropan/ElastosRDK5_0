@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_CAUTOTEXT_H__
 #define __ELASTOS_DROID_TEXT_CAUTOTEXT_H__
 
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "_Elastos_Droid_Text_CAutoText.h"
 #include <elastos/core/Object.h>
 

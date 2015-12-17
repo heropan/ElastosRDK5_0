@@ -4,7 +4,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Location.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;

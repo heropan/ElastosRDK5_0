@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_DATABASE_ABSTRACTCURSOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "Elastos.CoreLibrary.IO.h"
+#include <Elastos.CoreLibrary.IO.h>
 #include "elastos/droid/database/ContentObserver.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>

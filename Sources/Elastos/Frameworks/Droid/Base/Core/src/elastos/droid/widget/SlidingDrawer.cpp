@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/SlidingDrawer.h"
 #include "elastos/droid/view/SoundEffectConstants.h"
 #include "elastos/droid/os/SystemClock.h"

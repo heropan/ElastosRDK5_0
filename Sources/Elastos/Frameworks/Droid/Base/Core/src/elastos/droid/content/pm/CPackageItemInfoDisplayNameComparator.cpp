@@ -1,6 +1,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "Elastos.CoreLibrary.Text.h"
+#include <Elastos.CoreLibrary.Text.h>
 #include "elastos/droid/content/pm/CPackageItemInfoDisplayNameComparator.h"
 
 using Elastos::Core::ICharSequence;

@@ -1,3 +1,6 @@
+
+#include "Elastos.Droid.Provider.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/CalendarContractAttendees.h"
 #include <elastos/core/StringBuilder.h>

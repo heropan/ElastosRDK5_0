@@ -2,7 +2,7 @@
 #include "Elastos.Droid.Text.h"
 #include "Elastos.Droid.Widget.h"
 #include "Elastos.Droid.Content.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/widget/CompoundButton.h"
 #include "elastos/droid/widget/CCompoundButtonSavedState.h"
 #include "elastos/droid/graphics/drawable/Drawable.h"

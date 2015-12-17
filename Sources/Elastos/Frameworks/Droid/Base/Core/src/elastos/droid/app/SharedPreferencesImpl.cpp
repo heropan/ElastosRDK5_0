@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "Elastos.CoreLibrary.Libcore.h"
-#include "Elastos.CoreLibrary.Utility.Concurrent.h"
+#include <Elastos.CoreLibrary.Libcore.h>
+#include <Elastos.CoreLibrary.Utility.Concurrent.h>
 #include "elastos/droid/app/SharedPreferencesImpl.h"
 #include "elastos/droid/app/CActivityThread.h"
 // #include "elastos/droid/app/CContextImpl.h"

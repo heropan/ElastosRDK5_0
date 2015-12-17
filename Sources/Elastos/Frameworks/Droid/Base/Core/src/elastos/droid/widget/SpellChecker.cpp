@@ -1,15 +1,17 @@
 
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.Droid.View.h"
+#include <Elastos.CoreLibrary.Text.h>
 #include "elastos/droid/widget/SpellChecker.h"
-
+#include "elastos/droid/widget/TextView.h"
 #include "elastos/droid/text/method/CWordIterator.h"
 #include "elastos/droid/text/Selection.h"
 #include "elastos/droid/text/TextUtils.h"
-#include "elastos/droid/widget/TextView.h"
-#include "elastos/droid/internal/utility/ArrayUtils.h"
-#include "elastos/droid/internal/utility/GrowingArrayUtils.h"
 #include "elastos/droid/text/style/CSpellCheckSpan.h"
 #include "elastos/droid/text/style/CSuggestionSpan.h"
 #include "elastos/droid/view/textservice/CTextInfo.h"
+#include "elastos/droid/internal/utility/ArrayUtils.h"
+#include "elastos/droid/internal/utility/GrowingArrayUtils.h"
 
 #include <elastos/core/Math.h>
 

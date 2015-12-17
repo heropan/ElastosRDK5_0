@@ -1,6 +1,6 @@
 
 #include "Elastos.Droid.Content.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/preference/PreferenceGroup.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/R.h"

@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/text/method/QwertyKeyListener.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/widget/MultiAutoCompleteTextView.h"

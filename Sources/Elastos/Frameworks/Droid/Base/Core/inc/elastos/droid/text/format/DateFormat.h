@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_FORMAT_DATEFORMAT_H__
 #define __ELASTOS_DROID_TEXT_FORMAT_DATEFORMAT_H__
 
-#include "Elastos.CoreLibrary.Text.h"
+#include <Elastos.CoreLibrary.Text.h>
 #include "Elastos.Droid.Core.h"
 #include <elastos/core/Object.h>
 

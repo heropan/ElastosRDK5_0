@@ -1,5 +1,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/widget/DateTimeView.h"
 #include "elastos/droid/text/format/CTime.h"
 #include "elastos/droid/text/format/CDateFormat.h"

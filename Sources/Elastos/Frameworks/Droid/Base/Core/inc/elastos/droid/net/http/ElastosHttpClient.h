@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_ELASTOSHTTPCLIENT_H__
 #define __ELASTOS_DROID_NET_HTTP_ELASTOSHTTPCLIENT_H__
 
-#include "Elastos.CoreLibrary.Apache.h"
+#include <Elastos.CoreLibrary.Apache.h>
 #include "Elastos.Droid.Net.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>

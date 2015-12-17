@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/DigitalClock.h"
 #include "elastos/droid/text/format/DateFormat.h"
 #include "elastos/droid/text/format/CDateFormat.h"
@@ -11,7 +13,6 @@ using Elastos::Droid::Net::CUriHelper;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Text::Format::DateFormat;
-using Elastos::Droid::Text::Format::IDateFormat;
 using Elastos::Droid::Text::Format::CDateFormat;
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 
@@ -143,6 +144,7 @@ void DigitalClock::SetFormat()
 {
     AutoPtr<IContext> cxt;
     GetContext((IContext**)&cxt);
+    using Elastos::Droid::Text::Format::IDateFormat;
     AutoPtr<IDateFormat> df;
     CDateFormat::AcquireSingleton((IDateFormat**)&df);
     df->GetTimeFormatString(cxt, &mFormat);

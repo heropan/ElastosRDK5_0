@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_NET_CDNSPINGER_H__
 #define __ELASTOS_DROID_NET_CDNSPINGER_H__
 
-#include "Elastos.CoreLibrary.Net.h"
-#include "Elastos.CoreLibrary.Utility.h"
-#include "Elastos.CoreLibrary.Utility.Concurrent.h"
+#include <Elastos.CoreLibrary.Net.h>
+#include <Elastos.CoreLibrary.Utility.h>
+#include <Elastos.CoreLibrary.Utility.Concurrent.h>
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_Net_CDnsPinger.h"

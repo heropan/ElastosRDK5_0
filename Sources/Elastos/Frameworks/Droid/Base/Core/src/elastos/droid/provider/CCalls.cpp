@@ -1,3 +1,6 @@
+
+#include "Elastos.Droid.Location.h"
+#include "Elastos.Droid.Database.h"
 #include "elastos/droid/content/CContentValues.h"
 #include "elastos/droid/content/ContentProvider.h"
 #include "elastos/droid/net/CUriHelper.h"

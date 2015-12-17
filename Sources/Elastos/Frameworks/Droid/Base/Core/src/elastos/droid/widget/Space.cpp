@@ -1,4 +1,5 @@
-
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/Space.h"
 #include <elastos/core/Math.h>
 

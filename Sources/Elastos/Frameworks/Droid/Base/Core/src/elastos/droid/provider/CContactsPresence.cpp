@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/CContactsPresence.h"
 #include "elastos/droid/R.h"

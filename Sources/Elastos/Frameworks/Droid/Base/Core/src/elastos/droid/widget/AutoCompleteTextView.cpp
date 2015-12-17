@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/AutoCompleteTextView.h"
 #include "elastos/droid/view/LayoutInflater.h"
 #include "elastos/droid/view/inputmethod/CCompletionInfo.h"

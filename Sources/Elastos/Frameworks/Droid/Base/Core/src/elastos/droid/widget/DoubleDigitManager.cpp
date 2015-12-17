@@ -1,4 +1,5 @@
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/DoubleDigitManager.h"
 #include "elastos/droid/os/CHandler.h"
 

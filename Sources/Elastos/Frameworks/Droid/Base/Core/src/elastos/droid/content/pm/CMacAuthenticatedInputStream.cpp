@@ -1,6 +1,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "Elastos.CoreLibrary.Extensions.h"
+#include <Elastos.CoreLibrary.Extensions.h>
 #include "elastos/droid/content/pm/CMacAuthenticatedInputStream.h"
 
 namespace Elastos {

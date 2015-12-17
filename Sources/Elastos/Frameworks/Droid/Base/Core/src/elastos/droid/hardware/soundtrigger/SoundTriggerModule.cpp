@@ -1,5 +1,5 @@
 
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Media.h"
 #include "elastos/droid/hardware/soundtrigger/SoundTriggerModule.h"
 #include "elastos/droid/hardware/soundtrigger/SoundTrigger.h"

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CIMAGEREADER_H__
 #define __ELASTOS_DROID_MEDIA_CIMAGEREADER_H__
 
-#include "Elastos.CoreLibrary.IO.h"
+#include <Elastos.CoreLibrary.IO.h>
 #include "Elastos.Droid.View.h"
 #include "_Elastos_Droid_Media_CImageReader.h"
 #include "elastos/droid/ext/frameworkext.h"

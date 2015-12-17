@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_INTERNAL_OS_CBATTERYSTATSHELPER_H__
 
 #include "Elastos.Droid.Content.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "_Elastos_Droid_Internal_Os_CBatteryStatsHelper.h"
 #include "elastos/droid/internal/os/CBatterySipper.h"
 #include <elastos/utility/etl/HashMap.h>

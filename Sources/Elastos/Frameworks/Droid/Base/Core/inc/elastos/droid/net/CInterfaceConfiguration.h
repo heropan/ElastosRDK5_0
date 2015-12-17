@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CINTERFACECONFIGURATION_H__
 #define __ELASTOS_DROID_NET_CINTERFACECONFIGURATION_H__
 
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_Net_CInterfaceConfiguration.h"
 #include <elastos/core/Object.h>

@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Database.h"
 #include "elastos/droid/database/DatabaseUtils.h"
 #include "elastos/droid/provider/CMediaStoreAudio.h"
 #include <elastos/core/StringBuilder.h>

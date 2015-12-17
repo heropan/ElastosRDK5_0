@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_INTERNAL_INPUTMETHOD_INPUTMETHODUTILS_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Internal.h"
 #include "Elastos.Droid.Text.h"

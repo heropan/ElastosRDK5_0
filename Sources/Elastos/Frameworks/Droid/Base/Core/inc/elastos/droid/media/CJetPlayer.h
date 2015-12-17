@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CJETPLAYER_H__
 #define __ELASTOS_DROID_MEDIA_CJETPLAYER_H__
 
-#include "Elastos.CoreLibrary.IO.h"
+#include <Elastos.CoreLibrary.IO.h>
 #include "Elastos.Droid.Content.h"
 #include "_Elastos_Droid_Media_CJetPlayer.h"
 #include "elastos/droid/ext/frameworkext.h"

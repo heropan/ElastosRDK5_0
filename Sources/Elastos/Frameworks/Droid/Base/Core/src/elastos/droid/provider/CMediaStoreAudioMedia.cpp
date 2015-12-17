@@ -1,3 +1,5 @@
+
+#include <Elastos.CoreLibrary.IO.h>
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/net/CUriHelper.h"
 #include "elastos/droid/os/Environment.h"

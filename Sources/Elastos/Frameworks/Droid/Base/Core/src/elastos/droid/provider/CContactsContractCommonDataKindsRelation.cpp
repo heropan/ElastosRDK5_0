@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/provider/CContactsContractCommonDataKindsRelation.h"
 #include "elastos/droid/text/TextUtils.h"
 #include <elastos/coredef.h>

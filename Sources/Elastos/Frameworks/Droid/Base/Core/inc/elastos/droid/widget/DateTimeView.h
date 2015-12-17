@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_DATETIMEVIEW_H__
 
 #include <Elastos.CoreLibrary.h>
+#include <Elastos.CoreLibrary.Text.h>
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/TextView.h"
 #include "elastos/droid/content/BroadcastReceiver.h"

@@ -1,6 +1,6 @@
 
-#include "Elastos.CoreLibrary.Libcore.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Libcore.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Media.h"
 #include "Elastos.Droid.Net.h"
 #include "Elastos.Droid.Provider.h"

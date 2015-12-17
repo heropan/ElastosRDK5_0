@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_CONTENT_RES_XMLBLOCK_H__
 #define __ELASTOS_DROID_CONTENT_RES_XMLBLOCK_H__
 
-#include "Elastos.CoreLibrary.External.h"
-#include "Elastos.CoreLibrary.IO.h"
+#include <Elastos.CoreLibrary.External.h>
+#include <Elastos.CoreLibrary.IO.h>
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Utility.h"
 #include "elastos/droid/content/res/StringBlock.h"

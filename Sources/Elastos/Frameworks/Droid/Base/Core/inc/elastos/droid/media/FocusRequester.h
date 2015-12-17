@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_FOCUSREQUESTER_H__
 #define __ELASTOS_DROID_MEDIA_FOCUSREQUESTER_H__
 
-#include "Elastos.CoreLibrary.IO.h"
+#include <Elastos.CoreLibrary.IO.h>
 #include "Elastos.Droid.Media.h"
 #include "Elastos.Droid.Os.h"
 #include "elastos/droid/ext/frameworkext.h"

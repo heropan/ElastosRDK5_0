@@ -1,3 +1,5 @@
+#include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/provider/CDownloads.h"
 #include "elastos/droid/provider/CDownloadsImpl.h"
 

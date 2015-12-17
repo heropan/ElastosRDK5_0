@@ -1,12 +1,8 @@
-<<<<<<< HEAD
-
 #include "Elastos.Droid.Accounts.h"
 #include "Elastos.Droid.Database.h"
 #include "Elastos.Droid.Net.h"
 #include "Elastos.Droid.Provider.h"
-=======
 #include "elastos/droid/content/CContentProviderOperationHelper.h"
->>>>>>> master
 #include "elastos/droid/content/CContentUris.h"
 #include "elastos/droid/content/CContentValues.h"
 #include "elastos/droid/provider/SyncStateContractHelpers.h"

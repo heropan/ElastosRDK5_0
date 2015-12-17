@@ -1,4 +1,6 @@
 
+#include <Elastos.CoreLibrary.Libcore.h>
+#include <Elastos.CoreLibrary.Text.h>
 #include "elastos/droid/widget/CalendarView.h"
 #include "elastos/droid/widget/AbsListView.h"
 #include "elastos/droid/content/res/CConfiguration.h"

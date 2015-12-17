@@ -1,5 +1,5 @@
 
-#include "Elastos.CoreLibrary.Utility.Concurrent.h"
+#include <Elastos.CoreLibrary.Utility.Concurrent.h>
 #include "elastos/droid/internal/os/CHandlerCaller.h"
 #include "elastos/droid/service/wallpaper/WallpaperService.h"
 #include "elastos/droid/content/CIntentFilter.h"

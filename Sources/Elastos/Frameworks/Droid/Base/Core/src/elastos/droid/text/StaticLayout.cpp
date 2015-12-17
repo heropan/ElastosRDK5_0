@@ -1,5 +1,5 @@
 
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/text/StaticLayout.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/text/TextDirectionHeuristics.h"

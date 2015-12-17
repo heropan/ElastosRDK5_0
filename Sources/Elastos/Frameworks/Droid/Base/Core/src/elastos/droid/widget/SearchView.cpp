@@ -1,4 +1,4 @@
-
+#include "Elastos.Droid.Speech.h"
 #include <elastos/core/Math.h>
 #include "elastos/droid/widget/SearchView.h"
 #include "elastos/droid/text/TextUtils.h"

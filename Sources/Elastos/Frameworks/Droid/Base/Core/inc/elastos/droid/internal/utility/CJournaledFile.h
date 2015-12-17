@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_UTILITY_CJOURNALEDFILE_H__
 #define __ELASTOS_DROID_INTERNAL_UTILITY_CJOURNALEDFILE_H__
 
-#include "Elastos.CoreLibrary.IO.h"
+#include <Elastos.CoreLibrary.IO.h>
 #include "_Elastos_Droid_Internal_Utility_CJournaledFile.h"
 #include <elastos/core/Object.h>
 

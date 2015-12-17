@@ -3,10 +3,10 @@
 #define __ELASTOS_DROID_WIDGET_SPELLCHECKER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Text.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/utility/LruCache.h"
-
-#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Text::IEditable;

@@ -155,9 +155,9 @@ public:
     static void RandomSeed(Int64 seed);
 
 private:
-    ECO_LOCAL static const AutoPtr<IRandom> sRandom;// = new Random();
-    ECO_LOCAL static const Float DEG_TO_RAD;// = 3.1415926f / 180.0f;
-    ECO_LOCAL static const Float RAD_TO_DEG;// = 180.0f / 3.1415926f;
+    static const AutoPtr<IRandom> sRandom;// = new Random();
+    static const Float DEG_TO_RAD;// = 3.1415926f / 180.0f;
+    static const Float RAD_TO_DEG;// = 180.0f / 3.1415926f;
 
 private:
     ECO_LOCAL MathUtils();

@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Text.h"
+#include <Elastos.CoreLibrary.Libcore.h>
 #include "elastos/droid/R.h"
 #include "elastos/droid/text/format/CDateFormat.h"
 #include "elastos/droid/text/format/CDateUtils.h"
@@ -9,7 +12,6 @@
 
 using Elastos::Droid::Text::Format::CDateFormat;
 using Elastos::Droid::Text::Format::CDateUtils;
-using Elastos::Droid::Text::Format::IDateFormat;
 using Elastos::Droid::Text::Format::IDateUtils;
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
@@ -1039,6 +1041,7 @@ void TimePickerClockDelegate::GetHourFormatData()
     //     }
     // }
 
+    using Elastos::Droid::Text::Format::IDateFormat;
     AutoPtr<IDateFormat> dateFormat;
     CDateFormat::AcquireSingleton((IDateFormat**)&dateFormat);
     String bestDateTimePattern;
@@ -1068,6 +1071,7 @@ Boolean TimePickerClockDelegate::IsAmPmAtStart()
     //
     // return bestDateTimePattern.startsWith("a");
 
+    using Elastos::Droid::Text::Format::IDateFormat;
     AutoPtr<IDateFormat> dateFormat;
     CDateFormat::AcquireSingleton((IDateFormat**)&dateFormat);
     String bestDateTimePattern;
@@ -1099,6 +1103,7 @@ void TimePickerClockDelegate::SetDividerText()
     // }
     // mDivider.setText(separatorText);
 
+    using Elastos::Droid::Text::Format::IDateFormat;
     String skeleton = (mIs24HourView) ? String("Hm") : String("hm");
     AutoPtr<IDateFormat> dateFormat;
     CDateFormat::AcquireSingleton((IDateFormat**)&dateFormat);

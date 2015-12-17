@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_SHAREACTIONPROVIDER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/view/ActionProvider.h"
 
 using Elastos::Droid::Content::IIntent;

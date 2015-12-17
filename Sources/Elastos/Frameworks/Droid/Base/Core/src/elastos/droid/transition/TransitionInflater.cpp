@@ -1,6 +1,6 @@
 
 #include "Elastos.Droid.Content.h"
-#include "Elastos.CoreLibrary.External.h"
+#include <Elastos.CoreLibrary.External.h>
 #include "elastos/droid/transition/TransitionInflater.h"
 #include "elastos/droid/transition/CFade.h"
 #include "elastos/droid/transition/CChangeBounds.h"

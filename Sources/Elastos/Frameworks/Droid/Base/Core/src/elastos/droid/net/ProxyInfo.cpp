@@ -1,5 +1,5 @@
 
-#include "Elastos.CoreLibrary.Net.h"
+#include <Elastos.CoreLibrary.Net.h>
 #include "elastos/droid/net/ProxyInfo.h"
 #include "elastos/droid/net/CProxy.h"
 #include "elastos/droid/net/CProxyInfo.h"

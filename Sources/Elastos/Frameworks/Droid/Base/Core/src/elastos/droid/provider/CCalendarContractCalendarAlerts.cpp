@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Database.h"
 #include "elastos/droid/app/CPendingIntentHelper.h"
 #include "elastos/droid/content/CContentUris.h"
 #include "elastos/droid/content/CContentValues.h"

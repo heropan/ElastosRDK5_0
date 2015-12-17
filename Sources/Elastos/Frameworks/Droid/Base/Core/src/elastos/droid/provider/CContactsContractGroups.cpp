@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Database.h"
 #include "elastos/droid/provider/CContactsContractGroups.h"
 #include "elastos/droid/provider/ContactsContract.h"
 #include "elastos/droid/database/DatabaseUtils.h"

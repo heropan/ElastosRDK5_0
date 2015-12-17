@@ -1,4 +1,5 @@
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/text/format/CFormatter.h"

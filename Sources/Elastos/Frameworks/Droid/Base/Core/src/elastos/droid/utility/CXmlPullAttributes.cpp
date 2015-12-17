@@ -1,5 +1,5 @@
 
-#include "Elastos.CoreLibrary.External.h"
+#include <Elastos.CoreLibrary.External.h>
 #include "elastos/droid/utility/CXmlPullAttributes.h"
 #include "elastos/droid/internal/utility/XmlUtils.h"
 #include <elastos/core/StringUtils.h>

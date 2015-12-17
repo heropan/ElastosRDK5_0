@@ -1,4 +1,5 @@
 
+#include <Elastos.CoreLibrary.External.h>
 #include "elastos/droid/internal/policy/impl/GlobalKeyManager.h"
 #include "elastos/droid/content/CComponentNameHelper.h"
 #include "elastos/droid/content/CIntent.h"

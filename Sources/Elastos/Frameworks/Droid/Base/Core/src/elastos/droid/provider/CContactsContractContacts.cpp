@@ -1,3 +1,5 @@
+
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/provider/CContactsContractContacts.h"
 
 namespace Elastos {

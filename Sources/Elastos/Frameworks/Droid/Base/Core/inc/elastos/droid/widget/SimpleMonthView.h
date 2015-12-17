@@ -2,8 +2,8 @@
 #ifndef __ELASTOS_DROID_WIDGET_SIMPLEMONTHVIEW_H__
 #define __ELASTOS_DROID_WIDGET_SIMPLEMONTHVIEW_H__
 
-#include "Elastos.CoreLibrary.Text.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.Text.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/core/StringBuilder.h"

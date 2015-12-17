@@ -1,7 +1,7 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "Elastos.CoreLibrary.IO.h"
-#include "Elastos.CoreLibrary.Libcore.h"
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.Libcore.h>
 #include "Elastos.Droid.Net.h"
 #include "elastos/droid/internal/os/ZygoteConnection.h"
 #include "elastos/droid/internal/os/CZygoteInit.h"

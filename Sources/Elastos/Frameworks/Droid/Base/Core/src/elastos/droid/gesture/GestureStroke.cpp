@@ -1,6 +1,6 @@
 
-#include "Elastos.CoreLibrary.IO.h"
-#include "Elastos.CoreLibrary.Utility.h"
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/gesture/GestureStroke.h"
 #include "elastos/droid/gesture/CGestureStroke.h"
 #include "elastos/droid/gesture/GestureUtils.h"
