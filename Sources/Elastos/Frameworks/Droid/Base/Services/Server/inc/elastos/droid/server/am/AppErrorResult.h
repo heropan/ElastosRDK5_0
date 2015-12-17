@@ -2,27 +2,17 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_APPERRORRESULT_H__
 #define __ELASTOS_DROID_SERVER_AM_APPERRORRESULT_H__
 
-#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
-
-using namespace Elastos;
-using namespace Elastos::Core;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Am {
 
-extern "C" const InterfaceID EIID_AppErrorResult;
-
 class AppErrorResult
     : public Object
-    , public IInterface
-    , public Object
 {
 public:
-    CAR_INTERFACE_DECL()
-
     AppErrorResult();
 
     CARAPI_(void) SetResult(

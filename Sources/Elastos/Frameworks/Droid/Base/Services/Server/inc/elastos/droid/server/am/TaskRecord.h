@@ -3,6 +3,8 @@
 #define __ELASTOS_DROID_SERVER_AM_TASKRECORD_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Service.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
@@ -16,6 +18,7 @@ using Elastos::Droid::Service::Voice::IIVoiceInteractionSession;
 using Elastos::Droid::Internal::App::IIVoiceInteractor;
 using Elastos::Core::ICharSequence;
 using Elastos::IO::IFile;
+using Elastos::IO::IPrintWriter;
 using Elastos::Utility::Etl::List;
 using Org::Xmlpull::V1::IXmlPullParser;
 using Org::Xmlpull::V1::IXmlSerializer;
@@ -28,7 +31,7 @@ namespace Am {
 class ActivityStack;
 class ActivityStackSupervisor;
 class CActivityManagerService;
-class CActivityRecord;
+class ActivityRecord;
 class TaskPersister;
 
 class TaskRecord : public Object

@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_SERVER_AM_URIPERMISSION_H__
 
 #include "elastos/droid/server/am/GrantUri.h"
+#include "Elastos.CoreLibrary.IO.h"
 #include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Droid::Content::IUriPermission;

@@ -1,21 +1,32 @@
 
 #include "elastos/droid/server/am/TaskPersister.h"
+#include "elastos/droid/server/am/ActivityRecord.h"
+#include "elastos/droid/server/am/ActivityStack.h"
+#include "elastos/droid/server/am/ActivityStackSupervisor.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
+#include "elastos/droid/server/am/TaskRecord.h"
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Utility.h"
 #include <elastos/droid/internal/utility/XmlUtils.h>
 #include <elastos/droid/os/SystemClock.h>
 #include <elastos/droid/utility/Xml.h>
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/StringBuffer.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::Graphics::BitmapCompressFormat_PNG;
 using Elastos::Droid::Graphics::CBitmapFactory;
 using Elastos::Droid::Graphics::IBitmapFactory;
 using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Internal::Utility::CFastXmlSerializer;
+using Elastos::Droid::Internal::Utility::XmlUtils;
 using Elastos::Droid::Utility::CAtomicFile;
 using Elastos::Droid::Utility::IAtomicFile;
 using Elastos::Droid::Utility::Xml;
-using Elastos::Droid::Internal::Utility::CFastXmlSerializer;
-using Elastos::Droid::Internal::Utility::XmlUtils;
+using Elastos::Core::CSystem;
+using Elastos::Core::ISystem;
 using Elastos::Core::StringBuffer;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
@@ -26,11 +37,11 @@ using Elastos::IO::CFileOutputStream;
 using Elastos::IO::CStringWriter;
 using Elastos::IO::ICloseable;
 using Elastos::IO::IFlushable;
-using Elastos::IO::IFile;
 using Elastos::IO::IFileOutputStream;
 using Elastos::IO::IFileReader;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IReader;
+using Elastos::IO::IWriter;
 using Elastos::Utility::Logging::Slogger;
 using Org::Xmlpull::V1::IXmlPullParser;
 using Org::Xmlpull::V1::IXmlSerializer;
@@ -77,11 +88,13 @@ ECode TaskPersister::LazyTaskWriterThread::Run()
         synchronized (mHost) {
             probablyDone = mHost->mWriteQueue.IsEmpty();
         }
+        CActivityManagerService* service = mHost->mService;
         if (probablyDone) {
             if (DEBUG) Slogger::D(TAG, "Looking for obsolete files.");
             persistentTaskIds->Clear();
-            synchronized (mHost->mService) {
-                AutoPtr<List<TaskRecord> > tasks = mHost->mService->mRecentTasks;
+            synchronized (service) {
+                assert(0);
+                AutoPtr<List<AutoPtr<TaskRecord> > > tasks;// = service->mRecentTasks;
                 // if (DEBUG) Slogger::D(TAG, "mRecents=" + tasks);
                 List<AutoPtr<TaskRecord> >::ReverseIterator riter;
                 for (riter = tasks->RBegin(); riter != tasks->REnd(); ++riter) {
@@ -99,7 +112,7 @@ ECode TaskPersister::LazyTaskWriterThread::Run()
                     }
                 }
             }
-            RemoveObsoleteFiles(persistentTaskIds);
+            mHost->RemoveObsoleteFiles(persistentTaskIds);
         }
 
         // If mNextWriteTime, then don't delay between each call to saveToXml().
@@ -133,8 +146,8 @@ ECode TaskPersister::LazyTaskWriterThread::Run()
                 now, mHost->mNextWriteTime, mHost->mWriteQueue.GetSize());
             while (now < mHost->mNextWriteTime) {
                 if (DEBUG) Slogger::D(TAG, "LazyTaskWriter: waiting %lld",
-                        (mNextWriteTime - now));
-                mHost->Wait(mNextWriteTime - now);
+                        (mHost->mNextWriteTime - now));
+                mHost->Wait(mHost->mNextWriteTime - now);
                 now = SystemClock::GetUptimeMillis();
             }
             // Got something to do.
@@ -172,7 +185,7 @@ ECode TaskPersister::LazyTaskWriterThread::Run()
             AutoPtr<IStringWriter> stringWriter;
             TaskRecord* task = ((TaskWriteQueueItem*)item.Get())->mTask;
             if (DEBUG) Slogger::D(TAG, "Writing task=%s", task->ToString().string());
-            synchronized (mService) {
+            synchronized (service) {
                 if (task->mInRecents) {
                     // Still there.
                     if (DEBUG) Slogger::D(TAG, "Saving task=%s", task->ToString().string());
@@ -192,21 +205,21 @@ ECode TaskPersister::LazyTaskWriterThread::Run()
                     AutoPtr<IFile> f;
                     ec = CFile::New(sTasksDir, sb.ToString(), (IFile**)&f);
                     if (FAILED(ec))
-                        break
+                        break;
                     ec = CAtomicFile::New(f, (IAtomicFile**)&atomicFile);
                     if (FAILED(ec))
-                        break
+                        break;
                     ec = atomicFile->StartWrite((IFileOutputStream**)&file);
                     if (FAILED(ec))
-                        break
+                        break;
                     String str;
                     IObject::Probe(stringWriter)->ToString(&str);
                     ec = IOutputStream::Probe(file)->Write(str.GetBytes());
                     if (FAILED(ec))
-                        break
+                        break;
                     ec = IOutputStream::Probe(file)->Write('\n');
                     if (FAILED(ec))
-                        break
+                        break;
                     ec = atomicFile->FinishWrite(file);
                 } while(0);
 
@@ -435,12 +448,12 @@ ECode TaskPersister::SaveToXml(
     // save task
     FAIL_RETURN(xmlSerializer->StartDocument(String(NULL), TRUE));
 
-    FAIL_RETURN(xmlSerializer->StartTag(String(NULL), TAG_TASK));
+    FAIL_RETURN(xmlSerializer->WriteStartTag(String(NULL), TAG_TASK));
     FAIL_RETURN(task->SaveToXml(xmlSerializer));
-    FAIL_RETURN(xmlSerializer->EndTag(String(NULL), TAG_TASK));
+    FAIL_RETURN(xmlSerializer->WriteEndTag(String(NULL), TAG_TASK));
 
     FAIL_RETURN(xmlSerializer->EndDocument());
-    FAIL_RETURN(IFlushable::Probe(xmlSerializer->Flush()));
+    FAIL_RETURN(IFlushable::Probe(xmlSerializer)->Flush());
 
     return NOERROR;
 }
@@ -459,7 +472,7 @@ String TaskPersister::FileToString(
         AutoPtr<IBufferedReader> reader;
         if (FAILED(CBufferedReader::New(freader, (IBufferedReader**)&reader)))
             break;
-        Int32 length;
+        Int64 length;
         file->GetLength(&length);
         StringBuffer sb(length * 2);
         String line;
@@ -468,13 +481,13 @@ String TaskPersister::FileToString(
             sb.Append(newline);
         }
         ICloseable::Probe(reader)->Close();
-        return sb.toString();
+        return sb.ToString();
     } while(0);
 
     String name;
     file->GetName(&name);
     Slogger::E(TAG, "Couldn't read file %s", name.string());
-    return NULL;
+    return String(NULL);
 }
 
 AutoPtr<TaskRecord> TaskPersister::TaskIdToTask(
@@ -530,7 +543,7 @@ AutoPtr<List<AutoPtr<TaskRecord> > > TaskPersister::RestoreTasksLocked()
 
             AutoPtr<IXmlPullParser> in;
             Xml::NewPullParser((IXmlPullParser**)&in);
-            in->SetInput(reader);
+            in->SetInput(IReader::Probe(reader));
 
             Int32 event;
             while (((in->Next(&event), event) != IXmlPullParser::END_DOCUMENT) &&
@@ -557,7 +570,8 @@ AutoPtr<List<AutoPtr<TaskRecord> > > TaskPersister::RestoreTasksLocked()
                             tasks->PushBack(task);
                             Int32 taskId = task->mTaskId;
                             recoveredTaskIds->Insert(taskId);
-                            mStackSupervisor->SetNextTaskId(taskId);
+                            assert(0);
+                            // mStackSupervisor->SetNextTaskId(taskId);
                         }
                         else {
                             String str;
@@ -650,7 +664,7 @@ void TaskPersister::RemoveObsoleteFiles(
             //     file.delete();
             //     continue;
             // }
-            if (persistentTaskIds.Find(taskId) == persistentTaskIds.End()) {
+            if (persistentTaskIds->Find(taskId) == persistentTaskIds->End()) {
                 if (TRUE || DEBUG) Slogger::D(TAG, "removeObsoleteFile: deleting file=%s", filename.string());
                 file->Delete();
             }

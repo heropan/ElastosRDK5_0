@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_SERVER_AM_GRANTURI_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Net.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Net::IUri;

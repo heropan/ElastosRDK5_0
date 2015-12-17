@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_ACTIVITYRESULT_H__
 #define __ELASTOS_DROID_SERVER_AM_ACTIVITYRESULT_H__
 
-#include "Elastos.Droid.Server.h"
+#include "Elastos.Droid.App.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::App::IResultInfo;

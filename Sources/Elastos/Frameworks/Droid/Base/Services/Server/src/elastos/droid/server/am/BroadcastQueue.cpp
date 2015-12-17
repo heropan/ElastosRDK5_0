@@ -520,7 +520,7 @@ ECode BroadcastQueue::ProcessNextBroadcast(
                 Slogger::V(TAG, "Delivering non-ordered on [%s] to registered %p: %p"
                         , mQueueName.string(), tmpObj.Get(), r.Get());
             }
-            BroadcastFilter* target = reinterpret_cast<BroadcastFilter*>(tmpObj->Probe(EIID_BroadcastFilter));
+            BroadcastFilter* target = (BroadcastFilter*)IBroadcastFilter::Probe(tmpObj);
             DeliverToRegisteredReceiverLocked(r, target, FALSE);
         }
         AddBroadcastToHistoryLocked(r);
@@ -675,10 +675,10 @@ ECode BroadcastQueue::ProcessNextBroadcast(
 
     assert(recIdx >= 0 && recIdx < r->mReceivers->GetSize());
     AutoPtr<IInterface> nextReceiver = (*r->mReceivers)[recIdx];
-    if (nextReceiver->Probe(EIID_BroadcastFilter) != NULL) {
+    if (IBroadcastFilter::Probe(nextReceiver) != NULL) {
         // Simple case: this is a registered receiver who gets
         // a direct call.
-        AutoPtr<BroadcastFilter> filter = reinterpret_cast<BroadcastFilter*>(nextReceiver->Probe(EIID_BroadcastFilter));
+        AutoPtr<BroadcastFilter> filter = (BroadcastFilter*)IBroadcastFilter::Probe(nextReceiver);
         if (DEBUG_BROADCAST)  {
             Slogger::V(TAG, "Delivering ordered [%s] to registered %s: %s"
                     , mQueueName.string(), filter->ToString().string(), r->ToString().string());
@@ -978,8 +978,8 @@ void BroadcastQueue::BroadcastTimeoutLocked(
     AutoPtr<IInterface> curReceiver = (*r->mReceivers)[r->mNextReceiver - 1];
     Slogger::W(TAG, "Receiver during timeout: %p", curReceiver.Get());
     LogBroadcastReceiverDiscardLocked(r);
-    if (curReceiver->Probe(EIID_BroadcastFilter) != NULL) {
-        AutoPtr<BroadcastFilter> bf = reinterpret_cast<BroadcastFilter*>(curReceiver->Probe(EIID_BroadcastFilter));
+    if (IBroadcastFilter::Probe(curReceiver) != NULL) {
+        AutoPtr<BroadcastFilter> bf = (BroadcastFilter*)IBroadcastFilter::Probe(curReceiver);
         Slogger::W(TAG, "Receiver during timeout BroadcastFilter: %s", bf->ToString().string());
         if (bf->mReceiverList->mPid != 0
                 && bf->mReceiverList->mPid != CActivityManagerService::MY_PID) {
@@ -1041,7 +1041,7 @@ void BroadcastQueue::LogBroadcastReceiverDiscardLocked(
 {
     if (r->mNextReceiver > 0) {
         AutoPtr<IInterface> curReceiver = (*r->mReceivers)[r->mNextReceiver-1];
-        AutoPtr<BroadcastFilter> bFilter = reinterpret_cast<BroadcastFilter*>(curReceiver->Probe(EIID_BroadcastFilter));
+        AutoPtr<BroadcastFilter> bFilter = (BroadcastFilter*)IBroadcastFilter::Probe(curReceiver);
         if (bFilter != NULL) {
             String filter = bFilter->ToString();
             String record = r->ToString();

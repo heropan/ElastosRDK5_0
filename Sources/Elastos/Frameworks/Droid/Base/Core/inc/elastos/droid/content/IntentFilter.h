@@ -16,7 +16,7 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
-class IntentFilter
+class ECO_PUBLIC IntentFilter
     : public Object
     , public IIntentFilter
 {
@@ -774,25 +774,25 @@ protected:
     virtual ~IntentFilter();
 
 private:
-    static CARAPI_(Int32) FindStringInSet(
+    ECO_LOCAL static CARAPI_(Int32) FindStringInSet(
         /* [in] */ ArrayOf<String>* set,
         /* [in] */ const String& string,
         /* [in] */ const ArrayOf<Int32>& lengths,
         /* [in] */ Int32 lenPos);
 
-    static CARAPI_(AutoPtr< ArrayOf<String> >) AddStringToSet(
+    ECO_LOCAL static CARAPI_(AutoPtr< ArrayOf<String> >) AddStringToSet(
         /* [in] */ ArrayOf<String>* set,
         /* [in] */ const String& string,
         /* [in] */ ArrayOf<Int32>& lengths,
         /* [in] */ Int32 lenPos);
 
-    static CARAPI_(AutoPtr< ArrayOf<String> >) RemoveStringFromSet(
+    ECO_LOCAL static CARAPI_(AutoPtr< ArrayOf<String> >) RemoveStringFromSet(
         /* [in] */ ArrayOf<String>* set,
         /* [in] */ const String& string,
         /* [in] */ ArrayOf<Int32>& lengths,
         /* [in] */ Int32 lenPos);
 
-    CARAPI_(Boolean) FindMimeType(
+    ECO_LOCAL CARAPI_(Boolean) FindMimeType(
         /* [in] */ const String& type);
 
 protected:
@@ -810,15 +810,15 @@ protected:
     static const String NAME_STR;
     static const String ACTION_STR;
 
-    Int32 mPriority;
-    List<String> mActions;
-    AutoPtr<List<String> > mCategories;
-    AutoPtr<List<String> > mDataSchemes;
-    AutoPtr< List< AutoPtr<IPatternMatcher> > > mDataSchemeSpecificParts;
-    AutoPtr< List< AutoPtr<IIntentFilterAuthorityEntry> > > mDataAuthorities;
-    AutoPtr< List< AutoPtr<IPatternMatcher> > > mDataPaths;
-    AutoPtr<List<String> > mDataTypes;
-    Boolean mHasPartialTypes;
+    ECO_PUBLIC Int32 mPriority;
+    ECO_PUBLIC List<String> mActions;
+    ECO_PUBLIC AutoPtr<List<String> > mCategories;
+    ECO_PUBLIC AutoPtr<List<String> > mDataSchemes;
+    ECO_PUBLIC AutoPtr< List< AutoPtr<IPatternMatcher> > > mDataSchemeSpecificParts;
+    ECO_PUBLIC AutoPtr< List< AutoPtr<IIntentFilterAuthorityEntry> > > mDataAuthorities;
+    ECO_PUBLIC AutoPtr< List< AutoPtr<IPatternMatcher> > > mDataPaths;
+    ECO_PUBLIC AutoPtr<List<String> > mDataTypes;
+    ECO_PUBLIC Boolean mHasPartialTypes;
 };
 
 } // namespace Content

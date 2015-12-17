@@ -18645,7 +18645,7 @@ void CActivityManagerService::HandleShowErrorMsg(
         it = data->Find(String("result"));
         AutoPtr<AppErrorResult> res;
         if (it != data->End()) {
-            res = reinterpret_cast<AppErrorResult*>(it->mSecond->Probe(EIID_AppErrorResult));
+            res = (AppErrorResult*)IObject::Probe(it->mSecond);
         }
 
         if (proc != NULL && proc->mCrashDialog != NULL) {
@@ -18757,7 +18757,7 @@ void CActivityManagerService::HandleShowStrictModeViolationMsg(
         it = data->Find(String("result"));
         AutoPtr<AppErrorResult> res;
         if (it != data->End()) {
-            res = reinterpret_cast<AppErrorResult*>(it->mSecond->Probe(EIID_AppErrorResult));
+            res = (AppErrorResult*)IObject::Probe(it->mSecond);
         }
 
         if (mShowDialogs && !mSleeping && !mShuttingDown) {

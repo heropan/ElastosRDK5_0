@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_SERVER_AM_PROCESSRECORD_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/HashSet.h>
@@ -11,7 +12,7 @@
 // #include "elastos/droid/server/am/ConnectionRecord.h"
 // #include "elastos/droid/server/am/ContentProviderRecord.h"
 // #include "elastos/droid/server/am/CServiceRecord.h"
-// #include "elastos/droid/server/am/ActivityRecord.h"
+#include "elastos/droid/server/am/ActivityRecord.h"
 // #include "elastos/droid/server/am/BroadcastRecord.h"
 
 using Elastos::Droid::App::IApplicationThread;
@@ -31,6 +32,7 @@ using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Utility::IArrayMap;
 using Elastos::Core::IRunnable;
 using Elastos::Core::StringBuilder;
+using Elastos::IO::IPrintWriter;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::HashSet;

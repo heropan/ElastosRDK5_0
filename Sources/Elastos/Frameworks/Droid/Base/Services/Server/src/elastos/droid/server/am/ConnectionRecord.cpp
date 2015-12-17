@@ -40,7 +40,7 @@ void ConnectionRecord::Dump(
     sb += "binding";
     sb += mBinding->ToString();
     pw->Println(sb.ToString());
-    if (activity != NULL) {
+    if (mActivity != NULL) {
         sb.SetLength(0);
         sb += prefix;
         sb += "activity=";

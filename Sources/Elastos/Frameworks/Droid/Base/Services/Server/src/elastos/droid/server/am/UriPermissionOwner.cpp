@@ -1,8 +1,9 @@
 
-#include <elastos/core/StringBuilder.h>
 #include "elastos/droid/server/am/UriPermissionOwner.h"
 #include "elastos/droid/server/am/CActivityManagerService.h"
 #include "elastos/droid/server/am/CUriPermissionOwnerExternalToken.h"
+#include "Elastos.Droid.Content.h"
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Os::EIID_IBinder;

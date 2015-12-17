@@ -1,4 +1,5 @@
 #include "elastos/droid/server/am/GrantUri.h"
+#include "Elastos.Droid.Content.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Droid::Content::CContentProviderHelper;

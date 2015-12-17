@@ -16,6 +16,7 @@ EXPORT_HEADERS += elastos/droid/app/Instrumentation.h
 //EXPORT_HEADERS += elastos/droid/appwidget/AppWidgetProvider.h
 
 EXPORT_HEADERS += elastos/droid/content/BroadcastReceiver.h
+EXPORT_HEADERS += elastos/droid/content/IntentFilter.h
 //EXPORT_HEADERS += elastos/droid/content/ContentProvider.h
 //EXPORT_HEADERS += elastos/droid/database/sqlite/SQLiteOpenHelper.h
 //EXPORT_HEADERS += elastos/droid/database/ContentObserver.h

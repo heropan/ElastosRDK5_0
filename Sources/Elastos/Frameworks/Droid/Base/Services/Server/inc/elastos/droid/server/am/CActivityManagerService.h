@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_SERVER_AM_CACTIVITYMANAGERSERVICE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 #if 1
 namespace Elastos {
@@ -17,34 +18,41 @@ class CActivityManagerService : public Object
 public:
     static const String TAG;
     static const String TAG_MU;
-    static const Boolean DEBUG;
-    static const Boolean localLOGV;
-    static const Boolean DEBUG_SWITCH = FALSE;
-    static const Boolean DEBUG_TASKS;
-    static const Boolean DEBUG_THUMBNAILS;
-    static const Boolean DEBUG_PAUSE;
-    static const Boolean DEBUG_OOM_ADJ;
-    static const Boolean DEBUG_TRANSITION;
-    static const Boolean DEBUG_BROADCAST;
-    static const Boolean DEBUG_BACKGROUND_BROADCAST;
-    static const Boolean DEBUG_BROADCAST_LIGHT;
-    static const Boolean DEBUG_SERVICE;
-    static const Boolean DEBUG_SERVICE_EXECUTING;
-    static const Boolean DEBUG_VISBILITY;
-    static const Boolean DEBUG_PROCESSES;
-    static const Boolean DEBUG_PROCESS_OBSERVERS;
-    static const Boolean DEBUG_CLEANUP;
-    static const Boolean DEBUG_PROVIDER;
-    static const Boolean DEBUG_URI_PERMISSION;
-    static const Boolean DEBUG_USER_LEAVING;
-    static const Boolean DEBUG_RESULTS;
-    static const Boolean DEBUG_BACKUP;
-    static const Boolean DEBUG_CONFIGURATION;
-    static const Boolean DEBUG_POWER;
-    static const Boolean DEBUG_POWER_QUICK;
-    static const Boolean DEBUG_MU;
-    static const Boolean VALIDATE_TOKENS;
-    static const Boolean SHOW_ACTIVITY_START_TIME = FALSE;
+    static const Boolean DEBUG = FALSE;
+    static const Boolean localLOGV = DEBUG;
+    static const Boolean DEBUG_BACKUP = localLOGV || FALSE;
+    static const Boolean DEBUG_BROADCAST = localLOGV || FALSE;
+    static const Boolean DEBUG_BROADCAST_LIGHT = DEBUG_BROADCAST || FALSE;
+    static const Boolean DEBUG_BACKGROUND_BROADCAST = DEBUG_BROADCAST || FALSE;
+    static const Boolean DEBUG_CLEANUP = localLOGV || FALSE;
+    static const Boolean DEBUG_CONFIGURATION = localLOGV || FALSE;
+    static const Boolean DEBUG_FOCUS = FALSE;
+    static const Boolean DEBUG_IMMERSIVE = localLOGV || FALSE;
+    static const Boolean DEBUG_MU = localLOGV || FALSE;
+    static const Boolean DEBUG_OOM_ADJ = localLOGV || FALSE;
+    static const Boolean DEBUG_LRU = localLOGV || FALSE;
+    static const Boolean DEBUG_PAUSE = localLOGV || FALSE;
+    static const Boolean DEBUG_POWER = localLOGV || FALSE;
+    static const Boolean DEBUG_POWER_QUICK = DEBUG_POWER || FALSE;
+    static const Boolean DEBUG_PROCESS_OBSERVERS = localLOGV || FALSE;
+    static const Boolean DEBUG_PROCESSES = localLOGV || FALSE;
+    static const Boolean DEBUG_PROVIDER = localLOGV || FALSE;
+    static const Boolean DEBUG_RESULTS = localLOGV || FALSE;
+    static const Boolean DEBUG_SERVICE = localLOGV || FALSE;
+    static const Boolean DEBUG_SERVICE_EXECUTING = localLOGV || FALSE;
+    static const Boolean DEBUG_STACK = localLOGV || FALSE;
+    static const Boolean DEBUG_SWITCH = localLOGV || FALSE;
+    static const Boolean DEBUG_TASKS = localLOGV || FALSE;
+    static const Boolean DEBUG_THUMBNAILS = localLOGV || FALSE;
+    static const Boolean DEBUG_TRANSITION = localLOGV || FALSE;
+    static const Boolean DEBUG_URI_PERMISSION = localLOGV || FALSE;
+    static const Boolean DEBUG_USER_LEAVING = localLOGV || FALSE;
+    static const Boolean DEBUG_VISBILITY = localLOGV || FALSE;
+    static const Boolean DEBUG_PSS = localLOGV || FALSE;
+    static const Boolean DEBUG_LOCKSCREEN = localLOGV || FALSE;
+    static const Boolean DEBUG_RECENTS = localLOGV || FALSE;
+    static const Boolean VALIDATE_TOKENS = FALSE;
+    static const Boolean SHOW_ACTIVITY_START_TIME = TRUE;
 
     // Control over CPU and battery monitoring.
     static const Int64 BATTERY_STATS_TIME;      // write battery stats every 30 minutes.

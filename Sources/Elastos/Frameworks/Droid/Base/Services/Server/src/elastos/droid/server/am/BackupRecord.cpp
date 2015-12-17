@@ -1,5 +1,11 @@
 
 #include "elastos/droid/server/am/BackupRecord.h"
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -18,14 +24,14 @@ String BackupRecord::ToString()
     }
     StringBuilder sb(128);
     sb.Append("BackupRecord{");
-    sb.Append((Int32)this);  // (Integer.toHexString(System.identityHashCode(this)))
+    sb.Append(StringUtils::ToString((Int32)this, 16));
     sb.AppendChar(' ');
     String pkgName;
-    mAppInfo->GetPackageName(&pkgName);
+    IPackageItemInfo::Probe(mAppInfo)->GetPackageName(&pkgName);
     sb.Append(pkgName);
     sb.AppendChar(' ');
     String name;
-    mAppInfo->GetName(&name);
+    IPackageItemInfo::Probe(mAppInfo)->GetName(&name);
     sb.Append(name);
     sb.AppendChar(' ');
     String bName;

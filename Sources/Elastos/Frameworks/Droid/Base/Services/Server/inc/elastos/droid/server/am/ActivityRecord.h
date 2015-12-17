@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_ACTIVITYRECORD_H__
 #define __ELASTOS_DROID_SERVER_AM_ACTIVITYRECORD_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkhash.h"
 #include "elastos/droid/server/am/ActivityResult.h"
 #include "elastos/droid/server/am/ActivityState.h"
 #include "elastos/droid/server/am/ConnectionRecord.h"

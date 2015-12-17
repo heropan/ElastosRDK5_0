@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_SERVER_AM_CPENDINGINTENTRECORD_H__
 
 #include "_Elastos_Droid_Server_Am_CPendingIntentRecord.h"
+#include "Elastos.CoreLibrary.IO.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::App::IActivityContainer;

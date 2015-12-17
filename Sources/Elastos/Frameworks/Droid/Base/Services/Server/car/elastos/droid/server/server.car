@@ -8,6 +8,7 @@ module
     // merge("accessibility/EventStreamTransformation.car");
     // merge("accessibility/ScreenMagnifier.car");
     merge("am/ActivityRecord.car");
+    merge("am/BroadcastFilter.car");
     merge("am/PendingIntentRecord.car");
     merge("am/ProcessRecord.car");
     merge("am/UriPermissionOwnerExternalToken.car");

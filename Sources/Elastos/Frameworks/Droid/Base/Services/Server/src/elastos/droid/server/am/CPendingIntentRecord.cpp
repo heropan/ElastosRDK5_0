@@ -1,6 +1,7 @@
 
 #include "elastos/droid/server/am/CPendingIntentRecord.h"
 // #include "elastos/droid/server/am/CActivityManagerService.h"
+#include "Elastos.Droid.App.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>

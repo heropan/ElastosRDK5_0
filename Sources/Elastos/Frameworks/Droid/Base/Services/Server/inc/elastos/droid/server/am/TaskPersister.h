@@ -11,6 +11,7 @@
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Core::Thread;
 using Elastos::IO::IBufferedReader;
+using Elastos::IO::IFile;
 using Elastos::IO::IStringWriter;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::Set;
@@ -20,9 +21,9 @@ namespace Droid {
 namespace Server {
 namespace Am {
 
-class ActivityStack;
 class ActivityStackSupervisor;
 class CActivityManagerService;
+class TaskRecord;
 
 class TaskPersister : public Object
 {

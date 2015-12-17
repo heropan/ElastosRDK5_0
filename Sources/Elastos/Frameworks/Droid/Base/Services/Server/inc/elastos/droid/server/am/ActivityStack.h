@@ -59,6 +59,10 @@ public:
     static const Int32 STOP_TIMEOUT_MSG;
     static const Int32 DESTROY_ACTIVITIES_MSG;
 
+    Boolean IsHomeStack()
+    {
+        return FALSE;
+    }
 public:
     AutoPtr<IHandler> mHandler;
     Int64 mLaunchStartTime;

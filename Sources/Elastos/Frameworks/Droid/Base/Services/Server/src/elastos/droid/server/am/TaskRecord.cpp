@@ -1,18 +1,28 @@
 
 #include "elastos/droid/server/am/TaskRecord.h"
+#include "elastos/droid/server/am/ActivityRecord.h"
+#include "elastos/droid/server/am/ActivityStack.h"
+#include "elastos/droid/server/am/ActivityStackSupervisor.h"
 #include "elastos/droid/server/am/CActivityManagerService.h"
+#include "elastos/droid/server/am/TaskPersister.h"
 #include <elastos/droid/app/AppGlobals.h>
-#include <elastos/droid/utility/XmlUtils.h>
+#include <elastos/droid/internal/utility/XmlUtils.h>
+#include <elastos/core/CoreUtils.h>
+#include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::App::AppGlobals;
 using Elastos::Droid::App::CActivityManagerHelper;
+using Elastos::Droid::App::CActivityManagerTaskDescription;
+using Elastos::Droid::App::CActivityManagerTaskThumbnail;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::App::IActivityManagerHelper;
 using Elastos::Droid::App::IActivityOptions;
 using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::CIntentHelper;
+using Elastos::Droid::Content::IIntentHelper;
 using Elastos::Droid::Content::CComponentName;
 using Elastos::Droid::Content::CComponentNameHelper;
 using Elastos::Droid::Content::IComponentNameHelper;
@@ -28,8 +38,12 @@ using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Os::CUserHandleHelper;
 using Elastos::Droid::Os::IUserHandleHelper;
 using Elastos::Droid::Internal::Utility::XmlUtils;
+using Elastos::Core::CoreUtils;
+using Elastos::Core::CSystem;
+using Elastos::Core::ISystem;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
+using Elastos::IO::CFile;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -93,10 +107,10 @@ TaskRecord::TaskRecord()
     , mNextAffiliateTaskId(-1)
     , mCallingUid(0)
     , mService(NULL)
-    , mTaskToReturnTo(APPLICATION_ACTIVITY_TYPE)
+    , mTaskToReturnTo(ActivityRecord::APPLICATION_ACTIVITY_TYPE)
 {
     CActivityManagerTaskDescription::New((IActivityManagerTaskDescription**)&mLastTaskDescription);
-    AutoPtr<ISystem> System;
+    AutoPtr<ISystem> system;
     CSystem::AcquireSingleton((ISystem**)&system);
     system->GetCurrentTimeMillis(&mLastTimeMoved);
 }
@@ -158,8 +172,8 @@ ECode TaskRecord::constructor(
     mMaxRecents = Elastos::Core::Math::Min(Elastos::Core::Math::Max(maxRecents, 1),
             maxRecentsLimit);
 
-    mTaskType = APPLICATION_ACTIVITY_TYPE;
-    mTaskToReturnTo = HOME_ACTIVITY_TYPE;
+    mTaskType = ActivityRecord::APPLICATION_ACTIVITY_TYPE;
+    mTaskToReturnTo = ActivityRecord::HOME_ACTIVITY_TYPE;
     AutoPtr<IUserHandleHelper> uhHelper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&uhHelper);
     uhHelper->GetUserId(mCallingUid, &mUserId);
@@ -213,12 +227,12 @@ ECode TaskRecord::constructor(
     mAutoRemoveRecents = autoRemoveRecents;
     mAskedCompatMode = askedCompatMode;
     mTaskType = taskType;
-    mTaskToReturnTo = HOME_ACTIVITY_TYPE;
+    mTaskToReturnTo = ActivityRecord::HOME_ACTIVITY_TYPE;
     mUserId = userId;
     mEffectiveUid = effectiveUid;
     mFirstActiveTime = firstActiveTime;
     mLastActiveTime = lastActiveTime;
-    mLastDescription = lastDescription;
+    mLastDescription = CoreUtils::Convert(lastDescription);
     mActivities = activities;
     mLastTimeMoved = lastTimeMoved;
     mNeverRelinquishIdentity = neverRelinquishIdentity;
@@ -235,7 +249,7 @@ ECode TaskRecord::constructor(
 
 void TaskRecord::TouchActiveTime()
 {
-    AutoPtr<ISystem> System;
+    AutoPtr<ISystem> system;
     CSystem::AcquireSingleton((ISystem**)&system);
     system->GetCurrentTimeMillis(&mLastActiveTime);
     if (mFirstActiveTime == 0) {
@@ -245,7 +259,7 @@ void TaskRecord::TouchActiveTime()
 
 Int64 TaskRecord::GetInactiveDuration()
 {
-    AutoPtr<ISystem> System;
+    AutoPtr<ISystem> system;
     CSystem::AcquireSingleton((ISystem**)&system);
     Int64 now;
     system->GetCurrentTimeMillis(&now);
@@ -352,7 +366,7 @@ void TaskRecord::SetIntent(
     Int32 intentFlags = 0;
     if (mIntent != NULL)
         mIntent->GetFlags(&intentFlags);
-    if ((intentFlags & Intent::FLAG_ACTIVITY_RESET_TASK_IF_NEEDED) != 0) {
+    if ((intentFlags & IIntent::FLAG_ACTIVITY_RESET_TASK_IF_NEEDED) != 0) {
         // Once we are set to an Intent with this flag, we count this
         // task as having a TRUE root activity.
         mRootWasReset = TRUE;
@@ -363,12 +377,13 @@ void TaskRecord::SetIntent(
     uhHelper->GetUserId(uid, &mUserId);
     Int32 flags;
     info->GetFlags(&flags);
+    assert(0);
     if ((flags & IActivityInfo::FLAG_AUTO_REMOVE_FROM_RECENTS) != 0) {
         // If the activity itself has requested auto-remove, then just always do it.
         mAutoRemoveRecents = TRUE;
     }
-    else if ((intentFlags & (Intent.FLAG_ACTIVITY_NEW_DOCUMENT
-        | Intent::FLAG_ACTIVITY_RETAIN_IN_RECENTS)) == Intent::FLAG_ACTIVITY_NEW_DOCUMENT) {
+    else if ((intentFlags & (IIntent::FLAG_ACTIVITY_NEW_DOCUMENT
+        /*| IIntent::FLAG_ACTIVITY_RETAIN_IN_RECENTS*/)) == IIntent::FLAG_ACTIVITY_NEW_DOCUMENT) {
         // If the caller has not asked for the document to be retained, then we may
         // want to turn on auto-remove, depending on whether the target has set its
         // own document launch mode.
@@ -389,8 +404,8 @@ void TaskRecord::SetIntent(
 void TaskRecord::SetTaskToReturnTo(
     /* [in] */ Int32 taskToReturnTo)
 {
-    if (IGNORE_RETURN_TO_RECENTS && taskToReturnTo == RECENTS_ACTIVITY_TYPE) {
-        taskToReturnTo = HOME_ACTIVITY_TYPE;
+    if (IGNORE_RETURN_TO_RECENTS && taskToReturnTo == ActivityRecord::RECENTS_ACTIVITY_TYPE) {
+        taskToReturnTo = ActivityRecord::HOME_ACTIVITY_TYPE;
     }
     mTaskToReturnTo = taskToReturnTo;
 }
@@ -450,7 +465,7 @@ void TaskRecord::SetTaskToAffiliateWith(
         AutoPtr<TaskRecord> nextRecents = taskToAffiliateWith->mNextAffiliate;
         if (nextRecents->mAffiliatedTaskId != mAffiliatedTaskId) {
             Slogger::E(TAG, "setTaskToAffiliateWith: nextRecents=%s affilTaskId=%d should be %d",
-                nextRecents->ToString(), nextRecents->mAffiliatedTaskId, mAffiliatedTaskId);
+                nextRecents->ToString().string(), nextRecents->mAffiliatedTaskId, mAffiliatedTaskId);
             if (nextRecents->mPrevAffiliate == taskToAffiliateWith) {
                 nextRecents->SetPrevAffiliate(NULL);
             }
@@ -461,13 +476,13 @@ void TaskRecord::SetTaskToAffiliateWith(
     }
     taskToAffiliateWith->SetNextAffiliate(this);
     SetPrevAffiliate(taskToAffiliateWith);
-    setNextAffiliate(NULL);
+    SetNextAffiliate(NULL);
 }
 
 Boolean TaskRecord::SetLastThumbnail(
     /* [in] */ IBitmap* thumbnail)
 {
-    if (mLastThumbnail != thumbnail) {
+    if (mLastThumbnail.Get() != thumbnail) {
         mLastThumbnail = thumbnail;
         if (thumbnail == NULL) {
             if (mLastThumbnailFile != NULL) {
@@ -475,7 +490,8 @@ Boolean TaskRecord::SetLastThumbnail(
             }
         }
         else {
-            mService->mTaskPersister->SaveImage(thumbnail, mFilename);
+            assert(0);
+            // mService->mTaskPersister->SaveImage(thumbnail, mFilename);
         }
         return TRUE;
     }
@@ -488,7 +504,8 @@ void TaskRecord::GetLastThumbnail(
     thumbs->SetMainThumbnail(mLastThumbnail);
     thumbs->SetThumbnailFileDescriptor(NULL);
     if (mLastThumbnail == NULL) {
-        thumbs->SetMainThumbnail(mService->mTaskPersister->GetImageFromWriteQueue(mFilename));
+        assert(0);
+        // thumbs->SetMainThumbnail(mService->mTaskPersister->GetImageFromWriteQueue(mFilename));
     }
     // Only load the thumbnail file if we don't have a thumbnail
     AutoPtr<IBitmap> mainThumbnail;
@@ -499,7 +516,7 @@ void TaskRecord::GetLastThumbnail(
         CParcelFileDescriptorHelper::AcquireSingleton((IParcelFileDescriptorHelper**)&pfdHelper);
         AutoPtr<IParcelFileDescriptor> thumbnailFileDescriptor;
         pfdHelper->Open(mLastThumbnailFile, IParcelFileDescriptor::MODE_READ_ONLY,
-            (IParcelFileDescriptor**)&thumbnailFileDescriptor)
+            (IParcelFileDescriptor**)&thumbnailFileDescriptor);
         thumbs->SetThumbnailFileDescriptor(thumbnailFileDescriptor);
     }
 }
@@ -553,8 +570,9 @@ AutoPtr<ActivityRecord> TaskRecord::TopRunningActivityLocked(
 {
     List<AutoPtr<ActivityRecord> >::ReverseIterator riter;
     for (riter = mActivities->RBegin(); riter != mActivities->REnd(); ++riter) {
-        AutoPtr<ActivityRecord> r = *riter;
-        if (!r->mFinishing && r != notTop && mStack->OkToShowLocked(r)) {
+        ActivityRecord* r = *riter;
+        assert(0);
+        if (!r->mFinishing && r != notTop /*&& mStack->OkToShowLocked(r)*/) {
             return r;
         }
     }
@@ -590,8 +608,9 @@ void TaskRecord::SetFrontOfTask()
 void TaskRecord::MoveActivityToFrontLocked(
     /* [in] */ ActivityRecord* newTop)
 {
-    if (DEBUG_ADD_REMOVE) Slogger::I(TAG, "Removing and adding activity %s to stack at top",
-        newTop->ToString().string()/*, new RuntimeException("here").fillInStackTrace()*/);
+    if (ActivityStackSupervisor::DEBUG_ADD_REMOVE)
+        Slogger::I(TAG, "Removing and adding activity %s to stack at top",
+            newTop->ToString().string()/*, new RuntimeException("here").fillInStackTrace()*/);
 
     mActivities->Remove(newTop);
     mActivities->PushBack(newTop);
@@ -630,7 +649,7 @@ void TaskRecord::AddActivityAtIndex(
     }
     // Only set this based on the first activity
     if (mActivities->IsEmpty()) {
-        mTaskType = r->mMActivityType;
+        mTaskType = r->mActivityType;
         mIsPersistable = r->IsPersistable();
         mCallingUid = r->mLaunchedFromUid;
         mCallingPackage = r->mLaunchedFromPackage;
@@ -654,7 +673,8 @@ void TaskRecord::AddActivityAtIndex(
     mActivities->Insert(it, r);
     UpdateEffectiveIntent();
     if (r->IsPersistable()) {
-        mService->NotifyTaskPersisterLocked(this, FALSE);
+        assert(0);
+        // mService->NotifyTaskPersisterLocked(this, FALSE);
     }
 }
 
@@ -674,7 +694,8 @@ Boolean TaskRecord::RemoveActivity(
         mNumFullscreen--;
     }
     if (r->IsPersistable()) {
-        mService->NotifyTaskPersisterLocked(this, FALSE);
+        assert(0);
+        // mService->NotifyTaskPersisterLocked(this, FALSE);
     }
     if (mActivities->IsEmpty()) {
         return !mReuseTask;
@@ -699,22 +720,23 @@ void TaskRecord::PerformClearTaskAtIndexLocked(
         ++iter;
     while (iter != mActivities->End()) {
         AutoPtr<ActivityRecord> r = *iter;
-        if (r->finishing) {
+        if (r->mFinishing) {
             ++iter;
             continue;
         }
 
         List<AutoPtr<ActivityRecord> >::Iterator nextIter = iter;
         ++nextIter;
+        assert(0);
         if (mStack == NULL) {
             // Task was restored from persistent storage.
             r->TakeFromHistory();
             iter = mActivities->Erase(iter);
         }
-        else if (mStack->FinishActivityLocked(r, IActivity::RESULT_CANCELED, NULL, String("clear"),
-                FALSE)) {
-            iter = nextIter;
-        }
+        // else if (mStack->FinishActivityLocked(r, IActivity::RESULT_CANCELED, NULL, String("clear"),
+        //         FALSE)) {
+        //     iter = nextIter;
+        // }
         else
             ++iter;
     }
@@ -723,7 +745,7 @@ void TaskRecord::PerformClearTaskAtIndexLocked(
 void TaskRecord::PerformClearTaskLocked()
 {
     mReuseTask = TRUE;
-    performClearTaskAtIndexLocked(0);
+    PerformClearTaskAtIndexLocked(0);
     mReuseTask = FALSE;
 }
 
@@ -734,7 +756,7 @@ AutoPtr<ActivityRecord> TaskRecord::PerformClearTaskLocked(
     List<AutoPtr<ActivityRecord> >::ReverseIterator riter;
     for (riter = mActivities->RBegin(); riter != mActivities->REnd(); ++riter) {
         AutoPtr<ActivityRecord> r = *riter;
-        if (r->finishing) {
+        if (r->mFinishing) {
             continue;
         }
 
@@ -744,10 +766,10 @@ AutoPtr<ActivityRecord> TaskRecord::PerformClearTaskLocked(
             // Here it is!  Now finish everything in front...
             AutoPtr<ActivityRecord> ret = r;
 
-            List<AutoPtr<ActivityRecord> >::Iterator iter = riter->GetBase();
+            List<AutoPtr<ActivityRecord> >::Iterator iter = riter.GetBase();
             while (iter != mActivities->End()) {
                 r = *iter;
-                if (r->finishing) {
+                if (r->mFinishing) {
                     ++iter;
                     continue;
                 }
@@ -757,11 +779,12 @@ AutoPtr<ActivityRecord> TaskRecord::PerformClearTaskLocked(
                 }
                 List<AutoPtr<ActivityRecord> >::Iterator nextIter = iter;
                 ++nextIter;
-                if (mStack->FinishActivityLocked(r, IActivity::RESULT_CANCELED,
-                    NULL, String("clear"), FALSE)) {
-                    iter = nextIter;
-                }
-                else
+                assert(0);
+                // if (mStack->FinishActivityLocked(r, IActivity::RESULT_CANCELED,
+                //     NULL, String("clear"), FALSE)) {
+                //     iter = nextIter;
+                // }
+                // else
                     ++iter;
             }
 
@@ -769,10 +792,11 @@ AutoPtr<ActivityRecord> TaskRecord::PerformClearTaskLocked(
             // expecting onNewIntent()), then we will finish the current
             // instance of the activity so a new fresh one can be started.
             if (ret->mLaunchMode == IActivityInfo::LAUNCH_MULTIPLE
-                    && (launchFlags & Intent::FLAG_ACTIVITY_SINGLE_TOP) == 0) {
+                    && (launchFlags & IIntent::FLAG_ACTIVITY_SINGLE_TOP) == 0) {
                 if (!ret->mFinishing) {
-                    mStack->FinishActivityLocked(ret, IActivity::RESULT_CANCELED, NULL,
-                            String("clear"), FALSE);
+                    assert(0);
+                    // mStack->FinishActivityLocked(ret, IActivity::RESULT_CANCELED, NULL,
+                    //         String("clear"), FALSE);
                     return NULL;
                 }
             }
@@ -787,11 +811,12 @@ AutoPtr<ActivityRecord> TaskRecord::PerformClearTaskLocked(
 AutoPtr<IActivityManagerTaskThumbnail> TaskRecord::GetTaskThumbnailLocked()
 {
     if (mStack != NULL) {
-        AutoPtr<ActivityRecord> resumedActivity = mStack->mResumedActivity;
-        if (resumedActivity != NULL && resumedActivity->mTask.Get() == this) {
-            AutoPtr<IBitmap> thumbnail = mStack->ScreenshotActivities(resumedActivity);
-            SetLastThumbnail(thumbnail);
-        }
+        assert(0);
+        // AutoPtr<ActivityRecord> resumedActivity = mStack->mResumedActivity;
+        // if (resumedActivity != NULL && resumedActivity->mTask.Get() == this) {
+        //     AutoPtr<IBitmap> thumbnail = mStack->ScreenshotActivities(resumedActivity);
+        //     SetLastThumbnail(thumbnail);
+        // }
     }
     AutoPtr<IActivityManagerTaskThumbnail> taskThumbnail;
     CActivityManagerTaskThumbnail::New((IActivityManagerTaskThumbnail**)&taskThumbnail);
@@ -807,17 +832,18 @@ void TaskRecord::RemoveTaskActivitiesLocked()
 
 Boolean TaskRecord::IsHomeTask()
 {
-    return mTaskType == HOME_ACTIVITY_TYPE;
+    return mTaskType == ActivityRecord::HOME_ACTIVITY_TYPE;
 }
 
 Boolean TaskRecord::IsApplicationTask()
 {
-    return mTaskType == APPLICATION_ACTIVITY_TYPE;
+    return mTaskType == ActivityRecord::APPLICATION_ACTIVITY_TYPE;
 }
 
 Boolean TaskRecord::IsOverHomeStack()
 {
-    return mTaskToReturnTo == HOME_ACTIVITY_TYPE || mTaskToReturnTo == RECENTS_ACTIVITY_TYPE;
+    return mTaskToReturnTo == ActivityRecord::HOME_ACTIVITY_TYPE
+        || mTaskToReturnTo == ActivityRecord::RECENTS_ACTIVITY_TYPE;
 }
 
 AutoPtr<ActivityRecord> TaskRecord::FindActivityInHistoryLocked(
@@ -850,7 +876,7 @@ void TaskRecord::UpdateTaskDescription()
     List<AutoPtr<ActivityRecord> >::Iterator iter = mActivities->Begin();
     if (numActivities > 0)
         ++iter;
-    for (iter != mActivities->End(); ++iter) {
+    for (; iter != mActivities->End(); ++iter) {
         AutoPtr<ActivityRecord> r = *iter;
         Int32 flags;
         r->mInfo->GetFlags(&flags);
@@ -861,7 +887,7 @@ void TaskRecord::UpdateTaskDescription()
             break;
         }
         if (r->mIntent != NULL && (r->mIntent->GetFlags(&flags),
-            flags & Intent::FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET) != 0) {
+            flags & IIntent::FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET) != 0) {
             break;
         }
     }
@@ -875,7 +901,7 @@ void TaskRecord::UpdateTaskDescription()
         Int32 colorPrimary = 0;
         for (--iter; iter != mActivities->End(); --iter) {
             AutoPtr<ActivityRecord> r = *iter;
-            if (r->taskDescription != NULL) {
+            if (r->mTaskDescription != NULL) {
                 if (label == NULL) {
                     r->mTaskDescription->GetLabel(&label);
                 }
@@ -900,11 +926,11 @@ void TaskRecord::UpdateTaskDescription()
 Int32 TaskRecord::FindEffectiveRootIndex()
 {
     Int32 effectiveNdx = 0;
-    final Int32 topActivityNdx = mActivities->GetSize() - 1;
+    Int32 topActivityNdx = mActivities->GetSize() - 1;
     List<AutoPtr<ActivityRecord> >::ReverseIterator riter;
     for (riter = mActivities->RBegin(); riter != mActivities->REnd(); ++riter, ++effectiveNdx) {
         AutoPtr<ActivityRecord> r = *riter;
-        if (r->finishing) {
+        if (r->mFinishing) {
             continue;
         }
         Int32 flags;
@@ -997,9 +1023,9 @@ ECode TaskRecord::SaveToXml(
         Int32 persistableMode;
         r->mInfo->GetPersistableMode(&persistableMode);
         Int32 flags;
-        if (persistableMode == IActivityInfo::PERSIST_ROOT_ONLY || !r->IsPersistable() ||
-            ((r->mIntent->GetFlags(&flags), flags & Intent::FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET) != 0) &&
-                    activityNdx > 0) {
+        if ((persistableMode == IActivityInfo::PERSIST_ROOT_ONLY || !r->IsPersistable() ||
+            (r->mIntent->GetFlags(&flags), (flags & IIntent::FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET) != 0)) &&
+                iter != mActivities->Begin()) {
             // Stop at first non-persistable or first break in task (CLEAR_WHEN_TASK_RESET).
             break;
         }
@@ -1189,7 +1215,7 @@ ECode TaskRecord::RestoreFromXml(
             AutoPtr<IComponentName> component;
             checkIntent->GetComponent((IComponentName**)&component);
             String packageName;
-            component->GetPackageName(packageName);
+            component->GetPackageName(&packageName);
             AutoPtr<IApplicationInfo> ai;
             pm->GetApplicationInfo(packageName, IPackageManager::GET_UNINSTALLED_PACKAGES
                 | IPackageManager::GET_DISABLED_COMPONENTS, userId, (IApplicationInfo**)&ai);
@@ -1212,7 +1238,7 @@ ECode TaskRecord::RestoreFromXml(
             callingUid, callingPackage);
 
     List<AutoPtr<ActivityRecord> >::ReverseIterator riter;
-    for (riter = activities->RBegin(); riter != mActivities->REnd(); ++riter) {
+    for (riter = activities->RBegin(); riter != activities->REnd(); ++riter) {
         AutoPtr<ActivityRecord> r = *riter;
         r->mTask = task;
     }
@@ -1263,7 +1289,7 @@ void TaskRecord::Dump(
         StringBuilder sb(128);
         sb.Append(prefix);
         sb.Append("intent={");
-        mIntent->ToShortString(sb, FALSE, TRUE, FALSE, TRUE);
+        mIntent->ToShortString(&sb, FALSE, TRUE, FALSE, TRUE);
         sb.Append('}');
         pw->Println(sb.ToString());
     }
@@ -1271,7 +1297,7 @@ void TaskRecord::Dump(
         StringBuilder sb(128);
         sb.Append(prefix);
         sb.Append("mAffinityIntent={");
-        mAffinityIntent->ToShortString(sb, FALSE, TRUE, FALSE, TRUE);
+        mAffinityIntent->ToShortString(&sb, FALSE, TRUE, FALSE, TRUE);
         sb.Append('}');
         pw->Println(sb.ToString());
     }
@@ -1339,7 +1365,7 @@ void TaskRecord::Dump(
     }
     pw->Print(prefix);
     pw->Print(String("Activities="));
-    pw->Println(mActivities);
+    pw->Println(/*mActivities*/);
     if (!mAskedCompatMode || !mInRecents || !mIsAvailable) {
         pw->Print(prefix);
         pw->Print(String("mAskedCompatMode="));
@@ -1388,12 +1414,12 @@ String TaskRecord::ToString()
         sb.Append(" U=");
         sb.Append(mUserId);
         sb.Append(" sz=");
-        sb.Append(mActivities->GetSize());
+        sb.Append((Int32)mActivities->GetSize());
         sb.Append('}');
         return sb.ToString();
     }
     sb.Append("TaskRecord{");
-    sb.Append(StringUtils::ToString((Int32)this.Get(), 16));
+    sb.Append(StringUtils::ToString((Int32)this, 16));
     sb.Append(" #");
     sb.Append(mTaskId);
     if (mAffinity != NULL) {
@@ -1405,7 +1431,7 @@ String TaskRecord::ToString()
         AutoPtr<IComponentName> component;
         mIntent->GetComponent((IComponentName**)&component);
         String str;
-        component->FlattenToShortString(str);
+        component->FlattenToShortString(&str);
         sb.Append(str);
     }
     else if (mAffinityIntent != NULL) {
@@ -1413,7 +1439,7 @@ String TaskRecord::ToString()
         AutoPtr<IComponentName> component;
         mAffinityIntent->GetComponent((IComponentName**)&component);
         String str;
-        component->FlattenToShortString(str);
+        component->FlattenToShortString(&str);
         sb.Append(str);
     }
     else {
