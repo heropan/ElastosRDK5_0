@@ -9,10 +9,10 @@ module
     interface IEnvironment {
 
         /** {@hide} */
-        static const String DIR_ANDROID = "Android";
+        const String DIR_ANDROID = "Android";
         /** {@hide} */
         //@Deprecated
-        static const String DIRECTORY_ANDROID = "Android";
+        const String DIRECTORY_ANDROID = "Android";
 
         /**
          * Unknown storage state, such as when a path isn't backed by known storage
