@@ -7,11 +7,10 @@
 #include <unicode/uniset.h>
 #include <unicode/ucnv_cb.h>
 #include <unicode/ustring.h>
+#include <ustrenum.h> // For UStringEnumeration.
 #include "CharsetICU.h"
 #include <elastos/utility/etl/Vector.h>
 #include <utils/UniquePtr.h>
-
-//#include <ustrenum.h>
 
 
 using Elastos::Utility::Etl::Vector;
@@ -20,6 +19,8 @@ using Elastos::IO::Charset::CharsetICU;
 
 namespace Libcore {
 namespace ICU {
+
+extern String UnicodeStringToString(const UnicodeString& us);
 
 enum {
     NativeConverter_REPORT = 0,
@@ -62,27 +63,25 @@ static ECode collectStandardNames(
     const char* canonicalName,
     const char* standard,
     Vector<String>& result,
-    bool& rev)
+    bool* rev)
 {
     UErrorCode status = U_ZERO_ERROR;
-    assert(0);
-#if 0 // TODO: Waiting for external .h
     UStringEnumeration e(ucnv_openStandardNames(canonicalName, standard, &status));
     if (!U_SUCCESS(status)) {
-        rev = false;
+        *rev = false;
         return maybeThrowIcuException(status);
     }
 
     Int32 count = e.count(status);
     if (!U_SUCCESS(status)) {
-        rev = false;
+        *rev = false;
         return maybeThrowIcuException(status);
     }
 
     for (Int32 i = 0; i < count; ++i) {
         const UnicodeString* string = e.snext(status);
         if (!U_SUCCESS(status)) {
-            rev = false;
+            *rev = false;
             return maybeThrowIcuException(status);
         }
         String s = UnicodeStringToString(*string);
@@ -90,11 +89,8 @@ static ECode collectStandardNames(
             result.PushBack(s);
         }
     }
-#else
-    assert(0);
-#endif
 
-    rev = true;
+    *rev = true;
     return NOERROR;
 }
 
@@ -528,19 +524,19 @@ ECode NativeConverter::CharsetForName(
     // Get the aliases for this charset.
     Vector<String> aliases;
     bool rev;
-    collectStandardNames(icuCanonicalName, "IANA", aliases, rev);
+    collectStandardNames(icuCanonicalName, "IANA", aliases, &rev);
     if (!rev) {
         return NOERROR;
     }
-    collectStandardNames(icuCanonicalName, "MIME", aliases, rev);
+    collectStandardNames(icuCanonicalName, "MIME", aliases, &rev);
     if (!rev) {
         return NOERROR;
     }
-    collectStandardNames(icuCanonicalName, "JAVA", aliases, rev);
+    collectStandardNames(icuCanonicalName, "JAVA", aliases, &rev);
     if (!rev) {
         return NOERROR;
     }
-    collectStandardNames(icuCanonicalName, "WINDOWS", aliases, rev);
+    collectStandardNames(icuCanonicalName, "WINDOWS", aliases, &rev);
     if (!rev) {
         return NOERROR;
     }
