@@ -297,7 +297,7 @@ endif
 ifneq "$(IMPORTHS)" ""
 $(IMPORTHS):
 	@echo Generating H files from $(@:.h=.eco)
-	$(LUBE)  -C$(@:.h=.eco) -f -T header -T headercpp
+	$(LUBE)  -C$(@:.h=.eco) -f -T header2 -T headercpp
 endif
 
 ##########################################################################

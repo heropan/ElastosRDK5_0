@@ -3188,6 +3188,38 @@ IMPL_USERFUNC(GenerateDependHeaderForModule)(PLUBECTX pCtx, PSTATEDESC pDesc, PV
         pCtx->PutString(module->mFileDirs[i]->mPath);
         pCtx->PutString(".h\"\n");
     }
+    for (int i = 0; i < module->mDefinedInterfaceCount; i++) {
+        InterfaceDirEntry* itfDir = module->mInterfaceDirs[module->mDefinedInterfaceIndexes[i]];
+        if (itfDir->mFileIndex == 0) {
+            char* pPath = (char*)malloc(strlen(module->mName) + 4);
+            strcpy(pPath, "_");
+            strcat(pPath, module->mName);
+            strcat(pPath, ".");
+            strcat(pPath, "h");
+
+            pCtx->PutString("#include \"");
+            pCtx->PutString(pPath);
+            pCtx->PutString("\"\n");
+            free(pPath);
+            return LUBE_OK;
+        }
+    }
+    for (int i = 0; i < module->mClassCount; i++) {
+        ClassDirEntry* clsDir = module->mClassDirs[i];
+        if (clsDir->mFileIndex == 0) {
+            char* pPath = (char*)malloc(strlen(module->mName) + 4);
+            strcpy(pPath, "_");
+            strcat(pPath, module->mName);
+            strcat(pPath, ".");
+            strcat(pPath, "h");
+
+            pCtx->PutString("#include \"");
+            pCtx->PutString(pPath);
+            pCtx->PutString("\"\n");
+            free(pPath);
+            return LUBE_OK;
+        }
+    }
 
     return LUBE_OK;
 }
