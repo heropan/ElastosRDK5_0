@@ -12,7 +12,7 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-class ActivityManagerNative
+class ECO_PUBLIC ActivityManagerNative
 {
 public:
     static CARAPI_(AutoPtr<IIActivityManager>) GetDefault();

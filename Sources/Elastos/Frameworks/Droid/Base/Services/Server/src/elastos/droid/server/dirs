@@ -8,6 +8,7 @@ DIRS += display
 #DIRS += net
 #DIRS += pm
 #DIRS += usb
+DIRS = wallpaper
 #DIRS += wm
 #DIRS += accounts
 #DIRS += power

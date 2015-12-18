@@ -16,7 +16,7 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
-class FileObserver
+class ECO_PUBLIC FileObserver
     : public Object
     , public IFileObserver
 {
@@ -105,16 +105,16 @@ public:
     CARAPI StopWatching();
 
 private:
-    static CARAPI_(Boolean) InitObserverThread();
+    ECO_LOCAL static CARAPI_(Boolean) InitObserverThread();
 
 private:
     static AutoPtr<ObserverThread> sObserverThread;
     static const Boolean sObserverThreadInited;
 
     // instance
-    String mPath;
-    Int32 mDescriptor;
-    Int32 mMask;
+    ECO_LOCAL String mPath;
+    ECO_LOCAL Int32 mDescriptor;
+    ECO_LOCAL Int32 mMask;
 };
 
 } // namespace Os

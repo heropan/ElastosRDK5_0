@@ -24,16 +24,26 @@ module
     merge("SystemServer.car");
     merge("SystemService.car");
     merge("SystemServiceManager.car");
+    merge("wallpaper/WallpaperManagerService.car");
 
     // merge("RecognitionManagerService.car");
     // merge("DeviceStorageMonitorService.car");
     // merge("dreams/DreamManagerService.car");
     // merge("search/Searchables.car");
 
+
+    using interface Elastos.Droid.App.IWallpaperInfo;
+    using interface Elastos.Droid.App.IIWallpaperManager;
     using interface Elastos.Droid.Os.IBinder;
     using interface Elastos.Droid.Content.IContext;
+    using interface Elastos.Droid.Content.IServiceConnection;
     using interface Elastos.Droid.Hardware.Display.IIDisplayManager;
     using interface Elastos.Droid.Media.Projection.IIMediaProjectionCallback;
+    using interface Elastos.Droid.Service.Wallpaper.IIWallpaperConnection;
+    interface Elastos.Droid.Server.ISystemService;
+    interface Elastos.Droid.Server.Wallpaper.IWallpaperConnection;
+    interface Elastos.Droid.Server.Wallpaper.IWallpaperData;
+    interface Elastos.Droid.Server.Wallpaper.IWallpaperManagerService;
 
     // using interface Elastos.Core.IRunnable;
     // using interface Elastos.IO.IFile;
@@ -377,25 +387,29 @@ module
 //         interface IBinder;
 //     }
 
-//     [local]
-//     class CWallpaperManagerService  {
-//         constructor(
-//             [in] IContext* ctx);
+    namespace Wallpaper {
+        [local]
+        class CWallpaperManagerService  {
+            constructor(
+                [in] IContext* ctx);
 
-//         interface IIWallpaperManager;
-//         interface IBinder;
-//     }
+            interface IWallpaperManagerService;
+            interface IIWallpaperManager;
+            interface IBinder;
+         }
 
-//     class CWMSWallpaperConnection {
-//         constructor(
-//             [in] IWallpaperInfo* info,
-//             [in] Handle32 wallpaperData,
-//             [in] Handle32 owner);
+        [local]
+        class CWallpaperConnection {
+            constructor(
+                [in] IWallpaperInfo* info,
+                [in] IWallpaperData* wallpaper);
 
-//         interface IWallpaperConnection;
-//         interface IServiceConnection;
-//         interface IBinder;
-//     }
+            interface IWallpaperConnection;
+            interface IIWallpaperConnection;
+            interface IServiceConnection;
+            interface IBinder;
+         }
+    }//namespace Wallpaper
 
 //     class CWMSUserSwitchObserver {
 //         constructor(
