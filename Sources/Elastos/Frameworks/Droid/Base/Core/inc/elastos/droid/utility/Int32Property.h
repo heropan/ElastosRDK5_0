@@ -50,7 +50,7 @@ public :
         /* [in] */ Int32 value) = 0;
 
 private:
-    ECO_LOCAL String mName;
+    String mName;
 };
 
 } // namespace Utility

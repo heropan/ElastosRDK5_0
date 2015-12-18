@@ -108,13 +108,13 @@ private:
     ECO_LOCAL static CARAPI_(Boolean) InitObserverThread();
 
 private:
-    static AutoPtr<ObserverThread> sObserverThread;
-    static const Boolean sObserverThreadInited;
+    ECO_LOCAL static AutoPtr<ObserverThread> sObserverThread;
+    ECO_LOCAL static const Boolean sObserverThreadInited;
 
     // instance
-    ECO_LOCAL String mPath;
-    ECO_LOCAL Int32 mDescriptor;
-    ECO_LOCAL Int32 mMask;
+    String mPath;
+    Int32 mDescriptor;
+    Int32 mMask;
 };
 
 } // namespace Os

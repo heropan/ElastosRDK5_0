@@ -810,15 +810,15 @@ protected:
     static const String NAME_STR;
     static const String ACTION_STR;
 
-    ECO_PUBLIC Int32 mPriority;
-    ECO_PUBLIC List<String> mActions;
-    ECO_PUBLIC AutoPtr<List<String> > mCategories;
-    ECO_PUBLIC AutoPtr<List<String> > mDataSchemes;
-    ECO_PUBLIC AutoPtr< List< AutoPtr<IPatternMatcher> > > mDataSchemeSpecificParts;
-    ECO_PUBLIC AutoPtr< List< AutoPtr<IIntentFilterAuthorityEntry> > > mDataAuthorities;
-    ECO_PUBLIC AutoPtr< List< AutoPtr<IPatternMatcher> > > mDataPaths;
-    ECO_PUBLIC AutoPtr<List<String> > mDataTypes;
-    ECO_PUBLIC Boolean mHasPartialTypes;
+    Int32 mPriority;
+    List<String> mActions;
+    AutoPtr<List<String> > mCategories;
+    AutoPtr<List<String> > mDataSchemes;
+    AutoPtr< List< AutoPtr<IPatternMatcher> > > mDataSchemeSpecificParts;
+    AutoPtr< List< AutoPtr<IIntentFilterAuthorityEntry> > > mDataAuthorities;
+    AutoPtr< List< AutoPtr<IPatternMatcher> > > mDataPaths;
+    AutoPtr<List<String> > mDataTypes;
+    Boolean mHasPartialTypes;
 };
 
 } // namespace Content

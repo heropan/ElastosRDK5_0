@@ -491,9 +491,8 @@ private:
     ECO_LOCAL CARAPI CheckSynchronousHint();
 
 private:
-    ECO_LOCAL AutoPtr<IPendingResult> mPendingResult;
-    ECO_LOCAL Boolean mDebugUnregister;
-
+    AutoPtr<IPendingResult> mPendingResult;
+    Boolean mDebugUnregister;
 };
 
 } // namespace Content

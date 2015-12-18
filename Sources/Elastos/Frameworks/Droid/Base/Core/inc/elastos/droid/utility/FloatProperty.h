@@ -50,7 +50,7 @@ public :
         /* [in] */ Float value) = 0;
 
 private:
-    ECO_LOCAL String mName;
+    String mName;
 };
 
 } // namespace Utility

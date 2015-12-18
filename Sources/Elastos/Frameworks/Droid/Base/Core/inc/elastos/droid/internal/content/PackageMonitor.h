@@ -182,18 +182,17 @@ private:
     static AutoPtr<IIntentFilter> sExternalFilt;
 
 private:
-    ECO_LOCAL HashSet<String> mUpdatingPackages;
-    ECO_LOCAL AutoPtr<IContext> mRegisteredContext;
-    ECO_LOCAL AutoPtr<IHandler> mRegisteredHandler;
-    ECO_LOCAL AutoPtr<ArrayOf<String> > mDisappearingPackages;
-    ECO_LOCAL AutoPtr<ArrayOf<String> > mAppearingPackages;
-    ECO_LOCAL AutoPtr<ArrayOf<String> > mModifiedPackages;
-    ECO_LOCAL Int32 mChangeType;
-    ECO_LOCAL Int32 mChangeUserId;
-    ECO_LOCAL Boolean mSomePackagesChanged;
-    ECO_LOCAL AutoPtr<ArrayOf<String> > mTempArray;
-    ECO_LOCAL Object mUpdatingPackagesLock;
-
+    HashSet<String> mUpdatingPackages;
+    AutoPtr<IContext> mRegisteredContext;
+    AutoPtr<IHandler> mRegisteredHandler;
+    AutoPtr<ArrayOf<String> > mDisappearingPackages;
+    AutoPtr<ArrayOf<String> > mAppearingPackages;
+    AutoPtr<ArrayOf<String> > mModifiedPackages;
+    Int32 mChangeType;
+    Int32 mChangeUserId;
+    Boolean mSomePackagesChanged;
+    AutoPtr<ArrayOf<String> > mTempArray;
+    Object mUpdatingPackagesLock;
 };
 
 }

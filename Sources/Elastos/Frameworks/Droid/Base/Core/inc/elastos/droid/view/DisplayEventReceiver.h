@@ -107,13 +107,13 @@ private:
 private:
     static const String TAG;
 
-    ECO_LOCAL AutoPtr<ICloseGuard> mCloseGuard;// = CloseGuard.get();
+    AutoPtr<ICloseGuard> mCloseGuard;// = CloseGuard.get();
 
-    ECO_LOCAL android::sp<NativeDisplayEventReceiver> mNativeReceiver;
+    android::sp<NativeDisplayEventReceiver> mNativeReceiver;
 
     // We keep a reference message queue object here so that it is not
     // GC'd while the native peer of the receiver is using them.
-    ECO_LOCAL AutoPtr<IMessageQueue> mMessageQueue;
+    AutoPtr<IMessageQueue> mMessageQueue;
 };
 
 }   //namespace View
