@@ -44,9 +44,12 @@ module
     merge("widget/SwipeDismissLayout.car");
     merge("widget/ToolbarWidgetWrapper.car");
 
+    interface Elastos.Droid.Animation.IAnimatorListener;
     interface Elastos.Droid.App.IActionBarTab;
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Graphics.Drawable.IBitmapDrawable;
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
+    interface Elastos.Droid.Utility.IAttributeSet;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
     interface Elastos.Droid.View.IKeyEventCallback;
     interface Elastos.Droid.View.IViewGroup;
@@ -54,6 +57,10 @@ module
     interface Elastos.Droid.View.IViewParent;
     interface Elastos.Droid.View.IViewManager;
     interface Elastos.Droid.View.IViewOnLongClickListener;
+    interface Elastos.Droid.View.IOnPreDrawListener;
+    interface Elastos.Droid.View.InputMethod.IInputConnection;
+    interface Elastos.Droid.View.InputMethod.IBaseInputConnection;
+    interface Elastos.Droid.Widget.ITextView;
     interface Elastos.Droid.Widget.IFrameLayout;
     interface Elastos.Droid.Widget.ILinearLayout;
     interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener;
@@ -64,26 +71,34 @@ module
     namespace Internal {
     namespace Widget {
 
-   //  [local]
-   //  class CDialogTitle {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CDialogTitle {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
 
-   //      interface IDialogTitle;
-   //      interface IOnPreDrawListener;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface IDialogTitle;
+        interface ITextView;
+        interface IView;
+        interface IOnPreDrawListener;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
     [local]
     class CScrollingTabContainerView {
@@ -302,29 +317,31 @@ module
    //      interface IAccessibilityEventSource;
    //  }
 
-   //  [local]
-   //  class CDrawableHolder {
+    [local]
+    class CDrawableHolder {
 
-   //      constructor(
-   //          [in] IBitmapDrawable* drawable);
+        constructor(
+            [in] IBitmapDrawable* drawable);
 
-   //      constructor(
-   //          [in] IBitmapDrawable* drawable,
-   //          [in] Float x,
-   //          [in] Float y);
+        constructor(
+            [in] IBitmapDrawable* drawable,
+            [in] Float x,
+            [in] Float y);
 
-   //      interface IDrawableHolder;
-   //      interface IAnimatorListener;
-   //  }
+        interface IDrawableHolder;
+        interface IAnimatorListener;
+    }
 
-   //  [local]
-   //  class CEditableInputConnection {
+    [local]
+    class CEditableInputConnection {
 
-   //      constructor(
-   //          [in] ITextView* textview);
+        constructor(
+            [in] ITextView* textview);
 
-   //      interface IEditableInputConnection;
-   //  }
+        interface IEditableInputConnection;
+        interface IBaseInputConnection;
+        interface IInputConnection;
+    }
 
    //  [local]
    //  class CWeightedLinearLayout {

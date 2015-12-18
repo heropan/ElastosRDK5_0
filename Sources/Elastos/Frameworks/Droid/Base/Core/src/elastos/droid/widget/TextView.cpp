@@ -1,6 +1,4 @@
 #include "Elastos.Droid.View.h"
-#include "Elastos.Droid.Widget.h"
-#include "Elastos.Droid.Text.h"
 #include "Elastos.Droid.Provider.h"
 #include <Elastos.CoreLibrary.Utility.h>
 
