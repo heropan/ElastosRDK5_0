@@ -13,16 +13,21 @@ module
      *
      * {@hide}
      */
+    [local]
     interface ISystemServiceManager {
 
         /**
-         * Starts a service by class name.
+         * Starts a service by class name signature.
          *
          * @return The service instance.
          */
         //@SuppressWarnings("unchecked")
         StartService(
-            [in] String className);
+            [in] String classNameSignature,
+            [out] ISystemService** service);
+
+        StartService(
+            [in] ISystemService* service);
 
         /**
          * Creates and starts a system service. The class must be a subclass of
@@ -34,7 +39,7 @@ module
          */
         //@SuppressWarnings("unchecked")
         StartService(
-            [in] ClassID serviceClass,
+            [in] IClassInfo* serviceClass,
             [out] ISystemService** service);
 
         /**
