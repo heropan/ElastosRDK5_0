@@ -148,6 +148,7 @@ SOURCES += ImageSwitcher.cpp
 ##SOURCES += CNumberPickerButton.cpp
 SOURCES += DatePicker.cpp
 SOURCES += CDatePicker.cpp
+SOURCES += DatePickerCalendarDelegate.cpp
 SOURCES += DigitalClock.cpp
 SOURCES += CDigitalClock.cpp
 ##SOURCES += CDatePickerSavedState.cpp
