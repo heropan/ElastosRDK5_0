@@ -6,11 +6,6 @@ module
     namespace Server {
 
     interface ISystemServer {
-         Init1(
-            [in] ArrayOf<String> args);
-
-         Init2();
-
          Main(
             [in] ArrayOf<String> args);
     }

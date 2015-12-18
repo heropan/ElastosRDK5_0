@@ -15,7 +15,7 @@ namespace Os {
  *
  * {@hide}
  */
-class FactoryTest
+class ECO_PUBLIC FactoryTest
 {
 public:
     static const Int32 FACTORY_TEST_OFF;// = 0;
@@ -35,6 +35,10 @@ public:
      * shut down, without prompting the user.
      */
     static Boolean IsLongPressOnPowerOffEnabled();
+
+private:
+    ECO_LOCAL FactoryTest();
+    ECO_LOCAL FactoryTest(const FactoryTest&);
 };
 
 } // namespace Os

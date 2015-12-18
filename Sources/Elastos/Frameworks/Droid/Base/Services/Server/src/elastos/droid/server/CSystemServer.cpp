@@ -1,1497 +1,1233 @@
 
 #include "elastos/droid/server/CSystemServer.h"
-// #include "am/CActivityManagerService.h"
-// #include "am/CBatteryStatsService.h"
-// #include "CContentService.h"
-// #include "CVibratorService.h"
-// #include "CAlarmManagerService.h"
-// #include "CStatusBarManagerService.h"
-// #include "CNotificationManagerService.h"
-// #include "pm/Installer.h"
-// #include "pm/CPackageManagerService.h"
-// #include "pm/CUserManagerService.h"
-// #include "wm/InputMonitor.h"
-// #include "CPrivacySettingsManagerService.h"
-// #include "CClipboardService.h"
-// #include "CLockSettingsService.h"
-//#include "elastos/droid/os/Looper.h"
-// #include "elastos/droid/os/ServiceManager.h"
-// #include "input/CInputManagerService.h"
-// #include "power/CPowerManagerService.h"
-// #include "accounts/CAccountManagerService.h"
-// #include "AttributeCache.h"
-// #include "CNsdService.h"
-// #include "CWifiService.h"
-// #include "CEthernetService.h"
-// #include "CSerialService.h"
-// #include "CDiskStatsService.h"
-// #include "CUpdateLockService.h"
-// #include "CWifiDisplayManagerService.h"
-// #include "CSamplingProfilerService.h"
-// #include "CDropBoxManagerService.h"
-// #include "CDevicePolicyManagerService.h"
-// #include "CDeviceStorageMonitorService.h"
-// #include "CDisplayManagerServiceAw.h"
-// #include "display/CDisplayManagerService.h"
-// #include "search/CSearchManagerService.h"
-// #include "accessibility/CAccessibilityManagerService.h"
-// #include "CBackupManagerService.h"
-// #include "dreams/CDreamManagerService.h"
-// #include "AudioDeviceManagerObserver.h"
-// #include "CKortideRemoteService.h"
-// #include "CZigbeeService.h"
-#include <SurfaceFlinger.h>
-#include <SensorService.h>
+#include "elastos/droid/server/SystemServiceManager.h"
+#include <elastos/droid/server/LocalServices.h>
 
+#include <Elastos.Droid.Os.h>
+#include <Elastos.Droid.App.h>
+#include <Elastos.Droid.Webkit.h>
+#include <elastos/droid/R.h>
+#include <elastos/droid/os/FactoryTest.h>
+#include <elastos/droid/os/SystemClock.h>
+#include <elastos/droid/os/Build.h>
 #include <elastos/utility/logging/Slogger.h>
-#include <unistd.h>
-#include <cutils/properties.h>
-#include <binder/IPCThreadState.h>
-#include <binder/ProcessState.h>
 
-using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::EIID_ISynchronize;
-// using Elastos::IO::IFile;
-// using Elastos::IO::CFile;
-// using Elastos::IO::CFileOutputStream;
-// using Elastos::IO::IFlushable;
+using Elastos::Droid::R;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::FactoryTest;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::IEnvironment;
+using Elastos::Droid::Os::CEnvironment;
+using Elastos::Droid::Os::ILooperHelper;
+using Elastos::Droid::Os::CLooperHelper;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Os::IUserHandleHelper;
+using Elastos::Droid::Os::CUserHandleHelper;
+using Elastos::Droid::Os::ISystemProperties;
+using Elastos::Droid::Os::CSystemProperties;
+using Elastos::Droid::App::IContextImpl;
+using Elastos::Droid::App::IActivityThread;
+using Elastos::Droid::App::IActivityThreadHelper;
+using Elastos::Droid::App::CActivityThreadHelper;
+using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::CComponentName;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Webkit::IWebViewFactory;
+// using Elastos::Droid::Webkit::CWebViewFactory;
+using Elastos::Core::ISystem;
+using Elastos::Core::CSystem;
 using Elastos::Utility::Logging::Slogger;
-// using Elastos::Droid::App::Backup::IIBackupManager;
-// using Elastos::Droid::App::IIWallpaperManager;
-// using Elastos::Droid::App::IIAlarmManager;
-// using Elastos::Droid::App::Admin::IIDevicePolicyManager;
-// using Elastos::Droid::App::Admin::EIID_IIDevicePolicyManager;
-// using Elastos::Droid::Content::IContentResolver;
-// using Elastos::Droid::Content::IContext;
-// using Elastos::Droid::Hardware::Display::IIDisplayManager;
-// using Elastos::Droid::Hardware::Input::IIInputManager;
-// using Elastos::Droid::Hardware::IISerialManager;
-// using Elastos::Droid::Hardware::EIID_IISerialManager;
-// using Elastos::Droid::Hardware::Usb::IIUsbManager;
-// using Elastos::Droid::Hardware::Usb::EIID_IIUsbManager;
-// using Elastos::Droid::Net::IIConnectivityManager;
-// using Elastos::Droid::Net::Wifi::IIWifiManager;
-// using Elastos::Droid::Net::Wifi::P2p::IWifiP2pService;
-// using Elastos::Droid::Net::Wifi::P2p::CWifiP2pService;
-// using Elastos::Droid::Net::Wifi::P2p::IIWifiP2pManager;
-// using Elastos::Droid::Net::Ethernet::IIEthernetManager;
-// using Elastos::Droid::Net::Nsd::IINsdManager;
-// using Elastos::Droid::Net::Nsd::EIID_IINsdManager;
-// using Elastos::Droid::Net::IIThrottleManager;
-// using Elastos::Droid::Os::IBinder;
-//using Elastos::Droid::Os::Looper;
-// using Elastos::Droid::Os::ServiceManager;
-// using Elastos::Droid::Os::IServiceManager;
-// using Elastos::Droid::Os::CServiceManager;
-// using Elastos::Droid::Os::IHandlerThread;
-// using Elastos::Droid::Os::CHandlerThread;
-// using Elastos::Droid::Os::CHandler;
-// using Elastos::Droid::Os::ISystemProperties;
-// using Elastos::Droid::Os::CSystemProperties;
-// using Elastos::Droid::Os::IIPowerManager;
-// using Elastos::Droid::Os::Storage::IMountService;
-// using Elastos::Droid::Os::IVibratorService;
-// using Elastos::Droid::Os::IIUpdateLock;
-// using Elastos::Droid::Os::IIUserManager;
-// using Elastos::Droid::Os::IUserHandle;
-// using Elastos::Droid::Os::IUserHandleHelper;
-// using Elastos::Droid::Os::CUserHandleHelper;
-// using Elastos::Droid::Internal::Os::IDropBoxManagerService;
-// using Elastos::Droid::View::IDisplayManagerAw;
-// using Elastos::Droid::View::CDisplayManagerAw;
-// using Elastos::Droid::View::IDispListHelper;
-// using Elastos::Droid::View::CDispListHelper;
-// using Elastos::Droid::View::IDispListDispFormat;
-// using Elastos::Droid::View::CDispListDispFormat;
-// using Elastos::Droid::View::IIWindowManager;
-// using Elastos::Droid::View::IDispList;
-// using Elastos::Droid::View::Textservice::IITextServicesManager;
-// using Elastos::Droid::View::Accessibility::IIAccessibilityManager;
-// using Elastos::Droid::Widget::Internal::ILockSettings;
-// using Elastos::Droid::Widget::Internal::CLockSettingsService;
-// using Elastos::Droid::Server::Am::CActivityManagerService;
-// using Elastos::Droid::Server::Am::CBatteryStatsService;
-// using Elastos::Droid::Server::CContentService;
-// using Elastos::Droid::Server::Display::CDisplayManagerService;
-// using Elastos::Droid::Server::CVibratorService;
-// using Elastos::Droid::Server::CAlarmManagerService;
-// using Elastos::Droid::Server::CBackupManagerService;
-// using Elastos::Droid::Server::CSerialService;
-// using Elastos::Droid::Server::CDiskStatsService;
-// using Elastos::Droid::Server::CUpdateLockService;
-// using Elastos::Droid::Server::CWifiDisplayManagerService;
-// using Elastos::Droid::Server::CSamplingProfilerService;
-// using Elastos::Droid::Server::CWifiService;
-// using Elastos::Droid::Server::Pm::Installer;
-// using Elastos::Droid::Server::Pm::CPackageManagerService;
-// using Elastos::Droid::Server::Pm::CUserManagerService;
-// using Elastos::Droid::Server::Input::CInputManagerService;
-// using Elastos::Droid::Server::CPrivacySettingsManagerService;
-// using Elastos::Droid::Server::CClipboardService;
-// using Elastos::Droid::Server::CDropBoxManagerService;
-// using Elastos::Droid::Server::Power::CPowerManagerService;
-// using Elastos::Droid::Server::Accounts::CAccountManagerService;
-// using Elastos::Droid::Server::CStatusBarManagerService;
-// using Elastos::Droid::Server::CDeviceStorageMonitorService;
-// using Elastos::Droid::Server::Search::CSearchManagerService;
-// using Elastos::Droid::Server::Display::IDisplayManagerServiceWindowManagerFuncs;
-// using Elastos::Droid::Server::Display::IDisplayManagerServiceInputManagerFuncs;
-// using Elastos::Droid::Server::Accessibility::CAccessibilityManagerService;
-// // using Elastos::Droid::Server::Dreams::IDreamService;
-// using Elastos::Droid::Server::Dreams::IDreamManagerService;
-// using Elastos::Droid::Server::Dreams::CDreamManagerService;
-// using Elastos::Droid::StatusBar::IIStatusBarService;
-// using Elastos::Droid::Accounts::IIAccountManager;
-// using Elastos::Droid::Location::IILocationManager;
-// using Elastos::Droid::Location::IICountryDetector;
-// using Elastos::Droid::Media::IIAudioService;
-// using Elastos::Droid::Media::IAudioService;
-// using Elastos::Droid::Media::CAudioService;
-// using Elastos::Droid::Media::IAudioManager;
-// using Elastos::Droid::Media::CAudioManager;
-// using Elastos::Droid::Provider::ISettingsSystem;
-// using Elastos::Droid::Provider::CSettingsSystem;
+
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 
-static const char* TAG = "CSystemServer";
-
-const String ServerThread::ENCRYPTING_STATE("trigger_restart_min_framework");
-const String ServerThread::ENCRYPTED_STATE("1");
-
-/**
- * This class is used to kill this process when the runtime dies.
- */
-class GrimReaper : public android::IBinder::DeathRecipient
-{
-public:
-    GrimReaper() { }
-
-    virtual void binderDied(const android::wp<android::IBinder>& who)
-    {
-        Slogger::I(TAG, "Grim Reaper killing system_server...");
-        kill(getpid(), SIGKILL);
-    }
-};
-
-ServerThread::ServerThread()
-    : mDeviceHasYpbpr(FALSE)
-{
-    Thread::constructor();
-}
-
-#include <unistd.h>
-ECode ServerThread::Run()
-{
-    // Looper::PrepareMainLooper();
-
-    ECode ec = NOERROR;
-
-    // String factoryTestStr = SystemProperties.get("ro.factorytest");
-    // int factoryTest = "".equals(factoryTestStr) ? SystemServer.FACTORY_TEST_OFF
-    //         : Integer.parseInt(factoryTestStr);
-    Int32 factoryTest = CSystemServer::FACTORY_TEST_OFF;
-
-//     Slogger::I(TAG, "== BEGIN == Initializing Services, tid: %d...", gettid());
-//     AutoPtr<ISystemProperties> sysProp;
-//     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
-//     String value;
-//     sysProp->Get(String("ro.config.headless"), String("0"), &value);
-//     Boolean headless = String("1").Equals(value);
-
-//     AutoPtr<Installer> installer;
-//     AutoPtr<CAccountManagerService> accountManager;
-//     AutoPtr<LightsService> lights;
-//     AutoPtr<CDisplayManagerService> display;
-//     AutoPtr<CBatteryService> battery;
-//     AutoPtr<CVibratorService> vibrator;
-//     AutoPtr<CAlarmManagerService> alarm;
-//     AutoPtr<IIPackageManager> pm;
-//     AutoPtr<IContext> context;
-//     AutoPtr<CWindowManagerService> wm;
-//     AutoPtr<CInputManagerService> inputManager;
-//     AutoPtr<CNetworkManagementService> networkManagement;
-//     AutoPtr<CNetworkStatsService> networkStats;
-//     AutoPtr<CNetworkPolicyManagerService> networkPolicy;
-//     AutoPtr<CConnectivityService> connectivity;
-//     AutoPtr<IWifiP2pService> wifiP2p;
-//     AutoPtr<CWifiService> wifi;
-//     AutoPtr<CEthernetService> ethernet;    /*  EthernetService (add by shugeLinux@gmail.com)  */
-//     AutoPtr<CNsdService> serviceDiscovery;
-//     AutoPtr<CCountryDetectorService> countryDetector;
-//     AutoPtr<CPowerManagerService> power;
-// //    AutoPtr<CDynamicPManagerService> dpm;
-//     AutoPtr<CMountService> mountService;
-//     AutoPtr<CUsbService> usb;
-//     AutoPtr<CThrottleService> throttle;
-//     AutoPtr<CSerialService> serial;
-//     AutoPtr<TwilightService> twilight;
-//     AutoPtr<CUiModeManagerService> uiMode;
-//     AutoPtr<CRecognitionManagerService> recognition;
-//     AutoPtr<NetworkTimeUpdateService> networkTimeUpdater;
-//     AutoPtr<CCommonTimeManagementService> commonTimeMgmtService;
-//     // Create a shared handler thread for UI within the system server.
-//     // This thread is used by at least the following components:
-//     // - WindowManagerPolicy
-//     // - KeyguardViewManager
-//     // - DisplayManagerService
-//     AutoPtr<IHandlerThread> uiHandlerThread;
-//     CHandlerThread::New(String("UI"), (IHandlerThread**)&uiHandlerThread);
-//     uiHandlerThread->Start();
-//     AutoPtr<ILooper> looper;
-//     uiHandlerThread->GetLooper((ILooper**)&looper);
-//     AutoPtr<IHandler> uiHandler;
-//     CHandler::New(looper, (IHandler**)&uiHandler);
-// //    uiHandler.post(new Runnable() {
-// //        @Override
-// //        public void run() {
-// //            //Looper.myLooper().setMessageLogging(new LogPrinter(
-// //            //        Log.VERBOSE, "WindowManagerPolicy", Log.LOG_ID_SYSTEM));
-// //            android.os.Process.setThreadPriority(
-// //                    android.os.Process.THREAD_PRIORITY_FOREGROUND);
-// //            android.os.Process.setCanSelfBackground(false);
-// //
-// //            // For debug builds, log event loop stalls to dropbox for analysis.
-// //            if (StrictMode.conditionallyEnableDebugLogging()) {
-// //                Slog.i(TAG, "Enabled StrictMode logging for UI Looper");
-// //            }
-// //        }
-// //    });
-
-//     // Create a handler thread just for the window manager to enjoy.
-//     AutoPtr<IHandlerThread> wmHandlerThread;
-//     CHandlerThread::New(String("WindowManager"), (IHandlerThread**)&wmHandlerThread);
-//     wmHandlerThread->Start();
-//     looper = NULL;
-//     wmHandlerThread->GetLooper((ILooper**)&looper);
-//     AutoPtr<IHandler> wmHandler;
-//     CHandler::New(looper, (IHandler**)&wmHandler);
-// //    wmHandler.post(new Runnable() {
-// //        @Override
-// //        public void run() {
-// //            //Looper.myLooper().setMessageLogging(new LogPrinter(
-// //            //        android.util.Log.DEBUG, TAG, android.util.Log.LOG_ID_SYSTEM));
-// //            android.os.Process.setThreadPriority(
-// //                    android.os.Process.THREAD_PRIORITY_DISPLAY);
-// //            android.os.Process.setCanSelfBackground(false);
-// //
-// //            // For debug builds, log event loop stalls to dropbox for analysis.
-// //            if (StrictMode.conditionallyEnableDebugLogging()) {
-// //                Slog.i(TAG, "Enabled StrictMode logging for WM Looper");
-// //            }
-// //        }
-// //    });
-
-//     // Critical services...
-//     Boolean onlyCore = FALSE;
-// //    try {
-//     // Wait for installd to finished starting up so that it has a chance to
-//     // create critical directories such as /data/user with the appropriate
-//     // permissions.  We need this to complete before we initialize other services.
-//     Slogger::I(TAG, "Waiting for installd to be ready.");
-//     installer = new Installer();
-//     installer->Ping();
-
-//     // Slog.i(TAG, "Entropy Mixer");
-//     // ServiceManager.addService("entropy", new EntropyMixer());
-
-//     Slogger::I(TAG, "Power Manager");
-//     CPowerManagerService::NewByFriend((CPowerManagerService**)&power);
-//     ServiceManager::AddService(IContext::POWER_SERVICE, (IIPowerManager*)power.Get());
-
-//     Slogger::I(TAG, "Activity Manager");
-//     context = CActivityManagerService::Main(factoryTest);
-
-//     Slogger::I(TAG, "Display Manager");
-//     CDisplayManagerService::NewByFriend(context, wmHandler, uiHandler, (CDisplayManagerService**)&display);
-//     ServiceManager::AddService(IContext::DISPLAY_SERVICE, (IIDisplayManager*)display, TRUE);
-
-//     // Slog.i(TAG, "Telephony Registry");
-//     // telephonyRegistry = new TelephonyRegistry(context);
-//     // ServiceManager.addService("telephony.registry", telephonyRegistry);
-
-//     // Slog.i(TAG, "Scheduling Policy");
-//     // ServiceManager.addService(Context.SCHEDULING_POLICY_SERVICE,
-//     //         new SchedulingPolicyService());
-
-//     AttributeCache::Init(context);
-
-//     Boolean res;
-//     display->WaitForDefaultDisplay(&res);
-//     if (!res) {
-//         // reportWtf("Timeout waiting for default display to be initialized.",
-//         //         new Throwable());
-//         Slogger::W(TAG, "***********************************************");
-//         Logger::E(TAG, "BOOT FAILURE Timeout waiting for default display to be initialized.");
-//         assert(0);
-//     }
-
-//     Slogger::I(TAG, "Package Manager");
-//     // Only run "core" apps if we're encrypting the device.
-//     String cryptState;
-//     sysProp->Get(String("vold.decrypt"), &cryptState);
-//     if (ENCRYPTING_STATE.Equals(cryptState)) {
-//         Slogger::W(TAG, "Detected encryption in progress - only parsing core apps");
-//         onlyCore = TRUE;
-//     }
-//     else if (ENCRYPTED_STATE.Equals(cryptState)) {
-//         Slogger::W(TAG, "Device encrypted - only parsing core apps");
-//         onlyCore = TRUE;
-//     }
-
-//     pm = CPackageManagerService::Main(context, installer,
-//         factoryTest != CSystemServer::FACTORY_TEST_OFF,
-//         onlyCore);
-//     Boolean firstBoot = FALSE;
-// //    try {
-//     pm->IsFirstBoot(&firstBoot);
-// //    } catch (RemoteException e) {
-// //    }
-
-//     Slogger::I(TAG, "Set System Process");
-//     CActivityManagerService::SetSystemProcess();
-
-//     Slogger::I(TAG, "User Service");
-//     ServiceManager::AddService(IContext::USER_SERVICE,
-//         (IIUserManager*)(CUserManagerService::GetInstance()));
-
-//     context->GetContentResolver((IContentResolver**)&mContentResolver);
-
-//     // The AccountManager must come before the ContentService
-//     // try {
-//     Slogger::I(TAG, "Account Manager");
-//     CAccountManagerService::NewByFriend(context, (CAccountManagerService**)&accountManager);
-//     ServiceManager::AddService(IContext::ACCOUNT_SERVICE, (IIAccountManager*)accountManager.Get());
-//     // } catch (Throwable e) {
-//     //     Slog.e(TAG, "Failure starting Account Manager", e);
-//     // }
-
-//     Slogger::I(TAG, "Content Manager");
-//     AutoPtr<CContentService> contentService;
-//     CContentService::NewByFriend(context, factoryTest == CSystemServer::FACTORY_TEST_LOW_LEVEL, (CContentService**)&contentService);
-//     ServiceManager::AddService(IContentResolver::CONTENT_SERVICE_NAME, (IContentService*)contentService.Get());
-
-//     Slogger::I(TAG, "System Content Providers");
-//     CActivityManagerService::InstallSystemProviders();
-
-//     Slogger::I(TAG, "Lights Service");
-//     lights = new LightsService(context);
-
-//     Slogger::I(TAG, "Battery Service");
-//     CBatteryService::NewByFriend(context, (Handle32)lights.Get(), (CBatteryService**)&battery);
-//     ServiceManager::AddService(String("battery"), (IBinder*)battery.Get());
-
-// //    Slog.i(TAG, "DynamicPManager");
-// //    dpm = new DynamicPManagerService(context);
-// //    ServiceManager.addService(DynamicPManager.DPM_SERVICE, dpm);
-
-//     Slogger::I(TAG, "Vibrator Service");
-//     CVibratorService::NewByFriend(context, (CVibratorService**)&vibrator);
-//     ServiceManager::AddService(String("vibrator"), (IVibratorService*)vibrator.Get());
-
-//     // only initialize the power service after we have started the
-//     // lights service, content providers and the battery service.
-//     power->Init(context, lights, CActivityManagerService::Self(), battery,
-//             CBatteryStatsService::GetService(), display);
-
-//     Slogger::I(TAG, "Alarm Manager");
-//     CAlarmManagerService::NewByFriend(context, (CAlarmManagerService**)&alarm);
-//     ServiceManager::AddService(IContext::ALARM_SERVICE, (IIAlarmManager*)alarm.Get());
-
-//     // Slogger::I(TAG, "Init Watchdog");
-//     // Watchdog.getInstance().init(context, battery, power, alarm,
-//     //         ActivityManagerService.self());
-
-//     Slogger::I(TAG, "Input Manager");
-//     CInputManagerService::NewByFriend(
-//         context, wmHandler, (CInputManagerService**)&inputManager);
-//     ServiceManager::AddService(IContext::INPUT_SERVICE, (IIInputManager*)inputManager.Get());
-
-//     Slogger::I(TAG, "Window Manager");
-//     wm = CWindowManagerService::Main(context, power, display, inputManager,
-//         uiHandler, wmHandler,
-//         factoryTest != CSystemServer::FACTORY_TEST_LOW_LEVEL,
-//         !firstBoot, onlyCore);
-//     ServiceManager::AddService(IContext::WINDOW_SERVICE, (IIWindowManager*)wm.Get());
-
-//     sysProp->Get(String("ro.display.switch"), &value);
-//     Slogger::I(TAG, "Display Manager AW: %s", value.string());
-//     if (value.Equals("1")) {
-//         AutoPtr<CDisplayManagerServiceAw> display_aw;
-//         CDisplayManagerServiceAw::NewByFriend(context, power, (CDisplayManagerServiceAw**)&display_aw);
-//         ServiceManager::AddService(IContext::DISPLAY_SERVICE_AW, display_aw->Probe(EIID_IInterface));
-
-//         // try {
-//             ECode ec = display_aw->SystemReady();
-//         // } catch (Throwable e) {
-//             if (FAILED(ec)) {
-//                 Slogger::E(TAG, "Failure starting AW Display Manager");
-//             }
-//         // }
-//     }
-
-//     sysProp->Get(String("ro.wifidisplay.switch"), &value);
-//     Slogger::I(TAG, "Display Manager wifi: %s", value.Equals("1") ? "TRUE" : "FALSE");
-//     //TODO if (value.Equals("1"))
-//     {
-//         AutoPtr<CWifiDisplayManagerService> wifidisplay;
-//         CWifiDisplayManagerService::NewByFriend(context, power, (CWifiDisplayManagerService**)&wifidisplay);
-//         ServiceManager::AddService(IContext::WIFIDISPLAY_SERVICE, wifidisplay->Probe(EIID_IInterface));
-//     }
-
-//     CActivityManagerService::Self()->SetWindowManager(wm);
-
-//     inputManager->SetWindowManagerCallbacks(wm->GetInputMonitor());
-//     inputManager->Start();
-//     //TODO: inorder to start input dispatch, should be remove
-//     inputManager->SetInputDispatchMode(TRUE, FALSE);
-
-//     display->SetWindowManager(IDisplayManagerServiceWindowManagerFuncs::Probe(wm));
-//     display->SetInputManager(IDisplayManagerServiceInputManagerFuncs::Probe(inputManager));
-
-// //    } catch (RuntimeException e) {
-// //        Slog.e("System", "******************************************");
-// //        Slog.e("System", "************ Failure starting core service", e);
-// //    }
-
-//     AutoPtr<CDevicePolicyManagerService> devicePolicy;
-//     AutoPtr<CStatusBarManagerService> statusBar;
-//     AutoPtr<CInputMethodManagerService> imm;
-//     AutoPtr<CBackupManagerService> backupManager;
-//     AutoPtr<CAppWidgetService> appWidget;
-//     AutoPtr<CNotificationManagerService> notification;
-//     AutoPtr<CWallpaperManagerService> wallpaper;
-//     AutoPtr<CLocationManagerService> locationManager;
-//     // CountryDetectorService countryDetector = null;
-//     AutoPtr<CTextServicesManagerService> tsms;
-//     AutoPtr<CLockSettingsService> lockSettings;
-//     AutoPtr<IDreamManagerService> dreamy;
-
-//     // Bring up services needed for UI.
-//     if (factoryTest != CSystemServer::FACTORY_TEST_LOW_LEVEL) {
-//         // try {
-//         Slogger::I(TAG, "Input Method Service");
-//         CInputMethodManagerService::NewByFriend(context, (Handle32)wm.Get(), (CInputMethodManagerService**)&imm);
-//         ServiceManager::AddService(IContext::INPUT_METHOD_SERVICE, (IIInputMethodManager*)imm.Get());
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting Input Manager Service", e);
-//         // }
-
-//         // try {
-//         Slogger::I(TAG, "Accessibility Manager");
-//         AutoPtr<CAccessibilityManagerService> accessibilityService;
-//         CAccessibilityManagerService::NewByFriend(context, (CAccessibilityManagerService**)&accessibilityService);
-//         ServiceManager::AddService(IContext::ACCESSIBILITY_SERVICE, (IIAccessibilityManager*)accessibilityService.Get());
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting Accessibility Manager", e);
-//         // }
-//     }
-
-//     // try{
-//     wm->DisplayReady();
-//     // } catch (Throwable e) {
-//     //     reportWtf("making display ready", e);
-//     // }
-
-//     // try {
-//     pm->PerformBootDexOpt();
-//     // } catch (Throwable e) {
-//     //     reportWtf("performing boot dexopt", e);
-//     // }
-
-//     // try {
-//     //     ActivityManagerNative.getDefault().showBootMessage(
-//     //             context.getResources().getText(
-//     //                     com.android.internal.R.string.android_upgrading_starting_apps),
-//     //                     false);
-//     // } catch (RemoteException e) {
-//     // }
-
-//     if (factoryTest != CSystemServer::FACTORY_TEST_LOW_LEVEL) {
-//         Slogger::I(TAG, "PrivacySettings Service");
-//         AutoPtr<IIPrivacySettingsManager> privacySettingsManager;
-//         CPrivacySettingsManagerService::New(context, (IIPrivacySettingsManager**)&privacySettingsManager);
-//         ServiceManager::AddService(String("privacy"), (IInterface*)privacySettingsManager);
-
-//         if (sysProp->Get(String("system_init.startmountservice"), &value), !String("0").Equals(value)) {
-//             // try {
-//             /*
-//              * NotificationManagerService is dependant on MountService,
-//              * (for media / usb notifications) so we must start MountService first.
-//              */
-//             Slogger::I(TAG, "Mount Service");
-//             CMountService::NewByFriend(context, (CMountService**)&mountService);
-//             ServiceManager::AddService(String("mount"), (IMountService*)mountService.Get());
-//             // } catch (Throwable e) {
-//             //     reportWtf("starting Mount Service", e);
-//             // }
-//         }
-
-//         // try {
-//         Slogger::I(TAG,  "LockSettingsService");
-//         CLockSettingsService::NewByFriend(context, (CLockSettingsService**)&lockSettings);
-//         ServiceManager::AddService(String("lock_settings"), (ILockSettings*)lockSettings.Get());
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting LockSettingsService service", e);
-//         // }
-
-//         // try {
-//         Slogger::I(TAG, "Device Policy");
-//         CDevicePolicyManagerService::NewByFriend(context, (CDevicePolicyManagerService**)&devicePolicy);
-//         assert(devicePolicy != NULL);
-//         ServiceManager::AddService(IContext::DEVICE_POLICY_SERVICE, (IIDevicePolicyManager*)devicePolicy->Probe(EIID_IIDevicePolicyManager));
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting DevicePolicyService", e);
-//         // }
-
-//         // try {
-//         Slogger::I(TAG, "Status Bar");
-//         CStatusBarManagerService::NewByFriend(context, (Handle32)wm.Get(), (CStatusBarManagerService**)&statusBar);
-//         assert(statusBar != NULL);
-//         ServiceManager::AddService(IContext::STATUS_BAR_SERVICE, (IIStatusBarService*)statusBar.Get());
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting StatusBarManagerService", e);
-//         // }
-
-//         // try {
-//         Slogger::I(TAG, "Clipboard Service");
-//         AutoPtr<CClipboardService> clipboardService;
-//         CClipboardService::NewByFriend(context, (CClipboardService**)&clipboardService);
-//         ServiceManager::AddService(IContext::CLIPBOARD_SERVICE, (IClipboard*)clipboardService.Get());
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting Clipboard Service", e);
-//         // }
-
-//         Slogger::I(TAG, "NetworkManagement Service");
-//         networkManagement = CNetworkManagementService::Create(context);
-//         ServiceManager::AddService(IContext::NETWORKMANAGEMENT_SERVICE, (INetworkManagementService*)networkManagement.Get());
-
-//         //try {
-//         Slogger::I(TAG, "Text Service Manager Service");
-//         CTextServicesManagerService::NewByFriend(context, (CTextServicesManagerService**)&tsms);
-//         ServiceManager::AddService(IContext::TEXT_SERVICES_MANAGER_SERVICE, (IITextServicesManager*)tsms.Get());
-//         //} catch (Throwable e) {
-//         //    reportWtf("starting Text Service Manager Service", e);
-//         //}
-
-//         // try {
-//         Slogger::I(TAG, "NetworkStats Service");
-//         CNetworkStatsService::NewByFriend(
-//             context, (INetworkManagementService*)networkManagement,
-//             (IIAlarmManager*)alarm, (CNetworkStatsService**)&networkStats);
-//         ServiceManager::AddService(IContext::NETWORK_STATS_SERVICE, (INetworkStatsService*)networkStats.Get());
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting NetworkStats Service", e);
-//         // }
-
-//         // try {
-//         Slogger::I(TAG, "NetworkPolicy Service");
-//         CNetworkPolicyManagerService::NewByFriend(
-//             context, (IIActivityManager*)CActivityManagerService::Self(),
-//             (IIPowerManager*)power, (INetworkStatsService*)networkStats,
-//             (INetworkManagementService*)networkManagement, (CNetworkPolicyManagerService**)&networkPolicy);
-//         ServiceManager::AddService(IContext::NETWORK_POLICY_SERVICE, (IINetworkPolicyManager*)networkPolicy.Get());
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting NetworkPolicy Service", e);
-//         // }
-
-//         // try {
-//         Slogger::I(TAG, "Wi-Fi P2pService");
-//         CWifiP2pService::New(context, (IWifiP2pService**)&wifiP2p);
-//         IIWifiP2pManager* wpm = IIWifiP2pManager::Probe(wifiP2p);
-//         assert(wpm != NULL);
-//         ServiceManager::AddService(IContext::WIFI_P2P_SERVICE, wpm);
-//         //  } catch (Throwable e) {
-//         //      reportWtf("starting Wi-Fi P2pService", e);
-//         //  }
-
-//         Slogger::I(TAG, "Ethernet Service");
-//         CEthernetService::NewByFriend(context, (CEthernetService**)&ethernet);
-//         ServiceManager::AddService(IContext::ETHERNET_SERVICE, (IIEthernetManager*)ethernet.Get());
-
-
-//         // try {
-//         Slogger::I(TAG, "Wi-Fi Service");
-//         CWifiService::NewByFriend(context, (CWifiService**)&wifi);
-//         ServiceManager::AddService(IContext::WIFI_SERVICE, (IIWifiManager*)wifi.Get());
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting Wi-Fi Service", e);
-//         // }
-
-//         // try{
-//         Slogger::I(TAG, "Connectivity Service");
-//         CConnectivityService::NewByFriend(
-//            context, (INetworkManagementService*)networkManagement,
-//            (INetworkStatsService*)networkStats, (IINetworkPolicyManager*)networkPolicy,
-//            (CConnectivityService**)&connectivity);
-//         ServiceManager::AddService(IContext::CONNECTIVITY_SERVICE, (IIConnectivityManager*)connectivity.Get());
-//         networkStats->BindConnectivityManager((IIConnectivityManager*)connectivity);
-//         networkPolicy->BindConnectivityManager((IIConnectivityManager*)connectivity);
-//         wifi->CheckAndStartWifi();
-//         wifiP2p->ConnectivityServiceReady();
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting Connectivity Service", e);
-//         // }
-
-//         // try {
-//         Slogger::I(TAG, "Network Service Discovery Service");
-//         CNsdService::Create(context, (CNsdService**)&serviceDiscovery);
-//         ServiceManager::AddService(IContext::NSD_SERVICE, (IINsdManager*)serviceDiscovery->Probe(EIID_IINsdManager));
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting Service Discovery Service", e);
-//         // }
-
-//         // try {
-//          Slogger::I(TAG, "Throttle Service");
-//          CThrottleService::NewByFriend(context, (CThrottleService**)&throttle);
-//          ServiceManager::AddService(IContext::THROTTLE_SERVICE, (IIThrottleManager*)throttle.Get());
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting ThrottleService", e);
-//         // }
-
-//         //try {
-//         Slogger::I(TAG, "UpdateLock Service");
-//         AutoPtr<CUpdateLockService> updateLock;
-//         CUpdateLockService::NewByFriend(context, (CUpdateLockService**)&updateLock);
-//         ServiceManager::AddService(IContext::UPDATE_LOCK_SERVICE, (IIUpdateLock*)updateLock.Get());
-//         //} catch (Throwable e) {
-//         //    reportWtf("starting UpdateLockService", e);
-//         //}
-
-//         /*
-//          * MountService has a few dependencies: Notification Manager and
-//          * AppWidget Provider. Make sure MountService is completely started
-//          * first before continuing.
-//          */
-//         if (mountService != NULL) {
-//             mountService->WaitForAsecScan();
-//         }
-
-//         // try {
-//         if (accountManager != NULL)
-//             accountManager->SystemReady();
-//         // } catch (Throwable e) {
-//         //     reportWtf("making Account Manager Service ready", e);
-//         // }
-
-//         // try {
-//         if (contentService != NULL)
-//             contentService->SystemReady();
-//         // } catch (Throwable e) {
-//         //     reportWtf("making Content Service ready", e);
-//         // }
-
-//         Slogger::I(TAG, "Notification Manager");
-//         CNotificationManagerService::NewByFriend(context,
-//             (Handle32)statusBar.Get(), (Handle32)lights.Get(),
-//             (CNotificationManagerService**)&notification);
-//         ServiceManager::AddService(IContext::NOTIFICATION_SERVICE,
-//             (IINotificationManager*)notification.Get());
-//         // networkPolicy->BindNotificationManager(notification);
-
-//         // try {
-//         Slogger::I(TAG, "Device Storage Monitor");
-//         AutoPtr<CDeviceStorageMonitorService> deviceStorageMonitor;
-//         CDeviceStorageMonitorService::NewByFriend(context, (CDeviceStorageMonitorService**)&deviceStorageMonitor);
-//         ServiceManager::AddService(CDeviceStorageMonitorService::SERVICE,
-//             (IBinder*)deviceStorageMonitor.Get());
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting DeviceStorageMonitor service", e);
-//         // }
-
-//         Slogger::I(TAG, "Location Manager");
-//         CLocationManagerService::NewByFriend(context, (CLocationManagerService**)&locationManager);
-//         ServiceManager::AddService(IContext::LOCATION_SERVICE, (IILocationManager*)locationManager.Get());
-
-//         //try {
-//         Slogger::I(TAG, "Country Detector");
-//         CCountryDetectorService::NewByFriend(context, (CCountryDetectorService**)&countryDetector);
-//         ServiceManager::AddService(IContext::COUNTRY_DETECTOR, (IICountryDetector*)countryDetector.Get());
-//         //} catch (Throwable e) {
-//         //    reportWtf("starting Country Detector", e);
-//         //}
-
-//         // try {
-//         Slogger::I(TAG, "Search Manager");
-//         AutoPtr<CSearchManagerService> searchManagerService;
-//         CSearchManagerService::NewByFriend(context, (CSearchManagerService**)&searchManagerService);
-//         ServiceManager::AddService(IContext::SEARCH_SERVICE, (IISearchManager*)searchManagerService.Get());
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting Search Service", e);
-//         // }
-
-//         //try {
-//         Slogger::I(TAG, "DropBox Service");
-//         AutoPtr<IFile> file;
-//         CFile::New(String("/data/system/dropbox"), (IFile**)&file);
-//         AutoPtr<CDropBoxManagerService> dropBox;
-//         CDropBoxManagerService::NewByFriend(context, file, (CDropBoxManagerService**)&dropBox);
-//         ServiceManager::AddService(IContext::DROPBOX_SERVICE, (IDropBoxManagerService*)dropBox.Get());
-//         //} catch (Throwable e) {
-//         //    reportWtf("starting DropBoxManagerService", e);
-//         //}
-
-//         AutoPtr<IResources> r;
-//         context->GetResources((IResources**)&r);
-//         Boolean enable = TRUE;
-//         r->GetBoolean(R::bool_::config_enableWallpaperService, &enable);
-//         if (enable) {
-//             //try {
-//                 Slogger::I(TAG, "Wallpaper Service");
-//                 if (!headless) {
-//                     CWallpaperManagerService::NewByFriend(
-//                         context, (CWallpaperManagerService**)&wallpaper);
-//                     ServiceManager::AddService(
-//                         IContext::WALLPAPER_SERVICE, (IIWallpaperManager*)wallpaper.Get());
-//                 }
-//             // } catch (Throwable e) {
-//             //     reportWtf("starting Wallpaper Service", e);
-//             // }
-//         }
-
-//         String properties;
-//         sysProp->Get(String("system_init.startaudioservice"), &properties);
-//         Slogger::I(TAG, "Audio Service : %s", properties.string());
-//         if (!properties.Equals("0")) {
-//             // try {
-//                 AutoPtr<IAudioService> as;
-//                 CAudioService::New(context, (IAudioService**)&as);
-//                 ServiceManager::AddService(IContext::AUDIO_SERVICE, IIAudioService::Probe(as));
-//             // } catch (Throwable e) {
-//             //     reportWtf("starting Audio Service", e);
-//             // }
-//         }
-
-//         // try {
-//         //     Slog.i(TAG, "Dock Observer");
-//         //     // Listen for dock station changes
-//         //     dock = new DockObserver(context);
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting DockObserver", e);
-//         // }
-
-//         // try {
-//         //     Slog.i(TAG, "Wired Accessory Manager");
-//         //     // Listen for wired headset changes
-//         //     inputManager.setWiredAccessoryCallbacks(
-//         //             new WiredAccessoryManager(context, inputManager));
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting WiredAccessoryManager", e);
-//         // }
-
-//         // try {
-//             Slogger::I(TAG, "Audio device manager Observer");
-//             // Listen for wired headset changes
-//             AudioDeviceManagerObserver::GetInstance(context);
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting AudioDeviceManagerObserver", e);
-//         // }
-
-//         Slogger::I(TAG, "Usb Service");
-//         CUsbService::NewByFriend(context, (CUsbService**)&usb);
-//         ServiceManager::AddService(IContext::USB_SERVICE, (IIUsbManager*)usb->Probe(EIID_IIUsbManager));
-
-//         // try {
-//         //     Slog.i(TAG, "Usb Camera device manager Observer");
-//         //     // Listen for wired headset changes
-//         //     UsbCameraDeviceManagerObserver.getInstance(context);
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting UsbCameraDeviceManagerObserver", e);
-//         // }
-
-//         Slogger::I(TAG, "Serial Service");
-//         // Serial port support
-//         CSerialService::NewByFriend(context, (CSerialService**)&serial);
-//         ServiceManager::AddService(IContext::SERIAL_SERVICE, (IInterface*)serial->Probe(EIID_IInterface));
-
-//         // try {
-//         Slogger::I(TAG, "Twilight Service");
-//         twilight = new TwilightService(context);
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting TwilightService", e);
-//         // }
-
-//         // try {
-//         Slogger::I(TAG, "UI Mode Manager Service");
-//         // Listen for UI mode changes
-//         CUiModeManagerService::NewByFriend(context, (Handle32)twilight.Get(), (CUiModeManagerService**)&uiMode);
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting UiModeManagerService", e);
-//         // }
-
-//         //try {
-//         Slogger::I(TAG, "Backup Service");
-//         CBackupManagerService::NewByFriend(context, (CBackupManagerService**)&backupManager);
-//         ServiceManager::AddService(IContext::BACKUP_SERVICE, (IIBackupManager*)backupManager.Get());
-//         //} catch (Throwable e) {
-//         //    Slogger::E(TAG, "Failure starting Backup Service", e);
-//         //}
-
-//         // try {
-//         Slogger::I(TAG, "AppWidget Service");
-//         CAppWidgetService::NewByFriend(
-//             context, (CAppWidgetService**)&appWidget);
-//         ServiceManager::AddService(IContext::APPWIDGET_SERVICE, (IIAppWidgetService*)appWidget.Get());
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting AppWidget Service", e);
-//         // }
-//         //try {
-//         Slogger::I(TAG, "Recognition Service");
-//         CRecognitionManagerService::NewByFriend(context, (CRecognitionManagerService**)&recognition);
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting Recognition Service", e);
-//         // }
-
-//         Slogger::I(TAG, "DiskStats Service");
-//         AutoPtr<CDiskStatsService> diskStats;
-//         CDiskStatsService::NewByFriend(context, (CDiskStatsService**)&diskStats);
-//         ServiceManager::AddService(String("diskstats"), (IBinder*)diskStats);
-
-//         Slogger::I(TAG, "KortideRemote Service");
-//         AutoPtr<CKortideRemoteService> krService;
-//         CKortideRemoteService::NewByFriend(context, (CKortideRemoteService**)&krService);
-//         ServiceManager::AddService(String("KortideRemote"), (IBinder*)krService.Get());
-
-//         Slogger::I(TAG, "Zigbee Service");
-//         AutoPtr<CZigbeeService> zigbeeService;
-//         CZigbeeService::NewByFriend(context, (CZigbeeService**)&zigbeeService);
-//         ServiceManager::AddService(String("zigbee"), (IBinder*)zigbeeService.Get());
-
-//         // need to add this service even if SamplingProfilerIntegration.isEnabled()
-//         // is false, because it is this service that detects system property change and
-//         // turns on SamplingProfilerIntegration. Plus, when sampling profiler doesn't work,
-//         // there is little overhead for running this service.
-//         Slogger::I(TAG, "SamplingProfiler Service");
-//         AutoPtr<CSamplingProfilerService> samplingProfiler;
-//         CSamplingProfilerService::NewByFriend(context, (CSamplingProfilerService**)&samplingProfiler);
-//         ServiceManager::AddService(String("samplingprofiler"), (IBinder*)samplingProfiler.Get());
-
-//         // try {
-//         Slogger::I(TAG, "NetworkTimeUpdateService");
-//         networkTimeUpdater = new NetworkTimeUpdateService(context);
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting NetworkTimeUpdate service", e);
-//         // }
-
-//         // try {
-//         Slogger::I(TAG, "CommonTimeManagementService");
-//         CCommonTimeManagementService::NewByFriend(context, (CCommonTimeManagementService**)&commonTimeMgmtService);
-//         ServiceManager::AddService(String("commontime_management"), (IBinder*)commonTimeMgmtService.Get());
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting CommonTimeManagementService service", e);
-//         // }
-
-//         // try {
-//         //     Slog.i(TAG, "CertBlacklister");
-//         //     CertBlacklister blacklister = new CertBlacklister(context);
-//         // } catch (Throwable e) {
-//         //     reportWtf("starting CertBlacklister", e);
-//         // }
-//         r->GetBoolean(R::bool_::config_dreamsSupported, &enable);
-//         if (enable) {
-//             CDreamManagerService::New(context, wmHandler, (IDreamManagerService**)&dreamy);
-//             ServiceManager::AddService(String("dreams")/*IDreamService::DREAM_SERVICE*/, (IBinder*)dreamy.Get());
-//         }
-//         // if (context.getResources().getBoolean(
-//         //         com.android.internal.R.bool.config_dreamsSupported)) {
-//         //     try {
-//         //         Slog.i(TAG, "Dreams Service");
-//         //         // Dreams (interactive idle-time views, a/k/a screen savers)
-//         //         dreamy = new DreamManagerService(context, wmHandler);
-//         //         ServiceManager.addService(DreamService.DREAM_SERVICE, dreamy);
-//         //     } catch (Throwable e) {
-//         //         reportWtf("starting DreamManagerService", e);
-//         //     }
-//         // }
-//     }
-
-//     // Before things start rolling, be sure we have decided whether
-//     // we are in safe mode.
-//     Boolean safeMode = wm->DetectSafeMode();
-//     if (safeMode) {
-//         CActivityManagerService::Self()->EnterSafeMode();
-//         // TODO
-//         // Post the safe mode state in the Zygote class
-//         // Zygote.systemInSafeMode = TRUE;
-//         // Disable the JIT for the system_server process
-//         // VMRuntime.getRuntime().disableJitCompilation();
-//     } else {
-//     //     // Enable the JIT for the system_server process
-//     //     // VMRuntime.getRuntime().startJitCompilation();
-//     }
-
-//     // It is now time to start up the app processes...
-
-//     //try {
-//     ec = vibrator->SystemReady();
-//     Slogger::I(TAG, "Making Vibrator Manager Service ready, ec=%08x", ec);
-//     // } catch (Throwable e) {
-//     //     reportWtf("making Vibrator Service ready", e);
-//     // }
-
-//     // try {
-//     lockSettings->SystemReady();
-//     // } catch (Throwable e) {
-//     //     reportWtf("making Lock Settings Service ready", e);
-//     // }
-
-//     if (devicePolicy != NULL) {
-//     // try {
-//         ec = devicePolicy->SystemReady();
-//         Slogger::I(TAG, "Making Device Policy Service ready, ec=%08x", ec);
-//     // } catch (Throwable e) {
-//     //     reportWtf("making Device Policy Service ready", e);
-//     // }
-//     }
-
-//     if (notification != NULL) {
-//         ec = notification->SystemReady();
-//         Slogger::I(TAG, "Making Notification Manager Service ready, ec=%08x", ec);
-//     }
-
-//     // try {
-//     ec = wm->SystemReady();
-//     Slogger::I(TAG, "Making Notification Manager Service ready, ec=%08x", ec);
-//     // } catch (Throwable e) {
-//     //     reportWtf("making Window Manager Service ready", e);
-//     // }
-
-//     // try {
-//     ec = power->SystemReady(twilight/*dreamy*/);
-//     Slogger::I(TAG, "Making Power Manager Service ready, ec=%08x", ec);
-//     // } catch (Throwable e) {
-//     //     reportWtf("making Power Manager Service ready", e);
-//     // }
-
-//     //     try {
-//     ec = pm->SystemReady();
-//     Slogger::I(TAG, "Making Package Manager Service ready, ec=%08x", ec);
-//     // } catch (Throwable e) {
-//     //     reportWtf("making Package Manager Service ready", e);
-//     // }
-
-//     // try {
-
-//     ec = display->SystemReady(safeMode, onlyCore);
-//     Slogger::I(TAG, "Making Display Manager Service ready, safeMode=%d, onlyCore=%d, ec=%08x",
-//         safeMode, onlyCore, ec);
-//     // } catch (Throwable e) {
-//     //     reportWtf("making Display Manager Service ready", e);
-//     // }
-
-
-//     // We now tell the activity manager it is okay to run third party
-//     // code.  It will call back into us once it has gotten to the state
-//     // where third party code can really run (but before it has actually
-//     // started launching the initial applications), for us to complete our
-//     // initialization.
-//     AutoPtr<SystemReadyRunnable> task = new SystemReadyRunnable();
-//     task->mImm = imm;
-//     task->mWallpaper = wallpaper;
-//     task->mUsb = usb;
-//     task->mBattery = battery;
-//     task->mThrottle = throttle;
-//     task->mTwilight = twilight;
-//     task->mUiMode = uiMode;
-//     task->mConnectivity = connectivity;
-//     task->mNetworkManage = networkManagement;
-//     task->mNetworkStats = networkStats;
-//     task->mNetworkPolicy = networkPolicy;
-//     task->mMountService = mountService;
-//     task->mAppWidget = appWidget;
-//     task->mStatusBar = statusBar;
-//     task->mRecognition = recognition;
-//     task->mTextServiceManagerService = tsms;
-//     task->mCountryDetector = countryDetector;
-//     task->mNetworkTimeUpdater = networkTimeUpdater;
-//     task->mCommonTimeMgmtService = commonTimeMgmtService;
-//     task->mLocationF = locationManager;
-//     task->mContext = context;
-//     task->mHeadless = headless;
-//     ec = CActivityManagerService::Self()->SystemReady(task);
-//     Slogger::I(TAG, "Making Activity Manager Service ready");
-
-//     /*
-//      * Author : huanglong@allwinnertech.com
-//      * Description : Initialize the DisplayManagerAw, to set the display area.
-//      * Date : 2013-3-15
-//      */
-//     AutoPtr<IDisplayManagerAw> displayManager;
-//     CDisplayManagerAw::New((IDisplayManagerAw**)&displayManager);
-//     if (displayManager == NULL) {
-//         Logger::W(TAG, "Failed in creating DisplayManager.");
-//         assert(0);
-//         // init the display area
-//         // Int32 ratio = GetDispRatio();
-//         // Slogger::I(TAG, "Display area ratio = %d", ratio);
-//         // Int32 result;
-//         // displayManager->SetDisplayAreaPercent(0, ratio, &result);
-//     }
-
-//     // /* add by Gary. start {{----------------------------------- */
-//     // /* 2011-12-10 */
-//     /* init display output */
-//     Boolean ypbprIsConnected = FALSE;
-//     Boolean cvbsIsConnected = FALSE;
-//     Boolean hdmiIsConnected = FALSE;
-//     AutoPtr<IDispListDispFormat> finalFormat;
-
-//     if (displayManager == NULL) {
-//         Logger::W(TAG, "Fail in creating DisplayManager.");
-//     }
-
-//     // /* check cable's connection status */
-//     Int32 hdmiStatus;
-//     displayManager->GetHdmiHotPlugStatus(&hdmiStatus);
-//     if (hdmiStatus != 0)
-//         hdmiIsConnected = TRUE;
-
-//     Int32 tvStatus;
-//     displayManager->GetTvHotPlugStatus(&tvStatus);
-//     Logger::D(TAG, "tv connect status = %d", tvStatus);
-//     if (tvStatus == IDisplayManagerAw::DISPLAY_TVDAC_CVBS)
-//         cvbsIsConnected = TRUE;
-//     else if (tvStatus == IDisplayManagerAw::DISPLAY_TVDAC_YPBPR)
-//         ypbprIsConnected = TRUE;
-//     else if (tvStatus == IDisplayManagerAw::DISPLAY_TVDAC_ALL) {
-//         cvbsIsConnected = TRUE;
-//         ypbprIsConnected = TRUE;
-//     }
-//     Logger::D(TAG, "HDMI connect status = %d, av connnect status = %d, YPbPr connect status = %d",
-//         hdmiIsConnected, cvbsIsConnected, ypbprIsConnected);
-
-//     AutoPtr<IContentResolver> cr;
-//     context->GetContentResolver((IContentResolver**)&cr);
-//     AutoPtr<ISettingsSystem> systemSettings;
-//     CSettingsSystem::AcquireSingleton((ISettingsSystem**)&systemSettings);
-//     AutoPtr<IDispListHelper> dispListHelper;
-//     CDispListHelper::AcquireSingleton((IDispListHelper**)&dispListHelper);
-
-//     AutoPtr<IDispListDispFormat> savedFormat;
-//     String savedFormatName;
-//     systemSettings->GetString(cr, ISettingsSystem::DISPLY_OUTPUT_FORMAT, &savedFormatName);
-//     if (savedFormatName.IsNull()) {
-//         Logger::W(TAG, "Fail in getting saved display format.");
-//         dispListHelper->GetStaticDispFormat(IDispList::HDMI_DEFAULT_FORMAT_ID, (IDispListDispFormat**)&savedFormat);
-//     }
-//     else {
-//         dispListHelper->ItemName2Code(savedFormatName, (IDispListDispFormat**)&savedFormat);
-//         Logger::D(TAG, "saved display = %s", savedFormatName.string());
-//     }
-
-//     Int32 savedType;
-//     savedFormat->GetOutputType(&savedType);
-
-//     Int32 doType, doFormat;
-//     displayManager->GetDisplayOutputType(0, &doType);
-//     displayManager->GetDisplayOutputFormat(0, &doFormat);
-//     AutoPtr<IDispListDispFormat> curFormat;
-//     CDispListDispFormat::New(doType, doFormat, (IDispListDispFormat**)&curFormat);
-//     Logger::D(TAG, "current format is (type, format): (%d, %d)", doType, doFormat);
-
-//     Int32 savedIntType;
-//     dispListHelper->GetAdvancedDisplayType(savedFormat, &savedIntType);
-//     Int32 finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_HDMI;
-
-//     Boolean bval;
-//     if (hdmiIsConnected && (dispListHelper->IsHDMI(curFormat, &bval), bval)) {
-//         finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_HDMI;
-//         finalFormat = curFormat;
-//     }
-//     else if (cvbsIsConnected && (dispListHelper->IsCVBS(curFormat, &bval), bval)) {
-//         finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_CVBS;
-//         finalFormat = curFormat;
-//     }
-//     else if (mDeviceHasYpbpr && ypbprIsConnected
-//         && (dispListHelper->IsYPbPr(curFormat, &bval), bval)) {
-//         finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_YPBPR;
-//         finalFormat = curFormat;
-//     }
-//     else if (!mDeviceHasYpbpr && ypbprIsConnected
-//         && (dispListHelper->IsVGA(curFormat, &bval), bval)) {
-//         finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_VGA;
-//         dispListHelper->GetStaticDispFormat(
-//             IDispList::VGA_DEFAULT_FORMAT_ID, (IDispListDispFormat**)&finalFormat);
-//     }
-//     else if (hdmiIsConnected) {
-//         finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_HDMI;
-//         dispListHelper->GetStaticDispFormat(
-//             IDispList::HDMI_DEFAULT_FORMAT_ID, (IDispListDispFormat**)&finalFormat);
-//     }
-//     else if (cvbsIsConnected) {
-//         finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_CVBS;
-//         dispListHelper->GetStaticDispFormat(
-//             IDispList::CVBS_DEFAULT_FORMAT_ID, (IDispListDispFormat**)&finalFormat);
-//     }
-//     else if (mDeviceHasYpbpr && ypbprIsConnected) {
-//         finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_YPBPR;
-//         dispListHelper->GetStaticDispFormat(
-//             IDispList::YPBPR_DEFAULT_FORMAT_ID, (IDispListDispFormat**)&finalFormat);
-//     }
-//     else if (!mDeviceHasYpbpr && ypbprIsConnected){
-//         finalIntType = IDispList::ADVANCED_DISPLAY_TYPE_VGA;
-//         dispListHelper->GetStaticDispFormat(
-//             IDispList::VGA_DEFAULT_FORMAT_ID, (IDispListDispFormat**)&finalFormat);
-//     }
-//     else {
-//         finalIntType = savedIntType;
-//         finalFormat = savedFormat;
-//     }
-
-//     if (finalIntType == savedIntType)
-//         finalFormat = savedFormat;
-
-//     Int32 finalOutputType, finalFormatFormat;
-//     finalFormat->GetOutputType(&finalOutputType);
-//     finalFormat->GetFormat(&finalFormatFormat);
-//     if (finalOutputType == IDisplayManagerAw::DISPLAY_OUTPUT_TYPE_HDMI) {
-//         Int32 ival;
-//         displayManager->IsSupportHdmiMode(finalFormatFormat, &ival);
-//         Boolean isSupport = ival != 0;
-//         if (!isSupport) {
-//             String str;
-//             dispListHelper->ItemCode2Name(finalFormat, &str);
-//             Logger::D(TAG, "HDMI mode %s is NOT supported by the TV.", str.string());
-//             finalFormat = NULL;
-//             dispListHelper->GetStaticDispFormat(
-//                 IDispList::HDMI_DEFAULT_FORMAT_ID, (IDispListDispFormat**)&finalFormat);
-//         }
-//     }
-//     String finalFormatStr;
-//     dispListHelper->ItemCode2Name(finalFormat, &finalFormatStr);
-//     Logger::D(TAG, "final format is %s", finalFormatStr.string());
-
-//     finalFormat->GetOutputType(&finalOutputType);
-//     finalFormat->GetFormat(&finalFormatFormat);
-//     String srcPath("/data/displaysetmode");
-//     AutoPtr<IFile> FILE;
-//     CFile::New(srcPath, (IFile**)&FILE);
-//     String values;
-//     values.AppendFormat("%d\n%d", finalOutputType, finalFormatFormat);
-//     // try {
-//     AutoPtr<IFileOutputStream> fos;
-//     CFileOutputStream::New(FILE, (IFileOutputStream**)&fos);
-//     fos->WriteBytes(*values.GetBytes());
-//     IFlushable::Probe(fos)->Flush();
-//     AutoPtr<IFileDescriptor> fd;
-//     fos->GetFD((IFileDescriptor**)&fd);
-//     fd->Sync();
-//     fos->Close();
-//     // } catch (FileNotFoundException e) {
-//     // } catch (IOException e) {
-//     // }
-
-//     systemSettings->PutString(cr, ISettingsSystem::DISPLY_OUTPUT_FORMAT, finalFormatStr, &res);
-
-//     AutoPtr<IAudioManager> audioManager;
-//     CAudioManager::New(context, (IAudioManager**)&audioManager);
-//     if (audioManager == NULL) {
-//         Logger::E(TAG, "audioManager is NULL");
-//     }
-//     else {
-//         /* modified by chenjd,chenjd@allwinnertech.com,20120710, start {{--------
-//         * init audio output mode,may be multi channels */
-//         String audioOutputChannelName;
-//         systemSettings->GetString(cr, ISettingsSystem::AUDIO_OUTPUT_CHANNEL, &audioOutputChannelName);
-
-//         if (audioOutputChannelName.IsNull()) {
-//             audioOutputChannelName = IAudioManager::AUDIO_NAME_CODEC;
-//             Logger::D(TAG,"use default audio output channel:%s", audioOutputChannelName.string());
-//         }
-//         Logger::D(TAG, "saved audio channel is %s", audioOutputChannelName.string());
-//         List<String> audioOutputChannels;
-//         AutoPtr<ArrayOf<String> > audioList;
-//         StringUtils::Split(audioOutputChannelName, ",", (ArrayOf<String>**)&audioList);
-//         for (Int32 i = 0; i < audioList->GetLength(); i++){
-//             String audio = (*audioList)[i];
-//             if (!audio.IsEmpty()) {
-//                 audioOutputChannels.PushBack(audio);
-//             }
-//         }
-//         // Logger::D(TAG, "active the saved audio channels " + audioOutputChannels);
-//         AutoPtr<ArrayOf<String> > activedChannels = ArrayOf<String>::Alloc(1);
-//         if (Find(audioOutputChannels.Begin(), audioOutputChannels.End(),
-//             IAudioManager::AUDIO_NAME_SPDIF) != audioOutputChannels.End()) {
-//              activedChannels->Set(0, IAudioManager::AUDIO_NAME_SPDIF);
-//         }
-//         else if (finalOutputType == IDisplayManagerAw::DISPLAY_OUTPUT_TYPE_HDMI){
-//              activedChannels->Set(0, IAudioManager::AUDIO_NAME_HDMI);
-//         }
-//         else {
-//              activedChannels->Set(0, IAudioManager::AUDIO_NAME_CODEC);
-//         }
-//         audioManager->SetAudioDeviceActive(*activedChannels, IAudioManager::AUDIO_OUTPUT_ACTIVE);
-
-//         /* record the audio output channel */
-//         String st;
-//         List<String>::Iterator iter = audioOutputChannels.Begin();
-//         for(; iter != audioOutputChannels.End(); ++iter){
-//             if (st.IsNull()){
-//                 st = *iter;
-//             }
-//             else {
-//                 st = st + "," + *iter;
-//             }
-//         }
-//         systemSettings->PutString(cr, ISettingsSystem::AUDIO_OUTPUT_CHANNEL, st, &res);
-//         Logger::D(TAG, "audio channels change to {%s}", st.string());
-//     }
-
-    Slogger::I(TAG, "== END == Initializing Services... ");
-
-    //todo: Notify Init2
-    {
-        Lock();
-        NotifyAll();
-        Unlock();
-    }
-
-//    Looper::Loop();
-    Slogger::D(TAG, "System ServerThread is exiting!");
-    return NOERROR;
-}
-
-ServerThread::SystemReadyRunnable::SystemReadyRunnable()
-    // : mImm(NULL)
-    // , mWallpaper(NULL)
-    // , mNetworkManage(NULL)
-    // , mNetworkStats(NULL)
-    // , mNetworkPolicy(NULL)
-    // , mConnectivity(NULL)
-    // , mUsb(NULL)
-    // , mMountService(NULL)
-    // , mThrottle(NULL)
-    // , mBattery(NULL)
-    // , mAppWidget(NULL)
-    // , mStatusBar(NULL)
-    // , mRecognition(NULL)
-    // , mTextServiceManagerService(NULL)
-    // , mCountryDetector(NULL)
-    // , mNetworkTimeUpdater(NULL)
-    // , mCommonTimeMgmtService(NULL)
-    // , mTwilight(NULL)
-    // , mUiMode(NULL)
-    // , mLocationF(NULL)
-    // , mContext(NULL)
-    // , mHeadless(FALSE)
-{}
-
-ECode ServerThread::SystemReadyRunnable::Run()
-{
-    Slogger::I(TAG, "Making services ready.");
-    // if (!mHeadless) ServerThread::StartSystemUi(mContext);
-//            try {
-    // if (mMountService != NULL) mMountService->SystemReady();
-//            } catch (Throwable e) {
-//                reportWtf("making Mount Service ready", e);
-//            }
-//            try {
-    // if (mBattery != NULL) mBattery->SystemReady();
-//            } catch (Throwable e) {
-//                reportWtf("making Battery Service ready", e);
-//            }
-//            try {
-        // if (mNetworkManage != NULL) mNetworkManage->SystemReady();
-//            } catch (Throwable e) {
-//                reportWtf("making Network Managment Service ready", e);
-//            }
-//            try {
-//                if (networkStatsF != null) networkStatsF.systemReady();
-//            } catch (Throwable e) {
-//                reportWtf("making Network Stats Service ready", e);
-//            }
-//            try {
-//                if (networkPolicyF != null) networkPolicyF.systemReady();
-//            } catch (Throwable e) {
-//                reportWtf("making Network Policy Service ready", e);
-//            }
-//            try {
-        // if (mConnectivity != NULL) mConnectivity->SystemReady();
-//            } catch (Throwable e) {
-//                reportWtf("making Connectivity Service ready", e);
-//            }
-//            try {
-//                if (dockF != null) dockF.systemReady();
-//            } catch (Throwable e) {
-//                reportWtf("making Dock Service ready", e);
-//            }
-//            try {
-        // if (mUsb != NULL) mUsb->SystemReady();
-//            } catch (Throwable e) {
-//                reportWtf("making USB Service ready", e);
-//            }
-//            try {
-        // if (mTwilight != NULL) mTwilight->SystemReady();
-//            } catch (Throwable e) {
-//                reportWtf("makin Twilight Service ready", e);
-//            }
-//            try {
-        // if (mUiMode != NULL) mUiMode->SystemReady();
-//            } catch (Throwable e) {
-//                reportWtf("making UI Mode Service ready", e);
-//            }
-//            try {
-        // if (mRecognition != NULL) mRecognition->SystemReady();
-//            } catch (Throwable e) {
-//                reportWtf("making Recognition Service ready", e);
-//            }
-//            Watchdog.getInstance().start();
-//
-//            // It is now okay to let the various system services start their
-//            // third party code...
-//
-//            try {
-        // if (mAppWidget != NULL) mAppWidget->SystemReady(/*safeMode*/TRUE);
-//            } catch (Throwable e) {
-//                reportWtf("making App Widget Service ready", e);
-//            }
-//            try {
-        // if (mWallpaper != NULL) mWallpaper->SystemReady();
-//            } catch (Throwable e) {
-//                reportWtf("making Wallpaper Service ready", e);
-//            }
-//            try {
-        // if (mImm != NULL) mImm->SystemReady(mStatusBar);
-//            } catch (Throwable e) {
-//                reportWtf("making Input Method Service ready", e);
-//            }
-//            try {
-        // if (mLocationF != NULL) mLocationF->SystemReady();
-//            } catch (Throwable e) {
-//                reportWtf("making Location Service ready", e);
-//            }
-//            try {
-        // if (mCountryDetector != NULL) mCountryDetector->SystemReady();
-//            } catch (Throwable e) {
-//                reportWtf("making Country Detector Service ready", e);
-//            }
-//            try {
-        // if (mThrottle != NULL) mThrottle->SystemReady();
-//            } catch (Throwable e) {
-//                reportWtf("making Throttle Service ready", e);
-//            }
-//            try {
-        // if (mNetworkTimeUpdater != NULL) mNetworkTimeUpdater->SystemReady();
-//            } catch (Throwable e) {
-//                reportWtf("making Network Time Service ready", e);
-//            }
-//            try {
-        // if (mCommonTimeMgmtService != NULL) mCommonTimeMgmtService->SystemReady();
-//            } catch (Throwable e) {
-//                reportWtf("making Common time management service ready", e);
-//            }
-//            try {
-        // if (mTextServiceManagerService != NULL) mTextServiceManagerService->SystemReady();
-//            } catch (Throwable e) {
-//                reportWtf("making Text Services Manager Service ready", e);
-//            }
-//            try {
-//                if (dreamyF != null) dreamyF.systemReady();
-//            } catch (Throwable e) {
-//                reportWtf("making DreamManagerService ready", e);
-//            }
-//            try {
-//                // TODO(BT) Pass parameter to input manager
-//                if (inputManagerF != null) inputManagerF.systemReady();
-//            } catch (Throwable e) {
-//                reportWtf("making InputManagerService ready", e);
-//            }
-//            try {
-//                if (telephonyRegistryF != null) telephonyRegistryF.systemReady();
-//            } catch (Throwable e) {
-//                reportWtf("making TelephonyRegistry ready", e);
-//            }
-
-    return NOERROR;
-}
-
-void ServerThread::StartSystemUi(
-    /* [in] */ IContext* context)
-{
-    // AutoPtr<IComponentName> cn, result;
-    // CComponentName::New(
-    //     String("SystemUI"),
-    //     String("SystemUI.CSystemUIService"),
-    //     (IComponentName**)&cn);
-
-    // AutoPtr<IUserHandleHelper> helper;
-    // CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
-    // AutoPtr<IUserHandle> uh;
-    // helper->GetOWNER((IUserHandle**)&uh);
-
-    // AutoPtr<IIntent> intent;
-    // CIntent::New((IIntent**)&intent);
-    // intent->SetComponent(cn);
-    // context->StartServiceAsUser(intent, uh, (IComponentName**)&result);
-}
-
-//================================================================================
+const String SystemServer::TAG("SystemServer");
+
+const String SystemServer::ENCRYPTING_STATE("trigger_restart_min_framework");
+const String SystemServer::ENCRYPTED_STATE("1");
+
+const Int64 SystemServer::SNAPSHOT_INTERVAL = 60 * 60 * 1000; // 1hr
+const Int64 SystemServer::EARLIEST_SUPPORTED_TIME = 86400 * 1000;
+
+const String SystemServer::BACKUP_MANAGER_SERVICE_CLASS(
+    "com.android.server.backup.BackupManagerService$Lifecycle");
+const String SystemServer::APPWIDGET_SERVICE_CLASS(
+    "com.android.server.appwidget.AppWidgetService");
+const String SystemServer::VOICE_RECOGNITION_MANAGER_SERVICE_CLASS(
+    "com.android.server.voiceinteraction.VoiceInteractionManagerService");
+const String SystemServer::PRINT_MANAGER_SERVICE_CLASS(
+    "com.android.server.print.PrintManagerService");
+const String SystemServer::USB_SERVICE_CLASS(
+    "com.android.server.usb.UsbService$Lifecycle");
+const String SystemServer::WIFI_SERVICE_CLASS(
+    "com.android.server.wifi.WifiService");
+const String SystemServer::WIFI_P2P_SERVICE_CLASS(
+    "com.android.server.wifi.p2p.WifiP2pService");
+const String SystemServer::ETHERNET_SERVICE_CLASS(
+    "com.android.server.ethernet.EthernetService");
+const String SystemServer::JOB_SCHEDULER_SERVICE_CLASS(
+    "com.android.server.job.JobSchedulerService");
+const String SystemServer::PERSISTENT_DATA_BLOCK_PROP("ro.frp.pst");
+
+//===============================================================================
 // CSystemServer
-//================================================================================
-
-const Int32 CSystemServer::FACTORY_TEST_OFF;
-const Int32 CSystemServer::FACTORY_TEST_LOW_LEVEL;
-const Int32 CSystemServer::FACTORY_TEST_HIGH_LEVEL;
-
-CAR_INTERFACE_IMPL(CSystemServer, Singleton, ISystemServer)
+//===============================================================================
+CAR_INTERFACE_IMPL(CSystemServer, Object, ISystemServer)
 
 CAR_SINGLETON_IMPL(CSystemServer)
-
-ECode CSystemServer::Init1(
-    /* [in] */ const ArrayOf<String>& args)
-{
-    android::sp<android::IServiceManager> sm = android::defaultServiceManager();
-
-    android::sp<GrimReaper> grim = new GrimReaper();
-    sm->asBinder()->linkToDeath(grim, grim.get(), 0);
-
-    android::sp<android::IBinder> esm = sm->getService(android::String16("elastos.servicemanager"));
-    Slogger::I(TAG, "ServiceManager: %p\n", esm.get());
-    if (esm == 0) {
-        Slogger::E(TAG, "Get Elastos service manager fail.\n");
-        return E_RUNTIME_EXCEPTION;
-    }
-    esm->linkToDeath(grim, grim.get(), 0);
-
-    char propBuf[PROPERTY_VALUE_MAX];
-    property_get("system_init.startsensorservice", propBuf, "1");
-    if (strcmp(propBuf, "1") == 0) {
-        // Start the sensor service
-        android::SensorService::instantiate();
-    }
-
-    Slogger::I(TAG, "System server: starting Elastos services.\n");
-    FAIL_RETURN(Init2());
-
-    ALOGI("System server: entering thread pool.\n");
-    android::ProcessState::self()->startThreadPool();
-    android::IPCThreadState::self()->joinThreadPool();
-    ALOGI("System server: exiting thread pool.\n");
-    return NOERROR;
-}
-
-ECode CSystemServer::Init2()
-{
-    Slogger::I(TAG, "Entered the Android system server!");
-    mThread = new ServerThread();
-    mThread->SetName(String("elastos.server.ServerThread"));
-    ECode ec = mThread->Start();
-    //todo: wait for mThread
-    {
-        ISynchronize* sync = ISynchronize::Probe(mThread);
-        sync->Lock();
-        sync->Wait();
-        sync->Unlock();
-    }
-    return ec;
-}
 
 ECode CSystemServer::Main(
     /* [in] */ const ArrayOf<String>& args)
 {
-    return Init1(args);
+    AutoPtr<SystemServer> systemServer = new SystemServer();
+    return systemServer->Run();
+}
+
+//===============================================================================
+// SystemServer
+//===============================================================================
+SystemServer::SystemServer()
+    : mOnlyCore(FALSE)
+    , mFirstBoot(FALSE)
+{
+    // Check for factory test mode.
+    mFactoryTestMode = FactoryTest::GetMode();
+}
+
+ECode SystemServer::NativeInit()
+{
+    return NOERROR;
+}
+
+ECode SystemServer::Run()
+{
+    ECode ec = NOERROR;
+
+    // If a device's clock is before 1970 (before 0), a lot of
+    // APIs crash dealing with negative numbers, notably
+    // java.io.File#setLastModified, so instead we fake it and
+    // hope that time from cell towers or NTP fixes it shortly.
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+    Int64 ms;
+    system->GetCurrentTimeMillis(&ms);
+    if (ms < EARLIEST_SUPPORTED_TIME) {
+        Slogger::W(TAG, "System clock is before 1970; setting to 1970.");
+        SystemClock::SetCurrentTimeMillis(EARLIEST_SUPPORTED_TIME);
+    }
+
+    // Here we go!
+    Slogger::I(TAG, "Entered the Android system server!");
+    // EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_SYSTEM_RUN, SystemClock::uptimeMillis());
+
+    // In case the runtime switched since last boot (such as when
+    // the old runtime was removed in an OTA), set the system
+    // property so that it is in sync. We can't do this in
+    // libnativehelper's JniInvocation::Init code where we already
+    // had to fallback to a different runtime because it is
+    // running as root and we need to be the system user to set
+    // the property. http://b/11463182
+
+    AutoPtr<ISystemProperties> systemProperties;
+    CSystemProperties::AcquireSingleton((ISystemProperties**)&systemProperties);
+    // systemProperties->Set(String("persist.sys.dalvik.vm.lib.2"), VMRuntime.getRuntime().vmLibrary());
+
+    // // Enable the sampling profiler.
+    // if (SamplingProfilerIntegration.isEnabled()) {
+    //     SamplingProfilerIntegration.start();
+    //     mProfilerSnapshotTimer = new Timer();
+    //     mProfilerSnapshotTimer.schedule(new TimerTask() {
+    //         @Override
+    //         public void run() {
+    //             SamplingProfilerIntegration.writeSnapshot("system_server", NULL);
+    //         }
+    //     }, SNAPSHOT_INTERVAL, SNAPSHOT_INTERVAL);
+    // }
+
+    // // Mmmmmm... more memory!
+    // VMRuntime.getRuntime().clearGrowthLimit();
+
+    // // The system server has to run all of the time, so it needs to be
+    // // as efficient as possible with its memory usage.
+    // VMRuntime.getRuntime().setTargetHeapUtilization(0.8f);
+
+    // Some devices rely on runtime fingerprint generation, so make sure
+    // we've defined it before booting further.
+    Build::EnsureFingerprintProperty();
+
+    // Within the system server, it is an error to access Environment paths without
+    // explicitly specifying a user.
+    AutoPtr<IEnvironment> environment;
+    CEnvironment::AcquireSingleton((IEnvironment**)&environment);
+    // environment->SetUserRequired(TRUE);
+
+    // Ensure binder calls into the system always run at foreground priority.
+    // BinderInternal.disableBackgroundScheduling(true);
+
+    // Prepare the main looper thread (this thread).
+    // android.os.Process.setThreadPriority(
+    //         android.os.Process.THREAD_PRIORITY_FOREGROUND);
+    // android.os.Process.setCanSelfBackground(false);
+    AutoPtr<ILooperHelper> looper;
+    CLooperHelper::AcquireSingleton((ILooperHelper**)&looper);
+    looper->PrepareMainLooper();
+
+    // Initialize native services.
+    // System.loadLibrary("android_servers");
+    NativeInit();
+
+    // Check whether we failed to shut down last time we tried.
+    // This call may not return.
+    PerformPendingShutdown();
+
+    // Initialize the system context.
+    CreateSystemContext();
+
+    // // Create the system service manager.
+    mSystemServiceManager = (ISystemServiceManager*)new SystemServiceManager(mSystemContext);
+    LocalServices::AddService(EIID_ISystemServiceManager, mSystemServiceManager.Get());
+
+    // Start services.
+    {
+        ec = StartBootstrapServices();
+        FAIL_GOTO(ec, _EXIT_)
+
+        ec = StartCoreServices();
+        FAIL_GOTO(ec, _EXIT_)
+
+        ec = StartOtherServices();
+        FAIL_GOTO(ec, _EXIT_)
+    }
+
+    // // For debug builds, log event loop stalls to dropbox for analysis.
+    // if (StrictMode.conditionallyEnableDebugLogging()) {
+    //     Slogger::I(TAG, "Enabled StrictMode for system server main thread.");
+    // }
+
+    // Loop forever.
+    looper->Loop();
+
+    Slogger::E(TAG, "Main thread loop unexpectedly exited");
+    return E_RUNTIME_EXCEPTION;
+
+_EXIT_:
+    Slogger::E("System", "******************************************");
+    Slogger::E("System", "************ Failure starting system services, error ecode: %08x", ec);
+    return ec;
+}
+
+void SystemServer::ReportWtf(
+    /* [in] */ const char* msg,
+    /* [in] */ ECode ec)
+{
+    Slogger::W(TAG, "***********************************************");
+    Slogger::W(TAG, "BOOT FAILURE %s, error code: %08x", msg, ec);
+}
+
+ECode SystemServer::PerformPendingShutdown()
+{
+    AutoPtr<ISystemProperties> systemProperties;
+    CSystemProperties::AcquireSingleton((ISystemProperties**)&systemProperties);
+    String shutdownAction;
+    assert(0 && "TODO");
+    // systemProperties->Get(ShutdownThread::SHUTDOWN_ACTION_PROPERTY, String(""), &shutdownAction);
+    if (!shutdownAction.IsNullOrEmpty()) {
+        Boolean reboot = (shutdownAction.GetChar(0) == '1');
+
+        String reason;
+        if (shutdownAction.GetLength() > 1) {
+            reason = shutdownAction.Substring(1, shutdownAction.GetLength());
+        }
+
+        // ShutdownThread::RebootOrShutdown(reboot, reason);
+    }
+    return NOERROR;
+}
+
+ECode SystemServer::CreateSystemContext()
+{
+    AutoPtr<IActivityThread> activityThread;
+    AutoPtr<IActivityThreadHelper> helper;
+    CActivityThreadHelper::AcquireSingleton((IActivityThreadHelper**)&helper);
+    helper->GetSystemMain((IActivityThread**)&activityThread);
+    AutoPtr<IContextImpl> ctxImpl;
+    activityThread->GetSystemContext((IContextImpl**)&ctxImpl);
+    mSystemContext = IContext::Probe(ctxImpl);
+    mSystemContext->SetTheme(R::style::Theme_DeviceDefault_Light_DarkActionBar);
+    return NOERROR;
+}
+
+ECode SystemServer::StartBootstrapServices()
+{
+    AutoPtr<ISystemService> service;
+
+    // // Wait for installd to finish starting up so that it has a chance to
+    // // create critical directories such as /data/user with the appropriate
+    // // permissions.  We need this to complete before we initialize other services.
+    // mInstaller = mSystemServiceManager.startService(Installer.class);
+
+    // // Activity manager runs the show.
+    // mActivityManagerService = mSystemServiceManager.startService(
+    //         ActivityManagerService.Lifecycle.class).getService();
+    // mActivityManagerService.setSystemServiceManager(mSystemServiceManager);
+
+    // // Power manager needs to be started early because other services need it.
+    // // Native daemons may be watching for it to be registered so it must be ready
+    // // to handle incoming binder calls immediately (including being able to verify
+    // // the permissions for those calls).
+    // mPowerManagerService = mSystemServiceManager.startService(PowerManagerService.class);
+
+    // // Now that the power manager has been started, let the activity manager
+    // // initialize power management features.
+    // mActivityManagerService.initPowerManagement();
+
+    // Display manager is needed to provide display metrics before package manager
+    // starts up.
+    service = NULL;
+    mSystemServiceManager->StartService(
+        String("LElastos/Droid/Server/CDisplayManagerService"), (ISystemService**)&service);
+    mDisplayManagerService = (CDisplayManagerService*)service.Get();
+
+    // We need the default display before we can initialize the package manager.
+    mSystemServiceManager->StartBootPhase(ISystemService::PHASE_WAIT_FOR_DEFAULT_DISPLAY);
+
+    // // Only run "core" apps if we're encrypting the device.
+    // String cryptState = SystemProperties.get("vold.decrypt");
+    // if (ENCRYPTING_STATE.equals(cryptState)) {
+    //     Slogger::W(TAG, "Detected encryption in progress - only parsing core apps");
+    //     mOnlyCore = true;
+    // } else if (ENCRYPTED_STATE.equals(cryptState)) {
+    //     Slogger::W(TAG, "Device encrypted - only parsing core apps");
+    //     mOnlyCore = true;
+    // }
+
+    // // Start the package manager.
+    // Slogger::I(TAG, "Package Manager");
+    // mPackageManagerService = PackageManagerService.main(mSystemContext, mInstaller,
+    //         mFactoryTestMode != FactoryTest.FACTORY_TEST_OFF, mOnlyCore);
+    // mFirstBoot = mPackageManagerService.isFirstBoot();
+    // mPackageManager = mSystemContext.getPackageManager();
+
+    // Slogger::I(TAG, "User Service");
+    // ServiceManager.addService(Context.USER_SERVICE, UserManagerService.getInstance());
+
+    // // Initialize attribute cache used to cache resources from packages.
+    // AttributeCache.init(mSystemContext);
+
+    // // Set up the Application instance for the system process and get started.
+    // mActivityManagerService.setSystemProcess();
+    return NOERROR;
+}
+
+
+ECode SystemServer::StartCoreServices()
+{
+    // // Manages LEDs and display backlight.
+    // mSystemServiceManager.startService(LightsService.class);
+
+    // // Tracks the battery level.  Requires LightService.
+    // mSystemServiceManager.startService(BatteryService.class);
+
+    // // Tracks application usage stats.
+    // mSystemServiceManager.startService(UsageStatsService.class);
+    // mActivityManagerService.setUsageStatsManager(
+    //         LocalServices.getService(UsageStatsManagerInternal.class));
+
+    // // Tracks whether the updatable WebView is in a ready state and watches for update installs.
+    // mSystemServiceManager.startService(WebViewUpdateService.class);
+    return NOERROR;
+}
+
+
+ECode SystemServer::StartOtherServices()
+{
+    ECode ec = NOERROR;
+    AutoPtr<IContext> context = mSystemContext;
+    // AutoPtr<CAccountManagerService> accountManager;
+    // AutoPtr<CContentService> contentService;
+    // AutoPtr<CVibratorService> vibrator;
+    // AutoPtr<IIAlarmManager> alarm;
+    // AutoPtr<CMountService> mountService;
+    // AutoPtr<CNetworkManagementService> networkManagement;
+    // AutoPtr<CNetworkStatsService> networkStats;
+    // AutoPtr<CNetworkPolicyManagerService> networkPolicy;
+    // AutoPtr<CConnectivityService> connectivity;
+    // AutoPtr<CNetworkScoreService> networkScore;
+    // AutoPtr<CNsdService> serviceDiscovery= NULL;
+    // AutoPtr<CWindowManagerService> wm;
+    // AutoPtr<CBluetoothManagerService> bluetooth;
+    // AutoPtr<CUsbService> usb;
+    // AutoPtr<CSerialService> serial;
+    // AutoPtr<CNetworkTimeUpdateService> networkTimeUpdater;
+    // AutoPtr<CCommonTimeManagementService> commonTimeMgmtService;
+    // AutoPtr<CInputManagerService> inputManager;
+    // AutoPtr<CTelephonyRegistry> telephonyRegistry;
+    // AutoPtr<CConsumerIrService> consumerIr;
+    // AutoPtr<CAudioService> audioService;
+    // AutoPtr<CMmsServiceBroker> mmsService;
+
+    // AutoPtr<CStatusBarManagerService> statusBar;
+    // AutoPtr<IINotificationManager> notification;
+    // AutoPtr<CInputMethodManagerService> imm;
+    // AutoPtr<CWallpaperManagerService> wallpaper;
+    // AutoPtr<CLocationManagerService> location;
+    // AutoPtr<CCountryDetectorService> countryDetector;
+    // AutoPtr<CTextServicesManagerService> tsms;
+    // AutoPtr<CLockSettingsService> lockSettings;
+    // AutoPtr<CAssetAtlasService> atlas;
+    // AutoPtr<CMediaRouterService> mediaRouter;
+
+    AutoPtr<ISystemProperties> systemProperties;
+    CSystemProperties::AcquireSingleton((ISystemProperties**)&systemProperties);
+
+    Boolean disableStorage, disableMedia, disableBluetooth, disableTelephony;
+    Boolean disableLocation, disableSystemUI, disableNonCoreServices, disableNetwork;
+    systemProperties->GetBoolean(String("config.disable_storage"), FALSE, &disableStorage);
+    systemProperties->GetBoolean(String("config.disable_media"), FALSE, &disableMedia);
+    systemProperties->GetBoolean(String("config.disable_bluetooth"), FALSE, &disableBluetooth);
+    systemProperties->GetBoolean(String("config.disable_telephony"), FALSE, &disableTelephony);
+    systemProperties->GetBoolean(String("config.disable_location"), FALSE, &disableLocation);
+    systemProperties->GetBoolean(String("config.disable_systemui"), FALSE, &disableSystemUI);
+    systemProperties->GetBoolean(String("config.disable_noncore"), FALSE, &disableNonCoreServices);
+    systemProperties->GetBoolean(String("config.disable_network"), FALSE, &disableNetwork);
+    String str;
+    systemProperties->Get(String("ro.kernel.qemu"), &str);
+    Boolean isEmulator = str.Equals("1");
+
+    // try {
+    Slogger::I(TAG, "Reading configuration...");
+//     SystemConfig.getInstance();
+
+//     Slogger::I(TAG, "Scheduling Policy");
+//     ServiceManager.addService("scheduling_policy", new SchedulingPolicyService());
+
+//     Slogger::I(TAG, "Telephony Registry");
+//     telephonyRegistry = new TelephonyRegistry(context);
+//     ServiceManager.addService("telephony.registry", telephonyRegistry);
+
+//     Slogger::I(TAG, "Entropy Mixer");
+//     ServiceManager.addService("entropy", new EntropyMixer(context));
+
+    context->GetContentResolver((IContentResolver**)&mContentResolver);
+
+//     // The AccountManager must come before the ContentService
+//     try {
+//         // TODO: seems like this should be disable-able, but req'd by ContentService
+//         Slogger::I(TAG, "Account Manager");
+//         accountManager = new AccountManagerService(context);
+//         ServiceManager.addService(Context.ACCOUNT_SERVICE, accountManager);
+//     } catch (Throwable e) {
+//         Slog.e(TAG, "Failure starting Account Manager", ec);
+//     }
+
+//     Slogger::I(TAG, "Content Manager");
+//     contentService = ContentService.main(context,
+//             mFactoryTestMode == FactoryTest.FACTORY_TEST_LOW_LEVEL);
+
+//     Slogger::I(TAG, "System Content Providers");
+//     mActivityManagerService.installSystemProviders();
+
+//     Slogger::I(TAG, "Vibrator Service");
+//     vibrator = new VibratorService(context);
+//     ServiceManager.addService("vibrator", vibrator);
+
+//     Slogger::I(TAG, "Consumer IR Service");
+//     consumerIr = new ConsumerIrService(context);
+//     ServiceManager.addService(Context.CONSUMER_IR_SERVICE, consumerIr);
+
+//     mSystemServiceManager.startService(AlarmManagerService.class);
+//     alarm = IAlarmManager.Stub.asInterface(
+//             ServiceManager.getService(Context.ALARM_SERVICE));
+
+//     Slogger::I(TAG, "Init Watchdog");
+//     final Watchdog watchdog = Watchdog.getInstance();
+//     watchdog.init(context, mActivityManagerService);
+
+//     Slogger::I(TAG, "Input Manager");
+//     inputManager = new InputManagerService(context);
+
+//     Slogger::I(TAG, "Window Manager");
+//     wm = WindowManagerService.main(context, inputManager,
+//             mFactoryTestMode != FactoryTest.FACTORY_TEST_LOW_LEVEL,
+//             !mFirstBoot, mOnlyCore);
+//     ServiceManager.addService(Context.WINDOW_SERVICE, wm);
+//     ServiceManager.addService(Context.INPUT_SERVICE, inputManager);
+
+//     mActivityManagerService.setWindowManager(wm);
+
+//     inputManager.setWindowManagerCallbacks(wm.getInputMonitor());
+//     inputManager.start();
+
+//     // TODO: Use service dependencies instead.
+//     mDisplayManagerService.windowManagerAndInputReady();
+
+//     // Skip Bluetooth if we have an emulator kernel
+//     // TODO: Use a more reliable check to see if this product should
+//     // support Bluetooth - see bug 988521
+//     if (isEmulator) {
+//         Slogger::I(TAG, "No Bluetooh Service (emulator)");
+//     } else if (mFactoryTestMode == FactoryTest.FACTORY_TEST_LOW_LEVEL) {
+//         Slogger::I(TAG, "No Bluetooth Service (factory test)");
+//     } else if (!context.getPackageManager().hasSystemFeature
+//                (PackageManager.FEATURE_BLUETOOTH)) {
+//         Slogger::I(TAG, "No Bluetooth Service (Bluetooth Hardware Not Present)");
+//     } else if (disableBluetooth) {
+//         Slogger::I(TAG, "Bluetooth Service disabled by config");
+//     } else {
+//         Slogger::I(TAG, "Bluetooth Manager Service");
+//         bluetooth = new BluetoothManagerService(context);
+//         ServiceManager.addService(BluetoothAdapter.BLUETOOTH_MANAGER_SERVICE, bluetooth);
+//     }
+// } catch (RuntimeException e) {
+//     Slog.e("System", "******************************************");
+//     Slog.e("System", "************ Failure starting core service", ec);
+// }
+
+
+    // // Bring up services needed for UI.
+    // if (mFactoryTestMode != FactoryTest.FACTORY_TEST_LOW_LEVEL) {
+    //     //if (!disableNonCoreServices) { // TODO: View depends on these; mock them?
+    //     if (true) {
+    //         try {
+    //             Slogger::I(TAG, "Input Method Service");
+    //             imm = new InputMethodManagerService(context, wm);
+    //             ServiceManager.addService(Context.INPUT_METHOD_SERVICE, imm);
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting Input Manager Service", ec);
+    //         }
+
+    //         try {
+    //             Slogger::I(TAG, "Accessibility Manager");
+    //             ServiceManager.addService(Context.ACCESSIBILITY_SERVICE,
+    //                     new AccessibilityManagerService(context));
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting Accessibility Manager", ec);
+    //         }
+    //     }
+    // }
+
+    // try {
+    //     wm.displayReady();
+    // } catch (Throwable e) {
+    //     ReportWtf("making display ready", ec);
+    // }
+
+    // try {
+    //     mPackageManagerService.performBootDexOpt();
+    // } catch (Throwable e) {
+    //     ReportWtf("performing boot dexopt", ec);
+    // }
+
+    // try {
+    //     ActivityManagerNative.getDefault().showBootMessage(
+    //             context.getResources().getText(
+    //                     com.android.internal.R.string.android_upgrading_starting_apps),
+    //             false);
+    // } catch (RemoteException e) {
+    // }
+
+    // if (mFactoryTestMode != FactoryTest.FACTORY_TEST_LOW_LEVEL) {
+    //     if (!disableStorage &&
+    //         !"0".equals(SystemProperties.get("system_init.startmountservice"))) {
+    //         try {
+    //             /*
+    //              * NotificationManagerService is dependant on MountService,
+    //              * (for media / usb notifications) so we must start MountService first.
+    //              */
+    //             Slogger::I(TAG, "Mount Service");
+    //             mountService = new MountService(context);
+    //             ServiceManager.addService("mount", mountService);
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting Mount Service", ec);
+    //         }
+    //     }
+
+    //     if (!disableNonCoreServices) {
+    //         try {
+    //             Slogger::I(TAG,  "LockSettingsService");
+    //             lockSettings = new LockSettingsService(context);
+    //             ServiceManager.addService("lock_settings", lockSettings);
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting LockSettingsService service", ec);
+    //         }
+
+    //         if (!SystemProperties.get(PERSISTENT_DATA_BLOCK_PROP).equals("")) {
+    //             mSystemServiceManager.startService(PersistentDataBlockService.class);
+    //         }
+
+    //         // Always start the Device Policy Manager, so that the API is compatible with
+    //         // API8.
+    //         mSystemServiceManager.startService(DevicePolicyManagerService.Lifecycle.class);
+    //     }
+
+    //     if (!disableSystemUI) {
+    //         try {
+    //             Slogger::I(TAG, "Status Bar");
+    //             statusBar = new StatusBarManagerService(context, wm);
+    //             ServiceManager.addService(Context.STATUS_BAR_SERVICE, statusBar);
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting StatusBarManagerService", ec);
+    //         }
+    //     }
+
+    //     if (!disableNonCoreServices) {
+    //         try {
+    //             Slogger::I(TAG, "Clipboard Service");
+    //             ServiceManager.addService(Context.CLIPBOARD_SERVICE,
+    //                     new ClipboardService(context));
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting Clipboard Service", ec);
+    //         }
+    //     }
+
+    //     if (!disableNetwork) {
+    //         try {
+    //             Slogger::I(TAG, "NetworkManagement Service");
+    //             networkManagement = NetworkManagementService.create(context);
+    //             ServiceManager.addService(Context.NETWORKMANAGEMENT_SERVICE, networkManagement);
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting NetworkManagement Service", ec);
+    //         }
+    //     }
+
+    //     if (!disableNonCoreServices) {
+    //         try {
+    //             Slogger::I(TAG, "Text Service Manager Service");
+    //             tsms = new TextServicesManagerService(context);
+    //             ServiceManager.addService(Context.TEXT_SERVICES_MANAGER_SERVICE, tsms);
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting Text Service Manager Service", ec);
+    //         }
+    //     }
+
+    //     if (!disableNetwork) {
+    //         try {
+    //             Slogger::I(TAG, "Network Score Service");
+    //             networkScore = new NetworkScoreService(context);
+    //             ServiceManager.addService(Context.NETWORK_SCORE_SERVICE, networkScore);
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting Network Score Service", ec);
+    //         }
+
+    //         try {
+    //             Slogger::I(TAG, "NetworkStats Service");
+    //             networkStats = new NetworkStatsService(context, networkManagement, alarm);
+    //             ServiceManager.addService(Context.NETWORK_STATS_SERVICE, networkStats);
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting NetworkStats Service", ec);
+    //         }
+
+    //         try {
+    //             Slogger::I(TAG, "NetworkPolicy Service");
+    //             networkPolicy = new NetworkPolicyManagerService(
+    //                     context, mActivityManagerService,
+    //                     (IPowerManager)ServiceManager.getService(Context.POWER_SERVICE),
+    //                     networkStats, networkManagement);
+    //             ServiceManager.addService(Context.NETWORK_POLICY_SERVICE, networkPolicy);
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting NetworkPolicy Service", ec);
+    //         }
+
+    //         mSystemServiceManager.startService(WIFI_P2P_SERVICE_CLASS);
+    //         mSystemServiceManager.startService(WIFI_SERVICE_CLASS);
+    //         mSystemServiceManager.startService(
+    //                     "com.android.server.wifi.WifiScanningService");
+
+    //         mSystemServiceManager.startService("com.android.server.wifi.RttService");
+
+    //         if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_ETHERNET)) {
+    //             mSystemServiceManager.startService(ETHERNET_SERVICE_CLASS);
+    //         }
+
+    //         try {
+    //             Slogger::I(TAG, "Connectivity Service");
+    //             connectivity = new ConnectivityService(
+    //                     context, networkManagement, networkStats, networkPolicy);
+    //             ServiceManager.addService(Context.CONNECTIVITY_SERVICE, connectivity);
+    //             networkStats.bindConnectivityManager(connectivity);
+    //             networkPolicy.bindConnectivityManager(connectivity);
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting Connectivity Service", ec);
+    //         }
+
+    //         try {
+    //             Slogger::I(TAG, "Network Service Discovery Service");
+    //             serviceDiscovery = NsdService.create(context);
+    //             ServiceManager.addService(
+    //                     Context.NSD_SERVICE, serviceDiscovery);
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting Service Discovery Service", ec);
+    //         }
+    //     }
+
+    //     if (!disableNonCoreServices) {
+    //         try {
+    //             Slogger::I(TAG, "UpdateLock Service");
+    //             ServiceManager.addService(Context.UPDATE_LOCK_SERVICE,
+    //                     new UpdateLockService(context));
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting UpdateLockService", ec);
+    //         }
+    //     }
+
+    //     /*
+    //      * MountService has a few dependencies: Notification Manager and
+    //      * AppWidget Provider. Make sure MountService is completely started
+    //      * first before continuing.
+    //      */
+    //     if (mountService != NULL && !mOnlyCore) {
+    //         mountService.waitForAsecScan();
+    //     }
+
+    //     try {
+    //         if (accountManager != NULL)
+    //             accountManager->SystemReady();
+    //     } catch (Throwable e) {
+    //         ReportWtf("making Account Manager Service ready", ec);
+    //     }
+
+    //     try {
+    //         if (contentService != NULL)
+    //             contentService->SystemReady();
+    //     } catch (Throwable e) {
+    //         ReportWtf("making Content Service ready", ec);
+    //     }
+
+    //     mSystemServiceManager.startService(NotificationManagerService.class);
+    //     notification = INotificationManager.Stub.asInterface(
+    //             ServiceManager.getService(Context.NOTIFICATION_SERVICE));
+    //     networkPolicy.bindNotificationManager(notification);
+
+    //     mSystemServiceManager.startService(DeviceStorageMonitorService.class);
+
+    //     if (!disableLocation) {
+    //         try {
+    //             Slogger::I(TAG, "Location Manager");
+    //             location = new LocationManagerService(context);
+    //             ServiceManager.addService(Context.LOCATION_SERVICE, location);
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting Location Manager", ec);
+    //         }
+
+    //         try {
+    //             Slogger::I(TAG, "Country Detector");
+    //             countryDetector = new CountryDetectorService(context);
+    //             ServiceManager.addService(Context.COUNTRY_DETECTOR, countryDetector);
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting Country Detector", ec);
+    //         }
+    //     }
+
+    //     if (!disableNonCoreServices) {
+    //         try {
+    //             Slogger::I(TAG, "Search Service");
+    //             ServiceManager.addService(Context.SEARCH_SERVICE,
+    //                     new SearchManagerService(context));
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting Search Service", ec);
+    //         }
+    //     }
+
+    //     try {
+    //         Slogger::I(TAG, "DropBox Service");
+    //         ServiceManager.addService(Context.DROPBOX_SERVICE,
+    //                 new DropBoxManagerService(context, new File("/data/system/dropbox")));
+    //     } catch (Throwable e) {
+    //         ReportWtf("starting DropBoxManagerService", ec);
+    //     }
+
+    //     if (!disableNonCoreServices && context.getResources().getBoolean(
+    //                 R.bool.config_enableWallpaperService)) {
+    //         try {
+    //             Slogger::I(TAG, "Wallpaper Service");
+    //             wallpaper = new WallpaperManagerService(context);
+    //             ServiceManager.addService(Context.WALLPAPER_SERVICE, wallpaper);
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting Wallpaper Service", ec);
+    //         }
+    //     }
+
+    //     if (!disableMedia && !"0".equals(SystemProperties.get("system_init.startaudioservice"))) {
+    //         try {
+    //             Slogger::I(TAG, "Audio Service");
+    //             audioService = new AudioService(context);
+    //             ServiceManager.addService(Context.AUDIO_SERVICE, audioService);
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting Audio Service", ec);
+    //         }
+    //     }
+
+    //     if (!disableNonCoreServices) {
+    //         mSystemServiceManager.startService(DockObserver.class);
+    //     }
+
+    //     if (!disableMedia) {
+    //         try {
+    //             Slogger::I(TAG, "Wired Accessory Manager");
+    //             // Listen for wired headset changes
+    //             inputManager.setWiredAccessoryCallbacks(
+    //                     new WiredAccessoryManager(context, inputManager));
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting WiredAccessoryManager", ec);
+    //         }
+    //     }
+
+    //     if (!disableNonCoreServices) {
+    //         if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_USB_HOST)
+    //                 || mPackageManager.hasSystemFeature(
+    //                         PackageManager.FEATURE_USB_ACCESSORY)) {
+    //             // Manage USB host and device support
+    //             mSystemServiceManager.startService(USB_SERVICE_CLASS);
+    //         }
+
+    //         try {
+    //             Slogger::I(TAG, "Serial Service");
+    //             // Serial port support
+    //             serial = new SerialService(context);
+    //             ServiceManager.addService(Context.SERIAL_SERVICE, serial);
+    //         } catch (Throwable e) {
+    //             Slog.e(TAG, "Failure starting SerialService", ec);
+    //         }
+    //     }
+
+    //     mSystemServiceManager.startService(TwilightService.class);
+
+    //     mSystemServiceManager.startService(UiModeManagerService.class);
+
+    //     mSystemServiceManager.startService(JobSchedulerService.class);
+
+    //     if (!disableNonCoreServices) {
+    //         if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_BACKUP)) {
+    //             mSystemServiceManager.startService(BACKUP_MANAGER_SERVICE_CLASS);
+    //         }
+
+    //         if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_APP_WIDGETS)) {
+    //             mSystemServiceManager.startService(APPWIDGET_SERVICE_CLASS);
+    //         }
+
+    //         if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_VOICE_RECOGNIZERS)) {
+    //             mSystemServiceManager.startService(VOICE_RECOGNITION_MANAGER_SERVICE_CLASS);
+    //         }
+    //     }
+
+    //     try {
+    //         Slogger::I(TAG, "DiskStats Service");
+    //         ServiceManager.addService("diskstats", new DiskStatsService(context));
+    //     } catch (Throwable e) {
+    //         ReportWtf("starting DiskStats Service", ec);
+    //     }
+
+    //     try {
+    //         // need to add this service even if SamplingProfilerIntegration.isEnabled()
+    //         // is false, because it is this service that detects system property change and
+    //         // turns on SamplingProfilerIntegration. Plus, when sampling profiler doesn't work,
+    //         // there is little overhead for running this service.
+    //         Slogger::I(TAG, "SamplingProfiler Service");
+    //         ServiceManager.addService("samplingprofiler",
+    //                     new SamplingProfilerService(context));
+    //     } catch (Throwable e) {
+    //         ReportWtf("starting SamplingProfiler Service", ec);
+    //     }
+
+    //     if (!disableNetwork) {
+    //         try {
+    //             Slogger::I(TAG, "NetworkTimeUpdateService");
+    //             networkTimeUpdater = new NetworkTimeUpdateService(context);
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting NetworkTimeUpdate service", ec);
+    //         }
+    //     }
+
+    //     if (!disableMedia) {
+    //         try {
+    //             Slogger::I(TAG, "CommonTimeManagementService");
+    //             commonTimeMgmtService = new CommonTimeManagementService(context);
+    //             ServiceManager.addService("commontime_management", commonTimeMgmtService);
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting CommonTimeManagementService service", ec);
+    //         }
+    //     }
+
+    //     if (!disableNetwork) {
+    //         try {
+    //             Slogger::I(TAG, "CertBlacklister");
+    //             CertBlacklister blacklister = new CertBlacklister(context);
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting CertBlacklister", ec);
+    //         }
+    //     }
+
+    //     if (!disableNonCoreServices) {
+    //         // Dreams (interactive idle-time views, a/k/a screen savers, and doze mode)
+    //         mSystemServiceManager.startService(DreamManagerService.class);
+    //     }
+
+    //     if (!disableNonCoreServices) {
+    //         try {
+    //             Slogger::I(TAG, "Assets Atlas Service");
+    //             atlas = new AssetAtlasService(context);
+    //             ServiceManager.addService(AssetAtlasService.ASSET_ATLAS_SERVICE, atlas);
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting AssetAtlasService", ec);
+    //         }
+    //     }
+
+    //     if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_PRINTING)) {
+    //         mSystemServiceManager.startService(PRINT_MANAGER_SERVICE_CLASS);
+    //     }
+
+    //     mSystemServiceManager.startService(RestrictionsManagerService.class);
+
+    //     mSystemServiceManager.startService(MediaSessionService.class);
+
+    //     if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_HDMI_CEC)) {
+    //         mSystemServiceManager.startService(HdmiControlService.class);
+    //     }
+
+    //     if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_LIVE_TV)) {
+    //         mSystemServiceManager.startService(TvInputManagerService.class);
+    //     }
+
+    //     if (!disableNonCoreServices) {
+    //         try {
+    //             Slogger::I(TAG, "Media Router Service");
+    //             mediaRouter = new MediaRouterService(context);
+    //             ServiceManager.addService(Context.MEDIA_ROUTER_SERVICE, mediaRouter);
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting MediaRouterService", ec);
+    //         }
+
+    //         mSystemServiceManager.startService(TrustManagerService.class);
+
+    //         mSystemServiceManager.startService(FingerprintService.class);
+
+    //         try {
+    //             Slogger::I(TAG, "BackgroundDexOptService");
+    //             BackgroundDexOptService.schedule(context);
+    //         } catch (Throwable e) {
+    //             ReportWtf("starting BackgroundDexOptService", ec);
+    //         }
+
+    //     }
+
+    //     mSystemServiceManager.startService(LauncherAppsService.class);
+    // }
+
+    // if (!disableNonCoreServices) {
+    //     mSystemServiceManager.startService(MediaProjectionManagerService.class);
+    // }
+
+    // Before things start rolling, be sure we have decided whether
+    // we are in safe mode.
+    Boolean safeMode = FALSE;
+    // wm->DetectSafeMode(&safeMode);
+    // if (safeMode) {
+    //     mActivityManagerService.enterSafeMode();
+    //     // Disable the JIT for the system_server process
+    //     VMRuntime.getRuntime().disableJitCompilation();
+    // } else {
+    //     // Enable the JIT for the system_server process
+    //     VMRuntime.getRuntime().startJitCompilation();
+    // }
+
+    // // MMS service broker
+    // mmsService = mSystemServiceManager.startService(MmsServiceBroker.class);
+
+    // // It is now time to start up the app processes...
+
+    // try {
+    //     vibrator->SystemReady();
+    // } catch (Throwable e) {
+    //     ReportWtf("making Vibrator Service ready", ec);
+    // }
+
+    // if (lockSettings != NULL) {
+    //     try {
+    //         lockSettings->SystemReady();
+    //     } catch (Throwable e) {
+    //         ReportWtf("making Lock Settings Service ready", ec);
+    //     }
+    // }
+
+    // // Needed by DevicePolicyManager for initialization
+    // mSystemServiceManager->StartBootPhase(ISystemService::PHASE_LOCK_SETTINGS_READY);
+
+    // mSystemServiceManager->StartBootPhase(ISystemService::PHASE_SYSTEM_SERVICES_READY);
+
+    // try {
+    //     wm->SystemReady();
+    // } catch (Throwable e) {
+    //     ReportWtf("making Window Manager Service ready", ec);
+    // }
+
+    // if (safeMode) {
+    //     mActivityManagerService.showSafeModeOverlay();
+    // }
+
+    // // Update the configuration for this context by hand, because we're going
+    // // to start using it before the config change done in wm->SystemReady() will
+    // // propagate to it.
+    // Configuration config = wm.computeNewConfiguration();
+    // DisplayMetrics metrics = new DisplayMetrics();
+    // WindowManager w = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+    // w.getDefaultDisplay().getMetrics(metrics);
+    // context.getResources().updateConfiguration(config, metrics);
+
+    // try {
+    //     // TODO: use boot phase
+    //     mPowerManagerService.systemReady(mActivityManagerService.getAppOpsService());
+    // } catch (Throwable e) {
+    //     ReportWtf("making Power Manager Service ready", ec);
+    // }
+
+    // try {
+    //     mPackageManagerService->SystemReady();
+    // } catch (Throwable e) {
+    //     ReportWtf("making Package Manager Service ready", ec);
+    // }
+
+    // TODO: use boot phase and communicate these flags some other way
+    ec = mDisplayManagerService->SystemReady(safeMode, mOnlyCore);
+    if (FAILED(ec)) {
+        ReportWtf("making Display Manager Service ready", ec);
+    }
+
+    // These are needed to propagate to the runnable below.
+    AutoPtr<ServiceBundle> bundle = new ServiceBundle();
+    // bundle->mMountServiceF = mountService;
+    // bundle->mNetworkManagementF = networkManagement;
+    // bundle->mNetworkStatsF = networkStats;
+    // bundle->mNetworkPolicyF = networkPolicy;
+    // bundle->mConnectivityF = connectivity;
+    // bundle->mNetworkScoreF = networkScore;
+    // bundle->mWallpaperF = wallpaper;
+    // bundle->mImmF = imm;
+    // bundle->mLocationF = location;
+    // bundle->mCountryDetectorF = countryDetector;
+    // bundle->mNetworkTimeUpdaterF = networkTimeUpdater;
+    // bundle->mCommonTimeMgmtServiceF = commonTimeMgmtService;
+    // bundle->mTextServiceManagerServiceF = tsms;
+    // bundle->mStatusBarF = statusBar;
+    // bundle->mAtlasF = atlas;
+    // bundle->mInputManagerF = inputManager;
+    // bundle->mTelephonyRegistryF = telephonyRegistry;
+    // bundle->mMediaRouterF = mediaRouter;
+    // bundle->mAudioServiceF = audioService;
+    // bundle->mMmsServiceF = mmsService;
+
+    // We now tell the activity manager it is okay to run third party
+    // code.  It will call back into us once it has gotten to the state
+    // where third party code can really run (but before it has actually
+    // started launching the initial applications), for us to complete our
+    // initialization.
+    AutoPtr<IRunnable> runnable = new SystemReadyRunnable(this, bundle);
+    // mActivityManagerService->SystemReady(runnable);
+    return NOERROR;
+}
+
+ECode SystemServer::StartSystemUi(
+    /* [in] */ IContext* context)
+{
+    AutoPtr<IIntent> intent;
+    CIntent::New((IIntent**)&intent);
+    AutoPtr<IComponentName> name;
+    CComponentName::New(
+        String("com.android.systemui"),
+        String("com.android.systemui.SystemUIService"),
+        (IComponentName**)&name);
+    intent->SetComponent(name);
+    //Slog.d(TAG, "Starting service: " + intent);
+    AutoPtr<IUserHandleHelper> helper;
+    CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
+    AutoPtr<IUserHandle> owner;
+    helper->GetOWNER((IUserHandle**)&owner);
+    AutoPtr<IComponentName> result;
+    context->StartServiceAsUser(intent, owner, (IComponentName**)&result);
+    return NOERROR;
+}
+
+//===============================================================================
+// SystemServer::SystemReadyRunnable
+//===============================================================================
+SystemServer::SystemReadyRunnable::SystemReadyRunnable(
+    /* [in] */ SystemServer* host,
+    /* [in] */ SystemServer::ServiceBundle* bundle)
+    : mHost(host)
+    , mServiceBundle(bundle)
+{
+}
+
+ECode SystemServer::SystemReadyRunnable::Run()
+{
+    Slogger::I(TAG, "Making services ready");
+    assert(0 && "TODO");
+
+    mHost->mSystemServiceManager->StartBootPhase(
+        ISystemService::PHASE_ACTIVITY_MANAGER_READY);
+
+    ECode ec = NOERROR;
+
+    // ec = mActivityManagerService->StartObservingNativeCrashes();
+    // if (FAILED(ec)) {
+    //     mHost->ReportWtf("observing native crashes", ec);
+    // }
+
+    // Slogger::I(SystemServer::TAG, "WebViewFactory preparation");
+    AutoPtr<IWebViewFactory> webViewFactory;
+    // CWebViewFactory::AcquireSingleton((IWebViewFactory**)&webViewFactory);
+    webViewFactory->PrepareWebViewInSystemServer();
+
+    ec = StartSystemUi(mHost->mSystemContext);
+    if (FAILED(ec)) {
+        mHost->ReportWtf("starting System UI", ec);
+    }
+
+    // if (mServiceBundle->mMountServiceF != NULL) {
+    //     ec = mServiceBundle->mMountServiceF->SystemReady();
+    //     if (FAILED(ec)) {
+    //         mHost->ReportWtf("making Mount Service ready", ec);
+    //     }
+    // }
+
+    // if (mServiceBundle->mNetworkScoreF != NULL) {
+    //     ec = mServiceBundle->mNetworkScoreF->SystemReady();
+    //     if (FAILED(ec)) {
+    //         mHost->ReportWtf("making Network Score Service ready", ec);
+    //     }
+    // }
+
+    // if (mServiceBundle->mNetworkManagementF != NULL) {
+    //     ec = mServiceBundle->mNetworkManagementF->SystemReady();
+    //     if (FAILED(ec)) {
+    //         mHost->ReportWtf("making Network Managment Service ready", ec);
+    //     }
+    // }
+
+    // if (mServiceBundle->mNetworkStatsF != NULL) {
+    //     ec = mServiceBundle->mNetworkStatsF->SystemReady();
+    //     if (FAILED(ec)) {
+    //         mHost->ReportWtf("making Network Stats Service ready", ec);
+    //     }
+    // }
+
+    // if (mServiceBundle->mNetworkPolicyF != NULL) {
+    //     ec = mServiceBundle->mNetworkPolicyF->SystemReady();
+    //     if (FAILED(ec)) {
+    //         mHost->ReportWtf("making Network Policy Service ready", ec);
+    //     }
+    // }
+
+    // if (mServiceBundle->mConnectivityF != NULL) {
+    //     ec = mServiceBundle->mConnectivityF->SystemReady();
+    //     if (FAILED(ec)) {
+    //         mHost->ReportWtf("making Connectivity Service ready", ec);
+    //     }
+    // }
+
+    // if (mServiceBundle->mAudioServiceF != NULL) {
+    //     ec = mServiceBundle->mAudioServiceF->SystemReady();
+    //     if (FAILED(ec)) {
+    //         mHost->ReportWtf("making AudioService ready", ec);
+    //     }
+    // }
+
+    // // Watchdog.getInstance().start();
+
+    // // It is now okay to let the various system services start their
+    // // third party code...
+    // mSystemServiceManager->StartBootPhase(
+    //     ISystemService::PHASE_THIRD_PARTY_APPS_CAN_START);
+
+    // if (mServiceBundle->mWallpaperF != NULL) {
+    //     ec = mServiceBundle->mWallpaperF->SystemRunning();
+    //     if (FAILED(ec)) {
+    //         mHost->ReportWtf("Notifying WallpaperService running", ec);
+    //     }
+    // }
+
+    // if (mServiceBundle->mImmF != NULL) {
+    //     ec = mServiceBundle->mImmF->SystemRunning(mServiceBundle->mStatusBarF);
+    //     if (FAILED(ec)) {
+    //         mHost->ReportWtf("Notifying InputMethodService running", ec);
+    //     }
+    // }
+
+    // if (mServiceBundle->mLocationF != NULL) {
+    //     ec = mServiceBundle->mLocationF->SystemRunning();
+    //     if (FAILED(ec)) {
+    //         mHost->ReportWtf("Notifying Location Service running", ec);
+    //     }
+    // }
+
+    // if (mServiceBundle->mCountryDetectorF != NULL) {
+    //     ec = mServiceBundle->mCountryDetectorF->SystemRunning();
+    //     if (FAILED(ec)) {
+    //         mHost->ReportWtf("Notifying CountryDetectorService running", ec);
+    //     }
+    // }
+
+    // if (mServiceBundle->mNetworkTimeUpdaterF != NULL) {
+    //     ec = mServiceBundle->mNetworkTimeUpdaterF->SystemRunning();
+    //     if (FAILED(ec)) {
+    //         mHost->ReportWtf("Notifying NetworkTimeService running", ec);
+    //     }
+    // }
+
+    // if (mServiceBundle->mCommonTimeMgmtServiceF != NULL) {
+    //     ec = mServiceBundle->mCommonTimeMgmtServiceF->SystemRunning();
+    //     if (FAILED(ec)) {
+    //         mHost->ReportWtf("Notifying CommonTimeManagementService running", ec);
+    //     }
+    // }
+
+    // if (mServiceBundle->mTextServiceManagerServiceF != NULL) {
+    //     ec = mServiceBundle->mTextServiceManagerServiceF->SystemRunning();
+    //     if (FAILED(ec)) {
+    //         mHost->ReportWtf("Notifying TextServicesManagerService running", ec);
+    //     }
+    // }
+
+    // if (mServiceBundle->mAtlasF != NULL) {
+    //     ec = mServiceBundle->mAtlasF->SystemRunning();
+    //     if (FAILED(ec)) {
+    //         mHost->ReportWtf("Notifying AssetAtlasService running", ec);
+    //     }
+    // }
+
+    // if (mServiceBundle->mInputManagerF != NULL) {
+    //     // TODO(BT) Pass parameter to input manager
+    //     ec = mServiceBundle->mInputManagerF->SystemRunning();
+    //     if (FAILED(ec)) {
+    //         mHost->ReportWtf("Notifying InputManagerService running", ec);
+    //     }
+    // }
+
+    // if (mServiceBundle->mTelephonyRegistryF != NULL) {
+    //     ec = mServiceBundle->mTelephonyRegistryF->SystemRunning();
+    //     if (FAILED(ec)) {
+    //         mHost->ReportWtf("Notifying TelephonyRegistry running", ec);
+    //     }
+    // }
+
+    // if (mServiceBundle->mMediaRouterF != NULL) {
+    //     ec = mServiceBundle->mMediaRouterF->SystemRunning();
+    //     if (FAILED(ec)) {
+    //         mHost->ReportWtf("Notifying MediaRouterService running", ec);
+    //     }
+    // }
+
+    // if (mServiceBundle->mMmsServiceF != NULL) {
+    //     ec = mServiceBundle->mMmsServiceF->SystemRunning();
+    //     if (FAILED(ec)) {
+    //         mHost->ReportWtf("Notifying MmsService running", ec);
+    //     }
+    // }
+
+    return NOERROR;
 }
 
 } // namespace Server

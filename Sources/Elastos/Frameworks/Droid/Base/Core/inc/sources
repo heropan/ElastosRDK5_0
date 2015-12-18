@@ -49,6 +49,8 @@ EXPORT_HEADERS += elastos/droid/os/SystemClock.h
 //EXPORT_HEADERS += elastos/droid/os/AsyncTask.h
 //EXPORT_HEADERS += elastos/droid/os/FileObserver.h
 //EXPORT_HEADERS += elastos/droid/os/storage/StorageResultCode.h
+EXPORT_HEADERS += elastos/droid/os/FactoryTest.h
+
 
 EXPORT_HEADERS += elastos/droid/text/TextUtils.h
 //EXPORT_HEADERS += elastos/droid/text/MeasuredText.h
