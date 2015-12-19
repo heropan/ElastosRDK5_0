@@ -4194,6 +4194,7 @@ module
     }
 
     interface IPackageManagerHelper {
+
         /**
          * Returns the data directory for a particular user and package, given the uid of the package.
          * @param uid uid of the package, including the userId and appId
@@ -4205,7 +4206,38 @@ module
             [in] Int32 userId,
             [in] String packageName,
             [out] String* directory);
-        }
+
+        /** {@hide} */
+        InstallStatusToString(
+            [in] Int32 status,
+            [in] String msg,
+            [out] String* str);
+
+        /** {@hide} */
+        InstallStatusToString(
+            [in] Int32 status,
+            [out] String* str);
+
+        InstallStatusToPublicStatus(
+            [in] Int32 status,
+            [out] Int32* value);
+
+        /** {@hide} */
+        DeleteStatusToString(
+            [in] Int32 status,
+            [in] String msg,
+            [out] String* str);
+
+        /** {@hide} */
+        DeleteStatusToString(
+            [in] Int32 status,
+            [out] String* str);
+
+        /** {@hide} */
+        DeleteStatusToPublicStatus(
+            [in] Int32 status,
+            [out] Int32* value);
+
     }
 
     } // namespace Pm

@@ -3,7 +3,6 @@
 #define __ELASTOS_DROID_SERVER_PM_CRESOURCESCHANGEDRECEIVER_H__
 
 #include "_Elastos_Droid_Server_Pm_CResourcesChangedReceiver.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include "pm/CPackageManagerService.h"
 
 using Elastos::Droid::Os::IBundle;
@@ -16,14 +15,22 @@ namespace Server {
 namespace Pm {
 
 CarClass(CResourcesChangedReceiver)
+    : public Object
+    , public IIntentReceiver
 {
 public:
+    CResourcesChangedReceiver()
+        : mReportStatus(FALSE)
+    {}
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     constructor(
         /* [in] */ IIPackageManager* owner,
         /* [in] */ ISet* keys,
         /* [in] */ Boolean reportStatus);
-
-    ~CResourcesChangedReceiver();
 
     CARAPI PerformReceive(
        /* [in] */ IIntent* intent,

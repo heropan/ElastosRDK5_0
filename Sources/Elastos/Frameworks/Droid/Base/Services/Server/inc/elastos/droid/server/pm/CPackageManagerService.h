@@ -803,6 +803,7 @@ public:/* package */
 
         CARAPI_(void) SetError(
             /* [in] */ const String& msg,
+            /* [in] */ Int32 error,
             /* [in] */ ECode e/*PackageParserException e*/);
 
     public:
@@ -847,6 +848,67 @@ public:/* package */
         // Clean up resources deleted capsules.
         AutoPtr<InstallArgs> mArgs;
         CPackageManagerService* mHost;
+    };
+
+    class DumpState
+    {
+    public:
+        DumpState()
+            : mTypes(0)
+            , mOptions(0)
+            , mTitlePrinted(FALSE)
+        {}
+
+        CARAPI_(Boolean) IsDumping(
+            /* [in] */ Int32 type);
+
+        CARAPI_(void) SetDump(
+            /* [in] */ Int32 type);
+
+        CARAPI_(Boolean) IsOptionEnabled(
+            /* [in] */ Int32 option);
+
+        CARAPI_(void) SetOptionEnabled(
+            /* [in] */ Int32 option);
+
+        CARAPI_(Boolean) OnTitlePrinted();
+
+        CARAPI_(Boolean) GetTitlePrinted();
+
+        CARAPI_(void) SetTitlePrinted(
+            /* [in] */ Boolean enabled);
+
+        CARAPI_(AutoPtr<SharedUserSetting>) GetSharedUser();
+
+        CARAPI_(void) SetSharedUser(
+            /* [in] */ SharedUserSetting* user);
+
+    public:
+        static const Int32 DUMP_LIBS = 1 << 0;
+        static const Int32 DUMP_FEATURES = 1 << 1;
+        static const Int32 DUMP_RESOLVERS = 1 << 2;
+        static const Int32 DUMP_PERMISSIONS = 1 << 3;
+        static const Int32 DUMP_PACKAGES = 1 << 4;
+        static const Int32 DUMP_SHARED_USERS = 1 << 5;
+        static const Int32 DUMP_MESSAGES = 1 << 6;
+        static const Int32 DUMP_PROVIDERS = 1 << 7;
+        static const Int32 DUMP_VERIFIERS = 1 << 8;
+        static const Int32 DUMP_PREFERRED = 1 << 9;
+        static const Int32 DUMP_PREFERRED_XML = 1 << 10;
+        static const Int32 DUMP_KEYSETS = 1 << 11;
+        static const Int32 DUMP_VERSION = 1 << 12;
+        static const Int32 DUMP_INSTALLS = 1 << 13;
+
+        static const Int32 OPTION_SHOW_FILTERS = 1 << 0;
+
+    private:
+        Int32 mTypes;
+
+        Int32 mOptions;
+
+        Boolean mTitlePrinted;
+
+        AutoPtr<SharedUserSetting> mSharedUser;
     };
 
 private:
@@ -1199,9 +1261,7 @@ private:
         Int32 mUserId;
     };
 
-    class DeleteRunnable
-        : public ElRefBase
-        , public IRunnable
+    class DeleteRunnable : public Runnable
     {
     public:
         DeleteRunnable(
@@ -1215,8 +1275,6 @@ private:
             , mUserId(userId)
         {}
 
-        CAR_INTERFACE_DECL()
-
         CARAPI Run();
 
     private:
@@ -1226,12 +1284,10 @@ private:
         Int32 mUserId;
     };
 
-    class UpdateRunnable
-        : public ElRefBase
-        , public IRunnable
+    class UpdateExternalMediaStatusRunnable : public Runnable
     {
     public:
-        UpdateRunnable(
+        UpdateExternalMediaStatusRunnable(
             /* [in] */ CPackageManagerService* owner,
             /* [in] */ Boolean mediaStatus,
             /* [in] */ Boolean reportStatus)
@@ -1240,34 +1296,12 @@ private:
             , mReportStatus(reportStatus)
         {}
 
-        CAR_INTERFACE_DECL()
-
         CARAPI Run();
 
     private:
         CPackageManagerService* mHost;
         Boolean mMediaStatus;
         Boolean mReportStatus;
-    };
-
-    class ProcessRunnable : public Runnable
-    {
-    public:
-        ProcessRunnable(
-            /* [in] */ CPackageManagerService* owner,
-            /* [in] */ MoveParams* mp,
-            /* [in] */ Int32 currentStatus)
-            : mHost(owner)
-            , mMp(mp)
-            , mCurrentStatus(currentStatus)
-        {}
-
-        CARAPI Run();
-
-    private:
-        CPackageManagerService* mHost;
-        AutoPtr<MoveParams> mMp;
-        Int32 mCurrentStatus;
     };
 
     class ClearStorageConnection
@@ -1286,6 +1320,26 @@ private:
 
     public:
         AutoPtr<IIMediaContainerService> mContainerService;
+    };
+
+    class RemoveUnusedPackagesRunnable : public Runnable
+    {
+    public:
+        RemoveUnusedPackagesRunnable(
+            /* [in] */ CPackageManagerService* owner,
+            /* [in] */ const String& packageName,
+            /* [in] */ Int32 userHandle)
+            : mHost(owner)
+            , mPackageName(packageName)
+            , mUserHandle(userHandle)
+        {}
+
+        CARAPI Run();
+
+    private:
+        CPackageManagerService* mHost;
+        String mPackageName;
+        Int32 mUserHandle;
     };
 
 public:
@@ -1927,7 +1981,8 @@ public:
         /* [in] */ IIntentFilter* filter,
         /* [in] */ Int32 match,
         /* [in] */ ArrayOf<IComponentName*>* set,
-        /* [in] */ IComponentName* activity);
+        /* [in] */ IComponentName* activity,
+        /* [in] */ Int32 userId);
 
     CARAPI ClearPackagePreferredActivities(
         /* [in] */ const String& packageName);
@@ -1936,17 +1991,47 @@ public:
         /* [in] */ const String& packageName,
         /* [in] */ Int32 userId);
 
+    CARAPI ResetPreferredActivities(
+        /* [in] */ Int32 userId);
+
     CARAPI GetPreferredActivities(
         /* [in, out] */ IList* outFilters,
         /* [in, out] */ IList* outActivities,
         /* [in] */ const String& packageName,
         /* [out] */ Int32* count);
 
+    CARAPI AddPersistentPreferredActivity(
+        /* [in] */ IIntentFilter* filter,
+        /* [in] */ IComponentName* activity,
+        /* [in] */ Int32 userId);
+
+    CARAPI ClearPackagePersistentPreferredActivities(
+        /* [in] */ const String& packageName,
+        /* [in] */ Int32 userId);
+
+    CARAPI AddCrossProfileIntentFilter(
+        /* [in] */ IIntentFilter* intentFilter,
+        /* [in] */ const String& ownerPackage,
+        /* [in] */ Int32 ownerUserId,
+        /* [in] */ Int32 sourceUserId,
+        /* [in] */ Int32 targetUserId,
+        /* [in] */ Int32 flags);
+
+    CARAPI ClearCrossProfileIntentFilters(
+        /* [in] */ Int32 sourceUserId,
+        /* [in] */ const String& ownerPackage,
+        /* [in] */ Int32 ownerUserId);
+
+    CARAPI GetHomeActivities(
+        /* [in] */ IList* outHomeCandidates,
+        /* [out] */ IComponentName** name);
+
     CARAPI SetApplicationEnabledSetting(
         /* [in] */ const String& appPackageName,
         /* [in] */ Int32 newState,
         /* [in] */ Int32 flags,
-        /* [in] */ Int32 userId);
+        /* [in] */ Int32 userId,
+        /* [in] */ const String& callingPackage);
 
     CARAPI SetComponentEnabledSetting(
         /* [in] */ IComponentName* componentName,
@@ -1988,7 +2073,7 @@ public:
 
     // protected void dump(FileDescriptor fd, PrintWriter pw, String[] args)
 
-    static CARAPI_(String) GetTempContainerId();
+    CARAPI_(String) GetEncryptKey();
 
     CARAPI UpdateExternalMediaStatus(
         /* [in] */ Boolean mediaStatus,
@@ -2009,6 +2094,7 @@ public:
         /* [out] */ Int32* loc);
 
     CARAPI_(void) CleanUpUserLILPw(
+        /* [in] */ CUserManagerService* userManager,
         /* [in] */ Int32 userHandle);
 
     CARAPI_(void) CreateNewUserLILPw(
@@ -2027,6 +2113,28 @@ public:
         /* [out] */ Boolean* result);
 
     CARAPI IsStorageLow(
+        /* [out] */ Boolean* result);
+
+    CARAPI GetPackageInstaller(
+        /* [out] */ IIPackageInstaller** installer);
+
+    CARAPI GetKeySetByAlias(
+        /* [in] */ const String& packageName,
+        /* [in] */ const String& alias,
+        /* [out] */ IKeySet** set);
+
+    CARAPI GetSigningKeySet(
+        /* [in] */ const String& packageName,
+        /* [out] */ IKeySet** set);
+
+    CARAPI IsPackageSignedByKeySet(
+        /* [in] */ const String& packageName,
+        /* [in] */ IKeySet* ks,
+        /* [out] */ Boolean* result);
+
+    CARAPI IsPackageSignedByKeySetExactly(
+        /* [in] */ const String& packageName,
+        /* [in] */ IKeySet* ks,
         /* [out] */ Boolean* result);
 
 private:
@@ -2164,7 +2272,8 @@ private:
         /* [in] */ IFile* dir,
         /* [in] */ Int32 flags,
         /* [in] */ Int32 scanMode,
-        /* [in] */ Int64 currentTime);
+        /* [in] */ Int64 currentTime,
+        /* [in] */ ArrayOf<Byte>* readBuffer);
 
     static CARAPI_(AutoPtr<IFile>) GetSettingsProblemFile();
 
@@ -2173,7 +2282,8 @@ private:
         /* [in] */ PackageSetting* ps,
         /* [in] */ PackageParser::Package* pkg,
         /* [in] */ IFile* srcFile,
-        /* [in] */ Int32 parseFlags);
+        /* [in] */ Int32 parseFlags,
+        /* [in] */ ArrayOf<Byte>* readBuffer);
 
     CARAPI ScanPackageLI(
         /* [in] */ IFile* scanFile,
@@ -2181,6 +2291,7 @@ private:
         /* [in] */ Int32 scanFlags,
         /* [in] */ Int64 currentTime,
         /* [in] */ IUserHandle* user,
+        /* [in] */ ArrayOf<Byte>* readBuffer,
         /* [out] */ PackageParser::Packag** pkg);
 
     static CARAPI_(String) FixProcessName(
@@ -2300,7 +2411,8 @@ private:
         /* [in] */ Int32 parseFlags,
         /* [in] */ Int32 scanFlags,
         /* [in] */ Int64 currentTime,
-        /* [in] */ IUserHandle* user);
+        /* [in] */ IUserHandle* user,
+        /* [in] */ ArrayOf<Byte>* readBuffer);
 
     CARAPI ScanPackageDirtyLI(
         /* [in] */ PackageParser::Package* pkg,
@@ -2664,6 +2776,14 @@ private:
         /* [in] */ const String& packageName,
         /* [in] */ Int32 userId);
 
+    /**
+     * Remove entries from the keystore daemon. Will only remove it if the
+     * {@code appId} is valid.
+     */
+    static CARAPI_(void) RemoveKeystoreDataIfNeeded(
+        /* [in] */ Int32 userId,
+        /* [in] */ Int32 appId);
+
     CARAPI_(Boolean) DeleteApplicationCacheFilesLI(
         /* [in] */ const String& packageName,
         /* [in] */ Int32 userId);
@@ -2676,20 +2796,34 @@ private:
     CARAPI_(Int32) GetUidTargetSdkVersionLockedLPr(
         /* [in] */ Int32 uid);
 
+    CARAPI AddPreferredActivityInternal(
+        /* [in] */ IIntentFilter* filter,
+        /* [in] */ Int32 match,
+        /* [in] */ ArrayOf<IComponentName*>* set,
+        /* [in] */ IComponentName* activity,
+        /* [in] */ Boolean always,
+        /* [in] */ Int32 userId,
+        /* [in] */ const String& opname);
+
+    // Enforcing that callingUid is owning pkg on userId
+    CARAPI EnforceOwnerRights(
+        /* [in] */ const String& pkg,
+        /* [in] */ Int32 userId,
+        /* [in] */ Int32 callingUid);
+
     CARAPI SetEnabledSetting(
         /* [in] */ const String& packageName,
         /* [in] */ const String& className,
         /* [in] */ Int32 newState,
         /* [in] */ Int32 flags,
-        /* [in] */ Int32 userId);
+        /* [in] */ Int32 userId,
+        /* [in] */ const String& callingPackage);
 
     CARAPI_(void) SendPackageChangedBroadcast(
         /* [in] */ const String& packageName,
         /* [in] */ Boolean killFlag,
         /* [in] */ List<String>* componentNames,
         /* [in] */ Int32 packageUid);
-
-    CARAPI_(String) GetEncryptKey();
 
     CARAPI_(void) UpdateExternalMediaStatusInner(
         /* [in] */ Boolean isMounted,
@@ -2698,33 +2832,34 @@ private:
 
     CARAPI SendResourcesChangedBroadcast(
         /* [in] */ Boolean mediaStatus,
+        /* [in] */ Boolean replacing,
         /* [in] */ List<String>& pkgList,
         /* [in] */ ArrayOf<Int32>* uidArr,
         /* [in] */ IIntentReceiver* finishedReceiver);
 
     CARAPI_(void) LoadMediaPackages(
         /* [in] */ HashMap<AutoPtr<AsecInstallArgs>, String>& processCids,
-        /* [in] */ ArrayOf<Int32>& uidArr,
-        /* [in] */ List<String>* removeCids);
+        /* [in] */ ArrayOf<Int32>* uidArr);
 
     CARAPI_(void) UnloadAllContainers(
-        /* [in] */ ISet* cidArgs);
+        /* [in] */ ISet* cidArgs);//Set< AutoPtr<AsecInstallArgs> >
 
     CARAPI UnloadMediaPackages(
         /* [in] */ HashMap<AutoPtr<AsecInstallArgs>, String>& processCids,
-        /* [in] */ ArrayOf<Int32>& uidArr,
+        /* [in] */ ArrayOf<Int32>* uidArr,
         /* [in] */ Boolean reportStatus);
 
-    CARAPI_(void) ProcessPendingMove(
-        /* [in] */ MoveParams* mp,
-        /* [in] */ Int32 currentStatus);
+    /**
+     * We're removing userHandle and would like to remove any downloaded packages
+     * that are no longer in use by any other user.
+     * @param userHandle the user being removed
+     */
+    CARAPI_(void) RemoveUnusedPackagesLILPw(
+        /* [in] */ CUserManagerService* userManager,
+        /* [in] */ Int32 userHandle);
 
-    CARAPI_(Boolean) IsPermissionEnforcedDefault(
-        /* [in] */ const String& permission);
-
-    CARAPI_(Boolean) IsPermissionEnforcedLocked(
-        /* [in] */ const String& permission,
-        /* [in] */ Boolean enforcedDefault);
+    CARAPI_(Boolean) UserNeedsBadging(
+        /* [in] */ Int32 userId);
 
 public:/*package*/
     static const String TAG;
@@ -2886,7 +3021,7 @@ public:/*package*/
     AutoPtr< HashSet<AutoPtr<PackageParser::Package> > > mDeferredDexOpt;
 
     // Cache of users who need badging.
-    AutoPtr<ISparseBooleanArray> mUserNeedsBadging;
+    HashMap<Int32, Boolean> mUserNeedsBadging; //AutoPtr<ISparseBooleanArray> mUserNeedsBadging;
 
     Boolean mSystemReady;
     Boolean mSafeMode;
@@ -2988,7 +3123,7 @@ private:
      * Messages for {@link #mHandler} that need to wait for system ready before
      * being dispatched.
      */
-    AutoPtr<IArrayList> mPostSystemReadyMessages;
+    AutoPtr<List<AutoPtr<IMessage> > > mPostSystemReadyMessages;
 
     /**
      * Directory to which applications installed internally have their

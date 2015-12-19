@@ -25,3 +25,4 @@ SOURCES += PackageVerificationState.cpp
 SOURCES += PackageVerificationResponse.cpp
 SOURCES += BackgroundDexOptService.cpp
 SOURCES += CParcelFileDescriptorFactory.cpp
+SOURCES += CPackageInstallObserver2.cpp

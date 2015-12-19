@@ -679,6 +679,14 @@ module
 //         interface IIntentReceiver;
 //     }
 
+//     class CPackageInstallObserver2 {
+//         constructor(
+//             [in] IIPackageManager* owner,
+//             [in] IPackageMoveObserver* observer);
+
+//         interface IIPackageInstallObserver2;
+//     }
+
 //     [local]
 //     class CUserManagerService {
 //         constructor(

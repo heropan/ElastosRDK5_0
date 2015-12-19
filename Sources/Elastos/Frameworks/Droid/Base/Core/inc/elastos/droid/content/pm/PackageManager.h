@@ -213,29 +213,29 @@ public:
         /* [out] */ Boolean* result) = 0;
 
     /** {@hide} */
-    CARAPI_(String) InstallStatusToString(
+    static CARAPI_(String) InstallStatusToString(
         /* [in] */ Int32 status,
         /* [in] */ const String& msg);
 
     /** {@hide} */
-    CARAPI_(String) InstallStatusToString(
+    static CARAPI_(String) InstallStatusToString(
         /* [in] */ Int32 status);
 
     /** {@hide} */
-    CARAPI_(Int32) InstallStatusToPublicStatus(
+    static CARAPI_(Int32) InstallStatusToPublicStatus(
         /* [in] */ Int32 status);
 
     /** {@hide} */
-    CARAPI_(String) DeleteStatusToString(
+    static CARAPI_(String) DeleteStatusToString(
         /* [in] */ Int32 status,
         /* [in] */ const String& msg);
 
     /** {@hide} */
-    CARAPI_(String) DeleteStatusToString(
+    static CARAPI_(String) DeleteStatusToString(
         /* [in] */ Int32 status);
 
     /** {@hide} */
-    CARAPI_(Int32) DeleteStatusToPublicStatus(
+    static CARAPI_(Int32) DeleteStatusToPublicStatus(
         /* [in] */ Int32 status);
 
 public:

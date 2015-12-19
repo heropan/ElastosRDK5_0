@@ -1,25 +1,24 @@
 
 #include "pm/CResourcesChangedReceiver.h"
-#include "elastos/droid/os/Handler.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Pm {
 
+CAR_INTERFACE_IMPL(CResourcesChangedReceiver, Object, IIntentReceiver)
+
+CAR_OBJECT_IMPL(CResourcesChangedReceiver)
+
 ECode CResourcesChangedReceiver::constructor(
     /* [in] */ IIPackageManager* owner,
     /* [in] */ ISet* keys,
     /* [in] */ Boolean reportStatus)
 {
-    mOwner = (CPackageManagerService*)owner;
+    mOwner = reinterpret_cast<CPackageManagerService*>(owner->Probe(EIID_CPackageManagerService));
     mKeys = keys;
     mReportStatus = reportStatus;
     return NOERROR;
-}
-
-CResourcesChangedReceiver::~CResourcesChangedReceiver()
-{
 }
 
 ECode CResourcesChangedReceiver::PerformReceive(
