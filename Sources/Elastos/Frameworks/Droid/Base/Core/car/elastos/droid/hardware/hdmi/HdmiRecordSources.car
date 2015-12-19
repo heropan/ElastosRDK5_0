@@ -141,6 +141,7 @@ module
      */
     //@SystemApi
     interface IHdmiRecordSourcesDigitalServiceSource {
+        const Int32 EXTRA_DATA_SIZE = 7;
     }
 
     /**
@@ -158,6 +159,7 @@ module
      */
     //@SystemApi
     interface IHdmiRecordSourcesAnalogueServiceSource {
+        const Int32 EXTRA_DATA_SIZE = 4;
     }
 
     /**
@@ -173,6 +175,7 @@ module
      */
     //@SystemApi
     interface IHdmiRecordSourcesExternalPlugData {
+        const Int32 EXTRA_DATA_SIZE = 1;
     }
 
     /**
@@ -188,6 +191,7 @@ module
      */
     //@SystemApi
     interface IHdmiRecordSourcesExternalPhysicalAddress {
+        const Int32 EXTRA_DATA_SIZE = 2;
     }
 
     /**
@@ -417,7 +421,7 @@ module
             [in] Int32 physicalAddress,
             [out] IHdmiRecordSourcesExternalPhysicalAddress** address);
 
-         /**
+        /**
          * Check the byte array of record source.
          * @hide
          */

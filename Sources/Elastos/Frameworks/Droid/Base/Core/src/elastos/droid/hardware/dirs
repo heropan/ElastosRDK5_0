@@ -1,5 +1,6 @@
 DIRS += camera2
 DIRS += display
+DIRS += hdmi
 DIRS += input
 DIRS += usb
 DIRS += soundtrigger

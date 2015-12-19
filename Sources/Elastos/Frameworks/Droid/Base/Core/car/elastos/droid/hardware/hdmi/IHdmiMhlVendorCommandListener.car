@@ -11,13 +11,13 @@ module
      *
      * @hide
      */
-    [oneway]
+    [oneway, deprecated]
     interface IIHdmiMhlVendorCommandListener {
         OnReceived(
             [in] Int32 portId,
             [in] Int32 offset,
             [in] Int32 length,
-            [in] ArrayOf<Byte> data);
+            [in] ArrayOf<Byte>* data);
     }
 
     } // namespace Hdmi

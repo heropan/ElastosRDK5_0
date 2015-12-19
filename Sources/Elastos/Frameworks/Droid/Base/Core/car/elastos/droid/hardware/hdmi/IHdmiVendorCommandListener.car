@@ -12,11 +12,11 @@ module
      *
      * @hide
      */
-    [oneway]
+    [oneway, deprecated]
     interface IIHdmiVendorCommandListener {
         OnReceived(
             [in] Int32 logicalAddress,
-            [in] ArrayOf<Byte> operands,
+            [in] ArrayOf<Byte>* operands,
             [in] Boolean hasVendorId);
     }
 

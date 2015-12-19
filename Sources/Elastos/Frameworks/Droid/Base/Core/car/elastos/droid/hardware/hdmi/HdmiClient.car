@@ -58,6 +58,9 @@ module
          */
         AddVendorCommandListener(
             [in] IHdmiControlManagerVendorCommandListener* listener);
+
+        GetDeviceType(
+            [out] Int32* type);
     }
 
     } // namespace Hdmi

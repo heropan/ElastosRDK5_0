@@ -33,7 +33,6 @@ module
             [out] Boolean* port);
     }
 
-
     } // namespace Hdmi
     } // namespace Hardware
     } // namespace Droid

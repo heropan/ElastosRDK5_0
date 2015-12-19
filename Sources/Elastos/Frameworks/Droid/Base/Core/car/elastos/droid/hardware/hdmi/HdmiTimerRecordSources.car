@@ -19,10 +19,6 @@ module
             [in] ArrayOf<Byte>* data,
             [in] Int32 index,
             [out] Int32* result);
-
-        ToBcdByte(
-            [in] Int32 value,
-            [out] Byte* result);
     }
 
     /**
@@ -30,7 +26,7 @@ module
      * @hide
      *
      * @invoke
-     * iinterface IHdmiTimerRecordSourcesTimeUnit
+     * interface IHdmiTimerRecordSourcesTimeUnit
      */
     //@SystemApi
     interface IHdmiTimerRecordSourcesTime {
@@ -41,7 +37,7 @@ module
      * @hide
      *
      * @invoke
-     * iinterface IHdmiTimerRecordSourcesTimeUnit
+     * interface IHdmiTimerRecordSourcesTimeUnit
      */
     //@SystemApi
     interface IHdmiTimerRecordSourcesDuration {
