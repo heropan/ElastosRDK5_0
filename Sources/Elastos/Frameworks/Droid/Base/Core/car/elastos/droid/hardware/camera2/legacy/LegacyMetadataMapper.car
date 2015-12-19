@@ -1,6 +1,9 @@
 
 module
 {
+    interface Elastos.Droid.Hardware.IParameters;
+    interface Elastos.Droid.Hardware.ICameraInfo;
+    interface Elastos.Droid.Hardware.IHardwareCameraInfo;
     interface Elastos.Droid.Hardware.Camera2.ICameraCharacteristics;
     interface Elastos.Droid.Hardware.Camera2.Impl.ICameraMetadataNative;
 
@@ -9,6 +12,16 @@ module
     namespace Hardware {
     namespace Camera2 {
     namespace Legacy {
+
+    interface ILegacyMetadataMapper {
+        // from graphics.h
+        const Int32 HAL_PIXEL_FORMAT_RGBA_8888 = 1; //IPixelFormat::RGBA_8888;
+        const Int32 HAL_PIXEL_FORMAT_BGRA_8888 = 0x5;
+        const Int32 HAL_PIXEL_FORMAT_IMPLEMENTATION_DEFINED = 0x22;
+        const Int32 HAL_PIXEL_FORMAT_BLOB = 0x21;
+
+        const Int32 UNKNOWN_MODE = -1;
+    }
 
     /**
      * Provide legacy-specific implementations of camera2 metadata for legacy devices, such as the
@@ -26,10 +39,10 @@ module
          *
          * @throws NullPointerException if any of the args were {@code null}
          */
-//        CreateCharacteristics(
-//            [in] ICameraParameters* parameters,
-//            [in] ICameraInfo* info,
-//            [out] ICameraCharacteristics** outcc);
+        CreateCharacteristics(
+            [in] IParameters* parameters,
+            [in] IHardwareCameraInfo* info,
+            [out] ICameraCharacteristics** outcc);
 
         /**
          * Create characteristics for a legacy device by mapping the {@code parameters}
@@ -43,7 +56,7 @@ module
          */
         CreateCharacteristics(
             [in] String parameters,
-//            [in] ICameraInfo* info,
+            [in] ICameraInfo* info,
             [out] ICameraCharacteristics** outcc);
 
         /**

@@ -15,9 +15,10 @@ module
     namespace Http {
 
     /**
-     * {@hide}
-     */
-    /**
+     * A queue of bursts of requests.
+     *
+     * <p>This queue maintains the count of frames that have been produced, and is thread safe.</p>
+     *
      * @Involved
      * interface IRequestFeeder;
      */
@@ -128,8 +129,7 @@ module
 
     /**
      * This interface is exposed to each connection
-     */
-    /**
+     *
      * @Involved
      * no super interface ;
      */

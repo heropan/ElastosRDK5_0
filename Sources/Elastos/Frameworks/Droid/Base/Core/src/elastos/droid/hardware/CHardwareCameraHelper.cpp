@@ -12,7 +12,7 @@ CAR_SINGLETON_IMPL(CHardwareCameraHelper)
 
 ECode CHardwareCameraHelper::GetCameraInfo(
     /* [in] */ Int32 cameraId,
-    /* [in] */ ICameraInfo* cameraInfo)
+    /* [in] */ IHardwareCameraInfo* cameraInfo)
 {
     return HardwareCamera::GetCameraInfo(cameraId, cameraInfo);
 }

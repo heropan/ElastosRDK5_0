@@ -10,7 +10,7 @@ module
     /**
      * Provide legacy-specific implementations of camera2 CaptureRequest for legacy devices.
      */
-    interface ILegacyRequestMapperHelper {
+    interface ILegacyRequestMapper {
         /**
          * Set the legacy parameters using the {@link LegacyRequest legacy request}.
          *

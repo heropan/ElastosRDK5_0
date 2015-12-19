@@ -8,7 +8,7 @@
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::ISurfaceTexture;
 using Elastos::Droid::Hardware::IHardwareCamera;
-using Elastos::Droid::Hardware::ICameraInfo;
+using Elastos::Droid::Hardware::IHardwareCameraInfo;
 using Elastos::Droid::Hardware::IParameters;
 using Elastos::Droid::Hardware::IPreviewCallback;
 
@@ -178,7 +178,7 @@ protected:
 private:
     static const String TAG;
 
-    CARAPI_(AutoPtr<ICameraInfo>) GetCameraInfo(
+    CARAPI_(AutoPtr<IHardwareCameraInfo>) GetCameraInfo(
         /* [in] */ Int32 id);
 };
 

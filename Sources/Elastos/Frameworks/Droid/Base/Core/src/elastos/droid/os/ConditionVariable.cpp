@@ -8,6 +8,8 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
+CAR_INTERFACE_IMPL(ConditionVariable, Object, IConditionVariable)
+
 ConditionVariable::ConditionVariable()
     : mCondition(FALSE)
 {}

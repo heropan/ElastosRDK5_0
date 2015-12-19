@@ -2,14 +2,40 @@
 module
 {
     interface Elastos.Droid.Hardware.Camera2.Impl.ICameraMetadataNative;
+    interface Elastos.Droid.Hardware.Camera2.Impl.ICameraMetadataNativeKey;
 
     namespace Elastos {
     namespace Droid {
     namespace Hardware {
     namespace Camera2 {
 
+    /**
+     * A {@code Key} is used to do camera characteristics field lookups with
+     * {@link CameraCharacteristics#get}.
+     *
+     * <p>For example, to get the stream configuration map:
+     * <code><pre>
+     * StreamConfigurationMap map = cameraCharacteristics.get(
+     *      CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+     * </pre></code>
+     * </p>
+     *
+     * <p>To enumerate over all possible keys for {@link CameraCharacteristics}, see
+     * {@link CameraCharacteristics#getKeys()}.</p>
+     *
+     * @see CameraCharacteristics#get
+     * @see CameraCharacteristics#getKeys()
+     */
     interface ICameraCharacteristicsKey {
-
+        /**
+         * Visible for CameraMetadataNative implementation only; do not use.
+         *
+         * TODO: Make this private or remove it altogether.
+         *
+         * @hide
+         */
+        GetNativeKey(
+            [out] ICameraMetadataNativeKey** key);
     }
 
     /**
@@ -24,6 +50,9 @@ module
      *
      * @see CameraDevice
      * @see CameraManager
+     *
+     * @ invoke
+     * interface ICameraMetadata
      */
     interface ICameraCharacteristics {
         /**

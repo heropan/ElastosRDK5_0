@@ -11,6 +11,13 @@ module
 
     [deprecated]
     interface IRequestHandlerThread {
+        /**
+         * Ensure that the MessageQueue's idle handler gets run by poking the message queue;
+         * normally if the message queue is already idle, the idle handler won't get invoked.
+         *
+         * <p>Users of this handler thread should ignore this message.</p>
+         */
+        const Int32 MSG_POKE_IDLE_HANDLER = -1;
 
         // Blocks until thread has started
         WaitUntilStarted();

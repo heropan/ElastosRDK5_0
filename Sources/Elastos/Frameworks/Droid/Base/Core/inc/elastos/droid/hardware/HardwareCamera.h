@@ -45,7 +45,7 @@ public:
     //@Deprecated
     class CameraInfo
         : public Object
-        , public ICameraInfo
+        , public IHardwareCameraInfo
     {
     public:
         CameraInfo();
@@ -136,6 +136,42 @@ public:
          * Create an empty face.
          */
         Face();
+
+        CARAPI SetRect(
+            /* [in] */ IRect* rect);
+
+        CARAPI SetScore(
+            /* [in] */ Int32 score);
+
+        CARAPI SetId(
+            /* [in] */ Int32 id);
+
+        CARAPI SetLeftEye(
+            /* [in] */ IPoint* leftEye);
+
+        CARAPI SetRightEye(
+            /* [in] */ IPoint* rightEye);
+
+        CARAPI SetMouth(
+            /* [in] */ IPoint* mouth);
+
+        CARAPI GetRect(
+            /* [out] */ IRect** rect);
+
+        CARAPI GetScore(
+            /* [out] */ Int32* score);
+
+        CARAPI GetId(
+            /* [out] */ Int32* id);
+
+        CARAPI GetLeftEye(
+            /* [out] */ IPoint** leftEye);
+
+        CARAPI GetRightEye(
+            /* [out] */ IPoint** rightEye);
+
+        CARAPI GetMouth(
+            /* [out] */ IPoint** mouth);
 
     public:
         /**
@@ -268,6 +304,12 @@ public:
         CARAPI GetHashCode(
             /* [out] */ Int32* code);
 
+        CARAPI GetWidth(
+            /* [out] */ Int32* width);
+
+        CARAPI GetHeight(
+            /* [out] */ Int32* height);
+
     public:
         /** width of the picture */
         Int32 mWidth;
@@ -340,6 +382,12 @@ public:
 
         CARAPI GetHashCode(
             /* [out] */ Int32* hash);
+
+        CARAPI GetRect(
+            /* [out] */ IRect** rect);
+
+        CARAPI GetWeight(
+            /* [out] */ Int32* weight);
     public:
         /**
          * Bounds of the area. (-1000, -1000) represents the top-left of the
@@ -1070,7 +1118,7 @@ public:
      */
     static CARAPI GetCameraInfo(
         /* [in] */ Int32 cameraId,
-        /* [in] */ ICameraInfo* cameraInfo);
+        /* [in] */ IHardwareCameraInfo* cameraInfo);
 
     /**
      * Creates a new Camera object to access a particular hardware camera. If
@@ -1913,7 +1961,7 @@ private:
 
     /*native*/ static CARAPI _getCameraInfo(
         /* [in] */ Int32 cameraId,
-        /* [in] */ ICameraInfo* cameraInfo);
+        /* [in] */ IHardwareCameraInfo* cameraInfo);
 
 
 private:

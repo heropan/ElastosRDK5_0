@@ -169,7 +169,7 @@ ECode VideoCaptureTango::OnPreviewFrame(
                 mDeviceOrientation = rotation;
             }
 
-            if (mCameraFacing == ICameraInfo::CAMERA_FACING_BACK) {
+            if (mCameraFacing == IHardwareCameraInfo::CAMERA_FACING_BACK) {
                 rotation = 360 - rotation;
             }
 

@@ -4,11 +4,24 @@ module
     using interface Elastos.Utility.IList;
     using interface Elastos.Utility.ICollection;
 
+    interface Elastos.Droid.Hardware.Camera2.Utils.ILongParcelable;
+
     namespace Elastos {
     namespace Droid {
     namespace Hardware {
     namespace Camera2 {
     namespace Legacy {
+
+    interface IRequestThreadManagerFpsCounter {
+        CountFrame();
+
+        CheckFps(
+            [out] Double* result);
+
+        StaggeredLog();
+
+        CountAndLog();
+    }
 
     /**
      * This class executes requests to the {@link Camera}.
@@ -57,7 +70,7 @@ module
         SubmitCaptureRequests(
             [in] IList* requests,
             [in] Boolean repeating,
-//            [in] IInt64Parcelable* frameNumber,
+            [in] ILongParcelable* frameNumber,
             [out] Int32* value);
 
         /**

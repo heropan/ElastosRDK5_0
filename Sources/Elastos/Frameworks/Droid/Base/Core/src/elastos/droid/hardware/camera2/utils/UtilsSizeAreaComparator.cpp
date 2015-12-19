@@ -1,13 +1,14 @@
 
 #include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Utility.h"
-#include "elastos/droid/hardware/camera2/utils/SizeAreaComparator.h"
-#include "elastos/droid/hardware/camera2/utils/CSizeAreaComparator.h"
+#include "elastos/droid/hardware/camera2/utils/UtilsSizeAreaComparator.h"
+#include "elastos/droid/hardware/camera2/utils/CUtilsSizeAreaComparator.h"
 #include "elastos/droid/internal/utility/Preconditions.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Internal::Utility::Preconditions;
-using Elastos::Droid::Hardware::Camera2::Utils::CSizeAreaComparator;
+using Elastos::Droid::Hardware::Camera2::Utils::IUtilsSizeAreaComparator;
+using Elastos::Droid::Hardware::Camera2::Utils::CUtilsSizeAreaComparator;
 using Elastos::Core::EIID_IComparator;
 using Elastos::Utility::ICollections;
 using Elastos::Utility::CCollections;
@@ -19,9 +20,9 @@ namespace Hardware {
 namespace Camera2 {
 namespace Utils {
 
-CAR_INTERFACE_IMPL_2(SizeAreaComparator, Object, ISizeAreaComparator, IComparator)
+CAR_INTERFACE_IMPL_2(UtilsSizeAreaComparator, Object, IUtilsSizeAreaComparator, IComparator)
 
-ECode SizeAreaComparator::Compare(
+ECode UtilsSizeAreaComparator::Compare(
     /* [in] */ IInterface* lhs,
     /* [in] */ IInterface* rhs,
     /* [out] */ Int32* result)
@@ -62,7 +63,7 @@ ECode SizeAreaComparator::Compare(
     return NOERROR;
 }
 
-ECode SizeAreaComparator::FindLargestByArea(
+ECode UtilsSizeAreaComparator::FindLargestByArea(
     /* [in] */ IList* sizes,
     /* [out] */ ISize** outsz)
 {
@@ -71,12 +72,12 @@ ECode SizeAreaComparator::FindLargestByArea(
 
     FAIL_RETURN(Preconditions::CheckNotNull(sizes, String("sizes must not be null")))
 
-    AutoPtr<ISizeAreaComparator> comparator;
-    CSizeAreaComparator::New((ISizeAreaComparator**)&comparator);
-    AutoPtr<IInterface> obj;
+    AutoPtr<IUtilsSizeAreaComparator> comparator;
+    CUtilsSizeAreaComparator::New((IUtilsSizeAreaComparator**)&comparator);
 
     AutoPtr<ICollections> helper;
     CCollections::AcquireSingleton((ICollections**)&helper);
+    AutoPtr<IInterface> obj;
     helper->Max(ICollection::Probe(sizes), IComparator::Probe(comparator), (IInterface**)&obj);
     *outsz = ISize::Probe(obj);
     REFCOUNT_ADD(*outsz);
