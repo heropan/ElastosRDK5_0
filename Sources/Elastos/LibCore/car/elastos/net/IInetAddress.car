@@ -590,6 +590,18 @@ module
             [in] ArrayOf<Byte>* addr,
             [in] INetworkInterface* nif,
             [out] IInet6Address** address);
+
+        /**
+         * @hide
+         */
+        GetANY(
+            [out] IInetAddress** result);
+
+        /**
+         * @hide
+         */
+        GetLOOPBACK(
+            [out] IInetAddress** result);
     }
 
     } // namespace Net

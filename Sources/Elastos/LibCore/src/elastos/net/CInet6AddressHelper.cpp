@@ -1,6 +1,6 @@
 
-#include "CInet6AddressHelper.h"
-#include "CInet6Address.h"
+#include "elastos/net/CInet6AddressHelper.h"
+#include "elastos/net/Inet6Address.h"
 
 namespace Elastos {
 namespace Net {
@@ -15,7 +15,7 @@ ECode CInet6AddressHelper::GetByAddress(
     /* [in] */ Int32 scope_id,
     /* [out] */ IInet6Address** address)
 {
-    return CInet6Address::GetByAddress(host, addr, scope_id, address);
+    return Inet6Address::GetByAddress(host, addr, scope_id, address);
 }
 
 ECode CInet6AddressHelper::GetByAddress(
@@ -24,7 +24,19 @@ ECode CInet6AddressHelper::GetByAddress(
     /* [in] */ INetworkInterface* nif,
     /* [out] */ IInet6Address** address)
 {
-    return CInet6Address::GetByAddress(host, addr, nif, address);
+    return Inet6Address::GetByAddress(host, addr, nif, address);
+}
+
+ECode CInet6AddressHelper::GetANY(
+    /* [out] */ IInetAddress** result)
+{
+    return Inet6Address::GetANY(result);
+}
+
+ECode CInet6AddressHelper::GetLOOPBACK(
+    /* [out] */ IInetAddress** result)
+{
+    return Inet6Address::GetLOOPBACK(result);
 }
 
 } // namespace Net

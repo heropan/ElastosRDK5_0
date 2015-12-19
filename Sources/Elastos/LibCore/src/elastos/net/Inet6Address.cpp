@@ -1,9 +1,9 @@
-#include "Inet6Address.h"
-#include "CInet6Address.h"
-#include "StringBuilder.h"
-#include "Arrays.h"
-#include "NetworkInterface.h"
+#include "elastos/net/Inet6Address.h"
+#include "elastos/net/CInet6Address.h"
+#include "elastos/net/NetworkInterface.h"
 #include "droid/system/OsConstants.h"
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/Arrays.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::System::OsConstants;
@@ -342,6 +342,26 @@ ECode Inet6Address::ToString(
     }
 
     *result = sb.ToString();
+    return NOERROR;
+}
+
+ECode Inet6Address::GetANY(
+    /* [out] */ IInetAddress** result)
+{
+    VALIDATE_NOT_NULL(*result)
+
+    *result = ANY;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
+}
+
+ECode Inet6Address::GetLOOPBACK(
+    /* [out] */ IInetAddress** result)
+{
+    VALIDATE_NOT_NULL(*result)
+
+    *result = LOOPBACK;
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
