@@ -106,6 +106,18 @@ public:
     CARAPI ToString(
         /* [out] */ String* result);
 
+    /**
+     * @hide
+     */
+    static CARAPI GetANY(
+        /* [out] */ IInetAddress** result);
+
+    /**
+     * @hide
+     */
+    static CARAPI GetLOOPBACK(
+        /* [out] */ IInetAddress** result);
+
 protected:
     Inet6Address();
 

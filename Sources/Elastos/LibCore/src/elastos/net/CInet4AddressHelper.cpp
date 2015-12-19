@@ -1,6 +1,6 @@
 
 #include "elastos/net/CInet4AddressHelper.h"
-#include "elastos/net/CInet4Address.h"
+#include "elastos/net/Inet4Address.h"
 
 namespace Elastos {
 namespace Net {
@@ -12,19 +12,19 @@ CAR_SINGLETON_IMPL(CInet4AddressHelper)
 ECode CInet4AddressHelper::GetANY(
     /* [out] */ IInetAddress** result)
 {
-    return CInet4Address::GetANY(result);
+    return Inet4Address::GetANY(result);
 }
 
 ECode CInet4AddressHelper::GetALL(
     /* [out] */ IInetAddress** result)
 {
-    return CInet4Address::GetALL(result);
+    return Inet4Address::GetALL(result);
 }
 
 ECode CInet4AddressHelper::GetLOOPBACK(
     /* [out] */ IInetAddress** result)
 {
-    return CInet4Address::GetLOOPBACK(result);
+    return Inet4Address::GetLOOPBACK(result);
 }
 
 
