@@ -17,3 +17,5 @@ SOURCES += EditableInputConnection.cpp
 SOURCES += CEditableInputConnection.cpp
 SOURCES += DialogTitle.cpp
 SOURCES += CDialogTitle.cpp
+SOURCES += PasswordEntryKeyboard.cpp
+SOURCES += CPasswordEntryKeyboard.cpp

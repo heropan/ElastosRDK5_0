@@ -1,20 +1,24 @@
 
 #ifndef __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_KEYBOARD_H__
-#define  __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_KEYBOARD_H__
+#define __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_KEYBOARD_H__
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.InputMethodService.h"
+
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::Etl::List;
-using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::InputMethodService::IKeyboard;
+
+using Elastos::Core::Object;
+using Elastos::Core::ICharSequence;
 using Elastos::Utility::IList;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {

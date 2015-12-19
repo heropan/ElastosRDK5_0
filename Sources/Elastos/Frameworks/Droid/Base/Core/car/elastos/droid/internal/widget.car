@@ -50,6 +50,7 @@ module
     interface Elastos.Droid.Graphics.Drawable.IBitmapDrawable;
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
     interface Elastos.Droid.Utility.IAttributeSet;
+//    interface Elastos.Droid.InputMethodService.IKeyboard;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
     interface Elastos.Droid.View.IKeyEventCallback;
     interface Elastos.Droid.View.IViewGroup;
@@ -65,6 +66,8 @@ module
     interface Elastos.Droid.Widget.ILinearLayout;
     interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener;
     interface Elastos.Droid.Widget.IHorizontalScrollView;
+
+    interface Elastos.Core.ICharSequence;
 
     namespace Elastos {
     namespace Droid {
@@ -240,38 +243,39 @@ module
    //  }
 
    //  [local]
-   //  class CPasswordEntryKeyboard {
-   //       constructor(
-   //          [in] IContext* ctx,
-   //          [in] Int32 xmlLayoutResId);
+    class CPasswordEntryKeyboard {
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 xmlLayoutResId);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] Int32 xmlLayoutResId,
-   //          [in] Int32 width,
-   //          [in] Int32 height);
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 xmlLayoutResId,
+            [in] Int32 width,
+            [in] Int32 height);
 
-   //       constructor(
-   //          [in] IContext* ctx,
-   //          [in] Int32 xmlLayoutResId,
-   //          [in] Int32 modeId,
-   //          [in] Int32 width,
-   //          [in] Int32 height);
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 xmlLayoutResId,
+            [in] Int32 modeId,
+            [in] Int32 width,
+            [in] Int32 height);
 
-   //       constructor(
-   //          [in] IContext* ctx,
-   //          [in] Int32 xmlLayoutResId,
-   //          [in] Int32 modeId);
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 xmlLayoutResId,
+            [in] Int32 modeId);
 
-   //       constructor(
-   //          [in] IContext* ctx,
-   //          [in] Int32 layoutTemplateResId,
-   //          [in] ICharSequence* characters,
-   //          [in] Int32 columns,
-   //          [in] Int32 horizontalPadding);
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 layoutTemplateResId,
+            [in] ICharSequence* characters,
+            [in] Int32 columns,
+            [in] Int32 horizontalPadding);
 
-   //      interface IPasswordEntryKeyboard;
-   //  }
+        interface IPasswordEntryKeyboard;
+//        interface IKeyboard;
+    }
 
    //  [local, deprecated]
    //  class CPasswordEntryKeyboardHelper {
