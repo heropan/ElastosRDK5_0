@@ -3583,37 +3583,6 @@ module
    //  }
 
    //  [local]
-   //  class CLockPatternView {
-   //      constructor(
-   //          [in] IContext* ctx);
-
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
-
-   //      interface ILockPatternView;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
-
-   //  [local]
-   //  class CLockPatternViewSavedState {
-   //      constructor(
-   //          [in] IParcel* parcel);
-
-   //      constructor(
-   //          [in] IParcelable* superState,
-   //          [in] String serializedPattern,
-   //          [in] Int32 displayMode,
-   //          [in] Boolean inputEnabled,
-   //          [in] Boolean inStealthMode,
-   //          [in] Boolean tactileFeedbackEnabled);
-
-   //      interface ILockPatternViewSavedState;
-   //  }
-
-   //  [local]
    //  class CLockPatternUtils {
    //      constructor(
    //          [in] IContext* ctx);

@@ -37,7 +37,4 @@ module
     }// namespace Internal
     }// namespace Droid
     }// namespace Elastos
-
 }
-
-

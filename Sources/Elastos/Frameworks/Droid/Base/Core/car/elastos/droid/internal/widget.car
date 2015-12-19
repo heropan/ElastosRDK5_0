@@ -52,6 +52,7 @@ module
     interface Elastos.Droid.Utility.IAttributeSet;
 //    interface Elastos.Droid.InputMethodService.IKeyboard;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
+    interface Elastos.Droid.View.IAbsSavedState;
     interface Elastos.Droid.View.IKeyEventCallback;
     interface Elastos.Droid.View.IViewGroup;
     interface Elastos.Droid.View.IView;
@@ -61,11 +62,12 @@ module
     interface Elastos.Droid.View.IOnPreDrawListener;
     interface Elastos.Droid.View.InputMethod.IInputConnection;
     interface Elastos.Droid.View.InputMethod.IBaseInputConnection;
-    interface Elastos.Droid.Widget.ITextView;
+    interface Elastos.Droid.View.IViewBaseSavedState;
     interface Elastos.Droid.Widget.IFrameLayout;
     interface Elastos.Droid.Widget.ILinearLayout;
     interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener;
     interface Elastos.Droid.Widget.IHorizontalScrollView;
+    interface Elastos.Droid.Widget.ITextView;
 
     interface Elastos.Core.ICharSequence;
 
@@ -139,6 +141,27 @@ module
         interface IKeyEventCallback;
         interface IAccessibilityEventSource;
         interface IViewOnLongClickListener;
+    }
+
+    class CLockPatternUtilsCache {
+        constructor(
+            [in] IILockSettings* service);
+
+        interface ILockPatternUtilsCache;
+        interface IILockSettings;
+    }
+
+    class CLockPatternUtilsCacheObserver {
+        constructor();
+
+        constructor(
+            [in] ILockPatternUtilsCache* service);
+
+        interface IILockSettingsObserver;
+    }
+
+    singleton class CLockPatternUtilsCacheHelper {
+        interface ILockPatternUtilsCacheHelper;
     }
 
    //  [local]
@@ -578,36 +601,39 @@ module
    //      interface IAccessibilityEventSource;
    //  }
 
-   //  [local]
-   //  class CLockPatternView {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CLockPatternView {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      interface ILockPatternView;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        interface ILockPatternView;
+        interface IView;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
-   //  [local]
-   //  class CLockPatternViewSavedState {
-   //      constructor(
-   //          [in] IParcel* parcel);
+    [local]
+    class CLockPatternViewSavedState {
+        constructor();
 
-   //      constructor(
-   //          [in] IParcelable* superState,
-   //          [in] String serializedPattern,
-   //          [in] Int32 displayMode,
-   //          [in] Boolean inputEnabled,
-   //          [in] Boolean inStealthMode,
-   //          [in] Boolean tactileFeedbackEnabled);
+        constructor(
+            [in] IParcelable* superState,
+            [in] String serializedPattern,
+            [in] Int32 displayMode,
+            [in] Boolean inputEnabled,
+            [in] Boolean inStealthMode,
+            [in] Boolean tactileFeedbackEnabled);
 
-   //      interface ILockPatternViewSavedState;
-   //  }
+        interface ILockPatternViewSavedState;
+        interface IViewBaseSavedState;
+        interface IAbsSavedState;
+        interface IParcelable;
+    }
 
    //  [local]
    //  class CLockPatternUtils {

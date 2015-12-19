@@ -6,29 +6,14 @@ module
     namespace Internal {
     namespace Widget {
 
-    /**
-     * @Involve
-     * extends Elastos.Droid.View.IView
-     * extends Elastos.Droid.View.IViewGroup
-     * extends Elastos.Droid.Widget.IFrameLayout
-     * extends Elastos.Droid.Widget.IViewAnimator
-     *
-     * interface Elastos.Droid.View.IViewParent
-     * interface Elastos.Droid.View.IViewManager
-     * interface Elastos.Droid.View.IKeyEventCallback
-     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
-     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
-     */
     interface IILockSettingsObserver {
         OnLockSettingChanged(
             [in] String key,
             [in] Int32 userId);
     }
 
-
     }// namespace Widget
     }// namespace Internal
     }// namespace Droid
     }// namespace Elastos
-
 }

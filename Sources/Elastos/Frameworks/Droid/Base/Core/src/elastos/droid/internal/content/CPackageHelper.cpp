@@ -175,7 +175,7 @@ ECode CPackageHelper::MountSdDir(
         return NOERROR;
     }
     Int32 rc = 0;
-    if (FAILED(mountService->MountSecureContainer(cid, key, ownerUid, /*readOnly,*/ &rc))) {
+    if (FAILED(mountService->MountSecureContainer(cid, key, ownerUid, readOnly, &rc))) {
         Logger::E(TAG, "MountService running?");
         return NOERROR;
     }

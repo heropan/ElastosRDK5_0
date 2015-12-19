@@ -149,6 +149,7 @@ module
             [in] String id,
             [in] String key,
             [in] Int32 ownerUid,
+            [in] Boolean readOnly,
             [out] Int32* result);
 
         /**
@@ -249,6 +250,7 @@ module
          * Encrypts storage.
          */
         EncryptStorage(
+            [in] Int32 type,
             [in] String password,
             [out] Int32* result);
 
@@ -256,6 +258,7 @@ module
          * Changes the encryption password.
          */
         ChangeEncryptionPassword(
+            [in] Int32 type,
             [in] String password,
             [out] Int32* result);
 
@@ -348,6 +351,21 @@ module
             [in] Int32 sizeMb,
             [in] String key,
             [out] Int32* result);
+
+        /**
+         * Report the time of the last maintenance operation such as fstrim.
+         * @return Timestamp of the last maintenance operation, in the
+         *     System.currentTimeMillis() time base
+         * @throws RemoteException
+         */
+        LastMaintenance(
+            [out] Int64* timestamp);
+
+        /**
+         * Kick off an immediate maintenance operation
+         * @throws RemoteException
+         */
+        RunMaintenance();
     }
 
     }//namespace Storage

@@ -16,38 +16,6 @@ module
      * interface Elastos.Droid.Internal.Widget.ILockSettings
      */
     interface ILockPatternUtilsCache {
-        SetBoolean(
-            [in] String key,
-            [in] Boolean value,
-            [in] Int32 userId);
-
-        SetLong(
-            [in] String key,
-            [in] Int64 value,
-            [in] Int32 userId);
-
-        SetString(
-            [in] String key,
-            [in] String value,
-            [in] Int32 userId);
-
-        GetLong(
-            [in] String key,
-            [in] Int64 defaultValue,
-            [in] Int32 userId,
-            [out] Int64* res);
-
-        GetString(
-            [in] String key,
-            [in] String defaultValue,
-            [in] Int32 userId,
-            [out] String* res);
-
-        GetBoolean(
-            [in] String key,
-            [in] Boolean defaultValue,
-            [in] Int32 userId,
-            [out] Boolean* res);
     }
 
     interface ILockPatternUtilsCacheHelper {
@@ -56,9 +24,11 @@ module
             [out] ILockPatternUtilsCache** instance);
     }
 
+    interface ILockPatternUtilsCacheCacheKey {
+    }
+
     }// namespace Widget
     }// namespace Internal
     }// namespace Droid
     }// namespace Elastos
-
 }
