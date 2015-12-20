@@ -31,6 +31,10 @@ module
      * <p>{@link TotalCaptureResult} objects are immutable.</p>
      *
      * @see CameraDevice.CaptureCallback#onCaptureCompleted
+     *
+     * @invoke
+     * interface ICaptureResult
+     * interface ICameraMetadata
      */
     interface ITotalCaptureResult {
 

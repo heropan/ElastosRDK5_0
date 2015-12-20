@@ -2,12 +2,16 @@
 module
 {
     using interface Elastos.Utility.IList;
+
     interface Elastos.Droid.Hardware.ICameraSize;
     interface Elastos.Droid.Hardware.ICameraArea;
     interface Elastos.Droid.Hardware.IParameters;
     interface Elastos.Droid.Hardware.ICameraFace;
     interface Elastos.Droid.Hardware.Camera2.Params.IMeteringRectangle;
     interface Elastos.Droid.Hardware.Camera2.Params.IFace;
+    interface Elastos.Droid.Hardware.Camera2.Legacy.IParameterUtilsZoomData;
+    interface Elastos.Droid.Hardware.Camera2.Legacy.IParameterUtilsMeteringData;
+    interface Elastos.Droid.Hardware.Camera2.Legacy.IParameterUtilsWeightedRectangle;
     interface Elastos.Droid.Utility.ISize;
     interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Graphics.IPoint;
@@ -18,11 +22,43 @@ module
     namespace Camera2 {
     namespace Legacy {
 
-    interface IZoomData {
+    interface IParameterUtilsZoomData {
+        /** Zoom index used by {@link Camera.Parameters#setZoom} */
+        GetZoomIndex(
+            [out] Int32* index);
+
+        /** Effective crop-region given the zoom index, coordinates relative to active-array */
+        GetPreviewCrop(
+            [out] IRect** rect);
+
+        /** Reported crop-region given the zoom index, coordinates relative to active-array */
+        GetReportedCrop(
+            [out] IRect** rect);
     }
 
-    interface IMeteringData {
+    interface IParameterUtilsMeteringData {
+        /**
+         * The metering area scaled to the range of [-1000, 1000].
+         * <p>Values outside of this range are clipped to be within the range.</p>
+         */
+        GetMeteringArea(
+            [out] ICameraArea** area);
 
+        /**
+         * Effective preview metering region, coordinates relative to active-array.
+         *
+         * <p>Clipped to fit inside of the (effective) preview crop region.</p>
+         */
+        GetPreviewMetering(
+            [out] IRect** rect);
+
+        /**
+         * Reported metering region, coordinates relative to active-array.
+         *
+         * <p>Clipped to fit inside of the (reported) resulting crop region.</p>
+         */
+        GetReportedMetering(
+            [out] IRect** rect);
     }
 
     /**
@@ -36,7 +72,7 @@ module
      * <p>When converting to a more concrete type, out-of-range values are clipped; this prevents
      * possible illegal argument exceptions being thrown at runtime.</p>
      */
-    interface IWeightedRectangle {
+    interface IParameterUtilsWeightedRectangle {
 
         /**
          * Convert to a metering rectangle, clipping any of the values to stay within range.
@@ -82,12 +118,32 @@ module
          */
         ToFace(
             [out] IFace** outface);
+
+        GetRect(
+            [out] IRect** rect);
+
+        GetWeight(
+            [out] Int32* weight);
+
     }
 
     /**
      * Various utilities for dealing with camera API1 parameters.
      */
-    interface IParameterUtilsHelper {
+    interface IParameterUtils {
+        /** Upper/left minimal point of a normalized rectangle */
+        const Int32 NORMALIZED_RECTANGLE_MIN = -1000;
+        /** Lower/right maximal point of a normalized rectangle */
+        const Int32 NORMALIZED_RECTANGLE_MAX = 1000;
+
+        GetNORMALIZED_RECTANGLE_DEFAULT(
+            [out] IRect** rect);
+
+        GetCAMERA_AREA_DEFAULT(
+            [out] ICameraArea** area);
+
+        GetRECTANGLE_EMPTY(
+            [out] IRect** rect);
 
         /**
          * Convert a camera API1 size into a util size
@@ -108,7 +164,7 @@ module
          */
         ConvertSizeListToArray(
             [in] IList* sizeList,
-            [out, callee] ArrayOf<ISize>* outarr);
+            [out, callee] ArrayOf<ISize*>* outarr);
 
         /**
          * Check if the camera API1 list of sizes contains a size with the given dimens.
@@ -266,7 +322,7 @@ module
             [in] IRect* cropRegion,
             [in] ISize* previewSize,
             [in] IParameters* params,
-            [out] IZoomData** outzd);
+            [out] IParameterUtilsZoomData** outzd);
 
         /**
          * Calculate the actual/effective/reported normalized rectangle data from a metering
@@ -290,8 +346,8 @@ module
         ConvertMeteringRectangleToLegacy(
             [in] IRect* activeArray,
             [in] IMeteringRectangle* meteringRect,
-            [in] IZoomData* zoomData,
-            [out] IMeteringData** outmd);
+            [in] IParameterUtilsZoomData* zoomData,
+            [out] IParameterUtilsMeteringData** outmd);
 
         /**
          * Convert the normalized camera area from [-1000, 1000] coordinate space
@@ -310,9 +366,9 @@ module
          */
         ConvertCameraAreaToActiveArrayRectangle(
             [in] IRect* activeArray,
-            [in] IZoomData* zoomData,
+            [in] IParameterUtilsZoomData* zoomData,
             [in] ICameraArea* area,
-            [out] IWeightedRectangle** outwr);
+            [out] IParameterUtilsWeightedRectangle** outwr);
 
         /**
          * Convert an api1 face into an active-array based api2 face.
@@ -330,7 +386,7 @@ module
         ConvertFaceFromLegacy(
             [in] ICameraFace* face,
             [in] IRect* activeArray,
-            [in] IZoomData* zoomData,
+            [in] IParameterUtilsZoomData* zoomData,
             [out] IFace** outface);
     }
 

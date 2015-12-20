@@ -199,6 +199,9 @@
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware/camera2/params
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware/camera2/utils
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware/camera2/dispatch
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware/camera2/legacy
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware/camera2/impl
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware/camera2
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view/inputmethod
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/view/textservice

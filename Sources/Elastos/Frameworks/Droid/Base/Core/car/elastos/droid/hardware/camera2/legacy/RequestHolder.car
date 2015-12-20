@@ -2,6 +2,7 @@
 module
 {
     using interface Elastos.Utility.ICollection;
+
     interface Elastos.Droid.Hardware.Camera2.ICaptureRequest;
 
     namespace Elastos {
@@ -9,6 +10,21 @@ module
     namespace Hardware {
     namespace Camera2 {
     namespace Legacy {
+
+    interface IRequestHolder;
+
+    interface IRequestHolderBuilder {
+        /**
+         * Build a new {@link RequestHolder} using with parameters generated from this
+         *      {@link Builder}.
+         *
+         * @param frameNumber the {@code framenumber} to generate in the {@link RequestHolder}.
+         * @return a {@link RequestHolder} constructed with the {@link Builder}'s parameters.
+         */
+        Build(
+            [in] Int64 frameNumber,
+            [out] IRequestHolder** holder);
+    }
 
     /**
      * Semi-immutable container for a single capture request and associated information,

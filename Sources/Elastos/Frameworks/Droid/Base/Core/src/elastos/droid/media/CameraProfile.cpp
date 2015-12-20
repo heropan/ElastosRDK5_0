@@ -9,7 +9,7 @@
 
 using Elastos::Droid::Hardware::CHardwareCamera;
 using Elastos::Droid::Hardware::HardwareCamera;
-using Elastos::Droid::Hardware::ICameraInfo;
+using Elastos::Droid::Hardware::IHardwareCameraInfo;
 using Elastos::Utility::Arrays;
 
 namespace Elastos {
@@ -26,13 +26,13 @@ ECode CameraProfile::GetJpegEncodingQualityParameter(
     Int32 numberOfCameras;
     HardwareCamera::GetNumberOfCameras(&numberOfCameras);
 
-    AutoPtr<ICameraInfo> cameraInfo = new CHardwareCamera::CameraInfo();
+    AutoPtr<IHardwareCameraInfo> cameraInfo = new CHardwareCamera::CameraInfo();
 
     for (Int32 i = 0; i < numberOfCameras; i++) {
         HardwareCamera::GetCameraInfo(i, cameraInfo);
         Int32 facing;
         cameraInfo->GetFacing(&facing);
-        if (facing == ICameraInfo::CAMERA_FACING_BACK) {
+        if (facing == IHardwareCameraInfo::CAMERA_FACING_BACK) {
             return GetJpegEncodingQualityParameter(i, quality, result);
         }
     }

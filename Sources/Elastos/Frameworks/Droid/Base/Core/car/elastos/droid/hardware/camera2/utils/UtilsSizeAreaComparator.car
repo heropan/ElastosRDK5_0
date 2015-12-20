@@ -19,10 +19,10 @@ module
      * @invoke
      * interface IComparator
      */
-    interface ISizeAreaComparator {
+    interface IUtilsSizeAreaComparator {
     }
 
-    interface ISizeAreaComparatorHelper {
+    interface IUtilsSizeAreaComparatorHelper {
         /**
          * Get the largest {@code Size} from the list by comparing each size's area
          * by each other using {@link SizeAreaComparator}.

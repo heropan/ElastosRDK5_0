@@ -6,6 +6,8 @@ module
 
     interface Elastos.Droid.View.ISurface;
     interface Elastos.Droid.View.ISurfaceHolder;
+    interface Elastos.Droid.Graphics.IPoint;
+    interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Graphics.ISurfaceTexture;
 
     namespace Elastos {
@@ -28,6 +30,12 @@ module
 
         GetHashCode(
             [out] Int32* code);
+
+        GetWidth(
+            [out] Int32* width);
+
+        GetHeight(
+            [out] Int32* height);
     }
 
     /**
@@ -68,6 +76,12 @@ module
 
         GetHashCode(
             [out] Int32* hash);
+
+        GetRect(
+            [out] IRect** rect);
+
+        GetWeight(
+            [out] Int32* weight);
     }
 
     /**
@@ -347,6 +361,25 @@ module
          * #getSupportedPreviewFpsRange()}.
          */
         const Int32 PREVIEW_FPS_MAX_INDEX = 1;
+
+        /**
+         * Overwrite existing parameters with a copy of the ones from {@code other}.
+         *
+         * <b>For use by the legacy shim only.</b>
+         *
+         * @hide
+         */
+        CopyFrom(
+            [in] IParameters* other);
+
+        /**
+         * Value equality check.
+         *
+         * @hide
+         */
+        Same(
+            [in] IParameters* other,
+            [out] Boolean* result);
 
 
         /**
@@ -1702,6 +1735,23 @@ module
      * @see FaceDetectionListener
      */
     interface ICameraFace {
+        GetRect(
+            [out] IRect** rect);
+
+        GetScore(
+            [out] Int32* score);
+
+        GetId(
+            [out] Int32* id);
+
+        GetLeftEye(
+            [out] IPoint** leftEye);
+
+        GetRightEye(
+            [out] IPoint** rightEye);
+
+        GetMouth(
+            [out] IPoint** mouth);
     }
 
     /**
@@ -1720,7 +1770,7 @@ module
          * @param camera  The {@link Camera} service object
          */
         OnFaceDetection(
-            [in] ArrayOf<ICameraFace>* faces,
+            [in] ArrayOf<ICameraFace*>* faces,
             [in] IHardwareCamera* camera);
     }
 
@@ -1901,7 +1951,7 @@ module
      *             applications.
      */
     //@Deprecated
-    interface ICameraInfo {
+    interface IHardwareCameraInfo {
         /**
          * The facing of the camera is opposite to that of the screen.
          */
@@ -2802,7 +2852,7 @@ module
          */
         GetCameraInfo(
             [in] Int32 cameraId,
-            [in] ICameraInfo* cameraInfo);
+            [in] IHardwareCameraInfo* cameraInfo);
 
         /**
          * Creates a new Camera object to access a particular hardware camera. If

@@ -1,6 +1,12 @@
 
 module
 {
+
+    interface Elastos.Droid.Hardware.Camera2.ICaptureRequestKey;
+    interface Elastos.Droid.Hardware.Camera2.ICaptureResultKey;
+    interface Elastos.Droid.Hardware.Camera2.ICameraCharacteristicsKey;
+    interface Elastos.Droid.Hardware.Camera2.Utils.ITypeReference;
+
     namespace Elastos {
     namespace Droid {
     namespace Hardware {
@@ -8,7 +14,52 @@ module
     namespace Impl {
 
     interface ICameraMetadataNativeKey {
+        /**
+         * Return a camelCase, period separated name formatted like:
+         * {@code "root.section[.subsections].name"}.
+         *
+         * <p>Built-in keys exposed by the Android SDK are always prefixed with {@code "android."};
+         * keys that are device/platform-specific are prefixed with {@code "com."}.</p>
+         *
+         * <p>For example, {@code CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP} would
+         * have a name of {@code "android.scaler.streamConfigurationMap"}; whereas a device
+         * specific key might look like {@code "com.google.nexus.data.private"}.</p>
+         *
+         * @return String representation of the key name
+         */
+        GetName(
+            [out] String* name);
 
+        /**
+         * <p>
+         * Get the tag corresponding to this key. This enables insertion into the
+         * native metadata.
+         * </p>
+         *
+         * <p>This value is looked up the first time, and cached subsequently.</p>
+         *
+         * @return The tag numeric value corresponding to the string
+         */
+        GetTag(
+            [out] Int32* tag);
+
+        /**
+         * Get the raw class backing the type {@code T} for this key.
+         *
+         * <p>The distinction is only important if {@code T} is a generic, e.g.
+         * {@code Range<Integer>} since the nested type will be erased.</p>
+         */
+        GetType(
+            [out] ClassID* type);
+
+        /**
+         * Get the type reference backing the type {@code T} for this key.
+         *
+         * <p>The distinction is only important if {@code T} is a generic, e.g.
+         * {@code Range<Integer>} since the nested type will be retained.</p>
+         */
+        GetTypeReference(
+            [out] ITypeReference** ref);
     }
 
     /**
@@ -16,8 +67,125 @@ module
      *
      * <p>Since abstract classes do not support Java's dynamic {@code Proxy}, we have to
      * to use our own proxy mechanism.</p>
+     *
+     * @invoke
+     * interface IParcelable
      */
     interface ICameraMetadataNative {
+        // this should be in sync with HAL_PIXEL_FORMAT_BLOB defined in graphics.h
+        const Int32 NATIVE_JPEG_FORMAT = 0x21;
+
+        /**
+         * Set a camera metadata field to a value. The field definitions can be
+         * found in {@link CameraCharacteristics}, {@link CaptureResult}, and
+         * {@link CaptureRequest}.
+         *
+         * @param key The metadata field to write.
+         * @param value The value to set the field to, which must be of a matching
+         * type to the key.
+         */
+        Set(
+            [in] ICameraMetadataNativeKey* key,
+            [in] IInterface* value);
+
+        Set(
+            [in] ICaptureRequestKey* key,
+            [in] IInterface* value);
+
+        Set(
+            [in] ICaptureResultKey* key,
+            [in] IInterface* value);
+
+        Set(
+            [in] ICameraCharacteristicsKey* key,
+            [in] IInterface* value);
+
+        /**
+         * <p>Perform a 0-copy swap of the internal metadata with another object.</p>
+         *
+         * <p>Useful to convert a CameraMetadata into e.g. a CaptureRequest.</p>
+         *
+         * @param other Metadata to swap with
+         * @throws NullPointerException if other was null
+         * @hide
+         */
+        Swap(
+            [in] ICameraMetadataNative* other);
+
+        /**
+         * Dumps the native metadata contents to logcat.
+         *
+         * <p>Visibility for testing/debugging only. The results will not
+         * include any synthesized keys, as they are invisible to the native layer.</p>
+         *
+         * @hide
+         */
+        DumpToLog();
+
+        /**
+         * @hide
+         */
+        Get(
+            [in] ICameraCharacteristicsKey* key,
+            [out] IInterface** result);
+
+        /**
+         * @hide
+         */
+        Get(
+            [in] ICaptureResultKey* key,
+            [out] IInterface** result);
+
+        /**
+         * @hide
+         */
+        Get(
+            [in] ICaptureRequestKey* key,
+            [out] IInterface** result);
+
+        /**
+         * Look-up a metadata field value by its key.
+         *
+         * @param key a non-{@code null} key instance
+         * @return the field corresponding to the {@code key}, or {@code null} if no value was set
+         */
+        Get(
+            [in] ICameraMetadataNativeKey* key,
+            [out] IInterface** result);
+
+        /**
+         * Does this metadata contain at least 1 entry?
+         *
+         * @hide
+         */
+        IsEmpty(
+            [out] Boolean* result);
+    }
+
+    interface ICameraMetadataNativeHelper {
+        /**
+         * Convert a key string into the equivalent native tag.
+         *
+         * @throws IllegalArgumentException if the key was not recognized
+         * @throws NullPointerException if the key was null
+         *
+         * @hide
+         */
+        GetTag(
+            [in] String key,
+            [out] Int32* tag);
+
+        /**
+         * Move the contents from {@code other} into a new camera metadata instance.</p>
+         *
+         * <p>After this call, {@code other} will become empty.</p>
+         *
+         * @param other the previous metadata instance which will get pilfered
+         * @return a new metadata instance with the values from {@code other} moved into it
+         */
+        Move(
+            [in] ICameraMetadataNative* other,
+            [out] ICameraMetadataNative** result);
     }
 
     } // namespace Impl

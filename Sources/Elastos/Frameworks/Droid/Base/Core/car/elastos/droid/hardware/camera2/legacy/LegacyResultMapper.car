@@ -12,7 +12,7 @@ module
     /**
      * Provide legacy-specific implementations of camera2 CaptureRequest for legacy devices.
      */
-    interface ILegacyResultMapperHelper {
+    interface ILegacyResultMapper {
         /**
          * Generate capture result metadata from the legacy camera request.
          *

@@ -1,15 +1,20 @@
 
 module
 {
+    using interface Elastos.Core.IInteger64;
     using interface Elastos.Utility.Concurrent.ITimeUnit;
-//    interface Elastos.Droid.Utility.IMutableInt64;
+
     interface Elastos.Droid.Utility.IPair;
+    interface Elastos.Droid.Hardware.Camera2.Legacy.ILegacyRequest;
 
     namespace Elastos {
     namespace Droid {
     namespace Hardware {
     namespace Camera2 {
     namespace Legacy {
+
+    interface ICaptureCollectorCaptureHolder
+    {}
 
     /**
      * Collect timestamps and state for each {@link CaptureRequest} as it passes through
@@ -83,11 +88,12 @@ module
          *
          * @throws InterruptedException if this thread is interrupted.
          */
-//        WaitForRequestCompleted(
-//            [in] IRequestHolder* holder,
-//            [in] Int64 timeout,
-//            [in] ITimeUnit* unit,
-//            [in] IMutableInt64* timestamp);
+        WaitForRequestCompleted(
+            [in] IRequestHolder* holder,
+            [in] Int64 timeout,
+            [in] ITimeUnit* unit,
+            [in] IInteger64* timestamp,
+            [out] Boolean* value);
 
         /**
          * Called to alert the {@link CaptureCollector} that the jpeg capture has begun.

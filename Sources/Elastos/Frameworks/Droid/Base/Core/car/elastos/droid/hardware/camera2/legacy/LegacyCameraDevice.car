@@ -3,6 +3,9 @@ module
 {
     using interface Elastos.Utility.IList;
 
+    interface Elastos.Droid.Hardware.Camera2.ICaptureRequest;
+    interface Elastos.Droid.Hardware.Camera2.Utils.ILongParcelable;
+
     namespace Elastos {
     namespace Droid {
     namespace Hardware {
@@ -18,6 +21,8 @@ module
      * - A message-queue based pipeline that manages an old Camera class, and executes capture and
      *   configuration requests.
      * </p>
+     * @ invoke
+     * interface ICloseable
      */
     interface ILegacyCameraDevice {
 
@@ -47,11 +52,11 @@ module
          *                    burst is set to be repeating.
          * @return the request id.
          */
-//         SubmitRequestList(
-//             [in] IList* requestList,
-//             [in] Boolean repeating,
-//             [in] IInt64Parcelable* frameNumber,
-//             [out] Int32* value);
+         SubmitRequestList(
+            [in] IList* requestList,
+            [in] Boolean repeating,
+            [in] ILongParcelable* frameNumber,
+            [out] Int32* value);
 
         /**
          * Submit a single capture request.
@@ -64,11 +69,11 @@ module
          *                    request is set to be repeating.
          * @return the request id.
          */
-//         SubmitRequest(
-//             [in] ICaptureRequest* request,
-//             [in] Boolean repeating,
-//             [in] IInt64Parcelable* frameNumber,
-//             [out] Int32* value);
+        SubmitRequest(
+            [in] ICaptureRequest* request,
+            [in] Boolean repeating,
+            [in] ILongParcelable* frameNumber,
+            [out] Int32* value);
 
         /**
          * Cancel the repeating request with the given request id.

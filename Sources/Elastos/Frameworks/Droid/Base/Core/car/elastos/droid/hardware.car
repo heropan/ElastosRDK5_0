@@ -2,6 +2,7 @@
 module
 {
     merge("hardware/Camera.car");
+    merge("hardware/CameraInfo.car");
     merge("hardware/ISerialManager.car");
     merge("hardware/Sensor.car");
     merge("hardware/SensorEvent.car");
@@ -125,23 +126,28 @@ module
     merge("hardware/camera2/impl/CameraDeviceImpl.car");
     merge("hardware/camera2/impl/GetCommand.car");
     merge("hardware/camera2/impl/SetCommand.car");
+    merge("hardware/camera2/impl/CaptureResultExtras.car");
 
     merge("hardware/camera2/legacy/BurstHolder.car");
-    merge("hardware/camera2/legacy/RequestHolder.car");
-    merge("hardware/camera2/legacy/LegacyRequest.car");
     merge("hardware/camera2/legacy/CameraDeviceState.car");
+    merge("hardware/camera2/legacy/CameraDeviceUserShim.car");
     merge("hardware/camera2/legacy/CaptureCollector.car");
     merge("hardware/camera2/legacy/GLThreadManager.car");
+    merge("hardware/camera2/legacy/LegacyExceptionUtils.car");
     merge("hardware/camera2/legacy/LegacyCameraDevice.car");
     merge("hardware/camera2/legacy/LegacyFaceDetectMapper.car");
     merge("hardware/camera2/legacy/LegacyFocusStateMapper.car");
     merge("hardware/camera2/legacy/LegacyMetadataMapper.car");
+    merge("hardware/camera2/legacy/LegacyRequest.car");
     merge("hardware/camera2/legacy/LegacyRequestMapper.car");
     merge("hardware/camera2/legacy/LegacyResultMapper.car");
     merge("hardware/camera2/legacy/ParameterUtils.car");
+    merge("hardware/camera2/legacy/PerfMeasurement.car");
     merge("hardware/camera2/legacy/RequestHandlerThread.car");
+    merge("hardware/camera2/legacy/RequestHolder.car");
     merge("hardware/camera2/legacy/RequestQueue.car");
     merge("hardware/camera2/legacy/RequestThreadManager.car");
+    merge("hardware/camera2/legacy/LegacySizeAreaComparator.car");
     merge("hardware/camera2/legacy/SurfaceTextureRenderer.car");
 
     merge("hardware/camera2/marshal/Marshaler.car");
@@ -169,7 +175,7 @@ module
     merge("hardware/camera2/utils/ListUtils.car");
     merge("hardware/camera2/utils/LongParcelable.car");
     merge("hardware/camera2/utils/ParamsUtils.car");
-    merge("hardware/camera2/utils/SizeAreaComparator.car");
+    merge("hardware/camera2/utils/UtilsSizeAreaComparator.car");
     merge("hardware/camera2/utils/TaskDrainer.car");
     merge("hardware/camera2/utils/TaskSingleDrainer.car");
     merge("hardware/camera2/utils/TypeReference.car");
@@ -186,12 +192,26 @@ module
     interface Elastos.Droid.Media.IAudioFormat;
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.Os.IHandlerCallback;
     interface Elastos.Droid.Utility.IRational;
     interface Elastos.Droid.Utility.ISize;
+    interface Elastos.Droid.Hardware.Camera2.ICaptureRequest;
+    interface Elastos.Droid.Hardware.Camera2.ICameraCharacteristics;
+    interface Elastos.Droid.Hardware.Camera2.IICameraDeviceUser;
+    interface Elastos.Droid.Hardware.Camera2.IICameraDeviceCallbacks;
+    interface Elastos.Droid.Hardware.Camera2.Impl.ICameraMetadataNative;
+    interface Elastos.Droid.Hardware.Camera2.Impl.ICaptureResultExtras;
+    interface Elastos.Droid.Hardware.Camera2.Impl.ICameraMetadataNativeKey;
+    interface Elastos.Droid.Hardware.Camera2.Utils.ITypeReference;
+    interface Elastos.Droid.Hardware.IParameters;
+    interface Elastos.Droid.Hardware.ICameraArea;
+    interface Elastos.Droid.Hardware.IHardwareCamera;
 
     using interface Elastos.Core.IComparator;
     using interface Elastos.IO.ICloseable;
     using interface Elastos.Utility.IUUID;
+    using interface Elastos.Utility.IList;
+    using interface Elastos.Utility.ICollection;
 
     namespace Elastos {
     namespace Droid {
@@ -278,6 +298,119 @@ module
         }
 
     namespace Camera2 {
+        class CCameraCharacteristics {
+            constructor();
+
+            /**
+             * Takes ownership of the passed-in properties object
+             * @hide
+             */
+            constructor(
+                [in] ICameraMetadataNative* properties);
+
+            interface ICameraCharacteristics;
+            interface ICameraMetadata;
+        }
+
+        class CCaptureRequestBuilder {
+            constructor();
+
+            /**
+             * Initialize the builder using the template; the request takes
+             * ownership of the template.
+             *
+             * @hide
+             */
+            constructor(
+                [in] ICameraMetadataNative* _template);
+
+            interface ICaptureRequestBuilder;
+        }
+
+        class CCaptureResult {
+            /**
+             * Takes ownership of the passed-in properties object
+             *
+             * <p>For internal use only</p>
+             * @hide
+             */
+            constructor(
+                [in] ICameraMetadataNative* results,
+                [in] ICaptureRequest* parent,
+                [in] ICaptureResultExtras* extras);
+
+            /**
+             * Creates a request-less result.
+             *
+             * <p><strong>For testing only.</strong></p>
+             * @hide
+             */
+            constructor(
+                [in] ICameraMetadataNative* results,
+                [in] Int32 sequenceId);
+
+            interface ICaptureResult;
+            interface ICameraMetadata;
+        }
+
+        class CCaptureFailure {
+            constructor();
+
+            constructor(
+                [in] ICaptureRequest* request,
+                [in] Int32 reason,
+                [in] Boolean dropped,
+                [in] Int32 sequenceId,
+                [in] Int64 frameNumber);
+
+            interface ICaptureFailure;
+        }
+
+        class CTotalCaptureResult {
+            constructor();
+
+            constructor(
+                [in] ICameraMetadataNative* results,
+                [in] ICaptureRequest* parent,
+                [in] ICaptureResultExtras* extras,
+                [in] IList* partials);
+
+            constructor(
+                [in] ICameraMetadataNative* results,
+                [in] Int32 sequenceId);
+
+            interface ITotalCaptureResult;
+            interface ICaptureResult;
+            interface ICameraMetadata;
+        }
+
+        [local]
+        class CCaptureResultKey {
+            /**
+             * Visible for testing and vendor extensions only.
+             *
+             * @hide
+             */
+            constructor(
+                [in] String name,
+                [in] ClassID type);
+
+            /**
+             * Visible for testing and vendor extensions only.
+             *
+             * @hide
+             */
+            constructor(
+                [in] String name,
+                [in] ITypeReference* typeReference);
+
+            //@SuppressWarnings({ "unchecked" })
+            constructor(
+                [in] ICameraMetadataNativeKey* nativeKey);
+
+            interface ICaptureResultKey;
+        }
+
     namespace Dispatch {
         class CNullDispatcher {
             constructor();
@@ -398,6 +531,258 @@ module
         }
 
     } //namespace Dispatch
+
+    namespace Impl {
+        class CCameraMetadataNative {
+            constructor();
+
+            /**
+             * Copy constructor - clone metadata
+             */
+            constructor(
+                [in] ICameraMetadataNative* requestId);
+
+            interface ICameraMetadataNative;
+            interface IParcelable;
+        }
+    } //namespace Impl
+
+    namespace Legacy {
+        class CBurstHolder {
+            constructor();
+
+            constructor(
+                [in] Int32 requestId,
+                [in] Boolean repeating,
+                [in] IList* requests,
+                [in] ICollection* jpegSurfaceIds);
+
+            interface IBurstHolder;
+        }
+
+        class CCameraDeviceState {
+            interface ICameraDeviceState;
+        }
+
+        class CCameraDeviceUserShim {
+            constructor();
+
+            constructor(
+                [in] Int32 cameraId,
+                [in] ILegacyCameraDevice* legacyCamera,
+                [in] ICameraCharacteristics* characteristics,
+                [in] ICameraDeviceUserShimCameraLooper* cameraInit,
+                [in] ICameraDeviceUserShimCameraCallbackThread* cameraCallbacks);
+
+            interface ICameraDeviceUserShim;
+            interface IICameraDeviceUser;
+        }
+
+        singleton class CCameraDeviceUserShimHelper {
+            interface ICameraDeviceUserShimHelper;
+        }
+
+        class CCaptureCollector {
+            constructor();
+
+            constructor(
+                [in] Int32 maxInFlight,
+                [in] ICameraDeviceState* deviceState);
+
+            interface ICaptureCollector;
+        }
+
+        class CGLThreadManager {
+            constructor();
+
+            constructor(
+                [in] Int32 cameraId,
+                [in] Int32 facing,
+                [in] ICameraDeviceState* state);
+
+            interface IGLThreadManager;
+        }
+
+        singleton class CLegacyExceptionUtilsHelper {
+            interface ILegacyExceptionUtilsHelper;
+        }
+
+        class CLegacyCameraDevice {
+            constructor();
+
+            constructor(
+                [in] Int32 cameraId,
+                [in] IHardwareCamera* camera,
+                [in] ICameraCharacteristics* characteristics,
+                [in] IICameraDeviceCallbacks* _callbacks);
+
+            interface ILegacyCameraDevice;
+            interface ICloseable;
+        }
+
+        class CLegacyFaceDetectMapper {
+            constructor();
+
+            constructor(
+                [in] IHardwareCamera* camera,
+                [in] ICameraCharacteristics* characteristics);
+
+            interface ILegacyFaceDetectMapper;
+        }
+
+        class CLegacyFocusStateMapper {
+            constructor();
+
+            constructor(
+                [in] IHardwareCamera* camera);
+
+            interface ILegacyFocusStateMapper;
+        }
+
+        singleton class CLegacyMetadataMapper {
+            interface ILegacyMetadataMapper;
+        }
+
+        class CLegacyRequest {
+            constructor();
+
+            constructor(
+                [in] ICameraCharacteristics* characteristics,
+                [in] ICaptureRequest* captureRequest,
+                [in] ISize* previewSize,
+                [in] IParameters* parameters);
+
+            interface ILegacyRequest;
+        }
+
+        singleton class CLegacyRequestMapper {
+            interface ILegacyRequestMapper;
+        }
+
+        class CLegacyResultMapper {
+            interface ILegacyResultMapper;
+        }
+
+        singleton class CParameterUtils {
+            interface IParameterUtils;
+        }
+
+        class CZoomData {
+            constructor();
+
+            constructor(
+                [in] Int32 zoomIndex,
+                [in] IRect* previewCrop,
+                [in] IRect* reportedCrop);
+
+            interface IParameterUtilsZoomData;
+        }
+
+        class CMeteringData {
+            constructor();
+
+            constructor(
+                [in] ICameraArea* meteringArea,
+                [in] IRect* previewMetering,
+                [in] IRect* reportedMetering);
+
+            interface IParameterUtilsMeteringData;
+        }
+
+        class CWeightedRectangle {
+            constructor();
+
+            constructor(
+                [in] IRect* rect,
+                [in] Int32 weight);
+
+            interface IParameterUtilsWeightedRectangle;
+        }
+
+        class CPerfMeasurement {
+            constructor();
+
+            constructor(
+                [in] Int32 maxQueries);
+
+            interface IPerfMeasurement;
+        }
+
+        singleton class CPerfMeasurementHelper {
+            interface IPerfMeasurementHelper;
+        }
+
+        class CRequestHandlerThread {
+            constructor();
+
+            constructor(
+                [in] String name,
+                [in] IHandlerCallback* _callback);
+
+            interface IRequestHandlerThread;
+        }
+
+        class CRequestHolderBuilder {
+            constructor();
+
+            constructor(
+                [in] Int32 requestId,
+                [in] Int32 subsequenceId,
+                [in] ICaptureRequest* request,
+                [in] Boolean repeating,
+                [in] ICollection* jpegSurfaceIds);
+
+            interface IRequestHolderBuilder;
+        }
+
+        class CRequestQueue {
+            constructor();
+
+            constructor(
+                [in] IList* jpegSurfaceIds);
+
+            interface IRequestQueue;
+        }
+
+        class CRequestThreadManager {
+            constructor();
+
+            constructor(
+                [in] Int32 cameraId,
+                [in] IHardwareCamera* camera,
+                [in] ICameraCharacteristics* characteristics,
+                [in] ICameraDeviceState* deviceState);
+
+            interface IRequestThreadManager;
+        }
+
+        class CRequestThreadManagerFpsCounter {
+            constructor();
+
+            constructor(
+                [in] String streamType);
+
+            interface IRequestThreadManagerFpsCounter;
+        }
+
+        class CLegacySizeAreaComparator {
+            interface ILegacySizeAreaComparator;
+            interface IComparator;
+        }
+
+        singleton class CLegacySizeAreaComparatorHelper {
+            interface ILegacySizeAreaComparatorHelper;
+        }
+
+        class CSurfaceTextureRenderer {
+            constructor();
+
+            constructor(
+                [in] Int32 facing);
+
+            interface ISurfaceTextureRenderer;
+        }
+    } //namespace Legacy
 
     namespace Params {
         [deprecated]
@@ -587,13 +972,13 @@ module
             interface IParamsUtils;
         }
 
-        class CSizeAreaComparator {
-            interface ISizeAreaComparator;
+        class CUtilsSizeAreaComparator {
+            interface IUtilsSizeAreaComparator;
             interface IComparator;
         }
 
-        singleton class CSizeAreaComparatorHelper {
-            interface ISizeAreaComparatorHelper;
+        singleton class CUtilsSizeAreaComparatorHelper {
+            interface IUtilsSizeAreaComparatorHelper;
         }
 
         class CTaskDrainer {

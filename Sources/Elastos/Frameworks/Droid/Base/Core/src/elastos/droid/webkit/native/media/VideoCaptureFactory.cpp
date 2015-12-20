@@ -168,14 +168,14 @@ String VideoCaptureFactory::ChromiumCameraInfo::GetDeviceName()
         String enumerated("front");
         Int32 facing;
         mCameraInfo->GetFacing(&facing);
-        if (facing != ICameraInfo::CAMERA_FACING_FRONT)
+        if (facing != IHardwareCameraInfo::CAMERA_FACING_FRONT)
             enumerated = String("back");
         Logger::D(TAG, "Camera enumerated: %s", enumerated.string());
         String str("camera ");
         str += StringUtils::ToString(mId);
         str += ", facing ";
         str += (facing ==
-                ICameraInfo::CAMERA_FACING_FRONT ? "front" :
+                IHardwareCameraInfo::CAMERA_FACING_FRONT ? "front" :
                 "back");
 
         return str;
@@ -186,7 +186,7 @@ String VideoCaptureFactory::ChromiumCameraInfo::GetDeviceName()
 Int32 VideoCaptureFactory::ChromiumCameraInfo::GetOrientation()
 {
     if (IsSpecialCamera(mId)) {
-        return ICameraInfo::CAMERA_FACING_BACK;
+        return IHardwareCameraInfo::CAMERA_FACING_BACK;
     }
     else {
         Int32 orientation;
@@ -195,11 +195,11 @@ Int32 VideoCaptureFactory::ChromiumCameraInfo::GetOrientation()
     }
 }
 
-AutoPtr<ICameraInfo> VideoCaptureFactory::ChromiumCameraInfo::GetCameraInfo(
+AutoPtr<IHardwareCameraInfo> VideoCaptureFactory::ChromiumCameraInfo::GetCameraInfo(
     /* [in] */ Int32 id)
 {
-    AutoPtr<ICameraInfo> cameraInfo;
-    //TODO CHardwareCamera::CCameraInfo::New((ICameraInfo**)&cameraInfo);
+    AutoPtr<IHardwareCameraInfo> cameraInfo;
+    //TODO CHardwareCamera::CCameraInfo::New((IHardwareCameraInfo**)&cameraInfo);
     // try {
         AutoPtr<IHardwareCameraHelper> helper;
         CHardwareCameraHelper::AcquireSingleton((IHardwareCameraHelper**)&helper);

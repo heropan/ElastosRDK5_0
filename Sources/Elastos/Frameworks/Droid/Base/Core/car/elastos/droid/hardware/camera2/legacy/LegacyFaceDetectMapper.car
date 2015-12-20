@@ -1,6 +1,8 @@
 
 module
 {
+    interface Elastos.Droid.Hardware.IParameters;
+    interface Elastos.Droid.Hardware.Camera2.ICaptureRequest;
     interface Elastos.Droid.Hardware.Camera2.Impl.ICameraMetadataNative;
 
     namespace Elastos {
@@ -28,9 +30,9 @@ module
          * @param captureRequest a non-{@code null} request
          * @param parameters a non-{@code null} parameters corresponding to this request (read-only)
          */
-//        ProcessFaceDetectMode(
-//            [in] ICaptureRequest* captureRequest,
-//            [in] ICameraParameters* parameters);
+        ProcessFaceDetectMode(
+            [in] ICaptureRequest* captureRequest,
+            [in] IParameters* parameters);
 
         /**
          * Update the {@code result} camera metadata map with the new value for the

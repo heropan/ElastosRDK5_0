@@ -85,7 +85,7 @@ public:
         //@CalledByNative("ChromiumCameraInfo")
         CARAPI_(Int32) GetOrientation();
 
-        CARAPI_(AutoPtr<ICameraInfo>) GetCameraInfo(
+        CARAPI_(AutoPtr<IHardwareCameraInfo>) GetCameraInfo(
             /* [in] */ Int32 id);
 
     private:
@@ -112,7 +112,7 @@ public:
         static Int32 sNumberOfSystemCameras;
 
         const Int32 mId;
-        const AutoPtr<ICameraInfo> mCameraInfo;
+        const AutoPtr<IHardwareCameraInfo> mCameraInfo;
     };
 
 public:

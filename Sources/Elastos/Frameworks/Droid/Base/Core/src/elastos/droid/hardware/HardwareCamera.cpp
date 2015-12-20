@@ -738,7 +738,7 @@ void HardwareCamera::JNICameraContext::clearCallbackBuffers_l(
     }
 }
 
-CAR_INTERFACE_IMPL(HardwareCamera::CameraInfo, Object, ICameraInfo)
+CAR_INTERFACE_IMPL(HardwareCamera::CameraInfo, Object, IHardwareCameraInfo)
 
 HardwareCamera::CameraInfo::CameraInfo()
     : mFacing(0)
@@ -803,6 +803,106 @@ HardwareCamera::Face::Face()
 {
 }
 
+ECode HardwareCamera::Face::SetRect(
+    /* [in] */ IRect* rect)
+{
+    mRect = rect;
+    return NOERROR;
+}
+
+ECode HardwareCamera::Face::SetScore(
+    /* [in] */ Int32 score)
+{
+    mScore = score;
+    return NOERROR;
+}
+
+ECode HardwareCamera::Face::SetId(
+    /* [in] */ Int32 id)
+{
+    mId = id;
+    return NOERROR;
+}
+
+ECode HardwareCamera::Face::SetLeftEye(
+    /* [in] */ IPoint* leftEye)
+{
+    mLeftEye = leftEye;
+    return NOERROR;
+}
+
+ECode HardwareCamera::Face::SetRightEye(
+    /* [in] */ IPoint* rightEye)
+{
+    mRightEye = rightEye;
+    return NOERROR;
+}
+
+ECode HardwareCamera::Face::SetMouth(
+    /* [in] */ IPoint* mouth)
+{
+    mMouth = mouth;
+    return NOERROR;
+}
+
+ECode HardwareCamera::Face::GetRect(
+    /* [out] */ IRect** rect)
+{
+    VALIDATE_NOT_NULL(rect)
+
+    *rect = mRect;
+    REFCOUNT_ADD(*rect);
+    return NOERROR;
+}
+
+ECode HardwareCamera::Face::GetScore(
+    /* [out] */ Int32* score)
+{
+    VALIDATE_NOT_NULL(score)
+
+    *score = mScore;
+    return NOERROR;
+}
+
+ECode HardwareCamera::Face::GetId(
+    /* [out] */ Int32* id)
+{
+    VALIDATE_NOT_NULL(id)
+
+    *id = mId;
+    return NOERROR;
+}
+
+ECode HardwareCamera::Face::GetLeftEye(
+    /* [out] */ IPoint** leftEye)
+{
+    VALIDATE_NOT_NULL(leftEye)
+
+    *leftEye = mLeftEye;
+    REFCOUNT_ADD(*leftEye);
+    return NOERROR;
+}
+
+ECode HardwareCamera::Face::GetRightEye(
+    /* [out] */ IPoint** rightEye)
+{
+    VALIDATE_NOT_NULL(rightEye)
+
+    *rightEye = mRightEye;
+    REFCOUNT_ADD(*rightEye);
+    return NOERROR;
+}
+
+ECode HardwareCamera::Face::GetMouth(
+    /* [out] */ IPoint** mouth)
+{
+    VALIDATE_NOT_NULL(mouth)
+
+    *mouth = mMouth;
+    REFCOUNT_ADD(*mouth);
+    return NOERROR;
+}
+
 CAR_INTERFACE_IMPL(HardwareCamera::Size, Object, ICameraSize);
 
 HardwareCamera::Size::Size(
@@ -848,6 +948,24 @@ ECode HardwareCamera::Size::GetHashCode(
     return NOERROR;
 }
 
+ECode HardwareCamera::Size::GetWidth(
+    /* [out] */ Int32* width)
+{
+    VALIDATE_NOT_NULL(width);
+
+    *width = mWidth;
+    return NOERROR;
+}
+
+ECode HardwareCamera::Size::GetHeight(
+    /* [out] */ Int32* height)
+{
+    VALIDATE_NOT_NULL(height);
+
+    *height = mHeight;
+    return NOERROR;
+}
+
 CAR_INTERFACE_IMPL(HardwareCamera::Area, Object, ICameraArea);
 
 HardwareCamera::Area::Area(
@@ -885,7 +1003,27 @@ ECode HardwareCamera::Area::GetHashCode(
     /* [out] */ Int32* hash)
 {
     VALIDATE_NOT_NULL(hash);
+
     *hash = 0; // do not care.
+    return NOERROR;
+}
+
+ECode HardwareCamera::Area::GetRect(
+    /* [out] */ IRect** rect)
+{
+    VALIDATE_NOT_NULL(rect);
+
+    *rect = mRect;
+    REFCOUNT_ADD(*rect);
+    return NOERROR;
+}
+
+ECode HardwareCamera::Area::GetWeight(
+    /* [out] */ Int32* weight)
+{
+    VALIDATE_NOT_NULL(weight);
+
+    *weight = mWeight;
     return NOERROR;
 }
 
@@ -2510,10 +2648,10 @@ ECode HardwareCamera::Open(
 
     Int32 numberOfCameras = 0;
     GetNumberOfCameras(&numberOfCameras);
-    AutoPtr<ICameraInfo> cameraInfo = new HardwareCamera::CameraInfo();
+    AutoPtr<IHardwareCameraInfo> cameraInfo = new HardwareCamera::CameraInfo();
     for (Int32 i = 0; i < numberOfCameras; i++) {
         GetCameraInfo(i, cameraInfo);
-        if (((HardwareCamera::CameraInfo*)cameraInfo.Get())->mFacing == ICameraInfo::CAMERA_FACING_BACK) {
+        if (((HardwareCamera::CameraInfo*)cameraInfo.Get())->mFacing == IHardwareCameraInfo::CAMERA_FACING_BACK) {
             AutoPtr<IHardwareCamera> _camera = new HardwareCamera();
             ((HardwareCamera*)_camera.Get())->constructor(i);
             *camera = _camera;
@@ -2527,7 +2665,7 @@ ECode HardwareCamera::Open(
 
 ECode HardwareCamera::GetCameraInfo(
     /* [in] */ Int32 cameraId,
-    /* [in] */ ICameraInfo* cameraInfo)
+    /* [in] */ IHardwareCameraInfo* cameraInfo)
 {
     FAIL_RETURN(_getCameraInfo(cameraId, cameraInfo))
 
@@ -2549,7 +2687,7 @@ ECode HardwareCamera::GetCameraInfo(
 
 ECode HardwareCamera::_getCameraInfo(
     /* [in] */ Int32 cameraId,
-    /* [in] */ ICameraInfo* info_obj)
+    /* [in] */ IHardwareCameraInfo* info_obj)
 {
     android::CameraInfo cameraInfo;
     android::status_t rc = android::Camera::getCameraInfo(cameraId, &cameraInfo);

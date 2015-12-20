@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_DROID_HARDWARE_CAMERA2_PARAMS_SIZEAREACOMPARATOR_H__
-#define __ELASTOS_DROID_HARDWARE_CAMERA2_PARAMS_SIZEAREACOMPARATOR_H__
+#ifndef __ELASTOS_DROID_HARDWARE_CAMERA2_UTILS_UTILSSIZEAREACOMPARATOR_H__
+#define __ELASTOS_DROID_HARDWARE_CAMERA2_UTILS_UTILSSIZEAREACOMPARATOR_H__
 
 #include "Elastos.Droid.Hardware.h"
 #include "elastos/droid/ext/frameworkext.h"
@@ -17,9 +17,9 @@ namespace Hardware {
 namespace Camera2 {
 namespace Utils {
 
-class SizeAreaComparator
+class UtilsSizeAreaComparator
     : public Object
-    , public ISizeAreaComparator
+    , public IUtilsSizeAreaComparator
     , public IComparator
 {
 public:
@@ -54,4 +54,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_HARDWARE_CAMERA2_PARAMS_SIZEAREACOMPARATOR_H__
+#endif //__ELASTOS_DROID_HARDWARE_CAMERA2_UTILS_UTILSSIZEAREACOMPARATOR_H__

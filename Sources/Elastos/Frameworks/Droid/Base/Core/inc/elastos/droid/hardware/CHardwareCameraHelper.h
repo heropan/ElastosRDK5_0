@@ -20,7 +20,7 @@ public:
 
     CARAPI GetCameraInfo(
         /* [in] */ Int32 cameraId,
-        /* [in] */ ICameraInfo* cameraInfo);
+        /* [in] */ IHardwareCameraInfo* cameraInfo);
 
     CARAPI Open(
         /* [in] */ Int32 cameraId,

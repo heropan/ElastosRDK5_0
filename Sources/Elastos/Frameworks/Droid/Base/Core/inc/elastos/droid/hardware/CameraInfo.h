@@ -8,6 +8,7 @@
 #include <elastos/core/Object.h>
 #include <camera/Camera.h>
 
+using Elastos::Droid::Hardware::IHardwareCameraInfo;
 using Elastos::Droid::Content::IContext;
 
 namespace Elastos {
@@ -16,6 +17,7 @@ namespace Hardware {
 
 class CameraInfo
     : public Object
+    , public ICameraInfo
     , public IParcelable
 {
 public:
@@ -23,14 +25,14 @@ public:
 
     CameraInfo();
 
-    ~CameraInfo();
+    virtual ~CameraInfo() {}
 
     //@Override
     CARAPI WriteToParcel(
-    /* [in] */ IParcel* dest);
+        /* [in] */ IParcel* dest);
 
     CARAPI ReadFromParcel(
-    /* [in] */ IParcel* source);
+        /* [in] */ IParcel* source);
 
 
     // public static final Parcelable.Creator<CameraInfo> CREATOR =
@@ -49,11 +51,17 @@ public:
     //     }
     // };
 
+    CARAPI GetInfo(
+       /* [out] */ IHardwareCameraInfo** info);
+
+    CARAPI SetInfo(
+       /* [in] */ IHardwareCameraInfo* info);
+
 public:
 // Can't parcel nested classes, so make this a top level class that composes
     // CameraInfo.
     //AutoPtr<Camera::CameraInfo> info;
-    AutoPtr<HardwareCamera::CameraInfo> info;
+    AutoPtr<IHardwareCameraInfo> mInfo;
 };
 
 } // namespace Hardware

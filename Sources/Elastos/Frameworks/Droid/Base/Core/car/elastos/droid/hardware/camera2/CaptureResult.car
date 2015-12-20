@@ -1,6 +1,8 @@
 
 module
 {
+    interface Elastos.Droid.Hardware.Camera2.Impl.ICameraMetadataNativeKey;
+    interface Elastos.Droid.Hardware.Camera2.Impl.ICameraMetadataNative;
 
     namespace Elastos {
     namespace Droid {
@@ -8,7 +10,31 @@ module
     namespace Camera2 {
 
     interface ICaptureResultKey {
+        /**
+         * Return a camelCase, period separated name formatted like:
+         * {@code "root.section[.subsections].name"}.
+         *
+         * <p>Built-in keys exposed by the Android SDK are always prefixed with {@code "android."};
+         * keys that are device/platform-specific are prefixed with {@code "com."}.</p>
+         *
+         * <p>For example, {@code CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP} would
+         * have a name of {@code "android.scaler.streamConfigurationMap"}; whereas a device
+         * specific key might look like {@code "com.google.nexus.data.private"}.</p>
+         *
+         * @return String representation of the key name
+         */
+        GetName(
+            [out] String* name);
 
+        /**
+         * Visible for CameraMetadataNative implementation only; do not use.
+         *
+         * TODO: Make this private or remove it altogether.
+         *
+         * @hide
+         */
+        GetNativeKey(
+            [out] ICameraMetadataNativeKey** key);
     }
 
     /**
@@ -31,8 +57,17 @@ module
      *
      * <p>{@link CaptureResult} objects are immutable.</p>
      *
+     * @ invoke
+     * interface ICameraMetadata
+     *
      */
     interface ICaptureResult {
+        /**
+         * Returns a copy of the underlying {@link CameraMetadataNative}.
+         * @hide
+         */
+        GetNativeCopy(
+            [out] ICameraMetadataNative** native);
 
         /**
          * Get a capture result field value.

@@ -1,7 +1,10 @@
 
 module
 {
+    using interface Elastos.Utility.IList;
+
     interface Elastos.Droid.Utility.IPair;
+    interface Elastos.Droid.Hardware.Camera2.Utils.ILongParcelable;
 
     namespace Elastos {
     namespace Droid {
@@ -54,11 +57,11 @@ module
          *                    burst is set to be repeating.
          * @return the request id.
          */
-//        Submit(
-//            [in] IList* requests,
-//            [in] Boolean repeating,
-//            [in] IInt64Parcelable* frameNumber,
-//            [out] Int32* value);
+        Submit(
+            [in] IList* requests,
+            [in] Boolean repeating,
+            [in] ILongParcelable* frameNumber,
+            [out] Int32* value);
     }
 
     } // namespace Legacy

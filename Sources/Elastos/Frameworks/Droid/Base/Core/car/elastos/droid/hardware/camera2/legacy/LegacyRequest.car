@@ -1,6 +1,11 @@
 
 module
 {
+    interface Elastos.Droid.Hardware.IParameters;
+    interface Elastos.Droid.Hardware.Camera2.ICaptureRequest;
+    interface Elastos.Droid.Hardware.Camera2.ICameraCharacteristics;
+    interface Elastos.Droid.Utility.ISize;
+
     namespace Elastos {
     namespace Droid {
     namespace Hardware {
@@ -16,8 +21,20 @@ module
          *
          * @param parameters non-{@code null} parameters for api1 camera
          */
-//        SetParameters(
-//            [in] IParameters* parameters);
+        SetParameters(
+            [in] IParameters* parameters);
+
+        GetCameraCharacteristics(
+            [out] ICameraCharacteristics** character);
+
+        GetCaptureRequest(
+            [out] ICaptureRequest** request);
+
+        GetSize(
+            [out] ISize** size);
+
+        GetParameters(
+            [out] IParameters** para);
     }
 
     } // namespace Legacy

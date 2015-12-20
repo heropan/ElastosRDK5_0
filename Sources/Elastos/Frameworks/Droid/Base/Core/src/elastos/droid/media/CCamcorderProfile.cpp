@@ -6,7 +6,7 @@
 
 using Elastos::Droid::Hardware::CHardwareCamera;
 using Elastos::Droid::Hardware::CHardwareCameraHelper;
-using Elastos::Droid::Hardware::ICameraInfo;
+using Elastos::Droid::Hardware::IHardwareCameraInfo;
 using Elastos::Droid::Hardware::IHardwareCameraHelper;
 using Elastos::Utility::Logging::Slogger;
 
@@ -90,13 +90,13 @@ ECode CCamcorderProfile::Get(
     Int32 numberOfCameras;
     hardwareCameraHelper->GetNumberOfCameras(&numberOfCameras);
 
-    AutoPtr<ICameraInfo> cameraInfo = new CHardwareCamera::CameraInfo();
+    AutoPtr<IHardwareCameraInfo> cameraInfo = new CHardwareCamera::CameraInfo();
 
     Int32 facing;
     for (Int32 i = 0; i < numberOfCameras; i++) {
         hardwareCameraHelper->GetCameraInfo(i, cameraInfo);
         cameraInfo->GetFacing(&facing);
-        if (facing == ICameraInfo::CAMERA_FACING_BACK) {
+        if (facing == IHardwareCameraInfo::CAMERA_FACING_BACK) {
             return Get(i, quality, result);
         }
     }
@@ -135,12 +135,12 @@ ECode CCamcorderProfile::HasProfile(
     Int32 numberOfCameras;
     hardwareCameraHelper->GetNumberOfCameras(&numberOfCameras);
 
-    AutoPtr<ICameraInfo> cameraInfo = new CHardwareCamera::CameraInfo();
+    AutoPtr<IHardwareCameraInfo> cameraInfo = new CHardwareCamera::CameraInfo();
 
     Int32 facing;
     for (Int32 i = 0; i < numberOfCameras; i++) {
         hardwareCameraHelper->GetCameraInfo(i, cameraInfo);
-        if (cameraInfo->GetFacing(&facing) == ICameraInfo::CAMERA_FACING_BACK) {
+        if (cameraInfo->GetFacing(&facing) == IHardwareCameraInfo::CAMERA_FACING_BACK) {
             HasProfile(i, quality, result);
             return NOERROR;
         }

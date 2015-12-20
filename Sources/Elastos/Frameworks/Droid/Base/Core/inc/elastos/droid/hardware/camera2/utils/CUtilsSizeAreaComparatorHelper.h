@@ -1,8 +1,8 @@
 
-#ifndef  __ELASTOS_DROID_HARDWARE_CAMERA2_PARAMS_CSIZEAREACOMPARATORHELPER_H__
-#define  __ELASTOS_DROID_HARDWARE_CAMERA2_PARAMS_CSIZEAREACOMPARATORHELPER_H__
+#ifndef  __ELASTOS_DROID_HARDWARE_CAMERA2_UTILS_CUTILSSIZEAREACOMPARATORHELPER_H__
+#define  __ELASTOS_DROID_HARDWARE_CAMERA2_UTILS_CUTILSSIZEAREACOMPARATORHELPER_H__
 
-#include "_Elastos_Droid_Hardware_Camera2_Utils_CSizeAreaComparatorHelper.h"
+#include "_Elastos_Droid_Hardware_Camera2_Utils_CUtilsSizeAreaComparatorHelper.h"
 #include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Utility::ISize;
@@ -15,9 +15,9 @@ namespace Hardware {
 namespace Camera2 {
 namespace Utils {
 
-CarClass(CSizeAreaComparatorHelper)
+CarClass(CUtilsSizeAreaComparatorHelper)
     , public Singleton
-    , public ISizeAreaComparatorHelper
+    , public IUtilsSizeAreaComparatorHelper
 {
 public:
     CAR_INTERFACE_DECL()
@@ -44,4 +44,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  // __ELASTOS_DROID_HARDWARE_CAMERA2_PARAMS_CSIZEAREACOMPARATORHELPER_H__
+#endif  // __ELASTOS_DROID_HARDWARE_CAMERA2_UTILS_CUTILSSIZEAREACOMPARATORHELPER_H__

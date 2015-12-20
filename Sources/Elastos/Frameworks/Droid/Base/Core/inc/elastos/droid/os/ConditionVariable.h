@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_OS_CONDITION_VARIABLE_H__
 #define __ELASTOS_DROID_OS_CONDITION_VARIABLE_H__
 
+#include "Elastos.Droid.Os.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 namespace Elastos {
@@ -23,8 +25,11 @@ namespace Os {
  */
 class ConditionVariable
     : public Object
+    , public IConditionVariable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Create the ConditionVariable in the default closed state.
      */

@@ -2,6 +2,7 @@
 module
 {
     using interface Elastos.Utility.IList;
+
     interface Elastos.Droid.Hardware.ICameraSize;
 
     namespace Elastos {
@@ -14,8 +15,14 @@ module
      * Comparator for api1 {@link Camera.Size} objects by the area.
      *
      * <p>This comparator totally orders by rectangle area. Tie-breaks on width.</p>
+     *
+     * @invoke
+     * interface IComparator
      */
-    interface ISizeAreaComparatorHelper {
+    interface ILegacySizeAreaComparator {
+    }
+
+    interface ILegacySizeAreaComparatorHelper {
         /**
          * Get the largest api1 {@code Camera.Size} from the list by comparing each size's area
          * by each other using {@link SizeAreaComparator}.

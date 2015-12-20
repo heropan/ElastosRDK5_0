@@ -8,9 +8,7 @@ namespace Droid {
 namespace Hardware {
 
 CAR_OBJECT_IMPL(CHardwareCamera)
-
 CAR_OBJECT_IMPL(CGeomagneticField)
-
 CAR_OBJECT_IMPL(CSensorEvent)
 
 } //Hardware

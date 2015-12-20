@@ -124,7 +124,7 @@ Boolean VideoCapture::Allocate(
     //     return false;
     // }
 
-    AutoPtr<ICameraInfo> cameraInfo = GetCameraInfo(mId);
+    AutoPtr<IHardwareCameraInfo> cameraInfo = GetCameraInfo(mId);
     if (cameraInfo == NULL) {
         mCamera->Release();
         mCamera = NULL;
@@ -433,11 +433,11 @@ AutoPtr<IParameters> VideoCapture::GetCameraParameters(
     return parameters;
 }
 
-AutoPtr<ICameraInfo> VideoCapture::GetCameraInfo(
+AutoPtr<IHardwareCameraInfo> VideoCapture::GetCameraInfo(
     /* [in] */ Int32 id)
 {
-    AutoPtr<ICameraInfo> cameraInfo;
-    //TODO CHardwareCamera::CameraInfo::New((ICameraInfo**)&cameraInfo);
+    AutoPtr<IHardwareCameraInfo> cameraInfo;
+    //TODO CHardwareCamera::CameraInfo::New((IHardwareCameraInfo**)&cameraInfo);
     // try {
     /*TODO
         AutoPtr<IHardwareCameraHelper> helper;
