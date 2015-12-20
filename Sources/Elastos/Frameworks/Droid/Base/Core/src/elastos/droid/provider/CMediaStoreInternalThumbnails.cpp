@@ -306,9 +306,12 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
                 c->GetString(1, &filePath);
             }
             if (isVideo) {
-                bitmap = ThumbnailUtils::CreateVideoThumbnail(filePath, kind);
-            } else {
-                bitmap = ThumbnailUtils::CreateImageThumbnail(filePath, kind);
+                // TODO:
+                // bitmap = ThumbnailUtils::CreateVideoThumbnail(filePath, kind);
+            }
+            else {
+                // TODO:
+                // bitmap = ThumbnailUtils::CreateImageThumbnail(filePath, kind);
             }
         }
     //} catch (SQLiteException ex) {
