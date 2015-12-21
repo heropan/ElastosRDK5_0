@@ -59,8 +59,8 @@ namespace Droid {
 namespace Server {
 namespace Am {
 
-const String ActivityRecord::TAG(CActivityManagerService::TAG);
-const Boolean ActivityRecord::DEBUG_SAVED_STATE = ActivityStackSupervisor::DEBUG_SAVED_STATE;
+const String ActivityRecord::TAG("ActivityManager");
+const Boolean ActivityRecord::DEBUG_SAVED_STATE = FALSE;// ActivityStackSupervisor::DEBUG_SAVED_STATE;
 const String ActivityRecord::RECENTS_PACKAGE_NAME("com.android.systemui.recent");
 const String ActivityRecord::ACTIVITY_ICON_SUFFIX("_activity_icon_");
 const Int32 ActivityRecord::APPLICATION_ACTIVITY_TYPE;

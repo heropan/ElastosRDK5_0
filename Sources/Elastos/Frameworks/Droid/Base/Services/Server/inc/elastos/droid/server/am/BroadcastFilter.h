@@ -2,6 +2,8 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_BROADCASTFILTER_H__
 #define __ELASTOS_DROID_SERVER_AM_BROADCASTFILTER_H__
 
+#include "_Elastos.Droid.Server.h"
+#include "Elastos.CoreLibrary.IO.h"
 #include <elastos/droid/content/IntentFilter.h>
 
 using Elastos::Droid::Content::IIntentFilter;
@@ -50,6 +52,9 @@ public:
         /* [in] */ const String& prefix);
 
     CARAPI_(String) ToString();
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 
 public:
     // Back-pointer to the list this filter is in.

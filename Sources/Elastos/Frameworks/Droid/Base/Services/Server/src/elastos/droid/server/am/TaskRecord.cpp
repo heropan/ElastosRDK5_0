@@ -51,7 +51,7 @@ namespace Droid {
 namespace Server {
 namespace Am {
 
-const String TaskRecord::TAG(CActivityManagerService::TAG);
+const String TaskRecord::TAG("ActivityManager");
 const String TaskRecord::ATTR_TASKID("task_id");
 const String TaskRecord::TAG_INTENT("intent");
 const String TaskRecord::TAG_AFFINITYINTENT("affinity_intent");

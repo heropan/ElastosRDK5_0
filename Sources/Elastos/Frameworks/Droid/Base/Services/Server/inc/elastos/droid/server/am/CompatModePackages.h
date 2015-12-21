@@ -3,28 +3,34 @@
 #define __ELASTOS_DROID_SERVER_AM_COMPATMODEPACKAGES_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/server/am/CActivityManagerService.h"
-#include <Elastos.Droid.Core.h>
+#include <elastos/droid/os/Handler.h>
 #include <elastos/utility/etl/HashMap.h>
 
+using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Content::Res::ICompatibilityInfo;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Utility::IAtomicFile;
+using Elastos::IO::IFile;
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::IInteger32;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Am {
 
+class CActivityManagerService;
 
 class CompatModePackages : public Object
 {
 public:
-    class MyHandler : public HandlerBase
+    class CompatHandler : public Handler
     {
     public:
-        MyHandler(
+        CompatHandler(
+            /* [in] */ ILooper* looper,
             /* [in] */ CompatModePackages* host)
-            : mHost(host)
+            : Handler(looper, NULL, TRUE)
+            , mHost(host)
         {}
 
         CARAPI HandleMessage(
@@ -36,11 +42,12 @@ public:
 
     CompatModePackages(
         /* [in] */ CActivityManagerService* service,
-        /* [in] */ IFile* systemDir);
+        /* [in] */ IFile* systemDir,
+        /* [in] */ IHandler* handler);
 
     ~CompatModePackages();
 
-    AutoPtr<HashMap<String, AutoPtr<IInteger32> > > GetPackages();
+    HashMap<String, Int32>& GetPackages();
 
     CARAPI_(void) HandlePackageAddedLocked(
         /* [in] */ const String& packageName,
@@ -86,8 +93,6 @@ private:
         /* [in] */ IApplicationInfo* ai,
         /* [in] */ Int32 mode);
 
-    CARAPI_(void) HandleMsgWrite();
-
 private:
     const String TAG;
     const Boolean DEBUG_CONFIGURATION;
@@ -100,11 +105,11 @@ private:
     // Compatibility state: compatibility mode is enabled.
     static const Int32 COMPAT_FLAG_ENABLED = 1<<1;
 
-    AutoPtr<HashMap<String, AutoPtr<IInteger32> > > mPackages;
+    HashMap<String, Int32> mPackages;
 
     static const Int32 MSG_WRITE;
 
-    AutoPtr<IHandler> mHandler;
+    AutoPtr<CompatHandler> mHandler;
 };
 
 } // namespace Am

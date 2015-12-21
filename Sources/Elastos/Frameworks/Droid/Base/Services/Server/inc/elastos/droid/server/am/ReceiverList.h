@@ -2,9 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_RECEIVERLIST_H__
 #define __ELASTOS_DROID_SERVER_AM_RECEIVERLIST_H__
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/server/am/BroadcastFilter.h"
-#include <Elastos.Droid.Core.h>
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;
@@ -20,7 +18,8 @@ class BroadcastRecord;
 class CActivityManagerService;
 
 class ReceiverList
-    : public List< AutoPtr<BroadcastFilter> >
+    : public Object
+    , public List< AutoPtr<BroadcastFilter> >
     , public IProxyDeathRecipient
 {
 public:
@@ -37,15 +36,22 @@ public:
     virtual ~ReceiverList();
 
     // Want object identity, not the array identity we are inheriting.
-    // public boolean equals(Object o)
+    CARAPI Equals(
+        /* [in] */ IInterface* o,
+        /* [out] */ Boolean* result);
 
-    // public int hashCode()
+    CARAPI HashCode(
+        /* [out] */ Int32* hashCode);
 
     CARAPI ProxyDied();
 
-    // void dumpLocal(PrintWriter pw, String prefix);
+    CARAPI_(void) DumpLocal(
+        /* [in] */ IPrintWriter* pw,
+        /* [out] */ const String& prefix);
 
-    // void dump(PrintWriter pw, String prefix);
+    CARAPI_(void) Dump(
+        /* [in] */ IPrintWriter* pw,
+        /* [out] */ const String& prefix);
 
     CARAPI_(String) ToString();
 
@@ -67,11 +73,6 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-
-#define HASH_FUNC_FOR_AUTOPTR_RECEIVERLIST
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Server::Am::ReceiverList)
-#endif
-
-
 
 #endif //__ELASTOS_DROID_SERVER_AM_RECEIVERLIST_H__

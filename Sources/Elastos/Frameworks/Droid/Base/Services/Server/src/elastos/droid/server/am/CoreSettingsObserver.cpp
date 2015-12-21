@@ -1,12 +1,21 @@
 
 #include "elastos/droid/server/am/CoreSettingsObserver.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Provider.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Content::IContentResolver;
-using Elastos::Droid::Provider::ISettingsSecure;
+using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Provider::CSettingsGlobal;
 using Elastos::Droid::Provider::CSettingsSecure;
+using Elastos::Droid::Provider::CSettingsSystem;
+using Elastos::Droid::Provider::ISettingsGlobal;
+using Elastos::Droid::Provider::ISettingsSecure;
+using Elastos::Droid::Provider::ISettingsSystem;
+using Elastos::Core::ICloneable;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -16,20 +25,30 @@ namespace Am {
 const String CoreSettingsObserver::TAG("CoreSettingsObserver"); // = CoreSettingsObserver.class.getSimpleName();
 
 // mapping form property name to its type
-HashMap<String, String> CoreSettingsObserver::sCoreSettingToTypeMap;
+HashMap<String, String> CoreSettingsObserver::sSecureSettingToTypeMap;
+HashMap<String, String> CoreSettingsObserver::sSystemSettingToTypeMap;
+HashMap<String, String> CoreSettingsObserver::sGlobalSettingToTypeMap;
 
-void CoreSettingsObserver::Init()
+Boolean CoreSettingsObserver::Init()
 {
-    sCoreSettingToTypeMap[ISettingsSecure::LONG_PRESS_TIMEOUT] = String("Int32");
-    // add other core settings here...
+    sSecureSettingToTypeMap[ISettingsSecure::LONG_PRESS_TIMEOUT] = String("Int32");
+    // add other secure settings here...
+
+    sSystemSettingToTypeMap[ISettingsSystem::TIME_12_24] = String("String");
+    // add other system settings here...
+
+    sGlobalSettingToTypeMap[ISettingsGlobal::DEBUG_VIEW_ATTRIBUTES] = String("Int32");
+    // add other global settings here...
+    return TRUE;
 }
+
+Boolean sInit = CoreSettingsObserver::Init();
 
 CoreSettingsObserver::CoreSettingsObserver(
     /* [in] */ CActivityManagerService* activityManagerService)
-    : ContentObserver(activityManagerService->mHandler)
-    , mActivityManagerService(activityManagerService)
+    : mActivityManagerService(activityManagerService)
 {
-    Init();
+    ContentObserver::constructor(activityManagerService->mHandler);
     CBundle::New((IBundle**)&mCoreSettings);
     BeginObserveCoreSettings();
     SendCoreSettings();
@@ -37,77 +56,144 @@ CoreSettingsObserver::CoreSettingsObserver(
 
 AutoPtr<IBundle> CoreSettingsObserver::GetCoreSettingsLocked()
 {
-    AutoPtr<IBundle> coreSettings;
-    mCoreSettings->Clone((IBundle**)&coreSettings);
-    return coreSettings;
+    AutoPtr<IInterface> coreSettings;
+    ICloneable::Probe(mCoreSettings)->Clone((IInterface**)&coreSettings);
+    return IBundle::Probe(coreSettings);
 }
 
 // @Override
 ECode CoreSettingsObserver::OnChange(
     /* [in] */ Boolean selfChange)
 {
-    AutoLock lock(mActivityManagerService->mLock);
+    AutoLock lock(mActivityManagerService);
     SendCoreSettings();
     return NOERROR;
 }
 
 void CoreSettingsObserver::SendCoreSettings()
 {
-    PopulateCoreSettings(mCoreSettings);
-    mActivityManagerService->OnCoreSettingsChange(mCoreSettings);
+    PopulateSettings(mCoreSettings, &sSecureSettingToTypeMap);
+    PopulateSettings(mCoreSettings, &sSystemSettingToTypeMap);
+    PopulateSettings(mCoreSettings, &sGlobalSettingToTypeMap);
+    assert(0);
+    // mActivityManagerService->OnCoreSettingsChange(mCoreSettings);
 }
 
 void CoreSettingsObserver::BeginObserveCoreSettings()
 {
     AutoPtr<ISettingsSecure> settingsSecure;
     CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
+    AutoPtr<IContentResolver> resolver;
+    mActivityManagerService->mContext->GetContentResolver((IContentResolver**)&resolver);
     HashMap<String, String>::Iterator it;
-    for (it = sCoreSettingToTypeMap.Begin(); it != sCoreSettingToTypeMap.End(); ++it) {
+    for (it = sSecureSettingToTypeMap.Begin(); it != sSecureSettingToTypeMap.End(); ++it) {
         String setting = it->mFirst;
         AutoPtr<IUri> uri;
         settingsSecure->GetUriFor(setting, (IUri**)&uri);
-        AutoPtr<IContentResolver> resolver;
-        mActivityManagerService->mContext->GetContentResolver((IContentResolver**)&resolver);
+        resolver->RegisterContentObserver(uri, FALSE, this);
+    }
+
+    for (it = sSystemSettingToTypeMap.Begin(); it != sSystemSettingToTypeMap.End(); ++it) {
+        String setting = it->mFirst;
+        AutoPtr<IUri> uri;
+        settingsSecure->GetUriFor(setting, (IUri**)&uri);
+        resolver->RegisterContentObserver(uri, FALSE, this);
+    }
+
+    for (it = sGlobalSettingToTypeMap.Begin(); it != sGlobalSettingToTypeMap.End(); ++it) {
+        String setting = it->mFirst;
+        AutoPtr<IUri> uri;
+        settingsSecure->GetUriFor(setting, (IUri**)&uri);
         resolver->RegisterContentObserver(uri, FALSE, this);
     }
 }
 
-void CoreSettingsObserver::PopulateCoreSettings(
-    /* [in] */ IBundle* snapshot)
+void CoreSettingsObserver::PopulateSettings(
+    /* [in] */ IBundle* snapshot,
+    /* [in] */ HashMap<String, String>* map)
 {
     AutoPtr<IContext> context = mActivityManagerService->mContext;
+    AutoPtr<ISettingsSecure> settingsSecure;
+    CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
+    AutoPtr<ISettingsSystem> settingsSystem;
+    CSettingsSystem::AcquireSingleton((ISettingsSystem**)&settingsSystem);
+    AutoPtr<ISettingsGlobal> settingsGlobal;
+    CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
+
+    AutoPtr<IContentResolver> resolver;
+    context->GetContentResolver((IContentResolver**)&resolver);
     HashMap<String, String>::Iterator it;
-    for (it = sCoreSettingToTypeMap.Begin(); it != sCoreSettingToTypeMap.End(); ++it) {
+    for (it = map->Begin(); it != map->End(); ++it) {
         String setting = it->mFirst;
         String type = it->mSecond;
         // try {
-        AutoPtr<ISettingsSecure> settingsSecure;
-        CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
-        AutoPtr<IContentResolver> resolver;
-        context->GetContentResolver((IContentResolver**)&resolver);
+        ECode ec;
+        do {
             if (type.Equals("String")) {
                 String value;
-                settingsSecure->GetString(resolver, setting, &value);
+                if (map == &sSecureSettingToTypeMap) {
+                    ec = settingsSecure->GetString(resolver, setting, &value);
+                }
+                else if (map == &sSystemSettingToTypeMap) {
+                    ec = settingsSystem->GetString(resolver, setting, &value);
+                }
+                else {
+                    ec = settingsGlobal->GetString(resolver, setting, &value);
+                }
+                if (FAILED(ec))
+                    break;
                 snapshot->PutString(setting, value);
-            } else if (type.Equals("Int32")) {
+            }
+            else if (type.Equals("Int32")) {
                 Int32 value;
-                settingsSecure->GetInt32(resolver, setting, &value);
+                if (map == &sSecureSettingToTypeMap) {
+                    ec = settingsSecure->GetInt32(resolver, setting, &value);
+                }
+                else if (map == &sSystemSettingToTypeMap) {
+                    ec = settingsSystem->GetInt32(resolver, setting, &value);
+                }
+                else {
+                    ec = settingsGlobal->GetInt32(resolver, setting, &value);
+                }
+                if (FAILED(ec))
+                    break;
                 snapshot->PutInt32(setting, value);
-            } else if (type.Equals("Float")) {
+            }
+            else if (type.Equals("Float")) {
                 Float value;
-                settingsSecure->GetFloat(resolver, setting, &value);
+                if (map == &sSecureSettingToTypeMap) {
+                    ec = settingsSecure->GetFloat(resolver, setting, &value);
+                }
+                else if (map == &sSystemSettingToTypeMap) {
+                    ec = settingsSystem->GetFloat(resolver, setting, &value);
+                }
+                else {
+                    ec = settingsGlobal->GetFloat(resolver, setting, &value);
+                }
+                if (FAILED(ec))
+                    break;
                 snapshot->PutFloat(setting, value);
-            } else if (type.Equals("Int64")) {
+            }
+            else if (type.Equals("Int64")) {
                 Int64 value;
-                settingsSecure->GetInt64(resolver, setting, &value);
+                if (map == &sSecureSettingToTypeMap) {
+                    ec = settingsSecure->GetInt64(resolver, setting, &value);
+                }
+                else if (map == &sSystemSettingToTypeMap) {
+                    ec = settingsSystem->GetInt64(resolver, setting, &value);
+                }
+                else {
+                    ec = settingsGlobal->GetInt64(resolver, setting, &value);
+                }
+                if (FAILED(ec))
+                    break;
                 snapshot->PutInt64(setting, value);
             }
-            else {
-                Slogger::W(TAG, "Cannot find setting \"%s\" with type \"%s\"", setting.string(), type.string());
-            }
-        // } catch (SettingNotFoundException snfe) {
-        //     Log.w(LOG_TAG, "Cannot find setting \"" + setting + "\"", snfe);
-        // }
+        } while (0);
+
+        if (FAILED(ec)) {
+            Slogger::W(TAG, "Cannot find setting \"%s\" with type \"%s\"", setting.string(), type.string());
+        }
     }
 }
 

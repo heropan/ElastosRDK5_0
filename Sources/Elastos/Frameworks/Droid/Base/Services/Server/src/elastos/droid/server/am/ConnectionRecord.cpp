@@ -2,6 +2,7 @@
 #include "elastos/droid/server/am/ConnectionRecord.h"
 #include "elastos/droid/server/am/AppBindRecord.h"
 #include "elastos/droid/server/am/ActivityRecord.h"
+#include "elastos/droid/server/am/ProcessRecord.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
 
@@ -111,7 +112,8 @@ String ConnectionRecord::ToString()
     if (mServiceDead) {
         sb += "DEAD ";
     }
-    sb += mBinding->mService->mShortName;
+    assert(0);
+    // sb += mBinding->mService->mShortName;
     sb += ":@";
     sb += StringUtils::ToString((Int32)IBinder::Probe(mConn), 16);
     sb += '}';

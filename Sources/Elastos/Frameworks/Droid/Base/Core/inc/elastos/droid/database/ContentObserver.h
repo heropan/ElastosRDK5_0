@@ -18,12 +18,12 @@ namespace Database {
  * Receives call backs for changes to content. Must be implemented by objects which are added
  * to a {@link ContentObservable}.
  */
-class ContentObserver
+class ECO_PUBLIC ContentObserver
     : public Object
     , public IContentObserver
 {
 private:
-    class NotificationRunnable
+    class ECO_LOCAL NotificationRunnable
         : public Runnable
     {
     public:

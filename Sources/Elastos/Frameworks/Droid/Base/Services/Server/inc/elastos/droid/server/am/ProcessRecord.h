@@ -8,12 +8,12 @@
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/core/StringBuilder.h>
-// #include "elastos/droid/server/am/ReceiverList.h"
-// #include "elastos/droid/server/am/ConnectionRecord.h"
+#include "elastos/droid/server/am/ReceiverList.h"
+#include "elastos/droid/server/am/ConnectionRecord.h"
 // #include "elastos/droid/server/am/ContentProviderRecord.h"
 // #include "elastos/droid/server/am/CServiceRecord.h"
 #include "elastos/droid/server/am/ActivityRecord.h"
-// #include "elastos/droid/server/am/BroadcastRecord.h"
+#include "elastos/droid/server/am/BroadcastRecord.h"
 
 using Elastos::Droid::App::IApplicationThread;
 using Elastos::Droid::App::IActivityManagerProcessErrorStateInfo;
@@ -193,7 +193,7 @@ public:
     AutoPtr<IBundle> mInstrumentationArguments; // as given to us
     AutoPtr<IComponentName> mInstrumentationResultClass;// copy of instrumentationClass
     Boolean mUsingWrapper;       // Set to true when process was launched with a wrapper attached
-    // AutoPtr<BroadcastRecord> mCurReceiver; // receiver currently running in the app
+    AutoPtr<BroadcastRecord> mCurReceiver; // receiver currently running in the app
     Int64 mLastWakeTime;          // How long proc held wake lock at last check
     Int64 mLastCpuTime;           // How long proc has run CPU at last check
     Int64 mCurCpuTime;            // How long proc has run CPU most recently
@@ -215,11 +215,11 @@ public:
     // HashSet< AutoPtr<CServiceRecord> > mServices;
     // // services that are currently executing code (need to remain foreground).
     // HashSet< AutoPtr<CServiceRecord> > mExecutingServices;
-    // // All ConnectionRecord this process holds
-    // HashSet< AutoPtr<ConnectionRecord> > mConnections;
-    // // all IIntentReceivers that are registered from this process.
-    // HashSet< AutoPtr<ReceiverList> > mReceivers;
-    // // class (String) -> ContentProviderRecord
+    // All ConnectionRecord this process holds
+    HashSet< AutoPtr<ConnectionRecord> > mConnections;
+    // all IIntentReceivers that are registered from this process.
+    HashSet< AutoPtr<ReceiverList> > mReceivers;
+    // class (String) -> ContentProviderRecord
     // HashMap<String, AutoPtr<ContentProviderRecord> > mPubProviders;
     // // All ContentProviderRecord process is using
     // List< AutoPtr<CContentProviderConnection> > mConProviders;

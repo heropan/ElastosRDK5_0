@@ -3,16 +3,19 @@
 #include "elastos/droid/server/am/ContentProviderRecord.h"
 #include "elastos/droid/server/am/ProcessRecord.h"
 #include "elastos/droid/server/am/CContentProviderConnection.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
-#include "elastos/droid/os/UserHandle.h"
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::App::CContentProviderHolder;
+using Elastos::Droid::Content::Pm::IComponentInfo;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
+using Elastos::Droid::Os::CUserHandleHelper;
+using Elastos::Droid::Os::IUserHandleHelper;
+using Elastos::Droid::Os::IProcess;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
-using Elastos::Droid::Os::UserHandle;
-using Elastos::Droid::Os::IProcess;
-using Elastos::Droid::App::CContentProviderHolder;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -26,13 +29,13 @@ namespace Am {
 
 const String ContentProviderRecord::ExternalProcessHandle::TAG("ExternalProcessHanldle");
 
-CAR_INTERFACE_IMPL(ContentProviderRecord::ExternalProcessHandle, IProxyDeathRecipient)
+CAR_INTERFACE_IMPL(ContentProviderRecord::ExternalProcessHandle, Object, IProxyDeathRecipient)
 
 ContentProviderRecord::ExternalProcessHandle::ExternalProcessHandle(
     /* [in] */ IBinder* token,
     /* [in] */ ContentProviderRecord* owner)
-    : mAcquisitionCount(0)
-    , mToken(token)
+    : mToken(token)
+    , mAcquisitionCount(0)
     , mOwner(owner)
 {
     AutoPtr<IProxy> proxy = (IProxy*)token->Probe(EIID_IProxy);
@@ -53,11 +56,10 @@ ECode ContentProviderRecord::ExternalProcessHandle::UnlinkFromOwnDeathLocked()
 // @Override
 ECode ContentProviderRecord::ExternalProcessHandle::ProxyDied()
 {
-    PFL_EX("ProxyDied()");
-    AutoLock lock(mOwner->mService->mLock);
+    AutoLock lock(mOwner->mService);
     if (mOwner->HasExternalProcessHandles() &&
-        mOwner->mExternalProcessTokenToHandle.Find(mToken)
-        != mOwner->mExternalProcessTokenToHandle.End()) {
+        mOwner->mExternalProcessTokenToHandle->Find(mToken)
+        != mOwner->mExternalProcessTokenToHandle->End()) {
         mOwner->RemoveExternalProcessHandleInternalLocked(mToken);
     }
     return NOERROR;
@@ -67,7 +69,6 @@ ECode ContentProviderRecord::ExternalProcessHandle::ProxyDied()
 // ContentProviderRecord
 //=============================================================================
 
-
 ContentProviderRecord::ContentProviderRecord(
     /* [in] */ CActivityManagerService* service,
     /* [in] */ IProviderInfo* info,
@@ -75,17 +76,16 @@ ContentProviderRecord::ContentProviderRecord(
     /* [in] */ IComponentName* name,
     /* [in] */ Boolean singleton)
     : mService(service)
-    , mUid(0)
+    , mInfo(info)
+    , mAppInfo(ai)
+    , mName(name)
     , mSingleton(singleton)
     , mNoReleaseNeeded(FALSE)
     , mExternalProcessNoHandleCount(0)
     , mProc(NULL)
     , mLaunchingApp(NULL)
 {
-    mInfo = info;
-    mName = name;
     ai->GetUid(&mUid);
-    mAppInfo = ai;
     mNoReleaseNeeded = mUid == 0 || mUid == IProcess::SYSTEM_UID;
 }
 
@@ -106,8 +106,6 @@ ContentProviderRecord::ContentProviderRecord(
 ContentProviderRecord::~ContentProviderRecord()
 {}
 
-CAR_INTERFACE_IMPL(ContentProviderRecord, ISynchronize);
-
 AutoPtr<IContentProviderHolder> ContentProviderRecord::NewHolder(
     /* [in] */ CContentProviderConnection* conn)
 {
@@ -125,7 +123,7 @@ Boolean ContentProviderRecord::CanRunHere(
     Boolean multiprocess;
     mInfo->GetMultiprocess(&multiprocess);
     String processName;
-    mInfo->GetProcessName(&processName);
+    IComponentInfo::Probe(mInfo)->GetProcessName(&processName);
 
     Int32 appUid;
     app->mInfo->GetUid(&appUid);
@@ -139,18 +137,14 @@ void ContentProviderRecord::AddExternalProcessHandleLocked(
         mExternalProcessNoHandleCount++;
     }
     else {
-        HashMap<AutoPtr<IBinder>, AutoPtr<ExternalProcessHandle> >::Iterator it;
-        it = mExternalProcessTokenToHandle.Find(token);
+        if (mExternalProcessTokenToHandle == NULL)
+            mExternalProcessTokenToHandle = new ProcessHandleHashMap;
 
-        AutoPtr<ExternalProcessHandle> handle;
-        if (it == mExternalProcessTokenToHandle.End()) {
+        AutoPtr<ExternalProcessHandle> handle = (*mExternalProcessTokenToHandle)[token];
+        if (handle == NULL) {
             handle = new ExternalProcessHandle(token, this);
-            mExternalProcessTokenToHandle.Insert(ProcessHandleValueType(token, handle));
+            (*mExternalProcessTokenToHandle)[token] = handle;
         }
-        else {
-            handle = it->mSecond;
-        }
-
         handle->mAcquisitionCount++;
     }
 }
@@ -160,16 +154,17 @@ Boolean ContentProviderRecord::RemoveExternalProcessHandleLocked(
 {
     if (HasExternalProcessHandles()) {
         Boolean hasHandle = FALSE;
-        HashMap<AutoPtr<IBinder>, AutoPtr<ExternalProcessHandle> >::Iterator it;
-        it = mExternalProcessTokenToHandle.Find(token);
-
-        if (it != mExternalProcessTokenToHandle.End()) {
-            AutoPtr<ExternalProcessHandle> handle = it->mSecond;
-            hasHandle = TRUE;
-            handle->mAcquisitionCount--;
-            if (handle->mAcquisitionCount == 0) {
-                RemoveExternalProcessHandleInternalLocked(token);
-                return TRUE;
+        if (mExternalProcessTokenToHandle != NULL) {
+            HashMap<AutoPtr<IBinder>, AutoPtr<ExternalProcessHandle> >::Iterator it;
+            it = mExternalProcessTokenToHandle->Find(token);
+            if (it != mExternalProcessTokenToHandle->End()) {
+                AutoPtr<ExternalProcessHandle> handle = it->mSecond;
+                hasHandle = TRUE;
+                handle->mAcquisitionCount--;
+                if (handle->mAcquisitionCount == 0) {
+                    RemoveExternalProcessHandleInternalLocked(token);
+                    return TRUE;
+                }
             }
         }
 
@@ -184,18 +179,17 @@ Boolean ContentProviderRecord::RemoveExternalProcessHandleLocked(
 void ContentProviderRecord::RemoveExternalProcessHandleInternalLocked(
     /* [in] */ IBinder* token)
 {
-    HashMap<AutoPtr<IBinder>, AutoPtr<ExternalProcessHandle> >::Iterator it;
-    it = mExternalProcessTokenToHandle.Find(token);
-    if (it != mExternalProcessTokenToHandle.End()) {
-        AutoPtr<ExternalProcessHandle> handle = it->mSecond;
-        handle->UnlinkFromOwnDeathLocked();
+    AutoPtr<ExternalProcessHandle> handle = (*mExternalProcessTokenToHandle)[token];
+    handle->UnlinkFromOwnDeathLocked();
+    mExternalProcessTokenToHandle->Erase(token);
+    if (mExternalProcessTokenToHandle->GetSize() == 0) {
+        mExternalProcessTokenToHandle = NULL;
     }
-    mExternalProcessTokenToHandle.Erase(token);
 }
 
 Boolean ContentProviderRecord::HasExternalProcessHandles()
 {
-    return (mExternalProcessTokenToHandle.IsEmpty() == FALSE || mExternalProcessNoHandleCount > 0);
+    return (mExternalProcessTokenToHandle != NULL || mExternalProcessNoHandleCount > 0);
 }
 
 void ContentProviderRecord::Dump(
@@ -203,55 +197,103 @@ void ContentProviderRecord::Dump(
     /* [in] */ const String& prefix,
     /* [in] */ Boolean full)
 {
-//     if (full) {
-//         pw.print(prefix); pw.print("package=");
-//                 pw.print(info.applicationInfo.packageName);
-//                 pw.print(" process="); pw.println(info.processName);
-//     }
-//     pw.print(prefix); pw.print("proc="); pw.println(proc);
-//     if (launchingApp != null) {
-//         pw.print(prefix); pw.print("launchingApp="); pw.println(launchingApp);
-//     }
-//     if (full) {
-//         pw.print(prefix); pw.print("uid="); pw.print(uid);
-//                 pw.print(" provider="); pw.println(provider);
-//     }
-//     if (singleton) {
-//         pw.print(prefix); pw.print("singleton="); pw.println(singleton);
-//     }
-//     pw.print(prefix); pw.print("authority="); pw.println(info.authority);
-//     if (full) {
-//         if (info.isSyncable || info.multiprocess || info.initOrder != 0) {
-//             pw.print(prefix); pw.print("isSyncable="); pw.print(info.isSyncable);
-//                     pw.print(" multiprocess="); pw.print(info.multiprocess);
-//                     pw.print(" initOrder="); pw.println(info.initOrder);
-//         }
-//     }
-//     if (full) {
-//         if (hasExternalProcessHandles()) {
-//             pw.print(prefix); pw.print("externals=");
-//                     pw.println(mExternalProcessTokenToHandle.size());
-//         }
-//     } else {
-//         if (connections.size() > 0 || mExternalProcessNoHandleCount > 0) {
-//             pw.print(prefix); pw.print(connections.size());
-//                     pw.print(" connections, "); pw.print(mExternalProcessNoHandleCount);
-//                     pw.println(" external handles");
-//         }
-//     }
-//     if (connections.size() > 0) {
-//         if (full) {
-//             pw.print(prefix); pw.println("Connections:");
-//         }
-//         for (int i=0; i<connections.size(); i++) {
-//             CContentProviderConnection conn = connections.get(i);
-//             pw.print(prefix); pw.print("  -> "); pw.println(conn.toClientString());
-//             if (conn.provider != this) {
-//                 pw.print(prefix); pw.print("    *** WRONG PROVIDER: ");
-//                         pw.println(conn.provider);
-//             }
-//         }
-//     }
+    if (full) {
+        pw->Print(prefix);
+        pw->Print(String("package="));
+        AutoPtr<IApplicationInfo> appInfo;
+        IComponentInfo::Probe(mInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
+        String packageName;
+        IPackageItemInfo::Probe(appInfo)->GetPackageName(&packageName);
+        pw->Print(packageName);
+        pw->Print(String(" process="));
+        String processName;
+        IComponentInfo::Probe(mInfo)->GetProcessName(&processName);
+        pw->Println(processName);
+    }
+    pw->Print(prefix);
+    pw->Print(String("proc="));
+    pw->Println(mProc->ToString());
+    if (mLaunchingApp != NULL) {
+        pw->Print(prefix);
+        pw->Print(String("mLaunchingApp="));
+        pw->Println(mLaunchingApp->ToString());
+    }
+    if (full) {
+        pw->Print(prefix);
+        pw->Print(String("uid="));
+        pw->Print(mUid);
+        pw->Print(String(" provider="));
+        pw->Println(mProvider);
+    }
+    if (mSingleton) {
+        pw->Print(prefix);
+        pw->Print(String("singleton="));
+        pw->Println(mSingleton);
+    }
+    pw->Print(prefix);
+    pw->Print(String("authority="));
+    String authority;
+    mInfo->GetAuthority(&authority);
+    pw->Println(authority);
+    if (full) {
+        Boolean isSyncable;
+        mInfo->GetIsSyncable(&isSyncable);
+        Boolean multiprocess;
+        mInfo->GetMultiprocess(&multiprocess);
+        Int32 initOrder;
+        mInfo->GetInitOrder(&initOrder);
+        if (isSyncable || multiprocess || initOrder != 0) {
+            pw->Print(prefix);
+            pw->Print(String("isSyncable="));
+            pw->Print(isSyncable);
+            pw->Print(String(" multiprocess="));
+            pw->Print(multiprocess);
+            pw->Print(String(" initOrder="));
+            pw->Println(initOrder);
+        }
+    }
+    if (full) {
+        if (HasExternalProcessHandles()) {
+            pw->Print(prefix);
+            pw->Print(String("externals:"));
+            if (mExternalProcessTokenToHandle != NULL) {
+                pw->Print(String(" w/token="));
+                pw->Print((Int32)mExternalProcessTokenToHandle->GetSize());
+            }
+            if (mExternalProcessNoHandleCount > 0) {
+                pw->Print(String(" notoken="));
+                pw->Print(mExternalProcessNoHandleCount);
+            }
+            pw->Println();
+        }
+    }
+    else {
+        if (mConnections.GetSize() > 0 || mExternalProcessNoHandleCount > 0) {
+            pw->Print(prefix);
+            pw->Print((Int32)mConnections.GetSize());
+            pw->Print(String(" connections, "));
+            pw->Print(mExternalProcessNoHandleCount);
+            pw->Println(String(" external handles"));
+        }
+    }
+    if (mConnections.GetSize() > 0) {
+        if (full) {
+            pw->Print(prefix);
+            pw->Println(String("Connections:"));
+        }
+        List<AutoPtr<CContentProviderConnection> >::Iterator iter;
+        for (iter = mConnections.Begin(); iter != mConnections.End(); ++iter) {
+            AutoPtr<CContentProviderConnection> conn = *iter;
+            pw->Print(prefix);
+            pw->Print(String("  -> "));
+            pw->Println(conn->ToClientString());
+            if (conn->mProvider.Get() != this) {
+                pw->Print(prefix);
+                pw->Print(String("    *** WRONG PROVIDER: "));
+                pw->Println(conn->mProvider->ToString());
+            }
+        }
+    }
 }
 
 String ContentProviderRecord::ToString()
@@ -264,13 +306,17 @@ String ContentProviderRecord::ToString()
     mName->FlattenToShortString(&nameStr);
 
     StringBuilder sb(128);
-    sb += ("ContentProviderRecord{");
-    sb += StringUtils::Int32ToHexString((Int32)this);
-    sb += (" u");
-    sb += (UserHandle::GetUserId(mUid));
-    sb += (' ');
+    sb += "ContentProviderRecord{";
+    sb += StringUtils::ToString((Int32)this, 16);
+    sb += " u";
+    AutoPtr<IUserHandleHelper> uhHelper;
+    CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&uhHelper);
+    Int32 userId;
+    uhHelper->GetUserId(mUid, &userId);
+    sb += userId;
+    sb += ' ';
     sb += nameStr;
-    sb += ('}');
+    sb += '}';
     return mStringName = sb.ToString();
 }
 
@@ -284,48 +330,10 @@ String ContentProviderRecord::ToShortString()
     mName->FlattenToShortString(&nameStr);
 
     StringBuilder sb (128);
-    sb += StringUtils::Int32ToHexString((Int32)this);
-    sb += ('/');
+    sb += StringUtils::ToString((Int32)this, 16);
+    sb += '/';
     sb += nameStr;
     return mShortStringName = sb.ToString();
-}
-
-ECode ContentProviderRecord::Lock()
-{
-    return Object::Lock();
-}
-
-ECode ContentProviderRecord::Unlock()
-{
-    return Object::Unlock();
-}
-
-ECode ContentProviderRecord::Wait()
-{
-    return Object::Wait();
-}
-
-ECode ContentProviderRecord::Wait(
-    /* [in] */ Int64 millis)
-{
-    return Object::Wait(millis);
-}
-
-ECode ContentProviderRecord::Wait(
-    /* [in] */ Int64 millis,
-    /* [in] */ Int32 nanos)
-{
-    return Object::Wait(millis, nanos);
-}
-
-ECode ContentProviderRecord::Notify()
-{
-    return Object::Notify();
-}
-
-ECode ContentProviderRecord::NotifyAll()
-{
-    return Object::NotifyAll();
 }
 
 } // namespace Am

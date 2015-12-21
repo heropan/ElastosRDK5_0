@@ -2,29 +2,29 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_BROADCASTQUEUE_H__
 #define __ELASTOS_DROID_SERVER_AM_BROADCASTQUEUE_H__
 
-#include "elastos/droid/server/am/CActivityManagerService.h"
+#include "elastos/droid/server/am/BroadcastRecord.h"
+#include <elastos/droid/os/Handler.h>
+#include <elastos/droid/os/Runnable.h>
 #include <elastos/utility/etl/List.h>
-#include "elastos/droid/os/HandlerBase.h"
 
-using Elastos::Core::IRunnable;
-using Elastos::Utility::Etl::List;
-using Elastos::IO::IFileDescriptor;
-using Elastos::IO::IPrintWriter;
-using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentReceiver;
-
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::Runnable;
+using Elastos::Core::IRunnable;
+using Elastos::IO::IFileDescriptor;
+using Elastos::IO::IPrintWriter;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Am {
 
-class BroadcastRecord;
-class BroadcastFilter;
-class ProcessRecord;
+class CActivityManagerService;
 
 /**
  * BROADCASTS
@@ -33,16 +33,17 @@ class ProcessRecord;
  * foreground priority, and one for normal (background-priority) broadcasts.
  */
 class BroadcastQueue
-    : public IInterface
-    , public Object
+    : public Object
 {
 private:
-    class MyHandler : public HandlerBase
+    class BroadcastHandler : public Handler
     {
     public:
-        MyHandler(
+        BroadcastHandler(
+            /* [in] */ ILooper* looper,
             /* [in] */ BroadcastQueue* host)
-            : mHost(host)
+            : Handler(looper, NULL, TRUE)
+            , mHost(host)
         {}
 
         CARAPI HandleMessage(
@@ -52,17 +53,13 @@ private:
         BroadcastQueue* mHost;
     };
 
-    class AppNotResponding
-        : public Object
-        , public IRunnable
+    class AppNotResponding : public Runnable
     {
     public:
         AppNotResponding(
             /* [in] */ ProcessRecord* app,
             /* [in] */ const String& annotation,
             /* [in] */ BroadcastQueue* host);
-
-        CAR_INTERFACE_DECL()
 
         CARAPI Run();
 
@@ -73,12 +70,12 @@ private:
     };
 
 public:
-    CAR_INTERFACE_DECL()
-
     BroadcastQueue(
         /* [in] */ CActivityManagerService* service,
+        /* [in] */ IHandler* handler,
         /* [in] */ const String& name,
-        /* [in] */ Int64 timeoutPeriod);
+        /* [in] */ Int64 timeoutPeriod,
+        /* [in] */ Boolean allowDelayBehindServices);
 
     CARAPI_(Boolean) IsPendingBroadcastProcessLocked(
         /* [in] */ Int32 pid);
@@ -116,7 +113,7 @@ public:
         /* [in] */ const String& resultData,
         /* [in] */ IBundle* resultExtras,
         /* [in] */ Boolean resultAbort,
-        /* [in] */ Boolean _explicit);
+        /* [in] */ Boolean waitForServices);
 
     CARAPI ProcessNextBroadcast(
         /* [in] */ Boolean fromMsg);
@@ -145,6 +142,9 @@ private:
     CARAPI ProcessCurBroadcastLocked(
         /* [in] */ BroadcastRecord* r,
         /* [in] */ ProcessRecord* app);
+
+    CARAPI_(void) BackgroundServicesFinishedLocked(
+        /* [in] */ Int32 userId);
 
     static CARAPI PerformReceiveLocked(
         /* [in] */ ProcessRecord* app,
@@ -175,20 +175,26 @@ public:
     static const Int32 MAX_BROADCAST_HISTORY;
     static const Int32 MAX_BROADCAST_SUMMARY_HISTORY;
 
-    static const Int32 BROADCAST_INTENT_MSG;// = ActivityManagerService.FIRST_BROADCAST_QUEUE_MSG;
-    static const Int32 BROADCAST_TIMEOUT_MSG;// = ActivityManagerService.FIRST_BROADCAST_QUEUE_MSG + 1;
+    static const Int32 BROADCAST_INTENT_MSG;
+    static const Int32 BROADCAST_TIMEOUT_MSG;
 
     CActivityManagerService* mService;
 
     /**
      * Recognizable moniker for this queue
      */
-    String mQueueName;
+    const String mQueueName;
 
     /**
      * Timeout period for this queue's broadcasts
      */
-    Int32 mTimeoutPeriod;
+    const Int32 mTimeoutPeriod;
+
+    /**
+     * If true, we can delay broadcasts while waiting services to finish in the previous
+     * receiver's process.
+     */
+    const Boolean mDelayBehindServices;
 
     /**
      * Lists of all active broadcasts that are to be executed immediately
@@ -242,7 +248,7 @@ public:
      */
     Int32 mPendingBroadcastRecvIndex;
 
-    AutoPtr<IHandler> mHandler;
+    AutoPtr<BroadcastHandler> mHandler;
 };
 
 } // namespace Am

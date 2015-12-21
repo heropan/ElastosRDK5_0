@@ -2,20 +2,23 @@
 #include "elastos/droid/server/am/CContentProviderConnection.h"
 #include "elastos/droid/server/am/ProcessRecord.h"
 #include "elastos/droid/server/am/ContentProviderRecord.h"
-#include "elastos/droid/os/SystemClock.h"
+#include <elastos/droid/os/SystemClock.h>
+#include <elastos/droid/utility/TimeUtils.h>
 
-using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Utility::TimeUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Am {
 
+CAR_INTERFACE_IMPL(CContentProviderConnection, Object, IBinder)
+CAR_OBJECT_IMPL(CContentProviderConnection)
+
 CContentProviderConnection::CContentProviderConnection()
-    : mProvider(NULL)
-    , mClient(NULL)
-    , mCreateTime(0)
+    : mCreateTime(0)
     , mStableCount(0)
     , mUnstableCount(0)
     , mWaiting(FALSE)
@@ -26,8 +29,6 @@ CContentProviderConnection::CContentProviderConnection()
 
 CContentProviderConnection::~CContentProviderConnection()
 {
-    mProvider = NULL;
-    mClient = NULL;
 }
 
 ECode CContentProviderConnection::constructor(
@@ -44,12 +45,17 @@ ECode CContentProviderConnection::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
+    *str = ToString();
+    return NOERROR;
+}
+
+String CContentProviderConnection::ToString()
+{
     StringBuilder sb(128);
     sb += ("CContentProviderConnection{");
     ToShortString(&sb);
     sb += ('}');
-    *str = sb.ToString();
-    return NOERROR;
+    return sb.ToString();
 }
 
 String CContentProviderConnection::ToShortString()
@@ -84,7 +90,8 @@ void CContentProviderConnection::ToClientString(
         return;
 
     if (mClient != NULL) {
-        *sb += (mClient->ToShortString());
+        assert(0);
+        // *sb += (mClient->ToShortString());
     }
     *sb += (" s");
     *sb += (mStableCount);
@@ -103,7 +110,7 @@ void CContentProviderConnection::ToClientString(
 
     Int64 nowReal = SystemClock::GetElapsedRealtime();
     *sb += (" ");
-    // TODO TimeUtils.formatDuration(nowReal - mCreateTime, sb);
+    TimeUtils::FormatDuration(nowReal - mCreateTime, *sb);
 }
 
 } // namespace Am

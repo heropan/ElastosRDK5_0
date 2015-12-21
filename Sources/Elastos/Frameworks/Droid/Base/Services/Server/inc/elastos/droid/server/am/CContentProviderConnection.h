@@ -3,7 +3,6 @@
 #define __ELASTOS_DROID_SERVER_AM_CCONTENTPROVIDERCONNECTION_H__
 
 #include "_Elastos_Droid_Server_Am_CContentProviderConnection.h"
-#include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
@@ -18,11 +17,17 @@ class ContentProviderRecord;
 class ProcessRecord;
 
 CarClass(CContentProviderConnection)
+    , public Object
+    , public IBinder
 {
 public:
     CContentProviderConnection();
 
     ~CContentProviderConnection();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     constructor(
         /* [in] */ Handle32 provider,
@@ -30,6 +35,8 @@ public:
 
     CARAPI ToString(
         /* [out] */ String* str);
+
+    CARAPI_(String) ToString();
 
     CARAPI_(String) ToShortString();
 

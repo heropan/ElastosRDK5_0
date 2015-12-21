@@ -267,6 +267,15 @@ module
         const Int32 BIND_VISIBLE = 0x0100;
 
         /**
+         * @hide
+         * Flag for {@link #bindService}: Consider this binding to be causing the target
+         * process to be showing UI, so it will be do a UI_HIDDEN memory trim when it goes
+         * away.
+         */
+        const Int32 BIND_SHOWING_UI = 0x20000000;
+
+
+        /**
          * Flag for #bindService: Don't consider the bound service to be
          * visible, even if the caller is visible.
          *

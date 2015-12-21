@@ -6,6 +6,11 @@
 #include <elastos/core/Object.h>
 
 #if 1
+#include "Elastos.Droid.Content.h"
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Os::IHandler;
+
 namespace Elastos {
 namespace Droid {
 namespace Server {
@@ -131,6 +136,11 @@ public:
     {
         return FALSE;
     }
+
+public:
+    AutoPtr<IConfiguration> mConfiguration;
+    AutoPtr<IHandler> mHandler;
+    AutoPtr<IContext> mContext;
 };
 
 } // namespace Am
@@ -258,7 +268,6 @@ class ActiveServices;
 class ActivityStack;
 class BackupRecord;
 class BroadcastFilter;
-class BroadcastFilterList;
 class BroadcastQueue;
 class BroadcastRecord;
 //class CBatteryStatsService;
@@ -2655,7 +2664,7 @@ protected:
         /* [in] */ ArrayOf<String>* capsules,
         /* [in] */ Int32 userId);
 
-    CARAPI_(AutoPtr<BroadcastFilterList>) CollectReceiverComponents(
+    CARAPI_(AutoPtr<IList>) CollectReceiverComponents(
         /* [in] */ IIntent* intent,
         /* [in] */ const String& resolvedType,
         /* [in] */ ArrayOf<Int32>* users);

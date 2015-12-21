@@ -2,25 +2,22 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_CONTENTPROVIDERRECORD_H__
 #define __ELASTOS_DROID_SERVER_AM_CONTENTPROVIDERRECORD_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#define HASH_FOR_OS
+#include "elastos/droid/ext/frameworkhash.h"
 #include "elastos/droid/server/am/CContentProviderConnection.h"
-#include <Elastos.Droid.Core.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
-#include <elastos/core/Object.h>
 
-using Elastos::Utility::Etl::List;
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::ISynchronize;
-using Elastos::IO::IPrintWriter;
-using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Content::IIContentProvider;
+using Elastos::Droid::App::IContentProviderHolder;
 using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::IIContentProvider;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Pm::IProviderInfo;
-using Elastos::Droid::App::IContentProviderHolder;
-
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::IBundle;
+using Elastos::IO::IPrintWriter;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -29,10 +26,7 @@ namespace Am {
 
 class CActivityManagerService;
 
-class ContentProviderRecord
-    : public Object
-    , public ISynchronize
-    , public Object
+class ContentProviderRecord : public Object
 {
 private:
     // This class represents a handle from an external process to a provider.
@@ -51,6 +45,7 @@ private:
 
         CARAPI ProxyDied();
 
+    public:
         static const String TAG;
         AutoPtr<IBinder> mToken;
         Int32 mAcquisitionCount;
@@ -95,23 +90,6 @@ public:
 
     CARAPI_(String) ToShortString();
 
-    CARAPI Lock();
-
-    CARAPI Unlock();
-
-    CARAPI Wait();
-
-    CARAPI Wait(
-        /* [in] */ Int64 millis);
-
-    CARAPI Wait(
-        /* [in] */ Int64 millis,
-        /* [in] */ Int32 nanos);
-
-    CARAPI Notify();
-
-    CARAPI NotifyAll();
-
 private:
     CARAPI_(void) RemoveExternalProcessHandleInternalLocked(
         /* [in] */ IBinder* token);
@@ -132,7 +110,7 @@ public:
     typedef HashMap<AutoPtr<IBinder>, AutoPtr<ExternalProcessHandle> > ProcessHandleHashMap;
     typedef typename ProcessHandleHashMap::ValueType ProcessHandleValueType;
     typedef typename ProcessHandleHashMap::Iterator ProcessHandleIterator;
-    ProcessHandleHashMap mExternalProcessTokenToHandle;
+    AutoPtr<ProcessHandleHashMap> mExternalProcessTokenToHandle;
 
     // Count for external process for which we have no handles.
     Int32 mExternalProcessNoHandleCount;
@@ -147,10 +125,6 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-
-#define HASH_FUNC_FOR_AUTOPTR_CONTENTPROVIDERRECORD
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Server::Am::ContentProviderRecord)
-#endif
-
 
 #endif //__ELASTOS_DROID_SERVER_AM_CONTENTPROVIDERRECORD_H__

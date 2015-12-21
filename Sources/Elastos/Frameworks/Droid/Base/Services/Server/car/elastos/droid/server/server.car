@@ -469,14 +469,6 @@ module
 //         interface IIUsageStats;
 //     }
 
-//     class CContentProviderConnection {
-//         constructor(
-//             [in] Handle32 provider,
-//             [in] Handle32 client);
-
-//         interface IBinder;
-//     }
-
 //     class CServiceRecord {
 //         interface IBinder;
 //     }
@@ -1230,6 +1222,14 @@ module
             [in] IActivityRecord* activity);
 
         interface IApplicationToken;
+        interface IBinder;
+    }
+
+    class CContentProviderConnection {
+        constructor(
+            [in] Handle32 provider,
+            [in] Handle32 client);
+
         interface IBinder;
     }
 

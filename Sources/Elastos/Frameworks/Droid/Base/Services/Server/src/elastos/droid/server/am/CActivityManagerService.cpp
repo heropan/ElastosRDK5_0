@@ -12090,15 +12090,13 @@ Boolean CActivityManagerService::DumpProcessesLocked(
         StringBuilder sb("  mConfigWillChange: ");
         sb += mMainStack->mConfigWillChange;
         pw->PrintStringln(sb.ToString());
-        AutoPtr<HashMap<String, AutoPtr<IInteger32> > > packages = mCompatModePackages->GetPackages();
-        if (packages->Begin() != packages->End()) {
+        HashMap<String, Int32>& packages = mCompatModePackages->GetPackages();
+        if (packages.Begin() != packages.End()) {
             Boolean printed = FALSE;
-            HashMap<String, AutoPtr<IInteger32> >::Iterator it;
-            for (it = packages->Begin(); it != packages->End(); ++it) {
+            HashMap<String, Int32>::Iterator it;
+            for (it = packages.Begin(); it != packages.End(); ++it) {
                 String pkg = it->mFirst;
-                AutoPtr<IInteger32> mode = it->mSecond;
-                Int32 modeInt32;
-                mode->GetValue(&modeInt32);
+                Int32 mode = it->mSecond;
                 if (!dumpPackage.IsNull() && !dumpPackage.Equals(pkg)) {
                     continue;
                 }
@@ -12109,7 +12107,7 @@ Boolean CActivityManagerService::DumpProcessesLocked(
                 pw->PrintString(String("    "));
                 pw->PrintString(pkg);
                 pw->PrintString(String(": "));
-                pw->PrintInt32(modeInt32);
+                pw->PrintInt32(mode);
                 pw->Println();
             }
         }
@@ -14514,7 +14512,8 @@ ECode CActivityManagerService::RegisterReceiver(
     // this filter.
     if (allSticky != NULL) {
         AutoPtr<IInterface> bfObj = bf->Probe(EIID_IInterface);
-        AutoPtr<BroadcastFilterList> receivers = new BroadcastFilterList();
+        AutoPtr<IList> receivers;
+        CArrayList::New((IList**)&receivers);
         receivers->PushBack(bfObj);
 
         List<AutoPtr<IIntent> >::Iterator it = allSticky->Begin();
@@ -14607,7 +14606,7 @@ void CActivityManagerService::SendPackageBroadcastLocked(
    }
 }
 
-AutoPtr<BroadcastFilterList> CActivityManagerService::CollectReceiverComponents(
+AutoPtr<IList> CActivityManagerService::CollectReceiverComponents(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& resolvedType,
     /* [in] */ ArrayOf<Int32>* users)
@@ -14725,7 +14724,8 @@ AutoPtr<BroadcastFilterList> CActivityManagerService::CollectReceiverComponents(
     //     // pm is in same process, this will never happen.
     // }
     if (receivers != NULL) {
-        AutoPtr<BroadcastFilterList> list = new BroadcastFilterList();
+        AutoPtr<IList> list;
+        CArrayList::New((IList**)&list);
         AutoPtr<IObjectEnumerator> enumerator;
         receivers->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
         Boolean hasNext = FALSE;
@@ -15035,7 +15035,7 @@ ECode CActivityManagerService::BroadcastIntentLocked(
     }
 
     // Figure out who all will receive this broadcast.
-    AutoPtr<BroadcastFilterList> receivers;
+    AutoPtr<IList> receivers;
     AutoPtr<List<AutoPtr<BroadcastFilter> > > registeredReceivers;
     // Need to resolve the intent to interested receivers...
     Int32 flags;
@@ -15062,7 +15062,8 @@ ECode CActivityManagerService::BroadcastIntentLocked(
 
     if (!ordered && registeredReceivers != NULL && !registeredReceivers->IsEmpty()) {
         AutoPtr<BroadcastQueue> queue = BroadcastQueueForIntent(intent);
-        AutoPtr<BroadcastFilterList> rlist = new BroadcastFilterList();
+        AutoPtr<IList> rlist;
+        CArrayList::New((IList**)&rlist);
         List< AutoPtr<BroadcastFilter> >::Iterator it;
         for (it = registeredReceivers->Begin(); it != registeredReceivers->End(); ++it) {
             rlist->PushBack((*it)->Probe(EIID_IInterface));
@@ -15166,7 +15167,7 @@ ECode CActivityManagerService::BroadcastIntentLocked(
     if (registeredReceivers) {
         while(ir != registeredReceivers->End()) {
             if (receivers == NULL) {
-                receivers = new BroadcastFilterList();
+                CArrayList::New((IList**)&receivers);
             }
             receivers->PushBack((IInterface*)*ir);
             ir++;

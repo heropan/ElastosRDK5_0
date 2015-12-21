@@ -4,32 +4,22 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/server/am/BroadcastFilter.h"
-#include "elastos/droid/server/am/BroadcastQueue.h"
-#include <Elastos.Droid.Core.h>
-#include <elastos/utility/etl/List.h>
+#include "elastos/droid/server/am/ProcessRecord.h"
 
-
-using Elastos::Utility::Etl::List;
-using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentReceiver;
 using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Am {
 
-class ProcessRecord;
-class BroadcastFilter;
 class BroadcastQueue;
-
-class BroadcastFilterList
-     : public List< AutoPtr<IInterface> >
-{
-};
 
 /**
  * An active intent broadcast.
@@ -44,8 +34,10 @@ public:
         /* [in] */ const String& callerCapsule,
         /* [in] */ Int32 callingPid,
         /* [in] */ Int32 callingUid,
+        /* [in] */ const String& resolvedType,
         /* [in] */ const String& requiredPermission,
-        /* [in] */ BroadcastFilterList* receivers,
+        /* [in] */ Int32 appOp,
+        /* [in] */ IList* receivers,
         /* [in] */ IIntentReceiver* resultTo,
         /* [in] */ Int32 resultCode,
         /* [in] */ const String& resultData,
@@ -57,26 +49,36 @@ public:
 
     ~BroadcastRecord();
 
-public:
+    CARAPI_(void) Dump(
+        /* [in] */ IPrintWriter* pw,
+        /* [in] */ const String& prefix);
+
     CARAPI_(String) ToString();
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 
 public:
     static const Int32 IDLE = 0;
     static const Int32 APP_RECEIVE = 1;
     static const Int32 CALL_IN_RECEIVE = 2;
     static const Int32 CALL_DONE_RECEIVE = 3;
+    static const Int32 WAITING_SERVICES = 4;
 
-    AutoPtr<IIntent> mIntent;       // the original intent that generated us
-    AutoPtr<ProcessRecord> mCallerApp;      // process that sent this
-    String mCallerPackage;          // who sent this
-    Int32 mCallingPid;              // the pid of who sent this
-    Int32 mCallingUid;              // the uid of who sent this
-    Boolean mOrdered;               // serialize the send to receivers?
-    Boolean mSticky;                // originated from existing sticky data?
-    Boolean mInitialSticky;         // initial broadcast from register to sticky?
-    Int32 mUserId;       // user id this broadcast was for
-    String mRequiredPermission;     // a permission the caller has required
-    AutoPtr<BroadcastFilterList> mReceivers;  // contains BroadcastFilter and ResolveInfo
+    const AutoPtr<IIntent> mIntent;       // the original intent that generated us
+    AutoPtr<IComponentName> mTargetComp; // original component name set on the intent
+    const AutoPtr<ProcessRecord> mCallerApp;      // process that sent this
+    const String mCallerPackage;          // who sent this
+    const Int32 mCallingPid;              // the pid of who sent this
+    const Int32 mCallingUid;              // the uid of who sent this
+    const Boolean mOrdered;               // serialize the send to receivers?
+    const Boolean mSticky;                // originated from existing sticky data?
+    const Boolean mInitialSticky;         // initial broadcast from register to sticky?
+    const Int32 mUserId;       // user id this broadcast was for
+    const String mResolvedType; // the resolved data type
+    const String mRequiredPermission;     // a permission the caller has required
+    const Int32 mAppOp;        // an app op that is associated with this broadcast
+    AutoPtr<IList> mReceivers;  // contains BroadcastFilter and ResolveInfo
     AutoPtr<IIntentReceiver> mResultTo; // who receives final result if non-null
     Int64 mDispatchTime;      // when dispatch started on this set of receivers
     Int64 mDispatchClockTime; // the clock time the dispatch started
