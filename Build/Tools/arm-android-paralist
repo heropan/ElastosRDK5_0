@@ -287,7 +287,7 @@
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/sax
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid
 > Elastos/Frameworks/Droid/Base/Core
-- Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid Elastos.Droid.Server.car
+- Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server Elastos.Droid.Server.car
 #- Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid Elastos.Droid.System.eco
 #- Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid Org.Kxml2.IO.eco
 > Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/am
