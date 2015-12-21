@@ -14,6 +14,7 @@
 #include "elastos/droid/os/storage/StorageResultCode.h"
 // #include "elastos/droid/os/storage/CStorageManagerHelper.h"
 #include "elastos/droid/os/Environment.h"
+#include "elastos/droid/os/CUserEnvironment.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 
@@ -22,6 +23,8 @@ using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::IPackageInfo;
 using Elastos::Droid::Net::ITrafficStats;
 using Elastos::Droid::Os::Environment;
+using Elastos::Droid::Os::IUserEnvironment;
+using Elastos::Droid::Os::CUserEnvironment;
 using Elastos::Droid::Os::FileUtils;
 using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::Os::IUserHandle;
@@ -628,8 +631,10 @@ ECode CPackageHelper::ResolveInstallLocation(
 
     Boolean fitsOnExternal = FALSE;
     if (!emulated && (checkBoth || prefer == RECOMMEND_INSTALL_EXTERNAL)) {
-        AutoPtr<Environment::UserEnvironment> ue = new Environment::UserEnvironment(IUserHandle::USER_OWNER);
-        AutoPtr<IFile> target = ue->GetExternalStorageDirectory();
+        AutoPtr<IUserEnvironment> ue;
+        CUserEnvironment::New(IUserHandle::USER_OWNER, (IUserEnvironment**)&ue);
+        AutoPtr<IFile> target;
+        ue->GetExternalStorageDirectory((IFile**)&target);
         // External is only an option when size is known
         if (sizeBytes > 0) {
             Int64 size;

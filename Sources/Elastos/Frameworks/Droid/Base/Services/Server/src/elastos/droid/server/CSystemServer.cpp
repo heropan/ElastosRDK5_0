@@ -12,6 +12,11 @@
 #include <elastos/droid/os/Build.h>
 #include <elastos/utility/logging/Slogger.h>
 
+#include <SensorService.h>
+#include <cutils/properties.h>
+#include <utils/Log.h>
+#include <utils/misc.h>
+
 using Elastos::Droid::R;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::FactoryTest;
@@ -100,6 +105,12 @@ SystemServer::SystemServer()
 
 ECode SystemServer::NativeInit()
 {
+    char propBuf[PROPERTY_VALUE_MAX];
+    property_get("system_init.startsensorservice", propBuf, "1");
+    if (strcmp(propBuf, "1") == 0) {
+        // Start the sensor service
+        android::SensorService::instantiate();
+    }
     return NOERROR;
 }
 
@@ -288,8 +299,8 @@ ECode SystemServer::StartBootstrapServices()
     // Display manager is needed to provide display metrics before package manager
     // starts up.
     service = NULL;
-    mSystemServiceManager->StartService(
-        String("LElastos/Droid/Server/CDisplayManagerService"), (ISystemService**)&service);
+    CDisplayManagerService::New(mSystemContext, (ISystemService**)&service);
+    mSystemServiceManager->StartService(service);
     mDisplayManagerService = (CDisplayManagerService*)service.Get();
 
     // We need the default display before we can initialize the package manager.

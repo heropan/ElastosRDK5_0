@@ -3,6 +3,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
+#include "Elastos.Droid.Os.h"
 
 using Elastos::IO::IFile;
 using Elastos::Droid::Os::Storage::IStorageVolume;
@@ -21,57 +22,78 @@ public:
     /** {@hide} */
     class UserEnvironment
         : public Object
+        , public IUserEnvironment
     {
     public:
+        CAR_INTERFACE_DECL()
+
+        UserEnvironment();
+
+        virtual ~UserEnvironment();
 
         // TODO: generalize further to create package-specific environment
-
-        UserEnvironment(
+        CARAPI constructor(
             /* [in] */ Int32 useid);
 
         //@Deprecated
-        AutoPtr<IFile> GetExternalStorageDirectory();
+        CARAPI GetExternalStorageDirectory(
+            /* [out] */ IFile** file);
 
         //@Deprecated
-        AutoPtr<IFile> GetExternalStoragePublicDirectory(
-            /* [in] */ const String& type);
+        CARAPI GetExternalStoragePublicDirectory(
+            /* [in] */ const String& type,
+            /* [out] */ IFile** file);
 
-        AutoPtr<ArrayOf<IFile*> > GetExternalDirsForVold();
+        CARAPI GetExternalDirsForVold(
+            /* [out, callee] */ ArrayOf<IFile*>** files);
 
-        AutoPtr<ArrayOf<IFile*> > GetExternalDirsForApp();
+        CARAPI GetExternalDirsForApp(
+            /* [out, callee] */ ArrayOf<IFile*>** files);
 
-        AutoPtr<IFile> GetMediaDir();
+        CARAPI GetMediaDir(
+            /* [out] */ IFile** file);
 
-        AutoPtr<ArrayOf<IFile*> > BuildExternalStoragePublicDirs(
-            /* [in] */ const String& type);
+        CARAPI BuildExternalStoragePublicDirs(
+            /* [in] */ const String& type,
+            /* [out, callee] */ ArrayOf<IFile*>** files);
 
-        AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAndroidDataDirs();
+        CARAPI BuildExternalStorageAndroidDataDirs(
+            /* [out, callee] */ ArrayOf<IFile*>** files);
 
-        AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAndroidObbDirs();
+        CARAPI BuildExternalStorageAndroidObbDirs(
+            /* [out, callee] */ ArrayOf<IFile*>** files);
 
-        AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAppDataDirs(
-            /* [in] */ const String& packageName);
+        CARAPI BuildExternalStorageAppDataDirs(
+            /* [in] */ const String& packageName,
+            /* [out, callee] */ ArrayOf<IFile*>** files);
 
-        AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAppDataDirsForVold(
-            /* [in] */ const String& packageName);
+        CARAPI BuildExternalStorageAppDataDirsForVold(
+            /* [in] */ const String& packageName,
+            /* [out, callee] */ ArrayOf<IFile*>** files);
 
-        AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAppMediaDirs(
-            /* [in] */ const String& packageName);
+        CARAPI BuildExternalStorageAppMediaDirs(
+            /* [in] */ const String& packageName,
+            /* [out, callee] */ ArrayOf<IFile*>** files);
 
-        AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAppMediaDirsForVold(
-            /* [in] */ const String& packageName);
+        CARAPI BuildExternalStorageAppMediaDirsForVold(
+            /* [in] */ const String& packageName,
+            /* [out, callee] */ ArrayOf<IFile*>** files);
 
-        AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAppObbDirs(
-            /* [in] */ const String& packageName);
+        CARAPI BuildExternalStorageAppObbDirs(
+            /* [in] */ const String& packageName,
+            /* [out, callee] */ ArrayOf<IFile*>** files);
 
-        AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAppObbDirsForVold(
-            /* [in] */ const String& packageName);
+        CARAPI BuildExternalStorageAppObbDirsForVold(
+            /* [in] */ const String& packageName,
+            /* [out, callee] */ ArrayOf<IFile*>** files);
 
-        AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAppFilesDirs(
-            /* [in] */ const String& packageName);
+        CARAPI BuildExternalStorageAppFilesDirs(
+            /* [in] */ const String& packageName,
+            /* [out, callee] */ ArrayOf<IFile*>** files);
 
-        AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAppCacheDirs(
-            /* [in] */ const String& packageName);
+        CARAPI BuildExternalStorageAppCacheDirs(
+            /* [in] */ const String& packageName,
+            /* [out, callee] */ ArrayOf<IFile*>** files);
 
     private:
         /** External storage dirs, as visible to vold */
@@ -392,7 +414,7 @@ public:
         /* [in] */ const String& defaultPath);
 
     /** {@hide} */
-    static void SetUserRequired(
+    static CARAPI SetUserRequired(
         /* [in] */ Boolean userRequired);
 
     /**
@@ -403,6 +425,11 @@ public:
     static AutoPtr<ArrayOf<IFile*> > BuildPaths(
         /* [in] */ ArrayOf<IFile*>* base,
         /* [in] */ ArrayOf<String>* segments);
+
+    static CARAPI BuildPaths(
+        /* [in] */ ArrayOf<IFile*>* base,
+        /* [in] */ ArrayOf<String>* segments,
+        /* [out, callee] */ ArrayOf<IFile*>** files);
 
     /**
      * Append path segments to given base path, returning result.
@@ -659,7 +686,7 @@ private:
 
     static const String SYSTEM_PROPERTY_EFS_ENABLED; // = "persist.security.efs.enabled";
 
-    static AutoPtr<UserEnvironment> sCurrentUser;
+    static AutoPtr<IUserEnvironment> sCurrentUser;
     static Boolean sUserRequired;
 
 private:

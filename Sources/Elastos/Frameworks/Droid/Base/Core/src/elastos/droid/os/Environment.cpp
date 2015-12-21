@@ -3,21 +3,20 @@
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Os.h"
 #include "elastos/droid/os/Environment.h"
+#include "elastos/droid/os/CUserEnvironment.h"
 #include "elastos/droid/os/SystemProperties.h"
 #include "elastos/droid/os/UserHandle.h"
 //#include "elastos/droid/os/FileUtils.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
 
-//#include "elastos/droid/text/TextUtils.h"
-
+using Elastos::Droid::Text::TextUtils;
 using Elastos::IO::CFile;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
-
-//using Elastos::Droid::Text::TextUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -102,11 +101,12 @@ String GetCanonicalPathOrNull(
     return cp;
 }
 
-AutoPtr<Environment::UserEnvironment> InitForCurrentUser()
+AutoPtr<IUserEnvironment> InitForCurrentUser()
 {
     Int32 userId = UserHandle::GetMyUserId();
-    AutoPtr<Environment::UserEnvironment> ue = new Environment::UserEnvironment(userId);
-    return ue;
+    AutoPtr<CUserEnvironment> ue;
+    CUserEnvironment::NewByFriend(userId, (CUserEnvironment**)&ue);
+    return (IUserEnvironment*)ue.Get();
 }
 
 const AutoPtr<IFile> Environment::DIR_ANDROID_ROOT = GetDirectoryImpl(String("ANDROID_ROOT")/*ENV_ANDROID_ROOT*/, String("/system"));
@@ -124,14 +124,21 @@ const String Environment::CANONCIAL_EMULATED_STORAGE_TARGET =
 
 const String Environment::SYSTEM_PROPERTY_EFS_ENABLED("persist.security.efs.enabled");
 
-AutoPtr<Environment::UserEnvironment> Environment::sCurrentUser = InitForCurrentUser();
+AutoPtr<IUserEnvironment> Environment::sCurrentUser = InitForCurrentUser();
 Boolean Environment::sUserRequired;
 
 //===========================================================================================
 // Environment::UserEnvironment
 //===========================================================================================
+CAR_INTERFACE_IMPL(Environment::UserEnvironment, Object, IUserEnvironment)
 
-Environment::UserEnvironment::UserEnvironment(
+Environment::UserEnvironment::UserEnvironment()
+{}
+
+Environment::UserEnvironment::~UserEnvironment()
+{}
+
+ECode Environment::UserEnvironment::constructor(
     /* [in] */ Int32 userId)
 {
     AutoPtr<ISystem> system;
@@ -146,10 +153,9 @@ Environment::UserEnvironment::UserEnvironment(
 
     String rawMediaStorage;
     system->GetEnv(Environment::ENV_MEDIA_STORAGE, &rawMediaStorage);
-    assert(0 && "TODO");
-    // if (TextUtils::IsEmpty(rawMediaStorage)) {
-    //     rawMediaStorage = String("/data/media");
-    // }
+    if (TextUtils::IsEmpty(rawMediaStorage)) {
+        rawMediaStorage = String("/data/media");
+    }
 
     List<AutoPtr<IFile> > externalForVold, externalForApp;
 
@@ -193,9 +199,7 @@ Environment::UserEnvironment::UserEnvironment(
     // Splice in any secondary storage paths, but only for owner
     String rawSecondaryStorage;
     system->GetEnv(ENV_SECONDARY_STORAGE, &rawSecondaryStorage);
-
-    assert(0);
-    //isEmpty = TextUtils::IsEmpty(rawSecondaryStorage);
+    isEmpty = TextUtils::IsEmpty(rawSecondaryStorage);
     if (!isEmpty && userId == UserHandle::USER_OWNER) {
         AutoPtr<ArrayOf<String> > arrays;
         StringUtils::Split(rawSecondaryStorage, String(":"), (ArrayOf<String>**)&arrays);
@@ -224,133 +228,168 @@ Environment::UserEnvironment::UserEnvironment(
     for (it = externalForApp.Begin(); it != externalForApp.End(); ++it) {
         mExternalDirsForApp->Set(i++, *it);
     }
+    return NOERROR;
 }
 
-AutoPtr<IFile> Environment::UserEnvironment::GetExternalStorageDirectory()
+ECode Environment::UserEnvironment::GetExternalStorageDirectory(
+    /* [out] */ IFile** file)
 {
-    return (*mExternalDirsForApp)[0];
+    VALIDATE_NOT_NULL(file)
+    *file = (*mExternalDirsForApp)[0];
+    REFCOUNT_ADD(*file)
+    return NOERROR;
 }
 
-AutoPtr<IFile> Environment::UserEnvironment::GetExternalStoragePublicDirectory(
-    /* [in] */ const String& type)
+ECode Environment::UserEnvironment::GetExternalStoragePublicDirectory(
+    /* [in] */ const String& type,
+    /* [out] */ IFile** file)
 {
-    AutoPtr<ArrayOf<IFile*> > dirs = BuildExternalStoragePublicDirs(type);
-    return (*dirs)[0];
+    VALIDATE_NOT_NULL(file)
+    *file = NULL;
+
+    AutoPtr<ArrayOf<IFile*> > dirs;
+    FAIL_RETURN(BuildExternalStoragePublicDirs(type, (ArrayOf<IFile*>**)&dirs))
+    *file = (*dirs)[0];
+    REFCOUNT_ADD(*file)
+    return NOERROR;
 }
 
-AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::GetExternalDirsForVold()
+ECode Environment::UserEnvironment::GetExternalDirsForVold(
+    /* [out, callee] */ ArrayOf<IFile*>** files)
 {
-    return mExternalDirsForVold;
+    VALIDATE_NOT_NULL(files)
+    *files = mExternalDirsForVold;
+    REFCOUNT_ADD(*files)
+    return NOERROR;
 }
 
-AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::GetExternalDirsForApp()
+ECode Environment::UserEnvironment::GetExternalDirsForApp(
+    /* [out, callee] */ ArrayOf<IFile*>** files)
 {
-    return mExternalDirsForApp;
+    VALIDATE_NOT_NULL(files)
+    *files = mExternalDirsForApp;
+    REFCOUNT_ADD(*files)
+    return NOERROR;
 }
 
-AutoPtr<IFile> Environment::UserEnvironment::GetMediaDir()
+ECode Environment::UserEnvironment::GetMediaDir(
+    /* [out] */ IFile** file)
 {
-    return mEmulatedDirForDirect;
+    VALIDATE_NOT_NULL(file)
+    *file = mEmulatedDirForDirect;
+    REFCOUNT_ADD(*file)
+    return NOERROR;
 }
 
-AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStoragePublicDirs(
-    /* [in] */ const String& type)
+ECode Environment::UserEnvironment::BuildExternalStoragePublicDirs(
+    /* [in] */ const String& type,
+    /* [out, callee] */ ArrayOf<IFile*>** files)
 {
     AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(1);
     params->Set(0, type);
-    return BuildPaths(mExternalDirsForApp, params);
+    return BuildPaths(mExternalDirsForApp, params, files);
 }
 
-AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStorageAndroidDataDirs()
+ECode Environment::UserEnvironment::BuildExternalStorageAndroidDataDirs(
+    /* [out, callee] */ ArrayOf<IFile*>** files)
 {
     AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(2);
     params->Set(0, Environment::DIR_ANDROID);
     params->Set(1, Environment::DIR_DATA);
-    return BuildPaths(mExternalDirsForApp, params);
+    return BuildPaths(mExternalDirsForApp, params, files);
 }
 
-AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStorageAndroidObbDirs()
+ECode Environment::UserEnvironment::BuildExternalStorageAndroidObbDirs(
+    /* [out, callee] */ ArrayOf<IFile*>** files)
 {
     AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(3);
     params->Set(0, Environment::DIR_ANDROID);
     params->Set(1, Environment::DIR_OBB);
     params->Set(2, Environment::DIR_DATA);
-    return BuildPaths(mExternalDirsForApp, params);
+    return BuildPaths(mExternalDirsForApp, params, files);
 }
 
-AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStorageAppDataDirs(
-    /* [in] */ const String& packageName)
+ECode Environment::UserEnvironment::BuildExternalStorageAppDataDirs(
+    /* [in] */ const String& packageName,
+    /* [out, callee] */ ArrayOf<IFile*>** files)
 {
     AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(3);
     params->Set(0, Environment::DIR_ANDROID);
     params->Set(1, Environment::DIR_DATA);
     params->Set(2, packageName);
-    return BuildPaths(mExternalDirsForApp, params);
+    return BuildPaths(mExternalDirsForApp, params, files);
 }
 
-AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStorageAppDataDirsForVold(
-    /* [in] */ const String& packageName)
+ECode Environment::UserEnvironment::BuildExternalStorageAppDataDirsForVold(
+    /* [in] */ const String& packageName,
+    /* [out, callee] */ ArrayOf<IFile*>** files)
 {
     AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(3);
     params->Set(0, Environment::DIR_ANDROID);
     params->Set(1, Environment::DIR_DATA);
     params->Set(2, packageName);
-    return BuildPaths(mExternalDirsForVold, params);
+    return BuildPaths(mExternalDirsForVold, params, files);
 }
 
-AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStorageAppMediaDirs(
-    /* [in] */ const String& packageName)
+ECode Environment::UserEnvironment::BuildExternalStorageAppMediaDirs(
+    /* [in] */ const String& packageName,
+    /* [out, callee] */ ArrayOf<IFile*>** files)
 {
     AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(3);
     params->Set(0, Environment::DIR_ANDROID);
     params->Set(1, Environment::DIR_MEDIA);
     params->Set(2, packageName);
-    return BuildPaths(mExternalDirsForApp, params);
+    return BuildPaths(mExternalDirsForApp, params, files);
 }
 
-AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStorageAppMediaDirsForVold(
-    /* [in] */ const String& packageName)
+ECode Environment::UserEnvironment::BuildExternalStorageAppMediaDirsForVold(
+    /* [in] */ const String& packageName,
+    /* [out, callee] */ ArrayOf<IFile*>** files)
 {
     AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(3);
     params->Set(0, Environment::DIR_ANDROID);
     params->Set(1, Environment::DIR_MEDIA);
     params->Set(2, packageName);
-    return BuildPaths(mExternalDirsForVold, params);
+    return BuildPaths(mExternalDirsForVold, params, files);
 }
 
-AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStorageAppObbDirs(
-    /* [in] */ const String& packageName)
+ECode Environment::UserEnvironment::BuildExternalStorageAppObbDirs(
+    /* [in] */ const String& packageName,
+    /* [out, callee] */ ArrayOf<IFile*>** files)
 {
     AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(3);
     params->Set(0, Environment::DIR_ANDROID);
     params->Set(1, Environment::DIR_OBB);
     params->Set(2, packageName);
-    return BuildPaths(mExternalDirsForApp, params);
+    return BuildPaths(mExternalDirsForApp, params, files);
 }
 
-AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStorageAppObbDirsForVold(
-    /* [in] */ const String& packageName)
+ECode Environment::UserEnvironment::BuildExternalStorageAppObbDirsForVold(
+    /* [in] */ const String& packageName,
+    /* [out, callee] */ ArrayOf<IFile*>** files)
 {
     AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(3);
     params->Set(0, Environment::DIR_ANDROID);
     params->Set(1, Environment::DIR_OBB);
     params->Set(2, packageName);
-    return BuildPaths(mExternalDirsForVold, params);
+    return BuildPaths(mExternalDirsForVold, params, files);
 }
 
-AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStorageAppFilesDirs(
-    /* [in] */ const String& packageName)
+ECode Environment::UserEnvironment::BuildExternalStorageAppFilesDirs(
+    /* [in] */ const String& packageName,
+    /* [out, callee] */ ArrayOf<IFile*>** files)
 {
     AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(4);
     params->Set(0, Environment::DIR_ANDROID);
     params->Set(1, Environment::DIR_DATA);
     params->Set(2, packageName);
     params->Set(3, Environment::DIR_FILES);
-    return BuildPaths(mExternalDirsForApp, params);
+    return BuildPaths(mExternalDirsForApp, params, files);
 }
 
-AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStorageAppCacheDirs(
-    /* [in] */ const String& packageName)
+ECode Environment::UserEnvironment::BuildExternalStorageAppCacheDirs(
+    /* [in] */ const String& packageName,
+    /* [out, callee] */ ArrayOf<IFile*>** files)
 {
     AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(4);
     params->Set(0, Environment::DIR_ANDROID);
@@ -358,7 +397,7 @@ AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStorageAppC
     params->Set(2, packageName);
     params->Set(3, Environment::DIR_CACHE);
 
-    return BuildPaths(mExternalDirsForApp, params);
+    return BuildPaths(mExternalDirsForApp, params, files);
 }
 
 //===========================================================================================
@@ -406,7 +445,9 @@ AutoPtr<IFile> Environment::GetSecureDataDirectory()
 AutoPtr<IFile> Environment::GetMediaStorageDirectory()
 {
     if (FAILED(ThrowIfUserRequired())) return NULL;
-    return sCurrentUser->GetMediaDir();
+    AutoPtr<IFile> file;
+    sCurrentUser->GetMediaDir((IFile**)&file);
+    return file;
 }
 
 AutoPtr<IFile> Environment::GetUserSystemDirectory(
@@ -448,7 +489,8 @@ AutoPtr<IFile> Environment::GetDataDirectory()
 AutoPtr<IFile> Environment::GetExternalStorageDirectory()
 {
     if (FAILED(ThrowIfUserRequired())) return NULL;
-    AutoPtr<ArrayOf<IFile*> > files = sCurrentUser->GetExternalDirsForApp();
+    AutoPtr<ArrayOf<IFile*> > files;
+    sCurrentUser->GetExternalDirsForApp((ArrayOf<IFile*>**)&files);
     return (*files)[0];
 }
 
@@ -501,49 +543,62 @@ AutoPtr<IFile> Environment::GetExternalStoragePublicDirectory(
     /* [in] */ const String& type)
 {
     if (FAILED(ThrowIfUserRequired())) return NULL;
-    AutoPtr<ArrayOf<IFile*> > files = sCurrentUser->BuildExternalStoragePublicDirs(type);
+    AutoPtr<ArrayOf<IFile*> > files;
+    sCurrentUser->BuildExternalStoragePublicDirs(type, (ArrayOf<IFile*>**)&files);
     return (*files)[0];
 }
 
 AutoPtr<ArrayOf<IFile*> > Environment::BuildExternalStorageAndroidDataDirs()
 {
     if (FAILED(ThrowIfUserRequired())) return NULL;
-    return sCurrentUser->BuildExternalStorageAndroidDataDirs();
+    AutoPtr<ArrayOf<IFile*> > files;
+    sCurrentUser->BuildExternalStorageAndroidDataDirs((ArrayOf<IFile*>**)&files);
+    return files;
 }
 
 AutoPtr<ArrayOf<IFile*> > Environment::BuildExternalStorageAppDataDirs(
     /* [in] */ const String& packageName)
  {
     if (FAILED(ThrowIfUserRequired())) return NULL;
-    return sCurrentUser->BuildExternalStorageAppDataDirs(packageName);
+    AutoPtr<ArrayOf<IFile*> > files;
+    sCurrentUser->BuildExternalStorageAppDataDirs(packageName, (ArrayOf<IFile*>**)&files);
+    return files;
 }
 
 AutoPtr<ArrayOf<IFile*> > Environment::BuildExternalStorageAppMediaDirs(
     /* [in] */ const String& packageName)
  {
     if (FAILED(ThrowIfUserRequired())) return NULL;
-    return sCurrentUser->BuildExternalStorageAppMediaDirs(packageName);
+    AutoPtr<ArrayOf<IFile*> > files;
+    sCurrentUser->BuildExternalStorageAppMediaDirs(packageName, (ArrayOf<IFile*>**)&files);
+    return files;
 }
 
 AutoPtr<ArrayOf<IFile*> > Environment::BuildExternalStorageAppObbDirs(
     /* [in] */ const String& packageName)
 {
     if (FAILED(ThrowIfUserRequired())) return NULL;
-    return sCurrentUser->BuildExternalStorageAppObbDirs(packageName);
+    AutoPtr<ArrayOf<IFile*> > files;
+    sCurrentUser->BuildExternalStorageAppObbDirs(packageName, (ArrayOf<IFile*>**)&files);
+    return files;
 }
 
 AutoPtr<ArrayOf<IFile*> > Environment::BuildExternalStorageAppFilesDirs(
     /* [in] */ const String& packageName)
 {
     if (FAILED(ThrowIfUserRequired())) return NULL;
-    return sCurrentUser->BuildExternalStorageAppFilesDirs(packageName);
+    AutoPtr<ArrayOf<IFile*> > files;
+    sCurrentUser->BuildExternalStorageAppFilesDirs(packageName, (ArrayOf<IFile*>**)&files);
+    return files;
 }
 
 AutoPtr<ArrayOf<IFile*> > Environment::BuildExternalStorageAppCacheDirs(
     /* [in] */ const String& packageName)
 {
     if (FAILED(ThrowIfUserRequired())) return NULL;
-    return sCurrentUser->BuildExternalStorageAppCacheDirs(packageName);
+    AutoPtr<ArrayOf<IFile*> > files;
+    sCurrentUser->BuildExternalStorageAppCacheDirs(packageName, (ArrayOf<IFile*>**)&files);
+    return files;
 }
 
 AutoPtr<IFile> Environment::GetDownloadCacheDirectory()
@@ -553,7 +608,8 @@ AutoPtr<IFile> Environment::GetDownloadCacheDirectory()
 
 String Environment::GetExternalStorageState()
 {
-    AutoPtr<ArrayOf<IFile*> > files = sCurrentUser->GetExternalDirsForApp();
+    AutoPtr<ArrayOf<IFile*> > files;
+    sCurrentUser->GetExternalDirsForApp((ArrayOf<IFile*>**)&files);
     AutoPtr<IFile> externalDir = (*files)[0];
     return GetExternalStorageState(externalDir);
 }
@@ -569,7 +625,7 @@ String Environment::GetExternalStorageState(
 {
     AutoPtr<IStorageVolume> volume = GetStorageVolume(path);
     if (volume != NULL) {
-        assert(0);
+        assert(0 && "TODO");
 
         // AutoPtr<IInterface> obj = ServiceManager::GetService(String("mount"));
         // IMountService* mountService = IMountService::Probe(mountService);
@@ -590,7 +646,8 @@ String Environment::GetExternalStorageState(
 Boolean Environment::IsExternalStorageRemovable()
 {
     if (IsStorageDisabled()) return FALSE;
-    AutoPtr<ArrayOf<IFile*> > files = sCurrentUser->GetExternalDirsForApp();
+    AutoPtr<ArrayOf<IFile*> > files;
+    sCurrentUser->GetExternalDirsForApp((ArrayOf<IFile*>**)&files);
     AutoPtr<IFile> externalDir = (*files)[0];
     return IsExternalStorageRemovable(externalDir);
 }
@@ -612,7 +669,8 @@ Boolean Environment::IsExternalStorageRemovable(
 Boolean Environment::IsExternalStorageEmulated()
 {
     if (IsStorageDisabled()) return FALSE;
-    AutoPtr<ArrayOf<IFile*> > files = sCurrentUser->GetExternalDirsForApp();
+    AutoPtr<ArrayOf<IFile*> > files;
+    sCurrentUser->GetExternalDirsForApp((ArrayOf<IFile*>**)&files);
     AutoPtr<IFile> externalDir = (*files)[0];
     return IsExternalStorageEmulated(externalDir);
 }
@@ -638,10 +696,11 @@ AutoPtr<IFile> Environment::GetDirectory(
     return GetDirectoryImpl(variableName, defaultPath);
 }
 
-void Environment::SetUserRequired(
+ECode Environment::SetUserRequired(
     /* [in] */ Boolean userRequired)
 {
     sUserRequired = userRequired;
+    return NOERROR;
 }
 
 AutoPtr<ArrayOf<IFile*> > Environment::BuildPaths(
@@ -654,6 +713,24 @@ AutoPtr<ArrayOf<IFile*> > Environment::BuildPaths(
         result->Set(i, BuildPath((*base)[i], segments));
     }
     return result;
+}
+
+ECode Environment::BuildPaths(
+    /* [in] */ ArrayOf<IFile*>* base,
+    /* [in] */ ArrayOf<String>* segments,
+    /* [out, callee] */ ArrayOf<IFile*>** files)
+{
+    VALIDATE_NOT_NULL(files)
+
+    AutoPtr<ArrayOf<IFile*> > result = ArrayOf<IFile*>::Alloc(base->GetLength());
+
+    for (Int32 i = 0; i < base->GetLength(); i++) {
+        result->Set(i, BuildPath((*base)[i], segments));
+    }
+
+    *files = result;
+    REFCOUNT_ADD(*files)
+    return NOERROR;
 }
 
 AutoPtr<IFile> Environment::BuildPath(
@@ -733,7 +810,7 @@ AutoPtr<IStorageVolume> Environment::GetStorageVolume(
         return NULL;
     }
 
-    assert(0);
+    assert(0 && "TODO");
     // try {
     // AutoPtr<IInterface> obj = ServiceManager::GetService(String("mount"));
     // IMountService* mountService = IMountService::Probe(mountService);
@@ -752,8 +829,6 @@ AutoPtr<IStorageVolume> Environment::GetStorageVolume(
 
     return NULL;
 }
-
-
 
 } // namespace Os
 } // namespace Droid

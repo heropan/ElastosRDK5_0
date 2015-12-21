@@ -326,6 +326,13 @@ module
         interface IMemoryFile;
     }
 
+    class CUserEnvironment {
+        constructor(
+            [in] Int32 userId);
+
+        interface IUserEnvironment;
+    }
+
     class CParcel {
         constructor();
 

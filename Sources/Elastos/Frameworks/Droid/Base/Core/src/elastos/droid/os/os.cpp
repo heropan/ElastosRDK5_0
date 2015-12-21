@@ -3,6 +3,7 @@
 #include "elastos/droid/os/CBinder.h"
 #include "elastos/droid/os/CHandler.h"
 #include "elastos/droid/os/CUserHandle.h"
+#include "elastos/droid/os/CUserEnvironment.h"
 #include "elastos/droid/os/CPatternMatcher.h"
 #include "elastos/droid/os/CParcelFileDescriptor.h"
 #include "elastos/droid/os/CParcelFileDescriptorAutoCloseInputStream.h"
@@ -19,6 +20,8 @@ CAR_OBJECT_IMPL(CBinder)
 CAR_OBJECT_IMPL(CHandler)
 
 CAR_OBJECT_IMPL(CUserHandle)
+
+CAR_OBJECT_IMPL(CUserEnvironment)
 
 CAR_OBJECT_IMPL(CPatternMatcher)
 

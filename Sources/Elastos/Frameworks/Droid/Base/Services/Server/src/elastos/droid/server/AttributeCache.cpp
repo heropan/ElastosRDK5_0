@@ -1,9 +1,15 @@
-#include "AttributeCache.h"
+#include "elastos/droid/server/AttributeCache.h"
+#include <Elastos.Droid.Os.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/CoreUtils.h>
 
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::CUserHandle;
 using Elastos::Droid::Content::Res::CConfiguration;
 using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Core::CoreUtils;
+using Elastos::Core::ICharSequence;
+using Elastos::Utility::CWeakHashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -11,7 +17,10 @@ namespace Server {
 
 AutoPtr<AttributeCache> AttributeCache::sInstance;
 
-AttributeCache::Entry::Entry(
+//=======================================================================
+// Entry
+//=======================================================================
+Entry::Entry(
     /* [in] */ IContext* c,
     /* [in] */ ITypedArray* ta)
     : mContext(c)
@@ -19,6 +28,9 @@ AttributeCache::Entry::Entry(
 {
 }
 
+//=======================================================================
+// AttributeCache::Package
+//=======================================================================
 AttributeCache::Package::Package(
     /* [in] */ IContext* c)
 {
@@ -27,22 +39,17 @@ AttributeCache::Package::Package(
 
 AttributeCache::Package::~Package()
 {
-    if (mMap.GetSize() > 0) {
-        EntryIterator it = mMap.Begin();
-        for (; it != mMap.End(); it++) {
-            HashMap<AutoPtr<ArrayOf<Int32> >, AutoPtr<Entry> >* map = it->mSecond;
-            if (map != NULL) {
-                delete map;
-            }
-        }
-    }
 }
 
+//=======================================================================
+// AttributeCache
+//=======================================================================
 void AttributeCache::Init(
         /* [in] */ IContext* context)
 {
-    if (sInstance == NULL)
+    if (sInstance == NULL) {
         sInstance = new AttributeCache(context);
+    }
 }
 
 AutoPtr<AttributeCache> AttributeCache::GetInstance()
@@ -56,117 +63,93 @@ AttributeCache::AttributeCache(
     : mContext(context)
 {
     CConfiguration::New((IConfiguration**)&mConfiguration);
+    CWeakHashMap::New((IWeakHashMap**)&mPackages);
 }
 
 AttributeCache::~AttributeCache()
 {
-    if (mPackages.GetSize() > 0) {
-        HashMap<Int32, HashMap<String, AutoPtr<Package> >* >::Iterator it  = mPackages.Begin();
-        for (;it != mPackages.End(); it++) {
-            HashMap<String, AutoPtr<Package> >* map = it->mSecond;
-            if (map != NULL) {
-                delete map;
-            }
-        }
-    }
 }
 
 void AttributeCache::UpdateConfiguration(
     /* [in] */ IConfiguration* config)
 {
-    AutoLock lock(mLock);
-    Int32 changes;
-    mConfiguration->UpdateFrom(config, &changes);
-    if ((changes & ~(IActivityInfo::CONFIG_FONT_SCALE |
-            IActivityInfo::CONFIG_KEYBOARD_HIDDEN |
-            IActivityInfo::CONFIG_ORIENTATION)) != 0) {
-        // The configurations being masked out are ones that commonly
-        // change so we don't want flushing the cache... all others
-        // will flush the cache.
-        HashMap<Int32, HashMap<String, AutoPtr<Package> >* >::Iterator it = mPackages.Begin();
-        for (; it != mPackages.End() ; it++)
-        {
-            HashMap<String, AutoPtr<Package> >* map = it->mSecond;
-            if (map != NULL) {
-                delete map;
-            }
+    synchronized(this) {
+        Int32 changes;
+        mConfiguration->UpdateFrom(config, &changes);
+        if ((changes & ~(IActivityInfo::CONFIG_FONT_SCALE |
+                IActivityInfo::CONFIG_KEYBOARD_HIDDEN |
+                IActivityInfo::CONFIG_ORIENTATION)) != 0) {
+            mPackages->Clear();
         }
-        mPackages.Clear();
     }
-}
-
-ECode AttributeCache::RemoveUser(
-        /* [in] */ Int32 userId)
-{
-    AutoLock lock(mLock);
-    HashMap<String, AutoPtr<Package> >* map = mPackages[userId];
-    if (map != NULL)
-        delete map;
-    mPackages.Erase(userId);
-    return NOERROR;
 }
 
 void AttributeCache::RemovePackage(
     /* [in] */ const String& packageName)
 {
-    AutoLock lock(mLock);
-    HashMap<Int32, HashMap<String, AutoPtr<Package> >* >::Iterator it = mPackages.Begin();
-    for (; it != mPackages.End(); it++) {
-        HashMap<String, AutoPtr<Package> >* map = it->mSecond;
-        if (map != NULL)
-            map->Erase(packageName);
+    synchronized(this) {
+        AutoPtr<ICharSequence> csq = CoreUtils::Convert(packageName);
+        mPackages->Remove(csq.Get());
     }
 }
 
-AutoPtr<AttributeCache::Entry> AttributeCache::Get(
-    /* [in] */ Int32 userId,
+AutoPtr<Entry> AttributeCache::Get(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 resId,
-    /* [in] */ ArrayOf<Int32>* styleable)
+    /* [in] */ ArrayOf<Int32>* styleable,
+    /* [in] */ Int32 userId)
 {
-    AutoLock lock(mLock);
-    HashMap<String, AutoPtr<Package> >* packages = mPackages[userId];
-    if (packages == NULL) {
-        packages = new HashMap<String, AutoPtr<Package> >();
-        mPackages[userId] = packages;
-    }
-    AutoPtr<Package> pkg = (*packages)[packageName];
-    EntryMap* map = NULL;
-    AutoPtr<Entry> ent = NULL;
-    if (pkg != NULL) {
-        map = (pkg->mMap)[resId];
-        if (map != NULL) {
-            AutoPtr<ArrayOf<Int32> > key = styleable;
-            ent = (*map)[key];
-            if (ent != NULL) {
-                return ent;
+    AutoPtr<Entry> ent;
+    synchronized(this) {
+        AutoPtr<ICharSequence> csq = CoreUtils::Convert(packageName);
+        AutoPtr<IInterface> obj;
+        mPackages->Get(csq.Get(), (IInterface**)&obj);
+
+        AutoPtr<Package> pkg;
+        if (obj != NULL) {
+            pkg = (Package*)IObject::Probe(obj);
+        }
+
+        AutoPtr<EntryMap> entryMap;
+        if (pkg != NULL) {
+            PackageMapIterator pit = pkg->mMap.Find(resId);
+            if (pit != pkg->mMap.End()) {
+                entryMap = pit->mSecond;
+                if (entryMap != NULL) {
+                    AutoPtr<ArrayOf<Int32> > key = styleable;
+                    EntryMapIterator eit = entryMap->Find(key);
+                    if (eit != entryMap->End()) {
+                        return eit->mSecond;
+                    }
+                }
             }
         }
-    }
-    else {
-        AutoPtr<IContext> context;
-        AutoPtr<IUserHandle> userHandle;
-        CUserHandle::New(userId, (IUserHandle**)&userHandle);
-        ECode ec = mContext->CreatePackageContextAsUser(packageName, 0, userHandle, (IContext**)&context);
-        if (FAILED(ec) || context == NULL) {
+        else {
+            AutoPtr<IContext> context;
+            AutoPtr<IUserHandle> userHandle;
+            CUserHandle::New(userId, (IUserHandle**)&userHandle);
+            ECode ec = mContext->CreatePackageContextAsUser(packageName, 0, userHandle, (IContext**)&context);
+            if (FAILED(ec) || context == NULL) {
+                return NULL;
+            }
+
+            pkg = new Package(context);
+            mPackages->Put(csq.Get(), TO_IINTERFACE(pkg));
+        }
+
+        if (entryMap == NULL) {
+            entryMap = new EntryMap();
+            pkg->mMap[resId] = entryMap;
+        }
+
+        AutoPtr<ITypedArray> typeArray;
+        ECode ec = pkg->mContext->ObtainStyledAttributes(resId, styleable, (ITypedArray**)&typeArray);
+        if (FAILED(ec)) {
             return NULL;
         }
-        pkg = new Package(context);
-        (*packages)[packageName] = pkg;
+        ent = new Entry(pkg->mContext, typeArray);
+        (*entryMap)[styleable] = ent;
     }
-
-    if (map == NULL) {
-        map = new HashMap<AutoPtr<ArrayOf<Int32> >, AutoPtr<Entry> >();
-        (pkg->mMap)[resId] = map;
-    }
-
-    AutoPtr<ITypedArray> typeArray;
-    ECode ec = pkg->mContext->ObtainStyledAttributes(resId, styleable, (ITypedArray**)&typeArray);
-    if (FAILED(ec)) {
-        return NULL;
-    }
-    ent = new Entry(pkg->mContext, typeArray);
-    (*map)[styleable] = ent;
     return ent;
 }
 
