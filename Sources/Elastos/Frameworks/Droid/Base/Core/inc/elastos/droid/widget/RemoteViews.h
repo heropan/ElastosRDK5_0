@@ -2,32 +2,43 @@
 #ifndef __ELASTOS_DROID_WIDGET_REMOTEVIEWS_H__
 #define __ELASTOS_DROID_WIDGET_REMOTEVIEWS_H__
 
-#include "elastos/droid/widget/Filter.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.Droid.Utility.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.App.h"
+#include "elastos/droid/content/ContextWrapper.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Os::IUserHandle;
+using Elastos::Utility::IArrayList;
+using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::App::IPendingIntent;
+using Elastos::Droid::Content::ContextWrapper;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Graphics::PorterDuffMode;
 using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Utility::IArrayMap;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::IViewOnClickListener;
+using Elastos::Droid::View::ILayoutInflaterFilter;
 using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
+using Elastos::Droid::Graphics::IRect;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-extern "C" const InterfaceID EIID_RemoteViews;
-
 class RemoteViewsOnClickHandler
-    : public ElRefBase
+    : public Object
     , public IRemoteViewsOnClickHandler
 {
 public:
@@ -44,25 +55,64 @@ public:
  * Simple class used to keep track of memory usage in a RemoteViews.
  *
  */
-class MemoryUsageCounter : public ElRefBase
+class MemoryUsageCounter 
+    : public Object 
+    , public IMemoryUsageCounter
 {
 public:
+    CAR_INTERFACE_DECL()
+
     MemoryUsageCounter();
 
-    CARAPI_(void) Clear();
+    CARAPI Clear();
 
-    CARAPI_(void) Increment(
+    CARAPI Increment(
         /* [in */ Int32 numBytes);
 
-    CARAPI_(Int32) GetMemoryUsage();
+    CARAPI GetMemoryUsage(
+        /* [out] */ Int32* usage);
 
-    CARAPI_(void) AddBitmapMemory(
+    CARAPI AddBitmapMemory(
         /* [in */ IBitmap* b);
 
 public:
     Int32 mMemoryUsage;
 };
 
+class MutablePair
+    : public Object
+    , public IMutablePair
+{
+public:
+    CAR_INTERFACE_DECL()
+
+    MutablePair(
+        /* [in] */ String first,
+        /* [in] */ String second);
+
+    CARAPI Equals(
+        /* [in] */ IInterface* oth,
+        /* [out] */ Boolean* equals);
+
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hashCode);
+
+    CARAPI GetFirst(
+        /* [out] */ String* fir);
+
+    CARAPI SetFirst(
+        /* [in] */ const String& fir);
+
+    CARAPI GetSecond(
+        /* [out] */ String* sec);
+
+    CARAPI SetSecond(
+        /* [in] */ const String& sec);
+
+private:
+    String mFirst;
+    String mSecond;
+};
 
 /**
  * A class that describes a view hierarchy that can be displayed in
@@ -71,6 +121,10 @@ public:
  * the content of the inflated hierarchy.
  */
 class RemoteViews
+    : public Object
+    , public IRemoteViews
+    , public IParcelable
+    , public ILayoutInflaterFilter
 {
 private:
     /**
@@ -80,7 +134,8 @@ private:
      *  SUBCLASSES MUST BE IMMUTABLE SO CLONE WORKS!!!!!
      */
     class Action
-        : public ElRefBase
+        : public Object
+        , public IRemoteViewsAction
         , public IParcelable
     {
     public:
@@ -88,31 +143,31 @@ private:
 
         Action();
 
-        Action(
-            /* [in] */ Int32 viewId);
-
-        virtual CARAPI_(void) Apply(
-            /* [in] */ IView* root,
-            /* [in] */ IViewGroup* rootParent,
-            /* [in] */ IRemoteViewsOnClickHandler* handler) = 0;
-
-
-
         /**
          * Overridden by each class to report on it's own memory usage
          */
-        CARAPI_(void) UpdateMemoryUsageEstimate(
-            /* [in] */ MemoryUsageCounter* counter);
+        CARAPI UpdateMemoryUsageEstimate(
+            /* [in] */ IMemoryUsageCounter* counter);
 
-        CARAPI_(void) SetBitmapCache(
-            /* [in] */ IRemoteViewsBitmapCache* bitmapCache);
+        CARAPI SetBitmapCache(
+            /* [in] */ IBitmapCache* bitmapCache);
 
-        CARAPI_(Int32) MergeBehavior();
+        CARAPI MergeBehavior(
+            /* [out] */ Int32* result);
 
-        virtual CARAPI_(String) GetActionName() = 0;
 
-        CARAPI_(String) GetUniqueKey();
+        CARAPI GetUniqueKey(
+            /* [out] */ String* key);
 
+        CARAPI SetViewId(
+            /* [in] */ Int32 viewId);
+
+        CARAPI GetViewId(
+            /* [out] */ Int32* viewId);
+
+    protected:
+        Action(
+            /* [in] */ Int32 viewId);
     public:
         static const Int32 MERGE_REPLACE = 0;
         static const Int32 MERGE_APPEND = 1;
@@ -130,12 +185,13 @@ private:
             /* [in] */ Int32 viewId,
             /* [in] */ Int32 emptyViewId);
 
-        CARAPI_(void) Apply(
+        CARAPI Apply(
             /* [in] */ IView* root,
             /* [in] */ IViewGroup* rootParent,
             /* [in] */ IRemoteViewsOnClickHandler* handler);
 
-        CARAPI_(String) GetActionName();
+        CARAPI GetActionName(
+            /* [out] */ String* name);
 
         // interface IParcelable
         CARAPI ReadFromParcel(
@@ -147,6 +203,7 @@ private:
     public:
         static const Int32 TAG = 6;
 
+        Int32 mSubViewId;
         Int32 mEmptyViewId;
     };
 
@@ -161,12 +218,13 @@ private:
             /* [in] */ IIntent* fillInIntent,
             /* [in] */ RemoteViews* host);
 
-        CARAPI_(void) Apply(
+        CARAPI Apply(
             /* [in] */ IView* root,
             /* [in] */ IViewGroup* rootParent,
             /* [in] */ IRemoteViewsOnClickHandler* handler);
 
-        CARAPI_(String) GetActionName();
+        CARAPI GetActionName(
+            /* [out] */ String* name);
 
         // interface IParcelable
         CARAPI ReadFromParcel(
@@ -185,18 +243,21 @@ private:
     class _SetPendingIntentTemplate : public Action
     {
     public:
-        _SetPendingIntentTemplate();
+        _SetPendingIntentTemplate(
+            /* [in] */ RemoteViews* host);
 
         _SetPendingIntentTemplate(
             /* [in] */ Int32 id,
-            /* [in] */ IPendingIntent* pendingIntentTemplate);
+            /* [in] */ IPendingIntent* pendingIntentTemplate,
+            /* [in] */ RemoteViews* host);
 
-        CARAPI_(void) Apply(
+        CARAPI Apply(
             /* [in] */ IView* root,
             /* [in] */ IViewGroup* rootParent,
             /* [in] */ IRemoteViewsOnClickHandler* handler);
 
-        CARAPI_(String) GetActionName();
+        CARAPI GetActionName(
+            /* [out] */ String* name);
 
         // interface IParcelable
         CARAPI ReadFromParcel(
@@ -209,6 +270,41 @@ private:
         static const Int32 TAG = 8;
 
         AutoPtr<IPendingIntent> mPendingIntentTemplate;
+
+    private:
+        RemoteViews* mHost;
+    };
+
+    class SetRemoteViewsAdapterList : public Action
+    {
+    public:
+        SetRemoteViewsAdapterList();
+
+        SetRemoteViewsAdapterList(
+            /* [in] */ Int32 id,
+            /* [in] */ IArrayList* list,
+            /* [in] */ Int32 viewTypeCount);
+
+        CARAPI Apply(
+            /* [in] */ IView* root,
+            /* [in] */ IViewGroup* rootParent,
+            /* [in] */ IRemoteViewsOnClickHandler* handler);
+
+        CARAPI GetActionName(
+            /* [out] */ String* name);
+
+        CARAPI ReadFromParcel(
+            /* [in] */ IParcel* source);
+
+        CARAPI WriteToParcel(
+            /* [in] */ IParcel* dest);
+
+    public:
+        const static Int32 TAG = 15;
+
+    private:
+        Int32 mViewTypeCount;
+        AutoPtr<IArrayList> mList;
     };
 
     class SetRemoteViewsAdapterIntent : public Action
@@ -220,12 +316,13 @@ private:
             /* [in] */ Int32 id,
             /* [in] */ IIntent* intent);
 
-        CARAPI_(void) Apply(
+        CARAPI Apply(
             /* [in] */ IView* root,
             /* [in] */ IViewGroup* rootParent,
             /* [in] */ IRemoteViewsOnClickHandler* handler);
 
-        CARAPI_(String) GetActionName();
+        CARAPI GetActionName(
+            /* [out] */ String* name);
 
         // interface IParcelable
         CARAPI ReadFromParcel(
@@ -251,12 +348,13 @@ private:
             /* [in] */ IPendingIntent* pendingIntent,
             /* [in] */ RemoteViews* host);
 
-        CARAPI_(void) Apply(
+        CARAPI Apply(
             /* [in] */ IView* root,
             /* [in] */ IViewGroup* rootParent,
             /* [in] */ IRemoteViewsOnClickHandler* handler);
 
-        CARAPI_(String) GetActionName();
+        CARAPI GetActionName(
+            /* [out] */ String* name);
 
         // interface IParcelable
         CARAPI ReadFromParcel(
@@ -297,12 +395,13 @@ private:
             /* [in] */ PorterDuffMode mode,
             /* [in] */ Int32 level);
 
-        CARAPI_(void) Apply(
+        CARAPI Apply(
             /* [in] */ IView* root,
             /* [in] */ IViewGroup* rootParent,
             /* [in] */ IRemoteViewsOnClickHandler* handler);
 
-        CARAPI_(String) GetActionName();
+        CARAPI GetActionName(
+            /* [out] */ String* name);
 
         // interface IParcelable
         CARAPI ReadFromParcel(
@@ -324,18 +423,21 @@ private:
     class ReflectionActionWithoutParams : public Action
     {
     public:
-        ReflectionActionWithoutParams();
+        ReflectionActionWithoutParams(
+            /* [in] */ RemoteViews* host);
 
         ReflectionActionWithoutParams(
             /* [in] */ Int32 id,
-            /* [in] */ const String& methodName);
+            /* [in] */ const String& methodName,
+            /* [in] */ RemoteViews* host);
 
-        CARAPI_(void) Apply(
+        CARAPI Apply(
             /* [in] */ IView* root,
             /* [in] */ IViewGroup* rootParent,
             /* [in] */ IRemoteViewsOnClickHandler* handler);
 
-        CARAPI_(String) GetActionName();
+        CARAPI GetActionName(
+            /* [out] */ String* name);
 
         // interface IParcelable
         CARAPI ReadFromParcel(
@@ -344,12 +446,49 @@ private:
         CARAPI WriteToParcel(
             /* [in] */ IParcel* dest);
 
-        CARAPI_(Int32) MergeBehavior();
+        CARAPI MergeBehavior(
+            /* [out] */ Int32* result);
 
     public:
         static const Int32 TAG = 5;
 
         String mMethodName;
+
+    private:
+        RemoteViews* mHost;
+    };
+
+    class BitmapCache
+        : public Object
+        , public IBitmapCache
+    {
+    public:
+        CAR_INTERFACE_DECL()
+        
+        BitmapCache();
+
+        BitmapCache(
+            /* [in] */ IParcel* parcel);
+
+        CARAPI GetBitmapId(
+            /* [in] */ IBitmap* b,
+            /* [out] */ Int32* id);
+
+        CARAPI GetBitmapForId(
+            /* [in] */ Int32 id,
+            /* [out] */ IBitmap** bmp);
+
+        CARAPI WriteBitmapsToParcel(
+            /* [in] */ IParcel* dest);
+
+        CARAPI Assimilate(
+            /* [in] */ IBitmapCache* bitmapCache);
+
+        CARAPI AddBitmapMemory(
+            /* [in] */ IMemoryUsageCounter* memoryCounter);
+
+    private:
+        List<AutoPtr<IBitmap> > mBitmaps;
     };
 
     class BitmapReflectionAction : public Action
@@ -364,15 +503,16 @@ private:
             /* [in] */ IBitmap* bitmap,
             /* [in] */ RemoteViews* host);
 
-        CARAPI_(void) Apply(
+        CARAPI Apply(
             /* [in] */ IView* root,
             /* [in] */ IViewGroup* rootParent,
             /* [in] */ IRemoteViewsOnClickHandler* handler);
 
-        CARAPI_(String) GetActionName();
+        CARAPI GetActionName(
+            /* [out] */ String* name);
 
-        CARAPI_(void) SetBitmapCache(
-            /* [in] */ IRemoteViewsBitmapCache* bitmapCache);
+        CARAPI SetBitmapCache(
+            /* [in] */ IBitmapCache* bitmapCache);
 
         // interface IParcelable
         CARAPI ReadFromParcel(
@@ -404,16 +544,18 @@ private:
             /* [in] */ Int32 type,
             /* [in] */ IInterface* value);
 
-        CARAPI_(void) Apply(
+        CARAPI Apply(
             /* [in] */ IView* root,
             /* [in] */ IViewGroup* rootParent,
             /* [in] */ IRemoteViewsOnClickHandler* handler);
 
-        CARAPI_(String) GetActionName();
+        CARAPI GetActionName(
+            /* [out] */ String* name);
 
         CARAPI_(String) GetParameterType();
 
-        CARAPI_(Int32) MergeBehavior();
+        CARAPI MergeBehavior(
+            /* [out] */ Int32* result);
 
         // interface IParcelable
         CARAPI ReadFromParcel(
@@ -463,20 +605,22 @@ private:
             /* [in] */ IRemoteViews* nestedViews,
             /* [in] */ RemoteViews* host);
 
-        CARAPI_(void) Apply(
+        CARAPI Apply(
             /* [in] */ IView* root,
             /* [in] */ IViewGroup* rootParent,
             /* [in] */ IRemoteViewsOnClickHandler* handler);
 
-        CARAPI_(String) GetActionName();
+        CARAPI GetActionName(
+            /* [out] */ String* name);
 
-        CARAPI_(Int32) MergeBehavior();
+        CARAPI MergeBehavior(
+            /* [out] */ Int32* resut);
 
-        CARAPI_(void) UpdateMemoryUsageEstimate(
-            /* [in] */ MemoryUsageCounter* counter);
+        CARAPI UpdateMemoryUsageEstimate(
+            /* [in] */ IMemoryUsageCounter* counter);
 
-        CARAPI_(void) SetBitmapCache(
-            /* [in] */ IRemoteViewsBitmapCache* bitmapCache);
+        CARAPI SetBitmapCache(
+            /* [in] */ IBitmapCache* bitmapCache);
 
         // interface IParcelable
         CARAPI ReadFromParcel(
@@ -484,7 +628,7 @@ private:
 
         CARAPI ReadFromParcel(
             /* [in] */ IParcel* source,
-            /* [in] */ IRemoteViewsBitmapCache* bitmapCache);
+            /* [in] */ IBitmapCache* bitmapCache);
 
         CARAPI WriteToParcel(
             /* [in] */ IParcel* dest);
@@ -513,12 +657,13 @@ private:
             /* [in] */ Int32 d3,
             /* [in] */ Int32 d4);
 
-        CARAPI_(void) Apply(
+        CARAPI Apply(
             /* [in] */ IView* root,
             /* [in] */ IViewGroup* rootParent,
             /* [in] */ IRemoteViewsOnClickHandler* handler);
 
-        CARAPI_(String) GetActionName();
+        CARAPI GetActionName(
+            /* [out] */ String* name);
 
         // interface IParcelable
         CARAPI ReadFromParcel(
@@ -550,12 +695,13 @@ private:
             /* [in] */ Int32 units,
             /* [in] */ Float size);
 
-        CARAPI_(void) Apply(
+        CARAPI Apply(
             /* [in] */ IView* root,
             /* [in] */ IViewGroup* rootParent,
             /* [in] */ IRemoteViewsOnClickHandler* handler);
 
-        CARAPI_(String) GetActionName();
+        CARAPI GetActionName(
+            /* [out] */ String* name);
 
         // interface IParcelable
         CARAPI ReadFromParcel(
@@ -586,12 +732,13 @@ private:
             /* [in] */ Int32 right,
             /* [in] */ Int32 bottom);
 
-        CARAPI_(void) Apply(
+        CARAPI Apply(
             /* [in] */ IView* root,
             /* [in] */ IViewGroup* rootParent,
             /* [in] */ IRemoteViewsOnClickHandler* handler);
 
-        CARAPI_(String) GetActionName();
+        CARAPI GetActionName(
+            /* [out] */ String* name);
 
         // interface IParcelable
         CARAPI ReadFromParcel(
@@ -609,9 +756,50 @@ private:
         Int32 mBottom;
     };
 
+    class TextViewDrawableColorFilterAction
+        : public Action
+    {
+    public:
+        TextViewDrawableColorFilterAction();
+
+        TextViewDrawableColorFilterAction(
+            /* [in] */ Int32 viewId,
+            /* [in] */ Boolean isRelative,
+            /* [in] */ Int32 index,
+            /* [in] */ Int32 color,
+            /* [in] */ PorterDuffMode mode);
+
+        // interface IParcelable
+        CARAPI ReadFromParcel(
+            /* [in] */ IParcel* source);
+
+        CARAPI WriteToParcel(
+            /* [in] */ IParcel* dest);
+
+        CARAPI Apply(
+            /* [in] */ IView* root,
+            /* [in] */ IViewGroup* rootParent,
+            /* [in] */ IRemoteViewsOnClickHandler* handler);
+
+        CARAPI GetActionName(
+            /* [out] */ String* name);
+
+    private:
+        PorterDuffMode ReadPorterDuffMode(
+            /* [in] */ IParcel* parcel);
+
+    public:
+        Boolean mIsRelative;
+        Int32 mIndex;
+        Int32 mColor;
+        PorterDuffMode mMode;
+
+        static const Int32 TAG = 17;
+    };
+
     class FillInIntentClickListener
         : public IViewOnClickListener
-        , public ElRefBase
+        , public Object
     {
     public:
         FillInIntentClickListener(
@@ -630,7 +818,7 @@ private:
 
     class PendingIntentClickListener
         : public IViewOnClickListener
-        , public ElRefBase
+        , public Object
     {
     public:
         PendingIntentClickListener(
@@ -649,7 +837,7 @@ private:
 
     class IntentTemplateOnItemClickListener
         : public IAdapterViewOnItemClickListener
-        , public ElRefBase
+        , public Object
     {
     public:
         IntentTemplateOnItemClickListener(
@@ -669,9 +857,31 @@ private:
         AutoPtr<IRemoteViewsOnClickHandler> mHandler;
     };
 
+    class MyContextWrapper
+        : public ContextWrapper
+    {
+    public:
+        MyContextWrapper(
+            /* [in] */ IContext* ctx,
+            /* [in] */ IContext* contextForResources);
+
+        CARAPI GetResources(
+            /* [out] */ IResources** res);
+
+        CARAPI GetTheme(
+            /* [out] */ IResourcesTheme** theme);
+
+    private:
+        AutoPtr<IContext> mContext;
+        AutoPtr<IContext> mContextForResources;
+    };
+
 public:
-    RemoteViews(
-        /* [in] */ IParcel* parcel);
+    CAR_INTERFACE_DECL()
+
+    RemoteViews();
+
+    CARAPI constructor();
 
     /**
      * Create a new RemoteViews object that will display the views contained
@@ -680,8 +890,36 @@ public:
      * @param packageName Name of the package that contains the layout resource
      * @param layoutId The id of the layout resource
      */
-    RemoteViews(
+    CARAPI constructor(
         /* [in] */ const String& packageName,
+        /* [in] */ Int32 layoutId);
+
+    /**
+     * Create a new RemoteViews object that will display the views contained
+     * in the specified layout file.
+     *
+     * @param packageName Name of the package that contains the layout resource.
+     * @param userId The user under which the package is running.
+     * @param layoutId The id of the layout resource.
+     *
+     * @hide
+     */
+    CARAPI constructor(
+        /* [in] */ const String& packageName,
+        /* [in] */ Int32 userId,
+        /* [in] */ Int32 layoutId);
+
+    /**
+     * Create a new RemoteViews object that will display the views contained
+     * in the specified layout file.
+     *
+     * @param application The application whose content is shown by the views.
+     * @param layoutId The id of the layout resource.
+     *
+     * @hide
+     */
+    CARAPI constructor(
+        /* [in] */ IApplicationInfo* application,
         /* [in] */ Int32 layoutId);
 
     /**
@@ -691,12 +929,13 @@ public:
      * @param landscape The RemoteViews to inflate in landscape configuration
      * @param portrait The RemoteViews to inflate in portrait configuration
      */
-    RemoteViews(
+    CARAPI constructor(
         /* [in] */ IRemoteViews* landscape,
         /* [in] */ IRemoteViews* portrait);
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    CARAPI constructor(
+        /* [in] */ IParcel* parcel,
+        /* [in] */ IBitmapCache* bitmapCache);
 
     /**
      * Merges the passed RemoteViews actions with this RemoteViews actions according to
@@ -709,12 +948,11 @@ public:
     CARAPI MergeRemoteViews(
         /* [in] */ IRemoteViews* newRv);
 
-    CARAPI SetUser(
-        /* [in] */ IUserHandle* user);
+    CARAPI Clone(
+        /* [out] */ IRemoteViews** views);
 
-    CARAPI_(AutoPtr<IRemoteViews>) Clone();
-
-    CARAPI_(String) GetPackage();
+    CARAPI GetPackage(
+        /* [out] */ String* pkg);
 
     /**
      * Reutrns the layout id of the root layout associated with this RemoteViews. In the case
@@ -723,13 +961,15 @@ public:
      *
      * @return the layout id.
      */
-    CARAPI_(Int32) GetLayoutId();
+    CARAPI GetLayoutId(
+        /* [out] */ Int32* layoutId);
 
     /**
      * Returns an estimate of the bitmap heap memory usage for this RemoteViews.
      */
     /** @hide */
-    CARAPI_(Int32) EstimateMemoryUsage();
+    CARAPI EstimateMemoryUsage(
+        /* [out] */ Int32* usage);
 
     /**
      * Equivalent to calling {@link ViewGroup#addView(View)} after inflating the
@@ -846,6 +1086,26 @@ public:
         /* [in] */ Int32 top,
         /* [in] */ Int32 end,
         /* [in] */ Int32 bottom);
+
+    /**
+     * Equivalent to applying a color filter on one of the drawables in
+     * {@link android.widget.TextView#getCompoundDrawablesRelative()}.
+     *
+     * @param viewId The id of the view whose text should change.
+     * @param index  The index of the drawable in the array of
+     *               {@link android.widget.TextView#getCompoundDrawablesRelative()} to set the color
+     *               filter on. Must be in [0, 3].
+     * @param color  The color of the color filter. See
+     *               {@link Drawable#setColorFilter(int, android.graphics.PorterDuff.Mode)}.
+     * @param mode   The mode of the color filter. See
+     *               {@link Drawable#setColorFilter(int, android.graphics.PorterDuff.Mode)}.
+     * @hide
+     */
+    CARAPI SetTextViewCompoundDrawablesRelativeColorFilter(
+        /* [in] */ Int32 viewId,
+        /* [in] */ Int32 index,
+        /* [in] */ Int32 color,
+        /* [in] */ PorterDuffMode mode);
 
     /**
      * Equivalent to calling ImageView.setImageResource
@@ -1047,6 +1307,11 @@ public:
         /* [in] */ Int32 appWidgetId,
         /* [in] */ Int32 viewId,
         /* [in] */ IIntent* intent);
+
+    CARAPI SetRemoteAdapter(
+        /* [in] */ Int32 viewId,
+        /* [in] */ IArrayList* list,
+        /* [in] */ Int32 viewTypeCount);
 
     /**
      * Equivalent to calling {@link android.widget.AbsListView#smoothScrollToPosition(Int32, Int32)}.
@@ -1286,15 +1551,17 @@ public:
      * does <strong>not</strong> attach the hierarchy. The caller should do so when appropriate.
      * @return The inflated view hierarchy
      */
-    CARAPI_(AutoPtr<IView>) Apply(
-        /* [in] */ IContext* context,
-        /* [in] */ IViewGroup* parent);
+    CARAPI Apply(
+        /* [in] */ IContext* ctx,
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
 
     /** @hide */
-    CARAPI_(AutoPtr<IView>) Apply(
-        /* [in] */ IContext* context,
+    CARAPI Apply(
+        /* [in] */ IContext* ctx,
         /* [in] */ IViewGroup* parent,
-        /* [in] */ IRemoteViewsOnClickHandler* handler);
+        /* [in] */ IRemoteViewsOnClickHandler* handler,
+        /* [out] */ IView** view);
 
     /**
      * Applies all of the actions to the provided view.
@@ -1320,10 +1587,13 @@ public:
      * @see android.view.LayoutInflater.Filter#onLoadClass(java.lang.Class)
      */
     CARAPI OnLoadClass(
-        /* [in] */ Handle32 clazz,
+        /* [in] */ IClassInfo* clazz,
         /* [out] */ Boolean* res);
 
     CARAPI SetNotRoot();
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 
     virtual CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
@@ -1341,35 +1611,10 @@ public:
     CARAPI SetIsWidgetCollectionChild(
         /* [in] */ Boolean isWidgetCollectionChild);
 
-    CARAPI_(String) ToString();
-
-protected:
-    RemoteViews();
-
-    CARAPI Init(
-        /* [in] */ IParcel* parcel);
-
-    CARAPI Init(
-        /* [in] */ const String& packageName,
-        /* [in] */ Int32 layoutId);
-
-    CARAPI Init(
-        /* [in] */ IRemoteViews* landscape,
-        /* [in] */ IRemoteViews* portrait);
+    CARAPI GetSequenceNumber(
+        /* [out] */ Int32* seqNumber);
 
 private:
-    RemoteViews(
-        /* [in] */ IParcel* parcel,
-        /* [in] */ IRemoteViewsBitmapCache* bitmapCache);
-
-    CARAPI InitBitmapCache(
-        /* [in] */ IParcel* parcel,
-        /* [in] */ IRemoteViewsBitmapCache* bitmapCache);
-
-    CARAPI Init(
-        /* [in] */ IParcel* parcel,
-        /* [in] */ IRemoteViewsBitmapCache* bitmapCache);
-
     CARAPI_(void) ConfigureRemoteViewsAsChild(
         /* [in] */ IRemoteViews* rv);
 
@@ -1383,13 +1628,13 @@ private:
         /* [in] */ IViewGroup* parent,
         /* [in] */ IRemoteViewsOnClickHandler* handler);
 
-    CARAPI_(AutoPtr<IContext>) PrepareContext(
+    CARAPI_(AutoPtr<IContext>) GetContextForResources(
         /* [in] */ IContext* context);
 
     CARAPI_(void) RecalculateMemoryUsage();
 
     CARAPI_(void) SetBitmapCache(
-        /* [in] */ IRemoteViewsBitmapCache* bitmapCache);
+        /* [in] */ IBitmapCache* bitmapCache);
 
     /**
      * Add an action to be executed on the remote side when apply is called.
@@ -1397,24 +1642,44 @@ private:
      * @param a The action to add
      */
     CARAPI AddAction(
-        /* [in] */ Action* a);
+        /* [in] */ IRemoteViewsAction* a);
+
+    static CARAPI_(AutoPtr<IRect>) GetSourceBounds(
+        /* [out] */ IView* v);
+
+    CARAPI GetMethod(
+        /* [in] */ IView* view,
+        /* [in] */ const String& methodName,
+        /* [in] */ const String& paramType,
+        /* [out] */ IMethodInfo** info);
+
+    static CARAPI_(AutoPtr<IArgumentList>) WrapArg(
+        /* [in] */ IMethodInfo* value);
+
+    static CARAPI GetApplicationInfo(
+        /* [in] */ String packageName,
+        /* [in] */ Int32 userId,
+        /* [out] */ IApplicationInfo** info);
 
 public:
     static const String EXTRA_REMOTEADAPTER_APPWIDGET_ID;
 
-private:
-    /**
-     * User that these views should be applied as. Requires
-     * {@link android.Manifest.permission#INTERACT_ACROSS_USERS_FULL} when
-     * crossing user boundaries.
-     */
-    AutoPtr<IUserHandle> mUser;
+    static pthread_key_t sInvokeArgsTls;
 
+private:
+    const static String TAG;
+    const static AutoPtr<IRemoteViewsOnClickHandler> DEFAULT_ON_CLICK_HANDLER;
+    static Object sMethodsLock;
+    static AutoPtr<IArrayMap> sMethods;
+    static Boolean sHaveInitTls;
     /**
-     * The package name of the package containing the layout
-     * resource. (Added to the parcel)
+     * Constants to whether or not this RemoteViews is composed of a landscape and portrait
+     * RemoteViews.
      */
-    String mPackage;
+    static const Int32 MODE_NORMAL = 0;
+    static const Int32 MODE_HAS_LANDSCAPE_AND_PORTRAIT = 1;
+
+    AutoPtr<IApplicationInfo> mApplication;
 
     /**
      * The resource ID of the layout file. (Added to the parcel)
@@ -1425,30 +1690,23 @@ private:
      * An array of actions to perform on the view tree once it has been
      * inflated
      */
-    List< AutoPtr<Action> > mActions;
+    List<AutoPtr<IRemoteViewsAction> > mActions;
 
     /**
      * A class to keep track of memory usage by this RemoteViews
      */
-    AutoPtr<MemoryUsageCounter> mMemoryUsageCounter;
+    AutoPtr<IMemoryUsageCounter> mMemoryUsageCounter;
 
     /**
      * Maps bitmaps to unique indicies to avoid Bitmap duplication.
      */
-    AutoPtr<IRemoteViewsBitmapCache> mBitmapCache;
+    AutoPtr<IBitmapCache> mBitmapCache;
 
     /**
      * Indicates whether or not this RemoteViews object is contained as a child of any other
      * RemoteViews.
      */
     Boolean mIsRoot;// = true;
-
-    /**
-     * Constants to whether or not this RemoteViews is composed of a landscape and portrait
-     * RemoteViews.
-     */
-    static const Int32 MODE_NORMAL = 0;
-    static const Int32 MODE_HAS_LANDSCAPE_AND_PORTRAIT = 1;
 
     /**
      * Used in conjunction with the special constructor
@@ -1467,9 +1725,9 @@ private:
      */
     Boolean mIsWidgetCollectionChild;
 
-    const static AutoPtr<IRemoteViewsOnClickHandler> DEFAULT_ON_CLICK_HANDLER;
-
     List< AutoPtr<IContext> > mContextCache;
+
+    AutoPtr<IMutablePair> mPair;
 };
 
 } // namespace Widget

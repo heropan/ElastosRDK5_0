@@ -11,12 +11,22 @@
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/utility/CArrayMap.h"
 #include "elastos/droid/app/CActivityOptionsHelper.h"
-#include "elastos/droid/widget/CRemoteViews.h"
-#include "elastos/droid/widget/CRemoteViewsBitmapCache.h"
+#include "elastos/droid/app/CActivityThread.h"
+#include "elastos/droid/animation/PropertyValuesHolder.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/os/CUserHandle.h"
 #include "elastos/droid/R.h"
+#include "Elastos.Droid.AppWidget.h"
+#include "Elastos.Droid.Net.h"
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/CoreUtils.h>
+#include "Elastos.CoreLibrary.Net.h"
 
+using Elastos::Core::AutoLock;
+using Elastos::Core::CoreUtils;
 using Elastos::Core::StringUtils;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
@@ -34,11 +44,14 @@ using Elastos::Core::IDouble;
 using Elastos::Core::CDouble;
 using Elastos::Core::IChar32;
 using Elastos::Core::CChar32;
-using Elastos::Core::CStringWrapper;
 using Elastos::Core::StringBuilder;
+using Elastos::Droid::Net::IUri;
 using Elastos::Utility::Etl::HashMap;
+using Elastos::Droid::Animation::PropertyValuesHolder;
 using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::IContextWrapper;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::ICompatibilityInfo;
 using Elastos::Droid::Content::Res::IConfiguration;
@@ -46,6 +59,7 @@ using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Graphics::CBitmap;
 using Elastos::Droid::Graphics::PorterDuffMode_CLEAR;
+using Elastos::Droid::Graphics::PorterDuffMode_NONE;
 using Elastos::Droid::Graphics::BitmapConfig;
 using Elastos::Droid::Graphics::BitmapConfig_ALPHA_8;
 using Elastos::Droid::Graphics::BitmapConfig_RGB_565;
@@ -55,7 +69,11 @@ using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::Process;
+using Elastos::Droid::Os::UserHandle;
+using Elastos::Droid::Os::CUserHandle;
+using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Utility::CArrayMap;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::View::ILayoutInflater;
@@ -65,15 +83,17 @@ using Elastos::Droid::Widget::IImageView;
 using Elastos::Droid::Widget::ITextView;
 using Elastos::Droid::Widget::IAdapterView;
 using Elastos::Droid::Widget::EIID_IRemoteViews;
-using Elastos::Droid::Widget::CRemoteViews;
+// using Elastos::Droid::Widget::CRemoteViews; zhangjingcheng
 using Elastos::Droid::App::IActivityOptionsHelper;
 using Elastos::Droid::App::CActivityOptionsHelper;
 using Elastos::Droid::App::IActivityOptions;
+using Elastos::Droid::App::CActivityThread;
+using Elastos::Droid::App::IApplication;
 using Elastos::Droid::Content::IIntentSender;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
-// using Elastos::Droid::Appwidget::IAppWidgetHostView;
-
+using Elastos::Droid::AppWidget::IAppWidgetHostView;
+using Elastos::Utility::CArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -85,17 +105,10 @@ static AutoPtr<IRemoteViewsOnClickHandler> InitHandler()
     return temp;
 }
 
-const String RemoteViews::EXTRA_REMOTEADAPTER_APPWIDGET_ID("remoteAdapterAppWidgetId");
-const Int32 RemoteViews::MODE_NORMAL;
-const Int32 RemoteViews::MODE_HAS_LANDSCAPE_AND_PORTRAIT;
-const AutoPtr<IRemoteViewsOnClickHandler> RemoteViews::DEFAULT_ON_CLICK_HANDLER = InitHandler();
-
-static String TAG("RemoteViews");
-
 //==============================================================================
 //                  RemoteViewsOnClickHandler
 //==============================================================================
-CAR_INTERFACE_IMPL(RemoteViewsOnClickHandler, IRemoteViewsOnClickHandler)
+CAR_INTERFACE_IMPL(RemoteViewsOnClickHandler, Object, IRemoteViewsOnClickHandler)
 
 ECode RemoteViewsOnClickHandler::OnClickHandler(
     /* [in] */ IView* view,
@@ -104,6 +117,7 @@ ECode RemoteViewsOnClickHandler::OnClickHandler(
     /* [out] */ Boolean* succeed)
 {
     VALIDATE_NOT_NULL(succeed);
+
     assert(pendingIntent != NULL);
 
     // try {
@@ -143,29 +157,36 @@ ECode RemoteViewsOnClickHandler::OnClickHandler(
 //==============================================================================
 //                  MemoryUsageCounter
 //==============================================================================
+CAR_INTERFACE_IMPL(MemoryUsageCounter, Object, IMemoryUsageCounter)
 
 MemoryUsageCounter::MemoryUsageCounter()
     : mMemoryUsage(0)
 {
 }
 
-void MemoryUsageCounter::Clear()
+ECode MemoryUsageCounter::Clear()
 {
     mMemoryUsage = 0;
+    return NOERROR;
 }
 
-void MemoryUsageCounter::Increment(
+ECode MemoryUsageCounter::Increment(
     /* [in */ Int32 numBytes)
 {
     mMemoryUsage += numBytes;
+    return NOERROR;
 }
 
-Int32 MemoryUsageCounter::GetMemoryUsage()
+ECode MemoryUsageCounter::GetMemoryUsage(
+    /* [out] */ Int32* usage)
 {
-    return mMemoryUsage;
+    VALIDATE_NOT_NULL(usage)
+
+    *usage = mMemoryUsage;
+    return NOERROR;
 }
 
-void MemoryUsageCounter::AddBitmapMemory(
+ECode MemoryUsageCounter::AddBitmapMemory(
     /* [in */ IBitmap* b)
 {
     BitmapConfig c;
@@ -189,6 +210,73 @@ void MemoryUsageCounter::AddBitmapMemory(
     b->GetWidth(&w);
     b->GetHeight(&h);
     Increment(w * h * bpp);
+    return NOERROR;
+}
+
+CAR_INTERFACE_IMPL(MutablePair, Object, IMutablePair)
+
+MutablePair::MutablePair(
+    /* [in] */ String first,
+    /* [in] */ String second)
+    : mFirst(first)
+    , mSecond(second)
+{}
+
+ECode MutablePair::Equals(
+    /* [in] */ IInterface* oth,
+    /* [out] */ Boolean* equals)
+{
+    VALIDATE_NOT_NULL(equals)
+
+    AutoPtr<IMutablePair> pair = IMutablePair::Probe(oth);
+    if (pair == NULL) {
+        *equals = FALSE;
+        return NOERROR;
+    }
+    MutablePair* pairImpl = (MutablePair*)pair.Get();
+    *equals =mSecond.Equals(pairImpl->mSecond) && mFirst.Equals(pairImpl->mFirst);
+    return NOERROR;
+}
+
+ECode MutablePair::GetHashCode(
+    /* [out] */ Int32* hashCode)
+{
+    VALIDATE_NOT_NULL(hashCode)
+
+    *hashCode = mFirst.GetHashCode() ^ mSecond.GetHashCode();
+    return NOERROR;
+}
+
+ECode MutablePair::GetFirst(
+    /* [out] */ String* fir)
+{
+    VALIDATE_NOT_NULL(fir)
+
+    *fir = mFirst;
+    return NOERROR;
+}
+
+ECode MutablePair::SetFirst(
+    /* [in] */ const String& fir)
+{
+    mFirst = fir;
+    return NOERROR;
+}
+
+ECode MutablePair::GetSecond(
+    /* [out] */ String* sec)
+{
+    VALIDATE_NOT_NULL(sec)
+
+    *sec = mSecond;
+    return NOERROR;
+}
+
+ECode MutablePair::SetSecond(
+    /* [in] */ const String& sec)
+{
+    mSecond = sec;
+    return NOERROR;
 }
 
 //==============================================================================
@@ -198,7 +286,7 @@ const Int32 RemoteViews::Action::MERGE_REPLACE;
 const Int32 RemoteViews::Action::MERGE_APPEND;
 const Int32 RemoteViews::Action::MERGE_IGNORE;
 
-CAR_INTERFACE_IMPL(RemoteViews::Action, IParcelable)
+CAR_INTERFACE_IMPL(RemoteViews::Action, Object, IParcelable)
 
 RemoteViews::Action::Action()
     : mViewId(0)
@@ -209,32 +297,59 @@ RemoteViews::Action::Action(
     : mViewId(viewId)
 {}
 
-void RemoteViews::Action::UpdateMemoryUsageEstimate(
-    /* [in] */ MemoryUsageCounter* counter)
+ECode RemoteViews::Action::UpdateMemoryUsageEstimate(
+    /* [in] */ IMemoryUsageCounter* counter)
 {
     // We currently only calculate Bitmap memory usage, so by default, don't do anything
     // here
-    return;
+    return NOERROR;
 }
 
-void RemoteViews::Action::SetBitmapCache(
-    /* [in] */ IRemoteViewsBitmapCache* bitmapCache)
+ECode RemoteViews::Action::SetBitmapCache(
+    /* [in] */ IBitmapCache* bitmapCache)
 {
     // Do nothing
+    return NOERROR;
 }
 
-Int32 RemoteViews::Action::MergeBehavior()
+ECode RemoteViews::Action::SetViewId(
+    /* [in] */ Int32 viewId)
 {
-    return MERGE_REPLACE;
+    mViewId = viewId;
+    return NOERROR;
 }
 
-String RemoteViews::Action::GetUniqueKey()
+ECode RemoteViews::Action::GetViewId(
+    /* [out] */ Int32* viewId)
 {
-    StringBuilder sb(GetActionName());
+    VALIDATE_NOT_NULL(viewId)
+
+    *viewId = mViewId;
+    return NOERROR;
+}
+
+ECode RemoteViews::Action::MergeBehavior(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    *result = MERGE_REPLACE;
+    return NOERROR;
+}
+
+ECode RemoteViews::Action::GetUniqueKey(
+    /* [out] */ String* key)
+{
+    VALIDATE_NOT_NULL(key)
+
+    String subName;
+    GetActionName(&subName);
+    StringBuilder sb(subName);
     sb += "[viewId:0x";
-    sb += StringUtils::Int32ToHexString(mViewId);
+    sb += StringUtils::ToString(mViewId, 16);
     sb += "]";
-    return sb.ToString();
+    *key = sb.ToString();
+    return NOERROR;
 }
 
 
@@ -254,7 +369,7 @@ RemoteViews::_SetEmptyView::_SetEmptyView(
     , mEmptyViewId(emptyViewId)
 {}
 
-void RemoteViews::_SetEmptyView::Apply(
+ECode RemoteViews::_SetEmptyView::Apply(
     /* [in] */ IView* root,
     /* [in] */ IViewGroup* rootParent,
     /* [in] */ IRemoteViewsOnClickHandler* handler)
@@ -262,18 +377,26 @@ void RemoteViews::_SetEmptyView::Apply(
     AutoPtr<IView> view;
     root->FindViewById(mViewId, (IView**)&view);
     AutoPtr<IAdapterView> adapterView = IAdapterView::Probe(view);
-    if (adapterView == NULL) return;
+    if (adapterView == NULL) {
+        return NOERROR;
+    }
 
     AutoPtr<IView> emptyView;
     root->FindViewById(mEmptyViewId, (IView**)&emptyView);
-    if (emptyView == NULL) return;
+    if (emptyView == NULL) {
+        return NOERROR;
+    }
 
-    adapterView->SetEmptyView(emptyView);
+    return adapterView->SetEmptyView(emptyView);
 }
 
-String RemoteViews::_SetEmptyView::GetActionName()
+ECode RemoteViews::_SetEmptyView::GetActionName(
+    /* [out] */ String* name)
 {
-    return String("SetEmptyView");
+    VALIDATE_NOT_NULL(name)
+
+    *name = "SetEmptyView";
+    return NOERROR;
 }
 
 ECode RemoteViews::_SetEmptyView::ReadFromParcel(
@@ -313,32 +436,37 @@ RemoteViews::_SetOnClickFillInIntent::_SetOnClickFillInIntent(
     , mHost(host)
 {}
 
-void RemoteViews::_SetOnClickFillInIntent::Apply(
+ECode RemoteViews::_SetOnClickFillInIntent::Apply(
     /* [in] */ IView* root,
     /* [in] */ IViewGroup* rootParent,
     /* [in] */ IRemoteViewsOnClickHandler* handler)
 {
     AutoPtr<IView> target;
     root->FindViewById(mViewId, (IView**)&target);
-    if (target == NULL) return;
+    if (target == NULL) {
+        return NOERROR;
+    }
 
     if (!mHost->mIsWidgetCollectionChild) {
-        return;
+        return NOERROR;
     }
-    if (target.Get() == root) {
-        AutoPtr<IObject> obj = IObject::Probe(mFillInIntent);
-        assert(0 && "TODO");
-        target->SetTagInternal(R::id::fillInIntent, obj);
+    if (root == target) {
+        target->SetTagInternal(R::id::fillInIntent, mFillInIntent);
     }
     else if (target && mFillInIntent) {
         AutoPtr<FillInIntentClickListener> listener = new FillInIntentClickListener(mFillInIntent, handler);
-        target->SetOnClickListener(listener.Get());
+        target->SetOnClickListener(listener);
     }
+    return NOERROR;
 }
 
-String RemoteViews::_SetOnClickFillInIntent::GetActionName()
+ECode RemoteViews::_SetOnClickFillInIntent::GetActionName(
+    /* [out] */ String* name)
 {
-    return String("SetOnClickFillInIntent");
+    VALIDATE_NOT_NULL(name)
+
+    *name = "SetOnClickFillInIntent";
+    return NOERROR;
 }
 
 ECode RemoteViews::_SetOnClickFillInIntent::ReadFromParcel(
@@ -365,39 +493,51 @@ ECode RemoteViews::_SetOnClickFillInIntent::WriteToParcel(
 //==============================================================================
 const Int32 RemoteViews::_SetPendingIntentTemplate::TAG;
 
-RemoteViews::_SetPendingIntentTemplate::_SetPendingIntentTemplate()
+RemoteViews::_SetPendingIntentTemplate::_SetPendingIntentTemplate(
+    /* [in] */ RemoteViews* host)
+    : mHost(host)
 {}
 
 RemoteViews::_SetPendingIntentTemplate::_SetPendingIntentTemplate(
     /* [in] */ Int32 id,
-    /* [in] */ IPendingIntent* pendingIntentTemplate)
+    /* [in] */ IPendingIntent* pendingIntentTemplate,
+    /* [in] */ RemoteViews* host)
     : Action(id)
     , mPendingIntentTemplate(pendingIntentTemplate)
+    , mHost(host)
 {}
 
-void RemoteViews::_SetPendingIntentTemplate::Apply(
+ECode RemoteViews::_SetPendingIntentTemplate::Apply(
     /* [in] */ IView* root,
     /* [in] */ IViewGroup* rootParent,
     /* [in] */ IRemoteViewsOnClickHandler* handler)
 {
     AutoPtr<IView> target;
     root->FindViewById(mViewId, (IView**)&target);
-    if (target == NULL) return;
+    if (target == NULL) {
+        return NOERROR;
+    }
 
     AutoPtr<IAdapterView> av = IAdapterView::Probe(target);
     if (av) {
         AutoPtr<IntentTemplateOnItemClickListener> listener = new IntentTemplateOnItemClickListener(mPendingIntentTemplate, handler);
         av->SetOnItemClickListener(listener);
-        av->SetTag(mPendingIntentTemplate);
+        IView::Probe(av)->SetTag(mPendingIntentTemplate);
     }
     else {
-        return;
+        SLOGGERE("RemoteViews", String("Cannot setPendingIntentTemplate on a view which is not") +
+                        String("an AdapterView (id: ") + StringUtils::ToString(mViewId) + ")")
     }
+    return NOERROR;
 }
 
-String RemoteViews::_SetPendingIntentTemplate::GetActionName()
+ECode RemoteViews::_SetPendingIntentTemplate::GetActionName(
+    /* [out] */ String* name)
 {
-    return String("SetPendingIntentTemplate");
+    VALIDATE_NOT_NULL(name)
+
+    *name = "SetPendingIntentTemplate";
+    return NOERROR;
 }
 
 // interface IParcelable
@@ -408,7 +548,6 @@ ECode RemoteViews::_SetPendingIntentTemplate::ReadFromParcel(
     source->ReadInt32(&mViewId);
     mPendingIntentTemplate = NULL;
     source->ReadInterfacePtr((Handle32*)&mPendingIntentTemplate);
-    //pendingIntentTemplate = PendingIntent.readPendingIntentOrNullFromParcel(parcel);
     return NOERROR;
 }
 
@@ -418,6 +557,131 @@ ECode RemoteViews::_SetPendingIntentTemplate::WriteToParcel(
     dest->WriteInt32(TAG);
     dest->WriteInt32(mViewId);
     dest->WriteInterfacePtr(mPendingIntentTemplate);
+    return NOERROR;
+}
+
+//==============================================================================
+//                  RemoteViews::SetRemoteViewsAdapterList
+//==============================================================================
+const Int32 RemoteViews::SetRemoteViewsAdapterList::TAG;
+
+RemoteViews::SetRemoteViewsAdapterList::SetRemoteViewsAdapterList()
+    : Action(0)
+    ,mViewTypeCount(0)
+{}
+
+RemoteViews::SetRemoteViewsAdapterList::SetRemoteViewsAdapterList(
+    /* [in] */ Int32 id,
+    /* [in] */ IArrayList* list,
+    /* [in] */ Int32 viewTypeCount)
+    : Action(id)
+    , mViewTypeCount(viewTypeCount)
+    , mList(list)
+{}
+
+ECode RemoteViews::SetRemoteViewsAdapterList::Apply(
+    /* [in] */ IView* root,
+    /* [in] */ IViewGroup* rootParent,
+    /* [in] */ IRemoteViewsOnClickHandler* handler)
+{
+    AutoPtr<IView> target;
+    root->FindViewById(mViewId, (IView**)&target);
+    if (target == NULL) {
+        return NOERROR;
+    }
+
+    // Ensure that we are applying to an AppWidget root
+    if (IAppWidgetHostView::Probe(rootParent) == NULL) {
+        SLOGGERE("RemoteViews", String("SetRemoteViewsAdapterIntent action can only be used for ") +
+                "AppWidgets (root id: " + StringUtils::ToString(mViewId) + ")")
+        return NOERROR;
+    }
+    // Ensure that we are calling setRemoteAdapter on an AdapterView that supports it
+    if (IAbsListView::Probe(target) == NULL && IAdapterViewAnimator::Probe(target) == NULL) {
+        SLOGGERE("RemoteViews", String("Cannot setRemoteViewsAdapter on a view which is not ") +
+                "an AbsListView or AdapterViewAnimator (id: " + StringUtils::ToString(mViewId) + ")");
+        return NOERROR;
+    }
+
+    if (IAbsListView::Probe(target) != NULL) {
+        AutoPtr<IAbsListView> v = IAbsListView::Probe(target);
+        AutoPtr<IAdapter> a;
+        IAdapterView::Probe(v)->GetAdapter((IAdapter**)&a);
+        Int32 typeCount;
+        a->GetViewTypeCount(&typeCount);
+        if (IRemoteViewsListAdapter::Probe(a) && mViewTypeCount <= typeCount) {
+            IRemoteViewsListAdapter::Probe(a)->SetViewsList(mList);
+        } else {
+            AutoPtr<IContext> ctx;
+            IView::Probe(v)->GetContext((IContext**)&ctx);
+            AutoPtr<IAdapter> apt;// new RemoteViewsListAdapter(ctx, list, viewTypeCount)
+            IAdapterView::Probe(v)->SetAdapter(apt);
+        }
+    } else if (IAdapterViewAnimator::Probe(target) != NULL) {
+        AutoPtr<IAdapterViewAnimator> v = IAdapterViewAnimator::Probe(target);
+        AutoPtr<IAdapter> a;
+        IAdapterView::Probe(v)->GetAdapter((IAdapter**)&a);
+        Int32 typeCount;
+        a->GetViewTypeCount(&typeCount);
+        if (IRemoteViewsListAdapter::Probe(a) && mViewTypeCount <= typeCount) {
+            IRemoteViewsListAdapter::Probe(a)->SetViewsList(mList);
+        } else {
+            AutoPtr<IContext> ctx;
+            IView::Probe(v)->GetContext((IContext**)&ctx);
+            AutoPtr<IAdapter> apt;// new RemoteViewsListAdapter(ctx, list, viewTypeCount)
+            IAdapterView::Probe(v)->SetAdapter(apt);
+        }
+    }
+    return NOERROR;
+}
+
+ECode RemoteViews::SetRemoteViewsAdapterList::GetActionName(
+    /* [out] */ String* name)
+{
+    VALIDATE_NOT_NULL(name)
+
+    *name = "SetRemoteViewsAdapterList";
+    return NOERROR;
+}
+
+ECode RemoteViews::SetRemoteViewsAdapterList::ReadFromParcel(
+    /* [in] */ IParcel* source)
+{
+    source->ReadInt32(&mViewId);
+    source->ReadInt32(&mViewTypeCount);
+    Int32 count;
+    source->ReadInt32(&count);
+    CArrayList::New((IArrayList**)&mList);
+
+    for (int i = 0; i < count; i++) {
+        AutoPtr<IRemoteViews> rv;
+        // CRemoteViews::New((IRemoteViews**)&rv);zhangjingcheng
+        IParcelable::Probe(rv)->ReadFromParcel(source);
+        mList->Add(rv);
+    }
+    return NOERROR;
+}
+
+ECode RemoteViews::SetRemoteViewsAdapterList::WriteToParcel(
+    /* [in] */ IParcel* dest)
+{
+    dest->WriteInt32(TAG);
+    dest->WriteInt32(mViewId);
+    dest->WriteInt32(mViewTypeCount);
+
+    Int32 size;
+    if (mList == NULL || (mList->GetSize(&size), size) == 0) {
+        dest->WriteInt32(0);
+    } else {
+        mList->GetSize(&size);
+        dest->WriteInt32(size);
+        for (int i = 0; i < size; i++) {
+            AutoPtr<IInterface> tmp;
+            mList->Get(i, (IInterface**)&tmp);
+            AutoPtr<IParcelable> p = IParcelable::Probe(tmp);
+            p->WriteToParcel(dest);
+        }
+    }
     return NOERROR;
 }
 
@@ -436,22 +700,26 @@ RemoteViews::SetRemoteViewsAdapterIntent::SetRemoteViewsAdapterIntent(
     , mIntent(intent)
 {}
 
-void RemoteViews::SetRemoteViewsAdapterIntent::Apply(
+ECode RemoteViews::SetRemoteViewsAdapterIntent::Apply(
     /* [in] */ IView* root,
     /* [in] */ IViewGroup* rootParent,
     /* [in] */ IRemoteViewsOnClickHandler* handler)
 {
     AutoPtr <IView> target;
     root->FindViewById(mViewId, (IView**)&target);
-    if (target == NULL) return;
-
-    assert(0 && "TODO");
-    /*if (!
-    IAppWidgetHostView::Probe(rootParent)) {
-        return;
+    if (target == NULL) {
+        return NOERROR;
     }
-    if (!IAbsListView::Probe(target) && !IAdapterViewAnimator::Probe(target)) {
-        return;
+
+    if (IAppWidgetHostView::Probe(rootParent) == NULL) {
+        SLOGGERE("RemoteViews", String("SetRemoteViewsAdapterIntent action can only be used for ") +
+                "AppWidgets (root id: " + StringUtils::ToString(mViewId)  + ")");
+        return NOERROR;
+    }
+    if (IAbsListView::Probe(target) == NULL && IAdapterViewAnimator::Probe(target) == NULL) {
+        SLOGGERE("RemoteViews", String("Cannot setRemoteViewsAdapter on a view which is not ") +
+                "an AbsListView or AdapterViewAnimator (id: " + StringUtils::ToString(mViewId)  + ")");
+        return NOERROR;
     }
     AutoPtr<IAppWidgetHostView> host = IAppWidgetHostView::Probe(rootParent);
     Int32 hostId = 0;
@@ -465,12 +733,17 @@ void RemoteViews::SetRemoteViewsAdapterIntent::Apply(
     } else if (viewAnimator) {
         viewAnimator->SetRemoteViewsAdapter(mIntent);
         viewAnimator->SetRemoteViewsOnClickHandler(handler);
-    }*/
+    }
+    return NOERROR;
 }
 
-String RemoteViews::SetRemoteViewsAdapterIntent::GetActionName()
+ECode RemoteViews::SetRemoteViewsAdapterIntent::GetActionName(
+    /* [out] */ String* name)
 {
-    return String("SetRemoteViewsAdapterIntent");
+    VALIDATE_NOT_NULL(name)
+
+    *name = "SetRemoteViewsAdapterIntent";
+    return NOERROR;
 }
 
 // interface IParcelable
@@ -512,16 +785,20 @@ RemoteViews::_SetOnClickPendingIntent::_SetOnClickPendingIntent(
     , mHost(host)
 {}
 
-void RemoteViews::_SetOnClickPendingIntent::Apply(
+ECode RemoteViews::_SetOnClickPendingIntent::Apply(
     /* [in] */ IView* root,
     /* [in] */ IViewGroup* rootParent,
     /* [in] */ IRemoteViewsOnClickHandler* handler)
 {
     AutoPtr<IView> target;
     root->FindViewById(mViewId, (IView**)&target);
-    if (target == NULL) return;
+    if (target == NULL) {
+        return NOERROR;
+    }
 
     if (mHost->mIsWidgetCollectionChild) {
+        SLOGGERW("RemoteViews", String("Cannot setOnClickPendingIntent for collection item ") +
+            "(id: " + StringUtils::ToString(mViewId) + ")");
         AutoPtr<IContext> context;
         root->GetContext((IContext**)&context);
         AutoPtr<IApplicationInfo> appInfo;
@@ -529,22 +806,27 @@ void RemoteViews::_SetOnClickPendingIntent::Apply(
         Int32 version = 0;
         if (appInfo != NULL &&
                 (appInfo->GetTargetSdkVersion(&version), version >= Build::VERSION_CODES::JELLY_BEAN)) {
-            return;
+            return NOERROR;
         }
     }
 
     if (target != NULL) {
-        AutoPtr<PendingIntentClickListener> listener;
         if (mPendingIntent) {
+            AutoPtr<PendingIntentClickListener> listener;
             listener = new PendingIntentClickListener(mPendingIntent, handler);
-            target->SetOnClickListener(listener.Get());
+            target->SetOnClickListener(listener);
         }
     }
+    return NOERROR;
 }
 
-String RemoteViews::_SetOnClickPendingIntent::GetActionName()
+ECode RemoteViews::_SetOnClickPendingIntent::GetActionName(
+    /* [out] */ String* name)
 {
-    return String("SetOnClickPendingIntent");
+    VALIDATE_NOT_NULL(name)
+
+    *name = "SetOnClickPendingIntent";
+    return NOERROR;
 }
 
 // interface IParcelable
@@ -588,7 +870,7 @@ RemoteViews::_SetDrawableParameters::_SetDrawableParameters()
     : mTargetBackground(FALSE)
     , mAlpha(0)
     , mColorFilter(0)
-    , mFilterMode(PorterDuffMode_CLEAR)
+    , mFilterMode(PorterDuffMode_NONE)
     , mLevel(0)
 {}
 
@@ -607,14 +889,16 @@ RemoteViews::_SetDrawableParameters::_SetDrawableParameters(
     , mLevel(level)
 {}
 
-void RemoteViews::_SetDrawableParameters::Apply(
+ECode RemoteViews::_SetDrawableParameters::Apply(
     /* [in] */ IView* root,
     /* [in] */ IViewGroup* rootParent,
     /* [in] */ IRemoteViewsOnClickHandler* handler)
 {
     AutoPtr<IView> target;
     root->FindViewById(mViewId, (IView**)&target);
-    if (target == NULL) return;
+    if (target == NULL) {
+        return NOERROR;
+    }
 
     AutoPtr<IDrawable> targetDrawable;
     if (mTargetBackground) {
@@ -629,7 +913,7 @@ void RemoteViews::_SetDrawableParameters::Apply(
         if (mAlpha != -1) {
             targetDrawable->SetAlpha(mAlpha);
         }
-        if (mColorFilter != -1 && mFilterMode) {
+        if (mFilterMode != PorterDuffMode_NONE) {
             targetDrawable->SetColorFilter(mColorFilter, mFilterMode);
         }
         if (mLevel != -1) {
@@ -637,11 +921,16 @@ void RemoteViews::_SetDrawableParameters::Apply(
             targetDrawable->SetLevel(mLevel, &res);
         }
     }
+    return NOERROR;
 }
 
-String RemoteViews::_SetDrawableParameters::GetActionName()
+ECode RemoteViews::_SetDrawableParameters::GetActionName(
+    /* [out] */ String* name)
 {
-    return String("SetDrawableParameters");
+    VALIDATE_NOT_NULL(name)
+
+    *name = "SetDrawableParameters";
+    return NOERROR;
 }
 
 ECode RemoteViews::_SetDrawableParameters::ReadFromParcel(
@@ -658,11 +947,11 @@ ECode RemoteViews::_SetDrawableParameters::ReadFromParcel(
     source->ReadInt32(&mode);
     Boolean hasMode = mode != 0;
     if (hasMode) {
-        assert(0 && "TODO");
+        source->ReadInt32(&mFilterMode);
         //mFilterMode = PorterDuff.Mode.valueOf(parcel.readString());
     }
     else {
-        mFilterMode = PorterDuffMode_CLEAR;
+        mFilterMode = PorterDuffMode_NONE;
     }
     source->ReadInt32(&mLevel);
     return NOERROR;
@@ -676,10 +965,9 @@ ECode RemoteViews::_SetDrawableParameters::WriteToParcel(
     dest->WriteInt32(mTargetBackground ? 1 : 0);
     dest->WriteInt32(mAlpha);
     dest->WriteInt32(mColorFilter);
-    if (mFilterMode != PorterDuffMode_CLEAR) {
+    if (mFilterMode != PorterDuffMode_NONE) {
         dest->WriteInt32(1);
-        assert(0 && "TODO");
-        //dest->WriteString(mFilterMode.tostring());
+        dest->WriteInt32(mFilterMode);
     }
     else {
         dest->WriteInt32(0);
@@ -693,69 +981,61 @@ ECode RemoteViews::_SetDrawableParameters::WriteToParcel(
 //==============================================================================
 const Int32 RemoteViews::ReflectionActionWithoutParams::TAG;
 
-RemoteViews::ReflectionActionWithoutParams::ReflectionActionWithoutParams()
+RemoteViews::ReflectionActionWithoutParams::ReflectionActionWithoutParams(
+    /* [in] */ RemoteViews* host)
+    : mHost(host)
 {}
 
 RemoteViews::ReflectionActionWithoutParams::ReflectionActionWithoutParams(
     /* [in] */ Int32 id,
-    /* [in] */ const String& methodName)
+    /* [in] */ const String& methodName,
+    /* [in] */ RemoteViews* host)
     : Action(id)
     , mMethodName(methodName)
+    , mHost(host)
 {}
 
-void RemoteViews::ReflectionActionWithoutParams::Apply(
+ECode RemoteViews::ReflectionActionWithoutParams::Apply(
     /* [in] */ IView* root,
     /* [in] */ IViewGroup* rootParent,
     /* [in] */ IRemoteViewsOnClickHandler* handler)
 {
     AutoPtr <IView> view;
     root->FindViewById(mViewId, (IView**)&view);
-    if (view == NULL) return;
+    if (view == NULL) {
+        return NOERROR;
+    }
 
-    assert(0 && "TODO");
-//    final View view = root.findViewById(viewId);
-//    if (view == null) return;
-//
-//    Class klass = view.getClass();
-//    Method method;
-//    try {
-//        method = klass.getMethod(this.methodName);
-//    } catch (NoSuchMethodException ex) {
-//        throw new ActionException("view: " + klass.getName() + " doesn't have method: "
-//                + this.methodName + "()");
-//    }
-//
-//    if (!method.isAnnotationPresent(RemotableViewMethod.class)) {
-//        throw new ActionException("view: " + klass.getName()
-//                + " can't use method with RemoteViews: "
-//                + this.methodName + "()");
-//    }
-//
-//    try {
-//        //noinspection ConstantIfStatement
-//        if (false) {
-//            Log.d("RemoteViews", "view: " + klass.getName() + " calling method: "
-//                + this.methodName + "()");
-//        }
-//        method.invoke(view);
-//    } catch (Exception ex) {
-//        throw new ActionException(ex);
-//    }
+    AutoPtr<IMethodInfo> methodInfo;
+    ECode ec = mHost->GetMethod(view, mMethodName, String("()E"), (IMethodInfo**)&methodInfo);
+    if (!FAILED(ec) && methodInfo != NULL) {
+        return methodInfo->Invoke(view, NULL);
+    } else {
+        return ec;
+    }
 }
 
-String RemoteViews::ReflectionActionWithoutParams::GetActionName()
+ECode RemoteViews::ReflectionActionWithoutParams::GetActionName(
+    /* [out] */ String* name)
 {
-    return String("ReflectionActionWithoutParams");
+    VALIDATE_NOT_NULL(name)
+
+    *name = "ReflectionActionWithoutParams";
+    return NOERROR;
 }
 
-Int32 RemoteViews::ReflectionActionWithoutParams::MergeBehavior()
+ECode RemoteViews::ReflectionActionWithoutParams::MergeBehavior(
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     if (mMethodName.Equals("ShowNext") || mMethodName.Equals("ShowPrevious")) {
-        return MERGE_IGNORE;
+        *result = MERGE_IGNORE;
     }
     else {
-        return MERGE_REPLACE;
+        *result = MERGE_REPLACE;
     }
+    return NOERROR;
 }
 
 // interface IParcelable
@@ -774,6 +1054,108 @@ ECode RemoteViews::ReflectionActionWithoutParams::WriteToParcel(
     dest->WriteInt32(TAG);
     dest->WriteInt32(mViewId);
     dest->WriteString(mMethodName);
+    return NOERROR;
+}
+
+CAR_INTERFACE_IMPL(RemoteViews::BitmapCache, Object, IBitmapCache)
+
+RemoteViews::BitmapCache::BitmapCache()
+{}
+
+RemoteViews::BitmapCache::BitmapCache(
+    /* [in] */ IParcel* parcel)
+{
+    Int32 count;
+    parcel->ReadInt32(&count);
+    for (Int32 i = 0; i< count; i++) {
+        AutoPtr<IBitmap> bmp;
+        CBitmap::New((IBitmap**)&bmp);
+        IParcelable::Probe(bmp)->ReadFromParcel(parcel);
+        mBitmaps.PushBack(bmp);
+    }
+}
+
+ECode RemoteViews::BitmapCache::GetBitmapId(
+    /* [in] */ IBitmap* b,
+    /* [out] */ Int32* id)
+{
+    VALIDATE_NOT_NULL(id)
+
+    if (b == NULL) {
+        *id = -1;
+        return NOERROR;
+    } else {
+        List<AutoPtr<IBitmap> >::Iterator it = mBitmaps.Begin();
+        Int32 index = 0;
+        for (; it != mBitmaps.End(); it++) {
+            if (b == *it) {
+                *id = index;
+                return NOERROR;
+            }
+            index++;
+        }
+        if (it == mBitmaps.End()) {
+            AutoPtr<IBitmap> tmp = b;
+            mBitmaps.PushBack(tmp);
+        }
+        *id = mBitmaps.GetSize() - 1;
+        return NOERROR;
+    }
+}
+
+ECode RemoteViews::BitmapCache::GetBitmapForId(
+    /* [in] */ Int32 id,
+    /* [out] */ IBitmap** bmp)
+{
+    if (id < 0 || id > mBitmaps.GetSize()) {
+        *bmp = NULL;
+    } else {
+        *bmp = mBitmaps[id];
+        REFCOUNT_ADD(*bmp)
+    }
+    return NOERROR;
+}
+
+ECode RemoteViews::BitmapCache::WriteBitmapsToParcel(
+    /* [in] */ IParcel* dest)
+{
+    Int32 count = mBitmaps.GetSize();
+    dest->WriteInt32(count);
+    List<AutoPtr<IBitmap> >::Iterator it = mBitmaps.Begin();
+    for (; it != mBitmaps.End(); it++) {
+        AutoPtr<IBitmap> bmp = *it;
+        IParcelable::Probe(bmp)->WriteToParcel(dest);
+    }
+    return NOERROR;
+}
+
+ECode RemoteViews::BitmapCache::Assimilate(
+    /* [in] */ IBitmapCache* bitmapCache)
+{
+    BitmapCache* impl = (BitmapCache*)bitmapCache;
+    List<AutoPtr<IBitmap> >::Iterator it = impl->mBitmaps.Begin();
+    for (; it != impl->mBitmaps.End(); it++) {
+        AutoPtr<IBitmap> b = *it;
+        List<AutoPtr<IBitmap> >::Iterator it2 = mBitmaps.Begin();
+        for (; it2 != mBitmaps.End(); it2++) {
+            if (b == *it2) {
+                break;
+            }
+        }
+        if (it2 ==mBitmaps.End()) {
+            mBitmaps.PushBack(b);
+        }
+    }
+    return NOERROR;
+}
+
+ECode RemoteViews::BitmapCache::AddBitmapMemory(
+    /* [in] */ IMemoryUsageCounter* memoryCounter)
+{
+    List<AutoPtr<IBitmap> >::Iterator it = mBitmaps.Begin();
+    for (; it != mBitmaps.End(); it++) {
+        memoryCounter->AddBitmapMemory(*it);
+    }
     return NOERROR;
 }
 
@@ -802,24 +1184,28 @@ RemoteViews::BitmapReflectionAction::BitmapReflectionAction(
     mHost->mBitmapCache->GetBitmapId(bitmap, &mBitmapId);
 }
 
-void RemoteViews::BitmapReflectionAction::SetBitmapCache(
-    /* [in] */ IRemoteViewsBitmapCache* bitmapCache)
+ECode RemoteViews::BitmapReflectionAction::SetBitmapCache(
+    /* [in] */ IBitmapCache * bitmapCache)
 {
-    bitmapCache->GetBitmapId(mBitmap, &mBitmapId);
+    return bitmapCache->GetBitmapId(mBitmap, &mBitmapId);
 }
 
-void RemoteViews::BitmapReflectionAction::Apply(
+ECode RemoteViews::BitmapReflectionAction::Apply(
     /* [in] */ IView* root,
     /* [in] */ IViewGroup* rootParent,
     /* [in] */ IRemoteViewsOnClickHandler* handler)
 {
     AutoPtr<ReflectionAction> ra = new ReflectionAction(mViewId, mMethodName, ReflectionAction::BITMAP, mBitmap);
-    ra->Apply(root, rootParent, handler);
+    return ra->Apply(root, rootParent, handler);
 }
 
-String RemoteViews::BitmapReflectionAction::GetActionName()
+ECode RemoteViews::BitmapReflectionAction::GetActionName(
+    /* [out] */ String* name)
 {
-    return String("BitmapReflectionAction");
+    VALIDATE_NOT_NULL(name)
+
+    *name = "BitmapReflectionAction";
+    return NOERROR;
 }
 
 // interface IParcelable
@@ -831,8 +1217,7 @@ ECode RemoteViews::BitmapReflectionAction::ReadFromParcel(
     source->ReadString(&mMethodName);
     source->ReadInt32(&mBitmapId);
     mBitmap = NULL;
-    mHost->mBitmapCache->GetBitmapForId(mBitmapId, (IBitmap**)&mBitmap);
-    return NOERROR;
+    return mHost->mBitmapCache->GetBitmapForId(mBitmapId, (IBitmap**)&mBitmap);
 }
 
 ECode RemoteViews::BitmapReflectionAction::WriteToParcel(
@@ -866,8 +1251,7 @@ const Int32 RemoteViews::ReflectionAction::INTENT;
 
 RemoteViews::ReflectionAction::ReflectionAction()
     : mType(0)
-{
-}
+{}
 
 RemoteViews::ReflectionAction::ReflectionAction(
     /* [in] */ Int32 id,
@@ -885,190 +1269,228 @@ String RemoteViews::ReflectionAction::GetParameterType()
     switch (mType) {
         case BOOLEAN:
         {
-            return String("Boolean");
+            return String("(Z)E)");
         }
         case BYTE:
         {
-            return String("Byte");
+            return String("(B)E)");
         }
         case SHORT:
         {
-            return String("Int16");
+            return String("(I16)E)");
         }
         case INT:
         {
-            return String("Int32");
+            return String("(I32)E)");
         }
         case LONG:
         {
-            return String("Int64");
+            return String("(I64)E)");
         }
         case FLOAT:
         {
-            return String("Float");
+            return String("(F)E)");
         }
         case DOUBLE:
         {
-            return String("Double");
+            return String("(D)E)");
         }
         case CHAR:
         {
-            return String("Char32");
+            return String("(C32)E)");
         }
         case STRING:
         {
-            return String("String");
+            return String("(LElastos/String;)E)");
         }
         case CHAR_SEQUENCE:
         {
-            return String("ICharSequence");
+            return String("(LElastos/Core/ICharSequence;*)E");
         }
         case URI:
         {
-            return String("Uri");
+            return String("(LElastos/Droid/Net/IUri;*)E");
         }
         case BITMAP:
         {
-            return String("IBitmap");
+            return String("(LElastos/Droid/Graphics/IBitmap;*)E");
         }
         case BUNDLE:
         {
-            return String("IBundle");
+            return String("(LElastos/Droid/Os/IBundle;*)E");
         }
         case INTENT:
         {
-            return String("IIntent");
+            return String("(LElastos/Droid/Content/IIntent;*)E");
         }
         default:
-            return String("");
+            return String("()E");
     }
 }
 
-Int32 RemoteViews::ReflectionAction::MergeBehavior()
+ECode RemoteViews::ReflectionAction::MergeBehavior(
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     if (mMethodName.Equals(String("SmoothScrollBy"))) {
-        return MERGE_APPEND;
+        *result = MERGE_APPEND;
     }
     else {
-        return MERGE_REPLACE;
+        *result = MERGE_REPLACE;
     }
+    return NOERROR;
 }
 
-void RemoteViews::ReflectionAction::Apply(
+ECode RemoteViews::ReflectionAction::Apply(
     /* [in] */ IView* root,
     /* [in] */ IViewGroup* rootParent,
     /* [in] */ IRemoteViewsOnClickHandler* handler)
 {
-    // PEL("RemoteViews::ReflectionAction::Apply()")
+    // PEL("RemoteViews::_ReflectionAction::Apply()")
     assert(root != NULL);
     AutoPtr<IView> view;
     root->FindViewById(mViewId, (IView**)&view);
-    if (view == NULL) return;
-
-    String param = GetParameterType();
-    // PFL_EX(" <> mMethodName=[%s], mViewId=[0x%08x], param=[%s]", mMethodName.string(), mViewId, param.string());
-    if (param.IsNull()) {
-        // throw new ActionException("bad type: " + this.type);
-        assert(0);
+    if (view == NULL) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoPtr<IClassInfo> classInfo;
-    _CObject_ReflectClassInfo(view, (IClassInfo**)&classInfo);
-    assert(classInfo != NULL);
+    String param = GetParameterType();
+    AutoPtr<IClassInfo> klass = PropertyValuesHolder::TransformClassInfo(view);
+    if (klass == NULL) {
+        SLOGGERE("RemoteViews", "can not find view's class infomations")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
+    String className;
+    klass->GetName(&className);
     AutoPtr<IMethodInfo> methodInfo;
-    classInfo->GetMethodInfo(mMethodName, (IMethodInfo**)&methodInfo);
-    assert(methodInfo != NULL);
+    if (FAILED(klass->GetMethodInfo(mMethodName, param, (IMethodInfo**)&methodInfo)) || methodInfo == NULL)
+    {
+        SLOGGERE("RemoteViews ", String("can not find method named: ") + mMethodName + "in view:" + className)
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
-    AutoPtr<IArgumentList> argumentList;
+    AutoPtr<IArgumentList> argumentList = WrapArg(methodInfo);
     methodInfo->CreateArgumentList((IArgumentList**)&argumentList);
     assert(argumentList != NULL);
 
-    if (param.Equals(String("Boolean"))) {
-        AutoPtr<IBoolean> value = IBoolean::Probe(mValue);
-        assert(value != NULL);
-        Boolean v = FALSE;
-        value->GetValue(&v);
-        argumentList->SetInputArgumentOfBoolean(0, v);
-    }
-    else if (param.Equals(String("Byte"))) {
-        AutoPtr<IByte> value = IByte::Probe(mValue);
-        assert(value != NULL);
-        Byte v = 0;
-        value->GetValue(&v);
-        argumentList->SetInputArgumentOfByte(0, v);
-    }
-    else if (param.Equals(String("Int16"))) {
-        AutoPtr<IInteger16> value = IInteger16::Probe(mValue);
-        assert(value != NULL);
-        Int16 v = 0;
-        value->GetValue(&v);
-        argumentList->SetInputArgumentOfInt16(0, v);
-    }
-    else if (param.Equals(String("Int32"))) {
-        AutoPtr<IInteger32> value = IInteger32::Probe(mValue);
-        assert(value != NULL);
-        Int32 v = 0;
-        value->GetValue(&v);
-        argumentList->SetInputArgumentOfInt32(0, v);
-    }
-    else if (param.Equals(String("Int64"))) {
-        AutoPtr<IInteger64> value = IInteger64::Probe(mValue);
-        assert(value != NULL);
-        Int64 v = 0;
-        value->GetValue(&v);
-        argumentList->SetInputArgumentOfInt64(0, v);
-    }
-    else if (param.Equals(String("Float"))) {
-        AutoPtr<IFloat> value = IFloat::Probe(mValue);
-        assert(value != NULL);
-        Float v = 0.f;
-        value->GetValue(&v);
-        argumentList->SetInputArgumentOfFloat(0, v);
-    }
-    else if (param.Equals(String("Double"))) {
-        AutoPtr<IDouble> value = IDouble::Probe(mValue);
-        assert(value != NULL);
-        Double v = 0.0;
-        value->GetValue(&v);
-        argumentList->SetInputArgumentOfDouble(0, v);
-    }
-    else if (param.Equals(String("Char32"))) {
-        AutoPtr<IChar32> value = IChar32::Probe(mValue);
-        assert(value != NULL);
-        Char32 v = 0;
-        value->GetValue(&v);
-        argumentList->SetInputArgumentOfInt32(0, v);
-    }
-    else if (param.Equals(String("String"))) {
-        String v;
-        if (mValue != NULL) {
-            AutoPtr<ICharSequence> value = ICharSequence::Probe(mValue);
-            value->ToString(&v);
+    switch (mType) {
+        case BOOLEAN:
+        {
+            AutoPtr<IBoolean> value = IBoolean::Probe(mValue);
+            assert(value != NULL);
+            Boolean v = FALSE;
+            value->GetValue(&v);
+            argumentList->SetInputArgumentOfBoolean(0, v);
+            break;
         }
-        argumentList->SetInputArgumentOfString(0, v);
+        case BYTE:
+        {
+            AutoPtr<IByte> value = IByte::Probe(mValue);
+            assert(value != NULL);
+            Byte v = 0;
+            value->GetValue(&v);
+            argumentList->SetInputArgumentOfByte(0, v);
+            break;
+        }
+        case SHORT:
+        {
+            AutoPtr<IInteger16> value = IInteger16::Probe(mValue);
+            assert(value != NULL);
+            Int16 v = 0;
+            value->GetValue(&v);
+            argumentList->SetInputArgumentOfInt16(0, v);
+            break;
+        }
+        case INT:
+        {
+            AutoPtr<IInteger32> value = IInteger32::Probe(mValue);
+            assert(value != NULL);
+            Int32 v = 0;
+            value->GetValue(&v);
+            argumentList->SetInputArgumentOfInt32(0, v);
+            break;
+        }
+        case LONG:
+        {
+            AutoPtr<IInteger64> value = IInteger64::Probe(mValue);
+            assert(value != NULL);
+            Int64 v = 0;
+            value->GetValue(&v);
+            argumentList->SetInputArgumentOfInt64(0, v);
+            break;
+        }
+        case FLOAT:
+        {
+            AutoPtr<IFloat> value = IFloat::Probe(mValue);
+            assert(value != NULL);
+            Float v = 0.f;
+            value->GetValue(&v);
+            argumentList->SetInputArgumentOfFloat(0, v);
+            break;
+        }
+        case DOUBLE:
+        {
+            AutoPtr<IDouble> value = IDouble::Probe(mValue);
+            assert(value != NULL);
+            Double v = 0.0;
+            value->GetValue(&v);
+            argumentList->SetInputArgumentOfDouble(0, v);
+            break;
+        }
+        case CHAR:
+        {
+            AutoPtr<IChar32> value = IChar32::Probe(mValue);
+            assert(value != NULL);
+            Char32 v = 0;
+            value->GetValue(&v);
+            argumentList->SetInputArgumentOfInt32(0, v);
+            break;
+        }
+        case STRING:
+        {
+            String v;
+            if (mValue != NULL) {
+                AutoPtr<ICharSequence> value = ICharSequence::Probe(mValue);
+                value->ToString(&v);
+            }
+            argumentList->SetInputArgumentOfString(0, v);
+            break;
+        }
+        case CHAR_SEQUENCE:
+        {
+            AutoPtr<ICharSequence> value = ICharSequence::Probe(mValue);
+            argumentList->SetInputArgumentOfObjectPtr(0, value);
+            break;
+        }
+        case URI:
+        case BITMAP:
+        case BUNDLE:
+        case INTENT:
+            argumentList->SetInputArgumentOfObjectPtr(0, mValue);
+            break;
+        default:
+            break;
     }
-    else if (param.Equals(String("ICharSequence"))) {
-        AutoPtr<ICharSequence> value = ICharSequence::Probe(mValue);
-        argumentList->SetInputArgumentOfObjectPtr(0, value);
-    }
-    else {
-        argumentList->SetInputArgumentOfObjectPtr(0, mValue);
-    }
-
+    
     ECode ec = methodInfo->Invoke(view, argumentList);
     if (FAILED(ec)) {
-        assert(0);
-        return;
+        SLOGGERE("RemoteViews", String("method: ") + mMethodName + "in class: " + className + "invoke error")
     }
+    return ec;
 }
 
-String RemoteViews::ReflectionAction::GetActionName()
+ECode RemoteViews::ReflectionAction::GetActionName(
+    /* [out] */ String* name)
 {
+    VALIDATE_NOT_NULL(name)
+
     String str("ReflectionAction");
     str += mMethodName;
     str += StringUtils::ToString(mType);
-    return str;
+    *name = str;
+    return NOERROR;
 }
 
 // interface IParcelable
@@ -1079,7 +1501,7 @@ ECode RemoteViews::ReflectionAction::ReadFromParcel(
     source->ReadInt32(&mViewId);
     source->ReadString(&mMethodName);
     source->ReadInt32(&mType);
-    // Logger::D("RemoteViews", "+ RemoteViews::ReflectionAction::ReadFromParcel(), got type = %d; viewid = %d; methodName = %s", mType, mViewId, mMethodName.string());
+    // Logger::D("RemoteViews", "+ RemoteViews::_ReflectionAction::ReadFromParcel(), got type = %d; viewid = %d; methodName = %s", mType, mViewId, mMethodName.string());
 
     switch (mType) {
         case BOOLEAN:
@@ -1090,7 +1512,7 @@ ECode RemoteViews::ReflectionAction::ReadFromParcel(
             result = res != 0;
             AutoPtr<IBoolean> b;
             CBoolean::New(result, (IBoolean**)&b);
-            mValue = b->Probe(EIID_IInterface);
+            mValue = b;
             break;
         }
         case BYTE:
@@ -1099,7 +1521,7 @@ ECode RemoteViews::ReflectionAction::ReadFromParcel(
             source->ReadByte(&byte);
             AutoPtr<IByte> ibyte;
             CByte::New(byte, (IByte**)&ibyte);
-            mValue = ibyte->Probe(EIID_IInterface);
+            mValue = ibyte;
             break;
         }
         case SHORT:
@@ -1109,7 +1531,7 @@ ECode RemoteViews::ReflectionAction::ReadFromParcel(
             source->ReadInt16(&s);
             AutoPtr<IInteger16> integer16;
             CInteger16::New(s, (IInteger16**)&integer16);
-            mValue = integer16->Probe(EIID_IInterface);
+            mValue = integer16;
             break;
         }
         case INT:
@@ -1118,7 +1540,7 @@ ECode RemoteViews::ReflectionAction::ReadFromParcel(
             source->ReadInt32(&i);
             AutoPtr<IInteger32> integer32;
             CInteger32::New(i, (IInteger32**)&integer32);
-            mValue = integer32->Probe(EIID_IInterface);
+            mValue = integer32;
             break;
         }
         case LONG:
@@ -1127,7 +1549,7 @@ ECode RemoteViews::ReflectionAction::ReadFromParcel(
             source->ReadInt64(&l);
             AutoPtr<IInteger64> integer64;
             CInteger64::New(l, (IInteger64**)&integer64);
-            mValue = integer64->Probe(EIID_IInterface);
+            mValue = integer64;
             break;
         }
         case FLOAT:
@@ -1136,7 +1558,7 @@ ECode RemoteViews::ReflectionAction::ReadFromParcel(
             source->ReadFloat(&f);
             AutoPtr<IFloat> fl;
             CFloat::New(f, (IFloat**)&fl);
-            mValue = fl->Probe(EIID_IInterface);
+            mValue = fl;
             break;
         }
         case DOUBLE:
@@ -1145,7 +1567,7 @@ ECode RemoteViews::ReflectionAction::ReadFromParcel(
             source->ReadDouble(&d);
             AutoPtr<IDouble> dou;
             CDouble::New(d, (IDouble**)&dou);
-            mValue = dou->Probe(EIID_IInterface);
+            mValue = dou;
             break;
         }
         case CHAR:
@@ -1155,25 +1577,15 @@ ECode RemoteViews::ReflectionAction::ReadFromParcel(
             source->ReadInt32(&c);
             AutoPtr<IChar32> ch;
             CChar32::New((Char32)c, (IChar32**)&ch);
-            mValue = ch->Probe(EIID_IInterface);
+            mValue = ch;
             break;
         }
         case STRING:
-        {
-            String str;
-            source->ReadString(&str);
-            AutoPtr<ICharSequence> csq;
-            if (!str.IsNull()) {
-                CStringWrapper::New(str, (ICharSequence**)&csq);
-                mValue = csq->Probe(EIID_IInterface);
-            }
-            break;
-        }
         case CHAR_SEQUENCE:
         {
             AutoPtr<ICharSequence> charCsq;
             FAIL_RETURN(TextUtils::CHAR_SEQUENCE_CREATOR::CreateFromParcel(source, (ICharSequence**)&charCsq));
-            mValue = charCsq ? charCsq->Probe(EIID_IInterface) : NULL;
+            mValue = charCsq;
             break;
         }
         case URI:
@@ -1192,50 +1604,54 @@ ECode RemoteViews::ReflectionAction::ReadFromParcel(
         }
         case BITMAP:
         {
-            Int32 bitmap = 0;
-            source->ReadInt32(&bitmap);
-            if(bitmap != 0) {
+            Int32 flag = 0;
+            source->ReadInt32(&flag);
+            if(flag != 0) {
                 AutoPtr<IBitmap> bmp;
-                CBitmap::New(0, NULL, FALSE, NULL, 0, (IBitmap**)&bmp);
-                AutoPtr<CBitmap> cbmp = (CBitmap*)bmp.Get();
-                cbmp->ReadFromParcel(source);
-                mValue = bmp->Probe(EIID_IInterface);
+                CBitmap::New((IBitmap**)&bmp);
+                AutoPtr<IParcelable> p = IParcelable::Probe(bmp);
+                p->ReadFromParcel(source);
+                mValue = bmp;
             }
             break;
         }
         case BUNDLE:
         {
-            AutoPtr<IBundle> bundle;
-            CBundle::New((IBundle**)&bundle);
-            AutoPtr<CBundle> cBundle = (CBundle*)bundle.Get();
-            cBundle->ReadFromParcel(source);
-            mValue = bundle->Probe(EIID_IInterface);
-            break;
+            Int32 flag = 0;
+            source->ReadInt32(&flag);
+            if(flag != 0) {
+                AutoPtr<IBundle> bundle;
+                CBundle::New((IBundle**)&bundle);
+                AutoPtr<IParcelable> p = IParcelable::Probe(bundle);
+                p->ReadFromParcel(source);
+                mValue = bundle;
+                break;
+            }
         }
         case INTENT:
         {
-            Int32 intent = 0;
-            source->ReadInt32(&intent);
-            if (intent) {
+            Int32 flag = 0;
+            source->ReadInt32(&flag);
+            if (flag) {
                 AutoPtr<IIntent> intent;
                 CIntent::New((IIntent**)&intent);
-                AutoPtr<CIntent> cIntent = (CIntent*)intent.Get();
-                cIntent->ReadFromParcel(source);
-                mValue = intent->Probe(EIID_IInterface);
+                AutoPtr<IParcelable> p = IParcelable::Probe(intent);
+                p->ReadFromParcel(source);
+                mValue = intent;
             }
             break;
         }
         default:
             break;
     }
-    // Logger::D("RemoteViews", "- RemoteViews::ReflectionAction::ReadFromParcel()");
+    // Logger::D("RemoteViews", "- RemoteViews::_ReflectionAction::ReadFromParcel()");
     return NOERROR;
 }
 
 ECode RemoteViews::ReflectionAction::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    // Logger::D("RemoteViews", "+ RemoteViews::ReflectionAction::WriteToParcel(), type = %d; viewid = %d; method = %s", mType, mViewId, mMethodName.string());
+    // Logger::D("RemoteViews", "+ RemoteViews::_ReflectionAction::WriteToParcel(), type = %d; viewid = %d; method = %s", mType, mViewId, mMethodName.string());
     dest->WriteInt32(TAG);
     dest->WriteInt32(mViewId);
     dest->WriteString(mMethodName);
@@ -1244,7 +1660,7 @@ ECode RemoteViews::ReflectionAction::WriteToParcel(
     switch (mType) {
         case BOOLEAN:
         {
-            // Logger::D("RemoteViews", "RemoteViews::ReflectionAction::WriteToParcel(), write type BOOLEAN");
+            // Logger::D("RemoteViews", "RemoteViews::_ReflectionAction::WriteToParcel(), write type BOOLEAN");
             AutoPtr<IBoolean> b = IBoolean::Probe(mValue);
             Boolean res = FALSE;
             b->GetValue(&res);
@@ -1253,7 +1669,7 @@ ECode RemoteViews::ReflectionAction::WriteToParcel(
         }
         case BYTE:
         {
-            // Logger::D("RemoteViews", "RemoteViews::ReflectionAction::WriteToParcel(), write type BYTE");
+            // Logger::D("RemoteViews", "RemoteViews::_ReflectionAction::WriteToParcel(), write type BYTE");
             AutoPtr<IByte> ib = IByte::Probe(mValue);
             Byte by;
             ib->GetValue(&by);
@@ -1262,7 +1678,7 @@ ECode RemoteViews::ReflectionAction::WriteToParcel(
         }
         case SHORT:
         {
-            // Logger::D("RemoteViews", "RemoteViews::ReflectionAction::WriteToParcel(), write type SHORT");
+            // Logger::D("RemoteViews", "RemoteViews::_ReflectionAction::WriteToParcel(), write type SHORT");
             AutoPtr<IInteger16> integer16 = IInteger16::Probe(mValue);
             Int16 i16 = 0;
             integer16->GetValue(&i16);
@@ -1271,7 +1687,7 @@ ECode RemoteViews::ReflectionAction::WriteToParcel(
         }
         case INT:
         {
-            // Logger::D("RemoteViews", "RemoteViews::ReflectionAction::WriteToParcel(), write type INT");
+            // Logger::D("RemoteViews", "RemoteViews::_ReflectionAction::WriteToParcel(), write type INT");
             AutoPtr<IInteger32> integer32 = IInteger32::Probe(mValue);
             Int32 i32 = 0;
             integer32->GetValue(&i32);
@@ -1280,7 +1696,7 @@ ECode RemoteViews::ReflectionAction::WriteToParcel(
         }
         case LONG:
         {
-            // Logger::D("RemoteViews", "RemoteViews::ReflectionAction::WriteToParcel(), write type LONG");
+            // Logger::D("RemoteViews", "RemoteViews::_ReflectionAction::WriteToParcel(), write type LONG");
             AutoPtr<IInteger64> integer64 = IInteger64::Probe(mValue);
             Int64 i64 = 0;
             integer64->GetValue(&i64);
@@ -1288,7 +1704,7 @@ ECode RemoteViews::ReflectionAction::WriteToParcel(
             break;
         }
         case FLOAT:
-            // Logger::D("RemoteViews", "RemoteViews::ReflectionAction::WriteToParcel(), write type FLOAT");
+            // Logger::D("RemoteViews", "RemoteViews::_ReflectionAction::WriteToParcel(), write type FLOAT");
         {
             AutoPtr<IFloat> f = IFloat::Probe(mValue);
             Float fl = 0;
@@ -1298,7 +1714,7 @@ ECode RemoteViews::ReflectionAction::WriteToParcel(
         }
         case DOUBLE:
         {
-            // Logger::D("RemoteViews", "RemoteViews::ReflectionAction::WriteToParcel(), write type DOUBLE");
+            // Logger::D("RemoteViews", "RemoteViews::_ReflectionAction::WriteToParcel(), write type DOUBLE");
             AutoPtr<IDouble> d = IDouble::Probe(mValue);
             Double dou = 0;
             d->GetValue(&dou);
@@ -1307,7 +1723,7 @@ ECode RemoteViews::ReflectionAction::WriteToParcel(
         }
         case CHAR:
         {
-            // Logger::D("RemoteViews", "RemoteViews::ReflectionAction::WriteToParcel(), write type CHAR");
+            // Logger::D("RemoteViews", "RemoteViews::_ReflectionAction::WriteToParcel(), write type CHAR");
             AutoPtr<IChar32> c = IChar32::Probe(mValue);
             Char32 ch;
             c->GetValue(&ch);
@@ -1315,86 +1731,33 @@ ECode RemoteViews::ReflectionAction::WriteToParcel(
             break;
         }
         case STRING:
-        {
-            // Logger::D("RemoteViews", "RemoteViews::ReflectionAction::WriteToParcel(), write type STRING");
-            String str;
-            if (mValue != NULL) {
-                AutoPtr<ICharSequence> csq = ICharSequence::Probe(mValue);
-                csq->ToString(&str);
-            }
-            // Logger::D("RemoteViews", "RemoteViews::ReflectionAction::WriteToParcel(), write type STRING, str = %s", str.string());
-            dest->WriteString(str);
-            break;
-        }
         case CHAR_SEQUENCE:
         {
-            // Logger::D("RemoteViews", "RemoteViews::ReflectionAction::WriteToParcel(), write type CHAR_SEQUENCE");
+            // Logger::D("RemoteViews", "RemoteViews::_ReflectionAction::WriteToParcel(), write type CHAR_SEQUENCE");
             AutoPtr<ICharSequence> charSeq = ICharSequence::Probe(mValue);
-            // String str;
-            // if (charSeq) {
-            //     charSeq->ToString(&str);
-            // }
-            // Logger::D("RemoteViews", "RemoteViews::ReflectionAction::WriteToParcel(), write type CHAR_SEQUENCE, str = %s", str.string());
             TextUtils::WriteToParcel(charSeq, dest);
-            // dest->WriteString(str);
             break;
         }
         case URI:
-        {
-            // Logger::D("RemoteViews", "RemoteViews::ReflectionAction::WriteToParcel(), write type URI");
-            AutoPtr<IUri> uri = IUri::Probe(mValue);
-            if(uri) {
-                dest->WriteInt32(1);
-                dest->WriteInterfacePtr(uri.Get());
-            } else {
-                dest->WriteInt32(0);
-            }
-            break;
-        }
         case BITMAP:
-        {
-            // Logger::D("RemoteViews", "RemoteViews::ReflectionAction::WriteToParcel(), write type BITMAP");
-            if(mValue) {
-                dest->WriteInt32(1);
-            } else {
-                dest->WriteInt32(0);
-            }
-
-            if (mValue) {
-                AutoPtr<CBitmap> bmp = (CBitmap*)IBitmap::Probe(mValue);
-                bmp->WriteToParcel(dest);
-            }
-            break;
-        }
         case BUNDLE:
-        {
-            // Logger::D("RemoteViews", "RemoteViews::ReflectionAction::WriteToParcel(), write type BUNDLE");
-            if (mValue) {
-                AutoPtr<CBundle> bundle = (CBundle*)IBundle::Probe(mValue);
-                bundle->WriteToParcel(dest);
-            }
-            break;
-        }
         case INTENT:
         {
-            // Logger::D("RemoteViews", "RemoteViews::ReflectionAction::WriteToParcel(), write type INTENT");
+            // Logger::D("RemoteViews", "RemoteViews::_ReflectionAction::WriteToParcel(), write type INTENT");
             if(mValue) {
                 dest->WriteInt32(1);
+                IParcelable::Probe(mValue)->WriteToParcel(dest);
             } else {
                 dest->WriteInt32(0);
-            }
-            if (mValue) {
-                AutoPtr<CIntent> intent = (CIntent*)IIntent::Probe(mValue);
-                intent->WriteToParcel(dest);
             }
             break;
         }
         default:
-            Logger::W("RemoteViews", "RemoteViews::ReflectionAction::WriteToParcel(), write type unknown");
+            SLOGGERW("RemoteViews", "RemoteViews::ReflectionAction::WriteToParcel(), write type unknown");
             break;
     }
 
-    // Logger::D("RemoteViews", "- RemoteViews::ReflectionAction::WriteToParcel()");
+    // Logger::D("RemoteViews", "- RemoteViews::_ReflectionAction::WriteToParcel()");
     return NOERROR;
 }
 
@@ -1421,30 +1784,37 @@ RemoteViews::ViewGroupAction::ViewGroupAction(
     }
 }
 
-Int32 RemoteViews::ViewGroupAction::MergeBehavior()
+ECode RemoteViews::ViewGroupAction::MergeBehavior(
+    /* [out] */ Int32* result)
 {
-    return MERGE_APPEND;
+    VALIDATE_NOT_NULL(result)
+
+    *result = MERGE_APPEND;
+    return NOERROR;
 }
 
-void RemoteViews::ViewGroupAction::UpdateMemoryUsageEstimate(
-    /* [in] */ MemoryUsageCounter* counter)
+ECode RemoteViews::ViewGroupAction::UpdateMemoryUsageEstimate(
+    /* [in] */ IMemoryUsageCounter* counter)
 {
     if (mNestedViews != NULL) {
-        RemoteViews* v = reinterpret_cast<RemoteViews*>(mNestedViews.Get());
-        counter->Increment(v->EstimateMemoryUsage());
+        Int32 usage;
+        mNestedViews->EstimateMemoryUsage(&usage);
+        counter->Increment(usage);
     }
+    return NOERROR;
 }
 
-void RemoteViews::ViewGroupAction::SetBitmapCache(
-    /* [in] */ IRemoteViewsBitmapCache* bitmapCache)
+ECode RemoteViews::ViewGroupAction::SetBitmapCache(
+    /* [in] */ IBitmapCache* bitmapCache)
 {
     if (mNestedViews != NULL) {
-        RemoteViews* v = reinterpret_cast<RemoteViews*>(mNestedViews.Get());
+        RemoteViews* v = (RemoteViews*)(mNestedViews.Get());
         v->SetBitmapCache(bitmapCache);
     }
+    return NOERROR;
 }
 
-void RemoteViews::ViewGroupAction::Apply(
+ECode RemoteViews::ViewGroupAction::Apply(
     /* [in] */ IView* root,
     /* [in] */ IViewGroup* rootParent,
     /* [in] */ IRemoteViewsOnClickHandler* handler)
@@ -1454,19 +1824,25 @@ void RemoteViews::ViewGroupAction::Apply(
     AutoPtr<IView> v;
     root->FindViewById(mViewId, (IView**)&v);
     AutoPtr<IViewGroup> target = IViewGroup::Probe(v);
-    if (target == NULL) return;
+    if (target == NULL) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     if (mNestedViews != NULL) {
-        RemoteViews* v = reinterpret_cast<RemoteViews*>(mNestedViews.Get());
-        AutoPtr<IView> view = v->Apply(context, target, handler);
+        AutoPtr<IView> view;
+        mNestedViews->Apply(context, target, handler, (IView**)&view);
         target->AddView(view);
     }
     else {
         target->RemoveAllViews();
     }
+    return NOERROR;
 }
 
-String RemoteViews::ViewGroupAction::GetActionName()
+ECode RemoteViews::ViewGroupAction::GetActionName(
+    /* [out] */ String* name)
 {
+    VALIDATE_NOT_NULL(name)
+
     String str("ViewGroupAction");
     if (mNestedViews) {
         str += "Add";
@@ -1474,15 +1850,15 @@ String RemoteViews::ViewGroupAction::GetActionName()
     else {
         str += "Remove";
     }
-    return str;
+    *name = str;
+    return NOERROR;
 }
 
 // interface IParcelable
 ECode RemoteViews::ViewGroupAction::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    // need not to read TAG again!
-    return NOERROR;
+    return ReadFromParcel(source, NULL);
 }
 
 ECode RemoteViews::ViewGroupAction::WriteToParcel(
@@ -1492,8 +1868,7 @@ ECode RemoteViews::ViewGroupAction::WriteToParcel(
     dest->WriteInt32(mViewId);
     if (mNestedViews) {
         dest->WriteInt32(1);
-        // TODO:
-        //nestedViews.writeToParcel(dest, flags);
+        IParcelable::Probe(mNestedViews)->WriteToParcel(dest);
     }
     else {
         dest->WriteInt32(0);
@@ -1503,19 +1878,15 @@ ECode RemoteViews::ViewGroupAction::WriteToParcel(
 
 ECode RemoteViews::ViewGroupAction::ReadFromParcel(
     /* [in] */ IParcel* source,
-    /* [in] */ IRemoteViewsBitmapCache* bitmapCache)
+    /* [in] */ IBitmapCache* bitmapCache)
 {
-    // need not to read TAG again!
-    ReadFromParcel(source);
-
     source->ReadInt32(&mViewId);
     Int32 res = 0;
     source->ReadInt32(&res);
     Boolean nestedViewsNull = res == 0;
     if (!nestedViewsNull) {
-        PFL_EX("TODO:")
-        //This is right?
-        //mNestedViews = new RemoteViews(source, bitmapCache);
+        // CRemoteViews::New((IRemoteViews**)&mNestedViews); zhangjingcheng
+        ((RemoteViews*)mNestedViews.Get())->constructor(source, bitmapCache);
     }
     else {
         mNestedViews = NULL;
@@ -1551,7 +1922,7 @@ RemoteViews::TextViewDrawableAction::TextViewDrawableAction(
     , mD4(d4)
 {}
 
-void RemoteViews::TextViewDrawableAction::Apply(
+ECode RemoteViews::TextViewDrawableAction::Apply(
     /* [in] */ IView* root,
     /* [in] */ IViewGroup* rootParent,
     /* [in] */ IRemoteViewsOnClickHandler* handler)
@@ -1561,18 +1932,24 @@ void RemoteViews::TextViewDrawableAction::Apply(
     AutoPtr<IView> v;
     root->FindViewById(mViewId, (IView**)&v);
     AutoPtr<ITextView> target = ITextView::Probe(v);
-    if (target == NULL) return;
+    if (target == NULL) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     if (mIsRelative) {
-        target->SetCompoundDrawablesRelativeWithIntrinsicBounds(mD1, mD2, mD3, mD4);
+        return target->SetCompoundDrawablesRelativeWithIntrinsicBounds(mD1, mD2, mD3, mD4);
     }
     else {
-        target->SetCompoundDrawablesWithIntrinsicBounds(mD1, mD2, mD3, mD4);
+        return target->SetCompoundDrawablesWithIntrinsicBounds(mD1, mD2, mD3, mD4);
     }
 }
 
-String RemoteViews::TextViewDrawableAction::GetActionName()
+ECode RemoteViews::TextViewDrawableAction::GetActionName(
+    /* [out] */ String* name)
 {
-    return String("TextViewDrawableAction");
+    VALIDATE_NOT_NULL(name)
+
+    *name = "TextViewDrawableAction";
+    return NOERROR;
 }
 
 // interface IParcelable
@@ -1623,7 +2000,7 @@ RemoteViews::TextViewSizeAction::TextViewSizeAction(
     , mSize(size)
 {}
 
-void RemoteViews::TextViewSizeAction::Apply(
+ECode RemoteViews::TextViewSizeAction::Apply(
     /* [in] */ IView* root,
     /* [in] */ IViewGroup* rootParent,
     /* [in] */ IRemoteViewsOnClickHandler* handler)
@@ -1633,13 +2010,19 @@ void RemoteViews::TextViewSizeAction::Apply(
     AutoPtr<IView> v;
     root->FindViewById(mViewId, (IView**)&v);
     AutoPtr<ITextView> target = ITextView::Probe(v);
-    if (target == NULL) return;
-    target->SetTextSize(mUnits, mSize);
+    if (target == NULL) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    return target->SetTextSize(mUnits, mSize);
 }
 
-String RemoteViews::TextViewSizeAction::GetActionName()
+ECode RemoteViews::TextViewSizeAction::GetActionName(
+    /* [out] */ String* name)
 {
-    return String("TextViewSizeAction");
+    VALIDATE_NOT_NULL(name)
+
+    *name = "TextViewSizeAction";
+    return NOERROR;
 }
 
 // interface IParcelable
@@ -1687,7 +2070,7 @@ RemoteViews::ViewPaddingAction::ViewPaddingAction(
     , mBottom(bottom)
 {}
 
-void RemoteViews::ViewPaddingAction::Apply(
+ECode RemoteViews::ViewPaddingAction::Apply(
     /* [in] */ IView* root,
     /* [in] */ IViewGroup* rootParent,
     /* [in] */ IRemoteViewsOnClickHandler* handler)
@@ -1696,13 +2079,20 @@ void RemoteViews::ViewPaddingAction::Apply(
     root->GetContext((IContext**)&context);
     AutoPtr<IView> target;
     root->FindViewById(mViewId, (IView**)&target);
-    if (target == NULL) return;
+    if (target == NULL) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     target->SetPadding(mLeft, mTop, mRight, mBottom);
+    return NOERROR;
 }
 
-String RemoteViews::ViewPaddingAction::GetActionName()
+ECode RemoteViews::ViewPaddingAction::GetActionName(
+    /* [out] */ String* name)
 {
-    return String("ViewPaddingAction");
+    VALIDATE_NOT_NULL(name)
+
+    *name = "ViewPaddingAction";
+    return NOERROR;
 }
 
 // interface IParcelable
@@ -1730,18 +2120,108 @@ ECode RemoteViews::ViewPaddingAction::WriteToParcel(
 }
 
 //==============================================================================
+//                  RemoteViews::TextViewDrawableColorFilterAction
+//==============================================================================
+
+const Int32 RemoteViews::TextViewDrawableColorFilterAction::TAG;
+
+RemoteViews::TextViewDrawableColorFilterAction::TextViewDrawableColorFilterAction()
+    : Action(0)
+    , mIsRelative(FALSE)
+    , mIndex(0)
+    , mColor(0)
+    , mMode(PorterDuffMode_NONE)
+{}
+
+RemoteViews::TextViewDrawableColorFilterAction::TextViewDrawableColorFilterAction(
+    /* [in] */ Int32 viewId,
+    /* [in] */ Boolean isRelative,
+    /* [in] */ Int32 index,
+    /* [in] */ Int32 color,
+    /* [in] */ PorterDuffMode mode)
+    : Action(0)
+    , mIsRelative(FALSE)
+    , mIndex(0)
+    , mColor(0)
+    , mMode(PorterDuffMode_NONE)
+{}
+
+ECode RemoteViews::TextViewDrawableColorFilterAction::Apply(
+    /* [in] */ IView* root,
+    /* [in] */ IViewGroup* rootParent,
+    /* [in] */ IRemoteViewsOnClickHandler* handler)
+{
+    AutoPtr<IView> v;
+    root->FindViewById(mViewId, (IView**)&v);
+    AutoPtr<ITextView> target = ITextView::Probe(v);
+    if (target == NULL) {
+        return NOERROR;
+    }
+    AutoPtr<ArrayOf<IDrawable*> > drawables;
+    if (mIsRelative) {
+            target->GetCompoundDrawablesRelative((ArrayOf<IDrawable*>**)&drawables);
+    } else {
+            target->GetCompoundDrawables((ArrayOf<IDrawable*>**)&drawables);
+    }
+    if (mIndex < 0 || mIndex >= 4) {
+        SLOGGERE("RemoteViews", "index must be in range [0, 3].")
+        return NOERROR;
+    }
+    AutoPtr<IDrawable> d = (*drawables)[mIndex];
+    if (d != NULL) {
+        AutoPtr<IDrawable> tmp;
+        d->Mutate((IDrawable**)&tmp);
+        d->SetColorFilter(mColor, mMode);
+    }
+    return NOERROR;
+}
+
+ECode RemoteViews::TextViewDrawableColorFilterAction::GetActionName(
+    /* [out] */ String* name)
+{
+    VALIDATE_NOT_NULL(name)
+
+    *name = "TextViewDrawableColorFilterAction";
+    return NOERROR;
+}
+
+// interface IParcelable
+ECode RemoteViews::TextViewDrawableColorFilterAction::ReadFromParcel(
+    /* [in] */ IParcel* source)
+{
+    source->ReadInt32(&mViewId);
+    Int32 isRelative;
+    source->ReadInt32(&isRelative);
+    mIsRelative =  isRelative == 1;
+    source->ReadInt32(&mIndex);
+    source->ReadInt32(&mColor);
+    source->ReadInt32(&mMode);
+    return NOERROR;
+}
+
+ECode RemoteViews::TextViewDrawableColorFilterAction::WriteToParcel(
+    /* [in] */ IParcel* dest)
+{
+    dest->WriteInt32(TAG);
+    dest->WriteInt32(mViewId);
+    dest->WriteInt32(mIsRelative ? 1 : 0);
+    dest->WriteInt32(mIndex);
+    dest->WriteInt32(mColor);
+    dest->WriteInt32(mMode); // zhangjingcheng
+    return NOERROR;
+}
+
+//==============================================================================
 //                  RemoteViews::FillInIntentClickListener
 //==============================================================================
-CAR_INTERFACE_IMPL(RemoteViews::FillInIntentClickListener, IViewOnClickListener)
+CAR_INTERFACE_IMPL(RemoteViews::FillInIntentClickListener, Object, IViewOnClickListener)
 
 RemoteViews::FillInIntentClickListener::FillInIntentClickListener(
     /* [in] */ IIntent* fillInIntent,
     /* [in] */ IRemoteViewsOnClickHandler* handler)
     : mIntent(fillInIntent)
     , mHandler(handler)
-{
-
-}
+{}
 
 ECode RemoteViews::FillInIntentClickListener::FillInIntentClickListener::OnClick(
     /* [in] */ IView* v)
@@ -1750,52 +2230,31 @@ ECode RemoteViews::FillInIntentClickListener::FillInIntentClickListener::OnClick
     AutoPtr<IViewParent> pa;
     v->GetParent((IViewParent**)&pa);
     AutoPtr<IView> parent = IView::Probe(pa);
-    assert(0 && "TODO");
-    //TODO
-    // while (parent && IAdapterView::Probe(parent) == NULL && IAppWidgetHostView::Probe(parent) == NULL) {
-    //     AutoPtr<IViewParent> p;
-    //     parent->GetParent((IViewParent**)&p);
-    //     parent = IView::Probe(p);
-    // }
+    while (parent != NULL && IAppWidgetHostView::Probe(parent) == NULL) {
+        pa = NULL;
+        parent->GetParent((IViewParent**)&pa);
+        parent = IView::Probe(pa);
+    }
 
-    // if (IAppWidgetHostView::Probe(parent) || parent == NULL) {
-    //     // Somehow they've managed to get this far without having
-    //     // and AdapterView as a parent.
-    //     // Log.e("RemoteViews", "Collection item doesn't have AdapterView parent");
-    //     return NOERROR;
-    // }
+    if (IAppWidgetHostView::Probe(parent) != NULL || parent == NULL) {
+        // Somehow they've managed to get this far without having
+        // and AdapterView as a parent.
+        SLOGGERE("RemoteViews", "Collection item doesn't have AdapterView parent");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
     // Insure that a template pending intent has been set on an ancestor
-    AutoPtr<IInterface> inter;
-    // parent->GetTag((IInterface**)&inter);
-    // if (!IPendingIntent::Probe(inter)) {
-    //     // Log.e("RemoteViews", "Attempting setOnClickFillInIntent without" +
-    //     //         " calling setPendingIntentTemplate on parent.");
-    //     return NOERROR;
-    // }
 
-    AutoPtr<IPendingIntent> pendingIntent = IPendingIntent::Probe(inter);
-    AutoPtr<IContext> context;
-    v->GetContext((IContext**)&context);
-    AutoPtr<IResources> resources;
-    context->GetResources((IResources**)&resources);
-    AutoPtr<ICompatibilityInfo> info;
-    resources->GetCompatibilityInfo((ICompatibilityInfo**)&info);
-    Float appScale = 0;
-    info->GetApplicationScale(&appScale);
-    AutoPtr< ArrayOf<Int32> > pos = ArrayOf<Int32>::Alloc(2);
-    v->GetLocationOnScreen(&((*pos)[0]), &((*pos)[1]));
+    AutoPtr<IInterface> tag;
+    parent->GetTag((IInterface**)&tag);
+    if (IPendingIntent::Probe(tag) == NULL) {
+        SLOGGERE("RemoteViews", "Attempting setOnClickFillInIntent without calling setPendingIntentTemplate on parent.")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
-    AutoPtr<IRect> rect;
-    CRect::New((IRect**)&rect);
-    AutoPtr<CRect> crect = (CRect*)rect.Get();
-    crect->mLeft = (Int32)(((*pos)[0]) * appScale + 0.5f);
-    crect->mTop = (Int32)(((*pos)[1]) * appScale + 0.5f);
-    Int32 width = 0, height = 0;
-    v->GetWidth(&width);
-    v->GetHeight(&height);
-    crect->mRight = (Int32)((((*pos)[0]) + width) * appScale + 0.5f);
-    crect->mBottom = (Int32)((((*pos)[1]) + height) * appScale + 0.5f);
+    AutoPtr<IPendingIntent> pendingIntent = IPendingIntent::Probe(tag);
+
+    AutoPtr<IRect> rect = GetSourceBounds(v);
 
     mIntent->SetSourceBounds(rect);
     Boolean succeed = FALSE;
@@ -1807,43 +2266,22 @@ ECode RemoteViews::FillInIntentClickListener::FillInIntentClickListener::OnClick
 //==============================================================================
 //                  RemoteViews::PendingIntentClickListener
 //==============================================================================
-CAR_INTERFACE_IMPL(RemoteViews::PendingIntentClickListener, IViewOnClickListener)
+CAR_INTERFACE_IMPL(RemoteViews::PendingIntentClickListener, Object, IViewOnClickListener)
 
 RemoteViews::PendingIntentClickListener::PendingIntentClickListener(
     /* [in] */ IPendingIntent* intent,
     /* [in] */ IRemoteViewsOnClickHandler* handler)
     : mIntent(intent)
     , mHandler(handler)
-{
-
-}
+{}
 
 ECode RemoteViews::PendingIntentClickListener::OnClick(
     /* [in] */ IView* v)
 {
-    AutoPtr<IContext> context;
-    v->GetContext((IContext**)&context);
-    AutoPtr<IResources> resources;
-    context->GetResources((IResources**)&resources);
-    AutoPtr<ICompatibilityInfo> info;
-    resources->GetCompatibilityInfo((ICompatibilityInfo**)&info);
-    Float appScale = 0;
-    info->GetApplicationScale(&appScale);
+    // Find target view location in screen coordinates and
+    // fill into PendingIntent before sending.
 
-    AutoPtr< ArrayOf<Int32> > pos = ArrayOf<Int32>::Alloc(2);
-    v->GetLocationOnScreen(&((*pos)[0]), &((*pos)[1]));
-
-    AutoPtr<IRect> rect;
-    CRect::New((IRect**)&rect);
-    AutoPtr<CRect> crect = (CRect*)rect.Get();
-    crect->mLeft = (Int32)(((*pos)[0]) * appScale + 0.5f);
-    crect->mTop = (Int32)(((*pos)[1]) * appScale + 0.5f);
-    Int32 width = 0, height = 0;
-    v->GetWidth(&width);
-    v->GetHeight(&height);
-    crect->mRight = (Int32)((((*pos)[0]) + width) * appScale + 0.5f);
-    crect->mBottom = (Int32)((((*pos)[1]) + height) * appScale + 0.5f);
-
+    AutoPtr<IRect> rect = GetSourceBounds(v);
     AutoPtr<IIntent> intent;
     CIntent::New((IIntent**)&intent);
     intent->SetSourceBounds(rect);
@@ -1856,16 +2294,14 @@ ECode RemoteViews::PendingIntentClickListener::OnClick(
 //==============================================================================
 //                  RemoteViews::IntentTemplateOnItemClickListener
 //==============================================================================
-CAR_INTERFACE_IMPL(RemoteViews::IntentTemplateOnItemClickListener, IAdapterViewOnItemClickListener)
+CAR_INTERFACE_IMPL(RemoteViews::IntentTemplateOnItemClickListener, Object, IAdapterViewOnItemClickListener)
 
 RemoteViews::IntentTemplateOnItemClickListener::IntentTemplateOnItemClickListener(
     /* [in] */ IPendingIntent* intent,
     /* [in] */ IRemoteViewsOnClickHandler* handler)
     : mIntent(intent)
     , mHandler(handler)
-{
-
-}
+{}
 
 ECode RemoteViews::IntentTemplateOnItemClickListener::OnItemClick(
     /* [in] */ IAdapterView* parent,
@@ -1897,122 +2333,157 @@ ECode RemoteViews::IntentTemplateOnItemClickListener::OnItemClick(
 
         if (!fillInIntent) return NOERROR;
 
-        AutoPtr<IContext> context;
-        view->GetContext((IContext**)&context);
-        AutoPtr<IResources> resources;
-        context->GetResources((IResources**)&resources);
-        AutoPtr<ICompatibilityInfo> info;
-        resources->GetCompatibilityInfo((ICompatibilityInfo**)&info);
-        Float appScale = 0;
-        info->GetApplicationScale(&appScale);
-
-        AutoPtr< ArrayOf<Int32> > pos = ArrayOf<Int32>::Alloc(2);
-        view->GetLocationOnScreen(&((*pos)[0]), &((*pos)[1]));
-
-        AutoPtr<IRect> rect;
-        CRect::New((IRect**)&rect);
-        AutoPtr<CRect> crect = (CRect*)rect.Get();
-        crect->mLeft = (Int32)(((*pos)[0]) * appScale + 0.5f);
-        crect->mTop = (Int32)(((*pos)[1]) * appScale + 0.5f);
-        Int32 width = 0, height = 0;
-        view->GetWidth(&width);
-        view->GetHeight(&height);
-        crect->mRight = (Int32)((((*pos)[0]) + width) * appScale + 0.5f);
-        crect->mBottom = (Int32)((((*pos)[1]) + height) * appScale + 0.5f);
-
+        AutoPtr<IRect> rect = GetSourceBounds(view);
         AutoPtr<IIntent> intent;
         CIntent::New((IIntent**)&intent);
         intent->SetSourceBounds(rect);
         Boolean succeed = FALSE;
-        mHandler->OnClickHandler(view, mIntent, fillInIntent, &succeed);
+        mHandler->OnClickHandler(view, mIntent, intent, &succeed);
     }
     return NOERROR;
 }
 
+RemoteViews::MyContextWrapper::MyContextWrapper(
+    /* [in] */ IContext* ctx,
+    /* [in] */ IContext* contextForResources)
+{
+    ContextWrapper::constructor(ctx);
+    mContextForResources = contextForResources;
+}
+
+
+ECode RemoteViews::MyContextWrapper::GetResources(
+    /* [out] */ IResources** res)
+{
+    return mContextForResources->GetResources(res);
+}
+
+RemoteViews::MyContextWrapper::GetTheme(
+    /* [out] */ IResourcesTheme** theme)
+{
+    return mContextForResources->GetTheme(theme);
+}
 //==============================================================================
 //                  RemoteViews
 //==============================================================================
+CAR_INTERFACE_IMPL_3(RemoteViews, Object, IRemoteViews, IParcelable, ILayoutInflaterFilter)
+
+static void ThreadDestructor(void* st)
+{
+    AutoPtr<IArgumentList> argument = static_cast<IArgumentList*>(st);
+    if (argument) {
+        argument->Release();
+    }
+}
+
+static Boolean InitTls()
+{
+    Int32 result = pthread_key_create(&RemoteViews::sInvokeArgsTls, ThreadDestructor);
+    return result == 0 ;
+}
+
+const String RemoteViews::TAG("RemoteViews");
+const String RemoteViews::EXTRA_REMOTEADAPTER_APPWIDGET_ID("remoteAdapterAppWidgetId");
+const Int32 RemoteViews::MODE_NORMAL;
+const Int32 RemoteViews::MODE_HAS_LANDSCAPE_AND_PORTRAIT;
+const AutoPtr<IRemoteViewsOnClickHandler> RemoteViews::DEFAULT_ON_CLICK_HANDLER = InitHandler();
+pthread_key_t RemoteViews::sInvokeArgsTls;
+Boolean RemoteViews::sHaveInitTls = InitTls();
+Object RemoteViews::sMethodsLock;
+AutoPtr<IArrayMap> RemoteViews::sMethods;
+
 RemoteViews::RemoteViews()
-    : mIsRoot(TRUE)
-    , mIsWidgetCollectionChild(FALSE)
-{
-    Process::MyUserHandle((IUserHandle**)&mUser);
-}
-
-
-RemoteViews::RemoteViews(
-    /* [in] */ IParcel* parcel)
-    : mLayoutId(-1)
+    : mLayoutId(0)
     , mIsRoot(TRUE)
     , mIsWidgetCollectionChild(FALSE)
+{}
+
+ECode RemoteViews::constructor()
 {
-    Init(parcel);
+    return NOERROR;
 }
 
-RemoteViews::RemoteViews(
-    /* [in] */ const String& packageName,
-    /* [in] */ Int32 layoutId)
-    : mPackage(packageName)
-    , mLayoutId(layoutId)
-    , mIsRoot(TRUE)
-    , mIsWidgetCollectionChild(FALSE)
-{
-    CRemoteViewsBitmapCache::New((IRemoteViewsBitmapCache**)&mBitmapCache);
-    mMemoryUsageCounter = new MemoryUsageCounter();
-    RecalculateMemoryUsage();
-}
-
-RemoteViews::RemoteViews(
-    /* [in] */ IRemoteViews* landscape,
-    /* [in] */ IRemoteViews* portrait)
-{
-    Init(landscape, portrait);
-}
-
-ECode RemoteViews::Init(
-    /* [in] */ IParcel* parcel)
-{
-    return Init(parcel, NULL);
-}
-
-ECode RemoteViews::Init(
+ECode RemoteViews::constructor(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 layoutId)
 {
+    AutoPtr<IApplicationInfo> info;
+    GetApplicationInfo(packageName, UserHandle::GetMyUserId(), (IApplicationInfo**)&info);
+    return constructor(info, layoutId);
+}
+
+ECode RemoteViews::constructor(
+    /* [in] */ const String& packageName,
+    /* [in] */ Int32 userId,
+    /* [in] */ Int32 layoutId)
+{
+    AutoPtr<IApplicationInfo> info;
+    GetApplicationInfo(packageName, userId, (IApplicationInfo**)&info);
+    return constructor(info, layoutId);
+}
+
+    /**
+     * Create a new RemoteViews object that will display the views contained
+     * in the specified layout file.
+     *
+     * @param application The application whose content is shown by the views.
+     * @param layoutId The id of the layout resource.
+     *
+     * @hide
+     */
+ECode RemoteViews::constructor(
+    /* [in] */ IApplicationInfo* application,
+    /* [in] */ Int32 layoutId)
+{
+    mApplication = application;
     mLayoutId = layoutId;
-    mPackage = packageName;
-    CRemoteViewsBitmapCache::New((IRemoteViewsBitmapCache**)&mBitmapCache);
+    mBitmapCache = new BitmapCache();
+    // setup the memory usage statistics
+
     mMemoryUsageCounter = new MemoryUsageCounter();
     RecalculateMemoryUsage();
     return NOERROR;
 }
 
-ECode RemoteViews::Init(
-    /* [in] */ IRemoteViews* landscape,
-    /* [in] */ IRemoteViews* portrait)
+    /**
+     * Create a new RemoteViews object that will inflate as the specified
+     * landspace or portrait RemoteViews, depending on the current configuration.
+     *
+     * @param landscape The RemoteViews to inflate in landscape configuration
+     * @param portrait The RemoteViews to inflate in portrait configuration
+     */
+ECode RemoteViews::constructor(
+        /* [in] */ IRemoteViews* landscape,
+        /* [in] */ IRemoteViews* portrait)
 {
-    if (!landscape || !portrait) {
-        Slogger::E(TAG, "Both RemoteViews must be non-null");
+    if (landscape == NULL || portrait == NULL) {
+        SLOGGERE("RemoteViews", "Both RemoteViews must be non-null")
         return E_RUNTIME_EXCEPTION;
     }
+    AutoPtr<IApplicationInfo> landApp = ((RemoteViews*)landscape)->mApplication;
+    AutoPtr<IApplicationInfo> portraitApp = ((RemoteViews*)portrait)->mApplication;
+    Int32 landUid, portraitUid;
+    landApp->GetUid(&landUid);
+    portraitApp->GetUid(&portraitUid);
+    String landAppName, portraitAppName;
+    IPackageItemInfo::Probe(landApp)->GetPackageName(&landAppName);
+    IPackageItemInfo::Probe(portraitApp)->GetPackageName(&portraitAppName);
 
-    String landStr, portStr;
-    landscape->GetPackage(&landStr);
-    portrait->GetPackage(&portStr);
-    if (landStr.Compare(portStr) != 0) {
-        Slogger::E(TAG, "Both RemoteViews must share the same package");
+    if (landUid != portraitUid|| ! landAppName.Equals(portraitAppName))
+    {
+        SLOGGERE("RemoteViews", "Both RemoteViews must share the same package and user")
         return E_RUNTIME_EXCEPTION;
     }
-
-    portrait->GetPackage(&mPackage);
+    mApplication = portraitApp;
     portrait->GetLayoutId(&mLayoutId);
 
     mLandscape = landscape;
     mPortrait = portrait;
 
+    // setup the memory usage statistics
     mMemoryUsageCounter = new MemoryUsageCounter();
-    mBitmapCache = NULL;
-    CRemoteViewsBitmapCache::New((IRemoteViewsBitmapCache**)&mBitmapCache);
+
+    mBitmapCache = new BitmapCache();
     ConfigureRemoteViewsAsChild(landscape);
     ConfigureRemoteViewsAsChild(portrait);
 
@@ -2020,270 +2491,167 @@ ECode RemoteViews::Init(
     return NOERROR;
 }
 
-RemoteViews::RemoteViews(
+ECode RemoteViews::constructor(
     /* [in] */ IParcel* parcel,
-    /* [in] */ IRemoteViewsBitmapCache* bitmapCache)
-    : mLayoutId(-1)
-    , mIsRoot(FALSE)
-    , mIsWidgetCollectionChild(FALSE)
+    /* [in] */ IBitmapCache* bitmapCache)
 {
-    Init(parcel, bitmapCache);
+        Int32 mode;
+        parcel->ReadInt32(&mode);
+
+        // We only store a bitmap cache in the root of the RemoteViews.
+        if (bitmapCache == NULL) {
+            mBitmapCache = new BitmapCache(parcel);
+        } else {
+            SetBitmapCache(bitmapCache);
+            SetNotRoot();
+        }
+
+        if (mode == MODE_NORMAL) {
+            parcel->ReadInterfacePtr((Handle32*)&mApplication);
+            parcel->ReadInt32(&mLayoutId);
+            Int32 tmp;
+            parcel->ReadInt32(&tmp);
+            mIsWidgetCollectionChild = tmp == 1;
+
+            Int32 count;
+            parcel->ReadInt32(&count);
+            if (count > 0) {
+                for (int i=0; i<count; i++) {
+                    Int32 tag;
+                    parcel->ReadInt32(&tag);
+                    AutoPtr<IRemoteViewsAction> actionImpl;
+                    switch (tag) {
+                        case _SetOnClickPendingIntent::TAG:
+                            actionImpl = new _SetOnClickPendingIntent(this);
+                            IParcelable::Probe(actionImpl)->ReadFromParcel(parcel);
+                            mActions.PushBack(actionImpl);
+                            break;
+                        case _SetDrawableParameters::TAG:
+                            actionImpl = new _SetDrawableParameters();
+                            IParcelable::Probe(actionImpl)->ReadFromParcel(parcel);
+                            mActions.PushBack(actionImpl);
+                            break;
+                        case ReflectionAction::TAG:
+                            actionImpl = new ReflectionAction();
+                            IParcelable::Probe(actionImpl)->ReadFromParcel(parcel);
+                            mActions.PushBack(actionImpl);
+                            break;
+                        case ViewGroupAction::TAG:
+                            actionImpl = new ViewGroupAction(this);
+                            IParcelable::Probe(actionImpl)->ReadFromParcel(parcel);
+                            mActions.PushBack(actionImpl);
+                            break;
+                        case ReflectionActionWithoutParams::TAG:
+                            actionImpl = new ReflectionActionWithoutParams(this);
+                            IParcelable::Probe(actionImpl)->ReadFromParcel(parcel);
+                            mActions.PushBack(actionImpl);
+                            break;
+                        case _SetEmptyView::TAG:
+                            actionImpl = new _SetEmptyView();
+                            IParcelable::Probe(actionImpl)->ReadFromParcel(parcel);
+                            mActions.PushBack(actionImpl);
+                            break;
+                        case _SetPendingIntentTemplate::TAG:
+                            actionImpl = new _SetPendingIntentTemplate(this);
+                            IParcelable::Probe(actionImpl)->ReadFromParcel(parcel);
+                            mActions.PushBack(actionImpl);
+                            break;
+                        case _SetOnClickFillInIntent::TAG:
+                            actionImpl = new _SetOnClickFillInIntent(this);
+                            IParcelable::Probe(actionImpl)->ReadFromParcel(parcel);
+                            mActions.PushBack(actionImpl);
+                            break;
+                        case SetRemoteViewsAdapterIntent::TAG:
+                            actionImpl = new SetRemoteViewsAdapterIntent();
+                            IParcelable::Probe(actionImpl)->ReadFromParcel(parcel);
+                            mActions.PushBack(actionImpl);
+                            break;
+                        case TextViewDrawableAction::TAG:
+                            actionImpl = new TextViewDrawableAction();
+                            IParcelable::Probe(actionImpl)->ReadFromParcel(parcel);
+                            mActions.PushBack(actionImpl);
+                            break;
+                        case TextViewSizeAction::TAG:
+                            actionImpl = new TextViewDrawableAction();
+                            IParcelable::Probe(actionImpl)->ReadFromParcel(parcel);
+                            mActions.PushBack(actionImpl);
+                            break;
+                        case ViewPaddingAction::TAG:
+                            actionImpl = new ViewPaddingAction();
+                            IParcelable::Probe(actionImpl)->ReadFromParcel(parcel);
+                            mActions.PushBack(actionImpl);
+                            break;
+                        case BitmapReflectionAction::TAG:
+                            actionImpl = new BitmapReflectionAction(this);
+                            IParcelable::Probe(actionImpl)->ReadFromParcel(parcel);
+                            mActions.PushBack(actionImpl);
+                            break;
+                        case SetRemoteViewsAdapterList::TAG:
+                            actionImpl = new SetRemoteViewsAdapterList();
+                            IParcelable::Probe(actionImpl)->ReadFromParcel(parcel);
+                            mActions.PushBack(actionImpl);
+                            break;
+                        case TextViewDrawableColorFilterAction::TAG:
+                            actionImpl = new TextViewDrawableColorFilterAction();
+                            IParcelable::Probe(actionImpl)->ReadFromParcel(parcel);
+                            mActions.PushBack(actionImpl);
+                            break;
+                        default:
+                            SLOGGERE(TAG, String("tag not found: ") + StringUtils::ToString(tag))
+                            return E_RUNTIME_EXCEPTION;
+                    }
+                }
+            }
+        } else {
+            // MODE_HAS_LANDSCAPE_AND_PORTRAIT
+            // mLandscape = new RemoteViews(parcel, mBitmapCache);
+            // mPortrait = new RemoteViews(parcel, mBitmapCache);
+            mApplication = ((RemoteViews*)mPortrait.Get())->mApplication;
+            mPortrait->GetLayoutId(&mLayoutId);
+        }
+
+        // setup the memory usage statistics
+        mMemoryUsageCounter = new MemoryUsageCounter();
+        RecalculateMemoryUsage();
+        return NOERROR;
 }
 
 ECode RemoteViews::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    return Init(source);
+    return constructor(source, NULL);
 }
 
 ECode RemoteViews::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    if (!HasLandscapeAndPortraitLayouts()) {
-        dest->WriteInt32(MODE_NORMAL);
-        if (mIsRoot) {
-            if (mBitmapCache != NULL) {
-                dest->WriteInt32(1);
-                IParcelable* parcelable = IParcelable::Probe(mBitmapCache.Get());
-                parcelable->WriteToParcel(dest);
+        if (!HasLandscapeAndPortraitLayouts()) {
+            dest->WriteInt32(MODE_NORMAL);
+            // We only write the bitmap cache if we are the root RemoteViews, as this cache
+            // is shared by all children.
+            if (mIsRoot) {
+                mBitmapCache->WriteBitmapsToParcel(dest);
             }
-            else {
-                dest->WriteInt32(0);
+            IParcelable::Probe(mApplication)->WriteToParcel(dest);
+            dest->WriteInt32(mLayoutId);
+            dest->WriteInt32(mIsWidgetCollectionChild ? 1 : 0);
+            Int32 count = mActions.GetSize();
+            dest->WriteInt32(count);
+            for (int i=0; i<count; i++) {
+                AutoPtr<IRemoteViewsAction> a = mActions[i];
+                IParcelable::Probe(a)->WriteToParcel(dest);
             }
-        }
-
-        dest->WriteString(mPackage);
-        dest->WriteInt32(mLayoutId);
-        dest->WriteInt32(mIsWidgetCollectionChild ? 1 : 0);
-        Int32 count = mActions.GetSize();
-        dest->WriteInt32(count);
-        List< AutoPtr<Action> >::Iterator it;
-        for (it = mActions.Begin(); it != mActions.End(); ++it) {
-            AutoPtr<Action> a = *it;
-            a->WriteToParcel(dest);
-        }
-    }
-    else {
-        assert(0 && "not support now");
-        dest->WriteInt32(MODE_HAS_LANDSCAPE_AND_PORTRAIT);
-        if (mIsRoot) {
-            if (mBitmapCache != NULL) {
-                dest->WriteInt32(1);
-                IParcelable* parcelable = IParcelable::Probe(mBitmapCache.Get());
-                parcelable->WriteToParcel(dest);
+        } else {
+            dest->WriteInt32(MODE_HAS_LANDSCAPE_AND_PORTRAIT);
+            // We only write the bitmap cache if we are the root RemoteViews, as this cache
+            // is shared by all children.
+            if (mIsRoot) {
+                mBitmapCache->WriteBitmapsToParcel(dest);
             }
-            else {
-                dest->WriteInt32(0);
-            }
+            IParcelable::Probe(mLandscape)->WriteToParcel(dest);
+            IParcelable::Probe(mLandscape)->WriteToParcel(dest);
         }
-
-        if (mLandscape != NULL) {
-            dest->WriteInt32(1);
-            IParcelable* parcelable = IParcelable::Probe(mLandscape.Get());
-            parcelable->WriteToParcel(dest);
-        }
-        else {
-            dest->WriteInt32(0);
-        }
-
-        if (mPortrait != NULL) {
-            dest->WriteInt32(1);
-            IParcelable* parcelable = IParcelable::Probe(mPortrait.Get());
-            parcelable->WriteToParcel(dest);
-        }
-        else {
-            dest->WriteInt32(0);
-        }
-    }
-    return NOERROR;
-}
-
-ECode RemoteViews::InitBitmapCache(
-    /* [in] */ IParcel* parcel,
-    /* [in] */ IRemoteViewsBitmapCache* bitmapCache)
-{
-    if (!bitmapCache) {
-        Int32 temp;
-        parcel->ReadInt32(&temp);
-        mBitmapCache = NULL;
-        if (temp != 0) {
-            mBitmapCache = NULL;
-            CRemoteViewsBitmapCache::New((IRemoteViewsBitmapCache**)&mBitmapCache);
-            IParcelable* parcelable = IParcelable::Probe(mBitmapCache.Get());
-            parcelable->ReadFromParcel(parcel);
-        }
-    }
-    else {
-        SetBitmapCache(bitmapCache);
-        SetNotRoot();
-    }
-    return NOERROR;
-}
-
-ECode RemoteViews::Init(
-    /* [in] */ IParcel* parcel,
-    /* [in] */ IRemoteViewsBitmapCache* bitmapCache)
-{
-    Int32 mode = 0;
-    parcel->ReadInt32(&mode);
-
-    InitBitmapCache(parcel, bitmapCache);
-
-    if (mode == MODE_NORMAL) {
-        Int32 isWidget = 0;
-        parcel->ReadString(&mPackage);
-        parcel->ReadInt32(&mLayoutId);
-        parcel->ReadInt32(&isWidget);
-        mIsWidgetCollectionChild = (isWidget == 1);
-
-        Int32 count = 0;
-        parcel->ReadInt32(&count);
-        // Slogger::D("RemoteViews", "+ RemoteViews::Init(IP, IRB), read MODE_NORMAL, action count = %d", count);
-
-        if (count > 0) {
-            Int32 tag = 0;
-            for (Int32 i = 0; i < count; i++) {
-                parcel->ReadInt32(&tag);
-                switch (tag) {
-                    case _SetOnClickPendingIntent::TAG: {
-                        // Slogger::D("RemoteViews", "+ RemoteViews::Init(IP, IRB), Got and SetOnClickPendingIntent action");
-                        AutoPtr<Action> action = new _SetOnClickPendingIntent(this);
-                        action->ReadFromParcel(parcel);
-                        mActions.PushBack(action);
-                        break;
-                    }
-
-                    case _SetDrawableParameters::TAG: {
-                        // Slogger::D("RemoteViews", "+ RemoteViews::Init(IP, IRB), Got and SetDrawableParameters action");
-                        AutoPtr<Action> action = new _SetDrawableParameters();
-                        action->ReadFromParcel(parcel);
-                        mActions.PushBack(action);
-                        break;
-                    }
-
-                    case ReflectionAction::TAG: {
-                        // Slogger::D("RemoteViews", "+ RemoteViews::Init(IP, IRB), Got and ReflectionAction action");
-                        AutoPtr<Action> action = new ReflectionAction();
-                        action->ReadFromParcel(parcel);
-                        mActions.PushBack(action);
-                        break;
-                    }
-
-                    case ViewGroupAction::TAG: {
-                        // Slogger::D("RemoteViews", "+ RemoteViews::Init(IP, IRB), Got and ViewGroupAction action");
-                        AutoPtr<ViewGroupAction> action = new ViewGroupAction(this);
-                        action->ReadFromParcel(parcel, mBitmapCache);
-                        mActions.PushBack((Action*)action.Get());
-                        break;
-                    }
-
-                    case ReflectionActionWithoutParams::TAG: {
-                        // Slogger::D("RemoteViews", "+ RemoteViews::Init(IP, IRB), Got and ReflectionActionWithoutParams action");
-                        AutoPtr<Action> action = new ReflectionActionWithoutParams();
-                        action->ReadFromParcel(parcel);
-                        mActions.PushBack(action);
-                        break;
-                    }
-
-                    case _SetEmptyView::TAG: {
-                        // Slogger::D("RemoteViews", "+ RemoteViews::Init(IP, IRB), Got and RemoteViewsSetEmptyView action");
-                        AutoPtr<Action> action = new _SetEmptyView();
-                        action->ReadFromParcel(parcel);
-                        mActions.PushBack(action);
-                        break;
-                    }
-
-                    case _SetPendingIntentTemplate::TAG: {
-                        // Slogger::D("RemoteViews", "+ RemoteViews::Init(IP, IRB), Got and SetPendingIntentTemplate action");
-                        AutoPtr<Action> action = new _SetPendingIntentTemplate();
-                        action->ReadFromParcel(parcel);
-                        mActions.PushBack(action);
-                        break;
-                    }
-
-                    case _SetOnClickFillInIntent::TAG: {
-                        // Slogger::D("RemoteViews", "+ RemoteViews::Init(IP, IRB), Got and SetOnClickFillInIntent action");
-                        AutoPtr<Action> action = new _SetOnClickFillInIntent(this);
-                        action->ReadFromParcel(parcel);
-                        mActions.PushBack(action);
-                        break;
-                    }
-
-                    case SetRemoteViewsAdapterIntent::TAG: {
-                        // Slogger::D("RemoteViews", "+ RemoteViews::Init(IP, IRB), Got and SetRemoteViewsAdapterIntent action");
-                        AutoPtr<Action> action = new SetRemoteViewsAdapterIntent();
-                        action->ReadFromParcel(parcel);
-                        mActions.PushBack(action);
-                        break;
-                    }
-
-                    case TextViewDrawableAction::TAG: {
-                        // Slogger::D("RemoteViews", "+ RemoteViews::Init(IP, IRB), Got and TextViewDrawableAction action");
-                        AutoPtr<Action> action = new TextViewDrawableAction();
-                        action->ReadFromParcel(parcel);
-                        mActions.PushBack(action);
-                        break;
-                    }
-
-                    case TextViewSizeAction::TAG: {
-                        // Slogger::D("RemoteViews", "+ RemoteViews::Init(IP, IRB), Got and TextViewSizeAction action");
-                        AutoPtr<Action> action = new TextViewSizeAction();
-                        action->ReadFromParcel(parcel);
-                        mActions.PushBack(action);
-                        break;
-                    }
-
-                    case ViewPaddingAction::TAG: {
-                        // Slogger::D("RemoteViews", "+ RemoteViews::Init(IP, IRB), Got and ViewPaddingAction action");
-                        AutoPtr<Action> action = new ViewPaddingAction();
-                        action->ReadFromParcel(parcel);
-                        mActions.PushBack(action);
-                        break;
-                    }
-
-                    case BitmapReflectionAction::TAG: {
-                        // Slogger::D("RemoteViews", "+ RemoteViews::Init(IP, IRB), Got and BitmapReflectionAction action");
-                        AutoPtr<Action> action = new BitmapReflectionAction(this);
-                        action->ReadFromParcel(parcel);
-                        mActions.PushBack(action);
-                        break;
-                    }
-                    default:
-                        break;
-                }
-            }
-        }
-    }
-    else {
-        assert(0 && "not sopport now");
-        Int32 temp;
-
-        mLandscape = NULL;
-        parcel->ReadInt32(&temp);
-        if (temp != 0) {
-            CRemoteViews::New((IRemoteViews**)&mLandscape);
-            RemoteViews* tmp = reinterpret_cast<RemoteViews*>(mLandscape->Probe(EIID_RemoteViews));
-            tmp->Init(parcel, mBitmapCache);
-        }
-
-        mLayoutId = 0;
-        mPackage = NULL;
-
-        mPortrait = NULL;
-        parcel->ReadInt32(&temp);
-        if (temp != 0) {
-            CRemoteViews::New((IRemoteViews**)&mPortrait);
-            RemoteViews* tmp = reinterpret_cast<RemoteViews*>(mPortrait->Probe(EIID_RemoteViews));
-            tmp->Init(parcel, mBitmapCache);
-
-            mPortrait->GetPackage(&mPackage);
-            mPortrait->GetLayoutId(&mLayoutId);
-        }
-    }
-
-    mMemoryUsageCounter = new MemoryUsageCounter();
-    RecalculateMemoryUsage();
-    return NOERROR;
+        return NOERROR;
 }
 
 ECode RemoteViews::SetNotRoot()
@@ -2295,7 +2663,7 @@ ECode RemoteViews::SetNotRoot()
 void RemoteViews::ConfigureRemoteViewsAsChild(
     /* [in] */ IRemoteViews* rv)
 {
-    RemoteViews* remote = reinterpret_cast<RemoteViews*>(rv->Probe(EIID_RemoteViews));
+    RemoteViews* remote = (RemoteViews*)rv;
     mBitmapCache->Assimilate(remote->mBitmapCache);
     remote->SetBitmapCache(mBitmapCache);
     remote->SetNotRoot();
@@ -2303,7 +2671,7 @@ void RemoteViews::ConfigureRemoteViewsAsChild(
 
 Boolean RemoteViews::HasLandscapeAndPortraitLayouts()
 {
-    return mLandscape && mPortrait;
+    return (mLandscape != NULL) && (mPortrait != NULL);
 }
 
 AutoPtr<IRemoteViews> RemoteViews::GetRemoteViewsToApply(
@@ -2323,7 +2691,7 @@ AutoPtr<IRemoteViews> RemoteViews::GetRemoteViewsToApply(
         }
     }
 
-    return (IRemoteViews*)this->Probe(EIID_IRemoteViews);
+    return this;
 }
 
 void RemoteViews::PerformApply(
@@ -2335,106 +2703,126 @@ void RemoteViews::PerformApply(
         if (!handler) {
             handler = DEFAULT_ON_CLICK_HANDLER;
         }
-        List< AutoPtr<Action> >::Iterator it;
+        List< AutoPtr<IRemoteViewsAction> >::Iterator it;
         for (it = mActions.Begin(); it != mActions.End(); ++it) {
-            AutoPtr<Action> a = *it;
+            AutoPtr<IRemoteViewsAction> a = *it;
             a->Apply(v, parent, handler);
         }
     }
 }
 
-AutoPtr<IContext> RemoteViews::PrepareContext(
+AutoPtr<IContext> RemoteViews::GetContextForResources(
     /* [in] */ IContext* context)
 {
-    assert(context != NULL);
-    AutoPtr<IContext> c;
-    String packageName = mPackage;
-    if (!packageName.IsNull()) {
-//        try {
-        ECode ec = context->CreatePackageContextAsUser(packageName, IContext::CONTEXT_RESTRICTED, mUser, (IContext**)&c);
-        if (FAILED(ec)) {
-            c = context;
+    if (mApplication != NULL) {
+        Int32 appUid;
+        mApplication->GetUid(&appUid);
+        Int32 userHandleId = CUserHandle::GetUserId(appUid);
+        Int32 ctxUid;
+        context->GetUserId(&ctxUid);
+        String pkgName;
+        context->GetPackageName(&pkgName);
+        String appPkgName;
+        IPackageItemInfo::Probe(mApplication)->GetPackageName(&appPkgName);
+        if (ctxUid == userHandleId && pkgName.Equals(appPkgName)) {
+            return context;
         }
-//        } catch (NameNotFoundException e) {
-//            Log.e(LOG_TAG, "Package name " + packageName + " not found");
-//            c = context;
-//        }
-    } else {
-        c = context;
+        // try {
+            AutoPtr<IContext> result;
+            if (FAILED(context->CreateApplicationContext(mApplication,
+                    IContext::CONTEXT_RESTRICTED, (IContext**)&result)))
+            {
+                SLOGGERE(TAG, String("Package name ") + appPkgName + " not found");
+            }
+        // } catch (NameNotFoundException e) {
+        // }
     }
-    return c;
+
+    return context;
 }
 
 ECode RemoteViews::MergeRemoteViews(
     /* [in] */ IRemoteViews* newRv)
 {
-    if (!newRv) return NOERROR;
+    if (newRv == NULL) {
+        return NOERROR;
+    }
+    AutoPtr<IRemoteViews> copy;
+    newRv->Clone((IRemoteViews**)&copy);;
 
-    Slogger::E(TAG, "TODO: RemoteViews::MergeRemoteViews() not finish!");
-    return NOERROR;
+    HashMap<String, AutoPtr<IRemoteViewsAction> > map;
+        
+    // We first copy the new RemoteViews, as the process of merging modifies the way the actions
+    // reference the bitmap cache. We don't want to modify the object as it may need to
+    // be merged and applied multiple times.
+    List<AutoPtr<IRemoteViewsAction> >::Iterator it = mActions.Begin();
 
-    // AutoPtr<IRemoteViews> copy;
-    // newRv->Clone((IRemoteViews**)&copy);
+    for (; it != mActions.End(); it++) {
+        AutoPtr<IRemoteViewsAction> a = *it;
+        String uniqueKey;
+        a->GetUniqueKey(&uniqueKey);
+        map[uniqueKey] = a;
+    }
 
-    // HashMap<String, AutoPtr<Action> > map;
-    // Int32 count = mActions.GetSize();
-    // for (Int32 i = 0; i < count; i++) {
-    //     AutoPtr<Action> a = mActions[i];
-    //     //map.put(a.getUniqueKey(), a);
-    // }
-    // assert(0 && "TODO");
-    // RemoteViews* mCopy = reinterpret_cast<RemoteViews*>(copy->Probe(EIID_RemoteViews));
-    // List<AutoPtr<Action> > newActions = mCopy->mActions;
-    // if (newActions.IsEmpty()) return NOERROR;
-    // count = newActions.GetSize();
-    // for (Int32 i = 0; i < count; i++) {
-    //     AutoPtr<Action> action = newActions[i];
-    //     String key = action->GetUniqueKey();
-    //     Int32 mergeBehavior = action->MergeBehavior();
-    //     /*if (map.containsKey(key) && mergeBehavior == Action.MERGE_REPLACE) {
-    //         mActions.remove(map.get(key));
-    //         map.remove(key);
-    //     }*/
+    List<AutoPtr<IRemoteViewsAction> > newActions = ((RemoteViews*)copy.Get())->mActions;
+    List<AutoPtr<IRemoteViewsAction> >::Iterator newIt = newActions.Begin();
+    for (; newIt != newActions.End(); newIt++) {
+        AutoPtr<IRemoteViewsAction> a = *newIt;
+        String key;
+        a->GetUniqueKey(&key);
+        Int32 mergeBehavior;
+        (*newIt)->MergeBehavior(&mergeBehavior);
+        if (map.Find(key) != map.End() && mergeBehavior == Action::MERGE_REPLACE) {
+            mActions.Remove(map[key]);
+            map.Erase(key);
+        }
 
-    //     if(mergeBehavior == Action::MERGE_REPLACE || mergeBehavior == Action::MERGE_APPEND) {
-    //         mActions.PushBack(action);
-    //     }
-    // }
+        // If the merge behavior is ignore, we don't bother keeping the extra action
+        if (mergeBehavior == Action::MERGE_REPLACE || mergeBehavior == Action::MERGE_APPEND) {
+            mActions.PushBack(a);
+        }
+    }
 
-    // mBitmapCache = NULL;
-    // CRemoteViewsBitmapCache::New((IRemoteViewsBitmapCache**)&mBitmapCache);
-    // SetBitmapCache(mBitmapCache);
-
+    // Because pruning can remove the need for bitmaps, we reconstruct the bitmap cache
+    mBitmapCache = new BitmapCache();
+    SetBitmapCache(mBitmapCache);
     return NOERROR;
 }
 
-AutoPtr<IRemoteViews> RemoteViews::Clone()
+ECode RemoteViews::Clone(
+    /* [out] */ IRemoteViews** remoteViews)
 {
     AutoPtr<IParcel> source;
     CParcel::New((IParcel**)&source);
     WriteToParcel(source);
     source->SetDataPosition(0);
-    AutoPtr<IRemoteViews> remoteViews;
-    CRemoteViews::New((IRemoteViews**)&remoteViews);
-    IParcelable::Probe(remoteViews)->ReadFromParcel(source);
-    return remoteViews;
-}
-
-ECode RemoteViews::SetUser(
-    /* [in] */ IUserHandle* user)
-{
-    mUser = user;
+    // CRemoteViews::New(remoteViews);zhangjingcheng
+    IParcelable::Probe(*remoteViews)->ReadFromParcel(source);
+    // source->Recycle();
     return NOERROR;
 }
 
-String RemoteViews::GetPackage()
+ECode RemoteViews::GetPackage(
+    /* [out] */ String* pkg)
 {
-    return mPackage;
+    VALIDATE_NOT_NULL(pkg)
+
+    if (mApplication != NULL) {
+        return IPackageItemInfo::Probe(mApplication)->GetPackageName(pkg);
+    } else {
+        *pkg = String(NULL);
+    }
+
+    return NOERROR;
 }
 
-Int32 RemoteViews::GetLayoutId()
+ECode RemoteViews::GetLayoutId(
+    /* [out] */ Int32* id)
 {
-    return mLayoutId;
+    VALIDATE_NOT_NULL(id)
+
+    *id = mLayoutId;
+    return NOERROR;
 }
 
 ECode RemoteViews::SetIsWidgetCollectionChild(
@@ -2444,19 +2832,25 @@ ECode RemoteViews::SetIsWidgetCollectionChild(
     return NOERROR;
 }
 
+ECode RemoteViews::GetSequenceNumber(
+    /* [out] */ Int32* number)
+{
+    *number = mActions.GetSize();
+    return NOERROR;
+}
+
 void RemoteViews::RecalculateMemoryUsage()
 {
     mMemoryUsageCounter->Clear();
     if (!HasLandscapeAndPortraitLayouts()) {
         if (!mActions.IsEmpty()) {
-            List< AutoPtr<Action> >::Iterator it;
+            List< AutoPtr<IRemoteViewsAction> >::Iterator it;
             for (it = mActions.Begin(); it != mActions.End(); ++it) {
                 (*it)->UpdateMemoryUsageEstimate(mMemoryUsageCounter);
             }
         }
         if (mIsRoot) {
-            CRemoteViewsBitmapCache* bc = (CRemoteViewsBitmapCache*)mBitmapCache.Get();
-            bc->AddBitmapMemory(mMemoryUsageCounter);
+            mBitmapCache->AddBitmapMemory(mMemoryUsageCounter);
         }
     }
     else {
@@ -2465,41 +2859,43 @@ void RemoteViews::RecalculateMemoryUsage()
         mPortrait->EstimateMemoryUsage(&port);
         mMemoryUsageCounter->Increment(land);
         mMemoryUsageCounter->Increment(port);
-        CRemoteViewsBitmapCache* bc = (CRemoteViewsBitmapCache*)mBitmapCache.Get();
-        bc->AddBitmapMemory(mMemoryUsageCounter);
+        mBitmapCache->AddBitmapMemory(mMemoryUsageCounter);
     }
 }
 
 void RemoteViews::SetBitmapCache(
-    /* [in] */ IRemoteViewsBitmapCache* bitmapCache)
+    /* [in] */ IBitmapCache* bitmapCache)
 {
     mBitmapCache = bitmapCache;
     if (!HasLandscapeAndPortraitLayouts()) {
         if (!mActions.IsEmpty()) {
-            List< AutoPtr<Action> >::Iterator it;
+            List< AutoPtr<IRemoteViewsAction> >::Iterator it;
             for (it = mActions.Begin(); it != mActions.End(); ++it) {
                 (*it)->SetBitmapCache(bitmapCache);
             }
         }
     }
     else {
-        assert(0 && "TODO");
-        RemoteViews* land = reinterpret_cast<RemoteViews*>(mLandscape->Probe(EIID_RemoteViews));
-        RemoteViews* prot = reinterpret_cast<RemoteViews*>(mLandscape->Probe(EIID_RemoteViews));
+        RemoteViews* land = (RemoteViews*)mLandscape.Get();
+        RemoteViews* prot = (RemoteViews*)mLandscape.Get();
         land->SetBitmapCache(bitmapCache);
         prot->SetBitmapCache(bitmapCache);
     }
 }
 
-Int32 RemoteViews::EstimateMemoryUsage()
+ECode RemoteViews::EstimateMemoryUsage(
+    /* [out] */ Int32* usage)
 {
-    return mMemoryUsageCounter->GetMemoryUsage();
+    return mMemoryUsageCounter->GetMemoryUsage(usage);
 }
 
 ECode RemoteViews::AddAction(
-    /* [in] */ Action* a)
+    /* [in] */ IRemoteViewsAction* a)
 {
     if (HasLandscapeAndPortraitLayouts()) {
+       SLOGGERE("RemoteViews", String("RemoteViews specifying separate landscape and portrait") +
+            " layouts cannot be modified. Instead, fully configure the landscape and" +
+            " portrait layouts individually before constructing the combined layout.");
         return E_RUNTIME_EXCEPTION;
     }
     mActions.PushBack(a);
@@ -2507,61 +2903,189 @@ ECode RemoteViews::AddAction(
     return NOERROR;
 }
 
+AutoPtr<IRect> RemoteViews::GetSourceBounds(
+    /* [out] */ IView* v)
+{
+    AutoPtr<IContext> ctx;
+    v->GetContext((IContext**)&ctx);
+    AutoPtr<IResources> resources;
+    ctx->GetResources((IResources**)&resources);
+    AutoPtr<ICompatibilityInfo> compatibilityInfo;
+    resources->GetCompatibilityInfo((ICompatibilityInfo**)&compatibilityInfo);
+    Float appScale;
+    compatibilityInfo->GetApplicationScale(&appScale);
+    AutoPtr<ArrayOf<Int32> > pos = ArrayOf<Int32>::Alloc(2);
+    v->GetLocationOnScreen(pos);
+
+    AutoPtr<IRect> rect;
+    CRect::New((IRect**)&rect);
+    Int32 w, h;
+    v->GetWidth(&w);
+    v->GetHeight(&h);
+    rect->SetLeft((Int32) ((*pos)[0] * appScale + 0.5f));
+    rect->SetTop((Int32) ((*pos)[1] * appScale + 0.5f));
+    rect->SetRight((Int32) (((*pos)[0] + w) * appScale + 0.5f));
+    rect->SetBottom((Int32) (((*pos)[1] + h) * appScale + 0.5f));
+    return rect;
+}
+
+ECode RemoteViews::GetMethod(
+    /* [in] */ IView* view,
+    /* [in] */ const String& methodName,
+    /* [in] */ const String& paramType,
+    /* [out] */ IMethodInfo** info)
+{
+    AutoPtr<IMethodInfo> method;
+    AutoPtr<IClassInfo> klass = PropertyValuesHolder::TransformClassInfo(view);
+    if (klass == NULL) {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    {
+        AutoLock lock(sMethodsLock);
+        AutoPtr<IArrayMap> methods;
+        sMethods->Get(klass, (IInterface**)&methods);
+        if (methods == NULL) {
+            CArrayMap::New((IArrayMap**)&methods);
+            sMethods->Put(klass, methods);
+        }
+
+        mPair->SetFirst(methodName);
+        mPair->SetSecond(paramType);
+
+        methods->Get(mPair, (IInterface**)&method);
+        if (method == NULL) {
+            FAIL_RETURN(klass->GetMethodInfo(methodName, paramType, (IMethodInfo**)&method))
+        }
+
+        String className;
+        klass->GetName(&className);
+        if (method == NULL) {
+            SLOGGERE("RemoteViews", String("view: ") + className + " doesn't have method: " + methodName + paramType)
+        } else {
+            String annotation;
+            method->GetAnnotation(&annotation);
+            if (!annotation.Equals(String("RemotableViewMethod"))) {
+                SLOGGERE("RemoteViews", String("view: ") + className + " can't use method with RemoteViews: " + methodName + paramType)
+            }
+
+            AutoPtr<IMutablePair> pair = new MutablePair(methodName, paramType);
+            methods->Put(pair, method);
+        }
+    }
+    *info = method;
+    REFCOUNT_ADD(*info)
+    return NOERROR;
+}
+
+AutoPtr<IArgumentList> RemoteViews::WrapArg(
+    /* [in] */ IMethodInfo* method)
+{
+    AutoPtr<IArgumentList> argument = (IArgumentList*)pthread_getspecific(sInvokeArgsTls);
+    if (argument != NULL) {
+        argument->Release();
+    }
+    argument == NULL;
+    method->CreateArgumentList((IArgumentList**)&argument);
+    pthread_setspecific(sInvokeArgsTls, argument.Get());
+    argument->AddRef();
+    return argument;
+}
+
+ECode RemoteViews::GetApplicationInfo(
+    /* [in] */ String packageName,
+    /* [in] */ Int32 userId,
+    /* [out] */ IApplicationInfo** info)
+{
+        if (packageName == NULL) {
+            *info = NULL;
+            return NOERROR;
+        }
+
+        // Get the application for the passed in package and user.
+        AutoPtr<IApplication> application = CActivityThread::GetCurrentApplication();
+        if (application == NULL) {
+            SLOGGERE(TAG, "Cannot create remote views out of an aplication.");
+            return E_ILLEGAL_STATE_EXCEPTION;
+        }
+
+        AutoPtr<IApplicationInfo> applicationInfo;
+        IContext::Probe(application)->GetApplicationInfo((IApplicationInfo**)&applicationInfo);
+        Int32 uid;
+        applicationInfo->GetUid(&uid);
+        String pkgName;
+        IPackageItemInfo::Probe(applicationInfo)->GetPackageName(&pkgName);
+
+        if (UserHandle::GetUserId(uid) != userId
+                || !pkgName.Equals(packageName)) {
+            // try {
+                AutoPtr<IContext> baseContext;
+                IContextWrapper::Probe(application)->GetBaseContext((IContext**)&baseContext);
+                AutoPtr<IUserHandle> uhandle;
+                CUserHandle::New(userId, (IUserHandle**)&uhandle);
+                AutoPtr<IContext> context;
+                ECode ec = baseContext->CreatePackageContextAsUser(
+                        packageName, 0, uhandle, (IContext**)&context);
+                if (FAILED(ec) || context == NULL) {
+                    // throw new IllegalArgumentException("No such package " + packageName);
+                    SLOGGERE(TAG, String("No such package ") + packageName)
+                    return E_ILLEGAL_ARGUMENT_EXCEPTION;
+                }
+
+                return context->GetApplicationInfo(info);
+            // } catch (NameNotFoundException nnfe) {
+            // }
+        }
+        return NOERROR;
+}
+
 ECode RemoteViews::AddView(
     /* [in] */ Int32 viewId,
     /* [in] */ IRemoteViews* nestedView)
 {
-    AutoPtr<Action> action = new ViewGroupAction(viewId, nestedView, this);
-    AddAction(action);
-    return NOERROR;
+    AutoPtr<IRemoteViewsAction> action = new ViewGroupAction(viewId, nestedView, this);
+    return AddAction(action);
 }
 
 ECode RemoteViews::RemoveAllViews(
     /* [in] */ Int32 viewId)
 {
-    AutoPtr<Action> action = new ViewGroupAction(viewId, NULL, this);
-    AddAction(action);
-    return NOERROR;
+    AutoPtr<IRemoteViewsAction> action = new ViewGroupAction(viewId, NULL, this);
+    return AddAction(action);
 }
 
 ECode RemoteViews::ShowNext(
     /* [in] */ Int32 viewId)
 {
-    AutoPtr<Action> action = new ReflectionActionWithoutParams(viewId, String("ShowNext"));
-    AddAction(action);
-    return NOERROR;
+    AutoPtr<IRemoteViewsAction> action = new ReflectionActionWithoutParams(viewId, String("ShowNext"), this);
+    return AddAction(action);
 }
 
 ECode RemoteViews::ShowPrevious(
     /* [in] */ Int32 viewId)
 {
-    AutoPtr<Action> action = new ReflectionActionWithoutParams(viewId, String("ShowPrevious"));
-    AddAction(action);
-    return NOERROR;
+    AutoPtr<IRemoteViewsAction> action = new ReflectionActionWithoutParams(viewId, String("ShowPrevious"), this);
+    return AddAction(action);
 }
 
 ECode RemoteViews::SetDisplayedChild(
     /* [in] */ Int32 viewId,
     /* [in] */ Int32 childIndex)
 {
-    SetInt32(viewId, String("SetDisplayedChild"), childIndex);
-    return NOERROR;
+    return SetInt32(viewId, String("SetDisplayedChild"), childIndex);
 }
 
 ECode RemoteViews::SetViewVisibility(
     /* [in] */ Int32 viewId,
     /* [in] */ Int32 visibility)
 {
-    SetInt32(viewId, String("SetVisibility"), visibility);
-    return NOERROR;
+    return SetInt32(viewId, String("SetVisibility"), visibility);
 }
 
 ECode RemoteViews::SetTextViewText(
     /* [in] */ Int32 viewId,
     /* [in] */ ICharSequence* text)
 {
-    SetCharSequence(viewId, String("SetText"), text);
-    return NOERROR;
+    return SetCharSequence(viewId, String("SetText"), text);
 }
 
 ECode RemoteViews::SetTextViewTextSize(
@@ -2569,9 +3093,8 @@ ECode RemoteViews::SetTextViewTextSize(
     /* [in] */ Int32 units,
     /* [in] */ Float size)
 {
-    AutoPtr<Action> action = new TextViewSizeAction(viewId, units, size);
-    AddAction(action);
-    return NOERROR;
+    AutoPtr<IRemoteViewsAction> action = new TextViewSizeAction(viewId, units, size);
+    return AddAction(action);
 }
 
 ECode RemoteViews::SetTextViewCompoundDrawables(
@@ -2581,9 +3104,8 @@ ECode RemoteViews::SetTextViewCompoundDrawables(
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom)
 {
-    AutoPtr<Action> action = new TextViewDrawableAction(viewId, FALSE, left, top, right, bottom);
-    AddAction(action);
-    return NOERROR;
+    AutoPtr<IRemoteViewsAction> action = new TextViewDrawableAction(viewId, FALSE, left, top, right, bottom);
+    return AddAction(action);
 }
 
 ECode RemoteViews::SetTextViewCompoundDrawablesRelative(
@@ -2593,42 +3115,51 @@ ECode RemoteViews::SetTextViewCompoundDrawablesRelative(
     /* [in] */ Int32 end,
     /* [in] */ Int32 bottom)
 {
-    AutoPtr<Action> action = new TextViewDrawableAction(viewId, TRUE, start, top, end, bottom);
-    AddAction(action);
-    return NOERROR;
+    AutoPtr<IRemoteViewsAction> action = new TextViewDrawableAction(viewId, TRUE, start, top, end, bottom);
+    return AddAction(action);
+}
+
+ECode RemoteViews::SetTextViewCompoundDrawablesRelativeColorFilter(
+    /* [in] */ Int32 viewId,
+    /* [in] */ Int32 index,
+    /* [in] */ Int32 color,
+    /* [in] */ PorterDuffMode mode)
+{
+    if (index < 0 || index >= 4) {
+        SLOGGERE(TAG, "index must be in range [0, 3].")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    AutoPtr<IRemoteViewsAction> action = new TextViewDrawableColorFilterAction(viewId, TRUE, index, color, mode);
+    return AddAction(action);
 }
 
 ECode RemoteViews::SetImageViewResource(
     /* [in] */ Int32 viewId,
     /* [in] */ Int32 srcId)
 {
-    SetInt32(viewId, String("SetImageResource"), srcId);
-    return NOERROR;
+    return SetInt32(viewId, String("SetImageResource"), srcId);
 }
 
 ECode RemoteViews::SetImageViewUri(
     /* [in] */ Int32 viewId,
     /* [in] */ IUri* uri)
 {
-    SetUri(viewId, String("SetImageURI"), uri);
-    return NOERROR;
+    return SetUri(viewId, String("SetImageURI"), uri);
 }
 
 ECode RemoteViews::SetImageViewBitmap(
     /* [in] */ Int32 viewId,
     /* [in] */ IBitmap* bitmap)
 {
-    SetBitmap(viewId, String("SetImageBitmap"), bitmap);
-    return NOERROR;
+    return SetBitmap(viewId, String("SetImageBitmap"), bitmap);
 }
 
 ECode RemoteViews::SetEmptyView(
     /* [in] */ Int32 viewId,
     /* [in] */ Int32 emptyViewId)
 {
-    AutoPtr<Action> action = new _SetEmptyView(viewId, emptyViewId);
-    AddAction(action);
-    return NOERROR;
+    AutoPtr<IRemoteViewsAction> action = new _SetEmptyView(viewId, emptyViewId);
+    return AddAction(action);
 }
 
 ECode RemoteViews::SetChronometer(
@@ -2661,27 +3192,24 @@ ECode RemoteViews::SetOnClickPendingIntent(
     /* [in] */ Int32 viewId,
     /* [in] */ IPendingIntent* pendingIntent)
 {
-    AutoPtr<Action> action = new _SetOnClickPendingIntent(viewId, pendingIntent, this);
-    AddAction(action);
-    return NOERROR;
+    AutoPtr<IRemoteViewsAction> action = new _SetOnClickPendingIntent(viewId, pendingIntent, this);
+    return AddAction(action);
 }
 
 ECode RemoteViews::SetPendingIntentTemplate(
     /* [in] */ Int32 viewId,
     /* [in] */ IPendingIntent* pendingIntentTemplate)
 {
-    AutoPtr<Action> action = new _SetPendingIntentTemplate(viewId, pendingIntentTemplate);
-    AddAction(action);
-    return NOERROR;
+    AutoPtr<IRemoteViewsAction> action = new _SetPendingIntentTemplate(viewId, pendingIntentTemplate, this);
+    return AddAction(action);
 }
 
 ECode RemoteViews::SetOnClickFillInIntent(
     /* [in] */ Int32 viewId,
     /* [in] */ IIntent* fillInIntent)
 {
-    AutoPtr<Action> action = new _SetOnClickFillInIntent(viewId, fillInIntent, this);
-    AddAction(action);
-    return NOERROR;
+    AutoPtr<IRemoteViewsAction> action = new _SetOnClickFillInIntent(viewId, fillInIntent, this);
+    return AddAction(action);
 }
 
 ECode RemoteViews::SetDrawableParameters(
@@ -2692,26 +3220,23 @@ ECode RemoteViews::SetDrawableParameters(
     /* [in] */ PorterDuffMode mode,
     /* [in] */ Int32 level)
 {
-    AutoPtr<Action> action = new _SetDrawableParameters(viewId, targetBackground, alpha, colorFilter, mode, level);
-    AddAction(action);
-    return NOERROR;
+    AutoPtr<IRemoteViewsAction> action = new _SetDrawableParameters(viewId, targetBackground, alpha, colorFilter, mode, level);
+    return AddAction(action);
 }
 
 ECode RemoteViews::SetTextColor(
     /* [in] */ Int32 viewId,
     /* [in] */ Int32 color)
 {
-    SetInt32(viewId, String("SetTextColor"), color);
-    return NOERROR;
+    return SetInt32(viewId, String("SetTextColor"), color);
 }
 
 ECode RemoteViews::SetRemoteAdapter(
     /* [in] */ Int32 viewId,
     /* [in] */ IIntent* intent)
 {
-    AutoPtr<Action> action = new SetRemoteViewsAdapterIntent(viewId, intent);
-    AddAction(action);
-    return NOERROR;
+    AutoPtr<IRemoteViewsAction> action = new SetRemoteViewsAdapterIntent(viewId, intent);
+    return AddAction(action);
 }
 
 ECode RemoteViews::SetRemoteAdapter(
@@ -2719,24 +3244,30 @@ ECode RemoteViews::SetRemoteAdapter(
     /* [in] */ Int32 viewId,
     /* [in] */ IIntent* intent)
 {
-    SetRemoteAdapter(viewId, intent);
-    return NOERROR;
+    return SetRemoteAdapter(viewId, intent);
+}
+
+ECode RemoteViews::SetRemoteAdapter(
+    /* [in] */ Int32 viewId,
+    /* [in] */ IArrayList* list,
+    /* [in] */ Int32 viewTypeCount)
+{
+    AutoPtr<IRemoteViewsAction> action = new SetRemoteViewsAdapterList(viewId, list, viewTypeCount);
+    return AddAction(action);
 }
 
 ECode RemoteViews::SetScrollPosition(
     /* [in] */ Int32 viewId,
     /* [in] */ Int32 position)
 {
-    SetInt32(viewId, String("SmoothScrollToPosition"), position);
-    return NOERROR;
+    return SetInt32(viewId, String("SmoothScrollToPosition"), position);
 }
 
 ECode RemoteViews::SetRelativeScrollPosition(
     /* [in] */ Int32 viewId,
     /* [in] */ Int32 offset)
 {
-    SetInt32(viewId, String("SmoothScrollByOffset"), offset);
-    return NOERROR;
+    return SetInt32(viewId, String("SmoothScrollByOffset"), offset);
 }
 
 ECode RemoteViews::SetViewPadding(
@@ -2746,7 +3277,7 @@ ECode RemoteViews::SetViewPadding(
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom)
 {
-    AutoPtr<Action> action = new ViewPaddingAction(viewId, left, top, right, bottom);
+    AutoPtr<IRemoteViewsAction> action = new ViewPaddingAction(viewId, left, top, right, bottom);
     return AddAction(action);
 }
 
@@ -2755,10 +3286,9 @@ ECode RemoteViews::SetBoolean(
     /* [in] */ const String& methodName,
     /* [in] */ Boolean value)
 {
-    AutoPtr<IBoolean> b;
-    CBoolean::New(value, (IBoolean**)&b);
-    AutoPtr<IInterface> inter = b->Probe(EIID_IInterface);
-    AutoPtr<Action> action = new ReflectionAction(viewId, methodName, ReflectionAction::BOOLEAN, inter);
+    AutoPtr<IBoolean> pValue;
+    CBoolean::New(value, (IBoolean**)&pValue);
+    AutoPtr<IRemoteViewsAction> action = new ReflectionAction(viewId, methodName, ReflectionAction::BOOLEAN, pValue);
     return AddAction(action);
 }
 
@@ -2767,10 +3297,9 @@ ECode RemoteViews::SetByte(
     /* [in] */ const String& methodName,
     /* [in] */ Byte value)
 {
-    AutoPtr<IByte> b;
-    CByte::New(value, (IByte**)&b);
-    AutoPtr<IInterface> inter = b->Probe(EIID_IInterface);
-    AutoPtr<Action> action = new ReflectionAction(viewId, methodName, ReflectionAction::BYTE, inter);
+    AutoPtr<IByte> pValue;
+    CByte::New(value, (IByte**)&pValue);
+    AutoPtr<IRemoteViewsAction> action = new ReflectionAction(viewId, methodName, ReflectionAction::BYTE, pValue);
     return AddAction(action);
 }
 
@@ -2779,10 +3308,9 @@ ECode RemoteViews::SetInt16(
     /* [in] */ const String& methodName,
     /* [in] */ Int16 value)
 {
-    AutoPtr<IInteger16> b;
-    CInteger16::New(value, (IInteger16**)&b);
-    AutoPtr<IInterface> inter = b->Probe(EIID_IInterface);
-    AutoPtr<Action> action = new ReflectionAction(viewId, methodName, ReflectionAction::SHORT, inter);
+    AutoPtr<IInteger16> pValue;
+    CInteger16::New(value, (IInteger16**)&pValue);
+    AutoPtr<IRemoteViewsAction> action = new ReflectionAction(viewId, methodName, ReflectionAction::SHORT, pValue);
     return AddAction(action);
 }
 
@@ -2791,10 +3319,9 @@ ECode RemoteViews::SetInt32(
     /* [in] */ const String& methodName,
     /* [in] */ Int32 value)
 {
-    AutoPtr<IInteger32> b;
-    CInteger32::New(value, (IInteger32**)&b);
-    AutoPtr<IInterface> inter = b->Probe(EIID_IInterface);
-    AutoPtr<Action> action = new ReflectionAction(viewId, methodName, ReflectionAction::INT, inter);
+    AutoPtr<IInteger32> pValue;
+    CInteger32::New(value, (IInteger32**)&pValue);
+    AutoPtr<IRemoteViewsAction> action = new ReflectionAction(viewId, methodName, ReflectionAction::INT, pValue);
     return AddAction(action);
 }
 
@@ -2803,10 +3330,9 @@ ECode RemoteViews::SetInt64(
     /* [in] */ const String& methodName,
     /* [in] */ Int64 value)
 {
-    AutoPtr<IInteger64> b;
-    CInteger64::New(value, (IInteger64**)&b);
-    AutoPtr<IInterface> inter = b->Probe(EIID_IInterface);
-    AutoPtr<Action> action = new ReflectionAction(viewId, methodName, ReflectionAction::LONG, inter);
+    AutoPtr<IInteger64> pValue;
+    CInteger64::New(value, (IInteger64**)&pValue);
+    AutoPtr<IRemoteViewsAction> action = new ReflectionAction(viewId, methodName, ReflectionAction::LONG, pValue);
     return AddAction(action);
 }
 
@@ -2815,10 +3341,9 @@ ECode RemoteViews::SetFloat(
     /* [in] */ const String& methodName,
     /* [in] */ Float value)
 {
-    AutoPtr<IFloat> b;
-    CFloat::New(value, (IFloat**)&b);
-    AutoPtr<IInterface> inter = b->Probe(EIID_IInterface);
-    AutoPtr<Action> action = new ReflectionAction(viewId, methodName, ReflectionAction::FLOAT, inter);
+    AutoPtr<IFloat> pValue;
+    CFloat::New(value, (IFloat**)&pValue);
+    AutoPtr<IRemoteViewsAction> action = new ReflectionAction(viewId, methodName, ReflectionAction::FLOAT, pValue);
     return AddAction(action);
 }
 
@@ -2827,10 +3352,9 @@ ECode RemoteViews::SetDouble(
     /* [in] */ const String& methodName,
     /* [in] */ Double value)
 {
-    AutoPtr<IDouble> b;
-    CDouble::New(value, (IDouble**)&b);
-    AutoPtr<IInterface> inter = b->Probe(EIID_IInterface);
-    AutoPtr<Action> action = new ReflectionAction(viewId, methodName, ReflectionAction::DOUBLE, inter);
+    AutoPtr<IDouble> pValue;
+    CDouble::New(value, (IDouble**)&pValue);
+    AutoPtr<IRemoteViewsAction> action = new ReflectionAction(viewId, methodName, ReflectionAction::DOUBLE, pValue);
     return AddAction(action);
 }
 
@@ -2839,10 +3363,9 @@ ECode RemoteViews::SetChar(
     /* [in] */ const String& methodName,
     /* [in] */ Char32 value)
 {
-    AutoPtr<IChar32> b;
-    CChar32::New(value, (IChar32**)&b);
-    AutoPtr<IInterface> inter = b->Probe(EIID_IInterface);
-    AutoPtr<Action> action = new ReflectionAction(viewId, methodName, ReflectionAction::CHAR, inter);
+    AutoPtr<IChar32> pValue;
+    CChar32::New(value, (IChar32**)&pValue);
+    AutoPtr<IRemoteViewsAction> action = new ReflectionAction(viewId, methodName, ReflectionAction::CHAR, pValue);
     return AddAction(action);
 }
 
@@ -2851,13 +3374,8 @@ ECode RemoteViews::SetString(
     /* [in] */ const String& methodName,
     /* [in] */ const String& value)
 {
-    AutoPtr<IInterface> inter;
-    if (!value.IsNull()) {
-        AutoPtr<ICharSequence> b;
-        CStringWrapper::New(value, (ICharSequence**)&b);
-        inter = b->Probe(EIID_IInterface);
-    }
-    AutoPtr<Action> action = new ReflectionAction(viewId, methodName, ReflectionAction::STRING, inter);
+    AutoPtr<ICharSequence> pValue = CoreUtils::Convert(value);
+    AutoPtr<Action> action = new ReflectionAction(viewId, methodName, ReflectionAction::STRING, pValue);
     return AddAction(action);
 }
 
@@ -2866,8 +3384,7 @@ ECode RemoteViews::SetCharSequence(
     /* [in] */ const String& methodName,
     /* [in] */ ICharSequence* value)
 {
-    AutoPtr<IInterface> inter = value ? value->Probe(EIID_IInterface) : NULL;
-    AutoPtr<Action> action = new ReflectionAction(viewId, methodName, ReflectionAction::CHAR_SEQUENCE, inter);
+    AutoPtr<IRemoteViewsAction> action = new ReflectionAction(viewId, methodName, ReflectionAction::CHAR_SEQUENCE, value);
 
     return AddAction(action);
 }
@@ -2878,10 +3395,9 @@ ECode RemoteViews::SetUri(
     /* [in] */ IUri* value)
 {
     assert(value);
-    AutoPtr<IUri> temp;
-    value->GetCanonicalUri((IUri**)&temp);
-    AutoPtr<IInterface> inter = temp->Probe(EIID_IInterface);
-    AutoPtr<Action> action = new ReflectionAction(viewId, methodName, ReflectionAction::URI, inter);
+    AutoPtr<IUri> pValue;
+    value->GetCanonicalUri((IUri**)&pValue);
+    AutoPtr<IRemoteViewsAction> action = new ReflectionAction(viewId, methodName, ReflectionAction::URI, pValue);
     return AddAction(action);
 }
 
@@ -2890,7 +3406,7 @@ ECode RemoteViews::SetBitmap(
     /* [in] */ const String& methodName,
     /* [in] */ IBitmap* value)
 {
-    AutoPtr<Action> action = new BitmapReflectionAction(viewId, methodName, value, this);
+    AutoPtr<IRemoteViewsAction> action = new BitmapReflectionAction(viewId, methodName, value, this);
     return AddAction(action);
 }
 
@@ -2899,9 +3415,7 @@ ECode RemoteViews::SetBundle(
     /* [in] */ const String& methodName,
     /* [in] */ IBundle* value)
 {
-    AutoPtr<IInterface> inter = value ? value->Probe(EIID_IInterface) : NULL;
-    AutoPtr<Action> action = new ReflectionAction(viewId, methodName, ReflectionAction::BUNDLE, inter);
-
+    AutoPtr<IRemoteViewsAction> action = new ReflectionAction(viewId, methodName, ReflectionAction::BUNDLE, value);
     return AddAction(action);
 }
 
@@ -2910,9 +3424,7 @@ ECode RemoteViews::SetIntent(
     /* [in] */ const String& methodName,
     /* [in] */ IIntent* value)
 {
-    AutoPtr<IInterface> inter = value ? value->Probe(EIID_IInterface) : NULL;
-    AutoPtr<Action> action = new ReflectionAction(viewId, methodName, ReflectionAction::INTENT, inter);
-
+    AutoPtr<IRemoteViewsAction> action = new ReflectionAction(viewId, methodName, ReflectionAction::INTENT, value);
     return AddAction(action);
 }
 
@@ -2920,52 +3432,59 @@ ECode RemoteViews::SetContentDescription(
     /* [in] */ Int32 viewId,
     /* [in] */ ICharSequence* contentDescription)
 {
-    SetCharSequence(viewId, String("SetContentDescription"), contentDescription);
-    return NOERROR;
+    return SetCharSequence(viewId, String("SetContentDescription"), contentDescription);
 }
 
 ECode RemoteViews::SetLabelFor(
     /* [in] */ Int32 viewId,
     /* [in] */ Int32 labeledId)
 {
-    SetInt32(viewId, String("SetLabelFor"), labeledId);
-    return NOERROR;
+    return SetInt32(viewId, String("SetLabelFor"), labeledId);
 }
 
-AutoPtr<IView> RemoteViews::Apply(
-    /* [in] */ IContext* context,
-    /* [in] */ IViewGroup* parent)
-{
-    return Apply(context, parent, NULL);
-}
-
-AutoPtr<IView> RemoteViews::Apply(
-    /* [in] */ IContext* context,
+ECode RemoteViews::Apply(
+    /* [in] */ IContext* ctx,
     /* [in] */ IViewGroup* parent,
-    /* [in] */ IRemoteViewsOnClickHandler* handler)
+    /* [out] */ IView** view)
 {
-    AutoPtr<IRemoteViews> rvToApply = GetRemoteViewsToApply(context);
-    AutoPtr<IContext> c = PrepareContext(context);
-    // result doesn't hold the reference of c, so we put it in mContextCache in order to
-    // make c alive.
-    if (c.Get() != context) mContextCache.PushBack(c);
+    return Apply(ctx, parent, NULL, view);
+}
 
-    AutoPtr<IInterface> inter;
-    ASSERT_SUCCEEDED(c->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inter));
-    AutoPtr<ILayoutInflater> inflater = ILayoutInflater::Probe(inter);
-    assert(inflater);
-    ASSERT_SUCCEEDED(inflater->CloneInContext(c, (ILayoutInflater**)&inflater));
-    ASSERT_SUCCEEDED(inflater->SetFilter((ILayoutInflaterFilter*)this->Probe(EIID_ILayoutInflaterFilter)));
-
-    Int32 id = 0;
-    rvToApply->GetLayoutId(&id);
-
+/** @hide */
+ECode RemoteViews::Apply(
+    /* [in] */ IContext* ctx,
+    /* [in] */ IViewGroup* parent,
+    /* [in] */ IRemoteViewsOnClickHandler* handler,
+    /* [out] */ IView** view)
+{
+    AutoPtr<IRemoteViews> rvToApply = GetRemoteViewsToApply(ctx);
+    // RemoteViews may be built by an application installed in another
+    // user. So build a context that loads resources from that user but
+    // still returns the current users userId so settings like data / time formats
+    // are loaded without requiring cross user persmissions.
     AutoPtr<IView> result;
-    ASSERT_SUCCEEDED(inflater->Inflate(id, parent, FALSE, (IView**)&result));
+    AutoPtr<IContext> contextForResources = GetContextForResources(ctx);
+    AutoPtr<IContext> inflationContext = new MyContextWrapper(ctx, contextForResources);
 
-    RemoteViews* remote = reinterpret_cast<RemoteViews*>(rvToApply->Probe(EIID_RemoteViews));
-    remote->PerformApply(result, parent, handler);
-    return result;
+    AutoPtr<IInterface> tmp;
+    ctx->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&tmp);
+    AutoPtr<ILayoutInflater> inflater = ILayoutInflater::Probe(tmp);
+
+    // Clone inflater so we load resources from correct context and
+    // we don't add a filter to the static version returned by getSystemService.
+    AutoPtr<ILayoutInflater> newInflater;
+    inflater->CloneInContext(inflationContext, (ILayoutInflater**)&newInflater);
+    inflater->SetFilter(this);
+    Int32 layoutId;
+    rvToApply->GetLayoutId(&layoutId);
+    inflater->Inflate(layoutId, parent, FALSE, (IView**)&result);
+
+    RemoteViews* impl = (RemoteViews*)rvToApply.Get();
+    impl->PerformApply(result, parent, handler);
+
+    *view = result;
+    REFCOUNT_ADD(*view)
+    return NOERROR;
 }
 
 ECode RemoteViews::Reapply(
@@ -2981,65 +3500,44 @@ ECode RemoteViews::Reapply(
     /* [in] */ IRemoteViewsOnClickHandler* handler)
 {
     AutoPtr<IRemoteViews> rvToApply = GetRemoteViewsToApply(context);
+    // In the case that a view has this RemoteViews applied in one orientation, is persisted
+    // across orientation change, and has the RemoteViews re-applied in the new orientation,
+    // we throw an exception, since the layouts may be completely unrelated.
+
     if (HasLandscapeAndPortraitLayouts()) {
         Int32 vId = 0, rvId = 0;
         v->GetId(&vId);
         rvToApply->GetLayoutId(&rvId);
         if (vId != rvId) {
-            assert(0);
-//            throw new RuntimeException("Attempting to re-apply RemoteViews to a view that" +
-//                    " that does not share the same root layout id.");
+            SLOGGERE(TAG, String("Attempting to re-apply RemoteViews to a view that") +
+                   " that does not share the same root layout id.")
+            return E_RUNTIME_EXCEPTION;
         }
     }
 
-    PrepareContext(context);
     AutoPtr<IViewParent> parent;
     v->GetParent((IViewParent**)&parent);
-    RemoteViews* remote = reinterpret_cast<RemoteViews*>(rvToApply->Probe(EIID_RemoteViews));
+    RemoteViews* remote = (RemoteViews*)rvToApply.Get();
     remote->PerformApply(v, IViewGroup::Probe(parent), handler);
 
     return NOERROR;
 }
 
 ECode RemoteViews::OnLoadClass(
-    /* [in] */ Handle32 clazz,
+    /* [in] */ IClassInfo* clazz,
     /* [out] */ Boolean* res)
 {
     VALIDATE_NOT_NULL(res);
 //    return clazz.isAnnotationPresent(RemoteView.class);
-    *res = TRUE;
+    *res = FALSE;
     return NOERROR;
 }
 
-String RemoteViews::ToString()
+ECode RemoteViews::ToString(
+    /* [out] */ String* str)
 {
-    StringBuilder sb("IRemoteViews(0x");
-    sb += StringUtils::Int32ToHexString((Int32)(THIS_PROBE(IRemoteViews)));
-    sb += ")={package=";
-    sb += mPackage.IsNull() ? "NULL" : mPackage;
-    sb += ", layoutId=0x";
-    sb += StringUtils::Int32ToHexString(mLayoutId);
-    sb += ", actions={";
-
-    List< AutoPtr<Action> >::Iterator it;
-    for (it = mActions.Begin(); it != mActions.End(); ++it) {
-        if (it != mActions.Begin()) {
-            sb += ", ";
-        }
-        if ((*it) != NULL) {
-            sb += (*it)->GetUniqueKey();
-        }
-        else {
-            sb += "NULL";
-        }
-    }
-
-    sb += "}";
-    sb += "}";
-    return sb.ToString();
+    return NOERROR;
 }
-
-
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos

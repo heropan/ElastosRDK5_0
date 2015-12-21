@@ -136,6 +136,7 @@ module
     using interface Elastos.Utility.IObservable;
 
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.Pm.IApplicationInfo;
    //  interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Utility.IAttributeSet;
     interface Elastos.Droid.Database.ICursor;
@@ -206,6 +207,7 @@ module
     interface Elastos.Droid.View.IViewGroupMarginLayoutParams;
     interface Elastos.Droid.View.Animation.IInterpolator;
     interface Elastos.Droid.View.ISubUiVisibilityListener;
+    interface Elastos.Droid.View.ILayoutInflaterFilter;
 
     namespace Elastos {
     namespace Droid {
@@ -2584,21 +2586,31 @@ module
    //      interface IAccessibilityEventSource;
    //  }
 
-   //  [local]
-   //  class CRemoteViews {
-   //      constructor();
+    [local]
+    class CRemoteViews {
+        constructor();
 
-   //      constructor(
-   //          [in] String packageName,
-   //          [in] Int32 layoutId);
+        constructor(
+            [in] String packageName,
+            [in] Int32 layoutId);
 
-   //      constructor(
-   //          [in] IRemoteViews* landscape,
-   //          [in] IRemoteViews* portrait);
+        constructor(
+            [in] String packageName,
+            [in] Int32 userId,
+            [in] Int32 layoutId);
 
-   //      interface IRemoteViews;
-   //      interface IParcelable;
-   //  }
+        constructor(
+            [in] IApplicationInfo* application,
+            [in] Int32 layoutId);
+
+        constructor(
+            [in] IRemoteViews* landscape,
+            [in] IRemoteViews* portrait);
+
+        interface IRemoteViews;
+        interface IParcelable;
+        interface ILayoutInflaterFilter;
+    }
 
    //  [local]
    //  class CRemoteViewsAdapter {

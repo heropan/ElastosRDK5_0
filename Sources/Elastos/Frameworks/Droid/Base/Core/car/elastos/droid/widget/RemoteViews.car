@@ -23,17 +23,76 @@ module
 
     interface IRemoteViewsOnClickHandler;
 
-    interface IRemoteViewsBitmapCache {
+    interface IMemoryUsageCounter {
+        Clear();
+
+        Increment(
+            [in] Int32 numBytes);
+
+        GetMemoryUsage(
+            [out] Int32* usage);
+
+        AddBitmapMemory(
+            [in] IBitmap* b);
+    }
+
+    interface IBitmapCache {
         GetBitmapId(
             [in] IBitmap* b,
             [out] Int32* id);
 
         GetBitmapForId(
             [in] Int32 id,
-            [out] IBitmap** bitmap);
+            [out] IBitmap** b);
+
+        WriteBitmapsToParcel(
+            [in] IParcel* dest);
 
         Assimilate(
-            [in] IRemoteViewsBitmapCache* bitmapCache);
+            [in] IBitmapCache* bitmapCache);
+
+        AddBitmapMemory(
+            [in] IMemoryUsageCounter* memoryCounter);
+    }
+
+    [local]
+    interface IRemoteViewsAction {
+        Apply(
+             [in]  IView* root,
+             [in]  IViewGroup* rootParent,
+             [in]  IRemoteViewsOnClickHandler* handler);
+
+        /**
+         * Overridden by each class to report on it's own memory usage
+         */
+        UpdateMemoryUsageEstimate(
+             [in]  IMemoryUsageCounter* counter);
+
+        SetBitmapCache(
+             [in]  IBitmapCache* bitmapCache);
+
+        MergeBehavior(
+            [out] Int32* result);
+
+        GetActionName(
+            [out] String* name) ;
+
+        GetUniqueKey(
+            [out] String* key);
+    }
+
+    interface IMutablePair {
+        GetFirst(
+            [out] String* fir);
+
+        SetFirst(
+            [in] String fir);
+
+        GetSecond(
+            [out] String* sec);
+
+        SetSecond(
+            [in] String sec);
     }
 
     /**
@@ -52,9 +111,6 @@ module
          */
         MergeRemoteViews(
             [in] IRemoteViews* newRv);
-
-        SetUser(
-            [in] IUserHandle* user);
 
         Clone(
             [out] IRemoteViews** views);
@@ -720,9 +776,6 @@ module
 
         SetIsWidgetCollectionChild(
             [in] Boolean isWidgetCollectionChild);
-
-        ToString(
-            [out] String* info);
     }
 
     [local]

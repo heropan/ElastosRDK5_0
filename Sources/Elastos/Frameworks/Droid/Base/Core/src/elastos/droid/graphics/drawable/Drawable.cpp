@@ -636,7 +636,7 @@ ECode Drawable::Mutate(
     /* [out] */ IDrawable** drawable)
 {
     VALIDATE_NOT_NULL(drawable);
-    *drawable = (IDrawable*)this->Probe(EIID_IDrawable);
+    *drawable = this;
     REFCOUNT_ADD(*drawable);
     return NOERROR;
 }

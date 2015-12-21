@@ -346,9 +346,6 @@ public:
         /* [in] */ ICharSequence* contentText,
         /* [in] */ IPendingIntent* contentIntent);
 
-    CARAPI SetUser(
-        /* [in] */ IUserHandle* user);
-
     CARAPI ToString(
         /* [out] */ String* info);
 

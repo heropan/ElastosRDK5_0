@@ -245,5 +245,5 @@ SOURCES += CActivityChooserView.cpp
 SOURCES += ActionMenuPresenter.cpp
 SOURCES += ActionMenuView.cpp
 SOURCES += SpellChecker.cpp
-
+SOURCES += RemoteViews.cpp
 #ELASTOS_LIBS += internal/internal.lib

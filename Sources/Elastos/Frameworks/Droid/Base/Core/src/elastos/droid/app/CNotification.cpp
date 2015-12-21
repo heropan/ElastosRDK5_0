@@ -639,31 +639,6 @@ ECode CNotification::SetLatestEventInfo(
     return NOERROR;
 }
 
-ECode CNotification::SetUser(
-    /* [in] */ IUserHandle* user)
-{
-    if (user != NULL) {
-        AutoPtr<IUserHandle> realUser = user;
-        Int32 id;
-        user->GetIdentifier(&id);
-        if (id == IUserHandle::USER_ALL) {
-            realUser = UserHandle::ALL;
-        }
-
-        if (mTickerView != NULL) {
-            mTickerView->SetUser(user);
-        }
-        if (mContentView != NULL) {
-            mContentView->SetUser(user);
-        }
-        if (mBigContentView != NULL) {
-            mBigContentView->SetUser(user);
-        }
-    }
-
-    return NOERROR;
-}
-
 ECode CNotification::GetHeadsUpContentView(
     /* [out] */ IRemoteViews** view)
 {

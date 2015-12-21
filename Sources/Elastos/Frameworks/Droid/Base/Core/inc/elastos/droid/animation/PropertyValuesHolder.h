@@ -644,6 +644,9 @@ public:
         /* [in] */ const String& prefix,
         /* [in] */ const String& propertyName);
 
+    static CARAPI_(AutoPtr<IClassInfo>) TransformClassInfo(
+        /* [in] */ IInterface* o);
+
 protected:
     /**
      * Internal utility constructor, used by the factory methods to set the property name.
@@ -660,9 +663,6 @@ protected:
         /* [in] */ IProperty* property);
 
     //The function will help you transform from a object to classInfo
-
-    static CARAPI_(AutoPtr<IClassInfo>) TransformClassInfo(
-        /* [in] */ IInterface* o);
 
     static CARAPI_(AutoPtr<IMethodInfo>) nGetInt32Method(
         /* [in] */ IInterface* targetClass,
