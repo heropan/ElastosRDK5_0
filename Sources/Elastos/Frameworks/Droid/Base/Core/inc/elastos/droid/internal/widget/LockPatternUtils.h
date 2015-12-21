@@ -3,6 +3,8 @@
 #define  __ELASTOS_DROID_INTERNAL_WIDGET_LOCKPATTERNUTILS_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Internal.h"
 #include "elastos/droid/os/AsyncTask.h"
 #include <elastos/core/Object.h>
@@ -54,7 +56,8 @@ public:
 
     LockPatternUtils();
 
-    AutoPtr<IDevicePolicyManager> GetDevicePolicyManager();
+    CARAPI GetDevicePolicyManager(
+        /* [out] */ IDevicePolicyManager** mger);
 
     CARAPI constructor(
         /* [in] */ IContext* context);
@@ -232,19 +235,19 @@ public:
         /* [in] */ Boolean enabled);
 
     virtual CARAPI IsBiometricWeakLivelinessEnabled(
-        /* [out] */ Boolean enabled);
+        /* [out] */ Boolean* enabled);
 
     virtual CARAPI SetLockPatternEnabled(
         /* [in] */ Boolean enabled);
 
     virtual CARAPI IsVisiblePatternEnabled(
-        /* [out] */ Boolean enabled);
+        /* [out] */ Boolean* enabled);
 
     virtual CARAPI SetVisiblePatternEnabled(
         /* [in] */ Boolean enabled);
 
     virtual CARAPI IsTactileFeedbackEnabled(
-        /* [out] */ Boolean enabled);
+        /* [out] */ Boolean* enabled);
 
     virtual CARAPI SetLockoutAttemptDeadline(
         /* [out] */ Int64* result);
@@ -453,6 +456,11 @@ private:
 
     CARAPI_(Int64) GetInt64(
         /* [in] */ const String& secureSettingKey,
+        /* [in] */ Int64 defaultValue,
+        /* [in] */ Int32 userHandle);
+
+    CARAPI_(Int64) GetInt64(
+        /* [in] */ const String& secureSettingKey,
         /* [in] */ Int64 defaultValue);
 
     CARAPI_(void) SetInt64(
@@ -489,12 +497,9 @@ private:
     CARAPI_(AutoPtr<ArrayOf<Int32> >) GetAppWidgets(
         /* [in] */ Int32 userId);
 
-    CARAPI_(Int64) GetLong(
-        /* [in] */ const String& secureSettingKey,
-        /* [in] */ Int64 defaultValue,
-        /* [in] */ Int32 userHandle);
-
     CARAPI_(void) OnAfterChangingPassword();
+
+    AutoPtr<IDevicePolicyManager> GetDevicePolicyManager();
 
     // CARAPI_(AutoPtr<ITelecomManager>) GetTelecommManager();
 

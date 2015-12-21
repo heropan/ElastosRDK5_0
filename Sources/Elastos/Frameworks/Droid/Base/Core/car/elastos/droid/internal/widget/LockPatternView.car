@@ -74,19 +74,14 @@ module
      }
 
     interface ILockPatternViewCell {
-
         GetRow(
             [out] Int32* row);
 
         GetColumn(
             [out] Int32* column);
-
-        ToString(
-            [out] String* result);
     }
 
     interface ILockPatternViewCellHelper {
-
         Of(
             [in] Int32 row,
             [in] Int32 column,

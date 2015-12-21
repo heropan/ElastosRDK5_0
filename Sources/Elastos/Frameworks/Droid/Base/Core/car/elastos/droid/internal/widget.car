@@ -648,6 +648,18 @@ module
         interface IAccessibilityEventSource;
     }
 
+    class CLockPatternViewCell {
+        constructor(
+            [in] Int32 row,
+            [in] Int32 column);
+
+        interface ILockPatternViewCell;
+    }
+
+    singleton class CLockPatternViewCellHelper {
+        interface ILockPatternViewCellHelper;
+    }
+
     [local]
     class CLockPatternViewSavedState {
         constructor();
@@ -666,13 +678,13 @@ module
         interface IParcelable;
     }
 
-   //  [local]
-   //  class CLockPatternUtils {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CLockPatternUtils {
+        constructor(
+            [in] IContext* ctx);
 
-   //      interface ILockPatternUtils;
-   //  }
+        interface ILockPatternUtils;
+    }
 
     } // namespace Widget
     } // namespace Internal

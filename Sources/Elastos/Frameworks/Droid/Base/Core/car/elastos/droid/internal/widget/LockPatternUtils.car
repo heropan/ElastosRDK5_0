@@ -303,7 +303,8 @@ module
             [in] Boolean enabled);
 
         GetOwnerInfo(
-            [in] Int32 userId);
+            [in] Int32 userId,
+            [out] String* info);
 
         IsOwnerInfoEnabled(
             [out] Boolean* disabled);
@@ -512,11 +513,8 @@ module
         /**
          * Resumes a call in progress. Typically launched from the EmergencyCall button
          * on various lockscreens.
-         *
-         * @return true if we were able to tell InCallScreen to show.
          */
-        ResumeCall(
-            [out] Boolean* res);
+        ResumeCall();
 
         /**
          * @return {@code true} if there is a call currently in progress, {@code false} otherwise.

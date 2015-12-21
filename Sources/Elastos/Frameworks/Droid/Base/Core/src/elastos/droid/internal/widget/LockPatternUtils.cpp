@@ -1,13 +1,17 @@
 
 #include "elastos/droid/internal/widget/LockPatternUtils.h"
 #include "elastos/droid/internal/widget/CLockPatternUtilsCache.h"
-#include "Elastos.Droid.App.h"
+#include "elastos/droid/internal/widget/CLockPatternViewCellHelper.h"
+#include "Elastos.Droid.AppWidget.h"
+#include "Elastos.CoreLibrary.Security.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
-#include "Elastos.Droid.Content.h"
+#include "elastos/droid/content/CComponentName.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/Manifest.h"
+#include "elastos/droid/os/CUserManager.h"
 #include "elastos/droid/os/UserHandle.h"
 #include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/SystemProperties.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/Binder.h"
 #include "elastos/droid/os/UserHandle.h"
@@ -15,31 +19,40 @@
 #include "elastos/droid/provider/Settings.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/text/TextUtils.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include <elastos/core/Character.h>
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::App::IAlarmManager;
 using Elastos::Droid::App::ActivityManagerNative;
 using Elastos::Droid::App::IIActivityManager;
 using Elastos::Droid::AppWidget::IAppWidgetManager;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::CComponentName;
+using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::Pm::IUserInfo;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::IPackageInfo;
 using Elastos::Droid::Manifest;
+using Elastos::Droid::Os::CUserManager;
 using Elastos::Droid::Os::IProcess;
 using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::Os::IServiceManager;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::SystemClock;
-using Elastos::Droid::Os::Storage::IMountService;
+using Elastos::Droid::Os::SystemProperties;
 using Elastos::Droid::Os::Storage::EIID_IMountService;
+using Elastos::Droid::Os::Storage::IMountService;
+using Elastos::Droid::Os::Storage::IStorageManager;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::Binder;
 using Elastos::Droid::Os::UserHandle;
 using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::Provider::ISettingsGlobal;
 using Elastos::Droid::Provider::ISettingsSecure;
 using Elastos::Droid::Provider::ISettingsSystem;
 using Elastos::Droid::R;
@@ -47,9 +60,15 @@ using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IIWindowManager;
 using Elastos::Droid::View::EIID_IIWindowManager;
+using Elastos::Droid::Widget::ITextView;
 using Elastos::Core::CString;
 using Elastos::Core::Character;
 using Elastos::Core::StringUtils;
+using Elastos::Security::CMessageDigestHelper;
+using Elastos::Security::IMessageDigestHelper;
+using Elastos::Security::IMessageDigest;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::IIterator;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -95,8 +114,10 @@ const String LockPatternUtils::LOCK_SCREEN_OWNER_INFO = ISettingsSecure::LOCK_SC
 const String LockPatternUtils::LOCK_SCREEN_OWNER_INFO_ENABLED = ISettingsSecure::LOCK_SCREEN_OWNER_INFO_ENABLED;
 const String LockPatternUtils::ENABLED_TRUST_AGENTS("lockscreen.enabledtrustagents");
 volatile Int32 LockPatternUtils::sCurrentUserId = IUserHandle::USER_NULL;
-AutoPtr<IDevicePolicyManager> LockPatternUtils::GetDevicePolicyManager()
+ECode LockPatternUtils::GetDevicePolicyManager(
+    /* [out] */ IDevicePolicyManager** mger)
 {
+    VALIDATE_NOT_NULL(mger);
     if (!mDevicePolicyManager) {
         AutoPtr<IInterface> temp;
         mContext->GetSystemService(IContext::DEVICE_POLICY_SERVICE, (IInterface**)&temp);
@@ -105,7 +126,16 @@ AutoPtr<IDevicePolicyManager> LockPatternUtils::GetDevicePolicyManager()
             Slogger::E(TAG, "Can't get DevicePolicyManagerService: is it running?");
         }
     }
-    return mDevicePolicyManager;
+    *mger = mDevicePolicyManager;
+    REFCOUNT_ADD(*mger);
+    return NOERROR;
+}
+
+AutoPtr<IDevicePolicyManager> LockPatternUtils::GetDevicePolicyManager()
+{
+    AutoPtr<IDevicePolicyManager> mger;
+    GetDevicePolicyManager((IDevicePolicyManager**)&mger);
+    return mger;
 }
 
 AutoPtr<ITrustManager> LockPatternUtils::GetTrustManager()
@@ -227,8 +257,9 @@ ECode LockPatternUtils::ReportFailedPasswordAttempt()
 ECode LockPatternUtils::ReportSuccessfulPasswordAttempt()
 {
     GetDevicePolicyManager()->ReportSuccessfulPasswordAttempt(GetCurrentOrCallingUserId());
-    getTrustManager().reportUnlockAttempt(TRUE /* authenticated */,
-            getCurrentOrCallingUserId());
+    GetTrustManager()->ReportUnlockAttempt(TRUE /* authenticated */,
+            GetCurrentOrCallingUserId());
+    return NOERROR;
 }
 
 ECode LockPatternUtils::SetCurrentUser(
@@ -264,7 +295,7 @@ ECode LockPatternUtils::RemoveUser(
 {
     ECode ec = GetLockSettings()->RemoveUser(userId);
     if (FAILED(ec)) {
-        Slogger::E(TAG, String("Couldn't remove lock settings for user ") + StringUtils::Int32ToString(userId));
+        Slogger::E(TAG, String("Couldn't remove lock settings for user ") + StringUtils::ToString(userId));
     }
     return NOERROR;
 }
@@ -272,7 +303,9 @@ ECode LockPatternUtils::RemoveUser(
 Int32 LockPatternUtils::GetCurrentOrCallingUserId()
 {
     if (mMultiUserMode) {
-        return GetCurrentUser();
+        Int32 user = 0;
+        GetCurrentUser(&user);
+        return user;
     }
     else {
         return UserHandle::GetCallingUserId();
@@ -315,12 +348,11 @@ ECode LockPatternUtils::CheckVoldPassword(
     /* [out] */ Boolean* match)
 {
     VALIDATE_NOT_NULL(match);
-    final Int32 userId = getCurrentOrCallingUserId();
-    try {
-        return getLockSettings().checkVoldPassword(userId);
-    } catch (RemoteException re) {
-        return FALSE;
+    const Int32 userId = GetCurrentOrCallingUserId();
+    if (FAILED(GetLockSettings()->CheckVoldPassword(userId, match))) {
+        *match = FALSE;
     }
+    return NOERROR;
 }
 
 ECode LockPatternUtils::CheckPasswordHistory(
@@ -328,14 +360,17 @@ ECode LockPatternUtils::CheckPasswordHistory(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    String passwordHashString = String(PasswordToHash(password, GetCurrentOrCallingUserId()));
+    AutoPtr<ArrayOf<Byte> > bytes;
+    PasswordToHash(password, GetCurrentOrCallingUserId(), (ArrayOf<Byte>**)&bytes);
+    String passwordHashString = String(*bytes);
     String passwordHistory = GetString(PASSWORD_HISTORY_KEY);
     if (passwordHistory.IsNullOrEmpty()) {
         *result = FALSE;
         return NOERROR;
     }
     Int32 passwordHashLength = passwordHashString.GetLength();
-    Int32 passwordHistoryLength = GetRequestedPasswordHistoryLength();
+    Int32 passwordHistoryLength = 0;
+    GetRequestedPasswordHistoryLength(&passwordHistoryLength);
     if(passwordHistoryLength == 0) {
         *result = FALSE;
         return NOERROR;
@@ -396,39 +431,40 @@ ECode LockPatternUtils::GetActivePasswordQuality(
     Int32 activePasswordQuality = IDevicePolicyManager::PASSWORD_QUALITY_UNSPECIFIED;
 
     Int32 quality = (Int32) GetInt64(PASSWORD_TYPE_KEY, IDevicePolicyManager::PASSWORD_QUALITY_SOMETHING);
+    Boolean value = FALSE;
     switch (quality) {
         case IDevicePolicyManager::PASSWORD_QUALITY_SOMETHING:
-            if (IsLockPatternEnabled()) {
+            if (IsLockPatternEnabled(&value), value) {
                 activePasswordQuality = IDevicePolicyManager::PASSWORD_QUALITY_SOMETHING;
             }
             break;
         case IDevicePolicyManager::PASSWORD_QUALITY_BIOMETRIC_WEAK:
-            if (IsBiometricWeakInstalled()) {
+            if (IsBiometricWeakInstalled(&value), value) {
                 activePasswordQuality = IDevicePolicyManager::PASSWORD_QUALITY_BIOMETRIC_WEAK;
             }
             break;
         case IDevicePolicyManager::PASSWORD_QUALITY_NUMERIC:
-            if (IsLockPasswordEnabled()) {
+            if (IsLockPasswordEnabled(&value), value) {
                 activePasswordQuality = IDevicePolicyManager::PASSWORD_QUALITY_NUMERIC;
             }
             break;
         case IDevicePolicyManager::PASSWORD_QUALITY_NUMERIC_COMPLEX:
-            if (IsLockPasswordEnabled()) {
+            if (IsLockPasswordEnabled(&value), value) {
                 activePasswordQuality = IDevicePolicyManager::PASSWORD_QUALITY_NUMERIC_COMPLEX;
             }
             break;
         case IDevicePolicyManager::PASSWORD_QUALITY_ALPHABETIC:
-            if (IsLockPasswordEnabled()) {
+            if (IsLockPasswordEnabled(&value), value) {
                 activePasswordQuality = IDevicePolicyManager::PASSWORD_QUALITY_ALPHABETIC;
             }
             break;
         case IDevicePolicyManager::PASSWORD_QUALITY_ALPHANUMERIC:
-            if (IsLockPasswordEnabled()) {
+            if (IsLockPasswordEnabled(&value), value) {
                 activePasswordQuality = IDevicePolicyManager::PASSWORD_QUALITY_ALPHANUMERIC;
             }
             break;
         case IDevicePolicyManager::PASSWORD_QUALITY_COMPLEX:
-            if (IsLockPasswordEnabled()) {
+            if (IsLockPasswordEnabled(&value), value) {
                 activePasswordQuality = IDevicePolicyManager::PASSWORD_QUALITY_COMPLEX;
             }
             break;
@@ -467,7 +503,7 @@ ECode LockPatternUtils::IsLockScreenDisabled(
     if ((IsSecure(&value), !value) && GetInt64(DISABLE_LOCKSCREEN_KEY, 0) != 0) {
         // Check if the number of switchable users forces the lockscreen.
         AutoPtr<IList/*<UserInfo*/> users;
-        UserManager::Get(mContext)->GetUsers(TRUE, (IList**)&users);
+        CUserManager::Get(mContext)->GetUsers(TRUE, (IList**)&users);
         Int32 userCount = 0;
         users->GetSize(&userCount);
         Int32 switchableUsers = 0;
@@ -582,7 +618,7 @@ Error:
 
 void LockPatternUtils::UpdateCryptoUserInfo()
 {
-    Int32 userId = getCurrentOrCallingUserId();
+    Int32 userId = GetCurrentOrCallingUserId();
     if (userId != IUserHandle::USER_OWNER) {
         return;
     }
@@ -591,7 +627,7 @@ void LockPatternUtils::UpdateCryptoUserInfo()
     IsOwnerInfoEnabled(&enabled);
     String ownerInfo;
     if (enabled) {
-        GetOwnerInfo(userId, ownerInfo);
+        GetOwnerInfo(userId, &ownerInfo);
     }
     else {
         ownerInfo = String("");
@@ -632,14 +668,16 @@ ECode LockPatternUtils::GetOwnerInfo(
     /* [out] */ String* info)
 {
     VALIDATE_NOT_NULL(info);
-    return GetString(LOCK_SCREEN_OWNER_INFO, info);
+    *info = GetString(LOCK_SCREEN_OWNER_INFO);
+    return NOERROR;
 }
 
 ECode LockPatternUtils::IsOwnerInfoEnabled(
     /* [out] */ Boolean* enabled)
 {
     VALIDATE_NOT_NULL(enabled);
-    return GetBoolean(LOCK_SCREEN_OWNER_INFO_ENABLED, FALSE, enabled);
+    *enabled = GetBoolean(LOCK_SCREEN_OWNER_INFO_ENABLED, FALSE);
+    return NOERROR;
 }
 
 Int32 LockPatternUtils::ComputePasswordQuality(
@@ -651,7 +689,8 @@ Int32 LockPatternUtils::ComputePasswordQuality(
     for (Int32 i = 0; i < len; i++) {
         if (Character::IsDigit(password.GetChar(i))) {
             hasDigit = TRUE;
-        } else {
+        }
+        else {
             hasNonDigit = TRUE;
         }
     }
@@ -664,8 +703,8 @@ Int32 LockPatternUtils::ComputePasswordQuality(
     }
     if (hasDigit) {
         return MaxLengthSequence(password) > MAX_ALLOWED_SEQUENCE
-                ? DevicePolicyManager.PASSWORD_QUALITY_NUMERIC
-                : DevicePolicyManager.PASSWORD_QUALITY_NUMERIC_COMPLEX;
+                ? IDevicePolicyManager::PASSWORD_QUALITY_NUMERIC
+                : IDevicePolicyManager::PASSWORD_QUALITY_NUMERIC_COMPLEX;
     }
     return IDevicePolicyManager::PASSWORD_QUALITY_UNSPECIFIED;
 }
@@ -690,26 +729,26 @@ Int32 LockPatternUtils::MaxDiffCategory(
 Int32 LockPatternUtils::MaxLengthSequence(
     /* [in] */ const String& string)
 {
-    if (string.length() == 0) return 0;
-    char previousChar = string.charAt(0);
-    Int32 category = categoryChar(previousChar); //current category of the sequence
+    if (string.GetLength() == 0) return 0;
+    Char32 previousChar = string.GetChar(0);
+    Int32 category = CategoryChar(previousChar); //current category of the sequence
     Int32 diff = 0; //difference between two consecutive characters
-    boolean hasDiff = FALSE; //if we are currently targeting a sequence
+    Boolean hasDiff = FALSE; //if we are currently targeting a sequence
     Int32 maxLength = 0; //maximum length of a sequence already found
     Int32 startSequence = 0; //where the current sequence started
-    for (Int32 current = 1; current < string.length(); current++) {
-        char currentChar = string.charAt(current);
-        Int32 categoryCurrent = categoryChar(currentChar);
+    for (Int32 current = 1; current < string.GetLength(); current++) {
+        Char32 currentChar = string.GetChar(current);
+        Int32 categoryCurrent = CategoryChar(currentChar);
         Int32 currentDiff = (Int32) currentChar - (Int32) previousChar;
-        if (categoryCurrent != category || Math.abs(currentDiff) > maxDiffCategory(category)) {
-            maxLength = Math.max(maxLength, current - startSequence);
+        if (categoryCurrent != category || Elastos::Core::Math::Abs(currentDiff) > MaxDiffCategory(category)) {
+            maxLength = Elastos::Core::Math::Max(maxLength, current - startSequence);
             startSequence = current;
             hasDiff = FALSE;
             category = categoryCurrent;
         }
         else {
             if(hasDiff && currentDiff != diff) {
-                maxLength = Math.max(maxLength, current - startSequence);
+                maxLength = Elastos::Core::Math::Max(maxLength, current - startSequence);
                 startSequence = current - 1;
             }
             diff = currentDiff;
@@ -717,7 +756,7 @@ Int32 LockPatternUtils::MaxLengthSequence(
         }
         previousChar = currentChar;
     }
-    maxLength = Math.max(maxLength, string.length() - startSequence);
+    maxLength = Elastos::Core::Math::Max(maxLength, string.GetLength() - startSequence);
     return maxLength;
 }
 
@@ -734,17 +773,15 @@ void LockPatternUtils::UpdateEncryptionPassword(
         return;
     }
 
-    AutoPtr<LockAsyncTask> task = new LockAsyncTask(service);
-    task->Execute();
+    AutoPtr<LockAsyncTask> task = new LockAsyncTask(type, password, service);
+    task->Execute((ArrayOf<IInterface*>*)NULL);
 }
 
 ECode LockPatternUtils::SaveLockPassword(
     /* [in] */ const String& password,
     /* [in] */ Int32 quality)
 {
-    SaveLockPassword(password, quality, FALSE, GetCurrentOrCallingUserId());
-
-    return NOERROR;
+    return SaveLockPassword(password, quality, FALSE, GetCurrentOrCallingUserId());
 }
 
 ECode LockPatternUtils::SaveLockPassword(
@@ -752,9 +789,7 @@ ECode LockPatternUtils::SaveLockPassword(
     /* [in] */ Int32 quality,
     /* [in] */ Boolean isFallback)
 {
-    SaveLockPassword(password, quality, isFallback, GetCurrentOrCallingUserId());
-
-    return NOERROR;
+    return SaveLockPassword(password, quality, isFallback, GetCurrentOrCallingUserId());
 }
 
 ECode LockPatternUtils::SaveLockPassword(
@@ -764,24 +799,26 @@ ECode LockPatternUtils::SaveLockPassword(
     /* [in] */ Int32 userHandle)
 {
     // try {
-    DevicePolicyManager dpm = getDevicePolicyManager();
-    if (!TextUtils.isEmpty(password)) {
-        getLockSettings().setLockPassword(password, userHandle);
-        Int32 computedQuality = computePasswordQuality(password);
+    AutoPtr<IDevicePolicyManager> dpm = GetDevicePolicyManager();
+    if (!TextUtils::IsEmpty(password)) {
+        GetLockSettings()->SetLockPassword(password, userHandle);
+        Int32 computedQuality = ComputePasswordQuality(password);
 
         // Update the device encryption password.
-        if (userHandle == UserHandle.USER_OWNER
-                && LockPatternUtils.isDeviceEncryptionEnabled()) {
-            if (!isCredentialRequiredToDecrypt(TRUE)) {
-                clearEncryptionPassword();
-            } else {
-                boolean numeric = computedQuality
-                        == DevicePolicyManager.PASSWORD_QUALITY_NUMERIC;
-                boolean numericComplex = computedQuality
-                        == DevicePolicyManager.PASSWORD_QUALITY_NUMERIC_COMPLEX;
-                Int32 type = numeric || numericComplex ? StorageManager.CRYPT_TYPE_PIN
-                        : StorageManager.CRYPT_TYPE_PASSWORD;
-                updateEncryptionPassword(type, password);
+        if (userHandle == IUserHandle::USER_OWNER
+                && LockPatternUtils::IsDeviceEncryptionEnabled()) {
+            Boolean value = FALSE;
+            if (IsCredentialRequiredToDecrypt(TRUE, &value), value) {
+                ClearEncryptionPassword();
+            }
+            else {
+                Boolean numeric = computedQuality
+                        == IDevicePolicyManager::PASSWORD_QUALITY_NUMERIC;
+                Boolean numericComplex = computedQuality
+                        == IDevicePolicyManager::PASSWORD_QUALITY_NUMERIC_COMPLEX;
+                Int32 type = numeric || numericComplex ? IStorageManager::CRYPT_TYPE_PIN
+                        : IStorageManager::CRYPT_TYPE_PASSWORD;
+                UpdateEncryptionPassword(type, password);
             }
         }
         if (!isFallback) {
@@ -799,13 +836,16 @@ ECode LockPatternUtils::SaveLockPassword(
                     if (c >= 'A' && c <= 'Z') {
                         letters++;
                         uppercase++;
-                    } else if (c >= 'a' && c <= 'z') {
+                    }
+                    else if (c >= 'a' && c <= 'z') {
                         letters++;
                         lowercase++;
-                    } else if (c >= '0' && c <= '9') {
+                    }
+                    else if (c >= '0' && c <= '9') {
                         numbers++;
                         nonletter++;
-                    } else {
+                    }
+                    else {
                         symbols++;
                         nonletter++;
                     }
@@ -813,13 +853,15 @@ ECode LockPatternUtils::SaveLockPassword(
                 dpm->SetActivePasswordState(Elastos::Core::Math::Max(quality, computedQuality),
                         password.GetLength(), letters, uppercase, lowercase,
                         numbers, symbols, nonletter, userHandle);
-            } else {
+            }
+            else {
                 // The password is not anything.
                 dpm->SetActivePasswordState(
                         IDevicePolicyManager::PASSWORD_QUALITY_UNSPECIFIED,
                         0, 0, 0, 0, 0, 0, 0, userHandle);
             }
-        } else {
+        }
+        else {
             // Case where it's a fallback for biometric weak
             SetInt64(PASSWORD_TYPE_KEY, IDevicePolicyManager::PASSWORD_QUALITY_BIOMETRIC_WEAK,
                     userHandle);
@@ -836,12 +878,14 @@ ECode LockPatternUtils::SaveLockPassword(
         if (passwordHistory.IsNullOrEmpty()) {
             passwordHistory = String("");
         }
-        Int32 passwordHistoryLength = GetRequestedPasswordHistoryLength();
+        Int32 passwordHistoryLength = 0;
+        GetRequestedPasswordHistoryLength(&passwordHistoryLength);
         if (passwordHistoryLength == 0) {
             passwordHistory = String("");
         }
         else {
-            byte[] hash = passwordToHash(password, userHandle);
+            AutoPtr<ArrayOf<Byte> > hash;
+            PasswordToHash(password, userHandle, (ArrayOf<Byte>**)&hash);
             passwordHistory = String((char*)hash->GetPayload()) + "," + passwordHistory;
             // Cut it to contain passwordHistoryLength hashes
             // and passwordHistoryLength -1 commas.
@@ -853,10 +897,10 @@ ECode LockPatternUtils::SaveLockPassword(
     }
     else {
         // Empty password
-        GetLockSettings()->SetLockPassword(NULL, userHandle);
+        GetLockSettings()->SetLockPassword(String(NULL), userHandle);
         if (userHandle == IUserHandle::USER_OWNER) {
             // Set the encryption password to default.
-            UpdateEncryptionPassword(IStorageManager::CRYPT_TYPE_DEFAULT, NULL);
+            UpdateEncryptionPassword(IStorageManager::CRYPT_TYPE_DEFAULT, String(NULL));
         }
         dpm->SetActivePasswordState(
                 IDevicePolicyManager::PASSWORD_QUALITY_UNSPECIFIED, 0, 0, 0, 0, 0, 0, 0,
@@ -873,26 +917,33 @@ ECode LockPatternUtils::SaveLockPassword(
 
 Boolean LockPatternUtils::IsDeviceEncrypted()
 {
-    IMountService mountService = IMountService.Stub.asInterface(
-            ServiceManager.getService("mount"));
-    try {
-        return mountService.getEncryptionState() != IMountService.ENCRYPTION_STATE_NONE
-                && mountService.getPasswordType() != StorageManager.CRYPT_TYPE_DEFAULT;
-    } catch (RemoteException re) {
-        Log.e(TAG, "Error getting encryption state", re);
+    AutoPtr<IMountService> mountService = IMountService::Probe(
+            ServiceManager::GetService(String("mount")));
+
+    Int32 state = 0, type = 0;
+    if (FAILED(mountService->GetEncryptionState(&state))) {
+        Slogger::E(TAG, "Error getting encryption state");
+        return TRUE;
     }
-    return TRUE;
+    if (FAILED(mountService->GetPasswordType(&type))) {
+        Slogger::E(TAG, "Error getting encryption state");
+        return TRUE;
+    }
+
+    return state != IMountService::ENCRYPTION_STATE_NONE
+            && type != IStorageManager::CRYPT_TYPE_DEFAULT;
 }
 
 Boolean LockPatternUtils::IsDeviceEncryptionEnabled()
 {
-    final String status = SystemProperties.get("ro.crypto.state", "unsupported");
-    return "encrypted".equalsIgnoreCase(status);
+    String status;
+    SystemProperties::Get(String("ro.crypto.state"), String("unsupported"), &status);
+    return String("encrypted").EqualsIgnoreCase(status);
 }
 
 ECode LockPatternUtils::ClearEncryptionPassword()
 {
-    UpdateEncryptionPassword(StorageManager.CRYPT_TYPE_DEFAULT, null);
+    UpdateEncryptionPassword(IStorageManager::CRYPT_TYPE_DEFAULT, String(NULL));
     return NOERROR;
 }
 
@@ -932,14 +983,15 @@ ECode LockPatternUtils::UsingBiometricWeak(
 AutoPtr<IList> LockPatternUtils::StringToPattern(
     /* [in] */ const String& string)
 {
-    AutoPtr<IObjectContainer> result;
-    CObjectContainer::New((IObjectContainer**)&result);
+    AutoPtr<IList> result;
+    CArrayList::New((IList**)&result);
 
     AutoPtr<ILockPatternViewCellHelper> helper;
-    assert(0 && "TODO");
-    //CLockPatternViewCellHelper::AcquireSingleton((ILockPatternViewCellHelper**)&helper);
-    for (Int32 i = 0; i < string.GetLength(); i++) {
-        Char8 b = string[i];
+    CLockPatternViewCellHelper::AcquireSingleton((ILockPatternViewCellHelper**)&helper);
+    AutoPtr<ArrayOf<Byte> > bytes = string.GetBytes();
+    for (Int32 i = 0; i < bytes->GetLength(); i++) {
+        Byte b = (*bytes)[i];
+
         AutoPtr<ILockPatternViewCell> cell;
         helper->Of(b / 3, b % 3, (ILockPatternViewCell**)&cell);
         result->Add(cell);
@@ -948,29 +1000,25 @@ AutoPtr<IList> LockPatternUtils::StringToPattern(
 }
 
 String LockPatternUtils::PatternToString(
-    /* [in] */ IObjectContainer* pattern)
+    /* [in] */ IList* pattern)
 {
-    if (!pattern) {
+    if (pattern == NULL) {
         return String("");
     }
     Int32 patternSize = 0;
-    pattern->GetObjectCount(&patternSize);
+    pattern->GetSize(&patternSize);
 
-    AutoPtr<IObjectEnumerator> em;
-    pattern->GetObjectEnumerator((IObjectEnumerator**)&em);
-    AutoPtr<ArrayOf<Char8> > res = ArrayOf<Char8>::Alloc(patternSize);
-    Boolean hasNext = TRUE;
-    for (Int32 i = 0; i < patternSize && hasNext; i++, em->MoveNext(&hasNext)) {
-        AutoPtr<ILockPatternViewCell> cell;
-
-        em->Current((IInterface**)&cell);
+    AutoPtr<ArrayOf<Byte> > res = ArrayOf<Byte>::Alloc(patternSize);
+    for (Int32 i = 0; i < patternSize; i++) {
+        AutoPtr<IInterface> item;
+        pattern->Get(i, (IInterface**)&item);
+        AutoPtr<ILockPatternViewCell> cell = ILockPatternViewCell::Probe(item);
         Int32 row = 0, column = 0;
         cell->GetRow(&row);
         cell->GetColumn(&column);
-        (*res)[i] = (Char8) (row * 3 + column);
+        (*res)[i] = (Byte) (row * 3 + column);
     }
-
-    return String(res->GetPayload());
+    return String(*res);
 }
 
 AutoPtr< ArrayOf<Byte> > LockPatternUtils::PatternToHash(
@@ -981,46 +1029,52 @@ AutoPtr< ArrayOf<Byte> > LockPatternUtils::PatternToHash(
     }
 
     Int32 patternSize = 0;
-    pattern->GetObjectCount(&patternSize);
+    pattern->GetSize(&patternSize);
     AutoPtr<ArrayOf<Byte> > res = ArrayOf<Byte>::Alloc(patternSize);
-    AutoPtr<IObjectEnumerator> em;
-    pattern->GetObjectEnumerator((IObjectEnumerator**)&em);
-    Boolean hasNext = TRUE;
-    for (Int32 i = 0; i < patternSize && hasNext; i++, em->MoveNext(&hasNext)) {
-        AutoPtr<ILockPatternViewCell> cell;
-        em->Current((IInterface**)&cell);
+    for (Int32 i = 0; i < patternSize; i++) {
+        AutoPtr<IInterface> item;
+        pattern->Get(i, (IInterface**)&item);
+        AutoPtr<ILockPatternViewCell> cell = ILockPatternViewCell::Probe(item);
         Int32 row = 0, column = 0;
         cell->GetRow(&row);
         cell->GetColumn(&column);
+
         (*res)[i] = (Byte) (row * 3 + column);
     }
-    assert(0 && "TODO");
-////    try {
-//        MessageDigest md = MessageDigest.getInstance("SHA-1");
-//        Byte[] hash = md.digest(res);
-//        return hash;
-////    } catch (NoSuchAlgorithmException nsa) {
-//        return res;
-////    }
-    return res;
+
+    AutoPtr<IMessageDigestHelper> helper;
+    CMessageDigestHelper::AcquireSingleton((IMessageDigestHelper**)&helper);
+    AutoPtr<IMessageDigest> md;
+    ECode ec = helper->GetInstance(String("SHA-1"), (IMessageDigest**)&md);
+    if (FAILED(ec)) {
+        return res;
+    }
+
+    AutoPtr<ArrayOf<Byte> > hash;
+    ec = md->Digest(res, (ArrayOf<Byte>**)&hash);
+    if (FAILED(ec)) {
+        return res;
+    }
+
+    return hash;
 }
 
 String LockPatternUtils::GetSalt(
     /* [in] */ Int32 userId)
 {
-    Int64 salt = GetInt64(LOCK_PASSWORD_SALT_KEY, 0);
-    if (salt == 0) {
+    Int64 salt = GetInt64(LOCK_PASSWORD_SALT_KEY, 0, userId);
     assert(0 && "TODO");
-        //try {
-//        salt = SecureRandom::GetInstance("SHA1PRNG")->NextLong();
- //       SetInt64(LOCK_PASSWORD_SALT_KEY, salt, userId);
-            //Log.v(TAG, "Initialized lock password salt for user: " + userId);
-        //} catch (NoSuchAlgorithmException e) {
-        //    // Throw an exception rather than storing a password we'll never be able to recover
-        //    throw new IllegalStateException("Couldn't get SecureRandom number", e);
-        //}
-    }
-    return StringUtils::Int64ToString(salt, 16);
+    // if (salt == 0) {
+    //     try {
+    //         salt = SecureRandom.getInstance("SHA1PRNG").nextLong();
+    //         setLong(LOCK_PASSWORD_SALT_KEY, salt, userId);
+    //         Log.v(TAG, "Initialized lock password salt for user: " + userId);
+    //     } catch (NoSuchAlgorithmException e) {
+    //         // Throw an exception rather than storing a password we'll never be able to recover
+    //         throw new IllegalStateException("Couldn't get SecureRandom number", e);
+    //     }
+    // }
+    return StringUtils::ToHexString(salt);
 }
 
 ECode LockPatternUtils::PasswordToHash(
@@ -1030,30 +1084,57 @@ ECode LockPatternUtils::PasswordToHash(
 {
     VALIDATE_NOT_NULL(arr);
     *arr = NULL;
+
     if (password.IsNullOrEmpty()) {
         return NOERROR;
     }
     String algo;
     AutoPtr<ArrayOf<Byte> > hashed;
-    //try {
-        String saltedPassword = (password + GetSalt(userId));
-        assert(0 && "TODO");
-//        AutoPtr<ArrayOf<Byte> > sha1 = MessageDigest::GetInstance(algo = "SHA-1")->Digest(saltedPassword);
-//        AutoPtr<ArrayOf<Byte> > md5 = MessageDigest::GetInstance(algo = "MD5")->Digest(saltedPassword);
-//        hashed = (toHex(sha1) + toHex(md5)).getBytes();
-    /*} catch (NoSuchAlgorithmException e) {
-        Log.w(TAG, "Failed to encode string because of missing algorithm: " + algo);
-    }*/
-    return hashed;
+    AutoPtr<ArrayOf<Byte> > saltedPassword = (password + GetSalt(userId)).GetBytes();
+    AutoPtr<IMessageDigestHelper> helper;
+    CMessageDigestHelper::AcquireSingleton((IMessageDigestHelper**)&helper);
+    AutoPtr<IMessageDigest> md;
+    algo = "SHA-1";
+    ECode ec = helper->GetInstance(algo, (IMessageDigest**)&md);
+    if (FAILED(ec)) {
+        Slogger::W(TAG, String("Failed to encode string because of missing algorithm: ") + algo);
+        return NOERROR;
+    }
+    AutoPtr<ArrayOf<Byte> > sha1;
+    ec = md->Digest(saltedPassword, (ArrayOf<Byte>**)&sha1);
+    if (FAILED(ec)) {
+        Slogger::W(TAG, String("Failed to encode string because of missing algorithm: ") + algo);
+        return NOERROR;
+    }
+
+    algo = "MD5";
+    md = NULL;
+    ec = helper->GetInstance(algo, (IMessageDigest**)&md);
+    if (FAILED(ec)) {
+        Slogger::W(TAG, String("Failed to encode string because of missing algorithm: ") + algo);
+        return NOERROR;
+    }
+    AutoPtr<ArrayOf<Byte> > md5;
+    ec = md->Digest(saltedPassword, (ArrayOf<Byte>**)&md5);
+    if (FAILED(ec)) {
+        Slogger::W(TAG, String("Failed to encode string because of missing algorithm: ") + algo);
+        return NOERROR;
+    }
+
+    hashed = (ToHex(sha1) + ToHex(md5)).GetBytes();
+    *arr = hashed;
+    REFCOUNT_ADD(*arr);
+    return NOERROR;
 }
 
-String LockPatternUtils::ToHex(ArrayOf<Byte>* ary)
+String LockPatternUtils::ToHex(
+    /* [in] */ ArrayOf<Byte>* ary)
 {
-    String hex = String("0123456789ABCDEF");
-    String ret = String("");
+    const String hex("0123456789ABCDEF");
+    String ret("");
     for (Int32 i = 0; i < ary->GetLength(); i++) {
-        /*ret.Append(hex[((*ary[i]) >> 4) & 0xf]);
-        ret.Append(hex[(*ary[i]) & 0xf]);*/
+        ret += hex.GetChar(((*ary)[i] >> 4) & 0xf);
+        ret += hex.GetChar((*ary)[i] & 0xf);
     }
     return ret;
 }
@@ -1075,8 +1156,10 @@ ECode LockPatternUtils::IsLockPasswordEnabled(
             || backupMode == IDevicePolicyManager::PASSWORD_QUALITY_ALPHANUMERIC
             || backupMode == IDevicePolicyManager::PASSWORD_QUALITY_COMPLEX;
 
-    *result = SavedPasswordExists() && (passwordEnabled ||
-            (UsingBiometricWeak() && backupEnabled));
+    Boolean tmp = FALSE;
+    SavedPasswordExists(&tmp);
+    *result = tmp && (passwordEnabled ||
+            ((UsingBiometricWeak(&tmp), tmp) && backupEnabled));
     return NOERROR;
 }
 
@@ -1088,10 +1171,11 @@ ECode LockPatternUtils::IsLockPatternEnabled(
             GetInt64(PASSWORD_TYPE_ALTERNATE_KEY, IDevicePolicyManager::PASSWORD_QUALITY_UNSPECIFIED)
             == IDevicePolicyManager::PASSWORD_QUALITY_SOMETHING;
 
+    Boolean tmp = FALSE;
     *result = GetBoolean(ISettingsSecure::LOCK_PATTERN_ENABLED, FALSE)
             && (GetInt64(PASSWORD_TYPE_KEY, IDevicePolicyManager::PASSWORD_QUALITY_UNSPECIFIED)
                     == IDevicePolicyManager::PASSWORD_QUALITY_SOMETHING ||
-                    (UsingBiometricWeak() && backupEnabled));
+                    ((UsingBiometricWeak(&tmp), tmp) && backupEnabled));
     return NOERROR;
 }
 
@@ -1122,7 +1206,7 @@ ECode LockPatternUtils::IsBiometricWeakInstalled(
     // TODO: If we decide not to proceed with Face Unlock as a trustlet, this must be changed
     // back to returning TRUE.  If we become certain that Face Unlock will be a trustlet, this
     // entire function and a lot of other code can be removed.
-    if (DEBUG) Log.d(TAG, "Forcing isBiometricWeakInstalled() to return FALSE to disable it");
+    if (DEBUG) Slogger::D(TAG, "Forcing isBiometricWeakInstalled() to return FALSE to disable it");
     return NOERROR;
 }
 
@@ -1133,7 +1217,8 @@ ECode LockPatternUtils::SetBiometricWeakLivelinessEnabled(
     Int64 newFlag = 0;
     if (enabled) {
         newFlag = currentFlag | FLAG_BIOMETRIC_WEAK_LIVELINESS;
-    } else {
+    }
+    else {
         newFlag = currentFlag & ~FLAG_BIOMETRIC_WEAK_LIVELINESS;
     }
     SetInt64(ISettingsSecure::LOCK_BIOMETRIC_WEAK_FLAGS, newFlag);
@@ -1141,7 +1226,7 @@ ECode LockPatternUtils::SetBiometricWeakLivelinessEnabled(
 }
 
 ECode LockPatternUtils::IsBiometricWeakLivelinessEnabled(
-    /* [out] */ Boolean enabled)
+    /* [out] */ Boolean* enabled)
 {
     VALIDATE_NOT_NULL(enabled);
     Int64 currentFlag = GetInt64(ISettingsSecure::LOCK_BIOMETRIC_WEAK_FLAGS, 0L);
@@ -1158,7 +1243,7 @@ ECode LockPatternUtils::SetLockPatternEnabled(
 }
 
 ECode LockPatternUtils::IsVisiblePatternEnabled(
-    /* [out] */ Boolean enabled)
+    /* [out] */ Boolean* enabled)
 {
     VALIDATE_NOT_NULL(enabled);
     *enabled = GetBoolean(ISettingsSecure::LOCK_PATTERN_VISIBLE, FALSE);
@@ -1171,27 +1256,26 @@ ECode LockPatternUtils::SetVisiblePatternEnabled(
     SetBoolean(ISettingsSecure::LOCK_PATTERN_VISIBLE, enabled);
 
     // Update for crypto if owner
-    Int32 userId = getCurrentOrCallingUserId();
-    if (userId != UserHandle.USER_OWNER) {
-        return;
+    Int32 userId = GetCurrentOrCallingUserId();
+    if (userId != IUserHandle::USER_OWNER) {
+        return NOERROR;
     }
 
-    IBinder service = ServiceManager.getService("mount");
-    if (service == null) {
-        Log.e(TAG, "Could not find the mount service to update the user info");
-        return;
+    AutoPtr<IInterface> service = ServiceManager::GetService(String("mount"));
+    if (service == NULL) {
+        Slogger::E(TAG, "Could not find the mount service to update the user info");
+        return NOERROR;
     }
 
-    IMountService mountService = IMountService.Stub.asInterface(service);
-    try {
-        mountService.setField(StorageManager.PATTERN_VISIBLE_KEY, enabled ? "1" : "0");
-    } catch (RemoteException e) {
-        Log.e(TAG, "Error changing pattern visible state", e);
+    AutoPtr<IMountService> mountService = IMountService::Probe(service);
+    if (FAILED(mountService->SetField(IStorageManager::PATTERN_VISIBLE_KEY, enabled ? String("1") : String("0")))) {
+        Slogger::E(TAG, "Error changing pattern visible state");
     }
+    return NOERROR;
 }
 
 ECode LockPatternUtils::IsTactileFeedbackEnabled(
-    /* [out] */ Boolean enabled)
+    /* [out] */ Boolean* enabled)
 {
     VALIDATE_NOT_NULL(enabled);
     Int32 value;
@@ -1274,8 +1358,11 @@ ECode LockPatternUtils::IsEmergencyCallEnabledWhileSimLocked(
 ECode LockPatternUtils::GetNextAlarm(
     /* [out] */ IAlarmClockInfo** alarm)
 {
-    AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
-    return alarmManager.getNextAlarmClock(UserHandle.USER_CURRENT);
+    VALIDATE_NOT_NULL(alarm);
+    AutoPtr<IInterface> obj;
+    mContext->GetSystemService(IContext::ALARM_SERVICE, (IInterface**)&obj);
+    AutoPtr<IAlarmManager> alarmManager = IAlarmManager::Probe(obj);
+    return alarmManager->GetNextAlarmClock(IUserHandle::USER_CURRENT, alarm);
 }
 
 Boolean LockPatternUtils::GetBoolean(
@@ -1341,17 +1428,12 @@ AutoPtr<ArrayOf<Int32> > LockPatternUtils::GetAppWidgets(
         AutoPtr< ArrayOf<Int32> > appWidgetIds = ArrayOf<Int32>::Alloc(appWidgetStringIds->GetLength());
         for (Int32 i = 0; i < appWidgetStringIds->GetLength(); i++) {
             String appWidget = (*appWidgetStringIds)[i];
-            assert(0 && "TODO");
-            ///// is right?
-            /*Int32 hex = appWidget.Find("0x");
-            if(hex == -1 )
-            {
-                (*appWidgetIds)[i] = StringUtils::ParseInt32(appWidget);
-            } else {
-                String temp = appWidget.Substring(0, hex) + appWidget.SubString(hex + 2);
-
-                (*appWidgetIds)[i] = StringUtils::ParseInt32(temp, 16);
-            }*/
+            // try {
+            (*appWidgetIds)[i] = StringUtils::ParseInt32(appWidget);
+            // } catch (NumberFormatException e) {
+            //     Log.d(TAG, "Error when parsing widget id " + appWidget);
+            //     return null;
+            // }
         }
         return appWidgetIds;
     }
@@ -1369,7 +1451,7 @@ String LockPatternUtils::CombineStrings(
             return String("");
         }
         case 1: {
-            return StringUtils::Int32ToString((*list)[0]);
+            return StringUtils::ToString((*list)[0]);
         }
     }
 
@@ -1434,7 +1516,8 @@ ECode LockPatternUtils::AddAppWidget(
 {
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
-    AutoPtr<ArrayOf<Int32> > widgets = GetAppWidgets();
+    AutoPtr<ArrayOf<Int32> > widgets;
+    GetAppWidgets((ArrayOf<Int32>**)&widgets);
     if (widgets == NULL) {
         return NOERROR;
     }
@@ -1463,7 +1546,8 @@ ECode LockPatternUtils::RemoveAppWidget(
 {
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
-    AutoPtr<ArrayOf<Int32> > widgets = GetAppWidgets();
+    AutoPtr<ArrayOf<Int32> > widgets;
+    GetAppWidgets((ArrayOf<Int32>**)&widgets);
 
     if (widgets->GetLength() == 0) {
         return NOERROR;
@@ -1488,23 +1572,24 @@ ECode LockPatternUtils::RemoveAppWidget(
     return NOERROR;
 }
 
-Int64 LockPatternUtils::GetLong(
+Int64 LockPatternUtils::GetInt64(
     /* [in] */ const String& secureSettingKey,
     /* [in] */ Int64 defaultValue,
     /* [in] */ Int32 userHandle)
 {
-    try {
-        return getLockSettings().GetInt64(secureSettingKey, defaultValue, userHandle);
-    } catch (RemoteException re) {
+    Int64 result = 0;
+    ECode ec = GetLockSettings()->GetInt64(secureSettingKey, defaultValue, userHandle, &result);
+    if (FAILED(ec)) {
         return defaultValue;
     }
+    return result;
 }
 
 Int64 LockPatternUtils::GetInt64(
     /* [in] */ const String& secureSettingKey,
     /* [in] */ Int64 defaultValue)
 {
-    Int64 result = FALSE;
+    Int64 result = 0;
     ECode ec = GetLockSettings()->GetInt64(secureSettingKey, defaultValue,
             GetCurrentOrCallingUserId(), &result);
     if (FAILED(ec)) {
@@ -1565,15 +1650,19 @@ ECode LockPatternUtils::IsSecure(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    Int64 mode = GetKeyguardStoredPasswordQuality();
+    Int32 m = 0;
+    GetKeyguardStoredPasswordQuality(&m);
+    Int64 mode = m;
     Boolean isPattern = mode == IDevicePolicyManager::PASSWORD_QUALITY_SOMETHING;
     Boolean isPassword = mode == IDevicePolicyManager::PASSWORD_QUALITY_NUMERIC
             || mode == IDevicePolicyManager::PASSWORD_QUALITY_NUMERIC_COMPLEX
             || mode == IDevicePolicyManager::PASSWORD_QUALITY_ALPHABETIC
             || mode == IDevicePolicyManager::PASSWORD_QUALITY_ALPHANUMERIC
             || mode == IDevicePolicyManager::PASSWORD_QUALITY_COMPLEX;
-    Boolean secure = isPattern && IsLockPatternEnabled() && SavedPatternExists()
-            || isPassword && SavedPasswordExists();
+
+    Boolean tmp = FALSE;
+    Boolean secure = (isPattern && (IsLockPatternEnabled(&tmp), tmp) && (SavedPatternExists(&tmp), tmp))
+            || (isPassword && (SavedPasswordExists(&tmp), tmp));
     *result = secure;
     return NOERROR;
 }
@@ -1583,27 +1672,29 @@ ECode LockPatternUtils::UpdateEmergencyCallButtonState(
     /* [in] */ Boolean shown,
     /* [in] */ Boolean showIcon)
 {
-    if (IsEmergencyCallCapable() && shown) {
-        button->SetVisibility(IView::VISIBLE);
-    } else {
-        button->SetVisibility(IView::GONE);
+    Boolean tmp = FALSE;
+    if ((IsEmergencyCallCapable(&tmp), tmp) && shown) {
+        IView::Probe(button)->SetVisibility(IView::VISIBLE);
+    }
+    else {
+        IView::Probe(button)->SetVisibility(IView::GONE);
         return NOERROR;
     }
 
     Int32 textId = 0;
-    if (isInCall()) {
+    if (IsInCall(&tmp), tmp) {
         // show "return to call" text and show phone icon
         textId = R::string::lockscreen_return_to_call;
         Int32 phoneCallIcon = showIcon ? R::drawable::stat_sys_phone_call : 0;
-        button->SetCompoundDrawablesWithIntrinsicBounds(phoneCallIcon, 0, 0, 0);
+        ITextView::Probe(button)->SetCompoundDrawablesWithIntrinsicBounds(phoneCallIcon, 0, 0, 0);
     }
     else {
         textId = R::string::lockscreen_emergency_call;
         Int32 emergencyIcon = showIcon ? R::drawable::ic_emergency : 0;
-        button->SetCompoundDrawablesWithIntrinsicBounds(emergencyIcon, 0, 0, 0);
+        ITextView::Probe(button)->SetCompoundDrawablesWithIntrinsicBounds(emergencyIcon, 0, 0, 0);
     }
 
-    button->SetText(textId);
+    ITextView::Probe(button)->SetText(textId);
     return NOERROR;
 }
 
@@ -1676,20 +1767,22 @@ ECode LockPatternUtils::HasWidgetsEnabledInKeyguard(
     /* [out] */ Boolean* has)
 {
     VALIDATE_NOT_NULL(has);
-    Int32 widgets[] = getAppWidgets(userid);
-    for (Int32 i = 0; i < widgets.length; i++) {
-        if (widgets[i] > 0) {
-            return TRUE;
+    AutoPtr<ArrayOf<Int32> > widgets = GetAppWidgets(userid);
+    for (Int32 i = 0; i < widgets->GetLength(); i++) {
+        if ((*widgets)[i] > 0) {
+            *has = TRUE;
+            return NOERROR;
         }
     }
-    return FALSE;
+    *has = FALSE;
+    return NOERROR;
 }
 
 ECode LockPatternUtils::GetWidgetsEnabled(
     /* [out] */ Boolean* enabled)
 {
     VALIDATE_NOT_NULL(enabled);
-    return getWidgetsEnabled(getCurrentOrCallingUserId());
+    return GetWidgetsEnabled(GetCurrentOrCallingUserId(), enabled);
 }
 
 ECode LockPatternUtils::GetWidgetsEnabled(
@@ -1704,7 +1797,7 @@ ECode LockPatternUtils::GetWidgetsEnabled(
 ECode LockPatternUtils::SetWidgetsEnabled(
     /* [in] */ Boolean enabled)
 {
-    SetWidgetsEnabled(enabled, getCurrentOrCallingUserId());
+    return SetWidgetsEnabled(enabled, GetCurrentOrCallingUserId());
 }
 
 ECode LockPatternUtils::SetWidgetsEnabled(
@@ -1718,7 +1811,7 @@ ECode LockPatternUtils::SetWidgetsEnabled(
 ECode LockPatternUtils::SetEnabledTrustAgents(
     /* [in] */ ICollection/*<ComponentName>*/* activeTrustAgents)
 {
-    SetEnabledTrustAgents(activeTrustAgents, getCurrentOrCallingUserId());
+    SetEnabledTrustAgents(activeTrustAgents, GetCurrentOrCallingUserId());
     return NOERROR;
 }
 
@@ -1726,22 +1819,33 @@ ECode LockPatternUtils::GetEnabledTrustAgents(
     /* [out] */ IList** list)
 {
     VALIDATE_NOT_NULL(list);
-    return getEnabledTrustAgents(getCurrentOrCallingUserId());
+    return GetEnabledTrustAgents(GetCurrentOrCallingUserId(), list);
 }
 
 ECode LockPatternUtils::SetEnabledTrustAgents(
     /* [in] */ ICollection/*<ComponentName>*/* activeTrustAgents,
     /* [in] */ Int32 userId)
 {
-    StringBuilder sb = new StringBuilder();
-    for (ComponentName cn : activeTrustAgents) {
-        if (sb.length() > 0) {
-            sb.append(',');
+    StringBuilder sb;
+    AutoPtr<IIterator> ator;
+    activeTrustAgents->GetIterator((IIterator**)&ator);
+    Boolean hasNext = FALSE;
+    Int32 len = 0;
+    while (ator->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> obj;
+        ator->GetNext((IInterface**)&obj);
+        AutoPtr<IComponentName> cn = IComponentName::Probe(obj);
+
+        if ((sb.GetLength(&len), len) > 0) {
+            sb.AppendChar(',');
         }
-        sb.append(cn.flattenToShortString());
+        String name;
+        cn->FlattenToShortString(&name);
+        sb.Append(name);
     }
-    setString(ENABLED_TRUST_AGENTS, sb.toString(), userId);
-    getTrustManager().reportEnabledTrustAgentsChanged(getCurrentOrCallingUserId());
+    SetString(ENABLED_TRUST_AGENTS, sb.ToString(), userId);
+    GetTrustManager()->ReportEnabledTrustAgentsChanged(GetCurrentOrCallingUserId());
+    return NOERROR;
 }
 
 ECode LockPatternUtils::GetEnabledTrustAgents(
@@ -1749,29 +1853,36 @@ ECode LockPatternUtils::GetEnabledTrustAgents(
     /* [out] */ IList** list)
 {
     VALIDATE_NOT_NULL(list);
-    String serialized = getString(ENABLED_TRUST_AGENTS, userId);
-    if (TextUtils.isEmpty(serialized)) {
-        return null;
+    String serialized = GetString(ENABLED_TRUST_AGENTS, userId);
+    if (TextUtils::IsEmpty(serialized)) {
+        *list = NULL;
+        return NOERROR;
     }
-    String[] split = serialized.split(",");
-    ArrayList<ComponentName> activeTrustAgents = new ArrayList<ComponentName>(split.length);
-    for (String s : split) {
-        if (!TextUtils.isEmpty(s)) {
-            activeTrustAgents.add(ComponentName.unflattenFromString(s));
+    AutoPtr<ArrayOf<String> > split = TextUtils::Split(serialized, String(","));
+    AutoPtr<IArrayList> activeTrustAgents;
+    CArrayList::New(split->GetLength(), (IList**)&activeTrustAgents);
+    for (Int32 i = 0; i < split->GetLength(); i++) {
+        String s = (*split)[i];
+        if (!TextUtils::IsEmpty(s)) {
+            AutoPtr<IComponentName> cn;
+            CComponentName::UnflattenFromString(s, (IComponentName**)&cn);
+            activeTrustAgents->Add(cn);
         }
     }
-    return activeTrustAgents;
+    *list = IList::Probe(activeTrustAgents);
+    REFCOUNT_ADD(*list);
+    return NOERROR;
 }
 
 ECode LockPatternUtils::RequireCredentialEntry(
     /* [in] */ Int32 userId)
 {
-    getTrustManager().reportRequireCredentialEntry(userId);
+    return GetTrustManager()->ReportRequireCredentialEntry(userId);
 }
 
 void LockPatternUtils::OnAfterChangingPassword()
 {
-    getTrustManager().reportEnabledTrustAgentsChanged(getCurrentOrCallingUserId());
+    GetTrustManager()->ReportEnabledTrustAgentsChanged(GetCurrentOrCallingUserId());
 }
 
 ECode LockPatternUtils::IsCredentialRequiredToDecrypt(
@@ -1779,20 +1890,27 @@ ECode LockPatternUtils::IsCredentialRequiredToDecrypt(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    final Int32 value = Settings.Global.getInt(mContentResolver,
-            Settings.Global.REQUIRE_PASSWORD_TO_DECRYPT, -1);
-    return value == -1 ? defaultValue : (value != 0);
+    Int32 value = 0;
+    Settings::Global::GetInt32(mContentResolver,
+            ISettingsGlobal::REQUIRE_PASSWORD_TO_DECRYPT, -1, &value);
+    *result = value == -1 ? defaultValue : (value != 0);
+    return NOERROR;
 }
 
 ECode LockPatternUtils::SetCredentialRequiredToDecrypt(
     /* [in] */ Boolean required)
 {
-    if (getCurrentUser() != UserHandle.USER_OWNER) {
-        Log.w(TAG, "Only device owner may call setCredentialRequiredForDecrypt()");
-        return;
+    Int32 user = 0;
+    if ((GetCurrentUser(&user), user) != IUserHandle::USER_OWNER) {
+        Slogger::W(TAG, "Only device owner may call setCredentialRequiredForDecrypt()");
+        return NOERROR;
     }
-    Settings.Global.putInt(mContext.getContentResolver(),
-            Settings.Global.REQUIRE_PASSWORD_TO_DECRYPT, required ? 1 : 0);
+    AutoPtr<IContentResolver> resolver;
+    mContext->GetContentResolver((IContentResolver**)&resolver);
+    Boolean result = FALSE;
+    Settings::Global::PutInt32(resolver,
+            ISettingsGlobal::REQUIRE_PASSWORD_TO_DECRYPT, required ? 1 : 0, &result);
+    return NOERROR;
 }
 
 }// namespace Widget

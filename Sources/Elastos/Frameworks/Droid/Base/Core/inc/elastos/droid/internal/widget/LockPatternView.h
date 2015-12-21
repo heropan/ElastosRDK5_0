@@ -31,22 +31,30 @@ class LockPatternView
     , public ILockPatternView
 {
 public:
-    class Cell : public Object
+    class Cell
+        : public Object
+        , public ILockPatternViewCell
     {
     public:
-        Cell(
+        CAR_INTERFACE_DECL();
+
+        Cell();
+
+        CARAPI constructor(
             /* [in] */ Int32 row,
             /* [in] */ Int32 column);
 
-        virtual CARAPI_(Int32) GetRow();
+        virtual CARAPI GetRow(
+            /* [out] */ Int32* result);
 
-        virtual CARAPI_(Int32) GetColumn();
+        virtual CARAPI GetColumn(
+            /* [out] */ Int32* result);
 
         /**
          * @param row The row of the cell.
          * @param column The column of the cell.
          */
-        static CARAPI_(AutoPtr<Cell>) Of(
+        static CARAPI_(AutoPtr<ILockPatternViewCell>) Of(
             /* [in] */ Int32 row,
             /* [in] */ Int32 column);
 
@@ -61,7 +69,7 @@ public:
     public:
         Int32 mRow;
         Int32 mColumn;
-        static AutoPtr<Cell> sCells[3][3];
+        static AutoPtr<ILockPatternViewCell> sCells[3][3];
         static Boolean sInit;
         // static AutoPtr< ArrayOf< AutoPtr< ArrayOf<Cell*> > > > sCells;
     };
@@ -362,7 +370,7 @@ private:
         /* [in] */ CellState* state,
         /* [in] */ IRunnable* endRunnable);
 
-    CARAPI_(AutoPtr<Cell>) CheckForNewHit(
+    CARAPI_(AutoPtr<ILockPatternViewCell>) CheckForNewHit(
         /* [in] */ Float x,
         /* [in] */ Float y);
 

@@ -1,6 +1,7 @@
 
 #include "elastos/droid/internal/widget/LockPatternView.h"
-// #include "elastos/droid/internal/widget/LockPatternUtils.h"
+#include "elastos/droid/internal/widget/CLockPatternViewCell.h"
+#include "elastos/droid/internal/widget/LockPatternUtils.h"
 #include "elastos/droid/internal/widget/CLockPatternViewSavedState.h"
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/animation/ValueAnimator.h"
@@ -54,9 +55,11 @@ const Float LockPatternView::DRAG_THRESHHOLD = 0.0f;
 
 Boolean static InitStatic()
 {
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            LockPatternView::Cell::sCells[i][j] = new LockPatternView::Cell(i, j);
+    for (Int32 i = 0; i < 3; i++) {
+        for (Int32 j = 0; j < 3; j++) {
+            AutoPtr<CLockPatternViewCell> cell;
+            CLockPatternViewCell::NewByFriend(i, j, (CLockPatternViewCell**)&cell);
+            LockPatternView::Cell::sCells[i][j] = cell;
         }
     }
     return TRUE;
@@ -66,14 +69,21 @@ Boolean static InitStatic()
 //                  LockPatternView::Cell
 /////////////////////////////////////////////////////////////
 Boolean LockPatternView::Cell::sInit = InitStatic();
-AutoPtr<LockPatternView::Cell> LockPatternView::Cell::sCells[3][3];
-LockPatternView::Cell::Cell(
+AutoPtr<ILockPatternViewCell> LockPatternView::Cell::sCells[3][3];
+CAR_INTERFACE_IMPL(LockPatternView::Cell, Object, ILockPatternViewCell);
+LockPatternView::Cell::Cell()
+    : mRow(0)
+    , mColumn(0)
+{}
+
+ECode LockPatternView::Cell::constructor(
     /* [in] */ Int32 row,
     /* [in] */ Int32 column)
 {
     CheckRange(row, column);
     mRow = row;
     mColumn = column;
+    return NOERROR;
 }
 
 ECode LockPatternView::Cell::CheckRange(
@@ -89,23 +99,28 @@ ECode LockPatternView::Cell::CheckRange(
     return NOERROR;
 }
 
-Int32 LockPatternView::Cell::GetRow()
+ECode LockPatternView::Cell::GetRow(
+    /* [out] */ Int32* result)
 {
-    return mRow;
+    VALIDATE_NOT_NULL(result);
+    *result = mRow;
+    return NOERROR;
 }
 
-Int32 LockPatternView::Cell::GetColumn()
+ECode LockPatternView::Cell::GetColumn(
+    /* [out] */ Int32* result)
 {
-    return mColumn;
+    VALIDATE_NOT_NULL(result);
+    *result = mColumn;
+    return NOERROR;
 }
 
-AutoPtr<LockPatternView::Cell> LockPatternView::Cell::Of(
+AutoPtr<ILockPatternViewCell> LockPatternView::Cell::Of(
     /* [in] */ Int32 row,
     /* [in] */ Int32 column)
 {
     CheckRange(row, column);
-    AutoPtr<Cell> temp = sCells[row][column];
-    return temp;
+    return sCells[row][column];
 }
 
 ECode LockPatternView::Cell::ToString(
@@ -466,11 +481,14 @@ ECode LockPatternView::constructor(
 
     if (aspect.Equals("square")) {
         mAspect = ASPECT_SQUARE;
-    } else if (aspect.Equals("lock_width")) {
+    }
+    else if (aspect.Equals("lock_width")) {
         mAspect = ASPECT_LOCK_WIDTH;
-    } else if (aspect.Equals("lock_height")) {
+    }
+    else if (aspect.Equals("lock_height")) {
         mAspect = ASPECT_LOCK_HEIGHT;
-    } else {
+    }
+    else {
         mAspect = ASPECT_SQUARE;
     }
 
@@ -582,11 +600,14 @@ ECode LockPatternView::SetPattern(
     ClearPatternDrawLookup();
     Int32 size = 0;
     pattern->GetSize(&size);
+    Int32 row = 0, column = 0;
     for (Int32 i = 0; i < size; i++) {
         AutoPtr<IInterface> item;
         pattern->Get(i, (IInterface**)&item);
         Cell* cell = (Cell*)IObject::Probe(item);
-        mPatternDrawLookup[cell->GetRow()][cell->GetColumn()] = TRUE;
+        cell->GetRow(&row);
+        cell->GetColumn(&column);
+        mPatternDrawLookup[row][column] = TRUE;
     }
 
     SetDisplayMode(displayMode);
@@ -606,8 +627,11 @@ ECode LockPatternView::SetDisplayMode(
         AutoPtr<IInterface> item;
         mPattern->Get(0, (IInterface**)&item);
         Cell* first = (Cell*)IObject::Probe(item);
-        mInProgressX = GetCenterXForColumn(first->GetColumn());
-        mInProgressY = GetCenterYForRow(first->GetRow());
+        Int32 row = 0, column = 0;
+        first->GetColumn(&column);
+        first->GetRow(&row);
+        mInProgressX = GetCenterXForColumn(column);
+        mInProgressY = GetCenterYForRow(row);
         ClearPatternDrawLookup();
     }
     Invalidate();
@@ -788,7 +812,8 @@ AutoPtr<LockPatternView::Cell> LockPatternView::DetectAndAddHit(
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
-    AutoPtr<Cell> cell = CheckForNewHit(x, y);
+    AutoPtr<ILockPatternViewCell> c = CheckForNewHit(x, y);
+    AutoPtr<Cell> cell = (Cell*)c.Get();
     if (cell != NULL) {
 
         AutoPtr<Cell> fillInGapCell;
@@ -812,7 +837,7 @@ AutoPtr<LockPatternView::Cell> LockPatternView::DetectAndAddHit(
                 fillInColumn = lastCell->mColumn + ((dColumn > 0) ? 1 : -1);
             }
 
-            fillInGapCell = Cell::Of(fillInRow, fillInColumn);
+            fillInGapCell = (Cell*)Cell::Of(fillInRow, fillInColumn).Get();
         }
 
         if (fillInGapCell && !mPatternDrawLookup[fillInGapCell->mRow][fillInGapCell->mColumn]) {
@@ -833,7 +858,10 @@ AutoPtr<LockPatternView::Cell> LockPatternView::DetectAndAddHit(
 void LockPatternView::AddCellToPattern(
     /* [in] */ Cell* newCell)
 {
-    mPatternDrawLookup[newCell->GetRow()][newCell->GetColumn()] = TRUE;
+    Int32 row = 0, column = 0;
+    newCell->GetRow(&row);
+    newCell->GetColumn(&column);
+    mPatternDrawLookup[row][column] = TRUE;
     Int32 size = 0;
     mPattern->GetSize(&size);
     mPattern->Set(size, (IObject*)newCell->Probe(EIID_IObject));
@@ -903,7 +931,7 @@ void LockPatternView::StartSizeAnimation(
     IAnimator::Probe(valueAnimator)->Start();
 }
 
-AutoPtr<LockPatternView::Cell> LockPatternView::CheckForNewHit(
+AutoPtr<ILockPatternViewCell> LockPatternView::CheckForNewHit(
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
@@ -971,7 +999,8 @@ void LockPatternView::HandleActionMove(
         if (i < historySize) {
             event->GetHistoricalX(i, &x);
             event->GetHistoricalY(i, &y);
-        } else {
+        }
+        else {
             event->GetX(&x);
             event->GetY(&y);
         }
@@ -1092,7 +1121,8 @@ void LockPatternView::HandleActionDown(
         mPatternInProgress = TRUE;
         mPatternDisplayMode = DisplayMode_Correct;
         NotifyPatternStarted();
-    } else if (mPatternInProgress) {
+    }
+    else if (mPatternInProgress) {
         mPatternInProgress = FALSE;
         NotifyPatternCleared();
     }
@@ -1209,11 +1239,14 @@ void LockPatternView::OnDraw(
         Int32 numCircles = spotInCycle / MILLIS_PER_CIRCLE_ANIMATING;
 
         ClearPatternDrawLookup();
+        Int32 row = 0, column = 0;
         for (Int32 i = 0; i < numCircles; i++) {
             AutoPtr<IInterface> item;
             pattern->Get(i, (IInterface**)&item);
             Cell* cell = (Cell*)IObject::Probe(item);
-            mPatternDrawLookup[cell->GetRow()][cell->GetColumn()] = TRUE;
+            cell->GetRow(&row);
+            cell->GetColumn(&column);
+            mPatternDrawLookup[row][column] = TRUE;
         }
 
         Boolean needToUpdateInProgressPoint = numCircles > 0 && numCircles < count;
@@ -1293,7 +1326,8 @@ void LockPatternView::OnDraw(
                 if (state->mLineEndX != Elastos::Core::Math::FLOAT_MIN_VALUE
                     && state->mLineEndY != Elastos::Core::Math::FLOAT_MIN_VALUE) {
                     currentPath->LineTo(state->mLineEndX, state->mLineEndY);
-                } else {
+                }
+                else {
                     currentPath->LineTo(centerX, centerY);
                 }
                 canvas->DrawPath(currentPath, mPathPaint);
@@ -1320,11 +1354,10 @@ AutoPtr<IParcelable> LockPatternView::OnSaveInstanceState()
 {
     AutoPtr<IParcelable> superState = View::OnSaveInstanceState();
     AutoPtr<IParcelable> state;
-    assert(0 && "TODO");
-    // CLockPatternViewSavedState::New(superState,
-    //         LockPatternUtils::PatternToString(mPattern),
-    //         mPatternDisplayMode/*.ordinal()*/,
-    //         mInputEnabled, mInStealthMode, mEnableHapticFeedback, (IParcelable**)&state);
+    CLockPatternViewSavedState::New(superState,
+            LockPatternUtils::PatternToString(IList::Probe(mPattern)),
+            mPatternDisplayMode/*.ordinal()*/,
+            mInputEnabled, mInStealthMode, mEnableHapticFeedback, (IParcelable**)&state);
     return state;
 }
 
@@ -1337,9 +1370,8 @@ void LockPatternView::OnRestoreInstanceState(
     View::OnRestoreInstanceState(value);
     String pattern;
     ss->GetSerializedPattern(&pattern);
-    assert(0 && "TODO");
-    // SetPattern(DisplayMode_Correct,
-    //         LockPatternUtils::StringToPattern(pattern));
+    SetPattern(DisplayMode_Correct,
+            LockPatternUtils::StringToPattern(pattern));
     Int32 mode = 0;
     ss->GetDisplayMode(&mode);
     mPatternDisplayMode = mode/*DisplayMode.values()[mode]*/;
@@ -1352,4 +1384,3 @@ void LockPatternView::OnRestoreInstanceState(
 }// namespace Internal
 }// namespace Droid
 }// namespace Elastos
-
