@@ -12,21 +12,16 @@ using Elastos::Utility::CLocale;
 namespace Libcore {
 namespace ICU {
 
-CAR_INTERFACE_IMPL(LocaleData, Object, ILocaleData)
-
-HashMap< String, AutoPtr<ILocaleData> > LocaleData::sLocaleDataCache;
-Object LocaleData::sLocaleDataCacheLock;
-
-Boolean LocaleData::sIsInited = Init();
-
-Boolean LocaleData::Init()
+LocaleData::StaticInitializer::StaticInitializer()
 {
-    Get(CLocale::ROOT);
-    Get(CLocale::US);
-    Get(CLocale::GetDefault());
-
-    return TRUE;
+    LocaleData::Get(CLocale::ROOT);
+    LocaleData::Get(CLocale::US);
+    LocaleData::Get(CLocale::GetDefault());
 }
+
+INIT_PROI_4 HashMap< String, AutoPtr<ILocaleData> > LocaleData::sLocaleDataCache;
+INIT_PROI_4 Object LocaleData::sLocaleDataCacheLock;
+INIT_PROI_4 LocaleData::StaticInitializer LocaleData::sInitializer;
 
 LocaleData::LocaleData()
     : mAmPm(NULL)
@@ -45,6 +40,8 @@ LocaleData::LocaleData()
     , mTinyStandAloneWeekdayNames(NULL)
 {
 }
+
+CAR_INTERFACE_IMPL(LocaleData, Object, ILocaleData)
 
 AutoPtr<ILocale> LocaleData::MapInvalidAndNullLocales(
         /* [in] */ ILocale* locale)

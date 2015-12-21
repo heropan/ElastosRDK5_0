@@ -217,18 +217,9 @@ AutoPtr<ArrayOf< AutoPtr< ArrayOf<String> > > > TimeZoneNames::InterfaceToArray(
     return result;
 }
 
-AutoPtr<ArrayOf<String> > TimeZoneNames::sAvailableTimeZoneIds;
+INIT_PROI_5 AutoPtr<ArrayOf<String> > TimeZoneNames::sAvailableTimeZoneIds = Elastos::Utility::TimeZone::GetAvailableIDs();
 
-AutoPtr<TimeZoneNames::ZoneStringsCache> TimeZoneNames::sCachedZoneStrings = CreateCache();
-
-AutoPtr< ArrayOf<String> > TimeZoneNames::GetAvailableTimeZones()
-{
-    if (sAvailableTimeZoneIds == NULL) {
-        sAvailableTimeZoneIds = Elastos::Utility::TimeZone::GetAvailableIDs();
-    }
-
-    return sAvailableTimeZoneIds;
-}
+INIT_PROI_5 AutoPtr<TimeZoneNames::ZoneStringsCache> TimeZoneNames::sCachedZoneStrings = CreateCache();
 
 ECode TimeZoneNames::GetDisplayName(
     /* [in] */ ArrayOf<IArrayOf*>*  zoneStrings,

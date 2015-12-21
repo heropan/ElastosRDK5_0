@@ -22,9 +22,9 @@ AutoPtr<ICharset> CreateCharSet(
     return charset;
 }
 
-const AutoPtr<ICharset> CCharsets::ISO_8859_1 = CreateCharSet(String("ISO-8859-1"));
-const AutoPtr<ICharset> CCharsets::US_ASCII = CreateCharSet(String("US-ASCII"));
-const AutoPtr<ICharset> CCharsets::UTF_8 = CreateCharSet(String("UTF-8"));
+INIT_PROI_6 const AutoPtr<ICharset> CCharsets::ISO_8859_1 = CreateCharSet(String("ISO-8859-1"));
+INIT_PROI_6 const AutoPtr<ICharset> CCharsets::US_ASCII = CreateCharSet(String("US-ASCII"));
+INIT_PROI_6 const AutoPtr<ICharset> CCharsets::UTF_8 = CreateCharSet(String("UTF-8"));
 
 //==========================================================
 //       CCharsets::NativeUnsafeByteSequence

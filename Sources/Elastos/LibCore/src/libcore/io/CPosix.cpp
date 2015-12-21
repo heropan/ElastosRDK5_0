@@ -181,7 +181,8 @@ static AutoPtr<IStructPasswd> MakeStructPasswd(
 }
 
 static AutoPtr<IStructStat> MakeStructStat(
-    /* [in] */ const struct stat& sb) {
+    /* [in] */ const struct stat& sb)
+{
     AutoPtr<IStructStat> rst;
     CStructStat::New(
         static_cast<Int32>(sb.st_dev), static_cast<Int32>(sb.st_ino),
@@ -195,7 +196,8 @@ static AutoPtr<IStructStat> MakeStructStat(
 }
 
 static AutoPtr<IStructStatVfs> MakeStructStatVfs(
-    /* [in] */ const struct ::statvfs& sb) {
+    /* [in] */ const struct ::statvfs& sb)
+{
 #if defined(__APPLE__)
     // Mac OS has no f_namelen field in struct statfs.
     Int64 max_name_length = 255; // __DARWIN_MAXNAMLEN
@@ -339,7 +341,8 @@ static AutoPtr<IStructStat> DoStat(
     return MakeStructStat(sb);
 }
 
-class Passwd {
+class Passwd
+{
 public:
     Passwd() : mResult(NULL) {
         mBufferSize = sysconf(_SC_GETPW_R_SIZE_MAX);
@@ -797,7 +800,8 @@ ECode CPosix::Fstat(
         *statout = NULL;
         return E_ERRNO_EXCEPTION;
     }
-    *statout = MakeStructStat(sb);
+    AutoPtr<IStructStat> statObj = MakeStructStat(sb);
+    *statout = statObj;
     REFCOUNT_ADD(*statout)
     return NOERROR;
 }
@@ -816,7 +820,8 @@ ECode CPosix::Fstatvfs(
         *statFs = NULL;
         return E_ERRNO_EXCEPTION;
     }
-    *statFs = MakeStructStatVfs(sb);
+    AutoPtr<IStructStatVfs> statObj = MakeStructStatVfs(sb);
+    *statFs = statObj;
     REFCOUNT_ADD(*statFs)
     return NOERROR;
 }
@@ -912,7 +917,8 @@ ECode CPosix::Getpeername(
     /* [in] */ IFileDescriptor* fd,
     /* [out] */ ISocketAddress** peername)
 {
-    *peername = DoGetSockName(fd, FALSE);
+    AutoPtr<ISocketAddress> addr = DoGetSockName(fd, FALSE);
+    *peername = addr;
     REFCOUNT_ADD(*peername)
     return NOERROR;
 }
@@ -938,7 +944,8 @@ ECode CPosix::Getpwnam(
     if (name == NULL) {
         *pwnam = NULL;
     }
-    *pwnam = Passwd().getpwnam(name);
+    AutoPtr<IStructPasswd> passwd = Passwd().getpwnam(name);
+    *pwnam = passwd;
     REFCOUNT_ADD(*pwnam)
     return NOERROR;
 }
@@ -947,7 +954,8 @@ ECode CPosix::Getpwuid(
     /* [in] */ Int32 uid,
     /* [out] */ IStructPasswd** pwuid)
 {
-    *pwuid = Passwd().getpwuid(uid);
+    AutoPtr<IStructPasswd> passwd = Passwd().getpwuid(uid);
+    *pwuid = passwd;
     REFCOUNT_ADD(*pwuid)
     return NOERROR;
 }
@@ -956,7 +964,8 @@ ECode CPosix::Getsockname(
     /* [in] */ IFileDescriptor* fd,
     /* [out] */ ISocketAddress** sockname)
 {
-    *sockname = DoGetSockName(fd, TRUE);
+    AutoPtr<ISocketAddress> addr = DoGetSockName(fd, TRUE);
+    *sockname = addr;
     REFCOUNT_ADD(*sockname)
     return NOERROR;
 }
@@ -997,7 +1006,8 @@ ECode CPosix::GetsockoptInAddr(
         *addr = NULL;
         return E_ERRNO_EXCEPTION;
     }
-    *addr = SockaddrToInetAddress(ss, NULL);
+    AutoPtr<IInetAddress> inetAddress = SockaddrToInetAddress(ss, NULL);
+    *addr = inetAddress;
     REFCOUNT_ADD(*addr)
     return NOERROR;
 }
@@ -1145,7 +1155,8 @@ ECode CPosix::Inet_pton(
         return NOERROR;
     }
     ss.ss_family = family;
-    *addr = SockaddrToInetAddress(ss, NULL);
+    AutoPtr<IInetAddress> inetAddress = SockaddrToInetAddress(ss, NULL);
+    *addr = inetAddress;
     REFCOUNT_ADD(*addr)
     return NOERROR;
 }
@@ -1169,7 +1180,8 @@ ECode CPosix::IoctlInetAddress(
         *addr = NULL;
         return ec;
     }
-    *addr = SockaddrToInetAddress(reinterpret_cast<sockaddr_storage&>(req.ifr_addr), NULL);
+    AutoPtr<IInetAddress> inetAddress = SockaddrToInetAddress(reinterpret_cast<sockaddr_storage&>(req.ifr_addr), NULL);
+    *addr = inetAddress;
     REFCOUNT_ADD(*addr)
     return NOERROR;
 }
@@ -2123,7 +2135,8 @@ ECode CPosix::StatVfs(
         *vfsResult = NULL;
         return NOERROR;
     }
-    *vfsResult = MakeStructStatVfs(sb);
+    AutoPtr<IStructStatVfs> statObj = MakeStructStatVfs(sb);
+    *vfsResult = statObj;
     REFCOUNT_ADD(*vfsResult)
     return NOERROR;
 }

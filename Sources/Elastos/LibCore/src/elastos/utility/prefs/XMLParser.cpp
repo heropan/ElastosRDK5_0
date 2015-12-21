@@ -66,7 +66,8 @@ const String XMLParser::FILE_PREFS = String("<!DOCTYPE map SYSTEM 'http://java.s
 const Float XMLParser::XML_VERSION = 1.0f;
 const AutoPtr<IDocumentBuilder> XMLParser::sBuilder;
 Int32 XMLParser::sIndent = -1;
-Boolean XMLParser::sInit = XMLParser::StaticInit();
+//TODO:
+Boolean XMLParser::sInit;// = XMLParser::StaticInit();
 
 Boolean XMLParser::StaticInit()
 {

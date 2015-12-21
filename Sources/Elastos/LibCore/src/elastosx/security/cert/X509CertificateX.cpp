@@ -42,7 +42,8 @@ ECode X509Certificate::PrepairConstructor()
 // }
 AutoPtr<IModuleInfo> X509Certificate::sModuleInfo = NULL;
 AutoPtr<IClassInfo> X509Certificate::sClassInfo = NULL;
-const ECode X509Certificate::sConstructorState = PrepairConstructor();
+//TODO:
+const ECode X509Certificate::sConstructorState;// = PrepairConstructor();
 
 ECode X509Certificate::GetInstance(
     /* [in] */ IInputStream* inStream,

@@ -81,7 +81,7 @@ private:
     AutoLock(const AutoLock&);
 
 private:
-    AutoPtr<ISynchronize> mSyncObj;
+    ISynchronize* mSyncObj;
     Boolean mLocked;
 };
 

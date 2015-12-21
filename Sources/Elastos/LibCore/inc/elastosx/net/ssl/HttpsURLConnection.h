@@ -110,12 +110,14 @@ private:
      * Holds default instances so class preloading doesn't create an instance of
      * it.
      */
-    class NoPreloadHolder {
+    class NoPreloadHolder
+    {
     public:
-        static AutoPtr<IHostnameVerifier> mDefaultHostnameVerifier;
+        static AutoPtr<IHostnameVerifier> sDefaultHostnameVerifier;
 
-        static AutoPtr<ISSLSocketFactory> mDefaultSSLSocketFactory;
+        static AutoPtr<ISSLSocketFactory> sDefaultSSLSocketFactory;
     };
+
 public:
     CAR_INTERFACE_DECL()
 

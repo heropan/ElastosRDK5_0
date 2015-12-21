@@ -20,8 +20,8 @@ using Elastos::IO::EIID_ISerializable;
 namespace Elastos {
 namespace Utility {
 
-const AutoPtr<IIterator> Collections::EMPTY_ITERATOR = new Collections::Iterator();
-const AutoPtr<IEnumeration> Collections::EMPTY_ENUMERATION = new Collections::_Enumeration();
+INIT_PROI_1 const AutoPtr<IIterator> Collections::EMPTY_ITERATOR = new Collections::Iterator();
+INIT_PROI_1 const AutoPtr<IEnumeration> Collections::EMPTY_ENUMERATION = new Collections::_Enumeration();
 
 //====================================================================
 // Collections::Iterator::
@@ -731,11 +731,9 @@ AutoPtr<IInterface> Collections::EmptyMap::ReadResolve()
     return Collections::EMPTY_MAP;
 }
 
-const AutoPtr<IList> Collections::EMPTY_LIST = new Collections::EmptyList();
-
-const AutoPtr<ISet> Collections::EMPTY_SET = new Collections::EmptySet();
-
-const AutoPtr<IMap> Collections::EMPTY_MAP = new Collections::EmptyMap();
+INIT_PROI_1 const AutoPtr<IList> Collections::EMPTY_LIST = new Collections::EmptyList();
+INIT_PROI_1 const AutoPtr<ISet> Collections::EMPTY_SET = new Collections::EmptySet();
+INIT_PROI_1 const AutoPtr<IMap> Collections::EMPTY_MAP = new Collections::EmptyMap();
 
 //====================================================================
 // Collections::ReverseComparator::

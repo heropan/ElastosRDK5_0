@@ -129,10 +129,10 @@ AutoPtr<IBasicLruCache> createCache()
     return tmp;
 }
 
-const AutoPtr<IBasicLruCache> ICUUtil::CACHED_PATTERNS = createCache();
-AutoPtr<ArrayOf<String> > ICUUtil::sIsoLanguages = NULL;
-AutoPtr<ArrayOf<String> > ICUUtil::sIsoCountries = NULL;
-AutoPtr<ArrayOf<ILocale *> > ICUUtil::sAvailableLocalesCache = NULL;
+INIT_PROI_3 const AutoPtr<IBasicLruCache> ICUUtil::CACHED_PATTERNS = createCache();
+INIT_PROI_3 AutoPtr<ArrayOf<String> > ICUUtil::sIsoLanguages;
+INIT_PROI_3 AutoPtr<ArrayOf<String> > ICUUtil::sIsoCountries;
+INIT_PROI_3 AutoPtr<ArrayOf<ILocale *> > ICUUtil::sAvailableLocalesCache;
 const Int32 ICUUtil::IDX_LANGUAGE = 0;
 const Int32 ICUUtil::IDX_SCRIPT = 1;
 const Int32 ICUUtil::IDX_REGION = 2;

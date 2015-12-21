@@ -43,7 +43,7 @@ AutoPtr<TzData> InitDATA()
     return tz;
 }
 
-AutoPtr<TzData> CZoneInfoDB::DATA = InitDATA();
+INIT_PROI_4 AutoPtr<TzData> CZoneInfoDB::DATA = InitDATA();
 
 AutoPtr<TzData> CZoneInfoDB::GetInstance()
 {

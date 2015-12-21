@@ -38,7 +38,7 @@ class _${name}
 {
 public:
 $
-$ TEMPLATE "nakedbasenew.lub"
+$;; TEMPLATE "nakedbasenew.lub"
 $
 $
 $IF type is not "generic" and attrib is not "private"
@@ -49,8 +49,12 @@ $IF attrib is not "hasctor"
 $  IF type is not "aspect"
 $   IF class.attrib is not "singleton"
     static ECode NewByFriend(${name} **ppNewObj);
+
+    static ECode NewByFriend(REIID iid, PInterface* itfObj);
 $   ELSE
     static ECode AcquireSingletonByFriend(${name} **ppNewObj);
+
+    static ECode AcquireSingletonByFriend(REIID iid, PInterface* itfObj);
 $   END IF ;; "singleton"
 $  END IF
 $ELSE ;; not "hasctor"
@@ -70,6 +74,24 @@ $                   IF parameter is not last
         /* [${attrib}] */ ${type} ${name},
 $                   ELSE
         /* [out] */ ${class.name} **${name});
+$                   END IF
+$               END DO ;; all parameters
+$           END DO ;; all methods
+$
+$           WITH all methods DO
+$               IF class.attrib is not "singleton"
+
+    static ECode NewByFriend(
+$               ELSE
+
+    static ECode AcquireSingletonByFriend(
+$               END IF ;; "singleton"
+$               WITH all parameters DO
+$                   IF parameter is not last
+        /* [${attrib}] */ ${type} ${name},
+$                   ELSE
+        /* [in] */ REIID iid,
+        /* [out] */ PInterface* itfObj);
 $                   END IF
 $               END DO ;; all parameters
 $           END DO ;; all methods

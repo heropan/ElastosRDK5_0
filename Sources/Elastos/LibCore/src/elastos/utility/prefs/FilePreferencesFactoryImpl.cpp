@@ -10,7 +10,8 @@ namespace Elastos {
 namespace Utility {
 namespace Prefs {
 
-Boolean FilePreferencesFactoryImpl::sInit = FilePreferencesFactoryImpl::InitStatic();
+//TODO:
+Boolean FilePreferencesFactoryImpl::sInit;// = FilePreferencesFactoryImpl::InitStatic();
 AutoPtr<IPreferences> FilePreferencesFactoryImpl::USER_ROOT;
 AutoPtr<IPreferences> FilePreferencesFactoryImpl::SYSTEM_ROOT;
 

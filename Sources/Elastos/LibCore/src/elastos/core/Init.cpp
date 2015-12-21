@@ -15,7 +15,7 @@ CoreGlobals::CoreGlobals()
 }
 
 /* global state */
-struct CoreGlobals gCore;
+INIT_PROI_1 struct CoreGlobals gCore;
 
 /*
  * Set defaults for fields altered or modified by arguments.

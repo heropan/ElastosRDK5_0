@@ -49,12 +49,12 @@ static AutoPtr<IPattern> CreatePattern(
     return pattern;
 }
 
-AutoPtr<ITimeZone> TimeZone::sGMT = CreateSimpleTimeZone(0, "GMT");
-AutoPtr<ITimeZone> TimeZone::sUTC = CreateSimpleTimeZone(0, "UTC");
-AutoPtr<ITimeZone> TimeZone::sCHINA = CreateSimpleTimeZone(8, "UTC");
-AutoPtr<ITimeZone> TimeZone::sDefaultTimeZone = NULL;
-AutoPtr<IPattern> TimeZone::CUSTOM_ZONE_ID_PATTERN = CreatePattern("^GMT[-+](\\d{1,2})(:?(\\d\\d))?$");
-Object TimeZone::sLock;
+INIT_PROI_4 AutoPtr<ITimeZone> TimeZone::sGMT = CreateSimpleTimeZone(0, "GMT");
+INIT_PROI_4 AutoPtr<ITimeZone> TimeZone::sUTC = CreateSimpleTimeZone(0, "UTC");
+INIT_PROI_4 AutoPtr<ITimeZone> TimeZone::sCHINA = CreateSimpleTimeZone(8, "UTC");
+INIT_PROI_4 AutoPtr<ITimeZone> TimeZone::sDefaultTimeZone;
+INIT_PROI_4 AutoPtr<IPattern> TimeZone::CUSTOM_ZONE_ID_PATTERN = CreatePattern("^GMT[-+](\\d{1,2})(:?(\\d\\d))?$");
+INIT_PROI_4 Object TimeZone::sLock;
 
 CAR_INTERFACE_IMPL_3(TimeZone, Object, ITimeZone, ISerializable, ICloneable)
 

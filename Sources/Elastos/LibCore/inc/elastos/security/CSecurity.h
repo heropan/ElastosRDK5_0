@@ -58,6 +58,12 @@ private:
             /* [out] */ IProviderService** service);
     };
 
+    class StaticInitializer
+    {
+    public:
+        StaticInitializer();
+    };
+
 public:
     CAR_INTERFACE_DECL()
 
@@ -119,11 +125,12 @@ private:
 
     static CARAPI RenumProviders();
 
-    static CARAPI_(AutoPtr<IProperties>) InitStatics();
+    static CARAPI_(AutoPtr<IProperties>) Init_sSecprops();
 
 private:
     // Security properties
     static const AutoPtr<IProperties> sSecprops;
+    static const StaticInitializer sInitializer;
 };
 
 }

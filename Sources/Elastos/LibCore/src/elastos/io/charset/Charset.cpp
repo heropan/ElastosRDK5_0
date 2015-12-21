@@ -31,18 +31,16 @@ namespace Elastos {
 namespace IO {
 namespace Charset {
 
-AutoPtr<IHashMap> Charset::CACHED_CHARSETS;
-
-AutoPtr<ICharset> Charset::DEFAULT_CHARSET;
-
-Boolean Charset::IsInitflag()
+AutoPtr<IHashMap> Charset::Init_CACHED_CHARSETS()
 {
-    CHashMap::New((IHashMap**)&CACHED_CHARSETS);
-    DEFAULT_CHARSET = GetDefaultCharset();
-    return TRUE;
+    AutoPtr<IHashMap> map;
+    CHashMap::New((IHashMap**)&map);
+    return map;
 }
 
-Boolean Charset::mIsflag = IsInitflag();
+INIT_PROI_3 AutoPtr<IHashMap> Charset::CACHED_CHARSETS = Init_CACHED_CHARSETS();
+
+INIT_PROI_3 AutoPtr<ICharset> Charset::DEFAULT_CHARSET = GetDefaultCharset();
 
 Charset::Charset()
 {

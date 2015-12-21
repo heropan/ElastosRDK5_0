@@ -9,9 +9,13 @@ $           IF class.attrib is "singleton"
 $           ELSE
     static _ELASTOS ECode New(
 $           END IF ;; is singleton
-        /* [out] */ ${namespace}${name}** ${name})
+        /* [out] */ ${namespace}${name}** itfObj)
     {
-        return _CObject_CreateInstance(ECLSID_${class.name}, RGM_SAME_DOMAIN, ${namespace}EIID_${name}, (PInterface*)${name});
+$           IF class.attrib is "singleton"
+        return AcquireSingletonByFriend(${namespace}EIID_${name}, (PInterface*)itfObj);
+$           ELSE
+        return NewByFriend(${namespace}EIID_${name}, (PInterface*)itfObj);
+$           END IF ;; is singleton
     }
 $
 $       END IF ;; attrib is not clsobj and is not callback and ...
@@ -39,29 +43,18 @@ $                               ELSE
 $                               END IF ;; parameter is not last
 $                           END DO ;; all parameters
     {
-        IInterface* __pNewObj;
-
-        _ELASTOS ECode ec = $^
 $                           IF class.attrib is "singleton"
-_AcquireSingleton($^
+        return AcquireSingletonByFriend($^
 $                           ELSE
-_New($^
+        return NewByFriend($^
 $                           END IF ;; is singleton
 $                           WITH all parameters DO
 $                               IF parameter is not last
 ${name}, $^
 $                               ELSE
-&__pNewObj);
+${interface.namespace}EIID_${interface.name}, (PInterface*)__${interface.name});
 $                               END IF ;; parameter is not last
 $                           END DO ;; all parameters
-        if (FAILED(ec)) return ec;
-
-        *__${name} = ${namespace}${name}::Probe(__pNewObj);
-        if (*__${name}) (*__${name})->AddRef();
-        else ec = E_NO_INTERFACE;
-        __pNewObj->Release();
-
-        return ec;
     }
 
 $                       END IF ;; attrib is not clsobj and is not callback and ...

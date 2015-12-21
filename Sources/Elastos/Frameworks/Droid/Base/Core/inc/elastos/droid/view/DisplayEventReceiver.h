@@ -105,7 +105,7 @@ private:
         /* [in] */ Boolean connected);
 
 private:
-    static const String TAG;
+    ECO_LOCAL static const String TAG;
 
     AutoPtr<ICloseGuard> mCloseGuard;// = CloseGuard.get();
 

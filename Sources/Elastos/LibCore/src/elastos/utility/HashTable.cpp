@@ -779,7 +779,7 @@ const Int32 HashTable::MINIMUM_CAPACITY;
 
 const Int32 HashTable::MAXIMUM_CAPACITY;
 
-const AutoPtr<ArrayOf<HashTable::HashtableEntry*> > HashTable::EMPTY_TABLE = ArrayOf<HashTable::HashtableEntry*>::Alloc(MINIMUM_CAPACITY >> 1); // = new HashtableEntry[MINIMUM_CAPACITY >>> 1];
+INIT_PROI_1 const AutoPtr<ArrayOf<HashTable::HashtableEntry*> > HashTable::EMPTY_TABLE = ArrayOf<HashTable::HashtableEntry*>::Alloc(MINIMUM_CAPACITY >> 1); // = new HashtableEntry[MINIMUM_CAPACITY >>> 1];
 
 const Float HashTable::DEFAULT_LOAD_FACTOR;
 

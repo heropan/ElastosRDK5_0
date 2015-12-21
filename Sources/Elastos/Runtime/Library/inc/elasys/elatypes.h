@@ -167,6 +167,7 @@ _ELASTOS_NAMESPACE_END
 #define EXTERN_C_BEGIN      EXTERN_C {
 #define EXTERN_C_END        }
 
+//---- ECO_PUBLIC & ECO_LOCAL ----
 #if __GNUC__ >= 4
 #define ECO_PUBLIC __attribute__ ((visibility ("default")))
 #define ECO_LOCAL  __attribute__ ((visibility ("hidden")))
@@ -174,6 +175,15 @@ _ELASTOS_NAMESPACE_END
 #define ECO_PUBLIC
 #define ECO_LOCAL
 #endif
+
+//---- INIT_PROI ----
+#define INIT_PROI_1 __attribute__ ((init_priority (500)))
+#define INIT_PROI_2 __attribute__ ((init_priority (1000)))
+#define INIT_PROI_3 __attribute__ ((init_priority (1500)))
+#define INIT_PROI_4 __attribute__ ((init_priority (2000)))
+#define INIT_PROI_5 __attribute__ ((init_priority (2500)))
+#define INIT_PROI_6 __attribute__ ((init_priority (3000)))
+#define INIT_PROI_7 __attribute__ ((init_priority (3500)))
 
 //---- CAR_INLINE ----
 #ifdef _GNUC

@@ -118,9 +118,21 @@ ECode _${class.name}::NewByFriend(
 $    ELSE
 ECode _${class.name}::AcquireSingletonByFriend(
 $    END IF ;; "singleton"
-    /* [out] */ ${class.name} **newObj)
+    /* [in] */ REIID iid,
+    /* [out] */ PInterface* itfObj)
 {
-    return _${class.name}CreateObject(newObj);
+    ${class.name}* newObj;
+    ECode ec = _${class.name}CreateObject(&newObj);
+    if (FAILED(ec)) {
+        *itfObj = NULL;
+        return ec;
+    }
+    *itfObj = newObj->Probe(iid);
+    if (*itfObj) return NOERROR;
+    else {
+        newObj->Release();
+        return E_NO_INTERFACE;
+    }
 }
 $END IF
 
@@ -271,6 +283,44 @@ $       ELSE
             ${prefixingname(parameter)});
 $       END IF
 $   END DO ;; all parameters
+}
+
+$           END DO ;; all methods
+$
+$           WITH all methods DO
+$               IF class.attrib is not "singleton"
+ECode _${class.name}::NewByFriend(
+$               ELSE
+ECode _${class.name}::AcquireSingletonByFriend(
+$               END IF ;; "singleton"
+$               WITH all parameters DO
+$                   IF parameter is not last
+    /* [${attrib}] */ ${type} ${prefixingname(parameter)},
+$                   ELSE
+    /* [in] */ REIID iid,
+    /* [out] */ PInterface* itfObj)
+$                   END IF
+$               END DO ;; all parameters
+{
+    ${class.name}* newObj;
+    ECode ec = _${class.name}CreateObject(
+$   WITH all parameters DO
+$       IF parameter is not last
+            ${prefixingname(parameter)},
+$       ELSE
+            &newObj);
+$       END IF
+$   END DO ;; all parameters
+    if (FAILED(ec)) {
+        *itfObj = NULL;
+        return ec;
+    }
+    *itfObj = newObj->Probe(iid);
+    if (*itfObj) return NOERROR;
+    else {
+        newObj->Release();
+        return E_NO_INTERFACE;
+    }
 }
 
 $           END DO ;; all methods
