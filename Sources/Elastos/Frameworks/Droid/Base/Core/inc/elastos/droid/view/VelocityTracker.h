@@ -27,7 +27,7 @@ namespace View {
 
 //class VelocityTrackerState;
 
-extern "C" const InterfaceID EIID_VelocityTracker;
+//extern "C" const InterfaceID EIID_VelocityTracker;
 
 class VelocityTracker
     : public Object
@@ -36,11 +36,54 @@ class VelocityTracker
 public:
     class Estimator
         : public Object
+        , public IEstimator
     {
         friend class VelocityTracker;
+    public:
+        CAR_INTERFACE_DECL()
+
+        Estimator();
+
+        /**
+         * Gets an estimate of the X position of the pointer at the specified time point.
+         * @param time The time point in seconds, 0 is the last recorded time.
+         * @return The estimated X coordinate.
+         */
+        CARAPI EstimateX(
+            /* [in] */ Float time,
+            /* [out] */ Float* result);
+
+        /**
+         * Gets an estimate of the Y position of the pointer at the specified time point.
+         * @param time The time point in seconds, 0 is the last recorded time.
+         * @return The estimated Y coordinate.
+         */
+        CARAPI EstimateY(
+            /* [in] */ Float time,
+            /* [out] */ Float* result);
+
+        /**
+         * Gets the X coefficient with the specified index.
+         * @param index The index of the coefficient to return.
+         * @return The X coefficient, or 0 if the index is greater than the degree.
+         */
+        CARAPI GetXCoeff(
+            /* [in] */ Int32 index,
+            /* [out] */ Float* result);
+
+        /**
+         * Gets the Y coefficient with the specified index.
+         * @param index The index of the coefficient to return.
+         * @return The Y coefficient, or 0 if the index is greater than the degree.
+         */
+        CARAPI GetYCoeff(
+            /* [in] */ Int32 index,
+            /* [out] */ Float* result);
+
     private:
-        //Must match VelocityTracker::Estimator::MAX_DEGREE
-        static const Int32 MAX_DEGREE = 4;
+        CARAPI_(Float) Estimate(
+            /* [in] */ Float time,
+            /* [in] */ ArrayOf<Float>* c);
 
     public:
         /**
@@ -63,45 +106,9 @@ public:
          */
         Float mConfidence;
 
-    public:
-
-        Estimator();
-        /**
-         * Gets an estimate of the X position of the pointer at the specified time point.
-         * @param time The time point in seconds, 0 is the last recorded time.
-         * @return The estimated X coordinate.
-         */
-        CARAPI_(Float) EstimateX(
-            /* [in]  */ Float time);
-
-        /**
-         * Gets an estimate of the Y position of the pointer at the specified time point.
-         * @param time The time point in seconds, 0 is the last recorded time.
-         * @return The estimated Y coordinate.
-         */
-        CARAPI_(Float) EstimateY(
-            /* [in]  */ Float time);
-
-        /**
-         * Gets the X coefficient with the specified index.
-         * @param index The index of the coefficient to return.
-         * @return The X coefficient, or 0 if the index is greater than the degree.
-         */
-        CARAPI_(Float) GetXCoeff(
-            /* [in]  */ Int32 index);
-
-        /**
-         * Gets the Y coefficient with the specified index.
-         * @param index The index of the coefficient to return.
-         * @return The Y coefficient, or 0 if the index is greater than the degree.
-         */
-        CARAPI_(Float) GetYCoeff(
-            /* [in]  */ Int32 index);
-
     private:
-        CARAPI_(Float) Estimate(
-            /* [in]  */ Float time,
-            /* [in]  */ ArrayOf<Float>* c);
+        //Must match VelocityTracker::Estimator::MAX_DEGREE
+        static const Int32 MAX_DEGREE;
     };
 
 private:
@@ -144,7 +151,6 @@ public:
      *
      * @return Returns a new VelocityTracker.
      */
-
     static CARAPI_(AutoPtr<VelocityTracker>) Obtain();
 
     /**
@@ -156,9 +162,8 @@ public:
      *
      * @hide
      */
-
     static CARAPI_(AutoPtr<VelocityTracker>) Obtain(
-                    /* [in] */ const String& strategy);
+        /* [in] */ const String& strategy);
 
 public:
     CAR_INTERFACE_DECL()
@@ -197,7 +202,7 @@ public:
 
     CARAPI GetEstimator(
         /* [in] */ Int32 id,
-        /* [in] */ Estimator* outEstimatorObj,
+        /* [in] */ IEstimator* outEstimatorObj,
         /* [out] */ Boolean* result);
 
 private:
@@ -208,7 +213,7 @@ public:
     ~VelocityTracker();
 
 private:
-    static const Int32 ACTIVE_POINTER_ID = -1;
+    static const Int32 ACTIVE_POINTER_ID;
     static AutoPtr<Pools::SynchronizedPool<IVelocityTracker> > sPool;
 
 private:

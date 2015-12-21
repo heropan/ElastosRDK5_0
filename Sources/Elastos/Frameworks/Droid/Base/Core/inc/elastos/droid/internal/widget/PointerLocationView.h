@@ -1,7 +1,9 @@
 
-#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_POINTERLOCATIONVIEW_H__
-#define __ELASTOS_DROID_WIDGET_INTERNAL_POINTERLOCATIONVIEW_H__
+#ifndef __ELASTOS_DROID_INTERNAL_WIDGET_POINTERLOCATIONVIEW_H__
+#define __ELASTOS_DROID_INTERNAL_WIDGET_POINTERLOCATIONVIEW_H__
 
+#include <Elastos.CoreLibrary.Utility.h>
+#include "Elastos.Droid.Hardware.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/view/VelocityTracker.h"
 #include "elastos/droid/view/CMotionEvent.h"
@@ -13,19 +15,27 @@ using Elastos::Droid::View::CMotionEvent;
 using Elastos::Droid::View::IViewConfiguration;
 using Elastos::Droid::View::VelocityTracker;
 using Elastos::Droid::View::IPointerCoords;
+using Elastos::Droid::View::IPointerEventListener;
 using Elastos::Droid::Graphics::IPaint;
+using Elastos::Droid::Graphics::IPaintFontMetricsInt;;
 using Elastos::Droid::Hardware::Input::IInputManager;
+using Elastos::Droid::Hardware::Input::IInputDeviceListener;
 
 namespace Elastos {
 namespace Droid {
-namespace Widget {
 namespace Internal {
+namespace Widget {
 
-class PointerLocationView : public Elastos::Droid::View::View
+class PointerLocationView
+    : public Elastos::Droid::View::View
+    , public IInputDeviceListener
+    , public IPointerEventListener
+    , public IPointerLocationView
 {
 public:
     typedef VelocityTracker::Estimator Estimator;
-    class PointerState : public ElRefBase
+    class PointerState
+        : public Object
     {
     public:
         PointerState();
@@ -34,12 +44,14 @@ public:
 
         CARAPI_(void) AddTrace(
             /* [in] */ Float x,
-            /* [in] */ Float y);
+            /* [in] */ Float y,
+            /* [in] */ Boolean current);
 
     private:
         // Trace of previous points.
         AutoPtr<ArrayOf<Float> > mTraceX;
         AutoPtr<ArrayOf<Float> > mTraceY;
+        AutoPtr<ArrayOf<Boolean> > mTraceCurrent;
         Int32 mTraceCount;
 
         // True if the pointer is down.
@@ -55,6 +67,13 @@ public:
         Float mAltXVelocity;
         Float mAltYVelocity;
 
+        // Current bounding box, if any
+        Boolean mHasBoundingBox;
+        Float mBoundingLeft;
+        Float mBoundingTop;
+        Float mBoundingRight;
+        Float mBoundingBottom;
+
         // Position estimator.
         AutoPtr<Estimator> mEstimator;
         AutoPtr<Estimator> mAltEstimator;
@@ -62,7 +81,13 @@ public:
     };
 
 private:
-    class FasterStringBuilder : public ElRefBase
+    // HACK
+    // A quick and dirty string builder implementation optimized for GC.
+    // Using String.format causes the application grind to a halt when
+    // more than a couple of pointers are down due to the number of
+    // temporary objects allocated while formatting strings for drawing or logging.
+    class FasterStringBuilder
+        : public Object
     {
     public:
         FasterStringBuilder();
@@ -89,51 +114,57 @@ private:
         CARAPI_(Int32) Reserve(
             /* [in] */ Int32 length);
 
+    private:
         AutoPtr<ArrayOf<Char32> > mChars;
         Int32 mLength;
     };
+
 public:
-    PointerLocationView(
+    CAR_INTERFACE_DECL()
+
+    PointerLocationView();
+
+    CARAPI constructor(
         /* [in] */ IContext* c);
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
-
-    virtual CARAPI SetPrintCoords(
+    CARAPI SetPrintCoords(
         /* [in] */ Boolean state);
 
-    virtual CARAPI AddPointerEvent(
+    CARAPI OnPointerEvent(
         /* [in] */ IMotionEvent* event);
 
-    virtual CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* event);
+    CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) OnGenericMotionEvent(
-        /* [in] */ IMotionEvent* event);
+    CARAPI OnGenericMotionEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) OnKeyDown(
+    CARAPI OnKeyDown(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) OnKeyUp(
+    CARAPI OnKeyUp(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) OnTrackballEvent(
-        /* [in] */ IMotionEvent* event);
+    CARAPI OnTrackballEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
-    virtual CARAPI OnInputDeviceAdded(
+    CARAPI OnInputDeviceAdded(
         /* [in] */ Int32 deviceId);
 
-    virtual CARAPI OnInputDeviceChanged(
+    CARAPI OnInputDeviceChanged(
         /* [in] */ Int32 deviceId);
 
-    virtual CARAPI OnInputDeviceRemoved(
+    CARAPI OnInputDeviceRemoved(
         /* [in] */ Int32 deviceId);
 
 protected:
-    PointerLocationView();
-
     virtual CARAPI OnAttachedToWindow();
 
     virtual CARAPI OnDetachedFromWindow();
@@ -145,8 +176,6 @@ protected:
     CARAPI_(void) OnDraw(
         /* [in] */ ICanvas* canvas);
 
-    CARAPI Init(
-        /* [in] */ IContext* c);
 private:
     static CARAPI_(Boolean) ShouldLogKey(
         /* [in] */ Int32 keyCode);
@@ -170,9 +199,7 @@ private:
         /* [in] */ Int32 index,
         /* [in] */ IPointerCoords* coords,
         /* [in] */ Int32 id,
-        /* [in] */ Int32 toolType,
-        /* [in] */ Int32 buttonState);
-
+        /* [in] */ IMotionEvent* event);
 
     CARAPI_(void) LogInputDevices();
 
@@ -180,9 +207,7 @@ private:
         /* [in] */ Int32 deviceId,
         /* [in] */ const String& state);
 
-    CARAPI InitInternal(
-        /* [in] */ IContext* c);
-
+private:
     // Draw an oval.  When angle is 0 radians, orients the major axis vertically,
     // angles less than or greater than 0 radians rotate the major axis left or right.
     AutoPtr<IRectF> mReusableOvalRect;
@@ -204,6 +229,7 @@ private:
     AutoPtr<IPaint> mTextBackgroundPaint;
     AutoPtr<IPaint> mTextLevelPaint;
     AutoPtr<IPaint> mPaint;
+    AutoPtr<IPaint> mCurrentPointPaint;
     AutoPtr<IPaint> mTargetPaint;
     AutoPtr<IPaint> mPathPaint;
     AutoPtr<IPaintFontMetricsInt> mTextMetrics;
@@ -212,11 +238,11 @@ private:
     Int32 mCurNumPointers;
     Int32 mMaxNumPointers;
     Int32 mActivePointerId;
-    List<AutoPtr<PointerState> > mPointers;
+    AutoPtr<IArrayList> mPointers;
     AutoPtr<IPointerCoords> mTempCoords;
 
-    AutoPtr<VelocityTracker> mVelocity;
-    AutoPtr<VelocityTracker> mAltVelocity;
+    AutoPtr<IVelocityTracker> mVelocity;
+    AutoPtr<IVelocityTracker> mAltVelocity;
 
     AutoPtr<FasterStringBuilder> mText;
 
@@ -230,8 +256,9 @@ private:
 
 };
 
-}// namespace Internal
 }// namespace Widget
+}// namespace Internal
 }// namespace Droid
 }// namespace Elastos
-#endif
+
+#endif // __ELASTOS_DROID_INTERNAL_WIDGET_POINTERLOCATIONVIEW_H__

@@ -1,21 +1,24 @@
 
-#include "elastos/droid/widget/internal/PasswordEntryKeyboardHelper.h"
+#include "Elastos.Droid.Provider.h"
+#include "elastos/droid/internal/widget/PasswordEntryKeyboardHelper.h"
 #include "elastos/droid/view/CKeyCharacterMap.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/view/CKeyEvent.h"
 #include "elastos/droid/provider/Settings.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/view/ViewRootImpl.h"
+#include "elastos/droid/R.h"
 
+using Elastos::Droid::R;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Provider::Settings;
 using Elastos::Droid::Provider::ISettingsSystem;
 using Elastos::Droid::View::View;
-using Elastos::Droid::View::EIID_View;
 using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IInputEvent;
 using Elastos::Droid::View::CKeyEvent;
 using Elastos::Droid::View::IKeyCharacterMap;
-using Elastos::Droid::View::ViewRootImpl;
+using Elastos::Droid::View::IViewRootImpl;
 using Elastos::Droid::View::CKeyCharacterMap;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::View::IHapticFeedbackConstants;
@@ -26,18 +29,23 @@ using Elastos::Droid::InputMethodService::EIID_IOnKeyboardActionListener;
 
 namespace Elastos {
 namespace Droid {
-namespace Widget {
 namespace Internal {
+namespace Widget {
 
 const String PasswordEntryKeyboardHelper::TAG("PasswordEntryKeyboardHelper");
-const Int32 PasswordEntryKeyboardHelper::KEYBOARD_STATE_NORMAL;
-const Int32 PasswordEntryKeyboardHelper::KEYBOARD_STATE_SHIFTED;
-const Int32 PasswordEntryKeyboardHelper::KEYBOARD_STATE_CAPSLOCK;
-const Int32 PasswordEntryKeyboardHelper::NUMERIC;
-const Int32 PasswordEntryKeyboardHelper::QWERTY;
-const Int32 PasswordEntryKeyboardHelper::QWERTY_SHIFTED;
-const Int32 PasswordEntryKeyboardHelper::SYMBOLS;
-const Int32 PasswordEntryKeyboardHelper::SYMBOLS_SHIFTED;
+const Int32 PasswordEntryKeyboardHelper::KEYBOARD_MODE_ALPHA = 0;
+const Int32 PasswordEntryKeyboardHelper::KEYBOARD_MODE_NUMERIC = 1;
+const Int32 PasswordEntryKeyboardHelper::KEYBOARD_STATE_NORMAL = 0;
+const Int32 PasswordEntryKeyboardHelper::KEYBOARD_STATE_SHIFTED = 1;
+const Int32 PasswordEntryKeyboardHelper::KEYBOARD_STATE_CAPSLOCK = 2;
+const Int32 PasswordEntryKeyboardHelper::NUMERIC = 0;
+const Int32 PasswordEntryKeyboardHelper::QWERTY = 1;
+const Int32 PasswordEntryKeyboardHelper::QWERTY_SHIFTED = 2;
+const Int32 PasswordEntryKeyboardHelper::SYMBOLS = 3;
+const Int32 PasswordEntryKeyboardHelper::SYMBOLS_SHIFTED = 4;
+
+//CAR_INTERFACE_IMPL_2(PasswordEntryKeyboardHelper, Object, IPasswordEntryKeyboardHelper, IKeyboardActionListener)
+CAR_INTERFACE_IMPL(PasswordEntryKeyboardHelper, Object, IPasswordEntryKeyboardHelper)
 
 PasswordEntryKeyboardHelper::PasswordEntryKeyboardHelper()
     : mKeyboardMode(KEYBOARD_MODE_ALPHA)
@@ -52,67 +60,25 @@ PasswordEntryKeyboardHelper::PasswordEntryKeyboardHelper()
     (*mLayouts)[3] = R::xml::password_kbd_symbols;
     (*mLayouts)[4] = R::xml::password_kbd_symbols_shift;
 }
-PasswordEntryKeyboardHelper::PasswordEntryKeyboardHelper(
+
+ECode PasswordEntryKeyboardHelper::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IKeyboardView* keyboardView,
     /* [in] */ IView* targetView)
-    : mKeyboardMode(KEYBOARD_MODE_ALPHA)
-    , mKeyboardState(KEYBOARD_STATE_NORMAL)
-    , mEnableHaptics(FALSE)
-    , mUsingScreenWidth(FALSE)
 {
-    mLayouts = ArrayOf<Int32>::Alloc(LAYOUTS_LENGTH);
-    (*mLayouts)[0] = R::xml::password_kbd_numeric;
-    (*mLayouts)[1] = R::xml::password_kbd_qwerty;
-    (*mLayouts)[2] = R::xml::password_kbd_qwerty_shifted;
-    (*mLayouts)[3] = R::xml::password_kbd_symbols;
-    (*mLayouts)[4] = R::xml::password_kbd_symbols_shift;
-
-    ASSERT_SUCCEEDED(Init(context, keyboardView, targetView, TRUE, NULL));
+    return constructor(context, keyboardView, targetView, TRUE, NULL);
 }
 
-PasswordEntryKeyboardHelper::PasswordEntryKeyboardHelper(
+ECode PasswordEntryKeyboardHelper::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IKeyboardView* keyboardView,
     /* [in] */ IView* targetView,
     /* [in] */ Boolean useFullScreenWidth)
-    : mKeyboardMode(KEYBOARD_MODE_ALPHA)
-    , mKeyboardState(KEYBOARD_STATE_NORMAL)
-    , mEnableHaptics(FALSE)
-    , mUsingScreenWidth(FALSE)
 {
-    mLayouts = ArrayOf<Int32>::Alloc(LAYOUTS_LENGTH);
-    (*mLayouts)[0] = R::xml::password_kbd_numeric;
-    (*mLayouts)[1] = R::xml::password_kbd_qwerty;
-    (*mLayouts)[2] = R::xml::password_kbd_qwerty_shifted;
-    (*mLayouts)[3] = R::xml::password_kbd_symbols;
-    (*mLayouts)[4] = R::xml::password_kbd_symbols_shift;
-
-    ASSERT_SUCCEEDED(Init(context, keyboardView, targetView, useFullScreenWidth, NULL));
+    return constructor(context, keyboardView, targetView, useFullScreenWidth, NULL);
 }
 
-PasswordEntryKeyboardHelper::PasswordEntryKeyboardHelper(
-    /* [in] */ IContext* context,
-    /* [in] */ IKeyboardView* keyboardView,
-    /* [in] */ IView* targetView,
-    /* [in] */ Boolean useFullScreenWidth,
-    /* [in] */ ArrayOf<Int32>* layouts)
-    : mKeyboardMode(KEYBOARD_MODE_ALPHA)
-    , mKeyboardState(KEYBOARD_STATE_NORMAL)
-    , mEnableHaptics(FALSE)
-    , mUsingScreenWidth(FALSE)
-{
-    mLayouts = ArrayOf<Int32>::Alloc(LAYOUTS_LENGTH);
-    (*mLayouts)[0] = R::xml::password_kbd_numeric;
-    (*mLayouts)[1] = R::xml::password_kbd_qwerty;
-    (*mLayouts)[2] = R::xml::password_kbd_qwerty_shifted;
-    (*mLayouts)[3] = R::xml::password_kbd_symbols;
-    (*mLayouts)[4] = R::xml::password_kbd_symbols_shift;
-
-    ASSERT_SUCCEEDED(Init(context, keyboardView, targetView, useFullScreenWidth, layouts));
-}
-
-CARAPI PasswordEntryKeyboardHelper::Init(
+ECode PasswordEntryKeyboardHelper::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IKeyboardView* keyboardView,
     /* [in] */ IView* targetView,
@@ -140,14 +106,15 @@ CARAPI PasswordEntryKeyboardHelper::Init(
 ECode PasswordEntryKeyboardHelper::CreateKeyboards()
 {
     AutoPtr<IViewGroupLayoutParams> lp;
-    mKeyboardView->GetLayoutParams((IViewGroupLayoutParams**)&lp);
-    Int32 width, height;
+    IView::Probe(mKeyboardView)->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+    Int32 width = 0, height = 0;
     lp->GetWidth(&width);
     lp->GetHeight(&height);
 
     if (mUsingScreenWidth || (width == IViewGroupLayoutParams::MATCH_PARENT)) {
         CreateKeyboardsWithDefaultWidth();
-    } else {
+    }
+    else {
         CreateKeyboardsWithSpecificSize(width, height);
     }
     return NOERROR;
@@ -161,9 +128,12 @@ ECode PasswordEntryKeyboardHelper::SetEnableHaptics(
     return NOERROR;
 }
 
-Boolean PasswordEntryKeyboardHelper::IsAlpha()
+ECode PasswordEntryKeyboardHelper::IsAlpha(
+    /* [out] */ Boolean* alpha)
 {
-    return mKeyboardMode == KEYBOARD_MODE_ALPHA;
+    VALIDATE_NOT_NULL(alpha)
+    *alpha = mKeyboardMode == KEYBOARD_MODE_ALPHA;
+    return NOERROR;
 }
 
 void PasswordEntryKeyboardHelper::CreateKeyboardsWithSpecificSize(
@@ -182,7 +152,7 @@ void PasswordEntryKeyboardHelper::CreateKeyboardsWithSpecificSize(
     CPasswordEntryKeyboard::NewByFriend(mContext, (*mLayouts)[QWERTY_SHIFTED],
         R::id::mode_normal, width, height, (CPasswordEntryKeyboard**)&mQwertyKeyboardShifted);
     mQwertyKeyboardShifted->EnableShiftLock();
-    Boolean rst;
+    Boolean rst = FALSE;
     mQwertyKeyboardShifted->SetShifted(TRUE, &rst); // always shifted.
 
     mSymbolsKeyboard = NULL;
@@ -227,17 +197,15 @@ ECode PasswordEntryKeyboardHelper::SetKeyboardMode(
     /* [in] */ Int32 mode)
 {
     switch (mode) {
-        case KEYBOARD_MODE_ALPHA:
-        {
-            mKeyboardView->SetKeyboard((IKeyboard*)(mQwertyKeyboard->Probe(EIID_IKeyboard)));
+        case KEYBOARD_MODE_ALPHA: {
+            mKeyboardView->SetKeyboard(IKeyboard::Probe(mQwertyKeyboard));
             mKeyboardState = KEYBOARD_STATE_NORMAL;
             AutoPtr<IContentResolver> cr;
             mContext->GetContentResolver((IContentResolver**)&cr);
-            Boolean visiblePassword;
-            Int32 value;
+            Int32 value = 0;
             FAIL_RETURN(Settings::System::GetInt32(
                     cr, ISettingsSystem::TEXT_SHOW_PASSWORD, 1, &value))
-            visiblePassword = value != 0;
+            Boolean visiblePassword = value != 0;
             Boolean enablePreview = FALSE; // TODO: grab from configuration
             mKeyboardView->SetPreviewEnabled(visiblePassword && enablePreview);
             break;
@@ -255,8 +223,8 @@ ECode PasswordEntryKeyboardHelper::SetKeyboardMode(
 void PasswordEntryKeyboardHelper::SendKeyEventsToTarget(
     /* [in] */ Int32 character)
 {
-    AutoPtr<ViewRootImpl> viewRootImpl =
-        reinterpret_cast<Elastos::Droid::View::View*>((mTargetView)->Probe(EIID_View))->GetViewRootImpl();
+    AutoPtr<IViewRootImpl> viewRootImpl;
+    reinterpret_cast<Elastos::Droid::View::View*>(mTargetView.Get())->GetViewRootImpl((IViewRootImpl**)&viewRootImpl);
     AutoPtr<ArrayOf<IKeyEvent*> > events;
     AutoPtr<IKeyCharacterMap> kcm;
     CKeyCharacterMap::Load(IKeyCharacterMap::VIRTUAL_KEYBOARD, (IKeyCharacterMap**)&kcm);
@@ -267,12 +235,12 @@ void PasswordEntryKeyboardHelper::SendKeyEventsToTarget(
         Int32 N = events->GetLength();
         for (Int32 i = 0; i < N; i++) {
             AutoPtr<IKeyEvent> event = (*events)[i];
-            Int32 flags;
+            Int32 flags = 0;
             event->GetFlags(&flags);
             AutoPtr<IKeyEvent> newEvent;
             CKeyEvent::ChangeFlags(event, flags
                 | IKeyEvent::FLAG_SOFT_KEYBOARD | IKeyEvent::FLAG_KEEP_TOUCH_MODE, (IKeyEvent**)&newEvent);
-            viewRootImpl->DispatchKey(newEvent);
+            viewRootImpl->DispatchInputEvent(IInputEvent::Probe(newEvent));
         }
     }
 }
@@ -281,8 +249,8 @@ ECode PasswordEntryKeyboardHelper::SendDownUpKeyEvents(
     /* [in] */ Int32 keyEventCode)
 {
     Int64 eventTime = SystemClock::GetUptimeMillis();
-    AutoPtr<ViewRootImpl> viewRootImpl =
-        reinterpret_cast<Elastos::Droid::View::View*>((mTargetView)->Probe(EIID_View))->GetViewRootImpl();
+    AutoPtr<IViewRootImpl> viewRootImpl;
+    reinterpret_cast<Elastos::Droid::View::View*>(mTargetView.Get())->GetViewRootImpl((IViewRootImpl**)&viewRootImpl);
     AutoPtr<IKeyEvent> keyEvent;
     CKeyEvent::New(eventTime, eventTime, IKeyEvent::ACTION_DOWN, keyEventCode, 0, 0,
                         IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
@@ -302,14 +270,18 @@ ECode PasswordEntryKeyboardHelper::OnKey(
 {
     if (primaryCode == IKeyboard::KEYCODE_DELETE) {
         HandleBackspace();
-    } else if (primaryCode == IKeyboard::KEYCODE_SHIFT) {
+    }
+    else if (primaryCode == IKeyboard::KEYCODE_SHIFT) {
         HandleShift();
-    } else if (primaryCode == IKeyboard::KEYCODE_CANCEL) {
+    }
+    else if (primaryCode == IKeyboard::KEYCODE_CANCEL) {
         HandleClose();
         return NOERROR;
-    } else if (primaryCode == IKeyboard::KEYCODE_MODE_CHANGE && mKeyboardView != NULL) {
+    }
+    else if (primaryCode == IKeyboard::KEYCODE_MODE_CHANGE && mKeyboardView != NULL) {
         HandleModeChange();
-    } else {
+    }
+    else {
         HandleCharacter(primaryCode, keyCodes);
         // Switch back to old keyboard if we're not in capslock mode
         if (mKeyboardState == KEYBOARD_STATE_SHIFTED) {
@@ -322,10 +294,6 @@ ECode PasswordEntryKeyboardHelper::OnKey(
     return NOERROR;
 }
 
-/**
- * Sets and enables vibrate pattern.  If id is 0 (or can't be loaded), vibrate is disabled.
- * @param id resource id for array containing vibrate pattern.
- */
 ECode PasswordEntryKeyboardHelper::SetVibratePattern(
     /* [in] */ Int32 id)
 {
@@ -356,13 +324,13 @@ void PasswordEntryKeyboardHelper::HandleModeChange()
     mKeyboardView->GetKeyboard((IKeyboard**)&current);
 
     AutoPtr<IKeyboard> next = NULL;
-    if ((IKeyboard*)(mQwertyKeyboard->Probe(EIID_IKeyboard)) == current ||
-            (IKeyboard*)(mQwertyKeyboardShifted->Probe(EIID_IKeyboard)) == current) {
-        next = (IKeyboard*)(mSymbolsKeyboard->Probe(EIID_IKeyboard));
+    if (IKeyboard::Probe(mQwertyKeyboard) == current ||
+            IKeyboard::Probe(mQwertyKeyboardShifted) == current) {
+        next = IKeyboard::Probe(mSymbolsKeyboard);
     }
-    else if ((IKeyboard*)(mSymbolsKeyboard->Probe(EIID_IKeyboard)) == current ||
-            (IKeyboard*)(mSymbolsKeyboardShifted->Probe(EIID_IKeyboard)) == current) {
-        next = (IKeyboard*)(mQwertyKeyboard->Probe(EIID_IKeyboard));
+    else if (IKeyboard::Probe(mSymbolsKeyboard) == current ||
+            IKeyboard::Probe(mSymbolsKeyboardShifted) == current) {
+        next = IKeyboard::Probe(mQwertyKeyboard);
     }
     if (next != NULL) {
         mKeyboardView->SetKeyboard(next);
@@ -384,25 +352,27 @@ void PasswordEntryKeyboardHelper::HandleShift()
     }
     AutoPtr<IKeyboard> current;
     mKeyboardView->GetKeyboard((IKeyboard**)&current);
-    AutoPtr<CPasswordEntryKeyboard> next = NULL;
-    Boolean isAlphaMode = (IKeyboard*)(mQwertyKeyboard->Probe(EIID_IKeyboard)) == current
-            || (IKeyboard*)(mQwertyKeyboardShifted->Probe(EIID_IKeyboard)) == current;
+    AutoPtr<CPasswordEntryKeyboard> next;
+    Boolean isAlphaMode = IKeyboard::Probe(mQwertyKeyboard) == current
+            || IKeyboard::Probe(mQwertyKeyboardShifted) == current;
     if (mKeyboardState == KEYBOARD_STATE_NORMAL) {
         mKeyboardState = isAlphaMode ? KEYBOARD_STATE_SHIFTED : KEYBOARD_STATE_CAPSLOCK;
         next = isAlphaMode ? mQwertyKeyboardShifted : mSymbolsKeyboardShifted;
-    } else if (mKeyboardState == KEYBOARD_STATE_SHIFTED) {
+    }
+    else if (mKeyboardState == KEYBOARD_STATE_SHIFTED) {
         mKeyboardState = KEYBOARD_STATE_CAPSLOCK;
         next = isAlphaMode ? mQwertyKeyboardShifted : mSymbolsKeyboardShifted;
-    } else if (mKeyboardState == KEYBOARD_STATE_CAPSLOCK) {
+    }
+    else if (mKeyboardState == KEYBOARD_STATE_CAPSLOCK) {
         mKeyboardState = KEYBOARD_STATE_NORMAL;
         next = isAlphaMode ? mQwertyKeyboard : mSymbolsKeyboard;
     }
     if (next != NULL) {
-        if ((IKeyboard*)(next->Probe(EIID_IKeyboard)) != current) {
-            mKeyboardView->SetKeyboard((IKeyboard*)(next->Probe(EIID_IKeyboard)));
+        if (IKeyboard::Probe(next) != current) {
+            mKeyboardView->SetKeyboard(IKeyboard::Probe(next));
         }
         next->SetShiftLocked(mKeyboardState == KEYBOARD_STATE_CAPSLOCK);
-        Boolean rst;
+        Boolean rst = FALSE;
         mKeyboardView->SetShifted(mKeyboardState != KEYBOARD_STATE_NORMAL, &rst);
     }
 }
@@ -412,7 +382,7 @@ void PasswordEntryKeyboardHelper::HandleCharacter(
     /* [in] */ ArrayOf<Int32>* keyCodes)
 {
     // Maybe turn off shift if not in capslock mode.
-    Boolean isShifted;
+    Boolean isShifted = FALSE;
     mKeyboardView->IsShifted(&isShifted);
     if (isShifted && primaryCode != ' ' && primaryCode != '\n') {
         if(primaryCode >= 97 && primaryCode <= 122)
@@ -423,7 +393,6 @@ void PasswordEntryKeyboardHelper::HandleCharacter(
 
 void PasswordEntryKeyboardHelper::HandleClose()
 {
-
 }
 
 ECode PasswordEntryKeyboardHelper::OnPress(
@@ -437,8 +406,8 @@ ECode PasswordEntryKeyboardHelper::OnPress(
 void PasswordEntryKeyboardHelper::PerformHapticFeedback()
 {
     if (mEnableHaptics) {
-        Boolean rst;
-        mKeyboardView->PerformHapticFeedback(IHapticFeedbackConstants::VIRTUAL_KEY,
+        Boolean rst = FALSE;
+        IView::Probe(mKeyboardView)->PerformHapticFeedback(IHapticFeedbackConstants::VIRTUAL_KEY,
                 IHapticFeedbackConstants::FLAG_IGNORE_VIEW_SETTING
                 | IHapticFeedbackConstants::FLAG_IGNORE_GLOBAL_SETTING, &rst);
     }
@@ -476,7 +445,7 @@ ECode PasswordEntryKeyboardHelper::SwipeUp()
     return NOERROR;
 }
 
-}// namespace Internal
 }// namespace Widget
+}// namespace Internal
 }// namespace Droid
 }// namespace Elastos
