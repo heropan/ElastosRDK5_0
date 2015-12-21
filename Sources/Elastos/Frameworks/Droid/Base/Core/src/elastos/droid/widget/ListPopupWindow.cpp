@@ -21,6 +21,7 @@ using Elastos::Droid::Animation::CObjectAnimatorHelper;
 using Elastos::Droid::Animation::IAnimatorListener;
 using Elastos::Droid::Animation::IObjectAnimator;
 using Elastos::Droid::Animation::IObjectAnimatorHelper;
+using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Database::EIID_IDataSetObserver;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Text::CTextUtils;

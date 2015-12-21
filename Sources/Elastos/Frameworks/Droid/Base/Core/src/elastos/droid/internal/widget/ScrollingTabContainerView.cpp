@@ -19,6 +19,7 @@
 using Elastos::Droid::Animation::CObjectAnimator;
 using Elastos::Droid::Animation::EIID_IAnimatorListener;
 using Elastos::Droid::Animation::IObjectAnimator;
+using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Internal::View::IActionBarPolicy;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Text::TextUtilsTruncateAt;
@@ -417,7 +418,7 @@ static AutoPtr<ITimeInterpolator> InitIpt()
 {
     AutoPtr<CDecelerateInterpolator> ipt;
     CDecelerateInterpolator::NewByFriend((CDecelerateInterpolator**)&ipt);
-    return ipt;
+    return (ITimeInterpolator*)ipt.Get();
 }
 
 const String ScrollingTabContainerView::TAG("ScrollingTabContainerView");

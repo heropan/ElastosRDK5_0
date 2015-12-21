@@ -9,7 +9,7 @@
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::EIID_IRunnable;
+using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Content::Res::CResources;
 using Elastos::Droid::Internal::Widget::EIID_IAutoScrollHelper;
 using Elastos::Droid::Internal::Widget::EIID_IAbsListViewAutoScroller;
@@ -23,6 +23,7 @@ using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::MotionEvent;
 using Elastos::Droid::View::ViewConfiguration;
 using Elastos::Droid::Widget::IAdapterView;
+using Elastos::Core::EIID_IRunnable;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {

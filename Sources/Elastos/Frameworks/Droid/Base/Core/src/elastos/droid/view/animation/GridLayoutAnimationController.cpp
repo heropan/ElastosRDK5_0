@@ -12,6 +12,7 @@
 #include "elastos/droid/view/animation/CLinearInterpolator.h"
 #include "elastos/droid/R.h"
 
+using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::R;
 using Elastos::Utility::CRandom;

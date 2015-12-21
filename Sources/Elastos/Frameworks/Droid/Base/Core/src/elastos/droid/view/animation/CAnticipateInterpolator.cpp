@@ -10,7 +10,6 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/R.h"
 
-using Elastos::Droid::Animation::EIID_ITimeInterpolator;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Internal::View::Animation::EIID_INativeInterpolatorFactory;
 using Elastos::Droid::Internal::View::Animation::NativeInterpolatorFactoryHelper;
@@ -23,7 +22,7 @@ namespace Animation {
 
 CAR_OBJECT_IMPL(CAnticipateInterpolator);
 
-CAR_INTERFACE_IMPL_4(CAnticipateInterpolator, Object, IAnticipateInterpolator, INativeInterpolatorFactory, IInterpolator, ITimeInterpolator);
+CAR_INTERFACE_IMPL_3(CAnticipateInterpolator, Object, IAnticipateInterpolator, INativeInterpolatorFactory, IInterpolator);
 
 CAnticipateInterpolator::CAnticipateInterpolator()
     : mTension(0.0f)

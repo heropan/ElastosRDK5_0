@@ -10,7 +10,6 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Math.h>
 
-using Elastos::Droid::Animation::EIID_ITimeInterpolator;
 using Elastos::Droid::Internal::View::Animation::EIID_INativeInterpolatorFactory;
 using Elastos::Droid::Internal::View::Animation::NativeInterpolatorFactoryHelper;
 
@@ -21,7 +20,7 @@ namespace Animation {
 
 CAR_OBJECT_IMPL(CAccelerateDecelerateInterpolator);
 
-CAR_INTERFACE_IMPL_4(CAccelerateDecelerateInterpolator, Object, IAccelerateDecelerateInterpolator, INativeInterpolatorFactory, IInterpolator, ITimeInterpolator);
+CAR_INTERFACE_IMPL_3(CAccelerateDecelerateInterpolator, Object, IAccelerateDecelerateInterpolator, INativeInterpolatorFactory, IInterpolator);
 
 CAccelerateDecelerateInterpolator::CAccelerateDecelerateInterpolator()
 {}

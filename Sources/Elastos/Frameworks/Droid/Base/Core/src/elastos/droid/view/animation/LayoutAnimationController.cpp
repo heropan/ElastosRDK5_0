@@ -15,6 +15,7 @@
 #include <elastos/core/Math.h>
 #include <stdlib.h>
 
+using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::R;
 using Elastos::Core::ICloneable;
 using Elastos::Utility::CRandom;

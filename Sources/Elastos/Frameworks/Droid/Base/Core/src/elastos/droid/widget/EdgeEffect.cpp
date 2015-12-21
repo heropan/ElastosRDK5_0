@@ -12,6 +12,7 @@
 #include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
 
+using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Graphics::CPorterDuffXfermode;

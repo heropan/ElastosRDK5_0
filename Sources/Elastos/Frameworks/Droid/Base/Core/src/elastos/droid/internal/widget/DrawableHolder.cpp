@@ -7,6 +7,7 @@
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Animation::EIID_IAnimatorListener;
+using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Animation::IValueAnimator;
 using Elastos::Droid::Animation::ObjectAnimator;
 using Elastos::Droid::Graphics::Drawable::IDrawable;

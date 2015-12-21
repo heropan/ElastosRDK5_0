@@ -13,9 +13,9 @@
 #include <elastos/utility/etl/Algorithm.h>
 #include <unistd.h>
 
+using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Os::Looper;
 using Elastos::Droid::Os::ILooper;
-using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Os::SystemProperties;
 using Elastos::Droid::View::IChoreographerHelper;
 using Elastos::Droid::View::CChoreographerHelper;
@@ -23,6 +23,7 @@ using Elastos::Droid::View::Animation::AnimationUtils;
 using Elastos::Droid::View::Animation::CAccelerateDecelerateInterpolator;
 using Elastos::Droid::View::Animation::ILinearInterpolator;
 using Elastos::Droid::View::Animation::CLinearInterpolator;
+using Elastos::Core::EIID_IRunnable;
 
 namespace Elastos {
 namespace Droid {
@@ -167,7 +168,7 @@ AutoPtr<ITimeInterpolator> CreateInterPolator()
 {
     AutoPtr<CAccelerateDecelerateInterpolator> obj;
     CAccelerateDecelerateInterpolator::NewByFriend((CAccelerateDecelerateInterpolator**)&obj);
-    return obj;
+    return (ITimeInterpolator*)obj.Get();
 }
 
 static void ThreadDestructor(void* st)
