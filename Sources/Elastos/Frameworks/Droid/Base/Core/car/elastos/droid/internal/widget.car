@@ -68,6 +68,8 @@ module
     interface Elastos.Droid.View.InputMethod.IInputConnection;
     interface Elastos.Droid.View.InputMethod.IBaseInputConnection;
     interface Elastos.Droid.View.IViewBaseSavedState;
+    interface Elastos.Droid.View.IViewOnTouchListener;
+    interface Elastos.Droid.Widget.IAbsListView;
     interface Elastos.Droid.Widget.IFrameLayout;
     interface Elastos.Droid.Widget.ILinearLayout;
     interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener;
@@ -80,6 +82,23 @@ module
     namespace Droid {
     namespace Internal {
     namespace Widget {
+
+    [local]
+    class CBackgroundFallback {
+        constructor();
+
+        interface IBackgroundFallback;
+    }
+
+    [local]
+    class CAbsListViewAutoScroller {
+        constructor(
+            [in] IAbsListView* target);
+
+        interface IAbsListViewAutoScroller;
+        interface IAutoScrollHelper;
+        interface IViewOnTouchListener;
+    }
 
     [local]
     class CDialogTitle {

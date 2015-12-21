@@ -19,17 +19,16 @@ module
      [local]
     interface IBackgroundFallback {
 
-    SetDrawable(
-        [in] IDrawable* d);
+        SetDrawable(
+            [in] IDrawable* d);
 
-    HasFallback(
-        [out] Boolean* hasFallback);
+        HasFallback(
+            [out] Boolean* hasFallback);
 
-    Draw(
-        [in] IViewGroup* root,
-        [in] ICanvas* c,
-        [in] IView* content);
-
+        Draw(
+            [in] IViewGroup* root,
+            [in] ICanvas* c,
+            [in] IView* content);
     }
 
     }// namespace Widget

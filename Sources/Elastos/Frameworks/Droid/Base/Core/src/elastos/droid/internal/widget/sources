@@ -8,6 +8,10 @@ INCLUDES += $(MAKEDIR)/../../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
+SOURCES += AutoScrollHelper.cpp
+SOURCES += CAbsListViewAutoScroller.cpp
+SOURCES += BackgroundFallback.cpp
+SOURCES += CBackgroundFallback.cpp
 SOURCES += ScrollingTabContainerView.cpp
 SOURCES += DrawableHolder.cpp
 SOURCES += CDrawableHolder.cpp
