@@ -6,6 +6,45 @@ module
     namespace Droid {
     namespace View {
 
+    interface IEstimator
+    {
+        /**
+         * Gets an estimate of the X position of the pointer at the specified time point.
+         * @param time The time point in seconds, 0 is the last recorded time.
+         * @return The estimated X coordinate.
+         */
+        EstimateX(
+            [in] Float time,
+            [out] Float* result);
+
+        /**
+         * Gets an estimate of the Y position of the pointer at the specified time point.
+         * @param time The time point in seconds, 0 is the last recorded time.
+         * @return The estimated Y coordinate.
+         */
+        EstimateY(
+            [in] Float time,
+            [out] Float* result);
+
+        /**
+         * Gets the X coefficient with the specified index.
+         * @param index The index of the coefficient to return.
+         * @return The X coefficient, or 0 if the index is greater than the degree.
+         */
+        GetXCoeff(
+            [in] Int32 index,
+            [out] Float* result);
+
+        /**
+         * Gets the Y coefficient with the specified index.
+         * @param index The index of the coefficient to return.
+         * @return The Y coefficient, or 0 if the index is greater than the degree.
+         */
+        GetYCoeff(
+            [in] Int32 index,
+            [out] Float* result);
+    }
+
     /**
      * Helper for tracking the velocity of touch events, for implementing
      * flinging and other such gestures.
@@ -44,6 +83,11 @@ module
         GetYVelocity(
             [in] Int32 id,
             [out] Float* velocity);
+
+        GetEstimator(
+            [in] Int32 id,
+            [in] IEstimator* outEstimatorObj,
+            [out] Boolean* result);
     }
 
     interface IVelocityTrackerHelper {

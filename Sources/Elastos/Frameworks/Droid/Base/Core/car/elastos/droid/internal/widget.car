@@ -49,8 +49,12 @@ module
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Graphics.Drawable.IBitmapDrawable;
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
+    interface Elastos.Droid.Hardware.Input.IInputDeviceListener;
     interface Elastos.Droid.Utility.IAttributeSet;
 //    interface Elastos.Droid.InputMethodService.IKeyboard;
+    interface Elastos.Droid.InputMethodService.IKeyboardView;
+//    interface Elastos.Droid.InputMethodService.IOnKeyboardActionListener;
+    interface Elastos.Droid.Internal.Widget.IPointerLocationView;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
     interface Elastos.Droid.View.IAbsSavedState;
     interface Elastos.Droid.View.IKeyEventCallback;
@@ -60,6 +64,7 @@ module
     interface Elastos.Droid.View.IViewManager;
     interface Elastos.Droid.View.IViewOnLongClickListener;
     interface Elastos.Droid.View.IOnPreDrawListener;
+    interface Elastos.Droid.View.IPointerEventListener;
     interface Elastos.Droid.View.InputMethod.IInputConnection;
     interface Elastos.Droid.View.InputMethod.IBaseInputConnection;
     interface Elastos.Droid.View.IViewBaseSavedState;
@@ -238,15 +243,18 @@ module
    //  }
 
    //  [local]
-   //  class CPointerLocationView {
-   //      constructor(
-   //          [in] IContext* ctx);
+    class CPointerLocationView {
+        constructor(
+            [in] IContext* ctx);
 
-   //      interface IPointerLocationView;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        interface IPointerLocationView;
+        interface IInputDeviceListener;
+        interface IPointerEventListener;
+        interface IView;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
    //  [local]
    //  class CLinearLayoutWithDefaultTouchRecepient {
@@ -300,49 +308,53 @@ module
 //        interface IKeyboard;
     }
 
-   //  [local, deprecated]
-   //  class CPasswordEntryKeyboardHelper {
+    [local, deprecated]
+    class CPasswordEntryKeyboardHelper {
 
-   //       constructor(
-   //          [in] IContext* ctx,
-   //          [in] IKeyboardView* keyboardView,
-   //          [in] IView* targetView);
+        constructor(
+            [in] IContext* ctx,
+            [in] IKeyboardView* keyboardView,
+            [in] IView* targetView);
 
-   //       constructor(
-   //          [in] IContext* ctx,
-   //          [in] IKeyboardView* keyboardView,
-   //          [in] IView* targetView,
-   //          [in] Boolean useFullScreenWidth);
+        constructor(
+            [in] IContext* ctx,
+            [in] IKeyboardView* keyboardView,
+            [in] IView* targetView,
+            [in] Boolean useFullScreenWidth);
 
-   //       constructor(
-   //          [in] IContext* ctx,
-   //          [in] IKeyboardView* keyboardView,
-   //          [in] IView* targetView,
-   //          [in] Boolean useFullScreenWidth,
-   //          [in] ArrayOf<Int32>* layouts);
+        constructor(
+            [in] IContext* ctx,
+            [in] IKeyboardView* keyboardView,
+            [in] IView* targetView,
+            [in] Boolean useFullScreenWidth,
+            [in] ArrayOf<Int32>* layouts);
 
-   //      interface IPasswordEntryKeyboardHelper;
-   //      interface IOnKeyboardActionListener;
-   //  }
+        interface IPasswordEntryKeyboardHelper;
+//        interface IOnKeyboardActionListener;
+    }
 
    //  [local]
-   //  class CPasswordEntryKeyboardView {
+    class CPasswordEntryKeyboardView {
 
-   //       constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //       constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
 
-   //      interface IPasswordEntryKeyboardView;
-   //      interface IViewOnClickListener;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface IPasswordEntryKeyboardView;
+//          interface IKeyboardView;
+        interface IView;
+    }
 
     [local]
     class CDrawableHolder {

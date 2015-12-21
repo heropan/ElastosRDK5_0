@@ -7,7 +7,7 @@
 #include <elastos/core/StringBuffer.h>
 #include <stdio.h>
 
-using namespace Elastos::Core;
+//using namespace Elastos::Core;
 using Elastos::Droid::Utility::Pools;
 
 namespace Elastos {
@@ -15,45 +15,60 @@ namespace Droid {
 namespace View {
 
 // {b03b50d8-cfc9-4181-8089-7c308b4adb38}
-extern "C" const InterfaceID EIID_VelocityTracker =
-        { 0xb03b50d8, 0xcfc9, 0x4181, { 0x80, 0x89, 0x7c, 0x30, 0x8b, 0x4a, 0xdb, 0x38 } };
+// extern "C" const InterfaceID EIID_VelocityTracker =
+//         { 0xb03b50d8, 0xcfc9, 0x4181, { 0x80, 0x89, 0x7c, 0x30, 0x8b, 0x4a, 0xdb, 0x38 } };
 
-const Int32 VelocityTracker::ACTIVE_POINTER_ID;
-const Int32 VelocityTracker::Estimator::MAX_DEGREE;
+const Int32 VelocityTracker::ACTIVE_POINTER_ID = -1;
 AutoPtr<Pools::SynchronizedPool<IVelocityTracker> > VelocityTracker::sPool =
         new Pools::SynchronizedPool<IVelocityTracker>(2);
 
 //========================================================================================
 //              VelocityTracker::Estimator
 //========================================================================================
+const Int32 VelocityTracker::Estimator::MAX_DEGREE = 4;
+
+CAR_INTERFACE_IMPL(VelocityTracker::Estimator, Object, IEstimator)
+
 VelocityTracker::Estimator::Estimator()
 {
     mXCoeff = ArrayOf<Float>::Alloc(MAX_DEGREE + 1);
     mYCoeff = ArrayOf<Float>::Alloc(MAX_DEGREE + 1);
 }
 
-Float VelocityTracker::Estimator::EstimateX(
-    /* [in] */ Float time)
+ECode VelocityTracker::Estimator::EstimateX(
+    /* [in] */ Float time,
+    /* [out] */ Float* result)
 {
-    return Estimate(time, mXCoeff);
+    VALIDATE_NOT_NULL(result)
+    *result = Estimate(time, mXCoeff);
+    return NOERROR;
 }
 
-Float VelocityTracker::Estimator::EstimateY(
-    /* [in] */ Float time)
+ECode VelocityTracker::Estimator::EstimateY(
+    /* [in] */ Float time,
+    /* [out] */ Float* result)
 {
-    return Estimate(time, mYCoeff);
+    VALIDATE_NOT_NULL(result)
+    *result = Estimate(time, mYCoeff);
+    return NOERROR;
 }
 
-Float VelocityTracker::Estimator::GetXCoeff(
-    /* [in] */ Int32 index)
+ECode VelocityTracker::Estimator::GetXCoeff(
+    /* [in] */ Int32 index,
+    /* [out] */ Float* result)
 {
-    return index <= mDegree ? (*mXCoeff)[index] : 0.0f;
+    VALIDATE_NOT_NULL(result)
+    *result = index <= mDegree ? (*mXCoeff)[index] : 0.0f;
+    return NOERROR;
 }
 
-Float VelocityTracker::Estimator::GetYCoeff(
-    /* [in] */ Int32 index)
+ECode VelocityTracker::Estimator::GetYCoeff(
+    /* [in] */ Int32 index,
+    /* [out] */ Float* result)
 {
-    return index <= mDegree ? (*mYCoeff)[index] : 0.0f;
+    VALIDATE_NOT_NULL(result)
+    *result = index <= mDegree ? (*mYCoeff)[index] : 0.0f;
+    return NOERROR;
 }
 
 Float VelocityTracker::Estimator::Estimate(
@@ -259,7 +274,7 @@ ECode VelocityTracker::GetYVelocity(
 
 ECode VelocityTracker::GetEstimator(
     /* [in] */ Int32 id,
-    /* [in] */ Estimator* outEstimatorObj,
+    /* [in] */ IEstimator* outEstimatorObj,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
