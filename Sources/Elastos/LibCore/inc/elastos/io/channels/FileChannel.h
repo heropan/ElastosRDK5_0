@@ -69,6 +69,7 @@ class FileChannel
     , public IByteChannel
     , public IScatteringByteChannel
     , public IGatheringByteChannel
+    , public IFileChannel
 {
 public:
     CAR_INTERFACE_DECL()
@@ -102,8 +103,7 @@ public:
      * ClosedChannelException | if this channel is already closed.
      * IOException | if another I/O error occurs.
      */
-    virtual CARAPI Force(
-        Boolean metadata) = 0;
+    using IFileChannel::Force;
 
     /**
      * Obtains an exclusive lock on this file.
@@ -180,11 +180,7 @@ public:
      * FileLockInterruptionException | if the thread is interrupted while in the state of waiting on the desired file lock.
      * IOException | if another I/O error occurs.
      */
-    virtual CARAPI Lock(
-        /* [in] */ Int64 position,
-        /* [in] */ Int64 size,
-        /* [in] */ Boolean shared,
-        /* [out] */ IFileLock** lock) = 0;
+    using IFileChannel::Lock;
 
     /**
      * Maps the file into memory. There can be three modes: read-only,
@@ -208,11 +204,7 @@ public:
      * IllegalArgumentException | if the given parameters of position and size are not correct.Both must be non negative. {size} also must not be bigger than max integer.
      * IOException | if any I/O error occurs.
      */
-    virtual CARAPI Map(
-        /* [in] */ FileChannelMapMode mode,
-        /* [in] */ Int64 position,
-        /* [in] */ Int64 size,
-        /* [out] */ IMappedByteBuffer** buffer) = 0;
+    using IFileChannel::Map;
 
     /**
      * Returns the current value of the file position pointer.
@@ -225,8 +217,7 @@ public:
      * ClosedChannelException |  if this channel is closed.
      * IOException | if another I/O error occurs.
      */
-    virtual CARAPI GetPosition(
-        /* [out] */ Int64* position) = 0;
+    using IFileChannel::GetPosition;
 
     /**
      * Sets the file position pointer to a new value.
@@ -245,8 +236,7 @@ public:
      * ClosedChannelException | if this channel is closed.
      * IOException | if another I/O error occurs.
      */
-    virtual CARAPI SetPosition(
-        /* [in] */ Int64 newPosition) = 0;
+    using IFileChannel::SetPosition;
 
     /**
      * Reads bytes from this file channel into the given buffer.
@@ -273,9 +263,7 @@ public:
      * IOException | if another I/O error occurs, details are in the message.
      * NonReadableChannelException | if the channel has not been opened in a mode that permits reading.
      */
-    virtual CARAPI Read(
-        /* [in] */ IByteBuffer* buffer,
-        /* [out] */ Int32* number) = 0;
+    using IFileChannel::Read;
 
     /**
      * Reads bytes from this file channel into the given buffer starting from
@@ -305,10 +293,7 @@ public:
      * IOException | if another I/O error occurs.
      * NonReadableChannelException | if the channel has not been opened in a mode that permits reading.
      */
-    virtual CARAPI Read(
-        /* [in] */ IByteBuffer* buffer,
-        /* [in] */ Int64 position,
-        /* [out] */ Int32* number) = 0;
+    using IFileChannel::Read;
 
     /**
      * Reads bytes from this file channel and stores them in the specified array
@@ -366,11 +351,7 @@ public:
      * IOException | if another I/O error occurs; details are in the message.
      * NonReadableChannelException | if the channel has not been opened in a mode that permits reading.
      */
-    virtual CARAPI Read(
-        /* [in] */ ArrayOf<IByteBuffer*>* buffers,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 length,
-        /* [out] */ Int64* number) = 0;
+    using IFileChannel::Read;
 
     /**
      * Returns the size of the file underlying this channel in bytes.
@@ -382,8 +363,7 @@ public:
      * ClosedChannelException | if this channel is closed.
      * IOException | if an I/O error occurs while getting the size of the file.
      */
-    virtual CARAPI GetSize(
-        /* [out] */ Int64* size) = 0;
+    using IFileChannel::GetSize;
 
     /**
      * Reads up to {count} bytes from {src} and stores them in this
@@ -414,11 +394,7 @@ public:
      * ClosedByInterruptException | if the thread is interrupted during this operation.
      * IOException | if any I/O error occurs.
      */
-    virtual CARAPI TransferFrom(
-        /* [in] */ IReadableByteChannel* src,
-        /* [in] */ Int64 position,
-        /* [in] */ Int64 count,
-        /* [out] */ Int64* number) = 0;
+    using IFileChannel::TransferFrom;
 
     /**
      * Reads up to {count} bytes from this channel's file starting at
@@ -449,11 +425,7 @@ public:
      * ClosedByInterruptException | if the thread is interrupted during this operation.
      * IOException | if any I/O error occurs.
      */
-    virtual CARAPI TransferTo(
-        /* [in] */ Int64 position,
-        /* [in] */ Int64 count,
-        /* [in] */ IWritableByteChannel* target,
-        /* [out] */ Int64* number) = 0;
+    using IFileChannel::TransferTo;
 
     /**
      * Truncates the file underlying this channel to a given size. Any bytes
@@ -474,9 +446,7 @@ public:
      * IOException | if another I/O error occurs.
      * @return this channel.
      */
-    virtual CARAPI Truncate(
-        /* [in] */ Int64 size,
-        /* [out]*/ IFileChannel** channel) = 0;
+    using IFileChannel::Truncate;
 
     /**
      * Attempts to acquire an exclusive lock on this file without blocking.
@@ -526,11 +496,7 @@ public:
      * OverlappingFileLockException | if a lock is already held that overlaps this lock request or another thread is waiting to acquire a lock that will overlap with this request.
      * IOException | if any I/O error occurs.
      */
-    virtual CARAPI TryLock(
-        /* [in] */ Int64 position,
-        /* [in] */ Int64 size,
-        /* [in] */ Boolean shared,
-        /* [out] */ IFileLock** lock) = 0;
+    using IFileChannel::TryLock;
 
     /**
      * Write bytes from the given byte buffer to this file channel.
@@ -553,9 +519,7 @@ public:
      * IOException | if another I/O error occurs, details are in the message.
      * @see java.nio.channels.WritableByteChannel#write(java.nio.ByteBuffer)
      */
-    virtual CARAPI Write(
-        /* [in] */ IByteBuffer* buffer,
-        /* [out] */ Int32* number) = 0;
+    using IFileChannel::Write;
 
     /**
      * Write bytes from the given buffer to this file channel starting at the
@@ -586,10 +550,7 @@ public:
      * ClosedByInterruptException | if another thread interrupts the calling thread while this operation is in progress. The interrupt state of the calling thread is set and the channel is closed.
      * IOException | if another I/O error occurs.
      */
-    virtual CARAPI Write(
-        /* [in] */ IByteBuffer* buffer,
-        /* [in] */ Int64 position,
-        /* [out] */ Int32* number) = 0;
+    using IFileChannel::Write;
 
     /**
      * Write bytes from all the given byte buffers to this file channel.
@@ -646,11 +607,7 @@ public:
      * IOException | if another I/O error occurs; details are in the message.
      * NonWritableChannelException | if this channel was not opened for writing.
      */
-    virtual CARAPI Write(
-        /* [in] */ ArrayOf<IByteBuffer*>* buffers,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 length,
-        /* [out] */ Int64* number) = 0;
+    using IFileChannel::Write;
 
 protected:
     FileChannel();

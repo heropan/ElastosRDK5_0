@@ -40,11 +40,11 @@ const Int32 HashMap::MINIMUM_CAPACITY;
 
 const Int32 HashMap::MAXIMUM_CAPACITY;
 
-const AutoPtr< ArrayOf<HashMap::HashMapEntry*> > HashMap::EMPTY_TABLE =  ArrayOf<HashMap::HashMapEntry*>::Alloc(MINIMUM_CAPACITY >> 1) ; // new HashMapEntry[MINIMUM_CAPACITY >> 1];
+INIT_PROI_1 const AutoPtr< ArrayOf<HashMap::HashMapEntry*> > HashMap::EMPTY_TABLE =  ArrayOf<HashMap::HashMapEntry*>::Alloc(MINIMUM_CAPACITY >> 1) ; // new HashMapEntry[MINIMUM_CAPACITY >> 1];
 
 const Float HashMap::DEFAULT_LOAD_FACTOR;
 
-CAR_INTERFACE_IMPL_2(HashMap, AbstractMap, ICloneable, ISerializable)
+CAR_INTERFACE_IMPL_3(HashMap, AbstractMap, IHashMap, ICloneable, ISerializable)
 
 HashMap::HashMap()
     : mModCount(0)

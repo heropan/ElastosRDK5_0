@@ -21,7 +21,8 @@ static AutoPtr<IHttpDateGenerator> InitDateGenerator()
     CHttpDateGenerator::NewByFriend((CHttpDateGenerator**)&generator);
     return (IHttpDateGenerator*)generator.Get();
 }
-const AutoPtr<IHttpDateGenerator> RequestDate::DATE_GENERATOR = InitDateGenerator();
+//TODO:
+const AutoPtr<IHttpDateGenerator> RequestDate::DATE_GENERATOR;// = InitDateGenerator();
 
 CAR_INTERFACE_IMPL(RequestDate, Object, IHttpRequestInterceptor)
 

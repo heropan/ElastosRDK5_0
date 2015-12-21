@@ -67,8 +67,6 @@ private:
     TimeZoneNames(const TimeZoneNames&);
 
 private:
-    static CARAPI_(AutoPtr< ArrayOf<String> >) GetAvailableTimeZones();
-
     static CARAPI FillZoneStrings(
         /* [in] */ const String& locale,
         /* [in] */ ArrayOf<StringArray >* result);

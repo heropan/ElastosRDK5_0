@@ -79,6 +79,7 @@ module
      * interface Elastos.IO.Channels.IChannel;
      * interface IInterruptibleChannel;
      */
+    [deprecated]
     interface IFileChannel {
         /**
          * Requests that all updates to this channel are committed to the storage
@@ -280,7 +281,7 @@ module
          * IOException | if another I/O error occurs, details are in the message.
          * NonReadableChannelException | if the channel has not been opened in a mode that permits reading.
          */
-        ReadByteBuffer(
+        Read(
             [in] IByteBuffer* buffer,
             [out] Int32* number);
 
@@ -312,7 +313,7 @@ module
          * IOException | if another I/O error occurs.
          * NonReadableChannelException | if the channel has not been opened in a mode that permits reading.
          */
-        ReadByteBuffer(
+        Read(
             [in] IByteBuffer* buffer,
             [in] Int64 position,
             [out] Int32* number);
@@ -342,8 +343,8 @@ module
          * IOException | if another I/O error occurs; details are in the message.
          * NonReadableChannelException | if the channel has not been opened in a mode that permits reading.
          */
-        ReadByteBuffers(
-            [in] ArrayOf<IByteBuffer*> buffers,
+        Read(
+            [in] ArrayOf<IByteBuffer*>* buffers,
             [out] Int64* number);
 
         /**
@@ -373,8 +374,8 @@ module
          * IOException | if another I/O error occurs; details are in the message.
          * NonReadableChannelException | if the channel has not been opened in a mode that permits reading.
          */
-        ReadByteBuffers(
-            [in] ArrayOf<IByteBuffer*> buffers,
+        Read(
+            [in] ArrayOf<IByteBuffer*>* buffers,
             [in] Int32 offset,
             [in] Int32 length,
             [out] Int64* number);
@@ -560,7 +561,7 @@ module
          * IOException | if another I/O error occurs, details are in the message.
          * @see java.nio.channels.WritableByteChannel#write(java.nio.ByteBuffer)
          */
-        WriteByteBuffer(
+        Write(
             [in] IByteBuffer* buffer,
             [out] Int32* number);
 
@@ -593,7 +594,7 @@ module
          * ClosedByInterruptException | if another thread interrupts the calling thread while this operation is in progress. The interrupt state of the calling thread is set and the channel is closed.
          * IOException | if another I/O error occurs.
          */
-        WriteByteBuffer(
+        Write(
             [in] IByteBuffer* buffer,
             [in] Int64 position,
             [out] Int32* number);
@@ -621,8 +622,8 @@ module
          * IOException | if another I/O error occurs; details are in the message.
          * NonWritableChannelException | if this channel was not opened for writing.
          */
-        WriteByteBuffers(
-            [in] ArrayOf<IByteBuffer*> buffers,
+        Write(
+            [in] ArrayOf<IByteBuffer*>* buffers,
             [out] Int64* number);
 
         /**
@@ -653,8 +654,8 @@ module
          * IOException | if another I/O error occurs; details are in the message.
          * NonWritableChannelException | if this channel was not opened for writing.
          */
-        WriteByteBuffers(
-            [in] ArrayOf<IByteBuffer*> buffers,
+        Write(
+            [in] ArrayOf<IByteBuffer*>* buffers,
             [in] Int32 offset,
             [in] Int32 length,
             [out] Int64* number);

@@ -27,6 +27,13 @@ class LocaleData
     : public Object
     , public ILocaleData
 {
+private:
+    class StaticInitializer
+    {
+    public:
+        StaticInitializer();
+    };
+
 public:
     CAR_INTERFACE_DECL()
 
@@ -248,6 +255,7 @@ public:
 private:
     static HashMap< String, AutoPtr<ILocaleData> > sLocaleDataCache;
     static Object sLocaleDataCacheLock;
+    static StaticInitializer sInitializer;
 };
 
 } // namespace ICU

@@ -27,15 +27,16 @@ namespace Prefs {
 const Int64 AbstractPreferences::NodeAddEvent::serialVersionUID = 1L;
 const Int64 AbstractPreferences::NodeRemoveEvent::serialVersionUID = 1L;
 
-Boolean AbstractPreferences::sStaticInit = AbstractPreferences::staticInit();
 AutoPtr<IList> AbstractPreferences::sEvents;
+//TODO:
+Boolean AbstractPreferences::sStaticInit;// = AbstractPreferences::staticInit();
 // AutoPtr<EventDispatcher> AbstractPreferences::sDispatcher;
 
 CAR_INTERFACE_IMPL(AbstractPreferences, Preferences, IAbstractPreferences);
 
 Boolean AbstractPreferences::staticInit()
 {
-    CLinkedList::New((IList**) &sEvents);
+    CLinkedList::New((IList**)&sEvents);
     //TODO
     assert(0);
     // sDispatcher = new EventDispatcher("Preference Event Dispatcher");

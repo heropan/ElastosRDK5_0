@@ -119,9 +119,9 @@ private:
         /* [in] */ ICharset* s,
         /* [out] */ ICharset** charset);
 
-    static AutoPtr<ICharset> GetDefaultCharset();
+    static CARAPI_(AutoPtr<ICharset>) GetDefaultCharset();
 
-    static CARAPI_(Boolean) IsInitflag();
+    static CARAPI_(AutoPtr<IHashMap>) Init_CACHED_CHARSETS();
 
 public:
     String mCanonicalName;
@@ -132,8 +132,6 @@ private:
     static AutoPtr<ICharset> DEFAULT_CHARSET;
 
     AutoPtr<IHashSet> mAliasesSet;
-
-    static Boolean mIsflag;
 };
 
 } // namespace CharSet

@@ -15,26 +15,26 @@ CAR_INTERFACE_IMPL_3(HashSet, AbstractSet, IHashSet, ICloneable, ISerializable)
 
 ECode HashSet::constructor()
 {
-    AutoPtr<IMap> hmap;
-    FAIL_RETURN(CHashMap::New((IMap**)&hmap));
-    return this->constructor(hmap);
+    AutoPtr<IMap> map;
+    FAIL_RETURN(CHashMap::New((IMap**)&map));
+    return constructor(map);
 }
 
 ECode HashSet::constructor(
     /* [in] */ Int32 capacity)
 {
-    AutoPtr<IMap> hmap;
-    FAIL_RETURN(CHashMap::New(capacity, (IMap**)&hmap));
-    return this->constructor(hmap);
+    AutoPtr<IMap> map;
+    FAIL_RETURN(CHashMap::New(capacity, (IMap**)&map));
+    return constructor(map);
 }
 
 ECode HashSet::constructor(
     /* [in] */ Int32 capacity,
     /* [in] */ Float loadFactor)
 {
-    AutoPtr<IMap> hmap;
-    FAIL_RETURN(CHashMap::New(capacity, loadFactor, (IMap**)&hmap));
-    return this->constructor(hmap);
+    AutoPtr<IMap> map;
+    FAIL_RETURN(CHashMap::New(capacity, loadFactor, (IMap**)&map));
+    return constructor(map);
 }
 
 ECode HashSet::constructor(
@@ -42,9 +42,9 @@ ECode HashSet::constructor(
 {
     Int32 clolen = 0;
     collection->GetSize(&clolen);
-    AutoPtr<IMap> hmap;
-    FAIL_RETURN(CHashMap::New(clolen < 6 ? 11 : clolen * 2, (IMap**)&hmap));
-    this->constructor(hmap);
+    AutoPtr<IMap> map;
+    FAIL_RETURN(CHashMap::New(clolen < 6 ? 11 : clolen * 2, (IMap**)&map));
+    FAIL_RETURN(constructor(map));
     AutoPtr< ArrayOf<IInterface*> > outarr;
     collection->ToArray((ArrayOf<IInterface*>**)&outarr);
     for (Int32 i = 0; i < outarr->GetLength(); i++) {

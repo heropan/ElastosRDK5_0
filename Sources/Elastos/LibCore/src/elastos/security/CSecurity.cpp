@@ -77,15 +77,9 @@ ECode CSecurity::SecurityDoor::GetService(
 
 
 //----------------------------------------------------
-// CSecurity
+// CSecurity::StaticInitializer
 //----------------------------------------------------
-const AutoPtr<IProperties> CSecurity::sSecprops = CSecurity::InitStatics();
-
-CAR_INTERFACE_IMPL(CSecurity, Singleton, ISecurity)
-
-CAR_SINGLETON_IMPL(CSecurity)
-
-AutoPtr<IProperties> CSecurity::InitStatics()
+CSecurity::StaticInitializer::StaticInitializer()
 {
     // static initialization
     // - load security properties files
@@ -104,12 +98,26 @@ AutoPtr<IProperties> CSecurity::InitStatics()
     //     System.logE("Could not load 'security.properties'", ex);
     // }
     if (!loaded) {
-        RegisterDefaultProviders();
+        CSecurity::RegisterDefaultProviders();
     }
     CEngine::sDoor = new SecurityDoor();
+}
 
-    AutoPtr<CProperties> prop;
-    CProperties::NewByFriend((CProperties**)&prop);
+
+//----------------------------------------------------
+// CSecurity
+//----------------------------------------------------
+INIT_PROI_5 const AutoPtr<IProperties> CSecurity::sSecprops = CSecurity::Init_sSecprops();
+INIT_PROI_5 const CSecurity::StaticInitializer CSecurity::sInitializer;
+
+CAR_INTERFACE_IMPL(CSecurity, Singleton, ISecurity)
+
+CAR_SINGLETON_IMPL(CSecurity)
+
+AutoPtr<IProperties> CSecurity::Init_sSecprops()
+{
+    AutoPtr<IProperties> prop;
+    CProperties::New((IProperties**)&prop);
     return prop;
 }
 

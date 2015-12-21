@@ -16,8 +16,9 @@ namespace Apache {
 namespace Http {
 namespace Impl {
 
-const AutoPtr<IReasonPhraseCatalog> EnglishReasonPhraseCatalog::INSTANCE = EnglishReasonPhraseCatalog::InitInstance();
-const AutoPtr< ArrayOf<IArrayOf*> > EnglishReasonPhraseCatalog::REASON_PHRASES = EnglishReasonPhraseCatalog::InitReasonPhrases();
+//TODO:
+const AutoPtr<IReasonPhraseCatalog> EnglishReasonPhraseCatalog::INSTANCE;// = EnglishReasonPhraseCatalog::InitInstance();
+const AutoPtr< ArrayOf<IArrayOf*> > EnglishReasonPhraseCatalog::REASON_PHRASES;// = EnglishReasonPhraseCatalog::InitReasonPhrases();
 
 EnglishReasonPhraseCatalog::EnglishReasonPhraseCatalog()
 {}

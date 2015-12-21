@@ -38,13 +38,15 @@ static AutoPtr<IFileDescriptor> CreateSTDERR()
     return (IFileDescriptor*)fd.Get();
 }
 
-const AutoPtr<IFileDescriptor> CFileDescriptor::IN = CreateSTDIN();
-const AutoPtr<IFileDescriptor> CFileDescriptor::OUT = CreateSTDOUT();
-const AutoPtr<IFileDescriptor> CFileDescriptor::ERR = CreateSTDERR();
+INIT_PROI_1 const AutoPtr<IFileDescriptor> CFileDescriptor::IN = CreateSTDIN();
+INIT_PROI_1 const AutoPtr<IFileDescriptor> CFileDescriptor::OUT = CreateSTDOUT();
+INIT_PROI_1 const AutoPtr<IFileDescriptor> CFileDescriptor::ERR = CreateSTDERR();
 
 CFileDescriptor::CFileDescriptor()
     : mDescriptor(-1)
 {}
+
+CAR_INTERFACE_IMPL(CFileDescriptor, Object, IFileDescriptor)
 
 ECode CFileDescriptor::constructor()
 {

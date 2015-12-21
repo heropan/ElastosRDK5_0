@@ -37,28 +37,28 @@ static AutoPtr<ILocale> CreateLocale(
     return (ILocale*)l.Get();
 }
 
-const AutoPtr<ILocale> Locale::CANADA = CreateLocale(String("en"), String("CA"));
-const AutoPtr<ILocale> Locale::CANADA_FRENCH = CreateLocale(String("fr"), String("CA"));
-const AutoPtr<ILocale> Locale::CHINA = CreateLocale(String("zh"), String("CN"));
-const AutoPtr<ILocale> Locale::CHINESE = CreateLocale(String("zh"), String(""));
-const AutoPtr<ILocale> Locale::ENGLISH = CreateLocale(String("en"), String(""));
-const AutoPtr<ILocale> Locale::FRANCE = CreateLocale(String("fr"), String("FR"));
-const AutoPtr<ILocale> Locale::FRENCH = CreateLocale(String("fr"), String(""));
-const AutoPtr<ILocale> Locale::GERMAN = CreateLocale(String("de"), String(""));
-const AutoPtr<ILocale> Locale::GERMANY = CreateLocale(String("de"), String("DE"));
-const AutoPtr<ILocale> Locale::ITALIAN = CreateLocale(String("it"), String(""));
-const AutoPtr<ILocale> Locale::ITALY = CreateLocale(String("it"), String("IT"));
-const AutoPtr<ILocale> Locale::JAPAN = CreateLocale(String("ja"), String("JP"));
-const AutoPtr<ILocale> Locale::JAPANESE = CreateLocale(String("ja"), String(""));
-const AutoPtr<ILocale> Locale::KOREA = CreateLocale(String("ko"), String("KR"));
-const AutoPtr<ILocale> Locale::KOREAN = CreateLocale(String("ko"), String(""));
-const AutoPtr<ILocale> Locale::PRC = CreateLocale(String("zh"), String("CN"));
-const AutoPtr<ILocale> Locale::ROOT = CreateLocale(String(""), String(""));
-const AutoPtr<ILocale> Locale::SIMPLIFIED_CHINESE = CreateLocale(String("zh"), String("CN"));
-const AutoPtr<ILocale> Locale::TAIWAN = CreateLocale(String("zh"), String("TW"));
-const AutoPtr<ILocale> Locale::TRADITIONAL_CHINESE = CreateLocale(String("zh"), String("TW"));
-const AutoPtr<ILocale> Locale::UK = CreateLocale(String("en"), String("GB"));
-const AutoPtr<ILocale> Locale::US = CreateLocale(String("en"), String("US"));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::CANADA = CreateLocale(String("en"), String("CA"));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::CANADA_FRENCH = CreateLocale(String("fr"), String("CA"));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::CHINA = CreateLocale(String("zh"), String("CN"));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::CHINESE = CreateLocale(String("zh"), String(""));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::ENGLISH = CreateLocale(String("en"), String(""));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::FRANCE = CreateLocale(String("fr"), String("FR"));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::FRENCH = CreateLocale(String("fr"), String(""));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::GERMAN = CreateLocale(String("de"), String(""));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::GERMANY = CreateLocale(String("de"), String("DE"));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::ITALIAN = CreateLocale(String("it"), String(""));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::ITALY = CreateLocale(String("it"), String("IT"));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::JAPAN = CreateLocale(String("ja"), String("JP"));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::JAPANESE = CreateLocale(String("ja"), String(""));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::KOREA = CreateLocale(String("ko"), String("KR"));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::KOREAN = CreateLocale(String("ko"), String(""));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::PRC = CreateLocale(String("zh"), String("CN"));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::ROOT = CreateLocale(String(""), String(""));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::SIMPLIFIED_CHINESE = CreateLocale(String("zh"), String("CN"));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::TAIWAN = CreateLocale(String("zh"), String("TW"));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::TRADITIONAL_CHINESE = CreateLocale(String("zh"), String("TW"));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::UK = CreateLocale(String("en"), String("GB"));
+INIT_PROI_3 const AutoPtr<ILocale> Locale::US = CreateLocale(String("en"), String("US"));
 
 String Locale::UNDETERMINED_LANGUAGE("und");
 
@@ -73,7 +73,7 @@ static AutoPtr<ArrayOf<IObjectStreamField*> > InitSerialPersistentFields()
     // new ObjectStreamField("extensions", String.class),
     return notimpl;
 }
-AutoPtr<ArrayOf<IObjectStreamField*> > Locale::sSerialPersistentFields = InitSerialPersistentFields();
+INIT_PROI_3 AutoPtr<ArrayOf<IObjectStreamField*> > Locale::sSerialPersistentFields = InitSerialPersistentFields();
 
 static AutoPtr< StringMap > InitGRANDFATHERED_LOCALES()
 {
@@ -115,13 +115,13 @@ static AutoPtr< StringMap > InitGRANDFATHERED_LOCALES()
     return map;
 }
 
-AutoPtr< StringMap > Locale::GRANDFATHERED_LOCALES = InitGRANDFATHERED_LOCALES();
+INIT_PROI_3 AutoPtr< StringMap > Locale::GRANDFATHERED_LOCALES = InitGRANDFATHERED_LOCALES();
 
 /**
  * The current default locale. It is temporarily assigned to US because we
  * need a default locale to lookup the real default locale.
  */
-AutoPtr<ILocale> Locale::sDefaultLocale = Locale::US;
+INIT_PROI_3 AutoPtr<ILocale> Locale::sDefaultLocale = Locale::US;
 Boolean Locale::sIsInited = FALSE;
 
 CAR_INTERFACE_IMPL_3(Locale, Object, ILocale, ICloneable, ISerializable)
@@ -761,9 +761,12 @@ String Locale::MakeLanguageTag()
     // The private use extension comes right at the very end.
     csq = NULL;
     CString::New(String("x"), (ICharSequence**)&csq);
+    obj = NULL;
     mExtensions->Get(csq, (IInterface**)&obj);
     String privateUse;
-    ICharSequence::Probe(obj)->ToString(&privateUse);
+    if (obj != NULL) {
+        ICharSequence::Probe(obj)->ToString(&privateUse);
+    }
     if (!privateUse.IsNull()) {
         sb.Append("-x-");
         sb.Append(privateUse);

@@ -33,9 +33,9 @@ static AutoPtr<ISSLSocketFactory> InitDefaultSSLSocketFactory()
     return sslFactory;
 }
 
-AutoPtr<IHostnameVerifier> HttpsURLConnection::NoPreloadHolder::mDefaultHostnameVerifier = InitDefaultHostnameVerifier();
+AutoPtr<IHostnameVerifier> HttpsURLConnection::NoPreloadHolder::sDefaultHostnameVerifier;// = InitDefaultHostnameVerifier();
 
-AutoPtr<ISSLSocketFactory> HttpsURLConnection::NoPreloadHolder::mDefaultSSLSocketFactory = InitDefaultSSLSocketFactory();
+AutoPtr<ISSLSocketFactory> HttpsURLConnection::NoPreloadHolder::sDefaultSSLSocketFactory;// = InitDefaultSSLSocketFactory();
 
 
 CAR_INTERFACE_IMPL(HttpsURLConnection, HttpURLConnection, IHttpsURLConnection)
@@ -47,7 +47,7 @@ ECode HttpsURLConnection::SetDefaultHostnameVerifier(
         //throw new IllegalArgumentException("HostnameVerifier is null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    NoPreloadHolder::mDefaultHostnameVerifier = v;
+    NoPreloadHolder::sDefaultHostnameVerifier = v;
     return NOERROR;
 }
 
@@ -56,7 +56,7 @@ ECode HttpsURLConnection::GetDefaultHostnameVerifier(
 {
     VALIDATE_NOT_NULL(verifier)
 
-    *verifier = NoPreloadHolder::mDefaultHostnameVerifier;
+    *verifier = NoPreloadHolder::sDefaultHostnameVerifier;
     REFCOUNT_ADD(*verifier);
     return NOERROR;
 }
@@ -69,7 +69,7 @@ ECode HttpsURLConnection::SetDefaultSSLSocketFactory(
         //throw new IllegalArgumentException("SSLSocketFactory is null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    NoPreloadHolder::mDefaultSSLSocketFactory = sf;
+    NoPreloadHolder::sDefaultSSLSocketFactory = sf;
     return NOERROR;
 }
 
@@ -78,7 +78,7 @@ ECode HttpsURLConnection::GetDefaultSSLSocketFactory(
 {
     VALIDATE_NOT_NULL(factory)
 
-    *factory = NoPreloadHolder::mDefaultSSLSocketFactory;
+    *factory = NoPreloadHolder::sDefaultSSLSocketFactory;
     REFCOUNT_ADD(*factory);
     return NOERROR;
 }
@@ -87,8 +87,8 @@ ECode HttpsURLConnection::constructor(
     /* [in] */ IURL* url)
 {
     FAIL_RETURN(HttpURLConnection::constructor(url))
-    mHostnameVerifier = NoPreloadHolder::mDefaultHostnameVerifier;
-    mSslSocketFactory = NoPreloadHolder::mDefaultSSLSocketFactory;
+    mHostnameVerifier = NoPreloadHolder::sDefaultHostnameVerifier;
+    mSslSocketFactory = NoPreloadHolder::sDefaultSSLSocketFactory;
     return NOERROR;
 }
 
