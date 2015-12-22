@@ -8,6 +8,21 @@ INCLUDES += $(MAKEDIR)/../../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
+SOURCES += PreferenceImageView.cpp
+SOURCES += CPreferenceImageView.cpp
+SOURCES += LinearLayoutWithDefaultTouchRecepient.cpp
+SOURCES += CLinearLayoutWithDefaultTouchRecepient.cpp
+SOURCES += Smileys.cpp
+SOURCES += CSmileys.cpp
+SOURCES += CSmileysHelper.cpp
+SOURCES += TextProgressBar.cpp
+SOURCES += CTextProgressBar.cpp
+SOURCES += WeightedLinearLayout.cpp
+SOURCES += CWeightedLinearLayout.cpp
+SOURCES += WaveView.cpp
+SOURCES += CWaveView.cpp
+SOURCES += FaceUnlockView.cpp
+SOURCES += CFaceUnlockView.cpp
 SOURCES += AbsActionBarView.cpp
 SOURCES += CAbsActionBarView.cpp
 SOURCES += ActionBarContainer.cpp

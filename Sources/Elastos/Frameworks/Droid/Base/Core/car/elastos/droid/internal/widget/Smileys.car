@@ -24,15 +24,16 @@ module
         const Int32 LIPS_ARE_SEALED = 14;
         const Int32 LAUGHING = 15;
         const Int32 WTF = 16;
-
-         GetSmileyResource(
-            [in] Int32 which,
-            [out] Int32* rs);
     }
 
-    }// namespace Widget
-    }// namespace Internal
-    }// namespace Droid
-    }// namespace Elastos
+    interface ISmileysHelper {
+    	GetSmileyResource(
+            [in] Int32 which,
+            [out] Int32* result);
+    }
 
+    } // namespace Widget
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
 }

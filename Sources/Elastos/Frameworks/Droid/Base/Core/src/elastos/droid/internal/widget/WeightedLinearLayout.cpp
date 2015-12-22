@@ -1,15 +1,16 @@
 
-#include "elastos/droid/widget/internal/WeightedLinearLayout.h"
+#include "elastos/droid/internal/widget/WeightedLinearLayout.h"
 #include "elastos/droid/R.h"
 
-using Elastos::Droid::R;
+using Elastos::Droid::Internal::Widget::EIID_IWeightedLinearLayout;
 using Elastos::Droid::Utility::IDisplayMetrics;
 
 namespace Elastos {
 namespace Droid {
-namespace Widget {
 namespace Internal {
+namespace Widget {
 
+CAR_INTERFACE_IMPL(WeightedLinearLayout, LinearLayout, IWeightedLinearLayout)
 
 WeightedLinearLayout::WeightedLinearLayout()
     : mMajorWeightMin(0)
@@ -19,39 +20,17 @@ WeightedLinearLayout::WeightedLinearLayout()
 {
 }
 
-WeightedLinearLayout::WeightedLinearLayout(
-    /* [in] */ IContext* context)
-    : LinearLayout(context)
-    , mMajorWeightMin(0)
-    , mMinorWeightMin(0)
-    , mMajorWeightMax(0)
-    , mMinorWeightMax(0)
-{
-}
-
-WeightedLinearLayout::WeightedLinearLayout(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-    : mMajorWeightMin(0)
-    , mMinorWeightMin(0)
-    , mMajorWeightMax(0)
-    , mMinorWeightMax(0)
-{
-    Init(context, attrs);
-}
-
-ECode WeightedLinearLayout::Init(
+ECode WeightedLinearLayout::constructor(
     /* [in] */ IContext* context)
 {
-    return LinearLayout::Init(context);
+    return LinearLayout::constructor(context);
 }
 
-ECode WeightedLinearLayout::Init(
+ECode WeightedLinearLayout::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    LinearLayout::Init(context, attrs);
-
+    LinearLayout::constructor(context, attrs);
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::WeightedLinearLayout),
             ArraySize(R::styleable::WeightedLinearLayout));
@@ -62,7 +41,6 @@ ECode WeightedLinearLayout::Init(
     a->GetFloat(R::styleable::WeightedLinearLayout_minorWeightMin, 0.0f, &mMinorWeightMin);
     a->GetFloat(R::styleable::WeightedLinearLayout_majorWeightMax, 0.0f, &mMajorWeightMax);
     a->GetFloat(R::styleable::WeightedLinearLayout_minorWeightMax, 0.0f, &mMinorWeightMax);
-
     a->Recycle();
     return NOERROR;
 }
@@ -73,7 +51,8 @@ void WeightedLinearLayout::OnMeasure(
 {
     AutoPtr<IDisplayMetrics> metrics;
     AutoPtr<IResources> res;
-    AutoPtr<IContext> context = GetContext();
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
     context->GetResources((IResources**)&res);
     res->GetDisplayMetrics((IDisplayMetrics**)&metrics);
 
@@ -83,10 +62,10 @@ void WeightedLinearLayout::OnMeasure(
     Boolean isPortrait = screenWidth < screenHeight;
 
     Int32 widthMode = MeasureSpec::GetMode(widthMeasureSpec);
-
     LinearLayout::OnMeasure(widthMeasureSpec, heightMeasureSpec);
 
-    Int32 width = GetMeasuredWidth();
+    Int32 width = 0;
+    GetMeasuredWidth(&width);
     Boolean measure = FALSE;
 
     widthMeasureSpec = MeasureSpec::MakeMeasureSpec(width, MeasureSpec::EXACTLY);
@@ -99,20 +78,19 @@ void WeightedLinearLayout::OnMeasure(
         if (widthWeightMin > 0.0f && width < weightedMin) {
             widthMeasureSpec = MeasureSpec::MakeMeasureSpec(weightedMin, MeasureSpec::EXACTLY);
             measure = TRUE;
-        } else if (widthWeightMax > 0.0f && width > weightedMax) {
+        }
+        else if (widthWeightMax > 0.0f && width > weightedMax) {
             widthMeasureSpec = MeasureSpec::MakeMeasureSpec(weightedMax, MeasureSpec::EXACTLY);
             measure = TRUE;
         }
     }
-
-    // TODO: Support height?
-
     if (measure) {
         LinearLayout::OnMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 }
 
-} // namespace Internal
 } // namespace Widget
+} // namespace Internal
 } // namespace Droid
 } // namespace Elastos
+

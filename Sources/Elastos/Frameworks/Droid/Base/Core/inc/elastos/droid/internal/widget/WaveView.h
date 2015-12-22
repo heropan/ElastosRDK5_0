@@ -1,76 +1,90 @@
 
-#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_WAVEVIEW_H__
-#define __ELASTOS_DROID_WIDGET_INTERNAL_WAVEVIEW_H__
+#ifndef __ELASTOS_DROID_INTERNAL_WIDGET_WAVEVIEW_H__
+#define __ELASTOS_DROID_INTERNAL_WIDGET_WAVEVIEW_H__
 
 #include "elastos/droid/view/View.h"
+#include "Elastos.Droid.Animation.h"
+#include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.Os.h"
 
-using Elastos::Core::IRunnable;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Utility::IAttributeSet;
-using Elastos::Droid::View::IView;
+using Elastos::Droid::Animation::IAnimatorUpdateListener;
 using Elastos::Droid::Animation::IValueAnimator;
+using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::Drawable::IBitmapDrawable;
+using Elastos::Droid::Media::IAudioAttributes;
+using Elastos::Droid::Os::IVibrator;
+using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::View::IMotionEvent;
-using Elastos::Droid::View::EIID_IView;
-using Elastos::Core::EIID_IRunnable;
+using Elastos::Droid::View::IView;
+using Elastos::Core::IRunnable;
+
 namespace Elastos {
 namespace Droid {
-namespace Widget {
 namespace Internal {
+namespace Widget {
 
 using Elastos::Droid::View::View;
+
 /**
  * A special widget containing a center and outer ring. Moving the center ring to the outer ring
  * causes an event that can be caught by implementing OnTriggerListener.
  */
-class WaveView : public View
+class WaveView
+    : public View
+    , public IAnimatorUpdateListener
 {
 private:
-
-    class LockTimerRunnable
-            : public IRunnable
-            , public ElRefBase
+    class InnerLockTimerRunnable
+        : public Object
+        , public IRunnable
     {
     public:
-
         CAR_INTERFACE_DECL()
+
+        InnerLockTimerRunnable(
+            /* [in] */ WaveView* host);
 
         CARAPI Run();
 
-        LockTimerRunnable(
-            /* [in] */ WaveView* host);
     private:
         WaveView* mHost;
     };
 
-    class AddWaveRunnable
-            : public IRunnable
-            , public ElRefBase
+    class InnerAddWaveRunnable
+        : public Object
+        , public IRunnable
     {
     public:
-
         CAR_INTERFACE_DECL()
+
+        InnerAddWaveRunnable(
+            /* [in] */ WaveView* host);
 
         CARAPI Run();
 
-        AddWaveRunnable(
-            /* [in] */ WaveView* host);
     private:
         WaveView* mHost;
     };
+
 public:
+    CAR_INTERFACE_DECL()
 
     WaveView();
 
-    WaveView(
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL);
+        /* [in] */ IAttributeSet* attrs);
 
-    virtual CARAPI_(Boolean) OnHoverEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI OnHoverEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
     /**
      * Registers a callback to be invoked when the user triggers an event.
@@ -86,7 +100,6 @@ public:
     virtual CARAPI Reset();
 
 protected:
-
     CARAPI_(void) OnSizeChanged(
         /* [in] */ Int32 w,
         /* [in] */ Int32 h,
@@ -108,13 +121,6 @@ protected:
     CARAPI_(void) OnDraw(
         /* [in] */ ICanvas* canvas);
 
-    CARAPI Init(
-        /* [in] */ IContext* ctx);
-
-    CARAPI Init(
-        /* [in] */ IContext* ctx,
-        /* [in] */ IAttributeSet* attrs);
-
 private:
     CARAPI_(void) InitDrawables();
 
@@ -125,7 +131,6 @@ private:
 
     CARAPI_(AutoPtr<IBitmapDrawable>) CreateDrawable(
         /* [in] */ Int32 resId);
-
 
 private:
     /**
@@ -153,8 +158,6 @@ private:
     CARAPI_(void) Vibrate(
         /* [in] */ Int64 duration);
 
-
-
     /**
      * Dispatches a trigger event to listener. Ignored if a listener is not set.
      * @param whichHandle the handle that triggered the event.
@@ -168,6 +171,8 @@ private:
      */
     CARAPI_(void) SetGrabbedState(
         /* [in] */ Int32 newState);
+
+    static CARAPI_(AutoPtr<IAudioAttributes>) MiddleInitVibrationAttributes();
 
 private:
     static const String TAG;
@@ -208,12 +213,12 @@ private:
      */
     static const Float GRAB_HANDLE_RADIUS_SCALE_ACCESSIBILITY_ENABLED = 1.0f;
 
+    static const AutoPtr<IAudioAttributes> VIBRATION_ATTRIBUTES;
+
 private:
     AutoPtr<IRunnable> mLockTimerActions;
-
     AutoPtr<IRunnable> mAddWaveAction;
-
-//    Vibrator mVibrator;
+    AutoPtr<IVibrator> mVibrator;
     AutoPtr<IWaveViewOnTriggerListener> mOnTriggerListener;
     List<AutoPtr<IDrawableHolder> > mDrawables;// = new ArrayList<DrawableHolder>(3);
     List<AutoPtr<IDrawableHolder> >  mLightWaves;// = new ArrayList<DrawableHolder>(WAVE_COUNT);
@@ -230,15 +235,15 @@ private:
     AutoPtr<IDrawableHolder> mUnlockRing;
     AutoPtr<IDrawableHolder> mUnlockDefault;
     AutoPtr<IDrawableHolder> mUnlockHalo;
-    Int32 mLockState;// = STATE_RESET_LOCK;
-    Int32 mGrabbedState;// = OnTriggerListener.NO_HANDLE;
+    Int32 mLockState;
+    Int32 mGrabbedState;
     Boolean mWavesRunning;
     Boolean mFinishWaves;
-
 };
 
-}// namespace Internal
-}// namespace Widget
-}// namespace Droid
-}// namespace Elastos
-#endif
+} // namespace Widget
+} // namespace Internal
+} // namespace Droid
+} // namespace Elastos
+
+#endif // __ELASTOS_DROID_INTERNAL_WIDGET_WAVEVIEW_H__

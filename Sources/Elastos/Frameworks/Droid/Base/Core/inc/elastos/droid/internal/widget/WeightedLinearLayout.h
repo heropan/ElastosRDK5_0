@@ -1,26 +1,32 @@
 
-#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_WEIGHTEDLINEARLAYOUT_H__
-#define __ELASTOS_DROID_WIDGET_INTERNAL_WEIGHTEDLINEARLAYOUT_H__
+#ifndef __ELASTOS_DROID_INTERNAL_WIDGET_WEIGHTEDLINEARLAYOUT_H__
+#define __ELASTOS_DROID_INTERNAL_WIDGET_WEIGHTEDLINEARLAYOUT_H__
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/LinearLayout.h"
 
+using Elastos::Droid::Internal::Widget::IWeightedLinearLayout;
 using Elastos::Droid::Widget::LinearLayout;
 
 namespace Elastos {
 namespace Droid {
-namespace Widget {
 namespace Internal {
-
+namespace Widget {
 
 /**
  * A special layout when measured in AT_MOST will take up a given percentage of
  * the available space.
  */
-class WeightedLinearLayout : public LinearLayout
+class WeightedLinearLayout
+    : public LinearLayout
+    , public IWeightedLinearLayout
 {
 public:
-    WeightedLinearLayout(
+    CAR_INTERFACE_DECL()
+
+    WeightedLinearLayout();
+
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
     /**
@@ -30,20 +36,11 @@ public:
      * @param context the application environment
      * @param attrs a collection of attributes
      */
-    WeightedLinearLayout(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
 protected:
-    WeightedLinearLayout();
-
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
     //@Override
     virtual CARAPI_(void) OnMeasure(
         /* [in] */ Int32 widthMeasureSpec,
@@ -56,9 +53,9 @@ private:
     Float mMinorWeightMax;
 };
 
+} // namespace Widget
 } // namespace Internal
-} // namespace View
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_WIDGET_INTERNAL_WEIGHTEDLINEARLAYOUT_H__
+#endif //__ELASTOS_DROID_INTERNAL_WIDGET_WEIGHTEDLINEARLAYOUT_H__

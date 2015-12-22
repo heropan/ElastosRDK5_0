@@ -1,6 +1,8 @@
 
 module
 {
+	using interface Elastos.Droid.Widget.IChronometer;
+
     /**
      * Container that links together a {@link ProgressBar} and {@link Chronometer}
      * as children. It subscribes to {@link Chronometer#OnChronometerTickListener}
@@ -48,12 +50,18 @@ module
          */
         SetDurationBase(
             [in] Int64 durationBase);
+
+		/**
+         * Callback when {@link Chronometer} changes, indicating that we should
+         * update the {@link ProgressBar} and change the layout if necessary.
+         */
+        OnChronometerTick(
+        	[in] IChronometer* chronometer);
     }
 
-    }// namespace Widget
-    }// namespace Internal
-    }// namespace Droid
-    }// namespace Elastos
-
+    } // namespace Widget
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
 }
 

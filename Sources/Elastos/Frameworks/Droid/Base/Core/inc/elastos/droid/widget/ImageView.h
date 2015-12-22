@@ -7,6 +7,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/graphics/CRectF.h"
+#include "Elastos.Droid.Widget.h"
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Graphics::IBitmap;
@@ -17,6 +18,7 @@ using Elastos::Droid::Graphics::IXfermode;
 using Elastos::Droid::Graphics::MatrixScaleToFit;
 using Elastos::Droid::Graphics::PorterDuffMode;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::Widget::IImageView;
 
 namespace Elastos {
 namespace Droid {

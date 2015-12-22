@@ -1,27 +1,30 @@
 
-#include "elastos/droid/internal/FaceUnlockView.h"
+#include "elastos/droid/internal/widget/FaceUnlockView.h"
 #include <elastos/core/Math.h>
 
 namespace Elastos {
 namespace Droid {
-namespace Widget {
 namespace Internal {
+namespace Widget {
 
-const String FaceUnlockView::FaceUnlockView_TAG = String("FaceUnlockView");
+const String FaceUnlockView::FaceUnlockView_TAG("FaceUnlockView");
+CAR_INTERFACE_IMPL(FaceUnlockView, RelativeLayout, IFaceUnlockView)
 
 FaceUnlockView::FaceUnlockView()
-{}
+{
+}
 
-FaceUnlockView::FaceUnlockView(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs) : RelativeLayout(context, attrs)
-{}
+ECode FaceUnlockView::constructor(
+    /* [in] */ IContext* context)
+{
+    return constructor(context, NULL);
+}
 
-ECode FaceUnlockView::Init(
+ECode FaceUnlockView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return RelativeLayout::Init(context, attrs);
+    return RelativeLayout::constructor(context, attrs);
 }
 
 Int32 FaceUnlockView::ResolveMeasured(
@@ -44,7 +47,6 @@ Int32 FaceUnlockView::ResolveMeasured(
     return result;
 }
 
-
 void FaceUnlockView::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
@@ -63,7 +65,8 @@ void FaceUnlockView::OnMeasure(
     RelativeLayout::OnMeasure(newWidthMeasureSpec, newHeightMeasureSpec);
 }
 
-}// namespace Internal
-}// namespace Widget
-}// namespace Droid
-}// namespace Elastos
+} // namespace Widget
+} // namespace Internal
+} // namespace Droid
+} // namespace Elastos
+
