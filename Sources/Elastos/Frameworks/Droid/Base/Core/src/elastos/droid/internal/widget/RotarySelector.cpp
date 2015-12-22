@@ -1,28 +1,45 @@
 
-#include "elastos/droid/internal/RotarySelector.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Provider.h"
+#include "elastos/droid/internal/widget/RotarySelector.h"
+#include "elastos/droid/media/CAudioAttributesBuilder.h"
 #include "elastos/droid/view/animation/CDecelerateInterpolator.h"
-#include "elastos/droid/view/CViewConfiguration.h"
+#include "elastos/droid/view/CViewConfigurationHelper.h"
 #include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CMatrix.h"
 #include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/R.h"
+
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Core::StringUtils;
+using Elastos::Droid::R;
+using Elastos::Droid::Media::IAudioAttributesBuilder;
+using Elastos::Droid::Media::CAudioAttributesBuilder;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Provider::Settings;
 using Elastos::Droid::Provider::ISettingsSystem;
-using Elastos::Droid::Graphics::PaintStyle;
+using Elastos::Droid::Graphics::PaintStyle_STROKE;
+using Elastos::Droid::Graphics::IBitmapFactory;
 using Elastos::Droid::Graphics::CBitmapFactory;
+using Elastos::Droid::Graphics::CPaint;
+using Elastos::Droid::Graphics::CMatrix;
+using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::EIID_IView;
-using Elastos::Droid::View::CViewConfiguration;
+using Elastos::Droid::View::IViewConfiguration;
+using Elastos::Droid::View::IViewConfigurationHelper;
+using Elastos::Droid::View::CViewConfigurationHelper;
 using Elastos::Droid::View::Animation::CDecelerateInterpolator;
+
+using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Droid {
-namespace Widget {
 namespace Internal {
+namespace Widget {
 
 const String RotarySelector::TAG("RotarySelector");
 const Boolean RotarySelector::DBG = FALSE;
@@ -36,9 +53,12 @@ const Int32 RotarySelector::OUTER_ROTARY_RADIUS_DIP = 390;
 const Int32 RotarySelector::ROTARY_STROKE_WIDTH_DIP = 83;
 const Int32 RotarySelector::SNAP_BACK_ANIMATION_DURATION_MILLIS = 300;
 const Int32 RotarySelector::SPIN_ANIMATION_DURATION_MILLIS = 800;
+AutoPtr<IAudioAttributes> RotarySelector::VIBRATION_ATTRIBUTES;
+
+CAR_INTERFACE_IMPL(RotarySelector, View, IRotarySelector)
 
 RotarySelector::RotarySelector()
-    : mDensity(0.f)
+    : mDensity(0.0f)
     , mLeftHandleX(0)
     , mRightHandleX(0)
     , mRotaryOffsetX(0)
@@ -60,84 +80,31 @@ RotarySelector::RotarySelector()
     , mMaximumVelocity(0)
     , mDimplesOfFling(0)
     , mOrientation(0)
-{}
+{
+    CPaint::New((IPaint**)&mPaint);
 
-RotarySelector::RotarySelector(
+    CMatrix::New((IMatrix**)&mBgMatrix);
+    CMatrix::New((IMatrix**)&mArrowMatrix);
+
+    AutoPtr<IAudioAttributesBuilder> p;
+    CAudioAttributesBuilder::New((IAudioAttributesBuilder**)&p);
+    p->SetContentType(IAudioAttributes::CONTENT_TYPE_SONIFICATION);
+    p->SetUsage(IAudioAttributes::USAGE_ASSISTANCE_SONIFICATION);
+    p->Build((IAudioAttributes**)&VIBRATION_ATTRIBUTES);
+}
+
+ECode RotarySelector::constructor(
     /* [in] */ IContext* context)
-    : View(context, NULL)
-    , mDensity(0.f)
-    , mLeftHandleX(0)
-    , mRightHandleX(0)
-    , mRotaryOffsetX(0)
-    , mAnimating(FALSE)
-    , mAnimationStartTime(0)
-    , mAnimationDuration(0)
-    , mAnimatingDeltaXStart(0)
-    , mAnimatingDeltaXEnd(0)
-    , mGrabbedState(IRotarySelector::NOTHING_GRABBED)
-    , mTriggered(FALSE)
-    , mEdgeTriggerThresh(0)
-    , mDimpleWidth(0)
-    , mBackgroundWidth(0)
-    , mBackgroundHeight(0)
-    , mOuterRadius(0)
-    , mInnerRadius(0)
-    , mDimpleSpacing(0)
-    , mMinimumVelocity(0)
-    , mMaximumVelocity(0)
-    , mDimplesOfFling(0)
-    , mOrientation(0)
 {
-    ASSERT_SUCCEEDED(InternalInit(context, NULL));
+    return constructor(context, NULL);
 }
 
-/**
- * Constructor used when this widget is created from a layout file.
- */
-RotarySelector::RotarySelector(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-    : View(context, attrs)
-    , mDensity(0.f)
-    , mLeftHandleX(0)
-    , mRightHandleX(0)
-    , mRotaryOffsetX(0)
-    , mAnimating(FALSE)
-    , mAnimationStartTime(0)
-    , mAnimationDuration(0)
-    , mAnimatingDeltaXStart(0)
-    , mAnimatingDeltaXEnd(0)
-    , mGrabbedState(IRotarySelector::NOTHING_GRABBED)
-    , mTriggered(FALSE)
-    , mEdgeTriggerThresh(0)
-    , mDimpleWidth(0)
-    , mBackgroundWidth(0)
-    , mBackgroundHeight(0)
-    , mOuterRadius(0)
-    , mInnerRadius(0)
-    , mDimpleSpacing(0)
-    , mMinimumVelocity(0)
-    , mMaximumVelocity(0)
-    , mDimplesOfFling(0)
-    , mOrientation(0)
-{
-    ASSERT_SUCCEEDED(InternalInit(context, attrs));
-}
-
-ECode RotarySelector::Init(
+ECode RotarySelector::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    ASSERT_SUCCEEDED(View::Init(context, attrs));
-    ASSERT_SUCCEEDED(InternalInit(context, attrs));
-    return NOERROR;
-}
+    View::constructor(context, attrs);
 
-
-ECode RotarySelector::InternalInit(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::RotarySelector),
         ArraySize(R::styleable::RotarySelector));
@@ -146,12 +113,14 @@ ECode RotarySelector::InternalInit(
     a->GetInt32(R::styleable::RotarySelector_orientation, IRotarySelector::HORIZONTAL, &mOrientation);
     a->Recycle();
 
-    AutoPtr<IResources> r = GetResources();
+    AutoPtr<IResources> r;
+    GetResources((IResources**)&r);
     AutoPtr<IDisplayMetrics> dm;
     r->GetDisplayMetrics((IDisplayMetrics**)&dm);
     dm->GetDensity(&mDensity);
-    if (DBG)
-        SLOGGERD(TAG, String("- Density: ") + StringUtils::FloatToString(mDensity));
+    if (DBG) {
+        SLOGGERD(TAG, String("- Density: ") + StringUtils::ToString(mDensity));
+    }
 
     // Assets (all are BitmapDrawables).
     mBackground = GetBitmapFor(R::drawable::jog_dial_bg);
@@ -162,7 +131,7 @@ ECode RotarySelector::InternalInit(
     mArrowLongRight = GetBitmapFor(R::drawable::jog_dial_arrow_long_right_red);
     mArrowShortLeftAndRight = GetBitmapFor(R::drawable::jog_dial_arrow_short_left_and_right);
 
-    CDecelerateInterpolator::New(1.f, (IDecelerateInterpolator**)&mInterpolator);
+    CDecelerateInterpolator::New(1.0f, (IDecelerateInterpolator**)&mInterpolator);
 
     mEdgeTriggerThresh = (Int32) (mDensity * EDGE_TRIGGER_DIP);
 
@@ -173,8 +142,11 @@ ECode RotarySelector::InternalInit(
     mOuterRadius = (Int32) (mDensity * OUTER_ROTARY_RADIUS_DIP);
     mInnerRadius = (Int32) ((OUTER_ROTARY_RADIUS_DIP - ROTARY_STROKE_WIDTH_DIP) * mDensity);
 
-    AutoPtr<CViewConfiguration> configuration = CViewConfiguration::Get(mContext);
-    Int32 temp;
+    AutoPtr<IViewConfigurationHelper> hlp;
+    CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&hlp);
+    AutoPtr<IViewConfiguration> configuration;
+    hlp->Get(mContext, (IViewConfiguration**)&configuration);
+    Int32 temp = 0;
     configuration->GetScaledMinimumFlingVelocity(&temp);
     mMinimumVelocity = temp * 2;
     configuration->GetScaledMaximumFlingVelocity(&mMaximumVelocity);
@@ -184,8 +156,10 @@ ECode RotarySelector::InternalInit(
 AutoPtr<IBitmap> RotarySelector::GetBitmapFor(
     /* [in] */ Int32 resId)
 {
+    AutoPtr<IContext> cxt;
+    GetContext((IContext**)&cxt);
     AutoPtr<IResources> rs;
-    GetContext()->GetResources((IResources**)&rs);
+    cxt->GetResources((IResources**)&rs);
     AutoPtr<IBitmapFactory> factory;
     CBitmapFactory::AcquireSingleton((IBitmapFactory**)&factory);
     AutoPtr<IBitmap> bm;
@@ -212,12 +186,13 @@ void RotarySelector::OnSizeChanged(
     if (!IsHoriz()) {
         // set up matrix for translating drawing of background and arrow assets
         Int32 left = w - mBackgroundHeight;
-        Boolean rst;
+        Boolean rst = FALSE;
         mBgMatrix->PreRotate(-90.f, 0.f, 0.f, &rst);
         mBgMatrix->PostTranslate(left, h, &rst);
 
-    } else {
-        Boolean rst;
+    }
+    else {
+        Boolean rst = FALSE;
         mBgMatrix->PostTranslate(0.f, h - mBackgroundHeight, &rst);
     }
 }
@@ -227,14 +202,6 @@ Boolean RotarySelector::IsHoriz()
     return mOrientation == IRotarySelector::HORIZONTAL;
 }
 
-/**
- * Sets the left handle icon to a given resource.
- *
- * The resource should refer to a Drawable object, or use 0 to remove
- * the icon.
- *
- * @param resId the resource ID.
- */
 ECode RotarySelector::SetLeftHandleResource(
     /* [in] */ Int32 resId)
 {
@@ -246,14 +213,6 @@ ECode RotarySelector::SetLeftHandleResource(
     return NOERROR;
 }
 
-/**
- * Sets the right handle icon to a given resource.
- *
- * The resource should refer to a Drawable object, or use 0 to remove
- * the icon.
- *
- * @param resId the resource ID.
- */
 ECode RotarySelector::SetRightHandleResource(
     /* [in] */ Int32 resId)
 {
@@ -265,7 +224,6 @@ ECode RotarySelector::SetRightHandleResource(
     return NOERROR;
 }
 
-
 void RotarySelector::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
@@ -274,7 +232,7 @@ void RotarySelector::OnMeasure(
         MeasureSpec::GetSize(widthMeasureSpec) :
         MeasureSpec::GetSize(heightMeasureSpec);
     Int32 arrowScrunch = (Int32) (ARROW_SCRUNCH_DIP * mDensity);
-    Int32 arrowH;
+    Int32 arrowH = 0;
     mArrowShortLeftAndRight->GetHeight(&arrowH);
 
     // by making the height less than arrow + bg, arrow and bg will be scrunched together,
@@ -285,7 +243,8 @@ void RotarySelector::OnMeasure(
 
     if (IsHoriz()) {
         SetMeasuredDimension(length, height);
-    } else {
+    }
+    else {
         SetMeasuredDimension(height, length);
     }
 }
@@ -295,16 +254,20 @@ void RotarySelector::OnDraw(
 {
     View::OnDraw(canvas);
 
-    Int32 width = GetWidth();
+    Int32 width = 0;
+    GetWidth(&width);
 
     if (VISUAL_DEBUG) {
         // draw bounding box around widget
         mPaint->SetColor(0xffff0000);
         mPaint->SetStyle(PaintStyle_STROKE);
-        canvas->DrawRect(0, 0, width, GetHeight(), mPaint);
+        Int32 h = 0;
+        GetHeight(&h);
+        canvas->DrawRect(0, 0, width, h, mPaint);
     }
 
-    Int32 height = GetHeight();
+    Int32 height = 0;
+    GetHeight(&height);
 
     // update animating state before we draw anything
     if (mAnimating) {
@@ -323,7 +286,7 @@ void RotarySelector::OnDraw(
         case IRotarySelector::LEFT_HANDLE_GRABBED:
             mArrowMatrix->SetTranslate(0, 0);
             if (!IsHoriz()) {
-                Boolean r;
+                Boolean r = FALSE;
                 mArrowMatrix->PreRotate(-90.f, 0.f, 0.f, &r);
                 mArrowMatrix->PostTranslate(0.f, height, &r);
             }
@@ -332,7 +295,7 @@ void RotarySelector::OnDraw(
         case IRotarySelector::RIGHT_HANDLE_GRABBED:
             mArrowMatrix->SetTranslate(0, 0);
             if (!IsHoriz()) {
-                Boolean r;
+                Boolean r = FALSE;
                 mArrowMatrix->PreRotate(-90.f, 0.f, 0.f, &r);
                 // since bg width is > height of screen in landscape mode...
                 mArrowMatrix->PostTranslate(0.f, height + (mBackgroundWidth - height), &r);
@@ -356,7 +319,8 @@ void RotarySelector::OnDraw(
         Int32 midX = IsHoriz() ? width / 2 : mBackgroundWidth / 2 - vOffset;
         if (IsHoriz()) {
             canvas->DrawCircle(midX, orV + bgTop, orV, mPaint);
-        } else {
+        }
+        else {
             canvas->DrawCircle(orV + bgTop, midX, orV, mPaint);
         }
     }
@@ -374,7 +338,8 @@ void RotarySelector::OnDraw(
         if (mGrabbedState != IRotarySelector::RIGHT_HANDLE_GRABBED) {
             DrawCentered(mDimple, canvas, x, y);
             DrawCentered(mLeftHandleIcon, canvas, x, y);
-        } else {
+        }
+        else {
             DrawCentered(mDimpleDim, canvas, x, y);
         }
     }
@@ -392,7 +357,8 @@ void RotarySelector::OnDraw(
 
         if (IsHoriz()) {
             DrawCentered(mDimpleDim, canvas, xOffset, drawableY + bgTop);
-        } else {
+        }
+        else {
             // vertical
             DrawCentered(mDimpleDim, canvas, drawableY + bgTop, height - xOffset);
         }
@@ -412,7 +378,8 @@ void RotarySelector::OnDraw(
         if (mGrabbedState != IRotarySelector::LEFT_HANDLE_GRABBED) {
             DrawCentered(mDimple, canvas, x, y);
             DrawCentered(mRightHandleIcon, canvas, x, y);
-        } else {
+        }
+        else {
             DrawCentered(mDimpleDim, canvas, x, y);
         }
     }
@@ -429,7 +396,8 @@ void RotarySelector::OnDraw(
 
         if (IsHoriz()) {
             DrawCentered(mDimpleDim, canvas, dimpleLeft, drawableY + bgTop);
-        } else {
+        }
+        else {
             DrawCentered(mDimpleDim, canvas, drawableY + bgTop, height - dimpleLeft);
         }
         dimpleLeft -= mDimpleSpacing;
@@ -447,28 +415,14 @@ void RotarySelector::OnDraw(
 
         if (IsHoriz()) {
             DrawCentered(mDimpleDim, canvas, dimpleRight, drawableY + bgTop);
-        } else {
+        }
+        else {
             DrawCentered(mDimpleDim, canvas, drawableY + bgTop, height - dimpleRight);
         }
         dimpleRight += mDimpleSpacing;
     }
 }
 
-/**
- * Assuming bitmap is a bounding box around a piece of an arc drawn by two concentric circles
- * (as the background drawable for the rotary widget is), and given an x coordinate along the
- * drawable, return the y coordinate of a point on the arc that is between the two concentric
- * circles.  The resulting y combined with the incoming x is a point along the circle in
- * between the two concentric circles.
- *
- * @param backgroundWidth The width of the asset (the bottom of the box surrounding the arc).
- * @param innerRadius The radius of the circle that intersects the drawable at the bottom two
- *        corders of the drawable (top two corners in terms of drawing coordinates).
- * @param outerRadius The radius of the circle who's top most point is the top center of the
- *        drawable (bottom center in terms of drawing coordinates).
- * @param x The distance along the x axis of the desired point.    @return The y coordinate, in drawing coordinates, that will place (x, y) along the circle
- *        in between the two concentric circles.
- */
 Int32 RotarySelector::GetYOnArc(
     /* [in] */ Int32 backgroundWidth,
     /* [in] */ Int32 innerRadius,
@@ -494,26 +448,25 @@ Int32 RotarySelector::GetYOnArc(
     return middleRadius - triangleY + halfWidth;
 }
 
-/**
- * Handle touch screen events.
- *
- * @param event The motion event.
- * @return True if the event was handled, FALSE otherwise.
- */
-Boolean RotarySelector::OnTouchEvent(
-    /* [in] */ IMotionEvent* event)
+ECode RotarySelector::OnTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     if (mAnimating) {
-        return TRUE;
+        *result = TRUE;
+        return NOERROR;
     }
     if (mVelocityTracker == NULL) {
         mVelocityTracker = VelocityTracker::Obtain();
     }
     mVelocityTracker->AddMovement(event);
 
-    Int32 height = GetHeight();
+    Int32 height = 0;
+    GetHeight(&height);
 
-    Float x, y;
+    Float x = 0.0f, y = 0.0f;
     event->GetX(&x);
     event->GetY(&y);
     Int32 eventX = IsHoriz() ? (Int32)x : height - (Int32)y;
@@ -550,19 +503,20 @@ Boolean RotarySelector::OnTouchEvent(
             if (mGrabbedState == IRotarySelector::LEFT_HANDLE_GRABBED) {
                 mRotaryOffsetX = eventX - mLeftHandleX;
                 Invalidate();
-                Int32 rightThresh = IsHoriz() ? GetRight() : height;
+                Int32 r = 0;
+                GetRight(&r);
+                Int32 rightThresh = IsHoriz() ? r : height;
                 if (eventX >= rightThresh - mEdgeTriggerThresh && !mTriggered) {
                     mTriggered = TRUE;
                     DispatchTriggerEvent(IOnDialTriggerListener::LEFT_HANDLE);
                     AutoPtr<VelocityTracker> velocityTracker = mVelocityTracker;
-
                     velocityTracker->ComputeCurrentVelocity(1000, mMaximumVelocity);
-                    Float x, y;
+                    Float x = 0.0f, y = 0.0f;
                     velocityTracker->GetXVelocity(&x);
                     velocityTracker->GetYVelocity(&y);
                     Int32 rawVelocity = IsHoriz() ?
                             (Int32)x : -(Int32)y;
-                            Int32 velocity = Elastos::Core::Math::Max(mMinimumVelocity, rawVelocity);
+                    Int32 velocity = Elastos::Core::Math::Max(mMinimumVelocity, rawVelocity);
                     mDimplesOfFling = Elastos::Core::Math::Max(8,
                             Elastos::Core::Math::Abs(velocity / mDimpleSpacing));
                     StartAnimationWithVelocity(
@@ -576,11 +530,10 @@ Boolean RotarySelector::OnTouchEvent(
                 Invalidate();
                 if (eventX <= mEdgeTriggerThresh && !mTriggered) {
                     mTriggered = TRUE;
-
                     DispatchTriggerEvent(IOnDialTriggerListener::RIGHT_HANDLE);
                     AutoPtr<VelocityTracker> velocityTracker = mVelocityTracker;
                     velocityTracker->ComputeCurrentVelocity(1000, mMaximumVelocity);
-                    Float x, y;
+                    Float x = 0.0f, y = 0.0f;
                     velocityTracker->GetXVelocity(&x);
                     velocityTracker->GetYVelocity(&y);
                     Int32 rawVelocity = IsHoriz() ?
@@ -596,8 +549,9 @@ Boolean RotarySelector::OnTouchEvent(
             }
             break;
         case IMotionEvent::ACTION_UP:
-            if (DBG)
+            if (DBG) {
                 SLOGGERD(TAG, "touch-up")
+            }
             // handle animating back to start if they didn't trigger
             if (mGrabbedState == IRotarySelector::LEFT_HANDLE_GRABBED
                 && Elastos::Core::Math::Abs(eventX - mLeftHandleX) > 5) {
@@ -618,8 +572,9 @@ Boolean RotarySelector::OnTouchEvent(
             }
             break;
         case IMotionEvent::ACTION_CANCEL:
-            if (DBG)
+            if (DBG) {
                 SLOGGERD(TAG, "touch-cancel");
+            }
             Reset();
             Invalidate();
             if (mVelocityTracker != NULL) {
@@ -628,7 +583,8 @@ Boolean RotarySelector::OnTouchEvent(
             }
             break;
     }
-    return TRUE;
+    *result = TRUE;
+    return NOERROR;
 }
 
 void RotarySelector::StartAnimation(
@@ -637,7 +593,7 @@ void RotarySelector::StartAnimation(
     /* [in] */ Int32 duration)
 {
     mAnimating = TRUE;
-    mAnimationStartTime = AnimationUtils::CurrentAnimationTimeMillis();
+    AnimationUtils::CurrentAnimationTimeMillis(&mAnimationStartTime);
     mAnimationDuration = duration;
     mAnimatingDeltaXStart = startX;
     mAnimatingDeltaXEnd = endX;
@@ -652,7 +608,7 @@ void RotarySelector::StartAnimationWithVelocity(
     /* [in] */ Int32 pixelsPerSecond)
 {
     mAnimating = TRUE;
-    mAnimationStartTime = AnimationUtils::CurrentAnimationTimeMillis();
+    AnimationUtils::CurrentAnimationTimeMillis(&mAnimationStartTime);
     mAnimationDuration = 1000 * (endX - startX) / pixelsPerSecond;
     mAnimatingDeltaXStart = startX;
     mAnimatingDeltaXEnd = endX;
@@ -662,20 +618,22 @@ void RotarySelector::StartAnimationWithVelocity(
 
 void RotarySelector::UpdateAnimation()
 {
-    Int64 millisSoFar = AnimationUtils::CurrentAnimationTimeMillis() - mAnimationStartTime;
+    Int64 mils = 0;
+    AnimationUtils::CurrentAnimationTimeMillis(&mils);
+    Int64 millisSoFar = mils - mAnimationStartTime;
     Int64 millisLeft = mAnimationDuration - millisSoFar;
     Int32 totalDeltaX = mAnimatingDeltaXStart - mAnimatingDeltaXEnd;
     Boolean goingRight = totalDeltaX < 0;
-    if (DBG)
-        SLOGGERD(TAG, String("millisleft for animating: ") + StringUtils::Int64ToString(millisLeft));
+    if (DBG) {
+        SLOGGERD(TAG, String("millisleft for animating: ") + StringUtils::ToString(millisLeft));
+    }
     if (millisLeft <= 0) {
         Reset();
         return;
     }
     // from 0 to 1 as animation progresses
-    Float interpolation;
+    Float interpolation = 0.0f;
     mInterpolator->GetInterpolation((Float) millisSoFar / mAnimationDuration, &interpolation);
-
     Int32 dx = (Int32) (totalDeltaX * (1 - interpolation));
     mRotaryOffsetX = mAnimatingDeltaXEnd + dx;
 
@@ -686,7 +644,8 @@ void RotarySelector::UpdateAnimation()
         if (!goingRight && mRotaryOffsetX < -3 * mDimpleSpacing) {
             // wrap around on fling left
             mRotaryOffsetX += mDimplesOfFling * mDimpleSpacing;
-        } else if (goingRight && mRotaryOffsetX > 3 * mDimpleSpacing) {
+        }
+        else if (goingRight && mRotaryOffsetX > 3 * mDimpleSpacing) {
             // wrap around on fling right
             mRotaryOffsetX -= mDimplesOfFling * mDimpleSpacing;
         }
@@ -703,57 +662,43 @@ void RotarySelector::Reset()
     mTriggered = FALSE;
 }
 
-/**
- * Triggers haptic feedback.
- */
 ECode RotarySelector::Vibrate(
     /* [in] */ Int64 duration)
 {
     AutoPtr<IContentResolver> cr;
     mContext->GetContentResolver((IContentResolver**)&cr);
-    Boolean hapticEnabled;
-    Int32 value;
+    Int32 value = 0;
     FAIL_RETURN(Settings::System::GetInt32ForUser(
         cr, ISettingsSystem::HAPTIC_FEEDBACK_ENABLED, 1,
             IUserHandle::USER_CURRENT, &value))
-    hapticEnabled = value != 0;
+    Boolean hapticEnabled = value != 0;
     if (hapticEnabled) {
         if (mVibrator == NULL) {
+            AutoPtr<IContext> cxt;
+            GetContext((IContext**)&cxt);
             AutoPtr<IInterface> temp;
-            GetContext()->GetSystemService(IContext::VIBRATOR_SERVICE, (IInterface**)&temp);
+            cxt->GetSystemService(IContext::VIBRATOR_SERVICE, (IInterface**)&temp);
             mVibrator = IVibrator::Probe(temp);
         }
-        mVibrator->Vibrate(duration);
+        mVibrator->Vibrate(duration, VIBRATION_ATTRIBUTES);
     }
     return NOERROR;
 }
 
-/**
- * Draw the bitmap so that it's centered
- * on the point (x,y), then draws it using specified canvas.
- * TODO: is there already a utility method somewhere for this?
- */
 void RotarySelector::DrawCentered(
     /* [in] */ IBitmap* d,
     /* [in] */ ICanvas* c,
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
-    Int32 w;
+    Int32 w = 0;
     d->GetWidth(&w);
-    Int32 h;
+    Int32 h = 0;
     d->GetHeight(&h);
 
     c->DrawBitmap(d, x - (w / 2), y - (h / 2), mPaint);
 }
 
-
-/**
- * Registers a callback to be invoked when the dial
- * is "triggered" by rotating it one way or the other.
- *
- * @param l the OnDialTriggerListener to attach to this view
- */
 ECode RotarySelector::SetOnDialTriggerListener(
     /* [in] */ IOnDialTriggerListener* l)
 {
@@ -762,9 +707,6 @@ ECode RotarySelector::SetOnDialTriggerListener(
     return NOERROR;
 }
 
-/**
- * Dispatches a trigger event to our listener.
- */
 ECode RotarySelector::DispatchTriggerEvent(
     /* [in] */ Int32 whichHandle)
 {
@@ -775,10 +717,6 @@ ECode RotarySelector::DispatchTriggerEvent(
     return NOERROR;
 }
 
-/**
- * Sets the current grabbed state, and dispatches a grabbed state change
- * event to our listener.
- */
 void RotarySelector::SetGrabbedState(
     /* [in] */ Int32 newState)
 {
@@ -790,7 +728,7 @@ void RotarySelector::SetGrabbedState(
     }
 }
 
-}// namespace Internal
 }// namespace Widget
+}// namespace Internal
 }// namespace Droid
 }// namespace Elastos

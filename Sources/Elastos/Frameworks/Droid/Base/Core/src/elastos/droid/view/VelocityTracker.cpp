@@ -7,16 +7,11 @@
 #include <elastos/core/StringBuffer.h>
 #include <stdio.h>
 
-//using namespace Elastos::Core;
 using Elastos::Droid::Utility::Pools;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
-
-// {b03b50d8-cfc9-4181-8089-7c308b4adb38}
-// extern "C" const InterfaceID EIID_VelocityTracker =
-//         { 0xb03b50d8, 0xcfc9, 0x4181, { 0x80, 0x89, 0x7c, 0x30, 0x8b, 0x4a, 0xdb, 0x38 } };
 
 const Int32 VelocityTracker::ACTIVE_POINTER_ID = -1;
 AutoPtr<Pools::SynchronizedPool<IVelocityTracker> > VelocityTracker::sPool =

@@ -25,10 +25,6 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-//class VelocityTrackerState;
-
-//extern "C" const InterfaceID EIID_VelocityTracker;
-
 class VelocityTracker
     : public Object
     , public IVelocityTracker
