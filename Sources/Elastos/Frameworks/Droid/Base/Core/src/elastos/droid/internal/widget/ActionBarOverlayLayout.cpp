@@ -85,6 +85,8 @@ ActionBarOverlayLayout::InnerAnimatorListenerAdapter::InnerAnimatorListenerAdapt
 {
     // ==================before translated======================
     // mOwner = owner;
+
+    assert(mOwner);
 }
 
 ECode ActionBarOverlayLayout::InnerAnimatorListenerAdapter::OnAnimationEnd(
@@ -122,6 +124,8 @@ ActionBarOverlayLayout::InnerAnimatorListenerAdapter1::InnerAnimatorListenerAdap
 {
     // ==================before translated======================
     // mOwner = owner;
+
+    assert(mOwner);
 }
 
 ECode ActionBarOverlayLayout::InnerAnimatorListenerAdapter1::OnAnimationEnd(
@@ -161,6 +165,8 @@ ActionBarOverlayLayout::InnerRunnable::InnerRunnable(
 {
     // ==================before translated======================
     // mOwner = owner;
+
+    assert(mOwner);
 }
 
 ECode ActionBarOverlayLayout::InnerRunnable::Run()
@@ -203,6 +209,8 @@ ActionBarOverlayLayout::InnerRunnable1::InnerRunnable1(
 {
     // ==================before translated======================
     // mOwner = owner;
+
+    assert(mOwner);
 }
 
 ECode ActionBarOverlayLayout::InnerRunnable1::Run()

@@ -27,10 +27,10 @@ namespace Ui {
 //                     ColorPickerAdvancedComponent
 //=====================================================================
 ColorPickerAdvancedComponent::ColorPickerAdvancedComponent(
-    /* [in] */ /*const*/ IView* rootView,
+    /* [in] */ IView* rootView,
     /* [in] */ const Int32& textResourceId,
     /* [in] */ const Int32& seekBarMax,
-    /* [in] */ /*const*/ ISeekBarOnSeekBarChangeListener* seekBarListener)
+    /* [in] */ ISeekBarOnSeekBarChangeListener* seekBarListener)
 {
     // ==================before translated======================
     // mGradientView = rootView.findViewById(R.id.gradient);

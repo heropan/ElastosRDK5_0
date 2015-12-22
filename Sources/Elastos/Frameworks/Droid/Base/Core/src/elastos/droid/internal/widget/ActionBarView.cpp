@@ -183,8 +183,8 @@ ECode ActionBarView::InnerParcelableCreator::CreateFromParcel(
     // return new SavedState(in);
 
     assert(0);
-    //*result = new SavedState(in);
-    //REFCOUNT_ADD(*result);
+    *result = new SavedState(in);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
@@ -405,6 +405,77 @@ ECode ActionBarView::HomeView::GetUpWidth(
     // return mUpWidth;
 
     *result = mUpWidth;
+    return NOERROR;
+}
+
+ECode ActionBarView::GetContext(
+    /* [out] */ IContext** result)
+{
+    return NOERROR;
+}
+
+ECode ActionBarView::SetSplitView(
+    /* [in] */ IViewGroup* splitView)
+{
+    return NOERROR;
+}
+
+ECode ActionBarView::SetSplitWhenNarrow(
+    /* [in] */ Boolean splitWhenNarrow)
+{
+    return NOERROR;
+}
+
+ECode ActionBarView::CanShowOverflowMenu(
+    /* [out] */ Boolean* result)
+{
+    return NOERROR;
+}
+
+ECode ActionBarView::IsOverflowMenuShowing(
+    /* [out] */ Boolean* result)
+{
+    return NOERROR;
+}
+
+ECode ActionBarView::IsOverflowMenuShowPending(
+    /* [out] */ Boolean* result)
+{
+    return NOERROR;
+}
+
+ECode ActionBarView::ShowOverflowMenu(
+    /* [out] */ Boolean* result)
+{
+    return NOERROR;
+}
+
+ECode ActionBarView::HideOverflowMenu(
+    /* [out] */ Boolean* result)
+{
+    return NOERROR;
+}
+
+ECode ActionBarView::DismissPopupMenus()
+{
+    return NOERROR;
+}
+
+ECode ActionBarView::AnimateToVisibility(
+    /* [in] */ Int32 visibility)
+{
+    return NOERROR;
+}
+
+ECode ActionBarView::SaveHierarchyState(
+    /* [in] */ ISparseArray* toolbarStates)
+{
+    return NOERROR;
+}
+
+ECode ActionBarView::RestoreHierarchyState(
+    /* [in] */ ISparseArray* toolbarStates)
+{
     return NOERROR;
 }
 
@@ -797,10 +868,10 @@ ECode ActionBarView::ExpandedActionViewMenuPresenter::UpdateMenuView(
 
         if (mMenu) {
             Int32 count = 0;
-            mMenu->GetSize(&count);
+            IMenu::Probe(mMenu)->GetSize(&count);
             for (Int32 i = 0; i < count; ++i) {
                 AutoPtr<IMenuItem> item;
-                mMenu->GetItem(i, (IMenuItem**)&item);
+                IMenu::Probe(mMenu)->GetItem(i, (IMenuItem**)&item);
                 if (TO_IINTERFACE(item) == TO_IINTERFACE(mCurrentExpandedItem)) {
                     found = TRUE;
                     break;
@@ -889,7 +960,7 @@ ECode ActionBarView::ExpandedActionViewMenuPresenter::ExpandItemActionView(
     //
     // return true;
 
-    item->GetActionView((IView**)&(mOwner->mExpandedActionView));
+    IMenuItem::Probe(item)->GetActionView((IView**)&(mOwner->mExpandedActionView));
     AutoPtr<IDrawableConstantState> state;
     mOwner->mIcon->GetConstantState((IDrawableConstantState**)&state);
 
@@ -1045,7 +1116,7 @@ const String ActionBarView::TAG("ActionBarView");
 const Int32 ActionBarView::DISPLAY_RELAYOUT_MASK;
 const Int32 ActionBarView::DEFAULT_CUSTOM_GRAVITY;
 
-CAR_INTERFACE_IMPL(ActionBarView, AbsActionBarView, IActionBarView)
+CAR_INTERFACE_IMPL_2(ActionBarView, AbsActionBarView, IDecorToolbar, IActionBarView)
 
 ActionBarView::ActionBarView()
     : mNavigationMode(0)
@@ -1387,7 +1458,7 @@ ECode ActionBarView::SetSplitToolbar(
                 mActionMenuPresenter->SetExpandedActionViewsExclusive(FALSE);
 
                 AutoPtr<IContext> context;
-                GetContext((IContext**)&context);
+                IView::Probe(this)->GetContext((IContext**)&context);
                 AutoPtr<IResources> resources;
                 context->GetResources((IResources**)&resources);
                 AutoPtr<IDisplayMetrics> displayMetrics;
@@ -1604,7 +1675,7 @@ ECode ActionBarView::SetMenu(
         mActionMenuPresenter->SetExpandedActionViewsExclusive(FALSE);
         // Allow full screen width in split mode.
         AutoPtr<IContext> context;
-        GetContext((IContext**)&context);
+        IView::Probe(this)->GetContext((IContext**)&context);
         AutoPtr<IResources> resources;
         context->GetResources((IResources**)&resources);
         AutoPtr<IDisplayMetrics> metrics;
@@ -2311,7 +2382,7 @@ ECode ActionBarView::GenerateLayoutParams(
     // return new ActionBar.LayoutParams(getContext(), attrs);
 
     AutoPtr<IContext> context;
-    GetContext((IContext**)&context);
+    IView::Probe(this)->GetContext((IContext**)&context);
     AutoPtr<IActionBarLayoutParams> lp;
     CActionBarLayoutParams::New(context, attrs, (IActionBarLayoutParams**)&lp);
     *result = IViewGroupLayoutParams::Probe(lp);
@@ -2360,10 +2431,10 @@ ECode ActionBarView::OnSaveInstanceState(
     AutoPtr<SavedState> state = new SavedState(superState);
     if (mExpandedMenuPresenter != NULL && mExpandedMenuPresenter->mCurrentExpandedItem != NULL) {
         Int32 itemId = 0;
-        //mExpandedMenuPresenter->mCurrentExpandedItem->GetItemId(&itemId);
+        IMenuItem::Probe(mExpandedMenuPresenter->mCurrentExpandedItem)->GetItemId(&itemId);
         state->expandedMenuItemId = itemId;
     }
-    IsOverflowMenuShowing(&state->isOverflowOpen);
+    IAbsActionBarView::Probe(this)->IsOverflowMenuShowing(&state->isOverflowOpen);
     *result = state;
     REFCOUNT_ADD(*result);
     return NOERROR;
@@ -2394,7 +2465,7 @@ void ActionBarView::OnRestoreInstanceState(
     View::OnRestoreInstanceState(state->GetSuperState());
     if (state->expandedMenuItemId != 0 && mExpandedMenuPresenter != NULL && mOptionsMenu != NULL) {
         AutoPtr<IMenuItem> item;
-        //mOptionsMenu->FindItem(state->expandedMenuItemId);
+        IMenu::Probe(mOptionsMenu)->FindItem(state->expandedMenuItemId, (IMenuItem**)&item);
         if (item != NULL) {
             Boolean resTmp;
             item->ExpandActionView(&resTmp);
@@ -2863,7 +2934,7 @@ void ActionBarView::OnMeasure(
 
         if (visibleChildren == 0) {
             SetMeasuredDimension(0, 0);
-            return;
+            return ;
         }
     }
 
@@ -2871,14 +2942,14 @@ void ActionBarView::OnMeasure(
     if (widthMode != MeasureSpec::EXACTLY) {
         //throw new IllegalStateException(getClass().getSimpleName() + " can only be used " +
         //        "with android:layout_width=\"match_parent\" (or fill_parent)");
-        return;
+        return ;
     }
 
     Int32 heightMode = View::MeasureSpec::GetMode(heightMeasureSpec);
     if (heightMode != View::MeasureSpec::AT_MOST) {
         //throw new IllegalStateException(getClass().getSimpleName() + " can only be used " +
         //       "with android:layout_height=\"wrap_content\"");
-        return;
+        return ;
     }
 
     Int32 contentWidth = View::MeasureSpec::GetSize(widthMeasureSpec);
@@ -3071,7 +3142,7 @@ void ActionBarView::OnMeasure(
     if (mContextView) {
         Int32 measureHeight = 0;
         GetMeasuredHeight(&measureHeight);
-        //mContextView->SetContentHeight(measureHeight);
+        IAbsActionBarView::Probe(mContextView)->SetContentHeight(measureHeight);
     }
 
     Int32 pv = 0;
@@ -3489,7 +3560,7 @@ void ActionBarView::ConfigPresenters(
     else {
         IMenuPresenter::Probe(mActionMenuPresenter)->InitForMenu(mPopupContext, NULL);
         mExpandedMenuPresenter->InitForMenu(mPopupContext, NULL);
-        //IBaseMenuPresenter::Probe(mActionMenuPresenter)->UpdateMenuView(TRUE);
+        IMenuPresenter::Probe(mActionMenuPresenter)->UpdateMenuView(TRUE);
         mExpandedMenuPresenter->UpdateMenuView(TRUE);
     }
 }
@@ -3522,7 +3593,7 @@ void ActionBarView::SetTitleImpl(
         IView::Probe(mTitleLayout)->SetVisibility(visible ? IView::VISIBLE : IView::GONE);
     }
     if (mLogoNavItem != NULL) {
-        // car has this func: mLogoNavItem->SetTitle(title);
+        IMenuItem::Probe(mLogoNavItem)->SetTitle(title);
     }
     Boolean isEnalbed = FALSE;
     IView::Probe(mUpGoerFive)->IsEnabled(&isEnalbed);
@@ -3699,7 +3770,7 @@ void ActionBarView::InitTitle()
     assert(0);
     if (!mTitleLayout) {
         AutoPtr<IContext> context;
-        GetContext((IContext**)&context);
+        IView::Probe(this)->GetContext((IContext**)&context);
 
         AutoPtr<ILayoutInflater> inflater;
         LayoutInflater::From(context, (ILayoutInflater**)&inflater);

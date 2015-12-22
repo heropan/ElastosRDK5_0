@@ -1,5 +1,6 @@
 
 #include "Elastos.Droid.Net.h"
+//#include "Elastos.Droid.Telephony.h"
 #include "Elastos.Droid.Wifi.h"
 #include "elastos/droid/webkit/native/base/ApplicationState.h"
 #include "elastos/droid/webkit/native/base/ApplicationStatus.h"
@@ -9,6 +10,7 @@
 
 using Elastos::Droid::Content::EIID_IBroadcastReceiver;
 using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Net::IConnectivityManager;
 using Elastos::Droid::Net::INetworkInfo;
 using Elastos::Droid::Telephony::ITelephonyManager;
 using Elastos::Droid::Webkit::Base::ApplicationState;
@@ -167,12 +169,12 @@ String NetworkChangeNotifierAutoDetect::WifiManagerDelegate::GetWifiSSID()
 
     assert(0);
     AutoPtr<IWifiInfo> wifiInfo;
-    //mWifiManager->GetConnectionInfo((IWifiInfo**)&wifiInfo);
+    mWifiManager->GetConnectionInfo((IWifiInfo**)&wifiInfo);
     if (wifiInfo == NULL)
         return String("");
 
     String ssid;
-    //wifiInfo->GetSSID(&ssid);
+    wifiInfo->GetSSID(&ssid);
     return (ssid == String("") ? String("") : ssid);
 }
 
@@ -301,7 +303,7 @@ Int32 NetworkChangeNotifierAutoDetect::GetCurrentConnectionType()
         return NetworkChangeNotifier::CONNECTION_NONE;
     }
 
-    /*switch (mConnectivityManagerDelegate->GetNetworkType()) {
+    switch (mConnectivityManagerDelegate->GetNetworkType()) {
         case IConnectivityManager::TYPE_ETHERNET:
             return NetworkChangeNotifier::CONNECTION_ETHERNET;
         case IConnectivityManager::TYPE_WIFI:
@@ -313,13 +315,15 @@ Int32 NetworkChangeNotifierAutoDetect::GetCurrentConnectionType()
         case IConnectivityManager::TYPE_MOBILE:
             {
                 // Use information from TelephonyManager to classify the connection.
-                switch (mConnectivityManagerDelegate->GetNetworkSubtype()) {
+                /*switch (mConnectivityManagerDelegate->GetNetworkSubtype()) {
                     case ITelephonyManager::NETWORK_TYPE_GPRS:
                     case ITelephonyManager::NETWORK_TYPE_EDGE:
                     case ITelephonyManager::NETWORK_TYPE_CDMA:
                     case ITelephonyManager::NETWORK_TYPE_1xRTT:
                     case ITelephonyManager::NETWORK_TYPE_IDEN:
-                        return NetworkChangeNotifier::CONNECTION_2G;
+                        {
+                            return NetworkChangeNotifier::CONNECTION_2G;
+                        }
                     case ITelephonyManager::NETWORK_TYPE_UMTS:
                     case ITelephonyManager::NETWORK_TYPE_EVDO_0:
                     case ITelephonyManager::NETWORK_TYPE_EVDO_A:
@@ -334,13 +338,11 @@ Int32 NetworkChangeNotifierAutoDetect::GetCurrentConnectionType()
                         return NetworkChangeNotifier::CONNECTION_4G;
                     default:
                         return NetworkChangeNotifier::CONNECTION_UNKNOWN;
-                }
+                }*/
             }
         default:
             return NetworkChangeNotifier::CONNECTION_UNKNOWN;
-    }*/
-
-    return /* temp */0;
+    }
 }
 
 ECode NetworkChangeNotifierAutoDetect::OnReceive(
@@ -376,7 +378,6 @@ void NetworkChangeNotifierAutoDetect::OnApplicationStateChange(
     else if (newState == ApplicationState::HAS_PAUSED_ACTIVITIES) {
         UnregisterReceiver();
     }
-    //return NOERROR;
 }
 
 ECode NetworkChangeNotifierAutoDetect::RegisterReceiver()

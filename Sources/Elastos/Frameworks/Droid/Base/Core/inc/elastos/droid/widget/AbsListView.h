@@ -1879,6 +1879,8 @@ public:
         /* [in] */ Int32 position,
         /* [in] */ Int32 y);
 
+    virtual CARAPI HideSelector();
+
 protected:
     /**
      * What is the distance between the source and destination rectangles given the direction of
@@ -2143,8 +2145,6 @@ protected:
      */
     virtual CARAPI FillGap(
         /* [in] */ Boolean down) = 0;
-
-    virtual CARAPI_(void) HideSelector();
 
     /**
      * @return A position to select. First we try mSelectedPosition. If that has been clobbered by

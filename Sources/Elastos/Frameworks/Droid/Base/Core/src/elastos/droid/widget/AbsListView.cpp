@@ -7122,7 +7122,7 @@ Int32 AbsListView::GetFooterViewsCount()
     return 0;
 }
 
-void AbsListView::HideSelector()
+ECode AbsListView::HideSelector()
 {
     if (mSelectedPosition != IAdapterView::INVALID_POSITION) {
         if (mLayoutMode != LAYOUT_SPECIFIC) {
@@ -7137,6 +7137,7 @@ void AbsListView::HideSelector()
         SetNextSelectedPositionInt(IAdapterView::INVALID_POSITION);
         mSelectedTop = 0;
     }
+    return NOERROR;
 }
 
 Int32 AbsListView::ReconcileSelectedPosition()

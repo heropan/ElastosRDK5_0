@@ -48,7 +48,7 @@ using Elastos::Core::StringUtils;
 using Elastos::IO::CFileOutputStream;
 using Elastos::IO::IFileOutputStream;
 using Elastos::IO::IOutputStream;
-//using Elastos::IO::IWriter;
+using Elastos::IO::IFlushable;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Logger;
 
@@ -363,7 +363,8 @@ ECode CWindowManagerGlobal::AddView(
 
         AutoPtr<IContext> context;
         view->GetContext((IContext**)&context);
-        //root = new ViewRootImpl(context, display);
+        assert(0);
+        //-- abstract class: root = new ViewRootImpl(context, display);
         view->SetLayoutParams(params);
 
         mViews->Add(view);
@@ -457,7 +458,7 @@ ECode CWindowManagerGlobal::CloseAll(
     Int32 count = 0;
     mViews->GetSize(&count);
     for (Int32 i = count - 1; i >= 0; --i) {
-        //Log.i("foo", "@ " + i + " token " + (*mParams)[i].token
+        //Logger::I("foo", "@ " + i + " token " + (*mParams)[i].token
         //        + " view " + (*mRoots)[i].getView());
         AutoPtr<IInterface> temp;
         mParams->Get(i, (IInterface**)&temp);
@@ -582,7 +583,6 @@ ECode CWindowManagerGlobal::TrimMemory(
         if (ShouldDestroyEglContext(level)) {
             // Destroy all hardware surfaces and resources associated to
             // known windows
-
             {
                 AutoLock lock(mLock);
                 Int32 count;
@@ -597,7 +597,7 @@ ECode CWindowManagerGlobal::TrimMemory(
             level = IComponentCallbacks2::TRIM_MEMORY_COMPLETE;
         }
 
-        //-- HardwareRenderer file trans wrong: HardwareRenderer::TrimMemory(level);
+        HardwareRenderer::TrimMemory(level);
         if (HardwareRenderer::sTrimForeground) {
             DoTrimForeground();
         }
@@ -641,7 +641,7 @@ void CWindowManagerGlobal::DoTrimForeground()
     }
 
     if (!hasVisibleWindows) {
-        //-- HardwareRenderer trans wrong: HardwareRenderer::TrimMemory(IComponentCallbacks2::TRIM_MEMORY_COMPLETE);
+        HardwareRenderer::TrimMemory(IComponentCallbacks2::TRIM_MEMORY_COMPLETE);
     }
 }
 
@@ -677,8 +677,8 @@ ECode CWindowManagerGlobal::DumpGfxInfo(
 
                     AutoPtr<IView> viewTmp;
                     root->GetView((IView**)&viewTmp);
-                    //View* viewTmp1 = (View*)viewTmp.Get();
-                    AutoPtr<IHardwareRenderer> renderer = NULL;//viewTmp1->mAttachInfo->mHardwareRenderer;
+                    View* viewTmp1 = (View*)viewTmp.Get();
+                    AutoPtr<IHardwareRenderer> renderer = viewTmp1->mAttachInfo->mHardwareRenderer;
                     if (renderer != NULL) {
                         renderer->DumpGfxInfo(pw, fd);
                     }
@@ -738,8 +738,8 @@ ECode CWindowManagerGlobal::DumpGfxInfo(
             }
         }
     //} finally {
-        //IWriter* writerTmp = IWriter::Probe(pw);
-        //writerTmp->Flush();
+        IFlushable* flushTmp = IFlushable::Probe(pw);
+        flushTmp->Flush();
     //}
     return NOERROR;
 }

@@ -44,7 +44,6 @@ ECode DrawGLFunctor::DestroyRunnable::DetachNativeFunctor()
     // }
     // mViewRootImpl = null;
 
-    assert(0);
     if (mNativeDrawGLFunctor != 0 && mViewRootImpl != NULL) {
         mViewRootImpl->DetachFunctor(mNativeDrawGLFunctor);
     }
@@ -64,7 +63,6 @@ DrawGLFunctor::DrawGLFunctor(
     // mDestroyRunnable = new DestroyRunnable(nativeCreateGLFunctor(viewContext));
     // mCleanupReference = new CleanupReference(this, mDestroyRunnable);
 
-    assert(0);
     mDestroyRunnable = new DestroyRunnable(NativeCreateGLFunctor(viewContext));
     mCleanupReference = new CleanupReference(this, mDestroyRunnable);
 }
@@ -79,7 +77,6 @@ ECode DrawGLFunctor::Destroy()
     //     mDestroyRunnable = null;
     // }
 
-    assert(0);
     Detach();
     if (mCleanupReference != NULL) {
         mCleanupReference->CleanupNow();
@@ -125,7 +122,6 @@ Boolean DrawGLFunctor::RequestDrawGL(
     // }
     // return true;
 
-    assert(0);
     if (0 == mDestroyRunnable->mNativeDrawGLFunctor) {
         //throw new RuntimeException("requested DrawGL on already destroyed DrawGLFunctor");
         assert(0);
@@ -164,21 +160,18 @@ ECode DrawGLFunctor::SetChromiumAwDrawGLFunction(
 Int64 DrawGLFunctor::NativeCreateGLFunctor(
     /* [in] */ Int64 viewContext)
 {
-    assert(0);
     return 0;
 }
 
 ECode DrawGLFunctor::NativeDestroyGLFunctor(
     /* [in] */ Int64 functor)
 {
-    assert(0);
     return NOERROR;
 }
 
 ECode DrawGLFunctor::NativeSetChromiumAwDrawGLFunction(
     /* [in] */ Int64 functionPointer)
 {
-    assert(0);
     return NOERROR;
 }
 

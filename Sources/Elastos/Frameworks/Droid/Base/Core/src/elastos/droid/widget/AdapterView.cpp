@@ -190,7 +190,8 @@ ECode AdapterView::SelectionNotifier::Run()
         ((IAdapterView*)(mHost->Probe(EIID_IAdapterView)))->GetAdapter((IAdapter**)&adapter);
         if (adapter != NULL) {
             AutoPtr<IRunnable> r = (IRunnable*)this->Probe(EIID_IRunnable);
-            //mHost->Post(r);
+            Boolean resTmp;
+            mHost->Post(r, &resTmp);
         }
     }
     else {
@@ -259,8 +260,10 @@ ECode AdapterView::constructor(
 {
     ViewGroup::constructor(context, attrs, defStyle, defStyleRes);
     // If not explicitly specified this view is important for accessibility.
-    if (-1/* func should in View: GetImportantForAccessibility()*/ == IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
-        //SetImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
+    Int32 intTmp = 0;
+    GetImportantForAccessibility(&intTmp);
+    if (intTmp == IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+        SetImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
     }
     return NOERROR;
 }
@@ -616,8 +619,9 @@ ECode AdapterView::GetPositionForView(
     // Search the children for the list item
     Int32 childCount = 0;
     GetChildCount(&childCount);
-    for (Int32 i = 0; i < childCount; i++) {
-        AutoPtr<IView> child;// = GetChildAt(i);
+    for (Int32 i = 0; i < childCount; ++i) {
+        AutoPtr<IView> child;
+        GetChildAt(i, (IView**)&child);
         if (child.Get() == listItem) {
             *result = mFirstPosition + i;
             return NOERROR;
@@ -943,7 +947,8 @@ ECode AdapterView::OnDetachedFromWindow()
 {
     ViewGroup::OnDetachedFromWindow();
     if (mSelectionNotifier != NULL) {
-        //-- func is should in View: RemoveCallbacks(mSelectionNotifier);
+        Boolean resTmp;
+        RemoveCallbacks(mSelectionNotifier, &resTmp);
     }
     return NOERROR;
 }
@@ -963,7 +968,8 @@ void AdapterView::SelectionChanged()
             if (mSelectionNotifier == NULL) {
                 mSelectionNotifier = new SelectionNotifier(this);
             }
-            //Post(mSelectionNotifier);
+            Boolean resTmp;
+            Post(mSelectionNotifier, &resTmp);
         }
         else {
             FireOnSelected();
@@ -1286,14 +1292,14 @@ Int32 AdapterView::FindSyncPosition()
 
         if (hitFirst || (next && !hitLast)) {
             // Either we hit the top, or we are trying to move down
-            last++;
+            ++last;
             seed = last;
             // Try going up next time
             next = FALSE;
         }
         else if (hitLast || (!next && !hitFirst)) {
             // Either we hit the bottom, or we are trying to move up
-            first--;
+            --first;
             seed = first;
             // Try going down next time
             next = TRUE;
@@ -1338,7 +1344,8 @@ void AdapterView::RememberSyncState()
         mSyncHeight = mLayoutHeight;
         if (mSelectedPosition >= 0) {
             // Sync the selection state
-            AutoPtr<IView> v;// = GetChildAt(mSelectedPosition - mFirstPosition);
+            AutoPtr<IView> v;
+            GetChildAt(mSelectedPosition - mFirstPosition, (IView**)&v);
             mSyncRowId = mNextSelectedRowId;
             mSyncPosition = mNextSelectedPosition;
             if (v != NULL) {
@@ -1348,7 +1355,8 @@ void AdapterView::RememberSyncState()
         }
         else {
             // Sync the based on the offset of the first view
-            AutoPtr<IView> v;// = GetChildAt(0);
+            AutoPtr<IView> v;
+            GetChildAt(0, (IView**)&v);
             AutoPtr<IAdapter> adapter;
             THIS_PROBE(IAdapterView)->GetAdapter((IAdapter**)&adapter);
             Int32 count;
@@ -1370,6 +1378,6 @@ void AdapterView::RememberSyncState()
     }
 }
 
-}// namespace Widget
-}// namespace Droid
-}// namespace Elastos
+} // namespace Widget
+} // namespace Droid
+} // namespace Elastos

@@ -2,12 +2,13 @@
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/text/TextUtils.h"
-//#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/view/CView.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
 #include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
 #include "elastos/droid/webkit/native/ui/ColorSuggestion.h"
 #include "elastos/droid/webkit/native/ui/ColorSuggestionListAdapter.h"
-//#include "elastos/droid/widget/CLinearLayout.h"
-//#include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
+#include "elastos/droid/widget/CLinearLayout.h"
+#include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
 
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
@@ -15,15 +16,16 @@ using Elastos::Droid::Graphics::Drawable::IGradientDrawable;
 using Elastos::Droid::Graphics::Drawable::ILayerDrawable;
 using Elastos::Droid::Graphics::IColor;
 using Elastos::Droid::Text::TextUtils;
-//using Elastos::Droid::View::CViewGroupLayoutParams;
+using Elastos::Droid::View::CView;
+using Elastos::Droid::View::CViewGroupLayoutParams;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::View::IViewGroupMarginLayoutParams;
 using Elastos::Droid::View::IViewManager;
 using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
 using Elastos::Droid::Webkit::Ui::ColorSuggestion;
-//using Elastos::Droid::Widget::CLinearLayout;
-//using Elastos::Droid::Widget::CLinearLayoutLayoutParams;
+using Elastos::Droid::Widget::CLinearLayout;
+using Elastos::Droid::Widget::CLinearLayoutLayoutParams;
 using Elastos::Droid::Widget::ILinearLayout;
 using Elastos::Droid::Widget::ILinearLayoutLayoutParams;
 using Elastos::Core::CString;
@@ -51,7 +53,7 @@ ColorSuggestionListAdapter::ColorSuggestionListAdapter(
 }
 
 ECode ColorSuggestionListAdapter::SetOnColorSuggestionClickListener(
-    /* [in] */ OnColorSuggestionClickListener* listener)
+    /* [in] */ IOnColorSuggestionClickListener* listener)
 {
     VALIDATE_NOT_NULL(listener);
     // ==================before translated======================
@@ -87,7 +89,7 @@ ECode ColorSuggestionListAdapter::OnClick(
         return NOERROR;
     }
 
-    mListener->OnColorSuggestionClick(suggestion);
+    mListener->OnColorSuggestionClick(TO_IINTERFACE(suggestion));
     return NOERROR;
 }
 
@@ -136,27 +138,24 @@ ECode ColorSuggestionListAdapter::GetView(
         layout = maybelinear;
     }
     else {
-        //CLinearLayout::New(mContext, (ILinearLayout**)&layout);
+        CLinearLayout::New(mContext, (ILinearLayout**)&layout);
         AutoPtr<IViewGroupLayoutParams> params;
-        //CViewGroupLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::WRAP_CONTENT, (IViewGroupLayoutParams**)&params);
+        CViewGroupLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::WRAP_CONTENT, (IViewGroupLayoutParams**)&params);
 
-        //layout->SetLayoutParams(params);
+        IView::Probe(layout)->SetLayoutParams(params);
         layout->SetOrientation(ILinearLayout::HORIZONTAL);
-        //layout->SetBackgroundColor(IColor::WHITE);
+        IView::Probe(layout)->SetBackgroundColor(IColor::WHITE);
 
         Int32 buttonHeight = 0;
         AutoPtr<IResources> resource;
         mContext->GetResources((IResources**)&resource);
         resource->GetDimensionPixelOffset(-1/*R::dimen::color_button_height*/, &buttonHeight);
-
-        IViewManager* viewManager = IViewManager::Probe(layout);
-
         for (Int32 i = 0; i < COLORS_PER_ROW; ++i) {
             AutoPtr<IView> button;
-            //CView::New(mContext, (IView**)&button);
+            CView::New(mContext, (IView**)&button);
 
             AutoPtr<ILinearLayoutLayoutParams> layoutParams;
-            //CLinearLayoutLayoutParams::New(0, buttonHeight, 1f, (ILinearLayoutLayoutParams**)&layoutParams);
+            CLinearLayoutLayoutParams::New(0, buttonHeight, 1.0f, (ILinearLayoutLayoutParams**)&layoutParams);
 
             IViewGroupMarginLayoutParams* viewGroupParams = IViewGroupMarginLayoutParams::Probe(layoutParams);
             ApiCompatibilityUtils::SetMarginStart(viewGroupParams, -1);
@@ -166,7 +165,7 @@ ECode ColorSuggestionListAdapter::GetView(
             IViewGroupLayoutParams* viewGroupLayoutParams = IViewGroupLayoutParams::Probe(layoutParams);
             button->SetLayoutParams(viewGroupLayoutParams);
             button->SetBackgroundResource(-1/*R::drawable::color_button_background*/);
-            viewManager->AddView(button, NULL); // is addView(Parm1) or addView(Parm1, Param2)
+            IViewGroup::Probe(layout)->AddView(button);
         }
     }
 
@@ -243,6 +242,7 @@ ECode ColorSuggestionListAdapter::SetUpColorButton(
     // button.setContentDescription(description);
     // button.setOnClickListener(this);
 
+    assert(0);
     IView* viewTmp = IView::Probe(button);
     if (index >= mSuggestions->GetLength()) {
         viewTmp->SetTag(NULL);

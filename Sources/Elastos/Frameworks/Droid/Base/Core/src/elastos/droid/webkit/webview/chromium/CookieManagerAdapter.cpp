@@ -1,8 +1,10 @@
 
 #include "elastos/droid/net/CWebAddress.h"
 #include "elastos/droid/webkit/webview/chromium/CookieManagerAdapter.h"
+#include "elastos/core/AutoLock.h"
 
 using Elastos::Droid::Net::CWebAddress;
+using Elastos::Core::AutoLock;
 
 namespace Elastos {
 namespace Droid {
@@ -21,6 +23,8 @@ CookieManagerAdapter::CookieManagerAdapter(
 {
     // ==================before translated======================
     // mChromeCookieManager = chromeCookieManager;
+
+    assert(mChromeCookieManager);
 }
 
 // synchronized
@@ -30,6 +34,7 @@ ECode CookieManagerAdapter::SetAcceptCookie(
     // ==================before translated======================
     // mChromeCookieManager.setAcceptCookie(accept);
 
+    AutoLock lock(this);
     mChromeCookieManager->SetAcceptCookie(accept);
     return NOERROR;
 }
@@ -42,6 +47,7 @@ ECode CookieManagerAdapter::AcceptCookie(
     // ==================before translated======================
     // return mChromeCookieManager.acceptCookie();
 
+    AutoLock lock(this);
     *result = mChromeCookieManager->AcceptCookie();
     return NOERROR;
 }
@@ -55,7 +61,7 @@ ECode CookieManagerAdapter::SetAcceptThirdPartyCookies(
     // ==================before translated======================
     // webView.getSettings().setAcceptThirdPartyCookies(accept);
 
-    assert(0);
+    AutoLock lock(this);
     AutoPtr<IWebSettings> webSettings;
     webView->GetSettings((IWebSettings**)&webSettings);
     return webSettings->SetAcceptThirdPartyCookies(accept);
@@ -71,7 +77,7 @@ ECode CookieManagerAdapter::AcceptThirdPartyCookies(
     // ==================before translated======================
     // return webView.getSettings().getAcceptThirdPartyCookies();
 
-    assert(0);
+    AutoLock lock(this);
     AutoPtr<IWebSettings> webSettings;
     webView->GetSettings((IWebSettings**)&webSettings);
     return webSettings->GetAcceptThirdPartyCookies(result);
@@ -162,7 +168,7 @@ ECode CookieManagerAdapter::GetCookie(
     // ==================before translated======================
     // return mChromeCookieManager.getCookie(uri.toString());
 
-    assert(0);
+    AutoLock lock(this);
     String address;
     IObject* objTmp = IObject::Probe(uri);
     objTmp->ToString(&address);
@@ -218,6 +224,7 @@ ECode CookieManagerAdapter::HasCookies(
     // ==================before translated======================
     // return mChromeCookieManager.hasCookies();
 
+    AutoLock lock(this);
     *result = mChromeCookieManager->HasCookies();
     return NOERROR;
 }
@@ -231,6 +238,7 @@ ECode CookieManagerAdapter::HasCookies(
     // ==================before translated======================
     // return mChromeCookieManager.hasCookies();
 
+    AutoLock lock(this);
     *result = mChromeCookieManager->HasCookies();
     return NOERROR;
 }
@@ -279,7 +287,6 @@ String CookieManagerAdapter::FixupUrl(
     // // do the same normalisation before entering the chromium stack.
     // return new WebAddress(url).toString();
 
-    assert(0);
     AutoPtr<IWebAddress> webAddress;
     CWebAddress::New(url, (IWebAddress**)&webAddress);
     IObject* objTmp = IObject::Probe(webAddress);

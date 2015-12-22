@@ -2,13 +2,13 @@
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/CHandler.h"
-//#include "elastos/droid/view/CChoreographerHelper.h"
+#include "elastos/droid/view/CChoreographerHelper.h"
 #include "elastos/droid/webkit/native/base/TraceEvent.h"
 #include "elastos/droid/webkit/native/ui/VSyncMonitor.h"
 
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::CHandler;
-//using Elastos::Droid::View::CChoreographerHelper;
+using Elastos::Droid::View::CChoreographerHelper;
 using Elastos::Droid::View::EIID_IFrameCallback;
 using Elastos::Droid::View::IChoreographer;
 using Elastos::Droid::View::IChoreographerHelper;
@@ -35,6 +35,8 @@ VSyncMonitor::InnerChoreographerFrameCallback::InnerChoreographerFrameCallback(
 {
     // ==================before translated======================
     // mOwner = owner;
+
+    assert(mOwner);
 }
 
 ECode VSyncMonitor::InnerChoreographerFrameCallback::DoFrame(
@@ -64,6 +66,8 @@ VSyncMonitor::InnerVSyncTimerRunnable::InnerVSyncTimerRunnable(
 {
     // ==================before translated======================
     // mOwner = owner;
+
+    assert(mOwner);
 }
 
 ECode VSyncMonitor::InnerVSyncTimerRunnable::Run()
@@ -92,6 +96,8 @@ VSyncMonitor::InnerVSyncSyntheticRunnable::InnerVSyncSyntheticRunnable(
 {
     // ==================before translated======================
     // mOwner = owner;
+
+    assert(mOwner);
 }
 
 ECode VSyncMonitor::InnerVSyncSyntheticRunnable::Run()
@@ -117,21 +123,8 @@ const Int64 VSyncMonitor::NANOSECONDS_PER_SECOND;
 const Int64 VSyncMonitor::NANOSECONDS_PER_MILLISECOND;
 const Int64 VSyncMonitor::NANOSECONDS_PER_MICROSECOND;
 
-VSyncMonitor::VSyncMonitor(
-    /* [in] */ IContext* context,
-    /* [in] */ Listener* listener)
-    // warning : VSyncMonitor(context, listener, TRUE)
-{
-    // ==================before translated======================
-    // this(context, listener, true);
-}
-
-VSyncMonitor::VSyncMonitor(
-    /* [in] */ IContext* context,
-    /* [in] */ Listener* listener,
-    /* [in] */ Boolean enableJBVSync)
-    : mListener(listener)
-    , mRefreshPeriodNano(0)
+VSyncMonitor::VSyncMonitor()
+    : mRefreshPeriodNano(0)
     , mHaveRequestInFlight(FALSE)
     , mTriggerNextVSyncCount(0)
     , mChoreographer(NULL)
@@ -141,6 +134,23 @@ VSyncMonitor::VSyncMonitor(
     , mLastPostedNano(0)
     , mSyntheticVSyncRunnable(NULL)
     , mLastVSyncCpuTimeNano(0)
+{
+}
+
+ECode VSyncMonitor::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ Listener* listener)
+{
+    // ==================before translated======================
+    // this(context, listener, true);
+
+    return VSyncMonitor::constructor(context, listener, TRUE);
+}
+
+ECode VSyncMonitor::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ Listener* listener,
+    /* [in] */ Boolean enableJBVSync)
 {
     // ==================before translated======================
     // mListener = listener;
@@ -189,7 +199,7 @@ VSyncMonitor::VSyncMonitor(
     // };
     // mGoodStartingPointNano = getCurrentNanoTime();
 
-    assert(0);
+    mListener = listener;
     CHandler::New((IHandler**)&mHandler);
 
     AutoPtr<IInterface> interfaceTmp;
@@ -209,7 +219,7 @@ VSyncMonitor::VSyncMonitor(
     if (enableJBVSync && Build::VERSION::SDK_INT >= Build::VERSION_CODES::JELLY_BEAN) {
         // Use Choreographer on JB+ to get notified of vsync.
         AutoPtr<IChoreographerHelper> helper;
-        //CChoreographerHelper::AcquireSingletion((IChoreographerHelper**)&helper);
+        CChoreographerHelper::AcquireSingleton((IChoreographerHelper**)&helper);
         helper->GetInstance((IChoreographer**)&mChoreographer);
         mVSyncFrameCallback = new InnerChoreographerFrameCallback(this);
         mVSyncRunnableCallback = NULL;
@@ -223,6 +233,7 @@ VSyncMonitor::VSyncMonitor(
     }
     mSyntheticVSyncRunnable = new InnerVSyncSyntheticRunnable(this);
     mGoodStartingPointNano = GetCurrentNanoTime();
+    return NOERROR;
 }
 
 Int64 VSyncMonitor::GetVSyncPeriodInMicroseconds()

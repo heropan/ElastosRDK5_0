@@ -17,13 +17,13 @@ namespace Ui {
 ColorPickerMoreButton::ColorPickerMoreButton(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
-    //: Button(context, attrs)
     : mBorderPaint(NULL)
 {
     // ==================before translated======================
     // super(context, attrs);
     // init();
 
+    Button::constructor(context, attrs);
     Init();
 }
 
@@ -31,13 +31,13 @@ ColorPickerMoreButton::ColorPickerMoreButton(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle)
-    //: Button(context, attrs, defStyle)
     : mBorderPaint(NULL)
 {
     // ==================before translated======================
     // super(context, attrs, defStyle);
     // init();
 
+    Button::constructor(context, attrs, defStyle);
     Init();
 }
 
@@ -62,17 +62,19 @@ ECode ColorPickerMoreButton::Init()
     return NOERROR;
 }
 
-ECode ColorPickerMoreButton::OnDraw(
+void ColorPickerMoreButton::OnDraw(
     /* [in] */ ICanvas* canvas)
 {
-    VALIDATE_NOT_NULL(canvas);
     // ==================before translated======================
     // canvas.drawRect(0.5f, 0.5f, getWidth() - 1.5f, getHeight() - 1.5f, mBorderPaint);
     // super.onDraw(canvas);
 
-    canvas->DrawRect(0.5f, 0.5f, /*GetWidth() -*/ 1.5f, /*GetHeight() -*/ 1.5f, mBorderPaint);
-    //Button::OnDraw(canvas);
-    return NOERROR;
+    Int32 width = 0, height = 0;
+    GetWidth(&width);
+    GetHeight(&height);
+
+    canvas->DrawRect(0.5f, 0.5f, width - 1.5f, height - 1.5f, mBorderPaint);
+    Button::OnDraw(canvas);
 }
 
 } // namespace Ui

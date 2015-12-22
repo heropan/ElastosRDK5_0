@@ -409,7 +409,7 @@ ECode AnimationUtils::CreateInterpolatorFromXml(
     return NOERROR;
 }
 
-}   //namespace Animation
-}   //namespace View
-}   //namespace Droid
-}   //namespace Elastos
+} //namespace Animation
+} //namespace View
+} //namespace Droid
+} //namespace Elastos

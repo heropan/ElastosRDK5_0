@@ -3,6 +3,7 @@
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/text/CTextUtils.h"
+#include "elastos/droid/internal/widget/CAbsListViewAutoScroller.h"
 #include "elastos/droid/utility/CDisplayMetrics.h"
 #include "elastos/droid/view/animation/CAccelerateDecelerateInterpolator.h"
 #include "elastos/droid/view/CKeyEventHelper.h"
@@ -12,7 +13,7 @@
 #include "elastos/droid/widget/CLinearLayout.h"
 #include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
 #include "elastos/droid/widget/ListPopupWindow.h"
-//#include "elastos/droid/widget/PopupWindow.h"
+#include "elastos/droid/widget/CPopupWindow.h"
 #include "elastos/core/CoreUtils.h"
 #include "elastos/core/Math.h"
 #include <elastos/utility/logging/Logger.h>
@@ -23,6 +24,7 @@ using Elastos::Droid::Animation::IObjectAnimator;
 using Elastos::Droid::Animation::IObjectAnimatorHelper;
 using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Database::EIID_IDataSetObserver;
+using Elastos::Droid::Internal::Widget::CAbsListViewAutoScroller;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Text::CTextUtils;
 using Elastos::Droid::Text::ITextUtils;
@@ -47,6 +49,7 @@ using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::View::View;
 using Elastos::Droid::Widget::CLinearLayout;
+using Elastos::Droid::Widget::CPopupWindow;
 using Elastos::Core::CoreUtils;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Utility::Logging::Logger;
@@ -524,7 +527,8 @@ Boolean ListPopupWindow::ForwardingListener::OnTouchForwarded(
     }
 
     AutoPtr<DropDownListView> dst = ((ListPopupWindow*)popup.Get())->mDropDownList;
-    Boolean isShown = FALSE;// =dst->IsShown();
+    Boolean isShown = FALSE;
+    dst->IsShown(&isShown);
     if (dst == NULL || !isShown) {
         return FALSE;
     }
@@ -537,7 +541,7 @@ Boolean ListPopupWindow::ForwardingListener::OnTouchForwarded(
 
     Boolean resTmp;
     src->ToGlobalMotionEvent(dstEvent, &resTmp);
-    //dst->ToLocalMotionEvent(dstEvent, &resTmp);
+    dst->ToLocalMotionEvent(dstEvent, &resTmp);
 
     // Forward converted event to destination view, then recycle it.
     Boolean handled = FALSE;
@@ -561,6 +565,8 @@ ListPopupWindow::InnerForwardingListener::InnerForwardingListener(
 {
     // ==================before translated======================
     // mOwner = owner;
+
+    assert(mOwner);
 }
 
 ECode ListPopupWindow::InnerForwardingListener::GetPopup(
@@ -601,7 +607,8 @@ ECode ListPopupWindow::DropDownListView::InnerAnimatorListenerAdapter::OnAnimati
     // ==================before translated======================
     // performItemClick(child, position, id);
 
-    return NOERROR;//mOwner->PerformItemClick(mChild, mPosition, mId);
+    Boolean resTmp;
+    return mOwner->PerformItemClick(mChild, mPosition, mId, &resTmp);
 }
 
 //=====================================================================
@@ -622,10 +629,10 @@ ListPopupWindow::DropDownListView::DropDownListView(
     // setCacheColorHint(0); // Transparent, since the background drawable could be anything.
 
     assert(0);
-    //super(context, null, com.android.internal.R.attr.dropDownListViewStyle);
+    ListView::constructor(context, NULL, R::attr::dropDownListViewStyle);
     mHijackFocus = hijackFocus;
     // TODO: Add an API to control this
-    //--SetCacheColorHint(0); // Transparent, since the background drawable could be anything.
+    SetCacheColorHint(0); // Transparent, since the background drawable could be anything.
 }
 
 ECode ListPopupWindow::DropDownListView::OnForwardedEvent(
@@ -715,16 +722,16 @@ ECode ListPopupWindow::DropDownListView::OnForwardedEvent(
                 Int32 x = (event->GetX(activeIndex, &xTmp), (Int32)xTmp);
                 Int32 y = (event->GetY(activeIndex, &yTmp), (Int32)yTmp);
                 Int32 position = 0;
-                //--PointToPosition(x, y, &position);
-                if (position == -1/*INVALID_POSITION*/) {
+                PointToPosition(x, y, &position);
+                if (position == INVALID_POSITION) {
                     clearPressedItem = TRUE;
                     break;
                 }
 
-                //--Int32 visiblePosition = 0;
-                //--GetFirstVisiblePosition(&visiblePosition);
+                Int32 visiblePosition = 0;
+                GetFirstVisiblePosition(&visiblePosition);
                 AutoPtr<IView> child;
-                //--GetChildAt(position - visiblePosition, (IView**)&child);
+                GetChildAt(position - visiblePosition, (IView**)&child);
                 SetPressedItem(child, position, x, y);
                 handledEvent = TRUE;
 
@@ -743,13 +750,14 @@ ECode ListPopupWindow::DropDownListView::OnForwardedEvent(
     // Manage automatic scrolling.
     if (handledEvent) {
         if (mScrollHelper == NULL) {
-            //mScrollHelper = new AbsListViewAutoScroller(this);
+            CAbsListViewAutoScroller::New(this, (IAbsListViewAutoScroller**)&mScrollHelper);
         }
-        //mScrollHelper->SetEnabled(TRUE);
-        //mScrollHelper->OnTouch(this, event);
+        IView::Probe(mScrollHelper)->SetEnabled(TRUE);
+        Boolean resTmp;
+        IViewOnTouchListener::Probe(mScrollHelper)->OnTouch(this, event, &resTmp);
     }
     else if (mScrollHelper != NULL) {
-        //mScrollHelper->SetEnabled(FALSE);
+        IView::Probe(mScrollHelper)->SetEnabled(FALSE);
     }
 
     *result = handledEvent;
@@ -762,7 +770,7 @@ Boolean ListPopupWindow::DropDownListView::TouchModeDrawsInPressedState()
     // return mDrawsInPressedState || super.touchModeDrawsInPressedState();
 
     assert(0);
-    return mDrawsInPressedState;// || super.touchModeDrawsInPressedState();
+    return mDrawsInPressedState || ListView::TouchModeDrawsInPressedState();
 }
 
 AutoPtr<IView> ListPopupWindow::DropDownListView::ObtainView(
@@ -778,8 +786,7 @@ AutoPtr<IView> ListPopupWindow::DropDownListView::ObtainView(
     //
     // return view;
 
-    assert(0);
-    AutoPtr<IView> view;// = ListView::ObtainView(position, isScrap);
+    AutoPtr<IView> view = ListView::ObtainView(position, isScrap);
     ITextView* textView = ITextView::Probe(view);
     if (textView) {
         textView->SetHorizontallyScrolling(TRUE);
@@ -793,8 +800,9 @@ Boolean ListPopupWindow::DropDownListView::IsInTouchMode()
     // // WARNING: Please read the comment where mListSelectionHidden is declared
     // return (mHijackFocus && mListSelectionHidden) || super.isInTouchMode();
 
-    assert(0);
-    return (mHijackFocus && mListSelectionHidden) /*|| ListView::IsInTouchMode()*/;
+    Boolean resTmp = FALSE;
+    ListView::IsInTouchMode(&resTmp);
+    return (mHijackFocus && mListSelectionHidden) || resTmp;
 }
 
 Boolean ListPopupWindow::DropDownListView::HasWindowFocus()
@@ -802,8 +810,9 @@ Boolean ListPopupWindow::DropDownListView::HasWindowFocus()
     // ==================before translated======================
     // return mHijackFocus || super.hasWindowFocus();
 
-    assert(0);
-    return mHijackFocus /*|| ListView::HasWindowFocus()*/;
+    Boolean resTmp = FALSE;
+    ListView::HasWindowFocus(&resTmp);
+    return mHijackFocus || resTmp;
 }
 
 Boolean ListPopupWindow::DropDownListView::IsFocused()
@@ -811,8 +820,9 @@ Boolean ListPopupWindow::DropDownListView::IsFocused()
     // ==================before translated======================
     // return mHijackFocus || super.isFocused();
 
-    assert(0);
-    return mHijackFocus /*|| ListView::IsFocused()*/;
+    Boolean resTmp = FALSE;
+    ListView::IsFocused(&resTmp);
+    return mHijackFocus || resTmp;
 }
 
 Boolean ListPopupWindow::DropDownListView::HasFocus()
@@ -820,8 +830,9 @@ Boolean ListPopupWindow::DropDownListView::HasFocus()
     // ==================before translated======================
     // return mHijackFocus || super.hasFocus();
 
-    assert(0);
-    return mHijackFocus /*|| ListView::HasFocus()*/;
+    Boolean resTmp = FALSE;
+    ListView::HasFocus(&resTmp);
+    return mHijackFocus || resTmp;
 }
 
 void ListPopupWindow::DropDownListView::ClickPressedItem(
@@ -849,7 +860,7 @@ void ListPopupWindow::DropDownListView::ClickPressedItem(
 
     assert(0);
     Int64 id = 0;
-    //--GetItemIdAtPosition(position, &id);
+    GetItemIdAtPosition(position, &id);
 
     AutoPtr<IObjectAnimatorHelper> helper;
     CObjectAnimatorHelper::AcquireSingleton((IObjectAnimatorHelper**)&helper);
@@ -860,7 +871,7 @@ void ListPopupWindow::DropDownListView::ClickPressedItem(
     values->Set(1, CLICK_ANIM_ALPHA);
     values->Set(2, 0xFF);
     AutoPtr<IObjectAnimator> animTmp;
-    helper->OfInt32(NULL/*TO_IINTERFACE(mSelector)*/, alphaPorperty, values, (IObjectAnimator**)&animTmp);
+    helper->OfInt32(TO_IINTERFACE(mSelector), alphaPorperty, values, (IObjectAnimator**)&animTmp);
     IAnimator* anim = IAnimator::Probe(animTmp);
 
     anim->SetDuration(CLICK_ANIM_DURATION);
@@ -895,8 +906,8 @@ void ListPopupWindow::DropDownListView::ClearPressedItem()
 
     assert(0);
     mDrawsInPressedState = FALSE;
-    //SetPressed(FALSE);
-    //UpdateSelectorState();
+    SetPressed(FALSE);
+    UpdateSelectorState();
 
     if (mClickAnimation != NULL) {
         mClickAnimation->Cancel();
@@ -936,16 +947,16 @@ void ListPopupWindow::DropDownListView::SetPressedItem(
 
     // Ordering is essential. First update the pressed state and layout
     // the children. This will ensure the selector actually gets drawn.
-    //--SetPressed(TRUE);
-    //--LayoutChildren();
+    SetPressed(TRUE);
+    LayoutChildren();
 
     // Ensure that keyboard focus starts from the last touched position.
-    //--SetSelectedPositionInt(position);
-    //--PositionSelectorLikeTouch(position, child, x, y);
+    SetSelectedPositionInt(position);
+    PositionSelectorLikeTouch(position, child, x, y);
 
     // Refresh the drawable state to reflect the new pressed state,
     // which will also update the selector state.
-    //--RefreshDrawableState();
+    RefreshDrawableState();
 
     if (mClickAnimation != NULL) {
         mClickAnimation->Cancel();
@@ -1080,9 +1091,9 @@ ECode ListPopupWindow::ResizePopupRunnable::Run()
 
     assert(0);
     Int32 count = 0;
-    //mOwner->mDropDownList->GetCount(&count);
+    mOwner->mDropDownList->GetCount(&count);
     Int32 childCount = 0;
-    //mOwner->mDropDownList->GetChildCount(&childCount);
+    mOwner->mDropDownList->GetChildCount(&childCount);
     if (mOwner->mDropDownList && count > childCount && childCount <= mOwner->mListItemExpandMaximum) {
         mOwner->mPopup->SetInputMethodMode(IPopupWindow::INPUT_METHOD_NOT_NEEDED);
         mOwner->Show();
@@ -1370,7 +1381,7 @@ ECode ListPopupWindow::constructor(
     }
     a->Recycle();
 
-    //--mPopup = new PopupWindow(context, attrs, defStyle, defStyleRes);
+    CPopupWindow::New(context, attrs, defStyleAttr, defStyleRes, (IPopupWindow**)&mPopup);
     mPopup->SetInputMethodMode(IPopupWindow::INPUT_METHOD_NEEDED);
     AutoPtr<IResources> resources;
     mContext->GetResources((IResources**)&resources);
@@ -1406,7 +1417,7 @@ ECode ListPopupWindow::SetAdapter(
 
     assert(0);
     if (NULL == mObserver) {
-        //mObserver = new PopupDataSetObserver(this);
+        mObserver = new PopupDataSetObserver(this);
     }
     else if (NULL != mAdapter) {
         IAdapter* adapterTmp = IAdapter::Probe(mAdapter);
@@ -1420,8 +1431,8 @@ ECode ListPopupWindow::SetAdapter(
     }
 
     if (mDropDownList != NULL) {
-        //--IAdapter* temp = IAdapter::Probe(mAdapter);
-        //--mDropDownList->SetAdapter(temp);
+        IAdapter* temp = IAdapter::Probe(mAdapter);
+        mDropDownList->SetAdapter(temp);
     }
     return NOERROR;
 }
@@ -1950,10 +1961,9 @@ ECode ListPopupWindow::Show()
         mPopup->SetOutsideTouchable(!mForceIgnoreOutsideTouch && !mDropDownAlwaysVisible);
         mPopup->SetTouchInterceptor(mTouchInterceptor);
         mPopup->ShowAsDropDown(anchorView, mDropDownHorizontalOffset, mDropDownVerticalOffset, mDropDownGravity);
-        //mDropDownList->SetSelection(IListView::INVALID_POSITION);
+        mDropDownList->SetSelection(IAdapterView::INVALID_POSITION);
 
-        Boolean touchMode = FALSE;
-        //mDropDownList->IsInTouchMode(&touchMode);
+        Boolean touchMode = mDropDownList->IsInTouchMode();
         if(!mModal || touchMode) {
             ClearListSelection();
         }
@@ -2031,11 +2041,11 @@ ECode ListPopupWindow::SetSelection(
     AutoPtr<DropDownListView> list = mDropDownList;
     if (isShowing && list) {
         list->mListSelectionHidden = FALSE;
-        //list->SetSelection(position);
+        list->SetSelection(position);
         Int32 mode = 0;
-        //list->GetChoiceMode(&mode);
+        list->GetChoiceMode(&mode);
         if (mode != IAbsListView::CHOICE_MODE_NONE) {
-            //list->SetItemChecked(position, TRUE);
+            list->SetItemChecked(position, TRUE);
         }
     }
     return NOERROR;
@@ -2055,8 +2065,8 @@ ECode ListPopupWindow::ClearListSelection()
     AutoPtr<DropDownListView> list = mDropDownList;
     if (list != NULL) {
         list->mListSelectionHidden = TRUE;
-        //list->HideSelector();
-        //list->RequestLayout();
+        list->HideSelector();
+        list->RequestLayout();
     }
     return NOERROR;
 }
@@ -2106,15 +2116,15 @@ ECode ListPopupWindow::PerformItemClick(
     if (isShowing) {
         if (mItemClickListener != NULL) {
             AutoPtr<DropDownListView> list = mDropDownList;
-            //Int32 visiblePosition = 0;
-            //list->GetFirstVisiblePosition(&visiblePosition);
+            Int32 visiblePosition = 0;
+            list->GetFirstVisiblePosition(&visiblePosition);
             AutoPtr<IView> child;
-            //list->GetChildAt(position - visiblePosition, (IView**)&child);
+            list->GetChildAt(position - visiblePosition, (IView**)&child);
             AutoPtr<IAdapter> adapter;
-            //list->GetAdapter((IAdapter**)&adapter);
+            list->GetAdapter((IAdapter**)&adapter);
             Int64 id = 0;
             adapter->GetItemId(position, &id);
-            //mItemClickListener->OnItemClick(list, child, position, id);
+            mItemClickListener->OnItemClick(list, child, position, id);
         }
         *result = TRUE;
         return NOERROR;
@@ -2142,7 +2152,7 @@ ECode ListPopupWindow::GetSelectedItem(
         return NOERROR;
     }
 
-    //mDropDownList->GetSelectedItem((IInterface**)result);
+    mDropDownList->GetSelectedItem((IInterface**)result);
     return NOERROR;
 }
 
@@ -2164,7 +2174,7 @@ ECode ListPopupWindow::GetSelectedItemPosition(
         return NOERROR;
     }
 
-    //mDropDownList->GetSelectedItemPosition(result);
+    mDropDownList->GetSelectedItemPosition(result);
     return NOERROR;
 }
 
@@ -2186,7 +2196,7 @@ ECode ListPopupWindow::GetSelectedItemId(
         return NOERROR;
     }
 
-    //mDropDownList->GetSelectedItemId(result);
+    mDropDownList->GetSelectedItemId(result);
     return NOERROR;
 }
 
@@ -2208,7 +2218,7 @@ ECode ListPopupWindow::GetSelectedView(
         return NOERROR;
     }
 
-    //mDropDownList->GetSelectedView((IView**)result);
+    mDropDownList->GetSelectedView((IView**)result);
     return NOERROR;
 }
 
@@ -2330,7 +2340,7 @@ ECode ListPopupWindow::OnKeyDown(
     IsShowing(&isShowing);
     if (isShowing) {
         Int32 itemPosition = 0;
-        //mDropDownList->GetSelectedItemPosition(&itemPosition);
+        mDropDownList->GetSelectedItemPosition(&itemPosition);
 
         AutoPtr<IKeyEventHelper> helper;
         CKeyEventHelper::AcquireSingleton((IKeyEventHelper**)&helper);
@@ -2338,7 +2348,7 @@ ECode ListPopupWindow::OnKeyDown(
         helper->IsConfirmKey(keyCode, &isConfirmKey);
         if (keyCode != IKeyEvent::KEYCODE_SPACE && (itemPosition >= 0 || !isConfirmKey)) {
             Int32 curIndex = 0;
-            //mDropDownList->GetSelectedItemPosition(&curIndex);
+            mDropDownList->GetSelectedItemPosition(&curIndex);
             Boolean consumed = FALSE;
 
             Boolean aboveAnchor = FALSE;
@@ -2353,12 +2363,12 @@ ECode ListPopupWindow::OnKeyDown(
 
             if (adapter != NULL) {
                 adapter->AreAllItemsEnabled(&allEnabled);
-                firstItem = allEnabled ? 0 : -1;//mDropDownList->LookForSelectablePosition(0, TRUE);
+                firstItem = allEnabled ? 0 : mDropDownList->LookForSelectablePosition(0, TRUE);
 
                 IAdapter* adapterTmp = IAdapter::Probe(adapter);
                 Int32 count = 0;
                 adapterTmp->GetCount(&count);
-                lastItem = allEnabled ? count - 1 : -1;//mDropDownList->LookForSelectablePosition(count - 1, FALSE);
+                lastItem = allEnabled ? count - 1 : mDropDownList->LookForSelectablePosition(count - 1, FALSE);
             }
 
             if((below && IKeyEvent::KEYCODE_DPAD_UP && curIndex <= firstItem) ||
@@ -2370,14 +2380,14 @@ ECode ListPopupWindow::OnKeyDown(
                 return NOERROR;
             }
             else {
-                //mDropDownList->mListSelectionHidden = FALSE;
+                mDropDownList->mListSelectionHidden = FALSE;
             }
 
-            //mDropDownList->OnKeyDown(keyCode, event, &consumed);
+            mDropDownList->OnKeyDown(keyCode, event, &consumed);
             if (consumed) {
                 mPopup->SetInputMethodMode(IPopupWindow::INPUT_METHOD_NEEDED);
-                //Boolean res = FALSE;
-                //mDropDownList->RequestFocusFromTouch(&res);
+                Boolean res = FALSE;
+                mDropDownList->RequestFocusFromTouch(&res);
                 Show();
 
                 switch(keyCode) {
@@ -2432,10 +2442,10 @@ ECode ListPopupWindow::OnKeyUp(
     IsShowing(&isShowing);
     if (isShowing) {
         Int32 itemPosition;
-        //mDropDownList->GetSelectedItemPosition(&itemPosition);
+        mDropDownList->GetSelectedItemPosition(&itemPosition);
         if (itemPosition >= 0) {
             Boolean consumed = FALSE;
-            //mDropDownList->OnKeyUp(keyCode, event, &consumed);
+            mDropDownList->OnKeyUp(keyCode, event, &consumed);
             AutoPtr<IKeyEventHelper> helper;
             CKeyEventHelper::AcquireSingleton((IKeyEventHelper**)&helper);
             Boolean isConfirmKey = FALSE;
@@ -2498,7 +2508,7 @@ ECode ListPopupWindow::OnKeyPreIme(
             AutoPtr<IDispatcherState> state;
             anchorView->GetKeyDispatcherState((IDispatcherState**)&state);
             if (state != NULL) {
-                //state->StartTracking(event, this->Probe(EIID_IInterface));
+                state->StartTracking(event, TO_IINTERFACE(this));
             }
             *result = TRUE;
             return NOERROR;
@@ -2737,21 +2747,21 @@ Int32 ListPopupWindow::BuildDropDown()
         mShowDropDownRunnable = new InnerShowRunnable(this);
         mDropDownList = new DropDownListView(context, !mModal);
         if (mDropDownListHighlight != NULL) {
-            //mDropDownList->SetSelector(mDropDownListHighlight);
+            mDropDownList->SetSelector(mDropDownListHighlight);
         }
 
-        //IAdapter* temp = IAdapter::Probe(mAdapter);
-        //mDropDownList->SetAdapter(temp);
-        //mDropDownList->SetOnItemClickListener(mItemClickListener);
-        //mDropDownList->SetFocusable(TRUE);
-        //mDropDownList->SetFocusableInTouchMode(TRUE);
+        IAdapter* temp = IAdapter::Probe(mAdapter);
+        mDropDownList->SetAdapter(temp);
+        mDropDownList->SetOnItemClickListener(mItemClickListener);
+        mDropDownList->SetFocusable(TRUE);
+        mDropDownList->SetFocusableInTouchMode(TRUE);
 
         AutoPtr<InnerAdapterViewOnItemSelectedListener> listener = new InnerAdapterViewOnItemSelectedListener(this);
-        //mDropDownList->SetOnItemSelectedListener(listener);
-        //mDropDownList->SetOnScrollListener(mScrollListener);
+        mDropDownList->SetOnItemSelectedListener(listener);
+        mDropDownList->SetOnScrollListener(mScrollListener);
 
         if (mItemSelectedListener != NULL) {
-            //mDropDownList->SetOnItemSelectedListener(mItemSelectedListener);
+            mDropDownList->SetOnItemSelectedListener(mItemSelectedListener);
         }
 
         dropDownView = IViewGroup::Probe(mDropDownList);
@@ -2878,7 +2888,7 @@ Int32 ListPopupWindow::BuildDropDown()
             break;
     }
 
-    Int32 listContent = childWidthSpec;//mDropDownList->MeasureHeightOfChildren(childWidthSpec, 0, ListView::NO_POSITION, maxHeight - otherHeights, -1);
+    Int32 listContent = mDropDownList->MeasureHeightOfChildren(childWidthSpec, 0, ListView::NO_POSITION, maxHeight - otherHeights, -1);
     if (listContent > 0)
         otherHeights += padding;
     return listContent + otherHeights;

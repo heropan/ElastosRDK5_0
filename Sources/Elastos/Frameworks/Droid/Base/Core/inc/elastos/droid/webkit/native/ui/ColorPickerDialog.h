@@ -6,11 +6,11 @@
 #define _ELASTOS_DROID_WEBKIT_UI_COLORPICKERDIALOG_H_
 
 #include "Elastos.Droid.Content.h"
-//#include "elastos/droid/app/AlertDialog.h"
+#include "elastos/droid/app/AlertDialog.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/webkit/native/ui/ColorPickerAdvanced.h"
 #include "elastos/droid/webkit/native/ui/ColorPickerSimple.h"
-#include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"
+#include "elastos/droid/webkit/native/ui/ColorPickerAdvanced.h"
+#include "Elastos.Droid.Webkit.h"
 
 // package org.chromium.ui;
 // import android.app.AlertDialog;
@@ -22,7 +22,7 @@
 // import android.widget.Button;
 // import android.widget.TextView;
 
-//using Elastos::Droid::App::AlertDialog;
+using Elastos::Droid::App::AlertDialog;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IDialogInterface;
 using Elastos::Droid::Content::IDialogInterfaceOnCancelListener;
@@ -31,7 +31,7 @@ using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewOnClickListener;
 using Elastos::Droid::Webkit::Ui::ColorPickerAdvanced;
 using Elastos::Droid::Webkit::Ui::ColorPickerSimple;
-using Elastos::Droid::Webkit::Ui::OnColorChangedListener;
+using Elastos::Droid::Webkit::Ui::IOnColorChangedListener;
 using Elastos::Droid::Widget::IButton;
 
 namespace Elastos {
@@ -44,8 +44,8 @@ namespace Ui {
   * &lt;input type=color &gt; form element.
   */
 class ColorPickerDialog
-    //: public AlertDialog
-    : public OnColorChangedListener
+    : public AlertDialog
+    , public IOnColorChangedListener
 {
 public:
     class InnerOnClickListener
@@ -123,6 +123,8 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     /**
       * @param context The context the dialog is to run in.
       * @param listener The object to notify when the color is set.
@@ -131,7 +133,7 @@ public:
       */
     ColorPickerDialog(
         /* [in] */ IContext* context,
-        /* [in] */ OnColorChangedListener* listener,
+        /* [in] */ IOnColorChangedListener* listener,
         /* [in] */ Int32 color,
         /* [in] */ ArrayOf<IInterface*>* suggestions);
 
@@ -171,7 +173,7 @@ private:
     AutoPtr<IButton> mMoreButton;
     // The view up in the corner that shows the user the color they've currently selected.
     AutoPtr<IView> mCurrentColorView;
-    AutoPtr<OnColorChangedListener> mListener;
+    AutoPtr<IOnColorChangedListener> mListener;
     Int32 mInitialColor;
     Int32 mCurrentColor;
 };

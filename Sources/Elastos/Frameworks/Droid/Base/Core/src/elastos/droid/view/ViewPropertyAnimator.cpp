@@ -258,11 +258,11 @@ ViewPropertyAnimator::InnerStartAnimationRunnable::InnerStartAnimationRunnable(
     /* [in] */ ViewPropertyAnimator* owner)
     : mOwner(owner)
 {
+    assert(mOwner);
 }
 
 ECode ViewPropertyAnimator::InnerStartAnimationRunnable::Run()
 {
-    assert(NULL != mOwner);
     mOwner->StartAnimation();
     return NOERROR;
 }
@@ -276,14 +276,16 @@ ViewPropertyAnimator::InnerBuildLayerRunnable::InnerBuildLayerRunnable(
     /* [in] */ ViewPropertyAnimator* owner)
     : mOwner(owner)
 {
+    assert(mOwner);
 }
 
 ECode ViewPropertyAnimator::InnerBuildLayerRunnable::Run()
 {
-    assert(NULL != mOwner);
-    //mOwner->mView->SetLayerType(IView::LAYER_TYPE_HARDWARE, NULL);
-    if (-1/*mOwner->mView->IsAttachedToWindow()*/) {
-        //mOwner->mView->BuildLayer();
+    mOwner->mView->SetLayerType(IView::LAYER_TYPE_HARDWARE, NULL);
+    Boolean resTmp = FALSE;
+    mOwner->mView->IsAttachedToWindow(&resTmp);
+    if (resTmp) {
+        mOwner->mView->BuildLayer();
     }
     return NOERROR;
 }
@@ -299,11 +301,11 @@ ViewPropertyAnimator::InnerSetLayerTypeRunnable::InnerSetLayerTypeRunnable(
     : mOwner(owner)
     , mType(type)
 {
+    assert(mOwner);
 }
 
 ECode ViewPropertyAnimator::InnerSetLayerTypeRunnable::Run()
 {
-    assert(NULL != mOwner);
     mOwner->mView->SetLayerType(mType, NULL);
     return NOERROR;
 }
@@ -400,7 +402,7 @@ ECode ViewPropertyAnimator::GetDuration(
             CValueAnimator::New((IValueAnimator**)&mTempValueAnimator);
         }
 
-        return NOERROR;//-- aim car wrong: mTempValueAnimator->GetDuration(result);
+        return mTempValueAnimator->GetDuration(result);
     }
 }
 
@@ -538,7 +540,8 @@ ECode ViewPropertyAnimator::Cancel()
     Boolean resTmp = FALSE;
     mView->RemoveCallbacks(mAnimationStarter, &resTmp);
     if (mRTBackend != NULL) {
-        //mRTBackend->CancelAll();
+        assert(0);
+        //-- has no this car: mRTBackend->CancelAll();
     }
     return NOERROR;
 }
@@ -760,6 +763,8 @@ ECode ViewPropertyAnimator::HasActions(
 
 ECode ViewPropertyAnimator::StartAnimation()
 {
+    assert(0);
+    //-- has no this car:
     if (mRTBackend != NULL && -1/*mRTBackend->StartAnimation(this)*/) {
         return NOERROR;
     }
@@ -937,13 +942,17 @@ ECode ViewPropertyAnimator::SetValue(
         case _X:
             {
                 Boolean resTmp = FALSE;
-                renderNode->SetTranslationX(value - 0.0f/*mView.mLeft*/, &resTmp);
+                Int32 left = 0;
+                mView->GetLeft(&left);
+                renderNode->SetTranslationX(value - left, &resTmp);
             }
             break;
         case _Y:
             {
                 Boolean resTmp = FALSE;
-                renderNode->SetTranslationY(value - 0.0f/*mView.mTop*/, &resTmp);
+                Int32 top = 0;
+                mView->GetTop(&top);
+                renderNode->SetTranslationY(value - top, &resTmp);
             }
             break;
         case _Z:
@@ -999,14 +1008,18 @@ Float ViewPropertyAnimator::GetValue(
             {
                 Float tmp = 0.0f;
                 node->GetTranslationX(&tmp);
-                result = 0.0f;//mView->mLeft + tmp;
+                Int32 left = 0;
+                mView->GetLeft(&left);
+                result = left + tmp;
             }
             break;
         case _Y:
             {
                 Float tmp = 0.0f;
                 node->GetTranslationY(&tmp);
-                result = 0.0f;//mView->mTop + tmp;
+                Int32 top = 0;
+                mView->GetTop(&top);
+                result = top + tmp;
             }
             break;
         case _Z:
@@ -1019,12 +1032,13 @@ Float ViewPropertyAnimator::GetValue(
             }
             break;
         case ALPHA:
-            result = 0.0f;//mView->mTransformationInfo->mAlpha;
+            result = ((View*)mView.Get())->mTransformationInfo->mAlpha;
             break;
     }
     return result;
 }
 
-}// namespace View
-}// namespace Droid
-}// namespace Elastos
+} // namespace View
+} // namespace Droid
+} // namespace Elastos
+

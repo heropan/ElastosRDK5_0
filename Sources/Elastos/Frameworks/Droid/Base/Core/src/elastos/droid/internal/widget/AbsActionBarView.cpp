@@ -352,13 +352,13 @@ ECode AbsActionBarView::AnimateToVisibility(
         AutoPtr< ArrayOf<Float> > values = ArrayOf<Float>::Alloc(1);
         (*values)[0] = 1;
         AutoPtr<IObjectAnimator> anim = CObjectAnimator::OfFloat(TO_IINTERFACE(this), String("alpha"), values);
-        //IValueAnimator::Probe(anim)->SetDuration(FADE_DURATION);
+        IValueAnimator::Probe(anim)->SetDuration(FADE_DURATION);
         IAnimator::Probe(anim)->SetInterpolator(sAlphaInterpolator);
         if (mSplitView != NULL && mMenuView != NULL) {
             AutoPtr<IAnimatorSet> set;
             CAnimatorSet::New((IAnimatorSet**)&set);
             AutoPtr<IObjectAnimator> splitAnim = CObjectAnimator::OfFloat(mMenuView, String("alpha"), values);
-            //IValueAnimator::Probe(splitAnim)->SetDuration(FADE_DURATION);
+            IValueAnimator::Probe(splitAnim)->SetDuration(FADE_DURATION);
 
             AutoPtr<VisibilityAnimListener> animListener;
             mVisAnimListener->WithFinalVisibility(visibility, (VisibilityAnimListener**)&animListener);
@@ -379,13 +379,13 @@ ECode AbsActionBarView::AnimateToVisibility(
        AutoPtr<ArrayOf<Float> > values = ArrayOf<Float>::Alloc(1);
         (*values)[0] = 0;
         AutoPtr<IObjectAnimator> anim = CObjectAnimator::OfFloat((IInterface*)this->Probe(EIID_IInterface), String("alpha"), values);
-        //IValueAnimator::Probe(anim)->SetDuration(FADE_DURATION);
+        IValueAnimator::Probe(anim)->SetDuration(FADE_DURATION);
         IAnimator::Probe(anim)->SetInterpolator(sAlphaInterpolator);
         if (mSplitView != NULL && mMenuView != NULL) {
             AutoPtr<IAnimatorSet> set;
             CAnimatorSet::New((IAnimatorSet**)&set);
             AutoPtr<IObjectAnimator> splitAnim = CObjectAnimator::OfFloat(mMenuView, String("alpha"), values);
-            //IValueAnimator::Probe(splitAnim)->SetDuration(FADE_DURATION);
+            IValueAnimator::Probe(splitAnim)->SetDuration(FADE_DURATION);
 
             AutoPtr<VisibilityAnimListener> animListener;
             mVisAnimListener->WithFinalVisibility(visibility, (VisibilityAnimListener**)&animListener);

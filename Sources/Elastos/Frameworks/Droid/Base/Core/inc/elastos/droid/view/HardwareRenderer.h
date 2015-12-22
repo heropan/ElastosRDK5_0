@@ -109,6 +109,17 @@ public:
         /* [in] */ View::AttachInfo* attachInfo,
         /* [in] */ IHardwareDrawCallbacks* callbacks) = 0;
 
+    /**
+     * Invoke this method when the system is running out of memory. This
+     * method will attempt to recover as much memory as possible, based on
+     * the specified hint.
+     *
+     * @param level Hint about the amount of memory that should be trimmed,
+     *              see {@link android.content.ComponentCallbacks}
+     */
+    static CARAPI_(void) TrimMemory(
+        /* [in] */ Int32 level);
+
 protected:
     /**
      * Destroys the hardware rendering context.
@@ -283,17 +294,6 @@ protected:
      */
     virtual CARAPI_(void) SetOpaque(
         /* [in] */ Boolean opaque) = 0;
-
-    /**
-     * Invoke this method when the system is running out of memory. This
-     * method will attempt to recover as much memory as possible, based on
-     * the specified hint.
-     *
-     * @param level Hint about the amount of memory that should be trimmed,
-     *              see {@link android.content.ComponentCallbacks}
-     */
-    static CARAPI_(void) TrimMemory(
-        /* [in] */ Int32 level);
 
     /**
      * Indicates whether hardware acceleration is currently enabled.

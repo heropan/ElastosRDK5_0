@@ -2,7 +2,7 @@
 #include "elastos/droid/content/res/CResourcesHelper.h"
 #include "elastos/droid/graphics/CBitmapFactory.h"
 #include "elastos/droid/graphics/CBitmapFactoryOptions.h"
-//#include "elastos/droid/graphics/CBitmapHelper.h"
+#include "elastos/droid/graphics/CBitmapHelper.h"
 #include "elastos/droid/webkit/native/ui/gfx/BitmapHelper.h"
 #include "elastos/droid/webkit/native/ui/gfx/BitmapFormat.h"
 #include "elastos/droid/webkit/native/ui/api/BitmapHelper_dec.h"
@@ -17,7 +17,7 @@ using Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
 using Elastos::Droid::Graphics::BitmapConfig_RGB_565;
 using Elastos::Droid::Graphics::CBitmapFactory;
 using Elastos::Droid::Graphics::CBitmapFactoryOptions;
-//using Elastos::Droid::Graphics::CBitmapHelper;
+using Elastos::Droid::Graphics::CBitmapHelper;
 using Elastos::Droid::Graphics::IBitmapFactory;
 using Elastos::Droid::Graphics::IBitmapFactoryOptions;
 using Elastos::Droid::Graphics::IBitmapHelper;
@@ -42,11 +42,9 @@ AutoPtr<IInterface> BitmapHelper::CreateBitmap(
     // Bitmap.Config bitmapConfig = getBitmapConfigForFormat(bitmapFormatValue);
     // return Bitmap.createBitmap(width, height, bitmapConfig);
 
-    assert(0);
     BitmapConfig bitmapConfig = GetBitmapConfigForFormat(bitmapFormatValue);
-
     AutoPtr<IBitmapHelper> helper;
-    // CBitmapHelper::AcquireSingleton((IBitmapHelper**)&helper);
+    CBitmapHelper::AcquireSingleton((IBitmapHelper**)&helper);
     AutoPtr<IBitmap> bitmap;
     helper->CreateBitmap(width, height, bitmapConfig, (IBitmap**)&bitmap);
     return TO_IINTERFACE(bitmap);
@@ -71,7 +69,6 @@ AutoPtr<IInterface> BitmapHelper::DecodeDrawableResource(
     // options.inPreferredConfig = Bitmap.Config.ARGB_8888;
     // return BitmapFactory.decodeResource(res, resId, options);
 
-    assert(0);
     AutoPtr<IResources> res;
     AutoPtr<IResourcesHelper> helper;
     CResourcesHelper::AcquireSingleton((IResourcesHelper**)&helper);
@@ -79,7 +76,8 @@ AutoPtr<IInterface> BitmapHelper::DecodeDrawableResource(
 
     Int32 resId;
     res->GetIdentifier(name, String(""), String(""), &resId);
-    if (resId == 0) return NULL;
+    if (resId == 0)
+        return NULL;
 
     AutoPtr<IBitmapFactoryOptions> options;
     CBitmapFactoryOptions::New((IBitmapFactoryOptions**)&options);

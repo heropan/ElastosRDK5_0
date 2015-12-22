@@ -43,13 +43,11 @@ void DropdownDividerDrawable::OnBoundsChange(
     // ==================before translated======================
     // mDividerRect.set(0, 0, bounds.width(), mDividerRect.height());
 
-    assert(0);
     Int32 width = 0;
     Int32 height = 0;
     bounds->GetWidth(&width);
     mDividerRect->GetHeight(&height);
     mDividerRect->Set(0, 0, width, height);
-    //return NOERROR;
 }
 
 ECode DropdownDividerDrawable::SetHeight(
@@ -77,7 +75,6 @@ ECode DropdownDividerDrawable::SetColor(
 ECode DropdownDividerDrawable::SetAlpha(
     /* [in] */ Int32 alpha)
 {
-    assert(0);
     return NOERROR;
 }
 
@@ -85,7 +82,6 @@ ECode DropdownDividerDrawable::SetColorFilter(
     /* [in] */ IColorFilter* cf)
 {
     VALIDATE_NOT_NULL(cf);
-    assert(0);
     return NOERROR;
 }
 
@@ -100,7 +96,6 @@ Int32 DropdownDividerDrawable::GetOpacity()
 ECode DropdownDividerDrawable::GetOpacity(
     /* [out] */ Int32* opacity)
 {
-    assert(0);
     *opacity = 0;
     return NOERROR;
 }

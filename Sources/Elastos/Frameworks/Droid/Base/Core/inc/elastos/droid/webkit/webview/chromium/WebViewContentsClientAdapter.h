@@ -1,18 +1,3 @@
-/*
-  * Copyright (C) 2012 The Android Open Source Project
-  *
-  * Licensed under the Apache License, Version 2.0 (the "License");
-  * you may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at
-  *
-  *      http://www.apache.org/licenses/LICENSE-2.0
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS,
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  */
 
 #ifndef _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_WEBVIEWCONTENTSCLIENTADAPTER_H_
 #define _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_WEBVIEWCONTENTSCLIENTADAPTER_H_
@@ -29,63 +14,6 @@
 #include "elastos/droid/webkit/native/android_webview/JsResultReceiver.h"
 #include "elastos/droid/webkit/native/android_webview/permission/AwPermissionRequest.h"
 #include "elastos/droid/webkit/WebViewClient.h"
-
-// package com.android.webview.chromium;
-// import android.content.ActivityNotFoundException;
-// import android.content.Context;
-// import android.content.Intent;
-// import android.graphics.Bitmap;
-// import android.graphics.BitmapFactory;
-// import android.graphics.Canvas;
-// import android.graphics.Color;
-// import android.graphics.Picture;
-// import android.net.http.ErrorStrings;
-// import android.net.http.SslError;
-// import android.net.IUri;
-// import android.os.Build;
-// import android.os.IHandler;
-// import android.os.Looper;
-// import android.os.Message;
-// import android.provider.Browser;
-// import android.util.Log;
-// import android.view.IKeyEvent;
-// import android.view.View;
-// import android.webkit.ClientCertRequest;
-// import android.webkit.ConsoleMessage;
-// import android.webkit.DownloadListener;
-// import android.webkit.GeolocationPermissions;
-// import android.webkit.JsDialogHelper;
-// import android.webkit.JsPromptResult;
-// import android.webkit.JsResult;
-// import android.webkit.PermissionRequest;
-// import android.webkit.SslErrorHandler;
-// import android.webkit.ValueCallback;
-// import android.webkit.WebChromeClient;
-// import android.webkit.WebChromeClient.CustomViewCallback;
-// import android.webkit.WebResourceResponse;
-// import android.webkit.WebResourceRequest;
-// import android.webkit.WebView;
-// import android.webkit.WebViewClient;
-// import org.chromium.android_webview.AwContentsClient;
-// import org.chromium.android_webview.AwContentsClientBridge;
-// import org.chromium.android_webview.AwHttpAuthHandler;
-// import org.chromium.android_webview.AwWebResourceResponse;
-// import org.chromium.android_webview.JsPromptResultReceiver;
-// import org.chromium.android_webview.JsResultReceiver;
-// import org.chromium.android_webview.permission.AwPermissionRequest;
-// import org.chromium.base.ThreadUtils;
-// import org.chromium.base.TraceEvent;
-// import org.chromium.content.browser.ContentView;
-// import org.chromium.content.browser.ContentViewClient;
-// import java.lang.ref.WeakReference;
-// import java.net.URISyntaxException;
-// import java.security.Principal;
-// import java.security.PrivateKey;
-// import java.security.cert.X509Certificate;
-// import java.util.ArrayList;
-// import java.util.HashMap;
-// import java.util.Map;
-// import java.util.WeakHashMap;
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IBitmap;

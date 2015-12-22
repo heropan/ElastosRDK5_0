@@ -2,12 +2,13 @@
 #include "elastos/droid/graphics/CPoint.h"
 #include "elastos/droid/graphics/CRectF.h"
 #include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/view/View.h"
 #include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
 #include "elastos/droid/webkit/native/components/ValidationMessageBubble.h"
 #include "elastos/droid/webkit/native/components/api/ValidationMessageBubble_dec.h"
 #include "elastos/droid/webkit/native/content/browser/RenderCoordinates.h"
+#include "elastos/droid/widget/CPopupWindow.h"
 //#include "elastos/droid/widget/CRelativeLayoutLayoutParams.h"
-//#include "elastos/droid/widget/PopupWindow.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Graphics::CPoint;
@@ -22,12 +23,13 @@ using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::View::IViewManager;
 using Elastos::Droid::View::IViewParent;
+using Elastos::Droid::View::View;
 using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
 using Elastos::Droid::Webkit::Content::Browser::RenderCoordinates;
+using Elastos::Droid::Widget::CPopupWindow;
 //using Elastos::Droid::Widget::CRelativeLayoutLayoutParams;
 using Elastos::Droid::Widget::IRelativeLayoutLayoutParams;
 using Elastos::Droid::Widget::ITextView;
-//using Elastos::Droid::Widget::PopupWindow;
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::Logging::Logger;
@@ -58,14 +60,13 @@ ValidationMessageBubble::ValidationMessageBubble(
     //         contentViewCore.getContainerView(), Gravity.NO_GRAVITY, origin.x, origin.y);
 
     assert(0);
-
     AutoPtr<IView> view;
-    //View::Inflate(contentViewCore->GetContext(), -1/*R::layout::validation_message_bubble*/, NULL, (IView**)&view);
+    Elastos::Droid::View::View::Inflate(contentViewCore->GetContext(), -1/*R::layout::validation_message_bubble*/, NULL, (IView**)&view);
     IViewGroup* root = IViewGroup::Probe(view);
 
-    //mPopup = new PopupWindow(root);
+    CPopupWindow::New(IView::Probe(root), (IPopupWindow**)&mPopup);
     UpdateTextViews(root, mainText, subText);
-    //Measure(contentViewCore->GetRenderCoordinates());
+    Measure(contentViewCore->GetRenderCoordinates());
 
     Float centerX = 0.0f;
     Float bottom = 0.0f;
@@ -184,6 +185,7 @@ Float ValidationMessageBubble::GetWebViewOffsetYPixInScreen(
     // int[] location = new int[2];
     // contentViewCore.getContainerView().getLocationOnScreen(location);
     // return location[1] + contentViewCore.getRenderCoordinates().getContentOffsetYPix();
+
     AutoPtr<IViewGroup> viewGroup = contentViewCore->GetContainerView();
     AutoPtr<IView> view = IView::Probe(viewGroup);
     AutoPtr< ArrayOf<Int32> > temp = ArrayOf<Int32>::Alloc(2);
@@ -261,7 +263,7 @@ ECode ValidationMessageBubble::Measure(
     mPopup->GetContentView((IView**)&contentView);
 
     AutoPtr<IRelativeLayoutLayoutParams> layoutParams;
-    //CRelativeLayoutLayoutParams::New(
+    //-- has no cpp: CRelativeLayoutLayoutParams::New(
     //  IRelativeLayoutLayoutParams::WRAP_CONTENT,
     //    IRelativeLayoutLayoutParams::WRAP_CONTENT,
     //    (IRelativeLayoutLayoutParams**)&layoutParams
@@ -269,9 +271,10 @@ ECode ValidationMessageBubble::Measure(
     IViewGroupLayoutParams* layoutParamsTmp = IViewGroupLayoutParams::Probe(layoutParams);
     contentView->SetLayoutParams(layoutParamsTmp);
 
-    //AutoPtr<View::MeasureSpec> measureSpec = new View::MeasureSpec;
-    Int32 measureWidth = 0;// = measureSpec->MakeMeasureSpec(coordinates->GetLastFrameViewportWidthPixInt(), View::MeasureSpec::AT_MOST);
-    Int32 measureHeight = 0;// = measureSpec->MakeMeasureSpec(coordinates->GetLastFrameViewportHeightPixInt(), View::MeasureSpec::AT_MOST);
+    Int32 measureWidth = Elastos::Droid::View::View::MeasureSpec::MakeMeasureSpec(coordinates->GetLastFrameViewportWidthPixInt(),
+        Elastos::Droid::View::View::MeasureSpec::AT_MOST);
+    Int32 measureHeight = Elastos::Droid::View::View::MeasureSpec::MakeMeasureSpec(coordinates->GetLastFrameViewportHeightPixInt(),
+        Elastos::Droid::View::View::MeasureSpec::AT_MOST);
     contentView->Measure(measureWidth, measureHeight);
     return NOERROR;
 }

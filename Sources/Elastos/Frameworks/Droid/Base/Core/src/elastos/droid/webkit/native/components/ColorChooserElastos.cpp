@@ -2,6 +2,8 @@
 #include "elastos/droid/webkit/native/components/ColorChooserElastos.h"
 #include "elastos/droid/webkit/native/components/api/ColorChooserElastos_dec.h"
 #include <elastos/utility/logging/Logger.h>
+
+using Elastos::Droid::Webkit::Ui::EIID_IOnColorChangedListener;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -12,6 +14,8 @@ namespace Components {
 //=====================================================================
 //           ColorChooserElastos::InnerOnColorChangedListener
 //=====================================================================
+CAR_INTERFACE_IMPL(ColorChooserElastos::InnerOnColorChangedListener, Object, IOnColorChangedListener)
+
 ColorChooserElastos::InnerOnColorChangedListener::InnerOnColorChangedListener(
     /* [in] */ ColorChooserElastos* owner)
     : mOwner(owner)
@@ -82,7 +86,7 @@ ColorChooserElastos::ColorChooserElastos(
     // mNativeColorChooserAndroid = nativeColorChooserAndroid;
     // mDialog = new ColorPickerDialog(context, listener, initialColor, suggestions);
 
-    AutoPtr<OnColorChangedListener> listener = new InnerOnColorChangedListener(this);
+    AutoPtr<IOnColorChangedListener> listener = new InnerOnColorChangedListener(this);
     mNativeColorChooserElastos = nativeColorChooserElastos;
     mDialog = new ColorPickerDialog(context, listener, initialColor, suggestions);
 }
@@ -92,6 +96,7 @@ ECode ColorChooserElastos::OpenColorChooser()
     // ==================before translated======================
     // mDialog.show();
 
+    assert(0);
     //mDialog->Show();
     return NOERROR;
 }

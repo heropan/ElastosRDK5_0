@@ -2,16 +2,16 @@
 #include <Elastos.CoreLibrary.IO.h>
 #include <Elastos.CoreLibrary.Text.h>
 #include "elastos/droid/webkit/native/net/NetStringUtil.h"
-//#include "elastos/io/charset/CCodingErrorAction.h"
 
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::IO::Charset::CCharsetHelper;
-using Elastos::IO::Charset::CCodingErrorAction;
+using Elastos::IO::Charset::CCodingErrorActionHelper;
 using Elastos::IO::Charset::ICharset;
 using Elastos::IO::Charset::ICharsetDecoder;
 using Elastos::IO::Charset::ICharsetHelper;
 using Elastos::IO::Charset::ICodingErrorAction;
+using Elastos::IO::Charset::ICodingErrorActionHelper;
 using Elastos::IO::ICharBuffer;
 using Elastos::Text::CNormalizerHelper;
 using Elastos::Text::INormalizer;
@@ -45,8 +45,6 @@ String NetStringUtil::ConvertToUnicode(
         CCharsetHelper::AcquireSingleton((ICharsetHelper**)&helper);
         helper->ForName(charset_name, (ICharset**)&charset);
 
-        // question: interface ICharsetDecoder was deprecated in car file and
-        // which can be used instead.
         AutoPtr<ICharsetDecoder> decoder;
         charset->NewDecoder((ICharsetDecoder**)&decoder);
         AutoPtr<ICharBuffer> charBuffer;
@@ -80,8 +78,6 @@ String NetStringUtil::ConvertToUnicodeAndNormalize(
     CNormalizerHelper::AcquireSingleton((INormalizer**)&normalizer);
 
     String result;
-    // question: how do convert String to ICharSequence, Normalize function
-    // first param need a variable of ICharSequence type.
     AutoPtr<ICharSequence> charSquenceStr;
     CString::New(unicodeString, (ICharSequence**)&charSquenceStr);
     normalizer->Normalize(charSquenceStr, NormalizerForm_NFC, &result);
@@ -125,8 +121,10 @@ String NetStringUtil::ConvertToUnicodeWithSubstitutions(
         AutoPtr<ICharsetDecoder> decoder;
         charset->NewDecoder((ICharsetDecoder**)&decoder);
 
+        AutoPtr<ICodingErrorActionHelper> errorActionhelper;
+        CCodingErrorActionHelper::AcquireSingleton((ICodingErrorActionHelper**)&errorActionhelper);
         AutoPtr<ICodingErrorAction> errorActionReplace;
-        //CCodingErrorAction::GetREPLACE((ICodingErrorAction**)&errorActionReplace);
+        errorActionhelper->GetREPLACE((ICodingErrorAction**)&errorActionReplace);
 
         decoder->OnMalformedInput((ICodingErrorAction*)&errorActionReplace);
         decoder->OnUnmappableCharacter((ICodingErrorAction*)&errorActionReplace);

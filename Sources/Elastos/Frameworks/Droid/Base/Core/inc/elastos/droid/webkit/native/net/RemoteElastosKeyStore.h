@@ -8,6 +8,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/net/ElastosKeyStore.h"
 #include "elastos/droid/webkit/native/net/ElastosPrivateKey.h"
+#include "Elastos.Droid.Webkit.h"
 
 // package org.chromium.net;
 // import android.os.RemoteException;
@@ -15,6 +16,7 @@
 
 using Elastos::Droid::Webkit::Net::ElastosKeyStore;
 using Elastos::Droid::Webkit::Net::ElastosPrivateKey;
+using Elastos::Droid::Webkit::Net::IRemoteElastosKeyStore;
 
 namespace Elastos {
 namespace Droid {
@@ -51,7 +53,7 @@ private:
 
 public:
     RemoteElastosKeyStore(
-        /* [in] */ RemoteElastosKeyStore* manager);
+        /* [in] */ IRemoteElastosKeyStore* manager);
 
     // @Override
     CARAPI_(AutoPtr< ArrayOf<Byte> >) GetRSAKeyModulus(
@@ -91,7 +93,7 @@ public:
 
 private:
     static const String TAG;
-    const AutoPtr<RemoteElastosKeyStore> mRemoteManager;
+    const AutoPtr<IRemoteElastosKeyStore> mRemoteManager;
 };
 
 } // namespace Net

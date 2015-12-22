@@ -5,14 +5,16 @@
 #include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.Utility.h"
 #include "Elastos.Droid.Widget.h"
+#include "elastos/droid/utility/CSparseArray.h"
 #include "elastos/droid/webkit/native/ui/base/WindowElastos.h"
 #include "elastos/droid/webkit/native/ui/api/WindowElastos_dec.h"
-//#include "elastos/droid/widget/CToastHelper.h"
+#include "elastos/droid/widget/CToastHelper.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::IResolveInfo;
-//using Elastos::Droid::Widget::CToastHelper;
+using Elastos::Droid::Utility::CSparseArray;
+using Elastos::Droid::Widget::CToastHelper;
 using Elastos::Droid::Widget::IToast;
 using Elastos::Droid::Widget::IToastHelper;
 using Elastos::Core::CInteger32;
@@ -79,9 +81,10 @@ WindowElastos::WindowElastos(
     assert (context == applicationContext);
     mApplicationContext = context;
 
-    //mOutstandingIntents = SparseArray<IntentCallback>::Alloc(1);
+    CSparseArray::New((ISparseArray**)&mOutstandingIntents);
     CHashMap::New((IHashMap**)&mIntentErrors);
-    mVSyncMonitor = new VSyncMonitor(context, mVSyncListener);
+    mVSyncMonitor = new VSyncMonitor();
+    mVSyncMonitor->constructor(context, mVSyncListener);
 }
 
 Boolean WindowElastos::ShowIntent(
@@ -181,7 +184,7 @@ ECode WindowElastos::ShowError(
 
     if (!error.IsEmpty()) {
         AutoPtr<IToastHelper> helper;
-        //CToastHelper::AcquierSingleton((IToastHelper**)&helper);
+        CToastHelper::AcquireSingleton((IToastHelper**)&helper);
 
         AutoPtr<ICharSequence> charSequence;
         CString::New(error, (ICharSequence**)&charSequence);
@@ -290,12 +293,11 @@ Boolean WindowElastos::CanResolveActivity(
     // ==================before translated======================
     // return mApplicationContext.getPackageManager().resolveActivity(intent, 0) != null;
 
-    assert(0);
     AutoPtr<IPackageManager> packageManager;
     mApplicationContext->GetPackageManager((IPackageManager**)&packageManager);
 
     AutoPtr<IResolveInfo> resolveInfo;
-    //-- car hasno define this func: packageManager->ResolveActivity(intent, 0, (IResolveInfo**)&resolveInfo);
+    packageManager->ResolveActivity(intent, 0, (IResolveInfo**)&resolveInfo);
     return resolveInfo != NULL;
 }
 
@@ -378,7 +380,6 @@ void WindowElastos::RequestVSyncUpdate(
     }
     mObj->RequestVSyncUpdate();
 }
-
 
 } // namespace Base
 } // namespace Ui

@@ -49,8 +49,8 @@ module
         SetId(
             [in] Int32 id);
 
-		SetCallback(
-			[in] IMenuPresenterCallback* cb);
+        SetCallback(
+            [in] IMenuPresenterCallback* cb);
     }
 
     } // namespace Menu
@@ -59,3 +59,4 @@ module
     } // namepsace Droid
     } // namespace Elastos
 }
+

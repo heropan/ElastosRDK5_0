@@ -11,42 +11,6 @@
 #include "elastos/utility/etl/List.h"
 #include "elastos/utility/etl/Pair.h"
 
-// package org.chromium.net;
-// import android.annotation.SuppressLint;
-// import android.content.BroadcastReceiver;
-// import android.content.Context;
-// import android.content.Intent;
-// import android.content.IntentFilter;
-// import android.net.http.X509TrustManagerExtensions;
-// import android.os.Build;
-// import android.security.KeyChain;
-// import android.util.Log;
-// import android.util.Pair;
-// import org.chromium.base.JNINamespace;
-// import java.io.ByteArrayInputStream;
-// import java.io.File;
-// import java.io.IOException;
-// import java.security.KeyStore;
-// import java.security.KeyStoreException;
-// import java.security.MessageDigest;
-// import java.security.NoSuchAlgorithmException;
-// import java.security.PublicKey;
-// import java.security.cert.Certificate;
-// import java.security.cert.CertificateException;
-// import java.security.cert.CertificateExpiredException;
-// import java.security.cert.CertificateFactory;
-// import java.security.cert.CertificateNotYetValidException;
-// import java.security.cert.X509Certificate;
-// import java.util.Arrays;
-// import java.util.Collections;
-// import java.util.HashSet;
-// import java.util.List;
-// import java.util.Set;
-// import javax.net.ssl.TrustManager;
-// import javax.net.ssl.TrustManagerFactory;
-// import javax.net.ssl.X509TrustManager;
-// import javax.security.auth.x500.X500Principal;
-
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
@@ -87,7 +51,7 @@ private:
     {
     public:
         virtual CARAPI_(AutoPtr<IList>) CheckServerTrusted(
-            /* [in] */ ArrayOf<ICertificate*>* chain, // ArrayOf<IX509Certificate*>* chain,
+            /* [in] */ ArrayOf<IX509Certificate*>* chain,
             /* [in] */ const String& authType,
             /* [in] */ const String& host) = 0;
     };
@@ -112,7 +76,7 @@ public:
 
         // @Override
         CARAPI_(AutoPtr<IList>) CheckServerTrusted(
-            /* [in] */ ArrayOf<ICertificate*>* chain, // ArrayOf<IX509Certificate*>* chain,
+            /* [in] */ ArrayOf<IX509Certificate*>* chain,
             /* [in] */ const String& authType,
             /* [in] */ const String& host);
 
@@ -130,7 +94,7 @@ public:
 
         // @Override
         CARAPI_(AutoPtr<IList>) CheckServerTrusted(
-            /* [in] */ ArrayOf<ICertificate*>* chain, // ArrayOf<IX509Certificate*>* chain,
+            /* [in] */ ArrayOf<IX509Certificate*>* chain,
             /* [in] */ const String& authType,
             /* [in] */ const String& host);
 

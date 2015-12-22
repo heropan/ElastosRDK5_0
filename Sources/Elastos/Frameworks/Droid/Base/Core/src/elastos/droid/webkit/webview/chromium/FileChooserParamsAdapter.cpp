@@ -88,7 +88,6 @@ ECode FileChooserParamsAdapter::GetAcceptTypes(
     //     return new String[0];
     // return mParams.acceptTypes.split(";");
 
-    assert(0);
     if (mParams->acceptTypes == String("")) {
         *acceptTypes = ArrayOf<String>::Alloc(0);
         REFCOUNT_ADD(*acceptTypes);

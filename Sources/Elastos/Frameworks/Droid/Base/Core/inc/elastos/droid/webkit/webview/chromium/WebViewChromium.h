@@ -1,18 +1,3 @@
-/*
-  * Copyright (C) 2012 The Android Open Source Project
-  *
-  * Licensed under the Apache License, Version 2.0 (the "License");
-  * you may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at
-  *
-  *      http://www.apache.org/licenses/LICENSE-2.0
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS,
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  */
 
 #ifndef _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_WEBVIEWCHROMIUM_H_
 #define _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_WEBVIEWCHROMIUM_H_
@@ -21,81 +6,10 @@
 #include "elastos/droid/webkit/native/android_webview/AwContents.h"
 #include "elastos/droid/webkit/native/content/browser/LoadUrlParams.h"
 #include "elastos/droid/webkit/native/content/browser/SmartClipProvider.h"
-//#include "elastos/droid/webkit/WebSettings.h"
-//#include "elastos/droid/webkit/WebView.h"
 #include "elastos/droid/webkit/webview/chromium/ContentSettingsAdapter.h"
 #include "elastos/droid/webkit/webview/chromium/DrawGLFunctor.h"
 #include "elastos/droid/webkit/webview/chromium/WebViewContentsClientAdapter.h"
 #include "elastos/utility/concurrent/FutureTask.h"
-
-// package com.android.webview.chromium;
-// import android.content.Context;
-// import android.content.ContextWrapper;
-// import android.content.pm.PackageManager;
-// import android.content.res.Configuration;
-// import android.content.res.Resources;
-// import android.graphics.Bitmap;
-// import android.graphics.Canvas;
-// import android.graphics.Paint;
-// import android.graphics.Picture;
-// import android.graphics.Rect;
-// import android.graphics.drawable.Drawable;
-// import android.net.Uri;
-// import android.net.http.SslCertificate;
-// import android.os.Build;
-// import android.os.Bundle;
-// import android.os.Looper;
-// import android.os.Handler;
-// import android.os.Message;
-// import android.print.PrintDocumentAdapter;
-// import android.text.TextUtils;
-// import android.util.Base64;
-// import android.util.Log;
-// import android.view.HardwareCanvas;
-// import android.view.KeyEvent;
-// import android.view.LayoutInflater;
-// import android.view.MotionEvent;
-// import android.view.View;
-// import android.view.View.MeasureSpec;
-// import android.view.ViewGroup;
-// import android.view.accessibility.AccessibilityEvent;
-// import android.view.accessibility.AccessibilityNodeInfo;
-// import android.view.accessibility.AccessibilityNodeProvider;
-// import android.view.inputmethod.EditorInfo;
-// import android.view.inputmethod.InputConnection;
-// import android.webkit.DownloadListener;
-// import android.webkit.FindActionModeCallback;
-// import android.webkit.JavascriptInterface;
-// import android.webkit.ValueCallback;
-// import android.webkit.WebBackForwardList;
-// import android.webkit.WebChromeClient;
-// import android.webkit.WebSettings;
-// import android.webkit.WebView;
-// import android.webkit.WebViewClient;
-// import android.webkit.WebViewFactory;
-// import android.webkit.WebViewProvider;
-// import android.webkit.WebChromeClient.CustomViewCallback;
-// import android.widget.TextView;
-// import org.chromium.android_webview.AwBrowserContext;
-// import org.chromium.android_webview.AwContents;
-// import org.chromium.android_webview.AwContentsStatics;
-// import org.chromium.android_webview.AwLayoutSizer;
-// import org.chromium.android_webview.AwSettings;
-// import org.chromium.android_webview.AwPrintDocumentAdapter;
-// import org.chromium.base.ThreadUtils;
-// import org.chromium.content.browser.LoadUrlParams;
-// import org.chromium.content.browser.SmartClipProvider;
-// import org.chromium.net.NetworkChangeNotifier;
-// import java.io.BufferedWriter;
-// import java.io.File;
-// import java.lang.annotation.Annotation;
-// import java.util.concurrent.Callable;
-// import java.util.concurrent.ConcurrentLinkedQueue;
-// import java.util.concurrent.FutureTask;
-// import java.util.concurrent.TimeUnit;
-// import java.util.HashMap;
-// import java.util.Map;
-// import java.util.Queue;
 
 using Elastos::Droid::Content::IContextWrapper;
 using Elastos::Droid::Content::Res::IConfiguration;
@@ -2751,8 +2665,9 @@ public:
     AutoPtr<IWebViewPrivateAccess> mWebViewPrivate;
 
 private:
-    CARAPI_(AutoPtr<IInterface>) RunBlockingFuture(
-        /* [in] */ FutureTask* task);
+    CARAPI RunBlockingFuture(
+        /* [in] */ FutureTask* task,
+        /* [out] */ IInterface** result);
 
     // We have a 4 second timeout to try to detect deadlocks to detect and aid in debuggin
     // deadlocks.
@@ -2772,7 +2687,8 @@ private:
     // exception, note it temporarily
     // CARAPI_(AutoPtr<RuntimeException>) CreateThreadException();
 
-    CARAPI_(Boolean) CheckNeedsPost();
+    CARAPI CheckNeedsPost(
+        /* [out] */ Boolean* result);
 
     //  Intentionally not static, as no need to check thread on static methods
     CARAPI CheckThread();

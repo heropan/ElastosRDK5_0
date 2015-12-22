@@ -814,7 +814,6 @@ void ActionBarContextView::OnMeasure(
     if (widthMode != View::MeasureSpec::EXACTLY) {
         /*throw new IllegalStateException(getClass().getSimpleName() + " can only be used " +
                 "with android:layout_width=\"match_parent\" (or fill_parent)");*/
-        assert(0);
         return ;
     }
 
@@ -822,7 +821,6 @@ void ActionBarContextView::OnMeasure(
     if (heightMode == View::MeasureSpec::UNSPECIFIED) {
         /*throw new IllegalStateException(getClass().getSimpleName() + " can only be used " +
                 "with android:layout_height=\"wrap_content\"");*/
-        assert(0);
         return ;
     }
 
@@ -1217,7 +1215,7 @@ AutoPtr<IAnimator> ActionBarContextView::MakeOutAnimation()
         Int32 count;
         IViewGroup::Probe(mMenuView)->GetChildCount(&count);
         if (count > 0) {
-            for (Int32 i = 0; i < /*0 maybe source code has wrong*/count; ++i) {
+            for (Int32 i = 0; i < count; ++i) {
                 AutoPtr<IView> child;
                 IViewGroup::Probe(mMenuView)->GetChildAt(i, (IView**)&child);
                 child->SetScaleY(0);

@@ -2,9 +2,9 @@
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.Utility.h"
-//#include "elastos/droid/view/View.h"
+#include "elastos/droid/view/View.h"
 #include "elastos/droid/webkit/native/ui/DropdownPopupWindow.h"
-//#include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
+#include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
 #include "elastos/core/Math.h"
 
 using Elastos::Droid::Content::Res::IResources;
@@ -12,9 +12,10 @@ using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::View::EIID_IViewOnLayoutChangeListener;
 using Elastos::Droid::View::IViewGroupLayoutParams;
-//using Elastos::Droid::View::View;
-//using Elastos::Droid::Widget::CLinearLayoutLayoutParams;
+using Elastos::Droid::View::View;
+using Elastos::Droid::Widget::CLinearLayoutLayoutParams;
 using Elastos::Droid::Widget::EIID_IPopupWindowOnDismissListener;
+using Elastos::Droid::Widget::IAdapter;
 using Elastos::Droid::Widget::ILinearLayoutLayoutParams;
 using Elastos::Droid::Widget::IListView;
 
@@ -81,12 +82,12 @@ ECode DropdownPopupWindow::InnerPopupWindowOnDismissListener::OnDismiss()
     // mViewAndroidDelegate.releaseAnchorView(mAnchorView);
 
     assert(NULL != mOwner);
-    if (NULL != mOwner/*->mWindow->mOnDismissListener*/) {
-        //mOwner->mWindow->mOnDismissListener->OnDismiss();
+    if (NULL != mOwner->mOnDismissListener) {
+        mOwner->mOnDismissListener->OnDismiss();
     }
-    //mOwner->mWindow->mAnchorView->RemoveOnLayoutChangeListener(mOwner->mWindow->mLayoutChangeListener);
-    //mOwner->mWindow->mAnchorView->SetTag(NULL);
-    //mOwner->mWindow->mViewElastosDelegate->ReleaseAnchorView(mOwner->mWindow->mAnchorView);
+    mOwner->mAnchorView->RemoveOnLayoutChangeListener(mOwner->mLayoutChangeListener);
+    mOwner->mAnchorView->SetTag(NULL);
+    mOwner->mViewElastosDelegate->ReleaseAnchorView(mOwner->mAnchorView);
     return NOERROR;
 }
 
@@ -96,7 +97,6 @@ ECode DropdownPopupWindow::InnerPopupWindowOnDismissListener::OnDismiss()
 DropdownPopupWindow::DropdownPopupWindow(
     /* [in] */ IContext* context,
     /* [in] */ ViewElastosDelegate* viewElastosDelegate)
-    //: ListPopupWindow(context, NULL, 0, R::style::DropdownPopupWindow)
     : mContext(context)
     , mViewElastosDelegate(viewElastosDelegate)
     , mAnchorView(mViewElastosDelegate->AcquireAnchorView())
@@ -137,17 +137,17 @@ DropdownPopupWindow::DropdownPopupWindow(
     //
     // setAnchorView(mAnchorView);
 
+    assert(0);
+    ListPopupWindow::constructor(context, NULL, 0, -1/*R::style::DropdownPopupWindow*/);
     mAnchorView->SetId(-1/*R::id::dropdown_popup_window*/);
-
-    //IInterface* interfaceTmp = THIS_PROBE(IInterface);
-    //mAnchorView->SetTag(interfaceTmp);
+    mAnchorView->SetTag(TO_IINTERFACE(this));
 
     mLayoutChangeListener = new InnerOnLayoutChangeListener(this);
     mAnchorView->AddOnLayoutChangeListener(mLayoutChangeListener);
 
     AutoPtr<IPopupWindowOnDismissListener> dismissListener = new InnerPopupWindowOnDismissListener(this);
     SetOnDismissListener(dismissListener);
-    //SetAnchorView(mAnchorView);
+    SetAnchorView(mAnchorView);
 }
 
 ECode DropdownPopupWindow::SetAnchorRect(
@@ -184,9 +184,8 @@ ECode DropdownPopupWindow::SetAdapter(
     // mAdapter = adapter;
     // super.setAdapter(adapter);
 
-    assert(0);
     mAdapter = adapter;
-    //SetAdapter(adapter);
+    ListPopupWindow::SetAdapter(adapter);
     return NOERROR;
 }
 
@@ -215,37 +214,40 @@ ECode DropdownPopupWindow::Show()
 
     assert(0);
     // An ugly hack to keep the popup from expanding on top of the keyboard.
-    //SetInputMethodMode(INPUT_METHOD_NEEDED);
-    //Int32 contentWidth = MeasureContentWidth();
+    SetInputMethodMode(INPUT_METHOD_NEEDED);
+    Int32 contentWidth = MeasureContentWidth();
 
     AutoPtr<IResources> resources;
     mContext->GetResources((IResources**)&resources);
-
     AutoPtr<IDisplayMetrics> metrics;
     resources->GetDisplayMetrics((IDisplayMetrics**)&metrics);
     Float density = 0.0f;
     metrics->GetDensity(&density);
-    Float contentWidthInDip = 0.0f;//ContentWidth() / density;
+    Float contentWidthInDip = contentWidth / density;
 
     if (contentWidthInDip > mAnchorWidth) {
-        //SetContentWidth(contentWidth);
+        SetContentWidth(contentWidth);
         AutoPtr<IRect> displayFrame;
-        //mAnchorView->GetWindowVisibleDisplayFrame((IRect**)&displayFrame);
+        CRect::New((IRect**)&displayFrame);
+        mAnchorView->GetWindowVisibleDisplayFrame(displayFrame);
 
         Int32 displayWidth = 0;
         displayFrame->GetWidth(&displayWidth);
-        if (/*GetWidth() >*/ displayWidth) {
-            //SetWidth(displayWidth);
+        Int32 width = 0;
+        GetWidth(&width);
+        if (width > displayWidth) {
+            SetWidth(displayWidth);
         }
     }
     else {
-        //SetWidth(IViewGroupLayoutParams::WRAP_CONTENT);
+        SetWidth(IViewGroupLayoutParams::WRAP_CONTENT);
     }
 
     mViewElastosDelegate->SetAnchorViewPosition(mAnchorView, mAnchorX, mAnchorY, mAnchorWidth, mAnchorHeight);
-    //ListPopupWindow::Show();
+    ListPopupWindow::Show();
 
-    AutoPtr<IListView> listView;// = GetListView();
+    AutoPtr<IListView> listView;
+    GetListView((IListView**)&listView);
     listView->SetDividerHeight(0);
     return NOERROR;
 }
@@ -281,26 +283,29 @@ Int32 DropdownPopupWindow::MeasureContentWidth()
     // return maxWidth;
 
     Int32 maxWidth = 0;
-    if (NULL /*== mAdapter*/)
+    AutoPtr<IView> itemView;
+    if (NULL == mAdapter)
       return 0;
 
-    Int32 widthMeasureSpec = 0;// = View::MeasureSpec::MakeMeasureSpec(0, View::MeasureSpec::UNSPECIFIED);
-    Int32 heightMeasureSpec = 0;// = View::MeasureSpec::MakeMeasureSpec(0, View::MeasureSpec::UNSPECIFIED);
+    Int32 widthMeasureSpec = Elastos::Droid::View::View::MeasureSpec::MakeMeasureSpec(0, Elastos::Droid::View::View::MeasureSpec::UNSPECIFIED);
+    Int32 heightMeasureSpec = Elastos::Droid::View::View::MeasureSpec::MakeMeasureSpec(0, Elastos::Droid::View::View::MeasureSpec::UNSPECIFIED);
 
     Int32 count = 0;
     Int32 mearsureWidth = 0;
-    //mAdapter->GetCount(&count);
+    IAdapter::Probe(mAdapter)->GetCount(&count);
     for (Int32 i = 0; i < count; ++i) {
-        AutoPtr<IView> itemView;
-        //mAdapter->GetView(i, &itemView, NULL);
+        AutoPtr<IView> itemViewTmp;
+        IAdapter::Probe(mAdapter)->GetView(i, itemView, NULL, (IView**)&itemViewTmp);
         AutoPtr<ILinearLayoutLayoutParams> params;
-        //CLinearLayoutLayoutParams::New(ILinearLayoutLayoutParams::WRAP_CONTENT, ILinearLayoutLayoutParams::WRAP_CONTENT, (ILinearLayoutLayoutParams**)&params);
+        CLinearLayoutLayoutParams::New(IViewGroupLayoutParams::WRAP_CONTENT, IViewGroupLayoutParams::WRAP_CONTENT, (ILinearLayoutLayoutParams**)&params);
 
         IViewGroupLayoutParams* layoutParamsTmp = IViewGroupLayoutParams::Probe(params);
-        itemView->SetLayoutParams(layoutParamsTmp);
-        itemView->Measure(widthMeasureSpec, heightMeasureSpec);
-        itemView->GetMeasuredWidth(&mearsureWidth);
+        itemViewTmp->SetLayoutParams(layoutParamsTmp);
+        itemViewTmp->Measure(widthMeasureSpec, heightMeasureSpec);
+        itemViewTmp->GetMeasuredWidth(&mearsureWidth);
         maxWidth = Elastos::Core::Math::Max(maxWidth, mearsureWidth);
+        itemView = NULL;
+        itemView = itemViewTmp;
     }
     return maxWidth;
 }

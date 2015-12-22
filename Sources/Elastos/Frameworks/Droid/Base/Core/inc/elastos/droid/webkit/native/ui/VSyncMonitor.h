@@ -112,12 +112,14 @@ public:
     };
 
 public:
+    VSyncMonitor();
+
     /**
       * Constructs a VSyncMonitor
       * @param context The application context.
       * @param listener The listener receiving VSync notifications.
       */
-    VSyncMonitor(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Listener* listener);
 
@@ -127,7 +129,7 @@ public:
       * @param listener The listener receiving VSync notifications.
       * @param enableJBVsync Whether to allow Choreographer-based notifications on JB and up.
       */
-    VSyncMonitor(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Listener* listener,
         /* [in] */ Boolean enableJBVSync);

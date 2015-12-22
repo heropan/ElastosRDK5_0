@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_ADAPTERVIEWANIMATOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/View.h"
 #include "elastos/droid/widget/AdapterView.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
@@ -10,6 +11,7 @@
 using Elastos::Droid::Animation::IObjectAnimator;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::View;
 using Elastos::Droid::Widget::IAdapterViewAnimator;
 using Elastos::Core::IRunnable;
 using Elastos::Utility::Etl::HashMap;
@@ -58,7 +60,7 @@ public:
     };
 
     class SavedState
-        : public Object//ViewBaseSavedState
+        : public View::BaseSavedState
     {
     public:
         SavedState(

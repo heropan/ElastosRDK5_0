@@ -51,8 +51,6 @@ namespace Widget {
 //=====================================================================
 //                SimpleMonthView::MonthViewTouchHelper
 //=====================================================================
-CAR_INTERFACE_IMPL(SimpleMonthView::MonthViewTouchHelper, Object, IExploreByTouchHelper)
-
 const String SimpleMonthView::MonthViewTouchHelper::DATE_FORMAT("dd MMMM yyyy");
 
 SimpleMonthView::MonthViewTouchHelper::MonthViewTouchHelper(
@@ -122,10 +120,9 @@ Int32 SimpleMonthView::MonthViewTouchHelper::GetVirtualViewAt(
     return IExploreByTouchHelper::INVALID_ID;
 }
 
-ECode SimpleMonthView::MonthViewTouchHelper::GetVisibleVirtualViews(
+void SimpleMonthView::MonthViewTouchHelper::GetVisibleVirtualViews(
     /* [in] */ IList* virtualViewIds)
 {
-    VALIDATE_NOT_NULL(virtualViewIds);
     // ==================before translated======================
     // for (int day = 1; day <= mNumCells; day++) {
     //     virtualViewIds.add(day);
@@ -135,26 +132,23 @@ ECode SimpleMonthView::MonthViewTouchHelper::GetVisibleVirtualViews(
         AutoPtr<IInteger32> integer = CoreUtils::Convert(day);
         virtualViewIds->Add(TO_IINTERFACE(integer));
     }
-    return NOERROR;
 }
 
-ECode SimpleMonthView::MonthViewTouchHelper::OnPopulateEventForVirtualView(
+void SimpleMonthView::MonthViewTouchHelper::OnPopulateEventForVirtualView(
     /* [in] */ Int32 virtualViewId,
     /* [in] */ IAccessibilityEvent* event)
 {
-    VALIDATE_NOT_NULL(event);
     // ==================before translated======================
     // event.setContentDescription(getItemDescription(virtualViewId));
 
     IAccessibilityRecord* recordTmp = IAccessibilityRecord::Probe(event);
-    return recordTmp->SetContentDescription(GetItemDescription(virtualViewId));
+    recordTmp->SetContentDescription(GetItemDescription(virtualViewId));
 }
 
-ECode SimpleMonthView::MonthViewTouchHelper::OnPopulateNodeForVirtualView(
+void SimpleMonthView::MonthViewTouchHelper::OnPopulateNodeForVirtualView(
     /* [in] */ Int32 virtualViewId,
     /* [in] */ IAccessibilityNodeInfo* node)
 {
-    VALIDATE_NOT_NULL(node);
     // ==================before translated======================
     // getItemBounds(virtualViewId, mTempRect);
     //
@@ -174,7 +168,6 @@ ECode SimpleMonthView::MonthViewTouchHelper::OnPopulateNodeForVirtualView(
     if (virtualViewId == mOwner->mSelectedDay) {
         node->SetSelected(TRUE);
     }
-    return NOERROR;
 }
 
 Boolean SimpleMonthView::MonthViewTouchHelper::OnPerformActionForVirtualView(
@@ -380,7 +373,7 @@ ECode SimpleMonthView::constructor(
     mRowHeight = (pixelOffsetTmp - mMonthHeaderSize) / MAX_NUM_ROWS;
 
     // Set up accessibility components.
-    //mTouchHelper = new SimpleMonthView::MonthViewTouchHelper(this);
+    //-- base class has pure func: mTouchHelper = new SimpleMonthView::MonthViewTouchHelper(this);
     IAccessibilityDelegate* delegate = IAccessibilityDelegate::Probe(mTouchHelper);
     SetAccessibilityDelegate(delegate);
     SetImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
@@ -915,8 +908,8 @@ Int32 SimpleMonthView::GetDaysInMonth(
         case ICalendar::FEBRUARY:
             return (year % 4 == 0) ? 29 : 28;
         default:
-            assert(0); //throw new IllegalArgumentException("Invalid Month");
-            return -1;
+            //throw new IllegalArgumentException("Invalid Month");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 }
 

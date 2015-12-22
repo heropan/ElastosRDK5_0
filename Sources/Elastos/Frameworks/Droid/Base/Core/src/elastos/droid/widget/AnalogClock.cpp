@@ -3,6 +3,7 @@
 #include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/os/Process.h"
 #include "elastos/droid/text/format/CDateUtils.h"
 #include "elastos/droid/widget/AnalogClock.h"
 #include <elastos/core/Math.h>
@@ -10,6 +11,7 @@
 using Elastos::Droid::Content::EIID_IBroadcastReceiver;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Os::Process;
 using Elastos::Droid::Text::Format::CDateUtils;
 using Elastos::Droid::Text::Format::IDateUtils;
 using Elastos::Core::CString;
@@ -269,8 +271,9 @@ ECode AnalogClock::OnAttachedToWindow()
 
         AutoPtr<IContext> context;
         GetContext((IContext**)&context);
-        assert(0);
-        AutoPtr<IUserHandle> userHandle;// = android.os.Process.myUserHandle();
+
+        AutoPtr<IUserHandle> userHandle;
+        Process::MyUserHandle((IUserHandle**)&userHandle);
         context->RegisterReceiverAsUser(mIntentReceiver, userHandle, filter, String(""), mHandler, (IIntent**)&rst);
     }
 

@@ -4,7 +4,7 @@
 #include "elastos/droid/os/Looper.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/utility/CBase64.h"
-//#include "elastos/droid/view/CView.h"
+#include "elastos/droid/view/CView.h"
 #include "elastos/droid/webkit/CWebViewFactory.h"
 #include "elastos/droid/webkit/CWebViewHitTestResult.h"
 #include "elastos/droid/webkit/FindActionModeCallback.h"
@@ -17,7 +17,7 @@
 #include "elastos/droid/webkit/webview/chromium/UnimplementedWebViewApi.h"
 #include "elastos/droid/webkit/webview/chromium/WebBackForwardListChromium.h"
 #include "elastos/droid/webkit/webview/chromium/WebViewChromium.h"
-//#include "elastos/droid/widget/CTextView.h"
+#include "elastos/droid/widget/CTextView.h"
 #include "elastos/core/CoreUtils.h"
 #include <elastos/utility/logging/Logger.h>
 
@@ -29,6 +29,7 @@ using Elastos::Droid::Os::Looper;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Utility::CBase64;
 using Elastos::Droid::Utility::IBase64;
+using Elastos::Droid::View::CView;
 using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::View::IViewRootImpl;
 using Elastos::Droid::Webkit::AndroidWebview::AwBrowserContext;
@@ -43,7 +44,7 @@ using Elastos::Droid::Webkit::FindActionModeCallback;
 using Elastos::Droid::Webkit::IWebViewFactory;
 using Elastos::Droid::Webkit::Webview::Chromium::UnimplementedWebViewApi;
 using Elastos::Droid::Webkit::Webview::Chromium::WebBackForwardListChromium;
-//using Elastos::Droid::Widget::CTextView;
+using Elastos::Droid::Widget::CTextView;
 using Elastos::Droid::Widget::ITextView;
 using Elastos::Core::CInteger32;
 using Elastos::Core::CoreUtils;
@@ -260,8 +261,6 @@ CAR_INTERFACE_IMPL(WebViewChromium::InnerContextWrapper, Object, IContextWrapper
 
 WebViewChromium::InnerContextWrapper::InnerContextWrapper()
 {
-    // ==================before translated======================
-    // mOwner = owner;
 }
 
 ECode WebViewChromium::InnerContextWrapper::GetClassLoader(
@@ -3145,6 +3144,7 @@ ECode WebViewChromium::Init(
         const String msg("Private browsing is not supported in WebView.");
         if (mAppTargetSdkVersion >= Build::VERSION_CODES::KITKAT) {
             //throw new IllegalArgumentException(msg);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         else {
             Logger::W(TAG, msg);
@@ -3153,7 +3153,7 @@ ECode WebViewChromium::Init(
             AutoPtr<IContext> context;
             viewTmp->GetContext((IContext**)&context);
             AutoPtr<ITextView> warningLabel;
-            //CTextView::New(context, (ITextView**)&warningLabel);
+            CTextView::New(context, (ITextView**)&warningLabel);
 
             String warning;
             context->GetString(-1/*R::string::webviewchromium_private_browsing_warning*/, &warning);
@@ -3187,7 +3187,7 @@ ECode WebViewChromium::Init(
 
     const Boolean isAccessFromFileURLsGrantedByDefault = mAppTargetSdkVersion < Build::VERSION_CODES::JELLY_BEAN;
     const Boolean areLegacyQuirksEnabled = mAppTargetSdkVersion < Build::VERSION_CODES::KITKAT;
-    // mContentsClientAdapter = new WebViewContentsClientAdapter(mWebView);
+    //-- abstract class: mContentsClientAdapter = new WebViewContentsClientAdapter(mWebView);
     IView* viewTmp = IView::Probe(mWebView);
     AutoPtr<IContext> context;
     viewTmp->GetContext((IContext**)&context);
@@ -3234,7 +3234,9 @@ ECode WebViewChromium::SetHorizontalScrollbarOverlay(
     // mAwContents.setHorizontalScrollbarOverlay(overlay);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerSetHorizontalScrollbarOverlayRunnable(this, overlay);
         mRunQueue->AddTask(runnable);
         return NOERROR;
@@ -3260,7 +3262,9 @@ ECode WebViewChromium::SetVerticalScrollbarOverlay(
     // mAwContents.setVerticalScrollbarOverlay(overlay);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerSetVerticalScrollbarOverlayRunnable(this, overlay);
         mRunQueue->AddTask(runnable);
         return NOERROR;
@@ -3288,8 +3292,10 @@ ECode WebViewChromium::OverlayHorizontalScrollbar(
     // return mAwContents.overlayHorizontalScrollbar();
 
     assert(0);
-    //mFactory->StartYourEngines(FALSE);
-    if (CheckNeedsPost()) {
+    mFactory->StartYourEngines(FALSE);
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerOverlayHorizontalScrollbarCallable(this);
         AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
         IBoolean* boolTmp = IBoolean::Probe(interfaceTmp);
@@ -3320,7 +3326,9 @@ ECode WebViewChromium::OverlayVerticalScrollbar(
 
     assert(0);
     mFactory->StartYourEngines(FALSE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerOverlayVerticalScrollbarCallable(this);
         AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
         IBoolean* boolTmp = IBoolean::Probe(interfaceTmp);
@@ -3363,7 +3371,9 @@ ECode WebViewChromium::GetCertificate(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerGetCertificateCallable(this);
         AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
         *result = ISslCertificate::Probe(interfaceTmp);
@@ -3416,7 +3426,9 @@ ECode WebViewChromium::SetHttpAuthUsernamePassword(
     // mAwContents.setHttpAuthUsernamePassword(host, realm, username, password);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerSetHttpAuthUsernamePasswordRunnable(this, host, realm, username, password);
         mRunQueue->AddTask(runnable);
         return NOERROR;
@@ -3447,7 +3459,9 @@ ECode WebViewChromium::GetHttpAuthUsernamePassword(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerGetHttpAuthUsernamePasswordCallable(this, host, realm);
         AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
         IList* list = IList::Probe(interfaceTmp);
@@ -3492,7 +3506,9 @@ ECode WebViewChromium::Destroy()
     // }
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerDestroyRunnable(this);
         mRunQueue->AddTask(runnable);
         return NOERROR;
@@ -3524,7 +3540,9 @@ ECode WebViewChromium::SetNetworkAvailable(
     // mAwContents.setNetworkAvailable(networkUp);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerSetNetworkAvailableRunnable(this, networkUp);
         mRunQueue->AddTask(runnable);
         return NOERROR;
@@ -3557,10 +3575,12 @@ ECode WebViewChromium::SaveState(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerSaveStateCallable(this, outState);
-        AutoPtr<IInterface> retTmp = RunOnUiThreadBlocking(callable);
-        *result = IWebBackForwardList::Probe(retTmp);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        *result = IWebBackForwardList::Probe(interfaceTmp);
         REFCOUNT_ADD(*result);
         return NOERROR;
     }
@@ -3630,10 +3650,12 @@ ECode WebViewChromium::RestoreState(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerRestoreStateCallable(this, inState);
-        AutoPtr<IInterface> retTmp = RunOnUiThreadBlocking(callable);
-        *result = IWebBackForwardList::Probe(retTmp);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        *result = IWebBackForwardList::Probe(interfaceTmp);
         REFCOUNT_ADD(*result);
         return NOERROR;
     }
@@ -3687,7 +3709,9 @@ ECode WebViewChromium::LoadUrl(
     const String JAVASCRIPT_SCHEME("javascript:");
     if (mAppTargetSdkVersion < Build::VERSION_CODES::KITKAT && !url.IsEmpty() && url.StartWith(JAVASCRIPT_SCHEME)) {
         mFactory->StartYourEngines(TRUE);
-        if (CheckNeedsPost()) {
+        Boolean resTmp = FALSE;
+        CheckNeedsPost(&resTmp);
+        if (resTmp) {
             AutoPtr<IRunnable> javascriptRunnable = new InnerEvaluateJavaScriptRunnable(this, url, JAVASCRIPT_SCHEME);
             mRunQueue->AddTask(javascriptRunnable);
         }
@@ -3881,7 +3905,9 @@ ECode WebViewChromium::SaveWebArchive(
     // mAwContents.saveWebArchive(basename, autoname, callback);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerSaveWebArchiveRunnable(this, basename, autoname, callback);
         mRunQueue->AddTask(runnable);
     }
@@ -3906,7 +3932,9 @@ ECode WebViewChromium::StopLoading()
     // mAwContents.stopLoading();
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerStopLoadingRunnable(this);
         mRunQueue->AddTask(runnable);
     }
@@ -3930,7 +3958,9 @@ ECode WebViewChromium::Reload()
     // mAwContents.reload();
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerReloadRunnable(this);
         mRunQueue->AddTask(runnable);
     }
@@ -3958,11 +3988,13 @@ ECode WebViewChromium::CanGoBack(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerCanGoBackCallable(this);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IBoolean* resTmp1 = IBoolean::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IBoolean* interfaceTmp1 = IBoolean::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -3985,7 +4017,9 @@ ECode WebViewChromium::GoBack()
     // mAwContents.goBack();
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerGoBackRunnable(this);
         mRunQueue->AddTask(runnable);
     }
@@ -4013,11 +4047,13 @@ ECode WebViewChromium::CanGoForward(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerCanGoForwardCallable(this);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IBoolean* resTmp1 = IBoolean::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IBoolean* interfaceTmp1 = IBoolean::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -4040,7 +4076,9 @@ ECode WebViewChromium::GoForward()
     // mAwContents.goForward();
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerGoForwardRunnable(this);
         mRunQueue->AddTask(runnable);
     }
@@ -4069,11 +4107,13 @@ ECode WebViewChromium::CanGoBackOrForward(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerCanGoBackOrForwardCallable(this, steps);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IBoolean* resTmp1 = IBoolean::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IBoolean* interfaceTmp1 = IBoolean::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -4097,7 +4137,9 @@ ECode WebViewChromium::GoBackOrForward(
     // mAwContents.goBackOrForward(steps);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerGoBackOrForwardRunnable(this, steps);
         mRunQueue->AddTask(runnable);
     }
@@ -4138,11 +4180,13 @@ ECode WebViewChromium::PageUp(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerPageUpCallable(this, top);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IBoolean* resTmp1 = IBoolean::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IBoolean* interfaceTmp1 = IBoolean::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -4170,11 +4214,13 @@ ECode WebViewChromium::PageDown(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerPageDownCallable(this, bottom);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IBoolean* resTmp1 = IBoolean::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IBoolean* interfaceTmp1 = IBoolean::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -4197,7 +4243,9 @@ ECode WebViewChromium::ClearView()
     // mAwContents.clearView();
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerClearViewRunnable(this);
         mRunQueue->AddTask(runnable);
     }
@@ -4225,10 +4273,12 @@ ECode WebViewChromium::CapturePicture(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerCapturePictureCallable(this);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        *result = IPicture::Probe(resTmp);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        *result = IPicture::Probe(interfaceTmp);
         REFCOUNT_ADD(*result);
         return NOERROR;
     }
@@ -4282,7 +4332,9 @@ ECode WebViewChromium::InvokeZoomPicker()
     // mAwContents.invokeZoomPicker();
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerInvokeZoomPickerRunnable(this);
         mRunQueue->AddTask(runnable);
     }
@@ -4314,10 +4366,12 @@ ECode WebViewChromium::GetHitTestResult(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerGetHitTestResultCallable(this);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        *result = IWebViewHitTestResult::Probe(resTmp);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        *result = IWebViewHitTestResult::Probe(interfaceTmp);
         REFCOUNT_ADD(*result);
         return NOERROR;
     }
@@ -4347,7 +4401,9 @@ ECode WebViewChromium::RequestFocusNodeHref(
     // mAwContents.requestFocusNodeHref(hrefMsg);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerRequestFocusNodeHrefRunnable(this, hrefMsg);
         mRunQueue->AddTask(runnable);
     }
@@ -4373,7 +4429,9 @@ ECode WebViewChromium::RequestImageRef(
     // mAwContents.requestImageRef(msg);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerRequestImageRefRunnable(this, msg);
         mRunQueue->AddTask(runnable);
     }
@@ -4403,11 +4461,13 @@ ECode WebViewChromium::GetUrl(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerGetUrlCallable(this);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        ICharSequence* resTmp1 = ICharSequence::Probe(resTmp);
-        resTmp1->ToString(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        ICharSequence* interfaceTmp1 = ICharSequence::Probe(interfaceTmp);
+        interfaceTmp1->ToString(result);
         return NOERROR;
     }
 
@@ -4441,11 +4501,13 @@ ECode WebViewChromium::GetOriginalUrl(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerGetOriginalUrlCallable(this);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        ICharSequence* resTmp1 = ICharSequence::Probe(resTmp);
-        resTmp1->ToString(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        ICharSequence* interfaceTmp1 = ICharSequence::Probe(interfaceTmp);
+        interfaceTmp1->ToString(result);
         return NOERROR;
     }
 
@@ -4477,11 +4539,13 @@ ECode WebViewChromium::GetTitle(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerGetTitleCallable(this);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        ICharSequence* resTmp1 = ICharSequence::Probe(resTmp);
-        resTmp1->ToString(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        ICharSequence* interfaceTmp1 = ICharSequence::Probe(interfaceTmp);
+        interfaceTmp1->ToString(result);
         return NOERROR;
     }
 
@@ -4508,10 +4572,12 @@ ECode WebViewChromium::GetFavicon(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerGetFaviconCallable(this);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        *result = IBitmap::Probe(resTmp);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        *result = IBitmap::Probe(interfaceTmp);
         REFCOUNT_ADD(*result);
         return NOERROR;
     }
@@ -4602,7 +4668,9 @@ ECode WebViewChromium::PauseTimers()
     // mAwContents.pauseTimers();
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerPauseTimersRunnable(this);
         mRunQueue->AddTask(runnable);
     }
@@ -4626,7 +4694,9 @@ ECode WebViewChromium::ResumeTimers()
     // mAwContents.resumeTimers();
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerResumeTimersRunnable(this);
         mRunQueue->AddTask(runnable);
     }
@@ -4650,7 +4720,9 @@ ECode WebViewChromium::OnPause()
     // mAwContents.onPause();
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerOnPauseRunnable(this);
         mRunQueue->AddTask(runnable);
     }
@@ -4674,7 +4746,9 @@ ECode WebViewChromium::OnResume()
     // mAwContents.onResume();
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerOnResumeRunnable(this);
         mRunQueue->AddTask(runnable);
     }
@@ -4702,11 +4776,13 @@ ECode WebViewChromium::IsPaused(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerIsPausedCallable(this);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IBoolean* resTmp1 = IBoolean::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IBoolean* interfaceTmp1 = IBoolean::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -4738,7 +4814,9 @@ ECode WebViewChromium::ClearCache(
     // mAwContents.clearCache(includeDiskFiles);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerClearCacheRunnable(this, includeDiskFiles);
         mRunQueue->AddTask(runnable);
     }
@@ -4762,7 +4840,9 @@ ECode WebViewChromium::ClearFormData()
     // mAwContents.hideAutofillPopup();
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerClearFormDataRunnable(this);
         mRunQueue->AddTask(runnable);
     }
@@ -4786,7 +4866,9 @@ ECode WebViewChromium::ClearHistory()
     // mAwContents.clearHistory();
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerClearHistoryRunnable(this);
         mRunQueue->AddTask(runnable);
     }
@@ -4810,7 +4892,9 @@ ECode WebViewChromium::ClearSslPreferences()
     // mAwContents.clearSslPreferences();
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerClearSslPreferencesRunnable(this);
         mRunQueue->AddTask(runnable);
     }
@@ -4839,10 +4923,12 @@ ECode WebViewChromium::CopyBackForwardList(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerCopyBackForwardListCallable(this);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        *result = IWebBackForwardList::Probe(resTmp);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        *result = IWebBackForwardList::Probe(interfaceTmp);
         REFCOUNT_ADD(*result);
         return NOERROR;
     }
@@ -4879,7 +4965,9 @@ ECode WebViewChromium::FindNext(
     // mAwContents.findNext(forwards);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerFindNextRunnable(this, forwards);
         mRunQueue->AddTask(runnable);
     }
@@ -4919,7 +5007,9 @@ ECode WebViewChromium::FindAllAsync(
     // mAwContents.findAllAsync(searchString);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerFindAllAsyncRunnable(this, searchString);
         mRunQueue->AddTask(runnable);
     }
@@ -4963,7 +5053,9 @@ ECode WebViewChromium::ShowFindDialog(
 
     assert(0);
     mFactory->StartYourEngines(FALSE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         *result = FALSE;
         return NOERROR;
     }
@@ -5015,7 +5107,9 @@ ECode WebViewChromium::NotifyFindDialogDismissed()
     // clearMatches();
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerNotifyFindDialogDismissedRunnable(this);
         mRunQueue->AddTask(runnable);
     }
@@ -5039,7 +5133,9 @@ ECode WebViewChromium::ClearMatches()
     // mAwContents.clearMatches();
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerClearMatchesRunnable(this);
         mRunQueue->AddTask(runnable);
     }
@@ -5065,7 +5161,9 @@ ECode WebViewChromium::DocumentHasImages(
     // mAwContents.documentHasImages(response);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerDocumentHasImagesRunnable(this, response);
         mRunQueue->AddTask(runnable);
     }
@@ -5132,7 +5230,9 @@ ECode WebViewChromium::SetPictureListener(
     //         mAppTargetSdkVersion >= Build.VERSION_CODES.JELLY_BEAN_MR2);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerSetPictureListenerRunnable(this, listener);
         mRunQueue->AddTask(runnable);
     }
@@ -5167,7 +5267,9 @@ ECode WebViewChromium::AddJavascriptInterface(
     IObject* objTmp = IObject::Probe(obj);
     Object* objTmp1 = (Object*)objTmp;
 
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerAddJavascriptInterfaceRunnable(this, objTmp1, interfaceName);
         mRunQueue->AddTask(runnable);
     }
@@ -5198,7 +5300,9 @@ ECode WebViewChromium::RemoveJavascriptInterface(
     // mAwContents.removeJavascriptInterface(interfaceName);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerRemoveJavascriptInterfaceRunnable(this, interfaceName);
         mRunQueue->AddTask(runnable);
     }
@@ -5246,7 +5350,9 @@ ECode WebViewChromium::FlingScroll(
     // mAwContents.flingScroll(vx, vy);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerFlingScrollRunnable(this, vx, vy);
         mRunQueue->AddTask(runnable);
     }
@@ -5272,7 +5378,9 @@ ECode WebViewChromium::GetZoomControls(
 
     assert(0);
     mFactory->StartYourEngines(FALSE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         *result = NULL;
         return NOERROR;
     }
@@ -5285,7 +5393,7 @@ ECode WebViewChromium::GetZoomControls(
     AutoPtr<IContext> context;
     viewTmp->GetContext((IContext**)&context);
     if (mAwContents->GetSettings()->SupportZoom()) {
-        //CView::New(context, (IView**)result);
+        CView::New(context, (IView**)result);
         REFCOUNT_ADD(*result);
     }
     else {
@@ -5306,7 +5414,9 @@ ECode WebViewChromium::CanZoomIn(
     // return mAwContents.canZoomIn();
 
     assert(0);
-    if (CheckNeedsPost())
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp)
         *result = FALSE;
     else
         *result = mAwContents->CanZoomIn();
@@ -5325,7 +5435,9 @@ ECode WebViewChromium::CanZoomOut(
     // return mAwContents.canZoomOut();
 
     assert(0);
-    if (CheckNeedsPost())
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp)
         *result = FALSE;
     else
         *result = mAwContents->CanZoomOut();
@@ -5352,11 +5464,13 @@ ECode WebViewChromium::ZoomIn(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerZoomInCallable(this);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IBoolean* resTmp1 = IBoolean::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IBoolean* interfaceTmp1 = IBoolean::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -5383,11 +5497,13 @@ ECode WebViewChromium::ZoomOut(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerZoomOutCallable(this);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IBoolean* resTmp1 = IBoolean::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IBoolean* interfaceTmp1 = IBoolean::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -5483,11 +5599,13 @@ ECode WebViewChromium::ShouldDelayChildPressedState(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerShouldDelayChildPressedStateCallable(this);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IBoolean* resTmp1 = IBoolean::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IBoolean* interfaceTmp1 = IBoolean::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -5515,10 +5633,12 @@ ECode WebViewChromium::GetAccessibilityNodeProvider(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerGetAccessibilityNodeProviderCallable(this);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        *result = IAccessibilityNodeProvider::Probe(resTmp);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        *result = IAccessibilityNodeProvider::Probe(interfaceTmp);
         REFCOUNT_ADD(*result);
         return NOERROR;
     }
@@ -5546,7 +5666,9 @@ ECode WebViewChromium::OnInitializeAccessibilityNodeInfo(
     // mAwContents.onInitializeAccessibilityNodeInfo(info);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerOnInitializeAccessibilityNodeInfoRunnable(this, info);
         mRunQueue->AddTask(runnable);
     }
@@ -5573,7 +5695,9 @@ ECode WebViewChromium::OnInitializeAccessibilityEvent(
     // mAwContents.onInitializeAccessibilityEvent(event);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerOnInitializeAccessibilityEventRunnable(this, event);
         mRunQueue->AddTask(runnable);
     }
@@ -5607,11 +5731,13 @@ ECode WebViewChromium::PerformAccessibilityAction(
 
     assert(0);
     mFactory->StartYourEngines(FALSE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerPerformAccessibilityActionCallable(this, action, arguments);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IBoolean* resTmp1 = IBoolean::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IBoolean* interfaceTmp1 = IBoolean::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
     if (mAwContents->SupportsAccessibilityAction(action)) {
@@ -5651,7 +5777,9 @@ ECode WebViewChromium::SetOverScrollMode(
     if (NULL == mAwContents)
         return NOERROR;
 
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerSetOverScrollModeRunnable(this, mode);
         mRunQueue->AddTask(runnable);
     }
@@ -5676,7 +5804,9 @@ ECode WebViewChromium::SetScrollBarStyle(
     // mAwContents.setScrollBarStyle(style);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerSetScrollBarStyleRunnable(this, style);
         mRunQueue->AddTask(runnable);
     }
@@ -5728,7 +5858,9 @@ ECode WebViewChromium::OnOverScrolled(
     // mAwContents.onContainerViewOverScrolled(scrollX, scrollY, clampedX, clampedY);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerOnOverScrolledRunnable(this, scrollX, scrollY, clampedX, clampedY);
         mRunQueue->AddTask(runnable);
     }
@@ -5753,7 +5885,9 @@ ECode WebViewChromium::OnWindowVisibilityChanged(
     // mAwContents.onWindowVisibilityChanged(visibility);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerOnWindowVisibilityChangedRunnable(this, visibility);
         mRunQueue->AddTask(runnable);
     }
@@ -5781,7 +5915,9 @@ ECode WebViewChromium::OnDraw(
 
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerOnDrawRunnable(this, canvas);
         mRunQueue->AddTask(runnable);
     }
@@ -5848,7 +5984,9 @@ ECode WebViewChromium::OnConfigurationChanged(
     // mAwContents.onConfigurationChanged(newConfig);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerOnConfigurationChangedRunnable(this, newConfig);
         mRunQueue->AddTask(runnable);
     }
@@ -5872,7 +6010,9 @@ ECode WebViewChromium::OnCreateInputConnection(
 
     assert(0);
     mFactory->StartYourEngines(FALSE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
        *result = NULL;
        return NOERROR;
     }
@@ -5906,11 +6046,13 @@ ECode WebViewChromium::OnKeyMultiple(
 
     assert(0);
     mFactory->StartYourEngines(FALSE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerOnKeyMultipleCallable(this, keyCode, repeatCount, event);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IBoolean* resTmp1 = IBoolean::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IBoolean* interfaceTmp1 = IBoolean::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -5942,11 +6084,13 @@ ECode WebViewChromium::OnKeyDown(
 
     assert(0);
     mFactory->StartYourEngines(FALSE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerOnKeyDownCallable(this, keyCode, event);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IBoolean* resTmp1 = IBoolean::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IBoolean* interfaceTmp1 = IBoolean::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -5977,11 +6121,13 @@ ECode WebViewChromium::OnKeyUp(
 
     assert(0);
     mFactory->StartYourEngines(FALSE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerOnKeyUpCallable(this, keyCode, event);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IBoolean* resTmp1 = IBoolean::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IBoolean* interfaceTmp1 = IBoolean::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -6025,7 +6171,9 @@ ECode WebViewChromium::OnDetachedFromWindow()
     // mAwContents.onDetachedFromWindow();
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerOnDetachedFromWindowRunnable(this);
         mRunQueue->AddTask(runnable);
     }
@@ -6061,7 +6209,9 @@ ECode WebViewChromium::OnVisibilityChanged(
     if (NULL == mAwContents)
         return NOERROR;
 
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerOnVisibilityChangedRunnable(this, changedView, visibility);
         mRunQueue->AddTask(runnable);
     }
@@ -6086,7 +6236,9 @@ ECode WebViewChromium::OnWindowFocusChanged(
     // mAwContents.onWindowFocusChanged(hasWindowFocus);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerOnWindowFocusChangedRunnable(this, hasWindowFocus);
         mRunQueue->AddTask(runnable);
     }
@@ -6114,7 +6266,9 @@ ECode WebViewChromium::OnFocusChanged(
     // mAwContents.onFocusChanged(focused, direction, previouslyFocusedRect);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerOnFocusChangedRunnable(this, focused, direction, previouslyFocusedRect);
         mRunQueue->AddTask(runnable);
     }
@@ -6157,7 +6311,9 @@ ECode WebViewChromium::OnSizeChanged(
     // mAwContents.onSizeChanged(w, h, ow, oh);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerOnSizeChangedRunnable(this, w, h, ow, oh);
         mRunQueue->AddTask(runnable);
     }
@@ -6196,11 +6352,13 @@ ECode WebViewChromium::DispatchKeyEvent(
 
     assert(0);
     mFactory->StartYourEngines(FALSE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerDispatchKeyEventCallable(this, event);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IBoolean* resTmp1 = IBoolean::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IBoolean* interfaceTmp1 = IBoolean::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -6229,11 +6387,13 @@ ECode WebViewChromium::OnTouchEvent(
 
     assert(0);
     mFactory->StartYourEngines(FALSE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerOnTouchEventCallable(this, event);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IBoolean* resTmp1 = IBoolean::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IBoolean* interfaceTmp1 = IBoolean::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -6262,11 +6422,13 @@ ECode WebViewChromium::OnHoverEvent(
 
     assert(0);
     mFactory->StartYourEngines(FALSE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerOnHoverEventCallable(this, event);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IBoolean* resTmp1 = IBoolean::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IBoolean* interfaceTmp1 = IBoolean::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -6295,11 +6457,13 @@ ECode WebViewChromium::OnGenericMotionEvent(
 
     assert(0);
     mFactory->StartYourEngines(FALSE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerOnGenericMotionEventCallable(this, event);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IBoolean* resTmp1 = IBoolean::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IBoolean* interfaceTmp1 = IBoolean::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -6344,11 +6508,13 @@ ECode WebViewChromium::RequestFocus(
 
     assert(0);
     mFactory->StartYourEngines(FALSE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerRequestFocusCallable(this, direction, previouslyFocusedRect);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IBoolean* resTmp1 = IBoolean::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IBoolean* interfaceTmp1 = IBoolean::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -6374,7 +6540,9 @@ ECode WebViewChromium::OnMeasure(
     // mAwContents.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerOnMeasureRunnable(this, widthMeasureSpec, heightMeasureSpec);
         mRunQueue->AddTask(runnable);
     }
@@ -6407,11 +6575,13 @@ ECode WebViewChromium::RequestChildRectangleOnScreen(
 
     assert(0);
     mFactory->StartYourEngines(FALSE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerRequestChildRectangleOnScreenCallable(this, child, rect, immediate);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IBoolean* resTmp1 = IBoolean::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IBoolean* interfaceTmp1 = IBoolean::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -6436,7 +6606,9 @@ ECode WebViewChromium::SetBackgroundColor(
     // mAwContents.setBackgroundColor(color);
 
     assert(0);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerSetBackgroundColorRunnable(this, color);
         mRunQueue->AddTask(runnable);
     }
@@ -6471,7 +6643,9 @@ ECode WebViewChromium::SetLayerType(
     if (NULL == mAwContents)
         return NOERROR;
 
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerSetLayerTypeRunnable(this, layerType, paint);
         mRunQueue->AddTask(runnable);
     }
@@ -6530,11 +6704,13 @@ ECode WebViewChromium::ComputeHorizontalScrollRange(
 
     assert(0);
     mFactory->StartYourEngines(FALSE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerComputeHorizontalScrollRangeCallable(this);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IInteger32* resTmp1 = IInteger32::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IInteger32* interfaceTmp1 = IInteger32::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -6561,11 +6737,13 @@ ECode WebViewChromium::ComputeHorizontalScrollOffset(
 
     assert(0);
     mFactory->StartYourEngines(FALSE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerComputeHorizontalScrollOffsetCallable(this);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IInteger32* resTmp1 = IInteger32::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IInteger32* interfaceTmp1 = IInteger32::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -6592,11 +6770,13 @@ ECode WebViewChromium::ComputeVerticalScrollRange(
 
     assert(0);
     mFactory->StartYourEngines(FALSE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerComputeVerticalScrollRangeCallable(this);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IInteger32* resTmp1 = IInteger32::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IInteger32* interfaceTmp1 = IInteger32::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -6623,11 +6803,13 @@ ECode WebViewChromium::ComputeVerticalScrollOffset(
 
     assert(0);
     mFactory->StartYourEngines(FALSE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerComputeVerticalScrollOffsetCallable(this);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IInteger32* resTmp1 = IInteger32::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IInteger32* interfaceTmp1 = IInteger32::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -6654,11 +6836,13 @@ ECode WebViewChromium::ComputeVerticalScrollExtent(
 
     assert(0);
     mFactory->StartYourEngines(FALSE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<ICallable> callable = new InnerComputeVerticalScrollExtentCallable(this);
-        AutoPtr<IInterface> resTmp = RunOnUiThreadBlocking(callable);
-        IInteger32* resTmp1 = IInteger32::Probe(resTmp);
-        resTmp1->GetValue(result);
+        AutoPtr<IInterface> interfaceTmp = RunOnUiThreadBlocking(callable);
+        IInteger32* interfaceTmp1 = IInteger32::Probe(interfaceTmp);
+        interfaceTmp1->GetValue(result);
         return NOERROR;
     }
 
@@ -6683,7 +6867,9 @@ ECode WebViewChromium::ComputeScroll()
 
     assert(0);
     mFactory->StartYourEngines(FALSE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         AutoPtr<IRunnable> runnable = new InnerComputeScrollRunnable(this);
         mRunQueue->AddTask(runnable);
     }
@@ -6745,9 +6931,12 @@ ECode WebViewChromium::SetSmartClipResultHandler(
     return NOERROR;
 }
 
-AutoPtr<IInterface> WebViewChromium::RunBlockingFuture(
-    /* [in] */ FutureTask* task)
+ECode WebViewChromium::RunBlockingFuture(
+    /* [in] */ FutureTask* task,
+    /* [out] */ IInterface** result)
 {
+    VALIDATE_NOT_NULL(task);
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // if (!mFactory.hasStarted()) throw new RuntimeException("Must be started before we block!");
     // if (ThreadUtils.runningOnUiThread()) {
@@ -6768,10 +6957,14 @@ AutoPtr<IInterface> WebViewChromium::RunBlockingFuture(
     mFactory->HasStarted(&hasStarted);
     if (!hasStarted) {
         //throw new RuntimeException("Must be started before we block!");
+        assert(0);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     if (ThreadUtils::RunningOnUiThread()) {
         //throw new IllegalStateException("This method should only be called off the UI thread");
+        assert(0);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     mRunQueue->AddTask(task);
@@ -6781,9 +6974,8 @@ AutoPtr<IInterface> WebViewChromium::RunBlockingFuture(
         AutoPtr<ITimeUnit> timeUnit;
         helper->GetSECONDS((ITimeUnit**)&timeUnit);
 
-        AutoPtr<IInterface> result;
-        task->Get(4, timeUnit, (IInterface**)&result);
-        return result;
+        task->Get(4, timeUnit, (IInterface**)result);
+        return NOERROR;
     //}
     //catch (java.util.concurrent.TimeoutException e) {
     //    throw new RuntimeException("Probable deadlock detected due to WebView API being called "
@@ -6804,7 +6996,8 @@ ECode WebViewChromium::RunVoidTaskOnUiThreadBlocking(
 
     assert(0);
     AutoPtr<FutureTask> task = new FutureTask(r, NULL);
-    RunBlockingFuture(task);
+    AutoPtr<IInterface> interfaceTmp;
+    RunBlockingFuture(task, (IInterface**)&interfaceTmp);
     return NOERROR;
 }
 
@@ -6816,7 +7009,9 @@ AutoPtr<IInterface> WebViewChromium::RunOnUiThreadBlocking(
 
     assert(0);
     AutoPtr<FutureTask> task = new FutureTask(c);
-    return RunBlockingFuture(task);
+    AutoPtr<IInterface> interfaceTmp;
+    RunBlockingFuture(task, (IInterface**)&interfaceTmp);
+    return interfaceTmp;
 }
 
 AutoPtr<IContext> WebViewChromium::ResourcesContextWrapper(
@@ -6937,8 +7132,10 @@ ECode WebViewChromium::InitForReal()
 //    return empty;
 //}
 
-Boolean WebViewChromium::CheckNeedsPost()
+ECode WebViewChromium::CheckNeedsPost(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // ==================before translated======================
     // boolean needsPost = !mFactory.hasStarted() || !ThreadUtils.runningOnUiThread();
     // if (!needsPost && mAwContents == null) {
@@ -6953,8 +7150,11 @@ Boolean WebViewChromium::CheckNeedsPost()
     Boolean needsPost = !hasStarted || !ThreadUtils::RunningOnUiThread();
     if (!needsPost && NULL == mAwContents) {
         //throw new IllegalStateException("AwContents must be created if we are not posting!");
+        assert(0);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    return needsPost;
+    *result = needsPost;
+    return NOERROR;
 }
 
 ECode WebViewChromium::CheckThread()
@@ -6977,6 +7177,8 @@ ECode WebViewChromium::CheckThread()
         AutoPtr<IRunnable> runnable = new InnerThreadViolationRunnable(this);
         ThreadUtils::PostOnUiThread(runnable);
         //throw createThreadException();
+        assert(0);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NOERROR;
 }
@@ -7055,7 +7257,9 @@ ECode WebViewChromium::LoadUrlOnUiThread(
 
     assert(0);
     mFactory->StartYourEngines(TRUE);
-    if (CheckNeedsPost()) {
+    Boolean resTmp = FALSE;
+    CheckNeedsPost(&resTmp);
+    if (resTmp) {
         assert(mAppTargetSdkVersion < Build::VERSION_CODES::JELLY_BEAN_MR2);
         AutoPtr<IRunnable> runnable = new InnerLoadUrlRunnable(this, loadUrlParams);
         ThreadUtils::RunOnUiThread(runnable);

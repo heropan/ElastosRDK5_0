@@ -1,6 +1,7 @@
 
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/content/CIntentFilter.h"
+#include "elastos/droid/os/Process.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/widget/AdapterViewFlipper.h"
 #include "elastos/core/StringUtils.h"
@@ -11,6 +12,7 @@ using Elastos::Droid::Content::EIID_IBroadcastReceiver;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Os::EIID_IHandler;
 using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Os::Process;
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Core::CString;
 using Elastos::Core::StringUtils;
@@ -409,7 +411,8 @@ ECode AdapterViewFlipper::OnAttachedToWindow()
     // user not the one the context is for.
     AutoPtr<IContext> context;
     GetContext((IContext**)&context);
-    AutoPtr<IUserHandle> userHandle; // =android.os.Process.myUserHandle();
+    AutoPtr<IUserHandle> userHandle;
+    Process::MyUserHandle((IUserHandle**)&userHandle);
     AutoPtr<IIntent> intent;
     context->RegisterReceiverAsUser(mReceiver, userHandle, filter, String(""), mHandler, (IIntent**)&intent);
 
