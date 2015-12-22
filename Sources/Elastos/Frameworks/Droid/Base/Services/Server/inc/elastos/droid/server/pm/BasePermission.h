@@ -13,7 +13,7 @@ namespace Droid {
 namespace Server {
 namespace Pm {
 
-class BasePermission : public ElRefBase
+class BasePermission : public Object
 {
 public:
     BasePermission(

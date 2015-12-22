@@ -2,8 +2,11 @@
 #ifndef __ELASTOS_DROID_INTERNAL_OS_INSTALLERCONNECTION_H__
 #define __ELASTOS_DROID_INTERNAL_OS_INSTALLERCONNECTION_H__
 
-#include "Elastos.Droid.Core.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Net.h"
 #include <elastos/core/Object.h>
+#include <Elastos.CoreLibrary.IO.h>
 
 using Elastos::Droid::Net::ILocalSocket;
 using Elastos::Core::Object;
@@ -23,44 +26,53 @@ namespace Os {
  */
 class InstallerConnection
     : public Object
+    , public IInstallerConnection
 {
 public:
-    InstallerConnection();
+    CARAPI constructor();
 
-    CARAPI_(String) Transact(
-        /* [in] */ const String& cmd);
+    CAR_INTERFACE_DECL()
 
-    CARAPI_(Int32) Execute(
-        /* [in] */ const String& cmd);
+    CARAPI Transact(
+        /* [in] */ const String& cmd,
+        /* [out] */ String* result);
 
-    CARAPI_(Int32) Dexopt(
+    CARAPI Execute(
+        /* [in] */ const String& cmd,
+        /* [out] */ Int32* result);
+
+    CARAPI Dexopt(
         /* [in] */ const String& apkPath,
         /* [in] */ Int32 uid,
         /* [in] */ Boolean isPublic,
-        /* [in] */ const String& instructionSet);
+        /* [in] */ const String& instructionSet,
+        /* [out] */ Int32* result);
 
-    CARAPI_(Int32) Dexopt(
+    CARAPI Dexopt(
         /* [in] */ const String& apkPath,
         /* [in] */ Int32 uid,
         /* [in] */ Boolean isPublic,
         /* [in] */ const String& pkgName,
         /* [in] */ const String& instructionSet,
-        /* [in] */ Boolean vmSafeMode);
+        /* [in] */ Boolean vmSafeMode,
+        /* [out] */ Int32* result);
 
-    CARAPI_(Int32) Patchoat(
+    CARAPI Patchoat(
         /* [in] */ const String& apkPath,
         /* [in] */ Int32 uid,
         /* [in] */ Boolean isPublic,
-        /* [in] */ const String& instructionSet);
+        /* [in] */ const String& instructionSet,
+        /* [out] */ Int32* result);
 
-    CARAPI_(Int32) Patchoat(
+    CARAPI Patchoat(
         /* [in] */ const String& apkPath,
         /* [in] */ Int32 uid,
         /* [in] */ Boolean isPublic,
         /* [in] */ const String& pkgName,
-        /* [in] */ const String& instructionSet);
+        /* [in] */ const String& instructionSet,
+        /* [out] */ Int32* result);
 
-    CARAPI_(void) Disconnect();
+    CARAPI Disconnect();
 
 private:
     CARAPI_(Boolean) Connect();

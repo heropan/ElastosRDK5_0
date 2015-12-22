@@ -30,18 +30,24 @@ namespace Os {
 const String InstallerConnection::TAG("InstallerConnection");
 const Boolean InstallerConnection::LOCAL_DEBUG = FALSE;
 
-InstallerConnection::InstallerConnection()
+ECode InstallerConnection::constructor()
 {
     mBuf = ArrayOf<Byte>::Alloc(1024);
+    return NOERROR;
 }
 
-String InstallerConnection::Transact(
-    /* [in] */ const String& cmd)
+CAR_INTERFACE_IMPL(InstallerConnection, Object, IInstallerConnection)
+
+ECode InstallerConnection::Transact(
+    /* [in] */ const String& cmd,
+    /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result)
     AutoLock lock(this);
     if (!Connect()) {
         Slogger::E(TAG, "connection failed");
-        return String("-1");
+        *result = String("-1");
+        return NOERROR;
     }
 
     if (!WriteCommand(cmd)) {
@@ -52,7 +58,8 @@ String InstallerConnection::Transact(
          */
         Slogger::E(TAG, "write command failed? reconnect!");
         if (!Connect() || !WriteCommand(cmd)) {
-            return String("-1");
+            *result = String("-1");
+            return NOERROR;
         }
     }
     if (LOCAL_DEBUG) {
@@ -65,40 +72,49 @@ String InstallerConnection::Transact(
         if (LOCAL_DEBUG) {
             Slogger::I(TAG, "recv: '%s'", s.string());
         }
-        return s;
+        *result = s;
     }
     else {
         if (LOCAL_DEBUG) {
             Slogger::I(TAG, "fail");
         }
-        return String("-1");
+        *result = String("-1");
     }
+    return NOERROR;
 }
 
-Int32 InstallerConnection::Execute(
-    /* [in] */ const String& cmd)
+ECode InstallerConnection::Execute(
+    /* [in] */ const String& cmd,
+    /* [out] */ Int32* result)
 {
-    String res = Transact(cmd);
-    return StringUtils::ParseInt32(res, 10 , -1);
+    VALIDATE_NOT_NULL(result)
+    String res;
+    Transact(cmd, &res);
+    *result = StringUtils::ParseInt32(res, 10 , -1);
+    return NOERROR;
 }
 
-Int32 InstallerConnection::Dexopt(
+ECode InstallerConnection::Dexopt(
     /* [in] */ const String& apkPath,
     /* [in] */ Int32 uid,
     /* [in] */ Boolean isPublic,
-    /* [in] */ const String& instructionSet)
+    /* [in] */ const String& instructionSet,
+    /* [out] */ Int32* result)
 {
-    return Dexopt(apkPath, uid, isPublic, String("*"), instructionSet, FALSE);
+    VALIDATE_NOT_NULL(result)
+    return Dexopt(apkPath, uid, isPublic, String("*"), instructionSet, FALSE, result);
 }
 
-Int32 InstallerConnection::Dexopt(
+ECode InstallerConnection::Dexopt(
     /* [in] */ const String& apkPath,
     /* [in] */ Int32 uid,
     /* [in] */ Boolean isPublic,
     /* [in] */ const String& pkgName,
     /* [in] */ const String& instructionSet,
-    /* [in] */ Boolean vmSafeMode)
+    /* [in] */ Boolean vmSafeMode,
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
     StringBuilder builder("dexopt");
     builder.AppendChar(' ');
     builder.Append(apkPath);
@@ -111,25 +127,29 @@ Int32 InstallerConnection::Dexopt(
     builder.Append(instructionSet);
     builder.AppendChar(' ');
     builder.Append(vmSafeMode ? " 1" : " 0");
-    return Execute(builder.ToString());
+    return Execute(builder.ToString(), result);
 }
 
-Int32 InstallerConnection::Patchoat(
+ECode InstallerConnection::Patchoat(
     /* [in] */ const String& apkPath,
     /* [in] */ Int32 uid,
     /* [in] */ Boolean isPublic,
-    /* [in] */ const String& instructionSet)
+    /* [in] */ const String& instructionSet,
+    /* [out] */ Int32* result)
 {
-    return Patchoat(apkPath, uid, isPublic, String("*"), instructionSet);
+    VALIDATE_NOT_NULL(result)
+    return Patchoat(apkPath, uid, isPublic, String("*"), instructionSet, result);
 }
 
-Int32 InstallerConnection::Patchoat(
+ECode InstallerConnection::Patchoat(
     /* [in] */ const String& apkPath,
     /* [in] */ Int32 uid,
     /* [in] */ Boolean isPublic,
     /* [in] */ const String& pkgName,
-    /* [in] */ const String& instructionSet)
+    /* [in] */ const String& instructionSet,
+    /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
     StringBuilder builder("patchoat");
     builder.AppendChar(' ');
     builder.Append(apkPath);
@@ -140,7 +160,7 @@ Int32 InstallerConnection::Patchoat(
     builder.Append(pkgName);
     builder.AppendChar(' ');
     builder.Append(instructionSet);
-    return Execute(builder.ToString());
+    return Execute(builder.ToString(), result);
 }
 
 Boolean InstallerConnection::Connect()
@@ -174,7 +194,7 @@ Boolean InstallerConnection::Connect()
     return TRUE;
 }
 
-void InstallerConnection::Disconnect()
+ECode InstallerConnection::Disconnect()
 {
     Slogger::I(TAG, "disconnecting...");
     AutoPtr<IIoUtils> ioUtils;
@@ -186,6 +206,7 @@ void InstallerConnection::Disconnect()
     mSocket = NULL;
     mIn = NULL;
     mOut = NULL;
+    return NOERROR;
 }
 
 Boolean InstallerConnection::ReadFully(

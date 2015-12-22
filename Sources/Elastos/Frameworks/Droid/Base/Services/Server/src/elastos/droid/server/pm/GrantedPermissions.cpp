@@ -31,6 +31,7 @@ void GrantedPermissions::SetFlags(
 {
     mPkgFlags = pkgFlags
             & (IApplicationInfo::FLAG_SYSTEM
+                    | IApplicationInfo::FLAG_PRIVILEGED
                     | IApplicationInfo::FLAG_FORWARD_LOCK
                     | IApplicationInfo::FLAG_EXTERNAL_STORAGE);
 }

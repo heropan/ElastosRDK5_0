@@ -4,6 +4,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos.Droid.Server.h"
 #include <elastos/utility/etl/HashSet.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::Etl::HashSet;
 
@@ -12,7 +13,7 @@ namespace Droid {
 namespace Server {
 namespace Pm {
 
-class GrantedPermissions : public ElRefBase
+class GrantedPermissions : public Object
 {
 public:
     GrantedPermissions(

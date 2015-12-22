@@ -15,7 +15,6 @@
 using Elastos::Core::IBoolean;
 using Elastos::Core::StringBuilder;
 using Elastos::IO::IFile;
-
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Pm::PackageParser;
 using Elastos::Droid::Content::Pm::IPackageCleanItem;
@@ -29,8 +28,37 @@ namespace Droid {
 namespace Server {
 namespace Pm {
 
-class Settings : public ElRefBase
+class Settings : public Object
 {
+public:
+    /**
+     * This class contains constants that can be referred to from upgrade code.
+     * Insert constant values here that describe the upgrade reason. The version
+     * code must be monotonically increasing.
+     */
+    class DatabaseVersion
+    {
+    public:
+        /**
+         * The initial version of the database.
+         */
+        static const Int32 FIRST_VERSION = 1;
+
+        /**
+         * Migrating the Signature array from the entire certificate chain to
+         * just the signing certificate.
+         */
+        static const Int32 SIGNATURE_END_ENTITY = 2;
+
+        /**
+         * There was a window of time in
+         * {@link android.os.Build.VERSION_CODES#LOLLIPOP} where we persisted
+         * certificates after potentially mutating them. To switch back to the
+         * original untouched certificates, we need to force a collection pass.
+         */
+        static const Int32 SIGNATURE_MALFORMED_RECOVER = 3;
+    };
+
 public:
     Settings(
         /* [in] */ IContext* context);
@@ -46,7 +74,9 @@ public:
         /* [in] */ SharedUserSetting* sharedUser,
         /* [in] */ IFile* codePath,
         /* [in] */ IFile* resourcePath,
-        /* [in] */ const String& nativeLibraryPathString,
+        /* [in] */ const String& legacyNativeLibraryPathString,
+        /* [in] */ const String& primaryCpuAbi,
+        /* [in] */ const String& secondaryCpuAbi,
         /* [in] */ Int32 pkgFlags,
         /* [in] */ IUserHandle* user,
         /* [in] */ Boolean add);
@@ -67,6 +97,8 @@ public:
         /* [in] */ Int32 pkgFlags,
         /* [in] */ Boolean create);
 
+    CARAPI_(HashMap<String, AutoPtr<SharedUserSetting> >&) GetAllSharedUsersLPw();
+
     CARAPI_(Boolean) DisableSystemPackageLPw(
         /* [in] */ const String& name);
 
@@ -84,7 +116,10 @@ public:
         /* [in] */ const String& realName,
         /* [in] */ IFile* codePath,
         /* [in] */ IFile* resourcePath,
-        /* [in] */ const String& nativeLibraryPathString,
+        /* [in] */ const String& legacyNativeLibraryPathString,
+        /* [in] */ const String& primaryCpuAbiString,
+        /* [in] */ const String& secondaryCpuAbiString,
+        /* [in] */ const String& cpuAbiOverrideString,
         /* [in] */ Int32 uid,
         /* [in] */ Int32 vc,
         /* [in] */ Int32 pkgFlags);
@@ -94,10 +129,16 @@ public:
         /* [in] */ Int32 uid,
         /* [in] */ Int32 pkgFlags);
 
+    CARAPI_(void) PruneSharedUsersLPw();
+
     // Transfer ownership of permissions from one package to another.
     CARAPI_(void) TransferPermissionsLPw(
         /* [in] */ const String& origPkg,
         /* [in] */ const String& newPkg);
+
+    CARAPI_(Boolean) IsAdbInstallDisallowed(
+        /* [in] */ CUserManagerService* userManager,
+        /* [in] */ Int32 userId);
 
     CARAPI_(void) InsertPackageSettingLPw(
         /* [in] */ PackageSetting* p,
@@ -124,14 +165,57 @@ public:
     CARAPI_(AutoPtr<PreferredIntentResolver>) EditPreferredActivitiesLPw(
         /* [in] */ Int32 userId);
 
+    CARAPI_(AutoPtr<PersistentPreferredIntentResolver>) EditPersistentPreferredActivitiesLPw(
+        /* [in] */ Int32 userId);
+
+    CARAPI_(AutoPtr<CrossProfileIntentResolver>) EditCrossProfileIntentResolverLPw(
+        /* [in] */ Int32 userId);
+
     CARAPI_(void) WriteAllUsersPackageRestrictionsLPr();
 
     CARAPI_(void) ReadAllUsersPackageRestrictionsLPr();
+
+    /**
+     * Returns whether the current database has is older than {@code version}
+     * for apps on internal storage.
+     */
+    CARAPI_(Boolean) IsInternalDatabaseVersionOlderThan(
+        /* [in] */ Int32 version);
+
+    /**
+     * Returns whether the current database has is older than {@code version}
+     * for apps on external storage.
+     */
+    CARAPI_(Boolean) IsExternalDatabaseVersionOlderThan(
+        /* [in] */ Int32 version);
+
+    /**
+     * Updates the database version for apps on internal storage. Called after
+     * call the updates to the database format are done for apps on internal
+     * storage after the initial start-up scan.
+     */
+    CARAPI_(void) UpdateInternalDatabaseVersion();
+
+    /**
+     * Updates the database version for apps on internal storage. Called after
+     * call the updates to the database format are done for apps on internal
+     * storage after the initial start-up scan.
+     */
+    CARAPI_(void) UpdateExternalDatabaseVersion();
 
     CARAPI_(void) ReadPackageRestrictionsLPr(
         /* [in] */ Int32 userId);
 
     CARAPI WritePreferredActivitiesLPr(
+        /* [in] */ IXmlSerializer* serializer,
+        /* [in] */ Int32 userId,
+        /* [in] */ Boolean full);
+
+    CARAPI WritePersistentPreferredActivitiesLPr(
+        /* [in] */ IXmlSerializer* serializer,
+        /* [in] */ Int32 userId);
+
+    CARAPI WriteCrossProfileIntentFiltersLPr(
         /* [in] */ IXmlSerializer* serializer,
         /* [in] */ Int32 userId);
 
@@ -152,6 +236,18 @@ public:
         /* [in] */ IXmlSerializer* serializer,
         /* [in] */ PackageSetting* pkg);
 
+    CARAPI WriteSigningKeySetsLPr(
+        /* [in] */ IXmlSerializer* serializer,
+        /* [in] */ PackageKeySetData* data);
+
+    CARAPI WriteUpgradeKeySetsLPr(
+        /* [in] */ IXmlSerializer* serializer,
+        /* [in] */ PackageKeySetData* data);
+
+    CARAPI WriteKeySetAliasesLPr(
+        /* [in] */ IXmlSerializer* serializer,
+        /* [in] */ PackageKeySetData* data);
+
     CARAPI WritePermissionLPr(
         /* [in] */ IXmlSerializer* serializer,
         /* [in] */ BasePermission* bp);
@@ -162,16 +258,21 @@ public:
         /* [in] */ IPackageCleanItem* pkg);
 
     CARAPI_(Boolean) ReadLPw(
+        /* [in] */ CPackageManagerService* service,
         /* [in] */ List< AutoPtr<IUserInfo> >& users,
         /* [in] */ Int32 sdkVersion,
         /* [in] */ Boolean onlyCore);
 
     CARAPI_(void) CreateNewUserLILPw(
+        /* [in] */ CPackageManagerService* service,
         /* [in] */ Installer* installer,
         /* [in] */ Int32 userHandle,
         /* [in] */ IFile* path);
 
-    CARAPI_(void) RemoveUserLPr(
+    CARAPI_(void) RemoveUserLPw(
+        /* [in] */ Int32 userId);
+
+    CARAPI_(void) RemoveCrossProfileIntentFiltersLPw(
         /* [in] */ Int32 userId);
 
     CARAPI_(AutoPtr<IVerifierDeviceIdentity>) GetVerifierDeviceIdentityLPw();
@@ -211,25 +312,6 @@ public:
         /* [in] */ Int32 val,
         /* [in] */ ArrayOf<IInterface*>& spec);
 
-    CARAPI_(void) DumpPackagesLPr(
-        /* [in] */ IPrintWriter* pw,
-        /* [in] */ const String& packageName,
-        /* [in] */ DumpState* dumpState);
-
-    CARAPI_(void) DumpPermissionsLPr(
-        /* [in] */ IPrintWriter* pw,
-        /* [in] */ const String& packageName,
-        /* [in] */ DumpState* dumpState);
-
-    CARAPI_(void) DumpSharedUsersLPr(
-        /* [in] */ IPrintWriter* pw,
-        /* [in] */ const String& packageName,
-        /* [in] */ DumpState* dumpState);
-
-    CARAPI_(void) DumpReadMessagesLPr(
-        /* [in] */ IPrintWriter* pw,
-        /* [in] */ DumpState* dumpState);
-
 private:
     CARAPI_(void) Init(
         /* [in] */ IContext* context,
@@ -242,7 +324,9 @@ private:
         /* [in] */ SharedUserSetting* sharedUser,
         /* [in] */ IFile* codePath,
         /* [in] */ IFile* resourcePath,
-        /* [in] */ const String& nativeLibraryPathString,
+        /* [in] */ const String& legacyNativeLibraryPathString,
+        /* [in] */ const String& primaryCpuAbiString,
+        /* [in] */ const String& secondaryCpuAbiString,
         /* [in] */ Int32 vc,
         /* [in] */ Int32 pkgFlags,
         /* [in] */ IUserHandle* installUser,
@@ -282,10 +366,41 @@ private:
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ Int32 userId);
 
+    CARAPI ReadPersistentPreferredActivitiesLPw(
+        /* [in] */ IXmlPullParser* parser,
+        /* [in] */ Int32 userId);
+
+    CARAPI ReadCrossProfileIntentFiltersLPw(
+        /* [in] */ IXmlPullParser* parser,
+        /* [in] */ Int32 userId);
+
     CARAPI_(AutoPtr<HashSet<Elastos::String> >) ReadComponentsLPr(
         /* [in] */ IXmlPullParser* parser);
 
+    CARAPI_(void) ApplyDefaultPreferredActivityLPw(
+        /* [in] */ CPackageManagerService* service,
+        /* [in] */ IIntentFilter* tmpPa,
+        /* [in] */ IComponentName* cn,
+        /* [in] */ Int32 userId);
+
+    CARAPI_(void) ApplyDefaultPreferredActivityLPw(
+        /* [in] */ CPackageManagerService* service,
+        /* [in] */ IIntent* intent,
+        /* [in] */ Int32 flags,
+        /* [in] */ IComponentName* cn,
+        /* [in] */ const String& scheme,
+        /* [in] */ IPatternMatcher* ssp,
+        /* [in] */ IIntentFilterAuthorityEntry* auth,
+        /* [in] */ IPatternMatcher* path,
+        /* [in] */ Int32 userId);
+
+    CARAPI ReadDefaultPreferredActivitiesLPw(
+        /* [in] */ CPackageManagerService* service,
+        /* [in] */ IXmlPullParser* parser,
+        /* [in] */ Int32 userId);
+
     CARAPI_(void) ReadDefaultPreferredAppsLPw(
+        /* [in] */ CPackageManagerService* service,
         /* [in] */ Int32 userId);
 
     CARAPI_(Int32) ReadInt32(
@@ -321,6 +436,10 @@ private:
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ HashSet<String>& outPerms);
 
+    // This should be called (at least) whenever an application is removed
+    CARAPI_(void) SetFirstAvailableUid(
+        /* [in] */ Int32 uid);
+
     // Returns -1 if we could not find an available UserId to assign
     CARAPI_(Int32) NewUserIdLPw(
         /* [in] */ IInterface* obj);
@@ -331,6 +450,8 @@ private:
     CARAPI_(AutoPtr< List< AutoPtr<IUserInfo> > >) GetAllUsers();
 
 public:
+    static const String TAG_CROSS_PROFILE_INTENT_FILTERS;
+
     HashMap<String, AutoPtr<PackageSetting> > mPackages;
 
     // These are the last platform API version we were using for
@@ -339,11 +460,33 @@ public:
     Int32 mInternalSdkPlatform;
     Int32 mExternalSdkPlatform;
 
+    /**
+     * The current database version for apps on internal storage. This is
+     * used to upgrade the format of the packages.xml database not necessarily
+     * tied to an SDK version.
+     */
+    Int32 mInternalDatabaseVersion;
+    Int32 mExternalDatabaseVersion;
+
+    /**
+     * Last known value of {@link Build#FINGERPRINT}. Used to determine when an
+     * system update has occurred, meaning we need to clear code caches.
+     */
+    String mFingerprint;
+
     AutoPtr<IBoolean> mReadExternalStorageEnforced;
 
     // The user's preferred activities associated with particular intent
     // filters.
     HashMap<Int32, AutoPtr<PreferredIntentResolver> > mPreferredActivities;
+
+    // The persistent preferred activities of the user's profile/device owner
+    // associated with particular intent filters.
+    HashMap<Int32, AutoPtr<PersistentPreferredIntentResolver> > mPersistentPreferredActivities;
+
+    // For every user, it is used to find to which other users the intent can be forwarded.
+    HashMap<Int32, AutoPtr<CrossProfileIntentResolver> > mCrossProfileIntentResolvers;
+    Object mCrossProfileIntentResolversLock;
 
     HashMap<String, AutoPtr<SharedUserSetting> > mSharedUsers;
 
@@ -365,8 +508,20 @@ public:
 
     AutoPtr<StringBuilder> mReadMessages;
 
+    AutoPtr<KeySetManagerService> mKeySetManagerService;
+
 private:
     static const String TAG;
+
+    /**
+     * Current version of the package database. Set it to the latest version in
+     * the {@link DatabaseVersion} class below to ensure the database upgrade
+     * doesn't happen repeatedly.
+     * <p>
+     * Note that care should be taken to make sure all database upgrades are
+     * idempotent.
+     */
+    static const Int32 CURRENT_DATABASE_VERSION = DatabaseVersion::SIGNATURE_MALFORMED_RECOVER;
 
     static const Boolean DEBUG_STOPPED = FALSE;
     static const Boolean DEBUG_MU = FALSE;
@@ -379,14 +534,21 @@ private:
     static const String TAG_ENABLED_COMPONENTS;
     static const String TAG_PACKAGE_RESTRICTIONS;
     static const String TAG_PACKAGE;
+    static const String TAG_PERSISTENT_PREFERRED_ACTIVITIES;
 
     static const String ATTR_NAME;
     static const String ATTR_USER;
     static const String ATTR_CODE;
     static const String ATTR_NOT_LAUNCHED;
     static const String ATTR_ENABLED;
+    static const String ATTR_ENABLED_CALLER;
     static const String ATTR_STOPPED;
+    // Legacy, here for reading older versions of the package-restrictions.
+    static const String ATTR_BLOCKED;
+    // New name for the above attribute.
+    static const String ATTR_HIDDEN;
     static const String ATTR_INSTALLED;
+    static const String ATTR_BLOCK_UNINSTALL;
 
     AutoPtr<IFile> mSettingsFilename;
     AutoPtr<IFile> mBackupSettingsFilename;
@@ -396,6 +558,8 @@ private:
 
     // List of replaced system applications
     HashMap<String, AutoPtr<PackageSetting> > mDisabledSysPackages;
+
+    static Int32 mFirstAvailableUid;
 
     /** Device identity for the purpose of package verification. */
     AutoPtr<IVerifierDeviceIdentity> mVerifierDeviceIdentity;
@@ -414,8 +578,6 @@ private:
      * scanning to make it less confusing.
      */
     List< AutoPtr<PendingPackage> > mPendingPackages;
-
-    AutoPtr<IContext> mContext;
 
     AutoPtr<IFile> mSystemDir;
 };

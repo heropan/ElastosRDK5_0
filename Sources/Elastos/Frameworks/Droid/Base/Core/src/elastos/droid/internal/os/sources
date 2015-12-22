@@ -32,3 +32,4 @@ SOURCES += RuntimeInit.cpp
 SOURCES += SomeArgs.cpp
 SOURCES += Zygote.cpp
 SOURCES += ZygoteConnection.cpp
+SOURCES += CInstallerConnection.cpp

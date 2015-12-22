@@ -9,6 +9,7 @@ module
     merge("os/BinderInternal.car");
     merge("os/HandlerCaller.car");
     merge("os/IDropBoxManagerService.car");
+    merge("os/InstallerConnection.car");
     merge("os/IParcelFileDescriptorFactory.car");
     merge("os/IResultReceiver.car");
     merge("os/PowerProfile.car");
@@ -119,6 +120,12 @@ module
 
         interface ITransferPipe;
         interface IRunnable;
+    }
+
+    class CInstallerConnection {
+        constructor();
+
+        interface IInstallerConnection;
     }
 
     } // namespace Os

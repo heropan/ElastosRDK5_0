@@ -19,8 +19,7 @@ namespace Droid {
 namespace Server {
 namespace Pm {
 
-class BackgroundDexOptService
-    : public JobService
+class BackgroundDexOptService : public JobService
 {
 private:
     class OnStartJobThread : public Thread

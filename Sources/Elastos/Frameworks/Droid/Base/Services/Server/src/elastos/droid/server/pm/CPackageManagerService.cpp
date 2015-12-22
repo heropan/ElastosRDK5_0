@@ -91,6 +91,7 @@ using Elastos::Droid::Utility::CParcelableObjectContainer;
 using Elastos::Droid::Utility::Xml;
 using Elastos::Droid::Utility::XmlUtils;
 using Elastos::Droid::Utility::CSparseArray;
+using Elastos::Droid::Utility::ILogHelper;
 using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::View::IWindowManager;
 using Elastos::Droid::Server::IDeviceStorageMonitorService;
@@ -4582,17 +4583,18 @@ ECode CPackageManagerService::constructor(
             // Now that we know all of the shared libraries, update all clients to have
             // the correct library paths.
             UpdateAllSharedLibrariesLPw();
-            AutoPtr<ICollection> col = mSettings->GetAllSharedUsersLPw();
-            Boolean hasNext;
-            while (col->HasNext(&hasNext), hasNext) {
-                AutoPtr<IInterface> next;
-                col->GetNext((IInterface**)&next);
-                AutoPtr<SharedUserSetting> userSetting = (SharedUserSetting*)(IObject*)next.Get();
+            HashMap<String, AutoPtr<SharedUserSetting> >& col = mSettings->GetAllSharedUsersLPw();
+            HashMap<String, AutoPtr<SharedUserSetting> >::Iterator colIt = col.Begin();
+            for (; colIt != col.End(); ++colIt) {
+                AutoPtr<SharedUserSetting> userSetting = colIt->mSecond;
                 // NOTE: We ignore potential failures here during a system scan (like
                 // the rest of the commands above) because there's precious little we
                 // can do about it. A settings error is reported, though.
-                AdjustCpuAbisForSharedUserLPw(setting->mPackages, NULL /* scanned package */,
+                AdjustCpuAbisForSharedUserLPw(userSetting->mPackages, NULL /* scanned package */,
                         FALSE /* force dexopt */, FALSE /* defer dexopt */);
+            }
+            while (col->HasNext(&hasNext), hasNext) {
+
             }
 
             // Now that we know all the packages we are keeping,
