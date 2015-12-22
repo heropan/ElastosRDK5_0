@@ -154,9 +154,8 @@ private:
      * parsed later (if the scheme is supported) or null if failed
      * to parse the scheme (the header value is null?).
      */
-    CARAPI ParseScheme(
-        /* [in] */ const String& header,
-        /* [out] */ String* result);
+    CARAPI_(String) ParseScheme(
+        /* [in] */ const String& header);
 
     /**
      * Parses a comma-separated list of authentification scheme
@@ -192,9 +191,8 @@ private:
      * @return The string value without the outermost pair of double-
      * quotes or null if the original value is null.
      */
-    static CARAPI TrimDoubleQuotesIfAny(
-        /* [in] */ const String& value,
-        /* [out] */ String* result);
+    static CARAPI_(String) TrimDoubleQuotesIfAny(
+        /* [in] */ const String& value);
 
 private:
     static const String REALM_TOKEN;

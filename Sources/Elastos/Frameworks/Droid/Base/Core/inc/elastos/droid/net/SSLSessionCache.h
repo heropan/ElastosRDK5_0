@@ -83,10 +83,12 @@ public:
     CARAPI GetSessionCache(
         /* [out] */ ISSLClientSessionCache** result);
 
-private:
-    static const String TAG;
+public:
     /* package */
     AutoPtr<ISSLClientSessionCache> mSessionCache;
+
+private:
+    static const String TAG;
 };
 
 } // namespace Net

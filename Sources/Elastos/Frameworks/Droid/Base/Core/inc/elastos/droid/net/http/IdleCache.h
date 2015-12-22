@@ -35,7 +35,13 @@ private:
         : public Thread
     {
     public:
+        IdleReaper(
+            /* [in] */ IdleCache* host);
+
         CARAPI Run();
+
+    private:
+        IdleCache* mHost;
     };
 
 public:

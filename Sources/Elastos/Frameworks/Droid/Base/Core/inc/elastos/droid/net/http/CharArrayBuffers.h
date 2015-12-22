@@ -47,9 +47,8 @@ public:
     static const Char32 uppercaseAddon;
 
 private:
-    static CARAPI ToLower(
-        /* [in] */ Char32 c,
-        /* [out] */ Char32* result);
+    static CARAPI_(Char32) ToLower(
+        /* [in] */ Char32 c);
 };
 
 } // namespace Http

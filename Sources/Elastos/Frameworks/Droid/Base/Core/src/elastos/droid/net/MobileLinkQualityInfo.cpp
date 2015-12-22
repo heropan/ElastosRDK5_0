@@ -30,7 +30,7 @@ ECode MobileLinkQualityInfo::CreateFromParcelBody(
 {
     AutoPtr<MobileLinkQualityInfo> li = new MobileLinkQualityInfo();
     li->ReadFromParcel(in);
-    FUNC_RETURN(li);
+    FUNC_RETURN(li)
 }
 
 ECode MobileLinkQualityInfo::GetMobileNetworkType(

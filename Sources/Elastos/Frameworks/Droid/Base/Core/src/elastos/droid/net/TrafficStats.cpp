@@ -1,721 +1,297 @@
 
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.Libcore.h>
+#include <Elastos.CoreLibrary.Net.h>
+#include "_Elastos.Droid.Content.h"
 #include "elastos/droid/net/TrafficStats.h"
-#include "elastos/core/Object.h"
+#include "elastos/droid/net/CNetwork.h"
+#include "elastos/droid/net/CNetworkStats.h"
+#include "elastos/droid/net/Network.h"
+#include "elastos/droid/net/NetworkStats.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/Object.h>
+#include <elastos/core/Thread.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <dirent.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <inttypes.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <utils/misc.h>
+#include <utils/Log.h>
 
+using Elastos::Droid::App::Backup::IBackupManager;
+using Elastos::Droid::App::IDownloadManager;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Media::IMediaPlayer;
+using Elastos::Droid::Os::IServiceManager;
+using Elastos::Droid::Os::Process;
+using Elastos::Droid::Os::ServiceManager;
+using Elastos::Droid::Server::INetworkManagementSocketTagger;
+
+using Elastos::Core::Thread;
+using Elastos::Net::CSocket;
+using Elastos::Net::ISocket;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::Logging::Slogger;
+
+using Libcore::IO::CSocketTaggerHelper;
+using Libcore::IO::ISocketTagger;
+using Libcore::IO::ISocketTaggerHelper;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
-AutoPtr<IInterface> TrafficStats::sProfilingLock = (new Object)->Probe(EIID_IInterface);;
+AutoPtr<IInterface> TrafficStats::sProfilingLock = (new Object)->Probe(EIID_IInterface);
 const Int32 TrafficStats::TYPE_RX_BYTES = 0;
 const Int32 TrafficStats::TYPE_RX_PACKETS = 1;
 const Int32 TrafficStats::TYPE_TX_BYTES = 2;
 const Int32 TrafficStats::TYPE_TX_PACKETS = 3;
 const Int32 TrafficStats::TYPE_TCP_RX_PACKETS = 4;
 const Int32 TrafficStats::TYPE_TCP_TX_PACKETS = 5;
+AutoPtr<IINetworkStatsService> TrafficStats::sStatsService;
+AutoPtr<INetworkStats> TrafficStats::sActiveProfilingStart;
 
-ECode TrafficStats::GetStatsService(
-    /* [out] */ IINetworkStatsService** result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (sStatsService == NULL) {
-            sStatsService = INetworkStatsService::Probe(
-                    ServiceManager::GetService(Context.NETWORK_STATS_SERVICE));
+static const char* QTAGUID_IFACE_STATS = "/proc/net/xt_qtaguid/iface_stat_fmt";
+static const char* QTAGUID_UID_STATS = "/proc/net/xt_qtaguid/stats";
+
+// NOTE: keep these in sync with TrafficStats.java
+static const uint64_t UNKNOWN = -1;
+
+enum StatsType {
+    RX_BYTES = 0,
+    RX_PACKETS = 1,
+    TX_BYTES = 2,
+    TX_PACKETS = 3,
+    TCP_RX_PACKETS = 4,
+    TCP_TX_PACKETS = 5
+};
+
+struct Stats {
+    uint64_t rxBytes;
+    uint64_t rxPackets;
+    uint64_t txBytes;
+    uint64_t txPackets;
+    uint64_t tcpRxPackets;
+    uint64_t tcpTxPackets;
+};
+
+static uint64_t getStatsType(struct Stats* stats, StatsType type) {
+    switch (type) {
+        case RX_BYTES:
+            return stats->rxBytes;
+        case RX_PACKETS:
+            return stats->rxPackets;
+        case TX_BYTES:
+            return stats->txBytes;
+        case TX_PACKETS:
+            return stats->txPackets;
+        case TCP_RX_PACKETS:
+            return stats->tcpRxPackets;
+        case TCP_TX_PACKETS:
+            return stats->tcpTxPackets;
+        default:
+            return UNKNOWN;
+    }
+}
+
+static int parseIfaceStats(const char* iface, struct Stats* stats) {
+    FILE *fp = fopen(QTAGUID_IFACE_STATS, "r");
+    if (fp == NULL) {
+        return -1;
+    }
+
+    char buffer[384];
+    char cur_iface[32];
+    bool foundTcp = false;
+    uint64_t rxBytes, rxPackets, txBytes, txPackets, tcpRxPackets, tcpTxPackets;
+
+    while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+        int matched = sscanf(buffer, "%31s %" SCNu64 " %" SCNu64 " %" SCNu64
+                " %" SCNu64 " " "%*u %" SCNu64 " %*u %*u %*u %*u "
+                "%*u %" SCNu64 " %*u %*u %*u %*u", cur_iface, &rxBytes,
+                &rxPackets, &txBytes, &txPackets, &tcpRxPackets, &tcpTxPackets);
+        if (matched >= 5) {
+            if (matched == 7) {
+                foundTcp = true;
+            }
+            if (!iface || !strcmp(iface, cur_iface)) {
+                stats->rxBytes += rxBytes;
+                stats->rxPackets += rxPackets;
+                stats->txBytes += txBytes;
+                stats->txPackets += txPackets;
+                if (matched == 7) {
+                    stats->tcpRxPackets += tcpRxPackets;
+                    stats->tcpTxPackets += tcpTxPackets;
+                }
+            }
         }
-        return sStatsService;
-#endif
+    }
+
+    if (!foundTcp) {
+        stats->tcpRxPackets = UNKNOWN;
+        stats->tcpTxPackets = UNKNOWN;
+    }
+
+    if (fclose(fp) != 0) {
+        return -1;
+    }
+    return 0;
+}
+
+static int parseUidStats(const uint32_t uid, struct Stats* stats) {
+    FILE *fp = fopen(QTAGUID_UID_STATS, "r");
+    if (fp == NULL) {
+        return -1;
+    }
+
+    char buffer[384];
+    char iface[32];
+    uint32_t idx, cur_uid, set;
+    uint64_t tag, rxBytes, rxPackets, txBytes, txPackets;
+
+    while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+        if (sscanf(buffer,
+                "%" SCNu32 " %31s 0x%" SCNx64 " %u %u %" SCNu64 " %" SCNu64
+                " %" SCNu64 " %" SCNu64 "",
+                &idx, iface, &tag, &cur_uid, &set, &rxBytes, &rxPackets,
+                &txBytes, &txPackets) == 9) {
+            if (uid == cur_uid && tag == 0L) {
+                stats->rxBytes += rxBytes;
+                stats->rxPackets += rxPackets;
+                stats->txBytes += txBytes;
+                stats->txPackets += txPackets;
+            }
+        }
+    }
+
+    if (fclose(fp) != 0) {
+        return -1;
+    }
+    return 0;
+}
+
+AutoPtr<IINetworkStatsService> TrafficStats::GetStatsService()
+{
+    synchronized(sProfilingLock) {
+        if (sStatsService!=NULL)
+            return sStatsService;
+
+        sStatsService =(IINetworkStatsService*)ServiceManager::GetService(IContext::NETWORK_STATS_SERVICE).Get();
+    }
+    return sStatsService;
 }
 
 ECode TrafficStats::SetThreadStatsTag(
     /* [in] */ Int32 tag)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        NetworkManagementSocketTagger.setThreadSocketStatsTag(tag);
-#endif
+    // TODO: Waiting for NetworkManagementSocketTagger
+    assert(0);
+    return NOERROR;
+    // return NetworkManagementSocketTagger::SetThreadSocketStatsTag(tag);
 }
 
 ECode TrafficStats::SetThreadStatsTagBackup()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        setThreadStatsTag(TAG_SYSTEM_BACKUP);
-#endif
+    return SetThreadStatsTag(ITrafficStats::TAG_SYSTEM_BACKUP);
 }
 
 ECode TrafficStats::GetThreadStatsTag(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return NetworkManagementSocketTagger.getThreadSocketStatsTag();
-#endif
+    // TODO: Waiting for NetworkManagementSocketTagger
+    assert(0);
+    return NOERROR;
+    // return NetworkManagementSocketTagger::GetThreadSocketStatsTag(result);
 }
 
 ECode TrafficStats::ClearThreadStatsTag()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        NetworkManagementSocketTagger.setThreadSocketStatsTag(-1);
-#endif
+    // TODO: Waiting for NetworkManagementSocketTagger
+    assert(0);
+    return NOERROR;
+    // return NetworkManagementSocketTagger::SetThreadSocketStatsTag(-1);
 }
 
 ECode TrafficStats::SetThreadStatsUid(
     /* [in] */ Int32 uid)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        NetworkManagementSocketTagger.setThreadSocketStatsUid(uid);
-#endif
+    // TODO: Waiting for NetworkManagementSocketTagger
+    assert(0);
+    return NOERROR;
+    // return NetworkManagementSocketTagger::SetThreadSocketStatsUid(uid);
 }
 
 ECode TrafficStats::ClearThreadStatsUid()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        NetworkManagementSocketTagger.setThreadSocketStatsUid(-1);
-#endif
+    // TODO: Waiting for NetworkManagementSocketTagger
+    assert(0);
+    return NOERROR;
+    // return NetworkManagementSocketTagger::SetThreadSocketStatsUid(-1);
 }
 
 ECode TrafficStats::TagSocket(
     /* [in] */ ISocket* socket)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        SocketTagger.get().tag(socket);
-#endif
+    AutoPtr<ISocketTaggerHelper> helper;
+    CSocketTaggerHelper::AcquireSingleton((ISocketTaggerHelper**)&helper);
+    return Ptr(helper)->Func(helper->Get)->Tag(socket);
 }
 
 ECode TrafficStats::UntagSocket(
     /* [in] */ ISocket* socket)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        SocketTagger.get().untag(socket);
-#endif
+    AutoPtr<ISocketTaggerHelper> helper;
+    CSocketTaggerHelper::AcquireSingleton((ISocketTaggerHelper**)&helper);
+    return Ptr(helper)->Func(helper->Get)->Untag(socket);
 }
 
 ECode TrafficStats::StartDataProfiling(
     /* [in] */ IContext* context)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        synchronized(sProfilingLock) {
-            if (sActiveProfilingStart != NULL) {
-                throw new IllegalStateException("already profiling data");
-            }
-            // take snapshot in time; we calculate delta later
-            sActiveProfilingStart = getDataLayerSnapshotForUid(context);
+    synchronized(sProfilingLock) {
+        if (sActiveProfilingStart != NULL) {
+            Slogger::E("TrafficStats", "already profiling data");
+            return E_RUNTIME_EXCEPTION;
         }
-#endif
+
+        // take snapshot in time; we calculate delta later
+        GetDataLayerSnapshotForUid(context, (INetworkStats**)&sActiveProfilingStart);
+    }
+    return NOERROR;
 }
 
 ECode TrafficStats::StopDataProfiling(
     /* [in] */ IContext* context,
     /* [out] */ INetworkStats** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        synchronized(sProfilingLock) {
-            if (sActiveProfilingStart == NULL) {
-                throw new IllegalStateException("not profiling data");
-            }
-            // subtract starting values and return delta
-            final NetworkStats profilingStop = getDataLayerSnapshotForUid(context);
-            final NetworkStats profilingDelta = NetworkStats.subtract(
-                    profilingStop, sActiveProfilingStart, NULL, NULL);
-            sActiveProfilingStart = NULL;
-            return profilingDelta;
-        }
-#endif
-}
-
-ECode TrafficStats::IncrementOperationCount(
-    /* [in] */ Int32 operationCount)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        final Int32 tag = getThreadStatsTag();
-        incrementOperationCount(tag, operationCount);
-#endif
-}
-
-ECode TrafficStats::IncrementOperationCount(
-    /* [in] */ Int32 tag,
-    /* [in] */ Int32 operationCount)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        final Int32 uid = android.os.Process.myUid();
-        try {
-            getStatsService().incrementOperationCount(uid, tag, operationCount);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-#endif
-}
-
-ECode TrafficStats::CloseQuietly(
-    /* [in] */ IINetworkStatsSession* session)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        // TODO: move to NetworkStatsService once it exists
-        if (session != NULL) {
-            try {
-                session.close();
-            } catch (RuntimeException rethrown) {
-                throw rethrown;
-            } catch (Exception ignored) {
-            }
-        }
-#endif
-}
-
-ECode TrafficStats::GetMobileTxPackets(
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        long total = 0;
-        for (String iface : getMobileIfaces()) {
-            total += getTxPackets(iface);
-        }
-        return total;
-#endif
-}
-
-ECode TrafficStats::GetMobileRxPackets(
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        long total = 0;
-        for (String iface : getMobileIfaces()) {
-            total += getRxPackets(iface);
-        }
-        return total;
-#endif
-}
-
-ECode TrafficStats::GetMobileTxBytes(
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        long total = 0;
-        for (String iface : getMobileIfaces()) {
-            total += getTxBytes(iface);
-        }
-        return total;
-#endif
-}
-
-ECode TrafficStats::GetMobileRxBytes(
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        long total = 0;
-        for (String iface : getMobileIfaces()) {
-            total += getRxBytes(iface);
-        }
-        return total;
-#endif
-}
-
-ECode TrafficStats::GetMobileTcpRxPackets(
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        long total = 0;
-        for (String iface : getMobileIfaces()) {
-            final long stat = nativeGetIfaceStat(iface, TYPE_TCP_RX_PACKETS);
-            if (stat != UNSUPPORTED) {
-                total += stat;
-            }
-        }
-        return total;
-#endif
-}
-
-ECode TrafficStats::GetMobileTcpTxPackets(
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        long total = 0;
-        for (String iface : getMobileIfaces()) {
-            final long stat = nativeGetIfaceStat(iface, TYPE_TCP_TX_PACKETS);
-            if (stat != UNSUPPORTED) {
-                total += stat;
-            }
-        }
-        return total;
-#endif
-}
-
-ECode TrafficStats::GetTxPackets(
-    /* [in] */ const String& iface,
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return nativeGetIfaceStat(iface, TYPE_TX_PACKETS);
-#endif
-}
-
-ECode TrafficStats::GetRxPackets(
-    /* [in] */ const String& iface,
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return nativeGetIfaceStat(iface, TYPE_RX_PACKETS);
-#endif
-}
-
-ECode TrafficStats::GetTxBytes(
-    /* [in] */ const String& iface,
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return nativeGetIfaceStat(iface, TYPE_TX_BYTES);
-#endif
-}
-
-ECode TrafficStats::GetRxBytes(
-    /* [in] */ const String& iface,
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return nativeGetIfaceStat(iface, TYPE_RX_BYTES);
-#endif
-}
-
-ECode TrafficStats::GetTotalTxPackets(
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return nativeGetTotalStat(TYPE_TX_PACKETS);
-#endif
-}
-
-ECode TrafficStats::GetTotalRxPackets(
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return nativeGetTotalStat(TYPE_RX_PACKETS);
-#endif
-}
-
-ECode TrafficStats::GetTotalTxBytes(
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return nativeGetTotalStat(TYPE_TX_BYTES);
-#endif
-}
-
-ECode TrafficStats::GetTotalRxBytes(
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return nativeGetTotalStat(TYPE_RX_BYTES);
-#endif
-}
-
-ECode TrafficStats::GetUidTxBytes(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return nativeGetUidStat(uid, TYPE_TX_BYTES);
-#endif
-}
-
-ECode TrafficStats::GetUidRxBytes(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return nativeGetUidStat(uid, TYPE_RX_BYTES);
-#endif
-}
-
-ECode TrafficStats::GetUidTxPackets(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return nativeGetUidStat(uid, TYPE_TX_PACKETS);
-#endif
-}
-
-ECode TrafficStats::GetUidRxPackets(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return nativeGetUidStat(uid, TYPE_RX_PACKETS);
-#endif
-}
-
-ECode TrafficStats::GetUidTcpTxBytes(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return UNSUPPORTED;
-#endif
-}
-
-ECode TrafficStats::GetUidTcpRxBytes(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return UNSUPPORTED;
-#endif
-}
-
-ECode TrafficStats::GetUidUdpTxBytes(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return UNSUPPORTED;
-#endif
-}
-
-ECode TrafficStats::GetUidUdpRxBytes(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return UNSUPPORTED;
-#endif
-}
-
-ECode TrafficStats::GetUidTcpTxSegments(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return UNSUPPORTED;
-#endif
-}
-
-ECode TrafficStats::GetUidTcpRxSegments(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return UNSUPPORTED;
-#endif
-}
-
-ECode TrafficStats::GetUidUdpTxPackets(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return UNSUPPORTED;
-#endif
-}
-
-ECode TrafficStats::GetUidUdpRxPackets(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return UNSUPPORTED;
-#endif
-}
-
-ECode TrafficStats::GetDataLayerSnapshotForUid(
-    /* [in] */ IContext* context,
-    /* [out] */ INetworkStats** result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        // TODO: take snapshot locally, since proc file is now visible
-        final Int32 uid = android.os.Process.myUid();
-        try {
-            return getStatsService().getDataLayerSnapshotForUid(uid);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-#endif
-}
-
-ECode TrafficStats::GetMobileIfaces(
-    /* [out, callee] */ ArrayOf<String>* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        try {
-            return getStatsService().getMobileIfaces();
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-#endif
-}
-
-ECode TrafficStats::NativeGetTotalStat(
-    /* [in] */ Int32 type,
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-#endif
-}
-
-ECode TrafficStats::NativeGetIfaceStat(
-    /* [in] */ const String& iface,
-    /* [in] */ Int32 type,
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-#endif
-}
-
-ECode TrafficStats::NativeGetUidStat(
-    /* [in] */ Int32 uid,
-    /* [in] */ Int32 type,
-    /* [out] */ Int64* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-#endif
-}
-
-
-} // namespace Net
-} // namespace Droid
-} // namespace Elastos
-
-#if 0 // old CTrafficStats.cpp
-#include "ext/frameworkext.h"
-#include "net/CTrafficStats.h"
-#include "net/CNetworkStats.h"
-#include "os/Process.h"
-#include "os/ServiceManager.h"
-#include <elastos/core/StringBuffer.h>
-#include <dirent.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <elastos/utility/logging/Logger.h>
-#include <elastos/utility/logging/Slogger.h>
-// Returns an ASCII decimal number read from the specified file, -1 on error.
-
-
-
-using Elastos::Utility::Logging::Slogger;
-
-
-
-namespace Elastos {
-namespace Droid {
-namespace Net {
-
-static const uint64_t VALUE_UNKNOWN = -1;
-static const char* IFACE_STAT_ALL = "/proc/net/xt_qtaguid/iface_stat_all";
-const String CTrafficStats::TAG=String("CTrafficStats");
-
-INetworkStats* CTrafficStats::sActiveProfilingStart;
-Mutex CTrafficStats::sProfilingLock;
-AutoPtr<INetworkStatsService> CTrafficStats::sStatsService;
-
-
-ECode CTrafficStats::constructor()
-{
-    return NOERROR;
-}
-
-
-Int64 CTrafficStats::ReadNumber(
-    /* [in] */const char* filename)
-{
-    Char8 buf[80];
-    Int32 fd = open(filename, O_RDONLY);
-    if (fd < 0) {
-        if (errno != ENOENT){
-            Slogger::E(TAG, String("Can't open") + filename + strerror(errno));
-        }
-        return -1;
-    }
-
-    Int32 len = read(fd, buf, sizeof(buf) - 1);
-    if (len < 0) {
-        //Slogger::E(TAG, "Can't open %s: %s" + filename + strerror(errno));
-        Slogger::E(TAG, String("Can't open") + filename + strerror(errno) );
-        close(fd);
-        return -1;
-    }
-
-    close(fd);
-    buf[len] = '\0';
-    return ((Int64)(buf));
-
-}
-
-ECode CTrafficStats::GetUidTxBytes(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* result)
-{
     VALIDATE_NOT_NULL(result);
-    *result= GetUidBytes(uid, TX, TCP_AND_UDP);
-    return NOERROR;
-}
-
-ECode CTrafficStats::GetUidRxBytes(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result= GetUidBytes(uid, RX, TCP_AND_UDP);
-    return NOERROR;
-}
-
-
-INetworkStatsService* CTrafficStats::GetStatsService()
-{
     synchronized(sProfilingLock) {
-
-        if (sStatsService!=NULL)
-            return sStatsService;
-
-        sStatsService =(INetworkStatsService*)ServiceManager::GetService(IContext::NETWORK_STATS_SERVICE).Get();
-    }
-    return sStatsService;
-}
-
-ECode CTrafficStats::SetThreadStatsTag(
-    /* [in] */ Int32 tag)
-{
-    //anthony check
-    //Not implement
-    //NetworkManagementSocketTagger::SetThreadSocketStatsTag(tag);
-    return NOERROR;
-}
-
-ECode CTrafficStats::GetThreadStatsTag(
-    /* [out] */ Int32* result)
-{
-    //anthony check
-    //Not implement
-    //*result=NetworkManagementSocketTagger::GetThreadSocketStatsTag();
-    return NOERROR;
-}
-
-ECode CTrafficStats::ClearThreadStatsTag()
-{
-    //anthony check
-    //Not implement
-    //NetworkManagementSocketTagger::SetThreadSocketStatsTag(-1);
-    return NOERROR;
-}
-
-ECode CTrafficStats::SetThreadStatsUid(
-    /* [in] */ Int32 uid)
-{
-    //anthony check
-    //Not implement
-    //NetworkManagementSocketTagger::SetThreadSocketStatsUid(uid);
-    return NOERROR;
-}
-
-ECode CTrafficStats::ClearThreadStatsUid()
-{
-    //anthony check
-    //Not implement
-    //NetworkManagementSocketTagger::SetThreadSocketStatsUid(-1);
-    return NOERROR;
-}
-
-ECode CTrafficStats::TagSocket(
-    /* [in] */ ISocket* socket)
-{
-    //anthony check
-    //feature is rejected
-//    SocketTagger::Get()->Tag(socket);
-    return NOERROR;
-}
-
-ECode CTrafficStats::UntagSocket(
-    /* [in] */ ISocket* socket)
-{
-    //anthony check
-    //feature is rejected
-    //SocketTagger::Get()->Untag(socket);
-    return NOERROR;
-}
-
-ECode CTrafficStats::StartDataProfiling(
-    /* [in] */ IContext* context)
-{
-    synchronized(sProfilingLock) {
-
-        if (sActiveProfilingStart != NULL) {
-            Slogger::E(TAG, "already profiling data");
-            return E_RUNTIME_EXCEPTION;
-        }
-
-        // take snapshot in time; we calculate delta later
-        sActiveProfilingStart = GetDataLayerSnapshotForUid(context);
-    }
-    return NOERROR;
-}
-
-ECode CTrafficStats::StopDataProfiling(
-    /* [in] */  IContext* context,
-    /* [out] */ INetworkStats** retvalue)
-{
-    VALIDATE_NOT_NULL(retvalue);
-    synchronized(sProfilingLock) {
-
         if (sActiveProfilingStart == NULL) {
-            Slogger::E(TAG, "not profiling data");
+            Slogger::E("TrafficStats", "not profiling data");
             return E_RUNTIME_EXCEPTION;
         }
 
         // subtract starting values and return delta
-        AutoPtr<INetworkStats> profilingStop = GetDataLayerSnapshotForUid(context);
+        AutoPtr<INetworkStats> profilingStop;
+        GetDataLayerSnapshotForUid(context, (INetworkStats**)&profilingStop);
         AutoPtr<INetworkStats> profilingDelta;
         CNetworkStats::Subtract(profilingStop, sActiveProfilingStart, NULL, NULL, (INetworkStats**)&profilingDelta);
 
         sActiveProfilingStart = NULL;
-        *retvalue = profilingDelta;
-        REFCOUNT_ADD(*retvalue);
+        *result = profilingDelta;
+        REFCOUNT_ADD(*result);
     }
     return NOERROR;
 }
 
-ECode CTrafficStats::IncrementOperationCount(
+ECode TrafficStats::IncrementOperationCount(
     /* [in] */ Int32 operationCount)
 {
     Int32 tag;
@@ -724,7 +300,7 @@ ECode CTrafficStats::IncrementOperationCount(
     return NOERROR;
 }
 
-ECode CTrafficStats::IncrementOperationCount(
+ECode TrafficStats::IncrementOperationCount(
     /* [in] */ Int32 tag,
     /* [in] */ Int32 operationCount)
 {
@@ -733,8 +309,8 @@ ECode CTrafficStats::IncrementOperationCount(
     return NOERROR;
 }
 
-ECode CTrafficStats::CloseQuietly(
-    /* [in] */ INetworkStatsSession* session)
+ECode TrafficStats::CloseQuietly(
+    /* [in] */ IINetworkStatsSession* session)
 {
     // TODO: move to NetworkStatsService once it exists
     if (session != NULL) {
@@ -747,7 +323,7 @@ ECode CTrafficStats::CloseQuietly(
     }
 }
 
-ECode CTrafficStats::GetMobileTxPackets(
+ECode TrafficStats::GetMobileTxPackets(
     /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result);
@@ -765,8 +341,7 @@ ECode CTrafficStats::GetMobileTxPackets(
     return NOERROR;
 }
 
-
-ECode CTrafficStats::GetMobileRxPackets(
+ECode TrafficStats::GetMobileRxPackets(
     /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result);
@@ -783,7 +358,7 @@ ECode CTrafficStats::GetMobileRxPackets(
     return NOERROR;
 }
 
-ECode CTrafficStats::GetMobileTxBytes(
+ECode TrafficStats::GetMobileTxBytes(
     /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result);
@@ -802,8 +377,8 @@ ECode CTrafficStats::GetMobileTxBytes(
     return NOERROR;
 }
 
-ECode CTrafficStats::GetMobileRxBytes(
-     /* [out] */ Int64* result)
+ECode TrafficStats::GetMobileRxBytes(
+    /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result);
     *result = 0;
@@ -821,349 +396,298 @@ ECode CTrafficStats::GetMobileRxBytes(
     return NOERROR;
 }
 
-
-ECode CTrafficStats::GetTxPackets(
-    /* [in] */ const String& iface,
-    /* [out] */ Int64* retvalue)
-{
-    VALIDATE_NOT_NULL(retvalue);
-    *retvalue = NativeGetIfaceStat(iface, TYPE_TX_PACKETS);
-    return NOERROR;
-}
-
-ECode CTrafficStats::GetRxPackets(
-    /* [in] */ const String& iface,
-    /* [out] */ Int64* retvalue)
-{
-    VALIDATE_NOT_NULL(retvalue);
-    *retvalue= NativeGetIfaceStat(iface, TYPE_RX_PACKETS);
-    return NOERROR;
-}
-
-ECode CTrafficStats::GetTxBytes(
-    /* [in] */ const String& iface,
-    /* [out] */ Int64* retvalue)
-{
-    VALIDATE_NOT_NULL(retvalue);
-    *retvalue = NativeGetIfaceStat(iface, TYPE_TX_BYTES);
-    return NOERROR;
-}
-
-ECode CTrafficStats::GetRxBytes(
-    /* [in] */ const String& iface,
-    /* [out] */ Int64* retvalue)
-{
-    VALIDATE_NOT_NULL(retvalue);
-    *retvalue = NativeGetIfaceStat(iface, TYPE_RX_BYTES);
-    return NOERROR;
-}
-
-ECode CTrafficStats::GetTotalTxPackets(
+ECode TrafficStats::GetMobileTcpRxPackets(
     /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result);
+
+    Int64 total = 0;
+    AutoPtr<ArrayOf<String> > ifaces;
+    GetMobileIfaces((ArrayOf<String>**)&ifaces);
+    for (Int32 i = 0; i < ifaces->GetLength(); ++i) {
+        String iface = (*ifaces)[i];
+        const Int64 stat = NativeGetIfaceStat(iface, TYPE_TCP_RX_PACKETS);
+        if (stat != ITrafficStats::UNSUPPORTED) {
+            total += stat;
+        }
+    }
+    FUNC_RETURN(total)
+}
+
+ECode TrafficStats::GetMobileTcpTxPackets(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    Int64 total = 0;
+    AutoPtr<ArrayOf<String> > ifaces;
+    GetMobileIfaces((ArrayOf<String>**)&ifaces);
+    for (Int32 i = 0; i < ifaces->GetLength(); ++i) {
+    String iface = (*ifaces)[i];
+        const Int64 stat = NativeGetIfaceStat(iface, TYPE_TCP_TX_PACKETS);
+        if (stat != ITrafficStats::UNSUPPORTED) {
+            total += stat;
+        }
+    }
+    FUNC_RETURN(total)
+}
+
+ECode TrafficStats::GetTxPackets(
+    /* [in] */ const String& iface,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    *result = NativeGetIfaceStat(iface, TYPE_TX_PACKETS);
+    return NOERROR;
+}
+
+ECode TrafficStats::GetRxPackets(
+    /* [in] */ const String& iface,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    *result= NativeGetIfaceStat(iface, TYPE_RX_PACKETS);
+    return NOERROR;
+}
+
+ECode TrafficStats::GetTxBytes(
+    /* [in] */ const String& iface,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    *result = NativeGetIfaceStat(iface, TYPE_TX_BYTES);
+    return NOERROR;
+}
+
+ECode TrafficStats::GetRxBytes(
+    /* [in] */ const String& iface,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    *result = NativeGetIfaceStat(iface, TYPE_RX_BYTES);
+    return NOERROR;
+}
+
+ECode TrafficStats::GetTotalTxPackets(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
     *result = NativeGetTotalStat(TYPE_TX_PACKETS);
     return NOERROR;
 }
 
-ECode CTrafficStats::GetTotalRxPackets(
+ECode TrafficStats::GetTotalRxPackets(
     /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result);
+
     *result = NativeGetTotalStat(TYPE_RX_PACKETS);
     return NOERROR;
 }
 
-ECode CTrafficStats::GetTotalTxBytes(
-    /* [out] */ Int64* retvalue)
+ECode TrafficStats::GetTotalTxBytes(
+    /* [out] */ Int64* result)
 {
-    VALIDATE_NOT_NULL(retvalue);
-    *retvalue = NativeGetTotalStat(TYPE_TX_BYTES);
+    VALIDATE_NOT_NULL(result);
+
+    *result = NativeGetTotalStat(TYPE_TX_BYTES);
     return NOERROR;
 }
 
-ECode CTrafficStats::GetTotalRxBytes(
-    /* [out] */ Int64* retvalue)
+ECode TrafficStats::GetTotalRxBytes(
+    /* [out] */ Int64* result)
 {
-    VALIDATE_NOT_NULL(retvalue);
-    *retvalue = NativeGetTotalStat(TYPE_RX_BYTES);
+    VALIDATE_NOT_NULL(result);
+
+    *result = NativeGetTotalStat(TYPE_RX_BYTES);
     return NOERROR;
 }
 
-Int64 CTrafficStats::NativeGetTotalStat(
+ECode TrafficStats::GetUidTxBytes(
+    /* [in] */ Int32 uid,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    FUNC_RETURN(NativeGetUidStat(uid, TYPE_TX_BYTES))
+}
+
+ECode TrafficStats::GetUidRxBytes(
+    /* [in] */ Int32 uid,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    FUNC_RETURN(NativeGetUidStat(uid, TYPE_RX_BYTES))
+}
+
+ECode TrafficStats::GetUidTxPackets(
+    /* [in] */ Int32 uid,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    FUNC_RETURN(NativeGetUidStat(uid, TYPE_TX_PACKETS))
+}
+
+ECode TrafficStats::GetUidRxPackets(
+    /* [in] */ Int32 uid,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    FUNC_RETURN(NativeGetUidStat(uid, TYPE_RX_PACKETS))
+}
+
+ECode TrafficStats::GetUidTcpTxBytes(
+    /* [in] */ Int32 uid,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    FUNC_RETURN(ITrafficStats::UNSUPPORTED)
+}
+
+ECode TrafficStats::GetUidTcpRxBytes(
+    /* [in] */ Int32 uid,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    FUNC_RETURN(ITrafficStats::UNSUPPORTED)
+}
+
+ECode TrafficStats::GetUidUdpTxBytes(
+    /* [in] */ Int32 uid,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    FUNC_RETURN(ITrafficStats::UNSUPPORTED)
+}
+
+ECode TrafficStats::GetUidUdpRxBytes(
+    /* [in] */ Int32 uid,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    FUNC_RETURN(ITrafficStats::UNSUPPORTED)
+}
+
+ECode TrafficStats::GetUidTcpTxSegments(
+    /* [in] */ Int32 uid,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    FUNC_RETURN(ITrafficStats::UNSUPPORTED)
+}
+
+ECode TrafficStats::GetUidTcpRxSegments(
+    /* [in] */ Int32 uid,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    FUNC_RETURN(ITrafficStats::UNSUPPORTED)
+}
+
+ECode TrafficStats::GetUidUdpTxPackets(
+    /* [in] */ Int32 uid,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    FUNC_RETURN(ITrafficStats::UNSUPPORTED)
+}
+
+ECode TrafficStats::GetUidUdpRxPackets(
+    /* [in] */ Int32 uid,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    FUNC_RETURN(ITrafficStats::UNSUPPORTED)
+}
+
+ECode TrafficStats::GetDataLayerSnapshotForUid(
+    /* [in] */ IContext* context,
+    /* [out] */ INetworkStats** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    // TODO: take snapshot locally, since proc file is now visible
+    Int32 uid = Process::MyUid();
+    return GetStatsService()->GetDataLayerSnapshotForUid(uid, (INetworkStats**)&result);
+}
+
+ECode TrafficStats::GetMobileIfaces(
+    /* [out, callee] */ ArrayOf<String>** result)
+{
+    VALIDATE_NOT_NULL(result);
+
+        // try {
+    ECode ec = GetStatsService()->GetMobileIfaces(result);
+        // } catch (RemoteException e) {
+    if (FAILED(ec)) {
+        if (ec == E_REMOTE_EXCEPTION) {
+            Logger::E("TrafficStats", "%d", ec);
+            return E_RUNTIME_EXCEPTION;
+        }
+        return ec;
+    }
+        // }
+    return NOERROR;
+}
+
+Int64 TrafficStats::NativeGetTotalStat(
     /* [in] */ Int32 type)
 {
-    return GetIfaceStatType(NULL, (IfaceStatType) type);
+    struct Stats stats;
+    memset(&stats, 0, sizeof(Stats));
+    if (parseIfaceStats(NULL, &stats) == 0) {
+        return getStatsType(&stats, (StatsType) type);
+    } else {
+        return UNKNOWN;
+    }
 }
 
-Int64 CTrafficStats::NativeGetIfaceStat(
+Int64 TrafficStats::NativeGetIfaceStat(
     /* [in] */ const String& iface,
     /* [in] */ Int32 type)
 {
-     const char* tempstring=iface.string();
-     UInt64 tempstat = GetIfaceStatType(tempstring, (IfaceStatType) type);
-     Int64 stat=tempstat;
+    if (iface == NULL) {
+        return UNKNOWN;
+    }
 
-     return stat;
+    struct Stats stats;
+    memset(&stats, 0, sizeof(Stats));
+    if (parseIfaceStats(iface.string(), &stats) == 0) {
+        return getStatsType(&stats, (StatsType) type);
+    } else {
+        return UNKNOWN;
+    }
 }
 
-Int64 CTrafficStats::GetIfaceStatType(
-    /* [in] */ const char* iface,
-    /* [in] */ IfaceStatType type)
-{
-       struct IfaceStat* stat;
-       memset(stat, 0, sizeof(IfaceStat));
-
-      //anthony check
-       if (ParseIfaceStat(iface, stat)) {
-           return VALUE_UNKNOWN;
-       }
-
-       switch (type) {
-           case RX_BYTES:
-               return stat->rxBytes;
-           case RX_PACKETS:
-               return stat->rxPackets;
-           case TX_BYTES:
-               return stat->txBytes;
-           case TX_PACKETS:
-               return stat->txPackets;
-           default:
-               return VALUE_UNKNOWN;
-       }
-}
-
-Int32 CTrafficStats::ParseIfaceStat(
-    /* [in] */ const char* iface,
-    /* [in] */ IfaceStat* stat)
-{
-       FILE *fp = fopen(IFACE_STAT_ALL, "r");
-       if (!fp) {
-           return errno;
-       }
-
-       char buffer[256];
-       char cur_iface[32];
-      Int32 active;
-       UInt64 rxBytes, rxPackets, txBytes, txPackets, devRxBytes, devRxPackets, devTxBytes,
-               devTxPackets;
-
-       while (fgets(buffer, 256, fp) != NULL) {
-           if (sscanf(buffer, "%31s %d %llu %llu %llu %llu %llu %llu %llu %llu", cur_iface, &active,
-                      &rxBytes, &rxPackets, &txBytes, &txPackets, &devRxBytes, &devRxPackets,
-                      &devTxBytes, &devTxPackets) != 10) {
-               continue;
-           }
-
-           if (!iface || !strcmp(iface, cur_iface)) {
-               stat->rxBytes += rxBytes;
-               stat->rxPackets += rxPackets;
-               stat->txBytes += txBytes;
-               stat->txPackets += txPackets;
-
-               if (active) {
-                   stat->rxBytes += devRxBytes;
-                   stat->rxPackets += devRxPackets;
-                   stat->txBytes += devTxBytes;
-                   stat->txPackets += devTxPackets;
-               }
-           }
-       }
-
-       fclose(fp);
-       return 0;
-}
-
-Int64 CTrafficStats::GetUidBytes(
+Int64 TrafficStats::NativeGetUidStat(
     /* [in] */ Int32 uid,
-    /* [in] */ Int32 tx_or_rx,
-    /* [in] */ Int32 tcp_or_udp)
+    /* [in] */ Int32 type)
 {
-       char tcp_filename[80], udp_filename[80];
-       Int64 tcp_bytes = -1, udp_bytes = -1, total_bytes = -1;
-
-       switch (tx_or_rx) {
-           case TX:
-               sprintf(tcp_filename, "/proc/uid_stat/%d/tcp_snd", uid);
-               sprintf(udp_filename, "/proc/uid_stat/%d/udp_snd", uid);
-               break;
-           case RX:
-               sprintf(tcp_filename, "/proc/uid_stat/%d/tcp_rcv", uid);
-               sprintf(udp_filename, "/proc/uid_stat/%d/udp_rcv", uid);
-               break;
-           default:
-               return -1;
-       }
-
-
-       switch (tcp_or_udp) {
-           case TCP:
-               tcp_bytes = ReadNumber(tcp_filename);
-               total_bytes = (tcp_bytes >= 0) ? tcp_bytes : -1;
-               break;
-           case UDP:
-               udp_bytes = ReadNumber(udp_filename);
-               total_bytes = (udp_bytes >= 0) ? udp_bytes : -1;
-               break;
-           case TCP_AND_UDP:
-               tcp_bytes = ReadNumber(tcp_filename);
-               total_bytes += (tcp_bytes >= 0 ? tcp_bytes : 0);
-
-               udp_bytes = ReadNumber(udp_filename);
-               total_bytes += (udp_bytes >= 0 ? udp_bytes : 0);
-               break;
-           default:
-               return -1;
-       }
-
-       return total_bytes;
+    struct Stats stats;
+    memset(&stats, 0, sizeof(Stats));
+    if (parseUidStats(uid, &stats) == 0) {
+        return getStatsType(&stats, (StatsType) type);
+    } else {
+        return UNKNOWN;
+    }
 }
 
-Int64 CTrafficStats::GetUidPkts(
-    /* [in] */ Int32 uid,
-    /* [in] */ Int32 tx_or_rx,
-    /* [in] */ Int32 tcp_or_udp)
-{
-       char tcp_filename[80], udp_filename[80];
-       Int64 tcp_pkts = -1, udp_pkts = -1, total_pkts = -1;
-
-       switch (tx_or_rx) {
-           case TX:
-               sprintf(tcp_filename, "/proc/uid_stat/%d/tcp_snd_pkt", uid);
-               sprintf(udp_filename, "/proc/uid_stat/%d/udp_snd_pkt", uid);
-               break;
-           case RX:
-               sprintf(tcp_filename, "/proc/uid_stat/%d/tcp_rcv_pkt", uid);
-               sprintf(udp_filename, "/proc/uid_stat/%d/udp_rcv_pkt", uid);
-               break;
-           default:
-               return -1;
-       }
-
-
-       switch (tcp_or_udp) {
-           case TCP:
-               tcp_pkts = ReadNumber(tcp_filename);
-               total_pkts = (tcp_pkts >= 0) ? tcp_pkts : -1;
-               break;
-           case UDP:
-               udp_pkts = ReadNumber(udp_filename);
-               total_pkts = (udp_pkts >= 0) ? udp_pkts : -1;
-               break;
-           case TCP_AND_UDP:
-               tcp_pkts = ReadNumber(tcp_filename);
-               total_pkts += (tcp_pkts >= 0 ? tcp_pkts : 0);
-
-               udp_pkts = ReadNumber(udp_filename);
-               total_pkts += (udp_pkts >= 0 ? udp_pkts : 0);
-               break;
-           default:
-               return -1;
-       }
-
-       return total_pkts;
-}
-
-ECode CTrafficStats::GetUidTxPackets(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* retvalue)
-{
-    VALIDATE_NOT_NULL(retvalue);
-    *retvalue = GetUidPkts(uid, TX, TCP_AND_UDP);
-    return NOERROR;
-}
-
-ECode CTrafficStats::GetUidRxPackets(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* retvalue)
-{
-    VALIDATE_NOT_NULL(retvalue);
-    *retvalue = GetUidPkts(uid, RX, TCP_AND_UDP);
-    return NOERROR;
-}
-
-ECode CTrafficStats::GetUidTcpTxBytes(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* retvalue)
-{
-    VALIDATE_NOT_NULL(retvalue);
-    *retvalue = GetUidPkts(uid, RX, TCP_AND_UDP);
-    return NOERROR;
-}
-
-ECode CTrafficStats::GetUidTcpRxBytes(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* retvalue)
-{
-    VALIDATE_NOT_NULL(retvalue);
-    *retvalue = GetUidBytes(uid, RX, TCP);
-    return NOERROR;
-}
-
-ECode CTrafficStats::GetUidUdpTxBytes(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* retvalue)
-{
-    VALIDATE_NOT_NULL(retvalue);
-    *retvalue = GetUidBytes(uid, TX, UDP);
-    return NOERROR;
-}
-
-ECode CTrafficStats::GetUidUdpRxBytes(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* retvalue)
-{
-    VALIDATE_NOT_NULL(retvalue);
-    *retvalue = GetUidBytes(uid, RX, UDP);
-    return NOERROR;
-}
-
-ECode CTrafficStats::GetUidTcpTxSegments(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* retvalue)
-{
-    VALIDATE_NOT_NULL(retvalue);
-    *retvalue = GetUidPkts(uid, TX, TCP);
-    return NOERROR;
-}
-
-ECode CTrafficStats::GetUidTcpRxSegments(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* retvalue)
-{
-    VALIDATE_NOT_NULL(retvalue);
-    *retvalue = GetUidPkts(uid, RX, TCP);
-    return NOERROR;
-}
-
-ECode CTrafficStats::GetUidUdpTxPackets(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* retvalue)
-{
-    VALIDATE_NOT_NULL(retvalue);
-    *retvalue = GetUidPkts(uid, TX, UDP);
-    return NOERROR;
-}
-
-ECode CTrafficStats::GetUidUdpRxPackets(
-    /* [in] */ Int32 uid,
-    /* [out] */ Int64* retvalue)
-{
-    VALIDATE_NOT_NULL(retvalue);
-    *retvalue = GetUidPkts(uid, RX, UDP);
-    return NOERROR;
-}
-
-AutoPtr<INetworkStats> CTrafficStats::GetDataLayerSnapshotForUid(
-    /* [in] */ IContext* context)
-{
-    Int32 uid = Process::MyUid();
-    AutoPtr<INetworkStats> result;
-    GetStatsService()->GetDataLayerSnapshotForUid(uid, (INetworkStats**)&result);
-    return result;
-}
-
-} // namespace net
-} // namepsace Droid
+} // namespace Net
+} // namespace Droid
 } // namespace Elastos
-#endif

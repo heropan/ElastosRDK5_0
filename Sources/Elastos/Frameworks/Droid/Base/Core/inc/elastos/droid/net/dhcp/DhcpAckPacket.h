@@ -50,7 +50,7 @@ public:
      * Notifies the specified state machine of the ACK packet parameters.
      */
     CARAPI DoNextOp(
-        /* [in] */ IDhcpStateMachine* machine);
+        /* [in] */ DhcpStateMachine* machine);
 
 private:
     /**
@@ -60,6 +60,7 @@ private:
         /* [in] */ IInteger32* v,
         /* [out] */ Int32* result);
 
+private:
     /**
      * The address of the server which sent this packet.
      */

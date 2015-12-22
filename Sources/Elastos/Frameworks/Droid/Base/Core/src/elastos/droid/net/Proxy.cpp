@@ -94,7 +94,7 @@ ECode Proxy::GetProxy(
         if (Ptr(proxyList)->Func(proxyList->GetSize) > 0) {
             AutoPtr<IInterface> obj;
             proxyList->Get(0, (IInterface**)&obj);
-            FUNC_RETURN(Elastos::Net::IProxy::Probe(obj));
+            FUNC_RETURN(Elastos::Net::IProxy::Probe(obj))
         }
     }
     AutoPtr<Elastos::Net::IProxyHelper> helper;
@@ -246,11 +246,11 @@ ECode Proxy::Validate(
     HOSTNAME_PATTERN->Matcher(hostname, (IMatcher**)&match);
     AutoPtr<IMatcher> listMatch;
     EXCLLIST_PATTERN->Matcher(exclList, (IMatcher**)&listMatch);
-    if (!Ptr(match)->Func(match->Matches)) FUNC_RETURN(IProxy::PROXY_HOSTNAME_INVALID);
-    if (!Ptr(listMatch)->Func(listMatch->Matches)) FUNC_RETURN(IProxy::PROXY_EXCLLIST_INVALID);
-    if (hostname.GetLength() > 0 && port.GetLength() == 0) FUNC_RETURN(IProxy::PROXY_PORT_EMPTY);
+    if (!Ptr(match)->Func(match->Matches)) FUNC_RETURN(IProxy::PROXY_HOSTNAME_INVALID)
+    if (!Ptr(listMatch)->Func(listMatch->Matches)) FUNC_RETURN(IProxy::PROXY_EXCLLIST_INVALID)
+    if (hostname.GetLength() > 0 && port.GetLength() == 0) FUNC_RETURN(IProxy::PROXY_PORT_EMPTY)
     if (port.GetLength() > 0) {
-        if (hostname.GetLength() == 0) FUNC_RETURN(IProxy::PROXY_HOSTNAME_EMPTY);
+        if (hostname.GetLength() == 0) FUNC_RETURN(IProxy::PROXY_HOSTNAME_EMPTY)
         Int32 portVal = -1;
         // try {
         ECode ec = StringUtils::Parse(port, &portVal);
@@ -263,7 +263,7 @@ ECode Proxy::Validate(
             else return ec;
         }
         // }
-        if (portVal <= 0 || portVal > 0xFFFF) FUNC_RETURN(IProxy::PROXY_PORT_INVALID);
+        if (portVal <= 0 || portVal > 0xFFFF) FUNC_RETURN(IProxy::PROXY_PORT_INVALID)
     }
     *result = IProxy::PROXY_VALID;
     return NOERROR;

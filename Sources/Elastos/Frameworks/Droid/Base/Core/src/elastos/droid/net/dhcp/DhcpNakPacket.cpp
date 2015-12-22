@@ -1,7 +1,21 @@
 
-#include <Elastos.CoreLibrary.Utility.h>
+#include <Elastos.CoreLibrary.IO.h>
 #include <Elastos.CoreLibrary.Net.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/net/dhcp/DhcpNakPacket.h"
+#include "elastos/droid/net/dhcp/DhcpPacket.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/os/Build.h"
+
+using Elastos::Droid::Os::Build;
+
+using Elastos::IO::CByteBufferHelper;
+using Elastos::IO::IBuffer;
+using Elastos::IO::IByteBufferHelper;
+using Elastos::Net::CInet4AddressHelper;
+using Elastos::Net::IInet4Address;
+using Elastos::Net::IInet4AddressHelper;
+using Elastos::Net::IInetAddress;
 
 namespace Elastos {
 namespace Droid {
@@ -19,21 +33,23 @@ ECode DhcpNakPacket::constructor(
     /* [in] */ IInetAddress* relayIp,
     /* [in] */ ArrayOf<Byte>* clientMac)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        super(transId, Inet4Address.ANY, Inet4Address.ANY, nextIp, relayIp,
+    AutoPtr<IInetAddress> any;
+    AutoPtr<IInet4AddressHelper> inet4AddressHelper;
+    CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
+    inet4AddressHelper->GetANY((IInetAddress**)&any);
+    return DhcpPacket::constructor(transId, any, any, nextIp, relayIp,
             clientMac, FALSE);
-#endif
 }
 
 ECode DhcpNakPacket::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        String s = super.toString();
-        return s + " NAK, reason " + (mMessage == NULL ? "(none)" : mMessage);
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    String s;
+    DhcpPacket::ToString(&s);
+    *result = s + " NAK, reason " + (mMessage == NULL ? "(none)" : mMessage);
+    return NOERROR;
 }
 
 ECode DhcpNakPacket::BuildPacket(
@@ -42,39 +58,33 @@ ECode DhcpNakPacket::BuildPacket(
     /* [in] */ Int16 srcUdp,
     /* [out] */ IByteBuffer** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        ByteBuffer result = ByteBuffer.allocate(MAX_LENGTH);
-        InetAddress destIp = mClientIp;
-        InetAddress srcIp = mYourIp;
-        fillInPacket(encap, destIp, srcIp, destUdp, srcUdp, result,
-            DHCP_BOOTREPLY, mBroadcast);
-        result.flip();
-        return result;
-#endif
+    AutoPtr<IByteBuffer> rev;
+    AutoPtr<IByteBufferHelper> byteBufferHelper;
+    CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&byteBufferHelper);
+    byteBufferHelper->Allocate(MAX_LENGTH, (IByteBuffer**)&rev);
+    AutoPtr<IInetAddress> destIp = mClientIp;
+    AutoPtr<IInetAddress> srcIp = mYourIp;
+    FillInPacket(encap, destIp, srcIp, destUdp, srcUdp, rev,
+        DHCP_BOOTREPLY, mBroadcast);
+    IBuffer::Probe(rev)->Flip();
+    FUNC_RETURN(rev)
 }
 
 ECode DhcpNakPacket::FinishPacket(
     /* [in] */ IByteBuffer* buffer)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        addTlv(buffer, DHCP_MESSAGE_TYPE, DHCP_MESSAGE_TYPE_NAK);
-        addTlv(buffer, DHCP_SERVER_IDENTIFIER, mServerIdentifier);
-        addTlv(buffer, DHCP_MESSAGE, mMessage);
-        addTlvEnd(buffer);
-#endif
+    AddTlv(buffer, DHCP_MESSAGE_TYPE, DHCP_MESSAGE_TYPE_NAK);
+    AddTlv(buffer, DHCP_SERVER_IDENTIFIER, mServerIdentifier);
+    AddTlv(buffer, DHCP_MESSAGE, mMessage);
+    AddTlvEnd(buffer);
+    return NOERROR;
 }
 
 ECode DhcpNakPacket::DoNextOp(
     /* [in] */ DhcpStateMachine* machine)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        machine.onNakReceived();
-#endif
+    return machine->OnNakReceived();
 }
-
 
 } // namespace Dhcp
 } // namespace Net

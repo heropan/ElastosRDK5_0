@@ -56,7 +56,7 @@ module
          * @return An SSL error object if there is an error and null otherwise
          */
         VerifyServerCertificates(
-            [in] ArrayOf<IArrayOf>* certChain,
+            [in] ArrayOf<IArrayOf*>* certChain,
             [in] String sDomain,
             [in] String authType,
             [out] ISslError** result);

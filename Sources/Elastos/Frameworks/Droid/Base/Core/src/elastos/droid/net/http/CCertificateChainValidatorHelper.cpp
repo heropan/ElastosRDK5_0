@@ -19,7 +19,7 @@ CARAPI CCertificateChainValidatorHelper::GetInstance(
 }
 
 CARAPI CCertificateChainValidatorHelper::VerifyServerCertificates(
-    /* [in] */ ArrayOf<IArrayOf>* certChain,
+    /* [in] */ ArrayOf<IArrayOf*>* certChain,
     /* [in] */ const String& domain,
     /* [in] */ const String& authType,
     /* [out] */ ISslError** result)

@@ -52,7 +52,7 @@ public:
      * Informs the state machine of the arrival of a DECLINE packet.
      */
     CARAPI DoNextOp(
-        /* [in] */ IDhcpStateMachine* machine);
+        /* [in] */ DhcpStateMachine* machine);
 };
 
 } // namespace Dhcp

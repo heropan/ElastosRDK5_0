@@ -1,18 +1,44 @@
 
 #include "elastos/droid/net/nsd/NsdManager.h"
+#include "elastos/droid/net/nsd/CNsdServiceInfo.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/internal/utility/CAsyncChannel.h"
+#include "elastos/droid/os/CHandlerThread.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/Looper.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/utility/CSparseArray.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/Thread.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Internal::Utility::CAsyncChannel;
 using Elastos::Droid::Internal::Utility::IAsyncChannel;
 using Elastos::Droid::Internal::Utility::IProtocol;
+using Elastos::Droid::Os::CHandlerThread;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IHandlerThread;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::IMessenger;
+using Elastos::Droid::Os::Looper;
 using Elastos::Droid::Text::ITextUtils;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Utility::CSparseArray;
 using Elastos::Droid::Utility::ILog;
 
+using Elastos::Core::CObject;
+using Elastos::Core::IThread;
+using Elastos::Core::Thread;
+using Elastos::Utility::Concurrent::CCountDownLatch;
 using Elastos::Utility::Concurrent::ICountDownLatch;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -29,14 +55,11 @@ const Int32 NsdManager::BUSY_LISTENER_KEY = -1;
 NsdManager::NsdManager()
     : mListenerKey(1)
 {
-#if 0 // TODO: Translate codes below
-
     CSparseArray::New((ISparseArray**)&mListenerMap);
     CSparseArray::New((ISparseArray**)&mServiceMap);
-    CObject::New((IObject**)&mMapLock);
-    CAsyncChannel::New((IAsyncChannel**)&mAsyncChannel;
+    Elastos::Core::CObject::New((IObject**)&mMapLock);
+    CAsyncChannel::New((IAsyncChannel**)&mAsyncChannel);
     CCountDownLatch::New(1, (ICountDownLatch**)&mConnected);
-#endif
 }
 
 ECode NsdManager::constructor(
@@ -53,15 +76,13 @@ ECode NsdManager::PutListener(
     /* [in] */ INsdServiceInfo* s,
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (listener == NULL) {
         Slogger::E(TAG, "listener cannot be null");
         return INVALID_LISTENER_KEY;
     }
 
     Int32 key;
-    sychronized(mMapLock) {
+    synchronized(mMapLock) {
     Int32 valueIndex;
     mListenerMap->IndexOfValue(listener, &valueIndex);
     if (valueIndex != -1) {
@@ -77,68 +98,64 @@ ECode NsdManager::PutListener(
     }
     *result = key;
     return NOERROR;
-#endif
 }
+
 
 ECode NsdManager::GetListener(
     /* [in] */ Int32 key,
     /* [out] */ IInterface** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(listener);
-    *listener = NULL;
+    VALIDATE_NOT_NULL(result);
+    *result = NULL;
 
     if (key == INVALID_LISTENER_KEY) {
         return NOERROR;
     }
 
-    sychronized(mMapLock) {
+    synchronized(mMapLock) {
         mListenerMap->Get(key, result);
     }
 
     return NOERROR;
-#endif
 }
+
 
 ECode NsdManager::GetNsdService(
     /* [in] */ Int32 key,
     /* [out] */ INsdServiceInfo** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(result)
 
-    sychronized(mMapLock) {
-        mServiceMap->Get(key, result);
+    synchronized(mMapLock) {
+        AutoPtr<IInterface> obj;
+        mServiceMap->Get(key, (IInterface**)&obj);
+        *result = INsdServiceInfo::Probe(obj);
+        REFCOUNT_ADD(*result)
     }
-#endif
+    return NOERROR;
 }
+
 
 ECode NsdManager::RemoveListener(
     /* [in] */ Int32 key)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (key == INVALID_LISTENER_KEY) return NOERROR;
 
-    sychronized(mMapLock) {
+    synchronized(mMapLock) {
         mListenerMap->Remove(key);
         mServiceMap->Remove(key);
     }
     return NOERROR;
-#endif
 }
+
 
 ECode NsdManager::GetListenerKey(
     /* [in] */ IInterface* listener,
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(result)
 
-    sychronized(mMapLock) {
+    synchronized(mMapLock) {
         Int32 valueIndex;
         mListenerMap->IndexOfValue(listener, &valueIndex);
         if (valueIndex != -1) {
@@ -149,30 +166,27 @@ ECode NsdManager::GetListenerKey(
 
     *result = INVALID_LISTENER_KEY;
     return NOERROR;
-#endif
 }
+
 
 ECode NsdManager::GetNsdServiceInfoType(
     /* [in] */ INsdServiceInfo* s,
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(reslut)
+    VALIDATE_NOT_NULL(result)
 
     if (s == NULL) {
         *result = "?";
         return NOERROR;
     }
     return s->GetServiceType(result);
-#endif
 }
+
 
 ECode NsdManager::Init()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    AutoPtr<IMessenger> messenger = GetMessenger();
+    AutoPtr<IMessenger> messenger;
+    GetMessenger((IMessenger**)&messenger);
     if (messenger == NULL)
     {
         Slogger::E(TAG, "Failed to initialize");
@@ -181,7 +195,7 @@ ECode NsdManager::Init()
 
     AutoPtr<IHandlerThread> t;
     CHandlerThread::New(String("NsdManager"), (IHandlerThread**)&t);
-    t->Start();
+    IThread::Probe(t)->Start();
 
     AutoPtr<ILooper> looper;
     t->GetLooper((ILooper**)&looper);
@@ -195,16 +209,14 @@ ECode NsdManager::Init()
     //    Log.e(TAG, "interrupted wait at init");
     // }
     return NOERROR;
-#endif
 }
+
 
 ECode NsdManager::RegisterService(
     /* [in] */ INsdServiceInfo* serviceInfo,
     /* [in] */ Int32 protocolType,
     /* [in] */ INsdManagerRegistrationListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     String name, type;
     serviceInfo->GetServiceName(&name);
     serviceInfo->GetServiceType(&type);
@@ -228,28 +240,27 @@ ECode NsdManager::RegisterService(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Int32 key = PutListener(listener, serviceInfo);
+    Int32 key;
+    PutListener(listener, serviceInfo, &key);
     if (key == BUSY_LISTENER_KEY) {
-        // throw new IllegalArgumentException("listener already in use");
         Logger::E(TAG, "listener already in use");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mAsyncChannel->SendMessage(INsdManager::REGISTER_SERVICE, 0, key, serviceInfo);
     return NOERROR;
-#endif
 }
+
 
 ECode NsdManager::UnregisterService(
     /* [in] */ INsdManagerRegistrationListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (listener == NULL) {
         Slogger::E(TAG, "listener cannot be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Int32 id = GetListenerKey(listener->Probe(EIID_IInterface));
+    Int32 id;
+    GetListenerKey(listener->Probe(EIID_IInterface), &id);
     if (id == INVALID_LISTENER_KEY) {
         Slogger::E(TAG, "listener not registered");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -257,16 +268,14 @@ ECode NsdManager::UnregisterService(
 
     mAsyncChannel->SendMessage(INsdManager::UNREGISTER_SERVICE, 0, id);
     return NOERROR;
-#endif
 }
+
 
 ECode NsdManager::DiscoverServices(
     /* [in] */ const String& serviceType,
     /* [in] */ Int32 protocolType,
     /* [in] */ INsdManagerDiscoveryListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (listener == NULL) {
         Slogger::E(TAG, "listener cannot be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -285,28 +294,27 @@ ECode NsdManager::DiscoverServices(
     AutoPtr<INsdServiceInfo> s;
     CNsdServiceInfo::New((INsdServiceInfo**)&s);
     s->SetServiceType(serviceType);
-    Int32 key = PutListener(listener, s);
+    Int32 key;
+    PutListener(listener, s, &key);
     if (key == BUSY_LISTENER_KEY) {
-        // throw new IllegalArgumentException("listener already in use");
         Logger::E(TAG, "listener already in use");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mAsyncChannel->SendMessage(INsdManager::DISCOVER_SERVICES, 0, key, s);
     return NOERROR;
-#endif
 }
+
 
 ECode NsdManager::StopServiceDiscovery(
     /* [in] */ INsdManagerDiscoveryListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (listener == NULL) {
         Slogger::E(TAG, "listener cannot be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Int32 id = GetListenerKey(listener);
+    Int32 id;
+    GetListenerKey(listener, &id);
     if (id == INVALID_LISTENER_KEY) {
         Slogger::E(TAG, "service discovery not active on listener");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -314,15 +322,13 @@ ECode NsdManager::StopServiceDiscovery(
 
     mAsyncChannel->SendMessage(INsdManager::STOP_DISCOVERY, 0, id);
     return NOERROR;
-#endif
 }
+
 
 ECode NsdManager::ResolveService(
     /* [in] */ INsdServiceInfo* serviceInfo,
     /* [in] */ INsdManagerResolveListener* listener)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (listener == NULL) {
         Slogger::E(TAG, "listener cannot be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -337,58 +343,54 @@ ECode NsdManager::ResolveService(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Int32 key = PutListener(listener, serviceInfo);
+    Int32 key;
+    PutListener(listener, serviceInfo, &key);
     if (key == BUSY_LISTENER_KEY) {
-        // throw new IllegalArgumentException("listener already in use");
         Logger::E(TAG, "listener already in use");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mAsyncChannel->SendMessage(INsdManager::RESOLVE_SERVICE, 0, key, serviceInfo);
     return NOERROR;
-#endif
 }
+
 
 ECode NsdManager::SetEnabled(
     /* [in] */ Boolean enabled)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     // try {
     return mService->SetEnabled(enabled);
     // } catch (RemoteException e) { }
-#endif
 }
+
 
 ECode NsdManager::GetMessenger(
     /* [out] */ IMessenger** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(result)
 
     // try {
     AutoPtr<IMessenger> messenger;
     mService->GetMessenger((IMessenger**)&messenger);
-    return messenger;
+    FUNC_RETURN(messenger);
     // } catch (RemoteException e) {
     //     return NULL;
     // }
-#endif
 }
+
 
 //===========================================================================
 // NsdManager::ServiceHandler
 //===========================================================================
 NsdManager::ServiceHandler::ServiceHandler(
-    /* [in] */ ILooper* looper)
+    /* [in] */ ILooper* looper,
+    /* [in] */ NsdManager* host)
     : Handler(looper)
+    , mHost(host)
 {}
 
 ECode NsdManager::ServiceHandler::HandleMessage(
     /* [in] */ IMessage* message)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(message);
 
     Int32 what, arg1, arg2;
@@ -399,13 +401,13 @@ ECode NsdManager::ServiceHandler::HandleMessage(
     // Slogger::D("CNsdManager::ServiceHandler", " >> HandleMessage %s", CodeToString(what).string());
 
     switch (what) {
-        case AsyncChannel::CMD_CHANNEL_HALF_CONNECTED:
-            mHost->mAsyncChannel->SendMessage(AsyncChannel::CMD_CHANNEL_FULL_CONNECTION);
+        case IAsyncChannel::CMD_CHANNEL_HALF_CONNECTED:
+            mHost->mAsyncChannel->SendMessage(IAsyncChannel::CMD_CHANNEL_FULL_CONNECTION);
             return NOERROR;
-        case AsyncChannel::CMD_CHANNEL_FULLY_CONNECTED:
+        case IAsyncChannel::CMD_CHANNEL_FULLY_CONNECTED:
             mHost->mConnected->CountDown();
             return NOERROR;
-        case AsyncChannel::CMD_CHANNEL_DISCONNECTED:
+        case IAsyncChannel::CMD_CHANNEL_DISCONNECTED:
             Slogger::E("CNsdManager::ServiceHandler", "Channel lost");
             return NOERROR;
         default:
@@ -414,31 +416,27 @@ ECode NsdManager::ServiceHandler::HandleMessage(
         AutoPtr<IInterface> listener;
         mHost->GetListener(arg2, (IInterface**)&listener);
         if (NULL == listener) {
-            Slogger::D(TAG, "Stale key " + message.arg2);
+            Slogger::D("CNsdManager::ServiceHandler", "Stale key %d", arg2);
             return NOERROR;
         }
         AutoPtr<INsdServiceInfo> ns;
-        GetNsdService(message->arg2, (INsdServiceInfo**)&ns);
-        switch (message->what) {
+        mHost->GetNsdService(arg2, (INsdServiceInfo**)&ns);
+        switch (what) {
         case INsdManager::DISCOVER_SERVICES_STARTED: {
             AutoPtr<IInterface> obj;
             message->GetObj((IInterface**)&obj);
             AutoPtr<INsdServiceInfo> info = INsdServiceInfo::Probe(obj);
             String s;
-            GetNsdServiceInfoType(info, &s);
+            mHost->GetNsdServiceInfoType(info, &s);
             AutoPtr<INsdManagerDiscoveryListener> dl = INsdManagerDiscoveryListener::Probe(listener);
             dl->OnDiscoveryStarted(s);
             break;
         }
         case INsdManager::DISCOVER_SERVICES_FAILED: {
-            Int32 arg2;
-            message->GetArg2(&arg2);
-            RemoveListener(arg2);
+            mHost->RemoveListener(arg2);
             AutoPtr<INsdManagerDiscoveryListener> dl = INsdManagerDiscoveryListener::Probe(listener);
             String type;
-            GetNsdServiceInfoType(ns, &type)
-            Int32 arg1;
-            message->GetArg1(&arg1)
+            mHost->GetNsdServiceInfoType(ns, &type);
             dl->OnStartDiscoveryFailed(type, arg1);
             break;
         }
@@ -459,19 +457,22 @@ ECode NsdManager::ServiceHandler::HandleMessage(
             break;
         }
         case INsdManager::STOP_DISCOVERY_FAILED: {
-                    // removeListener(message.arg2);
-                    // ((DiscoveryListener) listener).onStopDiscoveryFailed(getNsdServiceInfoType(ns),
-                            // message.arg1);
+            mHost->RemoveListener(arg2);
+            String type;
+            mHost->GetNsdServiceInfoType(ns, &type);
+            INsdManagerDiscoveryListener::Probe(listener)->OnStopDiscoveryFailed(type, arg1);
             break;
         }
         case INsdManager::STOP_DISCOVERY_SUCCEEDED: {
-                    // removeListener(message.arg2);
-                    // ((DiscoveryListener) listener).onDiscoveryStopped(getNsdServiceInfoType(ns));
+            mHost->RemoveListener(arg2);
+            String type;
+            mHost->GetNsdServiceInfoType(ns, &type);
+            INsdManagerDiscoveryListener::Probe(listener)->OnDiscoveryStopped(type);
             break;
         }
         case INsdManager::REGISTER_SERVICE_FAILED: {
-                    // removeListener(message.arg2);
-                    // ((RegistrationListener) listener).onRegistrationFailed(ns, message.arg1);
+            mHost->RemoveListener(arg2);
+            INsdManagerRegistrationListener::Probe(listener)->OnRegistrationFailed(ns, arg1);
             break;
         }
         case INsdManager::REGISTER_SERVICE_SUCCEEDED: {
@@ -484,24 +485,22 @@ ECode NsdManager::ServiceHandler::HandleMessage(
             break;
         }
         case INsdManager::UNREGISTER_SERVICE_FAILED: {
-                    // removeListener(message.arg2);
-                    // ((RegistrationListener) listener).onUnregistrationFailed(ns, message.arg1);
+            mHost->RemoveListener(arg2);
+            INsdManagerRegistrationListener::Probe(listener)->OnUnregistrationFailed(ns, arg1);
             break;
         }
         case INsdManager::UNREGISTER_SERVICE_SUCCEEDED: {
-                    // removeListener(message.arg2);
-                    // ((RegistrationListener) listener).onServiceUnregistered(ns);
+            mHost->RemoveListener(arg2);
+            INsdManagerRegistrationListener::Probe(listener)->OnServiceUnregistered(ns);
             break;
         }
         case INsdManager::RESOLVE_SERVICE_FAILED: {
-                    // removeListener(message.arg2);
-                    // ((ResolveListener) listener).onResolveFailed(ns, message.arg1);
+            mHost->RemoveListener(arg2);
+            INsdManagerResolveListener::Probe(listener)->OnResolveFailed(ns, arg1);
             break;
         }
         case INsdManager::RESOLVE_SERVICE_SUCCEEDED: {
-            Int32 arg2;
-            message->GetArg2(&arg2);
-            removeListener(arg2);
+            mHost->RemoveListener(arg2);
             AutoPtr<IInterface> obj;
             message->GetObj((IInterface**)&obj);
             INsdServiceInfo* info = INsdServiceInfo::Probe(obj);
@@ -515,7 +514,6 @@ ECode NsdManager::ServiceHandler::HandleMessage(
     }
 
     return NOERROR;
-#endif
 }
 
 } // namespace Nsd

@@ -1087,7 +1087,7 @@ ECode LinkPropertiesCompareResult::ToString(
 ECode LinkPropertiesCompareResult::GetRemoved(
     /* [out] */ IList** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
 
     *result = mRemoved;
     REFCOUNT_ADD(*result)
@@ -1106,7 +1106,7 @@ ECode LinkPropertiesCompareResult::SetRemoved(
 ECode LinkPropertiesCompareResult::GetAdded(
     /* [out] */ IList** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
 
     *result = mAdded;
     REFCOUNT_ADD(*result)

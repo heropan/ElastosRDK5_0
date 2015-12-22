@@ -1,7 +1,44 @@
 
 #include <Elastos.CoreLibrary.Apache.h>
+#include <Elastos.CoreLibrary.Extensions.h>
+#include <Elastos.CoreLibrary.Net.h>
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/net/http/Connection.h"
+#include "elastos/droid/net/http/ElastosHttpClient.h"
+#include "elastos/droid/net/http/ElastosHttpClientConnection.h"
+#include "elastos/droid/net/http/ErrorStrings.h"
+#include "elastos/droid/net/http/HttpLog.h"
+#include "elastos/droid/net/http/CHttpsConnection.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/SystemClock.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Thread.h>
+#include <elastos/utility/etl/List.h>
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Internal::Utility::IProtocol;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::SystemClock;
+
+using Elastos::Core::StringUtils;
+using Elastos::Core::Thread;
+using Elastos::Utility::Etl::List;
+
+// using Org::Apache::Http::CHttpConnection;
+using Org::Apache::Http::CHttpVersionHelper;
+using Org::Apache::Http::IHeader;
+using Org::Apache::Http::IHttpConnection;
+using Org::Apache::Http::IHttpEntity;
+using Org::Apache::Http::IHttpHost;
+using Org::Apache::Http::IHttpVersion;
+using Org::Apache::Http::IHttpVersionHelper;
+using Org::Apache::Http::IProtocolVersion;
+using Org::Apache::Http::Protocol::CBasicHttpContext;
+using Org::Apache::Http::Protocol::IExecutionContext;
+using Org::Apache::Http::Protocol::IHttpContext;
 
 namespace Elastos {
 namespace Droid {
@@ -24,7 +61,8 @@ const Int32 Connection::MAX_PIPE = 3;
 const String Connection::HTTP_CONNECTION("http.connection");
 
 Connection::Connection()
-    : mActive(sSTATE_NORMAL)
+    : mCanPersist(FALSE)
+    , mActive(sSTATE_NORMAL)
 {}
 
 Connection::~Connection()
@@ -34,10 +72,10 @@ AutoPtr<ArrayOf<String> > Connection::InitSTATES()
 {
     AutoPtr<ArrayOf<String> > sArray = ArrayOf<String>::Alloc(4);
 
-    (*sArray)[0] = "SEND";
-    (*sArray)[1] = "READ";
-    (*sArray)[2] = "DRAIN";
-    (*sArray)[3] = "DONE";
+    (*sArray)[0] = String("SEND");
+    (*sArray)[1] = String("READ");
+    (*sArray)[2] = String("DRAIN");
+    (*sArray)[3] = String("DONE");
 
     return sArray;
 }
@@ -47,23 +85,20 @@ ECode Connection::constructor(
     /* [in] */ IHttpHost* host,
     /* [in] */ IRequestFeeder* requestFeeder)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mContext = context;
-        mHost = host;
-        mRequestFeeder = requestFeeder;
-        mCanPersist = false;
-        mHttpContext = new BasicHttpContext(NULL);
-#endif
+    mContext = context;
+    mHost = host;
+    mRequestFeeder = requestFeeder;
+    mCanPersist = FALSE;
+    CBasicHttpContext::New(NULL, (IHttpContext**)&mHttpContext);
+    return NOERROR;
 }
 
 ECode Connection::GetHost(
     /* [out] */ IHttpHost** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mHost;
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    FUNC_RETURN(mHost)
 }
 
 ECode Connection::GetConnection(
@@ -73,63 +108,60 @@ ECode Connection::GetConnection(
     /* [in] */ IRequestFeeder* requestFeeder,
     /* [out] */ IConnection** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (host.getSchemeName().equals("http")) {
-            return new HttpConnection(context, host, requestFeeder);
-        }
-        // Otherwise, default to https
-        return new HttpsConnection(context, host, proxy, requestFeeder);
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    if (Ptr(host)->Func(host->GetSchemeName).Equals("http")) {
+        // TODO: Waiting for CHttpConnection
+        assert(0);
+        // return CHttpConnection::New(context, host, requestFeeder, result);
+        return NOERROR;
+    }
+    // Otherwise, default to https
+    return CHttpsConnection::New(context, host, proxy, requestFeeder, result);
 }
 
 ECode Connection::GetCertificate(
     /* [out] */ ISslCertificate** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mCertificate;
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    FUNC_RETURN(mCertificate);
 }
 
 ECode Connection::Cancel()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mActive = STATE_CANCEL_REQUESTED;
-        closeConnection();
-        if (HttpLog.LOGV) HttpLog.v(
-            "Connection.cancel(): connection closed " + mHost);
-#endif
+    mActive = sSTATE_CANCEL_REQUESTED;
+    CloseConnection();
+    if (HttpLog::LOGV)
+        HttpLog::V("Connection.cancel(): connection closed %s", StringUtils::ToString(mHost).string());
+    return NOERROR;
 }
 
 ECode Connection::ProcessRequests(
     /* [in] */ IRequest* firstRequest)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    Request* req;
+    AutoPtr<IRequest> req;
     Boolean empty;
     Int32 error = IEventHandler::OK;
     Boolean exception = FALSE;
 
     // LinkedList<Request> pipe = new LinkedList<Request>();
-    List<AutoPtr<Request> > pipe;
+    List<Request*> pipe;
 
     Int32 minPipe = MIN_PIPE;
     Int32 maxPipe = MAX_PIPE;
     Int32 state = SEND;
 
     while (state != DONE) {
-        // if (HttpLog.LOGV) HttpLog.v(
-        //         states[state] + " pipe " + pipe.size());
+        if (HttpLog::LOGV)
+            HttpLog::V("%s pipe %d", (*STATES)[state].string(), pipe.GetSize());
 
         /* If a request was cancelled, give other cancel requests
            some time to go through so we don't uselessly restart
            connections */
-        if (mActive == STATE_CANCEL_REQUESTED) {
+        if (mActive == sSTATE_CANCEL_REQUESTED) {
             Thread::Sleep(100);
-            mActive = STATE_NORMAL;
+            mActive = sSTATE_NORMAL;
         }
 
         switch (state) {
@@ -140,7 +172,7 @@ ECode Connection::ProcessRequests(
                 }
                 /* get a request */
                 if (firstRequest == NULL) {
-                    mRequestFeeder->GetRequest(mHost, (Request**)&req);
+                    mRequestFeeder->GetRequest(mHost, (IRequest**)&req);
                 } else {
                     req = firstRequest;
                     firstRequest = NULL;
@@ -149,20 +181,22 @@ ECode Connection::ProcessRequests(
                     state = DRAIN;
                     break;
                 }
-                req->SetConnection(this);
+                ((Request*)req.Get())->SetConnection(this);
 
                 /* Don't work on cancelled requests. */
-                if (req->mCancelled) {
-                    // if (HttpLog.LOGV) HttpLog.v(
-                    //         "processRequests(): skipping cancelled request "
-                    //         + req);
-                    req->Complete();
+                if (((Request*)req.Get())->mCancelled) {
+                    if (HttpLog::LOGV)
+                        HttpLog::V("processRequests(): skipping cancelled request %s", StringUtils::ToString(req).string());
+                    ((Request*)req.Get())->Complete();
                     break;
                 }
 
-                // TODO:
-                if (mHttpClientConnection == NULL/* ||
-                    !mHttpClientConnection->IsOpen()*/) {
+                Boolean lamp = FALSE;
+                if (mHttpClientConnection == NULL) lamp = TRUE;
+                else if (!Ptr(mHttpClientConnection)->Func(mHttpClientConnection->IsOpen)){
+                    lamp = TRUE;
+                }
+                if (lamp) {
                     /* If this call fails, the address is bad or
                        the net is down.  Punt for now.
 
@@ -179,31 +213,33 @@ ECode Connection::ProcessRequests(
                  * know of any associated certificate,
                  * potentially none.
                  */
-                req->mEventHandler->Certificate(mCertificate);
+                ((Request*)req.Get())->mEventHandler->Certificate(mCertificate);
 
 
                 /* FIXME: don't increment failure count if old
                    connection?  There should not be a penalty for
                    attempting to reuse an old connection */
                 // TODO:
-                ECode eResult = req->SendRequest(mHttpClientConnection);
-                /*if (eResult == E_HTTP_EXCEPTION) {
+                ECode eResult = ((Request*)req.Get())->SendRequest(mHttpClientConnection);
+                if (eResult == E_HTTP_EXCEPTION) {
                     error = IEventHandler::ERROR;
                     exception = TRUE;
-                } else */if (eResult == E_IO_EXCEPTION){
+                }
+                else if (eResult == E_IO_EXCEPTION){
                     error = IEventHandler::ERROR_IO;
                     exception = TRUE;
-                } else if (eResult == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+                }
+                else if (eResult == E_ILLEGAL_ARGUMENT_EXCEPTION) {
                     error = IEventHandler::ERROR_IO;
                     exception = TRUE;
                 }
 
                 if (exception) {
                     if (HttpFailure(req, error, exception) &&
-                        !req->mCancelled) {
+                        !((Request*)req.Get())->mCancelled) {
                         /* retry request if not permanent failure
                            or cancelled */
-                        pipe.PushBack(req);
+                        pipe.PushBack((Request*)req.Get());
                     }
                     exception = FALSE;
                     state = ClearPipe(pipe) ? DONE : SEND;
@@ -211,7 +247,7 @@ ECode Connection::ProcessRequests(
                     break;
                 }
 
-                pipe.PushBack(req);
+                pipe.PushBack((Request*)req.Get());
                 if (!mCanPersist) state = READ;
                 break;
 
@@ -225,49 +261,50 @@ ECode Connection::ProcessRequests(
                     !empty && mCanPersist) {
                     state = SEND;
                     break;
-                } else if (pipeSize == 0) {
+                }
+                else if (pipeSize == 0) {
                     /* Done if no other work to do */
                     state = empty ? DONE : SEND;
                     break;
                 }
 
-                // TODO:
-                // req = (Request*)pipe.RemoveFirst();
-                // if (HttpLog.LOGV) HttpLog.v(
-                //         "processRequests() reading " + req);
+                req = (IRequest*)pipe.GetFront();
+                pipe.PopFront();
+                if (HttpLog::LOGV) HttpLog::V("processRequests() reading %s", StringUtils::ToString(req).string());
 
-                ECode eResult = req->ReadResponse(mHttpClientConnection);
-                /*if (eResult == E_PARSE_EXCEPTION) {
+                ECode eResult = ((Request*)req.Get())->ReadResponse(mHttpClientConnection);
+                if (eResult == E_PARSE_EXCEPTION) {
                     error = IEventHandler::ERROR_IO;
                     exception = TRUE;
-                } else */if (eResult == E_IO_EXCEPTION){
+                }
+                else if (eResult == E_IO_EXCEPTION){
                     error = IEventHandler::ERROR_IO;
                     exception = TRUE;
-                } else if (eResult == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+                }
+                else if (eResult == E_ILLEGAL_ARGUMENT_EXCEPTION) {
                     error = IEventHandler::ERROR_IO;
                     exception = TRUE;
                 }
 
                 if (exception) {
                     if (HttpFailure(req, error, exception) &&
-                        !req->mCancelled) {
+                        !((Request*)req.Get())->mCancelled) {
                         /* retry request if not permanent failure
                            or cancelled */
-                        req->Reset();
-                        pipe.PushBack(req);
+                        ((Request*)req.Get())->Reset();
+                        pipe.PushBack((Request*)req.Get());
                     }
                     exception = NULL;
                     mCanPersist = FALSE;
                 }
                 if (!mCanPersist) {
-                    // if (HttpLog.LOGV) HttpLog.v(
-                    //         "processRequests(): no persist, closing " +
-                    //         mHost);
+                    if (HttpLog::LOGV)
+                        HttpLog::V("processRequests(): no persist, closing %s", StringUtils::ToString(mHost).string());
 
                     CloseConnection();
 
-                    // TODO:
-                    // mHttpContext->RemoveAttribute(HTTP_CONNECTION);
+                    AutoPtr<IInterface> tmpObj;
+                    mHttpContext->RemoveAttribute(HTTP_CONNECTION, (IInterface**)&tmpObj);
                     ClearPipe(pipe);
                     minPipe = maxPipe = 1;
                     state = SEND;
@@ -276,26 +313,23 @@ ECode Connection::ProcessRequests(
             }
         }
     }
-#endif
+    return NOERROR;
 }
 
-ECode Connection::ClearPipe(
-    /* [in] */ ILinkedList* pipe,
-    /* [out] */ Boolean* result)
+Boolean Connection::ClearPipe(
+    /* [in] */ List<Request*>& pipe)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     Boolean empty = TRUE;
-    // if (HttpLog.LOGV) HttpLog.v(
-    //         "Connection.clearPipe(): clearing pipe " + pipe.size());
-    // synchronized(mRequestFeeder) {
+    if (HttpLog::LOGV) HttpLog::V(
+            "Connection.clearPipe(): clearing pipe %d", pipe.GetSize());
+    synchronized(mRequestFeeder) {
         Request* tReq;
 
         List<Request*>::Iterator itor;
         for (itor = pipe.Begin(); itor != pipe.End(); itor++) {
             tReq = *itor;
-            // if (HttpLog.LOGV) HttpLog.v(
-            //         "clearPipe() adding back " + mHost + " " + tReq);
+            if (HttpLog::LOGV) HttpLog::V(
+                    "clearPipe() adding back %s %s", StringUtils::ToString(mHost).string(), StringUtils::ToString((IRequest*)tReq).string());
             mRequestFeeder->RequeueRequest(tReq);
             empty = FALSE;
         }
@@ -303,19 +337,14 @@ ECode Connection::ClearPipe(
             empty = mRequestFeeder->HaveRequest(mHost, &empty);
             empty = !empty;
         }
-    // }
+    }
     return empty;
-#endif
 }
 
-ECode Connection::OpenHttpConnection(
-    /* [in] */ IRequest* req,
-    /* [out] */ Boolean* result)
+Boolean Connection::OpenHttpConnection(
+    /* [in] */ IRequest* req)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    // TODO:
-    Int64 now/* = SystemClock::GetUptimeMillis()*/;
+    Int64 now = SystemClock::GetUptimeMillis();
     Int32 error = IEventHandler::OK;
     Boolean exception = FALSE;
 
@@ -324,137 +353,132 @@ ECode Connection::OpenHttpConnection(
     mCertificate = NULL;
     ECode eResult = OpenConnection(req, (IElastosHttpClientConnection**)&mHttpClientConnection);
     if (mHttpClientConnection != NULL) {
-        // TODO:
-        // mHttpClientConnection->SetSocketTimeout(SOCKET_TIMEOUT);
-        // mHttpContext->SetAttribute(HTTP_CONNECTION, mHttpClientConnection);
+        mHttpClientConnection->SetSocketTimeout(SOCKET_TIMEOUT);
+        mHttpContext->SetAttribute(HTTP_CONNECTION, mHttpClientConnection);
     } else {
         // we tried to do SSL tunneling, failed,
         // and need to drop the request;
         // we have already informed the handler
-        req->mFailCount = RETRY_REQUEST_LIMIT;
+        ((Request*)req)->mFailCount = RETRY_REQUEST_LIMIT;
         return FALSE;
     }
 
-    /*if (eResult == E_UNKNOWN_HOST_EXCEPTION) {
-        // if (HttpLog.LOGV) HttpLog.v("Failed to open connection");
+    if (eResult == E_UNKNOWN_HOST_EXCEPTION) {
+        if (HttpLog::LOGV) HttpLog::V("Failed to open connection");
         error = IEventHandler::ERROR_LOOKUP;
         exception = TRUE;
-    } else*/ if (eResult == E_ILLEGAL_ARGUMENT_EXCEPTION) {
-        // if (HttpLog.LOGV) HttpLog.v("Illegal argument exception");
+    }
+    else if (eResult == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+        if (HttpLog::LOGV) HttpLog::V("Illegal argument exception");
         error = IEventHandler::ERROR_CONNECT;
-        req->mFailCount = RETRY_REQUEST_LIMIT;
+        ((Request*)req)->mFailCount = RETRY_REQUEST_LIMIT;
         exception = TRUE;
-    }/* else if (eResult == E_SSL_CONNECTION_CLOSED_BY_USER_ECXEPTION) {
+    }
+    else if (eResult == E_SSL_CONNECTION_CLOSED_BY_USER_EXCEPTION) {
         // hack: if we have an SSL connection failure,
         // we don't want to reconnect
-        req->mFailCount = RETRY_REQUEST_LIMIT;
+        ((Request*)req)->mFailCount = RETRY_REQUEST_LIMIT;
         // no error message
         return FALSE;
-    }else if (eResult == E_SSL_HANDSHAKE_EXCEPTION) {
+    }
+    else if (eResult == E_SSL_HANDSHAKE_EXCEPTION) {
         // hack: if we have an SSL connection failure,
         // we don't want to reconnect
-        req->mFailCount = RETRY_REQUEST_LIMIT;
-        // if (HttpLog.LOGV) HttpLog.v(
-        //         "SSL exception performing handshake");
+        ((Request*)req)->mFailCount = RETRY_REQUEST_LIMIT;
+        if (HttpLog::LOGV)
+            HttpLog::V("SSL exception performing handshake");
         error = IEventHandler::ERROR_FAILED_SSL_HANDSHAKE;
         exception = TRUE;
-    }*/  else if (eResult == E_IO_EXCEPTION) {
+    }
+    else if (eResult == E_IO_EXCEPTION) {
         error = IEventHandler::ERROR_CONNECT;
         exception = TRUE;
     }
 
-    // if (HttpLog.LOGV) {
-    //     long now2 = SystemClock.uptimeMillis();
-    //     HttpLog.v("Connection.openHttpConnection() " +
-    //               (now2 - now) + " " + mHost);
-    // }
+    if (HttpLog::LOGV) {
+        Int64 now2 = SystemClock::GetUptimeMillis();
+        HttpLog::V("Connection.openHttpConnection() %d %s", (now2 - now), StringUtils::ToString(mHost).string());
+    }
 
     if (error == IEventHandler::OK) {
         return TRUE;
     } else {
-        if (req->mFailCount < RETRY_REQUEST_LIMIT) {
+        if (((Request*)req)->mFailCount < RETRY_REQUEST_LIMIT) {
             // requeue
             mRequestFeeder->RequeueRequest(req);
-            req->mFailCount++;
+            ((Request*)req)->mFailCount++;
         } else {
             HttpFailure(req, error, exception);
         }
         return error == IEventHandler::OK;
     }
-#endif
 }
 
-ECode Connection::HttpFailure(
+Boolean Connection::HttpFailure(
     /* [in] */ IRequest* req,
     /* [in] */ Int32 errorId,
-    /* [in] */ ECode e,
-    /* [out] */ Boolean* result)
+    /* [in] */ ECode e)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     Boolean ret = TRUE;
 
-    // if (HttpLog.LOGV) HttpLog.v(
-    //         "httpFailure() ******* " + e + " count " + req.mFailCount +
-    //         " " + mHost + " " + req.getUri());
+    if (HttpLog::LOGV)
+        HttpLog::V("httpFailure() ******* %d count %d %s %s", e, ((Request*)req)->mFailCount,
+            StringUtils::ToString(mHost).string(), Ptr(((Request*)req))->Func(((Request*)req)->GetUri).string());
 
-    if (++req->mFailCount >= RETRY_REQUEST_LIMIT) {
+    if (++((Request*)req)->mFailCount >= RETRY_REQUEST_LIMIT) {
         ret = FALSE;
         String error;
         if (errorId < 0) {
             ErrorStrings::GetString(errorId, mContext, &error);
         } else {
-            // Throwable cause = e.getCause();
-            // error = cause != null ? cause.toString() : e.getMessage();
+            error.AppendFormat("%d", e);
         }
-        req->mEventHandler->Error(errorId, error);
-        req->Complete();
+        ((Request*)req)->mEventHandler->Error(errorId, error);
+        ((Request*)req)->Complete();
     }
 
     CloseConnection();
-    // TODO:
-    // mHttpContext->RemoveAttribute(HTTP_CONNECTION);
+    AutoPtr<IInterface> tmpObj;
+    mHttpContext->RemoveAttribute(HTTP_CONNECTION, (IInterface**)&tmpObj);
 
     return ret;
-#endif
 }
 
 ECode Connection::GetHttpContext(
     /* [out] */ IHttpContext** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(context);
-    *context = mHttpContext;
-    REFCOUNT_ADD(*context);
+    VALIDATE_NOT_NULL(result)
+
+    *result = mHttpContext;
+    REFCOUNT_ADD(*result);
     return NOERROR;
-#endif
 }
 
-ECode Connection::KeepAlive(
+Boolean Connection::KeepAlive(
     /* [in] */ IHttpEntity* entity,
     /* [in] */ IProtocolVersion* ver,
     /* [in] */ Int32 connType,
-    /* [in] */ const IHttpContext* context,
-    /* [out] */ Boolean* result)
+    /* [in] */ IHttpContext* context)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    AutoPtr<IHttpConnection> conn;
-    // TODO:
-    // context->GetAttribute(IExecutionContext::HTTP_CONNECTION, (IHttpConnection**)&conn);
+    AutoPtr<IInterface> obj;
+    context->GetAttribute(IExecutionContext::HTTP_CONNECTION, (IInterface**)&obj);
+    AutoPtr<IHttpConnection> conn = IHttpConnection::Probe(obj);
 
-    if (conn != NULL/* && !conn->IsOpen()*/) return FALSE;
+    if (conn != NULL && !Ptr(conn)->Func(conn->IsOpen)) return FALSE;
     // do NOT check for stale connection, that is an expensive operation
 
+    AutoPtr<IHttpVersionHelper> helper;
+    CHttpVersionHelper::AcquireSingleton((IHttpVersionHelper**)&helper);
+    Boolean isLessEquals;
     if (entity != NULL) {
-        // if (entity->GetContentLength() < 0) {
-        //     if (!entity->IsChunked() || ver->LessEquals(IHttpVersion::HTTP_1_0)) {
-        //         // if the content length is not known and is not chunk
-        //         // encoded, the connection cannot be reused
-        //         return FALSE;
-        //     }
-        // }
+        if (Ptr(entity)->Func(entity->GetContentLength) < 0) {
+            ver->LessEquals(IProtocolVersion::Probe(Ptr(helper)->Func(helper->GerHttpVersion10)), &isLessEquals);
+            if (!Ptr(entity)->Func(entity->IsChunked) || isLessEquals) {
+                // if the content length is not known and is not chunk
+                // encoded, the connection cannot be reused
+                return FALSE;
+            }
+        }
     }
     // Check for 'Connection' directive
     if (connType == IHeaders::CONN_CLOSE) {
@@ -463,9 +487,8 @@ ECode Connection::KeepAlive(
         return TRUE;
     }
     // Resorting to protocol version default close connection policy
-    // return !ver->LessEquals(IHttpVersion::HTTP_1_0);
-    return FALSE;
-#endif
+    ver->LessEquals(IProtocolVersion::Probe(Ptr(helper)->Func(helper->GerHttpVersion10)), &isLessEquals);
+    return !isLessEquals;
 }
 
 ECode Connection::SetCanPersist(
@@ -473,58 +496,45 @@ ECode Connection::SetCanPersist(
     /* [in] */ IProtocolVersion* ver,
     /* [in] */ Int32 connType)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     mCanPersist = KeepAlive(entity, ver, connType, mHttpContext);
     return NOERROR;
-#endif
 }
 
 ECode Connection::SetCanPersist(
     /* [in] */ Boolean canPersist)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     mCanPersist = canPersist;
     return NOERROR;
-#endif
 }
 
 ECode Connection::GetCanPersist(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(canPersist);
-    *canPersist = mCanPersist;
+    VALIDATE_NOT_NULL(result)
+
+    *result = mCanPersist;
     return NOERROR;
-#endif
 }
 
 ECode Connection::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mHost.toString();
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    return IObject::Probe(mHost)->ToString(result);
 }
 
 ECode Connection::GetBuf(
     /* [out, callee] */ ArrayOf<Byte>** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (mBuf == NULL) {
         mBuf = ArrayOf<Byte>::Alloc(8192);
     }
 
-    *buf = mBuf;
-    REFCOUNT_ADD(*buf);
+    *result = mBuf;
+    REFCOUNT_ADD(*result);
     return NOERROR;
-#endif
 }
-
 
 } // namespace Http
 } // namespace Net

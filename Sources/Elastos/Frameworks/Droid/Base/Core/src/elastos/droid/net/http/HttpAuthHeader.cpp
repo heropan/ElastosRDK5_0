@@ -1,7 +1,7 @@
 
 #include "elastos/droid/net/http/HttpAuthHeader.h"
-
-using Elastos::Utility::ILocale;
+#include "elastos/droid/net/Proxy.h"
+#include "elastos/droid/net/http/HttpLog.h"
 
 namespace Elastos {
 namespace Droid {
@@ -26,212 +26,171 @@ HttpAuthHeader::HttpAuthHeader()
 ECode HttpAuthHeader::constructor(
     /* [in] */ const String& header)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     if (header != NULL) {
         ParseHeader(header);
     }
     return NOERROR;
-#endif
 }
 
 ECode HttpAuthHeader::IsProxy(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(isProxy);
-    *isProxy = mIsProxy;
+    VALIDATE_NOT_NULL(result);
+
+    *result = mIsProxy;
     return NOERROR;
-#endif
 }
 
 ECode HttpAuthHeader::SetProxy()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     mIsProxy = TRUE;
     return NOERROR;
-#endif
 }
 
 ECode HttpAuthHeader::GetUsername(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(username);
-    *username = mUsername;
+    VALIDATE_NOT_NULL(result);
+
+    *result = mUsername;
     return NOERROR;
-#endif
 }
 
 ECode HttpAuthHeader::SetUsername(
     /* [in] */ const String& username)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     mUsername = username;
     return NOERROR;
-#endif
 }
 
 ECode HttpAuthHeader::GetPassword(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(password);
-    *password = mPassword;
+    VALIDATE_NOT_NULL(result);
+
+    *result = mPassword;
     return NOERROR;
-#endif
 }
 
 ECode HttpAuthHeader::SetPassword(
     /* [in] */ const String& password)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     mPassword = password;
     return NOERROR;
-#endif
 }
 
 ECode HttpAuthHeader::IsBasic(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(isBasic);
-    *isBasic = mScheme == BASIC;
+    VALIDATE_NOT_NULL(result);
+
+    *result = mScheme == BASIC;
     return NOERROR;
-#endif
 }
 
 ECode HttpAuthHeader::IsDigest(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(isDigest);
-    *isDigest = mScheme == DIGEST;
+    VALIDATE_NOT_NULL(result);
+
+    *result = mScheme == DIGEST;
     return NOERROR;
-#endif
 }
 
 ECode HttpAuthHeader::GetScheme(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(scheme);
-    *scheme = mScheme;
+    VALIDATE_NOT_NULL(result);
+
+    *result = mScheme;
     return NOERROR;
-#endif
 }
 
 ECode HttpAuthHeader::GetStale(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(stale);
-    *stale = mStale;
+    VALIDATE_NOT_NULL(result);
+
+    *result = mStale;
     return NOERROR;
-#endif
 }
 
 ECode HttpAuthHeader::GetRealm(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(realm);
-    *realm = mRealm;
+    VALIDATE_NOT_NULL(result);
+
+    *result = mRealm;
     return NOERROR;
-#endif
 }
 
 ECode HttpAuthHeader::GetNonce(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(nonce);
-    *nonce = mNonce;
+    VALIDATE_NOT_NULL(result);
+
+    *result = mNonce;
     return NOERROR;
-#endif
 }
 
 ECode HttpAuthHeader::GetOpaque(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(opaque);
-    *opaque = mOpaque;
+    VALIDATE_NOT_NULL(result);
+
+    *result = mOpaque;
     return NOERROR;
-#endif
 }
 
 ECode HttpAuthHeader::GetQop(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(qop);
-    *qop = mQop;
+    VALIDATE_NOT_NULL(result);
+
+    *result = mQop;
     return NOERROR;
-#endif
 }
 
 ECode HttpAuthHeader::GetAlgorithm(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(algorithm);
-    *algorithm = mAlgorithm;
+    VALIDATE_NOT_NULL(result);
+
+    *result = mAlgorithm;
     return NOERROR;
-#endif
 }
 
 ECode HttpAuthHeader::IsSupportedScheme(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(isSupport);
+    VALIDATE_NOT_NULL(result);
 
     // it is a good idea to enforce non-null realms!
     if (mRealm != NULL) {
         if (mScheme == BASIC) {
-            *isSupport = TRUE;
+            *result = TRUE;
         } else {
             if (mScheme == DIGEST) {
-                *isSupport = mAlgorithm.Equals("md5") &&
+                *result = mAlgorithm.Equals("md5") &&
                     (mQop == NULL || mQop.Equals("auth"));
             }
         }
     }
 
-    *isSupport = FALSE;
+    *result = FALSE;
     return NOERROR;
-#endif
 }
 
 ECode HttpAuthHeader::ParseHeader(
     /* [in] */ const String& header)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     if (HttpLog::LOGV) {
-        HttpLog::V(String("HttpAuthHeader.parseHeader(): header: ") + header);
+        HttpLog::V("HttpAuthHeader.parseHeader(): header: %s", header.string());
     }
 
     if (header != NULL) {
         String parameters;
-        ParseScheme(header, &parameters);
+        parameters = ParseScheme(header);
         if (parameters != NULL) {
             // if we have a supported scheme
             if (mScheme != UNKNOWN) {
@@ -240,15 +199,11 @@ ECode HttpAuthHeader::ParseHeader(
         }
     }
     return NOERROR;
-#endif
 }
 
-ECode HttpAuthHeader::ParseScheme(
-    /* [in] */ const String& header,
-    /* [out] */ String* result)
+String HttpAuthHeader::ParseScheme(
+    /* [in] */ const String& header)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     if (header != NULL) {
         Int32 i = header.IndexOf(' ');
         if (i >= 0) {
@@ -264,22 +219,18 @@ ECode HttpAuthHeader::ParseScheme(
                 }
             }
 
-            *scheme = header.Substring(i + 1);
+            return header.Substring(i + 1);
         }
     }
 
-    *scheme = String(NULL);
-    return NOERROR;
-#endif
+    return String(NULL);
 }
 
 ECode HttpAuthHeader::ParseParameters(
     /* [in] */ const String& parameters)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     if (HttpLog::LOGV) {
-        HttpLog::V(String("HttpAuthHeader.parseParameters(): parameters: ") + parameters);
+        HttpLog::V("HttpAuthHeader.parseParameters(): parameters: %s", parameters.string());
     }
 
     if (parameters != NULL) {
@@ -297,14 +248,11 @@ ECode HttpAuthHeader::ParseParameters(
         } while (i >= 0);
     }
     return NOERROR;
-#endif
 }
 
 ECode HttpAuthHeader::ParseParameter(
     /* [in] */ const String& parameter)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     if (parameter != NULL) {
         // here, we are looking for the 1st occurence of '=' only!!!
         Int32 i = parameter.IndexOf('=');
@@ -314,8 +262,8 @@ ECode HttpAuthHeader::ParseParameter(
                 TrimDoubleQuotesIfAny(parameter.Substring(i + 1).Trim());
 
             if (HttpLog::LOGV) {
-                HttpLog::V(String("HttpAuthHeader.parseParameter(): token: ") + token
-                    + String(" value: ") + value);
+                HttpLog::V("HttpAuthHeader.parseParameter(): token: %s value: %s",
+                    token.string(), value.string());
             }
 
             if (token.EqualsIgnoreCase(REALM_TOKEN)) {
@@ -328,15 +276,12 @@ ECode HttpAuthHeader::ParseParameter(
         }
     }
     return NOERROR;
-#endif
 }
 
 ECode HttpAuthHeader::ParseParameter(
     /* [in] */ const String& token,
     /* [in] */ const String& value)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     if (token != NULL && value != NULL) {
         if (token.EqualsIgnoreCase(NONCE_TOKEN)) {
             mNonce = value;
@@ -354,39 +299,32 @@ ECode HttpAuthHeader::ParseParameter(
         }
 
         if (token.EqualsIgnoreCase(QOP_TOKEN)) {
-            mQop = value.ToLowerCase(ILocale::ROOT);
+            mQop = value.ToLowerCase();
             return NOERROR;
         }
 
         if (token.EqualsIgnoreCase(ALGORITHM_TOKEN)) {
-            mAlgorithm = value.ToLowerCase(ILocale::ROOT);
+            mAlgorithm = value.ToLowerCase();
             return NOERROR;
         }
     }
     return NOERROR;
-#endif
 }
 
 ECode HttpAuthHeader::ParseStale(
     /* [in] */ const String& value)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     if (value != NULL) {
         if (value.EqualsIgnoreCase("true")) {
             mStale = TRUE;
         }
     }
     return NOERROR;
-#endif
 }
 
-ECode HttpAuthHeader::TrimDoubleQuotesIfAny(
-    /* [in] */ const String& value,
-    /* [out] */ String* result)
+String HttpAuthHeader::TrimDoubleQuotesIfAny(
+    /* [in] */ const String& value)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     if (value != NULL) {
         Int32 len = value.GetLength();
         if (len > 2
@@ -397,7 +335,6 @@ ECode HttpAuthHeader::TrimDoubleQuotesIfAny(
     }
 
     return value;
-#endif
 }
 
 } // namespace Http

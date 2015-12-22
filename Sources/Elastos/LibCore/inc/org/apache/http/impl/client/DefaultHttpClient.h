@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_IMPL_CLIENT_DefaultHttpClient_H__
 #define __ORG_APACHE_HTTP_IMPL_CLIENT_DefaultHttpClient_H__
 
-#include "org/apache/http/impl/client/AbstractHttpClient.h"
+#include <org/apache/http/impl/client/AbstractHttpClient.h>
 
 namespace Org {
 namespace Apache {
@@ -33,7 +33,8 @@ namespace Client {
  *
  * @since 4.0
  */
-class DefaultHttpClient : public AbstractHttpClient
+class ECO_PUBLIC DefaultHttpClient
+    : public AbstractHttpClient
 {
 public:
     /**
@@ -50,6 +51,8 @@ public:
         /* [in] */ IHttpParams* params);
 
     DefaultHttpClient();
+
+    virtual ~DefaultHttpClient();
 
     CARAPI CreateHttpParams(
         /* [out] */ IHttpParams** params);

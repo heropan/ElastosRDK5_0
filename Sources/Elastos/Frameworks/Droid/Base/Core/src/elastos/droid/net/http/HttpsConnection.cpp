@@ -1,34 +1,106 @@
 
+#include <Elastos.CoreLibrary.Extensions.h>
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.Net.h>
 #include "elastos/droid/net/http/HttpsConnection.h"
+#include "elastos/droid/net/Proxy.h"
 #include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/net/http/CCertificateChainValidator.h"
+#include "elastos/droid/net/http/CCertificateChainValidatorHelper.h"
+#include "elastos/droid/net/http/CElastosHttpClient.h"
+#include "elastos/droid/net/http/CElastosHttpClientConnection.h"
+#include "elastos/droid/net/http/CHeaders.h"
+#include "elastos/droid/net/http/Connection.h"
+#include "elastos/droid/net/http/HttpConnection.h"
+#include "elastos/droid/net/http/HttpLog.h"
+#include "elastos/droid/net/http/Request.h"
+#include "elastos/droid/os/Handler.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Internal::Utility::IProtocol;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Utility::ILog;
 
+using Elastos::Core::CObject;
+using Elastos::Core::StringUtils;
+using Elastos::IO::CFile;
+using Elastos::IO::IFile;
+using Elastos::Net::CSocket;
 using Elastos::Net::ISocket;
+using Elastos::Security::Cert::ICertificate;
 using Elastos::Security::Cert::IX509Certificate;
 using Elastos::Utility::ILocale;
+using Elastos::Utility::Logging::Logger;
+using Elastosx::Net::ISocketFactory;
+using Elastosx::Net::Ssl::EIID_ITrustManager;
+using Elastosx::Net::Ssl::EIID_IX509TrustManager;
 using Elastosx::Net::Ssl::ISSLSocket;
+using Elastosx::Net::Ssl::ISSLSocketFactory;
 using Elastosx::Net::Ssl::ITrustManager;
 using Elastosx::Net::Ssl::IX509TrustManager;
 
-// using Org::Apache::Harmony::Xnet::Provider::Jsse::IFileClientSessionCache;
-// using Org::Apache::Harmony::Xnet::Provider::Jsse::IOpenSSLContextImpl;
-// using Org::Apache::Harmony::Xnet::Provider::Jsse::ISSLClientSessionCache;
 using Org::Apache::Http::IHeader;
+using Org::Apache::Http::IHttpConnection;
 using Org::Apache::Http::IHttpHost;
+using Org::Apache::Http::IHttpRequest;
 using Org::Apache::Http::IHttpStatus;
 using Org::Apache::Http::IProtocolVersion;
 using Org::Apache::Http::IStatusLine;
-// using Org::Apache::Http::Message::IBasicHttpRequest;
+using Org::Apache::Http::Message::CBasicHttpRequest;
+using Org::Apache::Http::Message::IBasicHttpRequest;
+using Org::Apache::Http::Params::CBasicHttpParams;
+using Org::Apache::Http::Params::CHttpConnectionParams;
 using Org::Apache::Http::Params::IBasicHttpParams;
+using Org::Apache::Http::Params::ICoreConnectionPNames;
 using Org::Apache::Http::Params::IHttpConnectionParams;
 using Org::Apache::Http::Params::IHttpParams;
+// using Org::Conscrypt::CFileClientSessionCacheHelper;
+// using Org::Conscrypt::COpenSSLContextImpl;
+using Org::Conscrypt::IClientSessionContext;
+using Org::Conscrypt::IFileClientSessionCache;
+using Org::Conscrypt::IFileClientSessionCacheHelper;
+using Org::Conscrypt::IOpenSSLContextImpl;
+using Org::Conscrypt::ISSLClientSessionCache;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 namespace Http {
+
+//===========================================================
+// HttpsConnection::InnerSub_X509TrustManager
+//===========================================================
+CAR_INTERFACE_IMPL(HttpsConnection::InnerSub_X509TrustManager, Object, IX509TrustManager)
+
+ECode HttpsConnection::InnerSub_X509TrustManager::GetAcceptedIssuers(
+    /* [out, callee] */ ArrayOf<IX509Certificate*>** result)
+{
+    *result = NULL;
+    return NOERROR;
+}
+
+ECode HttpsConnection::InnerSub_X509TrustManager::CheckClientTrusted(
+    /* [in] */ ArrayOf<IX509Certificate*>* chain,
+    /* [in] */ const String& authType)
+{
+    return NOERROR;
+}
+
+ECode HttpsConnection::InnerSub_X509TrustManager::CheckServerTrusted(
+    /* [in] */ ArrayOf<ICertificate*>* chain,
+    /* [in] */ const String& authType)
+{
+    return NOERROR;
+}
+
+//===========================================================
+// HttpsConnection
+//===========================================================
+AutoPtr<IObject> HttpsConnection::sLock = InitLock();
+AutoPtr<ISSLSocketFactory> HttpsConnection::sSslSocketFactory;
 
 CAR_INTERFACE_IMPL(HttpsConnection, Connection, IHttpsConnection)
 
@@ -41,65 +113,60 @@ HttpsConnection::HttpsConnection()
     : mSuspended(FALSE)
     , mAborted(FALSE)
 {
-#if 0 // TODO: Translated before. Need check.
-    CObject::New((IInterface**)&mSuspendLock);
-#endif
+    Elastos::Core::CObject::New((IObject**)&mSuspendLock);
 }
 
 ECode HttpsConnection::InitializeEngine(
     /* [in] */ IFile* sessionDir)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     AutoPtr<ISSLClientSessionCache> cache;
     if (sessionDir != NULL) {
         String sSessionDir;
-        // sessionDir->ToString(&sSessionDir);
+        IObject::Probe(sessionDir)->ToString(&sSessionDir);
         Logger::D(String("HttpsConnection"), String("Caching SSL sessions in ")
                 + sSessionDir + String("."));
-                AutoPtr<IFileClientSessionCacheHelper> helper;
+        AutoPtr<IFileClientSessionCacheHelper> helper;
 
-        // TODO:
+        // TODO: Waiting for FileClientSessionCacheHelper
+        assert(0);
         // CFileClientSessionCacheHelper::AcquireSingleton((IFileClientSessionCacheHelper**)&helper);
         // FAIL_RETURN(helper->UsingDirectory(sessionDir, &cache));
     }
 
     AutoPtr<IOpenSSLContextImpl> sslContext;
+    // TODO: Waiting for COpenSSLContextImpl
+    assert(0);
     // COpenSSLContextImpl::New((IOpenSSLContextImpl**)&sslContext);
 
     // here, trust managers is a single trust-all manager
     AutoPtr<ArrayOf<ITrustManager*> > trustManagers = ArrayOf<ITrustManager*>::Alloc(1);
     AutoPtr<ITrustManager> manager;
-    LocalCX509TrustManager* cmanager = new LocalCX509TrustManager();
-    manager = (ITrustManager*)cmanager->Probe(Elastos::Net::Ssl::EIID_ITrustManager);
+    InnerSub_X509TrustManager* cmanager = new InnerSub_X509TrustManager();
+    manager = ITrustManager::Probe(cmanager);
     (*trustManagers)[0] = manager;
 
+    // TODO: Waiting for OpenSSLContextImpl
+    assert(0);
     // FAIL_RETURN(sslContext->EngineInit(NULL, trustManagers, NULL));
 
     AutoPtr<IClientSessionContext> context;
+    // TODO: Waiting for OpenSSLContextImpl, ClientSessionContext
+    assert(0);
     // FAIL_RETURN(sslContext->EngineGetClientSessionContext((IClientSessionContext**)&context));
     // FAIL_RETURN(context->SetPersistentCache(cache));
 
-    // {
-    //     Object mLock;
-    //     synchronized(mLock) {
-        //     FAIL_RETURN(sslContext->EngineGetSocketFactory((ISSLSocketFactory**)&mSslSocketFactory));
-            }
-    // }
+    synchronized(sLock) {
+        // TODO: Waiting for OpenSSLContextImpl
+        assert(0);
+        // FAIL_RETURN(sslContext->EngineGetSocketFactory((ISSLSocketFactory**)&sSslSocketFactory));
+    }
 
     return NOERROR;
-#endif
 }
 
-ECode HttpsConnection::GetSocketFactory(
-    /* [out] */ ISSLSocketFactory** result)
+AutoPtr<ISSLSocketFactory> HttpsConnection::GetSocketFactory()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(result)
-
-    FUNC_RETURN(mSslSocketFactory);
-#endif
+    return sSslSocketFactory;
 }
 
 ECode HttpsConnection::constructor(
@@ -108,30 +175,24 @@ ECode HttpsConnection::constructor(
     /* [in] */ IHttpHost* proxy,
     /* [in] */ IRequestFeeder* requestFeeder)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     Connection::constructor(context, host, requestFeeder);
     mProxyHost = proxy;
     return NOERROR;
-#endif
 }
 
 ECode HttpsConnection::SetCertificate(
     /* [in] */ ISslCertificate* certificate)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     mCertificate = certificate;
     return NOERROR;
-#endif
 }
 
 ECode HttpsConnection::OpenConnection(
     /* [in] */ IRequest* req,
     /* [out] */ IElastosHttpClientConnection** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
+    VALIDATE_NOT_NULL(result)
+
     AutoPtr<ISSLSocket> sslSock;
 
     if (mProxyHost != NULL) {
@@ -147,25 +208,21 @@ ECode HttpsConnection::OpenConnection(
 
         String name;
         Int32 port;
-        // TODO:
-        // mProxyHost->GetHostName(&name);
-        // mProxyHost->GetPort(&port);
-        // CSocket::New(name, port, (ISocket**)&proxySock);
+        mProxyHost->GetHostName(&name);
+        mProxyHost->GetPort(&port);
+        CSocket::New(name, port, (ISocket**)&proxySock);
 
         ECode ec;
-        // ec = proxySock->SetSoTimeout(60 * 1000);
-        FAIL_RETURN(CheckErrorAndClose(ec, proxyConnection));
+        ec = proxySock->SetSoTimeout(60 * 1000);
 
         CElastosHttpClientConnection::New((IElastosHttpClientConnection**)&proxyConnection);
         AutoPtr<IHttpParams> params;
-        // CBasicHttpParams::New((IHttpParams**)&params);
-        AutoPtr<IHttpConnectionParamsHelper> helper;
-        // CHttpConnectionParamsHelper::AcquireSingleton((IHttpConnectionParamsHelper**)&helper);
-        // ec = helper->SetSocketBufferSize(params, 8192);
-        FAIL_RETURN(CheckErrorAndClose(ec, proxyConnection));
+        CBasicHttpParams::New((IHttpParams**)&params);
+        AutoPtr<IHttpConnectionParams> helper;
+        CHttpConnectionParams::AcquireSingleton((IHttpConnectionParams**)&helper);
+        ec = helper->SetSocketBufferSize(params, 8192);
 
-        // ec = proxyConnection->Bind(proxySock, params);
-        FAIL_RETURN(CheckErrorAndClose(ec, proxyConnection));
+        ec = proxyConnection->Bind(proxySock, params);
 
         AutoPtr<IStatusLine> statusLine;
         Int32 statusCode = 0;
@@ -174,45 +231,51 @@ ECode HttpsConnection::OpenConnection(
 
         AutoPtr<IBasicHttpRequest> proxyReq;
         String shost;
-        // mHost->ToHostString(&shost);
-        // CBasicHttpRequest::New(String("CONNECT"), shost, &proxyReq);
+        mHost->ToHostString(&shost);
+        // TODO: Waiting for CBasicHttpRequest
+        assert(0);
+        // CBasicHttpRequest::New(String("CONNECT"), shost, (IBasicHttpRequest**)&proxyReq);
 
         // add all 'proxy' headers from the original request, we also need
         // to add 'host' header unless we want proxy to answer us with a
         // 400 Bad Request
         AutoPtr<ArrayOf<IHeader*> > reqHeaders;
-        // req->mHttpRequest->GetAllHeaders((ArrayOf<IHeader*>**)&reqHeaders);
+        // TODO: Waiting for IBasicHttpRequest
+        assert(0);
+        // ((Request*)req)->mHttpRequest->GetAllHeaders((ArrayOf<IHeader*>**)&reqHeaders);
         if (reqHeaders != NULL) {
             for (Int32 i = 0; i < reqHeaders->GetLength(); ++i) {
                 AutoPtr<IHeader> h;
                 h = (*reqHeaders)[i];
                 String headerName;
-                // h->GetName(&headerName);
-                // h->ToLowerCase(ILocale::ROOT);
+                h->GetName(&headerName);
+                headerName = headerName.ToLowerCase(/* ILocale::ROOT */);
 
                 if (headerName.StartWith("proxy")
                         || headerName.Equals("keep-alive")
                         || headerName.Equals("host")) {
+                    // TODO: Waiting for BasicHttpRequest
+                    assert(0);
                     // proxyReq->AddHeader(h);
                 }
             }
         }
 
-        AutoPtr<IHttpRequest> httpReq = (IHttpRequest*)proxyReq->Probe(EIID_IHttpRequest);
+        AutoPtr<IHttpRequest> httpReq = IHttpRequest::Probe(proxyReq);
         ec = proxyConnection->SendRequestHeader(httpReq);
-        // if (ec == (ECode)E_PARSE_EXCEPTION
-        //         || ec == E_HTTP_EXCEPTION
-        //         || ec == E_IO_EXCEPTION ) {
-        //     Logger::E(TAG, String("failed to send a CONNECT request"));
-        //     return ec;
-        // }
+        if (ec == (ECode)E_PARSE_EXCEPTION
+                || ec == E_HTTP_EXCEPTION
+                || ec == E_IO_EXCEPTION ) {
+            Logger::E("HttpsConnection", String("failed to send a CONNECT request"));
+            return ec;
+        }
         ec = proxyConnection->Flush();
-        // if (ec == (ECode)E_PARSE_EXCEPTION
-        //         || ec == E_HTTP_EXCEPTION
-        //         || ec == E_IO_EXCEPTION ) {
-        //     Logger::E(TAG, String("failed to send a CONNECT request"));
-        //     return ec;
-        // }
+        if (ec == (ECode)E_PARSE_EXCEPTION
+                || ec == E_HTTP_EXCEPTION
+                || ec == E_IO_EXCEPTION ) {
+            Logger::E("HttpsConnection", String("failed to send a CONNECT request"));
+            return ec;
+        }
 
         // it is possible to receive informational status
         // codes prior to receiving actual headers;
@@ -221,25 +284,27 @@ ECode HttpsConnection::OpenConnection(
         do {
             statusLine = NULL;
             ec = proxyConnection->ParseResponseHeader(headers, (IStatusLine**)&statusLine);
-            // if (ec == (ECode)E_PARSE_EXCEPTION
-            //         || ec == E_HTTP_EXCEPTION
-            //         || ec == E_IO_EXCEPTION ) {
-            //     Logger::E(TAG, String("failed to send a CONNECT request"));
-            //     return ec;
-            // }
-            // statusLine->GetStatusCode(&statusCode);
+            if (ec == (ECode)E_PARSE_EXCEPTION
+                    || ec == E_HTTP_EXCEPTION
+                    || ec == E_IO_EXCEPTION ) {
+                Logger::E("HttpsConnection", String("failed to send a CONNECT request"));
+                return ec;
+            }
+            statusLine->GetStatusCode(&statusCode);
         } while (statusCode < IHttpStatus::SC_OK);
 
 
         if (statusCode == IHttpStatus::SC_OK) {
             String hName;
             Int32 hPort;
-            // mHost->GetHostName(&hName);
-            // mHost->GetPort(&hName);
-            // ec = GetSocketFactory()->CreateSocket(proxySock, hName, hName, TRUE, &sslSock);
+            mHost->GetHostName(&hName);
+            mHost->GetPort(&hPort);
+            AutoPtr<ISocket> socket;
+            ec = GetSocketFactory()->CreateSocket(proxySock, hName, hPort, TRUE, (ISocket**)&socket);
+            sslSock = ISSLSocket::Probe(socket);
             if (FAILED(ec)) {
                 if (sslSock != NULL) {
-                    // sslSock->Close();
+                    ISocket::Probe(sslSock)->Close();
                 }
 
                 Logger::E("HttpsConnection", String("failed to create an SSL socket"));
@@ -247,41 +312,43 @@ ECode HttpsConnection::OpenConnection(
         } else {
             // if the code is not OK, inform the event handler
             AutoPtr<IProtocolVersion> version;
-            // statusLine->GetProtocolVersion((IProtocolVersion**)&version);
+            statusLine->GetProtocolVersion((IProtocolVersion**)&version);
 
             Int32 major;
             Int32 minor;
-            // version->HetMajor(&major);
-            // version->HetMinor(&minor);
+            version->GetMajor(&major);
+            version->GetMinor(&minor);
             String phrase;
-            // statusLine->GetReasonPhrase(&phrase);
-            req->mEventHandler->Status(major, minor, statusCode, phrase);
-            req->mEventHandler->Headers(headers);
-            req->mEventHandler->EndData();
+            statusLine->GetReasonPhrase(&phrase);
+            ((Request*)req)->mEventHandler->Status(major, minor, statusCode, phrase);
+            ((Request*)req)->mEventHandler->Headers(headers);
+            ((Request*)req)->mEventHandler->EndData();
 
-            // proxyConnection->Close();
+            proxyConnection->Close();
 
             // here, we return null to indicate that the original
             // request needs to be dropped
-            *connection = NULL;
+            *result = NULL;
             return NOERROR;
         }
     } else {
         // if we do not have a proxy, we simply connect to the host
         String hName;
         Int32 hPort;
-        // mHost->GetHostName(&hName);
-        // mHost->GetPort(&hName);
+        mHost->GetHostName(&hName);
+        mHost->GetPort(&hPort);
         ECode ec;
-        // ec = GetSocketFactory()->CreateSocket(proxySock, hName, hName, TRUE, &sslSock);
+        AutoPtr<ISocket> socket;
+        ec = ISocketFactory::Probe(GetSocketFactory())->CreateSocket(hName, hPort, (ISocket**)&socket);
+        sslSock = ISSLSocket::Probe(socket);
         if (FAILED(ec)) {
             if (sslSock != NULL) {
-                // sslSock->Close();
+                ISocket::Probe(sslSock)->Close();
             }
 
             Logger::E("HttpsConnection", String("failed to create an SSL socket"));
         }
-        // ec = sslSock->SetSoTimeout(SOCKET_TIMEOUT);
+        ec = ISocket::Probe(sslSock)->SetSoTimeout(SOCKET_TIMEOUT);
     }
 
     // do handshake and validate server certificates
@@ -290,7 +357,7 @@ ECode HttpsConnection::OpenConnection(
     AutoPtr<ICertificateChainValidator> validator;
     helper->GetInstance((ICertificateChainValidator**)&validator);
     String hName;
-    // mHost->GetHostName(&hName);
+    mHost->GetHostName(&hName);
     AutoPtr<ISslError> error;
     AutoPtr<IHttpsConnection> iThis = (IHttpsConnection*)this->Probe(EIID_IHttpsConnection);
     validator->DoHandshakeAndValidateServerCertificates(iThis, sslSock, hName, (ISslError**)&error);
@@ -309,11 +376,12 @@ ECode HttpsConnection::OpenConnection(
         }
         // don't hold the lock while calling out to the event handler
         Boolean canHandle;
-        AutoPtr<IEventHandler> handler = req->GetEventHandler();
+        AutoPtr<IEventHandler> handler;
+        ((Request*)req)->GetEventHandler((IEventHandler**)&handler);
         handler->HandleSslErrorRequest(error, &canHandle);
         if(!canHandle) {
             String serr;
-            error->ToString(&serr);
+            IObject::Probe(error)->ToString(&serr);
             Logger::E("HttpsConnection", String("failed to handle ") + serr);
             return E_IO_EXCEPTION;
         }
@@ -343,10 +411,9 @@ ECode HttpsConnection::OpenConnection(
                 if (mAborted) {
                     // The user decided not to use this unverified connection
                     // so close it immediately.
-                    // sslSock->Close();
+                    ISocket::Probe(sslSock)->Close();
                     Logger::E("HttpsConnection", String("connection closed by the user"));
-                    // return E_SSL_CONNECTION_CLOSE_BY_USER_EXCEPTION;
-                    return E_RUNTIME_EXCEPTION;
+                    return E_SSL_CONNECTION_CLOSED_BY_USER_EXCEPTION;
                 }
             }
         }
@@ -356,22 +423,20 @@ ECode HttpsConnection::OpenConnection(
     AutoPtr<IElastosHttpClientConnection> conn;
     CElastosHttpClientConnection::New((IElastosHttpClientConnection**)&conn);
     AutoPtr<IBasicHttpParams> params;
-    // CBasicHttpParams::New((IBasicHttpParams**)&params);
-    // params->SetIntParameter(IHttpConnectionParams::SOCKET_BUFFER_SIZE, 8192);
-    AutoPtr<ISocket> sslBaseSock = (ISocket*)sslSock->Probe(Elastos::Net::EIID_ISocket);
-    AutoPtr<IHttpParams> baseParams = (IHttpParams*)sslSock->Probe(Org::Apache::Http::Params::EIID_IHttpParams);
+    CBasicHttpParams::New((IBasicHttpParams**)&params);
+    AutoPtr<IHttpParams> httpParams;
+    IHttpParams::Probe(params)->SetInt32Parameter(/* HttpConnectionParams.SOCKET_BUFFER_SIZE */ICoreConnectionPNames::SOCKET_BUFFER_SIZE, 8192, (IHttpParams**)&httpParams);
+    AutoPtr<ISocket> sslBaseSock = ISocket::Probe(sslSock);
+    AutoPtr<IHttpParams> baseParams = Org::Apache::Http::Params::IHttpParams::Probe(sslSock);
     conn->Bind(sslBaseSock, baseParams);
 
-    *connection = conn;
-    REFCOUNT_ADD(*connection);
+    *result = conn;
+    REFCOUNT_ADD(*result);
     return NOERROR;
-#endif
 }
 
 ECode HttpsConnection::CloseConnection()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     // if the connection has been suspended due to an SSL error
     if (mSuspended) {
         // wake up the network thread
@@ -380,27 +445,23 @@ ECode HttpsConnection::CloseConnection()
 
     ECode ec;
     Boolean isOpen;
-    // TODO:
-    if (mHttpClientConnection != NULL &&/* (mHttpClientConnection->IsOpen(&isOpen), */isOpen) {
-        // ec = mHttpClientConnection->Close();
+    if (mHttpClientConnection != NULL && (mHttpClientConnection->IsOpen(&isOpen), isOpen)) {
+        ec = mHttpClientConnection->Close();
     }
     if (FAILED(ec)) {
         if (HttpLog::LOGV) {
             String smHost;
-            // mHost->ToString(&smHost);
+            IObject::Probe(mHost)->ToString(&smHost);
             HttpLog::V(String("HttpsConnection.closeConnection(): failed closing connection ") + smHost);
         }
     }
 
     return ec;
-#endif
 }
 
 ECode HttpsConnection::RestartConnection(
     /* [in] */ Boolean proceed)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     if (HttpLog::LOGV) {
         HttpLog::V(String("HttpsConnection.restartConnection(): proceed: ") + StringUtils::BooleanToString(proceed));
     }
@@ -410,24 +471,26 @@ ECode HttpsConnection::RestartConnection(
         if (mSuspended) {
             mSuspended = FALSE;
             mAborted = !proceed;
-            // TODO:
-            // mSuspendLock->Notify();
+            ISynchronize::Probe(mSuspendLock)->Notify();
         }
     }
     return NOERROR;
-#endif
 }
 
 ECode HttpsConnection::GetScheme(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(scheme);
+    VALIDATE_NOT_NULL(result);
 
-    *scheme = String("https");
+    *result = String("https");
     return NOERROR;
-#endif
+}
+
+AutoPtr<IObject> HttpsConnection::InitLock()
+{
+    AutoPtr<IObject> rev;
+    Elastos::Core::CObject::New((IObject**)&rev);
+    return rev;
 }
 
 } // namespace Http

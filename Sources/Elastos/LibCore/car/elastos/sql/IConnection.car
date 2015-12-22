@@ -19,10 +19,10 @@ module
     namespace Sql {
 
     /**
-      * @Involve
-      * interface Elastos.Sql.IWrapper;
-      * interface ICloseable;
-      */
+     * @Involve
+     * interface Elastos.Sql.IWrapper;
+     * interface ICloseable;
+     */
     interface IConnection {
         /**
          * A constant indicating that transactions are not supported.

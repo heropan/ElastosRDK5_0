@@ -1,10 +1,26 @@
 
-#include <Elastos.CoreLibrary.Utility.h>
+#include <Elastos.CoreLibrary.IO.h>
 #include <Elastos.CoreLibrary.Net.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/net/dhcp/DhcpAckPacket.h"
+#include "elastos/droid/net/DhcpStateMachine.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/net/dhcp/DhcpAckPacket.h"
+#include "elastos/droid/net/dhcp/DhcpPacket.h"
+#include "elastos/droid/os/Build.h"
+#include <elastos/core/StringUtils.h>
 
+using Elastos::Droid::Os::Build;
+
+using Elastos::Core::IInteger32;
+using Elastos::Core::StringUtils;
+using Elastos::IO::CByteBufferHelper;
+using Elastos::IO::IBuffer;
+using Elastos::IO::IByteBufferHelper;
 using Elastos::Net::CInet4AddressHelper;
+using Elastos::Net::IInet4Address;
 using Elastos::Net::IInet4AddressHelper;
+using Elastos::Net::IInetAddress;
 
 namespace Elastos {
 namespace Droid {
@@ -14,7 +30,7 @@ namespace Dhcp {
 DhcpAckPacket::DhcpAckPacket()
 {}
 
-DhcpAckPacket::constructor(
+ECode DhcpAckPacket::constructor(
     /* [in] */ Int32 transId,
     /* [in] */ Boolean broadcast,
     /* [in] */ IInetAddress* serverAddress,
@@ -26,28 +42,38 @@ DhcpAckPacket::constructor(
     CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
     inet4AddressHelper->GetANY((IInetAddress**)&any);
     DhcpPacket::constructor(transId, any, clientIp, serverAddress, any, clientMac, broadcast);
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mBroadcast = broadcast;
-        mSrcIp = serverAddress;
-#endif
+    mBroadcast = broadcast;
+    mSrcIp = serverAddress;
+    return NOERROR;
 }
 
 ECode DhcpAckPacket::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        String s = super.toString();
-        String dnsServers = " DNS servers: ";
-        for (InetAddress dnsServer: mDnsServers) {
-            dnsServers += dnsServer.toString() + " ";
-        }
-        return s + " ACK: your new IP " + mYourIp +
-                ", netmask " + mSubnetMask +
-                ", gateway " + mGateway + dnsServers +
-                ", lease time " + mLeaseTime;
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    String s;
+    DhcpPacket::ToString(&s);
+    String dnsServers(" DNS servers: ");
+    FOR_EACH(iter, mDnsServers) {
+        AutoPtr<IInetAddress> dnsServer = IInetAddress::Probe(Ptr(iter)->Func(iter->GetNext));
+        String sDnsServer;
+        IObject::Probe(dnsServer)->ToString(&sDnsServer);
+        dnsServers += sDnsServer + " ";
+    }
+    String sYourIp;
+    IObject::Probe(mYourIp)->ToString(&sYourIp);
+    String sSubnetMask;
+    IObject::Probe(mSubnetMask)->ToString(&sSubnetMask);
+    String sGateway;
+    IObject::Probe(mGateway)->ToString(&sGateway);
+    String sLeaseTime;
+    IObject::Probe(mLeaseTime)->ToString(&sLeaseTime);
+    *result = s + " ACK: your new IP " + sYourIp +
+            ", netmask " + sSubnetMask +
+            ", gateway " + sGateway + dnsServers +
+            ", lease time " + sLeaseTime;
+    return NOERROR;
 }
 
 ECode DhcpAckPacket::BuildPacket(
@@ -56,64 +82,63 @@ ECode DhcpAckPacket::BuildPacket(
     /* [in] */ Int16 srcUdp,
     /* [out] */ IByteBuffer** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        ByteBuffer result = ByteBuffer.allocate(MAX_LENGTH);
-        InetAddress destIp = mBroadcast ? Inet4Address.ALL : mYourIp;
-        InetAddress srcIp = mBroadcast ? Inet4Address.ANY : mSrcIp;
-        fillInPacket(encap, destIp, srcIp, destUdp, srcUdp, result,
-            DHCP_BOOTREPLY, mBroadcast);
-        result.flip();
-        return result;
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    AutoPtr<IByteBuffer> rev;
+    AutoPtr<IByteBufferHelper> byteBufferHelper;
+    CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&byteBufferHelper);
+    byteBufferHelper->Allocate(MAX_LENGTH, (IByteBuffer**)&rev);
+    AutoPtr<IInet4AddressHelper> inet4AddressHelper;
+    CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
+    AutoPtr<IInetAddress> destIp = mBroadcast ? Ptr(inet4AddressHelper)->Func(inet4AddressHelper->GetALL) : mYourIp.Get();
+    AutoPtr<IInetAddress> srcIp = mBroadcast ? Ptr(inet4AddressHelper)->Func(inet4AddressHelper->GetANY) : mSrcIp.Get();
+    FillInPacket(encap, destIp, srcIp, destUdp, srcUdp, rev,
+        DHCP_BOOTREPLY, mBroadcast);
+    IBuffer::Probe(rev)->Flip();
+    FUNC_RETURN(rev)
 }
 
 ECode DhcpAckPacket::FinishPacket(
     /* [in] */ IByteBuffer* buffer)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        addTlv(buffer, DHCP_MESSAGE_TYPE, DHCP_MESSAGE_TYPE_ACK);
-        addTlv(buffer, DHCP_SERVER_IDENTIFIER, mServerIdentifier);
-        addTlv(buffer, DHCP_LEASE_TIME, mLeaseTime);
-        // the client should renew at 1/2 the lease-expiry interval
-        if (mLeaseTime != null) {
-            addTlv(buffer, DHCP_RENEWAL_TIME,
-                Integer.valueOf(mLeaseTime.intValue() / 2));
-        }
-        addTlv(buffer, DHCP_SUBNET_MASK, mSubnetMask);
-        addTlv(buffer, DHCP_ROUTER, mGateway);
-        addTlv(buffer, DHCP_DOMAIN_NAME, mDomainName);
-        addTlv(buffer, DHCP_BROADCAST_ADDRESS, mBroadcastAddress);
-        addTlv(buffer, DHCP_DNS_SERVER, mDnsServers);
-        addTlvEnd(buffer);
-#endif
+    AddTlv(buffer, DHCP_MESSAGE_TYPE, DHCP_MESSAGE_TYPE_ACK);
+    AddTlv(buffer, DHCP_SERVER_IDENTIFIER, mServerIdentifier);
+    AddTlv(buffer, DHCP_LEASE_TIME, mLeaseTime);
+    // the client should renew at 1/2 the lease-expiry interval
+    if (mLeaseTime != NULL) {
+        AddTlv(buffer, DHCP_RENEWAL_TIME,
+            StringUtils::ToString(Ptr(mLeaseTime)->Func(mLeaseTime->GetValue) / 2));
+    }
+    AddTlv(buffer, DHCP_SUBNET_MASK, mSubnetMask);
+    AddTlv(buffer, DHCP_ROUTER, mGateway);
+    AddTlv(buffer, DHCP_DOMAIN_NAME, mDomainName);
+    AddTlv(buffer, DHCP_BROADCAST_ADDRESS, mBroadcastAddress);
+    AddTlv(buffer, DHCP_DNS_SERVER, mDnsServers);
+    AddTlvEnd(buffer);
+    return NOERROR;
 }
 
 ECode DhcpAckPacket::GetInt(
     /* [in] */ IInteger32* v,
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (v == null) {
-            return 0;
-        } else {
-            return v.intValue();
-        }
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    if (v == NULL) {
+        *result = 0;
+        return NOERROR;
+    } else {
+        return v->GetValue(result);
+    }
+    return NOERROR;
 }
 
 ECode DhcpAckPacket::DoNextOp(
-    /* [in] */ IDhcpStateMachine* machine)
+    /* [in] */ DhcpStateMachine* machine)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        machine.onAckReceived(mYourIp, mSubnetMask, mGateway, mDnsServers,
-            mServerIdentifier, getInt(mLeaseTime));
-#endif
+    return machine->OnAckReceived(mYourIp, mSubnetMask, mGateway, mDnsServers,
+            mServerIdentifier, Ptr(mLeaseTime)->Func(mLeaseTime->GetValue));
 }
-
 
 } // namespace Dhcp
 } // namespace Net

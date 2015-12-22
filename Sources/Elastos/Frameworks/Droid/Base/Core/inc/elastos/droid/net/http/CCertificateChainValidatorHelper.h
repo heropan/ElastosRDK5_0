@@ -41,7 +41,7 @@ public:
      * @return An SSL error object if there is an error and null otherwise
      */
     CARAPI VerifyServerCertificates(
-        /* [in] */ ArrayOf<IArrayOf>* certChain,
+        /* [in] */ ArrayOf<IArrayOf*>* certChain,
         /* [in] */ const String& domain,
         /* [in] */ const String& authType,
         /* [out] */ ISslError** result);

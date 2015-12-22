@@ -69,8 +69,8 @@ ECode CPackageInstallerSessionParams::ReadFromParcel(
     // CBitmap::New((IBitmap**)&mAppIcon);
     IParcelable::Probe(mAppIcon)->ReadFromParcel(source);
     source->ReadString(&mAppLabel);
-    Uri::ReadFromParcel(source, (IUri**)&mOriginatingUri);
-    Uri::ReadFromParcel(source, (IUri**)&mReferrerUri);
+    IParcelable::Probe(mOriginatingUri)->ReadFromParcel(source);
+    IParcelable::Probe(mReferrerUri)->ReadFromParcel(source);
     source->ReadString(&mAbiOverride);
     return NOERROR;
 }

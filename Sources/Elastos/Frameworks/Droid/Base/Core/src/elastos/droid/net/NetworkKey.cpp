@@ -51,14 +51,13 @@ ECode NetworkKey::Equals(
 {
     VALIDATE_NOT_NULL(result)
 
-    if (TO_IINTERFACE(this) != IInterface::Probe(o)) FUNC_RETURN(FALSE);
-    if (TO_IINTERFACE(this) == o) FUNC_RETURN(TRUE);
+    if (TO_IINTERFACE(this) == IInterface::Probe(o)) FUNC_RETURN(TRUE)
     ClassID this_cid, o_cid;
     IObject::Probe(TO_IINTERFACE(this))->GetClassID(&this_cid);
     IObject::Probe(o)->GetClassID(&o_cid);
-    if (o == NULL || this_cid != o_cid) FUNC_RETURN(FALSE);
+    if (o == NULL || this_cid != o_cid) FUNC_RETURN(FALSE)
     AutoPtr<NetworkKey> that = (NetworkKey*) INetworkKey::Probe(o);
-    FUNC_RETURN(mType == that->mType && Objects::Equals(mWifiKey, that->mWifiKey));
+    FUNC_RETURN(mType == that->mType && Objects::Equals(mWifiKey, that->mWifiKey))
 }
 
 ECode NetworkKey::GetHashCode(
@@ -129,7 +128,7 @@ ECode NetworkKey::GetType(
 ECode NetworkKey::GetWifiKey(
     /* [out] */ IWifiKey** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
 
     *result = mWifiKey;
     REFCOUNT_ADD(*result)

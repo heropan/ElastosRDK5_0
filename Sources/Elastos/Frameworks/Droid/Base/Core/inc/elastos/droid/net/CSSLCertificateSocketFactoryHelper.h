@@ -128,14 +128,6 @@ public:
     CARAPI VerifyHostname(
         /* [in] */ ISocket* socket,
         /* [in] */ const String& hostname);
-
-    /**
-     * Returns an array containing the concatenation of length-prefixed byte
-     * strings.
-     */
-    CARAPI ToLengthPrefixedList(
-        /* [in] */ ArrayOf<Byte>* items,
-        /* [out, callee] */ ArrayOf<Byte>** result);
 };
 
 } //namespace Net

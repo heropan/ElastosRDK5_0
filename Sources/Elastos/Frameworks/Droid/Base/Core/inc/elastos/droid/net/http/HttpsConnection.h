@@ -3,11 +3,15 @@
 #define __ELASTOS_DROID_NET_HTTP_HTTPSCONNECTION_H__
 
 #include <Elastos.CoreLibrary.Apache.h>
+#include <Elastos.CoreLibrary.Extensions.h>
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/net/http/Connection.h"
 
 using Elastos::IO::IFile;
+using Elastos::Security::Cert::IX509Certificate;
+using Elastos::Security::Cert::ICertificate;
 using Elastosx::Net::Ssl::ISSLSocketFactory;
+using Elastosx::Net::Ssl::IX509TrustManager;
 
 namespace Elastos {
 namespace Droid {
@@ -24,6 +28,25 @@ class HttpsConnection
     : public Connection
     , public IHttpsConnection
 {
+private:
+    class InnerSub_X509TrustManager
+        : public Object
+        , public IX509TrustManager
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        CARAPI GetAcceptedIssuers(
+            /* [out, callee] */ ArrayOf<IX509Certificate*>** issuers);
+
+        CARAPI CheckClientTrusted(
+            /* [in] */ ArrayOf<IX509Certificate*>* chain,
+            /* [in] */ const String& authType);
+
+        CARAPI CheckServerTrusted(
+            /* [in] */ ArrayOf<ICertificate*>* chain,
+            /* [in] */ const String& authType);
+    };
 public:
     CAR_INTERFACE_DECL()
 
@@ -83,8 +106,9 @@ public:
         /* [out] */ String* result);
 
 private:
-    static CARAPI GetSocketFactory(
-        /* [out] */ ISSLSocketFactory** result);
+    static CARAPI_(AutoPtr<ISSLSocketFactory>) GetSocketFactory();
+
+    static CARAPI_(AutoPtr<IObject>) InitLock();
 
 private:
     /**
@@ -95,7 +119,7 @@ private:
     /**
      * Object to wait on when suspending the SSL connection
      */
-    AutoPtr<IInterface> mSuspendLock;
+    AutoPtr<IObject> mSuspendLock;
 
     /**
      * True if the connection is suspended pending the result of asking the
@@ -113,6 +137,8 @@ private:
     AutoPtr<IHttpHost> mProxyHost;
 
     static ECode mEnableStaticBlock;
+
+    static AutoPtr<IObject> sLock;
 };
 
 } // namespace Http

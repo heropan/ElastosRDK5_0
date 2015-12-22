@@ -115,6 +115,9 @@ DefaultHttpClient::DefaultHttpClient()
     : AbstractHttpClient(NULL, NULL)
 {}
 
+DefaultHttpClient::~DefaultHttpClient()
+{}
+
 ECode DefaultHttpClient::CreateHttpParams(
     /* [out] */ IHttpParams** _params)
 {

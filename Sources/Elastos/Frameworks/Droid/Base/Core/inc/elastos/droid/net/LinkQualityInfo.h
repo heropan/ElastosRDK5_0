@@ -161,22 +161,6 @@ public:
 
 public:
     /**
-     * Represents a value that you can use to test if an integer field is set to a good value
-     */
-    const Int32 UNKNOWN_INT;
-
-    /**
-     * Represents a value that you can use to test if a long field is set to a good value
-     */
-    const Int64 UNKNOWN_LONG;
-
-    const Int32 NORMALIZED_MIN_SIGNAL_STRENGTH;
-
-    const Int32 NORMALIZED_MAX_SIGNAL_STRENGTH;
-
-    const Int32 NORMALIZED_SIGNAL_STRENGTH_RANGE;
-
-    /**
      * Implement the Parcelable interface.
      */
     static const Int32 sOBJECT_TYPE_LINK_QUALITY_INFO;

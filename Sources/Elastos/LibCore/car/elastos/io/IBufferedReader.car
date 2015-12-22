@@ -18,10 +18,11 @@ module
     */
 
     /**
-    * @Involve
-    * interface IReadable;
-    * interface IReader;
-    */
+     * @Involve
+     * interface IReadable;
+     * interface IReader;
+     * interface ICloseable;
+     */
     interface IBufferedReader {
         /**
          * Returns the next line of text available from this reader. A line is

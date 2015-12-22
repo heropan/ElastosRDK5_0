@@ -52,7 +52,7 @@ public:
         /* [in] */ Int32 encap,
         /* [in] */ Int16 destUdp,
         /* [in] */ Int16 srcUdp,
-        /* [out] */ IByteBuffer** result);
+        /* [out] */ IByteBuffer** result) = 0;
 
     /**
      * Allows the concrete class to fill in packet-type-specific details,
@@ -250,21 +250,19 @@ private:
      * Converts a signed short value to an unsigned int value.  Needed
      * because Java does not have unsigned types.
      */
-    CARAPI IntAbs(
-        /* [in] */ Int16 v,
-        /* [out] */ Int32* result);
+    CARAPI_(Int32) IntAbs(
+        /* [in] */ Int16 v);
 
     /**
      * Performs an IP checksum (used in IP header and across UDP
      * payload) on the specified portion of a ByteBuffer.  The seed
      * allows the checksum to commence with a specified value.
      */
-    CARAPI Checksum(
+    CARAPI_(Int32) Checksum(
         /* [in] */ IByteBuffer* buf,
         /* [in] */ Int32 seed,
         /* [in] */ Int32 start,
-        /* [in] */ Int32 end,
-        /* [out] */ Int32* result);
+        /* [in] */ Int32 end);
 
     /**
      * Reads a four-octet value from a ByteBuffer and construct

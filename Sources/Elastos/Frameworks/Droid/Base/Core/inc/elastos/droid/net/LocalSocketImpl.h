@@ -34,6 +34,9 @@ public:
         : public InputStream
     {
     public:
+        SocketInputStream(
+            /* [in] */ LocalSocketImpl* host);
+
         /** {@inheritDoc} */
         // @Override
         CARAPI Available(
@@ -62,6 +65,8 @@ public:
             /* [in] */ Int32 len,
             /* [out] */ Int32* result);
 
+    private:
+        LocalSocketImpl* mHost;
     };
 
     /**
@@ -72,6 +77,9 @@ public:
         : public OutputStream
     {
     public:
+        SocketOutputStream(
+            /* [in] */ LocalSocketImpl* host);
+
         /** {@inheritDoc} */
         // @Override
         CARAPI Close();
@@ -102,9 +110,13 @@ public:
         // @Override
         CARAPI Flush();
 
+    private:
+        LocalSocketImpl* mHost;
     };
 
     CAR_INTERFACE_DECL()
+
+    virtual ~LocalSocketImpl();
 
     /*package*/
     CARAPI constructor();
@@ -263,36 +275,33 @@ public:
     CARAPI GetSockAddress(
         /* [out] */ ILocalSocketAddress** result);
 
-    // @Override
-    CARAPI Finalize();
-
 private:
-    CARAPI Pending_native(
+    CARAPI NativePending(
         /* [in] */ IFileDescriptor* fd,
         /* [out] */ Int32* result);
 
-    CARAPI Available_native(
+    CARAPI NativeAvailable(
         /* [in] */ IFileDescriptor* fd,
         /* [out] */ Int32* result);
 
-    CARAPI Read_native(
+    CARAPI NativeRead(
         /* [in] */ IFileDescriptor* fd,
         /* [out] */ Int32* result);
 
-    CARAPI Readba_native(
+    CARAPI NativeReadba(
         /* [in] */ ArrayOf<Byte>* b,
         /* [in] */ Int32 off,
         /* [in] */ Int32 len,
         /* [in] */ IFileDescriptor* fd,
         /* [out] */ Int32* result);
 
-    CARAPI Writeba_native(
+    CARAPI NativeWriteba(
         /* [in] */ ArrayOf<Byte>* b,
         /* [in] */ Int32 off,
         /* [in] */ Int32 len,
         /* [in] */ IFileDescriptor* fd);
 
-    CARAPI Write_native(
+    CARAPI NativeWrite(
         /* [in] */ Int32 b,
         /* [in] */ IFileDescriptor* fd);
 
@@ -306,7 +315,7 @@ private:
         /* [in] */ const String& name,
         /* [in] */ Int32 ns);
 
-    CARAPI Listen_native(
+    CARAPI NativeListen(
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ Int32 backlog);
 
@@ -315,16 +324,16 @@ private:
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ Boolean shutdownInput);
 
-    CARAPI GetPeerCredentials_native(
+    CARAPI NativeGetPeerCredentials(
         /* [in] */ IFileDescriptor* fd,
         /* [out] */ ICredentials** result);
 
-    CARAPI GetOption_native(
+    CARAPI NativeGetOption(
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ Int32 optID,
         /* [out] */ Int32* result);
 
-    CARAPI SetOption_native(
+    CARAPI NativeSetOption(
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ Int32 optID,
         /* [in] */ Int32 b,
@@ -355,15 +364,17 @@ private:
 
     AutoPtr<IInterface> mWriteMonitor;
 
-    AutoPtr<ISocketInputStream> mFis;
+    AutoPtr<SocketInputStream> mFis;
 
-    AutoPtr<ISocketOutputStream> mFos;
+    AutoPtr<SocketOutputStream> mFos;
 
     /** null if closed or not yet created */
     AutoPtr<IFileDescriptor> mFd;
 
     /** whether fd is created internally */
     Boolean mFdCreatedInternally;
+
+    friend class SocketInputStream;
 };
 
 } // namespace Net

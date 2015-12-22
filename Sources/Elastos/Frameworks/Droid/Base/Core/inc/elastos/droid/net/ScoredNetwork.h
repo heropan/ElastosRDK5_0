@@ -75,9 +75,6 @@ public:
         /* [out] */ IRssiCurve** result);
 
 private:
-    ScoredNetwork(
-        /* [in] */ IParcel* in);
-
     /** A {@link NetworkKey} uniquely identifying this network. */
     AutoPtr<INetworkKey> mNetworkKey;
 

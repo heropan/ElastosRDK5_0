@@ -111,7 +111,7 @@ ECode NetworkScorerAppManager::GetAllValidScorers(
                 configurationActivityClassName, (INetworkScorerAppData**)&newNetworkScorerAppData);
         scorers->Add(newNetworkScorerAppData);
     }
-    FUNC_RETURN(ICollection::Probe(scorers));
+    FUNC_RETURN(ICollection::Probe(scorers))
 }
 
 ECode NetworkScorerAppManager::GetActiveScorer(
@@ -214,17 +214,17 @@ ECode NetworkScorerAppManager::GetScorer(
     VALIDATE_NOT_NULL(result)
 
     if (TextUtils::IsEmpty(packageName)) {
-        FUNC_RETURN(NULL);
+        FUNC_RETURN(NULL)
     }
     AutoPtr<ICollection> applications;
     GetAllValidScorers(context, (ICollection**)&applications);
     FOR_EACH(iter, applications) {
         AutoPtr<INetworkScorerAppData> app = INetworkScorerAppData::Probe(Ptr(iter)->Func(iter->GetNext));
         if (packageName.Equals(Ptr(app)->Func(app->GetPackageName))) {
-            FUNC_RETURN(app);
+            FUNC_RETURN(app)
         }
     }
-    FUNC_RETURN(NULL);
+    FUNC_RETURN(NULL)
 }
 
 //=====================================================================
@@ -255,7 +255,7 @@ ECode NetworkScorerAppData::GetPackageName(
 ECode NetworkScorerAppData::GetScorerName(
     /* [out] */ ICharSequence** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
 
     *result = mScorerName;
     REFCOUNT_ADD(*result)

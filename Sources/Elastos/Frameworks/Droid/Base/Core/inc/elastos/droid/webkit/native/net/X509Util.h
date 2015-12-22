@@ -54,6 +54,7 @@ using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Net::Http::IX509TrustManagerExtensions;
 using Elastos::Droid::Webkit::Net::ElastosCertVerifyResult;
 using Elastos::IO::IFile;
+using Elastos::Security::Cert::ICertificate;
 using Elastos::Security::Cert::ICertificateFactory;
 using Elastos::Security::Cert::IX509Certificate;
 using Elastos::Security::IKeyStore;
@@ -86,7 +87,7 @@ private:
     {
     public:
         virtual CARAPI_(AutoPtr<IList>) CheckServerTrusted(
-            /* [in] */ ArrayOf<IX509Certificate*>* chain,
+            /* [in] */ ArrayOf<ICertificate*>* chain, // ArrayOf<IX509Certificate*>* chain,
             /* [in] */ const String& authType,
             /* [in] */ const String& host) = 0;
     };
@@ -111,7 +112,7 @@ public:
 
         // @Override
         CARAPI_(AutoPtr<IList>) CheckServerTrusted(
-            /* [in] */ ArrayOf<IX509Certificate*>* chain,
+            /* [in] */ ArrayOf<ICertificate*>* chain, // ArrayOf<IX509Certificate*>* chain,
             /* [in] */ const String& authType,
             /* [in] */ const String& host);
 
@@ -129,7 +130,7 @@ public:
 
         // @Override
         CARAPI_(AutoPtr<IList>) CheckServerTrusted(
-            /* [in] */ ArrayOf<IX509Certificate*>* chain,
+            /* [in] */ ArrayOf<ICertificate*>* chain, // ArrayOf<IX509Certificate*>* chain,
             /* [in] */ const String& authType,
             /* [in] */ const String& host);
 

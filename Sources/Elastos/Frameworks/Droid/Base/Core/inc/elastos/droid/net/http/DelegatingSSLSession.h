@@ -134,6 +134,7 @@ public:
     CARAPI GetPeerCertificates(
         /* [out, callee] */ ArrayOf<ICertificate*>** result);
 
+private:
     /* const */ AutoPtr<ICertificate> mCertificate;
 };
 

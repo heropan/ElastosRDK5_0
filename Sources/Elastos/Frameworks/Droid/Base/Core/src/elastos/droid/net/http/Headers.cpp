@@ -1,13 +1,35 @@
 
+#include <Elastos.CoreLibrary.Apache.h>
 #include "elastos/droid/net/http/Headers.h"
+#include "elastos/droid/net/Proxy.h"
+#include "elastos/droid/net/http/CharArrayBuffers.h"
+#include "elastos/droid/net/http/Connection.h"
+#include "elastos/droid/net/http/HttpLog.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::Utility::ILog;
 
+using Elastos::Core::CObject;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::StringUtils;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::IArrayList;
+
 using Org::Apache::Http::Entity::IContentLengthStrategy;
+using Org::Apache::Http::IHeader;
 using Org::Apache::Http::IHeaderElement;
+// using Org::Apache::Http::Message::CBasicHeaderValueParserHelper;
+using Org::Apache::Http::Message::CParserCursor;
 using Org::Apache::Http::Message::IBasicHeaderValueParser;
+// using Org::Apache::Http::Message::IBasicHeaderValueParserHelper;
+using Org::Apache::Http::Message::IHeaderValueParser;
 using Org::Apache::Http::Message::IParserCursor;
 using Org::Apache::Http::Protocol::IHTTP;
+using Org::Apache::Http::Utility::ICharArrayBuffer;
 
 namespace Elastos {
 namespace Droid {
@@ -59,7 +81,7 @@ const Int32 Headers::IDX_REFRESH                            = 17;
 const Int32 Headers::IDX_X_PERMITTED_CROSS_DOMAIN_POLICIES  = 18;
 const Int32 Headers::HEADER_COUNT                           = 19;
 
-const AutoPtr<ArrayOf<String> > Headers::HEADER_NAMES = InitHeaderNames();
+const AutoPtr<ArrayOf<String> > Headers::sHeaderNames = InitHeaderNames();
 
 Headers::Headers()
     : mTransferEncoding(0)
@@ -67,18 +89,15 @@ Headers::Headers()
     , mConnectionType(0)
 {
     mHeaders = ArrayOf<String>::Alloc(HEADER_COUNT);
-#if 0 // TODO: Translated before. Need check.
-    ArrayList<String> cookies = new ArrayList<String>(2);
-    ArrayList<String> mExtraHeaderNames = new ArrayList<String>(4);
-    ArrayList<String> mExtraHeaderValues = new ArrayList<String>(4);
-#endif
+    CArrayList::New(2, (IArrayList**)&mCookies);
+    CArrayList::New(4, (IArrayList**)&mExtraHeaderNames);
+    CArrayList::New(4, (IArrayList**)&mExtraHeaderValues);
 }
 
 AutoPtr<ArrayOf<String> > Headers::InitHeaderNames()
 {
     AutoPtr<ArrayOf<String> > sarray = ArrayOf<String>::Alloc(19);
 
-#if 0 // TODO: Translated before. Need check.
     (*sarray)[0]  = IHeaders::TRANSFER_ENCODING;
     (*sarray)[1]  = IHeaders::CONTENT_LEN;
     (*sarray)[2]  = IHeaders::CONTENT_TYPE;
@@ -98,587 +117,496 @@ AutoPtr<ArrayOf<String> > Headers::InitHeaderNames()
     (*sarray)[16] = IHeaders::PRAGMA;
     (*sarray)[17] = IHeaders::REFRESH;
     (*sarray)[18] = IHeaders::X_PERMITTED_CROSS_DOMAIN_POLICIES;
-#endif
 
     return sarray;
 }
 
 ECode Headers::constructor()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     mTransferEncoding = NO_TRANSFER_ENCODING;
     mContentLength = NO_CONTENT_LENGTH;
     mConnectionType = NO_CONN_TYPE;
     return NOERROR;
-#endif
 }
 
 ECode Headers::ParseHeader(
     /* [in] */ ICharArrayBuffer* buffer)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     Int32 pos;
-    // TODO:
-    // AutoPtr<ICharArrayBuffersHelper> helper;
-    // CCharArrayBuffersHelper::AcquireSingleton((ICharArrayBuffersHelper**)&helper);
-    // helper->SetLowercaseIndexOf(buffer, ':', &pos);
+    CharArrayBuffers::SetLowercaseIndexOf(buffer, ':', &pos);
     if (pos == -1) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     String name;
-    // buffer->SubstringTrimmed(0, pos, &name);
+    buffer->SubstringTrimmed(0, pos, &name);
     if (name.GetLength() == 0) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     pos++;
 
     String val;
-    // buffer->SubstringTrimmed(pos, buffer.GetLength(), &val);
-    // if (HttpLog.LOGV) {
-    //     HttpLog.v("hdr " + buffer.length() + " " + buffer);
-    // }
+    buffer->SubstringTrimmed(pos, Ptr(buffer)->Func(buffer->GetLength), &val);
+    if (HttpLog::LOGV) {
+        HttpLog::V("hdr %d %s", Ptr(buffer)->Func(buffer->GetLength), StringUtils::ToString(buffer).string());
+    }
 
     switch (name.GetHashCode()) {
-    case HASH_TRANSFER_ENCODING: {
-        if (name.Equals(TRANSFER_ENCODING)) {
-            (*mHeaders)[IDX_TRANSFER_ENCODING] = val;
-            // AutoPtr<ArrayOf<IHeaderElement> > encodings;
-            // AutoPtr<IBasicHeaderValueParserHelper> bhpHelper;
-            // CBasicHeaderValueParserHelper::AcquireSingleton((IBasicHeaderValueParserHelper**)&bhpHelper);
-            // AutoPtr<IBasicHeaderValueParser> bhpDefault;
-            // bhpHelper->GetDEFAULT((IBasicHeaderValueParser**)&bhpDefault);
-            // AutoPtr<IParserCursor> cursor;
-            // CParserCursor::New(pos, buffer->GetLength(), (IParserCursor**)&cursor);
-            // bhpDefault->ParseElements(buffer, cursor);
-            // // The chunked encoding must be the last one applied RFC2616,
-            // // 14.41
-            // Int32 len = encodings->GetLength();
-            // if (HTTP::IDENTITY_CODING.EqualsIgnoreCase(val)) {
-            //     mTransferEncoding = IContentLengthStrategy::IDENTITY;
-            // } else if ((len > 0)
-            //         && (HTTP::CHUNK_CODING.EqualsIgnoreCase(encodings[len - 1]->GetName()))) {
-            //     mTransferEncoding = IContentLengthStrategy::CHUNKED;
-            // } else {
-            //     mTransferEncoding = IContentLengthStrategy::IDENTITY;
-            // }
-        }
-        break;
-    }
-    case HASH_CONTENT_LEN: {
-        if (name.Equals(CONTENT_LEN)) {
-            (*mHeaders)[IDX_CONTENT_LEN] = val;
-            mContentLength = StringUtils::ParseInt64(val);
-        }
-        break;
-    }
-    case HASH_CONTENT_TYPE: {
-        if (name.Equals(CONTENT_TYPE)) {
-            (*mHeaders)[IDX_CONTENT_TYPE] = val;
-        }
-        break;
-    }
-    case HASH_CONTENT_ENCODING: {
-        if (name.Equals(CONTENT_ENCODING)) {
-            (*mHeaders)[IDX_CONTENT_ENCODING] = val;
-        }
-        break;
-    }
-    case HASH_CONN_DIRECTIVE: {
-        if (name.Equals(CONN_DIRECTIVE)) {
-            (*mHeaders)[IDX_CONN_DIRECTIVE] = val;
-            SetConnectionType(buffer, pos);
-        }
-        break;
-    }
-    case HASH_LOCATION: {
-        if (name.Equals(LOCATION)) {
-            (*mHeaders)[IDX_LOCATION] = val;
-        }
-        break;
-    }
-    case HASH_PROXY_CONNECTION: {
-        if (name.Equals(PROXY_CONNECTION)) {
-            (*mHeaders)[IDX_PROXY_CONNECTION] = val;
-            SetConnectionType(buffer, pos);
-        }
-        break;
-    }
-    case HASH_WWW_AUTHENTICATE: {
-        if (name.Equals(WWW_AUTHENTICATE)) {
-            (*mHeaders)[IDX_WWW_AUTHENTICATE] = val;
-        }
-        break;
-    }
-    case HASH_PROXY_AUTHENTICATE: {
-        if (name.Equals(PROXY_AUTHENTICATE)) {
-            (*mHeaders)[IDX_PROXY_AUTHENTICATE] = val;
-        }
-        break;
-    }
-    case HASH_CONTENT_DISPOSITION: {
-        if (name.Equals(CONTENT_DISPOSITION)) {
-            (*mHeaders)[IDX_CONTENT_DISPOSITION] = val;
-        }
-        break;
-    }
-    case HASH_ACCEPT_RANGES: {
-        if (name.Equals(ACCEPT_RANGES)) {
-            (*mHeaders)[IDX_ACCEPT_RANGES] = val;
-        }
-        break;
-    }
-    case HASH_EXPIRES: {
-        if (name.Equals(EXPIRES)) {
-            (*mHeaders)[IDX_EXPIRES] = val;
-        }
-        break;
-    }
-    case HASH_CACHE_CONTROL: {
-        if (name.Equals(CACHE_CONTROL)) {
-            // In case where we receive more than one header, create a ',' separated list.
-            // This should be ok, according to RFC 2616 chapter 4.2
-            if (!((*mHeaders)[IDX_CACHE_CONTROL]).IsNullOrEmpty() &&
-                ((*mHeaders)[IDX_CACHE_CONTROL]).GetLength() > 0) {
-                String tmp = (*mHeaders)[IDX_CACHE_CONTROL];
-                (*mHeaders)[IDX_CACHE_CONTROL] += (String(",") + val);
-            } else {
-                (*mHeaders)[IDX_CACHE_CONTROL] = val;
+        case HASH_TRANSFER_ENCODING: {
+            if (name.Equals(TRANSFER_ENCODING)) {
+                (*mHeaders)[IDX_TRANSFER_ENCODING] = val;
+                AutoPtr<ArrayOf<IHeaderElement*> > encodings;
+                // TODO: Waiting for IBasicHeaderValueParserHelper, CBasicHeaderValueParserHelper
+                // AutoPtr<IBasicHeaderValueParserHelper> bhpHelper;
+                // CBasicHeaderValueParserHelper::AcquireSingleton((IBasicHeaderValueParserHelper**)&bhpHelper);
+                AutoPtr<IBasicHeaderValueParser> bhpDefault;
+                // bhpHelper->GetDEFAULT((IBasicHeaderValueParser**)&bhpDefault);
+                AutoPtr<IParserCursor> cursor;
+                CParserCursor::New(pos, Ptr(buffer)->Func(buffer->GetLength), (IParserCursor**)&cursor);
+                IHeaderValueParser::Probe(bhpDefault)->ParseElements(buffer, cursor, (ArrayOf<IHeaderElement*>**)&encodings);
+                // The chunked encoding must be the last one applied RFC2616,
+                // 14.41
+                Int32 len = encodings->GetLength();
+                if (IHTTP::IDENTITY_CODING.EqualsIgnoreCase(val)) {
+                    mTransferEncoding = IContentLengthStrategy::IDENTITY;
+                } else if ((len > 0)
+                        && (IHTTP::CHUNK_CODING.EqualsIgnoreCase(Ptr((*encodings)[len - 1])->Func((*encodings)[len - 1]->GetName)))) {
+                    mTransferEncoding = IContentLengthStrategy::CHUNKED;
+                } else {
+                    mTransferEncoding = IContentLengthStrategy::IDENTITY;
+                }
             }
+            break;
         }
-        break;
-    }
-    case HASH_LAST_MODIFIED: {
-        if (name.Equals(LAST_MODIFIED)) {
-            (*mHeaders)[IDX_LAST_MODIFIED] = val;
+        case HASH_CONTENT_LEN: {
+            if (name.Equals(CONTENT_LEN)) {
+                (*mHeaders)[IDX_CONTENT_LEN] = val;
+                mContentLength = StringUtils::ParseInt64(val);
+            }
+            break;
         }
-        break;
-    }
-    case HASH_ETAG: {
-        if (name.Equals(ETAG)) {
-            (*mHeaders)[IDX_ETAG] = val;
+        case HASH_CONTENT_TYPE: {
+            if (name.Equals(CONTENT_TYPE)) {
+                (*mHeaders)[IDX_CONTENT_TYPE] = val;
+            }
+            break;
         }
-        break;
-    }
-    case HASH_SET_COOKIE: {
-        if (name.Equals(SET_COOKIE)) {
-            (*mHeaders)[IDX_SET_COOKIE] = val;
-            mCookies.PushBack(val);
+        case HASH_CONTENT_ENCODING: {
+            if (name.Equals(CONTENT_ENCODING)) {
+                (*mHeaders)[IDX_CONTENT_ENCODING] = val;
+            }
+            break;
         }
-        break;
-    }
-    case HASH_PRAGMA: {
-        if (name.Equals(PRAGMA)) {
-            (*mHeaders)[IDX_PRAGMA] = val;
+        case HASH_CONN_DIRECTIVE: {
+            if (name.Equals(CONN_DIRECTIVE)) {
+                (*mHeaders)[IDX_CONN_DIRECTIVE] = val;
+                SetConnectionType(buffer, pos);
+            }
+            break;
         }
-        break;
-    }
-    case HASH_REFRESH: {
-        if (name.Equals(REFRESH)) {
-            (*mHeaders)[IDX_REFRESH] = val;
+        case HASH_LOCATION: {
+            if (name.Equals(LOCATION)) {
+                (*mHeaders)[IDX_LOCATION] = val;
+            }
+            break;
         }
-        break;
-    }
-    case HASH_X_PERMITTED_CROSS_DOMAIN_POLICIES: {
-        if (name.Equals(X_PERMITTED_CROSS_DOMAIN_POLICIES)) {
-            (*mHeaders)[IDX_X_PERMITTED_CROSS_DOMAIN_POLICIES] = val;
+        case HASH_PROXY_CONNECTION: {
+            if (name.Equals(PROXY_CONNECTION)) {
+                (*mHeaders)[IDX_PROXY_CONNECTION] = val;
+                SetConnectionType(buffer, pos);
+            }
+            break;
         }
-        break;
-    }
-    default: {
-        mExtraHeaderNames.PushBack(name);
-        mExtraHeaderValues.PushBack(val);
-    }
+        case HASH_WWW_AUTHENTICATE: {
+            if (name.Equals(WWW_AUTHENTICATE)) {
+                (*mHeaders)[IDX_WWW_AUTHENTICATE] = val;
+            }
+            break;
+        }
+        case HASH_PROXY_AUTHENTICATE: {
+            if (name.Equals(PROXY_AUTHENTICATE)) {
+                (*mHeaders)[IDX_PROXY_AUTHENTICATE] = val;
+            }
+            break;
+        }
+        case HASH_CONTENT_DISPOSITION: {
+            if (name.Equals(CONTENT_DISPOSITION)) {
+                (*mHeaders)[IDX_CONTENT_DISPOSITION] = val;
+            }
+            break;
+        }
+        case HASH_ACCEPT_RANGES: {
+            if (name.Equals(ACCEPT_RANGES)) {
+                (*mHeaders)[IDX_ACCEPT_RANGES] = val;
+            }
+            break;
+        }
+        case HASH_EXPIRES: {
+            if (name.Equals(EXPIRES)) {
+                (*mHeaders)[IDX_EXPIRES] = val;
+            }
+            break;
+        }
+        case HASH_CACHE_CONTROL: {
+            if (name.Equals(CACHE_CONTROL)) {
+                // In case where we receive more than one header, create a ',' separated list.
+                // This should be ok, according to RFC 2616 chapter 4.2
+                if (!((*mHeaders)[IDX_CACHE_CONTROL]).IsNullOrEmpty() &&
+                    ((*mHeaders)[IDX_CACHE_CONTROL]).GetLength() > 0) {
+                    String tmp = (*mHeaders)[IDX_CACHE_CONTROL];
+                    (*mHeaders)[IDX_CACHE_CONTROL] += (String(",") + val);
+                } else {
+                    (*mHeaders)[IDX_CACHE_CONTROL] = val;
+                }
+            }
+            break;
+        }
+        case HASH_LAST_MODIFIED: {
+            if (name.Equals(LAST_MODIFIED)) {
+                (*mHeaders)[IDX_LAST_MODIFIED] = val;
+            }
+            break;
+        }
+        case HASH_ETAG: {
+            if (name.Equals(ETAG)) {
+                (*mHeaders)[IDX_ETAG] = val;
+            }
+            break;
+        }
+        case HASH_SET_COOKIE: {
+            if (name.Equals(SET_COOKIE)) {
+                (*mHeaders)[IDX_SET_COOKIE] = val;
+                AutoPtr<ICharSequence> csq;
+                CString::New(val, (ICharSequence**)&csq);
+                mCookies->Add(csq);
+            }
+            break;
+        }
+        case HASH_PRAGMA: {
+            if (name.Equals(PRAGMA)) {
+                (*mHeaders)[IDX_PRAGMA] = val;
+            }
+            break;
+        }
+        case HASH_REFRESH: {
+            if (name.Equals(REFRESH)) {
+                (*mHeaders)[IDX_REFRESH] = val;
+            }
+            break;
+        }
+        case HASH_X_PERMITTED_CROSS_DOMAIN_POLICIES: {
+            if (name.Equals(X_PERMITTED_CROSS_DOMAIN_POLICIES)) {
+                (*mHeaders)[IDX_X_PERMITTED_CROSS_DOMAIN_POLICIES] = val;
+            }
+            break;
+        }
+        default: {
+            AutoPtr<ICharSequence> csq;
+            CString::New(name, (ICharSequence**)&csq);
+            mExtraHeaderNames->Add(csq);
+            csq = NULL;
+            CString::New(val, (ICharSequence**)&csq);
+            mExtraHeaderValues->Add(csq);
+        }
     }
 
     return NOERROR;
-#endif
 }
 
 ECode Headers::GetTransferEncoding(
     /* [out] */ Int64* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(encoding);
-    *encoding = mTransferEncoding;
+    VALIDATE_NOT_NULL(result);
+
+    *result = mTransferEncoding;
     return NOERROR;
-#endif
 }
 
 ECode Headers::GetContentLength(
     /* [out] */ Int64* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(length);
-    *length = mContentLength;
+    VALIDATE_NOT_NULL(result);
+
+    *result = mContentLength;
     return NOERROR;
-#endif
 }
 
 ECode Headers::GetConnectionType(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(type);
-    *type = mConnectionType;
+    VALIDATE_NOT_NULL(result);
+
+    *result = mConnectionType;
     return NOERROR;
-#endif
 }
 
 ECode Headers::GetContentType(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(type);
-    *type = (*mHeaders)[IDX_CONTENT_TYPE];
+    VALIDATE_NOT_NULL(result);
+
+    *result = (*mHeaders)[IDX_CONTENT_TYPE];
     return NOERROR;
-#endif
 }
 
 ECode Headers::GetContentEncoding(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(encoding);
-    *encoding = (*mHeaders)[IDX_CONTENT_ENCODING];
+    VALIDATE_NOT_NULL(result);
+
+    *result = (*mHeaders)[IDX_CONTENT_ENCODING];
     return NOERROR;
-#endif
 }
 
 ECode Headers::GetLocation(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(location);
-    *location = (*mHeaders)[IDX_LOCATION];
+    VALIDATE_NOT_NULL(result);
+
+    *result = (*mHeaders)[IDX_LOCATION];
     return NOERROR;
-#endif
 }
 
 ECode Headers::GetWwwAuthenticate(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(authenticate);
-    *authenticate = (*mHeaders)[IDX_WWW_AUTHENTICATE];
+    VALIDATE_NOT_NULL(result);
+
+    *result = (*mHeaders)[IDX_WWW_AUTHENTICATE];
     return NOERROR;
-#endif
 }
 
 ECode Headers::GetProxyAuthenticate(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(authenticate);
-    *authenticate = (*mHeaders)[IDX_PROXY_AUTHENTICATE];
+    VALIDATE_NOT_NULL(result);
+
+    *result = (*mHeaders)[IDX_PROXY_AUTHENTICATE];
     return NOERROR;
-#endif
 }
 
 ECode Headers::GetContentDisposition(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(disposition);
-    *disposition = (*mHeaders)[IDX_CONTENT_DISPOSITION];
+    VALIDATE_NOT_NULL(result);
+
+    *result = (*mHeaders)[IDX_CONTENT_DISPOSITION];
     return NOERROR;
-#endif
 }
 
 ECode Headers::GetAcceptRanges(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(ranges);
-    *ranges = (*mHeaders)[IDX_ACCEPT_RANGES];
+    VALIDATE_NOT_NULL(result);
+
+    *result = (*mHeaders)[IDX_ACCEPT_RANGES];
     return NOERROR;
-#endif
 }
 
 ECode Headers::GetExpires(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(expires);
-    *expires = (*mHeaders)[IDX_EXPIRES];
+    VALIDATE_NOT_NULL(result);
+
+    *result = (*mHeaders)[IDX_EXPIRES];
     return NOERROR;
-#endif
 }
 
 ECode Headers::GetCacheControl(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(control);
-    *control = (*mHeaders)[IDX_CACHE_CONTROL];
+    VALIDATE_NOT_NULL(result);
+
+    *result = (*mHeaders)[IDX_CACHE_CONTROL];
     return NOERROR;
-#endif
 }
 
 ECode Headers::GetLastModified(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(modified);
-    *modified = (*mHeaders)[IDX_LAST_MODIFIED];
+    VALIDATE_NOT_NULL(result);
+
+    *result = (*mHeaders)[IDX_LAST_MODIFIED];
     return NOERROR;
-#endif
 }
 
 ECode Headers::GetEtag(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(etag);
-    *etag = (*mHeaders)[IDX_ETAG];
+    VALIDATE_NOT_NULL(result);
+
+    *result = (*mHeaders)[IDX_ETAG];
     return NOERROR;
-#endif
 }
 
 ECode Headers::GetSetCookie(
     /* [out] */ IArrayList** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(cookie);
+    VALIDATE_NOT_NULL(result);
 
-    CObjectContainer::New(cookie);
-    List<String>::Iterator it;
-    AutoPtr<ICharSequence> cs;
-    for (it = mCookies.Begin(); it != mCookies.End(); ++it) {
-        String s = *it;
-        cs = NULL;
-        CString::New(s, (ICharSequence**)&cs);
-        (*cookie)->Add(cs);
-    }
-    return NOERROR;
-#endif
+    FUNC_RETURN(mCookies)
 }
 
 ECode Headers::GetPragma(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(sPragma);
-    *sPragma = (*mHeaders)[IDX_PRAGMA];
+    VALIDATE_NOT_NULL(result);
+
+    *result = (*mHeaders)[IDX_PRAGMA];
     return NOERROR;
-#endif
 }
 
 ECode Headers::GetRefresh(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(refresh);
-    *refresh = (*mHeaders)[IDX_REFRESH];
+    VALIDATE_NOT_NULL(result);
+
+    *result = (*mHeaders)[IDX_REFRESH];
     return NOERROR;
-#endif
 }
 
 ECode Headers::GetXPermittedCrossDomainPolicies(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(policies);
-    *policies = (*mHeaders)[IDX_X_PERMITTED_CROSS_DOMAIN_POLICIES];
+    VALIDATE_NOT_NULL(result);
+
+    *result = (*mHeaders)[IDX_X_PERMITTED_CROSS_DOMAIN_POLICIES];
     return NOERROR;
-#endif
 }
 
 ECode Headers::SetContentLength(
     /* [in] */ Int64 value)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    mContentLength = length;
+    mContentLength = value;
     return NOERROR;
-#endif
 }
 
 ECode Headers::SetContentType(
     /* [in] */ const String& value)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    (*mHeaders)[IDX_CONTENT_TYPE] = type;
+    (*mHeaders)[IDX_CONTENT_TYPE] = value;
     return NOERROR;
-#endif
 }
 
 ECode Headers::SetContentEncoding(
     /* [in] */ const String& value)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    (*mHeaders)[IDX_CONTENT_ENCODING] = encoding;
+    (*mHeaders)[IDX_CONTENT_ENCODING] = value;
     return NOERROR;
-#endif
 }
 
 ECode Headers::SetLocation(
     /* [in] */ const String& value)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    (*mHeaders)[IDX_LOCATION] = location;
+    (*mHeaders)[IDX_LOCATION] = value;
     return NOERROR;
-#endif
 }
 
 ECode Headers::SetWwwAuthenticate(
     /* [in] */ const String& value)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    (*mHeaders)[IDX_WWW_AUTHENTICATE] = authenticate;
+    (*mHeaders)[IDX_WWW_AUTHENTICATE] = value;
     return NOERROR;
-#endif
 }
 
 ECode Headers::SetProxyAuthenticate(
     /* [in] */ const String& value)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    (*mHeaders)[IDX_PROXY_AUTHENTICATE] = authenticate;
+    (*mHeaders)[IDX_PROXY_AUTHENTICATE] = value;
     return NOERROR;
-#endif
 }
 
 ECode Headers::SetContentDisposition(
     /* [in] */ const String& value)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    (*mHeaders)[IDX_CONTENT_DISPOSITION] = disposition;
+    (*mHeaders)[IDX_CONTENT_DISPOSITION] = value;
     return NOERROR;
-#endif
 }
 
 ECode Headers::SetAcceptRanges(
     /* [in] */ const String& value)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    (*mHeaders)[IDX_ACCEPT_RANGES] = ranges;
+    (*mHeaders)[IDX_ACCEPT_RANGES] = value;
     return NOERROR;
-#endif
 }
 
 ECode Headers::SetExpires(
     /* [in] */ const String& value)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    (*mHeaders)[IDX_EXPIRES] = expires;
+    (*mHeaders)[IDX_EXPIRES] = value;
     return NOERROR;
-#endif
 }
 
 ECode Headers::SetCacheControl(
     /* [in] */ const String& value)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    (*mHeaders)[IDX_CACHE_CONTROL] = control;
+    (*mHeaders)[IDX_CACHE_CONTROL] = value;
     return NOERROR;
-#endif
 }
 
 ECode Headers::SetLastModified(
     /* [in] */ const String& value)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    (*mHeaders)[IDX_LAST_MODIFIED] = modified;
+    (*mHeaders)[IDX_LAST_MODIFIED] = value;
     return NOERROR;
-#endif
 }
 
 ECode Headers::SetEtag(
     /* [in] */ const String& value)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    (*mHeaders)[IDX_ETAG] = etage;
+    (*mHeaders)[IDX_ETAG] = value;
     return NOERROR;
-#endif
 }
 
 ECode Headers::SetXPermittedCrossDomainPolicies(
     /* [in] */ const String& value)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    (*mHeaders)[IDX_X_PERMITTED_CROSS_DOMAIN_POLICIES] = policies;
+    (*mHeaders)[IDX_X_PERMITTED_CROSS_DOMAIN_POLICIES] = value;
     return NOERROR;
-#endif
 }
 
 ECode Headers::GetHeaders(
     /* [in] */ IHeaderCallback* hcb)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     VALIDATE_NOT_NULL(hcb);
-    *hcb = NULL;
-    assert(0 && "TODO create hcb");
 
     for (Int32 i = 0; i < HEADER_COUNT; i++) {
-        String h = mHeaders[i];
+        String h = (*mHeaders)[i];
         if (!h.IsNullOrEmpty()) {
-            (*hcb)->Header(mHeaderNames[i], h);
+            hcb->Header((*sHeaderNames)[i], h);
         }
     }
-
-    List<String>::Iterator it1 = mExtraHeaderNames.Begin();
-    List<String>::Iterator it2 = mExtraHeaderValues.Begin();
-    for (; it1 != mExtraHeaderNames.End() && it2 != mExtraHeaderValues.End(); ++it1, ++it2) {}
+    Int32 extralen;
+    mExtraHeaderNames->GetSize(&extralen);
+    for (Int32 i = 0; i < extralen; ++i) {
+        AutoPtr<IInterface> name, value;
         if (FALSE) {
-            // HttpLog.v("Headers.getHeaders() extra: " + i + " " +
-            //           mExtraHeaderNames.get(i) + " " + mExtraHeaderValues.get(i));
+            mExtraHeaderNames->Get(i, (IInterface**)&name);
+            mExtraHeaderValues->Get(i, (IInterface**)&value);
+            HttpLog::V("Headers.getHeaders() extra: %d %s %s", i,
+                      StringUtils::ToString(name).string(), StringUtils::ToString(value).string());
         }
-        (*hcb)->Header(*it1, *it2);
+        hcb->Header(StringUtils::ToString(name), StringUtils::ToString(value));
     }
     return NOERROR;
-#endif
 }
 
 ECode Headers::SetConnectionType(
     /* [in] */ ICharArrayBuffer* buffer,
     /* [in] */ Int32 pos)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    // TODO:
-    // AutoPtr<ICharArrayBuffersHelper> helper;
-    // CCharArrayBuffersHelper::AcquireSingleton((ICharArrayBuffersHelper**)&helper);
-    // if (helper->ContainsIgnoreCaseTrimmed(buffer, pos, HTTP::CONN_CLOSE)) {
-    //     mConnectionType = CONN_CLOSE;
-    // } else if (helper->ContainsIgnoreCaseTrimmed(buffer, pos, HTTP::CONN_KEEP_ALIVE)) {
-    //     mConnectionType = CONN_KEEP_ALIVE;
-    // }
+    Boolean isContainsIgnoreCaseTrimmed;
+    CharArrayBuffers::ContainsIgnoreCaseTrimmed(buffer, pos, IHTTP::CONN_CLOSE, &isContainsIgnoreCaseTrimmed);
+    if (isContainsIgnoreCaseTrimmed) {
+        mConnectionType = CONN_CLOSE;
+    }
+    else {
+        CharArrayBuffers::ContainsIgnoreCaseTrimmed(buffer, pos, IHTTP::CONN_KEEP_ALIVE, &isContainsIgnoreCaseTrimmed);
+        if (isContainsIgnoreCaseTrimmed) {
+            mConnectionType = CONN_KEEP_ALIVE;
+        }
+    }
 
     return NOERROR;
-#endif
 }
 
 } // namespace Http

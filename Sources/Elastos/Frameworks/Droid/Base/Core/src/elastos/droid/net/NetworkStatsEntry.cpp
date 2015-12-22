@@ -132,7 +132,7 @@ ECode NetworkStatsEntry::Equals(
 {
     VALIDATE_NOT_NULL(result);
 
-    if (TO_IINTERFACE(this) != IInterface::Probe(o)) FUNC_RETURN(FALSE);
+    if (TO_IINTERFACE(this) == IInterface::Probe(o)) FUNC_RETURN(TRUE)
     if (INetworkStatsEntry::Probe(o) != NULL) {
         AutoPtr<NetworkStatsEntry> e = (NetworkStatsEntry*) INetworkStatsEntry::Probe(o);
         *result = mUid == e->mUid && mSet == e->mSet && mTag == e->mTag && mRxBytes == e->mRxBytes

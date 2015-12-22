@@ -48,7 +48,7 @@ public:
      * Notifies the specified state machine of the REQUEST packet parameters.
      */
     CARAPI DoNextOp(
-        /* [in] */ IDhcpStateMachine* machine);
+        /* [in] */ DhcpStateMachine* machine);
 };
 
 } // namespace Dhcp

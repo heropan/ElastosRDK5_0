@@ -1,7 +1,10 @@
 
 #include "elastos/droid/net/http/DelegatingSSLSession.h"
 
+using Elastos::Security::Cert::ICertificate;
+using Elastos::Security::Cert::IX509Certificate;
 using Elastosx::Net::Ssl::EIID_ISSLSession;
+using Elastosx::Net::Ssl::ISSLSession;
 
 namespace Elastos {
 namespace Droid {
@@ -18,18 +21,24 @@ ECode DelegatingSSLSession::constructor()
 ECode DelegatingSSLSession::GetApplicationBufferSize(
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 ECode DelegatingSSLSession::GetCipherSuite(
     /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 ECode DelegatingSSLSession::GetCreationTime(
     /* [out] */ Int64* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
@@ -42,6 +51,8 @@ ECode DelegatingSSLSession::GetId(
 ECode DelegatingSSLSession::GetLastAccessedTime(
     /* [out] */ Int64* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
@@ -54,12 +65,16 @@ ECode DelegatingSSLSession::GetLocalCertificates(
 ECode DelegatingSSLSession::GetLocalPrincipal(
     /* [out] */ IPrincipal** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 ECode DelegatingSSLSession::GetPacketBufferSize(
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
@@ -78,30 +93,40 @@ ECode DelegatingSSLSession::GetPeerCertificates(
 ECode DelegatingSSLSession::GetPeerHost(
     /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 ECode DelegatingSSLSession::GetPeerPort(
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 ECode DelegatingSSLSession::GetPeerPrincipal(
     /* [out] */ IPrincipal** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 ECode DelegatingSSLSession::GetProtocol(
     /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
 ECode DelegatingSSLSession::GetSessionContext(
     /* [out] */ ISSLSessionContext** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
@@ -109,6 +134,8 @@ ECode DelegatingSSLSession::GetValue(
     /* [in] */ const String& name,
     /* [out] */ IInterface** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
@@ -126,6 +153,8 @@ ECode DelegatingSSLSession::Invalidate()
 ECode DelegatingSSLSession::IsValid(
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result)
+
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
@@ -150,19 +179,19 @@ CAR_INTERFACE_IMPL(DelegatingSSLSessionCertificateWrap, DelegatingSSLSession, ID
 ECode DelegatingSSLSessionCertificateWrap::constructor(
     /* [in] */ ICertificate* certificate)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                mCertificate = certificate;
-#endif
+    mCertificate = certificate;
+    return NOERROR;
 }
 
 ECode DelegatingSSLSessionCertificateWrap::GetPeerCertificates(
     /* [out, callee] */ ArrayOf<ICertificate*>** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                return new Certificate[] { mCertificate };
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    *result = ArrayOf<ICertificate*>::Alloc(1);
+    (*result)->Set(0, mCertificate);
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 } // namespace Http

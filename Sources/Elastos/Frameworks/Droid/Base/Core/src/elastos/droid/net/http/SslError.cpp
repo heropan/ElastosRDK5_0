@@ -190,7 +190,7 @@ ECode SslError::ToString(
     String sCert;
     mCertificate->ToString(&sCert);
 
-    *str = String("primary error: ") + StringUtils::Int32ToString(err)
+    *str = String("primary error: ") + StringUtils::ToString(err)
         + String(" certificate: ") + sCert
         + String(" on URL: ") + mUrl;
 

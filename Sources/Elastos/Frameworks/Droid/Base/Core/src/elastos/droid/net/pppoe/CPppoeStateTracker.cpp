@@ -99,7 +99,7 @@ ECode CPppoeStateTracker::ResetInterface(
             Slogger::I(TAG, "Mask: %s", netmask.string());
             Slogger::I(TAG, "DNS: %s", dns.string());
 
-            AutoLock lock(mSyncLock);
+            synchronized(mSyncLock)
             {
                 if(mInterfaceName != NULL) {
                     Slogger::I(TAG, "reset device: %s", mInterfaceName.string());
@@ -247,7 +247,7 @@ ECode CPppoeStateTracker::NotifyPppConnected(
     /* [in] */ const String& ifname)
 {
     Slogger::I(TAG, "report interface is up for %s", ifname.string());
-    AutoLock Lock(mSyncLock);
+    synchronized(mSyncLock)
     {
         //TODO: Need IHandler::sendEmptyMessage
         //mTrackerTarget->SendEmptyMessage(EVENT_CONNECTED);
@@ -263,7 +263,7 @@ ECode CPppoeStateTracker::NotifyStateChange(
     if (ifname.Equals(mInterfaceName)) {
         Slogger::I(TAG, "update network state tracker");
 
-        AutoLock lock(mSyncLock);
+        synchronized(mSyncLock)
         {
             //TODO: Need IHandler::sendEmptyMessage
             // mTrackerTarget->SendEmptyMessage(state->Equals(DetailedState::CONNECTED)

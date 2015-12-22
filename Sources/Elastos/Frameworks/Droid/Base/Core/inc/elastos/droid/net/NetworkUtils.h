@@ -273,6 +273,11 @@ public:
 private:
     NetworkUtils();
 
+    static CARAPI_(Boolean) NativeRunDhcpCommon(
+        /* [in] */ const String& ifname,
+        /* [in] */ IDhcpResults* dhcpResults,
+        /* [in] */ Boolean renew);
+
 private:
     static const String TAG;
 };

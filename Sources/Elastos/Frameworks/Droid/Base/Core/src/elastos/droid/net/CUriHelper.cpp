@@ -34,13 +34,6 @@ ECode CUriHelper::FromParts(
     return Uri::FromParts(scheme, ssp, fragment, result);
 }
 
-ECode CUriHelper::ReadFromParcel(
-    /* [in] */ IParcel* parcel,
-    /* [out] */ IUri** uri)
-{
-    return Uri::ReadFromParcel(parcel, uri);
-}
-
 ECode CUriHelper::Encode(
     /* [in] */ const String& s,
     /* [out] */ String* result)

@@ -240,8 +240,7 @@ module
          * not required.
          */
         SetSession(
-            [in] String session,
-            [out] IVpnServiceBuilder** result);
+            [in] String session);
 
         /**
          * Set the {@link PendingIntent} to an activity for users to
@@ -249,8 +248,7 @@ module
          * to configure will not be shown in system-managed dialogs.
          */
         SetConfigureIntent(
-            [in] IPendingIntent* intent,
-            [out] IVpnServiceBuilder** result);
+            [in] IPendingIntent* intent);
 
         /**
          * Set the maximum transmission unit (MTU) of the VPN interface. If
@@ -260,8 +258,7 @@ module
          * @throws IllegalArgumentException if the value is not positive.
          */
         SetMtu(
-            [in] Int32 mtu,
-            [out] IVpnServiceBuilder** result);
+            [in] Int32 mtu);
 
         /**
          * Add a network address to the VPN interface. Both IPv4 and IPv6
@@ -275,8 +272,7 @@ module
          */
         AddAddress(
             [in] IInetAddress* address,
-            [in] Int32 prefixLength,
-            [out] IVpnServiceBuilder** result);
+            [in] Int32 prefixLength);
 
         /**
          * Convenience method to add a network address to the VPN interface
@@ -291,8 +287,7 @@ module
          */
         AddAddress(
             [in] String address,
-            [in] Int32 prefixLength,
-            [out] IVpnServiceBuilder** result);
+            [in] Int32 prefixLength);
 
         /**
          * Add a network route to the VPN interface. Both IPv4 and IPv6
@@ -305,8 +300,7 @@ module
          */
         AddRoute(
             [in] IInetAddress* address,
-            [in] Int32 prefixLength,
-            [out] IVpnServiceBuilder** result);
+            [in] Int32 prefixLength);
 
         /**
          * Convenience method to add a network route to the VPN interface
@@ -321,8 +315,7 @@ module
          */
         AddRoute(
             [in] String address,
-            [in] Int32 prefixLength,
-            [out] IVpnServiceBuilder** result);
+            [in] Int32 prefixLength);
 
         /**
          * Add a DNS server to the VPN connection. Both IPv4 and IPv6
@@ -335,8 +328,7 @@ module
          * @throws IllegalArgumentException if the address is invalid.
          */
         AddDnsServer(
-            [in] IInetAddress* address,
-            [out] IVpnServiceBuilder** result);
+            [in] IInetAddress* address);
 
         /**
          * Convenience method to add a DNS server to the VPN connection
@@ -350,15 +342,13 @@ module
          * @see #addDnsServer(InetAddress)
          */
         AddDnsServer(
-            [in] String address,
-            [out] IVpnServiceBuilder** result);
+            [in] String address);
 
         /**
          * Add a search domain to the DNS resolver.
          */
         AddSearchDomain(
-            [in] String dm,
-            [out] IVpnServiceBuilder** result);
+            [in] String dm);
 
         /**
          * Allows traffic from the specified address family.
@@ -379,8 +369,7 @@ module
          * @return this {@link Builder} object to facilitate chaining of method calls.
          */
         AllowFamily(
-            [in] Int32 family,
-            [out] IVpnServiceBuilder** result);
+            [in] Int32 family);
 
         /**
          * Adds an application that's allowed to access the VPN connection.
@@ -404,8 +393,7 @@ module
          * @return this {@link Builder} object to facilitate chaining method calls.
          */
         AddAllowedApplication(
-            [in] String packageName,
-            [out] IVpnServiceBuilder** result);
+            [in] String packageName);
 
         /**
          * Adds an application that's denied access to the VPN connection.
@@ -427,8 +415,7 @@ module
          * @return this {@link Builder} object to facilitate chaining method calls.
          */
         AddDisallowedApplication(
-            [in] String packageName,
-            [out] IVpnServiceBuilder** result);
+            [in] String packageName);
 
         /**
          * Allows all apps to bypass this VPN connection.
@@ -440,8 +427,7 @@ module
          *
          * @return this {@link Builder} object to facilitate chaining of method calls.
          */
-        AllowBypass(
-            [out] IVpnServiceBuilder** result);
+        AllowBypass();
 
         /**
          * Sets the VPN interface's file descriptor to be in blocking/non-blocking mode.
@@ -453,8 +439,7 @@ module
          * @return this {@link Builder} object to facilitate chaining method calls.
          */
         SetBlocking(
-            [in] Boolean blocking,
-            [out] IVpnServiceBuilder** result);
+            [in] Boolean blocking);
 
         /**
          * Create a VPN interface using the parameters supplied to this

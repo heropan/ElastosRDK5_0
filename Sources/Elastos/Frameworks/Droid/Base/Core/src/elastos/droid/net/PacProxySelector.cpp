@@ -91,7 +91,7 @@ ECode PacProxySelector::Select(
         }
     // }
     if (response == NULL) {
-        FUNC_RETURN(mDefaultList);
+        FUNC_RETURN(mDefaultList)
     }
     *result = ParseResponse(response);
     return NOERROR;
@@ -172,7 +172,7 @@ ECode PacProxySelector::ProxyFromHostPort(
         }
         return ec;
     }
-    FUNC_RETURN(rev);
+    FUNC_RETURN(rev)
         // } catch (NumberFormatException|ArrayIndexOutOfBoundsException e) {
         // }
 }

@@ -489,7 +489,7 @@ static ECode ThrowSocketTimeoutException(const char* message)
 static ECode ThrowSSLHandshakeExceptionStr(const char* message)
 {
     NATIVE_TRACE("throwSSLExceptionStr %s", message);
-    return E_SSL_HAND_SHAKE_EXCEPTION;
+    return E_SSL_HANDSHAKE_EXCEPTION;
 }
 
 

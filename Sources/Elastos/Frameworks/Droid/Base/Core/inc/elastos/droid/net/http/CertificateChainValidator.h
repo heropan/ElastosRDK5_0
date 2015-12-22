@@ -9,6 +9,8 @@
 
 using Elastos::Core::IArrayOf;
 using Elastos::Security::Cert::IX509Certificate;
+using Elastos::Security::Cert::ICertificate;
+
 using Elastosx::Net::Ssl::IHostnameVerifier;
 using Elastosx::Net::Ssl::ISSLSocket;
 using Elastosx::Net::Ssl::IX509TrustManager;
@@ -46,6 +48,8 @@ private:
          * The singleton instance of the hostname verifier.
          */
         static const AutoPtr<IHostnameVerifier> sVerifier;
+
+        friend class CertificateChainValidator;
     };
 
 public:
@@ -84,7 +88,7 @@ public:
      * @return An SSL error object if there is an error and null otherwise
      */
     static CARAPI VerifyServerCertificates(
-        /* [in] */ ArrayOf<IArrayOf>* certChain,
+        /* [in] */ ArrayOf<IArrayOf*>* certChain,
         /* [in] */ const String& domain,
         /* [in] */ const String& authType,
         /* [out] */ ISslError** result);
@@ -110,7 +114,7 @@ private:
      * @return An SSL error object if there is an error and null otherwise
      */
     static CARAPI VerifyServerDomainAndCertificates(
-        /* [in] */ ArrayOf<IX509Certificate*>* chain,
+        /* [in] */ ArrayOf<ICertificate*>* chain,
         /* [in] */ const String& domain,
         /* [in] */ const String& authType,
         /* [out] */ ISslError** result);
@@ -130,6 +134,7 @@ private:
         /* [in] */ ISSLSocket* socket,
         /* [in] */ const String& errorMessage);
 
+private:
     static const String TAG;
 
     AutoPtr<IX509TrustManager> mTrustManager;

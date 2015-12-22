@@ -1,7 +1,18 @@
 
-#include <Elastos.CoreLibrary.Utility.h>
+#include <Elastos.CoreLibrary.IO.h>
 #include <Elastos.CoreLibrary.Net.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/net/dhcp/DhcpDeclinePacket.h"
+#include "elastos/droid/net/dhcp/DhcpPacket.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/os/Build.h"
+
+using Elastos::Droid::Os::Build;
+
+using Elastos::IO::CByteBufferHelper;
+using Elastos::IO::IBuffer;
+using Elastos::IO::IByteBufferHelper;
+using Elastos::Net::IInetAddress;
 
 namespace Elastos {
 namespace Droid {
@@ -19,20 +30,18 @@ ECode DhcpDeclinePacket::constructor(
     /* [in] */ IInetAddress* relayIp,
     /* [in] */ ArrayOf<Byte>* clientMac)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        super(transId, clientIp, yourIp, nextIp, relayIp, clientMac, FALSE);
-#endif
+    return DhcpPacket::constructor(transId, clientIp, yourIp, nextIp, relayIp, clientMac, FALSE);
 }
 
 ECode DhcpDeclinePacket::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        String s = super.toString();
-        return s + " DECLINE";
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    String s;
+    DhcpPacket::ToString(&s);
+    *result = s + " DECLINE";
+    return NOERROR;
 }
 
 ECode DhcpDeclinePacket::BuildPacket(
@@ -41,34 +50,30 @@ ECode DhcpDeclinePacket::BuildPacket(
     /* [in] */ Int16 srcUdp,
     /* [out] */ IByteBuffer** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        ByteBuffer result = ByteBuffer.allocate(MAX_LENGTH);
-        fillInPacket(encap, mClientIp, mYourIp, destUdp, srcUdp, result,
+    VALIDATE_NOT_NULL(result)
+
+    AutoPtr<IByteBuffer> rev;
+    AutoPtr<IByteBufferHelper> byteBufferHelper;
+    CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&byteBufferHelper);
+    byteBufferHelper->Allocate(MAX_LENGTH, (IByteBuffer**)&rev);
+    FillInPacket(encap, mClientIp, mYourIp, destUdp, srcUdp, rev,
             DHCP_BOOTREQUEST, FALSE);
-        result.flip();
-        return result;
-#endif
+    IBuffer::Probe(rev)->Flip();
+    FUNC_RETURN(rev)
 }
 
 ECode DhcpDeclinePacket::FinishPacket(
     /* [in] */ IByteBuffer* buffer)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        // None needed
-#endif
+    // None needed
+    return NOERROR;
 }
 
 ECode DhcpDeclinePacket::DoNextOp(
-    /* [in] */ IDhcpStateMachine* machine)
+    /* [in] */ DhcpStateMachine* machine)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        machine.onDeclineReceived(mClientMac, mRequestedIp);
-#endif
+    return machine->OnDeclineReceived(mClientMac, mRequestedIp);
 }
-
 
 } // namespace Dhcp
 } // namespace Net

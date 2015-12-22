@@ -104,9 +104,9 @@ ECode RequestQueue::ActivePool::StopTiming()
         }
         rt->mCurrentThreadTime = 0;
     }
-    Logger::D(String("Http"), String("Http thread used ") + StringUtils::Int32ToString(totalTime) + String(" ms ")
-        + String(" for ") + StringUtils::Int32ToString(mTotalRequest) + String(" requests and ")
-        + StringUtils::Int32ToString(mTotalConnection) + String(" new connections"));
+    Logger::D(String("Http"), String("Http thread used ") + StringUtils::ToString(totalTime) + String(" ms ")
+        + String(" for ") + StringUtils::ToString(mTotalRequest) + String(" requests and ")
+        + StringUtils::ToString(mTotalConnection) + String(" new connections"));
 
     return NOERROR;
 #endif
@@ -312,21 +312,21 @@ ECode RequestQueue::EnablePlatformNotifications()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    AutoLock lock(mLock);
+    synchronized(mLock) {
+        if (HttpLog::LOGV) {
+            HttpLog::V(String("RequestQueue.enablePlatformNotifications() network"));
+        }
 
-    if (HttpLog::LOGV) {
-        HttpLog::V(String("RequestQueue.enablePlatformNotifications() network"));
+        if (mProxyChangeReceiver == NULL) {
+            mProxyChangeReceiver = new LocalBroadcastReceiver(this);
+            AutoPtr<IIntentFilter> filter;
+            CIntentFilter::New(IProxy::PROXY_CHANGE_ACTION, (IIntentFilter**)&filter);
+            AutoPtr<IIntent> intent;
+            mContext->RegisterReceiver(mProxyChangeReceiver, filter, (IIntent**)&intent);
+        }
+        // we need to resample the current proxy setup
+        SetProxyConfig();
     }
-
-    if (mProxyChangeReceiver == NULL) {
-        mProxyChangeReceiver = new LocalBroadcastReceiver(this);
-        AutoPtr<IIntentFilter> filter;
-        CIntentFilter::New(IProxy::PROXY_CHANGE_ACTION, (IIntentFilter**)&filter);
-        AutoPtr<IIntent> intent;
-        mContext->RegisterReceiver(mProxyChangeReceiver, filter, (IIntent**)&intent);
-    }
-    // we need to resample the current proxy setup
-    SetProxyConfig();
     return NOERROR;
 #endif
 }
@@ -335,15 +335,15 @@ ECode RequestQueue::DisablePlatformNotifications()
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
-    AutoLock lock(mLock);
+    synchronized(mLock){
+        if (HttpLog::LOGV) {
+            HttpLog::V(String("RequestQueue.disablePlatformNotifications() network"));
+        }
 
-    if (HttpLog::LOGV) {
-        HttpLog::V(String("RequestQueue.disablePlatformNotifications() network"));
-    }
-
-    if (mProxyChangeReceiver != NULL) {
-        mContext->UnregisterReceiver(mProxyChangeReceiver);
-        mProxyChangeReceiver = NULL;
+        if (mProxyChangeReceiver != NULL) {
+            mContext->UnregisterReceiver(mProxyChangeReceiver);
+            mProxyChangeReceiver = NULL;
+        }
     }
     return NOERROR;
 #endif

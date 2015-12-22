@@ -113,7 +113,7 @@ X509Util::X509TrustManagerIceCreamSandwich::X509TrustManagerIceCreamSandwich(
 }
 
 AutoPtr<IList> X509Util::X509TrustManagerIceCreamSandwich::CheckServerTrusted(
-    /* [in] */ ArrayOf<IX509Certificate*>* chain,
+    /* [in] */ ArrayOf<ICertificate*>* chain, // ArrayOf<IX509Certificate*>* chain,
     /* [in] */ const String& authType,
     /* [in] */ const String& host)
 {
@@ -142,7 +142,7 @@ X509Util::X509TrustManagerJellyBean::X509TrustManagerJellyBean(
 }
 
 AutoPtr<IList> X509Util::X509TrustManagerJellyBean::CheckServerTrusted(
-    /* [in] */ ArrayOf<IX509Certificate*>* chain,
+    /* [in] */ ArrayOf<ICertificate*>* chain, // ArrayOf<IX509Certificate*>* chain,
     /* [in] */ const String& authType,
     /* [in] */ const String& host)
 {
@@ -440,7 +440,7 @@ AutoPtr<ElastosCertVerifyResult> X509Util::VerifyServerCertificates(
 
     AutoPtr<IList> verifiedChain;
     //try {
-        ArrayOf<IX509Certificate*>* tmpChain;
+        ArrayOf<ICertificate*>* tmpChain;
         //AutoPtr< ArrayOf< AutoPtr<IX509Certificate> > > serverCertificates;
         //verifiedChain = sDefaultTrustManager->CheckServerTrusted(serverCertificates, authType, host);
         verifiedChain = sDefaultTrustManager->CheckServerTrusted(tmpChain, authType, host);

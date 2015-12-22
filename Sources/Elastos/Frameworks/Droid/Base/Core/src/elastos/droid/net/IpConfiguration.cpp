@@ -90,7 +90,7 @@ ECode IpConfiguration::SetIpAssignment(
 ECode IpConfiguration::GetStaticIpConfiguration(
     /* [out] */ IStaticIpConfiguration** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
 
     *result = mStaticIpConfiguration;
     REFCOUNT_ADD(*result)
@@ -125,7 +125,7 @@ ECode IpConfiguration::SetProxySettings(
 ECode IpConfiguration::GetHttpProxy(
     /* [out] */ IProxyInfo** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
 
     *result = mHttpProxy;
     REFCOUNT_ADD(*result)

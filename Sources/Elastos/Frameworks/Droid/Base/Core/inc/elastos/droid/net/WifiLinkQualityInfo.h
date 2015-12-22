@@ -26,13 +26,6 @@ public:
     CARAPI constructor();
 
     /**
-     * @hide
-     */
-    static CARAPI CreateFromParcelBody(
-        /* [in] */ IParcel* in,
-        /* [out] */ IWifiLinkQualityInfo** result);
-
-    /**
      * returns Wifi network type
      * @return network type or {@link android.net.LinkQualityInfo#UNKNOWN_INT}
      */
@@ -96,6 +89,12 @@ public:
      */
     CARAPI SetTxBad(
         /* [in] */ Int64 txBad);
+
+    CARAPI ReadFromParcel(
+        /* [in] */ IParcel* parcel);
+
+    CARAPI WriteToParcel(
+        /* [in] */ IParcel* dest);
 
 private:
     /* Indicates Wifi network type such as b/g etc*/

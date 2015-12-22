@@ -447,6 +447,14 @@ String StringUtils::ToString(
     return RealToString::GetInstance()->ToString(f);
 }
 
+String StringUtils::ToString(
+    /* [in] */ IInterface* obj)
+{
+    String s;
+    IObject::Probe(obj)->ToString(&s);
+    return s;
+}
+
 ECode StringUtils::Split(
     /* [in] */ const String& input,
     /* [in] */ const String& regularExpression,

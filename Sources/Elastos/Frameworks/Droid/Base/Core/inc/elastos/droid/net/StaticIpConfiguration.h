@@ -87,11 +87,6 @@ public:
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
 
-    // protected
-    static CARAPI ReadFromParcel(
-        /* [in] */ IStaticIpConfiguration* s,
-        /* [in] */ IParcel* in);
-
     CARAPI GetIpAddress(
         /* [out] */ ILinkAddress** result);
 
