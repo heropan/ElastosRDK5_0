@@ -13,30 +13,20 @@ module
      * @Involved
      * none super interface
      */
-    interface ILocalSocketAddressNamespace {
+    enum LocalSocketAddressNamespace {
         /** A socket in the Linux abstract namespace */
-        const Int32 LocalSocketAddressNamespace_ABSTRACT = 0;
+        LocalSocketAddressNamespace_ABSTRACT = 0,
 
         /**
          * A socket in the Android reserved namespace in /dev/socket.
          * Only the init process may create a socket here.
          */
-        const Int32 LocalSocketAddressNamespace_RESERVED = 1;
+        LocalSocketAddressNamespace_RESERVED = 1,
 
         /**
          * A socket named with a normal filesystem path.
          */
-        const Int32 LocalSocketAddressNamespace_FILESYSTEM= 2;
-
-        /**
-         * @return int constant shared with native code
-         */
-        /*package*/
-        GetId(
-            [out] Int32* result);
-
-        SetId(
-            [in] Int32 id);
+        LocalSocketAddressNamespace_FILESYSTEM= 2
     }
 
     /**
@@ -48,7 +38,7 @@ module
             [out] String* name);
 
         GetNamespace(
-            [out] ILocalSocketAddressNamespace** ns);
+            [out] LocalSocketAddressNamespace* ns);
     }
 
     } // namespace Net

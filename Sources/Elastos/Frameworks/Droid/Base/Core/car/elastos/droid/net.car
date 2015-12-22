@@ -341,19 +341,12 @@ module
     class CLocalSocketAddress {
         constructor(
             [in] String name,
-            [in] ILocalSocketAddressNamespace* ns);
+            [in] LocalSocketAddressNamespace ns);
 
         constructor(
             [in] String name);
 
         interface ILocalSocketAddress;
-    }
-
-    class CLocalSocketAddressNamespace {
-        constructor(
-            [in] Int32 id);
-
-        interface ILocalSocketAddressNamespace;
     }
 
     class CMailTo {

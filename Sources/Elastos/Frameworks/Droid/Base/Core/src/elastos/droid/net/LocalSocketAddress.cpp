@@ -5,13 +5,11 @@ namespace Elastos {
 namespace Droid {
 namespace Net {
 
-CAR_INTERFACE_IMPL(LocalSocketAddressNamespace, Object, ILocalSocketAddressNamespace)
-
 CAR_INTERFACE_IMPL(LocalSocketAddress, Object, ILocalSocketAddress)
 
 ECode LocalSocketAddress::constructor(
     /* [in] */ const String& name,
-    /* [in] */ ILocalSocketAddressNamespace* ns)
+    /* [in] */ LocalSocketAddressNamespace ns)
 {
     mName = name;
     mNamespace = ns;
@@ -21,9 +19,7 @@ ECode LocalSocketAddress::constructor(
 ECode LocalSocketAddress::constructor(
     /* [in] */ const String& name)
 {
-    AutoPtr<ILocalSocketAddressNamespace> ns = new LocalSocketAddressNamespace();
-    ns->SetId(ILocalSocketAddressNamespace::LocalSocketAddressNamespace_ABSTRACT);
-    return constructor(name, ns);
+    return constructor(name, LocalSocketAddressNamespace_ABSTRACT);
 }
 
 ECode LocalSocketAddress::GetName(
@@ -36,12 +32,10 @@ ECode LocalSocketAddress::GetName(
 }
 
 ECode LocalSocketAddress::GetNamespace(
-    /* [out] */ ILocalSocketAddressNamespace** ns)
+    /* [out] */ LocalSocketAddressNamespace* ns)
 {
     VALIDATE_NOT_NULL(ns);
-
     *ns = mNamespace;
-    REFCOUNT_ADD(*ns)
     return NOERROR;
 }
 

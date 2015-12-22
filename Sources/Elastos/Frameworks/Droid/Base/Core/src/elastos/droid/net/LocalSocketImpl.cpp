@@ -967,9 +967,9 @@ ECode LocalSocketImpl::Connect(
 
     String name;
     address->GetName(&name);
-    AutoPtr<ILocalSocketAddressNamespace> ns;
-    address->GetNamespace((ILocalSocketAddressNamespace**)&ns);
-    return ConnectLocal(mFd, name, Ptr(ns)->Func(ns->GetId));
+    LocalSocketAddressNamespace ns;
+    address->GetNamespace(&ns);
+    return ConnectLocal(mFd, name, ns);
 }
 
 ECode LocalSocketImpl::Bind(
@@ -982,9 +982,9 @@ ECode LocalSocketImpl::Bind(
 
     String name;
     endpoint->GetName(&name);
-    AutoPtr<ILocalSocketAddressNamespace> ns;
-    endpoint->GetNamespace((ILocalSocketAddressNamespace**)&ns);
-    return BindLocal(mFd, name, Ptr(ns)->Func(ns->GetId));
+    LocalSocketAddressNamespace ns;
+    endpoint->GetNamespace(&ns);
+    return BindLocal(mFd, name, ns);
 }
 
 ECode LocalSocketImpl::Listen(

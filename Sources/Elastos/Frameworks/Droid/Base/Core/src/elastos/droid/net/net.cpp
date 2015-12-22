@@ -15,7 +15,6 @@
 #include "elastos/droid/net/CLocalServerSocket.h"
 #include "elastos/droid/net/CLocalSocket.h"
 #include "elastos/droid/net/CLocalSocketAddress.h"
-#include "elastos/droid/net/CLocalSocketAddressNamespace.h"
 #include "elastos/droid/net/CMailTo.h"
 #include "elastos/droid/net/CMobileDataStateTracker.h"
 #include "elastos/droid/net/CNetwork.h"
@@ -112,8 +111,6 @@ CAR_OBJECT_IMPL(CLocalServerSocket)
 CAR_OBJECT_IMPL(CLocalSocket)
 
 CAR_OBJECT_IMPL(CLocalSocketAddress)
-
-CAR_OBJECT_IMPL(CLocalSocketAddressNamespace)
 
 CAR_OBJECT_IMPL(CMailTo)
 

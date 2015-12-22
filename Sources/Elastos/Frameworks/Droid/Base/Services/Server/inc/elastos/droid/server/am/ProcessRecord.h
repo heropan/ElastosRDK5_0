@@ -254,5 +254,6 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Server::Am::ProcessRecord)
 
 #endif //__ELASTOS_DROID_SERVER_AM_PROCESSRECORD_H__

@@ -4,6 +4,7 @@ module
     merge("app/IAppOpsService.car");
     merge("app/IBatteryStats.car");
     merge("app/IMediaContainerService.car");
+    merge("app/IProcessStats.car");
     merge("app/IVoiceInteractionManagerService.car");
     merge("app/IVoiceInteractor.car");
     merge("app/IVoiceInteractorCallback.car");

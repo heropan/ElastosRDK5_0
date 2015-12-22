@@ -2,19 +2,13 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_INTENTBINDRECORD_H__
 #define __ELASTOS_DROID_SERVER_AM_INTENTBINDRECORD_H__
 
-#include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/HashMap.h>
 #include "elastos/droid/server/am/AppBindRecord.h"
+#include "elastos/droid/server/am/ProcessRecord.h"
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Content::IIntentFilterComparison;
-
-
-#define HASH_FUNC_FOR_AUTOPTR_USING_ADDR_PROCESSRECORD
-DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Server::Am::ProcessRecord)
-#endif
-
+using Elastos::Droid::Os::IBinder;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -23,7 +17,6 @@ namespace Am {
 
 class ProcessRecord;
 class CServiceRecord;
-
 
 /**
  * A particular Intent that has been bound to a Service.
@@ -37,13 +30,20 @@ public:
 
     virtual ~IntentBindRecord();
 
-    // void dump(PrintWriter pw, String prefix);
+    CARAPI_(void) Dump(
+        /* [in] */ IPrintWriter* pw,
+        /* [in] */ const String& prefix);
 
-    // void dumpInService(PrintWriter pw, String prefix);
+    CARAPI_(void) DumpInService(
+        /* [in] */ IPrintWriter* pw,
+        /* [in] */ const String& prefix);
 
     CARAPI_(Int32) CollectFlags();
 
     CARAPI_(String) ToString();
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 
 public:
      /** The running service. */

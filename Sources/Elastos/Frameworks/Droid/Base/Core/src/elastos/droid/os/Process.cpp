@@ -7,8 +7,8 @@
 #include "elastos/droid/os/CUserHandleHelper.h"
 #include "elastos/droid/os/CUserHandle.h"
 #include "elastos/droid/os/CSystemProperties.h"
-//#include "elastos/droid/net/CLocalSocket.h"
-//#include "elastos/droid/net/CLocalSocketAddress.h"
+#include "elastos/droid/net/CLocalSocket.h"
+#include "elastos/droid/net/CLocalSocketAddress.h"
 //#include <elastos/droid/DroidRuntime.h>
 
 #include <elastos/droid/system/Os.h>
@@ -52,10 +52,10 @@ using Elastos::IO::IOutputStream;
 using Elastos::Utility::Etl::Vector;
 using Elastos::Utility::Logging::Logger;
 //using Ellastos::Droid::DroidRuntime;
-//using Elastos::Droid::Net::CLocalSocket;
+using Elastos::Droid::Net::CLocalSocket;
 using Elastos::Droid::Net::ILocalSocketAddress;
-//using Elastos::Droid::Net::CLocalSocketAddress;
-//using Elastos::Droid::Net::ILocalSocketAddressNamespace::LocalSocketAddressNamespace_RESERVED;
+using Elastos::Droid::Net::CLocalSocketAddress;
+using Elastos::Droid::Net::LocalSocketAddressNamespace_RESERVED;
 
 namespace Elastos {
 namespace Droid {
@@ -123,7 +123,7 @@ ECode Process::ZygoteState::Connect(
 
     ECode ec = NOERROR;
     AutoPtr<ILocalSocketAddress> lsa;
-    //CLocalSocketAddress::New(socketAddress, LocalSocketAddressNamespace_RESERVED, (ILocalSocketAddress**)&lsa);
+    CLocalSocketAddress::New(socketAddress, LocalSocketAddressNamespace_RESERVED, (ILocalSocketAddress**)&lsa);
     ec = zygoteSocket->Connect(lsa);
     FAIL_GOTO(ec, _EXIT_)
 

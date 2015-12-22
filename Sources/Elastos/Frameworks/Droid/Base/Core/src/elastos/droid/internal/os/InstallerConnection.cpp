@@ -3,7 +3,6 @@
 #include "elastos/droid/internal/os/InstallerConnection.h"
 #include "elastos/droid/net/CLocalSocket.h"
 #include "elastos/droid/net/CLocalSocketAddress.h"
-#include "elastos/droid/net/CLocalSocketAddressNamespace.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
@@ -12,8 +11,7 @@
 using Elastos::Droid::Net::CLocalSocket;
 using Elastos::Droid::Net::CLocalSocketAddress;
 using Elastos::Droid::Net::ILocalSocketAddress;
-using Elastos::Droid::Net::CLocalSocketAddressNamespace;
-using Elastos::Droid::Net::ILocalSocketAddressNamespace;
+using Elastos::Droid::Net::LocalSocketAddressNamespace_RESERVED;
 using Elastos::Core::AutoLock;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
@@ -155,11 +153,9 @@ Boolean InstallerConnection::Connect()
     do {
         CLocalSocket::New((ILocalSocket**)&mSocket);
 
-        AutoPtr<ILocalSocketAddressNamespace> reserved;
-        CLocalSocketAddressNamespace::New(ILocalSocketAddressNamespace::LocalSocketAddressNamespace_RESERVED,
-            (ILocalSocketAddressNamespace**)&reserved);
         AutoPtr<ILocalSocketAddress> address;
-        CLocalSocketAddress::New(String("installd"), reserved, (ILocalSocketAddress**)&address);
+        CLocalSocketAddress::New(String("installd"), LocalSocketAddressNamespace_RESERVED,
+            (ILocalSocketAddress**)&address);
 
         ec = mSocket->Connect(address);
         if (FAILED(ec))

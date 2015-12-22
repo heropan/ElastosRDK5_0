@@ -1,13 +1,11 @@
 
 #include "elastos/droid/server/am/IntentBindRecord.h"
-#include "elastos/droid/server/am/CServiceRecord.h"
-#include "elastos/droid/server/am/ProcessRecord.h"
+// #include "elastos/droid/server/am/CServiceRecord.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::IStringBuilder;
 using Elastos::Droid::Content::IContext;
 
 namespace Elastos {
@@ -29,7 +27,71 @@ IntentBindRecord::IntentBindRecord(
 
 IntentBindRecord::~IntentBindRecord()
 {
-    mApps.Clear();
+}
+
+
+void IntentBindRecord::Dump(
+    /* [in] */ IPrintWriter* pw,
+    /* [in] */ const String& prefix)
+{
+    pw->Print(prefix);
+    pw->Print(String("service="));
+    assert(0);
+    // pw->Println(mService->ToString());
+    DumpInService(pw, prefix);
+}
+
+void IntentBindRecord::DumpInService(
+    /* [in] */ IPrintWriter* pw,
+    /* [in] */ const String& prefix)
+{
+    pw->Print(prefix);
+    pw->Print(String("intent={"));
+    AutoPtr<IIntent> intent;
+    mIntent->GetIntent((IIntent**)&intent);
+    String str;
+    intent->ToShortString(FALSE ,TRUE, FALSE, FALSE, &str);
+    pw->Print(str);
+    pw->PrintCharln('}');
+    pw->Print(prefix);
+    pw->Print(String("binder="));
+    pw->Println(mBinder);
+    pw->Print(prefix);
+    pw->Print(String("requested="));
+    pw->Print(mRequested);
+    pw->Print(String(" received="));
+    pw->Print(mReceived);
+    pw->Print(String(" hasBound="));
+    pw->Print(mHasBound);
+    pw->Print(String(" doRebind="));
+    pw->Println(mDoRebind);
+    HashMap< AutoPtr<ProcessRecord>, AutoPtr<AppBindRecord> >::Iterator it;
+    for (it = mApps.Begin(); it != mApps.End(); ++it) {
+        AutoPtr<AppBindRecord> a = it->mSecond;
+        pw->Print(prefix);
+        pw->Print(String("* Client AppBindRecord{"));
+        pw->Print(StringUtils::ToString((Int32)a.Get(), 16));
+        pw->PrintChar(' ');
+        assert(0);
+        // pw->Print(a->mClient->ToString());
+        pw->Println('}');
+        a->DumpInIntentBind(pw, prefix + "  ");
+    }
+}
+
+Int32 IntentBindRecord::CollectFlags()
+{
+    Int32 flags = 0;
+    HashMap< AutoPtr<ProcessRecord>, AutoPtr<AppBindRecord> >::Iterator it;
+    for (it = mApps.Begin(); it != mApps.End(); ++it) {
+        AutoPtr<AppBindRecord> app = it->mSecond;
+        HashSet< AutoPtr<ConnectionRecord> >::Iterator cit;
+        for (cit = app->mConnections.Begin(); cit != app->mConnections.End(); ++cit) {
+            AutoPtr<ConnectionRecord> conn = *cit;
+            flags |= conn->mFlags;
+        }
+    }
+    return flags;
 }
 
 String IntentBindRecord::ToString()
@@ -39,40 +101,30 @@ String IntentBindRecord::ToString()
     }
 
     StringBuilder sb(128);
-    sb += ("IntentBindRecord{");
-    sb += (StringUtils::Int32ToHexString(Int32(this)));
-    sb += (' ');
+    sb += "IntentBindRecord{";
+    sb += StringUtils::ToString(Int32(this), 16);
+    sb += ' ';
     if ((CollectFlags()& IContext::BIND_AUTO_CREATE) != 0) {
-        sb += ("CR ");
+        sb += "CR ";
     }
-    sb += (mService->mShortName);
-    sb += (':');
+    assert(0);
+    // sb += mService->mShortName;
+    sb += ':';
     if (mIntent != NULL) {
         AutoPtr<IIntent> intent;
         mIntent->GetIntent((IIntent**)&intent);
-        intent->ToShortString((IStringBuilder*)&sb, FALSE, FALSE, FALSE, FALSE);
+        intent->ToShortString(&sb, FALSE, FALSE, FALSE, FALSE);
     }
-    sb += ('}');
+    sb += '}';
     return mStringName = sb.ToString();
 }
 
-Int32 IntentBindRecord::CollectFlags()
+ECode IntentBindRecord::ToString(
+    /* [out] */ String* str)
 {
-    Int32 flags = 0;
-    if (mApps.IsEmpty() == FALSE) {
-        HashSet< AutoPtr<ConnectionRecord> >::Iterator cit;
-        HashMap< AutoPtr<ProcessRecord>, AutoPtr<AppBindRecord> >::Iterator it;
-        for (it = mApps.Begin(); it != mApps.End(); ++it) {
-            AutoPtr<AppBindRecord> app = it->mSecond;
-            if (app->mConnections.IsEmpty() == FALSE) {
-                for (cit = app->mConnections.Begin(); cit != app->mConnections.End(); ++cit) {
-                    AutoPtr<ConnectionRecord> conn = *cit;
-                    flags |= conn->mFlags;
-                }
-            }
-        }
-    }
-    return flags;
+    VALIDATE_NOT_NULL(str)
+    *str = ToString();
+    return NOERROR;
 }
 
 } // namespace Am

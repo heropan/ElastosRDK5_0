@@ -32,7 +32,7 @@ public:
      */
     CARAPI constructor(
         /* [in] */ const String& name,
-        /* [in] */ ILocalSocketAddressNamespace* ns);
+        /* [in] */ LocalSocketAddressNamespace ns);
 
     /**
      * Creates an instance with a given name in the {@link Namespace#ABSTRACT}
@@ -56,58 +56,12 @@ public:
      * @return non-null a namespace
      */
     CARAPI GetNamespace(
-        /* [out] */ ILocalSocketAddressNamespace** result);
+        /* [out] */ LocalSocketAddressNamespace* result);
 
 private:
     String mName;
 
-    AutoPtr<ILocalSocketAddressNamespace> mNamespace;
-};
-
-/**
- * The namespace that this address exists in. See also
- * include/cutils/sockets.h ANDROID_SOCKET_NAMESPACE_*
- */
-class LocalSocketAddressNamespace
-    : public Object
-    , public ILocalSocketAddressNamespace
-{
-public:
-    CAR_INTERFACE_DECL()
-
-    ECode constructor(
-        /* [in] */ Int32 id)
-    {
-        mId = id;
-        return NOERROR;
-    }
-
-    /**
-     * @return int constant shared with native code
-     */
-    /*package*/
-    ECode GetId(
-        /* [out] */ Int32* result)
-    {
-        VALIDATE_NOT_NULL(result)
-
-        *result = mId;
-        return NOERROR;
-    }
-
-    ECode SetId(
-        /* [in] */ Int32 id)
-    {
-        mId = id;
-        return NOERROR;
-    }
-
-public:
-    Int32 mValue;
-
-private:
-    /** The id matches with a #define in include/cutils/sockets.h */
-    Int32 mId;
+    LocalSocketAddressNamespace mNamespace;
 };
 
 } // namespace Net
