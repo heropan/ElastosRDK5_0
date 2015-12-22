@@ -33,4 +33,6 @@ SOURCES += PasswordEntryKeyboardView.cpp
 SOURCES += CPasswordEntryKeyboardView.cpp
 SOURCES += PointerLocationView.cpp
 SOURCES += CPointerLocationView.cpp
+SOURCES += RotarySelector.cpp
+SOURCES += CRotarySelector.cpp
 SOURCES += widgets.cpp

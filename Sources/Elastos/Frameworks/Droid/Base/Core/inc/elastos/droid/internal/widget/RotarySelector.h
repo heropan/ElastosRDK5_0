@@ -1,11 +1,13 @@
 
-#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_ROTARYSELECTOR_H__
-#define __ELASTOS_DROID_WIDGET_INTERNAL_ROTARYSELECTOR_H__
+#ifndef __ELASTOS_DROID_INTERNAL_WIDGET_ROTARYSELECTOR_H__
+#define __ELASTOS_DROID_INTERNAL_WIDGET_ROTARYSELECTOR_H__
 
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/view/VelocityTracker.h"
 #include "elastos/droid/view/animation/AnimationUtils.h"
 
+using Elastos::Droid::Media::IAudioAttributes;
 using Elastos::Droid::Os::IVibrator;
 using Elastos::Droid::View::View;
 using Elastos::Droid::View::IMotionEvent;
@@ -18,22 +20,27 @@ using Elastos::Droid::View::Animation::AnimationUtils;
  * left to right, or right to left.  Used by incoming call screen, and the lock screen when no
  * security pattern is set.
  */
-
 namespace Elastos {
 namespace Droid {
-namespace Widget {
 namespace Internal {
+namespace Widget {
 
-class RotarySelector : public Elastos::Droid::View::View
+class RotarySelector
+    : public Elastos::Droid::View::View
+    , public IRotarySelector
 {
 public:
-    RotarySelector(
+    CAR_INTERFACE_DECL()
+
+    RotarySelector();
+
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
     /**
      * Constructor used when this widget is created from a layout file.
      */
-    RotarySelector(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
@@ -65,8 +72,9 @@ public:
      * @param event The motion event.
      * @return True if the event was handled, FALSE otherwise.
      */
-    virtual CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
     /**
      * Registers a callback to be invoked when the dial
@@ -78,9 +86,6 @@ public:
         /* [in] */ IOnDialTriggerListener* l);
 
     using View::StartAnimation;
-
-protected:
-    RotarySelector();
 
     CARAPI_(void) OnSizeChanged(
         /* [in] */ Int32 w,
@@ -95,9 +100,6 @@ protected:
     CARAPI_(void) OnDraw(
         /* [in] */ ICanvas* canvas);
 
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL);
 private:
     CARAPI_(AutoPtr<IBitmap>) GetBitmapFor(
         /* [in] */ Int32 resId);
@@ -155,7 +157,6 @@ private:
         /* [in] */ ICanvas* c,
         /* [in] */ Int32 x,
         /* [in] */ Int32 y);
-
 
     /**
      * Dispatches a trigger event to our listener.
@@ -282,11 +283,13 @@ private:
      * Either {@link #HORIZONTAL} or {@link #VERTICAL}.
      */
     Int32 mOrientation;
+
+    static AutoPtr<IAudioAttributes> VIBRATION_ATTRIBUTES;
 };
 
-}// namespace Internal
 }// namespace Widget
+}// namespace Internal
 }// namespace Droid
 }// namespace Elastos
 
-#endif
+#endif // __ELASTOS_DROID_INTERNAL_WIDGET_ROTARYSELECTOR_H__
