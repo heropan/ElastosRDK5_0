@@ -30,8 +30,11 @@ SOURCES += ServiceThread.cpp
 SOURCES += FgThread.cpp
 SOURCES += IoThread.cpp
 SOURCES += UiThread.cpp
+SOURCES += DisplayThread.cpp
 SOURCES += ServiceWatcher.cpp
+SOURCES += SystemConfig.cpp
 SOURCES += MasterClearReceiver.cpp
+SOURCES += Watchdog.cpp
 
 #SOURCES += CAlarmManagerService.cpp
 #SOURCES += CBootReceiver.cpp

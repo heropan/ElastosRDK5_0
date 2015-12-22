@@ -1,31 +1,35 @@
 
 module
 {
-    // merge("StatusBarManagerService.car");
-    // merge("NetworkManagementService.car");
-    // merge("power/SuspendBlocker.car");
-    // merge("power/ScreenOnBlocker.car");
-    // merge("accessibility/EventStreamTransformation.car");
-    // merge("accessibility/ScreenMagnifier.car");
+    merge("Exceptions.car");
+    merge("SystemServer.car");
+    merge("SystemService.car");
+    merge("SystemServiceManager.car");
+    merge("Watchdog.car");
+
     merge("am/ActivityRecord.car");
     merge("am/BroadcastFilter.car");
     merge("am/PendingIntentRecord.car");
     merge("am/ProcessRecord.car");
     merge("am/UriPermissionOwnerExternalToken.car");
+
     merge("display/AutomaticBrightnessController.car");
     merge("display/WifiDisplayController.car");
     merge("display/DisplayAdapter.car");
     merge("display/DisplayBlanker.car");
     merge("display/OverlayDisplayWindow.car");
     merge("display/RampAnimator.car");
+
     merge("twilight/TwilightListener.car");
 
-    merge("Exceptions.car");
-    merge("SystemServer.car");
-    merge("SystemService.car");
-    merge("SystemServiceManager.car");
     merge("wallpaper/WallpaperManagerService.car");
 
+    // merge("StatusBarManagerService.car");
+    // merge("NetworkManagementService.car");
+    // merge("power/SuspendBlocker.car");
+    // merge("power/ScreenOnBlocker.car");
+    // merge("accessibility/EventStreamTransformation.car");
+    // merge("accessibility/ScreenMagnifier.car");
     // merge("RecognitionManagerService.car");
     // merge("DeviceStorageMonitorService.car");
     // merge("dreams/DreamManagerService.car");
@@ -499,35 +503,6 @@ module
 //     }
 
 //     } // namespace Connectivity
-
-    namespace Display {
-
-        [local]
-        class CDisplayManagerService {
-            constructor(
-                [in] IContext* ctx);
-
-            interface ISystemService;
-        }
-
-        class CDisplayManagerBinderService {
-            constructor(
-                [in] ISystemService* displayManagerService);
-
-            interface IIDisplayManager;
-            interface IBinder;
-        }
-
-        class CMediaProjectionCallback {
-            constructor(
-                [in] IBinder* appToken,
-                [in] IObject* displayAdapter);
-
-            interface IIMediaProjectionCallback;
-            interface IBinder;
-        }
-
-    } // namespace Display
 
 //     namespace Dreams {
 
@@ -1211,6 +1186,40 @@ module
 //     } // namespace Droid
 //     } // namespace Elastos
 
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+    namespace Display {
+
+    [local]
+    class CDisplayManagerService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface ISystemService;
+    }
+
+    class CDisplayManagerBinderService {
+        constructor(
+            [in] ISystemService* displayManagerService);
+
+        interface IIDisplayManager;
+        interface IBinder;
+    }
+
+    class CMediaProjectionCallback {
+        constructor(
+            [in] IBinder* appToken,
+            [in] IObject* displayAdapter);
+
+        interface IIMediaProjectionCallback;
+        interface IBinder;
+    }
+
+    } // namespace Display
+    } // namespace Server
+    } // namepsace Droid
+    } // namespace Elastos
 
     namespace Elastos {
     namespace Droid {
