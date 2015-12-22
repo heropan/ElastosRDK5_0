@@ -17,7 +17,6 @@ ECode PskKeyManager::ChooseServerKeyIdentityHint(
 {
     VALIDATE_NOT_NULL(result)
     *result = String(NULL);
-    VALIDATE_NOT_NULL(socket)
 
     return NOERROR;
 }
@@ -28,7 +27,6 @@ ECode PskKeyManager::ChooseServerKeyIdentityHint(
 {
     VALIDATE_NOT_NULL(result)
     *result = String(NULL);
-    VALIDATE_NOT_NULL(engine)
 
     return NOERROR;
 }
@@ -40,7 +38,6 @@ ECode PskKeyManager::ChooseClientKeyIdentity(
 {
     VALIDATE_NOT_NULL(result)
     *result = String("");
-    VALIDATE_NOT_NULL(socket)
 
     return NOERROR;
 }
@@ -52,7 +49,6 @@ ECode PskKeyManager::ChooseClientKeyIdentity(
 {
     VALIDATE_NOT_NULL(result)
     *result = String("");
-    VALIDATE_NOT_NULL(engine)
 
     return NOERROR;
 }
@@ -63,9 +59,8 @@ ECode PskKeyManager::GetKey(
     /* [in] */ ISocket* socket,
     /* [out] */ ISecretKey** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
     *result = NULL;
-    VALIDATE_NOT_NULL(socket)
 
     return NOERROR;
 }
@@ -76,9 +71,8 @@ ECode PskKeyManager::GetKey(
     /* [in] */ ISSLEngine* engine,
     /* [out] */ ISecretKey** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
     *result = NULL;
-    VALIDATE_NOT_NULL(engine)
 
     return NOERROR;
 }

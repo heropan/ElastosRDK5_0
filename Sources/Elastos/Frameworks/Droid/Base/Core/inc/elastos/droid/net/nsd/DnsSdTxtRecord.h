@@ -77,7 +77,7 @@ public:
         /* [out] */ Boolean* result);
 
     /* Gets the size in bytes */
-    CARAPI Size(
+    CARAPI GetSize(
         /* [out] */ Int32* result);
 
     /* Gets the raw data in bytes */

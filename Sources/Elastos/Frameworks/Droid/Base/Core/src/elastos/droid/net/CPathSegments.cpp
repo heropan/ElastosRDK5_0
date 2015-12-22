@@ -43,7 +43,6 @@ ECode PathSegments::Get(
     VALIDATE_NOT_NULL(encoded);
 
     if (index >= mSize) {
-        // throw new IndexOutOfBoundsException();
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 

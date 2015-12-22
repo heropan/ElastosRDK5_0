@@ -2,6 +2,7 @@
 module
 {
     interface Elastos.Security.Cert.IX509Certificate;
+    interface Elastos.Security.Cert.ICertificate;
 
     namespace Elastosx {
     namespace Net {
@@ -14,7 +15,7 @@ module
      * @Involve
      * interface Elastosx.Net.Ssl.ITrustManager
      */
-    [deprecated]
+    [deprecated, local]
     interface IX509TrustManager {
         /**
          * Checks whether the specified certificate chain (partial or complete) can
@@ -53,7 +54,7 @@ module
          *             empty string.
          */
         CheckServerTrusted(
-            [in] ArrayOf<IX509Certificate*>* chain,
+            [in] ArrayOf<ICertificate*>* chain,
             [in] String authType);
 
         /**

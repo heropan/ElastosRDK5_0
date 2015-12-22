@@ -214,7 +214,7 @@ ECode NetworkTemplate::Equals(
 {
     VALIDATE_NOT_NULL(result);
 
-    if (TO_IINTERFACE(this) != IInterface::Probe(obj)) FUNC_RETURN(FALSE);
+    if (TO_IINTERFACE(this) == IInterface::Probe(obj)) FUNC_RETURN(TRUE)
     if (INetworkTemplate::Probe(obj) != NULL) {
         AutoPtr<INetworkTemplate> other = INetworkTemplate::Probe(obj);
         Int32 matchrule;

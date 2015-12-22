@@ -136,6 +136,9 @@ public:
     static CARAPI_(String) ToString(
         /* [in] */ Float f);
 
+    static CARAPI_(String) ToString(
+        /* [in] */ IInterface* obj);
+
     static CARAPI Split(
         /* [in] */ const String& input,
         /* [in] */ const String& regularExpression,

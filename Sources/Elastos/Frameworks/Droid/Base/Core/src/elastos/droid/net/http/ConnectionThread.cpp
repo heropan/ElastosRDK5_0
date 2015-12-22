@@ -1,7 +1,25 @@
 
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Net.h"
+#include <Elastos.CoreLibrary.Apache.h>
 #include "elastos/droid/net/http/ConnectionThread.h"
+#include "elastos/droid/net/http/Connection.h"
+#include "elastos/droid/net/http/HttpLog.h"
+#include "elastos/droid/net/http/Request.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/SystemClock.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/Thread.h>
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::Process;
+using Elastos::Droid::Os::IProcess;
+using Elastos::Droid::Os::SystemClock;
+
+using Elastos::Core::StringUtils;
+using Elastos::Core::Thread;
 
 namespace Elastos {
 namespace Droid {
@@ -25,40 +43,29 @@ ECode ConnectionThread::constructor(
     /* [in] */ IRequestQueueConnectionManager* connectionManager,
     /* [in] */ IRequestFeeder* requestFeeder)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
     Thread::constructor();
     mContext = context;
-    SetName(String("http") + StringUtils::Int32ToString(id));
+    SetName(String("http") + StringUtils::ToString(id));
     mId = id;
     mConnectionManager = connectionManager;
     mRequestFeeder = requestFeeder;
-#endif
+    return NOERROR;
 }
 
 ECode ConnectionThread::RequestStop()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    synchronized(this) {
-
+    synchronized(mRequestFeeder) {
         mRunning = FALSE;
-        // return mRequestFeeder->Notify();
+        ISynchronize::Probe(mRequestFeeder)->Notify();
     }
     return NOERROR;
-#endif
 }
 
 ECode ConnectionThread::Run()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    // TODO:
-    // AutoPtr<IProcessHelper> process;
-    // CProcessHelper::AcquireSingleton((IProcessHelper**)&process);
-    // process->SetThreadPriority(
-    //         IProcess::THREAD_PRIORITY_DEFAULT +
-    //         IProcess::THREAD_PRIORITY_LESS_FAVORABLE);
+    Process::SetThreadPriority(
+            IProcess::THREAD_PRIORITY_DEFAULT +
+            IProcess::THREAD_PRIORITY_LESS_FAVORABLE);
 
     // these are used to get performance data. When it is not in the timing,
     // mCurrentThreadTime is 0. When it starts timing, mCurrentThreadTime is
@@ -67,71 +74,68 @@ ECode ConnectionThread::Run()
     mCurrentThreadTime = 0;
     mTotalThreadTime = 0;
 
-    // while (mRunning) {
-    //     if (mCurrentThreadTime == -1) {
-    //         mCurrentThreadTime = SystemClock::CurrentThreadTimeMillis();
-    //     }
+    while (mRunning) {
+        if (mCurrentThreadTime == -1) {
+            mCurrentThreadTime = SystemClock::GetCurrentThreadTimeMillis();
+        }
 
-    //     Request* request;
+        AutoPtr<IRequest> request;
 
-    //     /* Get a request to process */
-    //     mRequestFeeder->GetRequest(&request);
+        /* Get a request to process */
+        mRequestFeeder->GetRequest((IRequest**)&request);
 
-    //     /* wait for work */
-    //     if (request == NULL) {
-    //         synchronized(mLock) {
+        /* wait for work */
+        if (request == NULL) {
+            synchronized(mRequestFeeder) {
+                if (HttpLog::LOGV) HttpLog::V("ConnectionThread: Waiting for work");
+                mWaiting = TRUE;
+                ISynchronize::Probe(mRequestFeeder)->Wait();
+                mWaiting = false;
 
-        //         // if (HttpLog.LOGV) HttpLog.v("ConnectionThread: Waiting for work");
-        //         mWaiting = TRUE;
-        //         mRequestFeeder->Wait();
-        //         mWaiting = false;
-
-        //         if (mCurrentThreadTime != 0) {
-        //             mCurrentThreadTime = SystemClock::CurrentThreadTimeMillis();
-        //         }
+                if (mCurrentThreadTime != 0) {
+                    mCurrentThreadTime = SystemClock::GetCurrentThreadTimeMillis();
                 }
-    //     } else {
-    //         // if (HttpLog.LOGV) HttpLog.v("ConnectionThread: new request " +
-    //         //                             request.mHost + " " + request );
+            }
+        }
+        else {
+            if (HttpLog::LOGV) {
+                HttpLog::V("ConnectionThread: new request %s %s",
+                        Object::ToString(((Request*)request.Get())->mHost).string(), StringUtils::ToString(request).string());
+            }
 
-    //         mConnectionManager->GetConnection(mContext, request->mHost, (IRequestFeeder**)&mConnection);
-    //         mConnection->ProcessRequests(request);
-    //         if (mConnection->GetCanPersist()) {
-    //             if (!mConnectionManager->RecycleConnection(mConnection)) {
-    //                 mConnection->CloseConnection();
-    //             }
-    //         } else {
-    //             mConnection->CloseConnection();
-    //         }
-    //         mConnection = NULL;
+            mConnectionManager->GetConnection(mContext, ((Request*)request.Get())->mHost, (IConnection**)&mConnection);
+            ((Connection*)mConnection.Get())->ProcessRequests(request);
+            if (Ptr((Connection*)mConnection.Get())->Func(((Connection*)mConnection.Get())->GetCanPersist)) {
+                Boolean isRecycleConnectionOk;
+                mConnectionManager->RecycleConnection(mConnection, &isRecycleConnectionOk);
+                if (!isRecycleConnectionOk) {
+                    ((Connection*)mConnection.Get())->CloseConnection();
+                }
+            } else {
+                ((Connection*)mConnection.Get())->CloseConnection();
+            }
+            mConnection = NULL;
 
-    //         if (mCurrentThreadTime > 0) {
-    //             Int64 start = mCurrentThreadTime;
-    //             mCurrentThreadTime = SystemClock:CurrentThreadTimeMillis();
-    //             mTotalThreadTime += mCurrentThreadTime - start;
-    //         }
-    //     }
+            if (mCurrentThreadTime > 0) {
+                Int64 start = mCurrentThreadTime;
+                mCurrentThreadTime = SystemClock::GetCurrentThreadTimeMillis();
+                mTotalThreadTime += mCurrentThreadTime - start;
+            }
+        }
 
-    // }
+    }
     return NOERROR;
-#endif
 }
 
 ECode ConnectionThread::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(str);
+    VALIDATE_NOT_NULL(result);
 
-    String con;
-    // if(mConnection != NULL) mConnection->ToString(*con);
     String active = mWaiting ? String("w") : String("a");
-    *str = String("cid ") + StringUtils::Int32ToString(mId) + String(" ") + active + String(" ")  + con;
+    *result = String("cid ") + StringUtils::ToString(mId) + " " + active + " " + StringUtils::ToString(mConnection);
     return NOERROR;
-#endif
 }
-
 
 } // namespace Http
 } // namespace Net

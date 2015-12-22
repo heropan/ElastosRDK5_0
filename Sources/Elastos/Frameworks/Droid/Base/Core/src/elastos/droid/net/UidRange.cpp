@@ -1,5 +1,12 @@
 
+#include "_Elastos.Droid.Os.h"
 #include "elastos/droid/net/UidRange.h"
+#include "elastos/droid/net/CUidRange.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -11,107 +18,92 @@ ECode UidRange::constructor(
     /* [in] */ Int32 startUid,
     /* [in] */ Int32 stopUid)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (startUid < 0) throw new IllegalArgumentException("Invalid start UID.");
-        if (stopUid < 0) throw new IllegalArgumentException("Invalid stop UID.");
-        if (startUid > stopUid) throw new IllegalArgumentException("Invalid UID range.");
-        start = startUid;
-        stop  = stopUid;
-#endif
+    if (startUid < 0) {
+        Logger::E("UidRange", "Invalid start UID.");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    if (stopUid < 0) {
+        Logger::E("UidRange", "Invalid stop UID.");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    if (startUid > stopUid) {
+        Logger::E("UidRange", "Invalid UID range.");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mStart = startUid;
+    mStop  = stopUid;
+    return NOERROR;
 }
 
 ECode UidRange::CreateForUser(
     /* [in] */ Int32 userId,
     /* [out] */ IUidRange** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return new UidRange(userId * PER_USER_RANGE, (userId + 1) * PER_USER_RANGE - 1);
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    return CUidRange::New(userId * IUserHandle::PER_USER_RANGE, (userId + 1) * IUserHandle::PER_USER_RANGE - 1, result);
 }
 
 ECode UidRange::GetStartUser(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return start / PER_USER_RANGE;
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    *result = mStart / IUserHandle::PER_USER_RANGE;
+    return NOERROR;
 }
 
 ECode UidRange::GetHashCode(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        Int32 result = 17;
-        result = 31 * result + start;
-        result = 31 * result + stop;
-        return result;
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    *result = 17;
+    *result = 31 * *result + mStart;
+    *result = 31 * *result + mStop;
+    return NOERROR;
 }
 
 ECode UidRange::Equals(
     /* [in] */ IInterface* o,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (this == o) {
-            return TRUE;
-        }
-        if (IUidRange::Probe(o) != NULL) {
-            UidRange other = (UidRange) o;
-            return start == other.start && stop == other.stop;
-        }
-        return FALSE;
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    if (TO_IINTERFACE(this) == IInterface::Probe(o)) FUNC_RETURN(TRUE)
+    if (IUidRange::Probe(o) != NULL) {
+        AutoPtr<UidRange> other = (UidRange*) IUidRange::Probe(o);
+        *result = mStart == other->mStart && mStop == other->mStop;
+        return NOERROR;
+    }
+    FUNC_RETURN(FALSE)
 }
 
 ECode UidRange::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return start + "-" + stop;
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    String rev;
+    rev.AppendFormat("%d-%d", mStart, mStop);
+    *result = rev;
+    return NOERROR;
 }
 
 ECode UidRange::ReadFromParcel(
         /* [in] */ IParcel* parcel)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            @Override
-            public UidRange createFromParcel(Parcel in) {
-                Int32 start = in.readInt();
-                Int32 stop = in.readInt();
-                return new UidRange(start, stop);
-            }
-            @Override
-            public UidRange[] newArray(Int32 size) {
-                return new UidRange[size];
-            }
-#endif
+    parcel->ReadInt32(&mStart);
+    parcel->ReadInt32(&mStop);
+    return NOERROR;
 }
 
 ECode UidRange::WriteToParcel(
         /* [in] */ IParcel* dest)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            @Override
-            public UidRange createFromParcel(Parcel in) {
-                Int32 start = in.readInt();
-                Int32 stop = in.readInt();
-                return new UidRange(start, stop);
-            }
-            @Override
-            public UidRange[] newArray(Int32 size) {
-                return new UidRange[size];
-            }
-#endif
+    dest->WriteInt32(mStart);
+    dest->WriteInt32(mStop);
+    return NOERROR;
 }
 
 ECode UidRange::GetStart(
@@ -131,7 +123,6 @@ ECode UidRange::GetStop(
     *result = mStop;
     return NOERROR;
 }
-
 
 } // namespace Net
 } // namespace Droid

@@ -4,11 +4,14 @@
 
 #include "Elastos.Droid.Net.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/net/http/Request.h"
 #include <elastos/core/Object.h>
+#include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::Content::IContext;
 
-using Elastos::Utility::ILinkedList;
+using Elastos::Utility::Etl::List;
+
 using Org::Apache::Http::IHttpEntity;
 using Org::Apache::Http::IHttpHost;
 using Org::Apache::Http::IProtocolVersion;
@@ -109,16 +112,14 @@ private:
      * cleared back to the mRequest queue
      * @return true if mRequests is empty after pipe cleared
      */
-    CARAPI ClearPipe(
-        /* [in] */ ILinkedList* pipe,
-        /* [out] */ Boolean* result);
+    CARAPI_(Boolean) ClearPipe(
+        /* [in] */ List<Request*>& pipe);
 
     /**
      * @return true on success
      */
-    CARAPI OpenHttpConnection(
-        /* [in] */ IRequest* req,
-        /* [out] */ Boolean* result);
+    CARAPI_(Boolean) OpenHttpConnection(
+        /* [in] */ IRequest* req);
 
     /**
      * Helper.  Calls the mEventHandler's error() method only if
@@ -130,22 +131,20 @@ private:
      * @return true if request can be retried (less than
      * RETRY_REQUEST_LIMIT failures have occurred).
      */
-    CARAPI HttpFailure(
+    CARAPI_(Boolean) HttpFailure(
         /* [in] */ IRequest* req,
         /* [in] */ Int32 errorId,
-        /* [in] */ ECode e,
-        /* [out] */ Boolean* result);
+        /* [in] */ ECode e);
 
     /**
      * Use same logic as ConnectionReuseStrategy
      * @see ConnectionReuseStrategy
      */
-    CARAPI KeepAlive(
+    CARAPI_(Boolean) KeepAlive(
         /* [in] */ IHttpEntity* entity,
         /* [in] */ IProtocolVersion* ver,
         /* [in] */ Int32 connType,
-        /* [in] */ const IHttpContext* context,
-        /* [out] */ Boolean* result);
+        /* [in] */ IHttpContext* context);
 
     static CARAPI_(AutoPtr<ArrayOf<String> >) InitSTATES();
 

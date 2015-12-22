@@ -5,6 +5,8 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Utility::Regex::IPattern;
+
 namespace Elastos {
 namespace Droid {
 namespace Net {
@@ -77,22 +79,27 @@ public:
         /* [out] */ String* result);
 
 private:
-    WifiKey(
-        /* [in] */ IParcel* in);
+    static CARAPI_(AutoPtr<IPattern>) InitPattern(
+        /* [in] */ const String& pattern);
+
+private:
+    // Patterns used for validation.
+    static const AutoPtr<IPattern> SSID_PATTERN;
+    static const AutoPtr<IPattern> BSSID_PATTERN;
 
     /**
      * The service set identifier (SSID) of an 802.11 network. If the SSID can be decoded as
      * UTF-8, it will be surrounded by double quotation marks. Otherwise, it will be a string of
      * hex digits starting with 0x.
      */
-    const String SSID;
+    /* const */ String mSsid;
 
     /**
      * The basic service set identifier (BSSID) of an access point for this network. This will
      * be in the form of a six-byte MAC address: {@code XX:XX:XX:XX:XX:XX}, where each X is a
      * hexadecimal digit.
      */
-    const String BSSID;
+    /* const */ String mBssid;
 };
 
 } // namespace Net

@@ -15,6 +15,8 @@ module
      */
     /**
      * @Involve
+     * interface Elastos.Sql.IWrapper;
+     * interface ICloseable;
      * interface IConnection
      */
     interface IHttpsConnection {

@@ -1,7 +1,21 @@
 
-#include <Elastos.CoreLibrary.Utility.h>
+#include <Elastos.CoreLibrary.IO.h>
 #include <Elastos.CoreLibrary.Net.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/net/dhcp/DhcpDiscoverPacket.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/net/dhcp/DhcpDiscoverPacket.h"
+#include "elastos/droid/net/dhcp/DhcpPacket.h"
+#include "elastos/droid/os/Build.h"
+
+using Elastos::Droid::Os::Build;
+using Elastos::IO::CByteBufferHelper;
+using Elastos::IO::IBuffer;
+using Elastos::IO::IByteBufferHelper;
+using Elastos::Net::CInet4AddressHelper;
+using Elastos::Net::IInet4Address;
+using Elastos::Net::IInet4AddressHelper;
+using Elastos::Net::IInetAddress;
 
 namespace Elastos {
 namespace Droid {
@@ -16,22 +30,23 @@ ECode DhcpDiscoverPacket::constructor(
     /* [in] */ ArrayOf<Byte>* clientMac,
     /* [in] */ Boolean broadcast)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        super(transId, Inet4Address.ANY, Inet4Address.ANY, Inet4Address.ANY,
-            Inet4Address.ANY, clientMac, broadcast);
-#endif
+    AutoPtr<IInet4AddressHelper> inet4AddressHelper;
+    CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
+    AutoPtr<IInetAddress> any;
+    inet4AddressHelper->GetANY((IInetAddress**)&any);
+    return DhcpPacket::constructor(transId, any, any, any, any, clientMac, broadcast);
 }
 
 ECode DhcpDiscoverPacket::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        String s = super.toString();
-        return s + " DISCOVER " +
-                (mBroadcast ? "broadcast " : "unicast ");
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    String s;
+    DhcpPacket::ToString(&s);
+    *result = s + " DISCOVER " +
+            (mBroadcast ? "broadcast " : "unicast ");
+    return NOERROR;
 }
 
 ECode DhcpDiscoverPacket::BuildPacket(
@@ -40,39 +55,42 @@ ECode DhcpDiscoverPacket::BuildPacket(
     /* [in] */ Int16 srcUdp,
     /* [out] */ IByteBuffer** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        ByteBuffer result = ByteBuffer.allocate(MAX_LENGTH);
-        InetAddress destIp = Inet4Address.ALL;
-        fillInPacket(encap, Inet4Address.ALL, Inet4Address.ANY, destUdp, srcUdp,
-            result, DHCP_BOOTREQUEST, TRUE);
-        result.flip();
-        return result;
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    AutoPtr<IByteBuffer> rev;
+    AutoPtr<IByteBufferHelper> byteBufferHelper;
+    CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&byteBufferHelper);
+    byteBufferHelper->Allocate(MAX_LENGTH, (IByteBuffer**)&rev);
+    AutoPtr<IInet4AddressHelper> inet4AddressHelper;
+    CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
+    AutoPtr<IInetAddress> any;
+    inet4AddressHelper->GetANY((IInetAddress**)&any);
+    AutoPtr<IInetAddress> destIp;
+    inet4AddressHelper->GetALL((IInetAddress**)&destIp);
+    FillInPacket(encap, Ptr(inet4AddressHelper)->Func(inet4AddressHelper->GetALL),
+            Ptr(inet4AddressHelper)->Func(inet4AddressHelper->GetANY),
+            destUdp, srcUdp,
+            rev, DHCP_BOOTREQUEST, TRUE);
+    IBuffer::Probe(rev)->Flip();
+    FUNC_RETURN(rev)
 }
 
 ECode DhcpDiscoverPacket::FinishPacket(
     /* [in] */ IByteBuffer* buffer)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        addTlv(buffer, DHCP_MESSAGE_TYPE, DHCP_MESSAGE_TYPE_DISCOVER);
-        addTlv(buffer, DHCP_PARAMETER_LIST, mRequestedParams);
-        addTlvEnd(buffer);
-#endif
+    AddTlv(buffer, DHCP_MESSAGE_TYPE, DHCP_MESSAGE_TYPE_DISCOVER);
+    AddTlv(buffer, DHCP_PARAMETER_LIST, mRequestedParams);
+    AddTlvEnd(buffer);
+    return NOERROR;
 }
 
 ECode DhcpDiscoverPacket::DoNextOp(
     /* [in] */ DhcpStateMachine* machine)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        // currently omitted: host name
-        machine.onDiscoverReceived(mBroadcast, mTransId, mClientMac,
-            mRequestedParams);
-#endif
+    // currently omitted: host name
+   return machine->OnDiscoverReceived(mBroadcast, mTransId, mClientMac,
+        mRequestedParams);
 }
-
 
 } // namespace Dhcp
 } // namespace Net

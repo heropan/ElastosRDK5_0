@@ -1,5 +1,63 @@
 
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/net/NetworkUtils.h"
+#include "elastos/droid/net/CRouteInfo.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/utility/CPair.h"
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuffer.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+#include <netutils/ifc.h>
+#include <cutils/properties.h>
+#include <netd/NetdClient.h>
+
+using Elastos::Droid::Net::CRouteInfo;
+using Elastos::Droid::Utility::CPair;
+
+using Elastos::Core::CInteger32;
+using Elastos::Core::IInteger32;
+using Elastos::Core::StringBuffer;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::Net::CInetAddressHelper;
+using Elastos::Net::IInet6Address;
+using Elastos::Net::IInetAddress;
+using Elastos::Net::IInetAddressHelper;
+using Elastos::Utility::Logging::Logger;
+
+extern "C" {
+int ifc_enable(const char *ifname);
+int ifc_disable(const char *ifname);
+int ifc_reset_connections(const char *ifname, int reset_mask);
+
+int dhcp_do_request(const char * const ifname,
+                    const char *ipaddr,
+                    const char *gateway,
+                    uint32_t *prefixLength,
+                    const char *dns[],
+                    const char *server,
+                    uint32_t *lease,
+                    const char *vendorInfo,
+                    const char *domains,
+                    const char *mtu);
+
+int dhcp_do_request_renew(const char * const ifname,
+                    const char *ipaddr,
+                    const char *gateway,
+                    uint32_t *prefixLength,
+                    const char *dns[],
+                    const char *server,
+                    uint32_t *lease,
+                    const char *vendorInfo,
+                    const char *domains,
+                    const char *mtu);
+
+int dhcp_stop(const char *ifname);
+int dhcp_release_lease(const char *ifname);
+char *dhcp_get_errmsg();
+}
 
 namespace Elastos {
 namespace Droid {
@@ -15,9 +73,15 @@ ECode NetworkUtils::ResetConnections(
     /* [in] */ Int32 mask,
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-#endif
+    VALIDATE_NOT_NULL(result);
+
+    const char *nameStr = interfaceName;
+
+    Logger::D(TAG, "droid_net_utils_resetConnections in iface=%s mask=0x%x\n",
+            nameStr, mask);
+    int n = ::ifc_reset_connections(nameStr, mask);
+    *result = (Int32)n;
+    return NOERROR;
 }
 
 ECode NetworkUtils::RunDhcp(
@@ -25,9 +89,10 @@ ECode NetworkUtils::RunDhcp(
     /* [in] */ IDhcpResults* dhcpResults,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-#endif
+    VALIDATE_NOT_NULL(result);
+
+    *result = NativeRunDhcpCommon(interfaceName, dhcpResults, FALSE);
+    return NOERROR;
 }
 
 ECode NetworkUtils::RunDhcpRenew(
@@ -35,61 +100,72 @@ ECode NetworkUtils::RunDhcpRenew(
     /* [in] */ IDhcpResults* dhcpResults,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-#endif
+    VALIDATE_NOT_NULL(result);
+
+    *result = NativeRunDhcpCommon(interfaceName, dhcpResults, TRUE);
+    return NOERROR;
 }
 
 ECode NetworkUtils::StopDhcp(
     /* [in] */ const String& interfaceName,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-#endif
+    VALIDATE_NOT_NULL(result);
+
+    const char *nameStr = interfaceName.string();
+    int res = ::dhcp_stop(nameStr);
+    *result = (Boolean)(res == 0);
+    return NOERROR;
 }
 
 ECode NetworkUtils::ReleaseDhcpLease(
     /* [in] */ const String& interfaceName,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-#endif
+    VALIDATE_NOT_NULL(result);
+
+    const char *nameStr = interfaceName.string();
+    int res = ::dhcp_release_lease(nameStr);
+    *result = (Boolean)(res == 0);
+    return NOERROR;
 }
 
 ECode NetworkUtils::GetDhcpError(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    *result = String(::dhcp_get_errmsg());
+    return NOERROR;
 }
 
 ECode NetworkUtils::BindProcessToNetwork(
     /* [in] */ Int32 netId,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    *result = !setNetworkForProcess(netId);
+    return NOERROR;
 }
 
 ECode NetworkUtils::GetNetworkBoundToProcess(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    *result = getNetworkForProcess();
+    return NOERROR;
 }
 
 ECode NetworkUtils::BindProcessToNetworkForHostResolution(
     /* [in] */ Int32 netId,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    *result = !setNetworkForResolv(netId);
+    return NOERROR;
 }
 
 ECode NetworkUtils::BindSocketToNetwork(
@@ -97,478 +173,59 @@ ECode NetworkUtils::BindSocketToNetwork(
     /* [in] */ Int32 netId,
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    *result = setNetworkForSocket(netId, socketfd);
+    return NOERROR;
 }
 
 ECode NetworkUtils::ProtectFromVpn(
     /* [in] */ Int32 socketfd,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    *result = !protectFromVpn(socketfd);
+    return NOERROR;
 }
 
 ECode NetworkUtils::IntToInetAddress(
     /* [in] */ Int32 hostAddress,
     /* [out] */ IInetAddress** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        byte[] addressBytes = { (byte)(0xff & hostAddress),
-                                (byte)(0xff & (hostAddress >> 8)),
-                                (byte)(0xff & (hostAddress >> 16)),
-                                (byte)(0xff & (hostAddress >> 24)) };
-        try {
-           return InetAddress.getByAddress(addressBytes);
-        } catch (UnknownHostException e) {
-           throw new AssertionError();
-        }
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    AutoPtr<ArrayOf<Byte> > addressBytes = ArrayOf<Byte>::Alloc(new Byte[4] { (Byte)(0xff & hostAddress),
+            (Byte)(0xff & (hostAddress >> 8)),
+            (Byte)(0xff & (hostAddress >> 16)),
+            (Byte)(0xff & (hostAddress >> 24)) }, 4);
+        // try {
+    AutoPtr<IInetAddressHelper> helper;
+    CInetAddressHelper::AcquireSingleton((IInetAddressHelper**)&helper);
+    ECode ec = helper->GetByAddress(addressBytes, result);
+        // } catch (UnknownHostException e) {
+    if (FAILED(ec)) {
+        if (ec == E_UNKNOWN_HOST_EXCEPTION)
+           return E_ASSERTION_ERROR;
+        return ec;
+    }
+        // }
+    return NOERROR;
 }
 
 ECode NetworkUtils::InetAddressToInt(
     /* [in] */ IInet4Address* inetAddr,
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        byte [] addr = inetAddr.getAddress();
-        return ((addr[3] & 0xff) << 24) | ((addr[2] & 0xff) << 16) |
-                ((addr[1] & 0xff) << 8) | (addr[0] & 0xff);
-#endif
-}
-
-ECode NetworkUtils::PrefixLengthToNetmaskInt(
-    /* [in] */ Int32 prefixLength,
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (prefixLength < 0 || prefixLength > 32) {
-            throw new IllegalArgumentException("Invalid prefix length (0 <= prefix <= 32)");
-        }
-        Int32 value = 0xffffffff << (32 - prefixLength);
-        return Integer.reverseBytes(value);
-#endif
-}
-
-ECode NetworkUtils::NetmaskIntToPrefixLength(
-    /* [in] */ Int32 netmask,
-    /* [out] */ Int32* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return Integer.bitCount(netmask);
-#endif
-}
-
-ECode NetworkUtils::NumericToInetAddress(
-    /* [in] */ const String& addrString,
-    /* [out] */ IInetAddress** result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return InetAddress.parseNumericAddress(addrString);
-#endif
-}
-
-ECode NetworkUtils::ParcelInetAddress(
-    /* [in] */ IParcel* parcel,
-    /* [in] */ IInetAddress* address,
-    /* [in] */ Int32 flags)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        byte[] addressArray = (address != NULL) ? address.getAddress() : NULL;
-        parcel.writeByteArray(addressArray);
-#endif
-}
-
-ECode NetworkUtils::UnparcelInetAddress(
-    /* [in] */ IParcel* in,
-    /* [out] */ IInetAddress** result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        byte[] addressArray = in.createByteArray();
-        if (addressArray == NULL) {
-            return NULL;
-        }
-        try {
-            return InetAddress.getByAddress(addressArray);
-        } catch (UnknownHostException e) {
-            return NULL;
-        }
-#endif
-}
-
-ECode NetworkUtils::MaskRawAddress(
-    /* [in] */ ArrayOf<Byte>* array,
-    /* [in] */ Int32 prefixLength)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (prefixLength < 0 || prefixLength > array.length * 8) {
-            throw new RuntimeException("IP address with " + array.length +
-                    " bytes has invalid prefix length " + prefixLength);
-        }
-        Int32 offset = prefixLength / 8;
-        Int32 remainder = prefixLength % 8;
-        byte mask = (byte)(0xFF << (8 - remainder));
-        if (offset < array.length) array[offset] = (byte)(array[offset] & mask);
-        offset++;
-        for (; offset < array.length; offset++) {
-            array[offset] = 0;
-        }
-#endif
-}
-
-ECode NetworkUtils::GetNetworkPart(
-    /* [in] */ IInetAddress* address,
-    /* [in] */ Int32 prefixLength,
-    /* [out] */ IInetAddress** result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        byte[] array = address.getAddress();
-        maskRawAddress(array, prefixLength);
-        InetAddress netPart = NULL;
-        try {
-            netPart = InetAddress.getByAddress(array);
-        } catch (UnknownHostException e) {
-            throw new RuntimeException("getNetworkPart error - " + e.toString());
-        }
-        return netPart;
-#endif
-}
-
-ECode NetworkUtils::ParseIpAndMask(
-    /* [in] */ const String& ipAndMaskString,
-    /* [out] */ IPair** result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        InetAddress address = NULL;
-        Int32 prefixLength = -1;
-        try {
-            String[] pieces = ipAndMaskString.split("/", 2);
-            prefixLength = StringUtils::ParseInt32(pieces[1]);
-            address = InetAddress.parseNumericAddress(pieces[0]);
-        } catch (NullPointerException e) {            // Null string.
-        } catch (ArrayIndexOutOfBoundsException e) {  // No prefix length.
-        } catch (NumberFormatException e) {           // Non-numeric prefix.
-        } catch (IllegalArgumentException e) {        // Invalid IP address.
-        }
-        if (address == NULL || prefixLength == -1) {
-            throw new IllegalArgumentException("Invalid IP address and mask " + ipAndMaskString);
-        }
-        return new Pair<InetAddress, Integer>(address, prefixLength);
-#endif
-}
-
-ECode NetworkUtils::AddressTypeMatches(
-    /* [in] */ IInetAddress* left,
-    /* [in] */ IInetAddress* right,
-    /* [out] */ Boolean* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return (((IInet4Address::Probe(left) != NULL) && (IInet4Address::Probe(right) != NULL)) ||
-                ((IInet6Address::Probe(left) != NULL) && (IInet6Address::Probe(right) != NULL)));
-#endif
-}
-
-ECode NetworkUtils::HexToInet6Address(
-    /* [in] */ const String& addrHexString,
-    /* [out] */ IInetAddress** result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        try {
-            return numericToInetAddress(String.format(Locale.US, "%s:%s:%s:%s:%s:%s:%s:%s",
-                    addrHexString.substring(0,4),   addrHexString.substring(4,8),
-                    addrHexString.substring(8,12),  addrHexString.substring(12,16),
-                    addrHexString.substring(16,20), addrHexString.substring(20,24),
-                    addrHexString.substring(24,28), addrHexString.substring(28,32)));
-        } catch (Exception e) {
-            Logger::E("NetworkUtils", "error in hexToInet6Address(" + addrHexString + "): " + e);
-            throw new IllegalArgumentException(e);
-        }
-#endif
-}
-
-ECode NetworkUtils::MakeStrings(
-    /* [in] */ ICollection* addrs,
-    /* [out, callee] */ ArrayOf<String>** result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        String[] result = new String[addrs.size()];
-        Int32 i = 0;
-        for (InetAddress addr : addrs) {
-            result[i++] = addr.getHostAddress();
-        }
-        return result;
-#endif
-}
-
-ECode NetworkUtils::TrimV4AddrZeros(
-    /* [in] */ const String& addr,
-    /* [out] */ String* result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (addr == NULL) return NULL;
-        String[] octets = addr.split("\\.");
-        if (octets.length != 4) return addr;
-        StringBuilder builder = new StringBuilder(16);
-        String result = NULL;
-        for (Int32 i = 0; i < 4; i++) {
-            try {
-                if (octets[i].length() > 3) return addr;
-                builder.append(StringUtils::ParseInt32(octets[i]));
-            } catch (NumberFormatException e) {
-                return addr;
-            }
-            if (i < 3) builder.append('.');
-        }
-        result = builder.toString();
-        return result;
-#endif
-}
-
-
-} // namespace Net
-} // namespace Droid
-} // namespace Elastos
-
-#if 0 // old NetworkUtils.cpp
-#include "elastos/droid/net/NetworkUtils.h"
-#ifdef DROID_CORE
-#include "elastos/droid/net/CRouteInfo.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
-#include <elastos/core/Math.h>
-#include <elastos/core/StringBuffer.h>
-#include <elastos/core/StringUtils.h>
-#include <elastos/utility/logging/Logger.h>
-#include <netutils/ifc.h>
-#include <cutils/properties.h>
-#include <elastos/core/StringBuilder.h>
-
-using Elastos::Net::IInetAddress;
-using Elastos::Net::CInetAddressHelper;
-using Elastos::Core::StringBuilder;
-using Elastos::Core::StringBuffer;
-using Elastos::Core::StringUtils;
-using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::Net::CRouteInfo;
-
-extern "C" {
-int ifc_enable(const char *ifname);
-int ifc_disable(const char *ifname);
-int ifc_reset_connections(const char *ifname, int reset_mask);
-
-int dhcp_do_request(const char *ifname,
-                    const char *ipaddr,
-                    const char *gateway,
-                    uint32_t *prefixLength,
-                    const char *dns1,
-                    const char *dns2,
-                    const char *server,
-                    uint32_t *lease,
-                    const char *vendorInfo);
-
-int dhcp_do_request_renew(const char *ifname,
-                    const char *ipaddr,
-                    const char *gateway,
-                    uint32_t *prefixLength,
-                    const char *dns1,
-                    const char *dns2,
-                    const char *server,
-                    uint32_t *lease,
-                    const char *vendorInfo);
-
-int dhcp_stop(const char *ifname);
-int dhcp_release_lease(const char *ifname);
-char *dhcp_get_errmsg();
-}
-
-namespace Elastos {
-namespace Droid {
-namespace Net {
-
-const String NetworkUtils::TAG("NetworkUtils");
-
-/** Bring the named network interface up. */
-Int32 NetworkUtils::EnableInterface(
-    /* [in] */ const String& interfaceName)
-{
-    const char *nameStr = interfaceName.string();
-    int n = ::ifc_enable(nameStr);
-    return (Int32)n;
-}
-
-/** Bring the named network interface down. */
-Int32 NetworkUtils::DisableInterface(
-    /* [in] */ const String& interfaceName)
-{
-    const char *nameStr = interfaceName.string();
-    int n = ::ifc_disable(nameStr);
-    return (Int32)n;
-}
-
-/**
- * Reset IPv6 or IPv4 sockets that are connected via the named interface.
- *
- * @param interfaceName is the interface to reset
- * @param mask {@see #RESET_IPV4_ADDRESSES} and {@see #RESET_IPV6_ADDRESSES}
- */
-Int32 NetworkUtils::ResetConnections(
-    /* [in] */ const String& interfaceName,
-    /* [in] */ Int32 mask)
-{
-    const char *nameStr = interfaceName;
-
-//    ALOGD("android_net_utils_resetConnections in env=%p clazz=%p iface=%s mask=0x%x\n",
-//          env, clazz, nameStr, mask);
-    int n = ::ifc_reset_connections(nameStr, mask);
-    return (Int32)n;
-}
-
-/**
- * Start the DHCP client daemon, in order to have it request addresses
- * for the named interface, and then configure the interface with those
- * addresses. This call blocks until it obtains a result (either success
- * or failure) from the daemon.
- * @param interfaceName the name of the interface to configure
- * @param ipInfo if the request succeeds, this object is filled in with
- * the IP address information.
- * @return {@code TRUE} for success, {@code FALSE} for failure
- */
-Boolean NetworkUtils::RunDhcp(
-    /* [in] */ const String& interfaceName,
-    /* [in] */ DhcpInfoInternal* ipInfo)
-{
-    return NativeRunDhcpCommon(interfaceName, ipInfo, FALSE);
-}
-
-/**
- * Initiate renewal on the Dhcp client daemon. This call blocks until it obtains
- * a result (either success or failure) from the daemon.
- * @param interfaceName the name of the interface to configure
- * @param ipInfo if the request succeeds, this object is filled in with
- * the IP address information.
- * @return {@code TRUE} for success, {@code FALSE} for failure
- */
-Boolean NetworkUtils::RunDhcpRenew(
-    /* [in] */ const String& interfaceName,
-    /* [in] */ DhcpInfoInternal* ipInfo)
-{
-    return NativeRunDhcpCommon(interfaceName, ipInfo, TRUE);
-}
-
-/**
- * Shut down the DHCP client daemon.
- * @param interfaceName the name of the interface for which the daemon
- * should be stopped
- * @return {@code TRUE} for success, {@code FALSE} for failure
- */
-Boolean NetworkUtils::StopDhcp(
-    /* [in] */ const String& interfaceName)
-{
-    const char *nameStr = interfaceName.string();
-    int res = ::dhcp_stop(nameStr);
-    return (Boolean)(res == 0);
-}
-
-/**
- * Release the current DHCP lease.
- * @param interfaceName the name of the interface for which the lease should
- * be released
- * @return {@code TRUE} for success, {@code FALSE} for failure
- */
-Boolean NetworkUtils::ReleaseDhcpLease(
-    /* [in] */ const String& interfaceName)
-{
-    const char *nameStr = interfaceName.string();
-    int res = ::dhcp_release_lease(nameStr);
-    return (Boolean)(res == 0);
-}
-
-/**
- * Return the last DHCP-related error message that was recorded.
- * <p/>NOTE: This string is not localized, but currently it is only
- * used in logging.
- * @return the most recent error message, if any
- */
-String NetworkUtils::GetDhcpError()
-{
-    const char* ch = ::dhcp_get_errmsg();
-    return String(ch);
-}
-
-/**
- * Convert a IPv4 address from an integer to an InetAddress.
- * @param hostAddress an Int32 corresponding to the IPv4 address in network Byte order
- */
-ECode NetworkUtils::Int32ToInetAddress(
-    /* [in] */ Int32 hostAddress,
-    /* [out] */ IInetAddress** result)
-{
-    VALIDATE_NOT_NULL(result);
-
-    AutoPtr< ArrayOf<Byte> > addressBytes = ArrayOf<Byte>::Alloc(4);
-    addressBytes->Set(0, (Byte)(0xff & hostAddress));
-    addressBytes->Set(1, (Byte)(0xff & (hostAddress >> 8)));
-    addressBytes->Set(2, (Byte)(0xff & (hostAddress >> 16)));
-    addressBytes->Set(3, (Byte)(0xff & (hostAddress >> 24)));
-    AutoPtr<IInetAddress> inetaddress;
-    AutoPtr<IInetAddressHelper> inetaddresshelper;
-    CInetAddressHelper::AcquireSingleton((IInetAddressHelper**)&inetaddresshelper);
-    inetaddresshelper->GetByAddress(addressBytes, (IInetAddress**)&inetaddress);
-    *result = inetaddress;
-    REFCOUNT_ADD(*result);
-    return NOERROR;
-}
-
-/**
- * Convert a IPv4 address from an InetAddress to an integer
- * @param inetAddr is an InetAddress corresponding to the IPv4 address
- * @return the IP address as an integer in network Byte order
- */
-ECode NetworkUtils::InetAddressToInt32(
-    /* [in] */ IInetAddress* inetAddr,
-    /* [out] */ Int32* address)
-{
-    VALIDATE_NOT_NULL(address);
-    *address = 0;
+    VALIDATE_NOT_NULL(result)
 
     AutoPtr<ArrayOf<Byte> > addr;
-    inetAddr->GetAddress((ArrayOf<Byte>**)&addr);
-    assert(addr != NULL);
-
-    Int32 length = addr->GetLength();
-    if (length != 4) {
-        Logger::E("NetworkUtils::InetAddressToInt32", "Not an IPv4 address");
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        // throw new IllegalArgumentException("Not an IPv4 address");
-    }
-
-    *address = (((*addr)[3] & 0xff) << 24) | (((*addr)[2] & 0xff) << 16) |
+    IInetAddress::Probe(inetAddr)->GetAddress((ArrayOf<Byte>**)&addr);
+    *result = (((*addr)[3] & 0xff) << 24) | (((*addr)[2] & 0xff) << 16) |
             (((*addr)[1] & 0xff) << 8) | ((*addr)[0] & 0xff);
     return NOERROR;
 }
 
-/**
- * Convert a network prefix length to an IPv4 netmask integer
- * @param prefixLength
- * @return the IPv4 netmask as an integer in network Byte order
- */
 ECode NetworkUtils::PrefixLengthToNetmaskInt(
     /* [in] */ Int32 prefixLength,
     /* [out] */ Int32* result)
@@ -576,7 +233,7 @@ ECode NetworkUtils::PrefixLengthToNetmaskInt(
     VALIDATE_NOT_NULL(result);
 
     if (prefixLength < 0 || prefixLength > 32) {
-//        throw new IllegalArgumentException("Invalid prefix length (0 <= prefix <= 32)");
+        Logger::E(TAG, "Invalid prefix length 0 <= prefix <= 32)");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Int32 value = (Int32)0xffffffff << (32 - prefixLength);
@@ -584,68 +241,77 @@ ECode NetworkUtils::PrefixLengthToNetmaskInt(
     return NOERROR;
 }
 
-/**
- * Convert a IPv4 netmask integer to a prefix length
- * @param netmask as an integer in network Byte order
- * @return the network prefix length
- */
-Int32 NetworkUtils::NetmaskIntToPrefixLength(
-    /* [in] */ Int32 netmask)
+ECode NetworkUtils::NetmaskIntToPrefixLength(
+    /* [in] */ Int32 netmask,
+    /* [out] */ Int32* result)
 {
-    return Elastos::Core::Math::BitCount(netmask);
+    VALIDATE_NOT_NULL(result);
+
+    *result = Elastos::Core::Math::BitCount(netmask);
+    return NOERROR;
 }
 
-/**
- * Create an InetAddress from a string where the string must be a standard
- * representation of a V4 or V6 address.  Avoids doing a DNS lookup on failure
- * but it will throw an IllegalArgumentException in that case.
- * @param addrString
- * @return the InetAddress
- * @hide
- */
 ECode NetworkUtils::NumericToInetAddress(
     /* [in] */ const String& addrString,
     /* [out] */ IInetAddress** result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoPtr<IInetAddress> inetAddress;
+
     AutoPtr<IInetAddressHelper> inetaddresshelper;
     CInetAddressHelper::AcquireSingleton((IInetAddressHelper**)&inetaddresshelper);
+    AutoPtr<IInetAddress> inetAddress;
     FAIL_RETURN(inetaddresshelper->ParseNumericAddress(addrString, (IInetAddress**)&inetAddress));
     *result = inetAddress;
     REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
-/**
- * Get InetAddress masked with prefixLength.  Will never return NULL.
- * @param IP address which will be masked with specified prefixLength
- * @param prefixLength the prefixLength used to mask the IP
- */
-ECode NetworkUtils::GetNetworkPart(
+ECode NetworkUtils::ParcelInetAddress(
+    /* [in] */ IParcel* parcel,
     /* [in] */ IInetAddress* address,
-    /* [in] */ Int32 prefixLength,
+    /* [in] */ Int32 flags)
+{
+    AutoPtr<ArrayOf<Byte> > addressArray = (address != NULL) ? Ptr(address)->Func(address->GetAddress) : NULL;
+    parcel->WriteArrayOf((Handle32)addressArray.Get());
+    return NOERROR;
+}
+
+ECode NetworkUtils::UnparcelInetAddress(
+    /* [in] */ IParcel* in,
     /* [out] */ IInetAddress** result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = NULL;
 
-    if (address == NULL) {
-//        throw new RuntimeException("getNetworkPart doesn't accept NULL address");
-        return E_RUNTIME_EXCEPTION;
+    AutoPtr<ArrayOf<Byte> > addressArray;
+    in->ReadArrayOf((Handle32*)&addressArray);
+    if (addressArray == NULL) {
+        FUNC_RETURN(NULL)
     }
+        // try {
+    AutoPtr<IInetAddressHelper> inetaddresshelper;
+    CInetAddressHelper::AcquireSingleton((IInetAddressHelper**)&inetaddresshelper);
+    ECode ec = inetaddresshelper->GetByAddress(addressArray, result);
+        // } catch (UnknownHostException e) {
+    if (FAILED(ec)) {
+        if (ec == E_UNKNOWN_HOST_EXCEPTION) FUNC_RETURN(NULL)
+        return ec;
+    }
+        // }
+    return NOERROR;
+}
 
-    AutoPtr<ArrayOf<Byte> > array;
-    address->GetAddress((ArrayOf<Byte>**)&array);
-
+ECode NetworkUtils::MaskRawAddress(
+    /* [in] */ ArrayOf<Byte>* array,
+    /* [in] */ Int32 prefixLength)
+{
     if (prefixLength < 0 || prefixLength > array->GetLength() * 8) {
-//        throw new RuntimeException("getNetworkPart - bad prefixLength");
+        Logger::E(TAG, "IP address with %d bytes has invalid prefix length %d", array->GetLength(), prefixLength);
         return E_RUNTIME_EXCEPTION;
     }
 
     Int32 offset = prefixLength / 8;
-    Int32 reminder = prefixLength % 8;
-    Byte mask = (Byte)(0xFF << (8 - reminder));
+    Int32 remainder = prefixLength % 8;
+    Byte mask = (Byte)(0xFF << (8 - remainder));
 
     if (offset < array->GetLength())
         array->Set(offset, (Byte)((*array)[offset] & mask));
@@ -655,6 +321,20 @@ ECode NetworkUtils::GetNetworkPart(
     for (; offset < array->GetLength(); offset++) {
         array->Set(offset, 0);
     }
+    return NOERROR;
+}
+
+ECode NetworkUtils::GetNetworkPart(
+    /* [in] */ IInetAddress* address,
+    /* [in] */ Int32 prefixLength,
+    /* [out] */ IInetAddress** result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = NULL;
+
+    AutoPtr<ArrayOf<Byte> > array;
+    address->GetAddress((ArrayOf<Byte>**)&array);
+    MaskRawAddress(array, prefixLength);
 
     AutoPtr<IInetAddress> netPart;
     AutoPtr<IInetAddressHelper> inetaddresshelper;
@@ -665,31 +345,65 @@ ECode NetworkUtils::GetNetworkPart(
     return NOERROR;
 }
 
-/**
- * Check if IP address type is consistent between two InetAddress.
- * @return TRUE if both are the same type.  FALSE otherwise.
- */
-Boolean NetworkUtils::AddressTypeMatches(
-    /* [in] */ IInetAddress* left,
-    /* [in] */ IInetAddress* right)
+ECode NetworkUtils::ParseIpAndMask(
+    /* [in] */ const String& ipAndMaskString,
+    /* [out] */ IPair** result)
 {
-    return (((IInet4Address::Probe(left) != NULL) && (IInet4Address::Probe(right) != NULL)) ||
-            ((IInet6Address::Probe(left) != NULL) && (IInet6Address::Probe(right) != NULL)));
+    VALIDATE_NOT_NULL(result);
+
+    AutoPtr<IInetAddress> address;
+    Int32 prefixLength = -1;
+    // try {
+    AutoPtr<ArrayOf<String> > pieces;
+    StringUtils::Split(ipAndMaskString, "/", 2, (ArrayOf<String>**)&pieces);
+    AutoPtr<IInetAddressHelper> inetaddresshelper;
+    CInetAddressHelper::AcquireSingleton((IInetAddressHelper**)&inetaddresshelper);
+    ECode ec;
+    if (pieces->GetLength() > 1) {
+        prefixLength = StringUtils::ParseInt32((*pieces)[1]);
+        ec = inetaddresshelper->ParseNumericAddress((*pieces)[0], (IInetAddress**)&address);
+    }
+    if (FAILED(ec)) {
+        if (ec != E_ILLEGAL_ARGUMENT_EXCEPTION && ec != E_NUMBER_FORMAT_EXCEPTION)
+            return ec;
+    }
+    // } catch (NullPointerException e) {            // Null string.
+    // } catch (ArrayIndexOutOfBoundsException e) {  // No prefix length.
+    // } catch (NumberFormatException e) {           // Non-numeric prefix.
+    // } catch (IllegalArgumentException e) {        // Invalid IP address.
+    // }
+    if (address == NULL || prefixLength == -1) {
+        Logger::E(TAG, "Invalid IP address and mask %s", ipAndMaskString.string());
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    AutoPtr<IInteger32> i32;
+    CInteger32::New(prefixLength, (IInteger32**)&i32);
+    return CPair::New(address, i32, result);
 }
 
-/**
- * Convert a 32 char hex string into a Inet6Address.
- * throws a runtime exception if the string isn't 32 chars, isn't hex or can't be
- * made into an Inet6Address
- * @param addrHexString a 32 character hex string representing an IPv6 addr
- * @return addr an InetAddress representation for the string
- */
+ECode NetworkUtils::AddressTypeMatches(
+    /* [in] */ IInetAddress* left,
+    /* [in] */ IInetAddress* right,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    *result = (((IInet4Address::Probe(left) != NULL) && (IInet4Address::Probe(right) != NULL)) ||
+            ((IInet6Address::Probe(left) != NULL) && (IInet6Address::Probe(right) != NULL)));
+    return NOERROR;
+}
+
 ECode NetworkUtils::HexToInet6Address(
     /* [in] */ const String& addrHexString,
     /* [out] */ IInetAddress** result)
-{
-    VALIDATE_NOT_NULL(result);
+{    VALIDATE_NOT_NULL(result);
+
 //    try {
+            // return numericToInetAddress(String.format(Locale.US, "%s:%s:%s:%s:%s:%s:%s:%s",
+            //         addrHexString.substring(0,4),   addrHexString.substring(4,8),
+            //         addrHexString.substring(8,12),  addrHexString.substring(12,16),
+            //         addrHexString.substring(16,20), addrHexString.substring(20,24),
+            //         addrHexString.substring(24,28), addrHexString.substring(28,32)));
     StringBuilder builder(addrHexString.Substring(0,4));
     builder += String(":");
     builder += addrHexString.Substring(4,8);
@@ -711,63 +425,53 @@ ECode NetworkUtils::HexToInet6Address(
  //   }
 //    catch (Exception e) {
 //        Log.e("NetworkUtils", "error in hexToInet6Address(" + addrHexString + "): " + e);
-//        throw new IllegalArgumentException(e);
+//        return E_ILLEGAL_ARGUMENT_EXCEPTION;
 //    }
     *result = inetaddress;
     REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
-/**
- * Create a string array of host addresses from a collection of InetAddresses
- * @param addrs a Collection of InetAddresses
- * @return an array of Strings containing their host addresses
- */
-AutoPtr<ArrayOf<String> > NetworkUtils::MakeStrings(
-    /* [in] */ IObjectContainer* addrs)
+ECode NetworkUtils::MakeStrings(
+    /* [in] */ ICollection* addrs,
+    /* [out, callee] */ ArrayOf<String>** result)
 {
+    VALIDATE_NOT_NULL(result)
+
     Int32 n;
-    addrs->GetObjectCount(&n);
+    addrs->GetSize(&n);
     AutoPtr<ArrayOf<String> > strs = ArrayOf<String>::Alloc(n);
 
     Int32 i = 0;
-    AutoPtr<IObjectEnumerator> addrsEmu;
-    addrs->GetObjectEnumerator((IObjectEnumerator**)&addrsEmu);
-    Boolean hasNext = FALSE;
-    while (addrsEmu->MoveNext(&hasNext), hasNext) {
-        AutoPtr<IInetAddress> addr;
-        addrsEmu->Current((IInterface**)&addr);
-        addr->GetHostAddress(&(*strs)[i++]);
+    FOR_EACH(iter, addrs) {
+        AutoPtr<IInetAddress> addr = IInetAddress::Probe(Ptr(iter)->Func(iter->GetNext));
+        String s;
+        addr->GetHostAddress(&s);
+        (*strs)[i++] = s;
     }
-    return strs;
+    FUNC_RETURN(strs);
 }
 
-/**
- * Trim leading zeros from IPv4 address strings
- * Our base libraries will interpret that as octel..
- * Must leave non v4 addresses and host names alone.
- * For example, 192.168.000.010 -> 192.168.0.10
- * TODO - fix base libraries and remove this function
- * @param addr a string representing an ip addr
- * @return a string propertly trimmed
- */
-String NetworkUtils::TrimV4AddrZeros(
-    /* [in] */ const String& addr)
+ECode NetworkUtils::TrimV4AddrZeros(
+    /* [in] */ const String& addr,
+    /* [out] */ String* result)
 {
+    VALIDATE_NOT_NULL(result);
+
     if (addr.IsNull()) {
-        return String(NULL);
+        FUNC_RETURN(String(NULL))
     }
 
     AutoPtr<ArrayOf<String> > octets;
     StringUtils::Split(addr, String("\\."), (ArrayOf<String>**)&octets);
     if (octets->GetLength() != 4) {
-        return addr;
+        FUNC_RETURN(addr)
     }
     StringBuffer buff;
     for (Int32 i = 0; i < 4; i++) {
 //        try {
             if ((*octets)[i].GetLength() > 3) {
-                return addr;
+                FUNC_RETURN(addr)
             }
             buff += (*octets)[i];
 //        } catch (NumberFormatException e) {
@@ -776,12 +480,12 @@ String NetworkUtils::TrimV4AddrZeros(
         if (i < 3)
             buff += String(".");
     }
-    return buff.ToString();
+    FUNC_RETURN(buff.ToString())
 }
 
 Boolean NetworkUtils::NativeRunDhcpCommon(
     /* [in] */ const String& ifname,
-    /* [in] */ DhcpInfoInternal* info,
+    /* [in] */ IDhcpResults* dhcpResults,
     /* [in] */ Boolean renew)
 {
     Int32 num;
@@ -790,9 +494,14 @@ Boolean NetworkUtils::NativeRunDhcpCommon(
     char gateway[PROPERTY_VALUE_MAX];
     char    dns1[PROPERTY_VALUE_MAX];
     char    dns2[PROPERTY_VALUE_MAX];
+    char    dns3[PROPERTY_VALUE_MAX];
+    char    dns4[PROPERTY_VALUE_MAX];
+    const char *dns[5] = {dns1, dns2, dns3, dns4, NULL};
     char  server[PROPERTY_VALUE_MAX];
     uint32_t lease;
     char vendorInfo[PROPERTY_VALUE_MAX];
+    char domains[PROPERTY_VALUE_MAX];
+    char mtu[PROPERTY_VALUE_MAX];
 
     const char *nameStr = ifname.string();
     if (nameStr == NULL) {
@@ -800,44 +509,60 @@ Boolean NetworkUtils::NativeRunDhcpCommon(
     }
     if (renew) {
         num = ::dhcp_do_request_renew(nameStr, ipaddr, gateway, &prefixLength,
-                dns1, dns2, server, &lease, vendorInfo);
+                dns, server, &lease, vendorInfo, domains, mtu);
     }
     else {
         num = ::dhcp_do_request(nameStr, ipaddr, gateway, &prefixLength,
-                dns1, dns2, server, &lease, vendorInfo);
+                dns, server, &lease, vendorInfo, domains, mtu);
+    }
+    if (num != 0) {
+        ALOGD("dhcp_do_request failed : %s (%s)", nameStr, renew ? "renew" : "new");
+    }
+
+    Boolean b;
+    if (num == 0) {
+        dhcpResults->Clear();
+        // set the linkAddress
+        // dhcpResults->addLinkAddress(inetAddress, prefixLength)
+        num = dhcpResults->SetIpAddress(String(ipaddr), prefixLength, &b);
+    }
+    if (num == 0) {
+        // set the gateway
+        num = dhcpResults->SetGateway(String(gateway), &b);
+    }
+    if (num == 0) {
+        // dhcpResults->addDns(new InetAddress(dns1))
+        num = dhcpResults->AddDns(String(dns1), &b);
     }
 
     if (num == 0) {
-        info->mIpAddress = ipaddr;
-        // set the gateway
-        PFL_EX("TODO")
-        AutoPtr<IInetAddressHelper> inetaddresshelper;
-        CInetAddressHelper::AcquireSingleton((IInetAddressHelper**)&inetaddresshelper);
-        AutoPtr<IInetAddress> inetAddress;
-        inetaddresshelper->GetByName(String(gateway), (IInetAddress**)&inetAddress);
-//          if (!env->ExceptionOccurred()) {
-        AutoPtr<IRouteInfo> routeInfo;
-        CRouteInfo::New(inetAddress, (IRouteInfo**)&routeInfo);
-        info->AddRoute(routeInfo);
-//        } else {
-            // if we have an exception (host not found perhaps), just don't add the route
-//            env->ExceptionClear();
-//        }
+        dhcpResults->SetDomains(String(domains));
 
-        info->mPrefixLength = prefixLength;
-        info->mDns1 = dns1;
-        info->mDns2 = dns2;
-        info->mServerAddress = server;
-        info->mLeaseDuration = (Int32)lease;
-        info->mVendorInfo = vendorInfo;
+        num = dhcpResults->AddDns(String(dns2), &b);
 
-        //TODO: should be delete
-        property_set("net.dns1", dns1);
+        if (num == 0) {
+            num = dhcpResults->AddDns(String(dns3), &b);
+            if (num == 0) {
+                num = dhcpResults->AddDns(String(dns4), &b);
+            }
+        }
+    }
+
+    if (num == 0) {
+        // dhcpResults->setServerAddress(new InetAddress(server))
+        num = dhcpResults->SetServerAddress(String(server), &b);
+    }
+
+    if (num == 0) {
+        // dhcpResults->setLeaseDuration(lease)
+        dhcpResults->SetLeaseDuration(lease);
+
+        // dhcpResults->setVendorInfo(vendorInfo)
+        dhcpResults->SetVendorInfo(String(vendorInfo));
     }
     return (Boolean)(num == 0);
 }
 
 } // namespace Net
-} // namepsace Droid
+} // namespace Droid
 } // namespace Elastos
-#endif

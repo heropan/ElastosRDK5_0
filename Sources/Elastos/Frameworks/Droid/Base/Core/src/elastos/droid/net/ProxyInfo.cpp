@@ -176,7 +176,7 @@ ECode ProxyInfo::GetPacFileUrl(
 {
     VALIDATE_NOT_NULL(result)
 
-    FUNC_RETURN(mPacFileUrl);
+    FUNC_RETURN(mPacFileUrl)
 }
 
 ECode ProxyInfo::GetHost(
@@ -184,7 +184,7 @@ ECode ProxyInfo::GetHost(
 {
     VALIDATE_NOT_NULL(result)
 
-    FUNC_RETURN(mHost);
+    FUNC_RETURN(mHost)
 }
 
 ECode ProxyInfo::GetPort(
@@ -192,13 +192,13 @@ ECode ProxyInfo::GetPort(
 {
     VALIDATE_NOT_NULL(result)
 
-    FUNC_RETURN(mPort);
+    FUNC_RETURN(mPort)
 }
 
 ECode ProxyInfo::GetExclusionList(
     /* [out, callee] */ ArrayOf<String>** result)
 {
-    FUNC_RETURN(mParsedExclusionList);
+    FUNC_RETURN(mParsedExclusionList)
 }
 
 ECode ProxyInfo::GetExclusionListAsString(
@@ -206,7 +206,7 @@ ECode ProxyInfo::GetExclusionListAsString(
 {
     VALIDATE_NOT_NULL(result)
 
-    FUNC_RETURN(mExclusionList);
+    FUNC_RETURN(mExclusionList)
 }
 
 ECode ProxyInfo::SetExclusionList(
@@ -230,7 +230,7 @@ ECode ProxyInfo::IsValid(
     Uri::GetEMPTY((IUri**)&empty);
     Boolean isEqual;
     IObject::Probe(empty)->Equals(mPacFileUrl, &isEqual);
-    if (!isEqual) FUNC_RETURN(TRUE);
+    if (!isEqual) FUNC_RETURN(TRUE)
     Int32 validCode;
     Proxy::Validate(mHost == NULL ? String("") : mHost,
             mPort == 0 ? String("") : StringUtils::ToString(mPort),
@@ -264,7 +264,7 @@ ECode ProxyInfo::MakeProxy(
         // } catch (IllegalArgumentException e) {
         // }
     }
-    FUNC_RETURN(proxy);
+    FUNC_RETURN(proxy)
 }
 
 ECode ProxyInfo::ToString(
@@ -304,8 +304,8 @@ ECode ProxyInfo::Equals(
 {
     VALIDATE_NOT_NULL(result)
 
-    if (TO_IINTERFACE(this) != IInterface::Probe(o)) FUNC_RETURN(FALSE);
-    if (!(IProxyInfo::Probe(o) != NULL)) FUNC_RETURN(FALSE);
+    if (TO_IINTERFACE(this) == IInterface::Probe(o)) FUNC_RETURN(TRUE)
+    if (!(IProxyInfo::Probe(o) != NULL)) FUNC_RETURN(FALSE)
     ProxyInfo* p = (ProxyInfo*)(IProxyInfo::Probe(o));
     // If PAC URL is present in either then they must be equal.
     // Other parameters will only be for fall back.

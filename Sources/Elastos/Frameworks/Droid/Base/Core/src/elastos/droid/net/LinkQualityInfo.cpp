@@ -15,12 +15,7 @@ const Int32 LinkQualityInfo::sOBJECT_TYPE_WIFI_LINK_QUALITY_INFO = 2;
 const Int32 LinkQualityInfo::sOBJECT_TYPE_MOBILE_LINK_QUALITY_INFO = 3;
 
 LinkQualityInfo::LinkQualityInfo()
-    : UNKNOWN_INT(Elastos::Core::Math::INT32_MAX_VALUE)
-    , UNKNOWN_LONG(Elastos::Core::Math::INT64_MAX_VALUE)
-    , NORMALIZED_MIN_SIGNAL_STRENGTH(0)
-    , NORMALIZED_MAX_SIGNAL_STRENGTH(99)
-    , NORMALIZED_SIGNAL_STRENGTH_RANGE(NORMALIZED_MAX_SIGNAL_STRENGTH - NORMALIZED_MIN_SIGNAL_STRENGTH + 1)
-    , mNetworkType(IConnectivityManager::TYPE_NONE)
+    : mNetworkType(IConnectivityManager::TYPE_NONE)
     , mNormalizedSignalStrength(UNKNOWN_INT)
     , mPacketCount(UNKNOWN_LONG)
     , mPacketErrorCount(UNKNOWN_LONG)

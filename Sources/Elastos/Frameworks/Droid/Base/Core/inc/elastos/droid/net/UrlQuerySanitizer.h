@@ -393,9 +393,8 @@ public:
      * @param c the character to test
      * @return true if c is a hex digit.
      */
-    CARAPI IsHexDigit(
-        /* [in] */ Char32 c,
-        /* [out] */ Boolean* result);
+    CARAPI_(Boolean) IsHexDigit(
+        /* [in] */ Char32 c);
 
     /**
      * Convert a character that represents a hexidecimal digit into an integer.
@@ -404,9 +403,8 @@ public:
      * @param c the hexidecimal digit.
      * @return the integer value of the hexidecimal digit.
      */
-    CARAPI DecodeHexDigit(
-        /* [in] */ Char32 c,
-        /* [out] */ Int32* result);
+    CARAPI_(Int32) DecodeHexDigit(
+        /* [in] */ Char32 c);
 
     /**
      * Clear the existing entries. Called to get ready to parse a new
@@ -419,6 +417,10 @@ private:
 
     CARAPI_(AutoPtr<IArrayList>) CreateArrayList();
 
+    static CARAPI_(AutoPtr<IUrlQuerySanitizerValueSanitizer>) CreateValueSanitizer(
+        /* [in] */ Int32 value);
+
+private:
     // Private fields for singleton sanitizers:
     static const AutoPtr<IUrlQuerySanitizerValueSanitizer> sAllIllegal;
     static const AutoPtr<IUrlQuerySanitizerValueSanitizer> sAllButNulLegal;
@@ -429,9 +431,6 @@ private:
     static const AutoPtr<IUrlQuerySanitizerValueSanitizer> sAmpAndSpaceLegal;
     static const AutoPtr<IUrlQuerySanitizerValueSanitizer> sSpaceLegal;
     static const AutoPtr<IUrlQuerySanitizerValueSanitizer> sAllButNulAndAngleBracketsLegal;
-
-    static AutoPtr<IUrlQuerySanitizerValueSanitizer> CreateValueSanitizer(
-        /* [in] */ Int32 value);
 
     /* const */ AutoPtr<IHashMap> mSanitizers;
     /* const */ AutoPtr<IHashMap> mEntries;
@@ -510,6 +509,7 @@ class UrlQuerySanitizerIllegalCharacterValueSanitizer
 public:
     CAR_INTERFACE_DECL()
 
+    UrlQuerySanitizerIllegalCharacterValueSanitizer();
     /**
      * Construct a sanitizer. The parameters set the behavior of the
      * sanitizer.
@@ -546,18 +546,16 @@ private:
      * @param value the string to trim
      * @return the trimmed string
      */
-    CARAPI TrimWhitespace(
-        /* [in] */ const String& value,
-        /* [out] */ String* result);
+    CARAPI_(String) TrimWhitespace(
+        /* [in] */ const String& value);
 
     /**
      * Check if c is whitespace.
      * @param c character to test
      * @return true if c is a whitespace character
      */
-    CARAPI IsWhitespace(
-        /* [in] */ Char32 c,
-        /* [out] */ Boolean* result);
+    CARAPI_(Boolean) IsWhitespace(
+        /* [in] */ Char32 c);
 
     /**
      * Check whether an individual character is legal. Uses the
@@ -565,10 +563,10 @@ private:
      * @param c
      * @return true if c is a legal character
      */
-    CARAPI CharacterIsLegal(
-        /* [in] */ Char32 c,
-        /* [out] */ Boolean* result);
+    CARAPI_(Boolean) CharacterIsLegal(
+        /* [in] */ Char32 c);
 
+private:
     Int32 mFlags;
 
     /**

@@ -151,7 +151,6 @@ ECode IpPrefix::ToString(
         // } catch(UnknownHostException e) {
     if (ec == E_UNKNOWN_HOST_EXCEPTION) {
         // Cosmic rays?
-        // throw new IllegalStateException("IpPrefix with invalid address! Shouldn't happen.", e);
         Logger::E("IpPrefix", "IpPrefix with invalid address! Shouldn't happen.");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
@@ -159,7 +158,6 @@ ECode IpPrefix::ToString(
     ec = inetAddress->GetHostAddress(result);
     if (ec == E_UNKNOWN_HOST_EXCEPTION) {
         // Cosmic rays?
-        // throw new IllegalStateException("IpPrefix with invalid address! Shouldn't happen.", e);
         Logger::E("IpPrefix", "IpPrefix with invalid address! Shouldn't happen.");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
@@ -180,7 +178,7 @@ ECode IpPrefix::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
     dest->WriteArrayOf((Handle32)mAddress.Get());
-    dest->WriteArrayOf(mPrefixLength);
+    dest->WriteInt32(mPrefixLength);
     return NOERROR;
 }
 

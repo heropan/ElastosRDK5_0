@@ -125,8 +125,12 @@ module
     const E_ENCODE_EXCEPTION                            =  0xED060000;
 
     //==========================================================================
-    // Elastos Droid hardware exception codes (Family: 0x6E - EF)
+    // Elastos Droid hardware exception codes (Family: 0x6E - EE)
     const E_INVALID_PARAMETER_EXCEPTION                 =  0xEF010000;
     const E_CAMERA_RUNTIME_EXCEPTION                    =  0xEF020000;
     const E_BUFFER_QUEUE_ABANDONED_EXCEPTION            =  0xEF030000;
+
+    //==========================================================================
+    // Elastos Droid net exception codes (Family: 0x6F - EF)
+    const E_SSL_CONNECTION_CLOSED_BY_USER_EXCEPTION     = 0xEF010000;
 }

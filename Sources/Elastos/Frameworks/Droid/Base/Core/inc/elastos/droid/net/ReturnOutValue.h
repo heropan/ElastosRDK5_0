@@ -23,7 +23,7 @@ using Elastos::Utility::IIterator;
  * you can use the macro FOR_EACH as followed
  *
  * FOR_EACH(iter, mRoutes) {
- *    AutoPtr<IRouteInfo> route = Ptr(iter)->Func(iter->GetNexe);
+ *    AutoPtr<IRouteInfo> route = IRouteInfo::Probe(Ptr(iter)->Func(iter->GetNext));
  *    ...
  * }
  *
@@ -65,21 +65,18 @@ using Elastos::Utility::IIterator;
 template <typename T>
 inline void funcReturnVal(T** result)
 {
-    if (*result == NULL) return;
     REFCOUNT_ADD(*result)
 }
 
 template <typename T>
 inline void funcReturnVal(ArrayOf<T*>** result)
 {
-    if (*result == NULL) return;
     REFCOUNT_ADD(*result)
 }
 
 template <typename T>
 inline void funcReturnVal(ArrayOf<T>** result)
 {
-    if (*result == NULL) return;
     REFCOUNT_ADD(*result)
 }
 
@@ -89,9 +86,9 @@ inline void funcReturnVal(T* result)
     return;
 }
 
-#define FUNC_RETURN_ERROR_CODE(obj, errCode) *result = obj;\
+#define FUNC_RETURN_ERROR_CODE(obj, errCode) {*result = obj;\
                                 funcReturnVal(result);\
-                                return errCode;
+                                return errCode;}
 
 #define FUNC_RETURN(obj) FUNC_RETURN_ERROR_CODE(obj, NOERROR)
 

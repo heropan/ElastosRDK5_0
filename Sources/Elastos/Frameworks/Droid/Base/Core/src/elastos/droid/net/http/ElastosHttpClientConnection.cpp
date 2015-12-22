@@ -1,8 +1,72 @@
 
+#include <Elastos.CoreLibrary.IO.h>
 #include "elastos/droid/net/http/ElastosHttpClientConnection.h"
+#include "elastos/droid/net/http/CElastosHttpClient.h"
+#include "elastos/droid/net/http/ElastosHttpClient.h"
+#include "elastos/droid/net/http/HttpLog.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/os/Build.h"
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Droid::Os::Build;
+
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::Net::CSocket;
+using Elastos::Net::IInetAddress;
+using Elastos::Net::ISocket;
+using Elastos::Utility::Logging::Logger;
 
 using Org::Apache::Http::EIID_IHttpConnection;
 using Org::Apache::Http::EIID_IHttpInetConnection;
+using Org::Apache::Http::Entity::CBasicHttpEntity;
+using Org::Apache::Http::Entity::IBasicHttpEntity;
+using Org::Apache::Http::Entity::IContentLengthStrategy;
+using Org::Apache::Http::IHeader;
+using Org::Apache::Http::IHttpClientConnection;
+using Org::Apache::Http::IHttpConnection;
+using Org::Apache::Http::IHttpConnectionMetrics;
+using Org::Apache::Http::IHttpEntity;
+using Org::Apache::Http::IHttpEntityEnclosingRequest;
+using Org::Apache::Http::IHttpInetConnection;
+using Org::Apache::Http::IHttpMessage;
+using Org::Apache::Http::IHttpRequest;
+using Org::Apache::Http::IHttpResponse;
+using Org::Apache::Http::IO::IHttpMessageWriter;
+using Org::Apache::Http::IO::ISessionInputBuffer;
+using Org::Apache::Http::IO::ISessionOutputBuffer;
+using Org::Apache::Http::IStatusLine;
+// using Org::Apache::Http::Impl::CHttpConnectionMetricsImpl;
+// using Org::Apache::Http::Impl::Entity::CEntitySerializer;
+// using Org::Apache::Http::Impl::Entity::CStrictContentLengthStrategy;
+using Org::Apache::Http::Impl::Entity::IEntitySerializer;
+using Org::Apache::Http::Impl::Entity::IStrictContentLengthStrategy;
+using Org::Apache::Http::Impl::IHttpConnectionMetricsImpl;
+// using Org::Apache::Http::Impl::IO::CChunkedInputStream;
+// using Org::Apache::Http::Impl::IO::CContentLengthInputStream;
+// using Org::Apache::Http::Impl::IO::CHttpRequestWriter;
+// using Org::Apache::Http::Impl::IO::CIdentityInputStream;
+// using Org::Apache::Http::Impl::IO::CSocketInputBuffer;
+using Org::Apache::Http::Impl::IO::IChunkedInputStream;
+using Org::Apache::Http::Impl::IO::IContentLengthInputStream;
+using Org::Apache::Http::Impl::IO::IHttpRequestWriter;
+using Org::Apache::Http::Impl::IO::IIdentityInputStream;
+using Org::Apache::Http::Impl::IO::ISocketInputBuffer;
+using Org::Apache::Http::Impl::IO::ISocketOutputBuffer;
+// using Org::Apache::Http::Message::CBasicLineParserHelper;
+using Org::Apache::Http::Message::CParserCursor;
+using Org::Apache::Http::Message::IBasicLineParser;
+using Org::Apache::Http::Message::IBasicLineParserHelper;
+using Org::Apache::Http::Message::ILineParser;
+using Org::Apache::Http::Message::IParserCursor;
+using Org::Apache::Http::Params::CHttpConnectionParams;
+using Org::Apache::Http::Params::ICoreConnectionPNames;
+using Org::Apache::Http::Params::IHttpConnectionParams;
+using Org::Apache::Http::Params::IHttpParams;
+using Org::Apache::Http::Utility::CCharArrayBuffer;
+using Org::Apache::Http::Utility::ICharArrayBuffer;
 
 namespace Elastos {
 namespace Droid {
@@ -19,172 +83,167 @@ ElastosHttpClientConnection::ElastosHttpClientConnection()
 
 ECode ElastosHttpClientConnection::constructor()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        this.entityserializer =  new EntitySerializer(
-                new StrictContentLengthStrategy());
-#endif
+    AutoPtr<IStrictContentLengthStrategy> newStrictContentLengthStrategy;
+    // TODO: Waiting for CStrictContentLengthStrategy, CEntitySerializer
+    assert(0);
+    // CStrictContentLengthStrategy::New((IStrictContentLengthStrategy**)&newStrictContentLengthStrategy);
+    // return CEntitySerializer::New(newStrictContentLengthStrategy, (IEntitySerializer**)&mEntityserializer);
+    return NOERROR;
 }
 
 ECode ElastosHttpClientConnection::Bind(
     /* [in] */ ISocket* socket,
     /* [in] */ IHttpParams* params)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (socket == NULL) {
-            throw new IllegalArgumentException("Socket may not be null");
-        }
-        if (params == NULL) {
-            throw new IllegalArgumentException("HTTP parameters may not be null");
-        }
-        assertNotOpen();
-        socket.setTcpNoDelay(HttpConnectionParams.getTcpNoDelay(params));
-        socket.setSoTimeout(HttpConnectionParams.getSoTimeout(params));
-        Int32 linger = HttpConnectionParams.getLinger(params);
-        if (linger >= 0) {
-            socket.setSoLinger(linger > 0, linger);
-        }
-        this.socket = socket;
-        Int32 buffersize = HttpConnectionParams.getSocketBufferSize(params);
-        this.inbuffer = new SocketInputBuffer(socket, buffersize, params);
-        this.outbuffer = new SocketOutputBuffer(socket, buffersize, params);
-        maxHeaderCount = params.getIntParameter(
-                CoreConnectionPNames.MAX_HEADER_COUNT, -1);
-        maxLineLength = params.getIntParameter(
-                CoreConnectionPNames.MAX_LINE_LENGTH, -1);
-        this.requestWriter = new HttpRequestWriter(outbuffer, NULL, params);
-        this.metrics = new HttpConnectionMetricsImpl(
-                inbuffer.getMetrics(),
-                outbuffer.getMetrics());
-        this.open = TRUE;
-#endif
+    if (socket == NULL) {
+        Logger::E("ElastosHttpClientConnection", "Socket may not be null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    if (params == NULL) {
+        Logger::E("ElastosHttpClientConnection", "HTTP parameters may not be null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    FAIL_RETURN(AssertNotOpen());
+    AutoPtr<IHttpConnectionParams> helper;
+    CHttpConnectionParams::AcquireSingleton((IHttpConnectionParams**)&helper);
+    Boolean isTcpNoDelay;
+    helper->GetTcpNoDelay(params, &isTcpNoDelay);
+    socket->SetTcpNoDelay(isTcpNoDelay);
+    Int32 soTimeout;
+    helper->GetSoTimeout(params, &soTimeout);
+    socket->SetSoTimeout(soTimeout);
+    Int32 linger;
+    helper->GetLinger(params, &linger);
+    if (linger >= 0) {
+        socket->SetSoLinger(linger > 0, linger);
+    }
+    mSocket = socket;
+    Int32 buffersize;
+    helper->GetSocketBufferSize(params, &buffersize);
+    // TODO: Waiting for CSocketInputBuffer, CSocketOutputBuffer
+    assert(0);
+    // CSocketInputBuffer::New(socket, buffersize, params, (ISessionInputBuffer**)&mInbuffer);
+    // CSocketOutputBuffer::New(socket, buffersize, params, (ISessionOutputBuffer**)&mOutbuffer);
+    params->GetInt32Parameter(
+            ICoreConnectionPNames::MAX_HEADER_COUNT, -1, &mMaxHeaderCount);
+    params->GetInt32Parameter(
+            ICoreConnectionPNames::MAX_LINE_LENGTH, -1, &mMaxLineLength);
+    // TODO: Waiting for CHttpRequestWriter, CHttpConnectionMetricsImpl
+    assert(0);
+    // CHttpRequestWriter::New(mOutbuffer, NULL, params, (IHttpMessageWriter**)&mRequestWriter);
+    // CHttpConnectionMetricsImpl::New(Ptr(mInbuffer)->Func(mInbuffer->GetMetrics), Ptr(mOutbuffer)->Func(mOutbuffer->GetMetrics), (IHttpConnectionMetricsImpl**)&mMetrics);
+    mOpen = TRUE;
+    return NOERROR;
 }
 
 ECode ElastosHttpClientConnection::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
+    VALIDATE_NOT_NULL(result)
+
     AutoPtr<StringBuilder> buffer = new StringBuilder();
-    buffer->AppendCStr("CElastosHttpClientConnection[");
+    buffer->Append("CElastosHttpClientConnection[");
     Boolean isOpen;
     IsOpen(&isOpen);
     if (isOpen) {
         Int32 port;
         GetRemotePort(&port);
-        buffer->AppendInt32(port);
+        buffer->Append(port);
     } else {
-        buffer->AppendCStr("closed");
+        buffer->Append("closed");
     }
-    buffer->AppendCStr("]");
-    *str = buffer->ToString();
+    buffer->Append("]");
+    *result = buffer->ToString();
     return NOERROR;
-#endif
 }
 
 ECode ElastosHttpClientConnection::AssertNotOpen()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    if (mOpen) return E_ILLEGALSTATE_EXCEPTION;
+    if (mOpen) return E_ILLEGAL_STATE_EXCEPTION;
     return NOERROR;
-#endif
 }
 
 ECode ElastosHttpClientConnection::AssertOpen()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    if (!mOpen) return E_ILLEGALSTATE_EXCEPTION;
+    if (!mOpen) return E_ILLEGAL_STATE_EXCEPTION;
     return NOERROR;
-#endif
 }
 
 ECode ElastosHttpClientConnection::IsOpen(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translated before. Need check.
-    VALIDATE_NOT_NULL(isOpen);
+    VALIDATE_NOT_NULL(result);
 
     // to make this method useful, we want to check if the socket is connected
-    *isOpen = FALSE;
+    *result = FALSE;
     if (mOpen && mSocket != NULL) {
         Boolean isConnected;
         mSocket->IsConnected(&isConnected);
-        *isOpen = isConnected;
+        *result = isConnected;
     }
 
     return NOERROR;
-#endif
 }
 
 ECode ElastosHttpClientConnection::GetLocalAddress(
     /* [out] */ IInetAddress** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
+    VALIDATE_NOT_NULL(result)
+
     if (mSocket != NULL) {
-        return mSocket->GetLocalAddress(address);
+        return mSocket->GetLocalAddress(result);
     } else {
-        *address = NULL;
+        *result = NULL;
     }
 
     return NOERROR;
-#endif
 }
 
 ECode ElastosHttpClientConnection::GetLocalPort(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
+    VALIDATE_NOT_NULL(result)
+
     if (mSocket != NULL) {
-        return mSocket->GetLocalPort(port);
+        return mSocket->GetLocalPort(result);
     } else {
-        *port = -1;
+        *result = -1;
     }
 
     return NOERROR;
-#endif
 }
 
 ECode ElastosHttpClientConnection::GetRemoteAddress(
     /* [out] */ IInetAddress** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
+    VALIDATE_NOT_NULL(result)
+
     if (mSocket != NULL) {
-        return mSocket->GetInetAddress(address);
+        return mSocket->GetInetAddress(result);
     } else {
-        *address = NULL;
+        *result = NULL;
     }
 
     return NOERROR;
-#endif
 }
 
 ECode ElastosHttpClientConnection::GetRemotePort(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
+    VALIDATE_NOT_NULL(result)
+
     if (mSocket != NULL) {
-        return mSocket->GetPort(port);
+        return mSocket->GetPort(result);
     } else {
-        *port = -1;
+        *result = -1;
     }
 
     return NOERROR;
-#endif
 }
 
 ECode ElastosHttpClientConnection::SetSocketTimeout(
     /* [in] */ Int32 timeout)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     FAIL_RETURN(AssertOpen());
     if (mSocket != NULL) {
         // It is not quite clear from the original documentation if there are any
@@ -193,41 +252,34 @@ ECode ElastosHttpClientConnection::SetSocketTimeout(
         return mSocket->SetSoTimeout(timeout);
     }
 
-    return E_ILLEGALSTATE_EXCEPTION;
-#endif
+    return E_ILLEGAL_STATE_EXCEPTION;
 }
 
 ECode ElastosHttpClientConnection::GetSocketTimeout(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
+    VALIDATE_NOT_NULL(result)
+
     if (mSocket != NULL) {
-        return mSocket->GetSoTimeout(timeout);
+        return mSocket->GetSoTimeout(result);
     }
 
-    *timeout = -1;
-    return E_ILLEGALSTATE_EXCEPTION;
-#endif
+    *result = -1;
+    return E_ILLEGAL_STATE_EXCEPTION;
 }
 
 ECode ElastosHttpClientConnection::Shutdown()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     mOpen = FALSE;
     if (mSocket != NULL) {
         return mSocket->Close();
     }
 
-    return E_ILLEGALSTATE_EXCEPTION;
-#endif
+    return E_ILLEGAL_STATE_EXCEPTION;
 }
 
 ECode ElastosHttpClientConnection::Close()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (!mOpen)
     {
         return NOERROR;
@@ -236,188 +288,216 @@ ECode ElastosHttpClientConnection::Close()
     mOpen = FALSE;
     DoFlush();
 
-    if(!FAILED(mSocket->ShutdownOutput()) {
+    if(!FAILED(mSocket->ShutdownOutput())) {
     }
 
-    if(!FAILED(mSocket->ShutdownInput()) {
+    if(!FAILED(mSocket->ShutdownInput())) {
     }
 
     return mSocket->Close();
-#endif
 }
 
 ECode ElastosHttpClientConnection::SendRequestHeader(
     /* [in] */ IHttpRequest* request)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (request == NULL)
     {
-        // return E_ILLEGALSTATE_EXCEPTION;;
+        Logger::E("ElastosHttpClientConnection", "HTTP request may not be null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     FAIL_RETURN(AssertOpen());
-    // tmRequestWriter->Write(request);
+    mRequestWriter->Write(IHttpMessage::Probe(request));
+    // TODO: Waiting for IHttpConnectionMetricsImpl
+    assert(0);
     // mMetrics->IncrementRequestCount();
 
     return NOERROR;
-#endif
 }
 
 ECode ElastosHttpClientConnection::SendRequestEntity(
     /* [in] */ IHttpEntityEnclosingRequest* request)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (request == NULL) {
-        // return E_ILLEGALSTATE_EXCEPTION;;
+        Logger::E("ElastosHttpClientConnection", "HTTP request may not be null");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     FAIL_RETURN(AssertOpen());
 
     AutoPtr<IHttpEntity> entity;
-    // request->GetEntity((IHttpEntity**)&entity);
+    request->GetEntity((IHttpEntity**)&entity);
     if (entity == NULL) {
-        // return E_ILLEGALSTATE_EXCEPTION;
+        return NOERROR;
     }
+    // TODO: Waiting for IEntitySerializer
+    assert(0);
     // return mEntityserializer->Serialize(mOutbuffer, request, entity);
-    return E_NOT_IMPLEMENTED;
-#endif
+    return NOERROR;
 }
 
 ECode ElastosHttpClientConnection::DoFlush()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        this.outbuffer.flush();
-#endif
+    return mOutbuffer->Flush();
 }
 
 ECode ElastosHttpClientConnection::Flush()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     FAIL_RETURN(AssertOpen());
     return DoFlush();
-#endif
 }
 
 ECode ElastosHttpClientConnection::ParseResponseHeader(
     /* [in] */ IHeaders* headers,
     /* [out] */ IStatusLine** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        assertOpen();
-        CharArrayBuffer current = new CharArrayBuffer(64);
-        if (inbuffer.readLine(current) == -1) {
-            throw new NoHttpResponseException("The target server failed to respond");
-        }
-        // Create the status line from the status string
-        StatusLine statusline = BasicLineParser.DEFAULT.parseStatusLine(
-                current, new ParserCursor(0, current.length()));
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
 
-        if (HttpLog.LOGV) HttpLog.v("read: " + statusline);
-        Int32 statusCode = statusline.getStatusCode();
-        // Parse header body
-        CharArrayBuffer previous = NULL;
-        Int32 headerNumber = 0;
-        while(TRUE) {
-            if (current == NULL) {
-                current = new CharArrayBuffer(64);
-            } else {
-                // This must be he buffer used to parse the status
-                current.clear();
-            }
-            Int32 l = inbuffer.readLine(current);
-            if (l == -1 || current.length() < 1) {
-                break;
-            }
-            // Parse the header name and value
-            // Check for folded headers first
-            // Detect LWS-char see HTTP/1.0 or HTTP/1.1 Section 2.2
-            // discussion on folded headers
-            char first = current.charAt(0);
-            if ((first == ' ' || first == '\t') && previous != NULL) {
-                // we have continuation folded header
-                // so append value
-                Int32 start = 0;
-                Int32 length = current.length();
-                while (start < length) {
-                    char ch = current.charAt(start);
-                    if (ch != ' ' && ch != '\t') {
-                        break;
-                    }
-                    start++;
-                }
-                if (maxLineLength > 0 &&
-                        previous.length() + 1 + current.length() - start >
-                            maxLineLength) {
-                    throw new IOException("Maximum line length limit exceeded");
-                }
-                previous.append(' ');
-                previous.append(current, start, current.length() - start);
-            } else {
-                if (previous != NULL) {
-                    headers.parseHeader(previous);
-                }
-                headerNumber++;
-                previous = current;
-                current = NULL;
-            }
-            if (maxHeaderCount > 0 && headerNumber >= maxHeaderCount) {
-                throw new IOException("Maximum header count exceeded");
-            }
+    FAIL_RETURN(AssertOpen());
+    AutoPtr<ICharArrayBuffer> current;
+    CCharArrayBuffer::New(64, (ICharArrayBuffer**)&current);
+    Int32 count;
+    mInbuffer->ReadLine(current, &count);
+    if (count == -1) {
+        Logger::E("ElastosHttpClientConnection", "The target server failed to respond");
+        return E_NO_HTTP_RESPONSE_EXCEPTION;
+    }
+    // Create the status line from the status string
+    AutoPtr<IStatusLine> statusline;
+    AutoPtr<IBasicLineParserHelper> helper;
+    // TODO: Waiting for CBasicLineParserHelper
+    assert(0);
+    // CBasicLineParserHelper::AcquireSingleton((IBasicLineParserHelper**)&helper);
+    AutoPtr<IBasicLineParser> defaultBasicLineParser;
+    // TODO: Waiting for IBasicLineParser
+    assert(0);
+    // helper->GetDEFAULT((IBasicLineParser**)&defaultBasicLineParser);
+    AutoPtr<IParserCursor> newParserCursor;
+    CParserCursor::New(0, Ptr(current)->Func(current->GetLength), (IParserCursor**)&newParserCursor);
+    ILineParser::Probe(defaultBasicLineParser)->ParseStatusLine(current, newParserCursor, (IStatusLine**)&statusline);
+
+    if (HttpLog::LOGV) HttpLog::V("read: %s", StringUtils::ToString(statusline).string());
+    Int32 statusCode;
+    statusline->GetStatusCode(&statusCode);
+    // Parse header body
+    AutoPtr<ICharArrayBuffer> previous;
+    Int32 headerNumber = 0;
+    while(TRUE) {
+        if (current == NULL) {
+            CCharArrayBuffer::New(64, (ICharArrayBuffer**)&current);
+        } else {
+            // This must be he buffer used to parse the status
+            current->Clear();
         }
-        if (previous != NULL) {
-            headers.parseHeader(previous);
+        Int32 l;
+        mInbuffer->ReadLine(current, &l);
+        if (l == -1 || Ptr(current)->Func(current->GetLength) < 1) {
+            break;
         }
-        if (statusCode >= 200) {
-            this.metrics.incrementResponseCount();
+        // Parse the header name and value
+        // Check for folded headers first
+        // Detect LWS-char see HTTP/1.0 or HTTP/1.1 Section 2.2
+        // discussion on folded headers
+        Char32 first;
+        current->CharAt(0, &first);
+        if ((first == ' ' || first == '\t') && previous != NULL) {
+            // we have continuation folded header
+            // so append value
+            Int32 start = 0;
+            Int32 length;
+            current->GetLength(&length);
+            while (start < length) {
+                Char32 ch;
+                current->CharAt(start, &ch);
+                if (ch != ' ' && ch != '\t') {
+                    break;
+                }
+                start++;
+            }
+            if (mMaxLineLength > 0 &&
+                    Ptr(previous)->Func(previous->GetLength) + 1 + Ptr(current)->Func(current->GetLength) - start >
+                        mMaxLineLength) {
+                Logger::E("ElastosHttpClientConnection", "Maximum line length limit exceeded");
+                return E_IO_EXCEPTION;
+            }
+            previous->Append(' ');
+            previous->Append(current, start, Ptr(current)->Func(current->GetLength) - start);
+        } else {
+            if (previous != NULL) {
+                headers->ParseHeader(previous);
+            }
+            headerNumber++;
+            previous = current;
+            current = NULL;
         }
-        return statusline;
-#endif
+        if (mMaxHeaderCount > 0 && headerNumber >= mMaxHeaderCount) {
+            Logger::E("ElastosHttpClientConnection", "Maximum header count exceeded");
+            return E_IO_EXCEPTION;
+        }
+    }
+    if (previous != NULL) {
+        headers->ParseHeader(previous);
+    }
+    if (statusCode >= 200) {
+        // TODO: Waiting for IHttpConnectionMetricsImpl
+        assert(0);
+        // mMetrics->IncrementResponseCount();
+    }
+    FUNC_RETURN(statusline);
 }
 
 ECode ElastosHttpClientConnection::ReceiveResponseEntity(
     /* [in] */ IHeaders* headers,
     /* [out] */ IHttpEntity** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        assertOpen();
-        BasicHttpEntity entity = new BasicHttpEntity();
-        long len = determineLength(headers);
-        if (len == ContentLengthStrategy.CHUNKED) {
-            entity.setChunked(TRUE);
-            entity.setContentLength(-1);
-            entity.setContent(new ChunkedInputStream(inbuffer));
-        } else if (len == ContentLengthStrategy.IDENTITY) {
-            entity.setChunked(FALSE);
-            entity.setContentLength(-1);
-            entity.setContent(new IdentityInputStream(inbuffer));
-        } else {
-            entity.setChunked(FALSE);
-            entity.setContentLength(len);
-            entity.setContent(new ContentLengthInputStream(inbuffer, len));
-        }
-        String contentTypeHeader = headers.getContentType();
-        if (contentTypeHeader != NULL) {
-            entity.setContentType(contentTypeHeader);
-        }
-        String contentEncodingHeader = headers.getContentEncoding();
-        if (contentEncodingHeader != NULL) {
-            entity.setContentEncoding(contentEncodingHeader);
-        }
-       return entity;
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    FAIL_RETURN(AssertOpen());
+    AutoPtr<IBasicHttpEntity> entity;
+    CBasicHttpEntity::New((IBasicHttpEntity**)&entity);
+    Int64 len = DetermineLength(headers);
+    if (len == IContentLengthStrategy::CHUNKED) {
+        IAbstractHttpEntity::Probe(entity)->SetChunked(TRUE);
+        entity->SetContentLength(-1);
+        AutoPtr<IChunkedInputStream> newChunkedInputStream;
+        // TODO: Waiting for CChunkedInputStream
+        assert(0);
+        // CChunkedInputStream::New(mInbuffer, (IChunkedInputStream**)&newChunkedInputStream);
+        entity->SetContent(IInputStream::Probe(newChunkedInputStream));
+    }
+    else if (len == IContentLengthStrategy::IDENTITY) {
+        IAbstractHttpEntity::Probe(entity)->SetChunked(FALSE);
+        entity->SetContentLength(-1);
+        AutoPtr<IIdentityInputStream> newIdentityInputStream;
+        // TODO: Waiting for CIdentityInputStream
+        assert(0);
+        // CIdentityInputStream::New(mInbuffer, (IIdentityInputStream**)&newIdentityInputStream);
+        entity->SetContent(IInputStream::Probe(newIdentityInputStream));
+    } else {
+        IAbstractHttpEntity::Probe(entity)->SetChunked(FALSE);
+        entity->SetContentLength(len);
+        AutoPtr<IContentLengthInputStream> newContentLengthInputStream;
+        // TODO: Waiting for CContentLengthInputStream
+        assert(0);
+        // CContentLengthInputStream::New(mInbuffer, len, (IContentLengthInputStream**)&newContentLengthInputStream);
+        entity->SetContent(IInputStream::Probe(newContentLengthInputStream));
+    }
+    String contentTypeHeader;
+    headers->GetContentType(&contentTypeHeader);
+    if (contentTypeHeader != NULL) {
+        IAbstractHttpEntity::Probe(entity)->SetContentType(contentTypeHeader);
+    }
+    String contentEncodingHeader;
+    headers->GetContentEncoding(&contentEncodingHeader);
+    if (contentEncodingHeader != NULL) {
+        IAbstractHttpEntity::Probe(entity)->SetContentEncoding(contentEncodingHeader);
+    }
+    FUNC_RETURN(IHttpEntity::Probe(entity));
 }
 
-ECode ElastosHttpClientConnection::DetermineLength(
-    /* [in] */ const IHeaders* headers,
-    /* [out] */ Int64* result)
+Int64 ElastosHttpClientConnection::DetermineLength(
+    /* [in] */ IHeaders* headers)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     Int64 transferEncoding;
     headers->GetTransferEncoding(&transferEncoding);
     // We use Transfer-Encoding if present and ignore Content-Length.
@@ -433,36 +513,37 @@ ECode ElastosHttpClientConnection::DetermineLength(
             return IContentLengthStrategy::IDENTITY;
         }
     }
-#endif
 }
 
 ECode ElastosHttpClientConnection::IsStale(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
+    VALIDATE_NOT_NULL(result)
+
     FAIL_RETURN(AssertOpen());
+    *result = FALSE;
 
     Boolean available;
-    // if(NOERROR == mInbuffer->IsDataAvailable(1, &available)) {
-    //     *isStale = FALSE;
-    // }
-
-    *isStale = TRUE;
-
+    ECode ec;
+    ec = mInbuffer->IsDataAvailable(1, &available);
+    if (FAILED(ec)) {
+        if (ec == E_IO_EXCEPTION) {
+            *result = TRUE;
+            return NOERROR;
+        }
+        return ec;
+    }
+    *result = FALSE;
     return NOERROR;
-#endif
 }
 
 ECode ElastosHttpClientConnection::GetMetrics(
     /* [out] */ IHttpConnectionMetrics** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return this.metrics;
-#endif
-}
+    VALIDATE_NOT_NULL(result)
 
+    FUNC_RETURN(IHttpConnectionMetrics::Probe(mMetrics))
+}
 
 } // namespace Http
 } // namespace Net

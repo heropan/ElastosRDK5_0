@@ -1038,7 +1038,7 @@ ECode CConnectivityManager::RemoveDefaultNetworkActiveListener(
     IMap::Probe(mNetworkActivityListeners)->Get(l, (IInterface**)&itmp);
     AutoPtr<INetworkActivityListener> rl = INetworkActivityListener::Probe(itmp);
     if (NULL == rl) {
-        // throw new IllegalArgumentException("Listener not registered: " + l);
+        Logger::E(TAG, "Listener not registered: %s", StringUtils::ToString(l).string());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     // try {
@@ -1748,11 +1748,11 @@ ECode CConnectivityManager::SendRequestForNetwork(
     *result = NULL;
 
     if (NULL == networkCallback) {
-        // throw new IllegalArgumentException("NULL NetworkCallback");
+        Logger::E(TAG, "NULL NetworkCallback");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (NULL == need) {
-        // throw new IllegalArgumentException("NULL NetworkCapabilities");
+        Logger::E(TAG, "NULL NetworkCapabilities");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     // try {
@@ -1862,19 +1862,19 @@ ECode CConnectivityManager::UnregisterNetworkCallback(
     /* [in] */ IConnectivityManagerNetworkCallback* networkCallback)
 {
     if (NULL == networkCallback) {
-        // throw new IllegalArgumentException("Invalid NetworkCallback");
+        Logger::E(TAG, "Invalid NetworkCallback");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     else {
         if (NULL == ((ConnectivityManagerNetworkCallback*)networkCallback)->mNetworkRequest) {
-            // throw new IllegalArgumentException("Invalid NetworkCallback");
+            Logger::E(TAG, "Invalid NetworkCallback");
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         else {
             Int32 requestId;
             ((ConnectivityManagerNetworkCallback*)networkCallback)->mNetworkRequest->GetRequestId(&requestId);
             if (REQUEST_ID_UNSET == requestId) {
-                // throw new IllegalArgumentException("Invalid NetworkCallback");
+                Logger::E(TAG, "Invalid NetworkCallback");
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
         }

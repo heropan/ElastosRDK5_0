@@ -1,7 +1,25 @@
 
-#include <Elastos.CoreLibrary.Utility.h>
+#include <Elastos.CoreLibrary.IO.h>
 #include <Elastos.CoreLibrary.Net.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/net/dhcp/DhcpRequestPacket.h"
+#include "elastos/droid/net/dhcp/DhcpPacket.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/os/Build.h"
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Droid::Os::Build;
+
+using Elastos::Core::StringUtils;
+using Elastos::IO::CByteBufferHelper;
+using Elastos::IO::IBuffer;
+using Elastos::IO::IByteBufferHelper;
+using Elastos::Net::CInet4AddressHelper;
+using Elastos::Net::IInet4Address;
+using Elastos::Net::IInet4AddressHelper;
+using Elastos::Net::IInetAddress;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -14,23 +32,24 @@ ECode DhcpRequestPacket::constructor(
     /* [in] */ ArrayOf<Byte>* clientMac,
     /* [in] */ Boolean broadcast)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        super(transId, clientIp, Inet4Address.ANY, Inet4Address.ANY,
-          Inet4Address.ANY, clientMac, broadcast);
-#endif
+    AutoPtr<IInetAddress> any;
+    AutoPtr<IInet4AddressHelper> inet4AddressHelper;
+    CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
+    inet4AddressHelper->GetANY((IInetAddress**)&any);
+    return DhcpPacket::constructor(transId, clientIp, any, any, any, clientMac, broadcast);
 }
 
 ECode DhcpRequestPacket::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        String s = super.toString();
-        return s + " REQUEST, desired IP " + mRequestedIp + " from host '"
+    VALIDATE_NOT_NULL(result)
+
+    String s;
+    DhcpPacket::ToString(&s);
+    *result = s + " REQUEST, desired IP " + StringUtils::ToString(mRequestedIp) + " from host '"
             + mHostName + "', param list length "
-            + (mRequestedParams == NULL ? 0 : mRequestedParams.length);
-#endif
+            + StringUtils::ToString(mRequestedParams == NULL ? 0 : mRequestedParams->GetLength());
+    return NOERROR;
 }
 
 ECode DhcpRequestPacket::BuildPacket(
@@ -39,46 +58,46 @@ ECode DhcpRequestPacket::BuildPacket(
     /* [in] */ Int16 srcUdp,
     /* [out] */ IByteBuffer** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        ByteBuffer result = ByteBuffer.allocate(MAX_LENGTH);
-        fillInPacket(encap, Inet4Address.ALL, Inet4Address.ANY, destUdp, srcUdp,
-            result, DHCP_BOOTREQUEST, mBroadcast);
-        result.flip();
-        return result;
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    AutoPtr<IByteBufferHelper> byteBufferHelper;
+    CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&byteBufferHelper);
+    byteBufferHelper->Allocate(MAX_LENGTH, result);
+    AutoPtr<IInet4AddressHelper> inet4AddressHelper;
+    CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
+    FillInPacket(encap,
+        Ptr(inet4AddressHelper)->Func(inet4AddressHelper->GetALL),
+        Ptr(inet4AddressHelper)->Func(inet4AddressHelper->GetANY),
+        destUdp, srcUdp, *result, DHCP_BOOTREQUEST, mBroadcast);
+    IBuffer::Probe(*result)->Flip();
+    return NOERROR;
 }
 
 ECode DhcpRequestPacket::FinishPacket(
     /* [in] */ IByteBuffer* buffer)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        byte[] clientId = new byte[7];
-        // assemble client identifier
-        clientId[0] = CLIENT_ID_ETHER;
-        System.arraycopy(mClientMac, 0, clientId, 1, 6);
-        addTlv(buffer, DHCP_MESSAGE_TYPE, DHCP_MESSAGE_TYPE_REQUEST);
-        addTlv(buffer, DHCP_PARAMETER_LIST, mRequestedParams);
-        addTlv(buffer, DHCP_REQUESTED_IP, mRequestedIp);
-        addTlv(buffer, DHCP_SERVER_IDENTIFIER, mServerIdentifier);
-        addTlv(buffer, DHCP_CLIENT_IDENTIFIER, clientId);
-        addTlvEnd(buffer);
-#endif
+    AutoPtr<ArrayOf<Byte> > clientId = ArrayOf<Byte>::Alloc(7);
+    // assemble client identifier
+    (*clientId)[0] = CLIENT_ID_ETHER;
+    clientId->Copy(1, mClientMac, 0, 6);
+    AddTlv(buffer, DHCP_MESSAGE_TYPE, DHCP_MESSAGE_TYPE_REQUEST);
+    AddTlv(buffer, DHCP_PARAMETER_LIST, mRequestedParams);
+    AddTlv(buffer, DHCP_REQUESTED_IP, mRequestedIp);
+    AddTlv(buffer, DHCP_SERVER_IDENTIFIER, mServerIdentifier);
+    AddTlv(buffer, DHCP_CLIENT_IDENTIFIER, clientId);
+    AddTlvEnd(buffer);
+    return NOERROR;
 }
 
 ECode DhcpRequestPacket::DoNextOp(
-    /* [in] */ IDhcpStateMachine* machine)
+    /* [in] */ DhcpStateMachine* machine)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        InetAddress clientRequest =
+    AutoPtr<IInetAddress> clientRequest =
             mRequestedIp == NULL ? mClientIp : mRequestedIp;
-        Log.v(TAG, "requested IP is " + mRequestedIp + " and client IP is " +
-            mClientIp);
-        machine.onRequestReceived(mBroadcast, mTransId, mClientMac,
+    Logger::V(TAG, "requested IP is %s and client IP is ", StringUtils::ToString(mRequestedIp).string(),
+            StringUtils::ToString(mClientIp).string());
+    return machine->OnRequestReceived(mBroadcast, mTransId, mClientMac,
             clientRequest, mRequestedParams, mHostName);
-#endif
 }
 
 } // namespace Dhcp

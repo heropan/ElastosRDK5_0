@@ -110,11 +110,11 @@ public:
             /* [in] */ ArrayOf<String>* segments,
             /* [in] */ Int32 size);
 
-        virtual CARAPI Get(
+        CARAPI Get(
             /* [in] */ Int32 index,
             /* [out] */ IInterface** value);
 
-        virtual CARAPI Size(
+        CARAPI Size(
             /* [out] */ Int32* result);
 
     public:
@@ -516,10 +516,6 @@ public:
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* parcel);
 
-    static CARAPI ReadFromParcel(
-        /* [in] */ IParcel* parcel,
-        /* [out] */ IUri** uri);
-
     /**
      * Writes a Uri to a Parcel.
      *
@@ -631,11 +627,6 @@ private:
     Uri(){}
 
 private:
-    /** Log tag. */
-    static const String LOG;
-
-    static const Char32 HEX_DIGITS[];
-
     /**
      * Returns true if the given character is allowed.
      *
@@ -644,12 +635,16 @@ private:
      * @return true if the character is allowed or false if it should be
      *  encoded
      */
-    static CARAPI IsAllowed(
+    static CARAPI_(Boolean) IsAllowed(
         /* [in] */ Char32 c,
-        /* [in] */ const String& allow,
-        /* [out] */ Boolean* result);
+        /* [in] */ const String& allow);
 
 private:
+    /** Log tag. */
+    static const String LOG;
+
+    static const Char32 HEX_DIGITS[];
+
     /**
      * NOTE: EMPTY accesses this field during its own initialization, so this
      * field *must* be initialized first, or else EMPTY will see a null value!
@@ -872,6 +867,8 @@ protected:
     AutoPtr<Uri::PathPart> mPath;
     AutoPtr<Uri::Part> mQuery;
     AutoPtr<Uri::Part> mFragment;
+
+    friend class Uri;
 };
 
 class OpaqueUri : public Uri
@@ -965,6 +962,9 @@ private:
     AutoPtr<Uri::Part> mSsp;
     AutoPtr<Uri::Part> mFragment;
     String mCachedString;
+
+    friend class UriBuilder;
+    friend class Uri;
 };
 
 class HierarchicalUri

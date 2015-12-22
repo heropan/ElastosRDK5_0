@@ -90,7 +90,7 @@ ECode NetworkState::GetLinkProperties(
 ECode NetworkState::GetNetworkCapabilities(
     /* [out] */ INetworkCapabilities** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
 
     *result = mNetworkCapabilities;
     REFCOUNT_ADD(*result)

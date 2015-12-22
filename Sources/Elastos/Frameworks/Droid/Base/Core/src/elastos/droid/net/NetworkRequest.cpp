@@ -72,8 +72,8 @@ ECode NetworkRequest::Equals(
     /* [in] */ IInterface* obj,
     /* [out] */ Boolean* result)
 {
-    if (TO_IINTERFACE(this) != IInterface::Probe(obj)) FUNC_RETURN(FALSE);
-    if (INetworkRequest::Probe(obj) == NULL) FUNC_RETURN(FALSE);
+    if (TO_IINTERFACE(this) == IInterface::Probe(obj)) FUNC_RETURN(TRUE)
+    if (INetworkRequest::Probe(obj) == NULL) FUNC_RETURN(FALSE)
     NetworkRequest* that = (NetworkRequest*)(INetworkRequest::Probe(obj));
     Boolean bEquals;
     IObject::Probe(that->mNetworkCapabilities)->Equals(mNetworkCapabilities, &bEquals);
@@ -88,13 +88,13 @@ ECode NetworkRequest::GetHashCode(
 {
     Int32 hashCode;
     IObject::Probe(mNetworkCapabilities)->GetHashCode(&hashCode);
-    FUNC_RETURN(mRequestId + (mLegacyType * 1013) + hashCode * 1051);
+    FUNC_RETURN(mRequestId + (mLegacyType * 1013) + hashCode * 1051)
 }
 
 ECode NetworkRequest::GetNetworkCapabilities(
     /* [out] */ INetworkCapabilities** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
 
     *result = mNetworkCapabilities;
     REFCOUNT_ADD(*result)
@@ -142,7 +142,7 @@ ECode NetworkRequestBuilder::Build(
     AutoPtr<INetworkRequest> rev;
     CNetworkRequest::New(mNetworkCapabilities, IConnectivityManager::TYPE_NONE,
             IConnectivityManager::REQUEST_ID_UNSET, (INetworkRequest**)&rev);
-    FUNC_RETURN(rev);
+    FUNC_RETURN(rev)
 }
 
 ECode NetworkRequestBuilder::AddCapability(

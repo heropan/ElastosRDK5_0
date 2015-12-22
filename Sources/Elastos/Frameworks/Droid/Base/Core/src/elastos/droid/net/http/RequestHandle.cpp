@@ -166,7 +166,7 @@ ECode RequestHandle::SetupRedirect(
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Translate codes below
     if (HttpLog::LOGV) {
-        HttpLog::V(String("RequestHandle.setupRedirect(): redirectCount ") + StringUtils::Int32ToString(mRedirectCount));
+        HttpLog::V(String("RequestHandle.setupRedirect(): redirectCount ") + StringUtils::ToString(mRedirectCount));
     }
 
     // be careful and remove authentication headers, if any
@@ -506,7 +506,7 @@ String RequestHandle::BufferToHex(
 {
     return String(NULL);
 #if 0 // TODO: Translate codes below
-    const Char16 hexChars[] =
+    const AutoPtr<ArrayOf<Char16> > hexChars =
             { '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f' };
 
     if (buffer != NULL) {

@@ -1,5 +1,24 @@
 
 #include "elastos/droid/net/StaticIpConfiguration.h"
+#include "elastos/droid/net/CLinkProperties.h"
+#include "elastos/droid/net/CRouteInfo.h"
+#include "elastos/droid/net/IpConfiguration.h"
+#include "elastos/droid/net/LinkProperties.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include <elastos/core/StringBuffer.h>
+#include <elastos/utility/Objects.h>
+#include <elastos/utility/etl/List.h>
+
+using Elastos::Droid::Net::CLinkProperties;
+using Elastos::Droid::Net::ILinkAddress;
+
+using Elastos::Core::StringBuffer;
+using Elastos::Net::IInetAddress;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::IList;
+using Elastos::Utility::Objects;
 
 namespace Elastos {
 namespace Droid {
@@ -9,180 +28,175 @@ CAR_INTERFACE_IMPL_2(StaticIpConfiguration, Object, IParcelable, IStaticIpConfig
 
 ECode StaticIpConfiguration::constructor()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        dnsServers = new ArrayList<InetAddress>();
-#endif
+    return CArrayList::New((IArrayList**)&mDnsServers);
 }
 
 ECode StaticIpConfiguration::constructor(
     /* [in] */ IStaticIpConfiguration* source)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        this();
-        if (source != NULL) {
-            // All of these except dnsServers are immutable, so no need to make copies.
-            ipAddress = source.ipAddress;
-            gateway = source.gateway;
-            dnsServers.addAll(source.dnsServers);
-            domains = source.domains;
-        }
-#endif
+    constructor();
+    if (source != NULL) {
+        // All of these except dnsServers are immutable, so no need to make copies.
+        mIpAddress = ((StaticIpConfiguration*) source)->mIpAddress;
+        mGateway = ((StaticIpConfiguration*) source)->mGateway;
+        Boolean b;
+        mDnsServers->AddAll(ICollection::Probe(((StaticIpConfiguration*) source)->mDnsServers), &b);
+        mDomains = ((StaticIpConfiguration*) source)->mDomains;
+    }
+    return NOERROR;
 }
 
 ECode StaticIpConfiguration::Clear()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        ipAddress = NULL;
-        gateway = NULL;
-        dnsServers.clear();
-        domains = NULL;
-#endif
+    mIpAddress = NULL;
+    mGateway = NULL;
+    mDnsServers->Clear();
+    mDomains = NULL;
+    return NOERROR;
 }
 
 ECode StaticIpConfiguration::GetRoutes(
     /* [in] */ const String& iface,
     /* [out] */ IList** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        List<RouteInfo> routes = new ArrayList<RouteInfo>(2);
-        if (ipAddress != NULL) {
-            routes.add(new RouteInfo(ipAddress, NULL, iface));
-        }
-        if (gateway != NULL) {
-            routes.add(new RouteInfo((LinkAddress) NULL, gateway, iface));
-        }
-        return routes;
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    CArrayList::New(2, result);
+    if (mIpAddress != NULL) {
+        AutoPtr<IRouteInfo> newRouteInfo;
+        CRouteInfo::New(mIpAddress, NULL, iface, (IRouteInfo**)&newRouteInfo);
+        (*result)->Add(newRouteInfo);
+    }
+    if (mGateway != NULL) {
+        AutoPtr<IRouteInfo> newRouteInfo;
+        CRouteInfo::New((ILinkAddress*) NULL, mGateway, iface, (IRouteInfo**)&newRouteInfo);
+        (*result)->Add(newRouteInfo);
+    }
+    return NOERROR;
 }
 
 ECode StaticIpConfiguration::ToLinkProperties(
     /* [in] */ const String& iface,
     /* [out] */ ILinkProperties** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        LinkProperties lp = new LinkProperties();
-        lp.setInterfaceName(iface);
-        if (ipAddress != NULL) {
-            lp.addLinkAddress(ipAddress);
-        }
-        for (RouteInfo route : getRoutes(iface)) {
-            lp.addRoute(route);
-        }
-        for (InetAddress dns : dnsServers) {
-            lp.addDnsServer(dns);
-        }
-        return lp;
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    CLinkProperties::New(result);
+    (*result)->SetInterfaceName(iface);
+    if (mIpAddress != NULL) {
+        Boolean b;
+        (*result)->AddLinkAddress(mIpAddress, &b);
+    }
+    AutoPtr<IList> routes;
+    GetRoutes(iface, (IList**)&routes);
+    FOR_EACH(iter, routes) {
+        AutoPtr<IRouteInfo> route = IRouteInfo::Probe(Ptr(iter)->Func(iter->GetNext));
+        Boolean b;
+        (*result)->AddRoute(route, &b);
+    }
+    FOR_EACH(iter_dns, mDnsServers) {
+        AutoPtr<IInetAddress> dns = IInetAddress::Probe(Ptr(iter_dns)->Func(iter_dns->GetNext));
+        Boolean b;
+        (*result)->AddDnsServer(dns, &b);
+    }
+    return NOERROR;
 }
 
 ECode StaticIpConfiguration::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        StringBuffer str = new StringBuffer();
-        str.append("IP address ");
-        if (ipAddress != NULL ) str.append(ipAddress).append(" ");
-        str.append("Gateway ");
-        if (gateway != NULL) str.append(gateway.getHostAddress()).append(" ");
-        str.append(" DNS servers: [");
-        for (InetAddress dnsServer : dnsServers) {
-            str.append(" ").append(dnsServer.getHostAddress());
-        }
-        str.append(" ] Domains");
-        if (domains != NULL) str.append(domains);
-        return str.toString();
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    StringBuffer str;
+    str.Append("IP address ");
+    String s;
+    if (mIpAddress != NULL ) {
+        IObject::Probe(mIpAddress)->ToString(&s);
+        str.Append(s);
+        str.Append(" ");
+    }
+    str.Append("Gateway ");
+    if (mGateway != NULL) {
+        mGateway->GetHostAddress(&s);
+        str.Append(s);
+        str.Append(" ");
+    }
+    str.Append(" DNS servers: [");
+    FOR_EACH(iter_dns, mDnsServers) {
+        AutoPtr<IInetAddress> dns = IInetAddress::Probe(Ptr(iter_dns)->Func(iter_dns->GetNext));
+        str.Append(" ");
+        dns->GetHostAddress(&s);
+        str.Append(s);
+    }
+    str.Append(" ] Domains");
+    if (mDomains != NULL) {
+        str.Append(mDomains);
+    }
+    *result = str.ToString();
+    return NOERROR;
 }
 
 ECode StaticIpConfiguration::GetHashCode(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        Int32 result = 13;
-        result = 47 * result + (ipAddress == NULL ? 0 : ipAddress.hashCode());
-        result = 47 * result + (gateway == NULL ? 0 : gateway.hashCode());
-        result = 47 * result + (domains == NULL ? 0 : domains.hashCode());
-        result = 47 * result + dnsServers.hashCode();
-        return result;
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    Int32 rev = 13;
+    rev = 47 * rev + (mIpAddress == NULL ? 0 : Ptr(IObject::Probe(mIpAddress))->Func(IObject::Probe(mIpAddress)->GetHashCode));
+    rev = 47 * rev + (mGateway == NULL ? 0 : Ptr(IObject::Probe(mGateway))->Func(IObject::Probe(mGateway)->GetHashCode));
+    rev = 47 * rev + (mDomains == NULL ? 0 : mDomains.GetHashCode());
+    rev = 47 * rev + Ptr(IObject::Probe(mDnsServers))->Func(IObject::Probe(mDnsServers)->GetHashCode);
+    *result = rev;
+    return NOERROR;
 }
 
 ECode StaticIpConfiguration::Equals(
     /* [in] */ IInterface* obj,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (this == obj) return TRUE;
-        if (!(IStaticIpConfiguration::Probe(obj) != NULL)) return FALSE;
-        StaticIpConfiguration other = (StaticIpConfiguration) obj;
-        return other != NULL &&
-                Objects.equals(ipAddress, other.ipAddress) &&
-                Objects.equals(gateway, other.gateway) &&
-                dnsServers.equals(other.dnsServers) &&
-                Objects.equals(domains, other.domains);
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    if (TO_IINTERFACE(this) == IInterface::Probe(obj)) FUNC_RETURN(TRUE)
+    if (!(IStaticIpConfiguration::Probe(obj) != NULL)) FUNC_RETURN(FALSE)
+    AutoPtr<StaticIpConfiguration> other = (StaticIpConfiguration*) IStaticIpConfiguration::Probe(obj);
+    *result = other != NULL &&
+            Objects::Equals(mIpAddress, other->mIpAddress) &&
+            Objects::Equals(mGateway, other->mGateway) &&
+            Objects::Equals(mDnsServers, other->mDnsServers) &&
+            mDomains.Equals(other->mDomains);
+    return NOERROR;
 }
 
 ECode StaticIpConfiguration::ReadFromParcel(
         /* [in] */ IParcel* parcel)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            public StaticIpConfiguration createFromParcel(Parcel in) {
-                StaticIpConfiguration s = new StaticIpConfiguration();
-                readFromParcel(s, in);
-                return s;
-            }
-            public StaticIpConfiguration[] newArray(Int32 size) {
-                return new StaticIpConfiguration[size];
-            }
-#endif
+    AutoPtr<IInterface> obj;
+    parcel->ReadInterfacePtr((Handle32*)&obj);
+    mIpAddress = ILinkAddress::Probe(obj);
+    obj = NULL;
+    parcel->ReadInterfacePtr((Handle32*)&obj);
+    mGateway = IInetAddress::Probe(obj);
+    obj = NULL;
+    parcel->ReadInterfacePtr((Handle32*)&obj);
+    mDnsServers = IArrayList::Probe(obj);
+    parcel->ReadString(&mDomains);
+    return NOERROR;
 }
 
 ECode StaticIpConfiguration::WriteToParcel(
         /* [in] */ IParcel* dest)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-            public StaticIpConfiguration createFromParcel(Parcel in) {
-                StaticIpConfiguration s = new StaticIpConfiguration();
-                readFromParcel(s, in);
-                return s;
-            }
-            public StaticIpConfiguration[] newArray(Int32 size) {
-                return new StaticIpConfiguration[size];
-            }
-#endif
-}
-
-ECode StaticIpConfiguration::ReadFromParcel(
-    /* [in] */ IStaticIpConfiguration* s,
-    /* [in] */ IParcel* in)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        s.ipAddress = in.readParcelable(NULL);
-        s.gateway = NetworkUtils.unparcelInetAddress(in);
-        s.dnsServers.clear();
-        Int32 size = in.readInt();
-        for (Int32 i = 0; i < size; i++) {
-            s.dnsServers.add(NetworkUtils.unparcelInetAddress(in));
-        }
-#endif
+    dest->WriteInterfacePtr(mIpAddress.Get());
+    dest->WriteInterfacePtr(mGateway.Get());
+    dest->WriteInterfacePtr(mDnsServers.Get());
+    dest->WriteString(mDomains);
+    return NOERROR;
 }
 
 ECode StaticIpConfiguration::GetIpAddress(
     /* [out] */ ILinkAddress** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
 
     *result = mIpAddress;
     REFCOUNT_ADD(*result)
@@ -201,7 +215,7 @@ ECode StaticIpConfiguration::SetIpAddress(
 ECode StaticIpConfiguration::GetGateway(
     /* [out] */ IInetAddress** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
 
     *result = mGateway;
     REFCOUNT_ADD(*result)
@@ -220,7 +234,7 @@ ECode StaticIpConfiguration::SetGateway(
 ECode StaticIpConfiguration::GetDnsServers(
     /* [out] */ IArrayList** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
 
     *result = mDnsServers;
     REFCOUNT_ADD(*result)

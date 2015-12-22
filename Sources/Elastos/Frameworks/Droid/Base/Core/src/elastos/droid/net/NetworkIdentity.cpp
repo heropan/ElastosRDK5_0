@@ -68,7 +68,7 @@ ECode NetworkIdentity::Equals(
 {
     VALIDATE_NOT_NULL(result)
 
-    if (TO_IINTERFACE(this) != IInterface::Probe(obj)) FUNC_RETURN(FALSE);
+    if (TO_IINTERFACE(this) == IInterface::Probe(obj)) FUNC_RETURN(TRUE)
     if (INetworkIdentity::Probe(obj) != NULL) {
         AutoPtr<NetworkIdentity> ident = (NetworkIdentity*) INetworkIdentity::Probe(obj);
         *result = mType == ident->mType && mSubType == ident->mSubType && mRoaming == ident->mRoaming

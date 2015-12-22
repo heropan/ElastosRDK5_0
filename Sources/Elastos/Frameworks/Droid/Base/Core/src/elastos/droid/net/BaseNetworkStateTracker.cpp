@@ -287,7 +287,7 @@ ECode BaseNetworkStateTracker::SetNetId(
 ECode BaseNetworkStateTracker::GetNetwork(
     /* [out] */ INetwork** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
 
     *result = mNetwork;
     REFCOUNT_ADD(*result)
@@ -297,7 +297,7 @@ ECode BaseNetworkStateTracker::GetNetwork(
 ECode BaseNetworkStateTracker::GetNetworkCapabilities(
     /* [out] */ INetworkCapabilities** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
 
     return CNetworkCapabilities::New(mNetworkCapabilities, result);
 }

@@ -6,6 +6,8 @@
 #include "Elastos.Droid.Net.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
+// TODO: Waiting for DefaultHttpClient
+// #include <org/apache/http/impl/client/DefaultHttpClient.h>
 
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IContext;
@@ -21,7 +23,9 @@ using Org::Apache::Http::IHttpHost;
 using Org::Apache::Http::IHttpRequest;
 using Org::Apache::Http::IHttpRequestInterceptor;
 using Org::Apache::Http::IHttpResponse;
+// using Org::Apache::Http::Impl::Client::DefaultHttpClient;
 using Org::Apache::Http::Params::IHttpParams;
+using Org::Apache::Http::Protocol::IBasicHttpProcessor;
 using Org::Apache::Http::Protocol::IHttpContext;
 
 namespace Elastos {
@@ -59,8 +63,7 @@ private:
         /**
         * Returns true if logging is turned on for this configuration.
         */
-        CARAPI IsLoggable(
-            /* [out] */ Boolean* result);
+        CARAPI_(Boolean) IsLoggable();
 
         /**
         * Prints a message using this configuration.
@@ -72,6 +75,7 @@ private:
 
         const Int32 LEVEL;
 
+        friend class ElastosHttpClient;
     };
 
     /**
@@ -82,10 +86,40 @@ private:
         , public IHttpRequestInterceptor
     {
     public:
+        CAR_INTERFACE_DECL()
+
         CARAPI Process(
             /* [in] */ IHttpRequest* request,
             /* [in] */ IHttpContext* context);
 
+    };
+
+    class InnerSub_HttpRequestInterceptor
+        : public Object
+        , public IHttpRequestInterceptor
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        CARAPI Process(
+            /* [in] */ IHttpRequest* request,
+            /* [in] */ IHttpContext* context);
+    };
+
+    class InnerSub_DefaultHttpClient
+#if 0 // TODO: Waiting for DefaultHttpClient
+        : public DefaultHttpClient
+#else
+        : public Object
+#endif
+    {
+    public:
+        // @Override
+        CARAPI CreateHttpProcessor(
+            /* [out] */ IBasicHttpProcessor** processor);
+
+        CARAPI CreateHttpContext(
+            /* [out] */ IHttpContext** context);
     };
 
 public:
@@ -264,22 +298,21 @@ private:
 
     static CARAPI_(AutoPtr<IHttpRequestInterceptor>) InitThreadCheckInterceptor();
 
-    ElastosHttpClient(
+    CARAPI constructor(
         /* [in] */ IClientConnectionManager* ccm,
         /* [in] */ IHttpParams* params);
 
     /**
      * Generates a cURL command equivalent to the given request.
      */
-    static CARAPI ToCurl(
+    static CARAPI_(String) ToCurl(
         /* [in] */ IHttpUriRequest* request,
-        /* [in] */ Boolean logAuthToken,
-        /* [out] */ String* result);
+        /* [in] */ Boolean logAuthToken);
 
-    static CARAPI IsBinaryContent(
-        /* [in] */ IHttpUriRequest* request,
-        /* [out] */ Boolean* result);
+    static CARAPI_(Boolean) IsBinaryContent(
+        /* [in] */ IHttpUriRequest* request);
 
+private:
     // Default connection and socket timeout of 60 seconds.  Tweak to taste.
     static const Int32 SOCKET_OPERATION_TIMEOUT;
 
@@ -289,11 +322,13 @@ private:
 
     AutoPtr<IHttpClient> mDelegate;
 
+    Boolean mLeakedException;
+
     /** cURL logging configuration. */
     /* volatile */ AutoPtr<LoggingConfiguration> mCurlConfiguration;
 
     /** Interceptor throws an exception if the executing thread is blocked */
-    static const AutoPtr<IHttpRequestInterceptor> THREAD_CHECK_INTERCEPTOR;
+    static const AutoPtr<IHttpRequestInterceptor> sThreadCheckInterceptor;
 };
 
 } // namespace Http

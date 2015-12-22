@@ -1,15 +1,39 @@
 
 #include "elastos/droid/net/nsd/NsdServiceInfo.h"
+#include "elastos/droid/net/nsd/DnsSdTxtRecord.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/os/Build.h"
 #include "elastos/droid/utility/CArrayMap.h"
+#include <Elastos.CoreLibrary.IO.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Droid::Utility::ILog;
+using Elastos::Droid::Os::Build;
 using Elastos::Droid::Utility::CArrayMap;
+using Elastos::Droid::Utility::IArrayMap;
+using Elastos::Droid::Utility::ILog;
 
+using Elastos::Core::CString;
+using Elastos::Core::CArrayOf;
+using Elastos::Core::CByte;
+using Elastos::Core::EIID_IByte;
+using Elastos::Core::IArrayOf;
+using Elastos::Core::IByte;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::IO::Charset::CStandardCharsets;
 using Elastos::IO::Charset::IStandardCharsets;
 using Elastos::Net::EIID_IInetAddress;
 using Elastos::Net::IInetAddress;
+using Elastos::Utility::CCollections;
+using Elastos::Utility::ICollection;
 using Elastos::Utility::ICollections;
 using Elastos::Utility::IMap;
+using Elastos::Utility::IMapEntry;
+using Elastos::Utility::ISet;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -105,26 +129,21 @@ ECode NsdServiceInfo::SetAttribute(
     /* [in] */ const String& key,
     /* [in] */ ArrayOf<Byte>* value)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate code below.
     // Key must be printable US-ASCII, excluding =.
     for (Int32 i = 0; i < key.GetLength(); ++i) {
-        Char32 character = key.CharAt(i);
+        Char32 character = key.GetChar(i);
         if (character < 0x20 || character > 0x7E) {
-                // throw new IllegalArgumentException("Key strings must be printable US-ASCII");
             Logger::E(TAG, "Key strings must be printable US-ASCII");
-            return E_ILLEGAL_ARGUMENT;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         } else if (character == 0x3D) {
-                // throw new IllegalArgumentException("Key strings must not include '='");
             Logger::E(TAG, "Key strings must not include '='");
-            return E_ILLEGAL_ARGUMENT;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
     }
     // Key length + value length must be < 255.
-    if (key.GetLength() + (value == NULL ? 0 : value.GetLength()) >= 255) {
-            // throw new IllegalArgumentException("Key length + value length must be < 255 bytes");
+    if (key.GetLength() + (value == NULL ? 0 : value->GetLength()) >= 255) {
         Logger::E(TAG, "Key length + value length must be < 255 bytes");
-        return E_ILLEGAL_ARGUMENT;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     // Warn if key is > 9 characters, as recommended by RFC 6763 section 6.4.
     if (key.GetLength() > 9) {
@@ -134,53 +153,53 @@ ECode NsdServiceInfo::SetAttribute(
     // Arbitrary 400 / 1300 byte limits taken from RFC 6763 section 6.2.
     Int32 txtRecordSize;
     GetTxtRecordSize(&txtRecordSize);
-    Int32 futureSize = txtRecordSize + key.GetLength() + (value == NULL ? 0 : value.GetLength()) + 2;
+    Int32 futureSize = txtRecordSize + key.GetLength() + (value == NULL ? 0 : value->GetLength()) + 2;
     if (futureSize > 1300) {
-            // throw new IllegalArgumentException("Total length of attributes must be < 1300 bytes");
         Logger::E(TAG, "Total length of attributes must be < 1300 bytes");
-        return E_ILLEGAL_ARGUMENT;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     } else if (futureSize > 400) {
             Logger::W(TAG, "Total length of all attributes exceeds 400 bytes; truncation may occur");
     }
-    mTxtRecord->Put(key, value);
-#endif
+    AutoPtr<ICharSequence> csq;
+    CString::New(key, (ICharSequence**)&csq);
+    AutoPtr<IArrayOf> array;
+    CArrayOf::New(EIID_IByte, value->GetLength(), (IArrayOf**)&array);
+    for (Int32 i = 0; i < value->GetLength(); ++i) {
+        AutoPtr<IByte> b;
+        CByte::New((*value)[i], (IByte**)&b);
+        array->Set(i, b);
+    }
+    mTxtRecord->Put(csq, array);
+    return NOERROR;
 }
 
 ECode NsdServiceInfo::SetAttribute(
     /* [in] */ const String& key,
     /* [in] */ const String& value)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
         // try {
-    ECode ec = SetAttribute(key, value.IsNull() ? ArrayOf<Byte>::Alloc(0) : value.GetBytes("UTF-8"));
+    ECode ec = SetAttribute(key, value.IsNull() ? ArrayOf<Byte>::Alloc(0) : value.GetBytes(/* "UTF-8" */).Get());
         // } catch (UnsupportedEncodingException e) {
-    if (ec != NOERROR) {
-            // throw new IllegalArgumentException("Value must be UTF-8");
+    if (FAILED(ec)) {
         Logger::E(TAG, "Value must be UTF-8");
-        return E_ILLEGAL_ARGUMENT;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
         // }
-#endif
+    return NOERROR;
 }
 
 ECode NsdServiceInfo::RemoveAttribute(
     /* [in] */ const String& key)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(key, (ICharSequence**)&csq);
+    CString::New(key, (ICharSequence**)&csq);
     mTxtRecord->Remove(IInterface::Probe(csq));
     return NOERROR;
-#endif
 }
 
 ECode NsdServiceInfo::GetAttributes(
     /* [out, callee] */ IMap** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(result)
 
     AutoPtr<ICollections> collections;
@@ -188,14 +207,11 @@ ECode NsdServiceInfo::GetAttributes(
     collections->UnmodifiableMap(IMap::Probe(mTxtRecord), result);
     REFCOUNT_ADD(*result)
     return NOERROR;
-#endif
 }
 
 ECode NsdServiceInfo::GetTxtRecordSize(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     Int32 txtRecordSize = 0;
     AutoPtr<ISet> entrySet;
     mTxtRecord->GetEntrySet((ISet**)&entrySet);
@@ -210,8 +226,9 @@ ECode NsdServiceInfo::GetTxtRecordSize(
         Int32 length;
         ICharSequence::Probe(key)->GetLength(&length);
         txtRecordSize += length;
-        AutoPtr<IArrayOf> value;
-        entry->getValue((IArrayOf**)&value);
+        AutoPtr<IInterface> obj;
+        entry->GetValue((IInterface**)&obj);
+        AutoPtr<IArrayOf> value = IArrayOf::Probe(obj);
         length = 0;
         if (value != NULL)
             value->GetLength(&length);
@@ -219,14 +236,11 @@ ECode NsdServiceInfo::GetTxtRecordSize(
     }
     *result = txtRecordSize;
     return NOERROR;
-#endif
 }
 
 ECode NsdServiceInfo::GetTxtRecord(
     /* [out, callee] */ ArrayOf<Byte>** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     Int32 txtRecordSize;
     GetTxtRecordSize(&txtRecordSize);
     if (txtRecordSize == 0) {
@@ -250,36 +264,40 @@ ECode NsdServiceInfo::GetTxtRecord(
         entry->GetValue((IInterface**)&iValue);
         AutoPtr<IArrayOf> value = IArrayOf::Probe(iValue);
         // One byte to record the length of this key/value pair.
-        txtRecord[ptr++] = (Byte) (key.GetLength + (value == NULL ? 0 : value->GetLength()) + 1);
+        (*txtRecord)[ptr++] = (Byte) (key.GetLength() + (value == NULL ? 0 : Ptr(value)->Func(value->GetLength)) + 1);
         // The key, in US-ASCII.
         // Note: use the StandardCharsets const here because it doesn't raise exceptions and we
         // already know the key is ASCII at this point.
-            // System.arraycopy(key.getBytes(StandardCharsets.US_ASCII), 0, txtRecord, ptr, key.length());
-        txtRecord->Copy(ptr, key.GetBytes(IStandardCharsets::US_ASCII), 0, key.GetLength());
+        // System.arraycopy(key.getBytes(StandardCharsets.US_ASCII), 0, txtRecord, ptr, key.length());
+        txtRecord->Copy(ptr, key.GetBytes(), 0, key.GetLength());
         ptr += key.GetLength();
         // US-ASCII '=' character.
-        txtRecord[ptr++] = (Byte)'=';
+        (*txtRecord)[ptr++] = (Byte)'=';
         // The value, as any raw bytes.
         if (value != NULL) {
                 // System.arraycopy(value, 0, txtRecord, ptr, value.length);
             Int32 length;
             value->GetLength(&length);
-            txtRecord->Copy(ptr, (ArrayOf<Byte>*)value, 0, length);
+            AutoPtr<ArrayOf<Byte> > aValue = ArrayOf<Byte>::Alloc(length);
+            for (Int32 i = 0; i < length; ++i) {
+                AutoPtr<IInterface> obj;
+                value->Get(i, (IInterface**)&obj);
+                AutoPtr<IByte> b = IByte::Probe(obj);
+                (*aValue)[i] = Ptr(b)->Func(b->GetValue);
+            }
+            txtRecord->Copy(ptr, aValue, 0, length);
             ptr += length;
         }
     }
     *result = txtRecord;
     REFCOUNT_ADD(*result)
     return NOERROR;
-#endif
 }
 
 ECode NsdServiceInfo::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(info);
+    VALIDATE_NOT_NULL(result);
 
     StringBuilder sb;
 
@@ -290,62 +308,55 @@ ECode NsdServiceInfo::ToString(
 
     sb += ", host: ";
     String temp;
-    mHost->ToString(&temp);
+    IObject::Probe(mHost)->ToString(&temp);
     sb += temp;
 
     sb += ", port: ";
     sb += StringUtils::ToString(mPort);
     sb += "txtRecord: ";
-    mTxtRecord->ToString(&temp);
+    IObject::Probe(mTxtRecord)->ToString(&temp);
     sb += temp;
 
     AutoPtr<ArrayOf<Byte> > txtRecord;
     GetTxtRecord((ArrayOf<Byte>**)&txtRecord);
     if (txtRecord != NULL) {
         sb += ", txtRecord: ";
-        String s(txtRecord, StandardCharsets::UTF_8);
+        String s(*txtRecord/*, IStandardCharsets::UTF_8*/);
         sb += s;
     }
 
-    *info = sb.ToString();
+    *result = sb.ToString();
     return NOERROR;
-#endif
 }
 
 ECode NsdServiceInfo::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below. Source code changed.
-    FAIL_RETURN(dest->WriteString(mServiceName));
-    FAIL_RETURN(dest->WriteString(mServiceType));
-    FAIL_RETURN(dest->WriteInterfacePtr(mTxtRecord.Get()));
-    FAIL_RETURN(dest->WriteInterfacePtr(mHost.Get()));
-    FAIL_RETURN(dest->WriteInt32(mPort));
+    dest->WriteString(mServiceName);
+    dest->WriteString(mServiceType);
+    dest->WriteInterfacePtr(mTxtRecord.Get());
+    dest->WriteInterfacePtr(mHost.Get());
+    dest->WriteInt32(mPort);
 
     return NOERROR;
-#endif
 }
 
 ECode NsdServiceInfo::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     AutoPtr<IInterface> obj;
-    FAIL_RETURN(source->ReadString(&mServiceName));
-    FAIL_RETURN(source->ReadString(&mServiceType));
-    FAIL_RETURN(source->ReadInterfacePtrPtr((IInterface**)&obj));
-    mTxtRecord = IDnsSdTxtRecord::Probe(obj);
+    source->ReadString(&mServiceName);
+    source->ReadString(&mServiceType);
+    source->ReadInterfacePtr((Handle32*)&obj);
+    mTxtRecord = IArrayMap::Probe(obj);
 
     obj = NULL;
-    FAIL_RETURN(source->ReadInterfacePtrPtr((IInterface**)&obj));
+    source->ReadInterfacePtr((Handle32*)&obj);
     mHost = IInetAddress::Probe(obj);
 
-    FAIL_RETURN(source->ReadInt32(&mPort));
+    source->ReadInt32(&mPort);
 
     return NOERROR;
-#endif
 }
 
 } // namespace Nsd

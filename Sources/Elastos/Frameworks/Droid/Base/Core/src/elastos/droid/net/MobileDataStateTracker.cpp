@@ -911,28 +911,28 @@ ECode MobileDataStateTracker::NetworkTypeToApnType(
 
     switch(netType) {
         case IConnectivityManager::TYPE_MOBILE:
-            FUNC_RETURN(IPhoneConstants::APN_TYPE_DEFAULT);  // TODO - use just one of these
+            FUNC_RETURN(IPhoneConstants::APN_TYPE_DEFAULT)  // TODO - use just one of these
         case IConnectivityManager::TYPE_MOBILE_MMS:
-            FUNC_RETURN(IPhoneConstants::APN_TYPE_MMS);
+            FUNC_RETURN(IPhoneConstants::APN_TYPE_MMS)
         case IConnectivityManager::TYPE_MOBILE_SUPL:
-            FUNC_RETURN(IPhoneConstants::APN_TYPE_SUPL);
+            FUNC_RETURN(IPhoneConstants::APN_TYPE_SUPL)
         case IConnectivityManager::TYPE_MOBILE_DUN:
-            FUNC_RETURN(IPhoneConstants::APN_TYPE_DUN);
+            FUNC_RETURN(IPhoneConstants::APN_TYPE_DUN)
         case IConnectivityManager::TYPE_MOBILE_HIPRI:
-            FUNC_RETURN(IPhoneConstants::APN_TYPE_HIPRI);
+            FUNC_RETURN(IPhoneConstants::APN_TYPE_HIPRI)
         case IConnectivityManager::TYPE_MOBILE_FOTA:
-            FUNC_RETURN(IPhoneConstants::APN_TYPE_FOTA);
+            FUNC_RETURN(IPhoneConstants::APN_TYPE_FOTA)
         case IConnectivityManager::TYPE_MOBILE_IMS:
-            FUNC_RETURN(IPhoneConstants::APN_TYPE_IMS);
+            FUNC_RETURN(IPhoneConstants::APN_TYPE_IMS)
         case IConnectivityManager::TYPE_MOBILE_CBS:
-            FUNC_RETURN(IPhoneConstants::APN_TYPE_CBS);
+            FUNC_RETURN(IPhoneConstants::APN_TYPE_CBS)
         case IConnectivityManager::TYPE_MOBILE_IA:
-            FUNC_RETURN(IPhoneConstants::APN_TYPE_IA);
+            FUNC_RETURN(IPhoneConstants::APN_TYPE_IA)
         case IConnectivityManager::TYPE_MOBILE_EMERGENCY:
-            FUNC_RETURN(IPhoneConstants::APN_TYPE_EMERGENCY);
+            FUNC_RETURN(IPhoneConstants::APN_TYPE_EMERGENCY)
         default:
             Sloge("Error mapping networkType %d to apnType.", netType);
-            FUNC_RETURN(String(NULL));
+            FUNC_RETURN(String(NULL))
     }
     return NOERROR;
 }

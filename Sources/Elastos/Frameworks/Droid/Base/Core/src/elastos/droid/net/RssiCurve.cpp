@@ -1,5 +1,13 @@
 
 #include "elastos/droid/net/RssiCurve.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/Arrays.h>
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Core::StringBuilder;
+using Elastos::Utility::Arrays;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -8,6 +16,8 @@ namespace Net {
 CAR_INTERFACE_IMPL_2(RssiCurve, Object, IParcelable, IRssiCurve)
 
 RssiCurve::RssiCurve()
+    : mStart(0)
+    , mBucketWidth(0)
 {}
 
 ECode RssiCurve::constructor(
@@ -15,122 +25,99 @@ ECode RssiCurve::constructor(
     /* [in] */ Int32 bucketWidth,
     /* [in] */ ArrayOf<Byte>* rssiBuckets)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        this.start = start;
-        this.bucketWidth = bucketWidth;
-        if (rssiBuckets == NULL || rssiBuckets.length == 0) {
-            throw new IllegalArgumentException("rssiBuckets must be at least one element large.");
-        }
-        this.rssiBuckets = rssiBuckets;
-#endif
-}
-
-RssiCurve::RssiCurve(
-    /* [in] */ IParcel* in)
-{
-#if 0 // TODO: Translate codes below
-        start = in.readInt();
-        bucketWidth = in.readInt();
-        Int32 bucketCount = in.readInt();
-        rssiBuckets = new byte[bucketCount];
-        in.readByteArray(rssiBuckets);
-#endif
+    mStart = start;
+    mBucketWidth = bucketWidth;
+    if (rssiBuckets == NULL) {
+        Logger::E("RssiCurve", "rssiBuckets must be at least one element large.");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    if (rssiBuckets->GetLength() == 0) {
+        Logger::E("RssiCurve", "rssiBuckets must be at least one element large.");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mRssiBuckets = rssiBuckets;
+    return NOERROR;
 }
 
 ECode RssiCurve::LookupScore(
     /* [in] */ Int32 rssi,
     /* [out] */ Byte* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        Int32 index = (rssi - start) / bucketWidth;
-        // Snap the index to the closest bucket if it falls outside the curve.
-        if (index < 0) {
-            index = 0;
-        } else if (index > rssiBuckets.length - 1) {
-            index = rssiBuckets.length - 1;
-        }
-        return rssiBuckets[index];
-#endif
+    Int32 index = (rssi - mStart) / mBucketWidth;
+    // Snap the index to the closest bucket if it falls outside the curve.
+    if (index < 0) {
+        index = 0;
+    } else if (index > mRssiBuckets->GetLength() - 1) {
+        index = mRssiBuckets->GetLength() - 1;
+    }
+    FUNC_RETURN((*mRssiBuckets)[index])
 }
 
 ECode RssiCurve::Equals(
-    /* [in] */ IInterface* o,
+    /* [in] */ IInterface* obj,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (this == o) return TRUE;
-        if (o == NULL || getClass() != o.getClass()) return FALSE;
-        RssiCurve rssiCurve = (RssiCurve) o;
-        return start == rssiCurve.start &&
-                bucketWidth == rssiCurve.bucketWidth &&
-                Arrays.equals(rssiBuckets, rssiCurve.rssiBuckets);
-#endif
+    VALIDATE_NOT_NULL(result)
+
+    if (TO_IINTERFACE(this) == IInterface::Probe(obj)) FUNC_RETURN(TRUE)
+    ClassID this_cid, o_cid;
+    IObject::Probe(TO_IINTERFACE(this))->GetClassID(&this_cid);
+    IObject::Probe(obj)->GetClassID(&o_cid);
+    if (obj == NULL || this_cid != o_cid) FUNC_RETURN(FALSE)
+    AutoPtr<RssiCurve> rssiCurve = (RssiCurve*) IRssiCurve::Probe(obj);
+    *result = mStart == rssiCurve->mStart &&
+            mBucketWidth == rssiCurve->mBucketWidth &&
+            Arrays::Equals(mRssiBuckets, rssiCurve->mRssiBuckets);
+    return NOERROR;
 }
 
 ECode RssiCurve::GetHashCode(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return Objects.hash(start, bucketWidth, rssiBuckets);
-#endif
+    AutoPtr<ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(3);
+    (*array)[0] = mStart;
+    (*array)[1] = mBucketWidth;
+    (*array)[2] = Arrays::GetHashCode(mRssiBuckets);
+    *result = Arrays::GetHashCode(array);
+    return NOERROR;
 }
 
 ECode RssiCurve::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        StringBuilder sb = new StringBuilder();
-        sb.append("RssiCurve[start=")
-                .append(start)
-                .append(",bucketWidth=")
-                .append(bucketWidth);
-        sb.append(",buckets=");
-        for (Int32 i = 0; i < rssiBuckets.length; i++) {
-            sb.append(rssiBuckets[i]);
-            if (i < rssiBuckets.length - 1) {
-                sb.append(",");
-            }
+    StringBuilder sb;
+    sb.Append("RssiCurve[start=");
+    sb.Append(mStart);
+    sb.Append(",bucketWidth=");
+    sb.Append(mBucketWidth);
+    sb.Append(",buckets=");
+    for (Int32 i = 0; i < mRssiBuckets->GetLength(); i++) {
+        sb.Append((*mRssiBuckets)[i]);
+        if (i < mRssiBuckets->GetLength() - 1) {
+            sb.Append(",");
         }
-        sb.append("]");
-        return sb.toString();
-#endif
+    }
+    sb.Append("]");
+    *result = sb.ToString();
+    return NOERROR;
 }
 
 ECode RssiCurve::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                @Override
-                public RssiCurve createFromParcel(Parcel in) {
-                    return new RssiCurve(in);
-                }
-                @Override
-                public RssiCurve[] newArray(Int32 size) {
-                    return new RssiCurve[size];
-                }
-#endif
+    parcel->ReadInt32(&mStart);
+    parcel->ReadInt32(&mBucketWidth);
+    parcel->ReadArrayOf((Handle32*)&mRssiBuckets);
+    return NOERROR;
 }
 
 ECode RssiCurve::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-                @Override
-                public RssiCurve createFromParcel(Parcel in) {
-                    return new RssiCurve(in);
-                }
-                @Override
-                public RssiCurve[] newArray(Int32 size) {
-                    return new RssiCurve[size];
-                }
-#endif
+    dest->WriteInt32(mStart);
+    dest->WriteInt32(mBucketWidth);
+    dest->WriteArrayOf((Handle32)mRssiBuckets.Get());
+    return NOERROR;
 }
 
 ECode RssiCurve::GetStart(
@@ -160,8 +147,6 @@ ECode RssiCurve::GetRssiBuckets(
     REFCOUNT_ADD(*result)
     return NOERROR;
 }
-
-
 
 } // namespace Net
 } // namespace Droid

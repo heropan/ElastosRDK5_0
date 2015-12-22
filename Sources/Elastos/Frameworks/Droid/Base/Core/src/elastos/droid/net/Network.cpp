@@ -90,7 +90,7 @@ ECode Network::GetSocketFactory(
             }
         }
     }
-    FUNC_RETURN(ISocketFactory::Probe(mNetworkBoundSocketFactory));
+    FUNC_RETURN(ISocketFactory::Probe(mNetworkBoundSocketFactory))
 }
 
 ECode Network::MaybeInitHttpClient()
@@ -185,10 +185,10 @@ ECode Network::Equals(
 {
     VALIDATE_NOT_NULL(result)
 
-    if (TO_IINTERFACE(this) != IInterface::Probe(obj)) FUNC_RETURN(FALSE);
-    if (INetwork::Probe(obj) == NULL) FUNC_RETURN(FALSE);
+    if (TO_IINTERFACE(this) == IInterface::Probe(obj)) FUNC_RETURN(TRUE)
+    if (INetwork::Probe(obj) == NULL) FUNC_RETURN(FALSE)
     AutoPtr<Network> other = (Network*)INetwork::Probe(obj);
-    FUNC_RETURN(mNetId == other->mNetId);
+    FUNC_RETURN(mNetId == other->mNetId)
 }
 
 ECode Network::GetHashCode(
@@ -196,7 +196,7 @@ ECode Network::GetHashCode(
 {
     VALIDATE_NOT_NULL(result)
 
-    FUNC_RETURN(mNetId * 11);
+    FUNC_RETURN(mNetId * 11)
 }
 
 ECode Network::ToString(
@@ -204,7 +204,7 @@ ECode Network::ToString(
 {
     VALIDATE_NOT_NULL(result)
 
-    FUNC_RETURN(StringUtils::ToString(mNetId));
+    FUNC_RETURN(StringUtils::ToString(mNetId))
 }
 
 ECode Network::ReadFromParcel(
@@ -280,7 +280,7 @@ ECode Network::NetworkBoundSocketFactory::ConnectToHost(
                 ec = CInetSocketAddress::New((*hostAddresses)[i], port, (IInetSocketAddress**)&inetSocketAddress);
                 if (!FAILED(ec)) {
                     ec = socket->Connect(ISocketAddress::Probe(inetSocketAddress));
-                    if (!FAILED(ec)) FUNC_RETURN(socket);
+                    if (!FAILED(ec)) FUNC_RETURN(socket)
                 }
             }
         }
@@ -327,7 +327,7 @@ ECode Network::NetworkBoundSocketFactory::CreateSocket(
     AutoPtr<IInetSocketAddress> inetSocketAddress;
     CInetSocketAddress::New(address, port, (IInetSocketAddress**)&inetSocketAddress);
     socket->Connect(ISocketAddress::Probe(inetSocketAddress));
-    FUNC_RETURN(socket);
+    FUNC_RETURN(socket)
 }
 
 ECode Network::NetworkBoundSocketFactory::CreateSocket(
@@ -342,7 +342,7 @@ ECode Network::NetworkBoundSocketFactory::CreateSocket(
     AutoPtr<IInetSocketAddress> inetSocketAddress;
     CInetSocketAddress::New(host, port, (IInetSocketAddress**)&inetSocketAddress);
     socket->Connect(ISocketAddress::Probe(inetSocketAddress));
-    FUNC_RETURN(socket);
+    FUNC_RETURN(socket)
 }
 
 ECode Network::NetworkBoundSocketFactory::CreateSocket(
@@ -363,7 +363,7 @@ ECode Network::NetworkBoundSocketFactory::CreateSocket(
     AutoPtr<ISocket> socket;
     CSocket::New((ISocket**)&socket);
     mHost->BindSocket(socket);
-    FUNC_RETURN(socket);
+    FUNC_RETURN(socket)
 }
 
 Boolean Network::GetHTTP_KEEP_ALIVE()

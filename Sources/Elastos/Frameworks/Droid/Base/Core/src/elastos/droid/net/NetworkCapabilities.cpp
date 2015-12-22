@@ -75,7 +75,7 @@ ECode NetworkCapabilities::GetCapabilities(
 {
     VALIDATE_NOT_NULL(result)
 
-    FUNC_RETURN(EnumerateBits(mNetworkCapabilities));
+    FUNC_RETURN(EnumerateBits(mNetworkCapabilities))
 }
 
 ECode NetworkCapabilities::HasCapability(
@@ -155,7 +155,7 @@ ECode NetworkCapabilities::GetTransportTypes(
 {
     VALIDATE_NOT_NULL(result)
 
-    FUNC_RETURN(EnumerateBits(mTransportTypes));
+    FUNC_RETURN(EnumerateBits(mTransportTypes))
 }
 
 ECode NetworkCapabilities::HasTransport(
@@ -203,7 +203,7 @@ ECode NetworkCapabilities::GetLinkUpstreamBandwidthKbps(
 {
     VALIDATE_NOT_NULL(result)
 
-    FUNC_RETURN(mLinkUpBandwidthKbps);
+    FUNC_RETURN(mLinkUpBandwidthKbps)
 }
 
 ECode NetworkCapabilities::SetLinkDownstreamBandwidthKbps(
@@ -218,7 +218,7 @@ ECode NetworkCapabilities::GetLinkDownstreamBandwidthKbps(
 {
     VALIDATE_NOT_NULL(result)
 
-    FUNC_RETURN(mLinkDownBandwidthKbps);
+    FUNC_RETURN(mLinkDownBandwidthKbps)
 }
 
 ECode NetworkCapabilities::CombineLinkBandwidths(
@@ -261,7 +261,7 @@ ECode NetworkCapabilities::GetNetworkSpecifier(
 {
     VALIDATE_NOT_NULL(result)
 
-    FUNC_RETURN(mNetworkSpecifier);
+    FUNC_RETURN(mNetworkSpecifier)
 }
 
 ECode NetworkCapabilities::CombineSpecifiers(
@@ -323,8 +323,8 @@ ECode NetworkCapabilities::Equals(
 {
     VALIDATE_NOT_NULL(result)
 
-    if(TO_IINTERFACE(this) != IInterface::Probe(obj)) FUNC_RETURN(FALSE);
-    if (obj == NULL || (INetworkCapabilities::Probe(obj) == NULL)) FUNC_RETURN(FALSE);
+    if(TO_IINTERFACE(this) != IInterface::Probe(obj)) FUNC_RETURN(FALSE)
+    if (obj == NULL || (INetworkCapabilities::Probe(obj) == NULL)) FUNC_RETURN(FALSE)
     AutoPtr<NetworkCapabilities> that = (NetworkCapabilities*)INetworkCapabilities::Probe(obj);
     FUNC_RETURN(EqualsNetCapabilities(that) &&
             EqualsTransportTypes(that) &&
@@ -457,7 +457,7 @@ ECode NetworkCapabilities::ToString(
             StringUtils::ToString(mLinkDownBandwidthKbps) + "Kbps" : String(""));
     String specifier = (mNetworkSpecifier == NULL ?
             String("") : String(" Specifier: <") + mNetworkSpecifier + ">");
-    FUNC_RETURN(String("[") + transports + capabilities + upBand + dnBand + specifier + "]");
+    FUNC_RETURN(String("[") + transports + capabilities + upBand + dnBand + specifier + "]")
 }
 
 } // namespace Net

@@ -139,6 +139,9 @@ module
         interface ISSLClientSessionCache {}
         interface ISSLParametersImpl {}
         interface ITrustManagerImpl {}
+        interface IClientSessionContext {}
+        interface IFileClientSessionCache {}
+        interface IFileClientSessionCacheHelper {}
     }} // Org.Conscrypt
 
     namespace Org {
@@ -149,7 +152,29 @@ module
 
         interface IEntitySerializer {}
 
+        interface IStrictContentLengthStrategy {}
+
     }}}}} // Org.Apache.Http.Impl.Entity
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Impl {
+    namespace IO {
+
+        interface IChunkedInputStream {}
+
+        interface IContentLengthInputStream {}
+
+        interface IHttpRequestWriter {}
+
+        interface IIdentityInputStream {}
+
+        interface ISocketInputBuffer {}
+
+        interface ISocketOutputBuffer {}
+
+    }}}}} // Org.Apache.Http.Impl.IO
 
     namespace Org {
     namespace Apache {
@@ -159,6 +184,17 @@ module
         interface IHttpConnectionMetricsImpl {}
 
     }}}} // Org.Apache.Http.Impl
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Impl {
+    namespace Conn {
+    namespace Tsccm {
+
+        interface IThreadSafeClientConnManager {}
+
+    }}}}}} // Org.Apache.Http.Impl.Conn.Tsccm
 
     namespace Elastos {
     namespace Droid {
@@ -191,6 +227,8 @@ module
 
         interface IBasicHttpEntityEnclosingRequest {}
 
+        interface IBasicLineParserHelper {}
+
     }}}} // Org.Apache.Http.Message
 
     namespace Org {
@@ -199,6 +237,8 @@ module
     namespace Entity {
 
         interface IInputStreamEntity {}
+
+        interface IByteArrayEntity {}
 
     }}}} // Org.Apache.Http.Entity
 
@@ -209,6 +249,8 @@ module
 
         interface IRequestContent {}
 
+        interface IBasicHttpContext {}
+
     }}}} // Org.Apache.Http.Protocol
 
     namespace Org {
@@ -218,6 +260,8 @@ module
     namespace Client {
 
         interface IDefaultHttpClient {}
+
+        interface IRequestWrapper {}
 
     }}}}} // Org.Apache.Http.Impl.Client
 
@@ -239,4 +283,12 @@ module
         interface IX509Name {}
 
     }}}} // Org.Bouncycastle.Asn1.X509
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+
+        interface INetworkManagementSocketTagger {}
+
+    }}} // Elastos.Droid.Server
 }

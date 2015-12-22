@@ -64,7 +64,6 @@ ECode NetworkInfo::constructor(
     Boolean bol;
     CConnectivityManager::IsNetworkTypeValid(type, &bol);
     if (!bol) {
-//        throw new IllegalArgumentException("Invalid network type: " + type);
         Slogger::E(String("NetworkInfo"), "Invalid network type: %d", type);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }

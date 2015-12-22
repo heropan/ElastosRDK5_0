@@ -1,0 +1,641 @@
+.
+Building /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/dhcp
+.
+Building /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http
+Compiling /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/ElastosHttpClient.cpp ...
+Compiling /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/Connection.cpp ...
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/Connection.cpp: In member function 'Elastos::ECode Elastos::Droid::Net::Http::Connection::ProcessRequests(Elastos::Droid::Net::Http::IRequest*)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/Connection.cpp:168:39: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+                 if (pipe.GetSize() == maxPipe) {
+                                       ^
+In file included from ../../Elastos.Droid.Core_server.h:7:0,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkext.h:11,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/../../../../../inc/elastos/droid/net/http/Connection.h:5,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/Connection.cpp:2:
+../../Elastos.CoreLibrary.h:6397:26: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+ #define E_HTTP_EXCEPTION 0xb1020000
+                          ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/Connection.cpp:223:32: note: in expansion of macro 'E_HTTP_EXCEPTION'
+                 if (eResult == E_HTTP_EXCEPTION) {
+                                ^
+../../Elastos.CoreLibrary.h:5901:24: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+ #define E_IO_EXCEPTION 0xa2010000
+                        ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/Connection.cpp:227:37: note: in expansion of macro 'E_IO_EXCEPTION'
+                 else if (eResult == E_IO_EXCEPTION){
+                                     ^
+../../Elastos.CoreLibrary.h:5673:38: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+ #define E_ILLEGAL_ARGUMENT_EXCEPTION 0xa0020000
+                                      ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/Connection.cpp:231:37: note: in expansion of macro 'E_ILLEGAL_ARGUMENT_EXCEPTION'
+                 else if (eResult == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+                                     ^
+../../Elastos.CoreLibrary.h:6113:27: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+ #define E_PARSE_EXCEPTION 0xad010000
+                           ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/Connection.cpp:275:32: note: in expansion of macro 'E_PARSE_EXCEPTION'
+                 if (eResult == E_PARSE_EXCEPTION) {
+                                ^
+../../Elastos.CoreLibrary.h:5901:24: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+ #define E_IO_EXCEPTION 0xa2010000
+                        ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/Connection.cpp:279:37: note: in expansion of macro 'E_IO_EXCEPTION'
+                 else if (eResult == E_IO_EXCEPTION){
+                                     ^
+../../Elastos.CoreLibrary.h:5673:38: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+ #define E_ILLEGAL_ARGUMENT_EXCEPTION 0xa0020000
+                                      ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/Connection.cpp:283:37: note: in expansion of macro 'E_ILLEGAL_ARGUMENT_EXCEPTION'
+                 else if (eResult == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+                                     ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/Connection.cpp:296:31: warning: converting to non-pointer type 'Elastos::Boolean {aka unsigned char}' from NULL [-Wconversion-null]
+                     exception = NULL;
+                               ^
+In file included from ../../Elastos.Droid.Core_server.h:7:0,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkext.h:11,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/../../../../../inc/elastos/droid/net/http/Connection.h:5,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/Connection.cpp:2:
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/Connection.cpp: In member function 'Elastos::Boolean Elastos::Droid::Net::Http::Connection::OpenHttpConnection(Elastos::Droid::Net::Http::IRequest*)':
+../../Elastos.CoreLibrary.h:6109:34: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+ #define E_UNKNOWN_HOST_EXCEPTION 0xab100000
+                                  ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/Connection.cpp:365:20: note: in expansion of macro 'E_UNKNOWN_HOST_EXCEPTION'
+     if (eResult == E_UNKNOWN_HOST_EXCEPTION) {
+                    ^
+../../Elastos.CoreLibrary.h:5673:38: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+ #define E_ILLEGAL_ARGUMENT_EXCEPTION 0xa0020000
+                                      ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/Connection.cpp:370:25: note: in expansion of macro 'E_ILLEGAL_ARGUMENT_EXCEPTION'
+     else if (eResult == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+                         ^
+In file included from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkext.h:11:0,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/../../../../../inc/elastos/droid/net/http/Connection.h:5,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/Connection.cpp:2:
+../../Elastos.Droid.Core_server.h:15907:51: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+ #define E_SSL_CONNECTION_CLOSED_BY_USER_ECXEPTION 0xef010000
+                                                   ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/Connection.cpp:376:25: note: in expansion of macro 'E_SSL_CONNECTION_CLOSED_BY_USER_ECXEPTION'
+     else if (eResult == E_SSL_CONNECTION_CLOSED_BY_USER_ECXEPTION) {
+                         ^
+In file included from ../../Elastos.Droid.Core_server.h:7:0,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkext.h:11,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/../../../../../inc/elastos/droid/net/http/Connection.h:5,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/Connection.cpp:2:
+../../Elastos.CoreLibrary.h:6373:35: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+ #define E_SSL_HANDSHAKE_EXCEPTION 0xb1050000
+                                   ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/Connection.cpp:383:25: note: in expansion of macro 'E_SSL_HANDSHAKE_EXCEPTION'
+     else if (eResult == E_SSL_HANDSHAKE_EXCEPTION) {
+                         ^
+../../Elastos.CoreLibrary.h:5901:24: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+ #define E_IO_EXCEPTION 0xa2010000
+                        ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/http/Connection.cpp:392:25: note: in expansion of macro 'E_IO_EXCEPTION'
+     else if (eResult == E_IO_EXCEPTION) {
+                         ^
+Packing http.lib ...
+.
+Building /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/nsd
+Compiling /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/net.cpp ...
+Compiling /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/MailTo.cpp ...
+Compiling /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Proxy.cpp ...
+In file included from ../Elastos.Droid.Core_server.h:7:0,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkext.h:11,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/Proxy.h:5,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Proxy.cpp:2:
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Proxy.cpp: In static member function 'static Elastos::ECode Elastos::Droid::Net::Proxy::Validate(const Elastos::String&, const Elastos::String&, const Elastos::String&, Elastos::Int32*)':
+../Elastos.CoreLibrary.h:5745:35: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+ #define E_NUMBER_FORMAT_EXCEPTION 0xa0140000
+                                   ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Proxy.cpp:258:23: note: in expansion of macro 'E_NUMBER_FORMAT_EXCEPTION'
+             if (ec == E_NUMBER_FORMAT_EXCEPTION) {
+                       ^
+Compiling /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/ProxyInfo.cpp ...
+In file included from ../Elastos.Droid.Core_server.h:7:0,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkext.h:11,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/ProxyInfo.h:5,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/ProxyInfo.cpp:2:
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/ProxyInfo.cpp: In member function 'virtual Elastos::ECode Elastos::Droid::Net::ProxyInfo::GetSocketAddress(Elastos::Net::IInetSocketAddress**)':
+../Elastos.CoreLibrary.h:5673:38: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+ #define E_ILLEGAL_ARGUMENT_EXCEPTION 0xa0020000
+                                      ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/ProxyInfo.cpp:168:19: note: in expansion of macro 'E_ILLEGAL_ARGUMENT_EXCEPTION'
+         if (ec != E_ILLEGAL_ARGUMENT_EXCEPTION) return ec;
+                   ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/ProxyInfo.cpp: In member function 'virtual Elastos::ECode Elastos::Droid::Net::ProxyInfo::MakeProxy(Elastos::Net::IProxy**)':
+../Elastos.CoreLibrary.h:5673:38: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+ #define E_ILLEGAL_ARGUMENT_EXCEPTION 0xa0020000
+                                      ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/ProxyInfo.cpp:256:23: note: in expansion of macro 'E_ILLEGAL_ARGUMENT_EXCEPTION'
+             if (ec != E_ILLEGAL_ARGUMENT_EXCEPTION) return ec;
+                       ^
+../Elastos.CoreLibrary.h:5673:38: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+ #define E_ILLEGAL_ARGUMENT_EXCEPTION 0xa0020000
+                                      ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/ProxyInfo.cpp:261:23: note: in expansion of macro 'E_ILLEGAL_ARGUMENT_EXCEPTION'
+             if (ec != E_ILLEGAL_ARGUMENT_EXCEPTION) return ec;
+                       ^
+Compiling /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp ...
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In member function 'virtual Elastos::ECode Elastos::Droid::Net::StringUri::IsHierarchical(Elastos::Boolean*)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:133:51: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+     if (mUriString.GetLength() == (UInt32)(ssi + 1)) {
+                                                   ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In member function 'Elastos::String Elastos::Droid::Net::StringUri::ParsePath()':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:303:72: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+         Boolean schemeOnly = (UInt32)(ssi + 1) == charArray->GetLength();
+                                                                        ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In member function 'virtual Elastos::ECode Elastos::Droid::Net::UriBuilder::Build(Elastos::Droid::Net::IUri**)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:1609:38: error: no matching function for call to 'Elastos::Droid::Net::UriBuilder::HasSchemeOrAuthority()'
+             if (HasSchemeOrAuthority()) {
+                                      ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:1609:38: note: candidate is:
+In file included from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2:0:
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/Uri.h:1232:12: note: Elastos::ECode Elastos::Droid::Net::UriBuilder::HasSchemeOrAuthority(Elastos::Boolean*)
+     CARAPI HasSchemeOrAuthority(
+            ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/Uri.h:1232:12: note:   candidate expects 1 argument, 0 provided
+In file included from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkdef.h:5:0,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkext.h:27,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/Uri.h:5,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2:
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:1614:21: error: 'CHierarchicalUri' has not been declared
+         FAIL_RETURN(CHierarchicalUri::New(mScheme,
+                     ^
+/home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/coredef.h:55:26: note: in definition of macro 'FAIL_RETURN'
+         ECode fail_ec_ = expr; \
+                          ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In member function 'virtual Elastos::ECode Elastos::Droid::Net::UriBuilder::ToString(Elastos::String*)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:1638:23: error: 'str' was not declared in this scope
+     VALIDATE_NOT_NULL(str);
+                       ^
+/home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/coredef.h:49:35: note: in definition of macro 'VALIDATE_NOT_NULL'
+ #define VALIDATE_NOT_NULL(x) if (!x) { return E_ILLEGAL_ARGUMENT_EXCEPTION; }
+                                   ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:1639:6: error: 'str' was not declared in this scope
+     *str = NULL;
+      ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:1644:21: error: 'struct Elastos::Droid::Net::IUri' has no member named 'ToString'
+         return uri->ToString(str);
+                     ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In static member function 'static Elastos::AutoPtr<Elastos::Droid::Net::IUri> Elastos::Droid::Net::Uri::CreateEmpty()':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2045:13: error: 'CHierarchicalUri' was not declared in this scope
+     AutoPtr<CHierarchicalUri> obj;
+             ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2045:29: error: template argument 1 is invalid
+     AutoPtr<CHierarchicalUri> obj;
+                             ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2045:34: error: invalid type in declaration before ';' token
+     AutoPtr<CHierarchicalUri> obj;
+                                  ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2046:5: error: 'CHierarchicalUri' is not a class or namespace
+     CHierarchicalUri::NewByFriend(
+     ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2052:28: error: expected primary-expression before ')' token
+         (CHierarchicalUri**)&obj);
+                            ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2053:24: error: base operand of '->' is not a pointer
+     result = (IUri*)obj->Probe(EIID_IUri);
+                        ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In member function 'virtual Elastos::ECode Elastos::Droid::Net::Uri::Equals(IInterface*, Elastos::Boolean*)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2107:50: error: 'obj' was not declared in this scope
+     if (TO_IINTERFACE(this) == IInterface::Probe(obj)) FUNC_RETURN(TRUE)
+                                                  ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2112:24: error: 'IInterface' is an ambiguous base of 'Elastos::Droid::Net::Uri'
+     IObject::Probe(this)->ToString(&sThis);
+                        ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2113:20: error: 'other' was not declared in this scope
+     IObject::Probe(other)->ToString(&sO));
+                    ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2113:41: error: expected ';' before ')' token
+     IObject::Probe(other)->ToString(&sO));
+                                         ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In member function 'virtual Elastos::ECode Elastos::Droid::Net::Uri::GetHashCode(Elastos::Int32*)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2124:24: error: 'IInterface' is an ambiguous base of 'Elastos::Droid::Net::Uri'
+     IObject::Probe(this)->ToString(&s);
+                        ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In member function 'virtual Elastos::ECode Elastos::Droid::Net::Uri::CompareTo(IInterface*, Elastos::Int32*)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2136:24: error: 'IInterface' is an ambiguous base of 'Elastos::Droid::Net::Uri'
+     IObject::Probe(this)->ToString(&s);
+                        ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2138:17: error: 'class Elastos::String' has no member named 'CompareTo'
+     *result = s.CompareTo(sOther);
+                 ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In member function 'virtual Elastos::ECode Elastos::Droid::Net::Uri::ToSafeString(Elastos::String*)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2162:41: error: call of overloaded 'Append(Elastos::Char32&)' is ambiguous
+                         builder.Append(c);
+                                         ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2162:41: note: candidates are:
+In file included from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/Uri.h:6:0,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2:
+/home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/core/StringBuilder.h:334:12: note: Elastos::ECode Elastos::Core::StringBuilder::Append(const char*) <near match>
+     CARAPI Append(
+            ^
+/home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/core/StringBuilder.h:334:12: note:   no known conversion for argument 1 from 'Elastos::Char32 {aka unsigned int}' to 'const char*'
+/home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/core/StringBuilder.h:349:12: note: virtual Elastos::ECode Elastos::Core::StringBuilder::Append(Elastos::Boolean)
+     CARAPI Append(
+            ^
+/home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/core/StringBuilder.h:361:12: note: virtual Elastos::ECode Elastos::Core::StringBuilder::Append(Elastos::Int32)
+     CARAPI Append(
+            ^
+/home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/core/StringBuilder.h:373:12: note: virtual Elastos::ECode Elastos::Core::StringBuilder::Append(Elastos::Int64)
+     CARAPI Append(
+            ^
+/home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/core/StringBuilder.h:385:12: note: virtual Elastos::ECode Elastos::Core::StringBuilder::Append(Elastos::Float)
+     CARAPI Append(
+            ^
+/home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/core/StringBuilder.h:397:12: note: virtual Elastos::ECode Elastos::Core::StringBuilder::Append(Elastos::Double)
+     CARAPI Append(
+            ^
+/home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/core/StringBuilder.h:424:12: note: virtual Elastos::ECode Elastos::Core::StringBuilder::Append(IInterface*) <near match>
+     CARAPI Append(
+            ^
+/home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/core/StringBuilder.h:424:12: note:   no known conversion for argument 1 from 'Elastos::Char32 {aka unsigned int}' to 'IInterface*'
+/home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/core/StringBuilder.h:453:12: note: virtual Elastos::ECode Elastos::Core::StringBuilder::Append(Elastos::Core::IStringBuffer*) <near match>
+     CARAPI Append(
+            ^
+/home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/core/StringBuilder.h:453:12: note:   no known conversion for argument 1 from 'Elastos::Char32 {aka unsigned int}' to 'Elastos::Core::IStringBuffer*'
+/home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/core/StringBuilder.h:469:12: note: virtual Elastos::ECode Elastos::Core::StringBuilder::Append(Elastos::Core::IStringBuilder*) <near match>
+     CARAPI Append(
+            ^
+/home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/core/StringBuilder.h:469:12: note:   no known conversion for argument 1 from 'Elastos::Char32 {aka unsigned int}' to 'Elastos::Core::IStringBuilder*'
+/home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/core/StringBuilder.h:517:12: note: virtual Elastos::ECode Elastos::Core::StringBuilder::Append(Elastos::Core::ICharSequence*) <near match>
+     CARAPI Append(
+            ^
+/home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/core/StringBuilder.h:517:12: note:   no known conversion for argument 1 from 'Elastos::Char32 {aka unsigned int}' to 'Elastos::Core::ICharSequence*'
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In static member function 'static Elastos::ECode Elastos::Droid::Net::Uri::Parse(const Elastos::String&, Elastos::Droid::Net::IUri**)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2189:12: error: 'CStringUri' has not been declared
+     return CStringUri::New(uriString, result);
+            ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In static member function 'static Elastos::ECode Elastos::Droid::Net::Uri::FromFile(Elastos::IO::IFile*, Elastos::Droid::Net::IUri**)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2203:84: error: no matching function for call to 'Elastos::Droid::Net::Uri::PathPart::FromDecoded(Elastos::String, Elastos::Droid::Net::Uri::PathPart**)'
+     PathPart::FromDecoded(Ptr(file)->Func(file->GetAbsolutePath), (PathPart**)&path);
+                                                                                    ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2203:84: note: candidate is:
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:1977:24: note: static Elastos::AutoPtr<Elastos::Droid::Net::Uri::PathPart> Elastos::Droid::Net::Uri::PathPart::FromDecoded(const Elastos::String&)
+ AutoPtr<Uri::PathPart> Uri::PathPart::FromDecoded(
+                        ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:1977:24: note:   candidate expects 1 argument, 2 provided
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2204:12: error: 'CHierarchicalUri' has not been declared
+     return CHierarchicalUri::New(
+            ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2205:21: error: 'EMPTY' is not a member of 'Elastos::Droid::Net::Uri::Part'
+             "file", Part::EMPTY, path, Part::NULL, Part::NULL, result);
+                     ^
+In file included from /home/test/work_space/ElastosRDK5_0/Build/Prebuilt/Linux/usr/include/stdio.h:48:0,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elsharedbuf.h:6,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elstring.h:10,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elaobj.h:8,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/car.h:10,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/eltypes.h:8,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elapi.h:20,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos.h:8,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkext.h:6,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/Uri.h:5,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2:
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2205:46: error: expected unqualified-id before '__null'
+             "file", Part::EMPTY, path, Part::NULL, Part::NULL, result);
+                                              ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2205:58: error: expected unqualified-id before '__null'
+             "file", Part::EMPTY, path, Part::NULL, Part::NULL, result);
+                                                          ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In static member function 'static Elastos::ECode Elastos::Droid::Net::Uri::FromParts(const Elastos::String&, const Elastos::String&, const Elastos::String&, Elastos::Droid::Net::IUri**)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2225:52: error: no matching function for call to 'Elastos::Droid::Net::Uri::Part::FromDecoded(const Elastos::String&, Elastos::Droid::Net::Uri::PathPart**)'
+     Part::FromDecoded(ssp, (PathPart**)&sspPathPart);
+                                                    ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2225:52: note: candidate is:
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:1800:20: note: static Elastos::AutoPtr<Elastos::Droid::Net::Uri::Part> Elastos::Droid::Net::Uri::Part::FromDecoded(const Elastos::String&)
+ AutoPtr<Uri::Part> Uri::Part::FromDecoded(
+                    ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:1800:20: note:   candidate expects 1 argument, 2 provided
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2226:62: error: no matching function for call to 'Elastos::Droid::Net::Uri::Part::FromDecoded(const Elastos::String&, Elastos::Droid::Net::Uri::PathPart**)'
+     Part::FromDecoded(fragment, (PathPart**)&fragmentPathPart);
+                                                              ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2226:62: note: candidate is:
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:1800:20: note: static Elastos::AutoPtr<Elastos::Droid::Net::Uri::Part> Elastos::Droid::Net::Uri::Part::FromDecoded(const Elastos::String&)
+ AutoPtr<Uri::Part> Uri::Part::FromDecoded(
+                    ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:1800:20: note:   candidate expects 1 argument, 2 provided
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2227:12: error: 'COpaqueUri' has not been declared
+     return COpaqueUri::New(scheme, sspPathPart, fragmentPathPart, result);
+            ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In member function 'virtual Elastos::ECode Elastos::Droid::Net::Uri::GetQueryParameterNames(Elastos::Utility::ISet**)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2245:17: error: 'struct Elastos::Utility::ICollections' has no member named 'emptySet'
+         helper->emptySet();
+                 ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2248:5: error: 'CLinkedHashSet' has not been declared
+     CLinkedHashSet::New((ISet**)&names);
+     ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2260:9: error: expected ';' before 'names'
+         names.Add(decode);
+         ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In member function 'virtual Elastos::ECode Elastos::Droid::Net::Uri::GetQueryParameters(const Elastos::String&, Elastos::Utility::IList**)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2293:16: error: 'URLEncoder' was not declared in this scope
+     ECode ec = URLEncoder.encode(key, DEFAULT_ENCODING, &encodedKey);
+                ^
+In file included from ../Elastos.Droid.Core_server.h:7:0,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkext.h:11,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/Uri.h:5,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2:
+../Elastos.CoreLibrary.h:6005:42: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+ #define E_UNSUPPORTED_ENCODING_EXCEPTION 0xa21c0000
+                                          ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2296:19: note: in expansion of macro 'E_UNSUPPORTED_ENCODING_EXCEPTION'
+         if (ec == E_UNSUPPORTED_ENCODING_EXCEPTION) {
+                   ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2314:30: error: 'class Elastos::String' has no member named 'EegionMatches'
+                     && query.EegionMatches(start, encodedKey, 0, encodedKey.GetLength())) {
+                              ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2316:24: error: 'class Elastos::AutoPtr<Elastos::Utility::IArrayList>' has no member named 'Add'
+                 values.Add("");
+                        ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2319:30: error: 'class Elastos::String' has no member named 'substring'
+                 Decode(query.substring(separator + 1, end), &decode)
+                              ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2320:17: error: expected ';' before 'values'
+                 values.Add(decode);
+                 ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2332:51: error: no matching function for call to 'Elastos::Utility::ICollections::UnmodifiableList(Elastos::AutoPtr<Elastos::Utility::IArrayList>&, Elastos::Utility::IList**&)'
+     return helper->UnmodifiableList(values, result);
+                                                   ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2332:51: note: candidate is:
+In file included from ../Elastos.CoreLibrary.h:6853:0,
+                 from ../Elastos.Droid.Core_server.h:7,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkext.h:11,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/Uri.h:5,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2:
+../_Elastos.CoreLibrary.h:31755:20: note: virtual Elastos::ECode Elastos::Utility::ICollections::UnmodifiableList(Elastos::Utility::IList*, Elastos::Utility::IList**)
+     virtual CARAPI UnmodifiableList(
+                    ^
+../_Elastos.CoreLibrary.h:31755:20: note:   no known conversion for argument 1 from 'Elastos::AutoPtr<Elastos::Utility::IArrayList>' to 'Elastos::Utility::IList*'
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In member function 'virtual Elastos::ECode Elastos::Droid::Net::Uri::GetQueryParameter(const Elastos::String&, Elastos::String*)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2346:20: error: 'TAG' was not declared in this scope
+         Slogger::E(TAG, "key");
+                    ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2364:13: error: 'IUriCodecHelper' was not declared in this scope
+     AutoPtr<IUriCodecHelper> urlCodechelper;
+             ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2364:13: note: suggested alternative:
+In file included from ../Elastos.CoreLibrary.h:6853:0,
+                 from ../Elastos.Droid.Core_server.h:7,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkext.h:11,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/Uri.h:5,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2:
+../_Elastos.CoreLibrary.h:56395:1: note:   'Libcore::Net::IUriCodecHelper'
+ IUriCodecHelper : public IInterface
+ ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2364:28: error: template argument 1 is invalid
+     AutoPtr<IUriCodecHelper> urlCodechelper;
+                            ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2364:44: error: invalid type in declaration before ';' token
+     AutoPtr<IUriCodecHelper> urlCodechelper;
+                                            ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2365:5: error: 'CUriCodecHelper' has not been declared
+     CUriCodecHelper::AcquireSingleton((IUriCodecHelper**)&urlCodechelper);
+     ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2365:57: error: expected primary-expression before ')' token
+     CUriCodecHelper::AcquireSingleton((IUriCodecHelper**)&urlCodechelper);
+                                                         ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2366:13: error: 'ICharset' was not declared in this scope
+     AutoPtr<ICharset> charset;
+             ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2366:13: note: suggested alternative:
+In file included from ../Elastos.CoreLibrary.h:6853:0,
+                 from ../Elastos.Droid.Core_server.h:7,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkext.h:11,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/Uri.h:5,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2:
+../_Elastos.CoreLibrary.h:14009:1: note:   'Elastos::IO::Charset::ICharset'
+ ICharset : public IInterface
+ ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2366:21: error: template argument 1 is invalid
+     AutoPtr<ICharset> charset;
+                     ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2366:30: error: invalid type in declaration before ';' token
+     AutoPtr<ICharset> charset;
+                              ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2367:13: error: 'ICharsets' was not declared in this scope
+     AutoPtr<ICharsets> charsetHelper;
+             ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2367:13: note: suggested alternative:
+In file included from ../Elastos.CoreLibrary.h:6853:0,
+                 from ../Elastos.Droid.Core_server.h:7,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkext.h:11,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/Uri.h:5,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2:
+../_Elastos.CoreLibrary.h:14444:1: note:   'Elastos::IO::Charset::ICharsets'
+ ICharsets : public IInterface
+ ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2367:22: error: template argument 1 is invalid
+     AutoPtr<ICharsets> charsetHelper;
+                      ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2367:37: error: invalid type in declaration before ';' token
+     AutoPtr<ICharsets> charsetHelper;
+                                     ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2368:5: error: 'CStandardCharsets' has not been declared
+     CStandardCharsets::AcquireSingleton((IStandardCharsets**)&charsetHelper );
+     ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2369:18: error: base operand of '->' is not a pointer
+     charsetHelper->GetUTF_8((ICharset**)&charset);
+                  ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2369:40: error: expected primary-expression before ')' token
+     charsetHelper->GetUTF_8((ICharset**)&charset);
+                                        ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2388:38: error: base operand of '->' is not a pointer
+                 return urlCodechelper->Decode(encodedValue, TRUE, charset, FALSE, result);
+                                      ^
+In file included from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkdef.h:5:0,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkext.h:27,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/Uri.h:5,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2:
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In member function 'virtual Elastos::ECode Elastos::Droid::Net::Uri::GetBooleanQueryParameter(const Elastos::String&, Elastos::Boolean, Elastos::Boolean*)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2409:23: error: 'value' was not declared in this scope
+     VALIDATE_NOT_NULL(value);
+                       ^
+/home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/coredef.h:49:35: note: in definition of macro 'VALIDATE_NOT_NULL'
+ #define VALIDATE_NOT_NULL(x) if (!x) { return E_ILLEGAL_ARGUMENT_EXCEPTION; }
+                                   ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2410:6: error: 'value' was not declared in this scope
+     *value = defaultValue;
+      ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In static member function 'static Elastos::ECode Elastos::Droid::Net::Uri::Encode(const Elastos::String&, Elastos::String*)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2468:36: error: 'encoded' was not declared in this scope
+     return Encode(s, String(NULL), encoded);
+                                    ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In static member function 'static Elastos::ECode Elastos::Droid::Net::Uri::Encode(const Elastos::String&, const Elastos::String&, Elastos::String*)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2492:12: warning: unused variable 'c' [-Wunused-variable]
+     Char32 c;
+            ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In static member function 'static Elastos::ECode Elastos::Droid::Net::Uri::Decode(const Elastos::String&, Elastos::String*)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2592:5: error: 'CStandardCharsets' has not been declared
+     CStandardCharsets::AcquireSingleton((IStandardCharsets**)&charsetsHelper);
+     ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2593:13: error: 'ICharset' was not declared in this scope
+     AutoPtr<ICharset> charset;
+             ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2593:13: note: suggested alternative:
+In file included from ../Elastos.CoreLibrary.h:6853:0,
+                 from ../Elastos.Droid.Core_server.h:7,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkext.h:11,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/Uri.h:5,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2:
+../_Elastos.CoreLibrary.h:14009:1: note:   'Elastos::IO::Charset::ICharset'
+ ICharset : public IInterface
+ ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2593:21: error: template argument 1 is invalid
+     AutoPtr<ICharset> charset;
+                     ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2593:30: error: invalid type in declaration before ';' token
+     AutoPtr<ICharset> charset;
+                              ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2594:41: error: expected primary-expression before ')' token
+     charsetsHelper->GetUTF_8((ICharset**)&charset);
+                                         ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2596:13: error: 'IUriCodecHelper' was not declared in this scope
+     AutoPtr<IUriCodecHelper> uriCodecHelper;
+             ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2596:13: note: suggested alternative:
+In file included from ../Elastos.CoreLibrary.h:6853:0,
+                 from ../Elastos.Droid.Core_server.h:7,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkext.h:11,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/Uri.h:5,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2:
+../_Elastos.CoreLibrary.h:56395:1: note:   'Libcore::Net::IUriCodecHelper'
+ IUriCodecHelper : public IInterface
+ ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2596:28: error: template argument 1 is invalid
+     AutoPtr<IUriCodecHelper> uriCodecHelper;
+                            ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2596:44: error: invalid type in declaration before ';' token
+     AutoPtr<IUriCodecHelper> uriCodecHelper;
+                                            ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2597:5: error: 'CUriCodecHelper' has not been declared
+     CUriCodecHelper::AcquireSingleton((IUriCodecHelper**)&uriCodecHelper);
+     ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2597:57: error: expected primary-expression before ')' token
+     CUriCodecHelper::AcquireSingleton((IUriCodecHelper**)&uriCodecHelper);
+                                                         ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2598:26: error: base operand of '->' is not a pointer
+     return uriCodecHelper->Decode(s, FALSE, charset, FALSE, result);
+                          ^
+In file included from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkdef.h:5:0,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkext.h:27,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/Uri.h:5,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2:
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In static member function 'static Elastos::ECode Elastos::Droid::Net::Uri::WithAppendedPath(Elastos::Droid::Net::IUri*, const Elastos::String&, Elastos::Droid::Net::IUri**)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2606:23: error: 'uri' was not declared in this scope
+     VALIDATE_NOT_NULL(uri);
+                       ^
+/home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/coredef.h:49:35: note: in definition of macro 'VALIDATE_NOT_NULL'
+ #define VALIDATE_NOT_NULL(x) if (!x) { return E_ILLEGAL_ARGUMENT_EXCEPTION; }
+                                   ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2607:6: error: 'uri' was not declared in this scope
+     *uri = NULL;
+      ^
+In file included from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkdef.h:5:0,
+                 from /home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/droid/ext/frameworkext.h:27,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/Uri.h:5,
+                 from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2:
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In member function 'virtual Elastos::ECode Elastos::Droid::Net::Uri::GetCanonicalUri(Elastos::Droid::Net::IUri**)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2619:23: error: 'uri' was not declared in this scope
+     VALIDATE_NOT_NULL(uri);
+                       ^
+/home/test/work_space/ElastosRDK5_0/Targets/obj/rdk/arm.gnu.android.dbg/inc/elastos/coredef.h:49:35: note: in definition of macro 'VALIDATE_NOT_NULL'
+ #define VALIDATE_NOT_NULL(x) if (!x) { return E_ILLEGAL_ARGUMENT_EXCEPTION; }
+                                   ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2620:6: error: 'uri' was not declared in this scope
+     *uri = NULL;
+      ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2630:20: error: 'CFile' has not been declared
+         ECode ec = CFile::New(path, (IFile**)&file);
+                    ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2636:9: error: 'CEnvironment' has not been declared
+         CEnvironment::AcquireSingleton((IEnvironment**)&env);
+         ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2653:17: error: 'CFile' has not been declared
+                 CFile::New(dirPath, mode, (IFile**)&tmpFile);
+                 ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2658:9: error: 'CFile' has not been declared
+         CFile::New(canonicalPath, (IFile**)&tmpFile);
+         ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In member function 'virtual Elastos::ECode Elastos::Droid::Net::Uri::CheckFileUriExposed(const Elastos::String&)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2671:24: error: 'class Elastos::String' has no member named 'Eequals'
+     if (String("file").Eequals(Ptr(this)->Func(this->GetScheme))) {
+                        ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2671:63: error: no matching function for call to 'Redefine<Elastos::Droid::Net::Uri>::Func(<unresolved overloaded function type>)'
+     if (String("file").Eequals(Ptr(this)->Func(this->GetScheme))) {
+                                                               ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2671:63: note: candidate is:
+In file included from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:4:0:
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/ReturnOutValue.h:123:11: note: template<class T_REV> T_REV Redefine<T_OBJ>::Func(Elastos::ECode (T_OBJ::*)(T_REV*)) [with T_REV = T_REV; T_OBJ = Elastos::Droid::Net::Uri]
+     T_REV Func(ECode (T_OBJ::*func)(T_REV*))
+           ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/ReturnOutValue.h:123:11: note:   template argument deduction/substitution failed:
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2671:63: note:   mismatched types 'Elastos::Droid::Net::Uri*' and 'Elastos::Droid::Net::IUri*'
+     if (String("file").Eequals(Ptr(this)->Func(this->GetScheme))) {
+                                                               ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2671:63: note:   could not resolve address from overloaded function '((Elastos::Droid::Net::Uri*)this)->Elastos::Droid::Net::IUri::GetScheme'
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2672:9: error: 'CStrictMode' has not been declared
+         CStrictMode::OnFileUriExposed(location);
+         ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In member function 'virtual Elastos::ECode Elastos::Droid::Net::Uri::IsPathPrefixMatch(Elastos::Droid::Net::IUri*, Elastos::Boolean*)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2683:41: error: no matching function for call to 'Redefine<Elastos::Droid::Net::Uri>::Func(<unresolved overloaded function type>)'
+     if (!Ptr(this)->Func(this->GetScheme).Equals(Ptr(prefix)->Func(prefix->GetScheme))) FUNC_RETURN(FALSE)
+                                         ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2683:41: note: candidate is:
+In file included from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:4:0:
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/ReturnOutValue.h:123:11: note: template<class T_REV> T_REV Redefine<T_OBJ>::Func(Elastos::ECode (T_OBJ::*)(T_REV*)) [with T_REV = T_REV; T_OBJ = Elastos::Droid::Net::Uri]
+     T_REV Func(ECode (T_OBJ::*func)(T_REV*))
+           ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/ReturnOutValue.h:123:11: note:   template argument deduction/substitution failed:
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2683:41: note:   mismatched types 'Elastos::Droid::Net::Uri*' and 'Elastos::Droid::Net::IUri*'
+     if (!Ptr(this)->Func(this->GetScheme).Equals(Ptr(prefix)->Func(prefix->GetScheme))) FUNC_RETURN(FALSE)
+                                         ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2683:41: note:   could not resolve address from overloaded function '((Elastos::Droid::Net::Uri*)this)->Elastos::Droid::Net::IUri::GetScheme'
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2684:44: error: no matching function for call to 'Redefine<Elastos::Droid::Net::Uri>::Func(<unresolved overloaded function type>)'
+     if (!Ptr(this)->Func(this->GetAuthority).Equals(Ptr(prefix)->Func(prefix->GetAuthority))) FUNC_RETURN(FALSE)
+                                            ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2684:44: note: candidate is:
+In file included from /home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:4:0:
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/ReturnOutValue.h:123:11: note: template<class T_REV> T_REV Redefine<T_OBJ>::Func(Elastos::ECode (T_OBJ::*)(T_REV*)) [with T_REV = T_REV; T_OBJ = Elastos::Droid::Net::Uri]
+     T_REV Func(ECode (T_OBJ::*func)(T_REV*))
+           ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/../../../../inc/elastos/droid/net/ReturnOutValue.h:123:11: note:   template argument deduction/substitution failed:
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2684:44: note:   mismatched types 'Elastos::Droid::Net::Uri*' and 'Elastos::Droid::Net::IUri*'
+     if (!Ptr(this)->Func(this->GetAuthority).Equals(Ptr(prefix)->Func(prefix->GetAuthority))) FUNC_RETURN(FALSE)
+                                            ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2684:44: note:   could not resolve address from overloaded function '((Elastos::Droid::Net::Uri*)this)->Elastos::Droid::Net::IUri::GetAuthority'
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In static member function 'static Elastos::ECode Elastos::Droid::Net::Uri::Parse(const Elastos::String&, Elastos::Droid::Net::IUri**)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2190:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In static member function 'static Elastos::ECode Elastos::Droid::Net::Uri::FromFile(Elastos::IO::IFile*, Elastos::Droid::Net::IUri**)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2206:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In static member function 'static Elastos::ECode Elastos::Droid::Net::Uri::FromParts(const Elastos::String&, const Elastos::String&, const Elastos::String&, Elastos::Droid::Net::IUri**)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2228:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In member function 'virtual Elastos::ECode Elastos::Droid::Net::Uri::GetQueryParameterNames(Elastos::Utility::ISet**)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2267:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In member function 'virtual Elastos::ECode Elastos::Droid::Net::Uri::GetQueryParameters(const Elastos::String&, Elastos::Utility::IList**)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2333:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In static member function 'static Elastos::ECode Elastos::Droid::Net::Uri::Encode(const Elastos::String&, Elastos::String*)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2469:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In static member function 'static Elastos::ECode Elastos::Droid::Net::Uri::Decode(const Elastos::String&, Elastos::String*)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2599:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp: In static member function 'static Elastos::ECode Elastos::Droid::Net::Uri::WithAppendedPath(Elastos::Droid::Net::IUri*, const Elastos::String&, Elastos::Droid::Net::IUri**)':
+/home/test/work_space/ElastosRDK5_0/Sources/Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/net/Uri.cpp:2614:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+make[1]: *** [Uri.o] Error 1
+make: *** [all] Error 2
+Build finished, elapsed time: 0 Hours, 0 Minutes, 22 Seconds.

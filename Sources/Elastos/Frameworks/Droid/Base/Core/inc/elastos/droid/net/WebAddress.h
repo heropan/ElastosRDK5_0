@@ -80,7 +80,7 @@ public:
         /* [in] */ IPattern* addressPattern);
 
 private:
-    static CARAPI_(AutoPtr<IPattern>) CreateAddressPattern();
+    static CARAPI_(AutoPtr<IPattern>) InitWebAddressPattern();
 
 public:
     static const Int32 MATCH_GROUP_SCHEME;

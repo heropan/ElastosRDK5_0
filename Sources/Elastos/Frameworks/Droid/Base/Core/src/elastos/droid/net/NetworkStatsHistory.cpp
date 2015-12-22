@@ -737,7 +737,7 @@ ECode NetworkStatsHistory::InsertBucket(
     if (index < mBucketCount) {
         const Int32 dstPos = index + 1;
         const Int32 length = mBucketCount - index;
-        //not sure for copy method
+
         mBucketStart->Copy(index, mBucketStart, dstPos, length);
         if (mActiveTime != NULL) mActiveTime->Copy(index, mActiveTime, dstPos, length);
         if (mRxBytes != NULL) mRxBytes->Copy(index, mRxBytes, dstPos, length);

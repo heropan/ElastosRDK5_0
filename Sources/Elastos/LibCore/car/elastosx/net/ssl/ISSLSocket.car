@@ -16,6 +16,7 @@ module
     /**
      * @Involve
      * interface Elastos.Net.ISocket
+     * interface ICloseable;
      */
     [deprecated]
     interface ISSLSocket {

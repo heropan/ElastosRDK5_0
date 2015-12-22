@@ -109,6 +109,9 @@ module
         SetLegacy(
             [in] Boolean legacy);
 
+        SetBlocking(
+            [in] Boolean blocking);
+
         GetAllowBypass(
             [out] Boolean* allowBypass);
 

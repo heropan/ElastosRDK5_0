@@ -164,9 +164,8 @@ private:
 
     CARAPI AssertOpen();
 
-    CARAPI DetermineLength(
-        /* [in] */ const IHeaders* headers,
-        /* [out] */ Int64* result);
+    CARAPI_(Int64) DetermineLength(
+        /* [in] */ IHeaders* headers);
 
 private:
     AutoPtr<ISessionInputBuffer> mInbuffer;

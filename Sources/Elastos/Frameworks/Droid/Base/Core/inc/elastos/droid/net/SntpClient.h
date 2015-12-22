@@ -29,6 +29,8 @@ class SntpClient
 public:
     CAR_INTERFACE_DECL()
 
+    SntpClient();
+
     CARAPI constructor();
 
     /**
@@ -95,6 +97,7 @@ private:
         /* [in] */ Int32 offset,
         /* [in] */ Int64 time);
 
+private:
     static const String TAG;
 
     static const Int32 REFERENCE_TIME_OFFSET;

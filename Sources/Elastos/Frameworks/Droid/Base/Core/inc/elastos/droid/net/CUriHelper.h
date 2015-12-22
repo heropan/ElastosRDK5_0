@@ -45,10 +45,6 @@ public:
         /* [in] */ const String& fragment,
         /* [out] */ IUri** result);
 
-    CARAPI ReadFromParcel(
-        /* [in] */ IParcel* parcel,
-        /* [out] */ IUri** uri);
-
     CARAPI Encode(
         /* [in] */ const String& s,
         /* [out] */ String* result);

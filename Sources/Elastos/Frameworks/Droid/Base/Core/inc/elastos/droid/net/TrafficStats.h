@@ -426,8 +426,7 @@ public:
         /* [out] */ Int64* result);
 
 private:
-    static CARAPI GetStatsService(
-        /* [out] */ IINetworkStatsService** result);
+    static CARAPI_(AutoPtr<IINetworkStatsService>) GetStatsService();
 
     /**
      * Return detailed {@link NetworkStats} for the current UID. Requires no
@@ -443,22 +442,20 @@ private:
      * monotonic.
      */
     static CARAPI GetMobileIfaces(
-        /* [out, callee] */ ArrayOf<String>* result);
+        /* [out, callee] */ ArrayOf<String>** result);
 
-    static CARAPI NativeGetTotalStat(
-        /* [in] */ Int32 type,
-        /* [out] */ Int64* result);
+    static CARAPI_(Int64) NativeGetTotalStat(
+        /* [in] */ Int32 type);
 
-    static CARAPI NativeGetIfaceStat(
+    static CARAPI_(Int64) NativeGetIfaceStat(
         /* [in] */ const String& iface,
-        /* [in] */ Int32 type,
-        /* [out] */ Int64* result);
+        /* [in] */ Int32 type);
 
-    static CARAPI NativeGetUidStat(
+    static CARAPI_(Int64) NativeGetUidStat(
         /* [in] */ Int32 uid,
-        /* [in] */ Int32 type,
-        /* [out] */ Int64* result);
+        /* [in] */ Int32 type);
 
+private:
     static AutoPtr<IINetworkStatsService> sStatsService;
 
     /**

@@ -232,7 +232,7 @@ private:
 
     AutoPtr<ArrayOf<String> > mHeaders;
 
-    static const AutoPtr<ArrayOf<String> > HEADER_NAMES;
+    static const AutoPtr<ArrayOf<String> > sHeaderNames;
 
     // Catch-all for headers not explicitly handled
     AutoPtr<IArrayList> mExtraHeaderNames;

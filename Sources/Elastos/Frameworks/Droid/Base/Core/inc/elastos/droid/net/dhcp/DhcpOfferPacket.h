@@ -51,7 +51,7 @@ public:
      * Notifies the state machine of the OFFER packet parameters.
      */
     CARAPI DoNextOp(
-        /* [in] */ IDhcpStateMachine* machine);
+        /* [in] */ DhcpStateMachine* machine);
 
 private:
     /**

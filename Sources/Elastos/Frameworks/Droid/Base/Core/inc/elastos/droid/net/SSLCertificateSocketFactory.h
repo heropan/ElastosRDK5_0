@@ -13,6 +13,7 @@ using Elastos::Security::IPrivateKey;
 using Elastos::Security::Cert::IX509Certificate;
 using Elastosx::Net::Ssl::IKeyManager;
 using Elastosx::Net::Ssl::ITrustManager;
+using Elastosx::Net::Ssl::IX509TrustManager;
 using Elastosx::Net::Ssl::SSLSocketFactory;
 
 using Org::Conscrypt::IOpenSSLSocketImpl;
@@ -60,6 +61,7 @@ private:
     class InnerSub_TrustManager
         : public Object
         , public ITrustManager
+        , public IX509TrustManager
     {
     public:
         CAR_INTERFACE_DECL()
@@ -215,7 +217,7 @@ public:
      * strings.
      */
     static CARAPI ToLengthPrefixedList(
-        /* [in] */ ArrayOf<Byte>* items,
+        /* [in] */ ArrayOf<IArrayOf*>* items,
         /* [out, callee] */ ArrayOf<Byte>** result);
 
     /**
@@ -391,7 +393,7 @@ public:
         /* [out, callee] */ ArrayOf<String>** result);
 
 private:
-    SSLCertificateSocketFactory(
+    CARAPI constructor(
         /* [in] */ Int32 handshakeTimeoutMillis,
         /* [in] */ ISSLSessionCache* cache,
         /* [in] */ Boolean secure);
@@ -401,11 +403,9 @@ private:
         /* [in] */ ArrayOf<ITrustManager*>* trustManagers,
         /* [out] */ ISSLSocketFactory** result);
 
-    static CARAPI IsSslCheckRelaxed(
-        /* [out] */ Boolean* result);
+    static CARAPI_(Boolean) IsSslCheckRelaxed();
 
-    CARAPI GetDelegate(
-        /* [out] */ ISSLSocketFactory** result);
+    CARAPI_(AutoPtr<ISSLSocketFactory>) GetDelegate();
 
     static CARAPI CastToOpenSSLSocket(
         /* [in] */ ISocket* socket,

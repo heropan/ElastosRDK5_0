@@ -117,11 +117,15 @@ private:
     {
     public:
         ServiceHandler(
-            /* [in] */ ILooper* looper);
+            /* [in] */ ILooper* looper,
+            /* [in] */ NsdManager* host);
 
         // @Override
         CARAPI HandleMessage(
             /* [in] */ IMessage* message);
+
+    private:
+        NsdManager* mHost;
     };
 
 public:

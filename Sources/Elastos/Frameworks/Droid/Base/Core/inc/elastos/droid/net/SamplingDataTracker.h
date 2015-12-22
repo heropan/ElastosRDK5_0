@@ -114,6 +114,8 @@ class SamplingDataTrackerSamplingSnapshot
 public:
     CAR_INTERFACE_DECL()
 
+    SamplingDataTrackerSamplingSnapshot();
+
     CARAPI constructor();
 
     CARAPI GetTxByteCount(

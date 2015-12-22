@@ -62,7 +62,7 @@ ECode DefaultHttpRequestRetryHandler::RetryRequest(
         *retried = FALSE;
         return NOERROR;
     }
-    if (exception == (ECode)E_SSL_HAND_SHAKE_EXCEPTION) {
+    if (exception == (ECode)E_SSL_HANDSHAKE_EXCEPTION) {
         // SSL handshake exception
         *retried = FALSE;
         return NOERROR;

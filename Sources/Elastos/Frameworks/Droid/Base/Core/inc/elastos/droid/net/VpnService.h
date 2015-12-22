@@ -103,6 +103,10 @@ private:
     class Callback
         : public Binder
     {
+    public:
+        Callback(
+            /* [in] */ VpnService* host);
+
     protected:
         // @Override
         CARAPI OnTransact(
@@ -111,6 +115,9 @@ private:
             /* [in] */ IParcel* reply,
             /* [in] */ Int32 flags,
             /* [out] */ Boolean* result);
+
+    private:
+        VpnService* mHost;
     };
 
 public:
@@ -265,8 +272,7 @@ private:
      * Use IConnectivityManager since those methods are hidden and not
      * available in ConnectivityManager.
      */
-    static CARAPI GetService(
-        /* [out] */ IIConnectivityManager** result);
+    static CARAPI_(AutoPtr<IIConnectivityManager>) GetService();
 
     /**
      * Private method to validate address and prefixLength.
@@ -274,6 +280,8 @@ private:
     static CARAPI Check(
         /* [in] */ IInetAddress* address,
         /* [in] */ Int32 prefixLength);
+
+    friend class VpnServiceBuilder;
 };
 
 
@@ -292,7 +300,8 @@ public:
 
     VpnServiceBuilder();
 
-    CARAPI constructor();
+    CARAPI constructor(
+        /* [in] */ IVpnService* host);
 
     /**
      * Set the name of this session. It will be displayed in
@@ -300,8 +309,7 @@ public:
      * not required.
      */
     CARAPI SetSession(
-        /* [in] */ const String& session,
-        /* [out] */ IVpnServiceBuilder** result);
+        /* [in] */ const String& session);
 
     /**
      * Set the {@link PendingIntent} to an activity for users to
@@ -309,8 +317,7 @@ public:
      * to configure will not be shown in system-managed dialogs.
      */
     CARAPI SetConfigureIntent(
-        /* [in] */ IPendingIntent* intent,
-        /* [out] */ IVpnServiceBuilder** result);
+        /* [in] */ IPendingIntent* intent);
 
     /**
      * Set the maximum transmission unit (MTU) of the VPN interface. If
@@ -320,8 +327,7 @@ public:
      * @throws IllegalArgumentException if the value is not positive.
      */
     CARAPI SetMtu(
-        /* [in] */ Int32 mtu,
-        /* [out] */ IVpnServiceBuilder** result);
+        /* [in] */ Int32 mtu);
 
     /**
      * Add a network address to the VPN interface. Both IPv4 and IPv6
@@ -335,8 +341,7 @@ public:
      */
     CARAPI AddAddress(
         /* [in] */ IInetAddress* address,
-        /* [in] */ Int32 prefixLength,
-        /* [out] */ IVpnServiceBuilder** result);
+        /* [in] */ Int32 prefixLength);
 
     /**
      * Convenience method to add a network address to the VPN interface
@@ -351,8 +356,7 @@ public:
      */
     CARAPI AddAddress(
         /* [in] */ const String& address,
-        /* [in] */ Int32 prefixLength,
-        /* [out] */ IVpnServiceBuilder** result);
+        /* [in] */ Int32 prefixLength);
 
     /**
      * Add a network route to the VPN interface. Both IPv4 and IPv6
@@ -365,8 +369,7 @@ public:
      */
     CARAPI AddRoute(
         /* [in] */ IInetAddress* address,
-        /* [in] */ Int32 prefixLength,
-        /* [out] */ IVpnServiceBuilder** result);
+        /* [in] */ Int32 prefixLength);
 
     /**
      * Convenience method to add a network route to the VPN interface
@@ -381,8 +384,7 @@ public:
      */
     CARAPI AddRoute(
         /* [in] */ const String& address,
-        /* [in] */ Int32 prefixLength,
-        /* [out] */ IVpnServiceBuilder** result);
+        /* [in] */ Int32 prefixLength);
 
     /**
      * Add a DNS server to the VPN connection. Both IPv4 and IPv6
@@ -395,8 +397,7 @@ public:
      * @throws IllegalArgumentException if the address is invalid.
      */
     CARAPI AddDnsServer(
-        /* [in] */ IInetAddress* address,
-        /* [out] */ IVpnServiceBuilder** result);
+        /* [in] */ IInetAddress* address);
 
     /**
      * Convenience method to add a DNS server to the VPN connection
@@ -410,15 +411,13 @@ public:
      * @see #addDnsServer(InetAddress)
      */
     CARAPI AddDnsServer(
-        /* [in] */ const String& address,
-        /* [out] */ IVpnServiceBuilder** result);
+        /* [in] */ const String& address);
 
     /**
      * Add a search domain to the DNS resolver.
      */
     CARAPI AddSearchDomain(
-        /* [in] */ const String& domain,
-        /* [out] */ IVpnServiceBuilder** result);
+        /* [in] */ const String& domain);
 
     /**
      * Allows traffic from the specified address family.
@@ -439,8 +438,7 @@ public:
      * @return this {@link Builder} object to facilitate chaining of method calls.
      */
     CARAPI AllowFamily(
-        /* [in] */ Int32 family,
-        /* [out] */ IVpnServiceBuilder** result);
+        /* [in] */ Int32 family);
 
     /**
      * Adds an application that's allowed to access the VPN connection.
@@ -464,8 +462,7 @@ public:
      * @return this {@link Builder} object to facilitate chaining method calls.
      */
     CARAPI AddAllowedApplication(
-        /* [in] */ const String& packageName,
-        /* [out] */ IVpnServiceBuilder** result);
+        /* [in] */ const String& packageName);
 
     /**
      * Adds an application that's denied access to the VPN connection.
@@ -487,8 +484,7 @@ public:
      * @return this {@link Builder} object to facilitate chaining method calls.
      */
     CARAPI AddDisallowedApplication(
-        /* [in] */ const String& packageName,
-        /* [out] */ IVpnServiceBuilder** result);
+        /* [in] */ const String& packageName);
 
     /**
      * Allows all apps to bypass this VPN connection.
@@ -500,8 +496,7 @@ public:
      *
      * @return this {@link Builder} object to facilitate chaining of method calls.
      */
-    CARAPI AllowBypass(
-        /* [out] */ IVpnServiceBuilder** result);
+    CARAPI AllowBypass();
 
     /**
      * Sets the VPN interface's file descriptor to be in blocking/non-blocking mode.
@@ -513,8 +508,7 @@ public:
      * @return this {@link Builder} object to facilitate chaining method calls.
      */
     CARAPI SetBlocking(
-        /* [in] */ Boolean blocking,
-        /* [out] */ IVpnServiceBuilder** result);
+        /* [in] */ Boolean blocking);
 
     /**
      * Create a VPN interface using the parameters supplied to this
@@ -573,6 +567,7 @@ private:
     AutoPtr<IVpnConfig> mConfig;
     AutoPtr<IList> mAddresses;
     AutoPtr<IList> mRoutes;
+    VpnService* mHost;
 };
 
 } // namespace Net

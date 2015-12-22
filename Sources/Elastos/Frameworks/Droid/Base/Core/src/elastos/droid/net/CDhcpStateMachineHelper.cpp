@@ -17,10 +17,8 @@ ECode CDhcpStateMachineHelper::MakeDhcpStateMachine(
     /* [in] */ const String& intf,
     /* [out] */ IDhcpStateMachine** result)
 {
-    VALIDATE_NOT_NULL(*result)
+    VALIDATE_NOT_NULL(result)
     *result = NULL;
-    VALIDATE_NOT_NULL(context)
-    VALIDATE_NOT_NULL(controller)
 
     *result = DhcpStateMachine::MakeDhcpStateMachine(context, controller, intf);
     if(*result != NULL)

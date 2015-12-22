@@ -150,26 +150,6 @@ public:
         /* [in] */ Int32 errorId,
         /* [in] */ Int32 resourceId);
 
-    /** The eventhandler to call as the request progresses */
-    AutoPtr<IEventHandler> mEventHandler;
-
-    /** The Apache http request */
-    AutoPtr<IBasicHttpRequest> mHttpRequest;
-
-    /** The path component of this request */
-    String mPath;
-
-    /** Host serving this request */
-    AutoPtr<IHttpHost> mHost;
-
-    /** Set if I'm using a proxy server */
-    AutoPtr<IHttpHost> mProxyHost;
-
-    /** True if request has been cancelled */
-    /* volatile */ Boolean mCancelled;
-
-    Int32 mFailCount;
-
 private:
     /**
      * Decide whether a response comes with an entity.
@@ -201,6 +181,27 @@ private:
 
     static CARAPI_(AutoPtr<IRequestContent>) InitRequestContentProcessor();
 
+public:
+    /** The eventhandler to call as the request progresses */
+    AutoPtr<IEventHandler> mEventHandler;
+
+    /** The Apache http request */
+    AutoPtr<IBasicHttpRequest> mHttpRequest;
+
+    /** The path component of this request */
+    String mPath;
+
+    /** Host serving this request */
+    AutoPtr<IHttpHost> mHost;
+
+    /** Set if I'm using a proxy server */
+    AutoPtr<IHttpHost> mProxyHost;
+
+    /** True if request has been cancelled */
+    /* volatile */ Boolean mCancelled;
+
+    Int32 mFailCount;
+
 private:
     /**
      * Processor used to set content-length and transfer-encoding
@@ -224,7 +225,7 @@ private:
     static const String CONTENT_LENGTH_HEADER;
 
     /* Used to synchronize waitUntilComplete() requests */
-    /* const */ AutoPtr<IInterface> mClientResource;
+    /* const */ AutoPtr<IObject> mClientResource;
 
     /** True if loading should be paused **/
     Boolean mLoadingPaused;

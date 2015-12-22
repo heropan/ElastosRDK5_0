@@ -111,9 +111,6 @@ public:
         /* [out] */ ArrayOf<Byte>** result);
 
 private:
-    RssiCurve(
-        /* [in] */ IParcel* in);
-
     /** The starting dBm of the curve. */
     Int32 mStart;
 

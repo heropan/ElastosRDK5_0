@@ -1,5 +1,24 @@
 
+#include "_Elastos.Droid.Content.h"
+#include <Elastos.CoreLibrary.Extensions.h>
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.Net.h>
 #include "elastos/droid/net/SSLSessionCache.h"
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Net::ISSLSessionCache;
+using Elastos::Droid::Utility::ILog;
+
+using Elastos::IO::IFile;
+using Elastos::Utility::Logging::Logger;
+using Elastosx::Net::Ssl::ISSLContext;
+using Elastosx::Net::Ssl::ISSLSession;
+using Elastosx::Net::Ssl::ISSLSessionContext;
+
+using Org::Conscrypt::IClientSessionContext;
+using Org::Conscrypt::IFileClientSessionCache;
+using Org::Conscrypt::ISSLClientSessionCache;
 
 namespace Elastos {
 namespace Droid {
@@ -9,118 +28,68 @@ CAR_INTERFACE_IMPL(SSLSessionCache, Object, ISSLSessionCache)
 
 const String SSLSessionCache::TAG("SSLSessionCache");
 
-ECode SSLSessionCache::GetSessionCache(
-    /* [out] */ ISSLClientSessionCache** result)
-{
-    VALIDATE_NOT_NULL(*result)
-
-    *result = mSessionCache;
-    REFCOUNT_ADD(*result)
-    return NOERROR;
-}
-
 ECode SSLSessionCache::Install(
     /* [in] */ ISSLSessionCache* cache,
     /* [in] */ ISSLContext* context)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        SSLSessionContext clientContext = context.getClientSessionContext();
-        if (IClientSessionContext::Probe(clientContext) != NULL) {
-            ((ClientSessionContext) clientContext).setPersistentCache(
-                    cache == NULL ? NULL : cache.mSessionCache);
-        } else {
-            throw new IllegalArgumentException("Incompatible SSLContext: " + context);
-        }
-#endif
+    AutoPtr<ISSLSessionContext> clientContext;
+    context->GetClientSessionContext((ISSLSessionContext**)&clientContext);
+    if (IClientSessionContext::Probe(clientContext) != NULL) {
+        // TODO: Waiting for IClientSessionContext
+        assert(0);
+        // IClientSessionContext::Probe(clientContext)->SetPersistentCache(
+        //         cache == NULL ? NULL : ((SSLSessionCache*)cache)->mSessionCache);
+    } else {
+        String s;
+        IObject::Probe(context)->ToString(&s);
+        Logger::E("Incompatible SSLContext: %s", s.string());
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    return NOERROR;
 }
 
 ECode SSLSessionCache::constructor(
     /* [in] */ IInterface* cache)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mSessionCache = (SSLClientSessionCache) cache;
-#endif
+    mSessionCache = ISSLClientSessionCache::Probe(cache);
+    return NOERROR;
 }
 
 ECode SSLSessionCache::constructor(
     /* [in] */ IFile* dir)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mSessionCache = FileClientSessionCache.usingDirectory(dir);
-#endif
+    // TODO: Waiting for FileClientSessionCache
+    assert(0);
+    return NOERROR;
+    // AutoPtr<IFileClientSessionCacheHelper> helper;
+    // CFileClientSessionCacheHelper::AcquireSingleton((IFileClientSessionCacheHelper**)&helper);
+    // return helper->UsingDirectory(dir, (ISSLClientSessionCache**)&mSessionCache);
 }
 
 ECode SSLSessionCache::constructor(
     /* [in] */ IContext* context)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        File dir = context.getDir("sslcache", Context.MODE_PRIVATE);
-        SSLClientSessionCache cache = NULL;
-        try {
-            cache = FileClientSessionCache.usingDirectory(dir);
-        } catch (IOException e) {
-            Log.w(TAG, "Unable to create SSL session cache in " + dir, e);
-        }
-        mSessionCache = cache;
-#endif
+    AutoPtr<IFile> dir;
+    context->GetDir(String("sslcache"), IContext::MODE_PRIVATE, (IFile**)&dir);
+    AutoPtr<ISSLClientSessionCache> cache = NULL;
+    // TODO: Waiting for FileClientSessionCache
+    assert(0);
+    // // try {
+    // ECode ec = CFileClientSessionCache::UsingDirectory(dir, (ISSLClientSessionCache**)&cache);
+    // // } catch (IOException e) {
+    // if (FAILED(ec)) {
+    //     if (ec == E_IO_EXCEPTION) {
+    //         String s;
+    //         IObject::Probe(dir)->ToString(&s);
+    //         Logger::W(TAG, "Unable to create SSL session cache in %s, %d", s.string(), ec);
+    //     }
+    //     else return ec;
+    // }
+    // }
+    mSessionCache = cache;
+    return NOERROR;
 }
 
 } // namespace Net
 } // namespace Droid
 } // namespace Elastos
-
-#if 0 // old CSSLSessionCache.cpp
-#include "elastos/droid/net/CSSLSessionCache.h"
-//#include "CFileClientSessionCache.h"
-
-using Elastos::IO::IFile;
-using Elastos::Droid::Content::IContext;
-
-namespace Elastos {
-namespace Droid {
-namespace Net {
-
-const String CSSLSessionCache::TAG = "SSLSessionCache";
-
-/**
- * Create a session cache using the specified directory.
- * Individual session entries will be files within the directory.
- * Multiple instances for the same directory share data internally.
- *
- * @param dir to store session files in (created if necessary)
- * @throws IOException if the cache can't be opened
- */
-CSSLSessionCache::constructor(
-    /* [in] */ IFile* dir)
-{
-    CFileClientSessionCache::UsingDirectory(dir, (ISSLClientSessionCache**)&mSessionCache);
-}
-
-/**
- * Create a session cache at the default location for this app.
- * Multiple instances share data internally.
- *
- * @param context for the application
- */
-CSSLSessionCache::SSLSessionCache(
-    /* [in] */ IContext* context)
-{
-    AutoPtr<IFile> dir;
-    context->GetDir("sslcache", IContext::MODE_PRIVATE, (IFile**)&dir);
-    AutoPtr<ISSLClientSessionCache> cache = NULL;
-    //try {
-    CFileClientSessionCache::UsingDirectory(dir, (ISSLClientSessionCache**)&cache);
-    //} catch (IOException e) {
-    //    Log.w(TAG, "Unable to create SSL session cache in " + dir, e);
-    //}
-    mSessionCache = cache;
-}
-
-} //namespace Net
-} //namespace Droid
-} //namespace Elastos
-#endif

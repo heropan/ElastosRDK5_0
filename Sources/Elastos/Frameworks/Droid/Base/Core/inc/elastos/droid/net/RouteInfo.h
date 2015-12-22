@@ -41,6 +41,8 @@ class RouteInfo
 public:
     CAR_INTERFACE_DECL()
 
+    RouteInfo();
+
     /**
      * Constructs a RouteInfo object.
      *
@@ -298,9 +300,9 @@ public:
         /* [in] */ IParcel* dest);
 
 private:
-    CARAPI IsHost(
-        /* [out] */ Boolean* result);
+    CARAPI_(Boolean) IsHost();
 
+private:
     /**
      * The IP destination address for this route.
      */
