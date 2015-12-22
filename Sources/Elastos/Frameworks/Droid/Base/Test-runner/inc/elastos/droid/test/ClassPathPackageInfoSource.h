@@ -4,7 +4,6 @@
 #define __CLASSPATHPACKAGEINFOSOURCE_H__
 
 #include <elastos/droid/ext/frameworkdef.h>
-#include "Elastos.Droid.Test_server.h"
 #include "elastos/droid/test/ClassPathPackageInfo.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>

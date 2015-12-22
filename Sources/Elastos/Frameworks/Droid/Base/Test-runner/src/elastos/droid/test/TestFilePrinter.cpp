@@ -1,3 +1,7 @@
+
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Libcore.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/test/TestFilePrinter.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>

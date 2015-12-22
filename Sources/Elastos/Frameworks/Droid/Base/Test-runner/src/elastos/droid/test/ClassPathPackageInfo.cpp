@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/test/ClassPathPackageInfo.h"
 
 using Elastos::Core::ICharSequence;

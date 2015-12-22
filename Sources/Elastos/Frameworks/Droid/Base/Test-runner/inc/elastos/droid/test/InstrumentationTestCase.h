@@ -3,11 +3,7 @@
 #define __INSTRUMENTATIONTESTCASE_H__
 
 #include <elastos/droid/ext/frameworkdef.h>
-#ifdef DROID_TEST
-#include <Elastos.Droid.Test_server.h>
-#else
-#include <Elastos.Droid.Test.h>
-#endif
+#include <_Elastos.Droid.Test.h>
 #include <eunit/framework/TestCase.h>
 #include <elastos/droid/os/Runnable.h>
 

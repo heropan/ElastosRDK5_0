@@ -1,4 +1,7 @@
 
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Database.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/test/ElastosTestCase.h"
 
 using Elastos::Droid::Content::IIntent;

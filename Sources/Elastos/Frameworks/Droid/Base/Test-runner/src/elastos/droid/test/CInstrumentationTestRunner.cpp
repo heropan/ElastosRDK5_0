@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/test/CInstrumentationTestRunner.h"
 #include "elastos/droid/test/ClassPathPackageInfoSource.h"
 #include "elastos/droid/test/TestPrinter.h"

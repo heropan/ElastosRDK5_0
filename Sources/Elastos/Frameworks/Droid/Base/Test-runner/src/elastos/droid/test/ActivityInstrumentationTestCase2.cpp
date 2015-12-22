@@ -1,4 +1,6 @@
 
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
 #include <elastos/droid/test/ActivityInstrumentationTestCase2.h>
 
 using Elastos::Droid::Content::IContext;

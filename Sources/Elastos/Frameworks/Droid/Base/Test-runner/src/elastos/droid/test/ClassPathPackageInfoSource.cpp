@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/test/ClassPathPackageInfoSource.h"
 #include "elastos/droid/test/EcoFile.h"
 #include <elastos/core/StringUtils.h>

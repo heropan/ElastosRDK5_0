@@ -2,6 +2,9 @@
 #ifndef __CTESTSUITEBUILDER_H__
 #define __CTESTSUITEBUILDER_H__
 
+#include "Elastos.Droid.Content.h"
+#include "_Eunit.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "_Elastos_Droid_Test_SuiteBuilder_CTestSuiteBuilder.h"
 #include "TestGrouping.h"
 #include <elastos/core/Object.h>

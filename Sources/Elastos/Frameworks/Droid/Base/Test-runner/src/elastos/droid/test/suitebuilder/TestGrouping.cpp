@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/test/suitebuilder/TestGrouping.h"
 #include "elastos/droid/test/suitebuilder/CTestMethod.h"
 #include "elastos/droid/test/PackageInfoSources.h"

@@ -19,7 +19,7 @@ class GestureDetector
     , public IGestureDetector
 {
 public:
-    class SimpleOnGestureListener
+    class ECO_PUBLIC SimpleOnGestureListener
         : public Object
         , public IGestureDetectorOnGestureListener
         , public IGestureDetectorOnDoubleTapListener

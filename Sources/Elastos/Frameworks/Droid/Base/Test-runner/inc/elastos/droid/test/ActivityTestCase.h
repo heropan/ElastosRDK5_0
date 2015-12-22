@@ -3,11 +3,6 @@
 #define __ACTIVITYTESTCASE_H__
 
 #include <elastos/droid/ext/frameworkdef.h>
-#ifdef DROID_TEST
-#include <Elastos.Droid.Test_server.h>
-#else
-#include <Elastos.Droid.Test.h>
-#endif
 #include <elastos/droid/test/InstrumentationTestCase.h>
 
 namespace Elastos {

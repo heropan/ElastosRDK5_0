@@ -5,11 +5,13 @@
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/server/display/ColorFade.h"
 // #include "elastos/droid/server/LightsService.h"
+#include <elastos/droid/os/Runnable.h>
 #include <elastos/droid/utility/Int32Property.h>
 #include <elastos/droid/utility/FloatProperty.h>
 #include <elastos/core/Thread.h>
 
 using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::View::IChoreographer;
 using Elastos::Droid::Utility::FloatProperty;
 using Elastos::Droid::Utility::Int32Property;
@@ -88,13 +90,11 @@ private:
     {
     private:
         class TaskRunnable
-            : public IRunnable
+            : public Runnable
         {
         public:
             TaskRunnable(
                 /* [in] */ PhotonicModulator* host);
-
-            CAR_INTERFACE_DECL();
 
             ECode Run();
 
@@ -137,14 +137,11 @@ private:
     };
 
     class ScreenUpdateRunnable
-        : public ElRefBase
-        , public IRunnable
+        : public Runnable
     {
     public:
         ScreenUpdateRunnable(
             /* [in] */ DisplayPowerState* host);
-
-        CAR_INTERFACE_DECL();
 
         CARAPI Run();
 
@@ -153,23 +150,19 @@ private:
     };
 
     class ColorFadeDrawRunnable
-        : public ElRefBase
-        , public IRunnable
+        : public Runnable
     {
     public:
         ColorFadeDrawRunnable(
             /* [in] */ DisplayPowerState* host);
 
-        CAR_INTERFACE_DECL();
-
         CARAPI Run();
+
     private:
         DisplayPowerState* mHost;
     };
 
 public:
-    CAR_INTERFACE_DECL()
-
     DisplayPowerState(
         /* [in] */ IDisplayBlanker* blanker,
         ///* [in] */ LightsService::Light* backlight,

@@ -34,7 +34,7 @@ class ScaleGestureDetector
     , public IScaleGestureDetector
 {
 public:
-    class SimpleOnScaleGestureListener
+    class ECO_PUBLIC SimpleOnScaleGestureListener
         : public Object
         , public IScaleGestureDetectorOnScaleGestureListener
     {

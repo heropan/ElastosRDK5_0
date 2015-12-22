@@ -2,7 +2,8 @@
 #ifndef __TESTCASEUTIL_H__
 #define __TESTCASEUTIL_H__
 
-#include "Elastos.Droid.Test_server.h"
+#include "_Eunit.h"
+#include "Elastos.CoreLibrary.Utility.h"
 
 using Elastos::Utility::IList;
 using Elastos::Utility::ISet;

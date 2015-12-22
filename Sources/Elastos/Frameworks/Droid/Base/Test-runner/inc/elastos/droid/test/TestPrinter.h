@@ -3,7 +3,8 @@
 #define __TESTPRINTER_H__
 
 #include <elastos/droid/ext/frameworkdef.h>
-#include "Elastos.Droid.Test_server.h"
+#include "_Elastos.Droid.Test.h"
+#include "_Eunit.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashSet.h>
 

@@ -2,7 +2,6 @@
 #ifndef __ELASTOS_DROID_TEST_PACKAGEINFOSOURCES_H__
 #define __ELASTOS_DROID_TEST_PACKAGEINFOSOURCES_H__
 
-#include "Elastos.Droid.Test_server.h"
 #include "elastos/droid/test/ClassPathPackageInfoSource.h"
 
 using Elastos::Core::IClassLoader;

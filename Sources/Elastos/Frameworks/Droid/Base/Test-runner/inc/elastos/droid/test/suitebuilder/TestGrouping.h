@@ -3,8 +3,8 @@
 #define __TESTGROUPING_H__
 
 #include <elastos/droid/ext/frameworkdef.h>
+#include <Elastos.Droid.Internal.h>
 #include <elastos/core/Object.h>
-#include "Elastos.Droid.Test_server.h"
 
 using Elastos::Core::Object;
 using Elastos::Core::IComparator;

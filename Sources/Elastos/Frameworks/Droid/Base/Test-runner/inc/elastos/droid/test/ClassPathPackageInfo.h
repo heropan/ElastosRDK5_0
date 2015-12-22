@@ -3,7 +3,6 @@
 #define __CLASSPATHPACKAGEINFO_H__
 
 #include <elastos/droid/ext/frameworkdef.h>
-#include "Elastos.Droid.Test_server.h"
 #include "elastos/droid/test/ClassPathPackageInfoSource.h"
 #include <elastos/core/Object.h>
 

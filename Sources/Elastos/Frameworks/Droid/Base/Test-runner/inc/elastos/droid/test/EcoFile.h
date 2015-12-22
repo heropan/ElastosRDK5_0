@@ -3,7 +3,8 @@
 #define __ECOFILE__H__
 
 #include <elastos/droid/ext/frameworkdef.h>
-#include "Elastos.Droid.Test_server.h"
+#include "Elastos.CoreLibrary.Core.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;

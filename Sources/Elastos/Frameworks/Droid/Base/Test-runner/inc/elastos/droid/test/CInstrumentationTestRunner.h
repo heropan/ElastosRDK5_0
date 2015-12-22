@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_TEST_CINSTRUMENTATIONTESTRUNNER_H__
 
 #include <elastos/droid/ext/frameworkdef.h>
+#include "Elastos.CoreLibrary.IO.h"
 #include "_Elastos_Droid_Test_CInstrumentationTestRunner.h"
 #include "CAndroidTestRunner.h"
 #include "suitebuilder/CTestSuiteBuilder.h"

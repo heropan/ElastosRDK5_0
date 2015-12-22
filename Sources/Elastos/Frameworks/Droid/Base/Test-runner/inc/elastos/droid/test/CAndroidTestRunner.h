@@ -3,8 +3,11 @@
 #define __CANDROIDTESTRUNNER_H__
 
 #include <elastos/droid/ext/frameworkdef.h>
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "_Elastos_Droid_Test_CAndroidTestRunner.h"
-#include <Eunit.h>
+#include <_Eunit.h>
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 

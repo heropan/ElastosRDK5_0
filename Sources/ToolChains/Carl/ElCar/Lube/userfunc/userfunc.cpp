@@ -982,6 +982,59 @@ int CmpHModTime(char* szName)
     }
 }
 
+class Librarys
+{
+public:
+    Librarys()
+        : mCount(0)
+        , mCapacity(10)
+    {
+        mName = (char**)malloc(mCapacity * sizeof(char*));
+    }
+
+    ~Librarys()
+    {
+        for (int i = 0; i < mCount; i++) {
+            free(mName[i]);
+        }
+        free(mName);
+    }
+
+    BOOL Contains(char* library)
+    {
+        for (int i = 0; i < mCount; i++) {
+            if (!strcmp(mName[i], library)) return TRUE;
+        }
+        return FALSE;
+    }
+
+    void Add(char* library)
+    {
+        if (mCount >= mCapacity) Grow(mCapacity * 2);
+
+        mName[mCount] = (char*)malloc(strlen(library) + 1);
+        strcpy(mName[mCount], library);
+        mCount++;
+    }
+
+private:
+    void Grow(int capacity)
+    {
+        char** newLibrarys = (char**)malloc(capacity * sizeof(char*));
+        for (int i = 0; i < mCount; i++) {
+            newLibrarys[i] = mName[i];
+        }
+        free(mName);
+    }
+
+private:
+    int mCount;
+    int mCapacity;
+    char** mName;
+};
+
+static Librarys slibraries;
+
 IMPL_USERFUNC(CreateHFiles)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 {
     char *szName = (char *)alloca(strlen((char *)pvArg) + 4);
@@ -1012,7 +1065,12 @@ IMPL_USERFUNC(CreateHFiles)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     //Compare .h file and .dll/.cls file to avoid repeated building problem
     nRet = CmpHModTime(szName);
 
-    if (nRet >= 0) nRet = ctx.ExecTemplate("header2");
+    if (nRet >= 0) {
+        if (!slibraries.Contains(szName)) {
+            slibraries.Add(szName);
+            nRet = ctx.ExecTemplate("header2");
+        }
+    }
 
     DisposeFlattedCLS(pModule);
     if (nRet < 0 && nRet != HTIME_GT_DLLTIME)

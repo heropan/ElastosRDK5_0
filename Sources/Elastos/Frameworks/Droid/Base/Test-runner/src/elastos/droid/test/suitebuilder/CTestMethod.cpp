@@ -1,5 +1,6 @@
 
 #include <elastos/droid/ext/frameworkdef.h>
+#include <_Eunit.h>
 #include "elastos/droid/test/suitebuilder/CTestMethod.h"
 
 namespace Elastos {

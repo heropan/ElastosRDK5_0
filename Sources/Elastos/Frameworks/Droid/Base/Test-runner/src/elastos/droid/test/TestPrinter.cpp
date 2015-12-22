@@ -1,4 +1,5 @@
 
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/test/TestPrinter.h"
 #include <elastos/utility/logging/Logger.h>
 
