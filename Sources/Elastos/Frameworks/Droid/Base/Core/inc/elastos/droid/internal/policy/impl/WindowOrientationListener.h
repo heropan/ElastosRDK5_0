@@ -85,6 +85,9 @@ public:
     public:
         CAR_INTERFACE_DECL();
 
+        SensorEventListenerImpl(
+            /* [in] */ WindowOrientationListener* owner);
+
         virtual CARAPI GetProposedRotationLocked(
             /* [out] */ Int32* result);
 
@@ -101,12 +104,14 @@ public:
         CARAPI OnSensorChanged(
             /* [in] */ ISensorEvent* event);
 
+        CARAPI_(void) ResetLocked();
+
     private:
-        CARAPI_(AutoPtr< ArrayOf< AutoPtr< ArrayOf<Int32> > > >) MiddleInitTiltTolerance();
+        //CARAPI_(AutoPtr< ArrayOf< AutoPtr< ArrayOf<Int32> > > >) MiddleInitTiltTolerance();
 
-        CARAPI_(AutoPtr< ArrayOf<Float> >) MiddleInitMtilthistory();
+        //CARAPI_(AutoPtr< ArrayOf<Float> >) MiddleInitMtilthistory();
 
-        CARAPI_(AutoPtr< ArrayOf<Int64> >) MiddleInitMtilthistorytimestampnanos();
+        //CARAPI_(AutoPtr< ArrayOf<Int64> >) MiddleInitMtilthistorytimestampnanos();
 
         /**
           * Returns true if the tilt angle is acceptable for a given predicted rotation.
@@ -131,8 +136,6 @@ public:
           */
         CARAPI_(Boolean) IsPredictedRotationAcceptableLocked(
             /* [in] */ Int64 now);
-
-        CARAPI_(void) ResetLocked();
 
         CARAPI_(void) ClearPredictedRotationLocked();
 
@@ -269,10 +272,10 @@ public:
         AutoPtr< ArrayOf< AutoPtr< ArrayOf<Int32> > > > TILT_TOLERANCE;
         // The tilt angle below which we conclude that the user is holding the device
         // overhead reading in bed and lock into that state.
-        /*const*/ Int32 TILT_OVERHEAD_ENTER;
+        const Int32 TILT_OVERHEAD_ENTER;
         // The tilt angle above which we conclude that the user would like a rotation
         // change to occur and unlock from the overhead state.
-        /*const*/ Int32 TILT_OVERHEAD_EXIT;
+        const Int32 TILT_OVERHEAD_EXIT;
         // The gap angle in degrees between adjacent orientation angles for hysteresis.
         // This creates a "dead zone" between the current orientation and a proposed
         // adjacent orientation.  No orientation proposal is made when the orientation
@@ -306,6 +309,7 @@ public:
         AutoPtr< ArrayOf<Float> > mTiltHistory;
         AutoPtr< ArrayOf<Int64> > mTiltHistoryTimestampNanos;
         Int32 mTiltHistoryIndex;
+        WindowOrientationListener* mOwner;
     };
 
 public:
@@ -404,7 +408,7 @@ private:
     AutoPtr<ISensor> mSensor;
     AutoPtr<SensorEventListenerImpl> mSensorEventListener;
     Int32 mCurrentRotation;
-    /*const*/ AutoPtr<Object> mLock;
+    AutoPtr<Object> mLock;
 };
 
 } // namespace Impl

@@ -1,16 +1,164 @@
-
+#include "Elastos.CoreLibrary.IO.h"
+#include "elastos/droid/app/CActivityManagerHelper.h"
 #include "elastos/droid/internal/policy/impl/PhoneWindow.h"
-#include "elastos/droid/internal/policy/impl/CPhoneWindowRotationWatcher.h"
+//TODO #include "elastos/droid/internal/policy/impl/PhoneWindowManager.h"
+//TODO #include "elastos/droid/internal/widget/CBackgroundFallback.h"
+#include "elastos/droid/internal/policy/impl/CPhoneWindowSavedState.h"
+#include "elastos/droid/content/res/CConfiguration.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CPixelFormat.h"
+#include "elastos/droid/graphics/drawable/Drawable.h"
+#include "elastos/droid/media/session/CMediaSessionLegacyHelperHelper.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include "elastos/droid/os/CUserHandleHelper.h"
+#include "elastos/droid/transition/CTransitionManager.h"
+#include "elastos/droid/transition/CTransitionInflaterHelper.h"
 #include "elastos/droid/transition/CTransitionSet.h"
+#include "elastos/droid/transition/CSceneHelper.h"
+#include "elastos/droid/transition/CScene.h"
+#include "elastos/droid/view/CView.h"
+#include "elastos/droid/view/CContextThemeWrapper.h"
+#include "elastos/droid/view/CKeyCharacterMap.h"
+#include "elastos/droid/view/CKeyCharacterMapHelper.h"
+#include "elastos/droid/view/CKeyEvent.h"
+#include "elastos/droid/view/CContextThemeWrapper.h"
+#include "elastos/droid/view/CMotionEvent.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/view/CViewConfigurationHelper.h"
+#include "elastos/droid/view/LayoutInflater.h"
+//TODO #include "elastos/droid/view/CViewHelper.h"
+#include "elastos/droid/internal/view/StandaloneActionMode.h"
+#include "elastos/droid/internal/view/menu/CMenuDialogHelper.h"
+#include "elastos/droid/view/accessibility/CAccessibilityManager.h"
+#include "elastos/droid/view/animation/CAnimationUtils.h"
+#include "elastos/droid/internal/view/menu/CContextMenuBuilder.h"
+#include "elastos/droid/internal/view/menu/CMenuBuilder.h"
+#include "elastos/droid/internal/view/menu/CListMenuPresenter.h"
+#include "elastos/droid/internal/view/menu/CIconMenuPresenter.h"
+#include "elastos/droid/widget/CPopupWindow.h"
+//TODO #include "elastos/droid/widget/internal/CActionBarContextView.h"
+#include "elastos/droid/utility/CTypedValue.h"
+#include "elastos/droid/utility/CTypedValueHelper.h"
+#include "elastos/droid/utility/CSparseArray.h"
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Slogger.h>
+#include "elastos/droid/internal/policy/impl/CPhoneWindowRotationWatcher.h"
+#include "elastos/droid/R.h"
+#include <elastos/utility/logging/Logger.h>
 
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Droid::App::CActivityManagerHelper;
+using Elastos::Droid::App::IActivityManagerHelper;
+using Elastos::Droid::App::ISearchManager;
+using Elastos::Droid::R;
+using Elastos::Droid::App::IActivity;
+using Elastos::Droid::App::IService;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Content::Res::IResourcesTheme;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Graphics::CPixelFormat;
+using Elastos::Droid::Graphics::IPixelFormat;
+using Elastos::Droid::Graphics::IColor;
+using Elastos::Droid::Graphics::Drawable::Drawable;
+using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
+using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
+using Elastos::Droid::Os::CUserHandleHelper;
+using Elastos::Droid::Os::IUserHandleHelper;
+using Elastos::Droid::Media::Session::CMediaSessionLegacyHelperHelper;
+using Elastos::Droid::Media::Session::IMediaSessionLegacyHelperHelper;
+using Elastos::Droid::Media::Session::IMediaSessionLegacyHelper;
+using Elastos::Droid::Transition::CTransitionInflaterHelper;
+using Elastos::Droid::Transition::CTransitionManager;
+using Elastos::Droid::Transition::ITransitionInflaterHelper;
+using Elastos::Droid::Transition::ITransitionInflater;
+using Elastos::Droid::Transition::CTransitionSet;
+using Elastos::Droid::Transition::ITransitionSet;
+using Elastos::Droid::Transition::CSceneHelper;
+using Elastos::Droid::Transition::ISceneHelper;
+using Elastos::Droid::Transition::CScene;
+using Elastos::Droid::View::Accessibility::CAccessibilityManager;
+using Elastos::Droid::View::Accessibility::EIID_IAccessibilityEventSource;
+using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
+using Elastos::Droid::View::Accessibility::IAccessibilityManager;
+using Elastos::Droid::View::Animation::CAnimationUtils;
+using Elastos::Droid::View::Animation::IAnimationUtils;
+using Elastos::Droid::View::IDisplay;
+using Elastos::Droid::View::CKeyCharacterMap;
+using Elastos::Droid::View::CKeyCharacterMapHelper;
+using Elastos::Droid::View::CKeyEvent;
+using Elastos::Droid::View::CView;
+//TODO using Elastos::Droid::View::CViewHelper;
+using Elastos::Droid::View::IViewHelper;
+using Elastos::Droid::View::IViewConfiguration;
+using Elastos::Droid::View::CViewConfigurationHelper;
+using Elastos::Droid::View::IViewConfigurationHelper;
+using Elastos::Droid::View::CContextThemeWrapper;
+using Elastos::Droid::View::IContextThemeWrapper;
+using Elastos::Droid::View::CViewGroupLayoutParams;
+using Elastos::Droid::View::CWindowManagerLayoutParams;
+using Elastos::Droid::View::EIID_IActionModeCallback;
+using Elastos::Droid::View::EIID_IKeyEventCallback;
+using Elastos::Droid::View::EIID_IMenu;
+using Elastos::Droid::View::EIID_IWindow;
+using Elastos::Droid::View::IDispatcherState;
 using Elastos::Droid::Internal::View::EIID_IRootViewSurfaceTaker;
+using Elastos::Droid::Internal::View::Menu::IMenuPresenter;
+using Elastos::Droid::Internal::View::Menu::IMenuDialogHelper;
+using Elastos::Droid::Internal::View::Menu::CMenuDialogHelper;
+using Elastos::Droid::Internal::View::Menu::CListMenuPresenter;
+using Elastos::Droid::Internal::View::Menu::IListMenuPresenter;
+using Elastos::Droid::Internal::View::Menu::CIconMenuPresenter;
+using Elastos::Droid::Internal::View::Menu::IBaseMenuPresenter;
+using Elastos::Droid::Internal::View::StandaloneActionMode;
+//TODO using Elastos::Droid::Internal::Widget::CBackgroundFallback;
+using Elastos::Droid::Internal::Widget::IDecorContentParent;
+using Elastos::Droid::View::EIID_IView;
+using Elastos::Droid::View::EIID_IViewGroup;
+using Elastos::Droid::View::EIID_IViewManager;
+using Elastos::Droid::View::EIID_IViewParent;
+using Elastos::Droid::View::IGravity;
+using Elastos::Droid::View::IKeyCharacterMap;
+using Elastos::Droid::View::IKeyCharacterMapHelper;
+using Elastos::Droid::View::IKeyEventCallback;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::View::IViewManager;
+using Elastos::Droid::View::IViewParent;
+using Elastos::Droid::View::IViewStub;
+using Elastos::Droid::View::LayoutInflater;
+using Elastos::Droid::Internal::View::Menu::CContextMenuBuilder;
+using Elastos::Droid::Internal::View::Menu::CMenuBuilder;
+using Elastos::Droid::Internal::View::Menu::EIID_IMenuBuilder;
 using Elastos::Droid::Internal::View::Menu::EIID_IMenuBuilderCallback;
 using Elastos::Droid::Internal::View::Menu::EIID_IMenuPresenterCallback;
+using Elastos::Droid::Internal::View::Menu::IMenuBuilder;
+using Elastos::Droid::Internal::View::Menu::IMenuPresenterCallback;
+using Elastos::Droid::Internal::Widget::IAbsActionBarView;
 using Elastos::Droid::Internal::Widget::EIID_IOnDismissedListener;
 using Elastos::Droid::Internal::Widget::EIID_IOnSwipeProgressChangedListener;
-using Elastos::Droid::View::EIID_IActionModeCallback;
-using Elastos::Droid::Transition::CTransitionSet;
-using Elastos::Core::EIID_IRunnable;
+using Elastos::Droid::Widget::IAdapter;
+using Elastos::Droid::Widget::IFrameLayout;
+using Elastos::Droid::Widget::IListAdapter;
+using Elastos::Droid::Widget::EIID_IFrameLayout;
+using Elastos::Droid::Widget::CPopupWindow;
+//TODO using Elastos::Droid::Widget::Internal::CActionBarContextView;
+using Elastos::Droid::Internal::Widget::IActionBarContainer;
+using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::ServiceManager;
+using Elastos::Droid::Utility::CTypedValue;
+using Elastos::Droid::Utility::CTypedValueHelper;
+using Elastos::Droid::Utility::ITypedValueHelper;
+using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Droid::Utility::CSparseArray;
+using Elastos::IO::IInputStream;
+using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -18,1173 +166,751 @@ namespace Internal {
 namespace Policy {
 namespace Impl {
 
-//=====================================================================
-//                   PhoneWindow::WindowManagerHolder
-//=====================================================================
-AutoPtr<IIWindowManager> PhoneWindow::WindowManagerHolder::sWindowManager = PhoneWindow::WindowManagerHolder::MiddleInitSwindowmanager();
+// {45CF35EA-34D4-43a3-A1C7-2649411BAA61}
+//extern "C" const InterfaceID EIID_RootViewSurfaceTaker =
+//    {0x45cf35ea, 0x34d4, 0x43a3, {0xa1, 0xc7, 0x26, 0x49, 0x41, 0x1b, 0xaa, 0x61}};
 
-AutoPtr<IIWindowManager> PhoneWindow::WindowManagerHolder::MiddleInitSwindowmanager()
+// {eb327183-9b79-488c-b888-4b96d70cc2f5}
+///extern "C" const InterfaceID EIID_PhoneWindow =
+//        {0xeb327183,0x9b79,0x488c,{0xb8,0x88,0x4b,0x96,0xd7,0x0c,0xc2,0xf5}};
+
+AutoPtr<IIWindowManager> PhoneWindow::WindowManagerHolder::sWindowManager;
+
+String PhoneWindow::TAG("PhoneWindow");
+const Boolean PhoneWindow::SWEEP_OPEN_MENU = FALSE;
+
+const String PhoneWindow::FOCUSED_ID_TAG = String("android:focusedViewId");
+const String PhoneWindow::VIEWS_TAG = String("android:views");
+const String PhoneWindow::PANELS_TAG = String("android:Panels");
+const String PhoneWindow::ACTION_BAR_TAG = String("android:ActionBar");
+
+const Int32 PhoneWindow::DEFAULT_BACKGROUND_FADE_DURATION_MS;
+const Int32 PhoneWindow::CUSTOM_TITLE_COMPATIBLE_FEATURES = DEFAULT_FEATURES |
+                                        (1 << FEATURE_CUSTOM_TITLE) |
+                                        (1 << FEATURE_CONTENT_TRANSITIONS) |
+                                        (1 << FEATURE_ACTIVITY_TRANSITIONS) |
+                                        (1 << FEATURE_ACTION_MODE_OVERLAY);
+
+const Int32 PhoneWindow::FLAG_RESOURCE_SET_ICON;
+const Int32 PhoneWindow::FLAG_RESOURCE_SET_LOGO;
+const Int32 PhoneWindow::FLAG_RESOURCE_SET_ICON_FALLBACK;
+
+static AutoPtr<ITransition> InitUseDefault_Transition()
 {
-    // ==================before translated======================
-    // ->WWZ_SIGN: FUNC_CALL_START {
-    // ServiceManager.getService("window")
-    // ->WWZ_SIGN: FUNC_CALL_END }
-    assert(0);
-    AutoPtr<IIWindowManager> empty;
-    return empty;
+    AutoPtr<CTransitionSet> tmp;
+    CTransitionSet::NewByFriend((CTransitionSet**)&tmp);
+    return (ITransition*)tmp.Get();
 }
 
-//=====================================================================
-//               PhoneWindow::ActionMenuPresenterCallback
-//=====================================================================
-CAR_INTERFACE_IMPL(PhoneWindow::ActionMenuPresenterCallback, Object, IMenuPresenterCallback)
+AutoPtr<ITransition> PhoneWindow::USE_DEFAULT_TRANSITION = InitUseDefault_Transition();
 
-PhoneWindow::ActionMenuPresenterCallback::ActionMenuPresenterCallback(
-    /* [in] */ PhoneWindow* owner)
-    : mOwner(owner)
+static AutoPtr<IPhoneWindowRotationWatcher> InitStaticWatcher()
+{
+    AutoPtr<CPhoneWindowRotationWatcher> tmp;
+    CPhoneWindowRotationWatcher::NewByFriend((CPhoneWindowRotationWatcher**)&tmp);
+    return (IPhoneWindowRotationWatcher*)tmp.Get();
+}
+
+AutoPtr<IPhoneWindowRotationWatcher> PhoneWindow::sRotationWatcher = InitStaticWatcher();
+
+PhoneWindow::_DecorView::ShowActionModePopupRunnable::ShowActionModePopupRunnable(
+    /* [in] */ _DecorView* host)
+    : mHost(host)
 {
 }
 
-ECode PhoneWindow::ActionMenuPresenterCallback::OnOpenSubMenu(
-    /* [in] */ IMenuBuilder* subMenu,
-    /* [out] */ Boolean* result)
+ECode PhoneWindow::_DecorView::ShowActionModePopupRunnable::Run()
 {
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // Callback cb = getCallback();
-    // if (cb != null) {
-    //     cb.onMenuOpened(FEATURE_ACTION_BAR, subMenu);
-    //     return true;
-    // }
-    // return false;
-    assert(0);
-    return NOERROR;
+    AutoPtr<IBinder> token;
+    IView* amView = IView::Probe(mHost->mActionModeView);
+    amView->GetApplicationWindowToken((IBinder**)&token);
+    return mHost->mActionModePopup->ShowAtLocation(token,
+            IGravity::TOP | IGravity::FILL_HORIZONTAL, 0, 0);
 }
 
-ECode PhoneWindow::ActionMenuPresenterCallback::OnCloseMenu(
-    /* [in] */ IMenuBuilder* menu,
-    /* [in] */ Boolean allMenusAreClosing)
+CAR_INTERFACE_IMPL(PhoneWindow::_DecorView::ActionModeCallbackWrapper, Object, IActionModeCallback)
+
+PhoneWindow::_DecorView::ActionModeCallbackWrapper::ActionModeCallbackWrapper(
+    /* [in] */ IActionModeCallback* wrapped,
+    /* [in] */ _DecorView* host)
+    : mWrapped(wrapped)
+    , mHost(host)
 {
-    VALIDATE_NOT_NULL(menu);
-    // ==================before translated======================
-    // checkCloseActionMenu(menu);
-    assert(0);
-    return NOERROR;
 }
 
-//=====================================================================
-//          PhoneWindow::DecorView::ActionModeCallbackWrapper
-//=====================================================================
-CAR_INTERFACE_IMPL(PhoneWindow::DecorView, FrameLayout, IRootViewSurfaceTaker)
-
-CAR_INTERFACE_IMPL(PhoneWindow::DecorView::ActionModeCallbackWrapper, Object, IActionModeCallback)
-
-PhoneWindow::DecorView::ActionModeCallbackWrapper::ActionModeCallbackWrapper(
-    /* [in] */ DecorView* owner,
-    /* [in] */ IActionModeCallback* wrapped)
-{
-    // ==================before translated======================
-    mOwner = owner;
-    mWrapped = wrapped;
-}
-
-ECode PhoneWindow::DecorView::ActionModeCallbackWrapper::OnCreateActionMode(
+ECode PhoneWindow::_DecorView::ActionModeCallbackWrapper::OnCreateActionMode(
     /* [in] */ IActionMode* mode,
     /* [in] */ IMenu* menu,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(mode);
-    VALIDATE_NOT_NULL(menu);
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mWrapped.onCreateActionMode(mode, menu);
-    assert(0);
-    return NOERROR;
+    return mWrapped->OnCreateActionMode(mode, menu, result);
 }
 
-ECode PhoneWindow::DecorView::ActionModeCallbackWrapper::OnPrepareActionMode(
+ECode PhoneWindow::_DecorView::ActionModeCallbackWrapper::OnPrepareActionMode(
     /* [in] */ IActionMode* mode,
     /* [in] */ IMenu* menu,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(mode);
-    VALIDATE_NOT_NULL(menu);
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // requestFitSystemWindows();
-    // return mWrapped.onPrepareActionMode(mode, menu);
-    assert(0);
-    return NOERROR;
+    /* [out] */ Boolean* result) {
+    mHost->RequestFitSystemWindows();
+    return mWrapped->OnPrepareActionMode(mode, menu, result);
 }
 
-ECode PhoneWindow::DecorView::ActionModeCallbackWrapper::OnActionItemClicked(
+ECode PhoneWindow::_DecorView::ActionModeCallbackWrapper::OnActionItemClicked(
     /* [in] */ IActionMode* mode,
     /* [in] */ IMenuItem* item,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(mode);
-    VALIDATE_NOT_NULL(item);
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mWrapped.onActionItemClicked(mode, item);
-    assert(0);
-    return NOERROR;
+    return mWrapped->OnActionItemClicked(mode, item, result);
 }
 
-ECode PhoneWindow::DecorView::ActionModeCallbackWrapper::OnDestroyActionMode(
+ECode PhoneWindow::_DecorView::ActionModeCallbackWrapper::OnDestroyActionMode(
     /* [in] */ IActionMode* mode)
 {
-    VALIDATE_NOT_NULL(mode);
-    // ==================before translated======================
-    // mWrapped.onDestroyActionMode(mode);
-    // if (mActionModePopup != null) {
-    //     removeCallbacks(mShowActionModePopup);
-    //     mActionModePopup.dismiss();
-    // } else if (mActionModeView != null) {
-    //     mActionModeView.setVisibility(GONE);
-    // }
-    // if (mActionModeView != null) {
-    //     mActionModeView.removeAllViews();
-    // }
-    // if (getCallback() != null && !isDestroyed()) {
-    //     try {
-    //         getCallback().onActionModeFinished(mActionMode);
-    //     } catch (AbstractMethodError ame) {
-    //         // Older apps might not implement this callback method.
-    //     }
-    // }
-    // mActionMode = null;
-    // requestFitSystemWindows();
-    assert(0);
+    mWrapped->OnDestroyActionMode(mode);
+    if (mHost->mActionModePopup != NULL) {
+        Boolean res;
+        mHost->RemoveCallbacks(mHost->mShowActionModePopup, &res);
+        mHost->mActionModePopup->Dismiss();
+    } else if (mHost->mActionModeView != NULL) {
+        IView* amView = IView::Probe(mHost->mActionModeView);
+        amView->SetVisibility(IView::GONE);
+    }
+    if (mHost->mActionModeView != NULL) {
+        IViewGroup* amViewGroup = IViewGroup::Probe(mHost->mActionModeView);
+        amViewGroup->RemoveAllViews();
+    }
+
+    AutoPtr<IWindowCallback> cb = mHost->GetCallback();
+    if (cb != NULL && !mHost->IsDestroyed()) {
+        // try {
+        cb->OnActionModeFinished(mHost->mActionMode);
+        // } catch (AbstractMethodError ame) {
+        //     // Older apps might not implement this callback method.
+        // }
+    }
+
+    mHost->mActionMode = NULL;
+    mHost->RequestFitSystemWindows();
     return NOERROR;
 }
 
-//=====================================================================
-//                        PhoneWindow::DecorView
-//=====================================================================
-PhoneWindow::DecorView::DecorView(
-    /* [in] */ PhoneWindow* owner,
+//CAR_INTERFACE_IMPL_LIGHT(PhoneWindow::_DecorView::DecorViewWeakReferenceImpl, IWeakReference)
+//
+//PhoneWindow::_DecorView::DecorViewWeakReferenceImpl::DecorViewWeakReferenceImpl(
+//    /* [in] */ IInterface* object,
+//    /* [in] */ ElRefBase::WeakRefType* ref)
+//    : mObject(object)
+//    , mRef(ref)
+//{}
+//
+//PhoneWindow::_DecorView::DecorViewWeakReferenceImpl::~DecorViewWeakReferenceImpl()
+//{
+//    if (mRef) mRef->DecWeak(this);
+//}
+//
+//ECode PhoneWindow::_DecorView::DecorViewWeakReferenceImpl::Resolve(
+//    /* [in] */ const InterfaceID& riid,
+//    /* [out] */ IInterface** objectReference)
+//{
+//    *objectReference = NULL;
+//    if (mObject && mRef && mRef->AttemptIncStrong(objectReference)) {
+//        *objectReference = mObject->Probe(riid);
+//        REFCOUNT_ADD(*objectReference);
+//        ((DecorView*)(IFrameLayout*)mObject)->_Release();
+//    }
+//    return NOERROR;
+//}
+
+CAR_INTERFACE_IMPL(PhoneWindow::_DecorView, Object, IRootViewSurfaceTaker)
+
+PhoneWindow::_DecorView::_DecorView(
+    /* [in] */ PhoneWindow* host,
     /* [in] */ IContext* context,
     /* [in] */ Int32 featureId)
+    : mHost(host)
+    , mFeatureId(featureId)
+    , mChanging(FALSE)
+    , mWatchingForMenu(FALSE)
+    , mDownY(0)
+    , mLastTopInset(0)
+    , mLastBottomInset(0)
+    , mLastRightInset(0)
+    , mDefaultOpacity(IPixelFormat::OPAQUE)
 {
-    mOwner = owner;
-    // ==================before translated======================
-    // super(context);
-    // mFeatureId = featureId;
+    FrameLayout::constructor(context);
+    ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mDrawingBounds));
+    ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mBackgroundPadding));
+    ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mFramePadding));
+    ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mFrameOffsets));
+    //TODO CBackgroundFallback::New((IBackgroundFallback**)&mBackgroundFallback);
 }
 
-ECode PhoneWindow::DecorView::SetBackgroundFallback(
-    /* [in] */ Int32 resId)
+ECode PhoneWindow::_DecorView::WillYouTakeTheSurface(
+    /* [out] */ ISurfaceHolderCallback2** cback)
 {
-    // ==================before translated======================
-    // mBackgroundFallback.setDrawable(resId != 0 ? getContext().getDrawable(resId) : null);
-    // setWillNotDraw(getBackground() == null && !mBackgroundFallback.hasFallback());
-    assert(0);
+    VALIDATE_NOT_NULL(cback);
+    if (mFeatureId < 0) {
+        *cback = mHost->mTakeSurfaceCallback;
+        REFCOUNT_ADD(*cback);
+    }
+    else {
+        *cback = NULL;
+    }
+
     return NOERROR;
 }
 
-void PhoneWindow::DecorView::OnDraw(
-    /* [in] */ ICanvas* c)
-{
-    // ==================before translated======================
-    // super.onDraw(c);
-    // mBackgroundFallback.draw(mContentRoot, c, mContentParent);
-    assert(0);
-}
-
-ECode PhoneWindow::DecorView::DispatchKeyEvent(
-    /* [in] */ IKeyEvent* event,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // final int keyCode = event.getKeyCode();
-    // final int action = event.getAction();
-    // final boolean isDown = action == KeyEvent.ACTION_DOWN;
-    //
-    // if (isDown && (event.getRepeatCount() == 0)) {
-    //     // First handle chording of panel key: if a panel key is held
-    //     // but not released, try to execute a shortcut in it.
-    //     if ((mPanelChordingKey > 0) && (mPanelChordingKey != keyCode)) {
-    //         boolean handled = dispatchKeyShortcutEvent(event);
-    //         if (handled) {
-    //             return true;
-    //         }
-    //     }
-    //
-    //     // If a panel is open, perform a shortcut on it without the
-    //     // chorded panel key
-    //     if ((mPreparedPanel != null) && mPreparedPanel.isOpen) {
-    //         if (performPanelShortcut(mPreparedPanel, keyCode, event, 0)) {
-    //             return true;
-    //         }
-    //     }
-    // }
-    //
-    // if (!isDestroyed()) {
-    //     final Callback cb = getCallback();
-    //     final boolean handled = cb != null && mFeatureId < 0 ? cb.dispatchKeyEvent(event)
-    //             : super.dispatchKeyEvent(event);
-    //     if (handled) {
-    //         return true;
-    //     }
-    // }
-    //
-    // return isDown ? PhoneWindow.this.onKeyDown(mFeatureId, event.getKeyCode(), event)
-    //         : PhoneWindow.this.onKeyUp(mFeatureId, event.getKeyCode(), event);
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::DispatchKeyShortcutEvent(
-    /* [in] */ IKeyEvent* ev,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // // If the panel is already prepared, then perform the shortcut using it.
-    // boolean handled;
-    // if (mPreparedPanel != null) {
-    //     handled = performPanelShortcut(mPreparedPanel, ev.getKeyCode(), ev,
-    //             Menu.FLAG_PERFORM_NO_CLOSE);
-    //     if (handled) {
-    //         if (mPreparedPanel != null) {
-    //             mPreparedPanel.isHandled = true;
-    //         }
-    //         return true;
-    //     }
-    // }
-    //
-    // // Shortcut not handled by the panel.  Dispatch to the view hierarchy.
-    // final Callback cb = getCallback();
-    // handled = cb != null && !isDestroyed() && mFeatureId < 0
-    //         ? cb.dispatchKeyShortcutEvent(ev) : super.dispatchKeyShortcutEvent(ev);
-    // if (handled) {
-    //     return true;
-    // }
-    //
-    // // If the panel is not prepared, then we may be trying to handle a shortcut key
-    // // combination such as Control+C.  Temporarily prepare the panel then mark it
-    // // unprepared again when finished to ensure that the panel will again be prepared
-    // // the next time it is shown for real.
-    // if (mPreparedPanel == null) {
-    //     PanelFeatureState st = getPanelState(FEATURE_OPTIONS_PANEL, true);
-    //     preparePanel(st, ev);
-    //     handled = performPanelShortcut(st, ev.getKeyCode(), ev,
-    //             Menu.FLAG_PERFORM_NO_CLOSE);
-    //     st.isPrepared = false;
-    //     if (handled) {
-    //         return true;
-    //     }
-    // }
-    // return false;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::DispatchTouchEvent(
-    /* [in] */ IMotionEvent* ev,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // final Callback cb = getCallback();
-    // return cb != null && !isDestroyed() && mFeatureId < 0 ? cb.dispatchTouchEvent(ev)
-    //         : super.dispatchTouchEvent(ev);
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::DispatchTrackballEvent(
-    /* [in] */ IMotionEvent* ev,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // final Callback cb = getCallback();
-    // return cb != null && !isDestroyed() && mFeatureId < 0 ? cb.dispatchTrackballEvent(ev)
-    //         : super.dispatchTrackballEvent(ev);
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::DispatchGenericMotionEvent(
-    /* [in] */ IMotionEvent* ev,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // final Callback cb = getCallback();
-    // return cb != null && !isDestroyed() && mFeatureId < 0 ? cb.dispatchGenericMotionEvent(ev)
-    //         : super.dispatchGenericMotionEvent(ev);
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::SuperDispatchKeyEvent(
-    /* [in] */ IKeyEvent* event,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(event);
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // // Give priority to closing action modes if applicable.
-    // if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-    //     final int action = event.getAction();
-    //     // Back cancels action modes first.
-    //     if (mActionMode != null) {
-    //         if (action == KeyEvent.ACTION_UP) {
-    //             mActionMode.finish();
-    //         }
-    //         return true;
-    //     }
-    // }
-    //
-    // return super.dispatchKeyEvent(event);
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::SuperDispatchKeyShortcutEvent(
-    /* [in] */ IKeyEvent* event,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(event);
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return super.dispatchKeyShortcutEvent(event);
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::SuperDispatchTouchEvent(
-    /* [in] */ IMotionEvent* event,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(event);
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return super.dispatchTouchEvent(event);
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::SuperDispatchTrackballEvent(
-    /* [in] */ IMotionEvent* event,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(event);
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return super.dispatchTrackballEvent(event);
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::SuperDispatchGenericMotionEvent(
-    /* [in] */ IMotionEvent* event,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(event);
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return super.dispatchGenericMotionEvent(event);
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::DispatchApplyWindowInsets(
-    /* [in] */ IWindowInsets* insets,
-    /* [out] */ IWindowInsets** result)
-{
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // if (mOutsetBottom != null) {
-    //     final DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
-    //     int bottom = (int) mOutsetBottom.getDimension(metrics);
-    //     WindowInsets newInsets = insets.replaceSystemWindowInsets(
-    //             insets.getSystemWindowInsetLeft(), insets.getSystemWindowInsetTop(),
-    //             insets.getSystemWindowInsetRight(), bottom);
-    //     return super.dispatchApplyWindowInsets(newInsets);
-    // } else {
-    //     return super.dispatchApplyWindowInsets(insets);
-    // }
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::OnTouchEvent(
-    /* [in] */ IMotionEvent* event,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return onInterceptTouchEvent(event);
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::OnInterceptTouchEvent(
-    /* [in] */ IMotionEvent* event,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // int action = event.getAction();
-    // if (mFeatureId >= 0) {
-    //     if (action == MotionEvent.ACTION_DOWN) {
-    //         int x = (int)event.getX();
-    //         int y = (int)event.getY();
-    //         if (isOutOfBounds(x, y)) {
-    //             closePanel(mFeatureId);
-    //             return true;
-    //         }
-    //     }
-    // }
-    //
-    // if (!SWEEP_OPEN_MENU) {
-    //     return false;
-    // }
-    //
-    // if (mFeatureId >= 0) {
-    //     if (action == MotionEvent.ACTION_DOWN) {
-    //         Log.i(TAG, "Watchiing!");
-    //         mWatchingForMenu = true;
-    //         mDownY = (int) event.getY();
-    //         return false;
-    //     }
-    //
-    //     if (!mWatchingForMenu) {
-    //         return false;
-    //     }
-    //
-    //     int y = (int)event.getY();
-    //     if (action == MotionEvent.ACTION_MOVE) {
-    //         if (y > (mDownY+30)) {
-    //             Log.i(TAG, "Closing!");
-    //             closePanel(mFeatureId);
-    //             mWatchingForMenu = false;
-    //             return true;
-    //         }
-    //     } else if (action == MotionEvent.ACTION_UP) {
-    //         mWatchingForMenu = false;
-    //     }
-    //
-    //     return false;
-    // }
-    //
-    // //Log.i(TAG, "Intercept: action=" + action + " y=" + event.getY()
-    // //        + " (in " + getHeight() + ")");
-    //
-    // if (action == MotionEvent.ACTION_DOWN) {
-    //     int y = (int)event.getY();
-    //     if (y >= (getHeight()-5) && !hasChildren()) {
-    //         Log.i(TAG, "Watchiing!");
-    //         mWatchingForMenu = true;
-    //     }
-    //     return false;
-    // }
-    //
-    // if (!mWatchingForMenu) {
-    //     return false;
-    // }
-    //
-    // int y = (int)event.getY();
-    // if (action == MotionEvent.ACTION_MOVE) {
-    //     if (y < (getHeight()-30)) {
-    //         Log.i(TAG, "Opening!");
-    //         openPanel(FEATURE_OPTIONS_PANEL, new KeyEvent(
-    //                 KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MENU));
-    //         mWatchingForMenu = false;
-    //         return true;
-    //     }
-    // } else if (action == MotionEvent.ACTION_UP) {
-    //     mWatchingForMenu = false;
-    // }
-    //
-    // return false;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::SendAccessibilityEvent(
-    /* [in] */ Int32 eventType)
-{
-    // ==================before translated======================
-    // if (!AccessibilityManager.getInstance(mContext).isEnabled()) {
-    //     return;
-    // }
-    //
-    // // if we are showing a feature that should be announced and one child
-    // // make this child the event source since this is the feature itself
-    // // otherwise the callback will take over and announce its client
-    // if ((mFeatureId == FEATURE_OPTIONS_PANEL ||
-    //         mFeatureId == FEATURE_CONTEXT_MENU ||
-    //         mFeatureId == FEATURE_PROGRESS ||
-    //         mFeatureId == FEATURE_INDETERMINATE_PROGRESS)
-    //         && getChildCount() == 1) {
-    //     getChildAt(0).sendAccessibilityEvent(eventType);
-    // } else {
-    //     super.sendAccessibilityEvent(eventType);
-    // }
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::DispatchPopulateAccessibilityEvent(
-    /* [in] */ IAccessibilityEvent* event,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // final Callback cb = getCallback();
-    // if (cb != null && !isDestroyed()) {
-    //     if (cb.dispatchPopulateAccessibilityEvent(event)) {
-    //         return true;
-    //     }
-    // }
-    // return super.dispatchPopulateAccessibilityEvent(event);
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::Draw(
-    /* [in] */ ICanvas* canvas)
-{
-    VALIDATE_NOT_NULL(canvas);
-    // ==================before translated======================
-    // super.draw(canvas);
-    //
-    // if (mMenuBackground != null) {
-    //     mMenuBackground.draw(canvas);
-    // }
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::ShowContextMenuForChild(
-    /* [in] */ IView* originalView,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // // Reuse the context menu builder
-    // if (mContextMenu == null) {
-    //     mContextMenu = new ContextMenuBuilder(getContext());
-    //     mContextMenu.setCallback(mContextMenuCallback);
-    // } else {
-    //     mContextMenu.clearAll();
-    // }
-    //
-    // final MenuDialogHelper helper = mContextMenu.show(originalView,
-    //         originalView.getWindowToken());
-    // if (helper != null) {
-    //     helper.setPresenterCallback(mContextMenuCallback);
-    // } else if (mContextMenuHelper != null) {
-    //     // No menu to show, but if we have a menu currently showing it just became blank.
-    //     // Close it.
-    //     mContextMenuHelper.dismiss();
-    // }
-    // mContextMenuHelper = helper;
-    // return helper != null;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::StartActionModeForChild(
-    /* [in] */ IView* originalView,
-    /* [in] */ IActionModeCallback* callback,
-    /* [out] */ IActionMode** res)
-{
-    // ==================before translated======================
-    // // originalView can be used here to be sure that we don't obscure
-    // // relevant content with the context mode UI.
-    // return startActionMode(callback);
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::StartActionMode(
-        /* [in] */ IActionModeCallback* callback,
-        /* [out] */ IActionMode** res)
-{
-    // ==================before translated======================
-    // if (mActionMode != null) {
-    //     mActionMode.finish();
-    // }
-    //
-    // final ActionMode.Callback wrappedCallback = new ActionModeCallbackWrapper(callback);
-    // ActionMode mode = null;
-    // if (getCallback() != null && !isDestroyed()) {
-    //     try {
-    //         mode = getCallback().onWindowStartingActionMode(wrappedCallback);
-    //     } catch (AbstractMethodError ame) {
-    //         // Older apps might not implement this callback method.
-    //     }
-    // }
-    // if (mode != null) {
-    //     mActionMode = mode;
-    // } else {
-    //     if (mActionModeView == null) {
-    //         if (isFloating()) {
-    //             // Use the action bar theme.
-    //             final TypedValue outValue = new TypedValue();
-    //             final Theme baseTheme = mContext.getTheme();
-    //             baseTheme.resolveAttribute(R.attr.actionBarTheme, outValue, true);
-    //
-    //             final Context actionBarContext;
-    //             if (outValue.resourceId != 0) {
-    //                 final Theme actionBarTheme = mContext.getResources().newTheme();
-    //                 actionBarTheme.setTo(baseTheme);
-    //                 actionBarTheme.applyStyle(outValue.resourceId, true);
-    //
-    //                 actionBarContext = new ContextThemeWrapper(mContext, 0);
-    //                 actionBarContext.getTheme().setTo(actionBarTheme);
-    //             } else {
-    //                 actionBarContext = mContext;
-    //             }
-    //
-    //             mActionModeView = new ActionBarContextView(actionBarContext);
-    //             mActionModePopup = new PopupWindow(actionBarContext, null,
-    //                     R.attr.actionModePopupWindowStyle);
-    //             mActionModePopup.setWindowLayoutType(
-    //                     WindowManager.LayoutParams.TYPE_APPLICATION);
-    //             mActionModePopup.setContentView(mActionModeView);
-    //             mActionModePopup.setWidth(MATCH_PARENT);
-    //
-    //             actionBarContext.getTheme().resolveAttribute(
-    //                     R.attr.actionBarSize, outValue, true);
-    //             final int height = TypedValue.complexToDimensionPixelSize(outValue.data,
-    //                     actionBarContext.getResources().getDisplayMetrics());
-    //             mActionModeView.setContentHeight(height);
-    //             mActionModePopup.setHeight(WRAP_CONTENT);
-    //             mShowActionModePopup = new Runnable() {
-    //                 public void run() {
-    //                     mActionModePopup.showAtLocation(
-    //                             mActionModeView.getApplicationWindowToken(),
-    //                             Gravity.TOP | Gravity.FILL_HORIZONTAL, 0, 0);
-    //                 }
-    //             };
-    //         } else {
-    //             ViewStub stub = (ViewStub) findViewById(
-    //                     R.id.action_mode_bar_stub);
-    //             if (stub != null) {
-    //                 mActionModeView = (ActionBarContextView) stub.inflate();
-    //             }
-    //         }
-    //     }
-    //
-    //     if (mActionModeView != null) {
-    //         mActionModeView.killMode();
-    //         mode = new StandaloneActionMode(mActionModeView.getContext(), mActionModeView,
-    //                 wrappedCallback, mActionModePopup == null);
-    //         if (callback.onCreateActionMode(mode, mode.getMenu())) {
-    //             mode.invalidate();
-    //             mActionModeView.initForMode(mode);
-    //             mActionModeView.setVisibility(View.VISIBLE);
-    //             mActionMode = mode;
-    //             if (mActionModePopup != null) {
-    //                 post(mShowActionModePopup);
-    //             }
-    //             mActionModeView.sendAccessibilityEvent(
-    //                     AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
-    //         } else {
-    //             mActionMode = null;
-    //         }
-    //     }
-    // }
-    // if (mActionMode != null && getCallback() != null && !isDestroyed()) {
-    //     try {
-    //         getCallback().onActionModeStarted(mActionMode);
-    //     } catch (AbstractMethodError ame) {
-    //         // Older apps might not implement this callback method.
-    //     }
-    // }
-    // return mActionMode;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::StartChanging()
-{
-    // ==================before translated======================
-    // mChanging = true;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::FinishChanging()
-{
-    // ==================before translated======================
-    // mChanging = false;
-    // drawableChanged();
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::SetWindowBackground(
-    /* [in] */ IDrawable* drawable)
-{
-    VALIDATE_NOT_NULL(drawable);
-    // ==================before translated======================
-    // if (getBackground() != drawable) {
-    //     setBackgroundDrawable(drawable);
-    //     if (drawable != null) {
-    //         drawable.getPadding(mBackgroundPadding);
-    //     } else {
-    //         mBackgroundPadding.setEmpty();
-    //     }
-    //     drawableChanged();
-    // }
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::SetBackgroundDrawable(
-    /* [in] */ IDrawable* d)
-{
-    VALIDATE_NOT_NULL(d);
-    // ==================before translated======================
-    // super.setBackgroundDrawable(d);
-    // if (getWindowToken() != null) {
-    //     updateWindowResizeState();
-    // }
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::SetWindowFrame(
-    /* [in] */ IDrawable* drawable)
-{
-    VALIDATE_NOT_NULL(drawable);
-    // ==================before translated======================
-    // if (getForeground() != drawable) {
-    //     setForeground(drawable);
-    //     if (drawable != null) {
-    //         drawable.getPadding(mFramePadding);
-    //     } else {
-    //         mFramePadding.setEmpty();
-    //     }
-    //     drawableChanged();
-    // }
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::OnWindowSystemUiVisibilityChanged(
-    /* [in] */ Int32 visible)
-{
-    // ==================before translated======================
-    // updateColorViews(null /* insets */);
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::OnApplyWindowInsets(
-    /* [in] */ IWindowInsets* insets,
-    /* [out] */ IWindowInsets** result)
-{
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // mFrameOffsets.set(insets.getSystemWindowInsets());
-    // insets = updateColorViews(insets);
-    // insets = updateStatusGuard(insets);
-    // updateNavigationGuard(insets);
-    // if (getForeground() != null) {
-    //     drawableChanged();
-    // }
-    // return insets;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::IsTransitionGroup(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return false;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::OnWindowFocusChanged(
-    /* [in] */ Boolean hasWindowFocus)
-{
-    // ==================before translated======================
-    // super.onWindowFocusChanged(hasWindowFocus);
-    //
-    // // If the user is chording a menu shortcut, release the chord since
-    // // this window lost focus
-    // if (!hasWindowFocus && mPanelChordingKey != 0) {
-    //     closePanel(FEATURE_OPTIONS_PANEL);
-    // }
-    //
-    // final Callback cb = getCallback();
-    // if (cb != null && !isDestroyed() && mFeatureId < 0) {
-    //     cb.onWindowFocusChanged(hasWindowFocus);
-    // }
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::UpdateWindowResizeState()
-{
-    // ==================before translated======================
-    // Drawable bg = getBackground();
-    // hackTurnOffWindowResizeAnim(bg == null || bg.getOpacity()
-    //         != PixelFormat.OPAQUE);
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::OnCloseSystemDialogs(
-    /* [in] */ const String& reason)
-{
-    // ==================before translated======================
-    // if (mFeatureId >= 0) {
-    //     closeAllPanels();
-    // }
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::WillYouTakeTheSurface(
-    /* [out] */ ISurfaceHolderCallback2** result)
-{
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mFeatureId < 0 ? mTakeSurfaceCallback : null;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::WillYouTakeTheInputQueue(
-    /* [out] */ IInputQueueCallback** result)
-{
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mFeatureId < 0 ? mTakeInputQueueCallback : null;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DecorView::SetSurfaceType(
+ECode PhoneWindow::_DecorView::SetSurfaceType(
     /* [in] */ Int32 type)
 {
-    // ==================before translated======================
-    // PhoneWindow.this.setType(type);
-    assert(0);
-    return NOERROR;
+    return mHost->SetType(type);
 }
 
-ECode PhoneWindow::DecorView::SetSurfaceFormat(
+ECode PhoneWindow::_DecorView::SetSurfaceFormat(
     /* [in] */ Int32 format)
 {
-    // ==================before translated======================
-    // PhoneWindow.this.setFormat(format);
-    assert(0);
-    return NOERROR;
+    return mHost->SetFormat(format);
 }
 
-ECode PhoneWindow::DecorView::SetSurfaceKeepScreenOn(
+ECode PhoneWindow::_DecorView::SetSurfaceKeepScreenOn(
     /* [in] */ Boolean keepOn)
 {
-    // ==================before translated======================
-    // if (keepOn) PhoneWindow.this.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-    // else PhoneWindow.this.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-    assert(0);
+    if (keepOn) {
+        mHost->AddFlags(IWindowManagerLayoutParams::FLAG_KEEP_SCREEN_ON);
+    }
+    else {
+        mHost->ClearFlags(IWindowManagerLayoutParams::FLAG_KEEP_SCREEN_ON);
+    }
+
     return NOERROR;
 }
 
-Boolean PhoneWindow::DecorView::SetFrame(
-    /* [in] */ Int32 l,
-    /* [in] */ Int32 t,
-    /* [in] */ Int32 r,
-    /* [in] */ Int32 b)
+ECode PhoneWindow::_DecorView::WillYouTakeTheInputQueue(
+    /* [out] */ IInputQueueCallback** inputQueueCallback)
 {
-    // ==================before translated======================
-    // boolean changed = super.setFrame(l, t, r, b);
-    // if (changed) {
-    //     final Rect drawingBounds = mDrawingBounds;
-    //     getDrawingRect(drawingBounds);
-    //
-    //     Drawable fg = getForeground();
-    //     if (fg != null) {
-    //         final Rect frameOffsets = mFrameOffsets;
-    //         drawingBounds.left += frameOffsets.left;
-    //         drawingBounds.top += frameOffsets.top;
-    //         drawingBounds.right -= frameOffsets.right;
-    //         drawingBounds.bottom -= frameOffsets.bottom;
-    //         fg.setBounds(drawingBounds);
-    //         final Rect framePadding = mFramePadding;
-    //         drawingBounds.left += framePadding.left - frameOffsets.left;
-    //         drawingBounds.top += framePadding.top - frameOffsets.top;
-    //         drawingBounds.right -= framePadding.right - frameOffsets.right;
-    //         drawingBounds.bottom -= framePadding.bottom - frameOffsets.bottom;
-    //     }
-    //
-    //     Drawable bg = getBackground();
-    //     if (bg != null) {
-    //         bg.setBounds(drawingBounds);
-    //     }
-    //
-    //     if (SWEEP_OPEN_MENU) {
-    //         if (mMenuBackground == null && mFeatureId < 0
-    //                 && getAttributes().height
-    //                 == WindowManager.LayoutParams.MATCH_PARENT) {
-    //             mMenuBackground = getContext().getDrawable(
-    //                     R.drawable.menu_background);
-    //         }
-    //         if (mMenuBackground != null) {
-    //             mMenuBackground.setBounds(drawingBounds.left,
-    //                     drawingBounds.bottom-6, drawingBounds.right,
-    //                     drawingBounds.bottom+20);
-    //         }
-    //     }
-    // }
-    // return changed;
-    assert(0);
-    return FALSE;
-}
+    VALIDATE_NOT_NULL(inputQueueCallback);
+    if (mFeatureId < 0) {
+        *inputQueueCallback = mHost->mTakeInputQueueCallback;
+        REFCOUNT_ADD(*inputQueueCallback);
+    }
+    else {
+        *inputQueueCallback = NULL;
+    }
 
-void PhoneWindow::DecorView::OnMeasure(
-    /* [in] */ Int32 widthMeasureSpec,
-    /* [in] */ Int32 heightMeasureSpec)
-{
-    // ==================before translated======================
-    // final DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
-    // final boolean isPortrait = metrics.widthPixels < metrics.heightPixels;
-    //
-    // final int widthMode = getMode(widthMeasureSpec);
-    // final int heightMode = getMode(heightMeasureSpec);
-    //
-    // boolean fixedWidth = false;
-    // if (widthMode == AT_MOST) {
-    //     final TypedValue tvw = isPortrait ? mFixedWidthMinor : mFixedWidthMajor;
-    //     if (tvw != null && tvw.type != TypedValue.TYPE_NULL) {
-    //         final int w;
-    //         if (tvw.type == TypedValue.TYPE_DIMENSION) {
-    //             w = (int) tvw.getDimension(metrics);
-    //         } else if (tvw.type == TypedValue.TYPE_FRACTION) {
-    //             w = (int) tvw.getFraction(metrics.widthPixels, metrics.widthPixels);
-    //         } else {
-    //             w = 0;
-    //         }
-    //
-    //         if (w > 0) {
-    //             final int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-    //             widthMeasureSpec = MeasureSpec.makeMeasureSpec(
-    //                     Math.min(w, widthSize), EXACTLY);
-    //             fixedWidth = true;
-    //         }
-    //     }
-    // }
-    //
-    // if (heightMode == AT_MOST) {
-    //     final TypedValue tvh = isPortrait ? mFixedHeightMajor : mFixedHeightMinor;
-    //     if (tvh != null && tvh.type != TypedValue.TYPE_NULL) {
-    //         final int h;
-    //         if (tvh.type == TypedValue.TYPE_DIMENSION) {
-    //             h = (int) tvh.getDimension(metrics);
-    //         } else if (tvh.type == TypedValue.TYPE_FRACTION) {
-    //             h = (int) tvh.getFraction(metrics.heightPixels, metrics.heightPixels);
-    //         } else {
-    //             h = 0;
-    //         }
-    //         if (h > 0) {
-    //             final int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-    //             heightMeasureSpec = MeasureSpec.makeMeasureSpec(
-    //                     Math.min(h, heightSize), EXACTLY);
-    //         }
-    //     }
-    // }
-    //
-    // if (mOutsetBottom != null) {
-    //     int mode = MeasureSpec.getMode(heightMeasureSpec);
-    //     if (mode != MeasureSpec.UNSPECIFIED) {
-    //         int outset = (int) mOutsetBottom.getDimension(metrics);
-    //         int height = MeasureSpec.getSize(heightMeasureSpec);
-    //         heightMeasureSpec = MeasureSpec.makeMeasureSpec(height + outset, mode);
-    //     }
-    // }
-    //
-    // super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    //
-    // int width = getMeasuredWidth();
-    // boolean measure = false;
-    //
-    // widthMeasureSpec = MeasureSpec.makeMeasureSpec(width, EXACTLY);
-    //
-    // if (!fixedWidth && widthMode == AT_MOST) {
-    //     final TypedValue tv = isPortrait ? mMinWidthMinor : mMinWidthMajor;
-    //     if (tv.type != TypedValue.TYPE_NULL) {
-    //         final int min;
-    //         if (tv.type == TypedValue.TYPE_DIMENSION) {
-    //             min = (int)tv.getDimension(metrics);
-    //         } else if (tv.type == TypedValue.TYPE_FRACTION) {
-    //             min = (int)tv.getFraction(metrics.widthPixels, metrics.widthPixels);
-    //         } else {
-    //             min = 0;
-    //         }
-    //
-    //         if (width < min) {
-    //             widthMeasureSpec = MeasureSpec.makeMeasureSpec(min, EXACTLY);
-    //             measure = true;
-    //         }
-    //     }
-    // }
-    //
-    // // TODO: Support height?
-    //
-    // if (measure) {
-    //     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    // }
-    assert(0);
-}
-
-ECode PhoneWindow::DecorView::OnAttachedToWindow()
-{
-    // ==================before translated======================
-    // super.onAttachedToWindow();
-    //
-    // updateWindowResizeState();
-    //
-    // final Callback cb = getCallback();
-    // if (cb != null && !isDestroyed() && mFeatureId < 0) {
-    //     cb.onAttachedToWindow();
-    // }
-    //
-    // if (mFeatureId == -1) {
-    //     /*
-    //      * The main window has been attached, try to restore any panels
-    //      * that may have been open before. This is called in cases where
-    //      * an activity is being killed for configuration change and the
-    //      * menu was open. When the activity is recreated, the menu
-    //      * should be shown again.
-    //      */
-    //     openPanelsAfterRestore();
-    // }
-    assert(0);
     return NOERROR;
 }
 
-ECode PhoneWindow::DecorView::OnDetachedFromWindow()
+ECode PhoneWindow::_DecorView::StartChanging()
 {
-    // ==================before translated======================
-    // super.onDetachedFromWindow();
-    //
-    // final Callback cb = getCallback();
-    // if (cb != null && mFeatureId < 0) {
-    //     cb.onDetachedFromWindow();
-    // }
-    //
-    // if (mDecorContentParent != null) {
-    //     mDecorContentParent.dismissPopups();
-    // }
-    //
-    // if (mActionModePopup != null) {
-    //     removeCallbacks(mShowActionModePopup);
-    //     if (mActionModePopup.isShowing()) {
-    //         mActionModePopup.dismiss();
-    //     }
-    //     mActionModePopup = null;
-    // }
-    //
-    // PanelFeatureState st = getPanelState(FEATURE_OPTIONS_PANEL, false);
-    // if (st != null && st.menu != null && mFeatureId < 0) {
-    //     st.menu.close();
-    // }
-    assert(0);
+    mChanging = TRUE;
     return NOERROR;
 }
 
-Boolean PhoneWindow::DecorView::IsOutOfBounds(
+ECode PhoneWindow::_DecorView::FinishChanging()
+{
+    mChanging = FALSE;
+    DrawableChanged();
+    return NOERROR;
+}
+
+ECode PhoneWindow::_DecorView::SetWindowBackground(
+    /* [in] */ IDrawable* drawable)
+{
+    AutoPtr<IDrawable> bg;
+    GetBackground((IDrawable**)&bg);
+    if (bg.Get() != drawable) {
+        SetBackgroundDrawable(drawable);
+        if (drawable != NULL) {
+            Boolean result;
+            drawable->GetPadding((IRect*)mBackgroundPadding.Get(), &result);
+        } else {
+            mBackgroundPadding->SetEmpty();
+        }
+        DrawableChanged();
+    }
+    return NOERROR;
+}
+
+ECode PhoneWindow::_DecorView::SetBackgroundDrawable(
+    /* [in] */ IDrawable* d)
+{
+    FrameLayout::SetBackgroundDrawable(d);
+    AutoPtr<IBinder> token;
+    GetWindowToken((IBinder**)&token);
+    if (token != NULL) {
+        UpdateWindowResizeState();
+    }
+
+    return NOERROR;
+}
+
+ECode PhoneWindow::_DecorView::SetBackgroundFallback(
+    /* [in] */ Int32 resId)
+{
+    AutoPtr<IDrawable> drawable;
+    if (resId != 0)
+    {
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
+        context->GetDrawable(resId, (IDrawable**)&drawable);
+    }
+    mBackgroundFallback->SetDrawable(drawable);
+    AutoPtr<IDrawable> bg;
+    GetBackground((IDrawable**)&bg);
+    Boolean hasFallback;
+    mBackgroundFallback->HasFallback(&hasFallback);
+    SetWillNotDraw(bg == NULL && !hasFallback);
+    return NOERROR;
+}
+
+void PhoneWindow::_DecorView::OnDraw(
+    /* [in] */ ICanvas* c)
+{
+    FrameLayout::OnDraw(c);
+    mBackgroundFallback->Draw(mHost->mContentRoot, c, IView::Probe(mHost->mContentParent));
+}
+
+ECode PhoneWindow::_DecorView::SetWindowFrame(
+    /* [in] */ IDrawable* drawable)
+{
+    AutoPtr<IDrawable> bg;
+    GetBackground((IDrawable**)&bg);
+    if (bg.Get() != drawable) {
+        SetForeground(drawable);
+        if (drawable != NULL) {
+            Boolean result;
+            drawable->GetPadding((IRect*)mFramePadding.Get(), &result);
+        } else {
+            mFramePadding->SetEmpty();
+        }
+        DrawableChanged();
+    }
+    return NOERROR;
+}
+
+ECode PhoneWindow::_DecorView::OnWindowSystemUiVisibilityChanged(
+    /* [in] */ Int32 visible)
+{
+    UpdateColorViews(NULL/* insets */);
+    return NOERROR;
+}
+
+// @Override IView
+ECode PhoneWindow::_DecorView::OnApplyWindowInsets(
+    /* [in] */ IWindowInsets* insets,
+    /* [out] */ IWindowInsets** result)
+{
+    AutoPtr<IRect> swInsets;
+    insets->GetSystemWindowInsets((IRect**)&swInsets);
+    mFrameOffsets->Set(swInsets);
+    insets = UpdateColorViews(insets);
+    insets = UpdateStatusGuard(insets);
+    UpdateNavigationGuard(insets);
+    AutoPtr<IDrawable> drawable;
+    GetForeground((IDrawable**)&drawable);
+    if (drawable != NULL) {
+        DrawableChanged();
+    }
+    *result = insets;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+// @Override ViewGroup
+ECode PhoneWindow::_DecorView::IsTransitionGroup(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
+    return NOERROR;
+}
+
+ECode PhoneWindow::_DecorView::DispatchKeyEvent(
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    Int32 keyCode, action;
+    event->GetKeyCode(&keyCode);
+    event->GetAction(&action);
+    Boolean isDown = action == IKeyEvent::ACTION_DOWN;
+
+    Int32 repeat = 0;
+
+    if (isDown && (event->GetRepeatCount(&repeat), repeat) == 0) {
+        // First handle chording of panel key: if a panel key is held
+        // but not released, try to execute a shortcut in it.
+        if ((mHost->mPanelChordingKey > 0) && (mHost->mPanelChordingKey != keyCode)) {
+            Boolean handled;
+            DispatchKeyShortcutEvent(event, &handled);
+            if (handled) {
+                *result = TRUE;
+                return NOERROR;
+            }
+        }
+
+        // If a panel is open, perform a shortcut on it without the
+        // chorded panel key
+        if ((mHost->mPreparedPanel != NULL) && mHost->mPreparedPanel->mIsOpen) {
+            if (mHost->PerformPanelShortcut(mHost->mPreparedPanel, keyCode, event, 0)) {
+                *result = TRUE;
+                return NOERROR;
+            }
+        }
+    }
+
+    if (!IsDestroyed()) {
+        AutoPtr<IWindowCallback> cb;
+        mHost->GetCallback((IWindowCallback**)&cb);
+
+        Boolean handled = FALSE;
+        if (cb != NULL && mFeatureId < 0) {
+            cb->DispatchKeyEvent(event, &handled);
+        }
+        else {
+            FrameLayout::DispatchKeyEvent(event, &handled);
+        }
+
+        if (handled) {
+            *result = TRUE;
+            return NOERROR;
+        }
+    }
+
+    *result = isDown ? mHost->OnKeyDown(mFeatureId, keyCode, event)
+            : mHost->OnKeyUp(mFeatureId, keyCode, event);
+    return NOERROR;
+}
+
+ECode PhoneWindow::_DecorView::DispatchKeyShortcutEvent(
+    /* [in] */ IKeyEvent* ev,
+    /* [out] */ Boolean *result)
+{
+    VALIDATE_NOT_NULL(result);
+    // If the panel is already prepared, then perform the shortcut using it.
+    Boolean handled = FALSE;
+    if (mHost->mPreparedPanel != NULL) {
+        Int32 keyCode = 0;
+        ev->GetKeyCode(&keyCode);
+        handled = mHost->PerformPanelShortcut(mHost->mPreparedPanel, keyCode, ev,
+                IMenu::FLAG_PERFORM_NO_CLOSE);
+        if (handled) {
+            if (mHost->mPreparedPanel != NULL) {
+                mHost->mPreparedPanel->mIsHandled = TRUE;
+            }
+            *result = TRUE;
+            return NOERROR;
+        }
+    }
+
+    // Shortcut not handled by the panel.  Dispatch to the view hierarchy.
+    AutoPtr<IWindowCallback> cb;
+    mHost->GetCallback((IWindowCallback**)&cb);
+
+    if (cb != NULL && !IsDestroyed() && mFeatureId < 0) {
+        cb->DispatchKeyShortcutEvent(ev, &handled);
+    }
+    else {
+        FrameLayout::DispatchKeyShortcutEvent(ev, &handled);
+    }
+
+    if (handled) {
+        *result = TRUE;
+        return NOERROR;
+    }
+
+    // If the panel is not prepared, then we may be trying to handle a shortcut key
+    // combination such as Control+C.  Temporarily prepare the panel then mark it
+    // unprepared again when finished to ensure that the panel will again be prepared
+    // the next time it is shown for real.
+    if (mHost->mPreparedPanel == NULL) {
+        AutoPtr<PanelFeatureState> st;
+        ECode ec = mHost->GetPanelState(FEATURE_OPTIONS_PANEL, TRUE, (PanelFeatureState**)&st);
+        if (FAILED(ec))
+        {
+            *result = FALSE;
+            return NOERROR;
+        }
+
+        Boolean tmp = FALSE;
+        mHost->PreparePanel(st, ev, &tmp);
+
+        Int32 keyCode = 0;
+        ev->GetKeyCode(&keyCode);
+        handled = mHost->PerformPanelShortcut(st, keyCode, ev,
+                IMenu::FLAG_PERFORM_NO_CLOSE);
+        st->mIsPrepared = FALSE;
+        if (handled) {
+            *result = TRUE;
+            return NOERROR;
+        }
+    }
+
+    *result = FALSE;
+    return NOERROR;
+}
+
+ECode PhoneWindow::_DecorView::DispatchTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean *result)
+{
+    VALIDATE_NOT_NULL(result);
+    AutoPtr<IWindowCallback> cb;
+    mHost->GetCallback((IWindowCallback**)&cb);
+
+    Boolean handled = FALSE;
+    if (cb != NULL && !IsDestroyed() && mFeatureId < 0) {
+        cb->DispatchTouchEvent(event, &handled);
+    }
+    else {
+        FrameLayout::DispatchTouchEvent(event, &handled);
+    }
+
+    *result = handled;
+    return NOERROR;
+}
+
+ECode PhoneWindow::_DecorView::DispatchTrackballEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    AutoPtr<IWindowCallback> cb;
+    mHost->GetCallback((IWindowCallback**)&cb);
+
+    Boolean handled = FALSE;
+    if (cb != NULL && !IsDestroyed() && mFeatureId < 0) {
+        cb->DispatchTrackballEvent(event, &handled);
+    }
+    else {
+        FrameLayout::DispatchTrackballEvent(event, &handled);
+    }
+
+    *result = handled;
+    return NOERROR;
+}
+
+ECode PhoneWindow::_DecorView::DispatchGenericMotionEvent(
+    /* [in] */ IMotionEvent* ev,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    AutoPtr<IWindowCallback> cb;
+    mHost->GetCallback((IWindowCallback**)&cb);
+
+    if (cb != NULL && !IsDestroyed() && mFeatureId < 0) {
+        Boolean ret = FALSE;
+        cb->DispatchGenericMotionEvent(ev, &ret);
+        *result = ret;
+        return NOERROR;
+    }
+
+    return FrameLayout::DispatchGenericMotionEvent(ev, result);
+}
+
+ECode PhoneWindow::_DecorView::SuperDispatchKeyEvent(
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    // Give priority to closing action modes if applicable.
+    Int32 keyCode;
+    event->GetKeyCode(&keyCode);
+    if (keyCode == IKeyEvent::KEYCODE_BACK)
+    {
+        Int32 action;
+        event->GetAction(&action);
+        // Back cancels action modes first.
+        if (mActionMode != NULL) {
+            if (action == IKeyEvent::ACTION_UP) {
+                mActionMode->Finish();
+            }
+            return TRUE;
+        }
+    }
+    return FrameLayout::DispatchKeyEvent(event, result);
+}
+
+ECode PhoneWindow::_DecorView::SuperDispatchTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return FrameLayout::DispatchTouchEvent(event, result);
+}
+
+ECode PhoneWindow::_DecorView::SuperDispatchTrackballEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return FrameLayout::DispatchTrackballEvent(event, result);
+}
+
+ECode PhoneWindow::_DecorView::SuperDispatchGenericMotionEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return FrameLayout::DispatchGenericMotionEvent(event, result);
+}
+
+ECode PhoneWindow::_DecorView::SuperDispatchKeyShortcutEvent(
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return FrameLayout::DispatchKeyShortcutEvent(event, result);
+}
+ECode PhoneWindow::_DecorView::DispatchApplyWindowInsets(
+    /* [in] */ IWindowInsets* insets,
+    /* [out] */ IWindowInsets** result)
+{
+    VALIDATE_NOT_NULL(result);
+    if (mHost->mOutsetBottom != NULL) {
+        AutoPtr<IDisplayMetrics> metrics;
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
+        AutoPtr<IResources> resources;
+        context->GetResources((IResources**)&resources);
+        resources->GetDisplayMetrics((IDisplayMetrics**)&metrics);
+        Float tmp;
+        mHost->mOutsetBottom->GetDimension(metrics, &tmp);
+        Int32 bottom = (Int32)tmp;
+        AutoPtr<IWindowInsets> newInsets;
+        Int32 left;
+        insets->GetSystemWindowInsetLeft(&left);
+        Int32 top;
+        insets->GetSystemWindowInsetTop(&top);
+        Int32 right;
+        insets->GetSystemWindowInsetRight(&right);
+        insets->ReplaceSystemWindowInsets(left, top, right, bottom, (IWindowInsets**)&newInsets);
+        return FrameLayout::DispatchApplyWindowInsets(newInsets, result);
+    } else {
+        return FrameLayout::DispatchApplyWindowInsets(insets, result);
+    }
+    return NOERROR;
+}
+
+ECode PhoneWindow::_DecorView::OnTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    return OnInterceptTouchEvent(event, result);
+}
+
+Boolean PhoneWindow::_DecorView::IsOutOfBounds(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
-    // ==================before translated======================
-    // return x < -5 || y < -5 || x > (getWidth() + 5)
-    //         || y > (getHeight() + 5);
-    assert(0);
-    return FALSE;
+    Int32 width;
+    Int32 height;
+    FrameLayout::GetWidth(&width);
+    FrameLayout::GetHeight(&height);
+    return x < -5 || y < -5 || x > (width + 5)
+        || y > (height + 5);
 }
 
-AutoPtr<IWindowInsets> PhoneWindow::DecorView::UpdateColorViews(
+AutoPtr<IWindowInsets> PhoneWindow::_DecorView::UpdateColorViews(
     /* [in] */ IWindowInsets* insets)
 {
-    // ==================before translated======================
-    // WindowManager.LayoutParams attrs = getAttributes();
-    // int sysUiVisibility = attrs.systemUiVisibility | getWindowSystemUiVisibility();
-    //
-    // if (!mIsFloating && ActivityManager.isHighEndGfx()) {
-    //     if (insets != null) {
-    //         mLastTopInset = Math.min(insets.getStableInsetTop(),
-    //                 insets.getSystemWindowInsetTop());
-    //         mLastBottomInset = Math.min(insets.getStableInsetBottom(),
-    //                 insets.getSystemWindowInsetBottom());
-    //         mLastRightInset = Math.min(insets.getStableInsetRight(),
-    //                 insets.getSystemWindowInsetRight());
-    //     }
-    //     mStatusColorView = updateColorViewInt(mStatusColorView, sysUiVisibility,
-    //             SYSTEM_UI_FLAG_FULLSCREEN, FLAG_TRANSLUCENT_STATUS,
-    //             mStatusBarColor, mLastTopInset, Gravity.TOP,
-    //             STATUS_BAR_BACKGROUND_TRANSITION_NAME,
-    //             com.android.internal.R.id.statusBarBackground,
-    //             (getAttributes().flags & FLAG_FULLSCREEN) != 0);
-    //     mNavigationColorView = updateColorViewInt(mNavigationColorView, sysUiVisibility,
-    //             SYSTEM_UI_FLAG_HIDE_NAVIGATION, FLAG_TRANSLUCENT_NAVIGATION,
-    //             mNavigationBarColor, mLastBottomInset, Gravity.BOTTOM,
-    //             NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME,
-    //             com.android.internal.R.id.navigationBarBackground,
-    //             false /* hiddenByWindowFlag */);
-    // }
-    //
-    // // When we expand the window with FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS, we still need
-    // // to ensure that the rest of the view hierarchy doesn't notice it, unless they've
-    // // explicitly asked for it.
-    //
-    // boolean consumingNavBar =
-    //         (attrs.flags & FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS) != 0
-    //                 && (sysUiVisibility & SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION) == 0
-    //                 && (sysUiVisibility & SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
-    //
-    // int consumedRight = consumingNavBar ? mLastRightInset : 0;
-    // int consumedBottom = consumingNavBar ? mLastBottomInset : 0;
-    //
-    // if (mContentRoot != null
-    //         && mContentRoot.getLayoutParams() instanceof MarginLayoutParams) {
-    //     MarginLayoutParams lp = (MarginLayoutParams) mContentRoot.getLayoutParams();
-    //     if (lp.rightMargin != consumedRight || lp.bottomMargin != consumedBottom) {
-    //         lp.rightMargin = consumedRight;
-    //         lp.bottomMargin = consumedBottom;
-    //         mContentRoot.setLayoutParams(lp);
-    //
-    //         if (insets == null) {
-    //             // The insets have changed, but we're not currently in the process
-    //             // of dispatching them.
-    //             requestApplyInsets();
-    //         }
-    //     }
-    //     if (insets != null) {
-    //         insets = insets.replaceSystemWindowInsets(
-    //                 insets.getSystemWindowInsetLeft(),
-    //                 insets.getSystemWindowInsetTop(),
-    //                 insets.getSystemWindowInsetRight() - consumedRight,
-    //                 insets.getSystemWindowInsetBottom() - consumedBottom);
-    //     }
-    // }
-    //
-    // if (insets != null) {
-    //     insets = insets.consumeStableInsets();
-    // }
-    // return insets;
-    assert(0);
-    AutoPtr<IWindowInsets> empty;
-    return empty;
+    AutoPtr<IWindowManagerLayoutParams> attrs;
+    mHost->GetAttributes((IWindowManagerLayoutParams**)&attrs);
+    Int32 sysUiVisibility;
+    attrs->GetSystemUiVisibility(&sysUiVisibility);
+    Int32 winSysUiVisibility;
+    GetWindowSystemUiVisibility(&winSysUiVisibility);
+    sysUiVisibility |=  winSysUiVisibility;
+
+    Boolean isHighEndGfx;
+    AutoPtr<IActivityManagerHelper> amHelper;
+    CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&amHelper);
+    amHelper->IsHighEndGfx(&isHighEndGfx);
+    if (!mHost->mIsFloating && isHighEndGfx) {
+        if (insets != NULL) {
+            Int32 i1, i2;
+            insets->GetStableInsetTop(&i1);
+            insets->GetSystemWindowInsetTop(&i2);
+            mLastTopInset = Elastos::Core::Math::Min(i1, i2);
+            insets->GetStableInsetBottom(&i1);
+            insets->GetSystemWindowInsetBottom(&i2);
+            mLastBottomInset = Elastos::Core::Math::Min(i1, i2);
+            insets->GetStableInsetRight(&i1);
+            insets->GetSystemWindowInsetRight(&i2);
+            mLastRightInset = Elastos::Core::Math::Min(i1, i2);
+        }
+        Int32 flags;
+        mHost->GetAttributes((IWindowManagerLayoutParams**)&attrs);
+        attrs->GetFlags(&flags);
+        mStatusColorView = UpdateColorViewInt(mStatusColorView, sysUiVisibility,
+                SYSTEM_UI_FLAG_FULLSCREEN, IWindowManagerLayoutParams::FLAG_TRANSLUCENT_STATUS,
+                mHost->mStatusBarColor, mLastTopInset, IGravity::TOP,
+                STATUS_BAR_BACKGROUND_TRANSITION_NAME,
+                R::id::statusBarBackground,
+                (flags & IWindowManagerLayoutParams::FLAG_FULLSCREEN) != 0);
+        mNavigationColorView = UpdateColorViewInt(mNavigationColorView, sysUiVisibility,
+                SYSTEM_UI_FLAG_HIDE_NAVIGATION, IWindowManagerLayoutParams::FLAG_TRANSLUCENT_NAVIGATION,
+                mHost->mNavigationBarColor, mLastBottomInset, IGravity::BOTTOM,
+                NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME,
+                R::id::navigationBarBackground,
+                false /* hiddenByWindowFlag */);
+    }
+
+    // When we expand the window with FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS, we still need
+    // to ensure that the rest of the view hierarchy doesn't notice it, unless they've
+    // explicitly asked for it.
+
+    Int32 flags;
+    attrs->GetFlags(&flags);
+    Boolean consumingNavBar =
+        (flags & IWindowManagerLayoutParams::FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS) != 0
+        && (sysUiVisibility & SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION) == 0
+        && (sysUiVisibility & SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
+
+    Int32 consumedRight = consumingNavBar ? mLastRightInset : 0;
+    Int32 consumedBottom = consumingNavBar ? mLastBottomInset : 0;
+
+    AutoPtr<IViewGroupLayoutParams> vglParams;
+    IView::Probe(mHost->mContentRoot)->GetLayoutParams((IViewGroupLayoutParams**)&vglParams);
+    IViewGroupMarginLayoutParams* lp = IViewGroupMarginLayoutParams::Probe(vglParams);
+    if (mHost->mContentRoot != NULL
+            && lp != NULL) {
+        Int32 right;
+        lp->GetRightMargin(&right);
+        Int32 bottom;
+        lp->GetBottomMargin(&bottom);
+        if (right != consumedRight || bottom != consumedBottom) {
+            lp->SetRightMargin(consumedRight);
+            lp->SetBottomMargin(consumedRight);
+            IView::Probe(mHost->mContentRoot)->SetLayoutParams(vglParams);
+
+            if (insets == NULL) {
+                // The insets have changed, but we're not currently in the process
+                // of dispatching them.
+                RequestApplyInsets();
+            }
+        }
+        if (insets != NULL) {
+            AutoPtr<IWindowInsets> tmp;
+            Int32 l,t,r,b;
+            insets->GetSystemWindowInsetLeft(&l);
+            insets->GetSystemWindowInsetTop(&t);
+            insets->GetSystemWindowInsetRight(&r);
+            insets->GetSystemWindowInsetBottom(&b);
+            insets->ReplaceSystemWindowInsets(l, t, r - consumedRight, b - consumedBottom, (IWindowInsets**)&tmp);
+            insets = tmp;
+        }
+    }
+
+    if (insets != NULL) {
+        AutoPtr<IWindowInsets> tmp;
+        insets->ConsumeStableInsets((IWindowInsets**)&tmp);
+        insets = tmp;
+    }
+    return insets;
 }
 
-AutoPtr<IView> PhoneWindow::DecorView::UpdateColorViewInt(
+AutoPtr<IView> PhoneWindow::_DecorView::UpdateColorViewInt(
     /* [in] */ IView* view,
     /* [in] */ Int32 sysUiVis,
     /* [in] */ Int32 systemUiHideFlag,
@@ -1196,256 +922,1118 @@ AutoPtr<IView> PhoneWindow::DecorView::UpdateColorViewInt(
     /* [in] */ Int32 id,
     /* [in] */ Boolean hiddenByWindowFlag)
 {
-    // ==================before translated======================
-    // boolean show = height > 0 && (sysUiVis & systemUiHideFlag) == 0
-    //         && !hiddenByWindowFlag
-    //         && (getAttributes().flags & translucentFlag) == 0
-    //         && (color & Color.BLACK) != 0
-    //         && (getAttributes().flags & FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS) != 0;
-    //
-    // if (view == null) {
-    //     if (show) {
-    //         view = new View(mContext);
-    //         view.setBackgroundColor(color);
-    //         view.setTransitionName(transitionName);
-    //         view.setId(id);
-    //         addView(view, new LayoutParams(LayoutParams.MATCH_PARENT, height,
-    //                 Gravity.START | verticalGravity));
-    //     }
-    // } else {
-    //     int vis = show ? VISIBLE : INVISIBLE;
-    //     view.setVisibility(vis);
-    //     if (show) {
-    //         LayoutParams lp = (LayoutParams) view.getLayoutParams();
-    //         if (lp.height != height) {
-    //             lp.height = height;
-    //             view.setLayoutParams(lp);
-    //         }
-    //         view.setBackgroundColor(color);
-    //     }
-    // }
-    // return view;
-    assert(0);
-    AutoPtr<IView> empty;
-    return empty;
+    AutoPtr<IWindowManagerLayoutParams> attrs;
+    mHost->GetAttributes((IWindowManagerLayoutParams**)&attrs);
+    Int32 flags;
+    attrs->GetFlags(&flags);
+    Boolean show = height > 0 && (sysUiVis & systemUiHideFlag) == 0
+        && !hiddenByWindowFlag
+        && (flags & translucentFlag) == 0
+        && (color & IColor::BLACK) != 0
+        && (flags & IWindowManagerLayoutParams::FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS) != 0;
+
+    if (view == NULL) {
+        if (show) {
+            //view = new View(mContext);
+            AutoPtr<IView> tmpView;
+            CView::New(mContext, (IView**)&tmpView);
+            view = tmpView;
+            view->SetBackgroundColor(color);
+            view->SetTransitionName(transitionName);
+            view->SetId(id);
+            AutoPtr<IWindowManagerLayoutParams> wmlParam;
+            CWindowManagerLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT, height,
+                    IGravity::START | verticalGravity, (IWindowManagerLayoutParams**)&wmlParam);
+            AddView(view, IViewGroupLayoutParams::Probe(wmlParam));
+        }
+    } else {
+        Int32 vis = show ? VISIBLE : INVISIBLE;
+        view->SetVisibility(vis);
+        if (show) {
+            AutoPtr<IViewGroupLayoutParams> lp;
+            view->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+            Int32 h;
+            lp->GetHeight(&h);
+            if (h != height) {
+                lp->SetHeight(height);
+                view->SetLayoutParams(lp);
+            }
+            view->SetBackgroundColor(color);
+        }
+    }
+    return view;
 }
 
-AutoPtr<IWindowInsets> PhoneWindow::DecorView::UpdateStatusGuard(
+AutoPtr<IWindowInsets> PhoneWindow::_DecorView::UpdateStatusGuard(
     /* [in] */ IWindowInsets* insets)
 {
-    // ==================before translated======================
-    // boolean showStatusGuard = false;
-    // // Show the status guard when the non-overlay contextual action bar is showing
-    // if (mActionModeView != null) {
-    //     if (mActionModeView.getLayoutParams() instanceof MarginLayoutParams) {
-    //         // Insets are magic!
-    //         final MarginLayoutParams mlp = (MarginLayoutParams)
-    //                 mActionModeView.getLayoutParams();
-    //         boolean mlpChanged = false;
-    //         if (mActionModeView.isShown()) {
-    //             if (mTempRect == null) {
-    //                 mTempRect = new Rect();
-    //             }
-    //             final Rect rect = mTempRect;
-    //
-    //             // If the parent doesn't consume the insets, manually
-    //             // apply the default system window insets.
-    //             mContentParent.computeSystemWindowInsets(insets, rect);
-    //             final int newMargin = rect.top == 0 ? insets.getSystemWindowInsetTop() : 0;
-    //             if (mlp.topMargin != newMargin) {
-    //                 mlpChanged = true;
-    //                 mlp.topMargin = insets.getSystemWindowInsetTop();
-    //
-    //                 if (mStatusGuard == null) {
-    //                     mStatusGuard = new View(mContext);
-    //                     mStatusGuard.setBackgroundColor(mContext.getResources()
-    //                             .getColor(R.color.input_method_navigation_guard));
-    //                     addView(mStatusGuard, indexOfChild(mStatusColorView),
-    //                             new LayoutParams(LayoutParams.MATCH_PARENT,
-    //                                     mlp.topMargin, Gravity.START | Gravity.TOP));
-    //                 } else {
-    //                     final LayoutParams lp = (LayoutParams)
-    //                             mStatusGuard.getLayoutParams();
-    //                     if (lp.height != mlp.topMargin) {
-    //                         lp.height = mlp.topMargin;
-    //                         mStatusGuard.setLayoutParams(lp);
-    //                     }
-    //                 }
-    //             }
-    //
-    //             // The action mode's theme may differ from the app, so
-    //             // always show the status guard above it if we have one.
-    //             showStatusGuard = mStatusGuard != null;
-    //
-    //             // We only need to consume the insets if the action
-    //             // mode is overlaid on the app content (e.g. it's
-    //             // sitting in a FrameLayout, see
-    //             // screen_simple_overlay_action_mode.xml).
-    //             final boolean nonOverlay = (getLocalFeatures()
-    //                     & (1 << FEATURE_ACTION_MODE_OVERLAY)) == 0;
-    //             insets = insets.consumeSystemWindowInsets(
-    //                     false, nonOverlay && showStatusGuard /* top */, false, false);
-    //         } else {
-    //             // reset top margin
-    //             if (mlp.topMargin != 0) {
-    //                 mlpChanged = true;
-    //                 mlp.topMargin = 0;
-    //             }
-    //         }
-    //         if (mlpChanged) {
-    //             mActionModeView.setLayoutParams(mlp);
-    //         }
-    //     }
-    // }
-    // if (mStatusGuard != null) {
-    //     mStatusGuard.setVisibility(showStatusGuard ? View.VISIBLE : View.GONE);
-    // }
-    // return insets;
-    assert(0);
-    AutoPtr<IWindowInsets> empty;
-    return empty;
+    Boolean showStatusGuard = false;
+    // Show the status guard when the non-overlay contextual action bar is showing
+    if (mActionModeView != NULL) {
+        AutoPtr<IViewGroupLayoutParams> vglParams;
+        IView::Probe(mActionModeView)->GetLayoutParams((IViewGroupLayoutParams**)&vglParams);
+        IViewGroupMarginLayoutParams* mlp = IViewGroupMarginLayoutParams::Probe(vglParams);
+        if (mlp != NULL) {
+            // Insets are magic!
+            Boolean mlpChanged = false;
+            Boolean isShown;
+            IView::Probe(mActionModeView)->IsShown(&isShown);
+            if (isShown) {
+                if (mHost->mTempRect == NULL) {
+                    CRect::New((IRect**)&mHost->mTempRect);
+                }
+                AutoPtr<IRect> rect = mHost->mTempRect;
+
+                // If the parent doesn't consume the insets, manually
+                // apply the default system window insets.
+                AutoPtr<IWindowInsets> tmp;
+                IView::Probe(mHost->mContentParent)->ComputeSystemWindowInsets(insets, rect, (IWindowInsets**)&tmp);
+                Int32 t;
+                rect->GetTop(&t);
+                Int32 newMargin = 0;
+                if (t == 0 )
+                {
+                    insets->GetSystemWindowInsetTop(&newMargin);
+                }
+                Int32 topMargin;
+                mlp->GetTopMargin(&topMargin);
+                if (topMargin != newMargin) {
+                    mlpChanged = TRUE;
+                    Int32 tm;
+                    insets->GetSystemWindowInsetTop(&tm);
+                    mlp->SetTopMargin(tm);
+
+                    if (mStatusGuard == NULL) {
+                        CView::New(mContext, (IView**)&mStatusGuard);
+                        AutoPtr<IResources> resources;
+                        mContext->GetResources((IResources**)&resources);
+                        Int32 color;
+                        resources->GetColor(R::color::input_method_navigation_guard, &color);
+                        mStatusGuard->SetBackgroundColor(color);
+                        AutoPtr<IWindowManagerLayoutParams> wmlParam;
+                        CWindowManagerLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT, tm, IGravity::START | IGravity::TOP,
+                                (IWindowManagerLayoutParams**)&wmlParam);
+                        Int32 index;
+                        IndexOfChild(mStatusColorView, &index);
+                        AddView(mStatusGuard, index, IViewGroupLayoutParams::Probe(wmlParam));
+                    } else {
+                        AutoPtr<IViewGroupLayoutParams> lp;
+                        mStatusGuard->GetLayoutParams((IViewGroupLayoutParams**)&vglParams);
+                        Int32 lpheight;
+                        lp->GetHeight(&lpheight);
+                        if (lpheight != tm/*mlp.topMargin*/) {
+                            //lp.height = mlp.topMargin;
+                            lp->SetHeight(tm);
+                            mStatusGuard->SetLayoutParams(lp);
+                        }
+                    }
+                }
+
+                // The action mode's theme may differ from the app, so
+                // always show the status guard above it if we have one.
+                showStatusGuard = mStatusGuard != NULL;
+
+                // We only need to consume the insets if the action
+                // mode is overlaid on the app content (e.g. it's
+                // sitting in a FrameLayout, see
+                // screen_simple_overlay_action_mode.xml).
+                Boolean nonOverlay = (mHost->GetLocalFeatures()
+                        & (1 << FEATURE_ACTION_MODE_OVERLAY)) == 0;
+                AutoPtr<IWindowInsets> witmp;
+                insets->ConsumeSystemWindowInsets(false, nonOverlay && showStatusGuard /* top */, false, false, (IWindowInsets**)&witmp);
+                insets = witmp;
+            } else {
+                // reset top margin
+                Int32 mlpTop;
+                mlp->GetTopMargin(&mlpTop);
+                if (mlpTop != 0) {
+                    mlpChanged = true;
+                    mlp->SetTopMargin(0);
+                }
+            }
+            if (mlpChanged) {
+                IView::Probe(mActionModeView)->SetLayoutParams(IViewGroupLayoutParams::Probe(mlp));
+            }
+        }
+    }
+    if (mStatusGuard != NULL) {
+        mStatusGuard->SetVisibility(showStatusGuard ? IView::VISIBLE : IView::GONE);
+    }
+    return insets;
 }
 
-void PhoneWindow::DecorView::UpdateNavigationGuard(
+void PhoneWindow::_DecorView::UpdateNavigationGuard(
     /* [in] */ IWindowInsets* insets)
 {
-    // ==================before translated======================
-    // // IMEs lay out below the nav bar, but the content view must not (for back compat)
-    // if (getAttributes().type == WindowManager.LayoutParams.TYPE_INPUT_METHOD) {
-    //     // prevent the content view from including the nav bar height
-    //     if (mContentParent != null) {
-    //         if (mContentParent.getLayoutParams() instanceof MarginLayoutParams) {
-    //             MarginLayoutParams mlp =
-    //                     (MarginLayoutParams) mContentParent.getLayoutParams();
-    //             mlp.bottomMargin = insets.getSystemWindowInsetBottom();
-    //             mContentParent.setLayoutParams(mlp);
-    //         }
-    //     }
-    //     // position the navigation guard view, creating it if necessary
-    //     if (mNavigationGuard == null) {
-    //         mNavigationGuard = new View(mContext);
-    //         mNavigationGuard.setBackgroundColor(mContext.getResources()
-    //                 .getColor(R.color.input_method_navigation_guard));
-    //         addView(mNavigationGuard, indexOfChild(mNavigationColorView), new LayoutParams(
-    //                 LayoutParams.MATCH_PARENT, insets.getSystemWindowInsetBottom(),
-    //                 Gravity.START | Gravity.BOTTOM));
-    //     } else {
-    //         LayoutParams lp = (LayoutParams) mNavigationGuard.getLayoutParams();
-    //         lp.height = insets.getSystemWindowInsetBottom();
-    //         mNavigationGuard.setLayoutParams(lp);
-    //     }
-    // }
-    assert(0);
+    AutoPtr<IWindowManagerLayoutParams> attrs;
+    mHost->GetAttributes((IWindowManagerLayoutParams**)&attrs);
+    Int32 type;
+    attrs->GetType(&type);
+    // IMEs lay out below the nav bar, but the content view must not (for back compat)
+    if (type == IWindowManagerLayoutParams::TYPE_INPUT_METHOD) {
+        // prevent the content view from including the nav bar height
+        if (mHost->mContentParent != NULL) {
+            AutoPtr<IViewGroupLayoutParams> vglParams;
+            IView::Probe(mHost->mContentParent)->GetLayoutParams((IViewGroupLayoutParams**)&vglParams);
+            IViewGroupMarginLayoutParams* mlp = IViewGroupMarginLayoutParams::Probe(vglParams);
+            if (mlp != NULL) {
+                Int32 bot;
+                insets->GetSystemWindowInsetBottom(&bot);
+                mlp->SetBottomMargin(bot);
+                IView::Probe(mHost->mContentParent)->SetLayoutParams(IViewGroupLayoutParams::Probe(mlp));
+            }
+        }
+        // position the navigation guard view, creating it if necessary
+        if (mNavigationGuard == NULL) {
+            //mNavigationGuard = new View(mContext);
+            CView::New(mContext, (IView**)&mNavigationGuard);
+            AutoPtr<IResources> resources;
+            mContext->GetResources((IResources**)&resources);
+            Int32 color;
+            resources->GetColor(R::color::input_method_navigation_guard, &color);
+            mNavigationGuard->SetBackgroundColor(color);
+            Int32 swiBot;
+            insets->GetSystemWindowInsetBottom(&swiBot);
+            AutoPtr<IWindowManagerLayoutParams> wmlParam;
+            CWindowManagerLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT, swiBot, IGravity::START | IGravity::BOTTOM,
+                    (IWindowManagerLayoutParams**)&wmlParam);
+            Int32 index;
+            IndexOfChild(mNavigationColorView, &index);
+            AddView(mNavigationGuard, index, IViewGroupLayoutParams::Probe(wmlParam));
+        } else {
+            AutoPtr<IViewGroupLayoutParams> lp;
+            mNavigationGuard->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+            Int32 swiBot;
+            insets->GetSystemWindowInsetBottom(&swiBot);
+            lp->SetHeight(swiBot);;
+            mNavigationGuard->SetLayoutParams(lp);
+        }
+    }
 }
 
-void PhoneWindow::DecorView::DrawableChanged()
+AutoPtr<IWindowCallback> PhoneWindow::_DecorView::GetCallback()
 {
-    // ==================before translated======================
-    // if (mChanging) {
-    //     return;
-    // }
-    //
-    // setPadding(mFramePadding.left + mBackgroundPadding.left, mFramePadding.top
-    //         + mBackgroundPadding.top, mFramePadding.right + mBackgroundPadding.right,
-    //         mFramePadding.bottom + mBackgroundPadding.bottom);
-    // requestLayout();
-    // invalidate();
-    //
-    // int opacity = PixelFormat.OPAQUE;
-    // // Note: if there is no background, we will assume opaque. The
-    // // common case seems to be that an application sets there to be
-    // // no background so it can draw everything itself. For that,
-    // // we would like to assume OPAQUE and let the app force it to
-    // // the slower TRANSLUCENT mode if that is really what it wants.
-    // Drawable bg = getBackground();
-    // Drawable fg = getForeground();
-    // if (bg != null) {
-    //     if (fg == null) {
-    //         opacity = bg.getOpacity();
-    //     } else if (mFramePadding.left <= 0 && mFramePadding.top <= 0
-    //             && mFramePadding.right <= 0 && mFramePadding.bottom <= 0) {
-    //         // If the frame padding is zero, then we can be opaque
-    //         // if either the frame -or- the background is opaque.
-    //         int fop = fg.getOpacity();
-    //         int bop = bg.getOpacity();
-    //         if (false)
-    //             Log.v(TAG, "Background opacity: " + bop + ", Frame opacity: " + fop);
-    //         if (fop == PixelFormat.OPAQUE || bop == PixelFormat.OPAQUE) {
-    //             opacity = PixelFormat.OPAQUE;
-    //         } else if (fop == PixelFormat.UNKNOWN) {
-    //             opacity = bop;
-    //         } else if (bop == PixelFormat.UNKNOWN) {
-    //             opacity = fop;
-    //         } else {
-    //             opacity = Drawable.resolveOpacity(fop, bop);
-    //         }
-    //     } else {
-    //         // For now we have to assume translucent if there is a
-    //         // frame with padding... there is no way to tell if the
-    //         // frame and background together will draw all pixels.
-    //         if (false)
-    //             Log.v(TAG, "Padding: " + mFramePadding);
-    //         opacity = PixelFormat.TRANSLUCENT;
-    //     }
-    // }
-    //
+    AutoPtr<IWindowCallback> cb;
+    mHost->GetCallback((IWindowCallback**)&cb);
+    return cb;
+}
+
+Boolean PhoneWindow::_DecorView::IsDestroyed()
+{
+    Boolean destoryed = FALSE;
+    return (mHost->IsDestroyed(&destoryed), destoryed);
+}
+
+ECode PhoneWindow::_DecorView::OnInterceptTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    Int32 action;
+    event->GetAction(&action);
+    if (mFeatureId >= 0) {
+        if (action == IMotionEvent::ACTION_DOWN) {
+            Float fx, fy;
+            event->GetX(&fx);
+            event->GetY(&fy);
+            Int32 x = (Int32)fx;
+            Int32 y = (Int32)fy;
+            if (IsOutOfBounds(x, y)) {
+                mHost->ClosePanel(mFeatureId);
+                *result = TRUE;
+                return NOERROR;
+            }
+        }
+    }
+
+    if (!PhoneWindow::SWEEP_OPEN_MENU) {
+        *result = FALSE;
+        return NOERROR;
+    }
+
+    Float fy;
+    event->GetY(&fy);
+    if (mFeatureId >= 0) {
+        if (action == IMotionEvent::ACTION_DOWN) {
+            // Logger::D(TAG, "Watchiing!");
+            mWatchingForMenu = TRUE;
+            mDownY = (Int32)fy;
+            *result = FALSE;
+            return NOERROR;
+        }
+
+        if (!mWatchingForMenu) {
+            *result = FALSE;
+            return NOERROR;
+        }
+
+        Int32 y = (Int32)fy;
+        if (action == IMotionEvent::ACTION_MOVE) {
+            if (y > (mDownY + 30)) {
+                // Logger::D(TAG, "Closing!");
+                mHost->ClosePanel(mFeatureId);
+                mWatchingForMenu = FALSE;
+                *result = TRUE;
+                return NOERROR;
+            }
+        }
+        else if (action == IMotionEvent::ACTION_UP) {
+            mWatchingForMenu = FALSE;
+        }
+
+        *result = FALSE;
+        return NOERROR;
+    }
+
+    if (action == IMotionEvent::ACTION_DOWN) {
+        Int32 y = fy;
+        Boolean hasChildren;
+        mHost->HasChildren(&hasChildren);
+        Int32 height;
+        FrameLayout::GetHeight(&height);
+        if (y >= (height-5) && !hasChildren) {
+            // Logger::D(TAG, "Watchiing!");
+            mWatchingForMenu = TRUE;
+        }
+        *result = FALSE;
+        return NOERROR;
+    }
+
+    if (!mWatchingForMenu) {
+        *result = FALSE;
+        return NOERROR;
+    }
+
+    Int32 y = fy;
+    if (action == IMotionEvent::ACTION_MOVE) {
+        Int32 height;
+        FrameLayout::GetHeight(&height);
+        if (y < (height-30)) {
+            // Logger::D(TAG, "Opening!");
+            AutoPtr<IKeyEvent> event;
+            CKeyEvent::New(IKeyEvent::ACTION_DOWN, IKeyEvent::KEYCODE_MENU, (IKeyEvent**)&event);
+            mHost->OpenPanel(IWindow::FEATURE_OPTIONS_PANEL, event);
+
+            mWatchingForMenu = FALSE;
+            *result = TRUE;
+            return NOERROR;
+        }
+    }
+    else if (action == IMotionEvent::ACTION_UP) {
+        mWatchingForMenu = FALSE;
+    }
+
+    *result = FALSE;
+    return NOERROR;
+}
+
+ECode PhoneWindow::_DecorView::SendAccessibilityEvent(
+    /* [in] */ Int32 eventType)
+{
+    AutoPtr<IAccessibilityManager> accessibilityManager;
+    CAccessibilityManager::GetInstance(mContext, (IAccessibilityManager**)&accessibilityManager);
+    Boolean enable = FALSE;
+    if (!(accessibilityManager->IsEnabled(&enable), enable)) {
+        return NOERROR;
+    }
+
+    // if we are showing a feature that should be announced and one child
+    // make this child the event source since this is the feature itself
+    // otherwise the callback will take over and announce its client
+    Int32 childCount;
+    GetChildCount(&childCount);
+    if ((mFeatureId == FEATURE_OPTIONS_PANEL ||
+            mFeatureId == FEATURE_CONTEXT_MENU ||
+            mFeatureId == FEATURE_PROGRESS ||
+            mFeatureId == FEATURE_INDETERMINATE_PROGRESS)
+            && childCount == 1) {
+        AutoPtr<IView> view;
+        GetChildAt(0, (IView**)&view);
+        //VIEW_PROBE(GetChildAt(0))->SendAccessibilityEvent(eventType);
+        view->SendAccessibilityEvent(eventType);
+    } else {
+        FrameLayout::SendAccessibilityEvent(eventType);
+    }
+
+    return NOERROR;
+}
+
+ECode PhoneWindow::_DecorView::DispatchPopulateAccessibilityEvent(
+    /* [in] */ IAccessibilityEvent* event,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    AutoPtr<IWindowCallback> cb;
+    mHost->GetCallback((IWindowCallback**)&cb);
+    if (cb != NULL && !IsDestroyed()) {
+        Boolean tmp = FALSE;
+        if (cb->DispatchPopulateAccessibilityEvent(event, &tmp), tmp) {
+            *result = TRUE;
+            return NOERROR;
+        }
+    }
+
+    return FrameLayout::DispatchPopulateAccessibilityEvent(event, result);
+}
+
+Boolean PhoneWindow::_DecorView::SetFrame(
+    /* [in] */ Int32 l,
+    /* [in] */ Int32 t,
+    /* [in] */ Int32 r,
+    /* [in] */ Int32 b)
+{
+    Boolean changed = FrameLayout::SetFrame(l, t, r, b);
+    if (changed) {
+        AutoPtr<IRect> drawingBounds = mDrawingBounds;
+        GetDrawingRect(drawingBounds);
+
+        AutoPtr<IDrawable> fg;
+        GetForeground((IDrawable**)&fg);
+        if (fg != NULL) {
+            Int32 left = 0, top = 0, right = 0, bottom = 0;
+            Int32 left1 = 0, top1 = 0, right1 = 0, bottom1 = 0;
+            mFrameOffsets->GetLeft(&left);
+            mFrameOffsets->GetTop(&top);
+            mFrameOffsets->GetRight(&right);
+            mFrameOffsets->GetBottom(&bottom);
+
+            drawingBounds->GetLeft(&left1);
+            drawingBounds->GetTop(&top1);
+            drawingBounds->GetRight(&right1);
+            drawingBounds->GetBottom(&bottom1);
+
+            drawingBounds->SetLeft(left + left1);
+            drawingBounds->SetTop(top + top1);
+            drawingBounds->SetRight(right1 - right);
+            drawingBounds->SetBottom(bottom1 - bottom);
+            fg->SetBounds(drawingBounds);
+
+            Int32 left2 = 0, top2 = 0, right2 = 0, bottom2 = 0;
+            mFramePadding->GetLeft(&left2);
+            mFramePadding->GetTop(&top2);
+            mFramePadding->GetRight(&right2);
+            mFramePadding->GetBottom(&bottom2);
+
+            drawingBounds->SetLeft(left1 + left2 - left);
+            drawingBounds->SetTop(top1 + top2 - top);
+            drawingBounds->SetRight(right1 - right2 + right);
+            drawingBounds->SetBottom(bottom1 - bottom2 + bottom);
+        }
+
+        AutoPtr<IDrawable> bg;
+        GetBackground((IDrawable**)&bg);
+        if (bg != NULL) {
+            bg->SetBounds(drawingBounds);
+        }
+
+        if (SWEEP_OPEN_MENU) {
+            AutoPtr<IWindowManagerLayoutParams> attr;
+            mHost->GetAttributes((IWindowManagerLayoutParams**)&attr);
+            Int32 height = 0;
+            IViewGroupLayoutParams* vgLayoutParam = IViewGroupLayoutParams::Probe(attr);
+            vgLayoutParam->GetHeight(&height);
+            if (mMenuBackground == NULL && mFeatureId < 0
+                    && height
+                    == IViewGroupLayoutParams::MATCH_PARENT) {
+                //AutoPtr<IResources> res;
+                AutoPtr<IContext> context;
+                GetContext((IContext**)&context);
+                //context->GetResources((IResources**)&res);
+                context->GetDrawable(R::drawable::menu_background, (IDrawable**)&mMenuBackground);
+            }
+
+            if (mMenuBackground != NULL) {
+                Int32 left1 = 0, top1 = 0, right1 = 0, bottom1 = 0;
+                drawingBounds->GetLeft(&left1);
+                drawingBounds->GetTop(&top1);
+                drawingBounds->GetRight(&right1);
+                drawingBounds->GetBottom(&bottom1);
+
+                mMenuBackground->SetBounds(left1, bottom1 - 6, right1, bottom1 + 20);
+            }
+        }
+    }
+
+    return changed;
+}
+
+void PhoneWindow::_DecorView::OnMeasure(
+    /* [in] */ Int32 widthMeasureSpec,
+    /* [in] */ Int32 heightMeasureSpec)
+{
+    AutoPtr<IResources> res;
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    context->GetResources((IResources**)&res);
+
+    AutoPtr<IDisplayMetrics> metrics;
+    res->GetDisplayMetrics((IDisplayMetrics**)&metrics);
+
+    Int32 widthPixels = 0, heightPixels = 0;
+    metrics->GetWidthPixels(&widthPixels);
+    metrics->GetHeightPixels(&heightPixels);
+    Boolean isPortrait = widthPixels < heightPixels;
+
+    Int32 widthMode = MeasureSpec::GetMode(widthMeasureSpec);
+    Int32 heightMode = MeasureSpec::GetMode(heightMeasureSpec);
+
+    Boolean fixedWidth = FALSE;
+    if (widthMode == MeasureSpec::AT_MOST) {
+        AutoPtr<ITypedValue> tvw = isPortrait ? mHost->mFixedWidthMinor : mHost->mFixedWidthMajor;
+        Int32 type = 0;
+        if (tvw != NULL && (tvw->GetType(&type), type) != ITypedValue::TYPE_NULL) {
+            Int32 w = 0;
+            if (type == ITypedValue::TYPE_DIMENSION) {
+                tvw->GetDimension(metrics, (Float*)&w);
+            } else if (type == ITypedValue::TYPE_FRACTION) {
+                tvw->GetFraction(widthPixels, widthPixels, (Float*)&w);
+            } else {
+                w = 0;
+            }
+
+            if (w > 0) {
+                Int32 widthSize = MeasureSpec::GetSize(widthMeasureSpec);
+                widthMeasureSpec = MeasureSpec::MakeMeasureSpec(
+                        Elastos::Core::Math::Min(w, widthSize), MeasureSpec::EXACTLY);
+                fixedWidth = TRUE;
+            }
+        }
+    }
+
+    if (heightMode == MeasureSpec::AT_MOST) {
+        AutoPtr<ITypedValue> tvh = isPortrait ? mHost->mFixedHeightMajor : mHost->mFixedHeightMinor;
+        Int32 type = 0;
+        if (tvh != NULL && (tvh->GetType(&type), type) != ITypedValue::TYPE_NULL) {
+            Int32 h = 0;
+            if (type == ITypedValue::TYPE_DIMENSION) {
+                tvh->GetDimension(metrics, (Float*)&h);
+            } else if (type == ITypedValue::TYPE_FRACTION) {
+                tvh->GetFraction(heightPixels, heightPixels, (Float*)&h);
+            } else {
+                h = 0;
+            }
+
+            if (h > 0) {
+                Int32 heightSize = MeasureSpec::GetSize(heightMeasureSpec);
+                heightMeasureSpec = MeasureSpec::MakeMeasureSpec(
+                        Elastos::Core::Math::Min(h, heightSize), MeasureSpec::EXACTLY);
+            }
+        }
+    }
+
+    if (mHost->mOutsetBottom != NULL) {
+        int mode = MeasureSpec::GetMode(heightMeasureSpec);
+        if (mode != MeasureSpec::UNSPECIFIED) {
+            Float tmp;
+            mHost->mOutsetBottom->GetDimension(metrics, &tmp);
+            Int32 outset = (Int32) tmp;
+            Int32 height = MeasureSpec::GetSize(heightMeasureSpec);
+            heightMeasureSpec = MeasureSpec::MakeMeasureSpec(height + outset, mode);
+        }
+    }
+
+    FrameLayout::OnMeasure(widthMeasureSpec, heightMeasureSpec);
+
+    Int32 width;
+    GetMeasuredWidth(&width);
+    Boolean measure = FALSE;
+
+    widthMeasureSpec = MeasureSpec::MakeMeasureSpec(width, MeasureSpec::EXACTLY);
+
+    if (!fixedWidth && widthMode == MeasureSpec::AT_MOST) {
+        AutoPtr<ITypedValue> tv = isPortrait ? mHost->mMinWidthMinor : mHost->mMinWidthMajor;
+        Int32 type = 0;
+        if ((tv->GetType(&type), type) != ITypedValue::TYPE_NULL) {
+            Int32 min = 0;
+            if (type == ITypedValue::TYPE_DIMENSION) {
+                tv->GetDimension(metrics, (Float*)&min);
+            } else if (type == ITypedValue::TYPE_FRACTION) {
+                tv->GetFraction(widthPixels, widthPixels, (Float*)&min);
+            } else {
+                min = 0;
+            }
+
+            if (width < min) {
+                widthMeasureSpec = MeasureSpec::MakeMeasureSpec(min, MeasureSpec::EXACTLY);
+                measure = TRUE;
+            }
+        }
+    }
+
+    // TODO: Support height?
+
+    if (measure) {
+        FrameLayout::OnMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+}
+
+void PhoneWindow::_DecorView::DrawableChanged()
+{
+    if (mChanging) {
+        return;
+    }
+
+    SetPadding(mFramePadding->mLeft + mBackgroundPadding->mLeft, mFramePadding->mTop
+            + mBackgroundPadding->mTop, mFramePadding->mRight + mBackgroundPadding->mRight,
+            mFramePadding->mBottom + mBackgroundPadding->mBottom);
+    RequestLayout();
+    Invalidate();
+
+    Int32 opacity = CPixelFormat::OPAQUE;
+
+    // Note: if there is no background, we will assume opaque. The
+    // common case seems to be that an application sets there to be
+    // no background so it can draw everything itself. For that,
+    // we would like to assume OPAQUE and let the app force it to
+    // the slower TRANSLUCENT mode if that is really what it wants.
+    AutoPtr<IDrawable> bg;
+    GetBackground((IDrawable**)&bg);
+    AutoPtr<IDrawable> fg;
+    GetForeground((IDrawable**)&fg);
+    if (bg != NULL) {
+        if (fg == NULL) {
+            bg->GetOpacity(&opacity);
+        } else if (mFramePadding->mLeft <= 0 && mFramePadding->mTop <= 0
+                && mFramePadding->mRight <= 0 && mFramePadding->mBottom <= 0) {
+            // If the frame padding is zero, then we can be opaque
+            // if either the frame -or- the background is opaque.
+            Int32 fop = 0;
+            fg->GetOpacity(&fop);
+            Int32 bop = 0;
+            bg->GetOpacity(&bop);
+            // if (false)
+            //     Log.v(TAG, "Background opacity: " + bop + ", Frame opacity: " + fop);
+            if (fop == CPixelFormat::OPAQUE || bop == CPixelFormat::OPAQUE) {
+                opacity = CPixelFormat::OPAQUE;
+            } else if (fop == CPixelFormat::UNKNOWN) {
+                opacity = bop;
+            } else if (bop == CPixelFormat::UNKNOWN) {
+                opacity = fop;
+            } else {
+                Drawable::Drawable::ResolveOpacity(fop, bop, &opacity);
+            }
+        } else {
+            // For now we have to assume translucent if there is a
+            // frame with padding... there is no way to tell if the
+            // frame and background together will draw all pixels.
+            // if (false)
+            //     Log.v(TAG, "Padding: " + mFramePadding);
+            opacity = CPixelFormat::TRANSLUCENT;
+        }
+    }
+
     // if (false)
     //     Log.v(TAG, "Background: " + bg + ", Frame: " + fg);
     // if (false)
     //     Log.v(TAG, "Selected default opacity: " + opacity);
-    //
-    // mDefaultOpacity = opacity;
-    // if (mFeatureId < 0) {
-    //     setDefaultWindowFormat(opacity);
-    // }
-    assert(0);
+
+    mDefaultOpacity = opacity;
+    if (mFeatureId < 0) {
+        mHost->SetDefaultWindowFormat(opacity);
+    }
 }
 
-//=====================================================================
-//                  PhoneWindow::DrawableFeatureState
-//=====================================================================
-PhoneWindow::DrawableFeatureState::DrawableFeatureState(
-    /* [in] */ Int32 _featureId)
+ECode PhoneWindow::_DecorView::OnWindowFocusChanged(
+    /* [in] */ Boolean hasWindowFocus)
 {
-    // ==================before translated======================
-    // featureId = _featureId;
+    FrameLayout::OnWindowFocusChanged(hasWindowFocus);
+
+    // If the user is chording a menu shortcut, release the chord since
+    // this window lost focus
+    if (!hasWindowFocus && mHost->mPanelChordingKey != 0) {
+        mHost->ClosePanel(IWindow::FEATURE_OPTIONS_PANEL);
+    }
+
+    AutoPtr<IWindowCallback> cb;
+    mHost->GetCallback((IWindowCallback**)&cb);
+    if (cb != NULL && !IsDestroyed() && mFeatureId < 0) {
+        cb->OnWindowFocusChanged(hasWindowFocus);
+    }
+
+    return NOERROR;
 }
+
+ECode PhoneWindow::_DecorView::UpdateWindowResizeState()
+{
+    AutoPtr<IDrawable> bg;
+    GetBackground((IDrawable**)&bg);
+    Int32 opacity = 0;
+    HackTurnOffWindowResizeAnim(bg == NULL || (bg->GetOpacity(&opacity), opacity)
+            != IPixelFormat::OPAQUE);
+    return NOERROR;
+}
+
+ECode PhoneWindow::_DecorView::OnAttachedToWindow()
+{
+    FrameLayout::OnAttachedToWindow();
+
+    UpdateWindowResizeState();
+
+    AutoPtr<IWindowCallback> cb;
+    mHost->GetCallback((IWindowCallback**)&cb);
+    if (cb != NULL && !IsDestroyed() && mFeatureId < 0) {
+        cb->OnAttachedToWindow();
+    }
+
+    if (mFeatureId == -1) {
+        /*
+         * The main window has been attached, try to restore any panels
+         * that may have been open before. This is called in cases where
+         * an activity is being killed for configuration change and the
+         * menu was open. When the activity is recreated, the menu
+         * should be shown again.
+         */
+        mHost->OpenPanelsAfterRestore();
+    }
+    return NOERROR;
+}
+
+ECode PhoneWindow::_DecorView::OnDetachedFromWindow()
+{
+    FrameLayout::OnDetachedFromWindow();
+
+    AutoPtr<IWindowCallback> cb;
+    mHost->GetCallback((IWindowCallback**)&cb);
+    if (cb != NULL && mFeatureId < 0) {
+        cb->OnDetachedFromWindow();
+    }
+
+    if (mHost->mDecorContentParent != NULL) {
+        mHost->mDecorContentParent->DismissPopups();
+    }
+
+    if (mActionModePopup != NULL) {
+        Boolean res;
+        RemoveCallbacks(mShowActionModePopup, &res);
+        Boolean showing = FALSE;
+        if (mActionModePopup->IsShowing(&showing), showing) {
+            mActionModePopup->Dismiss();
+        }
+
+        mActionModePopup = NULL;
+    }
+
+    AutoPtr<PanelFeatureState> st;
+    FAIL_RETURN(mHost->GetPanelState(FEATURE_OPTIONS_PANEL, FALSE, (PanelFeatureState**)&st));
+    if (st != NULL && st->mMenu != NULL && mFeatureId < 0) {
+        Boolean res = FALSE;
+        st->mMenu->Close(res);//TODO should be pointer
+    }
+
+    return NOERROR;
+}
+
+ECode PhoneWindow::_DecorView::OnCloseSystemDialogs(
+    /* [in] */ const String& reason)
+{
+    if (mFeatureId >= 0) mHost->CloseAllPanels();
+    return NOERROR;
+}
+
+ECode PhoneWindow::_DecorView::Draw(
+    /* [in] */ ICanvas* canvas)
+{
+    FrameLayout::Draw(canvas);
+    if (mMenuBackground != NULL)
+    {
+        mMenuBackground->Draw(canvas);
+    }
+    return NOERROR;
+}
+
+ECode PhoneWindow::_DecorView::ShowContextMenuForChild(
+    /* [in] */ IView* originalView,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    assert(originalView != NULL);
+
+    // Reuse the context menu builder
+    if (mHost->mContextMenu == NULL) {
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
+
+        CContextMenuBuilder::New(context, (IContextMenuBuilder**)&mHost->mContextMenu);
+        IMenuBuilder* menuBuild = IMenuBuilder::Probe(mHost->mContextMenu);
+        menuBuild->SetCallback(mHost->mContextMenuCallback);
+    }
+    else {
+        IMenuBuilder* menuBuild = IMenuBuilder::Probe(mHost->mContextMenu);
+        menuBuild->ClearAll();
+    }
+
+    AutoPtr<IBinder> token;
+    originalView->GetWindowToken((IBinder**)&token);
+
+    AutoPtr<IMenuDialogHelper> helper;
+    mHost->mContextMenu->Show(originalView, token, (IMenuDialogHelper**)&helper);
+    if (helper != NULL) {
+       helper->SetPresenterCallback(mHost->mContextMenuCallback);
+    } else if (mHost->mContextMenuHelper != NULL) {
+        // No menu to show, but if we have a menu currently showing it just became blank.
+        // Close it.
+        mHost->mContextMenuHelper->Dismiss();
+    }
+
+    mHost->mContextMenuHelper = helper;
+    *result = helper != NULL;
+    return NOERROR;
+}
+
+ECode PhoneWindow::_DecorView::StartActionModeForChild(
+    /* [in] */ IView* originalView,
+    /* [in] */ IActionModeCallback* callback,
+    /* [out] */ IActionMode** res)
+{
+    VALIDATE_NOT_NULL(res);
+    // originalView can be used here to be sure that we don't obscure
+    // relevant content with the context mode UI.
+    return StartActionMode(callback, res);
+}
+
+ECode PhoneWindow::_DecorView::StartActionMode(
+    /* [in] */ IActionModeCallback* callback,
+    /* [out] */ IActionMode** res)
+{
+    VALIDATE_NOT_NULL(res);
+    if (mActionMode != NULL) {
+        mActionMode->Finish();
+    }
+
+    AutoPtr<IActionModeCallback> wrappedCallback = new ActionModeCallbackWrapper(callback, this);
+    AutoPtr<IActionMode> mode;
+
+    AutoPtr<IWindowCallback> cb;
+    if ((mHost->GetCallback((IWindowCallback**)&cb), cb) != NULL && !IsDestroyed()) {
+        // try {
+        cb->OnWindowStartingActionMode(wrappedCallback, (IActionMode**)&mode);
+        // } catch (AbstractMethodError ame) {
+        //     // Older apps might not implement this callback method.
+        // }
+    }
+
+    if (mode != NULL) {
+        mActionMode = mode;
+    } else {
+        if (mActionModeView == NULL) {
+            Boolean isFloating = FALSE;
+            if (mHost->IsFloating(&isFloating), isFloating) {
+                // Use the action bar theme.
+                AutoPtr<ITypedValue> outValue;
+                CTypedValue::New((ITypedValue**)&outValue);
+                AutoPtr<IResourcesTheme> baseTheme;
+                mContext->GetTheme((IResourcesTheme**)&baseTheme);
+                Boolean tmp = FALSE;
+                baseTheme->ResolveAttribute(R::attr::actionBarTheme, outValue, TRUE, &tmp);
+                AutoPtr<IContext> actionBarContext;
+                Int32 resId;
+                outValue->GetResourceId(&resId);
+                if (resId != 0) {
+                    AutoPtr<IResourcesTheme> actionBarTheme;
+                    AutoPtr<IResources> resources;
+                    mContext->GetResources((IResources**)&resources);
+                    resources->NewTheme((IResourcesTheme**)&actionBarTheme);
+
+                    actionBarTheme->SetTo(baseTheme);
+                    actionBarTheme->ApplyStyle(resId, TRUE);
+
+                    CContextThemeWrapper::New(mContext, 0, (IContextThemeWrapper**)&actionBarContext);
+                    AutoPtr<IResourcesTheme> ctxTheme;
+                    actionBarContext->GetTheme((IResourcesTheme**)&ctxTheme);
+                    ctxTheme->SetTo(actionBarTheme);
+                } else {
+                    actionBarContext = mContext;
+                }
+                //TODO CActionBarContextView::New(actionBarContext, (IActionBarContextView**)&mActionModeView);
+                mActionModePopup = NULL;
+                CPopupWindow::New(actionBarContext, NULL,
+                        R::attr::actionModePopupWindowStyle, (IPopupWindow**)&mActionModePopup);
+
+                //mActionModePopup->SetLayoutInScreenEnabled(TRUE);
+                //mActionModePopup->SetLayoutInsetDecor(TRUE);
+                mActionModePopup->SetWindowLayoutType(
+                        IWindowManagerLayoutParams::TYPE_APPLICATION);
+
+                mActionModePopup->SetContentView(IView::Probe(mActionModeView));
+                mActionModePopup->SetWidth(IViewGroupLayoutParams::MATCH_PARENT);
+
+                AutoPtr<IResourcesTheme> theme;
+                actionBarContext->GetTheme((IResourcesTheme**)&theme);
+
+                Boolean btmp = FALSE;
+                theme->ResolveAttribute(R::attr::actionBarSize, outValue, TRUE, &btmp);
+
+                Int32 data = 0;
+                outValue->GetData(&data);
+
+                AutoPtr<IResources> res;
+                actionBarContext->GetResources((IResources**)&res);
+                AutoPtr<IDisplayMetrics> metrics;
+                res->GetDisplayMetrics((IDisplayMetrics**)&metrics);
+
+                AutoPtr<ITypedValueHelper> helper;
+                CTypedValueHelper::AcquireSingleton((ITypedValueHelper**)&helper);
+
+                Int32 height = 0;
+                helper->ComplexToDimensionPixelSize(data, metrics, &height);
+                IAbsActionBarView* absActionBarView = IAbsActionBarView::Probe(mActionModeView);
+                absActionBarView->SetContentHeight(height);
+                mActionModePopup->SetHeight(IViewGroupLayoutParams::WRAP_CONTENT);
+                mShowActionModePopup = new ShowActionModePopupRunnable(this);
+            } else {
+                AutoPtr<IView> view;
+                FindViewById(R::id::action_mode_bar_stub, (IView**)&view);
+                AutoPtr<IViewStub> stub = IViewStub::Probe(view);
+                if (stub != NULL) {
+                    stub->Inflate((IView**)&mActionModeView);
+                }
+            }
+        }
+
+        if (mActionModeView != NULL) {
+            mActionModeView->KillMode();
+            mode = new StandaloneActionMode();
+            AutoPtr<IContext> context;
+            IView::Probe(mActionModeView)->GetContext((IContext**)&context);
+            ((StandaloneActionMode*)(mode.Get()))->constructor(context, mActionModeView,
+                    wrappedCallback, mActionModePopup == NULL);
+            Boolean tmp = FALSE;
+            AutoPtr<IMenu> menu;
+            mode->GetMenu((IMenu**)&menu);
+            if (callback->OnCreateActionMode(mode, menu, &tmp), tmp) {
+                mode->Invalidate();
+                mActionModeView->InitForMode(mode);
+                IView* amView = IView::Probe(mActionModeView);
+                amView->SetVisibility(IView::VISIBLE);
+                mActionMode = mode;
+                if (mActionModePopup != NULL) {
+                    Boolean res;
+                    Post(mShowActionModePopup, &res);
+                }
+
+                VIEW_PROBE(mActionModeView)->SendAccessibilityEvent(
+                        IAccessibilityEvent::TYPE_WINDOW_STATE_CHANGED);
+            } else {
+                mActionMode = NULL;
+            }
+        }
+    }
+
+    if (mActionMode != NULL && cb != NULL && !IsDestroyed()) {
+        // try {
+        cb->OnActionModeStarted(mActionMode);
+        // } catch (AbstractMethodError ame) {
+        //     // Older apps might not implement this callback method.
+        // }
+    }
+
+    *res = mActionMode;
+    REFCOUNT_ADD(*res);
+    return NOERROR;
+}
+
+//IVIEW_METHODS_IMPL(PhoneWindow::DecorView, PhoneWindow::_DecorView);
+//
+//IVIEWGROUP_METHODS_IMPL(PhoneWindow::DecorView, PhoneWindow::_DecorView);
+//
+//IVIEWPARENT_METHODS_IMPL(PhoneWindow::DecorView, PhoneWindow::_DecorView);
+//
+//IVIEWMANAGER_METHODS_IMPL(PhoneWindow::DecorView, PhoneWindow::_DecorView);
+//
+//IDRAWABLECALLBACK_METHODS_IMPL(PhoneWindow::DecorView, PhoneWindow::_DecorView);
+//
+//IKEYEVENTCALLBACK_METHODS_IMPL(PhoneWindow::DecorView, PhoneWindow::_DecorView);
+//
+//IACCESSIBILITYEVENTSOURCE_METHODS_IMPL(PhoneWindow::DecorView, PhoneWindow::_DecorView);
+//
+//PhoneWindow::DecorView::DecorView(
+//    /* [in] */ PhoneWindow* host,
+//    /* [in] */ IContext* context,
+//    /* [in] */ Int32 featureId,
+//    /* [in] */ Boolean useSelfRef) :
+//    _DecorView(host, context, featureId)
+//    , mUseSelfRef(useSelfRef)
+//{
+//}
+//
+//PhoneWindow::DecorView::~DecorView()
+//{
+//    if (!mUseSelfRef)
+//        mHost->mDecor = NULL;
+//}
+//
+//PInterface PhoneWindow::DecorView::Probe(
+//    /* [in] */ REIID riid)
+//{
+//    if (riid == EIID_IInterface) {
+//        return (IInterface*)(IFrameLayout*)this;
+//    }
+//    else if (riid == EIID_IView) {
+//        return (IView*)this;
+//    }
+//    else if (riid == EIID_IFrameLayout) {
+//        return (IFrameLayout*)this;
+//    }
+//    else if (riid == EIID_IViewGroup) {
+//        return (IViewGroup*)(IFrameLayout*)this;
+//    }
+//    else if (riid == EIID_IViewParent) {
+//        return (IViewParent*)this;
+//    }
+//    else if (riid == EIID_IViewManager) {
+//        return (IViewManager*)this;
+//    }
+//    else if (riid == EIID_IDrawableCallback) {
+//        return (IDrawableCallback*)this;
+//    }
+//    else if (riid == EIID_IKeyEventCallback) {
+//        return (IKeyEventCallback*)this;
+//    }
+//    else if (riid == EIID_IAccessibilityEventSource) {
+//        return (IAccessibilityEventSource*)this;
+//    }
+//    else if (riid == EIID_IWeakReferenceSource) {
+//        return (IWeakReferenceSource*)this;
+//    }
+//    else if (riid == EIID_View) {
+//        return reinterpret_cast<PInterface>((View*)(FrameLayout*)this);
+//    }
+//    else if (riid == EIID_ViewGroup) {
+//        return reinterpret_cast<PInterface>((ViewGroup*)(FrameLayout*)this);
+//    }
+//    else if (riid == EIID_IRootViewSurfaceTaker) {
+//        return reinterpret_cast<PInterface>((IRootViewSurfaceTaker*)this);
+//    }
+//
+//    return NULL;
+//}
+//
+//UInt32 PhoneWindow::DecorView::AddRef()
+//{
+//    if (mUseSelfRef)
+//        return ElRefBase::AddRef();
+//    else {
+//        assert(mHost != NULL);
+//        return mHost->AddRef();
+//    }
+//}
+//
+//UInt32 PhoneWindow::DecorView::Release()
+//{
+//    if (mUseSelfRef)
+//        return ElRefBase::Release();
+//    else {
+//        assert(mHost != NULL);
+//        return mHost->Release();
+//    }
+//}
+//
+//UInt32 PhoneWindow::DecorView::_AddRef()
+//{
+//    return ElRefBase::AddRef();
+//}
+//
+//UInt32 PhoneWindow::DecorView::_Release()
+//{
+//    return ElRefBase::Release();
+//}
+//
+//ECode PhoneWindow::DecorView::GetInterfaceID(
+//    /* [in] */ IInterface *pObject,
+//    /* [out] */ InterfaceID *pIID)
+//{
+//    return E_NOT_IMPLEMENTED;
+//}
+//
+//ECode PhoneWindow::DecorView::GetForegroundGravity(
+//    /* [out] */ Int32* foregroundGravity)
+//{
+//    assert(foregroundGravity != NULL);
+//    *foregroundGravity = _DecorView::GetForegroundGravity();
+//    return NOERROR;
+//}
+//
+//ECode PhoneWindow::DecorView::SetForegroundGravity(
+//    /* [in] */ Int32 foregroundGravity)
+//{
+//    return _DecorView::SetForegroundGravity(foregroundGravity);
+//}
+//
+//ECode PhoneWindow::DecorView::SetForeground(
+//    /* [in] */ IDrawable* drawable)
+//{
+//    return _DecorView::SetForeground(drawable);
+//}
+//
+//ECode PhoneWindow::DecorView::GetForeground(
+//    /* [out] */ IDrawable** foreground)
+//{
+//    VALIDATE_NOT_NULL(foreground);
+//    AutoPtr<IDrawable> d = _DecorView::GetForeground();
+//    *foreground = d.Get();
+//    REFCOUNT_ADD(*foreground);
+//
+//    return NOERROR;
+//}
+//
+//ECode PhoneWindow::DecorView::SetMeasureAllChildren(
+//    /* [in] */ Boolean measureAll)
+//{
+//    return _DecorView::SetMeasureAllChildren(measureAll);
+//}
+//
+//ECode PhoneWindow::DecorView::GetMeasureAllChildren(
+//    /* [out] */ Boolean* measureAll)
+//{
+//    assert(measureAll != NULL);
+//    *measureAll = _DecorView::GetMeasureAllChildren();
+//    return NOERROR;
+//}
+//
+//ECode PhoneWindow::DecorView::GetConsiderGoneChildrenWhenMeasuring(
+//    /* [out] */ Boolean* measureAll)
+//{
+//    VALIDATE_NOT_NULL(measureAll)
+//    *measureAll = _DecorView::GetConsiderGoneChildrenWhenMeasuring();
+//
+//    return NOERROR;
+//}
+//
+//ECode PhoneWindow::DecorView::GetWeakReference(
+//    /* [out] */ IWeakReference** weakReference)
+//{
+//    VALIDATE_NOT_NULL(weakReference)
+//    //*weakReference = new DecorViewWeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
+//    IWeakReferenceSource* source = IWeakReferenceSource::Probe((IWeakReferenceSource *)this);
+//    source->GetWeakReference((IWeakReference**)&weakReference);
+//    //REFCOUNT_ADD(*weakReference)
+//    return NOERROR;
+//}
 
 //=====================================================================
 //              PhoneWindow::PanelFeatureState::SavedState
 //=====================================================================
-//const AutoPtr<IParcelable> AutoPtr< ::Creator<SavedState> > PhoneWindow::PanelFeatureState::SavedState::CREATOR = new InnerParcelableCreator(this);
 CAR_INTERFACE_IMPL_2(PhoneWindow::PanelFeatureState::SavedState, Object, IPhoneWindowSavedState, IParcelable)
 
 PhoneWindow::PanelFeatureState::SavedState::SavedState()
+    : mFeatureId(0)
+    , mIsOpen(FALSE)
+    , mIsInExpandedMode(FALSE)
+
 {
 }
 
-ECode PhoneWindow::PanelFeatureState::SavedState::constructor()
-{
-    return NOERROR;
-}
-
+//should removed
 ECode PhoneWindow::PanelFeatureState::SavedState::constructor(
     /* [in] */ IParcelable* superState)
 {
-    // savedState.featureId = source.readInt();
-    // savedState.isOpen = source.readInt() == 1;
-    // savedState.isInExpandedMode = source.readInt() == 1;
-
-    // if (savedState.isOpen) {
-    //     savedState.menuState = source.readBundle();
-    // }
     return NOERROR;
 }
-
 ECode PhoneWindow::PanelFeatureState::SavedState::DescribeContents(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return 0;
-    assert(0);
+    *result = 0;
     return NOERROR;
 }
 
@@ -1461,12 +2049,19 @@ ECode PhoneWindow::PanelFeatureState::SavedState::WriteToParcel(
     // if (isOpen) {
     //     dest.writeBundle(menuState);
     // }
-    assert(0);
+    dest->WriteInt32(mFeatureId);
+    dest->WriteBoolean(mIsOpen);
+    dest->WriteBoolean(mIsInExpandedMode);
+
+    if (mIsOpen)
+    {
+        dest->WriteInterfacePtr(mMenuState);
+    }
     return NOERROR;
 }
 
 ECode PhoneWindow::PanelFeatureState::SavedState::ReadFromParcel(
-    /* [in] */ IParcel* in)
+    /* [in] */ IParcel* source)
 {
     // ==================before translated======================
     // SavedState savedState = new SavedState();
@@ -1479,31 +2074,47 @@ ECode PhoneWindow::PanelFeatureState::SavedState::ReadFromParcel(
     // }
     //
     // return savedState;
-    assert(0);
+    source->ReadInt32(&mFeatureId);
+    source->ReadBoolean(&mIsOpen);
+    source->ReadBoolean(&mIsInExpandedMode);
+
+    if (mIsOpen)
+    {
+        source->ReadInterfacePtr((Handle32*)&mMenuState);
+    }
     return NOERROR;
 }
 
-//=====================================================================
-//                    PhoneWindow::PanelFeatureState
-//=====================================================================
+
 PhoneWindow::PanelFeatureState::PanelFeatureState(
     /* [in] */ PhoneWindow* owner,
     /* [in] */ Int32 featureId)
-{
-    // ==================before translated======================
-    // this.featureId = featureId;
-    //
-    // refreshDecorView = false;
-    mOwner = owner;
-}
+    : mFeatureId(featureId)
+    , mBackground(0)
+    , mFullBackground(0)
+    , mGravity(0)
+    , mX(0)
+    , mY(0)
+    , mWindowAnimations(0)
+    , mIsCompact(FALSE)
+    , mListPresenterTheme(0)
+    , mIsPrepared(FALSE)
+    , mIsHandled(FALSE)
+    , mIsOpen(FALSE)
+    , mIsInExpandedMode(FALSE)
+    , mQwertyMode(FALSE)
+    , mRefreshDecorView(FALSE)
+    , mRefreshMenuContent(FALSE)
+    , mWasLastOpen(FALSE)
+    , mWasLastExpanded(FALSE)
+    , mOwner(owner)
+{}
 
 ECode PhoneWindow::PanelFeatureState::IsInListMode(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return isInExpandedMode || isCompact;
-    assert(0);
+    *result = mIsInExpandedMode || mIsCompact;
     return NOERROR;
 }
 
@@ -1511,365 +2122,498 @@ ECode PhoneWindow::PanelFeatureState::HasPanelItems(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // if (shownPanelView == null) return false;
-    // if (createdPanelView != null) return true;
-    //
-    // if (isCompact || isInExpandedMode) {
-    //     return listMenuPresenter.getAdapter().getCount() > 0;
-    // } else {
-    //     return ((ViewGroup) shownPanelView).getChildCount() > 0;
-    // }
-    assert(0);
+    if (mShownPanelView == NULL)
+    {
+        *result = FALSE;
+        return NOERROR;
+    }
+
+    if (mCreatedPanelView != NULL)
+    {
+        *result = TRUE;
+        return NOERROR;
+    }
+
+    if (mIsCompact || mIsInExpandedMode) {
+        AutoPtr<IListAdapter> adapter;
+        mListMenuPresenter->GetAdapter((IListAdapter**)&adapter);
+        Int32 count = 0;
+        IAdapter* adr = IAdapter::Probe(adapter);
+        *result = (adr->GetCount(&count), count) > 0;
+    } else {
+        Int32 count = 0;
+        *result = (IViewGroup::Probe(mShownPanelView)->GetChildCount(&count), count) > 0;
+    }
     return NOERROR;
 }
 
 ECode PhoneWindow::PanelFeatureState::ClearMenuPresenters()
 {
-    // ==================before translated======================
-    // if (menu != null) {
-    //     menu.removeMenuPresenter(iconMenuPresenter);
-    //     menu.removeMenuPresenter(listMenuPresenter);
-    // }
-    // iconMenuPresenter = null;
-    // listMenuPresenter = null;
-    assert(0);
+    if (mMenu != NULL) {
+        mMenu->RemoveMenuPresenter(IMenuPresenter::Probe(mIconMenuPresenter));
+        mMenu->RemoveMenuPresenter(IMenuPresenter::Probe(mListMenuPresenter));
+    }
+
+    mIconMenuPresenter = NULL;
+    mListMenuPresenter = NULL;
     return NOERROR;
 }
 
 ECode PhoneWindow::PanelFeatureState::SetStyle(
     /* [in] */ IContext* context)
 {
-    VALIDATE_NOT_NULL(context);
-    // ==================before translated======================
-    // TypedArray a = context.obtainStyledAttributes(R.styleable.Theme);
-    // background = a.getResourceId(
-    //         R.styleable.Theme_panelBackground, 0);
-    // fullBackground = a.getResourceId(
-    //         R.styleable.Theme_panelFullBackground, 0);
-    // windowAnimations = a.getResourceId(
-    //         R.styleable.Theme_windowAnimationStyle, 0);
-    // isCompact = a.getBoolean(
-    //         R.styleable.Theme_panelMenuIsCompact, false);
-    // listPresenterTheme = a.getResourceId(
-    //         R.styleable.Theme_panelMenuListTheme,
-    //         R.style.Theme_ExpandedMenu);
-    // a.recycle();
-    assert(0);
+    assert(context != NULL);
+
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+            const_cast<Int32 *>(R::styleable::Theme),
+            ArraySize(R::styleable::Theme));
+    AutoPtr<ITypedArray> a;
+    context->ObtainStyledAttributes(attrIds, (ITypedArray**)&a);
+
+    a->GetResourceId(R::styleable::Theme_panelBackground, 0, &mBackground);
+    a->GetResourceId(R::styleable::Theme_panelFullBackground, 0, &mFullBackground);
+    a->GetResourceId(R::styleable::Theme_windowAnimationStyle, 0, &mWindowAnimations);
+
+    a->GetBoolean(R::styleable::Theme_panelMenuIsCompact, FALSE, &mIsCompact);
+    a->GetResourceId(R::styleable::Theme_panelMenuListTheme,
+            R::style::Theme_ExpandedMenu, &mListPresenterTheme);
+
+    a->Recycle();
     return NOERROR;
 }
 
 ECode PhoneWindow::PanelFeatureState::SetMenu(
     /* [in] */ IMenuBuilder* menu)
 {
-    VALIDATE_NOT_NULL(menu);
-    // ==================before translated======================
-    // if (menu == this.menu) return;
-    //
-    // if (this.menu != null) {
-    //     this.menu.removeMenuPresenter(iconMenuPresenter);
-    //     this.menu.removeMenuPresenter(listMenuPresenter);
-    // }
-    // this.menu = menu;
-    // if (menu != null) {
-    //     if (iconMenuPresenter != null) menu.addMenuPresenter(iconMenuPresenter);
-    //     if (listMenuPresenter != null) menu.addMenuPresenter(listMenuPresenter);
-    // }
-    assert(0);
-    return NOERROR;
+     if (menu == mMenu) return NOERROR;
+
+     if (mMenu != NULL) {
+         mMenu->RemoveMenuPresenter(IMenuPresenter::Probe(mIconMenuPresenter));
+         mMenu->RemoveMenuPresenter(IMenuPresenter::Probe(mListMenuPresenter));
+     }
+
+     mMenu = menu;
+     if (menu != NULL) {
+         if (mIconMenuPresenter != NULL) menu->AddMenuPresenter(IMenuPresenter::Probe(mIconMenuPresenter));
+         if (mListMenuPresenter != NULL) menu->AddMenuPresenter(IMenuPresenter::Probe(mListMenuPresenter));
+     }
+     return NOERROR;
 }
 
-ECode PhoneWindow::PanelFeatureState::GetListMenuView(
+AutoPtr<IMenuView> PhoneWindow::PanelFeatureState::GetListMenuView(
     /* [in] */ IContext* context,
-    /* [in] */ IMenuPresenterCallback* cb,
-    /* [out] */ IMenuView** result)
+    /* [in] */ IMenuPresenterCallback* cb)
 {
-    VALIDATE_NOT_NULL(context);
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // if (menu == null) return null;
-    //
-    // if (!isCompact) {
-    //     getIconMenuView(context, cb); // Need this initialized to know where our offset goes
-    // }
-    //
-    // if (listMenuPresenter == null) {
-    //     listMenuPresenter = new ListMenuPresenter(
-    //             R.layout.list_menu_item_layout, listPresenterTheme);
-    //     listMenuPresenter.setCallback(cb);
-    //     listMenuPresenter.setId(R.id.list_menu_presenter);
-    //     menu.addMenuPresenter(listMenuPresenter);
-    // }
-    //
-    // if (iconMenuPresenter != null) {
-    //     listMenuPresenter.setItemIndexOffset(
-    //             iconMenuPresenter.getNumActualItemsShown());
-    // }
-    // MenuView result = listMenuPresenter.getMenuView(decorView);
-    //
-    // return result;
-    assert(0);
-    return NOERROR;
+    if (mMenu == NULL) return NULL;
+
+    if (!mIsCompact) {
+        GetIconMenuView(context, cb); // Need this initialized to know where our offset goes
+    }
+
+    if (mListMenuPresenter == NULL) {
+        CListMenuPresenter::New(R::layout::list_menu_item_layout, mListPresenterTheme, (IListMenuPresenter**)&mListMenuPresenter);
+        IMenuPresenter* menuPresenter = IMenuPresenter::Probe(mListMenuPresenter);
+        menuPresenter->SetCallback(cb);
+        mListMenuPresenter->SetId(R::id::list_menu_presenter);
+        mMenu->AddMenuPresenter(IMenuPresenter::Probe(mListMenuPresenter));
+    }
+
+    if (mIconMenuPresenter != NULL) {
+        Int32 itemNum;
+        mIconMenuPresenter->GetNumActualItemsShown(&itemNum);
+        mListMenuPresenter->SetItemIndexOffset(itemNum);
+    }
+
+    AutoPtr<IMenuView> result;
+    IMenuPresenter* menuPresenter = IMenuPresenter::Probe(mListMenuPresenter);
+    menuPresenter->GetMenuView(IViewGroup::Probe(mDecorView), (IMenuView**)&result);
+
+    return result;
 }
 
-ECode PhoneWindow::PanelFeatureState::GetIconMenuView(
+AutoPtr<IMenuView> PhoneWindow::PanelFeatureState::GetIconMenuView(
     /* [in] */ IContext* context,
-    /* [in] */ IMenuPresenterCallback* cb,
-    /* [out] */ IMenuView** result)
+    /* [in] */ IMenuPresenterCallback* cb)
 {
-    VALIDATE_NOT_NULL(context);
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // if (menu == null) return null;
-    //
-    // if (iconMenuPresenter == null) {
-    //     iconMenuPresenter = new IconMenuPresenter(context);
-    //     iconMenuPresenter.setCallback(cb);
-    //     iconMenuPresenter.setId(R.id.icon_menu_presenter);
-    //     menu.addMenuPresenter(iconMenuPresenter);
-    // }
-    //
-    // MenuView result = iconMenuPresenter.getMenuView(decorView);
-    //
-    // return result;
-    assert(0);
-    return NOERROR;
+     if (mMenu == NULL) return NULL;
+
+     if (mIconMenuPresenter == NULL) {
+         CIconMenuPresenter::New(context, (IIconMenuPresenter**)&mIconMenuPresenter);
+         IMenuPresenter* menuPresenter = IMenuPresenter::Probe(mIconMenuPresenter);
+         menuPresenter->SetCallback(cb);
+         IBaseMenuPresenter* baseMenuPresenter = IBaseMenuPresenter::Probe(mIconMenuPresenter);
+         baseMenuPresenter->SetId(R::id::icon_menu_presenter);
+         mMenu->AddMenuPresenter(IMenuPresenter::Probe(mIconMenuPresenter));
+     }
+
+     AutoPtr<IMenuView> result;
+     IMenuPresenter* menuPresenter = IMenuPresenter::Probe(mIconMenuPresenter);
+     menuPresenter->GetMenuView(IViewGroup::Probe(mDecorView), (IMenuView**)&result);
+
+     return result;
 }
 
-ECode PhoneWindow::PanelFeatureState::OnSaveInstanceState(
-    /* [out] */ IParcelable** result)
+AutoPtr<IParcelable> PhoneWindow::PanelFeatureState::OnSaveInstanceState()
 {
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // SavedState savedState = new SavedState();
-    // savedState.featureId = featureId;
-    // savedState.isOpen = isOpen;
-    // savedState.isInExpandedMode = isInExpandedMode;
-    //
-    // if (menu != null) {
-    //     savedState.menuState = new Bundle();
-    //     menu.savePresenterStates(savedState.menuState);
-    // }
-    //
-    // return savedState;
-    assert(0);
-    return NOERROR;
+    AutoPtr<CPhoneWindowSavedState> isavedState;
+    CPhoneWindowSavedState::NewByFriend((CPhoneWindowSavedState**)&isavedState);
+    SavedState* savedState = (SavedState*)(IPhoneWindowSavedState*)(isavedState.Get());
+    savedState->mFeatureId = mFeatureId;
+    savedState->mIsOpen = mIsOpen;
+    savedState->mIsInExpandedMode = mIsInExpandedMode;
+
+    if (mMenu != NULL) {
+        CBundle::New((IBundle**)&savedState->mMenuState);
+        mMenu->SavePresenterStates(savedState->mMenuState);
+    }
+
+    return savedState;
 }
 
-ECode PhoneWindow::PanelFeatureState::OnRestoreInstanceState(
+void PhoneWindow::PanelFeatureState::OnRestoreInstanceState(
     /* [in] */ IParcelable* state)
 {
-    VALIDATE_NOT_NULL(state);
-    // ==================before translated======================
-    // SavedState savedState = (SavedState) state;
-    // featureId = savedState.featureId;
-    // wasLastOpen = savedState.isOpen;
-    // wasLastExpanded = savedState.isInExpandedMode;
-    // frozenMenuState = savedState.menuState;
-    //
-    // /*
-    //  * A LocalActivityManager keeps the same instance of this class around.
-    //  * The first time the menu is being shown after restoring, the
-    //  * Activity.onCreateOptionsMenu should be called. But, if it is the
-    //  * same instance then menu != null and we won't call that method.
-    //  * We clear any cached views here. The caller should invalidatePanelMenu.
-    //  */
-    // createdPanelView = null;
-    // shownPanelView = null;
-    // decorView = null;
-    assert(0);
-    return NOERROR;
+    AutoPtr<SavedState> savedState = (SavedState*)state;
+    mFeatureId = savedState->mFeatureId;
+    mWasLastOpen = savedState->mIsOpen;
+    mWasLastExpanded = savedState->mIsInExpandedMode;
+    mFrozenMenuState = savedState->mMenuState;
+
+    /*
+     * A LocalActivityManager keeps the same instance of this class around.
+     * The first time the menu is being shown after restoring, the
+     * Activity.onCreateOptionsMenu should be called. But, if it is the
+     * same instance then menu != null and we won't call that method.
+     * So, clear this.  Also clear any cached views.
+     */
+    mMenu = NULL;
+    mCreatedPanelView = NULL;
+    mShownPanelView = NULL;
+    mDecorView = NULL;
 }
 
-ECode PhoneWindow::PanelFeatureState::ApplyFrozenState()
+void PhoneWindow::PanelFeatureState::ApplyFrozenState()
 {
-    // ==================before translated======================
-    // if (menu != null && frozenMenuState != null) {
-    //     menu.restorePresenterStates(frozenMenuState);
-    //     frozenMenuState = null;
-    // }
-    assert(0);
-    return NOERROR;
+    if (mMenu != NULL && mFrozenMenuState != NULL) {
+        mMenu->RestorePresenterStates(mFrozenMenuState);
+        mFrozenMenuState = NULL;
+    }
 }
 
-//=====================================================================
-//                   PhoneWindow::DialogMenuCallback
-//=====================================================================
-CAR_INTERFACE_IMPL_2(PhoneWindow::DialogMenuCallback, Object, IMenuBuilderCallback, IMenuPresenterCallback)
+CAR_INTERFACE_IMPL_2(PhoneWindow::DialogMenuCallback, Object, IMenuBuilderCallback, IMenuPresenterCallback);
 
 PhoneWindow::DialogMenuCallback::DialogMenuCallback(
-    /* [in] */ PhoneWindow* owner,
-    /* [in] */ Int32 featureId)
+    /* [in] */ Int32 featureId,
+    /* [in] */ PhoneWindow* host)
+    : mFeatureId(featureId)
 {
-    mOwner = owner;
-    // ==================before translated======================
-    // mFeatureId = featureId;
+    IWeakReferenceSource* source = IWeakReferenceSource::Probe((IWeakReferenceSource *)host);
+    source->GetWeakReference((IWeakReference**)&mWeakHost);
+    //host->GetWeakReference((IWeakReference**)&mWeakHost);
 }
+
+//CAR_INTERFACE_IMPL_2(PhoneWindow::DialogMenuCallback, Object, IMenuBuilderCallback, IMenuPresenterCallback)
 
 ECode PhoneWindow::DialogMenuCallback::OnCloseMenu(
     /* [in] */ IMenuBuilder* menu,
     /* [in] */ Boolean allMenusAreClosing)
 {
-    VALIDATE_NOT_NULL(menu);
-    // ==================before translated======================
-    // if (menu.getRootMenu() != menu) {
-    //     onCloseSubMenu(menu);
-    // }
-    //
-    // if (allMenusAreClosing) {
-    //     Callback callback = getCallback();
-    //     if (callback != null && !isDestroyed()) {
-    //         callback.onPanelClosed(mFeatureId, menu);
-    //     }
-    //
-    //     if (menu == mContextMenu) {
-    //         dismissContextMenu();
-    //     }
-    //
-    //     // Dismiss the submenu, if it is showing
-    //     if (mSubMenuHelper != null) {
-    //         mSubMenuHelper.dismiss();
-    //         mSubMenuHelper = null;
-    //     }
-    // }
-    assert(0);
+    if (allMenusAreClosing) {
+        AutoPtr<IInterface> w;
+        mWeakHost->Resolve(EIID_IPhoneWindow, (IInterface**)&w);
+        if (w == NULL)
+            return NOERROR;
+
+        AutoPtr<PhoneWindow> mHost = reinterpret_cast<PhoneWindow*>(w.Get());
+
+        AutoPtr<IMenuBuilder> m;
+        if ((menu->GetRootMenu((IMenuBuilder**)&m), m.Get()) != menu) {
+            OnCloseSubMenu(menu);
+        }
+
+        AutoPtr<IWindowCallback> callback;
+        mHost->GetCallback((IWindowCallback**)&callback);
+        Boolean destoryed = FALSE;
+        if (callback != NULL && !(mHost->IsDestroyed(&destoryed), destoryed)) {
+            callback->OnPanelClosed(mFeatureId, (IMenu*)menu);
+        }
+
+        if (mHost->mContextMenu != NULL && menu == mHost->mContextMenu->Probe(EIID_IMenuBuilder)) {
+            mHost->DismissContextMenu();
+        }
+
+        // Dismiss the submenu, if it is showing
+        if (mSubMenuHelper != NULL) {
+            mSubMenuHelper->Dismiss();
+            mSubMenuHelper = NULL;
+        }
+    }
+
     return NOERROR;
 }
 
 ECode PhoneWindow::DialogMenuCallback::OnCloseSubMenu(
     /* [in] */ IMenuBuilder* menu)
 {
-    VALIDATE_NOT_NULL(menu);
-    // ==================before translated======================
-    // Callback callback = getCallback();
-    // if (callback != null && !isDestroyed()) {
-    //     callback.onPanelClosed(mFeatureId, menu.getRootMenu());
-    // }
-    assert(0);
+    AutoPtr<IInterface> w;
+    mWeakHost->Resolve(EIID_IPhoneWindow, (IInterface**)&w);
+    if (w == NULL)
+        return NOERROR;
+
+    AutoPtr<PhoneWindow> mHost = reinterpret_cast<PhoneWindow*>(w.Get());
+
+    AutoPtr<IWindowCallback> callback;
+    mHost->GetCallback((IWindowCallback**)&callback);
+
+    Boolean destoryed = FALSE;
+    if (callback != NULL && !(mHost->IsDestroyed(&destoryed), destoryed)) {
+        AutoPtr<IMenuBuilder> rootMenu;
+        menu->GetRootMenu((IMenuBuilder**)&rootMenu);
+        callback->OnPanelClosed(mFeatureId, (IMenu*)rootMenu.Get());
+    }
+
     return NOERROR;
 }
 
 ECode PhoneWindow::DialogMenuCallback::OnMenuItemSelected(
     /* [in] */ IMenuBuilder* menu,
     /* [in] */ IMenuItem* item,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean* toFinish)
 {
-    VALIDATE_NOT_NULL(menu);
-    VALIDATE_NOT_NULL(item);
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // Callback callback = getCallback();
-    // return (callback != null && !isDestroyed())
-    //         && callback.onMenuItemSelected(mFeatureId, item);
-    assert(0);
+    AutoPtr<IInterface> w;
+    mWeakHost->Resolve(EIID_IPhoneWindow, (IInterface**)&w);
+    if (w == NULL)
+        return NOERROR;
+
+    AutoPtr<PhoneWindow> mHost = reinterpret_cast<PhoneWindow*>(w.Get());
+
+    AutoPtr<IWindowCallback> callback;
+    mHost->GetCallback((IWindowCallback**)&callback);
+
+    Boolean destoryed = FALSE;
+    if (callback != NULL && !(mHost->IsDestroyed(&destoryed), destoryed)) {
+        return callback->OnMenuItemSelected(mFeatureId, item, toFinish);
+    }
+
+    *toFinish = FALSE;
     return NOERROR;
 }
 
 ECode PhoneWindow::DialogMenuCallback::OnMenuModeChange(
     /* [in] */ IMenuBuilder* menu)
 {
-    VALIDATE_NOT_NULL(menu);
-    assert(0);
     return NOERROR;
 }
 
 ECode PhoneWindow::DialogMenuCallback::OnOpenSubMenu(
     /* [in] */ IMenuBuilder* subMenu,
-    /* [out] */ Boolean* result)
+    /* [out] */ Boolean* state)
 {
-    VALIDATE_NOT_NULL(subMenu);
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // if (subMenu == null) return false;
-    //
-    // // Set a simple callback for the submenu
-    // subMenu.setCallback(this);
-    //
-    // // The window manager will give us a valid window token
-    // mSubMenuHelper = new MenuDialogHelper(subMenu);
-    // mSubMenuHelper.show(null);
-    //
-    // return true;
-    assert(0);
+    VALIDATE_NOT_NULL(state);
+
+    if (subMenu == NULL) {
+        *state = FALSE;
+        return NOERROR;
+    }
+
+    // Set a simple callback for the submenu
+    subMenu->SetCallback(this);
+
+    // The window manager will give us a valid window token
+     CMenuDialogHelper::New(subMenu, (IMenuDialogHelper**)&mSubMenuHelper);
+    mSubMenuHelper->Show(NULL);
+
+    *state = TRUE;
     return NOERROR;
 }
 
-//=====================================================================
-//                      PhoneWindow::InnerRunnable
-//=====================================================================
-CAR_INTERFACE_IMPL(PhoneWindow::InnerRunnable, Object, IRunnable)
-
-PhoneWindow::InnerRunnable::InnerRunnable(
-    /* [in] */ PhoneWindow* owner)
-    : mOwner(owner)
+PhoneWindow::DecorRunnable::DecorRunnable(
+    /* [in] */ PhoneWindow* host)
 {
-    // ==================before translated======================
-    // mOwner = owner;
+    IWeakReferenceSource* source = IWeakReferenceSource::Probe((IWeakReferenceSource *)host);
+    source->GetWeakReference((IWeakReference**)&mWeakHost);
+    //host->GetWeakReference((IWeakReference**)&mWeakHost);
 }
 
-ECode PhoneWindow::InnerRunnable::Run()
+ECode PhoneWindow::DecorRunnable::Run()
 {
-    //@Override public void run() {
-    //    for (int i = 0; i <= FEATURE_MAX; i++) {
-    //        if ((mInvalidatePanelMenuFeatures & 1 << i) != 0) {
-    //            doInvalidatePanelMenu(i);
-    //        }
-    //    }
-    //    mInvalidatePanelMenuPosted = false;
-    //    mInvalidatePanelMenuFeatures = 0;
-    //}
+    AutoPtr<IInterface> w;
+    mWeakHost->Resolve(EIID_IPhoneWindow, (IInterface**)&w);
+    if (w == NULL)
+        return NOERROR;
+
+    AutoPtr<PhoneWindow> mHost = reinterpret_cast<PhoneWindow*>(w.Get());
+    // Invalidate if the panel menu hasn't been created before this.
+    AutoPtr<PanelFeatureState> st;
+    FAIL_RETURN(mHost->GetPanelState(FEATURE_OPTIONS_PANEL, FALSE, (PanelFeatureState**)&st));
+    Boolean destoryed = FALSE;
+    if (!(mHost->IsDestroyed(&destoryed), destoryed) && (st == NULL || st->mMenu == NULL)) {
+        mHost->InvalidatePanelMenu(FEATURE_ACTION_BAR);
+    }
     return NOERROR;
 }
 
-//=====================================================================
-//               PhoneWindow::PanelMenuPresenterCallback
-//=====================================================================
+PhoneWindow::DrawableFeatureState::DrawableFeatureState(
+    /* [in] */ Int32 _featureId)
+    : mFeatureId(_featureId)
+    , mResid(0)
+    , mAlpha(255)
+    , mCurAlpha(255)
+{
+}
+
+PhoneWindow::InvalidatePanelMenuRunnable::InvalidatePanelMenuRunnable(
+    /* [in] */ PhoneWindow* host)
+{
+    IWeakReferenceSource* source = IWeakReferenceSource::Probe((IWeakReferenceSource *)host);
+    source->GetWeakReference((IWeakReference**)&mWeakHost);
+    //host->GetWeakReference((IWeakReference**)&mWeakHost);
+}
+
+ECode PhoneWindow::InvalidatePanelMenuRunnable::Run()
+{
+    AutoPtr<IInterface> w;
+    mWeakHost->Resolve(EIID_IPhoneWindow, (IInterface**)&w);
+    if (w == NULL)
+        return NOERROR;
+
+    AutoPtr<PhoneWindow> host = reinterpret_cast<PhoneWindow*>(w.Get());
+    for (Int32 i = 0; i <= FEATURE_MAX; i++) {
+        if ((host->mInvalidatePanelMenuFeatures & (1 << i)) != 0) {
+            host->DoInvalidatePanelMenu(i);
+        }
+    }
+
+    host->mInvalidatePanelMenuPosted = FALSE;
+    host->mInvalidatePanelMenuFeatures = 0;
+    return NOERROR;
+}
+
+AutoPtr<IIWindowManager> PhoneWindow::WindowManagerHolder::GetWindowManager()
+{
+    if (sWindowManager == NULL) {
+        sWindowManager = IIWindowManager::Probe(ServiceManager::GetService(String("window")));
+        assert(sWindowManager != NULL);
+    }
+    return sWindowManager;
+}
+
 CAR_INTERFACE_IMPL(PhoneWindow::PanelMenuPresenterCallback, Object, IMenuPresenterCallback)
 
 PhoneWindow::PanelMenuPresenterCallback::PanelMenuPresenterCallback(
-    /* [in] */ PhoneWindow* owner)
-    : mOwner(owner)
+    /* [in] */ PhoneWindow* host)
 {
+    IWeakReferenceSource* source = IWeakReferenceSource::Probe((IWeakReferenceSource *)host);
+    source->GetWeakReference((IWeakReference**)&mWeakHost);
+    //host->GetWeakReference((IWeakReference**)&mWeakHost);
 }
 
 ECode PhoneWindow::PanelMenuPresenterCallback::OnCloseMenu(
     /* [in] */ IMenuBuilder* menu,
     /* [in] */ Boolean allMenusAreClosing)
 {
-    VALIDATE_NOT_NULL(menu);
-    // ==================before translated======================
-    // final Menu parentMenu = menu.getRootMenu();
-    // final boolean isSubMenu = parentMenu != menu;
-    // final PanelFeatureState panel = findMenuPanel(isSubMenu ? parentMenu : menu);
-    // if (panel != null) {
-    //     if (isSubMenu) {
-    //         callOnPanelClosed(panel.featureId, panel, parentMenu);
-    //         closePanel(panel, true);
-    //     } else {
-    //         // Close the panel and only do the callback if the menu is being
-    //         // closed completely, not if opening a sub menu
-    //         closePanel(panel, allMenusAreClosing);
-    //     }
-    // }
-    assert(0);
+    AutoPtr<IInterface> w;
+    mWeakHost->Resolve(EIID_IPhoneWindow, (IInterface**)&w);
+    if (w == NULL)
+        return NOERROR;
+
+    AutoPtr<PhoneWindow> mHost = reinterpret_cast<PhoneWindow*>(w.Get());
+
+    AutoPtr<IMenu> parentMenu;
+    menu->GetRootMenu((IMenuBuilder**)&parentMenu);
+
+    Boolean isSubMenu = (parentMenu.Get() != IMenu::Probe(menu));
+    AutoPtr<PanelFeatureState> panel = mHost->FindMenuPanel(isSubMenu ? parentMenu.Get() : IMenu::Probe(menu));
+    if (panel != NULL) {
+        if (isSubMenu) {
+            mHost->CallOnPanelClosed(panel->mFeatureId, panel, parentMenu);
+            mHost->ClosePanel(panel, TRUE);
+        } else {
+            // Close the panel and only do the callback if the menu is being
+            // closed completely, not if opening a sub menu
+            mHost->ClosePanel(panel, allMenusAreClosing);
+        }
+    }
+
     return NOERROR;
 }
 
 ECode PhoneWindow::PanelMenuPresenterCallback::OnOpenSubMenu(
     /* [in] */ IMenuBuilder* subMenu,
-    /* [out] */ Boolean* handle)
+    /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(handle);
-    // ==================before translated======================
-    // if (subMenu == null && hasFeature(FEATURE_ACTION_BAR)) {
-    //     Callback cb = getCallback();
-    //     if (cb != null && !isDestroyed()) {
-    //         cb.onMenuOpened(FEATURE_ACTION_BAR, subMenu);
-    //     }
-    // }
-    //
-    // return true;
-    assert(0);
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    AutoPtr<IInterface> w;
+    mWeakHost->Resolve(EIID_IPhoneWindow, (IInterface**)&w);
+    if (w == NULL)
+        return NOERROR;
+
+    AutoPtr<PhoneWindow> mHost = reinterpret_cast<PhoneWindow*>(w.Get());
+    Boolean has = FALSE;
+    if (subMenu == NULL && (mHost->HasFeature(FEATURE_ACTION_BAR, &has), has)) {
+        AutoPtr<IWindowCallback> cb;
+        mHost->GetCallback((IWindowCallback**)&cb);
+        Boolean destoryed = FALSE;
+        if (cb != NULL && !(mHost->IsDestroyed(&destoryed), destoryed)) {
+            Boolean tmp = FALSE;
+            cb->OnMenuOpened(FEATURE_ACTION_BAR, IMenu::Probe(subMenu), &tmp);
+        }
+    }
+
+    *result = TRUE;
+    return NOERROR;
+}
+
+CAR_INTERFACE_IMPL(PhoneWindow::ActionMenuPresenterCallback, Object, IMenuPresenterCallback)
+
+PhoneWindow::ActionMenuPresenterCallback::ActionMenuPresenterCallback(
+    /* [in] */ PhoneWindow* host)
+{
+    IWeakReferenceSource* source = IWeakReferenceSource::Probe((IWeakReferenceSource *)host);
+    source->GetWeakReference((IWeakReference**)&mWeakHost);
+    //host->GetWeakReference((IWeakReference**)&mWeakHost);
+}
+
+ECode PhoneWindow::ActionMenuPresenterCallback::OnOpenSubMenu(
+    /* [in] */ IMenuBuilder* subMenu,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    AutoPtr<IInterface> w;
+    mWeakHost->Resolve(EIID_IPhoneWindow, (IInterface**)&w);
+    if (w == NULL)
+        return NOERROR;
+
+    AutoPtr<PhoneWindow> mHost = reinterpret_cast<PhoneWindow*>(w.Get());
+
+    AutoPtr<IWindowCallback> cb;
+    mHost->GetCallback((IWindowCallback**)&cb);
+    if (cb != NULL) {
+        Boolean tmp = FALSE;
+        cb->OnMenuOpened(FEATURE_ACTION_BAR, IMenu::Probe(subMenu), &tmp);
+        *result = TRUE;
+        return NOERROR;
+    }
+
+    *result = FALSE;
+    return NOERROR;
+}
+
+ECode PhoneWindow::ActionMenuPresenterCallback::OnCloseMenu(
+    /* [in] */ IMenuBuilder* menu,
+    /* [in] */ Boolean allMenusAreClosing)
+{
+    AutoPtr<IInterface> w;
+    mWeakHost->Resolve(EIID_IPhoneWindow, (IInterface**)&w);
+    if (w == NULL)
+        return NOERROR;
+
+    AutoPtr<PhoneWindow> mHost = reinterpret_cast<PhoneWindow*>(w.Get());
+    mHost->CheckCloseActionMenu(IMenu::Probe(menu));
     return NOERROR;
 }
 
@@ -1882,17 +2626,13 @@ PhoneWindow::InnerSwipeDismissLayoutOnDismissedListener1::InnerSwipeDismissLayou
     /* [in] */ PhoneWindow* owner)
     : mOwner(owner)
 {
-    // ==================before translated======================
-    // mOwner = owner;
 }
 
 ECode PhoneWindow::InnerSwipeDismissLayoutOnDismissedListener1::OnDismissed(
     /* [in] */ ISwipeDismissLayout* layout)
 {
-    VALIDATE_NOT_NULL(layout);
-    // ==================before translated======================
-    // dispatchOnWindowDismissed();
-    assert(0);
+    //VALIDATE_NOT_NULL(layout);
+    mOwner->DispatchOnWindowDismissed();
     return NOERROR;
 }
 
@@ -1908,8 +2648,6 @@ PhoneWindow::InnerSwipeDismissLayoutOnSwipeProgressChangedListener1::InnerSwipeD
     : mIsTranslucent(FALSE)
     , mOwner(owner)
 {
-    // ==================before translated======================
-    // mOwner = owner;
 }
 
 ECode PhoneWindow::InnerSwipeDismissLayoutOnSwipeProgressChangedListener1::OnSwipeProgressChanged(
@@ -1917,98 +2655,175 @@ ECode PhoneWindow::InnerSwipeDismissLayoutOnSwipeProgressChangedListener1::OnSwi
     /* [in] */ Float progress,
     /* [in] */ Float translate)
 {
-    VALIDATE_NOT_NULL(layout);
-    // ==================before translated======================
-    // WindowManager.LayoutParams newParams = getAttributes();
-    // newParams.x = (int) translate;
-    // newParams.alpha = 1 - (progress * ALPHA_DECREASE);
-    // setAttributes(newParams);
-    //
-    // int flags = 0;
-    // if (newParams.x == 0) {
-    //     flags = FLAG_FULLSCREEN;
-    // } else {
-    //     flags = FLAG_LAYOUT_NO_LIMITS;
-    // }
-    // setFlags(flags, FLAG_FULLSCREEN | FLAG_LAYOUT_NO_LIMITS);
-    assert(0);
+    //VALIDATE_NOT_NULL(layout);
+    AutoPtr<IWindowManagerLayoutParams> newParams;
+    mOwner->GetAttributes((IWindowManagerLayoutParams**)&newParams);
+    newParams->SetX((Int32) translate);
+    newParams->SetAlpha(1 - (progress * ALPHA_DECREASE));
+    mOwner->SetAttributes(newParams);
+
+    Int32 flags = 0;
+    Int32 x;
+    newParams->GetX(&x);
+    if (x == 0) {
+        flags = IWindowManagerLayoutParams::FLAG_FULLSCREEN;
+    } else {
+        flags = IWindowManagerLayoutParams::FLAG_LAYOUT_NO_LIMITS;
+    }
+    mOwner->SetFlags(flags, IWindowManagerLayoutParams::FLAG_FULLSCREEN | IWindowManagerLayoutParams::FLAG_LAYOUT_NO_LIMITS);
     return NOERROR;
 }
 
 ECode PhoneWindow::InnerSwipeDismissLayoutOnSwipeProgressChangedListener1::OnSwipeCancelled(
     /* [in] */ ISwipeDismissLayout* layout)
 {
-    VALIDATE_NOT_NULL(layout);
-    // ==================before translated======================
-    // WindowManager.LayoutParams newParams = getAttributes();
-    // newParams.x = 0;
-    // newParams.alpha = 1;
-    // setAttributes(newParams);
-    // setFlags(FLAG_FULLSCREEN, FLAG_FULLSCREEN | FLAG_LAYOUT_NO_LIMITS);
-    assert(0);
+    //VALIDATE_NOT_NULL(layout);
+    AutoPtr<IWindowManagerLayoutParams> newParams;
+    mOwner->GetAttributes((IWindowManagerLayoutParams**)&newParams);
+    newParams->SetX(0);
+    newParams->SetAlpha(1);
+    mOwner->SetAttributes(newParams);
+    mOwner->SetFlags(IWindowManagerLayoutParams::FLAG_FULLSCREEN,
+            IWindowManagerLayoutParams::FLAG_FULLSCREEN | IWindowManagerLayoutParams::FLAG_LAYOUT_NO_LIMITS);
     return NOERROR;
 }
 
-//=====================================================================
-//                             PhoneWindow
-//=====================================================================
-static AutoPtr<IPhoneWindowRotationWatcher> InitDefaultRotationWatcher()
-{
-    AutoPtr<CPhoneWindowRotationWatcher> rotationWatcher;
-    CPhoneWindowRotationWatcher::NewByFriend(NULL, (CPhoneWindowRotationWatcher**)&rotationWatcher);
-    return (IPhoneWindowRotationWatcher*)rotationWatcher.Get();
-}
-
-static AutoPtr<ITransition> InitDefaultTransitionSet()
-{
-    AutoPtr<CTransitionSet> transitionSet;
-    CTransitionSet::NewByFriend((CTransitionSet**)&transitionSet);
-    //return ITransition::Probe(transitionSet);
-    return (ITransition*)(transitionSet.Get());
-}
+//CAR_INTERFACE_IMPL(PhoneWindow::MyMenuBuilderCallback, Object, IMenuBuilderCallback);
+//
+//PhoneWindow::MyMenuBuilderCallback::MyMenuBuilderCallback(
+//    /* [in] */ PhoneWindow* host)
+//{
+//    IWeakReferenceSource* source = IWeakReferenceSource::Probe((IWeakReferenceSource *)host);
+//    source->GetWeakReference((IWeakReference**)&mWeakHost);
+//    //host->GetWeakReference((IWeakReference**)&mWeakHost);
+//}
+//
+//ECode PhoneWindow::MyMenuBuilderCallback::OnMenuItemSelected(
+//    /* [in] */ IMenuBuilder* menu,
+//    /* [in] */ IMenuItem* item,
+//    /* [out] */ Boolean* state)
+//{
+//    VALIDATE_NOT_NULL(state)
+//    *state = FALSE;
+//
+//    AutoPtr<IInterface> w;
+//    mWeakHost->Resolve(EIID_IPhoneWindow, (IInterface**)&w);
+//    if (w == NULL)
+//        return NOERROR;
+//
+//    AutoPtr<PhoneWindow> mHost = reinterpret_cast<PhoneWindow*>(w.Get());
+//    return mHost->OnMenuItemSelected(menu, item, state);
+//}
+//
+//ECode PhoneWindow::MyMenuBuilderCallback::OnMenuModeChange(
+//    /* [in] */ IMenuBuilder* menu)
+//{
+//    AutoPtr<IInterface> w;
+//    mWeakHost->Resolve(EIID_IPhoneWindow, (IInterface**)&w);
+//    if (w == NULL)
+//        return NOERROR;
+//
+//    AutoPtr<PhoneWindow> mHost = reinterpret_cast<PhoneWindow*>(w.Get());
+//    return mHost->OnMenuModeChange(menu);
+//}
 
 CAR_INTERFACE_IMPL_2(PhoneWindow, Window, IPhoneWindow, IMenuBuilderCallback);
 
-const Int32 PhoneWindow::FLAG_RESOURCE_SET_ICON;
-const Int32 PhoneWindow::FLAG_RESOURCE_SET_LOGO;
-const Int32 PhoneWindow::FLAG_RESOURCE_SET_ICON_FALLBACK;
-AutoPtr<IPhoneWindowRotationWatcher> PhoneWindow::sRotationWatcher = InitDefaultRotationWatcher();
-const String PhoneWindow::TAG("PhoneWindow");
-const Boolean PhoneWindow::SWEEP_OPEN_MENU = false;
-const Int32 PhoneWindow::DEFAULT_BACKGROUND_FADE_DURATION_MS;
-const Int32 PhoneWindow::CUSTOM_TITLE_COMPATIBLE_FEATURES = DEFAULT_FEATURES |
-                            (1 << FEATURE_CUSTOM_TITLE) |
-                            (1 << FEATURE_CONTENT_TRANSITIONS) |
-                            (1 << FEATURE_ACTIVITY_TRANSITIONS) |
-                            (1 << FEATURE_ACTION_MODE_OVERLAY);
-
-AutoPtr<ITransition> PhoneWindow::USE_DEFAULT_TRANSITION = InitDefaultTransitionSet();
-const String PhoneWindow::FOCUSED_ID_TAG("android:focusedViewId");
-const String PhoneWindow::VIEWS_TAG("android:views");
-const String PhoneWindow::PANELS_TAG("android:Panels");
-const String PhoneWindow::ACTION_BAR_TAG("android:ActionBar");
-
 PhoneWindow::PhoneWindow()
+    : mResourcesSetFlags(0)
+    , mIconRes(0)
+    , mLogoRes(0)
+    , mDecor(NULL)
+    , mIsFloating(FALSE)
+    , mPanelChordingKey(0)
+    , mBackgroundResource(0)
+    , mBackgroundFallbackResource(0)
+    , mElevation(0.0)
+    , mClipToOutline(FALSE)
+    , mFrameResource(0)
+    , mTextColor(0)
+    , mStatusBarColor(0)
+    , mNavigationBarColor(0)
+    , mForcedStatusBarColor(FALSE)
+    , mForcedNavigationBarColor(FALSE)
+    , mTitleColor(0)
+    , mAlwaysReadCloseOnTouchAttr(FALSE)
+    , mClosingActionMenu(FALSE)
+    , mUiOptions(0)
+    , mInvalidatePanelMenuPosted(FALSE)
+    , mInvalidatePanelMenuFeatures(0)
+    , mReturnTransition(USE_DEFAULT_TRANSITION)
+    , mReenterTransition(USE_DEFAULT_TRANSITION)
+    , mSharedElementReturnTransition(USE_DEFAULT_TRANSITION)
+    , mSharedElementReenterTransition(USE_DEFAULT_TRANSITION)
+    , mAllowReturnTransitionOverlap(TRUE)
+    , mAllowEnterTransitionOverlap(TRUE)
+    , mBackgroundFadeDurationMillis(-1)
+    , mSharedElementsUseOverlay(TRUE)
 {
+    mVolumeControlStreamType = IAudioManager::USE_DEFAULT_STREAM_TYPE;
+    mContextMenuCallback = new DialogMenuCallback(IWindow::FEATURE_CONTEXT_MENU, this);
+    CTypedValue::New((ITypedValue**)&mMinWidthMajor);
+    CTypedValue::New((ITypedValue**)&mMinWidthMinor);
+    mInvalidatePanelMenuRunnable = new InvalidatePanelMenuRunnable(this);
+}
+
+PhoneWindow::~PhoneWindow()
+{
+    AutoPtr<_DecorView> decor = mDecor;
+    if (decor != NULL)
+    {
+        decor->Release();
+    }
 }
 
 ECode PhoneWindow::constructor(
     /* [in] */ IContext* context)
 {
-    // ==================before translated======================
-    // super(context);
-    // mLayoutInflater = LayoutInflater.from(context);
+    mContext = context;
+    mRetainContext = IActivity::Probe(mContext) == NULL && IService::Probe(mContext) == NULL;
+    if (mRetainContext) {
+        mContext->AddRef();
+    }
+    LayoutInflater::From(context, (ILayoutInflater**)&mLayoutInflater);
     return NOERROR;
 }
+
+//PInterface PhoneWindow::Probe(
+//    /* [in] */ REIID riid)
+//{
+//    if(riid == EIID_IPhoneWindow) {
+//        return reinterpret_cast<PInterface>(this);
+//    }
+//    return _PhoneWindow::Probe(riid);
+//}
+//
+//UInt32 PhoneWindow::AddRef()
+//{
+//    return _PhoneWindow::AddRef();
+//}
+//
+//UInt32 PhoneWindow::Release()
+//{
+//    _DecorView* decor = mDecor;
+//    UInt32 ref = _PhoneWindow::Release();
+//    if (decor != NULL && ref == 1) {
+//        decor->_Release();
+//    }
+//    return ref;
+//}
+//
+//ECode PhoneWindow::GetInterfaceID(
+//    /* [in] */ IInterface *pObject,
+//    /* [out] */ InterfaceID *pIID)
+//{
+//    return _PhoneWindow::GetInterfaceID(pObject, pIID);
+//}
 
 ECode PhoneWindow::SetContainer(
     /* [in] */ IWindow* container)
 {
-    VALIDATE_NOT_NULL(container);
-    // ==================before translated======================
-    // super.setContainer(container);
-    assert(0);
-    return NOERROR;
+    return Window::SetContainer(container);
 }
 
 ECode PhoneWindow::RequestFeature(
@@ -2016,51 +2831,66 @@ ECode PhoneWindow::RequestFeature(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // if (mContentParent != null) {
-    //     throw new AndroidRuntimeException("requestFeature() must be called before adding content");
-    // }
-    // final int features = getFeatures();
-    // final int newFeatures = features | (1 << featureId);
-    // if ((newFeatures & (1 << FEATURE_CUSTOM_TITLE)) != 0 &&
-    //         (newFeatures & ~CUSTOM_TITLE_COMPATIBLE_FEATURES) != 0) {
-    //     // Another feature is enabled and the user is trying to enable the custom title feature
-    //     // or custom title feature is enabled and the user is trying to enable another feature
-    //     throw new AndroidRuntimeException(
-    //             "You cannot combine custom titles with other title features");
-    // }
-    // if ((features & (1 << FEATURE_NO_TITLE)) != 0 && featureId == FEATURE_ACTION_BAR) {
-    //     return false; // Ignore. No title dominates.
-    // }
-    // if ((features & (1 << FEATURE_ACTION_BAR)) != 0 && featureId == FEATURE_NO_TITLE) {
-    //     // Remove the action bar feature if we have no title. No title dominates.
-    //     removeFeature(FEATURE_ACTION_BAR);
-    // }
-    //
-    // if ((features & (1 << FEATURE_ACTION_BAR)) != 0 && featureId == FEATURE_SWIPE_TO_DISMISS) {
-    //     throw new AndroidRuntimeException(
-    //             "You cannot combine swipe dismissal and the action bar.");
-    // }
-    // if ((features & (1 << FEATURE_SWIPE_TO_DISMISS)) != 0 && featureId == FEATURE_ACTION_BAR) {
-    //     throw new AndroidRuntimeException(
-    //             "You cannot combine swipe dismissal and the action bar.");
-    // }
-    //
-    // if (featureId == FEATURE_INDETERMINATE_PROGRESS &&
-    //         getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_WATCH)) {
-    //     throw new AndroidRuntimeException("You cannot use indeterminate progress on a watch.");
-    // }
-    // return super.requestFeature(featureId);
-    assert(0);
-    return NOERROR;
+    *result = FALSE;
+
+    if (mContentParent != NULL) {
+        Slogger::E(TAG, "requestFeature() must be called before adding content");
+        //throw new AndroidRuntimeException("requestFeature() must be called before adding content");
+        return E_RUNTIME_EXCEPTION;
+    }
+    const Int32 features = GetFeatures();
+    Int32 newFeatures = features | (1 << featureId);
+    if ((newFeatures & ( 1 << IWindow::FEATURE_CUSTOM_TITLE)) != 0
+           && (newFeatures & ~CUSTOM_TITLE_COMPATIBLE_FEATURES) !=0
+            )
+    {
+        Slogger::E(TAG, "requestFeature() You cannot combine custom titles with other title features");
+        /* Another feature is enabled and the user is trying to enable the custom title feature */
+        /* Custom title feature is enabled and the user is trying to enable another feature */
+        //throw new AndroidRuntimeException("You cannot combine custom titles with other title features");
+        return E_RUNTIME_EXCEPTION;
+    }
+
+    if ((features & (1 << FEATURE_NO_TITLE)) != 0 && featureId == FEATURE_ACTION_BAR) {
+        return NOERROR; // Ignore. No title dominates.
+    }
+
+    if ((features & (1 << FEATURE_ACTION_BAR)) != 0 && featureId == FEATURE_NO_TITLE) {
+        // Remove the action bar feature if we have no title. No title dominates.
+        RemoveFeature(FEATURE_ACTION_BAR);
+    }
+
+    if ((features & (1 << FEATURE_ACTION_BAR)) != 0 && featureId == FEATURE_SWIPE_TO_DISMISS) {
+        //throw new AndroidRuntimeException(
+        Slogger::E(TAG, "You cannot combine swipe dismissal and the action bar.");
+        return E_RUNTIME_EXCEPTION;
+    }
+    if ((features & (1 << FEATURE_SWIPE_TO_DISMISS)) != 0 && featureId == FEATURE_ACTION_BAR) {
+        //throw new AndroidRuntimeException(
+        Slogger::E(TAG, "You cannot combine swipe dismissal and the action bar.");
+        return E_RUNTIME_EXCEPTION;
+    }
+
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IPackageManager> pkManager;
+    context->GetPackageManager((IPackageManager**)&pkManager);
+    Boolean hasSystemFeature;
+    pkManager->HasSystemFeature(IPackageManager::FEATURE_WATCH, &hasSystemFeature);
+    if (featureId == FEATURE_INDETERMINATE_PROGRESS && hasSystemFeature)
+    {
+        //throw new AndroidRuntimeException("You cannot use indeterminate progress on a watch.");
+        Slogger::E(TAG, "You cannot use indeterminate progress on a watch.");
+        return E_RUNTIME_EXCEPTION;
+    }
+
+    return Window::RequestFeature(featureId, result);
 }
 
 ECode PhoneWindow::SetUiOptions(
     /* [in] */ Int32 uiOptions)
 {
-    // ==================before translated======================
-    // mUiOptions = uiOptions;
-    assert(0);
+    mUiOptions = uiOptions;
     return NOERROR;
 }
 
@@ -2068,394 +2898,730 @@ ECode PhoneWindow::SetUiOptions(
     /* [in] */ Int32 uiOptions,
     /* [in] */ Int32 mask)
 {
-    // ==================before translated======================
-    // mUiOptions = (mUiOptions & ~mask) | (uiOptions & mask);
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::GetTransitionManager(
-    /* [out] */ ITransitionManager** tm)
-{
-    VALIDATE_NOT_NULL(tm)
-    // ==================before translated======================
-    // return mTransitionManager;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::SetTransitionManager(
-    /* [in] */ ITransitionManager* tm)
-{
-    VALIDATE_NOT_NULL(tm);
-    // ==================before translated======================
-    // mTransitionManager = tm;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::GetContentScene(
-    /* [out] */ IScene** scene)
-{
-    // ==================before translated======================
-    // return mContentScene;
-    assert(0);
+    mUiOptions = (mUiOptions & ~mask) | (uiOptions & mask);
     return NOERROR;
 }
 
 ECode PhoneWindow::SetContentView(
     /* [in] */ Int32 layoutResID)
 {
-    // ==================before translated======================
-    // // Note: FEATURE_CONTENT_TRANSITIONS may be set in the process of installing the window
-    // // decor, when theme attributes and the like are crystalized. Do not check the feature
-    // // before this happens.
-    // if (mContentParent == null) {
-    //     installDecor();
-    // } else if (!hasFeature(FEATURE_CONTENT_TRANSITIONS)) {
-    //     mContentParent.removeAllViews();
-    // }
-    //
-    // if (hasFeature(FEATURE_CONTENT_TRANSITIONS)) {
-    //     final Scene newScene = Scene.getSceneForLayout(mContentParent, layoutResID,
-    //             getContext());
-    //     transitionTo(newScene);
-    // } else {
-    //     mLayoutInflater.inflate(layoutResID, mContentParent);
-    // }
-    // final Callback cb = getCallback();
-    // if (cb != null && !isDestroyed()) {
-    //     cb.onContentChanged();
-    // }
-    assert(0);
+    Boolean hFeature = FALSE;
+    HasFeature(FEATURE_CONTENT_TRANSITIONS, &hFeature);
+    if (mContentParent == NULL) {
+        InstallDecor();
+    }
+    else if(!hFeature)
+    {
+        mContentParent->RemoveAllViews();
+    }
+
+    if (hFeature)
+    {
+        AutoPtr<IScene> newScene;
+        AutoPtr<ISceneHelper> sceneHelper;
+        CSceneHelper::AcquireSingleton((ISceneHelper**)&sceneHelper);
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
+        sceneHelper->GetSceneForLayout(mContentParent, layoutResID, context, (IScene**)&newScene);
+        TransitionTo(newScene);
+    }
+    else
+    {
+        AutoPtr<IView> root;
+        mLayoutInflater->Inflate(layoutResID, mContentParent.Get(), (IView**)&root);
+    }
+
+    AutoPtr<IWindowCallback> cb;
+    GetCallback((IWindowCallback**)&cb);
+    Boolean destoryed = FALSE;
+    if (cb != NULL && !(IsDestroyed(&destoryed), destoryed)) {
+        cb->OnContentChanged();
+    }
+
     return NOERROR;
 }
 
 ECode PhoneWindow::SetContentView(
     /* [in] */ IView* view)
 {
-    VALIDATE_NOT_NULL(view);
-    // ==================before translated======================
-    // setContentView(view, new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));
-    assert(0);
-    return NOERROR;
+    AutoPtr<IViewGroupLayoutParams> params;
+    CViewGroupLayoutParams::New(
+        IViewGroupLayoutParams::MATCH_PARENT,
+        IViewGroupLayoutParams::MATCH_PARENT,
+        (IViewGroupLayoutParams**)&params);
+
+    return SetContentView(view, params);
 }
 
 ECode PhoneWindow::SetContentView(
     /* [in] */ IView* view,
-    /* [in] */ IViewGroupLayoutParams* viewGroup)
+    /* [in] */ IViewGroupLayoutParams* params)
 {
-    VALIDATE_NOT_NULL(view);
-    // ==================before translated======================
-    // // Note: FEATURE_CONTENT_TRANSITIONS may be set in the process of installing the window
-    // // decor, when theme attributes and the like are crystalized. Do not check the feature
-    // // before this happens.
-    // if (mContentParent == null) {
-    //     installDecor();
-    // } else if (!hasFeature(FEATURE_CONTENT_TRANSITIONS)) {
-    //     mContentParent.removeAllViews();
-    // }
-    //
-    // if (hasFeature(FEATURE_CONTENT_TRANSITIONS)) {
-    //     view.setLayoutParams(params);
-    //     final Scene newScene = new Scene(mContentParent, view);
-    //     transitionTo(newScene);
-    // } else {
-    //     mContentParent.addView(view, params);
-    // }
-    // final Callback cb = getCallback();
-    // if (cb != null && !isDestroyed()) {
-    //     cb.onContentChanged();
-    // }
-    assert(0);
+    // Note: FEATURE_CONTENT_TRANSITIONS may be set in the process of installing the window
+    // decor, when theme attributes and the like are crystalized. Do not check the feature
+    // before this happens.
+    Boolean hFeature = FALSE;
+    HasFeature(FEATURE_CONTENT_TRANSITIONS, &hFeature);
+    if (mContentParent == NULL) {
+        InstallDecor();
+    }
+    else if (!hFeature)
+    {
+        mContentParent->RemoveAllViews();
+    }
+
+    if (hFeature)
+    {
+        view->SetLayoutParams(params);
+        AutoPtr<IScene> newScene;
+        CScene::New(mContentParent, view, (IScene**)&newScene);
+        TransitionTo(newScene);
+    }
+    else
+    {
+        mContentParent->AddView(view, params);
+    }
+
+    AutoPtr<IWindowCallback> cb;
+    GetCallback((IWindowCallback**)&cb);
+    if (cb != NULL) {
+        cb->OnContentChanged();
+    }
+
     return NOERROR;
 }
 
 ECode PhoneWindow::AddContentView(
     /* [in] */ IView* view,
-    /* [in] */ IViewGroupLayoutParams* viewGroup)
+    /* [in] */ IViewGroupLayoutParams* params)
 {
-    VALIDATE_NOT_NULL(view);
-    // ==================before translated======================
-    // if (mContentParent == null) {
-    //     installDecor();
-    // }
-    // if (hasFeature(FEATURE_CONTENT_TRANSITIONS)) {
-    //     // TODO Augment the scenes/transitions API to support this.
-    //     Log.v(TAG, "addContentView does not support content transitions");
-    // }
-    // mContentParent.addView(view, params);
-    // final Callback cb = getCallback();
-    // if (cb != null && !isDestroyed()) {
-    //     cb.onContentChanged();
-    // }
-    assert(0);
+    if (mContentParent == NULL) {
+        InstallDecor();
+    }
+
+    Boolean hFeature = FALSE;
+    HasFeature(FEATURE_CONTENT_TRANSITIONS, &hFeature);
+    if (hFeature)
+    {
+        Logger::V(TAG, "addContentView does not support content transitions");
+    }
+
+    FAIL_RETURN(mContentParent->AddView(view, params));
+    AutoPtr<IWindowCallback> cb;
+    GetCallback((IWindowCallback**)&cb);
+    Boolean destoryed = FALSE;
+    if (cb != NULL && !(IsDestroyed(&destoryed), destoryed)) {
+        cb->OnContentChanged();
+    }
     return NOERROR;
 }
 
 ECode PhoneWindow::GetCurrentFocus(
     /* [out] */ IView** view)
 {
-    // ==================before translated======================
-    // return mDecor != null ? mDecor.findFocus() : null;
-    assert(0);
-    return NOERROR;
+    VALIDATE_NOT_NULL(view);
+
+    if (mDecor != NULL) {
+        return mDecor->FindFocus(view);
+    }
+    else {
+        *view = NULL;
+        return NOERROR;
+    }
 }
 
 ECode PhoneWindow::TakeSurface(
     /* [in] */ ISurfaceHolderCallback2* cb)
 {
-    // ==================before translated======================
-    // mTakeSurfaceCallback = callback;
-    assert(0);
+    mTakeSurfaceCallback = cb;
     return NOERROR;
 }
 
 ECode PhoneWindow::TakeInputQueue(
-    /* [in] */ IInputQueueCallback* cb)
+    /* [in] */ IInputQueueCallback* callback)
 {
-    // ==================before translated======================
-    // mTakeInputQueueCallback = callback;
-    assert(0);
+    mTakeInputQueueCallback = callback;
+
     return NOERROR;
 }
 
 ECode PhoneWindow::IsFloating(
     /* [out] */ Boolean* isFloating)
 {
-    // ==================before translated======================
-    // return mIsFloating;
-    assert(0);
+    VALIDATE_NOT_NULL(isFloating);
+    *isFloating = mIsFloating;
     return NOERROR;
 }
 
 ECode PhoneWindow::GetLayoutInflater(
     /* [out] */ ILayoutInflater** inflater)
 {
-    // ==================before translated======================
-    // return mLayoutInflater;
-    assert(0);
+    VALIDATE_NOT_NULL(inflater);
+    *inflater = mLayoutInflater;
+    REFCOUNT_ADD(*inflater);
     return NOERROR;
 }
 
 ECode PhoneWindow::SetTitle(
     /* [in] */ ICharSequence* title)
 {
-    VALIDATE_NOT_NULL(title);
-    // ==================before translated======================
-    // if (mTitleView != null) {
-    //     mTitleView.setText(title);
-    // } else if (mDecorContentParent != null) {
-    //     mDecorContentParent.setWindowTitle(title);
-    // }
-    // mTitle = title;
-    assert(0);
+    if (mTitleView != NULL) {
+        mTitleView->SetText(title);
+    }
+    else if (mDecorContentParent != NULL) {
+        mDecorContentParent->SetWindowTitle(title);
+    }
+
+    mTitle = title;
     return NOERROR;
 }
 
 ECode PhoneWindow::SetTitleColor(
     /* [in] */ Int32 textColor)
 {
-    // ==================before translated======================
-    // if (mTitleView != null) {
-    //     mTitleView.setTextColor(textColor);
-    // }
-    // mTitleColor = textColor;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::PreparePanel(
-    /* [in] */ PanelFeatureState* st,
-    /* [in] */ IKeyEvent* event,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(st);
-    VALIDATE_NOT_NULL(event);
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // if (isDestroyed()) {
-    //     return false;
-    // }
-    //
-    // // Already prepared (isPrepared will be reset to false later)
-    // if (st.isPrepared) {
-    //     return true;
-    // }
-    //
-    // if ((mPreparedPanel != null) && (mPreparedPanel != st)) {
-    //     // Another Panel is prepared and possibly open, so close it
-    //     closePanel(mPreparedPanel, false);
-    // }
-    //
-    // final Callback cb = getCallback();
-    //
-    // if (cb != null) {
-    //     st.createdPanelView = cb.onCreatePanelView(st.featureId);
-    // }
-    //
-    // final boolean isActionBarMenu =
-    //         (st.featureId == FEATURE_OPTIONS_PANEL || st.featureId == FEATURE_ACTION_BAR);
-    //
-    // if (isActionBarMenu && mDecorContentParent != null) {
-    //     // Enforce ordering guarantees around events so that the action bar never
-    //     // dispatches menu-related events before the panel is prepared.
-    //     mDecorContentParent.setMenuPrepared();
-    // }
-    //
-    // if (st.createdPanelView == null) {
-    //     // Init the panel state's menu--return false if init failed
-    //     if (st.menu == null || st.refreshMenuContent) {
-    //         if (st.menu == null) {
-    //             if (!initializePanelMenu(st) || (st.menu == null)) {
-    //                 return false;
-    //             }
-    //         }
-    //
-    //         if (isActionBarMenu && mDecorContentParent != null) {
-    //             if (mActionMenuPresenterCallback == null) {
-    //                 mActionMenuPresenterCallback = new ActionMenuPresenterCallback();
-    //             }
-    //             mDecorContentParent.setMenu(st.menu, mActionMenuPresenterCallback);
-    //         }
-    //
-    //         // Call callback, and return if it doesn't want to display menu.
-    //
-    //         // Creating the panel menu will involve a lot of manipulation;
-    //         // don't dispatch change events to presenters until we're done.
-    //         st.menu.stopDispatchingItemsChanged();
-    //         if ((cb == null) || !cb.onCreatePanelMenu(st.featureId, st.menu)) {
-    //             // Ditch the menu created above
-    //             st.setMenu(null);
-    //
-    //             if (isActionBarMenu && mDecorContentParent != null) {
-    //                 // Don't show it in the action bar either
-    //                 mDecorContentParent.setMenu(null, mActionMenuPresenterCallback);
-    //             }
-    //
-    //             return false;
-    //         }
-    //
-    //         st.refreshMenuContent = false;
-    //     }
-    //
-    //     // Callback and return if the callback does not want to show the menu
-    //
-    //     // Preparing the panel menu can involve a lot of manipulation;
-    //     // don't dispatch change events to presenters until we're done.
-    //     st.menu.stopDispatchingItemsChanged();
-    //
-    //     // Restore action view state before we prepare. This gives apps
-    //     // an opportunity to override frozen/restored state in onPrepare.
-    //     if (st.frozenActionViewState != null) {
-    //         st.menu.restoreActionViewStates(st.frozenActionViewState);
-    //         st.frozenActionViewState = null;
-    //     }
-    //
-    //     if (!cb.onPreparePanel(st.featureId, st.createdPanelView, st.menu)) {
-    //         if (isActionBarMenu && mDecorContentParent != null) {
-    //             // The app didn't want to show the menu for now but it still exists.
-    //             // Clear it out of the action bar.
-    //             mDecorContentParent.setMenu(null, mActionMenuPresenterCallback);
-    //         }
-    //         st.menu.startDispatchingItemsChanged();
-    //         return false;
-    //     }
-    //
-    //     // Set the proper keymap
-    //     KeyCharacterMap kmap = KeyCharacterMap.load(
-    //             event != null ? event.getDeviceId() : KeyCharacterMap.VIRTUAL_KEYBOARD);
-    //     st.qwertyMode = kmap.getKeyboardType() != KeyCharacterMap.NUMERIC;
-    //     st.menu.setQwertyMode(st.qwertyMode);
-    //     st.menu.startDispatchingItemsChanged();
-    // }
-    //
-    // // Set other state
-    // st.isPrepared = true;
-    // st.isHandled = false;
-    // mPreparedPanel = st;
-    //
-    // return true;
-    assert(0);
+    if (mTitleView != NULL) {
+        mTitleView->SetTextColor(textColor);
+    }
+    mTitleColor = textColor;
     return NOERROR;
 }
 
 ECode PhoneWindow::OnConfigurationChanged(
     /* [in] */ IConfiguration* newConfig)
 {
-    VALIDATE_NOT_NULL(newConfig);
-    // ==================before translated======================
-    // // Action bars handle their own menu state
-    // if (mDecorContentParent == null) {
-    //     PanelFeatureState st = getPanelState(FEATURE_OPTIONS_PANEL, false);
-    //     if ((st != null) && (st.menu != null)) {
-    //         if (st.isOpen) {
-    //             // Freeze state
-    //             final Bundle state = new Bundle();
-    //             if (st.iconMenuPresenter != null) {
-    //                 st.iconMenuPresenter.saveHierarchyState(state);
-    //             }
-    //             if (st.listMenuPresenter != null) {
-    //                 st.listMenuPresenter.saveHierarchyState(state);
-    //             }
-    //
-    //             // Remove the menu views since they need to be recreated
-    //             // according to the new configuration
-    //             clearMenuViews(st);
-    //
-    //             // Re-open the same menu
-    //             reopenMenu(false);
-    //
-    //             // Restore state
-    //             if (st.iconMenuPresenter != null) {
-    //                 st.iconMenuPresenter.restoreHierarchyState(state);
-    //             }
-    //             if (st.listMenuPresenter != null) {
-    //                 st.listMenuPresenter.restoreHierarchyState(state);
-    //             }
-    //
-    //         } else {
-    //             // Clear menu views so on next menu opening, it will use
-    //             // the proper layout
-    //             clearMenuViews(st);
-    //         }
-    //     }
-    // }
-    assert(0);
+    // Action bars handle their own menu state
+    if (mDecorContentParent == NULL)
+    {
+        AutoPtr<PanelFeatureState> st;
+        FAIL_RETURN(GetPanelState(FEATURE_OPTIONS_PANEL, FALSE, (PanelFeatureState**)&st));
+        if ((st != NULL) && (st->mMenu != NULL)) {
+            if (st->mIsOpen) {
+                // Freeze state
+                AutoPtr<IBundle> state;
+                CBundle::New((IBundle**)&state);
+                if (st->mIconMenuPresenter != NULL) {
+                    st->mIconMenuPresenter->SaveHierarchyState(state);
+                }
+                if (st->mListMenuPresenter != NULL) {
+                    st->mListMenuPresenter->SaveHierarchyState(state);
+                }
+
+                // Remove the menu views since they need to be recreated
+                // according to the new configuration
+                ClearMenuViews(st);
+
+                // Re-open the same menu
+                ReopenMenu(FALSE);
+
+                // Restore state
+                if (st->mIconMenuPresenter != NULL) {
+                    st->mIconMenuPresenter->RestoreHierarchyState(state);
+                }
+                if (st->mListMenuPresenter != NULL) {
+                    st->mListMenuPresenter->RestoreHierarchyState(state);
+                }
+
+            } else {
+                // Clear menu views so on next menu opening, it will use
+                // the proper layout
+                ClearMenuViews(st);
+            }
+        }
+    }
+
     return NOERROR;
+}
+
+/**
+ * Called when the panel key is pushed down.
+ * @param featureId The feature ID of the relevant panel (defaults to FEATURE_OPTIONS_PANEL}.
+ * @param event The key event.
+ * @return Whether the key was handled.
+ */
+ECode PhoneWindow::OnKeyDownPanel(
+    /* [in] */ Int32 featureId,
+    /* [in] */ IKeyEvent* event,
+    /* [out */ Boolean* handled)
+{
+    VALIDATE_NOT_NULL(handled);
+    assert(event != NULL);
+
+    Int32 keyCode = 0, repeat = 0;
+    event->GetKeyCode(&keyCode);
+
+    if ((event->GetRepeatCount(&repeat), repeat) == 0) {
+        // The panel key was pushed, so set the chording key
+        mPanelChordingKey = keyCode;
+
+        AutoPtr<PanelFeatureState> st;
+        FAIL_RETURN(GetPanelState(featureId, TRUE, (PanelFeatureState**)&st));
+        if (!st->mIsOpen) {
+            return PreparePanel(st, event, handled);
+        }
+    }
+
+    *handled = FALSE;
+    return NOERROR;
+}
+
+/**
+ * Called when the panel key is released.
+ * @param featureId The feature ID of the relevant panel (defaults to FEATURE_OPTIONS_PANEL}.
+ * @param event The key event.
+ */
+ECode PhoneWindow::OnKeyUpPanel(
+    /* [in] */ Int32 featureId,
+    /* [in] */ IKeyEvent* event)
+{
+    // The panel key was released, so clear the chording key
+    if (mPanelChordingKey != 0) {
+        mPanelChordingKey = 0;
+
+        Boolean isCanceled;
+        if ((event->IsCanceled(&isCanceled), isCanceled) || (mDecor != NULL && mDecor->mActionMode != NULL)) {
+            return NOERROR;
+        }
+
+        Boolean playSoundEffect = FALSE, reserved = FALSE;
+        AutoPtr<PanelFeatureState> st;
+        FAIL_RETURN(GetPanelState(featureId, TRUE, (PanelFeatureState**)&st));
+
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
+        AutoPtr<IViewConfigurationHelper> vcHelper;
+        CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&vcHelper);
+        AutoPtr<IViewConfiguration> viewConfig;
+        vcHelper->Get(context, (IViewConfiguration**)&viewConfig);
+        Boolean hasPerMk;
+        viewConfig->HasPermanentMenuKey(&hasPerMk);
+        if (featureId == FEATURE_OPTIONS_PANEL && mDecorContentParent != NULL &&
+                (mDecorContentParent->CanShowOverflowMenu(&reserved), reserved) &&
+                !hasPerMk)
+        {
+            Boolean showing = FALSE;
+            if (!(mDecorContentParent->IsOverflowMenuShowing(&showing), showing)) {
+                Boolean prepared = FALSE, destoryed = FALSE;
+                if (!(IsDestroyed(&destoryed), destoryed) && (PreparePanel(st, event, &prepared), prepared)) {
+                    mDecorContentParent->ShowOverflowMenu(&playSoundEffect);
+                }
+            } else {
+                mDecorContentParent->HideOverflowMenu(&playSoundEffect);
+            }
+        }
+        else
+        {
+            if (st->mIsOpen || st->mIsHandled) {
+
+                // Play the sound effect if the user closed an open menu (and not if
+                // they just released a menu shortcut)
+                playSoundEffect = st->mIsOpen;
+
+                // Close menu
+                ClosePanel(st, TRUE);
+
+            } else if (st->mIsPrepared) {
+                Boolean show = TRUE;
+                if (st->mRefreshMenuContent) {
+                    // Something may have invalidated the menu since we prepared it.
+                    // Re-prepare it to refresh.
+                    st->mIsPrepared = FALSE;
+                    PreparePanel(st, event, &show);
+                }
+
+                if (show) {
+                    // Write 'menu opened' to event log
+                    // EventLog.writeEvent(50001, 0);
+
+                    // Show menu
+                    OpenPanel(st, event);
+
+                    playSoundEffect = TRUE;
+                }
+            }
+        }
+
+        if (playSoundEffect) {
+            AutoPtr<IContext> context;
+            GetContext((IContext**)&context);
+            AutoPtr<IInterface> audioService;
+            context->GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&audioService);
+            AutoPtr<IAudioManager> audioManager = IAudioManager::Probe(audioService);
+            if (audioManager != NULL) {
+                audioManager->PlaySoundEffect(IAudioManager::FX_KEY_CLICK);
+            // } else {
+            //     Log.w(TAG, "Couldn't get audio manager");
+            }
+        }
+    }
+
+    return NOERROR;
+}
+
+void PhoneWindow::ClearMenuViews(
+        /* [in] */ PanelFeatureState* st)
+{
+    // This can be called on config changes, so we should make sure
+    // the views will be reconstructed based on the new orientation, etc.
+
+    // Allow the callback to create a new panel view
+    st->mCreatedPanelView = NULL;
+
+    // Causes the decor view to be recreated
+    st->mRefreshDecorView = TRUE;
+
+    st->ClearMenuPresenters();
 }
 
 ECode PhoneWindow::OpenPanel(
     /* [in] */ Int32 featureId,
     /* [in] */ IKeyEvent* event)
 {
-    VALIDATE_NOT_NULL(event);
-    // ==================before translated======================
-    // if (featureId == FEATURE_OPTIONS_PANEL && mDecorContentParent != null &&
-    //         mDecorContentParent.canShowOverflowMenu() &&
-    //         !ViewConfiguration.get(getContext()).hasPermanentMenuKey()) {
-    //     mDecorContentParent.showOverflowMenu();
-    // } else {
-    //     openPanel(getPanelState(featureId, true), event);
-    // }
-    assert(0);
+    Boolean reserved = FALSE;
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IViewConfigurationHelper> vcHelper;
+    CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&vcHelper);
+    AutoPtr<IViewConfiguration> viewConfig;
+    vcHelper->Get(context, (IViewConfiguration**)&viewConfig);
+    Boolean hasPerMk;
+    viewConfig->HasPermanentMenuKey(&hasPerMk);
+    if (featureId == FEATURE_OPTIONS_PANEL && mDecorContentParent != NULL &&
+            (mDecorContentParent->CanShowOverflowMenu(&reserved), reserved) &&
+            !hasPerMk)
+    {
+        Boolean tmp = FALSE;
+        mDecorContentParent->ShowOverflowMenu(&tmp);
+    }
+    else
+    {
+        AutoPtr<PanelFeatureState> st;
+        FAIL_RETURN(GetPanelState(featureId, TRUE, (PanelFeatureState**)&st));
+        OpenPanel(st, event);
+    }
+
     return NOERROR;
+}
+
+/**
+ * Perform initial setup of a panel. This should at the very least set the
+ * style information in the PanelFeatureState and must set
+ * PanelFeatureState.decor to the panel's window decor view.
+ *
+ * @param st The panel being initialized.
+ */
+Boolean PhoneWindow::InitializePanelDecor(
+    /* [in] */ PanelFeatureState* st)
+{
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    st->mDecorView = new _DecorView(this, context, st->mFeatureId);//, TRUE);
+    st->mGravity = IGravity::CENTER | IGravity::BOTTOM;
+    st->SetStyle(context);
+
+    AutoPtr<ITypedArray> a;
+    Int32 length = ArraySize(R::styleable::Window);
+    AutoPtr<ArrayOf<Int32> > wArray = ArrayOf<Int32>::Alloc(length);
+    for(Int32 i = 0; i < length; ++i) {
+        (*wArray)[i] = R::styleable::Window[i];
+    }
+    context->ObtainStyledAttributes(NULL, wArray, 0, st->mListPresenterTheme, (ITypedArray**)&a);
+    Float evelation;
+    a->GetDimension(R::styleable::Window_windowElevation, 0, &evelation);
+    if (evelation != 0)//Is is ok??
+    {
+        st->mDecorView->SetElevation(evelation);
+    }
+    a->Recycle();
+
+    return TRUE;
+}
+
+Int32 PhoneWindow::GetOptionsPanelGravity()
+{
+    Int32 gravity = 0;
+    // try {
+    ECode ec = WindowManagerHolder::GetWindowManager()->GetPreferredOptionsPanelGravity(&gravity);
+    if (FAILED(ec)) {
+        Slogger::E(TAG, "Couldn't getOptionsPanelGravity; using default");
+        gravity = IGravity::CENTER | IGravity::BOTTOM;
+    }
+    // } catch (RemoteException ex) {
+    //     Log.e(TAG, "Couldn't getOptionsPanelGravity; using default", ex);
+    //     return Gravity.CENTER | Gravity.BOTTOM;
+    // }
+    return gravity;
+}
+
+void PhoneWindow::OnOptionsPanelRotationChanged()
+{
+    AutoPtr<PanelFeatureState> st;
+    GetPanelState(FEATURE_OPTIONS_PANEL, FALSE, (PanelFeatureState**)&st);
+    if (st == NULL) return;
+
+    AutoPtr<IWindowManagerLayoutParams> lp;
+    if (st->mDecorView != NULL) {
+        st->mDecorView->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+    }
+
+    if (lp != NULL) {
+        ((CWindowManagerLayoutParams*)lp.Get())->mGravity = GetOptionsPanelGravity();
+        AutoPtr<IViewManager> wm;
+        GetWindowManager((IWindowManager**)&wm);
+        if (wm != NULL) {
+            wm->UpdateViewLayout(IView::Probe(st->mDecorView), IViewGroupLayoutParams::Probe(lp));
+        }
+    }
+}
+
+/**
+ * Initializes the panel associated with the panel feature state. You must
+ * at the very least set PanelFeatureState.panel to the View implementing
+ * its contents. The default implementation gets the panel from the menu.
+ *
+ * @param st The panel state being initialized.
+ * @return Whether the initialization was successful.
+ */
+Boolean PhoneWindow::InitializePanelContent(
+    /* [in] */ PanelFeatureState* st)
+{
+    if (st->mCreatedPanelView != NULL) {
+        st->mShownPanelView = st->mCreatedPanelView;
+        return TRUE;
+    }
+
+    if (st->mMenu == NULL) {
+        return FALSE;
+    }
+
+    if (mPanelMenuPresenterCallback == NULL) {
+        mPanelMenuPresenterCallback = new PanelMenuPresenterCallback(this);
+    }
+
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    Boolean res;
+    st->IsInListMode(&res);
+    AutoPtr<IMenuView> menuView = res
+            ? st->GetListMenuView(context, mPanelMenuPresenterCallback)
+            : st->GetIconMenuView(context, mPanelMenuPresenterCallback);
+
+    st->mShownPanelView = IView::Probe(menuView.Get());
+
+    if (st->mShownPanelView != NULL) {
+        // Use the menu View's default animations if it has any
+        Int32 defaultAnimations;
+        menuView->GetWindowAnimations(&defaultAnimations);
+        if (defaultAnimations != 0) {
+            st->mWindowAnimations = defaultAnimations;
+        }
+        return TRUE;
+    }
+    else {
+        return FALSE;
+    }
+}
+
+void PhoneWindow::OpenPanel(
+    /* [in] */ PanelFeatureState* st,
+    /* [in] */ IKeyEvent* event)
+{
+    // Already open, return
+    Boolean destoryed = FALSE;
+    if (st->mIsOpen || (IsDestroyed(&destoryed), destoryed)) {
+        return;
+    }
+
+    // Don't open an options panel for honeycomb apps on xlarge devices.
+    // (The app should be using an action bar for menu items.)
+    if (st->mFeatureId == FEATURE_OPTIONS_PANEL) {
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
+
+        AutoPtr<IResources> res;
+        context->GetResources((IResources**)&res);
+        assert(res != NULL);
+
+        AutoPtr<IConfiguration> config;
+        res->GetConfiguration((IConfiguration**)&config);
+
+        Int32 screenLayout = 0;
+        config->GetScreenLayout(&screenLayout);
+        Boolean isXLarge = (screenLayout & IConfiguration::SCREENLAYOUT_SIZE_MASK) ==
+                IConfiguration::SCREENLAYOUT_SIZE_XLARGE;
+
+        AutoPtr<IApplicationInfo> appInfo;
+        context->GetApplicationInfo((IApplicationInfo**)&appInfo);
+        assert(appInfo != NULL);
+
+        Int32 targetSdkVersion = 0;
+        appInfo->GetTargetSdkVersion(&targetSdkVersion);
+        Boolean isHoneycombApp = targetSdkVersion >=
+                Build::VERSION_CODES::HONEYCOMB;
+
+        if (isXLarge && isHoneycombApp) {
+            return;
+        }
+    }
+
+    AutoPtr<IWindowCallback> cb;
+    GetCallback((IWindowCallback**)&cb);
+    Boolean isOpened;
+    if ((cb != NULL) && (cb->OnMenuOpened(st->mFeatureId, IMenu::Probe(st->mMenu), &isOpened), !isOpened)) {
+        // Callback doesn't want the menu to open, reset any state
+        ClosePanel(st, TRUE);
+        return;
+    }
+
+    AutoPtr<IWindowManager> wm;
+    GetWindowManager((IWindowManager**)&wm);
+    if (wm == NULL) {
+        return;
+    }
+
+    // Prepare panel (should have been done before, but just in case)
+    Boolean prepared;
+    PreparePanel(st, event, &prepared);
+    if (!prepared) {
+        return;
+    }
+
+    Int32 width = IViewGroupLayoutParams::WRAP_CONTENT;
+    Boolean temp;
+    if (st->mDecorView == NULL || st->mRefreshDecorView) {
+        if (st->mDecorView == NULL) {
+            // Initialize the panel decor, this will populate st.decorView
+            if (!InitializePanelDecor(st) || (st->mDecorView == NULL)) {
+                return;
+            }
+        }
+        else if (st->mRefreshDecorView) {
+            Int32 count;
+            st->mDecorView->GetChildCount(&count);
+            if (count > 0) {
+                // Decor needs refreshing, so remove its views
+                st->mDecorView->RemoveAllViews();
+            }
+        }
+
+        // This will populate st.shownPanelView
+        Boolean res;
+        if (!InitializePanelContent(st) || !(st->HasPanelItems(&res), res)) {
+            return;
+        }
+
+        AutoPtr<IViewGroupLayoutParams> lp;
+        st->mShownPanelView->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+        if (lp == NULL) {
+            CViewGroupLayoutParams::New(IViewGroupLayoutParams::WRAP_CONTENT,
+                    IViewGroupLayoutParams::WRAP_CONTENT, (IViewGroupLayoutParams**)&lp);
+        }
+
+        Int32 backgroundResId, lpWidth;
+        lp->GetWidth(&lpWidth);
+        if (lpWidth == IViewGroupLayoutParams::MATCH_PARENT) {
+            // If the contents is fill parent for the width, set the
+            // corresponding background
+            backgroundResId = st->mFullBackground;
+            width = IViewGroupLayoutParams::MATCH_PARENT;
+        }
+        else {
+            // Otherwise, set the normal panel background
+            backgroundResId = st->mBackground;
+        }
+
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
+        //AutoPtr<IResources> resource;
+        //context->GetResources((IResources**)&resource);
+        AutoPtr<IDrawable> drawable;
+        context->GetDrawable(backgroundResId, (IDrawable**)&drawable);
+
+        st->mDecorView->SetWindowBackground(drawable);
+
+        AutoPtr<IViewParent> shownPanelParent;
+        st->mShownPanelView->GetParent((IViewParent**)&shownPanelParent);
+
+        if (IViewManager::Probe(shownPanelParent) != NULL) {
+            IViewManager::Probe(shownPanelParent)->RemoveView(st->mShownPanelView);
+        }
+
+        IViewGroup::Probe((IViewParent*)st->mDecorView)->AddView(st->mShownPanelView, lp);
+
+        /*
+         * Give focus to the view, if it or one of its children does not
+         * already have it.
+         */
+        Boolean focus;
+        if (st->mShownPanelView->HasFocus(&focus), !focus) {
+            Boolean requested;
+            st->mShownPanelView->RequestFocus(&requested);
+        }
+    }
+    else if (!(st->IsInListMode(&temp), temp)) {
+        width = IViewGroupLayoutParams::MATCH_PARENT;
+    } else if (st->mCreatedPanelView != NULL) {
+        // If we already had a panel view, carry width=MATCH_PARENT through
+        // as we did above when it was created.
+        AutoPtr<IViewGroupLayoutParams> lp;
+        st->mCreatedPanelView->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+
+        Int32 lpWidth = 0;
+        if (lp != NULL && (lp->GetWidth(&lpWidth), lpWidth) == IViewGroupLayoutParams::MATCH_PARENT) {
+            width = IViewGroupLayoutParams::MATCH_PARENT;
+        }
+    }
+
+    st->mIsHandled = FALSE;
+
+    AutoPtr<IWindowManagerLayoutParams> wlp;
+    CWindowManagerLayoutParams::New(
+            width, IViewGroupLayoutParams::WRAP_CONTENT,
+            st->mX, st->mY, IWindowManagerLayoutParams::TYPE_APPLICATION_ATTACHED_DIALOG,
+            IWindowManagerLayoutParams::FLAG_ALT_FOCUSABLE_IM | IWindowManagerLayoutParams::FLAG_SPLIT_TOUCH,
+            st->mDecorView->mDefaultOpacity, (IWindowManagerLayoutParams**)&wlp);
+
+    if (st->mIsCompact) {
+        ((CWindowManagerLayoutParams*)wlp.Get())->mGravity = GetOptionsPanelGravity();
+        sRotationWatcher->AddWindow(this);//THIS_PROBE(IWindow));
+    } else {
+        ((CWindowManagerLayoutParams*)wlp.Get())->mGravity = st->mGravity;
+    }
+
+    ((CWindowManagerLayoutParams*)wlp.Get())->mWindowAnimations = st->mWindowAnimations;
+
+    IViewManager::Probe(wm)->AddView((IView*)st->mDecorView.Get(), IViewGroupLayoutParams::Probe(wlp));
+    st->mIsOpen = TRUE;
+   // Log.v(TAG, "Adding main menu to window manager.");
 }
 
 ECode PhoneWindow::ClosePanel(
     /* [in] */ Int32 featureId)
 {
-    // ==================before translated======================
-    // if (featureId == FEATURE_OPTIONS_PANEL && mDecorContentParent != null &&
-    //         mDecorContentParent.canShowOverflowMenu() &&
-    //         !ViewConfiguration.get(getContext()).hasPermanentMenuKey()) {
-    //     mDecorContentParent.hideOverflowMenu();
-    // } else if (featureId == FEATURE_CONTEXT_MENU) {
-    //     closeContextMenu();
-    // } else {
-    //     closePanel(getPanelState(featureId, true), true);
-    // }
-    assert(0);
+    Boolean reserved = FALSE;
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IViewConfigurationHelper> vcHelper;
+    CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&vcHelper);
+    AutoPtr<IViewConfiguration> viewConfig;
+    vcHelper->Get(context, (IViewConfiguration**)&viewConfig);
+    Boolean hasPerMk;
+    viewConfig->HasPermanentMenuKey(&hasPerMk);
+    if (featureId == FEATURE_OPTIONS_PANEL && mDecorContentParent != NULL &&
+            (mDecorContentParent->CanShowOverflowMenu(&reserved), reserved) &&
+            !hasPerMk)
+    {
+        Boolean tmp = FALSE;
+        mDecorContentParent->HideOverflowMenu(&tmp);
+    }
+    else if (featureId == FEATURE_CONTEXT_MENU) {
+        CloseContextMenu();
+    }
+    else {
+        AutoPtr<PanelFeatureState> st;
+        FAIL_RETURN(GetPanelState(featureId, TRUE, (PanelFeatureState**)&st));
+        ClosePanel(st, TRUE);
+    }
+
     return NOERROR;
 }
 
@@ -2463,260 +3629,367 @@ ECode PhoneWindow::ClosePanel(
     /* [in] */ PanelFeatureState* st,
     /* [in] */ Boolean doCallback)
 {
-    VALIDATE_NOT_NULL(st);
-    // ==================before translated======================
-    // // System.out.println("Close panel: isOpen=" + st.isOpen);
-    // if (doCallback && st.featureId == FEATURE_OPTIONS_PANEL &&
-    //         mDecorContentParent != null && mDecorContentParent.isOverflowMenuShowing()) {
-    //     checkCloseActionMenu(st.menu);
-    //     return;
-    // }
+    Boolean showing = FALSE;
+    if (doCallback && st->mFeatureId == FEATURE_OPTIONS_PANEL &&
+            mDecorContentParent != NULL && (mDecorContentParent->IsOverflowMenuShowing(&showing), showing)) {
+        CheckCloseActionMenu(IMenu::Probe(st->mMenu));
+        return NOERROR;
+    }
+
+    AutoPtr<IWindowManager> wm;
+    GetWindowManager((IWindowManager**)&wm);
+    if ((wm != NULL) && st->mIsOpen) {
+        if (st->mDecorView != NULL) {
+            IViewManager::Probe(wm)->RemoveView((IView*)st->mDecorView.Get());
+            // Log.v(TAG, "Removing main menu from window manager.");
+            if (st->mIsCompact) {
+                sRotationWatcher->RemoveWindow(this);
+            }
+        }
+
+        if (doCallback) {
+            CallOnPanelClosed(st->mFeatureId, st, NULL);
+        }
+    }
+    st->mIsPrepared = FALSE;
+    st->mIsHandled = FALSE;
+    st->mIsOpen = FALSE;
+
+    // This view is no longer shown, so null it out
+    st->mShownPanelView = NULL;
+
+    if (st->mIsInExpandedMode) {
+        // Next time the menu opens, it should not be in expanded mode, so
+        // force a refresh of the decor
+        st->mRefreshDecorView = TRUE;
+        st->mIsInExpandedMode = FALSE;
+    }
+
+    if (mPreparedPanel.Get() == st) {
+        mPreparedPanel = NULL;
+        mPanelChordingKey = 0;
+    }
+    // add by xihao: there are several circular references
+    // PhoneWindow->PanelFeatureState->CMenuBuilder->Activity->PhoneWindow
+    // PhoneWindow->PanelFeatureState->DecorView->PhoneWindow
+    // CMenuBuilder->CListMenuPresenter->CMenuBuilder, and so on
     //
-    // final ViewManager wm = getWindowManager();
-    // if ((wm != null) && st.isOpen) {
-    //     if (st.decorView != null) {
-    //         wm.removeView(st.decorView);
-    //         // Log.v(TAG, "Removing main menu from window manager.");
-    //         if (st.isCompact) {
-    //             sRotationWatcher.removeWindow(this);
-    //         }
-    //     }
-    //
-    //     if (doCallback) {
-    //         callOnPanelClosed(st.featureId, st, null);
-    //     }
-    // }
-    //
-    // st.isPrepared = false;
-    // st.isHandled = false;
-    // st.isOpen = false;
-    //
-    // // This view is no longer shown, so null it out
-    // st.shownPanelView = null;
-    //
-    // if (st.isInExpandedMode) {
-    //     // Next time the menu opens, it should not be in expanded mode, so
-    //     // force a refresh of the decor
-    //     st.refreshDecorView = true;
-    //     st.isInExpandedMode = false;
-    // }
-    //
-    // if (mPreparedPanel == st) {
-    //     mPreparedPanel = null;
-    //     mPanelChordingKey = 0;
-    // }
-    assert(0);
+    st->SetMenu(NULL);
+    mPanels->Set(st->mFeatureId, NULL);
+
     return NOERROR;
 }
 
-ECode PhoneWindow::CheckCloseActionMenu(
+void PhoneWindow::CheckCloseActionMenu(
     /* [in] */ IMenu* menu)
 {
-    VALIDATE_NOT_NULL(menu);
-    // ==================before translated======================
-    // if (mClosingActionMenu) {
-    //     return;
-    // }
-    //
-    // mClosingActionMenu = true;
-    // mDecorContentParent.dismissPopups();
-    // Callback cb = getCallback();
-    // if (cb != null && !isDestroyed()) {
-    //     cb.onPanelClosed(FEATURE_ACTION_BAR, menu);
-    // }
-    // mClosingActionMenu = false;
-    assert(0);
-    return NOERROR;
+    if (mClosingActionMenu) {
+        return;
+    }
+
+    mClosingActionMenu = TRUE;
+    mDecorContentParent->DismissPopups();
+    AutoPtr<IWindowCallback> cb;
+    GetCallback((IWindowCallback**)&cb);
+
+    Boolean destoryed = FALSE;
+    if (cb != NULL && !(IsDestroyed(&destoryed), destoryed)) {
+        cb->OnPanelClosed(FEATURE_ACTION_BAR, menu);
+    }
+
+    mClosingActionMenu = FALSE;
+}
+
+/**
+ * Helper method for calling the {@link Callback#onPanelClosed(int, Menu)}
+ * callback. This method will grab whatever extra state is needed for the
+ * callback that isn't given in the parameters. If the panel is not open,
+ * this will not perform the callback.
+ *
+ * @param featureId Feature ID of the panel that was closed. Must be given.
+ * @param panel Panel that was closed. Optional but useful if there is no
+ *            menu given.
+ * @param menu The menu that was closed. Optional, but give if you have.
+ */
+void PhoneWindow::CallOnPanelClosed(
+    /* [in] */ Int32 featureId,
+    /* [in] */ PanelFeatureState* panel,
+    /* [in] */ IMenu* menu)
+{
+    AutoPtr<IWindowCallback> cb;
+    GetCallback((IWindowCallback**)&cb);
+    if (cb == NULL) {
+        return;
+    }
+
+    // Try to get a menu
+    if (menu == NULL) {
+        // Need a panel to grab the menu, so try to get that
+        if (panel == NULL) {
+            if ((featureId >= 0) && (featureId < mPanels->GetLength())) {
+                panel = (*mPanels)[featureId];
+            }
+        }
+
+        if (panel != NULL) {
+            // menu still may be null, which is okay--we tried our best
+            menu = IMenu::Probe(panel->mMenu);
+        }
+    }
+
+    // If the panel is not open, do not callback
+    if ((panel != NULL) && (!panel->mIsOpen)) {
+        return;
+    }
+
+    Boolean destoryed = FALSE;
+    if (!(IsDestroyed(&destoryed), destoryed)) {
+        cb->OnPanelClosed(featureId, menu);
+    }
+}
+
+Boolean PhoneWindow::LaunchDefaultSearch()
+{
+    Boolean result;
+    AutoPtr<IWindowCallback> cb;
+    GetCallback((IWindowCallback**)&cb);
+    Boolean isDestroyed = FALSE;
+    if (cb == NULL || (IsDestroyed(&isDestroyed), isDestroyed)) {
+        result = FALSE;
+    }
+    else {
+        SendCloseSystemWindows(String("search"));
+        Boolean value = FALSE;
+        cb->OnSearchRequested(&value);
+        result = value;
+    }
+
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IResources> resources;
+    context->GetResources((IResources**)&resources);
+    AutoPtr<IConfiguration> configuration;
+    resources->GetConfiguration((IConfiguration**)&configuration);
+    Int32 uiMode;
+    configuration->GetUiMode(&uiMode);
+    if (!result && (uiMode & IConfiguration::UI_MODE_TYPE_MASK) == IConfiguration::UI_MODE_TYPE_TELEVISION) {
+        // On TVs, if the app doesn't implement search, we want to launch assist.
+        AutoPtr<IInterface> obj;
+        context->GetSystemService(IContext::SEARCH_SERVICE, (IInterface**)&obj);
+        ISearchManager* searchManager = ISearchManager::Probe(obj);
+        AutoPtr<IUserHandleHelper> helper;
+        CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
+        Int32 userId;
+        helper->GetMyUserId(&userId);
+        Boolean res;
+        searchManager->LaunchAssistAction(0, String(NULL), userId, &res);
+        result = res;
+    }
+    return result;
+}
+
+void PhoneWindow::TransitionTo(
+    /* [in] */ IScene* scene)
+{
+    if (mContentScene == NULL)
+    {
+        scene->Enter();
+    }
+    else
+    {
+        mTransitionManager->TransitionTo(scene);
+    }
+    mContentScene = scene;
+}
+
+void PhoneWindow::RegisterSwipeCallbacks()
+{
+    AutoPtr<IView> v;
+    FindViewById(R::id::content, (IView**)&v);
+    ISwipeDismissLayout* swipeDismiss = ISwipeDismissLayout::Probe(v);
+    AutoPtr<IOnDismissedListener> odListener = new InnerSwipeDismissLayoutOnDismissedListener1(this);
+    swipeDismiss->SetOnDismissedListener(odListener);
+    AutoPtr<IOnSwipeProgressChangedListener> owpcListener = new InnerSwipeDismissLayoutOnSwipeProgressChangedListener1(this);
+    swipeDismiss->SetOnSwipeProgressChangedListener(owpcListener);
+}
+
+AutoPtr<IViewRootImpl> PhoneWindow::GetViewRootImpl()
+{
+    if (mDecor != NULL) {
+        AutoPtr<IViewRootImpl> viewRootImpl;
+        mDecor->GetViewRootImpl((IViewRootImpl**)&viewRootImpl);
+        if (viewRootImpl != NULL) {
+            return viewRootImpl;
+        }
+    }
+    //throw new IllegalStateException("view not added");
+    Logger::E(TAG, "PhoneWindow::GetViewRootImpl error");
+    return NULL;
+}
+
+Boolean PhoneWindow::IsTranslucent()
+{
+    AutoPtr<ITypedArray> a;
+    FAIL_RETURN(GetWindowStyle((ITypedArray**)&a));
+    Int32 resId;
+    a->GetResourceId(R::styleable::Window_windowIsTranslucent, 0, &resId);
+    Boolean res = FALSE;
+    a->GetBoolean(resId, FALSE, &res);
+    return res;
+}
+
+AutoPtr<ITransition> PhoneWindow::GetTransition(
+    /* [in] */ ITransition* currentValue,
+    /* [in] */ ITransition* defaultValue,
+    /* [in] */ Int32 id)
+{
+    if (currentValue != defaultValue) {
+        return currentValue;
+    }
+    Int32 transitionId;
+    AutoPtr<ITypedArray> a;
+    GetWindowStyle((ITypedArray**)&a);
+    a->GetResourceId(id, -1, &transitionId);
+    AutoPtr<ITransition> transition = defaultValue;
+    if (transitionId != -1 && transitionId != R::transition::no_transition) {
+        AutoPtr<ITransitionInflater> inflater;
+        AutoPtr<ITransitionInflaterHelper> tifHelper;
+        CTransitionInflaterHelper::AcquireSingleton((ITransitionInflaterHelper**)&tifHelper);
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
+        tifHelper->From(context, (ITransitionInflater**)&inflater);
+        inflater->InflateTransition(transitionId, (ITransition**)&transition);
+        ITransitionSet* ts = ITransitionSet::Probe(transition);
+        Int32 count;
+        ts->GetTransitionCount(&count);
+        if (transition != NULL && (count == 0)) {
+            transition = NULL;
+        }
+    }
+    return transition;
+}
+
+//void PhoneWindow::OpenPanel(
+//    /* [in] */ PanelFeatureState* st,
+//    /* [in] */ IKeyEvent* event)
+//{
+//    //
+//}
+
+/**
+ * Closes the context menu. This notifies the menu logic of the close, along
+ * with dismissing it from the UI.
+ */
+void PhoneWindow::CloseContextMenu()
+{
+    AutoLock lock(this);
+
+    if (mContextMenu != NULL) {
+        IMenu::Probe(mContextMenu)->Close();
+        DismissContextMenu();
+    }
+}
+
+/**
+ * Dismisses just the context menu UI. To close the context menu, use
+ * {@link #closeContextMenu()}.
+ */
+void PhoneWindow::DismissContextMenu()
+{
+    AutoLock lock(this);
+
+    mContextMenu = NULL;
+
+    if (mContextMenuHelper != NULL) {
+        mContextMenuHelper->Dismiss();
+        mContextMenuHelper = NULL;
+    }
 }
 
 ECode PhoneWindow::TogglePanel(
     /* [in] */ Int32 featureId,
     /* [in] */ IKeyEvent* event)
 {
-    VALIDATE_NOT_NULL(event);
-    // ==================before translated======================
-    // PanelFeatureState st = getPanelState(featureId, true);
-    // if (st.isOpen) {
-    //     closePanel(st, true);
-    // } else {
-    //     openPanel(st, event);
-    // }
-    assert(0);
+    AutoPtr<PanelFeatureState> st;
+    FAIL_RETURN(GetPanelState(featureId, TRUE, (PanelFeatureState**)&st));
+    if (st->mIsOpen) {
+        ClosePanel(st, TRUE);
+    } else {
+        OpenPanel(st, event);
+    }
     return NOERROR;
 }
 
 ECode PhoneWindow::InvalidatePanelMenu(
     /* [in] */ Int32 featureId)
 {
-    // ==================before translated======================
-    // mInvalidatePanelMenuFeatures |= 1 << featureId;
-    //
-    // if (!mInvalidatePanelMenuPosted && mDecor != null) {
-    //     mDecor.postOnAnimation(mInvalidatePanelMenuRunnable);
-    //     mInvalidatePanelMenuPosted = true;
-    // }
-    assert(0);
+    mInvalidatePanelMenuFeatures |= 1 << featureId;
+
+    if (!mInvalidatePanelMenuPosted && mDecor != NULL) {
+        mDecor->PostOnAnimation(mInvalidatePanelMenuRunnable);
+        mInvalidatePanelMenuPosted = TRUE;
+    }
+
     return NOERROR;
 }
 
-ECode PhoneWindow::DoPendingInvalidatePanelMenu()
-{
-    // ==================before translated======================
-    // if (mInvalidatePanelMenuPosted) {
-    //     mDecor.removeCallbacks(mInvalidatePanelMenuRunnable);
-    //     mInvalidatePanelMenuRunnable.run();
-    // }
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::DoInvalidatePanelMenu(
+void PhoneWindow::DoInvalidatePanelMenu(
     /* [in] */ Int32 featureId)
 {
-    // ==================before translated======================
-    // PanelFeatureState st = getPanelState(featureId, true);
-    // Bundle savedActionViewStates = null;
-    // if (st.menu != null) {
-    //     savedActionViewStates = new Bundle();
-    //     st.menu.saveActionViewStates(savedActionViewStates);
-    //     if (savedActionViewStates.size() > 0) {
-    //         st.frozenActionViewState = savedActionViewStates;
-    //     }
-    //     // This will be started again when the panel is prepared.
-    //     st.menu.stopDispatchingItemsChanged();
-    //     st.menu.clear();
-    // }
-    // st.refreshMenuContent = true;
-    // st.refreshDecorView = true;
-    //
-    // // Prepare the options panel if we have an action bar
-    // if ((featureId == FEATURE_ACTION_BAR || featureId == FEATURE_OPTIONS_PANEL)
-    //         && mDecorContentParent != null) {
-    //     st = getPanelState(Window.FEATURE_OPTIONS_PANEL, false);
-    //     if (st != null) {
-    //         st.isPrepared = false;
-    //         preparePanel(st, null);
-    //     }
-    // }
-    assert(0);
-    return NOERROR;
-}
+    AutoPtr<PanelFeatureState> st;
+    /*ECode ec = */GetPanelState(featureId, TRUE, (PanelFeatureState**)&st);
 
-ECode PhoneWindow::OnKeyDownPanel(
-    /* [in] */ Int32 featureId,
-    /* [in] */ IKeyEvent* event,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(event);
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // final int keyCode = event.getKeyCode();
-    //
-    // if (event.getRepeatCount() == 0) {
-    //     // The panel key was pushed, so set the chording key
-    //     mPanelChordingKey = keyCode;
-    //
-    //     PanelFeatureState st = getPanelState(featureId, true);
-    //     if (!st.isOpen) {
-    //         return preparePanel(st, event);
-    //     }
-    // }
-    //
-    // return false;
-    assert(0);
-    return NOERROR;
-}
+    if (st) {
+        AutoPtr<IBundle> savedActionViewStates;
+        if (st->mMenu != NULL) {
+            CBundle::New((IBundle**)&savedActionViewStates);
+            st->mMenu->SaveActionViewStates(savedActionViewStates);
 
-ECode PhoneWindow::OnKeyUpPanel(
-    /* [in] */ Int32 featureId,
-    /* [in] */ IKeyEvent* event)
-{
-    VALIDATE_NOT_NULL(event);
-    // ==================before translated======================
-    // // The panel key was released, so clear the chording key
-    // if (mPanelChordingKey != 0) {
-    //     mPanelChordingKey = 0;
-    //
-    //     if (event.isCanceled() || (mDecor != null && mDecor.mActionMode != null)) {
-    //         return;
-    //     }
-    //
-    //     boolean playSoundEffect = false;
-    //     final PanelFeatureState st = getPanelState(featureId, true);
-    //     if (featureId == FEATURE_OPTIONS_PANEL && mDecorContentParent != null &&
-    //             mDecorContentParent.canShowOverflowMenu() &&
-    //             !ViewConfiguration.get(getContext()).hasPermanentMenuKey()) {
-    //         if (!mDecorContentParent.isOverflowMenuShowing()) {
-    //             if (!isDestroyed() && preparePanel(st, event)) {
-    //                 playSoundEffect = mDecorContentParent.showOverflowMenu();
-    //             }
-    //         } else {
-    //             playSoundEffect = mDecorContentParent.hideOverflowMenu();
-    //         }
-    //     } else {
-    //         if (st.isOpen || st.isHandled) {
-    //
-    //             // Play the sound effect if the user closed an open menu (and not if
-    //             // they just released a menu shortcut)
-    //             playSoundEffect = st.isOpen;
-    //
-    //             // Close menu
-    //             closePanel(st, true);
-    //
-    //         } else if (st.isPrepared) {
-    //             boolean show = true;
-    //             if (st.refreshMenuContent) {
-    //                 // Something may have invalidated the menu since we prepared it.
-    //                 // Re-prepare it to refresh.
-    //                 st.isPrepared = false;
-    //                 show = preparePanel(st, event);
-    //             }
-    //
-    //             if (show) {
-    //                 // Write 'menu opened' to event log
-    //                 EventLog.writeEvent(50001, 0);
-    //
-    //                 // Show menu
-    //                 openPanel(st, event);
-    //
-    //                 playSoundEffect = true;
-    //             }
-    //         }
-    //     }
-    //
-    //     if (playSoundEffect) {
-    //         AudioManager audioManager = (AudioManager) getContext().getSystemService(
-    //                 Context.AUDIO_SERVICE);
-    //         if (audioManager != null) {
-    //             audioManager.playSoundEffect(AudioManager.FX_KEY_CLICK);
-    //         } else {
-    //             Log.w(TAG, "Couldn't get audio manager");
-    //         }
-    //     }
-    // }
-    assert(0);
-    return NOERROR;
+            Int32 size = 0;
+            if ((savedActionViewStates->GetSize(&size), size) > 0) {
+                st->mFrozenActionViewState = savedActionViewStates;
+            }
+            // This will be started again when the panel is prepared.
+            st->mMenu->StopDispatchingItemsChanged();
+            IMenu::Probe(st->mMenu)->Clear();
+        }
+
+        st->mRefreshMenuContent = TRUE;
+        st->mRefreshDecorView = TRUE;
+    }
+
+    // Prepare the options panel if we have an action bar
+    if ((featureId == FEATURE_ACTION_BAR || featureId == FEATURE_OPTIONS_PANEL) && mDecorContentParent != NULL)
+    {
+        st = NULL;
+        GetPanelState(IWindow::FEATURE_OPTIONS_PANEL, FALSE, (PanelFeatureState**)&st);
+        if (st != NULL) {
+            st->mIsPrepared = FALSE;
+            Boolean tmp = FALSE;
+            PreparePanel(st, NULL, &tmp);
+        }
+    }
 }
 
 ECode PhoneWindow::CloseAllPanels()
 {
-    // ==================before translated======================
-    // final ViewManager wm = getWindowManager();
-    // if (wm == null) {
-    //     return;
-    // }
-    //
-    // final PanelFeatureState[] panels = mPanels;
-    // final int N = panels != null ? panels.length : 0;
-    // for (int i = 0; i < N; i++) {
-    //     final PanelFeatureState panel = panels[i];
-    //     if (panel != null) {
-    //         closePanel(panel, true);
-    //     }
-    // }
-    //
-    // closeContextMenu();
-    assert(0);
+    const AutoPtr<IViewManager> wm;
+    GetWindowManager((IWindowManager**)&wm);
+    if (wm == NULL) {
+        return NOERROR;
+    }
+
+    const AutoPtr< ArrayOf<PanelFeatureState*> > panels = mPanels;
+    const Int32 N = panels != NULL ? panels->GetLength() : 0;
+    for (int i = 0; i < N; i++) {
+        const AutoPtr<PanelFeatureState> panel = (*panels)[i];
+        if (panel != NULL) {
+            ClosePanel(panel, TRUE);
+        }
+    }
+
+    CloseContextMenu();
+
     return NOERROR;
 }
 
@@ -2727,11 +4000,47 @@ ECode PhoneWindow::PerformPanelShortcut(
     /* [in] */ Int32 flags,
     /* [out] */ Boolean* succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded);
-    // ==================before translated======================
-    // return performPanelShortcut(getPanelState(featureId, true), keyCode, event, flags);
-    assert(0);
+    assert(succeeded != NULL);
+    *succeeded = FALSE;
+
+    AutoPtr<PanelFeatureState> st;
+    FAIL_RETURN(GetPanelState(featureId, TRUE, (PanelFeatureState**)&st))
+    *succeeded = PerformPanelShortcut(st, keyCode, event, flags);
     return NOERROR;
+}
+
+Boolean PhoneWindow::PerformPanelShortcut(
+    /* [in] */ PanelFeatureState* st,
+    /* [in] */ Int32 keyCode,
+    /* [in] */ IKeyEvent* event,
+    /* [in] */ Int32 flags)
+{
+    Boolean tmp = FALSE;
+    if ((event->IsSystem(&tmp), tmp) || (st == NULL)) {
+        return FALSE;
+    }
+
+    Boolean handled = FALSE;
+
+    // Only try to perform menu shortcuts if preparePanel returned true (possible false
+    // return value from application not wanting to show the menu).
+    if ((st->mIsPrepared || (PreparePanel(st, event, &tmp), tmp)) && st->mMenu != NULL) {
+        // The menu is prepared now, perform the shortcut on it
+        IMenu::Probe(st->mMenu)->PerformShortcut(keyCode, event, flags, &handled);
+    }
+
+    if (handled) {
+        // Mark as handled
+        st->mIsHandled = TRUE;
+
+        // Only close down the menu if we don't have an action bar keeping it open.
+        if ((flags & IMenu::FLAG_PERFORM_NO_CLOSE) == 0 && mDecorContentParent == NULL)
+        {
+            ClosePanel(st, TRUE);
+        }
+    }
+
+    return handled;
 }
 
 ECode PhoneWindow::PerformPanelIdentifierAction(
@@ -2740,96 +4049,31 @@ ECode PhoneWindow::PerformPanelIdentifierAction(
     /* [in] */ Int32 flags,
     /* [out] */ Boolean* succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded);
-    // ==================before translated======================
-    //
-    // PanelFeatureState st = getPanelState(featureId, true);
-    // if (!preparePanel(st, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MENU))) {
-    //     return false;
-    // }
-    // if (st.menu == null) {
-    //     return false;
-    // }
-    //
-    // boolean res = st.menu.performIdentifierAction(id, flags);
-    //
-    // // Only close down the menu if we don't have an action bar keeping it open.
-    // if (mDecorContentParent == null) {
-    //     closePanel(st, true);
-    // }
-    //
-    // return res;
-    assert(0);
-    return NOERROR;
-}
+    assert(succeeded != NULL);
+    *succeeded = FALSE;
 
-ECode PhoneWindow::FindMenuPanel(
-    /* [in] */ IMenu* menu,
-    /* [out] */ PanelFeatureState** result)
-{
-    VALIDATE_NOT_NULL(menu);
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // final PanelFeatureState[] panels = mPanels;
-    // final int N = panels != null ? panels.length : 0;
-    // for (int i = 0; i < N; i++) {
-    //     final PanelFeatureState panel = panels[i];
-    //     if (panel != null && panel.menu == menu) {
-    //         return panel;
-    //     }
-    // }
-    // return null;
-    assert(0);
-    return NOERROR;
-}
+    AutoPtr<PanelFeatureState> st;
+    FAIL_RETURN(GetPanelState(featureId, TRUE, (PanelFeatureState**)&st));
+    AutoPtr<IKeyEvent> event;
+    CKeyEvent::New(IKeyEvent::ACTION_DOWN, IKeyEvent::KEYCODE_MENU, (IKeyEvent**)&event);
 
-ECode PhoneWindow::OnMenuItemSelected(
-    /* [in] */ IMenuBuilder* menu,
-    /* [in] */ IMenuItem* item,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(menu);
-    VALIDATE_NOT_NULL(item);
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // final Callback cb = getCallback();
-    // if (cb != null && !isDestroyed()) {
-    //     final PanelFeatureState panel = findMenuPanel(menu.getRootMenu());
-    //     if (panel != null) {
-    //         return cb.onMenuItemSelected(panel.featureId, item);
-    //     }
-    // }
-    // return false;
-    assert(0);
-    return NOERROR;
-}
+    Boolean tmp = FALSE;
+    if (!(PreparePanel(st, event, &tmp), tmp)) {
+        return NOERROR;
+    }
 
-ECode PhoneWindow::OnMenuModeChange(
-    /* [in] */ IMenuBuilder* menu)
-{
-    VALIDATE_NOT_NULL(menu);
-    // ==================before translated======================
-    // reopenMenu(true);
-    assert(0);
-    return NOERROR;
-}
+    if (st->mMenu == NULL) {
+        return NOERROR;
+    }
 
-ECode PhoneWindow::OnOptionsPanelRotationChanged()
-{
-    // ==================before translated======================
-    // final PanelFeatureState st = getPanelState(FEATURE_OPTIONS_PANEL, false);
-    // if (st == null) return;
-    //
-    // final WindowManager.LayoutParams lp = st.decorView != null ?
-    //         (WindowManager.LayoutParams) st.decorView.getLayoutParams() : null;
-    // if (lp != null) {
-    //     lp.gravity = getOptionsPanelGravity();
-    //     final ViewManager wm = getWindowManager();
-    //     if (wm != null) {
-    //         wm.updateViewLayout(st.decorView, lp);
-    //     }
-    // }
-    assert(0);
+    IMenu::Probe(st->mMenu)->PerformIdentifierAction(id, flags, succeeded);
+
+    // Only close down the menu if we don't have an action bar keeping it open.
+    if (mDecorContentParent == NULL)
+    {
+        ClosePanel(st, TRUE);
+    }
+
     return NOERROR;
 }
 
@@ -2839,28 +4083,29 @@ ECode PhoneWindow::PerformContextMenuIdentifierAction(
     /* [out] */ Boolean* succeeded)
 {
     VALIDATE_NOT_NULL(succeeded);
-    // ==================before translated======================
-    // return (mContextMenu != null) ? mContextMenu.performIdentifierAction(id, flags) : false;
-    assert(0);
+
+    if (mContextMenu != NULL) {
+        return IMenu::Probe(mContextMenu)->PerformIdentifierAction(id, flags, succeeded);
+    }
+    *succeeded = FALSE;
     return NOERROR;
 }
 
 ECode PhoneWindow::SetBackgroundDrawable(
     /* [in] */ IDrawable* drawable)
 {
-    VALIDATE_NOT_NULL(drawable);
-    // ==================before translated======================
-    // if (drawable != mBackgroundDrawable || mBackgroundResource != 0) {
-    //     mBackgroundResource = 0;
-    //     mBackgroundDrawable = drawable;
-    //     if (mDecor != null) {
-    //         mDecor.setWindowBackground(drawable);
-    //     }
-    //     if (mBackgroundFallbackResource != 0) {
-    //         mDecor.setBackgroundFallback(drawable != null ? 0 : mBackgroundFallbackResource);
-    //     }
-    // }
-    assert(0);
+    if (drawable != mBackgroundDrawable || mBackgroundResource != 0) {
+        mBackgroundResource = 0;
+        mBackgroundDrawable = drawable;
+        if (mDecor != NULL) {
+            mDecor->SetWindowBackground(drawable);
+        }
+
+        if (mBackgroundFallbackResource != 0)
+        {
+            mDecor->SetBackgroundFallback(drawable != NULL? 0 : mBackgroundFallbackResource);
+        }
+    }
     return NOERROR;
 }
 
@@ -2868,19 +4113,25 @@ ECode PhoneWindow::SetFeatureDrawableResource(
     /* [in] */ Int32 featureId,
     /* [in] */ Int32 resId)
 {
-    // ==================before translated======================
-    // if (resId != 0) {
-    //     DrawableFeatureState st = getDrawableState(featureId, true);
-    //     if (st.resid != resId) {
-    //         st.resid = resId;
-    //         st.uri = null;
-    //         st.local = getContext().getDrawable(resId);
-    //         updateDrawable(featureId, st, false);
-    //     }
-    // } else {
-    //     setFeatureDrawable(featureId, null);
-    // }
-    assert(0);
+    if (resId != 0) {
+        AutoPtr<DrawableFeatureState> st;
+        GetDrawableState(featureId, TRUE, (DrawableFeatureState**)&st);
+        if (st->mResid != resId) {
+            st->mResid = resId;
+            st->mUri = NULL;
+
+            //AutoPtr<IResources> resource;
+            //mContext->GetResources((IResources**)&resource);
+            AutoPtr<IContext> context;
+            GetContext((IContext**)&context);
+            AutoPtr<IDrawable> drawable;
+            context->GetDrawable(resId, (IDrawable**)&drawable);
+            st->mLocal = drawable;
+            UpdateDrawable(featureId, st, FALSE);
+        }
+    } else {
+        SetFeatureDrawable(featureId, NULL);
+    }
     return NOERROR;
 }
 
@@ -2888,20 +4139,19 @@ ECode PhoneWindow::SetFeatureDrawableUri(
     /* [in] */ Int32 featureId,
     /* [in] */ IUri* uri)
 {
-    VALIDATE_NOT_NULL(uri);
-    // ==================before translated======================
-    // if (uri != null) {
-    //     DrawableFeatureState st = getDrawableState(featureId, true);
-    //     if (st.uri == null || !st.uri.equals(uri)) {
-    //         st.resid = 0;
-    //         st.uri = uri;
-    //         st.local = loadImageURI(uri);
-    //         updateDrawable(featureId, st, false);
-    //     }
-    // } else {
-    //     setFeatureDrawable(featureId, null);
-    // }
-    assert(0);
+    if (uri != NULL) {
+        AutoPtr<DrawableFeatureState> st;
+        GetDrawableState(featureId, TRUE, (DrawableFeatureState**)&st);
+        Boolean isEquals = FALSE;
+        if (st->mUri == NULL || !(IObject::Probe(st->mUri)->Equals(uri, &isEquals), isEquals)) {
+            st->mResid = 0;
+            st->mUri = uri;
+            st->mLocal = LoadImageURI(uri);
+            UpdateDrawable(featureId, st, FALSE);
+        }
+    } else {
+        SetFeatureDrawable(featureId, NULL);
+    }
     return NOERROR;
 }
 
@@ -2909,16 +4159,14 @@ ECode PhoneWindow::SetFeatureDrawable(
     /* [in] */ Int32 featureId,
     /* [in] */ IDrawable* drawable)
 {
-    VALIDATE_NOT_NULL(drawable);
-    // ==================before translated======================
-    // DrawableFeatureState st = getDrawableState(featureId, true);
-    // st.resid = 0;
-    // st.uri = null;
-    // if (st.local != drawable) {
-    //     st.local = drawable;
-    //     updateDrawable(featureId, st, false);
-    // }
-    assert(0);
+    AutoPtr<DrawableFeatureState> st;
+    GetDrawableState(featureId, TRUE, (DrawableFeatureState**)&st);
+    st->mResid = 0;
+    st->mUri = NULL;
+    if ((IDrawable*)st->mLocal != drawable) {
+        st->mLocal = drawable;
+        UpdateDrawable(featureId, st, FALSE);
+    }
     return NOERROR;
 }
 
@@ -2926,13 +4174,12 @@ ECode PhoneWindow::SetFeatureDrawableAlpha(
     /* [in] */ Int32 featureId,
     /* [in] */ Int32 alpha)
 {
-    // ==================before translated======================
-    // DrawableFeatureState st = getDrawableState(featureId, true);
-    // if (st.alpha != alpha) {
-    //     st.alpha = alpha;
-    //     updateDrawable(featureId, st, false);
-    // }
-    assert(0);
+    AutoPtr<DrawableFeatureState> st;
+    GetDrawableState(featureId, TRUE, (DrawableFeatureState**)&st);
+    if (st->mAlpha != alpha) {
+        st->mAlpha = alpha;
+        UpdateDrawable(featureId, st, FALSE);
+    }
     return NOERROR;
 }
 
@@ -2940,186 +4187,428 @@ ECode PhoneWindow::SetFeatureInt(
     /* [in] */ Int32 featureId,
     /* [in] */ Int32 value)
 {
-    // ==================before translated======================
-    // // XXX Should do more management (as with drawable features) to
-    // // deal with interactions between multiple window policies.
-    // updateInt(featureId, value, false);
-    assert(0);
+    // XXX Should do more management (as with drawable features) to
+    // deal with interactions between multiple window policies.
+    UpdateInt(featureId, value, FALSE);
     return NOERROR;
 }
 
 ECode PhoneWindow::SetIcon(
     /* [in] */ Int32 resId)
 {
-    // ==================before translated======================
-    // mIconRes = resId;
-    // mResourcesSetFlags |= FLAG_RESOURCE_SET_ICON;
-    // mResourcesSetFlags &= ~FLAG_RESOURCE_SET_ICON_FALLBACK;
-    // if (mDecorContentParent != null) {
-    //     mDecorContentParent.setIcon(resId);
-    // }
-    assert(0);
+    mIconRes = resId;
+    mResourcesSetFlags |= FLAG_RESOURCE_SET_ICON;
+    mResourcesSetFlags &= ~FLAG_RESOURCE_SET_ICON_FALLBACK;
+    if (mDecorContentParent != NULL)
+    {
+        mDecorContentParent->SetIcon(resId);
+    }
     return NOERROR;
 }
 
+// @Override
 ECode PhoneWindow::SetDefaultIcon(
     /* [in] */ Int32 resId)
 {
-    // ==================before translated======================
-    // if ((mResourcesSetFlags & FLAG_RESOURCE_SET_ICON) != 0) {
-    //     return;
-    // }
-    // mIconRes = resId;
-    // if (mDecorContentParent != null && (!mDecorContentParent.hasIcon() ||
-    //         (mResourcesSetFlags & FLAG_RESOURCE_SET_ICON_FALLBACK) != 0)) {
-    //     if (resId != 0) {
-    //         mDecorContentParent.setIcon(resId);
-    //         mResourcesSetFlags &= ~FLAG_RESOURCE_SET_ICON_FALLBACK;
-    //     } else {
-    //         mDecorContentParent.setIcon(
-    //                 getContext().getPackageManager().getDefaultActivityIcon());
-    //         mResourcesSetFlags |= FLAG_RESOURCE_SET_ICON_FALLBACK;
-    //     }
-    // }
-    assert(0);
+    if ((mResourcesSetFlags & FLAG_RESOURCE_SET_ICON) != 0) {
+        return NOERROR;
+    }
+    mIconRes = resId;
+    Boolean tmp;
+    if (mDecorContentParent != NULL && (!(mDecorContentParent->HasIcon(&tmp), tmp) ||
+                (mResourcesSetFlags & FLAG_RESOURCE_SET_ICON_FALLBACK) != 0))
+    {
+        if (resId != 0) {
+            mDecorContentParent->SetIcon(resId);
+            mResourcesSetFlags &= ~FLAG_RESOURCE_SET_ICON_FALLBACK;
+        } else {
+            AutoPtr<IContext> context;
+            GetContext((IContext**)&context);
+            AutoPtr<IPackageManager> pkManager;
+            context->GetPackageManager((IPackageManager**)&pkManager);
+            AutoPtr<IDrawable> daIcon;
+            pkManager->GetDefaultActivityIcon((IDrawable**)&daIcon);
+            mDecorContentParent->SetIcon(daIcon);
+            mResourcesSetFlags |= FLAG_RESOURCE_SET_ICON_FALLBACK;
+        }
+    }
     return NOERROR;
 }
 
+// @Override
 ECode PhoneWindow::SetLogo(
     /* [in] */ Int32 resId)
 {
-    // ==================before translated======================
-    // mLogoRes = resId;
-    // mResourcesSetFlags |= FLAG_RESOURCE_SET_LOGO;
-    // if (mDecorContentParent != null) {
-    //     mDecorContentParent.setLogo(resId);
-    // }
-    assert(0);
+    mLogoRes = resId;
+    mResourcesSetFlags |= FLAG_RESOURCE_SET_LOGO;
+    if (mDecorContentParent != NULL) {
+        mDecorContentParent->SetLogo(resId);
+    }
     return NOERROR;
 }
 
+// @Override
 ECode PhoneWindow::SetDefaultLogo(
     /* [in] */ Int32 resId)
 {
-    // ==================before translated======================
-    // if ((mResourcesSetFlags & FLAG_RESOURCE_SET_LOGO) != 0) {
-    //     return;
-    // }
-    // mLogoRes = resId;
-    // if (mDecorContentParent != null && !mDecorContentParent.hasLogo()) {
-    //     mDecorContentParent.setLogo(resId);
-    // }
-    assert(0);
+    if ((mResourcesSetFlags & FLAG_RESOURCE_SET_LOGO) != 0) {
+        return NOERROR;
+    }
+    mLogoRes = resId;
+    Boolean tmp;
+    if (mDecorContentParent != NULL && !(mDecorContentParent->HasLogo(&tmp), tmp)) {
+        mDecorContentParent->SetLogo(resId);
+    }
     return NOERROR;
 }
 
+// @Override
 ECode PhoneWindow::SetLocalFocus(
     /* [in] */ Boolean hasFocus,
     /* [in] */ Boolean inTouchMode)
 {
-    // ==================before translated======================
-    // getViewRootImpl().windowFocusChanged(hasFocus, inTouchMode);
-    assert(0);
+    AutoPtr<IViewRootImpl> vri = GetViewRootImpl();
+    if (vri == NULL)
+    {
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    vri->WindowFocusChanged(hasFocus, inTouchMode);
+
     return NOERROR;
 }
 
+// @Override
 ECode PhoneWindow::InjectInputEvent(
     /* [in] */ IInputEvent* event)
 {
-    VALIDATE_NOT_NULL(event);
-    // ==================before translated======================
-    // getViewRootImpl().dispatchInputEvent(event);
-    assert(0);
-    return NOERROR;
+    AutoPtr<IViewRootImpl> vri = GetViewRootImpl();
+    if (vri == NULL)
+    {
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    return vri->DispatchInputEvent(event);
 }
+
 
 ECode PhoneWindow::TakeKeyEvents(
     /* [in] */ Boolean get)
 {
-    // ==================before translated======================
-    // mDecor.setFocusable(get);
-    assert(0);
-    return NOERROR;
+    return mDecor->SetFocusable(get);
 }
 
 ECode PhoneWindow::SuperDispatchKeyEvent(
     /* [in] */ IKeyEvent* event,
     /* [out] */ Boolean* succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded);
-    // ==================before translated======================
-    // return mDecor.superDispatchKeyEvent(event);
-    assert(0);
-    return FALSE;
+    VALIDATE_NOT_NULL(succeeded)
+    mDecor->SuperDispatchKeyEvent(event, succeeded);
+    return NOERROR;
 }
 
 ECode PhoneWindow::SuperDispatchKeyShortcutEvent(
     /* [in] */ IKeyEvent* event,
     /* [out] */ Boolean* succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded);
-    // ==================before translated======================
-    // return mDecor.superDispatchKeyShortcutEvent(event);
-    assert(0);
-    return FALSE;
+    VALIDATE_NOT_NULL(succeeded)
+    mDecor->SuperDispatchKeyShortcutEvent(event, succeeded);
+    return NOERROR;
 }
 
 ECode PhoneWindow::SuperDispatchTouchEvent(
     /* [in] */ IMotionEvent* event,
     /* [out] */ Boolean* succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded);
-    // ==================before translated======================
-    // return mDecor.superDispatchTouchEvent(event);
-    assert(0);
-    return FALSE;
+    VALIDATE_NOT_NULL(succeeded)
+    mDecor->SuperDispatchTouchEvent(event, succeeded);
+    return NOERROR;
 }
 
 ECode PhoneWindow::SuperDispatchTrackballEvent(
     /* [in] */ IMotionEvent* event,
     /* [out] */ Boolean* succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded);
-    // ==================before translated======================
-    // return mDecor.superDispatchTrackballEvent(event);
-    assert(0);
-    return FALSE;
+    VALIDATE_NOT_NULL(succeeded)
+    mDecor->SuperDispatchTrackballEvent(event, succeeded);
+    return NOERROR;
 }
 
 ECode PhoneWindow::SuperDispatchGenericMotionEvent(
     /* [in] */ IMotionEvent* event,
     /* [out] */ Boolean* succeeded)
 {
-    VALIDATE_NOT_NULL(succeeded);
-    // ==================before translated======================
-    // return mDecor.superDispatchGenericMotionEvent(event);
-    assert(0);
+    VALIDATE_NOT_NULL(succeeded)
+    mDecor->SuperDispatchGenericMotionEvent(event, succeeded);
+    return NOERROR;
+}
+
+/**
+ * A key was pressed down and not handled by anything else in the window.
+ *
+ * @see #onKeyUp
+ * @see android.view.KeyEvent
+ */
+Boolean PhoneWindow::OnKeyDown(
+    /* [in] */ Int32 featureId,
+    /* [in] */ Int32 keyCode,
+    /* [in] */ IKeyEvent* event)
+{
+    /* ****************************************************************************
+     * HOW TO DECIDE WHERE YOUR KEY HANDLING GOES.
+     *
+     * If your key handling must happen before the app gets a crack at the event,
+     * it goes in PhoneWindowManager.
+     *
+     * If your key handling should happen in all windows, and does not depend on
+     * the state of the current application, other than that the current
+     * application can override the behavior by handling the event itself, it
+     * should go in PhoneFallbackEventHandler.
+     *
+     * Only if your handling depends on the window, and the fact that it has
+     * a DecorView, should it go here.
+     * ****************************************************************************/
+
+    AutoPtr<IDispatcherState> dispatcher;
+    if (mDecor != NULL) {
+        mDecor->GetKeyDispatcherState((IDispatcherState**)&dispatcher);
+    }
+
+    switch (keyCode) {
+        case IKeyEvent::KEYCODE_VOLUME_UP:
+        case IKeyEvent::KEYCODE_VOLUME_DOWN:
+        {
+            Int32 direction = keyCode == IKeyEvent::KEYCODE_VOLUME_UP ? IAudioManager::ADJUST_RAISE
+                : IAudioManager::ADJUST_LOWER;
+            // If we have a session send it the volume command, otherwise
+            // use the suggested stream.
+            if (mMediaController != NULL) {
+                mMediaController->AdjustVolume(direction, IAudioManager::FLAG_SHOW_UI);
+            } else {
+                AutoPtr<IContext> context;
+                GetContext((IContext**)&context);
+                AutoPtr<IMediaSessionLegacyHelper> mediaSessionLegacyHelper;
+                AutoPtr<IMediaSessionLegacyHelperHelper> mediaSessionLegacyHelperHelper;
+                CMediaSessionLegacyHelperHelper::AcquireSingleton((IMediaSessionLegacyHelperHelper**)&mediaSessionLegacyHelperHelper);
+                mediaSessionLegacyHelperHelper->GetHelper(context, (IMediaSessionLegacyHelper**)&mediaSessionLegacyHelper);
+                mediaSessionLegacyHelper->SendAdjustVolumeBy(mVolumeControlStreamType, direction,
+                                        IAudioManager::FLAG_SHOW_UI | IAudioManager::FLAG_VIBRATE);
+            }
+            return TRUE;
+        }
+        case IKeyEvent::KEYCODE_VOLUME_MUTE: {
+            // Similar code is in PhoneFallbackEventHandler in case the window
+            // doesn't have one of these.  In this case, we execute it here and
+            // eat the event instead, because we have mVolumeControlStreamType
+            // and they don't.
+            AutoPtr<IAudioManager> am = GetAudioManager();
+            am->HandleKeyDown(event, mVolumeControlStreamType);
+            return TRUE;
+        }
+        // These are all the recognized media key codes in
+        // KeyEvent.isMediaKey()
+        case IKeyEvent::KEYCODE_MEDIA_PLAY:
+        case IKeyEvent::KEYCODE_MEDIA_PAUSE:
+        case IKeyEvent::KEYCODE_MEDIA_PLAY_PAUSE:
+        case IKeyEvent::KEYCODE_MUTE:
+        case IKeyEvent::KEYCODE_HEADSETHOOK:
+        case IKeyEvent::KEYCODE_MEDIA_STOP:
+        case IKeyEvent::KEYCODE_MEDIA_NEXT:
+        case IKeyEvent::KEYCODE_MEDIA_PREVIOUS:
+        case IKeyEvent::KEYCODE_MEDIA_REWIND:
+        case IKeyEvent::KEYCODE_MEDIA_RECORD:
+        case IKeyEvent::KEYCODE_MEDIA_FAST_FORWARD: {
+            if (mMediaController != NULL) {
+                Boolean tmp;
+                if ((mMediaController->DispatchMediaButtonEvent(event, &tmp), tmp)) {
+                    return TRUE;
+                }
+            }
+            return FALSE;
+        }
+
+        case IKeyEvent::KEYCODE_MENU: {
+            Boolean tmp = FALSE;
+            OnKeyDownPanel((featureId < 0) ? FEATURE_OPTIONS_PANEL : featureId, event, &tmp);
+            return TRUE;
+        }
+
+        case IKeyEvent::KEYCODE_BACK: {
+            Int32 repeat = 0;
+            if ((event->GetRepeatCount(&repeat), repeat) > 0) break;
+            if (featureId < 0) break;
+            // Currently don't do anything with long press.
+            if (dispatcher != NULL) {
+                dispatcher->StartTracking(event, (IInterface*)this->Probe(EIID_IInterface));
+            }
+            return TRUE;
+        }
+
+    }
+
     return FALSE;
 }
 
-ECode PhoneWindow::GetAudioManager(
-    /* [out] */ IAudioManager** result)
+AutoPtr<IKeyguardManager> PhoneWindow::GetKeyguardManager()
 {
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // if (mAudioManager == null) {
-    //     mAudioManager = (AudioManager)getContext().getSystemService(Context.AUDIO_SERVICE);
-    // }
-    // return mAudioManager;
-    assert(0);
-    return NOERROR;
+    if (mKeyguardManager == NULL) {
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
+        context->GetSystemService(IContext::KEYGUARD_SERVICE, (IInterface**)&mKeyguardManager);
+    }
+
+    return mKeyguardManager;
+}
+
+AutoPtr<IAudioManager> PhoneWindow::GetAudioManager()
+{
+    if (mAudioManager == NULL) {
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
+        AutoPtr<IInterface> audioService;
+        context->GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&audioService);
+        mAudioManager = IAudioManager::Probe(audioService);
+    }
+
+    return mAudioManager;
+}
+
+/**
+ * A key was released and not handled by anything else in the window.
+ *
+ * @see #onKeyDown
+ * @see android.view.KeyEvent
+ */
+Boolean PhoneWindow::OnKeyUp(
+    /* [in] */ Int32 featureId,
+    /* [in] */ Int32 keyCode,
+    /* [in] */ IKeyEvent* event)
+{
+    AutoPtr<IDispatcherState> dispatcher;
+    if (mDecor != NULL) {
+        mDecor->GetKeyDispatcherState((IDispatcherState**)&dispatcher);
+    }
+
+    if (dispatcher != NULL) {
+        dispatcher->HandleUpEvent(event);
+    }
+    //Log.i(TAG, "Key up: repeat=" + event.getRepeatCount()
+    //        + " flags=0x" + Integer.toHexString(event.getFlags()));
+
+    switch (keyCode) {
+    case IKeyEvent::KEYCODE_VOLUME_UP:
+    case IKeyEvent::KEYCODE_VOLUME_DOWN: {
+        // If we have a session send it the volume command, otherwise
+        // use the suggested stream.
+        if (mMediaController != NULL) {
+            mMediaController->AdjustVolume(0, IAudioManager::FLAG_PLAY_SOUND | IAudioManager::FLAG_VIBRATE);
+        }
+        else {
+            AutoPtr<IContext> context;
+            GetContext((IContext**)&context);
+            AutoPtr<IMediaSessionLegacyHelper> mediaSessionLegacyHelper;
+            AutoPtr<IMediaSessionLegacyHelperHelper> mediaSessionLegacyHelperHelper;
+            CMediaSessionLegacyHelperHelper::AcquireSingleton((IMediaSessionLegacyHelperHelper**)&mediaSessionLegacyHelperHelper);
+            mediaSessionLegacyHelperHelper->GetHelper(context, (IMediaSessionLegacyHelper**)&mediaSessionLegacyHelper);
+            mediaSessionLegacyHelper->SendAdjustVolumeBy(
+                mVolumeControlStreamType, 0, IAudioManager::FLAG_PLAY_SOUND | IAudioManager::FLAG_VIBRATE);
+        }
+        return TRUE;
+    }
+    case IKeyEvent::KEYCODE_VOLUME_MUTE: {
+            // Similar code is in PhoneFallbackEventHandler in case the window
+            // doesn't have one of these.  In this case, we execute it here and
+            // eat the event instead, because we have mVolumeControlStreamType
+            // and they don't.
+            AutoPtr<IAudioManager> am = GetAudioManager();
+            am->HandleKeyUp(event, mVolumeControlStreamType);
+            return TRUE;
+        }
+    // These are all the recognized media key codes in
+    // KeyEvent.isMediaKey()
+    case IKeyEvent::KEYCODE_MEDIA_PLAY:
+    case IKeyEvent::KEYCODE_MEDIA_PAUSE:
+    case IKeyEvent::KEYCODE_MEDIA_PLAY_PAUSE:
+    case IKeyEvent::KEYCODE_MUTE:
+    case IKeyEvent::KEYCODE_HEADSETHOOK:
+    case IKeyEvent::KEYCODE_MEDIA_STOP:
+    case IKeyEvent::KEYCODE_MEDIA_NEXT:
+    case IKeyEvent::KEYCODE_MEDIA_PREVIOUS:
+    case IKeyEvent::KEYCODE_MEDIA_REWIND:
+    case IKeyEvent::KEYCODE_MEDIA_RECORD:
+    case IKeyEvent::KEYCODE_MEDIA_FAST_FORWARD: {
+        if (mMediaController != NULL) {
+            Boolean tmp;
+            if (mMediaController->DispatchMediaButtonEvent(event, &tmp), tmp) {
+                return TRUE;
+            }
+        }
+        return FALSE;
+    }
+
+    case IKeyEvent::KEYCODE_MENU:
+        {
+            OnKeyUpPanel(featureId < 0 ? IWindow::FEATURE_OPTIONS_PANEL : featureId, event);
+            return TRUE;
+        }
+    case IKeyEvent::KEYCODE_BACK:
+        {
+            if (featureId < 0) break;
+
+            Boolean isTracking, isCanceled;
+            event->IsTracking(&isTracking);
+            event->IsCanceled(&isCanceled);
+            if (isTracking && !isCanceled) {
+                if (featureId == IWindow::FEATURE_OPTIONS_PANEL) {
+                   AutoPtr<PanelFeatureState> st;
+                   GetPanelState(featureId, FALSE, (PanelFeatureState**)&st);
+                   if (st != NULL && st->mIsInExpandedMode) {
+                       // If the user is in an expanded menu and hits back, it
+                       // should go back to the icon menu
+                       ReopenMenu(TRUE);
+                       return TRUE;
+                   }
+                }
+                ClosePanel(featureId);
+                return TRUE;
+            }
+        }
+        break;
+    case IKeyEvent::KEYCODE_SEARCH:
+        {
+            /*
+             * Do this in onKeyUp since the Search key is also used for
+             * chording quick launch shortcuts.
+             */
+            Boolean value = FALSE;
+            if ((GetKeyguardManager()->InKeyguardRestrictedInputMode(&value), value)) {
+                break;
+            }
+            Boolean isTracking = FALSE;
+            Boolean isCanceled = FALSE;
+            if ((event->IsTracking(&isTracking), isTracking)
+                    && !(event->IsCanceled(&isCanceled), isCanceled)) {
+                LaunchDefaultSearch();
+            }
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
+void PhoneWindow::OnActive()
+{
 }
 
 ECode PhoneWindow::GetDecorView(
     /* [out] */ IView** view)
 {
     VALIDATE_NOT_NULL(view);
-    // ==================before translated======================
-    // if (mDecor == null) {
-    //     installDecor();
-    // }
-    // return mDecor;
-    assert(0);
+
+    if (mDecor == NULL) {
+        InstallDecor();
+    }
+    *view = mDecor;
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -3127,9 +4616,9 @@ ECode PhoneWindow::PeekDecorView(
     /* [out] */ IView** view)
 {
     VALIDATE_NOT_NULL(view);
-    // ==================before translated======================
-    // return mDecor;
-    assert(0);
+
+    *view = (IView*)mDecor;
+    REFCOUNT_ADD(*view);
     return NOERROR;
 }
 
@@ -3137,114 +4626,1202 @@ ECode PhoneWindow::SaveHierarchyState(
     /* [out] */ IBundle** instanceState)
 {
     VALIDATE_NOT_NULL(instanceState);
-    // ==================before translated======================
-    // Bundle outState = new Bundle();
-    // if (mContentParent == null) {
-    //     return outState;
-    // }
-    //
-    // SparseArray<Parcelable> states = new SparseArray<Parcelable>();
-    // mContentParent.saveHierarchyState(states);
-    // outState.putSparseParcelableArray(VIEWS_TAG, states);
-    //
-    // // save the focused view id
-    // View focusedView = mContentParent.findFocus();
-    // if (focusedView != null) {
-    //     if (focusedView.getId() != View.NO_ID) {
-    //         outState.putInt(FOCUSED_ID_TAG, focusedView.getId());
-    //     } else {
-    //         if (false) {
-    //             Log.d(TAG, "couldn't save which view has focus because the focused view "
-    //                     + focusedView + " has no id.");
-    //         }
-    //     }
-    // }
-    //
-    // // save the panels
-    // SparseArray<Parcelable> panelStates = new SparseArray<Parcelable>();
-    // savePanelState(panelStates);
-    // if (panelStates.size() > 0) {
-    //     outState.putSparseParcelableArray(PANELS_TAG, panelStates);
-    // }
-    //
-    // if (mDecorContentParent != null) {
-    //     SparseArray<Parcelable> actionBarStates = new SparseArray<Parcelable>();
-    //     mDecorContentParent.saveToolbarHierarchyState(actionBarStates);
-    //     outState.putSparseParcelableArray(ACTION_BAR_TAG, actionBarStates);
-    // }
-    //
-    // return outState;
-    assert(0);
+    AutoPtr<IBundle> state;
+    CBundle::New((IBundle**)&state);
+    if (mContentParent == NULL) {
+        *instanceState = state;
+        REFCOUNT_ADD(*instanceState);
+        return NOERROR;
+    }
+
+    AutoPtr<ISparseArray> states;
+    CSparseArray::New((ISparseArray**)&states);
+    IView::Probe(mContentParent)->SaveHierarchyState(states);
+    state->PutSparseParcelableArray(VIEWS_TAG, states);
+
+    // save the focused view id
+    AutoPtr<IView> focusedView;
+    IView::Probe(mContentParent)->FindFocus((IView**)&focusedView);
+    if (focusedView != NULL) {
+        Int32 id = 0;
+        if ((focusedView->GetId(&id), id) != IView::NO_ID) {
+            state->PutInt32(FOCUSED_ID_TAG, id);
+        // } else {
+        //    if (false) {
+        //        Log.d(TAG, "couldn't save which view has focus because the focused view "
+        //                 + focusedView + " has no id.");
+        //     }
+        }
+    }
+
+    // save the panels
+    //AutoPtr<IObjectInt32Map> panelStates;
+    //CObjectInt32Map::New((IObjectInt32Map**)&panelStates);
+    AutoPtr<ISparseArray> panelStates;
+    CSparseArray::New((ISparseArray**)&panelStates);
+    SavePanelState(panelStates);
+    Int32 size = 0;
+    if (size > 0) {
+        state->PutSparseParcelableArray(PANELS_TAG, panelStates);
+    }
+
+    if (mDecorContentParent != NULL)
+    {
+        //AutoPtr<IObjectInt32Map> actionBarStates;
+        //CObjectInt32Map::New((IObjectInt32Map**)&panelStates);
+        AutoPtr<ISparseArray> actionBarStates;
+        CSparseArray::New((ISparseArray**)&actionBarStates);
+        //TODO mDecorContentParent->SaveToolbarHierarchyState(actionBarStates);
+        state->PutSparseParcelableArray(ACTION_BAR_TAG, actionBarStates);
+    }
+
+    *instanceState = state;
+    REFCOUNT_ADD(*instanceState);
     return NOERROR;
 }
 
 ECode PhoneWindow::RestoreHierarchyState(
     /* [in] */ IBundle* savedInstanceState)
 {
-    VALIDATE_NOT_NULL(savedInstanceState);
-    // ==================before translated======================
-    // if (mContentParent == null) {
-    //     return;
-    // }
-    //
-    // SparseArray<Parcelable> savedStates
-    //         = savedInstanceState.getSparseParcelableArray(VIEWS_TAG);
-    // if (savedStates != null) {
-    //     mContentParent.restoreHierarchyState(savedStates);
-    // }
-    //
-    // // restore the focused view
-    // int focusedViewId = savedInstanceState.getInt(FOCUSED_ID_TAG, View.NO_ID);
-    // if (focusedViewId != View.NO_ID) {
-    //     View needsFocus = mContentParent.findViewById(focusedViewId);
-    //     if (needsFocus != null) {
-    //         needsFocus.requestFocus();
-    //     } else {
-    //         Log.w(TAG,
-    //                 "Previously focused view reported id " + focusedViewId
-    //                         + " during save, but can't be found during restore.");
-    //     }
-    // }
-    //
-    // // restore the panels
-    // SparseArray<Parcelable> panelStates = savedInstanceState.getSparseParcelableArray(PANELS_TAG);
-    // if (panelStates != null) {
-    //     restorePanelState(panelStates);
-    // }
-    //
-    // if (mDecorContentParent != null) {
-    //     SparseArray<Parcelable> actionBarStates =
-    //             savedInstanceState.getSparseParcelableArray(ACTION_BAR_TAG);
-    //     if (actionBarStates != null) {
-    //         doPendingInvalidatePanelMenu();
-    //         mDecorContentParent.restoreToolbarHierarchyState(actionBarStates);
-    //     } else {
-    //         Log.w(TAG, "Missing saved instance states for action bar views! " +
-    //                 "State will not be restored.");
-    //     }
-    // }
-    assert(0);
+    if (mContentParent == NULL) {
+        return NOERROR;
+    }
+
+    //AutoPtr<IObjectInt32Map> savedStates;
+    AutoPtr<ISparseArray> savedStates;
+    savedInstanceState->GetSparseParcelableArray(VIEWS_TAG, (ISparseArray**)&savedStates);
+    if (savedStates != NULL) {
+        IView::Probe(mContentParent)->RestoreHierarchyState(savedStates);
+    }
+
+    // restore the focused view
+    Int32 focusedViewId = 0;
+    savedInstanceState->GetInt32(FOCUSED_ID_TAG, IView::NO_ID, &focusedViewId);
+    if (focusedViewId != IView::NO_ID) {
+        AutoPtr<IView> needsFocus;
+        IView::Probe(mContentParent)->FindViewById(focusedViewId, (IView**)&needsFocus);
+        if (needsFocus != NULL) {
+            Boolean isRequest = FALSE;
+            needsFocus->RequestFocus(&isRequest);
+        // } else {
+        //     Log.w(TAG,
+        //             "Previously focused view reported id " + focusedViewId
+        //                         + " during save, but can't be found during restore.");
+        }
+    }
+
+    // restore the panels
+    //AutoPtr<IObjectInt32Map> panelStates;
+    AutoPtr<ISparseArray> panelStates;
+    savedInstanceState->GetSparseParcelableArray(PANELS_TAG, (ISparseArray**)&panelStates);
+    if (panelStates != NULL) {
+        RestorePanelState(panelStates);
+    }
+
+    if (mDecorContentParent != NULL)
+    {
+        //AutoPtr<IObjectInt32Map> actionBarStates;
+        AutoPtr<ISparseArray> actionBarStates;
+        savedInstanceState->GetSparseParcelableArray(ACTION_BAR_TAG, (ISparseArray**)&actionBarStates);
+        if (actionBarStates != NULL) {
+            DoPendingInvalidatePanelMenu();
+            //TODO mDecorContentParent->RestoreToolbarHierarchyState(actionBarStates);
+        } else {
+            Logger::W(TAG, "Missing saved instance states for action bar views! State will not be restored.");
+        }
+    }
+    return NOERROR;
+}
+
+/**
+ * Invoked when the panels should freeze their state.
+ *
+ * @param icicles Save state into this. This is usually indexed by the
+ *            featureId. This will be given to {@link #restorePanelState} in the
+ *            future.
+ */
+void PhoneWindow::SavePanelState(
+    /* [in] */ ISparseArray* icicles)
+{
+    AutoPtr< ArrayOf<PanelFeatureState*> > panels = mPanels;
+    if (panels == NULL) {
+        return;
+    }
+
+    for (Int32 curFeatureId = panels->GetLength() - 1; curFeatureId >= 0; curFeatureId--) {
+        if ((*panels)[curFeatureId] != NULL) {
+            AutoPtr<IParcelable> savedState = (*panels)[curFeatureId]->OnSaveInstanceState();
+            icicles->Put(curFeatureId, savedState);
+        }
+    }
+}
+
+/**
+ * Invoked when the panels should thaw their state from a previously frozen state.
+ *
+ * @param icicles The state saved by {@link #savePanelState} that needs to be thawed.
+ */
+void PhoneWindow::RestorePanelState(
+    /* [in] */ ISparseArray* icicles)
+{
+
+    Int32 curFeatureId = 0;
+    Int32 size = 0;
+    icicles->GetSize(&size);
+    for (Int32 i = size - 1; i >= 0; i--) {
+        //AutoPtr< ArrayOf<Int32> > keys;
+        //icicles->GetKeys((ArrayOf<Int32>**)&keys);
+        //curFeatureId = (*keys)[i];
+        icicles->KeyAt(i, &curFeatureId);
+        AutoPtr<PanelFeatureState> st;
+        GetPanelState(curFeatureId, FALSE /* required */, (PanelFeatureState**)&st);
+        if (st == NULL) {
+            // The panel must not have been required, and is currently not around, skip it
+            continue;
+        }
+        AutoPtr<IInterface> istate;
+        icicles->Get(curFeatureId, (IInterface**)&istate);
+        IParcelable* state = IParcelable::Probe(istate);
+        st->OnRestoreInstanceState(state);
+        InvalidatePanelMenu(curFeatureId);
+    }
+
+    /*
+     * Implementation note: call openPanelsAfterRestore later to actually open the
+     * restored panels.
+     */
+}
+
+AutoPtr<PhoneWindow::_DecorView> PhoneWindow::GenerateDecor()
+{
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<PhoneWindow::_DecorView> decor = new _DecorView(this, context.Get(), -1);
+    return decor;
+}
+
+ECode PhoneWindow::GenerateLayout(
+    /* [in] */ _DecorView* decor,
+    /* [out] */ IViewGroup** viewGroup)
+{
+    VALIDATE_NOT_NULL(viewGroup);
+    *viewGroup = NULL;
+
+    // Apply data from current theme.
+
+    AutoPtr<ITypedArray> a;
+    FAIL_RETURN(GetWindowStyle((ITypedArray**)&a));
+
+//    if (FALSE) {
+//        System.out.println("From style:");
+//        String s = "Attrs:";
+//        for (Int32 i = 0; i < R.styleable.Window.length; i++) {
+//            s = s + " " + Integer.toHexString(R.styleable.Window[i]) + "="
+//                    + a.getString(i);
+//        }
+//        System.out.println(s);
+//    }
+
+    a->GetBoolean(R::styleable::Window_windowIsFloating,
+            FALSE, &mIsFloating);
+    Int32 flagsToUpdate = (IWindowManagerLayoutParams::FLAG_LAYOUT_IN_SCREEN
+            | IWindowManagerLayoutParams::FLAG_LAYOUT_INSET_DECOR)
+            & (~GetForcedWindowFlags());
+    if (mIsFloating) {
+        SetLayout(IViewGroupLayoutParams::WRAP_CONTENT, IViewGroupLayoutParams::WRAP_CONTENT);
+        SetFlags(0, flagsToUpdate);
+    }
+    else {
+        SetFlags(IWindowManagerLayoutParams::FLAG_LAYOUT_IN_SCREEN
+                | IWindowManagerLayoutParams::FLAG_LAYOUT_INSET_DECOR, flagsToUpdate);
+    }
+
+    Boolean value;
+    a->GetBoolean(R::styleable::Window_windowNoTitle,
+            FALSE, &value);
+    if (value) {
+        RequestFeature(IWindow::FEATURE_NO_TITLE, &value);
+    }
+    else if (a->GetBoolean(R::styleable::Window_windowActionBar, FALSE, &value), value) {
+        // Don't allow an action bar if there is no title.
+        RequestFeature(FEATURE_ACTION_BAR, &value);
+    }
+
+    if (a->GetBoolean(R::styleable::Window_windowActionBarOverlay, FALSE, &value), value) {
+        RequestFeature(FEATURE_ACTION_BAR_OVERLAY, &value);
+    }
+
+    if (a->GetBoolean(R::styleable::Window_windowActionModeOverlay, FALSE, &value), value) {
+        RequestFeature(FEATURE_ACTION_MODE_OVERLAY, &value);
+    }
+
+    if (a->GetBoolean(R::styleable::Window_windowSwipeToDismiss, FALSE, &value), value) {
+        RequestFeature(FEATURE_SWIPE_TO_DISMISS, &value);
+    }
+
+    a->GetBoolean(R::styleable::Window_windowFullscreen, FALSE, &value);
+    if (value) {
+        SetFlags(IWindowManagerLayoutParams::FLAG_FULLSCREEN,
+                IWindowManagerLayoutParams::FLAG_FULLSCREEN & (~GetForcedWindowFlags()));
+    }
+
+    a->GetBoolean(R::styleable::Window_windowTranslucentStatus, FALSE, &value);
+    if (value) {
+        SetFlags(IWindowManagerLayoutParams::FLAG_TRANSLUCENT_STATUS,
+                IWindowManagerLayoutParams::FLAG_TRANSLUCENT_STATUS& (~GetForcedWindowFlags()));
+    }
+
+    a->GetBoolean(R::styleable::Window_windowTranslucentNavigation, FALSE, &value);
+    if (value) {
+        SetFlags(IWindowManagerLayoutParams::FLAG_TRANSLUCENT_NAVIGATION,
+                IWindowManagerLayoutParams::FLAG_TRANSLUCENT_NAVIGATION& (~GetForcedWindowFlags()));
+    }
+
+    a->GetBoolean(R::styleable::Window_windowOverscan, FALSE, &value);
+    if (value) {
+        SetFlags(IWindowManagerLayoutParams::FLAG_LAYOUT_IN_OVERSCAN,
+                IWindowManagerLayoutParams::FLAG_LAYOUT_IN_OVERSCAN& (~GetForcedWindowFlags()));
+    }
+
+    a->GetBoolean(R::styleable::Window_windowShowWallpaper, FALSE, &value);
+    if (value) {
+        SetFlags(IWindowManagerLayoutParams::FLAG_SHOW_WALLPAPER,
+                IWindowManagerLayoutParams::FLAG_SHOW_WALLPAPER & (~GetForcedWindowFlags()));
+    }
+
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IApplicationInfo> appInfo;
+    context->GetApplicationInfo((IApplicationInfo**)&appInfo);
+    assert(appInfo != NULL);
+
+    Int32 targetSdkVersion = 0;
+    appInfo->GetTargetSdkVersion(&targetSdkVersion);
+
+    if (a->GetBoolean(R::styleable::Window_windowEnableSplitTouch, targetSdkVersion
+                    >= Build::VERSION_CODES::HONEYCOMB, &value), value) {
+        SetFlags(IWindowManagerLayoutParams::FLAG_SPLIT_TOUCH,
+            IWindowManagerLayoutParams::FLAG_SPLIT_TOUCH&(~GetForcedWindowFlags()));
+    }
+
+    a->GetValue(R::styleable::Window_windowMinWidthMajor, mMinWidthMajor, &value);
+    a->GetValue(R::styleable::Window_windowMinWidthMinor, mMinWidthMinor, &value);
+
+    Boolean has = FALSE;
+    if (a->HasValue(R::styleable::Window_windowFixedWidthMajor, &has), has) {
+        if (mFixedWidthMajor == NULL) {
+            CTypedValue::New((ITypedValue**)&mFixedWidthMajor);
+        }
+
+        a->GetValue(R::styleable::Window_windowFixedWidthMajor, mFixedWidthMajor, &value);
+    }
+    if (a->HasValue(R::styleable::Window_windowFixedWidthMinor, &has), has) {
+        if (mFixedWidthMinor == NULL) {
+            CTypedValue::New((ITypedValue**)&mFixedWidthMinor);
+        }
+
+        a->GetValue(R::styleable::Window_windowFixedWidthMinor, mFixedWidthMinor, &value);
+    }
+    if (a->HasValue(R::styleable::Window_windowFixedHeightMajor, &has), has) {
+        if (mFixedHeightMajor == NULL) {
+            CTypedValue::New((ITypedValue**)&mFixedHeightMajor);
+        }
+
+        a->GetValue(R::styleable::Window_windowFixedHeightMajor, mFixedHeightMajor, &value);
+    }
+    if (a->HasValue(R::styleable::Window_windowFixedHeightMinor, &has), has) {
+        if (mFixedHeightMinor == NULL) {
+            CTypedValue::New((ITypedValue**)&mFixedHeightMinor);
+        }
+
+        a->GetValue(R::styleable::Window_windowFixedHeightMinor, mFixedHeightMinor, &value);
+    }
+
+    if (a->GetBoolean(R::styleable::Window_windowContentTransitions, FALSE, &value), value) {
+        RequestFeature(FEATURE_CONTENT_TRANSITIONS, &value);
+    }
+    if (a->GetBoolean(R::styleable::Window_windowActivityTransitions, FALSE, &value), value) {
+        RequestFeature(FEATURE_ACTIVITY_TRANSITIONS, &value);
+    }
+
+    AutoPtr<IInterface> obj;
+    context->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&obj);
+    IWindowManager* windowService = IWindowManager::Probe(obj);
+
+    if (windowService != NULL) {
+        AutoPtr<IDisplay> display;
+        windowService->GetDefaultDisplay((IDisplay**)&display);
+        Int32 displayId;
+        display->GetDisplayId(&displayId);
+        Boolean shouldUseBottomOutset = displayId == IDisplay::DEFAULT_DISPLAY
+            || (GetForcedWindowFlags() & IWindowManagerLayoutParams::FLAG_FULLSCREEN) != 0;
+        a->HasValue(R::styleable::Window_windowOutsetBottom, &has);
+        if (shouldUseBottomOutset && has) {
+            if (mOutsetBottom == NULL) {
+                CTypedValue::New((ITypedValue**)&mOutsetBottom);
+            }
+            a->GetValue(R::styleable::Window_windowOutsetBottom, mOutsetBottom, &value);
+        }
+    }
+
+    const Boolean targetPreHoneycomb = targetSdkVersion < Build::VERSION_CODES::HONEYCOMB;
+    const Boolean targetPreIcs = targetSdkVersion < Build::VERSION_CODES::ICE_CREAM_SANDWICH;
+    const Boolean targetPreL = targetSdkVersion < Build::VERSION_CODES::LOLLIPOP;
+
+    AutoPtr<IResources> res;
+    context->GetResources((IResources**)&res);
+    Boolean targetHcNeedsOptions = FALSE;
+    res->GetBoolean(R::bool_::target_honeycomb_needs_options_menu, &targetHcNeedsOptions);
+
+    Boolean has1 = FALSE, has2 = FALSE;
+    Boolean noActionBar = !(HasFeature(FEATURE_ACTION_BAR, &has1), has1)
+                        || (HasFeature(FEATURE_NO_TITLE, &has2), has2);
+
+    if (targetPreHoneycomb || (targetPreIcs && targetHcNeedsOptions && noActionBar)) {
+        AddFlags(IWindowManagerLayoutParams::FLAG_NEEDS_MENU_KEY);
+    } else {
+        ClearFlags(IWindowManagerLayoutParams::FLAG_NEEDS_MENU_KEY);
+    }
+
+    // Non-floating windows on high end devices must put up decor beneath the system bars and
+    // therefore must know about visibility changes of those.
+    Boolean isHighEndGfx;
+    AutoPtr<IActivityManagerHelper> amHelper;
+    CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&amHelper);
+    amHelper->IsHighEndGfx(&isHighEndGfx);
+    if (!mIsFloating && isHighEndGfx) {
+        if (!targetPreL && (a->GetBoolean(R::styleable::Window_windowDrawsSystemBarBackgrounds, FALSE, &value), value)) {
+            SetFlags(IWindowManagerLayoutParams::FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS,
+                    IWindowManagerLayoutParams::FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS & ~GetForcedWindowFlags());
+        }
+    }
+    if (!mForcedStatusBarColor) {
+        a->GetColor(R::styleable::Window_statusBarColor, 0xFF000000, &mStatusBarColor);
+    }
+    if (!mForcedNavigationBarColor) {
+        a->GetColor(R::styleable::Window_navigationBarColor, 0xFF000000, &mNavigationBarColor);
+    }
+
+    if (mAlwaysReadCloseOnTouchAttr || targetSdkVersion >= Build::VERSION_CODES::HONEYCOMB) {
+        Boolean tmp = FALSE;
+        if (a->GetBoolean(R::styleable::Window_windowCloseOnTouchOutside, FALSE, &tmp), tmp) {
+            SetCloseOnTouchOutsideIfNotSet(TRUE);
+        }
+    }
+
+    AutoPtr<IWindowManagerLayoutParams> _params;
+    GetAttributes((IWindowManagerLayoutParams**)&_params);
+    CWindowManagerLayoutParams* params = (CWindowManagerLayoutParams*)_params.Get();
+
+    if (!HasSoftInputMode()) {
+        a->GetInt32(R::styleable::Window_windowSoftInputMode,
+                params->mSoftInputMode, &(params->mSoftInputMode));
+    }
+
+    a->GetBoolean(R::styleable::Window_backgroundDimEnabled,
+            mIsFloating, &value);
+    if (value) {
+        /* All dialogs should have the window dimmed */
+        if ((GetForcedWindowFlags() & IWindowManagerLayoutParams::FLAG_DIM_BEHIND) == 0) {
+            params->mFlags |= IWindowManagerLayoutParams::FLAG_DIM_BEHIND;
+        }
+
+        if (!HaveDimAmount()) {
+            a->GetFloat(R::styleable::Window_backgroundDimAmount,
+                    0.5f, &(params->mDimAmount));
+        }
+    }
+
+    if (params->mWindowAnimations == 0) {
+        a->GetResourceId(R::styleable::Window_windowAnimationStyle,
+                0, &(params->mWindowAnimations));
+    }
+
+    // The rest are only done if this window is not embedded; otherwise,
+    // the values are inherited from our container.
+    AutoPtr<IWindow> container;
+    GetContainer((IWindow**)&container);
+    if (container == NULL) {
+        if (mBackgroundDrawable == NULL) {
+            if (mBackgroundResource == 0) {
+                a->GetResourceId(R::styleable::Window_windowBackground,
+                        0, &mBackgroundResource);
+            }
+            if (mFrameResource == 0) {
+                a->GetResourceId(R::styleable::Window_windowFrame,
+                        0, &mFrameResource);
+            }
+            a->GetResourceId(R::styleable::Window_windowBackgroundFallback, 0, &mBackgroundFallbackResource);
+//            if (FALSE) {
+//                System.out.println("Background: "
+//                        + Integer.toHexString(mBackgroundResource) + " Frame: "
+//                        + Integer.toHexString(mFrameResource));
+//            }
+        }
+        a->GetDimension(R::styleable::Window_windowElevation, 0, &mElevation);
+        a->GetBoolean(R::styleable::Window_windowClipToOutline, FALSE, &mClipToOutline);
+        a->GetColor(R::styleable::Window_textColor, IColor::TRANSPARENT, &mTextColor);
+    }
+
+    // Inflate the window decor.
+    Int32 layoutResource = 0;
+    Int32 features = GetLocalFeatures();
+    // System.out.println("Features: 0x" + Integer.toHexString(features));
+    if ((features & (1 << IWindow::FEATURE_SWIPE_TO_DISMISS)) != 0) {
+        layoutResource = R::layout::screen_swipe_dismiss;
+    } else if ((features & ((1 << IWindow::FEATURE_LEFT_ICON) | (1 << IWindow::FEATURE_RIGHT_ICON))) != 0) {
+        if (mIsFloating) {
+            AutoPtr<ITypedValue> res;
+            CTypedValue::New((ITypedValue**)&res);
+            AutoPtr<IContext> ctx;
+            GetContext((IContext**)&ctx);
+
+            AutoPtr<IResourcesTheme> theme;
+            ctx->GetTheme((IResourcesTheme**)&theme);
+            Boolean tmp = FALSE;
+            theme->ResolveAttribute(R::attr::dialogTitleIconsDecorLayout, res, TRUE, &tmp);
+            res->GetResourceId(&layoutResource);
+        } else {
+            layoutResource = R::layout::screen_title_icons;
+        }
+
+        // XXX Remove this once action bar supports these features.
+        RemoveFeature(FEATURE_ACTION_BAR);
+        // System.out.println("Title Icons!");
+    } else if ((features & ((1 << IWindow::FEATURE_PROGRESS)
+        | (1 << IWindow::FEATURE_INDETERMINATE_PROGRESS))) != 0
+        && (features & (1 << FEATURE_ACTION_BAR)) == 0) {
+        // Special case for a window with only a progress bar (and title).
+        // XXX Need to have a no-title version of embedded windows.
+        layoutResource = R::layout::screen_progress;
+        // System.out.println("Progress!");
+    } else if ((features & (1 << IWindow::FEATURE_CUSTOM_TITLE)) != 0) {
+        // Special case for a window with a custom title.
+        // If the window is floating, we need a dialog layout
+        if (mIsFloating) {
+            AutoPtr<ITypedValue> res;
+            CTypedValue::New((ITypedValue**)&res);
+
+            AutoPtr<IContext> ctx;
+            GetContext((IContext**)&ctx);
+
+            AutoPtr<IResourcesTheme> theme;
+            ctx->GetTheme((IResourcesTheme**)&theme);
+
+            Boolean tmp = FALSE;
+            theme->ResolveAttribute(R::attr::dialogCustomTitleDecorLayout, res, TRUE, &tmp);
+            res->GetResourceId(&layoutResource);
+        } else {
+            layoutResource = R::layout::screen_custom_title;
+        }
+    } else if ((features & (1 << IWindow::FEATURE_NO_TITLE)) == 0) {
+        // If no other features and not embedded, only need a title.
+        // If the window is floating, we need a dialog layout
+        if (mIsFloating) {
+            AutoPtr<ITypedValue> res;
+            CTypedValue::New((ITypedValue**)&res);
+
+            AutoPtr<IContext> ctx;
+            GetContext((IContext**)&ctx);
+
+            AutoPtr<IResourcesTheme> theme;
+            ctx->GetTheme((IResourcesTheme**)&theme);
+
+            Boolean tmp = FALSE;
+            theme->ResolveAttribute(R::attr::dialogTitleDecorLayout, res, TRUE, &tmp);
+            res->GetResourceId(&layoutResource);
+        }
+        else if ((features & (1 << FEATURE_ACTION_BAR)) != 0) {
+            a->GetResourceId(R::styleable::Window_windowActionBarFullscreenDecorLayout,
+                    R::layout::screen_action_bar, &layoutResource);
+        }
+        else {
+            layoutResource = R::layout::screen_title;
+        }
+        // System.out.println("Title!");
+    }
+    else if ((features & (1 << FEATURE_ACTION_MODE_OVERLAY)) != 0) {
+        layoutResource = R::layout::screen_simple_overlay_action_mode;
+    }
+    else {
+        // Embedded, so no decoration is needed.
+        layoutResource = R::layout::screen_simple;
+        // System.out.println("Simple!");
+    }
+
+    mDecor->StartChanging();
+
+    AutoPtr<IView> in;
+    mLayoutInflater->Inflate(layoutResource, NULL, (IView**)&in);
+
+    AutoPtr<IViewGroupLayoutParams> vparams;
+    CViewGroupLayoutParams::New(
+            IViewGroupLayoutParams::MATCH_PARENT,
+            IViewGroupLayoutParams::MATCH_PARENT,
+            (IViewGroupLayoutParams**)&vparams);
+    IViewGroup::Probe(decor)->AddView(in.Get(), vparams.Get());
+    mContentRoot = IViewGroup::Probe(in);
+
+    AutoPtr<IView> tmp;
+    FindViewById(ID_ANDROID_CONTENT, (IView**)&tmp);
+    if (tmp == NULL) {
+        // Logger::E("PhoneWindow", "Window couldn't find content container view");
+        return E_RUNTIME_EXCEPTION;
+    }
+    AutoPtr<IViewGroup> contentParent = (IViewGroup*)tmp->Probe(EIID_IViewGroup);
+    if (contentParent == NULL) {
+        // Logger::E("PhoneWindow", "Window couldn't find content container view");
+        return E_RUNTIME_EXCEPTION;
+    }
+
+    if ((features & (1 << IWindow::FEATURE_INDETERMINATE_PROGRESS)) != 0) {
+        AutoPtr<IProgressBar> progress = GetCircularProgressBar(FALSE);
+        if (progress != NULL) {
+            progress->SetIndeterminate(TRUE);
+        }
+    }
+
+    if ((features & (1 << FEATURE_SWIPE_TO_DISMISS)) != 0) {
+        RegisterSwipeCallbacks();
+    }
+
+    // Remaining setup -- of background and title -- that only applies
+    // to top-level windows.
+    container = NULL;
+    GetContainer((IWindow**)&container);
+    if (container == NULL) {
+        AutoPtr<IDrawable> background;
+        if (mBackgroundResource != 0) {
+            AutoPtr<IContext> context;
+            GetContext((IContext**)&context);
+            context->GetDrawable(mBackgroundResource, (IDrawable**)&background);
+        } else {
+            background = mBackgroundDrawable;
+        }
+
+        mDecor->SetWindowBackground(background);
+        AutoPtr<IDrawable> frame;
+        if (mFrameResource != 0) {
+            AutoPtr<IContext> context;
+            GetContext((IContext**)&context);
+            context->GetDrawable(mFrameResource, (IDrawable**)&frame);
+        } else {
+            frame = NULL;
+        }
+        mDecor->SetWindowFrame(frame);
+        mDecor->SetElevation(mElevation);
+        mDecor->SetClipToOutline(mClipToOutline);
+
+        // System.out.println("Text=" + Integer.toHexString(mTextColor) +
+        // " Sel=" + Integer.toHexString(mTextSelectedColor) +
+        // " Title=" + Integer.toHexString(mTitleColor));
+
+        if (mTitle != NULL) {
+            SetTitle(mTitle);
+        }
+
+        if (mTitleColor == 0) {
+            mTitleColor = mTextColor;
+        }
+
+        SetTitleColor(mTitleColor);
+    }
+
+    mDecor->FinishChanging();
+
+    *viewGroup = contentParent.Get();
+    REFCOUNT_ADD(*viewGroup);
+
     return NOERROR;
 }
 
 ECode PhoneWindow::AlwaysReadCloseOnTouchAttr()
 {
-    // ==================before translated======================
-    // mAlwaysReadCloseOnTouchAttr = true;
-    assert(0);
+    mAlwaysReadCloseOnTouchAttr = TRUE;
     return NOERROR;
 }
+
+ECode PhoneWindow::DoPendingInvalidatePanelMenu()
+{
+    if (mInvalidatePanelMenuPosted)
+    {
+        Boolean res;
+        mDecor->RemoveCallbacks(mInvalidatePanelMenuRunnable, &res);
+        mInvalidatePanelMenuRunnable->Run();
+    }
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::GetTransitionManager(
+    /* [out] */ ITransitionManager** tm)
+{
+    VALIDATE_NOT_NULL(tm);
+    *tm = mTransitionManager;
+    REFCOUNT_ADD(*tm);
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::SetTransitionManager(
+    /* [in] */ ITransitionManager* tm)
+{
+    mTransitionManager = tm;
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::GetContentScene(
+    /* [out] */ IScene** scene)
+{
+    VALIDATE_NOT_NULL(scene);
+    *scene = mContentScene;
+    REFCOUNT_ADD(*scene);
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::SetMediaController(
+    /* [in] */ IMediaController* controller)
+{
+    mMediaController = controller;
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::GetMediaController(
+    /* [out] */ IMediaController** controller)
+{
+    VALIDATE_NOT_NULL(controller);
+    *controller = mMediaController;
+    REFCOUNT_ADD(*controller);
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::SetEnterTransition(
+    /* [in] */ ITransition* enterTransition)
+{
+    mEnterTransition = enterTransition;
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::SetReturnTransition(
+    /* [in] */ ITransition* transition)
+{
+    mReturnTransition = transition;
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::SetExitTransition(
+    /* [in] */ ITransition* exitTransition)
+{
+    mExitTransition = exitTransition;
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::SetReenterTransition(
+    /* [in] */ ITransition* transition)
+{
+    mReenterTransition = transition;
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::SetSharedElementEnterTransition(
+    /* [in] */ ITransition* sharedElementEnterTransition)
+{
+    mSharedElementEnterTransition = sharedElementEnterTransition;
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::SetSharedElementReturnTransition(
+    /* [in] */ ITransition* transition)
+{
+    mSharedElementReturnTransition = transition;
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::SetSharedElementExitTransition(
+    /* [in] */ ITransition* sharedElementExitTransition)
+{
+    mSharedElementExitTransition = sharedElementExitTransition;
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::SetSharedElementReenterTransition(
+    /* [in] */ ITransition* transition)
+{
+    mSharedElementReenterTransition = transition;
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::GetEnterTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition);
+    *transition = mEnterTransition;
+    REFCOUNT_ADD(*transition);
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::GetReturnTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition);
+    if (mReturnTransition == USE_DEFAULT_TRANSITION)
+    {
+        return GetEnterTransition(transition);
+    }
+    else
+    {
+        *transition= mReturnTransition;
+        REFCOUNT_ADD(*transition);
+    }
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::GetExitTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition);
+    *transition = mExitTransition;
+    REFCOUNT_ADD(*transition);
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::GetReenterTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition);
+    if (mReenterTransition == USE_DEFAULT_TRANSITION)
+    {
+        return GetExitTransition(transition);
+    }
+    else
+    {
+        *transition = mReenterTransition;
+        REFCOUNT_ADD(*transition);
+    }
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::GetSharedElementEnterTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition);
+    *transition = mSharedElementEnterTransition;
+    REFCOUNT_ADD(*transition);
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::GetSharedElementReturnTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition);
+    if (mSharedElementReturnTransition == USE_DEFAULT_TRANSITION)
+    {
+        return GetSharedElementEnterTransition(transition);
+    }
+    else
+    {
+        *transition = mSharedElementReturnTransition;
+        REFCOUNT_ADD(*transition);
+    }
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::GetSharedElementExitTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition);
+    *transition = mSharedElementExitTransition;
+    REFCOUNT_ADD(*transition);
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::GetSharedElementReenterTransition(
+    /* [out] */ ITransition** transition)
+{
+    VALIDATE_NOT_NULL(transition);
+    if (mSharedElementReenterTransition == USE_DEFAULT_TRANSITION)
+    {
+        return GetSharedElementExitTransition(transition);
+    }
+    else
+    {
+        *transition = mSharedElementReenterTransition;
+        REFCOUNT_ADD(*transition);
+    }
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::SetAllowEnterTransitionOverlap(
+    /* [in] */ Boolean allow)
+{
+    mAllowEnterTransitionOverlap = allow;
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::GetAllowEnterTransitionOverlap(
+    /* [out] */ Boolean* allow)
+{
+    VALIDATE_NOT_NULL(allow);
+    *allow = mAllowEnterTransitionOverlap;
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::SetAllowReturnTransitionOverlap(
+    /* [in] */ Boolean allowReturnTransitionOverlap)
+{
+    mAllowReturnTransitionOverlap = allowReturnTransitionOverlap;
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::GetAllowReturnTransitionOverlap(
+    /* [out] */ Boolean* allow)
+{
+    VALIDATE_NOT_NULL(allow);
+    *allow = mAllowReturnTransitionOverlap;
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::GetTransitionBackgroundFadeDuration(
+    /* [out] */ Int64* duration)
+{
+    VALIDATE_NOT_NULL(duration);
+    if (mBackgroundFadeDurationMillis < 0)
+        *duration = DEFAULT_BACKGROUND_FADE_DURATION_MS;
+    else
+        *duration = mBackgroundFadeDurationMillis;
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::SetTransitionBackgroundFadeDuration(
+    /* [in] */ Int64 fadeDurationMillis)
+{
+    if (fadeDurationMillis < 0)
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    mBackgroundFadeDurationMillis = fadeDurationMillis;
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::SetSharedElementsUseOverlay(
+    /* [in] */ Boolean sharedElementsUseOverlay)
+{
+    mSharedElementsUseOverlay = sharedElementsUseOverlay;
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::GetSharedElementsUseOverlay(
+    /* [out] */ Boolean* shared)
+{
+    VALIDATE_NOT_NULL(shared);
+    *shared = mSharedElementsUseOverlay;
+    return NOERROR;
+}
+
+
+// @Override
+ECode PhoneWindow::GetStatusBarColor(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mStatusBarColor;
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::SetStatusBarColor(
+    /* [in] */ Int32 color)
+{
+    mStatusBarColor = color;
+    mForcedStatusBarColor = TRUE;
+    if (mDecor != NULL)
+    {
+        mDecor->UpdateColorViews(NULL);
+    }
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::GetNavigationBarColor(
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mNavigationBarColor;
+    return NOERROR;
+}
+
+// @Override
+ECode PhoneWindow::SetNavigationBarColor(
+    /* [in] */ Int32 color)
+{
+    mNavigationBarColor = color;
+    mForcedNavigationBarColor = TRUE;
+    if (mDecor != NULL)
+    {
+        mDecor->UpdateColorViews(NULL);
+    }
+    return NOERROR;
+}
+
+
+//ECode PhoneWindow::SetCloseOnTouchOutsideIfNotSet(
+//    /* [in] */ Boolean close)
+//{
+//    return Window::SetCloseOnTouchOutsideIfNotSet(close);
+//}
+//
+//ECode PhoneWindow::Destroy()
+//{
+//    return Window::Destroy();
+//}
+//
+//ECode PhoneWindow::SetWindowManager(
+//    /* [in] */ IWindowManager* wm,
+//    /* [in] */ IBinder* appToken,
+//    /* [in] */ const String& appName,
+//    /* [in] */ Boolean hardwareAccelerated)
+//{
+//    return Window::SetWindowManager(wm, appToken, appName, hardwareAccelerated);
+//}
+//
+//ECode PhoneWindow::AdjustLayoutParamsForSubWindow(
+//    /* [in] */ IWindowManagerLayoutParams* wp)
+//{
+//    return Window::AdjustLayoutParamsForSubWindow(wp);
+//}
+//
+//ECode PhoneWindow::SetDimAmount(
+//    /* [in] */ Float amount)
+//{
+//    return Window::SetDimAmount(amount);
+//}
+//
+//ECode PhoneWindow::SetCloseOnTouchOutside(
+//    /* [in] */ Boolean close)
+//{
+//    return Window::SetCloseOnTouchOutside(close);
+//}
+//
+//ECode PhoneWindow::ShouldCloseOnTouch(
+//    /* [in] */ IContext* context,
+//    /* [in] */ IMotionEvent* event,
+//    /* [out] */ Boolean* res)
+//{
+//    return Window::ShouldCloseOnTouch(context, event, res);
+//}
+//
+//ECode PhoneWindow::SetUiOptions(
+//    /* [in] */ Int32 uiOptions,
+//    /* [in] */ Int32 mask)
+//{
+//    return Window::SetUiOptions(uiOptions, mask);
+//}
+
+void PhoneWindow::InstallDecor()
+{
+    if (mDecor == NULL) {
+        AutoPtr<_DecorView> decor = GenerateDecor();
+        mDecor = decor;
+        mDecor->AddRef();
+        mDecor->SetDescendantFocusability(ViewGroup::FOCUS_AFTER_DESCENDANTS);
+        mDecor->SetIsRootNamespace(TRUE);
+
+        if (!mInvalidatePanelMenuPosted && mInvalidatePanelMenuFeatures != 0) {
+            mDecor->PostOnAnimation(mInvalidatePanelMenuRunnable);
+        }
+    }
+
+    if (mContentParent == NULL) {
+        ASSERT_SUCCEEDED(GenerateLayout(mDecor, (IViewGroup**)&mContentParent));
+
+        // Set up decor part of UI to ignore fitsSystemWindows if appropriate.
+        mDecor->MakeOptionalFitsSystemWindows();
+
+        AutoPtr<IView> dcpView;
+        mDecor->FindViewById(R::id::decor_content_parent, (IView**)&dcpView);
+        IDecorContentParent* decorContentParent = IDecorContentParent::Probe(dcpView);
+
+        if (decorContentParent != NULL) {
+            mDecorContentParent = decorContentParent;
+            AutoPtr<IWindowCallback> cb;
+            GetCallback((IWindowCallback**)&cb);
+            mDecorContentParent->SetWindowCallback(cb);
+            AutoPtr<ICharSequence> title;
+            mDecorContentParent->GetTitle((ICharSequence**)&title);
+            if (title == NULL) {
+                mDecorContentParent->SetWindowTitle(mTitle);
+            }
+
+            Int32 localFeatures = GetLocalFeatures();
+            for (Int32 i = 0; i < FEATURE_MAX; ++i) {
+                if ((localFeatures & (1 << i)) != 0) {
+                    mDecorContentParent->InitFeature(i);
+                }
+            }
+
+            mDecorContentParent->SetUiOptions(mUiOptions);
+
+            Boolean tmpbValue;
+            if ((mResourcesSetFlags & FLAG_RESOURCE_SET_ICON) != 0 ||
+                    (mIconRes != 0 && !(mDecorContentParent->HasIcon(&tmpbValue), tmpbValue))) {
+                mDecorContentParent->SetIcon(mIconRes);
+            } else if ((mResourcesSetFlags & FLAG_RESOURCE_SET_ICON) == 0 &&
+                    mIconRes == 0 && !(mDecorContentParent->HasIcon(&tmpbValue), tmpbValue)) {
+                AutoPtr<IContext> context;
+                GetContext((IContext**)&context);
+                AutoPtr<IPackageManager> pm;
+                context->GetPackageManager((IPackageManager**)&pm);
+                AutoPtr<IDrawable> icon;
+                pm->GetDefaultActivityIcon((IDrawable**)&icon);
+                mDecorContentParent->SetIcon(icon);
+                mResourcesSetFlags |= FLAG_RESOURCE_SET_ICON_FALLBACK;
+            }
+            if ((mResourcesSetFlags & FLAG_RESOURCE_SET_LOGO) != 0 ||
+                    (mLogoRes != 0 && !(mDecorContentParent->HasLogo(&tmpbValue), tmpbValue))) {
+                mDecorContentParent->SetLogo(mLogoRes);
+            }
+
+            // Invalidate if the panel menu hasn't been created before this.
+            // Panel menu invalidation is deferred avoiding application onCreateOptionsMenu
+            // being called in the middle of onCreate or similar.
+            // A pending invalidation will typically be resolved before the posted message
+            // would run normally in order to satisfy instance state restoration.
+            AutoPtr<PanelFeatureState> st;
+            GetPanelState(FEATURE_OPTIONS_PANEL, FALSE, (PanelFeatureState**)&st);
+
+            Boolean isDestroyed;
+            IsDestroyed(&isDestroyed);
+            if (!isDestroyed && (st == NULL || st->mMenu == NULL)) {
+                InvalidatePanelMenu(FEATURE_ACTION_BAR);
+            }
+        } else {
+            FindViewById(R::id::title, (IView**)&mTitleView);
+            if (mTitleView != NULL) {
+                Int32 direction = 0;
+                mDecor->GetLayoutDirection(&direction);
+                IView::Probe(mTitleView)->SetLayoutDirection(direction);
+                if ((GetLocalFeatures() & (1 << IWindow::FEATURE_NO_TITLE)) != 0) {
+                    AutoPtr<IView> titleContainer;
+                    FindViewById(R::id::title_container,
+                            (IView**)&titleContainer);
+                    if (titleContainer != NULL) {
+                        titleContainer->SetVisibility(IView::GONE);
+                    }
+                    else {
+                        IView::Probe(mTitleView)->SetVisibility(IView::GONE);
+                    }
+                    if (IFrameLayout::Probe(mContentParent) != NULL) {
+                        IFrameLayout::Probe(mContentParent)->SetForeground(NULL);
+                    }
+                }
+                else {
+                    mTitleView->SetText(mTitle);
+                }
+            }
+        }
+
+        AutoPtr<IDrawable> background;
+        mDecor->GetBackground((IDrawable**)&background);
+        if (background == NULL && mBackgroundFallbackResource != 0) {
+            mDecor->SetBackgroundFallback(mBackgroundFallbackResource);
+        }
+
+        // Only inflate or create a new TransitionManager if the caller hasn't
+        // already set a custom one.
+        Boolean has;
+        if (HasFeature(FEATURE_ACTIVITY_TRANSITIONS, &has), has) {
+            if (mTransitionManager == NULL) {
+                AutoPtr<ITypedArray> a;
+                GetWindowStyle((ITypedArray**)&a);
+                Int32 transitionRes;
+                a->GetResourceId(R::styleable::Window_windowContentTransitionManager, 0, &transitionRes);
+                if (transitionRes != 0) {
+                    AutoPtr<ITransitionInflater> inflater;
+                    AutoPtr<ITransitionInflaterHelper> tifHelper;
+                    CTransitionInflaterHelper::AcquireSingleton((ITransitionInflaterHelper**)&tifHelper);
+                    AutoPtr<IContext> context;
+                    GetContext((IContext**)&context);
+                    tifHelper->From(context, (ITransitionInflater**)&inflater);
+                    inflater->InflateTransitionManager(transitionRes, mContentParent, (ITransitionManager**)&mTransitionManager);
+                } else {
+                    CTransitionManager::New((ITransitionManager**)&mTransitionManager);
+                }
+            }
+
+            mEnterTransition = GetTransition(mEnterTransition, NULL, R::styleable::Window_windowEnterTransition);
+            mReturnTransition = GetTransition(mReturnTransition, USE_DEFAULT_TRANSITION, R::styleable::Window_windowReturnTransition);
+            mExitTransition = GetTransition(mExitTransition, NULL, R::styleable::Window_windowExitTransition);
+            mReenterTransition = GetTransition(mReenterTransition, USE_DEFAULT_TRANSITION, R::styleable::Window_windowReenterTransition);
+            mSharedElementEnterTransition = GetTransition(mSharedElementEnterTransition, NULL, R::styleable::Window_windowSharedElementEnterTransition);
+            mSharedElementReturnTransition = GetTransition(mSharedElementReturnTransition, USE_DEFAULT_TRANSITION,
+                    R::styleable::Window_windowSharedElementReturnTransition);
+            mSharedElementExitTransition = GetTransition(mSharedElementExitTransition, NULL,
+                    R::styleable::Window_windowSharedElementExitTransition);
+            mSharedElementReenterTransition = GetTransition(mSharedElementReenterTransition,
+                    USE_DEFAULT_TRANSITION,
+                    R::styleable::Window_windowSharedElementReenterTransition);
+            AutoPtr<ITypedArray> a;
+            GetWindowStyle((ITypedArray**)&a);
+            if (mAllowEnterTransitionOverlap == TRUE) {
+                a->GetBoolean(R::styleable::Window_windowAllowEnterTransitionOverlap, TRUE, &mAllowEnterTransitionOverlap);
+            }
+            if (mAllowReturnTransitionOverlap == TRUE) {
+                a->GetBoolean(R::styleable::Window_windowAllowReturnTransitionOverlap, TRUE, &mAllowReturnTransitionOverlap);
+            }
+            if (mBackgroundFadeDurationMillis < 0) {
+                Int32 value;
+                a->GetInteger(R::styleable::Window_windowTransitionBackgroundFadeDuration,
+                        DEFAULT_BACKGROUND_FADE_DURATION_MS, &value);
+                mBackgroundFadeDurationMillis = value;
+            }
+            if (mSharedElementsUseOverlay == TRUE) {
+                a->GetBoolean(R::styleable::Window_windowSharedElementsUseOverlay, TRUE, &mSharedElementsUseOverlay);
+            }
+        }
+    }
+}
+
+//ECode PhoneWindow::HasFeature(
+//    /* [in] */ Int32 feature,
+//    /* [out] */ Boolean* hasFeature)
+//{
+//    assert(hasFeature != NULL);
+//    return Window::HasFeature(feature, hasFeature);
+//}
 
 ECode PhoneWindow::SetChildDrawable(
     /* [in] */ Int32 featureId,
     /* [in] */ IDrawable* drawable)
 {
-    VALIDATE_NOT_NULL(drawable);
-    // ==================before translated======================
-    // DrawableFeatureState st = getDrawableState(featureId, true);
-    // st.child = drawable;
-    // updateDrawable(featureId, st, false);
-    assert(0);
+    AutoPtr<DrawableFeatureState> st;
+    GetDrawableState(featureId, TRUE, (DrawableFeatureState**)&st);
+    st->mChild = drawable;
+    UpdateDrawable(featureId, st, FALSE);
     return NOERROR;
 }
 
@@ -3252,9 +5829,7 @@ ECode PhoneWindow::SetChildInt(
     /* [in] */ Int32 featureId,
     /* [in] */ Int32 value)
 {
-    // ==================before translated======================
-    // updateInt(featureId, value, false);
-    assert(0);
+    UpdateInt(featureId, value, FALSE);
     return NOERROR;
 }
 
@@ -3264,487 +5839,70 @@ ECode PhoneWindow::IsShortcutKey(
     /* [out] */ Boolean* isShortcutKey)
 {
     VALIDATE_NOT_NULL(isShortcutKey);
-    // ==================before translated======================
-    // PanelFeatureState st = getPanelState(FEATURE_OPTIONS_PANEL, true);
-    // return st.menu != null && st.menu.isShortcutKey(keyCode, event);
-    assert(0);
+    *isShortcutKey = FALSE;
+
+    AutoPtr<PanelFeatureState> st;
+    FAIL_RETURN(GetPanelState(FEATURE_OPTIONS_PANEL, TRUE, (PanelFeatureState**)&st));
+    if (st->mMenu != NULL) {
+        IMenu::Probe(st->mMenu)->IsShortcutKey(keyCode, event, isShortcutKey);
+    }
     return NOERROR;
-}
-
-ECode PhoneWindow::SetVolumeControlStream(
-    /* [in] */ Int32 streamType)
-{
-    // ==================before translated======================
-    // mVolumeControlStreamType = streamType;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::GetVolumeControlStream(
-    /* [out] */ Int32* streamType)
-{
-    VALIDATE_NOT_NULL(streamType);
-    // ==================before translated======================
-    // return mVolumeControlStreamType;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::SetMediaController(
-    /* [in] */ IMediaController* controller)
-{
-    VALIDATE_NOT_NULL(controller);
-    // ==================before translated======================
-    // mMediaController = controller;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::GetMediaController(
-    /* [out] */ IMediaController** controller)
-{
-    VALIDATE_NOT_NULL(controller);
-    // ==================before translated======================
-    // return mMediaController;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::SetEnterTransition(
-    /* [in] */ ITransition* enterTransition)
-{
-    VALIDATE_NOT_NULL(enterTransition);
-    // ==================before translated======================
-    // mEnterTransition = enterTransition;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::SetReturnTransition(
-    /* [in] */ ITransition* transition)
-{
-    VALIDATE_NOT_NULL(transition);
-    // ==================before translated======================
-    // mReturnTransition = transition;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::SetExitTransition(
-    /* [in] */ ITransition* exitTransition)
-{
-    VALIDATE_NOT_NULL(exitTransition);
-    // ==================before translated======================
-    // mExitTransition = exitTransition;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::SetReenterTransition(
-    /* [in] */ ITransition* transition)
-{
-    VALIDATE_NOT_NULL(transition);
-    // ==================before translated======================
-    // mReenterTransition = transition;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::SetSharedElementEnterTransition(
-    /* [in] */ ITransition* sharedElementEnterTransition)
-{
-    VALIDATE_NOT_NULL(sharedElementEnterTransition);
-    // ==================before translated======================
-    // mSharedElementEnterTransition = sharedElementEnterTransition;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::SetSharedElementReturnTransition(
-    /* [in] */ ITransition* transition)
-{
-    VALIDATE_NOT_NULL(transition);
-    // ==================before translated======================
-    // mSharedElementReturnTransition = transition;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::SetSharedElementExitTransition(
-    /* [in] */ ITransition* sharedElementExitTransition)
-{
-    VALIDATE_NOT_NULL(sharedElementExitTransition);
-    // ==================before translated======================
-    // mSharedElementExitTransition = sharedElementExitTransition;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::SetSharedElementReenterTransition(
-    /* [in] */ ITransition* transition)
-{
-    VALIDATE_NOT_NULL(transition);
-    // ==================before translated======================
-    // mSharedElementReenterTransition = transition;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::GetEnterTransition(
-    /* [out] */ ITransition** transition)
-{
-    VALIDATE_NOT_NULL(transition);
-    // ==================before translated======================
-    // return mEnterTransition;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::GetReturnTransition(
-    /* [out] */ ITransition** transition)
-{
-    VALIDATE_NOT_NULL(transition);
-    // ==================before translated======================
-    // return mReturnTransition == USE_DEFAULT_TRANSITION ? getEnterTransition()
-    //         : mReturnTransition;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::GetExitTransition(
-    /* [out] */ ITransition** transition)
-{
-    VALIDATE_NOT_NULL(transition);
-    // ==================before translated======================
-    // return mExitTransition;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::GetReenterTransition(
-    /* [out] */ ITransition** transition)
-{
-    VALIDATE_NOT_NULL(transition);
-    // ==================before translated======================
-    // return mReenterTransition == USE_DEFAULT_TRANSITION ? getExitTransition()
-    //         : mReenterTransition;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::GetSharedElementEnterTransition(
-    /* [out] */ ITransition** transition)
-{
-    VALIDATE_NOT_NULL(transition);
-    // ==================before translated======================
-    // return mSharedElementEnterTransition;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::GetSharedElementReturnTransition(
-    /* [out] */ ITransition** transition)
-{
-    VALIDATE_NOT_NULL(transition);
-    // ==================before translated======================
-    // return mSharedElementReturnTransition == USE_DEFAULT_TRANSITION
-    //         ? getSharedElementEnterTransition() : mSharedElementReturnTransition;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::GetSharedElementExitTransition(
-    /* [out] */ ITransition** transition)
-{
-    VALIDATE_NOT_NULL(transition);
-    // ==================before translated======================
-    // return mSharedElementExitTransition;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::GetSharedElementReenterTransition(
-    /* [out] */ ITransition** transition)
-{
-    VALIDATE_NOT_NULL(transition);
-    // ==================before translated======================
-    // return mSharedElementReenterTransition == USE_DEFAULT_TRANSITION
-    //         ? getSharedElementExitTransition() : mSharedElementReenterTransition;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::SetAllowEnterTransitionOverlap(
-    /* [in] */ Boolean allow)
-{
-    // ==================before translated======================
-    // mAllowEnterTransitionOverlap = allow;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::GetAllowEnterTransitionOverlap(
-    /* [out] */ Boolean* allow)
-{
-    VALIDATE_NOT_NULL(allow);
-    // ==================before translated======================
-    // return (mAllowEnterTransitionOverlap == null) ? true : mAllowEnterTransitionOverlap;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::SetAllowReturnTransitionOverlap(
-    /* [in] */ Boolean allowExitTransitionOverlap)
-{
-    // ==================before translated======================
-    // mAllowReturnTransitionOverlap = allowExitTransitionOverlap;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::GetAllowReturnTransitionOverlap(
-    /* [out] */ Boolean* allow)
-{
-    VALIDATE_NOT_NULL(allow);
-    // ==================before translated======================
-    // return (mAllowReturnTransitionOverlap == null) ? true : mAllowReturnTransitionOverlap;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::GetTransitionBackgroundFadeDuration(
-    /* [out] */ Int64* duration)
-{
-    VALIDATE_NOT_NULL(duration);
-    // ==================before translated======================
-    // return (mBackgroundFadeDurationMillis < 0) ? DEFAULT_BACKGROUND_FADE_DURATION_MS
-    //         : mBackgroundFadeDurationMillis;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::SetTransitionBackgroundFadeDuration(
-    /* [in] */ Int64 fadeDurationMillis)
-{
-    // ==================before translated======================
-    // if (fadeDurationMillis < 0) {
-    //     throw new IllegalArgumentException("negative durations are not allowed");
-    // }
-    // mBackgroundFadeDurationMillis = fadeDurationMillis;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::SetSharedElementsUseOverlay(
-    /* [in] */ Boolean sharedElementsUseOverlay)
-{
-    // ==================before translated======================
-    // mSharedElementsUseOverlay = sharedElementsUseOverlay;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::GetSharedElementsUseOverlay(
-    /* [out] */ Boolean* shared)
-{
-    VALIDATE_NOT_NULL(shared);
-    // ==================before translated======================
-    // return (mSharedElementsUseOverlay == null) ? true : mSharedElementsUseOverlay;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::SendCloseSystemWindows()
-{
-    // ==================before translated======================
-    // PhoneWindowManager.sendCloseSystemWindows(getContext(), null);
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::SendCloseSystemWindows(
-    /* [in] */ const String& reason)
-{
-    // ==================before translated======================
-    // PhoneWindowManager.sendCloseSystemWindows(getContext(), reason);
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::GetStatusBarColor(
-    /* [out] */ Int32* result)
-{
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mStatusBarColor;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::SetStatusBarColor(
-    /* [in] */ Int32 color)
-{
-    // ==================before translated======================
-    // mStatusBarColor = color;
-    // mForcedStatusBarColor = true;
-    // if (mDecor != null) {
-    //     mDecor.updateColorViews(null);
-    // }
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::GetNavigationBarColor(
-    /* [out] */ Int32* result)
-{
-    VALIDATE_NOT_NULL(result);
-    // ==================before translated======================
-    // return mNavigationBarColor;
-    assert(0);
-    return NOERROR;
-}
-
-ECode PhoneWindow::SetNavigationBarColor(
-    /* [in] */ Int32 color)
-{
-    // ==================before translated======================
-    // mNavigationBarColor = color;
-    // mForcedNavigationBarColor = true;
-    // if (mDecor != null) {
-    //     mDecor.updateColorViews(null);
-    // }
-    assert(0);
-    return NOERROR;
-}
-
-Boolean PhoneWindow::InitializePanelMenu(
-    /* [in] */ PanelFeatureState* st)
-{
-    // ==================before translated======================
-    // Context context = getContext();
-    //
-    // // If we have an action bar, initialize the menu with the right theme.
-    // if ((st.featureId == FEATURE_OPTIONS_PANEL || st.featureId == FEATURE_ACTION_BAR) &&
-    //         mDecorContentParent != null) {
-    //     final TypedValue outValue = new TypedValue();
-    //     final Theme baseTheme = context.getTheme();
-    //     baseTheme.resolveAttribute(R.attr.actionBarTheme, outValue, true);
-    //
-    //     Theme widgetTheme = null;
-    //     if (outValue.resourceId != 0) {
-    //         widgetTheme = context.getResources().newTheme();
-    //         widgetTheme.setTo(baseTheme);
-    //         widgetTheme.applyStyle(outValue.resourceId, true);
-    //         widgetTheme.resolveAttribute(
-    //                 R.attr.actionBarWidgetTheme, outValue, true);
-    //     } else {
-    //         baseTheme.resolveAttribute(
-    //                 R.attr.actionBarWidgetTheme, outValue, true);
-    //     }
-    //
-    //     if (outValue.resourceId != 0) {
-    //         if (widgetTheme == null) {
-    //             widgetTheme = context.getResources().newTheme();
-    //             widgetTheme.setTo(baseTheme);
-    //         }
-    //         widgetTheme.applyStyle(outValue.resourceId, true);
-    //     }
-    //
-    //     if (widgetTheme != null) {
-    //         context = new ContextThemeWrapper(context, 0);
-    //         context.getTheme().setTo(widgetTheme);
-    //     }
-    // }
-    //
-    // final MenuBuilder menu = new MenuBuilder(context);
-    // menu.setCallback(this);
-    // st.setMenu(menu);
-    //
-    // return true;
-    assert(0);
-    return FALSE;
-}
-
-Boolean PhoneWindow::InitializePanelDecor(
-    /* [in] */ PanelFeatureState* st)
-{
-    // ==================before translated======================
-    // st.decorView = new DecorView(getContext(), st.featureId);
-    // st.gravity = Gravity.CENTER | Gravity.BOTTOM;
-    // st.setStyle(getContext());
-    // TypedArray a = getContext().obtainStyledAttributes(null,
-    //         R.styleable.Window, 0, st.listPresenterTheme);
-    // final float elevation = a.getDimension(R.styleable.Window_windowElevation, 0);
-    // if (elevation != 0) {
-    //     st.decorView.setElevation(elevation);
-    // }
-    // a.recycle();
-    //
-    // return true;
-    assert(0);
-    return FALSE;
-}
-
-Boolean PhoneWindow::InitializePanelContent(
-    /* [in] */ PanelFeatureState* st)
-{
-    // ==================before translated======================
-    // if (st.createdPanelView != null) {
-    //     st.shownPanelView = st.createdPanelView;
-    //     return true;
-    // }
-    //
-    // if (st.menu == null) {
-    //     return false;
-    // }
-    //
-    // if (mPanelMenuPresenterCallback == null) {
-    //     mPanelMenuPresenterCallback = new PanelMenuPresenterCallback();
-    // }
-    //
-    // MenuView menuView = st.isInListMode()
-    //         ? st.getListMenuView(getContext(), mPanelMenuPresenterCallback)
-    //         : st.getIconMenuView(getContext(), mPanelMenuPresenterCallback);
-    //
-    // st.shownPanelView = (View) menuView;
-    //
-    // if (st.shownPanelView != null) {
-    //     // Use the menu View's default animations if it has any
-    //     final int defaultAnimations = menuView.getWindowAnimations();
-    //     if (defaultAnimations != 0) {
-    //         st.windowAnimations = defaultAnimations;
-    //     }
-    //     return true;
-    // } else {
-    //     return false;
-    // }
-    assert(0);
-    return FALSE;
-}
-
-void PhoneWindow::SetFeatureDefaultDrawable(
-    /* [in] */ Int32 featureId,
-    /* [in] */ IDrawable* drawable)
-{
-    // ==================before translated======================
-    // DrawableFeatureState st = getDrawableState(featureId, true);
-    // if (st.def != drawable) {
-    //     st.def = drawable;
-    //     updateDrawable(featureId, st, false);
-    // }
-    assert(0);
 }
 
 void PhoneWindow::UpdateDrawable(
     /* [in] */ Int32 featureId,
     /* [in] */ Boolean fromActive)
 {
-    // ==================before translated======================
-    // final DrawableFeatureState st = getDrawableState(featureId, false);
-    // if (st != null) {
-    //     updateDrawable(featureId, st, fromActive);
-    // }
-    assert(0);
+    AutoPtr<DrawableFeatureState> st;
+    GetDrawableState(featureId, FALSE, (DrawableFeatureState**)&st);
+    if (st != NULL)
+    {
+        UpdateDrawable(featureId, st, fromActive);
+    }
+}
+
+void PhoneWindow::UpdateDrawable(
+    /* [in] */ Int32 featureId,
+    /* [in] */ DrawableFeatureState* st,
+    /* [in] */ Boolean fromResume)
+{
+    // Do nothing if the decor is not yet installed... an update will
+    // need to be forced when we eventually become active.
+    if (mContentParent == NULL) {
+        return;
+    }
+
+    const Int32 featureMask = 1 << featureId;
+
+    if ((GetFeatures() & featureMask) == 0 && !fromResume) {
+        return;
+    }
+
+    AutoPtr<IDrawable> drawable;
+    if (st != NULL) {
+        drawable = st->mChild;
+        if (drawable == NULL)
+            drawable = st->mLocal;
+        if (drawable == NULL)
+            drawable = st->mDef;
+    }
+
+    if ((GetLocalFeatures() & featureMask) == 0) {
+        AutoPtr<IWindow> w;
+        if ((GetContainer((IWindow**)&w), w) != NULL) {
+            Boolean active = FALSE;
+            if ((IsActive(&active), active) || fromResume) {
+                w->SetChildDrawable(featureId, drawable);
+            }
+        }
+    } else if (st != NULL && (st->mCur != drawable || st->mCurAlpha != st->mAlpha)) {
+        // System.out.println("Drawable changed: old=" + st.cur
+        // + ", new=" + drawable);
+        st->mCur = drawable;
+        st->mCurAlpha = st->mAlpha;
+
+        OnDrawableChanged(featureId, drawable, st->mAlpha);
+    }
 }
 
 void PhoneWindow::OnDrawableChanged(
@@ -3752,245 +5910,67 @@ void PhoneWindow::OnDrawableChanged(
     /* [in] */ IDrawable* drawable,
     /* [in] */ Int32 alpha)
 {
-    // ==================before translated======================
-    // ImageView view;
-    // if (featureId == FEATURE_LEFT_ICON) {
-    //     view = getLeftIconView();
-    // } else if (featureId == FEATURE_RIGHT_ICON) {
-    //     view = getRightIconView();
-    // } else {
-    //     return;
-    // }
-    //
-    // if (drawable != null) {
-    //     drawable.setAlpha(alpha);
-    //     view.setImageDrawable(drawable);
-    //     view.setVisibility(View.VISIBLE);
-    // } else {
-    //     view.setVisibility(View.GONE);
-    // }
-    assert(0);
+    AutoPtr<IImageView> view;
+    if (featureId == FEATURE_LEFT_ICON) {
+        view = GetLeftIconView();
+    } else if (featureId == FEATURE_RIGHT_ICON) {
+        view = GetRightIconView();
+    } else {
+        return;
+    }
+
+    if (drawable != NULL) {
+        drawable->SetAlpha(alpha);
+        view->SetImageDrawable(drawable);
+        IView::Probe(view)->SetVisibility(IView::VISIBLE);
+    } else {
+        IView::Probe(view)->SetVisibility(IView::GONE);
+    }
 }
 
 void PhoneWindow::OnIntChanged(
     /* [in] */ Int32 featureId,
     /* [in] */ Int32 value)
 {
-    // ==================before translated======================
-    // if (featureId == FEATURE_PROGRESS || featureId == FEATURE_INDETERMINATE_PROGRESS) {
-    //     updateProgressBars(value);
-    // } else if (featureId == FEATURE_CUSTOM_TITLE) {
-    //     FrameLayout titleContainer = (FrameLayout) findViewById(R.id.title_container);
-    //     if (titleContainer != null) {
-    //         mLayoutInflater.inflate(value, titleContainer);
-    //     }
-    // }
-    assert(0);
+    if (featureId == FEATURE_PROGRESS || featureId == FEATURE_INDETERMINATE_PROGRESS) {
+        UpdateProgressBars(value);
+    } else if (featureId == FEATURE_CUSTOM_TITLE) {
+        AutoPtr<IView> view;
+        FindViewById(R::id::title_container, (IView**)&view);
+        IFrameLayout* titleContainer = IFrameLayout::Probe(view.Get());
+        if (titleContainer != NULL) {
+            AutoPtr<IView> resultView;
+            mLayoutInflater->Inflate(value, IViewGroup::Probe(titleContainer), (IView**)&resultView);
+        }
+    }
 }
 
-Boolean PhoneWindow::OnKeyDown(
+void PhoneWindow::SendCloseSystemWindows()
+{
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    //TODO PhoneWindowManager::SendCloseSystemWindows(context, String(NULL));
+}
+
+void PhoneWindow::SendCloseSystemWindows(
+    /* [in] */ const String& reason)
+{
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    //TODO PhoneWindowManager::SendCloseSystemWindows(context, reason);
+}
+
+void PhoneWindow::SetFeatureDefaultDrawable(
     /* [in] */ Int32 featureId,
-    /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IDrawable* drawable)
 {
-    // ==================before translated======================
-    // /* ****************************************************************************
-    //  * HOW TO DECIDE WHERE YOUR KEY HANDLING GOES.
-    //  *
-    //  * If your key handling must happen before the app gets a crack at the event,
-    //  * it goes in PhoneWindowManager.
-    //  *
-    //  * If your key handling should happen in all windows, and does not depend on
-    //  * the state of the current application, other than that the current
-    //  * application can override the behavior by handling the event itself, it
-    //  * should go in PhoneFallbackEventHandler.
-    //  *
-    //  * Only if your handling depends on the window, and the fact that it has
-    //  * a DecorView, should it go here.
-    //  * ****************************************************************************/
-    //
-    // final KeyEvent.DispatcherState dispatcher =
-    //         mDecor != null ? mDecor.getKeyDispatcherState() : null;
-    // //Log.i(TAG, "Key down: repeat=" + event.getRepeatCount()
-    // //        + " flags=0x" + Integer.toHexString(event.getFlags()));
-    //
-    // switch (keyCode) {
-    //     case KeyEvent.KEYCODE_VOLUME_UP:
-    //     case KeyEvent.KEYCODE_VOLUME_DOWN: {
-    //         int direction = keyCode == KeyEvent.KEYCODE_VOLUME_UP ? AudioManager.ADJUST_RAISE
-    //                 : AudioManager.ADJUST_LOWER;
-    //         // If we have a session send it the volume command, otherwise
-    //         // use the suggested stream.
-    //         if (mMediaController != null) {
-    //             mMediaController.adjustVolume(direction, AudioManager.FLAG_SHOW_UI);
-    //         } else {
-    //             MediaSessionLegacyHelper.getHelper(getContext()).sendAdjustVolumeBy(
-    //                     mVolumeControlStreamType, direction,
-    //                     AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_VIBRATE);
-    //         }
-    //         return true;
-    //     }
-    //     case KeyEvent.KEYCODE_VOLUME_MUTE: {
-    //         getAudioManager().handleKeyDown(event, mVolumeControlStreamType);
-    //         return true;
-    //     }
-    //     // These are all the recognized media key codes in
-    //     // KeyEvent.isMediaKey()
-    //     case KeyEvent.KEYCODE_MEDIA_PLAY:
-    //     case KeyEvent.KEYCODE_MEDIA_PAUSE:
-    //     case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-    //     case KeyEvent.KEYCODE_MUTE:
-    //     case KeyEvent.KEYCODE_HEADSETHOOK:
-    //     case KeyEvent.KEYCODE_MEDIA_STOP:
-    //     case KeyEvent.KEYCODE_MEDIA_NEXT:
-    //     case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-    //     case KeyEvent.KEYCODE_MEDIA_REWIND:
-    //     case KeyEvent.KEYCODE_MEDIA_RECORD:
-    //     case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD: {
-    //         if (mMediaController != null) {
-    //             if (mMediaController.dispatchMediaButtonEvent(event)) {
-    //                 return true;
-    //             }
-    //         }
-    //         return false;
-    //     }
-    //
-    //     case KeyEvent.KEYCODE_MENU: {
-    //         onKeyDownPanel((featureId < 0) ? FEATURE_OPTIONS_PANEL : featureId, event);
-    //         return true;
-    //     }
-    //
-    //     case KeyEvent.KEYCODE_BACK: {
-    //         if (event.getRepeatCount() > 0) break;
-    //         if (featureId < 0) break;
-    //         // Currently don't do anything with long press.
-    //         if (dispatcher != null) {
-    //             dispatcher.startTracking(event, this);
-    //         }
-    //         return true;
-    //     }
-    //
-    // }
-    //
-    // return false;
-    assert(0);
-    return FALSE;
-}
-
-Boolean PhoneWindow::OnKeyUp(
-    /* [in] */ Int32 featureId,
-    /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
-{
-    // ==================before translated======================
-    // final KeyEvent.DispatcherState dispatcher =
-    //         mDecor != null ? mDecor.getKeyDispatcherState() : null;
-    // if (dispatcher != null) {
-    //     dispatcher.handleUpEvent(event);
-    // }
-    // //Log.i(TAG, "Key up: repeat=" + event.getRepeatCount()
-    // //        + " flags=0x" + Integer.toHexString(event.getFlags()));
-    //
-    // switch (keyCode) {
-    //     case KeyEvent.KEYCODE_VOLUME_UP:
-    //     case KeyEvent.KEYCODE_VOLUME_DOWN: {
-    //         // If we have a session send it the volume command, otherwise
-    //         // use the suggested stream.
-    //         if (mMediaController != null) {
-    //             mMediaController.adjustVolume(0, AudioManager.FLAG_PLAY_SOUND
-    //                     | AudioManager.FLAG_VIBRATE);
-    //         } else {
-    //             MediaSessionLegacyHelper.getHelper(getContext()).sendAdjustVolumeBy(
-    //                     mVolumeControlStreamType, 0,
-    //                     AudioManager.FLAG_PLAY_SOUND | AudioManager.FLAG_VIBRATE);
-    //         }
-    //         return true;
-    //     }
-    //     case KeyEvent.KEYCODE_VOLUME_MUTE: {
-    //         // Similar code is in PhoneFallbackEventHandler in case the window
-    //         // doesn't have one of these.  In this case, we execute it here and
-    //         // eat the event instead, because we have mVolumeControlStreamType
-    //         // and they don't.
-    //         getAudioManager().handleKeyUp(event, mVolumeControlStreamType);
-    //         return true;
-    //     }
-    //     // These are all the recognized media key codes in
-    //     // KeyEvent.isMediaKey()
-    //     case KeyEvent.KEYCODE_MEDIA_PLAY:
-    //     case KeyEvent.KEYCODE_MEDIA_PAUSE:
-    //     case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-    //     case KeyEvent.KEYCODE_MUTE:
-    //     case KeyEvent.KEYCODE_HEADSETHOOK:
-    //     case KeyEvent.KEYCODE_MEDIA_STOP:
-    //     case KeyEvent.KEYCODE_MEDIA_NEXT:
-    //     case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-    //     case KeyEvent.KEYCODE_MEDIA_REWIND:
-    //     case KeyEvent.KEYCODE_MEDIA_RECORD:
-    //     case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD: {
-    //         if (mMediaController != null) {
-    //             if (mMediaController.dispatchMediaButtonEvent(event)) {
-    //                 return true;
-    //             }
-    //         }
-    //         return false;
-    //     }
-    //
-    //     case KeyEvent.KEYCODE_MENU: {
-    //         onKeyUpPanel(featureId < 0 ? FEATURE_OPTIONS_PANEL : featureId,
-    //                 event);
-    //         return true;
-    //     }
-    //
-    //     case KeyEvent.KEYCODE_BACK: {
-    //         if (featureId < 0) break;
-    //         if (event.isTracking() && !event.isCanceled()) {
-    //             if (featureId == FEATURE_OPTIONS_PANEL) {
-    //                 PanelFeatureState st = getPanelState(featureId, false);
-    //                 if (st != null && st.isInExpandedMode) {
-    //                     // If the user is in an expanded menu and hits back, it
-    //                     // should go back to the icon menu
-    //                     reopenMenu(true);
-    //                     return true;
-    //                 }
-    //             }
-    //             closePanel(featureId);
-    //             return true;
-    //         }
-    //         break;
-    //     }
-    //
-    //     case KeyEvent.KEYCODE_SEARCH: {
-    //         /*
-    //          * Do this in onKeyUp since the Search key is also used for
-    //          * chording quick launch shortcuts.
-    //          */
-    //         if (getKeyguardManager().inKeyguardRestrictedInputMode()) {
-    //             break;
-    //         }
-    //         if (event.isTracking() && !event.isCanceled()) {
-    //             launchDefaultSearch();
-    //         }
-    //         return true;
-    //     }
-    // }
-    //
-    // return false;
-    assert(0);
-    return FALSE;
-}
-
-void PhoneWindow::OnActive()
-{
-    assert(0);
-}
-
-AutoPtr<PhoneWindow::DecorView> PhoneWindow::GenerateDecor()
-{
-    // ==================before translated======================
-    // return new DecorView(getContext(), -1);
-    assert(0);
-    AutoPtr<DecorView> empty;
-    return empty;
+    AutoPtr<DrawableFeatureState> st;
+    GetDrawableState(featureId, TRUE, (DrawableFeatureState**)&st);
+    if (st->mDef.Get() != drawable)
+    {
+        st->mDef = drawable;
+        UpdateDrawable(featureId, st, FALSE);
+    }
 }
 
 void PhoneWindow::SetFeatureFromAttrs(
@@ -3999,1165 +5979,183 @@ void PhoneWindow::SetFeatureFromAttrs(
     /* [in] */ Int32 drawableAttr,
     /* [in] */ Int32 alphaAttr)
 {
-    // ==================before translated======================
-    // Drawable d = attrs.getDrawable(drawableAttr);
-    // if (d != null) {
-    //     requestFeature(featureId);
-    //     setFeatureDefaultDrawable(featureId, d);
-    // }
-    // if ((getFeatures() & (1 << featureId)) != 0) {
-    //     int alpha = attrs.getInt(alphaAttr, -1);
-    //     if (alpha >= 0) {
-    //         setFeatureDrawableAlpha(featureId, alpha);
-    //     }
-    // }
-    assert(0);
-}
-
-AutoPtr<IViewGroup> PhoneWindow::GenerateLayout(
-    /* [in] */ DecorView* decor)
-{
-    // ==================before translated======================
-    // // Apply data from current theme.
-    //
-    // TypedArray a = getWindowStyle();
-    //
-    // if (false) {
-    //     System.out.println("From style:");
-    //     String s = "Attrs:";
-    //     for (int i = 0; i < R.styleable.Window.length; i++) {
-    //         s = s + " " + Integer.toHexString(R.styleable.Window[i]) + "="
-    //                 + a.getString(i);
-    //     }
-    //     System.out.println(s);
-    // }
-    //
-    // mIsFloating = a.getBoolean(R.styleable.Window_windowIsFloating, false);
-    // int flagsToUpdate = (FLAG_LAYOUT_IN_SCREEN|FLAG_LAYOUT_INSET_DECOR)
-    //         & (~getForcedWindowFlags());
-    // if (mIsFloating) {
-    //     setLayout(WRAP_CONTENT, WRAP_CONTENT);
-    //     setFlags(0, flagsToUpdate);
-    // } else {
-    //     setFlags(FLAG_LAYOUT_IN_SCREEN|FLAG_LAYOUT_INSET_DECOR, flagsToUpdate);
-    // }
-    //
-    // if (a.getBoolean(R.styleable.Window_windowNoTitle, false)) {
-    //     requestFeature(FEATURE_NO_TITLE);
-    // } else if (a.getBoolean(R.styleable.Window_windowActionBar, false)) {
-    //     // Don't allow an action bar if there is no title.
-    //     requestFeature(FEATURE_ACTION_BAR);
-    // }
-    //
-    // if (a.getBoolean(R.styleable.Window_windowActionBarOverlay, false)) {
-    //     requestFeature(FEATURE_ACTION_BAR_OVERLAY);
-    // }
-    //
-    // if (a.getBoolean(R.styleable.Window_windowActionModeOverlay, false)) {
-    //     requestFeature(FEATURE_ACTION_MODE_OVERLAY);
-    // }
-    //
-    // if (a.getBoolean(R.styleable.Window_windowSwipeToDismiss, false)) {
-    //     requestFeature(FEATURE_SWIPE_TO_DISMISS);
-    // }
-    //
-    // if (a.getBoolean(R.styleable.Window_windowFullscreen, false)) {
-    //     setFlags(FLAG_FULLSCREEN, FLAG_FULLSCREEN & (~getForcedWindowFlags()));
-    // }
-    //
-    // if (a.getBoolean(R.styleable.Window_windowTranslucentStatus,
-    //         false)) {
-    //     setFlags(FLAG_TRANSLUCENT_STATUS, FLAG_TRANSLUCENT_STATUS
-    //             & (~getForcedWindowFlags()));
-    // }
-    //
-    // if (a.getBoolean(R.styleable.Window_windowTranslucentNavigation,
-    //         false)) {
-    //     setFlags(FLAG_TRANSLUCENT_NAVIGATION, FLAG_TRANSLUCENT_NAVIGATION
-    //             & (~getForcedWindowFlags()));
-    // }
-    //
-    // if (a.getBoolean(R.styleable.Window_windowOverscan, false)) {
-    //     setFlags(FLAG_LAYOUT_IN_OVERSCAN, FLAG_LAYOUT_IN_OVERSCAN&(~getForcedWindowFlags()));
-    // }
-    //
-    // if (a.getBoolean(R.styleable.Window_windowShowWallpaper, false)) {
-    //     setFlags(FLAG_SHOW_WALLPAPER, FLAG_SHOW_WALLPAPER&(~getForcedWindowFlags()));
-    // }
-    //
-    // if (a.getBoolean(R.styleable.Window_windowEnableSplitTouch,
-    //         getContext().getApplicationInfo().targetSdkVersion
-    //                 >= android.os.Build.VERSION_CODES.HONEYCOMB)) {
-    //     setFlags(FLAG_SPLIT_TOUCH, FLAG_SPLIT_TOUCH&(~getForcedWindowFlags()));
-    // }
-    //
-    // a.getValue(R.styleable.Window_windowMinWidthMajor, mMinWidthMajor);
-    // a.getValue(R.styleable.Window_windowMinWidthMinor, mMinWidthMinor);
-    // if (a.hasValue(R.styleable.Window_windowFixedWidthMajor)) {
-    //     if (mFixedWidthMajor == null) mFixedWidthMajor = new TypedValue();
-    //     a.getValue(R.styleable.Window_windowFixedWidthMajor,
-    //             mFixedWidthMajor);
-    // }
-    // if (a.hasValue(R.styleable.Window_windowFixedWidthMinor)) {
-    //     if (mFixedWidthMinor == null) mFixedWidthMinor = new TypedValue();
-    //     a.getValue(R.styleable.Window_windowFixedWidthMinor,
-    //             mFixedWidthMinor);
-    // }
-    // if (a.hasValue(R.styleable.Window_windowFixedHeightMajor)) {
-    //     if (mFixedHeightMajor == null) mFixedHeightMajor = new TypedValue();
-    //     a.getValue(R.styleable.Window_windowFixedHeightMajor,
-    //             mFixedHeightMajor);
-    // }
-    // if (a.hasValue(R.styleable.Window_windowFixedHeightMinor)) {
-    //     if (mFixedHeightMinor == null) mFixedHeightMinor = new TypedValue();
-    //     a.getValue(R.styleable.Window_windowFixedHeightMinor,
-    //             mFixedHeightMinor);
-    // }
-    // if (a.getBoolean(R.styleable.Window_windowContentTransitions, false)) {
-    //     requestFeature(FEATURE_CONTENT_TRANSITIONS);
-    // }
-    // if (a.getBoolean(R.styleable.Window_windowActivityTransitions, false)) {
-    //     requestFeature(FEATURE_ACTIVITY_TRANSITIONS);
-    // }
-    //
-    // final WindowManager windowService = (WindowManager) getContext().getSystemService(
-    //         Context.WINDOW_SERVICE);
-    // if (windowService != null) {
-    //     final Display display = windowService.getDefaultDisplay();
-    //     final boolean shouldUseBottomOutset =
-    //             display.getDisplayId() == Display.DEFAULT_DISPLAY
-    //                     || (getForcedWindowFlags() & FLAG_FULLSCREEN) != 0;
-    //     if (shouldUseBottomOutset && a.hasValue(R.styleable.Window_windowOutsetBottom)) {
-    //         if (mOutsetBottom == null) mOutsetBottom = new TypedValue();
-    //         a.getValue(R.styleable.Window_windowOutsetBottom,
-    //                 mOutsetBottom);
-    //     }
-    // }
-    //
-    // final Context context = getContext();
-    // final int targetSdk = context.getApplicationInfo().targetSdkVersion;
-    // final boolean targetPreHoneycomb = targetSdk < android.os.Build.VERSION_CODES.HONEYCOMB;
-    // final boolean targetPreIcs = targetSdk < android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
-    // final boolean targetPreL = targetSdk < android.os.Build.VERSION_CODES.LOLLIPOP;
-    // final boolean targetHcNeedsOptions = context.getResources().getBoolean(
-    //         R.bool.target_honeycomb_needs_options_menu);
-    // final boolean noActionBar = !hasFeature(FEATURE_ACTION_BAR) || hasFeature(FEATURE_NO_TITLE);
-    //
-    // if (targetPreHoneycomb || (targetPreIcs && targetHcNeedsOptions && noActionBar)) {
-    //     addFlags(WindowManager.LayoutParams.FLAG_NEEDS_MENU_KEY);
-    // } else {
-    //     clearFlags(WindowManager.LayoutParams.FLAG_NEEDS_MENU_KEY);
-    // }
-    //
-    // // Non-floating windows on high end devices must put up decor beneath the system bars and
-    // // therefore must know about visibility changes of those.
-    // if (!mIsFloating && ActivityManager.isHighEndGfx()) {
-    //     if (!targetPreL && a.getBoolean(
-    //             R.styleable.Window_windowDrawsSystemBarBackgrounds,
-    //             false)) {
-    //         setFlags(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS,
-    //                 FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS & ~getForcedWindowFlags());
-    //     }
-    // }
-    // if (!mForcedStatusBarColor) {
-    //     mStatusBarColor = a.getColor(R.styleable.Window_statusBarColor, 0xFF000000);
-    // }
-    // if (!mForcedNavigationBarColor) {
-    //     mNavigationBarColor = a.getColor(R.styleable.Window_navigationBarColor, 0xFF000000);
-    // }
-    //
-    // if (mAlwaysReadCloseOnTouchAttr || getContext().getApplicationInfo().targetSdkVersion
-    //         >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-    //     if (a.getBoolean(
-    //             R.styleable.Window_windowCloseOnTouchOutside,
-    //             false)) {
-    //         setCloseOnTouchOutsideIfNotSet(true);
-    //     }
-    // }
-    //
-    // WindowManager.LayoutParams params = getAttributes();
-    //
-    // if (!hasSoftInputMode()) {
-    //     params.softInputMode = a.getInt(
-    //             R.styleable.Window_windowSoftInputMode,
-    //             params.softInputMode);
-    // }
-    //
-    // if (a.getBoolean(R.styleable.Window_backgroundDimEnabled,
-    //         mIsFloating)) {
-    //     /* All dialogs should have the window dimmed */
-    //     if ((getForcedWindowFlags()&WindowManager.LayoutParams.FLAG_DIM_BEHIND) == 0) {
-    //         params.flags |= WindowManager.LayoutParams.FLAG_DIM_BEHIND;
-    //     }
-    //     if (!haveDimAmount()) {
-    //         params.dimAmount = a.getFloat(
-    //                 android.R.styleable.Window_backgroundDimAmount, 0.5f);
-    //     }
-    // }
-    //
-    // if (params.windowAnimations == 0) {
-    //     params.windowAnimations = a.getResourceId(
-    //             R.styleable.Window_windowAnimationStyle, 0);
-    // }
-    //
-    // // The rest are only done if this window is not embedded; otherwise,
-    // // the values are inherited from our container.
-    // if (getContainer() == null) {
-    //     if (mBackgroundDrawable == null) {
-    //         if (mBackgroundResource == 0) {
-    //             mBackgroundResource = a.getResourceId(
-    //                     R.styleable.Window_windowBackground, 0);
-    //         }
-    //         if (mFrameResource == 0) {
-    //             mFrameResource = a.getResourceId(R.styleable.Window_windowFrame, 0);
-    //         }
-    //         mBackgroundFallbackResource = a.getResourceId(
-    //                 R.styleable.Window_windowBackgroundFallback, 0);
-    //         if (false) {
-    //             System.out.println("Background: "
-    //                     + Integer.toHexString(mBackgroundResource) + " Frame: "
-    //                     + Integer.toHexString(mFrameResource));
-    //         }
-    //     }
-    //     mElevation = a.getDimension(R.styleable.Window_windowElevation, 0);
-    //     mClipToOutline = a.getBoolean(R.styleable.Window_windowClipToOutline, false);
-    //     mTextColor = a.getColor(R.styleable.Window_textColor, Color.TRANSPARENT);
-    // }
-    //
-    // // Inflate the window decor.
-    //
-    // int layoutResource;
-    // int features = getLocalFeatures();
-    // // System.out.println("Features: 0x" + Integer.toHexString(features));
-    // if ((features & (1 << FEATURE_SWIPE_TO_DISMISS)) != 0) {
-    //     layoutResource = R.layout.screen_swipe_dismiss;
-    // } else if ((features & ((1 << FEATURE_LEFT_ICON) | (1 << FEATURE_RIGHT_ICON))) != 0) {
-    //     if (mIsFloating) {
-    //         TypedValue res = new TypedValue();
-    //         getContext().getTheme().resolveAttribute(
-    //                 R.attr.dialogTitleIconsDecorLayout, res, true);
-    //         layoutResource = res.resourceId;
-    //     } else {
-    //         layoutResource = R.layout.screen_title_icons;
-    //     }
-    //     // XXX Remove this once action bar supports these features.
-    //     removeFeature(FEATURE_ACTION_BAR);
-    //     // System.out.println("Title Icons!");
-    // } else if ((features & ((1 << FEATURE_PROGRESS) | (1 << FEATURE_INDETERMINATE_PROGRESS))) != 0
-    //         && (features & (1 << FEATURE_ACTION_BAR)) == 0) {
-    //     // Special case for a window with only a progress bar (and title).
-    //     // XXX Need to have a no-title version of embedded windows.
-    //     layoutResource = R.layout.screen_progress;
-    //     // System.out.println("Progress!");
-    // } else if ((features & (1 << FEATURE_CUSTOM_TITLE)) != 0) {
-    //     // Special case for a window with a custom title.
-    //     // If the window is floating, we need a dialog layout
-    //     if (mIsFloating) {
-    //         TypedValue res = new TypedValue();
-    //         getContext().getTheme().resolveAttribute(
-    //                 R.attr.dialogCustomTitleDecorLayout, res, true);
-    //         layoutResource = res.resourceId;
-    //     } else {
-    //         layoutResource = R.layout.screen_custom_title;
-    //     }
-    //     // XXX Remove this once action bar supports these features.
-    //     removeFeature(FEATURE_ACTION_BAR);
-    // } else if ((features & (1 << FEATURE_NO_TITLE)) == 0) {
-    //     // If no other features and not embedded, only need a title.
-    //     // If the window is floating, we need a dialog layout
-    //     if (mIsFloating) {
-    //         TypedValue res = new TypedValue();
-    //         getContext().getTheme().resolveAttribute(
-    //                 R.attr.dialogTitleDecorLayout, res, true);
-    //         layoutResource = res.resourceId;
-    //     } else if ((features & (1 << FEATURE_ACTION_BAR)) != 0) {
-    //         layoutResource = a.getResourceId(
-    //                 R.styleable.Window_windowActionBarFullscreenDecorLayout,
-    //                 R.layout.screen_action_bar);
-    //     } else {
-    //         layoutResource = R.layout.screen_title;
-    //     }
-    //     // System.out.println("Title!");
-    // } else if ((features & (1 << FEATURE_ACTION_MODE_OVERLAY)) != 0) {
-    //     layoutResource = R.layout.screen_simple_overlay_action_mode;
-    // } else {
-    //     // Embedded, so no decoration is needed.
-    //     layoutResource = R.layout.screen_simple;
-    //     // System.out.println("Simple!");
-    // }
-    //
-    // mDecor.startChanging();
-    //
-    // View in = mLayoutInflater.inflate(layoutResource, null);
-    // decor.addView(in, new ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT));
-    // mContentRoot = (ViewGroup) in;
-    //
-    // ViewGroup contentParent = (ViewGroup)findViewById(ID_ANDROID_CONTENT);
-    // if (contentParent == null) {
-    //     throw new RuntimeException("Window couldn't find content container view");
-    // }
-    //
-    // if ((features & (1 << FEATURE_INDETERMINATE_PROGRESS)) != 0) {
-    //     ProgressBar progress = getCircularProgressBar(false);
-    //     if (progress != null) {
-    //         progress.setIndeterminate(true);
-    //     }
-    // }
-    //
-    // if ((features & (1 << FEATURE_SWIPE_TO_DISMISS)) != 0) {
-    //     registerSwipeCallbacks();
-    // }
-    //
-    // // Remaining setup -- of background and title -- that only applies
-    // // to top-level windows.
-    // if (getContainer() == null) {
-    //     final Drawable background;
-    //     if (mBackgroundResource != 0) {
-    //         background = getContext().getDrawable(mBackgroundResource);
-    //     } else {
-    //         background = mBackgroundDrawable;
-    //     }
-    //     mDecor.setWindowBackground(background);
-    //
-    //     final Drawable frame;
-    //     if (mFrameResource != 0) {
-    //         frame = getContext().getDrawable(mFrameResource);
-    //     } else {
-    //         frame = null;
-    //     }
-    //     mDecor.setWindowFrame(frame);
-    //
-    //     mDecor.setElevation(mElevation);
-    //     mDecor.setClipToOutline(mClipToOutline);
-    //
-    //     if (mTitle != null) {
-    //         setTitle(mTitle);
-    //     }
-    //
-    //     if (mTitleColor == 0) {
-    //         mTitleColor = mTextColor;
-    //     }
-    //     setTitleColor(mTitleColor);
-    // }
-    //
-    // mDecor.finishChanging();
-    //
-    // return contentParent;
-    assert(0);
-    AutoPtr<IViewGroup> empty;
-    return empty;
+    Boolean val;
+    AutoPtr<IDrawable> d;
+    attrs->GetDrawable(drawableAttr, (IDrawable**)&d);
+    if (d != NULL) {
+        RequestFeature(featureId, &val);
+        SetFeatureDefaultDrawable(featureId, d);
+    }
+    if ((GetFeatures() & (1 << featureId)) != 0) {
+        Int32 alpha;
+        //TODO attrs->GetInt(alphaAttr, -1, &alpha);
+        if (alpha >= 0) {
+            SetFeatureDrawableAlpha(featureId, alpha);
+        }
+    }
 }
 
 void PhoneWindow::DispatchWindowAttributesChanged(
     /* [in] */ IWindowManagerLayoutParams* attrs)
 {
-    // ==================before translated======================
-    // super.dispatchWindowAttributesChanged(attrs);
-    // if (mDecor != null) {
-    //     mDecor.updateColorViews(null /* insets */);
-    // }
-    assert(0);
-}
-
-ECode PhoneWindow::DispatchOnWindowDismissed(
-    /* [in] */ IOnWindowDismissedCallback* cb)
-{
-    return Window::DispatchOnWindowDismissed();
-}
-
-void PhoneWindow::TransitionTo(
-    /* [in] */ IScene* scene)
-{
-    // ==================before translated======================
-    // if (mContentScene == null) {
-    //     scene.enter();
-    // } else {
-    //     mTransitionManager.transitionTo(scene);
-    // }
-    // mContentScene = scene;
-    assert(0);
-}
-
-void PhoneWindow::ClearMenuViews(
-    /* [in] */ PanelFeatureState* st)
-{
-    // ==================before translated======================
-    // // This can be called on config changes, so we should make sure
-    // // the views will be reconstructed based on the new orientation, etc.
-    //
-    // // Allow the callback to create a new panel view
-    // st.createdPanelView = null;
-    //
-    // // Causes the decor view to be recreated
-    // st.refreshDecorView = true;
-    //
-    // st.clearMenuPresenters();
-    assert(0);
-}
-
-void PhoneWindow::OpenPanel(
-    /* [in] */ PanelFeatureState* st,
-    /* [in] */ IKeyEvent* event)
-{
-    // ==================before translated======================
-    // // System.out.println("Open panel: isOpen=" + st.isOpen);
-    //
-    // // Already open, return
-    // if (st.isOpen || isDestroyed()) {
-    //     return;
-    // }
-    //
-    // // Don't open an options panel for honeycomb apps on xlarge devices.
-    // // (The app should be using an action bar for menu items.)
-    // if (st.featureId == FEATURE_OPTIONS_PANEL) {
-    //     Context context = getContext();
-    //     Configuration config = context.getResources().getConfiguration();
-    //     boolean isXLarge = (config.screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) ==
-    //             Configuration.SCREENLAYOUT_SIZE_XLARGE;
-    //     boolean isHoneycombApp = context.getApplicationInfo().targetSdkVersion >=
-    //             android.os.Build.VERSION_CODES.HONEYCOMB;
-    //
-    //     if (isXLarge && isHoneycombApp) {
-    //         return;
-    //     }
-    // }
-    //
-    // Callback cb = getCallback();
-    // if ((cb != null) && (!cb.onMenuOpened(st.featureId, st.menu))) {
-    //     // Callback doesn't want the menu to open, reset any state
-    //     closePanel(st, true);
-    //     return;
-    // }
-    //
-    // final WindowManager wm = getWindowManager();
-    // if (wm == null) {
-    //     return;
-    // }
-    //
-    // // Prepare panel (should have been done before, but just in case)
-    // if (!preparePanel(st, event)) {
-    //     return;
-    // }
-    //
-    // int width = WRAP_CONTENT;
-    // if (st.decorView == null || st.refreshDecorView) {
-    //     if (st.decorView == null) {
-    //         // Initialize the panel decor, this will populate st.decorView
-    //         if (!initializePanelDecor(st) || (st.decorView == null))
-    //             return;
-    //     } else if (st.refreshDecorView && (st.decorView.getChildCount() > 0)) {
-    //         // Decor needs refreshing, so remove its views
-    //         st.decorView.removeAllViews();
-    //     }
-    //
-    //     // This will populate st.shownPanelView
-    //     if (!initializePanelContent(st) || !st.hasPanelItems()) {
-    //         return;
-    //     }
-    //
-    //     ViewGroup.LayoutParams lp = st.shownPanelView.getLayoutParams();
-    //     if (lp == null) {
-    //         lp = new ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
-    //     }
-    //
-    //     int backgroundResId;
-    //     if (lp.width == ViewGroup.LayoutParams.MATCH_PARENT) {
-    //         // If the contents is fill parent for the width, set the
-    //         // corresponding background
-    //         backgroundResId = st.fullBackground;
-    //         width = MATCH_PARENT;
-    //     } else {
-    //         // Otherwise, set the normal panel background
-    //         backgroundResId = st.background;
-    //     }
-    //     st.decorView.setWindowBackground(getContext().getDrawable(
-    //             backgroundResId));
-    //
-    //     ViewParent shownPanelParent = st.shownPanelView.getParent();
-    //     if (shownPanelParent != null && shownPanelParent instanceof ViewGroup) {
-    //         ((ViewGroup) shownPanelParent).removeView(st.shownPanelView);
-    //     }
-    //     st.decorView.addView(st.shownPanelView, lp);
-    //
-    //     /*
-    //      * Give focus to the view, if it or one of its children does not
-    //      * already have it.
-    //      */
-    //     if (!st.shownPanelView.hasFocus()) {
-    //         st.shownPanelView.requestFocus();
-    //     }
-    // } else if (!st.isInListMode()) {
-    //     width = MATCH_PARENT;
-    // } else if (st.createdPanelView != null) {
-    //     // If we already had a panel view, carry width=MATCH_PARENT through
-    //     // as we did above when it was created.
-    //     ViewGroup.LayoutParams lp = st.createdPanelView.getLayoutParams();
-    //     if (lp != null && lp.width == ViewGroup.LayoutParams.MATCH_PARENT) {
-    //         width = MATCH_PARENT;
-    //     }
-    // }
-    //
-    // st.isHandled = false;
-    //
-    // WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-    //         width, WRAP_CONTENT,
-    //         st.x, st.y, WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG,
-    //         WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
-    //         | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
-    //         st.decorView.mDefaultOpacity);
-    //
-    // if (st.isCompact) {
-    //     lp.gravity = getOptionsPanelGravity();
-    //     sRotationWatcher.addWindow(this);
-    // } else {
-    //     lp.gravity = st.gravity;
-    // }
-    //
-    // lp.windowAnimations = st.windowAnimations;
-    //
-    // wm.addView(st.decorView, lp);
-    // st.isOpen = true;
-    // // Log.v(TAG, "Adding main menu to window manager.");
-    assert(0);
-}
-
-// synchronized
-void PhoneWindow::CloseContextMenu()
-{
-    // ==================before translated======================
-    // if (mContextMenu != null) {
-    //     mContextMenu.close();
-    //     dismissContextMenu();
-    // }
-    assert(0);
-}
-
-// synchronized
-void PhoneWindow::DismissContextMenu()
-{
-    // ==================before translated======================
-    // mContextMenu = null;
-    //
-    // if (mContextMenuHelper != null) {
-    //     mContextMenuHelper.dismiss();
-    //     mContextMenuHelper = null;
-    // }
-    assert(0);
-}
-
-Boolean PhoneWindow::PerformPanelShortcut(
-    /* [in] */ PanelFeatureState* st,
-    /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event,
-    /* [in] */ Int32 flags)
-{
-    // ==================before translated======================
-    // if (event.isSystem() || (st == null)) {
-    //     return false;
-    // }
-    //
-    // boolean handled = false;
-    //
-    // // Only try to perform menu shortcuts if preparePanel returned true (possible false
-    // // return value from application not wanting to show the menu).
-    // if ((st.isPrepared || preparePanel(st, event)) && st.menu != null) {
-    //     // The menu is prepared now, perform the shortcut on it
-    //     handled = st.menu.performShortcut(keyCode, event, flags);
-    // }
-    //
-    // if (handled) {
-    //     // Mark as handled
-    //     st.isHandled = true;
-    //
-    //     // Only close down the menu if we don't have an action bar keeping it open.
-    //     if ((flags & Menu.FLAG_PERFORM_NO_CLOSE) == 0 && mDecorContentParent == null) {
-    //         closePanel(st, true);
-    //     }
-    // }
-    //
-    // return handled;
-    assert(0);
-    return FALSE;
-}
-
-void PhoneWindow::ReopenMenu(
-    /* [in] */ Boolean toggleMenuMode)
-{
-    // ==================before translated======================
-    // if (mDecorContentParent != null && mDecorContentParent.canShowOverflowMenu() &&
-    //         (!ViewConfiguration.get(getContext()).hasPermanentMenuKey() ||
-    //                 mDecorContentParent.isOverflowMenuShowPending())) {
-    //     final Callback cb = getCallback();
-    //     if (!mDecorContentParent.isOverflowMenuShowing() || !toggleMenuMode) {
-    //         if (cb != null && !isDestroyed()) {
-    //             // If we have a menu invalidation pending, do it now.
-    //             if (mInvalidatePanelMenuPosted &&
-    //                     (mInvalidatePanelMenuFeatures & (1 << FEATURE_OPTIONS_PANEL)) != 0) {
-    //                 mDecor.removeCallbacks(mInvalidatePanelMenuRunnable);
-    //                 mInvalidatePanelMenuRunnable.run();
-    //             }
-    //
-    //             final PanelFeatureState st = getPanelState(FEATURE_OPTIONS_PANEL, true);
-    //
-    //             // If we don't have a menu or we're waiting for a full content refresh,
-    //             // forget it. This is a lingering event that no longer matters.
-    //             if (st.menu != null && !st.refreshMenuContent &&
-    //                     cb.onPreparePanel(FEATURE_OPTIONS_PANEL, st.createdPanelView, st.menu)) {
-    //                 cb.onMenuOpened(FEATURE_ACTION_BAR, st.menu);
-    //                 mDecorContentParent.showOverflowMenu();
-    //             }
-    //         }
-    //     } else {
-    //         mDecorContentParent.hideOverflowMenu();
-    //         if (cb != null && !isDestroyed()) {
-    //             final PanelFeatureState st = getPanelState(FEATURE_OPTIONS_PANEL, true);
-    //             cb.onPanelClosed(FEATURE_ACTION_BAR, st.menu);
-    //         }
-    //     }
-    //     return;
-    // }
-    //
-    // PanelFeatureState st = getPanelState(FEATURE_OPTIONS_PANEL, true);
-    //
-    // // Save the future expanded mode state since closePanel will reset it
-    // boolean newExpandedMode = toggleMenuMode ? !st.isInExpandedMode : st.isInExpandedMode;
-    //
-    // st.refreshDecorView = true;
-    // closePanel(st, false);
-    //
-    // // Set the expanded mode state
-    // st.isInExpandedMode = newExpandedMode;
-    //
-    // openPanel(st, null);
-    assert(0);
-}
-
-Int32 PhoneWindow::GetOptionsPanelGravity()
-{
-    // ==================before translated======================
-    // try {
-    //     return WindowManagerHolder.sWindowManager.getPreferredOptionsPanelGravity();
-    // } catch (RemoteException ex) {
-    //     Log.e(TAG, "Couldn't getOptionsPanelGravity; using default", ex);
-    //     return Gravity.CENTER | Gravity.BOTTOM;
-    // }
-    assert(0);
-    return 0;
+    //TODO FrameLayout::DispatchWindowAttributesChanged(attrs);
+    if (mDecor != NULL) {
+        mDecor->UpdateColorViews(NULL/* insets */);
+    }
 }
 
 void PhoneWindow::UpdateProgressBars(
-    /* [in] */ Int32 value)
+   /* [in] */ Int32 value)
 {
-    // ==================before translated======================
-    // ProgressBar circularProgressBar = getCircularProgressBar(true);
-    // ProgressBar horizontalProgressBar = getHorizontalProgressBar(true);
-    //
-    // final int features = getLocalFeatures();
-    // if (value == PROGRESS_VISIBILITY_ON) {
-    //     if ((features & (1 << FEATURE_PROGRESS)) != 0) {
-    //         if (horizontalProgressBar != null) {
-    //             int level = horizontalProgressBar.getProgress();
-    //             int visibility = (horizontalProgressBar.isIndeterminate() || level < 10000) ?
-    //                     View.VISIBLE : View.INVISIBLE;
-    //             horizontalProgressBar.setVisibility(visibility);
-    //         } else {
-    //             Log.e(TAG, "Horizontal progress bar not located in current window decor");
-    //         }
-    //     }
-    //     if ((features & (1 << FEATURE_INDETERMINATE_PROGRESS)) != 0) {
-    //         if (circularProgressBar != null) {
-    //             circularProgressBar.setVisibility(View.VISIBLE);
-    //         } else {
-    //             Log.e(TAG, "Circular progress bar not located in current window decor");
-    //         }
-    //     }
-    // } else if (value == PROGRESS_VISIBILITY_OFF) {
-    //     if ((features & (1 << FEATURE_PROGRESS)) != 0) {
-    //         if (horizontalProgressBar != null) {
-    //             horizontalProgressBar.setVisibility(View.GONE);
-    //         } else {
-    //             Log.e(TAG, "Horizontal progress bar not located in current window decor");
-    //         }
-    //     }
-    //     if ((features & (1 << FEATURE_INDETERMINATE_PROGRESS)) != 0) {
-    //         if (circularProgressBar != null) {
-    //             circularProgressBar.setVisibility(View.GONE);
-    //         } else {
-    //             Log.e(TAG, "Circular progress bar not located in current window decor");
-    //         }
-    //     }
-    // } else if (value == PROGRESS_INDETERMINATE_ON) {
-    //     if (horizontalProgressBar != null) {
-    //         horizontalProgressBar.setIndeterminate(true);
-    //     } else {
-    //         Log.e(TAG, "Horizontal progress bar not located in current window decor");
-    //     }
-    // } else if (value == PROGRESS_INDETERMINATE_OFF) {
-    //     if (horizontalProgressBar != null) {
-    //         horizontalProgressBar.setIndeterminate(false);
-    //     } else {
-    //         Log.e(TAG, "Horizontal progress bar not located in current window decor");
-    //     }
-    // } else if (PROGRESS_START <= value && value <= PROGRESS_END) {
-    //     // We want to set the progress value before testing for visibility
-    //     // so that when the progress bar becomes visible again, it has the
-    //     // correct level.
-    //     if (horizontalProgressBar != null) {
-    //         horizontalProgressBar.setProgress(value - PROGRESS_START);
-    //     } else {
-    //         Log.e(TAG, "Horizontal progress bar not located in current window decor");
-    //     }
-    //
-    //     if (value < PROGRESS_END) {
-    //         showProgressBars(horizontalProgressBar, circularProgressBar);
-    //     } else {
-    //         hideProgressBars(horizontalProgressBar, circularProgressBar);
-    //     }
-    // } else if (PROGRESS_SECONDARY_START <= value && value <= PROGRESS_SECONDARY_END) {
-    //     if (horizontalProgressBar != null) {
-    //         horizontalProgressBar.setSecondaryProgress(value - PROGRESS_SECONDARY_START);
-    //     } else {
-    //         Log.e(TAG, "Horizontal progress bar not located in current window decor");
-    //     }
-    //
-    //     showProgressBars(horizontalProgressBar, circularProgressBar);
-    // }
-    assert(0);
+    AutoPtr<IProgressBar> circularProgressBar = GetCircularProgressBar(TRUE);
+    AutoPtr<IProgressBar> horizontalProgressBar = GetHorizontalProgressBar(TRUE);
+
+    const Int32 features = GetLocalFeatures();
+    if (value == PROGRESS_VISIBILITY_ON) {
+        if ((features & (1 << FEATURE_PROGRESS)) != 0) {
+            if (horizontalProgressBar != NULL)
+            {
+                Int32 level = 0;
+                horizontalProgressBar->GetProgress(&level);
+                Boolean isIndeterminate = FALSE;
+                horizontalProgressBar->IsIndeterminate(&isIndeterminate);
+                Int32 visibility = (isIndeterminate || level < 10000) ?
+                    IView::VISIBLE : IView::INVISIBLE;
+                IView::Probe(horizontalProgressBar)->SetVisibility(visibility);
+            }
+            else
+            {
+                Logger::E(TAG, "Horizontal progress bar not located in current window decor");
+            }
+        }
+        if ((features & (1 << FEATURE_INDETERMINATE_PROGRESS)) != 0) {
+            if (circularProgressBar != NULL)
+            {
+                IView::Probe(circularProgressBar)->SetVisibility(IView::VISIBLE);
+            }
+            else
+            {
+                Logger::E(TAG, "Circular progress bar not located in current window decor");
+            }
+        }
+    } else if (value == PROGRESS_VISIBILITY_OFF) {
+        if ((features & (1 << FEATURE_PROGRESS)) != 0) {
+            if (horizontalProgressBar != NULL)
+            {
+                IView::Probe(horizontalProgressBar)->SetVisibility(IView::GONE);
+            }
+            else
+            {
+                Logger::E(TAG, "Horizontal progress bar not located in current window decor");
+            }
+        }
+        if ((features & (1 << FEATURE_INDETERMINATE_PROGRESS)) != 0) {
+            if (circularProgressBar != NULL)
+            {
+                IView::Probe(circularProgressBar)->SetVisibility(IView::GONE);
+            }
+            else
+            {
+                Logger::E(TAG, "Circular progress bar not located in current window decor");
+            }
+        }
+    } else if (value == PROGRESS_INDETERMINATE_ON) {
+        if (horizontalProgressBar != NULL)
+        {
+            horizontalProgressBar->SetIndeterminate(TRUE);
+        }
+        else
+        {
+            Logger::E(TAG, "Horizontal progress bar not located in current window decor");
+        }
+    } else if (value == PROGRESS_INDETERMINATE_OFF) {
+        if (horizontalProgressBar != NULL)
+        {
+            horizontalProgressBar->SetIndeterminate(FALSE);
+        }
+        else
+        {
+            Logger::E(TAG, "Horizontal progress bar not located in current window decor");
+        }
+    } else if (PROGRESS_START <= value && value <= PROGRESS_END) {
+        // We want to set the progress value before testing for visibility
+        // so that when the progress bar becomes visible again, it has the
+        // correct level.
+        if (horizontalProgressBar != NULL)
+        {
+            horizontalProgressBar->SetProgress(value - PROGRESS_START);
+        }
+        else
+        {
+            Logger::E(TAG, "Horizontal progress bar not located in current window decor");
+        }
+
+        if (value < PROGRESS_END) {
+            ShowProgressBars(horizontalProgressBar, circularProgressBar);
+        } else {
+            HideProgressBars(horizontalProgressBar, circularProgressBar);
+        }
+    } else if (PROGRESS_SECONDARY_START <= value && value <= PROGRESS_SECONDARY_END) {
+        if (horizontalProgressBar != NULL)
+        {
+            horizontalProgressBar->SetSecondaryProgress(value - PROGRESS_SECONDARY_START);
+        }
+        else
+        {
+            Logger::E(TAG, "Horizontal progress bar not located in current window decor");
+        }
+
+        ShowProgressBars(horizontalProgressBar, circularProgressBar);
+    }
 }
 
 void PhoneWindow::ShowProgressBars(
     /* [in] */ IProgressBar* horizontalProgressBar,
     /* [in] */ IProgressBar* spinnyProgressBar)
 {
-    // ==================before translated======================
-    // final int features = getLocalFeatures();
-    // if ((features & (1 << FEATURE_INDETERMINATE_PROGRESS)) != 0 &&
-    //         spinnyProgressBar != null && spinnyProgressBar.getVisibility() == View.INVISIBLE) {
-    //     spinnyProgressBar.setVisibility(View.VISIBLE);
-    // }
-    // // Only show the progress bars if the primary progress is not complete
-    // if ((features & (1 << FEATURE_PROGRESS)) != 0 && horizontalProgressBar != null &&
-    //         horizontalProgressBar.getProgress() < 10000) {
-    //     horizontalProgressBar.setVisibility(View.VISIBLE);
-    // }
-    assert(0);
+    const Int32 features = GetLocalFeatures();
+    Int32 visibility = 0;
+    if ((features & (1 << FEATURE_INDETERMINATE_PROGRESS)) != 0 && spinnyProgressBar != NULL &&
+            (IView::Probe(spinnyProgressBar)->GetVisibility(&visibility), visibility) == IView::INVISIBLE) {
+        IView::Probe(spinnyProgressBar)->SetVisibility(IView::VISIBLE);
+    }
+    // Only show the progress bars if the primary progress is not complete
+    if (horizontalProgressBar != NULL)
+    {
+        Int32 progress = 0;
+        horizontalProgressBar->GetProgress(&progress);
+        if ((features & (1 << FEATURE_PROGRESS)) != 0 &&
+                progress < 10000) {
+            IView::Probe(horizontalProgressBar)->SetVisibility(IView::VISIBLE);
+        }
+    }
 }
 
 void PhoneWindow::HideProgressBars(
-    /* [in] */ IProgressBar* horizontalProgressBar,
-    /* [in] */ IProgressBar* spinnyProgressBar)
+    /* [in] */ IProgressBar*  horizontalProgressBar,
+    /* [in] */ IProgressBar*  spinnyProgressBar)
 {
-    // ==================before translated======================
-    // final int features = getLocalFeatures();
-    // Animation anim = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
-    // anim.setDuration(1000);
-    // if ((features & (1 << FEATURE_INDETERMINATE_PROGRESS)) != 0 &&
-    //         spinnyProgressBar != null &&
-    //         spinnyProgressBar.getVisibility() == View.VISIBLE) {
-    //     spinnyProgressBar.startAnimation(anim);
-    //     spinnyProgressBar.setVisibility(View.INVISIBLE);
-    // }
-    // if ((features & (1 << FEATURE_PROGRESS)) != 0 && horizontalProgressBar != null &&
-    //         horizontalProgressBar.getVisibility() == View.VISIBLE) {
-    //     horizontalProgressBar.startAnimation(anim);
-    //     horizontalProgressBar.setVisibility(View.INVISIBLE);
-    // }
-    assert(0);
-}
-
-AutoPtr<IViewRootImpl> PhoneWindow::GetViewRootImpl()
-{
-    // ==================before translated======================
-    // if (mDecor != null) {
-    //     ViewRootImpl viewRootImpl = mDecor.getViewRootImpl();
-    //     if (viewRootImpl != null) {
-    //         return viewRootImpl;
-    //     }
-    // }
-    // throw new IllegalStateException("view not added");
-    assert(0);
-    AutoPtr<IViewRootImpl> empty;
-    return empty;
-}
-
-AutoPtr<IKeyguardManager> PhoneWindow::GetKeyguardManager()
-{
-    // ==================before translated======================
-    // if (mKeyguardManager == null) {
-    //     mKeyguardManager = (KeyguardManager) getContext().getSystemService(
-    //             Context.KEYGUARD_SERVICE);
-    // }
-    // return mKeyguardManager;
-    assert(0);
-    AutoPtr<IKeyguardManager> empty;
-    return empty;
-}
-
-void PhoneWindow::SavePanelState(
-    /* [in] */ ISparseArray* icicles)//IParcelable
-{
-    // ==================before translated======================
-    // PanelFeatureState[] panels = mPanels;
-    // if (panels == null) {
-    //     return;
-    // }
-    //
-    // for (int curFeatureId = panels.length - 1; curFeatureId >= 0; curFeatureId--) {
-    //     if (panels[curFeatureId] != null) {
-    //         icicles.put(curFeatureId, panels[curFeatureId].onSaveInstanceState());
-    //     }
-    // }
-    assert(0);
-}
-
-void PhoneWindow::RestorePanelState(
-    /* [in] */ ISparseArray* icicles)//IParcelable
-{
-    // ==================before translated======================
-    // PanelFeatureState st;
-    // int curFeatureId;
-    // for (int i = icicles.size() - 1; i >= 0; i--) {
-    //     curFeatureId = icicles.keyAt(i);
-    //     st = getPanelState(curFeatureId, false /* required */);
-    //     if (st == null) {
-    //         // The panel must not have been required, and is currently not around, skip it
-    //         continue;
-    //     }
-    //
-    //     st.onRestoreInstanceState(icicles.get(curFeatureId));
-    //     invalidatePanelMenu(curFeatureId);
-    // }
-    //
-    // /*
-    //  * Implementation note: call openPanelsAfterRestore later to actually open the
-    //  * restored panels.
-    //  */
-    assert(0);
-}
-
-void PhoneWindow::OpenPanelsAfterRestore()
-{
-    // ==================before translated======================
-    // PanelFeatureState[] panels = mPanels;
-    //
-    // if (panels == null) {
-    //     return;
-    // }
-    //
-    // PanelFeatureState st;
-    // for (int i = panels.length - 1; i >= 0; i--) {
-    //     st = panels[i];
-    //     // We restore the panel if it was last open; we skip it if it
-    //     // now is open, to avoid a race condition if the user immediately
-    //     // opens it when we are resuming.
-    //     if (st != null) {
-    //         st.applyFrozenState();
-    //         if (!st.isOpen && st.wasLastOpen) {
-    //             st.isInExpandedMode = st.wasLastExpanded;
-    //             openPanel(st, null);
-    //         }
-    //     }
-    // }
-    assert(0);
-}
-
-void PhoneWindow::InstallDecor()
-{
-    // ==================before translated======================
-    // if (mDecor == null) {
-    //     mDecor = generateDecor();
-    //     mDecor.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
-    //     mDecor.setIsRootNamespace(true);
-    //     if (!mInvalidatePanelMenuPosted && mInvalidatePanelMenuFeatures != 0) {
-    //         mDecor.postOnAnimation(mInvalidatePanelMenuRunnable);
-    //     }
-    // }
-    // if (mContentParent == null) {
-    //     mContentParent = generateLayout(mDecor);
-    //
-    //     // Set up decor part of UI to ignore fitsSystemWindows if appropriate.
-    //     mDecor.makeOptionalFitsSystemWindows();
-    //
-    //     final DecorContentParent decorContentParent = (DecorContentParent) mDecor.findViewById(
-    //             R.id.decor_content_parent);
-    //
-    //     if (decorContentParent != null) {
-    //         mDecorContentParent = decorContentParent;
-    //         mDecorContentParent.setWindowCallback(getCallback());
-    //         if (mDecorContentParent.getTitle() == null) {
-    //             mDecorContentParent.setWindowTitle(mTitle);
-    //         }
-    //
-    //         final int localFeatures = getLocalFeatures();
-    //         for (int i = 0; i < FEATURE_MAX; i++) {
-    //             if ((localFeatures & (1 << i)) != 0) {
-    //                 mDecorContentParent.initFeature(i);
-    //             }
-    //         }
-    //
-    //         mDecorContentParent.setUiOptions(mUiOptions);
-    //
-    //         if ((mResourcesSetFlags & FLAG_RESOURCE_SET_ICON) != 0 ||
-    //                 (mIconRes != 0 && !mDecorContentParent.hasIcon())) {
-    //             mDecorContentParent.setIcon(mIconRes);
-    //         } else if ((mResourcesSetFlags & FLAG_RESOURCE_SET_ICON) == 0 &&
-    //                 mIconRes == 0 && !mDecorContentParent.hasIcon()) {
-    //             mDecorContentParent.setIcon(
-    //                     getContext().getPackageManager().getDefaultActivityIcon());
-    //             mResourcesSetFlags |= FLAG_RESOURCE_SET_ICON_FALLBACK;
-    //         }
-    //         if ((mResourcesSetFlags & FLAG_RESOURCE_SET_LOGO) != 0 ||
-    //                 (mLogoRes != 0 && !mDecorContentParent.hasLogo())) {
-    //             mDecorContentParent.setLogo(mLogoRes);
-    //         }
-    //
-    //         // Invalidate if the panel menu hasn't been created before this.
-    //         // Panel menu invalidation is deferred avoiding application onCreateOptionsMenu
-    //         // being called in the middle of onCreate or similar.
-    //         // A pending invalidation will typically be resolved before the posted message
-    //         // would run normally in order to satisfy instance state restoration.
-    //         PanelFeatureState st = getPanelState(FEATURE_OPTIONS_PANEL, false);
-    //         if (!isDestroyed() && (st == null || st.menu == null)) {
-    //             invalidatePanelMenu(FEATURE_ACTION_BAR);
-    //         }
-    //     } else {
-    //         mTitleView = (TextView)findViewById(R.id.title);
-    //         if (mTitleView != null) {
-    //             mTitleView.setLayoutDirection(mDecor.getLayoutDirection());
-    //             if ((getLocalFeatures() & (1 << FEATURE_NO_TITLE)) != 0) {
-    //                 View titleContainer = findViewById(
-    //                         R.id.title_container);
-    //                 if (titleContainer != null) {
-    //                     titleContainer.setVisibility(View.GONE);
-    //                 } else {
-    //                     mTitleView.setVisibility(View.GONE);
-    //                 }
-    //                 if (mContentParent instanceof FrameLayout) {
-    //                     ((FrameLayout)mContentParent).setForeground(null);
-    //                 }
-    //             } else {
-    //                 mTitleView.setText(mTitle);
-    //             }
-    //         }
-    //     }
-    //
-    //     if (mDecor.getBackground() == null && mBackgroundFallbackResource != 0) {
-    //         mDecor.setBackgroundFallback(mBackgroundFallbackResource);
-    //     }
-    //
-    //     // Only inflate or create a new TransitionManager if the caller hasn't
-    //     // already set a custom one.
-    //     if (hasFeature(FEATURE_ACTIVITY_TRANSITIONS)) {
-    //         if (mTransitionManager == null) {
-    //             final int transitionRes = getWindowStyle().getResourceId(
-    //                     R.styleable.Window_windowContentTransitionManager,
-    //                     0);
-    //             if (transitionRes != 0) {
-    //                 final TransitionInflater inflater = TransitionInflater.from(getContext());
-    //                 mTransitionManager = inflater.inflateTransitionManager(transitionRes,
-    //                         mContentParent);
-    //             } else {
-    //                 mTransitionManager = new TransitionManager();
-    //             }
-    //         }
-    //
-    //         mEnterTransition = getTransition(mEnterTransition, null,
-    //                 R.styleable.Window_windowEnterTransition);
-    //         mReturnTransition = getTransition(mReturnTransition, USE_DEFAULT_TRANSITION,
-    //                 R.styleable.Window_windowReturnTransition);
-    //         mExitTransition = getTransition(mExitTransition, null,
-    //                 R.styleable.Window_windowExitTransition);
-    //         mReenterTransition = getTransition(mReenterTransition, USE_DEFAULT_TRANSITION,
-    //                 R.styleable.Window_windowReenterTransition);
-    //         mSharedElementEnterTransition = getTransition(mSharedElementEnterTransition, null,
-    //                 R.styleable.Window_windowSharedElementEnterTransition);
-    //         mSharedElementReturnTransition = getTransition(mSharedElementReturnTransition,
-    //                 USE_DEFAULT_TRANSITION,
-    //                 R.styleable.Window_windowSharedElementReturnTransition);
-    //         mSharedElementExitTransition = getTransition(mSharedElementExitTransition, null,
-    //                 R.styleable.Window_windowSharedElementExitTransition);
-    //         mSharedElementReenterTransition = getTransition(mSharedElementReenterTransition,
-    //                 USE_DEFAULT_TRANSITION,
-    //                 R.styleable.Window_windowSharedElementReenterTransition);
-    //         if (mAllowEnterTransitionOverlap == null) {
-    //             mAllowEnterTransitionOverlap = getWindowStyle().getBoolean(
-    //                     R.styleable.Window_windowAllowEnterTransitionOverlap, true);
-    //         }
-    //         if (mAllowReturnTransitionOverlap == null) {
-    //             mAllowReturnTransitionOverlap = getWindowStyle().getBoolean(
-    //                     R.styleable.Window_windowAllowReturnTransitionOverlap, true);
-    //         }
-    //         if (mBackgroundFadeDurationMillis < 0) {
-    //             mBackgroundFadeDurationMillis = getWindowStyle().getInteger(
-    //                     R.styleable.Window_windowTransitionBackgroundFadeDuration,
-    //                     DEFAULT_BACKGROUND_FADE_DURATION_MS);
-    //         }
-    //         if (mSharedElementsUseOverlay == null) {
-    //             mSharedElementsUseOverlay = getWindowStyle().getBoolean(
-    //                     R.styleable.Window_windowSharedElementsUseOverlay, true);
-    //         }
-    //     }
-    // }
-    assert(0);
-}
-
-AutoPtr<ITransition> PhoneWindow::GetTransition(
-    /* [in] */ ITransition* currentValue,
-    /* [in] */ ITransition* defaultValue,
-    /* [in] */ Int32 id)
-{
-    // ==================before translated======================
-    // if (currentValue != defaultValue) {
-    //     return currentValue;
-    // }
-    // int transitionId = getWindowStyle().getResourceId(id, -1);
-    // Transition transition = defaultValue;
-    // if (transitionId != -1 && transitionId != R.transition.no_transition) {
-    //     TransitionInflater inflater = TransitionInflater.from(getContext());
-    //     transition = inflater.inflateTransition(transitionId);
-    //     if (transition instanceof TransitionSet &&
-    //             ((TransitionSet)transition).getTransitionCount() == 0) {
-    //         transition = null;
-    //     }
-    // }
-    // return transition;
-    assert(0);
-    AutoPtr<ITransition> empty;
-    return empty;
-}
-
-AutoPtr<IDrawable> PhoneWindow::LoadImageURI(
-    /* [in] */ IUri* uri)
-{
-    // ==================before translated======================
-    // try {
-    //     return Drawable.createFromStream(
-    //             getContext().getContentResolver().openInputStream(uri), null);
-    // } catch (Exception e) {
-    //     Log.w(TAG, "Unable to open content: " + uri);
-    // }
-    // return null;
-    assert(0);
-    AutoPtr<IDrawable> empty;
-    return empty;
-}
-
-AutoPtr<PhoneWindow::DrawableFeatureState> PhoneWindow::GetDrawableState(
-    /* [in] */ Int32 featureId,
-    /* [in] */ Boolean required)
-{
-    // ==================before translated======================
-    // if ((getFeatures() & (1 << featureId)) == 0) {
-    //     if (!required) {
-    //         return null;
-    //     }
-    //     throw new RuntimeException("The feature has not been requested");
-    // }
-    //
-    // DrawableFeatureState[] ar;
-    // if ((ar = mDrawables) == null || ar.length <= featureId) {
-    //     DrawableFeatureState[] nar = new DrawableFeatureState[featureId + 1];
-    //     if (ar != null) {
-    //         System.arraycopy(ar, 0, nar, 0, ar.length);
-    //     }
-    //     mDrawables = ar = nar;
-    // }
-    //
-    // DrawableFeatureState st = ar[featureId];
-    // if (st == null) {
-    //     ar[featureId] = st = new DrawableFeatureState(featureId);
-    // }
-    // return st;
-    assert(0);
-    AutoPtr<DrawableFeatureState> empty;
-    return empty;
-}
-
-AutoPtr<PhoneWindow::PanelFeatureState> PhoneWindow::GetPanelState(
-    /* [in] */ Int32 featureId,
-    /* [in] */ Boolean required)
-{
-    // ==================before translated======================
-    // return getPanelState(featureId, required, null);
-    assert(0);
-    AutoPtr<PanelFeatureState> empty;
-    return empty;
-}
-
-AutoPtr<PhoneWindow::PanelFeatureState> PhoneWindow::GetPanelState(
-    /* [in] */ Int32 featureId,
-    /* [in] */ Boolean required,
-    /* [in] */ PanelFeatureState* convertPanelState)
-{
-    // ==================before translated======================
-    // if ((getFeatures() & (1 << featureId)) == 0) {
-    //     if (!required) {
-    //         return null;
-    //     }
-    //     throw new RuntimeException("The feature has not been requested");
-    // }
-    //
-    // PanelFeatureState[] ar;
-    // if ((ar = mPanels) == null || ar.length <= featureId) {
-    //     PanelFeatureState[] nar = new PanelFeatureState[featureId + 1];
-    //     if (ar != null) {
-    //         System.arraycopy(ar, 0, nar, 0, ar.length);
-    //     }
-    //     mPanels = ar = nar;
-    // }
-    //
-    // PanelFeatureState st = ar[featureId];
-    // if (st == null) {
-    //     ar[featureId] = st = (convertPanelState != null)
-    //             ? convertPanelState
-    //             : new PanelFeatureState(featureId);
-    // }
-    // return st;
-    assert(0);
-    AutoPtr<PanelFeatureState> empty;
-    return empty;
-}
-
-void PhoneWindow::UpdateDrawable(
-    /* [in] */ Int32 featureId,
-    /* [in] */ DrawableFeatureState* st,
-    /* [in] */ Boolean fromResume)
-{
-    // ==================before translated======================
-    // // Do nothing if the decor is not yet installed... an update will
-    // // need to be forced when we eventually become active.
-    // if (mContentParent == null) {
-    //     return;
-    // }
-    //
-    // final int featureMask = 1 << featureId;
-    //
-    // if ((getFeatures() & featureMask) == 0 && !fromResume) {
-    //     return;
-    // }
-    //
-    // Drawable drawable = null;
-    // if (st != null) {
-    //     drawable = st.child;
-    //     if (drawable == null)
-    //         drawable = st.local;
-    //     if (drawable == null)
-    //         drawable = st.def;
-    // }
-    // if ((getLocalFeatures() & featureMask) == 0) {
-    //     if (getContainer() != null) {
-    //         if (isActive() || fromResume) {
-    //             getContainer().setChildDrawable(featureId, drawable);
-    //         }
-    //     }
-    // } else if (st != null && (st.cur != drawable || st.curAlpha != st.alpha)) {
-    //     // System.out.println("Drawable changed: old=" + st.cur
-    //     // + ", new=" + drawable);
-    //     st.cur = drawable;
-    //     st.curAlpha = st.alpha;
-    //     onDrawableChanged(featureId, drawable, st.alpha);
-    // }
-    assert(0);
+    const Int32 features = GetLocalFeatures();
+    AutoPtr<IAnimationUtils> animUtils;
+    CAnimationUtils::AcquireSingleton((IAnimationUtils**)&animUtils);
+    AutoPtr<IAnimation> anim;
+    animUtils->LoadAnimation(mContext, R::anim::fade_out, (IAnimation**)&anim);
+    anim->SetDuration(1000);
+    Int32 spBarVisibility = 0;
+    if ((features & (1 << FEATURE_INDETERMINATE_PROGRESS)) != 0 && spinnyProgressBar != NULL &&
+            (IView::Probe(spinnyProgressBar)->GetVisibility(&spBarVisibility), spBarVisibility) == IView::VISIBLE) {
+        IView::Probe(spinnyProgressBar)->StartAnimation(anim);
+        IView::Probe(spinnyProgressBar)->SetVisibility(IView::INVISIBLE);
+    }
+    if (horizontalProgressBar != NULL)
+    {
+        Int32 hpBarVisibale =0;
+        if ((features & (1 << FEATURE_PROGRESS)) != 0 &&
+                (IView::Probe(horizontalProgressBar)->GetVisibility(&hpBarVisibale), hpBarVisibale) == IView::VISIBLE) {
+            IView::Probe(horizontalProgressBar)->StartAnimation(anim);
+            IView::Probe(horizontalProgressBar)->SetVisibility(IView::INVISIBLE);
+        }
+    }
 }
 
 void PhoneWindow::UpdateInt(
@@ -5165,209 +6163,744 @@ void PhoneWindow::UpdateInt(
     /* [in] */ Int32 value,
     /* [in] */ Boolean fromResume)
 {
-    // ==================before translated======================
-    //
-    // // Do nothing if the decor is not yet installed... an update will
-    // // need to be forced when we eventually become active.
-    // if (mContentParent == null) {
-    //     return;
-    // }
-    //
-    // final int featureMask = 1 << featureId;
-    //
-    // if ((getFeatures() & featureMask) == 0 && !fromResume) {
-    //     return;
-    // }
-    //
-    // if ((getLocalFeatures() & featureMask) == 0) {
-    //     if (getContainer() != null) {
-    //         getContainer().setChildInt(featureId, value);
-    //     }
-    // } else {
-    //     onIntChanged(featureId, value);
-    // }
-    assert(0);
+    // Do nothing if the decor is not yet installed... an update will
+    // need to be forced when we eventually become active.
+    if (mContentParent == NULL) {
+        return;
+    }
+
+    const Int32 featureMask = 1 << featureId;
+
+    if ((GetFeatures() & featureMask) == 0 && !fromResume) {
+        return;
+    }
+
+    if ((GetLocalFeatures() & featureMask) == 0) {
+        AutoPtr<IWindow> w;
+        if ((GetContainer((IWindow**)&w), w) != NULL) {
+            w->SetChildInt(featureId, value);
+        }
+    } else {
+        OnIntChanged(featureId, value);
+    }
 }
 
 AutoPtr<IImageView> PhoneWindow::GetLeftIconView()
 {
-    // ==================before translated======================
-    // if (mLeftIconView != null) {
-    //     return mLeftIconView;
-    // }
-    // if (mContentParent == null) {
-    //     installDecor();
-    // }
-    // return (mLeftIconView = (ImageView)findViewById(R.id.left_icon));
-    assert(0);
-    AutoPtr<IImageView> empty;
-    return empty;
+    if (mLeftIconView != NULL) {
+        return mLeftIconView;
+    }
+    if (mContentParent == NULL) {
+        InstallDecor();
+    }
+
+    FindViewById(R::id::left_icon, (IView**)&mLeftIconView);
+    return mLeftIconView;
 }
 
 AutoPtr<IProgressBar> PhoneWindow::GetCircularProgressBar(
     /* [in] */ Boolean shouldInstallDecor)
 {
-    // ==================before translated======================
-    // if (mCircularProgressBar != null) {
-    //     return mCircularProgressBar;
-    // }
-    // if (mContentParent == null && shouldInstallDecor) {
-    //     installDecor();
-    // }
-    // mCircularProgressBar = (ProgressBar) findViewById(R.id.progress_circular);
-    // if (mCircularProgressBar != null) {
-    //     mCircularProgressBar.setVisibility(View.INVISIBLE);
-    // }
-    // return mCircularProgressBar;
-    assert(0);
-    AutoPtr<IProgressBar> empty;
-    return empty;
+    if (mCircularProgressBar != NULL) {
+        return mCircularProgressBar;
+    }
+    if (mContentParent == NULL && shouldInstallDecor) {
+        InstallDecor();
+    }
+
+    FindViewById(R::id::progress_circular, (IView**)&mCircularProgressBar);
+    if (mCircularProgressBar != NULL) {
+        IView::Probe(mCircularProgressBar)->SetVisibility(IView::INVISIBLE);
+    }
+    return mCircularProgressBar;
 }
 
 AutoPtr<IProgressBar> PhoneWindow::GetHorizontalProgressBar(
     /* [in] */ Boolean shouldInstallDecor)
 {
-    // ==================before translated======================
-    // if (mHorizontalProgressBar != null) {
-    //     return mHorizontalProgressBar;
-    // }
-    // if (mContentParent == null && shouldInstallDecor) {
-    //     installDecor();
-    // }
-    // mHorizontalProgressBar = (ProgressBar) findViewById(R.id.progress_horizontal);
-    // if (mHorizontalProgressBar != null) {
-    //     mHorizontalProgressBar.setVisibility(View.INVISIBLE);
-    // }
-    // return mHorizontalProgressBar;
-    assert(0);
-    AutoPtr<IProgressBar> empty;
-    return empty;
+    if (mHorizontalProgressBar != NULL) {
+        return mHorizontalProgressBar;
+    }
+    if (mContentParent == NULL && shouldInstallDecor) {
+        InstallDecor();
+    }
+
+    FindViewById(R::id::progress_horizontal, (IView**)&mHorizontalProgressBar);
+    if (mHorizontalProgressBar != NULL) {
+        IView::Probe(mHorizontalProgressBar)->SetVisibility(IView::INVISIBLE);
+    }
+    return mHorizontalProgressBar;
 }
 
 AutoPtr<IImageView> PhoneWindow::GetRightIconView()
 {
-    // ==================before translated======================
-    // if (mRightIconView != null) {
-    //     return mRightIconView;
-    // }
-    // if (mContentParent == null) {
-    //     installDecor();
-    // }
-    // return (mRightIconView = (ImageView)findViewById(R.id.right_icon));
-    assert(0);
-    AutoPtr<IImageView> empty;
-    return empty;
+    if (mRightIconView != NULL) {
+        return mRightIconView;
+    }
+    if (mContentParent == NULL) {
+        InstallDecor();
+    }
+
+    FindViewById(R::id::right_icon, (IView**)&mRightIconView);
+    return mRightIconView;
 }
 
-void PhoneWindow::RegisterSwipeCallbacks()
+//@Override
+ECode PhoneWindow::SetVolumeControlStream(
+    /* [in] */ Int32 streamType)
 {
-    // ==================before translated======================
-    // SwipeDismissLayout swipeDismiss =
-    //         (SwipeDismissLayout) findViewById(R.id.content);
-    // swipeDismiss.setOnDismissedListener(new SwipeDismissLayout.OnDismissedListener() {
-    //     @Override
-    //     public void onDismissed(SwipeDismissLayout layout) {
-    //         dispatchOnWindowDismissed();
-    //     }
-    // });
-    // swipeDismiss.setOnSwipeProgressChangedListener(
-    //         new SwipeDismissLayout.OnSwipeProgressChangedListener() {
-    //             private static final float ALPHA_DECREASE = 0.5f;
-    //             private boolean mIsTranslucent = false;
-    //             @Override
-    //             public void onSwipeProgressChanged(
-    //                     SwipeDismissLayout layout, float progress, float translate) {
-    //                 WindowManager.LayoutParams newParams = getAttributes();
-    //                 newParams.x = (int) translate;
-    //                 newParams.alpha = 1 - (progress * ALPHA_DECREASE);
-    //                 setAttributes(newParams);
-    //
-    //                 int flags = 0;
-    //                 if (newParams.x == 0) {
-    //                     flags = FLAG_FULLSCREEN;
-    //                 } else {
-    //                     flags = FLAG_LAYOUT_NO_LIMITS;
-    //                 }
-    //                 setFlags(flags, FLAG_FULLSCREEN | FLAG_LAYOUT_NO_LIMITS);
-    //             }
-    //
-    //             @Override
-    //             public void onSwipeCancelled(SwipeDismissLayout layout) {
-    //                 WindowManager.LayoutParams newParams = getAttributes();
-    //                 newParams.x = 0;
-    //                 newParams.alpha = 1;
-    //                 setAttributes(newParams);
-    //                 setFlags(FLAG_FULLSCREEN, FLAG_FULLSCREEN | FLAG_LAYOUT_NO_LIMITS);
-    //             }
-    //         });
-    assert(0);
+    mVolumeControlStreamType = streamType;
+    return NOERROR;
 }
 
-void PhoneWindow::CallOnPanelClosed(
+//@Override
+ECode PhoneWindow::GetVolumeControlStream(
+    /* [out] */ Int32* streamType)
+{
+    VALIDATE_NOT_NULL(streamType);
+    *streamType = mVolumeControlStreamType;
+    return NOERROR;
+}
+
+//ECode PhoneWindow::GetContext(
+//    /* [out] */ IContext** context)
+//{
+//    VALIDATE_NOT_NULL(context);
+//    return Window::GetContext(context);
+//}
+//
+//ECode PhoneWindow::GetWindowStyle(
+//    /* [out] */ ITypedArray** attrs)
+//{
+//    VALIDATE_NOT_NULL(attrs);
+//    return Window::GetWindowStyle(attrs);
+//}
+//
+//ECode PhoneWindow::GetContainer(
+//    /* [out] */ IWindow** container)
+//{
+//    VALIDATE_NOT_NULL(container);
+//    return Window::GetContainer(container);
+//}
+//
+//ECode PhoneWindow::IsDestroyed(
+//    /* [out] */ Boolean* destroyed)
+//{
+//    VALIDATE_NOT_NULL(destroyed);
+//    return Window::IsDestroyed(destroyed);
+//}
+//
+//ECode PhoneWindow::HasChildren(
+//    /* [out] */  Boolean* hasChildren)
+//{
+//    VALIDATE_NOT_NULL(hasChildren);
+//    return Window::HasChildren(hasChildren);
+//}
+//
+//ECode PhoneWindow::SetWindowManager(
+//    /* [in] */ IWindowManager* wm,
+//    /* [in] */ IBinder* appToken,
+//    /* [in] */ const String& appName)
+//{
+//    return Window::SetWindowManager(wm, appToken, appName);
+//}
+//
+//ECode PhoneWindow::GetWindowManager(
+//    /* [out] */ IWindowManager** wm)
+//{
+//    return Window::GetWindowManager(wm);
+//}
+//
+//ECode PhoneWindow::SetCallback(
+//    /* [in] */ IWindowCallback* cb)
+//{
+//    return Window::SetCallback(cb);
+//}
+//
+//ECode PhoneWindow::GetCallback(
+//    /* [out] */ IWindowCallback** cb)
+//{
+//    VALIDATE_NOT_NULL(cb);
+//    return Window::GetCallback(cb);
+//}
+//
+//ECode PhoneWindow::SetLayout(
+//    /* [in] */ Int32 width,
+//    /* [in] */ Int32 height)
+//{
+//    return Window::SetLayout(width, height);
+//}
+//
+//ECode PhoneWindow::SetGravity(
+//    /* [in] */ Int32 gravity)
+//{
+//    return Window::SetGravity(gravity);
+//}
+//
+//ECode PhoneWindow::SetType(
+//    /* [in] */ Int32 type)
+//{
+//    return Window::SetType(type);
+//}
+//
+//ECode PhoneWindow::SetFormat(
+//    /* [in] */ Int32 format)
+//{
+//    return Window::SetFormat(format);
+//}
+//
+//ECode PhoneWindow::SetWindowAnimations(
+//    /* [in] */ Int32 resId)
+//{
+//    return Window::SetWindowAnimations(resId);
+//}
+//
+//ECode PhoneWindow::SetSoftInputMode(
+//    /* [in] */ Int32 mode)
+//{
+//    return Window::SetSoftInputMode(mode);
+//}
+//
+//ECode PhoneWindow::AddFlags(
+//    /* [in] */ Int32 flags)
+//{
+//    return Window::AddFlags(flags);
+//}
+//
+//ECode PhoneWindow::ClearFlags(
+//    /* [in] */ Int32 flags)
+//{
+//    return Window::ClearFlags(flags);
+//}
+//
+//ECode PhoneWindow::SetFlags(
+//    /* [in] */ Int32 flags,
+//    /* [in] */ Int32 mask)
+//{
+//    return Window::SetFlags(flags, mask);
+//}
+//
+//ECode PhoneWindow::SetAttributes(
+//    /* [in] */ IWindowManagerLayoutParams* a)
+//{
+//    return Window::SetAttributes(a);
+//}
+//
+//ECode PhoneWindow::GetAttributes(
+//    /* [out] */ IWindowManagerLayoutParams** params)
+//{
+//    return Window::GetAttributes(params);
+//}
+
+//ECode PhoneWindow::MakeActive()
+//{
+//    return Window::MakeActive();
+//}
+//
+//ECode PhoneWindow::IsActive(
+//    /* [out] */ Boolean* isActive)
+//{
+//    VALIDATE_NOT_NULL(isActive);
+//    return Window::IsActive(isActive);
+//}
+//
+//ECode PhoneWindow::FindViewById(
+//    /* [in] */ Int32 id,
+//    /* [out] */ IView** view)
+//{
+//    VALIDATE_NOT_NULL(view);
+//
+//    return Window::FindViewById(id, view);
+//}
+
+//ECode PhoneWindow::SetBackgroundDrawableResource(
+//    /* [in] */ Int32 resid)
+//{
+//    return Window::SetBackgroundDrawableResource(resid);
+//}
+
+/**
+ * Prepares the panel to either be opened or chorded. This creates the Menu
+ * instance for the panel and populates it via the Activity callbacks.
+ *
+ * @param st The panel state to prepare.
+ * @param event The event that triggered the preparing of the panel.
+ * @return Whether the panel was prepared. If the panel should not be shown,
+ *         returns false.
+ */
+ECode PhoneWindow::PreparePanel(
+    /* [in] */ PanelFeatureState* st,
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* prepared)
+{
+    VALIDATE_NOT_NULL(prepared)
+    *prepared = FALSE;
+    VALIDATE_NOT_NULL(st)
+
+    Boolean destoryed = FALSE;
+    if (IsDestroyed(&destoryed), destoryed) {
+        return NOERROR;
+    }
+
+    // Already prepared (isPrepared will be reset to false later)
+    if (st->mIsPrepared) {
+        *prepared = TRUE;
+        return NOERROR;
+    }
+
+    if ((mPreparedPanel != NULL) && (mPreparedPanel.Get() != st)) {
+        // Another Panel is prepared and possibly open, so close it
+        ClosePanel(mPreparedPanel, FALSE);
+    }
+
+    AutoPtr<IWindowCallback> cb;
+    GetCallback((IWindowCallback**)&cb);
+
+    if (cb != NULL) {
+        AutoPtr<IView> view;
+        cb->OnCreatePanelView(st->mFeatureId, (IView**)&view);
+        st->mCreatedPanelView = view;
+    }
+
+    Boolean isActionBarMenu = st->mFeatureId == FEATURE_OPTIONS_PANEL || st->mFeatureId == FEATURE_ACTION_BAR;
+    if (isActionBarMenu && mDecorContentParent != NULL)
+    {
+        // Enforce ordering guarantees around events so that the action bar never
+        // dispatches menu-related events before the panel is prepared.
+        mDecorContentParent->SetMenuPrepared();
+    }
+
+    if (st->mCreatedPanelView == NULL) {
+        // Init the panel state's menu--return false if init failed
+        if (st->mMenu == NULL || st->mRefreshMenuContent) {
+            if (st->mMenu == NULL) {
+                if (!InitializePanelMenu(st) || (st->mMenu == NULL)) {
+                    *prepared = FALSE;
+                    return NOERROR;
+                }
+            }
+
+            if (isActionBarMenu && mDecorContentParent != NULL) {
+                if (mActionMenuPresenterCallback == NULL) {
+                    mActionMenuPresenterCallback = new ActionMenuPresenterCallback(this);
+                }
+
+                mDecorContentParent->SetMenu(IMenu::Probe(st->mMenu), mActionMenuPresenterCallback);
+            }
+
+            // Call callback, and return if it doesn't want to display menu.
+
+            // Creating the panel menu will involve a lot of manipulation;
+            // don't dispatch change events to presenters until we're done.
+            st->mMenu->StopDispatchingItemsChanged();
+            Boolean result = FALSE;
+            if ((cb == NULL) || !(cb->OnCreatePanelMenu(st->mFeatureId, IMenu::Probe(st->mMenu), &result), result)) {
+                // Ditch the menu created above
+                st->SetMenu(NULL);
+
+                if (isActionBarMenu && mDecorContentParent != NULL) {
+                    // Don't show it in the action bar either
+                    mDecorContentParent->SetMenu(NULL, mActionMenuPresenterCallback);
+                }
+
+                *prepared = FALSE;
+                return NOERROR;
+            }
+
+            st->mRefreshMenuContent = FALSE;
+        }
+
+        // Callback and return if the callback does not want to show the menu
+
+        // Preparing the panel menu can involve a lot of manipulation;
+        // don't dispatch change events to presenters until we're done.
+        st->mMenu->StopDispatchingItemsChanged();
+
+        // Restore action view state before we prepare. This gives apps
+        // an opportunity to override frozen/restored state in onPrepare.
+        if (st->mFrozenActionViewState != NULL) {
+            st->mMenu->RestoreActionViewStates(st->mFrozenActionViewState);
+            st->mFrozenActionViewState = NULL;
+        }
+
+        Boolean tmp = FALSE;
+        if (!(cb->OnPreparePanel(st->mFeatureId, st->mCreatedPanelView, IMenu::Probe(st->mMenu), &tmp), tmp)) {
+            if (isActionBarMenu && mDecorContentParent != NULL) {
+                // The app didn't want to show the menu for now but it still exists.
+                // Clear it out of the action bar.
+                mDecorContentParent->SetMenu(NULL, mActionMenuPresenterCallback);
+            }
+
+            st->mMenu->StartDispatchingItemsChanged();
+
+            *prepared = FALSE;
+            return NOERROR;
+        }
+
+        // Set the proper keymap
+        Int32 devId = 0;
+        AutoPtr<IKeyCharacterMapHelper> kcHelper;
+        CKeyCharacterMapHelper::AcquireSingleton((IKeyCharacterMapHelper**)&kcHelper);
+        AutoPtr<IKeyCharacterMap> kmap;
+        kcHelper->Load(event != NULL ? (IInputEvent::Probe(event)->GetDeviceId(&devId), devId) : IKeyCharacterMap::VIRTUAL_KEYBOARD,
+                (IKeyCharacterMap**)&kmap);
+
+        Int32 boardType = 0;
+        st->mQwertyMode = (kmap->GetKeyboardType(&boardType), boardType) != IKeyCharacterMap::NUMERIC;
+        IMenu::Probe(st->mMenu)->SetQwertyMode(st->mQwertyMode);
+        st->mMenu->StartDispatchingItemsChanged();
+    }
+
+    // Set other state
+    st->mIsPrepared = TRUE;
+    st->mIsHandled = FALSE;
+    mPreparedPanel = st;
+    *prepared = TRUE;
+
+    return NOERROR;
+}
+
+/**
+ * Initializes the menu associated with the given panel feature state. You
+ * must at the very least set PanelFeatureState.menu to the Menu to be
+ * associated with the given panel state. The default implementation creates
+ * a new menu for the panel state.
+ *
+ * @param st The panel whose menu is being initialized.
+ * @return Whether the initialization was successful.
+ */
+Boolean PhoneWindow::InitializePanelMenu(
+    /* [in] */ PanelFeatureState* st)
+{
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+
+    // If we have an action bar, initialize the menu with a context themed for it.
+    if ((st->mFeatureId == FEATURE_OPTIONS_PANEL || st->mFeatureId == FEATURE_ACTION_BAR) && mDecorContentParent != NULL)
+    {
+        AutoPtr<ITypedValue> outValue;
+        CTypedValue::New((ITypedValue**)&outValue);
+
+        AutoPtr<IResourcesTheme> baseTheme;
+        context->GetTheme((IResourcesTheme**)&baseTheme);
+
+        Boolean tmp = FALSE;
+        baseTheme->ResolveAttribute(R::attr::actionBarTheme, outValue, TRUE, &tmp);
+
+        AutoPtr<IResourcesTheme> widgetTheme;
+        Int32 targetThemeRes = 0;
+        outValue->GetResourceId(&targetThemeRes);
+        if (targetThemeRes != 0)
+        {
+            AutoPtr<IResources> resources;
+            context->GetResources((IResources**)&resources);
+            resources->NewTheme((IResourcesTheme**)&widgetTheme);
+            widgetTheme->SetTo(baseTheme);
+            widgetTheme->ApplyStyle(targetThemeRes, TRUE);
+            widgetTheme->ResolveAttribute(R::attr::actionBarWidgetTheme, outValue, TRUE, &tmp);
+        }
+        else
+        {
+            baseTheme->ResolveAttribute(R::attr::actionBarWidgetTheme, outValue, TRUE, &tmp);
+        }
+
+        if (targetThemeRes != 0)
+        {
+            if (widgetTheme == NULL)
+            {
+                AutoPtr<IResources> resources;
+                context->GetResources((IResources**)&resources);
+                resources->NewTheme((IResourcesTheme**)&widgetTheme);
+                widgetTheme->SetTo(baseTheme);
+            }
+            widgetTheme->ApplyStyle(targetThemeRes, TRUE);
+        }
+
+        if (widgetTheme != NULL)
+        {
+            AutoPtr<IContext> temp;
+            CContextThemeWrapper::New(context, 0, (IContextThemeWrapper**)&temp);
+            context = temp;
+            AutoPtr<IResourcesTheme> ctxTheme;
+            context->GetTheme((IResourcesTheme**)&ctxTheme);
+            ctxTheme->SetTo(widgetTheme);
+        }
+    }
+
+    AutoPtr<IMenuBuilder> menu;
+    CMenuBuilder::New(context, (IMenuBuilder**)&menu);
+    menu->SetCallback(this/*new MyMenuBuilderCallback(this)*/);
+    st->SetMenu(menu);
+
+    return TRUE;
+}
+
+AutoPtr<IDrawable> PhoneWindow::LoadImageURI(
+    /* [in] */ IUri* uri)
+{
+    AutoPtr<IContentResolver> contentResolver;
+    mContext->GetContentResolver((IContentResolver**)&contentResolver);
+    AutoPtr<IInputStream> inputStream;
+    contentResolver->OpenInputStream(uri, (IInputStream**)&inputStream);
+    AutoPtr<IDrawable> drawable;
+    Drawable::Drawable::CreateFromStream(inputStream, String(NULL), (IDrawable**)&drawable);
+    return drawable;
+}
+
+ECode PhoneWindow::GetDrawableState(
     /* [in] */ Int32 featureId,
-    /* [in] */ PanelFeatureState* panel,
+    /* [in] */ Boolean required,
+    /* [out] */ DrawableFeatureState** state)
+{
+    VALIDATE_NOT_NULL(state);
+    *state = NULL;
+
+    if ((GetFeatures() & (1 << featureId)) == 0) {
+        if (!required) {
+            return NOERROR;
+        }
+
+        Slogger::E(TAG, "GetDrawableState: The feature has not been requested: content: %p, featureId: %d, mFeatures: %08x, mInvalidatePanelMenuFeatures: %08x",
+            &mFeatures, featureId, mFeatures, mInvalidatePanelMenuFeatures);
+        // throw new RuntimeException("The feature has not been requested");
+        assert(0);
+        return E_RUNTIME_EXCEPTION;
+    }
+
+    AutoPtr< ArrayOf<DrawableFeatureState*> > ar = mDrawables;
+    if (ar == NULL || ar->GetLength() <= featureId) {
+        AutoPtr< ArrayOf<DrawableFeatureState*> > nar = ArrayOf<DrawableFeatureState*>::Alloc(featureId + 1);
+        if (ar != NULL) {
+            nar->Copy(ar);
+        }
+        ar = nar;
+        mDrawables = nar;
+    }
+
+    AutoPtr<DrawableFeatureState> st = (*ar)[featureId];
+    if (st == NULL) {
+        st = new DrawableFeatureState(featureId);
+        ar->Set(featureId, st);
+    }
+    *state = st;
+    REFCOUNT_ADD(*state);
+    return NOERROR;
+}
+
+/**
+ * Gets a panel's state based on its feature ID.
+ *
+ * @param featureId The feature ID of the panel.
+ * @param required Whether the panel is required (if it is required and it
+ *            isn't in our features, this throws an exception).
+ * @return The panel state.
+ */
+ECode PhoneWindow::GetPanelState(
+    /* [in] */ Int32 featureId,
+    /* [in] */ Boolean required,
+    /* [out] */ PanelFeatureState** state)
+{
+    return GetPanelState(featureId, required, NULL, state);
+}
+
+/**
+ * Gets a panel's state based on its feature ID.
+ *
+ * @param featureId The feature ID of the panel.
+ * @param required Whether the panel is required (if it is required and it
+ *            isn't in our features, this throws an exception).
+ * @param convertPanelState Optional: If the panel state does not exist, use
+ *            this as the panel state.
+ * @return The panel state.
+ */
+ECode PhoneWindow::GetPanelState(
+    /* [in] */ Int32 featureId,
+    /* [in] */ Boolean required,
+    /* [in] */ PanelFeatureState* convertPanelState,
+    /* [out] */ PanelFeatureState** state)
+{
+    VALIDATE_NOT_NULL(state);
+    *state = NULL;
+
+    if ((GetFeatures() & (1 << featureId)) == 0) {
+        if (!required) {
+            return NOERROR;
+        }
+        Slogger::E(TAG, "GetPanelState: The feature has not been requested: content: %p, featureId: %d, mFeatures: %08x, mInvalidatePanelMenuFeatures: %08x",
+            &mFeatures, featureId, mFeatures, mInvalidatePanelMenuFeatures);
+        //throw new RuntimeException("The feature has not been requested");
+        assert(0);
+        return E_RUNTIME_EXCEPTION;
+    }
+
+    AutoPtr< ArrayOf<PanelFeatureState*> > ar = mPanels;
+    if (ar == NULL || ar->GetLength() <= featureId) {
+        AutoPtr< ArrayOf<PanelFeatureState*> > nar = ArrayOf<PanelFeatureState*>::Alloc(featureId + 1);
+        if (ar != NULL) {
+            nar->Copy(ar);
+        }
+        ar = nar;
+        mPanels = nar;
+    }
+
+    AutoPtr<PanelFeatureState> st = (*ar)[featureId];
+    if (st == NULL) {
+        st = (convertPanelState != NULL) ? convertPanelState : new PanelFeatureState(this, featureId);
+        ar->Set(featureId, st);
+    }
+
+    *state = st;
+    REFCOUNT_ADD(*state);
+    return NOERROR;
+}
+
+AutoPtr<PhoneWindow::PanelFeatureState> PhoneWindow::FindMenuPanel(
     /* [in] */ IMenu* menu)
 {
-    // ==================before translated======================
-    // final Callback cb = getCallback();
-    // if (cb == null)
-    //     return;
-    //
-    // // Try to get a menu
-    // if (menu == null) {
-    //     // Need a panel to grab the menu, so try to get that
-    //     if (panel == null) {
-    //         if ((featureId >= 0) && (featureId < mPanels.length)) {
-    //             panel = mPanels[featureId];
-    //         }
-    //     }
-    //
-    //     if (panel != null) {
-    //         // menu still may be null, which is okay--we tried our best
-    //         menu = panel.menu;
-    //     }
-    // }
-    //
-    // // If the panel is not open, do not callback
-    // if ((panel != null) && (!panel.isOpen))
-    //     return;
-    //
-    // if (!isDestroyed()) {
-    //     cb.onPanelClosed(featureId, menu);
-    // }
-    assert(0);
+    ArrayOf<PanelFeatureState*>* panels = mPanels;
+    const Int32 N = panels != NULL ? panels->GetLength() : 0;
+    for (Int32 i = 0; i < N; i++) {
+        AutoPtr<PanelFeatureState> panel = (*panels)[i];
+        if (panel != NULL && IMenu::Probe((panel->mMenu)) == menu) {
+            return panel;
+        }
+    }
+    return NULL;
 }
 
-Boolean PhoneWindow::LaunchDefaultSearch()
+ECode PhoneWindow::OnMenuModeChange(
+    /* [in] */ IMenuBuilder* menu)
 {
-    // ==================before translated======================
-    // boolean result;
-    // final Callback cb = getCallback();
-    // if (cb == null || isDestroyed()) {
-    //     result = false;
-    // } else {
-    //     sendCloseSystemWindows("search");
-    //     result = cb.onSearchRequested();
-    // }
-    // if (!result && (getContext().getResources().getConfiguration().uiMode
-    //         & Configuration.UI_MODE_TYPE_MASK) == Configuration.UI_MODE_TYPE_TELEVISION) {
-    //     // On TVs, if the app doesn't implement search, we want to launch assist.
-    //     return ((SearchManager)getContext().getSystemService(Context.SEARCH_SERVICE))
-    //             .launchAssistAction(0, null, UserHandle.myUserId());
-    // }
-    // return result;
-    assert(0);
-    return FALSE;
+    ReopenMenu(TRUE);
+    return NOERROR;
 }
 
-Boolean PhoneWindow::IsTranslucent()
+ECode PhoneWindow::OnMenuItemSelected(
+    /* [in] */ IMenuBuilder* menu,
+    /* [in] */ IMenuItem* item,
+    /* [out] */ Boolean* state)
 {
-    // ==================before translated======================
-    // TypedArray a = getWindowStyle();
-    // return a.getBoolean(a.getResourceId(
-    //         R.styleable.Window_windowIsTranslucent, 0), false);
-    assert(0);
-    return FALSE;
+    AutoPtr<IWindowCallback> cb;
+    GetCallback((IWindowCallback**)&cb);
+    Boolean destoryed = FALSE;
+    if (cb != NULL && !(IsDestroyed(&destoryed), destoryed)) {
+        AutoPtr<IMenuBuilder> rootMenu;
+        menu->GetRootMenu((IMenuBuilder**)&rootMenu);
+
+        AutoPtr<PanelFeatureState> panel = FindMenuPanel((IMenu*)rootMenu.Get());
+        if (panel != NULL) {
+            return cb->OnMenuItemSelected(panel->mFeatureId, item, state);
+        }
+    }
+    *state = FALSE;
+    return NOERROR;
+}
+
+void PhoneWindow::ReopenMenu(
+    /* [in] */ Boolean toggleMenuMode)
+{
+    Boolean tmp = FALSE;
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IViewConfigurationHelper> vcHelper;
+    CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&vcHelper);
+    AutoPtr<IViewConfiguration> viewConfig;
+    vcHelper->Get(context, (IViewConfiguration**)&viewConfig);
+    Boolean hasPerMk;
+    viewConfig->HasPermanentMenuKey(&hasPerMk);
+    if (mDecorContentParent != NULL &&
+        (mDecorContentParent->CanShowOverflowMenu(&tmp), tmp) &&
+        ( !hasPerMk||
+          (mDecorContentParent->IsOverflowMenuShowing(&tmp), tmp)
+        ))
+    {
+        AutoPtr<IWindowCallback> cb;
+        GetCallback((IWindowCallback**)&cb);
+
+        Boolean destoryed = FALSE;
+        IsDestroyed(&destoryed);
+        if (!(mDecorContentParent->IsOverflowMenuShowing(&tmp), tmp) || !toggleMenuMode) {
+            if (cb != NULL && !destoryed )
+            {
+                // If we have a menu invalidation pending, do it now.
+                if (mInvalidatePanelMenuPosted &&
+                    (mInvalidatePanelMenuFeatures & (1 << FEATURE_OPTIONS_PANEL)) != 0)
+                {
+                    Boolean res;
+                    mDecor->RemoveCallbacks(mInvalidatePanelMenuRunnable, &res);
+                    mInvalidatePanelMenuRunnable->Run();
+                }
+
+                AutoPtr<PanelFeatureState> st;
+                GetPanelState(FEATURE_OPTIONS_PANEL, TRUE, (PanelFeatureState**)&st);
+
+                // If we don't have a menu or we're waiting for a full content refresh,
+                // forget it. This is a lingering event that no longer matters.
+                if (st != NULL && st->mMenu != NULL && !st->mRefreshMenuContent &&
+                        (cb->OnPreparePanel(FEATURE_OPTIONS_PANEL, st->mCreatedPanelView, IMenu::Probe(st->mMenu), &tmp), tmp)) {
+                    Boolean tmp = FALSE;
+                    cb->OnMenuOpened(FEATURE_ACTION_BAR, IMenu::Probe(st->mMenu), &tmp);
+                    mDecorContentParent->ShowOverflowMenu(&tmp);
+                }
+            }
+        }
+        else {
+            Boolean tmp = FALSE;
+            mDecorContentParent->HideOverflowMenu(&tmp);
+            if (cb != NULL && !destoryed) {
+                AutoPtr<PanelFeatureState> st;
+                GetPanelState(FEATURE_OPTIONS_PANEL, TRUE, (PanelFeatureState**)&st);
+                if (st != NULL) {
+                    cb->OnPanelClosed(FEATURE_ACTION_BAR, IMenu::Probe(st->mMenu));
+                }
+            }
+        }
+        return;
+    }
+
+    AutoPtr<PanelFeatureState> st;
+    ECode ec = GetPanelState(FEATURE_OPTIONS_PANEL, TRUE, (PanelFeatureState**)&st);
+    if (FAILED(ec)) return;
+
+    // Save the future expanded mode state since closePanel will reset it
+    Boolean newExpandedMode = toggleMenuMode ? !st->mIsInExpandedMode : st->mIsInExpandedMode;
+
+    st->mRefreshDecorView = TRUE;
+    ClosePanel(st, FALSE);
+
+    // Set the expanded mode state
+    st->mIsInExpandedMode = newExpandedMode;
+
+    OpenPanel(st, NULL);
+}
+
+/**
+ * Opens the panels that have had their state restored. This should be
+ * called sometime after {@link #restorePanelState} when it is safe to add
+ * to the window manager.
+ */
+void PhoneWindow::OpenPanelsAfterRestore()
+{
+    AutoPtr<ArrayOf<PanelFeatureState*> > panels = mPanels;
+
+    if (panels == NULL) {
+        return;
+    }
+
+    AutoPtr<PanelFeatureState> st;
+    for (Int32 i = panels->GetLength() - 1; i >= 0; i--) {
+        st = (*panels)[i];
+        // We restore the panel if it was last open; we skip it if it
+        // now is open, to avoid a race condition if the user immediately
+        // opens it when we are resuming.
+        if ((st != NULL)) {
+            st->ApplyFrozenState();
+            if (!st->mIsOpen && st->mWasLastOpen) {
+                st->mIsInExpandedMode = st->mWasLastExpanded;
+                OpenPanel(st, NULL);
+            }
+        }
+    }
 }
 
 } // namespace Impl
@@ -5375,5 +6908,3 @@ Boolean PhoneWindow::IsTranslucent()
 } // namespace Internal
 } // namespace Droid
 } // namespace Elastos
-
-

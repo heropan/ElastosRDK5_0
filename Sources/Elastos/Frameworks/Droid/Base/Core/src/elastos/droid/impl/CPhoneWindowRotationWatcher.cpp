@@ -26,10 +26,10 @@ CPhoneWindowRotationWatcher::CPhoneWindowRotationWatcher()
     mRotationChanged = new MyRunnable(this);
 }
 
-ECode CPhoneWindowRotationWatcher::constructor()
-{
-    return NOERROR;
-}
+//ECode CPhoneWindowRotationWatcher::constructor()
+//{
+//    return NOERROR;
+//}
 
 ECode CPhoneWindowRotationWatcher::OnRotationChanged(
 /* [in] */ Int32 rotation)

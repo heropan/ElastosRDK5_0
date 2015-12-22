@@ -12,6 +12,7 @@ module
 
     merge("policy/impl/BarController.car");
     merge("policy/impl/EnableAccessibilityController.car");
+    merge("policy/impl/GlobalActions.car");
     merge("policy/impl/ImmersiveModeConfirmation.car");
     merge("policy/impl/LogDecelerateInterpolator.car");
     merge("policy/impl/PhoneFallbackEventHandler.car");
@@ -212,8 +213,6 @@ module
         }
 
         class CPhoneWindowRotationWatcher {
-            constructor(
-                [in] IPhoneWindow* owner);
 
             interface IPhoneWindowRotationWatcher;
             interface IBinder;
@@ -221,8 +220,6 @@ module
         }
 
         class CPhoneWindowSavedState {
-            constructor(
-                [in] IParcelable* state);
 
             interface IPhoneWindowSavedState;
             interface IParcelable;

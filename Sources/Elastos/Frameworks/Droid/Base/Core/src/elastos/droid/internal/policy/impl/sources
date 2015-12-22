@@ -41,5 +41,6 @@ SOURCES += WindowOrientationListener.cpp
 SOURCES += IconUtilities.cpp
 SOURCES += ShortcutManager.cpp
 SOURCES += GlobalKeyManager.cpp
+SOURCES += GlobalActions.cpp
 
 ELASTOS_LIBS += keyguard/keyguard.lib
