@@ -20,14 +20,10 @@ module
      * interface Elastos.Droid.Internal.Widget.IDecorToolbar
      */
     interface IToolbarWidgetWrapper {
-        SetDateMillis(
-            [in] Int64 dateMillis);
     }
 
-
-    }// namespace Widget
-    }// namespace Internal
-    }// namespace Droid
-    }// namespace Elastos
-
+    } // namespace Widget
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
 }

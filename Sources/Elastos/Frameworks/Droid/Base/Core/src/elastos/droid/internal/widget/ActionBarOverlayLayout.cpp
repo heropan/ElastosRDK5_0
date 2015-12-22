@@ -1149,7 +1149,7 @@ ECode ActionBarOverlayLayout::SetMenu(
 }
 
 ECode ActionBarOverlayLayout::SaveToolbarHierarchyState(
-    /* [in] */ IHashMap* toolbarStates)
+    /* [in] */ ISparseArray* toolbarStates)
 {
     VALIDATE_NOT_NULL(toolbarStates);
     // ==================before translated======================
@@ -1162,7 +1162,7 @@ ECode ActionBarOverlayLayout::SaveToolbarHierarchyState(
 }
 
 ECode ActionBarOverlayLayout::RestoreToolbarHierarchyState(
-    /* [in] */ IHashMap* toolbarStates)
+    /* [in] */ ISparseArray* toolbarStates)
 {
     VALIDATE_NOT_NULL(toolbarStates);
     // ==================before translated======================

@@ -2,7 +2,7 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
-    using interface Elastos.Utility.IHashMap;
+    using interface Elastos.Droid.Utility.ISparseArray;
 
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.View.IViewGroup;
@@ -186,10 +186,10 @@ module
             [in] IDrawable* icon);
 
         SaveHierarchyState(
-            [in] IHashMap* toolbarStates);
+            [in] ISparseArray* toolbarStates);
 
         RestoreHierarchyState(
-            [in] IHashMap* toolbarStates);
+            [in] ISparseArray* toolbarStates);
 
     }
 

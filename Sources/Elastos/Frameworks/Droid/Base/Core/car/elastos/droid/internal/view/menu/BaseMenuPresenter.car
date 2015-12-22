@@ -48,6 +48,9 @@ module
 
         SetId(
             [in] Int32 id);
+
+		SetCallback(
+			[in] IMenuPresenterCallback* cb);
     }
 
     } // namespace Menu

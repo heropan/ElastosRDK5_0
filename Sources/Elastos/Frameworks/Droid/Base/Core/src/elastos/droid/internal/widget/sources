@@ -8,6 +8,12 @@ INCLUDES += $(MAKEDIR)/../../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
+SOURCES += ToolbarWidgetWrapper.cpp
+SOURCES += CToolbarWidgetWrapper.cpp
+SOURCES += SwipeDismissLayout.cpp
+SOURCES += CSwipeDismissLayout.cpp
+SOURCES += SubtitleView.cpp
+SOURCES += CSubtitleView.cpp
 SOURCES += PreferenceImageView.cpp
 SOURCES += CPreferenceImageView.cpp
 SOURCES += LinearLayoutWithDefaultTouchRecepient.cpp
