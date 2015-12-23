@@ -1,54 +1,42 @@
 
 #include "elastos/droid/widget/RemoteViews.h"
-#include <elastos/utility/logging/Logger.h>
-#include <elastos/utility/logging/Slogger.h>
-#include <elastos/core/StringBuilder.h>
-#include "elastos/droid/text/TextUtils.h"
-#include "elastos/droid/graphics/CRect.h"
-#include "elastos/droid/graphics/CBitmap.h"
-#include "elastos/droid/content/CIntent.h"
-#include <elastos/utility/etl/HashMap.h>
-#include "elastos/droid/os/Build.h"
-#include "elastos/droid/os/Process.h"
-#include "elastos/droid/os/CBundle.h"
-#include "elastos/droid/utility/CArrayMap.h"
+
+#include "Elastos.CoreLibrary.Net.h"
+#include "Elastos.Droid.AppWidget.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/app/CActivityOptionsHelper.h"
 #include "elastos/droid/app/CActivityThread.h"
 #include "elastos/droid/animation/PropertyValuesHolder.h"
-#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CBitmap.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/CUserHandle.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/utility/CArrayMap.h"
+#include "elastos/droid/widget/CRemoteViews.h"
 #include "elastos/droid/R.h"
-#include "Elastos.Droid.AppWidget.h"
-#include "Elastos.Droid.Net.h"
-#include <elastos/core/StringUtils.h>
+
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/CoreUtils.h>
-#include "Elastos.CoreLibrary.Net.h"
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::AutoLock;
-using Elastos::Core::CoreUtils;
-using Elastos::Core::StringUtils;
-using Elastos::Core::IBoolean;
-using Elastos::Core::CBoolean;
-using Elastos::Core::IByte;
-using Elastos::Core::CByte;
-using Elastos::Core::IInteger16;
-using Elastos::Core::CInteger16;
-using Elastos::Core::IInteger32;
-using Elastos::Core::CInteger32;
-using Elastos::Core::IInteger64;
-using Elastos::Core::CInteger64;
-using Elastos::Core::IFloat;
-using Elastos::Core::CFloat;
-using Elastos::Core::IDouble;
-using Elastos::Core::CDouble;
-using Elastos::Core::IChar32;
-using Elastos::Core::CChar32;
-using Elastos::Core::StringBuilder;
-using Elastos::Droid::Net::IUri;
-using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Animation::PropertyValuesHolder;
+using Elastos::Droid::App::CActivityOptionsHelper;
+using Elastos::Droid::App::CActivityThread;
+using Elastos::Droid::App::IApplication;
+using Elastos::Droid::App::IActivityOptions;
+using Elastos::Droid::App::IActivityOptionsHelper;
+using Elastos::Droid::AppWidget::IAppWidgetHostView;
 using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::IIntentSender;
 using Elastos::Droid::Content::IContextWrapper;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Pm::IPackageItemInfo;
@@ -73,44 +61,49 @@ using Elastos::Droid::Os::UserHandle;
 using Elastos::Droid::Os::CUserHandle;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Utility::CArrayMap;
-using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::ILayoutInflaterFilter;
 using Elastos::Droid::View::EIID_ILayoutInflaterFilter;
-using Elastos::Droid::Widget::IImageView;
-using Elastos::Droid::Widget::ITextView;
-using Elastos::Droid::Widget::IAdapterView;
-using Elastos::Droid::Widget::EIID_IRemoteViews;
-// using Elastos::Droid::Widget::CRemoteViews; zhangjingcheng
-using Elastos::Droid::App::IActivityOptionsHelper;
-using Elastos::Droid::App::CActivityOptionsHelper;
-using Elastos::Droid::App::IActivityOptions;
-using Elastos::Droid::App::CActivityThread;
-using Elastos::Droid::App::IApplication;
-using Elastos::Droid::Content::IIntentSender;
+using Elastos::Droid::View::EIID_IViewOnClickListener;
+
+using Elastos::Core::AutoLock;
+using Elastos::Core::CoreUtils;
+using Elastos::Core::IBoolean;
+using Elastos::Core::CBoolean;
+using Elastos::Core::IByte;
+using Elastos::Core::CByte;
+using Elastos::Core::IInteger16;
+using Elastos::Core::CInteger16;
+using Elastos::Core::IInteger32;
+using Elastos::Core::CInteger32;
+using Elastos::Core::IInteger64;
+using Elastos::Core::CInteger64;
+using Elastos::Core::IFloat;
+using Elastos::Core::CFloat;
+using Elastos::Core::IDouble;
+using Elastos::Core::CDouble;
+using Elastos::Core::IChar32;
+using Elastos::Core::CChar32;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::AppWidget::IAppWidgetHostView;
-using Elastos::Utility::CArrayList;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-static AutoPtr<IRemoteViewsOnClickHandler> InitHandler()
-{
-    AutoPtr<IRemoteViewsOnClickHandler> temp = new RemoteViewsOnClickHandler();
-    return temp;
-}
-
 //==============================================================================
 //                  RemoteViewsOnClickHandler
 //==============================================================================
-CAR_INTERFACE_IMPL(RemoteViewsOnClickHandler, Object, IRemoteViewsOnClickHandler)
+CAR_INTERFACE_IMPL(RemoteViews::RemoteViewsOnClickHandler, Object, IRemoteViewsOnClickHandler)
 
-ECode RemoteViewsOnClickHandler::OnClickHandler(
+ECode RemoteViews::RemoteViewsOnClickHandler::OnClickHandler(
     /* [in] */ IView* view,
     /* [in] */ IPendingIntent* pendingIntent,
     /* [in] */ IIntent* fillInIntent,
@@ -157,27 +150,27 @@ ECode RemoteViewsOnClickHandler::OnClickHandler(
 //==============================================================================
 //                  MemoryUsageCounter
 //==============================================================================
-CAR_INTERFACE_IMPL(MemoryUsageCounter, Object, IMemoryUsageCounter)
+CAR_INTERFACE_IMPL(RemoteViews::MemoryUsageCounter, Object, IMemoryUsageCounter)
 
-MemoryUsageCounter::MemoryUsageCounter()
+RemoteViews::MemoryUsageCounter::MemoryUsageCounter()
     : mMemoryUsage(0)
 {
 }
 
-ECode MemoryUsageCounter::Clear()
+ECode RemoteViews::MemoryUsageCounter::Clear()
 {
     mMemoryUsage = 0;
     return NOERROR;
 }
 
-ECode MemoryUsageCounter::Increment(
+ECode RemoteViews::MemoryUsageCounter::Increment(
     /* [in */ Int32 numBytes)
 {
     mMemoryUsage += numBytes;
     return NOERROR;
 }
 
-ECode MemoryUsageCounter::GetMemoryUsage(
+ECode RemoteViews::MemoryUsageCounter::GetMemoryUsage(
     /* [out] */ Int32* usage)
 {
     VALIDATE_NOT_NULL(usage)
@@ -186,7 +179,7 @@ ECode MemoryUsageCounter::GetMemoryUsage(
     return NOERROR;
 }
 
-ECode MemoryUsageCounter::AddBitmapMemory(
+ECode RemoteViews::MemoryUsageCounter::AddBitmapMemory(
     /* [in */ IBitmap* b)
 {
     BitmapConfig c;
@@ -213,16 +206,16 @@ ECode MemoryUsageCounter::AddBitmapMemory(
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(MutablePair, Object, IMutablePair)
+CAR_INTERFACE_IMPL(RemoteViews::MutablePair, Object, IMutablePair)
 
-MutablePair::MutablePair(
+RemoteViews::MutablePair::MutablePair(
     /* [in] */ String first,
     /* [in] */ String second)
     : mFirst(first)
     , mSecond(second)
 {}
 
-ECode MutablePair::Equals(
+ECode RemoteViews::MutablePair::Equals(
     /* [in] */ IInterface* oth,
     /* [out] */ Boolean* equals)
 {
@@ -238,7 +231,7 @@ ECode MutablePair::Equals(
     return NOERROR;
 }
 
-ECode MutablePair::GetHashCode(
+ECode RemoteViews::MutablePair::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
     VALIDATE_NOT_NULL(hashCode)
@@ -247,7 +240,7 @@ ECode MutablePair::GetHashCode(
     return NOERROR;
 }
 
-ECode MutablePair::GetFirst(
+ECode RemoteViews::MutablePair::GetFirst(
     /* [out] */ String* fir)
 {
     VALIDATE_NOT_NULL(fir)
@@ -256,14 +249,14 @@ ECode MutablePair::GetFirst(
     return NOERROR;
 }
 
-ECode MutablePair::SetFirst(
+ECode RemoteViews::MutablePair::SetFirst(
     /* [in] */ const String& fir)
 {
     mFirst = fir;
     return NOERROR;
 }
 
-ECode MutablePair::GetSecond(
+ECode RemoteViews::MutablePair::GetSecond(
     /* [out] */ String* sec)
 {
     VALIDATE_NOT_NULL(sec)
@@ -272,7 +265,7 @@ ECode MutablePair::GetSecond(
     return NOERROR;
 }
 
-ECode MutablePair::SetSecond(
+ECode RemoteViews::MutablePair::SetSecond(
     /* [in] */ const String& sec)
 {
     mSecond = sec;
@@ -453,7 +446,7 @@ ECode RemoteViews::_SetOnClickFillInIntent::Apply(
     if (root == target) {
         target->SetTagInternal(R::id::fillInIntent, mFillInIntent);
     }
-    else if (target && mFillInIntent) {
+    else if (mFillInIntent) {
         AutoPtr<FillInIntentClickListener> listener = new FillInIntentClickListener(mFillInIntent, handler);
         target->SetOnClickListener(listener);
     }
@@ -655,7 +648,7 @@ ECode RemoteViews::SetRemoteViewsAdapterList::ReadFromParcel(
 
     for (int i = 0; i < count; i++) {
         AutoPtr<IRemoteViews> rv;
-        // CRemoteViews::New((IRemoteViews**)&rv);zhangjingcheng
+        CRemoteViews::New((IRemoteViews**)&rv);
         IParcelable::Probe(rv)->ReadFromParcel(source);
         mList->Add(rv);
     }
@@ -1473,7 +1466,7 @@ ECode RemoteViews::ReflectionAction::Apply(
         default:
             break;
     }
-    
+
     ECode ec = methodInfo->Invoke(view, argumentList);
     if (FAILED(ec)) {
         SLOGGERE("RemoteViews", String("method: ") + mMethodName + "in class: " + className + "invoke error")
@@ -1885,7 +1878,7 @@ ECode RemoteViews::ViewGroupAction::ReadFromParcel(
     source->ReadInt32(&res);
     Boolean nestedViewsNull = res == 0;
     if (!nestedViewsNull) {
-        // CRemoteViews::New((IRemoteViews**)&mNestedViews); zhangjingcheng
+        CRemoteViews::New((IRemoteViews**)&mNestedViews);
         ((RemoteViews*)mNestedViews.Get())->constructor(source, bitmapCache);
     }
     else {
@@ -1927,8 +1920,6 @@ ECode RemoteViews::TextViewDrawableAction::Apply(
     /* [in] */ IViewGroup* rootParent,
     /* [in] */ IRemoteViewsOnClickHandler* handler)
 {
-    AutoPtr<IContext> context;
-    root->GetContext((IContext**)&context);
     AutoPtr<IView> v;
     root->FindViewById(mViewId, (IView**)&v);
     AutoPtr<ITextView> target = ITextView::Probe(v);
@@ -2005,8 +1996,6 @@ ECode RemoteViews::TextViewSizeAction::Apply(
     /* [in] */ IViewGroup* rootParent,
     /* [in] */ IRemoteViewsOnClickHandler* handler)
 {
-    AutoPtr<IContext> context;
-    root->GetContext((IContext**)&context);
     AutoPtr<IView> v;
     root->FindViewById(mViewId, (IView**)&v);
     AutoPtr<ITextView> target = ITextView::Probe(v);
@@ -2075,8 +2064,6 @@ ECode RemoteViews::ViewPaddingAction::Apply(
     /* [in] */ IViewGroup* rootParent,
     /* [in] */ IRemoteViewsOnClickHandler* handler)
 {
-    AutoPtr<IContext> context;
-    root->GetContext((IContext**)&context);
     AutoPtr<IView> target;
     root->FindViewById(mViewId, (IView**)&target);
     if (target == NULL) {
@@ -2207,7 +2194,7 @@ ECode RemoteViews::TextViewDrawableColorFilterAction::WriteToParcel(
     dest->WriteInt32(mIsRelative ? 1 : 0);
     dest->WriteInt32(mIndex);
     dest->WriteInt32(mColor);
-    dest->WriteInt32(mMode); // zhangjingcheng
+    dest->WriteInt32(mMode);
     return NOERROR;
 }
 
@@ -2382,15 +2369,21 @@ static Boolean InitTls()
     return result == 0 ;
 }
 
+static AutoPtr<IRemoteViewsOnClickHandler> InitHandler()
+{
+    AutoPtr<IRemoteViewsOnClickHandler> temp = new RemoteViews::RemoteViewsOnClickHandler();
+    return temp;
+}
+
 const String RemoteViews::TAG("RemoteViews");
 const String RemoteViews::EXTRA_REMOTEADAPTER_APPWIDGET_ID("remoteAdapterAppWidgetId");
 const Int32 RemoteViews::MODE_NORMAL;
 const Int32 RemoteViews::MODE_HAS_LANDSCAPE_AND_PORTRAIT;
-const AutoPtr<IRemoteViewsOnClickHandler> RemoteViews::DEFAULT_ON_CLICK_HANDLER = InitHandler();
-pthread_key_t RemoteViews::sInvokeArgsTls;
-Boolean RemoteViews::sHaveInitTls = InitTls();
 Object RemoteViews::sMethodsLock;
 AutoPtr<IArrayMap> RemoteViews::sMethods;
+pthread_key_t RemoteViews::sInvokeArgsTls;
+Boolean RemoteViews::sHaveInitTls = InitTls();
+const AutoPtr<IRemoteViewsOnClickHandler> RemoteViews::DEFAULT_ON_CLICK_HANDLER = InitHandler();
 
 RemoteViews::RemoteViews()
     : mLayoutId(0)
@@ -2604,8 +2597,10 @@ ECode RemoteViews::constructor(
             }
         } else {
             // MODE_HAS_LANDSCAPE_AND_PORTRAIT
-            // mLandscape = new RemoteViews(parcel, mBitmapCache);
-            // mPortrait = new RemoteViews(parcel, mBitmapCache);
+            CRemoteViews::New((IRemoteViews**)&mLandscape);
+            CRemoteViews::New((IRemoteViews**)&mPortrait);
+            ((RemoteViews*)mLandscape.Get())->constructor(parcel, mBitmapCache);
+            ((RemoteViews*)mLandscape.Get())->constructor(parcel, mBitmapCache);
             mApplication = ((RemoteViews*)mPortrait.Get())->mApplication;
             mPortrait->GetLayoutId(&mLayoutId);
         }
@@ -2751,7 +2746,7 @@ ECode RemoteViews::MergeRemoteViews(
     newRv->Clone((IRemoteViews**)&copy);;
 
     HashMap<String, AutoPtr<IRemoteViewsAction> > map;
-        
+
     // We first copy the new RemoteViews, as the process of merging modifies the way the actions
     // reference the bitmap cache. We don't want to modify the object as it may need to
     // be merged and applied multiple times.
@@ -2796,7 +2791,7 @@ ECode RemoteViews::Clone(
     CParcel::New((IParcel**)&source);
     WriteToParcel(source);
     source->SetDataPosition(0);
-    // CRemoteViews::New(remoteViews);zhangjingcheng
+    CRemoteViews::New(remoteViews);
     IParcelable::Probe(*remoteViews)->ReadFromParcel(source);
     // source->Recycle();
     return NOERROR;
@@ -3394,9 +3389,14 @@ ECode RemoteViews::SetUri(
     /* [in] */ const String& methodName,
     /* [in] */ IUri* value)
 {
-    assert(value);
-    AutoPtr<IUri> pValue;
-    value->GetCanonicalUri((IUri**)&pValue);
+    AutoPtr<IUri> pValue = value;
+    if (value != NULL)
+    {
+        value->GetCanonicalUri((IUri**)&pValue);
+        // if (StrictMode.vmFileUriExposureEnabled()) {
+        //     value.checkFileUriExposed("RemoteViews.setUri()");
+        // }
+    }
     AutoPtr<IRemoteViewsAction> action = new ReflectionAction(viewId, methodName, ReflectionAction::URI, pValue);
     return AddAction(action);
 }
@@ -3533,11 +3533,6 @@ ECode RemoteViews::OnLoadClass(
     return NOERROR;
 }
 
-ECode RemoteViews::ToString(
-    /* [out] */ String* str)
-{
-    return NOERROR;
-}
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos

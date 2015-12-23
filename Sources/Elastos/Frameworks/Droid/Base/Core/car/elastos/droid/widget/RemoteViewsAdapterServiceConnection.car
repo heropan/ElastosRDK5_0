@@ -2,7 +2,7 @@ module
 {
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IIntent;
-    interface Elastos.Droid.Widget.Internal.IIRemoteViewsFactory;
+    interface Elastos.Droid.Internal.Widget.IIRemoteViewsFactory;
 
     namespace Elastos {
     namespace Droid {

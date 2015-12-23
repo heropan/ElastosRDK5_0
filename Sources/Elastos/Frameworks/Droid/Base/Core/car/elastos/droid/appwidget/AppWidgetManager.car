@@ -812,7 +812,8 @@ module
         UnbindRemoteViewsService(
             [in] String packageName,
             [in] Int32 appWidgetId,
-            [in] IIntent* intent);
+            [in] IIntent* intent,
+            [in] IBinder* connection);
 
         /**
          * Get the list of appWidgetIds that have been bound to the given AppWidget

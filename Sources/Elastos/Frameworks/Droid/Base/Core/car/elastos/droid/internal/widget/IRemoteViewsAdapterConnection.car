@@ -8,7 +8,7 @@ module
     namespace Internal {
     namespace Widget {
 
-    interface IRemoteViewsAdapterConnection {
+    interface IIRemoteViewsAdapterConnection {
         OnServiceConnected(
             [in] IBinder* service);
 

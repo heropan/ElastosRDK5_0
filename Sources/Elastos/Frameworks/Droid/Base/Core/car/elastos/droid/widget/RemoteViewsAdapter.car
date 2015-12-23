@@ -2,11 +2,28 @@
 module
 {
     interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Content.IIntentFilterComparison;
 
     namespace Elastos {
     namespace Droid {
     namespace Widget {
     interface IRemoteViewsOnClickHandler;
+
+    [local]
+    interface IRemoteViewsCacheKey {
+        GetFilter(
+            [out] IIntentFilterComparison** filter);
+
+        SetFilter(
+            [in] IIntentFilterComparison* filter);
+
+        GetWidgetId(
+            [out] Int32* id);
+
+        SetWidgetId(
+            [in] Int32 id);
+    }
+
     /**
      * An interface for the RemoteAdapter to notify other classes when adapters
      * are actually connected to/disconnected from their actual services.
