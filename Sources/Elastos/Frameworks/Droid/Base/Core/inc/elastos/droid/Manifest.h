@@ -14,7 +14,7 @@ using namespace Elastos;
 
 namespace Elastos {
 namespace Droid {
-class Manifest {
+class ECO_PUBLIC Manifest {
     public: class permission {
         /**  Allows an application to access all multi-user external storage @hide
          */

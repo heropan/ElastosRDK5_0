@@ -1,35 +1,37 @@
 
-#include "elastos/droid/internal/SizeAdaptiveLayout.h"
-#include <elastos/core/Math.h>
-#include <elastos/utility/logging/Slogger.h>
-#include "elastos/droid/R.h"
-#include "elastos/droid/utility/StateSet.h"
-#include "elastos/droid/widget/CView.h"
-#include "elastos/droid/widget/internal/CSizeAdaptiveLayoutLayoutParams.h"
+#include "elastos/droid/internal/widget/SizeAdaptiveLayout.h"
+#include "elastos/droid/internal/widget/CSizeAdaptiveLayoutLayoutParams.h"
 #include "elastos/droid/animation/CAnimatorSet.h"
 #include "elastos/droid/animation/CObjectAnimator.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/utility/StateSet.h"
+#include "elastos/droid/view/CView.h"
+#include <elastos/core/Math.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::R;
+using Elastos::Droid::Animation::EIID_IAnimatorListener;
 using Elastos::Droid::Animation::CObjectAnimator;
+using Elastos::Droid::Animation::IValueAnimator;
 using Elastos::Droid::Animation::IAnimatorSetBuilder;
 using Elastos::Droid::Animation::CAnimatorSet;
-using Elastos::Droid::Utility::StateSet;
 using Elastos::Droid::Graphics::Drawable::IColorDrawable;
 using Elastos::Droid::Graphics::Drawable::IStateListDrawable;
-using Elastos::Droid::Animation::EIID_IAnimatorListener;
-using Elastos::Droid::Widget::CView;
+using Elastos::Droid::R;
+using Elastos::Droid::Utility::StateSet;
+using Elastos::Droid::View::CView;
+using Elastos::Core::StringUtils;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
-namespace Widget {
 namespace Internal {
+namespace Widget {
 
 //===================================================================================
 //              SizeAdaptiveLayout::BringToFrontOnEnd
 //===================================================================================
-CAR_INTERFACE_IMPL(SizeAdaptiveLayout::BringToFrontOnEnd, IAnimatorListener)
-
+CAR_INTERFACE_IMPL(SizeAdaptiveLayout::BringToFrontOnEnd, Object, IAnimatorListener)
 SizeAdaptiveLayout::BringToFrontOnEnd::BringToFrontOnEnd(
     /* [in] */ SizeAdaptiveLayout* host)
     : mHost(host)
@@ -75,98 +77,196 @@ ECode SizeAdaptiveLayout::BringToFrontOnEnd::OnAnimationStart(
 }
 
 //===================================================================================
+//              SizeAdaptiveLayout::LayoutParams
+//===================================================================================
+CAR_INTERFACE_IMPL(SizeAdaptiveLayout::LayoutParams, ViewGroup::LayoutParams, ISizeAdaptiveLayoutLayoutParams);
+SizeAdaptiveLayout::LayoutParams::LayoutParams()
+    : mMinHeight(0)
+    , mMaxHeight(0)
+{}
+
+ECode SizeAdaptiveLayout::LayoutParams::constructor(
+    /* [in] */ IContext* c,
+    /* [in] */ IAttributeSet* attrs)
+{
+    ViewGroup::LayoutParams::constructor(c, attrs);
+    if (DEBUG) {
+        Slogger::D(TAG, "construct layout from attrs");
+        Int32 count = 0;
+        attrs->GetAttributeCount(&count);
+        for (Int32 i = 0; i < count; i++) {
+            String name;
+            attrs->GetAttributeName(i, &name);
+            String value;
+            attrs->GetAttributeValue(i, &value);
+            Slogger::D(TAG, String(" ") + name + " = " + value);
+        }
+    }
+
+    Int32 size = ArraySize(R::styleable::SizeAdaptiveLayout_Layout);
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(size);
+    attrIds->Copy(R::styleable::SizeAdaptiveLayout_Layout, size);
+
+    AutoPtr<ITypedArray> a;
+    FAIL_RETURN(c->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a));
+    a->GetDimensionPixelSize(SizeAdaptiveLayout::MIN_VALID_HEIGHT, 0, &mMinHeight);
+    if (DEBUG) Slogger::D(TAG, String("got minHeight of: ") + StringUtils::ToString(mMinHeight));
+
+    ECode ec = a->GetLayoutDimension(SizeAdaptiveLayout::MAX_VALID_HEIGHT,
+                    ISizeAdaptiveLayoutLayoutParams::UNBOUNDED, &mMaxHeight);
+    if (FAILED(ec)) {
+        if (DEBUG) Slogger::D(TAG, "caught exception looking for maxValidHeight ");
+    }
+    else {
+        if (DEBUG) Slogger::D(TAG, String("got maxHeight of: ") + StringUtils::ToString(mMaxHeight));
+    }
+
+    a->Recycle();
+    return NOERROR;
+}
+
+ECode SizeAdaptiveLayout::LayoutParams::constructor(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height,
+    /* [in] */ Int32 minHeight,
+    /* [in] */ Int32 maxHeight)
+{
+    ViewGroup::LayoutParams::constructor(width, height);
+    mMinHeight = minHeight;
+    mMaxHeight = maxHeight;
+    return NOERROR;
+}
+
+ECode SizeAdaptiveLayout::LayoutParams::constructor(
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height)
+{
+    return constructor(width, height, UNBOUNDED, UNBOUNDED);
+}
+
+ECode SizeAdaptiveLayout::LayoutParams::constructor()
+{
+    return constructor(MeasureSpec::UNSPECIFIED, MeasureSpec::UNSPECIFIED);
+}
+
+ECode SizeAdaptiveLayout::LayoutParams::constructor(
+    /* [in] */ IViewGroupLayoutParams* p)
+{
+    ViewGroup::LayoutParams::constructor(p);
+    mMinHeight = UNBOUNDED;
+    mMaxHeight = UNBOUNDED;
+    return NOERROR;
+}
+
+ECode SizeAdaptiveLayout::LayoutParams::Debug(
+    /* [in] */ const String& output,
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str);
+    *str = output + "SizeAdaptiveLayout.LayoutParams={" +
+            ", max=" + StringUtils::ToString(mMaxHeight) +
+            ", max=" + StringUtils::ToString(mMinHeight) + "}";
+    return NOERROR;
+}
+
+ECode SizeAdaptiveLayout::LayoutParams::SetMinHeight(
+    /* [in] */ Int32 mh)
+{
+    mMinHeight = mh;
+    return NOERROR;
+}
+
+ECode SizeAdaptiveLayout::LayoutParams::GetMinHeight(
+    /* [out] */ Int32* mh)
+{
+    VALIDATE_NOT_NULL(mh);
+    *mh = mMinHeight;
+    return NOERROR;
+}
+
+ECode SizeAdaptiveLayout::LayoutParams::SetMaxHeight(
+    /* [in] */ Int32 mh)
+{
+    mMaxHeight = mh;
+    return NOERROR;
+}
+
+ECode SizeAdaptiveLayout::LayoutParams::GetMaxHeight(
+    /* [out] */ Int32* mh)
+{
+    VALIDATE_NOT_NULL(*mh);
+    *mh = mMaxHeight;
+    return NOERROR;
+}
+
+//===================================================================================
 //              SizeAdaptiveLayout
 //===================================================================================
 const String SizeAdaptiveLayout::TAG("SizeAdaptiveLayout");
 const Boolean SizeAdaptiveLayout::SizeAdaptiveLayout::DEBUG = FALSE;
 const Boolean SizeAdaptiveLayout::REPORT_BAD_BOUNDS = TRUE;
 const Int64 SizeAdaptiveLayout::CROSSFADE_TIME = 250;
-
-    // TypedArray indices
+// TypedArray indices
 const Int32 SizeAdaptiveLayout::MIN_VALID_HEIGHT = R::styleable::SizeAdaptiveLayout_Layout_layout_minHeight;
 const Int32 SizeAdaptiveLayout::MAX_VALID_HEIGHT = R::styleable::SizeAdaptiveLayout_Layout_layout_maxHeight;
-
+CAR_INTERFACE_IMPL(SizeAdaptiveLayout, ViewGroup, ISizeAdaptiveLayout);
 SizeAdaptiveLayout::SizeAdaptiveLayout()
     : mCanceledAnimationCount(0)
     , mModestyPanelTop(0)
 {
 }
 
-SizeAdaptiveLayout::SizeAdaptiveLayout(
-    /* [in] */ IContext* context)
-    : ViewGroup(context)
-    , mCanceledAnimationCount(0)
-    , mModestyPanelTop(0)
-{
-    Initialize();
-}
-
-SizeAdaptiveLayout::SizeAdaptiveLayout(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-    : ViewGroup(context, attrs)
-    , mCanceledAnimationCount(0)
-    , mModestyPanelTop(0)
-{
-    Initialize();
-}
-
-SizeAdaptiveLayout::SizeAdaptiveLayout(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : ViewGroup(context, attrs, defStyle)
-    , mCanceledAnimationCount(0)
-    , mModestyPanelTop(0)
-{
-    Initialize();
-}
-
-ECode SizeAdaptiveLayout::Init(
+ECode SizeAdaptiveLayout::constructor(
     /* [in] */ IContext* context)
 {
-    ViewGroup::Init(context);
-    return Initialize();;
+    return constructor(context, NULL);
 }
 
-ECode SizeAdaptiveLayout::Init(
+ECode SizeAdaptiveLayout::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    ViewGroup::Init(context, attrs);
-    return Initialize();;
+    return constructor(context, attrs, 0);
 }
 
-ECode SizeAdaptiveLayout::Init(
+ECode SizeAdaptiveLayout::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr)
 {
-    ViewGroup::Init(context, attrs, defStyle);
-    return Initialize();;
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode SizeAdaptiveLayout::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    ViewGroup::constructor(context, attrs, defStyleAttr, defStyleRes);
+    Initialize();
+    return NOERROR;
 }
 
 ECode SizeAdaptiveLayout::Initialize()
 {
-    AutoPtr<IContext> context = GetContext();
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
     CView::New(context, (IView**)&mModestyPanel);
 
     // If the SizeAdaptiveLayout has a solid background, use it as a transition hint.
-    AutoPtr<IDrawable> background = GetBackground();
+    AutoPtr<IDrawable> background;
+    GetBackground((IDrawable**)&background);
     AutoPtr<IStateListDrawable> sld = IStateListDrawable::Probe(background.Get());
     if (sld != NULL) {
         Boolean result;
-        sld->SetState(StateSet::WILD_CARD, &result);
+        IDrawable::Probe(sld)->SetState(StateSet::WILD_CARD, &result);
         background = NULL;
-        sld->GetCurrent((IDrawable**)&background);
+        IDrawable::Probe(sld)->GetCurrent((IDrawable**)&background);
     }
 
-    AutoPtr<IColorDrawable> cdb = IColorDrawable::Probe(background.Get());
-    if (cdb) {
+    if (IColorDrawable::Probe(background)) {
         mModestyPanel->SetBackgroundDrawable(background);
-    }
-    else {
-        mModestyPanel->SetBackgroundColor(IColor::BLACK);
     }
 
     AutoPtr<ISizeAdaptiveLayoutLayoutParams> layout;
@@ -174,7 +274,7 @@ ECode SizeAdaptiveLayout::Initialize()
         IViewGroupLayoutParams::MATCH_PARENT,
         IViewGroupLayoutParams::MATCH_PARENT,
         (ISizeAdaptiveLayoutLayoutParams**)&layout);
-    mModestyPanel->SetLayoutParams(layout);
+    mModestyPanel->SetLayoutParams(IViewGroupLayoutParams::Probe(layout));
     AddView(mModestyPanel);
 
     mAnimatorListener = new BringToFrontOnEnd(this);
@@ -186,30 +286,41 @@ ECode SizeAdaptiveLayout::Initialize()
     assert(mFadePanel != NULL && mFadeView != NULL);
     CAnimatorSet::New((IAnimatorSet**)&mTransitionAnimation);
     AutoPtr<IAnimatorSetBuilder> build;
-    mTransitionAnimation->Play(mFadeView, (IAnimatorSetBuilder**)&build);
+    mTransitionAnimation->Play(IAnimator::Probe(mFadeView), (IAnimatorSetBuilder**)&build);
     assert(build != NULL);
-    build->With(mFadePanel);
-    mTransitionAnimation->SetDuration(CROSSFADE_TIME);
-    mTransitionAnimation->AddListener(mAnimatorListener);
+    build->With(IAnimator::Probe(mFadePanel));
+    IAnimator::Probe(mTransitionAnimation)->SetDuration(CROSSFADE_TIME);
+    IAnimator::Probe(mTransitionAnimation)->AddListener(mAnimatorListener);
     return NOERROR;
 }
 
-AutoPtr<IAnimator> SizeAdaptiveLayout::GetTransitionAnimation()
+ECode SizeAdaptiveLayout::GetTransitionAnimation(
+    /* [out] */ IAnimator** animator)
 {
-    return mTransitionAnimation;
+    VALIDATE_NOT_NULL(animator);
+    *animator = IAnimator::Probe(mTransitionAnimation);
+    REFCOUNT_ADD(*animator);
+    return NOERROR;
 }
 
-AutoPtr<IView> SizeAdaptiveLayout::GetModestyPanel()
+ECode SizeAdaptiveLayout::GetModestyPanel(
+    /* [out] */ IView** panel)
 {
-    return mModestyPanel;
+    VALIDATE_NOT_NULL(panel);
+    *panel = mModestyPanel;
+    REFCOUNT_ADD(*panel);
+    return NOERROR;
 }
 
 ECode SizeAdaptiveLayout::OnAttachedToWindow()
 {
     mLastActive = NULL;
     // make sure all views start off invisible.
-    for (Int32 i = 0; i < GetChildCount(); i++) {
-        AutoPtr<IView> child = GetChildAt(i);
+    Int32 count = 0;
+    GetChildCount(&count);
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IView> child;
+        GetChildAt(i, (IView**)&child);
         child->SetVisibility(IView::GONE);
     }
     return NOERROR;
@@ -222,6 +333,10 @@ void SizeAdaptiveLayout::OnMeasure(
     // if (DEBUG) Slogger::D(TAG, this + " measure spec: " +
     //                  MeasureSpec.toString(heightMeasureSpec));
     AutoPtr<IView> model = SelectActiveChild(heightMeasureSpec);
+    if (model == NULL) {
+        SetMeasuredDimension(0, 0);
+        return;
+    }
 
     AutoPtr<IViewGroupLayoutParams> vglp;
     model->GetLayoutParams((IViewGroupLayoutParams**)&vglp);
@@ -297,8 +412,11 @@ AutoPtr<IView> SizeAdaptiveLayout::SelectActiveChild(
     Int32 smallestViewSize = Elastos::Core::Math::INT32_MAX_VALUE;
     Int32 minHeight, maxHeight;
 
-    for (Int32 i = 0; i < GetChildCount(); i++) {
-        AutoPtr<IView> child = GetChildAt(i);
+    Int32 count = 0;
+    GetChildCount(&count);
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IView> child;
+        GetChildAt(i, (IView**)&child);
         if (child != mModestyPanel) {
             AutoPtr<IViewGroupLayoutParams> vglp;
             child->GetLayoutParams((IViewGroupLayoutParams**)&vglp);
@@ -337,16 +455,13 @@ AutoPtr<IView> SizeAdaptiveLayout::SelectActiveChild(
         tallestView = unboundedView;
     }
 
-    if (heightMode == MeasureSpec::UNSPECIFIED) {
-        return tallestView;
-    }
-    if (heightSize > tallestViewSize) {
+    if (heightMode == MeasureSpec::UNSPECIFIED || heightSize > tallestViewSize) {
         return tallestView;
     }
     return smallestView;
 }
 
-void SizeAdaptiveLayout::OnLayout(
+ECode SizeAdaptiveLayout::OnLayout(
     /* [in] */ Boolean changed,
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
@@ -359,6 +474,10 @@ void SizeAdaptiveLayout::OnLayout(
         bottom - top,
         View::MeasureSpec::EXACTLY);
     mActiveChild = SelectActiveChild(measureSpec);
+    if (mActiveChild == NULL) {
+        return NOERROR;
+    }
+
     mActiveChild->SetVisibility(IView::VISIBLE);
 
     if (mLastActive != mActiveChild && mLastActive != NULL) {
@@ -380,18 +499,18 @@ void SizeAdaptiveLayout::OnLayout(
 
         if (mTransitionAnimation != NULL) {
             Boolean res;
-            mTransitionAnimation->IsRunning(&res);
+            IAnimator::Probe(mTransitionAnimation)->IsRunning(&res);
             if (res) {
-                mTransitionAnimation->Cancel();
+                IAnimator::Probe(mTransitionAnimation)->Cancel();
             }
 
-            mFadeView->SetTarget((IInterface*)mLeavingView);
+            IAnimator::Probe(mFadeView)->SetTarget((IInterface*)mLeavingView);
             AutoPtr<ArrayOf<Float> > fv = ArrayOf<Float>::Alloc(1);
             fv->Set(0, 0.f);
-            mFadeView->SetFloatValues(fv);
-            mFadePanel->SetFloatValues(fv);
-            mTransitionAnimation->SetupStartValues();
-            mTransitionAnimation->Start();
+            IValueAnimator::Probe(mFadeView)->SetFloatValues(fv);
+            IValueAnimator::Probe(mFadePanel)->SetFloatValues(fv);
+            IAnimator::Probe(mTransitionAnimation)->SetupStartValues();
+            IAnimator::Probe(mTransitionAnimation)->Start();
         }
     }
 
@@ -401,10 +520,11 @@ void SizeAdaptiveLayout::OnLayout(
     Int32 childHeight;
     mActiveChild->GetMeasuredHeight(&childHeight);
     // TODO investigate setting LAYER_TYPE_HARDWARE on mLastActive
-    mActiveChild->Layout(0, 0, 0 + childWidth, 0 + childHeight);
+    mActiveChild->Layout(0, 0, childWidth, childHeight);
 
     if (DEBUG) Slogger::D(TAG, "got modesty offset of %d", mModestyPanelTop);
-    mModestyPanel->Layout(0, mModestyPanelTop, 0 + childWidth, mModestyPanelTop + childHeight);
+    mModestyPanel->Layout(0, mModestyPanelTop, childWidth, mModestyPanelTop + childHeight);
+    return NOERROR;
 }
 
 ECode SizeAdaptiveLayout::GenerateLayoutParams(
@@ -414,21 +534,12 @@ ECode SizeAdaptiveLayout::GenerateLayoutParams(
     VALIDATE_NOT_NULL(params);
     if (DEBUG) Slogger::D(TAG, "generate layout from attrs");
     AutoPtr<ISizeAdaptiveLayoutLayoutParams> lp;
-    FAIL_RETURN(CSizeAdaptiveLayoutLayoutParams::New(GetContext(), attrs, (ISizeAdaptiveLayoutLayoutParams**)&lp));
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    FAIL_RETURN(CSizeAdaptiveLayoutLayoutParams::New(context, attrs, (ISizeAdaptiveLayoutLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
     REFCOUNT_ADD(*params);
     return NOERROR;
-}
-
-AutoPtr<IViewGroupLayoutParams> SizeAdaptiveLayout::GenerateLayoutParams(
-    /* [in] */ IViewGroupLayoutParams* p)
-{
-    if (DEBUG) Slogger::D(TAG, "generate default layout from viewgroup");
-
-    AutoPtr<ISizeAdaptiveLayoutLayoutParams> lp;
-    CSizeAdaptiveLayoutLayoutParams::New(p, (ISizeAdaptiveLayoutLayoutParams**)&lp);
-    AutoPtr<IViewGroupLayoutParams> vglp = IViewGroupLayoutParams::Probe(lp);
-    return vglp;
 }
 
 AutoPtr<IViewGroupLayoutParams> SizeAdaptiveLayout::GenerateDefaultLayoutParams()
@@ -447,9 +558,7 @@ Boolean SizeAdaptiveLayout::CheckLayoutParams(
     return ISizeAdaptiveLayoutLayoutParams::Probe(p) != NULL;
 }
 
-
-}// namespace Internal
 }// namespace Widget
+}// namespace Internal
 }// namespace Droid
 }// namespace Elastos
-

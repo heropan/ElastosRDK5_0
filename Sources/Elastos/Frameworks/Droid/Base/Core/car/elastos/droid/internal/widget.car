@@ -69,12 +69,14 @@ module
     interface Elastos.Droid.View.InputMethod.IBaseInputConnection;
     interface Elastos.Droid.View.IViewBaseSavedState;
     interface Elastos.Droid.View.IViewOnTouchListener;
+    interface Elastos.Droid.View.IViewGroupLayoutParams;
     interface Elastos.Droid.Widget.IAbsListView;
     interface Elastos.Droid.Widget.IFrameLayout;
     interface Elastos.Droid.Widget.ILinearLayout;
     interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener;
     interface Elastos.Droid.Widget.IHorizontalScrollView;
     interface Elastos.Droid.Widget.ITextView;
+    interface Elastos.Droid.Widget.IViewAnimator;
     interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.Internal.Widget.IAbsActionBarView;
     interface Elastos.Droid.Internal.Widget.IActionBarView;
@@ -599,66 +601,93 @@ module
 	}
 
 
-   //  [local]
-   //  class CSizeAdaptiveLayoutLayoutParams {
-   //      /**
-   //       * Constructs a new LayoutParams with default values as defined in {@link LayoutParams}.
-   //       */
-   //      constructor();
+    [local]
+    class CSizeAdaptiveLayoutLayoutParams {
+        /**
+         * Constructs a new LayoutParams with default values as defined in {@link LayoutParams}.
+         */
+        constructor();
 
-   //      constructor(
-   //          [in] Int32 width,
-   //          [in] Int32 height);
+        constructor(
+            [in] Int32 width,
+            [in] Int32 height);
 
-   //      /**
-   //       * Creates a new set of layout parameters with the specified width, height
-   //       * and valid height bounds.
-   //       *
-   //       * @param width the width, either {@link #MATCH_PARENT},
-   //       *        {@link #WRAP_CONTENT} or a fixed size in pixels
-   //       * @param height the height, either {@link #MATCH_PARENT},
-   //       *        {@link #WRAP_CONTENT} or a fixed size in pixels
-   //       * @param minHeight the minimum height of this child
-   //       * @param maxHeight the maximum height of this child
-   //       *        or {@link #UNBOUNDED} if the child can grow forever
-   //       */
-   //      constructor(
-   //          [in] Int32 width,
-   //          [in] Int32 height,
-   //          [in] Int32 x,
-   //          [in] Int32 y);
+        /**
+         * Creates a new set of layout parameters with the specified width, height
+         * and valid height bounds.
+         *
+         * @param width the width, either {@link #MATCH_PARENT},
+         *        {@link #WRAP_CONTENT} or a fixed size in pixels
+         * @param height the height, either {@link #MATCH_PARENT},
+         *        {@link #WRAP_CONTENT} or a fixed size in pixels
+         * @param minHeight the minimum height of this child
+         * @param maxHeight the maximum height of this child
+         *        or {@link #UNBOUNDED} if the child can grow forever
+         */
+        constructor(
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] Int32 minHeight,
+            [in] Int32 maxHeight);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IViewGroupLayoutParams* source);
+        constructor(
+            [in] IViewGroupLayoutParams* source);
 
-   //      interface ISizeAdaptiveLayoutLayoutParams;
-   //  }
+        interface ISizeAdaptiveLayoutLayoutParams;
+        interface IViewGroupLayoutParams;
+    }
 
-   //  [local]
-   //  class CSizeAdaptiveLayout {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CSizeAdaptiveLayout {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
 
-   //      interface ISizeAdaptiveLayout;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface ISizeAdaptiveLayout;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
+
+    [local]
+    class CAccessibleDateAnimator {
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        interface IAccessibleDateAnimator;
+        interface IViewAnimator;
+        interface IFrameLayout;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
    //  [local]
    //  class CActionBarViewHomeView {

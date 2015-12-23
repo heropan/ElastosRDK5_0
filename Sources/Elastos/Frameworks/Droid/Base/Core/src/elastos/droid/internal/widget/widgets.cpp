@@ -5,6 +5,8 @@
 #include "elastos/droid/internal/widget/CLockPatternViewCell.h"
 #include "elastos/droid/internal/widget/CLockPatternViewSavedState.h"
 #include "elastos/droid/internal/widget/CLockPatternUtils.h"
+#include "elastos/droid/internal/widget/CSizeAdaptiveLayout.h"
+#include "elastos/droid/internal/widget/CSizeAdaptiveLayoutLayoutParams.h"
 
 namespace Elastos {
 namespace Droid {
@@ -17,6 +19,8 @@ CAR_OBJECT_IMPL(CLockPatternView);
 CAR_OBJECT_IMPL(CLockPatternViewCell);
 CAR_OBJECT_IMPL(CLockPatternViewSavedState);
 CAR_OBJECT_IMPL(CLockPatternUtils);
+CAR_OBJECT_IMPL(CSizeAdaptiveLayout);
+CAR_OBJECT_IMPL(CSizeAdaptiveLayoutLayoutParams);
 
 }// namespace Widget
 }// namespace Internal

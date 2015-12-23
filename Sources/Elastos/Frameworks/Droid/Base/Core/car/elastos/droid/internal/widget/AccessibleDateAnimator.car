@@ -24,7 +24,6 @@ module
             [in] Int64 dateMillis);
     }
 
-
     }// namespace Widget
     }// namespace Internal
     }// namespace Droid

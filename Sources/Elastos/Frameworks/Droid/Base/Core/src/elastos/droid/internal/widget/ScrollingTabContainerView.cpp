@@ -9,7 +9,6 @@
 #include "elastos/droid/widget/CAbsListViewLayoutParams.h"
 #include "elastos/droid/widget/CLinearLayout.h"
 #include "elastos/droid/widget/CSpinner.h"
-// #include "elastos/droid/widget/Spinner.h"
 #include "elastos/droid/widget/CImageView.h"
 #include "elastos/droid/widget/CTextView.h"
 #include "elastos/droid/widget/Toast.h"
@@ -137,6 +136,7 @@ ECode ScrollingTabContainerView::TabView::OnInitializeAccessibilityEvent(
 {
     LinearLayout::OnInitializeAccessibilityEvent(event);
     // This view masquerades as an action bar tab.
+    assert(0 && "TODO: class name is right?");
     IAccessibilityRecord::Probe(event)->SetClassName(CoreUtils::Convert(String("ActionBar.Tab.class.getName()")));
     return NOERROR;
 }
@@ -146,6 +146,7 @@ ECode ScrollingTabContainerView::TabView::OnInitializeAccessibilityNodeInfo(
 {
     LinearLayout::OnInitializeAccessibilityNodeInfo(info);
     // This view masquerades as an action bar tab.
+    assert(0 && "TODO: class name is right?");
     info->SetClassName(CoreUtils::Convert(String("ActionBar.Tab.class.getName()")));
     return NOERROR;
 }

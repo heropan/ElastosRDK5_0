@@ -46,7 +46,7 @@ SOURCES += CPointerLocationView.cpp
 SOURCES += RotarySelector.cpp
 SOURCES += CRotarySelector.cpp
 SOURCES += ResolverDrawerLayout.cpp
+SOURCES += SizeAdaptiveLayout.cpp
+SOURCES += CAccessibleDateAnimator.cpp
+SOURCES += ExploreByTouchHelper.cpp
 SOURCES += widgets.cpp
-#SOURCES += CScrollingTabContainerTabView.cpp
-#SOURCES += CScrollingTabContainerView.cpp
-
