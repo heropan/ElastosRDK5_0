@@ -45,8 +45,6 @@ private:
     };
 
 public:
-    CAR_INTERFACE_DECL()
-
     IdleCache();
 
     CARAPI constructor();

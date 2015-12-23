@@ -16,6 +16,7 @@
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
 using Elastos::Core::Character;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::IFormatter;
 using Elastos::Utility::CFormatter;
@@ -117,6 +118,14 @@ Boolean StringUtils::ParseBoolean(
     /* [in] */ const String& input)
 {
     return input.EqualsIgnoreCase("true");
+}
+
+AutoPtr<ICharSequence> StringUtils::ParseCharSequence(
+    /* [in] */ const String& input)
+{
+    AutoPtr<ICharSequence> rev;
+    CString::New(input, (ICharSequence**)&rev);
+    return rev;
 }
 
 ECode StringUtils::Parse(
@@ -445,14 +454,6 @@ String StringUtils::ToString(
     /* [in] */ Float f)
 {
     return RealToString::GetInstance()->ToString(f);
-}
-
-String StringUtils::ToString(
-    /* [in] */ IInterface* obj)
-{
-    String s;
-    IObject::Probe(obj)->ToString(&s);
-    return s;
 }
 
 ECode StringUtils::Split(

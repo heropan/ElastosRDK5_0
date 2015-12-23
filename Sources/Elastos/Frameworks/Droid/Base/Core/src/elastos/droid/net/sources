@@ -9,7 +9,6 @@ INCLUDES += $(MAKEDIR)/../../../../inc/
 C_DEFINES += -DDROID_CORE
 
 SOURCES = net.cpp
-SOURCES += FastConvert.cpp
 SOURCES += BaseNetworkStateTracker.cpp
 SOURCES += CConnectivityManager.cpp
 SOURCES += CConnectivityManagerHelper.cpp

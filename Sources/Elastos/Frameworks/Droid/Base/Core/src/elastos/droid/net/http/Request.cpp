@@ -1,4 +1,5 @@
 
+#include "_Elastos.Droid.Content.h"
 #include "_Elastos.Droid.Core.h"
 #include "_Elastos.Droid.Utility.h"
 #include <Elastos.CoreLibrary.Apache.h>
@@ -43,6 +44,8 @@ using Elastos::Utility::Zip::IGZIPInputStream;
 
 using Org::Apache::Http::EIID_IHttpEntityEnclosingRequest;
 using Org::Apache::Http::Entity::CBasicHttpEntity;
+using Org::Apache::Http::Entity::CInputStreamEntity;
+using Org::Apache::Http::Entity::IAbstractHttpEntity;
 using Org::Apache::Http::Entity::IBasicHttpEntity;
 using Org::Apache::Http::Entity::IInputStreamEntity;
 using Org::Apache::Http::IHeader;
@@ -77,11 +80,9 @@ AutoPtr<IRequestContent> Request::mRequestContentProcessor = InitRequestContentP
 AutoPtr<IRequestContent> Request::InitRequestContentProcessor()
 {
     AutoPtr<IRequestContent> rev;
-#if 0 // TODO: Translated before. Need check.
     // TODO: Waiting for CRequestContent
     assert(0);
     // CRequestContent::New((IRequestContent**)&rev);
-#endif
     return rev;
 }
 
@@ -91,9 +92,7 @@ Request::Request()
     , mReceivedBytes(0)
     , mLoadingPaused(FALSE)
 {
-#if 0 // TODO: Translate codes below
     Elastos::Core::CObject::New((IObject**)&mClientResource);
-#endif
 }
 
 ECode Request::constructor(
@@ -106,8 +105,6 @@ ECode Request::constructor(
     /* [in] */ IEventHandler* eventHandler,
     /* [in] */ IMap* headers)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (bodyProvider == NULL && !method.EqualsIgnoreCase("POST")) {
         // TODO: Waiting for CBasicHttpRequest
         assert(0);
@@ -131,14 +128,11 @@ ECode Request::constructor(
        high priority reqs (saving the trouble for images, etc) */
     AddHeader(ACCEPT_ENCODING_HEADER, String("gzip"));
     AddHeaders(headers);
-#endif
 }
 
 ECode Request::SetLoadingPaused(
     /* [in] */ Boolean pause)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     synchronized(this) {
         mLoadingPaused = pause;
 
@@ -149,36 +143,27 @@ ECode Request::SetLoadingPaused(
     }
 
     return NOERROR;
-#endif
 }
 
 ECode Request::SetConnection(
     /* [in] */ IConnection* connection)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     mConnection = connection;
     return NOERROR;
-#endif
 }
 
 ECode Request::GetEventHandler(
     /* [out] */ IEventHandler** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(result)
 
     FUNC_RETURN(mEventHandler)
-#endif
 }
 
 ECode Request::AddHeader(
     /* [in] */ const String& name,
     /* [in] */ const String& value)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (name.IsNullOrEmpty()) {
         String damage("Null http header name");
         HttpLog::E(damage);
@@ -190,15 +175,15 @@ ECode Request::AddHeader(
         return E_RUNTIME_EXCEPTION;
     }
 
-    return mHttpRequest->AddHeader(name, value);
-#endif
+    // TODO: Waiting for BasicHttpRequest
+    assert(0);
+    return NOERROR;
+    // return mHttpRequest->AddHeader(name, value);
 }
 
 ECode Request::AddHeaders(
     /* [in] */ IMap* headers)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (headers == NULL) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -219,14 +204,11 @@ ECode Request::AddHeaders(
     }
 
     return NOERROR;
-#endif
 }
 
 ECode Request::SendRequest(
     /* [in] */ IElastosHttpClientConnection* httpClientConnection)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (mCancelled){
         return NOERROR; // don't send cancelled requests
     }
@@ -259,7 +241,9 @@ ECode Request::SendRequest(
 
     AutoPtr<IHttpContext> context;
     ((Connection*)mConnection.Get())->GetHttpContext((IHttpContext**)&context);
-    mRequestContentProcessor->Process(mHttpRequest, context);
+    // TODO: Waiting for IRequestContent
+    assert(0);
+    // mRequestContentProcessor->Process(mHttpRequest, context);
     AutoPtr<IHttpRequest> req = IHttpRequest::Probe(mHttpRequest);
     httpClientConnection->SendRequestHeader(req);
     AutoPtr<IHttpEntityEnclosingRequest> httpReq = IHttpEntityEnclosingRequest::Probe(mHttpRequest);
@@ -274,14 +258,11 @@ ECode Request::SendRequest(
         this->GetHostPort(&hostPort);
         HttpLog::V("Request.requestSent() %s://%s%s", name.string(), hostPort.string(), mPath.string());
     }
-#endif
 }
 
 ECode Request::ReadResponse(
     /* [in] */ IElastosHttpClientConnection* httpClientConnection)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (mCancelled){
         return NOERROR; // don't send cancelled requests
     }
@@ -296,11 +277,11 @@ ECode Request::ReadResponse(
     do {
         statusLine = NULL;
         FAIL_RETURN(httpClientConnection->ParseResponseHeader(header, (IStatusLine**)&statusLine));
-        statusCode = statusLine->GetStatusCode();
+        statusLine->GetStatusCode(&statusCode);
     } while (statusCode < IHttpStatus::SC_OK);
     if (HttpLog::LOGV) {
         String str;
-        statusLine->ToString(&str);
+        IObject::Probe(statusLine)->ToString(&str);
         HttpLog::V(String("Request.readResponseStatus() ") +
                 StringUtils::ToString(str.GetLength()) + String(" ") + str);
     }
@@ -335,7 +316,7 @@ ECode Request::ReadResponse(
 
         // process gzip content encoding
         AutoPtr<IHeader> contentEncoding;
-        entity->GetContentEncoding(&contentEncoding);
+        entity->GetContentEncoding((IHeader**)&contentEncoding);
         AutoPtr<IInputStream> nis;
         AutoPtr<ArrayOf<Byte> > buf;
         Int32 count = 0;
@@ -371,20 +352,17 @@ ECode Request::ReadResponse(
         Int32 len = 0;
         Int32 lowWater = buf->GetLength() / 2;
         while (len != -1) {
-            {
                 synchronized(mClientResource) {
-
                     while (mLoadingPaused) {
                         // Put this (network loading) thread to sleep if WebCore
                         // has asked us to. This can happen with plugins for
                         // example, if we are streaming data but the plugin has
                         // filled its internal buffers.
-                        if(FAILED(Wait()) {
+                        if(FAILED(Wait())) {
                             HttpLog::E(String("Interrupted exception whilst network thread paused at WebCore's request."));
                         }
                     }
                 }
-            }
 
             ECode ec;
             ec = nis->Read(buf, count, buf->GetLength() - count, &len);
@@ -433,13 +411,10 @@ ECode Request::ReadResponse(
     }
 
     return NOERROR;
-#endif
 }
 
 ECode Request::Cancel()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     synchronized(mClientResource) {
         if (HttpLog::LOGV) {
             HttpLog::V("Request.cancel(): %s", Ptr(this)->Func(GetUri).string());
@@ -456,14 +431,11 @@ ECode Request::Cancel()
         }
     }
     return NOERROR;
-#endif
 }
 
 ECode Request::GetHostPort(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(result)
 
     String myScheme;
@@ -481,14 +453,11 @@ ECode Request::GetHostPort(
     }
 
     FUNC_RETURN(port)
-#endif
 }
 
 ECode Request::GetUri(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(result)
 
     String name;
@@ -498,27 +467,23 @@ ECode Request::GetUri(
     }
     mHost->GetSchemeName(&name);
     FUNC_RETURN(name + String("://") + Ptr(this)->Func(GetHostPort) + mPath)
-#endif
 }
 
 ECode Request::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(result)
 
     *result = mPath;
     return NOERROR;
-#endif
 }
 
 ECode Request::Reset()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     /* clear content-length header */
-    mHttpRequest->RemoveHeaders(CONTENT_LENGTH_HEADER);
+    // TODO: Waiting for IBasicHttpRequest
+    assert(0);
+    // mHttpRequest->RemoveHeaders(CONTENT_LENGTH_HEADER);
 
     if (mBodyProvider != NULL) {
         if(FAILED(mBodyProvider->Reset())) {
@@ -542,39 +507,30 @@ ECode Request::Reset()
     }
 
     return NOERROR;
-#endif
 }
 
 ECode Request::WaitUntilComplete()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     synchronized(mClientResource) {
         if (HttpLog::LOGV) HttpLog::V(String("Request.waitUntilComplete()"));
         ISynchronize::Probe(mClientResource)->Wait();
         if (HttpLog::LOGV) HttpLog::V(String("Request.waitUntilComplete() done waiting"));
     }
     return NOERROR;
-#endif
 }
 
 ECode Request::Complete()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     synchronized(mClientResource) {
         return ISynchronize::Probe(mClientResource)->NotifyAll();
     }
     return NOERROR;
-#endif
 }
 
 Boolean Request::CanResponseHaveBody(
     /* [in] */ IHttpRequest* request,
     /* [in] */ Int32 status)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     AutoPtr<IRequestLine> line;
     request->GetRequestLine((IRequestLine**)&line);
     String str;
@@ -585,17 +541,14 @@ Boolean Request::CanResponseHaveBody(
     return status >= IHttpStatus::SC_OK
         && status != IHttpStatus::SC_NO_CONTENT
         && status != IHttpStatus::SC_NOT_MODIFIED;
-#endif
 }
 
 ECode Request::SetBodyProvider(
     /* [in] */ IInputStream* bodyProvider,
     /* [in] */ Int32 bodyLength)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    if (!bodyProvider->MarkSupported()) {
-        Logger::E(String("bodyProvider must support mark()"));
+    if (!Ptr(bodyProvider)->Func(IInputStream::IsMarkSupported)) {
+        Logger::E("Request", "bodyProvider must support mark()");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     // Mark beginning of stream
@@ -603,39 +556,36 @@ ECode Request::SetBodyProvider(
 
     AutoPtr<IBasicHttpEntityEnclosingRequest> request
         = IBasicHttpEntityEnclosingRequest::Probe(mHttpRequest);
-    AutoPtr<IInputStreamEntity> entity;
-    CInputStreamEntity::New(bodyProvider, bodyLength, (IInputStreamEntity**)&entity);
-    return request->SetEntity(entity);
-#endif
+    AutoPtr<IAbstractHttpEntity> abstractHttpEntity;
+    CInputStreamEntity::New(bodyProvider, bodyLength, (IAbstractHttpEntity**)&abstractHttpEntity);
+    AutoPtr<IInputStreamEntity> entity = IInputStreamEntity::Probe(abstractHttpEntity);
+    // TODO: Waiting for IBasicHttpEntityEnclosingRequest
+    assert(0);
+    return NOERROR;
+    // return request->SetEntity(entity);
 }
 
 ECode Request::HandleSslErrorResponse(
     /* [in] */ Boolean proceed)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     AutoPtr<IHttpsConnection> connection;
     connection = IHttpsConnection::Probe(mConnection);
     if (connection != NULL) {
-        connection->RestartConnection(proceed);
+        ((HttpsConnection*)connection.Get())->RestartConnection(proceed);
     }
 
     return NOERROR;
-#endif
 }
 
 ECode Request::Error(
     /* [in] */ Int32 errorId,
     /* [in] */ Int32 resourceId)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     AutoPtr<ICharSequence> cs;
     ((Connection*)mConnection.Get())->mContext->GetText(resourceId, (ICharSequence**)&cs);
     String str;
     cs->ToString(&str);
     return mEventHandler->Error(errorId, str);
-#endif
 }
 
 } // namespace Http

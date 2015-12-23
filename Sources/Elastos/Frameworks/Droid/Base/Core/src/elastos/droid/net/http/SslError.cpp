@@ -1,5 +1,15 @@
 
 #include "elastos/droid/net/http/SslError.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/net/http/CSslCertificate.h"
+#include "elastos/droid/net/http/CSslError.h"
+#include "elastos/droid/net/http/SslCertificate.h"
+#include <elastos/core/StringUtils.h>
+
+using Elastos::Droid::R;
+
+using Elastos::Core::StringUtils;
+using Elastos::Security::Cert::IX509Certificate;
 
 namespace Elastos {
 namespace Droid {
@@ -16,22 +26,16 @@ ECode SslError::constructor(
     /* [in] */ Int32 error,
     /* [in] */ ISslCertificate* certificate)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     return constructor(error, certificate, String(""));
-#endif
 }
 
 ECode SslError::constructor(
     /* [in] */ Int32 error,
     /* [in] */ IX509Certificate* certificate)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     AutoPtr<ISslCertificate> cert;
     cert = ISslCertificate::Probe(certificate);
     return constructor(error, cert, String(""));
-#endif
 }
 
 ECode SslError::constructor(
@@ -39,8 +43,6 @@ ECode SslError::constructor(
     /* [in] */ ISslCertificate* certificate,
     /* [in] */ const String& url)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (url.IsNullOrEmpty()) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -50,7 +52,6 @@ ECode SslError::constructor(
     mCertificate = certificate;
     mUrl = url;
     return NOERROR;
-#endif
 }
 
 ECode SslError::constructor(
@@ -58,12 +59,9 @@ ECode SslError::constructor(
     /* [in] */ IX509Certificate* certificate,
     /* [in] */ const String& url)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     AutoPtr<ISslCertificate> cert;
     CSslCertificate::New(certificate, (ISslCertificate**)&cert);
     return constructor(error, cert, url);
-#endif
 }
 
 ECode SslError::SslErrorFromChromiumErrorCode(
@@ -72,8 +70,6 @@ ECode SslError::SslErrorFromChromiumErrorCode(
     /* [in] */ const String& url,
     /* [out] */ ISslError** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(result)
 
     // The chromium error codes are in:
@@ -91,39 +87,30 @@ ECode SslError::SslErrorFromChromiumErrorCode(
     }
     // Map all other codes to SSL_INVALID.
     return CSslError::New(CSslError::SSL_INVALID, cert, url, result);
-#endif
 }
 
 ECode SslError::GetCertificate(
     /* [out] */ ISslCertificate** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(result);
 
     *result = mCertificate;
     REFCOUNT_ADD(*result);
     return NOERROR;
-#endif
 }
 
 ECode SslError::GetUrl(
     /* [out] */ String* url)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(url);
     *url = mUrl;
     return NOERROR;
-#endif
 }
 
 ECode SslError::AddError(
     /* [in] */ Int32 error,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(result)
 
     Boolean rval = (0 <= error && error < SSL_MAX_ERROR);
@@ -133,15 +120,12 @@ ECode SslError::AddError(
 
     *result = rval;
     return NOERROR;
-#endif
 }
 
 ECode SslError::HasError(
     /* [in] */ Int32 error,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(result)
 
     Boolean rval = (0 <= error && error < SSL_MAX_ERROR);
@@ -149,16 +133,13 @@ ECode SslError::HasError(
         rval = ((mErrors & (0x1 << error)) != 0);
     }
 
-    *hasError = rval;
+    *result = rval;
     return NOERROR;
-#endif
 }
 
 ECode SslError::GetPrimaryError(
     /* [out] */ Int32* error)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(error)
 
     if (mErrors != 0) {
@@ -175,27 +156,23 @@ ECode SslError::GetPrimaryError(
 
     *error = -1;
     return NOERROR;
-#endif
 }
 
 ECode SslError::ToString(
     /* [out] */ String* str)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     VALIDATE_NOT_NULL(str)
 
     Int32 err;
     GetPrimaryError(&err);
     String sCert;
-    mCertificate->ToString(&sCert);
+    IObject::Probe(mCertificate)->ToString(&sCert);
 
     *str = String("primary error: ") + StringUtils::ToString(err)
         + String(" certificate: ") + sCert
         + String(" on URL: ") + mUrl;
 
     return NOERROR;
-#endif
 }
 
 } // namespace Http

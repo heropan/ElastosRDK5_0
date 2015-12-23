@@ -163,52 +163,45 @@ private:
     /**
      * Convenience for UI presentation, not intended as public API.
      */
-    static CARAPI GetSerialNumber(
-        /* [in] */ IX509Certificate* x509Certificate,
-        /* [out] */ String* result);
+    static CARAPI_(String) GetSerialNumber(
+        /* [in] */ IX509Certificate* x509Certificate);
 
     /**
      * Convenience for UI presentation, not intended as public API.
      */
-    static CARAPI GetDigest(
+    static CARAPI_(String) GetDigest(
         /* [in] */ IX509Certificate* x509Certificate,
-        /* [in] */ const String& algorithm,
-        /* [out] */ String* result);
+        /* [in] */ const String& algorithm);
 
-    static CARAPI Fingerprint(
-        /* [in] */ ArrayOf<Byte>* bytes,
-        /* [out] */ String* result);
+    static CARAPI_(String) Fingerprint(
+        /* [in] */ ArrayOf<Byte>* bytes);
 
     /**
      * Parse an ISO 8601 date converting ParseExceptions to a null result;
      */
-    static CARAPI ParseDate(
-        /* [in] */ const String& string,
-        /* [out] */ IDate** result);
+    static CARAPI_(AutoPtr<IDate>) ParseDate(
+        /* [in] */ const String& string);
 
     /**
      * Format a date as an ISO 8601 string, return "" for a null date
      */
-    static CARAPI FormatDate(
-        /* [in] */ IDate* date,
-        /* [out] */ String* result);
+    static CARAPI_(String) FormatDate(
+        /* [in] */ IDate* date);
 
     /**
      * Clone a possibly null Date
      */
-    static CARAPI CloneDate(
-        /* [in] */ IDate* date,
-        /* [out] */ IDate** result);
+    static CARAPI_(AutoPtr<IDate>) CloneDate(
+        /* [in] */ IDate* date);
 
     /**
      * Formats the certificate date to a properly localized date string.
      * @return Properly localized version of the certificate date string and
      * the "" if it fails to localize.
      */
-    CARAPI FormatCertificateDate(
+    CARAPI_(String) FormatCertificateDate(
         /* [in] */ IContext* context,
-        /* [in] */ IDate* certificateDate,
-        /* [out] */ String* result);
+        /* [in] */ IDate* certificateDate);
 
 private:
     /**
