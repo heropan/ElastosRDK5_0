@@ -59,9 +59,9 @@ ECode DhcpOfferPacket::ToString(
             dnsServers += sDnsServer + " ";
         }
     }
-    *result = s + " OFFER, ip " + StringUtils::ToString(mYourIp) + ", mask " + StringUtils::ToString(mSubnetMask) +
-            dnsServers + ", gateway " + StringUtils::ToString(mGateway) +
-            " lease time " + StringUtils::ToString(mLeaseTime) + ", domain " + mDomainName;
+    *result = s + " OFFER, ip " + Object::ToString(mYourIp) + ", mask " + Object::ToString(mSubnetMask) +
+            dnsServers + ", gateway " + Object::ToString(mGateway) +
+            " lease time " + Object::ToString(mLeaseTime) + ", domain " + mDomainName;
     return NOERROR;
 }
 

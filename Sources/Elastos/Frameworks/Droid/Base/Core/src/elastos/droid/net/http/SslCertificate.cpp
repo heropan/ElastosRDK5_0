@@ -1,18 +1,59 @@
 
+#include "_Elastos.Droid.Core.h"
+#include "_Elastos.Droid.Text.h"
+#include "_Elastos.Droid.View.h"
+#include "_Elastos.Droid.Widget.h"
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.Core.h>
+#include <Elastos.CoreLibrary.Text.h>
+#include "elastos/droid/R.h"
+#include "elastos/droid/net/ReturnOutValue.h"
 #include "elastos/droid/net/http/SslCertificate.h"
+#include "elastos/droid/net/http/CSslCertificate.h"
+#include "elastos/droid/net/http/CSslCertificateDName.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/text/format/DateFormat.h"
+#include "elastos/droid/view/LayoutInflater.h"
+#include <elastos/core/IntegralToString.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
-using Elastos::Droid::Text::Format::IDateFormat;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::R;
+using Elastos::Droid::Text::Format::DateFormat;
 using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::LayoutInflater;
 using Elastos::Droid::Widget::ITextView;
 
+using Elastos::Core::IByte;
+using Elastos::Core::IntegralToString;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::IO::CByteArrayInputStream;
 using Elastos::IO::IByteArrayInputStream;
+using Elastos::IO::IInputStream;
 using Elastos::Math::IBigInteger;
+using Elastos::Security::Cert::CCertificateFactoryHelper;
 using Elastos::Security::Cert::ICertificate;
 using Elastos::Security::Cert::ICertificateFactory;
+using Elastos::Security::Cert::ICertificateFactoryHelper;
+using Elastos::Security::Cert::IX509Certificate;
 using Elastos::Security::IMessageDigest;
+using Elastos::Security::IMessageDigestHelper;
+using Elastos::Security::IPrincipal;
+using Elastos::Text::CSimpleDateFormat;
 using Elastos::Text::ISimpleDateFormat;
+using Elastos::Utility::IDate;
 using Elastos::Utility::IVector;
 
+// using Org::Bouncycastle::Asn1::X509::CX509Name;
 using Org::Bouncycastle::Asn1::X509::IX509Name;
 
 namespace Elastos {
@@ -20,7 +61,108 @@ namespace Droid {
 namespace Net {
 namespace Http {
 
+//===============================================================
+// SslCertificateDName
+//===============================================================
+CAR_INTERFACE_IMPL(SslCertificateDName, Object, ISslCertificateDName)
 
+ECode SslCertificateDName::constructor(
+    /* [in] */ const String& dName)
+{
+    if (dName != NULL) {
+        mDName = dName;
+
+        AutoPtr<IX509Name> x509Name;
+        // TODO: Waiting for X509Name
+        assert(0);
+        // CX509Name::New(dName, (IX509Name**)&x509Name);
+
+        AutoPtr<IVector> val;
+        // x509Name->GetValues((IVector**)&val);
+        AutoPtr<IVector> oid;
+        // x509Name->GetOIDs(&oid);
+
+        for (Int32 i = 0; i < Ptr(oid)->Func(IVector::GetSize); i++) {
+        //     if (oid->At(i)->Equals(IX509Name::CN)) {
+        //         if (mCName.IsNull()) {
+        //             mCName = (String) val->At(i);
+        //         }
+        //         continue;
+        //     }
+
+        //     if (oid->At(i).Equals(IX509Name::O)) {
+        //         if (mOName.IsNull()) {
+        //             mOName = (String) val->At(i);
+        //         }
+        //         continue;
+        //     }
+
+        //     if (oid->At(i).Equals(IX509Name::OU)) {
+        //         if (mUName.IsNull()) {
+        //             mUName = (String) val->At(i);
+        //         }
+        //         continue;
+        //     }
+        }
+    }
+    return NOERROR;
+}
+
+ECode SslCertificateDName::GetDName(
+    /* [out] */ String* dName)
+{
+    VALIDATE_NOT_NULL(dName);
+
+    if (mDName.IsNullOrEmpty()) {
+        *dName = String("");
+    } else {
+        *dName = mDName;
+    }
+    return NOERROR;
+}
+
+ECode SslCertificateDName::GetCName(
+    /* [out] */ String* cName)
+{
+    VALIDATE_NOT_NULL(cName);
+
+    if (mCName.IsNullOrEmpty()) {
+        *cName = String("");
+    } else {
+        *cName = mCName;
+    }
+    return NOERROR;
+}
+
+ECode SslCertificateDName::GetOName(
+    /* [out] */ String* oName)
+{
+    VALIDATE_NOT_NULL(oName);
+
+    if (mOName.IsNullOrEmpty()) {
+        *oName = String("");
+    } else {
+        *oName = mOName;
+    }
+    return NOERROR;
+}
+
+ECode SslCertificateDName::GetUName(
+    /* [out] */ String* uName)
+{
+    VALIDATE_NOT_NULL(uName);
+
+    if (mUName.IsNullOrEmpty()) {
+        *uName = String("");
+    } else {
+        *uName = mUName;
+    }
+    return NOERROR;
+}
+
+//=================================================================
+// SslCertificate
+//=================================================================
 CAR_INTERFACE_IMPL(SslCertificate, Object, ISslCertificate)
 
 String SslCertificate::sISO_8601_DATE_FORMAT("yyyy-MM-dd HH:mm:ssZ");
@@ -37,12 +179,10 @@ ECode SslCertificate::SaveState(
     /* [in] */ ISslCertificate* certificate,
     /* [out] */ IBundle** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(bundle);
+    VALIDATE_NOT_NULL(result)
 
     if (certificate == NULL) {
-        *bundle = NULL;
+        *result = NULL;
         return NOERROR;
     }
 
@@ -67,32 +207,29 @@ ECode SslCertificate::SaveState(
     AutoPtr<IX509Certificate> x509Certificate = ((CSslCertificate*)certificate)->mX509Certificate;
     if (x509Certificate != NULL) {
         AutoPtr<ArrayOf<Byte> > bytesEncoded;
-        x509Certificate->GetEncoded(&bytesEncoded);
+        ICertificate::Probe(x509Certificate)->GetEncoded((ArrayOf<Byte>**)&bytesEncoded);
         localbundle->PutByteArray(CSslCertificate::X509_CERTIFICATE, bytesEncoded);
 
     }
-    *bundle = localbundle;
-    REFCOUNT_ADD(*bundle);
+    *result = localbundle;
+    REFCOUNT_ADD(*result);
     return NOERROR;
-#endif
 }
 
 ECode SslCertificate::RestoreState(
     /* [in] */ IBundle* bundle,
     /* [out] */ ISslCertificate** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(certificate);
+    VALIDATE_NOT_NULL(result);
 
     if (bundle == NULL) {
-        *certificate = NULL;
+        *result = NULL;
         return NOERROR;
     }
 
     AutoPtr<IX509Certificate> x509Certificate;
     AutoPtr<ArrayOf<Byte> > bytes;
-    bundle->GetByteArray(CSslCertificate::X509_CERTIFICATE, &bytes);
+    bundle->GetByteArray(CSslCertificate::X509_CERTIFICATE, (ArrayOf<Byte>**)&bytes);
     if (bytes != NULL) {
         AutoPtr<ICertificateFactoryHelper> helper;
         CCertificateFactoryHelper::AcquireSingleton((ICertificateFactoryHelper**)&helper);
@@ -101,8 +238,8 @@ ECode SslCertificate::RestoreState(
         AutoPtr<ICertificate> cert;
         AutoPtr<IByteArrayInputStream> stream;
         CByteArrayInputStream::New(bytes, (IByteArrayInputStream**)&stream);
-        if (!FAILED(certFactory->GenerateCertificate(stream, (ICertificate**)&cert))) {
-            x509Certificate = (IX509Certificate*)cert->Probe(EIID_IX509Certificate);
+        if (!FAILED(certFactory->GenerateCertificate(IInputStream::Probe(stream), (ICertificate**)&cert))) {
+            x509Certificate = IX509Certificate::Probe(cert);
         }
     }
 
@@ -117,11 +254,11 @@ ECode SslCertificate::RestoreState(
     bundle->GetString(CSslCertificate::VALID_NOT_AFTER, &strNotAfter);
     AutoPtr<IDate> dateNOtAfter = CSslCertificate::ParseDate(strNotBefore);
 
-    CSslCertificate* cert = new CSslCertificate(issuedTo, issuedBy, dateNOtBefore, dateNOtAfter, x509Certificate);
-    *certificate = (ISslCertificate*)cert->Probe(EIID_ISslCertificate);
-    REFCOUNT_ADD(*certificate);
+    CSslCertificate* cert = new CSslCertificate();
+    cert->constructor(issuedTo, issuedBy, dateNOtBefore, dateNOtAfter, x509Certificate);
+    *result = ISslCertificate::Probe(cert);
+    REFCOUNT_ADD(*result);
     return NOERROR;
-#endif
 }
 
 ECode SslCertificate::constructor(
@@ -130,13 +267,10 @@ ECode SslCertificate::constructor(
     /* [in] */ const String& validNotBefore,
     /* [in] */ const String& validNotAfter)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     AutoPtr<IDate> notBefore = ParseDate(validNotBefore);
     AutoPtr<IDate> notAfter = ParseDate(validNotAfter);
 
     return constructor(issuedTo, issuedBy, notBefore, notAfter, NULL);
-#endif
 }
 
 ECode SslCertificate::constructor(
@@ -145,32 +279,26 @@ ECode SslCertificate::constructor(
     /* [in] */ IDate* validNotBefore,
     /* [in] */ IDate* validNotAfter)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     return constructor(issuedTo, issuedBy, validNotBefore, validNotAfter, NULL);
-#endif
 }
 
 ECode SslCertificate::constructor(
     /* [in] */ IX509Certificate* certificate)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     AutoPtr<IPrincipal> subDN;
-    x509Certificate->GetSubjectDN((IPrincipal**)&subDN);
+    certificate->GetSubjectDN((IPrincipal**)&subDN);
     String issuedTo;
     subDN->GetName(&issuedTo);
     AutoPtr<IPrincipal> issbDN;
-    x509Certificate->GetSubjectDN((IPrincipal**)&issbDN);
+    certificate->GetSubjectDN((IPrincipal**)&issbDN);
     String issuedBy;
     issbDN->GetName(&issuedBy);
     AutoPtr<IDate> notBefore;
-    x509Certificate->GetNotBefore((IDate**)&notBefore);
+    certificate->GetNotBefore((IDate**)&notBefore);
     AutoPtr<IDate> notAfter;
-    x509Certificate->GetNotAfter((IDate**)&notAfter);
+    certificate->GetNotAfter((IDate**)&notAfter);
 
-    return constructor(issuedTo, issuedBy, notBefore, notAfter, x509Certificate);
-#endif
+    return constructor(issuedTo, issuedBy, notBefore, notAfter, certificate);
 }
 
 ECode SslCertificate::constructor(
@@ -180,8 +308,6 @@ ECode SslCertificate::constructor(
     /* [in] */ IDate* validNotAfter,
     /* [in] */ IX509Certificate* x509Certificate)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     CSslCertificateDName::New(issuedTo, (ISslCertificateDName**)&mIssuedTo);
     CSslCertificateDName::New(issuedBy, (ISslCertificateDName**)&mIssuedBy);
     mValidNotBefore = CloneDate(validNotBefore);
@@ -189,83 +315,67 @@ ECode SslCertificate::constructor(
     mX509Certificate = x509Certificate;
 
     return NOERROR;
-#endif
 }
 
 ECode SslCertificate::GetValidNotBeforeDate(
     /* [out] */ IDate** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(date);
-    *date = CloneDate(mValidNotBefore);
+    VALIDATE_NOT_NULL(result);
+
+    *result = CloneDate(mValidNotBefore);
     return NOERROR;
-#endif
 }
 
 ECode SslCertificate::GetValidNotBefore(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(valid);
-    *valid = FormatDate(mValidNotBefore);
+    VALIDATE_NOT_NULL(result);
+
+    *result = FormatDate(mValidNotBefore);
     return NOERROR;
-#endif
 }
 
 ECode SslCertificate::GetValidNotAfterDate(
     /* [out] */ IDate** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(date);
-    *date = CloneDate(mValidNotAfter);
+    VALIDATE_NOT_NULL(result);
+
+    *result = CloneDate(mValidNotAfter);
     return NOERROR;
-#endif
 }
 
 ECode SslCertificate::GetValidNotAfter(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(valid);
-    *valid = FormatDate(mValidNotAfter);
+    VALIDATE_NOT_NULL(result);
+
+    *result = FormatDate(mValidNotAfter);
     return NOERROR;
-#endif
 }
 
 ECode SslCertificate::GetIssuedTo(
     /* [out] */ ISslCertificateDName** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(issuedTo);
-    *issuedTo = mIssuedTo;
-    REFCOUNT_ADD(*issuedTo);
+    VALIDATE_NOT_NULL(result);
+
+    *result = mIssuedTo;
+    REFCOUNT_ADD(*result);
     return NOERROR;
-#endif
 }
 
 ECode SslCertificate::GetIssuedBy(
     /* [out] */ ISslCertificateDName** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(issuedBy);
-    *issuedBy = mIssuedBy;
-    REFCOUNT_ADD(*issuedBy);
+    VALIDATE_NOT_NULL(result);
+
+    *result = mIssuedBy;
+    REFCOUNT_ADD(*result);
     return NOERROR;
-#endif
 }
 
-ECode SslCertificate::GetSerialNumber(
-    /* [in] */ IX509Certificate* x509Certificate,
-    /* [out] */ String* result)
+String SslCertificate::GetSerialNumber(
+    /* [in] */ IX509Certificate* x509Certificate)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (x509Certificate == NULL) {
         return String("");
     }
@@ -275,24 +385,20 @@ ECode SslCertificate::GetSerialNumber(
         return String("");
     }
     AutoPtr<ArrayOf<Byte> > serArray;
-    serialNumber->toByteArray((ArrayOf<Byte>**)&serArray);
+    serialNumber->ToByteArray((ArrayOf<Byte>**)&serArray);
     return Fingerprint(serArray);
-#endif
 }
 
-ECode SslCertificate::GetDigest(
+String SslCertificate::GetDigest(
     /* [in] */ IX509Certificate* x509Certificate,
-    /* [in] */ const String& algorithm,
-    /* [out] */ String* result)
+    /* [in] */ const String& algorithm)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (x509Certificate == NULL) {
         return String("");
     }
 
     AutoPtr<ArrayOf<Byte> >bytes;
-    x509Certificate->GetEncoded((ArrayOf<Byte> **)&bytes);
+    ICertificate::Probe(x509Certificate)->GetEncoded((ArrayOf<Byte> **)&bytes);
     AutoPtr<IMessageDigestHelper> helper;
     AutoPtr<IMessageDigest> md;
     if(FAILED(helper->GetInstance(algorithm, (IMessageDigest**)&md))) {
@@ -304,86 +410,67 @@ ECode SslCertificate::GetDigest(
     }
 
     return Fingerprint(digest);
-#endif
 }
 
-ECode SslCertificate::Fingerprint(
-    /* [in] */ ArrayOf<Byte>* bytes,
-    /* [out] */ String* result)
+String SslCertificate::Fingerprint(
+    /* [in] */ ArrayOf<Byte>* bytes)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (bytes == NULL) {
         return String("");
     }
     AutoPtr<StringBuilder> sb = new StringBuilder();
     for (Int32 i = 0; i < bytes->GetLength(); i++) {
         Byte b = (*bytes)[i];
-        StringUtils::AppendByteAsHex(*sb, b, TRUE);
+        IntegralToString::AppendByteAsHex(*sb, b, TRUE);
         if (i + 1 != bytes->GetLength()) {
-            sb->AppendChar(':');
+            sb->Append(':');
         }
     }
     return sb->ToString();
-#endif
 }
 
 ECode SslCertificate::ToString(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(str);
+    VALIDATE_NOT_NULL(result);
 
     String issuedTo;
     mIssuedTo->GetDName(&issuedTo);
     String issuedBy;
     mIssuedBy->GetDName(&issuedBy);
 
-    *str = String("Issued to: ") + issuedTo + String(";\n")
+    *result = String("Issued to: ") + issuedTo + String(";\n")
         + String("Issued by: ") + issuedBy + String(";\n");
     return NOERROR;
-#endif
 }
 
-ECode SslCertificate::ParseDate(
-    /* [in] */ const String& string,
-    /* [out] */ IDate** result)
+AutoPtr<IDate> SslCertificate::ParseDate(
+    /* [in] */ const String& string)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     AutoPtr<ISimpleDateFormat> format;
-    CSimpleDateFormat::New(ISO_8601_DATE_FORMAT, (ISimpleDateFormat**)&format);
+    CSimpleDateFormat::New(sISO_8601_DATE_FORMAT, (ISimpleDateFormat**)&format);
     AutoPtr<IDate> date;
-    if(!FAILED(format->Parse(string, &date))) {
+    if(!FAILED(Elastos::Text::IDateFormat::Probe(format)->Parse(string, (IDate**)&date))) {
         return date;
     }
 
     return NULL;
-#endif
 }
 
-ECode SslCertificate::FormatDate(
-    /* [in] */ IDate* date,
-    /* [out] */ String* result)
+String SslCertificate::FormatDate(
+    /* [in] */ IDate* date)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     AutoPtr<ISimpleDateFormat> format;
-    CSimpleDateFormat::New(ISO_8601_DATE_FORMAT, (ISimpleDateFormat**)&format);
+    CSimpleDateFormat::New(sISO_8601_DATE_FORMAT, (ISimpleDateFormat**)&format);
     String strDate;
-    format->Format(date, &strDate);
+    Elastos::Text::IDateFormat::Probe(format)->Format(date, &strDate);
 
     return strDate;
-#endif
 }
 
-ECode SslCertificate::CloneDate(
-    /* [in] */ IDate* date,
-    /* [out] */ IDate** result)
+AutoPtr<IDate> SslCertificate::CloneDate(
+    /* [in] */ IDate* date)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (date == NULL) {
         return NULL;
     }
@@ -391,16 +478,13 @@ ECode SslCertificate::CloneDate(
     Elastos::Core::ICloneable::Probe(date)->Clone((IInterface**)&newDate);
 
     return IDate::Probe(newDate);
-#endif
 }
 
 ECode SslCertificate::InflateCertificateView(
     /* [in] */ IContext* context,
     /* [out] */ IView** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(view);
+    VALIDATE_NOT_NULL(result);
 
     AutoPtr<ILayoutInflater> factory;
     LayoutInflater::From(context, (ILayoutInflater**)&factory);
@@ -411,221 +495,108 @@ ECode SslCertificate::InflateCertificateView(
     // issued to:
     AutoPtr<ISslCertificateDName> issuedTo;
     GetIssuedTo((ISslCertificateDName**)&issuedTo);
+    AutoPtr<IView> view;
     if (issuedTo != NULL) {
-        AutoPtr<ITextView> commonView;
-        certificateView->FindViewById(R::id::to_common, (ITextView**)&commonView);
+        certificateView->FindViewById(R::id::to_common, (IView**)&view);
+        AutoPtr<ITextView> commonView = ITextView::Probe(view);
         String sCName;
         issuedTo->GetCName(&sCName);
-        commonView->SetText(sCName);
+        commonView->SetText(StringUtils::ParseCharSequence(sCName));
 
-        AutoPtr<ITextView> orgView;
-        certificateView->FindViewById(R::id::to_org, (ITextView**)&orgView);
+        view = NULL;
+        certificateView->FindViewById(R::id::to_org, (IView**)&view);
+        AutoPtr<ITextView> orgView = ITextView::Probe(view);
         String sOName;
         issuedTo->GetCName(&sOName);
-        commonView->SetText(sOName);
+        orgView->SetText(StringUtils::ParseCharSequence(sOName));
 
-        AutoPtr<ITextView> unitView;
-        certificateView->FindViewById(R::id::to_org_unit, (ITextView**)&unitView);
+        view = NULL;
+        certificateView->FindViewById(R::id::to_org_unit, (IView**)&view);
+        AutoPtr<ITextView> unitView = ITextView::Probe(view);
         String sUName;
         issuedTo->GetUName(&sUName);
-        commonView->SetText(sUName);
+        unitView->SetText(StringUtils::ParseCharSequence(sUName));
     }
     // serial number:
-    AutoPtr<ITextView> serView;
-    certificateView->FindViewById(R::id::serial_number, (ITextView**)&serView);
+    view = NULL;
+    certificateView->FindViewById(R::id::serial_number, (IView**)&view);
+    AutoPtr<ITextView> serView = ITextView::Probe(view);
     String sSerNum = GetSerialNumber(mX509Certificate);
-    serView->SetText(sSerNum);
+    serView->SetText(StringUtils::ParseCharSequence(sSerNum));
 
     // issued by:
     AutoPtr<ISslCertificateDName> issuedBy;
     GetIssuedBy((ISslCertificateDName**)&issuedBy);
     if (issuedBy != NULL) {
-        AutoPtr<ITextView> commonView;
-        certificateView->FindViewById(R::id::by_common, (ITextView**)&commonView);
+        view = NULL;
+        certificateView->FindViewById(R::id::by_common, (IView**)&view);
+        AutoPtr<ITextView> commonView = ITextView::Probe(view);
         String sCName;
         issuedBy->GetCName(&sCName);
-        commonView->SetText(sCName);
+        commonView->SetText(StringUtils::ParseCharSequence(sCName));
 
-        AutoPtr<ITextView> orgView;
-        certificateView->FindViewById(R::id::by_org, (ITextView**)&orgView);
+        view = NULL;
+        certificateView->FindViewById(R::id::by_org, (IView**)&view);
+        AutoPtr<ITextView> orgView = ITextView::Probe(view);
         String sOName;
         issuedBy->GetCName(&sOName);
-        commonView->SetText(sOName);
+        orgView->SetText(StringUtils::ParseCharSequence(sOName));
 
-        AutoPtr<ITextView> unitView;
-        certificateView->FindViewById(R::id::by_org_unit, (ITextView**)&unitView);
+        view = NULL;
+        certificateView->FindViewById(R::id::by_org_unit, (IView**)&view);
+        AutoPtr<ITextView> unitView = ITextView::Probe(view);
         String sUName;
         issuedBy->GetUName(&sUName);
-        commonView->SetText(sUName);
+        unitView->SetText(StringUtils::ParseCharSequence(sUName));
     }
 
     // issued on:
     AutoPtr<IDate> beforeDate;
     GetValidNotBeforeDate((IDate**)&beforeDate);
     String issuedOn = FormatCertificateDate(context, beforeDate);
-    AutoPtr<ITextView> isOnView;
-    certificateView->FindViewById(R::id::issued_on, (ItextView**)&isOnView);
-    isOnView->SetText(issuedOn);
+    view = NULL;
+    certificateView->FindViewById(R::id::issued_on, (IView**)&view);
+    AutoPtr<ITextView> isOnView = ITextView::Probe(view);
+    isOnView->SetText(StringUtils::ParseCharSequence(issuedOn));
 
     // expires on:
     AutoPtr<IDate> afterDate;
     GetValidNotAfterDate((IDate**)&afterDate);
     String expiresOn = FormatCertificateDate(context, afterDate);
-    AutoPtr<ITextView> expOnView;
-    certificateView->FindViewById(R::id::issued_on, (ItextView**)&expOnView);
-    expOnView->SetText(expiresOn);
+    view = NULL;
+    certificateView->FindViewById(R::id::issued_on, (IView**)&view);
+    AutoPtr<ITextView> expOnView = ITextView::Probe(view);
+    expOnView->SetText(StringUtils::ParseCharSequence(expiresOn));
 
     // fingerprints:
-    AutoPtr<ITextView> sha256View;
-    certificateView->FindViewById(R::id::sha256_fingerprint, (ItextView**)&sha256View);
+    view = NULL;
+    certificateView->FindViewById(R::id::sha256_fingerprint, (IView**)&view);
+    AutoPtr<ITextView> sha256View = ITextView::Probe(view);
     String sSha256Digest = GetDigest(mX509Certificate, String("SHA256"));
-    sha256View->SetText(sSha256Digest);
+    sha256View->SetText(StringUtils::ParseCharSequence(sSha256Digest));
 
-    AutoPtr<ITextView> sha1View;
-    certificateView->FindViewById(R::id::sha1_fingerprint, (ItextView**)&sha1View);
+    view = NULL;
+    certificateView->FindViewById(R::id::sha1_fingerprint, (IView**)&view);
+    AutoPtr<ITextView> sha1View = ITextView::Probe(view);
     String sSha1Digest = GetDigest(mX509Certificate, String("SHA1"));
-    sha1View->SetText(sSha1Digest);
+    sha1View->SetText(StringUtils::ParseCharSequence(sSha1Digest));
 
-    *view = (IView*)certificateView->Probe(EIID_IView);
+    *result = IView::Probe(certificateView);
+    REFCOUNT_ADD(*result)
     return NOERROR;
-#endif
 }
 
-ECode SslCertificate::FormatCertificateDate(
+String SslCertificate::FormatCertificateDate(
     /* [in] */ IContext* context,
-    /* [in] */ IDate* certificateDate,
-    /* [out] */ String* result)
+    /* [in] */ IDate* certificateDate)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(result)
-
     if (certificateDate == NULL) {
-        *reslut = String("");
-        return NOERROR;
+        return String("");
     }
-    AutoPtr<IDateFormatHelper> helper;
-    CDateFormatHelper::AcquireSingleton((IDateFormatHelper**)&helper);
-    AutoPtr<IDateFormat> format;
-    helper->GetDateFormat(context, (IDateFormat**)&format)
     String sdate;
-    format->Format(certificateDate, &sdate);
+    DateFormat::GetDateFormat(context)->Format(certificateDate, &sdate);
 
-    *result = sdate;
-    return NOERROR;
-#endif
-}
-
-//===============================================================
-// SslCertificateDName
-//===============================================================
-CAR_INTERFACE_IMPL(SslCertificateDName, Object, ISslCertificateDName)
-
-ECode SslCertificateDName::constructor(
-    /* [in] */ const String& dName)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    if (dName != NULL) {
-        mDName = dName;
-
-        AutoPtr<IX509Name> x509Name;
-        CX509Name::New(dName, (IX509Name**)&x509Name);
-
-        Vector<String>* val;
-        x509Name->GetValues(&val);
-        Vector<String>* oid;
-        x509Name->GetOIDs(&oid);
-
-        for (Int32 i = 0; i < oid->GetSize(); i++) {
-            if (oid->At(i).Equals(IX509Name::CN)) {
-                if (mCName.IsNull()) {
-                    mCName = (String) val->At(i);
-                }
-                continue;
-            }
-
-            if (oid->At(i).Equals(IX509Name::O)) {
-                if (mOName.IsNull()) {
-                    mOName = (String) val->At(i);
-                }
-                continue;
-            }
-
-            if (oid->At(i).Equals(IX509Name::OU)) {
-                if (mUName.IsNull()) {
-                    mUName = (String) val->At(i);
-                }
-                continue;
-            }
-        }
-    }
-    return NOERROR;
-#endif
-}
-
-ECode SslCertificateDName::GetDName(
-    /* [out] */ String* dName)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(dName);
-
-    if (mDName.IsNullOrEmpty()) {
-        *dName = String("");
-    } else {
-        *dName = mDName;
-    }
-    return NOERROR;
-#endif
-}
-
-ECode SslCertificateDName::GetCName(
-    /* [out] */ String* cName)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(cName);
-
-    if (mCName.IsNullOrEmpty()) {
-        *cName = String("");
-    } else {
-        *cName = mCName;
-    }
-    return NOERROR;
-#endif
-}
-
-ECode SslCertificateDName::GetOName(
-    /* [out] */ String* oName)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(oName);
-
-    if (mOName.IsNullOrEmpty()) {
-        *oName = String("");
-    } else {
-        *oName = mOName;
-    }
-    return NOERROR;
-#endif
-}
-
-ECode SslCertificateDName::GetUName(
-    /* [out] */ String* uName)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(uName);
-
-    if (mUName.IsNullOrEmpty()) {
-        *uName = String("");
-    } else {
-        *uName = mUName;
-    }
-    return NOERROR;
-#endif
+    return sdate;
 }
 
 } // namespace Http

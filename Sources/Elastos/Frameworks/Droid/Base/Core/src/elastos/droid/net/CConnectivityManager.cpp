@@ -1038,7 +1038,7 @@ ECode CConnectivityManager::RemoveDefaultNetworkActiveListener(
     IMap::Probe(mNetworkActivityListeners)->Get(l, (IInterface**)&itmp);
     AutoPtr<INetworkActivityListener> rl = INetworkActivityListener::Probe(itmp);
     if (NULL == rl) {
-        Logger::E(TAG, "Listener not registered: %s", StringUtils::ToString(l).string());
+        Logger::E(TAG, "Listener not registered: %s", Object::ToString(l).string());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     // try {

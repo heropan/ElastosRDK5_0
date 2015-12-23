@@ -157,38 +157,42 @@ private:
     /**
      * @return Digest-scheme authentication response.
      */
-    CARAPI_(String) ComputeDigestAuthResponse(
+    CARAPI ComputeDigestAuthResponse(
         /* [in] */ const String& username,
         /* [in] */ const String& password,
         /* [in] */ const String& realm,
         /* [in] */ const String& nonce,
         /* [in] */ const String& QOP,
         /* [in] */ const String& algorithm,
-        /* [in] */ const String& opaque);
+        /* [in] */ const String& opaque,
+        /* [out] */ String* result);
 
     /**
      * @return Double-quoted MD5 digest.
      */
-    CARAPI_(String) ComputeDigest(
+    CARAPI ComputeDigest(
         /* [in] */ const String& A1,
         /* [in] */ const String& A2,
         /* [in] */ const String& nonce,
         /* [in] */ const String& QOP,
         /* [in] */ const String& nc,
-        /* [in] */ const String& cnonce);
+        /* [in] */ const String& cnonce,
+        /* [out] */ String* result);
 
     /**
      * @return MD5 hash of concat(secret, ":", data).
      */
-    CARAPI_(String) KD(
+    CARAPI KD(
         /* [in] */ const String& secret,
-        /* [in] */ const String& data);
+        /* [in] */ const String& data,
+        /* [out] */ String* result);
 
     /**
      * @return MD5 hash of param.
      */
-    CARAPI_(String) H(
-        /* [in] */ const String& param);
+    CARAPI H(
+        /* [in] */ const String& param,
+        /* [out] */ String* result);
 
     /**
      * @return HEX buffer representation.

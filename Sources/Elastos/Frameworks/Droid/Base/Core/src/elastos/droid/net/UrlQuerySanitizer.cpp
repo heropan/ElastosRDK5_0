@@ -4,7 +4,6 @@
 #include "elastos/droid/net/CUrlQuerySanitizerIllegalCharacterValueSanitizer.h"
 #include "elastos/droid/net/CUrlQuerySanitizerParameterValuePair.h"
 #include "elastos/droid/net/http/Headers.h"
-#include "elastos/droid/net/FastConvert.h"
 #include "elastos/droid/net/ReturnOutValue.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
@@ -306,9 +305,9 @@ ECode UrlQuerySanitizer::RegisterParameter(
     /* [in] */ IUrlQuerySanitizerValueSanitizer* valueSanitizer)
 {
     if (valueSanitizer == NULL) {
-        mSanitizers->Remove(StringToCharSequence(parameter));
+        mSanitizers->Remove(StringUtils::ParseCharSequence(parameter));
     }
-    mSanitizers->Put(StringToCharSequence(parameter), valueSanitizer);
+    mSanitizers->Put(StringUtils::ParseCharSequence(parameter), valueSanitizer);
     return NOERROR;
 }
 
@@ -318,7 +317,7 @@ ECode UrlQuerySanitizer::RegisterParameters(
 {
     Int32 length = parameters->GetLength();
     for(Int32 i = 0; i < length; i++) {
-        mSanitizers->Put(StringToCharSequence((*parameters)[i]), valueSanitizer);
+        mSanitizers->Put(StringUtils::ParseCharSequence((*parameters)[i]), valueSanitizer);
     }
     return NOERROR;
 }
@@ -383,7 +382,7 @@ ECode UrlQuerySanitizer::AddSanitizedEntry(
     mEntriesList->Add(pair);
     if (mPreferFirstRepeatedParameter) {
         Boolean isContainsKey;
-        mEntries->ContainsKey(StringToCharSequence(parameter), &isContainsKey);
+        mEntries->ContainsKey(StringUtils::ParseCharSequence(parameter), &isContainsKey);
         if (isContainsKey) {
             return NOERROR;
         }
@@ -403,7 +402,7 @@ ECode UrlQuerySanitizer::GetValueSanitizer(
     VALIDATE_NOT_NULL(result);
 
     AutoPtr<IInterface> obj;
-    mSanitizers->Get(StringToCharSequence(parameter), (IInterface**)&obj);
+    mSanitizers->Get(StringUtils::ParseCharSequence(parameter), (IInterface**)&obj);
     FUNC_RETURN(IUrlQuerySanitizerValueSanitizer::Probe(obj))
 }
 

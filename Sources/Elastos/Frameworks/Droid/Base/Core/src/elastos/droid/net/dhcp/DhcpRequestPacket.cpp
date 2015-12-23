@@ -46,7 +46,7 @@ ECode DhcpRequestPacket::ToString(
 
     String s;
     DhcpPacket::ToString(&s);
-    *result = s + " REQUEST, desired IP " + StringUtils::ToString(mRequestedIp) + " from host '"
+    *result = s + " REQUEST, desired IP " + Object::ToString(mRequestedIp) + " from host '"
             + mHostName + "', param list length "
             + StringUtils::ToString(mRequestedParams == NULL ? 0 : mRequestedParams->GetLength());
     return NOERROR;
@@ -94,8 +94,8 @@ ECode DhcpRequestPacket::DoNextOp(
 {
     AutoPtr<IInetAddress> clientRequest =
             mRequestedIp == NULL ? mClientIp : mRequestedIp;
-    Logger::V(TAG, "requested IP is %s and client IP is ", StringUtils::ToString(mRequestedIp).string(),
-            StringUtils::ToString(mClientIp).string());
+    Logger::V(TAG, "requested IP is %s and client IP is ", Object::ToString(mRequestedIp).string(),
+            Object::ToString(mClientIp).string());
     return machine->OnRequestReceived(mBroadcast, mTransId, mClientMac,
             clientRequest, mRequestedParams, mHostName);
 }

@@ -100,7 +100,7 @@ ECode ConnectionThread::Run()
         else {
             if (HttpLog::LOGV) {
                 HttpLog::V("ConnectionThread: new request %s %s",
-                        Object::ToString(((Request*)request.Get())->mHost).string(), StringUtils::ToString(request).string());
+                        Object::ToString(((Request*)request.Get())->mHost).string(), Object::ToString(request).string());
             }
 
             mConnectionManager->GetConnection(mContext, ((Request*)request.Get())->mHost, (IConnection**)&mConnection);
@@ -133,7 +133,7 @@ ECode ConnectionThread::ToString(
     VALIDATE_NOT_NULL(result);
 
     String active = mWaiting ? String("w") : String("a");
-    *result = String("cid ") + StringUtils::ToString(mId) + " " + active + " " + StringUtils::ToString(mConnection);
+    *result = String("cid ") + StringUtils::ToString(mId) + " " + active + " " + Object::ToString(mConnection);
     return NOERROR;
 }
 

@@ -1,14 +1,59 @@
 
+#include "_Elastos.Droid.Core.h"
+#include "_Elastos.Droid.Webkit.h"
+#include <Elastos.CoreLibrary.Security.h>
 #include "elastos/droid/net/http/RequestHandle.h"
+#include "elastos/droid/net/CWebAddress.h"
+#include "elastos/droid/net/Proxy.h"
+#include "elastos/droid/net/ReturnOutValue.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/net/WebAddress.h"
+#include "elastos/droid/net/http/CRequestHandle.h"
+#include "elastos/droid/net/http/Connection.h"
+#include "elastos/droid/net/http/Headers.h"
+#include "elastos/droid/net/http/HttpConnection.h"
+#include "elastos/droid/net/http/HttpLog.h"
+#include "elastos/droid/net/http/HttpsConnection.h"
+#include "elastos/droid/net/http/Request.h"
+#include "elastos/droid/os/Build.h"
+#include "elastos/droid/os/CMessage.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/R.h"
+// #include "elastos/droid/webkit/CCookieManager.h"
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/etl/HashMap.h>
 
+using Elastos::Droid::Net::CWebAddress;
 using Elastos::Droid::Net::IWebAddress;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::CMessage;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Os::Process;
+using Elastos::Droid::R;
+// using Elastos::Droid::Webkit::CCookieManager;
 using Elastos::Droid::Webkit::ICookieManager;
 
+using Elastos::Core::CObject;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::IO::IInputStream;
+// using Elastos::Security::CMessageDigest;
 using Elastos::Security::IMessageDigest;
+using Elastos::Security::IMessageDigestHelper;
+using Elastos::Utility::CHashMap;
+using Elastos::Utility::CRandom;
+using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::IHashMap;
+using Elastos::Utility::IMap;
 using Elastos::Utility::IRandom;
-
 using Org::Apache::Commons::Codec::Binary::IBase64;
+using Org::Apache::Commons::Codec::Binary::IBase64Helper;
 
 namespace Elastos {
 namespace Droid {
@@ -35,8 +80,6 @@ ECode RequestHandle::constructor(
     /* [in] */ Int32 bodyLength,
     /* [in] */ IRequest* request)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (headers == NULL) {
         CHashMap::New((IMap**)&mHeaders);
     }
@@ -51,7 +94,6 @@ ECode RequestHandle::constructor(
     mRequest = (Request*)request;
 
     return NOERROR;
-#endif
 }
 
 ECode RequestHandle::constructor(
@@ -65,8 +107,6 @@ ECode RequestHandle::constructor(
     /* [in] */ IRequest* request,
     /* [in] */ IConnection* conn)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (headers == NULL) {
         CHashMap::New((IMap**)&mHeaders);
     }
@@ -87,74 +127,57 @@ ECode RequestHandle::constructor(
     }
 
     return NOERROR;
-#endif
 }
 
 ECode RequestHandle::Cancel()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (mRequest != NULL) {
-        // mRequest->Cancel();
+        ((Request*)mRequest.Get())->Cancel();
     }
     return NOERROR;
-#endif
 }
 
 ECode RequestHandle::PauseRequest(
     /* [in] */ Boolean pause)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (mRequest != NULL) {
-        // mRequest->SetLoadingPaused(pause);
+        ((Request*)mRequest.Get())->SetLoadingPaused(pause);
     }
     return NOERROR;
-#endif
 }
 
 ECode RequestHandle::HandleSslErrorResponse(
     /* [in] */ Boolean proceed)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (mRequest != NULL) {
-        // mRequest->HandleSslErrorResponse(proceed);
+        mRequest->HandleSslErrorResponse(proceed);
     }
     return NOERROR;
-#endif
 }
 
 ECode RequestHandle::IsRedirectMax(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(isRedirectMax);
-    *isRedirectMax = mRedirectCount >= MAX_REDIRECT_COUNT;
+    VALIDATE_NOT_NULL(result)
+
+    *result = mRedirectCount >= MAX_REDIRECT_COUNT;
     return NOERROR;
-#endif
 }
 
 ECode RequestHandle::GetRedirectCount(
     /* [out] */ Int32* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(count);
-    *count = mRedirectCount;
+    VALIDATE_NOT_NULL(result);
+
+    *result = mRedirectCount;
     return NOERROR;
-#endif
 }
 
 ECode RequestHandle::SetRedirectCount(
     /* [in] */ Int32 count)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     mRedirectCount = count;
     return NOERROR;
-#endif
 }
 
 ECode RequestHandle::SetupRedirect(
@@ -163,24 +186,23 @@ ECode RequestHandle::SetupRedirect(
     /* [in] */ IMap* cacheHeaders,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
+    VALIDATE_NOT_NULL(result)
+
     if (HttpLog::LOGV) {
-        HttpLog::V(String("RequestHandle.setupRedirect(): redirectCount ") + StringUtils::ToString(mRedirectCount));
+        HttpLog::V("RequestHandle.setupRedirect(): redirectCount %s", StringUtils::ToString(mRedirectCount).string());
     }
 
     // be careful and remove authentication headers, if any
-    mHeaders.Erase(AUTHORIZATION_HEADER);
-    mHeaders.Erase(PROXY_AUTHORIZATION_HEADER);
+    mHeaders->Remove(StringUtils::ParseCharSequence(AUTHORIZATION_HEADER));
+    mHeaders->Remove(StringUtils::ParseCharSequence(PROXY_AUTHORIZATION_HEADER));
 
     if (++mRedirectCount == MAX_REDIRECT_COUNT) {
         // Way too many redirects -- fail out
         if (HttpLog::LOGV) {
-            HttpLog::V(String("RequestHandle.setupRedirect(): too many redirects ")/* + mRequest*/);
+            HttpLog::V("RequestHandle.setupRedirect(): too many redirects %s", Object::ToString(mRequest).string());
         }
-        // TODO:
-        // mRequest->Error(IEventHandler::ERROR_REDIRECT_LOOP,
-        //                R::string::httpErrorRedirectLoop);
+        ((Request*)mRequest.Get())->Error(IEventHandler::ERROR_REDIRECT_LOOP,
+                       R::string::httpErrorRedirectLoop);
 
         *result = FALSE;
         return NOERROR;
@@ -191,22 +213,23 @@ ECode RequestHandle::SetupRedirect(
         if (HttpLog::LOGV) {
             HttpLog::V(String("blowing away the referer on an https -> http redirect"));
         }
-        mHeaders.Erase(String("Referer"));
+        mHeaders->Remove(StringUtils::ParseCharSequence(String("Referer")));
     }
 
     mUrl = redirectTo;
 
-    // TODO:
-    // FAIL_RETURN(CWebAddress::New(mUrl, &mUri));
+    FAIL_RETURN(CWebAddress::New(mUrl, (IWebAddress**)&mUri));
 
     // update the "Cookie" header based on the redirected url
-    mHeaders.Erase(String("Cookie"));
+    mHeaders->Remove(StringUtils::ParseCharSequence(String("Cookie")));
     AutoPtr<ICookieManager> cookieManager;
-    CCookieManagerHelper::GetInstance((ICookieManager**)&cookieManager);
+    // TODO: Waiting for CCookieManager
+    assert(0);
+    // CCookieManager::GetInstance((ICookieManager**)&cookieManager);
     String cookie;
     cookieManager->GetCookie(mUri, &cookie);
-    if (cookie.IsNullOrEmpty() && cookie.GetLength() > 0) {
-        (*mHeaders)[String("Cookie")] = cookie;
+    if (!cookie.IsNullOrEmpty() && cookie.GetLength() > 0) {
+        mHeaders->Put(StringUtils::ParseCharSequence(String("Cookie")), StringUtils::ParseCharSequence(cookie));
     }
 
     if ((statusCode == 302 || statusCode == 303) && mMethod.Equals("POST")) {
@@ -229,32 +252,16 @@ ECode RequestHandle::SetupRedirect(
             }
         }
     } else {
-        mHeaders.Erase(String("Content-Type"));
+        mHeaders->Remove(StringUtils::ParseCharSequence(String("Content-Type")));
         mBodyProvider = NULL;
     }
 
     // Update the cache headers for this URL
-    Int32 size;
-    cacheHeaders->GetSize(&size);
-    if (size > 0) {
-        AutoPtr<ArrayOf<String> > keys;
-        AutoPtr<IObjectContainer> values;
-        cacheHeaders->GetAllItems((ArrayOf<String>**)&keys, (IObjectContainer**)&values);
-
-        for (Int32 i = 0; i < size; i++) {
-            AutoPtr<ICharSequence> value;
-            cacheHeaders->Get((*keys)[i], (IInterface**)(ICharSequence**)&value);
-            String svalue;
-            value->ToString(&svalue);
-
-            (*mHeaders)[(*keys)[i]] = cookie;
-        }
-    }
+    mHeaders->PutAll(cacheHeaders);
 
     CreateAndQueueNewRequest();
     *result = TRUE;
     return NOERROR;
-#endif
 }
 
 ECode RequestHandle::SetupBasicAuthResponse(
@@ -262,19 +269,16 @@ ECode RequestHandle::SetupBasicAuthResponse(
     /* [in] */ const String& username,
     /* [in] */ const String& password)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     String response;
-    CRequestHandleHelper::ComputeBasicAuthResponse(username, password, &response);
+    ComputeBasicAuthResponse(username, password, &response);
     if (HttpLog::LOGV) {
         HttpLog::V(String("setupBasicAuthResponse(): response: ") + response);
     }
     String key;
-    key = AuthorizationHeader(isProxy);
-    (*mHeaders)[key] = String("Basic ") + response;
+    AuthorizationHeader(isProxy, &key);
+    mHeaders->Put(StringUtils::ParseCharSequence(key), StringUtils::ParseCharSequence(String("Basic ") + response));
     SetupAuthResponse();
     return NOERROR;
-#endif
 }
 
 ECode RequestHandle::SetupDigestAuthResponse(
@@ -287,46 +291,38 @@ ECode RequestHandle::SetupDigestAuthResponse(
     /* [in] */ const String& algorithm,
     /* [in] */ const String& opaque)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     String response;
-    ComputeDigestAuthResponse(username, password, realm, nonce, QOP,
-        algorithm, opaque, &response);
+    ComputeDigestAuthResponse(username, password, realm, nonce, QOP, algorithm, opaque, &response);
     if (HttpLog::LOGV) {
         HttpLog::V(String("setupDigestAuthResponse(): response: ") + response);
     }
     String key;
-    key = AuthorizationHeader(isProxy);
-    (*mHeaders)[key] = String("Digest ") + response;
+    AuthorizationHeader(isProxy, &key);
+    mHeaders->Put(StringUtils::ParseCharSequence(key), StringUtils::ParseCharSequence(String("Digest ") + response));
     SetupAuthResponse();
     return NOERROR;
-#endif
 }
 
 ECode RequestHandle::SetupAuthResponse()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
         // try {
-            if (mBodyProvider != NULL) mBodyProvider->Reset();
+    if (mBodyProvider != NULL) mBodyProvider->Reset();
         // } catch (java.io.IOException ex) {
-            if (HttpLog::LOGV) {
-                HttpLog::V("setupAuthResponse() failed to reset body provider");
-            }
+    if (HttpLog::LOGV) {
+        HttpLog::V("setupAuthResponse() failed to reset body provider");
+    }
         // }
-        CreateAndQueueNewRequest();
-#endif
+    CreateAndQueueNewRequest();
+    return NOERROR;
 }
 
 ECode RequestHandle::GetMethod(
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    VALIDATE_NOT_NULL(method);
-    *method = mMethod;
+    VALIDATE_NOT_NULL(result);
+
+    *result = mMethod;
     return NOERROR;
-#endif
 }
 
 ECode RequestHandle::ComputeBasicAuthResponse(
@@ -334,64 +330,58 @@ ECode RequestHandle::ComputeBasicAuthResponse(
     /* [in] */ const String& password,
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
+    VALIDATE_NOT_NULL(result)
+
     assert(username != NULL);
     assert(password != NULL);
     // encode username:password to base64
-    *result = String(Base64.encodeBase64((username + ':' + password).getBytes()));
+    AutoPtr<IBase64Helper> helper;
+    // TODO: Waiting for Base64
+    assert(0);
+    // CBase64Helper::AcquireSingleton((IBase64Helper**)&helper);
+    AutoPtr<ArrayOf<Byte> > in, out;
+    in = (username + Char32(':') + password).GetBytes();
+    // helper->EncodeBase64(in, (ArrayOf<Byte>**)&out);
+    *result = String(*out);
     return NOERROR;
-#endif
 }
 
 ECode RequestHandle::WaitUntilComplete()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    mRequest->WaitUntilComplete();
+    ((Request*)mRequest.Get())->WaitUntilComplete();
     return NOERROR;
-#endif
 }
 
 ECode RequestHandle::ProcessRequest()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
     if (mConnection != NULL) {
-        mConnection->ProcessRequests(mRequest);
+        ((Connection*)mConnection.Get())->ProcessRequests(mRequest);
     }
     return NOERROR;
-#endif
 }
 
-String RequestHandle::ComputeDigestAuthResponse(
+ECode RequestHandle::ComputeDigestAuthResponse(
     /* [in] */ const String& username,
     /* [in] */ const String& password,
     /* [in] */ const String& realm,
     /* [in] */ const String& nonce,
     /* [in] */ const String& QOP,
     /* [in] */ const String& algorithm,
-    /* [in] */ const String& opaque)
+    /* [in] */ const String& opaque,
+    /* [out] */ String* result)
 {
-    return String(NULL);
-#if 0 // TODO: Translate codes below
-    if (username.IsNullOrEmpty()
-        || password.IsNullOrEmpty()
-        || realm.IsNullOrEmpty())
-    {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
+    assert(username != String(NULL));
+    assert(password != String(NULL));
+    assert(realm != String(NULL));
 
     String A1 = username + String(":") + realm + String(":") + password;
     String A2 = mMethod  + String(":") + mUrl;
 
     // because we do not preemptively send authorization headers, nc is always 1
     String nc("00000001");
-    String cnonce;
-    FAIL_RETURN(ComputeCnonce(&cnonce));
+    String cnonce = ComputeCnonce();
     String digest;
-    FAIL_RETURN(ComputeDigest(A1, A2, nonce, QOP, nc, cnonce, &digest));
+    ComputeDigest(A1, A2, nonce, QOP, nc, cnonce, &digest);
 
     String response("");
     response += String("username=") + DoubleQuote(username) + String(", ");
@@ -412,17 +402,15 @@ String RequestHandle::ComputeDigestAuthResponse(
         response += String(", qop=") + QOP + String(", nc=") + nc + String(", cnonce=") + DoubleQuote(cnonce);
     }
 
-    *str = response;
-    return NOERROR;
-#endif
+    FUNC_RETURN(response)
 }
 
 ECode RequestHandle::AuthorizationHeader(
     /* [in] */ Boolean isProxy,
     /* [out] */ String* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
+    VALIDATE_NOT_NULL(result)
+
     if (!isProxy) {
         *result = AUTHORIZATION_HEADER;
         return NOERROR;
@@ -430,84 +418,82 @@ ECode RequestHandle::AuthorizationHeader(
         *result = PROXY_AUTHORIZATION_HEADER;
     }
     return NOERROR;
-#endif
 }
 
-String RequestHandle::ComputeDigest(
+ECode RequestHandle::ComputeDigest(
     /* [in] */ const String& A1,
     /* [in] */ const String& A2,
     /* [in] */ const String& nonce,
     /* [in] */ const String& QOP,
     /* [in] */ const String& nc,
-    /* [in] */ const String& cnonce)
+    /* [in] */ const String& cnonce,
+    /* [out] */ String* result)
 {
-    return String(NULL);
-#if 0 // TODO: Translate codes below
     if (HttpLog::LOGV) {
         HttpLog::V(String("computeDigest(): QOP: ") + QOP);
     }
 
     if (QOP == NULL) {
-        String hA1;
-        FAIL_RETURN(H(A1, &hA1));
-        String hA2;
-        FAIL_RETURN(H(A2, &hA2));
-        return KD(hA1, nonce + String(":") + hA2, str);
+        String ha1, ha2;
+        H(A1, &ha1);
+        H(A2, &ha2);
+        return KD(ha1, nonce + String(":") + ha2, result);
     } else {
         if (QOP.EqualsIgnoreCase("auth")) {
-            String hA1;
-            FAIL_RETURN(H(A1, &hA1));
-            String hA2;
-            FAIL_RETURN(H(A2, &hA2));
-            return KD(hA1, nonce + String(":") + nc + String(":") + cnonce + String(":") + QOP + String(":") + hA2, str);
+            String ha1, ha2;
+            H(A1, &ha1);
+            H(A2, &ha2);
+            return KD(ha1, nonce + String(":") + nc + String(":") + cnonce + String(":") + QOP + String(":") + ha2, result);
         }
     }
 
-    *str = String(NULL);
-    return NOERROR;
-#endif
+    FUNC_RETURN(String(NULL))
 }
 
-String RequestHandle::KD(
+ECode RequestHandle::KD(
     /* [in] */ const String& secret,
-    /* [in] */ const String& data)
+    /* [in] */ const String& data,
+    /* [out] */ String* result)
 {
-    return String(NULL);
-#if 0 // TODO: Translate codes below
-    return H(secret + String(":") + data, str);
-#endif
+    return H(secret + String(":") + data, result);
 }
 
-String RequestHandle::H(
-    /* [in] */ const String& param)
+ECode RequestHandle::H(
+    /* [in] */ const String& param,
+    /* [out] */ String* result)
 {
-    return String(NULL);
-#if 0 // TODO: Translate codes below
+    ECode ec;
     if (param != NULL) {
         AutoPtr<IMessageDigestHelper> helper;
-        CMessageDigest::AcquireSingleton((IMessageDigestHelper**)&helper);
+        // TODO: Waiting for CMessageDigest
+        assert(0);
+        // CMessageDigest::AcquireSingleton((IMessageDigestHelper**)&helper);
         AutoPtr<IMessageDigest> md5;
-        FAIL_RETURN(helper->GetInstance(String("MD5"), (IMessageDigest**)&md5));
+        ec = helper->GetInstance(String("MD5"), (IMessageDigest**)&md5);
+        if (FAILED(ec)) {
+            if (ec == E_NO_SUCH_ALGORITHM_EXCEPTION)
+                return E_RUNTIME_EXCEPTION;
+            return ec;
+        }
 
         AutoPtr<ArrayOf<Byte> > d;
 
-        FAIL_RETURN(md5->Digest(param.getBytes(), &d));
+        md5->Digest(param.GetBytes(), (ArrayOf<Byte>**)&d);
         if (d != NULL) {
-            return BufferToHex(d, str);
+            *result = BufferToHex(d);
+            return NOERROR;
         }
     }
 
-    return NULL;
-#endif
+    *result = String(NULL);
+    return NOERROR;
 }
 
 String RequestHandle::BufferToHex(
     /* [in] */ ArrayOf<Byte>* buffer)
 {
-    return String(NULL);
-#if 0 // TODO: Translate codes below
-    const AutoPtr<ArrayOf<Char16> > hexChars =
-            { '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f' };
+    Char16 array[] = { '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f' };
+    const AutoPtr<ArrayOf<Char16> > hexChars = ArrayOf<Char16>::Alloc(array, sizeof(array)/sizeof(Char16));
 
     if (buffer != NULL) {
         Int32 length = buffer->GetLength();
@@ -515,74 +501,50 @@ String RequestHandle::BufferToHex(
             AutoPtr<StringBuilder> hex = new StringBuilder(2 * length);
 
             for (Int32 i = 0; i < length; ++i) {
-                Byte l = (Byte) (buffer[i] & 0x0F);
-                Byte h = (Byte)((buffer[i] & 0xF0) >> 4);
+                Byte l = (Byte) ((*buffer)[i] & 0x0F);
+                Byte h = (Byte)(((*buffer)[i] & 0xF0) >> 4);
 
-                hex->Append(hexChars[h]);
-                hex->Append(hexChars[l]);
+                hex->Append((*hexChars)[h]);
+                hex->Append((*hexChars)[l]);
             }
 
-            *str = hex->ToString();
-            return NOERROR;
+            return hex->ToString();
         } else {
-            *str = String("");
-            return NOERROR;
+            return String("");
         }
     }
 
-    *str = String(NULL);
-    return E_ILLEGAL_ARGUMENT_EXCEPTION;;
-#endif
+    return String(NULL);
 }
 
 String RequestHandle::ComputeCnonce()
 {
-    return String(NULL);
-#if 0 // TODO: Translate codes below
     AutoPtr<IRandom> rand;
-    CRandom()::New((IRandom**)&rand);
+    CRandom::New((IRandom**)&rand);
     Int32 nextInt;
     rand->NextInt32(&nextInt);
     nextInt = (nextInt == 0x80000000/*IInteger::MIN_VALUE*/) ?
             0x7FFFFFFF/*IInteger::MAX_VALUE*/ : Elastos::Core::Math::Abs(nextInt);
-    *str = StringUtils::ToString(nextInt, 16);
-    return NOERROR;
-#endif
+    return StringUtils::ToString(nextInt, 16);
 }
 
 String RequestHandle::DoubleQuote(
     /* [in] */ const String& param)
 {
-    return String(NULL);
-#if 0 // TODO: Translate codes below
     if (param != String(NULL)) {
         return String("\"") + param + String("\"");
     }
 
     return String(NULL);
-#endif
 }
 
 ECode RequestHandle::CreateAndQueueNewRequest()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-    // // mConnection is non-null if and only if the requests are synchronous.
-    AutoPtr<IObjectStringMap> headersMap;
-    CObjectStringMap::New((IObjectStringMap**)&headersMap);
-    if (mHeaders != NULL) {
-        HashMap<String, String>::Iterator it = mHeaders.Begin();
-        for (; it != mHeaders.End(); ++it) {
-            String key = it->mFirst;
-            AutoPtr<ICharSequence> value;
-            CString::New(it->mSecond, (ICharSequence**)&value);
-            headersMap->Put(key, value);
-        }
-    }
+    // mConnection is non-null if and only if the requests are synchronous.
     if (mConnection != NULL) {
         AutoPtr<IRequestHandle> newHandle;
-        mRequestQueue->QueueSynchronousRequest(mUrl, mUri, mMethod, headersMap,
-            mRequest->mEventHandler, mBodyProvider, mBodyLength, (IRequestHandle**)&newHandle);
+        mRequestQueue->QueueSynchronousRequest(mUrl, mUri, mMethod, mHeaders,
+            ((Request*)mRequest.Get())->mEventHandler, mBodyProvider, mBodyLength, (IRequestHandle**)&newHandle);
         mRequest = ((CRequestHandle*)(IRequestHandle*)newHandle)->mRequest;
         mConnection = ((CRequestHandle*)(IRequestHandle*)newHandle)->mConnection;
         newHandle->ProcessRequest();
@@ -590,12 +552,11 @@ ECode RequestHandle::CreateAndQueueNewRequest()
     }
 
     AutoPtr<IRequestHandle> reqHandle;
-    mRequestQueue->QueueRequest(mUrl, mUri, mMethod, headersMap, mRequest->mEventHandler,
+    mRequestQueue->QueueRequest(mUrl, mUri, mMethod, mHeaders, ((Request*)mRequest.Get())->mEventHandler,
         mBodyProvider, mBodyLength, (IRequestHandle**)&reqHandle);
     mRequest = ((CRequestHandle*)(IRequestHandle*)reqHandle)->mRequest;
 
     return NOERROR;
-#endif
 }
 
 } // namespace Http

@@ -42,6 +42,7 @@ public:
         : public Object
         , public IRequestQueueConnectionManager
     {
+        friend class RequestQueue;
     public:
         CAR_INTERFACE_DECL()
 
@@ -98,7 +99,7 @@ public:
 
         Int32 mConnectionCount;
 
-        const RequestQueue* mHost;
+        RequestQueue* mHost;
     };
 
 private:
@@ -107,6 +108,8 @@ private:
         , public IRequestFeeder
     {
     public:
+        CAR_INTERFACE_DECL()
+
         CARAPI GetRequest(
             /* [out] */ IRequest** result);
 
@@ -303,6 +306,7 @@ private:
     CARAPI_(AutoPtr<IRequest>) RemoveFirst(
         /* [in] */ IHashMap* requestQueue);
 
+private:
     /**
      * Requests, indexed by HttpHost (scheme, host, port)
      */

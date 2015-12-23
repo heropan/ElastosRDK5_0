@@ -4,7 +4,6 @@
 #include "elastos/droid/internal/net/CVpnConfig.h"
 #include "elastos/droid/net/CLinkAddress.h"
 #include "elastos/droid/net/CRouteInfo.h"
-#include "elastos/droid/net/FastConvert.h"
 #include "elastos/droid/net/Network.h"
 #include "elastos/droid/net/NetworkUtils.h"
 #include "elastos/droid/net/ReturnOutValue.h"
@@ -12,11 +11,9 @@
 #include "elastos/droid/os/ServiceManager.h"
 #include "elastos/droid/os/UserHandle.h"
 #include "elastos/droid/system/OsConstants.h"
+#include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::CObject;
-using Elastos::Core::CString;
-using Elastos::Core::ICharSequence;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::App::IService;
@@ -38,6 +35,11 @@ using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::Os::UserHandle;
 using Elastos::Droid::System::OsConstants;
+
+using Elastos::Core::CObject;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::StringUtils;
 using Elastos::IO::IFile;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Net::CInetAddressHelper;
@@ -499,7 +501,7 @@ ECode VpnServiceBuilder::AddAllowedApplication(
         CArrayList::New((IList**)&newArrayList);
         mConfig->SetAllowedApplications(newArrayList);
     }
-    Ptr(mConfig)->Func(mConfig->GetAllowedApplications)->Add(StringToCharSequence(packageName));
+    Ptr(mConfig)->Func(mConfig->GetAllowedApplications)->Add(StringUtils::ParseCharSequence(packageName));
     return NOERROR;
 }
 
@@ -516,7 +518,7 @@ ECode VpnServiceBuilder::AddDisallowedApplication(
         CArrayList::New((IList**)&newArrayList);
         mConfig->SetDisallowedApplications(newArrayList);
     }
-    Ptr(mConfig)->Func(mConfig->GetDisallowedApplications)->Add(StringToCharSequence(packageName));
+    Ptr(mConfig)->Func(mConfig->GetDisallowedApplications)->Add(StringUtils::ParseCharSequence(packageName));
     return NOERROR;
 }
 

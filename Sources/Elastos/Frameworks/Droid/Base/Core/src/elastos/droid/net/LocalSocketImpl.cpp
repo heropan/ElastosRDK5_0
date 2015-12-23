@@ -897,7 +897,7 @@ ECode LocalSocketImpl::ToString(
     VALIDATE_NOT_NULL(result)
 
     Object::ToString(result);
-    result->AppendFormat(" fd:%s", StringUtils::ToString(mFd.Get()).string());
+    result->AppendFormat(" fd:%s", Object::ToString(mFd.Get()).string());
     return NOERROR;
 }
 
@@ -1173,7 +1173,7 @@ ECode LocalSocketImpl::SetOption(
         boolValue = bv? 1 : 0;
     }
     else {
-        Logger::E("LocalSocketImpl", "bad value: %s", StringUtils::ToString(value).string());
+        Logger::E("LocalSocketImpl", "bad value: %s", Object::ToString(value).string());
         return E_IO_EXCEPTION;
     }
 

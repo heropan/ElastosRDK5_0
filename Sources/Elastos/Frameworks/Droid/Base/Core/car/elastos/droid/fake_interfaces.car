@@ -273,6 +273,8 @@ module
 
         interface IBase64 {}
 
+        interface IBase64Helper {}
+
     }}}}} // Org.Apache.Commons.Codec.Binary
 
     namespace Org {

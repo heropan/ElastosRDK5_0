@@ -3,6 +3,7 @@
 
 #include "Elastos.CoreLibrary.h"
 
+using Elastos::Core::ICharSequence;
 using Elastos::Utility::ILocale;
 
 namespace Elastos {
@@ -37,6 +38,9 @@ public:
         /* [in] */ Double defValue = 0.0);
 
     static CARAPI_(Boolean) ParseBoolean(
+        /* [in] */ const String& input);
+
+    static CARAPI_(AutoPtr<ICharSequence>) ParseCharSequence(
         /* [in] */ const String& input);
 
     // From string with error code
@@ -135,9 +139,6 @@ public:
 
     static CARAPI_(String) ToString(
         /* [in] */ Float f);
-
-    static CARAPI_(String) ToString(
-        /* [in] */ IInterface* obj);
 
     static CARAPI Split(
         /* [in] */ const String& input,
