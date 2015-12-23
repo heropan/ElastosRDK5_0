@@ -246,4 +246,6 @@ SOURCES += ActionMenuPresenter.cpp
 SOURCES += ActionMenuView.cpp
 SOURCES += SpellChecker.cpp
 SOURCES += RemoteViews.cpp
+SOURCES += RemoteViewsAdapter.cpp
+
 #ELASTOS_LIBS += internal/internal.lib

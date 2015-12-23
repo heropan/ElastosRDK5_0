@@ -1,11 +1,20 @@
 #ifndef __ELASTOS_DROID_WIDGET_REMOTEVIEWSADAPTER_H__
 #define __ELASTOS_DROID_WIDGET_REMOTEVIEWSADAPTER_H__
 
+#define HASH_FOR_WIDGET
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkhash.h"
 #include "elastos/droid/widget/BaseAdapter.h"
 #include "elastos/droid/widget/FrameLayout.h"
 #include "elastos/droid/os/CHandlerThread.h"
 #include "elastos/droid/os/Runnable.h"
+
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
@@ -14,128 +23,80 @@
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::HashSet;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IIntentFilterComparison;
+using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IHandlerCallback;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::CHandlerThread;
 using Elastos::Droid::Os::IHandlerThread;
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::View::IViewManager;
 using Elastos::Droid::View::IKeyEventCallback;
 using Elastos::Droid::View::Accessibility::IAccessibilityEventSource;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::IIntentFilterComparison;
-using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
+using Elastos::Droid::Internal::Widget::IIRemoteViewsFactory;
+using Elastos::Droid::Internal::Widget::IIRemoteViewsAdapterConnection;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class RemoteViewsCacheKey
-    : public Object
-    , public IRemoteViewsCacheKey
-{
-public:
-    RemoteViewsCacheKey(
-        /* [in] */ IIntentFilterComparison* filter,
-        /* [in] */ Int32 widgetId,
-        /* [in] */ Int32 userId);
-
-    CARAPI Equals(
-        /* [in] */ IInterface* other,
-        /* [out] */ Boolean* result);
-
-    CARAPI GetHashCode(
-        /* [out] */ Int32* hashCode);
-
-    AutoPtr<IIntentFilterComparison> mFilter;
-    Int32 mWidgetId;
-};
-
-class RemoteViewsFrameLayout
-    : public FrameLayout
-    , public IRemoteViewsFrameLayout
-{
-public:
-    CAR_INTERFCE_DECL()
-
-    RemoteViewsFrameLayout();
-
-    CARAPI constructor(
-        /* [in] */ IContext* context);
-
-    CARAPI OnRemoteViewsLoaded(
-        /* [in] */ IRemoteViews* view,
-        /* [in] */ IRemoteViewsOnClickHandler* handler);
-};
-
-}// namespace Widget
-}// namespace Droid
-}// namespace Elastos
-
-_ETL_NAMESPACE_BEGIN
-template<> struct Hash<AutoPtr<Elastos::Droid::Widget::RemoteViewsCacheKey> >
-{
-    size_t operator()(const AutoPtr<Elastos::Droid::Widget::RemoteViewsCacheKey> s) const
-    {
-        Int32 hashCode;
-        s->GetHashCode(&hashCode);
-        return (size_t)hashCode;
-    }
-};
-_ETL_NAMESPACE_END
-
-#define HASH_FUNC_FOR_AUTOPTR_REMOTEVIEWFRAMELAYOUT
-DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Widget::RemoteViewsFrameLayout)
-#endif
-
-namespace Elastos {
-namespace Droid {
-namespace Widget {
-
-
-class CRemoteViewsAdapterServiceConnection;
 class RemoteViewsAdapter
     : public BaseAdapter
     , public IRemoteViewsAdapter
     , public IHandlerCallback
 {
-private:
-    class RemoteViewsFrameLayoutRefSet
+public:
+    class RemoteViewsAdapterServiceConnection
         : public Object
+        , public IIRemoteViewsAdapterConnection
+        , public IBinder
     {
     public:
-        RemoteViewsFrameLayoutRefSet(
-            /* [in] */ RemoteViewsAdapter* host);
+        CAR_INTERFACE_DECL()
 
-        ~RemoteViewsFrameLayoutRefSet();
+        RemoteViewsAdapterServiceConnection();
 
-        CARAPI Add(
-            /* [in] */ Int32 position,
-            /* [in] */ RemoteViewsFrameLayout* layout);
+        CARAPI constructor(
+            /* [in] */ IWeakReference* adapter);
 
-        CARAPI NotifyOnRemoteViewsLoaded(
-            /* [in] */ Int32 position,
-            /* [in] */ IRemoteViews* view);
+        CARAPI Bind(
+            /* [in] */ IContext* ctx,
+            /* [in] */ Int32 appWidgetId,
+            /* [in] */ IIntent* intent);
 
-        CARAPI RemoveView(
-            /* [in] */ RemoteViewsFrameLayout* rvfl);
+        CARAPI Unbind(
+            /* [in] */ IContext* ctx,
+            /* [in] */ Int32 appWidgetId,
+            /* [in] */ IIntent* intent);
 
-        CARAPI Clear();
+        CARAPI GetRemoteViewsFactory(
+            /* [out] */ IIRemoteViewsFactory** factory);
+
+        CARAPI IsConnected(
+            /* [out] */ Boolean* isConnected);
+
+        CARAPI OnServiceConnected(
+            /* [in] */ IBinder* service);
+
+        CARAPI OnServiceDisconnected();
+
+        CARAPI ToString(
+            /* [out] */ String* str);
 
     private:
-        typedef List<AutoPtr<RemoteViewsFrameLayout> > RemoteViewsFrameLayoutList;
-        typedef typename RemoteViewsFrameLayoutList::Iterator RemoteViewsFrameLayoutListIterator;
-        typedef HashMap<AutoPtr<RemoteViewsFrameLayout>, AutoPtr<RemoteViewsFrameLayoutList> > RemoteViewsFrameLayoutMap;
-        typedef typename RemoteViewsFrameLayoutMap::Iterator RemoteViewsFrameLayoutMapIterator;
-
-        RemoteViewsAdapter* mHost;
-        HashMap<Int32, AutoPtr<RemoteViewsFrameLayoutList> > mReferences;
-        RemoteViewsFrameLayoutMap mViewToLinkedList;
+        Object mLock;
+        Boolean mIsConnected;
+        Boolean mIsConnecting;
+        AutoPtr<IWeakReference> mAdapter;
+        AutoPtr<IIRemoteViewsFactory> mRemoteViewsFactory;
     };
+
 
     class RemoteViewsMetaData : public Object
     {
@@ -158,7 +119,7 @@ private:
             /* [in] */ Int32 typeId);
 
     private:
-        CARAPI_(AutoPtr<RemoteViewsFrameLayout>) CreateLoadingView(
+        CARAPI_(AutoPtr<IRemoteViewsFrameLayout>) CreateLoadingView(
             /* [in] */ Int32 position,
             /* [in] */ IView* convertView,
             /* [in] */ IViewGroup* parent,
@@ -266,24 +227,145 @@ private:
         friend class RemoteViewsAdapter;
     };
 
+private:
+    class RemoteViewsCacheKey
+        : public Object
+        , public IRemoteViewsCacheKey
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        RemoteViewsCacheKey(
+            /* [in] */ IIntentFilterComparison* filter,
+            /* [in] */ Int32 widgetId);
+
+        CARAPI Equals(
+            /* [in] */ IInterface* other,
+            /* [out] */ Boolean* result);
+
+        CARAPI GetHashCode(
+            /* [out] */ Int32* hashCode);
+
+        CARAPI GetFilter(
+            /* [out] */ IIntentFilterComparison** filter);
+
+        CARAPI SetFilter(
+            /* [in] */ IIntentFilterComparison* filter);
+
+        CARAPI GetWidgetId(
+            /* [out] */ Int32* id);
+
+        CARAPI SetWidgetId(
+            /* [in] */ Int32 id);
+
+        AutoPtr<IIntentFilterComparison> mFilter;
+        Int32 mWidgetId;
+    };
+
+    class RemoteViewsFrameLayout
+        : public FrameLayout
+        , public IRemoteViewsFrameLayout
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        RemoteViewsFrameLayout();
+
+        CARAPI constructor(
+            /* [in] */ IContext* context);
+
+        CARAPI OnRemoteViewsLoaded(
+            /* [in] */ IRemoteViews* view,
+            /* [in] */ IRemoteViewsOnClickHandler* handler);
+    };
+
+    class MyRunnable : public Runnable
+    {
+    public:
+        MyRunnable(
+            /* [in] */ IRemoteViewsAdapter* adapter);
+
+        CARAPI Run();
+    private:
+        AutoPtr<IRemoteViewsAdapter> mAdapter;
+    };
+
+    class MyRunnableEx : public Runnable
+    {
+    public:
+        MyRunnableEx(
+            /* [in] */ IRemoteViewsAdapter* adapter);
+
+        CARAPI Run();
+    private:
+        AutoPtr<IRemoteViewsAdapter> mAdapter;
+    };
+
+    class MyRunnableEx2 : public Runnable
+    {
+    public:
+        MyRunnableEx2(
+            /* [in] */ IRemoteViewsAdapter* adapter);
+
+        CARAPI Run();
+    private:
+        AutoPtr<IRemoteViewsAdapter> mAdapter;
+    };
+
+
+    class RemoteViewsFrameLayoutRefSet
+        : public Object
+    {
+    public:
+        RemoteViewsFrameLayoutRefSet(
+            /* [in] */ RemoteViewsAdapter* host);
+
+        ~RemoteViewsFrameLayoutRefSet();
+
+        CARAPI Add(
+            /* [in] */ Int32 position,
+            /* [in] */ IRemoteViewsFrameLayout* layout);
+
+        CARAPI NotifyOnRemoteViewsLoaded(
+            /* [in] */ Int32 position,
+            /* [in] */ IRemoteViews* view);
+
+        CARAPI RemoveView(
+            /* [in] */ IRemoteViewsFrameLayout* rvfl);
+
+        CARAPI Clear();
+
+    private:
+        typedef List<AutoPtr<IRemoteViewsFrameLayout> > RemoteViewsFrameLayoutList;
+        typedef typename RemoteViewsFrameLayoutList::Iterator RemoteViewsFrameLayoutListIterator;
+        typedef HashMap<AutoPtr<IRemoteViewsFrameLayout>, AutoPtr<RemoteViewsFrameLayoutList> > RemoteViewsFrameLayoutMap;
+        typedef typename RemoteViewsFrameLayoutMap::Iterator RemoteViewsFrameLayoutMapIterator;
+
+        RemoteViewsAdapter* mHost;
+        HashMap<Int32, AutoPtr<RemoteViewsFrameLayoutList> > mReferences;
+        RemoteViewsFrameLayoutMap mViewToLinkedList;
+    };
+
     class InnerRunnable : public Runnable
     {
     public:
         InnerRunnable(
-            /* [in] */ RemoteViewsCacheKey* host);
+            /* [in] */ IRemoteViewsCacheKey* host);
 
         CARAPI Run();
+
     private:
-        AutoPtr<RemoteViewsCacheKey> mKey;
+        AutoPtr<IRemoteViewsCacheKey> mKey;
     };
 
     class InnerRunnableEx : public Runnable
     {
     public:
-        InnerRunnable(
+        InnerRunnableEx(
             /* [in] */ RemoteViewsAdapter* host);
 
         CARAPI Run();
+
     private:
         RemoteViewsAdapter* mHost;
     };
@@ -291,7 +373,7 @@ private:
     class InnerRunnableEx2 : public Runnable
     {
     public:
-        InnerRunnable(
+        InnerRunnableEx2(
             /* [in] */ RemoteViewsAdapter* host);
 
         CARAPI Run();
@@ -302,7 +384,7 @@ private:
     class InnerRunnableEx3 : public Runnable
     {
     public:
-        InnerRunnable(
+        InnerRunnableEx3(
             /* [in] */ RemoteViewsAdapter* host);
 
         CARAPI Run();
@@ -313,7 +395,7 @@ private:
     class InnerRunnableEx4 : public Runnable
     {
     public:
-        InnerRunnable(
+        InnerRunnableEx4(
             /* [in] */ RemoteViewsFrameLayoutRefSet* refSet,
             /* [in] */ Int32 position,
             /* [in] */ IRemoteViews* rv);
@@ -328,7 +410,7 @@ private:
     class InnerRunnableEx5 : public Runnable
     {
     public:
-        InnerRunnable(
+        InnerRunnableEx5(
             /* [in] */ RemoteViewsAdapter* host);
 
         CARAPI Run();
@@ -337,7 +419,7 @@ private:
     };
 
 public:
-    CAR_INTERFCE_DECL()
+    CAR_INTERFACE_DECL()
 
     RemoteViewsAdapter();
 
@@ -366,13 +448,13 @@ public:
     CARAPI GetCount(
         /* [out] */ Int32* count);
 
-    CARAPI GetItem(IInterface
+    CARAPI GetItem(
         /* [in] */ Int32 position,
         /* [out] */ IInterface** intent);
 
     CARAPI GetItemId(
         /* [in] */ Int32 position,
-        /* [out] */ Int64 id);
+        /* [out] */ Int64* id);
 
     CARAPI GetItemViewType(
         /* [in] */ Int32 position,
@@ -449,10 +531,10 @@ private:
 
     // We cache the FixedSizeRemoteViewsCaches across orientation. These are the related data
     // structures;
-    static HashMap<AutoPtr<RemoteViewsCacheKey>, AutoPtr<FixedSizeRemoteViewsCache> > sCachedRemoteViewsCaches;
+    static HashMap<AutoPtr<IRemoteViewsCacheKey>, AutoPtr<FixedSizeRemoteViewsCache> > sCachedRemoteViewsCaches;
     static Object sCacheLock;
 
-    static HashMap<AutoPtr<RemoteViewsCacheKey>, AutoPtr<IRunnable> > sRemoteViewsCacheRemoveRunnables;
+    static HashMap<AutoPtr<IRemoteViewsCacheKey>, AutoPtr<IRunnable> > sRemoteViewsCacheRemoveRunnables;
 
     static AutoPtr<IHandlerThread> sCacheRemovalThread;
     static AutoPtr<IHandler> sCacheRemovalQueue;
@@ -466,7 +548,7 @@ private:
     Int32 mAppWidgetId;
     AutoPtr<ILayoutInflater> mLayoutInflater;
     AutoPtr<IRemoteViewsAdapterServiceConnection> mServiceConnection;
-    IRemoteAdapterConnectionCallback* mCallback; // weakReference
+    AutoPtr<IWeakReference> mCallback;//IRemoteAdapterConnectionCallback* mCallback; // weakReference
     AutoPtr<IRemoteViewsOnClickHandler> mRemoteViewsOnClickHandler;
     AutoPtr<FixedSizeRemoteViewsCache> mCache;
     Object mCacheLock;
@@ -490,8 +572,9 @@ private:
     // construction (happens when we have a cached FixedSizeRemoteViewsCache).
     Boolean mDataReady;// = false;
 
-    typedef HashMap<AutoPtr<RemoteViewsCacheKey>, AutoPtr<IRunnable> >::Iterator RunIterator;
-    typedef HashMap<AutoPtr<RemoteViewsCacheKey>, AutoPtr<FixedSizeRemoteViewsCache> >::Iterator CacheIterator;
+    typedef HashMap<AutoPtr<IRemoteViewsCacheKey>, AutoPtr<IRunnable> >::Iterator RunIterator;
+    typedef HashMap<AutoPtr<IRemoteViewsCacheKey>, AutoPtr<FixedSizeRemoteViewsCache> >::Iterator CacheIterator;
+
 protected:
     Int32 mUserId;
     friend class CRemoteViewsAdapterServiceConnection;

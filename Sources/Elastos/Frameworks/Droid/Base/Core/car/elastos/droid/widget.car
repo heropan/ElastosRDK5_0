@@ -136,22 +136,17 @@ module
     using interface Elastos.Utility.IObservable;
 
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Content.Pm.IApplicationInfo;
-   //  interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Utility.IAttributeSet;
     interface Elastos.Droid.Database.ICursor;
     interface Elastos.Droid.Database.IDataSetObserver;
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
-   //  interface Elastos.Droid.Graphics.Drawable.IBitmapDrawable;
     interface Elastos.Droid.Content.IDialogInterfaceOnClickListener;
-   //  interface Elastos.Droid.Animation.IAnimatorListener;
-   //  interface Elastos.Droid.Animation.IAnimatorUpdateListener;
     interface Elastos.Droid.App.IITransientNotification;
-   //  interface Elastos.Droid.App.IDialog;
     interface Elastos.Droid.Os.IBinder;
-   //  interface Elastos.Droid.Os.IHandler;
-   //  interface Elastos.Droid.Os.IHandlerCallback;
+    interface Elastos.Droid.Os.IHandlerCallback;
     interface Elastos.Droid.Text.INoCopySpan;
     interface Elastos.Droid.View.IActionProvider;
     interface Elastos.Droid.View.IAbsSavedState;
@@ -169,27 +164,15 @@ module
     interface Elastos.Droid.View.IGestureDetectorOnGestureListener;
     interface Elastos.Droid.View.IOnGlobalLayoutListener;
     interface Elastos.Droid.View.IOnTouchModeChangeListener;
-   //  interface Elastos.Droid.View.IViewOnFocusChangeListener;
     interface Elastos.Droid.View.IViewOnClickListener;
     interface Elastos.Droid.View.IViewOnTouchListener;
-   //  interface Elastos.Droid.View.IViewOnCreateContextMenuListener;
     interface Elastos.Droid.View.IViewOnLongClickListener;
     interface Elastos.Droid.Internal.View.Menu.IMenuPresenterCallback;
     interface Elastos.Droid.Internal.View.Menu.IMenuBuilderCallback;
     interface Elastos.Droid.View.IOnGlobalLayoutListener;
     interface Elastos.Droid.View.ICollapsibleActionView;
-   //  interface Elastos.Droid.View.IWindowCallback;
     interface Elastos.Droid.Text.ITextWatcher;
     interface Elastos.Droid.Widget.ILinearLayoutLayoutParams;
-   //  interface Elastos.Droid.Widget.ITextView;
-   //  interface Elastos.Droid.Widget.IRemoteViewsAdapterServiceConnection;
-   //  interface Elastos.Droid.Widget.ISeekBarOnSeekBarChangeListener;
-   //  interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener;
-   //  interface Elastos.Droid.Widget.IOnChronometerTickListener;
-   //  interface Elastos.Droid.Widget.Internal.IIRemoteViewsFactory;
-   //  interface Elastos.Droid.Media.IAudioService;
-   //  interface Elastos.Droid.InputMethodService.IKeyboardView;
-   //  interface Elastos.Droid.InputMethodService.IOnKeyboardActionListener;
     interface Elastos.Droid.Widget.IAdapterView;
     interface Elastos.Droid.Widget.IAdapterViewAnimator;
     interface Elastos.Droid.Widget.IAdapterViewFlipper;
@@ -2612,26 +2595,29 @@ module
         interface ILayoutInflaterFilter;
     }
 
-   //  [local]
-   //  class CRemoteViewsAdapter {
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IIntent* intent,
-   //          [in] IRemoteAdapterConnectionCallback* cb);
+    [local]
+    class CRemoteViewsAdapter {
+        constructor(
+            [in] IContext* ctx,
+            [in] IIntent* intent,
+            [in] IRemoteAdapterConnectionCallback* cb);
 
-   //      interface IRemoteViewsAdapter;
-   //      interface ISpinnerAdapter;
-   //      interface IHandlerCallback;
-   //  }
+        interface IRemoteViewsAdapter;
+        interface IBaseAdapter;
+        interface IListAdapter;
+        interface ISpinnerAdapter;
+        interface IAdapter;
+        interface IHandlerCallback;
+    }
 
-   //  [local]
-   //  class CRemoteViewsAdapterServiceConnection {
-   //      constructor(
-   //          [in] IRemoteViewsAdapter* adapter);
+    [local]
+    class CRemoteViewsAdapterServiceConnection {
+        constructor(
+            [in] IWeakReference* adapter);
 
-   //      interface IRemoteViewsAdapterServiceConnection;
-   //      interface IBinder;
-   //  }
+        interface IRemoteViewsAdapterServiceConnection;
+        interface IBinder;
+    }
 
    //  [local]
    //  class CRemoteViewsFactoryAdapter {

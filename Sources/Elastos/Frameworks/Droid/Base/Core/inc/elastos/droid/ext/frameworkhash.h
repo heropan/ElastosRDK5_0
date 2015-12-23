@@ -74,6 +74,8 @@ DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::View::IView)
 #include "Elastos.Droid.Widget.h"
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Widget::IGridLayoutSpec)
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Widget::IInterval)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Widget::IRemoteViewsCacheKey)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Widget::IRemoteViewsFrameLayout)
 #endif
 
 #endif // __ELASTOS_DROID_EXT_FRAMEWORKHASH_H__

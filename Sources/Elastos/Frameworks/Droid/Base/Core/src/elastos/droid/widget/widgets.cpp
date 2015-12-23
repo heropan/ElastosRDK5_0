@@ -67,6 +67,9 @@
 #include "elastos/droid/widget/CZoomButton.h"
 #include "elastos/droid/widget/CZoomButtonsController.h"
 #include "elastos/droid/widget/CRemoteViews.h"
+#include "elastos/droid/widget/CRemoteViews.h"
+#include "elastos/droid/widget/CRemoteViewsAdapter.h"
+#include "elastos/droid/widget/CRemoteViewsAdapterServiceConnection.h"
 
 namespace Elastos {
 namespace Droid {
@@ -140,6 +143,8 @@ CAR_OBJECT_IMPL(CZoomControls)
 CAR_OBJECT_IMPL(CZoomButton)
 CAR_OBJECT_IMPL(CZoomButtonsController)
 CAR_OBJECT_IMPL(CRemoteViews);
+CAR_OBJECT_IMPL(CRemoteViewsAdapter);
+CAR_OBJECT_IMPL(CRemoteViewsAdapterServiceConnection);
 
 } // namespace Widget
 } // namespace Droid

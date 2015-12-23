@@ -37,82 +37,6 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class RemoteViewsOnClickHandler
-    : public Object
-    , public IRemoteViewsOnClickHandler
-{
-public:
-    CAR_INTERFACE_DECL()
-
-    CARAPI OnClickHandler(
-        /* [in] */ IView* view,
-        /* [in] */ IPendingIntent* pending,
-        /* [in] */ IIntent* fillInIntent,
-        /* [out] */ Boolean* succeed);
-};
-
-/**
- * Simple class used to keep track of memory usage in a RemoteViews.
- *
- */
-class MemoryUsageCounter 
-    : public Object 
-    , public IMemoryUsageCounter
-{
-public:
-    CAR_INTERFACE_DECL()
-
-    MemoryUsageCounter();
-
-    CARAPI Clear();
-
-    CARAPI Increment(
-        /* [in */ Int32 numBytes);
-
-    CARAPI GetMemoryUsage(
-        /* [out] */ Int32* usage);
-
-    CARAPI AddBitmapMemory(
-        /* [in */ IBitmap* b);
-
-public:
-    Int32 mMemoryUsage;
-};
-
-class MutablePair
-    : public Object
-    , public IMutablePair
-{
-public:
-    CAR_INTERFACE_DECL()
-
-    MutablePair(
-        /* [in] */ String first,
-        /* [in] */ String second);
-
-    CARAPI Equals(
-        /* [in] */ IInterface* oth,
-        /* [out] */ Boolean* equals);
-
-    CARAPI GetHashCode(
-        /* [out] */ Int32* hashCode);
-
-    CARAPI GetFirst(
-        /* [out] */ String* fir);
-
-    CARAPI SetFirst(
-        /* [in] */ const String& fir);
-
-    CARAPI GetSecond(
-        /* [out] */ String* sec);
-
-    CARAPI SetSecond(
-        /* [in] */ const String& sec);
-
-private:
-    String mFirst;
-    String mSecond;
-};
 
 /**
  * A class that describes a view hierarchy that can be displayed in
@@ -126,7 +50,84 @@ class RemoteViews
     , public IParcelable
     , public ILayoutInflaterFilter
 {
+public:
+    class RemoteViewsOnClickHandler
+        : public Object
+        , public IRemoteViewsOnClickHandler
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        CARAPI OnClickHandler(
+            /* [in] */ IView* view,
+            /* [in] */ IPendingIntent* pending,
+            /* [in] */ IIntent* fillInIntent,
+            /* [out] */ Boolean* succeed);
+    };
+
 private:
+    /**
+     * Simple class used to keep track of memory usage in a RemoteViews.
+     *
+     */
+    class MemoryUsageCounter
+        : public Object
+        , public IMemoryUsageCounter
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        MemoryUsageCounter();
+
+        CARAPI Clear();
+
+        CARAPI Increment(
+            /* [in */ Int32 numBytes);
+
+        CARAPI GetMemoryUsage(
+            /* [out] */ Int32* usage);
+
+        CARAPI AddBitmapMemory(
+            /* [in */ IBitmap* b);
+
+    public:
+        Int32 mMemoryUsage;
+    };
+
+    class MutablePair
+        : public Object
+        , public IMutablePair
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        MutablePair(
+            /* [in] */ String first,
+            /* [in] */ String second);
+
+        CARAPI Equals(
+            /* [in] */ IInterface* oth,
+            /* [out] */ Boolean* equals);
+
+        CARAPI GetHashCode(
+            /* [out] */ Int32* hashCode);
+
+        CARAPI GetFirst(
+            /* [out] */ String* fir);
+
+        CARAPI SetFirst(
+            /* [in] */ const String& fir);
+
+        CARAPI GetSecond(
+            /* [out] */ String* sec);
+
+        CARAPI SetSecond(
+            /* [in] */ const String& sec);
+
+    private:
+        String mFirst;
+        String mSecond;
+    };
     /**
      * Base class for all actions that can be performed on an
      * inflated view.
@@ -464,7 +465,7 @@ private:
     {
     public:
         CAR_INTERFACE_DECL()
-        
+
         BitmapCache();
 
         BitmapCache(
@@ -1592,8 +1593,6 @@ public:
 
     CARAPI SetNotRoot();
 
-    CARAPI ToString(
-        /* [out] */ String* str);
 
     virtual CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
@@ -1644,22 +1643,22 @@ private:
     CARAPI AddAction(
         /* [in] */ IRemoteViewsAction* a);
 
-    static CARAPI_(AutoPtr<IRect>) GetSourceBounds(
-        /* [out] */ IView* v);
-
     CARAPI GetMethod(
         /* [in] */ IView* view,
         /* [in] */ const String& methodName,
         /* [in] */ const String& paramType,
         /* [out] */ IMethodInfo** info);
 
-    static CARAPI_(AutoPtr<IArgumentList>) WrapArg(
-        /* [in] */ IMethodInfo* value);
-
     static CARAPI GetApplicationInfo(
         /* [in] */ String packageName,
         /* [in] */ Int32 userId,
         /* [out] */ IApplicationInfo** info);
+
+    static CARAPI_(AutoPtr<IRect>) GetSourceBounds(
+        /* [out] */ IView* v);
+
+    static CARAPI_(AutoPtr<IArgumentList>) WrapArg(
+        /* [in] */ IMethodInfo* value);
 
 public:
     static const String EXTRA_REMOTEADAPTER_APPWIDGET_ID;
@@ -1668,16 +1667,16 @@ public:
 
 private:
     const static String TAG;
-    const static AutoPtr<IRemoteViewsOnClickHandler> DEFAULT_ON_CLICK_HANDLER;
-    static Object sMethodsLock;
-    static AutoPtr<IArrayMap> sMethods;
-    static Boolean sHaveInitTls;
     /**
      * Constants to whether or not this RemoteViews is composed of a landscape and portrait
      * RemoteViews.
      */
+    static Boolean sHaveInitTls;
     static const Int32 MODE_NORMAL = 0;
     static const Int32 MODE_HAS_LANDSCAPE_AND_PORTRAIT = 1;
+    static Object sMethodsLock;
+    static AutoPtr<IArrayMap> sMethods;
+    const static AutoPtr<IRemoteViewsOnClickHandler> DEFAULT_ON_CLICK_HANDLER;
 
     AutoPtr<IApplicationInfo> mApplication;
 
