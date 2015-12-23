@@ -1,9 +1,7 @@
 
 #include "eunit/framework/TestCase.h"
-#ifdef EUNIT
 #include "eunit/framework/CTestFailure.h"
 #include "eunit/framework/CTestResult.h"
-#endif
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;

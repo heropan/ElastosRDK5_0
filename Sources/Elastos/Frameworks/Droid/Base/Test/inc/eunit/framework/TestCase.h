@@ -83,7 +83,7 @@ namespace Framework {
  * @see TestResult
  * @see TestSuite
  */
-class TestCase
+class ECO_PUBLIC TestCase
     : public Object
     , public Assert
     , public ITest

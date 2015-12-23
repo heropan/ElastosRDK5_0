@@ -17,7 +17,7 @@ using Eunit::Framework::ITest;
 namespace Eunit {
 namespace Textui {
 
-class ResultPrinter
+class ECO_PUBLIC ResultPrinter
     : public Object
     , public ITestListener
     , public IResultPrinter

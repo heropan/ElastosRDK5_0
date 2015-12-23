@@ -12,7 +12,7 @@ namespace Framework {
 /**
  * A set of assert methods.  Messages are only displayed when an assert fails.
  */
-class Assert
+class ECO_PUBLIC Assert
 {
 public:
     /**

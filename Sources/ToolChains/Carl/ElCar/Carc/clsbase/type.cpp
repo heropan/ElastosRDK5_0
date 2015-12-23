@@ -587,6 +587,10 @@ int MethodCopy(
     }
 
     pDest->mAttribs = pSrc->mAttribs;
+    if (pSrc->mAnnotation != NULL) {
+        pDest->mAnnotation = (char*)malloc(strlen(pSrc->mAnnotation) + 1);
+        strcpy(pDest->mAnnotation, pSrc->mAnnotation);
+    }
 
     _Return (CLS_NoError);
 }
@@ -618,6 +622,10 @@ int MethodXCopy(
     }
 
     pDest->mAttribs = pSrc->mAttribs;
+    if (pSrc->mAnnotation != NULL) {
+        pDest->mAnnotation = (char*)malloc(strlen(pSrc->mAnnotation) + 1);
+        strcpy(pDest->mAnnotation, pSrc->mAnnotation);
+    }
 
     _Return (CLS_NoError);
 }

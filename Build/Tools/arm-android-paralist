@@ -353,8 +353,8 @@
   Elastos/Frameworks/Droid/Base/Test/src/eunit/runner
   Elastos/Frameworks/Droid/Base/Test/src/eunit/textui
 > Elastos/Frameworks/Droid/Base/Test/src/eunit
-> Elastos/Frameworks/Droid/Base/Test/src/lib Eunit.eco
-  Elastos/Frameworks/Droid/Base/Test/src/lib
+#> Elastos/Frameworks/Droid/Base/Test/src/lib Eunit.eco
+#  Elastos/Frameworks/Droid/Base/Test/src/lib
 > Elastos/Frameworks/Droid/Base/Test/src
   Elastos/Frameworks/Droid/Base/Test-runner/inc
 > Elastos/Frameworks/Droid/Base/Test-runner/src/elastos Elastos.Droid.Test.car
