@@ -150,6 +150,7 @@ module
     merge("media/MediaTimeProvider.car");
     merge("media/Metadata.car");
     merge("media/MiniThumbFile.car");
+    merge("media/PlayerRecord.car");
     merge("media/Rating.car");
     merge("media/RemoteControlClient.car");
     merge("media/RemoteController.car");
@@ -159,13 +160,16 @@ module
     merge("media/Ringtone.car");
     merge("media/RingtoneManager.car");
     merge("media/SoundPool.car");
+    merge("media/SRTRenderer.car");
     merge("media/SubtitleData.car");
     merge("media/SubtitleController.car");
     merge("media/SubtitleTrack.car");
     merge("media/ThumbnailUtils.car");
     merge("media/TimedText.car");
+    merge("media/TtmlRenderer.car");
     merge("media/ToneGenerator.car");
     merge("media/VolumeProvider.car");
+    merge("media/WebVttRenderer.car");
 
     interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.Content.IContext;
@@ -178,6 +182,9 @@ module
     interface Elastos.Droid.Media.IAudioAttributes;
     interface Elastos.Droid.Media.IAudioFormat;
     interface Elastos.Droid.Media.IMediaDescription;
+    interface Elastos.Droid.Media.IMediaTimeProvider;
+    interface Elastos.Droid.Media.ISubtitleController;
+    interface Elastos.Droid.Media.ISubtitleControllerListener;
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IBundle;
@@ -1096,13 +1103,22 @@ module
         interface IMediaActionSound;
     }
 
-
-
     class CMediaRouterSimpleCallback {
         constructor();
 
         interface IMediaRouterSimpleCallback;
         interface IMediaRouterCallback;
+    }
+
+    [deprecated]
+    class CSubtitleController {
+
+        constructor(
+            [in] IContext* context,
+            [in] IMediaTimeProvider* timeProvider,
+            [in] ISubtitleControllerListener* listener);
+
+        interface ISubtitleController;
     }
 
     } // namespace media

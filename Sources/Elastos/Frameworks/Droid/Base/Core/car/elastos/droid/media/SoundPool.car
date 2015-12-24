@@ -240,6 +240,8 @@ module
         Resume(
             [in] Int32 streamID);
 
+
+
         /**
          * Pause all active streams.
          *
@@ -356,7 +358,258 @@ module
          * should be set to null.
          */
         ReleaseResources();
+    }
 
+    interface ISoundPoolDelegate
+    {
+        Load(
+            [in] String path,
+            [in] Int32 priority,
+            [out] Int32* result);
+
+        Load(
+            [in] IContext* context,
+            [in] Int32 resId,
+            [in] Int32 priority,
+            [out] Int32* result);
+
+        Load(
+            [in] IAssetFileDescriptor* afd,
+            [in] Int32 priority,
+            [out] Int32* result);
+
+        Load(
+            [in] IFileDescriptor* fd,
+            [in] Int64 offset,
+            [in] Int64 length,
+            [in] Int32 priority,
+            [out] Int32* result);
+
+        Unload(
+            [in] Int32 soundID,
+            [out] Boolean* result);
+
+        Play(
+            [in] Int32 soundID,
+            [in] Float leftVolume,
+            [in] Float rightVolume,
+            [in] Int32 priority,
+            [in] Int32 loop,
+            [in] Float rate,
+            [out] Int32* result);
+
+        Pause(
+            [in] Int32 streamID);
+
+        Resume(
+            [in] Int32 streamID);
+
+        AutoPause();
+
+        AutoResume();
+
+        Stop(
+            [in] Int32 streamID);
+
+        SetVolume(
+            [in] Int32 streamID,
+            [in] Float leftVolume,
+            [in] Float rightVolume);
+
+        SetVolume(
+            [in] Int32 streamID,
+            [in] Float volume);
+
+        SetPriority(
+            [in] Int32 streamID,
+            [in] Int32 priority);
+
+        SetLoop(
+            [in] Int32 streamID,
+            [in] Int32 loop);
+
+        SetRate(
+            [in] Int32 streamID,
+            [in] Float rate);
+
+        SetOnLoadCompleteListener(
+            [in] ISoundPoolOnLoadCompleteListener* listener);
+
+        ReleaseSoundPoolDelegate();
+    }
+
+    interface ISoundPoolImpl
+    {
+        Load(
+            [in] String path,
+            [in] Int32 priority,
+            [out] Int32* result);
+
+        Load(
+            [in] IContext* context,
+            [in] Int32 resId,
+            [in] Int32 priority,
+            [out] Int32* result);
+
+        Load(
+            [in] IAssetFileDescriptor* afd,
+            [in] Int32 priority,
+            [out] Int32* result);
+
+        Load(
+            [in] IFileDescriptor* fd,
+            [in] Int64 offset,
+            [in] Int64 length,
+            [in] Int64 priority,
+            [out] Int32* result);
+
+        UnLoad(
+            [in] Int32 soundID,
+            [out] Boolean* result);
+
+        Play(
+            [in] Int32 soundID,
+            [in] Float leftVolume,
+            [in] Float rightVolume,
+            [in] Int32 priority,
+            [in] Int32 loop,
+            [in] Float rate,
+            [out] Int32* result);
+
+        _Play(
+            [in] Int32 soundID,
+            [in] Float leftVolume,
+            [in] Float rightVolume,
+            [in] Int32 priority,
+            [in] Int32 loop,
+            [in] Float rate,
+            [out] Int32* result);
+
+        Pause(
+            [in] Int32 streamID);
+
+        Resume(
+            [in] Int32 streamID);
+
+        AutoPause();
+
+        AutoResume();
+
+        Stop(
+            [in] Int32 streamID);
+
+        SetVolume(
+            [in] Int32 streamID,
+            [in] Float leftVolume,
+            [in] Float rightVolume);
+
+        SetVolume(
+            [in] Int32 streamID,
+            [in] Float volume);
+
+        SetPriority(
+            [in] Int32 streamID,
+            [in] Int32 priority);
+
+        SetLoop(
+            [in] Int32 streamID,
+            [in] Int32 loop);
+
+        SetRate(
+            [in] Int32 streamID,
+            [in] Float rate);
+
+        SetOnLoadCompleteListener(
+            [in] ISoundPoolOnLoadCompleteListener* listener);
+
+        ReleaseSoundPoolImpl();
+    }
+
+    /**
+     * No-op implementation of SoundPool.
+     * Used when media is disabled by the system.
+     * @hide
+     */
+    /**
+     * @Involve
+     * interface ISoundPoolDelegate
+     */
+    interface ISoundPoolStub
+    {
+        Load(
+            [in] String path,
+            [in] Int32 priority,
+            [out] Int32* result);
+
+        Load(
+            [in] IContext* context,
+            [in] Int32 resId,
+            [in] Int32 priority,
+            [out] Int32* result);
+
+        Load(
+            [in] IAssetFileDescriptor* afd,
+            [in] Int32 priority,
+            [out] Int32* result);
+
+        Load(
+            [in] IFileDescriptor* fd,
+            [in] Int64 offset,
+            [in] Int64 length,
+            [in] Int32 priority,
+            [out] Int32* result);
+
+        Unload(
+            [in] Int32 soundID,
+            [out] Boolean* result);
+
+        Play(
+            [in] Int32 soundID,
+            [in] Float leftVolume,
+            [in] Float rightVolume,
+            [in] Int32 priority,
+            [in] Int32 loop,
+            [in] Float rate,
+            [out] Int32* result);
+
+        Pause(
+            [in] Int32 streamID);
+
+        Resume(
+            [in] Int32 streamID);
+
+        AutoPause();
+
+        AutoResume();
+
+        Stop(
+            [in] Int32 streamID);
+
+        SetVolume(
+            [in] Int32 streamID,
+            [in] Float leftVolume,
+            [in] Float rightVolume);
+
+        SetVolume(
+            [in] Int32 streamID,
+            [in] Float volume);
+
+        SetPriority(
+            [in] Int32 streamID,
+            [in] Int32 priority);
+
+        SetLoop(
+            [in] Int32 streamID,
+            [in] Int32 loop);
+
+        SetRate(
+            [in] Int32 streamID,
+            [in] Float rate);
+
+        SetOnLoadCompleteListener(
+            [in] ISoundPoolOnLoadCompleteListener* listener);
+
+        ReleaseSoundPoolStub();
     }
 
     interface ISoundPoolBuilder {

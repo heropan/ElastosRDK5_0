@@ -6,6 +6,7 @@ module
     interface Elastos.Droid.Media.IMediaTimeProvider;
     interface Elastos.Droid.Media.ISubtitleTrackRenderingWidget;
     using interface Elastos.Utility.IVector;
+    using interface Elastos.Utility.IIterable;
 
     namespace Elastos {
     namespace Droid {
@@ -22,6 +23,16 @@ module
          */
         OnChanged(
             [in] ISubtitleTrackRenderingWidget* renderingWidget);
+    }
+
+    /** @hide */
+    interface ISubtitleTrackRun
+    {
+        //TODO
+        //StoreByEndTimeMs(
+        //    [in] ILongSparseArray* runsByEndTime);
+
+        RemoveAtEndTimeMs();
     }
 
     /**
@@ -75,9 +86,53 @@ module
     }
 
     /** @hide */
+    [deprecated]
     interface ISubtitleTrackCue {
         OnTime(
             [in] Int64 timeMs);
+
+        GetStartTimeMs(
+            [out] Int64* startTimeMs);
+
+        SetStartTimeMs(
+            [in] Int64 startTimeMs);
+
+        GetEndTimeMs(
+            [out] Int64* endTimeMs);
+
+        SetEndTimeMs(
+            [in] Int64 endTimeMs);
+
+        GetRunID(
+            [out] Int64* runID);
+
+        SetRunID(
+            [in] Int64 runID);
+    }
+
+    /** @hide */
+    interface ISubtitleTrackCueList
+    {
+        Add(
+            [in] ISubtitleTrackCue* cue);
+
+        Remove(
+            [in] ISubtitleTrackCue* cue);
+
+        EntriesBetween(
+            [in] Int64 lastTimeMs,
+            [in] Int64 timeMs,
+            [out] IIterable** result);
+
+        NextTimeAfter(
+            [in] Int64 timeMs,
+            [out] Int64* result);
+
+        GetDEBUG(
+            [out] Boolean* result);
+
+        SetDEBUG(
+            [in] Boolean dg);
     }
 
     /**
@@ -92,6 +147,7 @@ module
      */
     [deprecated]
     interface ISubtitleTrack {
+
         /** @hide */
         GetFormat(
             [out] IMediaFormat** result);

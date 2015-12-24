@@ -1,0 +1,209 @@
+module
+{
+    using interface Elastos.Core.IStringBuilder;
+    using interface Elastos.Core.IArrayOf;
+    using interface Elastos.Utility.IVector;
+
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Media {
+
+    /**
+     * @Involve
+     * interface ISubtitleControllerRenderer
+     */
+    interface IWebVttRenderer
+    {
+    }
+
+    interface ITextTrackCueSpan
+    {
+    }
+
+    /**
+     * @hide
+     *
+     * Extract all text without style, but with timestamp spans.
+     */
+    /**
+     * @Involve
+     * interface ITokenizerOnTokenListener
+     */
+    interface IUnstyledTextExtractor
+    {
+        GetText(
+            [out, callee] ArrayOf<IArrayOf*>* result);
+    }
+
+    /**
+     * @hide
+     *
+     * Tokenizer tokenizes the WebVTT Cue Text into tags and data
+     */
+    interface ITokenizer
+    {
+        Reset();
+
+        Tokenize(
+            [in] String s);
+    }
+
+    interface ITokenizerTokenizerPhase
+    {
+        Start(
+            [out] ITokenizerTokenizerPhase** result);
+
+        Tokenize();
+    }
+
+    /**
+     * @Involve
+     * interface ITokenizerTokenizerPhase
+     */
+    interface ITokenizerDataTokenizer
+    {
+    }
+
+    /**
+     * @Involve
+     * interface ITokenizerTokenizerPhase
+     */
+    interface ITokenizerTagTokenizer
+    {
+    }
+
+    /**
+     * @Involve
+     * interface ITokenizerTokenizerPhase
+     */
+    [deprecated]
+    interface ITokenizerOnTokenListener
+    {
+        OnData(
+            [in] String s);
+
+        OnStart(
+            [in] String tag,
+            [in] ArrayOf<String>* classes,
+            [in] String annotation);
+
+        OnEnd(
+            [in] String tag);
+
+        OnTimeStamp(
+            [in] Int64 timestampMs);
+
+        OnLineEnd();
+    }
+
+    interface ITextTrackRegion
+    {
+        const Int32 SCROLL_VALUE_NONE = 300;
+        const Int32 SCROLL_VALUE_SCROLL_UP = 301;
+    }
+
+    /**
+     * @Involve
+     * interface ISubtitleTrackCue
+     */
+    interface ITextTrackCue
+    {
+        const Int32 WRITING_DIRECTION_HORIZONTAL = 100;
+        const Int32 WRITING_DIRECTION_VERTICAL_RL = 101;
+        const Int32 WRITING_DIRECTION_VERTICAL_LR = 102;
+
+        const Int32 ALIGNMENT_MIDDLE = 200;
+        const Int32 ALIGNMENT_START = 201;
+        const Int32 ALIGNMENT_END = 202;
+        const Int32 ALIGNMENT_LEFT = 203;
+        const Int32 ALIGNMENT_RIGHT = 204;
+
+        AppendStringsToBuilder(
+            [in] IStringBuilder* builder,
+            [out] IStringBuilder** result);
+
+        AppendLinesToBuilder(
+            [in] IStringBuilder* builder,
+            [out] IStringBuilder** result);
+    }
+
+    /**
+     *  Supporting July 10 2013 draft version
+     *
+     *  @hide
+     */
+    interface IWebVttParser
+    {
+        /* parsePercentageString */
+        ParseFloatPercentage(
+            [in] String s,
+            [out] Float* result);
+
+        ParseIntPercentage(
+            [in] String s,
+            [out] Int32* result);
+
+        ParseTimestampMs(
+            [in] String s,
+            [out] Int64* result);
+
+        TimeToString(
+            [in] Int64 timeMs,
+            [out] String* result);
+
+        Parse(
+            [in] String s);
+
+        Eos();
+
+        YieldCue();
+    }
+
+    interface IWebVttParserPhase
+    {
+        Parse(
+            [in] String s);
+    }
+
+    /** @hide */
+    interface IWebVttCueListener
+    {
+        OnCueParsed(
+            [in] ITextTrackCue* cue);
+
+        OnRegionParsed(
+            [in] ITextTrackRegion* region);
+    }
+
+    /** @hide */
+    /**
+     * @Involve
+     * interface ISubtitleTrack
+     * interface IWebVttCueListener
+     */
+    interface IWebVttTrack
+    {
+    }
+
+    /**
+     * Widget capable of rendering WebVTT captions.
+     *
+     * @hide
+     */
+    /**
+     * @Involve
+     * interface ISubtitleTrackRenderingWidget
+     * interface IViewGroup
+     */
+    [deprecated]
+    interface IWebVttRenderingWidget
+    {
+        SetActiveCues(
+            [in] IVector* activeCues);
+    }
+
+    } // namespace media
+    } // namepsace Droid
+    } // namespace Elastos
+}

@@ -5,6 +5,10 @@ module
     namespace Droid {
     namespace Media {
 
+    /**
+     * @Involve
+     * interface IParcelable
+     */
     interface IMediaRouterClientStateRouteInfo {
     }
 
@@ -15,12 +19,16 @@ module
      * Clients must not modify the contents of this object.
      * @hide
      */
+    /**
+     * @Involve
+     * interface IParcelable
+     */
     interface IMediaRouterClientState {
         GetRoute(
             [in] String id,
             [out] IMediaRouterClientStateRouteInfo ** result);
-
     }
+
     } // namespace media
     } // namepsace Droid
     } // namespace Elastos
