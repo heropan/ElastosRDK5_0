@@ -1,29 +1,18 @@
 
-#include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/appwidget/CAppWidgetHostHelper.h"
-#include "elastos/droid/appwidget/CAppWidgetHost.h"
+#include "elastos/droid/appwidget/AppWidgetHost.h"
 
 namespace Elastos {
 namespace Droid {
 namespace AppWidget {
 
-ECode CAppWidgetHostHelper::AllocateAppWidgetIdForSystem(
-    /* [in] */ Int32 hostId,
-    /* [out] */ Int32* appWidgetId)
-{
-    VALIDATE_NOT_NULL(appWidgetId);
-    return CAppWidgetHost::AllocateAppWidgetIdForSystem(hostId, appWidgetId);
-}
+CAR_SINGLETON_IMPL(CAppWidgetHostHelper);
 
-ECode CAppWidgetHostHelper::DeleteAppWidgetIdForSystem(
-    /* [in] */ Int32 appWidgetId)
-{
-    return CAppWidgetHost::DeleteAppWidgetIdForSystem(appWidgetId);
-}
+CAR_INTERFACE_IMPL(CAppWidgetHostHelper, Singleton, IAppWidgetHostHelper);
 
 ECode CAppWidgetHostHelper::DeleteAllHosts()
 {
-    return CAppWidgetHost::DeleteAllHosts();
+    return AppWidgetHost::DeleteAllHosts();
 }
 
 } // namespace AppWidget

@@ -34,15 +34,16 @@ module
     [local, deprecated]
     interface IAppWidgetProvider {
         /**
-         * Called in response to the {@sa AppWidgetManager#ACTION_APPWIDGET_UPDATE} broadcast when
-         * this AppWidget provider is being asked to provide {@sa android.widget.RemoteViews RemoteViews}
+         * Called in response to the {@link AppWidgetManager#ACTION_APPWIDGET_UPDATE} and
+         * {@link AppWidgetManager#ACTION_APPWIDGET_RESTORED} broadcasts when this AppWidget
+         * provider is being asked to provide {@link android.widget.RemoteViews RemoteViews}
          * for a set of AppWidgets.  Override this method to implement your own AppWidget functionality.
          *
          * {@more}
          *
-         * @param context   The {@sa android.content.Context Context} in which this receiver is
+         * @param context   The {@link android.content.Context Context} in which this receiver is
          *                  running.
-         * @param appWidgetManager A {@sa AppWidgetManager} object you can call {@sa
+         * @param appWidgetManager A {@link AppWidgetManager} object you can call {@link
          *                  AppWidgetManager#updateAppWidget} on.
          * @param appWidgetIds The appWidgetIds for which an update is needed.  Note that this
          *                  may be all of the AppWidget instances for this provider, or just
@@ -65,8 +66,8 @@ module
          *                  running.
          * @param appWidgetManager A {@sa AppWidgetManager} object you can call {@sa
          *                  AppWidgetManager#updateAppWidget} on.
-         * @param appWidgetId The appWidgetId of the widget who's size changed.
-         * @param newOptions The appWidgetId of the widget who's size changed.
+         * @param appWidgetId The appWidgetId of the widget whose size changed.
+         * @param newOptions The appWidgetId of the widget whose size changed.
          *
          * @see AppWidgetManager#ACTION_APPWIDGET_OPTIONS_CHANGED
          */

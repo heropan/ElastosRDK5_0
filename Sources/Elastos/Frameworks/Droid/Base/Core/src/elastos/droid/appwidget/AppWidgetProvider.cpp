@@ -1,16 +1,18 @@
 
+#include <Elastos.Droid.Os.h>
 #include "elastos/droid/appwidget/AppWidgetProvider.h"
-#ifdef DROID_CORE
-#include "elastos/droid/appwidget/CAppWidgetManagerHelper.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
+#include "elastos/droid/appwidget/AppWidgetManager.h"
 
 namespace Elastos {
 namespace Droid {
 namespace AppWidget {
 
+CAR_INTERFACE_IMPL(AppWidgetProvider, BroadcastReceiver, IAppWidgetProvider);
+
 AppWidgetProvider::AppWidgetProvider()
+{}
+
+AppWidgetProvider::~AppWidgetProvider()
 {}
 
 ECode AppWidgetProvider::OnReceive(
@@ -29,10 +31,7 @@ ECode AppWidgetProvider::OnReceive(
             extras->GetInt32Array(
                     IAppWidgetManager::EXTRA_APPWIDGET_IDS, (ArrayOf<Int32>**)&appWidgetIds);
             if (appWidgetIds != NULL && appWidgetIds->GetLength() > 0) {
-                AutoPtr<IAppWidgetManagerHelper> helper;
-                CAppWidgetManagerHelper::AcquireSingleton((IAppWidgetManagerHelper**)&helper);
-                AutoPtr<IAppWidgetManager> manager;
-                helper->GetInstance(context, (IAppWidgetManager**)&manager);
+                AutoPtr<IAppWidgetManager> manager = AppWidgetManager::GetInstance(context);
                 OnUpdate(context, manager, *appWidgetIds);
             }
         }
@@ -59,10 +58,7 @@ ECode AppWidgetProvider::OnReceive(
             extras->GetInt32(IAppWidgetManager::EXTRA_APPWIDGET_ID, &appWidgetId);
             AutoPtr<IBundle> widgetExtras;
             extras->GetBundle(IAppWidgetManager::EXTRA_APPWIDGET_OPTIONS, (IBundle**)&widgetExtras);
-            AutoPtr<IAppWidgetManagerHelper> helper;
-            CAppWidgetManagerHelper::AcquireSingleton((IAppWidgetManagerHelper**)&helper);
-            AutoPtr<IAppWidgetManager> manager;
-            helper->GetInstance(context, (IAppWidgetManager**)&manager);
+            AutoPtr<IAppWidgetManager> manager = AppWidgetManager::GetInstance(context);
             OnAppWidgetOptionsChanged(context, manager, appWidgetId, widgetExtras);
         }
     }
@@ -71,6 +67,23 @@ ECode AppWidgetProvider::OnReceive(
     }
     else if (IAppWidgetManager::ACTION_APPWIDGET_DISABLED.Equals(action)) {
         OnDisabled(context);
+    }
+    else if (IAppWidgetManager::ACTION_APPWIDGET_RESTORED.Equals(action)) {
+        AutoPtr<IBundle> extras;
+        intent->GetExtras((IBundle**)&extras);
+        if (extras != NULL) {
+            AutoPtr< ArrayOf<Int32> > oldIds;
+            extras->GetInt32Array(
+                    IAppWidgetManager::EXTRA_APPWIDGET_OLD_IDS, (ArrayOf<Int32>**)&oldIds);
+            AutoPtr< ArrayOf<Int32> > newIds;
+            extras->GetInt32Array(
+                    IAppWidgetManager::EXTRA_APPWIDGET_IDS, (ArrayOf<Int32>**)&newIds);
+            if (oldIds != NULL && oldIds->GetLength() > 0) {
+                OnRestored(context, oldIds, newIds);
+                AutoPtr<IAppWidgetManager> manager = AppWidgetManager::GetInstance(context);
+                OnUpdate(context, manager, *newIds);
+            }
+        }
     }
 
     return NOERROR;
@@ -108,6 +121,14 @@ ECode AppWidgetProvider::OnEnabled(
 
 ECode AppWidgetProvider::OnDisabled(
     /* [in] */ IContext* context)
+{
+    return NOERROR;
+}
+
+ECode AppWidgetProvider::OnRestored(
+    /* [in] */ IContext* context,
+    /* [in] */ ArrayOf<Int32>* oldWidgetIds,
+    /* [in] */ ArrayOf<Int32>* newWidgetIds)
 {
     return NOERROR;
 }

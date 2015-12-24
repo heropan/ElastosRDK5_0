@@ -1,9 +1,9 @@
 
 module
 {
-    interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.App.IActivity;
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Widget.IRemoteViews;
 
     namespace Elastos {
@@ -11,7 +11,8 @@ module
     namespace AppWidget {
 
     /**
-     * AppWidgetHost provides the interaction with the AppWidget service for apps, like the home screen, that want to embed AppWidgets in their UI.
+     * AppWidgetHost provides the interaction with the AppWidget service for apps,
+     * like the home screen, that want to embed AppWidgets in their UI.
      */
     [local, deprecated]
     interface IAppWidgetHost {
@@ -35,39 +36,6 @@ module
         AllocateAppWidgetId(
             [out] Int32* appWidgetId);
 
-        /**
-         * Stop listening to changes for this AppWidget.
-         */
-        DeleteAppWidgetId(
-            [in] Int32 appWidgetId);
-
-        /**
-         * Remove all records about this host from the AppWidget manager.
-         * <ul>
-         *   <li>Call this when initializing your database, as it might be because of a data wipe.</li>
-         *   <li>Call this to have the AppWidget manager release all resources associated with your
-         *   host.  Any future calls about this host will cause the records to be re-allocated.</li>
-         * </ul>
-         */
-        DeleteHost();
-
-        CreateView(
-            [in] IContext* ctx,
-            [in] Int32 appWidgetId,
-            [in] IAppWidgetProviderInfo* appWidget,
-            [out] IAppWidgetHostView** hostView);
-
-        UpdateAppWidgetView(
-            [in] Int32 appWidgetId,
-            [in] IRemoteViews* views);
-
-        ViewDataChanged(
-            [in] Int32 appWidgetId,
-            [in] Int32 viewId);
-    }
-
-    [local]
-    interface IAppWidgetHostHelper {
         /**
          * Starts an app widget provider configure activity for result on behalf of the caller.
          * Use this method if the provider is in another profile as you are not allowed to start
@@ -94,6 +62,51 @@ module
             [in] Int32 requestCode,
             [in] IBundle* options);
 
+        /**
+         * Gets a list of all the appWidgetIds that are bound to the current host
+         *
+         * @hide
+         */
+        GetAppWidgetIds(
+            [out, callee] ArrayOf<Int32>* ids);
+
+        /**
+         * Stop listening to changes for this AppWidget.
+         */
+        DeleteAppWidgetId(
+            [in] Int32 appWidgetId);
+
+        /**
+         * Remove all records about this host from the AppWidget manager.
+         * <ul>
+         *   <li>Call this when initializing your database, as it might be because of a data wipe.</li>
+         *   <li>Call this to have the AppWidget manager release all resources associated with your
+         *   host.  Any future calls about this host will cause the records to be re-allocated.</li>
+         * </ul>
+         */
+        DeleteHost();
+
+        /**
+         * Create the AppWidgetHostView for the given widget.
+         * The AppWidgetHost retains a pointer to the newly-created View.
+         */
+        CreateView(
+            [in] IContext* ctx,
+            [in] Int32 appWidgetId,
+            [in] IAppWidgetProviderInfo* appWidget,
+            [out] IAppWidgetHostView** hostView);
+
+        UpdateAppWidgetView(
+            [in] Int32 appWidgetId,
+            [in] IRemoteViews* views);
+
+        ViewDataChanged(
+            [in] Int32 appWidgetId,
+            [in] Int32 viewId);
+    }
+
+    [local]
+    interface IAppWidgetHostHelper {
         /**
          * Remove all records about all hosts for your package.
          * <ul>

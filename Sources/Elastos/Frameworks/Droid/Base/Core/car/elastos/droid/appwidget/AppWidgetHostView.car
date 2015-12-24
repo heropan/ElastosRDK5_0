@@ -15,6 +15,13 @@ module
     /**
      * @Involve
      * interface Elastos.Droid.Widget.IFrameLayout
+     * interface Elastos.Droid.View.IViewGroup
+     * interface Elastos.Droid.View.IView
+     * interface Elastos.Droid.View.IViewParent
+     * interface Elastos.Droid.View.IViewManager
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
+     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
     [local]
     interface IAppWidgetHostView {
@@ -122,6 +129,13 @@ module
             [in] IComponentName* component,
             [in] IRect* padding,
             [out] IRect** rect);
+    }
+
+    /**
+     * @Involve
+     * interface Elastos.Droid.Utility.ISparseArray
+     */
+    interface IParcelableSparseArray {
     }
 
     }//namespace AppWidget
