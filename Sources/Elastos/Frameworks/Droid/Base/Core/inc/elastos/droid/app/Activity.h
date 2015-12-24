@@ -1734,6 +1734,9 @@ public:
         /* [in] */ Int32 requestCode,
         /* [in] */ IUserHandle* user);
 
+    /**
+     * @hide Implement to provide correct calling token.
+     */
     CARAPI StartActivityForResultAsUser(
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 requestCode,
@@ -3203,10 +3206,16 @@ public:
         /* [in] */ IIntent* intent,
         /* [in] */ IBundle* options);
 
+    /**
+     * @hide Implement to provide correct calling token.
+     */
     CARAPI StartActivityAsUser(
         /* [in] */ IIntent* intent,
         /* [in] */ IUserHandle* user);
 
+    /**
+     * @hide Implement to provide correct calling token.
+     */
     CARAPI StartActivityAsUser(
         /* [in] */ IIntent* intent,
         /* [in] */ IBundle* options,

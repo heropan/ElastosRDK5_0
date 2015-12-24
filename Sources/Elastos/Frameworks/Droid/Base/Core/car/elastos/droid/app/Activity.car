@@ -9,6 +9,7 @@ module
 
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IUserHandle;
     interface Elastos.Droid.Os.IPersistableBundle;
     interface Elastos.Droid.App.IActivityThread;
     interface Elastos.Droid.App.IActivityManagerTaskDescription;
@@ -2465,8 +2466,9 @@ module
          * <var>flagsMask</var>
          * @param extraFlags Always set to 0.
          */
-        StartIntentSender(
+        StartIntentSenderForResult(
             [in] IIntentSender* intent,
+            [in] Int32 requestCode,
             [in] IIntent* fillInIntent,
             [in] Int32 flagsMask,
             [in] Int32 flagsValues,
@@ -2492,13 +2494,31 @@ module
          * have also been supplied by the IntentSender, options given here will
          * override any that conflict with those given by the IntentSender.
          */
-        StartIntentSender(
+        StartIntentSenderForResult(
             [in] IIntentSender* intent,
+            [in] Int32 requestCode,
             [in] IIntent* fillInIntent,
             [in] Int32 flagsMask,
             [in] Int32 flagsValues,
             [in] Int32 extraFlags,
             [in] IBundle* bundle);
+
+        /**
+         * @hide Implement to provide correct calling token.
+         */
+        StartActivityForResultAsUser(
+            [in] IIntent* intent,
+            [in] Int32 requestCode,
+            [in] IUserHandle* user);
+
+        /**
+         * @hide Implement to provide correct calling token.
+         */
+        StartActivityForResultAsUser(
+            [in] IIntent* intent,
+            [in] Int32 requestCode,
+            [in] IBundle* options,
+            [in] IUserHandle* user);
 
         /**
          * Same as calling {@sa #startActivityIfNeeded(Intent, int, Bundle)}
@@ -2555,6 +2575,34 @@ module
             [in] Int32 requestCode,
             [in] IBundle* options,
             [out] Boolean* started);
+
+        /**
+         * @hide Implement to provide correct calling token.
+         */
+        StartActivityAsUser(
+            [in] IIntent* intent,
+            [in] IUserHandle* user);
+
+        /**
+         * @hide Implement to provide correct calling token.
+         */
+        StartActivityAsUser(
+            [in] IIntent* intent,
+            [in] IBundle* options,
+            [in] IUserHandle* user);
+
+        /**
+         * Start a new activity as if it was started by the activity that started our
+         * current activity.  This is for the resolver and chooser activities, which operate
+         * as intermediaries that dispatch their intent to the target the user selects -- to
+         * do this, they must perform all security checks including permission grants as if
+         * their launch had come from the original activity.
+         * @hide
+         */
+        StartActivityAsCaller(
+            [in] IIntent* intent,
+            [in] IBundle* options,
+            [in] Int32 userId);
 
         /**
          * Same as calling {@sa #startNextMatchingActivity(Intent, Bundle)} with

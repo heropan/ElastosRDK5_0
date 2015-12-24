@@ -16,6 +16,7 @@ DEFINE_OBJECT_HASH_FUNC_FOR(IWeakReference)
 #ifdef HASH_FOR_ACCOUNTS
 #include "Elastos.Droid.Accounts.h"
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Accounts::IAccount)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Accounts::IAccountAndUser)
 #endif
 
 //
