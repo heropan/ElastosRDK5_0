@@ -473,9 +473,6 @@ Boolean Installer::IsValidInstructionSet(
         //     return true;
         // }
     }
-    for (String abi : ) {
-
-    }
 
     return FALSE;
 }

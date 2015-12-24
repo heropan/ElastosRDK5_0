@@ -1025,10 +1025,7 @@ AutoPtr<IFile> Settings::GetUserPackagesStateFile(
     /* [in] */ Int32 userId)
 {
     AutoPtr<IFile> stateFile;
-    AutoPtr<IEnvironment> env;
-    CEnvironment::AcquireSingleton((IEnvironment**)&env);
-    AutoPtr<IFile> dir;
-    env->GetUserSystemDirectory(userId, (IFile**)&dir);
+    AutoPtr<IFile> dir = Environment::GetUserSystemDirectory(userId, (IFile**)&dir);
     CFile::New(dir, String("package-restrictions.xml"), (IFile**)&stateFile);
     return stateFile;
 }
@@ -1037,10 +1034,7 @@ AutoPtr<IFile> Settings::GetUserPackagesStateBackupFile(
     /* [in] */ Int32 userId)
 {
     AutoPtr<IFile> backupFile;
-    AutoPtr<IEnvironment> env;
-    CEnvironment::AcquireSingleton((IEnvironment**)&env);
-    AutoPtr<IFile> dir;
-    env->GetUserSystemDirectory(userId, (IFile**)&dir);
+    AutoPtr<IFile> dir = Environment::GetUserSystemDirectory(userId, (IFile**)&dir);
     CFile::New(dir, String("package-restrictions-backup.xml"), (IFile**)&backupFile);
     return backupFile;
 }

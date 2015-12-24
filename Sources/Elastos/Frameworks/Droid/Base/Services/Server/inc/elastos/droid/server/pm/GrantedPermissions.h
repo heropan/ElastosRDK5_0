@@ -30,7 +30,7 @@ public:
 
     HashSet<String> mGrantedPermissions;
 
-    AutoPtr< ArrayOf<Int32> > mGids;
+    AutoPtr<ArrayOf<Int32> > mGids;
 };
 
 } // namespace Pm

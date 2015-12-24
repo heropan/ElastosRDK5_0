@@ -28,3 +28,7 @@ SOURCES += CParcelFileDescriptorFactory.cpp
 SOURCES += CPackageInstallObserver2.cpp
 SOURCES += CrossProfileIntentFilter.cpp
 SOURCES += CrossProfileIntentResolver.cpp
+SOURCES += CKeySetHandle.cpp
+SOURCES += KeySetManagerService.cpp
+SOURCES += LauncherAppsService.cpp
+SOURCES += CLauncherAppsImpl.cpp
