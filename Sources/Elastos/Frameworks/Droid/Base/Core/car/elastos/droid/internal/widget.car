@@ -837,4 +837,20 @@ module
     } // namespace Internal
     } // namespace Droid
     } // namespace Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Widget {
+    namespace Multiwaveview {
+
+    singleton class CTweenerHelper {
+        interface ITweenerHelper;
+    }
+
+    } // namespace Multiwaveview
+    } // namespace Widget
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
 }

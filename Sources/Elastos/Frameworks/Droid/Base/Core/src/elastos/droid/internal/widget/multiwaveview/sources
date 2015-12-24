@@ -16,3 +16,4 @@ C_DEFINES += -DDROID_CORE
 
 SOURCES += Ease.cpp
 SOURCES += Tweener.cpp
+SOURCES += CTweenerHelper.cpp
