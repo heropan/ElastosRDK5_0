@@ -7,6 +7,7 @@
 
 DIRS += accessibilityservice
 DIRS += app
+DIRS += appwidget
 DIRS += animation
 DIRS += content
 DIRS += database
@@ -43,7 +44,6 @@ DIRS += wifi
 #DIRS += accounts
 #DIRS += telephony
 #DIRS += statusbar
-#DIRS += appwidget
 #DIRS += googleremote
 #DIRS += wifidisplay
 #DIRS += inputmethods

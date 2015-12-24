@@ -213,7 +213,7 @@ ECode RemoteViewsAdapter::RemoteViewsAdapterServiceConnection::Unbind(
         if (adapter != NULL) {
             String opPkgName;
             ctx->GetOpPackageName(&opPkgName);
-            pe = mgr->UnbindRemoteViewsService(opPkgName, appWidgetId, intent, this);
+            pe = mgr->UnbindRemoteViewsService(opPkgName, appWidgetId, intent);
         } else {
             SLOGGERE("RemoteViewsAdapterServiceConnection", "unbind: adapter was null");
         }

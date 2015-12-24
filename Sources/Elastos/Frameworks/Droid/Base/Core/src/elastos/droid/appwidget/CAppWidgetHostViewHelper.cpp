@@ -1,11 +1,14 @@
 
-#include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/appwidget/CAppWidgetHostViewHelper.h"
-#include "elastos/droid/appwidget/CAppWidgetHostView.h"
+#include "elastos/droid/appwidget/AppWidgetHostView.h"
 
 namespace Elastos {
 namespace Droid {
 namespace AppWidget {
+
+CAR_SINGLETON_IMPL(CAppWidgetHostViewHelper);
+
+CAR_INTERFACE_IMPL(CAppWidgetHostViewHelper, Singleton, IAppWidgetHostViewHelper);
 
 ECode CAppWidgetHostViewHelper::GetDefaultPaddingForWidget(
     /* [in] */ IContext* context,
@@ -14,8 +17,8 @@ ECode CAppWidgetHostViewHelper::GetDefaultPaddingForWidget(
     /* [out] */ IRect** rect)
 {
     VALIDATE_NOT_NULL(rect);
-    AutoPtr<IRect> r = CAppWidgetHostView::GetDefaultPaddingForWidget(context, component, padding);
-    *rect = r.Get();
+    AutoPtr<IRect> r = AppWidgetHostView::GetDefaultPaddingForWidget(context, component, padding);
+    *rect = r;
     REFCOUNT_ADD(*rect);
     return NOERROR;
 }

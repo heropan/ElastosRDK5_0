@@ -6,7 +6,7 @@ module
     interface Elastos.Droid.AppWidget.IAppWidgetProviderInfo;
     interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.Content.IIntent;
-    interface Elastos.Droid.Content.IIIntentSender;
+    interface Elastos.Droid.Content.IIntentSender;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Widget.IRemoteViews;
@@ -25,7 +25,7 @@ module
             [in] IIAppWidgetHost* host,
             [in] String callingPackage,
             [in] Int32 hostId,
-            [in/*out*/] IList* updatedViews,
+            [out] IList** updatedViews,
             [out, callee] ArrayOf<Int32>* result);
 
         StopListening(
@@ -61,7 +61,7 @@ module
             [in] String callingPackage,
             [in] Int32 appWidgetId,
             [in] Int32 intentFlags,
-            [out] IIIntentSender** result);
+            [out] IIntentSender** result);
 
         //
         // for AppWidgetManager
@@ -120,7 +120,8 @@ module
             [in] Int32 appWidgetId,
             [in] Int32 providerProfileId,
             [in] IComponentName* providerComponent,
-            [in] IBundle* options);
+            [in] IBundle* options,
+            [out] Boolean* result);
 
         BindRemoteViewsService(
             [in] String callingPackage,

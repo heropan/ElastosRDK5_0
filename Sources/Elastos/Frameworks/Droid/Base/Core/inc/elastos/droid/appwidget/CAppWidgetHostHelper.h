@@ -3,31 +3,21 @@
 #define  __ELASTOS_DROID_APPWIDGET_CAPPWIDGETHOSTHELPER_H__
 
 #include "_Elastos_Droid_AppWidget_CAppWidgetHostHelper.h"
+#include "elastos/droid/ext/frameworkdef.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace AppWidget {
 
 CarClass(CAppWidgetHostHelper)
+    , public Singleton
+    , public IAppWidgetHostHelper
 {
 public:
-    /**
-     * Get a appWidgetId for a host in the calling process.
-     *
-     * @return a appWidgetId
-     * @hide
-     */
-    CARAPI AllocateAppWidgetIdForSystem(
-        /* [in] */ Int32 hostId,
-        /* [out] */ Int32* appWidgetId);
+    CAR_SINGLETON_DECL();
 
-    /**
-     * Stop listening to changes for this AppWidget.
-     * @hide
-     */
-    CARAPI DeleteAppWidgetIdForSystem(
-        /* [in] */ Int32 appWidgetId);
-
+    CAR_INTERFACE_DECL();
     /**
      * Remove all records about all hosts for your package.
      * <ul>

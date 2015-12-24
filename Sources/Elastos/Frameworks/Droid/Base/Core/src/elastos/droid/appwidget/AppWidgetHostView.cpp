@@ -1,36 +1,39 @@
-#include "elastos/droid/ext/frameworkext.h"
+
 #include "elastos/droid/appwidget/AppWidgetHostView.h"
-#include "elastos/droid/appwidget/CAppWidgetProviderInfo.h"
-#include "elastos/droid/appwidget/CAppWidgetManager.h"
-#include "elastos/droid/graphics/CPaint.h"
-#include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/appwidget/AppWidgetManager.h"
+#include "elastos/droid/graphics/CBitmap.h"
 #include "elastos/droid/graphics/Color.h"
+#include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
 #include "elastos/droid/widget/CTextView.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/Build.h"
-#include "elastos/droid/os/CUserHandle.h"
-#include "elastos/droid/os/Process.h"
 #include "elastos/droid/utility/CDisplayMetrics.h"
 #include "elastos/droid/R.h"
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::CString;
-using Elastos::Droid::R;
-using Elastos::Droid::Utility::CDisplayMetrics;
-using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::Pm::IActivityInfo;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Content::Pm::IComponentInfo;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Graphics::CPaint;
+using Elastos::Droid::Graphics::Color;
+using Elastos::Droid::Graphics::CBitmap;
+using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
+using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::SystemClock;
-using Elastos::Droid::Os::Build;
-using Elastos::Droid::Os::CUserHandle;
-using Elastos::Droid::Os::Process;
-using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::View::EIID_IView;
 using Elastos::Droid::View::EIID_IViewGroup;
 using Elastos::Droid::View::EIID_ILayoutInflaterFilter;
 using Elastos::Droid::View::IGravity;
+using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::Widget::IAdapterView;
 using Elastos::Droid::Widget::IRemoteAdapterConnectionCallback;
 using Elastos::Droid::Widget::IAdapter;
@@ -39,6 +42,10 @@ using Elastos::Droid::Widget::ITextView;
 using Elastos::Droid::Widget::CTextView;
 using Elastos::Droid::Widget::IFrameLayoutLayoutParams;
 using Elastos::Droid::Widget::CFrameLayoutLayoutParams;
+using Elastos::Droid::Utility::CDisplayMetrics;
+using Elastos::Droid::R;
+using Elastos::Core::CString;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -47,25 +54,86 @@ namespace AppWidget {
 const String AppWidgetHostView::TAG("AppWidgetHostView");
 const Boolean AppWidgetHostView::LOGD = FALSE;
 const Boolean AppWidgetHostView::CROSSFADE = FALSE;
-AutoPtr<ILayoutInflaterFilter> AppWidgetHostView::sInflaterFilter = new AppWidgetHostView::MyLayoutInflaterFilter();
 const Int32 AppWidgetHostView::VIEW_MODE_NOINIT;
 const Int32 AppWidgetHostView::VIEW_MODE_CONTENT;
 const Int32 AppWidgetHostView::VIEW_MODE_ERROR;
 const Int32 AppWidgetHostView::VIEW_MODE_DEFAULT;
 const Int32 AppWidgetHostView::FADE_DURATION;
+AutoPtr<ILayoutInflaterFilter> AppWidgetHostView::sInflaterFilter = new AppWidgetHostView::MyLayoutInflaterFilter();
 
-CAR_INTERFACE_IMPL(AppWidgetHostView::MyLayoutInflaterFilter, ILayoutInflaterFilter);
+//==============================================================================
+//          AppWidgetHostView::MyLayoutInflaterFilter
+//==============================================================================
+
+CAR_INTERFACE_IMPL(AppWidgetHostView::MyLayoutInflaterFilter, Object, ILayoutInflaterFilter);
 
 AppWidgetHostView::MyLayoutInflaterFilter::OnLoadClass(
-    /* [in] */ Handle32 clazz,
+    /* [in] */ IClassInfo* clazz,
     /* [out] */ Boolean* allowed)
 {
-    PFL_EX("TODO")
-    assert(allowed != NULL);
+    VALIDATE_NOT_NULL(allowed);
+    assert(0 && "TODO");
+
     *allowed = TRUE;
     //return clazz.isAnnotationPresent(RemoteViews.RemoteView.class);
     return NOERROR;
 }
+
+//==============================================================================
+//          AppWidgetHostView::ParcelableSparseArray
+//==============================================================================
+
+CAR_INTERFACE_IMPL_2(AppWidgetHostView::ParcelableSparseArray, SparseArray, IParcelableSparseArray, IParcelable);
+
+AppWidgetHostView::ParcelableSparseArray::ParcelableSparseArray()
+{}
+
+AppWidgetHostView::ParcelableSparseArray::~ParcelableSparseArray()
+{}
+
+AppWidgetHostView::ParcelableSparseArray::WriteToParcel(
+    /* [in] */ IParcel* dest)
+{
+    VALIDATE_NOT_NULL(dest);
+
+    Int32 count;
+    GetSize(&count);
+    dest->WriteInt32(count);
+    for (Int32 i = 0; i < count; i++) {
+        Int32 key;
+        KeyAt(i, &key);
+        dest->WriteInt32(key);
+        AutoPtr<IInterface> obj;
+        ValueAt(i, (IInterface**)&obj);
+        AutoPtr<IParcelable> parcelable = IParcelable::Probe(obj);
+        dest->WriteInterfacePtr(obj);
+    }
+    return NOERROR;
+}
+
+AppWidgetHostView::ParcelableSparseArray::ReadFromParcel(
+    /* [in] */ IParcel* source)
+{
+    VALIDATE_NOT_NULL(source);
+
+    Int32 count;
+    source->ReadInt32(&count);
+    for (Int32 i = 0; i < count; i++) {
+        Int32 key;
+        source->ReadInt32(&key);
+        AutoPtr<IInterface> obj;
+        source->ReadInterfacePtr((Handle32*)&obj);
+        AutoPtr<IParcelable> parcelable = IParcelable::Probe(obj);
+        Put(key, parcelable);
+    }
+    return NOERROR;
+}
+
+//==============================================================================
+//          AppWidgetHostView
+//==============================================================================
+
+CAR_INTERFACE_IMPL(AppWidgetHostView, FrameLayout, IAppWidgetHostView);
 
 AppWidgetHostView::AppWidgetHostView()
     : mAppWidgetId(0)
@@ -76,39 +144,35 @@ AppWidgetHostView::AppWidgetHostView()
     CPaint::New((IPaint**)&mOldPaint);
 }
 
-ECode AppWidgetHostView::Init(
+AppWidgetHostView::~AppWidgetHostView()
+{}
+
+ECode AppWidgetHostView::constructor(
     /* [in] */ IContext* context)
 {
-    return Init(context, Elastos::Droid::R::anim::fade_in, Elastos::Droid::R::anim::fade_out);
+    return constructor(context, R::anim::fade_in, R::anim::fade_out);
 }
 
-ECode AppWidgetHostView::Init(
+ECode AppWidgetHostView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IRemoteViewsOnClickHandler* handler)
 {
-    ECode ec = Init(context, Elastos::Droid::R::anim::fade_in,Elastos::Droid::R::anim::fade_out);
+    ECode ec = constructor(context, R::anim::fade_in, R::anim::fade_out);
     mOnClickHandler = handler;
     return ec;
 }
 
-ECode AppWidgetHostView::Init(
+ECode AppWidgetHostView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ Int32 animationIn,
     /* [in] */ Int32 animationOut)
 {
-    FrameLayout::Init(context);
+    FrameLayout::constructor(context);
     mContext = context;
-    Process::MyUserHandle((IUserHandle**)&mUser);
     // We want to segregate the view ids within AppWidgets to prevent
     // problems when those ids collide with view ids in the AppWidgetHost.
     SetIsRootNamespace(TRUE);
     return NOERROR;
-}
-
-ECode AppWidgetHostView::SetUserId(
-    /* [in] */ Int32 userId)
-{
-    return CUserHandle::New(userId, (IUserHandle**)&mUser);
 }
 
 ECode AppWidgetHostView::SetOnClickHandler(
@@ -206,41 +270,58 @@ ECode AppWidgetHostView::GetAppWidgetInfo(
 }
 
 ECode AppWidgetHostView::DispatchSaveInstanceState(
-    /* [in] */ IObjectInt32Map* container)
+    /* [in] */ ISparseArray* container)
 {
-    // final ParcelableSparseArray jail = new ParcelableSparseArray();
-    // super.dispatchSaveInstanceState(jail);
-    // container.put(generateId(), jail);
-    assert(0);
-    return E_NOT_IMPLEMENTED;
+    AutoPtr<ParcelableSparseArray> jail = new ParcelableSparseArray();
+    FrameLayout::DispatchSaveInstanceState((ISparseArray*)jail.Get());
+    container->Put(GenerateId(), (IParcelableSparseArray*)jail.Get());
+
+    return NOERROR;
 }
 
 Int32 AppWidgetHostView::GenerateId()
 {
-    Int32 id = GetId();
+    Int32 id;
+    GetId(&id);
     return id == IView::NO_ID ? mAppWidgetId : id;
 }
 
 ECode AppWidgetHostView::DispatchRestoreInstanceState(
-    /* [in] */ IObjectInt32Map* container)
+    /* [in] */ ISparseArray* container)
 {
-//    final Parcelable parcelable = container.get(generateId());
-//
-//    ParcelableSparseArray jail = null;
-//    if (parcelable != null && parcelable instanceof ParcelableSparseArray) {
-//        jail = (ParcelableSparseArray) parcelable;
-//    }
-//
-//    if (jail == null) jail = new ParcelableSparseArray();
-//
-//    try  {
-//        super.dispatchRestoreInstanceState(jail);
-//    } catch (Exception e) {
-//        Log.e(TAG, "failed to restoreInstanceState for widget id: " + mAppWidgetId + ", "
-//                + (mInfo == null ? "null" : mInfo.provider), e);
-//    }
-    assert(0);
-    return E_NOT_IMPLEMENTED;
+    AutoPtr<IInterface> obj;
+    container->Get(GenerateId(), (IInterface**)&obj);
+    AutoPtr<IParcelable> parcelable = IParcelable::Probe(obj);
+
+    AutoPtr<IParcelableSparseArray> jail;
+    if (parcelable != NULL && IParcelableSparseArray::Probe(parcelable) != NULL) {
+        jail = IParcelableSparseArray::Probe(parcelable);
+    }
+
+    if (jail == NULL) {
+        AutoPtr<ParcelableSparseArray> object = new ParcelableSparseArray();
+        jail = (IParcelableSparseArray*)object.Get();
+    }
+
+    // try  {
+    ECode ec = FrameLayout::DispatchRestoreInstanceState(ISparseArray::Probe(jail));
+    if (FAILED(ec)) {
+        if (mInfo == NULL) {
+            Logger::E(TAG, "failed to restoreInstanceState for widget id: %d, mInfo: null", mAppWidgetId);
+        }
+        else {
+            AutoPtr<IComponentName> provider;
+            mInfo->GetProvider((IComponentName**)&provider);
+            Logger::E(TAG, "failed to restoreInstanceState for widget id: %d, mInfo.provider: %p, ec=%08x",
+                    mAppWidgetId, provider.Get(), ec);
+        }
+    }
+   // } catch (Exception e) {
+   //     Log.e(TAG, "failed to restoreInstanceState for widget id: " + mAppWidgetId + ", "
+   //             + (mInfo == null ? "null" : mInfo.provider), e);
+   // }
+
+    return NOERROR;
 }
 
 ECode AppWidgetHostView::UpdateAppWidgetSize(
@@ -273,8 +354,11 @@ ECode AppWidgetHostView::UpdateAppWidgetSize(
         mInfo->GetProvider((IComponentName**)&provider);
         padding = GetDefaultPaddingForWidget(mContext, provider, padding);
     }
+
+    AutoPtr<IResources> res;
+    GetResources((IResources**)&res);
     AutoPtr<IDisplayMetrics> dm;
-    GetResources()->GetDisplayMetrics((IDisplayMetrics**)&dm);
+    res->GetDisplayMetrics((IDisplayMetrics**)&dm);
     Float density;
     dm->GetDensity(&density);
 
@@ -288,8 +372,7 @@ ECode AppWidgetHostView::UpdateAppWidgetSize(
     Int32 newMaxWidth = maxWidth - (ignorePadding ? 0 : xPaddingDips);
     Int32 newMaxHeight = maxHeight - (ignorePadding ? 0 : yPaddingDips);
 
-    AutoPtr<IAppWidgetManager> widgetManager;
-    CAppWidgetManager::GetInstance(mContext, (IAppWidgetManager**)&widgetManager);
+    AutoPtr<IAppWidgetManager> widgetManager = AppWidgetManager::GetInstance(mContext);
 
     // We get the old options to see if the sizes have changed
     AutoPtr<IBundle> oldOptions;
@@ -316,8 +399,7 @@ ECode AppWidgetHostView::UpdateAppWidgetSize(
 ECode AppWidgetHostView::UpdateAppWidgetOptions(
     /* [in] */ IBundle* options)
 {
-    AutoPtr<IAppWidgetManager> widgetManager;
-    CAppWidgetManager::GetInstance(mContext, (IAppWidgetManager**)&widgetManager);
+    AutoPtr<IAppWidgetManager> widgetManager = AppWidgetManager::GetInstance(mContext);
     return widgetManager->UpdateAppWidgetOptions(mAppWidgetId, options);
 }
 
@@ -348,7 +430,9 @@ ECode AppWidgetHostView::ResetAppWidget(
 ECode AppWidgetHostView::UpdateAppWidget(
     /* [in] */ IRemoteViews* remoteViews)
 {
-    //if (LOGD) Log.d(TAG, "updateAppWidget called mOld=" + mOld);
+    if (LOGD) {
+        Logger::D(TAG, "updateAppWidget called mOld= %p" ,mOld.Get());
+    }
 
     Boolean recycled = FALSE;
     AutoPtr<IView> content;
@@ -362,10 +446,7 @@ ECode AppWidgetHostView::UpdateAppWidget(
                 mView->GetHeight(&height);
                 //try {
                 mOld = NULL;
-                AutoPtr<IBitmapFactory> factory;
-                ASSERT_SUCCEEDED(CBitmapFactory::AcquireSingleton(
-                            (IBitmapFactory**)&factory));
-                ECode ec = factory->CreateBitmap(width, height,
+                ECode ec = CBitmap::CreateBitmap(width, height,
                         BitmapConfig_ARGB_8888, (IBitmap**)&mOld);
                 if (FAILED(ec)) {
                     mOld = NULL;
@@ -393,7 +474,7 @@ ECode AppWidgetHostView::UpdateAppWidget(
     else {
         // Prepare a local reference to the remote Context so we're ready to
         // inflate any requested LayoutParams.
-        mRemoteContext = GetRemoteContext(remoteViews);
+        mRemoteContext = GetRemoteContext();
         Int32 layoutId = 0;
         remoteViews->GetLayoutId(&layoutId);
 
@@ -404,7 +485,9 @@ ECode AppWidgetHostView::UpdateAppWidget(
             remoteViews->Reapply(mContext, mView, mOnClickHandler);
             content = mView;
             recycled = TRUE;
-            //if (LOGD) Log.d(TAG, "was able to recycled existing layout");
+            if (LOGD) {
+                Logger::D(TAG, "was able to recycled existing layout");
+            }
             // } catch (RuntimeException e) {
             //     exception = e;
             // }
@@ -415,7 +498,9 @@ ECode AppWidgetHostView::UpdateAppWidget(
             //try {
             remoteViews->Apply(mContext, (IViewGroup*)this->Probe(EIID_IViewGroup),
                 mOnClickHandler, (IView**)&content);
-                //if (LOGD) Log.d(TAG, "had to inflate new layout");
+                if (LOGD) {
+                    Logger::D(TAG, "had to inflate new layout");
+                }
             // } catch (RuntimeException e) {
             //     exception = e;
             // }
@@ -430,7 +515,7 @@ ECode AppWidgetHostView::UpdateAppWidget(
             // We've already done this -- nothing to do.
             return NOERROR;
         }
-        //Log.w(TAG, "updateAppWidget couldn't find any view, using error view", exception);
+        Logger::W(TAG, "updateAppWidget couldn't find any view, using error view");
         content = GetErrorView();
         mViewMode = VIEW_MODE_ERROR;
     }
@@ -460,7 +545,8 @@ ECode AppWidgetHostView::UpdateAppWidget(
 ECode AppWidgetHostView::ViewDataChanged(
     /* [in] */ Int32 viewId)
 {
-    AutoPtr<IView> v = FindViewById(viewId);
+    AutoPtr<IView> v;
+    FindViewById(viewId, (IView**)&v);
     if ((v != NULL) && IAdapterView::Probe(v) != NULL) {
         AutoPtr<IAdapterView> adapterView = IAdapterView::Probe(v);
         AutoPtr<IAdapter> adapter;
@@ -479,24 +565,25 @@ ECode AppWidgetHostView::ViewDataChanged(
     return NOERROR;
 }
 
-AutoPtr<IContext> AppWidgetHostView::GetRemoteContext(
-    /* [in] */ IRemoteViews* views)
+AutoPtr<IContext> AppWidgetHostView::GetRemoteContext()
 {
-    // Bail if missing package name
-    String packageName;
-    views->GetPackage(&packageName);
-    if (packageName.IsNull()) return mContext;
-
     //try {
         // Return if cloned successfully, otherwise default
+    AutoPtr<IActivityInfo> providerInfo;
+    mInfo->GetProviderInfo((IActivityInfo**)&providerInfo);
+    AutoPtr<IApplicationInfo> applicationInfo;
+    IComponentInfo::Probe(providerInfo)->GetApplicationInfo((IApplicationInfo**)&applicationInfo);
     AutoPtr<IContext> context;
-    ECode ec = mContext->CreatePackageContextAsUser(packageName, IContext::CONTEXT_RESTRICTED, mUser, (IContext**)&context);
+    ECode ec = mContext->CreateApplicationContext(applicationInfo,
+            IContext::CONTEXT_RESTRICTED, (IContext**)&context);
     if (FAILED(ec)) {
-        //Log.e(TAG, "Package name " + packageName + " not found");
+        String packageName;
+        IPackageItemInfo::Probe(providerInfo)->GetPackageName(&packageName);
+        Logger::E(TAG, "Package name: %s not found", packageName.string());
         return mContext;
     }
     // } catch (NameNotFoundException e) {
-    //     Log.e(TAG, "Package name " + packageName + " not found");
+    //     Log.e(TAG, "Package name " + mInfo.providerInfo.packageName + " not found");
     //     return mContext;
     // }
     return context;
@@ -517,8 +604,9 @@ Boolean AppWidgetHostView::DrawChild(
             if (alpha > 255) {
                 alpha = 255;
             }
-            // Log.d(TAG, "drawChild alpha=" + alpha + " l=" + l + " t=" + t
-            //         + " w=" + child.getWidth());
+            Int32 w;
+            child->GetWidth(&w);
+            Logger::D(TAG, "drawChild alpha= %d, l= %d, t= %d, w= %d", alpha, l, t, w);
             if (alpha != 255 && mOld != NULL) {
                 mOldPaint->SetAlpha(255 - alpha);
                 //canvas.drawBitmap(mOld, l, t, mOldPaint);
@@ -565,25 +653,19 @@ void AppWidgetHostView::PrepareView(
     }
 
     requested->SetGravity(IGravity::CENTER);
-    view->SetLayoutParams(requested);
+    view->SetLayoutParams(IViewGroupLayoutParams::Probe(requested));
 }
 
 AutoPtr<IView> AppWidgetHostView::GetDefaultView()
 {
-    // if (LOGD) {
-    //     Log.d(TAG, "getDefaultView");
-    // }
+    if (LOGD) {
+        Logger::D(TAG, "getDefaultView");
+    }
     AutoPtr<IView> defaultView;
 
     //try {
     if (mInfo != NULL) {
-        AutoPtr<IContext> theirContext;
-        AutoPtr<IComponentName> provider;
-        mInfo->GetProvider((IComponentName**)&provider);
-        String packageName;
-        provider->GetPackageName(&packageName);
-        mContext->CreatePackageContextAsUser(packageName,
-                IContext::CONTEXT_RESTRICTED, mUser, (IContext**)&theirContext);
+        AutoPtr<IContext> theirContext = GetRemoteContext();
         mRemoteContext = theirContext;
         AutoPtr<ILayoutInflater> inflater;
         theirContext->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE,
@@ -592,8 +674,7 @@ AutoPtr<IView> AppWidgetHostView::GetDefaultView()
         inflater->CloneInContext(theirContext, (ILayoutInflater**)&theirInflater);
         inflater = theirInflater;
         inflater->SetFilter(sInflaterFilter);
-        AutoPtr<IAppWidgetManager> widgetManager;
-        CAppWidgetManager::GetInstance(mContext, (IAppWidgetManager**)&widgetManager);
+        AutoPtr<IAppWidgetManager> widgetManager = AppWidgetManager::GetInstance(mContext);
         AutoPtr<IBundle> options;
         widgetManager->GetAppWidgetOptions(mAppWidgetId, (IBundle**)&options);
 
@@ -615,10 +696,8 @@ AutoPtr<IView> AppWidgetHostView::GetDefaultView()
         inflater->Inflate(layoutId, (IViewGroup*)this->Probe(EIID_IViewGroup), FALSE, (IView**)&defaultView);
     }
     else {
-        //Log.w(TAG, "can't inflate defaultView because mInfo is missing");
+        Logger::W(TAG, "can't inflate defaultView because mInfo is missing");
     }
-    // } catch (PackageManager.NameNotFoundException e) {
-    //     exception = e;
     // } catch (RuntimeException e) {
     //     exception = e;
     // }
@@ -628,7 +707,9 @@ AutoPtr<IView> AppWidgetHostView::GetDefaultView()
     // }
 
     if (defaultView == NULL) {
-        //if (LOGD) Log.d(TAG, "getDefaultView couldn't find any view, so inflating error");
+        if (LOGD) {
+            Logger::D(TAG, "getDefaultView couldn't find any view, so inflating error");
+        }
         defaultView = GetErrorView();
     }
 
@@ -641,8 +722,9 @@ AutoPtr<IView> AppWidgetHostView::GetErrorView()
     CTextView::New(mContext, (ITextView**)&tv);
     tv->SetText(R::string::gadget_host_error_inflating);
     // TODO: get this color from somewhere.
-    tv->SetBackgroundColor(Color::Argb(127, 0, 0, 0));
-    return IView::Probe(tv);
+    AutoPtr<IView> view = IView::Probe(tv);
+    view->SetBackgroundColor(Color::Argb(127, 0, 0, 0));
+    return view;
 }
 
 ECode AppWidgetHostView::OnInitializeAccessibilityNodeInfo(

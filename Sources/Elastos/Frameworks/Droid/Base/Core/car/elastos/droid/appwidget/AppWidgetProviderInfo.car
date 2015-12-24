@@ -4,6 +4,7 @@ module
     interface Elastos.Droid.Os.IUserHandle;
     interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.Pm.IActivityInfo;
     interface Elastos.Droid.Content.Pm.IPackageManager;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
 
@@ -204,6 +205,12 @@ module
 
         GetWidgetCategory(
             [out] Int32* category);
+
+        SetProviderInfo(
+            [in] IActivityInfo* providerInfo);
+
+        GetProviderInfo(
+            [out] IActivityInfo** providerInfo);
 
         Clone(
             [out] IAppWidgetProviderInfo** info);

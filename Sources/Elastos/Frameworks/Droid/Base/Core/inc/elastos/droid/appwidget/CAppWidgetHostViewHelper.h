@@ -3,6 +3,7 @@
 #define  __ELASTOS_DROID_APPWIDGET_CAPPWIDGETHOSTVIEWHELPER_H__
 
 #include "_Elastos_Droid_AppWidget_CAppWidgetHostViewHelper.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;
@@ -13,8 +14,13 @@ namespace Droid {
 namespace AppWidget {
 
 CarClass(CAppWidgetHostViewHelper)
+    , public Singleton
+    , public IAppWidgetHostViewHelper
 {
 public:
+    CAR_SINGLETON_DECL();
+
+    CAR_INTERFACE_DECL();
     /**
      * As of ICE_CREAM_SANDWICH we are automatically adding padding to widgets targeting
      * ICE_CREAM_SANDWICH and higher. The new widget design guidelines strongly recommend

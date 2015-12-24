@@ -2,12 +2,15 @@
 #ifndef __ELASTOS_DROID_APPWIDGET_APPWIDGETPROVIDER_H__
 #define __ELASTOS_DROID_APPWIDGET_APPWIDGETPROVIDER_H__
 
+#include <Elastos.Droid.AppWidget.h>
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 
+using Elastos::Droid::AppWidget::IAppWidgetProvider;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Os::IBundle;
 
 namespace Elastos {
 namespace Droid {
@@ -31,13 +34,19 @@ namespace AppWidget {
  * developer guide.</p>
  * </div>
  */
-class AppWidgetProvider: public BroadcastReceiver
+class AppWidgetProvider
+    : public BroadcastReceiver
+    , public IAppWidgetProvider
 {
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * Constructor to initialize AppWidgetProvider.
      */
     AppWidgetProvider();
+
+    ~AppWidgetProvider();
 
     /**
      * Implements {@link BroadcastReceiver#onReceive} to dispatch calls to the various
@@ -47,7 +56,7 @@ public:
      * @param intent The Intent being received.
      */
     // BEGIN_INCLUDE(onReceive)
-    virtual CARAPI OnReceive(
+    CARAPI OnReceive(
         /* [in] */ IContext* context,
         /* [in] */ IIntent* intent);
 
@@ -61,8 +70,9 @@ public:
     }
 
     /**
-     * Called in response to the {@link AppWidgetManager#ACTION_APPWIDGET_UPDATE} broadcast when
-     * this AppWidget provider is being asked to provide {@link android.widget.RemoteViews RemoteViews}
+     * Called in response to the {@link AppWidgetManager#ACTION_APPWIDGET_UPDATE} and
+     * {@link AppWidgetManager#ACTION_APPWIDGET_RESTORED} broadcasts when this AppWidget
+     * provider is being asked to provide {@link android.widget.RemoteViews RemoteViews}
      * for a set of AppWidgets.  Override this method to implement your own AppWidget functionality.
      *
      * {@more}
@@ -77,7 +87,7 @@ public:
      *
      * @see AppWidgetManager#ACTION_APPWIDGET_UPDATE
      */
-    virtual CARAPI OnUpdate(
+    CARAPI OnUpdate(
         /* [in] */ IContext* context,
         /* [in] */ IAppWidgetManager* appWidgetManager,
         /* [in] */ const ArrayOf<Int32>& appWidgetIds);
@@ -92,12 +102,12 @@ public:
      *                  running.
      * @param appWidgetManager A {@link AppWidgetManager} object you can call {@link
      *                  AppWidgetManager#updateAppWidget} on.
-     * @param appWidgetId The appWidgetId of the widget who's size changed.
-     * @param newOptions The appWidgetId of the widget who's size changed.
+     * @param appWidgetId The appWidgetId of the widget whose size changed.
+     * @param newOptions The appWidgetId of the widget whose size changed.
      *
      * @see AppWidgetManager#ACTION_APPWIDGET_OPTIONS_CHANGED
      */
-    virtual CARAPI OnAppWidgetOptionsChanged(
+    CARAPI OnAppWidgetOptionsChanged(
         /* [in] */ IContext* context,
         /* [in] */ IAppWidgetManager* appWidgetManager,
         /* [in] */ Int32 appWidgetId,
@@ -116,7 +126,7 @@ public:
      *
      * @see AppWidgetManager#ACTION_APPWIDGET_DELETED
      */
-    virtual CARAPI OnDeleted(
+    CARAPI OnDeleted(
         /* [in] */ IContext* context,
         /* [in] */ const ArrayOf<Int32>& appWidgetIds);
 
@@ -136,7 +146,7 @@ public:
      *
      * @see AppWidgetManager#ACTION_APPWIDGET_ENABLED
      */
-    virtual CARAPI OnEnabled(
+    CARAPI OnEnabled(
         /* [in] */ IContext* context);
 
     /**
@@ -151,8 +161,30 @@ public:
      *
      * @see AppWidgetManager#ACTION_APPWIDGET_DISABLED
      */
-    virtual CARAPI OnDisabled(
+    CARAPI OnDisabled(
         /* [in] */ IContext* context);
+
+    /**
+     * Called in response to the {@link AppWidgetManager#ACTION_APPWIDGET_RESTORED} broadcast
+     * when instances of this AppWidget provider have been restored from backup.  If your
+     * provider maintains any persistent data about its widget instances, override this method
+     * to remap the old AppWidgetIds to the new values and update any other app state that may
+     * be relevant.
+     *
+     * <p>This callback will be followed immediately by a call to {@link #onUpdate} so your
+     * provider can immediately generate new RemoteViews suitable for its newly-restored set
+     * of instances.
+     *
+     * {@more}
+     *
+     * @param context
+     * @param oldWidgetIds
+     * @param newWidgetIds
+     */
+    CARAPI OnRestored(
+        /* [in] */ IContext* context,
+        /* [in] */ ArrayOf<Int32>* oldWidgetIds,
+        /* [in] */ ArrayOf<Int32>* newWidgetIds);
 };
 
 } // namespace AppWidget
