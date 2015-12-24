@@ -15,3 +15,4 @@ INCLUDES += $(MAKEDIR)/../../../../../../inc/
 C_DEFINES += -DDROID_CORE
 
 SOURCES += Ease.cpp
+SOURCES += Tweener.cpp

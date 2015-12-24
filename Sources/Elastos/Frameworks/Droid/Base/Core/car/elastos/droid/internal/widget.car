@@ -1,5 +1,6 @@
 module
 {
+    merge("widget/multiwaveview/Tweener.car");
     merge("widget/IRemoteViewsAdapterConnection.car");
     merge("widget/IRemoteViewsFactory.car");
     merge("widget/AbsActionBarView.car");

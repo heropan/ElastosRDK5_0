@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_DROID_INTERNAL_WIDGET_EASE_H__
-#define __ELASTOS_DROID_INTERNAL_WIDGET_EASE_H__
+#ifndef __ELASTOS_DROID_INTERNAL_WIDGET_MULTIWAVEVIEW_EASE_H__
+#define __ELASTOS_DROID_INTERNAL_WIDGET_MULTIWAVEVIEW_EASE_H__
 
 #include <elastos/core/Object.h>
 
@@ -24,7 +24,7 @@ public:
             : public Object
         {
         public:
-            Float GetInterpolation(
+            CARAPI_(Float) GetInterpolation(
                 /* [in] */ Float input);
         };
 
@@ -40,7 +40,7 @@ public:
             : public Object
         {
         public:
-            Float GetInterpolation(
+            CARAPI_(Float) GetInterpolation(
                 /* [in] */ Float input);
         };
 
@@ -48,7 +48,7 @@ public:
             : public Object
         {
         public:
-            Float GetInterpolation(
+            CARAPI_(Float) GetInterpolation(
                 /* [in] */ Float input);
         };
 
@@ -56,7 +56,7 @@ public:
             : public Object
         {
         public:
-            Float GetInterpolation(
+            CARAPI_(Float) GetInterpolation(
                 /* [in] */ Float input);
         };
 
@@ -76,7 +76,7 @@ public:
             : public Object
         {
         public:
-            Float GetInterpolation (
+            CARAPI_(Float) GetInterpolation (
                 /* [in] */ Float input);
         };
 
@@ -84,7 +84,7 @@ public:
             : public Object
         {
         public:
-            Float GetInterpolation(
+            CARAPI_(Float) GetInterpolation(
                 /* [in] */ Float input);
         };
 
@@ -92,7 +92,7 @@ public:
             : public Object
         {
         public:
-            Float GetInterpolation(
+            CARAPI_(Float) GetInterpolation(
                 /* [in] */ Float input);
         };
 
@@ -112,7 +112,7 @@ public:
             : public Object
         {
         public:
-            Float GetInterpolation(
+            CARAPI_(Float) GetInterpolation(
                 /* [in] */ Float input);
         };
 
@@ -120,7 +120,7 @@ public:
             : public Object
         {
         public:
-            Float GetInterpolation(
+            CARAPI_(Float) GetInterpolation(
                 /* [in] */ Float input);
         };
 
@@ -128,7 +128,7 @@ public:
             : public Object
         {
         public:
-            Float GetInterpolation(
+            CARAPI_(Float) GetInterpolation(
                 /* [in] */ Float input);
         };
 
@@ -148,7 +148,7 @@ public:
             : public Object
         {
         public:
-            Float GetInterpolation(
+            CARAPI_(Float) GetInterpolation(
                 /* [in] */ Float input);
         };
 
@@ -156,7 +156,7 @@ public:
             : public Object
         {
         public:
-            Float GetInterpolation(
+            CARAPI_(Float) GetInterpolation(
                 /* [in] */ Float input);
         };
 
@@ -164,7 +164,7 @@ public:
             : public Object
         {
         public:
-            Float GetInterpolation(
+            CARAPI_(Float) GetInterpolation(
                 /* [in] */ Float input);
         };
 
@@ -184,7 +184,7 @@ public:
             : public Object
         {
         public:
-            Float GetInterpolation(
+            CARAPI_(Float) GetInterpolation(
                 /* [in] */ Float input);
         };
 
@@ -192,7 +192,7 @@ public:
             : public Object
         {
         public:
-            Float GetInterpolation(
+            CARAPI_(Float) GetInterpolation(
                 /* [in] */ Float input);
         };
 
@@ -200,7 +200,7 @@ public:
             : public Object
         {
         public:
-            Float GetInterpolation(
+            CARAPI_(Float) GetInterpolation(
                 /* [in] */ Float input);
         };
 
@@ -224,4 +224,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_INTERNAL_WIDGET_EASE_H__
+#endif // __ELASTOS_DROID_INTERNAL_WIDGET_MULTIWAVEVIEW_EASE_H__
