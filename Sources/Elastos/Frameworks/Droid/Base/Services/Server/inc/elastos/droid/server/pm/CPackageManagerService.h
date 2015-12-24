@@ -96,8 +96,9 @@ adb shell am instrument -w -e class com.android.unit_tests.PackageManagerTests c
  * {@hide}
  */
 CarClass(CPackageManagerService)
-    : public Object
+    , public Object
     , public IIPackageManager
+    , public IBinder
 {
 public:/* package */
     friend class CResourcesChangedReceiver;

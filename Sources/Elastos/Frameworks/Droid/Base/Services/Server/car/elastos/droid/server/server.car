@@ -656,6 +656,20 @@ module
 //         interface IIPackageInstallObserver2;
 //     }
 
+//     class CKeySetHandle {
+//         constructor();
+
+//         interface IBinder;
+//     }
+
+//     class CLauncherAppsImpl {
+//         constructor(
+//             [in] IContext* context);
+
+//         interface IILauncherApps;
+//         interface IBinder;
+//     }
+
 //     [local]
 //     class CUserManagerService {
 //         constructor(
