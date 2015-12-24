@@ -1,13 +1,14 @@
 
 #include "elastos/droid/server/BootReceiver.h"
+#include "Elastos.CoreLibrary.Core.h"
 #include "elastos/droid/os/SystemProperties.h"
 #include "elastos/droid/os/ServiceManager.h"
 #include "elastos/droid/os/FileUtils.h"
 #include "elastos/droid/os/Build.h"
 // #include "elastos/droid/os/RecoverySystem.h"
 #include <elastos/utility/logging/Slogger.h>
-#include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
 
 // using Elastos::Droid::Os::RecoverySystem;
 using Elastos::Droid::Os::FileUtils;
@@ -15,12 +16,13 @@ using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::SystemProperties;
 using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::Content::ISharedPreferencesEditor;
-using Elastos::Utility::Logging::Slogger;
+using Elastos::Droid::Content::Pm::IIPackageManager;
+using Elastos::Core::CSystem;
+using Elastos::Core::ISystem;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
-using Elastos::Core::ISystem;
-using Elastos::Core::CSystem;
 using Elastos::IO::CFile;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -53,6 +55,7 @@ AutoPtr<IFileObserver> BootReceiver::sTombstoneObserver;
 //=================================================================================
 // BootReceiver::MyThread
 //=================================================================================
+
 BootReceiver::MyThread::MyThread(
     /* [in] */ BootReceiver* host,
     /* [in] */ IContext* ctx)
@@ -66,28 +69,27 @@ ECode BootReceiver::MyThread::Run()
     ECode ec = mHost->LogBootEvents(mContext);
     if (FAILED(ec)) {
         Slogger::E(BootReceiver::TAG, "Can't log boot events %08x", ec);
+        return ec;
     }
-    // try {
     Boolean onlyCore = FALSE;
     AutoPtr<IInterface> obj = ServiceManager::GetService(String("package"));
     IIPackageManager* pkgMgr = IIPackageManager::Probe(obj);
     ec = pkgMgr->IsOnlyCoreApps(&onlyCore);
-    if (ec == (ECode)E_REMOTE_EXCEPTION) {
-        ec = NOERROR;
+    if (FAILED(ec)) {
+        return E_REMOTE_EXCEPTION;
     }
-    else (FAILED(ec)) {
-        Slogger::E(BootReceiver::TAG, "Can't remove old update packages %08x", ec);
-        return ec;
-    }
-
     if (!onlyCore) {
-        return mHost->RemoveOldUpdatePackages(mContext);
+        ec = mHost->RemoveOldUpdatePackages(mContext);
+        if (FAILED(ec)) {
+            Slogger::E(BootReceiver::TAG, "Can't remove old update packages %08x", ec);
+            return ec;
+        }
     }
     return NOERROR;
 }
 
 //=================================================================================
-// BootReceiver
+// BootReceiver::TombstoneObserver
 //=================================================================================
 BootReceiver::TombstoneObserver::TombstoneObserver(
     /* [in] */ const String& path,
@@ -104,41 +106,45 @@ BootReceiver::TombstoneObserver::TombstoneObserver(
 {
 }
 
-//@Override
 ECode BootReceiver::TombstoneObserver::OnEvent(
     /* [in] */ Int32 event,
     /* [in] */ const String& path)
 {
-    // try {
      Boolean isFile;
     AutoPtr<IFile> file;
     ECode ec = CFile::New(BootReceiver::TOMBSTONE_DIR, path, (IFile**)&file);
-    if (ec == (ECode)E_IO_EXCEPTION) goto _EXIT_;
+    if (FAILED(ec)) return E_IO_EXCEPTION;
 
     ec = file->IsFile(&isFile);
-    if (ec == (ECode)E_IO_EXCEPTION) goto _EXIT_;
+    if (FAILED(ec)) return E_IO_EXCEPTION;
 
     if (isFile) {
         String filePath;
         file->GetPath(&filePath);
-        ec = mHost->AddFileToDropBox(mDropBoxManager, mSharedPreferences,
+        ec = mHost->AddFileToDropBox(mDropBoxManager.Get(), mSharedPreferences.Get(),
             mHeaders, filePath, BootReceiver::LOG_SIZE, String("SYSTEM_TOMBSTONE"));
     }
 
-_EXIT_:
-    // } catch (IOException e) {
-    if (ec == (ECode)E_IO_EXCEPTION) {
+    if (FAILED(ec)) {
         Slogger::E(BootReceiver::TAG, "Can't log tombstone %08x", ec);
-        return ec;
+        return E_IO_EXCEPTION;
     }
-
-    // }
     return NOERROR;
 }
 
 //=================================================================================
 // BootReceiver
 //=================================================================================
+
+BootReceiver::BootReceiver()
+{
+}
+
+ECode BootReceiver::constructor()
+{
+    return NOERROR;
+}
+
 ECode BootReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
@@ -149,13 +155,14 @@ ECode BootReceiver::OnReceive(
     return NOERROR;
 }
 
-void BootReceiver::RemoveOldUpdatePackages(
+ECode BootReceiver::RemoveOldUpdatePackages(
     /* [in] */ IContext* context)
 {
     assert(0 && "TODO");
-    AutoPtr<IDownloads> downloads;
+    // AutoPtr<IDownloads> downloads;
     // CDownloads::AcquireSingleton((IDownloads**)&downloads);
     // downloads->RemoveAllDownloadsByPackage(context, OLD_UPDATER_PACKAGE, OLD_UPDATER_CLASS);
+    return NOERROR;
 }
 
 ECode BootReceiver::LogBootEvents(
@@ -194,7 +201,7 @@ ECode BootReceiver::LogBootEvents(
 
     String headers(sb.ToString());
     String bootReason;
-    SystemProperties::Get(String("ro.boot.bootreason"), String(NULL), &bootreason);
+    SystemProperties::Get(String("ro.boot.bootreason"), String(NULL), &bootReason);
 
     assert(0 && "TODO");
     // String recovery = RecoverySystem::HandleAftermath();
@@ -259,7 +266,7 @@ ECode BootReceiver::LogBootEvents(
 
     // Scan existing tombstones (in case any new ones appeared)
     AutoPtr< ArrayOf<IFile*> > tombstoneFiles;
-    TOMBSTONE_DIR->ListFiles((ArrayOf<IFile**>**)&tombstoneFiles);
+    TOMBSTONE_DIR->ListFiles((ArrayOf<IFile*>**)&tombstoneFiles);
     Boolean isFile;
     for (Int32 i = 0; tombstoneFiles != NULL && i < tombstoneFiles->GetLength(); i++) {
         (*tombstoneFiles)[i]->IsFile(&isFile);
@@ -274,8 +281,7 @@ ECode BootReceiver::LogBootEvents(
     // This gets registered with the singleton file observer thread.
     String dir;
     TOMBSTONE_DIR->GetPath(&dir);
-    sTombstoneObserver = new TombstoneObserver(dir, IFileObserver::CLOSE_WRITE,
-        this, db, prefs, headers);
+    sTombstoneObserver = new TombstoneObserver(dir, IFileObserver::CLOSE_WRITE, db, prefs, headers, this);
 
     sTombstoneObserver->StartWatching();
     return NOERROR;
@@ -285,7 +291,6 @@ ECode BootReceiver::AddFileToDropBox(
     /* [in] */ IDropBoxManager* db,
     /* [in] */ ISharedPreferences* prefs,
     /* [in] */ const String& headers,
-    /* [in] */ const String& footers,
     /* [in] */ const String& filename,
     /* [in] */ Int32 maxSize,
     /* [in] */ const String& tag)
@@ -303,18 +308,18 @@ ECode BootReceiver::AddFileWithFootersToDropBox(
     /* [in] */ const String& tag)
 {
     Boolean bval;
-    if (db == NULL || (db->IsTagEnabled(tag, &bval), !bval)) return NOERROR;  // Logging disabled
+    if (db == NULL || (db->IsTagEnabled(tag, &bval), !bval)) return E_NULL_POINTER_EXCEPTION;  // Logging disabled
 
     AutoPtr<IFile> file;
     CFile::New(filename, (IFile**)&file);
     Int64 fileTime;
     file->GetLastModified(&fileTime);
-    if (fileTime <= 0) return NOERROR;  // File does not exist
+    if (fileTime <= 0) return E_NULL_POINTER_EXCEPTION;  // File does not exist
 
     if (prefs != NULL) {
         Int64 lastTime;
         prefs->GetInt64(filename, 0, &lastTime);
-        if (lastTime == fileTime) return NOERROR;  // Already logged this particular file
+        if (lastTime == fileTime) return E_NULL_POINTER_EXCEPTION;  // Already logged this particular file
         // TODO: move all these SharedPreferences Editor commits
         // outside this function to the end of logBootEvents
         AutoPtr<ISharedPreferencesEditor> editor;
@@ -337,7 +342,7 @@ ECode BootReceiver::AddAuditErrorsToDropBox(
     /* [in] */ const String& tag)
 {
     Boolean bval;
-    if (db == NULL || (db->IsTagEnabled(tag, &bval), !bval)) return NOERROR;  // Logging disabled
+    if (db == NULL || (db->IsTagEnabled(tag, &bval), !bval)) return E_NULL_POINTER_EXCEPTION;  // Logging disabled
     Slogger::I(TAG, "Copying audit failures to DropBox");
 
     AutoPtr<IFile> file;
@@ -351,12 +356,12 @@ ECode BootReceiver::AddAuditErrorsToDropBox(
         file->GetLastModified(&fileTime);
     }
 
-    if (fileTime <= 0) return NOERROR;  // File does not exist
+    if (fileTime <= 0) return E_NULL_POINTER_EXCEPTION;  // File does not exist
 
     if (prefs != NULL) {
         Int64 lastTime;
         prefs->GetInt64(tag, 0, &lastTime);
-        if (lastTime == fileTime) return NOERROR;  // Already logged this particular file
+        if (lastTime == fileTime) return E_NULL_POINTER_EXCEPTION;  // Already logged this particular file
         // TODO: move all these SharedPreferences Editor commits
         // outside this function to the end of logBootEvents
         AutoPtr<ISharedPreferencesEditor> editor;
@@ -372,7 +377,7 @@ ECode BootReceiver::AddAuditErrorsToDropBox(
     StringBuilder sb;
     for (Int32 i = 0; i < splits->GetLength(); ++i) {
         if ((*splits)[i].Contains("audit")) {
-            sb.Append((*splits));
+            sb.Append((*splits)[i]);
             sb.Append("\n");
         }
     }
@@ -390,7 +395,7 @@ ECode BootReceiver::AddFsckErrorsToDropBox(
     /* [in] */ const String& tag)
 {
     Boolean bval;
-    if (db == NULL || (db->IsTagEnabled(tag, &bval), !bval)) return NOERROR;  // Logging disabled
+    if (db == NULL || (db->IsTagEnabled(tag, &bval), !bval)) return E_NULL_POINTER_EXCEPTION;  // Logging disabled
 
     Slogger::I(TAG, "Checking for fsck errors");
 
@@ -400,8 +405,7 @@ ECode BootReceiver::AddFsckErrorsToDropBox(
     CFile::New(String("/dev/fscklogs/log"), (IFile**)&file);
     Int64 fileTime;
     file->GetLastModified(&fileTime);
-    if (fileTime <= 0) return NOERROR;  // File does not exist
-
+    if (fileTime <= 0) return E_NULL_POINTER_EXCEPTION;  // File does not exist
 
     String log;
     FileUtils::ReadTextFile(file, maxSize, String("[[TRUNCATED]]\n"), &log);
@@ -410,7 +414,7 @@ ECode BootReceiver::AddFsckErrorsToDropBox(
     StringBuilder sb;
     for (Int32 i = 0; i < splits->GetLength(); ++i) {
         if ((*splits)[i].Contains("FILE SYSTEM WAS MODIFIED")) {
-            upload_needed = true;
+            upload_needed = TRUE;
             break;
         }
     }

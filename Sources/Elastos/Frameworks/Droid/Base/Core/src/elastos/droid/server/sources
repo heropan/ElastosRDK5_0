@@ -8,6 +8,10 @@ INCLUDES += $(MAKEDIR)/../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
-#SOURCES = server.cpp
-#SOURCES += BootReceiver.cpp
+SOURCES = server.cpp
+SOURCES += BootReceiver.cpp
 SOURCES += LocalServices.cpp
+SOURCES += CAppWidgetBackupBridge.cpp
+SOURCES += ResettableTimeout.cpp
+SOURCES += NetworkManagementSocketTagger.cpp
+SOURCES += CNetworkManagementSocketTaggerHelper.cpp

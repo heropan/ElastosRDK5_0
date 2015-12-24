@@ -32,6 +32,7 @@ module
     merge("core/ICloseGuard.car");
     merge("core/IEnum.car");
     merge("core/ISystem.car");
+    merge("core/IThreadLocal.car");
 
     merge("io/ISerializable.car");
 

@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_DROID_SERVER_CBOOT_RECEIVER_H__
-#define __ELASTOS_DROID_SERVER_CBOOT_RECEIVER_H__
+#ifndef __ELASTOS_DROID_SERVER_CBOOTRECEIVER_H__
+#define __ELASTOS_DROID_SERVER_CBOOTRECEIVER_H__
 
 #include "_Elastos_Droid_Server_CBootReceiver.h"
 #include "elastos/droid/server/BootReceiver.h"
@@ -19,4 +19,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_SERVER_CBOOT_RECEIVER_H__
+#endif //__ELASTOS_DROID_SERVER_CBOOTRECEIVER_H__

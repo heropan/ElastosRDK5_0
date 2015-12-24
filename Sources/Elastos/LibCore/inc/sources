@@ -104,6 +104,7 @@ EXPORT_HEADERS += elastos/io/Writer.h
 
 EXPORT_HEADERS += elastos/security/Provider.h
 
+EXPORT_HEADERS += libcore/io/SocketTagger.h
 EXPORT_HEADERS += libcore/utility/EmptyArray.h
 
 EXPORT_HEADERS += elastos/droid/system/Os.h

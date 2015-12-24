@@ -2,11 +2,12 @@
 #define __LIBCORE_IO_SOCKETTAGGER_H__
 
 #include "Elastos.CoreLibrary.Libcore.h"
-#include "core/Object.h"
+#include "elastos/core/Object.h"
 
 using Libcore::IO::ISocketTagger;
 using Libcore::IO::EIID_ISocketTagger;
 using Elastos::IO::IFileDescriptor;
+using Elastos::Core::Object;
 using Elastos::Net::ISocket;
 
 namespace Libcore {
@@ -14,7 +15,7 @@ namespace IO {
 
 EXTERN const _ELASTOS ClassID ECLSID_SocketTagger;
 
-class SocketTagger
+class ECO_PUBLIC SocketTagger
     : public Object
     , public ISocketTagger
 {
@@ -45,9 +46,9 @@ public:
         /* [out] */ ISocketTagger** tagger);
 
 private:
-    static AutoPtr<ISocketTagger> sTagger;
+    ECO_LOCAL static AutoPtr<ISocketTagger> sTagger;
 
-    static Object sLock;
+    ECO_LOCAL static Object sLock;
 };
 
 class SocketTaggerInner

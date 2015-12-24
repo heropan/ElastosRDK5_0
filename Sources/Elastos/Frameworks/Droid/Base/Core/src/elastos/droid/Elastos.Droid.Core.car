@@ -134,7 +134,9 @@ module
     merge("../../../car/elastos/droid/transition.car");
     }
 
-    //merge("../../../car/elastos/droid/server.car");
+    submodule Elastos.Droid.Server {
+    merge("../../../car/elastos/droid/server.car");
+    }
 
     submodule Elastos.Droid.Internal {
     merge("../../../car/elastos/droid/internal/database.car");
