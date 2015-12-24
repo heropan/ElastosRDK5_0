@@ -1,6 +1,6 @@
 
-#include "Elastos.Droid.Widget.h"
 #include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/AbsSeekBar.h"
 #include "elastos/droid/animation/ObjectAnimator.h"
 #include "elastos/droid/graphics/drawable/Drawable.h"

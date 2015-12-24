@@ -26,6 +26,8 @@ using Elastos::Droid::Utility::CTypedValue;
 using Elastos::Droid::R;
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::Math;
+using Elastos::Core::CCloseGuardHelper;
+using Elastos::Core::ICloseGuardHelper;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -159,10 +161,21 @@ Animation::Animation()
     ASSERT_SUCCEEDED(CRectF::New((IRectF**)&mRegion));
     ASSERT_SUCCEEDED(CTransformation::New((ITransformation**)&mTransformation));
     ASSERT_SUCCEEDED(CTransformation::New((ITransformation**)&mPreviousTransformation));
+    AutoPtr<ICloseGuardHelper> helper;
+    CCloseGuardHelper::AcquireSingleton((ICloseGuardHelper**)&helper);
+    helper->Get((ICloseGuard**)&mGuard);
 }
 
 Animation::~Animation()
-{}
+{
+    // try {
+    if (mGuard != NULL) {
+        mGuard->WarnIfOpen();
+    }
+    // } finally {
+    //     super.finalize();
+    // }
+}
 
 ECode Animation::constructor()
 {
@@ -252,8 +265,7 @@ ECode Animation::Cancel()
         FireAnimationEnd();
         mEnded = TRUE;
 
-        //TODO
-        //guard.close();
+        mGuard->Close();
     }
     // Make sure we move the animation to the end
     mStartTime = Elastos::Core::Math::INT64_MIN_VALUE;
@@ -267,8 +279,7 @@ ECode Animation::Detach()
     if (mStarted && !mEnded) {
         mEnded = TRUE;
 
-        //TODO
-        //guard.close();
+        mGuard->Close();
 
         FireAnimationEnd();
     }
@@ -655,12 +666,10 @@ ECode Animation::GetTransformation(
             FireAnimationStart();
             mStarted = TRUE;
 
-//            CloseGuard is just used to remind you with Log infomations
-//            if (USE_CLOSEGUARD) {
-//                assert(0);
-//                //TODO
-//                //guard.open("cancel or detach or getTransformation");
-//            }
+           // CloseGuard is just used to remind you with Log infomations
+           if (USE_CLOSEGUARD) {
+               mGuard->Open(String("cancel or detach or getTransformation"));
+           }
         }
 
         if (mFillEnabled) {
@@ -680,6 +689,7 @@ ECode Animation::GetTransformation(
         if (mRepeatCount == mRepeated) {
             if (!mEnded) {
                 mEnded = TRUE;
+                mGuard->Close();
                 FireAnimationEnd();
             }
         }

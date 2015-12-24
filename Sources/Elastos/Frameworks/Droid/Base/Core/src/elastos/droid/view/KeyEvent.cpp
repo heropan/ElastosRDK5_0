@@ -105,8 +105,8 @@ ECode KeyEvent::DispatcherState::constructor()
 
 ECode KeyEvent::DispatcherState::Reset()
 {
-    //if (DEBUG)
-    //Logger::D(KeyEvent::TAG, "Reset: " + this);
+    if (DEBUG)
+    Logger::D(KeyEvent::TAG, "Reset: %p", this);
 
     mDownKeyCode = 0;
     mDownTarget = NULL;
@@ -119,8 +119,8 @@ ECode KeyEvent::DispatcherState::Reset(
     /* [in] */ IInterface* target)
 {
     if (mDownTarget.Get() == target) {
-        //if (DEBUG)
-        //Logger::D(TAG, "Reset in " + target + ": " + this);
+        if (DEBUG)
+        Logger::D(TAG, "Reset in %p, %p", target, this);
         mDownKeyCode = 0;
         mDownTarget = NULL;
     }
@@ -141,8 +141,8 @@ ECode KeyEvent::DispatcherState::StartTracking(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    //if (DEBUG)
-    //Logger::D(KeyEvent::TAG, "Start trackingt in " + target + ": " + this);
+    if (DEBUG)
+    Logger::D(KeyEvent::TAG, "Start trackingt in %p : %p", target, this);
     event->GetKeyCode(&mDownKeyCode);
     mDownTarget = target;
 

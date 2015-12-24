@@ -13,7 +13,7 @@
 #include "elastos/droid/view/accessibility/CCaptioningManagerCaptionStyle.h"
 #include "elastos/droid/graphics/Typeface.h"
 #include "elastos/droid/os/CHandler.h"
-// #include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/provider/Settings.h"
 #include "elastos/droid/text/TextUtils.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/StringUtils.h>
@@ -22,7 +22,7 @@ using Elastos::Droid::Graphics::IColor;
 using Elastos::Droid::Graphics::Typeface;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Provider::ISettingsSecure;
-// using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::Provider::Settings;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Core::StringUtils;
 using Elastos::Utility::CArrayList;
@@ -286,43 +286,42 @@ ECode CaptioningManager::CaptionStyle::GetCustomStyle(
     /* [out] */ ICaptioningManagerCaptionStyle** style)
 {
     VALIDATE_NOT_NULL(style);
-    assert(0 && "TODO");
 
-    // AutoPtr<ICaptioningManagerCaptionStyle> defStyle = DEFAULT_CUSTOM;
-    // Int32 foregroundColor, result;
-    // Settings::Secure::GetInt32(cr,
-    //         ISettingsSecure::ACCESSIBILITY_CAPTIONING_FOREGROUND_COLOR,
-    //         (defStyle->GetForegroundColor(&result), result), &foregroundColor);
-    // Int32 backgroundColor;
-    // Settings::Secure::GetInt32(cr,
-    //         ISettingsSecure::ACCESSIBILITY_CAPTIONING_BACKGROUND_COLOR,
-    //         (defStyle->GetBackgroundColor(&result), result), &backgroundColor);
-    // Int32 edgeType;
-    // Settings::Secure::GetInt32(cr,
-    //         ISettingsSecure::ACCESSIBILITY_CAPTIONING_EDGE_TYPE,
-    //         (defStyle->GetEdgeType(&result), result), &edgeType);
-    // Int32 edgeColor;
-    // Settings::Secure::GetInt32(cr,
-    //         ISettingsSecure::ACCESSIBILITY_CAPTIONING_EDGE_COLOR,
-    //         (defStyle->GetEdgeColor(&result), result), &edgeColor);
-    // Int32 windowColor;
-    // Settings::Secure::GetInt32(cr,
-    //         ISettingsSecure::ACCESSIBILITY_CAPTIONING_WINDOW_COLOR,
-    //         (defStyle->GetWindowColor(&result), result), &windowColor);
+    AutoPtr<ICaptioningManagerCaptionStyle> defStyle = DEFAULT_CUSTOM;
+    Int32 foregroundColor, result;
+    Settings::Secure::GetInt32(cr,
+            ISettingsSecure::ACCESSIBILITY_CAPTIONING_FOREGROUND_COLOR,
+            (defStyle->GetForegroundColor(&result), result), &foregroundColor);
+    Int32 backgroundColor;
+    Settings::Secure::GetInt32(cr,
+            ISettingsSecure::ACCESSIBILITY_CAPTIONING_BACKGROUND_COLOR,
+            (defStyle->GetBackgroundColor(&result), result), &backgroundColor);
+    Int32 edgeType;
+    Settings::Secure::GetInt32(cr,
+            ISettingsSecure::ACCESSIBILITY_CAPTIONING_EDGE_TYPE,
+            (defStyle->GetEdgeType(&result), result), &edgeType);
+    Int32 edgeColor;
+    Settings::Secure::GetInt32(cr,
+            ISettingsSecure::ACCESSIBILITY_CAPTIONING_EDGE_COLOR,
+            (defStyle->GetEdgeColor(&result), result), &edgeColor);
+    Int32 windowColor;
+    Settings::Secure::GetInt32(cr,
+            ISettingsSecure::ACCESSIBILITY_CAPTIONING_WINDOW_COLOR,
+            (defStyle->GetWindowColor(&result), result), &windowColor);
 
-    // String rawTypeface;
-    // Settings::Secure::GetString(cr, ISettingsSecure::ACCESSIBILITY_CAPTIONING_TYPEFACE, &rawTypeface);
-    // if (rawTypeface.IsNull()) {
-    //     defStyle->GetRawTypeface(&rawTypeface);
-    // }
+    String rawTypeface;
+    Settings::Secure::GetString(cr, ISettingsSecure::ACCESSIBILITY_CAPTIONING_TYPEFACE, &rawTypeface);
+    if (rawTypeface.IsNull()) {
+        defStyle->GetRawTypeface(&rawTypeface);
+    }
 
-    // AutoPtr<CCaptioningManagerCaptionStyle> styleObj;
-    // CCaptioningManagerCaptionStyle::NewByFriend(foregroundColor, backgroundColor,
-    //         edgeType, edgeColor, windowColor, rawTypeface,
-    //         (CCaptioningManagerCaptionStyle**)&styleObj);
+    AutoPtr<CCaptioningManagerCaptionStyle> styleObj;
+    CCaptioningManagerCaptionStyle::NewByFriend(foregroundColor, backgroundColor,
+            edgeType, edgeColor, windowColor, rawTypeface,
+            (CCaptioningManagerCaptionStyle**)&styleObj);
 
-    // *style = (ICaptioningManagerCaptionStyle*)styleObj.Get();
-    // REFCOUNT_ADD(*style);
+    *style = (ICaptioningManagerCaptionStyle*)styleObj.Get();
+    REFCOUNT_ADD(*style);
     return NOERROR;
 }
 
@@ -427,11 +426,10 @@ ECode CaptioningManager::IsEnabled(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    assert(0 && "TODO");
-    // Int32 value;
-    // Settings::Secure::GetInt32(mContentResolver,
-    //         ISettingsSecure::ACCESSIBILITY_CAPTIONING_ENABLED, DEFAULT_ENABLED, &value);
-    // *result = value == 1;
+    Int32 value;
+    Settings::Secure::GetInt32(mContentResolver,
+            ISettingsSecure::ACCESSIBILITY_CAPTIONING_ENABLED, DEFAULT_ENABLED, &value);
+    *result = value == 1;
     return NOERROR;
 }
 
@@ -439,9 +437,8 @@ ECode CaptioningManager::GetRawLocale(
     /* [out] */ String* locale)
 {
     VALIDATE_NOT_NULL(locale);
-    assert(0 && "TODO");
-    // Settings::Secure::GetString(mContentResolver,
-    //         ISettingsSecure::ACCESSIBILITY_CAPTIONING_LOCALE, locale);
+    Settings::Secure::GetString(mContentResolver,
+            ISettingsSecure::ACCESSIBILITY_CAPTIONING_LOCALE, locale);
     return NOERROR;
 }
 
@@ -475,9 +472,8 @@ ECode CaptioningManager::GetFontScale(
     /* [out] */ Float* scale)
 {
     VALIDATE_NOT_NULL(scale);
-    assert(0 && "TODO");
-    // Settings::Secure::GetFloat(mContentResolver,
-    //         ISettingsSecure::ACCESSIBILITY_CAPTIONING_FONT_SCALE, DEFAULT_FONT_SCALE, scale);
+    Settings::Secure::GetFloat(mContentResolver,
+            ISettingsSecure::ACCESSIBILITY_CAPTIONING_FONT_SCALE, DEFAULT_FONT_SCALE, scale);
     return NOERROR;
 }
 
@@ -485,9 +481,8 @@ ECode CaptioningManager::GetRawUserStyle(
     /* [out] */ Int32* style)
 {
     VALIDATE_NOT_NULL(style);
-    assert(0 && "TODO");
-    // Settings::Secure::GetInt32(mContentResolver,
-    //         ISettingsSecure::ACCESSIBILITY_CAPTIONING_PRESET, DEFAULT_PRESET, style);
+    Settings::Secure::GetInt32(mContentResolver,
+            ISettingsSecure::ACCESSIBILITY_CAPTIONING_PRESET, DEFAULT_PRESET, style);
     return NOERROR;
 }
 
@@ -532,10 +527,9 @@ ECode CaptioningManager::AddCaptioningChangeListener(
 void CaptioningManager::RegisterObserver(
     /* [in] */ const String& key)
 {
-    assert(0 && "TODO");
-    // AutoPtr<IUri> uri;
-    // Settings::Secure::GetUriFor(key, (IUri**)&uri);
-    // mContentResolver->RegisterContentObserver(uri, FALSE, mContentObserver);
+    AutoPtr<IUri> uri;
+    Settings::Secure::GetUriFor(key, (IUri**)&uri);
+    mContentResolver->RegisterContentObserver(uri, FALSE, mContentObserver);
 }
 
 ECode CaptioningManager::RemoveCaptioningChangeListener(

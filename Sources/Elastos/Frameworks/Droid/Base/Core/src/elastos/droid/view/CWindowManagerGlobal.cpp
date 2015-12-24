@@ -12,7 +12,7 @@
 #include "elastos/droid/view/CWindowManagerGlobalSessionCallback.h"
 #include "elastos/droid/view/CWindowManagerLayoutParams.h"
 #include "elastos/droid/view/HardwareRenderer.h"
-//#include "elastos/droid/view/inputmethod/CInputMethodManager.h"
+#include "elastos/droid/view/inputmethod/CInputMethodManager.h"
 #include "elastos/droid/view/ViewRootImpl.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
@@ -36,7 +36,7 @@ using Elastos::Droid::Os::IServiceManager;
 using Elastos::Droid::Os::ISystemProperties;
 using Elastos::Droid::View::EIID_IIWindowSessionCallback;
 using Elastos::Droid::View::HardwareRenderer;
-//using Elastos::Droid::View::InputMethod::CInputMethodManager;
+using Elastos::Droid::View::InputMethod::CInputMethodManager;
 using Elastos::Droid::View::InputMethod::IInputMethodManager;
 using Elastos::Core::CFloat;
 using Elastos::Core::CInteger32;
@@ -154,8 +154,7 @@ AutoPtr<IWindowSession> CWindowManagerGlobal::GetWindowSession()
     AutoLock lock(sDefaultWindowManagerLock);
     if (sWindowSession == NULL) {
         //try {
-            assert(0);
-            AutoPtr<IInputMethodManager> imm;// = CInputMethodManager::GetInstance();
+            AutoPtr<IInputMethodManager> imm = CInputMethodManager::GetInstance();
             AutoPtr<IIWindowManager> wm = GetWindowManagerService();
 
             AutoPtr<IInputMethodClient> client;
@@ -497,8 +496,7 @@ void CWindowManagerGlobal::RemoveViewLocked(
     root->GetView((IView**)&view);
 
     if (view != NULL) {
-        assert(0);
-        AutoPtr<IInputMethodManager> imm;// = CInputMethodManager::GetInstance();
+        AutoPtr<IInputMethodManager> imm = CInputMethodManager::GetInstance();
         if (imm != NULL) {
             temp = NULL;
             mViews->Get(index, (IInterface**)&temp);

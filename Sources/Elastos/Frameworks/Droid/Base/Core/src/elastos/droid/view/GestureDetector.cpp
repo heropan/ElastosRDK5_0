@@ -8,9 +8,8 @@
 #include "elastos/droid/view/GestureDetector.h"
 #include "elastos/droid/view/ViewConfiguration.h"
 #include <elastos/core/Math.h>
-// zhangjingcheng, wait...
-// #include "elastos/droid/view/VelocityTracker.h"
-// #include "elastos/droid/view/CMotionEvent.h"
+#include "elastos/droid/view/VelocityTracker.h"
+#include "elastos/droid/view/MotionEvent.h"
 
 using Elastos::Droid::Os::ILooper;
 
@@ -221,10 +220,9 @@ ECode GestureDetector::constructor(
    /* [in] */ IGestureDetectorOnGestureListener* listener,
    /* [in] */ IHandler* handler)
 {
-    assert (0 && "TODO");
-    // mInputEventConsistencyVerifier =
-    //         InputEventConsistencyVerifier::IsInstrumentationEnabled() ?
-    //                 new InputEventConsistencyVerifier(THIS_PROBE(IInterface), 0) : NULL;
+    mInputEventConsistencyVerifier =
+            InputEventConsistencyVerifier::IsInstrumentationEnabled() ?
+                    new InputEventConsistencyVerifier(THIS_PROBE(IInterface), 0) : NULL;
 
     if (handler != NULL) {
         AutoPtr<ILooper> looper;
@@ -310,7 +308,8 @@ ECode GestureDetector::OnTouchEvent(
     ev->GetAction(&action);
 
     if (mVelocityTracker == NULL) {
-        // mVelocityTracker = VelocityTracker::Obtain();
+        AutoPtr<VelocityTracker> tracker = VelocityTracker::Obtain();
+        mVelocityTracker = (IVelocityTracker*)tracker.Get();
     }
 
     mVelocityTracker->AddMovement(ev);
@@ -422,7 +421,7 @@ ECode GestureDetector::OnTouchEvent(
                 mCurrentDownEvent = NULL;
             }
 
-            // CMotionEvent::Obtain((CMotionEvent*) ev, (CMotionEvent**)&mCurrentDownEvent);
+            MotionEvent::Obtain(ev, (IMotionEvent**)&mCurrentDownEvent);
             mAlwaysInTapRegion = TRUE;
             mAlwaysInBiggerTapRegion = TRUE;
             mStillDown = TRUE;
@@ -484,7 +483,7 @@ ECode GestureDetector::OnTouchEvent(
         case IMotionEvent::ACTION_UP: {
             mStillDown = FALSE;
             AutoPtr<IMotionEvent> currentUpEvent;
-            // CMotionEvent::Obtain((CMotionEvent*) ev, (CMotionEvent**)&currentUpEvent);
+            MotionEvent::Obtain(ev, (IMotionEvent**)&currentUpEvent);
             if (mIsDoubleTapping) {
                 // Finally, give the up event of the double-tap
                 Boolean dtap = FALSE;

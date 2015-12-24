@@ -1,12 +1,11 @@
 
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/PopupWindow.h"
-#include <elastos/utility/logging/Logger.h>
-#include "elastos/droid/R.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/view/CWindowManagerLayoutParams.h"
 #include "elastos/droid/view/Gravity.h"
 #include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>

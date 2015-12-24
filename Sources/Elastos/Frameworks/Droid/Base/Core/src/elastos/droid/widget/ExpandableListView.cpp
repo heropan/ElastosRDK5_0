@@ -956,6 +956,8 @@ ECode ExpandableListView::SetSelectedChild(
         mConnector->GetFlattenedPos(elChildPos, (IPositionMetadata**)&flatChildPos);
 
         if (flatChildPos.Get() == NULL) {
+            Logger::E("ExpandableListView", "Could not find child");
+            return E_ILLEGAL_STATE_EXCEPTION;
             //throw new IllegalStateException("Could not find child");
         }
     }
