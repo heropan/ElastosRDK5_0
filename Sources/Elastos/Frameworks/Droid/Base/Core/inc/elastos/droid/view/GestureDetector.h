@@ -289,7 +289,7 @@ private:
     /**
      * Determines speed during touch scrolling
      */
-    AutoPtr<IVelocityTracker> mVelocityTracker; // zhangjingcheng.wait...
+    AutoPtr<IVelocityTracker> mVelocityTracker;
 
     /**
      * Consistency verifier for debugging purposes.

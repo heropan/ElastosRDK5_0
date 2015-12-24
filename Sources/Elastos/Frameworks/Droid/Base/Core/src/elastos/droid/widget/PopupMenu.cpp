@@ -3,14 +3,14 @@
 #include "elastos/droid/widget/PopupMenu.h"
 #include "elastos/droid/internal/view/menu/CMenuBuilder.h"
 #include "elastos/droid/internal/view/menu/CMenuPopupHelper.h"
-// #include "elastos/droid/view/CMenuInflater.h"
+#include "elastos/droid/view/CMenuInflater.h"
 
 using Elastos::Droid::Internal::View::Menu::CMenuPopupHelper;
 using Elastos::Droid::Internal::View::Menu::CMenuBuilder;
 using Elastos::Droid::Internal::View::Menu::IMenuPresenter;
 using Elastos::Droid::Internal::View::Menu::EIID_IMenuBuilderCallback;
 using Elastos::Droid::Internal::View::Menu::EIID_IMenuPresenterCallback;
-// using Elastos::Droid::View::CMenuInflater;
+using Elastos::Droid::View::CMenuInflater;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::Widget::EIID_IPopupMenu;
 
@@ -153,8 +153,7 @@ ECode PopupMenu::GetMenuInflater(
     VALIDATE_NOT_NULL(flater);
 
     AutoPtr<IMenuInflater> inflate;
-    assert(0 && "TODO");
-    // CMenuInflater::New(mContext, (IMenuInflater**)&inflate);
+    CMenuInflater::New(mContext, (IMenuInflater**)&inflate);
     *flater = inflate;
     REFCOUNT_ADD(*flater);
     return NOERROR;

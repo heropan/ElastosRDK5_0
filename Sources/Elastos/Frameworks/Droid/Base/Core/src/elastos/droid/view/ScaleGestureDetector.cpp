@@ -137,10 +137,9 @@ ECode ScaleGestureDetector::constructor(
 {
     assert(context != NULL);
 
-    assert (0 && "TODO");
-    // mInputEventConsistencyVerifier =
-    //         InputEventConsistencyVerifier::IsInstrumentationEnabled() ?
-    //                 new InputEventConsistencyVerifier(THIS_PROBE(IInterface), 0) : NULL;
+    mInputEventConsistencyVerifier =
+            InputEventConsistencyVerifier::IsInstrumentationEnabled() ?
+                    new InputEventConsistencyVerifier(THIS_PROBE(IInterface), 0) : NULL;
 
     mContext = context;
     mListener = listener;

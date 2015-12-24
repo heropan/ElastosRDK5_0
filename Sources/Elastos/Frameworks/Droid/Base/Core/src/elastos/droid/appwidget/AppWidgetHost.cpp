@@ -285,9 +285,8 @@ ECode AppWidgetHost::StartAppWidgetConfigureActivityForResult(
             intentFlags, (IIntentSender**)&intentSender);
     if (!FAILED(ec)) {
         if (intentSender != NULL) {
-            assert(0 && "TODO");
-            // activity->StartIntentSenderForResult(intentSender, requestCode, NULL,
-                    // 0, 0, 0, options);
+            activity->StartIntentSenderForResult(intentSender, requestCode, NULL,
+                    0, 0, 0, options);
         }
         else {
             return E_ACTIVITY_NOT_FOUND_EXCEPTION;

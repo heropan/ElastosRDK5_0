@@ -186,7 +186,7 @@ ECode CViewConfigurationHelper::GetSendRecurringAccessibilityEventsInterval(
 {
     VALIDATE_NOT_NULL(sendRecurringAccessibilityEventsInterval);
     *sendRecurringAccessibilityEventsInterval =
-        ViewConfiguration::GetSendRecurringAccessibilityEventsInterval();
+            ViewConfiguration::GetSendRecurringAccessibilityEventsInterval();
 
     return NOERROR;
 }

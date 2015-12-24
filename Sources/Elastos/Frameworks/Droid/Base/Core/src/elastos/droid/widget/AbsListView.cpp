@@ -3,8 +3,8 @@
 #include "elastos/droid/widget/AbsListView.h"
 #include "elastos/droid/widget/CAbsListViewLayoutParams.h"
 #include "elastos/droid/widget/CAbsListViewSavedState.h"
-// #include "elastos/droid/widget/CEdgeEffect.h"
-// #include "elastos/droid/widget/CPopupWindow.h"
+#include "elastos/droid/widget/CEdgeEffect.h"
+#include "elastos/droid/widget/CPopupWindow.h"
 // #include "elastos/droid/widget/CRemoteViewsAdapter.h"
 #include "elastos/droid/widget/FastScroller.h"
 #include "elastos/droid/widget/COverScroller.h"
@@ -2895,9 +2895,8 @@ ECode AbsListView::SetOverScrollMode(
         if (mEdgeGlowTop == NULL) {
             AutoPtr<IContext> context;
             GetContext((IContext**)&context);
-            assert(0 && "TODO");
-            // CEdgeEffect::New(context, (IEdgeEffect**)&mEdgeGlowTop);
-            // CEdgeEffect::New(context, (IEdgeEffect**)&mEdgeGlowBottom);
+            CEdgeEffect::New(context, (IEdgeEffect**)&mEdgeGlowTop);
+            CEdgeEffect::New(context, (IEdgeEffect**)&mEdgeGlowBottom);
         }
     }
     else {
@@ -7800,8 +7799,7 @@ void AbsListView::CreateTextFilter(
         AutoPtr<IContext> c;
         GetContext((IContext**)&c);
         AutoPtr<IPopupWindow> p;
-        assert(0 && "TODO");
-        // CPopupWindow::New(c, (IPopupWindow**)&p);
+        CPopupWindow::New(c, (IPopupWindow**)&p);
 
         p->SetFocusable(FALSE);
         p->SetTouchable(FALSE);

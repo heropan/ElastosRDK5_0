@@ -976,7 +976,8 @@ void AccessibilityInteractionController::FindAccessibilityNodeInfosByTextUiThrea
             if (virtualDescendantId != IAccessibilityNodeInfo::UNDEFINED_ITEM_ID) {
                 provider->FindAccessibilityNodeInfosByText(text,
                         virtualDescendantId, (IList**)&infos);
-            } else {
+            }
+            else {
                 provider->FindAccessibilityNodeInfosByText(text,
                         IAccessibilityNodeProvider::HOST_VIEW_ID, (IList**)&infos);
             }

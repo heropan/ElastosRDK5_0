@@ -15,6 +15,7 @@ using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Core::ICloneable;
+using Elastos::Core::ICloseGuard;
 
 namespace Elastos {
 namespace Droid {
@@ -762,8 +763,7 @@ private:
     Boolean mOneMoreTime;
     static Boolean USE_CLOSEGUARD;
 
-    //TODO
-    //private final CloseGuard guard = CloseGuard.get();
+    AutoPtr<ICloseGuard> mGuard;
 
     AutoPtr<IHandler> mListenerHandler;
     AutoPtr<IRunnable> mOnStart;
