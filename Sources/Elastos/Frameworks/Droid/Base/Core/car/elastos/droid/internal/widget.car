@@ -809,6 +809,29 @@ module
         interface ILockPatternUtils;
     }
 
+    class CResolverDrawerLayout {
+        constructor(
+            [in] IContext* context);
+
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
+
+        interface IResolverDrawerLayout;
+        interface IViewGroup;
+        interface IViewParent;
+        interface IViewManager;
+        interface IView;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
+
     } // namespace Widget
     } // namespace Internal
     } // namespace Droid

@@ -1,5 +1,4 @@
 
-#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/internal/widget/ResolverDrawerLayout.h"
 //#include "elastos/droid/view/CVelocityTrackerHelper.h"
 #include "elastos/droid/view/CViewConfigurationHelper.h"
@@ -19,6 +18,7 @@ using Elastos::Droid::View::CViewConfigurationHelper;
 using Elastos::Droid::View::IViewConfiguration;
 using Elastos::Droid::View::IViewTreeObserver;
 using Elastos::Droid::View::IViewGroupMarginLayoutParams;
+using Elastos::Droid::View::EIID_IOnTouchModeChangeListener;
 using Elastos::Droid::View::Animation::IAnimationUtils;
 using Elastos::Droid::View::Animation::CAnimationUtils;
 using Elastos::Droid::View::Animation::IInterpolator;
@@ -115,6 +115,28 @@ ECode ResolverDrawerLayout::SavedState::WriteToParcel(
 }
 
 //===============================================================
+// ResolverDrawerLayout::ResolverDrawerLayoutOnTouchModeChangeListener::
+//===============================================================
+CAR_INTERFACE_IMPL(ResolverDrawerLayout::ResolverDrawerLayoutOnTouchModeChangeListener, Object, IOnTouchModeChangeListener)
+
+ResolverDrawerLayout::ResolverDrawerLayoutOnTouchModeChangeListener::ResolverDrawerLayoutOnTouchModeChangeListener(
+    /* [in] */ ResolverDrawerLayout* host)
+    : mHost(host)
+{}
+
+ECode ResolverDrawerLayout::ResolverDrawerLayoutOnTouchModeChangeListener::OnTouchModeChanged(
+    /* [in] */ Boolean isInTouchMode)
+{
+    AutoPtr<IView> v;
+    mHost->GetFocusedChild((IView**)&v);
+    Boolean bF = FALSE;
+    if (!isInTouchMode && (mHost->HasFocus(&bF), bF) && mHost->IsDescendantClipped(v)) {
+        mHost->SmoothScrollTo(0, 0);
+    }
+    return NOERROR;
+}
+
+//===============================================================
 // ResolverDrawerLayout::
 //===============================================================
 const String ResolverDrawerLayout::TAG("ResolverDrawerLayout");
@@ -140,15 +162,7 @@ ResolverDrawerLayout::ResolverDrawerLayout()
     , mActivePointerId(IMotionEvent::INVALID_POINTER_ID)
 {
     CRect::New((IRect**)&mTempRect);
-    // mTouchModeChangeListener =
-    //     new ViewTreeObserver.OnTouchModeChangeListener() {
-    //         @Override
-    //         public void onTouchModeChanged(Boolean isInTouchMode) {
-    //             if (!isInTouchMode && hasFocus() && isDescendantClipped(getFocusedChild())) {
-    //                 smoothScrollTo(0, 0);
-    //             }
-    //         }
-    //     };
+    mTouchModeChangeListener = new ResolverDrawerLayoutOnTouchModeChangeListener(this);
 }
 
 ECode ResolverDrawerLayout::constructor(
@@ -689,8 +703,7 @@ ECode ResolverDrawerLayout::OnAttachedToWindow()
     ViewGroup::OnAttachedToWindow();
     AutoPtr<IViewTreeObserver> ob;
     GetViewTreeObserver((IViewTreeObserver**)&ob);
-    assert(0 && "TODO");
-//    ob->AddOnTouchModeChangeListener(mTouchModeChangeListener);
+    ob->AddOnTouchModeChangeListener(mTouchModeChangeListener);
     return NOERROR;
 }
 
@@ -699,8 +712,7 @@ ECode ResolverDrawerLayout::OnDetachedFromWindow()
     ViewGroup::OnDetachedFromWindow();
     AutoPtr<IViewTreeObserver> ob;
     GetViewTreeObserver((IViewTreeObserver**)&ob);
-    assert(0 && "TODO");
-//    ob->RemoveOnTouchModeChangeListener(mTouchModeChangeListener);
+    ob->RemoveOnTouchModeChangeListener(mTouchModeChangeListener);
     return NOERROR;
 }
 

@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_WIDGET_RESOLVERDRAWERLAYOUT_H__
 #define __ELASTOS_DROID_INTERNAL_WIDGET_RESOLVERDRAWERLAYOUT_H__
 
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/ViewGroup.h"
 
 using Elastos::Droid::View::ViewGroup;
@@ -9,6 +10,7 @@ using Elastos::Droid::View::IViewOnClickListener;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::View::IVelocityTracker;
+using Elastos::Droid::View::IOnTouchModeChangeListener;
 using Elastos::Droid::Widget::IOverScroller;
 
 namespace Elastos {
@@ -65,6 +67,24 @@ public:
 
     public:
         Boolean mOpen;
+    };
+
+private:
+    class ResolverDrawerLayoutOnTouchModeChangeListener
+        : public Object
+        , public IOnTouchModeChangeListener
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        ResolverDrawerLayoutOnTouchModeChangeListener(
+            /* [in] */ ResolverDrawerLayout* host);
+
+        CARAPI OnTouchModeChanged(
+            /* [in] */ Boolean isInTouchMode);
+
+    public:
+        ResolverDrawerLayout* mHost;
     };
 
 public:
@@ -281,15 +301,7 @@ private:
 
     AutoPtr<IRect> mTempRect;
 
-    // ViewTreeObserver.OnTouchModeChangeListener mTouchModeChangeListener =
-    //     new ViewTreeObserver.OnTouchModeChangeListener() {
-    //         @Override
-    //         public void onTouchModeChanged(Boolean isInTouchMode) {
-    //             if (!isInTouchMode && hasFocus() && isDescendantClipped(getFocusedChild())) {
-    //                 smoothScrollTo(0, 0);
-    //             }
-    //         }
-    //     };
+    AutoPtr<IOnTouchModeChangeListener> mTouchModeChangeListener;
 };
 
 }// namespace Widget

@@ -64,4 +64,7 @@ SOURCES += ResolverDrawerLayout.cpp
 SOURCES += SizeAdaptiveLayout.cpp
 SOURCES += CAccessibleDateAnimator.cpp
 SOURCES += ExploreByTouchHelper.cpp
+SOURCES += CResolverDrawerLayout.cpp
 SOURCES += widgets.cpp
+
+ELASTOS_LIBS += multiwaveview/multiwaveview.lib
