@@ -24,6 +24,9 @@ module
         GetExtras(
             [out] IBundle** extras);
 
+        GetFlexTime(
+            [out] Int64* flexTime);
+
         /** How frequently the sync should be scheduled, in seconds. */
         GetPeriod(
             [out] Int64* period);

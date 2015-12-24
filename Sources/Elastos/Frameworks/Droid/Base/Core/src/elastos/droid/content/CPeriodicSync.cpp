@@ -94,6 +94,14 @@ ECode CPeriodicSync::GetPeriod(
     return NOERROR;
 }
 
+ECode CPeriodicSync::GetFlexTime(
+    /* [out] */ Int64* flexTime)
+{
+    VALIDATE_NOT_NULL(flexTime)
+    *flexTime = mFlexTime;
+    return NOERROR;
+}
+
 ECode CPeriodicSync::Equals(
     /* [in] */ IInterface* obj,
     /* [out] */ Boolean* isEqual)

@@ -1,14 +1,18 @@
 
-#DIRS = accessibility
+
 DIRS += am
-#DIRS += connectivity
 DIRS += display
+DIRS += os
+DIRS += wallpaper
+
+
+#DIRS = accessibility
+#DIRS += connectivity
 #DIRS += input
 #DIRS += location
 #DIRS += net
 #DIRS += pm
 #DIRS += usb
-DIRS += wallpaper
 #DIRS += wm
 #DIRS += accounts
 #DIRS += power

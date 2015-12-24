@@ -70,9 +70,11 @@ public:
     CARAPI GetExtras(
         /* [out] */ IBundle** extras);
 
-    /** How frequently the sync should be scheduled, in seconds. */
     CARAPI GetPeriod(
         /* [out] */ Int64* period);
+
+    CARAPI GetFlexTime(
+        /* [out] */ Int64* flexTime);
 
     CARAPI Equals(
         /* [in] */ IInterface* obj,

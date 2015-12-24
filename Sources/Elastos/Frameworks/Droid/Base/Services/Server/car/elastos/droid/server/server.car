@@ -13,6 +13,8 @@ module
     merge("am/ProcessRecord.car");
     merge("am/UriPermissionOwnerExternalToken.car");
 
+    merge("content/SyncStorageEngine.car")
+
     merge("display/AutomaticBrightnessController.car");
     merge("display/WifiDisplayController.car");
     merge("display/DisplayAdapter.car");
@@ -39,10 +41,13 @@ module
     using interface Elastos.Droid.App.IWallpaperInfo;
     using interface Elastos.Droid.App.IIWallpaperManager;
     using interface Elastos.Droid.Os.IBinder;
+    using interface Elastos.Droid.Os.IISchedulingPolicyService;
     using interface Elastos.Droid.Content.IContext;
     using interface Elastos.Droid.Content.IServiceConnection;
+    using interface Elastos.Droid.Content.IIIntentSender;
     using interface Elastos.Droid.Hardware.Display.IIDisplayManager;
     using interface Elastos.Droid.Media.Projection.IIMediaProjectionCallback;
+    using interface Elastos.Droid.View.IApplicationToken;
     using interface Elastos.Droid.Service.Wallpaper.IIWallpaperConnection;
     interface Elastos.Droid.Server.ISystemService;
     interface Elastos.Droid.Server.Wallpaper.IWallpaperConnection;
@@ -76,7 +81,6 @@ module
     // using interface Elastos.Droid.Content.IServiceConnection;
     // using interface Elastos.Droid.Content.IComponentName;
     // using interface Elastos.Droid.Content.IContentService;
-    using interface Elastos.Droid.Content.IIIntentSender;
     // using interface Elastos.Droid.Content.Pm.IIPackageManager;
     // using interface Elastos.Droid.Content.Pm.IRegisteredServicesCacheListener;
     // using interface Elastos.Droid.Location.IICountryDetector;
@@ -88,7 +92,6 @@ module
     // using interface Elastos.Droid.Net.INetworkPolicyListener;
     // using interface Elastos.Droid.Net.IIThrottleManager;
     // using interface Elastos.Droid.Net.INetworkStatsSession;
-    using interface Elastos.Droid.Os.IBinder;
     // using interface Elastos.Droid.Os.ILooper;
     // using interface Elastos.Droid.Os.IHandler;
     // using interface Elastos.Droid.Os.IIUserManager;
@@ -106,7 +109,6 @@ module
     // using interface Elastos.Droid.View.IIWindowManager;
     // using interface Elastos.Droid.View.IWindowManagerPolicyWindowManagerFuncs;
     // using interface Elastos.Droid.View.IWindowSession;
-    using interface Elastos.Droid.View.IApplicationToken;
     // using interface Elastos.Droid.View.IWindowManager;
     // using interface Elastos.Droid.View.IInputMethodCallback;
     // using interface Elastos.Droid.View.InputMethod.IInputMethod;
@@ -1185,6 +1187,23 @@ module
 //     } // namespace Widget
 //     } // namespace Droid
 //     } // namespace Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+    namespace Os {
+
+    class CSchedulingPolicyService {
+        constructor();
+
+        interface IISchedulingPolicyService;
+        interface IBinder;
+    }
+
+    } // namespace Os
+    } // namespace Server
+    } // namepsace Droid
+    } // namespace Elastos
 
     namespace Elastos {
     namespace Droid {
