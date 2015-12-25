@@ -4,13 +4,14 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Location.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include <elastos/core/Object.h>
-#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Os::IBundle;
 using Elastos::Core::Object;
+using Elastos::Utility::IHashMap;
 using Elastos::Utility::ILocale;
-using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -330,7 +331,8 @@ private:
     AutoPtr<ILocale> mLocale;
 
     String mFeatureName;
-    AutoPtr< HashMap<Int32, String> > mAddressLines;
+    // AutoPtr< HashMap<Int32, String> > mAddressLines;
+    AutoPtr<IHashMap> mAddressLines;
     Int32 mMaxAddressLineIndex;
     String mAdminArea;
     String mSubAdminArea;
