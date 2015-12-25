@@ -3,24 +3,27 @@
 #define __ELASTOS_DROID_SERVER_AM_CSERVICERECORD_H__
 
 #include "_Elastos_Droid_Server_Am_CServiceRecord.h"
-#include "elastos/droid/ext/frameworkext.h"
+#define HASH_FOR_OS
+#define HASH_FOR_CONTENT
+#include "elastos/droid/ext/frameworkhash.h"
+#include "elastos/droid/server/am/ConnectionRecord.h"
+#include "Elastos.Droid.App.h"
+#include <elastos/droid/os/Runnable.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
-#include "elastos/droid/os/BatteryStatsImpl.h"
-#include "elastos/droid/server/am/ConnectionRecord.h"
 
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::Etl::List;
-using Elastos::Core::IRunnable;
-using Elastos::Droid::Os::BatteryStatsImpl;
-using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::App::INotification;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentFilterComparison;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::Pm::IServiceInfo;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
-using Elastos::Droid::App::INotification;
-
+using Elastos::Droid::Internal::App::IServiceState;
+using Elastos::Droid::Os::IBatteryStatsUidPkgServ;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::Runnable;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
@@ -30,12 +33,13 @@ namespace Am {
 class AppBindRecord;
 class CActivityManagerService;
 class NeededUriGrants;
-class CServiceRecord;
 class IntentBindRecord;
 class ProcessRecord;
 class UriPermissionOwner;
 
 CarClass(CServiceRecord)
+    , public Object
+    , public IBinder
 {
 public:
     class StartItem : public Object
@@ -51,6 +55,11 @@ public:
         CARAPI_(AutoPtr<UriPermissionOwner>) GetUriPermissionsLocked();
 
         CARAPI RemoveUriPermissionsLocked();
+
+        CARAPI ToString(
+            /* [out] */ String* str);
+
+        CARAPI_(String) ToString();
 
     public:
         CServiceRecord* mSr;
@@ -68,8 +77,7 @@ public:
 
 private:
     class PostNotificationRunnable
-        : public Object
-        , public IRunnable
+        : public Runnable
     {
     public:
         PostNotificationRunnable(
@@ -87,8 +95,6 @@ private:
             , mLocalForegroundNoti(localForegroundNoti)
         {}
 
-        CAR_INTERFACE_DECL()
-
         CARAPI Run();
 
     private:
@@ -100,10 +106,8 @@ private:
         AutoPtr<INotification> mLocalForegroundNoti;
     };
 
-private:
     class CancelNotificationRunnable
-        : public Object
-        , public IRunnable
+        : public Runnable
     {
     public:
         CancelNotificationRunnable(
@@ -115,8 +119,6 @@ private:
             , mLocalForegroundId(localForegroundId)
         {}
 
-        CAR_INTERFACE_DECL()
-
         CARAPI Run();
 
     private:
@@ -125,26 +127,68 @@ private:
         Int32 mLocalForegroundId;
     };
 
+    class StripForegroundServiceFlagNotificationRunnable
+        : public Runnable
+    {
+    public:
+        StripForegroundServiceFlagNotificationRunnable(
+            /* [in] */ const String& localPackageName,
+            /* [in] */ Int32 localUserId,
+            /* [in] */ Int32 localForegroundId)
+            : mLocalPackageName(localPackageName)
+            , mLocalUserId(localUserId)
+            , mLocalForegroundId(localForegroundId)
+        {}
+
+        CARAPI Run();
+
+    private:
+        String mLocalPackageName;
+        Int32 mLocalUserId;
+        Int32 mLocalForegroundId;
+    };
+
 public:
     CServiceRecord();
 
     virtual ~CServiceRecord();
 
-    CARAPI Init(
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor(
         /* [in] */ CActivityManagerService* ams,
-        /* [in] */ BatteryStatsImpl::Uid::Pkg::Serv* servStats,
+        /* [in] */ IBatteryStatsUidPkgServ* servStats,
         /* [in] */ IComponentName* name,
         /* [in] */ IIntentFilterComparison* intent,
         /* [in] */ IServiceInfo* sInfo,
+        /* [in] */ Boolean callerIsFg,
         /* [in] */ IRunnable* restarter);
 
-    // void dumpStartList(PrintWriter pw, String prefix, List<StartItem> list, long now);
+    CARAPI_(void) DumpStartList(
+        /* [in] */ IPrintWriter* pw,
+        /* [in] */ const String& prefix,
+        /* [in] */ List<AutoPtr<StartItem> >* list,
+        /* [in] */ Int32 now);
 
-    // void dump(PrintWriter pw, String prefix);
+    CARAPI_(void) Dump(
+        /* [in] */ IPrintWriter* pw,
+        /* [in] */ const String& prefix);
+
+    CARAPI_(AutoPtr<IServiceState>) GetTracker();
+
+    CARAPI_(void) ForceClearTracker();
+
+    CARAPI_(void) MakeRestarting(
+        /* [in] */ Int32 memFactor,
+        /* [in] */ Int64 now);
 
     CARAPI_(AutoPtr<AppBindRecord>) RetrieveAppBindingLocked(
         /* [in] */ IIntent* intent,
         /* [in] */ ProcessRecord* app);
+
+    CARAPI_(Boolean) HasAutoCreateConnections();
 
     CARAPI ResetRestartCounter();
 
@@ -160,10 +204,14 @@ public:
 
     CARAPI CancelNotification();
 
+    CARAPI StripForegroundServiceFlagFromNotification();
+
     CARAPI ClearDeliveredStartsLocked();
 
     CARAPI ToString(
         /* [out] */ String* str);
+
+    CARAPI_(String) ToString();
 
 public:
     // Maximum number of delivery attempts before giving up.
@@ -173,7 +221,7 @@ public:
     static const Int32 MAX_DONE_EXECUTING_COUNT = 6;
 
     AutoPtr<CActivityManagerService> mAms;
-    AutoPtr<BatteryStatsImpl::Uid::Pkg::Serv> mStats;
+    AutoPtr<IBatteryStatsUidPkgServ> mStats;
     AutoPtr<IComponentName> mName; // service component.
     String mShortName; // name.flattenToShortString().
     AutoPtr<IIntentFilterComparison> mIntent; // original intent used to find service.
@@ -183,28 +231,32 @@ public:
     String mPackageName; // the package implementing intent's component
     String mProcessName; // process where this component wants to run
     String mPermission; // permission needed to access service
-    String mBaseDir;   // where activity source (resources etc) located
-    String mResDir;   // where public activity source (public resources etc) located
-    String mDataDir;   // where activity data should go
     Boolean mExported; // from ServiceInfo.exported
     AutoPtr<IRunnable> mRestarter; // used to schedule retries of starting the service
     Int64 mCreateTime;  // when this service was created
     HashMap< AutoPtr<IIntentFilterComparison>, AutoPtr<IntentBindRecord> > mBindings; // All active bindings to the service.
     typedef HashMap< AutoPtr<IBinder>, AutoPtr<List< AutoPtr<ConnectionRecord> > > > ConnectionHashMap;
-    typedef typename ConnectionHashMap::Iterator ConnectionIterator;
+    typedef ConnectionHashMap::Iterator ConnectionIterator;
     ConnectionHashMap mConnections; // IBinder -> ConnectionRecord of all bound clients
 
     AutoPtr<ProcessRecord> mApp;  // where this service is running or null.
     AutoPtr<ProcessRecord> mIsolatedProc; // keep track of isolated process, if requested
-    Boolean mIsForeground;   // asked to run as a foreground service?
+    AutoPtr<IServiceState> mTracker; // tracking service execution, may be null
+    AutoPtr<IServiceState> mRestartTracker; // tracking service restart
+    Boolean mDelayed;        // are we waiting to start this service in the background?
+    Boolean mIsForeground;   // is service currently in foreground mode?
     Int32 mForegroundId;       // Notification ID of last foreground req.
     AutoPtr<INotification> mForegroundNoti; // Notification record of foreground state.
     Int64 mLastActivity;      // last time there was some activity on the service.
+    Int64 mStartingBgTimeout;  // time at which we scheduled this for a delayed start.
     Boolean mStartRequested; // someone explicitly called start?
+    Boolean mDelayedStop;    // service has been stopped but is in a delayed start?
     Boolean mStopIfKilled;   // last onStart() said to stop if service killed?
     Boolean mCallStart;      // last onStart() has asked to alway be called on restart.
     Int32 mExecuteNesting;     // number of outstanding operations keeping foreground.
+    Boolean mExecuteFg;      // should we be executing in the foreground?
     Int64 mExecutingStart;    // start time of last execute request.
+    Boolean mCreatedFromFg;  // was this service last created due to a foreground process call?
     Int32 mCrashCount;         // number of times proc has crashed with service running
     Int32 mTotalRestartCount;  // number of times we have had to restart.
     Int32 mRestartCount;       // number of restarts performed in a row.
@@ -226,9 +278,6 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-
-#define HASH_FUNC_FOR_AUTOPTR_CSERVICERECORD
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Server::Am::CServiceRecord)
-#endif
 
 #endif //__ELASTOS_DROID_SERVER_AM_CSERVICERECORD_H__

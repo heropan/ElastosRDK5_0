@@ -1,5 +1,6 @@
 
 EXPORT_HEADERS += elastos/droid/R.h
+EXPORT_HEADERS += elastos/droid/Manifest.h
 
 //EXPORT_HEADERS += elastos/droid/app/Activity.h
 EXPORT_HEADERS += elastos/droid/app/AppGlobals.h
@@ -32,8 +33,6 @@ EXPORT_HEADERS += elastos/droid/ext/frameworkhash.h
 //EXPORT_HEADERS += elastos/droid/inputmethodservice/Keyboard.h
 EXPORT_HEADERS += elastos/droid/internal/utility/XmlUtils.h
 EXPORT_HEADERS += elastos/droid/internal/content/PackageMonitor.h
-
-//EXPORT_HEADERS += elastos/droid/Manifest.h
 
 EXPORT_HEADERS += elastos/droid/os/Build.h
 EXPORT_HEADERS += elastos/droid/os/Environment.h

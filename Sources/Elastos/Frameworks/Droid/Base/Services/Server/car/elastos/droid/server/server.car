@@ -22,6 +22,8 @@ module
     merge("display/OverlayDisplayWindow.car");
     merge("display/RampAnimator.car");
 
+    merge("notification/NotificationManagerInternal.car");
+
     merge("twilight/TwilightListener.car");
 
     merge("wallpaper/WallpaperManagerService.car");
@@ -55,7 +57,7 @@ module
     interface Elastos.Droid.Server.Wallpaper.IWallpaperManagerService;
 
     // using interface Elastos.Core.IRunnable;
-    // using interface Elastos.IO.IFile;
+    using interface Elastos.IO.IFile;
     // using interface Elastos.Utility.ISet;
 
     // using interface Elastos.Droid.Utility.ITrustedTime;
@@ -125,6 +127,7 @@ module
     // using interface Elastos.Droid.Hardware.IISerialManager;
     // using interface Elastos.Droid.Internal.App.IIBatteryStats;
     // using interface Elastos.Droid.Internal.App.IIUsageStats;
+    using interface Elastos.Droid.Internal.App.IIProcessStats;
     // using interface Elastos.Droid.Internal.Os.IBatteryCallback;
     // using interface Elastos.Droid.Internal.Os.IDropBoxManagerService;
     // using interface Elastos.Droid.Internal.View.IInputMethodClient;
@@ -473,10 +476,6 @@ module
 //             [in] String dir);
 
 //         interface IIUsageStats;
-//     }
-
-//     class CServiceRecord {
-//         interface IBinder;
 //     }
 
 //     } // namespace Am
@@ -1283,6 +1282,19 @@ module
 
         interface IPendingIntentRecord;
         interface IIIntentSender;
+        interface IBinder;
+    }
+
+    class CProcessStatsService {
+        constructor(
+            [in] Handle32 am, //CActivityManagerService*
+            [in] IFile* file);
+
+        interface IIProcessStats;
+        interface IBinder;
+    }
+
+    class CServiceRecord {
         interface IBinder;
     }
 

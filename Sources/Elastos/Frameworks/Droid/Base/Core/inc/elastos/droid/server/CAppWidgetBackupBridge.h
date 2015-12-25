@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SERVER_CAPPWIDGETBACKUPBRIDGE_H__
 
 #include "_Elastos_Droid_Server_CAppWidgetBackupBridge.h"
-#include "Elastos.Droid.Server.h"
+#include "Elastos.Droid.Core.Server.h"
 #include "Elastos.CoreLibrary.Utility.h"
 #include <elastos/core/Singleton.h>
 

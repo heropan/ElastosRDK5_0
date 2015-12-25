@@ -2,20 +2,21 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_PROVIDERMAP_H__
 #define __ELASTOS_DROID_SERVER_AM_PROVIDERMAP_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#define HASH_FOR_CONTENT
+#include "elastos/droid/server/am/ContentProviderRecord.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 
+using Elastos::Droid::Content::IComponentName;
+using Elastos::IO::IFileDescriptor;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
-using Elastos::Droid::Content::IComponentName;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Am {
 
-class ContentProviderRecord;
 class CActivityManagerService;
 
 class ProviderMap : public Object
@@ -24,15 +25,15 @@ public:
 
     typedef HashMap<String, AutoPtr<ContentProviderRecord> > NameRecordHashMap;
     typedef HashMap<AutoPtr<IComponentName>, AutoPtr<ContentProviderRecord> > ClassRecordHashMap;
-    typedef typename NameRecordHashMap::ValueType NameRecordValueType;
-    typedef typename NameRecordHashMap::Iterator NameRecordIterator;
-    typedef typename ClassRecordHashMap::ValueType ClassRecordValueType;
-    typedef typename ClassRecordHashMap::Iterator ClassRecordIterator;
+    typedef NameRecordHashMap::ValueType NameRecordValueType;
+    typedef NameRecordHashMap::Iterator NameRecordIterator;
+    typedef ClassRecordHashMap::ValueType ClassRecordValueType;
+    typedef ClassRecordHashMap::Iterator ClassRecordIterator;
 
     ProviderMap(
         /* [in] */ CActivityManagerService* am);
 
-    virtual ~ProviderMap();
+    ~ProviderMap();
 
     CARAPI_(AutoPtr<ContentProviderRecord>) GetProviderByName(
         /* [in] */ const String& name);
@@ -87,6 +88,48 @@ public:
         /* [in] */ Int32 userId,
         /* [in] */ List<AutoPtr<ContentProviderRecord> >* result);
 
+    CARAPI_(Boolean) DumpProvidersLocked(
+        /* [in] */ IPrintWriter* pw,
+        /* [in] */ Boolean dumpAll,
+        /* [in] */ const String& dumpPackage);
+
+protected:
+    CARAPI_(Boolean) DumpProvider(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IPrintWriter* pw,
+        /* [in] */ String& name,
+        /* [in] */ ArrayOf<String>* args,
+        /* [in] */ Int32 opti,
+        /* [in] */ Boolean dumpAll);
+
+private:
+    CARAPI_(Boolean) DumpProvidersByClassLocked(
+        /* [in] */ IPrintWriter* pw,
+        /* [in] */ Boolean dumpAll,
+        /* [in] */ const String& dumpPackage,
+        /* [in] */ const String& header,
+        /* [in] */ Boolean needSep,
+        /* [in] */ ClassRecordHashMap* map);
+
+    CARAPI_(Boolean) DumpProvidersByNameLocked(
+        /* [in] */ IPrintWriter* pw,
+        /* [in] */ const String& dumpPackage,
+        /* [in] */ const String& header,
+        /* [in] */ Boolean needSep,
+        /* [in] */ NameRecordHashMap* map);
+
+    /**
+     * Invokes IApplicationThread.dumpProvider() on the thread of the specified provider if
+     * there is a thread associated with the provider.
+     */
+    CARAPI_(void) DumpProvider(
+        /* [in] */ const String& prefix,
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ IPrintWriter* pw,
+        /* [in] */ ContentProviderRecord* r,
+        /* [in] */ ArrayOf<String>* args,
+        /* [in] */ Boolean dumpAll);
+
 private:
     static const String TAG;
     static const Boolean DBG;
@@ -99,8 +142,8 @@ private:
     HashMap<Int32, AutoPtr<NameRecordHashMap> > mProvidersByNamePerUser;
     HashMap<Int32, AutoPtr<ClassRecordHashMap> > mProvidersByClassPerUser;
 
-    typedef typename HashMap<Int32, AutoPtr<NameRecordHashMap> >::ValueType ProviderByNameValueType;
-    typedef typename HashMap<Int32, AutoPtr<ClassRecordHashMap> >::ValueType ProviderByClassValueType;
+    typedef HashMap<Int32, AutoPtr<NameRecordHashMap> >::ValueType ProviderByNameValueType;
+    typedef HashMap<Int32, AutoPtr<ClassRecordHashMap> >::ValueType ProviderByClassValueType;
 
 };
 

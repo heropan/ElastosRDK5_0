@@ -66,6 +66,12 @@ public:
         /* [in] */ Int64 now,
         /* [out] */ Int64* result);
 
+    CARAPI GetCOMMIT_PERIOD(
+        /* [out] */ Int64* result);
+
+    CARAPI GetCOMMIT_UPTIME_PERIOD(
+        /* [out] */ Int64* result);
+
     CARAPI GetALL_MEM_ADJ(
         /* [out, callee] */ ArrayOf<Int32>** result);
 

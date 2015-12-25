@@ -7,9 +7,14 @@
 
 #if 1
 #include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Net.h"
+#include <elastos/utility/etl/List.h>
+
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Net::IUri;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
@@ -17,6 +22,24 @@ namespace Server {
 namespace Am {
 
 class UriPermission;
+
+//
+// NeededUriGrants
+//
+class NeededUriGrants
+    : public List< AutoPtr<IUri> >
+{
+public:
+    NeededUriGrants(
+        /* [in] */ const String& targetPkg,
+        /* [in] */ Int32 targetUid,
+        /* [in] */ Int32 flags);
+
+public:
+    String mTargetPkg;
+    Int32 mTargetUid;
+    Int32 mFlags;
+};
 
 class CActivityManagerService : public Object
 {

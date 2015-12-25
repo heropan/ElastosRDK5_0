@@ -4,7 +4,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Net.h"
 #include "Elastos.Droid.Os.h"
-#include "Elastos.Droid.Server.h"
+#include "Elastos.Droid.Core.Server.h"
 #include "elastos/droid/server/net/BaseNetworkObserver.h"
 
 using Elastos::Droid::Net::IINetworkManagementEventObserver;

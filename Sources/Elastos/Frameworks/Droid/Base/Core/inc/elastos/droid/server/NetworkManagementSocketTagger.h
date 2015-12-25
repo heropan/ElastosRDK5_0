@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SERVER_NETWORKMANAGEMENTSOCKETTAGGER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "Elastos.Droid.Server.h"
+#include "Elastos.Droid.Core.Server.h"
 #include "Elastos.CoreLibrary.Core.h"
 #include "Elastos.CoreLibrary.IO.h"
 #include <libcore/io/SocketTagger.h>

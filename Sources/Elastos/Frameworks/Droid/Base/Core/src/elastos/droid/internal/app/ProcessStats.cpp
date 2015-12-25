@@ -2133,6 +2133,9 @@ const String ProcessStats::TAG("ProcessStats");
 const Boolean ProcessStats::DEBUG;
 const Boolean ProcessStats::DEBUG_PARCEL;
 
+Int64 ProcessStats::COMMIT_PERIOD = 3*60*60*1000;  // Commit current stats every 3 hours
+Int64 ProcessStats::COMMIT_UPTIME_PERIOD = 60*60*1000;  // Must have at least 1 hour elapsed
+
 const AutoPtr<ArrayOf<Int32> > ProcessStats::ALL_MEM_ADJ = ProcessStats::InitALL_MEM_ADJ();
 const AutoPtr<ArrayOf<Int32> > ProcessStats::ALL_SCREEN_ADJ = ProcessStats::InitALL_SCREEN_ADJ();
 const AutoPtr<ArrayOf<Int32> > ProcessStats::NON_CACHED_PROC_STATES = ProcessStats::InitNON_CACHED_PROC_STATES();

@@ -942,7 +942,7 @@ AutoPtr<ActiveServices::ServiceLookupResult> ActiveServices::RetrieveServiceLock
                 stats->Unlock();
             }
             CServiceRecord::NewByFriend((CServiceRecord**)&r);
-            r->Init(mAm, ss, name, filter, sInfo, res);
+            r->constructor(mAm, ss, name, filter, sInfo, res);
             res->SetService(r);
             Int32 uid;
             r->mAppInfo->GetUid(&uid);

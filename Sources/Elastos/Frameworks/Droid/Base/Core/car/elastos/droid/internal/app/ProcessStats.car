@@ -414,6 +414,11 @@ module
             [in] Boolean update,
             [out] Boolean* result);
 
+        /** @hide */
+        WriteToParcel(
+            [in] IParcel* outParcel,
+            [in] Int64 now);
+
         Read(
             [in] IInputStream* stream);
 
@@ -594,6 +599,12 @@ module
             [in] Int32 curState,
             [in] Int64 curStartTime,
             [in] Int64 now,
+            [out] Int64* result);
+
+        GetCOMMIT_PERIOD(
+            [out] Int64* result);
+
+        GetCOMMIT_UPTIME_PERIOD(
             [out] Int64* result);
 
         GetALL_MEM_ADJ(

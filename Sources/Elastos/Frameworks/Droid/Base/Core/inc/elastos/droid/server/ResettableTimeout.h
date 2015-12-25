@@ -3,7 +3,7 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Os.h"
-#include "Elastos.Droid.Server.h"
+#include "Elastos.Droid.Core.Server.h"
 #include "Elastos.CoreLibrary.Core.h"
 #include <elastos/core/Object.h>
 #include <elastos/core/Thread.h>

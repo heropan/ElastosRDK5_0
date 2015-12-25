@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SERVER_CNETWORKMANAGEMENTSOCKETTAGGERHELPER_H__
 
 #include "_Elastos_Droid_Server_CNetworkManagementSocketTaggerHelper.h"
-#include "Elastos.Droid.Server.h"
+#include "Elastos.Droid.Core.Server.h"
 #include "elastos/droid/server/NetworkManagementSocketTagger.h"
 #include <elastos/core/Singleton.h>
 

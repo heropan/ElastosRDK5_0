@@ -79,6 +79,22 @@ ECode CProcessStatsHelper::DumpSingleServiceTime(
     return NOERROR;
 }
 
+ECode CProcessStatsHelper::GetCOMMIT_PERIOD(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = ProcessStats::COMMIT_PERIOD;
+    return NOERROR;
+}
+
+ECode CProcessStatsHelper::GetCOMMIT_UPTIME_PERIOD(
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = ProcessStats::COMMIT_UPTIME_PERIOD;
+    return NOERROR;
+}
+
 ECode CProcessStatsHelper::GetALL_MEM_ADJ(
     /* [out, callee] */ ArrayOf<Int32>** result)
 {

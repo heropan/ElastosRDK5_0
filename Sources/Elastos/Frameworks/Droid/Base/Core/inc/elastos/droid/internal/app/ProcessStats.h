@@ -1293,6 +1293,15 @@ public: // not public in java
     static const Boolean DEBUG = FALSE;
     static const Boolean DEBUG_PARCEL = FALSE;
 
+    // How often the service commits its data, giving the minimum batching
+    // that is done.
+    static Int64 COMMIT_PERIOD;  // Commit current stats every 3 hours
+
+    // Minimum uptime period before committing.  If the COMMIT_PERIOD has elapsed but
+    // the total uptime has not exceeded this amount, then the commit will be held until
+    // it is reached.
+    static Int64 COMMIT_UPTIME_PERIOD;  // Must have at least 1 hour elapsed
+
     // Map from process states to the states we track.
     static const AutoPtr<ArrayOf<Int32> > PROCESS_STATE_TO_STATE ;
     static const AutoPtr<ArrayOf<String> > STATE_NAMES;
