@@ -2674,6 +2674,7 @@ void OutputInterface(InterfaceDirEntry* pItfDir, CLSModule* pModule)
         else {
             pFile = fopen(pPath, "r+t");
         }
+        assert(pFile != NULL);
         fseek(pFile, -1 * (strlen(buffer) +  15), SEEK_END);
     }
 
@@ -2911,6 +2912,7 @@ void OutputClass(ClassDirEntry* pClsDir, CLSModule* pModule)
         else {
             pFile = fopen(pPath, "r+t");
         }
+        assert(pFile != NULL);
         fseek(pFile, -1 * (strlen(buffer) +  15), SEEK_END);
     }
 
