@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_LOCKPATTERNVIEW_H__
-#define __ELASTOS_DROID_WIDGET_INTERNAL_LOCKPATTERNVIEW_H__
+#ifndef __ELASTOS_DROID_INTERNAL_WIDGET_LOCKPATTERNVIEW_H__
+#define __ELASTOS_DROID_INTERNAL_WIDGET_LOCKPATTERNVIEW_H__
 
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/graphics/CRect.h"
@@ -503,4 +503,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__ELASTOS_DROID_WIDGET_INTERNAL_LOCKPATTERNVIEW_H__
+#endif //__ELASTOS_DROID_INTERNAL_WIDGET_LOCKPATTERNVIEW_H__
