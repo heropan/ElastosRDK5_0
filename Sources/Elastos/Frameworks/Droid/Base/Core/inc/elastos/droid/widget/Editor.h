@@ -2,22 +2,24 @@
 #ifndef __ELASTOS_DROID_WIDGET_EDITOR_H__
 #define __ELASTOS_DROID_WIDGET_EDITOR_H__
 
+#define HASH_FOR_TEXT_STYLE
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/ext/frameworkhash.h"
+#include "elastos/droid/content/UndoOperation.h"
 #include "elastos/droid/view/ViewTreeObserver.h"
 #include "elastos/droid/view/ViewGroup.h"
-
-
 #include "elastos/droid/text/style/CSuggestionSpan.h"
-
 #include "elastos/droid/widget/BaseAdapter.h"
 #include "elastos/droid/widget/PopupWindow.h"
-
 #include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/HandlerRunnable.h"
 #include "elastos/droid/R.h"
 
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IUndoManager;
+using Elastos::Droid::Content::IUndoOwner;
+using Elastos::Droid::Content::UndoOperation;
 using Elastos::Droid::Graphics::IPath;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::HandlerRunnable;
@@ -29,6 +31,7 @@ using Elastos::Droid::Text::ISpannable;
 using Elastos::Droid::Text::ISpannableStringBuilder;
 using Elastos::Droid::Text::ILayout;
 using Elastos::Droid::Text::IEditable;
+using Elastos::Droid::Text::ISpanned;
 using Elastos::Droid::Text::Style::ISuggestionSpan;
 using Elastos::Droid::Text::Style::IEasyEditSpan;
 using Elastos::Droid::Text::Style::ITextAppearanceSpan;
@@ -40,6 +43,7 @@ using Elastos::Droid::View::ViewGroup;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::View::IRenderNode;
 using Elastos::Droid::View::IActionMode;
 using Elastos::Droid::View::IDisplayList;
 using Elastos::Droid::View::IMotionEvent;
@@ -52,6 +56,7 @@ using Elastos::Droid::View::IActionModeCallback;
 using Elastos::Droid::View::InputMethod::IExtractedTextRequest;
 using Elastos::Droid::View::InputMethod::IExtractedText;
 using Elastos::Droid::View::InputMethod::ICorrectionInfo;
+using Elastos::Droid::View::InputMethod::ICursorAnchorInfoBuilder;
 using Elastos::Droid::View::IMenu;
 using Elastos::Droid::View::IMenuItem;
 using Elastos::Droid::Widget::PopupWindow;
@@ -68,7 +73,6 @@ class Editor;
 class ActionPopupWindow;
 class SuggestionsPopupWindow;
 class InsertionHandleView;
-class EasyEditSpanController;
 class HandleView;
 
 //==============================================================================
@@ -102,21 +106,6 @@ public:
 
 private:
     InsertionHandleView* mHost;
-};
-
-class HidePopupRunnable
-    : public Runnable
-{
-public:
-    HidePopupRunnable(
-        /* [in] */ EasyEditSpanController* host)
-        : mHost(host)
-    {}
-
-    virtual ECode Run();
-
-private:
-    EasyEditSpanController* mHost;
 };
 
 class ShowSuggestionRunnable
@@ -163,7 +152,6 @@ public:
     InputMethodState();
 
     AutoPtr<IRect> mCursorRectInWindow;// = new Rect();
-    AutoPtr<IRectF> mTmpRectF;// = new RectF();
     AutoPtr<ArrayOf<Float> > mTmpOffset;// = new Float[2];
     AutoPtr<IExtractedTextRequest> mExtractedTextRequest;
     AutoPtr<IExtractedText> mExtractedText;// = new ExtractedText();
@@ -185,7 +173,7 @@ class CustomPopupWindow
 public:
     CustomPopupWindow(
         /* [in] */ IContext* context,
-        /* [in] */ Int32 defStyle,
+        /* [in] */ Int32 defStyleAttr,
         /* [in] */ Editor* editor,
         /* [in] */ SuggestionsPopupWindow* owner);
 
@@ -217,16 +205,18 @@ class PinnedPopupWindow
     , public ITextViewPositionListener
 {
 public:
+    CAR_INTERFACE_DECL()
+
     PinnedPopupWindow(
         /* [in] */ Editor* editor);
 
     virtual ~PinnedPopupWindow();
 
-    CARAPI Show();
+    virtual CARAPI Show();
 
-    CARAPI Hide();
+    virtual CARAPI Hide();
 
-    virtual CARAPI_(void) UpdatePosition(
+    virtual CARAPI UpdatePosition(
         /* [in] */ Int32 parentPositionX,
         /* [in] */ Int32 parentPositionY,
         /* [in] */ Boolean parentPositionChanged,
@@ -265,8 +255,6 @@ protected:
 //==============================================================================
 //              EasyEditPopupWindow
 //==============================================================================
-class EasyEditSpanController;
-
 class EasyEditPopupWindow
     : public PinnedPopupWindow
     , public IViewOnClickListener
@@ -295,11 +283,18 @@ public:
     virtual CARAPI OnClick(
         /* [in] */ IView* view);
 
+    CARAPI Hide();
+
 private:
-    friend class EasyEditSpanController;
+    CARAPI_(void) SetOnDeleteListener(
+        /* [in] */ IEasyEditDeleteListener* listener);
+
+private:
+    friend class Editor;
     static const Int32 POPUP_TEXT_LAYOUT;
     AutoPtr<ITextView> mDeleteTextView;
     AutoPtr<IEasyEditSpan> mEasyEditSpan;
+    AutoPtr<IEasyEditDeleteListener> mOnDeleteListener;
 };
 
 //==============================================================================
@@ -336,18 +331,22 @@ public:
         /* [in] */ Editor* editor,
         /* [in] */ SuggestionsPopupWindow* popupWindow);
 
-    virtual CARAPI_(Int32) GetCount();
+    virtual CARAPI GetCount(
+        /* [out] */ Int32* count);
 
-    virtual CARAPI_(AutoPtr<IInterface>) GetItem(
-        /* [in] */ Int32 position);
+    virtual CARAPI GetItem(
+        /* [in] */ Int32 position,
+        /* [out] */ IInterface** item);
 
-    virtual CARAPI_(Int64) GetItemId(
-        /* [in] */ Int32 position);
+    virtual CARAPI GetItemId(
+        /* [in] */ Int32 position,
+        /* [out] */ Int64* id);
 
-    virtual CARAPI_(AutoPtr<IView>) GetView(
+    virtual CARAPI GetView(
         /* [in] */ Int32 position,
         /* [in] */ IView* convertView,
-        /* [in] */ IViewGroup* parent);
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** result);
 private:
     Editor* mEditor;
     SuggestionsPopupWindow* mPopupWindow;
@@ -541,7 +540,9 @@ class HandleView
 public:
     CAR_INTERFACE_DECL()
 
-    HandleView(
+    HandleView();
+
+    CARAPI constructor(
         /* [in] */ IDrawable* drawableLtr,
         /* [in] */ IDrawable* drawableRtl,
         /* [in] */ Editor* editor);
@@ -573,13 +574,14 @@ public:
 
     virtual CARAPI_(void) OnDetached();
 
-    CARAPI_(void) Init();
-
 protected:
     CARAPI_(void) UpdateDrawable();
 
     virtual CARAPI_(Int32) GetHotspotX(
         /* [in] */ IDrawable* drawable,
+        /* [in] */ Boolean isRtlRun) = 0;
+
+    virtual CARAPI_(Int32) GetHorizontalGravity(
         /* [in] */ Boolean isRtlRun) = 0;
 
     CARAPI_(void) Dismiss();
@@ -589,7 +591,7 @@ protected:
     virtual CARAPI_(void) UpdateSelection(
         /* [in] */ Int32 offset) = 0;
 
-    virtual CARAPI_(void) UpdatePosition(
+    virtual CARAPI UpdatePosition(
         /* [in] */ Int32 parentPositionX,
         /* [in] */ Int32 parentPositionY,
         /* [in] */ Boolean parentPositionChanged,
@@ -602,8 +604,11 @@ protected:
     virtual CARAPI_(void) OnDraw(
         /* [in] */ ICanvas* canvas);
 
-    virtual CARAPI_(Boolean) OnTouchEvent(
-            /* [in] */ IMotionEvent* event);
+    virtual CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
+
+    CARAPI_(Int32) GetCursorOffset();
 
 private:
     CARAPI_(void) StartTouchUpFilter(
@@ -616,6 +621,12 @@ private:
 
     CARAPI_(Boolean) IsVisible();
 
+    CARAPI_(Int32) GetPreferredWidth();
+
+    CARAPI_(Int32) GetPreferredHeight();
+
+    CARAPI_(Int32) GetHorizontalOffset();
+
 protected:
     Editor* mEditor;
 
@@ -624,6 +635,7 @@ protected:
     AutoPtr<IDrawable> mDrawableLtr;
     AutoPtr<IDrawable> mDrawableRtl;
     Int32 mHotspotX;
+    Int32 mHorizontalGravity;
     // Transient action popup window for Paste and Replace actions
     AutoPtr<ActionPopupWindow> mActionPopupWindow;
 
@@ -664,6 +676,8 @@ private:
     // Used to delay the appearance of the action popup window
     AutoPtr<IRunnable> mActionPopupShower;
 
+    Int32 mMinSize;
+
     AutoPtr<ArrayOf<Int64> > mPreviousOffsetsTimes;//= new long[HISTORY_SIZE];
     AutoPtr<ArrayOf<Int32> > mPreviousOffsets;// = new Int32[HISTORY_SIZE];
     Int32 mPreviousOffsetIndex;// = 0;
@@ -677,7 +691,9 @@ class InsertionHandleView
     : public HandleView
 {
 public:
-    InsertionHandleView(
+    InsertionHandleView();
+
+    CARAPI constructor(
         /* [in] */ IDrawable* drawable,
         /* [in] */ Editor* editor);
 
@@ -685,8 +701,9 @@ public:
 
     void ShowWithActionPopup();
 
-    virtual CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
     virtual CARAPI_(Int32) GetCurrentCursorOffset();
 
@@ -702,9 +719,14 @@ public:
     virtual CARAPI_(void) OnDetached();
 
 protected:
-    virtual CARAPI_(Int32) GetHotspotX(
+    CARAPI_(Int32) GetHotspotX(
         /* [in] */ IDrawable* drawable,
         /* [in] */ Boolean isRtlRun);
+
+    CARAPI_(Int32) GetHorizontalGravity(
+        /* [in] */ Boolean isRtlRun);
+
+    CARAPI_(Int32) GetCursorOffset();
 
 private:
     CARAPI_(void) HideAfterDelay();
@@ -729,7 +751,9 @@ class SelectionStartHandleView
     : public HandleView
 {
 public:
-    SelectionStartHandleView(
+    SelectionStartHandleView();
+
+    CARAPI constructor(
         /* [in] */ IDrawable* drawableLtr,
         /* [in] */ IDrawable* drawableRtl,
         /* [in] */ Editor* editor);
@@ -746,8 +770,11 @@ public:
     AutoPtr<ActionPopupWindow> GetActionPopupWindow();
 
 protected:
-    virtual CARAPI_(Int32) GetHotspotX(
+    CARAPI_(Int32) GetHotspotX(
         /* [in] */ IDrawable* drawable,
+        /* [in] */ Boolean isRtlRun);
+
+    CARAPI_(Int32) GetHorizontalGravity(
         /* [in] */ Boolean isRtlRun);
 };
 
@@ -758,7 +785,9 @@ class SelectionEndHandleView
     : public HandleView
 {
 public:
-    SelectionEndHandleView(
+    SelectionEndHandleView();
+
+    CARAPI constructor(
         /* [in] */ IDrawable* drawableLtr,
         /* [in] */ IDrawable* drawableRtl,
         /* [in] */ Editor* editor);
@@ -776,8 +805,11 @@ public:
         /* [in] */ ActionPopupWindow* actionPopupWindow);
 
 protected:
-    virtual CARAPI_(Int32) GetHotspotX(
+    CARAPI_(Int32) GetHotspotX(
         /* [in] */ IDrawable* drawable,
+        /* [in] */ Boolean isRtlRun);
+
+    CARAPI_(Int32) GetHorizontalGravity(
         /* [in] */ Boolean isRtlRun);
 
 };
@@ -953,8 +985,8 @@ public:
 private:
     // 3 handles
     // 3 ActionPopup [replace, suggestion, easyedit] (suggestionsPopup first hides the others)
-    static const Int32 MAXIMUM_NUMBER_OF_LISTENERS = 6;
-    AutoPtr<ArrayOf<TextViewPositionListener *> > mPositionListeners;//new TextViewPositionListener[MAXIMUM_NUMBER_OF_LISTENERS];
+    static const Int32 MAXIMUM_NUMBER_OF_LISTENERS = 7;
+    AutoPtr<ArrayOf<ITextViewPositionListener *> > mPositionListeners;//new TextViewPositionListener[MAXIMUM_NUMBER_OF_LISTENERS];
     AutoPtr<ArrayOf<Boolean> > mCanMove;//new boolean[MAXIMUM_NUMBER_OF_LISTENERS];
     Boolean mPositionHasChanged;// = true;
     // Absolute position of the TextView with respect to its parent window
@@ -1063,56 +1095,15 @@ private:
 };
 
 //==============================================================================
-//              EasyEditSpanController
-//==============================================================================
-
-class EasyEditSpanController
-    : public Object
-    , public ISpanWatcher
-{
-public:
-    CAR_INTERFACE_DECL();
-
-    EasyEditSpanController(
-        /* [in] */ Editor* editor);
-
-    CARAPI OnSpanAdded(
-        /* [in] */ ISpannable* text,
-        /* [in] */ IInterface* what,
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end);
-
-    CARAPI OnSpanRemoved(
-        /* [in] */ ISpannable* text,
-        /* [in] */ IInterface* what,
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end);
-
-    CARAPI OnSpanChanged(
-        /* [in] */ ISpannable* text,
-        /* [in] */ IInterface* what,
-        /* [in] */ Int32 ostart,
-        /* [in] */ Int32 oend,
-        /* [in] */ Int32 nstart,
-        /* [in] */ Int32 nend);
-
-    CARAPI_(void) Hide();
-
-private:
-    static const Int32 DISPLAY_TIMEOUT_MS = 3000; // 3 secs
-    AutoPtr<EasyEditPopupWindow> mPopupWindow;
-
-    Editor* mEditor;
-    AutoPtr<IRunnable> mHidePopup;
-};
-
-//==============================================================================
 //              DragLocalState
 //==============================================================================
 class DragLocalState
     : public Object
+    , public IDragLocalState
 {
 public:
+    CAR_INTERFACE_DECL()
+
     DragLocalState(
         /* [in] */ TextView* sourceTextView,
         /* [in] */ Int32 start,
@@ -1124,33 +1115,65 @@ public:
     Int32 mEnd;
 };
 
-class UserDictionaryListener
-    : public Handler
+//==============================================================================
+//              UndoInputFilter
+//==============================================================================
+class UndoInputFilter
+    : public Object
+    , public Elastos::Droid::Text::IInputFilter
 {
 public:
-    UserDictionaryListener();
+    CAR_INTERFACE_DECL()
 
-    CARAPI_(void) WaitForUserDictionaryAdded(
-        /* [in] */ ITextView* tv,
-        /* [in] */ const String& originalWord,
-        /* [in] */ Int32 spanStart,
-        /* [in] */ Int32 spanEnd);
+    UndoInputFilter(
+        /* [in] */ Editor* editor);
 
-    virtual CARAPI HandleMessage(
-        /* [in] */ IMessage* msg);
+    CARAPI Filter(
+        /* [in] */ ICharSequence* source,
+        /* [in] */ Int32 start,
+        /* [in] */ Int32 end,
+        /* [in] */ ISpanned* dest,
+        /* [in] */ Int32 dstart,
+        /* [in] */ Int32 dend,
+        /* [out] */ ICharSequence** cs);
 
 private:
-
-    CARAPI_(void) OnUserDictionaryAdded(
-        /* [in] */ const String& originalWord,
-        /* [in] */ const String& addedWord);
-
-    TextView* mTextView;
-    String mOriginalWord;
-    Int32 mWordStart;
-    Int32 mWordEnd;
-
+    Editor* mEditor;
 };
+
+//==============================================================================
+//              TextModifyOperation
+//==============================================================================
+class TextModifyOperation
+    : public UndoOperation
+{
+public:
+    TextModifyOperation();
+
+    CARAPI constructor(
+        /* [in] */ IUndoOwner* owner);
+
+    CARAPI Commit();
+
+    CARAPI Undo();
+
+    CARAPI Redo();
+
+    CARAPI WriteToParcel(
+        /* [in] */ IParcel* dest);
+
+    CARAPI ReadFromParcel(
+            /* [in] */ IParcel* source);
+
+private:
+    CARAPI_(void) SwapText();
+
+public:
+    Int32 mRangeStart;
+    Int32 mRangeEnd;
+    AutoPtr<ICharSequence> mOldText;
+};
+
 //==============================================================================
 //              Editor
 //==============================================================================
@@ -1162,8 +1185,138 @@ private:
  */
 class Editor
     : public Object
+    , public IEditor
 {
+private:
+    class TextDisplayList
+        : public Object
+    {
+    public:
+        friend class Editor;
+
+        TextDisplayList(
+            /* [in] */ const String& name);
+
+        CARAPI_(Boolean) NeedsRecord();
+
+    private:
+        AutoPtr<IRenderNode> mDisplayList;
+
+        Boolean mIsDirty;
+    };
+
+    class SpanController
+        : public Object
+        , public ISpanWatcher
+    {
+    private:
+        class SpanControllerRunnable
+            : public Runnable
+        {
+        public:
+            SpanControllerRunnable(
+                /* [in] */ SpanController* host);
+
+            CARAPI Run();
+
+        private:
+            SpanController* mHost;
+        };
+
+        class SpanControllerListener
+            : public Object
+            , public IEasyEditDeleteListener
+        {
+        public:
+            CAR_INTERFACE_DECL()
+
+            SpanControllerListener(
+                /* [in] */ SpanController* host);
+
+            CARAPI OnDeleteClick(
+                /* [in] */ IEasyEditSpan* span);
+        private:
+            SpanController* mHost;
+        };
+
+    public:
+        CAR_INTERFACE_DECL()
+
+        SpanController(
+            /* [in] */ Editor* host);
+
+        CARAPI OnSpanAdded(
+            /* [in] */ ISpannable* text,
+            /* [in] */ IInterface* span,
+            /* [in] */ Int32 start,
+            /* [in] */ Int32 end);
+
+        CARAPI OnSpanRemoved(
+            /* [in] */ ISpannable* text,
+            /* [in] */ IInterface* span,
+            /* [in] */ Int32 start,
+            /* [in] */ Int32 end);
+
+        CARAPI OnSpanChanged(
+            /* [in] */ ISpannable* text,
+            /* [in] */ IInterface* span,
+            /* [in] */ Int32 previousStart,
+            /* [in] */ Int32 previousEnd,
+            /* [in] */ Int32 newStart,
+            /* [in] */ Int32 newEnd);
+
+        CARAPI Hide();
+
+    private:
+        CARAPI_(Boolean) IsNonIntermediateSelectionSpan(
+            /* [in] */ ISpannable* text,
+            /* [in] */ IInterface* span);
+
+        CARAPI_(void) SendEasySpanNotification(
+            /* [in] */ Int32 textChangedType,
+            /* [in] */ IEasyEditSpan* span);
+
+    private:
+        Editor* mHost;
+
+        static const Int32 DISPLAY_TIMEOUT_MS = 3000;
+
+        AutoPtr<EasyEditPopupWindow> mPopupWindow;
+
+        AutoPtr<IRunnable> mHidePopup;
+    };
+
+    /**
+     * A listener to call {@link InputMethodManager#updateCursorAnchorInfo(View, CursorAnchorInfo)}
+     * while the input method is requesting the cursor/anchor position. Does nothing as long as
+     * {@link InputMethodManager#isWatchingCursor(View)} returns false.
+     */
+    class CursorAnchorInfoNotifier
+        : public Object
+        , public ITextViewPositionListener
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        CursorAnchorInfoNotifier(
+            /* [in] */ Editor* editor);
+
+        CARAPI UpdatePosition(
+            /* [in] */ Int32 parentPositionX,
+            /* [in] */ Int32 parentPositionY,
+            /* [in] */ Boolean parentPositionChanged,
+            /* [in] */ Boolean parentScrolled);
+
+    private:
+        Editor* mHost;
+        AutoPtr<ICursorAnchorInfoBuilder> mSelectionInfoBuilder;
+        AutoPtr< ArrayOf<Int32> > mTmpIntOffset;
+        AutoPtr<IMatrix> mViewToScreenMatrix;
+    };
+
 public:
+    CAR_INTERFACE_DECL()
+
     Editor(
         /* [in] */ TextView* textView);
 
@@ -1173,10 +1326,12 @@ public:
         /* [in] */ ICharSequence* error,
         /* [in] */ IDrawable* icon);
 
-    CARAPI_(AutoPtr<IWordIterator>) GetWordIterator();
+    CARAPI GetWordIterator(
+        /* [out] */ IWordIterator** iterator);
 
-    CARAPI_(Boolean) PerformLongClick(
-        /* [in] */ Boolean handled);
+    CARAPI PerformLongClick(
+        /* [in] */ Boolean handled,
+        /* [out] */ Boolean* res);
 
     CARAPI BeginBatchEdit();
 
@@ -1309,6 +1464,8 @@ protected:
         /* [in] */ IDragEvent* event);
 
 private:
+    CARAPI_(void) DestroyDisplayListsData();
+
     CARAPI_(void) ShowError();
 
     CARAPI_(void) SetErrorIcon(
@@ -1386,8 +1543,8 @@ private:
     CARAPI_(AutoPtr<PositionListener>) GetPositionListener();
 
     CARAPI_(Boolean) IsPositionVisible(
-        /* [in] */ Int32 positionX,
-        /* [in] */ Int32 positionY);
+        /* [in] */ Float positionX,
+        /* [in] */ Float positionY);
 
     CARAPI_(Boolean) IsOffsetVisible(
         /* [in] */ Int32 offset);
@@ -1435,7 +1592,8 @@ private:
     CARAPI_(Float) GetPrimaryHorizontal(
         /* [in] */ ILayout* layout,
         /* [in] */ ILayout* hintLayout,
-        /* [in] */ Int32 offset);
+        /* [in] */ Int32 offset,
+        /* [in] */ Boolean clamped);
 
     CARAPI_(Boolean) ExtractedTextModeWillBeStarted();
 
@@ -1464,6 +1622,8 @@ private:
     CARAPI_(AutoPtr<IDragShadowBuilder>) GetTextThumbnailBuilder(
         /* [in] */ ICharSequence* text);
 
+    CARAPI_(void) SendUpdateSelection();
+
 private:
     friend class TextView;
     friend class CustomPopupWindow;
@@ -1480,20 +1640,26 @@ private:
     friend class SelectionModifierCursorController;
     friend class PositionListener;
     friend class CorrectionHighlighter;
-    friend class EasyEditSpanController;
+    friend class SpanController;
     friend class Blink;
     friend class SelectionActionModeCallback;
+    friend class UndoInputFilter;
 
     static const String TAG;
+    static const Boolean DEBUG_UNDO;
     static const Int32 BLINK = 500;
 
     static AutoPtr<ArrayOf<Float> > TEMP_POSITION;
+    static Object TEMP_POSITION_OBJECT;
     static const Int32 DRAG_SHADOW_MAX_TEXT_LENGTH = 20;
 
     static const Int32 EXTRACT_NOTHING = -2;
     static const Int32 EXTRACT_UNKNOWN = -1;
 
     // Cursor Controllers.
+    AutoPtr<IUndoManager> mUndoManager;
+    AutoPtr<IUndoOwner> mUndoOwner;
+    AutoPtr<Elastos::Droid::Text::IInputFilter> mUndoInputFilter;
     AutoPtr<InsertionPointCursorController> mInsertionPointCursorController;
     AutoPtr<SelectionModifierCursorController> mSelectionModifierCursorController;
     AutoPtr<IActionMode> mSelectionActionMode;
@@ -1506,8 +1672,7 @@ private:
     AutoPtr<InputContentType> mInputContentType;
     AutoPtr<InputMethodState> mInputMethodState;
 
-    AutoPtr<ArrayOf<IDisplayList*> > mTextDisplayLists;
-    Int32 mLastLayoutHeight;
+    AutoPtr< ArrayOf<TextDisplayList*> > mTextDisplayLists;
 
     Boolean mFrozenWithFocus;
     Boolean mSelectionMoved;
@@ -1564,7 +1729,10 @@ private:
     // Set when this TextView gained focus with some text selected. Will start selection mode.
     Boolean mCreatedWithASelection;
 
-    AutoPtr<EasyEditSpanController> mEasyEditSpanController;
+    // The span controller helps monitoring the changes to which the Editor needs to react:
+    // - EasyEditSpans, for which we have some UI to display on attach and on hide
+    // - SelectionSpans, for which we need to call updateSelection if an IME is attached
+    AutoPtr<SpanController> mSpanController;
 
     AutoPtr<IWordIterator> mWordIterator;
     AutoPtr<ISpellChecker> mSpellChecker;
@@ -1572,12 +1740,15 @@ private:
     AutoPtr<IRect> mTempRect;
 
     TextView* mTextView;
-    AutoPtr<UserDictionaryListener> mUserDictionaryListener;//= new UserDictionaryListener();
+    AutoPtr<CursorAnchorInfoNotifier> mCursorAnchorInfoNotifier;//= new UserDictionaryListener();
     Object mTempPositionLock;
 };
 
 } // namespace Widget
 } // namespace Droid
 } // namespace Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::Widget::SuggestionInfo, IInterface)
+DEFINE_CONVERSION_FOR(Elastos::Droid::Widget::Editor::TextDisplayList, IInterface)
 
 #endif // __ELASTOS_DROID_WIDGET_EDITOR_H__

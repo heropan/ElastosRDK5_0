@@ -41,6 +41,23 @@ module
      */
     [deprecated]
     interface IUndoManager {
+
+        /**
+         * Never merge with the last undo state.
+         */
+        const Int32 MERGE_MODE_NONE = 0;
+
+        /**
+         * Allow merge with the last undo state only if it contains
+         * operations with the caller's owner.
+         */
+        const Int32 MERGE_MODE_UNIQUE = 1;
+
+        /**
+         * Always allow merge with the last undo state, if possible.
+         */
+        const Int32 MERGE_MODE_ANY = 2;
+
         GetOwner(
             [in] String tag,
             [in] IInterface* data,

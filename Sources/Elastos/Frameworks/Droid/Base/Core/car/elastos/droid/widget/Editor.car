@@ -4,6 +4,7 @@ module
     using interface Elastos.Core.ICharSequence;
 
     interface Elastos.Droid.Text.ISpannable;
+    interface Elastos.Droid.Text.Style.IEasyEditSpan;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.View.InputMethod.ICorrectionInfo;
     interface Elastos.Droid.Text.Method.IWordIterator;
@@ -32,6 +33,18 @@ module
             [in] Int32 parentPositionY,
             [in] Boolean parentPositionChanged,
             [in] Boolean parentScrolled);
+    }
+
+    interface IEasyEditDeleteListener {
+
+        /**
+         * Clicks the delete pop-up.
+         */
+        OnDeleteClick(
+            [in] IEasyEditSpan* span);
+    }
+
+    interface IDragLocalState {
     }
 
 

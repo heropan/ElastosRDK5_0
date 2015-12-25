@@ -79,6 +79,14 @@ DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Widget::IRemoteViewsCacheKey)
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Widget::IRemoteViewsFrameLayout)
 #endif
 
+//
+//Text::Style
+//
+#ifdef HASH_FOR_TEXT_STYLE
+#include "Elastos.Droid.Text.h"
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Text::Style::ISuggestionSpan)
+#endif
+
 #endif // __ELASTOS_DROID_EXT_FRAMEWORKHASH_H__
 
 
