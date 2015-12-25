@@ -1,61 +1,65 @@
 
-#include "elastos/droid/widget/internal/SlidingTab.h"
+#include "elastos/droid/internal/widget/SlidingTab.h"
 #include "elastos/droid/view/CViewGroupLayoutParams.h"
 #include "elastos/droid/provider/Settings.h"
-#include "elastos/droid/os/UserHandle.h"
 #include "elastos/droid/graphics/CRect.h"
+#include "Elastos.Droid.Media.h"
+#include "elastos/droid/media/CAudioAttributesBuilder.h"
+#include "Elastos.Droid.Provider.h"
 #include "elastos/droid/widget/CImageView.h"
 #include "elastos/droid/widget/CTextView.h"
+#include "elastos/droid/R.h"
 #include "elastos/droid/utility/CDisplayMetrics.h"
 #include "elastos/droid/view/animation/CTranslateAnimation.h"
 #include "elastos/droid/view/animation/CAlphaAnimation.h"
 #include "elastos/droid/view/animation/CLinearInterpolator.h"
+#include <elastos/core/Math.h>
 
+using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Media::CAudioAttributesBuilder;
+using Elastos::Droid::Media::IAudioAttributesBuilder;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::Provider::ISettingsSystem;
+using Elastos::Droid::R;
+using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Droid::Utility::CDisplayMetrics;
 using Elastos::Droid::View::EIID_IView;
 using Elastos::Droid::View::EIID_IViewGroup;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::CViewGroupLayoutParams;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::View::Animation::IAlphaAnimation;
-using Elastos::Droid::View::Animation::EIID_IAnimationListener;
-using Elastos::Droid::Utility::IDisplayMetrics;
-using Elastos::Droid::Utility::CDisplayMetrics;
-using Elastos::Droid::Provider::Settings;
-//using Elastos::Droid::Widget::ImageViewScaleType;
-using Elastos::Droid::Os::UserHandle;
-using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::View::Animation::IInterpolator;
+using Elastos::Droid::View::Animation::EIID_IAnimationAnimationListener;
 using Elastos::Droid::View::Animation::ILinearInterpolator;
 using Elastos::Droid::View::Animation::CTranslateAnimation;
 using Elastos::Droid::View::Animation::ITranslateAnimation;
 using Elastos::Droid::View::Animation::CAlphaAnimation;
 using Elastos::Droid::View::Animation::CLinearInterpolator;
 using Elastos::Droid::View::Animation::ILinearInterpolator;
+using Elastos::Droid::Widget::CImageView;
+using Elastos::Droid::Widget::CTextView;
+using Elastos::Droid::Widget::ImageViewScaleType;
+using Elastos::Droid::Widget::ImageViewScaleType_CENTER;
+using Elastos::Core::Math;
 
 namespace Elastos {
 namespace Droid {
-namespace Widget {
 namespace Internal {
+namespace Widget {
 
-const Boolean SlidingTab::DBG;
-const Int32 SlidingTab::HORIZONTAL;
-const Int32 SlidingTab::VERTICAL;
-const Float SlidingTab::THRESHOLD;
-const Int64 SlidingTab::VIBRATE_SHORT;
-const Int64 SlidingTab::VIBRATE_LONG;
-const Int32 SlidingTab::TRACKING_MARGIN;
-const Int32 SlidingTab::ANIM_DURATION;
-const Int32 SlidingTab::ANIM_TARGET_TIME;
-const String SlidingTab::TAG("SlidingTab");
-const Int32 SlidingTab::Slider::ALIGN_LEFT;
-const Int32 SlidingTab::Slider::ALIGN_RIGHT;
-const Int32 SlidingTab::Slider::ALIGN_TOP;
-const Int32 SlidingTab::Slider::ALIGN_BOTTOM;
-const Int32 SlidingTab::Slider::STATE_NORMAL;
-const Int32 SlidingTab::Slider::STATE_PRESSED;
-const Int32 SlidingTab::Slider::STATE_ACTIVE;
+const Int32 SlidingTab::Slider::ALIGN_LEFT = 0;
+const Int32 SlidingTab::Slider::ALIGN_RIGHT = 1;
+const Int32 SlidingTab::Slider::ALIGN_TOP = 2;
+const Int32 SlidingTab::Slider::ALIGN_BOTTOM = 3;
+const Int32 SlidingTab::Slider::ALIGN_UNKNOWN = 4;
+const Int32 SlidingTab::Slider::STATE_NORMAL = 0;
+const Int32 SlidingTab::Slider::STATE_PRESSED = 1;
+const Int32 SlidingTab::Slider::STATE_ACTIVE = 2;
 
-CAR_INTERFACE_IMPL(SlidingTab::AnimationDoneListener, IAnimationAnimationListener)
-CAR_INTERFACE_IMPL(SlidingTab::StartAnimationListener, IAnimationAnimationListener)
+CAR_INTERFACE_IMPL(SlidingTab::AnimationDoneListener, Object, IAnimationAnimationListener);
+CAR_INTERFACE_IMPL(SlidingTab::StartAnimationListener, Object, IAnimationAnimationListener);
 
 SlidingTab::AnimationDoneListener::AnimationDoneListener(
     /* [in] */ SlidingTab* host) : mHost(host)
@@ -109,44 +113,37 @@ ECode SlidingTab::StartAnimationListener::OnAnimationRepeat(
 {
     return NOERROR;
 }
-/**
- * Constructor
- *
- * @param parent the container view of this one
- * @param tabId drawable for the tab
- * @param barId drawable for the bar
- * @param targetId drawable for the target
- */
+
 SlidingTab::Slider::Slider(
     /* [in] */ IViewGroup* parent,
     /* [in] */ Int32 tabId,
     /* [in] */ Int32 barId,
     /* [in] */ Int32 targetId)
-         : mCurrentState(STATE_NORMAL)
-         , mAlignment(ALIGN_UNKNOWN)
-         , mAlignment_value(0)
+     : mCurrentState(STATE_NORMAL)
+     , mAlignment(ALIGN_UNKNOWN)
+     , mAlignment_value(0)
 {
     // Create tab
     AutoPtr<IContext> c;
-    parent->GetContext((IContext**)&c);
+    IView::Probe(parent)->GetContext((IContext**)&c);
 
     CImageView::New(c, (IImageView**)&mTab);
 
-    mTab->SetBackgroundResource(tabId);
+    IView::Probe(mTab)->SetBackgroundResource(tabId);
     mTab->SetScaleType(ImageViewScaleType_CENTER);
 
     AutoPtr<IViewGroupLayoutParams> lp;
     CViewGroupLayoutParams::New(IViewGroupLayoutParams::WRAP_CONTENT,
             IViewGroupLayoutParams::WRAP_CONTENT, (IViewGroupLayoutParams**)&lp);
-    mTab->SetLayoutParams(lp);
+    IView::Probe(mTab)->SetLayoutParams(lp);
 
     // Create hint TextView
     CTextView::New(c, (ITextView**)&mText);
 
 
-    mText->SetLayoutParams(lp);
+    IView::Probe(mText)->SetLayoutParams(lp);
 
-    mText->SetBackgroundResource(barId);
+    IView::Probe(mText)->SetBackgroundResource(barId);
     mText->SetTextAppearance(c, R::style::TextAppearance_SlidingTabNormal);
     // hint.setSingleLine();  // Hmm.. this causes the text to disappear off-screen
 
@@ -154,12 +151,12 @@ SlidingTab::Slider::Slider(
     CImageView::New(c, (IImageView**)&mTarget);
     mTarget->SetImageResource(targetId);
     mTarget->SetScaleType(ImageViewScaleType_CENTER);
-    mTarget->SetLayoutParams(lp);
-    mTarget->SetVisibility(IView::INVISIBLE);
+    IView::Probe(mTarget)->SetLayoutParams(lp);
+    IView::Probe(mTarget)->SetVisibility(IView::INVISIBLE);
 
-    parent->AddView(mTarget); // this needs to be first - relies on painter's algorithm
-    parent->AddView(mTab);
-    parent->AddView(mText);
+    parent->AddView(IView::Probe(mTarget)); // this needs to be first - relies on painter's algorithm
+    parent->AddView(IView::Probe(mTab));
+    parent->AddView(IView::Probe(mText));
 }
 
 void SlidingTab::Slider::SetIcon(
@@ -171,13 +168,13 @@ void SlidingTab::Slider::SetIcon(
 void SlidingTab::Slider::SetTabBackgroundResource(
     /* [in] */ Int32 tabId)
 {
-    mTab->SetBackgroundResource(tabId);
+    IView::Probe(mTab)->SetBackgroundResource(tabId);
 }
 
 void SlidingTab::Slider::SetBarBackgroundResource(
     /* [in] */ Int32 barId)
 {
-    mText->SetBackgroundResource(barId);
+    IView::Probe(mText)->SetBackgroundResource(barId);
 }
 
 void SlidingTab::Slider::SetHintText(
@@ -191,10 +188,10 @@ void SlidingTab::Slider::Hide()
     Boolean horiz = (mAlignment == ALIGN_LEFT || mAlignment == ALIGN_RIGHT);
 
     Int32 l, r, t, b;
-    mTab->GetRight(&r);
-    mTab->GetLeft(&l);
-    mTab->GetTop(&t);
-    mTab->GetBottom(&b);
+    IView::Probe(mTab)->GetRight(&r);
+    IView::Probe(mTab)->GetLeft(&l);
+    IView::Probe(mTab)->GetTop(&t);
+    IView::Probe(mTab)->GetBottom(&b);
 
     Int32 dx;
     dx = horiz ? (mAlignment == ALIGN_LEFT ? mAlignment_value - r
@@ -203,27 +200,26 @@ void SlidingTab::Slider::Hide()
     dy = horiz ? 0 : (mAlignment == ALIGN_TOP ? mAlignment_value - b
             : mAlignment_value - t);
 
-    AutoPtr<ITranslateAnimation> trans;
-    CTranslateAnimation::New(0, dx, 0, dy, (ITranslateAnimation**)&trans);
+    AutoPtr<IAnimation> trans;
+    CTranslateAnimation::New(0, dx, 0, dy, (IAnimation**)&trans);
 
     trans->SetDuration(ANIM_DURATION);
     trans->SetFillAfter(TRUE);
-    mTab->StartAnimation(trans);
-    mText->StartAnimation(trans);
-    mTarget->SetVisibility(IView::INVISIBLE);
+    IView::Probe(mTab)->StartAnimation(trans);
+    IView::Probe(mText)->StartAnimation(trans);
+    IView::Probe(mTarget)->SetVisibility(IView::INVISIBLE);
 }
 
 void SlidingTab::Slider::Show(
     /* [in] */ Boolean animate)
 {
-    mText->SetVisibility(IView::VISIBLE);
-    mTab->SetVisibility(IView::VISIBLE);
+    IView::Probe(mText)->SetVisibility(IView::VISIBLE);
+    IView::Probe(mTab)->SetVisibility(IView::VISIBLE);
     //target.setVisibility(View.INVISIBLE);
     if (animate) {
-
         Int32 w, h;
-        mTab->GetWidth(&w);
-        mTab->GetHeight(&h);
+        IView::Probe(mTab)->GetWidth(&w);
+        IView::Probe(mTab)->GetHeight(&h);
 
         Boolean horiz = mAlignment == ALIGN_LEFT || mAlignment == ALIGN_RIGHT;
         Int32 dx;
@@ -231,24 +227,24 @@ void SlidingTab::Slider::Show(
         Int32 dy;
         dy = horiz ? 0: (mAlignment == ALIGN_TOP ? h : -h);
 
-        AutoPtr<ITranslateAnimation> trans;
-        CTranslateAnimation::New(-dx, 0, -dy, 0, (ITranslateAnimation**)&trans);
+        AutoPtr<IAnimation> trans;
+        CTranslateAnimation::New(-dx, 0, -dy, 0, (IAnimation**)&trans);
         trans->SetDuration(ANIM_DURATION);
-        mTab->StartAnimation(trans);
-        mText->StartAnimation(trans);
+        IView::Probe(mTab)->StartAnimation(trans);
+        IView::Probe(mText)->StartAnimation(trans);
     }
 }
 
 void SlidingTab::Slider::SetState(
     /* [in] */ Int32 state)
 {
-    mText->SetPressed(state == STATE_PRESSED);
-    mTab->SetPressed(state == STATE_PRESSED);
+    IView::Probe(mText)->SetPressed(state == STATE_PRESSED);
+    IView::Probe(mTab)->SetPressed(state == STATE_PRESSED);
     if (state == STATE_ACTIVE) {
         AutoPtr<ArrayOf<Int32> > activeState = ArrayOf<Int32>::Alloc(1);
         (*activeState)[0] = R::attr::state_active;
         AutoPtr<IDrawable> drawable;
-        mText->GetBackground((IDrawable**)&drawable);
+        IView::Probe(mText)->GetBackground((IDrawable**)&drawable);
 
         Boolean res;
         drawable->IsStateful(&res);
@@ -257,7 +253,7 @@ void SlidingTab::Slider::SetState(
             drawable->SetState(activeState, &temp);
         }
         drawable = NULL;
-        mTab->GetBackground((IDrawable**)&drawable);
+        IView::Probe(mTab)->GetBackground((IDrawable**)&drawable);
 
         drawable->IsStateful(&res);
         if (res) {
@@ -266,12 +262,12 @@ void SlidingTab::Slider::SetState(
         }
 
         AutoPtr<IContext> c;
-        mText->GetContext((IContext**)&c);
+        IView::Probe(mText)->GetContext((IContext**)&c);
         mText->SetTextAppearance(c, R::style::TextAppearance_SlidingTabActive);
     } else {
 
         AutoPtr<IContext> c;
-        mText->GetContext((IContext**)&c);
+        IView::Probe(mText)->GetContext((IContext**)&c);
 
         mText->SetTextAppearance(c, R::style::TextAppearance_SlidingTabNormal);
     }
@@ -280,56 +276,56 @@ void SlidingTab::Slider::SetState(
 
 void SlidingTab::Slider::ShowTarget()
 {
-    AutoPtr<IAlphaAnimation> alphaAnim;
-    CAlphaAnimation::New(0.0f, 1.0f, (IAlphaAnimation**)&alphaAnim);
+    AutoPtr<IAnimation> alphaAnim;
+    CAlphaAnimation::New(0.0f, 1.0f, (IAnimation**)&alphaAnim);
     alphaAnim->SetDuration(ANIM_TARGET_TIME);
-    mTarget->StartAnimation(alphaAnim);
-    mTarget->SetVisibility(IView::VISIBLE);
+    IView::Probe(mTarget)->StartAnimation(alphaAnim);
+    IView::Probe(mTarget)->SetVisibility(IView::VISIBLE);
 }
 
 void SlidingTab::Slider::Reset(
     /* [in] */ Boolean animate)
 {
     SetState(STATE_NORMAL);
-    mText->SetVisibility(IView::VISIBLE);
+    IView::Probe(mText)->SetVisibility(IView::VISIBLE);
     AutoPtr<IContext> c;
-    mText->GetContext((IContext**)&c);
+    IView::Probe(mText)->GetContext((IContext**)&c);
 
     mText->SetTextAppearance(c, R::style::TextAppearance_SlidingTabNormal);
 
-    mTab->SetVisibility(IView::VISIBLE);
-    mTarget->SetVisibility(IView::INVISIBLE);
+    IView::Probe(mTab)->SetVisibility(IView::VISIBLE);
+    IView::Probe(mTarget)->SetVisibility(IView::INVISIBLE);
     Boolean horiz = mAlignment == ALIGN_LEFT || mAlignment == ALIGN_RIGHT;
 
     Int32 l, r, t, b;
-    mTab->GetLeft(&l);
-    mTab->GetRight(&r);
-    mTab->GetTop(&t);
-    mTab->GetBottom(&b);
+    IView::Probe(mTab)->GetLeft(&l);
+    IView::Probe(mTab)->GetRight(&r);
+    IView::Probe(mTab)->GetTop(&t);
+    IView::Probe(mTab)->GetBottom(&b);
 
     Int32 dx = horiz ? (mAlignment == ALIGN_LEFT ?  mAlignment_value - l
             : mAlignment_value - r) : 0;
     Int32 dy = horiz ? 0 : (mAlignment == ALIGN_TOP ? mAlignment_value - t
             : mAlignment_value - b);
     if (animate) {
-        AutoPtr<ITranslateAnimation> trans;
-        CTranslateAnimation::New(0, dx, 0, dy, (ITranslateAnimation**)&trans);
+        AutoPtr<IAnimation> trans;
+        CTranslateAnimation::New(0, dx, 0, dy, (IAnimation**)&trans);
 
         trans->SetDuration(ANIM_DURATION);
         trans->SetFillAfter(FALSE);
-        mText->StartAnimation(trans);
-        mTab->StartAnimation(trans);
+        IView::Probe(mText)->StartAnimation(trans);
+        IView::Probe(mTab)->StartAnimation(trans);
     } else {
         if (horiz) {
-            mText->OffsetLeftAndRight(dx);
-            mTab->OffsetLeftAndRight(dx);
+            IView::Probe(mText)->OffsetLeftAndRight(dx);
+            IView::Probe(mTab)->OffsetLeftAndRight(dx);
         } else {
-            mText->OffsetTopAndBottom(dy);
-            mTab->OffsetTopAndBottom(dy);
+            IView::Probe(mText)->OffsetTopAndBottom(dy);
+            IView::Probe(mTab)->OffsetTopAndBottom(dy);
         }
-        mText->ClearAnimation();
-        mTab->ClearAnimation();
-        mTarget->ClearAnimation();
+        IView::Probe(mText)->ClearAnimation();
+        IView::Probe(mTab)->ClearAnimation();
+        IView::Probe(mTarget)->ClearAnimation();
     }
 }
 
@@ -339,15 +335,6 @@ void SlidingTab::Slider::SetTarget(
     mTarget->SetImageResource(targetId);
 }
 
-/**
- * Layout the given widgets within the parent.
- *
- * @param l the parent's left border
- * @param t the parent's top border
- * @param r the parent's right border
- * @param b the parent's bottom border
- * @param alignment which side to align the widget to
- */
 void SlidingTab::Slider::Layout(
     /* [in] */ Int32 l,
     /* [in] */ Int32 t,
@@ -357,7 +344,7 @@ void SlidingTab::Slider::Layout(
 {
     mAlignment = alignment;
     AutoPtr<IDrawable> tabBackground;
-    mTab->GetBackground((IDrawable**)&tabBackground);
+    IView::Probe(mTab)->GetBackground((IDrawable**)&tabBackground);
 
     Int32 handleWidth;
     tabBackground->GetIntrinsicWidth(&handleWidth);
@@ -389,33 +376,36 @@ void SlidingTab::Slider::Layout(
         Int32 top = (parentHeight - handleHeight) / 2;
         Int32 bottom = (parentHeight + handleHeight) / 2;
         if (alignment == ALIGN_LEFT) {
-            mTab->Layout(0, top, handleWidth, bottom);
-            mText->Layout(0 - parentWidth, top, 0, bottom);
+            IView::Probe(mTab)->Layout(0, top, handleWidth, bottom);
+            IView::Probe(mText)->Layout(0 - parentWidth, top, 0, bottom);
             mText->SetGravity(IGravity::RIGHT);
-            mTarget->Layout(leftTarget, targetTop, leftTarget + targetWidth, targetBottom);
+            IView::Probe(mTarget)->Layout(leftTarget, targetTop, leftTarget + targetWidth, targetBottom);
             mAlignment_value = l;
-        } else {
-            mTab->Layout(parentWidth - handleWidth, top, parentWidth, bottom);
-            mText->Layout(parentWidth, top, parentWidth + parentWidth, bottom);
-            mTarget->Layout(rightTarget, targetTop, rightTarget + targetWidth, targetBottom);
+        }
+        else {
+            IView::Probe(mTab)->Layout(parentWidth - handleWidth, top, parentWidth, bottom);
+            IView::Probe(mText)->Layout(parentWidth, top, parentWidth + parentWidth, bottom);
+            IView::Probe(mTarget)->Layout(rightTarget, targetTop, rightTarget + targetWidth, targetBottom);
             mText->SetGravity(IGravity::TOP);
             mAlignment_value = r;
         }
-    } else {
+    }
+    else {
         // vertical
         Int32 targetLeft = (parentWidth - targetWidth) / 2;
         Int32 targetRight = (parentWidth + targetWidth) / 2;
         Int32 top = (Int32) (THRESHOLD * parentHeight) + handleHeight / 2 - targetHeight;
         Int32 bottom = (Int32) ((1.0f - THRESHOLD) * parentHeight) - handleHeight / 2;
         if (alignment == ALIGN_TOP) {
-            mTab->Layout(left, 0, right, handleHeight);
-            mText->Layout(left, 0 - parentHeight, right, 0);
-            mTarget->Layout(targetLeft, top, targetRight, top + targetHeight);
+            IView::Probe(mTab)->Layout(left, 0, right, handleHeight);
+            IView::Probe(mText)->Layout(left, 0 - parentHeight, right, 0);
+            IView::Probe(mTarget)->Layout(targetLeft, top, targetRight, top + targetHeight);
             mAlignment_value = t;
-        } else {
-            mTab->Layout(left, parentHeight - handleHeight, right, parentHeight);
-            mText->Layout(left, parentHeight, right, parentHeight + parentHeight);
-            mTarget->Layout(targetLeft, bottom, targetRight, bottom + targetHeight);
+        }
+        else {
+            IView::Probe(mTab)->Layout(left, parentHeight - handleHeight, right, parentHeight);
+            IView::Probe(mText)->Layout(left, parentHeight, right, parentHeight + parentHeight);
+            IView::Probe(mTarget)->Layout(targetLeft, bottom, targetRight, bottom + targetHeight);
             mAlignment_value = b;
         }
     }
@@ -426,66 +416,80 @@ void SlidingTab::Slider::UpdateDrawableStates()
     SetState(mCurrentState);
 }
 
-/**
- * Ensure all the dependent widgets are measured.
- */
 void SlidingTab::Slider::Measure()
 {
-    mTab->Measure(View::MeasureSpec::MakeMeasureSpec(0, View::MeasureSpec::UNSPECIFIED),
+    IView::Probe(mTab)->Measure(View::MeasureSpec::MakeMeasureSpec(0, View::MeasureSpec::UNSPECIFIED),
         View::MeasureSpec::MakeMeasureSpec(0, View::MeasureSpec::UNSPECIFIED));
-    mText->Measure(View::MeasureSpec::MakeMeasureSpec(0, View::MeasureSpec::UNSPECIFIED),
+    IView::Probe(mText)->Measure(View::MeasureSpec::MakeMeasureSpec(0, View::MeasureSpec::UNSPECIFIED),
         View::MeasureSpec::MakeMeasureSpec(0, View::MeasureSpec::UNSPECIFIED));
 }
 
-/**
- * Get the measured tab width. Must be called after {@link Slider#measure()}.
- * @return
- */
 Int32 SlidingTab::Slider::GetTabWidth()
 {
     Int32 width;
-    mTab->GetMeasuredWidth(&width);
-
+    IView::Probe(mTab)->GetMeasuredWidth(&width);
     return width;
 }
 
-/**
- * Get the measured tab width. Must be called after {@link Slider#measure()}.
- * @return
- */
 Int32 SlidingTab::Slider::GetTabHeight()
 {
     Int32 height;
-    mTab->GetMeasuredHeight(&height);
+    IView::Probe(mTab)->GetMeasuredHeight(&height);
     return height;
 }
 
-/**
- * Start animating the slider. Note we need two animations since a ValueAnimator
- * keeps internal state of the invalidation region which is just the view being animated.
- *
- * @param anim1
- * @param anim2
- */
 void SlidingTab::Slider::StartAnimation(
     /* [in] */ IAnimation* anim1,
     /* [in] */ IAnimation* anim2)
 {
-    mTab->StartAnimation(anim1);
-    mText->StartAnimation(anim2);
+    IView::Probe(mTab)->StartAnimation(anim1);
+    IView::Probe(mText)->StartAnimation(anim2);
 }
 
 void SlidingTab::Slider::HideTarget()
 {
-    mTarget->ClearAnimation();
-    mTarget->SetVisibility(IView::INVISIBLE);
+    IView::Probe(mTarget)->ClearAnimation();
+    IView::Probe(mTarget)->SetVisibility(IView::INVISIBLE);
 }
 
 
-ECode SlidingTab::InitFromResource(
+const Boolean SlidingTab::DBG = FALSE;
+const Int32 SlidingTab::HORIZONTAL = 0;
+const Int32 SlidingTab::VERTICAL = 1;
+const Float SlidingTab::THRESHOLD = 2.0f / 3.0f;
+const Int64 SlidingTab::VIBRATE_SHORT = 30;
+const Int64 SlidingTab::VIBRATE_LONG = 40;
+const Int32 SlidingTab::TRACKING_MARGIN = 50;
+const Int32 SlidingTab::ANIM_DURATION = 250;
+const Int32 SlidingTab::ANIM_TARGET_TIME = 500;
+const String SlidingTab::TAG("SlidingTab");
+AutoPtr<IAudioAttributes> SlidingTab::VIBRATION_ATTRIBUTES = InitStatic();
+
+CAR_INTERFACE_IMPL(SlidingTab, ViewGroup, ISlidingTab);
+SlidingTab::SlidingTab()
+    : mHoldLeftOnTransition(TRUE)
+    , mHoldRightOnTransition(TRUE)
+    , mGrabbedState(ISlidingTabOnTriggerListener::NO_HANDLE)
+    , mTriggered(FALSE)
+    , mDensity(0.0f)
+    , mOrientation(0)
+    , mTracking(FALSE)
+    , mThreshold(0.0f)
+    , mAnimating(FALSE)
+{}
+
+ECode SlidingTab::constructor(
+    /* [in] */ IContext* context)
+{
+    return constructor(context, NULL);
+}
+
+ECode SlidingTab::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
+    ViewGroup::constructor(context, attrs);
+
     // Allocate a temporary once that can be used everywhere.
     CRect::New((IRect**)&mTmpRect);
 
@@ -499,11 +503,12 @@ ECode SlidingTab::InitFromResource(
     a->GetInt32(R::styleable::SlidingTab_orientation, HORIZONTAL, &mOrientation);
     a->Recycle();
 
-    AutoPtr<IResources> r = GetResources();
+    AutoPtr<IResources> r;
+    GetResources((IResources**)&r);
     AutoPtr<IDisplayMetrics> metrics;
     r->GetDisplayMetrics((IDisplayMetrics**)&metrics);
     mDensity = ((CDisplayMetrics*)metrics.Get())->mDensity;
-//    if (DBG) Log("- Density: " + mDensity);
+    if (DBG) Log(String("- Density: ") + mDensity);
 
     mLeftSlider = new Slider(THIS_PROBE(IViewGroup),
         R::drawable::jog_tab_left_generic,
@@ -516,46 +521,6 @@ ECode SlidingTab::InitFromResource(
 
     // setBackgroundColor(0x80808080);
     return NOERROR;
-}
-
-/**
- * Constructor used when this widget is created from a layout file.
- */
-SlidingTab::SlidingTab()
-          : mHoldLeftOnTransition(TRUE)
-          , mHoldRightOnTransition(TRUE)
-          , mGrabbedState(ISlidingTabOnTriggerListener::NO_HANDLE)
-          , mTriggered(FALSE)
-          , mDensity(0.0f)
-          , mOrientation(0)
-          , mTracking(FALSE)
-          , mThreshold(0.0f)
-          , mAnimating(FALSE)
-{}
-
-SlidingTab::SlidingTab(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-          : ViewGroup(context, attrs)
-          , mHoldLeftOnTransition(TRUE)
-          , mHoldRightOnTransition(TRUE)
-          , mGrabbedState(ISlidingTabOnTriggerListener::NO_HANDLE)
-          , mTriggered(FALSE)
-          , mDensity(0.0f)
-          , mOrientation(0)
-          , mTracking(FALSE)
-          , mThreshold(0.0f)
-          , mAnimating(FALSE)
-{
-    InitFromResource(context, attrs);
-}
-
-ECode SlidingTab::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    ViewGroup::Init(context, attrs);
-    return InitFromResource(context, attrs);
 }
 
 void SlidingTab::OnMeasure(
@@ -596,9 +561,12 @@ void SlidingTab::OnMeasure(
     SetMeasuredDimension(width, height);
 }
 
-Boolean SlidingTab::OnInterceptTouchEvent(
-    /* [in] */ IMotionEvent* event)
+ECode SlidingTab::OnInterceptTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
     Int32 action;
     event->GetAction(&action);
     Float x;
@@ -608,21 +576,21 @@ Boolean SlidingTab::OnInterceptTouchEvent(
     event->GetY(&y);
 
     if (mAnimating) {
-        return FALSE;
+        return NOERROR;
     }
 
-    AutoPtr<IView> leftHandle = mLeftSlider->mTab;
+    AutoPtr<IView> leftHandle = IView::Probe(mLeftSlider->mTab);
     leftHandle->GetHitRect(mTmpRect);
     Boolean leftHit;
     mTmpRect->Contains((Int32) x, (Int32) y, &leftHit);
 
-    AutoPtr<IView> rightHandle = mRightSlider->mTab;
+    AutoPtr<IView> rightHandle = IView::Probe(mRightSlider->mTab);
     rightHandle->GetHitRect(mTmpRect);
     Boolean rightHit;
     mTmpRect->Contains((Int32)x, (Int32) y, &rightHit);
 
     if (!mTracking && !(leftHit || rightHit)) {
-        return FALSE;
+        return NOERROR;
     }
 
     switch (action) {
@@ -635,7 +603,8 @@ Boolean SlidingTab::OnInterceptTouchEvent(
                 mOtherSlider = mRightSlider;
                 mThreshold = IsHorizontal() ? THRESHOLD : 1.0f - THRESHOLD;
                 SetGrabbedState(ISlidingTabOnTriggerListener::LEFT_HANDLE);
-            } else {
+            }
+            else {
                 mCurrentSlider = mRightSlider;
                 mOtherSlider = mLeftSlider;
                 mThreshold = IsHorizontal() ? 1.0f - THRESHOLD : THRESHOLD;
@@ -648,15 +617,10 @@ Boolean SlidingTab::OnInterceptTouchEvent(
         }
     }
 
-    return TRUE;
+    *result = TRUE;
+    return NOERROR;
 }
 
-/**
- * Reset the tabs to their original state and stop any existing animation.
- * Animate them back into place if animate is TRUE.
- *
- * @param animate
- */
 ECode SlidingTab::Reset(
     /* [in] */ Boolean animate)
 {
@@ -671,24 +635,26 @@ ECode SlidingTab::Reset(
 ECode SlidingTab::SetVisibility(
     /* [in] */ Int32 visibility)
 {
+    Int32 v = 0;
+    GetVisibility(&v);
     // Clear animations so sliders don't continue to animate when we show the widget again.
-    if (visibility != GetVisibility() && visibility == IView::INVISIBLE) {
+    if (visibility != v && visibility == IView::INVISIBLE) {
        Reset(FALSE);
     }
     return ViewGroup::SetVisibility(visibility);
 }
 
-Boolean SlidingTab::OnTouchEvent(
-    /* [in] */ IMotionEvent* event)
+ECode SlidingTab::OnTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     if (mTracking) {
-        Int32 action;
+        Int32 action = 0;
         event->GetAction(&action);
 
-        Float x;
+        Float x = 0, y = 0;
         event->GetX(&x);
-
-        Float y;
         event->GetY(&y);
 
         switch (action) {
@@ -696,12 +662,14 @@ Boolean SlidingTab::OnTouchEvent(
                 if (WithinView(x, y, this) ) {
                     MoveHandle(x, y);
                     Float position = IsHorizontal() ? x : y;
-                    Float target = mThreshold * (IsHorizontal() ? GetWidth() : GetHeight());
+                    Int32 v = 0;
+                    Float target = mThreshold * (IsHorizontal() ? (GetWidth(&v), v) : (GetHeight(&v), v));
                     Boolean thresholdReached;
                     if (IsHorizontal()) {
                         thresholdReached = mCurrentSlider == mLeftSlider ?
                                 position > target : position < target;
-                    } else {
+                    }
+                    else {
                         thresholdReached = mCurrentSlider == mLeftSlider ?
                                 position < target : position > target;
                     }
@@ -727,7 +695,9 @@ Boolean SlidingTab::OnTouchEvent(
         }
     }
 
-    return mTracking || ViewGroup::OnTouchEvent(event);
+    Boolean tmp = FALSE;
+    *result = mTracking || (ViewGroup::OnTouchEvent(event, &tmp), tmp);
+    return NOERROR;
 }
 
 void SlidingTab::CancelGrab()
@@ -754,47 +724,49 @@ void SlidingTab::StartAnimating(
     Int32 dy;
     if (IsHorizontal()) {
         Int32 right;
-        slider->mTab->GetRight(&right);
+        IView::Probe(slider->mTab)->GetRight(&right);
 
         Int32 width;
-        slider->mTab->GetWidth(&width);
+        IView::Probe(slider->mTab)->GetWidth(&width);
 
         Int32 left;
-        slider->mTab->GetLeft(&left);
+        IView::Probe(slider->mTab)->GetLeft(&left);
 
-        Int32 viewWidth = GetWidth();
+        Int32 viewWidth = 0;
+        GetWidth(&viewWidth);
         Int32 holdOffset = holdAfter ? 0 : width; // how much of tab to show at the end of anim
         dx =  slider == mRightSlider ? - (right + viewWidth - holdOffset)
                 : (viewWidth - left) + viewWidth - holdOffset;
         dy = 0;
     } else {
         Int32 top;
-        slider->mTab->GetTop(&top);
+        IView::Probe(slider->mTab)->GetTop(&top);
 
         Int32 bottom;
-        slider->mTab->GetBottom(&bottom);
+        IView::Probe(slider->mTab)->GetBottom(&bottom);
 
         Int32 height;
-        slider->mTab->GetHeight(&height);
+        IView::Probe(slider->mTab)->GetHeight(&height);
 
-        Int32 viewHeight = GetHeight();
+        Int32 viewHeight = 0;
+        GetHeight(&viewHeight);
         Int32 holdOffset = holdAfter ? 0 : height; // how much of tab to show at end of anim
         dx = 0;
         dy =  slider == mRightSlider ? (top + viewHeight - holdOffset)
                 : - ((viewHeight - bottom) + viewHeight - holdOffset);
     }
-    CTranslateAnimation::New(0, dx, 0, dy, (ITranslateAnimation**)&trans1);
+    CTranslateAnimation::New(0, dx, 0, dy, (IAnimation**)&trans1);
 
     trans1->SetDuration(ANIM_DURATION);
-    AutoPtr<ILinearInterpolator> interpolator1;
-    CLinearInterpolator::New((ILinearInterpolator**)&interpolator1);
+    AutoPtr<IInterpolator> interpolator1;
+    CLinearInterpolator::New((IInterpolator**)&interpolator1);
     trans1->SetInterpolator(interpolator1);
     trans1->SetFillAfter(TRUE);
 
-    CTranslateAnimation::New(0, dx, 0, dy, (ITranslateAnimation**)&trans2);
+    CTranslateAnimation::New(0, dx, 0, dy, (IAnimation**)&trans2);
     trans2->SetDuration(ANIM_DURATION);
-    AutoPtr<ILinearInterpolator> interpolator2;
-    CLinearInterpolator::New((ILinearInterpolator**)&interpolator2);
+    AutoPtr<IInterpolator> interpolator2;
+    CLinearInterpolator::New((IInterpolator**)&interpolator2);
     trans2->SetInterpolator(interpolator2);
     trans2->SetFillAfter(TRUE);
 
@@ -816,8 +788,10 @@ Boolean SlidingTab::WithinView(
     /* [in] */ Float y,
     /* [in] */ View* view)
 {
-    Int32 w = view->GetHeight();
-    Int32 h = view->GetWidth();
+    Int32 w = 0;
+    view->GetHeight(&w);
+    Int32 h = 0;
+    view->GetWidth(&h);
 
     return (IsHorizontal() && (y > - TRACKING_MARGIN) && (y < TRACKING_MARGIN + h))
         || (!IsHorizontal() && (x > -TRACKING_MARGIN) && (x < TRACKING_MARGIN + w));
@@ -835,26 +809,27 @@ void SlidingTab::ResetView()
     // onLayout(TRUE, getLeft(), getTop(), getLeft() + getWidth(), getTop() + getHeight());
 }
 
-void SlidingTab::OnLayout(
+ECode SlidingTab::OnLayout(
     /* [in] */ Boolean changed,
     /* [in] */ Int32 l,
     /* [in] */ Int32 t,
     /* [in] */ Int32 r,
     /* [in] */ Int32 b)
 {
-    if (!changed) return;
+    if (!changed) return NOERROR;
 
     // Center the widgets in the view
     mLeftSlider->Layout(l, t, r, b, IsHorizontal() ? Slider::ALIGN_LEFT : Slider::ALIGN_BOTTOM);
     mRightSlider->Layout(l, t, r, b, IsHorizontal() ? Slider::ALIGN_RIGHT : Slider::ALIGN_TOP);
+    return NOERROR;
 }
 
 void SlidingTab::MoveHandle(
     /* [in] */ Float x,
     /* [in] */ Float y)
 {
-    AutoPtr<IView> handle = mCurrentSlider->mTab;
-    AutoPtr<IView> content = mCurrentSlider->mText;
+    AutoPtr<IView> handle = IView::Probe(mCurrentSlider->mTab);
+    AutoPtr<IView> content = IView::Probe(mCurrentSlider->mText);
     if (IsHorizontal()) {
         Int32 l, w;
         handle->GetLeft(&l);
@@ -875,17 +850,6 @@ void SlidingTab::MoveHandle(
     Invalidate(); // TODO: be more conservative about what we're invalidating
 }
 
-/**
- * Sets the left handle icon to a given resource.
- *
- * The resource should refer to a Drawable object, or use 0 to remove
- * the icon.
- *
- * @param iconId the resource ID of the icon drawable
- * @param targetId the resource of the target drawable
- * @param barId the resource of the bar drawable (stateful)
- * @param tabId the resource of the
- */
 ECode SlidingTab::SetLeftTabResources(
     /* [in] */ Int32 iconId,
     /* [in] */ Int32 targetId,
@@ -901,11 +865,6 @@ ECode SlidingTab::SetLeftTabResources(
     return NOERROR;
 }
 
-/**
- * Sets the left handle hint text to a given resource string.
- *
- * @param resId
- */
 ECode SlidingTab::SetLeftHintText(
     /* [in] */ Int32 resId)
 {
@@ -916,17 +875,6 @@ ECode SlidingTab::SetLeftHintText(
     return NOERROR;
 }
 
-/**
- * Sets the right handle icon to a given resource.
- *
- * The resource should refer to a Drawable object, or use 0 to remove
- * the icon.
- *
- * @param iconId the resource ID of the icon drawable
- * @param targetId the resource of the target drawable
- * @param barId the resource of the bar drawable (stateful)
- * @param tabId the resource of the
- */
 ECode SlidingTab::SetRightTabResources(
     /* [in] */ Int32 iconId,
     /* [in] */ Int32 targetId,
@@ -942,11 +890,6 @@ ECode SlidingTab::SetRightTabResources(
     return NOERROR;
 }
 
-/**
- * Sets the left handle hint text to a given resource string.
- *
- * @param resId
- */
 ECode SlidingTab::SetRightHintText(
     /* [in] */ Int32 resId)
 {
@@ -967,33 +910,29 @@ ECode SlidingTab::SetHoldAfterTrigger(
     return NOERROR;
 }
 
-/**
- * Triggers haptic feedback.
- */
 void SlidingTab::Vibrate(
     /* [in] */ Int64 duration)
 {
-//    Object::AutoLock lock(mLock);
-//
-//    AutoPtr<IContentResolver> cr;
-//    mContext->GetContentResolver((IContentResolver**)&cr);
-//    Boolean hapticEnabled = Settings::System::GetInt32ForUser(
-//            cr, Settings::System::HAPTIC_FEEDBACK_ENABLED, 1,
-//            UserHandle::USER_CURRENT) != 0;
-//    if (hapticEnabled) {
-//        if (mVibrator == NULL) {
-//            mVibrator = (android.os.Vibrator) GetContext()
-//                    ->GetSystemService(Context.VIBRATOR_SERVICE);
-//        }
-//        mVibrator->Vibrate(duration);
-//    }
+    AutoLock lock(this);
+
+    AutoPtr<IContentResolver> cr;
+    mContext->GetContentResolver((IContentResolver**)&cr);
+    Int32 value = 0;
+    Settings::System::GetInt32ForUser(cr, ISettingsSystem::HAPTIC_FEEDBACK_ENABLED, 1,
+           IUserHandle::USER_CURRENT, &value);
+    Boolean hapticEnabled = value != 0;
+    if (hapticEnabled) {
+        if (mVibrator == NULL) {
+            AutoPtr<IContext> context;
+            GetContext((IContext**)&context);
+            AutoPtr<IInterface> obj;
+            context->GetSystemService(IContext::VIBRATOR_SERVICE, (IInterface**)&obj);
+            mVibrator = IVibrator::Probe(obj);
+        }
+        mVibrator->Vibrate(duration, VIBRATION_ATTRIBUTES);
+    }
 }
 
-/**
- * Registers a callback to be invoked when the user triggers an event.
- *
- * @param listener the OnDialTriggerListener to attach to this view
- */
 ECode SlidingTab::SetOnTriggerListener(
     /* [in] */ ISlidingTabOnTriggerListener* listener)
 {
@@ -1002,10 +941,6 @@ ECode SlidingTab::SetOnTriggerListener(
     return NOERROR;
 }
 
-/**
- * Dispatches a trigger event to listener. Ignored if a listener is not set.
- * @param whichHandle the handle that triggered the event.
- */
 void SlidingTab::DispatchTriggerEvent(
     /* [in] */ Int32 whichHandle)
 {
@@ -1015,7 +950,7 @@ void SlidingTab::DispatchTriggerEvent(
     }
 }
 
-void SlidingTab::OnVisibilityChanged(
+ECode SlidingTab::OnVisibilityChanged(
     /* [in] */ IView* changedView,
     /* [in] */ Int32 visibility)
 {
@@ -1026,12 +961,9 @@ void SlidingTab::OnVisibilityChanged(
             && mGrabbedState != ISlidingTabOnTriggerListener::NO_HANDLE) {
         CancelGrab();
     }
+    return NOERROR;
 }
 
-/**
- * Sets the current grabbed state, and dispatches a grabbed state change
- * event to our listener.
- */
 void SlidingTab::SetGrabbedState(
     /* [in] */ Int32 newState)
 {
@@ -1071,7 +1003,18 @@ ECode SlidingTab::AnimationEndInStartAnimating(
     return NOERROR;
 }
 
-}// namespace Internal
+AutoPtr<IAudioAttributes> SlidingTab::InitStatic()
+{
+    AutoPtr<IAudioAttributesBuilder> builder;
+    CAudioAttributesBuilder::New((IAudioAttributesBuilder**)&builder);
+    builder->SetContentType(IAudioAttributes::CONTENT_TYPE_SONIFICATION);
+    builder->SetUsage(IAudioAttributes::USAGE_ASSISTANCE_SONIFICATION);
+    AutoPtr<IAudioAttributes> attrs;
+    builder->Build((IAudioAttributes**)&attrs);
+    return attrs;
+}
+
 }// namespace Widget
+}// namespace Internal
 }// namespace Droid
 }// namespace Elastos

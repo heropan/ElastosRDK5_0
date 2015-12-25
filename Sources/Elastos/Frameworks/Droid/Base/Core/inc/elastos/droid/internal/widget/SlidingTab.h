@@ -1,29 +1,28 @@
 
-#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_SLIDINGTAB_H__
-#define __ELASTOS_DROID_WIDGET_INTERNAL_SLIDINGTAB_H__
+#ifndef  __ELASTOS_DROID_INTERNAL_WIDGET_SLIDINGTAB_H__
+#define  __ELASTOS_DROID_INTERNAL_WIDGET_SLIDINGTAB_H__
 
 #include "elastos/droid/view/ViewGroup.h"
-#include <elastos/core/Math.h>
-#include "elastos/droid/R.h"
+#include "Elastos.Droid.Os.h"
 
-using Elastos::Core::Math;
-using Elastos::Droid::R;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Media::IAudioAttributes;
+using Elastos::Droid::Os::IVibrator;
+using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::Animation::IAnimation;
 using Elastos::Droid::View::Animation::IAnimationAnimationListener;
 using Elastos::Droid::View::ViewGroup;
 using Elastos::Droid::View::IMotionEvent;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Widget::ITextView;
 using Elastos::Droid::Widget::IImageView;
-using Elastos::Droid::Graphics::IRect;
 
 namespace Elastos {
 namespace Droid {
-namespace Widget {
 namespace Internal {
+namespace Widget {
 
 /**
  * A special widget containing two Sliders and a threshold for each.  Moving either slider beyond
@@ -34,7 +33,9 @@ namespace Internal {
  * the tab will result in whichHandle being {@link OnTriggerListener#NO_HANDLE}.
  *
  */
-class SlidingTab : public ViewGroup
+class SlidingTab
+    : public ViewGroup
+    , public ISlidingTab
 {
 private:
     /**
@@ -46,10 +47,9 @@ private:
      * {@link #target} is the target the user must drag the slider past to trigger the slider.
      *
      */
-    class Slider : public ElRefBase
+    class Slider : public Object
     {
     public:
-
         /**
          * Constructor
          *
@@ -139,38 +139,39 @@ private:
             /* [in] */ IAnimation* anim2);
 
         CARAPI_(void) HideTarget();
+
     public:
-        static const Int32 ALIGN_LEFT = 0;
-        static const Int32 ALIGN_RIGHT = 1;
-        static const Int32 ALIGN_TOP = 2;
-        static const Int32 ALIGN_BOTTOM = 3;
-        static const Int32 ALIGN_UNKNOWN = 4;
+        static const Int32 ALIGN_LEFT;
+        static const Int32 ALIGN_RIGHT;
+        static const Int32 ALIGN_TOP;
+        static const Int32 ALIGN_BOTTOM;
+        static const Int32 ALIGN_UNKNOWN;
 
     /**
      * States for the view.
      */
     private:
-        static const Int32 STATE_NORMAL = 0;
-        static const Int32 STATE_PRESSED = 1;
-        static const Int32 STATE_ACTIVE = 2;
+        static const Int32 STATE_NORMAL;
+        static const Int32 STATE_PRESSED;
+        static const Int32 STATE_ACTIVE;
 
     private:
         AutoPtr<IImageView> mTab;
         AutoPtr<ITextView> mText;
         AutoPtr<IImageView> mTarget;
-        Int32 mCurrentState;// = STATE_NORMAL;
-        Int32 mAlignment;// = ALIGN_UNKNOWN;
+        Int32 mCurrentState;
+        Int32 mAlignment;
         Int32 mAlignment_value;
 
         friend class SlidingTab;
     };
 
     class AnimationDoneListener
-            : public ElRefBase
-            , public IAnimationAnimationListener
+        : public Object
+        , public IAnimationAnimationListener
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         AnimationDoneListener(
             /* [in] */ SlidingTab* host);
@@ -189,11 +190,11 @@ private:
     };
 
     class StartAnimationListener
-            : public ElRefBase
-            , public IAnimationAnimationListener
+        : public Object
+        , public IAnimationAnimationListener
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         StartAnimationListener(
             /* [in] */ SlidingTab* host,
@@ -212,24 +213,31 @@ private:
 
     protected:
         SlidingTab* mHost;
+
     private:
         Boolean mHoldAfter;
         Int32 mDx;
         Int32 mDy;
     };
+
 public:
+    CAR_INTERFACE_DECL();
 
     SlidingTab();
+
     /**
      * Constructor used when this widget is created from a layout file.
      */
-    SlidingTab(
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL);
+        /* [in] */ IAttributeSet* attrs);
 
-
-    virtual CARAPI_(Boolean) OnInterceptTouchEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI OnInterceptTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
     /**
      * Reset the tabs to their original state and stop any existing animation.
@@ -243,8 +251,9 @@ public:
     virtual CARAPI SetVisibility(
         /* [in] */ Int32 visibility);
 
-    virtual CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
     /**
      * Sets the left handle icon to a given resource.
@@ -313,21 +322,16 @@ protected:
         /* [in] */ Int32 widthMeasureSpec,
         /* [in] */ Int32 heightMeasureSpec);
 
-    virtual CARAPI_(void) OnLayout(
+    virtual CARAPI OnLayout(
         /* [in] */ Boolean changed,
         /* [in] */ Int32 l,
         /* [in] */ Int32 t,
         /* [in] */ Int32 r,
         /* [in] */ Int32 b);
 
-    virtual CARAPI_(void) OnVisibilityChanged(
+    virtual CARAPI OnVisibilityChanged(
         /* [in] */ IView* changedView,
         /* [in] */ Int32 visibility);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL);
-
 
 private:
     CARAPI_(void) CancelGrab();
@@ -356,15 +360,12 @@ private:
     CARAPI_(void) Vibrate(
         /* [in] */ Int64 duration);
 
-
-
     /**
      * Dispatches a trigger event to listener. Ignored if a listener is not set.
      * @param whichHandle the handle that triggered the event.
      */
     CARAPI_(void) DispatchTriggerEvent(
         /* [in] */ Int32 whichHandle);
-
 
     /**
      * Sets the current grabbed state, and dispatches a grabbed state change
@@ -381,33 +382,30 @@ private:
         /* [in] */ Int32 dx,
         /* [in] */ Int32 dy);
 
-    CARAPI InitFromResource(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL);
+    static CARAPI_(AutoPtr<IAudioAttributes>) InitStatic();
 
 private:
-
     static const String TAG;
-    static const Boolean DBG = FALSE;
-    static const Int32 HORIZONTAL = 0; // as defined in attrs.xml
-    static const Int32 VERTICAL = 1;
+    static const Boolean DBG;
+    static const Int32 HORIZONTAL; // as defined in attrs.xml
+    static const Int32 VERTICAL;
 
-// TODO: Make these configurable
-    static const Float THRESHOLD = 2.0f / 3.0f;
-    static const Int64 VIBRATE_SHORT = 30;
-    static const Int64 VIBRATE_LONG = 40;
-    static const Int32 TRACKING_MARGIN = 50;
-    static const Int32 ANIM_DURATION = 250; // Time for most animations (in ms)
-    static const Int32 ANIM_TARGET_TIME = 500; // Time to show targets (in ms)
+    // TODO: Make these configurable
+    static const Float THRESHOLD;
+    static const Int64 VIBRATE_SHORT;
+    static const Int64 VIBRATE_LONG;
+    static const Int32 TRACKING_MARGIN;
+    static const Int32 ANIM_DURATION; // Time for most animations (in ms)
+    static const Int32 ANIM_TARGET_TIME; // Time to show targets (in ms)
 
 private:
-    Boolean mHoldLeftOnTransition;// = true;
-    Boolean mHoldRightOnTransition;// = true;
+    Boolean mHoldLeftOnTransition;
+    Boolean mHoldRightOnTransition;
 
     AutoPtr<ISlidingTabOnTriggerListener> mOnTriggerListener;
-    Int32 mGrabbedState;// = OnTriggerListener.NO_HANDLE;
-    Boolean mTriggered;// = false;
-//    AutoPtr<IVibrator> mVibrator;
+    Int32 mGrabbedState;
+    Boolean mTriggered;
+    AutoPtr<IVibrator> mVibrator;
     Float mDensity; // used to scale dimensions for bitmaps.
 
     /**
@@ -424,13 +422,13 @@ private:
     Boolean mAnimating;
     AutoPtr<IRect> mTmpRect;
     AutoPtr<AnimationDoneListener> mAnimationDoneListener;
-protected:
-    Object mLock;
+
+    static AutoPtr<IAudioAttributes> VIBRATION_ATTRIBUTES;
 };
 
-}// namespace Internal
 }// namespace Widget
+}// namespace Internal
 }// namespace Droid
 }// namespace Elastos
 
-#endif
+#endif // __ELASTOS_DROID_INTERNAL_WIDGET_SLIDINGTAB_H__
