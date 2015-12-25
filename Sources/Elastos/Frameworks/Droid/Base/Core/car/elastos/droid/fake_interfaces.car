@@ -285,12 +285,4 @@ module
         interface IX509Name {}
 
     }}}} // Org.Bouncycastle.Asn1.X509
-
-    namespace Elastos {
-    namespace Droid {
-    namespace Server {
-
-        interface INetworkManagementSocketTagger {}
-
-    }}} // Elastos.Droid.Server
 }
