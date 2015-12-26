@@ -17,9 +17,6 @@
 //#include "elastos/droid/view/menu/CMenuDialogHelper.h"
 #include "elastos/droid/widget/FrameLayout.h"
 
-//class ViewRootImpl;
-//class CPhoneWindowRotationWatcher;
-
 using Elastos::Droid::App::IKeyguardManager;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;

@@ -1,35 +1,96 @@
 #ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_PHONEWINDOWMANAGER_H__
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_PHONEWINDOWMANAGER_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/app/ProgressDialog.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/database/ContentObserver.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CRect.h"
+//#include "elastos/droid/internal/policy/impl/BootAnimationView.h"
+#include "elastos/droid/internal/policy/impl/GlobalActions.h"
+#include "elastos/droid/internal/policy/impl/GlobalKeyManager.h"
+#include "elastos/droid/internal/policy/impl/RecentApplicationsDialog.h"
+#include "elastos/droid/internal/policy/impl/ShortcutManager.h"
+#include "elastos/droid/internal/policy/impl/WakeGestureListener.h"
+#include "elastos/droid/internal/policy/impl/WindowOrientationListener.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/Runnable.h"
+#include "elastos/droid/os/UEventObserver.h"
+#include "elastos/droid/utility/SparseArray.h"
+#include "elastos/droid/view/InputEventReceiver.h"
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::View::IInputChannel;
-using Elastos::Droid::Os::ILooper;
-using Elastos::Droid::View::IInputEvent;
-using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Os::IIBinder;
-using Elastos::Droid::Os::IMessage;
-using Elastos::Droid::View::IInputEventReceiver;
-using Elastos::Droid::Content::IComponentName;
-using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::View::IIWindowManager;
-using Elastos::Droid::View::IDisplay;
-using Elastos::Droid::Content::Res::IConfiguration;
-using Elastos::Droid::View::IView;
-using Elastos::Droid::Content::Res::ICompatibilityInfo;
-using Elastos::Droid::View::Animation::IAnimation;
-using Elastos::Droid::Service::Dreams::IIDreamManager;
-using Elastos::Droid::Media::IIAudioService;
-using Elastos::Droid::View::IKeyEvent;
-using Elastos::Droid::Graphics::IRect;
-using Elastos::Droid::Content::Res::IResources;
-using Elastos::Io::IPrintWriter;
+using Elastos::Droid::App::IIUiModeManager;
+using Elastos::Droid::App::INotification;
+using Elastos::Droid::App::INotificationManager;
+using Elastos::Droid::App::IProgressDialog;
 using Elastos::Droid::App::ISearchManager;
-
+using Elastos::Droid::App::IStatusBarManager;
+using Elastos::Droid::App::ProgressDialog;
+using Elastos::Droid::Content::BroadcastReceiver;
+using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IServiceConnection;
+using Elastos::Droid::Content::Res::ICompatibilityInfo;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Database::ContentObserver;
+using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Graphics::IRect;
+//using Elastos::Droid::Internal::Policy::Impl::BootAnimationView;
+using Elastos::Droid::Internal::Policy::Impl::GlobalActions;
+using Elastos::Droid::Internal::Policy::Impl::ShortcutManager;
+using Elastos::Droid::Internal::Policy::Impl::IRecentApplicationsDialog;
+using Elastos::Droid::Internal::Policy::Impl::Keyguard::IKeyguardServiceDelegateShowListener;
+using Elastos::Droid::Internal::Policy::Impl::Keyguard::IKeyguardServiceDelegate;
+using Elastos::Droid::Internal::StatusBar::IIStatusBarService;
+using Elastos::Droid::Internal::Widget::IPointerLocationView;
+using Elastos::Droid::Media::IAudioAttributes;
+using Elastos::Droid::Media::IIAudioService;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IPowerManager;
+using Elastos::Droid::Os::IPowerManagerWakeLock;
+using Elastos::Droid::Os::IVibrator;
+using Elastos::Droid::Os::Runnable;
+using Elastos::Droid::Os::UEventObserver;
+using Elastos::Droid::Service::Dreams::IDreamManagerInternal;
+using Elastos::Droid::Service::Dreams::IIDreamManager;
+using Elastos::Droid::Utility::SparseArray;
+using Elastos::Droid::View::Accessibility::IAccessibilityManager;
+using Elastos::Droid::View::Animation::IAnimation;
+using Elastos::Droid::View::IApplicationToken;
+using Elastos::Droid::View::IDisplay;
+using Elastos::Droid::View::IFakeWindow;
+using Elastos::Droid::View::IInputChannel;
+using Elastos::Droid::View::IInputEvent;
+using Elastos::Droid::View::IInputEventReceiver;
+using Elastos::Droid::View::IInputEventReceiverFactory;
+using Elastos::Droid::View::IIWindowManager;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::InputEventReceiver;
+using Elastos::Droid::View::IOnKeyguardExitResult;
+using Elastos::Droid::View::IScreenOnListener;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IWindowManager;
+using Elastos::Droid::View::IWindowManagerInternal;
+using Elastos::Droid::View::IWindowManagerLayoutParams;
+using Elastos::Droid::View::IWindowManagerPolicy;
+using Elastos::Droid::View::IWindowManagerPolicyWindowManagerFuncs;
+using Elastos::Droid::View::IWindowState;
+using Elastos::Droid::View::IWindowCallback;
+using Elastos::Droid::View::IKeyEventCallback;
+using Elastos::Droid::View::IViewOnCreateContextMenuListener;
+using Elastos::Droid::Widget::IToast;
+
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IRunnable;
+using Elastos::IO::IPrintWriter;
+using Elastos::Utility::IHashSet;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -48,550 +109,872 @@ class PhoneWindowManager
     : public Object
     , public IWindowManagerPolicy
     , public IPhoneWindowManager
+
 {
-public:
+protected:
+//    class PromptEnterMouseModeRunnable
+//        : public Runnable
+//    {
+//    public:
+//        PromptEnterMouseModeRunnable(
+//            /* [in] */ PhoneWindowManager* host);
+//
+//        CARAPI Run();
+//
+//    private:
+//        PhoneWindowManager* mHost;
+//    };
+//
+//    class PromptExitMouseModeRunnable
+//        : public Runnable
+//    {
+//    public:
+//        PromptExitMouseModeRunnable(
+//            /* [in] */ PhoneWindowManager* host);
+//
+//        CARAPI Run();
+//
+//    private:
+//        PhoneWindowManager* mHost;
+//    };
+//
+    class MyWakeGestureListener
+        : public WakeGestureListener
+    {
+    public:
+        MyWakeGestureListener(
+            /* [in] */ IContext* context,
+            /* [in] */ IHandler* handler,
+            /* [in] */ PhoneWindowManager* host);
+
+        CARAPI OnWakeUp();
+
+    private:
+        PhoneWindowManager* mHost;
+    };
+
+    class SystemGesturesPointerEventListenerCallbacks
+        : public Object
+        , public ISystemGesturesPointerEventListenerCallbacks
+    {
+    public:
+
+        CAR_INTERFACE_DECL();
+
+        SystemGesturesPointerEventListenerCallbacks(
+            /* [in] */ PhoneWindowManager* host);
+
+        CARAPI OnSwipeFromTop();
+
+        CARAPI OnSwipeFromBottom();
+
+        CARAPI OnSwipeFromRight();
+
+        CARAPI OnDebug();
+
+    private:
+        PhoneWindowManager* mHost;
+    };
+
+    class WindowManagerDrawCallbackRunnable
+        : public Runnable
+    {
+    public:
+        WindowManagerDrawCallbackRunnable(
+            /* [in] */ PhoneWindowManager* host);
+
+        CARAPI Run();
+
+    private:
+        PhoneWindowManager* mHost;
+    };
+
+    class KeyguardDelegateCallbackShowListener
+        : public Object
+        , public IKeyguardServiceDelegateShowListener
+    {
+    public:
+        KeyguardDelegateCallbackShowListener(
+            /* [in] */ PhoneWindowManager* host);
+
+        CAR_INTERFACE_DECL();
+
+        CARAPI OnShown(
+            /* [in] */ IBinder* windowToken);
+
+    private:
+        PhoneWindowManager* mHost;
+
+    };
+
+    class KeyguardDelegateOnKeyguardExitResult
+        : public Object
+        , public IOnKeyguardExitResult
+    {
+    public:
+        KeyguardDelegateOnKeyguardExitResult(
+            /* [in] */ PhoneWindowManager* host);
+
+        CAR_INTERFACE_DECL();
+
+        CARAPI OnKeyguardExitResult(
+            /* [in] */ Boolean success);
+
+    private:
+        PhoneWindowManager* mHost;
+
+    };
+
+    class ClearHideNavigationFlagRunnable
+        : public Runnable
+    {
+    public:
+        ClearHideNavigationFlagRunnable(
+            /* [in] */ PhoneWindowManager* host);
+
+        CARAPI Run();
+
+    private:
+        PhoneWindowManager* mHost;
+    };
+
+    class RequestTransientBarsRunnable
+        : public Runnable
+    {
+    public:
+        RequestTransientBarsRunnable(
+            /* [in] */ PhoneWindowManager* host);
+
+        CARAPI Run();
+
+    private:
+        PhoneWindowManager* mHost;
+    };
+
+    class KeyguardDelegateKeyguardDone
+        : public Runnable
+    {
+    public:
+        KeyguardDelegateKeyguardDone(
+            /* [in] */ PhoneWindowManager* host);
+
+        CARAPI Run();
+
+    private:
+        PhoneWindowManager* mHost;
+    };
+
+    class KeyguardDelegateKeyguardDismiss
+        : public Runnable
+    {
+    public:
+        KeyguardDelegateKeyguardDismiss(
+            /* [in] */ PhoneWindowManager* host);
+
+        CARAPI Run();
+
+    private:
+        PhoneWindowManager* mHost;
+    };
+
+    class KeyguardDelegateActivityDrawn
+        : public Runnable
+    {
+    public:
+        KeyguardDelegateActivityDrawn(
+            /* [in] */ PhoneWindowManager* host);
+
+        CARAPI Run();
+
+    private:
+        PhoneWindowManager* mHost;
+    };
+
     class SettingsObserver
         : public ContentObserver
     {
     public:
         SettingsObserver(
-            /* [in] */ IHandler* handler);
-
-        // @Override public void onChange(boolean selfChange) {
-        UpdateSettings();
-
-        UpdateRotation(
-            /* [in] */  false);
-
-        virtual CARAPI Observe();
-    };
-
-    class MyWakeGestureListener
-        : public Object
-        , public WakeGestureListener
-    {
-    public:
-        MyWakeGestureListener(
-            /* [in] */ IContext* context,
-            /* [in] */ IHandler* handler);
+            /* [in] */ IHandler* handler,
+            /* [in] */ PhoneWindowManager* host);
 
         // @Override
-        CARAPI OnWakeUp();
+        CARAPI OnChange(
+            /* [in] */ Boolean selfChange);
+
+        CARAPI Observe();
+
+    private:
+        PhoneWindowManager* mHost;
     };
 
     class MyOrientationListener
-        : public Object
-        , public WindowOrientationListener
+         : public WindowOrientationListener
     {
     public:
         MyOrientationListener(
             /* [in] */ IContext* context,
-            /* [in] */ IHandler* handler);
+            /* [in] */ IHandler* handler,
+            /* [in] */ PhoneWindowManager* host);
 
         // @Override
         CARAPI OnProposedRotationChanged(
             /* [in] */ Int32 rotation);
+
+    private:
+        PhoneWindowManager* mHost;
     };
 
     /**
-      * Input handler used while nav bar is hidden.  Captures any touch on the screen,
-      * to determine when the nav bar should be shown and prevent applications from
-      * receiving those touches.
-      */
+     * A delayed callback use to determine when it is okay to re-allow applications
+     * to use certain system UI flags.  This is used to prevent applications from
+     * spamming system UI changes that prevent the navigation bar from being shown.
+     */
+    // final Runnable mAllowSystemUiDelay = new Runnable() {
+    //     @Override public void run() {
+    //     }
+    // };
+
+    /**
+     * Input handler used while nav bar is hidden.  Captures any touch on the screen,
+     * to determine when the nav bar should be shown and prevent applications from
+     * receiving those touches.
+     */
     class HideNavInputEventReceiver
-        : public Object
-        , public IInputEventReceiver
+        : public InputEventReceiver
     {
     public:
         HideNavInputEventReceiver(
             /* [in] */ IInputChannel* inputChannel,
-            /* [in] */ ILooper* looper);
+            /* [in] */ ILooper* looper,
+            /* [in] */ PhoneWindowManager* host);
 
         // @Override
         CARAPI OnInputEvent(
             /* [in] */ IInputEvent* event);
+
+    private:
+        PhoneWindowManager* mHost;
     };
 
-    class ScreenLockTimeout
+    class HideNavInputEventReceiverFactory
         : public Object
-        , public Runnable
+        , public IInputEventReceiverFactory
     {
     public:
+
+        HideNavInputEventReceiverFactory(
+            /* [in] */ PhoneWindowManager* host);
+
+        CAR_INTERFACE_DECL();
+
+        // @Override
+        CARAPI CreateInputEventReceiver(
+            /* [in] */ IInputChannel* inputChannel,
+            /* [in] */ ILooper* looper,
+            /* [out] */ IInputEventReceiver** receiver);
+
+    private:
+        PhoneWindowManager* mHost;
+    };
+
+    class ScreenshotTimeoutRunnable
+        : public Runnable
+    {
+    public:
+        ScreenshotTimeoutRunnable(
+            /* [in] */ PhoneWindowManager* host);
+
         // @Override
         CARAPI Run();
 
-        virtual CARAPI SetLockOptions(
+    private:
+        PhoneWindowManager* mHost;
+    };
+
+    class DockBroadReceiver
+        : public BroadcastReceiver
+    {
+    public:
+        DockBroadReceiver(
+            /* [in] */ PhoneWindowManager* host);
+
+        // @Override
+        CARAPI OnReceive(
+            /* [in] */ IContext* context,
+            /* [in] */ IIntent* intent);
+
+        CARAPI ToString(
+            /* [out] */ String* info)
+        {
+            VALIDATE_NOT_NULL(info);
+            *info = String("PhoneWindowManager::DockBroadReceiver: ");
+            (*info).AppendFormat("%p", this);
+            return NOERROR;
+        }
+    private:
+        PhoneWindowManager* mHost;
+    };
+
+    class DreamBroadReceiver
+        : public BroadcastReceiver
+    {
+    public:
+        DreamBroadReceiver(
+            /* [in] */ PhoneWindowManager* host);
+
+        // @Override
+        CARAPI OnReceive(
+            /* [in] */ IContext* context,
+            /* [in] */ IIntent* intent);
+
+        CARAPI ToString(
+            /* [out] */ String* info)
+        {
+            VALIDATE_NOT_NULL(info);
+            *info = String("PhoneWindowManager::DreamBroadReceiver: ");
+            (*info).AppendFormat("%p", this);
+            return NOERROR;
+        }
+    private:
+        PhoneWindowManager* mHost;
+    };
+
+    class MultiuserBroadReceiver
+        : public BroadcastReceiver
+    {
+    public:
+        MultiuserBroadReceiver(
+            /*in*/ PhoneWindowManager* host);
+
+        // @Override
+        CARAPI OnReceive(
+            /* [in] */ IContext* context,
+            /* [in] */ IIntent* intent);
+
+        CARAPI ToString(
+            /* [out] */ String* info)
+        {
+            VALIDATE_NOT_NULL(info);
+            *info = String("PhoneWindowManager::MultiuserBroadReceiver: ");
+            (*info).AppendFormat("%p", this);
+            return NOERROR;
+        }
+    private:
+        PhoneWindowManager* mHost;
+    };
+
+    class ScreenLockTimeoutRunnable
+        : public Runnable
+    {
+    public:
+        ScreenLockTimeoutRunnable(
+            /* [in] */ PhoneWindowManager* host);
+
+        // @Override
+        CARAPI Run();
+
+        CARAPI_(void) SetLockOptions(
             /* [in] */ IBundle* options);
 
-    public:
-        AutoPtr<IBundle> options;
+    protected:
+        AutoPtr<IBundle> mOptions;
+        PhoneWindowManager* mHost;
     };
 
 private:
-    class InnerRunnable
-        : public Object
-        , public Runnable
-    {
-    public:
-        InnerRunnable(
-            /* [in] */ PhoneWindowManager* owner);
+    //class PointerLocationInputEventReceiver
+    //    : public InputEventReceiver
+    //{
+    //public:
+    //    PointerLocationInputEventReceiver(
+    //        /* [in] */ IInputChannel* inputChannel,
+    //        /* [in] */ ILooper* looper,
+    //        /* [in] */ IPointerLocationView* view);
 
-        // @Override
-        CARAPI Run();
+    //    // @Override
+    //    CARAPI OnInputEvent(
+    //        /* [in] */ IInputEvent* event);
 
-    private:
-        PhoneWindowManager* mOwner;
-    };
-
-    class InnerShowListener
-        : public Object
-        , public IShowListener
-    {
-    public:
-        InnerShowListener(
-            /* [in] */ PhoneWindowManager* owner);
-
-        // @Override
-        CARAPI OnShown(
-            /* [in] */ IIBinder* windowToken);
-
-    private:
-        PhoneWindowManager* mOwner;
-    };
+    //private:
+    //    const AutoPtr<IPointerLocationView> mView;
+    //};
 
     class PolicyHandler
-        : public Object
-        , public IHandler
+        : public Handler
     {
     public:
+        PolicyHandler(
+            /* [in] */ PhoneWindowManager* host);
+
         // @Override
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
-    };
-
-    class InnerUEventObserver
-        : public Object
-        , public IUEventObserver
-    {
-    public:
-        InnerUEventObserver(
-            /* [in] */ PhoneWindowManager* owner);
-
-        // @Override
-        CARAPI OnUEvent(
-            /* [in] */  UEventObserver);
 
     private:
-        PhoneWindowManager* mOwner;
+        PhoneWindowManager* mHost;
     };
 
-    class InnerRunnable1
-        : public Object
-        , public Runnable
+    class HDMIUEventObserver
+        : public UEventObserver
     {
     public:
-        InnerRunnable1(
-            /* [in] */ PhoneWindowManager* owner);
+        HDMIUEventObserver(
+            /* [in] */ PhoneWindowManager* host);
+
+        // @Override
+        CARAPI_(void) OnUEvent(
+            /* [in] */ UEvent* event);
+
+    private:
+        PhoneWindowManager* mHost;
+    };
+
+    //class FlickerIntentBroadcastReceiver
+    //    : public BroadcastReceiver
+    //{
+    //public:
+    //    FlickerIntentBroadcastReceiver(
+    //        /* [in] */ PhoneWindowManager* host);
+
+    //    // @Override
+    //    CARAPI OnReceive(
+    //    /* [in] */ IContext* context,
+    //    /* [in] */ IIntent* intent);
+
+    //    CARAPI ToString(
+    //        /* [out] */ String* info)
+    //    {
+    //        VALIDATE_NOT_NULL(info);
+    //        *info = String("PhoneWindowManager::FlickerIntentBroadcastReceiver: ");
+    //        (*info).AppendFormat("%p", this);
+    //        return NOERROR;
+    //    }
+    //private:
+    //    PhoneWindowManager* mHost;
+    //};
+
+    //class Step1OnRunnable
+    //    : public Runnable
+    //{
+    //public:
+    //    Step1OnRunnable(
+    //        /* [in] */ PhoneWindowManager* mHost);
+
+    //    CARAPI Run();
+
+    //private:
+    //    PhoneWindowManager* mHost;
+    //};
+
+    //class Step2OffRunnable
+    //    : public Runnable
+    //{
+    //public:
+    //    Step2OffRunnable(
+    //    /* [in] */ PhoneWindowManager* mHost);
+
+    //    CARAPI Run();
+
+    //private:
+    //    PhoneWindowManager* mHost;
+    //};
+
+    //class Step3OnRunnable
+    //    : public Runnable
+    //{
+    //public:
+    //    Step3OnRunnable(
+    //        /* [in] */ PhoneWindowManager* host);
+
+    //    CARAPI Run();
+
+    //private:
+    //    PhoneWindowManager* mHost;
+    //};
+
+    //class BootFastPowerLongPressRunnable
+    //    : public Runnable
+    //{
+    //public:
+    //    BootFastPowerLongPressRunnable(
+    //        /* [in] */ PhoneWindowManager* host);
+
+    //    CARAPI Run();
+
+    //private:
+    //    PhoneWindowManager* mHost;
+    //};
+
+    class PowerLongPressRunnable
+        : public Runnable
+    {
+    public:
+        PowerLongPressRunnable(
+            /* [in] */ PhoneWindowManager* host);
 
         // @Override
         CARAPI Run();
 
     private:
-        PhoneWindowManager* mOwner;
+        PhoneWindowManager* mHost;
     };
 
-    class InnerRunnable2
-        : public Object
-        , public Runnable
+    class ScreenshotRunnable
+        : public Runnable
     {
     public:
-        InnerRunnable2(
-            /* [in] */ PhoneWindowManager* owner);
+        ScreenshotRunnable(
+            /* [in] */ PhoneWindowManager* host);
+
+        CARAPI Run();
+
+    private:
+        PhoneWindowManager* mHost;
+    };
+
+
+// Anonymous class in member functions.
+private:
+    //class ShowInitLogoRunnable
+    //    : public Runnable
+    //{
+    //public:
+    //    ShowInitLogoRunnable(
+    //        /* [in] */ PhoneWindowManager* host);
+
+    //    // @Override
+    //    CARAPI Run();
+
+    //private:
+    //    PhoneWindowManager* mHost;
+    //};
+
+    //class HideScreenRunnable
+    //    : public Runnable
+    //{
+    //public:
+    //    HideScreenRunnable(
+    //        /* [in] */ PhoneWindowManager* host);
+
+    //    // @Override
+    //    CARAPI Run();
+
+    //private:
+    //    PhoneWindowManager* mHost;
+    //};
+
+    //class HideBootAnimationRunnable
+    //    : public Runnable
+    //{
+    //public:
+    //    HideBootAnimationRunnable(
+    //        /* [in] */ PhoneWindowManager* host);
+
+    //    // @Override
+    //    CARAPI Run();
+
+    //private:
+    //    PhoneWindowManager* mHost;
+    //};
+
+    //class ShowOrHideRecentAppsDialogRunnable
+    //    : public Runnable
+    //{
+    //public:
+    //    ShowOrHideRecentAppsDialogRunnable(
+    //        /* [in] */ PhoneWindowManager* host,
+    //        /* [in] */ Int32 behavior);
+
+    //    // @Override
+    //    CARAPI Run();
+
+    //private:
+    //    PhoneWindowManager* mHost;
+    //    Int32 mBehavior;
+    //};
+
+    class HomeDoubleTapTimeoutRunnable
+        : public Runnable
+    {
+    public:
+        HomeDoubleTapTimeoutRunnable(
+            /* [in] */ PhoneWindowManager* host);
 
         // @Override
         CARAPI Run();
 
     private:
-        PhoneWindowManager* mOwner;
+        PhoneWindowManager* mHost;
     };
 
-    class InnerRunnable3
-        : public Object
-        , public Runnable
+    //class ReevaluateRunnable
+    //    : public Runnable
+    //{
+    //public:
+    //    ReevaluateRunnable(
+    //        /* [in] */ PhoneWindowManager* host);
+
+    //    // @Override
+    //    CARAPI Run();
+
+    //private:
+    //    PhoneWindowManager* mHost;
+    //};
+
+    class CollapsePanelsRunnable
+        : public Runnable
     {
     public:
-        InnerRunnable3(
-            /* [in] */ PhoneWindowManager* owner);
+        CollapsePanelsRunnable(
+            /* [in] */ PhoneWindowManager* host);
 
-        // @Override
-        CARAPI Run();
+        virtual CARAPI Run();
 
     private:
-        PhoneWindowManager* mOwner;
+        PhoneWindowManager* mHost;
     };
 
-    class InnerSystemGesturesPointerEventListenerCallbacks1
-        : public Object
-        , public SystemGesturesPointerEventListener::Callbacks
+    // TODO: KeyguardDoneRunnable, because KeyguardMediator is not implement.
+
+    // TODO: KeyguardMediatorDismissRunnable, because KeyguardMediator is not implement.
+
+    class ScreenshotHandler
+        : public Handler
     {
     public:
-        InnerSystemGesturesPointerEventListenerCallbacks1(
-            /* [in] */ PhoneWindowManager* owner);
+        ScreenshotHandler(
+            /* [in] */ ILooper* looper,
+            /* [in] */ IServiceConnection *conn,
+            /* [in] */ PhoneWindowManager* host);
 
         // @Override
-        CARAPI OnSwipeFromTop();
-
-        // @Override
-        CARAPI OnSwipeFromBottom();
-
-        // @Override
-        CARAPI OnSwipeFromRight();
-
-        // @Override
-        CARAPI OnDebug();
+        CARAPI HandleMessage(
+            /* [in] */ IMessage* msg);
 
     private:
-        PhoneWindowManager* mOwner;
+        AutoPtr<IServiceConnection> myConn;
+        PhoneWindowManager* mHost;
     };
 
-    class InnerOnKeyguardExitResult1
-        : public Object
-        , public OnKeyguardExitResult
-    {
-    public:
-        InnerOnKeyguardExitResult1(
-            /* [in] */ PhoneWindowManager* owner);
-
-        // @Override
-        CARAPI OnKeyguardExitResult(
-            /* [in] */ Boolean success);
-
-    private:
-        PhoneWindowManager* mOwner;
-    };
-
-    class InnerRunnable4
-        : public Object
-        , public Runnable
-    {
-    public:
-        InnerRunnable4(
-            /* [in] */ PhoneWindowManager* owner);
-
-        // @Override
-        CARAPI Run();
-
-    private:
-        PhoneWindowManager* mOwner;
-    };
-
-    class InnerInputEventReceiverFactory
-        : public Object
-        , public InputEventReceiver::Factory
-    {
-    public:
-        InnerInputEventReceiverFactory(
-            /* [in] */ PhoneWindowManager* owner);
-
-        // @Override
-        CARAPI_(AutoPtr<IInputEventReceiver>) CreateInputEventReceiver(
-            /* [in] */ IInputChannel* inputChannel,
-            /* [in] */ ILooper* looper);
-
-    private:
-        PhoneWindowManager* mOwner;
-    };
-
-    class InnerRunnable6
-        : public Object
-        , public Runnable
-    {
-    public:
-        InnerRunnable6(
-            /* [in] */ PhoneWindowManager* owner);
-
-        // @Override
-        CARAPI Run();
-
-    private:
-        PhoneWindowManager* mOwner;
-    };
-
-    class InnerRunnable8
-        : public Object
-        , public Runnable
-    {
-    public:
-        InnerRunnable8(
-            /* [in] */ PhoneWindowManager* owner);
-
-        // @Override
-        CARAPI Run();
-
-    private:
-        PhoneWindowManager* mOwner;
-    };
-
-    class InnerRunnable9
-        : public Object
-        , public Runnable
-    {
-    public:
-        InnerRunnable9(
-            /* [in] */ PhoneWindowManager* owner);
-
-        // @Override void run() {
-        // synchronized
-
-            /* [in] */  mScreenshotLock);
-
-    private:
-        AutoPtr<}
-
- PhoneWindowManager*> mOwner;
-    };
-
-    class InnerServiceConnection1
+    class ScreenshotServiceConnection
         : public Object
         , public IServiceConnection
     {
-    private:
-        class InnerHandler
-            : public Object
-            , public IHandler
-        {
-        public:
-            InnerHandler(
-                /* [in] */ InnerServiceConnection1* owner);
-
-            // @Override
-            CARAPI HandleMessage(
-                /* [in] */ IMessage* msg);
-
-        private:
-            InnerServiceConnection1* mOwner;
-        };
-
     public:
-        InnerServiceConnection1(
-            /* [in] */ PhoneWindowManager* owner);
+        ScreenshotServiceConnection(
+            /* [in] */ PhoneWindowManager* host);
+
+        CAR_INTERFACE_DECL();
 
         // @Override
         CARAPI OnServiceConnected(
             /* [in] */ IComponentName* name,
-            /* [in] */ IIBinder* service);
+            /* [in] */ IBinder* service);
 
         // @Override
         CARAPI OnServiceDisconnected(
             /* [in] */ IComponentName* name);
 
     private:
-        PhoneWindowManager* mOwner;
+        PhoneWindowManager* mHost;
     };
 
-    class InnerBroadcastReceiver
-        : public Object
-        , public IBroadcastReceiver
+    // TODO: WaitForKeyguardWindowDrawnRunnable, because KeyguardMediator is not implement.
+
+    // TODO: FinishScreenTurningOnRunnable, because RemoteCallback is not implement.
+
+    //class AcquireBootRunnable
+    //    : public Runnable
+    //{
+    //public:
+    //    AcquireBootRunnable(
+    //        /* [in] */ PhoneWindowManager* host);
+
+    //    // @Override
+    //    CARAPI Run();
+
+    //private:
+    //    PhoneWindowManager* mHost;
+    //};
+
+    //class ReleaseBootAVRunnable
+    //    : public Runnable
+    //{
+    //public:
+    //    ReleaseBootAVRunnable(
+    //        /* [in] */ PhoneWindowManager* host);
+
+    //    CARAPI Run();
+
+    //private:
+    //    PhoneWindowManager* mHost;
+    //};
+
+    // TODO: DismissKeyguardLwRunnable, because KeyguardMediator is not implement.
+
+    class UpdateSettingRunnable
+        : public Runnable
     {
     public:
-        InnerBroadcastReceiver(
-            /* [in] */ PhoneWindowManager* owner);
+        UpdateSettingRunnable(
+            /* [in] */ PhoneWindowManager* host);
 
         // @Override
-        CARAPI OnReceive(
+        CARAPI Run();
+
+    private:
+        PhoneWindowManager* mHost;
+    };
+
+    // This dialog will consume all events coming in to
+    // it, to avoid it trying to do things too early in boot.
+    class BootMsgDialog : public ProgressDialog
+    {
+    public:
+        CARAPI Init(
             /* [in] */ IContext* context,
-            /* [in] */ IIntent* intent);
-
-    private:
-        PhoneWindowManager* mOwner;
-    };
-
-    class InnerBroadcastReceiver1
-        : public Object
-        , public IBroadcastReceiver
-    {
-    public:
-        InnerBroadcastReceiver1(
-            /* [in] */ PhoneWindowManager* owner);
+            /* [in] */ Int32 theme);
 
         // @Override
-        CARAPI OnReceive(
-            /* [in] */ IContext* context,
-            /* [in] */ IIntent* intent);
-
-    private:
-        PhoneWindowManager* mOwner;
-    };
-
-    class InnerBroadcastReceiver2
-        : public Object
-        , public IBroadcastReceiver
-    {
-    public:
-        InnerBroadcastReceiver2(
-            /* [in] */ PhoneWindowManager* owner);
+        CARAPI DispatchKeyEvent(
+            /* [in] */ IKeyEvent* event,
+            /* [out] */ Boolean *result);
 
         // @Override
-        CARAPI OnReceive(
-            /* [in] */ IContext* context,
-            /* [in] */ IIntent* intent);
-
-    private:
-        PhoneWindowManager* mOwner;
-    };
-
-    class InnerRunnable10
-        : public Object
-        , public Runnable
-    {
-    public:
-        InnerRunnable10(
-            /* [in] */ PhoneWindowManager* owner);
+        CARAPI DispatchKeyShortcutEvent(
+            /* [in] */ IKeyEvent* event,
+            /* [out] */ Boolean *result);
 
         // @Override
-        CARAPI Run();
-
-    private:
-        PhoneWindowManager* mOwner;
-    };
-
-    class InnerRunnable12
-        : public Object
-        , public Runnable
-    {
-    public:
-        InnerRunnable12(
-            /* [in] */ PhoneWindowManager* owner);
+        CARAPI DispatchTouchEvent(
+            /* [in] */ IMotionEvent* ev,
+            /* [out] */ Boolean *result);
 
         // @Override
-        CARAPI Run();
-
-    private:
-        PhoneWindowManager* mOwner;
-    };
-
-    class InnerRunnable14
-        : public Object
-        , public Runnable
-    {
-    public:
-        InnerRunnable14(
-            /* [in] */ PhoneWindowManager* owner);
+        CARAPI DispatchTrackballEvent(
+            /* [in] */ IMotionEvent* ev,
+            /* [out] */ Boolean *result);
 
         // @Override
-        CARAPI Run();
+        CARAPI DispatchGenericMotionEvent(
+            /* [in] */ IMotionEvent* ev,
+            /* [out] */ Boolean *result);
 
-    private:
-        PhoneWindowManager* mOwner;
+        // @Override
+        CARAPI DispatchPopulateAccessibilityEvent(
+            /* [in] */ IAccessibilityEvent* event,
+            /* [out] */ Boolean *result);
+
     };
 
-    class InnerRunnable16
-        : public Object
-        , public Runnable
+//    class BootMsgDialog
+//        : public _BootMsgDialog
+//        , public IProgressDialog
+//        , public IWindowCallback
+//        , public IKeyEventCallback
+//        , public IViewOnCreateContextMenuListener
+//        , public ElRefBase
+//    {
+//    public:
+//        IPROGRESSDIALOG_METHODS_DECL();
+//
+//        IALERTDIALOG_METHODS_DECL();
+//
+//        IDIALOG_METHODS_DECL();
+//
+//        IWINDOWCALLBACK_METHODS_DECL();
+//
+//        IKEYEVENTCALLBACK_METHODS_DECL();
+//
+//        CARAPI_(PInterface) Probe(
+//            /* [in] */ REIID riid);
+//
+//        CARAPI_(UInt32) AddRef();
+//
+//        CARAPI_(UInt32) Release();
+//
+//        CARAPI GetInterfaceID(
+//            /* [in] */ IInterface *pObject,
+//            /* [out] */ InterfaceID *pIID);
+//
+//        CARAPI OnCreateContextMenu(
+//            /* [in] */ IContextMenu* menu,
+//            /* [in] */ IView* v,
+//            /* [in] */ IContextMenuInfo* menuInfo);
+//    };
+
+    class BootMsgRunnable
+        : public Runnable
     {
     public:
-        InnerRunnable16(
-            /* [in] */ PhoneWindowManager* owner);
+        BootMsgRunnable(
+            /* [in] */ PhoneWindowManager* host,
+            /* [in] */ ICharSequence* msg);
 
         // @Override
         CARAPI Run();
 
     private:
-        PhoneWindowManager* mOwner;
+        PhoneWindowManager* mHost;
+        AutoPtr<ICharSequence> mMsg;
     };
 
-    class InnerRunnable18
-        : public Object
-        , public Runnable
+    //class BootMsgDismissRunnable
+    //    : public Runnable
+    //{
+    //public:
+    //    BootMsgDismissRunnable(
+    //        /* [in] */ PhoneWindowManager* host);
+
+    //    // @Override
+    //    CARAPI Run();
+
+    //private:
+    //    PhoneWindowManager* mHost;
+    //};
+
+    class UpdateSystemUiVisibilityRunnable
+        : public Runnable
     {
     public:
-        InnerRunnable18(
-            /* [in] */ PhoneWindowManager* owner);
+        UpdateSystemUiVisibilityRunnable(
+            /* [in] */ Int32 visibility,
+            /* [in] */ Boolean needsMenu,
+            /* [in] */ PhoneWindowManager* host);
 
-        // @Override public void run() {
-        MBootMsgDialog.setMessage(
-            /* [in] */  msg);
-
-    private:
-        AutoPtr<}
-
- PhoneWindowManager*> mOwner;
-    };
-
-    class InnerRunnable20
-        : public Object
-        , public Runnable
-    {
-    public:
-        InnerRunnable20(
-            /* [in] */ PhoneWindowManager* owner);
-
-        // @Override
-        CARAPI Run();
+        virtual CARAPI Run();
 
     private:
-        PhoneWindowManager* mOwner;
+        Int32 mVisibility;
+        Boolean mNeedsMenu;
+        PhoneWindowManager* mHost;
     };
 
 public:
-    CAR_INTERFACE_DECL();
+    static CARAPI_(void) SendCloseSystemWindows(
+        /* [in] */ IContext* context,
+        /* [in] */ const String& reason);
 
+public:
     PhoneWindowManager();
 
-    CARAPI constructor();
-
-    virtual CARAPI GetStatusBarService(
-        /* [out] */ IStatusBarService** result);
-
-    /*
-      * We always let the sensor be switched on by default except when
-      * the user has explicitly disabled sensor based rotation or when the
-      * screen is switched off.
-      */
-    virtual CARAPI NeedSensorRunningLp(
-        /* [out] */ Boolean* result);
-
-    /*
-      * Various use cases for invoking this function
-      * screen turning off, should always disable listeners if already enabled
-      * screen turned on and current app has sensor based orientation, enable listeners
-      * if not already enabled
-      * screen turned on and current app does not have sensor orientation, disable listeners if
-      * already enabled
-      * screen turning on and current app has sensor based orientation, enable listeners if needed
-      * screen turning on and current app has nosensor based orientation, do nothing
-      */
-    virtual CARAPI UpdateOrientationListenerLp();
-
-    // @Override
     CARAPI ShowGlobalActions();
 
-    virtual CARAPI ShowGlobalActionsInternal();
-
-    virtual CARAPI IsDeviceProvisioned(
-        /* [out] */ Boolean* result);
-
-    virtual CARAPI IsUserSetupComplete(
-        /* [out] */ Boolean* result);
-
-    /** {@inheritDoc} */
-    // @Override
     CARAPI Init(
         /* [in] */ IContext* context,
         /* [in] */ IIWindowManager* windowManager,
-        /* [in] */ WindowManagerFuncs* windowManagerFuncs);
+        /* [in] */ IWindowManagerPolicyWindowManagerFuncs* windowManagerFuncs);
 
-    // @Override
     CARAPI SetInitialDisplaySize(
         /* [in] */ IDisplay* display,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
         /* [in] */ Int32 density);
 
-    // @Override
-    CARAPI_(Boolean) IsDefaultOrientationForced();
+    CARAPI IsDefaultOrientationForced(
+        /* [out] */ Boolean* result);
 
-    // @Override
     CARAPI SetDisplayOverscan(
         /* [in] */ IDisplay* display,
         /* [in] */ Int32 left,
@@ -599,219 +982,421 @@ public:
         /* [in] */ Int32 right,
         /* [in] */ Int32 bottom);
 
-    virtual CARAPI UpdateSettings();
+    CARAPI UpdateSettings();
 
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI_(Int32) CheckAddPermission(
-        /* [in] */ IWindowManager* ::LayoutParams* attrs,
-        /* [in] */ ArrayOf<Int32>* outAppOp);
+    //TODO should remove this
+    CARAPI CheckAddPermission(
+        /* [in] */ IWindowManagerLayoutParams* attrs,
+        /* [out] */ Int32* addPermisssion);
 
-    // @Override
-    CARAPI_(Boolean) CheckShowToOwnerOnly(
-        /* [in] */  WindowManager);
+    CARAPI CheckAddPermission(
+        /* [in] */ IWindowManagerLayoutParams* attrs,
+        /* [in] */ ArrayOf<Int32>* outAppOp,
+        /* [out] */ Int32* addPermisssion);
 
-    // @Override
+    CARAPI CheckShowToOwnerOnly(
+        /* [in] */ IWindowManagerLayoutParams* attrs,
+        /* [out] */ Boolean* result);
+
     CARAPI AdjustWindowParamsLw(
-        /* [in] */  WindowManager);
+        /* [in] */ IWindowManagerLayoutParams* attrs);
 
-    virtual CARAPI ReadLidState();
-
-    /** {@inheritDoc} */
-    // @Override
     CARAPI AdjustConfigurationLw(
         /* [in] */ IConfiguration* config,
         /* [in] */ Int32 keyboardPresence,
         /* [in] */ Int32 navigationPresence);
 
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI_(Int32) WindowTypeToLayerLw(
-        /* [in] */ Int32 type);
+    CARAPI WindowTypeToLayerLw(
+        /* [in] */ Int32 type,
+        /* [out] */ Int32* layer);
 
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI_(Int32) SubWindowTypeToLayerLw(
-        /* [in] */ Int32 type);
+    CARAPI SubWindowTypeToLayerLw(
+        /* [in] */ Int32 type,
+        /* [out] */ Int32* layer);
 
-    // @Override
-    CARAPI_(Int32) GetMaxWallpaperLayer();
+    CARAPI GetMaxWallpaperLayer(
+        /* [out] */ Int32* layer);
 
-    // @Override
-    CARAPI_(Int32) GetAboveUniverseLayer();
+    CARAPI GetAboveUniverseLayer(
+        /* [out] */ Int32* layer);
 
-    // @Override
-    CARAPI_(Int32) GetNonDecorDisplayWidth(
+    //CARAPI HasSystemNavBar(
+    //    /* [out] */ Boolean* has);
+
+    CARAPI GetNonDecorDisplayWidth(
         /* [in] */ Int32 fullWidth,
         /* [in] */ Int32 fullHeight,
-        /* [in] */ Int32 rotation);
+        /* [in] */ Int32 rotation,
+        /* [out] */ Int32* width);
 
-    // @Override
-    CARAPI_(Int32) GetNonDecorDisplayHeight(
+    CARAPI GetNonDecorDisplayHeight(
         /* [in] */ Int32 fullWidth,
         /* [in] */ Int32 fullHeight,
-        /* [in] */ Int32 rotation);
+        /* [in] */ Int32 rotation,
+        /* [out] */ Int32* height);
 
-    // @Override
-    CARAPI_(Int32) GetConfigDisplayWidth(
+    CARAPI GetConfigDisplayWidth(
         /* [in] */ Int32 fullWidth,
         /* [in] */ Int32 fullHeight,
-        /* [in] */ Int32 rotation);
+        /* [in] */ Int32 rotation,
+        /* [out] */ Int32* value);
 
-    // @Override
-    CARAPI_(Int32) GetConfigDisplayHeight(
+    CARAPI GetConfigDisplayHeight(
         /* [in] */ Int32 fullWidth,
         /* [in] */ Int32 fullHeight,
-        /* [in] */ Int32 rotation);
+        /* [in] */ Int32 rotation,
+        /* [out] */ Int32* value);
 
-    // @Override
-    CARAPI_(Boolean) IsForceHiding(
-        /* [in] */  WindowManager);
+    CARAPI IsForceHiding(
+        /* [in] */ IWindowManagerLayoutParams* attrs,
+        /* [out] */ Boolean* result);
 
-    // @Override
-    CARAPI_(Boolean) IsKeyguardHostWindow(
-        /* [in] */  WindowManager);
+    CARAPI IsKeyguardHostWindow(
+        /* [in] */ IWindowManagerLayoutParams* attrs,
+        /* [out] */ Boolean* result);
 
-    // @Override
-    CARAPI_(Boolean) CanBeForceHidden(
-        /* [in] */ WindowState* win,
-        /* [in] */  WindowManager);
+    CARAPI CanBeForceHidden(
+        /* [in] */ IWindowState* win,
+        /* [in] */ IWindowManagerLayoutParams* attrs,
+        /* [out] */ Boolean* canHiden);
 
-    // @Override
-    CARAPI_(AutoPtr<WindowState>) GetWinShowWhenLockedLw();
+    CARAPI GetWinShowWhenLockedLw(
+        /* [out] */ IWindowState** ws);
 
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI_(AutoPtr<IView>) AddStartingWindow(
-        /* [in] */ IIBinder* appToken,
-        /* [in] */ String packageName,
+    CARAPI AddStartingWindow(
+        /* [in] */ IBinder* appToken,
+        /* [in] */ const String& packageName,
         /* [in] */ Int32 theme,
         /* [in] */ ICompatibilityInfo* compatInfo,
-        /* [in] */ CharSequence* nonLocalizedLabel,
+        /* [in] */ ICharSequence* nonLocalizedLabel,
         /* [in] */ Int32 labelRes,
         /* [in] */ Int32 icon,
         /* [in] */ Int32 logo,
-        /* [in] */ Int32 windowFlags);
+        /* [in] */ Int32 windowFlags,
+        /* [out] */ IView** startingWindow);
 
-    /** {@inheritDoc} */
-    // @Override
     CARAPI RemoveStartingWindow(
-        /* [in] */ IIBinder* appToken,
+        /* [in] */ IBinder* appToken,
         /* [in] */ IView* window);
 
-    /**
-      * Preflight adding a window to the system.
-      *
-      * Currently enforces that three window types are singletons:
-      * <ul>
-      * <li>STATUS_BAR_TYPE</li>
-      * <li>KEYGUARD_TYPE</li>
-      * </ul>
-      *
-      * @param win The window to be added
-      * @param attrs Information about the window to be added
-      *
-      * @return If ok, WindowManagerImpl.ADD_OKAY.  If too many singletons,
-      * WindowManagerImpl.ADD_MULTIPLE_SINGLETON
-      */
-    // @Override
-    CARAPI_(Int32) PrepareAddWindowLw(
-        /* [in] */ WindowState* win,
-        /* [in] */  WindowManager);
+    CARAPI PrepareAddWindowLw(
+        /* [in] */ IWindowState* win,
+        /* [in] */ IWindowManagerLayoutParams* attrs,
+        /* [out] */ Int32* added);
 
-    /** {@inheritDoc} */
-    // @Override
     CARAPI RemoveWindowLw(
-        /* [in] */ WindowState* win);
+        /* [in] */ IWindowState* win);
 
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI_(Int32) SelectAnimationLw(
-        /* [in] */ WindowState* win,
-        /* [in] */ Int32 transit);
+    CARAPI SelectAnimationLw(
+        /* [in] */ IWindowState* win,
+        /* [in] */ Int32 transit,
+        /* [out] */ Int32* id);
 
-    // @Override
     CARAPI SelectRotationAnimationLw(
-        /* [in] */ Int32 anim[]);
+        /* [in] */ ArrayOf<Int32>* anim);
 
-    // @Override
-    CARAPI_(Boolean) ValidateRotationAnimationLw(
-        /* [in] */ Int32 exitAnimId,
-        /* [in] */ Int32 enterAnimId,
-        /* [in] */ Boolean forceDefault);
+    CARAPI CreateForceHideWallpaperExitAnimation(
+        /* [in] */Boolean goingToNotificationShade,
+        /* [out] */ IAnimation** anim);
 
-    // @Override
-    CARAPI_(AutoPtr<IAnimation>) CreateForceHideEnterAnimation(
-        /* [in] */ Boolean onWallpaper,
-        /* [in] */ Boolean goingToNotificationShade);
-
-    // @Override
-    CARAPI_(AutoPtr<IAnimation>) CreateForceHideWallpaperExitAnimation(
-        /* [in] */ Boolean goingToNotificationShade);
-
-    static CARAPI_(AutoPtr<IIDreamManager>) GetDreamManager();
-
-    virtual CARAPI GetTelecommService(
-        /* [out] */ TelecomManager** result);
-
-    static CARAPI_(AutoPtr<IIAudioService>) GetAudioService();
-
-    virtual CARAPI KeyguardOn(
-        /* [out] */ Boolean* result);
-
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI_(Int64) InterceptKeyBeforeDispatching(
-        /* [in] */ WindowState* win,
-        /* [in] */ IKeyEvent* event,
-        /* [in] */ Int32 policyFlags);
-
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI_(AutoPtr<IKeyEvent>) DispatchUnhandledKey(
-        /* [in] */ WindowState* win,
-        /* [in] */ IKeyEvent* event,
-        /* [in] */ Int32 policyFlags);
-
-    // @Override
     CARAPI ShowRecentApps();
 
-    /**
-      * A home key -> launch home action was detected.  Take the appropriate action
-      * given the situation with the keyguard.
-      */
-    virtual CARAPI LaunchHomeFromHotKey();
+    CARAPI ValidateRotationAnimationLw(
+        /* [in] */ Int32 exitAnimId,
+        /* [in] */ Int32 enterAnimId,
+        /* [in] */ Boolean forceDefault,
+        /* [out] */ Boolean* result);
 
-    // @Override
-    CARAPI_(Int32) AdjustSystemUiVisibilityLw(
-        /* [in] */ Int32 visibility);
+    CARAPI CreateForceHideEnterAnimation(
+        /* [in] */ Boolean onWallpaper,
+        /* [in] */ Boolean goingToNotificationShade,
+        /* [out] */ IAnimation** anim);
 
-    // @Override
+    CARAPI InterceptKeyBeforeDispatching(
+        /* [in] */ IWindowState* win,
+        /* [in] */ IKeyEvent* event,
+        /* [in] */ Int32 policyFlags,
+        /* [out] */ Int64* result);
+
+    CARAPI DispatchUnhandledKey(
+        /* [in] */ IWindowState* win,
+        /* [in] */ IKeyEvent* event,
+        /* [in] */ Int32 policyFlags,
+        /* [out] */ IKeyEvent** keyEvent);
+
+    CARAPI AdjustSystemUiVisibilityLw(
+        /* [in] */ Int32 visibility,
+        /* [out] */ Int32* newVisibility);
+
     CARAPI GetContentInsetHintLw(
-        /* [in] */ IWindowManager* ::LayoutParams* attrs,
+        /* [in] */ IWindowManagerLayoutParams* attrs,
         /* [in] */ IRect* contentInset);
 
-    /** {@inheritDoc} */
-    // @Override
     CARAPI BeginLayoutLw(
         /* [in] */ Boolean isDefaultDisplay,
         /* [in] */ Int32 displayWidth,
         /* [in] */ Int32 displayHeight,
         /* [in] */ Int32 displayRotation);
 
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI_(Int32) GetSystemDecorLayerLw();
+    CARAPI GetSystemDecorLayerLw(
+        /* [in] */ IRect* systemRect,
+        /* [out] */ Int32* layer);
 
-    // @Override
     CARAPI GetContentRectLw(
         /* [in] */ IRect* r);
 
-    virtual CARAPI SetAttachedWindowFrames(
-        /* [in] */ WindowState* win,
+    CARAPI LayoutWindowLw(
+        /* [in] */ IWindowState* win,
+        /* [in] */ IWindowState* attached);
+
+    CARAPI FinishLayoutLw();
+
+    CARAPI BeginPostLayoutPolicyLw(
+        /* [in] */ Int32 displayWidth,
+        /* [in] */ Int32 displayHeight);
+
+    CARAPI ApplyPostLayoutPolicyLw(
+        /* [in] */ IWindowState* win,
+        /* [in] */ IWindowManagerLayoutParams* attrs);
+
+    CARAPI FinishPostLayoutPolicyLw(
+        /* [out] */ Int32* result);
+
+    CARAPI AllowAppAnimationsLw(
+        /* [out] */ Boolean* allowed);
+
+    CARAPI FocusChangedLw(
+        /* [in] */ IWindowState* lastFocus,
+        /* [in] */ IWindowState* newFocus,
+        /* [out] */ Int32* state);
+
+    CARAPI NotifyLidSwitchChanged(
+        /* [in] */ Int64 whenNanos,
+        /* [in] */ Boolean lidOpen);
+
+    CARAPI NotifyCameraLensCoverSwitchChanged(
+        /* [in] */ Int64 whenNanos,
+        /* [in] */ Boolean lensCovered);
+
+    CARAPI InterceptKeyBeforeQueueing(
+        /* [in] */ IKeyEvent* event,
+        /* [in] */ Int32 policyFlags,
+        /* [out] */ Int32* result);
+
+    //CARAPI InterceptMotionBeforeQueueingWhenScreenOff(
+    //    /* [in] */ Int32 policyFlags,
+    //    /* [out] */ Int32* result);
+    CARAPI InterceptMotionBeforeQueueingNonInteractive(
+        /* [in] */ Int64 whenNanos,
+        /* [in] */ Int32 policyFlags,
+        /* [out] */ Int32* result);
+
+    CARAPI GoingToSleep(
+        /* [in] */ Int32 why);
+
+    CARAPI WakingUp();
+
+    CARAPI ScreenTurnedOff(
+        /* [in] */ Int32 why);
+
+    CARAPI ScreenTurningOn(
+        /* [in] */ IScreenOnListener* screenOnListener);
+
+    //CARAPI IsScreenOnEarly(
+    //    /* [out] */ Boolean* state);
+
+    //CARAPI IsScreenOnFully(
+    //    /* [out] */ Boolean* state);
+
+    //CARAPI AcquireBAView();
+
+    //CARAPI ReleaseBAView();
+
+    //CARAPI HideScreen(
+    //    /* [in] */ Boolean enable);
+
+    //CARAPI ShowBootInitLogo(
+    //    /* [in] */ Int32 logo);
+
+    //CARAPI ShowPowerCharge(
+    //    /* [in] */ Int32 precent);
+
+    CARAPI IsScreenOn(
+        /* [out] */ Boolean* result);
+
+    CARAPI EnableKeyguard(
+        /* [in] */ Boolean enabled);
+
+    CARAPI ExitKeyguardSecurely(
+       /* [in] */ IOnKeyguardExitResult* callback);
+
+    CARAPI IsKeyguardLocked(
+        /* [out] */ Boolean* state);
+
+    CARAPI IsKeyguardSecure(
+        /* [out] */ Boolean* state);
+
+    CARAPI InKeyguardRestrictedKeyInputMode(
+        /* [out] */ Boolean* restricted);
+
+    CARAPI DismissKeyguardLw();
+
+    CARAPI NotifyActivityDrawnForKeyguardLw();
+
+    CARAPI IsKeyguardDrawnLw(
+        /* [out] */ Boolean* result);
+
+    CARAPI StartKeyguardExitAnimation(
+        /* [in] */ Int64 startTime,
+        /* [in] */ Int64 fadeoutDuration);
+
+    CARAPI RotationForOrientationLw(
+        /* [in] */ Int32 orientation,
+        /* [in] */ Int32 lastRotation,
+        /* [out] */ Int32* surfaceRotation);
+
+    CARAPI RotationHasCompatibleMetricsLw(
+        /* [in] */ Int32 orientation,
+        /* [in] */ Int32 rotation,
+        /* [out] */ Boolean* result);
+
+    CARAPI SetRotationLw(
+        /* [in] */ Int32 rotation);
+
+    CARAPI GetUserRotationMode(
+        /* [out] */ Int32* result);
+
+    // User rotation: to be used when all else fails in assigning an orientation to the device
+    CARAPI SetUserRotationMode(
+        /* [in] */ Int32 mode,
+        /* [in] */ Int32 rot);
+
+    CARAPI SetSafeMode(
+        /* [in] */ Boolean safeMode);
+
+    CARAPI SystemReady();
+
+    CARAPI SystemBooted();
+
+    CARAPI ShowBootMessage(
+        /* [in] */ ICharSequence* msg,
+        /* [in] */ Boolean always);
+
+    CARAPI HideBootMessages();
+
+    CARAPI UserActivity();
+
+    CARAPI LockNow(
+        /* [in] */ IBundle* options);
+
+    CARAPI EnableScreenAfterBoot();
+
+    CARAPI SetCurrentOrientationLw(
+        /* [in] */ Int32 newOrientation);
+
+    CARAPI PerformHapticFeedbackLw(
+        /* [in] */ IWindowState* win,
+        /* [in] */ Int32 effectId,
+        /* [in] */ Boolean always,
+        /* [out] */ Boolean* isSucceed);
+
+    CARAPI KeepScreenOnStartedLw();
+
+    CARAPI KeepScreenOnStoppedLw();
+
+    // Use this instead of checking config_showNavigationBar so that it can be consistently
+    // overridden by qemu.hw.mainkeys in the emulator.
+    CARAPI HasNavigationBar(
+        /* [out] */ Boolean* has);
+
+    CARAPI SetLastInputMethodWindowLw(
+        /* [in] */ IWindowState* ime,
+        /* [in] */ IWindowState* target);
+
+    CARAPI CanMagnifyWindow(
+        /* [in] */ Int32 windowType,
+        /* [out] */ Boolean* result);
+
+    CARAPI IsTopLevelWindow(
+        /* [in] */ Int32 windowType,
+        /* [out] */ Boolean* result);
+
+    CARAPI GetInputMethodWindowVisibleHeightLw(
+        /* [out] */ Int32 *result);
+
+    CARAPI SetCurrentUserLw(
+        /* [in] */ Int32 newUserId);
+
+    //CARAPI ShowAssistant();
+
+    // @Override
+    CARAPI_(void) Dump(
+        /* [in] */ const String& prefix,
+        /* [in] */ IPrintWriter* pw,
+        /* [in] */ ArrayOf<String>* args);
+
+protected:
+    // TODO: Telephone is not implement.
+    //static ITelephony GetTelephonyService();
+
+    static AutoPtr<IIAudioService> GetAudioService();
+
+    static CARAPI_(AutoPtr< ArrayOf<Int64> >) GetLongIntArray(
+        /* [in] */ IResources* r,
+        /* [in] */ Int32 resid);
+
+    static CARAPI_(AutoPtr<IIDreamManager>) GetDreamManager();
+
+protected:
+    AutoPtr<IIStatusBarService> GetStatusBarService();
+
+    /*
+    * We always let the sensor be switched on by default except when
+    * the user has explicitly disabled sensor based rotation or when the
+    * screen is switched off.
+    */
+    CARAPI_(Boolean) NeedSensorRunningLp();
+
+    /*
+    * Various use cases for invoking this function
+    * screen turning off, should always disable listeners if already enabled
+    * screen turned on and current app has sensor based orientation, enable listeners
+    * if not already enabled
+    * screen turned on and current app does not have sensor orientation, disable listeners if
+    * already enabled
+    * screen turning on and current app has sensor based orientation, enable listeners if needed
+    * screen turning on and current app has nosensor based orientation, do nothing
+    */
+    CARAPI_(void) UpdateOrientationListenerLp();
+
+    CARAPI_(void) ShowGlobalActionsInternal();
+
+    CARAPI_(Boolean) IsDeviceProvisioned();
+
+    CARAPI_(Boolean) IsUserSetupComplete();
+
+    /**
+     * Create (if necessary) and show or dismiss the recent apps dialog according
+     * according to the requested behavior.
+     */
+    //CARAPI_(void) ShowOrHideRecentAppsDialog(
+    //    /* [in] */ Int32 behavior);
+
+    CARAPI_(void) ReadLidState();
+
+    CARAPI_(Boolean) KeyguardOn();
+
+    /**
+    * A home key -> launch home action was detected.  Take the appropriate action
+    * given the situation with the keyguard.
+    */
+    CARAPI_(void) LaunchHomeFromHotKey();
+
+    CARAPI_(void) SetAttachedWindowFrames(
+        /* [in] */ IWindowState* win,
         /* [in] */ Int32 fl,
-        /* [in] */ Int32 adjust,
-        /* [in] */ WindowState* attached,
+        /* [in] */ Int32 sim,
+        /* [in] */ IWindowState* attached,
         /* [in] */ Boolean insetDecors,
         /* [in] */ IRect* pf,
         /* [in] */ IRect* df,
@@ -819,294 +1404,99 @@ public:
         /* [in] */ IRect* cf,
         /* [in] */ IRect* vf);
 
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI LayoutWindowLw(
-        /* [in] */ WindowState* win,
-        /* [in] */ WindowState* attached);
-
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI FinishLayoutLw();
-
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI BeginPostLayoutPolicyLw(
-        /* [in] */ Int32 displayWidth,
-        /* [in] */ Int32 displayHeight);
-
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI ApplyPostLayoutPolicyLw(
-        /* [in] */ WindowState* win,
-        /* [in] */  WindowManager);
-
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI_(Int32) FinishPostLayoutPolicyLw();
-
-    // @Override
-    CARAPI_(Boolean) AllowAppAnimationsLw();
-
-    // @Override
-    CARAPI_(Int32) FocusChangedLw(
-        /* [in] */ WindowState* lastFocus,
-        /* [in] */ WindowState* newFocus);
-
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI NotifyLidSwitchChanged(
-        /* [in] */ Int64 whenNanos,
-        /* [in] */ Boolean lidOpen);
-
-    // @Override
-    CARAPI NotifyCameraLensCoverSwitchChanged(
-        /* [in] */ Int64 whenNanos,
-        /* [in] */ Boolean lensCovered);
-
-    virtual CARAPI SetHdmiPlugged(
+    CARAPI_(void) SetHdmiPlugged(
         /* [in] */ Boolean plugged);
 
-    virtual CARAPI InitializeHdmiState();
+    CARAPI_(void) InitializeHdmiState();
 
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI_(Int32) InterceptKeyBeforeQueueing(
-        /* [in] */ IKeyEvent* event,
-        /* [in] */ Int32 policyFlags);
+    ///**
+    //* @return Whether music is being played right now.
+    //*/
+    //CARAPI_(Boolean) IsMusicActive();
 
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI_(Int32) InterceptMotionBeforeQueueingNonInteractive(
-        /* [in] */ Int64 whenNanos,
-        /* [in] */ Int32 policyFlags);
+    ///**
+    //* Tell the audio service to adjust the volume appropriate to the event.
+    //* @param keycode
+    //*/
+    //CARAPI_(void) HandleVolumeKey(
+    //    /* [in] */ Int32 stream,
+    //    /* [in] */ Int32 keycode);
 
-    virtual CARAPI DispatchMediaKeyWithWakeLock(
+    //CARAPI_(Boolean) IsMute();
+
+    //CARAPI_(void) HandleMute();
+
+    CARAPI_(void) DispatchMediaKeyWithWakeLock(
         /* [in] */ IKeyEvent* event);
 
-    virtual CARAPI DispatchMediaKeyRepeatWithWakeLock(
+    CARAPI_(void) DispatchMediaKeyRepeatWithWakeLock(
         /* [in] */ IKeyEvent* event);
 
-    virtual CARAPI DispatchMediaKeyWithWakeLockToAudioService(
+    CARAPI_(void) DispatchMediaKeyWithWakeLockToAudioService(
         /* [in] */ IKeyEvent* event);
 
-    virtual CARAPI LaunchVoiceAssistWithWakeLock(
+    CARAPI_(void) LaunchVoiceAssistWithWakeLock(
         /* [in] */ Boolean keyguardActive);
 
-    // Called on the PowerManager's Notifier thread.
-    // @Override
-    CARAPI GoingToSleep(
-        /* [in] */ Int32 why);
+    CARAPI_(void) SendCloseSystemWindows();
 
-    // Called on the PowerManager's Notifier thread.
-    // @Override
-    CARAPI WakingUp();
+    CARAPI_(void) SendCloseSystemWindows(
+        /* [in] */ const String& reason);
 
-    // Called on the DisplayManager's DisplayPowerController thread.
-    // @Override
-    CARAPI ScreenTurnedOff();
+    CARAPI_(void) UpdateUiMode();
 
-    // Called on the DisplayManager's DisplayPowerController thread.
-    // @Override
-    CARAPI ScreenTurningOn(
-        /* [in] */ ScreenOnListener* screenOnListener);
-
-    // @Override
-    CARAPI_(Boolean) IsScreenOn();
-
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI EnableKeyguard(
-        /* [in] */ Boolean enabled);
-
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI ExitKeyguardSecurely(
-        /* [in] */ OnKeyguardExitResult* callback);
-
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI_(Boolean) IsKeyguardLocked();
-
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI_(Boolean) IsKeyguardSecure();
-
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI_(Boolean) InKeyguardRestrictedKeyInputMode();
-
-    // @Override
-    CARAPI DismissKeyguardLw();
-
-    virtual CARAPI NotifyActivityDrawnForKeyguardLw();
-
-    // @Override
-    CARAPI_(Boolean) IsKeyguardDrawnLw();
-
-    // @Override
-    CARAPI StartKeyguardExitAnimation(
-        /* [in] */ Int64 startTime,
-        /* [in] */ Int64 fadeoutDuration);
-
-    virtual CARAPI SendCloseSystemWindows();
-
-    virtual CARAPI SendCloseSystemWindows(
-        /* [in] */ String reason);
-
-    static CARAPI SendCloseSystemWindows(
-        /* [in] */ IContext* context,
-        /* [in] */ String reason);
-
-    // @Override
-    CARAPI_(Int32) RotationForOrientationLw(
-        /* [in] */ Int32 orientation,
-        /* [in] */ Int32 lastRotation);
-
-    // @Override
-    CARAPI_(Boolean) RotationHasCompatibleMetricsLw(
-        /* [in] */ Int32 orientation,
-        /* [in] */ Int32 rotation);
-
-    // @Override
-    CARAPI SetRotationLw(
-        /* [in] */ Int32 rotation);
-
-    // @Override
-    CARAPI_(Int32) GetUserRotationMode();
-
-    // User rotation: to be used when all else fails in assigning an orientation to the device
-    // @Override
-    CARAPI SetUserRotationMode(
-        /* [in] */ Int32 mode,
-        /* [in] */ Int32 rot);
-
-    // @Override
-    CARAPI SetSafeMode(
-        /* [in] */ Boolean safeMode);
-
-    static CARAPI_(AutoPtr< ArrayOf<Int64> >) GetLongIntArray(
-        /* [in] */ IResources* r,
-        /* [in] */ Int32 resid);
-
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI SystemReady();
-
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI SystemBooted();
-
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI ShowBootMessage(
-        /* [in] */ CharSequence* msg,
-        /* [in] */ Boolean always);
-
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI HideBootMessages();
-
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI UserActivity();
-
-    // @Override
-    CARAPI LockNow(
-        /* [in] */ IBundle* options);
-
-    /** {@inheritDoc} */
-    // @Override
-    CARAPI EnableScreenAfterBoot();
-
-    virtual CARAPI UpdateUiMode();
-
-    virtual CARAPI UpdateRotation(
+    CARAPI_(void) UpdateRotation(
         /* [in] */ Boolean alwaysSendConfiguration);
 
-    virtual CARAPI UpdateRotation(
+    CARAPI_(void) UpdateRotation(
         /* [in] */ Boolean alwaysSendConfiguration,
         /* [in] */ Boolean forceRelayout);
 
     /**
-      * Return an Intent to launch the currently active dock app as home.  Returns
-      * null if the standard home should be launched, which is the case if any of the following is
-      * true:
-      * <ul>
-      *  <li>The device is not in either car mode or desk mode
-      *  <li>The device is in car mode but ENABLE_CAR_DOCK_HOME_CAPTURE is false
-      *  <li>The device is in desk mode but ENABLE_DESK_DOCK_HOME_CAPTURE is false
-      *  <li>The device is in car mode but there's no CAR_DOCK app with METADATA_DOCK_HOME
-      *  <li>The device is in desk mode but there's no DESK_DOCK app with METADATA_DOCK_HOME
-      * </ul>
-      * @return A dock intent.
-      */
-    virtual CARAPI CreateHomeDockIntent(
-        /* [out] */ Intent** result);
+     * Return an Intent to launch the currently active dock app as home.  Returns
+     * null if the standard home should be launched, which is the case if any of the following is
+     * true:
+     * <ul>
+     *  <li>The device is not in either car mode or desk mode
+     *  <li>The device is in car mode but ENABLE_CAR_DOCK_HOME_CAPTURE is false
+     *  <li>The device is in desk mode but ENABLE_DESK_DOCK_HOME_CAPTURE is false
+     *  <li>The device is in car mode but there's no CAR_DOCK app with METADATA_DOCK_HOME
+     *  <li>The device is in desk mode but there's no DESK_DOCK app with METADATA_DOCK_HOME
+     * </ul>
+     * @return A dock intent.
+     */
+    CARAPI_(AutoPtr<IIntent>) CreateHomeDockIntent();
 
-    virtual CARAPI StartDockOrHome();
+    CARAPI_(void) StartDockOrHome();
 
     /**
-      * goes to the home screen
-      * @return whether it did anything
-      */
-    virtual CARAPI GoHome(
-        /* [out] */ Boolean* result);
+    * goes to the home screen
+    * @return whether it did anything
+    */
+    CARAPI_(Boolean) GoHome();
 
-    // @Override
-    CARAPI SetCurrentOrientationLw(
-        /* [in] */ Int32 newOrientation);
-
-    // @Override
-    CARAPI_(Boolean) PerformHapticFeedbackLw(
-        /* [in] */ WindowState* win,
-        /* [in] */ Int32 effectId,
-        /* [in] */ Boolean always);
-
-    // @Override
-    CARAPI KeepScreenOnStartedLw();
-
-    // @Override
-    CARAPI KeepScreenOnStoppedLw();
-
-    // Use this instead of checking config_showNavigationBar so that it can be consistently
-    // overridden by qemu.hw.mainkeys in the emulator.
-    // @Override
-    CARAPI_(Boolean) HasNavigationBar();
-
-    // @Override
-    CARAPI SetLastInputMethodWindowLw(
-        /* [in] */ WindowState* ime,
-        /* [in] */ WindowState* target);
-
-    // @Override
-    CARAPI_(Int32) GetInputMethodWindowVisibleHeightLw();
-
-    // @Override
-    CARAPI SetCurrentUserLw(
-        /* [in] */ Int32 newUserId);
-
-    // @Override
-    CARAPI_(Boolean) CanMagnifyWindow(
-        /* [in] */ Int32 windowType);
-
-    // @Override
-    CARAPI_(Boolean) IsTopLevelWindow(
-        /* [in] */ Int32 windowType);
-
-    // @Override
-    CARAPI Dump(
-        /* [in] */ String prefix,
-        /* [in] */ IPrintWriter* pw,
-        /* [in] */ ArrayOf<String>* args);
+    //TODO CARAPI_(AutoPtr<ITelecomManager> GetTelecommService();
 
 private:
-    CARAPI_(AutoPtr< ArrayOf<Int32> >) MiddleInitMnavigationbarheightforrotation();
-
-    CARAPI_(AutoPtr< ArrayOf<Int32> >) MiddleInitMnavigationbarwidthforrotation();
+    //CARAPI_(void) StartFlicker();
 
     CARAPI_(void) InterceptPowerKeyDown(
         /* [in] */ Boolean handled);
+
+    //CARAPI_(void) ShowBootAnimation();
+
+    //CARAPI_(void) HideBootAnimation();
+
+    // CARAPI_(void) SetAirplaneModeState(
+    //     /* [in] */ Boolean enabled);
+
+    //CARAPI_(void) RestoreAirplaneModeState();
+
+    //CARAPI_(void) InterceptBootFastPowerKeyDown(
+    //    /* [in] */ Boolean handled);
+
+    //CARAPI_(Boolean) InterceptBootFastPowerKeyUp(
+    //    /* [in] */ Boolean canceled);
 
     CARAPI_(Boolean) InterceptPowerKeyUp(
         /* [in] */ Boolean canceled);
@@ -1127,40 +1517,45 @@ private:
     CARAPI_(void) HandleDoubleTapOnHome();
 
     /**
-      * Read values from config.xml that may be overridden depending on
-      * the configuration of the device.
-      * eg. Disable long press on home goes to recents on sw600dp.
-      */
+     * Read values from config.xml that may be overridden depending on
+     * the configuration of the device.
+     * eg. Disable long press on home goes to recents on sw600dp.
+     */
     CARAPI_(void) ReadConfigurationDependentBehaviors();
 
     /**
-      * @return whether the navigation bar can be hidden, e.g. the device has a
-      *         navigation bar and touch exploration is not enabled
-      */
+     * @return whether the navigation bar can be hidden, e.g. the device has a
+     *         navigation bar and touch exploration is not enabled
+     */
     CARAPI_(Boolean) CanHideNavigationBar();
 
     CARAPI_(void) UpdateWakeGestureListenerLp();
 
     CARAPI_(Boolean) ShouldEnableWakeGestureLp();
 
+    CARAPI_(void) ReadCameraLensCoverState();
+
+    static CARAPI_(void) AwakenDreams();
+
     CARAPI_(void) EnablePointerLocation();
 
     CARAPI_(void) DisablePointerLocation();
 
     CARAPI_(Int32) ReadRotation(
-        /* [in] */ Int32 resID);
-
-    CARAPI_(void) ReadCameraLensCoverState();
+        /* [in] */  Int32 resID);
 
     CARAPI_(Boolean) IsHidden(
         /* [in] */ Int32 accessibilityMode);
 
-    static CARAPI_(void) AwakenDreams();
+    //CARAPI_(Boolean) IsBuiltInKeyboardVisible();
 
-    static CARAPI_(AutoPtr< ArrayOf<Int32> >) MiddleInitWindowTypesWhereHomeDoesntWork();
+    //Int64 InnerInterceptKeyBeforeDispatching(
+    //    /* [in] */ IWindowState* win,
+    //    /* [in] */ IKeyEvent* event,
+    //    /* [in] */ Int32 policyFlags);
 
     CARAPI_(Boolean) InterceptFallback(
-        /* [in] */ WindowState* win,
+        /* [in] */ IWindowState* win,
         /* [in] */ IKeyEvent* fallbackEvent,
         /* [in] */ Int32 policyFlags);
 
@@ -1169,7 +1564,7 @@ private:
     CARAPI_(void) LaunchAssistAction();
 
     CARAPI_(void) LaunchAssistAction(
-        /* [in] */ String hint);
+        /* [in] */ const String& hint);
 
     CARAPI_(AutoPtr<ISearchManager>) GetSearchManager();
 
@@ -1192,43 +1587,27 @@ private:
         /* [in] */ IRect* r);
 
     CARAPI_(void) OffsetInputMethodWindowLw(
-        /* [in] */ WindowState* win);
+        /* [in] */ IWindowState* win);
 
     CARAPI_(void) OffsetVoiceInputWindowLw(
-        /* [in] */ WindowState* win);
-
-    /**
-      * Processes the result code of {@link IKeyguardService#setOccluded}. This is needed because we
-      * immediately need to put the wallpaper directly behind the Keyguard when a window with flag
-      * {@link android.view.WindowManager.LayoutParams#FLAG_SHOW_WHEN_LOCKED} gets dismissed. If we
-      * would wait for Keyguard to change the flags, that would be running asynchronously and thus be
-      * too late so the user might see the window behind.
-      *
-      * @param setHiddenResult The result code from {@link IKeyguardService#setOccluded}.
-      * @return Whether the flags have changed and we have to redo the layout.
-      */
-    CARAPI_(Boolean) ProcessKeyguardSetHiddenResultLw(
-        /* [in] */ Int32 setHiddenResult);
-
-    CARAPI_(Boolean) IsStatusBarKeyguard();
+        /* [in] */ IWindowState* win);
 
     // Assume this is called from the Handler thread.
     CARAPI_(void) TakeScreenshot();
 
-    /**
-      * When the screen is off we ignore some keys that might otherwise typically
-      * be considered wake keys.  We filter them out here.
-      *
-      * {@link KeyEvent#KEYCODE_POWER} is notably absent from this list because it
-      * is always considered a wake key.
-      */
+    /** When the screen is off we ignore some keys that might otherwise typically
+     * be considered wake keys.  We filter them out here.
+     *
+     * {@link KeyEvent#KEYCODE_POWER} is notably absent from this list because it
+     * is always considered a wake key.
+     */
     CARAPI_(Boolean) IsWakeKeyWhenScreenOff(
         /* [in] */ Int32 keyCode);
 
     CARAPI_(Boolean) ShouldDispatchInputWhenNonInteractive();
 
     CARAPI_(void) RequestTransientBars(
-        /* [in] */ WindowState* swipeTarget);
+        /* [in] */ IWindowState* swipeTarget);
 
     CARAPI_(void) FinishKeyguardDrawn();
 
@@ -1238,16 +1617,28 @@ private:
 
     CARAPI_(void) HandleHideBootMessage();
 
+    //CARAPI_(void) WaitForKeyguard(
+    //    /* [in] */ IScreenOnListener* screenOnListener);
+
+    //CARAPI_(void) WaitForKeyguardWindowDrawn(
+    //    /* [in] */ IBinder* windowToken,
+    //    /* [in] */ IScreenOnListener* screenOnListener);
+
+    //CARAPI_(void) FinishScreenTurningOn(
+    //    /* [in] */ IScreenOnListener* screenOnListener);
+
+    CARAPI_(void) ShowBootAnimation(
+        /* [in] */ Int64 time);
+
     CARAPI_(Boolean) KeyguardIsShowingTq();
 
-    // Returns true if keyguard is currently locked whether or not it is currently hidden.
     CARAPI_(Boolean) IsKeyguardSecureIncludingHidden();
 
     CARAPI_(Boolean) IsLandscapeOrSeascape(
-        /* [in] */ Int32 rotation);
+        /* [in] */ Int32 sensorRotation);
 
     CARAPI_(Boolean) IsAnyPortrait(
-        /* [in] */ Int32 rotation);
+        /* [in] */ Int32 sensorRotation);
 
     CARAPI_(void) UpdateLockScreenTimeout();
 
@@ -1260,7 +1651,7 @@ private:
     CARAPI_(Int32) UpdateSystemUiVisibilityLw();
 
     CARAPI_(Int32) UpdateSystemBarsLw(
-        /* [in] */ WindowState* win,
+        /* [in] */ IWindowState* win,
         /* [in] */ Int32 oldVis,
         /* [in] */ Int32 vis);
 
@@ -1270,127 +1661,198 @@ private:
         /* [in] */ Int32 vis);
 
     /**
-      * @return whether the navigation or status bar can be made translucent
-      *
-      * This should return true unless touch exploration is not enabled or
-      * R.boolean.config_enableTranslucentDecor is false.
-      */
+     * @return whether the navigation or status bar can be made translucent
+     *
+     * This should return true unless touch exploration is not enabled or
+     * R.boolean.config_enableTranslucentDecor is false.
+     */
     CARAPI_(Boolean) AreTranslucentBarsAllowed();
 
+    /**
+     * Processes the result code of {@link IKeyguardService#setOccluded}. This is needed because we
+     * immediately need to put the wallpaper directly behind the Keyguard when a window with flag
+     * {@link android.view.WindowManager.LayoutParams#FLAG_SHOW_WHEN_LOCKED} gets dismissed. If we
+     * would wait for Keyguard to change the flags, that would be running asynchronously and thus be
+     * too late so the user might see the window behind.
+     *
+     * @param setHiddenResult The result code from {@link IKeyguardService#setOccluded}.
+     * @return Whether the flags have changed and we have to redo the layout.
+     */
+    CARAPI_(Boolean) ProcessKeyguardSetHiddenResultLw(
+        /* [in] */ Int32 setHiddenResult);
+
+    CARAPI_(Boolean) IsStatusBarKeyguard();
+
 public:
-    static const String TAG;
+    static String SYSTEM_DIALOG_REASON_KEY;
+    static String SYSTEM_DIALOG_REASON_GLOBAL_ACTIONS;
+    static String SYSTEM_DIALOG_REASON_RECENT_APPS;
+    static String SYSTEM_DIALOG_REASON_HOME_KEY;
+    static String SYSTEM_DIALOG_REASON_ASSIST;
+
+protected:
+    static String TAG;
     static const Boolean DEBUG;
     static const Boolean localLOGV;
     static const Boolean DEBUG_LAYOUT;
     static const Boolean DEBUG_INPUT;
+    //static const Boolean DEBUG_BOOTFAST;
     static const Boolean DEBUG_STARTING_WINDOW;
     static const Boolean DEBUG_WAKEUP;
     static const Boolean SHOW_STARTING_ANIMATIONS;
     static const Boolean SHOW_PROCESSES_ON_ALT_MENU;
+
+    //static const Int32 WINDOW_TYPE_TEST_MODE; //new Window type for AllWinner SDK
     // Whether to allow dock apps with METADATA_DOCK_HOME to temporarily take over the Home key.
     // No longer recommended for desk docks; still useful in car docks.
-    static const Boolean ENABLE_CAR_DOCK_HOME_CAPTURE;
-    static const Boolean ENABLE_DESK_DOCK_HOME_CAPTURE;
-    static const Int32 SHORT_PRESS_POWER_NOTHING = 0;
-    static const Int32 SHORT_PRESS_POWER_GO_TO_SLEEP = 1;
-    static const Int32 SHORT_PRESS_POWER_REALLY_GO_TO_SLEEP = 2;
-    static const Int32 SHORT_PRESS_POWER_REALLY_GO_TO_SLEEP_AND_GO_HOME = 3;
-    static const Int32 LONG_PRESS_POWER_NOTHING = 0;
-    static const Int32 LONG_PRESS_POWER_GLOBAL_ACTIONS = 1;
-    static const Int32 LONG_PRESS_POWER_SHUT_OFF = 2;
-    static const Int32 LONG_PRESS_POWER_SHUT_OFF_NO_CONFIRM = 3;
+    static const Boolean ENABLE_CAR_DOCK_HOME_CAPTURE;// = true;
+    static const Boolean ENABLE_DESK_DOCK_HOME_CAPTURE;// = false;
+    static const Int32 SHORT_PRESS_POWER_NOTHING;// = 0;
+    static const Int32 SHORT_PRESS_POWER_GO_TO_SLEEP;// = 1;
+    static const Int32 SHORT_PRESS_POWER_REALLY_GO_TO_SLEEP;// = 2;
+    static const Int32 SHORT_PRESS_POWER_REALLY_GO_TO_SLEEP_AND_GO_HOME;// = 3;
+
+    static const Int32 LONG_PRESS_POWER_NOTHING;
+    static const Int32 LONG_PRESS_POWER_GLOBAL_ACTIONS;
+    static const Int32 LONG_PRESS_POWER_SHUT_OFF;
+    static const Int32 LONG_PRESS_POWER_SHUT_OFF_NO_CONFIRM;
+
     // These need to match the documentation/constant in
     // core/res/res/values/config.xml
-    static const Int32 LONG_PRESS_HOME_NOTHING = 0;
-    static const Int32 LONG_PRESS_HOME_RECENT_SYSTEM_UI = 1;
-    static const Int32 LONG_PRESS_HOME_ASSIST = 2;
-    static const Int32 DOUBLE_TAP_HOME_NOTHING = 0;
-    static const Int32 DOUBLE_TAP_HOME_RECENT_SYSTEM_UI = 1;
-    static const Int32 APPLICATION_MEDIA_SUBLAYER = -2;
-    static const Int32 APPLICATION_MEDIA_OVERLAY_SUBLAYER = -1;
-    static const Int32 APPLICATION_PANEL_SUBLAYER = 1;
-    static const Int32 APPLICATION_SUB_PANEL_SUBLAYER = 2;
-    static const String SYSTEM_DIALOG_REASON_KEY;
-    static const String SYSTEM_DIALOG_REASON_GLOBAL_ACTIONS;
-    static const String SYSTEM_DIALOG_REASON_RECENT_APPS;
-    static const String SYSTEM_DIALOG_REASON_HOME_KEY;
-    static const String SYSTEM_DIALOG_REASON_ASSIST;
+    static const Int32 LONG_PRESS_HOME_NOTHING;
+    //static const Int32 LONG_PRESS_HOME_RECENT_DIALOG;
+    static const Int32 LONG_PRESS_HOME_RECENT_SYSTEM_UI;
+    static const Int32 LONG_PRESS_HOME_ASSIST;
+
+    static const Int32 DOUBLE_TAP_HOME_NOTHING;// = 0;
+    static const Int32 DOUBLE_TAP_HOME_RECENT_SYSTEM_UI;// = 1;
+
+    static const Int32 APPLICATION_MEDIA_SUBLAYER;
+    static const Int32 APPLICATION_MEDIA_OVERLAY_SUBLAYER;
+    static const Int32 APPLICATION_PANEL_SUBLAYER;
+    static const Int32 APPLICATION_SUB_PANEL_SUBLAYER;
+
     /**
-      * These are the system UI flags that, when changing, can cause the layout
-      * of the screen to change.
-      */
-    static const Int32 SYSTEM_UI_CHANGING_LAYOUT = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-             | View.SYSTEM_UI_FLAG_FULLSCREEN
-             | View.STATUS_BAR_TRANSLUCENT
-             | View.NAVIGATION_BAR_TRANSLUCENT
-             | View.SYSTEM_UI_TRANSPARENT;
-    /* Table of Application Launch keys.  Maps from key codes to intent categories.
-      *
-      * These are special keys that are used to launch particular kinds of applications,
-      * such as a web browser.  HID defines nearly a hundred of them in the Consumer (0x0C)
-      * usage page.  We don't support quite that many yet...
-      */
-    static AutoPtr< ISparseArray<String> > sApplicationLaunchKeyCategories;
-    /** Amount of time (in milliseconds) to wait for windows drawn before powering on. */
-    static const Int32 WAITING_FOR_DRAWN_TIMEOUT = 1000;
+     * These are the system UI flags that, when changing, can cause the layout
+     * of the screen to change.
+     */
+    static const Int32 SYSTEM_UI_CHANGING_LAYOUT;
+
+    /* Table of Application Launch keys.  Maps from key codes to Intent categories.
+     *
+     * These are special keys that are used to launch particular kinds of applications,
+     * such as a web browser.  HID defines nearly a hundred of them in the Consumer (0x0C)
+     * usage page.  We don't support quite that many yet...
+     */
+    static AutoPtr<HashMap<Int32, AutoPtr<IInterface> > > sApplicationLaunchKeyCategories;
+
+    //static const Int32 RECENT_APPS_BEHAVIOR_SHOW_OR_DISMISS;
+    //static const Int32 RECENT_APPS_BEHAVIOR_EXIT_TOUCH_MODE_AND_SHOW;
+    //static const Int32 RECENT_APPS_BEHAVIOR_DISMISS;
+    //static const Int32 RECENT_APPS_BEHAVIOR_DISMISS_AND_SWITCH;
+
+    static AutoPtr<CRect> mTmpParentFrame;
+    static AutoPtr<CRect> mTmpDisplayFrame;
+    static AutoPtr<CRect> mTmpOverscanFrame;
+    static AutoPtr<CRect> mTmpContentFrame;
+    static AutoPtr<CRect> mTmpVisibleFrame;
+    static AutoPtr<CRect> mTmpDecorFrame;
+    static AutoPtr<CRect> mTmpStableFrame;
+    static AutoPtr<CRect> mTmpNavigationFrame;
+
+    //static Boolean mFullScreenIsEnable;// = true;
+    //static Boolean mAlwaysFullScreen;// = false;
+
+    static const Boolean PRINT_ANIM;
+
+    // Java has not these two variable.
+    static Boolean mVolumeMute;
+    static Int32 mPreVolume;
+
+// Need to instantiate in the Constructor.
+protected:
+    //AutoPtr<PromptEnterMouseModeRunnable> mPromptEnterMouseMode;
+    //AutoPtr<PromptExitMouseModeRunnable> mPromptExitMouseMode;
+    AutoPtr<IRunnable> mWindowManagerDrawCallback;
+    AutoPtr<IKeyguardServiceDelegateShowListener> mKeyguardDelegateCallback;
+    AutoPtr<HideNavInputEventReceiverFactory> mHideNavInputEventReceiverFactory;
+    AutoPtr<ScreenshotTimeoutRunnable> mScreenshotTimeout;
+    AutoPtr<DockBroadReceiver> mDockReceiver;
+    AutoPtr<DreamBroadReceiver> mDreamReceiver;
+    AutoPtr<MultiuserBroadReceiver> mMultiuserReceiver;
+    AutoPtr<ScreenLockTimeoutRunnable> mScreenLockTimeout;
+
+protected:
     AutoPtr<IContext> mContext;
     AutoPtr<IIWindowManager> mWindowManager;
-    AutoPtr<WindowManagerFuncs> mWindowManagerFuncs;
+    AutoPtr<IWindowManagerPolicyWindowManagerFuncs> mWindowManagerFuncs;
     AutoPtr<IWindowManagerInternal> mWindowManagerInternal;
     AutoPtr<IPowerManager> mPowerManager;
     AutoPtr<IDreamManagerInternal> mDreamManagerInternal;
     AutoPtr<IIStatusBarService> mStatusBarService;
     Boolean mPreloadedRecentApps;
-    /*const*/ AutoPtr<Object> mServiceAquireLock;
-    AutoPtr<IVibrator> mVibrator;
-    // Vibrator for giving feedback of orientation changes
+    Object mServiceAquireLock;
+    AutoPtr<IVibrator> mVibrator; // Vibrator for giving feedback of orientation changes
     AutoPtr<ISearchManager> mSearchManager;
     AutoPtr<IAccessibilityManager> mAccessibilityManager;
+
     // Vibrator pattern for haptic feedback of a long press.
-    AutoPtr< ArrayOf<Int64> > mLongPressVibePattern;
+    AutoPtr<ArrayOf<Int64> > mLongPressVibePattern;
+
     // Vibrator pattern for haptic feedback of virtual key press.
-    AutoPtr< ArrayOf<Int64> > mVirtualKeyVibePattern;
+    AutoPtr<ArrayOf<Int64> > mVirtualKeyVibePattern;
+
     // Vibrator pattern for a short vibration.
-    AutoPtr< ArrayOf<Int64> > mKeyboardTapVibePattern;
+    AutoPtr<ArrayOf<Int64> > mKeyboardTapVibePattern;
+
     // Vibrator pattern for a short vibration when tapping on an hour/minute tick of a Clock.
-    AutoPtr< ArrayOf<Int64> > mClockTickVibePattern;
+    AutoPtr<ArrayOf<Int64> > mClockTickVibePattern;
+
     // Vibrator pattern for a short vibration when tapping on a day/month/year date of a Calendar.
-    AutoPtr< ArrayOf<Int64> > mCalendarDateVibePattern;
+    AutoPtr<ArrayOf<Int64> > mCalendarDateVibePattern;
+
     // Vibrator pattern for haptic feedback during boot when safe mode is disabled.
-    AutoPtr< ArrayOf<Int64> > mSafeModeDisabledVibePattern;
+    AutoPtr<ArrayOf<Int64> > mSafeModeDisabledVibePattern;
+
     // Vibrator pattern for haptic feedback during boot when safe mode is enabled.
-    AutoPtr< ArrayOf<Int64> > mSafeModeEnabledVibePattern;
+    AutoPtr<ArrayOf<Int64> > mSafeModeEnabledVibePattern;
+
     /** If true, hitting shift & menu will broadcast Intent.ACTION_BUG_REPORT */
     Boolean mEnableShiftMenuBugReports;
+
     Boolean mSafeMode;
-    AutoPtr<WindowState> mStatusBar;
+    AutoPtr<IWindowState> mStatusBar;
     Int32 mStatusBarHeight;
-    AutoPtr<WindowState> mNavigationBar;
+    AutoPtr<IWindowState> mNavigationBar;
     Boolean mHasNavigationBar;
     Boolean mCanHideNavigationBar;
-    Boolean mNavigationBarCanMove;
-    // can the navigation bar ever move to the side?
-    Boolean mNavigationBarOnBottom;
-    // is the navigation bar on the bottom *right now*?
-    AutoPtr< ArrayOf<Int32> > mNavigationBarHeightForRotation;
-    AutoPtr< ArrayOf<Int32> > mNavigationBarWidthForRotation;
+    Boolean mNavigationBarCanMove; // can the navigation bar ever move to the side?
+    Boolean mNavigationBarOnBottom; // is the navigation bar on the bottom *right now*?
+    Int32 mNavigationBarHeightForRotation[4];
+    Int32 mNavigationBarWidthForRotation[4];
+
+    //AutoPtr<IWindowState> mKeyguard;
+    // TODO: Because KeyguardViewMediator is not implement.
+    // KeyguardViewMediator mKeyguardMediator;
     Boolean mBootMessageNeedsHiding;
     AutoPtr<IKeyguardServiceDelegate> mKeyguardDelegate;
-    /*const*/ AutoPtr<Runnable> mWindowManagerDrawCallback;
-    /*const*/ AutoPtr<IShowListener> mKeyguardDelegateCallback;
     AutoPtr<GlobalActions> mGlobalActions;
-    AutoPtr<volatile> Boolean mPowerKeyHandled;
-    // accessed from input reader and handler thread
+    volatile Boolean mPowerKeyHandled; // accessed from input reader and handler thread
+    //volatile Boolean mPowerBootKeyHandled;
     Boolean mPendingPowerKeyUpCanceled;
     AutoPtr<IHandler> mHandler;
-    AutoPtr<WindowState> mLastInputMethodWindow;
-    AutoPtr<WindowState> mLastInputMethodTargetWindow;
+    AutoPtr<IWindowState> mLastInputMethodWindow;
+    AutoPtr<IWindowState> mLastInputMethodTargetWindow;
+
+    //AutoPtr<IRecentApplicationsDialog> mRecentAppsDialog;
     Boolean mRecentsVisible;
     Int32 mRecentAppsHeldModifiers;
     Boolean mLanguageSwitchKeyPressed;
+
     Int32 mLidState;
-    Int32 mCameraLensCoverState;
+    Int32 mCameraLensCoverState;// = CAMERA_LENS_COVER_ABSENT;
     Boolean mHaveBuiltInKeyboard;
+
     Boolean mSystemReady;
     Boolean mSystemBooted;
     Boolean mHdmiPlugged;
@@ -1400,108 +1862,94 @@ public:
     Int32 mLidOpenRotation;
     Int32 mCarDockRotation;
     Int32 mDeskDockRotation;
+    //Int32 mHdmiRotation;
+    //Boolean mHdmiRotationLock;
     Int32 mUndockedHdmiRotation;
     Int32 mDemoHdmiRotation;
     Boolean mDemoHdmiRotationLock;
+
     Boolean mWakeGestureEnabledSetting;
     AutoPtr<MyWakeGestureListener> mWakeGestureListener;
+
+
     Int32 mUserRotationMode;
     Int32 mUserRotation;
     Boolean mAccelerometerDefault;
+    //Boolean mBootFastEnable;
     Boolean mSupportAutoRotation;
+
     Int32 mAllowAllRotations;
     Boolean mCarDockEnablesAccelerometer;
     Boolean mDeskDockEnablesAccelerometer;
     Int32 mLidKeyboardAccessibility;
     Int32 mLidNavigationAccessibility;
     Boolean mLidControlsSleep;
-    Int32 mShortPressOnPowerBehavior;
+    Int32 mShortPressOnPowerBehavior;// = -1;
     Int32 mLongPressOnPowerBehavior;
     Boolean mAwake;
     Boolean mScreenOnEarly;
     Boolean mScreenOnFully;
-    AutoPtr<ScreenOnListener> mScreenOnListener;
+    AutoPtr<IScreenOnListener> mScreenOnListener;
     Boolean mKeyguardDrawComplete;
     Boolean mWindowManagerDrawComplete;
     Boolean mOrientationSensorEnabled;
     Int32 mCurrentAppOrientation;
     Boolean mHasSoftInput;
-    Boolean mTranslucentDecorEnabled;
-    Int32 mPointerLocationMode;
-    // guarded by mLock
+    Boolean mTranslucentDecorEnabled;// = true;
+
+    Int32 mPointerLocationMode; // guarded by mLock
+
     // The last window we were told about in focusChanged.
-    AutoPtr<WindowState> mFocusedWindow;
-    AutoPtr<IIApplicationToken> mFocusedApp;
+    AutoPtr<IWindowState> mFocusedWindow;
+    AutoPtr<IApplicationToken> mFocusedApp;
+    //AutoPtr<BootAnimationView> mBootAnimationView;
+
+    // Pointer location view state, only modified on the mHandler Looper.
+    //AutoPtr<PointerLocationInputEventReceiver> mPointerLocationInputEventReceiver;
     AutoPtr<IPointerLocationView> mPointerLocationView;
+    //AutoPtr<IInputChannel> mPointerLocationInputChannel;
     // The current size of the screen; really; extends into the overscan area of
     // the screen and doesn't account for any system elements like the status bar.
-    Int32 mOverscanScreenLeft;
-    Int32 mOverscanScreenTop;
-    Int32 mOverscanScreenWidth;
-    Int32 mOverscanScreenHeight;
-    // The current visible size of the screen; really; (ir)regardless of whether the status
-    // bar can be hidden but not extending into the overscan area.
-    Int32 mUnrestrictedScreenLeft;
-    Int32 mUnrestrictedScreenTop;
-    Int32 mUnrestrictedScreenWidth;
-    Int32 mUnrestrictedScreenHeight;
+    Int32 mOverscanScreenLeft, mOverscanScreenTop;
+    Int32 mOverscanScreenWidth, mOverscanScreenHeight;
+
+    // The current size of the screen; really; (ir)regardless of whether the status
+    // bar can be hidden or not
+    Int32 mUnrestrictedScreenLeft, mUnrestrictedScreenTop;
+    Int32 mUnrestrictedScreenWidth, mUnrestrictedScreenHeight;
     // Like mOverscanScreen*, but allowed to move into the overscan region where appropriate.
-    Int32 mRestrictedOverscanScreenLeft;
-    Int32 mRestrictedOverscanScreenTop;
-    Int32 mRestrictedOverscanScreenWidth;
-    Int32 mRestrictedOverscanScreenHeight;
+    Int32 mRestrictedOverscanScreenLeft, mRestrictedOverscanScreenTop;
+    Int32 mRestrictedOverscanScreenWidth, mRestrictedOverscanScreenHeight;
     // The current size of the screen; these may be different than (0,0)-(dw,dh)
     // if the status bar can't be hidden; in that case it effectively carves out
     // that area of the display from all other windows.
-    Int32 mRestrictedScreenLeft;
-    Int32 mRestrictedScreenTop;
-    Int32 mRestrictedScreenWidth;
-    Int32 mRestrictedScreenHeight;
+    Int32 mRestrictedScreenLeft, mRestrictedScreenTop;
+    Int32 mRestrictedScreenWidth, mRestrictedScreenHeight;
     // During layout, the current screen borders accounting for any currently
     // visible system UI elements.
-    Int32 mSystemLeft;
-    Int32 mSystemTop;
-    Int32 mSystemRight;
-    Int32 mSystemBottom;
+    Int32 mSystemLeft, mSystemTop, mSystemRight, mSystemBottom;
     // For applications requesting stable content insets, these are them.
-    Int32 mStableLeft;
-    Int32 mStableTop;
-    Int32 mStableRight;
-    Int32 mStableBottom;
+    Int32 mStableLeft, mStableTop, mStableRight, mStableBottom;
     // For applications requesting stable content insets but have also set the
     // fullscreen window flag, these are the stable dimensions without the status bar.
-    Int32 mStableFullscreenLeft;
-    Int32 mStableFullscreenTop;
-    Int32 mStableFullscreenRight;
-    Int32 mStableFullscreenBottom;
+    Int32 mStableFullscreenLeft, mStableFullscreenTop;
+    Int32 mStableFullscreenRight, mStableFullscreenBottom;
     // During layout, the current screen borders with all outer decoration
     // (status bar, input method dock) accounted for.
-    Int32 mCurLeft;
-    Int32 mCurTop;
-    Int32 mCurRight;
-    Int32 mCurBottom;
+    Int32 mCurLeft, mCurTop, mCurRight, mCurBottom;
     // During layout, the frame in which content should be displayed
     // to the user, accounting for all screen decoration except for any
     // space they deem as available for other content.  This is usually
     // the same as mCur*, but may be larger if the screen decor has supplied
     // content insets.
-    Int32 mContentLeft;
-    Int32 mContentTop;
-    Int32 mContentRight;
-    Int32 mContentBottom;
+    Int32 mContentLeft, mContentTop, mContentRight, mContentBottom;
     // During layout, the frame in which voice content should be displayed
     // to the user, accounting for all screen decoration except for any
     // space they deem as available for other content.
-    Int32 mVoiceContentLeft;
-    Int32 mVoiceContentTop;
-    Int32 mVoiceContentRight;
-    Int32 mVoiceContentBottom;
+    Int32 mVoiceContentLeft, mVoiceContentTop, mVoiceContentRight, mVoiceContentBottom;
     // During layout, the current screen borders along which input method
     // windows are placed.
-    Int32 mDockLeft;
-    Int32 mDockTop;
-    Int32 mDockRight;
-    Int32 mDockBottom;
+    Int32 mDockLeft, mDockTop, mDockRight, mDockBottom;
     // During layout, the layer at which the doc window is placed.
     Int32 mDockLayer;
     // During layout, this is the layer of the status bar.
@@ -1516,30 +1964,26 @@ public:
     // What we last reported to system UI about whether the compatibility
     // menu needs to be displayed.
     Boolean mLastFocusNeedsMenu;
-    AutoPtr<FakeWindow> mHideNavFakeWindow;
-    static const AutoPtr<IRect> mTmpParentFrame;
-    static const AutoPtr<IRect> mTmpDisplayFrame;
-    static const AutoPtr<IRect> mTmpOverscanFrame;
-    static const AutoPtr<IRect> mTmpContentFrame;
-    static const AutoPtr<IRect> mTmpVisibleFrame;
-    static const AutoPtr<IRect> mTmpDecorFrame;
-    static const AutoPtr<IRect> mTmpStableFrame;
-    static const AutoPtr<IRect> mTmpNavigationFrame;
-    AutoPtr<WindowState> mTopFullscreenOpaqueWindowState;
-    AutoPtr< IHashSet<IIApplicationToken> > mAppsToBeHidden;
-    AutoPtr< IHashSet<IIApplicationToken> > mAppsThatDismissKeyguard;
+
+    AutoPtr<IFakeWindow> mHideNavFakeWindow;
+
+    AutoPtr<IWindowState> mTopFullscreenOpaqueWindowState;
+    AutoPtr<IHashSet> mAppsToBeHidden;//IApplicationToken
+    AutoPtr<IHashSet> mAppsThatDismissKeyguard;//IApplicationToken
     Boolean mTopIsFullscreen;
     Boolean mForceStatusBar;
     Boolean mForceStatusBarFromKeyguard;
     Boolean mHideLockScreen;
     Boolean mForcingShowNavBar;
     Int32 mForcingShowNavBarLayer;
-    // Keyguard has been dismissed.
+
     Int32 mDismissKeyguard;
+
     Boolean mShowingLockscreen;
     Boolean mShowingDream;
     Boolean mDreamingLockscreen;
     Boolean mHomePressed;
+    //Boolean mHomeLongPressed;
     Boolean mHomeConsumed;
     Boolean mHomeDoubleTapPending;
     AutoPtr<IIntent> mHomeIntent;
@@ -1549,84 +1993,146 @@ public:
     Boolean mConsumeSearchKeyUp;
     Boolean mAssistKeyLongPressed;
     Boolean mPendingMetaAction;
+
     // support for activating the lock screen while the screen is on
     Boolean mAllowLockscreenWhenOn;
     Int32 mLockScreenTimeout;
     Boolean mLockScreenTimerActive;
+
     // Behavior of ENDCALL Button.  (See Settings.System.END_BUTTON_BEHAVIOR.)
     Int32 mEndcallBehavior;
+
     // Behavior of POWER button while in-call and screen on.
     // (See Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR.)
     Int32 mIncallPowerBehavior;
+
     AutoPtr<IDisplay> mDisplay;
-    Int32 mLandscapeRotation;
-    // default landscape rotation
-    Int32 mSeascapeRotation;
-    // "other" landscape rotation, 180 degrees from mLandscapeRotation
-    Int32 mPortraitRotation;
-    // default portrait rotation
-    Int32 mUpsideDownRotation;
-    // "other" portrait rotation
-    Int32 mOverscanLeft;
-    Int32 mOverscanTop;
-    Int32 mOverscanRight;
-    Int32 mOverscanBottom;
+
+    Int32 mLandscapeRotation;  // default landscape rotation
+    Int32 mSeascapeRotation;   // "other" landscape rotation, 180 degrees from mLandscapeRotation
+    Int32 mPortraitRotation;   // default portrait rotation
+    Int32 mUpsideDownRotation; // "other" portrait rotation
+
+    Int32 mOverscanLeft;// = 0;
+    Int32 mOverscanTop;// = 0;
+    Int32 mOverscanRight;// = 0;
+    Int32 mOverscanBottom;// = 0;
+
     AutoPtr<SettingsObserver> mSettingsObserver;
     AutoPtr<ShortcutManager> mShortcutManager;
-    AutoPtr<PowerManager::WakeLock> mBroadcastWakeLock;
+    AutoPtr<IPowerManagerWakeLock> mBroadcastWakeLock;
     Boolean mHavePendingMediaKeyRepeatWithWakeLock;
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-10-27 */
+    /* support mute */
+    //AutoPtr<IBinder> mCallback;// = new Binder();
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-11-1 */
+    /* support the shortcut keys "setup", "expand" and "browser" */
+    //Boolean mIsExpanded;// = false;
+    //AutoPtr<IStatusBarManager> mStatusBarManager;
+    /* add by Gary. end   -----------------------------------}} */
+
+    //Boolean mKeyEnterMouseMode;// = false;
+    //AutoPtr<INotificationManager> mNotifationManager;// = null;
+    //AutoPtr<INotification> mNotificationEnterKeyMouseMode;// = null;
+    //AutoPtr<IToast>        mMouseToast;// = null;
+
     AutoPtr<MyOrientationListener> mOrientationListener;
-    static const Boolean PRINT_ANIM;
-    /*const*/ AutoPtr<InputEventReceiver::Factory> mHideNavInputEventReceiverFactory;
-    /*const*/ AutoPtr<Object> mScreenshotLock;
+
+    Object mScreenshotLock;
     AutoPtr<IServiceConnection> mScreenshotConnection;
-    /*const*/ AutoPtr<Runnable> mScreenshotTimeout;
-    AutoPtr<IBroadcastReceiver> mDockReceiver;
-    AutoPtr<IBroadcastReceiver> mDreamReceiver;
-    AutoPtr<IBroadcastReceiver> mMultiuserReceiver;
-    AutoPtr<IProgressDialog> mBootMsgDialog;
-    AutoPtr<ScreenLockTimeout> mScreenLockTimeout;
+
+    AutoPtr<BootMsgDialog> mBootMsgDialog;
 
 private:
-    static const AutoPtr<IAudioAttributes> VIBRATION_ATTRIBUTES;
-    /**
-      * Keyguard stuff
-      */
-    AutoPtr<WindowState> mKeyguardScrim;
-    Boolean mKeyguardHidden;
-    Boolean mKeyguardDrawnOnce;
-    /**
-      * Lock protecting internal state.  Must not call out into window
-      * manager with lock held.  (This lock will be acquired in places
-      * where the window manager is calling in with its own lock held.)
-      */
-    /*const*/ AutoPtr<Object> mLock;
-    // Default display does not rotate, apps that require non-default orientation will have to
-    // have the orientation emulated.
-    Boolean mForceDefaultOrientation;
+    /** Amount of time (in milliseconds) to wait for windows drawn before powering on. */
+    static const Int32 WAITING_FOR_DRAWN_TIMEOUT;// = 1000;
     // States of keyguard dismiss.
-    static const Int32 DISMISS_KEYGUARD_NONE = 0;
-    // Keyguard not being dismissed.
-    static const Int32 DISMISS_KEYGUARD_START = 1;
-    // Keyguard needs to be dismissed.
-    static const Int32 DISMISS_KEYGUARD_CONTINUE = 2;
-    /** The window that is currently dismissing the keyguard. Dismissing the keyguard must only
-      * be done once per window. */
-    AutoPtr<WindowState> mWinDismissingKeyguard;
-    /** The window that is currently showing "over" the keyguard. If there is an app window
-      * belonging to another app on top of this the keyguard shows. If there is a fullscreen
-      * app window under this, still dismiss the keyguard but don't show the app underneath. Show
-      * the wallpaper. */
-    AutoPtr<WindowState> mWinShowWhenLocked;
-    // What we do when the user long presses on home
-    Int32 mLongPressOnHomeBehavior;
-    // What we do when the user double-taps on home
-    Int32 mDoubleTapOnHomeBehavior;
-    // Screenshot trigger states
+    static const Int32 DISMISS_KEYGUARD_NONE; // Keyguard not being dismissed.
+    static const Int32 DISMISS_KEYGUARD_START; // Keyguard needs to be dismissed.
+    static const Int32 DISMISS_KEYGUARD_CONTINUE; // Keyguard has been dismissed.
+
     // Time to volume and power must be pressed within this interval of each other.
-    static const Int64 SCREENSHOT_CHORD_DEBOUNCE_DELAY_MILLIS = 150;
+    static const Int64 SCREENSHOT_CHORD_DEBOUNCE_DELAY_MILLIS;
     // Increase the chord delay when taking a screenshot from the keyguard
     static const Float KEYGUARD_SCREENSHOT_CHORD_DELAY_MULTIPLIER;
+
+    static const Int32 MSG_ENABLE_POINTER_LOCATION;
+    static const Int32 MSG_DISABLE_POINTER_LOCATION;
+    static const Int32 MSG_DISPATCH_MEDIA_KEY_WITH_WAKE_LOCK;
+    static const Int32 MSG_DISPATCH_MEDIA_KEY_REPEAT_WITH_WAKE_LOCK;
+    //static const Int32 MSG_SHOW_BATTERY_CHARGE;// = 5;
+    //static const Int32 MSG_SHOW_BOOT_INIT;// = 6;
+    static const Int32 MSG_KEYGUARD_DRAWN_COMPLETE;// = 5;
+    static const Int32 MSG_KEYGUARD_DRAWN_TIMEOUT;// = 6;
+    static const Int32 MSG_WINDOW_MANAGER_DRAWN_COMPLETE;// = 7;
+    static const Int32 MSG_DISPATCH_SHOW_RECENTS;// = 9;
+    static const Int32 MSG_DISPATCH_SHOW_GLOBAL_ACTIONS;// = 10;
+    static const Int32 MSG_HIDE_BOOT_MESSAGE;// = 11;
+    static const Int32 MSG_LAUNCH_VOICE_ASSIST_WITH_WAKE_LOCK;// = 12;
+
+
+    //static const Int32 NF_ID_ENTER_KEY_MOUSE_MODE;// = 1;
+
+    //static const Int32 FLICKER_INTERVAL;// = 30;
+    //static const Char32 PORT_TYPE;// = 'h';
+    //static const Int32 PORT_NUM;// = 20;
+    //static const Int32 ON;// = 1;
+    //static const Int32 OFF;// = 0;
+
+    /* The number of steps between min and max brightness */
+    static const Int32 BRIGHTNESS_STEPS;// = 10;
+
+    static AutoPtr<ArrayOf<Int32> > WINDOW_TYPES_WHERE_HOME_DOESNT_WORK;
+    static AutoPtr<IAudioAttributes> VIBRATION_ATTRIBUTES;
+
+// Need to instantiate in the Constructor.
+private:
+    AutoPtr<HDMIUEventObserver> mHDMIObserver;
+    //AutoPtr<FlickerIntentBroadcastReceiver> mFlickerIntentReceiver;
+    //AutoPtr<IRunnable> mStep1On;
+    //AutoPtr<IRunnable> mStep2Off;
+    //AutoPtr<IRunnable> mStep3On;
+    //AutoPtr<IRunnable> mBootFastPowerLongPress;
+    AutoPtr<PowerLongPressRunnable> mPowerLongPress;
+    //AutoPtr<ScreenshotChordLongPressRunnable> mScreenshotChordLongPress;
+    AutoPtr<ScreenshotRunnable> mScreenshotRunnable;
+
+private:
+    /**
+     * Lock protecting Internal state.  Must not call out Into window
+     * manager with lock held.  (This lock will be acquired in places
+     * where the window manager is calling in with its own lock held.)
+     */
+    Object mLock;
+
+    /**
+     * Keyguard stuff
+     */
+    AutoPtr<IWindowState> mKeyguardScrim;
+    Boolean mKeyguardHidden;
+    Boolean mKeyguardDrawnOnce;
+    /** The window that is currently dismissing the keyguard. Dismissing the keyguard must only
+     * be done once per window. */
+    AutoPtr<IWindowState> mWinDismissingKeyguard;
+
+    /** The window that is currently showing "over" the keyguard. If there is an app window
+     * belonging to another app on top of this the keyguard shows. If there is a fullscreen
+     * app window under this, still dismiss the keyguard but don't show the app underneath. Show
+     * the wallpaper. */
+    AutoPtr<IWindowState> mWinShowWhenLocked;
+
+    // What we do when the user long presses on home
+    Int32 mLongPressOnHomeBehavior;
+
+    // What we do when the user double-taps on home
+    Int32 mDoubleTapOnHomeBehavior;
+
+    // Screenshot trigger states
     Boolean mScreenshotChordEnabled;
     Boolean mVolumeDownKeyTriggered;
     Int64 mVolumeDownKeyTime;
@@ -1634,36 +2140,43 @@ private:
     Boolean mVolumeUpKeyTriggered;
     Boolean mPowerKeyTriggered;
     Int64 mPowerKeyTime;
-    /* The number of steps between min and max brightness */
-    static const Int32 BRIGHTNESS_STEPS = 10;
+    //Boolean mBootFastRuning;
+
     Int32 mCurrentUserId;
+
     // Maps global key codes to the components that will handle them.
     AutoPtr<GlobalKeyManager> mGlobalKeyManager;
+
     // Fallback actions by key code.
-    /*const*/ AutoPtr< ISparseArray<KeyCharacterMap::FallbackAction> > mFallbackActions;
-    /*const*/ AutoPtr<LogDecelerateInterpolator> mLogDecelerateInterpolator;
-    static const Int32 MSG_ENABLE_POINTER_LOCATION = 1;
-    static const Int32 MSG_DISABLE_POINTER_LOCATION = 2;
-    static const Int32 MSG_DISPATCH_MEDIA_KEY_WITH_WAKE_LOCK = 3;
-    static const Int32 MSG_DISPATCH_MEDIA_KEY_REPEAT_WITH_WAKE_LOCK = 4;
-    static const Int32 MSG_KEYGUARD_DRAWN_COMPLETE = 5;
-    static const Int32 MSG_KEYGUARD_DRAWN_TIMEOUT = 6;
-    static const Int32 MSG_WINDOW_MANAGER_DRAWN_COMPLETE = 7;
-    static const Int32 MSG_DISPATCH_SHOW_RECENTS = 9;
-    static const Int32 MSG_DISPATCH_SHOW_GLOBAL_ACTIONS = 10;
-    static const Int32 MSG_HIDE_BOOT_MESSAGE = 11;
-    static const Int32 MSG_LAUNCH_VOICE_ASSIST_WITH_WAKE_LOCK = 12;
-    AutoPtr<IUEventObserver> mHDMIObserver;
-    /*const*/ AutoPtr<BarController> mStatusBarController;
-    /*const*/ AutoPtr<BarController> mNavigationBarController;
-    AutoPtr<ImmersiveModeConfirmation> mImmersiveModeConfirmation;
-    AutoPtr<SystemGesturesPointerEventListener> mSystemGestures;
-    /*const*/ AutoPtr<Runnable> mPowerLongPress;
-    /*const*/ AutoPtr<Runnable> mScreenshotRunnable;
-    /*const*/ AutoPtr<Runnable> mHomeDoubleTapTimeoutRunnable;
-    static AutoPtr< ArrayOf<Int32> > WINDOW_TYPES_WHERE_HOME_DOESNT_WORK;
-    /*const*/ AutoPtr<Runnable> mClearHideNavigationFlag;
-    /*const*/ AutoPtr<Runnable> mRequestTransientNav;
+    AutoPtr<HashMap<Int32, AutoPtr<IInterface> > > mFallbackActions;//TODO update to SparseArray
+    AutoPtr<ILogDecelerateInterpolator> mLogDecelerateInterpolator;// = new LogDecelerateInterpolator(100, 0);
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-12-7 */
+    /* support the mouse mode */
+    //Int32 mLeftBtn;//  = -1;
+    //Int32 mMidBtn;//   = -1;
+    //Int32 mRightBtn;// = -1;
+    //Int32 mLeft;//     = -1;
+    //Int32 mRight;//    = -1;
+    //Int32 mTop;//      = -1;
+    //Int32 mBottom;//   = -1;
+
+    /*add by chenjd,start {{-----------------------------*/
+    /* 2013-03-02 */
+    /* flicker led when receive ir signal */
+    //AutoPtr<IHandler> mFlickerHandler;// = new Handler();
+    //Boolean mFlickerEnable;//  = true;
+    // Default display does not rotate, apps that require non-default orientation will have to
+    // have the orientation emulated.
+    Boolean mForceDefaultOrientation;// = false;
+    AutoPtr<IBarController> mStatusBarController;
+    AutoPtr<IBarController> mNavigationBarController;
+    AutoPtr<IImmersiveModeConfirmation> mImmersiveModeConfirmation;
+    AutoPtr<ISystemGesturesPointerEventListener> mSystemGestures;
+    AutoPtr<IRunnable> mHomeDoubleTapTimeoutRunnable;
+    AutoPtr<IRunnable> mClearHideNavigationFlag;
+    AutoPtr<IRunnable> mRequestTransientNav;
 };
 
 } // namespace Impl
@@ -1673,4 +2186,3 @@ private:
 } // namespace Elastos
 
 #endif // __ELASTOS_DROID_INTERNAL_POLICY_IMPL_PHONEWINDOWMANAGER_H__
-

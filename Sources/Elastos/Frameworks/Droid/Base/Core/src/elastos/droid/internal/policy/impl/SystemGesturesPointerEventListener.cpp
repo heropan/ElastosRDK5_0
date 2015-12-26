@@ -18,7 +18,7 @@ namespace Impl {
 //=====================================================================
 //                  SystemGesturesPointerEventListener
 //=====================================================================
-CAR_INTERFACE_IMPL(SystemGesturesPointerEventListener, Object, IPointerEventListener)
+CAR_INTERFACE_IMPL_2(SystemGesturesPointerEventListener, Object, ISystemGesturesPointerEventListener, IPointerEventListener)
 
 const String SystemGesturesPointerEventListener::TAG("SystemGestures");
 const Boolean SystemGesturesPointerEventListener::DEBUG = FALSE;

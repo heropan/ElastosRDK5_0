@@ -21,6 +21,7 @@ namespace Impl {
   */
 class SystemGesturesPointerEventListener
     : public Object
+    , public ISystemGesturesPointerEventListener
     , public IPointerEventListener
 {
 public:
