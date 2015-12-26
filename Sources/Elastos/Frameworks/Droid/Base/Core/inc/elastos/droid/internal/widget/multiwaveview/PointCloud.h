@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_INTERNAL_WIDGET_MULTIWAVEVIEW_POINTCLOUD_H__
 
 #include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Graphics.h"
 #include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/ext/frameworkext.h"
 

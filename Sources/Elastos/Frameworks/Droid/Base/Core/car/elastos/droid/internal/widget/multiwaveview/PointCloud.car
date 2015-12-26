@@ -72,14 +72,14 @@ module
             [out] Float* result);
 
         GetAlphaForPoint(
-            [in] IPoint* point,
+            [in] IPointCloudPoint* point,
             [out] Int32* result);
 
         Draw(
             [in] ICanvas* canvas);
     }
 
-    } // namespace Widget
+    } // namespace Multiwaveview
     } // namespace Widget
     } // namespace Internal
     } // namespace Droid

@@ -142,6 +142,7 @@ ECode PointCloud::GlowManager::GetRadius(
 //=====================================================================
 //               PointCloud::Point::
 //=====================================================================
+CAR_INTERFACE_IMPL(PointCloud::Point, Object, IPointCloudPoint)
 
 PointCloud::Point::Point(
     /* [in] */ Float x2,

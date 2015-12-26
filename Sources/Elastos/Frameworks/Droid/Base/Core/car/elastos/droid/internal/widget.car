@@ -2,6 +2,7 @@ module
 {
     merge("widget/multiwaveview/PointCloud.car");
     merge("widget/multiwaveview/Tweener.car");
+    merge("widget/multiwaveview/TargetDrawable.car");
     merge("widget/IRemoteViewsAdapterConnection.car");
     merge("widget/IRemoteViewsFactory.car");
     merge("widget/AbsActionBarView.car");
@@ -49,8 +50,10 @@ module
     interface Elastos.Droid.Animation.IAnimatorListener;
     interface Elastos.Droid.App.IActionBarTab;
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.Res.IResources;
     interface Elastos.Droid.Graphics.Drawable.IBitmapDrawable;
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
+    interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.Hardware.Input.IInputDeviceListener;
     interface Elastos.Droid.Utility.IAttributeSet;
 //    interface Elastos.Droid.InputMethodService.IKeyboard;
@@ -849,6 +852,22 @@ module
 
     singleton class CTweenerHelper {
         interface ITweenerHelper;
+    }
+
+    class CPointCloud {
+        constructor(
+            [in] IDrawable* drawable);
+
+        interface IPointCloud;
+    }
+
+    class CTargetDrawable {
+
+        constructor(
+            [in] IResources* res,
+            [in] Int32 resId);
+
+        interface ITargetDrawable;
     }
 
     } // namespace Multiwaveview
