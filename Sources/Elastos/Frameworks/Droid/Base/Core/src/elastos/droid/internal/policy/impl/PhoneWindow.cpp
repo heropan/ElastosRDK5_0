@@ -29,7 +29,6 @@
 #include "elastos/droid/view/CWindowManagerLayoutParams.h"
 #include "elastos/droid/view/CViewConfigurationHelper.h"
 #include "elastos/droid/view/LayoutInflater.h"
-//TODO #include "elastos/droid/view/CViewHelper.h"
 #include "elastos/droid/internal/view/StandaloneActionMode.h"
 #include "elastos/droid/internal/view/menu/CMenuDialogHelper.h"
 #include "elastos/droid/view/accessibility/CAccessibilityManager.h"
@@ -92,8 +91,6 @@ using Elastos::Droid::View::CKeyCharacterMap;
 using Elastos::Droid::View::CKeyCharacterMapHelper;
 using Elastos::Droid::View::CKeyEvent;
 using Elastos::Droid::View::CView;
-//TODO using Elastos::Droid::View::CViewHelper;
-using Elastos::Droid::View::IViewHelper;
 using Elastos::Droid::View::IViewConfiguration;
 using Elastos::Droid::View::CViewConfigurationHelper;
 using Elastos::Droid::View::IViewConfigurationHelper;
@@ -5988,7 +5985,7 @@ void PhoneWindow::SetFeatureFromAttrs(
     }
     if ((GetFeatures() & (1 << featureId)) != 0) {
         Int32 alpha;
-        //TODO attrs->GetInt(alphaAttr, -1, &alpha);
+        attrs->GetInt32(alphaAttr, -1, &alpha);
         if (alpha >= 0) {
             SetFeatureDrawableAlpha(featureId, alpha);
         }
@@ -5998,7 +5995,7 @@ void PhoneWindow::SetFeatureFromAttrs(
 void PhoneWindow::DispatchWindowAttributesChanged(
     /* [in] */ IWindowManagerLayoutParams* attrs)
 {
-    //TODO FrameLayout::DispatchWindowAttributesChanged(attrs);
+    Window::DispatchWindowAttributesChanged(attrs);
     if (mDecor != NULL) {
         mDecor->UpdateColorViews(NULL/* insets */);
     }

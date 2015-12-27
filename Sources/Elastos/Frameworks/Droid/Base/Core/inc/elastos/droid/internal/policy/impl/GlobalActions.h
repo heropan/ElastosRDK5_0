@@ -4,13 +4,12 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/app/Dialog.h"
-#include "elastos/droid/os/Handler.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/database/ContentObserver.h"
 #include "elastos/droid/internal/policy/impl/EnableAccessibilityController.h"
+#include "elastos/droid/os/Handler.h"
 #include "elastos/droid/widget/BaseAdapter.h"
 
-using Elastos::Core::ICharSequence;
 using Elastos::Droid::App::Dialog;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;
@@ -36,6 +35,7 @@ using Elastos::Droid::Widget::IAdapterView;
 using Elastos::Droid::Widget::IAdapterViewOnItemLongClickListener;
 using Elastos::Droid::Widget::IBaseAdapter;
 using Elastos::Droid::Widget::IListView;
+using Elastos::Core::ICharSequence;
 
 
 namespace Elastos {
@@ -876,10 +876,10 @@ private:
     AutoPtr<IHandler> mHandler;
 };
 
-} // namespace Elastos
-} // namespace Droid
-} // namespace Internal
-} // namespace Policy
 } // namespace Impl
+} // namespace Policy
+} // namespace Internal
+} // namespace Droid
+} // namespace Elastos
 
 #endif // __ELASTOS_DROID_INTERNAL_POLICY_IMPL_GLOBALACTIONS_H__
