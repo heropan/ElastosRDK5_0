@@ -3944,7 +3944,7 @@ CPackageManagerService::CPackageManagerService()
 CPackageManagerService::~CPackageManagerService()
 {}
 
-CAR_INTERFACE_IMPL(CPackageManagerService, Object, IIPackageManager)
+CAR_INTERFACE_IMPL_2(CPackageManagerService, Object, IIPackageManager, IBinder)
 
 CAR_OBJECT_IMPL(CPackageManagerService)
 
@@ -4662,7 +4662,7 @@ ECode CPackageManagerService::constructor(
         } // synchronized (mPackagesLock)
     } // synchronized (mInstallLock)
 
-    mInstallerService = new PackageInstallerService(context, this, mAppInstallDir);
+    CPackageInstallerService::NewByFriend(context, this, mAppInstallDir, (CPackageInstallerService**)&mInstallerService);
 
     // Now after opening every single application zip, make sure they
     // are all flushed.  Not really needed, but keeps things nice and

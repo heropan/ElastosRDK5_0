@@ -3,8 +3,9 @@
 #define __ELASTOS_DROID_SERVER_PM_PACKAGESETTINGBASE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "pm/GrantedPermissions.h"
-#include "pm/PackageSignatures.h"
+#include "elastos/droid/server/pm/GrantedPermissions.h"
+#include "elastos/droid/server/pm/PackageSignatures.h"
+#include "elastos/droid/server/pm/PackageKeySetData.h"
 #include "elastos/droid/content/pm/PackageUserState.h"
 #include <elastos/utility/etl/HashMap.h>
 
@@ -26,7 +27,10 @@ public:
         /* [in] */ const String& realName,
         /* [in] */ IFile* codePath,
         /* [in] */ IFile* resourcePath,
-        /* [in] */ const String& nativeLibraryPathString,
+        /* [in] */ const String& legacyNativeLibraryPathString,
+        /* [in] */ const String& primaryCpuAbiString,
+        /* [in] */ const String& secondaryCpuAbiString,
+        /* [in] */ const String& cpuAbiOverrideString,
         /* [in] */ Int32 pVersionCode,
         /* [in] */ Int32 pkgFlags);
 
@@ -36,7 +40,10 @@ public:
     CARAPI_(void) Init(
         /* [in] */ IFile* codePath,
         /* [in] */ IFile* resourcePath,
-        /* [in] */ const String& nativeLibraryPathString,
+        /* [in] */ const String& legacyNativeLibraryPathString,
+        /* [in] */ const String& primaryCpuAbiString,
+        /* [in] */ const String& secondaryCpuAbiString,
+        /* [in] */ const String& cpuAbiOverrideString,
         /* [in] */ Int32 pVersionCode);
 
     CARAPI_(void) SetInstallerPackageName(
@@ -60,9 +67,13 @@ public:
 
     CARAPI_(void) SetEnabled(
         /* [in] */ Int32 state,
-        /* [in] */ Int32 userId);
+        /* [in] */ Int32 userId,
+        /* [in] */ const String& callingPackage);
 
     CARAPI_(Int32) GetEnabled(
+        /* [in] */ Int32 userId);
+
+    CARAPI_(String) GetLastDisabledAppCaller(
         /* [in] */ Int32 userId);
 
     CARAPI_(void) SetInstalled(
@@ -91,6 +102,20 @@ public:
 
     CARAPI_(void) SetNotLaunched(
         /* [in] */ Boolean stop,
+        /* [in] */ Int32 userId);
+
+    CARAPI_(Boolean) GetHidden(
+        /* [in] */ Int32 userId);
+
+    CARAPI_(void) SetHidden(
+        /* [in] */ Boolean hidden,
+        /* [in] */ Int32 userId);
+
+    CARAPI_(Boolean) GetBlockUninstall(
+        /* [in] */ Int32 userId);
+
+    CARAPI_(void) SetBlockUninstall(
+        /* [in] */ Boolean blockUninstall,
         /* [in] */ Int32 userId);
 
     CARAPI_(void) SetUserState(
@@ -176,11 +201,44 @@ public:
 
     String mName;
     String mRealName;
+
+    /**
+     * Path where this package was found on disk. For monolithic packages
+     * this is path to single base APK file; for cluster packages this is
+     * path to the cluster directory.
+     */
     AutoPtr<IFile> mCodePath;
     String mCodePathString;
     AutoPtr<IFile> mResourcePath;
     String mResourcePathString;
-    String mNativeLibraryPathString;
+
+    /**
+     * The path under which native libraries have been unpacked. This path is
+     * always derived at runtime, and is only stored here for cleanup when a
+     * package is uninstalled.
+     */
+    // @Deprecated
+    String m:egacyNativeLibraryPathString;
+
+    /**
+     * The primary CPU abi for this package. This value is regenerated at every
+     * boot scan.
+     */
+    String mPrimaryCpuAbiString;
+
+    /**
+     * The secondary CPU abi for this package. This value is regenerated at every
+     * boot scan.
+     */
+    String secondaryCpuAbiString;
+
+    /**
+     * The install time CPU override, if any. This value is written at install time
+     * and doesn't change during the life of an install. If non-null,
+     * {@code primaryCpuAbiString} will contain the same value.
+     */
+    String cpuAbiOverrideString;
+
     Int64 mTimeStamp;
     Int64 mFirstInstallTime;
     Int64 mLastUpdateTime;
@@ -192,6 +250,8 @@ public:
 
     Boolean mPermissionsFixed;
     Boolean mHaveGids;
+
+    AutoPtr<PackageKeySetData> mKeySetData;
 
     Int32 mInstallStatus;
 

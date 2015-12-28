@@ -16,6 +16,7 @@ namespace Pm {
 CarClass(CParcelFileDescriptorFactory)
     , public Object
     , public IIParcelFileDescriptorFactory
+    , public IBinder
 {
 public:
     constructor(

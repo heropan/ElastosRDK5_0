@@ -629,6 +629,7 @@ module
 //             [in] Boolean onlyCore);
 
 //         interface IIPackageManager;
+//         interface IBinder;
 //     }
 
 //     class CParcelFileDescriptorFactory {
@@ -636,6 +637,7 @@ module
 //             [in] IFile* codeFile);
 
 //         interface IIParcelFileDescriptorFactory;
+//         interface IBinder;
 //     }
 
 //     class CResourcesChangedReceiver {
@@ -645,6 +647,7 @@ module
 //             [in] Boolean reportStatus);
 
 //         interface IIntentReceiver;
+//         interface IBinder;
 //     }
 
 //     class CPackageInstallObserver2 {
@@ -653,6 +656,7 @@ module
 //             [in] IPackageMoveObserver* observer);
 
 //         interface IIPackageInstallObserver2;
+//         interface IBinder;
 //     }
 
 //     class CKeySetHandle {
@@ -661,11 +665,53 @@ module
 //         interface IBinder;
 //     }
 
+//     [local]
 //     class CLauncherAppsImpl {
 //         constructor(
 //             [in] IContext* context);
 
 //         interface IILauncherApps;
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CPackageInstallerService {
+//         constructor(
+//             [in] IContext* ctx,
+//             [in] IIPackageManager* pm,
+//             [in] IFile* stagingDir);
+
+//         interface IIPackageInstaller;
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CPackageInstallerSession {
+//         constructor(
+//             [in] Handle64 callback,
+//             [in] IContext* ctx,
+//             [in] IIPackageManager* pm,
+//             [in] ILooper* looper,
+//             [in] Int32 sessionId,
+//             [in] Int32 userId,
+//             [in] String installerPackageName,
+//             [in] Int32 installerUid,
+//             [in] IPackageInstallerSessionParams* stagingDir,
+//             [in] Int64 createdMillis,
+//             [in] IFile* stagingDir,
+//             [in] String stageCid,
+//             [in] Boolean prepared,
+//             [in] Boolean sealed);
+
+//         interface IIPackageInstallerSession;
+//         interface IBinder;
+//     }
+
+//     class CLocalObserver {
+//         constructor(
+//             [in] IIPackageInstallerSession* session);
+
+//         interface IIPackageInstallObserver2;
 //         interface IBinder;
 //     }
 
@@ -755,11 +801,12 @@ module
 
 //         interface IIWindowManager;
 //         interface IWindowManagerPolicyWindowManagerFuncs;
+//         interface IBinder;
 //     }
 
 //     class CSession {
 //         constructor(
-//             [in] Handle32 service,
+//             [in] Handle64 service,
 //             [in] IInputMethodClient* client,
 //             [in] IIWindowSessionCallback* callback,
 //             [in] IInputContext* inputContext);

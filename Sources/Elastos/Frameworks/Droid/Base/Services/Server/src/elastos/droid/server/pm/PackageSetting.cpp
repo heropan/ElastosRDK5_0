@@ -18,11 +18,15 @@ PackageSetting::PackageSetting(
     /* [in] */ const String& realName,
     /* [in] */ IFile* codePath,
     /* [in] */ IFile* resourcePath,
-    /* [in] */ const String& nativeLibraryPathString,
+    /* [in] */ const String& legacyNativeLibraryPathString,
+    /* [in] */ const String& primaryCpuAbiString,
+    /* [in] */ const String& secondaryCpuAbiString,
+    /* [in] */ const String& cpuAbiOverrideString,
     /* [in] */ Int32 pVersionCode,
     /* [in] */ Int32 pkgFlags)
     : PackageSettingBase(name, realName, codePath, resourcePath,
-            nativeLibraryPathString, pVersionCode, pkgFlags)
+            legacyNativeLibraryPathString, primaryCpuAbiString,
+            secondaryCpuAbiString ,cpuAbiOverrideString, pVersionCode, pkgFlags)
     , mAppId(0)
 {}
 

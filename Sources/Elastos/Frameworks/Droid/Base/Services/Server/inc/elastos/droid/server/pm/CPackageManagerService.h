@@ -9,13 +9,18 @@
 #include "pm/Settings.h"
 #include "pm/CUserManagerService.h"
 #include "pm/ServiceThread.h"
-#include "pm/PackageInstallerService.h"
+#include "pm/CPackageInstallerService.h"
 #include "elastos/droid/content/pm/PackageParser.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/FileObserver.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/Runnable.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Utility.h"
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include <elastos/core/Thread.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
@@ -1172,7 +1177,7 @@ private:
             /* [in] */ IInterface* lhs,
             /* [in] */ IInterface* rhs,
             /* [out] */ Int32* result);
-    }
+    };
 
     class ProviderInitOrderSorter
         : public Object
@@ -1185,7 +1190,7 @@ private:
             /* [in] */ IInterface* lhs,
             /* [in] */ IInterface* rhs,
             /* [out] */ Int32* result);
-    }
+    };
 
     class PackageComparator
         : public Object
@@ -3017,7 +3022,7 @@ public:/*package*/
     /** Set of packages associated with each app op permission. */
     HashMap<String, AutoPtr<HashSet<String> > > mAppOpPermissionPackages;
 
-    AutoPtr<PackageInstallerService> mInstallerService;
+    AutoPtr<CPackageInstallerService> mInstallerService;
 
     AutoPtr< HashSet<AutoPtr<PackageParser::Package> > > mDeferredDexOpt;
 

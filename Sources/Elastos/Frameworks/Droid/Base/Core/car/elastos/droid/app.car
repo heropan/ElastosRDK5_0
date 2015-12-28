@@ -1918,6 +1918,7 @@ module
             [in] IPackageInstallObserver* host);
 
         interface IIPackageInstallObserver2;
+        interface IBinder;
     }
 
     class CPackageDeleteObserver2 {
@@ -1925,6 +1926,7 @@ module
             [in] IPackageDeleteObserver* host);
 
         interface IIPackageDeleteObserver2;
+        interface IBinder;
     }
 
     class CLegacyPackageDeleteObserver {
@@ -1932,6 +1934,7 @@ module
             [in] IIPackageDeleteObserver* ovserver);
 
         interface IPackageDeleteObserver;
+
     }
 
     }

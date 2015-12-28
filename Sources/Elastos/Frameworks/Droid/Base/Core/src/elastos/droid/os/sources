@@ -37,6 +37,7 @@ SOURCES += Environment.cpp
 SOURCES += CEnvironment.cpp
 SOURCES += FactoryTest.cpp
 SOURCES += FileBridge.cpp
+SOURCES += CFileBridge.cpp
 SOURCES += FileObserver.cpp
 SOURCES += FileUtils.cpp
 SOURCES += Handler.cpp
