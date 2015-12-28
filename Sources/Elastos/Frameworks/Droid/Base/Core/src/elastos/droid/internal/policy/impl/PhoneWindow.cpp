@@ -1,8 +1,8 @@
 #include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/app/CActivityManagerHelper.h"
 #include "elastos/droid/internal/policy/impl/PhoneWindow.h"
-//TODO #include "elastos/droid/internal/policy/impl/PhoneWindowManager.h"
-//TODO #include "elastos/droid/internal/widget/CBackgroundFallback.h"
+#include "elastos/droid/internal/policy/impl/PhoneWindowManager.h"
+#include "elastos/droid/internal/widget/CBackgroundFallback.h"
 #include "elastos/droid/internal/policy/impl/CPhoneWindowSavedState.h"
 #include "elastos/droid/content/res/CConfiguration.h"
 #include "elastos/droid/graphics/CPaint.h"
@@ -38,7 +38,7 @@
 #include "elastos/droid/internal/view/menu/CListMenuPresenter.h"
 #include "elastos/droid/internal/view/menu/CIconMenuPresenter.h"
 #include "elastos/droid/widget/CPopupWindow.h"
-//TODO #include "elastos/droid/widget/internal/CActionBarContextView.h"
+//#include "elastos/droid/widget/internal/CActionBarContextView.h"
 #include "elastos/droid/utility/CTypedValue.h"
 #include "elastos/droid/utility/CTypedValueHelper.h"
 #include "elastos/droid/utility/CSparseArray.h"
@@ -112,7 +112,7 @@ using Elastos::Droid::Internal::View::Menu::IListMenuPresenter;
 using Elastos::Droid::Internal::View::Menu::CIconMenuPresenter;
 using Elastos::Droid::Internal::View::Menu::IBaseMenuPresenter;
 using Elastos::Droid::Internal::View::StandaloneActionMode;
-//TODO using Elastos::Droid::Internal::Widget::CBackgroundFallback;
+using Elastos::Droid::Internal::Widget::CBackgroundFallback;
 using Elastos::Droid::Internal::Widget::IDecorContentParent;
 using Elastos::Droid::View::EIID_IView;
 using Elastos::Droid::View::EIID_IViewGroup;
@@ -338,7 +338,7 @@ PhoneWindow::_DecorView::_DecorView(
     ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mBackgroundPadding));
     ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mFramePadding));
     ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mFrameOffsets));
-    //TODO CBackgroundFallback::New((IBackgroundFallback**)&mBackgroundFallback);
+    CBackgroundFallback::New((IBackgroundFallback**)&mBackgroundFallback);
 }
 
 ECode PhoneWindow::_DecorView::WillYouTakeTheSurface(
@@ -5946,7 +5946,7 @@ void PhoneWindow::SendCloseSystemWindows()
 {
     AutoPtr<IContext> context;
     GetContext((IContext**)&context);
-    //TODO PhoneWindowManager::SendCloseSystemWindows(context, String(NULL));
+    PhoneWindowManager::SendCloseSystemWindows(context, String(NULL));
 }
 
 void PhoneWindow::SendCloseSystemWindows(
@@ -5954,7 +5954,7 @@ void PhoneWindow::SendCloseSystemWindows(
 {
     AutoPtr<IContext> context;
     GetContext((IContext**)&context);
-    //TODO PhoneWindowManager::SendCloseSystemWindows(context, reason);
+    PhoneWindowManager::SendCloseSystemWindows(context, reason);
 }
 
 void PhoneWindow::SetFeatureDefaultDrawable(

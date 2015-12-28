@@ -225,11 +225,11 @@ module
             interface IParcelable;
         }
 
-        //class CPhoneWindowManager {
+        class CPhoneWindowManager {
 
-        //    interface IPhoneWindowManager;
-        //    interface IWindowManagerPolicy;
-        //}
+            interface IPhoneWindowManager;
+            interface IWindowManagerPolicy;
+        }
 
         class CPolicy {
             interface IIPolicy;
@@ -281,39 +281,23 @@ module
             interface IPointerEventListener;
         }
 
-        ////class CWakeGestureListener {
-        ////    constructor(
-        ////        [in] IContext* ctx,
-        ////        [in] IHandler* handler);
-
-        ////    interface IWakeGestureListener;
-        ////}
-
-        ////class CWindowOrientationListener {
-        ////    constructor(
-        ////        [in] IContext* ctx,
-        ////        [in] IHandler* handler);
-
-        ////    interface IWindowOrientationListener;
-        ////}
-
     } // Impl
     } // Policy
     } // Internal
     } // Droid
     } // Elastos
 
-    //namespace Elastos {
-    //namespace Droid {
-    //namespace Internal {
-    //namespace Policy {
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Policy {
 
-    //    singleton class CPolicyManager{
-    //        interface IPolicyManager;
-    //    }
+        singleton class CPolicyManager{
+            interface IPolicyManager;
+        }
 
-    //} // Policy
-    //} // Internal
-    //} // Droid
-    //} // Elastos
+    } // Policy
+    } // Internal
+    } // Droid
+    } // Elastos
 }

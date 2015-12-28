@@ -2,7 +2,6 @@
 #include "elastos/droid/internal/policy/impl/keyguard/KeyguardServiceWrapper.h"
 #include <elastos/utility/logging/Logger.h>
 
-//using Elastos::Droid::SystemUI::Keyguard::EIID_IKeyguardService;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {

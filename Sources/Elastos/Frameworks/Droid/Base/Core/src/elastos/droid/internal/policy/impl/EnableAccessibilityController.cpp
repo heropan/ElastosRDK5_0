@@ -8,11 +8,13 @@
 #include "elastos/droid/content/CComponentName.h"
 //TODO #include "elastos/droid/media/CRingtoneManager.h"
 #include "elastos/droid/os/CServiceManager.h"
-//TODO #include "elastos/droid/provider/CSettingsGlobal.h"
-//TODO #include "elastos/droid/provider/CSettingsSecure.h"
-//TODO #include "elastos/droid/provider/CSettingsSystem.h"
+#include "elastos/droid/provider/CSettingsGlobal.h"
+#include "elastos/droid/provider/CSettingsSecure.h"
+#include "elastos/droid/provider/CSettingsSystem.h"
 //TODO #include "elastos/droid/speech/tts/CTextToSpeech.h"
 #include "elastos/droid/view/accessibility/CAccessibilityManagerHelper.h"
+#include "elastos/droid/utility/MathUtils.h"
+#include "elastos/core/Math.h"
 
 using Elastos::Droid::App::CActivityManager;
 using Elastos::Droid::Content::CComponentName;
@@ -26,15 +28,16 @@ using Elastos::Droid::Media::IAudioManager;
 using Elastos::Droid::Os::CServiceManager;
 using Elastos::Droid::Os::IServiceManager;
 using Elastos::Droid::Os::EIID_IHandler;
-//TODO using Elastos::Droid::Provider::CSettingsGlobal;
-//TODO using Elastos::Droid::Provider::CSettingsSecure;
-//TODO using Elastos::Droid::Provider::CSettingsSystem;
+using Elastos::Droid::Provider::CSettingsGlobal;
+using Elastos::Droid::Provider::CSettingsSecure;
+using Elastos::Droid::Provider::CSettingsSystem;
 using Elastos::Droid::Provider::ISettingsGlobal;
 using Elastos::Droid::Provider::ISettingsSecure;
 using Elastos::Droid::Provider::ISettingsSystem;
 //TODO using Elastos::Droid::Speech::Tts::CTextToSpeech;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Speech::Tts::EIID_ITextToSpeechOnInitListener;
+using Elastos::Droid::Utility::MathUtils;
 using Elastos::Droid::View::Accessibility::CAccessibilityManagerHelper;
 using Elastos::Droid::View::Accessibility::IAccessibilityManager;
 using Elastos::Droid::View::Accessibility::IAccessibilityManagerHelper;
@@ -160,7 +163,7 @@ ECode EnableAccessibilityController::constructor(
     //TODO CTextToSpeech::New(context, ttsShutdownOnInitListener, (ITextToSpeech**)&mTts);
 
     AutoPtr<ISettingsSystem> settingsSystem;
-    //TODO CSettingsSystem::AcquireSingleton((ISettingsSystem**)&settingsSystem);
+    CSettingsSystem::AcquireSingleton((ISettingsSystem**)&settingsSystem);
     AutoPtr<IUri> uri;
     settingsSystem->GetDEFAULT_NOTIFICATION_URI((IUri**)&uri);
     //TODO CRingtoneManager::GetRingtone(context, uri, (IRingtone**)&mTone);
@@ -197,7 +200,7 @@ Boolean EnableAccessibilityController::CanEnableAccessibilityViaGesture(
     AutoPtr<IContentResolver> contentResolver;
     context->GetContentResolver((IContentResolver**)&contentResolver);
     AutoPtr<ISettingsGlobal> settingsGlobal;
-    //TODO CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
+    CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
     Int32 value = 0;
     settingsGlobal->GetInt32(contentResolver,
             ISettingsGlobal::ENABLE_ACCESSIBILITY_GLOBAL_GESTURE_ENABLED, 0, &value);
@@ -293,17 +296,22 @@ ECode EnableAccessibilityController::OnTouchEvent(
             break;
         case IMotionEvent::ACTION_MOVE:
             {
-                //TODO: MathUtils is not implement.
-                // Float firstPointerMove = MathUtils.dist(event.getX(0),
-                //         event.getY(0), mFirstPointerDownX, mFirstPointerDownY);
-                // if (Math.abs(firstPointerMove) > mTouchSlop) {
-                //     cancel();
-                // }
-                // final float secondPointerMove = MathUtils.dist(event.getX(1),
-                //         event.getY(1), mSecondPointerDownX, mSecondPointerDownY);
-                // if (Math.abs(secondPointerMove) > mTouchSlop) {
-                //     cancel();
-                // }
+                Float x0, y0;
+                event->GetX(0, &x0);
+                event->GetY(0, &y0);
+                Float firstPointerMove = MathUtils::Dist(x0,
+                        y0, mFirstPointerDownX, mFirstPointerDownY);
+                if (Elastos::Core::Math::Abs(firstPointerMove) > mTouchSlop) {
+                    Cancel();
+                }
+                Float x1, y1;
+                event->GetX(1, &x1);
+                event->GetY(1, &y1);
+                Float secondPointerMove = MathUtils::Dist(x1,
+                        y1, mSecondPointerDownX, mSecondPointerDownY);
+                if (Elastos::Core::Math::Abs(secondPointerMove) > mTouchSlop) {
+                    Cancel();
+                }
             }
             break;
         case IMotionEvent::ACTION_POINTER_UP:
@@ -391,7 +399,7 @@ void EnableAccessibilityController::EnableAccessibility()
         mContext->GetContentResolver((IContentResolver**)&resolver);
         // Enable one speaking accessibility service.
         AutoPtr<ISettingsSecure> settingsSecure;
-        //TODO CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
+        CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
         Boolean result = FALSE;
         settingsSecure->PutStringForUser(resolver,
                 ISettingsSecure::ENABLED_ACCESSIBILITY_SERVICES,

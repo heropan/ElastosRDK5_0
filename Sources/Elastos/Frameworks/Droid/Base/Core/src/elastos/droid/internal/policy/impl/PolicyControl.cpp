@@ -1,15 +1,16 @@
+#include <Elastos.Droid.Provider.h>
+#include <Elastos.Droid.Os.h>
 #include "elastos/droid/app/CActivityManagerHelper.h"
 #include "elastos/droid/internal/policy/impl/PolicyControl.h"
-//TODO #include "elastos/droid/provider/Settings.h"
-//TODO #include "elastos/io/CPrintWriter.h"
-//TODO #include "elastos/io/CStringWriter.h"
+#include "elastos/droid/provider/Settings.h"
 #include "elastos/droid/utility/CArraySet.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::App::CActivityManagerHelper;
 using Elastos::Droid::App::IActivityManagerHelper;
 using Elastos::Droid::Content::IContentResolver;
-//TODO using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Provider::Settings;
 using Elastos::Droid::Provider::ISettingsGlobal;
 using Elastos::Droid::Utility::CArraySet;
 using Elastos::Droid::View::IView;
@@ -382,7 +383,7 @@ ECode PolicyControl::ReloadFromSetting(
     //try {
     AutoPtr<IContentResolver> cResolver;
     context->GetContentResolver((IContentResolver**)&cResolver);
-    //TODO value = Settings::Global::GetStringForUser(cResolver, ISettingsGlobal::POLICY_CONTROL, IUserHandle::USER_CURRENT);
+    Settings::Global::GetStringForUser(cResolver, ISettingsGlobal::POLICY_CONTROL, IUserHandle::USER_CURRENT, &value);
     if (!sSettingValue.IsNullOrEmpty() && sSettingValue.Equals(value)) return NOERROR;
     SetFilters(value);
     sSettingValue = value;

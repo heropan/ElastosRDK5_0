@@ -1,7 +1,7 @@
 
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/internal/policy/impl/PhoneFallbackEventHandler.h"
-//TODO #include "elastos/droid/internal/policy/impl/CPhoneWindowManager.h"
+#include "elastos/droid/internal/policy/impl/CPhoneWindowManager.h"
 #include "elastos/droid/media/session/CMediaSessionLegacyHelperHelper.h"
 #include "elastos/droid/os/CServiceManager.h"
 #include "elastos/droid/os/UserHandle.h"
@@ -117,12 +117,13 @@ ECode PhoneFallbackEventHandler::OnKeyDown(
             if (tm) {
                 Int32 state = 0;
                 assert(state);//TODO remove
-                //TODO ITelephoneManager is not ok
-                //TODO tm->GetCallState(&state);
-                //TODO if (ITelephonyManager::CALL_STATE_IDLE == state) {
-                    *res = TRUE;  // suppress key event
-                    return NOERROR;
-                //TODO }
+                //TODO begin ITelephoneManager is not ok
+                //tm->GetCallState(&state);
+                //if (ITelephonyManager::CALL_STATE_IDLE == state) {
+                //    *res = TRUE;  // suppress key event
+                //    return NOERROR;
+                //}
+                //TODO end
             }
         }
 
@@ -459,7 +460,7 @@ ECode PhoneFallbackEventHandler::GetAudioManager(
 
 ECode PhoneFallbackEventHandler::SendCloseSystemWindows()
 {
-    //TODO CPhoneWindowManager::SendCloseSystemWindows(mContext, String());
+    CPhoneWindowManager::SendCloseSystemWindows(mContext, String());
     return NOERROR;
 }
 

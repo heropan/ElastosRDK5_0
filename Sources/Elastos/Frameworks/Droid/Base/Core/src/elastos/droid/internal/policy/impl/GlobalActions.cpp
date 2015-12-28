@@ -9,7 +9,7 @@
 #include "elastos/droid/graphics/drawable/Drawable.h"
 #include "elastos/droid/internal/app/CAlertController.h"
 #include "elastos/droid/internal/app/CAlertControllerAlertParams.h"
-//TODO #include "elastos/droid/internal/policy/impl/CPhoneWindowManager.h"
+#include "elastos/droid/internal/policy/impl/CPhoneWindowManager.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/CServiceManager.h"
 #include "elastos/droid/os/CUserHandleHelper.h"
@@ -23,6 +23,7 @@
 #include "elastos/droid/view/CViewConfigurationHelper.h"
 #include "elastos/droid/view/CWindowManagerGlobalHelper.h"
 //TODO #include "elastos/droid/widget/internal/CLockPatternUtils.h"
+#include <elastos/core/StringUtils.h>
 #include "elastos/utility/etl/HashSet.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>
@@ -46,7 +47,9 @@ using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IResourcesTheme;
 using Elastos::Droid::Internal::App::CAlertController;
 using Elastos::Droid::Internal::App::CAlertControllerAlertParams;
-//TODO using Elastos::Droid::Internal::Policy::Impl::CPhoneWindowManager;
+using Elastos::Droid::Internal::Policy::Impl::CPhoneWindowManager;
+using Elastos::Droid::Internal::Telephony::ITelephonyIntents;
+using Elastos::Droid::Internal::Telephony::ITelephonyProperties;
 using Elastos::Droid::Net::IConnectivityManager;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::CServiceManager;
@@ -88,6 +91,7 @@ using Elastos::Core::CInteger32;
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IInteger32;
+using Elastos::Core::StringUtils;
 using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::IList;
 using Elastos::Utility::IIterator;
@@ -1042,24 +1046,23 @@ ECode GlobalActions::MyBroadcastReceiver::OnReceive(
     if (IIntent::ACTION_CLOSE_SYSTEM_DIALOGS.Equals(action)
             || IIntent::ACTION_SCREEN_OFF.Equals(action)) {
         String reason;
-        intent->GetStringExtra(String(NULL)/*TODO CPhoneWindowManager::SYSTEM_DIALOG_REASON_KEY*/, &reason);
-        if (!String("")/*TODO CPhoneWindowManager::SYSTEM_DIALOG_REASON_GLOBAL_ACTIONS*/.Equals(reason)) {
+        intent->GetStringExtra(CPhoneWindowManager::SYSTEM_DIALOG_REASON_KEY, &reason);
+        if (!CPhoneWindowManager::SYSTEM_DIALOG_REASON_GLOBAL_ACTIONS.Equals(reason)) {
             AutoPtr<IMessage> message;
             mHost->mHandler->ObtainMessage(MESSAGE_DISMISS, (IMessage**)&message);
             Boolean isSuccess = FALSE;
             mHost->mHandler->SendMessage(message, &isSuccess);
         }
+    } else if (ITelephonyIntents::ACTION_EMERGENCY_CALLBACK_MODE_CHANGED.Equals(action)) {
+        // Airplane mode can be changed after ECM exits if airplane toggle button
+        // is pressed during ECM mode
+        Boolean bTemp = FALSE;
+        if (!((intent->GetBooleanExtra(String("PHONE_IN_ECM_STATE"), FALSE, &bTemp), bTemp)) &&
+                mHost->mIsWaitingForEcmExit) {
+            mHost->mIsWaitingForEcmExit = FALSE;
+            mHost->ChangeAirplaneModeSystemSetting(TRUE);
+        }
     }
-    // TODO: TelephonyIntents is not implement.
-    // else if (TelephonyIntents.ACTION_EMERGENCY_CALLBACK_MODE_CHANGED.equals(action)) {
-    //     // Airplane mode can be changed after ECM exits if airplane toggle button
-    //     // is pressed during ECM mode
-    //     if (!(intent.getBooleanExtra("PHONE_IN_ECM_STATE", false)) &&
-    //             mIsWaitingForEcmExit) {
-    //         mIsWaitingForEcmExit = false;
-    //         changeAirplaneModeSystemSetting(true);
-    //     }
-    // }
     return NOERROR;
 }
 
@@ -1139,24 +1142,26 @@ GlobalActions::AirplaneModeOn::AirplaneModeOn(
             R::string::global_actions_toggle_airplane_mode,
             R::string::global_actions_airplane_mode_on_status,
             R::string::global_actions_airplane_mode_off_status)
+    , mHost(owner)
 {
 }
 
 void GlobalActions::AirplaneModeOn::OnToggle(
     /* [in] */ Boolean on)
 {
-    // TODO: TelephonyIntents is not implement.
-    // if (mOwner->mHasTelephony && Boolean.parseBoolean(
-    //         SystemProperties::GetBoolean(TelephonyProperties.PROPERTY_INECM_MODE))) {
-    //     mOwner->mIsWaitingForEcmExit = TRUE;
+    String value;
+    SystemProperties::Get(ITelephonyProperties::PROPERTY_INECM_MODE, &value);
+    Boolean bValue = StringUtils::ParseBoolean(value);
+    if (mHost->mHasTelephony && bValue) {
+        mHost->mIsWaitingForEcmExit = TRUE;
         // Launch ECM exit dialog
-        // Intent ecmDialogIntent =
-        //         new Intent(TelephonyIntents.ACTION_SHOW_NOTICE_ECM_BLOCK_OTHERS, null);
-        // ecmDialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        // mContext.startActivity(ecmDialogIntent);
-    // } else {
-    //     mOwner->ChangeAirplaneModeSystemSetting(on);
-    // }
+        AutoPtr<IIntent> ecmDialogIntent;
+        CIntent::New(ITelephonyIntents::ACTION_SHOW_NOTICE_ECM_BLOCK_OTHERS, NULL, (IIntent**)&ecmDialogIntent);
+        ecmDialogIntent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
+        mHost->mContext->StartActivity(ecmDialogIntent);
+    } else {
+        mHost->ChangeAirplaneModeSystemSetting(on);
+    }
 }
 
 Boolean GlobalActions::AirplaneModeOn::ShowDuringKeyguard()
@@ -1177,12 +1182,13 @@ void GlobalActions::AirplaneModeOn::ChangeStateFromPress(
     }
 
     // In ECM mode airplane state cannot be changed
-    // TODO: TelephonyProperties is not impelement.
-    // if (!(Boolean.parseBoolean(
-    //         SystemProperties.get(TelephonyProperties.PROPERTY_INECM_MODE)))) {
-    //     mState = buttonOn ? State.TurningOn : State.TurningOff;
-    //     mAirplaneState = mState;
-    // }
+    String value;
+    SystemProperties::Get(ITelephonyProperties::PROPERTY_INECM_MODE, &value);
+    Boolean bValue = StringUtils::ParseBoolean(value);
+    if (!(bValue)) {
+        mState = buttonOn ? ToggleAction::State::TurningOn : ToggleAction::State::TurningOff;
+        mHost->mAirplaneState = mState;
+    }
 }
 
 
@@ -1465,7 +1471,7 @@ GlobalActions::GlobalActions(
     filter->AddAction(IIntent::ACTION_CLOSE_SYSTEM_DIALOGS);
     filter->AddAction(IIntent::ACTION_SCREEN_OFF);
     // TODO: Telephone is not implement.
-    // filter->AddAction(ITelephonyIntents::ACTION_EMERGENCY_CALLBACK_MODE_CHANGED);
+    filter->AddAction(ITelephonyIntents::ACTION_EMERGENCY_CALLBACK_MODE_CHANGED);
     AutoPtr<IIntent> intent;
     context->RegisterReceiver(mBroadcastReceiver, filter, (IIntent**)&intent);
 

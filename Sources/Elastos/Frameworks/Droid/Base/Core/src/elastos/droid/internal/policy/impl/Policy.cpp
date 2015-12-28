@@ -2,7 +2,7 @@
 #include "elastos/droid/internal/policy/impl/Policy.h"
 #include "elastos/droid/internal/policy/impl/CPhoneWindow.h"
 #include "elastos/droid/internal/policy/impl/CPhoneLayoutInflater.h"
-//TODO #include "elastos/droid/internal/policy/impl/CPhoneWindowManager.h"
+#include "elastos/droid/internal/policy/impl/CPhoneWindowManager.h"
 #include "elastos/droid/internal/policy/impl/CPhoneFallbackEventHandler.h"
 
 using Elastos::Droid::Internal::Policy::EIID_IIPolicy;
@@ -43,7 +43,7 @@ ECode Policy::MakeNewWindowManager(
     /* [out] */ IWindowManagerPolicy** wm)
 {
     VALIDATE_NOT_NULL(wm);
-    return NOERROR;//TODO CPhoneWindowManager::New(wm);
+    return CPhoneWindowManager::New(wm);
 }
 
 ECode Policy::MakeNewFallbackEventHandler(

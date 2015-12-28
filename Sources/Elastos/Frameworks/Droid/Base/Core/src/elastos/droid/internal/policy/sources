@@ -8,4 +8,6 @@ INCLUDES += $(MAKEDIR)/../../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
+SOURCES += CPolicyManager.cpp
+
 ELASTOS_LIBS += impl/impl.lib

@@ -2,7 +2,7 @@
 #include "Elastos.Droid.Provider.h"
 #include "elastos/droid/internal/policy/impl/ShortcutManager.h"
 #include "elastos/droid/content/CIntentHelper.h"
-//TODO #include "elastos/droid/provider/CSettingsBookmarks.h"
+#include "elastos/droid/provider/CSettingsBookmarks.h"
 #include <elastos/core/Character.h>
 #include <elastos/utility/logging/Slogger.h>
 
@@ -11,7 +11,7 @@ using Elastos::Droid::Content::CIntentHelper;
 using Elastos::Droid::Content::IIntentHelper;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Database::IContentObserver;
-//TODO using Elastos::Droid::Provider::CSettingsBookmarks;
+using Elastos::Droid::Provider::CSettingsBookmarks;
 using Elastos::Droid::Provider::ISettingsBookmarks;
 using Elastos::Utility::Logging::Slogger;
 
@@ -41,7 +41,7 @@ void ShortcutManager::Observe()
     AutoPtr<IContentResolver> contentResolver;
     mContext->GetContentResolver((IContentResolver**)&contentResolver);
     AutoPtr<ISettingsBookmarks> settingsBookmarks;
-    //TODO CSettingsBookmarks::AcquireSingleton((ISettingsBookmarks**)&settingsBookmarks);
+    CSettingsBookmarks::AcquireSingleton((ISettingsBookmarks**)&settingsBookmarks);
     AutoPtr<IUri> contentUri;
     settingsBookmarks->GetCONTENT_URI((IUri**)&contentUri);
     contentResolver->Query(

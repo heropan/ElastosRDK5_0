@@ -25,6 +25,7 @@ using Elastos::Droid::Internal::App::IAlertControllerAlertParams;
 using Elastos::Droid::Internal::Policy::Impl::EnableAccessibilityController;
 using Elastos::Droid::Media::IAudioManager;
 using Elastos::Droid::Service::Dreams::IIDreamManager;
+//TODO using Elastos::Droid::Telephony::IPhoneStateListener;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IView;
@@ -623,6 +624,8 @@ private:
         // @Override
         CARAPI_(void) ChangeStateFromPress(
             /* [in] */ Boolean buttonOn);
+    private:
+        GlobalActions* mHost;
     };
 
     //class PowerSinglePressAction
@@ -870,7 +873,7 @@ private:
 private:
     AutoPtr<MyBroadcastReceiver> mBroadcastReceiver;
     // TODO: PhoneStateListener is not implement.
-    // PhoneStateListener mPhoneStateListener;
+    //AutoPtr<IPhoneStateListener> mPhoneStateListener;
     AutoPtr<RingerModeReceiver> mRingerModeReceiver;
     AutoPtr<AirplaneModeObserver> mAirplaneModeObserver;
     AutoPtr<IHandler> mHandler;

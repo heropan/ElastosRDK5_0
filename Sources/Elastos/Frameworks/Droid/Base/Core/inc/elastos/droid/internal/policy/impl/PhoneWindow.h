@@ -11,10 +11,6 @@
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/view/Window.h"
-//#include "elastos/droid/view/BaseSurfaceHolder.h"
-//#include "elastos/droid/view/menu/CIconMenuPresenter.h"
-//#include "elastos/droid/view/menu/CListMenuPresenter.h"
-//#include "elastos/droid/view/menu/CMenuDialogHelper.h"
 #include "elastos/droid/widget/FrameLayout.h"
 
 using Elastos::Droid::App::IKeyguardManager;

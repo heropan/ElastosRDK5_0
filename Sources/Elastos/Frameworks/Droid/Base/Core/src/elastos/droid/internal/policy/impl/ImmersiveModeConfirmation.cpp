@@ -1,3 +1,4 @@
+#include <Elastos.Droid.Provider.h>
 #include "elastos/droid/app/CActivityManagerHelper.h"
 #include "elastos/droid/animation/CArgbEvaluator.h"
 #include "elastos/droid/animation/CValueAnimatorHelper.h"
@@ -5,7 +6,7 @@
 #include "elastos/droid/graphics/drawable/CColorDrawable.h"
 #include "elastos/droid/internal/policy/impl/ImmersiveModeConfirmation.h"
 #include "elastos/droid/internal/policy/impl/CPolicyControl.h"
-//TODO #include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/provider/Settings.h"
 #include "elastos/droid/utility/CDisplayMetrics.h"
 #include "elastos/droid/utility/CSparseBooleanArray.h"
 #include "elastos/droid/view/CWindowManagerLayoutParams.h"
@@ -33,7 +34,7 @@ using Elastos::Droid::Graphics::Drawable::CColorDrawable;
 using Elastos::Droid::Graphics::IPixelFormat;
 using Elastos::Droid::Os::EIID_IHandler;
 using Elastos::Droid::Os::IUserHandle;
-//TODO using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::Provider::Settings;
 using Elastos::Droid::Provider::ISettingsSecure;
 using Elastos::Droid::Utility::CDisplayMetrics;
 using Elastos::Droid::Utility::IDisplayMetrics;
@@ -380,7 +381,7 @@ ECode ImmersiveModeConfirmation::LoadSetting(
     //try {
     AutoPtr<IContentResolver> cResolver;
     mContext->GetContentResolver((IContentResolver**)&cResolver);
-    //TODO Settings::Secure::GetStringForUser(cResolver, ISettingsSecure::IMMERSIVE_MODE_CONFIRMATIONS, IUserHandle::USER_CURRENT, &value);
+    Settings::Secure::GetStringForUser(cResolver, ISettingsSecure::IMMERSIVE_MODE_CONFIRMATIONS, IUserHandle::USER_CURRENT, &value);
     mConfirmed = CONFIRMED.Equals(value);
     if (DEBUG) Slogger::D(TAG, "Loaded mConfirmed=%d", mConfirmed);
     //} catch (Throwable t) {
@@ -523,8 +524,7 @@ void ImmersiveModeConfirmation::SaveSetting()
     AutoPtr<IContentResolver> cResolver;
     mContext->GetContentResolver((IContentResolver**)&cResolver);
     Boolean res = FALSE;
-    assert(res);//TODO remove aft below line is ok
-    //TODO Settings::Secure::PutStringForUser(cResolver, ISettingsSecure::IMMERSIVE_MODE_CONFIRMATIONS, value, IUserHandle::USER_CURRENT, &res);
+    Settings::Secure::PutStringForUser(cResolver, ISettingsSecure::IMMERSIVE_MODE_CONFIRMATIONS, value, IUserHandle::USER_CURRENT, &res);
     if (DEBUG) Slogger::D(TAG, "Saved value=%s", value.string());
     //} catch (Throwable t) {
     //    Slog.w(TAG, "Error saving confirmations, mConfirmed=" + mConfirmed, t);

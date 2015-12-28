@@ -1,12 +1,12 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/internal/policy/impl/keyguard/KeyguardServiceDelegate.h"
-//TODO #include "elastos/droid/internal/policy/impl/keyguard/CKeyguardShowDelegate.h"
-//TODO #include "elastos/droid/internal/policy/impl/keyguard/CKeyguardExitDelegate.h"
+#include "elastos/droid/internal/policy/impl/keyguard/CKeyguardShowDelegate.h"
+#include "elastos/droid/internal/policy/impl/keyguard/CKeyguardExitDelegate.h"
 #include "elastos/droid/content/Context.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/view/CView.h"
 #include "elastos/droid/view/CWindowManagerLayoutParams.h"
-//TODO #include "elastos/droid/internal/policy/impl/keyguard/CKeyguardServiceWrapper.h"
+#include "elastos/droid/internal/policy/impl/keyguard/CKeyguardServiceWrapper.h"
 #include "elastos/droid/os/CUserHandleHelper.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/logging/Logger.h>
@@ -84,14 +84,14 @@ ECode KeyguardServiceDelegate::InnerServiceConnection::OnServiceConnected(
     */
     if (KeyguardServiceDelegate::DEBUG) Logger::V(KeyguardServiceDelegate::TAG, "*** Keyguard connected (yay!)");
     mHost->mKeyguardService = NULL;
-    //TODO IIKeyguardService* keyguardService = IIKeyguardService::Probe(service);//TODO is this right??
-    //TODO CKeyguardServiceWrapper::New(keyguardService, (IKeyguardService**)&(mHost->mKeyguardService));
+    IIKeyguardService* keyguardService = IIKeyguardService::Probe(service);
+    CKeyguardServiceWrapper::New(keyguardService, (IIKeyguardService**)&(mHost->mKeyguardService));
     if (mHost->mKeyguardState->systemIsReady) {
         // If the system is ready, it means keyguard crashed and restarted.
         mHost->mKeyguardService->OnSystemReady();
         // This is used to hide the scrim once keyguard displays.
         AutoPtr<IIKeyguardShowCallback> keyguardShowCallback;
-        //TODO CKeyguardShowDelegate::New(this, NULL, (IIKeyguardShowCallback**)&keyguardShowCallback);
+        CKeyguardShowDelegate::New(mHost, NULL, (IIKeyguardShowCallback**)&keyguardShowCallback);
         mHost->mKeyguardService->OnScreenTurnedOn(keyguardShowCallback);
     }
     if (mHost->mKeyguardState->bootCompleted) {
@@ -148,7 +148,7 @@ ECode KeyguardServiceDelegate::InnerRunnable2::Run()
 CAR_INTERFACE_IMPL(KeyguardServiceDelegate, Object, IKeyguardServiceDelegate)
 
 // TODO: propagate changes to these to {@link KeyguardTouchDelegate}
-const String KeyguardServiceDelegate::KEYGUARD_PACKAGE("com.android.systemui");//TODO the value right??
+const String KeyguardServiceDelegate::KEYGUARD_PACKAGE("com.android.systemui");
 const String KeyguardServiceDelegate::KEYGUARD_CLASS("com.android.systemui.keyguard.KeyguardService");
 
 const String KeyguardServiceDelegate::TAG("KeyguardServiceDelegate");
@@ -250,7 +250,7 @@ ECode KeyguardServiceDelegate::VerifyUnlock(
 {
     if (mKeyguardService != NULL) {
         AutoPtr<IIKeyguardExitCallback> onKeyguardExitCallback;
-        //TODO CKeyguardExitDelegate::New(this, onKeyguardExitCallback, (IIKeyguardExitCallback**)&onKeyguardExitCallback);
+        CKeyguardExitDelegate::New(this, onKeyguardExitResult, (IIKeyguardExitCallback**)&onKeyguardExitCallback);
         mKeyguardService->VerifyUnlock(onKeyguardExitCallback);
     }
     return NOERROR;
@@ -322,7 +322,7 @@ ECode KeyguardServiceDelegate::OnScreenTurnedOn(
     if (mKeyguardService != NULL) {
         if (DEBUG) Logger::V(TAG, "onScreenTurnedOn(showListener = %p )", showListener);
         AutoPtr<IIKeyguardShowCallback> keyguardShowCallback;
-        //TODO CKeyguardShowDelegate::New(this, showListener, (IIKeyguardShowCallback**)&keyguardShowCallback);
+        CKeyguardShowDelegate::New(this, showListener, (IIKeyguardShowCallback**)&keyguardShowCallback);
         mKeyguardService->OnScreenTurnedOn(keyguardShowCallback);
     } else {
         // try again when we establish a connection

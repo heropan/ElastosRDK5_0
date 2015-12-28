@@ -2,8 +2,8 @@
 #include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/internal/policy/impl/RecentApplicationsDialog.h"
-//TODO #include "elastos/droid/internal/policy/impl/CPhoneWindowManager.h"
-//TODO #include "elastos/droid/internal/policy/impl/IconUtilities.h"
+#include "elastos/droid/internal/policy/impl/CPhoneWindowManager.h"
+#include "elastos/droid/internal/policy/impl/IconUtilities.h"
 #include "elastos/droid/os/CHandler.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/view/SoundEffectConstants.h"
@@ -47,10 +47,10 @@ ECode RecentApplicationsDialog::MyBroadcastReceiver::OnReceive(
     intent->GetAction(&action);
     if (action.Equals(IIntent::ACTION_CLOSE_SYSTEM_DIALOGS)) {
         String reason;
-        //TODO intent->GetStringExtra(CPhoneWindowManager::SYSTEM_DIALOG_REASON_KEY, &reason);
-        //TODO if (!CPhoneWindowManager::SYSTEM_DIALOG_REASON_RECENT_APPS.Equals(reason)) {
+        intent->GetStringExtra(CPhoneWindowManager::SYSTEM_DIALOG_REASON_KEY, &reason);
+        if (!CPhoneWindowManager::SYSTEM_DIALOG_REASON_RECENT_APPS.Equals(reason)) {
             mHost->Dismiss();
-        //TODO }
+        }
     }
 
     return NOERROR;
@@ -391,7 +391,7 @@ void RecentApplicationsDialog::ReloadButtons()
     intent->AddCategory(IIntent::CATEGORY_HOME);
     intent->ResolveActivityInfo(pm, 0, (IActivityInfo**)&homeInfo);
 
-    //TODO AutoPtr<IconUtilities> iconUtilities = new IconUtilities(context);
+    AutoPtr<IconUtilities> iconUtilities = new IconUtilities(context);
 
     // Performance note:  Our android performance guide says to prefer Iterator when
     // using a List class, but because we know that getRecentTasks() always returns
@@ -462,7 +462,7 @@ void RecentApplicationsDialog::ReloadButtons()
                 AutoPtr<ITextView> tv = (*mIcons)[index];
                 IView* v = IView::Probe(tv);
                 tv->SetText(seq);
-                //TODO icon = iconUtilities->CreateIconDrawable(icon);
+                icon = iconUtilities->CreateIconDrawable(icon);
                 tv->SetCompoundDrawables(NULL, icon, NULL, NULL);
                 AutoPtr<RecentTag> tag = new RecentTag();
                 tag->mInfo = info;
