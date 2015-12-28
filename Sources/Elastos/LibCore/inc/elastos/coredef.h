@@ -1051,5 +1051,85 @@ public:                                                                         
     }
 #endif // CAR_INNER_INTERFACE_IMPL
 
+// using break as try
+// #ifndef TRY
+// #define TRY {ECode ecode; Boolean needCatch = FALSE; Boolean doFinallyAndReturn = FALSE; for (Boolean isFirst = TRUE; isFirst; isFirst = FALSE)
+// #endif // TRY
+
+// #ifndef DO_FINALLY_AND_RETURN
+// #define DO_FINALLY_AND_RETURN doFinallyAndReturn = true; break;
+// #endif // DO_FINALLY_AND_RETURN
+
+// #ifndef JUDGE_THROW
+// #define JUDGE_THROW if (needCatch || doFinallyAndReturn) break;
+// #endif // JUDGE_THROW
+
+// #ifndef CATCH
+// #define CATCH(EXCEPTION, ecode) if (!doFinallyAndReturn && needCatch && ((ECode)EXCEPTION == ecode || (ECode)EXCEPTION == E_FAIL)) needCatch = FALSE; if ((ECode)EXCEPTION == ecode || (ECode)EXCEPTION == E_FAIL)
+// #endif // CATCH
+
+// #ifndef TRY_END
+// #define TRY_END if(doFinallyAndReturn) return NOERROR; if(needCatch) return ecode;}
+// #endif // TRY_END
+
+// #ifndef JUDGE
+// #define JUDGE(x) ecode = (x); if (FAILED(ecode)) {needCatch = TRUE; break;}
+// #endif // JUDGE
+
+// #ifndef FINALLY
+// #define FINALLY
+// #endif // FINALLY
+
+// using goto as try
+/*
+ECode ecode;
+Boolean needCatch = FALSE;
+Boolean isReturnAfterFinally = FALSE;
+TRY {
+    JUDGE(label_catch, ecode, needCatch)
+    ...
+}
+label:
+CATCH(E_INVALID_ARGUMENT_EXECEPTION, ecode) {
+    ...
+    TRY_RETURN(label_final)
+}
+CATCH(E_FAIL, ecode, needCatch) {
+    ...
+}
+FINALLY(label_final) {
+    ...
+}
+FINALLY_END(isReturnAfterFinally, ecode)
+TRY_END(isReturnAfterFinally, ecode)
+ */
+
+#ifndef TRY
+#define TRY
+#endif // TRY
+
+#ifndef JUDGE
+#define JUDGE(label_catch, ecode, needCatch) if (FAILED(ecode)) { needCatch = TRUE; goto label_catch;}
+#endif // JUDGE
+
+#ifndef TRY_RETURN
+#define TRY_RETURN(label_final, isReturnAfterFinally) isReturnAfterFinally = TRUE; goto label_final;
+#endif // TRY_RETURN
+
+#ifndef CATCH
+#define CATCH(EXCEPTION, ecode, needCatch) if ((ECode)EXCEPTION == ecode || (ECode)EXCEPTION == E_FAIL) needCatch = FALSE; if ((ECode)EXCEPTION == ecode || (ECode)EXCEPTION == E_FAIL)
+#endif // CATCH
+
+#ifndef FINALLY
+#define FINALLY(label_final) label_final:
+#endif // FINALLY
+
+#ifndef FINALLY_END
+#define FINALLY_END(isReturnAfterFinally, ecode) if (isReturnAfterFinally) return ecode;
+#endif // FINALLY_END
+
+#ifndef TRY_END
+#define TRY_END(ecode, needCatch) if (needCatch) return ecode;
+#endif // TRY_END
 
 #endif //__ELASTOS_CORE_DEF_H__

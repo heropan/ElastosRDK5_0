@@ -90,8 +90,8 @@ ECode DhcpAckPacket::BuildPacket(
     byteBufferHelper->Allocate(MAX_LENGTH, (IByteBuffer**)&rev);
     AutoPtr<IInet4AddressHelper> inet4AddressHelper;
     CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&inet4AddressHelper);
-    AutoPtr<IInetAddress> destIp = mBroadcast ? Ptr(inet4AddressHelper)->Func(inet4AddressHelper->GetALL) : mYourIp.Get();
-    AutoPtr<IInetAddress> srcIp = mBroadcast ? Ptr(inet4AddressHelper)->Func(inet4AddressHelper->GetANY) : mSrcIp.Get();
+    AutoPtr<IInetAddress> destIp = mBroadcast ? Ptr(inet4AddressHelper)->Func(inet4AddressHelper->GetALL) : mYourIp;
+    AutoPtr<IInetAddress> srcIp = mBroadcast ? Ptr(inet4AddressHelper)->Func(inet4AddressHelper->GetANY) : mSrcIp;
     FillInPacket(encap, destIp, srcIp, destUdp, srcUdp, rev,
         DHCP_BOOTREPLY, mBroadcast);
     IBuffer::Probe(rev)->Flip();

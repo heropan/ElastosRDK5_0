@@ -26,6 +26,9 @@ module
 
     merge("notification/NotificationManagerInternal.car");
 
+    merge("net/NetworkPolicyManagerService.car");
+    merge("net/NetworkStatsService.car");
+
     merge("twilight/TwilightListener.car");
 
     merge("wallpaper/WallpaperManagerService.car");
@@ -1371,4 +1374,14 @@ module
     } // namespace Server
     } // namepsace Droid
     } // namespace Elastos
+
+    // namespace Elastos {
+    // namespace Droid {
+    // namespace Server {
+    // namespace Net {
+
+    // } // namespace Net
+    // } // namespace Server
+    // } // namepsace Droid
+    // } // namespace Elastos
 }

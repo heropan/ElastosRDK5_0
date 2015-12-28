@@ -101,7 +101,7 @@ ELASTOS_LIBS += wallpaper/wallpaper.lib
 
 #ELASTOS_LIBS += input/input.lib
 #ELASTOS_LIBS += location/location.lib
-#ELASTOS_LIBS += net/net.lib
+ELASTOS_LIBS += net/net.lib
 #ELASTOS_LIBS += pm/pm.lib
 #ELASTOS_LIBS += usb/usb.lib
 #ELASTOS_LIBS += wm/wm.lib

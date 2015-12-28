@@ -34,6 +34,10 @@ EXPORT_HEADERS += elastos/droid/ext/frameworkhash.h
 EXPORT_HEADERS += elastos/droid/internal/utility/XmlUtils.h
 EXPORT_HEADERS += elastos/droid/internal/content/PackageMonitor.h
 
+//EXPORT_HEADERS += elastos/droid/Manifest.h
+
+EXPORT_HEADERS += elastos/droid/net/ReturnOutValue.h
+
 EXPORT_HEADERS += elastos/droid/os/Build.h
 EXPORT_HEADERS += elastos/droid/os/Environment.h
 //EXPORT_HEADERS += elastos/droid/os/NativeMessageQueue.h

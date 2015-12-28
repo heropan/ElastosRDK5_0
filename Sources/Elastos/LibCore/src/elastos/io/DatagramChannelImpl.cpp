@@ -252,10 +252,16 @@ ECode DatagramChannelImpl::OnBind(
 {
     AutoPtr<ISocketAddress> sa;
     // try {
-    FAIL_RETURN(CLibcore::sOs->Getsockname(mFd, (ISocketAddress**)&sa))
-    // } catch (ErrnoException errnoException) {
-    //     throw new AssertionError(errnoException);
-    // }
+    ECode ec;
+    Boolean needCatch = FALSE;
+    TRY {
+        JUDGE(label, ec = CLibcore::sOs->Getsockname(mFd, (ISocketAddress**)&sa), needCatch)
+    }
+    label:
+    CATCH(E_ERRNO_EXCEPTION, ec, needCatch) {
+        return E_ASSERTION_ERROR;
+    }
+    TRY_END(ec, needCatch)
     mIsBound = true;
     AutoPtr<IInetSocketAddress> localSocketAddress = IInetSocketAddress::Probe(sa);
     mLocalAddress = NULL;

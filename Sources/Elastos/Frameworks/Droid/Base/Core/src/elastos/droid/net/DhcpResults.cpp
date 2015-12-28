@@ -206,10 +206,10 @@ ECode DhcpResults::SetIpAddress(
     AutoPtr<IInetAddress> addr;
     AutoPtr<ILinkAddress> ipAddress;
     ECode ec;
-    FAIL_GOTO((ec = NetworkUtils::NumericToInetAddress(addrString, (IInetAddress**)&addr)), CATCH);
-    FAIL_GOTO((ec = CLinkAddress::New(addr, prefixLength, (ILinkAddress**)&ipAddress)), CATCH);
+    FAIL_GOTO((ec = NetworkUtils::NumericToInetAddress(addrString, (IInetAddress**)&addr)), FAIL_CATCH);
+    FAIL_GOTO((ec = CLinkAddress::New(addr, prefixLength, (ILinkAddress**)&ipAddress)), FAIL_CATCH);
     return NOERROR;
-CATCH:
+FAIL_CATCH:
     if (ec == E_ILLEGAL_ARGUMENT_EXCEPTION || ec == E_CLASS_CAST_EXCEPTION) {
         Logger::E(TAG, "setIpAddress failed with addrString %s/%d", addrString.string(), prefixLength);
         *result = TRUE;

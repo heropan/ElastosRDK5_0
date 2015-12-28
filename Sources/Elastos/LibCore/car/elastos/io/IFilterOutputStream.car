@@ -5,10 +5,11 @@ module
     namespace IO {
 
     /**
-    * @Involve
-    * interface ICloseable;
-    * interface IOutputStream;
-    */
+     * @Involve
+     * interface ICloseable;
+     * interface IFlushable;
+     * interface IOutputStream;
+     */
     interface IFilterOutputStream {
     }
 

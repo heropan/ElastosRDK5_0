@@ -25,65 +25,67 @@ namespace Droid {
 namespace Server {
 namespace Net {
 
-ECode LockdownVpnTracker::TrackerBroadcastReceiver::OnReceive(
+//=====================================================================
+// LockdownVpnTracker::InnerSub_BroadcastReceiver
+//=====================================================================
+ECode LockdownVpnTracker::InnerSub_BroadcastReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
     return mOwner->Reset();
 }
 
+//=====================================================================
+// LockdownVpnTracker
+//=====================================================================
 const String LockdownVpnTracker::TAG("LockdownVpnTracker");
 const Int32 LockdownVpnTracker::MAX_ERROR_COUNT = 4;
 const String LockdownVpnTracker::ACTION_LOCKDOWN_RESET("com.android.server.action.LOCKDOWN_RESET");
 const String LockdownVpnTracker::ACTION_VPN_SETTINGS("android.net.vpn.SETTINGS");
+const String LockdownVpnTracker::EXTRA_PICK_LOCKDOWN("android.net.vpn.PICK_LOCKDOWN");
+const Int32 LockdownVpnTracker::ROOT_UID = 0;
 
-/**
- * State tracker for lockdown mode. Watches for normal {@link NetworkInfo} to be
- * connected and kicks off VPN connection, managing any required {@code netd}
- * firewall rules.
- */
-LockdownVpnTracker::LockdownVpnTracker(
+LockdownVpnTracker::LockdownVpnTracker()
+    : mErrorCount(0)
+{}
+
+ECode LockdownVpnTracker::constructor(
     /* [in] */ IContext* context,
     /* [in] */ INetworkManagementService* netService,
     /* [in] */ CConnectivityService* connService,
     /* [in] */ Elastos::Droid::Server::Connectivity::Vpn* vpn,
     /* [in] */ IVpnProfile* profile)
-    : mContext(context)
-    , mNetService(netService)
-    , mConnService(connService)
-    , mVpn(vpn)
-    , mProfile(profile)
-    , mErrorCount(0)
 {
-    mResetReceiver = new TrackerBroadcastReceiver(this);
+    mResetReceiver = new InnerSub_BroadcastReceiver(this);
+
+    mContext = context;
+    mNetService = netService;
+    mConnService = connService;
+    mVpn = vpn;
+    mProfile = profile;
+
+    AutoPtr<IIntent> configIntent;
+    CIntent::New(ACTION_VPN_SETTINGS, (IIntent**)&configIntent);
+    configIntent->PutExtra(EXTRA_PICK_LOCKDOWN, TRUE);
+    AutoPtr<IPendingIntentHelper> helper;
+    CPendingIntentHelper::AcquireSingleton((IPendingIntentHelper**)&helper);
+    helper->GetActivity(mContext, 0, configIntent, 0, (IPendingIntent**)&mConfigIntent);
 
     AutoPtr<IIntent> resetIntent;
     CIntent::New(ACTION_LOCKDOWN_RESET, (IIntent**)&resetIntent);
     resetIntent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY);
-    AutoPtr<IPendingIntentHelper> helper;
-    CPendingIntentHelper::AcquireSingleton((IPendingIntentHelper**)&helper);
     helper->GetBroadcast(mContext, 0, resetIntent, 0, (IPendingIntent**)&mResetIntent);
+    return NOERROR;
 }
 
-/**
- * State tracker for lockdown mode. Watches for normal {@link NetworkInfo} to be
- * connected and kicks off VPN connection, managing any required {@code netd}
- * firewall rules.
- */
 Boolean LockdownVpnTracker::IsEnabled()
 {
     // return KeyStore.getInstance().contains(Credentials.LOCKDOWN_VPN);
     return FALSE;
 }
 
-/**
- * Watch for state changes to both active egress network, kicking off a VPN
- * connection when ready, or setting firewall rules once VPN is connected.
- */
 ECode LockdownVpnTracker::HandleStateChangedLocked()
 {
-    Slogger::D(TAG, "handleStateChanged()");
-
     AutoPtr<INetworkInfo> egressInfo;
     mConnService->GetActiveNetworkInfoUnfiltered((INetworkInfo**)&egressInfo);
     AutoPtr<ILinkProperties> egressProp;
@@ -101,12 +103,29 @@ ECode LockdownVpnTracker::HandleStateChangedLocked()
     String ifaceName;
     Boolean egressChanged = egressProp == NULL
             || (egressProp->GetInterfaceName(&ifaceName), mAcceptedEgressIface.Equals(ifaceName));
+
+    String egressTypeName(NULL);
+    if (egressInfo != NULL) {
+        AutoPtr<IConnectivityManagerHelper> helper;
+        CConnectivityManagerHelper::AcquireSingleton((IConnectivityManagerHelper**)&helper);
+        helper->GetNetworkTypeName(Ptr(egressInfo)->GetType), &egressTypeName);
+    }
+    String egressIface(NULL);
+    if (egressProp != null) {
+        egressProp->GetInterfaceName(&egressIface);
+    }
+    Slogger::D(TAG, "handleStateChanged: egress=%s %s->%s", egressTypeName.string(),
+            mAcceptedEgressIface.string(), egressIface.string());
+
     if (egressDisconnected || egressChanged) {
         ClearSourceRulesLocked();
         mAcceptedEgressIface = NULL;
         mVpn->StopLegacyVpn();
     }
-    if (egressDisconnected) return NOERROR;
+    if (egressDisconnected) {
+        HideNotification();
+        return NOERROR;
+    }
 
     Int32 egressType;
     egressInfo->GetType(&egressType);
@@ -130,9 +149,18 @@ ECode LockdownVpnTracker::HandleStateChangedLocked()
             ShowNotification(R::string::vpn_lockdown_connecting, R::drawable::vpn_disconnected);
 
             egressProp->GetInterfaceName(&mAcceptedEgressIface);
-            assert(0);
-            // mVpn.startLegacyVpn(mProfile, KeyStore.getInstance(), egressProp);
-            mVpn->StartLegacyVpn(mProfile, NULL, egressProp);
+                // try {
+            AutoPtr<IKeyStoreHelper> helper;
+            CKeyStoreHelper::AcquireSingleton((IKeyStoreHelper**)&helper);
+            ECode ec = mVpn->StartLegacyVpn(mProfile, Ptr(helper)->Func(helper->GetInstance), egressProp);
+                // } catch (IllegalStateException e) {
+            if (FAILED(ec)) {
+                if (ec != (ECode)E_ILLEGAL_STATE_EXCEPTION) return ec;
+                mAcceptedEgressIface = NULL;
+                Slogger::E(TAG, "Failed to start VPN %d", ec);
+                ShowNotification(R::string::vpn_lockdown_error, R::drawable::vpn_disconnected);
+            }
+                // }
         }
         else {
             Slogger::E(TAG, "Invalid VPN profile; requires IP-based server and DNS");
@@ -141,16 +169,16 @@ ECode LockdownVpnTracker::HandleStateChangedLocked()
     }
     else if ((vpnInfo->IsConnected(&isConnected), isConnected) && vpnConfig != NULL) {
         String iface;
-        String sourceAddr;
+        AutoPtr<IList> sourceAddr;
         vpnConfig->GetInterfaze(&iface);
-        vpnConfig->GetAddresses(&sourceAddr);
+        vpnConfig->GetAddresses((IList**)&sourceAddr);
 
-        if (((iface.IsNull() && mAcceptedIface.IsNull()) || iface.Equals(mAcceptedIface))
-                && ((sourceAddr.IsNull() && mAcceptedSourceAddr.IsNull()) || sourceAddr.Equals(mAcceptedSourceAddr))) {
+        if (TextUtils::Equals(iface, mAcceptedIface)
+                && Objects::Equals(sourceAddr, mAcceptedSourceAddr)) {
             return NOERROR;
         }
 
-        Slogger::D(TAG, "VPN connected using iface=%s, sourceAddr=%s", iface.string(), sourceAddr.string());
+        Slogger::D(TAG, "VPN connected using iface=%s, sourceAddr=%s", iface.string(), Object::ToString(sourceAddr).string());
         //EventLogTags.writeLockdownVpnConnected(egressType);
         ShowNotification(R::string::vpn_lockdown_connected, R::drawable::vpn_connected);
 
@@ -158,9 +186,17 @@ ECode LockdownVpnTracker::HandleStateChangedLocked()
         ClearSourceRulesLocked();
 
         ECode ec = mNetService->SetFirewallInterfaceRule(iface, TRUE);
-        if (FAILED(ec)) return E_RUNTIME_EXCEPTION;
+        if (FAILED(ec)) {
+            if (ec == (ECode)E_REMOTE_EXCEPTION)
+                return E_RUNTIME_EXCEPTION;
+            return ec;
+        }
         ec = mNetService->SetFirewallEgressSourceRule(sourceAddr, TRUE);
-        if (FAILED(ec)) return E_RUNTIME_EXCEPTION;
+        if (FAILED(ec)) {
+            if (ec == (ECode)E_REMOTE_EXCEPTION)
+                return E_RUNTIME_EXCEPTION;
+            return ec;
+        }
 
         mErrorCount = 0;
         mAcceptedIface = iface;
