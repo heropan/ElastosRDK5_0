@@ -17,8 +17,9 @@
 #include <elastos/core/StringUtils.h>
 #include "elastos/droid/view/View.h"
 #ifdef DROID_CORE
+#include "elastos/droid/os/CHandler.h"
 // #include "elastos/droid/widget/CBlinkLayout.h"
-// #include "elastos/droid/view/CContextThemeWrapper.h"
+#include "elastos/droid/view/CContextThemeWrapper.h"
 #endif
 
 using Elastos::Core::ICharSequence;
@@ -36,6 +37,8 @@ using Elastos::Droid::Utility::Xml;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::EIID_IHandlerCallback;
 // using Elastos::Droid::Widget::CBlinkLayout;
 using Elastos::Droid::Widget::IFrameLayout;
 
@@ -183,6 +186,85 @@ static AutoPtr<IHashMap> InitMap()
 }
 
 AutoPtr<IHashMap> LayoutInflater::sConstructorMap = InitMap();
+
+CAR_INTERFACE_IMPL(LayoutInflater::BlinkLayout::HandlerCallback, Object, IHandlerCallback)
+
+LayoutInflater::BlinkLayout::HandlerCallback::HandlerCallback(
+    /* [in] */ BlinkLayout* host)
+    : mHost(host)
+{}
+
+ECode LayoutInflater::BlinkLayout::HandlerCallback::HandleMessage(
+    /* [in] */ IMessage* msg,
+    /* [in] */ Boolean* result)
+{
+    Int32 what;
+    msg->GetWhat(&what);
+    if (what == MESSAGE_BLINK) {
+        if (mHost->mBlink) {
+            mHost->mBlinkState = !mHost->mBlinkState;
+            mHost->MakeBlink();
+        }
+        mHost->Invalidate();
+        *result = TRUE;
+        return NOERROR;
+    }
+    *result = FALSE;
+    return NOERROR;
+}
+
+CAR_INTERFACE_IMPL(LayoutInflater::BlinkLayout, FrameLayout, IBlinkLayout)
+
+LayoutInflater::BlinkLayout::BlinkLayout()
+    : mBlink(FALSE)
+    , mBlinkState(FALSE)
+{}
+
+ECode LayoutInflater::BlinkLayout::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    AutoPtr<IHandlerCallback> callback = new HandlerCallback(this);
+    CHandler::New(callback, TRUE, FALSE, (IHandler**)&mHandler);
+    return NOERROR;
+}
+
+ECode LayoutInflater::BlinkLayout::OnAttachedToWindow()
+{
+    FrameLayout::OnAttachedToWindow();
+
+    mBlink = TRUE;
+    mBlinkState = TRUE;
+
+    MakeBlink();
+    return NOERROR;
+}
+
+ECode LayoutInflater::BlinkLayout::OnDetachedFromWindow()
+{
+    FrameLayout::OnDetachedFromWindow();
+
+    mBlink = FALSE;
+    mBlinkState = TRUE;
+
+    return mHandler->RemoveMessages(MESSAGE_BLINK);
+}
+
+void LayoutInflater::BlinkLayout::DispatchDraw(
+        /* [in] */ ICanvas* canvas)
+{
+    if (mBlinkState) {
+        FrameLayout::DispatchDraw(canvas);
+    }
+}
+
+void LayoutInflater::BlinkLayout::MakeBlink()
+{
+        AutoPtr<IMessage> message;
+        mHandler->ObtainMessage(MESSAGE_BLINK, (IMessage**)&message);
+        Boolean res;
+        mHandler->SendMessageDelayed(message, BLINK_DELAY, &res);
+}
 
 //=======================================================================================
 // LayoutInflater::FactoryMerger
@@ -606,7 +688,7 @@ ECode LayoutInflater::CreateView(
     if (value == NULL) {
         // Class not found in the cache, see if it's real, and try to add it
         AutoPtr<IClassLoader> cl;
-        // LAYOUT_INFLATOR_CATCH_EXCEPTION1(mContext->GetClassLoader((IClassLoader**)&cl)) // zhangjingcheng wait
+        // LAYOUT_INFLATOR_CATCH_EXCEPTION1(mContext->GetClassLoader((IClassLoader**)&cl))
         if (!prefix.IsNull()) {
             LAYOUT_INFLATOR_CATCH_EXCEPTION1(cl->LoadClass(prefix + name, (IClassInfo**)&clazz));
         }
@@ -637,7 +719,7 @@ ECode LayoutInflater::CreateView(
             if (stateTmp == NULL) {
                 // New class -- remember whether it is allowed
                 AutoPtr<IClassLoader> cl;
-                // LAYOUT_INFLATOR_CATCH_EXCEPTION1(mContext->GetClassLoader((IClassLoader**)&cl)) // zhangjingcheng wait
+                // LAYOUT_INFLATOR_CATCH_EXCEPTION1(mContext->GetClassLoader((IClassLoader**)&cl))
                 if (!prefix.IsNull()) {
                     LAYOUT_INFLATOR_CATCH_EXCEPTION1(cl->LoadClass(prefix + name, (IClassInfo**)&clazz));
                 }
@@ -849,14 +931,13 @@ ECode LayoutInflater::CreateViewFromTag(
     Int32 themeResId;
     ta->GetResourceId(0, 0, &themeResId);
     if (themeResId != 0) {
-        // CContextThemeWrapper::New(viewContext, themeResId, (IContext**)&viewContext);
-        // zhangjingcheng wait
+        CContextThemeWrapper::New(viewContext, themeResId, (IContext**)&viewContext);
     }
     ta->Recycle();
 
     if (name.Equals(TAG_1995)) {
         // Let's party like it's 1995!
-        // CBlinkLayout::New(viewContext, attrs, view); //zhangjingcheng
+        // CBlinkLayout::New(viewContext, attrs, view);
     }
 
 //    try {
@@ -1004,16 +1085,16 @@ ECode LayoutInflater::ParseViewTag(
 {
     Int32 type, depth;
 
-    AutoPtr<ITypedArray> ta; // zhangjingcheng. wait
-    // AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
-    //     const_cast<Int32 *>(R::styleable::ViewTag),
-    //     ArraySize(R::styleable::ViewTag));
-    // mContext->ObtainStyledAttributes(
-    //         attrs, attrIds, (ITypedArray**)&ta); zhangjigcheng
+    AutoPtr<ITypedArray> ta;
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+        const_cast<Int32 *>(R::styleable::ViewTag),
+        ArraySize(R::styleable::ViewTag));
+    mContext->ObtainStyledAttributes(
+            attrs, attrIds, (ITypedArray**)&ta);
     Int32 key;
-    // ta->GetResourceId(R::styleable::ViewTag_id, 0, &key); zhangjingcheng
+    ta->GetResourceId(R::styleable::ViewTag_id, 0, &key);
     AutoPtr<ICharSequence> value;
-    // ta->GetText(R::styleable::ViewTag_value, (ICharSequence**)&value); zhangjingcheng
+    ta->GetText(R::styleable::ViewTag_value, (ICharSequence**)&value);
     view->SetTag(key, value);
     ta->Recycle();
 

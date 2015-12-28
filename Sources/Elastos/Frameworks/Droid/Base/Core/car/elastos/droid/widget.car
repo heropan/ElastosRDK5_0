@@ -129,6 +129,7 @@ module
     merge("widget/DayPickerView.car");
     merge("widget/TimePickerClockDelegate.car");
     merge("widget/TimePickerSpinnerDelegate.car");
+    merge("internal/widget/IRemoteViewsFactory.car");
 
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Utility.IList;
@@ -180,6 +181,7 @@ module
     interface Elastos.Droid.Internal.View.Menu.IBaseMenuPresenter;
     interface Elastos.Droid.Internal.View.Menu.IMenuBuilderItemInvoker;
     interface Elastos.Droid.Internal.View.Menu.IMenuView;
+    interface Elastos.Droid.Internal.Widget.IIRemoteViewsFactory;
 
     interface Elastos.Droid.Widget.ISimpleMonthView;
     interface Elastos.Droid.Widget.IExpandableListAdapter;
@@ -191,6 +193,7 @@ module
     interface Elastos.Droid.View.Animation.IInterpolator;
     interface Elastos.Droid.View.ISubUiVisibilityListener;
     interface Elastos.Droid.View.ILayoutInflaterFilter;
+    interface Elastos.Droid.View.IBlinkLayout;
 
     namespace Elastos {
     namespace Droid {
@@ -783,62 +786,71 @@ module
         interface IAccessibilityEventSource;
     }
 
-   //  [local]
-   //  class CBlinkLayout {
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+    [local]
+    class CBlinkLayout {
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      interface IFrameLayout;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        interface IBlinkLayout;
+        interface IFrameLayout;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
-   //  [local]
-   //  class CTableLayoutLayoutParams {
-   //      constructor();
+    [local]
+    class CTableLayoutLayoutParams {
+        constructor();
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] Int32 width,
-   //          [in] Int32 height);
+        constructor(
+            [in] Int32 width,
+            [in] Int32 height);
 
-   //      constructor(
-   //          [in] Int32 width,
-   //          [in] Int32 height,
-   //          [in] Float initWeight);
+        constructor(
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] Float initWeight);
 
-   //      constructor(
-   //          [in] IViewGroupLayoutParams* source);
+        constructor(
+            [in] IViewGroupLayoutParams* source);
 
-   //      constructor(
-   //          [in] IViewGroupMarginLayoutParams* marginSource);
+        constructor(
+            [in] IViewGroupMarginLayoutParams* marginSource);
 
-   //      interface ITableLayoutLayoutParams;
-   //  }
+        interface ITableLayoutLayoutParams;
+        interface ILinearLayoutLayoutParams;
+        interface IViewGroupMarginLayoutParams;
+        interface IViewGroupLayoutParams;
+    }
 
-   //  [local]
-   //  class CTableLayout {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CTableLayout {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      interface ITableLayout;
-   //      interface IViewParent;
-   //      interface IViewManager;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //  }
+        interface ITableLayout;
+        interface ILinearLayout;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
    //  [local]
    //  class CTableRowLayoutParams {
@@ -2619,15 +2631,28 @@ module
         interface IBinder;
     }
 
-   //  [local]
-   //  class CRemoteViewsFactoryAdapter {
-   //      constructor(
-   //          [in] IRemoteViewsFactory* factory,
-   //          [in] Boolean isCreated);
+    [local]
+    class CRemoteViewsListAdapter {
+        constructor(
+            [in] IContext* context,
+            [in] IArrayList* remoteViews,
+            [in] Int32 viewTypeCount);
 
-   //      interface IIRemoteViewsFactory;
-   //      interface IBinder;
-   //  }
+        interface IRemoteViewsListAdapter;
+        interface IBaseAdapter;
+        interface IListAdapter;
+        interface ISpinnerAdapter;
+        interface IAdapter;
+    }
+
+    class CRemoteViewsFactoryAdapter {
+        constructor(
+            [in] IRemoteViewsFactory* factory,
+            [in] Boolean isCreated);
+
+        interface IIRemoteViewsFactory;
+        interface IBinder;
+    }
 
    //  class CRemoteViewsBitmapCache {
    //      constructor();

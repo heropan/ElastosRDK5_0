@@ -3,13 +3,21 @@
 #define __ELASTOS_DROID_VIEW_LAYOUTINFLATER_H__
 
 #include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Graphics.h"
+#include "elastos/droid/widget/FrameLayout.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Utility::IHashMap;
 using Org::Xmlpull::V1::IXmlPullParser;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IHandlerCallback;
 using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Widget::FrameLayout;
 
 namespace Elastos {
 namespace Droid {
@@ -19,6 +27,59 @@ class LayoutInflater
     : public Object
     , public ILayoutInflater
 {
+public:
+    class BlinkLayout
+        : public FrameLayout
+        , public IBlinkLayout
+    {
+    private:
+        class HandlerCallback
+            : public Object
+            , public IHandlerCallback
+        {
+        public:
+            CAR_INTERFACE_DECL()
+
+            HandlerCallback(
+                /* [in] */ BlinkLayout* host);
+
+            CARAPI HandleMessage(
+                /* [in] */ IMessage* msg,
+                /* [in] */ Boolean* result);
+
+        private:
+            BlinkLayout* mHost;
+        };
+
+    public:
+        CAR_INTERFACE_DECL()
+
+        BlinkLayout();
+
+        CARAPI constructor(
+            /* [in] */ IContext* context,
+            /* [in] */ IAttributeSet* attrs);
+
+    protected:
+        CARAPI OnAttachedToWindow();
+
+        CARAPI OnDetachedFromWindow();
+
+        CARAPI_(void) DispatchDraw(
+                /* [in] */ ICanvas* canvas);
+
+    private:
+        CARAPI_(void) MakeBlink();
+
+    private:
+        static const Int32 MESSAGE_BLINK = 0x42;
+        static const Int32 BLINK_DELAY = 500;
+
+        Boolean mBlink;
+        Boolean mBlinkState;
+        AutoPtr<IHandler> mHandler;
+    };
+
 private:
     class FactoryMerger
         : public Object

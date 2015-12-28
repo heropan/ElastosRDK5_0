@@ -25,6 +25,7 @@ namespace Widget {
 
 class ExpandableListConnector
     : public BaseAdapter
+    , public IExpandableListConnector
     , public IFilterable
 {
 public:
@@ -87,8 +88,11 @@ public:
       */
     class PositionMetadata
         : public Object
+        , public IPositionMetadata
     {
     public:
+        CAR_INTERFACE_DECL()
+
         static CARAPI_(AutoPtr<PositionMetadata>) Obtain(
             /* [in] */ Int32 flatListPos,
             /* [in] */ Int32 type,
@@ -212,7 +216,7 @@ public:
       */
     virtual CARAPI GetUnflattenedPos(
         /* [in] */ Int32 flPos,
-        /* [out] */ PositionMetadata** result);
+        /* [out] */ IPositionMetadata** result);
 
     /**
       * Translates either a group pos or a child pos (+ group it belongs to) to a
@@ -227,7 +231,7 @@ public:
       */
     virtual CARAPI GetFlattenedPos(
         /* [in] */ IExpandableListPosition* pos,
-        /* [out] */ PositionMetadata** result);
+        /* [out] */ IPositionMetadata** result);
 
     // @Override
     CARAPI_(Boolean) AreAllItemsEnabled();
@@ -273,7 +277,7 @@ public:
         /* [out] */ Boolean* result);
 
     virtual CARAPI CollapseGroup(
-        /* [in] */ PositionMetadata* posMetadata,
+        /* [in] */ IPositionMetadata* posMetadata,
         /* [out] */ Boolean* result);
 
     /**
@@ -285,7 +289,7 @@ public:
         /* [out] */ Boolean* result);
 
     virtual CARAPI ExpandGroup(
-        /* [in] */ PositionMetadata* posMetadata,
+        /* [in] */ IPositionMetadata* posMetadata,
         /* [out] */ Boolean* result);
 
     /**

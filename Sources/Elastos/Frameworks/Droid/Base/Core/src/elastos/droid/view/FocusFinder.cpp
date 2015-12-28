@@ -8,9 +8,9 @@
 #include "Elastos.Droid.View.h"
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/FocusFinder.h"
-// #include "elastos/droid/view/View.h"
-// #include "elastos/droid/view/ViewGroup.h"
-// #include "elastos/droid/view/CViewConfiguration.h"
+#include "elastos/droid/view/View.h"
+#include "elastos/droid/view/ViewGroup.h"
+#include "elastos/droid/view/ViewConfiguration.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 
@@ -212,9 +212,8 @@ AutoPtr<IView> FocusFinder::FindNextUserSpecifiedFocus(
     /* [in] */ Int32 direction)
 {
     // check for user specified next focus
-    //zhangjingcheng wait...
-    AutoPtr<IView> userSetNextFocus;// =
-        // reinterpret_cast<View*>(focused->Probe(EIID_View))->FindUserSetNextFocus(root, direction);
+    AutoPtr<IView> userSetNextFocus;
+    ((View*)focused)->FindUserSetNextFocus(IView::Probe(root), direction, (IView**)&userSetNextFocus);
     Boolean isFocusable, isInTouchMode, isFocusableInTouchMode;
     if (userSetNextFocus != NULL
         && (userSetNextFocus->IsFocusable(&isFocusable), isFocusable)
@@ -807,8 +806,7 @@ ECode FocusFinder::FindNearestTouchable(
     IView::Probe(root)->GetContext((IContext**)&context);
     assert(context.Get());
     Int32 edgeSlop;
-    //zhangjingcheng wait...
-    // CViewConfiguration::Get(context)->GetScaledEdgeSlop(&edgeSlop);
+    ViewConfiguration::Get(context)->GetScaledEdgeSlop(&edgeSlop);
 
     AutoPtr<CRect> closestBounds;
     ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&closestBounds));
@@ -827,9 +825,7 @@ ECode FocusFinder::FindNearestTouchable(
         // get visible bounds of other view in same coordinate system
         item->GetDrawingRect((IRect*)touchableBounds);
 
-        //zhangjingcheng wait...
-        // reinterpret_cast<ViewGroup*>(root->Probe(EIID_ViewGroup))
-        //     ->OffsetRectBetweenParentAndChild(item, touchableBounds, TRUE, TRUE);
+        ((ViewGroup*)root)->OffsetRectBetweenParentAndChild(item, touchableBounds, TRUE, TRUE);
 
         if (!IsTouchCandidate(x, y, touchableBounds, direction)) {
             continue;

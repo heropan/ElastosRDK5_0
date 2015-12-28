@@ -128,6 +128,7 @@ ECode TableLayout::PassThroughHierarchyChangeListener::OnChildViewRemoved(
 //     TableLayout
 //==============================================================================
 
+CAR_INTERFACE_IMPL(TableLayout, LinearLayout, ITableLayout)
 
 TableLayout::TableLayout()
     : mShrinkAllColumns(FALSE)

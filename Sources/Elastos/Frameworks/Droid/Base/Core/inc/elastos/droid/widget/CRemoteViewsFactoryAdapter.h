@@ -3,64 +3,21 @@
 #define __ELASTOS_DROID_WIDGET_CREMOTEVIEWSFACTORYADAPTER_H__
 
 #include "_Elastos_Droid_Widget_CRemoteViewsFactoryAdapter.h"
-
-using Elastos::Droid::Content::IIntent;
+#include "elastos/droid/widget/RemoteViewsService.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
 CarClass(CRemoteViewsFactoryAdapter)
+    , public RemoteViewsService::RemoteViewsFactoryAdapter
 {
 public:
-    CRemoteViewsFactoryAdapter();
-
-    CARAPI constructor(
-        /* [in] */ IRemoteViewsFactory* factory,
-        /* [in] */ Boolean isCreated);
-
-    CARAPI IsCreated(
-        /* [out] */ Boolean* result);
-
-    CARAPI OnDataSetChanged();
-
-    CARAPI OnDataSetChangedAsync();
-
-    CARAPI GetCount(
-        /* [out] */ Int32* count);
-
-    CARAPI GetViewAt(
-        /* [in] */ Int32 position,
-        /* [out] */ IParcelable** views);
-
-    CARAPI GetLoadingView(
-        /* [out] */ IParcelable** views);
-
-
-    CARAPI GetViewTypeCount(
-        /* [out] */ Int32* count);
-
-    CARAPI GetItemId(
-        /* [in] */ Int32 position,
-        /* [out] */ Int64* id);
-
-    CARAPI HasStableIds(
-        /* [out] */ Boolean* res);
-
-    CARAPI OnDestroy(
-        /* [in] */ IIntent* intent);
-
-    CARAPI ToString(
-        /* [out] */ String* str);
-
-private:
-    AutoPtr<IRemoteViewsFactory> mFactory;
-    Boolean mIsCreated;
+    CAR_OBJECT_DECL()
 };
 
-} // namespace Widget
-} // namespace Droid
-} // namespace Elastos
+}// namespace Widget
+}// namespace Droid
+}// namespace Elastos
 
-#endif //__ELASTOS_DROID_WIDGET_CREMOTEVIEWSFACTORYADAPTER_H__
-
+#endif // __ELASTOS_DROID_WIDGET_CREMOTEVIEWSFACTORYADAPTER_H__

@@ -10,8 +10,8 @@
 #include "elastos/droid/view/NativeInputChannel.h"
 #include "elastos/droid/view/ScopedLocalRef.h"
 #ifdef DROID_CORE
-// #include "elastos/droid/view/CKeyEvent.h"
-// #include "elastos/droid/view/CMotionEvent.h"
+#include "elastos/droid/view/CKeyEvent.h"
+#include "elastos/droid/view/CMotionEvent.h"
 #endif
 #include <elastos/utility/logging/Logger.h>
 #include <android/looper.h>
@@ -34,21 +34,20 @@ static AutoPtr<IKeyEvent> CreateKeyEventFromNative(
     /* [in] */ const android::KeyEvent* event)
 {
     AutoPtr<IKeyEvent> eventObj;
-    ECode ec;
-    // ECode ec = CKeyEvent::New(nanoseconds_to_milliseconds(event->getDownTime()),
-    //         nanoseconds_to_milliseconds(event->getEventTime()),
-    //         event->getAction(),
-    //         event->getKeyCode(),
-    //         event->getRepeatCount(),
-    //         event->getMetaState(),
-    //         event->getDeviceId(),
-    //         event->getScanCode(),
-    //         event->getFlags(),
-    //         event->getSource(),
-    //         (IKeyEvent**)&eventObj);
-    // zhangjingcheng wait
+
+    ECode ec = CKeyEvent::New(nanoseconds_to_milliseconds(event->getDownTime()),
+            nanoseconds_to_milliseconds(event->getEventTime()),
+            event->getAction(),
+            event->getKeyCode(),
+            event->getRepeatCount(),
+            event->getMetaState(),
+            event->getDeviceId(),
+            event->getScanCode(),
+            event->getFlags(),
+            event->getSource(),
+            (IKeyEvent**)&eventObj);
     if (FAILED(ec)) {
-//        ALOGE("An exception occurred while obtaining a key event.");
+       ALOGE("An exception occurred while obtaining a key event.");
         return NULL;
     }
     return eventObj;
@@ -58,10 +57,9 @@ static AutoPtr<IMotionEvent> CreateMotionEventFromNative(
     /* [in] */ const android::MotionEvent* event)
 {
     AutoPtr<IMotionEvent> eventObj;
-    // if (FAILED(CMotionEvent::New((IMotionEvent**)&eventObj))) {
-    //     return NULL;
-    // }
-    // zhangjingcheng wait
+    if (FAILED(CMotionEvent::New((IMotionEvent**)&eventObj))) {
+        return NULL;
+    }
     Handle64 native;
     eventObj->GetNative(&native);
     android::MotionEvent* destEvent = (android::MotionEvent*)native;

@@ -8,6 +8,7 @@
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/InputChannel.h"
+#include "elastos/droid/view/CInputChannel.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <input/InputTransport.h>
 
@@ -172,7 +173,7 @@ ECode InputChannel::WriteToParcel(
 ECode InputChannel::Dup(
     /* [out] */ IInputChannel** target)
 {
-    // CInputChannel::New(target);  wait...zhangjingcheng
+    CInputChannel::New(target);
     NativeDup(*target);
     return NOERROR;
 }
@@ -198,12 +199,12 @@ ECode InputChannel::NativeOpenInputChannelPair(
     AutoPtr<ArrayOf<IInputChannel*> > rArray = ArrayOf<IInputChannel*>::Alloc(2);
     NativeInputChannel* tmpServer = new NativeInputChannel(serverChannel);
     AutoPtr<IInputChannel> serverChannelObj;
-    // CInputChannel::New((IInputChannel**)&serverChannelObj); zhangjingcheng. wait...
+    CInputChannel::New((IInputChannel**)&serverChannelObj);
     ((InputChannel*)serverChannelObj.Get())->mNative = reinterpret_cast<Handle64>(tmpServer);
 
     NativeInputChannel* tmpClient = new NativeInputChannel(clientChannel);
     AutoPtr<IInputChannel> clientChannelObj;
-    // CInputChannel::New((IInputChannel**)&clientChannelObj); zhangjingcheng. wait...
+    CInputChannel::New((IInputChannel**)&clientChannelObj);
     ((InputChannel*)clientChannelObj.Get())->mNative = reinterpret_cast<Handle64>(tmpClient);
 
 

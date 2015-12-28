@@ -6,14 +6,13 @@
 #include "Elastos.Droid.Location.h"
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/InputDevice.h"
-// #include "elastos/droid/view/CKeyCharacterMap.h" zhangjingcheng wait.
-// #include "elastos/droid/view/CMotionEvent.h" zhangjingcheng wait.
+#include "elastos/droid/view/CKeyCharacterMap.h"
+#include "elastos/droid/view/MotionEvent.h"
 #include "elastos/droid/hardware/input/CInputManager.h"
 #include "elastos/droid/hardware/input/InputDeviceIdentifier.h"
 #include "elastos/droid/hardware/input/CInputManagerHelper.h"
 #include <elastos/core/AutoLock.h>
 
-// using Elastos::Droid::View::CMotionEvent; zhangjingcheng wait.
 using Elastos::Core::AutoLock;
 using Elastos::Droid::Hardware::Input::CInputManager;
 using Elastos::Droid::Hardware::Input::InputDeviceIdentifier;
@@ -460,8 +459,8 @@ ECode InputDevice::ReadFromParcel(
         // IParcelable::Probe(mKeyCharacterMap)->ReadFromParcel(in);
     }
     else {
-        // CKeyCharacterMap::New((IKeyCharacterMap**)&mKeyCharacterMap); zhangjingcheng wait.
-        // IParcelable::Probe(mKeyCharacterMap)->ReadFromParcel(in);
+        CKeyCharacterMap::New((IKeyCharacterMap**)&mKeyCharacterMap);
+        IParcelable::Probe(mKeyCharacterMap)->ReadFromParcel(in);
     }
     in->ReadBoolean(&mHasVibrator);
     in->ReadBoolean(&mHasButtonUnderPad);
@@ -571,7 +570,7 @@ ECode InputDevice::ToString(
         mMotionRanges->Get(i, (IInterface**)&tmp);
         AutoPtr<IMotionRange> rangeItf = IMotionRange::Probe(tmp);
         MotionRange* range = (MotionRange*)(rangeItf.Get());
-        // (description += "    ") += CMotionEvent::AxisToString(range->mAxis); zhangjingcheng wait.
+        (description += "    ") += MotionEvent::AxisToString(range->mAxis);
         (description += ": source=0x") += StringUtils::ToString(range->mSource, 16);
         (description += " min=") += range->mMin;
         (description += " max=") += range->mMax;

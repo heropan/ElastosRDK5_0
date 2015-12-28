@@ -7,9 +7,9 @@
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/GestureDetector.h"
 #include "elastos/droid/view/ViewConfiguration.h"
-#include <elastos/core/Math.h>
 #include "elastos/droid/view/VelocityTracker.h"
 #include "elastos/droid/view/MotionEvent.h"
+#include <elastos/core/Math.h>
 
 using Elastos::Droid::Os::ILooper;
 
@@ -308,8 +308,7 @@ ECode GestureDetector::OnTouchEvent(
     ev->GetAction(&action);
 
     if (mVelocityTracker == NULL) {
-        AutoPtr<VelocityTracker> tracker = VelocityTracker::Obtain();
-        mVelocityTracker = (IVelocityTracker*)tracker.Get();
+        mVelocityTracker = VelocityTracker::Obtain();
     }
 
     mVelocityTracker->AddMovement(ev);

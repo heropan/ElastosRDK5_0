@@ -4,8 +4,9 @@
 #include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/widget/ActionMenuPresenter.h"
 #include "elastos/droid/internal/view/menu/MenuItemImpl.h"
-// #include "elastos/droid/widget/ActionMenuView.h"
-// #include "elastos/droid/widget/CActionMenuView.h"
+#include "elastos/droid/widget/ActionMenuView.h"
+#include "elastos/droid/widget/CActionMenuView.h"
+#include "elastos/droid/widget/ListPopupWindow.h"
 #include "elastos/droid/internal/view/ActionBarPolicy.h"
 #include "elastos/droid/internal/transition/ActionBarTransition.h"
 #include "elastos/droid/widget/CActionMenuPresenterSavedState.h"
@@ -47,8 +48,8 @@ String ActionMenuPresenter::TAG("ActionMenuPresenter");
 ActionMenuPresenter::MyForwardingListener::MyForwardingListener(
     /* [in] */ IView* host,
     /* [in] */ ActionMenuPresenter* hostEx)
-    // : ForwardingListener(host)
 {
+    ForwardingListener::constructor(host);
     mHostEx = hostEx;
 }
 
@@ -100,8 +101,8 @@ ActionMenuPresenter::OverflowMenuButton::OverflowMenuButton(
     SetFocusable(TRUE);
     SetVisibility(IView::VISIBLE);
     SetEnabled(TRUE);
-    // AutoPtr<MyForwardingListener> listener = new MyForwardingListener(this, mHost);
-    // SetOnTouchListener(listener); zhangjingcheng
+    AutoPtr<MyForwardingListener> listener = new MyForwardingListener(this, mHost);
+    SetOnTouchListener(listener);
 }
 
 //@Override
@@ -455,7 +456,7 @@ ECode ActionMenuPresenter::InitForMenu(
     res->GetDisplayMetrics((IDisplayMetrics**)&metrics);
     Float density = 0.f;
     metrics->GetDensity(&density);
-    mMinCellSize = (Int32) (56 /* ActionMenuView::MIN_CELL_SIZE */ * density);
+    mMinCellSize = (Int32) (ActionMenuView::MIN_CELL_SIZE * density);
 
     // Drop a scrap view as it may no longer reflect the proper context/config.
     mScrapActionButtonView = NULL;
@@ -543,11 +544,10 @@ ECode ActionMenuPresenter::GetItemView(
     AutoPtr<IActionMenuView> menuParent = IActionMenuView::Probe(parent);
     AutoPtr<IViewGroupLayoutParams> lp;
     actionView->GetLayoutParams((IViewGroupLayoutParams**)&lp);
-    // ActionMenuView* impl = (ActionMenuView*)menuParent.Get();
-    // if (!impl->CheckLayoutParams(lp)) {
-        // actionView->SetLayoutParams(impl->GenerateLayoutParams(lp));
-    // }
-    // zhangjingcheng
+    ActionMenuView* impl = (ActionMenuView*)menuParent.Get();
+    if (!impl->CheckLayoutParams(lp)) {
+        actionView->SetLayoutParams(impl->GenerateLayoutParams(lp));
+    }
 
     *view = actionView;
     REFCOUNT_ADD(*view);
@@ -932,9 +932,8 @@ ECode ActionMenuPresenter::FlagActionItems(
             }
 
             if (mStrictWidthLimit) {
-                // cellsRemaining -= ActionMenuView::MeasureChildForCells(v,
-                //         cellSize, cellsRemaining, querySpec, 0);
-                // zhangjingcheng
+                cellsRemaining -= ActionMenuView::MeasureChildForCells(v,
+                        cellSize, cellsRemaining, querySpec, 0);
             } else {
                 v->Measure(querySpec, querySpec);
             }

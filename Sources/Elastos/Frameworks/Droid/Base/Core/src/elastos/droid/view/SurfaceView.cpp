@@ -5,7 +5,6 @@
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/SurfaceView.h"
 #include "elastos/droid/view/ViewRootImpl.h"
-// #include "elastos/droid/view/CSurfaceView.h"
 #include "elastos/droid/view/CSurface.h"
 #include "elastos/droid/view/CWindowManagerLayoutParams.h"
 #include "elastos/droid/content/res/CConfiguration.h"
@@ -14,7 +13,6 @@
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/SystemProperties.h"
 #include <elastos/utility/logging/Logger.h>
-// #include "elastos/droid/provider/Settings.h" zhangjingcheng
 
 using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
@@ -29,8 +27,6 @@ using Elastos::Droid::Graphics::PixelFormat;
 using Elastos::Droid::Graphics::IPixelFormat;
 using Elastos::Droid::Graphics::PorterDuffMode_CLEAR;
 using Elastos::Droid::Graphics::RegionOp_UNION;
-// using Elastos::Droid::Provider::ISettingsSystem; zhangjingcheng
-// using Elastos::Droid::Provider::Settings; zhangjingcheng
 
 namespace Elastos {
 namespace Droid {
@@ -632,7 +628,9 @@ ECode SurfaceView::UpdateWindow(
         return NOERROR;
     }
 
-    ViewRootImpl* viewRoot; //GetViewRootImpl(); zhangjingcheng
+    AutoPtr<IViewRootImpl> root;
+    GetViewRootImpl((IViewRootImpl**)&root);
+    ViewRootImpl* viewRoot = (ViewRootImpl*)root.Get();
     if (viewRoot != NULL) {
         mTranslator = viewRoot->mTranslator;
     }

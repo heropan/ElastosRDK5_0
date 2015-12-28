@@ -89,6 +89,9 @@ module {
         SetMaxExpGroupCount(
             [in] Int32 maxExpGroupCount);
 
+        GetAdapter(
+            [out] IExpandableListAdapter** adapter);
+
         GetFlattenedPos(
             [in] IExpandableListPosition* pos,
             [out] IPositionMetadata** data);

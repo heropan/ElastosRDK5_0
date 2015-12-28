@@ -137,8 +137,7 @@ public:
 
     ~KeyCharacterMap();
 
-    CARAPI constructor(
-        /* [in] */ IParcel* in);
+    CARAPI constructor();
 
     // Called from Native
     CARAPI constructor(

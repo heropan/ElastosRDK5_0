@@ -6,6 +6,7 @@
 #include "Elastos.Droid.View.h"
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/Surface.h"
+#include "elastos/droid/view/SurfaceControl.h"
 #include "elastos/droid/graphics/CMatrix.h"
 #include "elastos/droid/graphics/CSurfaceTexture.h"
 #include "elastos/droid/graphics/CRegion.h"
@@ -504,7 +505,8 @@ ECode Surface::CopyFrom(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Int64 surfaceControlPtr;// = other.mNativeObject; zhangjingcheng wait
+    SurfaceControl* otherImp = (SurfaceControl*)other;
+    Int64 surfaceControlPtr  = otherImp->mNativeObject;
     if (surfaceControlPtr == 0) {
         // throw new NullPointerException(
         //         "SurfaceControl native object is null. Are you using a released SurfaceControl?");

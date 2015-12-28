@@ -463,6 +463,8 @@ private:
     static const Int32 SURFACE_OPAQUE = 0x02;
 
     static Object sLock;
+
+    friend class Surface;
 };
 
 } // view

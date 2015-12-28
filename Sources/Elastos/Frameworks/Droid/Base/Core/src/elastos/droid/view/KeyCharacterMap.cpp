@@ -384,7 +384,12 @@ KeyCharacterMap::~KeyCharacterMap()
     }
 }
 
-ECode KeyCharacterMap::constructor(
+ECode KeyCharacterMap::constructor()
+{
+    return NOERROR;
+}
+
+ECode KeyCharacterMap::ReadFromParcel(
     /* [in] */ IParcel* in)
 {
     if (in == NULL) {
@@ -670,18 +675,6 @@ ECode KeyCharacterMap::DeviceHasKeys(
     VALIDATE_NOT_NULL(keyCodes);
     VALIDATE_NOT_NULL(hasKeys);
     return CInputManager::GetInstance()->DeviceHasKeys(*keyCodes, hasKeys);
-}
-
-ECode KeyCharacterMap::ReadFromParcel(
-    /* [in] */ IParcel* in)
-{
-    if (in == NULL) {
-        Slogger::E(TAG, String("parcel must not be NULL"));
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    NativeReadFromParcel(in);
-
-    return NOERROR;
 }
 
 ECode KeyCharacterMap::WriteToParcel(

@@ -140,6 +140,8 @@ const Int32 ExpandableListConnector::PositionMetadata::MAX_POOL_SIZE;
 AutoPtr<IArrayList> ExpandableListConnector::PositionMetadata::sPool = ExpandableListConnector::PositionMetadata::InitSPool();
 Object ExpandableListConnector::PositionMetadata::sPoolLock;
 
+CAR_INTERFACE_IMPL(ExpandableListConnector::PositionMetadata, Object, IPositionMetadata)
+
 AutoPtr<ExpandableListConnector::PositionMetadata> ExpandableListConnector::PositionMetadata::Obtain(
     /* [in] */ Int32 flatListPos,
     /* [in] */ Int32 type,
@@ -244,8 +246,8 @@ AutoPtr<ExpandableListConnector::PositionMetadata> ExpandableListConnector::Posi
             sPool->Get(0, (IInterface**)&interfaceTmp);
             sPool->Remove(interfaceTmp);
 
-            IObject* objTmp = IObject::Probe(interfaceTmp);
-            pm = (PositionMetadata*)objTmp;
+            AutoPtr<IPositionMetadata> tmp = IPositionMetadata::Probe(interfaceTmp);
+            pm = (PositionMetadata*)tmp.Get();
         }
         else {
             pm = new PositionMetadata();
@@ -372,7 +374,7 @@ ECode ExpandableListConnector::InnerParcelableCreator::WriteToParcel(
 //=====================================================================
 //                       ExpandableListConnector
 //=====================================================================
-CAR_INTERFACE_IMPL(ExpandableListConnector, BaseAdapter, IFilterable)
+CAR_INTERFACE_IMPL_2(ExpandableListConnector, BaseAdapter, IExpandableListConnector, IFilterable)
 
 ExpandableListConnector::ExpandableListConnector()
     : mExpandableListAdapter(NULL)
@@ -416,7 +418,7 @@ ECode ExpandableListConnector::SetExpandableListAdapter(
 
 ECode ExpandableListConnector::GetUnflattenedPos(
     /* [in] */ Int32 flPos,
-    /* [out] */ PositionMetadata** result)
+    /* [out] */ IPositionMetadata** result)
 {
     VALIDATE_NOT_NULL(result);
     // ==================before translated======================
@@ -629,12 +631,13 @@ ECode ExpandableListConnector::GetUnflattenedPos(
     }
 
     *result = PositionMetadata::Obtain(flPos, ExpandableListPosition::GROUP, groupPos, -1, NULL, insertPosition);
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
 ECode ExpandableListConnector::GetFlattenedPos(
     /* [in] */ IExpandableListPosition* pos,
-    /* [out] */ PositionMetadata** result)
+    /* [out] */ IPositionMetadata** result)
 {
     VALIDATE_NOT_NULL(pos);
     VALIDATE_NOT_NULL(result);
@@ -863,8 +866,9 @@ Boolean ExpandableListConnector::IsEnabled(
     //
     // return retValue;
 
-    AutoPtr<PositionMetadata> metadata;
-    GetUnflattenedPos(flatListPos, (PositionMetadata**)&metadata);
+    AutoPtr<IPositionMetadata> posMetadata;
+    GetUnflattenedPos(flatListPos, (IPositionMetadata**)&posMetadata);
+    PositionMetadata* metadata = (PositionMetadata*)posMetadata.Get();
     AutoPtr<IExpandableListPosition> pos = metadata->mPosition;
     Boolean retValue = FALSE;
     if (((ExpandableListPosition*)pos.Get())->mType == IExpandableListPosition::CHILD) {
@@ -921,8 +925,9 @@ ECode ExpandableListConnector::GetItem(
     //
     // return retValue;
 
-    AutoPtr<PositionMetadata> posMetadata;
-    GetUnflattenedPos(flatListPos, (PositionMetadata**)&posMetadata);
+    AutoPtr<IPositionMetadata> metadata;
+    GetUnflattenedPos(flatListPos, (IPositionMetadata**)&metadata);
+    PositionMetadata* posMetadata = (PositionMetadata*)metadata.Get();
 
     if (posMetadata->mPosition->mType == IExpandableListPosition::GROUP) {
         mExpandableListAdapter->GetGroup(posMetadata->mPosition->mGroupPos, (IInterface**)result);
@@ -966,8 +971,9 @@ ECode ExpandableListConnector::GetItemId(
     //
     // return retValue;
 
-    AutoPtr<PositionMetadata> posMetadata;
-    GetUnflattenedPos(flatListPos, (PositionMetadata**)&posMetadata);
+    AutoPtr<IPositionMetadata> metadata;
+    GetUnflattenedPos(flatListPos, (IPositionMetadata**)&metadata);
+    PositionMetadata* posMetadata = (PositionMetadata*)metadata.Get();
     Int64 groupId = 0;
     mExpandableListAdapter->GetGroupId(posMetadata->mPosition->mGroupPos,
         &groupId);
@@ -1021,8 +1027,9 @@ ECode ExpandableListConnector::GetView(
     //
     // return retValue;
 
-    AutoPtr<PositionMetadata> posMetadata;
-    GetUnflattenedPos(flatListPos, (PositionMetadata**)&posMetadata);
+    AutoPtr<IPositionMetadata> metadata;
+    GetUnflattenedPos(flatListPos, (IPositionMetadata**)&metadata);
+    PositionMetadata* posMetadata = (PositionMetadata*)metadata.Get();
 
     Boolean expanded = FALSE;
     if (posMetadata->mPosition->mType == IExpandableListPosition::GROUP) {
@@ -1074,9 +1081,10 @@ Int32 ExpandableListConnector::GetItemViewType(
     //
     // return retValue;
 
-    AutoPtr<PositionMetadata> metadata;
-    GetUnflattenedPos(flatListPos, (PositionMetadata**)&metadata);
-    AutoPtr<IExpandableListPosition> pos = metadata->mPosition;
+    AutoPtr<IPositionMetadata> metadata;
+    GetUnflattenedPos(flatListPos, (IPositionMetadata**)&metadata);
+    PositionMetadata* posMetadata = (PositionMetadata*)metadata.Get();
+    AutoPtr<IExpandableListPosition> pos = posMetadata->mPosition;
 
     Int32 result = 0;
     IHeterogeneousExpandableList* adapter = IHeterogeneousExpandableList::Probe(mExpandableListAdapter);
@@ -1156,8 +1164,8 @@ ECode ExpandableListConnector::CollapseGroup(
     // return retValue;
 
     AutoPtr<IExpandableListPosition> elGroupPos = ExpandableListPosition::Obtain(IExpandableListPosition::GROUP, groupPos, -1, -1);
-    AutoPtr<PositionMetadata> pm;
-    GetFlattenedPos(elGroupPos, (PositionMetadata**)&pm);
+    AutoPtr<IPositionMetadata> pm;
+    GetFlattenedPos(elGroupPos, (IPositionMetadata**)&pm);
     elGroupPos->Recycle();
 
     if (pm == NULL) {
@@ -1171,11 +1179,13 @@ ECode ExpandableListConnector::CollapseGroup(
 }
 
 ECode ExpandableListConnector::CollapseGroup(
-    /* [in] */ PositionMetadata* posMetadata,
+    /* [in] */ IPositionMetadata* metadata,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(posMetadata);
+    VALIDATE_NOT_NULL(metadata);
     VALIDATE_NOT_NULL(result);
+
+    PositionMetadata* posMetadata = (PositionMetadata*)metadata;
     // ==================before translated======================
     // /*
     //  * Collapsing requires removal from mExpGroupMetadataList
@@ -1230,8 +1240,8 @@ ECode ExpandableListConnector::ExpandGroup(
     // return retValue;
 
     AutoPtr<ExpandableListPosition> elGroupPos = ExpandableListPosition::Obtain(IExpandableListPosition::GROUP, groupPos, -1, -1);
-    AutoPtr<PositionMetadata> pm;
-    GetFlattenedPos(elGroupPos, (PositionMetadata**)&pm);
+    AutoPtr<IPositionMetadata> pm;
+    GetFlattenedPos(elGroupPos, (IPositionMetadata**)&pm);
     elGroupPos->Recycle();
 
     ExpandGroup(pm, result);
@@ -1240,11 +1250,13 @@ ECode ExpandableListConnector::ExpandGroup(
 }
 
 ECode ExpandableListConnector::ExpandGroup(
-    /* [in] */ PositionMetadata* posMetadata,
+    /* [in] */ IPositionMetadata* metadata,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(posMetadata);
+    VALIDATE_NOT_NULL(metadata);
     VALIDATE_NOT_NULL(result);
+
+    PositionMetadata* posMetadata = (PositionMetadata*)metadata;
     // ==================before translated======================
     // /*
     //  * Expanding requires insertion into the mExpGroupMetadataList

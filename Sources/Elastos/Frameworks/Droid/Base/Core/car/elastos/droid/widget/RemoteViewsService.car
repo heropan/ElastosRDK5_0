@@ -14,7 +14,7 @@ module
      * @see android.widget.Adapter
      * @see android.appwidget.AppWidgetManager
      */
-    [local]
+
     interface IRemoteViewsFactory {
         /**
          * Called when your factory is first constructed. The same factory may be shared across

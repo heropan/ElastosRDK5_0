@@ -8,14 +8,13 @@
 #include "elastos/droid/widget/FrameLayout.h"
 #include "elastos/droid/os/CHandlerThread.h"
 #include "elastos/droid/os/Runnable.h"
-
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.Internal.h"
 #include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.View.h"
 #include "Elastos.Droid.Widget.h"
-
+    
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/HashSet.h>

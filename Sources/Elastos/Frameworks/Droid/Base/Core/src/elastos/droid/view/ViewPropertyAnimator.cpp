@@ -22,6 +22,7 @@ namespace View {
 const Int32 ViewPropertyAnimator::NONE;
 const Int32 ViewPropertyAnimator::TRANSLATION_X;
 const Int32 ViewPropertyAnimator::TRANSLATION_Y;
+const Int32 ViewPropertyAnimator::TRANSLATION_Z;
 const Int32 ViewPropertyAnimator::SCALE_X;
 const Int32 ViewPropertyAnimator::SCALE_Y;
 const Int32 ViewPropertyAnimator::ROTATION;
@@ -29,6 +30,7 @@ const Int32 ViewPropertyAnimator::ROTATION_X;
 const Int32 ViewPropertyAnimator::ROTATION_Y;
 const Int32 ViewPropertyAnimator::_X;
 const Int32 ViewPropertyAnimator::_Y;
+const Int32 ViewPropertyAnimator::_Z;
 const Int32 ViewPropertyAnimator::ALPHA;
 const Int32 ViewPropertyAnimator::TRANSFORM_MASK;
 

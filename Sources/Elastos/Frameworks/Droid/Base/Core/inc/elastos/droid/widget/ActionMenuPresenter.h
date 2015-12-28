@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_WIDGET_ACTIONMENUPRESENTER_H__
 
 #include "elastos/droid/widget/ImageButton.h"
-
+#include "elastos/droid/widget/ListPopupWindow.h"
 #include "elastos/droid/internal/view/menu/BaseMenuPresenter.h"
 #include "elastos/droid/internal/view/menu/MenuPopupHelper.h"
 #include "elastos/droid/os/Runnable.h"
@@ -61,8 +61,7 @@ public:
 
 private:
     class MyForwardingListener
-        // : public ListPopupWindow::ForwardingListener
-    // zhangjingcheng
+        : public ListPopupWindow::ForwardingListener
     {
     public:
         MyForwardingListener(

@@ -69,36 +69,41 @@
 #include "elastos/droid/widget/CRemoteViews.h"
 #include "elastos/droid/widget/CRemoteViews.h"
 #include "elastos/droid/widget/CRemoteViewsAdapter.h"
+#include "elastos/droid/widget/CRemoteViewsListAdapter.h"
+#include "elastos/droid/widget/CRemoteViewsFactoryAdapter.h"
 #include "elastos/droid/widget/CRemoteViewsAdapterServiceConnection.h"
+#include "elastos/droid/widget/CTableLayout.h"
+#include "elastos/droid/widget/CTableLayoutLayoutParams.h"
+#include "elastos/droid/widget/CBlinkLayout.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-CAR_OBJECT_IMPL(CGallery);
-CAR_OBJECT_IMPL(CGalleryLayoutParams);
-CAR_OBJECT_IMPL(CScroller);
-CAR_OBJECT_IMPL(CViewAnimator);
-CAR_OBJECT_IMPL(CViewSwitcher);
-CAR_OBJECT_IMPL(CImageSwitcher);
-CAR_OBJECT_IMPL(CTextView);
-CAR_OBJECT_IMPL(CEditText);
-CAR_OBJECT_IMPL(CButton);
-CAR_OBJECT_IMPL(CSwitch);
-CAR_OBJECT_IMPL(CGridView);
-CAR_OBJECT_IMPL(CHorizontalScrollView);
-CAR_OBJECT_IMPL(CHorizontalScrollViewSavedState);
-CAR_OBJECT_IMPL(CScrollBarDrawable);
-CAR_OBJECT_IMPL(CQuickContactBadge);
-CAR_OBJECT_IMPL(CTextClock);
-CAR_OBJECT_IMPL(CToggleButton);
-CAR_OBJECT_IMPL(CTwoLineListItem);
-CAR_OBJECT_IMPL(CAutoCompleteTextView);
-CAR_OBJECT_IMPL(CSearchViewSearchAutoComplete);
-CAR_OBJECT_IMPL(CSearchView);
-CAR_OBJECT_IMPL(CRadialTimePickerView);
-CAR_OBJECT_IMPL(CScrollView);
-CAR_OBJECT_IMPL(CScrollViewSavedState);
+CAR_OBJECT_IMPL(CGallery)
+CAR_OBJECT_IMPL(CGalleryLayoutParams)
+CAR_OBJECT_IMPL(CScroller)
+CAR_OBJECT_IMPL(CViewAnimator)
+CAR_OBJECT_IMPL(CViewSwitcher)
+CAR_OBJECT_IMPL(CImageSwitcher)
+CAR_OBJECT_IMPL(CTextView)
+CAR_OBJECT_IMPL(CEditText)
+CAR_OBJECT_IMPL(CButton)
+CAR_OBJECT_IMPL(CSwitch)
+CAR_OBJECT_IMPL(CGridView)
+CAR_OBJECT_IMPL(CHorizontalScrollView)
+CAR_OBJECT_IMPL(CHorizontalScrollViewSavedState)
+CAR_OBJECT_IMPL(CScrollBarDrawable)
+CAR_OBJECT_IMPL(CQuickContactBadge)
+CAR_OBJECT_IMPL(CTextClock)
+CAR_OBJECT_IMPL(CToggleButton)
+CAR_OBJECT_IMPL(CTwoLineListItem)
+CAR_OBJECT_IMPL(CAutoCompleteTextView)
+CAR_OBJECT_IMPL(CSearchViewSearchAutoComplete)
+CAR_OBJECT_IMPL(CSearchView)
+CAR_OBJECT_IMPL(CRadialTimePickerView)
+CAR_OBJECT_IMPL(CScrollView)
+CAR_OBJECT_IMPL(CScrollViewSavedState)
 CAR_OBJECT_IMPL(CLinearLayout)
 CAR_OBJECT_IMPL(CLinearLayoutLayoutParams)
 CAR_OBJECT_IMPL(CFrameLayout)
@@ -142,9 +147,14 @@ CAR_OBJECT_IMPL(CViewFlipper)
 CAR_OBJECT_IMPL(CZoomControls)
 CAR_OBJECT_IMPL(CZoomButton)
 CAR_OBJECT_IMPL(CZoomButtonsController)
-CAR_OBJECT_IMPL(CRemoteViews);
-CAR_OBJECT_IMPL(CRemoteViewsAdapter);
-CAR_OBJECT_IMPL(CRemoteViewsAdapterServiceConnection);
+CAR_OBJECT_IMPL(CRemoteViews)
+CAR_OBJECT_IMPL(CRemoteViewsAdapter)
+CAR_OBJECT_IMPL(CRemoteViewsListAdapter)
+CAR_OBJECT_IMPL(CRemoteViewsFactoryAdapter)
+CAR_OBJECT_IMPL(CRemoteViewsAdapterServiceConnection)
+CAR_OBJECT_IMPL(CTableLayout)
+CAR_OBJECT_IMPL(CTableLayoutLayoutParams)
+CAR_OBJECT_IMPL(CBlinkLayout)
 
 } // namespace Widget
 } // namespace Droid

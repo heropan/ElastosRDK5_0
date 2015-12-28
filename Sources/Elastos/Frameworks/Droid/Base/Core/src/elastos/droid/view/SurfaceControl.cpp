@@ -7,6 +7,8 @@
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/SurfaceControl.h"
 #include "elastos/droid/view/CSurfaceSession.h"
+#include "elastos/droid/view/CWindowContentFrameStats.h"
+#include "elastos/droid/view/CWindowAnimationFrameStats.h"
 #include "elastos/droid/graphics/CBitmap.h"
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/CRegion.h"
@@ -1084,9 +1086,8 @@ ECode SurfaceControl::NativeGetContentFrameStats(
         (*readyTimesNanoDst)[i] = readyTimesNanoSrc[i];
     }
 
-    // env->CallVoidMethod(outStats, gWindowContentFrameStatsClassInfo.init, refreshPeriodNano,
-            // postedTimesNanoDst, presentedTimesNanoDst, readyTimesNanoDst);
-    // zhangjingcheng wait
+    ((CWindowContentFrameStats*)outStats)->Init(refreshPeriodNano,
+             postedTimesNanoDst, presentedTimesNanoDst, readyTimesNanoDst);
 
     // if (env->ExceptionCheck()) {
     //     return JNI_FALSE;
@@ -1148,9 +1149,7 @@ ECode SurfaceControl::NativeGetAnimationFrameStats(
         (*presentedTimesNanoDst)[i] = presentedTimeNano;
     }
 
-    // env->CallVoidMethod(outStats, gWindowAnimationFrameStatsClassInfo.init, refreshPeriodNano,
-    //         presentedTimesNanoDst);
-    //zhangjingcheng wait
+    ((CWindowAnimationFrameStats*)outStats)->Init(refreshPeriodNano, presentedTimesNanoDst);
 
     // if (env->ExceptionCheck()) {
         // return JNI_FALSE;

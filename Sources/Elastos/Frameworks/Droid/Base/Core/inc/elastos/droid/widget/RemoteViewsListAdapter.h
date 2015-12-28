@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_DROID_WIDGET_ABSLISTVIEW_H__
-#define __ELASTOS_DROID_WIDGET_ABSLISTVIEW_H__
+#ifndef __ELASTOS_DROID_WIDGET_REMOTEVIEWSLISTADAPTER_H__
+#define __ELASTOS_DROID_WIDGET_REMOTEVIEWSLISTADAPTER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Widget.h"
@@ -8,6 +8,9 @@
 #include "elastos/droid/widget/BaseAdapter.h"
 #include "elastos/droid/view/ViewGroup.h"
 #include <Elastos.CoreLibrary.h>
+#include <elastos/utility/etl/List.h>
+
+using Elastos::Droid::Content::IContext;
 
 namespace Elastos {
 namespace Droid {
@@ -38,7 +41,7 @@ public:
 
     CARAPI GetItem(
         /* [in] */ Int32 position,
-        /* [out] */ IInterface* item);
+        /* [out] */ IInterface** item);
 
     CARAPI GetItemId(
         /* [in] */ Int32 position,
@@ -47,7 +50,7 @@ public:
     CARAPI GetView(
         /* [in] */ Int32 position,
         /* [in] */ IView* convertView,
-        /* [in] */ IViewGroup* parent
+        /* [in] */ IViewGroup* parent,
         /* [out] */ IView** view);
 
     CARAPI GetItemViewType(
@@ -58,14 +61,18 @@ public:
         /* [out] */ Boolean* hasStableIds);
 
 private:
-    CARAPI_(void) Init();
+    CARAPI Init();
+
+    CARAPI_(Boolean) FindInList(
+        /* [in] */ Int32 value);
 
     AutoPtr<IContext> mContext;
     AutoPtr<IArrayList> mRemoteViewsList;
-    AutoPtr<IArrayList> mViewTypes;;
+    List<Int32> mViewTypes;
     Int32 mViewTypeCount;
 };
 
 } // namespace Elastos
 } // namespace Droid
 } // namespace Widget
+#endif

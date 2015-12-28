@@ -5,15 +5,19 @@
 #include "Elastos.Droid.Location.h"
 #include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.Widget.h"
+#include "Elastos.Droid.Internal.h"
 #include "elastos/droid/view/RenderNodeAnimator.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/view/ViewPropertyAnimator.h"
+#include "elastos/droid/internal/view/animation/FallbackLUTInterpolator.h"
 #include "elastos/droid/animation/ValueAnimator.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <hwui/Animator.h>
 
 using Elastos::Droid::Animation::ValueAnimator;
 using Elastos::Droid::Animation::EIID_IAnimator;
+using Elastos::Droid::Internal::View::Animation::FallbackLUTInterpolator;
+using Elastos::Droid::Internal::View::Animation::INativeInterpolatorFactory;
 using Elastos::Core::EIID_IRunnable;
 using android::uirenderer::RenderPropertyAnimator;
 using android::uirenderer::BaseRenderNodeAnimator;
@@ -49,19 +53,19 @@ Boolean InitTLS()
 
 Boolean RenderNodeAnimator::InitHashMap()
 {
-    // sViewPropertyAnimatorMap[ViewPropertyAnimator::TRANSLATION_X] = IRenderNodeAnimator::TRANSLATION_X;
-    // sViewPropertyAnimatorMap[ViewPropertyAnimator::TRANSLATION_Y] = IRenderNodeAnimator::TRANSLATION_Y;
-    // sViewPropertyAnimatorMap[ViewPropertyAnimator::TRANSLATION_Z] = IRenderNodeAnimator::TRANSLATION_Z;
-    // sViewPropertyAnimatorMap[ViewPropertyAnimator::SCALE_X] = IRenderNodeAnimator::SCALE_X;
-    // sViewPropertyAnimatorMap[ViewPropertyAnimator::SCALE_Y] = IRenderNodeAnimator::SCALE_Y;
-    // sViewPropertyAnimatorMap[ViewPropertyAnimator::ROTATION] = IRenderNodeAnimator::ROTATION;
-    // sViewPropertyAnimatorMap[ViewPropertyAnimator::ROTATION_X] = IRenderNodeAnimator::ROTATION_X;
-    // sViewPropertyAnimatorMap[ViewPropertyAnimator::ROTATION_Y] = IRenderNodeAnimator::ROTATION_Y;
-    // sViewPropertyAnimatorMap[ViewPropertyAnimator::_X] = IRenderNodeAnimator::X;
-    // sViewPropertyAnimatorMap[ViewPropertyAnimator::_Y] = IRenderNodeAnimator::Y;
-    // sViewPropertyAnimatorMap[ViewPropertyAnimator::_Z] = IRenderNodeAnimator::Z;
-    // sViewPropertyAnimatorMap[ViewPropertyAnimator::ALPHA] = IRenderNodeAnimator::ALPHA;
-    return TRUE; // zhangjingcheng
+    sViewPropertyAnimatorMap[ViewPropertyAnimator::TRANSLATION_X] = IRenderNodeAnimator::TRANSLATION_X;
+    sViewPropertyAnimatorMap[ViewPropertyAnimator::TRANSLATION_Y] = IRenderNodeAnimator::TRANSLATION_Y;
+    sViewPropertyAnimatorMap[ViewPropertyAnimator::TRANSLATION_Z] = IRenderNodeAnimator::TRANSLATION_Z;
+    sViewPropertyAnimatorMap[ViewPropertyAnimator::SCALE_X] = IRenderNodeAnimator::SCALE_X;
+    sViewPropertyAnimatorMap[ViewPropertyAnimator::SCALE_Y] = IRenderNodeAnimator::SCALE_Y;
+    sViewPropertyAnimatorMap[ViewPropertyAnimator::ROTATION] = IRenderNodeAnimator::ROTATION;
+    sViewPropertyAnimatorMap[ViewPropertyAnimator::ROTATION_X] = IRenderNodeAnimator::ROTATION_X;
+    sViewPropertyAnimatorMap[ViewPropertyAnimator::ROTATION_Y] = IRenderNodeAnimator::ROTATION_Y;
+    sViewPropertyAnimatorMap[ViewPropertyAnimator::_X] = IRenderNodeAnimator::X;
+    sViewPropertyAnimatorMap[ViewPropertyAnimator::_Y] = IRenderNodeAnimator::Y;
+    sViewPropertyAnimatorMap[ViewPropertyAnimator::_Z] = IRenderNodeAnimator::Z;
+    sViewPropertyAnimatorMap[ViewPropertyAnimator::ALPHA] = IRenderNodeAnimator::ALPHA;
+    return TRUE;
 }
 
 Boolean RenderNodeAnimator::sHaveKey = InitTLS();
@@ -120,8 +124,7 @@ ECode RenderNodeAnimator::DelayedAnimationHelper::ScheduleCallback()
 {
     if (!mCallbackScheduled) {
         mCallbackScheduled = TRUE;
-        // mChoreographer.postCallback(Choreographer.CALLBACK_ANIMATION, this, null);
-        // zhangjingcheng
+        mChoreographer->PostCallback(IChoreographer::CALLBACK_ANIMATION, this, NULL);
     }
     return NOERROR;
 }
@@ -443,7 +446,9 @@ Int32 RenderNodeAnimator::MapViewPropertyToRenderProperty(
 Boolean RenderNodeAnimator::IsNativeInterpolator(
     /* [in] */ ITimeInterpolator* interpolator)
 {
-    return FALSE; //zhangjingcheng
+    Boolean res;
+    interpolator->HasNativeInterpolator(&res);
+    return res;
 }
 
 void RenderNodeAnimator::OnFinished()
@@ -457,7 +462,7 @@ void RenderNodeAnimator::OnFinished()
     AutoPtr<ArrayOf<IAnimatorListener*> > listeners = CloneListeners();
     Int32 numListeners = listeners == NULL ? 0 : listeners->GetLength();
     for (int i = 0; i < numListeners; i++) {
-        // (*listeners)[i]->OnAnimationEnd(this); zhangjingcheng
+        (*listeners)[i]->OnAnimationEnd(this);
     }
 
     // Release the native object, as it has a global reference to us. This
@@ -491,14 +496,14 @@ void RenderNodeAnimator::ApplyInterpolator()
 {
     if (mInterpolator == NULL) return;
 
-    // Int64 ni;
-    // if (isNativeInterpolator(mInterpolator)) {
-    //     (INativeInterpolatorFactory::Probe(mInterpolator))->CreateNativeInterpolator(&ni);
-    // } else {
-    //     Int64 duration = nGetDuration(mNativePtr->get());
-    //     ni = FallbackLUTInterpolator.createNativeInterpolator(mInterpolator, duration);
-    // }
-    // nSetInterpolator(mNativePtr->get(), ni); // zhangjingcheng
+    Int64 ni;
+    if (IsNativeInterpolator(mInterpolator)) {
+        (INativeInterpolatorFactory::Probe(mInterpolator))->CreateNativeInterpolator(&ni);
+    } else {
+        Int64 duration = nGetDuration(mNativePtr->get());
+        ni = FallbackLUTInterpolator::CreateNativeInterpolator(mInterpolator, duration);
+    }
+    nSetInterpolator(mNativePtr->get(), ni);
 }
 
 void RenderNodeAnimator::DoStart()
@@ -528,7 +533,7 @@ void RenderNodeAnimator::NotifyStartListeners()
     AutoPtr<ArrayOf<IAnimatorListener*> > listeners = CloneListeners();
     Int32 numListeners = listeners == NULL ? 0 : listeners->GetLength();
     for (int i = 0; i < numListeners; i++) {
-        // (*listeners)[i]->OnAnimationStart(this); zhangjingcheng
+        (*listeners)[i]->OnAnimationStart(this);
     }
 }
 

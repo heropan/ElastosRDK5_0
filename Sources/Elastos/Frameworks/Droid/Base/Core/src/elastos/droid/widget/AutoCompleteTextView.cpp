@@ -872,8 +872,7 @@ ECode AutoCompleteTextView::OnKeyPreIme(
             }
         }
     }
-    // return EditText::OnKeyPreIme(keyCode, event, result); zhangjingcheng
-    return NOERROR;
+    return EditText::OnKeyPreIme(keyCode, event, result);
 }
 
 ECode AutoCompleteTextView::OnKeyUp(
@@ -910,8 +909,7 @@ ECode AutoCompleteTextView::OnKeyUp(
         return NOERROR;
     }
 
-    // return EditText::OnKeyUp(keyCode, event, result); zhangjingcheng
-    return NOERROR;
+    return EditText::OnKeyUp(keyCode, event, result);
 }
 
 ECode AutoCompleteTextView::OnKeyDown(
@@ -945,7 +943,7 @@ ECode AutoCompleteTextView::OnKeyDown(
 
     mLastKeyCode = keyCode;
     Boolean handled;
-    // EditText::OnKeyDown(keyCode, event, &handled); zhangjingcheng
+    EditText::OnKeyDown(keyCode, event, &handled);
     mLastKeyCode = IKeyEvent::KEYCODE_UNKNOWN;
 
     if (handled && (IsPopupShowing(&isPopupShowing), isPopupShowing)) {

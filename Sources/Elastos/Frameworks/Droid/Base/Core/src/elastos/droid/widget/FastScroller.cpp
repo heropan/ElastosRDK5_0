@@ -16,7 +16,11 @@
 #include "elastos/droid/view/CViewConfiguration.h"
 #include "elastos/droid/view/CViewGroupLayoutParams.h"
 #include "elastos/droid/utility/MathUtils.h"
+#include "elastos/droid/widget/AbsListView.h"
+#include "elastos/droid/widget/ExpandableListView.h"
+
 #include "elastos/droid/widget/CImageView.h"
+#include "elastos/droid/widget/CTextView.h"
 #include "elastos/droid/R.h"
 
 #include <elastos/core/Math.h>
@@ -696,8 +700,7 @@ Boolean FastScroller::OnTouchEvent(
                     // be other classes that don't properly reset on touch-up,
                     // so do this explicitly just in case.
                     IViewParent::Probe(mList)->RequestDisallowInterceptTouchEvent(FALSE);
-                    // mList->ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_IDLE);
-                    // zhangjingcheng
+                    ((AbsListView*)mList.Get())->ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_IDLE);
                 }
 
                 SetState(STATE_VISIBLE);
@@ -839,7 +842,7 @@ AutoPtr<ITextView> FastScroller::CreatePreviewTextView(
     CViewGroupLayoutParams::New(
             IViewGroupLayoutParams::WRAP_CONTENT, IViewGroupLayoutParams::WRAP_CONTENT, (IViewGroupLayoutParams**)&params);
     AutoPtr<ITextView> textView;
-    // CTextView::New(context, (ITextView**)&textView); zhangjingcheng
+    CTextView::New(context, (ITextView**)&textView);
     IView::Probe(textView)->SetLayoutParams(params);
     textView->SetSingleLine(true);
     textView->SetEllipsize(TextUtilsTruncateAt_MIDDLE);
@@ -1306,15 +1309,15 @@ void FastScroller::GetSectionsFromIndexer()
     IAdapterView::Probe(mList)->GetAdapter((IAdapter**)&adapter);
     if (IHeaderViewListAdapter::Probe(adapter) != NULL) {
         IHeaderViewListAdapter::Probe(adapter)->GetHeadersCount(&mHeaderCount);
-        // adapter = ((HeaderViewListAdapter) adapter).getWrappedAdapter();
-        //zhangjingcheng
+        AutoPtr<IListAdapter> lAdapter;
+        IWrapperListAdapter::Probe(adapter)->GetWrappedAdapter((IListAdapter**)&lAdapter);
+        adapter = IAdapter::Probe(lAdapter);
     }
 
     if (IExpandableListConnector::Probe(adapter) != NULL) {
         AutoPtr<IExpandableListConnector> expConnector = IExpandableListConnector::Probe(adapter);
         AutoPtr<IExpandableListAdapter> expAdapter;
-        // expConnector->GetAdapter((IExpandableListAdapter**)&expAdapter);
-        // zhangjingcheng
+        expConnector->GetAdapter((IExpandableListAdapter**)&expAdapter);
 
         if (ISectionIndexer::Probe(expAdapter) != NULL) {
             mSectionIndexer = ISectionIndexer::Probe(expAdapter);
@@ -1420,14 +1423,12 @@ void FastScroller::ScrollTo(
 
         if (IExpandableListView::Probe(mList) != NULL) {
             AutoPtr<IExpandableListView> expList = IExpandableListView::Probe(mList);
-            // expList->SetSelectionFromTop(expList.getFlatListPosition(
-            //         ExpandableListView.getPackedPositionForGroup(targetIndex + mHeaderCount)),
-            //         0);
-            //zhangjingcheng
+            Int32 pos;
+            expList->GetFlatListPosition(ExpandableListView::GetPackedPositionForGroup(targetIndex + mHeaderCount), &pos);
+            IAbsListView::Probe(expList)->SetSelectionFromTop(pos, 0);
         } else if (IListView::Probe(mList) != NULL) {
             AutoPtr<IListView> list = IListView::Probe(mList);
-            // ((ListView) mList).setSelectionFromTop(targetIndex + mHeaderCount, 0);
-            // zhangjingcheng
+            IAbsListView::Probe(mList)->SetSelectionFromTop(targetIndex + mHeaderCount, 0);
         } else {
             IAdapterView::Probe(mList)->SetSelection(targetIndex + mHeaderCount);
         }
@@ -1436,12 +1437,11 @@ void FastScroller::ScrollTo(
 
         if (IExpandableListView::Probe(mList) != NULL) {
             AutoPtr<IExpandableListView> expList = IExpandableListView::Probe(mList);
-            // expList.setSelectionFromTop(expList.getFlatListPosition(
-            //         ExpandableListView.getPackedPositionForGroup(index + mHeaderCount)), 0);
-            // zhangjingcheng
+            Int32 pos;
+            expList->GetFlatListPosition(ExpandableListView::GetPackedPositionForGroup(index + mHeaderCount), &pos);
+            IAbsListView::Probe(expList)->SetSelectionFromTop(pos, 0);
         } else if (IListView::Probe(mList) != NULL) {
-            // ((ListView)mList).setSelectionFromTop(index + mHeaderCount, 0);
-            // zhangjingcheng
+            IAdapterView::Probe(mList)->SetSelection(index + mHeaderCount);
         } else {
             IAdapterView::Probe(mList)->SetSelection(index + mHeaderCount);
         }
@@ -1795,8 +1795,7 @@ void FastScroller::BeginDrag()
 
     if (mList != NULL) {
        IViewParent::Probe(mList)->RequestDisallowInterceptTouchEvent(TRUE);
-        // mList->ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_TOUCH_SCROLL);
-       // zhangjingcheng
+       ((AbsListView*)mList.Get())->ReportScrollStateChange(IAbsListViewOnScrollListener::SCROLL_STATE_TOUCH_SCROLL);
     }
 
     CancelFling();

@@ -514,11 +514,10 @@ module
         constructor(
             [in] Int32 ptr);
 
-        constructor(
-            [in] IParcel* source);
+        constructor();
 
-        interface IKeyCharacterMap;
         interface IParcelable;
+        interface IKeyCharacterMap;
     }
 
     singleton class CKeyCharacterMapHelper {
