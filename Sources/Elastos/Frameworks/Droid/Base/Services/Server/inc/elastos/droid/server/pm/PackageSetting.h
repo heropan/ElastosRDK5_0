@@ -28,7 +28,10 @@ public:
         /* [in] */ const String& realName,
         /* [in] */ IFile* codePath,
         /* [in] */ IFile* resourcePath,
-        /* [in] */ const String& nativeLibraryPathString,
+        /* [in] */ const String& legacyNativeLibraryPathString,
+        /* [in] */ const String& primaryCpuAbiString,
+        /* [in] */ const String& secondaryCpuAbiString,
+        /* [in] */ const String& cpuAbiOverrideString,
         /* [in] */ Int32 pVersionCode,
         /* [in] */ Int32 pkgFlags);
 

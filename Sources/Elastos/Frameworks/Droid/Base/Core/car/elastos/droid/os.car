@@ -629,6 +629,12 @@ module
     //     interface IZigbeeManager;
     // }
 
+    class CFileBridge {
+        constructor();
+
+        interface IFileBridge;
+    }
+
     } // namespace Os
     } // namespace Droid
     } // namespace Elastos

@@ -17,7 +17,10 @@ PackageSettingBase::PackageSettingBase(
     /* [in] */ const String& realName,
     /* [in] */ IFile* codePath,
     /* [in] */ IFile* resourcePath,
-    /* [in] */ const String& nativeLibraryPathString,
+    /* [in] */ const String& legacyNativeLibraryPathString,
+    /* [in] */ const String& primaryCpuAbiString,
+    /* [in] */ const String& secondaryCpuAbiString,
+    /* [in] */ const String& cpuAbiOverrideString,
     /* [in] */ Int32 pVersionCode,
     /* [in] */ Int32 pkgFlags)
     : GrantedPermissions(pkgFlags)
@@ -33,7 +36,9 @@ PackageSettingBase::PackageSettingBase(
     , mUserState(20)
 {
     mSignatures = new PackageSignatures();
-    Init(codePath, resourcePath, nativeLibraryPathString, pVersionCode);
+    mKeySetData = new PackageKeySetData();
+    Init(codePath, resourcePath, legacyNativeLibraryPathString, primaryCpuAbiString,
+            secondaryCpuAbiString, cpuAbiOverrideString, pVersionCode);
 }
 
 PackageSettingBase::PackageSettingBase(
@@ -45,6 +50,10 @@ PackageSettingBase::PackageSettingBase(
     , mCodePathString(base->mCodePathString)
     , mResourcePath(base->mResourcePath)
     , mResourcePathString(base->mResourcePathString)
+    , mLegacyNativeLibraryPathString(base->mLegacyNativeLibraryPathString;
+    , mPrimaryCpuAbiString(base->mPrimaryCpuAbiString;
+    , mSecondaryCpuAbiString(base->mSecondaryCpuAbiString;
+    , mCpuAbiOverrideString(base->mCpuAbiOverrideString;
     , mNativeLibraryPathString(base->mNativeLibraryPathString)
     , mTimeStamp(base->mTimeStamp)
     , mFirstInstallTime(base->mFirstInstallTime)
@@ -64,19 +73,27 @@ PackageSettingBase::PackageSettingBase(
     for (it = base->mUserState.Begin(); it != base->mUserState.End(); ++it) {
         mUserState[it->mFirst] = new PackageUserState(it->mSecond);
     }
+
+    mKeySetData = new PackageKeySetData(base->mKeySetData);
 }
 
 void PackageSettingBase::Init(
     /* [in] */ IFile* codePath,
     /* [in] */ IFile* resourcePath,
-    /* [in] */ const String& nativeLibraryPathString,
+    /* [in] */ const String& legacyNativeLibraryPathString,
+    /* [in] */ const String& primaryCpuAbiString,
+    /* [in] */ const String& secondaryCpuAbiString,
+    /* [in] */ const String& cpuAbiOverrideString,
     /* [in] */ Int32 pVersionCode)
 {
     mCodePath = codePath;
     codePath->ToString(&mCodePathString);
     mResourcePath = resourcePath;
     resourcePath->ToString(&mResourcePathString);
-    mNativeLibraryPathString = nativeLibraryPathString;
+    mLegacyNativeLibraryPathString = legacyNativeLibraryPathString;
+    mPrimaryCpuAbiString = primaryCpuAbiString;
+    mSecondaryCpuAbiString = secondaryCpuAbiString;
+    mCpuAbiOverrideString = cpuAbiOverrideString;
     mVersionCode = pVersionCode;
 }
 
@@ -114,6 +131,9 @@ void PackageSettingBase::CopyFrom(
     mGrantedPermissions.Insert(base->mGrantedPermissions.Begin(), base->mGrantedPermissions.End());
     mGids = base->mGids;
 
+    mPrimaryCpuAbiString = base->mPrimaryCpuAbiString;
+    mSecondaryCpuAbiString = base->mSecondaryCpuAbiString;
+    mCpuAbiOverrideString = base->mCpuAbiOverrideString;
     mTimeStamp = base->mTimeStamp;
     mFirstInstallTime = base->mFirstInstallTime;
     mLastUpdateTime = base->mLastUpdateTime;
@@ -126,6 +146,7 @@ void PackageSettingBase::CopyFrom(
         mUserState[it->mFirst] = new PackageUserState(it->mSecond);
     }
     mInstallStatus = base->mInstallStatus;
+    mKeySetData = base->mKeySetData;
 }
 
 AutoPtr<PackageUserState> PackageSettingBase::ModifyUserState(
@@ -151,15 +172,24 @@ AutoPtr<PackageUserState> PackageSettingBase::ReadUserState(
 
 void PackageSettingBase::SetEnabled(
     /* [in] */ Int32 state,
-    /* [in] */ Int32 userId)
+    /* [in] */ Int32 userId,
+    /* [in] */ const String& callingPackage)
 {
-    ModifyUserState(userId)->mEnabled = state;
+    AutoPtr<PackageUserState> st = ModifyUserState(userId);
+    st->mEnabled = state;
+    st->mLastDisableAppCaller = callingPackage;
 }
 
 Int32 PackageSettingBase::GetEnabled(
     /* [in] */ Int32 userId)
 {
     return ReadUserState(userId)->mEnabled;
+}
+
+String PackageSettingBase::GetLastDisabledAppCaller(
+    /* [in] */ Int32 userId)
+{
+    return ReadUserState(userId)->mLastDisableAppCaller;
 }
 
 void PackageSettingBase::SetInstalled(
@@ -231,6 +261,32 @@ void PackageSettingBase::SetNotLaunched(
     /* [in] */ Int32 userId)
 {
     ModifyUserState(userId)->mNotLaunched = stop;
+}
+
+Boolean PackageSettingBase::GetHidden(
+    /* [in] */ Int32 userId)
+{
+    return ReadUserState(userId)->mHidden;
+}
+
+void PackageSettingBase::SetHidden(
+    /* [in] */ Boolean hidden,
+    /* [in] */ Int32 userId)
+{
+    ModifyUserState(userId)->mHidden = hidden;
+}
+
+Boolean PackageSettingBase::GetBlockUninstall(
+    /* [in] */ Int32 userId)
+{
+    return ReadUserState(userId)->mBlockUninstall;
+}
+
+void PackageSettingBase::SetBlockUninstall(
+    /* [in] */ Boolean blockUninstall,
+    /* [in] */ Int32 userId)
+{
+    ModifyUserState(userId)->mBlockUninstall = blockUninstall;
 }
 
 void PackageSettingBase::SetUserState(

@@ -1,11 +1,12 @@
 
-#ifndef __ELASTOS_DROID_SERVER_PM_CPACKAGEINSTALLOBSERVER2_H__
-#define __ELASTOS_DROID_SERVER_PM_CPACKAGEINSTALLOBSERVER2_H__
+#ifndef __ELASTOS_DROID_SERVER_PM_CLOCALOBSERVER_H__
+#define __ELASTOS_DROID_SERVER_PM_CLOCALOBSERVER_H__
 
-#include "_Elastos_Droid_Server_Pm_CPackageInstallObserver2.h"
-#include "pm/CPackageManagerService.h"
+#include "_Elastos_Droid_Server_Pm_CLocalObserver.h"
+#include "pm/CPackageInstallerSession.h"
 
 using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::Pm::IIPackageInstallObserver2;
 
@@ -14,7 +15,7 @@ namespace Droid {
 namespace Server {
 namespace Pm {
 
-CarClass(CPackageInstallObserver2)
+CarClass(CLocalObserver)
     , public Object
     , public IIPackageInstallObserver2
     , public IBinder
@@ -25,8 +26,7 @@ public:
     CAR_OBJECT_DECL()
 
     constructor(
-        /* [in] */ IIPackageManager* host,
-        /* [in] */ IPackageMoveObserver* observer);
+        /* [in] */ IIPackageInstallerSession* host);
 
     CARAPI OnUserActionRequired(
         /* [in] */ IIntent* intent);
@@ -38,8 +38,7 @@ public:
         /* [in] */ IBundle* extras);
 
 private:
-    CPackageManagerService* mHost;
-    AutoPtr<IPackageMoveObserver> mObserver;
+    CPackageInstallerSession* mHost;
 };
 
 } // namespace Pm
@@ -47,4 +46,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_SERVER_PM_CPACKAGEINSTALLOBSERVER2_H__
+#endif // __ELASTOS_DROID_SERVER_PM_CLOCALOBSERVER_H__

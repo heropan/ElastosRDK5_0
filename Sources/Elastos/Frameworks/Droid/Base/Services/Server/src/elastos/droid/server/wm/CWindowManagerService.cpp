@@ -351,7 +351,7 @@ CWindowManagerService::WindowManagerServiceCreator::WindowManagerServiceCreator(
 
 ECode CWindowManagerService::WindowManagerServiceCreator::Run()
 {
-    return CWindowManagerService::NewByFriend(mContext, (Handle32)mIm.Get(),
+    return CWindowManagerService::NewByFriend(mContext, (Handle64)mIm.Get(),
             mHaveInputMethods, mShowBootMsgs, mOnlyCore, (CWindowManagerService**)&mInstance);
 }
 
@@ -874,7 +874,7 @@ CWindowManagerService::CWindowManagerService()
     mInputMonitor = new InputMonitor(this);
 }
 
-CAR_INTERFACE_IMPL_2(CWindowManagerService, Object, IIWindowManager, IWindowManagerPolicyWindowManagerFuncs)
+CAR_INTERFACE_IMPL_3(CWindowManagerService, Object, IIWindowManager, IWindowManagerPolicyWindowManagerFuncs, IBinder)
 
 CAR_OBJECT_IMPL(CWindowManagerService)
 
@@ -902,7 +902,7 @@ void CWindowManagerService::InitPolicy()
 
 ECode CWindowManagerService::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ Handle32 inputManager,
+    /* [in] */ Handle64 inputManager,
     /* [in] */ Boolean haveInputMethods,
     /* [in] */ Boolean showBootMsgs,
     /* [in] */ Boolean onlyCore)
@@ -9559,7 +9559,7 @@ ECode CWindowManagerService::OpenSession(
         // throw new IllegalArgumentException("NULL inputContext");
     }
 
-    return CSession::New((Handle32)this, callback, client, inputContext, session);
+    return CSession::New((Handle64)this, callback, client, inputContext, session);
 }
 
 ECode CWindowManagerService::InputMethodClientHasFocus(
