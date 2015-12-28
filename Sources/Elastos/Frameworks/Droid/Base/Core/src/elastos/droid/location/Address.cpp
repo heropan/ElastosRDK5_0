@@ -77,8 +77,7 @@ ECode Address::GetAddressLine(
         CInteger32::New(index, (IInteger32**)&kobj);
         AutoPtr<IInterface> obj;
         mAddressLines->Get(kobj.Get(), (IInterface**)&obj);
-        AutoPtr<ICharSequence> cs = ICharSequence::Probe(obj);
-        cs->ToString(line);
+        ICharSequence::Probe(obj)->ToString(line);
     }
     else {
         *line = String(NULL);
@@ -98,8 +97,8 @@ ECode Address::SetAddressLine(
     }
     AutoPtr<IInteger32> key;
     CInteger32::New(index, (IInteger32**)&key);
-    AutoPtr<IString> value;
-    CString::New(line, (IString**)&value);
+    AutoPtr<ICharSequence> value;
+    CString::New(line, (ICharSequence**)&value);
     mAddressLines->Put(key.Get(), value.Get());
 
     if (line.IsNull()) {
@@ -113,9 +112,8 @@ ECode Address::SetAddressLine(
         while (iter->HasNext(&hasNext), hasNext) {
             AutoPtr<IInterface> next;
             iter->GetNext((IInterface**)&next);
-            AutoPtr<IInteger32> i = IInteger32::Probe(next);
             Int32 v;
-            i->GetValue(&v);
+            IInteger32::Probe(next)->GetValue(&v);
             mMaxAddressLineIndex = Elastos::Core::Math::Max(mMaxAddressLineIndex, v);
         }
     }
@@ -427,9 +425,8 @@ ECode Address::ToString(
         CInteger32::New(i, (IInteger32**)&k);
         AutoPtr<IInterface> obj;
         mAddressLines->Get(k.Get(), (IInterface**)&obj);
-        AutoPtr<ICharSequence> v = ICharSequence::Probe(obj);
         String line;
-        v->ToString(&line);
+        ICharSequence::Probe(obj)->ToString(&line);
 
         if (line.IsNull()) {
             sb += "null";
@@ -486,14 +483,10 @@ ECode Address::ReadFromParcel(
     !country.IsNullOrEmpty() ?
         CLocale::New(language, country, (ILocale**)&locale) :
         CLocale::New(language, (ILocale**)&locale);
-    AutoPtr<IAddress> _a;
-    CAddress::New(locale, (IAddress**)&_a);
-    AutoPtr<Address> a = (Address*)_a.Get();
-
     Int32 N;
     source->ReadInt32(&N);
     if (N > 0) {
-        CHashMap::New(N, (IHashMap**)&(a->mAddressLines));
+        CHashMap::New(N, (IHashMap**)&mAddressLines);
         for (Int32 i = 0; i < N; i++) {
             Int32 index;
             source->ReadInt32(&index);
@@ -501,45 +494,44 @@ ECode Address::ReadFromParcel(
             source->ReadString(&line);
             AutoPtr<IInteger32> k;
             CInteger32::New(index, (IInteger32**)&k);
-            AutoPtr<IString> v;
-            CString::New(line, (IString**)&v);
-            a->mAddressLines->Put(k.Get(), v.Get());
-            a->mMaxAddressLineIndex = Elastos::Core::Math::Max(a->mMaxAddressLineIndex, index);
+            AutoPtr<ICharSequence> v;
+            CString::New(line, (ICharSequence**)&v);
+            mAddressLines->Put(k.Get(), v.Get());
+            mMaxAddressLineIndex = Elastos::Core::Math::Max(mMaxAddressLineIndex, index);
         }
     }
     else {
-        a->mAddressLines = NULL;
-        a->mMaxAddressLineIndex = -1;
+        mAddressLines = NULL;
+        mMaxAddressLineIndex = -1;
     }
-    source->ReadString(&(a->mFeatureName));
-    source->ReadString(&(a->mAdminArea));
-    source->ReadString(&(a->mSubAdminArea));
-    source->ReadString(&(a->mLocality));
-    source->ReadString(&(a->mSubLocality));
-    source->ReadString(&(a->mThoroughfare));
-    source->ReadString(&(a->mSubThoroughfare));
-    source->ReadString(&(a->mPremises));
-    source->ReadString(&(a->mPostalCode));
-    source->ReadString(&(a->mCountryCode));
-    source->ReadString(&(a->mCountryName));
+    source->ReadString(&mFeatureName);
+    source->ReadString(&mAdminArea);
+    source->ReadString(&mSubAdminArea);
+    source->ReadString(&mLocality);
+    source->ReadString(&mSubLocality);
+    source->ReadString(&mThoroughfare);
+    source->ReadString(&mSubThoroughfare);
+    source->ReadString(&mPremises);
+    source->ReadString(&mPostalCode);
+    source->ReadString(&mCountryCode);
+    source->ReadString(&mCountryName);
     Int32 value;
     source->ReadInt32(&value);
-    a->mHasLatitude = value == 0 ? FALSE : TRUE;
-    if (a->mHasLatitude) {
-        source->ReadDouble(&(a->mLatitude));
+    mHasLatitude = value == 0 ? FALSE : TRUE;
+    if (mHasLatitude) {
+        source->ReadDouble(&mLatitude);
     }
     source->ReadInt32(&value);
-    a->mHasLongitude = value == 0 ? FALSE : TRUE;
-    if (a->mHasLongitude) {
-        source->ReadDouble(&(a->mLongitude));
+    mHasLongitude = value == 0 ? FALSE : TRUE;
+    if (mHasLongitude) {
+        source->ReadDouble(&mLongitude);
     }
-    source->ReadString(&(a->mPhone));
-    source->ReadString(&(a->mUrl));
+    source->ReadString(&mPhone);
+    source->ReadString(&mUrl);
 
     AutoPtr<IInterface> info;
     source->ReadInterfacePtr((Handle32*)&info);
-    a->mExtras = (info != NULL)? IBundle::Probe(info) : NULL;
-
+    mExtras = (info != NULL)? IBundle::Probe(info) : NULL;
     return NOERROR;
 }
 
@@ -572,12 +564,10 @@ ECode Address::WriteToParcel(
             AutoPtr<IInterface> ko, vo;
             e->GetKey((IInterface**)&ko);
             e->GetValue((IInterface**)&vo);
-            AutoPtr<IInteger32> k = IInteger32::Probe(ko);
-            AutoPtr<ICharSequence> v = ICharSequence::Probe(vo);
             Int32 key;
-            k->GetValue(&key);
+            IInteger32::Probe(ko)->GetValue(&key);
             String value;
-            v->ToString(&value);
+            ICharSequence::Probe(vo)->ToString(&value);
             parcel->WriteInt32(key);
             parcel->WriteString(value);
         }
@@ -603,8 +593,7 @@ ECode Address::WriteToParcel(
     }
     parcel->WriteString(mPhone);
     parcel->WriteString(mUrl);
-    AutoPtr<IInterface> mExtrasObj = IInterface::Probe(mExtras);
-    parcel->WriteInterfacePtr(mExtrasObj);
+    parcel->WriteInterfacePtr(mExtras);
     return NOERROR;
 }
 

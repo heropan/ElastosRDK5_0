@@ -338,14 +338,32 @@ ECode GpsClock::ResetDriftUncertaintyInNsPerSec()
 ECode GpsClock::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {
-    //TODO
+    parcel->ReadInt16(&mFlags);
+    parcel->ReadInt16(&mLeapSecond);
+    parcel->ReadByte(&mType);
+    parcel->ReadInt64(&mTimeInNs);
+    parcel->ReadDouble(&mTimeUncertaintyInNs);
+    parcel->ReadInt64(&mFullBiasInNs);
+    parcel->ReadDouble(&mBiasInNs);
+    parcel->ReadDouble(&mBiasUncertaintyInNs);
+    parcel->ReadDouble(&mDriftInNsPerSec);
+    parcel->ReadDouble(&mDriftUncertaintyInNsPerSec);
     return NOERROR;
 }
 
 ECode GpsClock::WriteToParcel(
     /* [in] */ IParcel* parcel)
 {
-    //TODO
+    parcel->WriteInt32(mFlags);
+    parcel->WriteInt32(mLeapSecond);
+    parcel->WriteByte(mType);
+    parcel->WriteInt64(mTimeInNs);
+    parcel->WriteDouble(mTimeUncertaintyInNs);
+    parcel->WriteInt64(mFullBiasInNs);
+    parcel->WriteDouble(mBiasInNs);
+    parcel->WriteDouble(mBiasUncertaintyInNs);
+    parcel->WriteDouble(mDriftInNsPerSec);
+    parcel->WriteDouble(mDriftUncertaintyInNsPerSec);
     return NOERROR;
 }
 

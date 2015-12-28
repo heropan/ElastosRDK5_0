@@ -1,7 +1,9 @@
 #include "elastos/droid/location/Criteria.h"
 #include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::StringBuilder;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -46,6 +48,7 @@ ECode Criteria::SetHorizontalAccuracy(
     /* [in] */ Int32 accuracy)
 {
     if (accuracy < Criteria_NO_REQUIREMENT || accuracy > Criteria_ACCURACY_HIGH) {
+        Logger::E("Criteria", "accuracy=%d", accuracy);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mHorizontalAccuracy = accuracy;
@@ -64,6 +67,7 @@ ECode Criteria::SetVerticalAccuracy(
     /* [in] */ Int32 accuracy)
 {
     if (accuracy < Criteria_NO_REQUIREMENT || accuracy > Criteria_ACCURACY_HIGH) {
+        Logger::E("Criteria", "accuracy=%d", accuracy);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mVerticalAccuracy = accuracy;
@@ -82,6 +86,7 @@ ECode Criteria::SetSpeedAccuracy(
     /* [in] */ Int32 accuracy)
 {
     if (accuracy < Criteria_NO_REQUIREMENT || accuracy > Criteria_ACCURACY_HIGH) {
+        Logger::E("Criteria", "accuracy=%d", accuracy);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mSpeedAccuracy = accuracy;
@@ -100,6 +105,7 @@ ECode Criteria::SetBearingAccuracy(
     /* [in] */ Int32 accuracy)
 {
     if (accuracy < Criteria_NO_REQUIREMENT || accuracy > Criteria_ACCURACY_HIGH) {
+        Logger::E("Criteria", "accuracy=%d", accuracy);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mBearingAccuracy = accuracy;
@@ -118,6 +124,7 @@ ECode Criteria::SetAccuracy(
     /* [in] */ Int32 accuracy)
 {
     if (accuracy < Criteria_NO_REQUIREMENT || accuracy > Criteria_ACCURACY_COARSE) {
+        Logger::E("Criteria", "accuracy=%d", accuracy);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (accuracy == Criteria_ACCURACY_FINE) {
@@ -147,6 +154,7 @@ ECode Criteria::SetPowerRequirement(
     /* [in] */ Int32 level)
 {
     if (level < Criteria_NO_REQUIREMENT || level > Criteria_POWER_HIGH) {
+        Logger::E("Criteria", "level=%d", level);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mPowerRequirement = level;
@@ -260,25 +268,21 @@ ECode Criteria::PowerToString(
                 *strOut = "NO_REQ";
                 return NOERROR;
             }
-
         case Criteria_POWER_LOW:
             {
                 *strOut = "LOW";
                 return NOERROR;
             }
-
         case Criteria_POWER_MEDIUM:
             {
                 *strOut = "MEDIUM";
                 return NOERROR;
             }
-
         case Criteria_POWER_HIGH:
             {
                 *strOut = "HIGH";
                 return NOERROR;
             }
-
         default:
             {
                 *strOut = "???";
@@ -292,32 +296,27 @@ ECode Criteria::AccuracyToString(
     /* [out] */ String* strOut)
 {
     VALIDATE_NOT_NULL(strOut);
-
     switch (accuracy) {
         case Criteria_NO_REQUIREMENT:
             {
                 *strOut = "---";
                 return NOERROR;
             }
-
         case Criteria_ACCURACY_HIGH:
             {
                 *strOut = "HIGH";
                 return NOERROR;
             }
-
         case Criteria_ACCURACY_MEDIUM:
             {
                 *strOut = "MEDIUM";
                 return NOERROR;
             }
-
         case Criteria_ACCURACY_LOW:
             {
                 *strOut = "LOW";
                 return NOERROR;
             }
-
         default:
             {
                 *strOut = "???";

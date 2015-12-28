@@ -9,7 +9,6 @@
 #include "elastos/droid/location/CLocationRequest.h"
 #include "elastos/droid/location/CGpsMeasurementListenerTransport.h"
 #include "elastos/droid/location/CGpsNavigationMessageListenerTransport.h"
-
 #include "elastos/droid/location/CGpsStatus.h"
 #include "elastos/droid/location/Geofence.h"
 #include "elastos/droid/os/Build.h"
@@ -37,7 +36,10 @@ namespace Elastos {
 namespace Droid {
 namespace Location {
 
-//--------------LocationManager::ListenerTransport::ListenerTransportHandler--------------------//
+//============================================
+//LocationManager::ListenerTransport::ListenerTransportHandler
+//============================================
+
 LocationManager::ListenerTransport::ListenerTransportHandler::ListenerTransportHandler(
     /* [in] */ ListenerTransport* listener)
     : mLTHost(listener)
@@ -57,7 +59,10 @@ ECode LocationManager::ListenerTransport::ListenerTransportHandler::HandleMessag
     return mLTHost->_handleMessage(msg);
 }
 
-//--------------LocationManager::ListenerTransport--------------------//
+//============================================
+//LocationManager::ListenerTransport
+//============================================
+
 const Int32 LocationManager::ListenerTransport::TYPE_LOCATION_CHANGED;
 const Int32 LocationManager::ListenerTransport::TYPE_STATUS_CHANGED;
 const Int32 LocationManager::ListenerTransport::TYPE_PROVIDER_ENABLED;
@@ -205,7 +210,10 @@ ECode LocationManager::ListenerTransport::ToString(
     return E_NOT_IMPLEMENTED;
 }
 
-//--------------LocationManager::GpsStatusListenerTransport::Nmea------//
+//============================================
+//LocationManager::GpsStatusListenerTransport::Nmea
+//============================================
+
 LocationManager::GpsStatusListenerTransport::Nmea::Nmea(
     /* [in] */ Int64 timestamp,
     /* [in] */ const String& nmea)
@@ -214,7 +222,10 @@ LocationManager::GpsStatusListenerTransport::Nmea::Nmea(
 {
 }
 
-//--------------LocationManager::GpsStatusListenerTransport::GpsHandler------//
+//============================================
+//LocationManager::GpsStatusListenerTransport::GpsHandler
+//============================================
+
 LocationManager::GpsStatusListenerTransport::GpsHandler::GpsHandler(
     /* [in] */ GpsStatusListenerTransport* host)
     : mGLTHost(host)
@@ -251,7 +262,10 @@ ECode LocationManager::GpsStatusListenerTransport::GpsHandler::HandleMessage(
     return NOERROR;
 }
 
-//--------------LocationManager::GpsStatusListenerTransport------//
+//============================================
+//LocationManager::GpsStatusListenerTransport
+//============================================
+
 CAR_INTERFACE_IMPL_2(LocationManager::GpsStatusListenerTransport, Object, IIGpsStatusListener, IBinder)
 
 LocationManager::GpsStatusListenerTransport::GpsStatusListenerTransport()
@@ -369,7 +383,10 @@ ECode LocationManager::GpsStatusListenerTransport::ToString(
     return E_NOT_IMPLEMENTED;
 }
 
-//--------------LocationManager------------------------------------------------//
+//============================================
+//LocationManager
+//============================================
+
 const String LocationManager::TAG("LocationManager");
 
 CAR_INTERFACE_IMPL(LocationManager, Object, ILocationManager)

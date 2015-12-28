@@ -93,9 +93,6 @@ ECode Location::Set(
     return NOERROR;
 }
 
-/**
- * Clears the contents of the location.
- */
 ECode Location::Reset()
 {
     mProvider = "";
@@ -255,12 +252,10 @@ ECode Location::ComputeDistanceAndBearing(
 
     Int32 MAXITERS = 20;
     // Convert lat/long to radians
-#if 0 //'DOUBLE_PI' is not a member of 'Elastos::Core::Math'
-    lat1 *= Elastos::Core::Math::DOUBLE_PI / 180.0;
-    lat2 *= Elastos::Core::Math::DOUBLE_PI / 180.0;
-    lon1 *= Elastos::Core::Math::DOUBLE_PI / 180.0;
-    lon2 *= Elastos::Core::Math::DOUBLE_PI / 180.0;
-#endif
+    lat1 *= Elastos::Core::Math::PI / 180.0;
+    lat2 *= Elastos::Core::Math::PI / 180.0;
+    lon1 *= Elastos::Core::Math::PI / 180.0;
+    lon2 *= Elastos::Core::Math::PI / 180.0;
 
     Double a = 6378137.0; // WGS84 major axis
     Double b = 6356752.3142; // WGS84 semi-major axis
@@ -334,22 +329,20 @@ ECode Location::ComputeDistanceAndBearing(
             break;
         }
     }
-#if 0 //'DOUBLE_PI' is not a member of 'Elastos::Core::Math'
     Float distance = (Float) (b * A * (sigma - deltaSigma));
     (*results)[0] = distance;
     if (results->GetLength() > 1) {
         Float initialBearing = (Float) Elastos::Core::Math::Atan2(cosU2 * sinLambda,
             cosU1 * sinU2 - sinU1 * cosU2 * cosLambda);
-        initialBearing *= 180.0 / Elastos::Core::Math::DOUBLE_PI;
+        initialBearing *= 180.0 / Elastos::Core::Math::PI;
         (*results)[1] = initialBearing;
         if (results->GetLength() > 2) {
             Float finalBearing = (Float) Elastos::Core::Math::Atan2(cosU1 * sinLambda,
                 -sinU1 * cosU2 + cosU1 * sinU2 * cosLambda);
-            finalBearing *= 180.0 / Elastos::Core::Math::DOUBLE_PI;
+            finalBearing *= 180.0 / Elastos::Core::Math::PI;
             (*results)[2] = finalBearing;
         }
     }
-#endif
     return NOERROR;
 }
 
@@ -373,7 +366,6 @@ ECode Location::DistanceTo(
     /* [out] */ Float* distance)
 {
     VALIDATE_NOT_NULL(distance);
-
     // See if we already have the result
     synchronized(this) {
         AutoPtr<Location> destLocation = (Location*)dest;
@@ -724,9 +716,7 @@ ECode Location::ReadFromParcel(
     in->ReadInt64(&mElapsedRealtimeNanos);
     in->ReadDouble(&mLatitude);
     in->ReadDouble(&mLongitude);
-
     Int32 tempInt32;
-
     in->ReadInt32(&tempInt32);
     mHasAltitude = tempInt32 != 0;
     in->ReadDouble(&mAltitude);
@@ -739,19 +729,16 @@ ECode Location::ReadFromParcel(
     in->ReadInt32(&tempInt32);
     mHasAccuracy = tempInt32 != 0;
     in->ReadFloat(&mAccuracy);
-    assert(0);
-    // in->ReadBundle(&mExtras);
-    // l.mIsFromMockProvider = in.readInt() != 0;
-
+    in->ReadInterfacePtr((Handle32*)&mExtras);
+    Int32 v;
+    in->ReadInt32(&v);
+    mIsFromMockProvider = v != 0;
     return NOERROR;
 }
 
-//@Override
 ECode Location::WriteToParcel(
     /* [in] */ IParcel* parcel)
 {
-    VALIDATE_NOT_NULL(parcel);
-
     parcel->WriteString(mProvider);
     parcel->WriteInt64(mTime);
     parcel->WriteInt64(mElapsedRealtimeNanos);
@@ -765,9 +752,8 @@ ECode Location::WriteToParcel(
     parcel->WriteFloat(mBearing);
     parcel->WriteInt32(mHasAccuracy ? 1 : 0);
     parcel->WriteFloat(mAccuracy);
-    assert(0);
-    // parcel->WriteBundle(mExtras);
-    // parcel.writeInt(mIsFromMockProvider? 1 : 0);
+    parcel->WriteInterfacePtr(mExtras);
+    parcel->WriteInt32(mIsFromMockProvider? 1 : 0);
     return NOERROR;
 }
 

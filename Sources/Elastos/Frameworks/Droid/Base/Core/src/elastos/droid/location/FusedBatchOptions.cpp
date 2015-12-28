@@ -5,18 +5,27 @@ namespace Elastos {
 namespace Droid {
 namespace Location {
 
+//=========================
 //FusedBatchOptions::SourceTechnologies
+//=========================
+
 Int32 FusedBatchOptions::SourceTechnologies::GNSS = 1 << 0;
 Int32 FusedBatchOptions::SourceTechnologies::WIFI = 1 << 1;
 Int32 FusedBatchOptions::SourceTechnologies::SENSORS = 1 << 2;
 Int32 FusedBatchOptions::SourceTechnologies::CELL = 1 << 3;
 Int32 FusedBatchOptions::SourceTechnologies::BLUETOOTH = 1 << 4;
 
+//====================
 //FusedBatchOptions::BatchFlags
+//====================
+
 Int32 FusedBatchOptions::BatchFlags::WAKEUP_ON_FIFO_FULL = 0x0000001;
 Int32 FusedBatchOptions::BatchFlags::CALLBACK_ON_LOCATION_FIX = 0x0000002;
 
+//============
 //FusedBatchOptions
+//============
+
 CAR_INTERFACE_IMPL_2(FusedBatchOptions, Object, IFusedBatchOptions, IParcelable)
 
 FusedBatchOptions::FusedBatchOptions()
