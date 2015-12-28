@@ -2632,7 +2632,7 @@ Boolean PhoneWindowManager::ShouldEnableWakeGestureLp()
 
 void PhoneWindowManager::ReadCameraLensCoverState()
 {
-    mCameraLensCoverState = mWindowManagerFuncs->GetCameraLensCoverState();
+    mWindowManagerFuncs->GetCameraLensCoverState(&mCameraLensCoverState);
 }
 
 void PhoneWindowManager::AwakenDreams()
