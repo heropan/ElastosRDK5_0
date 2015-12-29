@@ -94,6 +94,7 @@ SOURCES += Elastos.Droid.Core.cpp
 SOURCES += Elastos.CoreLibrary.cpp
 
 ELASTOS_LIBS += am/am.lib
+ELASTOS_LIBS += content/content.lib
 ELASTOS_LIBS += display/display.lib
 ELASTOS_LIBS += os/os.lib
 ELASTOS_LIBS += wallpaper/wallpaper.lib

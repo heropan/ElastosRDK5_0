@@ -722,6 +722,10 @@ module
     }
 
     interface IUserManagerHelper {
+        Get(
+            [in] IContext* ctx,
+            [out] IUserManager** userManager);
+
         /**
          * Returns whether the system supports multiple users.
          * @return true if multiple users can be created, false if it is a single user device.

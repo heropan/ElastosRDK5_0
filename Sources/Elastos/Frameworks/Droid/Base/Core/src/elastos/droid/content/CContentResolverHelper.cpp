@@ -174,6 +174,15 @@ ECode CContentResolverHelper::GetContentService(
     return ContentResolver::GetContentService(contentService);
 }
 
+ECode CContentResolverHelper::SyncErrorToString(
+    /* [in] */ Int32 error,
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = ContentResolver::SyncErrorToString(error);
+    return NOERROR;
+}
+
 }
 }
 }

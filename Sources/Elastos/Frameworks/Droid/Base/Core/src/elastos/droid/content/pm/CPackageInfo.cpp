@@ -476,6 +476,24 @@ ECode CPackageInfo::SetInstallLocation(
     return NOERROR;
 }
 
+/** @hide */
+ECode CPackageInfo::GetRequiredAccountType(
+    /* [out] */ String* requiredAccountType)
+{
+    VALIDATE_NOT_NULL(requiredAccountType);
+    *requiredAccountType = mRequiredAccountType;
+    return NOERROR;
+}
+
+/** @hide */
+ECode CPackageInfo::SetRequiredAccountType(
+    /* [in] */  String requiredAccountType)
+{
+    mRequiredAccountType = requiredAccountType;
+    return NOERROR;
+}
+
+
 } // namespace Pm
 } // namespace Content
 } // namespace Droid

@@ -759,7 +759,6 @@ ECode Process::SetProcessGroup(
     /* [in] */ Int32 group)
 {
     DIR *d;
-    FILE *fp;
     char proc_path[255];
     struct dirent *de;
 

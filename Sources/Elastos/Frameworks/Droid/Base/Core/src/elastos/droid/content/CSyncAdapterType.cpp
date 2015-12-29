@@ -323,6 +323,17 @@ ECode CSyncAdapterType::constructor(
     return NOERROR;
 }
 
+AutoPtr<ISyncAdapterType> CSyncAdapterType::NewKey(
+    /* [in] */ const String& authority,
+    /* [in] */ const String& accountType)
+{
+    AutoPtr<CSyncAdapterType> type;
+    CSyncAdapterType::NewByFriend((CSyncAdapterType**)&type);
+    type->constructor(authority, accountType);
+    return (ISyncAdapterType*)type.Get();
+}
+
+
 }
 }
 }

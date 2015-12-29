@@ -1325,6 +1325,11 @@ module
         /** @hide */
         GetContentService(
             [out] IIContentService** contentService);
+
+        /** @hide */
+        SyncErrorToString(
+            [in] Int32 error,
+            [out] String* str);
     }
 
     } // namespace Content

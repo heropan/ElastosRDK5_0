@@ -2,7 +2,12 @@
 #ifndef __ELASTOS_DROID_SERVER_CONTENT_SYNC_QUEUE_H__
 #define __ELASTOS_DROID_SERVER_CONTENT_SYNC_QUEUE_H__
 
+#include <elastos/droid/ext/frameworkext.h>
+#include <Elastos.Droid.Content.h>
+#include <elastos/droid/server/SyncStorageEngine.h>
 #include <elastos/core/Object.h>
+
+using Elastos::Droid::Content::Pm::IPackageManager;
 
 namespace Elastos {
 namespace Droid {
@@ -22,7 +27,7 @@ public:
     SyncQueue(
         /* [in] */ IPackageManager* packageManager,
         /* [in] */ SyncStorageEngine* syncStorageEngine,
-        /* [in] */ SyncAdaptersCache* syncAdapters);
+        /* [in] */ ISyncAdaptersCache* syncAdapters);
 
     void AddPendingOperations(
         /* [in] */ Int32 userId);
@@ -73,20 +78,20 @@ public:
         /* [in] */ EndPoint* info,
         /* [in] */ IBundle* extras);
 
-    AutoPtr<List<AutoPtr<SyncOperation> > GetOperations();
+    AutoPtr< HashMap<String, AutoPtr<SyncOperation> > > GetOperations();
 
     void Dump(
         /* [in] */ StringBuilder* sb);
 
 private:
-    static const String TAG = "SyncManager";
+    static const String TAG;
     AutoPtr<SyncStorageEngine> mSyncStorageEngine;
     AutoPtr<SyncAdaptersCache> mSyncAdapters;
     AutoPtr<IPackageManager> mPackageManager;
 
     // A Map of SyncOperations operationKey -> SyncOperation that is designed for
     // quick lookup of an enqueued SyncOperation.
-    HashMap<String, SyncOperation> mOperationsMap;// = Maps.newHashMap();
+    AutoPtr< HashMap<String, AutoPtr<SyncOperation> > > mOperationsMap;
 };
 
 } // namespace Content

@@ -8,6 +8,7 @@
 #include "elastos/droid/content/pm/CPermissionGroupInfo.h"
 #include "elastos/droid/content/pm/CPermissionInfo.h"
 #include "elastos/droid/content/pm/CProviderInfo.h"
+#include "elastos/droid/content/pm/CRegisteredServicesCacheServiceInfo.h"
 #include "elastos/droid/content/pm/CResolveInfo.h"
 #include "elastos/droid/content/pm/CServiceInfo.h"
 
@@ -25,6 +26,7 @@ CAR_OBJECT_IMPL(CPackageItemInfo)
 CAR_OBJECT_IMPL(CPermissionGroupInfo)
 CAR_OBJECT_IMPL(CPermissionInfo)
 CAR_OBJECT_IMPL(CProviderInfo)
+CAR_OBJECT_IMPL(CRegisteredServicesCacheServiceInfo)
 CAR_OBJECT_IMPL(CResolveInfo)
 CAR_OBJECT_IMPL(CServiceInfo)
 

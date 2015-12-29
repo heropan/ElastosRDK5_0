@@ -15,10 +15,8 @@ ECode CSyncAdapterTypeHelper::NewKey(
     /* [in] */ const String& accountType,
     /* [out] */ ISyncAdapterType** syncAdapterType)
 {
-    AutoPtr<CSyncAdapterType> sat;
-    CSyncAdapterType::NewByFriend((CSyncAdapterType**)&sat);
-    sat->constructor(authority, accountType);
-    *syncAdapterType = (ISyncAdapterType*)sat.Get();
+    AutoPtr<ISyncAdapterType> sat = CSyncAdapterType::NewKey(authority, accountType);
+    *syncAdapterType = sat;
     REFCOUNT_ADD(*syncAdapterType)
     return NOERROR;
 }

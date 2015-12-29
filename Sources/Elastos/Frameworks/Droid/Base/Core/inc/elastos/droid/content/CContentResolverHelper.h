@@ -117,6 +117,10 @@ public:
 
     CARAPI GetContentService(
         /* [out] */ IIContentService** contentService);
+
+    CARAPI SyncErrorToString(
+        /* [in] */ Int32 error,
+        /* [out] */ String* str);
 };
 
 }

@@ -3,7 +3,6 @@
 
 #include "Elastos.Droid.Core.h"
 #include <elastos/core/StringBuilder.h>
-#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
@@ -14,7 +13,6 @@ using Elastos::Text::IDateFormat;
 using Elastos::Utility::ICalendar;
 using Elastos::Utility::IFormatter;
 
-
 namespace Elastos {
 namespace Droid {
 namespace Text {
@@ -24,7 +22,7 @@ namespace Format {
  * This class contains various date-related utilities for creating text for things like
  * elapsed time and date ranges, strings for days of the week and months, and AM/PM text etc.
  */
-class DateUtils
+class ECO_PUBLIC DateUtils
 {
 public:
     /**
@@ -535,7 +533,8 @@ public:
         /* [in] */ Int64 millis);
 
 private:
-    DateUtils();
+    ECO_LOCAL DateUtils();
+    ECO_LOCAL DateUtils(const DateUtils&);
 
     /**
      * Returns a string describing a day relative to the current day. For example if the day is
@@ -547,16 +546,16 @@ private:
      * @param today the current time in UTC milliseconds
      * @return a formatting string
      */
-    static /*final*/ CARAPI_(String) GetRelativeDayString(
+    ECO_LOCAL static /*final*/ CARAPI_(String) GetRelativeDayString(
         /* [in] */ IResources* r,
         /* [in] */ Int64 day,
         /* [in] */ Int64 today);
 
-    static CARAPI InitFormatStrings();
+    ECO_LOCAL static CARAPI InitFormatStrings();
 
-    static CARAPI InitFormatStringsLocked();
+    ECO_LOCAL static CARAPI InitFormatStringsLocked();
 
-    static CARAPI Append(
+    ECO_LOCAL static CARAPI Append(
         /* [in,out] */ StringBuilder* sb,
         /* [in] */ Int64 value,
         /* [in] */  Boolean pad,

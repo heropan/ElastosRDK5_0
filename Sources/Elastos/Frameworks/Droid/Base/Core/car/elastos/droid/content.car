@@ -49,6 +49,7 @@ module
     merge("content/ServiceConnection.car");
     merge("content/SharedPreferences.car");
     merge("content/SyncAdapterType.car");
+    merge("content/SyncAdaptersCache.car");
     merge("content/SyncContext.car");
     merge("content/SyncInfo.car");
     merge("content/SyncRequest.car");
@@ -102,6 +103,7 @@ module
     merge("content/pm/PermissionGroupInfo.car");
     merge("content/pm/PermissionInfo.car");
     merge("content/pm/ProviderInfo.car");
+    merge("content/pm/RegisteredServicesCache.car");
     merge("content/pm/RegisteredServicesCacheListener.car");
     merge("content/pm/ResolveInfo.car");
     merge("content/pm/ServiceInfo.car");
@@ -157,10 +159,12 @@ module
     interface Elastos.Droid.Content.ILoader;
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Content.IIIntentSender;
+    interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.Content.Res.IResources;
     interface Elastos.Droid.Content.Pm.IApplicationInfo;
     interface Elastos.Droid.Content.Pm.IPackageManager;
     interface Elastos.Droid.Content.Pm.IIPackageInstaller;
+    interface Elastos.Droid.Content.Pm.IRegisteredServicesCache;
     interface Elastos.Droid.Utility.IDisplayMetrics;
 
     namespace Elastos {
@@ -782,6 +786,14 @@ module
             interface IParcelable;
         }
 
+        class CSyncAdaptersCache {
+            constructor(
+                [in] IContext* context);
+
+            interface ISyncAdaptersCache;
+            interface IRegisteredServicesCache;
+        }
+
         class CRestrictionsManager {
             interface IRestrictionsManager;
         }
@@ -794,6 +806,16 @@ module
                 [in] String accountType,
                 [in] Boolean userVisible,
                 [in] Boolean supportsUploading);
+
+            /** @hide */
+            constructor(
+                [in] String authority,
+                [in] String accountType,
+                [in] Boolean userVisible,
+                [in] Boolean supportsUploading,
+                [in] Boolean isAlwaysSyncable,
+                [in] Boolean allowParallelSyncs,
+                [in] String settingsActivity);
 
             interface ISyncAdapterType;
             interface IParcelable;
@@ -956,7 +978,6 @@ module
         interface IConfigurationInfo;
         interface IParcelable;
     }
-
 
     [deprecated]
     class CContainerEncryptionParams {
@@ -1262,6 +1283,15 @@ module
 
         interface IProviderInfo;
         interface IParcelable;
+    }
+
+    class CRegisteredServicesCacheServiceInfo {
+        constructor(
+            [in] IInterface* type,
+            [in] IComponentName* componentName,
+            [in] Int32 uid);
+
+        interface IRegisteredServicesCacheServiceInfo;
     }
 
     [local]

@@ -178,6 +178,14 @@ public:
     CARAPI SetInstallLocation(
         /* [in] */ Int32 installLocation);
 
+    /** @hide */
+    CARAPI GetRequiredAccountType(
+        /* [out] */ String* requiredAccountType);
+
+    /** @hide */
+    CARAPI SetRequiredAccountType(
+        /* [in] */  String requiredAccountType);
+
 public:
     /**
      * The name of this package.  From the &lt;manifest&gt; tag's "name"
