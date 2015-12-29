@@ -37,7 +37,7 @@ using Elastos::Droid::View::ViewGroup;
 using Elastos::Droid::Widget::IOverScroller;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IRunnable;
-using Elastos::Utility::IHashMap;
+using Elastos::Droid::Utility::ISparseArray;
 
 namespace Elastos {
 namespace Droid {
@@ -330,11 +330,11 @@ public:
 
     // @Override
     CARAPI SaveToolbarHierarchyState(
-        /* [in] */ IHashMap* toolbarStates);
+        /* [in] */ ISparseArray* toolbarStates);
 
     // @Override
     CARAPI RestoreToolbarHierarchyState(
-        /* [in] */ IHashMap* toolbarStates);
+        /* [in] */ ISparseArray* toolbarStates);
 
     // @Override
     CARAPI DismissPopups();

@@ -83,6 +83,7 @@ module
     interface Elastos.Droid.Widget.IViewAnimator;
     interface Elastos.Droid.Widget.IOnChronometerTickListener;
     interface Elastos.Droid.Widget.IImageView;
+    interface Elastos.Droid.Widget.IToolbar;
     interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.Internal.Widget.IAbsActionBarView;
     interface Elastos.Droid.Internal.Widget.IActionBarView;
@@ -98,6 +99,9 @@ module
     interface Elastos.Droid.Internal.Widget.ISmileysHelper;
     interface Elastos.Droid.Internal.Widget.ILinearLayoutWithDefaultTouchRecepient;
     interface Elastos.Droid.Internal.Widget.IPreferenceImageView;
+    interface Elastos.Droid.Internal.Widget.ISubtitleView;
+    interface Elastos.Droid.Internal.Widget.ISwipeDismissLayout;
+    interface Elastos.Droid.Internal.Widget.IToolbarWidgetWrapper;
     interface Elastos.Droid.Utility.IAttributeSet;
     interface Elastos.Droid.Animation.IAnimatorListener;
     interface Elastos.Droid.Animation.IAnimatorUpdateListener;
@@ -130,6 +134,73 @@ module
         interface IPreferenceImageView;
         interface IImageView;
         interface IView;
+    	interface IDrawableCallback;
+    	interface IKeyEventCallback;
+    	interface IAccessibilityEventSource;
+    }
+
+    [local]
+    class CToolbarWidgetWrapper {
+	    constructor(
+	        [in] IToolbar* toolbar,
+	        [in] Boolean style);
+
+	    constructor(
+	        [in] IToolbar* toolbar,
+	        [in] Boolean style,
+	        [in] Int32 defaultNavigationContentDescription);
+
+        interface IToolbarWidgetWrapper;
+        interface IDecorToolbar;
+    }
+
+    [local]
+    class CSubtitleView {
+        constructor(
+	        [in] IContext* context);
+
+	    constructor(
+	        [in] IContext* context,
+	        [in] IAttributeSet* attrs);
+
+	    constructor(
+	        [in] IContext* context,
+	        [in] IAttributeSet* attrs,
+	        [in] Int32 defStyleAttr);
+
+	    constructor(
+	        [in] IContext* context,
+	        [in] IAttributeSet* attrs,
+	        [in] Int32 defStyleAttr,
+	        [in] Int32 defStyleRes);
+
+        interface ISubtitleView;
+        interface IView;
+    	interface IDrawableCallback;
+    	interface IKeyEventCallback;
+    	interface IAccessibilityEventSource;
+    }
+
+    [local]
+    class CSwipeDismissLayout {
+        constructor(
+	        [in] IContext* context);
+
+	    constructor(
+	        [in] IContext* context,
+	        [in] IAttributeSet* attrs);
+
+	    constructor(
+	        [in] IContext* context,
+	        [in] IAttributeSet* attrs,
+	        [in] Int32 defStyle);
+
+        interface ISwipeDismissLayout;
+        interface IFrameLayout;
+    	interface IViewGroup;
+    	interface IViewParent;
+    	interface IViewManager;
+    	interface IView;
     	interface IDrawableCallback;
     	interface IKeyEventCallback;
     	interface IAccessibilityEventSource;

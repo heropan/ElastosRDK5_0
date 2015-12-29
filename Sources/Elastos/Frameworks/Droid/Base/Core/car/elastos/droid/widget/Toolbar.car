@@ -466,7 +466,7 @@ module
      * @see #setNavigationIcon(android.graphics.drawable.Drawable)
      */
     SetNavigationOnClickListener(
-        [out] IViewOnClickListener** listener);
+        [in] IViewOnClickListener* listener);
 
     /**
      * Return the Menu shown in the toolbar.

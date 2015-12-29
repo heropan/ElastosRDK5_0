@@ -979,7 +979,7 @@ ECode ActionBarView::ExpandedActionViewMenuPresenter::CollapseItemActionView(
     }
 
     mOwner->RemoveView(mOwner->mExpandedActionView);
-    //car has no func: mOwner->mUpGoerFive->RemoveView(mOwner->mExpandedHomeLayout);
+    mOwner->mUpGoerFive->RemoveView(mOwner->mExpandedHomeLayout);
     mOwner->mExpandedActionView = NULL;
     if ((mOwner->mDisplayOptions & IActionBar::DISPLAY_SHOW_HOME) != 0) {
         IView::Probe(mOwner->mHomeLayout)->SetVisibility(VISIBLE);

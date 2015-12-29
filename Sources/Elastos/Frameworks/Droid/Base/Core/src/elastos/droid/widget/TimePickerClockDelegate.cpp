@@ -603,7 +603,7 @@ ECode TimePickerClockDelegate::constructor(
         AutoPtr<IView> viewTmp7;
         (IView::Probe(delegator))->FindViewById(R::id::timePickerLayout, (IView**)&viewTmp7);
         IViewGroup* amPmParent = IViewGroup::Probe(viewTmp7);
-        //(IViewGroup::Probe(amPmParent))->RemoveView(amPmView);
+        (IViewGroup::Probe(amPmParent))->RemoveView(amPmView);
         (IViewGroup::Probe(amPmParent))->AddView(amPmView, 0);
         // Swap layout margins if needed. They may be not symmetrical (Old Standard Theme
         // for example and not for Holo Theme)
