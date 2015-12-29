@@ -37,6 +37,7 @@ ECode PackageManager::LegacyPackageDeleteObserver::constructor(
 {
     PackageDeleteObserver::constructor();
     mLegacy = legacy;
+    return NOERROR;
 }
 
 ECode PackageManager::LegacyPackageDeleteObserver::OnPackageDeleted(

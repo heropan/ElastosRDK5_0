@@ -209,8 +209,8 @@ ECode RemoteViews::MemoryUsageCounter::AddBitmapMemory(
 CAR_INTERFACE_IMPL(RemoteViews::MutablePair, Object, IMutablePair)
 
 RemoteViews::MutablePair::MutablePair(
-    /* [in] */ String first,
-    /* [in] */ String second)
+    /* [in] */ const String& first,
+    /* [in] */ const String& second)
     : mFirst(first)
     , mSecond(second)
 {}
@@ -2987,7 +2987,7 @@ AutoPtr<IArgumentList> RemoteViews::WrapArg(
 }
 
 ECode RemoteViews::GetApplicationInfo(
-    /* [in] */ String packageName,
+    /* [in] */ const String& packageName,
     /* [in] */ Int32 userId,
     /* [out] */ IApplicationInfo** info)
 {

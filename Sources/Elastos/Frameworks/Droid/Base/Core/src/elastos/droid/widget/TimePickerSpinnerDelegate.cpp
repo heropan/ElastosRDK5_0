@@ -1711,7 +1711,7 @@ void TimePickerSpinnerDelegate::UpdateHeaderSeparator()
 }
 
 Int32 TimePickerSpinnerDelegate::LastIndexOfAny(
-    /* [in] */ String str,
+    /* [in] */ const String& str,
     /* [in] */ ArrayOf<Char32>* any)
 {
     // ==================before translated======================

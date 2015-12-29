@@ -81,9 +81,9 @@ ECode SearchIndexablesProvider::AttachInfo(
 ECode SearchIndexablesProvider::Query(
     /* [in] */ IUri* uri,
     /* [in] */ ArrayOf<String>* projection,
-    /* [in] */ String selection,
+    /* [in] */ const String& selection,
     /* [in] */ ArrayOf<String>* selectionArgs,
-    /* [in] */ String sortOrder,
+    /* [in] */ const String& sortOrder,
     /* [out] */ ICursor** cursor)
 {
     VALIDATE_NOT_NULL(cursor);
@@ -151,7 +151,7 @@ ECode SearchIndexablesProvider::Insert(
 //@Override
 ECode SearchIndexablesProvider::Delete(
     /* [in] */ IUri* uri,
-    /* [in] */ String selection,
+    /* [in] */ const String& selection,
     /* [in] */ ArrayOf<String>* selectionArgs,
     /* [out] */ Int32* rowsAffected)
 {
@@ -165,7 +165,7 @@ ECode SearchIndexablesProvider::Delete(
 ECode SearchIndexablesProvider::Update(
     /* [in] */ IUri* uri,
     /* [in] */ IContentValues* values,
-    /* [in] */ String selection,
+    /* [in] */ const String& selection,
     /* [in] */ ArrayOf<String>* selectionArgs,
     /* [out] */ Int32* rowsAffected)
 {

@@ -233,7 +233,7 @@ public:
         InternalISpellCheckerSession();
 
         CARAPI constructor(
-            /* [in] */ String locale,
+            /* [in] */ const String& locale,
             /* [in] */ IISpellCheckerSessionListener* listener,
             /* [in] */ IBundle* bundle,
             /* [in] */ ISpellCheckerServiceSession* session);

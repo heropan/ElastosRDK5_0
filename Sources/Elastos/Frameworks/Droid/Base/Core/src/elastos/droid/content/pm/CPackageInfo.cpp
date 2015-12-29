@@ -487,7 +487,7 @@ ECode CPackageInfo::GetRequiredAccountType(
 
 /** @hide */
 ECode CPackageInfo::SetRequiredAccountType(
-    /* [in] */  String requiredAccountType)
+    /* [in] */ const String& requiredAccountType)
 {
     mRequiredAccountType = requiredAccountType;
     return NOERROR;

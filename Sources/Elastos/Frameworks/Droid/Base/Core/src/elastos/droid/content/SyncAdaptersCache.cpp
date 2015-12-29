@@ -66,7 +66,8 @@ ECode SyncAdaptersCache::constructor(
     /* [in] */ IContext *context)
 {
     String nullStr;
-    return RegisteredServicesCache::constructor(context, nullStr, nullStr, nullStr, sSerializer.Get())
+    return RegisteredServicesCache::constructor(context, nullStr, nullStr,
+        nullStr, sSerializer.Get());
 }
 
 ECode SyncAdaptersCache::ParseServiceAttributes(

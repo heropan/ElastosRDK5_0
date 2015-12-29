@@ -316,7 +316,7 @@ public:
         {
         public:
             CCLineBuilder(
-                /* [in] */ String str);
+                /* [in] */ const String& str);
 
             CARAPI SetCharAt(
                 /* [in] */ Int32 index,

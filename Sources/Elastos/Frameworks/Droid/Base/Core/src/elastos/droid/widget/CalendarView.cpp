@@ -914,7 +914,7 @@ void CalendarView::LegacyCalendarViewDelegate::GoTo(
 }
 
 Boolean CalendarView::LegacyCalendarViewDelegate::ParseDate(
-    /* [in] */ String date,
+    /* [in] */ const String& date,
     /* [in] */ ICalendar* outDate)
 {
 //     try {

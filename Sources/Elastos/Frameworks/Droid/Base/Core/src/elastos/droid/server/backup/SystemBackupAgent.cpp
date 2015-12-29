@@ -211,8 +211,8 @@ ECode SystemBackupAgent::OnRestoreFile(
     /* [in] */ IParcelFileDescriptor* data,
     /* [in] */ Int64 size,
     /* [in] */ Int32 type,
-    /* [in] */ String domain,
-    /* [in] */ String path,
+    /* [in] */ const String& domain,
+    /* [in] */ const String& path,
     /* [in] */ Int64 mode,
     /* [in] */ Int64 mtime)
 {

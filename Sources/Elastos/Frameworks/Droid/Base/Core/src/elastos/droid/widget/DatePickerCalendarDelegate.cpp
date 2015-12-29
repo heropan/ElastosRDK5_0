@@ -363,7 +363,7 @@ AutoPtr<ICalendar> DatePickerCalendarDelegate::GetCalendarForLocale(
 }
 
 AutoPtr<ArrayOf<Int32> > DatePickerCalendarDelegate::GetMonthDayYearIndexes(
-    /* [in] */ String pattern)
+    /* [in] */ const String& pattern)
 {
     AutoPtr<ArrayOf<Int32> > result = ArrayOf<Int32>::Alloc(3);
 

@@ -241,7 +241,7 @@ public:
 
 private:
     CARAPI OnError(
-        /* [in] */ String msg);
+        /* [in] */ const String& msg);
 
 private:
     const String TAG;

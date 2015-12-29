@@ -131,12 +131,12 @@ ECode CPackageInstallerSession::constructor(
     /* [in] */ ILooper* looper,
     /* [in] */ Int32 sessionId,
     /* [in] */ Int32 userId,
-    /* [in] */ String installerPackageName,
+    /* [in] */ const String& installerPackageName,
     /* [in] */ Int32 installerUid,
     /* [in] */ IPackageInstallerSessionParams* stagingDir,
     /* [in] */ Int64 createdMillis,
     /* [in] */ IFile* stagingDir,
-    /* [in] */ String stageCid,
+    /* [in] */ const String& stageCid,
     /* [in] */ Boolean prepared,
     /* [in] */ Boolean sealed)
 {

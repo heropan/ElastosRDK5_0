@@ -134,7 +134,7 @@ private:
      * Returns the language component of a given locale string.
      */
     static CARAPI_(String) ParseLanguageFromLocaleString(
-        /* [in] */ String locale);
+        /* [in] */ const String& locale);
 
 private:
     static const String TAG;

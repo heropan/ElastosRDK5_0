@@ -102,8 +102,8 @@ private:
         CAR_INTERFACE_DECL()
 
         MutablePair(
-            /* [in] */ String first,
-            /* [in] */ String second);
+            /* [in] */ const String& first,
+            /* [in] */ const String& second);
 
         CARAPI Equals(
             /* [in] */ IInterface* oth,
@@ -1650,7 +1650,7 @@ private:
         /* [out] */ IMethodInfo** info);
 
     static CARAPI GetApplicationInfo(
-        /* [in] */ String packageName,
+        /* [in] */ const String& packageName,
         /* [in] */ Int32 userId,
         /* [out] */ IApplicationInfo** info);
 

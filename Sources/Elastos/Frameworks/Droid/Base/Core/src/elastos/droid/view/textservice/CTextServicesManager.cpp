@@ -69,7 +69,7 @@ AutoPtr<ITextServicesManager> CTextServicesManager::GetInstance()
 }
 
 String CTextServicesManager::ParseLanguageFromLocaleString(
-    /* [in] */ String locale)
+    /* [in] */ const String& locale)
 {
     Int32 idx = locale.IndexOf('_');
     if (idx < 0) {

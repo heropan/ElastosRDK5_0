@@ -225,7 +225,7 @@ ECode TrustAgentService::OnTrustTimeout()
 }
 
 ECode TrustAgentService::OnError(
-    /* [in] */ String msg)
+    /* [in] */ const String& msg)
 {
     Slogger::V(TAG, "Remote exception while %s", msg.string());
     return NOERROR;

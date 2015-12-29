@@ -236,7 +236,7 @@ private:
      * Will be used for I18N purpose as the order of them depends on the Locale.
      */
     CARAPI_(AutoPtr<ArrayOf<Int32> >) GetMonthDayYearIndexes(
-        /* [in] */ String pattern);
+        /* [in] */ const String& pattern);
 
     CARAPI_(void) UpdateDisplay(
         /* [in] */ Boolean announce);

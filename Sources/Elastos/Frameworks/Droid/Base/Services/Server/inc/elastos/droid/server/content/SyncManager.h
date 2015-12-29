@@ -631,6 +631,12 @@ private:
         SyncManager* mHost;
     };
 
+    class StaticInitializer
+    {
+    public:
+        StaticInitializer();
+    };
+
 public:
     CAR_INTERFACE_DECL()
 
@@ -1000,6 +1006,8 @@ private:
 
     static const Int64 SYNC_ALARM_TIMEOUT_MIN; // 30 seconds
     static const Int64 SYNC_ALARM_TIMEOUT_MAX; // two hours
+
+    static const StaticInitializer sInitializer;
 };
 
 } // namespace Content

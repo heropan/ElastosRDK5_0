@@ -382,7 +382,7 @@ ECode ZenModeConfig::IsValid(
 }
 
 Boolean ZenModeConfig::IsValidSleepMode(
-    /* [in] */ String sleepMode)
+    /* [in] */ const String& sleepMode)
 {
     AutoPtr<ArrayOf<Int32> > days;
     TryParseDays(sleepMode, (ArrayOf<Int32>**)&days);
@@ -391,7 +391,7 @@ Boolean ZenModeConfig::IsValidSleepMode(
 }
 
 ECode ZenModeConfig::TryParseDays(
-    /* [in] */ String sleepMode,
+    /* [in] */ const String& sleepMode,
     /* [out, callee] */ ArrayOf<Int32>** results)
 {
     VALIDATE_NOT_NULL(results)
@@ -440,7 +440,7 @@ ECode ZenModeConfig::TryParseDays(
 }
 
 Int32 ZenModeConfig::TryParseInt32(
-    /* [in] */ String value,
+    /* [in] */ const String& value,
     /* [in] */ Int32 defValue)
 {
     if (TextUtils::IsEmpty(value)) return defValue;
@@ -925,7 +925,7 @@ ECode ZenModeConfig::TryParseDowntimeConditionId(
 }
 
 ECode ZenModeConfig::TryParseHourAndMinute(
-    /* [in] */ String value,
+    /* [in] */ const String& value,
     /* [out, callee] */ ArrayOf<Int32>** results)
 {
     if (TextUtils::IsEmpty(value)) {

@@ -116,7 +116,7 @@ ECode PersistentDataBlockManager::GetOemUnlockEnabled(
 }
 
 void PersistentDataBlockManager::OnError(
-    /* [in] */ String msg)
+    /* [in] */ const String& msg)
 {
     Slogger::V(TAG, String("Remote exception while ") + msg);
 }

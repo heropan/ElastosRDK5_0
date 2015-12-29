@@ -5,6 +5,7 @@
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/content/CRestrictionEntry.h"
+#include "elastos/droid/content/CSyncAdaptersCache.h"
 
 namespace Elastos {
 namespace Droid {

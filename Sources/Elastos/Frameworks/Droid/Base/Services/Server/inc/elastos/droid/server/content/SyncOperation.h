@@ -35,7 +35,7 @@ public:
         /* [in] */ Int32 userId,
         /* [in] */ Int32 reason,
         /* [in] */ Int32 source,
-        /* [in] */ String provider,
+        /* [in] */ const String& provider,
         /* [in] */ IBundle* extras,
         /* [in] */ Int64 runTimeFromNow,
         /* [in] */ Int64 flexTime,

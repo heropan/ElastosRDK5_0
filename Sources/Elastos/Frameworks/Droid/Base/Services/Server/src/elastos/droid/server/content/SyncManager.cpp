@@ -17,6 +17,10 @@ using Elastos::Droid::Os::UserHandle;
 using Elastos::Droid::Os::CUserHandle;
 using Elastos::Droid::Os::IMessageHelper;
 using Elastos::Droid::Os::CMessageHelper;
+using Elastos::Droid::Os::ISystemProperties;
+using Elastos::Droid::Os::CSystemProperties;
+using Elastos::Droid::App::IActivityManagerHelper;
+using Elastos::Droid::App::CActivityManagerHelper;
 using Elastos::Droid::Content::IPendingIntentHelper;
 using Elastos::Droid::Content::CPendingIntentHelper;
 using Elastos::Droid::Content::CIntent;
@@ -75,20 +79,30 @@ const Int64 SyncManager::SYNC_NOTIFICATION_DELAY;
 const Int32 SyncManager::MAX_SIMULTANEOUS_REGULAR_SYNCS;
 const Int32 SyncManager::MAX_SIMULTANEOUS_INITIALIZATION_SYNCS;
 
-static {
-    Boolean isLargeRAM = !ActivityManager.isLowRamDeviceStatic();
+const SyncManager::StaticInitializer SyncManager::sInitializer;
+
+SyncManager::StaticInitializer::StaticInitializer()
+{
+    AutoPtr<IActivityManagerHelper> amHelper;
+    CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&amHelper);
+    Boolean isLargeRAM;
+    amHelper->IsLowRamDeviceStatic(&isLargeRAM);
+    isLargeRAM = !isLargeRAM;
     Int32 defaultMaxInitSyncs = isLargeRAM ? 5 : 2;
     Int32 defaultMaxRegularSyncs = isLargeRAM ? 2 : 1;
-    MAX_SIMULTANEOUS_INITIALIZATION_SYNCS =
-            SystemProperties.getInt("sync.max_init_syncs", defaultMaxInitSyncs);
-    MAX_SIMULTANEOUS_REGULAR_SYNCS =
-            SystemProperties.getInt("sync.max_regular_syncs", defaultMaxRegularSyncs);
-    LOCAL_SYNC_DELAY =
-            SystemProperties.getLong("sync.local_sync_delay", 30 * 1000 /* 30 seconds */);
-    MAX_TIME_PER_SYNC =
-            SystemProperties.getLong("sync.max_time_per_sync", 5 * 60 * 1000 /* 5 minutes */);
-    SYNC_NOTIFICATION_DELAY =
-            SystemProperties.getLong("sync.notification_delay", 30 * 1000 /* 30 seconds */);
+
+    AutoPtr<ISystemProperties> sysProp;
+    CSystemProperties::New((ISystemProperties**)&sysProp);
+    sysProp->GetInt32(String("sync.max_init_syncs"), defaultMaxInitSyncs,
+        &SyncManager::MAX_SIMULTANEOUS_INITIALIZATION_SYNCS);
+    sysProp->GetInt32(String("sync.max_regular_syncs"), defaultMaxRegularSyncs,
+        &SyncManager::MAX_SIMULTANEOUS_REGULAR_SYNCS);
+    sysProp->GetInt64(String("sync.local_sync_delay"), 30 * 1000 /* 30 seconds */,
+        &SyncManager::LOCAL_SYNC_DELAY);
+    sysProp->GetInt64(String("sync.max_time_per_sync"), 5 * 60 * 1000 /* 5 minutes */,
+        &SyncManager::MAX_TIME_PER_SYNC);
+    sysProp->GetInt64(String("sync.notification_delay"), 30 * 1000 /* 30 seconds */,
+        &SyncManager::SYNC_NOTIFICATION_DELAY);
 }
 
 //===============================================================================

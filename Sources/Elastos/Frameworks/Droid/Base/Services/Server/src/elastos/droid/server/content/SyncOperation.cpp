@@ -1,8 +1,17 @@
 #include "elastos/droid/server/content/SyncOperation.h"
 #include <elastos/droid/os/SystemClock.h>
+#include <elastos/core/CoreUtils.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::SystemClock;
+using Elastos::Core::CoreUtils;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -50,7 +59,7 @@ SyncOperation::SyncOperation(
     /* [in] */ Int32 userId,
     /* [in] */ Int32 reason,
     /* [in] */ Int32 source,
-    /* [in] */ String provider,
+    /* [in] */ const String& provider,
     /* [in] */ IBundle* extras,
     /* [in] */ Int64 runTimeFromNow,
     /* [in] */ Int64 flexTime,
@@ -191,11 +200,10 @@ Boolean SyncOperation::IsConflict(
             && mTarget->mUserId == other->mUserId
             && (!allowParallelSyncs || n1.Equals(n2));
     }
-    else {
-        // Ops that target a service default to allow parallel syncs, which is handled by the
-        // service returning SYNC_IN_PROGRESS if they don't.
-        return Object::Equals(mTarget->mService, other->mService) && !allowParallelSyncs;
-    }
+
+    // Ops that target a service default to allow parallel syncs, which is handled by the
+    // service returning SYNC_IN_PROGRESS if they don't.
+    return Object::Equals(mTarget->mService, other->mService) && !allowParallelSyncs;
 }
 
 ECode SyncOperation::ToString(
@@ -425,10 +433,9 @@ String SyncOperation::WakeLockName()
         mWakeLockName = sb.ToString();
         return mWakeLockName;
     }
-    else {
-        Logger::W(TAG, "Invalid target getting wakelock name for operation - %s", mKey.string());
-        return NULL;
-    }
+
+    Logger::W(TAG, "Invalid target getting wakelock name for operation - %s", mKey.string());
+    return NULL;
 }
 
 void SyncOperation::UpdateEffectiveRunTime()

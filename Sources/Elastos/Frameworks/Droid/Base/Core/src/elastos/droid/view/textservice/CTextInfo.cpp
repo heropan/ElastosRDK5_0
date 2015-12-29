@@ -61,7 +61,7 @@ ECode CTextInfo::constructor(
 }
 
 Int32 CTextInfo::GetStringLengthOrZero(
-    /* [in] */ String text)
+    /* [in] */ const String& text)
 {
     AutoPtr<ITextUtils> tu;
     CTextUtils::AcquireSingleton((ITextUtils**)&tu);

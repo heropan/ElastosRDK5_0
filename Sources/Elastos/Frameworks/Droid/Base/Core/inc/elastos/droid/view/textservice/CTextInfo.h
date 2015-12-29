@@ -102,7 +102,7 @@ public:
 
 private:
     static Int32 GetStringLengthOrZero(
-        /* [in] */ String text);
+        /* [in] */ const String& text);
 
 private:
     AutoPtr<ICharSequence> mCharSequence;

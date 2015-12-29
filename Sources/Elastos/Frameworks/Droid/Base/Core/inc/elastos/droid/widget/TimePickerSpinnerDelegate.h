@@ -441,7 +441,7 @@ private:
     CARAPI_(void) UpdateHeaderSeparator();
 
     static CARAPI_(Int32) LastIndexOfAny(
-        /* [in] */ String str,
+        /* [in] */ const String& str,
         /* [in] */ ArrayOf<Char32>* any);
 
     CARAPI_(void) UpdateHeaderMinute(

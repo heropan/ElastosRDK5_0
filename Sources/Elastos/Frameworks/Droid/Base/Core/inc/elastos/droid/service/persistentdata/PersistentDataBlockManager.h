@@ -100,7 +100,7 @@ public:
 
 private:
     CARAPI_(void) OnError(
-        /* [in] */ String msg);
+        /* [in] */ const String& msg);
 
 private:
     const static String TAG;//PersistentDataBlockManager.class.getSimpleName();

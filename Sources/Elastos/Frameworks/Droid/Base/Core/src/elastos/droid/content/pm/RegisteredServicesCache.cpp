@@ -128,6 +128,8 @@ ECode RegisteredServicesCache::ListenerRunnable::Run()
 //====================================================================
 // RegisteredServicesCache::ServiceInfo
 //====================================================================
+CAR_INTERFACE_IMPL(RegisteredServicesCache::ServiceInfo, Object, IRegisteredServicesCacheServiceInfo)
+
 RegisteredServicesCache::ServiceInfo::ServiceInfo()
     : mUid(0)
 {}
@@ -213,6 +215,8 @@ ECode RegisteredServicesCache::ServiceInfo::ToString(
 // RegisteredServicesCache
 //====================================================================
 const String RegisteredServicesCache::TAG("PackageManager");
+
+CAR_INTERFACE_IMPL(RegisteredServicesCache, Object, IRegisteredServicesCache)
 
 RegisteredServicesCache::RegisteredServicesCache()
     : mPersistentServicesFileDidNotExist(FALSE)
@@ -451,7 +455,7 @@ ECode RegisteredServicesCache::GetServiceInfo(
 
 ECode RegisteredServicesCache::GetAllServices(
     /* [in] */ Int32 userId,
-    /* [out] */ IList* list)
+    /* [out] */ IList** list)
 {
     VALIDATE_NOT_NULL(list)
 

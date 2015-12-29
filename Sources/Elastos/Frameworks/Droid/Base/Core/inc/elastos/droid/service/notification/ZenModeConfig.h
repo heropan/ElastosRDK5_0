@@ -91,10 +91,10 @@ public:
         /* [out] */ Boolean* result);
 
     static CARAPI_(Boolean) IsValidSleepMode(
-        /* [in] */ String sleepMode);
+        /* [in] */ const String& sleepMode);
 
     static CARAPI TryParseDays(
-        /* [in] */ String sleepMode,
+        /* [in] */ const String& sleepMode,
         /* [out, callee] */ ArrayOf<Int32>** results);
 
     static CARAPI ReadXml(
@@ -158,7 +158,7 @@ public:
 
 private:
     static CARAPI_(Int32) TryParseInt32(
-        /* [in] */ String value,
+        /* [in] */ const String& value,
         /* [in] */ Int32 defValue);
 
     static CARAPI_(Boolean) SafeBoolean(
@@ -180,7 +180,7 @@ private:
         /* [in] */ const String& att);
 
     static CARAPI TryParseHourAndMinute(
-        /* [in] */ String value,
+        /* [in] */ const String& value,
         /* [out, callee] */ ArrayOf<Int32>** results);
 
     static CARAPI GetALL_DAYS(

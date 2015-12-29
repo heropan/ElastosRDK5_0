@@ -1237,27 +1237,27 @@ module
 //     } // namespace Droid
 //     } // namespace Elastos
 
-    namespace Elastos {
-    namespace Droid {
-    namespace Server {
-    namespace Os {
+    //namespace Elastos {
+    //namespace Droid {
+    //namespace Server {
+    //namespace Content {
 
     /**
      * {@hide}
      */
-    [local]
-    class CContentService {
-        constructor(
-            [in] IContext* ctx,
-            [in] Boolean factoryTest);
+    //[local]
+    //class CContentService {
+    //    constructor(
+    //        [in] IContext* ctx,
+    //        [in] Boolean factoryTest);
 
-        interface IIContentService;
-    }
+    //    interface IIContentService;
+    //}
 
-    } // namespace Os
-    } // namespace Server
-    } // namepsace Droid
-    } // namespace Elastos
+    //} // namespace Content
+    //} // namespace Server
+    //} // namepsace Droid
+    //} // namespace Elastos
 
 
     namespace Elastos {

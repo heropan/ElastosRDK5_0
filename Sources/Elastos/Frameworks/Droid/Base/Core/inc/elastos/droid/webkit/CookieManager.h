@@ -101,8 +101,8 @@ public:
         /* [in] */ const String& value);
 
     CARAPI SetCookie(
-        /* [in] */ String url,
-        /* [in] */ String value,
+        /* [in] */ const String& url,
+        /* [in] */ const String& value,
         /* [in] */ IValueCallback* callBack);
 
     /**

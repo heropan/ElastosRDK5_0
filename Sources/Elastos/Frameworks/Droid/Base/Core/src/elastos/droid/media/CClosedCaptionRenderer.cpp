@@ -1324,7 +1324,7 @@ ECode CClosedCaptionRenderer::CCParser::CCMemory::GetLineBuffer(
 //================================================================================
 
 CClosedCaptionRenderer::CCParser::CCLineBuilder::CCLineBuilder(
-    /* [in] */ String str)
+    /* [in] */ const String& str)
 {
     mDisplayChars = new StringBuilder(str);
     Int32 len;

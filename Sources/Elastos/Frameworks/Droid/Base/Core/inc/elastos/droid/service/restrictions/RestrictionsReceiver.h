@@ -59,9 +59,9 @@ public:
      */
     virtual CARAPI OnRequestPermission(
         /* [in] */ IContext* context,
-        /* [in] */ String packageName,
-        /* [in] */ String requestType,
-        /* [in] */ String requestId,
+        /* [in] */ const String& packageName,
+        /* [in] */ const String& requestType,
+        /* [in] */ const String& requestId,
         /* [in] */ IPersistableBundle* request) = 0;
 
     /**

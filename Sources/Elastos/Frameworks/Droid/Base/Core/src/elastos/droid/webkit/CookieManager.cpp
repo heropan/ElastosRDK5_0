@@ -97,8 +97,8 @@ ECode CookieManager::SetCookie(
 }
 
 ECode CookieManager::SetCookie(
-    /* [in] */ String url,
-    /* [in] */ String value,
+    /* [in] */ const String& url,
+    /* [in] */ const String& value,
     /* [in] */ IValueCallback* callBack)
 {
     return E_MUST_OVERRIDE_EXCEPTION;

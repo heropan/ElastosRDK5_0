@@ -635,7 +635,7 @@ private:
          * @return True if the date was parsed.
          */
         CARAPI_(Boolean) ParseDate(
-            /* [in] */ String date,
+            /* [in] */ const String& date,
             /* [in] */ ICalendar* outDate);
 
         /**

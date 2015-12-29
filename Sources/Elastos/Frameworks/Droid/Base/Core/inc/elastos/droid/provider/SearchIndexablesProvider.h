@@ -42,9 +42,9 @@ public:
     CARAPI Query(
         /* [in] */ IUri* uri,
         /* [in] */ ArrayOf<String>* projection,
-        /* [in] */ String selection,
+        /* [in] */ const String& selection,
         /* [in] */ ArrayOf<String>* selectionArgs,
-        /* [in] */ String sortOrder,
+        /* [in] */ const String& sortOrder,
         /* [out] */ ICursor** cursor);
 
     virtual CARAPI QueryXmlResources(
@@ -79,7 +79,7 @@ public:
     //@Override
     CARAPI Delete(
         /* [in] */ IUri* uri,
-        /* [in] */ String selection,
+        /* [in] */ const String& selection,
         /* [in] */ ArrayOf<String>* selectionArgs,
         /* [out] */ Int32* rowsAffected);
 
@@ -90,7 +90,7 @@ public:
     CARAPI Update(
         /* [in] */ IUri* uri,
         /* [in] */ IContentValues* values,
-        /* [in] */ String selection,
+        /* [in] */ const String& selection,
         /* [in] */ ArrayOf<String>* selectionArgs,
         /* [out] */ Int32* rowsAffected);
 

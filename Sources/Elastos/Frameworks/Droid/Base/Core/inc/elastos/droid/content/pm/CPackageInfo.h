@@ -184,7 +184,7 @@ public:
 
     /** @hide */
     CARAPI SetRequiredAccountType(
-        /* [in] */  String requiredAccountType);
+        /* [in] */ const String& requiredAccountType);
 
 public:
     /**
