@@ -3,6 +3,8 @@
 
 #include <elastos/core/Math.h>
 
+using Elastos::Droid::Animation::EIID_ITimeInterpolator;
+
 namespace Elastos {
 namespace Droid {
 namespace Internal {
@@ -16,10 +18,21 @@ const Float Ease::START = 0.0f;
 //=====================================================================
 //               Ease::Linear::TimeInterpolator::
 //=====================================================================
-Float Ease::Linear::TimeInterpolator::GetInterpolation(
-    /* [in] */ Float input)
+CAR_INTERFACE_IMPL(Ease::Linear::TimeInterpolator, Object, ITimeInterpolator)
+
+ECode Ease::Linear::TimeInterpolator::GetInterpolation(
+    /* [in] */ Float input,
+    /* [out] */ Float* res)
 {
-    return input;
+    VALIDATE_NOT_NULL(res)
+    *res = input;
+    return NOERROR;
+}
+
+ECode Ease::Linear::TimeInterpolator::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    return E_NOT_IMPLEMENTED;
 }
 
 //=====================================================================
@@ -31,37 +44,70 @@ AutoPtr<Ease::Linear::TimeInterpolator> Ease::Linear::mEaseNone =
 //=====================================================================
 //               Ease::Cubic::TimeInterpolatorIn::
 //=====================================================================
-Float Ease::Cubic::TimeInterpolatorIn::GetInterpolation(
-    /* [in] */ Float input)
+CAR_INTERFACE_IMPL(Ease::Cubic::TimeInterpolatorIn, Object, ITimeInterpolator)
+
+ECode Ease::Cubic::TimeInterpolatorIn::GetInterpolation(
+    /* [in] */ Float input,
+    /* [out] */ Float* res)
 {
+    VALIDATE_NOT_NULL(res)
     input /= DURATION;
-    return DOMAIN * input * input * input + START;
+    *res = DOMAIN * input * input * input + START;
+    return NOERROR;
+}
+
+ECode Ease::Cubic::TimeInterpolatorIn::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    return E_NOT_IMPLEMENTED;
 }
 
 //=====================================================================
 //               Ease::Cubic::TimeInterpolatorOut::
 //=====================================================================
-Float Ease::Cubic::TimeInterpolatorOut::GetInterpolation(
-    /* [in] */ Float input)
+CAR_INTERFACE_IMPL(Ease::Cubic::TimeInterpolatorOut, Object, ITimeInterpolator)
+
+ECode Ease::Cubic::TimeInterpolatorOut::GetInterpolation(
+    /* [in] */ Float input,
+    /* [out] */ Float* res)
 {
+    VALIDATE_NOT_NULL(res)
     input = input / DURATION - 1;
-    return DOMAIN * (input * input * input + 1) + START;
+    *res = DOMAIN * (input * input * input + 1) + START;
+    return NOERROR;
+}
+
+ECode Ease::Cubic::TimeInterpolatorOut::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    return E_NOT_IMPLEMENTED;
 }
 
 //=====================================================================
 //               Ease::Cubic::TimeInterpolatorInOut::
 //=====================================================================
-Float Ease::Cubic::TimeInterpolatorInOut::GetInterpolation(
-    /* [in] */ Float input)
+CAR_INTERFACE_IMPL(Ease::Cubic::TimeInterpolatorInOut, Object, ITimeInterpolator)
+
+ECode Ease::Cubic::TimeInterpolatorInOut::GetInterpolation(
+    /* [in] */ Float input,
+    /* [out] */ Float* res)
 {
+    VALIDATE_NOT_NULL(res)
     input /= DURATION / 2;
     if (input < 1.0f) {
-        return DOMAIN / 2 * input * input * input + START;
+        *res = DOMAIN / 2 * input * input * input + START;
     }
     else {
         input -= 2;
-        return DOMAIN / 2 * (input * input * input + 2) + START;
+        *res = DOMAIN / 2 * (input * input * input + 2) + START;
     }
+    return NOERROR;
+}
+
+ECode Ease::Cubic::TimeInterpolatorInOut::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    return E_NOT_IMPLEMENTED;
 }
 
 //=====================================================================
@@ -79,38 +125,71 @@ AutoPtr<Ease::Cubic::TimeInterpolatorInOut> Ease::Cubic::mEaseInOut =
 //=====================================================================
 //               Ease::Quad::TimeInterpolatorIn::
 //=====================================================================
-Float Ease::Quad::TimeInterpolatorIn::GetInterpolation(
-    /* [in] */ Float input)
+CAR_INTERFACE_IMPL(Ease::Quad::TimeInterpolatorIn, Object, ITimeInterpolator)
+
+ECode Ease::Quad::TimeInterpolatorIn::GetInterpolation(
+    /* [in] */ Float input,
+    /* [out] */ Float* res)
 {
+    VALIDATE_NOT_NULL(res)
     input /= DURATION;
-    return DOMAIN * input * input + START;
+    *res = DOMAIN * input * input + START;
+    return NOERROR;
+}
+
+ECode Ease::Quad::TimeInterpolatorIn::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    return E_NOT_IMPLEMENTED;
 }
 
 //=====================================================================
 //               Ease::Quad::TimeInterpolatorOut::
 //=====================================================================
-Float Ease::Quad::TimeInterpolatorOut::GetInterpolation(
-    /* [in] */ Float input)
+CAR_INTERFACE_IMPL(Ease::Quad::TimeInterpolatorOut, Object, ITimeInterpolator)
+
+ECode Ease::Quad::TimeInterpolatorOut::GetInterpolation(
+    /* [in] */ Float input,
+    /* [out] */ Float* res)
 {
+    VALIDATE_NOT_NULL(res)
     input /= DURATION;
-    return -DOMAIN * input * (input - 2) + START;
+    *res = -DOMAIN * input * (input - 2) + START;
+    return NOERROR;
+}
+
+ECode Ease::Quad::TimeInterpolatorOut::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    return E_NOT_IMPLEMENTED;
 }
 
 //=====================================================================
 //               Ease::Quad::TimeInterpolatorInOut::
 //=====================================================================
-Float Ease::Quad::TimeInterpolatorInOut::GetInterpolation(
-    /* [in] */ Float input)
+CAR_INTERFACE_IMPL(Ease::Quad::TimeInterpolatorInOut, Object, ITimeInterpolator)
+
+ECode Ease::Quad::TimeInterpolatorInOut::GetInterpolation(
+    /* [in] */ Float input,
+    /* [out] */ Float* res)
 {
+    VALIDATE_NOT_NULL(res)
     input /= DURATION / 2;
     if (input < 1) {
-        return DOMAIN / 2 * input * input + START;
+        *res = DOMAIN / 2 * input * input + START;
     }
     else {
         Float x = input - 2;
         Float y = --input;
-        return -DOMAIN / 2 * (y * x - 1) + START;
+        *res = -DOMAIN / 2 * (y * x - 1) + START;
     }
+    return NOERROR;
+}
+
+ECode Ease::Quad::TimeInterpolatorInOut::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    return E_NOT_IMPLEMENTED;
 }
 
 //=====================================================================
@@ -128,37 +207,70 @@ AutoPtr<Ease::Quad::TimeInterpolatorInOut> Ease::Quad::mEaseInOut =
 //=====================================================================
 //               Ease::Quart::TimeInterpolatorIn::
 //=====================================================================
-Float Ease::Quart::TimeInterpolatorIn::GetInterpolation(
-    /* [in] */ Float input)
+CAR_INTERFACE_IMPL(Ease::Quart::TimeInterpolatorIn, Object, ITimeInterpolator)
+
+ECode Ease::Quart::TimeInterpolatorIn::GetInterpolation(
+    /* [in] */ Float input,
+    /* [out] */ Float* res)
 {
+    VALIDATE_NOT_NULL(res)
     input /= DURATION;
-    return DOMAIN * input * input * input * input + START;
+    *res = DOMAIN * input * input * input * input + START;
+    return NOERROR;
+}
+
+ECode Ease::Quart::TimeInterpolatorIn::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    return E_NOT_IMPLEMENTED;
 }
 
 //=====================================================================
 //               Ease::Quart::TimeInterpolatorOut::
 //=====================================================================
-Float Ease::Quart::TimeInterpolatorOut::GetInterpolation(
-    /* [in] */ Float input)
+CAR_INTERFACE_IMPL(Ease::Quart::TimeInterpolatorOut, Object, ITimeInterpolator)
+
+ECode Ease::Quart::TimeInterpolatorOut::GetInterpolation(
+    /* [in] */ Float input,
+    /* [out] */ Float* res)
 {
+    VALIDATE_NOT_NULL(res)
     input = input / DURATION - 1;
-    return -DOMAIN * (input * input * input * input - 1) + START;
+    *res = -DOMAIN * (input * input * input * input - 1) + START;
+    return NOERROR;
+}
+
+ECode Ease::Quart::TimeInterpolatorOut::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    return E_NOT_IMPLEMENTED;
 }
 
 //=====================================================================
 //               Ease::Quart::TimeInterpolatorInOut::
 //=====================================================================
-Float Ease::Quart::TimeInterpolatorInOut::GetInterpolation(
-    /* [in] */ Float input)
+CAR_INTERFACE_IMPL(Ease::Quart::TimeInterpolatorInOut, Object, ITimeInterpolator)
+
+ECode Ease::Quart::TimeInterpolatorInOut::GetInterpolation(
+    /* [in] */ Float input,
+    /* [out] */ Float* res)
 {
+    VALIDATE_NOT_NULL(res)
     input /= DURATION / 2;
     if (input < 1) {
-        return DOMAIN / 2 * input * input * input * input + START;
+        *res = DOMAIN / 2 * input * input * input * input + START;
     }
     else {
         input -= 2;
-        return -DOMAIN / 2 * (input * input * input * input - 2) + START;
+        *res = -DOMAIN / 2 * (input * input * input * input - 2) + START;
     }
+    return NOERROR;
+}
+
+ECode Ease::Quart::TimeInterpolatorInOut::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    return E_NOT_IMPLEMENTED;
 }
 
 //=====================================================================
@@ -176,37 +288,70 @@ AutoPtr<Ease::Quart::TimeInterpolatorInOut> Ease::Quart::mEaseInOut =
 //=====================================================================
 //               Ease::Quint::TimeInterpolatorIn::
 //=====================================================================
-Float Ease::Quint::TimeInterpolatorIn::GetInterpolation(
-    /* [in] */ Float input)
+CAR_INTERFACE_IMPL(Ease::Quint::TimeInterpolatorIn, Object, ITimeInterpolator)
+
+ECode Ease::Quint::TimeInterpolatorIn::GetInterpolation(
+    /* [in] */ Float input,
+    /* [out] */ Float* res)
 {
+    VALIDATE_NOT_NULL(res)
     input /= DURATION;
-    return DOMAIN * input * input * input * input * input + START;
+    *res = DOMAIN * input * input * input * input * input + START;
+    return NOERROR;
+}
+
+ECode Ease::Quint::TimeInterpolatorIn::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    return E_NOT_IMPLEMENTED;
 }
 
 //=====================================================================
 //               Ease::Quint::TimeInterpolatorOut::
 //=====================================================================
-Float Ease::Quint::TimeInterpolatorOut::GetInterpolation(
-    /* [in] */ Float input)
+CAR_INTERFACE_IMPL(Ease::Quint::TimeInterpolatorOut, Object, ITimeInterpolator)
+
+ECode Ease::Quint::TimeInterpolatorOut::GetInterpolation(
+    /* [in] */ Float input,
+    /* [out] */ Float* res)
 {
+    VALIDATE_NOT_NULL(res)
     input = input / DURATION - 1;
-    return DOMAIN * (input * input * input * input * input + 1) + START;
+    *res = DOMAIN * (input * input * input * input * input + 1) + START;
+    return NOERROR;
+}
+
+ECode Ease::Quint::TimeInterpolatorOut::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    return E_NOT_IMPLEMENTED;
 }
 
 //=====================================================================
 //               Ease::Quint::TimeInterpolatorInOut::
 //=====================================================================
-Float Ease::Quint::TimeInterpolatorInOut::GetInterpolation(
-    /* [in] */ Float input)
+CAR_INTERFACE_IMPL(Ease::Quint::TimeInterpolatorInOut, Object, ITimeInterpolator)
+
+ECode Ease::Quint::TimeInterpolatorInOut::GetInterpolation(
+    /* [in] */ Float input,
+    /* [out] */ Float* res)
 {
+    VALIDATE_NOT_NULL(res)
     input /= DURATION / 2;
     if (input < 1) {
-        return DOMAIN / 2 * input * input * input * input * input + START;
+        *res = DOMAIN / 2 * input * input * input * input * input + START;
     }
     else {
         input -= 2;
-        return DOMAIN / 2 * (input * input * input * input * input + 2) + START;
+        *res = DOMAIN / 2 * (input * input * input * input * input + 2) + START;
     }
+    return NOERROR;
+}
+
+ECode Ease::Quint::TimeInterpolatorInOut::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    return E_NOT_IMPLEMENTED;
 }
 
 //=====================================================================
@@ -224,28 +369,61 @@ AutoPtr<Ease::Quint::TimeInterpolatorInOut> Ease::Quint::mEaseInOut =
 //=====================================================================
 //               Ease::Sine::TimeInterpolatorIn::
 //=====================================================================
-Float Ease::Sine::TimeInterpolatorIn::GetInterpolation(
-    /* [in] */ Float input)
+CAR_INTERFACE_IMPL(Ease::Sine::TimeInterpolatorIn, Object, ITimeInterpolator)
+
+ECode Ease::Sine::TimeInterpolatorIn::GetInterpolation(
+    /* [in] */ Float input,
+    /* [out] */ Float* res)
 {
-    return -DOMAIN * (Float) Elastos::Core::Math::Cos(input / DURATION * (Elastos::Core::Math::PI / 2)) + DOMAIN + START;
+    VALIDATE_NOT_NULL(res)
+    *res = -DOMAIN * (Float) Elastos::Core::Math::Cos(input / DURATION * (Elastos::Core::Math::PI / 2)) + DOMAIN + START;
+    return NOERROR;
+}
+
+ECode Ease::Sine::TimeInterpolatorIn::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    return E_NOT_IMPLEMENTED;
 }
 
 //=====================================================================
 //               Ease::Sine::TimeInterpolatorOut::
 //=====================================================================
-Float Ease::Sine::TimeInterpolatorOut::GetInterpolation(
-    /* [in] */ Float input)
+CAR_INTERFACE_IMPL(Ease::Sine::TimeInterpolatorOut, Object, ITimeInterpolator)
+
+ECode Ease::Sine::TimeInterpolatorOut::GetInterpolation(
+    /* [in] */ Float input,
+    /* [out] */ Float* res)
 {
-    return DOMAIN * (Float) Elastos::Core::Math::Sin(input / DURATION * (Elastos::Core::Math::PI / 2)) + START;
+    VALIDATE_NOT_NULL(res)
+    *res = DOMAIN * (Float) Elastos::Core::Math::Sin(input / DURATION * (Elastos::Core::Math::PI / 2)) + START;
+    return NOERROR;
+}
+
+ECode Ease::Sine::TimeInterpolatorOut::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    return E_NOT_IMPLEMENTED;
 }
 
 //=====================================================================
 //               Ease::Sine::TimeInterpolatorInOut::
 //=====================================================================
-Float Ease::Sine::TimeInterpolatorInOut::GetInterpolation(
-    /* [in] */ Float input)
+CAR_INTERFACE_IMPL(Ease::Sine::TimeInterpolatorInOut, Object, ITimeInterpolator)
+
+ECode Ease::Sine::TimeInterpolatorInOut::GetInterpolation(
+    /* [in] */ Float input,
+    /* [out] */ Float* res)
 {
-    return -DOMAIN / 2 * ((Float)Elastos::Core::Math::Cos(Elastos::Core::Math::PI * input / DURATION) - 1.0f) + START;
+    VALIDATE_NOT_NULL(res)
+    *res = -DOMAIN / 2 * ((Float)Elastos::Core::Math::Cos(Elastos::Core::Math::PI * input / DURATION) - 1.0f) + START;
+    return NOERROR;
+}
+
+ECode Ease::Sine::TimeInterpolatorInOut::HasNativeInterpolator(
+    /* [out] */ Boolean* res)
+{
+    return E_NOT_IMPLEMENTED;
 }
 
 //=====================================================================

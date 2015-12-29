@@ -3,6 +3,7 @@ module
     merge("widget/multiwaveview/PointCloud.car");
     merge("widget/multiwaveview/Tweener.car");
     merge("widget/multiwaveview/TargetDrawable.car");
+    merge("widget/multiwaveview/GlowPadView.car");
     merge("widget/IRemoteViewsAdapterConnection.car");
     merge("widget/AbsActionBarView.car");
     merge("widget/ActionBarContainer.car");

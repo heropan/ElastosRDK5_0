@@ -21,3 +21,4 @@ SOURCES += PointCloud.cpp
 SOURCES += CPointCloud.cpp
 SOURCES += TargetDrawable.cpp
 SOURCES += CTargetDrawable.cpp
+SOURCES += GlowPadView.cpp
