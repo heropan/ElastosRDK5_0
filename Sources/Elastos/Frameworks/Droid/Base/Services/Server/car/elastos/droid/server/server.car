@@ -13,6 +13,8 @@ module
     merge("am/ProcessRecord.car");
     merge("am/UriPermissionOwnerExternalToken.car");
 
+    merge("content/SyncManager.car");
+    merge("content/SyncOperation.car");
     merge("content/SyncStorageEngine.car");
 
     merge("display/AutomaticBrightnessController.car");

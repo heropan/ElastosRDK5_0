@@ -1,14 +1,23 @@
 
-#include <elastos/droid/server/SyncQueue.h>
+#include <elastos/droid/server/content/SyncQueue.h>
+#include <elastos/droid/server/content/SyncOperation.h>
+#include <elastos/droid/server/content/SyncManager.h>
 #include <elastos/droid/os/SystemClock.h>
 #include <elastos/droid/content/pm/RegisteredServicesCache.h>
 #include <elastos/droid/text/format/DateUtils.h>
 #include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Content::ISyncAdapterType;
 using Elastos::Droid::Content::ISyncAdapterTypeHelper;
 using Elastos::Droid::Content::CSyncAdapterTypeHelper;
+using Elastos::Droid::Content::Pm::IServiceInfo;
+using Elastos::Droid::Content::Pm::IRegisteredServicesCacheServiceInfo;
+using Elastos::Droid::Content::Pm::IRegisteredServicesCache;
 using Elastos::Droid::Text::Format::DateUtils;
-using Elastos::Core::ICompareable;
+using Elastos::Core::IComparable;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -20,7 +29,7 @@ const String SyncQueue::TAG("SyncManager");
 SyncQueue::SyncQueue(
     /* [in] */ IPackageManager* packageManager,
     /* [in] */ SyncStorageEngine* syncStorageEngine,
-    /* [in] */ SyncAdaptersCache* syncAdapters)
+    /* [in] */ ISyncAdaptersCache* syncAdapters)
 {
     mOperationsMap = new HashMap<String, AutoPtr<SyncOperation> >();
     mPackageManager = packageManager;
@@ -49,16 +58,19 @@ void SyncQueue::AddPendingOperations(
             AutoPtr<ISyncAdapterType> adapterType;
             typeHelper->NewKey(info->mProvider, accountType, (ISyncAdapterType**)&adapterType);
 
-            AutoPtr<RegisteredServicesCache::ServiceInfo> syncAdapterInfo;
-            syncAdapterInfo = mSyncAdapters->GetServiceInfo(TO_IINTERFACE(adapterType), info->mUserId);
-            if (syncAdapterInfo == NULL) {
+            AutoPtr<IRegisteredServicesCacheServiceInfo> syncAdapterInfo;
+            IRegisteredServicesCache::Probe(mSyncAdapters)->GetServiceInfo(TO_IINTERFACE(adapterType), info->mUserId,
+                (IRegisteredServicesCacheServiceInfo**)&syncAdapterInfo);
+            if (syncAdapterInfo.Get() == NULL) {
                 // if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 //     Log.v(TAG, "Missing sync adapter info for authority " + op.target);
                 // }
                 continue;
             }
 
-            ISyncAdapterType* type = ISyncAdapterType::Probe(syncAdapterInfo->mType);
+            AutoPtr<IInterface> typeObj;
+            syncAdapterInfo->GetType((IInterface**)&typeObj);
+            ISyncAdapterType* type = ISyncAdapterType::Probe(typeObj);
             Boolean bval;
             type->AllowParallelSyncs(&bval);
             operationToAdd = new SyncOperation(
@@ -66,15 +78,15 @@ void SyncQueue::AddPendingOperations(
                 op->mExtras,
                 op->mExpedited ? -1 : 0 /* delay */,
                 0 /* flex */,
-                backoff != NULL ? backoff->mFirst : 0L,
+                backoff != NULL ? backoff->mFirst : 0,
                 mSyncStorageEngine->GetDelayUntilTime(info),
                 bval);
             operationToAdd->mPendingOperation = op;
             Add(operationToAdd, op);
         }
         else if (info->mTarget_service) {
-
-            ECode ec = mPackageManager->GetServiceInfo(info->mService, 0);
+            AutoPtr<IServiceInfo> si;
+            ECode ec = mPackageManager->GetServiceInfo(info->mService, 0, (IServiceInfo**)&si);
             if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
                 // if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 //     Log.w(TAG, "Missing sync service for authority " + op.target);
@@ -119,10 +131,10 @@ Boolean SyncQueue::Add(
     if (existingOperation != NULL) {
         Boolean changed = FALSE;
         Int32 ival;
-        ICompareable::Probe(operation)->CompareTo(TO_IINTERFACE(existingOperation), &ival);
+        IComparable::Probe(operation)->CompareTo(TO_IINTERFACE(existingOperation), &ival);
         if (ival <= 0 ) {
             Int64 newRunTime =
-                Elastos::Core::Math::Min(existingOperation.latestRunTime, operation.latestRunTime);
+                Elastos::Core::Math::Min(existingOperation->mLatestRunTime, operation->mLatestRunTime);
             // Take smaller runtime.
             existingOperation->mLatestRunTime = newRunTime;
             // Take newer flextime.
@@ -136,16 +148,16 @@ Boolean SyncQueue::Add(
     // Don't update the PendingOp if one already exists. This really is just a placeholder,
     // no actual scheduling info is placed here.
     if (operation->mPendingOperation == NULL) {
-        pop = mSyncStorageEngine.insertIntoPending(operation);
-        if (pop == null) {
-            Slogger::E(TAG, "error adding pending sync operation ");
+        pop = mSyncStorageEngine->InsertIntoPending(operation);
+        if (pop == NULL) {
+            Logger::E(TAG, "error adding pending sync operation ");
             // return E_ILLEGAL_STATE_EXCEPTION;
             return FALSE;
         }
         operation->mPendingOperation = pop;
     }
 
-    mOperationsMap[operationKey] = operation;
+    (*mOperationsMap)[operationKey] = operation;
     return TRUE;
 }
 
@@ -163,7 +175,7 @@ void SyncQueue::RemoveUserLocked(
 
     List<AutoPtr<SyncOperation> >::Iterator lit;
     for (lit = opsToRemove.Begin(); lit != opsToRemove.End(); ++lit) {
-        Remove(*it);
+        Remove(*lit);
     }
 }
 
@@ -188,7 +200,8 @@ void SyncQueue::Remove(
         return;
     }
     if (!mSyncStorageEngine->DeleteFromPending(operationToRemove->mPendingOperation)) {
-        Logger::E(TAG, "unable to find pending row for %s", Object::ToString(operationToRemove));
+        Logger::E(TAG, "unable to find pending row for %s",
+            Object::ToString(operationToRemove).string());
     }
 }
 
@@ -197,7 +210,7 @@ void SyncQueue::ClearBackoffs()
     HashMap<String, AutoPtr<SyncOperation> >::Iterator it;
     for (it = mOperationsMap->Begin(); it != mOperationsMap->End(); ++it) {
         AutoPtr<SyncOperation> op = it->mSecond;
-        op->mBackoff = 0L;
+        op->mBackoff = 0;
         op->UpdateEffectiveRunTime();
     }
 }
@@ -226,7 +239,7 @@ void SyncQueue::OnDelayUntilTimeChanged(
     HashMap<String, AutoPtr<SyncOperation> >::Iterator it;
     for (it = mOperationsMap->Begin(); it != mOperationsMap->End(); ++it) {
         AutoPtr<SyncOperation> op = it->mSecond;
-        if (op->mTarget.matchesSpec(target)) {
+        if (op->mTarget->MatchesSpec(target)) {
             op->mDelayUntil = delayUntil;
             op->UpdateEffectiveRunTime();
         }
@@ -238,10 +251,11 @@ void SyncQueue::Remove(
     /* [in] */ IBundle* extras)
 {
     HashMap<String, AutoPtr<SyncOperation> >::Iterator it;
-    for (it = mOperationsMap->Begin(); it != mOperationsMap->End(); ++it) {
-        AutoPtr<SyncOperation> syncOperation = *it;
+    for (it = mOperationsMap->Begin(); it != mOperationsMap->End(); ) {
+        AutoPtr<SyncOperation> syncOperation = it->mSecond;
         AutoPtr<EndPoint> opInfo = syncOperation->mTarget;
         if (!opInfo->MatchesSpec(info)) {
+            ++it;
             continue;
         }
         if (extras != NULL
@@ -249,12 +263,14 @@ void SyncQueue::Remove(
                     syncOperation->mExtras,
                     extras,
                     FALSE /* no config flags*/)) {
+            ++it;
             continue;
         }
-        entries->Remove();
-        if (!mSyncStorageEngine->DeleteFromPending(syncOperation.pendingOperation)) {
-            final String errorMessage = "unable to find pending row for " + syncOperation;
-            Logger::E(TAG, "unable to find pending row for %s", Object::ToString(syncOperation).string());
+        mOperationsMap->Erase(it++);
+
+        if (!mSyncStorageEngine->DeleteFromPending(syncOperation->mPendingOperation)) {
+            Logger::E(TAG, "unable to find pending row for %s",
+                Object::ToString(syncOperation).string());
         }
     }
 }
@@ -269,7 +285,7 @@ void SyncQueue::Dump(
 {
     Int64 now = SystemClock::GetElapsedRealtime();
     sb->Append("SyncQueue: ");
-    sb->Append(mOperationsMap->GetSize());
+    sb->Append((Int32)mOperationsMap->GetSize());
     sb->Append(" operation(s)\n");
     HashMap<String, AutoPtr<SyncOperation> >::Iterator it = mOperationsMap->Begin();
     for (; it != mOperationsMap->End(); ++it) {

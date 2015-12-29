@@ -550,8 +550,8 @@ void CAccountManagerService::ValidateAccountsInternal(
     }
 
     HashSet< AutoPtr<IAuthenticatorDescription> > knownAuth;
-    AutoPtr< List<AutoPtr<RegisteredServicesCache::ServiceInfo> > > services = mAuthenticatorCache->GetAllServices(accounts->mUserId);
-    List<AutoPtr<RegisteredServicesCache::ServiceInfo> >::Iterator infoIt = services->Begin();
+    AutoPtr< List<AutoPtr<IRegisteredServicesCacheServiceInfo> > > services = mAuthenticatorCache->GetAllServices(accounts->mUserId);
+    List<AutoPtr<IRegisteredServicesCacheServiceInfo> >::Iterator infoIt = services->Begin();
     for (; infoIt != services->End(); ++infoIt) {
         AutoPtr<IAuthenticatorDescription> type = (IAuthenticatorDescription*)(*infoIt)->mType.Get();
         knownAuth.Insert(type);
@@ -820,12 +820,12 @@ ECode CAccountManagerService::GetAuthenticatorTypes(
     // try {
     // Collection<AccountAuthenticatorCache.ServiceInfo<AuthenticatorDescription>>
     //         authenticatorCollection = mAuthenticatorCache.getAllServices(userId);
-    AutoPtr< List<AutoPtr<RegisteredServicesCache::ServiceInfo> > > services = mAuthenticatorCache->GetAllServices(
+    AutoPtr< List<AutoPtr<IRegisteredServicesCacheServiceInfo> > > services = mAuthenticatorCache->GetAllServices(
             UserHandle::GetCallingUserId());
     Int32 count = services->GetSize();
     AutoPtr< ArrayOf<IAuthenticatorDescription*> > types =
             ArrayOf<IAuthenticatorDescription*>::Alloc(count);
-    List<AutoPtr<RegisteredServicesCache::ServiceInfo> >::Iterator it = services->Begin();
+    List<AutoPtr<IRegisteredServicesCacheServiceInfo> >::Iterator it = services->Begin();
     for(Int32 i = 0; it != services->End(); ++i, ++it) {
         types->Set(i, (IAuthenticatorDescription*)(*it)->mType.Get());
     }
@@ -1620,7 +1620,7 @@ ECode CAccountManagerService::GetAuthToken(
     ASSERT_SUCCEEDED(CAuthenticatorDescriptionHelper::AcquireSingleton(
             (IAuthenticatorDescriptionHelper**)&descHelper));
     descHelper->NewKey(accountType, (IAuthenticatorDescription**)&value);
-    AutoPtr<RegisteredServicesCache::ServiceInfo> authenticatorInfo =
+    AutoPtr<IRegisteredServicesCacheServiceInfo> authenticatorInfo =
             mAuthenticatorCache->GetServiceInfo(value, accounts->mUserId);
     Boolean customTokens = FALSE;
     if (authenticatorInfo != NULL) {
@@ -2590,11 +2590,11 @@ Boolean CAccountManagerService::HasAuthenticatorUid(
     /* [in] */ const String& accountType,
     /* [in] */ Int32 callingUid)
 {
-    AutoPtr< List<AutoPtr<RegisteredServicesCache::ServiceInfo> > > services = mAuthenticatorCache->GetAllServices(
+    AutoPtr< List<AutoPtr<IRegisteredServicesCacheServiceInfo> > > services = mAuthenticatorCache->GetAllServices(
             UserHandle::GetUserId(callingUid));
-    List<AutoPtr<RegisteredServicesCache::ServiceInfo> >::Iterator it = services->Begin();
+    List<AutoPtr<IRegisteredServicesCacheServiceInfo> >::Iterator it = services->Begin();
     for (; it != services->End(); ++it) {
-        AutoPtr<RegisteredServicesCache::ServiceInfo> serviceInfo = *it;
+        AutoPtr<IRegisteredServicesCacheServiceInfo> serviceInfo = *it;
         AutoPtr<IAuthenticatorDescription> type = (IAuthenticatorDescription*)serviceInfo->mType.Get();
         assert(type != NULL);
         String descType;

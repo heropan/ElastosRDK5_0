@@ -138,6 +138,7 @@ ECode SyncOperation::Init(
     }
     UpdateEffectiveRunTime();
     mKey = ToKey(info, mExtras);
+    return NOERROR;
 }
 
 SyncOperation::SyncOperation(
@@ -148,7 +149,7 @@ SyncOperation::SyncOperation(
     CBundle::other->mExtras, (IBundle**)&extras);
     Init(other->mTarget, other->mReason, other->mSyncSource, extras),
         newRunTimeFromNow,
-        0L /* In back-off so no flex */,
+        0 /* In back-off so no flex */,
         other->mBackoff,
         other->mDelayUntil,
         other->mAllowParallelSyncs);

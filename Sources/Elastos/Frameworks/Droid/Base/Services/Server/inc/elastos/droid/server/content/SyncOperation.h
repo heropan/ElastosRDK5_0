@@ -1,15 +1,17 @@
-#ifndef __ELASTOS_DROID_SERVER_CONTENT_SYNC_QUEUE_H__
-#define __ELASTOS_DROID_SERVER_CONTENT_SYNC_QUEUE_H__
+#ifndef __ELASTOS_DROID_SERVER_CONTENT_SYNC_OPERATION_H__
+#define __ELASTOS_DROID_SERVER_CONTENT_SYNC_OPERATION_H__
 
 #include <elastos/droid/ext/frameworkext.h>
-#include <elastos/core/Object.h>
+#include "_Elastos.Droid.Server.h"
 #include <elastos/droid/server/content/SyncStorageEngine.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Account::IAccount;
+using Elastos::Droid::Accounts::IAccount;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Core::IComparable;
+using Elastos::Core::StringBuilder;
 
 namespace Elastos {
 namespace Droid {
@@ -209,4 +211,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__ELASTOS_DROID_SERVER_CONTENT_SYNC_QUEUE_H__
+#endif  //__ELASTOS_DROID_SERVER_CONTENT_SYNC_OPERATION_H__

@@ -303,7 +303,7 @@ Boolean AccountManagerServiceSession::BindToAuthenticator(
     ASSERT_SUCCEEDED(CAuthenticatorDescriptionHelper::AcquireSingleton(
             (IAuthenticatorDescriptionHelper**)&helper));
     helper->NewKey(authenticatorType, (IAuthenticatorDescription**)&value);
-    AutoPtr<RegisteredServicesCache::ServiceInfo> authenticatorInfo =
+    AutoPtr<IRegisteredServicesCacheServiceInfo> authenticatorInfo =
             mHost->mAuthenticatorCache->GetServiceInfo(value, mAccounts->mUserId);
     if (authenticatorInfo == NULL) {
         // if (Log.isLoggable(TAG, Log.VERBOSE)) {

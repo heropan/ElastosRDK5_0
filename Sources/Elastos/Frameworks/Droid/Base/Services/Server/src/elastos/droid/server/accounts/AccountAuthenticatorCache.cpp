@@ -156,14 +156,14 @@ ECode AccountAuthenticatorCache::ParseServiceAttributes(
     // }
 }
 
-AutoPtr<RegisteredServicesCache::ServiceInfo> AccountAuthenticatorCache::GetServiceInfo(
+AutoPtr<IRegisteredServicesCacheServiceInfo> AccountAuthenticatorCache::GetServiceInfo(
     /* [in] */ IAuthenticatorDescription* type,
     /* [in] */ Int32 userId)
 {
     return RegisteredServicesCache::GetServiceInfo(type, userId);
 }
 
-AutoPtr< List<AutoPtr<RegisteredServicesCache::ServiceInfo> > > AccountAuthenticatorCache::GetAllServices(
+AutoPtr< List<AutoPtr<IRegisteredServicesCacheServiceInfo> > > AccountAuthenticatorCache::GetAllServices(
     /* [in] */ Int32 userId)
 {
     return RegisteredServicesCache::GetAllServices(userId);

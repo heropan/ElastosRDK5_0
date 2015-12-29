@@ -8,30 +8,47 @@
 #include <Elastos.Droid.Utility.h>
 #include <Elastos.Droid.Os.h>
 #include <Elastos.CoreLibrary.Utility.h>
+#include <Elastos.CoreLibrary.IO.h>
+#include "_Elastos.Droid.Server.h"
 #include <elastos/droid/os/Handler.h>
 #include <elastos/utility/etl/Pair.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
+#include <elastos/droid/os/Handler.h>
+#include <elastos/core/StringBuilder.h>
 
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IRemoteCallbackList;
+using Elastos::Droid::Content::IISyncStatusObserver;
+using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IPeriodicSync;
 using Elastos::Droid::Content::ISyncInfo;
 using Elastos::Droid::Content::ISyncStatusInfo;
+using Elastos::Droid::Content::ISyncAdaptersCache;
 using Elastos::Droid::Accounts::IAccount;
 using Elastos::Droid::Accounts::IAccountAndUser;
+using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Utility::IAtomicFile;
 using Elastos::Core::IComparable;
+using Elastos::Core::StringBuilder;
 using Elastos::Utility::ICalendar;
+using Elastos::Utility::IList;
 using Elastos::Utility::Etl::Pair;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;
+using Elastos::IO::IFile;
+using Org::Xmlpull::V1::IXmlSerializer;
+using Org::Xmlpull::V1::IXmlPullParser;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Content {
+
+class SyncQueue;
+class SyncOperation;
 
 class DayStats
     : public Object
@@ -54,7 +71,6 @@ public:
 
 
 DEFINE_CONVERSION_FOR(Elastos::Droid::Server::Content::DayStats, IInterface)
-
 
 namespace Elastos {
 namespace Droid {
@@ -139,6 +155,9 @@ public:
      * @param spec the Endpoint to match. If the spec has null fields, they indicate a wildcard
      * and match any.
      */
+    CARAPI_(Boolean) MatchesSpec(
+        /* [in] */ ISyncStorageEngineEndPoint* spec);
+
     CARAPI MatchesSpec(
         /* [in] */ ISyncStorageEngineEndPoint* spec,
         /* [out] */ Boolean* result);
@@ -244,7 +263,7 @@ public:
 
     static AutoPtr<SyncStorageEngine> GetSingleton();
 
-    protected void SetOnSyncRequestListener(
+    void SetOnSyncRequestListener(
         /* [in] */ IOnSyncRequestListener* listener);
 
     //@Override
@@ -485,7 +504,7 @@ public:
      */
     void SetPeriodicSyncTime(
         /* [in] */ Int32 authorityId,
-        /* [in] */ PeriodicSync* targetPeriodicSync,
+        /* [in] */ IPeriodicSync* targetPeriodicSync,
         /* [in] */ Int64 when);
 
     void WriteAllState();
@@ -721,7 +740,7 @@ public:
 
     // TODO: i18n -- grab these out of resources.
     /** String names for the sync event types. */
-    static const String[] EVENTS;
+    static const AutoPtr< ArrayOf<String> > EVENTS;
 
     /** Enum value for a server-initiated sync. */
     static const Int32 SOURCE_SERVER;

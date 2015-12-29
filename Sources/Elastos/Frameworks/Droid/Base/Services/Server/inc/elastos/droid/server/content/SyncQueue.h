@@ -4,9 +4,11 @@
 
 #include <elastos/droid/ext/frameworkext.h>
 #include <Elastos.Droid.Content.h>
-#include <elastos/droid/server/SyncStorageEngine.h>
-#include <elastos/core/Object.h>
+#include "_Elastos.Droid.Server.h"
+#include "elastos/droid/server/content/SyncOperation.h"
+#include <elastos/droid/server/content/SyncStorageEngine.h>
 
+using Elastos::Droid::Content::ISyncAdaptersCache;
 using Elastos::Droid::Content::Pm::IPackageManager;
 
 namespace Elastos {
@@ -86,7 +88,7 @@ public:
 private:
     static const String TAG;
     AutoPtr<SyncStorageEngine> mSyncStorageEngine;
-    AutoPtr<SyncAdaptersCache> mSyncAdapters;
+    AutoPtr<ISyncAdaptersCache> mSyncAdapters;
     AutoPtr<IPackageManager> mPackageManager;
 
     // A Map of SyncOperations operationKey -> SyncOperation that is designed for

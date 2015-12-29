@@ -1,8 +1,8 @@
 
-#include <elastos/droid/server/SyncStorageEngine.h>
-#include <elastos/droid/server/SyncOperation.h>
-#include <elastos/droid/server/SyncManager.h>
-#include <elastos/droid/server/SyncRequest.h>
+#include <elastos/droid/server/content/SyncStorageEngine.h>
+#include <elastos/droid/server/content/SyncOperation.h>
+#include <elastos/droid/server/content/SyncManager.h>
+#include <elastos/droid/server/content/SyncQueue.h>
 #include <elastos/droid/R.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/CoreUtils.h>
@@ -256,17 +256,21 @@ ECode EndPoint::MatchesSpec(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = FALSE;
+    *result = MatchesSpec(spec);
+    return NOERROR;
+}
 
+Boolean EndPoint::MatchesSpec(
+    /* [in] */ ISyncStorageEngineEndPoint* spec)
+{
     EndPoint* other = (EndPoint)*spec;
     if (mUserId != other->mUserId
             && mUserId != IUserHandle::USER_ALL
             && other->mUserId != IUserHandle::USER_ALL) {
-        return NOERROR;
+        return FALSE;
     }
     if (mTarget_service && other->mTarget_service) {
-        *result = Object::Equals(mService, other->mService);
-        return NOERROR;
+        return Object::Equals(mService, other->mService);
     }
     else if (mTarget_provider && other->mTarget_provider) {
         Boolean accountsMatch;
@@ -283,10 +287,10 @@ ECode EndPoint::MatchesSpec(
         else {
             providersMatch = Object::Equals(mProvider, other->mProvider);
         }
-        *result = accountsMatch && providersMatch;
+        return accountsMatch && providersMatch;
     }
 
-    return NOERROR;
+    return FALSE;
 }
 
 ECode EndPoint::ToString(
@@ -381,9 +385,10 @@ void AuthorityInfo::DefaultInitialisation()
     if (target->mTarget_provider) {
         AutoPtr<IBundle> bundle;
         CBundle::New((IBundle**)&bundle);
-        defaultSync = new PeriodicSync(target->mAccount, target->mProvider,
+        CPeriodicSync::New(target->mAccount, target->mProvider,
             bundle, DEFAULT_POLL_FREQUENCY_SECONDS,
-            CalculateDefaultFlexTime(DEFAULT_POLL_FREQUENCY_SECONDS));
+            CalculateDefaultFlexTime(DEFAULT_POLL_FREQUENCY_SECONDS),
+            (IPeriodicSync**)&defaultSync);
         mPeriodicSyncs.PushBack(defaultSync);
     }
 }
@@ -1003,8 +1008,9 @@ void SyncStorageEngine::UpdateOrAddPeriodicSync(
 
         AutoPtr<IPeriodicSync> toUpdate;
         if (info->mTarget_provider) {
-            toUpdate = new PeriodicSync(info->mAccount,
-                info->mProvider, extras, period, flextime);
+            toUpdate
+            CPeriodicSync::New(info->mAccount,
+                info->mProvider, extras, period, flextime, (IPeriodicSync**)&toUpdate);
         }
         else {
             WriteAccountInfoLocked();
@@ -1016,7 +1022,7 @@ void SyncStorageEngine::UpdateOrAddPeriodicSync(
         // add this periodic sync if an equivalent periodic doesn't already exist.
         Boolean alreadyPresent = FALSE;
         for (Int32 i = 0, N = authority->mPeriodicSyncs.GetSize(); i < N; i++) {
-            PeriodicSync* syncInfo = authority->mPeriodicSyncs[i];
+            IPeriodicSync* syncInfo = authority->mPeriodicSyncs[i];
             if (SyncManager::SyncExtrasEquals(syncInfo->mExtras,
                     extras, TRUE /* includeSyncSettings*/)) {
                 if (period == syncInfo->mPeriod &&
@@ -1993,7 +1999,7 @@ void SyncStorageEngine::RemoveAuthorityLocked(
 
 void SyncStorageEngine::SetPeriodicSyncTime(
     /* [in] */ Int32 authorityId,
-    /* [in] */ PeriodicSync* targetPeriodicSync,
+    /* [in] */ IPeriodicSync* targetPeriodicSync,
     /* [in] */ Int64 when)
 {
     Boolean found = FALSE;
@@ -2004,7 +2010,7 @@ void SyncStorageEngine::SetPeriodicSyncTime(
             authorityInfo = it->mSecond;
         }
 
-        PeriodicSync* periodicSync;
+        IPeriodicSync* periodicSync;
         List<AutoPtr<IPeriodicSync> >::Iterator psIt;
         for (psIt = authorityInfo->mPeriodicSyncs.Begin(); psIt != authorityInfo->mPeriodicSyncs.End(); ++psIt) {
             periodicSync = *psIt;
@@ -2083,7 +2089,7 @@ void SyncStorageEngine::ReadAccountInfoLocked()
     Int32 eventType, version, id, depth;
     String tagName, listen, versionString, nextIdString, offsetString;
     AutoPtr<AuthorityInfo> authority;
-    AutoPtr<PeriodicSync> periodicSync;
+    AutoPtr<IPeriodicSync> periodicSync;
 
     ECode ec = NOERROR;
 
@@ -2382,7 +2388,7 @@ AutoPtr<AuthorityInfo> SyncStorageEngine::ParseAuthority(
     return authority;
 }
 
-AutoPtr<PeriodicSync> SyncStorageEngine::ParsePeriodicSync(
+AutoPtr<IPeriodicSync> SyncStorageEngine::ParsePeriodicSync(
     /* [in] */ IXmlPullParser* parser,
     /* [in] */ AuthorityInfo* authorityInfo)
 {
@@ -2418,13 +2424,13 @@ AutoPtr<PeriodicSync> SyncStorageEngine::ParsePeriodicSync(
         return NULL;
     }
 
-    AutoPtr<PeriodicSync> periodicSync;
+    AutoPtr<IPeriodicSync> periodicSync;
     if (authorityInfo->mTarget->mTarget_provider) {
         periodicSync =
-            new PeriodicSync(authorityInfo->mTarget->mAccount,
-                authorityInfo->mTarget->mProvider,
-                extras,
-                period, flextime);
+        CPeriodicSync::New(authorityInfo->mTarget->mAccount,
+            authorityInfo->mTarget->mProvider,
+            extras,
+            period, flextime, (IPeriodicSync**)&periodicSync);
     } else {
         Logger::E(TAG, "Unknown target.");
         return NULL;

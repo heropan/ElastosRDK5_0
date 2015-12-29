@@ -80,14 +80,14 @@ public:
      * @return the {@link android.content.pm.RegisteredServicesCache.ServiceInfo} that
      * matches the account type or null if none is present
      */
-    CARAPI_(AutoPtr<RegisteredServicesCache::ServiceInfo>) GetServiceInfo(
+    CARAPI_(AutoPtr<IRegisteredServicesCacheServiceInfo>) GetServiceInfo(
         /* [in] */ IAuthenticatorDescription* type,
         /* [in] */ Int32 userId);
 
     /**
      * @return A copy of a Collection of all the current Authenticators.
      */
-    CARAPI_(AutoPtr< List<AutoPtr<RegisteredServicesCache::ServiceInfo> > >) GetAllServices(
+    CARAPI_(AutoPtr< List<AutoPtr<IRegisteredServicesCacheServiceInfo> > >) GetAllServices(
         /* [in] */ Int32 userId);
 
     /**
