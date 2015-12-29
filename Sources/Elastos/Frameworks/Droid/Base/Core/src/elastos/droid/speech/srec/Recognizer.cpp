@@ -1,8 +1,8 @@
 #include "elastos/droid/speech/srec/Recognizer.h"
-#include "Elastos.Droid.Core_server.h"
 #include <elastos/utility/logging/Logger.h>
 #include <Elastos.CoreLibrary.h>
 #include <elastos/core/StringUtils.h>
+#include <Elastos.CoreLibrary.Utility.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::ILocaleHelper;
@@ -39,21 +39,23 @@ Recognizer::RecognizerGrammar::constructor(
     /* [in] */ const String& g2gFileName,
     /* [in] */ IRecognizer* r)
 {
-    mR = r;
+    mR = (Recognizer *)r;
     mGrammar = mR->SR_GrammarLoad(g2gFileName);
     Int32 i;
     r->GetVocabulary(&i);
-    mR -> SR_GrammarSetupVocabulary(mGrammar, i);
+    mR->SR_GrammarSetupVocabulary(mGrammar, i);
 
     return NOERROR;
 }
 
-void Recognizer::RecognizerGrammar::ResetAllSlots()
+ECode Recognizer::RecognizerGrammar::ResetAllSlots()
 {
     mR->SR_GrammarResetAllSlots(mGrammar);
+
+    return NOERROR;
 }
 
-void Recognizer::RecognizerGrammar::AddWordToSlot(
+ECode Recognizer::RecognizerGrammar::AddWordToSlot(
     /* [in] */ const String& slot,
     /* [in] */ const String& word,
     /* [in] */ const String& pron,
@@ -61,32 +63,42 @@ void Recognizer::RecognizerGrammar::AddWordToSlot(
     /* [in] */ const String& tag)
 {
     mR->SR_GrammarAddWordToSlot(mGrammar, slot, word, pron, weight, tag);
+
+    return NOERROR;
 }
 
-void Recognizer::RecognizerGrammar::Compile()
+ECode Recognizer::RecognizerGrammar::Compile()
 {
     mR->SR_GrammarCompile(mGrammar);
+
+    return NOERROR;
 }
 
-void Recognizer::RecognizerGrammar::SetupRecognizer()
+ECode Recognizer::RecognizerGrammar::SetupRecognizer()
 {
     mR->SR_GrammarSetupRecognizer(mGrammar, mR->mRecognizer);
     mR->mActiveGrammar = this;
+
+    return NOERROR;
 }
 
-void Recognizer::RecognizerGrammar::Save(
+ECode Recognizer::RecognizerGrammar::Save(
     /* [in] */ const String& g2gFileName)
 {
     mR->SR_GrammarSave(mGrammar, g2gFileName);
+
+    return NOERROR;
 }
 
-void Recognizer::RecognizerGrammar::Destroy()
+ECode Recognizer::RecognizerGrammar::Destroy()
 {
     // TODO: need to do cleanup and disassociation with Recognizer
     if (mGrammar != 0) {
         mR->SR_GrammarDestroy(mGrammar);
         mGrammar = 0;
     }
+
+    return NOERROR;
 }
 
 void Recognizer::RecognizerGrammar::Finalize()
@@ -112,9 +124,11 @@ Recognizer::~Recognizer()
 {}
 
 ECode Recognizer::constructor()
-{}
+{
+    return NOERROR;
+}
 
-void Recognizer::constructor(
+ECode Recognizer::constructor(
     /* [in] */ const String& configFile)
 {
     PMemInit();
@@ -122,12 +136,17 @@ void Recognizer::constructor(
     mRecognizer = SR_RecognizerCreate();
     SR_RecognizerSetup(mRecognizer);
     mVocabulary = SR_VocabularyLoad();
+
+    return NOERROR;
 }
 
-String Recognizer::GetConfigDir(
-    /* [in] */ ILocale* locale)
+ECode Recognizer::GetConfigDir(
+    /* [in] */ ILocale* locale,
+    /* [out] */ String* ret)
 {
-    if (locale == NULL){
+    VALIDATE_NOT_NULL(ret);
+
+    if (locale == NULL) {
         //locale = CLocale::US;
         AutoPtr<ILocaleHelper> lh;
         CLocaleHelper::AcquireSingleton((ILocaleHelper**)&lh);
@@ -146,9 +165,12 @@ String Recognizer::GetConfigDir(
     fT -> IsDirectory(&bIsDirectory);
 
     if (bIsDirectory) {
-        return dir;
+        *ret = dir;
     }
-    return String(NULL);
+    else
+        *ret = String(NULL);
+
+    return NOERROR;
 }
 
 ECode Recognizer::Start()
@@ -156,60 +178,91 @@ ECode Recognizer::Start()
     // TODO: shouldn't be here?
     SR_RecognizerActivateRule(mRecognizer, mActiveGrammar->mGrammar, String("trash"), 1);
     SR_RecognizerStart(mRecognizer);
+
     return NOERROR;
 }
 
-Int32 Recognizer::Advance()
+ECode Recognizer::Advance(
+    /* [out] */ Int32* ret)
 {
-    return SR_RecognizerAdvance(mRecognizer);
+    VALIDATE_NOT_NULL(ret);
+
+    *ret = SR_RecognizerAdvance(mRecognizer);
+
+    return NOERROR;
 }
 
-Int32 Recognizer::PutAudio(
+ECode Recognizer::PutAudio(
     /* [in] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
-    /* [in] */ Boolean isLast)
+    /* [in] */ Boolean isLast,
+    /* [out] */ Int32* ret)
 {
-    return SR_RecognizerPutAudio(mRecognizer, buf, offset, length, isLast);
+    VALIDATE_NOT_NULL(ret);
+
+    *ret = SR_RecognizerPutAudio(mRecognizer, buf, offset, length, isLast);
+
+    return NOERROR;
 }
 
-void Recognizer::PutAudio(
-    /* [in] */ IInputStream* audio)
+ECode Recognizer::PutAudio(
+    /* [in] */ IInputStream* audio,
+    /* [out] */ Int32* ret)
 {
+    VALIDATE_NOT_NULL(ret);
+
     // make sure the audio buffer is allocated
     if (mPutAudioBuffer == NULL){
         mPutAudioBuffer = ArrayOf<Byte>::Alloc(512);
     }
     // read some data
     Int32 nbytes;
-    audio->ReadBytes(mPutAudioBuffer, &nbytes);
+    audio->Read(mPutAudioBuffer, &nbytes);
     // eof, so signal Recognizer
     if (nbytes == -1) {
-        SR_RecognizerPutAudio(mRecognizer, mPutAudioBuffer, 0, 0, TRUE);
+        *ret = SR_RecognizerPutAudio(mRecognizer, mPutAudioBuffer, 0, 0, TRUE);
     }
     // put it into the Recognizer
     else if (nbytes != SR_RecognizerPutAudio(mRecognizer, mPutAudioBuffer, 0, nbytes, FALSE)) {
         //Java:    throw new IOException("SR_RecognizerPutAudio failed nbytes=" + nbytes);
         Logger::E(TAG, "IOException:SR_RecognizerPutAudio failed nbytes=%d\n", nbytes);
     }
+
+    return NOERROR;
 }
 
-Int32 Recognizer::GetResultCount()
+ECode Recognizer::GetResultCount(
+        /* [out] */ Int32* ret)
 {
-    return SR_RecognizerResultGetSize(mRecognizer);
+    VALIDATE_NOT_NULL(ret);
+
+    *ret = SR_RecognizerResultGetSize(mRecognizer);
+
+    return NOERROR;
 }
 
-AutoPtr< ArrayOf<String> > Recognizer::GetResultKeys(
-    /* [in] */ Int32 index)
-{
-    return SR_RecognizerResultGetKeyList(mRecognizer, index);
-}
-
-String Recognizer::GetResult(
+ECode Recognizer::GetResultKeys(
     /* [in] */ Int32 index,
-    /* [in] */ const String& key)
+    /* [out] */ ArrayOf<String>** ret)
 {
-    return SR_RecognizerResultGetValue(mRecognizer, index, key);
+    VALIDATE_NOT_NULL(ret);
+
+    *ret = SR_RecognizerResultGetKeyList(mRecognizer, index);
+
+    return NOERROR;
+}
+
+ECode Recognizer::GetResult(
+    /* [in] */ Int32 index,
+    /* [in] */ const String& key,
+    /* [out] */ String* ret)
+{
+    VALIDATE_NOT_NULL(ret);
+
+    *ret = SR_RecognizerResultGetValue(mRecognizer, index, key);
+
+    return NOERROR;
 }
 
 ECode Recognizer::Stop()
@@ -232,9 +285,14 @@ ECode Recognizer::SetAcousticState(
     return NOERROR;
 }
 
-String Recognizer::GetAcousticState()
+ECode Recognizer::GetAcousticState(
+    /* [out] */ String* ret)
 {
-    return SR_AcousticStateGet(mRecognizer);
+    VALIDATE_NOT_NULL(ret);
+
+    *ret = SR_AcousticStateGet(mRecognizer);
+
+    return NOERROR;
 }
 
 ECode Recognizer::Destroy()
@@ -296,38 +354,54 @@ void Recognizer::SR_SessionCreate(
 void Recognizer::SR_SessionDestroy()
 {}
 
-String Recognizer::EventToString(
-    /* [in] */ Int32 event)
+ECode Recognizer::EventToString(
+    /* [in] */ Int32 event,
+    /* [out] */ String* ret)
 {
     switch (event) {
         case IRecognizer::EVENT_INVALID:
-            return String("EVENT_INVALID");
+            *ret = String("EVENT_INVALID");
+            break;
         case IRecognizer::EVENT_NO_MATCH:
-            return String("EVENT_NO_MATCH");
+            *ret = String("EVENT_NO_MATCH");
+            break;
         case IRecognizer::EVENT_INCOMPLETE:
-            return String("EVENT_INCOMPLETE");
+            *ret = String("EVENT_INCOMPLETE");
+            break;
         case IRecognizer::EVENT_STARTED:
-            return String("EVENT_STARTED");
+            *ret = String("EVENT_STARTED");
+            break;
         case IRecognizer::EVENT_STOPPED:
-            return String("EVENT_STOPPED");
+            *ret = String("EVENT_STOPPED");
+            break;
         case IRecognizer::EVENT_START_OF_VOICING:
-            return String("EVENT_START_OF_VOICING");
+            *ret = String("EVENT_START_OF_VOICING");
+            break;
         case IRecognizer::EVENT_END_OF_VOICING:
-            return String("EVENT_END_OF_VOICING");
+            *ret = String("EVENT_END_OF_VOICING");
+            break;
         case IRecognizer::EVENT_SPOKE_TOO_SOON:
-            return String("EVENT_SPOKE_TOO_SOON");
+            *ret = String("EVENT_SPOKE_TOO_SOON");
+            break;
         case IRecognizer::EVENT_RECOGNITION_RESULT:
-            return String("EVENT_RECOGNITION_RESULT");
+            *ret = String("EVENT_RECOGNITION_RESULT");
+            break;
         case IRecognizer::EVENT_START_OF_UTTERANCE_TIMEOUT:
-            return String("EVENT_START_OF_UTTERANCE_TIMEOUT");
+            *ret = String("EVENT_START_OF_UTTERANCE_TIMEOUT");
+            break;
         case IRecognizer::EVENT_RECOGNITION_TIMEOUT:
-            return String("EVENT_RECOGNITION_TIMEOUT");
+            *ret = String("EVENT_RECOGNITION_TIMEOUT");
+            break;
         case IRecognizer::EVENT_NEED_MORE_AUDIO:
-            return String("EVENT_NEED_MORE_AUDIO");
+            *ret = String("EVENT_NEED_MORE_AUDIO");
+            break;
         case IRecognizer::EVENT_MAX_SPEECH:
-            return String("EVENT_MAX_SPEECH");
+            *ret = String("EVENT_MAX_SPEECH");
+        default:
+            *ret = String("EVENT_") + StringUtils::ToString(event);
     }
-    return String("EVENT_") + StringUtils::Int32ToString(event);
+
+    return NOERROR;
 }
 
 void Recognizer::SR_RecognizerStart(
@@ -338,7 +412,7 @@ void Recognizer::SR_RecognizerStop(
     /* [in] */ Int64 recognizer)
 {}
 
-Int32 Recognizer::SR_RecognizerCreate()
+Int64 Recognizer::SR_RecognizerCreate()
 {
     return 0;
 }

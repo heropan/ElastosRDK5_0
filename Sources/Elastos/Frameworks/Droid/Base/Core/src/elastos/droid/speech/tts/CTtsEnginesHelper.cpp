@@ -8,15 +8,11 @@ namespace Droid {
 namespace Speech {
 namespace Tts {
 
-ECode CTtsEnginesHelper::ParseLocalePref(
-    /* [in] */ const String& pref,
-    /* [out, callee] */ ArrayOf<String> ** ppRet)
+ECode CTtsEnginesHelper::NormalizeTTSLocale(
+    /* [in] */ ILocale* ttsLocale,
+    /* [out] */ ILocale** outLocale)
 {
-    VALIDATE_NOT_NULL(ppRet);
-    AutoPtr<ArrayOf<String> > temp = CTtsEngines::ParseLocalePref(pref);
-    *ppRet = temp;
-    REFCOUNT_ADD(*ppRet);
-    return NOERROR;
+    return TtsEngines::NormalizeTTSLocale(ttsLocale, outLocale);
 }
 
 } // namespace Tts

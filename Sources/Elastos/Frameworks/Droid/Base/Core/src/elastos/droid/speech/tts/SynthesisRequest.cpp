@@ -2,6 +2,7 @@
 #include "elastos/droid/os/CBundle.h"
 
 using Elastos::Droid::Os::CBundle;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -46,15 +47,15 @@ ECode SynthesisRequest::constructor(
     return CBundle::New(params, (IBundle**)&mParams);
 }
 
-ECode CSynthesisRequest::GetText(
+ECode SynthesisRequest::GetText(
     /* [out] */ String* ret)
 {
     VALIDATE_NOT_NULL(ret);
-    *ret = mText;
+    *ret = ToString(mText);
     return NOERROR;
 }
 
-ECode CSynthesisRequest::GetCharSequenceText(
+ECode SynthesisRequest::GetCharSequenceText(
     /* [out] */ ICharSequence** ret)
 {
     VALIDATE_NOT_NULL(ret);
@@ -62,7 +63,7 @@ ECode CSynthesisRequest::GetCharSequenceText(
     return NOERROR;
 }
 
-ECode CSynthesisRequest::GetVoiceName(
+ECode SynthesisRequest::GetVoiceName(
     /* [out] */ String* ret)
 {
     VALIDATE_NOT_NULL(ret);
@@ -70,7 +71,7 @@ ECode CSynthesisRequest::GetVoiceName(
     return NOERROR;
 }
 
-ECode CSynthesisRequest::GetLanguage(
+ECode SynthesisRequest::GetLanguage(
     /* [out] */ String* ret)
 {
     VALIDATE_NOT_NULL(ret);
@@ -78,7 +79,7 @@ ECode CSynthesisRequest::GetLanguage(
     return NOERROR;
 }
 
-ECode CSynthesisRequest::GetCountry(
+ECode SynthesisRequest::GetCountry(
     /* [out] */ String* ret)
 {
     VALIDATE_NOT_NULL(ret);
@@ -86,7 +87,7 @@ ECode CSynthesisRequest::GetCountry(
     return NOERROR;
 }
 
-ECode CSynthesisRequest::GetVariant(
+ECode SynthesisRequest::GetVariant(
     /* [out] */ String* ret)
 {
     VALIDATE_NOT_NULL(ret);
@@ -94,7 +95,7 @@ ECode CSynthesisRequest::GetVariant(
     return NOERROR;
 }
 
-ECode CSynthesisRequest::GetSpeechRate(
+ECode SynthesisRequest::GetSpeechRate(
     /* [out] */ Int32* ret)
 {
     VALIDATE_NOT_NULL(ret);
@@ -102,7 +103,7 @@ ECode CSynthesisRequest::GetSpeechRate(
     return NOERROR;
 }
 
-ECode CSynthesisRequest::GetPitch(
+ECode SynthesisRequest::GetPitch(
     /* [out] */ Int32* ret)
 {
     VALIDATE_NOT_NULL(ret);
@@ -110,7 +111,7 @@ ECode CSynthesisRequest::GetPitch(
     return NOERROR;
 }
 
-ECode CSynthesisRequest::GetParams(
+ECode SynthesisRequest::GetParams(
     /* [out] */ IBundle** ret)
 {
     VALIDATE_NOT_NULL(ret);
@@ -119,7 +120,7 @@ ECode CSynthesisRequest::GetParams(
     return NOERROR;
 }
 
-ECode CSynthesisRequest::GetCallerUid(
+ECode SynthesisRequest::GetCallerUid(
     /* [out] */ Int32* ret)
 {
     VALIDATE_NOT_NULL(ret);
@@ -135,29 +136,35 @@ ECode SynthesisRequest::SetLanguage(
     mLanguage = language;
     mCountry = country;
     mVariant = variant;
+    return NOERROR;
 }
 
 ECode SynthesisRequest::SetVoiceName(
     /* [in] */ const String& voiceName)
 {
     mVoiceName = voiceName;
+    return NOERROR;
 }
+
 ECode SynthesisRequest::SetSpeechRate(
     /* [in] */ Int32 speechRate)
 {
     mSpeechRate = speechRate;
+    return NOERROR;
 }
 
 ECode SynthesisRequest::SetPitch(
     /* [in] */ Int32 pitch)
 {
     mPitch = pitch;
+    return NOERROR;
 }
 
 ECode SynthesisRequest::SetCallerUid(
     /* [in] */ Int32 uid)
 {
     mCallerUid = uid;
+    return NOERROR;
 }
 
 } // namespace Tts

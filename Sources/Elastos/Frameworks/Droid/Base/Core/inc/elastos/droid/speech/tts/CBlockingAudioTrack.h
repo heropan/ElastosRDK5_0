@@ -1,8 +1,8 @@
 
-#ifndef __ELASTOS_DROID_SPEECH_TTS_CTtsEngines_h__
-#define __ELASTOS_DROID_SPEECH_TTS_CTtsEngines_h__
+#ifndef __ELASTOS_DROID_SPEECH_TTS_CBlockingAudioTrack_h__
+#define __ELASTOS_DROID_SPEECH_TTS_CBlockingAudioTrack_h__
 
-#include "_Elastos_Droid_Speech_Tts_BlockingAudioTrack.h"
+#include "_Elastos_Droid_Speech_Tts_CBlockingAudioTrack.h"
 #include "elastos/droid/speech/tts/BlockingAudioTrack.h"
 
 namespace Elastos {
@@ -26,4 +26,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_SPEECH_TTS_CTtsEngines_h__
+#endif // __ELASTOS_DROID_SPEECH_TTS_CBlockingAudioTrack_h__

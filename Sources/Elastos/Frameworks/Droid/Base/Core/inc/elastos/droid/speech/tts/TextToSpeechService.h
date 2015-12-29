@@ -9,29 +9,30 @@
 //#include "elastos/droid/os/HandlerThread.h"
 #include "elastos/droid/os/Looper.h"
 #include "elastos/droid/os/Runnable.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/speech/tts/SynthesisRequest.h"
 #include "elastos/droid/speech/tts/AbstractSynthesisCallback.h"
-#include "elastos/droid/speech/tts/EventLogger.h"
+#include "elastos/droid/speech/tts/EventLoggerV1.h"
 #include "elastos/droid/speech/tts/AudioPlaybackQueueItem.h"
 //#include "elastos/droid/os/RemoteCallbackList.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/Set.h>
 
-
-#include "Elastos.Droid.Core_server.h"
 using Elastos::Droid::Os::IRemoteCallbackList;
 //using Elastos::Droid::Os::RemoteCallbackList;
 using Elastos::Droid::Os::IIdleHandler;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::ILooper;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Speech::Tts::IITextToSpeechService;
 using Elastos::Droid::App::Service;
+using Elastos::Net::IURI;
 //using Elastos::Droid::Provider::ISettingsSecure;
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::Set;
+using Elastos::Utility::Etl::Set;
+using Elastos::Utility::IList;
+using Elastos::IO::IFileOutputStream;
 
 namespace Elastos {
 namespace Droid {
@@ -93,8 +94,7 @@ namespace Tts {
  */
 //public abstract class
 class TextToSpeechService
-    : public Object
-    , public Elastos::Droid::App::Service
+    : public Elastos::Droid::App::Service
     , public ITextToSpeechService
 {
 private:
@@ -115,8 +115,8 @@ private:
         virtual ~SynthThread();
 
         CARAPI constructor();
-    public:
-        SynthThread(
+
+        CARAPI constructor(
             /* [in] */ TextToSpeechService* ttss);
 
         CARAPI QueueIdle(
@@ -127,7 +127,7 @@ private:
         CARAPI_(void) BroadcastTtsQueueProcessingCompleted();
 
     private:
-        Boolean mFirstIdle;// = TRUE;
+        Boolean mFirstIdle;
         AutoPtr<TextToSpeechService> mTtss;
     };
 
@@ -138,8 +138,6 @@ private:
     //private abstract class
     class SpeechItem
         : public Object
-        , public ITextToSpeechServiceUtteranceProgressDispatcher
-        , public ITextToSpeechSpeechItem
     {
     public:
         CAR_INTERFACE_DECL();
@@ -154,22 +152,32 @@ private:
             /* [in] */ IInterface* caller,
             /* [in] */ Int32 callerUid,
             /* [in] */ Int32 callerPid,
-            /* [in] */ IBundle* params,
             /* [in] */ TextToSpeechService* ttss);
 
-        CARAPI GetCallerIdentity(
-            /* [out] */ IInterface *ret);
+        AutoPtr<IInterface> GetCallerIdentity();
+
+        CARAPI GetCallerUid(
+            /* [out] */ Int32* ret);
+
+        CARAPI GetCallerPid(
+            /* [out] */ Int32* ret);
+
+        /**
+         * Checker whether the item is valid. If this method returns false, the item should not
+         * be played.
+         */
+        virtual Boolean IsValid() = 0;
 
         /**
          * Plays the speech item. Blocks until playback is finished.
          * Must not be called more than once.
          *
          * Only called on the synthesis thread.
-         *
-         * @return {@link TextToSpeech#SUCCESS} or {@link TextToSpeech#ERROR}.
          */
         //public
         CARAPI Play();
+
+        virtual void PlayImpl() = 0;
 
         /**
          * Stops the speech item.
@@ -180,85 +188,23 @@ private:
         //public
         CARAPI Stop();
 
-        //@Override
-        //public
-        CARAPI DispatchOnDone();
+        virtual void StopImpl() = 0;
 
-        //@Override
-        //public
-        CARAPI DispatchOnStart();
-
-        //@Override
-        //public
-        CARAPI DispatchOnError();
-
-        CARAPI GetCallerUid(
-            /* [out] */ Int32* ret);
-
-        CARAPI GetCallerPid(
-            /* [out] */ Int32* ret);
-
-    public:
-        //public
-        CARAPI_(Int32) GetStreamType();
-
-        //public
-        CARAPI_(Float) GetVolume();
-
-        //public
-        CARAPI_(Float) GetPan();
-
-        //public
-        CARAPI_(String) GetUtteranceId();
-
-        /**
-         * Checker whether the item is valid. If this method returns false, the item should not
-         * be played.
-         */
-        //public abstract
-        virtual CARAPI_(Boolean) IsValid() = 0;
-
-    protected:
         //protected synchronized
         CARAPI_(Boolean) IsStopped();
 
-        //protected abstract
-        virtual CARAPI_(Int32) PlayImpl() = 0;
-
-        //protected abstract
-        virtual CARAPI_(void) StopImpl() = 0;
-
-    protected:
-        //protected
-        CARAPI_(String) GetStringParam(
-            /* [in] */ const String& key,
-            /* [in] */ const String& defaultValue);
-
-        //protected
-        CARAPI_(Int32) GetIntParam(
-            /* [in] */ const String& key,
-            /* [in] */ Int32 defaultValue);
-
-        //protected
-        CARAPI_(Float) GetFloatParam(
-            /* [in] */ const String& key,
-            /* [in] */ Float defaultValue);
-
-    protected:
-        //protected final
-        AutoPtr<IBundle> mParams;
     protected:
         //private final
         AutoPtr<IInterface> mCallerIdentity;
-    protected:
+
         //private final
         Int32 mCallerUid;
         //private final
         Int32 mCallerPid;
         //private
-        Boolean mStarted;// = FALSE;
+        Boolean mStarted;
         //private
-        Boolean mStopped;// = FALSE;
+        Boolean mStopped;
         Object mLock;
         AutoPtr<TextToSpeechService> mTtss;
     };
@@ -270,37 +216,38 @@ public:
      */
     class UtteranceSpeechItem
         : public SpeechItem
-        , public IUtteranceProgressDispatcher
     {
     public:
+        UtteranceSpeechItem();
+
         UtteranceSpeechItem(
             /* [in] */ IInterface* caller,
             /* [in] */ Int32 callerUid,
             /* [in] */ Int32 callerPid);
 
-        void DispatchOnSuccess();
+        CARAPI DispatchOnSuccess();
 
-        void DispatchOnStop();
+        CARAPI DispatchOnStop();
 
-        void DispatchOnStart();
+        CARAPI DispatchOnStart();
 
-        void DispatchOnError(
+        CARAPI DispatchOnError(
             /* [in] */ Int32 errorCode);
 
         String GetUtteranceId();
 
         String GetStringParam(
-            /* [in] */ IBundle params,
+            /* [in] */ IBundle* params,
             /* [in] */ const String& key,
             /* [in] */ const String& defaultValue);
 
         Int32 GetIntParam(
-            /* [in] */ IBundle params,
+            /* [in] */ IBundle* params,
             /* [in] */ const String& key,
             /* [in] */ Int32 defaultValue);
 
         Float GetFloatParam(
-            /* [in] */ IBundle params,
+            /* [in] */ IBundle* params,
             /* [in] */ const String& key,
             /* [in] */ Float defaultValue);
     };
@@ -314,12 +261,14 @@ public:
     class SpeechItemV1
         : public UtteranceSpeechItem
     {
+    public:
         SpeechItemV1(
-            /* [in] */ IInterface callerIdentity,
+            /* [in] */ IInterface* callerIdentity,
             /* [in] */ Int32 callerUid,
             /* [in] */ Int32 callerPid,
-            /* [in] */ Bundle params,
-            /* [in] */ const String& utteranceId);
+            /* [in] */ IBundle* params,
+            /* [in] */ const String& utteranceId,
+            /* [in] */ TextToSpeechService* ttss);
 
         Boolean HasLanguage();
 
@@ -329,125 +278,87 @@ public:
 
         String GetUtteranceId();
 
-        AudioOutputParams getAudioParams();
+        AudioOutputParams* GetAudioParams();
 
     protected:
-        IBundle mParams;
+        IBundle* mParams;
         String mUtteranceId;
-
     };
 
 public:
 
     class SynthesisSpeechItemV1
-        : SpeechItemV1
+        : public SpeechItemV1
     {
-    private:
-        // Never null.
-        ICharSequence mText;
-        SynthesisRequest mSynthesisRequest;
-        ArrayOf<String> mDefaultLocale;
-        // Non null after synthesis has started, and all accesses
-        // guarded by 'this'.
-        AbstractSynthesisCallback mSynthesisCallback;
-        EventLoggerV1 mEventLogger;
-        Int32 mCallerUid;
-
     public:
         SynthesisSpeechItemV1(
-            /* [in] */ IInterface callerIdentity,
+            /* [in] */ IInterface* callerIdentity,
             /* [in] */ Int32 callerUid,
             /* [in] */ Int32 callerPid,
-            /* [in] */ IBundle params,
+            /* [in] */ IBundle* params,
             /* [in] */ const String& utteranceId,
-            /* [in] */ ICharSequence text);
+            /* [in] */ TextToSpeechService* ttss);
 
-        ICharSequence getText();
+        ICharSequence* GetText();
 
-        boolean isValid();
+        Boolean HasLanguage();
 
-        void playImpl();
+        Boolean IsValid();
 
-        AbstractSynthesisCallback createSynthesisCallback();
+        void PlayImpl();
 
-        void setRequestParams(
-            /* [in] */ SynthesisRequest request);
+        AbstractSynthesisCallback* CreateSynthesisCallback();
 
-        void stopImpl();
+        void SetRequestParams(
+            /* [in] */ ISynthesisRequest* request);
 
-        String getCountry();
+        void StopImpl();
 
-        String getVariant();
+        String GetCountry();
 
-        String getLanguage();
+        String GetVariant();
 
-        String getVoiceName();
+        String GetLanguage();
+
+        String GetVoiceName();
+
+        Int32 GetSpeechRate();
+
+        Int32 GetPitch();
+
+    private:
+        // Never null.
+        AutoPtr<ICharSequence> mText;
+        AutoPtr<ISynthesisRequest> mSynthesisRequest;
+        AutoPtr<ArrayOf<String> > mDefaultLocale;
+        // Non null after synthesis has started, and all accesses
+        // guarded by 'this'.
+        AutoPtr<AbstractSynthesisCallback> mSynthesisCallback;
+        AutoPtr<EventLoggerV1> mEventLogger;
+        Int32 mCallerUid;
     };
 
 private:
 
     class SynthesisToFileOutputStreamSpeechItemV1
-        : SynthesisSpeechItemV1
+        : public SynthesisSpeechItemV1
     {
-    private:
-        IFileOutputStream mFileOutputStream;
-
     public:
         SynthesisToFileOutputStreamSpeechItemV1(
-            /* [in] */ IInterface callerIdentity,
+            /* [in] */ IInterface* callerIdentity,
             /* [in] */ Int32 callerUid,
             /* [in] */ Int32 callerPid,
-            /* [in] */ IBundle params,
+            /* [in] */ IBundle* params,
             /* [in] */ const String& utteranceId,
-            /* [in] */ ICharSequence text,
-            /* [in] */ IFileOutputStream fileOutputStream);
+            /* [in] */ IFileOutputStream* fileOutputStream,
+            /* [in] */ TextToSpeechService* ttss);
 
-        AbstractSynthesisCallback createSynthesisCallback();
+        AbstractSynthesisCallback* createSynthesisCallback();
 
-        void playImpl();
-    };
+        void PlayImpl();
 
-public:
-    /** Set of parameters affecting audio output. */
-    class AudioOutputParams {
-        /**
-         * Audio session identifier. May be used to associate audio playback with one of the
-         * {@link android.media.audiofx.AudioEffect} objects. If not specified by client,
-         * it should be equal to {@link AudioSystem#AUDIO_SESSION_ALLOCATE}.
-         */
-        Int32 mSessionId;
-
-        /**
-         * Volume, in the range [0.0f, 1.0f]. The default value is
-         * {@link TextToSpeech.Engine#DEFAULT_VOLUME} (1.0f).
-         */
-        Float mVolume;
-
-        /**
-         * Left/right position of the audio, in the range [-1.0f, 1.0f].
-         * The default value is {@link TextToSpeech.Engine#DEFAULT_PAN} (0.0f).
-         */
-        Float mPan;
-
-        /**
-         * Audio attributes, set by {@link TextToSpeech#setAudioAttributes}
-         * or created from the value of {@link TextToSpeech.Engine#KEY_PARAM_STREAM}.
-         */
-        AutoPtr<IAudioAttributes> mAudioAttributes;
-
-        /** Create AudioOutputParams with default values */
-        AudioOutputParams();
-
-        AudioOutputParams(
-            /* [in] */ Int32 sessionId,
-            /* [in] */ Float volume,
-            /* [in] */ Float pan,
-            /* [in] */ AudioAttributes audioAttributes);
-
-        /** Create AudioOutputParams from A {@link SynthesisRequest#getParams()} bundle */
-        static AudioOutputParams createFromV1ParamsBundle(
-            /* [in] */ IBundle paramsBundle,
-            /* [in] */ Boolean isSpeech);
+    private:
+        AutoPtr<IFileOutputStream> mFileOutputStream;
     };
 
 private:
@@ -455,26 +366,27 @@ private:
         : public SpeechItemV1
     {
     private:
-        AudioPlaybackQueueItem mItem;
+        AutoPtr<AudioPlaybackQueueItem> mItem;
 
     public:
         AudioSpeechItemV1(
-            /* [in] */ IInterface callerIdentity,
+            /* [in] */ IInterface* callerIdentity,
             /* [in] */ Int64 callerUid,
             /* [in] */ Int64 callerPid,
-            /* [in] */ Bundle params,
+            /* [in] */ IBundle* params,
             /* [in] */ const String& utteranceId,
-            /* [in] */ Uri uri);
+            /* [in] */ IURI* uri,
+            /* [in] */ TextToSpeechService* ttss);
 
-        Boolean isValid();
+        Boolean IsValid();
 
-        void playImpl();
+        void PlayImpl();
 
-        void stopImpl();
+        void StopImpl();
 
-        String getUtteranceId();
+        String GetUtteranceId();
 
-        AudioOutputParams getAudioParams();
+        AudioOutputParams* GetAudioParams();
     };
 
 private:
@@ -487,19 +399,20 @@ private:
 
     public:
         SilenceSpeechItem(
-            /* [in] */ IInterface callerIdentity,
+            /* [in] */ IInterface* callerIdentity,
             /* [in] */ Int32 callerUid,
             /* [in] */ Int32 callerPid,
             /* [in] */ const String& utteranceId,
-            /* [in] */ Int64 duration);
+            /* [in] */ Int64 duration,
+            /* [in] */ TextToSpeechService* ttss);
 
-        Boolean isValid();
+        Boolean IsValid();
 
-        void playImpl();
+        void PlayImpl();
 
-        void stopImpl();
+        void StopImpl();
 
-        String getUtteranceId();
+        String GetUtteranceId();
     };
 
 private:
@@ -517,7 +430,7 @@ private:
 
     public:
         LoadLanguageItem(
-            /* [in] */ IInterface callerIdentity,
+            /* [in] */ IInterface* callerIdentity,
             /* [in] */ Int32 callerUid,
             /* [in] */ Int32 callerPid,
             /* [in] */ const String& language,
@@ -543,22 +456,22 @@ private:
 
     public:
         LoadVoiceItem(
-            /* [in] */ IInterface callerIdentity,
+            /* [in] */ IInterface* callerIdentity,
             /* [in] */ Int32 callerUid,
             /* [in] */ Int32 callerPid,
-            /* [in] */ const String& voiceName) {
+            /* [in] */ const String& voiceName);
 
         Boolean isValid();
 
         void playImpl();
 
         void stopImpl();
-    }
+    };
 
 private:
     //private class
     class SynthHandler
-        : public HandlerBase
+        : public Object
     {
     private:
         class RunnableSynthHandlerEnqueueSpeechItem
@@ -647,6 +560,9 @@ private:
         virtual ~TextToSpeechServiceStub();
 
         CARAPI constructor();
+
+        CARAPI constructor(
+            /* [in] */ TextToSpeechService* ttss);
 
     public:
         //@Override
@@ -781,7 +697,8 @@ private:
         //public void
         void DispatchOnError(
             /* [in] */ IInterface* callerIdentity,
-            /* [in] */ const String& utteranceId);
+            /* [in] */ const String& utteranceId,
+            /* [in] */ Int32 errorCode);
 
         //@Override
         //public void
@@ -808,7 +725,13 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     TextToSpeechService();
+
+    virtual ~TextToSpeechService();
+
+    CARAPI constructor();
 
 public:
     //@Override
@@ -1032,7 +955,7 @@ private:
     //private
     static const Int32 MAX_SPEECH_ITEM_CHAR_LENGTH;     // = 4000;
     //private
-    static const CString SYNTH_THREAD_NAME;             // = "SynthThread";
+    static const String SYNTH_THREAD_NAME;              // = "SynthThread";
 
     //private
     AutoPtr<SynthHandler> mSynthHandler;
@@ -1049,7 +972,6 @@ private:
     //private
     String mPackageName;
 
-private:
     /**
      * Binder returned from {@code #onBind(Intent)}. The methods in this class can be
      * called called from several different threads.

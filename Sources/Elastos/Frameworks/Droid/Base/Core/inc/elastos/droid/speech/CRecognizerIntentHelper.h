@@ -1,9 +1,10 @@
 
-#ifndef __ELASTOS_DROID_SPEECH_CRECOGNIZERINTENT_H__
-#define __ELASTOS_DROID_SPEECH_CRECOGNIZERINTENT_H__
+#ifndef __ELASTOS_DROID_SPEECH_CRecognizerIntentHelper_H__
+#define __ELASTOS_DROID_SPEECH_CRecognizerIntentHelper_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/core/Singleton.h"
+#include "_Elastos_Droid_Speech_CRecognizerIntentHelper.h"
 
 using Elastos::Droid::Speech::IRecognizerIntent;
 using Elastos::Droid::Content::IIntent;
@@ -407,4 +408,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_SPEECH_CRECOGNIZERINTENT_H__
+#endif // __ELASTOS_DROID_SPEECH_CRecognizerIntentHelper_H__

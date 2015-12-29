@@ -4,6 +4,7 @@
 
 using Elastos::Core::CThread;
 using Elastos::Utility::Logging::Logger;
+using Elastos::Core::EIID_IRunnable;
 
 namespace Elastos {
 namespace Droid {
@@ -17,7 +18,7 @@ const Boolean AudioPlaybackHandler::DBG = FALSE;
  * AudioPlaybackHandler::AudioPlaybackHandlerMessageLoop
  *******************************************************************************************************/
 
-CAR_OBJECT_IMPL(AudioPlaybackHandler::AudioPlaybackHandlerMessageLoop, Object, IRunnable);
+CAR_INTERFACE_IMPL(AudioPlaybackHandler::AudioPlaybackHandlerMessageLoop, Object, IRunnable);
 
 AudioPlaybackHandler::AudioPlaybackHandlerMessageLoop::AudioPlaybackHandlerMessageLoop()
 {}
@@ -27,6 +28,13 @@ AudioPlaybackHandler::AudioPlaybackHandlerMessageLoop::~AudioPlaybackHandlerMess
 
 ECode AudioPlaybackHandler::AudioPlaybackHandlerMessageLoop::constructor()
 {
+    return NOERROR;
+}
+
+ECode AudioPlaybackHandler::AudioPlaybackHandlerMessageLoop::constructor(
+    /* [in] */ AudioPlaybackHandler* aph)
+{
+    mAph = aph;
     return NOERROR;
 }
 
@@ -60,18 +68,13 @@ ECode AudioPlaybackHandler::AudioPlaybackHandlerMessageLoop::Run()
     return NOERROR;
 }
 
-AudioPlaybackHandler::AudioPlaybackHandlerMessageLoop::AudioPlaybackHandlerMessageLoop(
-    /* [in] */ AudioPlaybackHandler* aph)
-{
-    mAph = aph;
-}
-
 /******************************AudioPlaybackHandler*************************/
 
 AudioPlaybackHandler::AudioPlaybackHandler()
 {
     //Java:    mHandlerThread = new Thread(new MessageLoop(), "TTS.AudioPlaybackThread");
-    AutoPtr<AudioPlaybackHandlerMessageLoop> aphMl = new AudioPlaybackHandlerMessageLoop(this);
+    AutoPtr<AudioPlaybackHandlerMessageLoop> aphMl = new AudioPlaybackHandlerMessageLoop();
+    aphMl->constructor(this);
     CThread::New(aphMl, String("TTS.AudioPlaybackThread"), (IThread**)&mHandlerThread);
 }
 

@@ -1,8 +1,10 @@
 #include "elastos/droid/speech/RecognitionService.h"
 #include <elastos/utility/logging/Logger.h>
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Os.h"
 
 using Elastos::Utility::Logging::Logger;
+using Elastos::Droid::Os::EIID_IHandler;
 
 namespace Elastos {
 namespace Droid {
@@ -111,6 +113,23 @@ RecognitionService::RecognitionServiceStartListeningArgs::RecognitionServiceStar
 }
 
 /******************************RecognitionService::RecognitionServiceHandler*************************/
+//CAR_INTERFACE_IMPL(RecognitionService::RecognitionServiceHandler, Object, IHandler);
+
+RecognitionService::RecognitionServiceHandler::RecognitionServiceHandler()
+{}
+
+RecognitionService::RecognitionServiceHandler::RecognitionServiceHandler(
+    /* [in] */ RecognitionService* host)
+    : mHost(host)
+{}
+
+RecognitionService::RecognitionServiceHandler::~RecognitionServiceHandler()
+{}
+
+ECode RecognitionService::RecognitionServiceHandler::constructor()
+{
+    return NOERROR;
+}
 
 ECode RecognitionService::RecognitionServiceHandler::HandleMessage(
     /* [in] */ IMessage* msg)
@@ -122,7 +141,7 @@ ECode RecognitionService::RecognitionServiceHandler::HandleMessage(
 
     switch (what) {
         case RecognitionService::MSG_START_LISTENING: {
-            RecognitionServiceStartListeningArgs* args = (RecognitionServiceStartListeningArgs*)obj.Get();
+            RecognitionServiceStartListeningArgs* args = (RecognitionServiceStartListeningArgs*)IObject::Probe(obj.Get());
             mHost->DispatchStartListening(args->mIntent.Get(), args->mListener.Get());
             break;
         }
@@ -148,8 +167,10 @@ RecognitionService::RecognitionServiceBinder::RecognitionServiceBinder()
 RecognitionService::RecognitionServiceBinder::~RecognitionServiceBinder()
 {}
 
-RecognitionService::RecognitionServiceBinder::constructor()
-{}
+ECode RecognitionService::RecognitionServiceBinder::constructor()
+{
+    return NOERROR;
+}
 
 RecognitionService::RecognitionServiceBinder::RecognitionServiceBinder(
     /* [in] */ RecognitionService* service)
@@ -170,7 +191,7 @@ ECode RecognitionService::RecognitionServiceBinder::StartListening(
             new RecognitionServiceStartListeningArgs(recognizerIntent, listener);
         AutoPtr<IMessage> msg;
         mInternalService->mHandler->ObtainMessage(
-            RecognitionService::MSG_START_LISTENING, rslArgs.Get(), (IMessage**)&msg);
+            RecognitionService::MSG_START_LISTENING, TO_IINTERFACE(rslArgs.Get()), (IMessage**)&msg);
         Boolean result;
         return mInternalService->mHandler->SendMessage(msg, &result);
     }
@@ -317,7 +338,7 @@ AutoPtr</*IIBinder*/IBinder> RecognitionService::OnBind(
         //Java:    Log.d(TAG, "onBind, intent=" + intent);
         String strIntent;
         intent->ToString(&strIntent);
-        Logger::D(TAG, "onBind, intent=%s\n", strIntent);
+        Logger::D(TAG, "onBind, intent=%s\n", strIntent.string());
     }
     return /*mBinder*/NULL;
 }
@@ -336,8 +357,8 @@ ECode RecognitionService::OnDestroy()
 
 RecognitionService::RecognitionService()
 {
-    mBinder = new RecognitionServiceBinder(this);
-    mHandler = new RecognitionServiceHandler(this);
+    mBinder = new RecognitionServiceBinder();
+//    mHandler = new RecognitionServiceHandler();
 }
 
 } // namespace Speech

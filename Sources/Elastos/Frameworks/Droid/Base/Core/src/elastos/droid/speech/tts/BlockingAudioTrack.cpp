@@ -1,3 +1,7 @@
+//
+//depend on CAudioTrack
+//
+#if 0
 #include "elastos/droid/speech/tts/BlockingAudioTrack.h"
 #include "elastos/droid/media/CAudioTrack.h"
 #include <elastos/core/Math.h>
@@ -389,3 +393,5 @@ Float BlockingAudioTrack::Clip(
 } // namespace Speech
 } // namepsace Droid
 } // namespace Elastos
+
+#endif

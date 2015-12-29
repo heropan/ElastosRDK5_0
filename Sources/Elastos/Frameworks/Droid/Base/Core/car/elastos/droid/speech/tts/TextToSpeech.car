@@ -392,7 +392,8 @@ module
         Speak(
             [in] String text,
             [in] Int32 queueMode,
-            [in] IHashMap* params);
+            [in] IHashMap* params,
+            [out] Int32* ret);
 
         /**
          * Plays the earcon using the specified queueing mode and parameters.

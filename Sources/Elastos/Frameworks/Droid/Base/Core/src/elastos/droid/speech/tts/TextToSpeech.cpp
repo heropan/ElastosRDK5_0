@@ -8,6 +8,8 @@
 //#include "elastos/droid/net/CUriBuilder.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/AutoLock.h>
+#include <Elastos.CoreLibrary.Utility.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::CLocale;
@@ -40,7 +42,9 @@ TextToSpeech::TextToSpeechEngineInfo::~TextToSpeechEngineInfo()
 {}
 
 ECode TextToSpeech::TextToSpeechEngineInfo::constructor()
-{}
+{
+    return NOERROR;
+}
 
 ECode TextToSpeech::TextToSpeechEngineInfo::ToString(
     /* [out] */ String* ret)
@@ -83,7 +87,7 @@ TextToSpeech::TextToSpeechActionRSpeak::TextToSpeechActionRSpeak(
     /* [in] */ TextToSpeech* tts,
     /* [in] */ const String& text,
     /* [in] */ Int32 queueMode,
-    /* [in] */ IObjectStringMap* params)
+    /* [in] */ IHashMap* params)
 {
     mTts = tts;
     mText = text;
@@ -94,16 +98,19 @@ TextToSpeech::TextToSpeechActionRSpeak::TextToSpeechActionRSpeak(
 Handle32 TextToSpeech::TextToSpeechActionRSpeak::Run(
     /* [in] */ IITextToSpeechService* service)
 {
+#if 0
     AutoPtr<IUri> utteranceUri = (*((mTts->mUtterances).Find(mText))).mSecond;
     if (utteranceUri != NULL) {
         Int32 nRet;
-        service->PlayAudio((/*IIBinder*/IBinder*)((mTts->GetCallerIdentity()).Get()), utteranceUri.Get(), mQueueMode, (mTts->GetParams(mParams)).Get(), &nRet);
+        service->PlayAudio((/*IIBinder*/IBinder*)((mTts->GetCallerIdentity()).Get()), utteranceUri.Get(), mQueueMode, (mTts->ConvertParamsHashMaptoBundle(mParams)).Get(), &nRet);
         return (Handle32)nRet;
     } else {
         Int32 nRet;
-        service->Speak((/*IIBinder*/IBinder*)((mTts->GetCallerIdentity()).Get()), mText, mQueueMode, (mTts->GetParams(mParams)).Get(), &nRet);
+        service->Speak((/*IIBinder*/IBinder*)((mTts->GetCallerIdentity()).Get()), mText, mQueueMode, (mTts->ConvertParamsHashMaptoBundle(mParams)).Get(), &nRet);
         return (Handle32)nRet;
     }
+#endif
+    return (Handle32)NULL;
 }
 
 /******************************TextToSpeech::TextToSpeechActionRPlayEarcon*************************/
@@ -111,7 +118,7 @@ TextToSpeech::TextToSpeechActionRPlayEarcon::TextToSpeechActionRPlayEarcon(
     /* [in] */ TextToSpeech* tts,
     /* [in] */ const String& earcon,
     /* [in] */ Int32 queueMode,
-    /* [in] */ IObjectStringMap* params)
+    /* [in] */ IMap* params)
 {
     mTts = tts;
     mEarcon = earcon;
@@ -122,13 +129,16 @@ TextToSpeech::TextToSpeechActionRPlayEarcon::TextToSpeechActionRPlayEarcon(
 Handle32 TextToSpeech::TextToSpeechActionRPlayEarcon::Run(
     /* [in] */ IITextToSpeechService* service)
 {
+#if 0
     AutoPtr<IUri> earconUri = (*((mTts->mEarcons).Find(mEarcon))).mSecond;
     if (earconUri == NULL) {
         return (Handle32)ITextToSpeech::TTS_ERROR;
     }
     Int32 nRet;
-    service->PlayAudio((/*IIBinder*/IBinder*)((mTts->GetCallerIdentity()).Get()), earconUri, mQueueMode, (mTts->GetParams(mParams)).Get(), &nRet);
+    service->PlayAudio((/*IIBinder*/IBinder*)((mTts->GetCallerIdentity()).Get()), earconUri, mQueueMode, (mTts->ConvertParamsHashMaptoBundle(mParams)).Get(), &nRet);
     return (Handle32)nRet;
+#endif
+    return (Handle32)NULL;
 }
 
 /******************************TextToSpeech::TextToSpeechActionRPlaySilence*************************/
@@ -136,7 +146,7 @@ TextToSpeech::TextToSpeechActionRPlaySilence::TextToSpeechActionRPlaySilence(
     /* [in] */ TextToSpeech* tts,
     /* [in] */ Int64 durationInMs,
     /* [in] */ Int32 queueMode,
-    /* [in] */ IObjectStringMap* params)
+    /* [in] */ IMap* params)
 {
     mTts = tts;
     mDurationInMs = durationInMs;
@@ -148,7 +158,9 @@ Handle32 TextToSpeech::TextToSpeechActionRPlaySilence::Run(
     /* [in] */ IITextToSpeechService* service)
 {
     Int32 nRet;
-    service->PlaySilence((/*IIBinder*/IBinder*)((mTts->GetCallerIdentity()).Get()), mDurationInMs, mQueueMode, mTts->GetParams(mParams), &nRet);
+#if 0
+    service->PlaySilence((/*IIBinder*/IBinder*)((mTts->GetCallerIdentity()).Get()), mDurationInMs, mQueueMode, mTts->ConvertParamsHashMaptoBundle(mParams), &nRet);
+#endif
     return (Handle32)nRet;
 }
 
@@ -164,6 +176,7 @@ TextToSpeech::TextToSpeechActionRGetFeatures::TextToSpeechActionRGetFeatures(
 Handle32 TextToSpeech::TextToSpeechActionRGetFeatures::Run(
     /* [in] */ IITextToSpeechService* service)
 {
+#if 0
     String strISO3Language, strISO3Country, strVariant;
     mLocale->GetISO3Language(&strISO3Language);
     mLocale->GetISO3Country(&strISO3Country);
@@ -184,6 +197,7 @@ Handle32 TextToSpeech::TextToSpeechActionRGetFeatures::Run(
         }
         return (Handle32)(oc.Get());
     }
+#endif
     return (Handle32)NULL;
 }
 
@@ -229,6 +243,7 @@ TextToSpeech::TextToSpeechActionRSetLanguage::TextToSpeechActionRSetLanguage(
 Handle32 TextToSpeech::TextToSpeechActionRSetLanguage::Run(
     /* [in] */ IITextToSpeechService* service)
 {
+#if 0
     if (mLocale == NULL) {
         return ITextToSpeech::LANG_NOT_SUPPORTED;
     }
@@ -254,6 +269,8 @@ Handle32 TextToSpeech::TextToSpeechActionRSetLanguage::Run(
         (mTts->mParams)->PutString(ITextToSpeechEngine::KEY_PARAM_VARIANT, variant);
     }
     return (Handle32)result;
+#endif
+    return (Handle32)NULL;
 }
 
 /******************************TextToSpeech::TextToSpeechActionRGetLanguage*************************/
@@ -301,7 +318,7 @@ Handle32 TextToSpeech::TextToSpeechActionRIsLanguageAvailable::Run(
 TextToSpeech::TextToSpeechActionRSynthesizeToFile::TextToSpeechActionRSynthesizeToFile(
     /* [in] */ TextToSpeech* tts,
     /* [in] */ const String& text,
-    /* [in] */ IObjectStringMap* params,
+    /* [in] */ IMap* params,
     /* [in] */ const String& filename)
 {
     mTts = tts;
@@ -314,7 +331,9 @@ Handle32 TextToSpeech::TextToSpeechActionRSynthesizeToFile::Run(
     /* [in] */ IITextToSpeechService* service)
 {
     Int32 nRet;
-    service->SynthesizeToFile((/*IIBinder*/IBinder*)((mTts->GetCallerIdentity()).Get()), mText, mFilename, (mTts->GetParams(mParams)).Get(), &nRet);
+#if 0
+    service->SynthesizeToFile((/*IIBinder*/IBinder*)((mTts->GetCallerIdentity()).Get()), mText, mFilename, (mTts->ConvertParamsHashMaptoBundle(mParams)).Get(), &nRet);
+#endif
     return (Handle32)nRet;
 }
 
@@ -342,22 +361,33 @@ ECode TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback::cons
     return NOERROR;
 }
 
-ECode TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback::OnDone(
+ECode TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback::OnStop(
     /* [in] */ const String& utteranceId)
 {
-    AutoPtr<IUtteranceProgressListener> listener = mTts -> mUtteranceProgressListener;
+    AutoPtr<IUtteranceProgressListener> listener = mTts->mUtteranceProgressListener;
     if (listener != NULL) {
-        return listener -> OnDone(utteranceId);
+        listener->OnDone(utteranceId);
+    }
+    return NOERROR;
+}
+
+ECode TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback::OnSuccess(
+    /* [in] */ const String& utteranceId)
+{
+    AutoPtr<IUtteranceProgressListener> listener = mTts->mUtteranceProgressListener;
+    if (listener != NULL) {
+        return listener->OnDone(utteranceId);
     }
     return NOERROR;
 }
 
 ECode TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback::OnError(
-    /* [in] */ const String& utteranceId)
+    /* [in] */ const String& utteranceId,
+    /* [in] */ Int32 errorCode)
 {
-    AutoPtr<IUtteranceProgressListener> listener = mTts -> mUtteranceProgressListener;
+    AutoPtr<IUtteranceProgressListener> listener = mTts->mUtteranceProgressListener;
     if (listener != NULL) {
-        return listener -> OnError(utteranceId);
+        return listener->OnError(utteranceId);
     }
     return NOERROR;
 }
@@ -365,13 +395,12 @@ ECode TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback::OnEr
 ECode TextToSpeech::TextToSpeechConnection::TextToSpeechConnectionCallback::OnStart(
     /* [in] */ const String& utteranceId)
 {
-    AutoPtr<IUtteranceProgressListener> listener = mTts -> mUtteranceProgressListener;
+    AutoPtr<IUtteranceProgressListener> listener = mTts->mUtteranceProgressListener;
     if (listener != NULL) {
-        return listener -> OnStart(utteranceId);
+        return listener->OnStart(utteranceId);
     }
     return NOERROR;
 }
-
 
 /******************
  * TextToSpeech::TextToSpeechConnection
@@ -393,8 +422,11 @@ ECode TextToSpeech::TextToSpeechConnection::constructor()
 ECode TextToSpeech::TextToSpeechConnection::constructor(
     /* [in] */ TextToSpeech* pTts)
 {
+    AutoPtr<TextToSpeechConnectionCallback> ttscc;
     mTts = pTts;
-    mCallback = new TextToSpeechConnectionCallback(mTts);
+    ttscc = new TextToSpeechConnectionCallback();
+    ttscc->constructor(mTts);
+    mCallback = ttscc;
     return NOERROR;
 }
 
@@ -433,22 +465,23 @@ ECode TextToSpeech::TextToSpeechConnection::OnServiceConnected(
     return mCallback;
 }
 
-Boolean TextToSpeech::ClearServiceConnection()
+Boolean TextToSpeech::TextToSpeechConnection::ClearServiceConnection()
 {
-    synchronized(mStartLock) {
-        Boolean result = false;
-        if (mOnSetupConnectionAsyncTask != NULL) {
-            result = mOnSetupConnectionAsyncTask->Cancel(FALSE);
-            mOnSetupConnectionAsyncTask = NULL;
-        }
-
-        mService = NULL;
-        // If this is the active connection, clear it
-        if (mServiceConnection == this) {
-            mServiceConnection = NULL;
-        }
-        return result;
+    AutoLock lock(mTts->mStartLock);
+    Boolean result = false;
+#if 0
+    if (mOnSetupConnectionAsyncTask != NULL) {
+        result = mOnSetupConnectionAsyncTask->Cancel(FALSE);
+        mOnSetupConnectionAsyncTask = NULL;
     }
+
+    mService = NULL;
+    // If this is the active connection, clear it
+    if (mServiceConnection == this) {
+        mServiceConnection = NULL;
+    }
+#endif
+    return result;
 }
 
 ECode TextToSpeech::TextToSpeechConnection::OnServiceDisconnected(
@@ -461,15 +494,15 @@ ECode TextToSpeech::TextToSpeechConnection::OnServiceDisconnected(
         mTts->mServiceConnection = NULL;
     }
 
-    Logger::I(TAG, String("Asked to disconnect from ") + name);
-    if (clearServiceConnection()) {
+    Logger::I(TAG, String("Asked to disconnect from ") + ToString(name));
+    if (ClearServiceConnection()) {
         /* We need to protect against a rare case where engine
          * dies just after successful connection - and we process onServiceDisconnected
          * before OnServiceConnectedAsyncTask.onPostExecute. onServiceDisconnected cancels
          * OnServiceConnectedAsyncTask.onPostExecute and we don't call dispatchOnInit
          * with ERROR as argument.
          */
-        DispatchOnInit(ERROR);
+        mTts->DispatchOnInit(TTS_ERROR);
     }
 
     return NOERROR;
@@ -479,14 +512,20 @@ void TextToSpeech::TextToSpeechConnection::Disconnect()
 {
     (mTts->mContext)->UnbindService(this);
 
-    clearServiceConnection();
+    ClearServiceConnection();
+}
+
+Boolean TextToSpeech::TextToSpeechConnection::IsEstablished()
+{
+    return mService != NULL && mEstablished;
 }
 
 Handle32 TextToSpeech::TextToSpeechConnection::RunAction(
     /* [in] */ TextToSpeechActionR* action,
     /* [in] */ Handle32 errorResult,
     /* [in] */ const String& method,
-    /* [in] */ Boolean reconnect)
+    /* [in] */ Boolean reconnect,
+    /* [in] */ Boolean onlyEstablishedConnection)
 {
     AutoLock lock(mTts->mStartLock);
     //try {
@@ -496,7 +535,7 @@ Handle32 TextToSpeech::TextToSpeechConnection::RunAction(
             return errorResult;
         }
 
-        if (onlyEstablishedConnection && !isEstablished()) {
+        if (onlyEstablishedConnection && !IsEstablished()) {
             Logger::W(TAG, method + String(" failed: TTS engine connection not fully set up"));
             return errorResult;
         }
@@ -577,9 +616,10 @@ ECode TextToSpeech::constructor(
 Handle32 TextToSpeech::RunActionNoReconnect(
     /* [in] */ TextToSpeechActionR* action,
     /* [in] */ Handle32 errorResult,
-    /* [in] */ const String& method)
+    /* [in] */ const String& method,
+    /* [in] */ Boolean onlyEstablishedConnection)
 {
-    return RunAction(action, errorResult, method, FALSE);
+    return RunAction(action, errorResult, method, FALSE, onlyEstablishedConnection);
 }
 
 Handle32 TextToSpeech::RunAction(
@@ -587,14 +627,15 @@ Handle32 TextToSpeech::RunAction(
     /* [in] */ Handle32 errorResult,
     /* [in] */ const String& method)
 {
-    return RunAction(action, errorResult, method, TRUE);
+    return RunAction(action, errorResult, method, TRUE, TRUE);
 }
 
 Handle32 TextToSpeech::RunAction(
     /* [in] */ TextToSpeechActionR* action,
     /* [in] */ Handle32 errorResult,
     /* [in] */ const String& method,
-    /* [in] */ Boolean reconnect)
+    /* [in] */ Boolean reconnect,
+    /* [in] */ Boolean onlyEstablishedConnection)
 {
     AutoLock lock(mStartLock);
     if (mServiceConnection == NULL) {
@@ -602,7 +643,7 @@ Handle32 TextToSpeech::RunAction(
         Logger::W(TAG, method + String(" failed: not bound to TTS engine\n"));
         return errorResult;
     }
-    return mServiceConnection->RunAction(action, errorResult, method, reconnect);
+    return mServiceConnection->RunAction(action, errorResult, method, reconnect, onlyEstablishedConnection);
 }
 
 Int32 TextToSpeech::InitTts()
@@ -631,7 +672,8 @@ Int32 TextToSpeech::InitTts()
     }
 
     // Step 2: Try connecting to the user's default engine.
-    /*const*/ String defaultEngine = GetDefaultEngine();
+    String defaultEngine;
+    GetDefaultEngine(&defaultEngine);
     if (!defaultEngine.IsNull() && !defaultEngine.Equals(mRequestedEngine)) {
         if (ConnectToEngine(defaultEngine)) {
             mCurrentEngine = defaultEngine;
@@ -641,7 +683,7 @@ Int32 TextToSpeech::InitTts()
 
     // Step 3: Try connecting to the highest ranked engine in the
     // system.
-    /*const*/ String highestRanked;
+    String highestRanked;
     mEnginesHelper->GetHighestRankedEngineName(&highestRanked);
     if (!highestRanked.IsNull() && !highestRanked.Equals(mRequestedEngine) &&
             !highestRanked.Equals(defaultEngine)) {
@@ -695,51 +737,102 @@ void TextToSpeech::DispatchOnInit(
     return mServiceConnection->GetCallerIdentity();
 }
 
-void TextToSpeech::Shutdown()
+ECode TextToSpeech::Shutdown()
 {
     AutoPtr<TextToSpeechActionR> ttsActionR  = new TextToSpeechActionRShutdown(this);
-    RunActionNoReconnect(ttsActionR.Get(), (Handle32)NULL, String("shutdown"));
+    RunActionNoReconnect(ttsActionR.Get(), (Handle32)NULL, String("shutdown"), FALSE);
+
+    return NOERROR;
 }
 
-Int32 TextToSpeech::AddSpeech(
+ECode TextToSpeech::AddSpeech(
     /* [in] */ const String& text,
     /* [in] */ const String& packagename,
-    /* [in] */ Int32 resourceId)
+    /* [in] */ Int32 resourceId,
+    /* [out] */ Int32 *ret)
 {
     AutoLock lock(mStartLock);
     mUtterances.Insert(Map<String, AutoPtr<IUri> >::ValueType(text, MakeResourceUri(packagename, resourceId)) );
-    return ITextToSpeech::TTS_SUCCESS;
+    *ret = ITextToSpeech::TTS_SUCCESS;
+    return NOERROR;
 }
 
-Int32 TextToSpeech::AddSpeech(
+ECode TextToSpeech::AddSpeech(
+    /* [in] */ ICharSequence* text,
+    /* [in] */ const String& packagename,
+    /* [in] */ Int32 resourceId,
+    /* [out] */ Int32 *ret)
+{
+    AutoLock lock(mStartLock);
+    String str;
+    text->ToString(&str);
+    mUtterances.Insert(Map<String, AutoPtr<IUri> >::ValueType(str, MakeResourceUri(packagename, resourceId)) );
+    *ret = ITextToSpeech::TTS_SUCCESS;
+    return NOERROR;
+}
+
+ECode TextToSpeech::AddSpeech(
     /* [in] */ const String& text,
-    /* [in] */ const String& filename)
+    /* [in] */ const String& filename,
+    /* [out] */ Int32 *ret)
 {
     AutoLock lock(mStartLock);
     AutoPtr<IUri> uri = /*Uri::Parse(filename)*/NULL;
     mUtterances.Insert(Map<String, AutoPtr<IUri> >::ValueType(text, uri.Get() ) );
-    return ITextToSpeech::TTS_SUCCESS;
+    *ret = ITextToSpeech::TTS_SUCCESS;
+    return NOERROR;
 }
 
-Int32 TextToSpeech::AddEarcon(
+ECode TextToSpeech::AddSpeech(
+    /* [in] */ ICharSequence* text,
+    /* [in] */ IFile* file,
+    /* [out] */ Int32 *ret)
+{
+    AutoLock lock(mStartLock);
+    String str;
+    text->ToString(&str);
+    AutoPtr<IUri> uri = /*Uri::fromFile(file)*/NULL;
+    mUtterances.Insert(Map<String, AutoPtr<IUri> >::ValueType(str, uri.Get() ) );
+    *ret = ITextToSpeech::TTS_SUCCESS;
+    return NOERROR;
+}
+
+ECode TextToSpeech::AddEarcon(
     /* [in] */ const String& earcon,
     /* [in] */ const String& packagename,
-    /* [in] */ Int32 resourceId)
+    /* [in] */ Int32 resourceId,
+    /* [out] */ Int32 *ret)
 {
     AutoLock lock(mStartLock);
     mEarcons.Insert(Map<String, AutoPtr<IUri> >::ValueType(earcon, MakeResourceUri(packagename, resourceId) ) );
-    return ITextToSpeech::TTS_SUCCESS;
+    *ret = ITextToSpeech::TTS_SUCCESS;
+    return NOERROR;
 }
 
-Int32 TextToSpeech::AddEarcon(
+ECode TextToSpeech::AddEarcon(
     /* [in] */ const String& earcon,
-    /* [in] */ const String& filename)
+    /* [in] */ const String& filename,
+    /* [out] */ Int32 *ret)
 {
     AutoLock lock(mStartLock);
     AutoPtr<IUri> uri = /*Uri::Parse(filename)*/NULL;
     mEarcons.Insert(Map<String, AutoPtr<IUri> >::ValueType(earcon, uri.Get() ) );
-    return ITextToSpeech::TTS_SUCCESS;
+    *ret = ITextToSpeech::TTS_SUCCESS;
+    return NOERROR;
 }
+
+ECode TextToSpeech::AddEarcon(
+    /* [in] */ const String& earcon,
+    /* [in] */ IFile* file,
+    /* [out] */ Int32* ret)
+{
+    AutoLock lock(mStartLock);
+    AutoPtr<IUri> uri = /*Uri::FromFile(file)*/NULL;
+    mEarcons.Insert(Map<String, AutoPtr<IUri> >::ValueType(earcon, uri.Get() ) );
+    *ret = ITextToSpeech::TTS_SUCCESS;
+    return NOERROR;
+}
+
 
 AutoPtr<IUri> TextToSpeech::MakeResourceUri(
     /* [in] */ const String& packageName,
@@ -757,36 +850,77 @@ AutoPtr<IUri> TextToSpeech::MakeResourceUri(
     return uRet;
 }
 
-Int32 TextToSpeech::Speak(
-    /* [in] */ /*const*/ String text,
-    /* [in] */ /*const*/ Int32 queueMode,
-    /* [in] */ /*const*/ IObjectStringMap* params)
+ECode TextToSpeech::Speak(
+    /* [in] */ ICharSequence* text,
+    /* [in] */ Int32 queueMode,
+    /* [in] */ IBundle* params,
+    /* [in] */ const String& utteranceId,
+    /* [in] */ Int32* ret)
 {
-    AutoPtr<TextToSpeechActionR> ttsActionR = new TextToSpeechActionRSpeak(this, text, queueMode, params);
-    return (Int32)RunAction(ttsActionR.Get(), ITextToSpeech::TTS_ERROR, String("speak") );
+    String str;
+    text->ToString(&str);
+
+/*
+    AutoPtr<TextToSpeechActionR> ttsActionR = new TextToSpeechActionRSpeak(this, str, queueMode, params);
+    *ret = (Int32)RunAction(ttsActionR.Get(), ITextToSpeech::TTS_ERROR, String("speak") );
+*/
+    return NOERROR;
 }
 
-Int32 TextToSpeech::PlayEarcon(
-    /* [in] */ /*const*/ String earcon,
-    /* [in] */ /*const*/ Int32 queueMode,
-    /* [in] */ /*const*/ IObjectStringMap* params)
+ECode TextToSpeech::Speak(
+    /* [in] */ const String& text,
+    /* [in] */ Int32 queueMode,
+    /* [in] */ IHashMap* params,
+    /* [in] */ Int32* ret)
+{
+/*
+    AutoPtr<TextToSpeechActionR> ttsActionR = new TextToSpeechActionRSpeak(this, text, queueMode, params, utteranceId);
+    *ret = (Int32)RunAction(ttsActionR.Get(), ITextToSpeech::TTS_ERROR, String("speak") );
+*/
+    return NOERROR;
+}
+
+ECode TextToSpeech::PlayEarcon(
+    /* [in] */ const String& earcon,
+    /* [in] */ Int32 queueMode,
+    /* [in] */ IBundle* params,
+    /* [in] */ const String& utteranceld,
+    /* [out] */ Int32* ret)
+{
+/*
+    *ret = PlayEarcon(earcon, queueMode, ConvertParamsHashMaptoBundle(params),
+                          params == NULL ? NULL : params->Get(Engine.KEY_PARAM_UTTERANCE_ID));
+*/
+return NOERROR;
+}
+
+ECode TextToSpeech::PlayEarcon(
+    /* [in] */ const String& earcon,
+    /* [in] */ Int32 queueMode,
+    /* [in] */ IMap* params,
+    /* [out] */ Int32* ret)
 {
     AutoPtr<TextToSpeechActionR> ttsActionR = new TextToSpeechActionRPlayEarcon(this, earcon, queueMode, params);
-    return (Int32)RunAction(ttsActionR.Get(), ITextToSpeech::TTS_ERROR, String("playEarcon") );
+    *ret = (Int32)RunAction(ttsActionR.Get(), ITextToSpeech::TTS_ERROR, String("playEarcon") );
+    return NOERROR;
 }
 
-Int32 TextToSpeech::PlaySilence(
-    /* [in] */ /*const*/ Int64 durationInMs,
-    /* [in] */ /*const*/ Int32 queueMode,
-    /* [in] */ /*const*/ IObjectStringMap* params)
+ECode TextToSpeech::PlaySilence(
+    /* [in] */ Int64 durationInMs,
+    /* [in] */ Int32 queueMode,
+    /* [in] */ IMap* params,
+    /* [out] */ Int32* ret)
 {
     AutoPtr<TextToSpeechActionR> ttsActionR = new TextToSpeechActionRPlaySilence(this, durationInMs, queueMode, params);
-    return (Int32)RunAction(ttsActionR.Get(), ITextToSpeech::TTS_ERROR, String("playSilence") );
+    *ret = (Int32)RunAction(ttsActionR.Get(), ITextToSpeech::TTS_ERROR, String("playSilence") );
+    return NOERROR;
 }
 
-AutoPtr< Set<String> > TextToSpeech::GetFeatures(
-    /* [in] */ ILocale* locale)
+ECode TextToSpeech::GetFeatures(
+    /* [in] */ ILocale* locale,
+    /* [out] */ ISet** ret)
 {
+#if 0
     AutoPtr<TextToSpeechActionR> ttsActionR = new TextToSpeechActionRGetFeatures(this, locale);
     AutoPtr<IObjectContainer> oc;
     oc = (IObjectContainer*)RunAction(ttsActionR.Get(), (Handle32)NULL, String("getFeatures") );
@@ -806,22 +940,29 @@ AutoPtr< Set<String> > TextToSpeech::GetFeatures(
     }
 
     return sRet;
+#endif
+    return NOERROR;
 }
 
-Boolean TextToSpeech::IsSpeaking()
+ECode TextToSpeech::IsSpeaking(
+    /* [out] */ Boolean* ret)
 {
     AutoPtr<TextToSpeechActionR> ttsActionR = new TextToSpeechActionRIsSpeaking(this);
-    return (Boolean)RunAction(ttsActionR.Get(), FALSE, String("isSpeaking") );
+    *ret = (Boolean)RunAction(ttsActionR.Get(), FALSE, String("isSpeaking") );
+    return NOERROR;
 }
 
-Int32 TextToSpeech::Stop()
+ECode TextToSpeech::Stop(
+    /* [out] */ Int32* ret)
 {
     AutoPtr<TextToSpeechActionR> ttsActionR = new TextToSpeechActionRStop(this);
-    return (Int32)RunAction(ttsActionR.Get(), ITextToSpeech::TTS_ERROR, String("stop") );
+    *ret = (Int32)RunAction(ttsActionR.Get(), ITextToSpeech::TTS_ERROR, String("stop") );
+    return NOERROR;
 }
 
-Int32 TextToSpeech::SetSpeechRate(
-    /* [in] */ Float speechRate)
+ECode TextToSpeech::SetSpeechRate(
+    /* [in] */ Float speechRate,
+    /* [out] */ Int32* ret)
 {
     if (speechRate > 0.0f) {
         Int32 intRate = (Int32)(speechRate * 100);
@@ -830,14 +971,17 @@ Int32 TextToSpeech::SetSpeechRate(
                 AutoLock lock(mStartLock);
                 mParams->PutInt32(ITextToSpeechEngine::KEY_PARAM_RATE, intRate);
             }
-            return ITextToSpeech::TTS_SUCCESS;
+            *ret = ITextToSpeech::TTS_SUCCESS;
+            return NOERROR;
         }
     }
-    return ITextToSpeech::TTS_ERROR;
+    *ret = ITextToSpeech::TTS_ERROR;
+    return NOERROR;
 }
 
-Int32 TextToSpeech::SetPitch(
-    /* [in] */ Float pitch)
+ECode TextToSpeech::SetPitch(
+    /* [in] */ Float pitch,
+    /* [out] */ Int32* ret)
 {
     if (pitch > 0.0f) {
         Int32 intPitch = (Int32)(pitch * 100);
@@ -846,51 +990,105 @@ Int32 TextToSpeech::SetPitch(
                 AutoLock lock(mStartLock);
                 mParams->PutInt32(ITextToSpeechEngine::KEY_PARAM_PITCH, intPitch);
             }
-            return ITextToSpeech::TTS_SUCCESS;
+            *ret = ITextToSpeech::TTS_SUCCESS;
+            return NOERROR;
         }
     }
-    return ITextToSpeech::TTS_ERROR;
+    *ret = ITextToSpeech::TTS_ERROR;
+    return NOERROR;
 }
 
-String TextToSpeech::GetCurrentEngine()
+ECode TextToSpeech::GetCurrentEngine(
+    /* [out] */ String* ret)
 {
-    return mCurrentEngine;
+    *ret = mCurrentEngine;
+    return NOERROR;
 }
 
-Int32 TextToSpeech::SetLanguage(
-    /* [in] */ ILocale* loc)
+ECode TextToSpeech::SetLanguage(
+    /* [in] */ ILocale* loc,
+    /* [out] */ Int32* ret)
 {
     AutoPtr<TextToSpeechActionR> ttsActionR = new TextToSpeechActionRSetLanguage(this, loc);
-    return (Int32)RunAction(ttsActionR.Get(), ITextToSpeech::LANG_NOT_SUPPORTED, String("setLanguage") );
+    *ret = (Int32)RunAction(ttsActionR.Get(), ITextToSpeech::LANG_NOT_SUPPORTED, String("setLanguage") );
+    return NOERROR;
 }
 
-AutoPtr<ILocale> TextToSpeech::GetLanguage()
+ECode TextToSpeech::GetLanguage(
+    /* [out] */ ILocale** language)
 {
     AutoPtr<TextToSpeechActionR> ttsActionR = new TextToSpeechActionRGetLanguage(this);
     AutoPtr<ILocale> lRet = (ILocale*)RunAction(ttsActionR.Get(), (Handle32)NULL, String("getLanguage") );
     lRet->Release();//???
-    return lRet;
+    *language = lRet;
+    return NOERROR;
 }
 
-Int32 TextToSpeech::IsLanguageAvailable(
-    /* [in] */ ILocale* loc)
+ECode TextToSpeech::IsLanguageAvailable(
+    /* [in] */ ILocale* loc,
+    /* [out] */ Int32* ret)
 {
     AutoPtr<TextToSpeechActionR> ttsActionR = new TextToSpeechActionRIsLanguageAvailable(this, loc);
-    return (Int32)RunAction(ttsActionR.Get(), ITextToSpeech::LANG_NOT_SUPPORTED, String("isLanguageAvailable") );
+    *ret = RunAction(ttsActionR.Get(), ITextToSpeech::LANG_NOT_SUPPORTED, String("isLanguageAvailable") );
+
+    return NOERROR;
 }
 
-Int32 TextToSpeech::SynthesizeToFile(
-    /* [in] */ /*const*/ String text,
-    /* [in] */ /*const*/ IObjectStringMap* params,
-    /* [in] */ /*const*/ String filename)
+ECode TextToSpeech::SynthesizeToFile(
+    /* [in] */ ICharSequence* text,
+    /* [in] */ IBundle* params,
+    /* [in] */ IFile* filename,
+    /* [in] */ const String& utteranceld,
+    /* [out] */ Int32* ret)
+{
+#if 0
+        return runAction(new Action<Integer>() {
+            @Override
+            public Integer run(ITextToSpeechService service) throws RemoteException {
+                ParcelFileDescriptor fileDescriptor;
+                int returnValue;
+                try {
+                    if(file.exists() && !file.canWrite()) {
+                        Log.e(TAG, "Can't write to " + file);
+                        return ERROR;
+                    }
+                    fileDescriptor = ParcelFileDescriptor.open(file,
+                            ParcelFileDescriptor.MODE_WRITE_ONLY |
+                            ParcelFileDescriptor.MODE_CREATE |
+                            ParcelFileDescriptor.MODE_TRUNCATE);
+                    returnValue = service.synthesizeToFileDescriptor(getCallerIdentity(), text,
+                            fileDescriptor, getParams(params), utteranceId);
+                    fileDescriptor.close();
+                    return returnValue;
+                } catch (FileNotFoundException e) {
+                    Log.e(TAG, "Opening file " + file + " failed", e);
+                    return ERROR;
+                } catch (IOException e) {
+                    Log.e(TAG, "Closing file " + file + " failed", e);
+                    return ERROR;
+                }
+            }
+        }, ERROR, "synthesizeToFile");
+#endif
+    return NOERROR;
+}
+
+
+ECode TextToSpeech::SynthesizeToFile(
+    /* [in] */ const String& text,
+    /* [in] */ IMap* params,
+    /* [in] */ const String& filename,
+    /* [out] */ Int32* ret)
 {
     AutoPtr<TextToSpeechActionR> ttsActionR = new TextToSpeechActionRSynthesizeToFile(this, text, params, filename);
-    return (Int32)RunAction(ttsActionR.Get(), ITextToSpeech::TTS_ERROR, String("synthesizeToFile") );
+    *ret = (Int32)RunAction(ttsActionR.Get(), ITextToSpeech::TTS_ERROR, String("synthesizeToFile") );
+    return NOERROR;
 }
 
-AutoPtr<IBundle> TextToSpeech::GetParams(
-    /* [in] */ IObjectStringMap* params)
+AutoPtr<IBundle> TextToSpeech::ConvertParamsHashMaptoBundle(
+    /* [in] */ IMap* params)
 {
+    #if 0
     Int32 paramsLen;
     if (params != NULL && ((params->GetSize(&paramsLen), paramsLen)!=0)) {
         AutoPtr<IBundle> bundle;
@@ -930,15 +1128,19 @@ AutoPtr<IBundle> TextToSpeech::GetParams(
     } else {
         return mParams;
     }
+#endif
+    return NULL;
 }
 
 void TextToSpeech::CopyStringParam(
     /* [in] */ IBundle* bundle,
-    /* [in] */ IObjectStringMap* params,
+    /* [in] */ IMap* params,
     /* [in] */ const String& key)
 {
     AutoPtr<ICharSequence> cs;
-    params->Get(key, (IInterface**)&cs);
+    AutoPtr<ICharSequence> skey;
+    CString::New(key, (ICharSequence**)&skey);
+    params->Get(skey, (IInterface**)&cs);
     String value;
     cs->ToString(&value);
     if (!value.IsNull()) {
@@ -948,11 +1150,13 @@ void TextToSpeech::CopyStringParam(
 
 void TextToSpeech::CopyIntParam(
     /* [in] */ IBundle* bundle,
-    /* [in] */ IObjectStringMap* params,
+    /* [in] */ IMap* params,
     /* [in] */ const String& key)
 {
     AutoPtr<ICharSequence> cs;
-    params->Get(key, (IInterface**)&cs);
+    AutoPtr<ICharSequence> skey;
+    CString::New(key, (ICharSequence**)&skey);
+    params->Get(skey, (IInterface**)&cs);
     String valueString;
     cs->ToString(&valueString);
     if (!TextUtils::IsEmpty(valueString)) {
@@ -967,11 +1171,13 @@ void TextToSpeech::CopyIntParam(
 
 void TextToSpeech::CopyFloatParam(
     /* [in] */ IBundle* bundle,
-    /* [in] */ IObjectStringMap* params,
+    /* [in] */ IMap* params,
     /* [in] */ const String& key)
 {
     AutoPtr<ICharSequence> cs;
-    params->Get(key, (IInterface**)&cs);
+    AutoPtr<ICharSequence> skey;
+    CString::New(key, (ICharSequence**)&skey);
+    params->Get(skey, (IInterface**)&cs);
     String valueString;
     cs->ToString(&valueString);
     if (!TextUtils::IsEmpty(valueString)) {
@@ -984,59 +1190,56 @@ void TextToSpeech::CopyFloatParam(
     }
 }
 
-Int32 TextToSpeech::SetOnUtteranceCompletedListener(
-    /* [in] */ /*const*/ ITextToSpeechOnUtteranceCompletedListener* listener)
+ECode TextToSpeech::SetOnUtteranceCompletedListener(
+    /* [in] */ ITextToSpeechOnUtteranceCompletedListener* listener,
+    /* [out] */ Int32* ret)
 {
     mUtteranceProgressListener = UtteranceProgressListener::From(listener);
-    return ITextToSpeech::TTS_SUCCESS;
+    *ret = ITextToSpeech::TTS_SUCCESS;
+    return NOERROR;
 }
 
-Int32 TextToSpeech::SetOnUtteranceProgressListener(
-    /* [in] */ IUtteranceProgressListener* listener)
+ECode TextToSpeech::SetOnUtteranceProgressListener(
+    /* [in] */ IUtteranceProgressListener* listener,
+    /* [out] */ Int32* ret)
 {
     mUtteranceProgressListener = listener;
-    return ITextToSpeech::TTS_SUCCESS;
+    *ret = ITextToSpeech::TTS_SUCCESS;
+    return NOERROR;
 }
 
-Int32 TextToSpeech::SetEngineByPackageName(
-    /* [in] */ const String& enginePackageName)
+ECode TextToSpeech::SetEngineByPackageName(
+    /* [in] */ const String& enginePackageName,
+    /* [out] */ Int32* ret)
 {
     mRequestedEngine = enginePackageName;
-    return InitTts();
+    *ret = InitTts();
+    return NOERROR;
 }
 
-String TextToSpeech::GetDefaultEngine()
+ECode TextToSpeech::GetDefaultEngine(
+    /* [out] */ String* engine)
 {
-    String strRet;
-    mEnginesHelper->GetDefaultEngine(&strRet);
-    return strRet;
+    //mEnginesHelper->GetDefaultEngine(&engine);
+    return NOERROR;
 }
 
-Boolean TextToSpeech::AreDefaultsEnforced()
+ECode TextToSpeech::AreDefaultsEnforced(
+    /* [out] */ Boolean* enforced)
 {
-    return FALSE;
+    *enforced = FALSE;
+    return NOERROR;
 }
 
-AutoPtr< List< AutoPtr<ITextToSpeechEngineInfo> > > TextToSpeech::GetEngines()
+ECode TextToSpeech::GetEngines(
+    /* [out] */ IList** ret)
 {
-    AutoPtr< List< AutoPtr<ITextToSpeechEngineInfo> > > lRet = new List< AutoPtr<ITextToSpeechEngineInfo> >();
+    AutoPtr<IList> engines;
 
-    AutoPtr<IObjectContainer> oc;
-    mEnginesHelper->GetEngines( (IObjectContainer**)&oc );
-    if(oc != NULL) {
-        AutoPtr<IObjectEnumerator> it;
-        oc->GetObjectEnumerator((IObjectEnumerator**)&it);
-        Boolean succeeded = FALSE;
-        while(it->MoveNext(&succeeded), succeeded) {
-            AutoPtr<ITextToSpeechEngineInfo> ttsEi;
-            it->Current((IInterface**)&ttsEi);
+    mEnginesHelper->GetEngines((IList**)&engines);
+    *ret = engines;
 
-            lRet->PushBack(ttsEi);
-
-        }
-    }
-
-    return lRet;
+    return NOERROR;
 }
 
 Int32 TextToSpeech::GetMaxSpeechInputLength()

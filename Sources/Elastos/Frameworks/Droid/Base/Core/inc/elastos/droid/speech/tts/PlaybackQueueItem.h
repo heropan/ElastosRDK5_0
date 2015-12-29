@@ -3,6 +3,7 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/core/Object.h"
+#include "Elastos.Droid.Speech.h"
 
 using Elastos::Core::IRunnable;
 
@@ -17,8 +18,14 @@ class PlaybackQueueItem
     , public IRunnable
 {
 public:
-    PlaybackQueueItem(
-        /* [in] */ ITextToSpeechServiceUtteranceProgressDispatcher* dispatcher,
+    CAR_INTERFACE_DECL();
+
+    PlaybackQueueItem();
+
+    virtual ~PlaybackQueueItem();
+
+    CARAPI constructor(
+        /* [in] */ IUtteranceProgressDispatcher* dispatcher,
         /* [in] */ IInterface* callerIdentity);
 
     CARAPI_(AutoPtr<IInterface>) GetCallerIdentity();
@@ -38,10 +45,10 @@ public:
         /* [in] */ Int32 errorCode) = 0;
 
 protected:
-    CARAPI_(AutoPtr<ITextToSpeechServiceUtteranceProgressDispatcher>) GetDispatcher();
+    CARAPI_(AutoPtr<IUtteranceProgressDispatcher>) GetDispatcher();
 
 private:
-    AutoPtr<ITextToSpeechServiceUtteranceProgressDispatcher> mDispatcher;
+    AutoPtr<IUtteranceProgressDispatcher> mDispatcher;
     AutoPtr<IInterface> mCallerIdentity;
 };
 

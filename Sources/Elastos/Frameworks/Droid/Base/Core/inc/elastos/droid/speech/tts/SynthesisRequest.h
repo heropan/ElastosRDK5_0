@@ -3,6 +3,7 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/core/Object.h"
+#include "Elastos.Droid.Speech.h"
 
 using Elastos::Droid::Os::IBundle;
 using Elastos::Core::ICharSequence;

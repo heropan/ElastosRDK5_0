@@ -16,6 +16,8 @@ namespace Droid {
 namespace Speech {
 namespace Tts {
 
+CAR_INTERFACE_IMPL(AbstractEventLogger, Object, IAbstractEventLogger);
+
 AbstractEventLogger::AbstractEventLogger()
 {}
 
@@ -77,7 +79,7 @@ ECode AbstractEventLogger::OnAudioDataWritten()
 }
 
 ECode AbstractEventLogger::OnCompleted(
-    /* [in] */ statusCode)
+    /* [in] */ Int32 statusCode)
 {
     if (mLogWritten) {
         return NOERROR;
@@ -104,6 +106,8 @@ ECode AbstractEventLogger::OnCompleted(
     Int64 engineTotal = mEngineCompleteTime - mRequestProcessingStartTime;
 
     LogSuccess(audioLatency, engineLatency, engineTotal);
+
+    return NOERROR;
 }
 
 } // namespace Tts

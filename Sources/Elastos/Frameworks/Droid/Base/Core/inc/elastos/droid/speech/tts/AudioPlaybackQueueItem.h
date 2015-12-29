@@ -2,7 +2,8 @@
 #define __ELASTOS_DROID_SPEECH_TTS_AudioPlaybackQueueItem_H__
 
 #include "elastos/droid/speech/tts/PlaybackQueueItem.h"
-#include "Elastos.Droid.Core_server.h"
+#include "elastos/droid/speech/tts/AudioOutputParams.h"
+#include "Elastos.Droid.Speech.h"
 
 using Elastos::Core::IRunnable;
 using Elastos::Droid::Content::IContext;
@@ -85,11 +86,11 @@ public:
     CARAPI constructor();
 
     CARAPI constructor(
-        /* [in] */ ITextToSpeechServiceUtteranceProgressDispatcher* dispatcher,
+        /* [in] */ IUtteranceProgressDispatcher* dispatcher,
         /* [in] */ IInterface* callerIdentity,
         /* [in] */ IContext* context,
         /* [in] */ IUri* uri,
-        /* [in] */ AudioOutputParams audioParams);
+        /* [in] */ AudioOutputParams* audioParams);
 
     //@Override
     CARAPI Run();
@@ -98,7 +99,7 @@ private:
     CARAPI_(void) Finish();
 
     CARAPI_(void) SetupVolume(
-        /* [in] */ IMediaPlayer *player,
+//        /* [in] */ IMediaPlayer *player,
         /* [in] */ Float volume,
         /* [in] */ Float pan);
 
@@ -109,7 +110,7 @@ private:
 
     //@Override
     CARAPI Stop(
-        /* [in] */ Boolean isError);
+        /* [in] */ Int32 errorCode);
 
 private:
     static const String TAG;        // = "TTS.AudioQueueItem";

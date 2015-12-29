@@ -12,17 +12,9 @@ module
      * data has been flushed to the mixer, and is estimated to have completed
      * playback.
      */
-    interface IBlockingAudioTrack {
 
-        /*
-         * if I expose this function, I have to expose AudioOutputParams and enclose it into a CAR interface
-         *
-        constructor(
-            [in] AudioOutputParams audioParams,
-            [in] Int32 sampleRate,
-            [in] Int32 audioFormat,
-            [in] Int32 channelCount);
-        */
+    [deprecated]
+    interface IBlockingAudioTrack {
 
         Init(
             [out] Boolean* ret);

@@ -3,8 +3,9 @@
 
 #include "elastos/droid/speech/tts/AbstractSynthesisCallback.h"
 #include "elastos/droid/speech/tts/SynthesisPlaybackQueueItem.h"
-#include "elastos/droid/speech/tts/EventLogger.h"
+#include "elastos/droid/speech/tts/EventLoggerV1.h"
 #include "elastos/droid/speech/tts/AudioPlaybackHandler.h"
+#include "elastos/droid/speech/tts/AudioOutputParams.h"
 
 namespace Elastos {
 namespace Droid {
@@ -19,43 +20,50 @@ class PlaybackSynthesisCallback
 {
 public:
     PlaybackSynthesisCallback(
-        /* [in] */ Int32 streamType,
-        /* [in] */ Float volume,
-        /* [in] */ Float pan,
+        /* [in] */ AudioOutputParams* audioParams,
         /* [in] */ AudioPlaybackHandler* audioTrackHandler,
-        /* [in] */ ITextToSpeechServiceUtteranceProgressDispatcher* dispatcher,
+        /* [in] */ IUtteranceProgressDispatcher* dispatcher,
         /* [in] */ IInterface* callerIdentity,
-        /* [in] */ EventLogger* logger);
+        /* [in] */ EventLoggerV1* logger,
+        /* [in] */ Boolean clientIsUsingV2);
 
     //@Override
-    CARAPI_(void) Stop();
-
-    CARAPI_(void) StopImpl(
-        /* [in] */ Boolean wasError);
+    CARAPI Stop();
 
     //@Override
-    CARAPI_(Int32) GetMaxBufferSize();
+    CARAPI GetMaxBufferSize(
+        /* [out] */ Int32* ret);
+
+    CARAPI HasStarted(
+        /* [out] */ Boolean* ret);
+
+    CARAPI HasFinished(
+        /* [out] */ Boolean* ret);
 
     //@Override
-    CARAPI_(Boolean) IsDone();
-
-    //@Override
-    CARAPI_(Int32) Start(
+    CARAPI Start(
         /* [in] */ Int32 sampleRateInHz,
         /* [in] */ Int32 audioFormat,
-        /* [in] */ Int32 channelCount);
+        /* [in] */ Int32 channelCount,
+        /* [out] */ Int32* ret);
 
     //@Override
-    CARAPI_(Int32) AudioAvailable(
+    CARAPI AudioAvailable(
         /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
-        /* [in] */ Int32 length);
+        /* [in] */ Int32 length,
+        /* [out] */ Int32* ret);
 
     //@Override
-    CARAPI_(Int32) Done();
+    CARAPI Done(
+        /* [out] */ Int32* ret);
 
     //@Override
     CARAPI Error();
+
+    //@Override
+    CARAPI Error(
+        /* [in] */ Int32 errorCode);
 
 private:
     static const String TAG;            // = "PlaybackSynthesisRequest";
@@ -63,23 +71,7 @@ private:
 
     static const Int32 MIN_AUDIO_BUFFER_SIZE;       // = 8192;
 
-    /**
-     * Audio stream type. Must be one of the STREAM_ contants defined in
-     * {@link android.media.AudioManager}.
-     */
-    Int32 mStreamType;                    // = 0;
-
-    /**
-     * Volume, in the range [0.0f, 1.0f]. The default value is
-     * {@link TextToSpeech.Engine#DEFAULT_VOLUME} (1.0f).
-     */
-    Float mVolume;                        // = 0.0;
-
-    /**
-     * Left/right position of the audio, in the range [-1.0f, 1.0f].
-     * The default value is {@link TextToSpeech.Engine#DEFAULT_PAN} (0.0f).
-     */
-    Float mPan;// = 0.0;
+    AudioOutputParams* mAudioParams;
 
     /**
      * Guards {@link #mAudioTrackHandler}, {@link #mItem} and {@link #mStopped}.
@@ -89,17 +81,15 @@ private:
     // Handler associated with a thread that plays back audio requests.
     AutoPtr<AudioPlaybackHandler> mAudioTrackHandler;
     // A request "token", which will be non null after start() has been called.
-    AutoPtr<SynthesisPlaybackQueueItem> mItem;// = NULL;
-    // Whether this request has been stopped. This is useful for keeping
-    // track whether stop() has been called before start(). In all other cases,
-    // a non-null value of mItem will provide the same information.
-    Boolean mStopped;// = FALSE;
+    AutoPtr<SynthesisPlaybackQueueItem> mItem;
+    /** Status code of synthesis */
+    Int32 mStatusCode;
 
-    volatile Boolean mDone;             // = FALSE;
+    volatile Boolean mDone;
 
-    AutoPtr<ITextToSpeechServiceUtteranceProgressDispatcher> mDispatcher;
+    AutoPtr<IUtteranceProgressDispatcher> mDispatcher;
     AutoPtr<IInterface> mCallerIdentity;
-    AutoPtr<EventLogger> mLogger;
+    AutoPtr<EventLoggerV1> mLogger;
 };
 
 } // namespace Tts

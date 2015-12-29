@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_DROID_SPEECH_TTS_CSYNTHESISREQUEST_H__
-#define __ELASTOS_DROID_SPEECH_TTS_CSYNTHESISREQUEST_H__
+#ifndef __ELASTOS_DROID_SPEECH_TTS_CSynthesisRequest_H__
+#define __ELASTOS_DROID_SPEECH_TTS_CSynthesisRequest_H__
 
 #include "_Elastos_Droid_Speech_Tts_CSynthesisRequest.h"
 #include "SynthesisRequest.h"
@@ -28,4 +28,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_SPEECH_TTS_CSYNTHESISREQUEST_H__
+#endif // __ELASTOS_DROID_SPEECH_TTS_CSynthesisRequest_H__

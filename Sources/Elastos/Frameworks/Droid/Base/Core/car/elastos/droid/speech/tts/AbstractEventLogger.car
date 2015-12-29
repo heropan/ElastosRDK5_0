@@ -10,14 +10,9 @@ module
      * event logs. The data that is logged depends on actual implementation. Note
      * that {@link AbstractEventLogger#onAudioDataWritten()} and
      * {@link AbstractEventLogger#onEngineComplete()} must be called from a single
-     * thread (usually the audio playback thread}.
+     * thread (usually the audio playback thread).
      */
     interface IAbstractEventLogger {
-
-        constructor(
-            [in] Int32 callerUid,
-            [in] Int32 callerPid,
-            [in] String serviceApp);
 
         /**
          * Notifies the logger that this request has been selected from

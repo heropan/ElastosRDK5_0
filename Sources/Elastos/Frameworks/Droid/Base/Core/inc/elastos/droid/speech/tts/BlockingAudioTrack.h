@@ -3,9 +3,14 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/core/Object.h"
+#include "elastos/droid/speech/tts/AudioOutputParams.h"
+#include "Elastos.Droid.Speech.h"
 
+//
+// WAITING for IAudioTrack
+//
 using Elastos::Droid::Media::IAudioTrack;
-using Elastos::Droid::Media::IBlockingAudioTrack;
+//#define IAudioTrack void *
 
 namespace Elastos {
 namespace Droid {
@@ -44,7 +49,7 @@ public:
     CARAPI Stop();
 
     CARAPI Write(
-        /* [in] */ ArrayOf<Byte>* data);
+        /* [in] */ ArrayOf<Byte>* data,
         /* [out] */ Int32* ret);
 
     CARAPI WaitAndRelease();

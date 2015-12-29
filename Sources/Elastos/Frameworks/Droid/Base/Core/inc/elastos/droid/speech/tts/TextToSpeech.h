@@ -5,16 +5,18 @@
 #include "elastos/core/Object.h"
 
 #include "elastos/droid/speech/tts/UtteranceProgressListener.h"
-#include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/Map.h>
+#include <elastos/utility/etl/Map.h>
 #include <elastos/utility/etl/Set.h>
 #include <elastos/utility/etl/List.h>
-
+#include "Elastos.Droid.Speech.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Net.h"
 
 using Elastos::Utility::ILocale;
-using Elastos::Utility::Map;
-using Elastos::Utility::Set;
+using Elastos::Utility::IMap;
+using Elastos::Utility::Etl::Map;
+using Elastos::Utility::Etl::Set;
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::IBundle;
 //using Elastos::Droid::Os::IIBinder;
@@ -23,6 +25,10 @@ using Elastos::Droid::Content::IServiceConnection;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Net::IUri;
 //using Elastos::Droid::Speech::Tts::CTtsEngines;
+using Elastos::Utility::IList;
+using Elastos::IO::IFile;
+using Elastos::Utility::ISet;
+using Elastos::Utility::IHashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -135,12 +141,12 @@ private:
             /* [in] */ TextToSpeech* tts,
             /* [in] */ const String& text,
             /* [in] */ Int32 queueMode,
-            /* [in] */ IObjectStringMap* params);
+            /* [in] */ IHashMap* params);
     private:
         TextToSpeech* mTts;
         String mText;
         Int32 mQueueMode;
-        AutoPtr<IObjectStringMap> mParams;
+        AutoPtr<IHashMap> mParams;
     };
 
     class TextToSpeechActionRPlayEarcon
@@ -154,12 +160,12 @@ private:
             /* [in] */ TextToSpeech* tts,
             /* [in] */ const String& earcon,
             /* [in] */ Int32 queueMode,
-            /* [in] */ IObjectStringMap* params);
+            /* [in] */ IMap* params);
     private:
         TextToSpeech* mTts;
         String mEarcon;
         Int32 mQueueMode;
-        AutoPtr<IObjectStringMap> mParams;
+        AutoPtr<IMap> mParams;
     };
 
     class TextToSpeechActionRPlaySilence
@@ -173,12 +179,12 @@ private:
             /* [in] */ TextToSpeech* tts,
             /* [in] */ Int64 durationInMs,
             /* [in] */ Int32 queueMode,
-            /* [in] */ IObjectStringMap* params);
+            /* [in] */ IMap* params);
     private:
         TextToSpeech* mTts;
         Int64 mDurationInMs;
         Int32 mQueueMode;
-        AutoPtr<IObjectStringMap> mParams;
+        AutoPtr<IMap> mParams;
     };
 
     class TextToSpeechActionRGetFeatures
@@ -275,12 +281,12 @@ private:
         TextToSpeechActionRSynthesizeToFile(
             /* [in] */ TextToSpeech* tts,
             /* [in] */ const String& text,
-            /* [in] */ IObjectStringMap* params,
+            /* [in] */ IMap* params,
             /* [in] */ const String& filename);
     private:
         TextToSpeech* mTts;
         String mText;
-        AutoPtr<IObjectStringMap> mParams;
+        AutoPtr<IMap> mParams;
         String mFilename;
     };
 
@@ -302,22 +308,26 @@ private:
             virtual ~TextToSpeechConnectionCallback();
 
             CARAPI constructor();
+
+            CARAPI constructor(
+                /* [in] */ TextToSpeech* tts);
         public:
             //@Override
-            CARAPI OnDone(
+            CARAPI OnStop(
+                /* [in] */ const String& utteranceId);
+
+            //@Override
+            CARAPI OnSuccess(
                 /* [in] */ const String& utteranceId);
 
             //@Override
             CARAPI OnError(
-                /* [in] */ const String& utteranceId);
+                /* [in] */ const String& utteranceId,
+                /* [in] */ Int32 errorCode);
 
             //@Override
             CARAPI OnStart(
                 /* [in] */ const String& utteranceId);
-
-        public:
-            TextToSpeechConnectionCallback(
-                /* [in] */ TextToSpeech* tts);
 
         private:
             TextToSpeech* mTts;
@@ -331,6 +341,9 @@ private:
         virtual ~TextToSpeechConnection();
 
         CARAPI constructor();
+
+        CARAPI constructor(
+            /* [in] */ TextToSpeech* tts);
     public:
         //@Override
         CARAPI OnServiceConnected(
@@ -361,15 +374,18 @@ private:
             /* [in] */ TextToSpeechActionR* action,
             /* [in] */ Handle32 errorResult,
             /* [in] */ const String& method,
-            /* [in] */ Boolean reconnect);
-    public:
-        TextToSpeechConnection(
-            /* [in] */ TextToSpeech* tts);
+            /* [in] */ Boolean reconnect,
+            /* [in] */ Boolean onlyEstablishedConnection);
     private:
         TextToSpeech* mTts;
         AutoPtr<IITextToSpeechService> mService;
         //private final ITextToSpeechCallback.Stub mCallback = new ITextToSpeechCallback.Stub() {...}
         AutoPtr<IITextToSpeechCallback> mCallback;      // = new TextToSpeechConnectionCallback(mTts);
+
+        //SetupConnectionAsyncTask mOnSetupConnectionAsyncTask;
+
+        Boolean mEstablished;
+        Boolean onlyEstablishedConnection;
     };
 
     friend class TextToSpeechConnection;
@@ -431,7 +447,7 @@ public:
      * It is good practice for instance to call this method in the onDestroy() method of an Activity
      * so the TextToSpeech engine can be cleanly stopped.
      */
-    CARAPI_(void) Shutdown();
+    CARAPI Shutdown();
 
     /**
      * Adds a mapping between a string of text and a sound resource in a
@@ -460,10 +476,44 @@ public:
      *
      * @return Code indicating success or failure. See {@link #ERROR} and {@link #SUCCESS}.
      */
-    CARAPI_(Int32) AddSpeech(
+    CARAPI AddSpeech(
         /* [in] */ const String& text,
         /* [in] */ const String& packagename,
-        /* [in] */ Int32 resourceId);
+        /* [in] */ Int32 resourceId,
+        /* [out] */ Int32 *ret);
+
+    /**
+     * Adds a mapping between a CharSequence (may be spanned with TtsSpans) of text
+     * and a sound resource in a package. After a call to this method, subsequent calls to
+     * {@link #speak(String, int, HashMap)} will play the specified sound resource
+     * if it is available, or synthesize the text it is missing.
+     *
+     * @param text
+     *            The string of text. Example: <code>"south_south_east"</code>
+     *
+     * @param packagename
+     *            Pass the packagename of the application that contains the
+     *            resource. If the resource is in your own application (this is
+     *            the most common case), then put the packagename of your
+     *            application here.<br/>
+     *            Example: <b>"com.google.marvin.compass"</b><br/>
+     *            The packagename can be found in the AndroidManifest.xml of
+     *            your application.
+     *            <p>
+     *            <code>&lt;manifest xmlns:android=&quot;...&quot;
+     *      package=&quot;<b>com.google.marvin.compass</b>&quot;&gt;</code>
+     *            </p>
+     *
+     * @param resourceId
+     *            Example: <code>R.raw.south_south_east</code>
+     *
+     * @return Code indicating success or failure. See {@link #ERROR} and {@link #SUCCESS}.
+     */
+    CARAPI AddSpeech(
+        /* [in] */ ICharSequence* text,
+        /* [in] */ const String& packagename,
+        /* [in] */ Int32 resourceId,
+        /* [out] */ Int32 *ret);
 
     /**
      * Adds a mapping between a string of text and a sound file. Using this, it
@@ -480,10 +530,29 @@ public:
      *
      * @return Code indicating success or failure. See {@link #ERROR} and {@link #SUCCESS}.
      */
-    CARAPI_(Int32) AddSpeech(
+    CARAPI AddSpeech(
         /* [in] */ const String& text,
-        /* [in] */ const String& filename);
+        /* [in] */ const String& filename,
+        /* [out] */ Int32 *ret);
 
+    /**
+     * Adds a mapping between a CharSequence (may be spanned with TtsSpans and a sound file.
+     * Using this, it is possible to add custom pronounciations for a string of text.
+     * After a call to this method, subsequent calls to {@link #speak(String, int, HashMap)}
+     * will play the specified sound resource if it is available, or synthesize the text it is
+     * missing.
+     *
+     * @param text
+     *            The string of text. Example: <code>"south_south_east"</code>
+     * @param file
+     *            File object pointing to the sound file.
+     *
+     * @return Code indicating success or failure. See {@link #ERROR} and {@link #SUCCESS}.
+     */
+    CARAPI AddSpeech(
+        /* [in] */ ICharSequence* text,
+        /* [in] */ IFile* file,
+        /* [out] */ Int32 *ret);
 
     /**
      * Adds a mapping between a string of text and a sound resource in a
@@ -510,10 +579,11 @@ public:
      *
      * @return Code indicating success or failure. See {@link #ERROR} and {@link #SUCCESS}.
      */
-    CARAPI_(Int32) AddEarcon(
+    CARAPI AddEarcon(
         /* [in] */ const String& earcon,
         /* [in] */ const String& packagename,
-        /* [in] */ Int32 resourceId);
+        /* [in] */ Int32 resourceId,
+        /* [out] */ Int32 *ret);
 
     /**
      * Adds a mapping between a string of text and a sound file.
@@ -530,11 +600,64 @@ public:
      *
      * @return Code indicating success or failure. See {@link #ERROR} and {@link #SUCCESS}.
      */
-    CARAPI_(Int32) AddEarcon(
+    CARAPI AddEarcon(
         /* [in] */ const String& earcon,
-        /* [in] */ const String& filename);
+        /* [in] */ const String& filename,
+        /* [out] */ Int32 *ret);
 
-public:
+    /**
+     * Adds a mapping between a string of text and a sound file.
+     * Use this to add custom earcons.
+     *
+     * @see #playEarcon(String, int, HashMap)
+     *
+     * @param earcon
+     *            The name of the earcon.
+     *            Example: <code>"[tick]"</code>
+     * @param file
+     *            File object pointing to the sound file.
+     *
+     * @return Code indicating success or failure. See {@link #ERROR} and {@link #SUCCESS}.
+     */
+    CARAPI AddEarcon(
+        /* [in] */ const String& earcon,
+        /* [in] */ IFile* file,
+        /* [out] */ Int32* ret);
+
+
+    /**
+     * Speaks the text using the specified queuing strategy and speech parameters, the text may
+     * be spanned with TtsSpans.
+     * This method is asynchronous, i.e. the method just adds the request to the queue of TTS
+     * requests and then returns. The synthesis might not have finished (or even started!) at the
+     * time when this method returns. In order to reliably detect errors during synthesis,
+     * we recommend setting an utterance progress listener (see
+     * {@link #setOnUtteranceProgressListener}) and using the
+     * {@link Engine#KEY_PARAM_UTTERANCE_ID} parameter.
+     *
+     * @param text The string of text to be spoken. No longer than
+     *            {@link #getMaxSpeechInputLength()} characters.
+     * @param queueMode The queuing strategy to use, {@link #QUEUE_ADD} or {@link #QUEUE_FLUSH}.
+     * @param params Parameters for the request. Can be null.
+     *            Supported parameter names:
+     *            {@link Engine#KEY_PARAM_STREAM},
+     *            {@link Engine#KEY_PARAM_VOLUME},
+     *            {@link Engine#KEY_PARAM_PAN}.
+     *            Engine specific parameters may be passed in but the parameter keys
+     *            must be prefixed by the name of the engine they are intended for. For example
+     *            the keys "com.svox.pico_foo" and "com.svox.pico:bar" will be passed to the
+     *            engine named "com.svox.pico" if it is being used.
+     * @param utteranceId An unique identifier for this request.
+     *
+     * @return {@link #ERROR} or {@link #SUCCESS} of <b>queuing</b> the speak operation.
+     */
+    Speak(
+        /* [in] */ ICharSequence* text,
+        /* [in] */ Int32 queueMode,
+        /* [in] */ IBundle* params,
+        /* [in] */ const String& utteranceId,
+        /* [in] */ Int32* ret);
+
     /**
      * Speaks the string using the specified queuing strategy and speech
      * parameters.
@@ -554,15 +677,53 @@ public:
      *
      * @return {@link #ERROR} or {@link #SUCCESS}.
      */
-    CARAPI_(Int32) Speak(
-        /* [in] */ /*const*/ String text,
-        /* [in] */ /*const*/ Int32 queueMode,
-        /* [in] */ /*const*/ IObjectStringMap* params);
+    CARAPI Speak(
+        /* [in] */ const String& text,
+        /* [in] */ Int32 queueMode,
+        /* [in] */ IHashMap* params,
+        /* [in] */ Int32* ret);
 
     /**
      * Plays the earcon using the specified queueing mode and parameters.
      * The earcon must already have been added with {@link #addEarcon(String, String)} or
      * {@link #addEarcon(String, String, int)}.
+     * This method is asynchronous, i.e. the method just adds the request to the queue of TTS
+     * requests and then returns. The synthesis might not have finished (or even started!) at the
+     * time when this method returns. In order to reliably detect errors during synthesis,
+     * we recommend setting an utterance progress listener (see
+     * {@link #setOnUtteranceProgressListener}) and using the
+     * {@link Engine#KEY_PARAM_UTTERANCE_ID} parameter.
+     *
+     * @param earcon The earcon that should be played
+     * @param queueMode {@link #QUEUE_ADD} or {@link #QUEUE_FLUSH}.
+     * @param params Parameters for the request. Can be null.
+     *            Supported parameter names:
+     *            {@link Engine#KEY_PARAM_STREAM},
+     *            Engine specific parameters may be passed in but the parameter keys
+     *            must be prefixed by the name of the engine they are intended for. For example
+     *            the keys "com.svox.pico_foo" and "com.svox.pico:bar" will be passed to the
+     *            engine named "com.svox.pico" if it is being used.
+     *
+     * @return {@link #ERROR} or {@link #SUCCESS} of <b>queuing</b> the playEarcon operation.
+     */
+    PlayEarcon(
+        /* [in] */ const String& earcon,
+        /* [in] */ Int32 queueMode,
+        /* [in] */ IBundle* params,
+        /* [in] */ const String& utteranceld,
+        /* [out] */ Int32* ret);
+
+
+    /**
+     * Plays the earcon using the specified queueing mode and parameters.
+     * The earcon must already have been added with {@link #addEarcon(String, String)} or
+     * {@link #addEarcon(String, String, int)}.
+     * This method is asynchronous, i.e. the method just adds the request to the queue of TTS
+     * requests and then returns. The synthesis might not have finished (or even started!) at the
+     * time when this method returns. In order to reliably detect errors during synthesis,
+     * we recommend setting an utterance progress listener (see
+     * {@link #setOnUtteranceProgressListener}) and using the
+     * {@link Engine#KEY_PARAM_UTTERANCE_ID} parameter.
      *
      * @param earcon The earcon that should be played
      * @param queueMode {@link #QUEUE_ADD} or {@link #QUEUE_FLUSH}.
@@ -575,12 +736,15 @@ public:
      *            the keys "com.svox.pico_foo" and "com.svox.pico:bar" will be passed to the
      *            engine named "com.svox.pico" if it is being used.
      *
-     * @return {@link #ERROR} or {@link #SUCCESS}.
+     * @return {@link #ERROR} or {@link #SUCCESS} of <b>queuing</b> the playEarcon operation.
+     * @deprecated As of API level 21, replaced by
+     *         {@link #playEarcon(String, int, Bundle, String)}.
      */
-    CARAPI_(Int32) PlayEarcon(
-        /* [in] */ /*const*/ String earcon,
-        /* [in] */ /*const*/ Int32 queueMode,
-        /* [in] */ /*const*/ IObjectStringMap* params);
+    CARAPI PlayEarcon(
+        /* [in] */ const String& earcon,
+        /* [in] */ Int32 queueMode,
+        /* [in] */ IMap* params,
+        /* [out] */ Int32* ret);
 
     /**
      * Plays silence for the specified amount of time using the specified
@@ -599,9 +763,10 @@ public:
      * @return {@link #ERROR} or {@link #SUCCESS}.
      */
     CARAPI_(Int32) PlaySilence(
-        /* [in] */ /*const*/ Int64 durationInMs,
-        /* [in] */ /*const*/ Int32 queueMode,
-        /* [in] */ /*const*/ IObjectStringMap* params);
+        /* [in] */ Int64 durationInMs,
+        /* [in] */ Int32 queueMode,
+        /* [in] */ IMap* params,
+        /* [out] */ Int32* ret);
 
     /**
      * Queries the engine for the set of features it supports for a given locale.
@@ -617,8 +782,9 @@ public:
      *
      * @param locale The locale to query features for.
      */
-    CARAPI_(AutoPtr< Set<String> >) GetFeatures(
-        /* [in] */ /*const*/ ILocale* locale);
+    CARAPI GetFeatures(
+        /* [in] */ ILocale* locale,
+        /* [out] */ ISet** ret);
 
     /**
      * Checks whether the TTS engine is busy speaking. Note that a speech item is
@@ -628,7 +794,8 @@ public:
      *
      * @return {@code true} if the TTS engine is speaking.
      */
-    CARAPI_(Boolean) IsSpeaking();
+    CARAPI IsSpeaking(
+        /* [out] */ Boolean* ret);
 
     /**
      * Interrupts the current utterance (whether played or rendered to file) and discards other
@@ -636,7 +803,8 @@ public:
      *
      * @return {@link #ERROR} or {@link #SUCCESS}.
      */
-    CARAPI_(Int32) Stop();
+    CARAPI Stop(
+        /* [out] */ Int32* ret);
 
     /**
      * Sets the speech rate.
@@ -649,8 +817,9 @@ public:
      *
      * @return {@link #ERROR} or {@link #SUCCESS}.
      */
-    CARAPI_(Int32) SetSpeechRate(
-        /* [in] */ Float speechRate);
+    CARAPI SetSpeechRate(
+        /* [in] */ Float speechRate,
+        /* [out] */ Int32* ret);
 
     /**
      * Sets the speech pitch for the TextToSpeech engine.
@@ -663,14 +832,16 @@ public:
      *
      * @return {@link #ERROR} or {@link #SUCCESS}.
      */
-    CARAPI_(Int32) SetPitch(
-        /* [in] */ Float pitch);
+    CARAPI SetPitch(
+        /* [in] */ Float pitch,
+        /* [out] */ Int32* ret);
 
     /**
      * @return the engine currently in use by this TextToSpeech instance.
      * @hide
      */
-    CARAPI_(String) GetCurrentEngine();
+    CARAPI GetCurrentEngine(
+        /* [out] */ String* ret);
 
     /**
      * Sets the text-to-speech language.
@@ -686,7 +857,8 @@ public:
      *         {@link #LANG_MISSING_DATA} and {@link #LANG_NOT_SUPPORTED}.
      */
     CARAPI_(Int32) SetLanguage(
-        /* [in] */ /*const*/ ILocale* loc);
+        /* [in] */ ILocale* loc,
+        /* [out] */ Int32* ret);
 
     /**
      * Returns a Locale instance describing the language currently being used by the TextToSpeech
@@ -695,7 +867,8 @@ public:
      * @return language, country (if any) and variant (if any) used by the engine stored in a Locale
      *     instance, or {@code null} on error.
      */
-    CARAPI_(AutoPtr<ILocale>) GetLanguage();
+    CARAPI GetLanguage(
+        /* [out] */ ILocale** language);
 
     /**
      * Checks if the specified language as represented by the Locale is available and supported.
@@ -707,12 +880,46 @@ public:
      *         {@link #LANG_MISSING_DATA} and {@link #LANG_NOT_SUPPORTED}.
      */
     CARAPI_(Int32) IsLanguageAvailable(
-        /* [in] */ /*const*/ ILocale* loc);
+        /* [in] */ ILocale* loc,
+        /* [out] */ Int32* ret);
 
     /**
      * Synthesizes the given text to a file using the specified parameters.
+     * This method is asynchronous, i.e. the method just adds the request to the queue of TTS
+     * requests and then returns. The synthesis might not have finished (or even started!) at the
+     * time when this method returns. In order to reliably detect errors during synthesis,
+     * we recommend setting an utterance progress listener (see
+     * {@link #setOnUtteranceProgressListener}).
      *
-     * @param text The text that should be synthesized
+     * @param text The text that should be synthesized. No longer than
+     *            {@link #getMaxSpeechInputLength()} characters.
+     * @param params Parameters for the request. Can be null.
+     *            Engine specific parameters may be passed in but the parameter keys
+     *            must be prefixed by the name of the engine they are intended for. For example
+     *            the keys "com.svox.pico_foo" and "com.svox.pico:bar" will be passed to the
+     *            engine named "com.svox.pico" if it is being used.
+     * @param file File to write the generated audio data to.
+     * @param utteranceId An unique identifier for this request.
+     * @return {@link #ERROR} or {@link #SUCCESS} of <b>queuing</b> the synthesizeToFile operation.
+     */
+    SynthesizeToFile(
+        /* [in] */ ICharSequence* text,
+        /* [in] */ IBundle* params,
+        /* [in] */ IFile* filename,
+        /* [in] */ const String& utteranceld,
+        /* [out] */ Int32* ret);
+
+    /**
+     * Synthesizes the given text to a file using the specified parameters.
+     * This method is asynchronous, i.e. the method just adds the request to the queue of TTS
+     * requests and then returns. The synthesis might not have finished (or even started!) at the
+     * time when this method returns. In order to reliably detect errors during synthesis,
+     * we recommend setting an utterance progress listener (see
+     * {@link #setOnUtteranceProgressListener}) and using the
+     * {@link Engine#KEY_PARAM_UTTERANCE_ID} parameter.
+     *
+     * @param text The text that should be synthesized. No longer than
+     *            {@link #getMaxSpeechInputLength()} characters.
      * @param params Parameters for the request. Can be null.
      *            Supported parameter names:
      *            {@link Engine#KEY_PARAM_UTTERANCE_ID}.
@@ -723,14 +930,17 @@ public:
      * @param filename Absolute file filename to write the generated audio data to.It should be
      *            something like "/sdcard/myappsounds/mysound.wav".
      *
-     * @return {@link #ERROR} or {@link #SUCCESS}.
+     * @return {@link #ERROR} or {@link #SUCCESS} of <b>queuing</b> the synthesizeToFile operation.
+     * @deprecated As of API level 21, replaced by
+     *         {@link #synthesizeToFile(CharSequence, Bundle, File, String)}.
+     * @Deprecated
      */
-    CARAPI_(Int32) SynthesizeToFile(
-        /* [in] */ /*const*/ String text,
-        /* [in] */ /*const*/ IObjectStringMap* params,
-        /* [in] */ /*const*/ String filename);
+    CARAPI SynthesizeToFile(
+        /* [in] */ const String& text,
+        /* [in] */ IMap* params,
+        /* [in] */ const String& filename,
+        /* [out] */ Int32* ret);
 
-public:
     /**
      * Sets the listener that will be notified when synthesis of an utterance completes.
      *
@@ -742,8 +952,9 @@ public:
      *        instead.
      */
     //@Deprecated
-    CARAPI_(Int32) SetOnUtteranceCompletedListener(
-        /* [in] */ /*const*/ ITextToSpeechOnUtteranceCompletedListener* listener);
+    CARAPI SetOnUtteranceCompletedListener(
+        /* [in] */ ITextToSpeechOnUtteranceCompletedListener* listener,
+        /* [out] */ Int32* ret);
 
     /**
      * Sets the listener that will be notified of various events related to the
@@ -755,8 +966,9 @@ public:
      * @param listener the listener to use.
      * @return {@link #ERROR} or {@link #SUCCESS}
      */
-    CARAPI_(Int32) SetOnUtteranceProgressListener(
-        /* [in] */ IUtteranceProgressListener* listener);
+    CARAPI SetOnUtteranceProgressListener(
+        /* [in] */ IUtteranceProgressListener* listener,
+        /* [out] */ Int32* ret);
 
     /**
      * Sets the TTS engine to use.
@@ -772,8 +984,9 @@ public:
      * @return {@link #ERROR} or {@link #SUCCESS}.
      */
     //@Deprecated
-    CARAPI_(Int32) SetEngineByPackageName(
-        /* [in] */ const String& enginePackageName);
+    CARAPI SetEngineByPackageName(
+        /* [in] */ const String& enginePackageName,
+        /* [out] */ Int32* ret);
 
     /**
      * Gets the package name of the default speech synthesis engine.
@@ -781,21 +994,32 @@ public:
      * @return Package name of the TTS engine that the user has chosen
      *        as their default.
      */
-    CARAPI_(String) GetDefaultEngine();
+    CARAPI GetDefaultEngine(
+        /* [out] */ String* engine);
 
     /**
      * Checks whether the user's settings should override settings requested
      * by the calling application. As of the Ice cream sandwich release,
      * user settings never forcibly override the app's settings.
      */
-    CARAPI_(Boolean) AreDefaultsEnforced();
+    CARAPI AreDefaultsEnforced(
+        /* [out] */ Boolean* enforced);
 
     /**
      * Gets a list of all installed TTS engines.
      *
      * @return A list of engine info objects. The list can be empty, but never {@code null}.
      */
-    CARAPI_(AutoPtr<List< AutoPtr<ITextToSpeechEngineInfo> > >) GetEngines();
+    CARAPI GetEngines(
+        /* [out] */ IList** ret);
+
+    /**
+     * Limit of length of input string passed to speak and synthesizeToFile.
+     *
+     * @see #speak
+     * @see #synthesizeToFile
+     */
+    static CARAPI_(Int32) GetMaxSpeechInputLength();
 
 private:
     //private <R>
@@ -829,36 +1053,28 @@ private:
 
     CARAPI_(AutoPtr</*IIBinder*/IInterface>) GetCallerIdentity();
 
-    /**
-     * Limit of length of input string passed to speak and synthesizeToFile.
-     *
-     * @see #speak
-     * @see #synthesizeToFile
-     */
-    CARAPI_(Int32) GetMaxSpeechInputLength();
-
 private:
     CARAPI_(AutoPtr<IUri>) MakeResourceUri(
         /* [in] */ const String& packageName,
         /* [in] */ Int32 resourceId);
 
 private:
-    CARAPI_(AutoPtr<IBundle>) GetParams(
-        /* [in] */ IObjectStringMap* params);
+    CARAPI_(AutoPtr<IBundle>) ConvertParamsHashMaptoBundle(
+        /* [in] */ IMap* params);
 
     CARAPI_(void) CopyStringParam(
         /* [in] */ IBundle* bundle,
-        /* [in] */ IObjectStringMap* params,
+        /* [in] */ IMap* params,
         /* [in] */ const String& key);
 
     CARAPI_(void) CopyIntParam(
         /* [in] */ IBundle* bundle,
-        /* [in] */ IObjectStringMap* params,
+        /* [in] */ IMap* params,
         /* [in] */ const String& key);
 
     CARAPI_(void) CopyFloatParam(
         /* [in] */ IBundle* bundle,
-        /* [in] */ IObjectStringMap* params,
+        /* [in] */ IMap* params,
         /* [in] */ const String& key);
 public:
     static const Int32 QUEUE_DESTROY;       // = 2;

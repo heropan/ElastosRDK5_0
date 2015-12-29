@@ -5,6 +5,7 @@
 #include "elastos/core/Object.h"
 #include <elastos/io/InputStream.h>
 #include <elastos/io/OutputStream.h>
+#include "Elastos.Droid.Speech.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
@@ -35,13 +36,13 @@ class WaveHeader
 public:
     CAR_INTERFACE_DECL();
 
-    /**
-     * Construct a WaveHeader, with all fields defaulting to zero.
-     */
     WaveHeader();
 
     virtual ~WaveHeader();
 
+    /**
+     * Construct a WaveHeader, with all fields defaulting to zero.
+     */
     CARAPI constructor();
 
     /**
@@ -168,13 +169,11 @@ private:
         /* [in] */ IInputStream* in,
         /* [in] */ const String& id);
 
-    static CARAPI ReadInt(
-        /* [in] */ IInputStream* in,
-        /* [out] */ Int32* ret);
+    static CARAPI_(Int32) ReadInt(
+        /* [in] */ IInputStream* in);
 
-    static CARAPI ReadShort(
-        /* [in] */ IInputStream* in,
-        /* [out] */ Int16* ret);
+    static CARAPI_(Int16) ReadShort(
+        /* [in] */ IInputStream* in);
 
     static CARAPI WriteId(
         /* [in] */ IOutputStream* out,

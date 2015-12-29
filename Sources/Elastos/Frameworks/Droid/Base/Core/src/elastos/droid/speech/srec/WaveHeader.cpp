@@ -40,7 +40,7 @@ ECode WaveHeader::constructor(
     return NOERROR;
 }
 
-Int16 WaveHeader::GetFormat(
+ECode WaveHeader::GetFormat(
     /* [out] */ Int16* ret)
 {
     *ret = mFormat;
@@ -97,7 +97,7 @@ ECode WaveHeader::SetBitsPerSample(
 }
 
 ECode WaveHeader::GetNumBytes(
-   /* [out] */ Int32* ret);
+   /* [out] */ Int32* ret)
 {
     *ret = mNumBytes;
     return NOERROR;
@@ -170,26 +170,20 @@ ECode WaveHeader::ReadId(
     return NOERROR;
 }
 
-ECode WaveHeader::ReadInt(
-    /* [in] */ IInputStream* in,
-    /* [out] */ Int32* ret);
+Int32 WaveHeader::ReadInt(
+    /* [in] */ IInputStream* in)
 {
     Int32 val;
     in->Read(&val);
-    *ret = val | (val << 8) | (val << 16) | (val << 24);
-
-    return NOERROR;
+    return val | (val << 8) | (val << 16) | (val << 24);
 }
 
-ECode WaveHeader::ReadShort(
-    /* [in] */ IInputStream* in,
-    /* [out] */ Int16* ret);
+Int16 WaveHeader::ReadShort(
+    /* [in] */ IInputStream* in)
 {
     Int32 val;
     in->Read(&val);
-    *ret = (Int16)(val | (val << 8));
-
-    return NOERROR;
+    return (Int16)(val | (val << 8));
 }
 
 ECode WaveHeader::Write(
@@ -262,7 +256,7 @@ ECode WaveHeader::ToString(
             "WaveHeader format=%d numChannels=%d sampleRate=%d bitsPerSample=%d numBytes=%d",
             mFormat, mNumChannels, mSampleRate, mBitsPerSample, mNumBytes);
             */
-    *ret = strOut;
+    *str = strOut;
     return NOERROR;
 }
 

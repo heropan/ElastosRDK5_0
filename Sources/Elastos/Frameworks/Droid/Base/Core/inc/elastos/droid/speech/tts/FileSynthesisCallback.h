@@ -7,6 +7,7 @@
 using Elastos::IO::IFile;
 using Elastos::IO::IRandomAccessFile;
 using Elastos::IO::Channels::IFileChannel;
+using Elastos::IO::IByteBuffer;
 
 namespace Elastos {
 namespace Droid {
@@ -17,28 +18,26 @@ namespace Tts {
  * Speech synthesis request that writes the audio to a WAV file.
  */
 class FileSynthesisCallback
-    : public Object
-    , public AbstractSynthesisCallback      // abstract class
-    , public SynthesisCallback              // interface
+    : public AbstractSynthesisCallback      // abstract class
 {
 public:
+    CAR_INTERFACE_DECL();
+
     FileSynthesisCallback();
 
-    ~FileSynthesisCallback();
+    virtual ~FileSynthesisCallback();
 
-    constructor(
-        /* [in] */ IFileChannel fileChannel,
-        /* [in] */ UtteranceProgressDispatcher dispatcher,
-        /* [in] */ IInterface callerIdentity,
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ IFileChannel* fileChannel,
+        /* [in] */ IUtteranceProgressDispatcher* dispatcher,
+        /* [in] */ IInterface* callerIdentity,
         /* [in] */ Boolean clientIsUsingV2);
 
-    CARAPI Stop(
-        /* [out] */ Int32* ret);
+    CARAPI Stop();
 
     CARAPI GetMaxBufferSize(
-        /* [out] */ Int32* ret);
-
-    CARAPI IsDone(
         /* [out] */ Int32* ret);
 
     CARAPI Start(
@@ -96,7 +95,7 @@ private:
     /**
      * Must be called while holding the monitor on {@link #mStateLock}.
      */
-    CARAPI_(void) CleanUp();
+    CARAPI CleanUp();
 
     /**
      * Must be called while holding the monitor on {@link #mStateLock}.

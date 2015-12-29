@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SPEECH_TTS_SilencePlaybackQueueItem_H__
 
 #include "elastos/droid/speech/tts/PlaybackQueueItem.h"
-#include "Elastos.Droid.Core_server.h"
+#include "elastos/droid/os/ConditionVariable.h"
 //
 namespace Elastos {
 namespace Droid {
@@ -13,8 +13,16 @@ class SilencePlaybackQueueItem
     : public PlaybackQueueItem
 {
 public:
-    SilencePlaybackQueueItem(
-        /* [in] */ ITextToSpeechServiceUtteranceProgressDispatcher* dispatcher,
+    CAR_INTERFACE_DECL();
+
+    SilencePlaybackQueueItem();
+
+    virtual ~SilencePlaybackQueueItem();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ IUtteranceProgressDispatcher* dispatcher,
         /* [in] */ IInterface* callerIdentity,
         /* [in] */ Int64 silenceDurationMs);
 
@@ -23,7 +31,7 @@ public:
 
     //@Override
     CARAPI Stop(
-        /* [in] */ Boolean isError);
+        /* [in] */ Int32 errorCode);
 
 private:
 //    AutoPtr<IConditionVariable> mCondVar;// = new ConditionVariable();

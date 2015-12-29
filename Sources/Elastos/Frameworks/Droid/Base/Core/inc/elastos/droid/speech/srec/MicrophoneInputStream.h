@@ -1,7 +1,10 @@
 #ifndef __ELASTOS_DROID_SPEECH_SREC_MicrophoneInputStream_H__
 #define __ELASTOS_DROID_SPEECH_SREC_MicrophoneInputStream_H__
 
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
 #include <elastos/io/InputStream.h>
+#include "Elastos.Droid.Speech.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::InputStream;
@@ -59,9 +62,6 @@ public:
      */
     //@Override
     CARAPI Close();
-
-protected:
-    MicrophoneInputStream();
 
 protected:
     //@Override

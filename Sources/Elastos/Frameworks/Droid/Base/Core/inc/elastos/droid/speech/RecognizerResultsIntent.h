@@ -47,14 +47,14 @@ public:
      * list of base urls) should be provided with {@link #EXTRA_VOICE_SEARCH_RESULT_HTML_BASE_URLS}.
      */
     //public static final
-    static const String; ACTION_VOICE_SEARCH_RESULTS;               // = "android.speech.action.VOICE_SEARCH_RESULTS";
+    static const String ACTION_VOICE_SEARCH_RESULTS;               // = "android.speech.action.VOICE_SEARCH_RESULTS";
 
     /**
      * The key to an extra {@link ArrayList} of {@link String}s that contains the list of
      * recognition alternates from voice search, in order from highest to lowest confidence.
      */
     //public static final
-    static const String; EXTRA_VOICE_SEARCH_RESULT_STRINGS;         // = "android.speech.extras.VOICE_SEARCH_RESULT_STRINGS";
+    static const String EXTRA_VOICE_SEARCH_RESULT_STRINGS;         // = "android.speech.extras.VOICE_SEARCH_RESULT_STRINGS";
 
     /**
      * The key to an extra {@link ArrayList} of {@link String}s that contains the search urls
@@ -66,7 +66,7 @@ public:
      * based on the recognition result string.
      */
     //public static final
-    static const String; EXTRA_VOICE_SEARCH_RESULT_URLS;            // = "android.speech.extras.VOICE_SEARCH_RESULT_URLS";
+    static const String EXTRA_VOICE_SEARCH_RESULT_URLS;            // = "android.speech.extras.VOICE_SEARCH_RESULT_URLS";
 
     /**
      * The key to an extra {@link ArrayList} of {@link String}s that contains the html content to
@@ -85,7 +85,7 @@ public:
      * maintaining future backwards compatibility if this changes.
      */
     //public static final
-    static const String; EXTRA_VOICE_SEARCH_RESULT_HTML;            // = "android.speech.extras.VOICE_SEARCH_RESULT_HTML";
+    static const String EXTRA_VOICE_SEARCH_RESULT_HTML;            // = "android.speech.extras.VOICE_SEARCH_RESULT_HTML";
 
     /**
      * The key to an extra {@link ArrayList} of {@link String}s that contains the base url to
@@ -97,7 +97,7 @@ public:
      * {@link #EXTRA_VOICE_SEARCH_RESULT_HTML} list.
      */
     //public static final
-    static const String; EXTRA_VOICE_SEARCH_RESULT_HTML_BASE_URLS;  // = "android.speech.extras.VOICE_SEARCH_RESULT_HTML_BASE_URLS";
+    static const String EXTRA_VOICE_SEARCH_RESULT_HTML_BASE_URLS;  // = "android.speech.extras.VOICE_SEARCH_RESULT_HTML_BASE_URLS";
 
     /**
      * The key to an extra {@link ArrayList} of {@link Bundle}s that contains key/value pairs.
@@ -111,7 +111,7 @@ public:
      * {@link #EXTRA_VOICE_SEARCH_RESULT_URLS}) is loaded.
      */
     //public static final
-    static const String; EXTRA_VOICE_SEARCH_RESULT_HTTP_HEADERS;    // = "android.speech.extras.EXTRA_VOICE_SEARCH_RESULT_HTTP_HEADERS";
+    static const String EXTRA_VOICE_SEARCH_RESULT_HTTP_HEADERS;    // = "android.speech.extras.EXTRA_VOICE_SEARCH_RESULT_HTTP_HEADERS";
 
     /**
      * The scheme used currently for html content in {@link #EXTRA_VOICE_SEARCH_RESULT_HTML}.
@@ -119,7 +119,7 @@ public:
      * NOT be used for generic URIs such as those found in the data field of an Intent.
      */
     //public static final
-    static const String; URI_SCHEME_INLINE;                         // = "inline";
+    static const String URI_SCHEME_INLINE;                         // = "inline";
 };
 
 

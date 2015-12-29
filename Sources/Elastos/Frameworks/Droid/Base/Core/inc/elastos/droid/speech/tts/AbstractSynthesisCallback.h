@@ -49,7 +49,7 @@ public:
      *
      * Can be called from multiple threads.
      */
-    virtual CARAPI Stop();
+    CARAPI Stop();
 
     /**
      * Get status code for a "stop".

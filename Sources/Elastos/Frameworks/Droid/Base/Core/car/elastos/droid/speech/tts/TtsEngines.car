@@ -2,7 +2,6 @@ module
 {
     using interface Elastos.Utility.IList;
     using interface Elastos.Utility.ILocale;
-    using interface Elastos.Utility.IArrayList;
 
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Speech.Tts.ITextToSpeechEngineInfo;
@@ -140,15 +139,6 @@ module
         NormalizeTTSLocale(
             [in] ILocale* ttsLocale,
             [out] ILocale** outLocale);
-
-        /**
-         * Parses a locale preference value delimited by {@link #LOCALE_DELIMITER}.
-         * Varies from {@link String#split} in that it will always return an array
-         * of length 3 with non null values.
-         */
-        ParseLocalePref(
-            [in] String pref,
-            [out, callee] ArrayOf<String>* ret);
     }
 
     } // namespace Tts

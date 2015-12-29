@@ -22,7 +22,7 @@ ECode EventLoggerV1::constructor(
     /* [in] */ Int32 callerPid,
     /* [in] */ const String& serviceApp)
 {
-    AbstractEventLogger::AbstractEventLogger(callerUid, callerPid, serviceApp);
+    AbstractEventLogger::constructor(callerUid, callerPid, serviceApp);
     mRequest = request;
 
     return NOERROR;

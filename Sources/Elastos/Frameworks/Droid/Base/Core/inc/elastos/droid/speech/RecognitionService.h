@@ -4,12 +4,11 @@
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/core/Object.h"
 #include "elastos/droid/app/Service.h"
-#include "elastos/droid/os/HandlerBase.h"
-#include "Elastos.Droid.Core_server.h"
+#include "Elastos.Droid.Speech.h"
 
 using Elastos::Droid::App::Service;
 using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::IMessage;
 
 namespace Elastos {
 namespace Droid {
@@ -43,6 +42,8 @@ public:
         RecognitionServiceCallback();
 
         virtual ~RecognitionServiceCallback();
+
+        CARAPI constructor();
 
     public:
         /**
@@ -149,15 +150,22 @@ private:
         AutoPtr<IIRecognitionListener> mListener;
     };
 
-private:
+public:
     class RecognitionServiceHandler
-        : public HandlerBase
+        : public Object
+//        , public IHandler
     {
     public:
+//        CAR_INTERFACE_DECL();
+
+        RecognitionServiceHandler();
+
         RecognitionServiceHandler(
-            /* [in] */ RecognitionService* host)
-            : mHost(host)
-        {}
+            /* [in] */ RecognitionService* host);
+
+        ~RecognitionServiceHandler();
+
+        CARAPI constructor();
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
@@ -178,6 +186,8 @@ private:
         RecognitionServiceBinder();
 
         virtual ~RecognitionServiceBinder();
+
+        CARAPI constructor();
 
     public:
         //public
@@ -285,7 +295,7 @@ public:
      */
     //@SdkConstant(SdkConstantType.SERVICE_ACTION)
     //public
-    static const CString SERVICE_INTERFACE;// = "android.speech.RecognitionService";
+    static const String SERVICE_INTERFACE;      // = "android.speech.RecognitionService";
 
     /**
      * Name under which a RecognitionService component publishes information about itself.
@@ -293,42 +303,42 @@ public:
      * <code>&lt;{@link android.R.styleable#RecognitionService recognition-service}&gt;</code> tag.
      */
     //public
-    static const CString SERVICE_META_DATA;// = "android.speech";
+    static const String SERVICE_META_DATA;      // = "android.speech";
 
 private:
     /** Log messages identifier */
     //private
-    static const CString TAG;// = "RecognitionService";
+    static const String TAG;                    // = "RecognitionService";
 
     /** Debugging flag */
     //private
-    static const Boolean DBG;// = FALSE;
+    static const Boolean DBG;
+
+    //private
+    static const Int32 MSG_START_LISTENING;
+
+    //private
+    static const Int32 MSG_STOP_LISTENING;
+
+    //private
+    static const Int32 MSG_CANCEL;
+
+    //private
+    static const Int32 MSG_RESET;
+
+    //private final
+    AutoPtr<IHandler>  mHandler;
 
     /** Binder of the recognition service */
     //private
-    AutoPtr<RecognitionServiceBinder> mBinder;// = new RecognitionServiceBinder(this);
+    AutoPtr<RecognitionServiceBinder> mBinder;
 
     /**
      * The current callback of an application that invoked the
      * {@link RecognitionService#onStartListening(Intent, Callback)} method
      */
     //private
-    AutoPtr<RecognitionServiceCallback> mCurrentCallback;// = NULL;
-
-    //private
-    static const Int32 MSG_START_LISTENING;// = 1;
-
-    //private
-    static const Int32 MSG_STOP_LISTENING;// = 2;
-
-    //private
-    static const Int32 MSG_CANCEL;// = 3;
-
-    //private
-    static const Int32 MSG_RESET;// = 4;
-
-    //private final
-    AutoPtr<IHandler>  mHandler;// = new RecognitionServiceHandler(this);
+    AutoPtr<RecognitionServiceCallback> mCurrentCallback;
 };
 
 } // namespace Speech

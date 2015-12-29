@@ -1,12 +1,11 @@
-#ifndef __ELASTOS_DROID_SPEECH_TTS_EventLogger_H__
-#define __ELASTOS_DROID_SPEECH_TTS_EventLogger_H__
+#ifndef __ELASTOS_DROID_SPEECH_TTS_EventLoggerV1_H__
+#define __ELASTOS_DROID_SPEECH_TTS_EventLoggerV1_H__
 
 /**
  * AbstractEventLogger.java
  * EventLoggerV1.java
  */
 
-#include "Elastos.Droid.Core_server.h"
 #include "elastos/droid/speech/tts/AbstractEventLogger.h"
 
 namespace Elastos {
@@ -61,4 +60,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_SPEECH_TTS_EventLogger_H__
+#endif // __ELASTOS_DROID_SPEECH_TTS_EventLoggerV1_H__

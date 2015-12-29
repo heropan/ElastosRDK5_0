@@ -1,4 +1,5 @@
 #include "elastos/droid/speech/tts/AbstractSynthesisCallback.h"
+#include "elastos/droid/speech/tts/TextToSpeech.h"
 
 namespace Elastos {
 namespace Droid {
@@ -9,7 +10,7 @@ namespace Tts {
  * AbstractSynthesisCallback
  *******************************************************************************************************/
 
-CAR_OBJECT_IMPL(AbstractSynthesisCallback, Object, ISynthesisCallback);
+CAR_INTERFACE_IMPL(AbstractSynthesisCallback, Object, ISynthesisCallback);
 
 AbstractSynthesisCallback::AbstractSynthesisCallback()
 {}
@@ -31,9 +32,9 @@ ECode AbstractSynthesisCallback::constructor(
 }
 
 ECode AbstractSynthesisCallback::ErrorCodeOnStop(
-    /* [out] */ Int32* ret);
+    /* [out] */ Int32* ret)
 {
-    *ret = mClientIsUsingV2 ? TextToSpeech.STOPPED : TextToSpeech.ERROR;
+    *ret = mClientIsUsingV2 ? TextToSpeech::STOPPED : TextToSpeech::TTS_ERROR;
 
     return NOERROR;
 }

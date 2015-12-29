@@ -1,5 +1,6 @@
 #include "elastos/droid/speech/tts/UtteranceProgressListener.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/AutoLock.h>
 
 namespace Elastos {
 namespace Droid {
@@ -10,7 +11,7 @@ namespace Tts {
  * UtteranceProgressListener::UtteranceProgressListenerStand
  *******************************************************************************************************/
 
-CAR_OBJECT_IMPL(UtteranceProgressListener::UtteranceProgressListenerStand);
+CAR_INTERFACE_IMPL(UtteranceProgressListener::UtteranceProgressListenerStand, Object,IUtteranceProgressListener);
 
 UtteranceProgressListener::UtteranceProgressListenerStand::UtteranceProgressListenerStand()
 {}
@@ -22,7 +23,6 @@ ECode UtteranceProgressListener::UtteranceProgressListenerStand::constructor()
 {
     return NOERROR;
 }
-
 
 ECode UtteranceProgressListener::UtteranceProgressListenerStand::constructor(
     /* [in] */ ITextToSpeechOnUtteranceCompletedListener* listener)
@@ -67,10 +67,25 @@ ECode UtteranceProgressListener::UtteranceProgressListenerStand::OnStart(
  * UtteranceProgressListener
  *******************************************************************************************************/
 
+CAR_INTERFACE_IMPL(UtteranceProgressListener, Object,IUtteranceProgressListener);
+
+UtteranceProgressListener::UtteranceProgressListener()
+{}
+
+UtteranceProgressListener::~UtteranceProgressListener()
+{}
+
+ECode UtteranceProgressListener::constructor()
+{
+    return NOERROR;
+}
+
 AutoPtr<IUtteranceProgressListener> UtteranceProgressListener::From(
     /* [in] */ ITextToSpeechOnUtteranceCompletedListener* listener)
 {
-    AutoPtr<IUtteranceProgressListener> ret = new UtteranceProgressListenerStand(listener);
+    UtteranceProgressListenerStand *upls = new UtteranceProgressListenerStand();
+    AutoPtr<IUtteranceProgressListener> ret = upls;
+    upls->constructor(listener);
     return ret;
 }
 

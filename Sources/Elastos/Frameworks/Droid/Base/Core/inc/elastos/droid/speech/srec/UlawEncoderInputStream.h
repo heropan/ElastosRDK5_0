@@ -1,10 +1,14 @@
 #ifndef __ELASTOS_DROID_SPEECH_SREC_UlawEncoderInputStream_H__
 #define __ELASTOS_DROID_SPEECH_SREC_UlawEncoderInputStream_H__
 
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
 #include <elastos/io/InputStream.h>
+#include "Elastos.Droid.Speech.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::InputStream;
+using Elastos::Droid::Speech::Srec::IUlawEncoderInputStream;
 
 namespace Elastos {
 namespace Droid {
@@ -34,8 +38,15 @@ public:
 
     virtual ~UlawEncoderInputStream();
 
+    CARAPI constructor();
+
+    /**
+     * Create an InputStream which takes 16 bit pcm data and produces ulaw data.
+     * @param in InputStream containing 16 bit pcm data.
+     * @param max pcm value corresponding to maximum ulaw value.
+     */
     CARAPI constructor(
-        /* [in]  */ IInputStream* in,
+        /* [in]  */ IInputStream* ins,
         /* [in]  */ Int32 max);
 
     static CARAPI Encode(
@@ -76,13 +87,6 @@ public:
     CARAPI Read(
         /* [out] */ Int32* value);
 
-    //@Override
-    CARAPI Close();
-
-    //@Override
-    CARAPI Available(
-        /* [out] */ Int32* number);// throws IOException
-
     CARAPI Close();
 
     CARAPI Available(
@@ -94,31 +98,11 @@ public:
     CARAPI IsMarkSupported(
         /* [out] */ Boolean* supported);
 
-    CARAPI Read(
-        /* [out] */ Int32* value);
-
-    CARAPI ReadBytes(
-        /* [out] */ ArrayOf<Byte>* buffer,
-        /* [out] */ Int32* number);
-
-    CARAPI ReadBytes(
-        /* [out] */ ArrayOf<Byte>* buffer,
-        /* [in]  */ Int32 offset,
-        /* [in]  */ Int32 length,
-        /* [out] */ Int32* number);
-
     CARAPI Reset();
 
     CARAPI Skip(
         /* [in]  */ Int64 byteCount,
         /* [out] */ Int64* number);
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in]  */ REIID riid);
-
-    CARAPI constructor(
-        /* [in]  */ IInputStream* in,
-        /* [in]  */ Int32 max);
 
     CARAPI GetLock(
         /* [out] */ IInterface** lockobj);
@@ -131,7 +115,7 @@ private:
 
     AutoPtr<IInputStream> mIn;
 
-    Int32 mMax;// = 0;
+    Int32 mMax;
 
     AutoPtr< ArrayOf<Byte> > mBuf;  // = ArrayOf<Byte>::Alloc(1024);
     Int32 mBufCount;                // = 0; // should be 0 or 1

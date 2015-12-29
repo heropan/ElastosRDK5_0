@@ -4,6 +4,7 @@
 #include <elastos/io/InputStream.h>
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/core/Object.h"
+#include "Elastos.Droid.Speech.h"
 
 using Elastos::Utility::ILocale;
 using Elastos::IO::IInputStream;
@@ -115,12 +116,12 @@ public:
          */
         CARAPI constructor(
             /* [in] */ const String& g2gFileName,
-            /* [in] */ IRecognizer* r);// throws IOException
+            /* [in] */ IRecognizer* r);
 
         /**
          * Reset all slots.
          */
-        CARAPI_(void) ResetAllSlots();
+        CARAPI ResetAllSlots();
 
         /**
          * Add a word to a slot.
@@ -131,7 +132,7 @@ public:
          * @param weight weight to give the word.  One is normal, 50 is low.
          * @param tag semantic meaning tag string.
          */
-        CARAPI_(void) AddWordToSlot(
+        CARAPI AddWordToSlot(
             /* [in] */ const String& slot,
             /* [in] */ const String& word,
             /* [in] */ const String& pron,
@@ -141,12 +142,12 @@ public:
         /**
          * Compile all slots.
          */
-        CARAPI_(void) Compile();
+        CARAPI Compile();
 
         /**
          * Setup <code>Grammar</code> with <code>Recognizer</code>.
          */
-        CARAPI_(void) SetupRecognizer();
+        CARAPI SetupRecognizer();
 
         /**
          * Save <code>Grammar</code> to g2g file.
@@ -154,13 +155,13 @@ public:
          * @param g2gFileName
          * @throws IOException
          */
-        CARAPI_(void) Save(
-            /* [in] */ const String& g2gFileName);// throws IOException
+        CARAPI Save(
+            /* [in] */ const String& g2gFileName);
 
         /**
          * Release resources associated with this <code>Grammar</code>.
          */
-        CARAPI_(void) Destroy();
+        CARAPI Destroy();
 
     protected:
         /**
@@ -169,7 +170,7 @@ public:
         CARAPI_(void) Finalize();
 
     private:
-        Int32 mGrammar;// = 0;
+        Int32 mGrammar;
         Recognizer* mR;
     };
     friend class RecognizerGrammar;
@@ -207,8 +208,9 @@ public:
      * or null for default, currently <code>Locale.US</code>.
      * @return Pathname of the configuration directory.
      */
-    static CARAPI_(String) GetConfigDir(
-        /* [in] */ ILocale* locale);
+    static CARAPI GetConfigDir(
+        /* [in] */ ILocale* locale,
+        /* [out] */ String* ret);
 
 
     /**
@@ -235,7 +237,8 @@ public:
      * <li><code>EVENT_MAX_SPEECH</code>
      * </ul>
      */
-    CARAPI_(Int32) Advance();
+    CARAPI Advance(
+        /* [out] */ Int32* ret);
 
     /**
      * Put audio samples into the <code>Recognizer</code>.
@@ -245,19 +248,21 @@ public:
      * @param isLast indicates no more audio data, normally false.
      * @return number of bytes accepted.
      */
-    CARAPI_(Int32) PutAudio(
+    CARAPI PutAudio(
         /* [in] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
-        /* [in] */ Boolean isLast);
+        /* [in] */ Boolean isLast,
+        /* [out] */ Int32* ret);
 
     /**
      * Read audio samples from an <code>InputStream</code> and put them in the
      * <code>Recognizer</code>.
      * @param audio <code>InputStream</code> containing PCM audio samples.
      */
-    CARAPI_(void) PutAudio(
-        /* [in] */ IInputStream* audio);// throws IOException
+    CARAPI PutAudio(
+        /* [in] */ IInputStream* audio,
+        /* [out] */ Int32* ret);
 
     /**
      * Get the number of recognition results.  Must be called after
@@ -266,7 +271,8 @@ public:
      *
      * @return number of results in nbest list.
      */
-    CARAPI_(Int32) GetResultCount();
+    CARAPI GetResultCount(
+        /* [out] */ Int32* ret);
 
     /**
      * Get a set of keys for the result.  Must be called after
@@ -276,8 +282,9 @@ public:
      * @param index index of result.
      * @return array of keys.
      */
-    CARAPI_(AutoPtr< ArrayOf<String> >) GetResultKeys(
-        /* [in] */ Int32 index);
+    CARAPI GetResultKeys(
+        /* [in] */ Int32 index,
+        /* [out] */ ArrayOf<String>** ret);
 
     /**
      * Get a result value.  Must be called after
@@ -292,9 +299,10 @@ public:
      * <code>Grammar.addWordToSlot</code>.
      * @return the result.
      */
-    CARAPI_(String) GetResult(
+    CARAPI GetResult(
         /* [in] */ Int32 index,
-        /* [in] */ const String& key);
+        /* [in] */ const String& key,
+        /* [out] */ String* ret);
 
     /**
      * Stop the <code>Recognizer</code>.
@@ -323,7 +331,8 @@ public:
      *
      * @hide
      */
-    CARAPI_(String) GetAcousticState();
+    CARAPI GetAcousticState(
+        /* [out] */ String* ret);
 
     /**
      * Clean up resources.
@@ -339,11 +348,9 @@ public:
      * @param event
      * @return String representing the event.
      */
-    static CARAPI_(String) EventToString(
-        /* [in] */ Int32 event);
-
-protected:
-    Recognizer();
+    static CARAPI EventToString(
+        /* [in] */ Int32 event,
+        /* [out] */ String* ret);
 
 protected:
     /**
@@ -431,7 +438,7 @@ private:
     static CARAPI_(void) SR_RecognizerStop(
         /* [in] */ Int64 recognizer);
     //native
-    static CARAPI_(Int32) SR_RecognizerCreate();
+    static CARAPI_(Int64) SR_RecognizerCreate();
     //native
     static CARAPI_(void) SR_RecognizerDestroy(
         /* [in] */ Int64 recognizer);

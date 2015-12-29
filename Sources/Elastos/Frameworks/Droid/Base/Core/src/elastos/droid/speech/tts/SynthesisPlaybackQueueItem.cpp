@@ -1,7 +1,9 @@
 #include "elastos/droid/speech/tts/SynthesisPlaybackQueueItem.h"
 #include <elastos/utility/logging/Logger.h>
+#include "elastos/droid/speech/tts/BlockingAudioTrack.h"
 
 using Elastos::Utility::Logging::Logger;
+using Elastos::Core::EIID_IRunnable;
 
 namespace Elastos {
 namespace Droid {
@@ -16,40 +18,58 @@ SynthesisPlaybackQueueItem::ListEntry::ListEntry(
 }
 
 /******************************SynthesisPlaybackQueueItem*************************/
-const CString SynthesisPlaybackQueueItem::TAG = "TTS.SynthQueueItem";
+const String SynthesisPlaybackQueueItem::TAG("TTS.SynthQueueItem");
 const Boolean SynthesisPlaybackQueueItem::DBG = FALSE;
 
 const Int64 SynthesisPlaybackQueueItem::MAX_UNCONSUMED_AUDIO_MS = 500;
 
+CAR_INTERFACE_IMPL(SynthesisPlaybackQueueItem, Object, IRunnable);
 
-SynthesisPlaybackQueueItem::SynthesisPlaybackQueueItem(
-    /* [in] */ Int32 streamType,
+SynthesisPlaybackQueueItem::SynthesisPlaybackQueueItem()
+{}
+
+SynthesisPlaybackQueueItem::~SynthesisPlaybackQueueItem()
+{}
+
+ECode SynthesisPlaybackQueueItem::constructor()
+{
+    return NOERROR;
+}
+
+ECode SynthesisPlaybackQueueItem::constructor(
+    /* [in] */ AudioOutputParams* audioParams,
     /* [in] */ Int32 sampleRate,
     /* [in] */ Int32 audioFormat,
     /* [in] */ Int32 channelCount,
-    /* [in] */ Float volume,
-    /* [in] */ Float pan,
-    /* [in] */ ITextToSpeechServiceUtteranceProgressDispatcher* dispatcher,
+    /* [in] */ IUtteranceProgressDispatcher* dispatcher,
     /* [in] */ IInterface* callerIdentity,
-    /* [in] */ EventLogger* logger):PlaybackQueueItem(dispatcher, callerIdentity)
+    /* [in] */ AbstractEventLogger* logger)
+
 {
     mUnconsumedBytes = 0;
 
     mStopped = FALSE;
     mDone = FALSE;
-    mIsError = FALSE;
+    mStatusCode = ITextToSpeech::TTS_SUCCESS;
 
-    mAudioTrack = new BlockingAudioTrack(streamType, sampleRate, audioFormat, channelCount, volume, pan);
+    mAudioTrack = new BlockingAudioTrack();
+    mAudioTrack->constructor(audioParams, sampleRate, audioFormat, channelCount);
     mLogger = logger;
+
+    PlaybackQueueItem::constructor(dispatcher, callerIdentity);
+
+    return NOERROR;
 }
 
 ECode SynthesisPlaybackQueueItem::Run()
 {
-    const AutoPtr<ITextToSpeechServiceUtteranceProgressDispatcher> dispatcher = GetDispatcher();
+    const AutoPtr<IUtteranceProgressDispatcher> dispatcher = GetDispatcher();
     dispatcher->DispatchOnStart();
 
-    if (!mAudioTrack->Init()) {
-        dispatcher->DispatchOnError();
+    Boolean b;
+    mAudioTrack->Init(&b);
+    if (!b) {
+        dispatcher->DispatchOnError(ITextToSpeech::ERROR_OUTPUT);
         return NOERROR;
     }
 
@@ -63,7 +83,8 @@ ECode SynthesisPlaybackQueueItem::Run()
         // OR (b) stop() is called in which case it will return null.
         // OR (c) done() is called in which case it will return null.
         while ( (buffer = Take(), buffer) != NULL) {
-            mAudioTrack->Write(buffer);
+            Int32 i;
+            mAudioTrack->Write(buffer, &i);
             mLogger->OnAudioDataWritten();
         }
 
@@ -78,19 +99,23 @@ ECode SynthesisPlaybackQueueItem::Run()
 
     mAudioTrack->WaitAndRelease();
 
-    if (mIsError) {
-        dispatcher->DispatchOnError();
+    if (mStatusCode == ITextToSpeech::TTS_SUCCESS) {
+        dispatcher->DispatchOnSuccess();
+    } else if(mStatusCode == ITextToSpeech::STOPPED) {
+        dispatcher->DispatchOnStop();
     } else {
-        dispatcher->DispatchOnDone();
+        dispatcher->DispatchOnError(mStatusCode);
     }
 
-    mLogger->OnWriteData();
+    mLogger->OnCompleted(mStatusCode);
+
     return NOERROR;
 }
 
 ECode SynthesisPlaybackQueueItem::Stop(
-    /* [in] */ Boolean isError)
+    /* [in] */ Int32 errorCode)
 {
+#if 0
     //try {
         //Java:    mListLock.lock();
         {
@@ -114,6 +139,7 @@ ECode SynthesisPlaybackQueueItem::Stop(
     //} finally {
         //Java:    mListLock.unlock();
     //}
+#endif
 
     // Stop the underlying audio track. This will stop sending
     // data to the mixer and discard any pending buffers that the
@@ -124,6 +150,7 @@ ECode SynthesisPlaybackQueueItem::Stop(
 
 void SynthesisPlaybackQueueItem::Done()
 {
+#if 0
     //try {
         //mListLock.lock();
         AutoLock lock(mListLock);
@@ -145,11 +172,13 @@ void SynthesisPlaybackQueueItem::Done()
     //} finally {
         //mListLock.unlock();
     //}
+#endif
 }
 
 void SynthesisPlaybackQueueItem::Put(
     /* [in] */ ArrayOf<Byte>* buffer)// throws InterruptedException
 {
+    #if 0
     //try {
         //Java:    mListLock.lock();
         AutoLock lock(mListLock);
@@ -176,10 +205,12 @@ void SynthesisPlaybackQueueItem::Put(
     //} finally {
         //Java:    mListLock.unlock();
     //}
+#endif
 }
 
 AutoPtr< ArrayOf<Byte> > SynthesisPlaybackQueueItem::Take()
 {
+#if 0
     //try {
         //Java:    mListLock.lock();
         AutoLock lock(mListLock);
@@ -216,6 +247,8 @@ AutoPtr< ArrayOf<Byte> > SynthesisPlaybackQueueItem::Take()
     //} finally {
         //Java:    mListLock.unlock();
     //}
+#endif
+    return NULL;
 }
 
 } // namespace Tts

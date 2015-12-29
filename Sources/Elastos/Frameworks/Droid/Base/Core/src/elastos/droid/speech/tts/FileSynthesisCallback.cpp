@@ -1,8 +1,12 @@
+#include "elastos/droid/speech/tts/TextToSpeech.h"
 #include "elastos/droid/speech/tts/FileSynthesisCallback.h"
 #include "elastos/droid/os/FileUtils.h"
-#include "Elastos.Droid.Core_server.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/AutoLock.h>
+#include "Elastos.Droid.Speech.h"
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.CoreLibrary.Libcore.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::IO::CRandomAccessFile;
@@ -11,7 +15,8 @@ using Elastos::IO::IByteBufferHelper;
 using Elastos::IO::CByteBufferHelper;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::FileUtils;
-
+using Elastos::IO::IBuffer;
+using Elastos::IO::Channels::IFileChannel;
 
 namespace Elastos {
 namespace Droid {
@@ -34,14 +39,16 @@ FileSynthesisCallback::FileSynthesisCallback()
 FileSynthesisCallback::~FileSynthesisCallback()
 {}
 
-FileSynthesisCallback::constructor()
-{}
+ECode FileSynthesisCallback::constructor()
+{
+    return NOERROR;
+}
 
-FileSynthesisCallback::constructor(
-    /* [in] */ IFileChannel fileChannel,
-    /* [in] */ UtteranceProgressDispatcher dispatcher,
-    /* [in] */ IInterface callerIdentity,
-    /* [in] */ Boolean clientIsUsingV2);
+ECode FileSynthesisCallback::constructor(
+    /* [in] */ IFileChannel* fileChannel,
+    /* [in] */ IUtteranceProgressDispatcher* dispatcher,
+    /* [in] */ IInterface* callerIdentity,
+    /* [in] */ Boolean clientIsUsingV2)
 {
     mFileChannel = fileChannel;
     mSampleRateInHz = 0;
@@ -49,6 +56,8 @@ FileSynthesisCallback::constructor(
     mChannelCount = 0;
     mStarted = FALSE;
     mDone = FALSE;
+
+    return NOERROR;
 }
 
 ECode FileSynthesisCallback::Stop()
@@ -78,47 +87,10 @@ ECode FileSynthesisCallback::CleanUp()
     return NOERROR;
 }
 
-/**
- * Must be called while holding the monitor on {@link #mStateLock}.
- */
-void FileSynthesisCallback::CloseFile() {
+void FileSynthesisCallback::CloseFile()
+{
     // File will be closed by the SpeechItem in the speech service.
     mFileChannel = NULL;
-}
-
-void FileSynthesisCallback::CloseFileAndWidenPermissions()
-{
-    //try {
-        if (mFile != NULL) {
-            mFile->Close();
-            mFile = NULL;
-        }
-    //} catch (IOException ex) {
-        //Java:    Log.e(TAG, "Failed to close " + mFileName + ": " + ex);
-        /*
-        String strPath;
-        mFileName->GetAbsolutePath(&strPath);
-        Logger::E(TAG, String("Failed to close ") + strPath + String("\n"));
-        */
-    //}
-
-    //try {
-        // Make the written file readable and writeable by everyone.
-        // This allows the app that requested synthesis to read the file.
-        //
-        // Note that the directory this file was written must have already
-        // been world writeable in order it to have been
-        // written to in the first place.
-        String absolutePath;
-        FileUtils::SetPermissions((mFileName->GetAbsolutePath(&absolutePath), absolutePath), 0666, -1, -1); //-rw-rw-rw
-    //} catch (SecurityException se) {
-        //Java:    Log.e(TAG, "Security exception setting rw permissions on : " + mFileName);
-        /*
-        String strPath;
-        mFileName->GetAbsolutePath(&strPath);
-        Logger::E(TAG, String("Security exception setting rw permissions on : ") + strPath + String("\n"));
-        */
-    //}
 }
 
 Boolean FileSynthesisCallback::MaybeCleanupExistingFile(
@@ -140,14 +112,11 @@ Boolean FileSynthesisCallback::MaybeCleanupExistingFile(
     return TRUE;
 }
 
-Int32 FileSynthesisCallback::GetMaxBufferSize()
+ECode FileSynthesisCallback::GetMaxBufferSize(
+    /* [out] */ Int32* ret)
 {
-    return MAX_AUDIO_BUFFER_SIZE;
-}
-
-Boolean FileSynthesisCallback::IsDone()
-{
-    return mDone;
+    *ret = MAX_AUDIO_BUFFER_SIZE;
+    return NOERROR;
 }
 
 ECode FileSynthesisCallback::Start(
@@ -158,22 +127,23 @@ ECode FileSynthesisCallback::Start(
 {
     if (DBG) {
         //Java:    Log.d(TAG, "FileSynthesisRequest.start(" + sampleRateInHz + "," + audioFormat + "," + channelCount + ")");
-        String strOut = String("FileSynthesisRequest.start(")+StringUtils::Int32ToString(sampleRateInHz)+String(",")+StringUtils::Int32ToString(audioFormat)+String(",")+StringUtils::Int32ToString(channelCount)+String(")\n");
-        Logger::D(TAG, strOut);
+        Logger::D(TAG, "FileSynthesisRequest.start(%d, %d, %d)", sampleRateInHz, audioFormat, channelCount);
     }
 
     AutoPtr<IFileChannel> fileChannel;
 
     synchronized (this) {
         if (mStatusCode == ITextToSpeech::STOPPED) {
-            if (DBG)
+            if (DBG) {
                 Logger::D(TAG, "Request has been aborted.");
-            *ret = ErrorCodeOnStop();
+            }
+            ErrorCodeOnStop(ret);
             return NOERROR;
         }
         if (mStatusCode != ITextToSpeech::TTS_SUCCESS) {
-            if (DBG)
+            if (DBG) {
                 Logger::D(TAG, "Error was raised");
+            }
             *ret = TextToSpeech::TTS_ERROR;
             return NOERROR;
         }
@@ -193,10 +163,15 @@ ECode FileSynthesisCallback::Start(
         fileChannel = mFileChannel;
     }
 
-    ECode ec = fileChannel->Write(ByteBuffer->Allocate(WAV_HEADER_LENGTH));
+    Int32 i;
+    AutoPtr<IByteBufferHelper> bbHelper;
+    AutoPtr<IByteBuffer> mBytes;
+    CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&bbHelper);
+    bbHelper->Allocate(WAV_HEADER_LENGTH, (IByteBuffer**)&mBytes);
+    ECode ec = fileChannel->Write(mBytes, &i);
 
     if (FAILED(ec)) {
-        Logger::E(TAG, "Failed to write wav header to output file descriptor", ex);
+        Logger::E(TAG, "Failed to write wav header to output file descriptor");
         synchronized (this) {
             CleanUp();
             mStatusCode = ITextToSpeech::ERROR_OUTPUT;
@@ -205,7 +180,7 @@ ECode FileSynthesisCallback::Start(
         return NOERROR;
     }
 
-    Logger::E(TAG, "Failed to write wav header to output file descriptor", ex);
+    Logger::E(TAG, "Failed to write wav header to output file descriptor");
     synchronized (this) {
         CleanUp();
         mStatusCode = ITextToSpeech::ERROR_OUTPUT;
@@ -225,23 +200,27 @@ ECode FileSynthesisCallback::AudioAvailable(
         Logger::D(TAG, "FileSynthesisRequest.audioAvailable\n");
     }
 
+    AutoPtr<IFileChannel> fileChannel;
+
     synchronized (this) {
         if (mStatusCode == ITextToSpeech::STOPPED) {
-            if (DBG)
+            if (DBG) {
                 Logger::D(TAG, "Request has been aborted.");
-            *ret = ErrorCodeOnStop();
+            }
+            ErrorCodeOnStop(ret);
             return NOERROR;
         }
-        if (mStatusCode != ITextToSpeech::SUCCESS) {
-            if (DBG)
+        if (mStatusCode != ITextToSpeech::TTS_SUCCESS) {
+            if (DBG) {
                 Logger::D(TAG, "Error was raised");
-            *ret = TextToSpeech.TTS_ERROR;
+            }
+            *ret = ITextToSpeech::TTS_ERROR;
             return NOERROR;
         }
-        if (mFileChannel == null) {
+        if (mFileChannel == NULL) {
             Logger::E(TAG, "File not open");
             mStatusCode = ITextToSpeech::ERROR_OUTPUT;
-            *ret = ITextToSpeech::ERROR;
+            *ret = ITextToSpeech::TTS_ERROR;
             return NOERROR;
         }
         if (!mStarted) {
@@ -252,7 +231,12 @@ ECode FileSynthesisCallback::AudioAvailable(
         fileChannel = mFileChannel;
     }
 
-    ECode ec = fileChannel->Write(ByteBuffer->Wrap(buffer,  offset,  length));
+    Int32 i;
+    AutoPtr<IByteBufferHelper> bbHelper;
+    AutoPtr<IByteBuffer> mBytes;
+    CByteBufferHelper::AcquireSingleton((IByteBufferHelper**)&bbHelper);
+    bbHelper->Wrap(buffer, offset, length, (IByteBuffer**)&mBytes);
+    ECode ec = fileChannel->Write(mBytes, &i);
 
     if (FAILED(ec)) {
         Logger::E(TAG, "Failed to write to output file descriptor");
@@ -268,8 +252,8 @@ ECode FileSynthesisCallback::AudioAvailable(
     return NOERROR;
 }
 
-ECode FileSynthesisCallback::Done()
-        /* [out] */ Int32* ret);
+ECode FileSynthesisCallback::Done(
+    /* [out] */ Int32* ret)
 {
     if (DBG){
         //Java:    Log.d(TAG, "FileSynthesisRequest.done()");
@@ -296,8 +280,10 @@ ECode FileSynthesisCallback::Done()
 
 
         if (mStatusCode == ITextToSpeech::STOPPED) {
-            if (DBG) Log.d(TAG, "Request has been aborted.");
-            *ret = ErrorCodeOnStop();
+            if (DBG) {
+                Logger::D(TAG, "Request has been aborted.");
+            }
+            ErrorCodeOnStop(ret);
             return NOERROR;
         }
         if (mDispatcher != NULL && mStatusCode != ITextToSpeech::TTS_SUCCESS &&
@@ -306,7 +292,7 @@ ECode FileSynthesisCallback::Done()
             *ret = ITextToSpeech::TTS_ERROR;
             return NOERROR;
         }
-        if (mFileChannel == null) {
+        if (mFileChannel == NULL) {
             Logger::E(TAG, "File not open");
             *ret = ITextToSpeech::TTS_ERROR;
             return NOERROR;
@@ -326,13 +312,13 @@ ECode FileSynthesisCallback::Done()
     fileChannel->SetPosition(0);
     fileChannel->GetSize(&size);
 
-    int dataLength = (int) (size - WAV_HEADER_LENGTH);
+    Int32 dataLength = (Int32) (size - WAV_HEADER_LENGTH);
     fileChannel->Write(MakeWavHeader(sampleRateInHz, audioFormat, channelCount, dataLength), &number);
 
     synchronized (mStateLock) {
         CloseFile();
-        if (mDispatcher != null) {
-            mDispatcher->ispatchOnSuccess();
+        if (mDispatcher != NULL) {
+            mDispatcher->DispatchOnSuccess();
         }
         *ret = TextToSpeech::TTS_SUCCESS;
         return NOERROR;
@@ -353,7 +339,7 @@ ECode FileSynthesisCallback::Done()
 
 ECode FileSynthesisCallback::Error()
 {
-    return error(ITextToSpeech.ERROR_SYNTHESIS);
+    return Error(ITextToSpeech::ERROR_SYNTHESIS);
 }
 
 ECode FileSynthesisCallback::Error(
@@ -371,16 +357,16 @@ ECode FileSynthesisCallback::Error(
     return NOERROR;
 }
 
-ECode HasStarted(
+ECode FileSynthesisCallback::HasStarted(
     /* [out] */ Boolean* started)
 {
-    synchronized (mStateLock) {
-        *started = mStarted;
-    }
+    AutoLock lock(mStateLock);
+    *started = mStarted;
+
     return NOERROR;
 }
 
-ECode HasFinished(
+ECode FileSynthesisCallback::HasFinished(
     /* [out] */ Boolean* finished)
 {
     synchronized (mStateLock) {
@@ -416,7 +402,7 @@ AutoPtr<IByteBuffer> FileSynthesisCallback::MakeWavHeader(
     //Java:    header.put(new byte[]{ 'R', 'I', 'F', 'F' });
     AutoPtr< ArrayOf<Byte> > riff = ArrayOf<Byte>::Alloc(4);
     (*riff)[0] = 'R';    (*riff)[1] = 'I';    (*riff)[2] = 'F';    (*riff)[3] = 'F';
-    header->PutBytes(*riff);
+    header->Put((ArrayOf<Byte>*)riff);
 
     //Java:    header.putInt(dataLength + WAV_HEADER_LENGTH - 8);  // RIFF chunk size
     header->PutInt32(dataLength + WAV_HEADER_LENGTH - 8);
@@ -424,12 +410,12 @@ AutoPtr<IByteBuffer> FileSynthesisCallback::MakeWavHeader(
     //Java:    header.put(new byte[]{ 'W', 'A', 'V', 'E' });
     AutoPtr< ArrayOf<Byte> > wave = ArrayOf<Byte>::Alloc(4);
     (*wave)[0] = 'W';    (*wave)[1] = 'A';    (*wave)[2] = 'V';    (*wave)[3] = 'E';
-    header->PutBytes(*wave);
+    header->Put((ArrayOf<Byte>*)wave);
 
     //Java:    header.put(new byte[]{ 'f', 'm', 't', ' ' });
     AutoPtr< ArrayOf<Byte> > fmt = ArrayOf<Byte>::Alloc(4);
     (*fmt)[0] = 'f';    (*fmt)[1] = 'm';    (*fmt)[2] = 't';    (*fmt)[3] = ' ';
-    header->PutBytes(*fmt);
+    header->Put((ArrayOf<Byte>*)fmt);
 
     //Java:    header.putInt(16);  // size of fmt chunk
     header->PutInt32(16);
@@ -449,12 +435,12 @@ AutoPtr<IByteBuffer> FileSynthesisCallback::MakeWavHeader(
     //Java:    header.put(new byte[]{ 'd', 'a', 't', 'a' });
     AutoPtr< ArrayOf<Byte> > data = ArrayOf<Byte>::Alloc(4);
     (*data)[0] = 'd';    (*data)[1] = 'a';    (*data)[2] = 't';    (*data)[3] = 'a';
-    header->PutBytes(*data);
+    header->Put((ArrayOf<Byte>*)data);
 
     //Java:    header.putInt(dataLength);
     header->PutInt32(dataLength);
 
-    header->Flip();
+    IBuffer::Probe(header)->Flip();
 
     return header;
 }

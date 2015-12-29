@@ -3,20 +3,28 @@
 #include <elastos/utility/logging/Logger.h>
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/StringUtils.h>
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Net.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::Speech::Tts::ITextToSpeechServiceUtteranceProgressDispatcher;
+using Elastos::Droid::Speech::Tts::IUtteranceProgressDispatcher;
 using Elastos::Droid::Media::IMetadata;
-using Elastos::Droid::Media::CMediaPlayer;
-using Elastos::Droid::Media::IAudioManager;
+//using Elastos::Droid::Media::CMediaPlayer;
+//using Elastos::Droid::Media::IAudioManager;
 using Elastos::Droid::Media::IMediaPlayerOnPreparedListener;
 using Elastos::Droid::Media::IMediaPlayerOnCompletionListener;
 using Elastos::Droid::Media::IMediaPlayerOnErrorListener;
 using Elastos::Droid::Media::IMediaPlayerOnInfoListener;
 using Elastos::Droid::Media::IMediaPlayerOnVideoSizeChangedListener;
 using Elastos::Droid::Media::IMediaPlayerOnBufferingUpdateListener;
+using Elastos::Droid::Media::EIID_IMediaPlayerOnPreparedListener;
+using Elastos::Droid::Media::EIID_IMediaPlayerOnCompletionListener;
+using Elastos::Droid::Media::EIID_IMediaPlayerOnErrorListener;
+using Elastos::Droid::Media::EIID_IMediaPlayerOnInfoListener;
+using Elastos::Droid::Media::EIID_IMediaPlayerOnVideoSizeChangedListener;
+using Elastos::Droid::Media::EIID_IMediaPlayerOnBufferingUpdateListener;
 
 namespace Elastos {
 namespace Droid {
@@ -27,7 +35,7 @@ namespace Tts {
  * AudioPlaybackQueueItem::MediaPlayerOnErrorListener
  *******************************************************************************************************/
 
-CAR_OBJECT_IMPL(AudioPlaybackQueueItem::MediaPlayerOnErrorListener, Object, IMediaPlayerOnErrorListener);
+//CAR_INTERFACE_IMPL(AudioPlaybackQueueItem::MediaPlayerOnErrorListener, Object, IMediaPlayerOnErrorListener);
 
 AudioPlaybackQueueItem::MediaPlayerOnErrorListener::MediaPlayerOnErrorListener()
 {}
@@ -65,12 +73,24 @@ ECode AudioPlaybackQueueItem::MediaPlayerOnErrorListener::OnError(
  * AudioPlaybackQueueItem::MediaPlayerOnCompletionListener
  *******************************************************************************************************/
 
-CAR_INTERFACE_IMPL(AudioPlaybackQueueItem::MediaPlayerOnCompletionListener, Object, IMediaPlayerOnCompletionListener);
+//CAR_INTERFACE_IMPL(AudioPlaybackQueueItem::MediaPlayerOnCompletionListener, Object, IMediaPlayerOnCompletionListener);
 
-AudioPlaybackQueueItem::MediaPlayerOnCompletionListener::MediaPlayerOnCompletionListener(
+AudioPlaybackQueueItem::MediaPlayerOnCompletionListener::MediaPlayerOnCompletionListener()
+{}
+
+AudioPlaybackQueueItem::MediaPlayerOnCompletionListener::~MediaPlayerOnCompletionListener()
+{}
+
+AudioPlaybackQueueItem::MediaPlayerOnCompletionListener::constructor()
+{
+    return NOERROR;
+}
+
+AudioPlaybackQueueItem::MediaPlayerOnCompletionListener::constructor(
     /* [in] */ AudioPlaybackQueueItem* apqi)
 {
     mApqi = apqi;
+    return NOERROR;
 }
 
 ECode AudioPlaybackQueueItem::MediaPlayerOnCompletionListener::OnCompletion(
@@ -102,12 +122,11 @@ ECode AudioPlaybackQueueItem::constructor()
 }
 
 ECode AudioPlaybackQueueItem::constructor(
-    /* [in] */ ITextToSpeechServiceUtteranceProgressDispatcher* dispatcher,
+    /* [in] */ IUtteranceProgressDispatcher* dispatcher,
     /* [in] */ IInterface* callerIdentity,
     /* [in] */ IContext* context,
     /* [in] */ IUri* uri,
     /* [in] */ AudioOutputParams *audioParams)
-    : PlaybackQueueItem(dispatcher, callerIdentity)
 {
     mContext = context;
     mUri = uri;
@@ -116,13 +135,14 @@ ECode AudioPlaybackQueueItem::constructor(
 //    CConditionVariable::New((IConditionVariable**)&mDone);
 //    mPlayer = NULL;
     mFinished = FALSE;
+    PlaybackQueueItem::constructor(dispatcher, callerIdentity);
 
     return NOERROR;
 }
 
 ECode AudioPlaybackQueueItem::Run()
 {
-    AutoPtr<ITextToSpeechServiceUtteranceProgressDispatcher> dispatcher = GetDispatcher();
+    AutoPtr<IUtteranceProgressDispatcher> dispatcher = GetDispatcher();
 
     Int32 sessionId = mAudioParams->mSessionId;
 
@@ -135,18 +155,18 @@ ECode AudioPlaybackQueueItem::Run()
         return E_INVALID_PARAMETER_EXCEPTION;
     }
 
-    AutoPtr<MediaPlayerOnErrorListener> mpoer = new MediaPlayerOnErrorListener(this);
+    AutoPtr<MediaPlayerOnErrorListener> mpoer = new MediaPlayerOnErrorListener();
 //        mPlayer->SetOnErrorListener(mpoer);
-    AutoPtr<MediaPlayerOnCompletionListener> mpocl = new MediaPlayerOnCompletionListener(this);
+    AutoPtr<MediaPlayerOnCompletionListener> mpocl = new MediaPlayerOnCompletionListener();
 
     if (mpoer == NULL || mpocl == NULL) {
         Logger::W(TAG, String("MediaPlayer failed\n"));
-        mDone->Open();
+//        mDone->Open();
 
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    SetupVolume(mPlayer, mAudioParams->mVolume, mAudioParams->mPan);
+//    SetupVolume(mPlayer, mAudioParams->mVolume, mAudioParams->mPan);
 //    mPlayer->SetOnCompletionListener(mpocl);
 //    mPlayer->SetAudioStreamType(mStreamType);
 //    mPlayer->Start();
@@ -154,15 +174,15 @@ ECode AudioPlaybackQueueItem::Run()
     Finish();
 
     if (mFinished) {
-        dispatcher->DispatchOnDone();
+        dispatcher->DispatchOnSuccess();
     } else {
-        dispatcher->DispatchOnError();
+        dispatcher->DispatchOnStop();
     }
     return NOERROR;
 }
 
 void AudioPlaybackQueueItem::SetupVolume(
-    /* [in] */ IMediaPlayer *player,
+//    /* [in] */ IMediaPlayer *player,
     /* [in] */ Float volume,
     /* [in] */ Float pan)
 {
@@ -175,7 +195,7 @@ void AudioPlaybackQueueItem::SetupVolume(
     } else if (panning < 0.0f) {
         volRight *= (1.0f + panning);
     }
-    player->SetVolume(volLeft, volRight);
+//    player->SetVolume(volLeft, volRight);
 }
 
 Float AudioPlaybackQueueItem::Clip(

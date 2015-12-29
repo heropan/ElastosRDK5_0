@@ -7,6 +7,7 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/core/Object.h"
+#include "Elastos.Droid.Speech.h"
 
 using Elastos::Droid::Speech::Tts::IAbstractEventLogger;
 
@@ -27,9 +28,11 @@ class AbstractEventLogger
     , public IAbstractEventLogger
 {
 public:
+    CAR_INTERFACE_DECL();
+
     AbstractEventLogger();
 
-    ~AbstractEventLogger()
+    virtual ~AbstractEventLogger();
 
     CARAPI constructor(
         /* [in] */ Int32 callerUid,
@@ -68,7 +71,7 @@ public:
      * All available data is not logged.
      */
     CARAPI OnCompleted(
-        /* [in] */  statusCode);
+        /* [in] */  Int32 statusCode);
 
     // protected abstract void
     CARAPI LogFailure(

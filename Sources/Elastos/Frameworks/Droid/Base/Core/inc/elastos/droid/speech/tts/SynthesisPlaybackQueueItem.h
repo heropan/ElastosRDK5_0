@@ -1,10 +1,12 @@
 #ifndef __ELASTOS_DROID_SPEECH_TTS_SynthesisPlaybackQueueItem_H__
 #define __ELASTOS_DROID_SPEECH_TTS_SynthesisPlaybackQueueItem_H__
 
+#include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/core/Object.h"
 #include "elastos/droid/speech/tts/PlaybackQueueItem.h"
 #include "elastos/droid/speech/tts/BlockingAudioTrack.h"
-#include "elastos/droid/speech/tts/EventLogger.h"
-#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/speech/tts/AbstractEventLogger.h"
+#include "elastos/droid/speech/tts/AudioOutputParams.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;
@@ -24,7 +26,7 @@ class SynthesisPlaybackQueueItem
 public:
     //static final
     class ListEntry
-        : public ElRefBase
+        : public Object
     {
     public:
         //final
@@ -35,31 +37,37 @@ public:
     };
 
 public:
-    SynthesisPlaybackQueueItem(
-        /* [in] */ Int32 streamType,
+    CAR_INTERFACE_DECL();
+
+    SynthesisPlaybackQueueItem();
+
+    virtual ~SynthesisPlaybackQueueItem();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ AudioOutputParams* audioParams,
         /* [in] */ Int32 sampleRate,
         /* [in] */ Int32 audioFormat,
         /* [in] */ Int32 channelCount,
-        /* [in] */ Float volume,
-        /* [in] */ Float pan,
-        /* [in] */ ITextToSpeechServiceUtteranceProgressDispatcher* dispatcher,
+        /* [in] */ IUtteranceProgressDispatcher* dispatcher,
         /* [in] */ IInterface* callerIdentity,
-        /* [in] */ EventLogger* logger);
+        /* [in] */ AbstractEventLogger* logger);
 
     //@Override
     CARAPI Run();
 
     //@Override
     CARAPI Stop(
-        /* [in] */ Boolean isError);
+        /* [in] */ Int32 errorCode);
 
     CARAPI_(void) Done();
 
     CARAPI_(void) Put(
-        /* [in] */ ArrayOf<Byte>* buffer);// throws InterruptedException
+        /* [in] */ ArrayOf<Byte>* buffer);      // throws InterruptedException
 
 private:
-    AutoPtr< ArrayOf<Byte> > Take();// throws InterruptedException
+    AutoPtr<ArrayOf<Byte> > Take();             // throws InterruptedException
 
 private:
     static const String TAG;        // = "TTS.SynthQueueItem";
@@ -81,7 +89,7 @@ private:
     Object mListLock;
 
     // Guarded by mListLock.
-    List< AutoPtr<ListEntry> > mDataBufferList;
+    List<AutoPtr<ListEntry> > mDataBufferList;
     // Guarded by mListLock.
     Int32 mUnconsumedBytes;// = 0;
 
@@ -90,12 +98,12 @@ private:
      * only from the synthesis thread. All three variables are read from the
      * audio playback thread.
      */
-    volatile Boolean mStopped;          // = FALSE;
-    volatile Boolean mDone;             // = FALSE;
-    volatile Boolean mIsError;          // = FALSE;
+    volatile Boolean mStopped;
+    volatile Boolean mDone;
+    volatile Boolean mStatusCode;
 
     AutoPtr<BlockingAudioTrack> mAudioTrack;
-    AutoPtr<EventLogger> mLogger;
+    AutoPtr<AbstractEventLogger> mLogger;
 };
 
 } // namespace Tts

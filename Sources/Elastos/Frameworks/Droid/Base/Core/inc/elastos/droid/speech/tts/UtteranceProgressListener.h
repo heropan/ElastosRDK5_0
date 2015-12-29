@@ -3,6 +3,7 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/core/Object.h"
+#include "Elastos.Droid.Speech.h"
 
 namespace Elastos {
 namespace Droid {
@@ -35,11 +36,14 @@ private:
         virtual ~UtteranceProgressListenerStand();
 
         constructor();
+
+        constructor(
+            /* [in] */ ITextToSpeechOnUtteranceCompletedListener* listener);
     public:
         //@Override
         //public synchronized void
         CARAPI OnDone(
-            /* [in] */ const String & utteranceId);
+            /* [in] */ const String& utteranceId);
 
         /**
          * Called when an error has occurred during processing. This can be called
@@ -54,7 +58,7 @@ private:
         //@Override
         //public void
         CARAPI OnError(
-            /* [in] */ const String & utteranceId);
+            /* [in] */ const String& utteranceId);
         /**
          * Called when an error has occurred during processing. This can be called
          * at any point in the synthesis process. Note that there might be calls
@@ -65,18 +69,15 @@ private:
          * @param utteranceId the utterance ID of the utterance.
          * @param errorCode one of the ERROR_* codes from {@link TextToSpeech}
          */
-        CARAPI UtteranceProgressListenerStand::OnError(
+        CARAPI OnError(
             /* [in] */ const String& utteranceId,
-            /* [in] */ Int32 errorCode)
+            /* [in] */ Int32 errorCode);
 
         //@Override
         //public void
         CARAPI OnStart(
-            /* [in] */ const String & utteranceId);
+            /* [in] */ const String& utteranceId);
 
-    public:
-        UtteranceProgressListenerStand(
-        /* [in] */ ITextToSpeechOnUtteranceCompletedListener* listener);
     private:
         AutoPtr<ITextToSpeechOnUtteranceCompletedListener> mListener;
         Object mMutex;
@@ -100,7 +101,7 @@ public:
      */
     //public abstract
     virtual CARAPI OnStart(
-        /* [in] */ const String & utteranceId) = 0;
+        /* [in] */ const String& utteranceId) = 0;
 
     /**
      * Called when an utterance has successfully completed processing.
@@ -113,7 +114,7 @@ public:
      */
     //public abstract
     virtual CARAPI OnDone(
-        /* [in] */ const String & utteranceId) = 0;
+        /* [in] */ const String& utteranceId) = 0;
 
     /**
      * Called when an error has occurred during processing. This can be called
@@ -126,7 +127,7 @@ public:
      */
     //public abstract
     virtual CARAPI OnError(
-        /* [in] */ const String & utteranceId) = 0;
+        /* [in] */ const String& utteranceId) = 0;
 
     /**
      * Wraps an old deprecated OnUtteranceCompletedListener with a shiny new

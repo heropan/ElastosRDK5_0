@@ -8,6 +8,9 @@
 //#include "elastos/droid/provider/Settings.h"
 #include "elastos/droid/speech/tts/TextToSpeech.h"
 #include "elastos/droid/R.h"
+#include <elastos/core/AutoLock.h>
+#include "Elastos.Droid.Utility.h"
+#include <Elastos.CoreLibrary.Utility.h>
 
 using Elastos::Core::IComparator;
 using Elastos::Core::EIID_IComparator;
@@ -19,12 +22,14 @@ using Elastos::Droid::Content::Pm::CServiceInfo;
 using Elastos::Droid::Content::Pm::CResolveInfo;
 using Elastos::Droid::Utility::Xml;
 using Elastos::Droid::Text::TextUtils;
-
+using Elastos::Utility::CCollections;
+using Elastos::Utility::ICollections;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocale;
 using Elastos::Utility::CLocaleHelper;
 using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -37,7 +42,7 @@ namespace Tts {
 
 AutoPtr<TtsEngines::EngineInfoComparator> TtsEngines::EngineInfoComparator::INSTANCE = new TtsEngines::EngineInfoComparator();
 
-CAR_OBJECT_IMPL(TtsEngines::EngineInfoComparator, Object, ITtsEngines);
+CAR_INTERFACE_IMPL(TtsEngines::EngineInfoComparator, Object, ITtsEngines);
 
 TtsEngines::EngineInfoComparator::EngineInfoComparator()
 {}
@@ -64,6 +69,7 @@ ECode TtsEngines::EngineInfoComparator::Compare(
     /* [in] */ IInterface* object2,
     /* [out] */ Int32* result)
 {
+#if 0
     AutoPtr<TextToSpeech::TextToSpeechEngineInfo> lhs = (TextToSpeech::TextToSpeechEngineInfo*)object1;
     AutoPtr<TextToSpeech::TextToSpeechEngineInfo> rhs = (TextToSpeech::TextToSpeechEngineInfo*)object2;
     if (lhs->system && !rhs->system) {
@@ -78,7 +84,7 @@ ECode TtsEngines::EngineInfoComparator::Compare(
         // higher priority, but are "lower" in the sort order.
         *result = rhs->priority - lhs->priority;
     }
-
+#endif
     return NOERROR;
 }
 
@@ -107,9 +113,6 @@ const Boolean TtsEngines::DBG = FALSE;
 const String TtsEngines::LOCALE_DELIMITER_OLD("-");
 const String TtsEngines::LOCALE_DELIMITER_NEW("_");
 const String TtsEngines::XML_TAG_NAME("tts-engine");
-
-static ILocale normalizeTTSLocale(ILocale ttsLocale);
-static AutoPtr<ArrayOf<String> > toOldLocaleStringFormat(ILocale locale);
 
 TtsEngines::TtsEngines()
 {
@@ -155,7 +158,7 @@ ECode TtsEngines::constructor(
     return NOERROR;
 }
 
-ECode CTtsEngines::GetDefaultEngine(
+ECode TtsEngines::GetDefaultEngine(
     /* [out] */ String* pRet)
 {
     VALIDATE_NOT_NULL(pRet);
@@ -163,28 +166,47 @@ ECode CTtsEngines::GetDefaultEngine(
     //Java:    String engine = getString(mContext.getContentResolver(), Settings.Secure.TTS_DEFAULT_SYNTH);
     AutoPtr<IContentResolver> cr;
     mContext->GetContentResolver((IContentResolver**)&cr);
-    String engine;// = GetString(cr.Get(), /*ISettingsSecure::TTS_DEFAULT_SYNTH*/String("tts_default_synth"));
-    *pRet = IsEngineInstalled(engine) ? engine : GetHighestRankedEngineName();
+    String engine;      // = GetString(cr.Get(), /*ISettingsSecure::TTS_DEFAULT_SYNTH*/String("tts_default_synth"));
+
+    Boolean b;
+    String str;
+    IsEngineInstalled(engine, &b);
+
+    if (b) {
+        *pRet = engine;
+    } else {
+        GetHighestRankedEngineName(pRet);
+    }
 
     return NOERROR;
 }
 
-Code CTtsEngines::GetHighestRankedEngineName(
-    /* [out] */ String * pRet)
+ECode TtsEngines::GetHighestRankedEngineName(
+    /* [out] */ String* pRet)
 {
     VALIDATE_NOT_NULL(pRet);
 
-    AutoPtr< List< AutoPtr<TextToSpeech::TextToSpeechEngineInfo> > > engines = GetEngines();
+    AutoPtr<IList> engines;
+    GetEngines((IList**)&engines);
 
-    if (engines != NULL && !engines->IsEmpty() && ((*engines)[0])->system) {
-        *pRet = (*engines)[0]->name;
+    if (engines != NULL ) {
+
+        Boolean b;
+        AutoPtr<TextToSpeech::TextToSpeechEngineInfo> engine;
+
+        engines->IsEmpty(&b);
+        engines->Get(0, (IInterface**)&engine);
+        if ( !b && engine->system) {
+            *pRet = engine->name;
+        }
+    } else {
+        *pRet = String(NULL);
     }
-    *pRet = String(NULL);
 
     return NOERROR;
 }
 
-ECode CTtsEngines::GetEngineInfo(
+ECode TtsEngines::GetEngineInfo(
     /* [in] */ const String& packageName,
     /* [out] */ ITextToSpeechEngineInfo** ppRet)
 {
@@ -196,33 +218,24 @@ ECode CTtsEngines::GetEngineInfo(
     CIntent::New(ITextToSpeechEngine::INTENT_ACTION_TTS_SERVICE, (IIntent**)&intent);
     intent->SetPackage(packageName);
     List< AutoPtr<IResolveInfo> > resolveInfos;
-    AutoPtr<IObjectContainer> oc;
-    pm->QueryIntentServices(intent.Get(),IPackageManager::MATCH_DEFAULT_ONLY, (IObjectContainer**)&oc);
-    if(oc != NULL) {
-        AutoPtr<IObjectEnumerator> it;
-        oc->GetObjectEnumerator((IObjectEnumerator**)&it);
-        Boolean succeeded = FALSE;
-        while(it->MoveNext(&succeeded), succeeded) {
-            AutoPtr<IResolveInfo> ttsEi;
-            it->Current((IInterface**)&ttsEi);
+    AutoPtr<IList> oc;
+    pm->QueryIntentServices(intent.Get(),IPackageManager::MATCH_DEFAULT_ONLY, (IList**)&oc);
 
-            resolveInfos.PushBack(ttsEi);
-
-        }
+    ppRet = NULL;
+    if (oc == NULL) {
+        return NOERROR;
     }
+
     // Note that the current API allows only one engine per
     // package name. Since the "engine name" is the same as
     // the package name.
-    if (resolveInfos.IsEmpty() && resolveInfos.GetSize() == 1) {
-        *ppRet = GetEngineInfo(resolveInfos[0], pm.Get());
-    }
-    *ppRet = NULL;
+    oc->Get(0, (IInterface**)ppRet);
 
     return NOERROR;
 }
 
-ECode CTtsEngines::GetEngines(
-    /* [out] */ IArrayList** ppRet)
+ECode TtsEngines::GetEngines(
+    /* [out] */ IList** ppRet)
 {
     VALIDATE_NOT_NULL(ppRet);
 
@@ -230,40 +243,33 @@ ECode CTtsEngines::GetEngines(
     mContext->GetPackageManager((IPackageManager**)&pm);
     AutoPtr<IIntent> intent;
     CIntent::New(ITextToSpeechEngine::INTENT_ACTION_TTS_SERVICE, (IIntent**)&intent);
-    List< AutoPtr<IResolveInfo> > resolveInfos;
-    AutoPtr<IObjectContainer> oc;
-    pm->QueryIntentServices(intent.Get(),IPackageManager::MATCH_DEFAULT_ONLY, (IObjectContainer**)&oc);
-    if(oc != NULL) {
-        AutoPtr<IObjectEnumerator> it;
-        oc->GetObjectEnumerator((IObjectEnumerator**)&it);
-        Boolean succeeded = FALSE;
-        while(it->MoveNext(&succeeded), succeeded) {
-            AutoPtr<IResolveInfo> ttsEi;
-            it->Current((IInterface**)&ttsEi);
+    AutoPtr<IList> oc;
+    pm->QueryIntentServices(intent.Get(), IPackageManager::MATCH_DEFAULT_ONLY, (IList**)&oc);
 
-            resolveInfos.PushBack(ttsEi);
+    AutoPtr<ICollections> c;
+    CCollections::AcquireSingleton((ICollections**)&c);
+    c->GetEmptyList((IList**)ppRet);
 
-        }
-    }
-    if (resolveInfos.IsEmpty()){
-        AutoPtr<List< AutoPtr<TextToSpeech::TextToSpeechEngineInfo> > > enginesNull;
-        *ppRet = enginesNull;    //Java:     return Collections.emptyList();
+    if (oc == NULL) {
         return NOERROR;
     }
 
-    AutoPtr< List< AutoPtr<TextToSpeech::TextToSpeechEngineInfo> > > engines;// = new ArrayList<EngineInfo>(resolveInfos.size());
-    engines = new List< AutoPtr<TextToSpeech::TextToSpeechEngineInfo> >(resolveInfos.GetSize());
-    Int32 resolveInfosSize = resolveInfos.GetSize();
-    for (Int32 i = 0; i < resolveInfosSize; ++i)
-    {
-        AutoPtr<TextToSpeech::TextToSpeechEngineInfo> engine = GetEngineInfo((resolveInfos[i]).Get(), pm.Get());
-        if(engine != NULL){
-            engines->PushBack(engine);
+    Int32 resolveInfosSize;
+    oc->GetSize(&resolveInfosSize);
+
+    for (Int32 i = 0; i < resolveInfosSize; i++) {
+        AutoPtr<IResolveInfo> resolve;
+        AutoPtr<TextToSpeech::TextToSpeechEngineInfo> engine;
+        oc->Get(i, (IInterface**)&resolve);
+
+        engine = GetEngineInfo(resolve, pm.Get());
+        if (engine != NULL) {
+            (*ppRet)->Set(i, TO_IINTERFACE(engine));
         }
     }
-    engines->Sort(EngineInfoComparator::Comparator);
 
-    *ppRet = engines;
+    c->Sort((IList*)(*ppRet), (IComparator*)EngineInfoComparator::Comparator);
+
     return NOERROR;
 }
 
@@ -277,19 +283,22 @@ Boolean TtsEngines::IsSystemEngine(
     return appInfo != NULL && (flags & IApplicationInfo::FLAG_SYSTEM) != 0;
 }
 
-ECode CTtsEngines::IsEngineInstalled(
+ECode TtsEngines::IsEngineInstalled(
     /* [in] */ const String& engine,
     /* [out] */ Boolean* pRet)
 {
     if (engine.IsNullOrEmpty()) {
         *pRet = FALSE;
     }
+    AutoPtr<ITextToSpeechEngineInfo> p;
 
-    *pRet = (GetEngineInfo(engine) != NULL);
+    GetEngineInfo(engine, (ITextToSpeechEngineInfo**)&p);
+
+    *pRet = (p != NULL);
     return NOERROR;
 }
 
-ECode CTtsEngines::GetSettingsIntent(
+ECode TtsEngines::GetSettingsIntent(
     /* [in] */ const String& engine,
     /* [out] */ IIntent** ppRet)
 {
@@ -300,37 +309,25 @@ ECode CTtsEngines::GetSettingsIntent(
     intent->SetPackage(engine);
     List< AutoPtr<IResolveInfo> > resolveInfos;
 
-    AutoPtr<IObjectContainer> oc;
+    AutoPtr<IList> oc;
     pm->QueryIntentServices(intent.Get(),
-                IPackageManager::MATCH_DEFAULT_ONLY | IPackageManager::GET_META_DATA, (IObjectContainer**)&oc);
-    if(oc != NULL) {
-        AutoPtr<IObjectEnumerator> it;
-        oc->GetObjectEnumerator((IObjectEnumerator**)&it);
-        Boolean succeeded = FALSE;
-        while(it->MoveNext(&succeeded), succeeded) {
-            AutoPtr<IResolveInfo> ttsEi;
-            it->Current((IInterface**)&ttsEi);
+                IPackageManager::MATCH_DEFAULT_ONLY | IPackageManager::GET_META_DATA, (IList**)&oc);
 
-            resolveInfos.PushBack(ttsEi);
-
-        }
-    }
+    AutoPtr<IServiceInfo> service;
 
     // Note that the current API allows only one engine per
     // package name. Since the "engine name" is the same as
     // the package name.
-    if ((!resolveInfos.IsEmpty()) && resolveInfos.GetSize() == 1) {
-        AutoPtr<IServiceInfo> service;
-        (resolveInfos[0])->GetServiceInfo((IServiceInfo**)&service);
-        if (service != NULL) {
-            String settings = SettingsActivityFromServiceInfo(service.Get(), pm.Get());
-            if (!settings.IsNull()) {
-                AutoPtr<IIntent> intent;
-                CIntent::New((IIntent**)&intent);
-                intent->SetClassName(engine, settings);
-                *ppRet = intent;
-                return NOERROR;
-            }
+    oc->Get(0, (IInterface**)&service);
+
+    if (service != NULL) {
+        String settings = SettingsActivityFromServiceInfo(service.Get(), pm.Get());
+        if (!settings.IsNull()) {
+            AutoPtr<IIntent> intent;
+            CIntent::New((IIntent**)&intent);
+            intent->SetClassName(engine, settings);
+            *ppRet = intent;
+            return NOERROR;
         }
     }
 
@@ -338,10 +335,48 @@ ECode CTtsEngines::GetSettingsIntent(
     return NOERROR;
 }
 
+ECode TtsEngines::NormalizeTTSLocale(
+    /* [in] */ ILocale* ttsLocale,
+    /* [out] */ ILocale** outLocale)
+{
+    return NOERROR;
+/*
+        String language = ttsLocale.getLanguage();
+        if (!TextUtils.isEmpty(language)) {
+            String normalizedLanguage = sNormalizeLanguage.get(language);
+            if (normalizedLanguage != null) {
+                language = normalizedLanguage;
+            }
+        }
+
+        String country = ttsLocale.getCountry();
+        if (!TextUtils.isEmpty(country)) {
+            String normalizedCountry= sNormalizeCountry.get(country);
+            if (normalizedCountry != null) {
+                country = normalizedCountry;
+            }
+        }
+        return new Locale(language, country, ttsLocale.getVariant());
+*/
+}
+
+
 String TtsEngines::SettingsActivityFromServiceInfo(
     /* [in] */ IServiceInfo* si,
     /* [in] */ IPackageManager* pm)
 {
+/*
+// WAITING for android.content.pm.ResolveInfo;
+//
+**
+ * Information you can retrieve about a particular application
+ * service. This corresponds to information collected from the
+ * AndroidManifest.xml's &lt;service&gt; tags.
+ *
+public class ServiceInfo extends ComponentInfo
+        implements Parcelable {
+*/
+#if 0
     AutoPtr<IXmlResourceParser> parser;
     //try {
         si->LoadXmlMetaData(pm, ITextToSpeechEngine::SERVICE_META_DATA, (IXmlResourceParser**)&parser);
@@ -397,6 +432,7 @@ String TtsEngines::SettingsActivityFromServiceInfo(
                 parser->Close();
             }
     //}
+#endif
     return String(NULL);
 }
 
@@ -404,6 +440,7 @@ AutoPtr<TextToSpeech::TextToSpeechEngineInfo> TtsEngines::GetEngineInfo(
     /* [in] */ IResolveInfo* resolve,
     /* [in] */ IPackageManager* pm)
 {
+#if 0
     AutoPtr<IServiceInfo> service;
     resolve->GetServiceInfo((IServiceInfo**)&service);
     if (service != NULL) {
@@ -423,7 +460,7 @@ AutoPtr<TextToSpeech::TextToSpeechEngineInfo> TtsEngines::GetEngineInfo(
         engine->system = IsSystemEngine(service.Get());
         return engine;
     }
-
+#endif
     return NULL;
 }
 
@@ -437,7 +474,7 @@ ECode TtsEngines::GetLocalePrefForEngine(
     return GetLocalePrefForEngine(engineName, /*GetString(cr.Get(), ISettingsSecure::TTS_DEFAULT_LOCALE)*/String(NULL), ret);
 }
 
-ECode GetLocalePrefForEngine(
+ECode TtsEngines::GetLocalePrefForEngine(
     /* [in] */ const String& engineName,
     /* [in] */ const String& prefValue,
     /* [in] */ ILocale** locale)
@@ -452,16 +489,18 @@ ECode GetLocalePrefForEngine(
         localeString = GetV1Locale();
     }
 
-    AutoPtr<ILocale> result = parseLocaleString(localeString);
+    AutoPtr<ILocale> result;
+    ParseLocaleString(localeString, (ILocale**)&result);
     if (result == NULL) {
-        Logger::W(TAG, "Failed to parse locale " + engineName + ", returning en_US instead");
-        result = Locale.US;
+        Logger::W(TAG, "Failed to parse locale %s returning en_US instead", engineName.string());
+//TODO
+//        result = Locale.US;
     }
 
 
     if (DBG) {
         //Java:    Log.d(TAG, "getLocalePrefForEngine(" + engineName + ")= " + locale);
-        Logger::D(TAG, String("getLocalePrefForEngine(")+ engineName + String(")= ") + localeString+String("\n"));
+        Logger::D(TAG, "getLocalePrefForEngine(%s)= %s\n", engineName.string(), localeString.string());
     }
 
     *locale = result;
@@ -469,13 +508,12 @@ ECode GetLocalePrefForEngine(
 
 }
 
-
 ECode TtsEngines::ParseLocaleString(
-    /* [in] */ const String& localeString)
+    /* [in] */ const String& localeString,
     /* [in] */ ILocale** ret)
 {
     String language("");
-    String country("")
+    String country("");
     String variant("");
 
     AutoPtr<ICharSequence> cs;
@@ -522,31 +560,33 @@ ECode TtsEngines::ParseLocaleString(
             splitStartPos++;
         }
 
-        language = split[0].ToLowerCase();
-        if (split.GetLength() == 0) {
-            Logger::W(TAG, "Failed to convert " + localeString + " to a valid Locale object. Only" +
-                        " separators");
-            return NULL;
+        String str;
+
+        language = (*split)[0].ToLowerCase();
+        if ((*split).GetLength() == 0) {
+            Logger::W(TAG, "Failed to convert %s to a valid Locale object. Only separators\n", localeString.string());
+            *ret = NULL;
+            return NOERROR;
         }
-        if (split.GetLength() > 3) {
-            Logger::W(TAG, "Failed to convert " + localeString + " to a valid Locale object. Too" +
-                    " many separators");
-            return NULL;
+        if ((*split).GetLength() > 3) {
+            Logger::W(TAG, "Failed to convert %s to a valid Locale object. Too many separators\n", localeString.string());
+            *ret = NULL;
+            return NOERROR;
         }
-        if (split.GetLength() >= 2) {
-            country = split[1].ToUpperCase();
+        if ((*split).GetLength() >= 2) {
+            country = (*split)[1].ToUpperCase();
         }
-        if (split.GetLength() >= 3) {
-            variant = split[2];
+        if ((*split).GetLength() >= 3) {
+            variant = (*split)[2];
         }
     }
 
-    String normalizedLanguage = sNormalizeLanguage.Get(language);
+    String normalizedLanguage = sNormalizeLanguage[language];
     if (normalizedLanguage != NULL) {
         language = normalizedLanguage;
     }
 
-    String normalizedCountry= sNormalizeCountry.Get(country);
+    String normalizedCountry= sNormalizeCountry[country];
     if (normalizedCountry != NULL) {
         country = normalizedCountry;
     }
@@ -565,41 +605,32 @@ ECode TtsEngines::ParseLocaleString(
     mLocale->GetVariant(&strVariant);
 
     if (strISO3Language == NULL || strISO3Country == NULL) {
-        Logger::w(TAG, "Failed to convert " + localeString + " to a valid Locale object.");
+        Logger::W(TAG, "Failed to convert %s to a valid Locale object.\n", localeString.string());
         //E_MISSING_RESOURCE_EXCEPTION;
-        return NULL;
+        *ret = NULL;
+        return NOERROR;
     }
 
-    return mLocale;
+    *ret = mLocale;
+    return NOERROR;
 }
 
-
-/**
- * This method tries its best to return a valid {@link Locale} object from the TTS-specific
- * Locale input (returned by {@link TextToSpeech#getLanguage}
- * and {@link TextToSpeech#getDefaultLanguage}). A TTS Locale language field contains
- * a three-letter ISO 639-2/T code (where a proper Locale would use a two-letter ISO 639-1
- * code), and the country field contains a three-letter ISO 3166 country code (where a proper
- * Locale would use a two-letter ISO 3166-1 code).
- *
- * This method tries to convert three-letter language and country codes into their two-letter
- * equivalents. If it fails to do so, it keeps the value from the TTS locale.
- */
-static ILocale normalizeTTSLocale(ILocale ttsLocale)
+ILocale* TtsEngines::NormalizeTTSLocale(ILocale* ttsLocale)
 {
     String language;
-    ttsLocale->getLanguage(&language);
-    if (!TextUtils.isEmpty(language)) {
-        String normalizedLanguage = sNormalizeLanguage.Get(language);
+    ttsLocale->GetLanguage(&language);
+
+    if (!TextUtils::IsEmpty(language)) {
+        String normalizedLanguage = sNormalizeLanguage[language];
         if (normalizedLanguage != NULL) {
             language = normalizedLanguage;
         }
     }
 
     String country;
-    ttsLocale->getCountry(&country);
-    if (!TextUtils.isEmpty(country)) {
-        String normalizedCountry= sNormalizeCountry.Get(country);
+    ttsLocale->GetCountry(&country);
+    if (!TextUtils::IsEmpty(country)) {
+        String normalizedCountry = sNormalizeCountry[country];
         if (normalizedCountry != NULL) {
             country = normalizedCountry;
         }
@@ -626,7 +657,7 @@ static ILocale normalizeTTSLocale(ILocale ttsLocale)
  * If we fail to generate those codes using {@link Locale#getISO3Country()} and
  * {@link Locale#getISO3Language()}, then we return new String[]{"eng","USA",""};
  */
-static AutoPtr<ArrayOf<String> > toOldLocaleStringFormat(ILocale locale)
+AutoPtr<ArrayOf<String> > TtsEngines::ToOldLocaleStringFormat(ILocale* locale)
 {
 
     AutoPtr< ArrayOf<String> > returnVal = ArrayOf<String>::Alloc(3);
@@ -639,9 +670,9 @@ static AutoPtr<ArrayOf<String> > toOldLocaleStringFormat(ILocale locale)
     // the same as {@link #getV1Locale} i.e no trailing delimiters
     // or spaces.
     String strISO3Language, strISO3Country, strVariant;
-    mLocale->GetISO3Language(&strISO3Language);
-    mLocale->GetISO3Country(&strISO3Country);
-    mLocale->GetVariant(&strVariant);
+    locale->GetISO3Language(&strISO3Language);
+    locale->GetISO3Country(&strISO3Country);
+    locale->GetVariant(&strVariant);
 
     if (strISO3Language == NULL || strISO3Country == NULL) {
         (*returnVal)[0] = String("eng");
@@ -677,7 +708,7 @@ String TtsEngines::GetDefaultLocale()
     cs = NULL;
     CString::New(localeCountry, (ICharSequence**)&cs);
     if (!TextUtils::IsEmpty(cs)) {
-        defaultLocale += String(LOCALE_DELIMITER) + localeCountry;
+        defaultLocale += String(LOCALE_DELIMITER_NEW) + localeCountry;
     } else {
         // Do not allow locales of the form lang--variant with
         // an empty country.
@@ -689,7 +720,7 @@ String TtsEngines::GetDefaultLocale()
     cs = NULL;
     CString::New(strVariant, (ICharSequence**)&cs);
     if (!TextUtils::IsEmpty(cs)) {
-        defaultLocale += String(LOCALE_DELIMITER) + strVariant;
+        defaultLocale += String(LOCALE_DELIMITER_NEW) + strVariant;
     }
 
     return defaultLocale;
@@ -743,30 +774,32 @@ String TtsEngines::ParseEnginePrefFromList(
 
 ECode TtsEngines::UpdateLocalePrefForEngine(
     /* [in] */ const String& engineName,
-    /* [in] */ const ILocale* newLocale)
+    /* [in] */ ILocale* newLocale)
 {
-    AutoLock lock(mLock);
+    synchronized(mLock) {
 
-    AutoPtr<IContentResolver> cr;
-    mContext->GetContentResolver((IContentResolver**)&cr);
+        AutoPtr<IContentResolver> cr;
+        mContext->GetContentResolver((IContentResolver**)&cr);
 
-    String prefList;
-//    prefList = Settings::Secure::GetString(cr.Get(), ISettingsSecure::TTS_DEFAULT_LOCALE);
-    if (DBG) {
-        //Java:    Log.d(TAG, "updateLocalePrefForEngine(" + name + ", " + newLocale + "), originally: " + prefList);
-        Logger::D(TAG, String("updateLocalePrefForEngine(")+ engineName + String(", ") + newLocale + String("), originally: ") + prefList+String("\n"));
-    }
+        String prefList;
+    //    prefList = Settings::Secure::GetString(cr.Get(), ISettingsSecure::TTS_DEFAULT_LOCALE);
+        if (DBG) {
+            //Java:    Log.d(TAG, "updateLocalePrefForEngine(" + name + ", " + newLocale + "), originally: " + prefList);
+            Logger::D(TAG, String("updateLocalePrefForEngine(") + engineName + String(", ") + ToString(newLocale) + String("), originally: ") + prefList+String("\n"));
+        }
 
-    String newPrefList;
-    if (newLocale != NULL) {
-        newPrefList = UpdateValueInCommaSeparatedList(prefList, engineName, Object::ToString(newLocale));
-    } else {
-        newPrefList = UpdateValueInCommaSeparatedList(prefList, engineName, String(""));
-    }
+        String newPrefList;
+        if (newLocale != NULL) {
+            newPrefList = UpdateValueInCommaSeparatedList(prefList, engineName, Object::ToString(newLocale));
+        } else {
+            newPrefList = UpdateValueInCommaSeparatedList(prefList, engineName, String(""));
+        }
 
-    if (DBG) {
-        //Java:    Log.d(TAG, "updateLocalePrefForEngine(), writing: " + newPrefList.toString());
-        Logger::D(TAG, String("updateLocalePrefForEngine(), writing: ")+ newPrefList + String("\n"));
+        if (DBG) {
+            //Java:    Log.d(TAG, "updateLocalePrefForEngine(), writing: " + newPrefList.toString());
+            Logger::D(TAG, String("updateLocalePrefForEngine(), writing: ")+ newPrefList + String("\n"));
+
+        }
 
     }
 

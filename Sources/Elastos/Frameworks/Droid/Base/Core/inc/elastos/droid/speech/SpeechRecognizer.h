@@ -3,18 +3,20 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/core/Object.h"
-#include "Elastos.Droid.Core_server.h"
-#include "elastos/droid/os/HandlerBase.h"
 #include <elastos/utility/etl/List.h>
+#include "_Elastos.Droid.Speech.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 
 using Elastos::Utility::Etl::List;
-using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IServiceConnection;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Os::IHandler;
 
 namespace Elastos {
 namespace Droid {
@@ -40,13 +42,13 @@ class SpeechRecognizer
 {
 private:
     class SpeechRecognizerHandler
-        : public HandlerBase
+        : public Object
     {
     public:
+        SpeechRecognizerHandler();
+
         SpeechRecognizerHandler(
-            /* [in] */ SpeechRecognizer* sr)
-            : mHost(sr)
-        {}
+            /* [in] */ SpeechRecognizer* sr);
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
@@ -104,13 +106,13 @@ private:
     {
     private:
         class SpeechRecognizerInternalListenerHandler
-            : public HandlerBase
+            : public Object
         {
         public:
+            SpeechRecognizerInternalListenerHandler();
+
             SpeechRecognizerInternalListenerHandler(
-                /* [in] */ SpeechRecognizerInternalListener* sil)
-                : mHost(sil)
-            {}
+                /* [in] */ SpeechRecognizerInternalListener* sil);
 
             CARAPI HandleMessage(
                 /* [in] */ IMessage* msg);
@@ -166,8 +168,6 @@ private:
         CARAPI OnEvent(
             /* [in] */ Int32 eventType,
             /* [in] */ IBundle* bParams);
-    public:
-        SpeechRecognizerInternalListener();
     private:
         //private
         AutoPtr<IRecognitionListener> mInternalListener;
@@ -193,7 +193,7 @@ private:
 
     private:
         //private final Handler
-        AutoPtr<IHandler> mInternalHandler;// = new SpeechRecognizerInternalListenerHandler();
+        AutoPtr<IHandler> mInternalHandler;             // = new SpeechRecognizerInternalListenerHandler();
     };
 
     friend class SpeechRecognizerInternalListener;
@@ -254,7 +254,7 @@ public:
      *        {@link SpeechRecognizer}, this must not be null.
      */
     //public
-    CARAPI_(void) SetRecognitionListener(
+    CARAPI SetRecognitionListener(
         /* [in] */ IRecognitionListener* listener);
 
     /**
@@ -267,7 +267,7 @@ public:
      *        not set explicitly, default values will be used by the recognizer.
      */
     //public
-    CARAPI_(void) StartListening(
+    CARAPI StartListening(
         /* [in] */ IIntent* recognizerIntent);
 
     /**
@@ -281,7 +281,7 @@ public:
      * no notifications will be received.
      */
     //public
-    CARAPI_(void) StopListening();
+    CARAPI StopListening();
 
     /**
      * Cancels the speech recognition. Please note that
@@ -289,13 +289,13 @@ public:
      * no notifications will be received.
      */
     //public
-    CARAPI_(void) Cancel();
+    CARAPI Cancel();
 
     /**
      * Destroys the {@code SpeechRecognizer} object.
      */
     //public
-    CARAPI_(void) Destroy();
+    CARAPI Destroy();
 
 protected:
     //private
@@ -334,7 +334,7 @@ public:
      * recognition results, where the first element is the most likely candidate.
      */
     //public static final
-    static const CString RESULTS_RECOGNITION;       // = "results_recognition";
+    static const String RESULTS_RECOGNITION;       // = "results_recognition";
 
     /**
      * Key used to retrieve a float array from the {@link Bundle} passed to the
@@ -349,7 +349,7 @@ public:
      * This value is optional and might not be provided.
      */
     //public static final
-    static const CString CONFIDENCE_SCORES;         // = "confidence_scores";
+    static const String CONFIDENCE_SCORES;          // = "confidence_scores";
 
     /** Network operation timed out. */
     //public static final
@@ -394,7 +394,7 @@ protected:
 
     /** Log messages identifier */
     //private static final
-    static const CString TAG;                       // = "SpeechRecognizer";
+    static const String TAG;                        // = "SpeechRecognizer";
 
 private:
     /** action codes */

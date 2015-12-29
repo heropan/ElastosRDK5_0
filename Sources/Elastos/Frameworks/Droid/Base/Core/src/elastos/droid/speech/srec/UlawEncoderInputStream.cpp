@@ -4,6 +4,7 @@
 //#include "elastos/droid/ext/frameworkext.h"
 
 using Elastos::Utility::Logging::Logger;
+using Elastos::IO::EIID_IInputStream;
 
 namespace Elastos {
 namespace Droid {
@@ -14,7 +15,7 @@ const String UlawEncoderInputStream::TAG("UlawEncoderInputStream");
 const Int32 UlawEncoderInputStream::MAX_ULAW = 8192;
 const Int32 UlawEncoderInputStream::SCALE_BITS = 16;
 
-CAR_INTERFACE_IMPL(UlawEncoderInputStream, Object, IInputStream);
+CAR_INTERFACE_IMPL_2(UlawEncoderInputStream, Object, IInputStream, IUlawEncoderInputStream);
 
 UlawEncoderInputStream::UlawEncoderInputStream()
 {}
@@ -28,10 +29,10 @@ ECode UlawEncoderInputStream::constructor()
 }
 
 ECode UlawEncoderInputStream::constructor(
-    /* [in] */ IInputStream* in,
+    /* [in] */ IInputStream* ins,
     /* [in] */ Int32 max)
 {
-    mIn = in;
+    mIn = ins;
     mMax = max;
 
     mBuf = ArrayOf<Byte>::Alloc(1024);
@@ -57,7 +58,10 @@ ECode UlawEncoderInputStream::Encode(
     Int32 coef = MAX_ULAW * (1 << SCALE_BITS) / max;
 
     for (Int32 i = 0; i < length; i++) {
-        Int32 pcm = (0xff & (*pcmBuf)[pcmOffset++]) + ((*pcmBuf)[pcmOffset++] << 8);
+        Int32 pcm;
+
+        pcm = (0xff & (*pcmBuf)[pcmOffset++]);
+        pcm += ((*pcmBuf)[pcmOffset++] << 8);
         pcm = (pcm * coef) >> SCALE_BITS;
 
         Int32 ulaw;
@@ -87,6 +91,8 @@ ECode UlawEncoderInputStream::Encode(
         }
         (*ulawBuf)[ulawOffset++] = (Byte)ulaw;
     }
+
+    return NOERROR;
 }
 
 ECode UlawEncoderInputStream::MaxAbsPcm(
@@ -99,7 +105,10 @@ ECode UlawEncoderInputStream::MaxAbsPcm(
 
     Int32 max = 0;
     for (Int32 i = 0; i < length; i++) {
-        Int32 pcm = (0xff & (*pcmBuf)[offset++]) + ((*pcmBuf)[offset++] << 8);
+        Int32 pcm;
+
+        pcm = (0xff & (*pcmBuf)[offset++]);
+        pcm += ((*pcmBuf)[offset++] << 8);
 
         if (pcm < 0){
             pcm = -pcm;
@@ -127,8 +136,8 @@ ECode UlawEncoderInputStream::ReadBytes(
     // return at least one byte, but try to fill 'length'
     while (mBufCount < 2) {
         Int32 n;
-        mIn->ReadBytes(mBuf, mBufCount, Elastos::Core::Math::Min(length * 2, mBuf->GetLength() - mBufCount), &n);
-        if (n == -1){
+        mIn->Read(mBuf, mBufCount, Elastos::Core::Math::Min(length * 2, mBuf->GetLength() - mBufCount), &n);
+        if (n == -1) {
             *number = -1;
             return NOERROR;
         }

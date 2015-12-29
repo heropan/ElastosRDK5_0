@@ -1,8 +1,10 @@
 #include "elastos/droid/speech/tts/PlaybackSynthesisCallback.h"
 #include "elastos/droid/speech/tts/BlockingAudioTrack.h"
 #include "elastos/droid/speech/tts/SynthesisPlaybackQueueItem.h"
+#include "elastos/droid/speech/tts/TextToSpeech.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
@@ -18,52 +20,44 @@ const Boolean PlaybackSynthesisCallback::DBG = FALSE;
 const Int32 PlaybackSynthesisCallback::MIN_AUDIO_BUFFER_SIZE = 8192;
 
 PlaybackSynthesisCallback::PlaybackSynthesisCallback(
-    /* [in] */ Int32 streamType,
-    /* [in] */ Float volume,
-    /* [in] */ Float pan,
+    /* [in] */ AudioOutputParams* audioParams,
     /* [in] */ AudioPlaybackHandler* audioTrackHandler,
-    /* [in] */ ITextToSpeechServiceUtteranceProgressDispatcher* dispatcher,
+    /* [in] */ IUtteranceProgressDispatcher* dispatcher,
     /* [in] */ IInterface* callerIdentity,
-    /* [in] */ EventLogger* logger)
+    /* [in] */ EventLoggerV1* logger,
+    /* [in] */ Boolean clientIsUsingV2)
 {
-    mStreamType = streamType;
-    mVolume = volume;
-    mPan = pan;
+    mAudioParams = audioParams;
     mAudioTrackHandler = audioTrackHandler;
     mDispatcher = dispatcher;
     mCallerIdentity = callerIdentity;
     mLogger = logger;
 
-    mStopped = FALSE;
+    mStatusCode = TextToSpeech::TTS_SUCCESS;
+
     mDone = FALSE;
 }
 
-void PlaybackSynthesisCallback::Stop()
+ECode PlaybackSynthesisCallback::Stop()
 {
-    StopImpl(FALSE);
-}
-
-void PlaybackSynthesisCallback::StopImpl(
-    /* [in] */ Boolean wasError)
-{
-    if (DBG){
+    if (DBG) {
         //Java:    Log.d(TAG, "stop()");
         Logger::D(TAG, String("stop()\n"));
     }
 
-    // Note that mLogger.mError might be true too at this point.
-    mLogger->OnStopped();
-
     AutoPtr<SynthesisPlaybackQueueItem> item;
-    {
-        AutoLock lock(mStateLock);
-        if (mStopped) {
+    synchronized(mStateLock) {
+        if (mDone) {
+            return NOERROR;
+        }
+
+        if (mStatusCode == TextToSpeech::STOPPED) {
             //Java:    Log.w(TAG, "stop() called twice");
             Logger::W(TAG, String("stop() called twice\n"));
-            return;
+            return NOERROR;
         }
         item = mItem;
-        mStopped = TRUE;
+        mStatusCode = TextToSpeech::STOPPED;
     }
 
     if (item != NULL) {
@@ -71,7 +65,7 @@ void PlaybackSynthesisCallback::StopImpl(
         // point it will write an additional buffer to the item - but we
         // won't worry about that because the audio playback queue will be cleared
         // soon after (see SynthHandler#stop(String).
-        item->Stop(wasError);
+        item->Stop(TextToSpeech::STOPPED);
     }
     else {
         // This happens when stop() or error() were called before start() was.
@@ -79,89 +73,141 @@ void PlaybackSynthesisCallback::StopImpl(
         // In all other cases, mAudioTrackHandler.stop() will
         // result in onSynthesisDone being called, and we will
         // write data there.
-        mLogger->OnWriteData();
-
-        if (wasError) {
-            // We have to dispatch the error ourselves.
-            mDispatcher->DispatchOnError();
-        }
+        mLogger->OnCompleted(TextToSpeech::STOPPED);
+        mDispatcher->DispatchOnStop();
     }
+
+    return NOERROR;
 }
 
-Int32 PlaybackSynthesisCallback::GetMaxBufferSize()
+ECode PlaybackSynthesisCallback::GetMaxBufferSize(
+    /* [out] */ Int32* ret)
 {
     // The AudioTrack buffer will be at least MIN_AUDIO_BUFFER_SIZE, so that should always be
     // a safe buffer size to pass in.
-    return MIN_AUDIO_BUFFER_SIZE;
+    *ret = MIN_AUDIO_BUFFER_SIZE;
+
+    return NOERROR;
 }
 
-Boolean PlaybackSynthesisCallback::IsDone()
+ECode PlaybackSynthesisCallback::HasStarted(
+    /* [out] */ Boolean* ret)
 {
-    return mDone;
+    synchronized (mStateLock) {
+        if (mItem != NULL) {
+            *ret = TRUE;
+        } else {
+            *ret = FALSE;
+        }
+    }
+
+    return NOERROR;
 }
 
-Int32 PlaybackSynthesisCallback::Start(
+ECode PlaybackSynthesisCallback::HasFinished(
+    /* [out] */ Boolean* ret)
+{
+    synchronized (mStateLock) {
+        *ret = mDone;
+    }
+
+    return NOERROR;
+}
+
+ECode PlaybackSynthesisCallback::Start(
     /* [in] */ Int32 sampleRateInHz,
     /* [in] */ Int32 audioFormat,
-    /* [in] */ Int32 channelCount)
+    /* [in] */ Int32 channelCount,
+    /* [out] */ Int32* ret)
 {
     if (DBG) {
         //Java:    Log.d(TAG, "start(" + sampleRateInHz + "," + audioFormat + "," + channelCount + ")");
-        String strOut = String("start(") + StringUtils::Int32ToString(sampleRateInHz) + String(",") + StringUtils::Int32ToString(audioFormat) + String(",") + StringUtils::Int32ToString(channelCount) + String(")\n");
-        Logger::D(TAG, strOut);
+        Logger::D(TAG, "start(%d, %d, %d)\n", sampleRateInHz, audioFormat, channelCount);
     }
 
-    Int32 channelConfig = BlockingAudioTrack::GetChannelConfig(channelCount);
-    if (channelConfig == 0) {
-        //Java:    Log.e(TAG, "Unsupported number of channels :" + channelCount);
-        String strOut = String("Unsupported number of channels :") + StringUtils::Int32ToString(channelCount) + String("\n");
-        Logger::E(TAG, strOut);
-        return ITextToSpeech::TTS_ERROR;
-    }
-
-    {
-        AutoLock lock(mStateLock);
-        if (mStopped) {
-            if (DBG) {
-                //Java:    Log.d(TAG, "stop() called before start(), returning.");
-                Logger::D(TAG, String("stop() called before start(), returning.\n"));
-            }
-            return ITextToSpeech::TTS_ERROR;
+    synchronized (mStateLock) {
+        Int32 channelConfig = BlockingAudioTrack::GetChannelConfig(channelCount);
+        if (channelConfig == 0) {
+            //Java:    Log.e(TAG, "Unsupported number of channels :" + channelCount);
+            Logger::E(TAG, "Unsupported number of channels: %d\n", channelCount);
+            mStatusCode = TextToSpeech::ERROR_OUTPUT;
+            *ret = ITextToSpeech::TTS_ERROR;
+            return NOERROR;
         }
-        AutoPtr<SynthesisPlaybackQueueItem> item = new SynthesisPlaybackQueueItem(
-                    mStreamType, sampleRateInHz, audioFormat, channelCount, mVolume, mPan,
+
+        if (mStatusCode == TextToSpeech::STOPPED) {
+            if (DBG) {
+                Logger::D(TAG, "stop() called before start(), returning.");
+            }
+
+            ErrorCodeOnStop(ret);
+            return NOERROR;
+        }
+        if (mStatusCode != TextToSpeech::TTS_SUCCESS) {
+            if (DBG) {
+                Logger::D(TAG, "Error was raised");
+            }
+            *ret = TextToSpeech::TTS_ERROR;
+            return NOERROR;
+        }
+        if (mItem != NULL) {
+            Logger::E(TAG, "Start called twice");
+            *ret = TextToSpeech::TTS_ERROR;
+            return NOERROR;
+        }
+
+        AutoPtr<SynthesisPlaybackQueueItem> item = new SynthesisPlaybackQueueItem();
+        item->constructor(mAudioParams, sampleRateInHz, audioFormat, channelCount,
                     mDispatcher, mCallerIdentity, mLogger);
         mAudioTrackHandler->Enqueue(item);
         mItem = item;
     }
 
-    return ITextToSpeech::TTS_SUCCESS;
+    *ret = ITextToSpeech::TTS_SUCCESS;
+    return NOERROR;
 }
 
-Int32 PlaybackSynthesisCallback::AudioAvailable(
+ECode PlaybackSynthesisCallback::AudioAvailable(
     /* [in] */ ArrayOf<Byte>* buffer,
     /* [in] */ Int32 offset,
-    /* [in] */ Int32 length)
+    /* [in] */ Int32 length,
+    /* [out] */ Int32* ret)
 {
     if (DBG) {
         //Java:    Log.d(TAG, "audioAvailable(byte[" + buffer.length + "]," + offset + "," + length + ")");
-        String strOut = String("audioAvailable(byte[") + StringUtils::Int32ToString(buffer->GetLength()) + String("],") + StringUtils::Int32ToString(offset) + String(",") + StringUtils::Int32ToString(length) + String(")\n");
-        Logger::D(TAG, strOut);
+        Logger::D(TAG, "audioAvailable(byte[%d], %d, %d)\n", buffer->GetLength(), offset, length);
     }
-    if (length > GetMaxBufferSize() || length <= 0) {
+
+    Int32 i;
+    GetMaxBufferSize(&i);
+    if (length > i || length <= 0) {
         //Java:    throw new IllegalArgumentException("buffer is too large or of zero length (" + length + " bytes)");
-        String strOut = String("buffer is too large or of zero length (") + StringUtils::Int32ToString(length) + String(" bytes)\n");
-        Logger::E(TAG, strOut);
-        return 0;// E_ILLEGAL_ARGUMENT_EXCEPTION;
+        Logger::E(TAG, "buffer is too large or of zero length (%d) bytes)\n", length);
+        *ret = 0;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     AutoPtr<SynthesisPlaybackQueueItem> item = NULL;
 
     {
         AutoLock lock(mStateLock);
-        if (mItem == NULL || mStopped) {
-            return ITextToSpeech::TTS_ERROR;
+        if (mItem == NULL) {
+            mStatusCode = TextToSpeech::ERROR_OUTPUT;
+            *ret = ITextToSpeech::TTS_ERROR;
+            return NOERROR;
         }
+        if (mStatusCode != TextToSpeech::TTS_SUCCESS) {
+            if (DBG) {
+                Logger::D(TAG, "Error was raised");
+            }
+            *ret = TextToSpeech::TTS_ERROR;
+            return NOERROR;
+        }
+        if (mStatusCode == TextToSpeech::STOPPED) {
+            ErrorCodeOnStop(ret);
+            return NOERROR;
+        }
+
         item = mItem;
     }
 
@@ -179,10 +225,12 @@ Int32 PlaybackSynthesisCallback::AudioAvailable(
 
     mLogger->OnEngineDataReceived();
 
-    return ITextToSpeech::TTS_SUCCESS;
+    *ret = ITextToSpeech::TTS_SUCCESS;
+    return NOERROR;
 }
 
-Int32 PlaybackSynthesisCallback::Done()
+ECode PlaybackSynthesisCallback::Done(
+    /* [out] */ Int32* ret)
 {
     if (DBG) {
         //Java:    Log.d(TAG, "done()");
@@ -196,13 +244,15 @@ Int32 PlaybackSynthesisCallback::Done()
         if (mDone) {
             //Java:    Log.w(TAG, "Duplicate call to done()");
             Logger::W(TAG, String("Duplicate call to done()\n") );
-            return ITextToSpeech::TTS_ERROR;
+            *ret = ITextToSpeech::TTS_ERROR;
+            return NOERROR;
         }
 
         mDone = TRUE;
 
         if (mItem == NULL) {
-            return ITextToSpeech::TTS_ERROR;
+            *ret = ITextToSpeech::TTS_ERROR;
+            return NOERROR;
         }
 
         item = mItem;
@@ -211,19 +261,28 @@ Int32 PlaybackSynthesisCallback::Done()
     item->Done();
     mLogger->OnEngineComplete();
 
-    return ITextToSpeech::TTS_SUCCESS;
+    *ret = ITextToSpeech::TTS_SUCCESS;
+    return NOERROR;
 }
 
 ECode PlaybackSynthesisCallback::Error()
+{
+    return Error(TextToSpeech::ERROR_SYNTHESIS);
+}
+
+ECode PlaybackSynthesisCallback::Error(
+    /* [in] */ Int32 errorCode)
 {
     if (DBG) {
         //Java:    Log.d(TAG, "error() [will call stop]");
         Logger::D(TAG, String("error() [will call stop]\n") );
     }
-    // Currently, this call will not be logged if error( ) is called
-    // before start.
-    mLogger->OnError();
-    StopImpl(TRUE);
+    synchronized(mStateLock) {
+        if (mDone) {
+            return NOERROR;
+        }
+        mStatusCode = errorCode;
+    }
     return NOERROR;
 }
 

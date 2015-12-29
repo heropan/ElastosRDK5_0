@@ -6,7 +6,7 @@
 #include "elastos/droid/speech/tts/TextToSpeech.h"
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::IComparator;
+using Elastos::Core::IComparator;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::Pm::IServiceInfo;
 using Elastos::Droid::Content::Pm::IPackageManager;
@@ -72,10 +72,6 @@ private:
             /* [in] */ AutoPtr<TextToSpeech::TextToSpeechEngineInfo> lhs,
             /* [in] */ AutoPtr<TextToSpeech::TextToSpeechEngineInfo> rhs);
 
-    private:
-        //private
-        EngineInfoComparator();
-
     public:
         static AutoPtr<EngineInfoComparator> INSTANCE;      // = new EngineInfoComparator();
     };
@@ -98,14 +94,14 @@ public:
      *         the highest ranked engine is returned as per {@link EngineInfoComparator}.
      */
     CARAPI GetDefaultEngine(
-        /* [out] */ String * pRet);
+        /* [out] */ String* pRet);
 
     /**
      * @return the package name of the highest ranked system engine, {@code null}
      *         if no TTS engines were present in the system image.
      */
     CARAPI GetHighestRankedEngineName(
-        /* [out] */ String * pRet);
+        /* [out] */ String* pRet);
 
     /**
      * Returns the engine info for a given engine name. Note that engines are
@@ -121,13 +117,13 @@ public:
      * @return A list of engine info objects. The list can be empty, but never {@code null}.
      */
     CARAPI GetEngines(
-        /* [out] */ IArrayList** ppRet);
+        /* [out] */ IList** ppRet);
 
     /**
      * @return true if a given engine is installed on the system.
      */
     CARAPI IsEngineInstalled(
-        /* [in] */ const String& engine,;
+        /* [in] */ const String& engine,
         /* [out] */ Boolean* pRet);
 
     /**
@@ -165,19 +161,49 @@ public:
      * if it fails to do so, we return null.
      */
     CARAPI ParseLocaleString(
-        /* [in] */ const String& localeString)
+        /* [in] */ const String& localeString,
         /* [in] */ ILocale** ret);
 
     //public synchronized
     CARAPI UpdateLocalePrefForEngine(
         /* [in] */ const String& name,
-        /* [in] */ const ILocale* newLocale);
+        /* [in] */ ILocale* newLocale);
+
+public:
+    /**
+     * This method tries its best to return a valid {@link Locale} object from the TTS-specific
+     * Locale input (returned by {@link TextToSpeech#getLanguage}
+     * and {@link TextToSpeech#getDefaultLanguage}). A TTS Locale language field contains
+     * a three-letter ISO 639-2/T code (where a proper Locale would use a two-letter ISO 639-1
+     * code), and the country field contains a three-letter ISO 3166 country code (where a proper
+     * Locale would use a two-letter ISO 3166-1 code).
+     *
+     * This method tries to convert three-letter language and country codes into their two-letter
+     * equivalents. If it fails to do so, it keeps the value from the TTS locale.
+     */
+    static CARAPI NormalizeTTSLocale(
+        /* [in] */ ILocale* ttsLocale,
+        /* [out] */ ILocale** outLocale);
+
+    /**
+     * Return the old-style string form of the locale. It consists of 3 letter codes:
+     * <ul>
+     *   <li>"ISO 639-2/T language code" if the locale has no country entry</li>
+     *   <li> "ISO 639-2/T language code{@link #LOCALE_DELIMITER}ISO 3166 country code"
+     *     if the locale has no variant entry</li>
+     *   <li> "ISO 639-2/T language code{@link #LOCALE_DELIMITER}ISO 3166 country
+     *     code{@link #LOCALE_DELIMITER}variant" if the locale has a variant entry</li>
+     * </ul>
+     * If we fail to generate those codes using {@link Locale#getISO3Country()} and
+     * {@link Locale#getISO3Language()}, then we return new String[]{"eng","USA",""};
+     */
+    static CARAPI_(AutoPtr<ArrayOf<String> >) ToOldLocaleStringFormat(
+        /* [in] */ ILocale* locale);
 
 private:
     CARAPI_(Boolean) IsSystemEngine(
         /* [in] */ IServiceInfo* info);
 
-private:
     //private
     CARAPI_(String) SettingsActivityFromServiceInfo(
         /* [in] */ IServiceInfo* si,
@@ -188,7 +214,6 @@ private:
         /* [in] */ IResolveInfo* resolve,
         /* [in] */ IPackageManager* pm);
 
-private:
     /**
      * @return the old style locale string constructed from
      *         {@link Settings.Secure#TTS_DEFAULT_LANG},
@@ -213,7 +238,20 @@ private:
         /* [in] */ const String& prefValue,
         /* [in] */ const String& engineName);
 
-private:
+    /**
+     * This method tries its best to return a valid {@link Locale} object from the TTS-specific
+     * Locale input (returned by {@link TextToSpeech#getLanguage}
+     * and {@link TextToSpeech#getDefaultLanguage}). A TTS Locale language field contains
+     * a three-letter ISO 639-2/T code (where a proper Locale would use a two-letter ISO 639-1
+     * code), and the country field contains a three-letter ISO 3166 country code (where a proper
+     * Locale would use a two-letter ISO 3166-1 code).
+     *
+     * This method tries to convert three-letter language and country codes into their two-letter
+     * equivalents. If it fails to do so, it keeps the value from the TTS locale.
+     */
+    static CARAPI_(ILocale*) NormalizeTTSLocale(
+        /* [in] */ ILocale* ttsLocale);
+
     /**
      * Updates the value for a given key in a comma separated list of key value pairs,
      * each of which are delimited by a colon. If no value exists for the given key,
@@ -242,10 +280,10 @@ private:
     static const String LOCALE_DELIMITER_NEW;   // = "-";
 
     /** Mapping of various language strings to the normalized Locale form */
-    static final Map<String, String> sNormalizeLanguage;
+    static Map<String, String> sNormalizeLanguage;
 
     /** Mapping of various country strings to the normalized Locale form */
-    static final Map<String, String> sNormalizeCountry;
+    static Map<String, String> sNormalizeCountry;
 
     //private final
     AutoPtr<IContext> mContext;

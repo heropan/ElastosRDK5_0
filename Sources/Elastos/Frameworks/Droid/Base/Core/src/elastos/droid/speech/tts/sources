@@ -2,10 +2,10 @@
 TARGET_NAME = speech.tts
 TARGET_TYPE = lib
 
-include $(MAKEDIR)/../../../../../../sources.inc
+include $(MAKEDIR)/../../../../../../../sources.inc
 
-INCLUDES += ../
-INCLUDES += $(MAKEDIR)/../../../../inc/
+INCLUDES += ../../
+INCLUDES += $(MAKEDIR)/../../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
@@ -17,7 +17,7 @@ SOURCES += SynthesisPlaybackQueueItem.cpp
 SOURCES += TtsEngines.cpp
 SOURCES += AbstractSynthesisCallback.cpp
 SOURCES += CSynthesisRequest.cpp
-SOURCES += EventLogger.cpp
+SOURCES += EventLoggerV1.cpp
 SOURCES += PlaybackSynthesisCallback.cpp
 SOURCES += SynthesisRequest.cpp
 SOURCES += UtteranceProgressListener.cpp
@@ -31,5 +31,5 @@ SOURCES += CTtsEngines.cpp
 SOURCES += FileSynthesisCallback.cpp
 SOURCES += TextToSpeechService.cpp
 SOURCES += CFileSynthesisCallback.cpp
-SOURCES += CBlockingAudioTrack
+SOURCES += CBlockingAudioTrack.cpp
 

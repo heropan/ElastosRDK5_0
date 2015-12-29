@@ -1,6 +1,6 @@
 
 #include "elastos/droid/speech/srec/CRecognizerHelper.h"
-#include "elastos/droid/speech/srec/CRecognizer.h"
+#include "elastos/droid/speech/srec/Recognizer.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
@@ -16,18 +16,14 @@ ECode CRecognizerHelper::GetConfigDir(
     /* [in] */ ILocale* locale,
     /* [out] */ String* ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    *ret = Recognizer::GetConfigDir(locale);
-    return NOERROR;
+    return Recognizer::GetConfigDir(locale, ret);
 }
 
 ECode CRecognizerHelper::EventToString(
     /* [in] */ Int32 event,
     /* [out] */ String* ret)
 {
-    VALIDATE_NOT_NULL(ret);
-    *ret = Recognizer::EventToString(event);
-    return NOERROR;
+    return Recognizer::EventToString(event, ret);
 }
 
 } // namespace Srec

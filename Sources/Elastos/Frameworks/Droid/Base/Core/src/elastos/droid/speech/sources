@@ -9,11 +9,10 @@ INCLUDES += $(MAKEDIR)/../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
-SOURCES = CRecognizerIntent.cpp
+SOURCES = CRecognizerIntentHelper.cpp
 SOURCES += CSpeechRecognizer.cpp
 SOURCES += CSpeechRecognizerHelper.cpp
 SOURCES += RecognitionService.cpp
-SOURCES += RecognizerIntent.cpp
 SOURCES += RecognizerResultsIntent.cpp
 SOURCES += SpeechRecognizer.cpp
 
