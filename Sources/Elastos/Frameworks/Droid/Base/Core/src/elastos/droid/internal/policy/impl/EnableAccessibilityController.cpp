@@ -71,14 +71,16 @@ ECode EnableAccessibilityController::SpeakHandler::HandleMessage(
             {
                 String text;
                 mHost->mContext->GetString(R::string::continue_to_enable_accessibility, &text);
-                mHost->mTts->Speak(text, ITextToSpeech::QUEUE_FLUSH, NULL);
+                Int32 result;
+                mHost->mTts->Speak(text, ITextToSpeech::QUEUE_FLUSH, NULL, &result);
             }
             break;
         case EnableAccessibilityController::MESSAGE_SPEAK_ENABLE_CANCELED:
             {
                 String text;
                 mHost->mContext->GetString(R::string::enable_accessibility_canceled, &text);
-                mHost->mTts->Speak(text, ITextToSpeech::QUEUE_FLUSH, NULL);
+                Int32 result;
+                mHost->mTts->Speak(text, ITextToSpeech::QUEUE_FLUSH, NULL, &result);
             }
             break;
         case EnableAccessibilityController::MESSAGE_ENABLE_ACCESSIBILITY:
@@ -87,7 +89,8 @@ ECode EnableAccessibilityController::SpeakHandler::HandleMessage(
                 mHost->mTone->Play();
                 String text;
                 mHost->mContext->GetString(R::string::accessibility_enabled, &text);
-                mHost->mTts->Speak(text, ITextToSpeech::QUEUE_FLUSH, NULL);
+                Int32 result;
+                mHost->mTts->Speak(text, ITextToSpeech::QUEUE_FLUSH, NULL, &result);
             }
             break;
     }
