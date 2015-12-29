@@ -8,6 +8,7 @@
 
 using Elastos::Core::Object;
 using Elastos::Utility::IList;
+using Elastos::Utility::IArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -37,6 +38,28 @@ public:
     CARAPI GetKeys(
         /* [out] */ IList** outlist);
 
+    /**
+     * Return a list of all the Key<?> that are declared as a field inside of the class
+     * {@code type}.
+     *
+     * <p>
+     * Optionally, if {@code instance} is not null, then filter out any keys with null values.
+     * </p>
+     *
+     * <p>
+     * Optionally, if {@code filterTags} is not {@code null}, then filter out any keys
+     * whose native {@code tag} is not in {@code filterTags}. The {@code filterTags} array will be
+     * sorted as a side effect.
+     * </p>
+     */
+    // /*package*/ @SuppressWarnings("unchecked")
+    static CARAPI GetKeysStatic(
+        /* [in] */ ClassID type,
+        /* [in] */ ClassID keyClass,
+        /* [in] */ ICameraMetadata* instance,
+        /* [in] */ ArrayOf<Int32>* filterTags,
+        /* [out] */ IArrayList** list);
+
 protected:
     /**
      * Set a camera metadata field to a value. The field definitions can be
@@ -50,6 +73,14 @@ protected:
      * @hide
      */
     CameraMetadata();
+
+private:
+    // //@SuppressWarnings("rawtypes")
+    // static CARAPI ShouldKeyBeAdded(
+    //     /* [in] */ IInterface* key,
+    //     /* [in] */ Field field,
+    //     /* [in] */ ArrayOf<Int32>* filterTags,
+    //     /* [out] */ Boolean* result);
 
 private:
     static const String TAG;

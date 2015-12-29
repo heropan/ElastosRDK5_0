@@ -41,6 +41,11 @@ CaptureResult::Key::Key(
     mKey = new CameraMetadataNative::Key(name,  type);
 }
 
+ECode CaptureResult::Key::constructor()
+{
+    return NOERROR;
+}
+
 ECode CaptureResult::Key::constructor(
     /* [in] */ const String& name,
     /* [in] */ ClassID type)
@@ -485,12 +490,12 @@ ECode CaptureResult::Get(
 }
 
 ECode CaptureResult::GetProtected(
-    /* [in] */ ICaptureResultKey* key,
+    /* [in] */ IInterface* key,
     /* [out] */ IInterface** outface)
 {
     VALIDATE_NOT_NULL(outface)
 
-    return mResults->Get(key, outface);
+    return mResults->Get(ICaptureResultKey::Probe(key), outface);
 }
 
 ECode CaptureResult::GetKeyClass(

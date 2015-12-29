@@ -35,6 +35,8 @@ public:
 
         virtual ~Key() {}
 
+        constructor();
+
         /**
          * Visible for testing and vendor extensions only.
          *
@@ -169,7 +171,7 @@ public:
     //@SuppressWarnings("unchecked")
     //@Override
     CARAPI GetProtected(
-        /* [in] */ ICaptureResultKey* key,
+        /* [in] */ IInterface* key,
         /* [out] */ IInterface** outface);
 
     /**

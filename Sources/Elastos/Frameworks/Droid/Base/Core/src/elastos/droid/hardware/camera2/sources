@@ -13,5 +13,9 @@ SOURCES += CaptureRequest.cpp
 SOURCES += CaptureResult.cpp
 SOURCES += CaptureFailure.cpp
 SOURCES += TotalCaptureResult.cpp
+SOURCES += CameraCaptureSession.cpp
+SOURCES += CameraDevice.cpp
+SOURCES += CameraManager.cpp
+SOURCES += DngCreator.cpp
 
 SOURCES += camera2.cpp

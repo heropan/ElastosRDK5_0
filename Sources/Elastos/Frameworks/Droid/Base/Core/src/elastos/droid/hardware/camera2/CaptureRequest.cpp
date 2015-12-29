@@ -2,12 +2,15 @@
 #include "Elastos.Droid.View.h"
 #include "elastos/droid/hardware/camera2/CaptureRequest.h"
 #include "elastos/droid/hardware/camera2/impl/CCameraMetadataNative.h"
+#include "elastos/droid/hardware/camera2/utils/HashCodeHelpers.h"
+#include <elastos/utility/Objects.h>
 
 using Elastos::Droid::Hardware::Camera2::Impl::CameraMetadataNative;
 using Elastos::Droid::Hardware::Camera2::Impl::CCameraMetadataNative;
 using Elastos::Droid::Hardware::Camera2::Params::ECLSID_CColorSpaceTransform;
 using Elastos::Droid::Hardware::Camera2::Params::ECLSID_CRggbChannelVector;
 using Elastos::Droid::Hardware::Camera2::Params::ECLSID_CTonemapCurve;
+using Elastos::Droid::Hardware::Camera2::Utils::HashCodeHelpers;
 using Elastos::Droid::Graphics::ECLSID_CRect;
 using Elastos::Droid::Location::ECLSID_CLocation;
 using Elastos::Droid::Utility::ECLSID_CSize;
@@ -20,6 +23,7 @@ using Elastos::Core::ECLSID_CInteger32;
 using Elastos::Core::ECLSID_CInteger64;
 using Elastos::Core::ECLSID_CBoolean;
 using Elastos::Utility::CHashSet;
+using Elastos::Utility::Objects;
 using Elastos::Utility::ICollections;
 using Elastos::Utility::CCollections;
 
@@ -30,24 +34,49 @@ namespace Camera2 {
 
 CAR_INTERFACE_IMPL(CaptureRequest::Key, Object, ICaptureRequestKey)
 
-CaptureRequest::Key::Key(
+CaptureRequest::Key::Key()
+{
+}
+
+ECode CaptureRequest::Key::constructor()
+{
+    return NOERROR;
+}
+
+ECode CaptureRequest::Key::constructor(
     /* [in] */ const String& name,
     /* [in] */ ClassID type)
 {
     mKey = new CameraMetadataNative::Key(name,  type);
+    return NOERROR;
 }
 
-CaptureRequest::Key::Key(
+ECode CaptureRequest::Key::constructor(
     /* [in] */ const String& name,
     /* [in] */ ITypeReference* typeReference)
 {
     mKey = new CameraMetadataNative::Key(name,  typeReference);
+    return NOERROR;
+}
+
+ECode CaptureRequest::Key::constructor(
+    /* [in] */ ICameraMetadataNativeKey* nativeKey)
+{
+    mKey = nativeKey;
+    return NOERROR;
 }
 
 CaptureRequest::Key::Key(
     /* [in] */ ICameraMetadataNativeKey* nativeKey)
 {
     mKey = nativeKey;
+}
+
+CaptureRequest::Key::Key(
+    /* [in] */ const String& name,
+    /* [in] */ ClassID type)
+{
+    mKey = new CameraMetadataNative::Key(name,  type);
 }
 
 ECode CaptureRequest::Key::GetName(
@@ -397,6 +426,24 @@ ECode CaptureRequest::GetTargets(
     return coll->UnmodifiableCollection(ICollection::Probe(mSurfaceSet), targets);
 }
 
+ECode CaptureRequest::GetProtected(
+    /* [in] */ IInterface* key,
+    /* [out] */ IInterface** outface)
+{
+    VALIDATE_NOT_NULL(outface)
+
+    return mSettings->Get(ICaptureRequestKey::Probe(key), outface);
+}
+
+ECode CaptureRequest::GetKeyClass(
+    /* [out] */ ClassID* id)
+{
+    VALIDATE_NOT_NULL(id)
+
+    *id = ECLSID_CCaptureRequestKey;
+    return NOERROR;
+}
+
 ECode CaptureRequest::GetKeys(
     /* [out] */ IList** outlist)
 {
@@ -405,20 +452,95 @@ ECode CaptureRequest::GetKeys(
     return CameraMetadata::GetKeys(outlist);
 }
 
+ECode CaptureRequest::GetTag(
+    /* [out] */ IInterface** tag)
+{
+    VALIDATE_NOT_NULL(tag)
+
+    *tag = mUserTag;
+    REFCOUNT_ADD(*tag);
+    return NOERROR;
+}
+
+ECode CaptureRequest::Equals(
+    /* [in] */ IInterface* other,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    if (ICaptureRequest::Probe(other) != NULL) {
+        return Equals(ICaptureRequest::Probe(other), result);
+    }
+    return NOERROR;
+}
+
+ECode CaptureRequest::Equals(
+    /* [in] */ ICaptureRequest* other,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    if (other != NULL) {
+        CaptureRequest* tmp = (CaptureRequest*)other;
+        if (Objects::Equals(mUserTag, tmp->mUserTag)) {
+            if (mSurfaceSet->Equals(tmp->mSurfaceSet, result), result) {
+                if (IObject::Probe(mSettings)->Equals(tmp->mSettings, result), result) {
+                    return NOERROR;
+                }
+            }
+        }
+    }
+    return NOERROR;
+}
+
+ECode CaptureRequest::GetHashCode(
+    /* [out] */ Int32* code)
+{
+    return HashCodeHelpers::GetHashCode(IInterface::Probe(mSettings),
+            IInterface::Probe(mSurfaceSet), mUserTag, code);
+}
+
+
 ECode CaptureRequest::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    assert(0);
-    // mSettings.writeToParcel(dest, flags);
-    // dest.writeParcelableArray(mSurfaceSet.toArray(new Surface[mSurfaceSet.size()]), flags);
-    return NOERROR;
+    IParcelable::Probe(mSettings)->WriteToParcel(dest);
+    AutoPtr<ArrayOf<IInterface*> > objArray;
+    mSurfaceSet->ToArray((ArrayOf<IInterface*>**)&objArray);
+    return dest->WriteArrayOf((Handle32)objArray.Get());
 }
 
 ECode CaptureRequest::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    assert(0);
+    IParcelable::Probe(mSettings)->ReadFromParcel(source);
+
+    mSurfaceSet->Clear();
+
+    AutoPtr<ArrayOf<IInterface*> > objArray;
+    source->ReadArrayOf((Handle32*)(&objArray));
+
+    if (objArray == NULL) {
+        return NOERROR;
+    }
+
+    for (Int32 i = 0; i < objArray->GetLength(); i++) {
+        AutoPtr<ISurface> s = ISurface::Probe((*objArray)[i]);
+        mSurfaceSet->Add(IInterface::Probe(s));
+    }
+
     return NOERROR;
+}
+
+CARAPI CaptureRequest::ContainsTarget(
+    /* [in] */ ISurface* surface,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    return mSurfaceSet->Contains(IInterface::Probe(surface), result);
 }
 
 } // namespace Camera2

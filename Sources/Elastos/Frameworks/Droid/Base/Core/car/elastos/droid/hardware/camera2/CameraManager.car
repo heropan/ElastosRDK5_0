@@ -22,8 +22,30 @@ module
      *
      * @see registerAvailabilityCallback
      */
-    interface IAvailabilityCallback {
+    interface ICameraManagerAvailabilityCallback {
+        /**
+         * A new camera has become available to use.
+         *
+         * <p>The default implementation of this method does nothing.</p>
+         *
+         * @param cameraId The unique identifier of the new camera.
+         */
+        OnCameraAvailable(
+            [in] String cameraId);
 
+        /**
+         * A previously-available camera has become unavailable for use.
+         *
+         * <p>If an application had an active CameraDevice instance for the
+         * now-disconnected camera, that application will receive a
+         * {@link CameraDevice.StateCallback#onDisconnected disconnection error}.</p>
+         *
+         * <p>The default implementation of this method does nothing.</p>
+         *
+         * @param cameraId The unique identifier of the disconnected camera.
+         */
+        OnCameraUnavailable(
+            [in] String cameraId);
     }
 
     /**
@@ -68,7 +90,7 @@ module
          * {@code null} to use the current thread's {@link android.os.Looper looper}.
          */
         RegisterAvailabilityCallback(
-            [in] IAvailabilityCallback* ccallback,
+            [in] ICameraManagerAvailabilityCallback* ccallback,
             [in] IHandler* handler);
 
         /**
@@ -80,7 +102,7 @@ module
          * @param callback The callback to remove from the notification list
          */
         UnregisterAvailabilityCallback(
-            [in] IAvailabilityCallback* ccallback);
+            [in] ICameraManagerAvailabilityCallback* ccallback);
 
         /**
          * <p>Query the capabilities of a camera device. These capabilities are
