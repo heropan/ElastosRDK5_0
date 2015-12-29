@@ -1,8 +1,14 @@
 #ifndef __ELASTOS_DROID_SERVER_CONTENT_SYNC_QUEUE_H__
 #define __ELASTOS_DROID_SERVER_CONTENT_SYNC_QUEUE_H__
 
+#include <elastos/droid/ext/frameworkext.h>
 #include <elastos/core/Object.h>
+#include <elastos/droid/server/content/SyncStorageEngine.h>
 
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Account::IAccount;
+using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Core::IComparable;
 
 namespace Elastos {
@@ -18,6 +24,7 @@ namespace Content {
  */
 class SyncOperation
     : public Object
+    , public ISyncOperation
     , public IComparable
 {
 public:
@@ -48,7 +55,7 @@ public:
         /* [in] */ Int64 delayUntil);
 
     CARAPI Init(
-        /* [in] */ SyncStorageEngineEndPoint* info,
+        /* [in] */ EndPoint* info,
         /* [in] */ Int32 reason,
         /* [in] */ Int32 source,
         /* [in] */ IBundle* extras,
@@ -100,7 +107,7 @@ public:
 
     /** Changed in V3. */
     static String ToKey(
-        /* [in] */ SyncStorageEngineEndPoint* info,
+        /* [in] */ EndPoint* info,
         /* [in] */ IBundle* extras);
 
     String WakeLockName();
@@ -164,7 +171,7 @@ public:
     static const Int32 SYNC_TARGET_SERVICE;
 
     /** Identifying info for the target for this operation. */
-    AutoPtr<SyncStorageEngineEndPoint> mTarget;
+    AutoPtr<EndPoint> mTarget;
     /** Why this sync was kicked off. {@link #REASON_NAMES} */
     Int32 mReason;
     /** Where this sync was initiated. */
@@ -175,7 +182,7 @@ public:
     Boolean mExpedited;
     AutoPtr<IBundle> mExtras;
     /** Bare-bones version of this operation that is persisted across reboots. */
-    AutoPtr<SyncStorageEnginePendingOperation> mPendingOperation;
+    AutoPtr<PendingOperation> mPendingOperation;
     /** Elapsed real time in millis at which to run this sync. */
     Int64 mLatestRunTime;
     /** Set by the SyncManager in order to delay retries. */

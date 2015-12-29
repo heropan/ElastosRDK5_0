@@ -21,6 +21,7 @@ namespace Content {
  */
 class SyncAdaptersCache
     : public RegisteredServicesCache
+    , public ISyncAdaptersCache
 {
 public:
     class MySerializer
@@ -41,10 +42,14 @@ public:
     };
 
 public:
-    SyncAdaptersCache(
-        /* [in] */ IContext* context);
+    CAR_INTERFACE_DECL()
+
+    SyncAdaptersCache();
 
     virtual ~SyncAdaptersCache();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context);
 
     CARAPI ParseServiceAttributes(
         /* [in] */ IResources* res,

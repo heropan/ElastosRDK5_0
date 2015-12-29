@@ -16,6 +16,8 @@ CAR_OBJECT_IMPL(CContextWrapper)
 CAR_OBJECT_IMPL(CIntent)
 CAR_OBJECT_IMPL(CIntentFilter)
 CAR_OBJECT_IMPL(CRestrictionEntry)
+CAR_OBJECT_IMPL(CSyncAdaptersCache)
+
 
 }
 }

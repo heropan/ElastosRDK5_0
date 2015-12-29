@@ -3,6 +3,7 @@
 #include <Elastos.CoreLibrary.Utility.h>
 #include <Elastos.CoreLibrary.External.h>
 #include "elastos/droid/content/pm/RegisteredServicesCache.h"
+#include "elastos/droid/content/pm/CRegisteredServicesCacheServiceInfo.h"
 #include "elastos/droid/content/CComponentName.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/content/CIntentFilter.h"
@@ -43,7 +44,8 @@ using Elastos::IO::IFile;
 using Elastos::IO::CFile;
 using Elastos::IO::ICloseable;
 using Elastos::IO::IOutputStream;
-using Elastos::Utility::IList;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
@@ -126,14 +128,70 @@ ECode RegisteredServicesCache::ListenerRunnable::Run()
 //====================================================================
 // RegisteredServicesCache::ServiceInfo
 //====================================================================
-RegisteredServicesCache::ServiceInfo::ServiceInfo(
+RegisteredServicesCache::ServiceInfo::ServiceInfo()
+    : mUid(0)
+{}
+
+RegisteredServicesCache::ServiceInfo::~ServiceInfo()
+{}
+
+ECode RegisteredServicesCache::ServiceInfo::constructor(
     /* [in] */ IInterface* type,
     /* [in] */ IComponentName* componentName,
     /* [in] */ Int32 uid)
-    : mType(type)
-    , mComponentName(componentName)
-    , mUid(uid)
-{}
+{
+    mType = type;
+    mComponentName = componentName;
+    mUid = uid;
+    return NOERROR;
+}
+
+ECode RegisteredServicesCache::ServiceInfo::SetType(
+    /* [in] */ IInterface* type)
+{
+    mType = type;
+    return NOERROR;
+}
+
+ECode RegisteredServicesCache::ServiceInfo::GetType(
+    /* [out] */ IInterface** type)
+{
+    VALIDATE_NOT_NULL(type)
+    *type = mType;
+    REFCOUNT_ADD(*type)
+    return NOERROR;
+}
+
+ECode RegisteredServicesCache::ServiceInfo::SetComponentName(
+    /* [in] */ IComponentName* cn)
+{
+    mComponentName = cn;
+    return NOERROR;
+}
+
+ECode RegisteredServicesCache::ServiceInfo::GetComponentName(
+    /* [out] */ IComponentName** cn)
+{
+    VALIDATE_NOT_NULL(cn)
+    *cn = mComponentName;
+    REFCOUNT_ADD(*cn)
+    return NOERROR;
+}
+
+ECode RegisteredServicesCache::ServiceInfo::SetUid(
+    /* [in] */ Int32 uid)
+{
+    mUid = uid;
+    return NOERROR;
+}
+
+ECode RegisteredServicesCache::ServiceInfo::GetUid(
+    /* [out] */ Int32* uid)
+{
+    VALIDATE_NOT_NULL(uid)
+    *uid = mUid;
+    return NOERROR;
+}
 
 ECode RegisteredServicesCache::ServiceInfo::ToString(
     /* [out] */ String* str)
@@ -156,19 +214,44 @@ ECode RegisteredServicesCache::ServiceInfo::ToString(
 //====================================================================
 const String RegisteredServicesCache::TAG("PackageManager");
 
-RegisteredServicesCache::RegisteredServicesCache(
+RegisteredServicesCache::RegisteredServicesCache()
+    : mPersistentServicesFileDidNotExist(FALSE)
+{
+}
+
+RegisteredServicesCache::~RegisteredServicesCache()
+{
+}
+
+ECode RegisteredServicesCache::GetContext(
+    /* [out] */ IContext** ctx)
+{
+    VALIDATE_NOT_NULL(ctx)
+    *ctx = mContext;
+    REFCOUNT_ADD(*ctx)
+    return NOERROR;
+}
+
+ECode RegisteredServicesCache::SetContext(
+    /* [in] */ IContext* ctx)
+{
+    mContext = ctx;
+    return NOERROR;
+}
+
+ECode RegisteredServicesCache::constructor(
     /* [in] */ IContext* context,
     /* [in] */ const String& interfaceName,
     /* [in] */ const String& metaDataName,
     /* [in] */ const String& attributeName,
     /* [in] */ IXmlSerializerAndParser* serializerAndParser)
-    : mContext(context)
-    , mInterfaceName(interfaceName)
-    , mMetaDataName(metaDataName)
-    , mAttributesName(attributeName)
-    , mSerializerAndParser(serializerAndParser)
-    , mPersistentServicesFileDidNotExist(FALSE)
 {
+    mContext = context;
+    mInterfaceName = interfaceName;
+    mMetaDataName = metaDataName;
+    mAttributesName = attributeName;
+    mSerializerAndParser = serializerAndParser;
+
     mPackageReceiver = (IBroadcastReceiver*)new RegisteredServicesCache::PackageReceiver(this);
     mPackageReceiver = (IBroadcastReceiver*)new RegisteredServicesCache::ExternalReceiver(this);
 
@@ -201,6 +284,7 @@ RegisteredServicesCache::RegisteredServicesCache(
     sdFilter->AddAction(IIntent::ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE);
     intent = NULL;
     mContext->RegisterReceiver(mExternalReceiver, sdFilter, (IIntent**)&intent);
+    return NOERROR;
 }
 
 ECode RegisteredServicesCache::HandlePackageEvent(
@@ -245,7 +329,7 @@ AutoPtr<RegisteredServicesCache::UserServices> RegisteredServicesCache::FindOrCr
     return services;
 }
 
-void RegisteredServicesCache::InvalidateCache(
+ECode RegisteredServicesCache::InvalidateCache(
     /* [in] */ Int32 userId)
 {
     AutoLock lock(mServicesLock);
@@ -254,9 +338,10 @@ void RegisteredServicesCache::InvalidateCache(
     if (user->mServices != NULL) {
         user->mServices = NULL;
     }
+    return NOERROR;
 }
 
-void RegisteredServicesCache::Dump(
+ECode RegisteredServicesCache::Dump(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IPrintWriter* fout,
     /* [in] */ ArrayOf<String>* args,
@@ -271,10 +356,10 @@ void RegisteredServicesCache::Dump(
         sb += " services";
         fout->Println(sb.ToString());
 
-        HashMap<AutoPtr<IInterface>, AutoPtr<ServiceInfo> >::Iterator itr =
+        HashMap<AutoPtr<IInterface>, AutoPtr<IRegisteredServicesCacheServiceInfo> >::Iterator itr =
                 user->mServices->Begin();
         for (; itr != user->mServices->End(); ++itr) {
-            AutoPtr<ServiceInfo> info = itr->mSecond;
+            AutoPtr<IRegisteredServicesCacheServiceInfo> info = itr->mSecond;
             StringBuilder sb("  ");
             sb += Object::ToString(info);
             fout->Println(sb.ToString());
@@ -283,15 +368,21 @@ void RegisteredServicesCache::Dump(
     else {
         fout->Println(String("RegisteredServicesCache: services not loaded"));
     }
+    return NOERROR;
 }
 
-AutoPtr<IRegisteredServicesCacheListener> RegisteredServicesCache::GetListener()
+ECode RegisteredServicesCache::GetListener(
+    /* [out] */ IRegisteredServicesCacheListener** listener)
 {
+    VALIDATE_NOT_NULL(listener)
+
     AutoLock lock(mServicesLock);
-    return mListener;
+    *listener = mListener;
+    REFCOUNT_ADD(*listener)
+    return NOERROR;
 }
 
-void RegisteredServicesCache::SetListener(
+ECode RegisteredServicesCache::SetListener(
     /* [in] */ IRegisteredServicesCacheListener* listener,
     /* [in] */ IHandler* handler)
 {
@@ -304,6 +395,7 @@ void RegisteredServicesCache::SetListener(
     AutoLock lock(this);
     mHandler = handler;
     mListener = listener;
+    return NOERROR;
 }
 
 void RegisteredServicesCache::NotifyListener(
@@ -332,10 +424,13 @@ void RegisteredServicesCache::NotifyListener(
     handler->Post(runnable, &result);
 }
 
-AutoPtr<RegisteredServicesCache::ServiceInfo> RegisteredServicesCache::GetServiceInfo(
+ECode RegisteredServicesCache::GetServiceInfo(
     /* [in] */ IInterface* type,
-    /* [in] */ Int32 userId)
+    /* [in] */ Int32 userId,
+    /* [out] */ IRegisteredServicesCacheServiceInfo** serviceInfo)
 {
+    VALIDATE_NOT_NULL(serviceInfo)
+
     AutoLock lock(mServicesLock);
     // Find user and lazily populate cache
     AutoPtr<UserServices> user = FindOrCreateUserLocked(userId);
@@ -343,17 +438,23 @@ AutoPtr<RegisteredServicesCache::ServiceInfo> RegisteredServicesCache::GetServic
         GenerateServicesMap(userId);
     }
 
-    AutoPtr<ServiceInfo> info;
-    HashMap<AutoPtr<IInterface>, AutoPtr<ServiceInfo> >::Iterator it = user->mServices->Find(type);
+    AutoPtr<IRegisteredServicesCacheServiceInfo> info;
+    HashMap<AutoPtr<IInterface>, AutoPtr<IRegisteredServicesCacheServiceInfo> >::Iterator it = user->mServices->Find(type);
     if (it != user->mServices->End()){
         info = it->mSecond;
     }
-    return info;
+
+    *serviceInfo = info;
+    REFCOUNT_ADD(*serviceInfo)
+    return NOERROR;
 }
 
-AutoPtr< List<AutoPtr<RegisteredServicesCache::ServiceInfo> > > RegisteredServicesCache::GetAllServices(
-    /* [in] */ Int32 userId)
+ECode RegisteredServicesCache::GetAllServices(
+    /* [in] */ Int32 userId,
+    /* [out] */ IList* list)
 {
+    VALIDATE_NOT_NULL(list)
+
     AutoLock lock(mServicesLock);
     // Find user and lazily populate cache
     AutoPtr<UserServices> user = FindOrCreateUserLocked(userId);
@@ -361,13 +462,17 @@ AutoPtr< List<AutoPtr<RegisteredServicesCache::ServiceInfo> > > RegisteredServic
         GenerateServicesMap(userId);
     }
 
-    AutoPtr< List<AutoPtr<RegisteredServicesCache::ServiceInfo> > > infos = new List<AutoPtr<RegisteredServicesCache::ServiceInfo> >();
-    HashMap<AutoPtr<IInterface>, AutoPtr<ServiceInfo> >::Iterator itr = user->mServices->Begin();
+    AutoPtr<IArrayList> infos;
+    CArrayList::New((IArrayList**)&infos);
+
+    HashMap<AutoPtr<IInterface>, AutoPtr<IRegisteredServicesCacheServiceInfo> >::Iterator itr = user->mServices->Begin();
     for (; itr != user->mServices->End(); ++itr) {
-        infos->PushBack(itr->mSecond);
+        infos->Add(TO_IINTERFACE(itr->mSecond));
     }
 
-    return infos;
+    *list = IList::Probe(infos);
+    REFCOUNT_ADD(*list)
+    return NOERROR;
 }
 
 Boolean RegisteredServicesCache::InSystemImage(
@@ -405,7 +510,7 @@ void RegisteredServicesCache::GenerateServicesMap(
 
     AutoPtr<IPackageManager> pm;
     mContext->GetPackageManager((IPackageManager**)&pm);
-    List<AutoPtr<ServiceInfo> > serviceInfos;
+    List<AutoPtr<IRegisteredServicesCacheServiceInfo> > serviceInfos;
     AutoPtr<IList> resolveInfos;
     AutoPtr<IIntent> intent;
     CIntent::New(mInterfaceName, (IIntent**)&intent);
@@ -419,8 +524,8 @@ void RegisteredServicesCache::GenerateServicesMap(
         it->GetNext((IInterface**)&current);
         AutoPtr<IResolveInfo> resolveInfo = IResolveInfo::Probe(current);
         // try {
-        AutoPtr<ServiceInfo> info;
-        ECode ec = ParseServiceInfo(resolveInfo, (ServiceInfo**)&info);
+        AutoPtr<IRegisteredServicesCacheServiceInfo> info;
+        ECode ec = ParseServiceInfo(resolveInfo, (IRegisteredServicesCacheServiceInfo**)&info);
         if (FAILED(ec)) {
             String s;
             resolveInfo->ToString(&s);
@@ -440,7 +545,7 @@ void RegisteredServicesCache::GenerateServicesMap(
     AutoPtr<UserServices> user = FindOrCreateUserLocked(userId);
     Boolean firstScan = user->mServices == NULL;
     if (firstScan) {
-        user->mServices = new HashMap<AutoPtr<IInterface>, AutoPtr<ServiceInfo> >();
+        user->mServices = new HashMap<AutoPtr<IInterface>, AutoPtr<IRegisteredServicesCacheServiceInfo> >();
     }
     else {
         user->mServices->Clear();
@@ -448,9 +553,10 @@ void RegisteredServicesCache::GenerateServicesMap(
 
     StringBuilder changes;
     Boolean changed = FALSE;
-    List<AutoPtr<ServiceInfo> >::Iterator itr = serviceInfos.Begin();
+    ServiceInfo* info;
+    List<AutoPtr<IRegisteredServicesCacheServiceInfo> >::Iterator itr = serviceInfos.Begin();
     for (Int32 i = 0; itr != serviceInfos.End(); ++itr, ++i) {
-        AutoPtr<ServiceInfo> info = *itr;
+        info = (ServiceInfo*)(*itr).Get();
         // four cases:
         // - doesn't exist yet
         //   - add, notify user that it was added
@@ -564,13 +670,15 @@ void RegisteredServicesCache::GenerateServicesMap(
 }
 
 Boolean RegisteredServicesCache::ContainsType(
-    /* [in] */ List<AutoPtr<ServiceInfo> >* serviceInfos,
+    /* [in] */ List<AutoPtr<IRegisteredServicesCacheServiceInfo> >* serviceInfos,
     /* [in] */ IInterface* type)
 {
-    List<AutoPtr<ServiceInfo> >::Iterator itr = serviceInfos->Begin();
+    List<AutoPtr<IRegisteredServicesCacheServiceInfo> >::Iterator itr = serviceInfos->Begin();
     for (; itr != serviceInfos->End(); ++itr) {
-        AutoPtr<ServiceInfo> info = *itr;
-        if (info->mType.Get() == type) {
+        AutoPtr<IRegisteredServicesCacheServiceInfo> info = *itr;
+        AutoPtr<IInterface> t;
+        info->GetType((IInterface**)&t);
+        if (t.Get() == type) {
             return TRUE;
         }
     }
@@ -578,14 +686,15 @@ Boolean RegisteredServicesCache::ContainsType(
 }
 
 Boolean RegisteredServicesCache::ContainsTypeAndUid(
-    /* [in] */ List<AutoPtr<ServiceInfo> >* serviceInfos,
+    /* [in] */ List<AutoPtr<IRegisteredServicesCacheServiceInfo> >* serviceInfos,
     /* [in] */ IInterface* type,
     /* [in] */ Int32 uid)
 {
-    List<AutoPtr<ServiceInfo> >::Iterator itr = serviceInfos->Begin();
+    List<AutoPtr<IRegisteredServicesCacheServiceInfo> >::Iterator itr = serviceInfos->Begin();
     for (; itr != serviceInfos->End(); ++itr) {
-        AutoPtr<ServiceInfo> info = *itr;
-        if (info->mType.Get() == type && info->mUid == uid) {
+        AutoPtr<IRegisteredServicesCacheServiceInfo> info = *itr;
+        ServiceInfo* si = (ServiceInfo*)info.Get();
+        if (si->mType.Get() == type && si->mUid == uid) {
             return TRUE;
         }
 
@@ -595,7 +704,7 @@ Boolean RegisteredServicesCache::ContainsTypeAndUid(
 
 ECode RegisteredServicesCache::ParseServiceInfo(
     /* [in] */ IResolveInfo* service,
-    /* [out] */ ServiceInfo** info)
+    /* [out] */ IRegisteredServicesCacheServiceInfo** info)
 {
     VALIDATE_NOT_NULL(info);
     *info = NULL;
@@ -669,8 +778,8 @@ ECode RegisteredServicesCache::ParseServiceInfo(
     IComponentInfo::Probe(serviceInfo)->GetApplicationInfo((IApplicationInfo**)&applicationInfo);
     Int32 uid;
     applicationInfo->GetUid(&uid);
-    *info = new ServiceInfo(v, componentName, uid);
-    REFCOUNT_ADD(*info);
+    CRegisteredServicesCacheServiceInfo::New(v, componentName, uid, info);
+
     if (parser != NULL) parser->Close();
 
     return NOERROR;

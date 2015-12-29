@@ -206,6 +206,14 @@ module
 
         SetInstallLocation(
             [in] Int32 installLocation);
+
+        /** @hide */
+        GetRequiredAccountType(
+            [out] String* requiredAccountType);
+
+        /** @hide */
+        SetRequiredAccountType(
+            [in] String requiredAccountType);
     }
 
     } // namespace Pm

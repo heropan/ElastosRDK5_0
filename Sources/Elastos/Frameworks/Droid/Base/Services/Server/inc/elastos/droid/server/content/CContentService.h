@@ -1,31 +1,42 @@
 
-#ifndef __ELASTOS_DROID_SERVER_CCONTENTSERVICE_H__
-#define __ELASTOS_DROID_SERVER_CCONTENTSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CONTENT_CCONTENTSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CONTENT_CCONTENTSERVICE_H__
 
-#include "_Elastos_Droid_Server_CContentService.h"
+#include "_Elastos_Droid_Server_Content_CContentService.h"
+#include "elastos/droid/server/SyncManager.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::Etl::List;
-using Elastos::Utility::Etl::HashMap;
-using Elastos::IO::IFileDescriptor;
-using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Accounts::IAccount;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Database::IIContentObserver;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::ISyncAdapterType;
-using Elastos::Droid::Content::ISyncManager;
 using Elastos::Droid::Content::ISyncStatusInfo;
 using Elastos::Droid::Content::IISyncStatusObserver;
+using Elastos::Droid::Content::IIContentService;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::IO::IFileDescriptor;
+using Elastos::IO::IPrintWriter;
+
+using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::IPeriodicSync;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::ISyncInfo;
+using Elastos::Droid::Content::ISyncRequest;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
+namespace Content {
 
 CarClass(CContentService)
+    : public Object
+    , public IIContentService
 {
 public:
     class ObserverNode;
@@ -35,7 +46,8 @@ public:
      * @hide
      *
      */
-    class ObserverCall: public ElRefBase
+    class ObserverCall
+        : public Object
     {
     public:
         ObserverCall(
@@ -54,14 +66,17 @@ public:
      * but current unittest framework requires it to be public
      * @hide
      */
-    class ObserverNode: public ElRefBase
+    class ObserverNode
+        : public Object
     {
     public:
         class ObserverEntry
-            : public ElRefBase
+            : public Object
             , public IProxyDeathRecipient
         {
         public:
+            CAR_INTERFACE_DECL()
+
             ObserverEntry(
                 /* [in] */ ObserverNode* host,
                 /* [in] */ IIContentObserver* observer,
@@ -169,7 +184,15 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL()
+
     CContentService();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ Boolean factoryTest);
 
     CARAPI Dump(
         /* [in] */ IFileDescriptor* fd,
@@ -224,15 +247,54 @@ public:
         /* [in] */ const String& authority,
         /* [in] */ IBundle* extras);
 
+    CARAPI Sync(
+        /* [in] */ ISyncRequest* request);
+
+    /**
+     * If the user id supplied is different to the calling user, the caller must hold the
+     * INTERACT_ACROSS_USERS_FULL permission.
+     */
+    CARAPI SyncAsUser(
+        /* [in] */ ISyncRequest* request,
+        /* [in] */ Int32 userId);
+
     /**
      * Clear all scheduled sync operations that match the uri and cancel the active sync
      * if they match the authority and account, if they are present.
-     * @param account filter the pending and active syncs to cancel using this account
-     * @param authority filter the pending and active syncs to cancel using this authority
+     *
+     * @param account filter the pending and active syncs to cancel using this account, or null.
+     * @param authority filter the pending and active syncs to cancel using this authority, or
+     * null.
+     * @param cname cancel syncs running on this service, or null for provider/account.
      */
+    // @Override
     CARAPI CancelSync(
         /* [in] */ IAccount* account,
-        /* [in] */ const String& authority);
+        /* [in] */ const String& authority,
+        /* [in] */ IComponentName* cn);
+
+    /**
+     * Clear all scheduled sync operations that match the uri and cancel the active sync
+     * if they match the authority and account, if they are present.
+     *
+     * <p> If the user id supplied is different to the calling user, the caller must hold the
+     * INTERACT_ACROSS_USERS_FULL permission.
+     *
+     * @param account filter the pending and active syncs to cancel using this account, or null.
+     * @param authority filter the pending and active syncs to cancel using this authority, or
+     * null.
+     * @param userId the user id for which to cancel sync operations.
+     * @param cname cancel syncs running on this service, or null for provider/account.
+     */
+    // @Override
+    CARAPI CancelSyncAsUser(
+        /* [in] */ IAccount* account,
+        /* [in] */ const String& authority,
+        /* [in] */ IComponentName* cn,
+        /* [in] */ Int32 userId);
+
+    CARAPI CancelRequest(
+        /* [in ]*/ ISyncRequest* request);
 
     /**
      * Get information about the SyncAdapters that are known to the system.
@@ -241,15 +303,40 @@ public:
     CARAPI GetSyncAdapterTypes(
         /* [out, callee] */ ArrayOf<ISyncAdapterType*>** result);
 
+    /**
+     * Get information about the SyncAdapters that are known to the system for a particular user.
+     *
+     * <p> If the user id supplied is different to the calling user, the caller must hold the
+     * INTERACT_ACROSS_USERS_FULL permission.
+     *
+     * @return an array of SyncAdapters that have registered with the system
+     */
+    //@Override
+    CARAPI GetSyncAdapterTypesAsUser(
+        /* [in] */ Int32 userId,
+        /* [out, callee] */ ArrayOf<ISyncAdapterType*>** result);
+
     CARAPI GetSyncAutomatically(
         /* [in] */ IAccount* account,
         /* [in] */ const String& providerName,
+        /* [out] */ Boolean* result);
+
+    CARAPI GetSyncAutomaticallyAsUser(
+        /* [in] */ IAccount* account,
+        /* [in] */ const String& providerName,
+        /* [in] */ Int32 userId,
         /* [out] */ Boolean* result);
 
     CARAPI SetSyncAutomatically(
         /* [in] */ IAccount* account,
         /* [in] */ const String& providerName,
         /* [in] */ Boolean sync);
+
+    CARAPI SetSyncAutomaticallyAsUser(
+        /* [in] */ IAccount* account,
+        /* [in] */ const String& providerName,
+        /* [in] */ Boolean sync,
+        /* [in] */ Int32 userId);
 
     CARAPI AddPeriodicSync(
         /* [in] */ IAccount* account,
@@ -265,11 +352,21 @@ public:
     CARAPI GetPeriodicSyncs(
         /* [in] */ IAccount* account,
         /* [in] */ const String& providerName,
-        /* [out] */ IObjectContainer** periodicSyncList);
+        /* [out] */ IList** periodicSyncList);
 
     CARAPI GetIsSyncable(
         /* [in] */ IAccount* account,
         /* [in] */ const String& providerName,
+        /* [out] */ Int32* value);
+
+    /**
+     * If the user id supplied is different to the calling user, the caller must hold the
+     * INTERACT_ACROSS_USERS_FULL permission.
+     */
+    CARAPI GetIsSyncableAsUser(
+        /* [in] */ IAccount* account,
+        /* [in] */ const String& providerName,
+        /* [in] */ Int32 userId,
         /* [out] */ Int32* value);
 
     CARAPI SetIsSyncable(
@@ -280,25 +377,54 @@ public:
     CARAPI GetMasterSyncAutomatically(
         /* [out] */ Boolean* result);
 
+    CARAPI GetMasterSyncAutomaticallyAsUser(
+        /* [in] */ Int32 userId,
+        /* [out] */ Boolean* result);
+
     CARAPI SetMasterSyncAutomatically(
         /* [in] */ Boolean flag);
+
+    CARAPI SetMasterSyncAutomaticallyAsUser(
+        /* [in] */ Boolean flag,
+        /* [in] */ Int32 userId);
 
     CARAPI IsSyncActive(
         /* [in] */ IAccount* account,
         /* [in] */ const String& authority,
+        /* [in] */ IComponentName* cname,
         /* [out] */ Boolean* isActive);
 
     CARAPI GetCurrentSyncs(
-        /* [out] */ IObjectContainer** syncInfoList);
+        /* [out] */ IList** syncInfoList);
+
+    CARAPI GetCurrentSyncsAsUser(
+        /* [in] */ Int32 userId,
+        /* [out] */ IList** syncInfoList);
 
     CARAPI GetSyncStatus(
         /* [in] */ IAccount* account,
         /* [in] */ const String& authority,
+        /* [in] */ IComponentName* cname,
+        /* [out] */ ISyncStatusInfo** result);
+
+    CARAPI GetSyncStatusAsUser(
+        /* [in] */ IAccount* account,
+        /* [in] */ const String& authority,
+        /* [in] */ IComponentName* cname,
+        /* [in] */ Int32 userId,
         /* [out] */ ISyncStatusInfo** result);
 
     CARAPI IsSyncPending(
         /* [in] */ IAccount* account,
         /* [in] */ const String& authority,
+        /* [in] */ IComponentName* cname,
+        /* [out] */ Boolean* isPending);
+
+    CARAPI IsSyncPendingAsUser(
+        /* [in] */ IAccount* account,
+        /* [in] */ const String& authority,
+        /* [in] */ IComponentName* cname,
+        /* [in] */ Int32 userId,
         /* [out] */ Boolean* isPending);
 
     CARAPI AddStatusChangeListener(
@@ -308,12 +434,23 @@ public:
     CARAPI RemoveStatusChangeListener(
         /* [in] */ IISyncStatusObserver* observer);
 
-    CARAPI constructor(
+    static CARAPI Main(
         /* [in] */ IContext* context,
         /* [in] */ Boolean factoryTest);
 
 private:
-    CARAPI_(AutoPtr<ISyncManager>) GetSyncManager();
+    CARAPI_(AutoPtr<SyncManager>) GetSyncManager();
+
+    /**
+     * Checks if the request is from the system or an app that has INTERACT_ACROSS_USERS_FULL
+     * permission, if the userHandle is not for the caller.
+     *
+     * @param userHandle the user handle of the user we want to act on behalf of.
+     * @param message the message to log on security exception.
+     */
+    CARAPI EnforceCrossUserPermission(
+        /* [in] */ Int32 userHandle,
+        /* [in] */ const String& message);
 
 private:
     static const String TAG;
@@ -323,13 +460,12 @@ private:
     AutoPtr<IContext> mContext;
     Boolean mFactoryTest;
     AutoPtr<ObserverNode> mRootNode;
-    Object mRootNodeLock;
-    AutoPtr<ISyncManager> mSyncManager;
-    Object mSyncManagerLock;
+    AutoPtr<SyncManager> mSyncManager;
 };
 
 }
 }
 }
+}
 
-#endif // __ELASTOS_DROID_SERVER_CCONTENTSERVICE_H__
+#endif // __ELASTOS_DROID_SERVER_CONTENT_CCONTENTSERVICE_H__

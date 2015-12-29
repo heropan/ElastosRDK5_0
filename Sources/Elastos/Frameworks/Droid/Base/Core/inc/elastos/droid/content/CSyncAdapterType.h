@@ -41,7 +41,7 @@ public:
         /* [in] */ Boolean allowParallelSyncs,
         /* [in] */ const String& settingsActivity);
 
-    /** @hide */
+    /** @private */
     CARAPI constructor(
         /* [in] */ const String& authority,
         /* [in] */ const String& accountType);
@@ -111,6 +111,10 @@ public:
 
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
+
+    static AutoPtr<ISyncAdapterType> NewKey(
+        /* [in] */ const String& authority,
+        /* [in] */ const String& accountType);
 
 private:
     String mAuthority;

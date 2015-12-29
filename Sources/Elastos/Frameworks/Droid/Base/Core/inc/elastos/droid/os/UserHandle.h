@@ -3,7 +3,6 @@
 #define __ELASTOS_DROID_OS_USERHANDLE_H__
 
 #include "Elastos.Droid.Os.h"
-
 #include <elastos/core/Object.h>
 
 using Elastos::Core::IStringBuilder;
@@ -13,7 +12,7 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
-class UserHandle
+class ECO_PUBLIC UserHandle
     : public Object
     , public IUserHandle
     , public IParcelable

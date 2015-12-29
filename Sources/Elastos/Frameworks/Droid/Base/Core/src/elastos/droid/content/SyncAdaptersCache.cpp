@@ -1,13 +1,17 @@
 
+#include "elastos/droid/content/SyncAdaptersCache.h"
 #include <Elastos.CoreLibrary.External.h>
 #include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.Utility.h"
-#include "elastos/droid/content/SyncAdaptersCache.h"
-#include "elastos/droid/content/CSyncAdapterType.h"
-#include "elastos/droid/content/CSyncAdapterTypeHelper.h"
 #include "elastos/droid/R.h"
+#include "elastos/droid/content/CSyncAdapterType.h"
 #include <elastos/core/StringUtils.h>
 
+using Elastos::Droid::Content::CSyncAdapterType;
+using Elastos::Droid::Content::Pm::IXmlSerializerAndParser;
+using Elastos::Droid::Content::Pm::EIID_IXmlSerializerAndParser;
+using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::Content::Res::IResources;
 using Elastos::Core::StringUtils;
 
 namespace Elastos {
@@ -41,26 +45,29 @@ ECode SyncAdaptersCache::MySerializer::CreateFromXml(
     /* [out] */ IInterface** obj)
 {
     VALIDATE_NOT_NULL(obj)
-    String authority;
+    String authority, accountType;
     FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("authority"), &authority))
-    String accountType;
     FAIL_RETURN(parser->GetAttributeValue(String(NULL), String("accountType"), &accountType))
-    AutoPtr<ISyncAdapterTypeHelper> typeHelper;
-    FAIL_RETURN(CSyncAdapterTypeHelper::AcquireSingleton((ISyncAdapterTypeHelper**)&typeHelper))
-    AutoPtr<ISyncAdapterType> adapterType;
-    FAIL_RETURN(typeHelper->NewKey(authority, accountType, (ISyncAdapterType**)&adapterType))
+    AutoPtr<ISyncAdapterType> adapterType = CSyncAdapterType::NewKey(authority, accountType);
     *obj = adapterType;
     REFCOUNT_ADD(*obj);
     return NOERROR;
 }
 
-SyncAdaptersCache::SyncAdaptersCache(
-    /* [in] */ IContext *context)
-    : RegisteredServicesCache(context, String(NULL), String(NULL), String(NULL), sSerializer.Get())
+CAR_INTERFACE_IMPL(SyncAdaptersCache, RegisteredServicesCache, ISyncAdaptersCache)
+
+SyncAdaptersCache::SyncAdaptersCache()
 {}
 
 SyncAdaptersCache::~SyncAdaptersCache()
 {}
+
+ECode SyncAdaptersCache::constructor(
+    /* [in] */ IContext *context)
+{
+    String nullStr;
+    return RegisteredServicesCache::constructor(context, nullStr, nullStr, nullStr, sSerializer.Get())
+}
 
 ECode SyncAdaptersCache::ParseServiceAttributes(
     /* [in] */ IResources* res,

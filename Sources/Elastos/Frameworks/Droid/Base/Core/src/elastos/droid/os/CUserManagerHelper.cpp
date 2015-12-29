@@ -12,6 +12,17 @@ CAR_INTERFACE_IMPL(CUserManagerHelper, Singleton, IUserManagerHelper)
 
 CAR_SINGLETON_IMPL(CUserManagerHelper)
 
+ECode CUserManagerHelper::Get(
+    /* [in] */ IContext* ctx,
+    /* [out] */ IUserManager** userManager)
+{
+    VALIDATE_NOT_NULL(userManager)
+    AutoPtr<IUserManager> um = CUserManager::Get(ctx);
+    *userManager = um;
+    REFCOUNT_ADD(*userManager)
+    return NOERROR;
+}
+
 ECode CUserManagerHelper::SupportsMultipleUsers(
     /* [out] */ Boolean* result)
 {

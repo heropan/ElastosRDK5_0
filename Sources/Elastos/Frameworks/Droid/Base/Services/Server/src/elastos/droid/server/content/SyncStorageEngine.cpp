@@ -1171,10 +1171,10 @@ Boolean SyncStorageEngine::IsSyncActive(
     /* [in] */ EndPoint* info)
 {
     synchronized(mAuthoritiesLock) {
-        AutoPtr<List<AutoPtr<SyncInfo> > > list = GetCurrentSyncs(info->mUserId);
-        List<AutoPtr<SyncInfo> >::Iterator it;
+        AutoPtr<List<AutoPtr<ISyncInfo> > > list = GetCurrentSyncs(info->mUserId);
+        List<AutoPtr<ISyncInfo> >::Iterator it;
         for (it = list->Begin(); it != list->End(); ++it) {
-            SyncInfo* syncInfo = *it;
+            ISyncInfo* syncInfo = *it;
             AutoPtr<AuthorityInfo> ainfo = GetAuthority(syncInfo->mAuthorityId);
             if (ainfo != NULL && ainfo->mTarget->MatchesSpec(info)) {
                 return TRUE;
@@ -1363,11 +1363,11 @@ void SyncStorageEngine::DoDatabaseCleanup(
     }
 }
 
-AutoPtr<SyncInfo> SyncStorageEngine::AddActiveSync(
-    /* [in] */ ISyncManagerActiveSyncContext* activeSyncContextObj)
+AutoPtr<ISyncInfo> SyncStorageEngine::AddActiveSync(
+    /* [in] */ IActiveSyncContext* activeSyncContextObj)
 {
     SyncManager::ActiveSyncContext* activeSyncContext = (SyncManager::ActiveSyncContext*)activeSyncContextObj;
-    AutoPtr<SyncInfo> syncInfo;
+    AutoPtr<ISyncInfo> syncInfo;
     synchronized(mAuthoritiesLock) {
         // if (Log.isLoggable(TAG, Log.VERBOSE)) {
         //     Log.v(TAG, "setActiveSync: account="
@@ -1380,13 +1380,14 @@ AutoPtr<SyncInfo> SyncStorageEngine::AddActiveSync(
             info,
             -1 /* assign a new identifier if creating a new target */,
             TRUE /* write to storage if this results in a change */);
-        syncInfo = new SyncInfo(
+        CISyncInfo::New(
             authorityInfo->mIdent,
             authorityInfo->mTarget->mAccount,
             authorityInfo->mTarget->mProvider,
-            activeSyncContext->mStartTime);
+            activeSyncContext->mStartTime,
+            (ISyncInfo**)&syncInfo);
 
-        AutoPtr<List<AutoPtr<SyncInfo> > > list = GetCurrentSyncs(authorityInfo->mTarget->mUserId);
+        AutoPtr<List<AutoPtr<ISyncInfo> > > list = GetCurrentSyncs(authorityInfo->mTarget->mUserId);
         list->PushBack(syncInfo);
     }
     ReportActiveChange();
@@ -1394,7 +1395,7 @@ AutoPtr<SyncInfo> SyncStorageEngine::AddActiveSync(
 }
 
 void SyncStorageEngine::RemoveActiveSync(
-    /* [in] */ SyncInfo* syncInfo,
+    /* [in] */ ISyncInfo* syncInfo,
     /* [in] */ Int32 userId)
 {
     synchronized(mAuthoritiesLock) {
@@ -1404,9 +1405,9 @@ void SyncStorageEngine::RemoveActiveSync(
         //             + " auth=" + syncInfo.authority);
         // }
 
-        AutoPtr<List<AutoPtr<SyncInfo> > > list = GetCurrentSyncs(mUserId);
-        AutoPtr<SyncInfo> obj = syncInfo;
-        List<AutoPtr<SyncInfo> >::Iterator it = Find(list->Begin(), list->End(), obj);
+        AutoPtr<List<AutoPtr<ISyncInfo> > > list = GetCurrentSyncs(mUserId);
+        AutoPtr<ISyncInfo> obj = syncInfo;
+        List<AutoPtr<ISyncInfo> >::Iterator it = Find(list->Begin(), list->End(), obj);
         if (it != list->End()) {
             list->Erase(it);
         }
@@ -1579,42 +1580,45 @@ void SyncStorageEngine::StopSyncEvent(
     ReportChange(IContentResolver::SYNC_OBSERVER_TYPE_STATUS);
 }
 
-AutoPtr<List<AutoPtr<SyncInfo> > > SyncStorageEngine::GetCurrentSyncs(
+AutoPtr<List<AutoPtr<ISyncInfo> > > SyncStorageEngine::GetCurrentSyncs(
     /* [in] */ Int32 userId)
 {
-    AutoPtr<List<AutoPtr<SyncInfo> > > list;
+    AutoPtr<List<AutoPtr<ISyncInfo> > > list;
     synchronized(mAuthoritiesLock) {
         list = GetCurrentSyncsLocked(userId);
     }
     return list;
 }
 
-AutoPtr<List<AutoPtr<SyncInfo> > > SyncStorageEngine::GetCurrentSyncsCopy(
+AutoPtr<IList> SyncStorageEngine::GetCurrentSyncsCopy(
     /* [in] */ Int32 userId)
 {
-    AutoPtr<List<AutoPtr<SyncInfo> > > syncsCopy;
+    AutoPtr<IList> syncsCopy;
+    CArrayList::New((IList**)&syncsCopy);
+
     synchronized(mAuthoritiesLock) {
-        AutoPtr<List<AutoPtr<SyncInfo> > > syncs = GetCurrentSyncsLocked(userId);
-        syncsCopy = List<AutoPtr<SyncInfo> >();
-        List<AutoPtr<SyncInfo> >::Iterator it;
+        AutoPtr<List<AutoPtr<ISyncInfo> > > syncs = GetCurrentSyncsLocked(userId);
+        syncsCopy = new List<AutoPtr<ISyncInfo> >();
+        List<AutoPtr<ISyncInfo> >::Iterator it;
         for (it = syncs->Begin(); it != syncs->End(); ++it) {
-            AutoPtr<SyncInfo> si = new SyncInfo(*it);
-            syncsCopy->PushBack(si);
+            AutoPtr<ISyncInfo> si;
+            CSyncInfo::New((*it).Get(), (ISyncInfo**)&si);
+            syncsCopy->Add(To_IINTERFACE(si));
         }
     }
     return syncsCopy;
 }
 
-AutoPtr<List<AutoPtr<SyncInfo> > > SyncStorageEngine::GetCurrentSyncsLocked(
+AutoPtr<List<AutoPtr<ISyncInfo> > > SyncStorageEngine::GetCurrentSyncsLocked(
     /* [in] */ Int32 userId)
 {
-    AutoPtr<List<AutoPtr<SyncInfo> > > syncs;
-    HashMap<Int32, AutoPtr<List<AutoPtr<SyncInfo> > > >::Iterator it;
+    AutoPtr<List<AutoPtr<ISyncInfo> > > syncs;
+    HashMap<Int32, AutoPtr<List<AutoPtr<ISyncInfo> > > >::Iterator it;
     it = mCurrentSyncs.Find(userId);
     if (it != mCurrentSyncs.End()) {
         syncs = it->mSecond;
         if (syncs == NULL) {
-            syncs = List<AutoPtr<SyncInfo> >();
+            syncs = new List<AutoPtr<ISyncInfo> >();
             mCurrentSyncs[userId] = syncs;
         }
     }

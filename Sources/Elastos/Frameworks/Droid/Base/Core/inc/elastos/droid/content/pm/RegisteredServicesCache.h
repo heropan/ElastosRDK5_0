@@ -9,6 +9,13 @@
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::Runnable;
+using Elastos::Droid::Utility::IAtomicFile;
+using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Utility::IList;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
 using Elastos::Core::IInteger32;
@@ -17,12 +24,6 @@ using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::IFileOutputStream;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::Os::Runnable;
-using Elastos::Droid::Utility::IAtomicFile;
-using Elastos::Droid::Utility::IAttributeSet;
 
 namespace Elastos {
 namespace Droid {
@@ -41,24 +42,52 @@ namespace Pm {
  *
  * @hide
  */
-class RegisteredServicesCache : public Object
+class RegisteredServicesCache
+    : public Object
+    , public IRegisteredServicesCache
 {
 public:
     /**
      * Value type that describes a Service. The information within can be used
      * to bind to the service.
      */
-    class ServiceInfo : public Object
+    class ServiceInfo
+        : public Object
+        , public IRegisteredServicesCacheServiceInfo
     {
     public:
+        CAR_INTERFACE_DECL()
+
         /** @hide */
-        ServiceInfo(
+        ServiceInfo();
+
+        virtual ~ServiceInfo();
+
+        CARAPI constructor(
             /* [in] */ IInterface* type,
             /* [in] */ IComponentName* componentName,
             /* [in] */ Int32 uid);
 
         CARAPI ToString(
             /* [out] */ String* info);
+
+        CARAPI SetType(
+            /* [in] */ IInterface* type);
+
+        CARAPI GetType(
+            /* [out] */ IInterface** type);
+
+        CARAPI SetComponentName(
+            /* [in] */ IComponentName* cn);
+
+        CARAPI GetComponentName(
+            /* [out] */ IComponentName** cn);
+
+        CARAPI SetUid(
+            /* [in] */ Int32 uid);
+
+        CARAPI GetUid(
+            /* [out] */ Int32* uid);
 
     public:
         AutoPtr<IInterface> mType;
@@ -67,7 +96,8 @@ public:
     };
 
 private:
-    class UserServices : public Object
+    class UserServices
+        : public Object
     {
     public:
         UserServices();
@@ -79,10 +109,11 @@ private:
         HashMap<AutoPtr<IInterface>, AutoPtr<IInteger32> > mPersistentServices;
 
         // @GuardedBy("mServicesLock")
-        AutoPtr<HashMap<AutoPtr<IInterface>, AutoPtr<ServiceInfo> > > mServices;
+        AutoPtr<HashMap<AutoPtr<IInterface>, AutoPtr<IRegisteredServicesCacheServiceInfo> > > mServices;
     };
 
-    class PackageReceiver : public BroadcastReceiver
+    class PackageReceiver
+        : public BroadcastReceiver
     {
     public:
         PackageReceiver(
@@ -104,7 +135,8 @@ private:
         RegisteredServicesCache* mParent;
     };
 
-    class ExternalReceiver : public BroadcastReceiver
+    class ExternalReceiver
+        : public BroadcastReceiver
     {
     public:
         ExternalReceiver(
@@ -149,25 +181,38 @@ private:
     };
 
 public:
-    RegisteredServicesCache(
+    CAR_INTERFACE_DECL()
+
+    RegisteredServicesCache();
+
+    virtual ~RegisteredServicesCache();
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ const String& interfaceName,
         /* [in] */ const String& metaDataName,
         /* [in] */ const String& attributeName,
         /* [in] */ IXmlSerializerAndParser* serializerAndParser);
 
-    CARAPI_(void) InvalidateCache(
+    CARAPI GetContext(
+        /* [out] */ IContext** ctx);
+
+    CARAPI SetContext(
+        /* [in] */ IContext* ctx);
+
+    CARAPI InvalidateCache(
         /* [in] */ Int32 userId);
 
-    CARAPI_(void) Dump(
+    CARAPI Dump(
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ IPrintWriter* fout,
         /* [in] */ ArrayOf<String>* args,
         /* [in] */ Int32 userId);
 
-    CARAPI_(AutoPtr<IRegisteredServicesCacheListener>) GetListener();
+    CARAPI GetListener(
+        /* [out] */ IRegisteredServicesCacheListener** listener);
 
-    CARAPI_(void) SetListener(
+    CARAPI SetListener(
         /* [in] */ IRegisteredServicesCacheListener* listener,
         /* [in] */ IHandler* handler);
 
@@ -176,16 +221,18 @@ public:
      * @param type the account type of the authenticator
      * @return the AuthenticatorInfo that matches the account type or null if none is present
      */
-    CARAPI_(AutoPtr<ServiceInfo>) GetServiceInfo(
+    CARAPI GetServiceInfo(
         /* [in] */ IInterface* type,
-        /* [in] */ Int32 userId);
+        /* [in] */ Int32 userId,
+        /* [out] */ IRegisteredServicesCacheServiceInfo** info);
 
     /**
      * @return a collection of {@link RegisteredServicesCache.ServiceInfo} objects for all
      * registered authenticators.
      */
-    CARAPI_(AutoPtr< List<AutoPtr<ServiceInfo> > >) GetAllServices(
-        /* [in] */ Int32 userId);
+    CARAPI GetAllServices(
+        /* [in] */ Int32 userId,
+        /* [out] */ IList** list);
 
     virtual CARAPI ParseServiceAttributes(
             /* [in] */ IResources* res,
@@ -213,17 +260,17 @@ private:
         /* [in] */ Int32 userId);
 
     CARAPI_(Boolean) ContainsType(
-        /* [in] */ List<AutoPtr<ServiceInfo> >* serviceInfos,
+        /* [in] */ List<AutoPtr<IRegisteredServicesCacheServiceInfo> >* serviceInfos,
         /* [in] */ IInterface* type);
 
     CARAPI_(Boolean) ContainsTypeAndUid(
-        /* [in] */ List<AutoPtr<ServiceInfo> >* serviceInfos,
+        /* [in] */ List<AutoPtr<IRegisteredServicesCacheServiceInfo> >* serviceInfos,
         /* [in] */ IInterface* type,
         /* [in] */ Int32 uid);
 
     CARAPI ParseServiceInfo(
         /* [in] */ IResolveInfo* service,
-        /* [out] */ ServiceInfo** info);
+        /* [out] */ IRegisteredServicesCacheServiceInfo** info);
 
     /**
      * Read all sync status back in to the initial engine state.

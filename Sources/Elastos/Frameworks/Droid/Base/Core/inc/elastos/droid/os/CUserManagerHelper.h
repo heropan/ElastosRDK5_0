@@ -3,7 +3,10 @@
 #define __ELASTOS_DROID_OS_CUSERMANAGERHELPER_H__
 
 #include "_Elastos_Droid_Os_CUserManagerHelper.h"
+#include "Elastos.Droid.Content.h"
 #include <elastos/core/Singleton.h>
+
+using Elastos::Droid::Content::IContext;
 
 namespace Elastos {
 namespace Droid {
@@ -17,6 +20,11 @@ public:
     CAR_INTERFACE_DECL()
 
     CAR_SINGLETON_DECL()
+
+    /** @hide */
+    CARAPI Get(
+        /* [in] */ IContext* ctx,
+        /* [out] */ IUserManager** userManager);
 
     /**
      * Returns whether the system supports multiple users.

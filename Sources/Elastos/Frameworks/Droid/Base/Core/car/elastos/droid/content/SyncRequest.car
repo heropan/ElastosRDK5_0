@@ -211,7 +211,62 @@ module
      * interface IParcelable
      */
     interface ISyncRequest {
+        /**
+         * {@hide}
+         * @return whether this sync is periodic or one-time. A Sync Request must be
+         *         either one of these or an InvalidStateException will be thrown in
+         *         Builder.build().
+         */
+        IsPeriodic(
+            [out] Boolean* periodic);
 
+        /**
+         * {@hide}
+         * @return whether this sync is expedited.
+         */
+        IsExpedited(
+            [out] Boolean* periodic);
+
+        /**
+         * {@hide}
+         *
+         * @return account object for this sync.
+         * @throws IllegalArgumentException if this function is called for a request that targets a
+         * sync service.
+         */
+        GetAccount(
+            [out] IAccount** account);
+
+        /**
+         * {@hide}
+         *
+         * @return provider for this sync.
+         * @throws IllegalArgumentException if this function is called for a request that targets a
+         * sync service.
+         */
+        GetProvider(
+            [out] String* provider);
+
+        /**
+         * {@hide}
+         * Retrieve bundle for this SyncRequest. Will not be null.
+         */
+        GetBundle(
+            [out] IBundle** account);
+
+        /**
+         * {@hide}
+         * @return the earliest point in time that this sync can be scheduled.
+         */
+        GetSyncFlexTime(
+            [out] Int64* time);
+
+        /**
+         * {@hide}
+         * @return the last point in time at which this sync must scheduled.
+         */
+        GetSyncRunTime(
+            [out] Int64* time);
     }
 
     } // namespace Content

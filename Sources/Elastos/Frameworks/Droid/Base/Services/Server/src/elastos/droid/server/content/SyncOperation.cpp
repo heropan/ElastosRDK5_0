@@ -1,4 +1,8 @@
 #include "elastos/droid/server/content/SyncOperation.h"
+#include <elastos/droid/os/SystemClock.h>
+
+using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Os::SystemClock;
 
 namespace Elastos {
 namespace Droid {
@@ -15,7 +19,7 @@ const Int32 SyncOperation::REASON_PERIODIC = -4;
 const Int32 SyncOperation::REASON_IS_SYNCABLE = -5;
 /** Sync started because it has just been set to sync automatically. */
 const Int32 SyncOperation::REASON_SYNC_AUTO = -6;
-/** Sync started because master sync automatically has been set to true. */
+/** Sync started because master sync automatically has been set to TRUE. */
 const Int32 SyncOperation::REASON_MASTER_SYNC_AUTO = -7;
 const Int32 SyncOperation::REASON_USER_START = -8;
 
@@ -39,7 +43,7 @@ AutoPtr<ArrayOf<String> > InitREASON_NAMES()
 
 AutoPtr<ArrayOf<String> > SyncOperation::REASON_NAMES = InitREASON_NAMES();
 
-CAR_INTERFACE_IMPL(SyncOperation, Object, IComparable)
+CAR_INTERFACE_IMPL_2(SyncOperation, Object, ISyncOperation, IComparable)
 
 SyncOperation::SyncOperation(
     /* [in] */ IAccount* account,
@@ -63,9 +67,9 @@ SyncOperation::SyncOperation(
     , mEffectiveRunTime(0)
     , mFlexTime(0)
 {
-    Init(new SyncStorageEngine.EndPoint(account, provider, userId),
-            reason, source, extras, runTimeFromNow, flexTime, backoff, delayUntil,
-            allowParallelSyncs);
+    AutoPtr<EndPoint> ep = new EndPoint(account, provider, userId);
+    Init(ep, reason, source, extras, runTimeFromNow,
+        flexTime, backoff, delayUntil, allowParallelSyncs);
 }
 
 SyncOperation::SyncOperation(
@@ -79,12 +83,13 @@ SyncOperation::SyncOperation(
     /* [in] */ Int64 backoff,
     /* [in] */ Int64 delayUntil)
 {
-    Init(new SyncStorageEngine.EndPoint(service, userId), reason, source, extras,
-            runTimeFromNow, flexTime, backoff, delayUntil, true /* allowParallelSyncs */);
+    AutoPtr<EndPoint> ep = new EndPoint(service, userId);
+    Init(ep, reason, source, extras,
+        runTimeFromNow, flexTime, backoff, delayUntil, TRUE /* allowParallelSyncs */);
 }
 
 ECode SyncOperation::Init(
-    /* [in] */ SyncStorageEngineEndPoint* info,
+    /* [in] */ EndPoint* info,
     /* [in] */ Int32 reason,
     /* [in] */ Int32 source,
     /* [in] */ IBundle* extras,
@@ -94,134 +99,162 @@ ECode SyncOperation::Init(
     /* [in] */ Int64 delayUntil,
     /* [in] */ Boolean allowParallelSyncs)
 {
-    mtarget = info;
-    mreason = reason;
-    msyncSource = source;
-    mextras = new Bundle(extras);
-    cleanBundle(mextras);
-    mdelayUntil = delayUntil;
-    mbackoff = backoff;
-    mallowParallelSyncs = allowParallelSyncs;
-    final Int64 now = SystemClock.elapsedRealtime();
+    mTarget = info;
+    mReason = reason;
+    mSyncSource = source;
+    CBundle::New(extras, (IBundle**)&mExtras);
+    CleanBundle(mExtras);
+    mDelayUntil = delayUntil;
+    mBackoff = backoff;
+    mAllowParallelSyncs = allowParallelSyncs;
+    Int64 now = SystemClock::GetElapsedRealtime();
     // Set expedited based on runTimeFromNow. The SyncManager specifies whether the op is
     // expedited (Not done solely based on bundle).
     if (runTimeFromNow < 0) {
-        mexpedited = true;
-        // Sanity check: Will always be true.
-        if (!mextras.getBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, false)) {
-            mextras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        mExpedited = TRUE;
+        // Sanity check: Will always be TRUE.
+        Boolean bval;
+        mExtras->GetBoolean(IContentResolver::SYNC_EXTRAS_EXPEDITED, FALSE, &bval);
+        if (!bval) {
+            mExtras->PutBoolean(IContentResolver::SYNC_EXTRAS_EXPEDITED, TRUE);
         }
-        mlatestRunTime = now;
-        mflexTime = 0;
-    } else {
-        mexpedited = false;
-        mextras.remove(ContentResolver.SYNC_EXTRAS_EXPEDITED);
-        mlatestRunTime = now + runTimeFromNow;
-        mflexTime = flexTime;
+        mLatestRunTime = now;
+        mFlexTime = 0;
+    }
+    else {
+        mExpedited = FALSE;
+        mExtras->Remove(IContentResolver::SYNC_EXTRAS_EXPEDITED);
+        mLatestRunTime = now + runTimeFromNow;
+        mFlexTime = flexTime;
     }
     UpdateEffectiveRunTime();
-    mkey = toKey(info, mextras);
+    mKey = ToKey(info, mExtras);
 }
 
 SyncOperation::SyncOperation(
     /* [in] */ SyncOperation* other,
     /* [in] */ Int64 newRunTimeFromNow)
 {
-    this(other.target, other.reason, other.syncSource, new Bundle(other.extras),
-            newRunTimeFromNow,
-            0L /* In back-off so no flex */,
-            other.backoff,
-            other.delayUntil,
-            other.allowParallelSyncs);
+    AutoPtr<IBundle> extras;
+    CBundle::other->mExtras, (IBundle**)&extras);
+    Init(other->mTarget, other->mReason, other->mSyncSource, extras),
+        newRunTimeFromNow,
+        0L /* In back-off so no flex */,
+        other->mBackoff,
+        other->mDelayUntil,
+        other->mAllowParallelSyncs);
 }
 
 Boolean SyncOperation::MatchesAuthority(
     /* [in] */ SyncOperation* other)
 {
-    return mtarget.matchesSpec(other.target);
+    return mTarget->MatchesSpec(other->mTarget);
 }
 
 void SyncOperation::CleanBundle(
     /* [in] */ IBundle* bundle)
 {
-    RemoveFalseExtra(bundle, ContentResolver.SYNC_EXTRAS_UPLOAD);
-    RemoveFalseExtra(bundle, ContentResolver.SYNC_EXTRAS_MANUAL);
-    RemoveFalseExtra(bundle, ContentResolver.SYNC_EXTRAS_IGNORE_SETTINGS);
-    RemoveFalseExtra(bundle, ContentResolver.SYNC_EXTRAS_IGNORE_BACKOFF);
-    RemoveFalseExtra(bundle, ContentResolver.SYNC_EXTRAS_DO_NOT_RETRY);
-    RemoveFalseExtra(bundle, ContentResolver.SYNC_EXTRAS_DISCARD_LOCAL_DELETIONS);
-    RemoveFalseExtra(bundle, ContentResolver.SYNC_EXTRAS_EXPEDITED);
-    RemoveFalseExtra(bundle, ContentResolver.SYNC_EXTRAS_OVERRIDE_TOO_MANY_DELETIONS);
-    RemoveFalseExtra(bundle, ContentResolver.SYNC_EXTRAS_DISALLOW_METERED);
+    RemoveFalseExtra(bundle, IContentResolver::SYNC_EXTRAS_UPLOAD);
+    RemoveFalseExtra(bundle, IContentResolver::SYNC_EXTRAS_MANUAL);
+    RemoveFalseExtra(bundle, IContentResolver::SYNC_EXTRAS_IGNORE_SETTINGS);
+    RemoveFalseExtra(bundle, IContentResolver::SYNC_EXTRAS_IGNORE_BACKOFF);
+    RemoveFalseExtra(bundle, IContentResolver::SYNC_EXTRAS_DO_NOT_RETRY);
+    RemoveFalseExtra(bundle, IContentResolver::SYNC_EXTRAS_DISCARD_LOCAL_DELETIONS);
+    RemoveFalseExtra(bundle, IContentResolver::SYNC_EXTRAS_EXPEDITED);
+    RemoveFalseExtra(bundle, IContentResolver::SYNC_EXTRAS_OVERRIDE_TOO_MANY_DELETIONS);
+    RemoveFalseExtra(bundle, IContentResolver::SYNC_EXTRAS_DISALLOW_METERED);
 }
 
 void SyncOperation::RemoveFalseExtra(
     /* [in] */ IBundle* bundle,
     /* [in] */ const String& extraName)
 {
-    if (!bundle.getBoolean(extraName, false)) {
-        bundle.remove(extraName);
+    Boolean bval;
+    bundle->GetBoolean(extraName, FALSE, &bval);
+    if (!bval) {
+        bundle->Remove(extraName);
     }
 }
 
 Boolean SyncOperation::IsConflict(
     /* [in] */ SyncOperation* toRun)
 {
-    final SyncStorageEngine.EndPoint other = toRun.target;
-    if (target.target_provider) {
-        return target.account.type.equals(other.account.type)
-                && target.provider.equals(other.provider)
-                && target.userId == other.userId
-                && (!allowParallelSyncs
-                        || target.account.name.equals(other.account.name));
-    } else {
+    AutoPtr<EndPoint> other = toRun->mTarget;
+    if (target->mTarget_provider) {
+        String t1, t2, n1, n2;
+        mTarget->mAccount->GetType(&t1);
+        mTarget->mAccount->GetName(&n1);
+        other->mAccount->GetType(&t2);
+        other->mAccount->GetName(&n2);
+        return t1.Equals(t2)
+            && mTarget->mProvider.Equals(other->mProvider)
+            && mTarget->mUserId == other->mUserId
+            && (!allowParallelSyncs || n1.Equals(n2));
+    }
+    else {
         // Ops that target a service default to allow parallel syncs, which is handled by the
         // service returning SYNC_IN_PROGRESS if they don't.
-        return target.service.equals(other.service) && !allowParallelSyncs;
+        return Object::Equals(mTarget->mService, other->mService) && !allowParallelSyncs;
     }
 }
 
-// @Override
 ECode SyncOperation::ToString(
     /* [out] */ String* str)
 {
-    return dump(null, true);
+    return Dump(NULL, TRUE);
 }
 
 String SyncOperation::Dump(
     /* [in ]*/ IPackageManager* pm,
     /* [in] */ Boolean useOneLine)
 {
-    StringBuilder sb = new StringBuilder();
-    if (target.target_provider) {
-        sb.Append(target.account.name)
-            .append(" u")
-            .append(target.userId).append(" (")
-            .append(target.account.type)
-            .append(")")
-            .append(", ")
-            .append(target.provider)
-            .append(", ");
-    } else if (target.target_service) {
-        sb.Append(target.service.getPackageName())
-            .append(" u")
-            .append(target.userId).append(" (")
-            .append(target.service.getClassName()).append(")")
-            .append(", ");
+    StringBuilder sb;
+    if (mTarget->mTarget_provider) {
+        String name, type;
+        mTarget->mAccount->GetName(&name);
+        mTarget->mAccount->GetType(&type);
+        sb.Append(name);
+        sb.Append(" u");
+        sb.Append(mTarget->mUserId);
+        sb.Append(" (");
+        sb.Append(type);
+        sb.Append(")");
+        sb.Append(", ");
+        sb.Append(mTarget->mProvider);
+        sb.Append(", ");
     }
-    sb.Append(SyncStorageEngine.SOURCES[syncSource])
-        .append(", currentRunTime ")
-        .append(effectiveRunTime);
+    else if (mTarget->mTarget_service) {
+        String pkgName, clsName;
+        mTarget->mService->GetPackageName(&pkgName);
+        mTarget->mService->GetClassName(&clsName);
+        sb.Append(pkgName);
+        sb.Append(" u");
+        sb.Append(mTarget->mUserId);
+        sb.Append(" (");
+        sb.Append(clsName;
+        sb.Append(")");
+        sb.Append(", ");
+    }
+    sb.Append((*SyncStorageEngine::SOURCES)[syncSource]);
+    sb.Append(", currentRunTime ");
+    sb.Append(effectiveRunTime);
     if (expedited) {
         sb.Append(", EXPEDITED");
     }
     sb.Append(", reason: ");
-    sb.Append(reasonToString(pm, reason));
-    if (!useOneLine && !extras.keySet().isEmpty()) {
-        sb.Append("\n    ");
-        ExtrasToStringBuilder(extras, sb);
+    sb.Append(ReasonToString(pm, reason));
+    if (!useOneLine) {
+        AutoPtr<ISet> set;
+        extras->GetKeySet((ISet**)&set);
+        Boolean isEmpty;
+        set->IsEmpty(&isEmpty);
+        if (!isEmpty) {
+            sb.Append("\n    ");
+            ExtrasToStringBuilder(extras, sb);
+        }
     }
-    return sb.toString();
+
+    return sb.ToString();
 }
 
 String SyncOperation::ReasonToString(
@@ -229,83 +262,112 @@ String SyncOperation::ReasonToString(
     /* [in] */ Int32 reason)
 {
     if (reason >= 0) {
-        if (pm != null) {
-            final String[] packages = pm.getPackagesForUid(reason);
-            if (packages != null && packages.length == 1) {
-                return packages[0];
+        if (pm != NULL) {
+            AutoPtr<ArrayOf<String> > packages;
+            pm->GetPackagesForUid(reason, (ArrayOf<String>**)&packages);
+            if (packages != NULL && packages->GetLength() == 1) {
+                return (*packages)[0];
             }
-            final String name = pm.getNameForUid(reason);
-            if (name != null) {
+            String name;
+            pm->GetNameForUid(reason, &name);
+            if (name != NULL) {
                 return name;
             }
-            return String.valueOf(reason);
-        } else {
-            return String.valueOf(reason);
         }
-    } else {
-        final Int32 index = -reason - 1;
-        if (index >= REASON_NAMES.length) {
-            return String.valueOf(reason);
-        } else {
-            return REASON_NAMES[index];
-        }
+
+        return StringUtils::ToString(reason);
     }
+
+    Int32 index = -reason - 1;
+    if (index >= REASON_NAMES->GetLength()) {
+        return StringUtils::ToString(reason);
+    }
+
+    return (*REASON_NAMES)[index];
 }
 
-Boolean SyncOperation::IsInitialization() {
-    return extras.getBoolean(ContentResolver.SYNC_EXTRAS_INITIALIZE, false);
+Boolean SyncOperation::IsInitialization()
+{
+    Boolean bval;
+    extras->GetBoolean(IContentResolver::SYNC_EXTRAS_INITIALIZE, FALSE, &bval);
+    return bval;
 }
 
-Boolean SyncOperation::IsExpedited() {
+Boolean SyncOperation::IsExpedited()
+{
     return expedited;
 }
 
-Boolean SyncOperation::IgnoreBackoff() {
-    return extras.getBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_BACKOFF, false);
+Boolean SyncOperation::IgnoreBackoff()
+{
+    Boolean bval;
+    extras->GetBoolean(IContentResolver::SYNC_EXTRAS_IGNORE_BACKOFF, FALSE, &bval);
+    return bval;
 }
 
-Boolean SyncOperation::IsNotAllowedOnMetered() {
-    return extras.getBoolean(ContentResolver.SYNC_EXTRAS_DISALLOW_METERED, false);
+Boolean SyncOperation::IsNotAllowedOnMetered()
+{
+    Boolean bval;
+    extras->GetBoolean(IContentResolver::SYNC_EXTRAS_DISALLOW_METERED, FALSE, &bval);
+    return bval;
 }
 
-Boolean SyncOperation::IsManual() {
-    return extras.getBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, false);
+Boolean SyncOperation::IsManual()
+{
+    Boolean bval;
+    extras->GetBoolean(IContentResolver::SYNC_EXTRAS_MANUAL, FALSE, &bval);
+    return bval;
 }
 
-Boolean SyncOperation::IsIgnoreSettings() {
-    return extras.getBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_SETTINGS, false);
+Boolean SyncOperation::IsIgnoreSettings()
+{
+    Boolean bval;
+    extras->GetBoolean(IContentResolver::SYNC_EXTRAS_IGNORE_SETTINGS, FALSE, &bval);
+    return bval;
 }
 
 /** Changed in V3. */
 static String SyncOperation::ToKey(
-    /* [in] */ SyncStorageEngineEndPoint* info,
+    /* [in] */ EndPoint* info,
     /* [in] */ IBundle* extras)
 {
-    StringBuilder sb = new StringBuilder();
-    if (info.target_provider) {
+    StringBuilder sb;
+    if (info->mTarget_provider) {
+        String name, type;
+        info->mAccount->GetName(&name);
+        info->mAccount->GetType(&type);
+
         sb.Append("provider: ");
-        sb.Append(info.provider);
-        sb.Append(" account {name=" + info.account.name
-                + ", user="
-                + info.userId
-                + ", type="
-                + info.account.type
-                + "}");
-    } else if (info.target_service) {
-        sb.Append("service {package=" );
-        sb.Append(info.service.getPackageName());
-        sb.Append(" user=");
-        sb.Append(info.userId);
-        sb.Append(", class=");
-        sb.Append(info.service.getClassName());
+        sb.Append(info->mProvider);
+        sb.Append(" account {name=");
+        sb.Append(name);
+        sb.Append(", user=");
+        sb.Append(info->mUserId);
+        sb.Append(", type=");
+        sb.Append(type);
         sb.Append("}");
-    } else {
-        Log.v(TAG, "Converting SyncOperaton to key, invalid target: " + info.toString());
-        return "";
+    }
+    else if (info->mTarget_service) {
+        String pkgName, clsName;
+        info->mService->GetPackageName(&pkgName);
+        info->mService->GetClassName(&clsName);
+
+        sb.Append("service {package=" );
+        sb.Append(pkgName);
+        sb.Append(" user=");
+        sb.Append(info->mUserId);
+        sb.Append(", class=");
+        sb.Append(clsName);
+        sb.Append("}");
+    }
+    else {
+        Logger::V(TAG, "Converting SyncOperaton to key, invalid target: %s",
+            Object::ToString(info).string());
+        return String("");
     }
     sb.Append(" extras: ");
     ExtrasToStringBuilder(extras, sb);
-    return sb.toString();
+    return sb.ToString();
 }
 
 void SyncOperation::ExtrasToStringBuilder(
@@ -313,74 +375,122 @@ void SyncOperation::ExtrasToStringBuilder(
     /* [in] */ StringBuilder& sb)
 {
     sb.Append("[");
-    for (String key : bundle.keySet()) {
-        sb.Append(key).append("=").append(bundle.get(key)).append(" ");
+    AutoPtr<ISet> set;
+    bundle->GetKeySet((ISet**)&set);
+    AutoPtr<IIterator> it;
+    set->GetIterator((IIterator**)&it);
+    Boolean hasNext;
+    while (it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> obj, value;
+        it->GetNext((IInterface**)&obj);
+        String key = Object::ToString(obj);
+        sb.Append(key);
+        sb.Append("=");
+        bundle->Get(key, (IInterface**)&value);
+        sb.Append(Object::ToString(value));
+        sb.Append(" ");
     }
     sb.Append("]");
 }
 
 String SyncOperation::WakeLockName()
 {
-    if (wakeLockName != null) {
-        return wakeLockName;
+    if (mWakeLockName != NULL) {
+        return mWakeLockName;
     }
-    if (target.target_provider) {
-        return (wakeLockName = target.provider
-                + "/" + target.account.type
-                + "/" + target.account.name);
-    } else if (target.target_service) {
-        return (wakeLockName = target.service.getPackageName()
-                + "/" + target.service.getClassName());
-    } else {
-        Log.wtf(TAG, "Invalid target getting wakelock name for operation - " + key);
-        return null;
+    if (mTarget->mTarget_provider) {
+        String name, type;
+        mTarget->mAccount->GetName(&name);
+        mTarget->mAccount->GetType(&type);
+
+        StringBuilder sb;
+        sb += mTarget->mProvider;
+        sb += "/";
+        sb += type;
+        sb += "/";
+        sb += name;
+        mWakeLockName = sb.ToString();
+        return mWakeLockName;
+    }
+    else if (mTarget->target_service) {
+        String pkgName, clsName;
+        mTarget->mService->GetPackageName(&pkgName);
+        mTarget->mService->GetClassName(&clsName);
+
+        StringBuilder sb;
+        sb += "/";
+        sb += pkgName;
+        sb += "/";
+        sb += clsName;
+        mWakeLockName = sb.ToString();
+        return mWakeLockName;
+    }
+    else {
+        Logger::W(TAG, "Invalid target getting wakelock name for operation - %s", mKey.string());
+        return NULL;
     }
 }
 
 void SyncOperation::UpdateEffectiveRunTime()
 {
+    using Elastos::Core::Math;
     // Regardless of whether we're in backoff or honouring a delayUntil, we still incorporate
     // the flex time provided by the developer.
-    effectiveRunTime = ignoreBackoff() ?
-            latestRunTime :
-                Math.max(Math.max(latestRunTime, delayUntil), backoff);
+    mEffectiveRunTime = IgnoreBackoff() ?
+        mLatestRunTime : Math::Max(Math::Max(mLatestRunTime, mDelayUntil), mBackoff);
 }
 
 ECode SyncOperation::CompareTo(
     /* [in] */ IInterface* o,
     /* [out] */ Int32* result)
 {
-    SyncOperation other = (SyncOperation) o;
-    if (expedited != other.expedited) {
-        return expedited ? -1 : 1;
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
+    using Elastos::Core::Math;
+
+    SyncOperation* other = (SyncOperation*)IComparable::Probe(o);
+    if (mExpedited != other->mExpedited) {
+        *result = mExpedited ? -1 : 1;
+        return NOERROR;
     }
-    Int64 thisIntervalStart = Math.max(effectiveRunTime - flexTime, 0);
-    Int64 otherIntervalStart = Math.max(
-        other.effectiveRunTime - other.flexTime, 0);
+    Int64 thisIntervalStart = Math::Max(mEffectiveRunTime - mFlexTime, 0);
+    Int64 otherIntervalStart = Math::Max(other->mEffectiveRunTime - other->mFlexTime, 0);
     if (thisIntervalStart < otherIntervalStart) {
-        return -1;
-    } else if (otherIntervalStart < thisIntervalStart) {
-        return 1;
-    } else {
-        return 0;
+        *result = -1;
     }
+    else if (otherIntervalStart < thisIntervalStart) {
+        *result = 1;
+    }
+    else {
+        *result = 0;
+    }
+    return NOERROR;
 }
 
 // TODO: Test this to make sure that casting to object doesn't lose the type info for EventLog.
 AutoPtr<ArrayOf<IInterface*> > SyncOperation::ToEventLog(
     /* [in] */ Int32 event)
 {
-    Object[] logArray = new Object[4];
-    logArray[1] = event;
-    logArray[2] = syncSource;
-    if (target.target_provider) {
-        logArray[0] = target.provider;
-        logArray[3] = target.account.name.hashCode();
-    } else if (target.target_service) {
-        logArray[0] = target.service.getPackageName();
-        logArray[3] = target.service.hashCode();
-    } else {
-        Log.wtf(TAG, "sync op with invalid target: " + key);
+    AutoPtr<ArrayOf<IInterface*> > logArray = ArrayOf<IInterface*>::Alloc(4);
+    logArray->Set(1, CoreUtils::Convert(event).Get());
+    logArray->Set(2, CoreUtils::Convert(mSyncSource).Get());
+    if (target->mTarget_provider) {
+        logArray->Set(0, CoreUtils::Convert(target->mProvider).Get());
+        String name;
+        mTarget->mAccount->GetName(&name);
+        Int32 hash = name.GetHashCode();
+        logArray->Set(3, CoreUtils::Convert(hash).Get());
+    }
+    else if (target->target_service) {
+        String pkgName;
+        mTarget->mService->GetPackageName(&pkgName);
+        Int32 hash = Object.GetHashCode(mTarget->mService);
+        logArray->Set(0, CoreUtils::Convert(pkgName).Get());
+        logArray->Set(3, CoreUtils::Convert(hash).Get());
+    }
+    else {
+        Logger::W(TAG, "sync op with invalid target: %s", mKey.string());
     }
     return logArray;
 }

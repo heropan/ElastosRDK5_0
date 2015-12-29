@@ -24,7 +24,7 @@ namespace Os {
  *
  * @see IBinder
  */
-class Binder
+class ECO_PUBLIC Binder
     : public Object
     , public IBinder
 {
@@ -143,7 +143,7 @@ public:
         /* [in] */ IInterface* iface);
 
 private:
-    CARAPI_(void) Destroy();
+    ECO_LOCAL CARAPI_(void) Destroy();
 
 public:
     Int64 mObject;

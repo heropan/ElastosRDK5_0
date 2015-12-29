@@ -1,29 +1,36 @@
 
-#include "CContentService.h"
-#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/server/CContentService.h"
+#include <elastos/droid/Manifest.h>
 #include "elastos/droid/os/Binder.h"
-#include "elastos/droid/Manifest.h"
+#include "elastos/droid/os/UserHandle.h"
+#include "elastos/droid/text/TextUtils.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Utility::Logging::Logger;
-using Elastos::Utility::Logging::Slogger;
+using Elastos::Droid::Manifest;
 using Elastos::Droid::App::CActivityManagerHelper;
 using Elastos::Droid::App::IActivityManagerHelper;
 using Elastos::Droid::Os::UserHandle;
 using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::Binder;
+using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Content::IContentResolverHelper;
 using Elastos::Droid::Content::CContentResolverHelper;
-using Elastos::Droid::Content::ISyncStorageEngine;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
+namespace Content {
 
 const String CContentService::TAG("CContentService");
 const Boolean CContentService::DBG = FALSE;
 
+//===================================================================================
+// CContentService::ObserverCall
+//===================================================================================
 CContentService::ObserverCall::ObserverCall(
     /* [in] */ ObserverNode* node,
     /* [in] */ IIContentObserver* observer,
@@ -32,6 +39,11 @@ CContentService::ObserverCall::ObserverCall(
     , mObserver(observer)
     , mSelfChange(selfChange)
 {}
+
+//===================================================================================
+// CContentService::ObserverNode::ObserverEntry
+//===================================================================================
+CAR_INTERFACE_IMPL(CContentService::ObserverNode::ObserverEntry, Object, IProxyDeathRecipient)
 
 CContentService::ObserverNode::ObserverEntry::ObserverEntry(
     /* [in] */ ObserverNode* host,
@@ -61,8 +73,6 @@ CContentService::ObserverNode::ObserverEntry::ObserverEntry(
     // }
 }
 
-CAR_INTERFACE_IMPL(CContentService::ObserverNode::ObserverEntry, IProxyDeathRecipient)
-
 ECode CContentService::ObserverNode::ObserverEntry::ProxyDied()
 {
     AutoLock lock(mObserversLock);
@@ -79,21 +89,22 @@ void CContentService::ObserverNode::ObserverEntry::DumpLocked(
     /* [in] */ HashMap<Int32, Int32>* pidCounts)
 {
     (*pidCounts)[mPid] = (*pidCounts)[mPid] + 1;
-    pw->PrintString(prefix);
-    pw->PrintString(name);
-    pw->PrintString(String(": pid="));
-    pw->PrintInt32(mPid);
-    pw->PrintString(String(" uid="));
-    pw->PrintInt32(mUid);
-    pw->PrintString(String(" user="));
-    pw->PrintInt32(mUserHandle);
-    pw->PrintString(String(" target="));
-    String info;
-    if (mObserver != NULL) {
-        mObserver->ToString(&info);
-    }
-    pw->PrintString(info);
+    pw->Print(prefix);
+    pw->Print(name);
+    pw->Print(String(": pid="));
+    pw->Print(mPid);
+    pw->Print(String(" uid="));
+    pw->Print(mUid);
+    pw->Print(String(" user="));
+    pw->Print(mUserHandle);
+    pw->Print(String(" target="));
+    String info = Object::ToString(mObserver);
+    pw->Print(info);
 }
+
+//===================================================================================
+// CContentService::ObserverNode
+//===================================================================================
 
 CContentService::ObserverNode::ObserverNode(
     /* [in] */ const String& name)
@@ -340,17 +351,33 @@ void CContentService::ObserverNode::CollectObserversLocked(
     }
 }
 
+//===================================================================================
+// CContentService
+//===================================================================================
+CAR_INTERFACE_IMPL(CContentService, Object, IIContentService)
+
+CAR_OBJECT_IMPL(CContentService)
+
 CContentService::CContentService()
     : mFactoryTest(FALSE)
 {
     mRootNode = new ObserverNode(String(""));
 }
 
-AutoPtr<ISyncManager> CContentService::GetSyncManager()
+AutoPtr<SyncManager> CContentService::GetSyncManager()
 {
-    AutoLock lock(mSyncManagerLock);
+    AutoPtr<ISystemProperties> sysProp;
+    CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
+    Boolean bval;
+    sysProp->GetBoolean(String("config.disable_network"), FALSE, &bval);
+    if (bval) {
+        return NULL;
+    }
+
+    ISynchronize* sync = ISynchronize::Probe(mSyncManager);
+    AutoLock lock(sync);
     // try {
-        // Try to create the SyncManager, return null if it fails (e.g. the disk is full).
+        // Try to create the SyncManager, return NULL if it fails (e.g. the disk is full).
     if (mSyncManager == NULL) {
         // mSyncManager = new SyncManager(mContext, mFactoryTest);
         Slogger::W(TAG, "TODO, SyncManager not implemented");
@@ -366,7 +393,56 @@ ECode CContentService::Dump(
     /* [in] */ IPrintWriter* pw,
     /* [in] */ ArrayOf<String>* args)
 {
-    assert(0);
+    assert(0 && "TODO");
+    // FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Manifest::permission::DUMP,
+    //         "caller doesn't have the DUMP permission");
+
+    // // This makes it so that future permission checks will be in the context of this
+    // // process rather than the caller's process. We will restore this before returning.
+    // Int64 identityToken = Binder::ClearCallingIdentity();
+    // try {
+    //     if (mSyncManager == NULL) {
+    //         pw.println("No SyncManager created!  (Disk full?)");
+    //     } else {
+    //         mSyncManager.dump(fd, pw);
+    //     }
+    //     pw.println();
+    //     pw.println("Observer tree:");
+    //     synchronized (mRootNode) {
+    //         int[] counts = new int[2];
+    //         final SparseIntArray pidCounts = new SparseIntArray();
+    //         mRootNode.dumpLocked(fd, pw, args, "", "  ", counts, pidCounts);
+    //         pw.println();
+    //         ArrayList<Integer> sorted = new ArrayList<Integer>();
+    //         for (int i=0; i<pidCounts.size(); i++) {
+    //             sorted.add(pidCounts.keyAt(i));
+    //         }
+    //         Collections.sort(sorted, new Comparator<Integer>() {
+    //             @Override
+    //             public int compare(Integer lhs, Integer rhs) {
+    //                 int lc = pidCounts.get(lhs);
+    //                 int rc = pidCounts.get(rhs);
+    //                 if (lc < rc) {
+    //                     return 1;
+    //                 } else if (lc > rc) {
+    //                     return -1;
+    //                 }
+    //                 return 0;
+    //             }
+
+    //         });
+    //         for (int i=0; i<sorted.size(); i++) {
+    //             int pid = sorted.get(i);
+    //             pw.print("  pid "); pw.print(pid); pw.print(": ");
+    //                     pw.print(pidCounts.get(pid)); pw.println(" observers");
+    //         }
+    //         pw.println();
+    //         pw.print(" Total number of nodes: "); pw.println(counts[0]);
+    //         pw.print(" Total number of observers: "); pw.println(counts[1]);
+    //     }
+    // } finally {
+    //     Binder::RestoreCallingIdentity(identityToken);
+    // }
     return E_NOT_IMPLEMENTED;
 }
 
@@ -383,8 +459,8 @@ ECode CContentService::RegisterContentObserver(
 {
     if (NULL == observer || NULL == uri) {
         String uriStr, observerStr;
-        if (uri) uri->ToString(&uriStr);
-        if (observer) observer->ToString(&observerStr);
+        if (uri) uriStr = Object::ToString(uri);
+        if (observer) observerStr = Object::ToString(observer);
         Slogger::E(TAG, "RegisterContentObserver: You must pass a valid uri(%s) and observer(%s)",
             uriStr.string(), observerStr.string());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -392,17 +468,14 @@ ECode CContentService::RegisterContentObserver(
 
     if (DBG) {
         String uriStr, observerStr;
-        uri->ToString(&uriStr);
-        observer->ToString(&observerStr);
+        if (uri) uriStr = Object::ToString(uri);
+        if (observer) observerStr = Object::ToString(observer);
         Logger::V(TAG, "Registered observer %p : [%s] at [%s] with notifyForDescendants %d",
             observer, observerStr.string(), uriStr.string(), notifyForDescendants);
     }
 
-    Int32 callingUser = UserHandle::GetCallingUserId();
-    if (callingUser != userHandle) {
-        FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL,
-            String("no permission to observe other users' provider view")));
-    }
+    FAIL_RETURN(EnforceCrossUserPermission(userHandle,
+        String("no permission to observe other users' provider view")))
 
     if (userHandle < 0) {
         if (userHandle == IUserHandle::USER_CURRENT) {
@@ -416,9 +489,9 @@ ECode CContentService::RegisterContentObserver(
         }
     }
 
-    AutoLock lock(mRootNodeLock);
+    AutoLock lock(mRootNode);
     FAIL_RETURN(mRootNode->AddObserverLocked(uri, observer, notifyForDescendants,
-            &mRootNodeLock, Binder::GetCallingUid(), Binder::GetCallingPid(), userHandle));
+            &mRootNode, Binder::GetCallingUid(), Binder::GetCallingPid(), userHandle));
     return NOERROR;
 }
 
@@ -445,7 +518,7 @@ ECode CContentService::UnregisterContentObserver(
         Slogger::V(TAG, "Unregistered observer %p : [%s]", observer, info.string());
     }
 
-    AutoLock lock(mRootNodeLock);
+    AutoLock lock(mRootNode);
     mRootNode->RemoveObserverLocked(observer);
     return NOERROR;
 }
@@ -468,8 +541,9 @@ ECode CContentService::NotifyChange(
     // Notify for any user other than the caller's own requires permission.
     Int32 callingUserHandle = UserHandle::GetCallingUserId();
     if (userHandle != callingUserHandle) {
-        FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL,
-                String("no permission to notify other users")))
+        FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+            Elastos::Droid::Manifest::permission::INTERACT_ACROSS_USERS_FULL,
+            String("no permission to notify other users")))
     }
 
     // We passed the permission check; resolve pseudouser targets as appropriate
@@ -487,13 +561,14 @@ ECode CContentService::NotifyChange(
         }
     }
 
+    Int32 uid = Binder.getCallingUid();
     // This makes it so that future permission checks will be in the context of this
     // process rather than the caller's process. We will restore this before returning.
     Int64 identityToken = Binder::ClearCallingIdentity();
     // try {
     List<AutoPtr<ObserverCall> > calls;
     {
-        AutoLock lock(mRootNodeLock);
+        AutoLock lock(mRootNode);
         mRootNode->CollectObserversLocked(uri, 0, observer, observerWantsSelfNotifications,
                 userHandle, &calls);
     }
@@ -501,8 +576,8 @@ ECode CContentService::NotifyChange(
     for (; it != calls.End(); ++it) {
         AutoPtr<ObserverCall> oc = *it;
         // try {
-        if (FAILED(oc->mObserver->OnChange(oc->mSelfChange, uri))) {
-            AutoLock lock(mRootNodeLock);
+        if (FAILED(oc->mObserver->OnChange(oc->mSelfChange, uri, userHandle))) {
+            AutoLock lock(mRootNode);
             Slogger::W(TAG, "Found dead observer, removing");
             List<AutoPtr<ObserverNode::ObserverEntry> >& list = oc->mNode->mObservers;
             List<AutoPtr<ObserverNode::ObserverEntry> >::Iterator it2 = list.Begin();
@@ -538,11 +613,12 @@ ECode CContentService::NotifyChange(
         // }
     }
     if (syncToNetwork) {
-        AutoPtr<ISyncManager> syncManager = GetSyncManager();
+        AutoPtr<SyncManager> syncManager = GetSyncManager();
         if (syncManager != NULL) {
             String auth;
             uri->GetAuthority(&auth);
-            ECode ec = syncManager->ScheduleLocalSync(NULL /* all accounts */, callingUserHandle, auth);
+            ECode ec = syncManager->ScheduleLocalSync(
+                NULL /* all accounts */, callingUserHandle, uid, auth);
             if (FAILED(ec)) {
                 Binder::RestoreCallingIdentity(identityToken);
                 return ec;
@@ -562,7 +638,7 @@ ECode CContentService::NotifyChange(
     /* [in] */ Boolean syncToNetwork)
 {
     return NotifyChange(uri, observer, observerWantsSelfNotifications, syncToNetwork,
-            UserHandle::GetCallingUserId());
+        UserHandle::GetCallingUserId());
 }
 
 ECode CContentService::RequestSync(
@@ -574,70 +650,209 @@ ECode CContentService::RequestSync(
     FAIL_RETURN(CContentResolverHelper::AcquireSingleton((IContentResolverHelper**)&contentResolverHelper))
     FAIL_RETURN(contentResolverHelper->ValidateSyncExtrasBundle(extras))
     Int32 userId = UserHandle::GetCallingUserId();
+    int uId = Binder.getCallingUid();
 
     // This makes it so that future permission checks will be in the context of this
     // process rather than the caller's process. We will restore this before returning.
     Int64 identityToken = Binder::ClearCallingIdentity();
     // try {
-    AutoPtr<ISyncManager> syncManager = GetSyncManager();
+    AutoPtr<SyncManager> syncManager = GetSyncManager();
     ECode ec = NOERROR;
     if (syncManager != NULL) {
-        ec = syncManager->ScheduleSync(account, userId, authority, extras,
-                0 /* no delay */, FALSE /* onlyThoseWithUnkownSyncableState */);
+        ec = syncManager->ScheduleSync(account, userId, uid, authority, extras,
+                0 /* no delay */, 0 /* no delay */,
+                FALSE /* onlyThoseWithUnkownSyncableState */);
     }
     // } finally {
-    //     restoreCallingIdentity(identityToken);
+    //     Binder::RestoreCallingIdentity(identityToken);
     // }
     Binder::RestoreCallingIdentity(identityToken);
     return ec;
 }
 
+ECode CContentService::Sync(
+    /* [in] */ ISyncRequest* request)
+{
+    return SyncAsUser(request, UserHandle::GetCallingUserId());
+}
+
+ECode CContentService::SyncAsUser(
+    /* [in] */ ISyncRequest* request,
+    /* [in] */ Int32 userId)
+{
+    StringBuilder sb("no permission to request sync as user: ");
+    sb += userId;
+    FAIL_RETURN(EnforceCrossUserPermission(userId, sb.ToString()))
+
+    Int32 callerUid = Binder::GetCallingUid();
+    // This makes it so that future permission checks will be in the context of this
+    // process rather than the caller's process. We will restore this before returning.
+    Int64 identityToken = Binder::ClearCallingIdentity();
+    AutoPtr<SyncManager> syncManager = GetSyncManager();
+    if (syncManager == NULL) {
+        return NOERROR;
+    }
+
+    AutoPtr<IBundle> extras;
+    request->GetBundle((IBundle**)&extras);
+    Int64 flextime, runAtTime;
+    request->GetSyncFlexTime(&flextime);
+    request->GetSyncRunTime(&runAtTime);
+    Boolean bval;
+    request->IsPeriodic(&bval);
+    if (bval) {
+        FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+            Manifest::permission::WRITE_SYNC_SETTINGS,
+            String("no permission to write the sync settings")))
+        AutoPtr<IAccount> account;
+        request->GetAccount((IAccount**)&account);
+        String provider;
+        request->GetProvider(&provider);
+        AutoPtr<EndPoint> info;
+        info = new EndPoint(account, provider, userId);
+        if (runAtTime < 60) {
+            Slogger::W(TAG, "Requested poll frequency of %lld seconds being rounded up to 60 seconds.",
+                runAtTime);
+            runAtTime = 60;
+        }
+        // Schedule periodic sync.
+        syncManager->GetSyncStorageEngine()->UpdateOrAddPeriodicSync(
+            info, runAtTime, flextime, extras);
+    }
+    else {
+        Int64 beforeRuntimeMillis = (flextime) * 1000;
+        Int64 runtimeMillis = runAtTime * 1000;
+        AutoPtr<IAccount> account;
+        request->GetAccount((IAccount**)&account);
+        String provider;
+        request->GetProvider(&provider);
+        syncManager->ScheduleSync(
+            account, userId, callerUid, provider, extras,
+            beforeRuntimeMillis, runtimeMillis,
+            FALSE /* onlyThoseWithUnknownSyncableState */);
+    }
+
+    Binder::RestoreCallingIdentity(identityToken);
+    return NOERROR;
+}
+
 ECode CContentService::CancelSync(
     /* [in] */ IAccount* account,
-    /* [in] */ const String& authority)
+    /* [in] */ const String& authority,
+    /* [in] */ IComponentName* cn)
 {
-    Int32 userId = UserHandle::GetCallingUserId();
+    return CancelSyncAsUser(account, authority, cname, UserHandle::GetCallingUserId());;
+}
+
+ECode CContentService::CancelSync(
+    /* [in] */ IAccount* account,
+    /* [in] */ const String& authority,
+    /* [in] */ IComponentName* cn,
+    /* [in] */ Int32 userId)
+{
+    if (authority.IsNullOrEmpty() {
+        Slogger::E(TAG, ""Authority must be non-empty"")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    StringBuilder sb("no permission to modify the sync settings for user: ");
+    sb += userId;
+    FAIL_RETURN(EnforceCrossUserPermission(userId, sb.ToString()))
 
     // This makes it so that future permission checks will be in the context of this
     // process rather than the caller's process. We will restore this before returning.
     Int64 identityToken = Binder::ClearCallingIdentity();
-    // try {
-    AutoPtr<ISyncManager> syncManager = GetSyncManager();
-    ECode ec = NOERROR;
+
+    AutoPtr<SyncManager> syncManager = getSyncManager();
     if (syncManager != NULL) {
-        ec = syncManager->ClearScheduledSyncOperations(account, userId, authority);
-        ec = syncManager->CancelActiveSync(account, userId, authority);
+        AutoPtr<EndPoint> info;
+        if (cname == NULL) {
+            info = new EndPoint(account, authority, userId);
+        }
+        else {
+            info = new EndPoint(cname, userId);
+        }
+        syncManager->ClearScheduledSyncOperations(info);
+        syncManager->CancelActiveSync(info, NULL /* all syncs for this adapter */);
     }
-    // } finally {
-    // RestoreCallingIdentity(identityToken);
-    // }
+
     Binder::RestoreCallingIdentity(identityToken);
-    return ec;
+}
+
+ECode CContentService::CancelRequest(
+    /* [in ]*/ ISyncRequest* request)
+{
+    AutoPtr<SyncManager> syncManager = GetSyncManager();
+    if (syncManager == NULL) return;
+    Int32 userId = UserHandle::GetCallingUserId();
+
+    Int64 identityToken = Binder::ClearCallingIdentity();
+
+    AutoPtr<IBundle> b;
+    request->GetBundle((IBundle**)&b);
+    AutoPtr<EndPoint> info;
+    AutoPtr<IBundle> extras;
+    CBundle::New(b, (IBundle**)&extras);
+    AutoPtr<IAccount> account;
+    request->GetAccount((IAccount**)&account);
+    String provider;
+    request->GetProvider(&provider);
+    info = new EndPoint(account, provider, userId);
+    Boolean bval;
+    request->IsPeriodic(&bval);
+    if (bval) {
+        // Remove periodic sync.
+        FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+            Manifest::permission::WRITE_SYNC_SETTINGS,
+            String("no permission to write the sync settings")))
+        syncManager->GetSyncStorageEngine()->RemovePeriodicSync(info, extras);
+    }
+    // Cancel active syncs and clear pending syncs from the queue.
+    syncManager->CancelScheduledSyncOperation(info, extras);
+    syncManager->CancelActiveSync(info, extras);
+
+    Binder::RestoreCallingIdentity(identityToken);
+    return NOERROR;
 }
 
 ECode CContentService::GetSyncAdapterTypes(
     /* [out, callee] */ ArrayOf<ISyncAdapterType*>** result)
 {
+    return GetSyncAdapterTypesAsUser(UserHandle::GetCallingUserId(), result);
+}
+
+ECode CContentService::GetSyncAdapterTypesAsUser(
+    /* [in] */ Int32 userId,
+    /* [out, callee] */ ArrayOf<ISyncAdapterType*>** result)
+{
     VALIDATE_NOT_NULL(result)
     *result = NULL;
+
+    StringBuilder sb("no permission to read the sync settings for user: ");
+    sb += userId;
+    FAIL_RETURN(EnforceCrossUserPermission(userId, sb.ToString()))
+
     // This makes it so that future permission checks will be in the context of this
     // process rather than the caller's process. We will restore this before returning.
-    Int32 userId = UserHandle::GetCallingUserId();
     Int64 identityToken = Binder::ClearCallingIdentity();
-    // try {
-    AutoPtr<ISyncManager> syncManager = GetSyncManager();
-    ECode ec = NOERROR;
-    if (syncManager != NULL) {
-        ec = syncManager->GetSyncAdapterTypes(userId, result);
-    }
+
+    AutoPtr<SyncManager> syncManager = GetSyncManager();
+    syncManager->GetSyncAdapterTypes(userId, result);
+
     Binder::RestoreCallingIdentity(identityToken);
-    return ec;
-    // } finally {
-    //     restoreCallingIdentity(identityToken);
-    // }
+    return NOERROR;
 }
 
 ECode CContentService::GetSyncAutomatically(
+    /* [in] */ IAccount* account,
+    /* [in] */ const String& providerName,
+    /* [in] */ Int32 userId,
+    /* [out] */ Boolean* result)
+{
+    return GetSyncAutomaticallyAsUser(account, providerName, UserHandle::GetCallingUserId(), result);
+}
+
+ECode CContentService::GetSyncAutomaticallyAsUser(
     /* [in] */ IAccount* account,
     /* [in] */ const String& providerName,
     /* [out] */ Boolean* result)
@@ -645,24 +860,24 @@ ECode CContentService::GetSyncAutomatically(
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
 
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::READ_SYNC_SETTINGS,
-            String("no permission to read the sync settings")));
-    Int32 userId = UserHandle::GetCallingUserId();
+    StringBuilder sb("no permission to read the sync settings for user: ");
+    sb += userId;
+    FAIL_RETURN(EnforceCrossUserPermission(userId, sb.ToString()))
+
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+        Manifest::permission::READ_SYNC_SETTINGS,
+        String("no permission to read the sync settings")))
 
     Int64 identityToken = Binder::ClearCallingIdentity();
-    // try {
-    AutoPtr<ISyncManager> syncManager = GetSyncManager();
-    ECode ec = NOERROR;
+
+    AutoPtr<SyncManager> syncManager = GetSyncManager();
     if (syncManager != NULL) {
-        AutoPtr<ISyncStorageEngine> engine;
-        ec = syncManager->GetSyncStorageEngine((ISyncStorageEngine**)&engine);
-        ec = engine->GetSyncAutomatically(account, userId, providerName, result);
+        *result = syncManager->GetSyncStorageEngine()->GetSyncAutomatically(account, userId, providerName);
     }
-    // } finally {
-    //     restoreCallingIdentity(identityToken);
-    // }
+
     Binder::RestoreCallingIdentity(identityToken);
-    return ec;
+
+    return NOERROR;
 }
 
 ECode CContentService::SetSyncAutomatically(
@@ -670,24 +885,35 @@ ECode CContentService::SetSyncAutomatically(
     /* [in] */ const String& providerName,
     /* [in] */ Boolean sync)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::WRITE_SYNC_SETTINGS,
-            String("no permission to write the sync settings")))
-    Int32 userId = UserHandle::GetCallingUserId();
+    return SetSyncAutomaticallyAsUser(account, providerName, sync, UserHandle::GetCallingUserId());
+}
+
+ECode CContentService::SetSyncAutomaticallyAsUser(
+    /* [in] */ IAccount* account,
+    /* [in] */ const String& providerName,
+    /* [in] */ Boolean sync,
+    /* [in] */ Int32 userId)
+{
+    if (TextUtils::IsEmpty(providerName)) {
+        Slogger::E(TAG, "Authority must be non-empty");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Manifest::permission::WRITE_SYNC_SETTINGS,
+        String("no permission to write the sync settings")))
+
+    StringBuilder sb("no permission modify read the sync settings for user: ");
+    sb += userId;
+    FAIL_RETURN(EnforceCrossUserPermission(userId, sb.ToString()))
 
     Int64 identityToken = Binder::ClearCallingIdentity();
-    // try {
-    AutoPtr<ISyncManager> syncManager = GetSyncManager();
-    ECode ec = NOERROR;
+
+    AutoPtr<SyncManager> syncManager = GetSyncManager();
     if (syncManager != NULL) {
-        AutoPtr<ISyncStorageEngine> engine;
-        ec = syncManager->GetSyncStorageEngine((ISyncStorageEngine**)&engine);
-        ec = engine->SetSyncAutomatically(account, userId, providerName, sync);
+        syncManager->GetSyncStorageEngine()->SetSyncAutomatically(account, userId, providerName, sync);
     }
-    // } finally {
-    //     restoreCallingIdentity(identityToken);
-    // }
+
     Binder::RestoreCallingIdentity(identityToken);
-    return ec;
+    return NOERROR;
 }
 
 ECode CContentService::AddPeriodicSync(
@@ -696,24 +922,34 @@ ECode CContentService::AddPeriodicSync(
     /* [in] */ IBundle* extras,
     /* [in] */ Int64 pollFrequency)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::WRITE_SYNC_SETTINGS,
-            String("no permission to write the sync settings")))
+    if (account == NULL) {
+        Slogger::E(TAG, "Account must not be NULL");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    if (TextUtils::IsEmpty(authority)) {
+        Slogger::E(TAG, "Authority must not be empty.");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+        Manifest::permission::WRITE_SYNC_SETTINGS,
+        String("no permission to write the sync settings")))
+
     Int32 userId = UserHandle::GetCallingUserId();
+    if (pollFrequency < 60) {
+        Slogger::W(TAG, "Requested poll frequency of %lld"
+            " seconds being rounded up to 60 seconds.", pollFrequency);
+        pollFrequency = 60;
+    }
+    Int64 defaultFlex = SyncStorageEngine::CalculateDefaultFlexTime(pollFrequency);
 
     Int64 identityToken = Binder::ClearCallingIdentity();
-    // try {
-    AutoPtr<ISyncManager> syncManager = GetSyncManager();
-    ECode ec = NOERROR;
-    if (syncManager != NULL) {
-        AutoPtr<ISyncStorageEngine> engine;
-        ec = syncManager->GetSyncStorageEngine((ISyncStorageEngine**)&engine);
-        ec = engine->AddPeriodicSync(account, userId, authority, extras, pollFrequency);
-    }
-    // } finally {
-    //     restoreCallingIdentity(identityToken);
-    // }
+
+    AutoPtr<EndPoint> info = new EndPoint(account, authority, userId);
+    GetSyncManager()->GetSyncStorageEngine()->UpdateOrAddPeriodicSync(
+        info, pollFrequency, defaultFlex, extras);
+
     Binder::RestoreCallingIdentity(identityToken);
-    return ec;
+    return NOERROR;
 }
 
 ECode CContentService::RemovePeriodicSync(
@@ -721,52 +957,72 @@ ECode CContentService::RemovePeriodicSync(
     /* [in] */ const String& authority,
     /* [in] */ IBundle* extras)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::WRITE_SYNC_SETTINGS,
-            String("no permission to write the sync settings")))
-    Int32 userId = UserHandle::GetCallingUserId();
-
-    Int64 identityToken = Binder::ClearCallingIdentity();
-    // try {
-    AutoPtr<ISyncManager> syncManager = GetSyncManager();
-    ECode ec = NOERROR;
-    if (syncManager != NULL) {
-        AutoPtr<ISyncStorageEngine> engine;
-        ec = syncManager->GetSyncStorageEngine((ISyncStorageEngine**)&engine);
-        ec = engine->RemovePeriodicSync(account, userId, authority, extras);
+    if (account == NULL) {
+        Slogger::E(TAG, "Account must not be NULL");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    // } finally {
-    //     restoreCallingIdentity(identityToken);
-    // }
+    if (TextUtils::IsEmpty(authority)) {
+        Slogger::E(TAG, "Authority must not be empty");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+        Manifest::permission::WRITE_SYNC_SETTINGS,
+        String("no permission to write the sync settings")))
+
+    Int32 userId = UserHandle::GetCallingUserId();
+    Int64 identityToken = Binder::ClearCallingIdentity();
+
+    AutoPtr<EndPoint> ep = new EndPoint(account, authority, userId);
+    GetSyncManager()->GetSyncStorageEngine()->RemovePeriodicSync(
+        ep, extras);
+
     Binder::RestoreCallingIdentity(identityToken);
-    return ec;
+    return NOERROR;
 }
 
 ECode CContentService::GetPeriodicSyncs(
     /* [in] */ IAccount* account,
     /* [in] */ const String& providerName,
-    /* [out] */ IObjectContainer** periodicSyncList)
+    /* [out] */ IList** periodicSyncList)
 {
-    VALIDATE_NOT_NULL(periodicSyncList);
+    VALIDATE_NOT_NULL(periodicSyncList)
     *periodicSyncList = NULL;
 
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::READ_SYNC_SETTINGS,
-            String("no permission to read the sync settings")))
-    Int32 userId = UserHandle::GetCallingUserId();
-
-    Int64 identityToken = Binder::ClearCallingIdentity();
-    // try {
-    AutoPtr<ISyncManager> syncManager = GetSyncManager();
-    ECode ec = NOERROR;
-    if (syncManager != NULL) {
-        AutoPtr<ISyncStorageEngine> engine;
-        ec = syncManager->GetSyncStorageEngine((ISyncStorageEngine**)&engine);
-        ec = engine->GetPeriodicSyncs(account, userId, providerName, periodicSyncList);
+    if (account == NULL) {
+        Slogger::E(TAG, "Account must not be NULL");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    // } finally {
-    //     restoreCallingIdentity(identityToken);
-    // }
+    if (TextUtils::IsEmpty(providerName)) {
+        Slogger::E(TAG, "Authority must not be empty");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+        Manifest::permission::READ_SYNC_SETTINGS,
+        String("no permission to read the sync settings")))
+
+    Int32 userId = UserHandle::GetCallingUserId();
+    Int64 identityToken = Binder::ClearCallingIdentity();
+
+    AutoPtr<SyncManager> syncManager = GetSyncManager();
+    AutoPtr<EndPoint> ep = new EndPoint(account, providerName, userId);
+    AutoPtr<List<AutoPtr<IPeriodicSync> > > list;
+    list = syncManager->GetSyncStorageEngine()->GetPeriodicSyncs(ep);
+
+    if (list != NULL) {
+        Boolean bval;
+        AutoPtr<IArrayList> al;
+        CArrayList::New((IArrayList**)&al);
+        List<AutoPtr<IPeriodicSync> >::Iterator it;
+        for (it = list->Begin(); it != list->End(); ++it) {
+            al->Add(TO_IINTERFACE(*it), &bva);
+        }
+
+        *periodicSyncList = IList::Probe(al);
+        REFCOUNT_ADD(*periodicSyncList)
+    }
+
     Binder::RestoreCallingIdentity(identityToken);
-    return ec;
+    return NOERROR;
 }
 
 ECode CContentService::GetIsSyncable(
@@ -774,27 +1030,36 @@ ECode CContentService::GetIsSyncable(
     /* [in] */ const String& providerName,
     /* [out] */ Int32* value)
 {
+    return GetIsSyncableAsUser(account, providerName, UserHandle::GetCallingUserId(), value);
+}
+
+ECode CContentService::GetIsSyncableAsUser(
+    /* [in] */ IAccount* account,
+    /* [in] */ const String& providerName,
+    /* [in] */ Int32 userId,
+    /* [out] */ Int32* value)
+{
     VALIDATE_NOT_NULL(value)
     *value = -1;
 
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::READ_SYNC_SETTINGS,
-            String("no permission to read the sync settings")))
-    Int32 userId = UserHandle::GetCallingUserId();
+    StringBuilder sb("no permission read the sync settings for user: ");
+    sb += userId;
+    FAIL_RETURN(EnforceCrossUserPermission(userId, sb.ToString()))
+
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+        Manifest::permission::READ_SYNC_SETTINGS,
+        String("no permission to read the sync settings")))
 
     Int64 identityToken = Binder::ClearCallingIdentity();
-    // try {
-    AutoPtr<ISyncManager> syncManager = GetSyncManager();
-    ECode ec = NOERROR;
+
+    AutoPtr<SyncManager> syncManager = GetSyncManager();
     if (syncManager != NULL) {
-        AutoPtr<ISyncStorageEngine> engine;
-        ec = syncManager->GetSyncStorageEngine((ISyncStorageEngine**)&engine);
-        ec = engine->GetIsSyncable(account, userId, providerName, value);
+        *value = syncManager->GetIsSyncable(account, userId, providerName);
     }
-    // } finally {
-    //     restoreCallingIdentity(identityToken);
-    // }
+
     Binder::RestoreCallingIdentity(identityToken);
-    return ec;
+
+    return NOERROR;
 }
 
 ECode CContentService::SetIsSyncable(
@@ -802,183 +1067,246 @@ ECode CContentService::SetIsSyncable(
     /* [in] */ const String& providerName,
     /* [in] */ Int32 syncable)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::WRITE_SYNC_SETTINGS,
-            String("no permission to write the sync settings")))
-    Int32 userId = UserHandle::GetCallingUserId();
-
-    Int64 identityToken = Binder::ClearCallingIdentity();
-    // try {
-    AutoPtr<ISyncManager> syncManager = GetSyncManager();
-    ECode ec = NOERROR;
-    if (syncManager != NULL) {
-        AutoPtr<ISyncStorageEngine> engine;
-        ec = syncManager->GetSyncStorageEngine((ISyncStorageEngine**)&engine);
-        ec = engine->SetIsSyncable(account, userId, providerName, syncable);
+    if (TextUtils::IsEmpty(providerName)) {
+        Slogger::E(TAG, "Authority must not be empty");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    // } finally {
-    //     restoreCallingIdentity(identityToken);
-    // }
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+        Manifest::permission::WRITE_SYNC_SETTINGS,
+        String("no permission to write the sync settings")))
+
+    Int32 userId = UserHandle::GetCallingUserId();
+    Int64 identityToken = Binder::ClearCallingIdentity();
+    AutoPtr<SyncManager> syncManager = GetSyncManager();
+    if (syncManager != NULL) {
+        syncManager->GetSyncStorageEngine()->SetIsSyncable(
+            account, userId, providerName, syncable);
+    }
+
     Binder::RestoreCallingIdentity(identityToken);
-    return ec;
+    return NOERROR;
 }
 
 ECode CContentService::GetMasterSyncAutomatically(
     /* [out] */ Boolean* result)
 {
+    return GetMasterSyncAutomaticallyAsUser(UserHandle::GetCallingUserId(), result);
+}
+
+ECode CContentService::GetMasterSyncAutomaticallyAsUser(
+    /* [in] */ Int32 userId,
+    /* [out] */ Boolean* result)
+{
     VALIDATE_NOT_NULL(result)
     *result = FALSE;
 
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::READ_SYNC_SETTINGS,
-            String("no permission to read the sync settings")))
+    StringBuilder sb("no permission read the sync settings for user: ");
+    sb += userId;
+    FAIL_RETURN(EnforceCrossUserPermission(userId, sb.ToString()))
+
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+        Manifest::permission::READ_SYNC_SETTINGS,
+        String("no permission to read the sync settings")))
     Int32 userId = UserHandle::GetCallingUserId();
 
     Int64 identityToken = Binder::ClearCallingIdentity();
     // try {
-    AutoPtr<ISyncManager> syncManager = GetSyncManager();
-    ECode ec = NOERROR;
+    AutoPtr<SyncManager> syncManager = GetSyncManager();
     if (syncManager != NULL) {
-        AutoPtr<ISyncStorageEngine> engine;
-        ec = syncManager->GetSyncStorageEngine((ISyncStorageEngine**)&engine);
-        ec = engine->GetMasterSyncAutomatically(userId, result);
+        *result = syncManager->GetSyncStorageEngine()->GetMasterSyncAutomatically(userId);
     }
-    // } finally {
-    //     restoreCallingIdentity(identityToken);
-    // }
     Binder::RestoreCallingIdentity(identityToken);
-    return ec;
+    return NOERROR;
 }
 
 ECode CContentService::SetMasterSyncAutomatically(
     /* [in] */ Boolean flag)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::WRITE_SYNC_SETTINGS,
-            String("no permission to write the sync settings")))
-    Int32 userId = UserHandle::GetCallingUserId();
+    return SetMasterSyncAutomaticallyAsUser(flag, UserHandle::GetCallingUserId());
+}
+
+ECode CContentService::SetMasterSyncAutomaticallyAsUser(
+    /* [in] */ Boolean flag,
+    /* [in] */ Int32 userId)
+{
+    StringBuilder sb("no permission set the sync settings for user: ");
+    sb += userId;
+    FAIL_RETURN(EnforceCrossUserPermission(userId, sb.ToString()))
+
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+        Manifest::permission::WRITE_SYNC_SETTINGS,
+        String("no permission to write the sync settings")))
 
     Int64 identityToken = Binder::ClearCallingIdentity();
-    // try {
-    AutoPtr<ISyncManager> syncManager = GetSyncManager();
-    ECode ec = NOERROR;
+
+    AutoPtr<SyncManager> syncManager = GetSyncManager();
     if (syncManager != NULL) {
-        AutoPtr<ISyncStorageEngine> engine;
-        ec = syncManager->GetSyncStorageEngine((ISyncStorageEngine**)&engine);
-        ec = engine->SetMasterSyncAutomatically(flag, userId);
+        syncManager->GetSyncStorageEngine()->SetMasterSyncAutomatically(flag, userId);
     }
-    // } finally {
-    //     restoreCallingIdentity(identityToken);
-    // }
+
     Binder::RestoreCallingIdentity(identityToken);
-    return ec;
+
+    return NOERROR;
 }
 
 ECode CContentService::IsSyncActive(
     /* [in] */ IAccount* account,
     /* [in] */ const String& authority,
+    /* [in] */ IComponentName* cname,
     /* [out] */ Boolean* isActive)
 {
     VALIDATE_NOT_NULL(isActive)
     *isActive = FALSE;
 
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::READ_SYNC_STATS,
-            String("no permission to read the sync stats")))
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+        Manifest::permission::READ_SYNC_STATS,
+        String("no permission to read the sync stats")))
     Int32 userId = UserHandle::GetCallingUserId();
-
+    Int32 callingUid = Binder::GetCallingUid();
     Int64 identityToken = Binder::ClearCallingIdentity();
-    // try {
-    AutoPtr<ISyncManager> syncManager = GetSyncManager();
-    ECode ec = NOERROR;
-    if (syncManager != NULL) {
-        AutoPtr<ISyncStorageEngine> engine;
-        ec = syncManager->GetSyncStorageEngine((ISyncStorageEngine**)&engine);
-        ec = engine->IsSyncActive(account, userId, authority, isActive);
+
+    AutoPtr<SyncManager> syncManager = GetSyncManager();
+    if (syncManager == NULL) {
+        return NOERROR;
     }
-    // } finally {
-    //     restoreCallingIdentity(identityToken);
-    // }
+
+    AutoPtr<EndPoint> ep = new EndPoint(account, authority, userId);
+    *isActive = syncManager->GetSyncStorageEngine()->IsSyncActive(ep);
     Binder::RestoreCallingIdentity(identityToken);
-    return ec;
+    return NOERROR;
 }
 
 ECode CContentService::GetCurrentSyncs(
-    /* [out] */ IObjectContainer** syncInfoList)
+    /* [out] */ IList** syncInfoList)
+{
+    return GetCurrentSyncsAsUser(UserHandle::GetCallingUserId(), syncInfoList);
+}
+
+ECode CContentService::GetCurrentSyncsAsUser(
+    /* [in] */ Int32 userId,
+    /* [out] */ IList** syncInfoList)
 {
     VALIDATE_NOT_NULL(syncInfoList)
     *syncInfoList = NULL;
 
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::READ_SYNC_STATS,
-            String("no permission to read the sync stats")))
-    Int32 userId = UserHandle::GetCallingUserId();
+    StringBuilder sb("no permission read the sync settings for user: ");
+    sb += userId;
+    FAIL_RETURN(EnforceCrossUserPermission(userId, sb.ToString()))
+
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+        Manifest::permission::READ_SYNC_STATS,
+        String("no permission to read the sync stats")))
 
     Int64 identityToken = Binder::ClearCallingIdentity();
-    // try {
-    AutoPtr<ISyncManager> syncManager = GetSyncManager();
-    ECode ec = NOERROR;
-    if (syncManager != NULL) {
-        AutoPtr<ISyncStorageEngine> engine;
-        ec = syncManager->GetSyncStorageEngine((ISyncStorageEngine**)&engine);
-        ec = engine->GetCurrentSyncs(userId, syncInfoList);
-    }
-    // } finally {
-    //     restoreCallingIdentity(identityToken);
-    // }
+
+    AutoPtr<SyncManager> syncManager = GetSyncManager();
+    AutoPtr<IList> list = syncManager->GetSyncStorageEngine()->GetCurrentSyncsCopy(userId);
+    *syncInfoList = list;
+    REFCOUNT_ADD(*syncInfoList)
+
     Binder::RestoreCallingIdentity(identityToken);
-    return ec;
+    return NOERROR;
 }
 
 ECode CContentService::GetSyncStatus(
     /* [in] */ IAccount* account,
     /* [in] */ const String& authority,
+    /* [in] */ IComponentName* cname,
+    /* [out] */ ISyncStatusInfo** result)
+{
+    return GetSyncStatusAsUser(account, authority, cname, UserHandle::GetCallingUserId(), result);
+}
+
+ECode CContentService::GetSyncStatusAsUser(
+    /* [in] */ IAccount* account,
+    /* [in] */ const String& authority,
+    /* [in] */ IComponentName* cname,
+    /* [in] */ Int32 userId,
     /* [out] */ ISyncStatusInfo** result)
 {
     VALIDATE_NOT_NULL(result)
     *result = NULL;
 
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::READ_SYNC_STATS,
-            String("no permission to read the sync stats")))
-    Int32 userId = UserHandle::GetCallingUserId();
-
-    Int64 identityToken = Binder::ClearCallingIdentity();
-    // try {
-    AutoPtr<ISyncManager> syncManager = GetSyncManager();
-    ECode ec = NOERROR;
-    if (syncManager != NULL) {
-        AutoPtr<ISyncStorageEngine> engine;
-        ec = syncManager->GetSyncStorageEngine((ISyncStorageEngine**)&engine);
-        ec = engine->GetStatusByAccountAndAuthority(account, userId, authority, result);
+    if (TextUtils::IsEmpty(authority)) {
+        Slogger::E(TAG, "Authority must not be empty");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    // } finally {
-    //     restoreCallingIdentity(identityToken);
-    // }
+
+    StringBuilder sb("no permission read the sync settings for user: ");
+    sb += userId;
+    FAIL_RETURN(EnforceCrossUserPermission(userId, sb.ToString()))
+
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+        Manifest::permission::READ_SYNC_STATS,
+        String("no permission to read the sync stats")))
+
+    Int32 callerUid = Binder::GetCallingUid();
+    Int64 identityToken = Binder::ClearCallingIdentity();
+
+    AutoPtr<SyncManager> syncManager = GetSyncManager();
+    if (syncManager == NULL) {
+        return NOERROR;
+    }
+
+    AutoPtr<EndPoint> info;
+    if (!(account == NULL || authority == NULL)) {
+        info = new EndPoint(account, authority, userId);
+    }
+    else {
+        Slogger::E(TAG, "Must call sync status with valid authority");
+    }
+    AutoPtr<ISyncStatusInfo> info = syncManager->GetSyncStorageEngine()->GetStatusByAuthority(info);
+    *result = info;
+    REFCOUNT_ADD(*result)
+
     Binder::RestoreCallingIdentity(identityToken);
-    return ec;
+    return NOERROR;
 }
 
 ECode CContentService::IsSyncPending(
     /* [in] */ IAccount* account,
     /* [in] */ const String& authority,
+    /* [in] */ IComponentName* cname,
+    /* [out] */ Boolean* isPending)
+{
+    return IsSyncPendingAsUser(account, authority, cname, UserHandle::GetCallingUserId(), isPending);
+}
+
+ECode CContentService::IsSyncPendingAsUser(
+    /* [in] */ IAccount* account,
+    /* [in] */ const String& authority,
+    /* [in] */ IComponentName* cname,
+    /* [in] */ Int32 userId,
     /* [out] */ Boolean* isPending)
 {
     VALIDATE_NOT_NULL(isPending)
     *isPending = FALSE;
 
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::READ_SYNC_STATS,
-            String("no permission to read the sync stats")))
-    Int32 userId = UserHandle::GetCallingUserId();
+    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+        Manifest::permission::READ_SYNC_STATS,
+        String("no permission to read the sync stats")))
 
+    StringBuilder sb("no permission retrieve the sync settings for user: ");
+    sb += userId;
+    FAIL_RETURN(EnforceCrossUserPermission(userId, sb.ToString()))
+
+    Int32 callerUid = Binder::GetCallingUid();
     Int64 identityToken = Binder::ClearCallingIdentity();
-    // try {
-    AutoPtr<ISyncManager> syncManager = GetSyncManager();
-    ECode ec = NOERROR;
-    if (syncManager != NULL) {
-        AutoPtr<ISyncStorageEngine> engine;
-        ec = syncManager->GetSyncStorageEngine((ISyncStorageEngine**)&engine);
-        ec = engine->IsSyncPending(account, userId, authority, isPending);
+    AutoPtr<SyncManager> syncManager = GetSyncManager();
+    if (syncManager == NULL) return NOERROR;
+
+    AutoPtr<EndPoint> info;
+    if (!(account == NULL || authority == NULL)) {
+        info = new EndPoint(account, authority, userId);
     }
-    // } finally {
-    //     restoreCallingIdentity(identityToken);
-    // }
+    else {
+        Slogger::E(TAG, "Invalid authority specified");
+    }
+
+    *isPending = syncManager->GetSyncStorageEngine()->IsSyncPending(info);
+
     Binder::RestoreCallingIdentity(identityToken);
-    return ec;
+    return NOERROR;
 }
 
 ECode CContentService::AddStatusChangeListener(
@@ -987,15 +1315,13 @@ ECode CContentService::AddStatusChangeListener(
 {
     Int64 identityToken = Binder::ClearCallingIdentity();
     // try {
-    AutoPtr<ISyncManager> syncManager = GetSyncManager();
+    AutoPtr<SyncManager> syncManager = GetSyncManager();
     ECode ec = NOERROR;
     if (syncManager != NULL && callback != NULL) {
-        AutoPtr<ISyncStorageEngine> engine;
-        ec = syncManager->GetSyncStorageEngine((ISyncStorageEngine**)&engine);
-        ec = engine->AddStatusChangeListener(mask, callback);
+        syncManager->GetSyncStorageEngine()->AddStatusChangeListener(mask, callback);
     }
     Binder::RestoreCallingIdentity(identityToken);
-    return ec;
+    return NULL;
 }
 
 ECode CContentService::RemoveStatusChangeListener(
@@ -1003,15 +1329,36 @@ ECode CContentService::RemoveStatusChangeListener(
 {
     Int64 identityToken = Binder::ClearCallingIdentity();
     // try {
-    AutoPtr<ISyncManager> syncManager = GetSyncManager();
+    AutoPtr<SyncManager> syncManager = GetSyncManager();
     ECode ec = NOERROR;
     if (syncManager != NULL && callback != NULL) {
-        AutoPtr<ISyncStorageEngine> engine;
-        ec = syncManager->GetSyncStorageEngine((ISyncStorageEngine**)&engine);
-        ec = engine->RemoveStatusChangeListener(callback);
+        syncManager->GetSyncStorageEngine()->RemoveStatusChangeListener(callback);
     }
     Binder::RestoreCallingIdentity(identityToken);
-    return ec;
+    return NOERROR;
+}
+
+ECode CContentService::EnforceCrossUserPermission(
+    /* [in] */ Int32 userHandle,
+    /* [in] */ const String& message)
+{
+    Int32 callingUser = UserHandle::GetCallingUserId();
+    if (callingUser != userHandle) {
+        FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
+            Manifest::permission::INTERACT_ACROSS_USERS_FULL, message))
+    }
+    return NOERROR;
+}
+
+ECode CContentService::Main(
+    /* [in] */ IContext* context,
+    /* [in] */ Boolean factoryTest)
+{
+    AutoPtr<IIContentService> service;
+    CContentService::New(context, factoryTest, (IIContentService**)&service);
+    AutoPtr<IServiceManager> mgr;
+    CServiceManager::AcquireSingleton((IServiceManager**)&mgr);
+    return mgr->AddService(IContentResolver::CONTENT_SERVICE_NAME, service.Get());
 }
 
 ECode CContentService::constructor(
@@ -1023,6 +1370,7 @@ ECode CContentService::constructor(
     return NOERROR;
 }
 
+}
 }
 }
 }

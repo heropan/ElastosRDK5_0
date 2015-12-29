@@ -17,6 +17,7 @@ using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IRemoteCallbackList;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IPeriodicSync;
+using Elastos::Droid::Content::ISyncInfo;
 using Elastos::Droid::Content::ISyncStatusInfo;
 using Elastos::Droid::Accounts::IAccount;
 using Elastos::Droid::Accounts::IAccountAndUser;
@@ -393,14 +394,14 @@ public:
      * Called when a sync is starting. Supply a valid ActiveSyncContext with information
      * about the sync.
      */
-    AutoPtr<SyncInfo> AddActiveSync(
-        /* [in] */ ISyncManagerActiveSyncContext* activeSyncContext);
+    AutoPtr<ISyncInfo> AddActiveSync(
+        /* [in] */ IActiveSyncContext* activeSyncContext);
 
     /**
      * Called to indicate that a previously active sync is no longer active.
      */
     void RemoveActiveSync(
-        /* [in] */ SyncInfo* syncInfo,
+        /* [in] */ ISyncInfo* syncInfo,
         /* [in] */ Int32 userId);
 
     /**
@@ -426,7 +427,7 @@ public:
      * @return a copy of the current syncs data structure. Will not return
      * null.
      */
-    AutoPtr<List<AutoPtr<SyncInfo> > > GetCurrentSyncsCopy(
+    AutoPtr<IList> GetCurrentSyncsCopy(
         /* [in] */ Int32 userId);
 
     /**
@@ -544,10 +545,10 @@ private:
      * items are the real, live active sync objects, so be careful what you do
      * with it.
      */
-    AutoPtr<List<AutoPtr<SyncInfo> > > GetCurrentSyncs(
+    AutoPtr<List<AutoPtr<ISyncInfo> > > GetCurrentSyncs(
         /* [in] */ Int32 userId);
 
-    AutoPtr<List<AutoPtr<SyncInfo> > > GetCurrentSyncsLocked(
+    AutoPtr<List<AutoPtr<ISyncInfo> > > GetCurrentSyncsLocked(
         /* [in] */ Int32 userId);
 
     AutoPtr<ISyncStatusInfo> GetOrCreateSyncStatusLocked(
@@ -810,7 +811,7 @@ private:
 
     List<AutoPtr<PendingOperation> > mPendingOperations;
 
-    HashMap<Int32, AutoPtr<List<AutoPtr<SyncInfo> > > > mCurrentSyncs;
+    HashMap<Int32, AutoPtr<List<AutoPtr<ISyncInfo> > > > mCurrentSyncs;
 
     HashMap<Int32, AutoPtr<ISyncStatusInfo> > mSyncStatus;
 

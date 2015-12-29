@@ -47,6 +47,7 @@ module
     using interface Elastos.Droid.Content.IContext;
     using interface Elastos.Droid.Content.IServiceConnection;
     using interface Elastos.Droid.Content.IIIntentSender;
+    using interface Elastos.Droid.Content.IIContentService;
     using interface Elastos.Droid.Hardware.Display.IIDisplayManager;
     using interface Elastos.Droid.Media.Projection.IIMediaProjectionCallback;
     using interface Elastos.Droid.View.IApplicationToken;
@@ -82,7 +83,6 @@ module
     // using interface Elastos.Droid.Content.IIntentReceiver;
     // using interface Elastos.Droid.Content.IServiceConnection;
     // using interface Elastos.Droid.Content.IComponentName;
-    // using interface Elastos.Droid.Content.IContentService;
     // using interface Elastos.Droid.Content.Pm.IIPackageManager;
     // using interface Elastos.Droid.Content.Pm.IRegisteredServicesCacheListener;
     // using interface Elastos.Droid.Location.IICountryDetector;
@@ -903,17 +903,6 @@ module
         interface ISystemServer;
     }
 
-//     /**
-//      * {@hide}
-//      */
-//     [local]
-//     class CContentService {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] Boolean factoryTest);
-
-//         interface IContentService;
-//     }
 
 //     [local]
 //     class CRecognitionManagerService {
@@ -1247,6 +1236,29 @@ module
 //     } // namespace Widget
 //     } // namespace Droid
 //     } // namespace Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+    namespace Os {
+
+    /**
+     * {@hide}
+     */
+    [local]
+    class CContentService {
+        constructor(
+            [in] IContext* ctx,
+            [in] Boolean factoryTest);
+
+        interface IIContentService;
+    }
+
+    } // namespace Os
+    } // namespace Server
+    } // namepsace Droid
+    } // namespace Elastos
+
 
     namespace Elastos {
     namespace Droid {
