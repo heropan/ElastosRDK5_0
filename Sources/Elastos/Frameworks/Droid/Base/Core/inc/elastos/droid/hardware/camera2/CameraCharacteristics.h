@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_HARDWARE_CAMERA2_CAMERACHARACTERISTICS_H__
 
 #include "Elastos.Droid.Hardware.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
@@ -30,12 +31,18 @@ public:
     public:
         CAR_INTERFACE_DECL()
 
+        Key();
+
+        virtual ~Key() {}
+
+        CARAPI constructor();
+
         /**
          * Visible for testing and vendor extensions only.
          *
          * @hide
          */
-        Key(
+        CARAPI constructor(
             /* [in] */ const String& name,
             /* [in] */ ClassID type);
 
@@ -44,9 +51,15 @@ public:
          *
          * @hide
          */
-        Key(
+        CARAPI constructor(
             /* [in] */ const String& name,
             /* [in] */ ITypeReference* typeReference);
+
+        // @SuppressWarnings({
+        //         "unused", "unchecked"
+        // })
+        CARAPI constructor(
+            /* [in] */ ICameraMetadataNativeKey* nativeKey);
 
         /**
          * Return a camelCase, period separated name formatted like:
@@ -91,6 +104,16 @@ public:
             /* [out] */ ICameraMetadataNativeKey** key);
 
     private:
+        friend class CameraCharacteristics;
+        /**
+         * Visible for testing and vendor extensions only.
+         *
+         * @hide
+         */
+        Key(
+            /* [in] */ const String& name,
+            /* [in] */ ClassID type);
+
         // @SuppressWarnings({
         //         "unused", "unchecked"
         // })
@@ -143,6 +166,83 @@ public:
         /* [out] */ IInterface** outface);
 
     CARAPI GetKeys(
+        /* [out] */ IList** outlist);
+
+    /**
+     * {@inheritDoc}
+     * @hide
+     */
+    // @SuppressWarnings("unchecked")
+    // @Override
+    CARAPI GetProtected(
+        /* [in] */ IInterface* key,
+        /* [out] */ IInterface** outface);
+
+    /**
+     * {@inheritDoc}
+     * @hide
+     */
+    // @SuppressWarnings("unchecked")
+    // @Override
+    CARAPI GetKeyClass(
+        /* [out] */ ClassID* id);
+
+    /**
+     * Returns the list of keys supported by this {@link CameraDevice} for querying
+     * with a {@link CaptureRequest}.
+     *
+     * <p>The list returned is not modifiable, so any attempts to modify it will throw
+     * a {@code UnsupportedOperationException}.</p>
+     *
+     * <p>Each key is only listed once in the list. The order of the keys is undefined.</p>
+     *
+     * <p>Note that there is no {@code getAvailableCameraCharacteristicsKeys()} -- use
+     * {@link #getKeys()} instead.</p>
+     *
+     * @return List of keys supported by this CameraDevice for CaptureRequests.
+     */
+    //@SuppressWarnings({"unchecked"})
+    CARAPI GetAvailableCaptureRequestKeys(
+        /* [out] */ IList** outlist);
+
+    /**
+     * Returns the list of keys supported by this {@link CameraDevice} for querying
+     * with a {@link CaptureResult}.
+     *
+     * <p>The list returned is not modifiable, so any attempts to modify it will throw
+     * a {@code UnsupportedOperationException}.</p>
+     *
+     * <p>Each key is only listed once in the list. The order of the keys is undefined.</p>
+     *
+     * <p>Note that there is no {@code getAvailableCameraCharacteristicsKeys()} -- use
+     * {@link #getKeys()} instead.</p>
+     *
+     * @return List of keys supported by this CameraDevice for CaptureResults.
+     */
+    //@SuppressWarnings({"unchecked"})
+    CARAPI GetAvailableCaptureResultKeys(
+        /* [out] */ IList** outlist);
+
+private:
+    /**
+     * Returns the list of keys supported by this {@link CameraDevice} by metadataClass.
+     *
+     * <p>The list returned is not modifiable, so any attempts to modify it will throw
+     * a {@code UnsupportedOperationException}.</p>
+     *
+     * <p>Each key is only listed once in the list. The order of the keys is undefined.</p>
+     *
+     * @param metadataClass The subclass of CameraMetadata that you want to get the keys for.
+     * @param keyClass The class of the metadata key, e.g. CaptureRequest.Key.class
+     *
+     * @return List of keys supported by this CameraDevice for metadataClass.
+     *
+     * @throws IllegalArgumentException if metadataClass is not a subclass of CameraMetadata
+     */
+    CARAPI GetAvailableKeyList(
+        /* [in] */ ClassID metadataClass,
+        /* [in] */ ClassID keyClass,
+        /* [in] */ ArrayOf<Int32>* filterTags,
         /* [out] */ IList** outlist);
 
 public:
@@ -2149,9 +2249,9 @@ public:
 
 private:
     AutoPtr<ICameraMetadataNative> mProperties;
-    // private List<CameraCharacteristics.Key<?>> mKeys;
-    // private List<CaptureRequest.Key<?>> mAvailableRequestKeys;
-    // private List<CaptureResult.Key<?>> mAvailableResultKeys;
+    AutoPtr<IList> mKeys;
+    AutoPtr<IList> mAvailableRequestKeys;
+    AutoPtr<IList> mAvailableResultKeys;
 };
 
 } // namespace Camera2

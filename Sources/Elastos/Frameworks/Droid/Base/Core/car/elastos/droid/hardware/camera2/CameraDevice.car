@@ -2,6 +2,8 @@
 module
 {
     using interface Elastos.Utility.IList;
+
+    interface Elastos.Droid.Hardware.Camera2.ICameraDevice;
     interface Elastos.Droid.Hardware.Camera2.ICameraCaptureSessionStateCallback;
     interface Elastos.Droid.Os.IHandler;
 
@@ -11,7 +13,168 @@ module
     namespace Camera2 {
 
     interface ICameraDeviceStateCallback {
+        /**
+         * An error code that can be reported by {@link #onError}
+         * indicating that the camera device is in use already.
+         *
+         * <p>
+         * This error can be produced when opening the camera fails.
+         * </p>
+         *
+         * @see #onError
+         */
+        const Int32 ERROR_CAMERA_IN_USE = 1;
 
+        /**
+         * An error code that can be reported by {@link #onError}
+         * indicating that the camera device could not be opened
+         * because there are too many other open camera devices.
+         *
+         * <p>
+         * The system-wide limit for number of open cameras has been reached,
+         * and more camera devices cannot be opened until previous instances are
+         * closed.
+         * </p>
+         *
+         * <p>
+         * This error can be produced when opening the camera fails.
+         * </p>
+         *
+         * @see #onError
+         */
+        const Int32 ERROR_MAX_CAMERAS_IN_USE = 2;
+
+        /**
+         * An error code that can be reported by {@link #onError}
+         * indicating that the camera device could not be opened due to a device
+         * policy.
+         *
+         * @see android.app.admin.DevicePolicyManager#setCameraDisabled(android.content.ComponentName, boolean)
+         * @see #onError
+         */
+        const Int32 ERROR_CAMERA_DISABLED = 3;
+
+        /**
+         * An error code that can be reported by {@link #onError}
+         * indicating that the camera device has encountered a fatal error.
+         *
+         * <p>The camera device needs to be re-opened to be used again.</p>
+         *
+         * @see #onError
+         */
+        const Int32 ERROR_CAMERA_DEVICE = 4;
+
+        /**
+         * An error code that can be reported by {@link #onError}
+         * indicating that the camera service has encountered a fatal error.
+         *
+         * <p>The Android device may need to be shut down and restarted to restore
+         * camera function, or there may be a persistent hardware problem.</p>
+         *
+         * <p>An attempt at recovery <i>may</i> be possible by closing the
+         * CameraDevice and the CameraManager, and trying to acquire all resources
+         * again from scratch.</p>
+         *
+         * @see #onError
+         */
+        const Int32 ERROR_CAMERA_SERVICE = 5;
+
+        /**
+         * The method called when a camera device has finished opening.
+         *
+         * <p>At this point, the camera device is ready to use, and
+         * {@link CameraDevice#createCaptureSession} can be called to set up the first capture
+         * session.</p>
+         *
+         * @param camera the camera device that has become opened
+         */
+        OnOpened(
+            [in] ICameraDevice* camera); // Must implement
+
+        /**
+         * The method called when a camera device has been closed with
+         * {@link CameraDevice#close}.
+         *
+         * <p>Any attempt to call methods on this CameraDevice in the
+         * future will throw a {@link IllegalStateException}.</p>
+         *
+         * <p>The default implementation of this method does nothing.</p>
+         *
+         * @param camera the camera device that has become closed
+         */
+        OnClosed(
+            [in] ICameraDevice* camera);
+
+        /**
+         * The method called when a camera device is no longer available for
+         * use.
+         *
+         * <p>This callback may be called instead of {@link #onOpened}
+         * if opening the camera fails.</p>
+         *
+         * <p>Any attempt to call methods on this CameraDevice will throw a
+         * {@link CameraAccessException}. The disconnection could be due to a
+         * change in security policy or permissions; the physical disconnection
+         * of a removable camera device; or the camera being needed for a
+         * higher-priority use case.</p>
+         *
+         * <p>There may still be capture callbacks that are invoked
+         * after this method is called, or new image buffers that are delivered
+         * to active outputs.</p>
+         *
+         * <p>The default implementation logs a notice to the system log
+         * about the disconnection.</p>
+         *
+         * <p>You should clean up the camera with {@link CameraDevice#close} after
+         * this happens, as it is not recoverable until opening the camera again
+         * after it becomes {@link CameraManager.AvailabilityCallback#onCameraAvailable available}.
+         * </p>
+         *
+         * @param camera the device that has been disconnected
+         */
+        OnDisconnected(
+            [in] ICameraDevice* camera); // Must implement
+
+        /**
+         * The method called when a camera device has encountered a serious error.
+         *
+         * <p>This callback may be called instead of {@link #onOpened}
+         * if opening the camera fails.</p>
+         *
+         * <p>This indicates a failure of the camera device or camera service in
+         * some way. Any attempt to call methods on this CameraDevice in the
+         * future will throw a {@link CameraAccessException} with the
+         * {@link CameraAccessException#CAMERA_ERROR CAMERA_ERROR} reason.
+         * </p>
+         *
+         * <p>There may still be capture completion or camera stream callbacks
+         * that will be called after this error is received.</p>
+         *
+         * <p>You should clean up the camera with {@link CameraDevice#close} after
+         * this happens. Further attempts at recovery are error-code specific.</p>
+         *
+         * @param camera The device reporting the error
+         * @param error The error code, one of the
+         *     {@code StateCallback.ERROR_*} values.
+         *
+         * @see #ERROR_CAMERA_DEVICE
+         * @see #ERROR_CAMERA_SERVICE
+         * @see #ERROR_CAMERA_DISABLED
+         * @see #ERROR_CAMERA_IN_USE
+         */
+        OnError(
+            [in] ICameraDevice* camera,
+            [in] Int32 error); // Must implement
+    }
+
+    /**
+     * Temporary for migrating to Callback naming
+     * @hide
+     *
+     * @invoke
+     * interface ICameraDeviceStateCallback
+     */
+    interface ICameraDeviceStateListener {
     }
 
     /**
@@ -36,6 +199,9 @@ module
      *
      * @see CameraManager#openCamera
      * @see android.Manifest.permission#CAMERA
+     *
+     * @invoke
+     * interface ICloseable
      */
     interface ICameraDevice {
 

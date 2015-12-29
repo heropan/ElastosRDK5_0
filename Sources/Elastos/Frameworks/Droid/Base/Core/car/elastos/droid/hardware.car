@@ -19,6 +19,10 @@ module
     merge("hardware/TriggerEventListener.car");
     merge("hardware/LegacySensorManager.car");
     merge("hardware/IConsumerIrService.car");
+    merge("hardware/ICameraServiceListener.car");
+    merge("hardware/ICameraClient.car");
+    merge("hardware/ICameraService.car");
+    merge("hardware/IProCameraCallbacks.car");
 
     merge("hardware/display/DisplayManager.car");
     merge("hardware/display/DisplayManagerGlobal.car");
@@ -98,6 +102,7 @@ module
     merge("hardware/usb/UsbCameraManager.car");
     merge("hardware/usb/UsbConfiguration.car");
 
+    merge("hardware/camera2/CameraAccessException.car");
     merge("hardware/camera2/CaptureRequest.car");
     merge("hardware/camera2/CameraDevice.car");
     merge("hardware/camera2/CameraCaptureSession.car");
@@ -385,7 +390,46 @@ module
         }
 
         [local]
+        class CCameraCharacteristicsKey {
+
+            constructor();
+
+            /**
+             * Visible for testing and vendor extensions only.
+             *
+             * @hide
+             */
+            constructor(
+                [in] String name,
+                [in] ClassID type);
+
+            /**
+             * Visible for testing and vendor extensions only.
+             *
+             * @hide
+             */
+            constructor(
+                [in] String name,
+                [in] ITypeReference* typeReference);
+
+            /**
+             * Visible for CameraMetadataNative implementation only; do not use.
+             *
+             * TODO: Make this private or remove it altogether.
+             *
+             * @hide
+             */
+            constructor(
+                [in] ICameraMetadataNativeKey* nativeKey);
+
+            interface ICameraCharacteristicsKey;
+        }
+
+        [local]
         class CCaptureResultKey {
+
+            constructor();
+
             /**
              * Visible for testing and vendor extensions only.
              *
@@ -409,6 +453,57 @@ module
                 [in] ICameraMetadataNativeKey* nativeKey);
 
             interface ICaptureResultKey;
+        }
+
+        [local]
+        class CCaptureRequestKey {
+
+            constructor();
+
+            /**
+             * Visible for testing and vendor extensions only.
+             *
+             * @hide
+             */
+            constructor(
+                [in] String name,
+                [in] ClassID type);
+
+            /**
+             * Visible for testing and vendor extensions only.
+             *
+             * @hide
+             */
+            constructor(
+                [in] String name,
+                [in] ITypeReference* typeReference);
+
+            //@SuppressWarnings({ "unchecked" })
+            constructor(
+                [in] ICameraMetadataNativeKey* nativeKey);
+
+
+            interface ICaptureRequestKey;
+        }
+
+        class CCameraManager {
+            constructor();
+
+            constructor(
+                [in] IContext* context);
+
+            interface ICameraManager;
+        }
+
+        class CDngCreator {
+            constructor();
+
+            constructor(
+                [in] ICameraCharacteristics* characteristics,
+                [in] ICaptureResult* metadata);
+
+            interface IDngCreator;
+            interface ICloseable;
         }
 
     namespace Dispatch {

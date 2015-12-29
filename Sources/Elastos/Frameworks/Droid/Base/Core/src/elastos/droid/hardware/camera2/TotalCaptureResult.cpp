@@ -32,7 +32,8 @@ ECode TotalCaptureResult::constructor(
 
     if (partials == NULL) {
         CArrayList::New((IList**)&mPartialResults);
-    } else {
+    }
+    else {
         mPartialResults = partials;
     }
     return NOERROR;

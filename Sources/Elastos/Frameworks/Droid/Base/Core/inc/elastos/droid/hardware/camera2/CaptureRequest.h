@@ -33,12 +33,18 @@ public:
     public:
         CAR_INTERFACE_DECL()
 
+        Key();
+
+        virtual ~Key() {}
+
+        CARAPI constructor();
+
         /**
          * Visible for testing and vendor extensions only.
          *
          * @hide
          */
-        Key(
+        CARAPI constructor(
             /* [in] */ const String& name,
             /* [in] */ ClassID type);
 
@@ -47,9 +53,13 @@ public:
          *
          * @hide
          */
-        Key(
+        CARAPI constructor(
             /* [in] */ const String& name,
             /* [in] */ ITypeReference* typeReference);
+
+        //@SuppressWarnings({ "unchecked" })
+        CARAPI constructor(
+            /* [in] */ ICameraMetadataNativeKey* nativeKey);
 
         /**
          * Return a camelCase, period separated name formatted like:
@@ -94,9 +104,14 @@ public:
             /* [out] */ ICameraMetadataNativeKey** key);
 
     private:
+        friend class CaptureRequest;
         //@SuppressWarnings({ "unchecked" })
         Key(
             /* [in] */ ICameraMetadataNativeKey* nativeKey);
+
+        Key(
+            /* [in] */ const String& name,
+            /* [in] */ ClassID type);
 
     private:
         AutoPtr<ICameraMetadataNativeKey> mKey;
@@ -229,10 +244,64 @@ public:
 
     /**
      * {@inheritDoc}
+     * @hide
+     */
+    // @SuppressWarnings("unchecked")
+    // @Override
+    CARAPI GetProtected(
+        /* [in] */ IInterface* key,
+        /* [out] */ IInterface** outface);
+
+    /**
+     * {@inheritDoc}
+     * @hide
+     */
+    // @SuppressWarnings("unchecked")
+    // @Override
+    CARAPI GetKeyClass(
+        /* [out] */ ClassID* id);
+
+    /**
+     * {@inheritDoc}
      */
     //@Override
     CARAPI GetKeys(
         /* [out] */ IList** outlist);
+
+    /**
+     * Retrieve the tag for this request, if any.
+     *
+     * <p>This tag is not used for anything by the camera device, but can be
+     * used by an application to easily identify a CaptureRequest when it is
+     * returned by
+     * {@link CameraCaptureSession.CaptureCallback#onCaptureCompleted CaptureCallback.onCaptureCompleted}
+     * </p>
+     *
+     * @return the last tag Object set on this request, or {@code null} if
+     *     no tag has been set.
+     * @see Builder#setTag
+     */
+    CARAPI GetTag(
+        /* [out] */ IInterface** tag);
+
+    /**
+     * Determine whether this CaptureRequest is equal to another CaptureRequest.
+     *
+     * <p>A request is considered equal to another is if it's set of key/values is equal, it's
+     * list of output surfaces is equal, and the user tag is equal.</p>
+     *
+     * @param other Another instance of CaptureRequest.
+     *
+     * @return True if the requests are the same, false otherwise.
+     */
+    //@Override
+    CARAPI Equals(
+        /* [in] */ IInterface* other,
+        /* [out] */ Boolean* result);
+
+    //@Override
+    CARAPI GetHashCode(
+        /* [out] */ Int32* code);
 
     //@Override
     CARAPI WriteToParcel(
@@ -241,6 +310,29 @@ public:
     //@Override
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
+
+    /**
+     * @hide
+     */
+    CARAPI ContainsTarget(
+        /* [in] */ ISurface* surface,
+        /* [out] */ Boolean* result);
+
+    // public static final Parcelable.Creator<CaptureRequest> CREATOR =
+    //         new Parcelable.Creator<CaptureRequest>() {
+    //     @Override
+    //     public CaptureRequest createFromParcel(Parcel in) {
+    //         CaptureRequest request = new CaptureRequest();
+    //         request.readFromParcel(in);
+
+    //         return request;
+    //     }
+
+    //     @Override
+    //     public CaptureRequest[] newArray(int size) {
+    //         return new CaptureRequest[size];
+    //     }
+    // };
 
 private:
     friend class CaptureRequestBuilder;
@@ -267,6 +359,11 @@ private:
      */
     CaptureRequest(
         /* [in] */ ICameraMetadataNative* settings);
+
+
+    CARAPI Equals(
+        /* [in] */ ICaptureRequest* other,
+        /* [out] */ Boolean* result);
 
 public:
     /*@O~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~

@@ -4,8 +4,9 @@ module
     using interface Elastos.IO.IOutputStream;
     using interface Elastos.IO.IInputStream;
     using interface Elastos.IO.IByteBuffer;
+
     interface Elastos.Droid.Graphics.IBitmap;
-//    interface Elastos.Droid.Media.IImage;
+    interface Elastos.Droid.Media.IImage;
     interface Elastos.Droid.Location.ILocation;
     interface Elastos.Droid.Utility.ISize;
 
@@ -39,6 +40,12 @@ module
      * </p>
      */
     interface IDngCreator {
+
+        /**
+         * Max width or height dimension for thumbnails.
+         */
+        const Int32 MAX_THUMBNAIL_DIMENSION = 256; // max pixel dimension for TIFF/EP
+
 
         /**
          * Set the orientation value to write.
@@ -96,8 +103,8 @@ module
          * @throws java.lang.IllegalArgumentException if the given thumbnail image has a dimension
          *      larger than {@link #MAX_THUMBNAIL_DIMENSION}.
          */
-//         SetThumbnail(
-//             [in] IImage* pixels);
+        SetThumbnail(
+            [in] IImage* pixels);
 
         /**
          * Set image location metadata.
@@ -218,9 +225,9 @@ module
          * @throws java.lang.IllegalStateException if not enough metadata information has been
          *          set to write a well-formatted DNG file.
          */
-//         WriteImage(
-//             [in] IOutputStream* dngOutput,
-//             [in] IImage* pixels);
+        WriteImage(
+            [in] IOutputStream* dngOutput,
+            [in] IImage* pixels);
     }
 
     } // namespace Camera2

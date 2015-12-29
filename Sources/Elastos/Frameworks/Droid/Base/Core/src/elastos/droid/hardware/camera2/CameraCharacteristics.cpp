@@ -1,7 +1,9 @@
 
 #include "elastos/droid/hardware/camera2/CameraCharacteristics.h"
+#include "elastos/droid/hardware/camera2/CameraMetadata.h"
 #include "elastos/droid/hardware/camera2/impl/CameraMetadataNative.h"
 #include "elastos/droid/hardware/camera2/impl/CCameraMetadataNative.h"
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Hardware::Camera2::Impl::CameraMetadataNative;
 using Elastos::Droid::Hardware::Camera2::Impl::CCameraMetadataNative;
@@ -12,6 +14,8 @@ using Elastos::Droid::Graphics::ECLSID_CRect;
 using Elastos::Droid::Utility::ECLSID_CRational;
 using Elastos::Droid::Utility::ECLSID_CSize;
 using Elastos::Droid::Utility::ECLSID_CSizeF;
+using Elastos::Core::IArrayOf;
+using Elastos::Core::IInteger32;
 using Elastos::Core::ECLSID_CString;
 using Elastos::Core::ECLSID_CByte;
 using Elastos::Core::ECLSID_CFloat;
@@ -19,7 +23,10 @@ using Elastos::Core::ECLSID_CInteger32;
 using Elastos::Core::ECLSID_CInteger64;
 using Elastos::Core::ECLSID_CBoolean;
 using Elastos::Core::ECLSID_CArrayOf;
+using Elastos::Utility::ICollections;
+using Elastos::Utility::CCollections;
 using Elastos::Utility::ECLSID_CArrayList;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -28,18 +35,43 @@ namespace Camera2 {
 
 CAR_INTERFACE_IMPL(CameraCharacteristics::Key, Object, ICameraCharacteristicsKey)
 
+CameraCharacteristics::Key::Key()
+{
+}
+
+ECode CameraCharacteristics::Key::constructor()
+{
+    return NOERROR;
+}
+
+ECode CameraCharacteristics::Key::constructor(
+    /* [in] */ const String& name,
+    /* [in] */ ClassID type)
+{
+    mKey = new CameraMetadataNative::Key(name,  type);
+    return NOERROR;
+}
+
+ECode CameraCharacteristics::Key::constructor(
+    /* [in] */ const String& name,
+    /* [in] */ ITypeReference* typeReference)
+{
+    mKey = new CameraMetadataNative::Key(name,  typeReference);
+    return NOERROR;
+}
+
+ECode CameraCharacteristics::Key::constructor(
+    /* [in] */ ICameraMetadataNativeKey* nativeKey)
+{
+    mKey = nativeKey;
+    return NOERROR;
+}
+
 CameraCharacteristics::Key::Key(
     /* [in] */ const String& name,
     /* [in] */ ClassID type)
 {
     mKey = new CameraMetadataNative::Key(name,  type);
-}
-
-CameraCharacteristics::Key::Key(
-    /* [in] */ const String& name,
-    /* [in] */ ITypeReference* typeReference)
-{
-    mKey = new CameraMetadataNative::Key(name,  typeReference);
 }
 
 CameraCharacteristics::Key::Key(
@@ -428,22 +460,176 @@ ECode CameraCharacteristics::GetKeys(
     VALIDATE_NOT_NULL(outlist);
     *outlist = NULL;
 
-    assert(0);
     // List of keys is immutable; cache the results after we calculate them
-    // if (mKeys != null) {
-    //     return mKeys;
-    // }
+    if (mKeys != NULL) {
+        *outlist = mKeys;
+        REFCOUNT_ADD(*outlist);
+        return NOERROR;
+    }
 
-    // int[] filterTags = get(REQUEST_AVAILABLE_CHARACTERISTICS_KEYS);
-    // if (filterTags == null) {
-    //     throw new AssertionError("android.request.availableCharacteristicsKeys must be non-null"
-    //             + " in the characteristics");
-    // }
+    AutoPtr<IInterface> obj;
+    Get(REQUEST_AVAILABLE_CHARACTERISTICS_KEYS, (IInterface**)&obj);
+    AutoPtr<IArrayOf> arrayObj = IArrayOf::Probe(obj);
+    if (arrayObj == NULL) {
+        // throw new AssertionError("android.request.availableCharacteristicsKeys must be non-null"
+        //         + " in the characteristics");
+        Slogger::E("CameraCharacteristics", "android.request.availableCharacteristicsKeys must be non-null"
+                " in the characteristics");
+        return E_ASSERTION_ERROR;
+    }
 
-    // mKeys = Collections.unmodifiableList(
-    //         getKeysStatic(getClass(), getKeyClass(), this, filterTags));
-    // return mKeys;
+    Int32 size;
+    arrayObj->GetLength(&size);
+    AutoPtr<ArrayOf<Int32> > filterTags = ArrayOf<Int32>::Alloc(size);
+    for (Int32 i = 0; i< size; i++) {
+        AutoPtr<IInterface> tmp;
+        arrayObj->Get(i, (IInterface**)&tmp);
+        AutoPtr<IInteger32> intObj = IInteger32::Probe(tmp);
+        Int32 value;
+        intObj->GetValue(&value);
+        (*filterTags)[i] = value;
+    }
+
+    AutoPtr<IList> list;
+    ClassID leyClass;
+    GetKeyClass(&leyClass);
+    assert(0);
+    //GetKeysStatic(getClass(), leyClass, this, filterTags, (IArrayList**)&list);
+    AutoPtr<ICollections> collections;
+    CCollections::AcquireSingleton((ICollections**)&collections);
+    collections->UnmodifiableList(list, (IList**)&mKeys);
+    *outlist = mKeys;
+    REFCOUNT_ADD(*outlist);
     return NOERROR;
+}
+
+ECode CameraCharacteristics::GetProtected(
+    /* [in] */ IInterface* key,
+    /* [out] */ IInterface** outface)
+{
+    VALIDATE_NOT_NULL(outface);
+    *outface = NULL;
+
+    return mProperties->Get(ICameraCharacteristicsKey::Probe(key), outface);
+}
+
+ECode CameraCharacteristics::GetKeyClass(
+    /* [out] */ ClassID* id)
+{
+    VALIDATE_NOT_NULL(id);
+
+    *id = ECLSID_CCameraCharacteristicsKey;
+    return NOERROR;
+}
+
+ECode CameraCharacteristics::GetAvailableCaptureRequestKeys(
+    /* [out] */ IList** outlist)
+{
+    VALIDATE_NOT_NULL(outlist);
+    *outlist = NULL;
+
+    if (mAvailableRequestKeys == NULL) {
+        ClassID crKeyTyped = ECLSID_CCaptureRequestKey;
+
+        AutoPtr<IInterface> obj;
+        Get(REQUEST_AVAILABLE_REQUEST_KEYS, (IInterface**)&obj);
+        AutoPtr<IArrayOf> arrayObj = IArrayOf::Probe(obj);
+        if (arrayObj == NULL) {
+            // throw new AssertionError("android.request.availableRequestKeys must be non-null "
+            //         + "in the characteristics");
+            Slogger::E("CameraCharacteristics", "android.request.availableRequestKeys must be non-null "
+                    "in the characteristics");
+            return E_ASSERTION_ERROR;
+        }
+
+        Int32 size;
+        arrayObj->GetLength(&size);
+        AutoPtr<ArrayOf<Int32> > filterTags = ArrayOf<Int32>::Alloc(size);
+        for (Int32 i = 0; i< size; i++) {
+            AutoPtr<IInterface> tmp;
+            arrayObj->Get(i, (IInterface**)&tmp);
+            AutoPtr<IInteger32> intObj = IInteger32::Probe(tmp);
+            Int32 value;
+            intObj->GetValue(&value);
+            (*filterTags)[i] = value;
+        }
+
+        assert(0);
+        //GetAvailableKeyList(ECLSID_CCaptureRequest, crKeyTyped, filterTags, (IList**)&mAvailableRequestKeys);
+    }
+    *outlist = mAvailableRequestKeys;
+    REFCOUNT_ADD(*outlist);
+    return NOERROR;
+}
+
+ECode CameraCharacteristics::GetAvailableCaptureResultKeys(
+    /* [out] */ IList** outlist)
+{
+    VALIDATE_NOT_NULL(outlist);
+    *outlist = NULL;
+
+    if (mAvailableResultKeys == NULL) {
+        ClassID crKeyTyped = ECLSID_CCaptureResultKey;
+
+        AutoPtr<IInterface> obj;
+        Get(REQUEST_AVAILABLE_RESULT_KEYS, (IInterface**)&obj);
+        AutoPtr<IArrayOf> arrayObj = IArrayOf::Probe(obj);
+        if (arrayObj == NULL) {
+            // throw new AssertionError("android.request.availableResultKeys must be non-null "
+            //         + "in the characteristics");
+            Slogger::E("CameraCharacteristics", "android.request.availableResultKeys must be non-null "
+                    "in the characteristics");
+            return E_ASSERTION_ERROR;
+        }
+
+        Int32 size;
+        arrayObj->GetLength(&size);
+        AutoPtr<ArrayOf<Int32> > filterTags = ArrayOf<Int32>::Alloc(size);
+        for (Int32 i = 0; i< size; i++) {
+            AutoPtr<IInterface> tmp;
+            arrayObj->Get(i, (IInterface**)&tmp);
+            AutoPtr<IInteger32> intObj = IInteger32::Probe(tmp);
+            Int32 value;
+            intObj->GetValue(&value);
+            (*filterTags)[i] = value;
+        }
+
+        GetAvailableKeyList(ECLSID_CCaptureResult, crKeyTyped, filterTags, (IList**)&mAvailableResultKeys);
+    }
+    *outlist = mAvailableResultKeys;
+    REFCOUNT_ADD(*outlist);
+    return NOERROR;
+}
+
+ECode CameraCharacteristics::GetAvailableKeyList(
+    /* [in] */ ClassID metadataClass,
+    /* [in] */ ClassID keyClass,
+    /* [in] */ ArrayOf<Int32>* filterTags,
+    /* [out] */ IList** outlist)
+{
+    VALIDATE_NOT_NULL(outlist);
+    *outlist = NULL;
+
+    assert(0);
+    // if (metadataClass.equals(CameraMetadata.class)) {
+    //     // throw new AssertionError(
+    //     //         "metadataClass must be a strict subclass of CameraMetadata");
+    //     Slogger::E("CameraCharacteristics", "metadataClass must be a strict subclass of CameraMetadata");
+    //     return E_ASSERTION_ERROR;
+    // }
+    // else if (!CameraMetadata.class.isAssignableFrom(metadataClass)) {
+    //     // throw new AssertionError(
+    //     //         "metadataClass must be a subclass of CameraMetadata");
+    //     Slogger::E("CameraCharacteristics", "metadataClass must be a subclass of CameraMetadata");
+    //     return E_ASSERTION_ERROR;
+    // }
+
+    AutoPtr<IList> staticKeyList;
+    CameraMetadata::GetKeysStatic(
+            metadataClass, keyClass, /*instance*/NULL, filterTags, (IArrayList**)&staticKeyList);
+    AutoPtr<ICollections> collections;
+    CCollections::AcquireSingleton((ICollections**)&collections);
+    return collections->UnmodifiableList(staticKeyList, outlist);
 }
 
 } // namespace Camera2

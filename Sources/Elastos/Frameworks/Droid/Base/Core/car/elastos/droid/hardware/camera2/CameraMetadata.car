@@ -2,6 +2,7 @@
 module
 {
     using interface Elastos.Utility.IList;
+    using interface Elastos.Utility.IArrayList;
 
     namespace Elastos {
     namespace Droid {
@@ -2055,6 +2056,58 @@ module
         // @SuppressWarnings("unchecked")
         GetKeys(
             [out] IList** outlist);
+
+        /**
+         * Get a camera metadata field value.
+         *
+         * <p>The field definitions can be
+         * found in {@link CameraCharacteristics}, {@link CaptureResult}, and
+         * {@link CaptureRequest}.</p>
+         *
+         * <p>Querying the value for the same key more than once will return a value
+         * which is equal to the previous queried value.</p>
+         *
+         * @throws IllegalArgumentException if the key was not valid
+         *
+         * @param key The metadata field to read.
+         * @return The value of that key, or {@code null} if the field is not set.
+         *
+         * @hide
+         */
+        GetProtected(
+            [in] IInterface* key,
+            [out] IInterface** outface);
+
+        /**
+          * @hide
+          */
+        GetKeyClass(
+            [out] ClassID* id);
+    }
+
+    [deprecated]
+    interface ICameraMetadataHelper {
+        /**
+         * Return a list of all the Key<?> that are declared as a field inside of the class
+         * {@code type}.
+         *
+         * <p>
+         * Optionally, if {@code instance} is not null, then filter out any keys with null values.
+         * </p>
+         *
+         * <p>
+         * Optionally, if {@code filterTags} is not {@code null}, then filter out any keys
+         * whose native {@code tag} is not in {@code filterTags}. The {@code filterTags} array will be
+         * sorted as a side effect.
+         * </p>
+         */
+        // /*package*/ @SuppressWarnings("unchecked")
+        GetKeysStatic(
+            [in] ClassID type,
+            [in] ClassID keyClass,
+            [in] ICameraMetadata* instance,
+            [in] ArrayOf<Int32>* filterTags,
+            [out] IArrayList** list);
     }
 
     } // namespace Camera2
