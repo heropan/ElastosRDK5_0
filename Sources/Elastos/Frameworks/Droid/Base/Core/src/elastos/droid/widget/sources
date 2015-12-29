@@ -243,5 +243,7 @@ SOURCES += RemoteViews.cpp
 SOURCES += RemoteViewsAdapter.cpp
 SOURCES += RemoteViewsListAdapter.cpp
 SOURCES += RemoteViewsService.cpp
+SOURCES += YearPickerView.cpp
+SOURCES += ToolBar.cpp
 
 #ELASTOS_LIBS += internal/internal.lib

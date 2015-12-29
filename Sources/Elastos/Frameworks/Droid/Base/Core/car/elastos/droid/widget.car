@@ -32,6 +32,7 @@ module
     merge("widget/EdgeEffect.car");
     merge("widget/Editor.car");
     merge("widget/ListView.car");
+    merge("widget/YearPickerView.car");
     merge("widget/ExpandableListAdapter.car");
     merge("widget/ExpandableListConnector.car");
     merge("widget/ExpandableListPosition.car");
@@ -129,7 +130,11 @@ module
     merge("widget/DayPickerView.car");
     merge("widget/TimePickerClockDelegate.car");
     merge("widget/TimePickerSpinnerDelegate.car");
+<<<<<<< HEAD
     merge("internal/widget/IRemoteViewsFactory.car");
+=======
+    merge("widget/ToolBar.car");
+>>>>>>> impelement ToolBar and YearPickView
 
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Utility.IList;
@@ -218,6 +223,35 @@ module
    //      interface IKeyEventCallback;
    //      interface IAccessibilityEventSource;
    //  }
+
+   class CToolBar {
+        constructor(
+            [in] IContext* ctx);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface IToolBar;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+   }
 
     class CScrollBarDrawable {
         constructor();
@@ -566,6 +600,7 @@ module
             [in] IAttributeSet* attrs);
 
         interface ILinearLayout;
+        interface IActionMenuView;
         interface IViewGroup;
         interface IView;
         interface IViewParent;
@@ -1035,19 +1070,19 @@ module
     [local]
     class CTimePicker {
         constructor(
-            [in] IContext* context);
+            [in] IContext* ctx);
 
         constructor(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IAttributeSet* attrs);
 
         constructor(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IAttributeSet* attrs,
             [in] Int32 defStyleAttr);
 
         constructor(
-            [in] IContext* context,
+            [in] IContext* ctx,
             [in] IAttributeSet* attrs,
             [in] Int32 defStyleAttr,
             [in] Int32 defStyleRes);
@@ -1072,7 +1107,13 @@ module
         constructor(
             [in] IContext* ctx,
             [in] IAttributeSet* attrs,
-            [in] Int32 defStyle);
+            [in] Int32 defStyleAttr);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
 
         interface IImageButton;
         interface IImageView;

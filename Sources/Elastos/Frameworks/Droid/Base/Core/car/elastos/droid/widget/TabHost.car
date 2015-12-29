@@ -32,6 +32,39 @@ module
             [out] IView** view);
     }
 
+    /**
+     * Specifies what you do to create a tab indicator.
+     */
+    [local]
+    interface ITabHostIndicatorStrategy {
+
+        /**
+         * Return the view for the indicator.
+         */
+        CreateIndicatorView(
+            [out] IView** view);
+    }
+
+    /**
+     * Specifies what you do to manage the tab content.
+     */
+    [local]
+    interface ITabHostContentStrategy {
+
+        /**
+         * Return the content view.  The view should may be cached locally.
+         */
+        GetContentView(
+            [out] IView** view);
+
+        /**
+         * Perhaps do something when the tab associated with this content has
+         * been closed (i.e make it invisible, or remove it).
+         */
+        TabClosed(
+            [out] IView** view);
+    }
+
     [local]
     interface ITabSpec {
         SetIndicator(

@@ -46,7 +46,7 @@ TabHost::TabSpec::TabSpec(
 ECode TabHost::TabSpec::SetIndicator(
     /* [in] */ ICharSequence* label)
 {
-    mIndicatorStrategy = new TabHost::LabelIndicatorStrategy(label, mHost);
+    //mIndicatorStrategy = new TabHost::LabelIndicatorStrategy(label, mHost);
     return NOERROR;
 }
 
@@ -57,7 +57,7 @@ ECode TabHost::TabSpec::SetIndicator(
     /* [in] */ ICharSequence* label,
     /* [in] */ IDrawable* icon)
 {
-    mIndicatorStrategy = new TabHost::LabelAndIconIndicatorStrategy(label, icon, mHost);
+    //mIndicatorStrategy = new TabHost::LabelAndIconIndicatorStrategy(label, icon, mHost);
     return NOERROR;
 }
 
@@ -67,7 +67,7 @@ ECode TabHost::TabSpec::SetIndicator(
 ECode TabHost::TabSpec::SetIndicator(
     /* [in] */ IView* view)
 {
-    mIndicatorStrategy = new TabHost::ViewIndicatorStrategy(view);
+    //mIndicatorStrategy = new TabHost::ViewIndicatorStrategy(view);
     return NOERROR;
 }
 
@@ -78,7 +78,7 @@ ECode TabHost::TabSpec::SetIndicator(
 ECode TabHost::TabSpec::SetContent(
     /* [in] */ Int32 viewId)
 {
-    mContentStrategy = new TabHost::ViewIdContentStrategy(viewId, mHost);
+    //mContentStrategy = new TabHost::ViewIdContentStrategy(viewId, mHost);
     return NOERROR;
 }
 
@@ -89,9 +89,9 @@ ECode TabHost::TabSpec::SetContent(
 ECode TabHost::TabSpec::SetContent(
     /* [in] */ ITabHostTabContentFactory* contentFactory)
 {
-    AutoPtr<ICharSequence> tag;
+    /*AutoPtr<ICharSequence> tag;
     CString::New(mTag, (ICharSequence**)&tag);
-    mContentStrategy = new TabHost::FactoryContentStrategy(tag, contentFactory);
+    mContentStrategy = new TabHost::FactoryContentStrategy(tag, contentFactory);*/
     return NOERROR;
 }
 
@@ -101,7 +101,7 @@ ECode TabHost::TabSpec::SetContent(
 ECode TabHost::TabSpec::SetContent(
     /* [in] */ IIntent* intent)
 {
-    mContentStrategy = new TabHost::IntentContentStrategy(mTag, intent, mHost);
+    //mContentStrategy = new TabHost::IntentContentStrategy(mTag, intent, mHost);
     return NOERROR;
 }
 
@@ -116,6 +116,7 @@ ECode TabHost::TabSpec::GetTag(
 //==============================================================================
 //                  TabHost::LabelIndicatorStrategy
 //==============================================================================
+CAR_INTERFACE_IMPL(TabHost::LabelIndicatorStrategy, Object, ITabHostIndicatorStrategy)
 
 TabHost::LabelIndicatorStrategy::LabelIndicatorStrategy(
     /* [in] */ ICharSequence* label,
@@ -129,7 +130,7 @@ ECode TabHost::LabelIndicatorStrategy::CreateIndicatorView(
 {
     VALIDATE_NOT_NULL(view);
 
-    AutoPtr<IContext> context;
+    /*AutoPtr<IContext> context;
     mHost->GetContext((IContext**)&context);
     AutoPtr<ILayoutInflater> inflater;
     context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inflater);
@@ -162,13 +163,14 @@ ECode TabHost::LabelIndicatorStrategy::CreateIndicatorView(
     }
 
     *view = tabIndicator;
-    REFCOUNT_ADD(*view);
+    REFCOUNT_ADD(*view);*/
     return NOERROR;
 }
 
 //==============================================================================
 //                  TabHost::LabelAndIconIndicatorStrategy
 //==============================================================================
+CAR_INTERFACE_IMPL(TabHost::LabelAndIconIndicatorStrategy, Object, ITabHostIndicatorStrategy)
 
 TabHost::LabelAndIconIndicatorStrategy::LabelAndIconIndicatorStrategy(
     /* [in] */ ICharSequence* label,
@@ -184,7 +186,7 @@ ECode TabHost::LabelAndIconIndicatorStrategy::CreateIndicatorView(
 {
     VALIDATE_NOT_NULL(view);
 
-    AutoPtr<IContext> context;
+    /*AutoPtr<IContext> context;
     mHost->GetContext((IContext**)&context);
     AutoPtr<ILayoutInflater> inflater;
     context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inflater);
@@ -234,13 +236,14 @@ ECode TabHost::LabelAndIconIndicatorStrategy::CreateIndicatorView(
     }
 
     *view = tabIndicator;
-    REFCOUNT_ADD(*view);
+    REFCOUNT_ADD(*view);*/
     return NOERROR;
 }
 
 //==============================================================================
 //                  TabHost::ViewIndicatorStrategy
 //==============================================================================
+CAR_INTERFACE_IMPL(TabHost::ViewIndicatorStrategy, Object, ITabHostIndicatorStrategy)
 
 TabHost::ViewIndicatorStrategy::ViewIndicatorStrategy(
     /* [in] */ IView* view)
@@ -250,9 +253,9 @@ TabHost::ViewIndicatorStrategy::ViewIndicatorStrategy(
 ECode TabHost::ViewIndicatorStrategy::CreateIndicatorView(
     /* [out] */ IView** view)
 {
-    VALIDATE_NOT_NULL(view);
+    /*VALIDATE_NOT_NULL(view);
     *view = mView;
-    REFCOUNT_ADD(*view);
+    REFCOUNT_ADD(*view);*/
 
     return NOERROR;
 }
@@ -260,40 +263,42 @@ ECode TabHost::ViewIndicatorStrategy::CreateIndicatorView(
 //==============================================================================
 //                  TabHost::ViewIdContentStrategy
 //==============================================================================
+CAR_INTERFACE_IMPL(TabHost::ViewIdContentStrategy, Object, ITabHostContentStrategy)
 
 TabHost::ViewIdContentStrategy::ViewIdContentStrategy(
     /* [in] */ Int32 viewId,
     /* [in] */ TabHost* owner)
     : mHost(owner)
 {
-    IView::Probe(mHost->mTabContent)->FindViewById(viewId, (IView**)&mView);
+    /*IView::Probe(mHost->mTabContent)->FindViewById(viewId, (IView**)&mView);
     if (mView != NULL) {
         mView->SetVisibility(IView::GONE);
     }
     else {
-        /*throw new RuntimeException("Could not create tab content because " +
-                "could not find view with id " + viewId);*/
+        throw new RuntimeException("Could not create tab content because " +
+                "could not find view with id " + viewId);
         assert(0);
-    }
+    }*/
 }
 
 ECode TabHost::ViewIdContentStrategy::GetContentView(
     /* [out] */ IView** view)
 {
-    mView->SetVisibility(IView::VISIBLE);
+    /*mView->SetVisibility(IView::VISIBLE);
     *view = mView;
-    REFCOUNT_ADD(*view);
+    REFCOUNT_ADD(*view);*/
     return NOERROR;
 }
 
 ECode TabHost::ViewIdContentStrategy::TabClosed()
 {
-    return mView->SetVisibility(IView::GONE);
+    //return mView->SetVisibility(IView::GONE);
 }
 
 //==============================================================================
 //                  TabHost::FactoryContentStrategy
 //==============================================================================
+CAR_INTERFACE_IMPL(TabHost::FactoryContentStrategy, Object, ITabHostContentStrategy)
 
 TabHost::FactoryContentStrategy::FactoryContentStrategy(
     /* [in] */ ICharSequence* tag,
@@ -305,7 +310,7 @@ TabHost::FactoryContentStrategy::FactoryContentStrategy(
 ECode TabHost::FactoryContentStrategy::GetContentView(
     /* [out] */ IView** view)
 {
-    VALIDATE_NOT_NULL(view);
+    /*VALIDATE_NOT_NULL(view);
     if (mTabContent == NULL) {
         String str;
         mTag->ToString(&str);
@@ -313,19 +318,20 @@ ECode TabHost::FactoryContentStrategy::GetContentView(
     }
     mTabContent->SetVisibility(IView::VISIBLE);
     *view = mTabContent;
-    REFCOUNT_ADD(*view);
+    REFCOUNT_ADD(*view);*/
 
     return NOERROR;
 }
 
 ECode TabHost::FactoryContentStrategy::TabClosed()
 {
-    return mTabContent->SetVisibility(IView::GONE);
+    //return mTabContent->SetVisibility(IView::GONE);
 }
 
 //==============================================================================
 //                  TabHost::IntentContentStrategy
 //==============================================================================
+CAR_INTERFACE_IMPL(TabHost::IntentContentStrategy, Object, ITabHostContentStrategy)
 
 TabHost::IntentContentStrategy::IntentContentStrategy(
     /* [in] */ const String& tag,
@@ -341,7 +347,7 @@ ECode TabHost::IntentContentStrategy::GetContentView(
 {
     VALIDATE_NOT_NULL(view);
 
-    if (mHost->mLocalActivityManager == NULL) {
+    /*if (mHost->mLocalActivityManager == NULL) {
         *view = NULL;
         return E_ILLEGAL_STATE_EXCEPTION;
         //throw new IllegalStateException("Did you forget to call 'public void setup(LocalActivityManager activityGroup)'?");
@@ -379,15 +385,15 @@ ECode TabHost::IntentContentStrategy::GetContentView(
     }
 
     *view = mLaunchedView;
-    REFCOUNT_ADD(*view);
+    REFCOUNT_ADD(*view);*/
     return NOERROR;
 }
 
 ECode TabHost::IntentContentStrategy::TabClosed()
 {
-    if (mLaunchedView != NULL) {
+    /*if (mLaunchedView != NULL) {
         mLaunchedView->SetVisibility(IView::GONE);
-    }
+    }*/
 
     return NOERROR;
 }
@@ -410,7 +416,7 @@ ECode TabHost::TabKeyListener::OnKey(
 {
     VALIDATE_NOT_NULL(result);
 
-    switch (keyCode) {
+    /*switch (keyCode) {
         case IKeyEvent::KEYCODE_DPAD_CENTER:
         case IKeyEvent::KEYCODE_DPAD_LEFT:
         case IKeyEvent::KEYCODE_DPAD_RIGHT:
@@ -422,7 +428,7 @@ ECode TabHost::TabKeyListener::OnKey(
     }
 
     IView::Probe(mHost->mTabContent)->RequestFocus(IView::FOCUS_FORWARD, result);
-    return IView::Probe(mHost->mTabContent)->DispatchKeyEvent(event, result);
+    return IView::Probe(mHost->mTabContent)->DispatchKeyEvent(event, result);*/
 }
 
 //==============================================================================
@@ -440,11 +446,11 @@ ECode TabHost::TabSelectionListener::OnTabSelectionChanged(
     /* [in] */ Int32 tabIndex,
     /* [in] */ Boolean clicked)
 {
-    mHost->SetCurrentTab(tabIndex);
+    /*mHost->SetCurrentTab(tabIndex);
     if (clicked) {
         Boolean res;
         IView::Probe(mHost->mTabContent)->RequestFocus(IView::FOCUS_FORWARD, &res);
-    }
+    }*/
     return NOERROR;
 }
 
@@ -468,8 +474,8 @@ TabHost::TabHost()
 TabHost::constructor(
     /* [in] */ IContext* context)
 {
-    FrameLayout::constructor(context);
-    InitTabHost();
+    /*FrameLayout::constructor(context);
+    InitTabHost();*/
     return NOERROR;
 }
 
@@ -479,19 +485,19 @@ TabHost::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    FrameLayout::constructor(context, attrs, defStyleAttr, defStyleRes);
+    /*FrameLayout::constructor(context, attrs, defStyleAttr, defStyleRes);
     InitFromAttributes(context, attrs, defStyleAttr, defStyleRes);
-    InitTabHost();
+    InitTabHost();*/
     return NOERROR;
 }
 
 void TabHost::InitTabHost()
 {
-    SetFocusableInTouchMode(TRUE);
+    /*SetFocusableInTouchMode(TRUE);
     SetDescendantFocusability(IViewGroup::FOCUS_AFTER_DESCENDANTS);
 
     mCurrentTab = -1;
-    mCurrentView = NULL;
+    mCurrentView = NULL;*/
 }
 
 ECode TabHost::InitFromAttributes(
@@ -500,7 +506,7 @@ ECode TabHost::InitFromAttributes(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+    /*AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::TabWidget),
             ArraySize(R::styleable::TabWidget));
     AutoPtr<ITypedArray> a;
@@ -515,7 +521,7 @@ ECode TabHost::InitFromAttributes(
         // In case the tabWidgetStyle does not inherit from Widget.TabWidget and tabLayout is
         // not defined.
         mTabLayoutId = R::layout::tab_indicator_holo;
-    }
+    }*/
     return NOERROR;
 }
 
@@ -526,8 +532,8 @@ ECode TabHost::InitFromAttributes(
 AutoPtr<ITabSpec> TabHost::NewTabSpec(
     /* [in] */ const String& tag)
 {
-    AutoPtr<ITabSpec> tabSpec = new TabHost::TabSpec(tag, this);
-    return tabSpec;
+    /*AutoPtr<ITabSpec> tabSpec = new TabHost::TabSpec(tag, this);
+    return tabSpec;*/
 }
 
 /**
@@ -541,7 +547,7 @@ mTabHost.addTab(TAB_TAG_1, "Hello, world!", "Tab 1");
   */
 ECode TabHost::Setup()
 {
-    AutoPtr<IView> v;
+    /*AutoPtr<IView> v;
     FindViewById(R::id::tabs, (IView**)&v);
     mTabWidget = ITabWidget::Probe(v);
     if (mTabWidget == NULL) {
@@ -565,7 +571,7 @@ ECode TabHost::Setup()
 //                "Your TabHost must have a FrameLayout whose id attribute is "
 //                        + "'android.R::id::tabcontent'");
         return E_RUNTIME_EXCEPTION;
-    }
+    }*/
 
     return NOERROR;
 }
@@ -587,28 +593,28 @@ ECode TabHost::SendAccessibilityEvent(
 ECode TabHost::Setup(
     /* [in ] */ ILocalActivityManager* activityGroup)
 {
-    Setup();
-    mLocalActivityManager = activityGroup;
+    /*Setup();
+    mLocalActivityManager = activityGroup;*/
     return NOERROR;
 }
 
 ECode TabHost::OnAttachedToWindow()
 {
-    FrameLayout::OnAttachedToWindow();
+    /*FrameLayout::OnAttachedToWindow();
     AutoPtr<IViewTreeObserver> treeObserver;
     GetViewTreeObserver((IViewTreeObserver**)&treeObserver);
     treeObserver->AddOnTouchModeChangeListener(
-            THIS_PROBE(IOnTouchModeChangeListener));
+            THIS_PROBE(IOnTouchModeChangeListener));*/
     return NOERROR;
 }
 
 ECode TabHost::OnDetachedFromWindow()
 {
-    FrameLayout::OnDetachedFromWindow();
+    /*FrameLayout::OnDetachedFromWindow();
     AutoPtr<IViewTreeObserver> treeObserver;
     GetViewTreeObserver((IViewTreeObserver**)&treeObserver);
     treeObserver->RemoveOnTouchModeChangeListener(
-            THIS_PROBE(IOnTouchModeChangeListener));
+            THIS_PROBE(IOnTouchModeChangeListener));*/
     return NOERROR;
 }
 
@@ -618,7 +624,7 @@ ECode TabHost::OnDetachedFromWindow()
 ECode TabHost::OnTouchModeChanged(
     /* [in] */ Boolean isInTouchMode)
 {
-    if (!isInTouchMode) {
+    /*if (!isInTouchMode) {
         // leaving touch mode.. if nothing has focus, let's give it to
         // the indicator of the current tab
         if (mCurrentView != NULL) {
@@ -633,7 +639,7 @@ ECode TabHost::OnTouchModeChanged(
                 tabView->RequestFocus(&res);
             }
         }
-    }
+    }*/
 
     return NOERROR;
 }
@@ -647,7 +653,7 @@ ECode TabHost::AddTab(
 {
     VALIDATE_NOT_NULL(tabSpec);
 
-    AutoPtr<TabSpec> ts = (TabSpec*)tabSpec;
+    /*AutoPtr<TabSpec> ts = (TabSpec*)tabSpec;
     if (ts->mIndicatorStrategy == NULL) {
 //        throw new IllegalArgumentException("you must specify a way to create the tab indicator.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -671,7 +677,7 @@ ECode TabHost::AddTab(
     mTabSpecs.PushBack(ts);
     if (mCurrentTab == -1) {
         SetCurrentTab(0);
-    }
+    }*/
 
     return NOERROR;
 }
@@ -681,12 +687,12 @@ ECode TabHost::AddTab(
  */
 ECode TabHost::ClearAllTabs()
 {
-    mTabWidget->RemoveAllViews();
+    /*mTabWidget->RemoveAllViews();
     InitTabHost();
     mTabContent->RemoveAllViews();
     mTabSpecs.Clear();
     RequestLayout();
-    Invalidate();
+    Invalidate();*/
 
     return NOERROR;
 }
@@ -703,21 +709,21 @@ Int32 TabHost::GetCurrentTab()
 
 String TabHost::GetCurrentTabTag()
 {
-    if (mCurrentTab >= 0 && mCurrentTab < (Int32)mTabSpecs.GetSize()) {
+    /*if (mCurrentTab >= 0 && mCurrentTab < (Int32)mTabSpecs.GetSize()) {
         String str;
         mTabSpecs[mCurrentTab]->GetTag(&str);
         return str;
-    }
+    }*/
     return String(NULL);
 }
 
 AutoPtr<IView> TabHost::GetCurrentTabView()
 {
-    if (mCurrentTab >= 0 && mCurrentTab < (Int32)mTabSpecs.GetSize()) {
+    /*if (mCurrentTab >= 0 && mCurrentTab < (Int32)mTabSpecs.GetSize()) {
         AutoPtr<IView> view;
         mTabWidget->GetChildTabViewAt(mCurrentTab, (IView**)&view);
         return view;
-    }
+    }*/
     return NULL;
 }
 
@@ -729,7 +735,7 @@ AutoPtr<IView> TabHost::GetCurrentView()
 ECode TabHost::SetCurrentTabByTag(
     /* [in] */ const String& tag)
 {
-    Int32 i = 0;
+    /*Int32 i = 0;
     String str;
     List< AutoPtr<TabSpec> >::Iterator it;
     for (it = mTabSpecs.Begin(); it != mTabSpecs.End(); ++it, ++i) {
@@ -738,7 +744,7 @@ ECode TabHost::SetCurrentTabByTag(
             SetCurrentTab(i);
             break;
         }
-    }
+    }*/
 
     return NOERROR;
 }
@@ -760,7 +766,7 @@ Int32 TabHost::GetTabWidgetLocation()
 {
     Int32 location = TABWIDGET_LOCATION_TOP;
 
-    Int32 orientation;
+    /*Int32 orientation;
     mTabWidget->GetOrientation(&orientation);
     switch (orientation) {
         case ILinearLayout::VERTICAL: {
@@ -778,14 +784,14 @@ Int32 TabHost::GetTabWidgetLocation()
             location = (ct < wt) ? TABWIDGET_LOCATION_BOTTOM : TABWIDGET_LOCATION_TOP;
         }
         break;
-    }
+    }*/
     return location;
 }
 
 Boolean TabHost::DispatchKeyEvent(
     /* [in] */ IKeyEvent* event)
 {
-    Boolean handled = FrameLayout::DispatchKeyEvent(event);
+    /*Boolean handled = FrameLayout::DispatchKeyEvent(event);
 
     Int32 action, keyCode;
     event->GetAction(&action);
@@ -843,7 +849,7 @@ Boolean TabHost::DispatchKeyEvent(
                 return TRUE;
             }
         }
-    }
+    }*/
 
     return handled;
 }
@@ -852,9 +858,9 @@ Boolean TabHost::DispatchKeyEvent(
 ECode TabHost::DispatchWindowFocusChanged(
     /* [in] */ Boolean hasFocus)
 {
-    if (mCurrentView != NULL){
+    /*if (mCurrentView != NULL){
         mCurrentView->DispatchWindowFocusChanged(hasFocus);
-    }
+    }*/
 
     return NOERROR;
 }
@@ -862,27 +868,27 @@ ECode TabHost::DispatchWindowFocusChanged(
 ECode TabHost::OnInitializeAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
-    FrameLayout::OnInitializeAccessibilityEvent(event);
+    /*FrameLayout::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> clsName;
     CStringWrapper::New(String("CTabHost"), (ICharSequence**)&clsName);
-    event->SetClassName(clsName);
+    event->SetClassName(clsName);*/
     return NOERROR;
 }
 
 ECode TabHost::OnInitializeAccessibilityNodeInfo(
     /* [in] */ IAccessibilityNodeInfo* info)
 {
-    FrameLayout::OnInitializeAccessibilityNodeInfo(info);
+    /*FrameLayout::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> clsName;
     CStringWrapper::New(String("CTabHost"), (ICharSequence**)&clsName);
-    info->SetClassName(clsName);
+    info->SetClassName(clsName);*/
     return NOERROR;
 }
 
 ECode TabHost::SetCurrentTab(
     /* [in] */ Int32 index)
 {
-    if (index < 0 || index >= (Int32)mTabSpecs.GetSize()) {
+    /*if (index < 0 || index >= (Int32)mTabSpecs.GetSize()) {
         return NOERROR;
     }
 
@@ -926,7 +932,7 @@ ECode TabHost::SetCurrentTab(
     }
 
     //mTabContent.requestFocus(IView::FOCUS_FORWARD);
-    InvokeOnTabChangeListener();
+    InvokeOnTabChangeListener();*/
     return NOERROR;
 }
 
@@ -939,16 +945,16 @@ ECode TabHost::SetCurrentTab(
 ECode TabHost::SetOnTabChangedListener(
     /* [in] */ ITabHostOnTabChangeListener* l)
 {
-    mOnTabChangeListener = l;
+    //mOnTabChangeListener = l;
 
     return NOERROR;
 }
 
 void TabHost::InvokeOnTabChangeListener()
 {
-    if (mOnTabChangeListener != NULL) {
+    /*if (mOnTabChangeListener != NULL) {
         mOnTabChangeListener->OnTabChanged(GetCurrentTabTag());
-    }
+    }*/
 }
 
 
