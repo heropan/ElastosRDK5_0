@@ -1172,6 +1172,10 @@ module
         interface INotificationManager;
     }
 
+    singleton class CNotificationManagerHelper {
+        interface INotificationManagerHelper;
+    }
+
     class CNotificationWearableExtender {
         constructor();
 

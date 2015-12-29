@@ -1,6 +1,9 @@
 module
 {
+    interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.App.INotification;
+    interface Elastos.Droid.App.INotificationManager;
+    interface Elastos.Droid.App.IINotificationManager;
     interface Elastos.Droid.Os.IUserHandle;
 
     namespace Elastos {
@@ -124,6 +127,17 @@ module
          * @sa #cancel
          */
         CancelAll();
+    }
+
+    interface INotificationManagerHelper {
+        /** @hide */
+        GetService(
+            [out] IINotificationManager** mgr);
+
+        /** @hide */
+        From(
+            [in] IContext* context,
+            [out] INotificationManager** mgr);
     }
 
     } // namespace App

@@ -115,6 +115,7 @@ SOURCES += CNotificationBigTextStyle.cpp
 SOURCES += CNotificationInboxStyle.cpp
 SOURCES += CNotificationMediaStyle.cpp
 SOURCES += NotificationManager.cpp
+SOURCES += CNotificationManagerHelper.cpp
 SOURCES += CNotificationWearableExtender.cpp
 
 SOURCES += PackageDeleteObserver.cpp
