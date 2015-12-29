@@ -31,43 +31,16 @@ class TabHost
     , public IOnTouchModeChangeListener
 {
 private:
-    class IndicatorStrategy
-        : public Object
-    {
-    public:
-        /**
-         * Return the view for the indicator.
-         */
-        virtual CARAPI CreateIndicatorView(
-            /* [out] */ IView** view) = 0;
-    };
-
-    class ContentStrategy
-        : public Object
-    {
-    public:
-        /**
-         * Return the content view.  The view should may be cached locally.
-         */
-        virtual CARAPI GetContentView(
-            /* [out] */ IView** view) = 0;
-
-        /**
-         * Perhaps do something when the tab associated with this content has
-         * been closed (i.e make it invisible, or remove it).
-         */
-        virtual CARAPI TabClosed() = 0;
-    };
-
     /**
      * How to create a tab indicator that just has a label.
      */
     class LabelIndicatorStrategy
-        : public IndicatorStrategy
+        : public Object
+        , public ITabHostIndicatorStrategy
     {
-        friend class TabHost;
-
     public:
+        CAR_INTERFACE_DECL()
+
         CARAPI CreateIndicatorView(
             /* [out] */ IView** view);
 
@@ -85,11 +58,12 @@ private:
      * How we create a tab indicator that has a label and an icon
      */
     class LabelAndIconIndicatorStrategy
-        : public IndicatorStrategy
+        : public Object
+        , public ITabHostIndicatorStrategy
     {
-        friend class TabHost;
-
     public:
+        CAR_INTERFACE_DECL()
+
         CARAPI CreateIndicatorView(
             /* [out] */ IView** view);
 
@@ -109,11 +83,12 @@ private:
      * How to create a tab indicator by specifying a view.
      */
     class ViewIndicatorStrategy
-        : public IndicatorStrategy
+        : public Object
+        , public ITabHostIndicatorStrategy
     {
-        friend class TabHost;
-
     public:
+        CAR_INTERFACE_DECL()
+
         CARAPI CreateIndicatorView(
             /* [out] */ IView** view);
 
@@ -129,11 +104,12 @@ private:
      * How to create the tab content via a view id.
      */
     class ViewIdContentStrategy
-        : public ContentStrategy
+        : public Object
+        , public ITabHostContentStrategy
     {
-        friend class TabHost;
-
     public:
+        CAR_INTERFACE_DECL()
+
         CARAPI GetContentView(
             /* [out] */ IView** view);
 
@@ -141,8 +117,9 @@ private:
 
     private:
         ViewIdContentStrategy(
-            /* [in] */ Int32 viewId,
-            /* [in] */ TabHost* owner);
+            /* [in] */ Int32 id,
+            /* [in] */ TabHost* host);
+
 
     private:
         AutoPtr<IView> mView;
@@ -153,9 +130,12 @@ private:
      * How tab content is managed using {@link TabContentFactory}.
      */
     class FactoryContentStrategy
-        : public ContentStrategy
+        : public Object
+        , public ITabHostContentStrategy
     {
     public:
+        CAR_INTERFACE_DECL()
+
         FactoryContentStrategy(
             /* [in] */ ICharSequence* tag,
             /* [in] */ ITabHostTabContentFactory* factory);
@@ -176,16 +156,18 @@ private:
      * decorview of the launched activity.
      */
     class IntentContentStrategy
-        : public ContentStrategy
+        : public Object
+        , public ITabHostContentStrategy
     {
-        friend class TabHost;
-
     public:
+        CAR_INTERFACE_DECL()
+
         CARAPI GetContentView(
             /* [out] */ IView** view);
 
         CARAPI TabClosed();
 
+    private:
         IntentContentStrategy(
             /* [in] */ const String& tag,
             /* [in] */ IIntent* intent,
@@ -202,20 +184,17 @@ private:
         : public Object
         , public IViewOnKeyListener
     {
-        friend class TabHost;
-
     public:
         CAR_INTERFACE_DECL()
+
+        TabKeyListener(
+            /* [in] */ TabHost* owner);
 
         CARAPI OnKey(
             /* [in] */ IView* v,
             /* [in] */ Int32 keyCode,
             /* [in] */ IKeyEvent* event,
             /* [out] */ Boolean* result);
-
-    private:
-        TabKeyListener(
-            /* [in] */ TabHost* owner);
 
     private:
         TabHost* mHost;
@@ -225,18 +204,15 @@ private:
         : public Object
         , public ITabWidgetOnTabSelectionChanged
     {
-        friend class TabHost;
-
     public:
         CAR_INTERFACE_DECL()
+
+        TabSelectionListener(
+            /* [in] */ TabHost* owner);
 
         CARAPI OnTabSelectionChanged(
             /* [in] */ Int32 tabIndex,
             /* [in] */ Boolean clicked);
-
-    private:
-        TabSelectionListener(
-            /* [in] */ TabHost* owner);
 
     private:
         TabHost* mHost;
@@ -260,8 +236,6 @@ public:
         : public Object
         , public ITabSpec
     {
-        friend class TabHost;
-
     public:
         CAR_INTERFACE_DECL()
 
@@ -307,7 +281,7 @@ public:
         CARAPI GetTag(
             /* [out] */ String* tag);
 
-    public:
+    private:
         TabSpec(
             /* [in] */ const String& tag,
             /* [in] */ TabHost* owner);

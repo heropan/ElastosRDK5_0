@@ -3,8 +3,8 @@
 #define __ELASTOS_DROID_WIDGET_EDITOR_H__
 
 #define HASH_FOR_TEXT_STYLE
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/ext/frameworkhash.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/UndoOperation.h"
 #include "elastos/droid/view/ViewTreeObserver.h"
 #include "elastos/droid/view/ViewGroup.h"
