@@ -154,7 +154,7 @@ private:
         /* [in] */ Float max,
         /* [in] */ Float f);
 
-private:
+public:
     static Float MIN_POINT_SIZE;
     static Float MAX_POINT_SIZE;
     static Int32 INNER_POINTS;

@@ -2,7 +2,12 @@
 #ifndef __ELASTOS_DROID_INTERNAL_WIDGET_MULTIWAVEVIEW_EASE_H__
 #define __ELASTOS_DROID_INTERNAL_WIDGET_MULTIWAVEVIEW_EASE_H__
 
+#include "Elastos.Droid.Animation.h"
+#include "elastos/droid/ext/frameworkext.h"
+
 #include <elastos/core/Object.h>
+
+using Elastos::Droid::Animation::ITimeInterpolator;
 
 using Elastos::Core::Object;
 
@@ -22,10 +27,17 @@ public:
     public:
         class TimeInterpolator
             : public Object
+            , public ITimeInterpolator
         {
         public:
-            CARAPI_(Float) GetInterpolation(
-                /* [in] */ Float input);
+            CAR_INTERFACE_DECL()
+
+            CARAPI GetInterpolation(
+                /* [in] */ Float input,
+                /* [out] */ Float* res);
+
+            CARAPI HasNativeInterpolator(
+                /* [out] */ Boolean* res);
         };
 
     public:
@@ -38,26 +50,47 @@ public:
     public:
         class TimeInterpolatorIn
             : public Object
+            , public ITimeInterpolator
         {
         public:
-            CARAPI_(Float) GetInterpolation(
-                /* [in] */ Float input);
+            CAR_INTERFACE_DECL()
+
+            CARAPI GetInterpolation(
+                /* [in] */ Float input,
+                /* [out] */ Float* res);
+
+            CARAPI HasNativeInterpolator(
+                /* [out] */ Boolean* res);
         };
 
         class TimeInterpolatorOut
             : public Object
+            , public ITimeInterpolator
         {
         public:
-            CARAPI_(Float) GetInterpolation(
-                /* [in] */ Float input);
+            CAR_INTERFACE_DECL()
+
+            CARAPI GetInterpolation(
+                /* [in] */ Float input,
+                /* [out] */ Float* res);
+
+            CARAPI HasNativeInterpolator(
+                /* [out] */ Boolean* res);
         };
 
         class TimeInterpolatorInOut
             : public Object
+            , public ITimeInterpolator
         {
         public:
-            CARAPI_(Float) GetInterpolation(
-                /* [in] */ Float input);
+            CAR_INTERFACE_DECL()
+
+            CARAPI GetInterpolation(
+                /* [in] */ Float input,
+                /* [out] */ Float* res);
+
+            CARAPI HasNativeInterpolator(
+                /* [out] */ Boolean* res);
         };
 
     public:
@@ -74,26 +107,47 @@ public:
     public:
         class TimeInterpolatorIn
             : public Object
+            , public ITimeInterpolator
         {
         public:
-            CARAPI_(Float) GetInterpolation (
-                /* [in] */ Float input);
+            CAR_INTERFACE_DECL()
+
+            CARAPI GetInterpolation(
+                /* [in] */ Float input,
+                /* [out] */ Float* res);
+
+            CARAPI HasNativeInterpolator(
+                /* [out] */ Boolean* res);
         };
 
         class TimeInterpolatorOut
             : public Object
+            , public ITimeInterpolator
         {
         public:
-            CARAPI_(Float) GetInterpolation(
-                /* [in] */ Float input);
+            CAR_INTERFACE_DECL()
+
+            CARAPI GetInterpolation(
+                /* [in] */ Float input,
+                /* [out] */ Float* res);
+
+            CARAPI HasNativeInterpolator(
+                /* [out] */ Boolean* res);
         };
 
         class TimeInterpolatorInOut
             : public Object
+            , public ITimeInterpolator
         {
         public:
-            CARAPI_(Float) GetInterpolation(
-                /* [in] */ Float input);
+            CAR_INTERFACE_DECL()
+
+            CARAPI GetInterpolation(
+                /* [in] */ Float input,
+                /* [out] */ Float* res);
+
+            CARAPI HasNativeInterpolator(
+                /* [out] */ Boolean* res);
         };
 
     public:
@@ -110,26 +164,47 @@ public:
     public:
         class TimeInterpolatorIn
             : public Object
+            , public ITimeInterpolator
         {
         public:
-            CARAPI_(Float) GetInterpolation(
-                /* [in] */ Float input);
+            CAR_INTERFACE_DECL()
+
+            CARAPI GetInterpolation(
+                /* [in] */ Float input,
+                /* [out] */ Float* res);
+
+            CARAPI HasNativeInterpolator(
+                /* [out] */ Boolean* res);
         };
 
         class TimeInterpolatorOut
             : public Object
+            , public ITimeInterpolator
         {
         public:
-            CARAPI_(Float) GetInterpolation(
-                /* [in] */ Float input);
+            CAR_INTERFACE_DECL()
+
+            CARAPI GetInterpolation(
+                /* [in] */ Float input,
+                /* [out] */ Float* res);
+
+            CARAPI HasNativeInterpolator(
+                /* [out] */ Boolean* res);
         };
 
         class TimeInterpolatorInOut
             : public Object
+            , public ITimeInterpolator
         {
         public:
-            CARAPI_(Float) GetInterpolation(
-                /* [in] */ Float input);
+            CAR_INTERFACE_DECL()
+
+            CARAPI GetInterpolation(
+                /* [in] */ Float input,
+                /* [out] */ Float* res);
+
+            CARAPI HasNativeInterpolator(
+                /* [out] */ Boolean* res);
         };
 
     public:
@@ -146,26 +221,47 @@ public:
     public:
         class TimeInterpolatorIn
             : public Object
+            , public ITimeInterpolator
         {
         public:
-            CARAPI_(Float) GetInterpolation(
-                /* [in] */ Float input);
+            CAR_INTERFACE_DECL()
+
+            CARAPI GetInterpolation(
+                /* [in] */ Float input,
+                /* [out] */ Float* res);
+
+            CARAPI HasNativeInterpolator(
+                /* [out] */ Boolean* res);
         };
 
         class TimeInterpolatorOut
             : public Object
+            , public ITimeInterpolator
         {
         public:
-            CARAPI_(Float) GetInterpolation(
-                /* [in] */ Float input);
+            CAR_INTERFACE_DECL()
+
+            CARAPI GetInterpolation(
+                /* [in] */ Float input,
+                /* [out] */ Float* res);
+
+            CARAPI HasNativeInterpolator(
+                /* [out] */ Boolean* res);
         };
 
         class TimeInterpolatorInOut
             : public Object
+            , public ITimeInterpolator
         {
         public:
-            CARAPI_(Float) GetInterpolation(
-                /* [in] */ Float input);
+            CAR_INTERFACE_DECL()
+
+            CARAPI GetInterpolation(
+                /* [in] */ Float input,
+                /* [out] */ Float* res);
+
+            CARAPI HasNativeInterpolator(
+                /* [out] */ Boolean* res);
         };
 
     public:
@@ -182,26 +278,47 @@ public:
     public:
         class TimeInterpolatorIn
             : public Object
+            , public ITimeInterpolator
         {
         public:
-            CARAPI_(Float) GetInterpolation(
-                /* [in] */ Float input);
+            CAR_INTERFACE_DECL()
+
+            CARAPI GetInterpolation(
+                /* [in] */ Float input,
+                /* [out] */ Float* res);
+
+            CARAPI HasNativeInterpolator(
+                /* [out] */ Boolean* res);
         };
 
         class TimeInterpolatorOut
             : public Object
+            , public ITimeInterpolator
         {
         public:
-            CARAPI_(Float) GetInterpolation(
-                /* [in] */ Float input);
+            CAR_INTERFACE_DECL()
+
+            CARAPI GetInterpolation(
+                /* [in] */ Float input,
+                /* [out] */ Float* res);
+
+            CARAPI HasNativeInterpolator(
+                /* [out] */ Boolean* res);
         };
 
         class TimeInterpolatorInOut
             : public Object
+            , public ITimeInterpolator
         {
         public:
-            CARAPI_(Float) GetInterpolation(
-                /* [in] */ Float input);
+            CAR_INTERFACE_DECL()
+
+            CARAPI GetInterpolation(
+                /* [in] */ Float input,
+                /* [out] */ Float* res);
+
+            CARAPI HasNativeInterpolator(
+                /* [out] */ Boolean* res);
         };
 
     public:
