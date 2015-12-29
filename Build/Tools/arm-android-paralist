@@ -297,6 +297,7 @@
 #  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/connectivity
 > Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/display
 > Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/os
+> Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/content
 #  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/dreams
 #  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/input
 #  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/location
