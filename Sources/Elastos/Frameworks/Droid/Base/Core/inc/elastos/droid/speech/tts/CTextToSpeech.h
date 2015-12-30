@@ -15,10 +15,6 @@ CarClass(CTextToSpeech)
 {
 public:
     CAR_OBJECT_DECL();
-
-    CTextToSpeech();
-
-    virtual ~CTextToSpeech();
 };
 
 } // namespace Tts

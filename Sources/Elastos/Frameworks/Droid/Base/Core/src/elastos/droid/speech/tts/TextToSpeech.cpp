@@ -49,6 +49,7 @@ ECode TextToSpeech::TextToSpeechEngineInfo::constructor()
 ECode TextToSpeech::TextToSpeechEngineInfo::ToString(
     /* [out] */ String* ret)
 {
+    VALIDATE_NOT_NULL(ret)
     *ret = String("EngineInfo{name=") + name + String("}");
     return NOERROR;
 }
@@ -897,7 +898,7 @@ return NOERROR;
 ECode TextToSpeech::PlayEarcon(
     /* [in] */ const String& earcon,
     /* [in] */ Int32 queueMode,
-    /* [in] */ IMap* params,
+    /* [in] */ IHashMap* params,
     /* [out] */ Int32* ret)
 {
     AutoPtr<TextToSpeechActionR> ttsActionR = new TextToSpeechActionRPlayEarcon(this, earcon, queueMode, params);
@@ -908,7 +909,7 @@ ECode TextToSpeech::PlayEarcon(
 ECode TextToSpeech::PlaySilence(
     /* [in] */ Int64 durationInMs,
     /* [in] */ Int32 queueMode,
-    /* [in] */ IMap* params,
+    /* [in] */ IHashMap* params,
     /* [out] */ Int32* ret)
 {
     AutoPtr<TextToSpeechActionR> ttsActionR = new TextToSpeechActionRPlaySilence(this, durationInMs, queueMode, params);

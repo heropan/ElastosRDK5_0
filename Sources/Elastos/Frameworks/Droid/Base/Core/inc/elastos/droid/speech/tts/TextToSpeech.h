@@ -19,7 +19,6 @@ using Elastos::Utility::Etl::Map;
 using Elastos::Utility::Etl::Set;
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::IBundle;
-//using Elastos::Droid::Os::IIBinder;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IServiceConnection;
 using Elastos::Droid::Content::IContext;
@@ -165,7 +164,7 @@ private:
         TextToSpeech* mTts;
         String mEarcon;
         Int32 mQueueMode;
-        AutoPtr<IMap> mParams;
+        AutoPtr<IHashMap> mParams;
     };
 
     class TextToSpeechActionRPlaySilence
@@ -743,7 +742,7 @@ public:
     CARAPI PlayEarcon(
         /* [in] */ const String& earcon,
         /* [in] */ Int32 queueMode,
-        /* [in] */ IMap* params,
+        /* [in] */ IHashMap* params,
         /* [out] */ Int32* ret);
 
     /**
@@ -762,10 +761,10 @@ public:
      *
      * @return {@link #ERROR} or {@link #SUCCESS}.
      */
-    CARAPI_(Int32) PlaySilence(
+    CARAPI PlaySilence(
         /* [in] */ Int64 durationInMs,
         /* [in] */ Int32 queueMode,
-        /* [in] */ IMap* params,
+        /* [in] */ IHashMap* params,
         /* [out] */ Int32* ret);
 
     /**

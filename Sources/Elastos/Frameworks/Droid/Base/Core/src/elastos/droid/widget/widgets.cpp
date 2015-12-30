@@ -67,7 +67,6 @@
 #include "elastos/droid/widget/CZoomButton.h"
 #include "elastos/droid/widget/CZoomButtonsController.h"
 #include "elastos/droid/widget/CRemoteViews.h"
-#include "elastos/droid/widget/CRemoteViews.h"
 #include "elastos/droid/widget/CRemoteViewsAdapter.h"
 #include "elastos/droid/widget/CRemoteViewsListAdapter.h"
 #include "elastos/droid/widget/CRemoteViewsFactoryAdapter.h"
@@ -156,9 +155,6 @@ CAR_OBJECT_IMPL(CRemoteViewsAdapterServiceConnection)
 CAR_OBJECT_IMPL(CTableLayout)
 CAR_OBJECT_IMPL(CTableLayoutLayoutParams)
 CAR_OBJECT_IMPL(CBlinkLayout)
-CAR_OBJECT_IMPL(CRemoteViews);
-CAR_OBJECT_IMPL(CRemoteViewsAdapter);
-CAR_OBJECT_IMPL(CRemoteViewsAdapterServiceConnection);
 CAR_OBJECT_IMPL(CToolBar);
 
 } // namespace Widget
