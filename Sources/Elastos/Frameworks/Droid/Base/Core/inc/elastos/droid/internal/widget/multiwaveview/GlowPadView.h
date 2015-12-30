@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_INTERNAL_WIDGET_MULTIWAVEVIEW_GLOWPADVIEW_H__
 
 #include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/animation/AnimatorListenerAdapter.h"
@@ -111,6 +112,20 @@ private:
     {
     public:
         AnimatorListenerAdapter_3(
+            /* [in] */ GlowPadView* host);
+
+        CARAPI OnAnimationEnd(
+            /* [in] */ IAnimator* animator);
+
+    public:
+        GlowPadView* mHost;
+    };
+
+    class AnimatorListenerAdapter_4
+        : public AnimatorListenerAdapter
+    {
+    public:
+        AnimatorListenerAdapter_4(
             /* [in] */ GlowPadView* host);
 
         CARAPI OnAnimationEnd(
@@ -240,7 +255,7 @@ public:
      */
     CARAPI ReplaceTargetDrawablesIfPresent(
         /* [in] */ IComponentName* component,
-        /* [in] */ String name,
+        /* [in] */ const String& name,
         /* [in] */ Int32 existingResId,
         /* [out] */ Boolean* result);
 

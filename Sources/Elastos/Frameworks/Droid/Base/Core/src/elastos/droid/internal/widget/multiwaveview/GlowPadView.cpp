@@ -236,6 +236,24 @@ ECode GlowPadView::AnimatorListenerAdapter_3::OnAnimationEnd(
 }
 
 //=====================================================================
+//               GlowPadView::AnimatorListenerAdapter_4::
+//=====================================================================
+
+GlowPadView::AnimatorListenerAdapter_4::AnimatorListenerAdapter_4(
+    /* [in] */ GlowPadView* host)
+    : mHost(host)
+{}
+
+ECode GlowPadView::AnimatorListenerAdapter_4::OnAnimationEnd(
+    /* [in] */ IAnimator* animator)
+{
+    AutoPtr<CPointCloud> pc = (CPointCloud*)(mHost->mPointCloud.Get());
+    pc->mWaveManager->SetRadius(0.0f);
+    pc->mWaveManager->SetAlpha(0.0f);
+    return NOERROR;
+}
+
+//=====================================================================
 //               GlowPadView::
 //=====================================================================
 CAR_INTERFACE_IMPL(GlowPadView, Elastos::Droid::View::View, IGlowPadView)
@@ -1177,19 +1195,46 @@ void GlowPadView::StartWaveAnimation()
     Int32 w = 0;
     mHandleDrawable->GetWidth(&w);
     pc->mWaveManager->SetRadius(w/2.0f);
-    assert(0 && "TODO");
-    // mWaveAnimations->Add(Tweener::To(pc->mWaveManager, WAVE_ANIMATION_DURATION,
-    //         "ease", Ease.Quad.easeOut,
-    //         "delay", 0,
-    //         "radius", 2.0f * mOuterRadius,
-    //         "onUpdate", mUpdateListener,
-    //         "onComplete",
-    //         new AnimatorListenerAdapter() {
-    //             public void onAnimationEnd(Animator animator) {
-    //                 mPointCloud.waveManager.setRadius(0.0f);
-    //                 mPointCloud.waveManager.setAlpha(0.0f);
-    //             }
-    //         }));
+
+    AutoPtr<ArrayOf<IInterface*> > arr = ArrayOf<IInterface*>::Alloc(10);
+    AutoPtr<ICharSequence> pEA;
+    CString::New(String("ease"), (ICharSequence**)&pEA);
+    (*arr)[0] = pEA;
+    (*arr)[1] = (IObject*)Ease::Quad::mEaseOut;
+
+    AutoPtr<ICharSequence> pDl;
+    CString::New(String("delay"), (ICharSequence**)&pDl);
+    (*arr)[2] = pDl;
+
+    AutoPtr<IFloat> pZero;
+    CFloat::New(1.0f, (IFloat**)&pZero);
+    (*arr)[3] = pZero;
+
+    AutoPtr<ICharSequence> pRd;
+    CString::New(String("radius"), (ICharSequence**)&pRd);
+    (*arr)[4] = pRd;
+
+    AutoPtr<IFloat> pOR;
+    CFloat::New(2.0f * mOuterRadius, (IFloat**)&pOR);
+    (*arr)[5] = pOR;
+
+    AutoPtr<ICharSequence> pOUp;
+    CString::New(String("onUpdate"), (ICharSequence**)&pOUp);
+    (*arr)[6] = pOUp;
+
+    (*arr)[7] = mUpdateListener;
+
+    AutoPtr<ICharSequence> pCom;
+    CString::New(String("onComplete"), (ICharSequence**)&pCom);
+    (*arr)[8] = pCom;
+
+    AutoPtr<AnimatorListenerAdapter_4> p = new AnimatorListenerAdapter_4(this);
+    (*arr)[9] = IAnimatorListener::Probe(p);
+
+    AutoPtr<ITweener> res;
+    Tweener::To(pc->mWaveManager, WAVE_ANIMATION_DURATION, arr, (ITweener**)&res);
+    IList::Probe(mWaveAnimations)->Add(res);
+
     mWaveAnimations->Start();
 }
 
@@ -1217,11 +1262,29 @@ void GlowPadView::StartBackgroundAnimation(
         if (mBackgroundAnimator != NULL) {
             IAnimator::Probe(ba->mAnimator)->Cancel();
         }
-        assert(0 && "TODO");
-        // mBackgroundAnimator = Tweener::To(background, duration,
-        //         "ease", Ease.Cubic.easeIn,
-        //         "alpha", (Int32)(255.0f * alpha),
-        //         "delay", SHOW_ANIMATION_DELAY);
+        AutoPtr<ArrayOf<IInterface*> > arr = ArrayOf<IInterface*>::Alloc(6);
+        AutoPtr<ICharSequence> pEA;
+        CString::New(String("ease"), (ICharSequence**)&pEA);
+        (*arr)[0] = pEA;
+        (*arr)[1] = (IObject*)Ease::Cubic::mEaseIn;
+
+        AutoPtr<ICharSequence> pAl;
+        CString::New(String("alpha"), (ICharSequence**)&pAl);
+        (*arr)[2] = pAl;
+
+        AutoPtr<IInteger32> pInt;
+        CInteger32::New((Int32)(255.0f * alpha), (IInteger32**)&pInt);
+        (*arr)[3] = pInt;
+
+        AutoPtr<ICharSequence> pDl;
+        CString::New(String("delay"), (ICharSequence**)&pDl);
+        (*arr)[4] = pDl;
+
+        AutoPtr<IInteger32> pInt2;
+        CInteger32::New(SHOW_ANIMATION_DELAY, (IInteger32**)&pInt2);
+        (*arr)[5] = pInt2;
+
+        Tweener::To(background, duration, arr, (ITweener**)&mBackgroundAnimator);
         IAnimator::Probe(ba->mAnimator)->Start();
     }
 }
@@ -2056,7 +2119,7 @@ Boolean GlowPadView::ReplaceTargetDrawables(
 
 ECode GlowPadView::ReplaceTargetDrawablesIfPresent(
     /* [in] */ IComponentName* component,
-    /* [in] */ String name,
+    /* [in] */ const String& name,
     /* [in] */ Int32 existingResId,
     /* [out] */ Boolean* result)
 {

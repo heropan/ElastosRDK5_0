@@ -941,6 +941,19 @@ module
         interface ITargetDrawable;
     }
 
+    class CGlowPadView {
+
+        constructor(
+            [in] IContext* context);
+
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs);
+
+        interface IGlowPadView;
+        interface IView;
+    }
+
     } // namespace Multiwaveview
     } // namespace Widget
     } // namespace Internal
