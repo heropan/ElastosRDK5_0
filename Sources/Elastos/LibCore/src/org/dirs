@@ -1,5 +1,6 @@
 
 DIRS += apache
+DIRS += json
 DIRS += xml
 DIRS += xmlpull
 DIRS += kxml2

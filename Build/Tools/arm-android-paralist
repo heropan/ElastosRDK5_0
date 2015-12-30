@@ -121,6 +121,7 @@
 > Elastos/LibCore/src/org/xmlpull/v1
   Elastos/LibCore/src/org/kxml2/io
   Elastos/LibCore/src/org/w3c/dom
+  Elastos/LibCore/src/org/json
 > Elastos/LibCore/src/corelibrary
 # ==== buid External ====
   Elastos/External/conscrypt/src/org/conscrypt

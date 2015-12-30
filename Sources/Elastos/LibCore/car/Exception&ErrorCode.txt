@@ -17,6 +17,7 @@ Elastos.Text.Exceptions                             0x2D
 Elastosx.Crypto.Exceptions                          0x30
 Org.Xmlpull.V1.Exceptions                           0x40
 Org.Xml.Sax.Exceptions                              0x41
+Org.Json.Exceptions                                 0x42
 Eunit.Framework.Errors                              0x50
 Elastos.Droid.Content.Exceptions                    0x60
 Elastos.Droid.App.Exceptions                        0x61

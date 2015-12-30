@@ -106,6 +106,7 @@ INCLUDES += $(MAKEDIR)/../../inc/org/xmlpull/v1
 INCLUDES += $(MAKEDIR)/../../inc/org/xmlpull/v1/sax2
 INCLUDES += $(MAKEDIR)/../../inc/org/kxml2
 INCLUDES += $(MAKEDIR)/../../inc/org/kxml2/io
+INCLUDES += $(MAKEDIR)/../../inc/org/json
 
 VPATH := $(MAKEDIR)/../elastos/core
 
@@ -137,6 +138,7 @@ ELASTOS_LIBS += ../org/w3c/dom/org.w3c.dom.lib
 ELASTOS_LIBS += ../org/xml/sax/org.xml.sax.lib
 ELASTOS_LIBS += ../org/xmlpull/v1/org.xmlpull.v1.lib
 ELASTOS_LIBS += ../org/kxml2/io/org.kxml2.io.lib
+ELASTOS_LIBS += ../org/json/org.json.lib
 
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
 LIBRARIES += $(XDK_USER_LIB)/crt0.lib

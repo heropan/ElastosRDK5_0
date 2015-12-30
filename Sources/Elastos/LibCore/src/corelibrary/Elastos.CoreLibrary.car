@@ -64,5 +64,6 @@ module
     merge("../../car/org/xml.car");
     merge("../../car/org/xmlpull.car");
     merge("../../car/org/kxml2.car");
+    merge("../../car/org/json.car");
     }
 }
