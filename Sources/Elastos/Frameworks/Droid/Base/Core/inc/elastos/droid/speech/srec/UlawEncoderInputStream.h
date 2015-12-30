@@ -72,14 +72,14 @@ public:
         /* [out] */ Int32* ret);
 
     //@Override
-    CARAPI ReadBytes(
+    CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buf,
         /* [in]  */ Int32 offset,
         /* [in]  */ Int32 length,
         /* [out] */ Int32* number);
 
     //@Override
-    CARAPI ReadBytes(
+    CARAPI Read(
         /* [out] */ ArrayOf<Byte>* buf,
         /* [out] */ Int32* number);
 

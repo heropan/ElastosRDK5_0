@@ -121,7 +121,7 @@ ECode UlawEncoderInputStream::MaxAbsPcm(
     return NOERROR;
 }
 
-ECode UlawEncoderInputStream::ReadBytes(
+ECode UlawEncoderInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length,
@@ -158,11 +158,11 @@ ECode UlawEncoderInputStream::ReadBytes(
     return NOERROR;
 }
 
-ECode UlawEncoderInputStream::ReadBytes(
+ECode UlawEncoderInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buf,
     /* [out] */ Int32* number)
 {
-    ReadBytes(buf, 0, buf->GetLength(), number);
+    Read(buf, 0, buf->GetLength(), number);
     return NOERROR;
 }
 
@@ -170,7 +170,7 @@ ECode UlawEncoderInputStream::Read(
     /* [out] */ Int32* value)
 {
     Int32 n;
-    ReadBytes(mOneByte, 0, 1, &n);
+    Read(mOneByte, 0, 1, &n);
     if (n == -1){
         *value = -1;
         return NOERROR;

@@ -261,8 +261,7 @@ public:
      * @param audio <code>InputStream</code> containing PCM audio samples.
      */
     CARAPI PutAudio(
-        /* [in] */ IInputStream* audio,
-        /* [out] */ Int32* ret);
+        /* [in] */ IInputStream* audio);
 
     /**
      * Get the number of recognition results.  Must be called after

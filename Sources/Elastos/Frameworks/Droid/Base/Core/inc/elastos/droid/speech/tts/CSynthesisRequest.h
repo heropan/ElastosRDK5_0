@@ -17,10 +17,6 @@ CarClass(CSynthesisRequest)
 {
 public:
     CAR_OBJECT_DECL();
-
-    CSynthesisRequest();
-
-    virtual ~CSynthesisRequest();
 };
 
 } // namespace Tts

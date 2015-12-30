@@ -906,6 +906,24 @@ ECode TextToSpeech::PlayEarcon(
     return NOERROR;
 }
 
+ECode TextToSpeech::PlaySilentUtterance(
+    /* [in] */ Int64 durationInMs,
+    /* [in] */ Int32 queueMode,
+    /* [in] */ const String& utteranceId,
+    /* [out] */ Int32* ret)
+{
+    VALIDATE_NOT_NULL(ret)
+    assert(0 && "TODO")
+    // return runAction(new Action<Integer>() {
+    //     @Override
+    //     public Integer run(ITextToSpeechService service) throws RemoteException {
+    //         return service.playSilence(getCallerIdentity(), durationInMs,
+    //                                    queueMode, utteranceId);
+    //     }
+    // }, ERROR, "playSilentUtterance");
+    return NOERROR;
+}
+
 ECode TextToSpeech::PlaySilence(
     /* [in] */ Int64 durationInMs,
     /* [in] */ Int32 queueMode,
@@ -999,10 +1017,44 @@ ECode TextToSpeech::SetPitch(
     return NOERROR;
 }
 
+ECode TextToSpeech::SetAudioAttributes(
+    /* [in] */ IAudioAttributes* audioAttributes,
+    /* [out] */ Int32* ret)
+{
+    VALIDATE_NOT_NULL(ret)
+    assert(0 && "TODO");
+    // if (audioAttributes != null) {
+    //     synchronized (mStartLock) {
+    //         mParams.putParcelable(Engine.KEY_PARAM_AUDIO_ATTRIBUTES,
+    //             audioAttributes);
+    //     }
+    //     return SUCCESS;
+    // }
+    // return ERROR;
+    return NOERROR;
+}
+
 ECode TextToSpeech::GetCurrentEngine(
     /* [out] */ String* ret)
 {
+    VALIDATE_NOT_NULL(ret)
     *ret = mCurrentEngine;
+    return NOERROR;
+}
+
+ECode TextToSpeech::GetDefaultLanguage(
+    /* [out] */ ILocale** ret)
+{
+    VALIDATE_NOT_NULL(ret)
+    assert(0 && "TODO");
+    // return runAction(new Action<Locale>() {
+    //     @Override
+    //     public Locale run(ITextToSpeechService service) throws RemoteException {
+    //         String[] defaultLanguage = service.getClientDefaultLanguage();
+
+    //         return new Locale(defaultLanguage[0], defaultLanguage[1], defaultLanguage[2]);
+    //     }
+    // }, null, "getDefaultLanguage");
     return NOERROR;
 }
 
@@ -1022,6 +1074,167 @@ ECode TextToSpeech::GetLanguage(
     AutoPtr<ILocale> lRet = (ILocale*)RunAction(ttsActionR.Get(), (Handle32)NULL, String("getLanguage") );
     lRet->Release();//???
     *language = lRet;
+    return NOERROR;
+}
+
+ECode TextToSpeech::GetAvailableLanguages(
+    /* [out] */ ISet** languages)
+{
+    VALIDATE_NOT_NULL(languages)
+    assert(0 && "TODO");
+    // return runAction(new Action<Set<Locale>>() {
+    //     @Override
+    //     public Set<Locale> run(ITextToSpeechService service) throws RemoteException {
+    //         List<Voice> voices = service.getVoices();
+    //         if (voices == null) {
+    //             return new HashSet<Locale>();
+    //         }
+    //         HashSet<Locale> locales = new HashSet<Locale>();
+    //         for (Voice voice : voices) {
+    //             locales.add(voice.getLocale());
+    //         }
+    //         return locales;
+    //     }
+    // }, null, "getAvailableLanguages");
+    return NOERROR;
+}
+
+ECode TextToSpeech::GetVoices(
+    /* [out] */ ISet** voices)
+{
+    VALIDATE_NOT_NULL(voices)
+    assert(0 && "TODO");
+    // return runAction(new Action<Set<Voice>>() {
+    //     @Override
+    //     public Set<Voice> run(ITextToSpeechService service) throws RemoteException {
+    //         List<Voice> voices = service.getVoices();
+    //         return (voices != null)  ? new HashSet<Voice>(voices) : new HashSet<Voice>();
+    //     }
+    // }, null, "getVoices");
+    return NOERROR;
+}
+
+ECode TextToSpeech::SetVoice(
+    /* [in] */ IVoice* voice,
+    /* [out] */ Int32* ret)
+{
+    assert(0 && "TODO");
+    // return runAction(new Action<Integer>() {
+    //     @Override
+    //     public Integer run(ITextToSpeechService service) throws RemoteException {
+    //         int result = service.loadVoice(getCallerIdentity(), voice.getName());
+    //         if (result == SUCCESS) {
+    //             mParams.putString(Engine.KEY_PARAM_VOICE_NAME, voice.getName());
+
+    //             // Set the language/country/variant, so #getLanguage will return the voice
+    //             // locale when called.
+    //             String language = "";
+    //             try {
+    //                 language = voice.getLocale().getISO3Language();
+    //             } catch (MissingResourceException e) {
+    //                 Log.w(TAG, "Couldn't retrieve ISO 639-2/T language code for locale: " +
+    //                         voice.getLocale(), e);
+    //             }
+
+    //             String country = "";
+    //             try {
+    //                 country = voice.getLocale().getISO3Country();
+    //             } catch (MissingResourceException e) {
+    //                 Log.w(TAG, "Couldn't retrieve ISO 3166 country code for locale: " +
+    //                         voice.getLocale(), e);
+    //             }
+    //             mParams.putString(Engine.KEY_PARAM_LANGUAGE, language);
+    //             mParams.putString(Engine.KEY_PARAM_COUNTRY, country);
+    //             mParams.putString(Engine.KEY_PARAM_VARIANT, voice.getLocale().getVariant());
+    //         }
+    //         return result;
+    //     }
+    // }, LANG_NOT_SUPPORTED, "setVoice");
+    return NOERROR;
+}
+
+ECode TextToSpeech::GetVoice(
+    /* [out] */ IVoice** voice)
+{
+    VALIDATE_NOT_NULL(voice)
+    assert(0 && "TODO");
+    // return runAction(new Action<Voice>() {
+    //     @Override
+    //     public Voice run(ITextToSpeechService service) throws RemoteException {
+    //         String voiceName = mParams.getString(Engine.KEY_PARAM_VOICE_NAME, "");
+    //         if (TextUtils.isEmpty(voiceName)) {
+    //             return null;
+    //         }
+    //         List<Voice> voices = service.getVoices();
+    //         if (voices == null) {
+    //             return null;
+    //         }
+    //         for (Voice voice : voices) {
+    //             if (voice.getName().equals(voiceName)) {
+    //                 return voice;
+    //             }
+    //         }
+    //         return null;
+    //     }
+    // }, null, "getVoice");
+
+    return NOERROR;
+}
+
+ECode TextToSpeech::GetDefaultVoice(
+    /* [out] */ IVoice** voice)
+{
+    VALIDATE_NOT_NULL(voice)
+    assert(0 && "TODO");
+
+    // return runAction(new Action<Voice>() {
+    //     @Override
+    //     public Voice run(ITextToSpeechService service) throws RemoteException {
+
+    //         String[] defaultLanguage = service.getClientDefaultLanguage();
+
+    //         if (defaultLanguage == null || defaultLanguage.length == 0) {
+    //             Log.e(TAG, "service.getClientDefaultLanguage() returned empty array");
+    //             return null;
+    //         }
+    //         String language = defaultLanguage[0];
+    //         String country = (defaultLanguage.length > 1) ? defaultLanguage[1] : "";
+    //         String variant = (defaultLanguage.length > 2) ? defaultLanguage[2] : "";
+
+    //         // Sanitize the locale using isLanguageAvailable.
+    //         int result = service.isLanguageAvailable(language, country, variant);
+    //         if (result >= LANG_AVAILABLE){
+    //             if (result < LANG_COUNTRY_VAR_AVAILABLE) {
+    //                 variant = "";
+    //                 if (result < LANG_COUNTRY_AVAILABLE) {
+    //                     country = "";
+    //                 }
+    //             }
+    //         } else {
+    //             // The default language is not supported.
+    //             return null;
+    //         }
+
+    //         // Get the default voice name
+    //         String voiceName = service.getDefaultVoiceNameFor(language, country, variant);
+    //         if (TextUtils.isEmpty(voiceName)) {
+    //             return null;
+    //         }
+
+    //         // Find it
+    //         List<Voice> voices = service.getVoices();
+    //         if (voices == null) {
+    //             return null;
+    //         }
+    //         for (Voice voice : voices) {
+    //             if (voice.getName().equals(voiceName)) {
+    //                 return voice;
+    //             }
+    //         }
+    //         return null;
+    //     }
+    // }, null, "getDefaultVoice");
+
     return NOERROR;
 }
 
@@ -1077,7 +1290,7 @@ ECode TextToSpeech::SynthesizeToFile(
 
 ECode TextToSpeech::SynthesizeToFile(
     /* [in] */ const String& text,
-    /* [in] */ IMap* params,
+    /* [in] */ IHashMap* params,
     /* [in] */ const String& filename,
     /* [out] */ Int32* ret)
 {

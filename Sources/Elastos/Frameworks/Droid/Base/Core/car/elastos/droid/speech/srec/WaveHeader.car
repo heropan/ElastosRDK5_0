@@ -45,8 +45,7 @@ module
          * @return reference to this WaveHeader instance.
          */
         SetFormat(
-            [in] Int16 format,
-            [out] IWaveHeader** ret);
+            [in] Int16 format);
 
         /**
          * Get the number of channels.
@@ -61,8 +60,7 @@ module
          * @return reference to this WaveHeader instance.
          */
         SetNumChannels(
-            [in] Int16 numChannels,
-            [out] IWaveHeader** ret);
+            [in] Int16 numChannels);
 
         /**
          * Get the sample rate.

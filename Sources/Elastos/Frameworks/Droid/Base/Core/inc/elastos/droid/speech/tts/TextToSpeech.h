@@ -12,6 +12,7 @@
 #include "Elastos.Droid.Speech.h"
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Media.h"
 
 using Elastos::Utility::ILocale;
 using Elastos::Utility::IMap;
@@ -23,6 +24,7 @@ using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IServiceConnection;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Media::IAudioAttributes;
 //using Elastos::Droid::Speech::Tts::CTtsEngines;
 using Elastos::Utility::IList;
 using Elastos::IO::IFile;
@@ -285,7 +287,7 @@ private:
     private:
         TextToSpeech* mTts;
         String mText;
-        AutoPtr<IMap> mParams;
+        AutoPtr<IHashMap> mParams;
         String mFilename;
     };
 
@@ -748,6 +750,28 @@ public:
     /**
      * Plays silence for the specified amount of time using the specified
      * queue mode.
+     * This method is asynchronous, i.e. the method just adds the request to the queue of TTS
+     * requests and then returns. The synthesis might not have finished (or even started!) at the
+     * time when this method returns. In order to reliably detect errors during synthesis,
+     * we recommend setting an utterance progress listener (see
+     * {@link #setOnUtteranceProgressListener}) and using the
+     * {@link Engine#KEY_PARAM_UTTERANCE_ID} parameter.
+     *
+     * @param durationInMs The duration of the silence.
+     * @param queueMode {@link #QUEUE_ADD} or {@link #QUEUE_FLUSH}.
+     * @param utteranceId An unique identifier for this request.
+     *
+     * @return {@link #ERROR} or {@link #SUCCESS} of <b>queuing</b> the playSilentUtterance operation.
+     */
+    CARAPI PlaySilentUtterance(
+        /* [in] */ Int64 durationInMs,
+        /* [in] */ Int32 queueMode,
+        /* [in] */ const String& utteranceId,
+        /* [out] */ Int32* ret);
+
+    /**
+     * Plays silence for the specified amount of time using the specified
+     * queue mode.
      *
      * @param durationInMs The duration of the silence.
      * @param queueMode {@link #QUEUE_ADD} or {@link #QUEUE_FLUSH}.
@@ -836,11 +860,39 @@ public:
         /* [out] */ Int32* ret);
 
     /**
+     * Sets the audio attributes to be used when speaking text or playing
+     * back a file.
+     *
+     * @param audioAttributes Valid AudioAttributes instance.
+     *
+     * @return {@link #ERROR} or {@link #SUCCESS}.
+     */
+    CARAPI SetAudioAttributes(
+        /* [in] */ IAudioAttributes* audioAttributes,
+        /* [out] */ Int32* ret);
+
+    /**
      * @return the engine currently in use by this TextToSpeech instance.
      * @hide
      */
     CARAPI GetCurrentEngine(
         /* [out] */ String* ret);
+
+    /**
+     * Returns a Locale instance describing the language currently being used as the default
+     * Text-to-speech language.
+     *
+     * The locale object returned by this method is NOT a valid one. It has identical form to the
+     * one in {@link #getLanguage()}. Please refer to {@link #getLanguage()} for more information.
+     *
+     * @return language, country (if any) and variant (if any) used by the client stored in a
+     *     Locale instance, or {@code null} on error.
+     * @deprecated As of API level 21, use <code>getDefaultVoice().getLocale()</code> ({@link
+     *   #getDefaultVoice()})
+     */
+    // @Deprecated
+    CARAPI GetDefaultLanguage(
+        /* [out] */ ILocale** language);
 
     /**
      * Sets the text-to-speech language.
@@ -868,6 +920,59 @@ public:
      */
     CARAPI GetLanguage(
         /* [out] */ ILocale** language);
+
+    /**
+     * Query the engine about the set of available languages.
+     */
+    CARAPI GetAvailableLanguages(
+        /* [out] */ ISet** languages);
+
+    /**
+     * Query the engine about the set of available voices.
+     *
+     * Each TTS Engine can expose multiple voices for each locale, each with a different set of
+     * features.
+     *
+     * @see #setVoice(Voice)
+     * @see Voice
+     */
+    CARAPI GetVoices(
+        /* [out] */ ISet** voices);
+
+    /**
+     * Sets the text-to-speech voice.
+     *
+     * @param voice One of objects returned by {@link #getVoices()}.
+     *
+     * @return {@link #ERROR} or {@link #SUCCESS}.
+     *
+     * @see #getVoices
+     * @see Voice
+     */
+    CARAPI SetVoice(
+        /* [in] */ IVoice* voice,
+        /* [out] */ Int32* ret);
+
+    /**
+     * Returns a Voice instance describing the voice currently being used for synthesis
+     * requests sent to the TextToSpeech engine.
+     *
+     * @return Voice instance used by the client, or {@code null} if not set or on error.
+     *
+     * @see #getVoices
+     * @see #setVoice
+     * @see Voice
+     */
+    CARAPI GetVoice(
+        /* [out] */ IVoice** voice);
+
+    /**
+     * Returns a Voice instance that's the default voice for the default Text-to-speech language.
+     * @return The default voice instance for the default language, or {@code null} if not set or
+     *     on error.
+     */
+    CARAPI GetDefaultVoice(
+        /* [out] */ IVoice** voice);
 
     /**
      * Checks if the specified language as represented by the Locale is available and supported.
@@ -901,7 +1006,7 @@ public:
      * @param utteranceId An unique identifier for this request.
      * @return {@link #ERROR} or {@link #SUCCESS} of <b>queuing</b> the synthesizeToFile operation.
      */
-    SynthesizeToFile(
+    CARAPI SynthesizeToFile(
         /* [in] */ ICharSequence* text,
         /* [in] */ IBundle* params,
         /* [in] */ IFile* filename,
@@ -936,7 +1041,7 @@ public:
      */
     CARAPI SynthesizeToFile(
         /* [in] */ const String& text,
-        /* [in] */ IMap* params,
+        /* [in] */ IHashMap* params,
         /* [in] */ const String& filename,
         /* [out] */ Int32* ret);
 

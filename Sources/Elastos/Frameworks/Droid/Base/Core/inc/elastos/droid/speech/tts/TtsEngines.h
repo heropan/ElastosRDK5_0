@@ -154,6 +154,17 @@ public:
         /* [in] */ ILocale** locale);
 
     /**
+     * True if a given TTS engine uses the default phone locale as a default locale. Attempts to
+     * read the value from {@link Settings.Secure#TTS_DEFAULT_LOCALE}. If
+     * its  value is empty, this methods returns true.
+     *
+     * @param engineName the engine to return the locale for.
+     */
+    CARAPI IsLocaleSetToDefaultForEngine(
+        /* [in] */ const String& engineName,
+        /* [out] */ Boolean* ret);
+
+    /**
      * Parses a locale encoded as a string, and tries its best to return a valid {@link Locale}
      * object, even if the input string is encoded using the old-style 3 character format e.g.
      * "deu-deu". At the end, we test if the resulting locale can return ISO3 language and

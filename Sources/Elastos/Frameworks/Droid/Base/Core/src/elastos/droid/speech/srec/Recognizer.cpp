@@ -207,8 +207,7 @@ ECode Recognizer::PutAudio(
 }
 
 ECode Recognizer::PutAudio(
-    /* [in] */ IInputStream* audio,
-    /* [out] */ Int32* ret)
+    /* [in] */ IInputStream* audio)
 {
     VALIDATE_NOT_NULL(ret);
 

@@ -9,13 +9,10 @@ INCLUDES += $(MAKEDIR)/../../../../../inc/
 
 C_DEFINES += -DDROID_CORE
 
-SOURCES = CMicrophoneInputStream.cpp
+SOURCES = srec.cpp
 SOURCES += CRecognizerHelper.cpp
 SOURCES += CUlawEncoderInputStreamHelper.cpp
 SOURCES += MicrophoneInputStream.cpp
 SOURCES += WaveHeader.cpp
-SOURCES += CRecognizer.cpp
-SOURCES += CRecognizer.cpp
 SOURCES += Recognizer.cpp
-SOURCES += CWaveHeader.cpp
 SOURCES += UlawEncoderInputStream.cpp

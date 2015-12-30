@@ -15,10 +15,6 @@ CarClass(CUlawEncoderInputStream)
 {
 public:
     CAR_OBJECT_DECL();
-
-    CUlawEncoderInputStream();
-
-    virtual ~CUlawEncoderInputStream();
 };
 
 } // namespace Srec

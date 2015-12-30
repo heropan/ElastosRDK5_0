@@ -120,7 +120,7 @@ module
         //synchronized
         UpdateLocalePrefForEngine(
             [in] String name,
-            [in] String newLocale);
+            [in] ILocale* newLocale);
     }
 
     interface ITtsEnginesHelper {

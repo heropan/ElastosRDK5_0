@@ -15,10 +15,6 @@ CarClass(CFileSynthesisCallback)
 {
 public:
     CAR_OBJECT_DECL();
-
-    CFileSynthesisCallback();
-
-    virtual ~CFileSynthesisCallback();
 };
 
 } // namespace Tts

@@ -504,8 +504,20 @@ ECode TtsEngines::GetLocalePrefForEngine(
     }
 
     *locale = result;
+    REFCOUNT_ADD(*locale)
     return NOERROR;
+}
 
+ECode TtsEngines::IsLocaleSetToDefaultForEngine(
+    /* [in] */ const String& engineName,
+    /* [out] */ Boolean* ret)
+{
+    VALIDATE_NOT_NULL(ret)
+    assert(0 && "TODO");
+    // return TextUtils.isEmpty(parseEnginePrefFromList(
+    //             getString(mContext.getContentResolver(), Settings.Secure.TTS_DEFAULT_LOCALE),
+    //             engineName));
+    return NOERROR;
 }
 
 ECode TtsEngines::ParseLocaleString(

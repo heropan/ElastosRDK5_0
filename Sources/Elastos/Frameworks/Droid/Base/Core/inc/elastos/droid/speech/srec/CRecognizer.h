@@ -15,10 +15,6 @@ CarClass(CRecognizer)
 {
 public:
     CAR_OBJECT_DECL();
-
-    CRecognizer();
-
-    virtual ~CRecognizer();
 };
 
 } // namespace Srec

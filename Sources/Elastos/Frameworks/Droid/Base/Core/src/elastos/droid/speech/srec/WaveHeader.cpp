@@ -12,8 +12,12 @@ const String WaveHeader::TAG("WaveHeader");
 const Int32 WaveHeader::HEADER_LENGTH = 44;
 
 WaveHeader::WaveHeader()
+    : mFormat(0)
+    , mNumChannels(0)
+    , mSampleRate(0)
+    , mBitsPerSample(0)
+    , mNumBytes(0)
 {
-    constructor(0, 0, 0, 0, 0);
 }
 
 WaveHeader::~WaveHeader()
@@ -43,6 +47,7 @@ ECode WaveHeader::constructor(
 ECode WaveHeader::GetFormat(
     /* [out] */ Int16* ret)
 {
+    VALIDATE_NOT_NULL(ret)
     *ret = mFormat;
     return NOERROR;
 }
@@ -57,6 +62,7 @@ ECode WaveHeader::SetFormat(
 ECode WaveHeader::GetNumChannels(
     /* [out] */ Int16* ret)
 {
+    VALIDATE_NOT_NULL(ret)
     *ret  = mNumChannels;
     return NOERROR;
 }
@@ -71,6 +77,7 @@ ECode WaveHeader::SetNumChannels(
 ECode WaveHeader::GetSampleRate(
     /* [out] */ Int32* ret)
 {
+    VALIDATE_NOT_NULL(ret)
     *ret = mSampleRate;
     return NOERROR;
 }
@@ -85,6 +92,7 @@ ECode WaveHeader::SetSampleRate(
 ECode WaveHeader::GetBitsPerSample(
     /* [out] */ Int16* ret)
 {
+    VALIDATE_NOT_NULL(ret)
     *ret = mBitsPerSample;
     return NOERROR;
 }
@@ -99,6 +107,7 @@ ECode WaveHeader::SetBitsPerSample(
 ECode WaveHeader::GetNumBytes(
    /* [out] */ Int32* ret)
 {
+    VALIDATE_NOT_NULL(ret)
     *ret = mNumBytes;
     return NOERROR;
 }
@@ -114,6 +123,7 @@ ECode WaveHeader::Read(
     /* [in] */ IInputStream* in,
     /* [out] */ Int32* ret)
 {
+    VALIDATE_NOT_NULL(ret)
     *ret = 0;
 
     /* RIFF header */
@@ -190,6 +200,7 @@ ECode WaveHeader::Write(
     /* [in] */ IOutputStream* out,
     /* [out] */ Int32* ret)
 {
+    VALIDATE_NOT_NULL(ret)
     /* RIFF header */
     WriteId(out, String("RIFF"));
     WriteInt(out, 36 + mNumBytes);
@@ -250,12 +261,11 @@ ECode WaveHeader::WriteShort(
 ECode WaveHeader::ToString(
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str)
     String strOut;
-    /*
-    strOut = String.fromat(
-            "WaveHeader format=%d numChannels=%d sampleRate=%d bitsPerSample=%d numBytes=%d",
-            mFormat, mNumChannels, mSampleRate, mBitsPerSample, mNumBytes);
-            */
+    strOut.Fromat("WaveHeader format=%d numChannels=%d sampleRate=%d bitsPerSample=%d numBytes=%d",
+        mFormat, mNumChannels, mSampleRate, mBitsPerSample, mNumBytes);
+
     *str = strOut;
     return NOERROR;
 }

@@ -14,10 +14,6 @@ CarClass(CWaveHeader)
 {
 public:
     CAR_OBJECT_DECL();
-
-    CWaveHeader();
-
-    virtual ~CWaveHeader();
 };
 
 } // namespace Srec

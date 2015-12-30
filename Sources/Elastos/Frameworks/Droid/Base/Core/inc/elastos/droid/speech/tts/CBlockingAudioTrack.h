@@ -15,10 +15,6 @@ CarClass(CBlockingAudioTrack)
 {
 public:
     CAR_OBJECT_DECL();
-
-    CBlockingAudioTrack();
-
-    virtual ~CBlockingAudioTrack();
 };
 
 } // namespace Tts

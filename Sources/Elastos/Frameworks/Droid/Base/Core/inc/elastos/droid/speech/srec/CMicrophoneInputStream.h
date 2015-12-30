@@ -14,10 +14,6 @@ CarClass(CMicrophoneInputStream)
 {
 public:
     CAR_OBJECT_DECL();
-
-    CMicrophoneInputStream();
-
-    virtual ~CMicrophoneInputStream();
 };
 
 } // namespace Srec
