@@ -8,13 +8,13 @@
 #include "elastos/droid/text/method/Touch.h"
 #include "elastos/droid/text/Selection.h"
 #include "elastos/droid/graphics/CRect.h"
-// #include "elastos/droid/view/CKeyEvent.h"
+#include "elastos/droid/view/KeyEvent.h"
 
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Text::EIID_ISelectionPositionIterator;
 using Elastos::Droid::Text::ISelectionPositionIterator;
-// using Elastos::Droid::View::CKeyEvent;
+using Elastos::Droid::View::KeyEvent;
 using Elastos::Droid::View::IInputEvent;
 using Elastos::Droid::View::IViewParent;
 
@@ -82,16 +82,15 @@ Boolean ArrowKeyMovementMethod::HandleMovementKey(
 {
     switch (keyCode) {
         case IKeyEvent::KEYCODE_DPAD_CENTER:
-        assert(0 && "TODO");
-           /* if (CKeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
-                Int32 action,repeatCount;
+            if (KeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
+                Int32 action, repeatCount, ret;
                 if ((event->GetAction(&action), action == IKeyEvent::ACTION_DOWN)
                     && (event->GetRepeatCount(&repeatCount), repeatCount == 0)
-                    && MetaKeyKeyListener::GetMetaState(buffer, IMetaKeyKeyListener::META_SELECTING) != 0) {
+                    && (MetaKeyKeyListener::GetMetaState(ICharSequence::Probe(buffer), IMetaKeyKeyListener::META_SELECTING, &ret), ret != 0)) {
                     Boolean bShowContextMenu;
-                    return (widget->ShowContextMenu(&bShowContextMenu), bShowContextMenu);
+                    return (IView::Probe(widget)->ShowContextMenu(&bShowContextMenu), bShowContextMenu);
                 }
-            }*/
+            }
         break;
     }
     return BaseMovementMethod::HandleMovementKey(widget, buffer, keyCode, movementMetaState, event);

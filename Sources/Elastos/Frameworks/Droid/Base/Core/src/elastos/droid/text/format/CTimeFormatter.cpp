@@ -2,8 +2,9 @@
 #include <Elastos.CoreLibrary.IO.h>
 #include <Elastos.CoreLibrary.Libcore.h>
 #include <Elastos.CoreLibrary.Utility.h>
-#include "elastos/droid/text/format/CTimeFormatter.h"
 #include "elastos/droid/content/res/CResourcesHelper.h"
+#include "elastos/droid/text/format/CTimeFormatter.h"
+#include "elastos/droid/R.h"
 #include <elastos/core/AutoLock.h>
 
 using Elastos::Droid::Content::Res::IResources;
@@ -19,7 +20,7 @@ using Elastos::Utility::CLocaleHelper;
 using Elastos::Utility::ITimeZone;
 using Elastos::IO::IBuffer;
 using Elastos::IO::ICharBufferHelper;
-// using Elastos::IO::CCharBufferHelper;
+using Elastos::IO::CCharBufferHelper;
 using Elastos::Core::IAppendable;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
@@ -79,10 +80,9 @@ ECode CTimeFormatter::constructor()
             CResourcesHelper::AcquireSingleton((IResourcesHelper**)&resourcesHelper);
             resourcesHelper->GetSystem((IResources**)&r);
 
-            assert(0 && "TODO");
-            // r->GetString(com.android.internal.R.string.time_of_day, &sTimeOnlyFormat);
-            // r->GetString(com.android.internal.R.string.month_day_year, &sDateOnlyFormat);
-            // r->GetString(com.android.internal.R.string.date_and_time, &sDateTimeFormat);
+            r->GetString(R::string::time_of_day, &sTimeOnlyFormat);
+            r->GetString(R::string::month_day_year, &sDateOnlyFormat);
+            r->GetString(R::string::date_and_time, &sDateTimeFormat);
         }
 
         mDateTimeFormat = sDateTimeFormat;
@@ -157,8 +157,7 @@ ECode CTimeFormatter::FormatInternal(
     /* [in] */ IZoneInfo* zoneInfo)
 {
     AutoPtr<ICharBufferHelper> formatBufferHelper;
-    assert(0 && "TODO");
-    // CCharBufferHelper::AcquireSingleton((ICharBufferHelper**)&formatBufferHelper);
+    CCharBufferHelper::AcquireSingleton((ICharBufferHelper**)&formatBufferHelper);
     AutoPtr<ArrayOf<Char32> > pattern_ = pattern.GetChars(0);
     AutoPtr<ICharBuffer> formatBuffer;
     formatBufferHelper->Wrap(pattern_, (ICharBuffer**)&formatBuffer);

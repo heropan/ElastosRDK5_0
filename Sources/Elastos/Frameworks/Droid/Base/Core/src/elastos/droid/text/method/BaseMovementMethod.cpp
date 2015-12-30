@@ -5,13 +5,13 @@
 #include "elastos/droid/text/method/BaseMovementMethod.h"
 #include "elastos/droid/text/method/MetaKeyKeyListener.h"
 #include "elastos/droid/text/method/Touch.h"
-// #include "elastos/droid/view/CKeyEvent.h"
+#include "elastos/droid/view/KeyEvent.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Droid::Graphics::IPaint;
-// using Elastos::Droid::View::CKeyEvent;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IInputEvent;
+using Elastos::Droid::View::KeyEvent;
 
 namespace Elastos {
 namespace Droid {
@@ -198,9 +198,7 @@ Int32 BaseMovementMethod::GetMovementMetaState(
 
     Int32 metaState = mkMetaState
                 & ~(IMetaKeyKeyListener::META_ALT_LOCKED | IMetaKeyKeyListener::META_SYM_LOCKED);
-    // return CKeyEvent::NormalizeMetaState(metaState) & ~IKeyEvent::META_SHIFT_MASK;
-    assert(0 && "TODO");
-    return 0;
+    return KeyEvent::NormalizeMetaState(metaState) & ~IKeyEvent::META_SHIFT_MASK;
 }
 
 Boolean BaseMovementMethod::HandleMovementKey(
@@ -210,87 +208,86 @@ Boolean BaseMovementMethod::HandleMovementKey(
     /* [in] */ Int32 movementMetaState,
     /* [in] */ IKeyEvent* event)
 {
-    assert(0 && "TODO"); //need CKeyEvent
-/*    switch (keyCode) {
+    switch (keyCode) {
         Boolean bHasModifiersCtrlOn, bHasModifiersAltOn;
         case IKeyEvent::KEYCODE_DPAD_LEFT:
-            if (CKeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
+            if (KeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
                 return Left(widget, buffer);
             }
-            else if ((CKeyEvent::MetaStateHasModifiers(movementMetaState, IKeyEvent::META_CTRL_ON, &bHasModifiersCtrlOn), bHasModifiersCtrlOn)) {
+            else if ((KeyEvent::MetaStateHasModifiers(movementMetaState, IKeyEvent::META_CTRL_ON, &bHasModifiersCtrlOn), bHasModifiersCtrlOn)) {
                 return LeftWord(widget, buffer);
             }
-            else if ((CKeyEvent::MetaStateHasModifiers(movementMetaState, IKeyEvent::META_ALT_ON, &bHasModifiersAltOn), bHasModifiersAltOn)) {
+            else if ((KeyEvent::MetaStateHasModifiers(movementMetaState, IKeyEvent::META_ALT_ON, &bHasModifiersAltOn), bHasModifiersAltOn)) {
                 return LineStart(widget, buffer);
             }
             break;
 
         case IKeyEvent::KEYCODE_DPAD_RIGHT:
-            if (CKeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
+            if (KeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
                 return Right(widget, buffer);
             }
-            else if ((CKeyEvent::MetaStateHasModifiers(movementMetaState, IKeyEvent::META_CTRL_ON, &bHasModifiersCtrlOn), bHasModifiersCtrlOn)) {
+            else if ((KeyEvent::MetaStateHasModifiers(movementMetaState, IKeyEvent::META_CTRL_ON, &bHasModifiersCtrlOn), bHasModifiersCtrlOn)) {
                 return RightWord(widget, buffer);
             }
-            else if ((CKeyEvent::MetaStateHasModifiers(movementMetaState, IKeyEvent::META_ALT_ON, &bHasModifiersAltOn), bHasModifiersAltOn)) {
+            else if ((KeyEvent::MetaStateHasModifiers(movementMetaState, IKeyEvent::META_ALT_ON, &bHasModifiersAltOn), bHasModifiersAltOn)) {
                 return LineEnd(widget, buffer);
             }
             break;
 
         case IKeyEvent::KEYCODE_DPAD_UP:
-            if (CKeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
+            if (KeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
                 return Up(widget, buffer);
             }
-            else if ((CKeyEvent::MetaStateHasModifiers(movementMetaState, IKeyEvent::META_ALT_ON, &bHasModifiersAltOn), bHasModifiersAltOn)) {
+            else if ((KeyEvent::MetaStateHasModifiers(movementMetaState, IKeyEvent::META_ALT_ON, &bHasModifiersAltOn), bHasModifiersAltOn)) {
                 return Top(widget, buffer);
             }
             break;
 
         case IKeyEvent::KEYCODE_DPAD_DOWN:
-            if (CKeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
+            if (KeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
                 return Down(widget, buffer);
             }
-            else if ((CKeyEvent::MetaStateHasModifiers(movementMetaState, IKeyEvent::META_ALT_ON, &bHasModifiersAltOn), bHasModifiersAltOn)) {
+            else if ((KeyEvent::MetaStateHasModifiers(movementMetaState, IKeyEvent::META_ALT_ON, &bHasModifiersAltOn), bHasModifiersAltOn)) {
                 return Bottom(widget, buffer);
             }
             break;
 
         case IKeyEvent::KEYCODE_PAGE_UP:
-            if (CKeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
+            if (KeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
                 return PageUp(widget, buffer);
             }
-            else if ((CKeyEvent::MetaStateHasModifiers(movementMetaState, IKeyEvent::META_ALT_ON, &bHasModifiersAltOn), bHasModifiersAltOn)) {
+            else if ((KeyEvent::MetaStateHasModifiers(movementMetaState, IKeyEvent::META_ALT_ON, &bHasModifiersAltOn), bHasModifiersAltOn)) {
                 return Top(widget, buffer);
             }
             break;
 
         case IKeyEvent::KEYCODE_PAGE_DOWN:
-            if (CKeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
+            if (KeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
                 return PageDown(widget, buffer);
             }
-            else if ((CKeyEvent::MetaStateHasModifiers(movementMetaState, IKeyEvent::META_ALT_ON, &bHasModifiersAltOn), bHasModifiersAltOn)) {
+            else if ((KeyEvent::MetaStateHasModifiers(movementMetaState, IKeyEvent::META_ALT_ON, &bHasModifiersAltOn), bHasModifiersAltOn)) {
                 return Bottom(widget, buffer);
             }
             break;
 
         case IKeyEvent::KEYCODE_MOVE_HOME:
-            if (CKeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
+            if (KeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
                 return Home(widget, buffer);
             }
-            else if ((CKeyEvent::MetaStateHasModifiers(movementMetaState, IKeyEvent::META_CTRL_ON, &bHasModifiersCtrlOn), bHasModifiersCtrlOn)) {
+            else if ((KeyEvent::MetaStateHasModifiers(movementMetaState, IKeyEvent::META_CTRL_ON, &bHasModifiersCtrlOn), bHasModifiersCtrlOn)) {
                 return Top(widget, buffer);
             }
             break;
 
         case IKeyEvent::KEYCODE_MOVE_END:
-            if (CKeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
+            if (KeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
                 return End(widget, buffer);
             }
-            else if ((CKeyEvent::MetaStateHasModifiers(movementMetaState, IKeyEvent::META_CTRL_ON, &bHasModifiersCtrlOn), bHasModifiersCtrlOn)) {
+            else if ((KeyEvent::MetaStateHasModifiers(movementMetaState, IKeyEvent::META_CTRL_ON, &bHasModifiersCtrlOn), bHasModifiersCtrlOn)) {
                 return Bottom(widget, buffer);
             }
             break;
-        }*/
+        }
     return FALSE;
 }
 
@@ -705,7 +702,6 @@ Boolean BaseMovementMethod::ScrollLineEnd(
     }
     return FALSE;
 }
-
 
 } // namespace Method
 } // namespace Text

@@ -6,8 +6,7 @@
 #include "elastos/droid/text/format/DateFormat.h"
 #include "elastos/droid/text/format/CDateUtils.h"
 #include "elastos/droid/text/CSpannedString.h"
-// #include "elastos/droid/provider/Settings.h"
-// #include "elastos/droid/provider/CSettingsSystem.h"
+#include "elastos/droid/provider/CSettingsSystem.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/StringBuilder.h>
 #include <Elastos.CoreLibrary.h>
@@ -18,9 +17,8 @@
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IConfiguration;
-// using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::Provider::CSettingsSystem;
 using Elastos::Droid::Provider::ISettingsSystem;
-// using Elastos::Droid::Internal::Widget::ILockSettings;
 using Elastos::Droid::Text::ISpannableStringBuilder;
 using Elastos::Droid::Text::ISpannedString;
 using Elastos::Droid::Text::CSpannedString;
@@ -63,8 +61,7 @@ Boolean DateFormat::Is24HourFormat(
     AutoPtr<IContentResolver> resolver;
     context->GetContentResolver((IContentResolver**)&resolver);
     AutoPtr<ISettingsSystem> settingsSystem;
-    assert(0 && "TODO");
-    // CSettingsSystem::New((ISettingsSystem**)&settingsSystem);
+    CSettingsSystem::AcquireSingleton((ISettingsSystem**)&settingsSystem);
     String value;
     settingsSystem->GetString(resolver, ISettingsSystem::TIME_12_24, &value);
 
@@ -165,8 +162,7 @@ AutoPtr<Elastos::Text::IDateFormat> DateFormat::GetDateFormat(
     AutoPtr<IContentResolver> resolver;
     context->GetContentResolver((IContentResolver**)&resolver);
     AutoPtr<ISettingsSystem> settingsSystem;
-    assert(0 && "TODO");
-    // CSettingsSystem::New((ISettingsSystem**)&settingsSystem);
+    CSettingsSystem::AcquireSingleton((ISettingsSystem**)&settingsSystem);
     String value;
     settingsSystem->GetString(resolver, ISettingsSystem::DATE_FORMAT, &value);
     return GetDateFormatForSetting(context, value);
@@ -280,8 +276,7 @@ String DateFormat::GetDateFormatString(
     AutoPtr<IContentResolver> resolver;
     context->GetContentResolver((IContentResolver**)&resolver);
     AutoPtr<ISettingsSystem> settingsSystem;
-    assert(0 && "TODO");
-    // CSettingsSystem::New((ISettingsSystem**)&settingsSystem);
+    CSettingsSystem::AcquireSingleton((ISettingsSystem**)&settingsSystem);
     String value;
     settingsSystem->GetString(resolver, ISettingsSystem::DATE_FORMAT, &value);
     return GetDateFormatStringForSetting(context, value);

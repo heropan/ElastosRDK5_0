@@ -12,8 +12,7 @@ using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Core::Character;
 using Elastos::Text::IBreakIteratorHelper;
-// assert(0 && "TODO"); // need CBreakIteratorHelper
-// using Elastos::Text::CBreakIteratorHelper;
+using Elastos::Text::CBreakIteratorHelper;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
 using Elastos::Utility::Logging::Logger;
@@ -49,7 +48,7 @@ ECode WordIterator::constructor(
     /* [in] */ ILocale* locale)
 {
     AutoPtr<IBreakIteratorHelper> bih;
-    // CBreakIteratorHelper::AcquireSingleton((IBreakIteratorHelper**)&bih);
+    CBreakIteratorHelper::AcquireSingleton((IBreakIteratorHelper**)&bih);
     return bih->GetWordInstance(locale, (IBreakIterator**)&mIterator);
 }
 

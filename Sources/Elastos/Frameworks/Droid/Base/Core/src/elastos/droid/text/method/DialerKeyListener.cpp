@@ -3,11 +3,11 @@
 #include "elastos/droid/text/method/DialerKeyListener.h"
 #include "elastos/droid/text/method/CDialerKeyListener.h"
 #include "elastos/droid/text/method/MetaKeyKeyListener.h"
-// assert(0 && "TODO");
-// #include "elastos/droid/view/CKeyCharacterMap.h"
+#include "elastos/droid/view/KeyCharacterMap.h"
 
-// using Elastos::Droid::View::CKeyCharacterMap;
+
 using Elastos::Droid::View::IKeyData;
+using Elastos::Droid::View::KeyCharacterMap;
 
 namespace Elastos {
 namespace Droid {
@@ -110,10 +110,10 @@ Int32 DialerKeyListener::Lookup(
          * or vice versa.
          */
 
-        if (meta != 0) {/*
+        if (meta != 0) {
             //Java:    KeyData kd = new KeyData();
-            AutoPtr<CKeyCharacterMap::KeyData> kd;
-            kd = new CKeyCharacterMap::KeyData();
+            AutoPtr<KeyCharacterMap::KeyData> kd;
+            kd = new KeyCharacterMap::KeyData();
             AutoPtr< ArrayOf<Char32> > accepted = GetAcceptedChars();
             Boolean bGetKeyData;
 
@@ -124,7 +124,7 @@ Int32 DialerKeyListener::Lookup(
                     }
                 }
             }
-        */}
+        }
 
         /*
          * Otherwise, use the number associated with the key, since

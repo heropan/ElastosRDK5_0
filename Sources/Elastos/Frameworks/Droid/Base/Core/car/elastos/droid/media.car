@@ -1121,6 +1121,50 @@ module
         interface ISubtitleController;
     }
 
+    class CSubtitleData {
+
+        constructor();
+
+        interface ISubtitleData;
+    }
+
+    class CWebVttRenderer {
+
+        constructor(
+            [in] IContext* context);
+
+        interface ISubtitleControllerRenderer;
+    }
+
+    class CTextTrackCueSpan {
+
+        constructor(
+            [in] String text,
+            [in] Int64 timestamp);
+
+        interface ITextTrackCueSpan;
+    }
+
+    class CWebVttRendererTokenizer {
+
+        constructor(
+            [in] ITokenizerOnTokenListener* listener);
+
+        interface ITokenizer;
+    }
+
+    class CWebVttParser {
+
+        constructor(
+            [in] IWebVttCueListener* listener);
+
+        interface IWebVttParser;
+    }
+
+    singleton class CWebVttParserHelper {
+        interface IWebVttParserHelper;
+    }
+
     } // namespace media
     } // namepsace Droid
     } // namespace Elastos

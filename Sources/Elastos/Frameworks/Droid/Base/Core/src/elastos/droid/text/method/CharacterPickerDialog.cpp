@@ -1,15 +1,38 @@
-#include "elastos/droid/text/method/CharacterPickerDialog.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/text/method/CharacterPickerDialog.h"
+#include "elastos/droid/text/Selection.h"
+#include "elastos/droid/view/LayoutInflater.h"
 #include <elastos/core/CoreUtils.h>
 
+using Elastos::Droid::App::EIID_IDialog;
+using Elastos::Droid::Content::EIID_IDialogInterface;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Text::Selection;
+using Elastos::Droid::View::EIID_IKeyEventCallback;
+using Elastos::Droid::View::EIID_IWindowCallback;
+using Elastos::Droid::View::EIID_IOnWindowDismissedCallback;
+using Elastos::Droid::View::EIID_IViewOnClickListener;
+using Elastos::Droid::View::EIID_IViewOnCreateContextMenuListener;
 using Elastos::Droid::View::IView;
+using Elastos::Droid::View::LayoutInflater;
+using Elastos::Droid::Widget::EIID_IAdapter;
+using Elastos::Droid::Widget::EIID_IAdapterViewOnItemClickListener;
+using Elastos::Droid::Widget::EIID_IBaseAdapter;
+using Elastos::Droid::Widget::EIID_IListAdapter;
+using Elastos::Droid::Widget::EIID_ISpinnerAdapter;
 using Elastos::Droid::Widget::IAdapter;
 using Elastos::Droid::Widget::IAdapterView;
 using Elastos::Droid::Widget::IBaseAdapter;
+using Elastos::Droid::Widget::IGridView;
 using Elastos::Droid::Widget::IListAdapter;
 using Elastos::Droid::Widget::ISpinnerAdapter;
+using Elastos::Droid::Widget::ITextView;
 using Elastos::Core::CoreUtils;
 
 namespace Elastos {
@@ -19,15 +42,15 @@ namespace Method {
 
 /*****************************CharacterPickerDialog::OptionsAdapter*****************************/
 CharacterPickerDialog::OptionsAdapter::OptionsAdapter()
-{}
+{
+}
 
 CAR_INTERFACE_IMPL_4(CharacterPickerDialog::OptionsAdapter, Object, IBaseAdapter, IListAdapter, ISpinnerAdapter, IAdapter)
 
 ECode CharacterPickerDialog::OptionsAdapter::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ ICharacterPickerDialog* host)
+    /* [in] */ CharacterPickerDialog* host)
 {
-    FAIL_RETURN(constructor());
     mHost = host;
     return NOERROR;
 }
@@ -35,36 +58,38 @@ ECode CharacterPickerDialog::OptionsAdapter::constructor(
 ECode CharacterPickerDialog::OptionsAdapter::GetView(
     /* [in] */ Int32 position,
     /* [in] */ IView* convertView,
-    /* [in] */ IViewGroup* parent
+    /* [in] */ IViewGroup* parent,
     /* [out] */ IView** ret)
 {
     VALIDATE_NOT_NULL(ret);
     AutoPtr<IView> v;
-    mInflater->Inflate(R.layout.character_picker_button, NULL, (IView**)&v);
+    AutoPtr<ILayoutInflater> layoutInf = mHost->mInflater;
+    layoutInf->Inflate(R::layout::character_picker_button, NULL, (IView**)&v);
     AutoPtr<IButton> b = IButton::Probe(v);
-    Char32 c = mOptions->GetChar(position);
+    Char32 c = (mHost->mOptions).GetChar(position);
     ITextView::Probe(b)->SetText(c);
-    b->SetOnClickListener(IViewOnClickListener::Probe(this));
+    IView::Probe(b)->SetOnClickListener(IViewOnClickListener::Probe(this));
     *ret = IView::Probe(b);
     REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
 ECode CharacterPickerDialog::OptionsAdapter::GetCount(
-    /* [out] */ Int32** ret)
+    /* [out] */ Int32* ret)
 {
     VALIDATE_NOT_NULL(ret);
-    String str = (CharacterPickerDialog*)mHost->mOptions;
+    String str = mHost->mOptions;
     *ret = str.GetLength();
     return NOERROR;
 }
 
 ECode CharacterPickerDialog::OptionsAdapter::GetItem(
-    /* [in] */ Int position,
+    /* [in] */ Int32 position,
     /* [out] */ IInterface** ret)
 {
     VALIDATE_NOT_NULL(ret);
-    Char32 c = mOptions->GetChar(position);
+
+    Char32 c = (mHost->mOptions).GetChar(position);
     String str;
     str.Append(c);
     AutoPtr<ICharSequence> csq = CoreUtils::Convert(str);
@@ -75,7 +100,7 @@ ECode CharacterPickerDialog::OptionsAdapter::GetItem(
 
 ECode CharacterPickerDialog::OptionsAdapter::GetItemId(
     /* [in] */ Int32 position,
-    /* [out] */ Int64** ret)
+    /* [out] */ Int64* ret)
 {
     VALIDATE_NOT_NULL(ret);
     *ret = (Int64)position;
@@ -100,22 +125,23 @@ ECode CharacterPickerDialog::constructor(
     /* [in] */ const String& options,
     /* [in] */ Boolean insert)
 {
-    FAIL_RETURN(constructor(context, R.style.Theme_Panel));
+    FAIL_RETURN(Dialog::constructor(context, R::style::Theme_Panel));
     mView = view;
     mText = text;
     mOptions = options;
     mInsert = insert;
-    return LayoutInflater::From(context, (ILayoutInflaterHelper**)&mInflater);
+    return LayoutInflater::From(context, (ILayoutInflater**)&mInflater);
 }
 
-void CharacterPickerDialog::OnCreate(
+ECode CharacterPickerDialog::OnCreate(
     /* [in] */ IBundle* savedInstanceState)
 {
-    OnCreate(savedInstanceState);
+    Dialog::OnCreate(savedInstanceState);
 
-    AutoPtr<IWindow> iwindow = GetWindow();
+    AutoPtr<IWindow> iwindow;
+    Dialog::GetWindow((IWindow**)&iwindow);
     AutoPtr<IWindowManagerLayoutParams> params;
-    iwindow->GetAttributes((IWindowManagerLayoutParams**)&params));
+    iwindow->GetAttributes((IWindowManagerLayoutParams**)&params);
 
     AutoPtr<IBinder> ibinder;
     params->SetToken((mView->GetApplicationWindowToken((IBinder**)&ibinder), ibinder));
@@ -124,17 +150,25 @@ void CharacterPickerDialog::OnCreate(
     params->GetFlags(&flags);
     params->SetFlags(flags | IWindow::FEATURE_NO_TITLE);
 
-    SetContentView(R.layout.character_picker);
+    Dialog::SetContentView(R::layout::character_picker);
 
-    AutoPtr<IGridView> grid = FindViewById(R.id.characterPicker);
-    AutoPtr<IContext> context = GetContext();
-    AutoPtr<OptionsAdapter> adapter = new OptionsAdapter(context.Get(), this);
-    grid->SetAdapter(IAdapter::Probe(adapter));
-    IAdapterView::Probe(grid)->SetOnItemClickListener(IAdapterViewOnItemClickListener::Probe(this));
+    AutoPtr<IView> gview;
+    Dialog::FindViewById(R::id::characterPicker, (IView**)&gview);
+    AutoPtr<IGridView> grid = IGridView::Probe(gview);
+    AutoPtr<IContext> context;
+    Dialog::GetContext((IContext**)&context);
+    AutoPtr<OptionsAdapter> adapter = new OptionsAdapter();
+    adapter->constructor(context.Get(), this);
+    IAdapterView::Probe(grid)->SetAdapter(IAdapter::Probe(adapter));
+    AutoPtr<IAdapterView> iav;
+    IAdapterView::Probe(grid)->SetOnItemClickListener(this);
 
-    AutoPtr<IGridView> bGrid = FindViewById(R.id.cancel);
-    mCancelButton = IButton::Probe(bGrid);
+    gview = NULL;
+    Dialog::FindViewById(R::id::cancel, (IView**)&gview);
+    AutoPtr<IButton> button = IButton::Probe(gview);
+    mCancelButton = button;
     IView::Probe(mCancelButton)->SetOnClickListener(IViewOnClickListener::Probe(this));
+    return NOERROR;
 }
 
 ECode CharacterPickerDialog::OnItemClick(
@@ -167,12 +201,11 @@ void CharacterPickerDialog::ReplaceCharacterAndClose(
 ECode CharacterPickerDialog::OnClick(
     /* [in] */ IView* v)
 {
-    Boolean flag(FALSE);
-    if ((v->Equals(mCancelButton, &flag), flag)) {
+    if (Object::Equals(v, IView::Probe(mCancelButton))) {
         Dismiss();
     } else if (IButton::Probe(v)) {
         AutoPtr<ICharSequence> result;
-        IButton::Probe(v)->GetText((ICharSequence**)&result);
+        ITextView::Probe(v)->GetText((ICharSequence**)&result);
         ReplaceCharacterAndClose(result.Get());
     }
     return NOERROR;

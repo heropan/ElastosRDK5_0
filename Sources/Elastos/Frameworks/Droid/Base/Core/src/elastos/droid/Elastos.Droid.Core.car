@@ -94,12 +94,12 @@ module
     merge("../../../car/elastos/droid/widget.car");
     }
 
-    submodule Elastos.Droid.Text {
-    merge("../../../car/elastos/droid/text2.car"); //should after widget.car
-    }
-
     submodule Elastos.Droid.App {
     merge("../../../car/elastos/droid/app.car");
+    }
+
+    submodule Elastos.Droid.Text {
+    merge("../../../car/elastos/droid/text2.car"); //should after widget.car, app.car
     }
 
     submodule Elastos.Droid.Internal {

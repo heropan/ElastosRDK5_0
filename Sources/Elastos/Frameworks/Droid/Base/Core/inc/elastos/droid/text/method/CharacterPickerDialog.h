@@ -2,7 +2,12 @@
 #define __ELASTOS_DROID_TEXT_METHOD_CHARACTERPICKERDIALOG_H__
 
 #include "elastos/droid/app/Dialog.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/BaseAdapter.h"
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.Droid.Text.h"
 
+using Elastos::Droid::App::Dialog;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Text::Method::ICharacterPickerDialog;
@@ -11,6 +16,7 @@ using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewOnClickListener;
 using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::Widget::BaseAdapter;
 using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
 using Elastos::Droid::Widget::IAdapterView;
 using Elastos::Droid::Widget::IButton;
@@ -38,27 +44,27 @@ private:
 
         CARAPI constructor(
             /* [in] */ IContext* context,
-            /* [in] */ ICharacterPickerDialog* host);
+            /* [in] */ CharacterPickerDialog* host);
 
         CARAPI GetView(
             /* [in] */ Int32 position,
             /* [in] */ IView* convertView,
-            /* [in] */ IViewGroup* parent
+            /* [in] */ IViewGroup* parent,
             /* [out] */ IView** ret);
 
         CARAPI GetCount(
-            /* [out] */ Int32** ret);
+            /* [out] */ Int32* ret);
 
         CARAPI GetItem(
-            /* [in] */ Int position,
+            /* [in] */ Int32 position,
             /* [out] */ IInterface** ret);
 
         CARAPI GetItemId(
             /* [in] */ Int32 position,
-            /* [out] */ Int64** ret);
+            /* [out] */ Int64* ret);
 
     private:
-        ICharacterPickerDialog* mHost;
+        CharacterPickerDialog* mHost;
     };
 
 public:
@@ -86,7 +92,7 @@ public:
 
 protected:
     //@Override
-    CARAPI_(void) OnCreate(
+    CARAPI OnCreate(
         /* [in] */ IBundle* savedInstanceState);
 
 private:
