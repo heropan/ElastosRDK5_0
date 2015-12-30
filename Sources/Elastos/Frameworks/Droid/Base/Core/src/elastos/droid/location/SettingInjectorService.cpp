@@ -25,8 +25,7 @@ namespace Location {
 
 const String SettingInjectorService::TAG("SettingInjectorService");
 
-// CAR_INTERFACE_IMPL(SettingInjectorService, Service, ISettingInjectorService)
-CAR_INTERFACE_IMPL(SettingInjectorService, Object, ISettingInjectorService)
+CAR_INTERFACE_IMPL(SettingInjectorService, Service, ISettingInjectorService)
 
 SettingInjectorService::SettingInjectorService(
     /* [in] */ const String& name)
@@ -47,9 +46,7 @@ ECode SettingInjectorService::OnStart(
     /* [in] */ IIntent* intent,
     /* [in] */ Int32 startId)
 {
-    assert(0);
-    // Service::OnStart(intent, startId);
-    return NOERROR;
+    return Service::OnStart(intent, startId);
 }
 
 ECode SettingInjectorService::OnStartCommand(
@@ -60,8 +57,7 @@ ECode SettingInjectorService::OnStartCommand(
 {
     VALIDATE_NOT_NULL(result)
     OnHandleIntent(intent);
-    assert(0);
-    // Service::StopSelf(startId);
+    FAIL_RETURN(Service::StopSelf(startId))
     *result = IService::START_NOT_STICKY;
     return NOERROR;
 }
@@ -90,10 +86,11 @@ ECode SettingInjectorService::SendStatus(
     message->SetData(bundle);
 
     if (Logger::IsLoggable(TAG, Logger::___DEBUG)) {
-         #if 0
-         Log.d(TAG, mName + ": received " + intent
-                 + ", enabled=" + enabled + ", sending message: " + message);
-        #endif
+        String str1, str2;
+        IObject::Probe(intent)->ToString(&str1);
+        IObject::Probe(message)->ToString(&str2);
+        Logger::D(TAG, "%s: received %s, enabled=%s, sending message: %s",
+            mName.string(), str1.string(), enabled ? "TRUE" : "FALSE", str2.string());
     }
 
     AutoPtr<IParcelable> par;

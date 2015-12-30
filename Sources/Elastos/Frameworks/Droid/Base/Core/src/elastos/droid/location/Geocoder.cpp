@@ -1,14 +1,15 @@
 
-#include <Elastos.CoreLibrary.Utility.h>
-#include "Elastos.Droid.Content.h"
 #include "elastos/droid/location/Geocoder.h"
+#include "Elastos.Droid.Content.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/location/CGeocoderParams.h"
-#include "elastos/droid/os/CServiceManager.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Droid::Os::IServiceManager;
-using Elastos::Droid::Os::CServiceManager;
-using Elastos::Utility::ILocaleHelper;
+using Elastos::Droid::Os::ServiceManager;
 using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -25,16 +26,14 @@ ECode Geocoder::constructor(
     /* [in] */ IContext* context,
     /* [in] */ ILocale* locale)
 {
-    if (locale != NULL) {
-        CGeocoderParams::New(context, locale, (IGeocoderParams**)&mParams);
-        AutoPtr<IServiceManager> serviceManager;
-        ASSERT_SUCCEEDED(CServiceManager::AcquireSingleton((IServiceManager**)&serviceManager));
-        ASSERT_SUCCEEDED(serviceManager->GetService(IContext::LOCATION_SERVICE, (IInterface**)&mService));
-        return NOERROR;
-    }
-    else {
+    if (locale == NULL) {
+        Logger::E(TAG, "locale == null");
         return E_NULL_POINTER_EXCEPTION;
     }
+    CGeocoderParams::New(context, locale, (IGeocoderParams**)&mParams);
+    AutoPtr<IInterface> obj = ServiceManager::GetService(IContext::LOCATION_SERVICE);
+    mService = IILocationManager::Probe(obj);
+    return NOERROR;
 }
 
 ECode Geocoder::constructor(
@@ -56,9 +55,11 @@ ECode Geocoder::GetFromLocation(
     VALIDATE_NOT_NULL(addressContainer);
 
     if (latitude < -90.0 || latitude > 90.0) {
+        Logger::E(TAG, "latitude == %d" ,latitude);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (longitude < -180.0 || longitude > 180.0) {
+        Logger::E(TAG, "longitude == %d" ,longitude);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     String ex;
@@ -76,11 +77,17 @@ ECode Geocoder::GetFromLocationName(
     /* [out] */ IList** addressContainer)
 {
     if (locationName == NULL) {
+        Logger::E(TAG, "locationName == null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     String ex;
-    mService->GetFromLocationName(locationName,
+    ECode ec = mService->GetFromLocationName(locationName,
         0, 0, 0, 0, maxResults, mParams, addressContainer, &ex);
+    if (FAILED(ec)) {
+        Logger::E(TAG, "getFromLocationName: got RemoteException%08x", ec);
+        *addressContainer = NULL;
+        return E_REMOTE_EXCEPTION;
+    }
     if (!ex.IsNull()) {
         return E_IO_EXCEPTION;
     }
@@ -97,24 +104,34 @@ ECode Geocoder::GetFromLocationName(
     /* [out] */ IList** addressContainer)
 {
     if (locationName == NULL) {
+        Logger::E(TAG, "locationName == null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (lowerLeftLatitude < -90.0 || lowerLeftLatitude > 90.0) {
+        Logger::E(TAG, "lowerLeftLatitude == %d", lowerLeftLatitude);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (lowerLeftLongitude < -180.0 || lowerLeftLongitude > 180.0) {
+        Logger::E(TAG, "lowerLeftLongitude == %d", lowerLeftLongitude);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (upperRightLatitude < -90.0 || upperRightLatitude > 90.0) {
+        Logger::E(TAG, "upperRightLatitude == %d", upperRightLatitude);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (upperRightLongitude < -180.0 || upperRightLongitude > 180.0) {
+        Logger::E(TAG, "upperRightLongitude == %d", upperRightLongitude);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     String ex;
-    return mService->GetFromLocationName(locationName,
+    ECode ec = mService->GetFromLocationName(locationName,
         lowerLeftLatitude, lowerLeftLongitude, upperRightLatitude, upperRightLongitude,
         maxResults, mParams, addressContainer, &ex);
+    if (FAILED(ec)) {
+        Logger::E(TAG, "getFromLocationName: got RemoteException%08x", ec);
+        *addressContainer = NULL;
+        return E_REMOTE_EXCEPTION;
+    }
     if (!ex.IsNull()) {
         return E_IO_EXCEPTION;
     }

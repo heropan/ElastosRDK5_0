@@ -26,7 +26,7 @@ ECode GpsMeasurementsEvent::constructor(
     AutoPtr<IList> list;
     Arrays::AsList(measurements, (IList**)&list);
     AutoPtr<ICollection> measurementCollection = ICollection::Probe(list);
-    assert(0);//'Elastos::Utility::Collections' has not been declared
+    assert(0);//'Elastos::Utility::Collections::UnmodifiableCollection' has not been declared
     // Collections::UnmodifiableCollection(measurementCollection, (ICollection**)&mReadOnlyMeasurements);
     return NOERROR;
 }
@@ -50,17 +50,31 @@ ECode GpsMeasurementsEvent::GetMeasurements(
 }
 
 ECode GpsMeasurementsEvent::ReadFromParcel(
-    /* [in] */ IParcel* parcel)
+    /* [in] */ IParcel* in)
 {
     //TODO
-    return E_NOT_IMPLEMENTED;
+    // ClassLoader classLoader = getClass().getClassLoader();
+
+    // GpsClock clock = in.readParcelable(classLoader);
+
+    // int measurementsLength = in.readInt();
+    // GpsMeasurement[] measurementsArray = new GpsMeasurement[measurementsLength];
+    // in.readTypedArray(measurementsArray, GpsMeasurement.CREATOR);
+
+    // return new GpsMeasurementsEvent(clock, measurementsArray);
+    return NOERROR;
 }
 
 ECode GpsMeasurementsEvent::WriteToParcel(
     /* [in] */ IParcel* parcel)
 {
     //TODO
-    return E_NOT_IMPLEMENTED;
+    // parcel.writeParcelable(mClock, flags);
+
+    // GpsMeasurement[] measurementsArray = mReadOnlyMeasurements.toArray(new GpsMeasurement[0]);
+    // parcel.writeInt(measurementsArray.length);
+    // parcel.writeTypedArray(measurementsArray, flags);
+    return NOERROR;
 }
 
 ECode GpsMeasurementsEvent::ToString(

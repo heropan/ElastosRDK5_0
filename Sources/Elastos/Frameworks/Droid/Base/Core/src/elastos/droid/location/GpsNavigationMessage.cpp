@@ -165,13 +165,36 @@ ECode GpsNavigationMessage::SetData(
 ECode GpsNavigationMessage::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {
-    return E_NOT_IMPLEMENTED;
+    Byte type;
+    parcel->ReadByte(&type);
+    SetType(type);
+    Byte prn;
+    parcel->ReadByte(&prn);
+    SetPrn(prn);
+    Int16 messageId;
+    parcel->ReadInt16(&messageId);
+    SetMessageId(messageId);
+    Int16 subMessageId;
+    parcel->ReadInt16(&subMessageId);
+    SetSubmessageId(subMessageId);
+    Int32 dataLength;
+    parcel->ReadInt32(&dataLength);
+    AutoPtr<ArrayOf<Byte> > data = ArrayOf<Byte>::Alloc(dataLength);
+    parcel->ReadArrayOf((Handle32*)&data);
+    SetData(data.Get());
+    return NOERROR;
 }
 
 ECode GpsNavigationMessage::WriteToParcel(
     /* [in] */ IParcel* parcel)
 {
-    return E_NOT_IMPLEMENTED;
+    parcel->WriteByte(mType);
+    parcel->WriteByte(mPrn);
+    parcel->WriteInt32(mMessageId);
+    parcel->WriteInt32(mSubmessageId);
+    parcel->WriteInt32(mData->GetLength());
+    parcel->WriteArrayOf((Handle32)(ArrayOf<Byte>*)mData);
+    return NOERROR;
 }
 
 ECode GpsNavigationMessage::ToString(

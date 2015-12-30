@@ -1,9 +1,11 @@
 
 #include <Elastos.CoreLibrary.Utility.h>
+#include "elastos/droid/internal/utility/Preconditions.h"
 #include "elastos/droid/location/LocalListenerHelper.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Internal::Utility::Preconditions;
 using Elastos::Core::AutoLock;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::CArrayList;
@@ -21,7 +23,7 @@ LocalListenerHelper::LocalListenerHelper(
     /* [in] */ const String& name)
     : mTag(name)
 {
-    // Preconditions.checkNotNull(name);
+    Preconditions::CheckNotNull(name);
 }
 
 ECode LocalListenerHelper::Add(
@@ -29,8 +31,7 @@ ECode LocalListenerHelper::Add(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    // Preconditions.checkNotNull(listener);
-
+    FAIL_RETURN(Preconditions::CheckNotNull(listener));
     synchronized(this) {
         // we need to register with the service first, because we need to find out if the
         // service will actually support the request before we attempt anything
@@ -66,8 +67,7 @@ ECode LocalListenerHelper::Add(
 ECode LocalListenerHelper::Remove(
     /* [in] */ IInterface* listener)
 {
-    // Preconditions.checkNotNull(listener);
-
+    FAIL_RETURN(Preconditions::CheckNotNull(listener));
     synchronized(this) {
         Boolean removed = FALSE;
         mListeners->Remove(listener, &removed);

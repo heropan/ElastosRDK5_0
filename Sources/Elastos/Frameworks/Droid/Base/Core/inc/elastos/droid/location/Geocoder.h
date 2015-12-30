@@ -3,7 +3,9 @@
 #define __ELASTOS_DROID_LOCATION_GEOCODER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Location.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;

@@ -41,14 +41,16 @@ ECode GpsNavigationMessageEvent::GetNavigationMessage(
 ECode GpsNavigationMessageEvent::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {
-    //TODO
+    // ClassLoader classLoader = getClass().getClassLoader();
+    // GpsNavigationMessage navigationMessage = in.readParcelable(classLoader);
+    // return new GpsNavigationMessageEvent(navigationMessage);
     return E_NOT_IMPLEMENTED;
 }
 
 ECode GpsNavigationMessageEvent::WriteToParcel(
     /* [in] */ IParcel* parcel)
 {
-    //TODO
+    // parcel.writeParcelable(mNavigationMessage, flags);
     return E_NOT_IMPLEMENTED;
 }
 

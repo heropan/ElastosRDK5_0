@@ -1,5 +1,8 @@
 
 #include "elastos/droid/location/LocationProvider.h"
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -17,6 +20,7 @@ ECode LocationProvider::constructor(
 {
     Int32 length = name.GetLength();
     if (name.RegionMatches(0, ILocationProvider::BAD_CHARS_REGEX, 0, length)) {
+        Logger::E("LocationProvider", "provider name contains illegal character: %s", name.string());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mName = name;

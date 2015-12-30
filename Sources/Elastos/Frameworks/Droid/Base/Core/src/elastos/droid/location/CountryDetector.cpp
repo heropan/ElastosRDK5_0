@@ -2,15 +2,20 @@
 #include "elastos/droid/location/CountryDetector.h"
 #include "elastos/droid/os/CHandler.h"
 #include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Os::CHandler;
 using Elastos::Core::AutoLock;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Location {
 
+//============================================================
 //CountryDetector::CountryDetectorListenerTransport::CountryDetectorListenerTransportRunnnable
+//============================================================
+
 CountryDetector::CountryDetectorListenerTransport::CountryDetectorListenerTransportRunnnable::CountryDetectorListenerTransportRunnnable(
     /* [in] */ ICountry* country,
     /* [in] */ CountryDetectorListenerTransport* host)
@@ -24,7 +29,10 @@ ECode CountryDetector::CountryDetectorListenerTransport::CountryDetectorListener
     return NOERROR;
 }
 
+//===================================
 //CountryDetector::CountryDetectorListenerTransport
+//===================================
+
 CAR_INTERFACE_IMPL_2(CountryDetector::CountryDetectorListenerTransport, Object, ICountryDetectorListenerTransport, IICountryListener)
 
 CountryDetector::CountryDetectorListenerTransport::CountryDetectorListenerTransport(
@@ -48,7 +56,10 @@ ECode CountryDetector::CountryDetectorListenerTransport::OnCountryDetected(
     return NOERROR;
 }
 
+//=============
 //CountryDetector
+//=============
+
 const String CountryDetector::TAG("CountryDetector");
 
 CAR_INTERFACE_IMPL(CountryDetector, Object, ICountryDetector)
@@ -59,7 +70,8 @@ CountryDetector::CountryDetector()
 ECode CountryDetector::constructor(
     /* [in] */ IICountryDetector* service)
 {
-    return Init(service);
+    mService = service;
+    return NOERROR;
 }
 
 ECode CountryDetector::DetectCountry(
@@ -74,16 +86,18 @@ ECode CountryDetector::AddCountryListener(
     /* [in] */ ICountryListener* listener,
     /* [in] */ ILooper* looper)
 {
-    AutoLock lock(mListenersLock);
-
-    HashMap<AutoPtr<ICountryListener>, AutoPtr<ICountryDetectorListenerTransport> >::Iterator iter
-            = mListeners.Find(listener);
-    if (iter == mListeners.End()) {
-        AutoPtr<CountryDetectorListenerTransport> transport = new CountryDetectorListenerTransport(listener, looper);
-        mService->AddCountryListener(IICountryListener::Probe(transport));
-        mListeners[listener] = ICountryDetectorListenerTransport::Probe(transport);
-    } else {
-        return E_REMOTE_EXCEPTION;
+    synchronized(this) {
+        Boolean isContained;
+        mListeners->ContainsKey(listener, &isContained);
+        if (!isContained) {
+            AutoPtr<CountryDetectorListenerTransport> transport = new CountryDetectorListenerTransport(listener, looper);
+            ECode ec = mService->AddCountryListener((IICountryListener*)transport.Get());
+            if (FAILED(ec)) {
+                Logger::E(TAG, "addCountryListener: RemoteException%08x", ec);
+                return E_REMOTE_EXCEPTION;
+            }
+            mListeners->Put(listener, (IICountryListener*)transport.Get());
+        }
     }
     return NOERROR;
 }
@@ -92,26 +106,19 @@ ECode CountryDetector::AddCountryListener(
 ECode CountryDetector::RemoveCountryListener(
     /* [in] */ ICountryListener* listener)
 {
-    AutoLock lock(mListenersLock);
-
-    HashMap<AutoPtr<ICountryListener>, AutoPtr<ICountryDetectorListenerTransport> >::Iterator iter
-            = mListeners.Find(listener);
-    AutoPtr<ICountryDetectorListenerTransport> transport;
-    if (iter != mListeners.End()) {
-        transport = iter->mSecond;
-        mListeners.Erase(listener);
-        mService->RemoveCountryListener(IICountryListener::Probe(transport));
+    synchronized(this) {
+        AutoPtr<IInterface> obj;
+        mListeners->Get(listener, (IInterface**)&obj);
+        AutoPtr<IICountryListener> transport = IICountryListener::Probe(obj);
+        if (transport != NULL) {
+            mListeners->Remove(listener);
+            ECode ec = mService->RemoveCountryListener(transport);
+            if (FAILED(ec)) {
+                Logger::E(TAG, "removeCountryListener: RemoteException%08x", ec);
+                return E_REMOTE_EXCEPTION;
+            }
+        }
     }
-    else {
-        return E_REMOTE_EXCEPTION;
-    }
-    return NOERROR;
-}
-
-ECode CountryDetector::Init(
-    /* [in] */ IICountryDetector* service)
-{
-    mService = service;
     return NOERROR;
 }
 

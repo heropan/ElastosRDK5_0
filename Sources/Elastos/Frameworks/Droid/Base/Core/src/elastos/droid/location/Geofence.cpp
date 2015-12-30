@@ -2,12 +2,16 @@
 #include "elastos/droid/location/Geofence.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::StringBuilder;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Location {
+
+const String Geofence::TAG("Geofence");
 
 CAR_INTERFACE_IMPL_2(Geofence, Object, IGeofence, IParcelable)
 
@@ -203,6 +207,7 @@ ECode Geofence::CheckRadius(
     /* [in] */ Float radius)
 {
     if (radius <= 0) {
+        Logger::E(TAG, "invalid radius: %f", radius);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NOERROR;
@@ -213,10 +218,12 @@ ECode Geofence::CheckLatLong(
     /* [in] */ Double longitude)
 {
     if (latitude > 90.0 || latitude < -90.0) {
+        Logger::E(TAG, "invalid latitude: %d", latitude);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     if (longitude > 180.0 || longitude < -180.0) {
+        Logger::E(TAG, "invalid longitude: %d", longitude);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NOERROR;
@@ -226,6 +233,7 @@ ECode Geofence::CheckType(
     /* [in] */ Int32 type)
 {
     if (type != TYPE_HORIZONTAL_CIRCLE) {
+        Logger::E(TAG, "invalid type: %d", type);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NOERROR;

@@ -4,6 +4,7 @@
 namespace Elastos {
 namespace Droid {
 namespace Location {
+
 CAR_INTERFACE_IMPL(GpsSatellite, Object, IGpsSatellite)
 
 GpsSatellite::GpsSatellite()

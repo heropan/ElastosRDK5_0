@@ -4,9 +4,10 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Location.h"
-// #include "elastos/droid/app/Service.h"
+#include "elastos/droid/app/Service.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Droid::App::Service;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Core::Object;
@@ -16,10 +17,7 @@ namespace Droid {
 namespace Location {
 
 class SettingInjectorService
-#if 0 // Elastos::Droid::App::Service is not getting into compiled this moment
-     : public Service
-#endif
-    : public Object
+    : public Elastos::Droid::App::Service
     , public ISettingInjectorService
 {
 public:

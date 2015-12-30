@@ -92,6 +92,7 @@ private:
         /* [out] */ String* result);
 
 private:
+    const static String TAG;
     Int32 mType;
     Double mLatitude;
     Double mLongitude;

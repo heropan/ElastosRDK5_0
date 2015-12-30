@@ -329,9 +329,7 @@ public:
 
 private:
     AutoPtr<ILocale> mLocale;
-
     String mFeatureName;
-    // AutoPtr< HashMap<Int32, String> > mAddressLines;
     AutoPtr<IHashMap> mAddressLines;
     Int32 mMaxAddressLineIndex;
     String mAdminArea;

@@ -3,19 +3,19 @@
 #define __ELASTOS_DROID_LOCATION_COUNTRYDETECTOR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "Elastos.Droid.Location.h"
-#define HASH_FOR_LOCATION
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/ext/frameworkhash.h"
 #include "elastos/droid/os/Runnable.h"
 #include <elastos/core/Object.h>
-#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Location::ICountryListener;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Core::Object;
-using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::IHashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -133,21 +133,10 @@ public:
     CARAPI RemoveCountryListener(
         /* [in] */ ICountryListener* listener);
 
-protected:
-    /**
-     * @hide - hide this constructor because it has a parameter of type
-     *       ICountryDetector, which is a system private class. The right way to
-     *       create an instance of this class is using the factory
-     *       Context.getSystemService.
-     */
-    CARAPI Init(
-        /* [in] */ IICountryDetector* service);
-
 private:
     static const String TAG;
     AutoPtr<IICountryDetector> mService;
-    HashMap<AutoPtr<ICountryListener>, AutoPtr<ICountryDetectorListenerTransport> > mListeners;
-    Object mListenersLock;
+    AutoPtr<IHashMap> mListeners;
 };
 
 }//namespace Location

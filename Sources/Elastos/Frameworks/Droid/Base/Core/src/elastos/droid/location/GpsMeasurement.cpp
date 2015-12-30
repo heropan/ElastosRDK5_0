@@ -332,8 +332,7 @@ ECode GpsMeasurement::SetPseudorangeInMeters(
 ECode GpsMeasurement::ResetPseudorangeInMeters()
 {
     ResetFlag(HAS_PSEUDORANGE);
-    assert(0);
-    // mPseudorangeInMeters = Elastos::Core::Math::DOUBLE_NAN;
+    mPseudorangeInMeters = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -364,8 +363,7 @@ ECode GpsMeasurement::SetPseudorangeUncertaintyInMeters(
 ECode GpsMeasurement::ResetPseudorangeUncertaintyInMeters()
 {
     ResetFlag(HAS_PSEUDORANGE_UNCERTAINTY);
-    assert(0);
-    // mPseudorangeUncertaintyInMeters = Elastos::Core::Math::DOUBLE_NAN;
+    mPseudorangeUncertaintyInMeters = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -396,8 +394,7 @@ ECode GpsMeasurement::SetCodePhaseInChips(
 ECode GpsMeasurement::ResetCodePhaseInChips()
 {
     ResetFlag(HAS_CODE_PHASE);
-    assert(0);
-    // mCodePhaseInChips = Elastos::Core::Math::DOUBLE_NAN;
+    mCodePhaseInChips = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -428,8 +425,7 @@ ECode GpsMeasurement::SetCodePhaseUncertaintyInChips(
 ECode GpsMeasurement::ResetCodePhaseUncertaintyInChips()
 {
     ResetFlag(HAS_CODE_PHASE_UNCERTAINTY);
-    assert(0);
-    // mCodePhaseUncertaintyInChips = Elastos::Core::Math::DOUBLE_NAN;
+    mCodePhaseUncertaintyInChips = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -461,8 +457,7 @@ ECode GpsMeasurement::SetCarrierFrequencyInHz(
 ECode GpsMeasurement::ResetCarrierFrequencyInHz()
 {
     ResetFlag(HAS_CARRIER_FREQUENCY);
-    assert(0);
-    // mCarrierFrequencyInHz = Elastos::Core::Math::FLOAT_NAN;
+    mCarrierFrequencyInHz = Elastos::Core::Math::FLOAT_NAN;
     return NOERROR;
 }
 
@@ -524,8 +519,7 @@ ECode GpsMeasurement::SetCarrierPhase(
 ECode GpsMeasurement::ResetCarrierPhase()
 {
     ResetFlag(HAS_CARRIER_PHASE);
-    // mCarrierPhase = Elastos::Core::Math::DOUBLE_NAN;
-    assert(0);
+    mCarrierPhase = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -556,8 +550,7 @@ ECode GpsMeasurement::SetCarrierPhaseUncertainty(
 ECode GpsMeasurement::ResetCarrierPhaseUncertainty()
 {
     ResetFlag(HAS_CARRIER_PHASE_UNCERTAINTY);
-    // mCarrierPhaseUncertainty = Elastos::Core::Math::DOUBLE_NAN;
-    assert(0);
+    mCarrierPhaseUncertainty = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -691,8 +684,7 @@ ECode GpsMeasurement::SetDopplerShiftInHz(
 ECode GpsMeasurement::ResetDopplerShiftInHz()
 {
     ResetFlag(HAS_DOPPLER_SHIFT);
-    // mDopplerShiftInHz = Elastos::Core::Math::DOUBLE_NAN;
-    assert(0);
+    mDopplerShiftInHz = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -723,8 +715,7 @@ ECode GpsMeasurement::SetDopplerShiftUncertaintyInHz(
 ECode GpsMeasurement::ResetDopplerShiftUncertaintyInHz()
 {
     ResetFlag((Int16)HAS_DOPPLER_SHIFT_UNCERTAINTY);
-    // mDopplerShiftUncertaintyInHz = Elastos::Core::Math::DOUBLE_NAN;
-    assert(0);
+    mDopplerShiftUncertaintyInHz = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -795,8 +786,7 @@ ECode GpsMeasurement::SetSnrInDb(
 ECode GpsMeasurement::ResetSnrInDb()
 {
     ResetFlag(HAS_SNR);
-    // mSnrInDb = Elastos::Core::Math::DOUBLE_NAN;
-    assert(0);
+    mSnrInDb = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -827,8 +817,7 @@ ECode GpsMeasurement::SetElevationInDeg(
 ECode GpsMeasurement::ResetElevationInDeg()
 {
     ResetFlag(HAS_ELEVATION);
-    // mElevationInDeg = Elastos::Core::Math::DOUBLE_NAN;
-    assert(0);
+    mElevationInDeg = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -859,8 +848,7 @@ ECode GpsMeasurement::SetElevationUncertaintyInDeg(
 ECode GpsMeasurement::ResetElevationUncertaintyInDeg()
 {
     ResetFlag(HAS_ELEVATION_UNCERTAINTY);
-    // mElevationUncertaintyInDeg = Elastos::Core::Math::DOUBLE_NAN;
-    assert(0);
+    mElevationUncertaintyInDeg = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -891,8 +879,7 @@ ECode GpsMeasurement::SetAzimuthInDeg(
 ECode GpsMeasurement::ResetAzimuthInDeg()
 {
     ResetFlag(HAS_AZIMUTH);
-    // mAzimuthInDeg = Elastos::Core::Math::DOUBLE_NAN;
-    assert(0);
+    mAzimuthInDeg = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -923,8 +910,7 @@ ECode GpsMeasurement::SetAzimuthUncertaintyInDeg(
 ECode GpsMeasurement::ResetAzimuthUncertaintyInDeg()
 {
     ResetFlag(HAS_AZIMUTH_UNCERTAINTY);
-    // mAzimuthUncertaintyInDeg = Elastos::Core::Math::DOUBLE_NAN;
-    assert(0);
+    mAzimuthUncertaintyInDeg = Elastos::Core::Math::DOUBLE_NAN;
     return NOERROR;
 }
 
@@ -946,87 +932,79 @@ ECode GpsMeasurement::SetUsedInFix(
 ECode GpsMeasurement::ReadFromParcel(
     /* [in] */ IParcel* parcel)
 {
-    return E_NOT_IMPLEMENTED;
-
-    #if 0 // TODO: Translate codes below
-        GpsMeasurement gpsMeasurement = new GpsMeasurement();
-
-        gpsMeasurement.mFlags = parcel.readInt();
-        gpsMeasurement.mPrn = parcel.readByte();
-        gpsMeasurement.mTimeOffsetInNs = parcel.readDouble();
-        gpsMeasurement.mState = (short) parcel.readInt();
-        gpsMeasurement.mReceivedGpsTowInNs = parcel.readLong();
-        gpsMeasurement.mReceivedGpsTowUncertaintyInNs = parcel.readLong();
-        gpsMeasurement.mCn0InDbHz = parcel.readDouble();
-        gpsMeasurement.mPseudorangeRateInMetersPerSec = parcel.readDouble();
-        gpsMeasurement.mPseudorangeRateUncertaintyInMetersPerSec = parcel.readDouble();
-        gpsMeasurement.mAccumulatedDeltaRangeState = (short) parcel.readInt();
-        gpsMeasurement.mAccumulatedDeltaRangeInMeters = parcel.readDouble();
-        gpsMeasurement.mAccumulatedDeltaRangeUncertaintyInMeters = parcel.readDouble();
-        gpsMeasurement.mPseudorangeInMeters = parcel.readDouble();
-        gpsMeasurement.mPseudorangeUncertaintyInMeters = parcel.readDouble();
-        gpsMeasurement.mCodePhaseInChips = parcel.readDouble();
-        gpsMeasurement.mCodePhaseUncertaintyInChips = parcel.readDouble();
-        gpsMeasurement.mCarrierFrequencyInHz = parcel.readFloat();
-        gpsMeasurement.mCarrierCycles = parcel.readLong();
-        gpsMeasurement.mCarrierPhase = parcel.readDouble();
-        gpsMeasurement.mCarrierPhaseUncertainty = parcel.readDouble();
-        gpsMeasurement.mLossOfLock = parcel.readByte();
-        gpsMeasurement.mBitNumber = parcel.readInt();
-        gpsMeasurement.mTimeFromLastBitInMs = (short) parcel.readInt();
-        gpsMeasurement.mDopplerShiftInHz = parcel.readDouble();
-        gpsMeasurement.mDopplerShiftUncertaintyInHz = parcel.readDouble();
-        gpsMeasurement.mMultipathIndicator = parcel.readByte();
-        gpsMeasurement.mSnrInDb = parcel.readDouble();
-        gpsMeasurement.mElevationInDeg = parcel.readDouble();
-        gpsMeasurement.mElevationUncertaintyInDeg = parcel.readDouble();
-        gpsMeasurement.mAzimuthInDeg = parcel.readDouble();
-        gpsMeasurement.mAzimuthUncertaintyInDeg = parcel.readDouble();
-        gpsMeasurement.mUsedInFix = parcel.readInt() != 0;
-
-        return gpsMeasurement;
-    #endif
+    parcel->ReadInt32(&mFlags);
+    parcel->ReadByte(&mPrn);
+    parcel->ReadDouble(&mTimeOffsetInNs);
+    parcel->ReadInt16(&mState);
+    parcel->ReadInt64(&mReceivedGpsTowInNs);
+    parcel->ReadInt64(&mReceivedGpsTowUncertaintyInNs);
+    parcel->ReadDouble(&mCn0InDbHz);
+    parcel->ReadDouble(&mPseudorangeRateInMetersPerSec);
+    parcel->ReadDouble(&mPseudorangeRateUncertaintyInMetersPerSec);
+    parcel->ReadInt16(&mAccumulatedDeltaRangeState);
+    parcel->ReadDouble(&mAccumulatedDeltaRangeInMeters);
+    parcel->ReadDouble(&mAccumulatedDeltaRangeUncertaintyInMeters);
+    parcel->ReadDouble(&mPseudorangeInMeters);
+    parcel->ReadDouble(&mPseudorangeUncertaintyInMeters);
+    parcel->ReadDouble(&mCodePhaseInChips);
+    parcel->ReadDouble(&mCodePhaseUncertaintyInChips);
+    parcel->ReadFloat(&mCarrierFrequencyInHz);
+    parcel->ReadInt64(&mCarrierCycles);
+    parcel->ReadDouble(&mCarrierPhase);
+    parcel->ReadDouble(&mCarrierPhaseUncertainty);
+    parcel->ReadByte(&mLossOfLock);
+    parcel->ReadInt32(&mBitNumber);
+    parcel->ReadInt16(&mTimeFromLastBitInMs);
+    parcel->ReadDouble(&mDopplerShiftInHz);
+    parcel->ReadDouble(&mDopplerShiftUncertaintyInHz);
+    parcel->ReadByte(&mMultipathIndicator);
+    parcel->ReadDouble(&mSnrInDb);
+    parcel->ReadDouble(&mElevationInDeg);
+    parcel->ReadDouble(&mElevationUncertaintyInDeg);
+    parcel->ReadDouble(&mAzimuthInDeg);
+    parcel->ReadDouble(&mAzimuthUncertaintyInDeg);
+    Int32 value;
+    parcel->ReadInt32(&value);
+    mUsedInFix = value != 0;
+    return NOERROR;
 }
 
 ECode GpsMeasurement::WriteToParcel(
     /* [in] */ IParcel* parcel)
 {
-    return E_NOT_IMPLEMENTED;
-
-    #if 0 // TODO: Translate codes below
-        parcel.writeInt(mFlags);
-        parcel.writeByte(mPrn);
-        parcel.writeDouble(mTimeOffsetInNs);
-        parcel.writeInt(mState);
-        parcel.writeLong(mReceivedGpsTowInNs);
-        parcel.writeLong(mReceivedGpsTowUncertaintyInNs);
-        parcel.writeDouble(mCn0InDbHz);
-        parcel.writeDouble(mPseudorangeRateInMetersPerSec);
-        parcel.writeDouble(mPseudorangeRateUncertaintyInMetersPerSec);
-        parcel.writeInt(mAccumulatedDeltaRangeState);
-        parcel.writeDouble(mAccumulatedDeltaRangeInMeters);
-        parcel.writeDouble(mAccumulatedDeltaRangeUncertaintyInMeters);
-        parcel.writeDouble(mPseudorangeInMeters);
-        parcel.writeDouble(mPseudorangeUncertaintyInMeters);
-        parcel.writeDouble(mCodePhaseInChips);
-        parcel.writeDouble(mCodePhaseUncertaintyInChips);
-        parcel.writeFloat(mCarrierFrequencyInHz);
-        parcel.writeLong(mCarrierCycles);
-        parcel.writeDouble(mCarrierPhase);
-        parcel.writeDouble(mCarrierPhaseUncertainty);
-        parcel.writeByte(mLossOfLock);
-        parcel.writeInt(mBitNumber);
-        parcel.writeInt(mTimeFromLastBitInMs);
-        parcel.writeDouble(mDopplerShiftInHz);
-        parcel.writeDouble(mDopplerShiftUncertaintyInHz);
-        parcel.writeByte(mMultipathIndicator);
-        parcel.writeDouble(mSnrInDb);
-        parcel.writeDouble(mElevationInDeg);
-        parcel.writeDouble(mElevationUncertaintyInDeg);
-        parcel.writeDouble(mAzimuthInDeg);
-        parcel.writeDouble(mAzimuthUncertaintyInDeg);
-        parcel.writeInt(mUsedInFix ? 1 : 0);
-    #endif
+    parcel->WriteInt32(mFlags);
+    parcel->WriteByte(mPrn);
+    parcel->WriteDouble(mTimeOffsetInNs);
+    parcel->WriteInt32(mState);
+    parcel->WriteInt64(mReceivedGpsTowInNs);
+    parcel->WriteInt64(mReceivedGpsTowUncertaintyInNs);
+    parcel->WriteDouble(mCn0InDbHz);
+    parcel->WriteDouble(mPseudorangeRateInMetersPerSec);
+    parcel->WriteDouble(mPseudorangeRateUncertaintyInMetersPerSec);
+    parcel->WriteInt32(mAccumulatedDeltaRangeState);
+    parcel->WriteDouble(mAccumulatedDeltaRangeInMeters);
+    parcel->WriteDouble(mAccumulatedDeltaRangeUncertaintyInMeters);
+    parcel->WriteDouble(mPseudorangeInMeters);
+    parcel->WriteDouble(mPseudorangeUncertaintyInMeters);
+    parcel->WriteDouble(mCodePhaseInChips);
+    parcel->WriteDouble(mCodePhaseUncertaintyInChips);
+    parcel->WriteFloat(mCarrierFrequencyInHz);
+    parcel->WriteInt64(mCarrierCycles);
+    parcel->WriteDouble(mCarrierPhase);
+    parcel->WriteDouble(mCarrierPhaseUncertainty);
+    parcel->WriteByte(mLossOfLock);
+    parcel->WriteInt32(mBitNumber);
+    parcel->WriteInt32(mTimeFromLastBitInMs);
+    parcel->WriteDouble(mDopplerShiftInHz);
+    parcel->WriteDouble(mDopplerShiftUncertaintyInHz);
+    parcel->WriteByte(mMultipathIndicator);
+    parcel->WriteDouble(mSnrInDb);
+    parcel->WriteDouble(mElevationInDeg);
+    parcel->WriteDouble(mElevationUncertaintyInDeg);
+    parcel->WriteDouble(mAzimuthInDeg);
+    parcel->WriteDouble(mAzimuthUncertaintyInDeg);
+    parcel->WriteInt32(mUsedInFix ? 1 : 0);
+    return NOERROR;
 }
 
 ECode GpsMeasurement::ToString(

@@ -9,7 +9,9 @@ namespace Elastos {
 namespace Droid {
 namespace Location {
 
-//-------------GpsMeasurementListenerTransport::ListenerTransport::Operation-----------------------------//
+//==============================================
+//GpsMeasurementListenerTransport::ListenerTransport::Operation
+//==============================================
 
 CAR_INTERFACE_IMPL(GpsMeasurementListenerTransport::ListenerTransport::Operation, Object, ILocalListenerHelperListenerOperation)
 
@@ -30,7 +32,9 @@ ECode GpsMeasurementListenerTransport::ListenerTransport::Operation::Execute(
     return NOERROR;
 }
 
-//-------------GpsMeasurementListenerTransport::ListenerTransport---------------------------------------------//
+//==============================================
+//GpsMeasurementListenerTransport::ListenerTransport
+//==============================================
 
 CAR_INTERFACE_IMPL_2(GpsMeasurementListenerTransport::ListenerTransport, Object, IIGpsMeasurementsListener, IBinder)
 
@@ -60,7 +64,9 @@ ECode GpsMeasurementListenerTransport::ListenerTransport::ToString(
     return E_NOT_IMPLEMENTED;
 }
 
-//-------------GpsMeasurementListenerTransport-------------------------------------------------------------------------//
+//==============================================
+//GpsMeasurementListenerTransport
+//==============================================
 
 CAR_INTERFACE_IMPL(GpsMeasurementListenerTransport, LocalListenerHelper, IGpsMeasurementListenerTransport)
 
