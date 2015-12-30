@@ -4,12 +4,14 @@
 #include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/CContactsSettings.h"
 #include <elastos/coredef.h>
+#include <Elastos.CoreLibrary.IO.h>
 
 using Elastos::Droid::Content::CContentValues;
 using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Net::Uri;
 using Elastos::Core::CString;
+using Elastos::IO::ICloseable;
 
 namespace Elastos {
 namespace Droid {
@@ -85,8 +87,7 @@ ECode CContactsSettings::GetSetting(
     }
     //} finally {
 EXIT:
-    assert(0 && "TODO");
-    // return cursor->Close();
+    return ICloseable::Probe(cursor)->Close();
     //}
 }
 

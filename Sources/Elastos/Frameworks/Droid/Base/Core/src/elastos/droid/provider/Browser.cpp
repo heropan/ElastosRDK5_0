@@ -12,6 +12,7 @@
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/CoreUtils.h>
 #include <elastos/core/StringUtils.h>
+#include <Elastos.CoreLibrary.IO.h>
 
 using Elastos::Droid::Content::CContentUris;
 using Elastos::Droid::Content::CIntent;
@@ -23,6 +24,7 @@ using Elastos::Droid::Content::Intent;
 using Elastos::Droid::Database::DatabaseUtils;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Net::Uri;
+using Elastos::IO::ICloseable;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::CoreUtils;
 using Elastos::Core::CSystem;
@@ -280,8 +282,7 @@ ECode Browser::UpdateVisitedHistory(
     // } catch (IllegalStateException e) {
     // Slogger::E(LOGTAG, "updateVisitedHistory");
     // } finally {
-    assert(0 && "TODO");
-    // if (c != NULL)  return c->Close();
+    if (c != NULL)  return ICloseable::Probe(c)->Close();
     // }
 }
 
@@ -318,8 +319,7 @@ ECode Browser::GetVisitedHistory(
     *urls = str;
     REFCOUNT_ADD(*urls);
     // } finally {
-    assert(0 && "TODO");
-    // if (c != NULL) c->Close();
+    if (c != NULL) ICloseable::Probe(c)->Close();
     return NOERROR;
     // }
 EXIT:
@@ -369,8 +369,7 @@ ECode Browser::TruncateHistory(
         }
     }
     // } finally {
-    assert(0 && "TODO");
-    // if (cursor != NULL) cursor->Close();
+    if (cursor != NULL) ICloseable::Probe(cursor)->Close();
     // }
     return NOERROR;
 EXIT:
@@ -397,8 +396,7 @@ ECode Browser::CanClearHistory(
     Int32 count;
     ret = (cursor->GetCount(&count), count) > 0;
     *res = ret;
-    assert(0 && "TODO");
-    // if (cursor != NULL) cursor->Close();
+    if (cursor != NULL) ICloseable::Probe(cursor)->Close();
     return NOERROR;
     // } finally {
         // if (cursor != null) cursor.close();
@@ -409,8 +407,7 @@ EXIT:
     if (ec == (ECode)E_ILLEGAL_STATE_EXCEPTION) {
         Slogger::E(LOGTAG, "canClearHistory%d", ec);
     }
-    assert(0 && "TODO");
-    // if (cursor != NULL) cursor->Close();
+    if (cursor != NULL) ICloseable::Probe(cursor)->Close();
 
     return NOERROR;
 }
@@ -440,8 +437,7 @@ void Browser::DeleteHistoryWhere(
         ec = cr->Delete(BrowserContract::History::CONTENT_URI.Get(), whereClause, NULL, &rowsAffected);
         if (!SUCCEEDED(ec)) goto EXIT;
     }
-    assert(0 && "TODO");
-    // if (cursor != NULL) cursor->Close();
+    if (cursor != NULL) ICloseable::Probe(cursor)->Close();
     return;
     // } catch (IllegalStateException e) {
         // Log.e(LOGTAG, "deleteHistoryWhere", e);
@@ -454,8 +450,7 @@ EXIT:
         if(ec == (ECode)E_ILLEGAL_STATE_EXCEPTION) {
             Slogger::E(LOGTAG, "deleteHistoryWhere%d", ec);
         }
-        assert(0 && "TODO");
-        // if (cursor != NULL) cursor->Close();
+        if (cursor != NULL) ICloseable::Probe(cursor)->Close();
         return;
     }
 }

@@ -12,6 +12,7 @@
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
+#include <Elastos.CoreLibrary.IO.h>
 
 using Elastos::Droid::App::CPendingIntentHelper;
 using Elastos::Droid::App::IPendingIntent;
@@ -28,6 +29,7 @@ using Elastos::Droid::Text::Format::CTime;
 using Elastos::Droid::Text::Format::ITime;
 using Elastos::Droid::Text::Format::IDateUtils;
 using Elastos::Utility::Logging::Slogger;
+using Elastos::IO::ICloseable;
 using Elastos::Core::CInteger32;
 using Elastos::Core::CInteger64;
 using Elastos::Core::CString;
@@ -151,8 +153,7 @@ ECode CCalendarContractCalendarAlerts::FindNextAlarmTime(
     //} finally {
 EXIT:
     if (cursor != NULL) {
-        //TODO
-        // FAIL_RETURN(cursor->Close())
+        FAIL_RETURN(ICloseable::Probe(cursor)->Close())
     }
     //}
     *alarm = alarmTime;
@@ -213,9 +214,7 @@ ECode CCalendarContractCalendarAlerts::RescheduleMissedAlarms(
     //} finally {
 EXIT:
     {
-        // TODO
-        // return cursor->Close();
-        //}
+        return ICloseable::Probe(cursor)->Close();
     }
 }
 
@@ -284,8 +283,7 @@ ECode CCalendarContractCalendarAlerts::IsAlarmExists(
     }
     //} finally {
     if (cursor != NULL) {
-        // TODO
-        // FAIL_RETURN(cursor->Close())
+        FAIL_RETURN(ICloseable::Probe(cursor)->Close())
     }
     //}
     *isExit = found;

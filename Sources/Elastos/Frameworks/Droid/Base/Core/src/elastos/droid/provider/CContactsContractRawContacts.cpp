@@ -9,6 +9,7 @@
 #include "elastos/droid/provider/ContactsContract.h"
 #include "elastos/droid/provider/ContactsContractContacts.h"
 #include "elastos/droid/provider/ContactsContractData.h"
+#include <Elastos.CoreLibrary.IO.h>
 
 using Elastos::Droid::Content::CContentValues;
 using Elastos::Droid::Content::CEntity;
@@ -22,6 +23,7 @@ using Elastos::Droid::Net::Uri;
 using Elastos::Utility::EIID_IIterator;
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
+using Elastos::IO::ICloseable;
 
 namespace Elastos {
 namespace Droid {
@@ -59,7 +61,6 @@ ECode CContactsContractRawContacts::GetContactLookupUri(
     (*args)[1] = IContactsContractContactsColumns::LOOKUP_KEY;
     FAIL_RETURN(resolver->Query(dataUri, args, String(NULL), NULL, String(NULL), (ICursor**)&cursor))
 
-    //AutoPtr<IUri> lookupUri;
     //try {
     Boolean result;
     if (cursor != NULL && (cursor->MoveToFirst(&result), result)) {
@@ -68,15 +69,13 @@ ECode CContactsContractRawContacts::GetContactLookupUri(
         String lookupKey;
         FAIL_GOTO(cursor->GetString(1, &lookupKey), EXIT)
         FAIL_GOTO(ContactsContractContacts::GetLookupUri(contactId, lookupKey, uri), EXIT)
-        // TODO
-        // cursor->Close();
+        ICloseable::Probe(cursor)->Close();
         return NOERROR;
     }
     //} finally {
 EXIT:
     if (cursor != NULL) {
-        //TODO
-        // FAIL_RETURN(cursor->Close())
+        FAIL_RETURN(ICloseable::Probe(cursor)->Close())
     }
     //}
     *uri = NULL;
