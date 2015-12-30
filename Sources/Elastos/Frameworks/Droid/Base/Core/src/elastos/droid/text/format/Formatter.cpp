@@ -1,14 +1,16 @@
-
+#include "Elastos.Droid.Content.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/text/format/Formatter.h"
+#include "elastos/droid/net/NetworkUtils.h"
 #include <Elastos.CoreLibrary.Core.h>
 #include <Elastos.CoreLibrary.Net.h>
-#include "Elastos.Droid.Content.h"
-#include "elastos/droid/text/format/Formatter.h"
-#include "elastos/droid/R.h"
-// #include "elastos/droid/net/NetworkUtils.h"
+#include <elastos/core/CoreUtils.h>
 
-using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
-// using Elastos::Droid::Net::NetworkUtils;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IInteger32;
+using Elastos::Core::CoreUtils;
+using Elastos::Droid::Net::NetworkUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -44,26 +46,25 @@ String Formatter::FormatFileSize(
 
     Float result = number;
     Int32 suffix;
-    assert(0 && "TODO");
-    // suffix = R::string::byteShort;
+    suffix = R::string::byteShort;
     if (result > 900) {
-        // suffix = R::string::kilobyteShort;
+        suffix = R::string::kilobyteShort;
         result = result / 1024;
     }
     if (result > 900) {
-        // suffix = R::string::megabyteShort;
+        suffix = R::string::megabyteShort;
         result = result / 1024;
     }
     if (result > 900) {
-        // suffix = R::string::gigabyteShort;
+        suffix = R::string::gigabyteShort;
         result = result / 1024;
     }
     if (result > 900) {
-        // suffix = R::string::terabyteShort;
+        suffix = R::string::terabyteShort;
         result = result / 1024;
     }
     if (result > 900) {
-        // suffix = R::string::petabyteShort;
+        suffix = R::string::petabyteShort;
         result = result / 1024;
     }
     String value;
@@ -101,8 +102,7 @@ String Formatter::FormatFileSize(
     AutoPtr<IResources> res;
     context->GetResources((IResources**)&res);
     String ret;
-    assert(0 && "TODO");
-    // res->GetString(R::string::fileSizeSuffix, args, &ret);
+    res->GetString(R::string::fileSizeSuffix, args, &ret);
     return ret;
 }
 
@@ -111,7 +111,7 @@ String Formatter::FormatIpAddress(
 {
     String ret;
     AutoPtr<IInetAddress> ina;
-    // NetworkUtils::Int32ToInetAddress(ipv4Address, (IInetAddress**)&ina);
+    NetworkUtils::IntToInetAddress(ipv4Address, (IInetAddress**)&ina);
     ina->GetHostAddress(&ret);
     return ret;
 }
@@ -137,51 +137,70 @@ String Formatter::FormatShortElapsedTime(
     }
     Int32 seconds = (Int32)secondsLong;
 
+    String ret;
+    AutoPtr<IInteger32> daysPtr = CoreUtils::Convert(days);
+    AutoPtr<IInteger32> hoursPtr = CoreUtils::Convert(hours);
+    AutoPtr<IInteger32> minutesPtr = CoreUtils::Convert(minutes);
+    AutoPtr<IInteger32> secondsPtr = CoreUtils::Convert(seconds);
+
+    AutoPtr<ArrayOf<IInterface*> > daysFormat = ArrayOf<IInterface*>::Alloc(1);
+    (*daysFormat)[0] = daysPtr;
+
+    AutoPtr<ArrayOf<IInterface*> > hoursFormat = ArrayOf<IInterface*>::Alloc(1);
+    (*hoursFormat)[0] = hoursPtr;
+
+    AutoPtr<ArrayOf<IInterface*> > minutesFormat = ArrayOf<IInterface*>::Alloc(1);
+    (*minutesFormat)[0] = minutesPtr;
+
+    AutoPtr<ArrayOf<IInterface*> > secondsFormat = ArrayOf<IInterface*>::Alloc(1);
+    (*secondsFormat)[0] = secondsPtr;
+
+    AutoPtr<ArrayOf<IInterface*> > dayHourFormat = ArrayOf<IInterface*>::Alloc(2);
+    (*dayHourFormat)[0] = daysPtr;
+    (*dayHourFormat)[1] = hoursPtr;
+
+    AutoPtr<ArrayOf<IInterface*> > hourminuteFormat = ArrayOf<IInterface*>::Alloc(2);
+    (*hourminuteFormat)[0] = hoursPtr;
+    (*hourminuteFormat)[1] = minutesPtr;
+
+    AutoPtr<ArrayOf<IInterface*> > minutesecondFormat = ArrayOf<IInterface*>::Alloc(2);
+    (*minutesecondFormat)[0] = minutesPtr;
+    (*minutesecondFormat)[1] = secondsPtr;
+
     if (days >= 2) {
         days += (hours + 12) / 24;
-        assert(0 && "TODO");
-        // return context.getString(com.android.internal.R.string.durationDays, days);
-        return String("");
+        context->GetString(R::string::durationDays, daysFormat, &ret);
     } else if (days > 0) {
         if (hours == 1) {
-            // return context.getString(com.android.internal.R.string.durationDayHour, days, hours);
-            return String("");
+            context->GetString(R::string::durationDayHour, dayHourFormat, &ret);
+            return ret;
         }
-        // return context.getString(com.android.internal.R.string.durationDayHours, days, hours);
-        return String("");
+        context->GetString(R::string::durationDayHours, dayHourFormat, &ret);
     } else if (hours >= 2) {
         hours += (minutes + 30) / 60;
-        // return context.getString(com.android.internal.R.string.durationHours, hours);
-        return String("");
+        context->GetString(R::string::durationHours, hoursFormat, &ret);
     } else if (hours > 0) {
         if (minutes == 1) {
-            // return context.getString(com.android.internal.R.string.durationHourMinute, hours,
-            //             minutes);
-            return String("");
+            context->GetString(R::string::durationHourMinute, hourminuteFormat, &ret);
+            return ret;
         }
-        // return context.getString(com.android.internal.R.string.durationHourMinutes, hours,
-        //             minutes);
-        return String("");
+        context->GetString(R::string::durationHourMinutes, hourminuteFormat, &ret);
     } else if (minutes >= 2) {
         minutes += (seconds + 30) / 60;
-        // return context.getString(com.android.internal.R.string.durationMinutes, minutes);
-        return String("");
+        context->GetString(R::string::durationMinutes, minutesFormat, &ret);
     } else if (minutes > 0) {
         if (seconds == 1) {
-            // return context.getString(com.android.internal.R.string.durationMinuteSecond, minutes,
-            //             seconds);
-            return String("");
+            context->GetString(R::string::durationMinuteSecond, minutesecondFormat, &ret);
+            return ret;
         }
-        // return context.getString(com.android.internal.R.string.durationMinuteSeconds, minutes,
-        //             seconds);
-        return String("");
+        context->GetString(R::string::durationMinuteSeconds, minutesecondFormat, &ret);
     } else if (seconds == 1) {
-        // return context.getString(com.android.internal.R.string.durationSecond, seconds);
-        return String("");
+        context->GetString(R::string::durationSecond, secondsFormat, &ret);
+        return ret;
     } else {
-        // return context.getString(com.android.internal.R.string.durationSeconds, seconds);
-        return String("");
+        context->GetString(R::string::durationSeconds, secondsFormat, &ret);
     }
+    return ret;
 }
 
 } // namespace Format

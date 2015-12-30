@@ -1,15 +1,16 @@
 
 #include "Elastos.Droid.View.h"
 #include "Elastos.Droid.Widget.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/text/method/Touch.h"
 #include "elastos/droid/text/method/MetaKeyKeyListener.h"
-// #include "elastos/droid/view/CViewConfiguration.h"
+#include "elastos/droid/view/ViewConfiguration.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Droid::Text::Method::EIID_ITouchDragState;
-// using Elastos::Droid::View::CViewConfiguration;
+using Elastos::Droid::View::IViewConfiguration;
+using Elastos::Droid::View::ViewConfiguration;
 using Elastos::Droid::View::IKeyEvent;
-
 
 namespace Elastos {
 namespace Droid {
@@ -157,10 +158,11 @@ ECode Touch::OnTouchEvent(
             if (ds->GetLength() > 0) {
                 ((DragState*)(ITouchDragState::Probe((*ds)[0])))->mIsSelectionStarted = FALSE;
                 if ( ((DragState*)(ITouchDragState::Probe((*ds)[0])))->mFarEnough == FALSE ) {
-                    // AutoPtr<IContext> context;
+                    AutoPtr<IContext> context;
+                    IView::Probe(widget)->GetContext((IContext**)&context);
                     Int32 slop;
-                    assert(0 && "TODO");
-                    // CViewConfiguration::Get((widget->GetContext((IContext**)&context), context))->GetScaledTouchSlop(&slop);
+                    AutoPtr<IViewConfiguration> ivdfg = ViewConfiguration::Get(context);
+                    ivdfg->GetScaledTouchSlop(&slop);
 
                     Float eX,eY;
 

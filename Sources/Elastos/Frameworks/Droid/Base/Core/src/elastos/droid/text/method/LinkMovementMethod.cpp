@@ -4,13 +4,13 @@
 #include "elastos/droid/text/method/LinkMovementMethod.h"
 #include "elastos/droid/text/method/CLinkMovementMethod.h"
 #include "elastos/droid/text/Selection.h"
-// #include "elastos/droid/view/CKeyEvent.h"
+#include "elastos/droid/view/KeyEvent.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Droid::Text::Selection;
 using Elastos::Droid::Text::Style::EIID_IClickableSpan;
 using Elastos::Droid::Text::Style::IClickableSpan;
-// using Elastos::Droid::View::CKeyEvent;
+using Elastos::Droid::View::KeyEvent;
 using Elastos::Droid::View::IView;
 
 namespace Elastos {
@@ -59,14 +59,13 @@ Boolean LinkMovementMethod::HandleMovementKey(
     switch (keyCode) {
         case IKeyEvent::KEYCODE_DPAD_CENTER:
         case IKeyEvent::KEYCODE_ENTER:
-            assert(0 && "TODO"); // CKeyEvent
-/*            if (CKeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
+            if (KeyEvent::MetaStateHasNoModifiers(movementMetaState)) {
                 Int32 action, repeatCount;
                 if ((event->GetAction(&action), action) == IKeyEvent::ACTION_DOWN &&
                         (event->GetRepeatCount(&repeatCount), repeatCount) == 0 && Action(CLICK, widget, buffer)) {
                     return TRUE;
                 }
-            }*/
+            }
             break;
     }
     return ScrollingMovementMethod::HandleMovementKey(widget, buffer, keyCode, movementMetaState, event);

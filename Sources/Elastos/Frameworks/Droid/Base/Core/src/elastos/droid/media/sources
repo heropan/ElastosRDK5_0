@@ -57,8 +57,18 @@ SOURCES += CJetPlayer.cpp
 SOURCES += CJetPlayerHelper.cpp
 SOURCES += CMediaActionSound.cpp
 
-SOURCES += MediaRouterSimpleCallback.cpp
 SOURCES += CMediaRouterSimpleCallback.cpp
+SOURCES += CTextTrackCueSpan.cpp
+SOURCES += CWebVttRenderer.cpp
+SOURCES += MediaRouterSimpleCallback.cpp
+SOURCES += MediaTimeProvider.cpp
+SOURCES += SubtitleTrack.cpp
+SOURCES += SubtitleController.cpp
+SOURCES += SubtitleData.cpp
+SOURCES += Tokenizer.cpp
+SOURCES += WebVttParser.cpp
+SOURCES += WebVttParserHelper.cpp
+SOURCES += CWebVttParserHelper.cpp
 
 SOURCES += media.cpp
 
@@ -140,7 +150,6 @@ SOURCES += media.cpp
 #SOURCES += CMetadataHelper.cpp
 #SOURCES += CMiniThumbFile.cpp
 #SOURCES += CMiniThumbFileHelper.cpp
-SOURCES += MediaTimeProvider.cpp
 #SOURCES += CRemoteControlClient.cpp
 #SOURCES += CRemoteDisplay.cpp
 #SOURCES += CRemoteDisplayHelper.cpp
@@ -149,8 +158,6 @@ SOURCES += MediaTimeProvider.cpp
 #SOURCES += CRingtoneManager.cpp
 #SOURCES += CRingtoneManagerHelper.cpp
 #SOURCES += CSoundPool.cpp
-SOURCES += SubtitleTrack.cpp
-SOURCES += SubtitleController.cpp
 #SOURCES += CTimedText.cpp
 #SOURCES += CToneGenerator.cpp
 #SOURCES += CCodecCapabilities.cpp

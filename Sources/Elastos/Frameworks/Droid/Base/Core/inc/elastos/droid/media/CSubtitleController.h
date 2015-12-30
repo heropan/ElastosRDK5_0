@@ -2,8 +2,8 @@
 #define __ELASTOS_DROID_MEDIA_CSUBTITLECONTROLLER_H__
 
 #include "_Elastos_Droid_Media_CSubtitleController.h"
-#include "elastos/droid/media/SubtitleController.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/media/SubtitleController.h"
 
 namespace Elastos {
 namespace Droid {
@@ -20,4 +20,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif __ELASTOS_DROID_MEDIA_CSUBTITLECONTROLLER_H__
+#endif // __ELASTOS_DROID_MEDIA_CSUBTITLECONTROLLER_H__

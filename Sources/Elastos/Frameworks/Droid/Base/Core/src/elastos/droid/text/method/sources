@@ -48,6 +48,6 @@ SOURCES += CMultiTapKeyListenerHelper.cpp
 SOURCES += CHideReturnsTransformationMethodHelper.cpp
 SOURCES += HideReturnsTransformationMethod.cpp
 SOURCES += MultiTapKeyListener.cpp
-#SOURCES += CharacterPickerDialog.cpp
+SOURCES += CharacterPickerDialog.cpp
 SOURCES += method.cpp
 

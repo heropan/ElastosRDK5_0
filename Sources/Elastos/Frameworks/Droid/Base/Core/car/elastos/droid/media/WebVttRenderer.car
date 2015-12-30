@@ -19,6 +19,17 @@ module
 
     interface ITextTrackCueSpan
     {
+        GetTimeStampMs(
+            [out] Int64* timestampMs);
+
+        SetTimeStampMs(
+            [in] Int64 timestampMs);
+
+        GetText(
+            [out] String* result);
+
+        SetText(
+            [in] String result);
     }
 
     /**
@@ -135,6 +146,16 @@ module
      */
     interface IWebVttParser
     {
+        Parse(
+            [in] String s);
+
+        Eos();
+
+        YieldCue();
+    }
+
+    interface IWebVttParserHelper
+    {
         /* parsePercentageString */
         ParseFloatPercentage(
             [in] String s,
@@ -151,13 +172,6 @@ module
         TimeToString(
             [in] Int64 timeMs,
             [out] String* result);
-
-        Parse(
-            [in] String s);
-
-        Eos();
-
-        YieldCue();
     }
 
     interface IWebVttParserPhase

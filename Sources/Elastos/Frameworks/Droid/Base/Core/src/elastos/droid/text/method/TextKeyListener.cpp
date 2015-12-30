@@ -1,6 +1,7 @@
 
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Provider.h"
 #include "elastos/droid/text/method/TextKeyListener.h"
 #include "elastos/droid/text/method/CTextKeyListener.h"
 #include "elastos/droid/text/method/CQwertyKeyListener.h"
@@ -8,7 +9,7 @@
 #include "elastos/droid/text/SpannableStringInternal.h"
 #include "elastos/droid/text/Selection.h"
 #include "elastos/droid/text/TextUtils.h"
-// #include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/provider/Settings.h"
 #include <elastos/core/AutoLock.h>
 
 using Elastos::Droid::Content::EIID_IContentResolver;
@@ -16,7 +17,7 @@ using Elastos::Droid::Database::IContentObserver;
 using Elastos::Droid::Database::IIContentObserver;
 using Elastos::Droid::Database::EIID_IContentObserver;
 using Elastos::Droid::Net::IUri;
-// using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::Provider::Settings;
 using Elastos::Droid::Provider::ISettingsSystem;
 using Elastos::Droid::Text::Method::CQwertyKeyListener;
 using Elastos::Droid::View::IKeyCharacterMap;
@@ -344,8 +345,7 @@ ECode TextKeyListener::Clear(
     Int32 len;
     ICharSequence::Probe(e)->GetLength(&len);
     AutoPtr< ArrayOf<IInterface*> > repl = NULL;
-    assert(0 && "TODO");
-    // e->GetSpans(0, len, /*EIID_Replaced*/EIID_INoCopySpan, (ArrayOf<IInterface*>**)&repl);
+    ISpanned::Probe(e)->GetSpans(0, len, /*EIID_Replaced*/EIID_INoCopySpan, (ArrayOf<IInterface*>**)&repl);
     Int32 count = repl->GetLength();
     for (Int32 i = 0; i < count; i++) {
         ISpannable::Probe(e)->RemoveSpan((*repl)[i]);
@@ -452,8 +452,7 @@ void TextKeyListener::InitPrefs(
 
     if (mObserver == NULL) {
         mObserver = new SettingsObserver(this);
-        assert(0 && "TODO");
-        // contentResolver->RegisterContentObserver(Settings::System::CONTENT_URI, TRUE, (IContentObserver*)(mObserver->Probe(EIID_IContentObserver)));
+        contentResolver->RegisterContentObserver(Settings::System::CONTENT_URI.Get(), TRUE, IContentObserver::Probe(mObserver));
     }
 
     UpdatePrefs(contentResolver);
@@ -465,17 +464,16 @@ void TextKeyListener::UpdatePrefs(
 {
     Boolean cap;
     Int32 value;
-    assert(0 && "TODO");
-    // Settings::System::GetInt32(resolver, ISettingsSystem::TEXT_AUTO_CAPS, 1, &value);
+    Settings::System::GetInt32(resolver, ISettingsSystem::TEXT_AUTO_CAPS, 1, &value);
     cap = value > 0;
     Boolean text;
-    // Settings::System::GetInt32(resolver, ISettingsSystem::TEXT_AUTO_REPLACE, 1, &value);
+    Settings::System::GetInt32(resolver, ISettingsSystem::TEXT_AUTO_REPLACE, 1, &value);
     text = value > 0;
     Boolean period;
-    // Settings::System::GetInt32(resolver, ISettingsSystem::TEXT_AUTO_PUNCTUATE, 1, &value);
+    Settings::System::GetInt32(resolver, ISettingsSystem::TEXT_AUTO_PUNCTUATE, 1, &value);
     period = value > 0;
     Boolean pw;
-    // Settings::System::GetInt32(resolver, ISettingsSystem::TEXT_SHOW_PASSWORD, 1, &value);
+    Settings::System::GetInt32(resolver, ISettingsSystem::TEXT_SHOW_PASSWORD, 1, &value);
     pw = value > 0;
 
     mPrefs = (cap ? AUTO_CAP : 0) |

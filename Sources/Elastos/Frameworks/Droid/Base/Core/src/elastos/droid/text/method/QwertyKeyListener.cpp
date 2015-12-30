@@ -1,6 +1,7 @@
 
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.View.h"
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/text/method/QwertyKeyListener.h"
 #include "elastos/droid/text/method/TextKeyListener.h"
 #include "elastos/droid/text/method/CTextKeyListener.h"
@@ -9,10 +10,7 @@
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/text/Selection.h"
 #include "elastos/droid/text/CAutoText.h"
-// assert(0 && "TODO")
-// #include "elastos/droid/view/CKeyCharacterMap.h"
-// #include "elastos/droid/view/CKeyEvent.h"
-#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/view/KeyEvent.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/Character.h>
 #include <stdio.h>
@@ -22,8 +20,8 @@ using namespace Elastos::Core;
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Text::Selection;
 using Elastos::Droid::Text::INoCopySpan;
-// using Elastos::Droid::View::CKeyCharacterMap; //assert(0 && "TODO");
-// using Elastos::Droid::View::CKeyEvent;
+using Elastos::Droid::View::IKeyCharacterMap;
+using Elastos::Droid::View::KeyEvent;
 
 namespace Elastos {
 namespace Droid {
@@ -250,17 +248,16 @@ ECode QwertyKeyListener::OnKeyDown(
         }
     }
 
-    assert(0 && "TODO"); //CKeyCharacterMap
-    /*if (i == CKeyCharacterMap::PICKER_DIALOG_INPUT) {
+    if (i == IKeyCharacterMap::PICKER_DIALOG_INPUT) {
         if (view != NULL) {
             ShowCharacterPicker(view, content,
-                CKeyCharacterMap::PICKER_DIALOG_INPUT, TRUE, 1);
+                IKeyCharacterMap::PICKER_DIALOG_INPUT, TRUE, 1);
         }
-        ResetMetaState(content);
+        ResetMetaState(ISpannable::Probe(content));
         *ret = TRUE;
         return NOERROR;
-    }*/
-/*    if (i == CKeyCharacterMap::HEX_INPUT) {
+    }
+    if (i == IKeyCharacterMap::HEX_INPUT) {
         Int32 start;
 
         if (selStart == selEnd) {
@@ -268,7 +265,7 @@ ECode QwertyKeyListener::OnKeyDown(
 
             Char32 ch;
             while (start > 0 && selEnd - start < 4 &&
-                Character::ToDigit((content->GetCharAt(start - 1, &ch), ch), 16) >= 0) {
+                Character::ToDigit((ICharSequence::Probe(content)->GetCharAt(start - 1, &ch), ch), 16) >= 0) {
                 start--;
             }
         }
@@ -279,7 +276,7 @@ ECode QwertyKeyListener::OnKeyDown(
         Int32 ch = -1;
 
         String hex;
-        hex = TextUtils::Substring(content, start, selEnd);
+        hex = TextUtils::Substring(ICharSequence::Probe(content), start, selEnd);
         ch = StringUtils::ParseInt32(hex, 16);
 
         if (ch >= 0) {
@@ -290,15 +287,15 @@ ECode QwertyKeyListener::OnKeyDown(
         else {
             i = 0;
         }
-    }*/
+    }
     Boolean bHasNoModifiers, bHasModifiers;
     if (i != 0) {
         Boolean dead = FALSE;
 
-/*        if ((i & CKeyCharacterMap::COMBINING_ACCENT) != 0) {
+        if ((i & IKeyCharacterMap::COMBINING_ACCENT) != 0) {
             dead = TRUE;
-            i = i & CKeyCharacterMap::COMBINING_ACCENT_MASK;
-        }*/
+            i = i & IKeyCharacterMap::COMBINING_ACCENT_MASK;
+        }
 
         if (activeStart == selStart && activeEnd == selEnd) {
             Boolean replace = FALSE;
@@ -306,8 +303,7 @@ ECode QwertyKeyListener::OnKeyDown(
             if (selEnd - selStart - 1 == 0) {
                 Char32 accent;
                 ICharSequence::Probe(content)->GetCharAt(selStart, &accent);
-                assert(0 && "TODO");
-                Int32 composed /*= CKeyEvent::GetDeadChar(accent, i)*/;
+                Int32 composed = KeyEvent::GetDeadChar(accent, i);
 
                 if (composed != 0) {
                     i = composed;

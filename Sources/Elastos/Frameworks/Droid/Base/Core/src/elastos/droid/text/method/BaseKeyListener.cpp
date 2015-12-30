@@ -2,16 +2,15 @@
 #include "Elastos.Droid.View.h"
 #include "Elastos.Droid.Widget.h"
 #include <elastos/core/Math.h>
+#include "elastos/droid/view/KeyEvent.h"
 #include "elastos/droid/text/method/BaseKeyListener.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/text/CSelection.h"
-//assert(0 && "TODO"); not implemented
-// #include "elastos/droid/view/CKeyEventHelper.h"
 
 using Elastos::Droid::Text::CSelection;
 using Elastos::Droid::Text::Method::IMetaKeyKeyListener;
-// using Elastos::Droid::View::CKeyEventHelper;
 using Elastos::Droid::View::IKeyEventHelper;
+using Elastos::Droid::View::KeyEvent;
 using Elastos::Core::CString;
 
 namespace Elastos {
@@ -63,10 +62,8 @@ Boolean BaseKeyListener::BackspaceOrForwardDelete(
 {
     // Ensure the key event does not have modifiers except ALT or SHIFT.
     Int32 metaState;
-    AutoPtr<IKeyEventHelper> helper;
-    // CKeyEventHelper::AcquireSingleton((IKeyEventHelper**)&helper);
     Boolean res = FALSE;
-    helper->MetaStateHasNoModifiers((event->GetMetaState(&metaState), metaState) & ~(IKeyEvent::META_SHIFT_MASK | IKeyEvent::META_ALT_MASK), &res);
+    res = KeyEvent::MetaStateHasNoModifiers((event->GetMetaState(&metaState), metaState) & ~(IKeyEvent::META_SHIFT_MASK | IKeyEvent::META_ALT_MASK));
     if (!res) {
         return FALSE;
     }

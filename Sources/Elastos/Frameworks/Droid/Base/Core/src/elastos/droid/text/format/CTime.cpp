@@ -1002,7 +1002,6 @@ String CTime::TimeCalculator::Format(
     }
     AutoPtr<ITimeFormatter> formatter;
     CTimeFormatter::New((ITimeFormatter**)&formatter);
-    assert(0 && "TODO");
     String ret;
     formatter->Format(const_cast<const Elastos::String&>(format),
             mWallTime.Get(), mZoneInfo, &ret);
@@ -1092,8 +1091,7 @@ String CTime::TimeCalculator::Format2445(
     (*buf)[7] = ToChar(n % 10);
 
     if (!hasTime) {
-        assert(0 && "TODO");
-        // return new String(buf, 0, 8);
+        return String(*buf, 0, 8);
     }
 
     (*buf)[8] = 'T';
@@ -1114,11 +1112,9 @@ String CTime::TimeCalculator::Format2445(
     {
         // The letter 'Z' is appended to the end.
         (*buf)[15] = 'Z';
-        assert(0 && "TODO");
-        // return new String(buf, 0, 16);
+        return String(*buf, 0, 16);
     } else {
-        assert(0 && "TODO");
-        // return new String(buf, 0, 15);
+        return String(*buf, 0, 15);
     }
 }
 
