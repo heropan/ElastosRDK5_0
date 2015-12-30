@@ -130,11 +130,8 @@ module
     merge("widget/DayPickerView.car");
     merge("widget/TimePickerClockDelegate.car");
     merge("widget/TimePickerSpinnerDelegate.car");
-<<<<<<< HEAD
-    merge("internal/widget/IRemoteViewsFactory.car");
-=======
     merge("widget/ToolBar.car");
->>>>>>> impelement ToolBar and YearPickView
+    merge("internal/widget/IRemoteViewsFactory.car");
 
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Utility.IList;
