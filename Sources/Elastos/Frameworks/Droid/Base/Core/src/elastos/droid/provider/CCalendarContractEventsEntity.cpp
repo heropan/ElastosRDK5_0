@@ -10,6 +10,7 @@
 #include "elastos/droid/provider/ContactsContract.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
+#include <Elastos.CoreLibrary.IO.h>
 
 using Elastos::Droid::Content::CContentValues;
 using Elastos::Droid::Content::CEntity;
@@ -26,6 +27,7 @@ using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
+using Elastos::IO::ICloseable;
 
 namespace Elastos {
 namespace Droid {
@@ -216,8 +218,7 @@ ECode CCalendarContractEventsEntity::EntityIteratorImpl::GetEntityAndIncrementCu
         _entity->AddSubValue(remindUri, reminderValues);
     }
     //} finally {
-    //TODO
-    // subCursor->Close();
+    ICloseable::Probe(cursor)->Close();
     //}
 
     subCursor = NULL;
@@ -267,8 +268,7 @@ ECode CCalendarContractEventsEntity::EntityIteratorImpl::GetEntityAndIncrementCu
         _entity->AddSubValue(attendeesUri, attendeeValues);
     }
     //} finally {
-    // TODO
-    // subCursor->Close();
+    ICloseable::Probe(subCursor)->Close();
     //}
 
     subCursor = NULL;
@@ -297,8 +297,7 @@ ECode CCalendarContractEventsEntity::EntityIteratorImpl::GetEntityAndIncrementCu
         _entity->AddSubValue(propertiesUri, extendedValues);
     }
     //} finally {
-    // TODO
-    // subCursor->Close();
+    ICloseable::Probe(subCursor)->Close();
     //}
 
     cursor->MoveToNext(&result);

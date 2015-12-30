@@ -20,13 +20,9 @@ using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::IBitmapFactory;
 using Elastos::Droid::Graphics::IBitmapFactoryOptions;
 using Elastos::Droid::Net::Uri;
-// using Elastos::Droid::Provider::CContactsGroupMembership;
-// using Elastos::Droid::Provider::CContactsGroups;
-// using Elastos::Droid::Provider::IBaseColumns;
-// using Elastos::Droid::Provider::IContactsGroupMembership;
-// using Elastos::Droid::Provider::IContactsGroups;
 using Elastos::IO::CByteArrayInputStream;
 using Elastos::IO::IByteArrayInputStream;
+using Elastos::IO::ICloseable;
 using Elastos::IO::IInputStream;
 using Elastos::Core::CArrayOf;
 using Elastos::Core::CByte;
@@ -154,13 +150,11 @@ ECode CContactsPeople::TryGetMyContactsGroupId(
         ECode ec = groupsCursor->MoveToFirst(&result);
         if (SUCCEEDED(ec) && result) {
             groupsCursor->GetInt64(0, id);
-            // TODO
-            // groupsCursor->Close();
+            ICloseable::Probe(groupsCursor)->Close();
             return NOERROR;
         }
         //} finally {
-        //TODO
-        // groupsCursor->Close();
+        ICloseable::Probe(groupsCursor)->Close();
         //}
     }
     *id = 0;
@@ -205,8 +199,7 @@ ECode CContactsPeople::AddToGroup(
             groupsCursor->GetInt64(0, &groupId);
         }
         //} finally {
-        //TODO
-        // groupsCursor->Close();
+        ICloseable::Probe(groupsCursor)->Close();
         //}
     }
 
@@ -315,16 +308,14 @@ ECode CContactsPeople::OpenContactPhotoInputStream(
     cr->Query(photoUri, args, String(NULL), NULL, String(NULL), (ICursor**)&cursor);
     Boolean result;
     if (cursor == NULL || (cursor->MoveToNext(&result), !result)) {
-        //TODO
-        // if (cursor != NULL) cursor->Close();
+        if (cursor != NULL) ICloseable::Probe(cursor)->Close();
         *stream = NULL;
         return NOERROR;
     }
     AutoPtr<ArrayOf<Byte> > data;
     cursor->GetBlob(0, (ArrayOf<Byte>**)&data);
     if (data == NULL) {
-        //TODO
-        // if (cursor != NULL) cursor->Close();
+        if (cursor != NULL) ICloseable::Probe(cursor)->Close();
         *stream = NULL;
         return NOERROR;
     }
@@ -332,8 +323,7 @@ ECode CContactsPeople::OpenContactPhotoInputStream(
     CByteArrayInputStream::New(data, (IByteArrayInputStream**)&_stream);
     *stream = IInputStream::Probe(_stream);
     REFCOUNT_ADD(*stream);
-    //TODO
-    // if (cursor != NULL) cursor->Close();
+    if (cursor != NULL) ICloseable::Probe(cursor)->Close();
     return NOERROR;
 }
 

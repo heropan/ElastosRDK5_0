@@ -27,6 +27,7 @@ using Elastos::Droid::Media::IMiniThumbFile;
 using Elastos::Droid::Net::CUriHelper;
 using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Os::IParcelFileDescriptor;
+using Elastos::IO::ICloseable;
 using Elastos::Utility::Arrays;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::StringUtils;
@@ -124,8 +125,7 @@ ECode CMediaStoreInternalThumbnails::CancelThumbnailRequest(
         cr->Query(cancelUri, PROJECTION.Get(), String(NULL), NULL, String(NULL), (ICursor**)&c);
     //}
     //finally {
-        assert(0 && "TODO");
-        // if (c != NULL) c->Close();
+        if (c != NULL) ICloseable::Probe(c)->Close();
     //}
     return NOERROR;
 }
@@ -217,8 +217,7 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
         ub->Build((IUri**)&blockingUri);
 
         if (c != NULL) {
-            assert(0 && "TODO");
-            // c->Close();
+            ICloseable::Probe(c)->Close();
             c = NULL;
         }
         cr->Query(blockingUri, PROJECTION.Get(), String(NULL), NULL, String(NULL), (ICursor**)&c);
@@ -279,9 +278,7 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
 
             ub->AppendPath(StringUtils::ToString(origId));
 
-            String str;
-            assert(0 && "TODO");
-            // ub->ToString(&str);
+            String str = Object::ToString(ub);
 
             String result;
             StringUtils::ReplaceFirst(str, String("thumbnails"), String("media"), &result);
@@ -291,8 +288,7 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
 
             if (filePath == NULL) {
                 if (c != NULL) {
-                    assert(0 && "TODO");
-                    // c->Close();
+                    ICloseable::Probe(c)->Close();
                     c = NULL;
                 }
                 cr->Query(uri, PROJECTION.Get(), String(NULL), NULL, String(NULL), (ICursor**)&c);
@@ -317,8 +313,7 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
     //} catch (SQLiteException ex) {
         //Log.w(TAG, ex);
     //} finally {
-        assert(0 && "TODO");
-        // if (c != NULL) c->Close();
+        if (c != NULL) ICloseable::Probe(c)->Close();
         // To avoid file descriptor leak in application process.
         thumbFile->Deactivate();
     //}

@@ -255,7 +255,7 @@ ECode CMediaStoreImagesMedia::InsertImage(
     }*/
 
     if (url != NULL) {
-        assert(0 && "TODO");
+        stringUrl = Object::ToString(url);
         // url->ToString(&stringUrl);
     }
 

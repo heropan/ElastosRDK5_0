@@ -6,6 +6,7 @@
 #include "elastos/droid/net/Uri.h"
 #include "elastos/droid/provider/BrowserContract.h"
 #include "elastos/droid/provider/SyncStateContractHelpers.h"
+#include <Elastos.CoreLibrary.IO.h>
 
 using Elastos::Droid::Content::CContentUris;
 using Elastos::Droid::Content::CContentValues;
@@ -16,6 +17,7 @@ using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Net::IUriBuilder;
 using Elastos::Droid::Net::Uri;
+using Elastos::IO::ICloseable;
 
 namespace Elastos {
 namespace Droid {
@@ -245,11 +247,9 @@ ECode BrowserContract::Settings::IsSyncEnabled(
     cursor->GetInt32(0, &columnValue);
     *res = columnValue != 0;
     // } finally {
-    //     if (cursor != null) cursor.close();
     // }
     if (cursor != NULL) {
-        assert(0 && "TODO");
-        // cursor->Close();
+        ICloseable::Probe(cursor)->Close();
     }
     return NOERROR;
 }

@@ -8,7 +8,6 @@
 #include "elastos/droid/provider/ContactsContract.h"
 #include "elastos/droid/provider/ContactsContractContacts.h"
 #include "elastos/droid/provider/ContactsContractProfile.h"
-// #include <elastos/coredef.h>
 
 using Elastos::Droid::Content::CContentValues;
 using Elastos::Droid::Content::CContentUris;
@@ -21,6 +20,7 @@ using Elastos::Droid::Provider::IBaseColumns;
 using Elastos::IO::CByteArrayInputStream;
 using Elastos::IO::IByteArrayInputStream;
 using Elastos::IO::IFileInputStream;
+using Elastos::IO::ICloseable;
 using Elastos::Core::CInteger64;
 using Elastos::Core::CSystem;
 using Elastos::Core::ISystem;
@@ -140,13 +140,11 @@ ECode ContactsContractContacts::GetLookupUri(
         Int64 contactId;
         FAIL_GOTO(c->GetInt64(1, &contactId), EXIT)
         FAIL_GOTO(GetLookupUri(contactId, lookupKey, uri), EXIT)
-        //TODO
-        // return c->Close();
+        return ICloseable::Probe(c)->Close();
     }
     //} finally {
 EXIT:
-    //TODO
-    // FAIL_RETURN(c->Close())
+    FAIL_RETURN(ICloseable::Probe(c)->Close())
     //}
     *uri = NULL;
     return NOERROR;
@@ -195,14 +193,12 @@ ECode ContactsContractContacts::LookupContact(
         AutoPtr<IContentUris> contentUris;
         CContentUris::AcquireSingleton((IContentUris**)&contentUris);
         FAIL_GOTO(contentUris->WithAppendedId(ContactsContractContacts::CONTENT_URI.Get(), contactId, uri), EXIT)
-        // TODO
-        // c->Close();
+        ICloseable::Probe(c)->Close();
         return NOERROR;
     }
     //} finally {
 EXIT:
-    // TODO
-    // FAIL_RETURN((c->Close()))
+    FAIL_RETURN(ICloseable::Probe(c)->Close())
     //}
     *uri = NULL;
     return NOERROR;
@@ -285,8 +281,7 @@ ECode ContactsContractContacts::OpenContactPhotoInputStream(
     //} finally {
 FINALLY:
     if (cursor != NULL) {
-        //TODO
-        // FAIL_RETURN(cursor->Close())
+        FAIL_RETURN(ICloseable::Probe(cursor)->Close())
     }
     //}
     return NOERROR;

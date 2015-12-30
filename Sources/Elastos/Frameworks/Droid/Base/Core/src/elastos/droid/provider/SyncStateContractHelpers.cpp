@@ -7,6 +7,8 @@
 #include "elastos/droid/content/CContentValues.h"
 #include "elastos/droid/provider/SyncStateContractHelpers.h"
 #include "elastos/droid/utility/CPair.h"
+#include <Elastos.CoreLibrary.IO.h>
+#include <elastos/core/CoreUtils.h>
 
 using Elastos::Droid::Content::CContentUris;
 using Elastos::Droid::Content::CContentValues;
@@ -18,6 +20,7 @@ using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Utility::CPair;
 using Elastos::Droid::Utility::IPair;
+using Elastos::IO::ICloseable;
 using Elastos::Core::CArrayOf;
 using Elastos::Core::CString;
 using Elastos::Core::EIID_IByte;
@@ -68,12 +71,11 @@ ECode SyncStateContractHelpers::Get(
         Int32 columnIndex;
         FAIL_GOTO(c->GetColumnIndexOrThrow(ISyncStateContractColumns::DATA, &columnIndex), EXIT)
         FAIL_GOTO(c->GetBlob(columnIndex, value), EXIT)
-        // return c->Close();
+        return ICloseable::Probe(c)->Close();
     }
     //} finally {
 EXIT:
-    //TODO
-    // FAIL_RETURN(c->Close())
+    FAIL_RETURN(ICloseable::Probe(c)->Close())
     //}
     *value = NULL;
     return NOERROR;
@@ -179,12 +181,12 @@ ECode SyncStateContractHelpers::GetWithUri(
         CContentUris::AcquireSingleton((IContentUris**)&icu);
         AutoPtr<IUri> outUri;
         icu->WithAppendedId(uri, rowId, (IUri**)&outUri);
-        assert(0 && "TODO");
-        // c->Close();
-        // return CPair::Create(outUri, blob, value);
+        ICloseable::Probe(c)->Close();
+        return CPair::Create(outUri.Get(), CoreUtils::ConvertByteArray(blob).Get(), value);
     }
 // } finally {
-    // c.close();
+    ICloseable::Probe(c)->Close();
+
 // }
     *value = NULL;
     return NOERROR;

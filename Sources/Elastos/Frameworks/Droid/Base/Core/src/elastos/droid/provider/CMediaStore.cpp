@@ -9,6 +9,7 @@
 #include "elastos/droid/provider/CMediaStoreVideoMedia.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
+#include <Elastos.CoreLibrary.IO.h>
 
 using Elastos::Droid::Content::CContentUris;
 using Elastos::Droid::Content::IContentUris;
@@ -18,6 +19,7 @@ using Elastos::Droid::Media::IMiniThumbFile;
 using Elastos::Droid::Net::CUriHelper;
 using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Os::IParcelFileDescriptor;
+using Elastos::IO::ICloseable;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::StringUtils;
 
@@ -66,8 +68,7 @@ ECode CMediaStore::GetVersion(
                 return NOERROR;
             }
         // } finally {
-            assert(0 && "TODO");
-            // c->Close();
+            ICloseable::Probe(c)->Close();
         // }
     }
     return NOERROR;

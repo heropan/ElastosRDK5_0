@@ -16,11 +16,11 @@
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/utility/Config.h"
 #include <elastos/utility/logging/Slogger.h>
-//#include <elastos/utility/CHashSet.h>
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/CoreUtils.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
+#include <Elastos.CoreLibrary.Utility.h>
 
 using Elastos::Droid::Content::CContentValues;
 using Elastos::Droid::Content::IContentValues;
@@ -43,7 +43,7 @@ using Elastos::Droid::Privacy::IIPrivacySettingsManager;
 using Elastos::Droid::Provider::ISettingsGlobal;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::View::IKeyEvent;
-//TODO using Elastos::Utility::CHashSet;
+using Elastos::Utility::CHashSet;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::CInteger32;
 using Elastos::Core::CoreUtils;
@@ -359,8 +359,7 @@ const AutoPtr<Settings::NameValueCache> Settings::System::sNameValueCache = new 
 static AutoPtr<IHashSet> InitSystemMOVED_TO_SECURE()
 {
     AutoPtr<IHashSet> hs;
-    assert(0 && "TODO");
-    // CHashSet::New(30, (IHashSet**)&hs);
+    CHashSet::New(30, (IHashSet**)&hs);
 
     hs->Add(CoreUtils::Convert(ISettingsSecure::ANDROID_ID));
     hs->Add(CoreUtils::Convert(ISettingsSecure::HTTP_PROXY));
@@ -401,8 +400,7 @@ const AutoPtr<IHashSet> Settings::System::MOVED_TO_SECURE = InitSystemMOVED_TO_S
 static AutoPtr<IHashSet> initSystemMOVED_TO_SECURE_THEN_GLOBAL()
 {
     AutoPtr<IHashSet> hs;
-    assert(0 && "TODO");
-    // CHashSet::New((IHashSet**)&hs);
+    CHashSet::New((IHashSet**)&hs);
     // these were originally in system but migrated to secure in the past,
     // so are duplicated in the Secure.* namespace
     hs->Add(CoreUtils::Convert(ISettingsGlobal::ADB_ENABLED));
@@ -421,8 +419,7 @@ const AutoPtr<IHashSet> Settings::System::MOVED_TO_SECURE_THEN_GLOBAL =
 static AutoPtr<IHashSet> InitSystemMOVED_TO_GLOBAL()
 {
     AutoPtr<IHashSet> hs;
-    assert(0 && "TODO");
-    // CHashSet::New((IHashSet**)&hs);
+    CHashSet::New((IHashSet**)&hs);
     // these are moving directly from system to global
     hs->Add(CoreUtils::Convert(ISettingsGlobal::AIRPLANE_MODE_ON));
     hs->Add(CoreUtils::Convert(ISettingsGlobal::AIRPLANE_MODE_RADIOS));
@@ -1087,8 +1084,7 @@ Boolean Settings::Secure::sIsSystemProcess = FALSE;
 static AutoPtr<IHashSet> InitSecureMOVED_TO_LOCK_SETTINGS()
 {
     AutoPtr<IHashSet> hs;
-    assert(0 && "TODO");
-    // CHashSet::New(3, (IHashSet**)&hs);
+    CHashSet::New(3, (IHashSet**)&hs);
 
     hs->Add(CoreUtils::Convert(ISettingsSecure::LOCK_PATTERN_ENABLED));
     hs->Add(CoreUtils::Convert(ISettingsSecure::LOCK_PATTERN_VISIBLE));
@@ -1102,8 +1098,7 @@ const AutoPtr<IHashSet> Settings::Secure::MOVED_TO_LOCK_SETTINGS = InitSecureMOV
 static AutoPtr<IHashSet> initSecureMOVED_TO_GLOBAL()
 {
     AutoPtr<IHashSet> hs;
-    assert(0 && "TODO");
-    // CHashSet::New((IHashSet**)&hs);
+    CHashSet::New((IHashSet**)&hs);
 
     hs->Add(CoreUtils::Convert(ISettingsGlobal::ADB_ENABLED));
     hs->Add(CoreUtils::Convert(ISettingsGlobal::ASSISTED_GPS_ENABLED));
@@ -1793,8 +1788,7 @@ const AutoPtr<Settings::NameValueCache> Settings::Global::sNameValueCache = new 
 static AutoPtr<IHashSet> initGlobalMOVED_TO_SECURE()
 {
     AutoPtr<IHashSet> hs;
-    assert(0 && "TODO");
-    // CHashSet::New(1, (IHashSet**)&hs);
+    CHashSet::New(1, (IHashSet**)&hs);
     hs->Add(CoreUtils::Convert(ISettingsGlobal::INSTALL_NON_MARKET_APPS).Get());
 }
 

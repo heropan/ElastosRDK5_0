@@ -4,8 +4,10 @@
 #include "Elastos.Droid.Media.h"
 #include "Elastos.Droid.Net.h"
 #include "Elastos.Droid.Provider.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/provider/DocumentsContract.h"
+#include "elastos/droid/content/pm/ResolveInfo.h"
 #include "elastos/droid/content/CContentProviderClient.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/content/res/CAssetFileDescriptor.h"
@@ -14,7 +16,7 @@
 #include "elastos/droid/graphics/CBitmapFactoryOptions.h"
 #include "elastos/droid/graphics/CMatrix.h"
 // #include "elastos/droid/media/CExifInterface.h"
-// #include "elastos/droid/net/CUriBuilder.h"
+#include "elastos/droid/net/CUriBuilder.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/ParcelFileDescriptor.h"
 #include "elastos/droid/system/Os.h"
@@ -24,11 +26,13 @@
 using Elastos::Droid::Content::CContentProviderClient;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IContentProviderClient;
+using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Pm::IIPackageManager;
 using Elastos::Droid::Content::Pm::IProviderInfo;
 using Elastos::Droid::Content::Pm::IResolveInfo;
+using Elastos::Droid::Content::Pm::ResolveInfo;
 using Elastos::Droid::Content::Res::CAssetFileDescriptor;
 using Elastos::Droid::Content::Res::IAssetFileDescriptor;
 using Elastos::Droid::Graphics::BitmapFactory;
@@ -41,6 +45,7 @@ using Elastos::Droid::Graphics::IBitmapFactoryOptions;
 using Elastos::Droid::Graphics::IMatrix;
 using Elastos::Droid::Media::IExifInterface;
 using Elastos::Droid::Net::ITrafficStats;
+using Elastos::Droid::Net::CUriBuilder;
 using Elastos::Droid::Net::IUriBuilder;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::IBundle;
@@ -61,8 +66,6 @@ using Libcore::IO::IIoUtils;
 
 using Elastos::Utility::IList;
 using Elastos::Utility::Logging::Slogger;
-
-
 
 namespace Elastos {
 namespace Droid {
@@ -86,19 +89,11 @@ ECode DocumentsContract::BuildRootsUri(
 {
     VALIDATE_NOT_NULL(uri);
     AutoPtr<IUriBuilder> iub;
-    assert(0 && "TODO"); // CUriBuilder
-    // CUriBuilder::New((IUriBuilder**)&iub);
-
-    // AutoPtr<IUriBuilder> ub;
-    // iub->Scheme(IContentResolver::SCHEME_CONTENT, (IUriBuilder**)&ub);
-
-    // AutoPtr<IUriBuilder> ubi;
-    // ub->Authority(authority, (IUriBuilder**)&ubi);
-
-    // AutoPtr<IUriBuilder> ubr;
-    // ubi->AppendPath(PATH_ROOT, (IUriBuilder**)&ubr);
-
-    // return ubr->Build(uri);
+    CUriBuilder::New((IUriBuilder**)&iub);
+    iub->Scheme(IContentResolver::SCHEME_CONTENT);
+    iub->Authority(authority);
+    iub->AppendPath(PATH_ROOT);
+    return iub->Build(uri);
 }
 
 ECode DocumentsContract::BuildRootUri(
@@ -106,23 +101,14 @@ ECode DocumentsContract::BuildRootUri(
     /* [in] */ const String& rootId,
     /* [out] */ IUri** uri)
 {
-    // VALIDATE_NOT_NULL(uri);
-    // AutoPtr<IUriBuilder> iub;
-    // CUriBuilder::New((IUriBuilder**)&iub);
-
-    // AutoPtr<IUriBuilder> ub;
-    // iub->Scheme(IContentResolver::SCHEME_CONTENT, (IUriBuilder**)&ub);
-
-    // AutoPtr<IUriBuilder> ubi;
-    // ub->Authority(authority, (IUriBuilder**)&ubi);
-
-    // AutoPtr<IUriBuilder> ubr;
-    // ubi->AppendPath(PATH_ROOT, (IUriBuilder**)&ubr);
-
-    // AutoPtr<IUriBuilder> ubd;
-    // ubr->AppendPath(rootId, (IUriBuilder**)&ubd);
-
-    // return ubd->Build(uri);
+    VALIDATE_NOT_NULL(uri);
+    AutoPtr<IUriBuilder> iub;
+    CUriBuilder::New((IUriBuilder**)&iub);
+    iub->Scheme(IContentResolver::SCHEME_CONTENT);
+    iub->Authority(authority);
+    iub->AppendPath(PATH_ROOT);
+    iub->AppendPath(rootId);
+    return iub->Build(uri);
 }
 
 ECode DocumentsContract::BuildRecentDocumentsUri(
@@ -130,26 +116,16 @@ ECode DocumentsContract::BuildRecentDocumentsUri(
     /* [in] */ const String& rootId,
     /* [out] */ IUri** uri)
 {
-    // VALIDATE_NOT_NULL(uri);
-    // AutoPtr<IUriBuilder> iub;
-    // CUriBuilder::New((IUriBuilder**)&iub);
+    VALIDATE_NOT_NULL(uri);
+    AutoPtr<IUriBuilder> iub;
+    CUriBuilder::New((IUriBuilder**)&iub);
 
-    // AutoPtr<IUriBuilder> ub;
-    // iub->Scheme(IContentResolver::SCHEME_CONTENT, (IUriBuilder**)&ub);
-
-    // AutoPtr<IUriBuilder> ubi;
-    // ub->Authority(authority, (IUriBuilder**)&ubi);
-
-    // AutoPtr<IUriBuilder> ubir;
-    // ubi->AppendPath(PATH_ROOT, (IUriBuilder**)&ubir);
-
-    // AutoPtr<IUriBuilder> ubd;
-    // ubir->AppendPath(rootId, (IUriBuilder**)&ubd);
-
-    // AutoPtr<IUriBuilder> ubdr;
-    // ubdr->AppendPath(PATH_RECENT, (IUriBuilder**)&ubdr);
-
-    // return ubdr->Build(uri);
+    iub->Scheme(IContentResolver::SCHEME_CONTENT);
+    iub->Authority(authority);
+    iub->AppendPath(PATH_ROOT);
+    iub->AppendPath(rootId);
+    iub->AppendPath(PATH_RECENT);
+    return iub->Build(uri);
 }
 
 ECode DocumentsContract::BuildTreeDocumentUri(
@@ -157,23 +133,15 @@ ECode DocumentsContract::BuildTreeDocumentUri(
     /* [in] */ const String& documentId,
     /* [out] */ IUri** uri)
 {
-    // VALIDATE_NOT_NULL(uri);
-    //  AutoPtr<IUriBuilder> iub;
-    // // CUriBuilder::New((IUriBuilder**)&iub);
+    VALIDATE_NOT_NULL(uri);
+     AutoPtr<IUriBuilder> iub;
+    CUriBuilder::New((IUriBuilder**)&iub);
 
-    // AutoPtr<IUriBuilder> ub;
-    // iub->Scheme(IContentResolver::SCHEME_CONTENT, (IUriBuilder**)&ub);
-
-    // AutoPtr<IUriBuilder> ubi;
-    // ub->Authority(authority, (IUriBuilder**)&ubi);
-
-    // AutoPtr<IUriBuilder> ubr;
-    // ubi->AppendPath(PATH_TREE, (IUriBuilder**)&ubr);
-
-    // AutoPtr<IUriBuilder> ubd;
-    // ubr->AppendPath(documentId, (IUriBuilder**)&ubd);
-
-    // return ubd->Build(uri);
+    iub->Scheme(IContentResolver::SCHEME_CONTENT);
+    iub->Authority(authority);
+    iub->AppendPath(PATH_TREE);
+    iub->AppendPath(documentId);
+    return iub->Build(uri);
 }
 
 ECode DocumentsContract::BuildDocumentUri(
@@ -181,23 +149,15 @@ ECode DocumentsContract::BuildDocumentUri(
     /* [in] */ const String& documentId,
     /* [out] */ IUri** uri)
 {
-    // VALIDATE_NOT_NULL(uri);
-    // AutoPtr<IUriBuilder> iub;
-    // // CUriBuilder::New((IUriBuilder**)&iub);
+    VALIDATE_NOT_NULL(uri);
+    AutoPtr<IUriBuilder> iub;
+    CUriBuilder::New((IUriBuilder**)&iub);
 
-    // AutoPtr<IUriBuilder> ub;
-    // iub->Scheme(IContentResolver::SCHEME_CONTENT, (IUriBuilder**)&ub);
-
-    // AutoPtr<IUriBuilder> ubi;
-    // ub->Authority(authority, (IUriBuilder**)&ubi);
-
-    // AutoPtr<IUriBuilder> ubr;
-    // ubi->AppendPath(PATH_DOCUMENT, (IUriBuilder**)&ubr);
-
-    // AutoPtr<IUriBuilder> ubd;
-    // ubr->AppendPath(documentId, (IUriBuilder**)&ubd);
-
-    // return ubd->Build(uri);
+    iub->Scheme(IContentResolver::SCHEME_CONTENT);
+    iub->Authority(authority);
+    iub->AppendPath(PATH_DOCUMENT);
+    iub->AppendPath(documentId);
+    return iub->Build(uri);
 }
 
 ECode DocumentsContract::BuildDocumentUriUsingTree(
@@ -205,35 +165,22 @@ ECode DocumentsContract::BuildDocumentUriUsingTree(
     /* [in] */ const String& documentId,
     /* [out] */ IUri** uri)
 {
-    // VALIDATE_NOT_NULL(uri);
-    // String authority;
-    // treeUri->GetAuthority(&authority);
+    VALIDATE_NOT_NULL(uri);
+    String authority;
+    treeUri->GetAuthority(&authority);
 
-    // String docId;
-    // GetTreeDocumentId(treeUri, &docId);
+    String docId;
+    GetTreeDocumentId(treeUri, &docId);
 
-    // AutoPtr<IUriBuilder> iub;
-    // // CUriBuilder::New((IUriBuilder**)&iub);
-
-    // AutoPtr<IUriBuilder> ub;
-    // iub->Scheme(IContentResolver::SCHEME_CONTENT, (IUriBuilder**)&ub);
-
-    // AutoPtr<IUriBuilder> ubi;
-    // ub->Authority(authority, (IUriBuilder**)&ubi);
-
-    // AutoPtr<IUriBuilder> ubr;
-    // ubi->AppendPath(PATH_TREE, (IUriBuilder**)&ubr);
-
-    // AutoPtr<IUriBuilder> ubd;
-    // ubr->AppendPath(docId, (IUriBuilder**)&ubd);
-
-    // AutoPtr<IUriBuilder> ubdr;
-    // ubd->AppendPath(PATH_DOCUMENT, (IUriBuilder**)&ubdr);
-
-    // AutoPtr<IUriBuilder> ubder;
-    // ubdr->AppendPath(documentId, (IUriBuilder**)&ubder);
-
-    // return ubder->Build(uri);
+    AutoPtr<IUriBuilder> iub;
+    CUriBuilder::New((IUriBuilder**)&iub);
+    iub->Scheme(IContentResolver::SCHEME_CONTENT);
+    iub->Authority(authority);
+    iub->AppendPath(PATH_TREE);
+    iub->AppendPath(docId);
+    iub->AppendPath(PATH_DOCUMENT);
+    iub->AppendPath(documentId);
+    return iub->Build(uri);
 }
 
 ECode DocumentsContract::BuildDocumentUriMaybeUsingTree(
@@ -259,25 +206,15 @@ ECode DocumentsContract::BuildChildDocumentsUri(
     /* [in] */ const String& parentDocumentId,
     /* [out] */ IUri** uri)
 {
-    // AutoPtr<IUriBuilder> iub;
-    // CUriBuilder::New((IUriBuilder**)&iub);
+    AutoPtr<IUriBuilder> iub;
+    CUriBuilder::New((IUriBuilder**)&iub);
 
-    // AutoPtr<IUriBuilder> ub;
-    // iub->Scheme(IContentResolver::SCHEME_CONTENT, (IUriBuilder**)&ub);
-
-    // AutoPtr<IUriBuilder> ubi;
-    // ub->Authority(authority, (IUriBuilder**)&ubi);
-
-    // AutoPtr<IUriBuilder> ubr;
-    // ubi->AppendPath(PATH_DOCUMENT, (IUriBuilder**)&ubr);
-
-    // AutoPtr<IUriBuilder> ubd;
-    // ubr->AppendPath(parentDocumentId, (IUriBuilder**)&ubd);
-
-    // AutoPtr<IUriBuilder> ubdr;
-    // ubd->AppendPath(PATH_CHILDREN, (IUriBuilder**)&ubdr);
-
-    // return ubdr->Build(uri);
+    iub->Scheme(IContentResolver::SCHEME_CONTENT);
+    iub->Authority(authority);
+    iub->AppendPath(PATH_DOCUMENT);
+    iub->AppendPath(parentDocumentId);
+    iub->AppendPath(PATH_CHILDREN);
+    return iub->Build(uri);
 }
 
 ECode DocumentsContract::BuildChildDocumentsUriUsingTree(
@@ -285,38 +222,24 @@ ECode DocumentsContract::BuildChildDocumentsUriUsingTree(
     /* [in] */ const String& parentDocumentId,
     /* [out] */ IUri** uri)
 {
-    // VALIDATE_NOT_NULL(uri);
-    // String authority;
-    // treeUri->GetAuthority(&authority);
+    VALIDATE_NOT_NULL(uri);
+    String authority;
+    treeUri->GetAuthority(&authority);
 
-    // String docId;
-    // GetTreeDocumentId(treeUri, &docId);
+    String docId;
+    GetTreeDocumentId(treeUri, &docId);
 
-    // AutoPtr<IUriBuilder> iub;
-    // // CUriBuilder::New((IUriBuilder**)&iub);
+    AutoPtr<IUriBuilder> iub;
+    CUriBuilder::New((IUriBuilder**)&iub);
 
-    // AutoPtr<IUriBuilder> ub;
-    // iub->Scheme(IContentResolver::SCHEME_CONTENT, (IUriBuilder**)&ub);
-
-    // AutoPtr<IUriBuilder> ubi;
-    // ub->Authority(authority, (IUriBuilder**)&ubi);
-
-    // AutoPtr<IUriBuilder> ubr;
-    // ubi->AppendPath(PATH_TREE, (IUriBuilder**)&ubr);
-
-    // AutoPtr<IUriBuilder> ubd;
-    // ubr->AppendPath(docId, (IUriBuilder**)&ubd);
-
-    // AutoPtr<IUriBuilder> ubdr;
-    // ubd->AppendPath(PATH_DOCUMENT, (IUriBuilder**)&ubdr);
-
-    // AutoPtr<IUriBuilder> ubder;
-    // ubdr->AppendPath(parentDocumentId, (IUriBuilder**)&ubder);
-
-    // AutoPtr<IUriBuilder> ublder;
-    // ubder->AppendPath(PATH_CHILDREN, (IUriBuilder**)&ublder);
-
-    // return ublder->Build(uri);
+    iub->Scheme(IContentResolver::SCHEME_CONTENT);
+    iub->Authority(authority);
+    iub->AppendPath(PATH_TREE);
+    iub->AppendPath(docId);
+    iub->AppendPath(PATH_DOCUMENT);
+    iub->AppendPath(parentDocumentId);
+    iub->AppendPath(PATH_CHILDREN);
+    return iub->Build(uri);
 }
 
 ECode DocumentsContract::BuildSearchDocumentsUri(
@@ -325,28 +248,16 @@ ECode DocumentsContract::BuildSearchDocumentsUri(
     /* [in] */ const String& query,
     /* [out] */ IUri** uri)
 {
-    // AutoPtr<IUriBuilder> iub;
-    // // CUriBuilder::New((IUriBuilder**)&iub);
+    AutoPtr<IUriBuilder> iub;
+    CUriBuilder::New((IUriBuilder**)&iub);
 
-    // AutoPtr<IUriBuilder> ub;
-    // iub->Scheme(IContentResolver::SCHEME_CONTENT, (IUriBuilder**)&ub);
-
-    // AutoPtr<IUriBuilder> ubi;
-    // ub->Authority(authority, (IUriBuilder**)&ubi);
-
-    // AutoPtr<IUriBuilder> ubr;
-    // ubi->AppendPath(PATH_ROOT, (IUriBuilder**)&ubr);
-
-    // AutoPtr<IUriBuilder> ubd;
-    // ubr->AppendPath(rootId, (IUriBuilder**)&ubd);
-
-    // AutoPtr<IUriBuilder> ubdr;
-    // ubd->AppendPath(PATH_SEARCH, (IUriBuilder**)&ubdr);
-
-    // AutoPtr<IUriBuilder> ubder;
-    // ubdr->AppendQueryParameter(PARAM_QUERY, query, (IUriBuilder**)&ubder);
-
-    // return ubder->Build(uri);
+    iub->Scheme(IContentResolver::SCHEME_CONTENT);
+    iub->Authority(authority);
+    iub->AppendPath(PATH_ROOT);
+    iub->AppendPath(rootId);
+    iub->AppendPath(PATH_SEARCH);
+    iub->AppendQueryParameter(PARAM_QUERY, query);
+    return iub->Build(uri);
 }
 
 ECode DocumentsContract::IsDocumentUri(
@@ -410,31 +321,31 @@ Boolean DocumentsContract::IsDocumentsProvider(
     /* [in] */ IContext* context,
     /* [in] */ const String& authority)
 {
-    // VALIDATE_NOT_NULL(context);
-    // AutoPtr<IIntent> intent;
-    // CIntent::New(IDocumentsContract::PROVIDER_INTERFACE, (IIntent**)&intent);
-    // AutoPtr<IIPackageManager> pmr;
+    VALIDATE_NOT_NULL(context);
+    AutoPtr<IIntent> intent;
+    CIntent::New(IDocumentsContract::PROVIDER_INTERFACE, (IIntent**)&intent);
+    AutoPtr<IIPackageManager> pmr;
     // context->GetPackageManager((IIPackageManager**)&pmr);
-    // AutoPtr<IList> infos;
-    // assert(0 && "TODO"); // QueryIntentContentProviders not implement
+    AutoPtr<IList> infos;
+    assert(0 && "TODO"); // QueryIntentContentProviders not implement
     // pmr->QueryIntentContentProviders(intent, 0, (IList**)&infos);
-    // Int32 size;
-    // infos->GetSize(&size);
-    // for (Int32 i = 0; i < size; ++i) {
-    //     AutoPtr<IInterface> tmp;
-    //     if (tmp != NULL) {
-    //         tmp = NULL;
-    //     }
-    //     infos->Get(i, (IInterface**)&tmp);
-    //     AutoPtr<IProviderInfo> pi = ((CResolveInfo*)IObject::Probe(tmp))->mProviderInfo;
-    //     String authority_;
-    //     pi->GetAuthority(&authority_);
-    //     if (authority.Equals(authority_)) {
-    //         return TRUE;
-    //     }
-    // }
+    Int32 size;
+    infos->GetSize(&size);
+    for (Int32 i = 0; i < size; ++i) {
+        AutoPtr<IInterface> tmp;
+        if (tmp != NULL) {
+            tmp = NULL;
+        }
+        infos->Get(i, (IInterface**)&tmp);
+        AutoPtr<IProviderInfo> pi = ((ResolveInfo*)IResolveInfo::Probe(tmp))->mProviderInfo;
+        String authority_;
+        pi->GetAuthority(&authority_);
+        if (authority.Equals(authority_)) {
+            return TRUE;
+        }
+    }
 
-    // return FALSE;
+    return FALSE;
 }
 
 ECode DocumentsContract::GetRootId(

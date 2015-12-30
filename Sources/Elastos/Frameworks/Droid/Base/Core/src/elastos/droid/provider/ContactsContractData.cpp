@@ -7,9 +7,11 @@
 #include "elastos/droid/provider/ContactsContract.h"
 #include "elastos/droid/provider/ContactsContractContacts.h"
 #include "elastos/droid/provider/ContactsContractData.h"
+#include <Elastos.CoreLibrary.IO.h>
 
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Net::Uri;
+using Elastos::IO::ICloseable;
 
 namespace Elastos {
 namespace Droid {
@@ -36,7 +38,6 @@ ECode ContactsContractData::GetContactLookupUri(
     (*args)[1] = IContactsContractContactsColumns::LOOKUP_KEY;
     FAIL_RETURN(resolver->Query(dataUri, args, String(NULL), NULL, String(NULL), (ICursor**)&cursor))
 
-    //AutoPtr<IUri> lookupUri;
     //try {
     Boolean result;
     if (cursor != NULL && (cursor->MoveToFirst(&result), result)) {
@@ -45,15 +46,12 @@ ECode ContactsContractData::GetContactLookupUri(
         String lookupKey;
         FAIL_GOTO(cursor->GetString(1, &lookupKey), EXIT)
         FAIL_GOTO(ContactsContractContacts::GetLookupUri(contactId, lookupKey, uri), EXIT)
-        //TODO
-        // return cursor->Close();
-        return NOERROR;
+        return ICloseable::Probe(cursor)->Close();
     }
     //} finally {
 EXIT:
     if (cursor != NULL) {
-        //TODO
-        // FAIL_RETURN(cursor->Close())
+        FAIL_RETURN(ICloseable::Probe(cursor)->Close())
     }
     //}
     *uri = NULL;
