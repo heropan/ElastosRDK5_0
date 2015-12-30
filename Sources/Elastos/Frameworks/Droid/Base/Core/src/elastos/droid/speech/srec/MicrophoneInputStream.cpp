@@ -12,6 +12,8 @@ namespace Srec {
 
 const String MicrophoneInputStream::TAG("MicrophoneInputStream");
 
+CAR_INTERFACE_IMPL(MicrophoneInputStream, InputStream, IMicrophoneInputStream)
+
 MicrophoneInputStream::MicrophoneInputStream()
 {}
 
@@ -20,7 +22,7 @@ MicrophoneInputStream::~MicrophoneInputStream()
 
 ECode MicrophoneInputStream::constructor()
 {
-    return NOERROR;
+    return InputStream::constructor();
 }
 
 ECode MicrophoneInputStream::constructor(
@@ -57,7 +59,7 @@ ECode MicrophoneInputStream::Read(
     return NOERROR;
 }
 
-ECode MicrophoneInputStream::ReadBytes(
+ECode MicrophoneInputStream::Read(
     /* [out] */ ArrayOf<Byte>* b,
     /* [out] */ Int32* number)
 {
@@ -70,7 +72,7 @@ ECode MicrophoneInputStream::ReadBytes(
     return NOERROR;
 }
 
-ECode MicrophoneInputStream::ReadBytes(
+ECode MicrophoneInputStream::Read(
         /* [out] */ ArrayOf<Byte>* b,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,

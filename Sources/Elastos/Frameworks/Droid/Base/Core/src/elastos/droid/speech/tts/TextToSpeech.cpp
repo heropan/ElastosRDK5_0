@@ -119,7 +119,7 @@ TextToSpeech::TextToSpeechActionRPlayEarcon::TextToSpeechActionRPlayEarcon(
     /* [in] */ TextToSpeech* tts,
     /* [in] */ const String& earcon,
     /* [in] */ Int32 queueMode,
-    /* [in] */ IMap* params)
+    /* [in] */ IHashMap* params)
 {
     mTts = tts;
     mEarcon = earcon;
@@ -147,7 +147,7 @@ TextToSpeech::TextToSpeechActionRPlaySilence::TextToSpeechActionRPlaySilence(
     /* [in] */ TextToSpeech* tts,
     /* [in] */ Int64 durationInMs,
     /* [in] */ Int32 queueMode,
-    /* [in] */ IMap* params)
+    /* [in] */ IHashMap* params)
 {
     mTts = tts;
     mDurationInMs = durationInMs;
@@ -319,7 +319,7 @@ Handle32 TextToSpeech::TextToSpeechActionRIsLanguageAvailable::Run(
 TextToSpeech::TextToSpeechActionRSynthesizeToFile::TextToSpeechActionRSynthesizeToFile(
     /* [in] */ TextToSpeech* tts,
     /* [in] */ const String& text,
-    /* [in] */ IMap* params,
+    /* [in] */ IHashMap* params,
     /* [in] */ const String& filename)
 {
     mTts = tts;
@@ -913,7 +913,7 @@ ECode TextToSpeech::PlaySilentUtterance(
     /* [out] */ Int32* ret)
 {
     VALIDATE_NOT_NULL(ret)
-    assert(0 && "TODO")
+    assert(0 && "TODO");
     // return runAction(new Action<Integer>() {
     //     @Override
     //     public Integer run(ITextToSpeechService service) throws RemoteException {

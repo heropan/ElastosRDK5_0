@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_DROID_SPEECH_SpeechRecognizer_H__
-#define __ELASTOS_DROID_SPEECH_SpeechRecognizer_H__
+#ifndef __ELASTOS_DROID_SPEECH_SPEECHRECOGNIZER_H__
+#define __ELASTOS_DROID_SPEECH_SPEECHRECOGNIZER_H__
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/core/Object.h"
@@ -199,6 +199,22 @@ private:
     friend class SpeechRecognizerInternalListener;
 
 public:
+    CAR_INTERFACE_DECL();
+
+    SpeechRecognizer();
+
+    virtual ~SpeechRecognizer();
+
+    CARAPI constructor();
+
+    /**
+     * The right way to create a {@code SpeechRecognizer} is by using
+     * {@link #createSpeechRecognizer} static factory method
+     */
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IComponentName* serviceComponent);
+
     /**
      * Checks whether a speech recognition service is available on the system. If this method
      * returns {@code false}, {@link SpeechRecognizer#createSpeechRecognizer(Context)} will
@@ -326,67 +342,6 @@ protected:
     CARAPI_(void) HandleChangeListener(
         /* [in] */ IRecognitionListener* listener);
 
-public:
-    /**
-     * Key used to retrieve an {@code ArrayList<String>} from the {@link Bundle} passed to the
-     * {@link RecognitionListener#onResults(Bundle)} and
-     * {@link RecognitionListener#onPartialResults(Bundle)} methods. These strings are the possible
-     * recognition results, where the first element is the most likely candidate.
-     */
-    //public static final
-    static const String RESULTS_RECOGNITION;       // = "results_recognition";
-
-    /**
-     * Key used to retrieve a float array from the {@link Bundle} passed to the
-     * {@link RecognitionListener#onResults(Bundle)} and
-     * {@link RecognitionListener#onPartialResults(Bundle)} methods. The array should be
-     * the same size as the ArrayList provided in {@link #RESULTS_RECOGNITION}, and should contain
-     * values ranging from 0.0 to 1.0, or -1 to represent an unavailable confidence score.
-     * <p>
-     * Confidence values close to 1.0 indicate high confidence (the speech recognizer is confident
-     * that the recognition result is correct), while values close to 0.0 indicate low confidence.
-     * <p>
-     * This value is optional and might not be provided.
-     */
-    //public static final
-    static const String CONFIDENCE_SCORES;          // = "confidence_scores";
-
-    /** Network operation timed out. */
-    //public static final
-    static const Int32 ERROR_NETWORK_TIMEOUT;       // = 1;
-
-    /** Other network related errors. */
-    //public static final
-    static const Int32 ERROR_NETWORK;               // = 2;
-
-    /** Audio recording error. */
-    //public static final
-    static const Int32 ERROR_AUDIO;                 // = 3;
-
-    /** Server sends error status. */
-    //public static final
-    static const Int32 ERROR_SERVER;                // = 4;
-
-    /** Other client side errors. */
-    //public static final
-    static const Int32 ERROR_CLIENT;                // = 5;
-
-    /** No speech input */
-    //public static final
-    static const Int32 ERROR_SPEECH_TIMEOUT;        // = 6;
-
-    /** No recognition result matched. */
-    //public static final
-    static const Int32 ERROR_NO_MATCH;              // = 7;
-
-    /** RecognitionService busy. */
-    //public static final
-    static const Int32 ERROR_RECOGNIZER_BUSY;       // = 8;
-
-    /** Insufficient permissions */
-    //public static final
-    static const Int32 ERROR_INSUFFICIENT_PERMISSIONS;  // = 9;
-
 protected:
     /** DEBUG value to enable verbose debug prints */
     //private final static
@@ -440,27 +395,10 @@ private:
     /** The Listener that will receive all the callbacks */
     //private final InternalListener
     AutoPtr<SpeechRecognizerInternalListener> mListener;    // = new SpeechRecognizerInternalListener();
-
-public:
-    CAR_INTERFACE_DECL();
-
-    SpeechRecognizer();
-
-    virtual ~SpeechRecognizer();
-
-    CARAPI constructor();
-
-    /**
-     * The right way to create a {@code SpeechRecognizer} is by using
-     * {@link #createSpeechRecognizer} static factory method
-     */
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IComponentName* serviceComponent);
 };
 
 } // namespace Speech
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_SPEECH_SpeechRecognizer_H__
+#endif // __ELASTOS_DROID_SPEECH_SPEECHRECOGNIZER_H__

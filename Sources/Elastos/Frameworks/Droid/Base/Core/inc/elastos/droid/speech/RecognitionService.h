@@ -222,7 +222,7 @@ public:
 public:
     //@Override
     //public final
-    CARAPI_(AutoPtr</*IIBinder*/IBinder>) OnBind(
+    CARAPI_(AutoPtr<IBinder>) OnBind(
         /* [in]  */ IIntent* intent);
 
     //@Override
@@ -288,22 +288,6 @@ private:
     //private
     CARAPI_(Boolean) CheckPermissions(
         /* [in]  */ IIRecognitionListener* listener);
-
-public:
-    /**
-     * The {@link Intent} that must be declared as handled by the service.
-     */
-    //@SdkConstant(SdkConstantType.SERVICE_ACTION)
-    //public
-    static const String SERVICE_INTERFACE;      // = "android.speech.RecognitionService";
-
-    /**
-     * Name under which a RecognitionService component publishes information about itself.
-     * This meta-data should reference an XML resource containing a
-     * <code>&lt;{@link android.R.styleable#RecognitionService recognition-service}&gt;</code> tag.
-     */
-    //public
-    static const String SERVICE_META_DATA;      // = "android.speech";
 
 private:
     /** Log messages identifier */

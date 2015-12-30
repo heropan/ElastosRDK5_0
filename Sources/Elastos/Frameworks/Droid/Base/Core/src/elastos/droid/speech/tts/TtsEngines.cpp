@@ -42,7 +42,7 @@ namespace Tts {
 
 AutoPtr<TtsEngines::EngineInfoComparator> TtsEngines::EngineInfoComparator::INSTANCE = new TtsEngines::EngineInfoComparator();
 
-CAR_INTERFACE_IMPL(TtsEngines::EngineInfoComparator, Object, ITtsEngines);
+CAR_INTERFACE_IMPL(TtsEngines::EngineInfoComparator, Object, IComparator);
 
 TtsEngines::EngineInfoComparator::EngineInfoComparator()
 {}
@@ -113,6 +113,8 @@ const Boolean TtsEngines::DBG = FALSE;
 const String TtsEngines::LOCALE_DELIMITER_OLD("-");
 const String TtsEngines::LOCALE_DELIMITER_NEW("_");
 const String TtsEngines::XML_TAG_NAME("tts-engine");
+
+CAR_INTERFACE_IMPL(TtsEngines, Object, ITtsEngines)
 
 TtsEngines::TtsEngines()
 {

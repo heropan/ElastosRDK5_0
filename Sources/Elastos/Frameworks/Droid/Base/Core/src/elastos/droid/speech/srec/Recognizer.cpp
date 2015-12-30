@@ -209,8 +209,6 @@ ECode Recognizer::PutAudio(
 ECode Recognizer::PutAudio(
     /* [in] */ IInputStream* audio)
 {
-    VALIDATE_NOT_NULL(ret);
-
     // make sure the audio buffer is allocated
     if (mPutAudioBuffer == NULL){
         mPutAudioBuffer = ArrayOf<Byte>::Alloc(512);
@@ -220,7 +218,7 @@ ECode Recognizer::PutAudio(
     audio->Read(mPutAudioBuffer, &nbytes);
     // eof, so signal Recognizer
     if (nbytes == -1) {
-        *ret = SR_RecognizerPutAudio(mRecognizer, mPutAudioBuffer, 0, 0, TRUE);
+        SR_RecognizerPutAudio(mRecognizer, mPutAudioBuffer, 0, 0, TRUE);
     }
     // put it into the Recognizer
     else if (nbytes != SR_RecognizerPutAudio(mRecognizer, mPutAudioBuffer, 0, nbytes, FALSE)) {

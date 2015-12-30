@@ -10,8 +10,6 @@ namespace Elastos {
 namespace Droid {
 namespace Speech {
 
-const String RecognitionService::SERVICE_INTERFACE("android.speech.RecognitionService");
-const String RecognitionService::SERVICE_META_DATA("android.speech");
 const String RecognitionService::TAG("RecognitionService");
 const Boolean RecognitionService::DBG = FALSE;
 const Int32 RecognitionService::MSG_START_LISTENING = 1;

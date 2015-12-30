@@ -18,8 +18,7 @@ namespace Srec {
  * PCM input stream from the microphone, 16 bits per sample.
  */
 class MicrophoneInputStream
-    : public Object
-    , public InputStream
+    : public InputStream
     , public IMicrophoneInputStream
 {
 public:
@@ -46,12 +45,12 @@ public:
         /* [out] */ Int32* value);
 
     //@Override
-    CARAPI ReadBytes(
+    CARAPI Read(
         /* [out] */ ArrayOf<Byte>* b,
         /* [out] */ Int32* number);
 
     //@Override
-    CARAPI ReadBytes(
+    CARAPI Read(
         /* [out] */ ArrayOf<Byte>* b,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,

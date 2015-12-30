@@ -161,7 +161,7 @@ private:
             /* [in] */ TextToSpeech* tts,
             /* [in] */ const String& earcon,
             /* [in] */ Int32 queueMode,
-            /* [in] */ IMap* params);
+            /* [in] */ IHashMap* params);
     private:
         TextToSpeech* mTts;
         String mEarcon;
@@ -180,12 +180,12 @@ private:
             /* [in] */ TextToSpeech* tts,
             /* [in] */ Int64 durationInMs,
             /* [in] */ Int32 queueMode,
-            /* [in] */ IMap* params);
+            /* [in] */ IHashMap* params);
     private:
         TextToSpeech* mTts;
         Int64 mDurationInMs;
         Int32 mQueueMode;
-        AutoPtr<IMap> mParams;
+        AutoPtr<IHashMap> mParams;
     };
 
     class TextToSpeechActionRGetFeatures
@@ -282,7 +282,7 @@ private:
         TextToSpeechActionRSynthesizeToFile(
             /* [in] */ TextToSpeech* tts,
             /* [in] */ const String& text,
-            /* [in] */ IMap* params,
+            /* [in] */ IHashMap* params,
             /* [in] */ const String& filename);
     private:
         TextToSpeech* mTts;

@@ -31,18 +31,6 @@ namespace Elastos {
 namespace Droid {
 namespace Speech {
 
-const String SpeechRecognizer::RESULTS_RECOGNITION("results_recognition");
-const String SpeechRecognizer::CONFIDENCE_SCORES("confidence_scores");
-const Int32 SpeechRecognizer::ERROR_NETWORK_TIMEOUT = 1;
-const Int32 SpeechRecognizer::ERROR_NETWORK = 2;
-const Int32 SpeechRecognizer::ERROR_AUDIO = 3;
-const Int32 SpeechRecognizer::ERROR_SERVER = 4;
-const Int32 SpeechRecognizer::ERROR_CLIENT = 5;
-const Int32 SpeechRecognizer::ERROR_SPEECH_TIMEOUT = 6;
-const Int32 SpeechRecognizer::ERROR_NO_MATCH = 7;
-const Int32 SpeechRecognizer::ERROR_RECOGNIZER_BUSY = 8;
-const Int32 SpeechRecognizer::ERROR_INSUFFICIENT_PERMISSIONS = 9;
-
 const Boolean SpeechRecognizer::DBG = FALSE;
 const String SpeechRecognizer::TAG("SpeechRecognizer");
 

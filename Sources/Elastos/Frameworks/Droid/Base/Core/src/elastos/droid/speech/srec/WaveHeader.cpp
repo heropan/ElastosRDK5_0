@@ -11,6 +11,8 @@ namespace Srec {
 const String WaveHeader::TAG("WaveHeader");
 const Int32 WaveHeader::HEADER_LENGTH = 44;
 
+CAR_INTERFACE_IMPL(WaveHeader, Object, IWaveHeader)
+
 WaveHeader::WaveHeader()
     : mFormat(0)
     , mNumChannels(0)
@@ -263,7 +265,7 @@ ECode WaveHeader::ToString(
 {
     VALIDATE_NOT_NULL(str)
     String strOut;
-    strOut.Fromat("WaveHeader format=%d numChannels=%d sampleRate=%d bitsPerSample=%d numBytes=%d",
+    strOut.AppendFormat("WaveHeader format=%d numChannels=%d sampleRate=%d bitsPerSample=%d numBytes=%d",
         mFormat, mNumChannels, mSampleRate, mBitsPerSample, mNumBytes);
 
     *str = strOut;

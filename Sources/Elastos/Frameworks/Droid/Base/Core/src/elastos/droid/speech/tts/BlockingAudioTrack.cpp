@@ -1,18 +1,18 @@
-//
-//depend on CAudioTrack
-//
-#if 0
+
 #include "elastos/droid/speech/tts/BlockingAudioTrack.h"
 #include "elastos/droid/media/CAudioTrack.h"
+#include "elastos/droid/media/CAudioFormat.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 #include <unistd.h>     //for Method: unsigned sleep(unsigned)
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Media::CAudioTrack;
 using Elastos::Droid::Media::IAudioFormat;
+using Elastos::Droid::Media::CAudioFormat;
 
 namespace Elastos {
 namespace Droid {
@@ -55,7 +55,7 @@ ECode BlockingAudioTrack::constructor(
     mChannelCount = channelCount;
 
     Int32 fmt;
-    AudioFormat->GetBytesPerSample(mAudioFormat, &fmt)
+    CAudioFormat::GetBytesPerSample(mAudioFormat, &fmt);
     mBytesPerFrame = fmt * mChannelCount;
     mIsShortUtterance = FALSE;
     mAudioBufferSize = 0;
@@ -97,7 +97,7 @@ ECode BlockingAudioTrack::Stop()
 }
 
 ECode BlockingAudioTrack::Write(
-    /* [in] */ ArrayOf<Byte>* data);
+    /* [in] */ ArrayOf<Byte>* data,
     /* [out] */ Int32* ret)
 {
     AutoPtr<IAudioTrack> track = NULL;
@@ -153,8 +153,7 @@ ECode BlockingAudioTrack::WaitAndRelease()
     // Block until the audio track is done only if we haven't stopped yet.
     if (!mStopped) {
         if (DBG) {
-            Int32 code;
-            mAudioTrack->HashCode(&code);
+            Int32 code = Object::GetHashCode(mAudioTrack);
             Logger::D(TAG, "Waiting for audio track to complete: %d\n", code);
         }
         BlockUntilDone(mAudioTrack);
@@ -164,15 +163,14 @@ ECode BlockingAudioTrack::WaitAndRelease()
     // all data from the audioTrack has been sent to the mixer, so
     // it's safe to release at this point.
     if (DBG) {
-        Int32 code;
-        track->HashCode(&code);
+        Int32 code = Object::GetHashCode(mAudioTrack);
         Logger::D(TAG, "Releasing audio track [%d]\n", code);
     }
     {
         AutoLock lock(mAudioTrackLock);
         mAudioTrack = NULL;
     }
-    track->Release();
+    track->ReleaseResources();
 }
 
 
@@ -206,8 +204,7 @@ Int32 BlockingAudioTrack::WriteToAudioTrack(
     Int32 playState;
     if ((audioTrack->GetPlayState(&playState), playState) != IAudioTrack::PLAYSTATE_PLAYING) {
         if (DBG) {
-            Int32 code;
-            audioTrack->HashCode(&code);
+            Int32 code = Object::GetHashCode(audioTrack);
             Logger::D(TAG, "AudioTrack not playing, restarting: %d\n", code);
         }
         audioTrack->Play();
@@ -235,6 +232,7 @@ AutoPtr<IAudioTrack> BlockingAudioTrack::CreateStreamingAudioTrack()
     CAudioTrack::GetMinBufferSize(mSampleRateInHz, channelConfig, mAudioFormat, &minBufferSizeInBytes);
     Int32 bufferSizeInBytes = Elastos::Core::Math::Max(MIN_AUDIO_BUFFER_SIZE, minBufferSizeInBytes);
 
+    AutoPtr<IAudioFormat> audioFormat;
     /*
     AudioFormat audioFormat = (new AudioFormat.Builder())
             .setChannelMask(channelConfig)
@@ -243,13 +241,13 @@ AutoPtr<IAudioTrack> BlockingAudioTrack::CreateStreamingAudioTrack()
     */
     AutoPtr<IAudioTrack> audioTrack;
     CAudioTrack::New(mAudioParams->mAudioAttributes,
-            audioFormat, bufferSizeInBytes, AudioTrack::MODE_STREAM,
-            mAudioParams->mSessionId, (IAudioTrack**)&audioTrack);
+        audioFormat, bufferSizeInBytes, IAudioTrack::MODE_STREAM,
+        mAudioParams->mSessionId, (IAudioTrack**)&audioTrack);
 
     Int32 atState;
     if ((audioTrack->GetState(&atState), atState) != IAudioTrack::STATE_INITIALIZED) {
         Logger::W(TAG, "Unable to create audio track.\n");
-        audioTrack->Release();
+        audioTrack->ReleaseResources();
         return NULL;
     }
 
@@ -368,7 +366,8 @@ void BlockingAudioTrack::SetupVolume(
         Logger::D(TAG, "volLeft= %f, volRight= %f\n", volLeft, volRight);
     }
     Int32 ssvState;
-    if ((audioTrack->SetStereoVolume(volLeft, volRight, &ssvState), ssvState) != IAudioTrack::/*SUCCESS*/IAudioTrack::SUCCESS) {
+    audioTrack->SetStereoVolume(volLeft, volRight, &ssvState);
+    if (ssvState != IAudioTrack::SUCCESS) {
         Logger::E(TAG, "Failed to set volume\n");
     }
 }
@@ -393,5 +392,3 @@ Float BlockingAudioTrack::Clip(
 } // namespace Speech
 } // namepsace Droid
 } // namespace Elastos
-
-#endif

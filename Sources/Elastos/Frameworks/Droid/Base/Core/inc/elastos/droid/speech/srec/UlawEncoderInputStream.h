@@ -22,8 +22,7 @@ namespace Srec {
  * @hide
  */
 class UlawEncoderInputStream
-    : public Object
-    , public IInputStream
+    : public InputStream
     , public IUlawEncoderInputStream
 {
 public:

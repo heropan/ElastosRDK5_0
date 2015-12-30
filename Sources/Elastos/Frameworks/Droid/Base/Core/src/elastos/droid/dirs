@@ -28,6 +28,7 @@ DIRS += view
 DIRS += sax
 DIRS += server
 DIRS += service
+#DIRS += speech
 #DIRS += systemui
 DIRS += text
 DIRS += transition
@@ -38,7 +39,6 @@ DIRS += wifi
 
 #DIRS += impl
 #DIRS += bluetooth
-#DIRS += speech
 #DIRS += opengl
 #DIRS += privacy
 #DIRS += accounts

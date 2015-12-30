@@ -15,7 +15,7 @@ const String UlawEncoderInputStream::TAG("UlawEncoderInputStream");
 const Int32 UlawEncoderInputStream::MAX_ULAW = 8192;
 const Int32 UlawEncoderInputStream::SCALE_BITS = 16;
 
-CAR_INTERFACE_IMPL_2(UlawEncoderInputStream, Object, IInputStream, IUlawEncoderInputStream);
+CAR_INTERFACE_IMPL(UlawEncoderInputStream, IInputStream, IUlawEncoderInputStream);
 
 UlawEncoderInputStream::UlawEncoderInputStream()
 {}
@@ -25,7 +25,7 @@ UlawEncoderInputStream::~UlawEncoderInputStream()
 
 ECode UlawEncoderInputStream::constructor()
 {
-    return NOERROR;
+    return InputStream::constructor();
 }
 
 ECode UlawEncoderInputStream::constructor(
@@ -127,6 +127,7 @@ ECode UlawEncoderInputStream::Read(
     /* [in] */ Int32 length,
     /* [out] */ Int32* number)
 {
+    VALIDATE_NOT_NULL(number)
     if (mIn == NULL){
         //Java:    throw new IllegalStateException("not open");
         Logger::E(TAG, "IllegalStateException:not open\n");
@@ -162,13 +163,13 @@ ECode UlawEncoderInputStream::Read(
     /* [out] */ ArrayOf<Byte>* buf,
     /* [out] */ Int32* number)
 {
-    Read(buf, 0, buf->GetLength(), number);
-    return NOERROR;
+    return Read(buf, 0, buf->GetLength(), number);
 }
 
 ECode UlawEncoderInputStream::Read(
     /* [out] */ Int32* value)
 {
+    VALIDATE_NOT_NULL(value)
     Int32 n;
     Read(mOneByte, 0, 1, &n);
     if (n == -1){
@@ -192,6 +193,7 @@ ECode UlawEncoderInputStream::Close()
 ECode UlawEncoderInputStream::Available(
     /* [out] */ Int32* number)
 {
+    VALIDATE_NOT_NULL(number)
     Int32 numberAvailable;
     *number = ((mIn->Available(&numberAvailable), numberAvailable) + mBufCount) / 2;
     return NOERROR;

@@ -1,5 +1,5 @@
 
-TARGET_NAME = speech.tts
+TARGET_NAME = tts
 TARGET_TYPE = lib
 
 include $(MAKEDIR)/../../../../../../../sources.inc
