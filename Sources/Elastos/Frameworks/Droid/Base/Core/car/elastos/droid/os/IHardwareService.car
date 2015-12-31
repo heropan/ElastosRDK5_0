@@ -6,7 +6,7 @@ module
     namespace Os {
 
     /** {@hide} */
-    interface IHardwareService {
+    interface IIHardwareService {
         // obsolete flashlight support
         GetFlashlightEnabled(
             [out] Boolean* enabled);

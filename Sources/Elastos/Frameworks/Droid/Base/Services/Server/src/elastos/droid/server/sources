@@ -47,7 +47,6 @@ SOURCES += Watchdog.cpp
 #SOURCES += CDiskStatsService.cpp
 #SOURCES += CUpdateLockService.cpp
 #SOURCES += CSamplingProfilerService.cpp
-#SOURCES += LightsService.cpp
 #SOURCES += CCountryDetectorService.cpp
 #SOURCES += CEthernetService.cpp
 #SOURCES += CLocationManagerService.cpp
@@ -81,7 +80,6 @@ SOURCES += Watchdog.cpp
 #SOURCES += AppWidgetServiceImpl.cpp
 #SOURCES += CAppWidgetService.cpp
 #SOURCES += CPrivacySettingsManagerService.cpp
-#SOURCES += CLegacyFlashlightHack.cpp
 #SOURCES += CWifiService.cpp
 #SOURCES += invokeCallback_gnuc.S
 # TODO: Add ECO_PUBLIC to R.h and Manifest.h
@@ -96,6 +94,7 @@ SOURCES += Elastos.CoreLibrary.cpp
 ELASTOS_LIBS += am/am.lib
 #ELASTOS_LIBS += content/content.lib
 ELASTOS_LIBS += display/display.lib
+ELASTOS_LIBS += lights/lights.lib
 ELASTOS_LIBS += os/os.lib
 ELASTOS_LIBS += wallpaper/wallpaper.lib
 

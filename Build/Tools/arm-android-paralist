@@ -301,6 +301,7 @@
 #> Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/content
 #  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/dreams
 #  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/input
+> Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/lights
 #  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/location
   Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/net
 #< Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/pm

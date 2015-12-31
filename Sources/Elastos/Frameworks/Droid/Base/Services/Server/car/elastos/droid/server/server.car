@@ -24,6 +24,8 @@ module
     merge("display/OverlayDisplayWindow.car");
     merge("display/RampAnimator.car");
 
+    merge("lights/LightsManager.car");
+
     merge("notification/NotificationManagerInternal.car");
 
     merge("net/NetworkPolicyManagerService.car");
@@ -108,7 +110,7 @@ module
     // using interface Elastos.Droid.Os.INetworkManagementService;
     // using interface Elastos.Droid.Os.IBundle;
     // using interface Elastos.Droid.Os.IIPowerManager;
-    // using interface Elastos.Droid.Os.IHardwareService;
+    using interface Elastos.Droid.Os.IIHardwareService;
     // using interface Elastos.Droid.Os.IZigbeeService;
     // using interface Elastos.Droid.Os.IKortideRemoteService;
     // using interface Elastos.Droid.Os.Storage.IMountService;
@@ -346,15 +348,6 @@ module
 //             [in] Handle32 twilight);
 
 //         interface IIUiModeManager;
-//         interface IBinder;
-//     }
-
-//     [local]
-//     class CLegacyFlashlightHack {
-//         constructor(
-//             [in] IContext* ctx);
-
-//         interface IHardwareService;
 //         interface IBinder;
 //     }
 
@@ -1375,6 +1368,7 @@ module
     } // namepsace Droid
     } // namespace Elastos
 
+
     // namespace Elastos {
     // namespace Droid {
     // namespace Server {
@@ -1384,4 +1378,24 @@ module
     // } // namespace Server
     // } // namepsace Droid
     // } // namespace Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+    namespace Lights {
+
+    [local]
+    class CLegacyFlashlightHack {
+        constructor(
+            [in] ISystemService* service);
+
+        interface IIHardwareService;
+        interface IBinder;
+    }
+
+    } // namespace Lights
+    } // namespace Server
+    } // namepsace Droid
+    } // namespace Elastos
+
 }

@@ -3,6 +3,7 @@
 DIRS += am
 #DIRS += content
 DIRS += display
+DIRS += lights
 DIRS += os
 DIRS += wallpaper
 
