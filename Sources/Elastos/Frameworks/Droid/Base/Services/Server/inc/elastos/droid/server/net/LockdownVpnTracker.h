@@ -5,6 +5,7 @@
 #include "_Elastos.Droid.Server.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/connectivity/Vpn.h"
 
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::BroadcastReceiver;
@@ -18,13 +19,6 @@ using Elastos::Droid::Internal::Net::IVpnProfile;
 namespace Elastos {
 namespace Droid {
 namespace Server {
-
-class CConnectivityService;
-
-namespace Connectivity {
-class Vpn;
-}
-
 namespace Net {
 
 /**
@@ -32,14 +26,17 @@ namespace Net {
  * connected and kicks off VPN connection, managing any required {@code netd}
  * firewall rules.
  */
-class LockdownVpnTracker : public ElRefBase
+class LockdownVpnTracker
+    : public Object
 {
 private:
-    class TrackerBroadcastReceiver : public BroadcastReceiver
+    class InnerSub_BroadcastReceiver
+        : public BroadcastReceiver
     {
     public:
         TrackerBroadcastReceiver(
-            /* [in] */ LockdownVpnTracker* owner) : mOwner(owner)
+            /* [in] */ LockdownVpnTracker* owner)
+            : mOwner(owner)
         {}
 
         CARAPI OnReceive(
@@ -59,7 +56,9 @@ private:
     };
 
 public:
-    LockdownVpnTracker(
+    LockdownVpnTracker();
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ INetworkManagementService* netService,
         /* [in] */ CConnectivityService* connService,
@@ -84,6 +83,10 @@ public:
         /* [in] */ INetworkInfo* inInfo);
 
 private:
+    /**
+     * Watch for state changes to both active egress network, kicking off a VPN
+     * connection when ready, or setting firewall rules once VPN is connected.
+     */
     CARAPI HandleStateChangedLocked();
 
     CARAPI InitLocked();
@@ -106,6 +109,9 @@ private:
 
     static const String ACTION_LOCKDOWN_RESET;
     static const String ACTION_VPN_SETTINGS;
+    static const String EXTRA_PICK_LOCKDOWN;
+
+    static const Int32 ROOT_UID;
 
     AutoPtr<IContext> mContext;
     AutoPtr<INetworkManagementService> mNetService;
@@ -115,11 +121,12 @@ private:
 
     Object mStateLock;
 
+    AutoPtr<IPendingIntent> mConfigIntent;
     AutoPtr<IPendingIntent> mResetIntent;
 
     String mAcceptedEgressIface;
     String mAcceptedIface;
-    String mAcceptedSourceAddr;
+    AutoPtr<IList> mAcceptedSourceAddr;
 
     Int32 mErrorCount;
 

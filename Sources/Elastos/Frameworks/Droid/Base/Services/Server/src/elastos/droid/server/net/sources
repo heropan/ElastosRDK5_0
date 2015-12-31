@@ -1,22 +1,23 @@
 TARGET_NAME= net
 TARGET_TYPE= lib
 
+include $(MAKEDIR)/../../../../../../../../sources.inc
+
 INCLUDES += ../
-INCLUDES += $(MAKEDIR)/../../inc
-INCLUDES += $(MAKEDIR)/../../../../Core/inc
-#INCLUDES += $(MAKEDIR)/../../../../../../../LibCore/inc/Elastos/Core
-#INCLUDES += $(MAKEDIR)/../../../../../../../LibCore/inc/Elastos/Core/elastos
+INCLUDES += $(MAKEDIR)/../../../../../inc
 
 C_DEFINES += -DDROID_SERVER
 
-SOURCES = BaseNetworkObserver.cpp
-SOURCES += LockdownVpnTracker.cpp
-SOURCES += NetworkIdentitySet.cpp
-SOURCES += CNetworkPolicyManagerServiceAlertObserber.cpp
-SOURCES += CNetworkPolicyManagerService.cpp
-SOURCES += CProcessObserver.cpp
-SOURCES += NetworkStatsCollection.cpp
-SOURCES += NetworkStatsRecorder.cpp
-SOURCES += CNetworkStatsSession.cpp
-SOURCES += CNetworkStatsServiceAlertObserber.cpp
-SOURCES += CNetworkStatsService.cpp
+SOURCES = net.cpp
+SOURCES += DelayedDiskWrite.cpp
+SOURCES += IpConfigStore.cpp
+#SOURCES += LockdownVpnTracker.cpp
+#SOURCES += NetworkIdentitySet.cpp
+#SOURCES += CNetworkPolicyManagerServiceAlertObserber.cpp
+#SOURCES += CNetworkPolicyManagerService.cpp
+#SOURCES += CProcessObserver.cpp
+#SOURCES += NetworkStatsCollection.cpp
+#SOURCES += NetworkStatsRecorder.cpp
+#SOURCES += CNetworkStatsSession.cpp
+#SOURCES += CNetworkStatsServiceAlertObserber.cpp
+#SOURCES += CNetworkStatsService.cpp

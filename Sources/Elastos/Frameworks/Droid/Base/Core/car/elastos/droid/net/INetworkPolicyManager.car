@@ -10,6 +10,10 @@ module
     namespace Droid {
     namespace Net {
 
+    /**
+     * @Involved
+     * no super interface
+     */
     [deprecated]
     interface IINetworkPolicyManager {
         /** Control UID policies. */

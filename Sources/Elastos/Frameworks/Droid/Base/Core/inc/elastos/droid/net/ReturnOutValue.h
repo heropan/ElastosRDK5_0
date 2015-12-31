@@ -113,6 +113,22 @@ inline void funcReturnVal(T* result)
  *
  */
 template <typename T_OBJ>
+class Redefine;
+
+template <typename T>
+AutoPtr<Redefine<T> > Ptr(T* obj)
+{
+    AutoPtr<Redefine<T> > rev = new Redefine<T>(obj);
+    return rev;
+}
+
+template <typename T>
+AutoPtr<Redefine<T> > Ptr(AutoPtr<T>& obj)
+{
+    return Ptr(obj.Get());
+}
+
+template <typename T_OBJ>
 class Redefine
     : public Object
 {
@@ -128,22 +144,26 @@ public:
         (mPtr->*func)(&rev);
         return rev;
     }
+
+    template <typename T_REV>
+    AutoPtr<T_REV> Func(ECode (T_OBJ::*func)(T_REV**))
+    {
+        AutoPtr<T_REV> rev;
+        (mPtr->*func)((T_REV**)&rev);
+        return rev;
+    }
+
+    template <typename T_REV>
+    AutoPtr<Redefine<T_REV> > Ptr(ECode (T_OBJ::*func)(T_REV**))
+    {
+        AutoPtr<T_REV> rev;
+        (mPtr->*func)((T_REV**)&rev);
+        return ::Ptr(rev);
+    }
+
 private:
-    T_OBJ* mPtr;
+    AutoPtr<T_OBJ> mPtr;
 };
-
-template <typename T>
-AutoPtr<Redefine<T> > Ptr(T* obj)
-{
-    AutoPtr<Redefine<T> > rev = new Redefine<T>(obj);
-    return rev;
-}
-
-template <typename T>
-AutoPtr<Redefine<T> > Ptr(AutoPtr<T>& obj)
-{
-    return Ptr(obj.Get());
-}
 
 // @Deprecated
 //======================================================================

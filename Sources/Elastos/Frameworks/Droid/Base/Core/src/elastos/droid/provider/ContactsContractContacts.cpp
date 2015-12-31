@@ -267,19 +267,19 @@ ECode ContactsContractContacts::OpenContactPhotoInputStream(
     AutoPtr<IByteArrayInputStream> _stream;
     if (cursor == NULL || (cursor->MoveToNext(&result), !result)) {
         *stream = NULL;
-        goto FINALLY;
+        goto FAIL_FINALLY;
     }
-    FAIL_GOTO(cursor->GetBlob(0, (ArrayOf<Byte>**)&data), FINALLY)
+    FAIL_GOTO(cursor->GetBlob(0, (ArrayOf<Byte>**)&data), FAIL_FINALLY)
     if (data == NULL) {
         *stream = NULL;
-        goto FINALLY;
+        goto FAIL_FINALLY;
     }
-    FAIL_GOTO(CByteArrayInputStream::New(data, (IByteArrayInputStream**)&_stream), FINALLY)
+    FAIL_GOTO(CByteArrayInputStream::New(data, (IByteArrayInputStream**)&_stream), FAIL_FINALLY)
     *stream = IInputStream::Probe(_stream);
     REFCOUNT_ADD(*stream);
-    goto FINALLY;
+    goto FAIL_FINALLY;
     //} finally {
-FINALLY:
+FAIL_FINALLY:
     if (cursor != NULL) {
         FAIL_RETURN(ICloseable::Probe(cursor)->Close())
     }
