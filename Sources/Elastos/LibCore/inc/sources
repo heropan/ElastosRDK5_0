@@ -81,6 +81,7 @@ EXPORT_HEADERS += elastos/utility/Arrays.h
 EXPORT_HEADERS += elastos/utility/ComparableTimSort.h
 EXPORT_HEADERS += elastos/utility/DualPivotQuicksort.h
 EXPORT_HEADERS += elastos/utility/HashMap.h
+EXPORT_HEADERS += elastos/utility/HashSet.h
 EXPORT_HEADERS += elastos/utility/HashTable.h
 EXPORT_HEADERS += elastos/utility/Objects.h
 EXPORT_HEADERS += elastos/utility/Observable.h

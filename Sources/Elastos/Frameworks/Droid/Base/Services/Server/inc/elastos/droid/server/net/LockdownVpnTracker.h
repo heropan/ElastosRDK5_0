@@ -4,17 +4,21 @@
 
 #include "_Elastos.Droid.Server.h"
 #include "elastos/droid/ext/frameworkext.h"
+// #include "elastos/droid/server/connectivity/Vpn.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
-#include "elastos/droid/connectivity/Vpn.h"
 
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Net::IIConnectivityManager;
+using Elastos::Droid::Net::IBaseNetworkStateTracker;
+using Elastos::Droid::Net::ILinkAddress;
 using Elastos::Droid::Net::INetworkInfo;
 using Elastos::Droid::Os::INetworkManagementService;
 using Elastos::Droid::Internal::Net::IVpnProfile;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -34,7 +38,7 @@ private:
         : public BroadcastReceiver
     {
     public:
-        TrackerBroadcastReceiver(
+        InnerSub_BroadcastReceiver(
             /* [in] */ LockdownVpnTracker* owner)
             : mOwner(owner)
         {}
@@ -61,8 +65,8 @@ public:
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ INetworkManagementService* netService,
-        /* [in] */ CConnectivityService* connService,
-        /* [in] */ Elastos::Droid::Server::Connectivity::Vpn* vpn,
+        /* [in] */ IIConnectivityManager* connService,
+        /* [in] */ IBaseNetworkStateTracker* vpn,
         /* [in] */ IVpnProfile* profile);
 
     static CARAPI_(Boolean) IsEnabled();
@@ -73,8 +77,7 @@ public:
 
     CARAPI Reset();
 
-    CARAPI OnNetworkInfoChanged(
-        /* [in] */ INetworkInfo* info);
+    CARAPI OnNetworkInfoChanged();
 
     CARAPI OnVpnStateChanged(
         /* [in] */ INetworkInfo* info);
@@ -94,6 +97,10 @@ private:
     CARAPI ShutdownLocked();
 
     CARAPI ClearSourceRulesLocked();
+
+    CARAPI SetFirewallEgressSourceRule(
+        /* [in] */ ILinkAddress* address,
+        /* [in] */ Boolean allow);
 
     CARAPI_(void) ShowNotification(
         /* [in] */ Int32 titleRes,
@@ -115,8 +122,8 @@ private:
 
     AutoPtr<IContext> mContext;
     AutoPtr<INetworkManagementService> mNetService;
-    AutoPtr<CConnectivityService> mConnService;
-    AutoPtr<Elastos::Droid::Server::Connectivity::Vpn> mVpn;
+    // AutoPtr<CConnectivityService> mConnService;
+    // AutoPtr<Elastos::Droid::Server::Connectivity::Vpn> mVpn;
     AutoPtr<IVpnProfile> mProfile;
 
     Object mStateLock;

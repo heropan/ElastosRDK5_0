@@ -926,7 +926,7 @@ module
         interface IRunnable;
     }
 
-    singleton class CPendingIntentHelper{
+    singleton class CPendingIntentHelper {
         interface IPendingIntentHelper;
     }
 

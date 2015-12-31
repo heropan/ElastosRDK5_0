@@ -75,7 +75,7 @@ IpConfigStore::InnerSub_Writer::InnerSub_Writer(
 ECode IpConfigStore::InnerSub_Writer::OnWriteCalled(
     /* [in] */ IDataOutputStream* out)
 {
-    FAIL_RETURN(out->WriteInt32(IPCONFIG_FILE_VERSION))
+    FAIL_RETURN(IDataOutput::Probe(out)->WriteInt32(IPCONFIG_FILE_VERSION))
     for (Int32 i = 0; i < Ptr(mNetworks)->Func(mNetworks->GetSize); i++) {
         Int32 key;
         AutoPtr<IInterface> value;
@@ -118,107 +118,106 @@ ECode IpConfigStore::WriteConfig(
 {
     Boolean written = FALSE;
     // try {
-    ECode ecode;
-    Boolean needCatch = FALSE;
-    TRY {
-        switch (Ptr(config)->Func(config->GetIpAssignment)) {
-            case Elastos::Droid::Net::STATIC_IpAssignment: {
-                    JUDGE(label, ecode = out->WriteUTF(IP_ASSIGNMENT_KEY), needCatch)
-                    JUDGE(label, ecode = out->WriteUTF(StringUtils::ToString(Ptr(config)->Func(config->GetIpAssignment))), needCatch)
-                    AutoPtr<IStaticIpConfiguration> staticIpConfiguration;
-                    config->GetStaticIpConfiguration((IStaticIpConfiguration**)&staticIpConfiguration);
-                    if (staticIpConfiguration != NULL) {
-                        if (Ptr(staticIpConfiguration)->Func(staticIpConfiguration->GetIpAddress) != NULL) {
-                            AutoPtr<ILinkAddress> ipAddress;
-                            staticIpConfiguration->GetIpAddress((ILinkAddress**)&ipAddress);
-                            JUDGE(label, ecode = out->WriteUTF(LINK_ADDRESS_KEY), needCatch)
-                            String s = Ptr(ipAddress)->Ptr(ipAddress->GetAddress)->Func(IInetAddress::GetHostAddress);
-                            JUDGE(label, ecode = out->WriteUTF(s), needCatch)
-                            JUDGE(label, ecode = out->WriteInt32(Ptr(ipAddress)->Func(ipAddress->GetPrefixLength)), needCatch)
-                        }
-                        if (Ptr(staticIpConfiguration)->Func(staticIpConfiguration->GetGateway) != NULL) {
-                            JUDGE(label, ecode = out->WriteUTF(GATEWAY_KEY), needCatch)
-                            JUDGE(label, ecode = out->WriteInt32(0), needCatch)  // Default route.
-                            JUDGE(label, ecode = out->WriteInt32(1), needCatch)  // Have a gateway.
-                            String s;
-                            Ptr(staticIpConfiguration)->Func(staticIpConfiguration->GetGateway)->GetHostAddress(&s);
-                            JUDGE(label, ecode = out->WriteUTF(s), needCatch)
-                        }
-                        FOR_EACH(iter, Ptr(staticIpConfiguration)->Func(staticIpConfiguration->GetDnsServers)) {
-                            AutoPtr<IInetAddress> inetAddr = IInetAddress::Probe(Ptr(iter)->Func(iter->GetNext));
-                            JUDGE(label, ecode = out->WriteUTF(DNS_KEY), needCatch)
-                            JUDGE(label, ecode = out->WriteUTF(Ptr(inetAddr)->Func(inetAddr->GetHostAddress)), needCatch)
-                        }
+    ECode ec;
+    switch (Ptr(config)->Func(config->GetIpAssignment)) {
+        case Elastos::Droid::Net::STATIC_IpAssignment: {
+                FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(IP_ASSIGNMENT_KEY), label)
+                FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(StringUtils::ToString(Ptr(config)->Func(config->GetIpAssignment))), label)
+                AutoPtr<IStaticIpConfiguration> staticIpConfiguration;
+                config->GetStaticIpConfiguration((IStaticIpConfiguration**)&staticIpConfiguration);
+                if (staticIpConfiguration != NULL) {
+                    if (Ptr(staticIpConfiguration)->Func(staticIpConfiguration->GetIpAddress) != NULL) {
+                        AutoPtr<ILinkAddress> ipAddress;
+                        staticIpConfiguration->GetIpAddress((ILinkAddress**)&ipAddress);
+                        FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(LINK_ADDRESS_KEY), label)
+                        String s = Ptr(ipAddress)->Ptr(ipAddress->GetAddress)->Func(IInetAddress::GetHostAddress);
+                        FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(s), label)
+                        FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteInt32(Ptr(ipAddress)->Func(ipAddress->GetPrefixLength)), label)
                     }
-                    written = TRUE;
-                }
-                break;
-            case Elastos::Droid::Net::DHCP_IpAssignment:
-                JUDGE(label, ecode = out->WriteUTF(IP_ASSIGNMENT_KEY), needCatch)
-                JUDGE(label, ecode = out->WriteUTF(StringUtils::ToString(Ptr(config)->Func(config->GetIpAssignment))), needCatch)
-                written = TRUE;
-                break;
-            case Elastos::Droid::Net::UNASSIGNED_IpAssignment:
-                /* Ignore */
-                break;
-            default:
-                Loge("Ignore invalid ip assignment while writing");
-                break;
-        }
-        switch (Ptr(config)->Func(config->GetProxySettings)) {
-            case Elastos::Droid::Net::STATIC_ProxySettings: {
-                    AutoPtr<IProxyInfo> proxyProperties;
-                    config->GetHttpProxy((IProxyInfo**)&proxyProperties);
-                    String exclusionList;
-                    proxyProperties->GetExclusionListAsString(&exclusionList);
-                    out->WriteUTF(PROXY_SETTINGS_KEY);
-                    JUDGE(label, ecode = out->WriteUTF(StringUtils::ToString(Ptr(config)->Func(config->GetProxySettings))), needCatch)
-                    JUDGE(label, ecode = out->WriteUTF(PROXY_HOST_KEY), needCatch)
-                    JUDGE(label, ecode = out->WriteUTF(Ptr(proxyProperties)->Func(proxyProperties->GetHost)), needCatch)
-                    JUDGE(label, ecode = out->WriteUTF(PROXY_PORT_KEY), needCatch)
-                    JUDGE(label, ecode = out->WriteInt32(Ptr(proxyProperties)->Func(proxyProperties->GetPort)), needCatch)
-                    if (exclusionList != NULL) {
-                        JUDGE(label, ecode = out->WriteUTF(EXCLUSION_LIST_KEY), needCatch)
-                        JUDGE(label, ecode = out->WriteUTF(exclusionList), needCatch)
+                    if (Ptr(staticIpConfiguration)->Func(staticIpConfiguration->GetGateway) != NULL) {
+                        FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(GATEWAY_KEY), label)
+                        FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteInt32(0), label)  // Default route.
+                        FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteInt32(1), label)  // Have a gateway.
+                        String s;
+                        Ptr(staticIpConfiguration)->Func(staticIpConfiguration->GetGateway)->GetHostAddress(&s);
+                        FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(s), label)
                     }
-                    written = TRUE;
+                    FOR_EACH(iter, Ptr(staticIpConfiguration)->Func(staticIpConfiguration->GetDnsServers)) {
+                        AutoPtr<IInetAddress> inetAddr = IInetAddress::Probe(Ptr(iter)->Func(iter->GetNext));
+                        FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(DNS_KEY), label)
+                        FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(Ptr(inetAddr)->Func(inetAddr->GetHostAddress)), label)
+                    }
                 }
-                break;
-            case Elastos::Droid::Net::PAC_ProxySettings: {
-                    AutoPtr<IProxyInfo> proxyPacProperties;
-                    config->GetHttpProxy((IProxyInfo**)&proxyPacProperties);
-                    JUDGE(label, ecode = out->WriteUTF(PROXY_SETTINGS_KEY), needCatch)
-                    JUDGE(label, ecode = out->WriteUTF(StringUtils::ToString(Ptr(config)->Func(config->GetProxySettings))), needCatch)
-                    JUDGE(label, ecode = out->WriteUTF(PROXY_PAC_FILE), needCatch)
-                    JUDGE(label, ecode = out->WriteUTF(Object::ToString(Ptr(proxyPacProperties)->Func(proxyPacProperties->GetPacFileUrl))), needCatch)
-                    written = TRUE;
-                }
-                break;
-            case Elastos::Droid::Net::NONE_ProxySettings:
-                JUDGE(label, ecode = out->WriteUTF(PROXY_SETTINGS_KEY), needCatch)
-                JUDGE(label, ecode = out->WriteUTF(StringUtils::ToString(Ptr(config)->Func(config->GetProxySettings))), needCatch)
                 written = TRUE;
-                break;
-            case Elastos::Droid::Net::UNASSIGNED_ProxySettings:
-                /* Ignore */
-                break;
-            default:
-                Loge("Ignore invalid proxy settings while writing");
-                break;
-        }
-        if (written) {
-            JUDGE(label, ecode = out->WriteUTF(ID_KEY), needCatch)
-            JUDGE(label, ecode = out->WriteInt32(configKey), needCatch)
-        }
+            }
+            break;
+        case Elastos::Droid::Net::DHCP_IpAssignment:
+            FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(IP_ASSIGNMENT_KEY), label)
+            FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(StringUtils::ToString(Ptr(config)->Func(config->GetIpAssignment))), label)
+            written = TRUE;
+            break;
+        case Elastos::Droid::Net::UNASSIGNED_IpAssignment:
+            /* Ignore */
+            break;
+        default:
+            Loge("Ignore invalid ip assignment while writing");
+            break;
+    }
+    switch (Ptr(config)->Func(config->GetProxySettings)) {
+        case Elastos::Droid::Net::STATIC_ProxySettings: {
+                AutoPtr<IProxyInfo> proxyProperties;
+                config->GetHttpProxy((IProxyInfo**)&proxyProperties);
+                String exclusionList;
+                proxyProperties->GetExclusionListAsString(&exclusionList);
+                IDataOutput::Probe(out)->WriteUTF(PROXY_SETTINGS_KEY);
+                FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(StringUtils::ToString(Ptr(config)->Func(config->GetProxySettings))), label)
+                FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(PROXY_HOST_KEY), label)
+                FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(Ptr(proxyProperties)->Func(proxyProperties->GetHost)), label)
+                FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(PROXY_PORT_KEY), label)
+                FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteInt32(Ptr(proxyProperties)->Func(proxyProperties->GetPort)), label)
+                if (exclusionList != NULL) {
+                    FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(EXCLUSION_LIST_KEY), label)
+                    FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(exclusionList), label)
+                }
+                written = TRUE;
+            }
+            break;
+        case Elastos::Droid::Net::PAC_ProxySettings: {
+                AutoPtr<IProxyInfo> proxyPacProperties;
+                config->GetHttpProxy((IProxyInfo**)&proxyPacProperties);
+                FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(PROXY_SETTINGS_KEY), label)
+                FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(StringUtils::ToString(Ptr(config)->Func(config->GetProxySettings))), label)
+                FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(PROXY_PAC_FILE), label)
+                FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(Object::ToString(Ptr(proxyPacProperties)->Func(proxyPacProperties->GetPacFileUrl))), label)
+                written = TRUE;
+            }
+            break;
+        case Elastos::Droid::Net::NONE_ProxySettings:
+            FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(PROXY_SETTINGS_KEY), label)
+            FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(StringUtils::ToString(Ptr(config)->Func(config->GetProxySettings))), label)
+            written = TRUE;
+            break;
+        case Elastos::Droid::Net::UNASSIGNED_ProxySettings:
+            /* Ignore */
+            break;
+        default:
+            Loge("Ignore invalid proxy settings while writing");
+            break;
+    }
+    if (written) {
+        FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(ID_KEY), label)
+        FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteInt32(configKey), label)
     }
     // } catch (NullPointerException e) {
     label:
-    CATCH(E_NULL_POINTER_EXCEPTION, ecode, needCatch) {
-        Loge(TAG, "Failure in writing %s%d", Object::ToString(config).string(), ecode);
+    if (FAILED(ec)) {
+        if ((ECode)E_NULL_POINTER_EXCEPTION == ec)
+            Loge(TAG, "Failure in writing %s%d", Object::ToString(config).string(), ec);
+        else
+            return ec;
     }
-    TRY_END(ecode, needCatch)
     // }
-    out->WriteUTF(EOS);
+    IDataOutput::Probe(out)->WriteUTF(EOS);
     FUNC_RETURN(written)
 }
 
@@ -233,188 +232,191 @@ ECode IpConfigStore::ReadIpAndProxyConfigurations(
     /* [in] */ String filePath,
     /* [out] */ ISparseArray** result)
 {
-        AutoPtr<ISparseArray> networks;
-        CSparseArray::New((ISparseArray**)&networks);
-        AutoPtr<IDataInputStream> in;
-        ECode ec;
-        Boolean isReturnAfterFinally = FALSE;
-        Boolean needCatch = FALSE;
-        TRY {
-            AutoPtr<IFileInputStream> fileInputStream;
-            JUDGE(out_try, ec = CFileInputStream::New(filePath, (IFileInputStream**)&fileInputStream), needCatch)
-            AutoPtr<IBufferedInputStream> bufferedInputStream;
-            JUDGE(out_try, ec = CBufferedInputStream::New(IInputStream::Probe(fileInputStream), (IBufferedInputStream**)&bufferedInputStream), needCatch)
-            JUDGE(out_try, ec = CDataInputStream::New(IInputStream::Probe(bufferedInputStream), (IDataInputStream**)&in), needCatch)
-            Int32 version;
-            JUDGE(out_try, ec = in->ReadInt32(&version), needCatch)
-            if (version != 2 && version != 1) {
-                Loge("Bad version on IP configuration file, ignore read");
-                *result = NULL;
-                TRY_RETURN(out_try_final, isReturnAfterFinally)
+    AutoPtr<ISparseArray> networks;
+    CSparseArray::New((ISparseArray**)&networks);
+    AutoPtr<IDataInputStream> in;
+    ECode ec;
+    AutoPtr<IFileInputStream> fileInputStream;
+    AutoPtr<IBufferedInputStream> bufferedInputStream;
+    FAIL_GOTO(ec = CFileInputStream::New(filePath, (IFileInputStream**)&fileInputStream), out_try)
+    FAIL_GOTO(ec = CBufferedInputStream::New(IInputStream::Probe(fileInputStream), (IBufferedInputStream**)&bufferedInputStream), out_try)
+    FAIL_GOTO(ec = CDataInputStream::New(IInputStream::Probe(bufferedInputStream), (IDataInputStream**)&in), out_try)
+    Int32 version;
+    FAIL_GOTO(ec = IDataInput::Probe(in)->ReadInt32(&version), out_try)
+    if (version != 2 && version != 1) {
+        Loge("Bad version on IP configuration file, ignore read");
+        *result = NULL;
+        if (in != NULL) {
+            // try {
+            ICloseable::Probe(in)->Close();
+            // } catch (Exception e) {}
+        }
+        return NOERROR;
+    }
+    while (TRUE) {
+        Int32 id = -1;
+        // Default is DHCP with no proxy
+        IpConfigurationIpAssignment ipAssignment = Elastos::Droid::Net::DHCP_IpAssignment;
+        IpConfigurationProxySettings proxySettings = Elastos::Droid::Net::NONE_ProxySettings;
+        AutoPtr<IStaticIpConfiguration> staticIpConfiguration;
+        CStaticIpConfiguration::New((IStaticIpConfiguration**)&staticIpConfiguration);
+        String proxyHost(NULL);
+        String pacFileUrl(NULL);
+        Int32 proxyPort = -1;
+        String exclusionList(NULL);
+        String key;
+        do {
+            FAIL_GOTO(ec = IDataInput::Probe(in)->ReadUTF(&key), out_try)
+            ECode ec_inner;
+            AutoPtr<INetworkUtils> helper;
+            CNetworkUtils::AcquireSingleton((INetworkUtils**)&helper);
+            if (key.Equals(ID_KEY)) {
+                FAIL_GOTO(ec_inner = IDataInput::Probe(in)->ReadInt32(&id), inner_try)
             }
-            while (TRUE) {
-                Int32 id = -1;
-                // Default is DHCP with no proxy
-                IpConfigurationIpAssignment ipAssignment = Elastos::Droid::Net::DHCP_IpAssignment;
-                IpConfigurationProxySettings proxySettings = Elastos::Droid::Net::NONE_ProxySettings;
-                AutoPtr<IStaticIpConfiguration> staticIpConfiguration;
-                CStaticIpConfiguration::New((IStaticIpConfiguration**)&staticIpConfiguration);
-                String proxyHost(NULL);
-                String pacFileUrl(NULL);
-                Int32 proxyPort = -1;
-                String exclusionList(NULL);
-                String key;
-                do {
-                    JUDGE(out_try, ec = in->ReadUTF(&key), needCatch)
-                    ECode ec_inner;
-                    Boolean inner_needCatch = FALSE;
-                    TRY {
-                        AutoPtr<INetworkUtils> helper;
-                        CNetworkUtils::AcquireSingleton((INetworkUtils**)&helper);
-                        if (key.Equals(ID_KEY)) {
-                            JUDGE(inner_try, ec_inner = in->ReadInt32(&id), inner_needCatch)
-                        }
-                        else if (key.Equals(IP_ASSIGNMENT_KEY)) {
-                            ipAssignment = StringUtils::ParseInt32(Ptr(in)->Func(in->ReadUTF));
-                        }
-                        else if (key.Equals(LINK_ADDRESS_KEY)) {
-                            AutoPtr<IInetAddress> inetAddress;
-                            JUDGE(inner_try, ec_inner = helper->NumericToInetAddress(Ptr(in)->Func(in->ReadUTF), (IInetAddress**)&inetAddress), inner_needCatch)
-                            AutoPtr<ILinkAddress> linkAddr;
-                            CLinkAddress::New(inetAddress, Ptr(in)->Func(in->ReadInt32), (ILinkAddress**)&linkAddr);
-                            if (IInet4Address::Probe(Ptr(linkAddr)->Func(linkAddr->GetAddress)) != NULL &&
-                                    Ptr(staticIpConfiguration)->Func(staticIpConfiguration->GetIpAddress) == NULL) {
-                                staticIpConfiguration->SetIpAddress(linkAddr);
-                            }
-                            else {
-                                Loge("Non-IPv4 or duplicate address: %s", Object::ToString(linkAddr).string());
-                            }
-                        }
-                        else if (key.Equals(GATEWAY_KEY)) {
-                            AutoPtr<ILinkAddress> dest;
-                            AutoPtr<IInetAddress> gateway;
-                            if (version == 1) {
-                                // only supported default gateways - leave the dest/prefix empty
-                                JUDGE(inner_try, ec_inner = helper->NumericToInetAddress(Ptr(in)->Func(in->ReadUTF), (IInetAddress**)&gateway), inner_needCatch)
-                                if (Ptr(staticIpConfiguration)->Func(staticIpConfiguration->GetGateway) == NULL) {
-                                    staticIpConfiguration->SetGateway(gateway);
-                                } else {
-                                    Loge("Duplicate gateway: %s", Ptr(gateway)->Func(gateway->GetHostAddress).string());
-                                }
-                            } else {
-                                if (Ptr(in)->Func(in->ReadInt32) == 1) {
-                                    AutoPtr<IInetAddress> inetAddress;
-                                    JUDGE(inner_try, ec_inner = helper->NumericToInetAddress(Ptr(in)->Func(in->ReadUTF),
-                                        (IInetAddress**)&inetAddress), inner_needCatch)
-                                    CLinkAddress::New(inetAddress, Ptr(in)->Func(in->ReadInt32), (ILinkAddress**)&dest);
-                                }
-                                if (Ptr(in)->Func(in->ReadInt32) == 1) {
-                                    JUDGE(inner_try, ec_inner = helper->NumericToInetAddress(Ptr(in)->Func(in->ReadUTF), (IInetAddress**)&gateway), inner_needCatch)
-                                }
-                                AutoPtr<IRouteInfo> route;
-                                CRouteInfo::New(dest, gateway, (IRouteInfo**)&route);
-                                if (Ptr(route)->Func(route->IsIPv4Default) &&
-                                        Ptr(staticIpConfiguration)->Func(staticIpConfiguration->GetGateway) == NULL) {
-                                    staticIpConfiguration->SetGateway(gateway);
-                                } else {
-                                    Loge("Non-IPv4 default or duplicate route: %s", Object::ToString(route).string());
-                                }
-                            }
-                        } else if (key.Equals(DNS_KEY)) {
-                            AutoPtr<IInetAddress> inetAddress;
-                            JUDGE(inner_try, ec_inner = helper->NumericToInetAddress(Ptr(in)->Func(in->ReadUTF), (IInetAddress**)&inetAddress), inner_needCatch)
-                            Ptr(staticIpConfiguration)->Func(staticIpConfiguration->GetDnsServers)->Add(inetAddress);
-                        } else if (key.Equals(PROXY_SETTINGS_KEY)) {
-                            proxySettings = StringUtils::ParseInt32(Ptr(in)->Func(in->ReadUTF));
-                        } else if (key.Equals(PROXY_HOST_KEY)) {
-                            JUDGE(inner_try, ec_inner = in->ReadUTF(&proxyHost), inner_needCatch)
-                        } else if (key.Equals(PROXY_PORT_KEY)) {
-                            JUDGE(inner_try, ec_inner = in->ReadInt32(&proxyPort), inner_needCatch)
-                        } else if (key.Equals(PROXY_PAC_FILE)) {
-                            JUDGE(inner_try, ec_inner = in->ReadUTF(&pacFileUrl), inner_needCatch)
-                        } else if (key.Equals(EXCLUSION_LIST_KEY)) {
-                            JUDGE(inner_try, ec_inner = in->ReadUTF(&exclusionList), inner_needCatch)
-                        } else if (key.Equals(EOS)) {
-                            break;
-                        } else {
-                            Loge("Ignore unknown key %s while reading", key.string());
-                        }
-                    }
-                    inner_try:
-                    CATCH(E_ILLEGAL_ARGUMENT_EXCEPTION, ec_inner, inner_needCatch) {
-                        Loge("Ignore invalid address while reading %d", ec_inner);
-                    }
-                    TRY_END(ec_inner, inner_needCatch)
-                } while (TRUE);
-                if (id != -1) {
-                    AutoPtr<IIpConfiguration> config;
-                    CIpConfiguration::New((IIpConfiguration**)&config);
-                    networks->Put(id, config);
-                    switch (ipAssignment) {
-                        case Elastos::Droid::Net::STATIC_IpAssignment:
-                            config->SetStaticIpConfiguration(staticIpConfiguration);
-                            config->SetIpAssignment(ipAssignment);
-                            break;
-                        case Elastos::Droid::Net::DHCP_IpAssignment:
-                            config->SetIpAssignment(ipAssignment);
-                            break;
-                        case Elastos::Droid::Net::UNASSIGNED_IpAssignment:
-                            Loge("BUG: Found UNASSIGNED IP on file, use DHCP");
-                            config->SetIpAssignment(Elastos::Droid::Net::DHCP_IpAssignment);
-                            break;
-                        default:
-                            Loge("Ignore invalid ip assignment while reading.");
-                            config->SetIpAssignment(Elastos::Droid::Net::UNASSIGNED_IpAssignment);
-                            break;
-                    }
-                    switch (proxySettings) {
-                        case Elastos::Droid::Net::STATIC_ProxySettings: {
-                                AutoPtr<IProxyInfo> proxyInfo;
-                                CProxyInfo::New(proxyHost, proxyPort, exclusionList, (IProxyInfo**)&proxyInfo);
-                                config->SetProxySettings(proxySettings);
-                                config->SetHttpProxy(proxyInfo);
-                            }
-                            break;
-                        case Elastos::Droid::Net::PAC_ProxySettings: {
-                                AutoPtr<IProxyInfo> proxyPacProperties;
-                                CProxyInfo::New(pacFileUrl, (IProxyInfo**)&proxyPacProperties);
-                                config->SetProxySettings(proxySettings);
-                                config->SetHttpProxy(proxyPacProperties);
-                            }
-                            break;
-                        case Elastos::Droid::Net::NONE_ProxySettings:
-                            config->SetProxySettings(proxySettings);
-                            break;
-                        case Elastos::Droid::Net::UNASSIGNED_ProxySettings:
-                            Loge("BUG: Found UNASSIGNED proxy on file, use NONE");
-                            config->SetProxySettings(Elastos::Droid::Net::NONE_ProxySettings);
-                            break;
-                        default:
-                            Loge("Ignore invalid proxy settings while reading");
-                            config->SetProxySettings(Elastos::Droid::Net::UNASSIGNED_ProxySettings);
-                            break;
-                    }
-                } else {
-                    if (DBG) Log("Missing id while parsing configuration");
+            else if (key.Equals(IP_ASSIGNMENT_KEY)) {
+                ipAssignment = StringUtils::ParseInt32(Ptr(IDataInput::Probe(in))->Func(IDataInput::ReadUTF));
+            }
+            else if (key.Equals(LINK_ADDRESS_KEY)) {
+                AutoPtr<IInetAddress> inetAddress;
+                FAIL_GOTO(ec_inner = helper->NumericToInetAddress(Ptr(IDataInput::Probe(in))->Func(IDataInput::ReadUTF), (IInetAddress**)&inetAddress), inner_try)
+                AutoPtr<ILinkAddress> linkAddr;
+                CLinkAddress::New(inetAddress, Ptr(IDataInput::Probe(in))->Func(IDataInput::ReadInt32), (ILinkAddress**)&linkAddr);
+                if (IInet4Address::Probe(Ptr(linkAddr)->Func(linkAddr->GetAddress)) != NULL &&
+                        Ptr(staticIpConfiguration)->Func(staticIpConfiguration->GetIpAddress) == NULL) {
+                    staticIpConfiguration->SetIpAddress(linkAddr);
+                }
+                else {
+                    Loge("Non-IPv4 or duplicate address: %s", Object::ToString(linkAddr).string());
                 }
             }
+            else if (key.Equals(GATEWAY_KEY)) {
+                AutoPtr<ILinkAddress> dest;
+                AutoPtr<IInetAddress> gateway;
+                if (version == 1) {
+                    // only supported default gateways - leave the dest/prefix empty
+                    FAIL_GOTO(ec_inner = helper->NumericToInetAddress(Ptr(IDataInput::Probe(in))->Func(IDataInput::ReadUTF), (IInetAddress**)&gateway), inner_try)
+                    if (Ptr(staticIpConfiguration)->Func(staticIpConfiguration->GetGateway) == NULL) {
+                        staticIpConfiguration->SetGateway(gateway);
+                    } else {
+                        Loge("Duplicate gateway: %s", Ptr(gateway)->Func(gateway->GetHostAddress).string());
+                    }
+                } else {
+                    if (Ptr(IDataInput::Probe(in))->Func(IDataInput::ReadInt32) == 1) {
+                        AutoPtr<IInetAddress> inetAddress;
+                        FAIL_GOTO(ec_inner = helper->NumericToInetAddress(Ptr(IDataInput::Probe(in))->Func(IDataInput::ReadUTF),
+                            (IInetAddress**)&inetAddress), inner_try)
+                        CLinkAddress::New(inetAddress, Ptr(IDataInput::Probe(in))->Func(IDataInput::ReadInt32), (ILinkAddress**)&dest);
+                    }
+                    if (Ptr(IDataInput::Probe(in))->Func(IDataInput::ReadInt32) == 1) {
+                        FAIL_GOTO(ec_inner = helper->NumericToInetAddress(Ptr(IDataInput::Probe(in))->Func(IDataInput::ReadUTF), (IInetAddress**)&gateway), inner_try)
+                    }
+                    AutoPtr<IRouteInfo> route;
+                    CRouteInfo::New(dest, gateway, (IRouteInfo**)&route);
+                    if (Ptr(route)->Func(route->IsIPv4Default) &&
+                            Ptr(staticIpConfiguration)->Func(staticIpConfiguration->GetGateway) == NULL) {
+                        staticIpConfiguration->SetGateway(gateway);
+                    } else {
+                        Loge("Non-IPv4 default or duplicate route: %s", Object::ToString(route).string());
+                    }
+                }
+            } else if (key.Equals(DNS_KEY)) {
+                AutoPtr<IInetAddress> inetAddress;
+                FAIL_GOTO(ec_inner = helper->NumericToInetAddress(Ptr(IDataInput::Probe(in))->Func(IDataInput::ReadUTF), (IInetAddress**)&inetAddress), inner_try)
+                Ptr(staticIpConfiguration)->Func(staticIpConfiguration->GetDnsServers)->Add(inetAddress);
+            } else if (key.Equals(PROXY_SETTINGS_KEY)) {
+                proxySettings = StringUtils::ParseInt32(Ptr(IDataInput::Probe(in))->Func(IDataInput::ReadUTF));
+            } else if (key.Equals(PROXY_HOST_KEY)) {
+                FAIL_GOTO(ec_inner = IDataInput::Probe(in)->ReadUTF(&proxyHost), inner_try)
+            } else if (key.Equals(PROXY_PORT_KEY)) {
+                FAIL_GOTO(ec_inner = IDataInput::Probe(in)->ReadInt32(&proxyPort), inner_try)
+            } else if (key.Equals(PROXY_PAC_FILE)) {
+                FAIL_GOTO(ec_inner = IDataInput::Probe(in)->ReadUTF(&pacFileUrl), inner_try)
+            } else if (key.Equals(EXCLUSION_LIST_KEY)) {
+                FAIL_GOTO(ec_inner = IDataInput::Probe(in)->ReadUTF(&exclusionList), inner_try)
+            } else if (key.Equals(EOS)) {
+                break;
+            } else {
+                Loge("Ignore unknown key %s while reading", key.string());
+            }
+            inner_try:
+            if (FAILED(ec)) {
+                if ((ECode)E_ILLEGAL_ARGUMENT_EXCEPTION == ec_inner)
+                    Loge("Ignore invalid address while reading %d", ec_inner);
+                else
+                    return ec;
+            }
+        } while (TRUE);
+        if (id != -1) {
+            AutoPtr<IIpConfiguration> config;
+            CIpConfiguration::New((IIpConfiguration**)&config);
+            networks->Put(id, config);
+            switch (ipAssignment) {
+                case Elastos::Droid::Net::STATIC_IpAssignment:
+                    config->SetStaticIpConfiguration(staticIpConfiguration);
+                    config->SetIpAssignment(ipAssignment);
+                    break;
+                case Elastos::Droid::Net::DHCP_IpAssignment:
+                    config->SetIpAssignment(ipAssignment);
+                    break;
+                case Elastos::Droid::Net::UNASSIGNED_IpAssignment:
+                    Loge("BUG: Found UNASSIGNED IP on file, use DHCP");
+                    config->SetIpAssignment(Elastos::Droid::Net::DHCP_IpAssignment);
+                    break;
+                default:
+                    Loge("Ignore invalid ip assignment while reading.");
+                    config->SetIpAssignment(Elastos::Droid::Net::UNASSIGNED_IpAssignment);
+                    break;
+            }
+            switch (proxySettings) {
+                case Elastos::Droid::Net::STATIC_ProxySettings: {
+                        AutoPtr<IProxyInfo> proxyInfo;
+                        CProxyInfo::New(proxyHost, proxyPort, exclusionList, (IProxyInfo**)&proxyInfo);
+                        config->SetProxySettings(proxySettings);
+                        config->SetHttpProxy(proxyInfo);
+                    }
+                    break;
+                case Elastos::Droid::Net::PAC_ProxySettings: {
+                        AutoPtr<IProxyInfo> proxyPacProperties;
+                        CProxyInfo::New(pacFileUrl, (IProxyInfo**)&proxyPacProperties);
+                        config->SetProxySettings(proxySettings);
+                        config->SetHttpProxy(proxyPacProperties);
+                    }
+                    break;
+                case Elastos::Droid::Net::NONE_ProxySettings:
+                    config->SetProxySettings(proxySettings);
+                    break;
+                case Elastos::Droid::Net::UNASSIGNED_ProxySettings:
+                    Loge("BUG: Found UNASSIGNED proxy on file, use NONE");
+                    config->SetProxySettings(Elastos::Droid::Net::NONE_ProxySettings);
+                    break;
+                default:
+                    Loge("Ignore invalid proxy settings while reading");
+                    config->SetProxySettings(Elastos::Droid::Net::UNASSIGNED_ProxySettings);
+                    break;
+            }
+        } else {
+            if (DBG) Log("Missing id while parsing configuration");
         }
-        out_try:
-        CATCH(E_EOF_EXCEPTION, ec, needCatch) {
+    }
+out_try:
+    if (FAILED(ec)) {
+        if ((ECode)E_EOF_EXCEPTION == ec) {
         }
-        CATCH(E_IO_EXCEPTION, ec, needCatch) {
+        else if ((ECode)E_IO_EXCEPTION == ec) {
             Loge("Error parsing configuration: %d", ec);
         }
-        FINALLY(out_try_final) {
-            if (in != NULL) {
-                // try {
-                ICloseable::Probe(in)->Close();
-                // } catch (Exception e) {}
-            }
-        }
-        FINALLY_END(isReturnAfterFinally, ec)
-        TRY_END(ec, needCatch)
-        FUNC_RETURN(networks)
+        else
+            return ec;
+    }
+    // finally {
+    if (in != NULL) {
+        // try {
+        ICloseable::Probe(in)->Close();
+        // } catch (Exception e) {}
+    }
+    // }
+
+    FUNC_RETURN(networks)
 }
 
 ECode IpConfigStore::Loge(

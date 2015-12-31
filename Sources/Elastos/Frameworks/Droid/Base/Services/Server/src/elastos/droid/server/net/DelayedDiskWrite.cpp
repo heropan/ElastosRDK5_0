@@ -76,41 +76,38 @@ ECode DelayedDiskWrite::DoWrite(
     /* [in] */ const String& filePath,
     /* [in] */ Writer* w)
 {
-    return E_NOT_IMPLEMENTED;
-#if 1 // TODO: Translate codes below
     AutoPtr<IDataOutputStream> out;
     ECode ec;
-    Boolean needCatch = FALSE;
-    TRY {
+    do {
         AutoPtr<IFileOutputStream> fos;
-        JUDGE(label, ec = CFileOutputStream::New(filePath, (IFileOutputStream**)&fos), needCatch)
+        if (FAILED(ec = CFileOutputStream::New(filePath, (IFileOutputStream**)&fos))) break;
         AutoPtr<IBufferedOutputStream> bos;
-        JUDGE(label, ec = CBufferedOutputStream::New(IOutputStream::Probe(fos), (IBufferedOutputStream**)&bos), needCatch)
-        JUDGE(label, ec = CDataOutputStream::New(IOutputStream::Probe(bos), (IDataOutputStream**)&out), needCatch)
-        JUDGE(label, ec = w->OnWriteCalled(out), needCatch)
+        if (FAILED(ec = CBufferedOutputStream::New(IOutputStream::Probe(fos), (IBufferedOutputStream**)&bos))) break;
+        if (FAILED(ec = CDataOutputStream::New(IOutputStream::Probe(bos), (IDataOutputStream**)&out))) break;
+        if (FAILED(ec = w->OnWriteCalled(out))) break;
+    } while(FALSE);
+    if (FAILED(ec)) {
+        if ((ECode)E_IO_EXCEPTION == ec)
+            Logger::E(TAG, "Error writing data file %s", filePath.string());
+        else
+            return ec;
     }
-    label:
-    CATCH(E_IO_EXCEPTION, ec, needCatch) {
-        Logger::E(TAG, "Error writing data file %s", filePath.string());
+    // finally {
+    if (out != NULL) {
+        // try {
+        IOutputStream::Probe(out)->Close();
+        // } catch (Exception e) {}
     }
-    FINALLY(label_finally) {
-        if (out != NULL) {
-            // try {
-            IOutputStream::Probe(out)->Close();
-            // } catch (Exception e) {}
+    // }
+    // Quit if no more writes sent
+    synchronized(this) {
+        if (--mWriteSequence == 0) {
+            Ptr(mDiskWriteHandler)->Func(IHandler::GetLooper)->Quit();
+            mDiskWriteHandler = NULL;
+            mDiskWriteHandlerThread = NULL;
         }
-        // Quit if no more writes sent
-        synchronized(this) {
-            if (--mWriteSequence == 0) {
-                Ptr(mDiskWriteHandler)->Func(IHandler::GetLooper)->Quit();
-                mDiskWriteHandler = NULL;
-                mDiskWriteHandlerThread = NULL;
-            }
-        }
     }
-    TRY_END(ec, needCatch)
     return NOERROR;
-#endif
 }
 
 ECode DelayedDiskWrite::Loge(

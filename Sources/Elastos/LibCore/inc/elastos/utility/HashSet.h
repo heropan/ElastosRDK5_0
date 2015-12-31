@@ -11,7 +11,7 @@ using Elastos::IO::ISerializable;
 namespace Elastos {
 namespace Utility {
 
-class HashSet
+class ECO_PUBLIC HashSet
     : public AbstractSet
     , public IHashSet
     , public ICloneable
@@ -208,7 +208,7 @@ private:
         /* [in] */ IObjectInputStream* stream);
 
 private:
-    static const Int64 sSerialVersionUID = -5024744406713321676L;
+    ECO_LOCAL static const Int64 sSerialVersionUID = -5024744406713321676L;
 
     /* transient */ AutoPtr<IMap> mBackingMap;
 };
