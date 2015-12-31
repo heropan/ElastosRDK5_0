@@ -27,59 +27,6 @@ module
          */
         GetSize(
             [out] Int32* result);
-
-        /**
-         * Writes a boolean to the target stream.
-         *
-         * @param val
-         *            the boolean value to write to the target stream.
-         * @throws IOException
-         *             if an error occurs while writing to the target stream.
-         * @see DataInputStream#readBoolean()
-         */
-        WriteBoolean(
-            [in] Boolean val);
-
-        /**
-         * Writes an 8-bit byte to the target stream. Only the least significant
-         * byte of the integer {@code val} is written.
-         *
-         * @param val
-         *            the byte value to write to the target stream.
-         * @throws IOException
-         *             if an error occurs while writing to the target stream.
-         * @see DataInputStream#readByte()
-         * @see DataInputStream#readUnsignedByte()
-         */
-        WriteByte(
-            [in] Int32 val);
-
-        WriteBytes(
-            [in] String str);
-
-        WriteChar(
-            [in] Int32 val);
-
-        WriteChars(
-            [in] String str);
-
-        WriteDouble(
-            [in] Double val);
-
-        WriteFloat(
-            [in] Float val);
-
-        WriteInt32(
-            [in] Int32 val);
-
-        WriteInt64(
-            [in] Int64 val);
-
-        WriteInt16(
-            [in] Int32 val);
-
-        WriteUTF(
-            [in] String str);
     }
 
     } // namespace IO

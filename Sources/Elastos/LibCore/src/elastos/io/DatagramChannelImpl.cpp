@@ -251,17 +251,15 @@ ECode DatagramChannelImpl::OnBind(
     /* [in] */ Boolean updateSocketState)
 {
     AutoPtr<ISocketAddress> sa;
-    // try {
     ECode ec;
-    Boolean needCatch = FALSE;
-    TRY {
-        JUDGE(label, ec = CLibcore::sOs->Getsockname(mFd, (ISocketAddress**)&sa), needCatch)
+    do {
+        if (FAILED(ec = CLibcore::sOs->Getsockname(mFd, (ISocketAddress**)&sa))) break;
+    } while(FALSE);
+    if (FAILED(ec)) {
+        if ((ECode)E_ERRNO_EXCEPTION == ec)
+            return E_ASSERTION_ERROR;
+        return ec;
     }
-    label:
-    CATCH(E_ERRNO_EXCEPTION, ec, needCatch) {
-        return E_ASSERTION_ERROR;
-    }
-    TRY_END(ec, needCatch)
     mIsBound = true;
     AutoPtr<IInetSocketAddress> localSocketAddress = IInetSocketAddress::Probe(sa);
     mLocalAddress = NULL;

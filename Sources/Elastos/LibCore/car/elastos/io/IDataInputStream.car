@@ -23,74 +23,7 @@ module
      */
     [deprecated]
     interface IDataInputStream {
-        ReadBoolean(
-            [out] Boolean* result);
-
-        ReadByte(
-            [out] Byte* result);
-
-        ReadChar(
-            [out] Char32* result);
-
-        ReadDouble(
-            [out] Double* result);
-
-        ReadFloat(
-            [out] Float* result);
-
-        ReadFully(
-            [in] ArrayOf<Byte>* dst);
-
-        ReadFully(
-            [in] ArrayOf<Byte>* dst,
-            [in] Int32 offset,
-            [in] Int32 byteCount);
-
-        ReadInt32(
-            [out] Int32* result);
-
-        /**
-         * @deprecated This method cannot be trusted to convert bytes to characters correctly.
-         * Wrap this stream with a {@link BufferedReader} instead.
-         */
-        // @Deprecated
-        ReadLine(
-            [out] String* result);
-
-        ReadInt64(
-            [out] Int64* result);
-
-        ReadInt16(
-            [out] Int16* result);
-
-        ReadUnsignedByte(
-            [out] Int32* result);
-
-        ReadUnsignedInt16(
-            [out] Int32* result);
-
-        ReadUTF(
-            [out] String* result);
-
-        /**
-         * Skips {@code count} number of bytes in this stream. Subsequent {@code
-         * read()}s will not return these bytes unless {@code reset()} is used.
-         *
-         * This method will not throw an {@link EOFException} if the end of the
-         * input is reached before {@code count} bytes where skipped.
-         *
-         * @param count
-         *            the number of bytes to skip.
-         * @return the number of bytes actually skipped.
-         * @throws IOException
-         *             if a problem occurs during skipping.
-         * @see #mark(int)
-         * @see #reset()
-         */
-        SkipBytes(
-            [in] Int32 count,
-            [out] Int32* result);
-     }
+    }
 
     interface IDataInputStreamHelper {
         ReadUTF(

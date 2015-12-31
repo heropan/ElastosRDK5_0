@@ -15,6 +15,7 @@ using Elastos::Core::IArrayOf;
 using Elastos::IO::IFile;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
+using Elastos::Utility::IArrayMap;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::HashSet;
 using Elastos::Droid::App::IINotificationManager;
@@ -35,11 +36,12 @@ using Elastos::Droid::Os::IRemoteCallbackList;
 using Elastos::Droid::Os::IIdleHandler;
 using Elastos::Droid::Os::IIPowerManager;
 using Elastos::Droid::Os::HandlerBase;
-using Elastos::Droid::Os::IHandlerThread;
 using Elastos::Droid::Os::IHandlerCallback;
 using Elastos::Droid::Os::INetworkManagementService;
+using Elastos::Droid::Os::IPowerManagerInternal;
 using Elastos::Droid::Utility::IAtomicFile;
 using Elastos::Droid::Utility::ITrustedTime;
+using Elastos::Droid::Utility::ISparseBooleanArray;
 
 namespace Elastos {
 namespace Droid {
@@ -49,12 +51,14 @@ namespace Net {
 class CNetworkPolicyManagerServiceAlertObserber;
 
 CarClass(CNetworkPolicyManagerService)
+    , public Object
+    , public IINetworkPolicyManager
 {
     friend class CProcessObserver;
 
 public:
     class MyHandlerCallback
-        : public ElRefBase
+        : public Object
         , public IHandlerCallback
     {
     public:
@@ -108,7 +112,8 @@ public:
     };
 
 private:
-    class ScreenReceiver : public BroadcastReceiver
+    class ScreenReceiver
+        : public BroadcastReceiver
     {
     public:
         ScreenReceiver(
@@ -131,7 +136,8 @@ private:
         CNetworkPolicyManagerService* mOwner;
     };
 
-    class PackageReceiver : public BroadcastReceiver
+    class PackageReceiver
+        : public BroadcastReceiver
     {
     public:
         PackageReceiver(
@@ -154,7 +160,8 @@ private:
         CNetworkPolicyManagerService* mOwner;
     };
 
-    class UidRemovedReceiver : public BroadcastReceiver
+    class UidRemovedReceiver
+        : public BroadcastReceiver
     {
     public:
         UidRemovedReceiver(
@@ -177,7 +184,8 @@ private:
         CNetworkPolicyManagerService* mOwner;
     };
 
-    class UserReceiver : public BroadcastReceiver
+    class UserReceiver
+        : public BroadcastReceiver
     {
     public:
         UserReceiver(
@@ -204,7 +212,8 @@ private:
      * Receiver that watches for {@link INetworkStatsService} updates, which we
      * use to check against {@link NetworkPolicy#warningBytes}.
      */
-    class StatsReceiver : public BroadcastReceiver
+    class StatsReceiver
+        : public BroadcastReceiver
     {
     public:
         StatsReceiver(
@@ -231,7 +240,8 @@ private:
      * Receiver that watches for {@link Notification} control of
      * {@link #mRestrictBackground}.
      */
-    class AllowReceiver : public BroadcastReceiver
+    class AllowReceiver
+        : public BroadcastReceiver
     {
     public:
         AllowReceiver(
@@ -258,7 +268,8 @@ private:
      * Receiver that watches for {@link Notification} control of
      * {@link NetworkPolicy#lastWarningSnooze}.
      */
-    class SnoozeWarningReceiver : public BroadcastReceiver
+    class SnoozeWarningReceiver
+        : public BroadcastReceiver
     {
     public:
         SnoozeWarningReceiver(
@@ -285,7 +296,8 @@ private:
     /**
     * Receiver that watches for {@link WifiConfiguration} to be changed.
     */
-    class WifiConfigReceiver : public BroadcastReceiver
+    class WifiConfigReceiver
+        : public BroadcastReceiver
     {
     public:
         WifiConfigReceiver(
@@ -312,7 +324,8 @@ private:
     * Receiver that watches {@link WifiInfo} state changes to infer metered
     * state. Ignores hints when policy is user-defined.
     */
-    class WifiStateReceiver : public BroadcastReceiver
+    class WifiStateReceiver
+        : public BroadcastReceiver
     {
     public:
         WifiStateReceiver(
@@ -339,7 +352,8 @@ private:
      * Receiver that watches for {@link IConnectivityManager} to claim network
      * interfaces. Used to apply {@link NetworkPolicy} to matching networks.
      */
-    class ConnReceiver : public BroadcastReceiver
+    class ConnReceiver
+        : public BroadcastReceiver
     {
     public:
         ConnReceiver(
@@ -362,10 +376,64 @@ private:
         CNetworkPolicyManagerService* mOwner;
     };
 
+    class InnerSub_LowPowerModeListener
+        : public PowerManagerInternal::LowPowerModeListener
+    {
+    public:
+        InnerSub_LowPowerModeListener(
+            /* [in] */ CNetworkPolicyManagerService* host,
+            /* [in] */ IObject* rulesLock,
+            /* [in] */ Boolean& restrictPower);
+
+        // @Override
+        CARAPI OnLowPowerModeChanged(
+            /* [in] */ Boolean enabled);
+
+    private:
+        CNetworkPolicyManagerService* mHost;
+        AutoPtr<IObject> mRulesLock;
+        Boolean& mRestrictPower;
+    };
+
+    class InnerSub_IProcessObserver
+        : public IIProcessObserver
+        , public IBinder
+    {
+    public:
+        InnerSub_IProcessObserver(
+            /* [in] */ CNetworkPolicyManagerService* host,
+            /* [in] */ IObject* rulesLock,
+            /* [in] */ ISparseArray* uidPidState);
+
+        // @Override
+        CARAPI OnForegroundActivitiesChanged(
+            /* [in] */ Int32 pid,
+            /* [in] */ Int32 uid,
+            /* [in] */ Boolean foregroundActivities);
+
+        // @Override
+        CARAPI OnProcessStateChanged(
+            /* [in] */ Int32 pid,
+            /* [in] */ Int32 uid,
+            /* [in] */ Int32 procState);
+
+        // @Override
+        CARAPI OnProcessDied(
+            /* [in] */ Int32 pid,
+            /* [in] */ Int32 uid);
+
+    private:
+        CNetworkPolicyManagerService* mHost;
+        AutoPtr<IObject> mRulesLock;
+        AutoPtr<ISparseArray> mUidPidState;
+    };
+
 public:
     CNetworkPolicyManagerService();
 
     ~CNetworkPolicyManagerService();
+
+    CAR_INTERFACE_DECL()
 
     CARAPI constructor(
         /* [in] */ IContext* context,
@@ -440,6 +508,31 @@ public:
     CARAPI AddIdleHandler(
         /* [in] */ IIdleHandler* handler);
 
+    // package
+    /**
+     * Check {@link NetworkPolicy} against current {@link INetworkStatsService}
+     * to show visible notifications as needed.
+     */
+    CARAPI_(void) UpdateNotificationsLocked();
+
+    // package
+    /**
+     * Proactively control network data connections when they exceed
+     * {@link NetworkPolicy#limitBytes}.
+     */
+    CARAPI_(void) UpdateNetworkEnabledLocked();
+
+    // package
+    /**
+     * Examine all connected {@link NetworkState}, looking for
+     * {@link NetworkPolicy} that need to be enforced. When matches found, set
+     * remaining quota based on usage cycle and historical stats.
+     */
+    CARAPI_(void) UpdateNetworkRulesLocked();
+
+    // package
+    CARAPI_(void) WritePolicyLocked();
+
 protected:
     CARAPI_(void) Dump(
         /* [in] */ IFileDescriptor* fd,
@@ -448,12 +541,6 @@ protected:
 
 private:
     static CARAPI_(AutoPtr<IFile>) GetSystemDir();
-
-    /**
-     * Check {@link NetworkPolicy} against current {@link INetworkStatsService}
-     * to show visible notifications as needed.
-     */
-    CARAPI_(void) UpdateNotificationsLocked();
 
     /**
     * Test if given {@link NetworkTemplate} is relevant to user based on
@@ -502,25 +589,12 @@ private:
         /* [in] */ const String& tag);
 
     /**
-     * Proactively control network data connections when they exceed
-     * {@link NetworkPolicy#limitBytes}.
-     */
-    CARAPI_(void) UpdateNetworkEnabledLocked();
-
-    /**
      * Control {@link IConnectivityManager#setPolicyDataEnable(int, boolean)}
      * for the given {@link NetworkTemplate}.
      */
     CARAPI_(void) SetNetworkTemplateEnabled(
         /* [in] */ INetworkTemplate* templ,
         /* [in] */ Boolean enabled);
-
-    /**
-     * Examine all connected {@link NetworkState}, looking for
-     * {@link NetworkPolicy} that need to be enforced. When matches found, set
-     * remaining quota based on usage cycle and historical stats.
-     */
-    CARAPI_(void) UpdateNetworkRulesLocked();
 
     /**
      * Once any {@link #mNetworkPolicy} are loaded from disk, ensure that we
@@ -535,9 +609,7 @@ private:
      */
     CARAPI_(void) UpgradeLegacyBackgroundData();
 
-    CARAPI_(void) WritePolicyLocked();
-
-    CARAPI_(void) SetUidPolicyUnchecked(
+    CARAPI_(void) SetUidPolicyUncheckedLocked(
         /* [in] */ Int32 uid,
         /* [in] */ Int32 policy,
         /* [in] */ Boolean persist);
@@ -674,6 +746,23 @@ public:
     static const Int32 TYPE_LIMIT;
     static const Int32 TYPE_LIMIT_SNOOZED;
 
+    // package
+    /* volatile */ Boolean mScreenOn;
+    /* volatile */ Boolean mRestrictBackground;
+    /* volatile */ Boolean mRestrictPower;
+
+    // package
+    /** Defined network policies. */
+    /* const */ AutoPtr<IArrayMap> mNetworkPolicy;
+
+    // package
+    /** Defined UID policies. */
+    /* const */ HashMap<Int32, Int32> mUidPolicy;
+
+    // package
+    /** Foreground at both UID and PID granularity. */
+    /* const */ AutoPtr<ISparseArray> mUidPidState;
+
 private:
     static const String TAG;
     static const Boolean LOGD;
@@ -723,8 +812,6 @@ private:
 
     static const Int32 MSG_RULES_CHANGED;// = 1;
     static const Int32 MSG_METERED_IFACES_CHANGED;// = 2;
-    static const Int32 MSG_FOREGROUND_ACTIVITIES_CHANGED;// = 3;
-    static const Int32 MSG_PROCESS_DIED;// = 4;
     static const Int32 MSG_LIMIT_REACHED;// = 5;
     static const Int32 MSG_RESTRICT_BACKGROUND_CHANGED;// = 6;
     static const Int32 MSG_ADVISE_PERSIST_THRESHOLD;// = 7;
@@ -739,44 +826,40 @@ private:
 
     AutoPtr<IIConnectivityManager> mConnManager;
     AutoPtr<IINotificationManager> mNotifManager;
+    AutoPtr<IPowerManagerInternal> mPowerManagerInternal;
 
-    Object mRulesLock;
-
-    Boolean mScreenOn;
-    Boolean mRestrictBackground;
+    AutoPtr<IObject> mRulesLock;
 
     Boolean mSuppressDefaultPolicy;
 
-    /** Defined network policies. */
-    HashMap< AutoPtr<INetworkTemplate>, AutoPtr<INetworkPolicy> > mNetworkPolicy;
     /** Currently active network rules for ifaces. */
-    HashMap< AutoPtr<INetworkPolicy>, AutoPtr< ArrayOf<String> > > mNetworkRules;
+    /* const */ AutoPtr<IArrayMap> mNetworkRules;
 
-    /** Defined UID policies. */
-    HashMap<Int32, Int32> mUidPolicy;
     /** Currently derived rules for each UID. */
-    HashMap<Int32, Int32> mUidRules;
+    /* const */ HashMap<Int32, Int32> mUidRules;
+
+    /** UIDs that have been white-listed to always be able to have network access in
+     * power save mode. */
+    /* const */ AutoPtr<ISparseBooleanArray> mPowerSaveWhitelistAppIds;
 
     /** Set of ifaces that are metered. */
-    HashSet<String> mMeteredIfaces;
+    AutoPtr<IArraySet> mMeteredIfaces;
     /** Set of over-limit templates that have been notified. */
-    HashSet< AutoPtr<INetworkTemplate> > mOverLimitNotified;
+    /* const */ AutoPtr<IArraySet> mOverLimitNotified;
 
     /** Set of currently active {@link Notification} tags. */
-    HashSet<String> mActiveNotifs;
+    /* const */ AutoPtr<IArraySet> mActiveNotifs;
 
     /** Foreground at both UID and PID granularity. */
-    typedef HashMap<Int32, Boolean> Int32BooleanMap;
-    typedef typename Int32BooleanMap::Iterator Int32BooleanMapIterator;
-    typedef HashMap<Int32, AutoPtr<Int32BooleanMap> > UidPidForegroundMap;
-    typedef typename UidPidForegroundMap::Iterator UidPidForegroundMapIterator;
-    Int32BooleanMap  mUidForeground;
-    UidPidForegroundMap mUidPidForeground;
+    /* const */ AutoPtr<ISparseIntArray> mUidState;
+
+    /** The current maximum process state that we are considering to be foreground. */
+    Int32 mCurForegroundState;
 
     AutoPtr<IRemoteCallbackList> mListeners;
 
-    AutoPtr<IHandlerThread> mHandlerThread;
     AutoPtr<IHandler> mHandler;
+
     AutoPtr<IHandlerCallback> mHandlerCallback;
 
     AutoPtr<IAtomicFile> mPolicyFile;

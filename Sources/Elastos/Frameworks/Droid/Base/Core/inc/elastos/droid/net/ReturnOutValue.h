@@ -6,6 +6,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
+using Elastos::Utility::ICollection;
 using Elastos::Utility::IIterator;
 
 //======================================================================
@@ -29,7 +30,7 @@ using Elastos::Utility::IIterator;
  *
  */
 #define FOR_EACH(iterator, container) AutoPtr<IIterator> iterator;      \
-        container->GetIterator((IIterator**)&iterator);                 \
+        ICollection::Probe(container)->GetIterator((IIterator**)&iterator);                 \
         while (ReturnOutValue(iterator, iterator->HasNext))
 
 //======================================================================
