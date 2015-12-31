@@ -113,6 +113,8 @@ const Boolean TtsEngines::DBG = FALSE;
 const String TtsEngines::LOCALE_DELIMITER_OLD("-");
 const String TtsEngines::LOCALE_DELIMITER_NEW("_");
 const String TtsEngines::XML_TAG_NAME("tts-engine");
+Map<String, String> TtsEngines::sNormalizeCountry;
+Map<String, String> TtsEngines::sNormalizeLanguage;
 
 CAR_INTERFACE_IMPL(TtsEngines, Object, ITtsEngines)
 
@@ -600,7 +602,7 @@ ECode TtsEngines::ParseLocaleString(
         language = normalizedLanguage;
     }
 
-    String normalizedCountry= sNormalizeCountry[country];
+    String normalizedCountry = sNormalizeCountry[country];
     if (normalizedCountry != NULL) {
         country = normalizedCountry;
     }
@@ -694,6 +696,11 @@ AutoPtr<ArrayOf<String> > TtsEngines::ToOldLocaleStringFormat(ILocale* locale)
     }
 
     return returnVal;
+}
+
+String TtsEngines::GetV1Locale()
+{
+    return String("");
 }
 
 String TtsEngines::GetDefaultLocale()
