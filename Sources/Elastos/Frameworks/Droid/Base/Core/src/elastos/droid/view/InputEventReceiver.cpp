@@ -346,6 +346,9 @@ android::status_t InputEventReceiver::NativeInputEventReceiver::consumeEvents(
     }
 }
 
+InputEventReceiver::InputEventReceiver()
+{}
+
 /**
  * Creates an input event receiver bound to the specified input channel.
  *

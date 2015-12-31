@@ -280,8 +280,9 @@ private:
         CARAPI_(Boolean) SuperDispatchKeyShortcutEvent(
             /* [in] */ IKeyEvent* event);
 
-        CARAPI_(Boolean) OnTouchEvent(
-            /* [in] */ IMotionEvent* event);
+        CARAPI OnTouchEvent(
+            /* [in] */ IMotionEvent* event,
+            /* [out] */ Boolean* res);
 
         CARAPI_(Boolean) OnInterceptTouchEvent(
             /* [in] */ IMotionEvent* event);

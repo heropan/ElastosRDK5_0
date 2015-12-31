@@ -198,9 +198,11 @@ ECode StackView::ShowPrevious()
     return NOERROR;
 }
 
-Boolean StackView::OnGenericMotionEvent(
-    /* [in] */ IMotionEvent* event)
+ECode StackView::OnGenericMotionEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res);
     Int32 source = 0;
     event->GetSource(&source);
     if ((source & IInputDevice::SOURCE_CLASS_POINTER) != 0) {
@@ -212,20 +214,24 @@ Boolean StackView::OnGenericMotionEvent(
                 event->GetAxisValue(IMotionEvent::AXIS_VSCROLL, &vscroll);
                 if (vscroll < 0) {
                     PacedScroll(FALSE);
-                    return TRUE;
+                    *res = TRUE;
+                    return NOERROR;
                 } else if (vscroll > 0) {
                     PacedScroll(TRUE);
-                    return TRUE;
+                    *res = TRUE;
+                    return NOERROR;
                 }
             }
         }
     }
-    return AdapterViewAnimator::OnGenericMotionEvent(event);
+    return AdapterViewAnimator::OnGenericMotionEvent(event, res);
 }
 
-Boolean StackView::OnInterceptTouchEvent(
-    /* [in] */ IMotionEvent* ev)
+ECode StackView::OnInterceptTouchEvent(
+    /* [in] */ IMotionEvent* ev,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res);
     Int32 action = 0;
     ev->GetAction(&action);
     switch(action & IMotionEvent::ACTION_MASK) {
@@ -245,7 +251,8 @@ Boolean StackView::OnInterceptTouchEvent(
             ev->FindPointerIndex(mActivePointerId, &pointerIndex);
             if (pointerIndex == INVALID_POINTER) {
                 //Log.d(TAG, "Error: No data for our primary pointer.");
-                return FALSE;
+                *res = FALSE;
+                return NOERROR;
             }
             Float newY = 0;
             ev->GetY(pointerIndex, &newY);
@@ -265,13 +272,16 @@ Boolean StackView::OnInterceptTouchEvent(
         }
     }
 
-    return mSwipeGestureType != GESTURE_NONE;
+    *res = mSwipeGestureType != GESTURE_NONE;
+    return NOERROR;
 }
 
-Boolean StackView::OnTouchEvent(
-    /* [in] */ IMotionEvent* ev)
+ECode StackView::OnTouchEvent(
+    /* [in] */ IMotionEvent* ev,
+    /* [out] */ Boolean* res)
 {
-    AdapterViewAnimator::OnTouchEvent(ev);
+    VALIDATE_NOT_NULL(res);
+    AdapterViewAnimator::OnTouchEvent(ev, res);
 
     Int32 action = 0;
     ev->GetAction(&action);
@@ -280,7 +290,8 @@ Boolean StackView::OnTouchEvent(
     if (pointerIndex == INVALID_POINTER) {
         // no data for our primary pointer, this shouldn't happen, log it
         //Log.d(TAG, "Error: No data for our primary pointer.");
-        return FALSE;
+        *res = FALSE;
+        return NOERROR;
     }
 
     Float newY = 0, newX = 0;
@@ -305,13 +316,15 @@ Boolean StackView::OnTouchEvent(
                 if (mStackMode == ITEMS_SLIDE_DOWN) r = 1 - r;
                 mStackSlider->SetYProgress(1 - r);
                 mStackSlider->SetXProgress(rx);
-                return TRUE;
+                *res = TRUE;
+                return NOERROR;
             } else if (mSwipeGestureType == GESTURE_SLIDE_UP) {
                 Float r = -(deltaY + mTouchSlop * 1.0f) / mSlideAmount * 1.0f;
                 if (mStackMode == ITEMS_SLIDE_DOWN) r = 1 - r;
                 mStackSlider->SetYProgress(r);
                 mStackSlider->SetXProgress(rx);
-                return TRUE;
+                *res = TRUE;
+                return NOERROR;
             }
             break;
         }
@@ -332,7 +345,8 @@ Boolean StackView::OnTouchEvent(
             break;
         }
     }
-    return TRUE;
+    *res = TRUE;
+    return NOERROR;
 }
 
 ECode StackView::Advance()

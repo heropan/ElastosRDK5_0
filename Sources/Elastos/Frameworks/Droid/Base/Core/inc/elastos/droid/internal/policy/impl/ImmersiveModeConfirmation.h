@@ -148,8 +148,9 @@ private:
         CARAPI OnDetachedFromWindow();
 
         // @Override
-        CARAPI_(Boolean) OnTouchEvent(
-            /* [in] */ IMotionEvent* motion);
+        CARAPI OnTouchEvent(
+            /* [in] */ IMotionEvent* motion,
+            /* [out] */ Boolean* res);
 
     private:
         static const Int32 BGCOLOR = 0x80000000;

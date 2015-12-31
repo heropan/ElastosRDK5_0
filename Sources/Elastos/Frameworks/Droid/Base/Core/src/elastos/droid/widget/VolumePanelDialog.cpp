@@ -5,9 +5,11 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-Boolean VolumePanelDialog::OnTouchEvent(
-    /* [in] */ IMotionEvent* event)
+ECode VolumePanelDialog::OnTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     Int32 action;
     event->GetAction(&action);
 
@@ -15,10 +17,12 @@ Boolean VolumePanelDialog::OnTouchEvent(
         CVolumePanel* panel = (CVolumePanel*)mVolumePanel.Get();
         if (IsShowing()) {
             panel->ForceTimeout();
-            return TRUE;
+            *result = TRUE;
+            return NOERROR;
         }
     }
-    return FALSE;
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode VolumePanelDialog::Init(

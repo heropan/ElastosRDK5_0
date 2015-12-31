@@ -7,8 +7,7 @@ namespace Droid {
 namespace InputMethodService {
 
 CAR_OBJECT_IMPL(CExtractEditText);
-CAR_INTERFACE_IMPL(CExtractEditText, /*EditText*/Object, IExtractEditText);
-
+CAR_INTERFACE_IMPL(CExtractEditText, EditText, IExtractEditText);
 CExtractEditText::CExtractEditText()
     : mSettingExtractedText(0)
 {
@@ -18,8 +17,7 @@ ECode CExtractEditText::SetExtractedText(
     /* [in] */ IExtractedText* text)
 {
     mSettingExtractedText++;
-    assert(0 && "TODO");
-    // EditText::SetExtractedText(text);
+    EditText::SetExtractedText(text);
 
     mSettingExtractedText--;
     return NOERROR;
@@ -29,15 +27,12 @@ ECode CExtractEditText::PerformClick(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    assert(mIME != NULL);
-
-    assert(0 && "TODO");
-    // Boolean tmp = FALSE;
-    // if (!(EditText::PerformClick(&tmp), tmp) && mIME != NULL) {
-    //     mIME->OnExtractedTextClicked();
-    //     *result = TRUE;
-    //     return NOERROR;
-    // }
+    Boolean tmp = FALSE;
+    if ((EditText::PerformClick(&tmp), !tmp) && mIME != NULL) {
+        mIME->OnExtractedTextClicked();
+        *result = TRUE;
+        return NOERROR;
+    }
 
     *result = FALSE;
     return NOERROR;
@@ -53,17 +48,14 @@ ECode CExtractEditText::OnTextContextMenuItem(
         // Mode was started on Extracted, needs to be stopped here.
         // Cut and paste will change the text, which stops selection mode.
         if (id == R::id::copy) {
-            assert(0 && "TODO");
-            // StopSelectionActionMode();
+            StopSelectionActionMode();
         }
 
         *result = TRUE;
         return NOERROR;
     }
 
-    assert(0 && "TODO");
-    return NOERROR;
-    // return EditText::OnTextContextMenuItem(id, result);
+    return EditText::OnTextContextMenuItem(id, result);
 }
 
 ECode CExtractEditText::IsInputMethodTarget(
@@ -78,27 +70,21 @@ ECode CExtractEditText::HasWindowFocus(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    assert(0 && "TODO");
-    return NOERROR;
-    // return EditText::IsEnabled(result);
+    return EditText::IsEnabled(result);
 }
 
 ECode CExtractEditText::IsFocused(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    assert(0 && "TODO");
-    return NOERROR;
-    // return EditText::IsEnabled(result);
+    return EditText::IsEnabled(result);
 }
 
 ECode CExtractEditText::HasFocus(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    assert(0 && "TODO");
-    return NOERROR;
-    // return EditText::IsEnabled(result);
+    return EditText::IsEnabled(result);
 }
 
 void CExtractEditText::OnSelectionChanged(
@@ -164,18 +150,14 @@ void CExtractEditText::SetCursorPosition_internal(
 ECode CExtractEditText::constructor(
     /* [in] */ IContext* context)
 {
-    // return EditText::constructor(context, NULL);
-    assert(0 && "TODO");
-    return NOERROR;
+    return EditText::constructor(context, NULL);
 }
 
 ECode CExtractEditText::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    // return EditText::constructor(context, attrs, 0x0101006e /*com.android.internal.R.attr.editTextStyle*/);
-    assert(0 && "TODO");
-    return NOERROR;
+    return EditText::constructor(context, attrs, 0x0101006e /*com.android.internal.R.attr.editTextStyle*/);
 }
 
 ECode CExtractEditText::constructor(
@@ -192,9 +174,7 @@ ECode CExtractEditText::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    assert(0 && "TODO");
-    return NOERROR;
-    // return EditText::constructor(context, attrs, defStyleAttr, defStyleRes);
+    return EditText::constructor(context, attrs, defStyleAttr, defStyleRes);
 }
 
 ECode CExtractEditText::SetIME(
@@ -219,9 +199,8 @@ ECode CExtractEditText::FinishInternalChanges()
 ECode CExtractEditText::HasVerticalScrollBar(
     /* [out] */ Boolean* has)
 {
-    assert(has != NULL);
-    assert(0 && "TODO");
-    // *has = EditText::ComputeVerticalScrollRange() > EditText::ComputeVerticalScrollExtent();
+    VALIDATE_NOT_NULL(has);
+    *has = EditText::ComputeVerticalScrollRange() > EditText::ComputeVerticalScrollExtent();
     return NOERROR;
 }
 

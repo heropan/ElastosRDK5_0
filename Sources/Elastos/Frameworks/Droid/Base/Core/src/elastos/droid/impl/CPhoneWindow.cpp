@@ -544,10 +544,13 @@ Boolean CPhoneWindow::_DecorView::SuperDispatchKeyShortcutEvent(
     return FrameLayout::DispatchKeyShortcutEvent(event);
 }
 
-Boolean CPhoneWindow::_DecorView::OnTouchEvent(
-    /* [in] */ IMotionEvent* event)
+ECode CPhoneWindow::_DecorView::OnTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* res)
 {
-    return OnInterceptTouchEvent(event);
+    VALIDATE_NOT_NULL(res);
+    *res = OnInterceptTouchEvent(event);
+    return NOERROR;
 }
 
 Boolean CPhoneWindow::_DecorView::IsOutOfBounds(

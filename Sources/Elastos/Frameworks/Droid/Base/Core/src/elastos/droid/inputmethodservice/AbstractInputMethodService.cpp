@@ -3,12 +3,12 @@
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/inputmethodservice/AbstractInputMethodService.h"
 #include "elastos/droid/inputmethodservice/CIInputMethodWrapper.h"
-// #include "elastos/droid/view/CDispatcherState.h"
+#include "elastos/droid/view/CDispatcherState.h"
 #else
 #include "elastos/droid/inputmethodservice/AbstractInputMethodService.h"
 #endif
 
-// using Elastos::Droid::View::CDispatcherState;
+using Elastos::Droid::View::CDispatcherState;
 using Elastos::Droid::View::EIID_IKeyEventCallback;
 using Elastos::Droid::Internal::View::IIInputMethod;
 
@@ -16,11 +16,10 @@ namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
 
-CAR_INTERFACE_IMPL(AbstractInputMethodService, /*Service*/ Object, IKeyEventCallback);
+CAR_INTERFACE_IMPL(AbstractInputMethodService, Service, IKeyEventCallback);
 AbstractInputMethodService::AbstractInputMethodService()
 {
-    assert(0 && "TODO");
-    // ASSERT_TRUE(CDispatcherState::New((IDispatcherState**)&mDispatcherState) == NOERROR);
+    CDispatcherState::New((IDispatcherState**)&mDispatcherState);
 }
 
 ECode AbstractInputMethodService::GetKeyDispatcherState(

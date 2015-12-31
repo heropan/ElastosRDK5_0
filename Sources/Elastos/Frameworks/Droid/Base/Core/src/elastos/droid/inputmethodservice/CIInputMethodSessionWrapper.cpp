@@ -6,36 +6,37 @@
 #include "elastos/droid/inputmethodservice/CIInputMethodSessionWrapper.h"
 #include "elastos/droid/internal/os/CHandlerCaller.h"
 #include "elastos/droid/internal/os/SomeArgs.h"
+#include "elastos/droid/utility/CSparseArray.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::CString;
-using Elastos::Core::CArrayOf;
-using Elastos::Core::IArrayOf;
-using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Internal::Os::SomeArgs;
 using Elastos::Droid::Internal::Os::CHandlerCaller;
 using Elastos::Droid::Internal::Os::EIID_IHandlerCallerCallback;
 using Elastos::Droid::Internal::View::EIID_IIInputMethodSession;
+using Elastos::Droid::Utility::CSparseArray;
 using Elastos::Droid::View::IInputDevice;
 using Elastos::Droid::View::InputMethod::EIID_ILocalInputMethodSessionEventCallback;
 using Elastos::Droid::View::InputMethod::IInputMethodSession;
 using Elastos::Droid::View::InputMethod::EIID_ICompletionInfo;
+using Elastos::Core::CString;
+using Elastos::Core::CArrayOf;
+using Elastos::Core::IArrayOf;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
 
-CAR_INTERFACE_IMPL(CIInputMethodSessionWrapper::ImeInputEventReceiver, Object /*InputEventReceiver*/, ILocalInputMethodSessionEventCallback);
+CAR_INTERFACE_IMPL(CIInputMethodSessionWrapper::ImeInputEventReceiver, InputEventReceiver, ILocalInputMethodSessionEventCallback);
 CIInputMethodSessionWrapper::ImeInputEventReceiver::ImeInputEventReceiver(
     /* [in] */ IInputChannel* inputChannel,
     /* [in] */ ILooper* looper,
     /* [in] */ CIInputMethodSessionWrapper* host)
     : mHost(host)
 {
-    assert(0 && "TODO");
-    // InputEventReceiver::constructor(inputChannel, looper);
-    // mPendingEvents = new SparseArray<InputEvent>();
+    InputEventReceiver::constructor(inputChannel, looper);
+    CSparseArray::New((ISparseArray**)&mPendingEvents);
 }
 
 ECode CIInputMethodSessionWrapper::ImeInputEventReceiver::OnInputEvent(
@@ -43,15 +44,13 @@ ECode CIInputMethodSessionWrapper::ImeInputEventReceiver::OnInputEvent(
 {
     if (mHost->mInputMethodSession == NULL) {
         // The session has been finished.
-        assert(0 && "TODO");
-        // FinishInputEvent(event, FALSE);
+        FinishInputEvent(event, FALSE);
         return NOERROR;
     }
 
     Int32 seq = 0;
     event->GetSequenceNumber(&seq);
-    assert(0 && "TODO");
-    // mPendingEvents.put(seq, event);
+    mPendingEvents->Put(seq, event);
     if (IKeyEvent::Probe(event)) {
         AutoPtr<IKeyEvent> keyEvent = IKeyEvent::Probe(event);
         mHost->mInputMethodSession->DispatchKeyEvent(seq, keyEvent, this);
@@ -71,15 +70,14 @@ ECode CIInputMethodSessionWrapper::ImeInputEventReceiver::FinishedEvent(
     /* [in] */ Int32 seq,
     /* [in] */ Boolean handled)
 {
-    assert(0 && "TODO");
-    // Int32 index = 0;
-    // mPendingEvents->IndexOfKey(seq, &index);
-    // if (index >= 0) {
-    //     AutoPtr<IInputEvent> event;
-    //     mPendingEvents->ValueAt(index, (IInterface**)&event);
-    //     mPendingEvents->RemoveAt(index);
-    //     FinishInputEvent(event, handled);
-    // }
+    Int32 index = 0;
+    mPendingEvents->IndexOfKey(seq, &index);
+    if (index >= 0) {
+        AutoPtr<IInputEvent> event;
+        mPendingEvents->ValueAt(index, (IInterface**)&event);
+        mPendingEvents->RemoveAt(index);
+        FinishInputEvent(event, handled);
+    }
     return NOERROR;
 }
 
@@ -221,8 +219,7 @@ void CIInputMethodSessionWrapper::DoFinishSession()
 {
     mInputMethodSession = NULL;
     if (mReceiver != NULL) {
-        assert(0 && "TODO");
-        // mReceiver->Dispose();
+        mReceiver->Dispose();
         mReceiver = NULL;
     }
     if (mChannel != NULL) {

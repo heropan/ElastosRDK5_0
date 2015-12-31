@@ -2,43 +2,45 @@
 #ifndef __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_KEYBOARDVIEW_H__
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_KEYBOARDVIEW_H__
 
-#include "elastos/droid/ext/frameworkext.h"
-//#include "elastos/droid/view/GestureDetector.h"
-// #include "elastos/droid/view/View.h"
-#include "elastos/droid/os/Handler.h"
 #include "elastos/droid/inputmethodservice/Keyboard.h"
-#include "elastos/droid/R.h"
-#include <elastos/utility/etl/HashMap.h>
+#include "elastos/droid/os/Handler.h"
+#include "Elastos.Droid.Media.h"
+#include "elastos/droid/view/GestureDetector.h"
+#include "elastos/droid/view/View.h"
+#include "Elastos.Droid.Widget.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Object.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::StringBuilder;
-using Elastos::Droid::R;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::InputMethodService::IKeyboardKey;
 using Elastos::Droid::InputMethodService::IOnKeyboardActionListener;
-// using Elastos::Droid::View::View;
+using Elastos::Droid::View::View;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::IRectF;
 using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::View::GestureDetector;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IGestureDetector;
 using Elastos::Droid::View::Accessibility::IAccessibilityManager;
 using Elastos::Droid::Widget::ITextView;
 using Elastos::Droid::Widget::IPopupWindow;
-// using Elastos::Droid::Media::IAudioManager;
+using Elastos::Droid::Media::IAudioManager;
 using Elastos::Droid::Utility::IAttributeSet;
+
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::InputMethodService::IKeyboardKey);
 
 namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
 
 class KeyboardView
-    : public /*Elastos::Droid::View::View*/Object
+    : public Elastos::Droid::View::View
     , public IKeyboardView
 {
 public:
@@ -135,9 +137,7 @@ private:
     };
 
     class _SimpleOnGestureListener
-        : public Object
-        //TODO
-        // , public GestureDetector::SimpleOnGestureListener
+        : public GestureDetector::SimpleOnGestureListener
     {
     public:
         _SimpleOnGestureListener(
@@ -145,11 +145,12 @@ private:
 
         ~_SimpleOnGestureListener();
 
-        virtual Boolean OnFling(
+        virtual CARAPI OnFling(
             /* [in] */ IMotionEvent* e1,
             /* [in] */ IMotionEvent* e2,
             /* [in] */ Float velocityX,
-            /* [in] */ Float velocityY);
+            /* [in] */ Float velocityY,
+            /* [out] */ Boolean* res);
 
     private:
         KeyboardView* mHost;
@@ -160,13 +161,20 @@ public:
 
     KeyboardView();
 
-    KeyboardView(
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyleAttr = R::attr::keyboardViewStyle,
-        /* [in] */ Int32 defStyleRes = 0);
+        /* [in] */ Int32 defStyleAttr);
 
-    ~KeyboardView();
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     virtual CARAPI SetOnKeyboardActionListener(
         /* [in] */ IOnKeyboardActionListener* listener);
@@ -299,8 +307,9 @@ public:
         /* [in] */ Int32 keyIndex);
 
     //@Override
-    CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* me);
+    CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* me,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI Closing();
 
@@ -310,8 +319,9 @@ public:
     virtual CARAPI HandleBack(
         /* [out] */ Boolean* res);
 
-    virtual CARAPI_(Boolean) OnHoverEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI OnHoverEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
 protected:
     /**
@@ -333,19 +343,7 @@ protected:
 
     virtual CARAPI_(void) SwipeDown();
 
-    CARAPI constructor(
-        /* [in] */ IContext* ctx,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyleAttr = R::attr::keyboardViewStyle,
-        /* [in] */ Int32 defStyleRes = 0);
-
 private:
-    CARAPI InitInternal(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyleAttr,
-        /* [in] */ Int32 defStyleRes);
-
     CARAPI_(void) InitGestureDetector();
 
     CARAPI_(AutoPtr<ICharSequence>) AdjustCase(
@@ -421,8 +419,8 @@ private:
 protected:
     static const Boolean DEBUG;
     static const Int32 NOT_A_KEY;
-    static Int32 KEY_DELETE[];// = { Keyboard_KEYCODE_DELETE };
-    static Int32 LONG_PRESSABLE_STATE_SET[];// = { 0x0101023c /*R.attr.state_long_pressable*/ };
+    static Int32 KEY_DELETE[];
+    static Int32 LONG_PRESSABLE_STATE_SET[];
 
     AutoPtr<IKeyboard> mKeyboard;
     Int32 mCurrentKeyIndex;
@@ -439,7 +437,7 @@ protected:
     Int32 mPreviewOffset;
     Int32 mPreviewHeight;
     // Working variable
-    Int32 mCoordinates[2];
+    AutoPtr<ArrayOf<Int32> > mCoordinates;
 
     AutoPtr<IPopupWindow> mPopupKeyboard;
     AutoPtr<IView> mMiniKeyboardContainer;
@@ -542,7 +540,7 @@ protected:
     /** The accessibility manager for accessibility support */
     AutoPtr<IAccessibilityManager> mAccessibilityManager;
     /** The audio manager for accessibility support */
-    // AutoPtr<IAudioManager> mAudioManager;
+    AutoPtr<IAudioManager> mAudioManager;
     /** Whether the requirement of a headset to hear passwords if accessibility is enabled is announced. */
     Boolean mHeadsetRequiredToHearPasswordsAnnounced;
 

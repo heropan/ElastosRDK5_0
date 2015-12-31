@@ -2,7 +2,7 @@
 #ifndef  __ELASTOS_DROID_INPUTMETHODSERVICE_ABSTRACTINPUTMETHODSERVICE_H__
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_ABSTRACTINPUTMETHODSERVICE_H__
 
-// #include "elastos/droid/app/Service.h"
+#include "elastos/droid/app/Service.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include "Elastos.Droid.View.h"
 #include <elastos/core/Object.h>
@@ -19,7 +19,7 @@ namespace Droid {
 namespace InputMethodService {
 
 class AbstractInputMethodService
-    : public /*Elastos::Droid::App::Service*/ Object
+    : public Elastos::Droid::App::Service
     , public IKeyEventCallback
 {
 public:

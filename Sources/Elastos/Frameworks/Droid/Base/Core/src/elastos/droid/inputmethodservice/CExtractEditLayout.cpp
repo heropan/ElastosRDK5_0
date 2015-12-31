@@ -1,29 +1,33 @@
 
 #include "elastos/droid/inputmethodservice/CExtractEditLayout.h"
-// #include "elastos/droid/view/menu/CMenuBuilder.h"
-//#include "elastos/droid/view/CMenuInflater.h"
+#include "elastos/droid/internal/view/menu/CMenuBuilder.h"
+#include "elastos/droid/internal/view/menu/CMenuPopupHelper.h"
+#include "elastos/droid/view/CMenuInflater.h"
 #include "elastos/droid/R.h"
 
 using Elastos::Droid::R;
-//using Elastos::Droid::View::CMenuInflater;
+using Elastos::Droid::View::CMenuInflater;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::View::EIID_IActionMode;
+using Elastos::Droid::Internal::View::Menu::CMenuBuilder;
+using Elastos::Droid::Internal::View::Menu::CMenuPopupHelper;
 using Elastos::Droid::Internal::View::Menu::EIID_IMenuBuilderCallback;
-// using Elastos::Droid::View::Menu::CMenuBuilder;
+using Elastos::Droid::Internal::View::Menu::IMenuPopupHelper;
 
 namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
 
-CAR_INTERFACE_IMPL(CExtractEditLayout::ExtractActionMode, /*ActionMode*/Object, IMenuBuilderCallback);
+CAR_INTERFACE_IMPL(CExtractEditLayout::ExtractActionMode, ActionMode, IMenuBuilderCallback);
 CExtractEditLayout::ExtractActionMode::ExtractActionMode(
     /* [in] */ IActionModeCallback* cb,
     /* [in] */ CExtractEditLayout* host)
     : mHost(host)
 {
-    assert(0 && "TODO");
-    // CMenuBuilder::New(mHost->GetContext(), (IMenuBuilder**)&mMenu);
-    // mMenu->SetCallback(this);
+    AutoPtr<IContext> context;
+    mHost->GetContext((IContext**)&context);
+    CMenuBuilder::New(context, (IMenuBuilder**)&mMenu);
+    mMenu->SetCallback(this);
     mCallback = cb;
 }
 
@@ -73,29 +77,19 @@ ECode CExtractEditLayout::ExtractActionMode::SetCustomView(
 
 ECode CExtractEditLayout::ExtractActionMode::Invalidate()
 {
-    assert(0 && "TODO");
-    return NOERROR;
-    // mMenu->StopDispatchingItemsChanged();
-    // // try {
-    // Boolean tmp = FALSE;
-    // mCallback->OnPrepareActionMode(this, mMenu, &tmp);
-    // // } finally {
-    // return mMenu->StartDispatchingItemsChanged();
-    // }
+    mMenu->StopDispatchingItemsChanged();
+    Boolean tmp = FALSE;
+    mCallback->OnPrepareActionMode(THIS_PROBE(IActionMode), IMenu::Probe(mMenu), &tmp);
+    return mMenu->StartDispatchingItemsChanged();
 }
 
 Boolean CExtractEditLayout::ExtractActionMode::DispatchOnCreate()
 {
-    assert(0 && "TODO");
-    return FALSE;
-    // mMenu->StopDispatchingItemsChanged();
-    // // try {
-    // Boolean ret = FALSE;
-    // mCallback->OnCreateActionMode(this, mMenu, &ret);
-    // // } finally {
-    // mMenu->StartDispatchingItemsChanged();
-    // // }
-    // return ret;
+    mMenu->StopDispatchingItemsChanged();
+    Boolean ret = FALSE;
+    mCallback->OnCreateActionMode(THIS_PROBE(IActionMode), IMenu::Probe(mMenu), &ret);
+    mMenu->StartDispatchingItemsChanged();
+    return ret;
 }
 
 ECode CExtractEditLayout::ExtractActionMode::Finish()
@@ -111,8 +105,7 @@ ECode CExtractEditLayout::ExtractActionMode::Finish()
     IView::Probe(mHost->mExtractActionButton)->SetVisibility(IView::VISIBLE);
     IView::Probe(mHost->mEditButton)->SetVisibility(IView::INVISIBLE);
 
-    assert(0 && "TODO");
-    // mHost->SendAccessibilityEvent(IAccessibilityEvent::TYPE_WINDOW_STATE_CHANGED);
+    mHost->SendAccessibilityEvent(IAccessibilityEvent::TYPE_WINDOW_STATE_CHANGED);
 
     mHost->mActionMode = NULL;
     return NOERROR;
@@ -193,8 +186,11 @@ ECode CExtractEditLayout::_OnClickListener::OnClick(
     /* [in] */ IView* clicked)
 {
     if (mHost->mActionMode != NULL) {
-        assert(0 && "TODO");
-        //new MenuPopupHelper(mHost->GetContext(), mHost->mActionMode->mMenu, clicked)->Show();
+        AutoPtr<IContext> context;
+        mHost->GetContext((IContext**)&context);
+        AutoPtr<IMenuPopupHelper> helper;
+        CMenuPopupHelper::New(context, mHost->mActionMode->mMenu, clicked, (IMenuPopupHelper**)&helper);
+        helper->Show();
     }
 
     return NOERROR;
@@ -210,9 +206,8 @@ AutoPtr<IActionMode> CExtractEditLayout::StartActionModeForChild(
         IView::Probe(mExtractActionButton)->SetVisibility(IView::INVISIBLE);
         IView::Probe(mEditButton)->SetVisibility(IView::VISIBLE);
         mActionMode = mode;
-        assert(0 && "TODO");
-        // SendAccessibilityEvent(IAccessibilityEvent::TYPE_WINDOW_STATE_CHANGED);
-        // return mode;
+        SendAccessibilityEvent(IAccessibilityEvent::TYPE_WINDOW_STATE_CHANGED);
+        return mode;
     }
 
     return NULL;
@@ -220,31 +215,30 @@ AutoPtr<IActionMode> CExtractEditLayout::StartActionModeForChild(
 
 ECode CExtractEditLayout::OnFinishInflate()
 {
-    assert(0 && "TODO");
-    // LinearLayout::OnFinishInflate();
-    // mExtractActionButton = IButton::Probe(FindViewById(R::id::inputExtractAction));
-    // mEditButton = IButton::Probe(FindViewById(R::id::inputExtractEditButton));
+    LinearLayout::OnFinishInflate();
+    AutoPtr<IView> view;
+    FindViewById(R::id::inputExtractAction, (IView**)&view);
+    mExtractActionButton = IButton::Probe(view);
+    view = NULL;
+    FindViewById(R::id::inputExtractEditButton, (IView**)&view);
+    mEditButton = IButton::Probe(view);
     AutoPtr<_OnClickListener> listener = new _OnClickListener(this);
     return IView::Probe(mEditButton)->SetOnClickListener(listener);
 }
 
 CAR_OBJECT_IMPL(CExtractEditLayout);
-CAR_INTERFACE_IMPL(CExtractEditLayout, /*LinearLayout*/Object, IExtractEditLayout);
+CAR_INTERFACE_IMPL(CExtractEditLayout, LinearLayout, IExtractEditLayout);
 ECode CExtractEditLayout::constructor(
     /* [in] */ IContext* ctx)
 {
-    assert(0 && "TODO");
-    return NOERROR;
-    // return LinearLayout::constructor(ctx);
+    return LinearLayout::constructor(ctx);
 }
 
 ECode CExtractEditLayout::constructor(
     /* [in] */ IContext* ctx,
     /* [in] */ IAttributeSet* attrs)
 {
-    assert(0 && "TODO");
-    return NOERROR;
-    // return LinearLayout::constructor(ctx, attrs);
+    return LinearLayout::constructor(ctx, attrs);
 }
 
 ECode CExtractEditLayout::IsActionModeStarted(
