@@ -26,7 +26,7 @@ namespace Droid {
 namespace Preference {
 
 class PreferenceGroupAdapter
-    : BaseAdapter
+    : public BaseAdapter
     , public IPreferenceOnPreferenceChangeInternalListener
     , public IPreferenceGroupAdapter
 {

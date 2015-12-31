@@ -3,17 +3,17 @@
 #include "elastos/droid/R.h"
 #include "elastos/droid/preference/CPreferenceGroupAdapter.h"
 #include "elastos/droid/preference/CPreferenceManager.h"
-//#include "elastos/droid/app/CDialog.h"
+#include "elastos/droid/app/CDialog.h"
 #include "elastos/droid/text/TextUtils.h"
-//#include "elastos/droid/widget/CListView.h"
+#include "elastos/droid/widget/CListView.h"
 #include "elastos/droid/preference/CPreferenceScreenSavedState.h"
 
 using Elastos::Core::CString;
-//using Elastos::Droid::App::CDialog;
+using Elastos::Droid::App::CDialog;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnDismissListener;
 using Elastos::Droid::Preference::CPreferenceGroupAdapter;
 using Elastos::Droid::Text::TextUtils;
-//using Elastos::Droid::Widget::CListView;
+using Elastos::Droid::Widget::CListView;
 using Elastos::Droid::Widget::IAdapter;
 using Elastos::Droid::Widget::IAdapterView;
 using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
@@ -111,31 +111,29 @@ ECode PreferenceScreen::ShowDialog(
     GetTitle((ICharSequence**)&title);
     Int32 resID;
     context->GetThemeResId((Int32*)&resID);
-    // AutoPtr<IDialog> dialog;
-    // CDialog::New(context, resID, (IDialog **)&dialog);
-    // mDialog = dialog;
-    // if (TextUtils::IsEmpty(title)) {
-    //     AutoPtr<IWindow> window;
-    //     dialog->GetWindow((IWindow**)&window);
-    //     Boolean result;
-    //     window->RequestFeature(IWindow::FEATURE_NO_TITLE, (Boolean*)&result);
-    // }
-    // else {
-    //     dialog->SetTitle(title);
-    // }
-    // dialog->SetContentView(childPrefScreen);
-    // dialog->SetOnDismissListener(THIS_PROBE(IDialogInterfaceOnDismissListener));
-    // if (state != NULL) {
-    //     dialog->OnRestoreInstanceState(state);
-    // }
+    AutoPtr<IDialog> dialog;
+    CDialog::New(context, resID, (IDialog **)&dialog);
+    mDialog = dialog;
+    if (TextUtils::IsEmpty(title)) {
+        AutoPtr<IWindow> window;
+        dialog->GetWindow((IWindow**)&window);
+        Boolean result;
+        window->RequestFeature(IWindow::FEATURE_NO_TITLE, (Boolean*)&result);
+    }
+    else {
+        dialog->SetTitle(title);
+    }
+    dialog->SetContentView(childPrefScreen);
+    dialog->SetOnDismissListener(THIS_PROBE(IDialogInterfaceOnDismissListener));
+    if (state != NULL) {
+        dialog->OnRestoreInstanceState(state);
+    }
 
     // Add the screen to the list of preferences screens opened as dialogs
-    // AutoPtr<IPreferenceManager> manager;
-    // GetPreferenceManager((IPreferenceManager**)&manager);
-    // manager->AddPreferencesScreen(dialog);
-
-    // return dialog->Show();
-    return NOERROR;
+    AutoPtr<IPreferenceManager> manager;
+    GetPreferenceManager((IPreferenceManager**)&manager);
+    manager->AddPreferencesScreen(IDialogInterface::Probe(dialog));
+    return dialog->Show();
 }
 
 ECode PreferenceScreen::OnDismiss(
@@ -165,7 +163,7 @@ ECode PreferenceScreen::OnItemClick(
 {
     // If the list has headers, subtract them from the index.
     if (IListView::Probe(parent) != NULL) {
-        // position -= ((CListView*)IListView::Probe(parent))->GetHeaderViewsCount();
+        position -= ((CListView*)IListView::Probe(parent))->GetHeaderViewsCount();
     }
 
     AutoPtr<IListAdapter> adapter;

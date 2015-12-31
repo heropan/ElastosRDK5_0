@@ -1111,9 +1111,9 @@ module
     //         interface IParcelable;
     //     }
 
-    //     singleton class CAbsSavedStateHelper {
-    //         interface IAbsSavedStateHelper;
-    //     }
+    singleton class CAbsSavedStateHelper {
+        interface IAbsSavedStateHelper;
+    }
 
     singleton class CWindowManagerLayoutParamsHelper {
         interface IWindowManagerLayoutParamsHelper;
