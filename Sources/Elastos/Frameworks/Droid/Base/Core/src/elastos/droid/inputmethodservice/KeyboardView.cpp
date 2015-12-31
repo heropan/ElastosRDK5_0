@@ -2,47 +2,61 @@
 #include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.View.h"
-#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/inputmethodservice/KeyboardView.h"
-// #include "elastos/droid/graphics/CBitmapFactory.h"
-// #include "elastos/droid/graphics/CCanvas.h"
-// #include "elastos/droid/graphics/CRectF.h"
+#include "elastos/droid/graphics/CBitmap.h"
+#include "elastos/droid/graphics/CCanvas.h"
+#include "elastos/droid/graphics/CRectF.h"
 #include "elastos/droid/graphics/Typeface.h"
-// #include "elastos/droid/graphics/CPaint.h"
-// #include "elastos/droid/view/CViewConfiguration.h"
-// #include "elastos/droid/view/CMotionEvent.h"
-// #include "elastos/droid/view/accessibility/CAccessibilityEventHelper.h"
-// #include "elastos/droid/view/accessibility/CAccessibilityManagerHelper.h"
-// #include "elastos/droid/provider/CSettingsSecure.h"
-// #include "elastos/droid/widget/CPopupWindow.h"
+#include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/R.h"
+#include "elastos/droid/view/ViewConfiguration.h"
+#include "elastos/droid/view/MotionEvent.h"
+#include "elastos/droid/view/CGestureDetector.h"
+#include "elastos/droid/view/accessibility/CAccessibilityEventHelper.h"
+#include "elastos/droid/view/accessibility/CAccessibilityManagerHelper.h"
+#include "elastos/droid/provider/CSettingsSecure.h"
+#include "elastos/droid/widget/CPopupWindow.h"
 #include "elastos/droid/utility/CDisplayMetrics.h"
 #include <elastos/core/Character.h>
 #include <elastos/core/Math.h>
 
-using Elastos::Core::Character;
-using Elastos::Core::CString;
 using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
+using Elastos::Droid::Graphics::CRectF;
+using Elastos::Droid::Graphics::CCanvas;
+using Elastos::Droid::Graphics::CPaint;
+using Elastos::Droid::Graphics::CBitmap;
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Graphics::PorterDuffMode_CLEAR;
+using Elastos::Droid::Graphics::RegionOp_REPLACE;
+using Elastos::Droid::Graphics::Typeface;
 using Elastos::Droid::Provider::ISettingsSecure;
-// using Elastos::Droid::Provider::CSettingsSecure;
+using Elastos::Droid::Provider::CSettingsSecure;
+using Elastos::Droid::R;
+using Elastos::Droid::View::CGestureDetector;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::EIID_IView;
 using Elastos::Droid::View::IViewOnClickListener;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
-// using Elastos::Droid::View::CMotionEvent;
+using Elastos::Droid::View::MotionEvent;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IInputEvent;
-// using Elastos::Droid::View::CViewConfiguration;
+using Elastos::Droid::View::IGestureDetectorOnGestureListener;
+using Elastos::Droid::View::ViewConfiguration;
 using Elastos::Droid::View::Accessibility::IAccessibilityEventHelper;
-// using Elastos::Droid::View::Accessibility::CAccessibilityEventHelper;
+using Elastos::Droid::View::Accessibility::CAccessibilityEventHelper;
 using Elastos::Droid::View::Accessibility::IAccessibilityManagerHelper;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
-// using Elastos::Droid::View::Accessibility::CAccessibilityManagerHelper;
-// using Elastos::Droid::Widget::CPopupWindow;
+using Elastos::Droid::View::Accessibility::CAccessibilityManagerHelper;
+using Elastos::Droid::Widget::CPopupWindow;
+using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::Utility::CDisplayMetrics;
 using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Core::Character;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -67,7 +81,7 @@ const Int32 KeyboardView::DEBOUNCE_TIME = 70;
 
 const Int32 KeyboardView::REPEAT_INTERVAL = 50; // ~20 keys per second
 const Int32 KeyboardView::REPEAT_START_DELAY = 400;
-const Int32 KeyboardView::LONGPRESS_TIMEOUT = 0;// TODO CViewConfiguration::GetLongPressTimeout();
+const Int32 KeyboardView::LONGPRESS_TIMEOUT = ViewConfiguration::GetLongPressTimeout();
 const Int32 KeyboardView::MAX_NEARBY_KEYS = 12;
 const Int32 KeyboardView::MULTITAP_INTERVAL = 800;
 
@@ -324,14 +338,18 @@ KeyboardView::_SimpleOnGestureListener::_SimpleOnGestureListener(
 KeyboardView::_SimpleOnGestureListener::~_SimpleOnGestureListener()
 {}
 
-Boolean KeyboardView::_SimpleOnGestureListener::OnFling(
+ECode KeyboardView::_SimpleOnGestureListener::OnFling(
     /* [in] */ IMotionEvent* e1,
     /* [in] */ IMotionEvent* e2,
     /* [in] */ Float velocityX,
-    /* [in] */ Float velocityY)
+    /* [in] */ Float velocityY,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res);
+    *res = TRUE;
     if (mHost->mPossiblePoly) {
-        return FALSE;
+        *res = FALSE;
+        return NOERROR;
     }
 
     const Float absX = Elastos::Core::Math::Abs(velocityX);
@@ -358,30 +376,37 @@ Boolean KeyboardView::_SimpleOnGestureListener::OnFling(
     if (velocityX > mHost->mSwipeThreshold && absY < absX && deltaX > travelX) {
         if (mHost->mDisambiguateSwipe && endingVelocityX < velocityX / 4) {
             sendDownKey = TRUE;
-        } else {
-            mHost->SwipeRight();
-            return TRUE;
         }
-    } else if (velocityX < - mHost->mSwipeThreshold && absY < absX && deltaX < -travelX) {
+        else {
+            mHost->SwipeRight();
+            return NOERROR;
+        }
+    }
+    else if (velocityX < - mHost->mSwipeThreshold && absY < absX && deltaX < -travelX) {
         if (mHost->mDisambiguateSwipe && endingVelocityX > velocityX / 4) {
             sendDownKey = TRUE;
-        } else {
-            mHost->SwipeLeft();
-            return TRUE;
         }
-    } else if (velocityY < - mHost->mSwipeThreshold && absX < absY && deltaY < -travelY) {
+        else {
+            mHost->SwipeLeft();
+            return NOERROR;
+        }
+    }
+    else if (velocityY < - mHost->mSwipeThreshold && absX < absY && deltaY < -travelY) {
         if (mHost->mDisambiguateSwipe && endingVelocityY > velocityY / 4) {
             sendDownKey = TRUE;
-        } else {
-            mHost->SwipeUp();
-            return TRUE;
         }
-    } else if (velocityY > mHost->mSwipeThreshold && absX < absY / 2 && deltaY > travelY) {
+        else {
+            mHost->SwipeUp();
+            return NOERROR;
+        }
+    }
+    else if (velocityY > mHost->mSwipeThreshold && absX < absY / 2 && deltaY > travelY) {
         if (mHost->mDisambiguateSwipe && endingVelocityY < velocityY / 4) {
             sendDownKey = TRUE;
-        } else {
+        }
+        else {
             mHost->SwipeDown();
-            return TRUE;
+            return NOERROR;
         }
     }
 
@@ -391,10 +416,11 @@ Boolean KeyboardView::_SimpleOnGestureListener::OnFling(
         mHost->DetectAndSendKey(mHost->mDownKey, mHost->mStartX, mHost->mStartY, time);
     }
 
-    return FALSE;
+    *res = FALSE;
+    return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(KeyboardView, /*View*/ Object, IKeyboardView);
+CAR_INTERFACE_IMPL(KeyboardView, View, IKeyboardView);
 KeyboardView::KeyboardView()
     : mCurrentKeyIndex(NOT_A_KEY)
     , mLabelTextSize(0)
@@ -432,7 +458,6 @@ KeyboardView::KeyboardView()
     , mLastKeyTime(0)
     , mCurrentKeyTime(0)
     , mKeyIndices(ArrayOf<Int32>::Alloc(12))
-    // , mGestureDetector(NULL)
     , mPopupX(0)
     , mPopupY(0)
     , mRepeatKeyIndex(NOT_A_KEY)
@@ -456,111 +481,34 @@ KeyboardView::KeyboardView()
     , mOldEventTime(0)
     , mUsedVelocity(FALSE)
 {
-    assert(0 && "TODO");
-    // CRect::New(0, 0, 0, 0, (IRect**)&mClipRegion);
-    // CRectF::New((IRectF**)&mDirtyRect);
+    CRect::New(0, 0, 0, 0, (IRect**)&mClipRegion);
+    CRectF::New((IRectF**)&mDirtyRect);
     mHandler = new MyHandler(this);
-    mCoordinates[0] = mCoordinates[1] = 0;
-}
-
-//TODO
-KeyboardView::KeyboardView(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes)
-    : /*View(context, attrs, defStyleAttr)
-    ,*/ mCurrentKeyIndex(NOT_A_KEY)
-    , mLabelTextSize(0)
-    , mKeyTextSize(0)
-    , mKeyTextColor(0)
-    , mShadowRadius(0.0)
-    , mShadowColor(0)
-    , mBackgroundDimAmount(0.0)
-    , mPreviewTextSizeLarge(0)
-    , mPreviewOffset(0)
-    , mPreviewHeight(0)
-    , mMiniKeyboardOnScreen(FALSE)
-    , mMiniKeyboardOffsetX(0)
-    , mMiniKeyboardOffsetY(0)
-    , mKeys(NULL)
-    , mVerticalCorrection(0)
-    , mProximityThreshold(0)
-    , mPreviewCentered(FALSE)
-    , mShowPreview(TRUE)
-    , mShowTouchPoints(TRUE)
-    , mPopupPreviewX(0)
-    , mPopupPreviewY(0)
-    , mLastX(0)
-    , mLastY(0)
-    , mStartX(0)
-    , mStartY(0)
-    , mProximityCorrectOn(FALSE)
-    , mDownTime(0)
-    , mLastMoveTime(0)
-    , mLastKey(0)
-    , mLastCodeX(0)
-    , mLastCodeY(0)
-    , mCurrentKey(NOT_A_KEY)
-    , mDownKey(NOT_A_KEY)
-    , mLastKeyTime(0)
-    , mCurrentKeyTime(0)
-    , mKeyIndices(ArrayOf<Int32>::Alloc(12))
-    // , mGestureDetector(NULL)
-    , mPopupX(0)
-    , mPopupY(0)
-    , mRepeatKeyIndex(NOT_A_KEY)
-    , mPopupLayout(0)
-    , mAbortKey(FALSE)
-    , mPossiblePoly(FALSE)
-    , mSwipeTracker(new SwipeTracker())
-    , mSwipeThreshold(0)
-    , mDisambiguateSwipe(FALSE)
-    , mOldPointerCount(1)
-    , mOldPointerX(0.0)
-    , mOldPointerY(0.0)
-    , mDistances(ArrayOf<Int32>::Alloc(MAX_NEARBY_KEYS))
-    , mLastSentIndex(0)
-    , mTapCount(0)
-    , mLastTapTime(0)
-    , mInMultiTap(FALSE)
-    , mDrawPending(FALSE)
-    , mKeyboardChanged(FALSE)
-    , mHeadsetRequiredToHearPasswordsAnnounced(FALSE)
-    , mOldEventTime(0)
-    , mUsedVelocity(FALSE)
-{
-    assert(0 && "TODO");
-    // CRect::New(0, 0, 0, 0, (IRect**)&mClipRegion);
-    // CRectF::New((IRectF**)&mDirtyRect);
-    mHandler = new MyHandler(this);
-    mCoordinates[0] = mCoordinates[1] = 0;
-    ASSERT_SUCCEEDED(InitInternal(context, attrs, defStyleAttr, defStyleRes));
-}
-
-KeyboardView::~KeyboardView()
-{
-    mMiniKeyboardCache = NULL;
+    mCoordinates = ArrayOf<Int32>::Alloc(2);
 }
 
 ECode KeyboardView::constructor(
-    /* [in] */ IContext* ctx,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyleAttr,
-    /* [in] */ Int32 defStyleRes)
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
 {
-    assert(0 && "TODO");
-    // ASSERT_SUCCEEDED(View::constructor(context, attrs, defStyleAttr, defStyleRes));
-    ASSERT_SUCCEEDED(InitInternal(ctx, attrs, defStyleAttr, defStyleRes));
-    return NOERROR;
+    return constructor(context, attrs, R::attr::keyboardViewStyle);
 }
 
-ECode KeyboardView::InitInternal(
+ECode KeyboardView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+{
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode KeyboardView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
+    View::constructor(context, attrs, defStyleAttr, defStyleRes);
     AutoPtr<ITypedArray> a;
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::KeyboardView),
@@ -621,13 +569,11 @@ ECode KeyboardView::InitInternal(
     a->Recycle();
 
     a = NULL;
-    assert(0 && "TODO");
-    // mContext->ObtainStyledAttributes(attrIds, (ITypedArray**)&a);
+    mContext->ObtainStyledAttributes(attrIds, (ITypedArray**)&a);
     a->GetFloat(R::styleable::Theme_backgroundDimAmount, 0.5f, &mBackgroundDimAmount);
     a->Recycle();
 
-    assert(0 && "TODO");
-    // CPopupWindow::New(context, (IPopupWindow**)&mPreviewPopup);
+    CPopupWindow::New(context, (IPopupWindow**)&mPreviewPopup);
     if (previewLayout != 0) {
         inflate->Inflate(previewLayout, NULL, (IView**)&mPreviewText);
         Float textSize = 0.0;
@@ -642,31 +588,28 @@ ECode KeyboardView::InitInternal(
 
     mPreviewPopup->SetTouchable(FALSE);
 
-    assert(0 && "TODO");
-    // CPopupWindow::New(context, (IPopupWindow**)&mPopupKeyboard);
+    CPopupWindow::New(context, (IPopupWindow**)&mPopupKeyboard);
     mPopupKeyboard->SetBackgroundDrawable(NULL);
     //mPopupKeyboard.setClippingEnabled(FALSE);
 
     mPopupParent = (IView*)this->Probe(EIID_IView);
     //mPredicting = TRUE;
 
-    assert(0 && "TODO");
-    // CPaint::New((IPaint**)&mPaint);
+    CPaint::New((IPaint**)&mPaint);
     mPaint->SetAntiAlias(TRUE);
     mPaint->SetTextSize(keyTextSize);
 
     mPaint->SetTextAlign(Elastos::Droid::Graphics::PaintAlign_CENTER /*Align.CENTER*/);
     mPaint->SetAlpha(255);
 
-    assert(0 && "TODO");
-    // CRect::New(0, 0, 0, 0, (IRect**)&mPadding);
+    CRect::New(0, 0, 0, 0, (IRect**)&mPadding);
     mMiniKeyboardCache = new HashMap<AutoPtr<IKeyboardKey>, AutoPtr<IView> >();
 
     Boolean isPadding = FALSE;
     mKeyBackground->GetPadding(mPadding, &isPadding);
 
-    assert(0 && "TODO");
-    AutoPtr<IResources> res/* = GetResources()*/;
+    AutoPtr<IResources> res;
+    GetResources((IResources**)&res);
 
     AutoPtr<IDisplayMetrics> dis;
     res->GetDisplayMetrics((IDisplayMetrics**)&dis);
@@ -677,28 +620,26 @@ ECode KeyboardView::InitInternal(
             &mDisambiguateSwipe);
 
     AutoPtr<IAccessibilityManagerHelper> helper;
-    assert(0 && "TODO");
-    // CAccessibilityManagerHelper::AcquireSingleton((IAccessibilityManagerHelper**)&helper);
+    CAccessibilityManagerHelper::AcquireSingleton((IAccessibilityManagerHelper**)&helper);
     helper->GetInstance(context, (IAccessibilityManager**)&mAccessibilityManager);
 
     AutoPtr<IInterface> audioService;
     context->GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&audioService);
-    assert(0 && "TODO");
-    // mAudioManager = IAudioManager::Probe(audioService);
+    mAudioManager = IAudioManager::Probe(audioService);
 
     ResetMultiTap();
-    // InitGestureDetector();
+    InitGestureDetector();
 
     return NOERROR;
 }
 
 void KeyboardView::InitGestureDetector()
 {
-    assert(0);
-    //TODO
-    // mGestureDetector = new GestureDetector(GetContext(),
-    //         new _SimpleOnGestureListener(this));
-    // mGestureDetector->SetIsLongpressEnabled(FALSE);
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IGestureDetectorOnGestureListener> listener = new _SimpleOnGestureListener(this);
+    CGestureDetector::New(context, listener, (IGestureDetector**)&mGestureDetector);
+    mGestureDetector->SetIsLongpressEnabled(FALSE);
 }
 
 ECode KeyboardView::SetOnKeyboardActionListener(
@@ -738,8 +679,7 @@ ECode KeyboardView::SetKeyboard(
         mKeys->Set(pos, key);
     }
 
-    assert(0 && "TODO");
-    // RequestLayout();
+    RequestLayout();
 
     // Hint to reallocate the buffer if the size changed
     mKeyboardChanged = TRUE;
@@ -887,23 +827,22 @@ void KeyboardView::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
-    assert(0 && "TODO");
     // Round up a little
-    // if (mKeyboard == NULL) {
-    //     SetMeasuredDimension(mPaddingLeft + mPaddingRight, mPaddingTop + mPaddingBottom);
-    // }
-    // else {
-    //     Int32 mw = 0;
-    //     mKeyboard->GetMinWidth(&mw);
-    //     Int32 width = mw + mPaddingLeft + mPaddingRight;
+    if (mKeyboard == NULL) {
+        SetMeasuredDimension(mPaddingLeft + mPaddingRight, mPaddingTop + mPaddingBottom);
+    }
+    else {
+        Int32 mw = 0;
+        mKeyboard->GetMinWidth(&mw);
+        Int32 width = mw + mPaddingLeft + mPaddingRight;
 
-    //     if (View::MeasureSpec::GetSize(widthMeasureSpec) < width + 10) {
-    //         width = View::MeasureSpec::GetSize(widthMeasureSpec);
-    //     }
-    //     Int32 th = 0;
-    //     mKeyboard->GetHeight(&th);
-    //     SetMeasuredDimension(width, th + mPaddingTop + mPaddingBottom);
-    // }
+        if (View::MeasureSpec::GetSize(widthMeasureSpec) < width + 10) {
+            width = View::MeasureSpec::GetSize(widthMeasureSpec);
+        }
+        Int32 th = 0;
+        mKeyboard->GetHeight(&th);
+        SetMeasuredDimension(width, th + mPaddingTop + mPaddingBottom);
+    }
 }
 
 void KeyboardView::ComputeProximityThreshold(
@@ -933,8 +872,7 @@ void KeyboardView::OnSizeChanged(
     /* [in] */ Int32 oldw,
     /* [in] */ Int32 oldh)
 {
-    assert(0 && "TODO");
-    // View::OnSizeChanged(w, h, oldw, oldh);
+    View::OnSizeChanged(w, h, oldw, oldh);
     if (mKeyboard != NULL) {
         ((Keyboard*)mKeyboard.Get())->Resize(w, h);
     }
@@ -943,12 +881,10 @@ void KeyboardView::OnSizeChanged(
     mBuffer = NULL;
 }
 
-//@Override
 void KeyboardView::OnDraw(
     /* [in] */ ICanvas* canvas)
 {
-    assert(0 && "TODO");
-    // View::OnDraw(canvas);
+    View::OnDraw(canvas);
     if (mDrawPending || mBuffer == NULL || mKeyboardChanged) {
         OnBufferDraw();
     }
@@ -957,155 +893,157 @@ void KeyboardView::OnDraw(
 
 void KeyboardView::OnBufferDraw()
 {
-    assert(0 && "TODO");
-    // if (mBuffer == NULL || mKeyboardChanged) {
-    //     Int32 bufferW = 0, bufferH = 0;
-    //     if (mBuffer != NULL) {
-    //         mBuffer->GetWidth(&bufferW);
-    //         mBuffer->GetHeight(&bufferH);
-    //     }
-    //     if (mBuffer == NULL || (mKeyboardChanged &&
-    //             (bufferW != GetWidth() || bufferH != GetHeight()))) {
-    //         // Make sure our bitmap is at least 1x1
-    //         const Int32 width = Elastos::Core::Math::Max(1, GetWidth());
-    //         const Int32 height = Elastos::Core::Math::Max(1, GetHeight());
+    if (mBuffer == NULL || mKeyboardChanged) {
+        Int32 bufferW = 0, bufferH = 0;
+        if (mBuffer != NULL) {
+            mBuffer->GetWidth(&bufferW);
+            mBuffer->GetHeight(&bufferH);
+        }
 
-    //         AutoPtr<IBitmapFactory> bmFactory;
-    //         CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bmFactory);
-    //         mBuffer = NULL;
-    //         bmFactory->CreateBitmap(width, height,
-    //             BitmapConfig_ARGB_8888, (IBitmap**)&mBuffer);
+        Int32 sw = 0, sh = 0;
+        if (mBuffer == NULL || (mKeyboardChanged &&
+                (bufferW != (GetWidth(&sw), sw) || bufferH != (GetHeight(&sh), sh)))) {
+            // Make sure our bitmap is at least 1x1
+            const Int32 width = Elastos::Core::Math::Max(1, (GetWidth(&sw), sw));
+            const Int32 height = Elastos::Core::Math::Max(1, (GetHeight(&sh), sh));
 
-    //         mCanvas = NULL;
-    //         CCanvas::New(mBuffer, (ICanvas**)&mCanvas);
-    //     }
-    //     InvalidateAllKeys();
-    //     mKeyboardChanged = FALSE;
-    // }
-    // Boolean isNotEmpty = FALSE;
-    // mCanvas->ClipRect(mDirtyRect, RegionOp_REPLACE, &isNotEmpty);
+            mBuffer = NULL;
+            CBitmap::CreateBitmap(width, height,
+                BitmapConfig_ARGB_8888, (IBitmap**)&mBuffer);
 
-    // if (mKeyboard == NULL) return;
+            mCanvas = NULL;
+            CCanvas::New(mBuffer, (ICanvas**)&mCanvas);
+        }
+        InvalidateAllKeys();
+        mKeyboardChanged = FALSE;
+    }
+    Boolean isNotEmpty = FALSE;
+    mCanvas->ClipRect(mDirtyRect, RegionOp_REPLACE, &isNotEmpty);
 
-    // const Int32 kbdPaddingLeft = mPaddingLeft;
-    // const Int32 kbdPaddingTop = mPaddingTop;
+    if (mKeyboard == NULL) return;
 
-    // mPaint->SetColor(mKeyTextColor);
-    // Boolean drawSingleKey = FALSE;
-    // Boolean isNonEmpty = FALSE;
-    // if (mInvalidatedKey != NULL && (mCanvas->GetClipBounds(mClipRegion, &isNonEmpty), isNonEmpty)) {
-    //     // Is clipRegion completely contained within the invalidated key?
-    //     Int32 keyX, keyY, keyW, keyH;
-    //     mInvalidatedKey->GetX(&keyX);
-    //     mInvalidatedKey->GetY(&keyY);
-    //     mInvalidatedKey->GetWidth(&keyW);
-    //     mInvalidatedKey->GetHeight(&keyH);
-    //     CRect* clipRegion = (CRect*)mClipRegion.Get();
-    //     if (keyX + kbdPaddingLeft - 1 <= clipRegion->mLeft &&
-    //           keyY + kbdPaddingTop - 1 <= clipRegion->mTop &&
-    //           keyX + keyW + kbdPaddingLeft + 1 >= clipRegion->mRight &&
-    //           keyY + keyH + kbdPaddingTop + 1 >= clipRegion->mBottom) {
-    //         drawSingleKey = TRUE;
-    //     }
-    // }
-    // mCanvas->DrawColor(0x00000000, PorterDuffMode_CLEAR);
-    // CRect* padding = (CRect*)mPadding.Get();
-    // const Int32 keyCount = mKeys->GetLength();
-    // for (Int32 i = 0; i < keyCount; i++) {
-    //     AutoPtr<IKeyboardKey> key = (*mKeys)[i];
-    //     if (drawSingleKey && mInvalidatedKey != key) {
-    //         continue;
-    //     }
-    //     AutoPtr< ArrayOf<Int32> > drawableState;
-    //     key->GetCurrentDrawableState((ArrayOf<Int32>**)&drawableState);
-    //     Boolean isStateful = FALSE;
-    //     mKeyBackground->SetState(drawableState.Get(), &isStateful);
+    const Int32 kbdPaddingLeft = mPaddingLeft;
+    const Int32 kbdPaddingTop = mPaddingTop;
 
-    //     // Switch the character to uppercase if shift is pressed
-    //     String label;
-    //     AutoPtr<ICharSequence> l;
-    //     key->GetLabel((ICharSequence**)&l);
-    //     if (l != NULL) {
-    //         AdjustCase(l)->ToString(&label);
-    //     }
+    mPaint->SetColor(mKeyTextColor);
+    Boolean drawSingleKey = FALSE;
+    Boolean isNonEmpty = FALSE;
+    if (mInvalidatedKey != NULL && (mCanvas->GetClipBounds(mClipRegion, &isNonEmpty), isNonEmpty)) {
+        // Is clipRegion completely contained within the invalidated key?
+        Int32 keyX, keyY, keyW, keyH;
+        mInvalidatedKey->GetX(&keyX);
+        mInvalidatedKey->GetY(&keyY);
+        mInvalidatedKey->GetWidth(&keyW);
+        mInvalidatedKey->GetHeight(&keyH);
+        CRect* clipRegion = (CRect*)mClipRegion.Get();
+        if (keyX + kbdPaddingLeft - 1 <= clipRegion->mLeft &&
+              keyY + kbdPaddingTop - 1 <= clipRegion->mTop &&
+              keyX + keyW + kbdPaddingLeft + 1 >= clipRegion->mRight &&
+              keyY + keyH + kbdPaddingTop + 1 >= clipRegion->mBottom) {
+            drawSingleKey = TRUE;
+        }
+    }
+    mCanvas->DrawColor(0x00000000, PorterDuffMode_CLEAR);
+    CRect* padding = (CRect*)mPadding.Get();
+    const Int32 keyCount = mKeys->GetLength();
+    for (Int32 i = 0; i < keyCount; i++) {
+        AutoPtr<IKeyboardKey> key = (*mKeys)[i];
+        if (drawSingleKey && mInvalidatedKey != key) {
+            continue;
+        }
+        AutoPtr< ArrayOf<Int32> > drawableState;
+        key->GetCurrentDrawableState((ArrayOf<Int32>**)&drawableState);
+        Boolean isStateful = FALSE;
+        mKeyBackground->SetState(drawableState.Get(), &isStateful);
 
-    //     Int32 keyW, keyH;
-    //     key->GetWidth(&keyW);
-    //     key->GetHeight(&keyH);
-    //     AutoPtr<IRect> bounds;
-    //     mKeyBackground->GetBounds((IRect**)&bounds);
-    //     if (keyW != ((CRect*)bounds.Get())->mRight ||
-    //             keyH != ((CRect*)bounds.Get())->mBottom) {
-    //         mKeyBackground->SetBounds(0, 0, keyW, keyH);
-    //     }
-    //     Int32 keyX, keyY;
-    //     key->GetX(&keyX);
-    //     key->GetY(&keyY);
-    //     mCanvas->Translate(keyX + kbdPaddingLeft, keyY + kbdPaddingTop);
-    //     mKeyBackground->Draw(mCanvas);
+        // Switch the character to uppercase if shift is pressed
+        String label;
+        AutoPtr<ICharSequence> l;
+        key->GetLabel((ICharSequence**)&l);
+        if (l != NULL) {
+            AdjustCase(l)->ToString(&label);
+        }
 
-    //     if (!label.IsNull()) {
-    //         // For characters, use large font. For labels like "Done", use small font.
-    //         if (label.GetLength() > 1 /*&& ((CKeyboardKey*)key.Get())->mCodes->GetLength() < 2*/) {
-    //             mPaint->SetTextSize(mLabelTextSize);
-    //             mPaint->SetTypeface(Typeface::DEFAULT_BOLD);
-    //         }
-    //         else {
-    //             mPaint->SetTextSize(mKeyTextSize);
-    //             mPaint->SetTypeface(Typeface::DEFAULT);
-    //         }
-    //         // Draw a drop shadow for the text
-    //         mPaint->SetShadowLayer(mShadowRadius, 0, 0, mShadowColor);
-    //         // Draw the text
-    //         Float textSize = 0.0, tmpDescent = 0.0;
-    //         mPaint->GetTextSize(&textSize);
-    //         mPaint->Descent(&tmpDescent);
-    //         mCanvas->DrawText(label,
-    //             (keyW - padding->mLeft - padding->mRight) / 2 + padding->mLeft,
-    //             (keyH - padding->mTop - padding->mBottom) / 2 + (textSize - tmpDescent) / 2 + padding->mTop,
-    //             mPaint);
-    //         // Turn off drop shadow
-    //         mPaint->SetShadowLayer(0, 0, 0, 0);
-    //     }
-    //     else {
-    //         AutoPtr<IDrawable> icon;
-    //         key->GetIcon((IDrawable**)&icon);
-    //         if (icon != NULL) {
-    //             Int32 intrinsicWidth = 0, intrinsicHeight = 0;
-    //             icon->GetIntrinsicWidth(&intrinsicWidth);
-    //             icon->GetIntrinsicHeight(&intrinsicHeight);
-    //             const Int32 drawableX = (keyW - padding->mLeft - padding->mRight
-    //                     - intrinsicWidth) / 2 + padding->mLeft;
-    //             const Int32 drawableY = (keyH - padding->mTop - padding->mBottom
-    //                     - intrinsicHeight) / 2 + padding->mTop;
-    //             mCanvas->Translate(drawableX, drawableY);
-    //             icon->SetBounds(0, 0, intrinsicWidth, intrinsicHeight);
-    //             icon->Draw(mCanvas);
-    //             mCanvas->Translate(-drawableX, -drawableY);
-    //         }
-    //     }
-    //     mCanvas->Translate(-keyX - kbdPaddingLeft, -keyY - kbdPaddingTop);
-    // }
-    // mInvalidatedKey = NULL;
-    // // Overlay a dark rectangle to dim the keyboard
-    // if (mMiniKeyboardOnScreen) {
-    //     mPaint->SetColor((Int32)(mBackgroundDimAmount * 0xFF) << 24);
-    //     mCanvas->DrawRect(0, 0, GetWidth(), GetHeight(), mPaint);
-    // }
+        Int32 keyW, keyH;
+        key->GetWidth(&keyW);
+        key->GetHeight(&keyH);
+        AutoPtr<IRect> bounds;
+        mKeyBackground->GetBounds((IRect**)&bounds);
+        if (keyW != ((CRect*)bounds.Get())->mRight ||
+                keyH != ((CRect*)bounds.Get())->mBottom) {
+            mKeyBackground->SetBounds(0, 0, keyW, keyH);
+        }
+        Int32 keyX, keyY;
+        key->GetX(&keyX);
+        key->GetY(&keyY);
+        mCanvas->Translate(keyX + kbdPaddingLeft, keyY + kbdPaddingTop);
+        mKeyBackground->Draw(mCanvas);
 
-    // if (DEBUG && mShowTouchPoints) {
-    //     mPaint->SetAlpha(128);
-    //     mPaint->SetColor(0xFFFF0000);
-    //     mCanvas->DrawCircle(mStartX, mStartY, 3, mPaint);
-    //     mCanvas->DrawLine(mStartX, mStartY, mLastX, mLastY, mPaint);
-    //     mPaint->SetColor(0xFF0000FF);
-    //     mCanvas->DrawCircle(mLastX, mLastY, 3, mPaint);
-    //     mPaint->SetColor(0xFF00FF00);
-    //     mCanvas->DrawCircle((mStartX + mLastX) / 2, (mStartY + mLastY) / 2, 2, mPaint);
-    // }
+        if (!label.IsNull()) {
+            // For characters, use large font. For labels like "Done", use small font.
+            if (label.GetLength() > 1 /*&& ((CKeyboardKey*)key.Get())->mCodes->GetLength() < 2*/) {
+                mPaint->SetTextSize(mLabelTextSize);
+                mPaint->SetTypeface(Typeface::DEFAULT_BOLD);
+            }
+            else {
+                mPaint->SetTextSize(mKeyTextSize);
+                mPaint->SetTypeface(Typeface::DEFAULT);
+            }
+            // Draw a drop shadow for the text
+            mPaint->SetShadowLayer(mShadowRadius, 0, 0, mShadowColor);
+            // Draw the text
+            Float textSize = 0.0, tmpDescent = 0.0;
+            mPaint->GetTextSize(&textSize);
+            mPaint->Descent(&tmpDescent);
+            mCanvas->DrawText(label,
+                (keyW - padding->mLeft - padding->mRight) / 2 + padding->mLeft,
+                (keyH - padding->mTop - padding->mBottom) / 2 + (textSize - tmpDescent) / 2 + padding->mTop,
+                mPaint);
+            // Turn off drop shadow
+            mPaint->SetShadowLayer(0, 0, 0, 0);
+        }
+        else {
+            AutoPtr<IDrawable> icon;
+            key->GetIcon((IDrawable**)&icon);
+            if (icon != NULL) {
+                Int32 intrinsicWidth = 0, intrinsicHeight = 0;
+                icon->GetIntrinsicWidth(&intrinsicWidth);
+                icon->GetIntrinsicHeight(&intrinsicHeight);
+                const Int32 drawableX = (keyW - padding->mLeft - padding->mRight
+                        - intrinsicWidth) / 2 + padding->mLeft;
+                const Int32 drawableY = (keyH - padding->mTop - padding->mBottom
+                        - intrinsicHeight) / 2 + padding->mTop;
+                mCanvas->Translate(drawableX, drawableY);
+                icon->SetBounds(0, 0, intrinsicWidth, intrinsicHeight);
+                icon->Draw(mCanvas);
+                mCanvas->Translate(-drawableX, -drawableY);
+            }
+        }
+        mCanvas->Translate(-keyX - kbdPaddingLeft, -keyY - kbdPaddingTop);
+    }
+    mInvalidatedKey = NULL;
+    // Overlay a dark rectangle to dim the keyboard
+    if (mMiniKeyboardOnScreen) {
+        Int32 sw = 0, sh = 0;
+        GetWidth(&sw);
+        GetHeight(&sh);
+        mPaint->SetColor((Int32)(mBackgroundDimAmount * 0xFF) << 24);
+        mCanvas->DrawRect(0, 0, sw, sh, mPaint);
+    }
 
-    // mDrawPending = FALSE;
-    // mDirtyRect->SetEmpty();
+    if (DEBUG && mShowTouchPoints) {
+        mPaint->SetAlpha(128);
+        mPaint->SetColor(0xFFFF0000);
+        mCanvas->DrawCircle(mStartX, mStartY, 3, mPaint);
+        mCanvas->DrawLine(mStartX, mStartY, mLastX, mLastY, mPaint);
+        mPaint->SetColor(0xFF0000FF);
+        mCanvas->DrawCircle(mLastX, mLastY, 3, mPaint);
+        mPaint->SetColor(0xFF00FF00);
+        mCanvas->DrawCircle((mStartX + mLastX) / 2, (mStartY + mLastY) / 2, 2, mPaint);
+    }
+
+    mDrawPending = FALSE;
+    mDirtyRect->SetEmpty();
 }
 
 Int32 KeyboardView::GetKeyIndices(
@@ -1303,218 +1241,213 @@ void KeyboardView::ShowPreview(
 void KeyboardView::ShowKey(
     /* [in] */ Int32 keyIndex)
 {
-    assert(0 && "TODO");
-    // if (keyIndex < 0 || keyIndex >= mKeys->GetLength()) return;
-    // AutoPtr<IKeyboardKey> key = (*mKeys)[keyIndex];
-    // AutoPtr<IDrawable> icon;
-    // key->GetIcon((IDrawable**)&icon);
-    // if (icon != NULL) {
-    //     AutoPtr<IDrawable> iconPreview;
-    //     key->GetIconPreview((IDrawable**)&iconPreview);
-    //     mPreviewText->SetCompoundDrawables(NULL, NULL, NULL,
-    //             iconPreview != NULL ? iconPreview : icon);
-    //     mPreviewText->SetText(NULL);
-    // }
-    // else {
-    //     mPreviewText->SetCompoundDrawables(NULL, NULL, NULL, NULL);
-    //     AutoPtr<ICharSequence> text = GetPreviewText(key);
-    //     mPreviewText->SetText(text);
+    if (keyIndex < 0 || keyIndex >= mKeys->GetLength()) return;
+    AutoPtr<IKeyboardKey> key = (*mKeys)[keyIndex];
+    AutoPtr<IDrawable> icon;
+    key->GetIcon((IDrawable**)&icon);
+    if (icon != NULL) {
+        AutoPtr<IDrawable> iconPreview;
+        key->GetIconPreview((IDrawable**)&iconPreview);
+        mPreviewText->SetCompoundDrawables(NULL, NULL, NULL,
+                iconPreview != NULL ? iconPreview : icon);
+        mPreviewText->SetText((ICharSequence*)NULL);
+    }
+    else {
+        mPreviewText->SetCompoundDrawables(NULL, NULL, NULL, NULL);
+        AutoPtr<ICharSequence> text = GetPreviewText(key);
+        mPreviewText->SetText(text);
 
-    //     AutoPtr<ICharSequence> label;
-    //     key->GetLabel((ICharSequence**)&label);
-    //     Int32 len = 0;
-    //     label->GetLength(&len);
-    //     AutoPtr< ArrayOf<Int32> > codes;
-    //     key->GetCodes((ArrayOf<Int32>**)&codes);
-    //     if (len > 1 && codes->GetLength() < 2) {
-    //         mPreviewText->SetTextSize(ITypedValue::COMPLEX_UNIT_PX, mKeyTextSize);
-    //         mPreviewText->SetTypeface(Typeface::DEFAULT_BOLD);
-    //     }
-    //     else {
-    //         mPreviewText->SetTextSize(ITypedValue::COMPLEX_UNIT_PX, mPreviewTextSizeLarge);
-    //         mPreviewText->SetTypeface(Typeface::DEFAULT);
-    //     }
-    // }
-    // mPreviewText->Measure(MeasureSpec::MakeMeasureSpec(0, MeasureSpec::UNSPECIFIED),
-    //         MeasureSpec::MakeMeasureSpec(0, MeasureSpec::UNSPECIFIED));
-    // Int32 tmp = 0, tmpL = 0, tmpR = 0;
-    // mPreviewText->GetMeasuredWidth(&tmp);
-    // mPreviewText->GetPaddingLeft(&tmpL);
-    // mPreviewText->GetPaddingRight(&tmpR);
-    // Int32 keyW;
-    // key->GetWidth(&keyW);
-    // Int32 popupWidth = Elastos::Core::Math::Max(tmp, keyW + tmpL + tmpR);
-    // const Int32 popupHeight = mPreviewHeight;
-    // AutoPtr<IViewGroupLayoutParams> lp;
-    // mPreviewText->GetLayoutParams((IViewGroupLayoutParams**)&lp);
-    // if (lp != NULL) {
-    //     lp->SetWidth(popupWidth);
-    //     lp->SetHeight(popupHeight);
-    // }
-    // if (!mPreviewCentered) {
-    //     mPreviewText->GetPaddingLeft(&tmpL);
-    //     Int32 keyX, keyY;
-    //     key->GetX(&keyX);
-    //     key->GetY(&keyY);
-    //     mPopupPreviewX = keyX - tmpL + mPaddingLeft;
-    //     mPopupPreviewY = keyY - popupHeight + mPreviewOffset;
-    // }
-    // else {
-    //     // TODO: Fix this if centering is brought back
-    //     mPreviewText->GetMeasuredWidth(&tmp);
-    //     mPopupPreviewX = 160 - tmp / 2;
-    //     mPreviewText->GetMeasuredHeight(&tmp);
-    //     mPopupPreviewY = - tmp;
-    // }
+        AutoPtr<ICharSequence> label;
+        key->GetLabel((ICharSequence**)&label);
+        Int32 len = 0;
+        label->GetLength(&len);
+        AutoPtr< ArrayOf<Int32> > codes;
+        key->GetCodes((ArrayOf<Int32>**)&codes);
+        if (len > 1 && codes->GetLength() < 2) {
+            mPreviewText->SetTextSize(ITypedValue::COMPLEX_UNIT_PX, mKeyTextSize);
+            mPreviewText->SetTypeface(Typeface::DEFAULT_BOLD);
+        }
+        else {
+            mPreviewText->SetTextSize(ITypedValue::COMPLEX_UNIT_PX, mPreviewTextSizeLarge);
+            mPreviewText->SetTypeface(Typeface::DEFAULT);
+        }
+    }
+    IView::Probe(mPreviewText)->Measure(MeasureSpec::MakeMeasureSpec(0, MeasureSpec::UNSPECIFIED),
+            MeasureSpec::MakeMeasureSpec(0, MeasureSpec::UNSPECIFIED));
+    Int32 tmp = 0, tmpL = 0, tmpR = 0;
+    IView::Probe(mPreviewText)->GetMeasuredWidth(&tmp);
+    IView::Probe(mPreviewText)->GetPaddingLeft(&tmpL);
+    IView::Probe(mPreviewText)->GetPaddingRight(&tmpR);
+    Int32 keyW;
+    key->GetWidth(&keyW);
+    Int32 popupWidth = Elastos::Core::Math::Max(tmp, keyW + tmpL + tmpR);
+    const Int32 popupHeight = mPreviewHeight;
+    AutoPtr<IViewGroupLayoutParams> lp;
+    IView::Probe(mPreviewText)->GetLayoutParams((IViewGroupLayoutParams**)&lp);
+    if (lp != NULL) {
+        lp->SetWidth(popupWidth);
+        lp->SetHeight(popupHeight);
+    }
+    if (!mPreviewCentered) {
+        IView::Probe(mPreviewText)->GetPaddingLeft(&tmpL);
+        Int32 keyX, keyY;
+        key->GetX(&keyX);
+        key->GetY(&keyY);
+        mPopupPreviewX = keyX - tmpL + mPaddingLeft;
+        mPopupPreviewY = keyY - popupHeight + mPreviewOffset;
+    }
+    else {
+        // TODO: Fix this if centering is brought back
+        IView::Probe(mPreviewText)->GetMeasuredWidth(&tmp);
+        mPopupPreviewX = 160 - tmp / 2;
+        IView::Probe(mPreviewText)->GetMeasuredHeight(&tmp);
+        mPopupPreviewY = - tmp;
+    }
 
-    // mHandler->RemoveMessages(MSG_REMOVE_PREVIEW);
+    mHandler->RemoveMessages(MSG_REMOVE_PREVIEW);
 
-    // Int32 tmpX = 0, tmpY = 0;
-    // GetLocationInWindow(&tmpX, &tmpY);
-    // mCoordinates[0] = tmpX;
-    // mCoordinates[1] = tmpY;
+    GetLocationInWindow(mCoordinates);
+    (*mCoordinates)[0] += mMiniKeyboardOffsetX; // Offset may be zero
+    (*mCoordinates)[1] += mMiniKeyboardOffsetY; // Offset may be zero
 
-    // mCoordinates[0] += mMiniKeyboardOffsetX; // Offset may be zero
-    // mCoordinates[1] += mMiniKeyboardOffsetY; // Offset may be zero
+    // Set the preview background state
+    AutoPtr<IDrawable> drawable;
+    IView::Probe(mPreviewText)->GetBackground((IDrawable**)&drawable);
+    AutoPtr< ArrayOf<Int32> >tmpArr;
+    Int32 resId;
+    key->GetPopupResId(&resId);
+    if (resId != 0) {
+        tmpArr = ArrayOf<Int32>::Alloc(1);
+        (*tmpArr)[0] = LONG_PRESSABLE_STATE_SET[0];
+    }
+    else {
+        tmpArr = ArrayOf<Int32>::Alloc(0);
+    }
+    Boolean isStateful = FALSE;
+    drawable->SetState(tmpArr, &isStateful);
+    mPopupPreviewX += (*mCoordinates)[0];
+    mPopupPreviewY += (*mCoordinates)[1];
 
-    // // Set the preview background state
-    // AutoPtr<IDrawable> drawable;
-    // mPreviewText->GetBackground((IDrawable**)&drawable);
-    // AutoPtr< ArrayOf<Int32> >tmpArr;
-    // Int32 resId;
-    // key->GetPopupResId(&resId);
-    // if (resId != 0) {
-    //     tmpArr = ArrayOf<Int32>::Alloc(1);
-    //     (*tmpArr)[0] = LONG_PRESSABLE_STATE_SET[0];
-    // }
-    // else {
-    //     tmpArr = ArrayOf<Int32>::Alloc(0);
-    // }
-    // Boolean isStateful = FALSE;
-    // drawable->SetState(tmpArr, &isStateful);
-    // mPopupPreviewX += mCoordinates[0];
-    // mPopupPreviewY += mCoordinates[1];
+    // If the popup cannot be shown above the key, put it on the side
+    GetLocationOnScreen(mCoordinates);
+    if (mPopupPreviewY + (*mCoordinates)[1] < 0) {
+        // If the key you're pressing is on the left side of the keyboard, show the popup on
+        // the right, offset by enough to see at least one key to the left/right.
+        Int32 keyX, keyW;
+        key->GetX(&keyX);
+        key->GetWidth(&keyW);
+        Int32 tmp = 0;
+        GetWidth(&tmp);
+        if (keyX + keyW <= tmp / 2) {
+            mPopupPreviewX += (Int32)(keyW * 2.5);
+        }
+        else {
+            mPopupPreviewX -= (Int32)(keyW * 2.5);
+        }
+        mPopupPreviewY += popupHeight;
+    }
 
-    // // If the popup cannot be shown above the key, put it on the side
-    // GetLocationOnScreen(&tmpX, &tmpY);
-    // mCoordinates[0] = tmpX;
-    // mCoordinates[1] = tmpY;
-
-    // if (mPopupPreviewY + mCoordinates[1] < 0) {
-    //     // If the key you're pressing is on the left side of the keyboard, show the popup on
-    //     // the right, offset by enough to see at least one key to the left/right.
-    //     Int32 keyX, keyW;
-    //     key->GetX(&keyX);
-    //     key->GetWidth(&keyW);
-    //     if (keyX + keyW <= GetWidth() / 2) {
-    //         mPopupPreviewX += (Int32)(keyW * 2.5);
-    //     }
-    //     else {
-    //         mPopupPreviewX -= (Int32)(keyW * 2.5);
-    //     }
-    //     mPopupPreviewY += popupHeight;
-    // }
-
-    // Boolean showing = FALSE;
-    // if (mPreviewPopup->IsShowing(&showing), showing) {
-    //     mPreviewPopup->Update(mPopupPreviewX, mPopupPreviewY,
-    //             popupWidth, popupHeight);
-    // }
-    // else {
-    //     mPreviewPopup->SetWidth(popupWidth);
-    //     mPreviewPopup->SetHeight(popupHeight);
-    //     mPreviewPopup->ShowAtLocation(mPopupParent, IGravity::NO_GRAVITY,
-    //             mPopupPreviewX, mPopupPreviewY);
-    // }
-    // IView::Probe(mPreviewText)->SetVisibility(IView::VISIBLE);
+    Boolean showing = FALSE;
+    if (mPreviewPopup->IsShowing(&showing), showing) {
+        mPreviewPopup->Update(mPopupPreviewX, mPopupPreviewY,
+                popupWidth, popupHeight);
+    }
+    else {
+        mPreviewPopup->SetWidth(popupWidth);
+        mPreviewPopup->SetHeight(popupHeight);
+        mPreviewPopup->ShowAtLocation(mPopupParent, IGravity::NO_GRAVITY,
+                mPopupPreviewX, mPopupPreviewY);
+    }
+    IView::Probe(mPreviewText)->SetVisibility(IView::VISIBLE);
 }
 
 void KeyboardView::SendAccessibilityEventForUnicodeCharacter(
     /* [in] */ Int32 eventType,
     /* [in] */ Int32 code)
 {
-    assert(0 && "TODO");
-    // Boolean enabled = FALSE;
-    // if (mAccessibilityManager->IsEnabled(&enabled), enabled) {
-    //     AutoPtr<IAccessibilityEventHelper> helper;
-    //     CAccessibilityEventHelper::AcquireSingleton((IAccessibilityEventHelper**)&helper);
-    //     AutoPtr<IAccessibilityEvent> event;
-    //     helper->Obtain(eventType, (IAccessibilityEvent**)&event);
-    //     OnInitializeAccessibilityEvent(event);
+    Boolean enabled = FALSE;
+    if (mAccessibilityManager->IsEnabled(&enabled), enabled) {
+        AutoPtr<IAccessibilityEventHelper> helper;
+        CAccessibilityEventHelper::AcquireSingleton((IAccessibilityEventHelper**)&helper);
+        AutoPtr<IAccessibilityEvent> event;
+        helper->Obtain(eventType, (IAccessibilityEvent**)&event);
+        OnInitializeAccessibilityEvent(event);
 
-    //     // This is very efficient since the properties are cached.
-    //     AutoPtr<IContentResolver> cr;
-    //     mContext->GetContentResolver((IContentResolver**)&cr);
-    //     AutoPtr<ISettingsSecure> ss;
-    //     CSettingsSecure::AcquireSingleton((ISettingsSecure**)&ss);
-    //     Int32 value;
-    //     ss->GetInt32(cr, ISettingsSecure::ACCESSIBILITY_SPEAK_PASSWORD, 0, &value);
-    //     Boolean speakPassword = value != 0;
+        // This is very efficient since the properties are cached.
+        AutoPtr<IContentResolver> cr;
+        mContext->GetContentResolver((IContentResolver**)&cr);
+        AutoPtr<ISettingsSecure> ss;
+        CSettingsSecure::AcquireSingleton((ISettingsSecure**)&ss);
+        Int32 value;
+        ss->GetInt32(cr, ISettingsSecure::ACCESSIBILITY_SPEAK_PASSWORD, 0, &value);
+        Boolean speakPassword = value != 0;
 
-    //     // Add text only if password announcement is enabled or if headset is
-    //     // used to avoid leaking passwords.
-    //     String text;
-    //     Boolean bval1, bval2;
-    //     if (speakPassword
-    //         || (mAudioManager->IsBluetoothA2dpOn(&bval1), bval1)
-    //         || (mAudioManager->IsWiredHeadsetOn(&bval2), bval2))
-    //     {
-    //         switch (code) {
-    //             case IKeyboard::KEYCODE_ALT:
-    //                 mContext->GetString(R::string::keyboardview_keycode_alt, &text);
-    //                 break;
-    //             case IKeyboard::KEYCODE_CANCEL:
-    //                 mContext->GetString(R::string::keyboardview_keycode_cancel, &text);
-    //                 break;
-    //             case IKeyboard::KEYCODE_DELETE:
-    //                 mContext->GetString(R::string::keyboardview_keycode_delete, &text);
-    //                 break;
-    //             case IKeyboard::KEYCODE_DONE:
-    //                 mContext->GetString(R::string::keyboardview_keycode_done, &text);
-    //                 break;
-    //             case IKeyboard::KEYCODE_MODE_CHANGE:
-    //                 mContext->GetString(R::string::keyboardview_keycode_mode_change, &text);
-    //                 break;
-    //             case IKeyboard::KEYCODE_SHIFT:
-    //                 mContext->GetString(R::string::keyboardview_keycode_shift, &text);
-    //                 break;
-    //             case '\n':
-    //                 mContext->GetString(R::string::keyboardview_keycode_enter, &text);
-    //                 break;
-    //             default: {
-    //                 StringBuilder info;
-    //                 info.AppendChar(code);
-    //                 text = info.ToString();
-    //             }
-    //         }
-    //     }
-    //     else if (!mHeadsetRequiredToHearPasswordsAnnounced) {
-    //         // We want the waring for required head set to be send with both the
-    //         // hover enter and hover exit event, so set the flag after the exit.
-    //         if (eventType == IAccessibilityEvent::TYPE_VIEW_HOVER_EXIT) {
-    //             mHeadsetRequiredToHearPasswordsAnnounced = true;
-    //         }
-    //         mContext->GetString(R::string::keyboard_headset_required_to_hear_password, &text);
-    //     }
-    //     else {
-    //         mContext->GetString(R::string::keyboard_password_character_no_headset, &text);
-    //     }
+        // Add text only if password announcement is enabled or if headset is
+        // used to avoid leaking passwords.
+        String text;
+        Boolean bval1, bval2;
+        if (speakPassword
+            || (mAudioManager->IsBluetoothA2dpOn(&bval1), bval1)
+            || (mAudioManager->IsWiredHeadsetOn(&bval2), bval2))
+        {
+            switch (code) {
+                case IKeyboard::KEYCODE_ALT:
+                    mContext->GetString(R::string::keyboardview_keycode_alt, &text);
+                    break;
+                case IKeyboard::KEYCODE_CANCEL:
+                    mContext->GetString(R::string::keyboardview_keycode_cancel, &text);
+                    break;
+                case IKeyboard::KEYCODE_DELETE:
+                    mContext->GetString(R::string::keyboardview_keycode_delete, &text);
+                    break;
+                case IKeyboard::KEYCODE_DONE:
+                    mContext->GetString(R::string::keyboardview_keycode_done, &text);
+                    break;
+                case IKeyboard::KEYCODE_MODE_CHANGE:
+                    mContext->GetString(R::string::keyboardview_keycode_mode_change, &text);
+                    break;
+                case IKeyboard::KEYCODE_SHIFT:
+                    mContext->GetString(R::string::keyboardview_keycode_shift, &text);
+                    break;
+                case '\n':
+                    mContext->GetString(R::string::keyboardview_keycode_enter, &text);
+                    break;
+                default: {
+                    StringBuilder info;
+                    info.AppendChar(code);
+                    text = info.ToString();
+                }
+            }
+        }
+        else if (!mHeadsetRequiredToHearPasswordsAnnounced) {
+            // We want the waring for required head set to be send with both the
+            // hover enter and hover exit event, so set the flag after the exit.
+            if (eventType == IAccessibilityEvent::TYPE_VIEW_HOVER_EXIT) {
+                mHeadsetRequiredToHearPasswordsAnnounced = true;
+            }
+            mContext->GetString(R::string::keyboard_headset_required_to_hear_password, &text);
+        }
+        else {
+            mContext->GetString(R::string::keyboard_password_character_no_headset, &text);
+        }
 
-    //     AutoPtr<ICharSequence> seq;
-    //     CString::New(text, (ICharSequence**)&seq);
-    //     AutoPtr<IList> bc;
-    //     IAccessibilityRecord::Probe(event)->GetText((IList**)&bc);
-    //     bc->Add(seq);
-    //     mAccessibilityManager->SendAccessibilityEvent(event);
-    // }
+        AutoPtr<ICharSequence> seq;
+        CString::New(text, (ICharSequence**)&seq);
+        AutoPtr<IList> bc;
+        IAccessibilityRecord::Probe(event)->GetText((IList**)&bc);
+        bc->Add(seq);
+        mAccessibilityManager->SendAccessibilityEvent(event);
+    }
 }
 
 ECode KeyboardView::InvalidateAllKeys()
 {
-    assert(0 && "TODO");
-    // mDirtyRect->Union(0, 0, GetWidth(), GetHeight());
-    // mDrawPending = TRUE;
-    // Invalidate();
+    Int32 w = 0, h = 0;
+    GetWidth(&w);
+    GetHeight(&h);
+    mDirtyRect->Union(0, 0, w, h);
+    mDrawPending = TRUE;
+    Invalidate();
     return NOERROR;
 }
 
@@ -1532,12 +1465,11 @@ ECode KeyboardView::InvalidateKey(
     key->GetY(&keyY);
     key->GetWidth(&keyW);
     key->GetHeight(&keyH);
-    assert( 0 && "TODO");
-    // mDirtyRect->Union(keyX + mPaddingLeft, keyY + mPaddingTop,
-    //         keyX + keyW + mPaddingLeft, keyY + keyH + mPaddingTop);
-    // OnBufferDraw();
-    // Invalidate(keyX + mPaddingLeft, keyY + mPaddingTop,
-    //         keyX + keyW + mPaddingLeft, keyY + keyH + mPaddingTop);
+    mDirtyRect->Union(keyX + mPaddingLeft, keyY + mPaddingTop,
+            keyX + keyW + mPaddingLeft, keyY + keyH + mPaddingTop);
+    OnBufferDraw();
+    Invalidate(keyX + mPaddingLeft, keyY + mPaddingTop,
+            keyX + keyW + mPaddingLeft, keyY + keyH + mPaddingTop);
     return NOERROR;
 }
 
@@ -1567,95 +1499,100 @@ ECode KeyboardView::OnLongPress(
     /* [in] */ IKeyboardKey* popupKey,
     /* [out] */ Boolean* res)
 {
-    assert(0 && "TODO");
-    // assert(res != NULL && popupKey != NULL);
-    // Int32 popupKeyboardId;
-    // popupKey->GetPopupResId(&popupKeyboardId);
+    VALIDATE_NOT_NULL(res);
+    Int32 popupKeyboardId = 0;
+    popupKey->GetPopupResId(&popupKeyboardId);
 
-    // if (popupKeyboardId != 0) {
-    //     mMiniKeyboardContainer = (*mMiniKeyboardCache)[popupKey];
-    //     if (mMiniKeyboardContainer == NULL) {
-    //         AutoPtr<ILayoutInflater> inflater;
-    //         GetContext()->GetSystemService(
-    //                 IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inflater);
-    //         inflater->Inflate(mPopupLayout, NULL, (IView**)&mMiniKeyboardContainer);
-    //         mMiniKeyboardContainer->FindViewById(R::id::keyboardView,
-    //                 (IView**)&mMiniKeyboard);
-    //         AutoPtr<IView> closeButton;
-    //         mMiniKeyboardContainer->FindViewById(R::id::closeButton,
-    //                 (IView**)&closeButton);
-    //         if (closeButton != NULL) {
-    //             closeButton->SetOnClickListener((IViewOnClickListener*)this->Probe(EIID_IViewOnClickListener));
-    //         }
-    //         AutoPtr<_OnKeyboardActionListener> listener = new _OnKeyboardActionListener(this);
-    //         mMiniKeyboard->SetOnKeyboardActionListener(listener);
-    //         //mInputView.setSuggest(mSuggest);
-    //         AutoPtr<IKeyboard> keyboard;
-    //         AutoPtr<ICharSequence> popupCharacters;
-    //         popupKey->GetPopupCharacters((ICharSequence**)&popupCharacters);
-    //         if (popupCharacters != NULL) {
-    //             keyboard = new Keyboard(GetContext(), popupKeyboardId,
-    //                     popupCharacters, -1, GetPaddingLeft() + GetPaddingRight());
-    //         }
-    //         else {
-    //             keyboard = new Keyboard(GetContext(), popupKeyboardId);
-    //         }
-    //         ((KeyboardView*)mMiniKeyboard.Get())->SetKeyboard(keyboard);
-    //         ((KeyboardView*)mMiniKeyboard.Get())->SetPopupParent((IView*)this->Probe(EIID_IView));
-    //         mMiniKeyboardContainer->Measure(
-    //                 View::MeasureSpec::MakeMeasureSpec(GetWidth(), View::MeasureSpec::AT_MOST),
-    //                 View::MeasureSpec::MakeMeasureSpec(GetHeight(), View::MeasureSpec::AT_MOST));
+    if (popupKeyboardId != 0) {
+        mMiniKeyboardContainer = (*mMiniKeyboardCache)[popupKey];
+        if (mMiniKeyboardContainer == NULL) {
+            AutoPtr<IContext> context;
+            GetContext((IContext**)&context);
+            AutoPtr<ILayoutInflater> inflater;
+            context->GetSystemService(
+                    IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inflater);
+            inflater->Inflate(mPopupLayout, NULL, (IView**)&mMiniKeyboardContainer);
+            mMiniKeyboardContainer->FindViewById(R::id::keyboardView,
+                    (IView**)&mMiniKeyboard);
+            AutoPtr<IView> closeButton;
+            mMiniKeyboardContainer->FindViewById(R::id::closeButton,
+                    (IView**)&closeButton);
+            if (closeButton != NULL) {
+                closeButton->SetOnClickListener((IViewOnClickListener*)this->Probe(EIID_IViewOnClickListener));
+            }
+            AutoPtr<_OnKeyboardActionListener> listener = new _OnKeyboardActionListener(this);
+            mMiniKeyboard->SetOnKeyboardActionListener(listener);
+            //mInputView.setSuggest(mSuggest);
+            AutoPtr<IKeyboard> keyboard;
+            AutoPtr<ICharSequence> popupCharacters;
+            popupKey->GetPopupCharacters((ICharSequence**)&popupCharacters);
+            if (popupCharacters != NULL) {
+                Int32 l = 0, r = 0;
+                GetPaddingLeft(&l);
+                GetPaddingRight(&r);
+                keyboard = new Keyboard(context, popupKeyboardId,
+                        popupCharacters, -1, l + r);
+            }
+            else {
+                keyboard = new Keyboard(context, popupKeyboardId);
+            }
+            ((KeyboardView*)mMiniKeyboard.Get())->SetKeyboard(keyboard);
+            ((KeyboardView*)mMiniKeyboard.Get())->SetPopupParent((IView*)this->Probe(EIID_IView));
+            Int32 w = 0, h = 0;
+            GetWidth(&w);
+            GetHeight(&h);
+            mMiniKeyboardContainer->Measure(
+                    View::MeasureSpec::MakeMeasureSpec(w, View::MeasureSpec::AT_MOST),
+                    View::MeasureSpec::MakeMeasureSpec(h, View::MeasureSpec::AT_MOST));
 
-    //         (*mMiniKeyboardCache)[popupKey] = mMiniKeyboardContainer;
-    //     }
-    //     else {
-    //         mMiniKeyboardContainer->FindViewById(R::id::keyboardView,
-    //                 (IView**)&mMiniKeyboard);
-    //     }
+            (*mMiniKeyboardCache)[popupKey] = mMiniKeyboardContainer;
+        }
+        else {
+            mMiniKeyboardContainer->FindViewById(R::id::keyboardView,
+                    (IView**)&mMiniKeyboard);
+        }
 
-    //     Int32 tmpY = 0, tmpX = 0;
-    //     GetLocationInWindow(&tmpX, &tmpY);
-    //     mCoordinates[0] = tmpX;
-    //     mCoordinates[1] = tmpY;
-
-    //     Int32 keyX, keyY, keyW;
-    //     popupKey->GetX(&keyX);
-    //     popupKey->GetY(&keyY);
-    //     popupKey->GetWidth(&keyW);
-    //     mPopupX = keyX + mPaddingLeft;
-    //     mPopupY = keyY + mPaddingTop;
-    //     Int32 meauseredW = 0, meauseredH = 0;
-    //     mMiniKeyboardContainer->GetMeasuredWidth(&meauseredW);
-    //     mPopupX = mPopupX + keyW - meauseredW;
-    //     mMiniKeyboardContainer->GetMeasuredHeight(&meauseredH);
-    //     mPopupY = mPopupY - meauseredH;
-    //     Int32 paddingRight = 0, paddingBottom = 0;
-    //     mMiniKeyboardContainer->GetPaddingRight(&paddingRight);
-    //     Int32 x = mPopupX + paddingRight + mCoordinates[0];
-    //     mMiniKeyboardContainer->GetPaddingBottom(&paddingBottom);
-    //     Int32 y = mPopupY + paddingBottom + mCoordinates[1];
-    //     mMiniKeyboard->SetPopupOffset(x < 0 ? 0 : x, y);
-    //     Boolean shifted = FALSE;
-    //     IsShifted(&shifted);
-    //     Boolean temp = FALSE;
-    //     mMiniKeyboard->SetShifted(shifted, &temp);
-    //     mPopupKeyboard->SetContentView(IView::Probe(mMiniKeyboardContainer));
-    //     mPopupKeyboard->SetWidth(meauseredW);
-    //     mPopupKeyboard->SetHeight(meauseredH);
-    //     mPopupKeyboard->ShowAtLocation((IView*)this->Probe(EIID_IView), IGravity::NO_GRAVITY, x, y);
-    //     mMiniKeyboardOnScreen = TRUE;
-    //     //mMiniKeyboard.onTouchEvent(getTranslatedEvent(me));
-    //     InvalidateAllKeys();
-    //     *res = TRUE;
-    //     return NOERROR;
-    // }
+        GetLocationInWindow(mCoordinates);
+        Int32 keyX, keyY, keyW;
+        popupKey->GetX(&keyX);
+        popupKey->GetY(&keyY);
+        popupKey->GetWidth(&keyW);
+        mPopupX = keyX + mPaddingLeft;
+        mPopupY = keyY + mPaddingTop;
+        Int32 meauseredW = 0, meauseredH = 0;
+        mMiniKeyboardContainer->GetMeasuredWidth(&meauseredW);
+        mPopupX = mPopupX + keyW - meauseredW;
+        mMiniKeyboardContainer->GetMeasuredHeight(&meauseredH);
+        mPopupY = mPopupY - meauseredH;
+        Int32 paddingRight = 0, paddingBottom = 0;
+        mMiniKeyboardContainer->GetPaddingRight(&paddingRight);
+        Int32 x = mPopupX + paddingRight + (*mCoordinates)[0];
+        mMiniKeyboardContainer->GetPaddingBottom(&paddingBottom);
+        Int32 y = mPopupY + paddingBottom + (*mCoordinates)[1];
+        mMiniKeyboard->SetPopupOffset(x < 0 ? 0 : x, y);
+        Boolean shifted = FALSE;
+        IsShifted(&shifted);
+        Boolean temp = FALSE;
+        mMiniKeyboard->SetShifted(shifted, &temp);
+        mPopupKeyboard->SetContentView(IView::Probe(mMiniKeyboardContainer));
+        mPopupKeyboard->SetWidth(meauseredW);
+        mPopupKeyboard->SetHeight(meauseredH);
+        mPopupKeyboard->ShowAtLocation((IView*)this->Probe(EIID_IView), IGravity::NO_GRAVITY, x, y);
+        mMiniKeyboardOnScreen = TRUE;
+        //mMiniKeyboard.onTouchEvent(getTranslatedEvent(me));
+        InvalidateAllKeys();
+        *res = TRUE;
+        return NOERROR;
+    }
     *res = FALSE;
     return NOERROR;
 }
 
-Boolean KeyboardView::OnHoverEvent(
-    /* [in] */ IMotionEvent* event)
+ECode KeyboardView::OnHoverEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res);
     Boolean enabled = TRUE;
     Int32 count = 0;
     if ((mAccessibilityManager->IsTouchExplorationEnabled(&enabled), enabled)
@@ -1674,15 +1611,18 @@ Boolean KeyboardView::OnHoverEvent(
             } break;
         }
 
-        return OnTouchEvent(event);
+        return OnTouchEvent(event, res);
     }
 
-    return TRUE;
+    *res = TRUE;
+    return NOERROR;
 }
 
-Boolean KeyboardView::OnTouchEvent(
-    /* [in] */ IMotionEvent* me)
+ECode KeyboardView::OnTouchEvent(
+    /* [in] */ IMotionEvent* me,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res);
     // Convert multi-pointer up/down events to single up/down events to
     // deal with the typical multi-pointer behavior of two-thumb typing
     Int32 pointerCount = 0;
@@ -1701,12 +1641,11 @@ Boolean KeyboardView::OnTouchEvent(
             me->GetY(&tY);
             Int32 tState = 0;
             me->GetMetaState(&tState);
-            assert(0 && "TODO");
-            // AutoPtr<CMotionEvent> down;
-            // CMotionEvent::Obtain(now, now, IKeyEvent::ACTION_DOWN,
-            //         tX, tY, tState, (CMotionEvent**)&down);
-            // result = OnModifiedTouchEvent(down, FALSE);
-            // down->Recycle();
+            AutoPtr<IMotionEvent> down;
+            MotionEvent::Obtain(now, now, IKeyEvent::ACTION_DOWN,
+                    tX, tY, tState, (IMotionEvent**)&down);
+            result = OnModifiedTouchEvent(down, FALSE);
+            IInputEvent::Probe(down)->Recycle();
 
             // If it's an up action, then deliver the up as well.
             if (action == IKeyEvent::ACTION_UP) {
@@ -1717,12 +1656,11 @@ Boolean KeyboardView::OnTouchEvent(
             Int32 tState = 0;
             me->GetMetaState(&tState);
             // Send an up event for the last pointer
-            assert(0 && "TODO");
-            // AutoPtr<CMotionEvent> up;
-            // CMotionEvent::Obtain(now, now, IKeyEvent::ACTION_UP,
-            //         mOldPointerX, mOldPointerY, tState, (CMotionEvent**)&up);
-            // result = OnModifiedTouchEvent(up, TRUE);
-            // up->Recycle();
+            AutoPtr<IMotionEvent> up;
+            MotionEvent::Obtain(now, now, IKeyEvent::ACTION_UP,
+                    mOldPointerX, mOldPointerY, tState, (IMotionEvent**)&up);
+            result = OnModifiedTouchEvent(up, TRUE);
+            IInputEvent::Probe(up)->Recycle();
         }
     }
     else {
@@ -1738,7 +1676,8 @@ Boolean KeyboardView::OnTouchEvent(
     }
     mOldPointerCount = pointerCount;
 
-    return result;
+    *res = result;
+    return NOERROR;
 }
 
 Boolean KeyboardView::OnModifiedTouchEvent(
@@ -1748,9 +1687,8 @@ Boolean KeyboardView::OnModifiedTouchEvent(
     Float tmpX = 0, tmpY = 0;
     me->GetX(&tmpX);
     me->GetY(&tmpY);
-    assert(0 && "TODO");
-    Int32 touchX /*= (Int32) tmpX - mPaddingLeft*/;
-    Int32 touchY /*= (Int32) tmpY - mPaddingTop*/;
+    Int32 touchX = (Int32) tmpX - mPaddingLeft;
+    Int32 touchY = (Int32) tmpY - mPaddingTop;
     if (touchY >= -mVerticalCorrection) {
         touchY += mVerticalCorrection;
     }
@@ -1772,13 +1710,13 @@ Boolean KeyboardView::OnModifiedTouchEvent(
         return TRUE;
     }
 
-    //TODO
-    // if (mGestureDetector->OnTouchEvent(me)) {
-    //     ShowPreview(NOT_A_KEY);
-            // mHandler->RemoveMessages(MSG_REPEAT);
-            // mHandler->RemoveMessages(MSG_LONGPRESS);
-    //     return TRUE;
-    // }
+    Boolean tmp = FALSE;
+    if (mGestureDetector->OnTouchEvent(me, &tmp), tmp) {
+        ShowPreview(NOT_A_KEY);
+            mHandler->RemoveMessages(MSG_REPEAT);
+            mHandler->RemoveMessages(MSG_LONGPRESS);
+        return TRUE;
+    }
 
     // Needs to be called after the gesture detector gets a turn, as it may have
     // displayed the mini keyboard
@@ -1981,8 +1919,7 @@ void KeyboardView::RemoveMessages()
 
 ECode KeyboardView::OnDetachedFromWindow()
 {
-    assert(0 && "TODO");
-    // View::OnDetachedFromWindow();
+    View::OnDetachedFromWindow();
     Closing();
     return NOERROR;
 }

@@ -308,10 +308,13 @@ ECode ImmersiveModeConfirmation::ClingWindowView::OnDetachedFromWindow()
     return NOERROR;
 }
 
-Boolean ImmersiveModeConfirmation::ClingWindowView::OnTouchEvent(
-    /* [in] */ IMotionEvent* motion)
+ECode ImmersiveModeConfirmation::ClingWindowView::OnTouchEvent(
+    /* [in] */ IMotionEvent* motion,
+    /* [out] */ Boolean* res)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(res);
+    *res = TRUE;
+    return NOERROR;
 }
 
 //=====================================================================

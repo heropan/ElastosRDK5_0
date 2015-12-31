@@ -50,7 +50,9 @@ namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
 
-class InputMethodService : public AbstractInputMethodService
+class InputMethodService
+    : public AbstractInputMethodService
+    , public IInputMethodService
 {
 private:
     class _OnComputeInternalInsetsListener
@@ -314,6 +316,8 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     InputMethodService();
 
     virtual ~InputMethodService();

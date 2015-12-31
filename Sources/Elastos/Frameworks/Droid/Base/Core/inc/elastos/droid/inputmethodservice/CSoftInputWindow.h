@@ -4,10 +4,10 @@
 
 #include "Elastos.Droid.Graphics.h"
 #include "_Elastos_Droid_InputMethodService_CSoftInputWindow.h"
-// #include "elastos/droid/app/Dialog.h"
+#include "elastos/droid/app/Dialog.h"
 #include <elastos/core/Object.h>
 
-// using Elastos::Droid::App::Dialog;
+using Elastos::Droid::App::Dialog;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::View::IMotionEvent;
@@ -28,7 +28,7 @@ namespace InputMethodService {
  * always visible.
  */
 CarClass(CSoftInputWindow)
-    , public /*Dialog*/Object
+    , public Dialog
     , public ISoftInputWindow
 {
 public:

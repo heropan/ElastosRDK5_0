@@ -1,10 +1,10 @@
 
 #include "elastos/droid/inputmethodservice/CSoftInputWindow.h"
-// #include "elastos/droid/view/CWindowManagerLayoutParams.h"
+#include "elastos/droid/view/CWindowManagerLayoutParams.h"
 
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
-// using Elastos::Droid::View::CWindowManagerLayoutParams;
+using Elastos::Droid::View::CWindowManagerLayoutParams;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::IInputEvent;
 using Elastos::Droid::View::IView;
@@ -16,21 +16,20 @@ namespace Droid {
 namespace InputMethodService {
 
 CAR_OBJECT_IMPL(CSoftInputWindow);
-CAR_INTERFACE_IMPL(CSoftInputWindow, /*Dialog*/Object, ISoftInputWindow);
+CAR_INTERFACE_IMPL(CSoftInputWindow, Dialog, ISoftInputWindow);
 CSoftInputWindow::CSoftInputWindow()
     : mWindowType(0)
     , mGravity(0)
     , mTakesFocus(FALSE)
 {
-    // CRect::New((IRect**)&mBounds);
-    assert(0 && "TODO");
+    CRect::New((IRect**)&mBounds);
 }
 
 ECode CSoftInputWindow::SetToken(
     /* [in] */ IBinder* token)
 {
-    assert(0 && "TODO");
-    AutoPtr<IWindow> window/* = GetWindow()*/;
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
     AutoPtr<IWindowManagerLayoutParams> lp;
     window->GetAttributes((IWindowManagerLayoutParams**)&lp);
     lp->SetToken(token);
@@ -40,8 +39,7 @@ ECode CSoftInputWindow::SetToken(
 ECode CSoftInputWindow::OnWindowFocusChanged(
     /* [in] */ Boolean hasFocus)
 {
-    // FAIL_RETURN(Dialog::OnWindowFocusChanged(hasFocus));
-    assert(0 && "TODO");
+    FAIL_RETURN(Dialog::OnWindowFocusChanged(hasFocus));
     return mDispatcherState->Reset();
 }
 
@@ -50,9 +48,10 @@ ECode CSoftInputWindow::DispatchTouchEvent(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
     AutoPtr<IView> docorView;
-    assert(0 && "TODO");
-    // GetWindow()->GetDecorView((IView**)&docorView);
+    window->GetDecorView((IView**)&docorView);
     docorView->GetHitRect(mBounds);
 
     Boolean withIn = FALSE;
@@ -64,15 +63,13 @@ ECode CSoftInputWindow::DispatchTouchEvent(
     mBounds->GetBottom(&bottom);
     if (ev->IsWithinBoundsNoHistory(left, top,
             right - 1, bottom - 1, &withIn), withIn) {
-        assert(0 && "TODO");
-        // return Dialog::DispatchTouchEvent(ev, result);
+        return Dialog::DispatchTouchEvent(ev, result);
     } else {
         AutoPtr<IMotionEvent> temp;
         ev->ClampNoHistory(left, top,
                 right - 1, bottom - 1, (IMotionEvent**)&temp);
 
-        assert(0 && "TODO");
-        // Dialog::DispatchTouchEvent(temp, result);
+        Dialog::DispatchTouchEvent(temp, result);
         IInputEvent::Probe(temp)->Recycle();
     }
 
@@ -82,8 +79,8 @@ ECode CSoftInputWindow::DispatchTouchEvent(
 ECode CSoftInputWindow::SetGravity(
     /* [in] */ Int32 gravity)
 {
-    assert(0 && "TODO");
-    AutoPtr<IWindow> window/* = GetWindow()*/;
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
     AutoPtr<IWindowManagerLayoutParams> lp;
     window->GetAttributes((IWindowManagerLayoutParams**)&lp);
     lp->SetGravity(gravity);
@@ -95,8 +92,8 @@ ECode CSoftInputWindow::GetGravity(
     /* [out] */ Int32* gravity)
 {
     VALIDATE_NOT_NULL(gravity);
-    assert(0 && "TODO");
-    AutoPtr<IWindow> window/* = GetWindow()*/;
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
     AutoPtr<IWindowManagerLayoutParams> lp;
     window->GetAttributes((IWindowManagerLayoutParams**)&lp);
     return lp->GetGravity(gravity);
@@ -127,9 +124,7 @@ ECode CSoftInputWindow::OnKeyDown(
         *result = TRUE;
         return NOERROR;
     }
-    assert(0 && "TODO");
-    // return Dialog::OnKeyDown(keyCode, event, result);
-    return NOERROR;
+    return Dialog::OnKeyDown(keyCode, event, result);
 }
 
 ECode CSoftInputWindow::OnKeyLongPress(
@@ -144,9 +139,7 @@ ECode CSoftInputWindow::OnKeyLongPress(
         return NOERROR;
     }
 
-    assert(0 && "TODO");
-    // return Dialog::OnKeyLongPress(keyCode, event, result);
-    return NOERROR;
+    return Dialog::OnKeyLongPress(keyCode, event, result);
 }
 
 ECode CSoftInputWindow::OnKeyUp(
@@ -161,9 +154,7 @@ ECode CSoftInputWindow::OnKeyUp(
         return NOERROR;
     }
 
-    assert(0 && "TODO");
-    // return Dialog::OnKeyUp(keyCode, event, result);
-    return NOERROR;
+    return Dialog::OnKeyUp(keyCode, event, result);
 }
 
 ECode CSoftInputWindow::OnKeyMultiple(
@@ -179,9 +170,7 @@ ECode CSoftInputWindow::OnKeyMultiple(
         return NOERROR;
     }
 
-    assert(0 && "TODO");
-    // return Dialog::OnKeyMultiple(keyCode, count, event, result);
-    return NOERROR;
+    return Dialog::OnKeyMultiple(keyCode, count, event, result);
 }
 
 ECode CSoftInputWindow::OnBackPressed()
@@ -189,8 +178,7 @@ ECode CSoftInputWindow::OnBackPressed()
     if (mCallback != NULL) {
         mCallback->OnBackPressed();
     } else {
-        assert(0 && "TODO");
-        // Dialog::OnBackPressed();
+        Dialog::OnBackPressed();
     }
 
     return NOERROR;
@@ -198,8 +186,8 @@ ECode CSoftInputWindow::OnBackPressed()
 
 void CSoftInputWindow::InitDockWindow()
 {
-    assert(0 && "TODO");
-    AutoPtr<IWindow> window/* = GetWindow()*/;
+    AutoPtr<IWindow> window;
+    GetWindow((IWindow**)&window);
     AutoPtr<IWindowManagerLayoutParams> lp;
     window->GetAttributes((IWindowManagerLayoutParams**)&lp);
     lp->SetType(mWindowType);
@@ -239,8 +227,7 @@ ECode CSoftInputWindow::constructor(
     /* [in] */ Int32 gravity,
     /* [in] */ Boolean takesFocus)
 {
-    assert(0 && "TODO");
-    // FAIL_RETURN(Dialog::constructor(context, theme));
+    FAIL_RETURN(Dialog::constructor(context, theme));
     mName = name;
     mCallback = callback;
     mKeyEventCallback = keyEventCallback;

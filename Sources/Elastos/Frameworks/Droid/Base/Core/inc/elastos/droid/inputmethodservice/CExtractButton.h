@@ -4,11 +4,11 @@
 
 #include "_Elastos_Droid_InputMethodService_CExtractButton.h"
 #include <elastos/core/Object.h>
-// #include "elastos/droid/widget/Button.h"
+#include "elastos/droid/widget/Button.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
-// using Elastos::Droid::Widget::Button;
+using Elastos::Droid::Widget::Button;
 
 namespace Elastos {
 namespace Droid {
@@ -18,13 +18,10 @@ namespace InputMethodService {
  * Specialization of {@link Button} that ignores the window not being focused.
  */
 CarClass(CExtractButton)
-    /*, public Button*/
-    , public Object //TODO
+    , public Button
 {
 public:
     CAR_OBJECT_DECL();
-
-    CExtractButton();
 
     CARAPI constructor(
         /* [in] */ IContext* context);
@@ -48,7 +45,8 @@ public:
      * Pretend like the window this view is in always has focus, so it will
      * highlight when selected.
      */
-    CARAPI_(Boolean) HasWindowFocus();
+    CARAPI HasWindowFocus(
+        /* [out] */ Boolean* res);
 };
 
 } // namespace InputMethodService

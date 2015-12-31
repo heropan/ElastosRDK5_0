@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_CIINPUTMETHODSESSIONWRAPPER_H__
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_CIINPUTMETHODSESSIONWRAPPER_H__
 
-#include "elastos/droid/ext/frameworkext.h"
-#include "Elastos.Droid.View.h"
 #include "_Elastos_Droid_InputMethodService_CIInputMethodSessionWrapper.h"
+#include "Elastos.Droid.View.h"
+#include "elastos/droid/view/InputEventReceiver.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
@@ -18,6 +18,7 @@ using Elastos::Droid::View::IInputEvent;
 using Elastos::Droid::Internal::Os::IHandlerCaller;
 using Elastos::Droid::Internal::Os::IHandlerCallerCallback;
 using Elastos::Droid::Internal::View::IIInputMethodSession;
+using Elastos::Droid::View::InputEventReceiver;
 using Elastos::Droid::View::IInputMethodCallback;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IMotionEvent;
@@ -41,7 +42,7 @@ CarClass(CIInputMethodSessionWrapper)
 {
 private:
     class ImeInputEventReceiver
-        : public Object /*InputEventReceiver*/
+        : public InputEventReceiver
         , public ILocalInputMethodSessionEventCallback
     {
     public:

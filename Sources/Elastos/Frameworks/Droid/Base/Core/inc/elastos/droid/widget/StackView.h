@@ -233,14 +233,17 @@ public:
 
     CARAPI ShowPrevious();
 
-    CARAPI_(Boolean) OnGenericMotionEvent(
-        /* [in] */ IMotionEvent* event);
+    CARAPI OnGenericMotionEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
-    CARAPI_(Boolean) OnInterceptTouchEvent(
-        /* [in] */ IMotionEvent* ev);
+    CARAPI OnInterceptTouchEvent(
+        /* [in] */ IMotionEvent* ev,
+        /* [out] */ Boolean* res);
 
-    CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* ev);
+    CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* ev,
+        /* [out] */ Boolean* res);
 
     CARAPI Advance();
 

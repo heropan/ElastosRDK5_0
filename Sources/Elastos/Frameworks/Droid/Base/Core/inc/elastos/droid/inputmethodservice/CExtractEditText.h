@@ -3,25 +3,26 @@
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_CEXTRACTEDITTEXT_H__
 
 #include "_Elastos_Droid_InputMethodService_CExtractEditText.h"
+#include "elastos/droid/widget/EditText.h"
 #include <elastos/core/Object.h>
-// #include "elastos/droid/widget/EditText.h"
 
-// using Elastos::Droid::Widget::EditText;
-using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::View::InputMethod::IExtractedText;
 using Elastos::Droid::View::InputMethod::IInputMethodManager;
+using Elastos::Droid::Widget::EditText;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
+
 /***
  * Specialization of {@link EditText} for showing and interacting with the
  * extracted text in a full-screen input method.
  */
 CarClass(CExtractEditText)
-    , public /*EditText*/Object
+    , public EditText
     , public IExtractEditText
 {
 public:

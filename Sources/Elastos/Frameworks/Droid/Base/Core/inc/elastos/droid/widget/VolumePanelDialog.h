@@ -19,8 +19,9 @@ namespace Widget {
 class VolumePanelDialog : public Dialog
 {
 public:
-    virtual CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* event);
+    virtual CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
 protected:
     CARAPI Init(

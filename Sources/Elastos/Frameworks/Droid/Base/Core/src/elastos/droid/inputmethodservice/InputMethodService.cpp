@@ -6,45 +6,43 @@
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/inputmethodservice/InputMethodService.h"
 #include "elastos/droid/view/ViewTreeObserver.h"
-// #include "elastos/droid/view/CViewGroupLayoutParams.h"
-// #include "elastos/droid/view/inputmethod/CExtractedTextRequest.h"
-// #include "elastos/droid/view/CKeyEvent.h"
-// #include "elastos/droid/view/animation/AnimationUtils.h"
-// #include "elastos/droid/content/res/CResourcesHelper.h"
-// #include "elastos/droid/graphics/CRegion.h"
-// #include "elastos/droid/app/CActivityManagerHelper.h"
-// #include "elastos/droid/provider/CSettingsGlobal.h"
-// using Elastos::Droid::View::Animation::AnimationUtils;
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/view/inputmethod/CExtractedTextRequest.h"
+#include "elastos/droid/view/CKeyEvent.h"
+#include "elastos/droid/view/animation/AnimationUtils.h"
+#include "elastos/droid/content/res/CResourcesHelper.h"
+#include "elastos/droid/graphics/CRegion.h"
+#include "elastos/droid/app/CActivityManagerHelper.h"
+#include "elastos/droid/provider/CSettingsGlobal.h"
 #include <elastos/core/Character.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/logging/Logger.h>
 #include "elastos/droid/R.h"
 #include "elastos/droid/os/SystemClock.h"
 
-
-using namespace Elastos::Core;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::R;
-// using Elastos::Droid::App::CActivityManagerHelper;
+using Elastos::Droid::App::CActivityManagerHelper;
 using Elastos::Droid::App::IActivityManagerHelper;
 using Elastos::Droid::Content::IDialogInterface;
 using Elastos::Droid::Content::EIID_IContext;
 using Elastos::Droid::Content::Res::IResourcesHelper;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
-// using Elastos::Droid::Content::Res::CResourcesHelper;
-// using Elastos::Droid::Graphics::CRegion;
+using Elastos::Droid::Content::Res::CResourcesHelper;
+using Elastos::Droid::Graphics::CRegion;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Os::SystemClock;
-//using Elastos::Droid::Provider::ISettingsGlobal;
-// using Elastos::Droid::Provider::CSettingsGlobal;
+using Elastos::Droid::Provider::ISettingsGlobal;
+using Elastos::Droid::Provider::CSettingsGlobal;
 using Elastos::Droid::Text::IInputType;
 using Elastos::Droid::Text::ISpannable;
 using Elastos::Droid::Text::ILayout;
 using Elastos::Droid::Text::Method::IMovementMethod;
-// using Elastos::Droid::View::CViewGroupLayoutParams;
-// using Elastos::Droid::View::CKeyEvent;
+using Elastos::Droid::View::CViewGroupLayoutParams;
+using Elastos::Droid::View::CKeyEvent;
+using Elastos::Droid::View::Animation::AnimationUtils;
 using Elastos::Droid::View::IKeyCharacterMap;
 using Elastos::Droid::View::IViewTreeObserver;
 using Elastos::Droid::View::IWindowManager;
@@ -61,11 +59,12 @@ using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::InputMethod::EIID_IInputMethod;
 using Elastos::Droid::View::InputMethod::IInputMethodSession;
 using Elastos::Droid::View::InputMethod::EIID_IInputMethodSession;
-// using Elastos::Droid::View::InputMethod::CExtractedTextRequest;
+using Elastos::Droid::View::InputMethod::CExtractedTextRequest;
 using Elastos::Droid::View::InputMethod::IExtractedTextRequest;
 using Elastos::Droid::Widget::ILinearLayoutLayoutParams;
 using Elastos::Droid::Widget::IEditText;
 using Elastos::Droid::Widget::ITextView;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -317,49 +316,6 @@ InputMethodService::InputMethodSessionImpl::InputMethodSessionImpl(
 InputMethodService::InputMethodSessionImpl::~InputMethodSessionImpl()
 {}
 
-PInterface InputMethodService::InputMethodSessionImpl::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInputMethodSession == riid) {
-        return (IInputMethodSession *)this;
-    }
-
-    if (EIID_IAbstractInputMethodSessionImpl == riid) {
-        return (IAbstractInputMethodSessionImpl *)this;
-    }
-
-    return NULL;
-}
-
-UInt32 InputMethodService::InputMethodSessionImpl::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 InputMethodService::InputMethodSessionImpl::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode InputMethodService::InputMethodSessionImpl::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-
-    if (pObject == (IInterface*)(IInputMethodSession*)this) {
-        *pIID = EIID_IInputMethodSession;
-    }
-    else if (pObject == (IInterface*)(IAbstractInputMethodSessionImpl*)this) {
-        *pIID = EIID_IAbstractInputMethodSessionImpl;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return NOERROR;
-}
-
 ECode InputMethodService::InputMethodSessionImpl::FinishInput()
 {
     assert(mHost != NULL);
@@ -469,10 +425,10 @@ InputMethodService::Insets::Insets()
     , mVisibleTopInsets(0)
     , mTouchableInsets(0)
 {
-    assert(0 && "TODO");
-    // CRegion::New((IRegion**)&mTouchableRegion);
+    CRegion::New((IRegion**)&mTouchableRegion);
 }
 
+CAR_INTERFACE_IMPL(InputMethodService, AbstractInputMethodService, IInputMethodService);
 InputMethodService::InputMethodService()
     : mTheme(0)
     , mHardwareAccelerated(FALSE)
@@ -535,8 +491,7 @@ ECode InputMethodService::EnableHardwareAcceleration(
     }
 
     AutoPtr<IActivityManagerHelper> helper;
-    assert(0 && "TODO");
-    // CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&helper);
+    CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&helper);
 
     Boolean tmp = FALSE;
     if (helper->IsHighEndGfx(&tmp), tmp) {
@@ -552,28 +507,27 @@ ECode InputMethodService::EnableHardwareAcceleration(
 ECode InputMethodService::OnCreate()
 {
     AutoPtr<IApplicationInfo> appInfo;
-    assert(0 && "TODO");
-    // GetApplicationInfo((IApplicationInfo**)&appInfo);
+    GetApplicationInfo((IApplicationInfo**)&appInfo);
     Int32 targetSdkVersion = 0;
     appInfo->GetTargetSdkVersion(&targetSdkVersion);
     AutoPtr<IResourcesHelper> helper;
-    // CResourcesHelper::AcquireSingleton((IResourcesHelper**)&helper);
-    // helper->SelectSystemTheme(mTheme,
-    //         targetSdkVersion,
-    //         R::style::Theme_InputMethod,
-    //         R::style::Theme_Holo_InputMethod,
-    //         R::style::Theme_DeviceDefault_InputMethod,
-    //         R::style::Theme_DeviceDefault_InputMethod,
-    //         &mTheme);
-    // AbstractInputMethodService::SetTheme(mTheme);
-    // AbstractInputMethodService::OnCreate();
-    // AbstractInputMethodService::GetSystemService(
-    //     IContext::INPUT_METHOD_SERVICE, (IInterface**)&mImm);
-    // AbstractInputMethodService::GetSystemService(
-    //     IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&mInflater);
-    // CSoftInputWindow::New((IContext*)this->Probe(EIID_IContext), String("InputMethod"),
-    //         mTheme, NULL, NULL, mDispatcherState, IWindowManagerLayoutParams::TYPE_INPUT_METHOD,
-    //         IGravity::BOTTOM, FALSE, (ISoftInputWindow**)&mWindow);
+    CResourcesHelper::AcquireSingleton((IResourcesHelper**)&helper);
+    helper->SelectSystemTheme(mTheme,
+            targetSdkVersion,
+            R::style::Theme_InputMethod,
+            R::style::Theme_Holo_InputMethod,
+            R::style::Theme_DeviceDefault_InputMethod,
+            R::style::Theme_DeviceDefault_InputMethod,
+            &mTheme);
+    AbstractInputMethodService::SetTheme(mTheme);
+    AbstractInputMethodService::OnCreate();
+    AbstractInputMethodService::GetSystemService(
+        IContext::INPUT_METHOD_SERVICE, (IInterface**)&mImm);
+    AbstractInputMethodService::GetSystemService(
+        IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&mInflater);
+    CSoftInputWindow::New((IContext*)this->Probe(EIID_IContext), String("InputMethod"),
+            mTheme, NULL, NULL, mDispatcherState, IWindowManagerLayoutParams::TYPE_INPUT_METHOD,
+            IGravity::BOTTOM, FALSE, (ISoftInputWindow**)&mWindow);
 
     AutoPtr<IWindow> window;
     IDialog::Probe(mWindow)->GetWindow((IWindow**)&window);
@@ -654,8 +608,7 @@ void InputMethodService::InitViews()
 
 ECode InputMethodService::OnDestroy()
 {
-    assert(0 && "TODO");
-    // AbstractInputMethodService::OnDestroy();
+    AbstractInputMethodService::OnDestroy();
     AutoPtr<IViewTreeObserver> observer;
     mRootView->GetViewTreeObserver((IViewTreeObserver**)&observer);
     assert(observer != NULL);
@@ -679,8 +632,7 @@ ECode InputMethodService::OnDestroy()
 ECode InputMethodService::OnConfigurationChanged(
     /* [in] */ IConfiguration* newConfig)
 {
-    assert(0 && "TODO");
-    // AbstractInputMethodService::OnConfigurationChanged(newConfig);
+    AbstractInputMethodService::OnConfigurationChanged(newConfig);
 
     Boolean visible = mWindowVisible;
     Int32 showFlags = mShowInputFlags;
@@ -788,8 +740,7 @@ ECode InputMethodService::GetMaxWidth(
 {
     assert(maxWidth != NULL);
     AutoPtr<IWindowManager> wm;
-    assert(0 && "TODO");
-    // AbstractInputMethodService::GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&wm);
+    AbstractInputMethodService::GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&wm);
     assert(wm != NULL);
     AutoPtr<IDisplay> display;
     wm->GetDefaultDisplay((IDisplay**)&display);
@@ -844,10 +795,7 @@ ECode InputMethodService::GetCurrentInputEditorInfo(
 ECode InputMethodService::UpdateFullscreenMode()
 {
     Boolean tmpMode = FALSE;
-    OnEvaluateFullscreenMode(&tmpMode);
-    PFL_EX("TODO") // if isFullscreen = TRUE, SetExtractView will be crashed
-    // Boolean isFullscreen = mShowInputRequested && tmpMode;
-    Boolean isFullscreen = FALSE;
+    Boolean isFullscreen = mShowInputRequested && (OnEvaluateFullscreenMode(&tmpMode), tmpMode);
     Boolean changed = mLastShowInputRequested != mShowInputRequested;
     if (mIsFullscreen != isFullscreen || !mFullscreenApplied) {
         changed = TRUE;
@@ -951,8 +899,7 @@ ECode InputMethodService::OnEvaluateFullscreenMode(
 {
     assert(screenMode != NULL);
     AutoPtr<IResources> res;
-    assert(0 && "TODO");
-    // AbstractInputMethodService::GetResources((IResources**)&res);
+    AbstractInputMethodService::GetResources((IResources**)&res);
     assert(res != NULL);
     AutoPtr<IConfiguration> config;
     res->GetConfiguration((IConfiguration**)&config);
@@ -1015,9 +962,8 @@ void InputMethodService::UpdateExtractFrameVisibility()
         if (animRes != 0) {
             AutoPtr<IAnimation> ani;
 #ifdef DROID_CORE
-            assert(0 && "TODO");
-            // AnimationUtils::LoadAnimation((IContext*)this->Probe(EIID_IContext),
-            //         animRes, (IAnimation**)&ani);
+            AnimationUtils::LoadAnimation((IContext*)this->Probe(EIID_IContext),
+                    animRes, (IAnimation**)&ani);
 #else
             AutoPtr<IAnimationUtils> animationUtils;
             CAnimationUtils::AcquireSingleton((IAnimationUtils**)&animationUtils);
@@ -1183,8 +1129,7 @@ ECode InputMethodService::ShowStatusIcon(
 {
     mStatusIcon = iconResId;
     String packageName;
-    assert(0 && "TODO");
-    // GetPackageName(&packageName);
+    GetPackageName(&packageName);
     return mImm->ShowStatusIcon(mToken, packageName, iconResId);
 }
 
@@ -1205,10 +1150,9 @@ ECode InputMethodService::SetExtractView(
 {
     IViewGroup::Probe(mExtractFrame)->RemoveAllViews();
     AutoPtr<IViewGroupLayoutParams> params;
-    assert(0 && "TODO");
-    // CViewGroupLayoutParams::New(
-    //     IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::MATCH_PARENT,
-    //     (IViewGroupLayoutParams**)&params);
+    CViewGroupLayoutParams::New(
+        IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::MATCH_PARENT,
+        (IViewGroupLayoutParams**)&params);
     IViewGroup::Probe(mExtractFrame)->AddView(view, params.Get());
     mExtractView = view;
 
@@ -1243,10 +1187,9 @@ ECode InputMethodService::SetCandidatesView(
 {
     IViewGroup::Probe(mCandidatesFrame)->RemoveAllViews();
     AutoPtr<IViewGroupLayoutParams> params;
-    assert(0 && "TODO");
-    // CViewGroupLayoutParams::New(
-    //     IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::WRAP_CONTENT,
-    //     (IViewGroupLayoutParams**)&params);
+    CViewGroupLayoutParams::New(
+        IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::WRAP_CONTENT,
+        (IViewGroupLayoutParams**)&params);
     return IViewGroup::Probe(mCandidatesFrame)->AddView(view, params.Get());
 }
 
@@ -1261,10 +1204,9 @@ ECode InputMethodService::SetInputView(
 {
     IViewGroup::Probe(mInputFrame)->RemoveAllViews();
     AutoPtr<IViewGroupLayoutParams> params;
-    assert(0 && "TODO");
-    // CViewGroupLayoutParams::New(
-    //     IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::WRAP_CONTENT,
-    //     (IViewGroupLayoutParams**)&params);
+    CViewGroupLayoutParams::New(
+        IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::WRAP_CONTENT,
+        (IViewGroupLayoutParams**)&params);
     IViewGroup::Probe(mInputFrame)->AddView(view, params.Get());
     mInputView = view;
     return NOERROR;
@@ -1372,8 +1314,7 @@ ECode InputMethodService::OnShowInputRequested(
             return NOERROR;
         }
         AutoPtr<IResources> res;
-        assert(0 && "TODO");
-        // AbstractInputMethodService::GetResources((IResources**)&res);
+        AbstractInputMethodService::GetResources((IResources**)&res);
         AutoPtr<IConfiguration> config;
         res->GetConfiguration((IConfiguration**)&config);
         Int32 keyboard;
@@ -1951,19 +1892,18 @@ ECode InputMethodService::SendDownUpKeyEvents(
     if (ic == NULL) return NOERROR;
     long eventTime = SystemClock::GetUptimeMillis();
     AutoPtr<IKeyEvent> event;
-    assert(0 && "TODO");
-    // CKeyEvent::New(eventTime, eventTime,
-    //         IKeyEvent::ACTION_DOWN, keyEventCode, 0, 0, IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
-    //         IKeyEvent::FLAG_SOFT_KEYBOARD | IKeyEvent::FLAG_KEEP_TOUCH_MODE,
-    //         (IKeyEvent**)&event);
+    CKeyEvent::New(eventTime, eventTime,
+            IKeyEvent::ACTION_DOWN, keyEventCode, 0, 0, IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
+            IKeyEvent::FLAG_SOFT_KEYBOARD | IKeyEvent::FLAG_KEEP_TOUCH_MODE,
+            (IKeyEvent**)&event);
     Boolean tmpState = FALSE;
     ic->SendKeyEvent(event, &tmpState);
 
     event = NULL;
-    // CKeyEvent::New(eventTime, SystemClock::GetUptimeMillis(),
-    //         IKeyEvent::ACTION_UP, keyEventCode, 0, 0, IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
-    //         IKeyEvent::FLAG_SOFT_KEYBOARD | IKeyEvent::FLAG_KEEP_TOUCH_MODE,
-    //         (IKeyEvent**)&event);
+    CKeyEvent::New(eventTime, SystemClock::GetUptimeMillis(),
+            IKeyEvent::ACTION_UP, keyEventCode, 0, 0, IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
+            IKeyEvent::FLAG_SOFT_KEYBOARD | IKeyEvent::FLAG_KEEP_TOUCH_MODE,
+            (IKeyEvent**)&event);
     return ic->SendKeyEvent(event, &tmpState);
 }
 
@@ -2151,32 +2091,31 @@ ECode InputMethodService::GetTextForImeAction(
     /* [out] */ ICharSequence** text)
 {
     assert(text != NULL);
-    assert(0 && "TODO");
     switch (imeOptions & IEditorInfo::IME_MASK_ACTION) {
         case IEditorInfo::IME_ACTION_NONE:
             *text = NULL;
             return NOERROR;
-        // case IEditorInfo::IME_ACTION_GO:
-        //     return AbstractInputMethodService::GetText(
-        //             R::string::ime_action_go, text);
-        // case IEditorInfo::IME_ACTION_SEARCH:
-        //     return AbstractInputMethodService::GetText(
-        //             R::string::ime_action_search, text);
-        // case IEditorInfo::IME_ACTION_SEND:
-        //     return AbstractInputMethodService::GetText(
-        //             R::string::ime_action_send, text);
-        // case IEditorInfo::IME_ACTION_NEXT:
-        //     return AbstractInputMethodService::GetText(
-        //             R::string::ime_action_next, text);
-        // case IEditorInfo::IME_ACTION_DONE:
-        //     return AbstractInputMethodService::GetText(
-        //             R::string::ime_action_done, text);
-        // case IEditorInfo::IME_ACTION_PREVIOUS:
-        //     return AbstractInputMethodService::GetText(
-        //         R::string::ime_action_previous, text);
-        // default:
-        //     return AbstractInputMethodService::GetText(
-        //             R::string::ime_action_default, text);
+        case IEditorInfo::IME_ACTION_GO:
+            return AbstractInputMethodService::GetText(
+                    R::string::ime_action_go, text);
+        case IEditorInfo::IME_ACTION_SEARCH:
+            return AbstractInputMethodService::GetText(
+                    R::string::ime_action_search, text);
+        case IEditorInfo::IME_ACTION_SEND:
+            return AbstractInputMethodService::GetText(
+                    R::string::ime_action_send, text);
+        case IEditorInfo::IME_ACTION_NEXT:
+            return AbstractInputMethodService::GetText(
+                    R::string::ime_action_next, text);
+        case IEditorInfo::IME_ACTION_DONE:
+            return AbstractInputMethodService::GetText(
+                    R::string::ime_action_done, text);
+        case IEditorInfo::IME_ACTION_PREVIOUS:
+            return AbstractInputMethodService::GetText(
+                R::string::ime_action_previous, text);
+        default:
+            return AbstractInputMethodService::GetText(
+                    R::string::ime_action_default, text);
     }
 }
 
@@ -2260,8 +2199,7 @@ void InputMethodService::StartExtractingText(
     if (mExtractEditText != NULL && tmpState && fullscreen) {
         mExtractedToken++;
         AutoPtr<IExtractedTextRequest> req;
-        assert(0 && "TODO");
-        // CExtractedTextRequest::New((IExtractedTextRequest**)&req);
+        CExtractedTextRequest::New((IExtractedTextRequest**)&req);
         req->SetToken(mExtractedToken);
         req->SetFlags(IInputConnection::GET_TEXT_WITH_STYLES);
         req->SetHintMaxLines(10);

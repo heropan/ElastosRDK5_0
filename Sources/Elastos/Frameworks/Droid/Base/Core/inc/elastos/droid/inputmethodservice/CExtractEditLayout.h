@@ -4,12 +4,12 @@
 
 #include "Elastos.Droid.Internal.h"
 #include "_Elastos_Droid_InputMethodService_CExtractEditLayout.h"
-// #include "elastos/droid/widget/LinearLayout.h"
+#include "elastos/droid/widget/LinearLayout.h"
 #include "elastos/droid/view/ActionMode.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
-// using Elastos::Droid::Widget::LinearLayout;
+using Elastos::Droid::Widget::LinearLayout;
 using Elastos::Droid::Widget::IButton;
 using Elastos::Droid::View::IMenu;
 using Elastos::Droid::View::ActionMode;
@@ -35,12 +35,12 @@ namespace InputMethodService {
  * @hide
  */
 CarClass(CExtractEditLayout)
-    , public /*LinearLayout*/Object
+    , public LinearLayout
     , public IExtractEditLayout
 {
 protected:
     class ExtractActionMode
-        : public /*ActionMode*/Object
+        : public ActionMode
         , public IMenuBuilderCallback
     {
     public:
@@ -116,6 +116,8 @@ protected:
         AutoPtr<IActionModeCallback> mCallback;
         AutoPtr<IMenuBuilder> mMenu;
         CExtractEditLayout* mHost;
+
+        friend class CExtractEditLayout;
     };
 
     class _OnClickListener

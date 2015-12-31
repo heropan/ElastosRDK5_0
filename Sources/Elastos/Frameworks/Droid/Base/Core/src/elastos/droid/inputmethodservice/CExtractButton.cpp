@@ -6,24 +6,17 @@ namespace Droid {
 namespace InputMethodService {
 
 CAR_OBJECT_IMPL(CExtractButton);
-CExtractButton::CExtractButton()
-{}
-
 ECode CExtractButton::constructor(
     /* [in] */ IContext* context)
 {
-    // return Button::constructor(context, NULL);
-    assert(0 && "TODO");
-    return NOERROR;
+    return Button::constructor(context, NULL);
 }
 
 ECode CExtractButton::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    // return Button::constructor(context, attrs, 0x01010048 /*com.android.internal.R.attr.buttonStyle*/);
-    assert(0 && "TODO");
-    return NOERROR;
+    return Button::constructor(context, attrs, R::attr::buttonStyle);
 }
 
 ECode CExtractButton::constructor(
@@ -40,16 +33,16 @@ ECode CExtractButton::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    assert(0 && "TODO");
-    return NOERROR;
-    // return Button::constructor(context, attrs, defStyleAttr, defStyleRes);
+    return Button::constructor(context, attrs, defStyleAttr, defStyleRes);
 }
 
-Boolean CExtractButton::HasWindowFocus()
+ECode CExtractButton::HasWindowFocus(
+    /* [out] */ Boolean* res)
 {
-    // return IsEnabled() && GetVisibility() == IView::VISIBLE;
-    assert(0 && "TODO");
-    return FALSE;
+    VALIDATE_NOT_NULL(res);
+    Int32 v = 0;
+    *res = (IsEnabled(res), *res) && (GetVisibility(&v), v) == IView::VISIBLE;
+    return NOERROR;
 }
 
 } // namespace InputMethodService

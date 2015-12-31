@@ -3,31 +3,32 @@
 #define __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_CCANDIDATEVIEW_H__
 
 #include "_Elastos_Droid_InputMethodService_CCandidateView.h"
+#include "elastos/droid/view/View.h"
+#include "elastos/droid/view/GestureDetector.h"
 #include <elastos/core/Object.h>
-// #include "elastos/droid/view/View.h"
-//#include "elastos/droid/view/GestureDetector.h"
 
-using Elastos::Core::ICharSequence;
-// using Elastos::Droid::View::View;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::View::View;
+using Elastos::Droid::View::GestureDetector;
+using Elastos::Droid::View::IGestureDetector;
 using Elastos::Droid::View::IMotionEvent;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
 
 CarClass(CCandidateView)
-    , public Object/*Elastos::Droid::View::View*/
+    , public Elastos::Droid::View::View
     , public ICandidateView
 {
 protected:
     class SelfSimpleOnGestureListener
-        : public Object
-        //, public GestureDetector::SimpleOnGestureListener
+        : public GestureDetector::SimpleOnGestureListener
     {
     public:
         SelfSimpleOnGestureListener(
@@ -50,8 +51,6 @@ public:
     CAR_INTERFACE_DECL();
 
     CCandidateView();
-
-    ~CCandidateView();
 
     CARAPI constructor(
         /* [in] */ IContext* ctx);
@@ -80,8 +79,9 @@ public:
 
     CARAPI Clear();
 
-    CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* event);
+    CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* res);
 
 protected:
     /**
@@ -124,7 +124,7 @@ protected:
     Int32 mTargetScrollX;
 
     Int32 mTotalWidth;
-    //GestureDetector* mGestureDetector;
+    AutoPtr<IGestureDetector> mGestureDetector;
 };
 
 } // namespace InputMethodService
