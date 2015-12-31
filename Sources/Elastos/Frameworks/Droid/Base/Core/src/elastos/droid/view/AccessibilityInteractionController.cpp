@@ -665,6 +665,7 @@ ECode AccessibilityInteractionController::constructor(
     thread->GetId(&mMyLooperThreadId);
     mMyProcessId = Process::MyPid();
     mHandler = new PrivateHandler(looper, this);
+    mHandler->constructor();
     mPrefetcher = new AccessibilityNodePrefetcher(this);
     return NOERROR;
 }

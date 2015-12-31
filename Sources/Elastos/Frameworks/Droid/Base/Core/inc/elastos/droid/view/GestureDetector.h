@@ -260,7 +260,7 @@ private:
     static const Int32 LONG_PRESS;
     static const Int32 TAP;
 
-    AutoPtr<IHandler> mHandler;
+    AutoPtr<GestureHandler> mHandler;
     IGestureDetectorOnGestureListener* mListener;
     AutoPtr<IGestureDetectorOnDoubleTapListener> mDoubleTapListener;
 

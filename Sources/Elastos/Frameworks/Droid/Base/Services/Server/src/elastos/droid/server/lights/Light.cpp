@@ -1,8 +1,5 @@
 
 #include "elastos/droid/server/lights/Light.h"
-#include <elastos/utility/logging/Logger.h>
-
-using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -17,7 +14,6 @@ const Int32 Light::BRIGHTNESS_MODE_SENSOR = 1;
 
 Light::~Light()
 {
-    Logger::I("Light", "Light::~Light, Light is abstract class");
 }
 
 } // Lights

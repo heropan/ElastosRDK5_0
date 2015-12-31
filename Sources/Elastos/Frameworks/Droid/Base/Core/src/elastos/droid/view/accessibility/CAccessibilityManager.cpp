@@ -117,6 +117,7 @@ ECode CAccessibilityManager::constructor(
     context->GetMainLooper((ILooper**)&looper);
 
     mHandler = new MyHandler(this, looper);
+    mHandler->constructor();
     mService = service;
     mUserId = userId;
     synchronized(mLock) {

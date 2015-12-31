@@ -285,7 +285,7 @@ private:
 
     AutoPtr<IArrayList> mTempAccessibilityNodeInfoList;
 
-    AutoPtr<IHandler> mHandler;
+    AutoPtr<PrivateHandler> mHandler;
 
     ViewRootImpl* mViewRootImpl;
 

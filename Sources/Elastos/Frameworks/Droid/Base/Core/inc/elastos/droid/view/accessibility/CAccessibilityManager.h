@@ -286,7 +286,7 @@ private:
 public:
     Int32 mUserId;
 
-    AutoPtr<IHandler> mHandler;
+    AutoPtr<MyHandler> mHandler;
 
     Boolean mIsEnabled;
 
