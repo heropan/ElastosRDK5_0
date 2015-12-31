@@ -407,9 +407,7 @@ ECode PreferenceGroupAdapter::AreAllItemsEnabled(
 ECode PreferenceGroupAdapter::OnPreferenceChange(
     /* [in] */ IPreference* preference)
 {
-    assert(0);
-    // return BaseAdapter::NotifyDataSetChanged();
-    return E_NOT_IMPLEMENTED;
+    return BaseAdapter::NotifyDataSetChanged();
 }
 
 ECode PreferenceGroupAdapter::OnPreferenceHierarchyChange(

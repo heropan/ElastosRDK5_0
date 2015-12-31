@@ -3,6 +3,7 @@
 #include "elastos/droid/app/Fragment.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/content/CIntentHelper.h"
+#include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/preference/CPreferenceActivityHeader.h"
 #include "elastos/droid/preference/CPreferenceManager.h"
@@ -27,6 +28,7 @@ using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
 using Elastos::Droid::Internal::Utility::XmlUtils;
+using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Utility::IAttributeSet;
@@ -301,7 +303,6 @@ ECode PreferenceActivity::Header::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
     VALIDATE_NOT_NULL(dest)
-
     dest->WriteInt64(mId);
     dest->WriteInt32(mTitleRes);
     dest->WriteInterfacePtr(mTitle);
@@ -316,7 +317,6 @@ ECode PreferenceActivity::Header::WriteToParcel(
     dest->WriteInterfacePtr(mFragmentArguments);
     dest->WriteInterfacePtr(mIntent);
     dest->WriteInterfacePtr(mExtras);
-
     return NOERROR;
 }
 
@@ -336,7 +336,6 @@ ECode PreferenceActivity::Header::ReadFromParcel(
     AutoPtr<IInterface> breadCrumbTitle;
     source->ReadInterfacePtr((Handle32*)(IInterface**)&breadCrumbTitle);
     mBreadCrumbTitle = ICharSequence::Probe(breadCrumbTitle);
-
     source->ReadInt32(&mBreadCrumbShortTitleRes);
     AutoPtr<IInterface> breadCrumbShortTitle;
     source->ReadInterfacePtr((Handle32*)(IInterface**)&breadCrumbShortTitle);
@@ -1130,19 +1129,15 @@ ECode PreferenceActivity::IsValidFragment(
     Activity::GetApplicationInfo((IApplicationInfo**)&info);
     Int32 targetSdkVersion;
     info->GetTargetSdkVersion(&targetSdkVersion);
-#if 0 // cannot find android.os.Build.VERSION_CODES.KITKAT
-    if (targetSdkVersion  >= android.os.Build.VERSION_CODES.KITKAT) {
-        assert(0);
-        // throw new RuntimeException(
-        //         "Subclasses of PreferenceActivity must override isValidFragment(String)"
-        //         + " to verify that the Fragment class is valid! " + this.getClass().getName()
-        //         + " has not checked if fragment " + fragmentName + " is valid.");
+    if (targetSdkVersion  >= Elastos::Droid::Os::Build::VERSION_CODES::KITKAT) {
+        Slogger::E(TAG,
+            "Subclasses of PreferenceActivity must override isValidFragment(String) to verify that the Fragment class is valid! PreferenceActivity has not checked if fragment %s is valid.",
+            fragmentName.string());
         return E_RUNTIME_EXCEPTION;
     } else {
         *result= TRUE;
         return NOERROR;
     }
-#endif
     return NOERROR;
 }
 
@@ -1390,8 +1385,7 @@ ECode PreferenceActivity::ShowBreadCrumbs(
         SetTitle(title);
     } else {
         //some peple forget to write setTitle in FragmentBreadCrumbs.car
-        assert(0);
-        // mFragmentBreadCrumbs->SetTitle(title, shortTitle);
+        mFragmentBreadCrumbs->SetTitle(title, shortTitle);
         mFragmentBreadCrumbs->SetParentTitle(NULL, NULL, NULL);
     }
     return NOERROR;

@@ -4,9 +4,11 @@
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/preference/CTwoStatePreferenceSavedState.h"
 #include "elastos/droid/preference/TwoStatePreference.h"
+#include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::View::Accessibility::IAccessibilityEventHelper;
 using Elastos::Droid::View::Accessibility::IAccessibilityManagerHelper;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
@@ -239,23 +241,23 @@ ECode TwoStatePreference::SyncSummaryView(
     view->FindViewById(R::id::summary, (IView**)(ITextView**)&summaryView);
     if (summaryView != NULL) {
         Boolean useDefaultSummary = TRUE;
-        // if (mChecked && !TextUtils::IsEmpty(mSummaryOn)) {
-        //     summaryView->SetText(mSummaryOn);
-        //     useDefaultSummary = FALSE;
-        // }
-        // else if (!mChecked && !TextUtils::IsEmpty(mSummaryOff)) {
-        //     summaryView->SetText(mSummaryOff);
-        //     useDefaultSummary = FALSE;
-        // }
+        if (mChecked && !TextUtils::IsEmpty(mSummaryOn)) {
+            summaryView->SetText(mSummaryOn);
+            useDefaultSummary = FALSE;
+        }
+        else if (!mChecked && !TextUtils::IsEmpty(mSummaryOff)) {
+            summaryView->SetText(mSummaryOff);
+            useDefaultSummary = FALSE;
+        }
 
-        // if (useDefaultSummary) {
-        //     AutoPtr<ICharSequence> summary;
-        //     GetSummary((ICharSequence**)&summary);
-        //     if (!TextUtils::IsEmpty(summary)) {
-        //         summaryView->SetText(summary);
-        //         useDefaultSummary = FALSE;
-        //     }
-        // }
+        if (useDefaultSummary) {
+            AutoPtr<ICharSequence> summary;
+            GetSummary((ICharSequence**)&summary);
+            if (!TextUtils::IsEmpty(summary)) {
+                summaryView->SetText(summary);
+                useDefaultSummary = FALSE;
+            }
+        }
 
         Int32 newVisibility = IView::GONE;
         if (!useDefaultSummary) {

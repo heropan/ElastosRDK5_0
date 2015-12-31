@@ -231,7 +231,7 @@ private:
 
     static CARAPI_(Int32) GetDefaultSharedPreferencesMode();
 
-    CARAPI_(void) SetNoCommit(
+    CARAPI SetNoCommit(
         /* [in] */ Boolean noCommit);
 
     CARAPI_(void) DismissAllScreens();

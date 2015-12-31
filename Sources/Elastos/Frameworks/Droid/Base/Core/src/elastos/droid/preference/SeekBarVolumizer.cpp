@@ -3,7 +3,7 @@
 #include "elastos/droid/preference/SeekBarVolumizer.h"
 #include "elastos/droid/os/CHandlerThread.h"
 #include "elastos/droid/os/CHandler.h"
-// #include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/provider/Settings.h"
 #include "elastos/droid/R.h"
 #include "elastos/core/StringBuilder.h"
 #include "elastos/utility/logging/Logger.h"
@@ -15,6 +15,7 @@ using Elastos::Droid::Os::EIID_IHandlerCallback;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::CHandlerThread;
 using Elastos::Droid::Os::IHandlerThread;
+using Elastos::Droid::Provider::Settings;
 using Elastos::Droid::Widget::EIID_ISeekBarOnSeekBarChangeListener;
 using Elastos::Droid::Widget::IProgressBar;
 using Elastos::Droid::R;
@@ -179,11 +180,10 @@ ECode SeekBarVolumizer::constructor(
     mAudioManager->GetStreamVolume(mStreamType, &mOriginalStreamVolume);
     mVolumeObserver = new SeekBarVolumizerObserver(mHandler, this);
 
-#if 0 // Elastos::Droid::Provider::Settings needed to update for below code
     AutoPtr<IContentResolver> resolver;
     mContext->GetContentResolver((IContentResolver**)&resolver);
     AutoPtr<IUri> uri;
-    Settings::System::GetUriFor((*VOLUME_SETTINGS)[mStreamType], (IUri**)&uri);
+    Settings::System::GetUriFor((*(Settings::System::VOLUME_SETTINGS))[mStreamType], (IUri**)&uri);
     resolver->RegisterContentObserver(uri, FALSE, mVolumeObserver);
     mReceiver->SetListening(TRUE);
     if (defaultUri == NULL) {
@@ -198,7 +198,6 @@ ECode SeekBarVolumizer::constructor(
     mDefaultUri = defaultUri;
     Boolean result = FALSE;
     mHandler->SendEmptyMessage(MSG_INIT_SAMPLE, &result);
-#endif
     return NOERROR;
 }
 
@@ -275,11 +274,10 @@ void SeekBarVolumizer::OnStartSample()
             mCallback->OnSampleStarting((ISeekBarVolumizer*)this);
         }
         if (mRingtone != NULL) {
-            //try {
-            mRingtone->Play();
-            //} catch (Throwable e) {
-            //    Log.w(TAG, "Error playing ringtone, stream " + mStreamType, e);
-            //}
+            ECode ec = mRingtone->Play();
+            if (FAILED(ec)) {
+                Logger::W(TAG, "Error playing ringtone, stream %d%08x", mStreamType, ec);
+            }
         }
     }
 }
@@ -410,7 +408,8 @@ ECode SeekBarVolumizer::MuteVolume()
         PostSetVolume(mVolumeBeforeMute);
         PostStartSample();
         mVolumeBeforeMute = -1;
-    } else {
+    }
+    else {
         IProgressBar::Probe(mSeekBar)->GetProgress(&mVolumeBeforeMute);
         IProgressBar::Probe(mSeekBar)->SetProgress(0);
         PostStopSample();

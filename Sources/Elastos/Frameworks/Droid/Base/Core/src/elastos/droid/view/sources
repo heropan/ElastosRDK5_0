@@ -65,7 +65,7 @@ SOURCES += SurfaceControl.cpp
 SOURCES += CSurfaceControl.cpp
 #SOURCES += CGravity.cpp
 #SOURCES += CEmptyAbsSavedState.cpp
-#SOURCES += CAbsSavedStateHelper.cpp
+SOURCES += CAbsSavedStateHelper.cpp
 #SOURCES += CChoreographerHelper.cpp
 #SOURCES += CCompatibilityInfoHolder.cpp
 

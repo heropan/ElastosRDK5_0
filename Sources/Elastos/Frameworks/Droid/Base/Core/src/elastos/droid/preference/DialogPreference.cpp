@@ -1,15 +1,15 @@
 
 #include "Elastos.Droid.Widget.h"
+#include "elastos/droid/app/CAlertDialogBuilder.h"
 #include "elastos/droid/preference/DialogPreference.h"
 #include "elastos/droid/preference/CDialogPreferenceSavedState.h"
-// #include "elastos/droid/app/CAlertDialogBuilder.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/view/LayoutInflater.h"
 
 using Elastos::Core::CString;
-//using Elastos::Droid::App::CAlertDialogBuilder;
+using Elastos::Droid::App::CAlertDialogBuilder;
 using Elastos::Droid::App::IAlertDialog;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnDismissListener;
@@ -265,12 +265,12 @@ ECode DialogPreference::ShowDialog(
 
     mWhichButtonClicked = IDialogInterface::BUTTON_NEGATIVE;
 
-    // mBuilder = NULL;
-    // CAlertDialogBuilder::New(context, (IAlertDialogBuilder**)&mBuilder);
-    // mBuilder->SetTitle(mDialogTitle);
-    // mBuilder->SetIcon(mDialogIcon);
-    // mBuilder->SetPositiveButton(mPositiveButtonText, THIS_PROBE(IDialogInterfaceOnClickListener));
-    // mBuilder->SetNegativeButton(mNegativeButtonText, THIS_PROBE(IDialogInterfaceOnClickListener));
+    mBuilder = NULL;
+    CAlertDialogBuilder::New(context, (IAlertDialogBuilder**)&mBuilder);
+    mBuilder->SetTitle(mDialogTitle);
+    mBuilder->SetIcon(mDialogIcon);
+    mBuilder->SetPositiveButton(mPositiveButtonText, (IDialogInterfaceOnClickListener*)this);
+    mBuilder->SetNegativeButton(mNegativeButtonText, (IDialogInterfaceOnClickListener*)this);
 
     AutoPtr<IView> contentView;
     OnCreateDialogView((IView**)&contentView);

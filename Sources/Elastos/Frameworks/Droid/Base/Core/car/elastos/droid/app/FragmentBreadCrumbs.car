@@ -91,6 +91,15 @@ module
          */
         SetOnBreadCrumbClickListener(
             [in] IOnBreadCrumbClickListener* listener);
+
+        /**
+        * Set a custom title for the bread crumbs. This will be the first entry
+        * shown at the left, representing the root of the bread crumbs. If the
+        * title is null, it will not be shown.
+        */
+        SetTitle(
+            [in] ICharSequence* title,
+            [in] ICharSequence* shortTitle);
     }
 
     } // namespace App

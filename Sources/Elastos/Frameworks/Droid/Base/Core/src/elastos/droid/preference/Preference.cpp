@@ -6,13 +6,14 @@
 #include "elastos/droid/preference/Preference.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/view/CAbsSavedStateHelper.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Text::TextUtils;
-// using Elastos::Droid::View::CAbsSavedStateHelper;
+using Elastos::Droid::View::CAbsSavedStateHelper;
 using Elastos::Droid::View::IAbsSavedState;
 using Elastos::Droid::View::IAbsSavedStateHelper;
 using Elastos::Core::CString;
@@ -1122,8 +1123,7 @@ ECode Preference::PersistStringSet(
 
         AutoPtr<ISharedPreferencesEditor> editor;
         mPreferenceManager->GetEditor((ISharedPreferencesEditor**)&editor);
-        assert(0);
-        // editor->PutStringSet(mKey, values);
+        editor->PutStringSet(mKey, values);
         TryCommit(editor);
         *isPersistStringSet = TRUE;
         return NOERROR;
@@ -1396,13 +1396,12 @@ ECode Preference::OnSaveInstanceState(
 {
     VALIDATE_NOT_NULL(state)
     mBaseMethodCalled = TRUE;
-    //TODO
-    // AutoPtr<IAbsSavedStateHelper> helper;
-    // CAbsSavedStateHelper::AcquireSingleton((IAbsSavedStateHelper**)&helper);
-    // AutoPtr<IAbsSavedState> emptyState;
-    // helper->GetEMPTY_STATE((IAbsSavedState**)&emptyState);
-    // *state = IParcelable::Probe(emptyState);
-    // REFCOUNT_ADD(*state);
+    AutoPtr<IAbsSavedStateHelper> helper;
+    CAbsSavedStateHelper::AcquireSingleton((IAbsSavedStateHelper**)&helper);
+    AutoPtr<IAbsSavedState> emptyState;
+    helper->GetEMPTY_STATE((IAbsSavedState**)&emptyState);
+    *state = IParcelable::Probe(emptyState);
+    REFCOUNT_ADD(*state);
     return NOERROR;
 }
 
@@ -1435,15 +1434,14 @@ ECode Preference::OnRestoreInstanceState(
     /* [in] */ IParcelable* state)
 {
     mBaseMethodCalled = TRUE;
-    //TODO
-    // AutoPtr<IAbsSavedStateHelper> helper;
-    // CAbsSavedStateHelper::AcquireSingleton((IAbsSavedStateHelper**)&helper);
-    // AutoPtr<IAbsSavedState> emptyState;
-    // helper->GetEMPTY_STATE((IAbsSavedState**)&emptyState);
-    // if (state != IParcelable::Probe(emptyState) && state != NULL) {
-    //     Slogger::E("preference", "Wrong state class -- expecting Preference State");
-    //     return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    // }
+    AutoPtr<IAbsSavedStateHelper> helper;
+    CAbsSavedStateHelper::AcquireSingleton((IAbsSavedStateHelper**)&helper);
+    AutoPtr<IAbsSavedState> emptyState;
+    helper->GetEMPTY_STATE((IAbsSavedState**)&emptyState);
+    if (state != IParcelable::Probe(emptyState) && state != NULL) {
+        Slogger::E("preference", "Wrong state class -- expecting Preference State");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     return NOERROR;
 }
 

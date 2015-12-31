@@ -1,16 +1,16 @@
 
 #include "Elastos.Droid.View.h"
-#include "elastos/droid/preference/EditTextPreference.h"
 #include "elastos/droid/preference/CEditTextPreferenceSavedState.h"
+#include "elastos/droid/preference/EditTextPreference.h"
 #include "elastos/droid/text/TextUtils.h"
-// #include "elastos/droid/widget/CEditText.h"
+#include "elastos/droid/widget/CEditText.h"
 #include "elastos/droid/R.h"
 
 using Elastos::Droid::Preference::IEditTextPreferenceSavedState;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::View::IAbsSavedState;
 using Elastos::Droid::View::IViewParent;
-// using Elastos::Droid::Widget::CEditText;
+using Elastos::Droid::Widget::CEditText;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::Preference::CEditTextPreferenceSavedState;
@@ -33,10 +33,10 @@ ECode EditTextPreference::constructor(
     /* [in] */ Int32 defStyleRes)
 {
     FAIL_RETURN(DialogPreference::constructor(context, attrs, defStyleAttr, defStyleRes));
-    // CEditText::New(context, attrs, (IEditText**)&mEditText);
+    CEditText::New(context, attrs, (IEditText**)&mEditText);
 
     // Give it an ID so it can be saved/restored
-    // mEditText->SetId(R::id::edit);
+    IView::Probe(mEditText)->SetId(R::id::edit);
 
     /*
      * The preference framework and view framework both have an 'enabled'
@@ -44,7 +44,7 @@ ECode EditTextPreference::constructor(
      * the preference framework, but it was also given to the view framework.
      * We reset the enabled state.
      */
-    // mEditText->SetEnabled(TRUE);
+    IView::Probe(mEditText)->SetEnabled(TRUE);
     return NOERROR;
 }
 
@@ -104,17 +104,14 @@ ECode EditTextPreference::OnBindDialogView(
     AutoPtr<IEditText> editText = mEditText;
     AutoPtr<ICharSequence> cs;
     CString::New(mText, (ICharSequence**)&cs);
-    assert(0);
-    // editText->SetText(cs);
+    ITextView::Probe(editText)->SetText(cs);
 
     AutoPtr<IViewParent> oldParent;
-    assert(0);
-    // editText->GetParent((IViewParent**)&oldParent);
+    IView::Probe(editText)->GetParent((IViewParent**)&oldParent);
     if ((IView*)oldParent.Get() != view) {
         if (oldParent != NULL) {
             AutoPtr<IViewGroup> vGroup = IViewGroup::Probe(oldParent);
-            assert(0);
-            // vGroup->RemoveViewInLayout(editText);
+            vGroup->RemoveViewInLayout(IView::Probe(editText));
         }
         OnAddEditTextToDialogView(view, editText);
     }
@@ -142,15 +139,14 @@ ECode EditTextPreference::OnDialogClosed(
     FAIL_RETURN(DialogPreference::OnDialogClosed(positiveResult))
 
     if (positiveResult) {
-        assert(0);
-        // AutoPtr<ICharSequence> cs;
-        // mEditText->GetText((ICharSequence**)&cs);
-        // Boolean isSuccess;
-        // if (CallChangeListener(cs, &isSuccess), isSuccess) {
-        //     String value;
-        //     cs->ToString(&value);
-        //     SetText(value);
-        // }
+        AutoPtr<ICharSequence> cs;
+        ITextView::Probe(mEditText)->GetText((ICharSequence**)&cs);
+        Boolean isSuccess;
+        if (CallChangeListener(cs, &isSuccess), isSuccess) {
+            String value;
+            cs->ToString(&value);
+            SetText(value);
+        }
     }
     return NOERROR;
 }

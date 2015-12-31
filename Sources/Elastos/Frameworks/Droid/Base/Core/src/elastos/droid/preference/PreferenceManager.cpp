@@ -353,8 +353,7 @@ ECode PreferenceManager::SetDefaultValues(
             // an apply method.
             Boolean result = FALSE;
             editor->Commit(&result);
-            assert(0);
-            // return E_ABSTRACT_METHOD_ERROR;
+            return E_ABSTRACT_METHOD_ERROR;
             return NOERROR;
         }
     }
@@ -394,7 +393,7 @@ ECode PreferenceManager::ShouldCommit(
     return NOERROR;
 }
 
-void PreferenceManager::SetNoCommit(
+ECode PreferenceManager::SetNoCommit(
     /* [in] */ Boolean noCommit)
 {
     if (!noCommit && mEditor != NULL) {
@@ -405,11 +404,11 @@ void PreferenceManager::SetNoCommit(
             // an apply method.
             Boolean result = FALSE;
             mEditor->Commit(&result);
-            assert(0);
-            // return E_ABSTRACT_METHOD_ERROR;
+            return E_ABSTRACT_METHOD_ERROR;
         }
     }
     mNoCommit = noCommit;
+    return NOERROR;
 }
 
 ECode PreferenceManager::GetActivity(
