@@ -13,9 +13,6 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-extern "C" const InterfaceID EIID_TabWidget;
-
-
 /**
  *
  * Displays a list of tab labels representing each page in the parent's tab
@@ -37,13 +34,16 @@ extern "C" const InterfaceID EIID_TabWidget;
  * @attr ref android.R.styleable#TabWidget_tabStripRight
  */
 
-class TabWidget : public LinearLayout //implements OnFocusChangeListener
+class TabWidget
+    : public LinearLayout //implements OnFocusChangeListener
+    , public ITabWidget
+    , public IViewOnFocusChangeListener
 {
 private:
     // registered with each tab indicator so we can notify tab host
     class TabClickListener
-        : public IViewOnClickListener
-        , public ElRefBase
+        : public Object
+        , public IViewOnClickListener
     {
         friend class TabWidget;
 
@@ -65,17 +65,15 @@ private:
     };
 
 public:
-    TabWidget(
-        /* [in] */ IContext* context);
+    CAR_INTERFACE_DECL()
 
-    TabWidget(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
+    TabWidget();
 
-    TabWidget(
+    CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
+        /* [in] */ IAttributeSet* attrs = NULL,
+        /* [in] */ Int32 defStyleAttr = R::attr::tabWidgetStyle,
+        /* [in] */ Int32 defStyleRes = 0);
 
     /**
      * Returns the tab indicator view at the given index.
@@ -83,14 +81,16 @@ public:
      * @param index the zero-based index of the tab indicator view to return
      * @return the tab indicator view at the given index
      */
-    CARAPI_(AutoPtr<IView>) GetChildTabViewAt(
-        /* [in] */ Int32 index);
+    CARAPI GetChildTabViewAt(
+        /* [in] */ Int32 index,
+        /* [out] */ IView** v);
 
     /**
      * Returns the number of tab indicator views.
      * @return the number of tab indicator views.
      */
-    CARAPI_(Int32) GetTabCount();
+    CARAPI GetTabCount(
+        /* [out] */ Int32* count);
 
     /**
      * Sets the drawable to use as a divider between the tab indicators.
@@ -155,7 +155,8 @@ public:
      * Indicates whether the bottom strips on the tab indicators are drawn
      * or not.
      */
-    CARAPI_(Boolean) IsStripEnabled();
+    CARAPI IsStripEnabled(
+        /* [out] */ Boolean* enabled);
 
     //@Override
     virtual CARAPI ChildDrawableStateChanged(
@@ -224,15 +225,16 @@ public:
     /**
      * Provides a way for {@link TabHost} to be notified that the user clicked on a tab indicator.
      */
-    virtual CARAPI_(void) SetTabSelectionListener(
+    virtual CARAPI SetTabSelectionListener(
         /* [in] */ ITabWidgetOnTabSelectionChanged* listener);
 
     virtual CARAPI OnFocusChange(
         /* [in] */ IView* v,
         /* [in] */ Boolean hasFocus);
 
-    virtual CARAPI_(Boolean) DispatchPopulateAccessibilityEvent(
-        /* [in] */ IAccessibilityEvent* event);
+    virtual CARAPI DispatchPopulateAccessibilityEvent(
+        /* [in] */ IAccessibilityEvent* event,
+        /* [out] */ Boolean* res);
 
     virtual CARAPI OnInitializeAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
@@ -247,8 +249,6 @@ public:
 
 
 protected:
-    TabWidget();
-
     //@Override
     virtual CARAPI_(void) OnSizeChanged(
         /* [in] */ Int32 w,
@@ -260,11 +260,6 @@ protected:
     virtual CARAPI_(Int32) GetChildDrawingOrder(
         /* [in] */ Int32 childCount,
         /* [in] */ Int32 i);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs = NULL,
-        /* [in] */ Int32 defStyle = R::attr::tabWidgetStyle);
 
     CARAPI_(void) MeasureChildBeforeLayout(
         /* [in] */ IView* child,

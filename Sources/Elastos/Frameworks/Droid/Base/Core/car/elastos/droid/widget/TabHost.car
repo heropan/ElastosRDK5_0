@@ -61,8 +61,7 @@ module
          * Perhaps do something when the tab associated with this content has
          * been closed (i.e make it invisible, or remove it).
          */
-        TabClosed(
-            [out] IView** view);
+        TabClosed();
     }
 
     [local]

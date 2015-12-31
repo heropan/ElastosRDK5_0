@@ -2,11 +2,12 @@
 #ifndef __ELASTOS_DROID_WIDGET_TABLEROWLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_WIDGET_TABLEROWLAYOUTPARAMS_H__
 
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/widget/LinearLayout.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Widget {
-
-extern "C" const InterfaceID EIID_TableRowLayoutParams;
 
 /**
  * <p>Set of layout parameters used in table rows.</p>
@@ -16,15 +17,21 @@ extern "C" const InterfaceID EIID_TableRowLayoutParams;
  * @attr ref android.R.styleable#TableRow_Cell_layout_column
  * @attr ref android.R.styleable#TableRow_Cell_layout_span
  */
-class TableRowLayoutParams : public LinearLayout::LayoutParams
+class TableRowLayoutParams
+    : public LinearLayout::LayoutParams
+    , public ITableRowLayoutParams
 {
     friend class TableRow;
 
 public:
+    CAR_INTERFACE_DECL()
+
+    TableRowLayoutParams();
+
     /**
      * {@inheritDoc}
      */
-    TableRowLayoutParams(
+    CARAPI constructor(
         /* [in] */ IContext* c,
         /* [in] */ IAttributeSet* attrs);
 
@@ -34,7 +41,7 @@ public:
      * @param w the desired width
      * @param h the desired height
      */
-    TableRowLayoutParams(
+    CARAPI constructor(
         /* [in] */ Int32 w,
         /* [in] */ Int32 h);
 
@@ -45,7 +52,7 @@ public:
      * @param h the desired height
      * @param initWeight the desired weight
      */
-    TableRowLayoutParams(
+    CARAPI constructor(
         /* [in] */ Int32 w,
         /* [in] */ Int32 h,
         /* [in] */ Float initWeight);
@@ -55,7 +62,7 @@ public:
      * and the child height to
      * {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}.</p>
      */
-    TableRowLayoutParams();
+    CARAPI constructor();
 
     /**
      * <p>Puts the view in the specified column.</p>
@@ -66,55 +73,32 @@ public:
      *
      * @param column the column index for the view
      */
-    TableRowLayoutParams(
+    CARAPI constructor(
         /* [in] */ Int32 column);
 
     /**
      * {@inheritDoc}
      */
-    TableRowLayoutParams(
-        /* [in] */ ViewGroup::LayoutParams* p);
+    CARAPI constructor(
+        /* [in] */ IViewGroupLayoutParams* p);
 
     /**
      * {@inheritDoc}
      */
-    TableRowLayoutParams(
-        /* [in] */ ViewGroup::MarginLayoutParams* source);
+    CARAPI constructor(
+        /* [in] */ IViewGroupMarginLayoutParams* source);
 
     virtual CARAPI SetColumn(
         /* [in] */ Int32 column);
 
-    CARAPI_(Int32) GetColumn();
+    CARAPI GetColumn(
+        /* [out] */ Int32* column);
 
     virtual CARAPI SetSpan(
         /* [in] */ Int32 span);
 
-    CARAPI_(Int32) GetSpan();
-
-protected:
-    CARAPI Init(
-        /* [in] */ IContext* c,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI Init(
-        /* [in] */ Int32 w,
-        /* [in] */ Int32 h);
-
-    CARAPI Init(
-        /* [in] */ Int32 w,
-        /* [in] */ Int32 h,
-        /* [in] */ Float initWeight);
-
-    CARAPI Init();
-
-    CARAPI Init(
-        /* [in] */ Int32 column);
-
-    CARAPI Init(
-        /* [in] */ IViewGroupLayoutParams* p);
-
-    CARAPI Init(
-        /* [in] */ IViewGroupMarginLayoutParams* source);
+    CARAPI GetSpan(
+        /* [out] */ Int32* span);
 
     //@Override
     virtual CARAPI SetBaseAttributes(
@@ -142,7 +126,7 @@ private:
     static const Int32 LOCATION = 0;
     static const Int32 LOCATION_NEXT = 1;
 
-    Int32 mOffset[2];
+    AutoPtr< ArrayOf<Int32> > mOffset;
 };
 
 } // namespace Widget

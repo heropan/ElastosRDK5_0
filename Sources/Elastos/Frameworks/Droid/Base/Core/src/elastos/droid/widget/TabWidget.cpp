@@ -5,27 +5,23 @@
 #include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
 #include "elastos/droid/widget/CImageView.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::View::EIID_IViewOnFocusChangeListener;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::View::EIID_IView;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-// {ca8d2eff-aa0f-43c3-881c-108012f2d868}
-const InterfaceID EIID_TabWidget =
-{ 0xca8d2eff, 0xaa0f, 0x43c3, { 0x88, 0x1c, 0x10, 0x80, 0x12, 0xf2, 0xd8, 0x68 } };
-
-
 //==============================================================================
 //              TabWidget::TabClickListener
 //==============================================================================
 
-CAR_INTERFACE_IMPL(TabWidget::TabClickListener, IViewOnClickListener)
+CAR_INTERFACE_IMPL(TabWidget::TabClickListener, Object, IViewOnClickListener)
 
 TabWidget::TabClickListener::TabClickListener(
     /* [in] */ Int32 tabIndex,
@@ -44,6 +40,7 @@ ECode TabWidget::TabClickListener::OnClick(
 //==============================================================================
 //              TabWidget
 //==============================================================================
+CAR_INTERFACE_IMPL_2(TabWidget, LinearLayout, ITabWidget, IViewOnFocusChangeListener)
 
 TabWidget::TabWidget()
     : mSelectedTab(-1)
@@ -54,59 +51,19 @@ TabWidget::TabWidget()
     CRect::New((IRect**)&mBounds);
 }
 
-TabWidget::TabWidget(
-    /* [in] */ IContext* context)
-    : LinearLayout(context, NULL, R::attr::tabWidgetStyle)
-    , mSelectedTab(-1)
-    , mDrawBottomStrips(TRUE)
-    , mStripMoved(FALSE)
-    , mImposedTabsHeight(-1)
-{
-    CRect::New((IRect**)&mBounds);
-    ASSERT_SUCCEEDED(InitFromAttributes(context, NULL, R::attr::tabWidgetStyle));
-    InitTabWidget();
-}
-
-TabWidget::TabWidget(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-    : LinearLayout(context, attrs, R::attr::tabWidgetStyle)
-    , mSelectedTab(-1)
-    , mDrawBottomStrips(TRUE)
-    , mStripMoved(FALSE)
-    , mImposedTabsHeight(-1)
-{
-    CRect::New((IRect**)&mBounds);
-    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, R::attr::tabWidgetStyle));
-    InitTabWidget();
-}
-
-TabWidget::TabWidget(
+ECode TabWidget::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : LinearLayout(context, attrs, defStyle)
-    , mSelectedTab(-1)
-    , mDrawBottomStrips(TRUE)
-    , mStripMoved(FALSE)
-    , mImposedTabsHeight(-1)
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
 {
-    CRect::New((IRect**)&mBounds);
-    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, defStyle));
-    InitTabWidget();
-}
-
-ECode TabWidget::InitFromAttributes(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-{
-    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+    LinearLayout::constructor(context, attrs, defStyleAttr, defStyleRes);
+    AutoPtr< ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
         const_cast<Int32 *>(R::styleable::TabWidget),
         ArraySize(R::styleable::TabWidget));
     AutoPtr<ITypedArray> a;
     context->ObtainStyledAttributes(
-        attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+        attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 
     Boolean res;
     a->GetBoolean(R::styleable::TabWidget_tabStripEnabled, TRUE, &res);
@@ -120,17 +77,6 @@ ECode TabWidget::InitFromAttributes(
     SetRightStripDrawable(dr);
 
     a->Recycle();
-    return NOERROR;
-}
-
-ECode TabWidget::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-{
-    FAIL_RETURN(LinearLayout::Init(context, attrs, defStyle));
-    FAIL_RETURN(InitFromAttributes(context, attrs, defStyle));
-    InitTabWidget();
     return NOERROR;
 }
 
@@ -170,8 +116,6 @@ void TabWidget::InitTabWidget()
     SetChildrenDrawingOrderEnabled(TRUE);
 
     IContext* context = mContext;
-    AutoPtr<IResources> resources;
-    context->GetResources((IResources**)&resources);
 
     AutoPtr<IApplicationInfo> ai;
     context->GetApplicationInfo((IApplicationInfo**)&ai);
@@ -180,19 +124,19 @@ void TabWidget::InitTabWidget()
     if (version <= Build::VERSION_CODES::DONUT) {
         // Donut apps get old color scheme
         if (mLeftStrip == NULL) {
-            resources->GetDrawable(R::drawable::tab_bottom_left_v4, (IDrawable**)&mLeftStrip);
+            context->GetDrawable(R::drawable::tab_bottom_left_v4, (IDrawable**)&mLeftStrip);
         }
         if (mRightStrip == NULL) {
-            resources->GetDrawable(R::drawable::tab_bottom_right_v4, (IDrawable**)&mRightStrip);
+            context->GetDrawable(R::drawable::tab_bottom_right_v4, (IDrawable**)&mRightStrip);
         }
     }
     else {
         // Use modern color scheme for Eclair and beyond
         if (mLeftStrip == NULL) {
-            resources->GetDrawable(R::drawable::tab_bottom_left, (IDrawable**)&mLeftStrip);
+            context->GetDrawable(R::drawable::tab_bottom_left, (IDrawable**)&mLeftStrip);
         }
         if (mRightStrip == NULL) {
-            resources->GetDrawable(R::drawable::tab_bottom_right, (IDrawable**)&mRightStrip);
+            context->GetDrawable(R::drawable::tab_bottom_right, (IDrawable**)&mRightStrip);
         }
     }
 
@@ -210,7 +154,9 @@ void TabWidget::MeasureChildBeforeLayout(
     /* [in] */ Int32 heightMeasureSpec,
     /* [in] */ Int32 totalHeight)
 {
-    if (!IsMeasureWithLargestChildEnabled() && mImposedTabsHeight >= 0) {
+    Boolean enabled;
+    if ((IsMeasureWithLargestChildEnabled(&enabled), enabled)
+        && mImposedTabsHeight >= 0) {
         widthMeasureSpec = MeasureSpec::MakeMeasureSpec(
             totalWidth + (*mImposedTabWidths)[childIndex], MeasureSpec::EXACTLY);
         heightMeasureSpec = MeasureSpec::MakeMeasureSpec(mImposedTabsHeight,
@@ -235,13 +181,18 @@ void TabWidget::MeasureHorizontal(
     mImposedTabsHeight = -1;
     LinearLayout::MeasureHorizontal(unspecifiedWidth, heightMeasureSpec);
 
-    Int32 extraWidth = GetMeasuredWidth() - MeasureSpec::GetSize(widthMeasureSpec);
+    Int32 measureWidth;
+    GetMeasuredWidth(&measureWidth);
+    Int32 extraWidth = measureWidth - MeasureSpec::GetSize(widthMeasureSpec);
     if (extraWidth > 0) {
-        Int32 count = GetChildCount();
+        Int32 count;
+        GetChildCount(&count);
 
         Int32 childCount = 0;
+        AutoPtr<IView> child;
         for (Int32 i = 0; i < count; i++) {
-            AutoPtr<IView> child = GetChildAt(i);
+            child = NULL;
+            GetChildAt(i, (IView**)&child);
             Int32 visible;
             child->GetVisibility(&visible);
 
@@ -254,8 +205,10 @@ void TabWidget::MeasureHorizontal(
                 mImposedTabWidths = ArrayOf<Int32>::Alloc(count);
             }
             Int32 visibility;
+            AutoPtr<IView> child;
             for (Int32 i = 0; i < count; i++) {
-                AutoPtr<IView> child = GetChildAt(i);
+                child = NULL;
+                GetChildAt(i, (IView**)&child);
                 child->GetVisibility(&visibility);
                 if (visibility == IView::GONE) continue;
                 Int32 childWidth, childHeight;
@@ -282,19 +235,23 @@ void TabWidget::MeasureHorizontal(
  * @param index the zero-based index of the tab indicator view to return
  * @return the tab indicator view at the given index
  */
-AutoPtr<IView> TabWidget::GetChildTabViewAt(
-    /* [in] */ Int32 index)
+ECode TabWidget::GetChildTabViewAt(
+    /* [in] */ Int32 index,
+    /* [out] */ IView** v)
 {
-    return GetChildAt(index);
+    VALIDATE_NOT_NULL(v)
+    return GetChildAt(index, v);
 }
 
 /**
  * Returns the number of tab indicator views.
  * @return the number of tab indicator views.
  */
-Int32 TabWidget::GetTabCount()
+ECode TabWidget::GetTabCount(
+    /* [out] */ Int32* count)
 {
-    return GetChildCount();
+    VALIDATE_NOT_NULL(count)
+    return GetChildCount(count);
 }
 
 /**
@@ -315,11 +272,8 @@ ECode TabWidget::SetDividerDrawable(
 ECode TabWidget::SetDividerDrawable(
     /* [in] */ Int32 resId)
 {
-    AutoPtr<IResources> resources;
-    mContext->GetResources((IResources**)&resources);
-
     AutoPtr<IDrawable> dr;
-    resources->GetDrawable(resId, (IDrawable**)&dr);
+    mContext->GetDrawable(resId, (IDrawable**)&dr);
 
     return SetDividerDrawable(dr);
 }
@@ -348,11 +302,8 @@ ECode TabWidget::SetLeftStripDrawable(
 ECode TabWidget::SetLeftStripDrawable(
     /* [in] */ Int32 resId)
 {
-    AutoPtr<IResources> resources;
-    mContext->GetResources((IResources**)&resources);
-
     AutoPtr<IDrawable> dr;
-    resources->GetDrawable(resId, (IDrawable**)&dr);
+    mContext->GetDrawable(resId, (IDrawable**)&dr);
 
     return SetLeftStripDrawable(dr);
 }
@@ -381,11 +332,8 @@ ECode TabWidget::SetRightStripDrawable(
 ECode TabWidget::SetRightStripDrawable(
     /* [in] */ Int32 resId)
 {
-    AutoPtr<IResources> resources;
-    mContext->GetResources((IResources**)&resources);
-
     AutoPtr<IDrawable> dr;
-    resources->GetDrawable(resId, (IDrawable**)&dr);
+    mContext->GetDrawable(resId, (IDrawable**)&dr);
 
     return SetRightStripDrawable(dr);
 }
@@ -410,15 +358,21 @@ ECode TabWidget::SetStripEnabled(
  * Indicates whether the bottom strips on the tab indicators are drawn
  * or not.
  */
-Boolean TabWidget::IsStripEnabled()
+ECode TabWidget::IsStripEnabled(
+    /* [out] */ Boolean* enabled)
 {
-    return mDrawBottomStrips;
+    VALIDATE_NOT_NULL(enabled)
+    *enabled = mDrawBottomStrips;
+    return NOERROR;
 }
 
 ECode TabWidget::ChildDrawableStateChanged(
     /* [in] */ IView* child)
 {
-    if (GetTabCount() > 0 && child == GetChildTabViewAt(mSelectedTab)) {
+    Int32 count;
+    AutoPtr<IView> v;
+    if ((GetTabCount(&count), count) > 0
+        && child == (GetChildTabViewAt(mSelectedTab, (IView**)&v),  v)) {
         // To make sure that the bottom strip is redrawn
         Invalidate();
     }
@@ -431,7 +385,8 @@ void TabWidget::DispatchDraw(
     LinearLayout::DispatchDraw(canvas);
 
     // Do nothing if there are no tabs.
-    if (GetTabCount() == 0) return;
+    Int32 count;
+    if ((GetTabCount(&count), count) == 0) return;
 
     // If the user specified a custom view for the tab indicators, then
     // do not draw the bottom strips.
@@ -440,7 +395,8 @@ void TabWidget::DispatchDraw(
         return;
     }
 
-    AutoPtr<IView> selectedChild = GetChildTabViewAt(mSelectedTab);
+    AutoPtr<IView> selectedChild;
+    GetChildTabViewAt(mSelectedTab, (IView**)&selectedChild);
 
     IDrawable* leftStrip = mLeftStrip;
     IDrawable* rightStrip = mRightStrip;
@@ -460,7 +416,8 @@ void TabWidget::DispatchDraw(
         bounds->SetLeft(l);
         bounds->SetRight(r);
 
-        Int32 myHeight = GetHeight();
+        Int32 myHeight;
+        GetHeight(&myHeight);
 
         Int32 w, h;
         leftStrip->GetIntrinsicWidth(&w);
@@ -470,8 +427,10 @@ void TabWidget::DispatchDraw(
 
         rightStrip->GetIntrinsicWidth(&w);
         rightStrip->GetIntrinsicHeight(&h);
+        Int32 width;
+        GetWidth(&width);
         rightStrip->SetBounds(r, myHeight - h,
-            Elastos::Core::Math::Max(GetWidth(), r + w), myHeight);
+            Elastos::Core::Math::Max(width, r + w), myHeight);
         mStripMoved = FALSE;
     }
 
@@ -509,41 +468,47 @@ void TabWidget::DispatchDraw(
 ECode TabWidget::SetCurrentTab(
     /* [in] */ Int32 index)
 {
-    if (index < 0 || index >= GetTabCount() || index == mSelectedTab) {
+    Int32 count;
+    if (index < 0 || index >= (GetTabCount(&count), count) || index == mSelectedTab) {
         return NOERROR;
     }
 
     if (mSelectedTab != -1) {
-        GetChildTabViewAt(mSelectedTab)->SetSelected(FALSE);
+        AutoPtr<IView> v;
+        GetChildTabViewAt(mSelectedTab, (IView**)&v);
+        v->SetSelected(FALSE);
     }
 
     mSelectedTab = index;
-    AutoPtr<IView> tabView = GetChildTabViewAt(mSelectedTab);
+    AutoPtr<IView> tabView;
+    GetChildTabViewAt(mSelectedTab, (IView**)&tabView);
     tabView->SetSelected(TRUE);
     mStripMoved = TRUE;
-
-    if (IsShown()) {
+    Boolean isShow;
+    if (IsShown(&isShow), isShow) {
         SendAccessibilityEvent(IAccessibilityEvent::TYPE_VIEW_SELECTED);
     }
 
     return NOERROR;
 }
 
-Boolean TabWidget::DispatchPopulateAccessibilityEvent(
-    /* [in] */ IAccessibilityEvent* event)
+ECode TabWidget::DispatchPopulateAccessibilityEvent(
+    /* [in] */ IAccessibilityEvent* event,
+    /* [out] */ Boolean* res)
 {
+    VALIDATE_NOT_NULL(res)
     OnPopulateAccessibilityEvent(event);
     // Dispatch only to the selected tab.
     if (mSelectedTab != -1) {
-        AutoPtr<IView> tabView = GetChildTabViewAt(mSelectedTab);
+        AutoPtr<IView> tabView;
+        GetChildTabViewAt(mSelectedTab, (IView**)&tabView);
         Int32 visible;
         if (tabView != NULL && (tabView->GetVisibility(&visible), visible) == IView::VISIBLE) {
-            Boolean result;
-            tabView->DispatchPopulateAccessibilityEvent(event, &result);
-            return result;
+            return tabView->DispatchPopulateAccessibilityEvent(event, res);
         }
     }
-    return FALSE;
+    *res = FALSE;
+    return NOERROR;
 }
 
 ECode TabWidget::OnInitializeAccessibilityEvent(
@@ -551,10 +516,12 @@ ECode TabWidget::OnInitializeAccessibilityEvent(
 {
     LinearLayout::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("CTabWidget"), (ICharSequence**)&seq);
-    event->SetClassName(seq);
-    event->SetItemCount(GetTabCount());
-    event->SetCurrentItemIndex(mSelectedTab);
+    CString::New(String("CTabWidget"), (ICharSequence**)&seq);
+    IAccessibilityRecord::Probe(event)->SetClassName(seq);
+    Int32 count;
+    GetTabCount(&count);
+    IAccessibilityRecord::Probe(event)->SetItemCount(count);
+    IAccessibilityRecord::Probe(event)->SetCurrentItemIndex(mSelectedTab);
     return NOERROR;
 }
 
@@ -564,8 +531,9 @@ ECode TabWidget::SendAccessibilityEventUnchecked(
     // this class fires events only when tabs are focused or selected
     Int32 type;
     event->GetEventType(&type);
-    if (type == IAccessibilityEvent::TYPE_VIEW_FOCUSED && IsFocused()) {
-        event->Recycle();
+    Boolean isFocus;
+    if (type == IAccessibilityEvent::TYPE_VIEW_FOCUSED && (IsFocused(&isFocus), isFocus)) {
+        IAccessibilityRecord::Probe(event)->Recycle();
         return NOERROR;
     }
     return LinearLayout::SendAccessibilityEventUnchecked(event);
@@ -576,7 +544,7 @@ ECode TabWidget::OnInitializeAccessibilityNodeInfo(
 {
     LinearLayout::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> clsName;
-    CStringWrapper::New(String("CTabWidget"), (ICharSequence**)&clsName);
+    CString::New(String("CTabWidget"), (ICharSequence**)&clsName);
     info->SetClassName(clsName);
     return NOERROR;
 }
@@ -605,7 +573,8 @@ ECode TabWidget::FocusCurrentTab(
 
     // change the focus if applicable.
     if (oldTab != index) {
-        AutoPtr<IView> tabView = GetChildTabViewAt(index);
+        AutoPtr<IView> tabView;
+        GetChildTabViewAt(index, (IView**)&tabView);
         Boolean res;
         tabView->RequestFocus(&res);
     }
@@ -617,10 +586,12 @@ ECode TabWidget::SetEnabled(
     /* [in] */ Boolean enabled)
 {
     LinearLayout::SetEnabled(enabled);
-    Int32 count = GetTabCount();
+    Int32 count;
+    GetTabCount(&count);
 
     for (Int32 i = 0; i < count; i++) {
-        AutoPtr<IView> tabView = GetChildTabViewAt(i);
+        AutoPtr<IView> tabView;
+        GetChildTabViewAt(i, (IView**)&tabView);
         tabView->SetEnabled(enabled);
     }
 
@@ -636,8 +607,8 @@ ECode TabWidget::AddView(
         AutoPtr<ILinearLayoutLayoutParams> lp;
         CLinearLayoutLayoutParams::New(0, IViewGroupLayoutParams::MATCH_PARENT,
                 1.0f, (ILinearLayoutLayoutParams**)&lp);
-        lp->SetMargins(0, 0, 0, 0);
-        child->SetLayoutParams(lp);
+        IViewGroupMarginLayoutParams::Probe(lp)->SetMargins(0, 0, 0, 0);
+        child->SetLayoutParams(IViewGroupLayoutParams::Probe(lp));
     }
 
     // Ensure you can navigate to the tab with the keyboard, and you can touch it
@@ -648,7 +619,9 @@ ECode TabWidget::AddView(
 
     // TODO: detect this via geometry with a tabwidget listener rather
     // than potentially interfere with the view's listener
-    AutoPtr<TabClickListener> listener = new TabClickListener(GetTabCount() - 1, this);
+    Int32 count;
+    GetTabCount(&count);
+    AutoPtr<TabClickListener> listener = new TabClickListener(count - 1, this);
     child->SetOnClickListener((IViewOnClickListener*)listener);
     child->SetOnFocusChangeListener(THIS_PROBE(IViewOnFocusChangeListener));
 
@@ -665,32 +638,38 @@ ECode TabWidget::RemoveAllViews()
 /**
  * Provides a way for {@link TabHost} to be notified that the user clicked on a tab indicator.
  */
-void TabWidget::SetTabSelectionListener(
+ECode TabWidget::SetTabSelectionListener(
     /* [in] */ ITabWidgetOnTabSelectionChanged* listener)
 {
     mSelectionChangedListener = listener;
+    return NOERROR;
 }
 
 ECode TabWidget::OnFocusChange(
     /* [in] */ IView* v,
     /* [in] */ Boolean hasFocus)
 {
-    if (v == THIS_PROBE(IView) && hasFocus && GetTabCount() > 0) {
-        AutoPtr<IView> tabView = GetChildTabViewAt(mSelectedTab);
+    Int32 count;
+    if (v == THIS_PROBE(IView) && hasFocus
+        && (GetTabCount(&count), count) > 0) {
+        AutoPtr<IView> tabView;
+        GetChildTabViewAt(mSelectedTab, (IView**)&tabView);
         Boolean res;
         return tabView->RequestFocus(&res);
     }
 
     if (hasFocus) {
         Int32 i = 0;
-        Int32 numTabs = GetTabCount();
+        Int32 numTabs;
+        GetTabCount(&numTabs);
         while (i < numTabs) {
-            AutoPtr<IView> tabView = GetChildTabViewAt(mSelectedTab);
-            if (tabView.Get() == v) {
+            AutoPtr<IView> tabView;
+            GetChildTabViewAt(mSelectedTab, (IView**)&tabView);
+            if (v == tabView) {
                 SetCurrentTab(i);
                 mSelectionChangedListener->OnTabSelectionChanged(i, FALSE);
-
-                if (IsShown()) {
+                Boolean isShow;
+                if (IsShown(&isShow), isShow) {
                     // a tab is focused so send an event to announce the tab widget state
                     SendAccessibilityEvent(IAccessibilityEvent::TYPE_VIEW_FOCUSED);
                 }
