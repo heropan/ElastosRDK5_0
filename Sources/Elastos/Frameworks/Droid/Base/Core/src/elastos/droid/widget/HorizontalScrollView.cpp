@@ -2,7 +2,7 @@
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/HorizontalScrollView.h"
 #include "elastos/droid/widget/CHorizontalScrollViewSavedState.h"
-// #include "elastos/droid/widget/ScrollView.h"
+#include "elastos/droid/widget/ScrollView.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/view/CViewConfigurationHelper.h"
 #include "elastos/droid/view/FocusFinder.h"
@@ -34,7 +34,7 @@ using Elastos::Droid::View::IInputDevice;
 using Elastos::Droid::View::IViewBaseSavedState;
 using Elastos::Droid::View::CViewGroupMarginLayoutParams;
 using Elastos::Droid::Widget::CEdgeEffect;
-// using Elastos::Droid::Widget::ScrollView;
+using Elastos::Droid::Widget::ScrollView;
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CSystem;
@@ -108,8 +108,8 @@ ECode HorizontalScrollView::SavedState::ToString(
 }
 
 const String HorizontalScrollView::HORIZONTALSCROLLVIEW_NAME("HorizontalScrollView");
-const Int32 HorizontalScrollView::ANIMATED_SCROLL_GAP = 250;// = ScrollView::ANIMATED_SCROLL_GAP; //TODO
-const Float HorizontalScrollView::MAX_SCROLL_FACTOR = 0.5;// = ScrollView::MAX_SCROLL_FACTOR; //TODO
+const Int32 HorizontalScrollView::ANIMATED_SCROLL_GAP = ScrollView::ANIMATED_SCROLL_GAP;
+const Float HorizontalScrollView::MAX_SCROLL_FACTOR = ScrollView::MAX_SCROLL_FACTOR;
 const Int32 HorizontalScrollView::INVALID_POINTER = -1;
 
 CAR_INTERFACE_IMPL(HorizontalScrollView, FrameLayout, IHorizontalScrollView);

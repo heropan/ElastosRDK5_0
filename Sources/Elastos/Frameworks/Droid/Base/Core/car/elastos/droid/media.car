@@ -125,6 +125,7 @@ module
     merge("media/ImageReader.car");
     merge("media/JetPlayer.car");
     merge("media/MediaActionSound.car");
+    merge("media/MediaFormat.car");
     merge("media/MediaCodec.car");
     merge("media/MediaCodecInfo.car");
     merge("media/MediaCodecList.car");
@@ -133,7 +134,6 @@ module
     merge("media/MediaDrm.car");
     merge("media/MediaExtractor.car");
     merge("media/MediaFile.car");
-    merge("media/MediaFormat.car");
     merge("media/MediaInserter.car");
     merge("media/MediaMetadata.car");
     merge("media/MediaMetadataEditor.car");

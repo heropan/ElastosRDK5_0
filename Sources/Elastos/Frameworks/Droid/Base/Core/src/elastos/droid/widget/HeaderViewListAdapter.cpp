@@ -1,281 +1,336 @@
 #include "elastos/droid/widget/HeaderViewListAdapter.h"
 
+using Elastos::Utility::CArrayList;
+
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-HeaderViewListAdapter::HeaderViewListAdapter(
-    /* [in] */ ArrayOf<IFixedViewInfo*>* headerViewInfos,
-    /* [in] */ ArrayOf<IFixedViewInfo*>* footerViewInfos,
-    /* [in] */ IListAdapter* adapter)
+AutoPtr<IArrayList> HeaderViewListAdapter::EMPTY_INFO_LIST;
+Boolean HeaderViewListAdapter::sInit = InitStatic();
+
+CAR_INTERFACE_IMPL_5(HeaderViewListAdapter, Object, IHeaderViewListAdapter, IWrapperListAdapter, IListAdapter, IAdapter, IFilterable);
+HeaderViewListAdapter::HeaderViewListAdapter()
+    : mAreAllFixedViewsSelectable(FALSE)
+    , mIsFilterable(FALSE)
 {
-    Init(headerViewInfos, footerViewInfos, adapter);
 }
 
-ECode HeaderViewListAdapter::Init(
-    /* [in] */ ArrayOf<IFixedViewInfo*>* headerViewInfos,
-    /* [in] */ ArrayOf<IFixedViewInfo*>* footerViewInfos,
+ECode HeaderViewListAdapter::constructor(
+    /* [in] */ IArrayList* headerViewInfos,
+    /* [in] */ IArrayList* footerViewInfos,
     /* [in] */ IListAdapter* adapter)
 {
     mAdapter = adapter;
     if(IFilterable::Probe(adapter)){
         mIsFilterable = TRUE;
-    } else {
+    }
+    else {
         mIsFilterable = FALSE;
     }
 
-    if(headerViewInfos != NULL) {
-        for(Int32 i = 0; i < headerViewInfos->GetLength(); i++) {
-            mHeaderViewInfos.PushBack((*headerViewInfos)[i]);
-        }
+    if (headerViewInfos == NULL) {
+        mHeaderViewInfos = EMPTY_INFO_LIST;
+    }
+    else {
+        mHeaderViewInfos = headerViewInfos;
     }
 
-    if(footerViewInfos != NULL) {
-        for(Int32 i = 0; i < footerViewInfos->GetLength(); i++) {
-            mFooterViewInfos.PushBack((*footerViewInfos)[i]);
-        }
+    if (footerViewInfos == NULL) {
+        mFooterViewInfos = EMPTY_INFO_LIST;
+    }
+    else {
+        mFooterViewInfos = footerViewInfos;
     }
 
     mAreAllFixedViewsSelectable = AreAllListInfosSelectable(mHeaderViewInfos)
         && AreAllListInfosSelectable(mFooterViewInfos);
     return NOERROR;
 }
-HeaderViewListAdapter::HeaderViewListAdapter()
-    : mAreAllFixedViewsSelectable(FALSE)
-    , mIsFilterable(FALSE)
-{}
 
-HeaderViewListAdapter::~HeaderViewListAdapter()
+ECode HeaderViewListAdapter::GetHeadersCount(
+    /* [out] */ Int32* count)
 {
-    if(mHeaderViewInfos.IsEmpty() == FALSE) {
-        mHeaderViewInfos.Clear();
-    }
-    if(mFooterViewInfos.IsEmpty() == FALSE) {
-        mFooterViewInfos.Clear();
-    }
+    VALIDATE_NOT_NULL(count);
+    return mHeaderViewInfos->GetSize(count);
 }
 
-Int32 HeaderViewListAdapter::GetHeadersCount()
+ECode HeaderViewListAdapter::GetFootersCount(
+    /* [out] */ Int32* count)
 {
-    return mHeaderViewInfos.GetSize();
+    VALIDATE_NOT_NULL(count);
+    return mFooterViewInfos->GetSize(count);
 }
 
-Int32 HeaderViewListAdapter::GetFootersCount()
+ECode HeaderViewListAdapter::IsEmpty(
+    /* [out] */ Boolean* empty)
 {
-    return mFooterViewInfos.GetSize();
-}
-
-Boolean HeaderViewListAdapter::IsEmpty()
-{
+    VALIDATE_NOT_NULL(empty);
     Boolean res = FALSE;
-    return  mAdapter == NULL || (mAdapter->IsEmpty(&res), res);
+    *empty =  mAdapter == NULL || (IAdapter::Probe(mAdapter)->IsEmpty(&res), res);
+    return NOERROR;
 }
 
-Boolean HeaderViewListAdapter::RemoveHeader(
-    /* [in] */ IView* v)
+ECode HeaderViewListAdapter::RemoveHeader(
+    /* [in] */ IView* v,
+    /* [out] */ Boolean* result)
 {
-    Iterator it = mHeaderViewInfos.Begin();
-    while(it != mHeaderViewInfos.End())
-    {
-        AutoPtr<IFixedViewInfo> info = *it;
-        AutoPtr<IView> vInfo;
-        info->GetView((IView**)&vInfo);
-        if(v == vInfo)
-        {
-            it = mHeaderViewInfos.Erase(it);
-            mAreAllFixedViewsSelectable = AreAllListInfosSelectable(mHeaderViewInfos)
-                && AreAllListInfosSelectable(mFooterViewInfos);
-            return TRUE;
+    VALIDATE_NOT_NULL(result);
+    Int32 size = 0;
+    mHeaderViewInfos->GetSize(&size);
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IInterface> obj;
+        mHeaderViewInfos->Get(i, (IInterface**)&obj);
+        AutoPtr<IFixedViewInfo> info = IFixedViewInfo::Probe(obj);
+        AutoPtr<IView> view;
+        info->GetView((IView**)&view);
+        if (view.Get() == v) {
+            mHeaderViewInfos->Remove(i);
+
+            mAreAllFixedViewsSelectable =
+                    AreAllListInfosSelectable(mHeaderViewInfos)
+                    && AreAllListInfosSelectable(mFooterViewInfos);
+
+            *result = TRUE;
+            return NOERROR;
         }
-        it++;
     }
-    return FALSE;
+
+    *result = FALSE;
+    return NOERROR;
 }
 
-Boolean HeaderViewListAdapter::RemoveFooter(
-    /* [in] */ IView* v)
+ECode HeaderViewListAdapter::RemoveFooter(
+    /* [in] */ IView* v,
+    /* [out] */ Boolean* result)
 {
-    Iterator it = mFooterViewInfos.Begin();
-    while(it != mFooterViewInfos.End())
-    {
-        AutoPtr<IFixedViewInfo> info = *it;
-        AutoPtr<IView> vInfo;
-        info->GetView((IView**)&vInfo);
-        if(v == vInfo)
-        {
-            it = mFooterViewInfos.Erase(it);
-            mAreAllFixedViewsSelectable = AreAllListInfosSelectable(mHeaderViewInfos)
-                && AreAllListInfosSelectable(mFooterViewInfos);
-            return TRUE;
+    VALIDATE_NOT_NULL(result);
+    Int32 size = 0;
+    mFooterViewInfos->GetSize(&size);
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IInterface> obj;
+        mFooterViewInfos->Get(i, (IInterface**)&obj);
+        AutoPtr<IFixedViewInfo> info = IFixedViewInfo::Probe(obj);
+        AutoPtr<IView> view;
+        info->GetView((IView**)&view);
+        if (view.Get() == v) {
+            mFooterViewInfos->Remove(i);
+
+            mAreAllFixedViewsSelectable =
+                    AreAllListInfosSelectable(mHeaderViewInfos)
+                    && AreAllListInfosSelectable(mFooterViewInfos);
+
+            *result = TRUE;
+            return NOERROR;
         }
-        it++;
     }
-    return FALSE;
+
+    *result = FALSE;
+    return NOERROR;
 }
 
-Int32 HeaderViewListAdapter::GetCount()
+ECode HeaderViewListAdapter::GetCount(
+    /* [out] */ Int32* count)
 {
+    VALIDATE_NOT_NULL(count);
+    Int32 fc = 0, hc = 0;
+    GetFootersCount(&fc);
+    GetHeadersCount(&hc);
     if(mAdapter != NULL) {
-        Int32 count = 0;
-        mAdapter->GetCount(&count);
-        return GetFootersCount() + GetHeadersCount() + count;
-    } else {
-        return GetFootersCount() + GetHeadersCount();
+        Int32 c = 0;
+        IAdapter::Probe(mAdapter)->GetCount(&c);
+        *count = fc + hc + c;
+        return NOERROR;
     }
+
+    *count = fc + hc;
+    return NOERROR;
 }
 
-Boolean HeaderViewListAdapter::AreAllItemsEnabled()
+ECode HeaderViewListAdapter::AreAllItemsEnabled(
+    /* [out] */ Boolean* enabled)
 {
+    VALIDATE_NOT_NULL(enabled);
     if(mAdapter != NULL) {
         Boolean res = FALSE;
         mAdapter->AreAllItemsEnabled(&res);
-        return mAreAllFixedViewsSelectable && res;
-    } else {
-        return TRUE;
+        *enabled = mAreAllFixedViewsSelectable && res;
+        return NOERROR;
     }
+    *enabled = TRUE;
+    return NOERROR;
 }
 
-Boolean HeaderViewListAdapter::IsEnabled(
-    /* [in] */ Int32 position)
+ECode HeaderViewListAdapter::IsEnabled(
+    /* [in] */ Int32 position,
+    /* [out] */ Boolean* enabled)
 {
-    Int32 numHeaders = GetHeadersCount();
-    if(position < numHeaders) {
-        Boolean selectable = FALSE;
-        mHeaderViewInfos[position]->GetSelectable(&selectable);
-        return selectable;
+    VALIDATE_NOT_NULL(enabled);
+    // Header (negative positions will throw an IndexOutOfBoundsException)
+    Int32 numHeaders = 0;
+    GetHeadersCount(&numHeaders);
+    if (position < numHeaders) {
+        AutoPtr<IInterface> obj;
+        mHeaderViewInfos->Get(position, (IInterface**)&obj);
+        AutoPtr<IFixedViewInfo> info = IFixedViewInfo::Probe(obj);
+        return info->GetSelectable(enabled);
     }
 
+    // Adapter
+    const Int32 adjPosition = position - numHeaders;
+    Int32 adapterCount = 0;
+    if (mAdapter != NULL) {
+        IAdapter::Probe(mAdapter)->GetCount(&adapterCount);
+        if (adjPosition < adapterCount) {
+            return mAdapter->IsEnabled(adjPosition, enabled);
+        }
+    }
+
+    // Footer (off-limits positions will throw an IndexOutOfBoundsException)
+    AutoPtr<IInterface> obj;
+    mFooterViewInfos->Get(adjPosition - adapterCount, (IInterface**)&obj);
+    return IFixedViewInfo::Probe(obj)->GetSelectable(enabled);
+}
+
+ECode HeaderViewListAdapter::GetItem(
+    /* [in] */ Int32 position,
+    /* [out] */ IInterface** item)
+{
+    VALIDATE_NOT_NULL(item);
+    // Header (negative positions will throw an IndexOutOfBoundsException)
+    Int32 numHeaders = 0;
+    GetHeadersCount(&numHeaders);
+    if(position < numHeaders) {
+        AutoPtr<IInterface> obj;
+        mHeaderViewInfos->Get(position, (IInterface**)&obj);
+        return IFixedViewInfo::Probe(obj)->GetData(item);
+    }
+
+    // Adapter
     Int32 adjPosition = position - numHeaders;
     Int32 adapterCount = 0;
     if(mAdapter != NULL) {
-        mAdapter->GetCount(&adapterCount);
+        IAdapter::Probe(mAdapter)->GetCount(&adapterCount);
         if(adjPosition < adapterCount) {
-            Boolean isEnabled = FALSE;
-            mAdapter->IsEnabled(adjPosition, &isEnabled);
-            return isEnabled;
+            return IAdapter::Probe(mAdapter)->GetItem(adjPosition, item);
         }
     }
-    if (adjPosition - adapterCount >= GetFootersCount())
-        return FALSE;
-    Boolean selectable;
-    IFixedViewInfo* temp = mFooterViewInfos[adjPosition - adapterCount];
-    temp->GetSelectable(&selectable);
-    return selectable;
+    Int32 c = 0;
+    if (adjPosition - adapterCount >= (GetFootersCount(&c), c)) {
+        *item = NULL;
+        return NOERROR;
+    }
+
+    // Footer (off-limits positions will throw an IndexOutOfBoundsException)
+    AutoPtr<IInterface> obj;
+    mFooterViewInfos->Get(adjPosition - adapterCount, (IInterface**)&obj);
+    return IFixedViewInfo::Probe(obj)->GetData(item);
 }
 
-AutoPtr<IInterface> HeaderViewListAdapter::GetItem(
-    /* [in] */ Int32 position)
+ECode HeaderViewListAdapter::GetItemId(
+    /* [in] */ Int32 position,
+    /* [out] */ Int64* id)
 {
-    Int32 numHeaders = GetHeadersCount();
-    if(position < numHeaders) {
-        AutoPtr<IInterface> data;
-        mHeaderViewInfos[position]->GetData((IInterface**)&data);
-        return data;
-    }
-    Int32 adjPosition = position - numHeaders;
-    Int32 adapterCount = 0;
-    if(mAdapter != NULL) {
-        mAdapter->GetCount(&adapterCount);
-        if(adjPosition < adapterCount) {
-            AutoPtr<IInterface> inter;
-            mAdapter->GetItem(adjPosition, (IInterface**)&inter);
-            return inter;
-        }
-    }
-    if (adjPosition - adapterCount >= GetFootersCount())
-        return NULL;
-    AutoPtr<IInterface> data;
-    mFooterViewInfos[adjPosition - adapterCount]->GetData((IInterface**)&data);
-    return data;
-}
-
-Int64 HeaderViewListAdapter::GetItemId(
-    /* [in] */ Int32 position)
-{
-    Int32 numHeaders = GetHeadersCount();
+    VALIDATE_NOT_NULL(id);
+    Int32 numHeaders = 0;
+    GetHeadersCount(&numHeaders);
     if(mAdapter != NULL && position >= numHeaders) {
         Int32 adjPosition = position - numHeaders;
         Int32 adapterCount = 0;
-        mAdapter->GetCount(&adapterCount);
+        IAdapter::Probe(mAdapter)->GetCount(&adapterCount);
         if(adjPosition < adapterCount) {
-            Int64 id = 0;
-            mAdapter->GetItemId(adjPosition, &id);
-            return id;
+            return IAdapter::Probe(mAdapter)->GetItemId(adjPosition, id);
         }
     }
-    return -1;
+    *id = -1;
+    return NOERROR;
 }
 
-Boolean HeaderViewListAdapter::HasStableIds()
+ECode HeaderViewListAdapter::HasStableIds(
+    /* [out] */ Boolean* has)
 {
+    VALIDATE_NOT_NULL(has);
     if(mAdapter != NULL) {
-        Boolean res = FALSE;
-        mAdapter->HasStableIds(&res);
-        return res;
+        return IAdapter::Probe(mAdapter)->HasStableIds(has);
     }
-    return FALSE;
+    *has = FALSE;
+    return NOERROR;
 }
 
-AutoPtr<IView> HeaderViewListAdapter::GetView(
+ECode HeaderViewListAdapter::GetView(
     /* [in] */ Int32 position,
     /* [in] */ IView* convertView,
-    /* [in] */ IViewGroup* parent)
+    /* [in] */ IViewGroup* parent,
+    /* [out] */ IView** view)
 {
-    Int32 numHeaders = GetHeadersCount();
+    VALIDATE_NOT_NULL(view);
+    // Header (negative positions will throw an IndexOutOfBoundsException)
+    Int32 numHeaders = 0;
+    GetHeadersCount(&numHeaders);
     if(position < numHeaders) {
-        AutoPtr<IView> data;
-        mHeaderViewInfos[position]->GetView((IView**)&data);
-        return data;
+        AutoPtr<IInterface> obj;
+        mHeaderViewInfos->Get(position, (IInterface**)&obj);
+        return IFixedViewInfo::Probe(obj)->GetView(view);
     }
 
+    // Adapter
     Int32 adjPosition = position - numHeaders;
     Int32 adapterCount = 0;
     if(mAdapter != NULL) {
-        mAdapter->GetCount(&adapterCount);
+        IAdapter::Probe(mAdapter)->GetCount(&adapterCount);
         if(adjPosition < adapterCount) {
-            AutoPtr<IView> v;
-            mAdapter->GetView(adjPosition, convertView, parent, (IView**)&v);
-            return v;
+            return IAdapter::Probe(mAdapter)->GetView(adjPosition, convertView, parent, view);
         }
     }
-    if (adjPosition - adapterCount >= GetFootersCount())
-        return NULL;
-    AutoPtr<IView> v;
-    mFooterViewInfos[adjPosition - adapterCount]->GetView((IView**)&v);
-    return v;
+
+    Int32 count = 0;
+    if (adjPosition - adapterCount >= (GetFootersCount(&count), count)) {
+        *view = NULL;
+        return NOERROR;
+    }
+
+    // Footer (off-limits positions will throw an IndexOutOfBoundsException)
+    AutoPtr<IInterface> obj;
+    mFooterViewInfos->Get(adjPosition - adapterCount, (IInterface**)&obj);
+    return IFixedViewInfo::Probe(obj)->GetView(view);
 }
 
-Int32 HeaderViewListAdapter::GetItemViewType(
-    /* [in] */Int32 position)
+ECode HeaderViewListAdapter::GetItemViewType(
+    /* [in] */Int32 position,
+    /* [out] */ Int32* type)
 {
-    Int32 numHeaders = GetHeadersCount();
+    VALIDATE_NOT_NULL(type);
+    Int32 numHeaders = 0;
+    GetHeadersCount(&numHeaders);
     if(mAdapter != NULL && position >= numHeaders) {
         Int32 adjPosition = position - numHeaders;
         Int32 adapterCount = 0;
-        mAdapter->GetCount(&adapterCount);
+        IAdapter::Probe(mAdapter)->GetCount(&adapterCount);
         if(adjPosition < adapterCount) {
             Int32 res = 0;
-            mAdapter->GetItemViewType(adjPosition, &res);
+            IAdapter::Probe(mAdapter)->GetItemViewType(adjPosition, &res);
         }
     }
-    return IAdapterView::ITEM_VIEW_TYPE_HEADER_OR_FOOTER;
+    *type = IAdapterView::ITEM_VIEW_TYPE_HEADER_OR_FOOTER;
+    return NOERROR;
 }
 
-Int32 HeaderViewListAdapter::GetViewTypeCount()
+ECode HeaderViewListAdapter::GetViewTypeCount(
+    /* [out] */ Int32* count)
 {
+    VALIDATE_NOT_NULL(count);
     if(mAdapter != NULL) {
-        Int32 count = 0;
-        mAdapter->GetViewTypeCount(&count);
-        return count;
+        return IAdapter::Probe(mAdapter)->GetViewTypeCount(count);
     }
-    return 1;
+    *count = 1;
+    return NOERROR;
 }
 
 ECode HeaderViewListAdapter::RegisterDataSetObserver(
     /* [in] */ IDataSetObserver* observer)
 {
     if(mAdapter != NULL) {
-        mAdapter->RegisterDataSetObserver(observer);
+        IAdapter::Probe(mAdapter)->RegisterDataSetObserver(observer);
     }
     return NOERROR;
 }
@@ -284,41 +339,55 @@ ECode HeaderViewListAdapter::UnregisterDataSetObserver(
     /* [in] */ IDataSetObserver* observer)
 {
     if(mAdapter != NULL) {
-        mAdapter->UnregisterDataSetObserver(observer);
+        IAdapter::Probe(mAdapter)->UnregisterDataSetObserver(observer);
     }
     return NOERROR;
 }
 
-AutoPtr<IFilter> HeaderViewListAdapter::GetFilter()
+ECode HeaderViewListAdapter::GetFilter(
+    /* [out] */ IFilter** filter)
 {
+    VALIDATE_NOT_NULL(filter);
     if(mIsFilterable) {
         AutoPtr<IFilterable> filterable = IFilterable::Probe(mAdapter);
-        AutoPtr<IFilter> filter;
-        filterable->GetFilter((IFilter**)&filter);
-        return filter;
+        return filterable->GetFilter(filter);
     }
-    return NULL;
+    *filter = NULL;
+    return NOERROR;
 }
 
-AutoPtr<IListAdapter> HeaderViewListAdapter::GetWrappedAdapter()
+ECode HeaderViewListAdapter::GetWrappedAdapter(
+    /* [out] */ IListAdapter** atapter)
 {
-    return mAdapter;
+    VALIDATE_NOT_NULL(atapter);
+    *atapter = mAdapter;
+    REFCOUNT_ADD(*atapter);
+    return NOERROR;
 }
 
 Boolean HeaderViewListAdapter::AreAllListInfosSelectable(
-        /* [in] */ List<AutoPtr<IFixedViewInfo> >& infos)
+    /* [in] */ IArrayList* infos)
 {
-    if(!infos.IsEmpty()) {
-        Iterator it = infos.Begin();
-        for(; it != infos.End(); it++) {
-            AutoPtr<IFixedViewInfo> info = *it;
-            Boolean selectable;
-            info->GetSelectable(&selectable);
-            if(!selectable) {
+    if (infos != NULL) {
+        Int32 size = 0;
+        infos->GetSize(&size);
+        for (Int32 i = 0; i < size; i++) {
+            AutoPtr<IInterface> obj;
+            infos->Get(i, (IInterface**)&obj);
+            AutoPtr<IFixedViewInfo> info = IFixedViewInfo::Probe(obj);
+            Boolean isSelectable = FALSE;
+            info->GetSelectable(&isSelectable);
+            if (!isSelectable) {
                 return FALSE;
             }
         }
     }
+    return TRUE;
+}
+
+Boolean HeaderViewListAdapter::InitStatic()
+{
+    CArrayList::New((IArrayList**)&EMPTY_INFO_LIST);
     return TRUE;
 }
 

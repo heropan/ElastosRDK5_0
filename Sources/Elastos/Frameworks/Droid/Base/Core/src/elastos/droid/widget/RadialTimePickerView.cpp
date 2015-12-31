@@ -3,6 +3,7 @@
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/RadialTimePickerView.h"
 #include "elastos/droid/widget/CTextView.h"
+#include "elastos/droid/widget/TimePickerClockDelegate.h"
 #include "elastos/droid/animation/CAnimatorSet.h"
 #include "elastos/droid/animation/ObjectAnimator.h"
 #include "elastos/droid/animation/Keyframe.h"
@@ -728,8 +729,7 @@ void RadialTimePickerView::InitHoursAndMinutesText()
     }
 
     AutoPtr<ArrayOf<String> > amPmStrings;
-    assert(0 && "TODO");
-    // amPmStrings = TimePickerClockDelegate.getAmPmStrings(mContext);
+    amPmStrings = TimePickerClockDelegate::GetAmPmStrings(mContext);
     (*mAmPmText)[AM] = (*amPmStrings)[0];
     (*mAmPmText)[PM] = (*amPmStrings)[1];
 }

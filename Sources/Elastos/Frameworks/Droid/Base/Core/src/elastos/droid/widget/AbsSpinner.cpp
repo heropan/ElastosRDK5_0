@@ -463,38 +463,35 @@ ECode AbsSpinner::PointToPosition(
 AutoPtr<IParcelable> AbsSpinner::OnSaveInstanceState()
 {
     AutoPtr<IParcelable> superState = AdapterView::OnSaveInstanceState();
-    assert(0 && "TODO");
-    // AutoPtr<CAbsSpinnerSavedState> ss;
-    // CAbsSpinnerSavedState::NewByFriend(superState, (CAbsSpinnerSavedState**)&ss);
-    // ss->mSelectedId = GetSelectedItemId();
-    // if (ss->mSelectedId >= 0) {
-    //     ss->mPosition = GetSelectedItemPosition();
-    // }
-    // else {
-    //     ss->mPosition = IAdapterView::INVALID_POSITION;
-    // }
-    // return (IParcelable*)ss->Probe(EIID_IParcelable);
-    return NOERROR;
+    AutoPtr<CAbsSpinnerSavedState> ss;
+    CAbsSpinnerSavedState::NewByFriend(superState, (CAbsSpinnerSavedState**)&ss);
+    GetSelectedItemId(&ss->mSelectedId);
+    if (ss->mSelectedId >= 0) {
+        GetSelectedItemPosition(&ss->mPosition);
+    }
+    else {
+        ss->mPosition = IAdapterView::INVALID_POSITION;
+    }
+    return (IParcelable*)ss->Probe(EIID_IParcelable);
 }
 
 void AbsSpinner::OnRestoreInstanceState(
     /* [in] */ IParcelable* state)
 {
-    assert(0 && "TODO");
-    // AutoPtr<CAbsSpinnerSavedState> ss = (CAbsSpinnerSavedState*)IAbsSpinnerSavedState::Probe(state);
+    AutoPtr<CAbsSpinnerSavedState> ss = (CAbsSpinnerSavedState*)IAbsSpinnerSavedState::Probe(state);
 
-    // AutoPtr<IParcelable> p;
-    // ss->GetSuperState((IParcelable**)&p);
-    // AdapterView::OnRestoreInstanceState(p);
+    AutoPtr<IParcelable> p;
+    ss->GetSuperState((IParcelable**)&p);
+    AdapterView::OnRestoreInstanceState(p);
 
-    // if (ss->mSelectedId >= 0) {
-    //     mDataChanged = TRUE;
-    //     mNeedSync = TRUE;
-    //     mSyncRowId = ss->mSelectedId;
-    //     mSyncPosition = ss->mPosition;
-    //     mSyncMode = AdapterView::SYNC_SELECTED_POSITION;
-    //     RequestLayout();
-    // }
+    if (ss->mSelectedId >= 0) {
+        mDataChanged = TRUE;
+        mNeedSync = TRUE;
+        mSyncRowId = ss->mSelectedId;
+        mSyncPosition = ss->mPosition;
+        mSyncMode = AdapterView::SYNC_SELECTED_POSITION;
+        RequestLayout();
+    }
 }
 
 AbsSpinner::RecycleBin::RecycleBin(

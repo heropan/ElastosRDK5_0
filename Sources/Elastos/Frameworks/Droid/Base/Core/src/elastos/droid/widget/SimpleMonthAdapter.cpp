@@ -1,7 +1,7 @@
 
 #include "Elastos.Droid.View.h"
 #include "elastos/droid/widget/SimpleMonthAdapter.h"
-// #include "elastos/droid/widget/CSimpleMonthView.h"
+#include "elastos/droid/widget/CSimpleMonthView.h"
 
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Utility::CCalendarHelper;
@@ -106,8 +106,7 @@ ECode SimpleMonthAdapter::GetView(
         IView::Probe(v)->GetTag((IInterface**)&obj);
         drawingParams = IHashMap::Probe(obj);
     } else {
-        assert(0 && "TODO");
-        // CSimpleMonthView::New(mContext, (ISimpleMonthView**)&v);
+        CSimpleMonthView::New(mContext, (ISimpleMonthView**)&v);
         // Set up the new view
         AutoPtr<IAbsListViewLayoutParams> params;
         // CAbsListViewLayoutParams::New(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.MATCH_PARENT

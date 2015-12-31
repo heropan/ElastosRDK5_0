@@ -138,19 +138,20 @@ module
     using interface Elastos.Utility.IArrayList;
     using interface Elastos.Utility.IObservable;
 
+    interface Elastos.Droid.App.IITransientNotification;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Content.Pm.IApplicationInfo;
-    interface Elastos.Droid.Utility.IAttributeSet;
     interface Elastos.Droid.Database.ICursor;
     interface Elastos.Droid.Database.IDataSetObserver;
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.Content.IDialogInterfaceOnClickListener;
-    interface Elastos.Droid.App.IITransientNotification;
+    interface Elastos.Droid.Media.ISubtitleControllerAnchor;
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IHandlerCallback;
     interface Elastos.Droid.Text.INoCopySpan;
+    interface Elastos.Droid.Utility.IAttributeSet;
     interface Elastos.Droid.View.IActionProvider;
     interface Elastos.Droid.View.IAbsSavedState;
     interface Elastos.Droid.View.IContextMenuInfo;
@@ -170,6 +171,7 @@ module
     interface Elastos.Droid.View.IViewOnClickListener;
     interface Elastos.Droid.View.IViewOnTouchListener;
     interface Elastos.Droid.View.IViewOnLongClickListener;
+    interface Elastos.Droid.View.ISurfaceView;
     interface Elastos.Droid.Internal.View.Menu.IMenuPresenterCallback;
     interface Elastos.Droid.Internal.View.Menu.IMenuBuilderCallback;
     interface Elastos.Droid.View.IOnGlobalLayoutListener;
@@ -1422,15 +1424,17 @@ module
         interface IParcelable;
     }
 
-   //  class CProgressBarSavedState {
-   //      constructor();
+    class CProgressBarSavedState {
+        constructor();
 
-   //      constructor(
-   //          [in] IParcelable* superState);
+        constructor(
+            [in] IParcelable* superState);
 
-   //      interface IParcelable;
-   //      interface IProgressBarSavedState;
-   //  }
+        interface IProgressBarSavedState;
+        interface IViewBaseSavedState;
+        interface IAbsSavedState;
+        interface IParcelable;
+    }
 
     [local]
     class CAbsListViewLayoutParams {
@@ -2244,47 +2248,29 @@ module
    //      interface IOnTouchModeChangeListener;
    //  }
 
-   //  [local]
-   //  class CVideoView {
-   //      constructor(
-   //          [in] IContext* ctx);
+    [local]
+    class CVideoView {
+        constructor(
+            [in] IContext* ctx);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyle);
 
-   //      interface IVideoView;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //      interface IMediaPlayerControl;
-   //  }
-
-   //  [local]
-   //  class CVideoViewEx {
-   //      constructor(
-   //          [in] IContext* ctx);
-
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs);
-
-   //      constructor(
-   //          [in] IContext* ctx,
-   //          [in] IAttributeSet* attrs,
-   //          [in] Int32 defStyle);
-
-   //      interface IVideoView;
-   //      interface IDrawableCallback;
-   //      interface IKeyEventCallback;
-   //      interface IAccessibilityEventSource;
-   //      interface IMediaPlayerControl;
-   //  }
+        interface IVideoView;
+        interface ISurfaceView;
+        interface IView;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+        interface IMediaPlayerControl;
+        interface ISubtitleControllerAnchor;
+    }
 
     [local]
     class CGalleryLayoutParams {
@@ -2993,17 +2979,17 @@ module
         interface IHeterogeneousExpandableList;
     }
 
-   //  [local, deprecated]
-   //  class CHeaderViewListAdapter {
-   //      constructor(
-   //          [in] ArrayOf<IFixedViewInfo*>* headerViewInfos,
-   //          [in] ArrayOf<IFixedViewInfo*>* footerViewInfos,
-   //          [in] IListAdapter* adapter);
+    [local]
+    class CHeaderViewListAdapter {
+        constructor(
+            [in] IArrayList* headerViewInfos,
+            [in] IArrayList* footerViewInfos,
+            [in] IListAdapter* adapter);
 
-   //      interface IHeaderViewListAdapter;
-   //      interface IWrapperListAdapter;
-   //      interface IFilterable;
-   //  }
+        interface IHeaderViewListAdapter;
+        interface IWrapperListAdapter;
+        interface IFilterable;
+    }
 
    //  [local]
    //  class CSlidingDrawer {

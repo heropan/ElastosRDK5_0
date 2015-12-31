@@ -24,6 +24,32 @@ class ProgressBar
     : public View
     , public IProgressBar
 {
+public:
+    class SavedState
+        : public View::BaseSavedState
+        , public IProgressBarSavedState
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        SavedState();
+
+        CARAPI constructor();
+
+        CARAPI constructor(
+            /* [in] */ IParcelable* superState);
+
+        CARAPI WriteToParcel(
+            /* [in] */ IParcel* dest);
+
+        CARAPI ReadFromParcel(
+            /* [in] */ IParcel* source);
+
+    public:
+        Int32 mProgress;
+        Int32 mSecondaryProgress;
+    };
+
 private:
     class RefreshProgressRunnable
         : public Runnable
@@ -37,7 +63,6 @@ private:
     private:
         AutoPtr<IWeakReference> mWeakHost;
     };// RefreshProgressRunnable
-
 
     /**
      * Command for sending an accessibility event.

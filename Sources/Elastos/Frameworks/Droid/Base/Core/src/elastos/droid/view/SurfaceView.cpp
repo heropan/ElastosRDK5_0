@@ -381,6 +381,17 @@ ECode SurfaceView::constructor(
     return NOERROR;
 }
 
+SurfaceView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    FAIL_RETURN(View::constructor(context, attrs, defStyleAttr, defStyleRes));
+    Init();
+    return NOERROR;
+}
+
 SurfaceView::~SurfaceView()
 {
 }
@@ -388,11 +399,6 @@ SurfaceView::~SurfaceView()
 void SurfaceView::Init()
 {
     SetWillNotDraw(TRUE);
-}
-
-AutoPtr<ISurfaceHolder> SurfaceView::GetHolder()
-{
-    return mSurfaceHolder;
 }
 
 ECode SurfaceView::GetHolder(
@@ -902,92 +908,11 @@ ECode SurfaceView::HandleGetNewSurface()
     return UpdateWindow(FALSE, FALSE);
 }
 
-Boolean SurfaceView::IsFixedSize()
-{
-    return (mRequestedWidth != -1 || mRequestedHeight != -1);
-}
-
 ECode SurfaceView::IsFixedSize(
     /* [out] */ Boolean* isFixedSize)
 {
-    *isFixedSize = IsFixedSize();
-    return NOERROR;
-}
-
-
-AutoPtr<IInputConnection> SurfaceView::OnCreateInputConnection(
-    /* [in] */ IEditorInfo* outAttrs)
-{
-    AutoPtr<IInputConnection> ic;
-    if (mDelegate != NULL) {
-        mDelegate->OnCreateInputConnection(outAttrs, (IInputConnection**)&ic);
-    }
-    return ic;
-}
-
-Boolean SurfaceView::OnKeyDown(
-    /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
-{
-    Boolean result;
-    if (mKeyEventCallbackDelegate != NULL) {
-        mKeyEventCallbackDelegate->OnKeyDown(keyCode, event, &result);
-        return result;
-    }
-    View::OnKeyDown(keyCode, event, &result);
-    return result;
-}
-
-Boolean SurfaceView::OnKeyLongPress(
-    /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
-{
-    Boolean result;
-    if (mKeyEventCallbackDelegate != NULL) {
-        mKeyEventCallbackDelegate->OnKeyLongPress(keyCode, event, &result);
-        return result;
-    }
-    return View::OnKeyLongPress(keyCode, event, &result);
-}
-
-Boolean SurfaceView::OnKeyUp(
-    /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
-{
-    Boolean result;
-    if (mKeyEventCallbackDelegate != NULL) {
-        mKeyEventCallbackDelegate->OnKeyUp(keyCode, event, &result);
-        return result;
-    }
-    View::OnKeyUp(keyCode, event, &result);
-    return result;
-}
-
-Boolean SurfaceView::OnKeyMultiple(
-    /* [in] */ Int32 keyCode,
-    /* [in] */ Int32 repeatCount,
-    /* [in] */ IKeyEvent* event)
-{
-    Boolean result;
-    if (mKeyEventCallbackDelegate != NULL) {
-        mKeyEventCallbackDelegate->OnKeyMultiple(keyCode, repeatCount, event, &result);
-        return result;
-    }
-    View::OnKeyMultiple(keyCode, repeatCount, event, &result);
-    return result;
-}
-
-ECode SurfaceView::SetCreateInputConnectionDelegate(
-    /* [in] */ IView* view)
-{
-    mDelegate = view;
-    return NOERROR;
-}
-
-ECode SurfaceView::SetKeyEventCallbackDelegate(
-    /* [in] */IKeyEventCallback* cb)
-{
-    mKeyEventCallbackDelegate = cb;
+    VALIDATE_NOT_NULL(isFixedSize);
+    *isFixedSize = mRequestedWidth != -1 || mRequestedHeight != -1;
     return NOERROR;
 }
 

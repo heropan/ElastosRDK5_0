@@ -7,7 +7,7 @@
 #include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/os/CHandler.h"
 #include "elastos/droid/os/SystemClock.h"
-// #include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/provider/Settings.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/text/format/DateFormat.h"
 
@@ -16,6 +16,7 @@ using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Provider::Settings;
 using Elastos::Droid::R;
 using Elastos::Droid::Text::Format::DateFormat;
 using Elastos::Core::CString;
@@ -418,8 +419,7 @@ void TextClock::RegisterObserver()
     GetContext((IContext**)&context);
     AutoPtr<IContentResolver> resolver;
     context->GetContentResolver((IContentResolver**)&resolver);
-    assert(0 && "TODO");
-    // resolver->RegisterContentObserver(Settings::System::CONTENT_URI, TRUE, mFormatChangeObserver);
+    resolver->RegisterContentObserver(Settings::System::CONTENT_URI, TRUE, mFormatChangeObserver);
 }
 
 void TextClock::UnregisterReceiver()

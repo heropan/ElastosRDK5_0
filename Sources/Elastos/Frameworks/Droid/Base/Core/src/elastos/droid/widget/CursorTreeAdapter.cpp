@@ -4,7 +4,7 @@
 #include "Elastos.Droid.Content.h"
 #include <Elastos.CoreLibrary.IO.h>
 #include "elastos/droid/widget/CursorTreeAdapter.h"
-// #include "elastos/droid/widget/CCursorFilter.h"
+#include "elastos/droid/widget/CCursorFilter.h"
 #include "elastos/droid/os/CHandler.h"
 
 using Elastos::Droid::Database::EIID_IDataSetObserver;
@@ -311,8 +311,7 @@ ECode CursorTreeAdapter::GetFilter(
 {
     VALIDATE_NOT_NULL(filter);
     if (mCursorFilter == NULL) {
-        assert(0 && "TODO");
-        // CCursorFilter::New(THIS_PROBE(ICursorFilterClient), (ICursorFilter**)&mCursorFilter);
+        CCursorFilter::New(THIS_PROBE(ICursorFilterClient), (ICursorFilter**)&mCursorFilter);
     }
     *filter = IFilter::Probe(mCursorFilter);
     REFCOUNT_ADD(*filter);
@@ -473,6 +472,7 @@ CursorTreeAdapter::MyCursorHelper::MyContentObserver::MyContentObserver(
 ECode CursorTreeAdapter::MyCursorHelper::MyContentObserver::DeliverSelfNotifications(
     /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     *result = TRUE;
     return NOERROR;
 }

@@ -2,15 +2,14 @@
 #ifndef __ELASTOS_DROID_WIDGET_VideoView_H__
 #define __ELASTOS_DROID_WIDGET_VideoView_H__
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/SurfaceView.h"
-#include "elastos/droid/media/CMediaPlayer.h"
-#include <elastos/utility/etl/HashMap.h>
+#include "Elastos.Droid.Widget.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Media.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IDialogInterface;
 using Elastos::Droid::Content::IDialogInterfaceOnClickListener;
-using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Media::IMediaPlayer;
 using Elastos::Droid::Media::IMediaPlayerOnPreparedListener;
 using Elastos::Droid::Media::IMediaPlayerOnCompletionListener;
@@ -18,33 +17,43 @@ using Elastos::Droid::Media::IMediaPlayerOnErrorListener;
 using Elastos::Droid::Media::IMediaPlayerOnInfoListener;
 using Elastos::Droid::Media::IMediaPlayerOnVideoSizeChangedListener;
 using Elastos::Droid::Media::IMediaPlayerOnBufferingUpdateListener;
+using Elastos::Droid::Media::ISubtitleControllerAnchor;
+using Elastos::Droid::Media::IMediaFormat;
+using Elastos::Droid::Media::ISubtitleTrackRenderingWidgetOnChangedListener;
+using Elastos::Droid::Media::ISubtitleTrackRenderingWidget;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
+using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
 using Elastos::Droid::View::IView;
-using Elastos::Droid::View::SurfaceView;
+using Elastos::Droid::View::ISurfaceHolder;
 using Elastos::Droid::View::ISurfaceHolderCallback;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IMotionEvent;
-using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
-using Elastos::Droid::View::Accessibility::IAccessibilityNodeInfo;
-
+using Elastos::Droid::View::SurfaceView;
+using Elastos::IO::IInputStream;
+using Elastos::Utility::IVector;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class VideoView : public SurfaceView
+class VideoView
+    : public SurfaceView
+    , public IVideoView
+    , public IMediaPlayerControl
+    , public ISubtitleControllerAnchor
 {
 private:
     class VVOnVideoSizeChangedListener
-        : public ElRefBase
+        : public Object
         , public IMediaPlayerOnVideoSizeChangedListener
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         VVOnVideoSizeChangedListener(
-            /* [in] */ VideoView* host)
-            : mHost(host)
-        {}
+            /* [in] */ VideoView* host);
 
         CARAPI OnVideoSizeChanged(
             /* [in] */ IMediaPlayer* mp,
@@ -56,16 +65,14 @@ private:
     };
 
     class VVOnPreparedListener
-      : public ElRefBase
+      : public Object
       , public IMediaPlayerOnPreparedListener
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         VVOnPreparedListener(
-            /* [in] */ VideoView* host)
-            : mHost(host)
-        {}
+            /* [in] */ VideoView* host);
 
         CARAPI OnPrepared(
             /* [in] */ IMediaPlayer* mp);
@@ -75,16 +82,14 @@ private:
     };
 
     class VVOnCompletionListener
-        : public ElRefBase
+        : public Object
         , public IMediaPlayerOnCompletionListener
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         VVOnCompletionListener(
-            /* [in] */ VideoView* host)
-            : mHost(host)
-        {}
+            /* [in] */ VideoView* host);
 
         CARAPI OnCompletion(
             /* [in] */ IMediaPlayer* mp);
@@ -94,16 +99,14 @@ private:
     };
 
     class VVOnErrorListener
-        : public ElRefBase
+        : public Object
         , public IMediaPlayerOnErrorListener
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         VVOnErrorListener(
-            /* [in] */ VideoView* host)
-            : mHost(host)
-        {}
+            /* [in] */ VideoView* host);
 
         CARAPI OnError(
             /* [in] */ IMediaPlayer* mp,
@@ -116,16 +119,14 @@ private:
     };
 
     class VVDialogOnClickListener
-        : public ElRefBase
+        : public Object
         , public IDialogInterfaceOnClickListener
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         VVDialogOnClickListener(
-            /* [in] */ VideoView* host)
-            : mHost(host)
-        {}
+            /* [in] */ VideoView* host);
 
         CARAPI OnClick(
             /* [in] */ IDialogInterface* dialog,
@@ -136,16 +137,14 @@ private:
     };
 
     class VVOnBufferingUpdateListener
-        : public ElRefBase
+        : public Object
         , public IMediaPlayerOnBufferingUpdateListener
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         VVOnBufferingUpdateListener(
-            /* [in] */ VideoView* host)
-            : mHost(host)
-        {}
+            /* [in] */ VideoView* host);
 
         CARAPI OnBufferingUpdate(
             /* [in] */ IMediaPlayer* mp,
@@ -156,16 +155,14 @@ private:
     };
 
     class VVSurfaceHodlerCallback
-        : public ElRefBase
+        : public Object
         , public ISurfaceHolderCallback
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         VVSurfaceHodlerCallback(
-            /* [in] */ VideoView* host)
-            : mHost(host)
-        {}
+            /* [in] */ VideoView* host);
 
         CARAPI SurfaceCreated(
             /* [in] */ ISurfaceHolder* holder);
@@ -183,14 +180,73 @@ private:
         VideoView* mHost;
     };
 
+    class InfoListener
+        : public Object
+        , public IMediaPlayerOnInfoListener
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        InfoListener(
+            /* [in] */ VideoView* host);
+
+        CARAPI OnInfo(
+            /* [in] */ IMediaPlayer* mp,
+            /* [in] */ Int32 arg1,
+            /* [in] */ Int32 arg2,
+            /* [out] */ Boolean* result);
+
+    private:
+        VideoView* mHost;
+    };
+
+    class ChangedListener
+        : public Object
+        , public ISubtitleTrackRenderingWidgetOnChangedListener
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        ChangedListener(
+            /* [in] */ VideoView* host);
+
+        // @Override
+        CARAPI OnChanged(
+            /* [in] */ ISubtitleTrackRenderingWidget* renderingWidget);
+
+    private:
+        VideoView* mHost;
+    };
+
 public:
+    CAR_INTERFACE_DECL();
+
     VideoView();
+
+    CARAPI constructor(
+        /* [in] */ IContext* ctx);
+
+    CARAPI constructor(
+        /* [in] */ IContext* ctx,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
+        /* [in] */ IContext* ctx,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI constructor(
+        /* [in] */ IContext* ctx,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     virtual ~VideoView();
 
-    virtual CARAPI_(Int32) ResolveAdjustedSize(
+    virtual CARAPI ResolveAdjustedSize(
         /* [in] */ Int32 desiredSize,
-        /* [in] */ Int32 measureSpec);
+        /* [in] */ Int32 measureSpec,
+        /* [out] */ Int32* size);
 
     virtual CARAPI SetVideoPath(
         /* [in] */ const String& path);
@@ -198,12 +254,13 @@ public:
     virtual CARAPI SetVideoURI(
         /* [in] */ IUri* uri);
 
-    /**
-     * @hide
-     */
     virtual CARAPI SetVideoURI(
         /* [in] */ IUri* uri,
-        /* [in] */ HashMap<String, String>* headers);
+        /* [in] */ IMap* headers);
+
+    CARAPI AddSubtitleSource(
+        /* [in] */ IInputStream* is,
+        /* [in] */ IMediaFormat* format);
 
     virtual CARAPI StopPlayback();
 
@@ -229,42 +286,79 @@ public:
         /* [in] */ IMediaPlayerOnInfoListener* l);
 
     //@Override
-    CARAPI_(Boolean) OnTouchEvent(
-        /* [in] */ IMotionEvent* event);
+    CARAPI OnTouchEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
     //@Override
-    CARAPI_(Boolean) OnTrackballEvent(
-        /* [in] */ IMotionEvent* event);
+    CARAPI OnTrackballEvent(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
     //@Override
-    CARAPI_(Boolean) OnKeyDown(
+    CARAPI OnKeyDown(
         /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
 
+    // @Override
     virtual CARAPI Start();
 
+    // @Override
     virtual CARAPI Pause();
 
     virtual CARAPI Suspend();
 
     virtual CARAPI Resume();
 
-    virtual CARAPI_(Int32) GetDuration();
+    // @Override
+    virtual CARAPI GetDuration(
+        /* [out] */ Int32* duration);
 
-    virtual CARAPI_(Int32) GetCurrentPosition();
+    virtual CARAPI GetCurrentPosition(
+        /* [out] */ Int32* pos);
 
+    // @Override
     virtual CARAPI SeekTo(
         /* [in] */ Int32 msec);
 
-    virtual CARAPI_(Boolean) IsPlaying();
+    // @Override
+    virtual CARAPI IsPlaying(
+        /* [out] */ Boolean* playing);
 
-    virtual CARAPI_(Int32) GetBufferPercentage();
+    // @Override
+    virtual CARAPI GetBufferPercentage(
+        /* [out] */ Int32* percentage);
 
-    virtual CARAPI_(Boolean) CanPause();
+    // @Override
+    virtual CARAPI CanPause(
+        /* [out] */ Boolean* can);
 
-    virtual CARAPI_(Boolean) CanSeekBackward();
+    // @Override
+    virtual CARAPI CanSeekBackward(
+        /* [out] */ Boolean* can);
 
-    virtual CARAPI_(Boolean) CanSeekForward();
+    // @Override
+    virtual CARAPI CanSeekForward(
+        /* [out] */ Boolean* can);
+
+    // @Override
+    CARAPI GetAudioSessionId(
+        /* [out] */ Int32* id);
+
+    // @Override
+    CARAPI Draw(
+        /* [in] */ ICanvas* canvas);
+
+    /** @hide */
+    // @Override
+    CARAPI SetSubtitleWidget(
+        /* [in] */ ISubtitleTrackRenderingWidget* subtitleWidget);
+
+    /** @hide */
+    // @Override
+    CARAPI GetSubtitleLooper(
+        /* [out] */ ILooper** looper);
 
     virtual CARAPI OnInitializeAccessibilityEvent(
         /* [in] */ IAccessibilityEvent* event);
@@ -272,20 +366,25 @@ public:
     virtual CARAPI OnInitializeAccessibilityNodeInfo(
         /* [in] */ IAccessibilityNodeInfo* info);
 
-
 protected:
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle = 0);
-
     //@Override
     CARAPI_(void) OnMeasure(
         /* [in] */ Int32 widthMeasureSpec,
         /* [in] */ Int32 heightMeasureSpec);
+
+    // @Override
+    CARAPI OnAttachedToWindow();
+
+    // @Override
+    CARAPI OnDetachedFromWindow();
+
+    // @Override
+    CARAPI OnLayout(
+        /* [in] */ Boolean changed,
+        /* [in] */ Int32 left,
+        /* [in] */ Int32 top,
+        /* [in] */ Int32 right,
+        /* [in] */ Int32 bottom);
 
 private:
     CARAPI_(void) InitVideoView();
@@ -294,28 +393,34 @@ private:
 
     CARAPI_(void) AttachMediaController();
 
-    CARAPI_(void) Release(
+    CARAPI_(void) ReleaseResources(
         /* [in] */ Boolean cleartargetstate);
 
     CARAPI_(void) ToggleMediaControlsVisiblity();
 
     CARAPI_(Boolean) IsInPlaybackState();
 
+    /**
+     * Forces a measurement and layout pass for all overlaid views.
+     *
+     * @see #setSubtitleWidget(RenderingWidget)
+     */
+    CARAPI_(void) MeasureAndLayoutSubtitleWidget();
+
 private:
     static const String TAG;
     // settable by the client
     AutoPtr<IUri> mUri;
-    HashMap<String, String> mHeaders;
+    AutoPtr<IMap> mHeaders;
 
     // all possible internal states
-    static const Int32 STATE_ERROR              = -1;
-    static const Int32 STATE_IDLE               = 0;
-    static const Int32 STATE_PREPARING          = 1;
-    static const Int32 STATE_PREPARED           = 2;
-    static const Int32 STATE_PLAYING            = 3;
-    static const Int32 STATE_PAUSED             = 4;
-    static const Int32 STATE_PLAYBACK_COMPLETED = 5;
-
+    static const Int32 STATE_ERROR;
+    static const Int32 STATE_IDLE;
+    static const Int32 STATE_PREPARING;
+    static const Int32 STATE_PREPARED;
+    static const Int32 STATE_PLAYING;
+    static const Int32 STATE_PAUSED;
+    static const Int32 STATE_PLAYBACK_COMPLETED;
 
     // mCurrentState is a VideoView object's current state.
     // mTargetState is the state that a method caller intends to reach.
@@ -328,6 +433,7 @@ private:
     // All the stuff we need for playing and showing a video
     AutoPtr<ISurfaceHolder> mSurfaceHolder;
     AutoPtr<IMediaPlayer> mMediaPlayer;
+    Int32 mAudioSession;
     Int32 mVideoWidth;
     Int32 mVideoHeight;
     Int32 mSurfaceWidth;
@@ -343,12 +449,23 @@ private:
     Boolean mCanSeekBack;
     Boolean mCanSeekForward;
 
+    /** Subtitle rendering widget overlaid on top of the video. */
+    AutoPtr<ISubtitleTrackRenderingWidget> mSubtitleWidget;
+
+    /** Listener for changes to subtitle data, used to redraw when needed. */
+    AutoPtr<ISubtitleTrackRenderingWidgetOnChangedListener> mSubtitlesChangedListener;
+
     AutoPtr<IMediaPlayerOnVideoSizeChangedListener> mSizeChangedListener;
     AutoPtr<IMediaPlayerOnPreparedListener> mPreparedListener;
     AutoPtr<IMediaPlayerOnCompletionListener> mCompletionListener;
+
+    AutoPtr<IMediaPlayerOnInfoListener> mInfoListener;
+
     AutoPtr<IMediaPlayerOnErrorListener> mErrorListener;
     AutoPtr<IMediaPlayerOnBufferingUpdateListener> mBufferingUpdateListener;
     AutoPtr<ISurfaceHolderCallback> mSHCallback;
+    // private Vector<Pair<InputStream, MediaFormat>> mPendingSubtitleTracks;
+    AutoPtr<IVector> mPendingSubtitleTracks;
 };
 
 }// namespace Widget

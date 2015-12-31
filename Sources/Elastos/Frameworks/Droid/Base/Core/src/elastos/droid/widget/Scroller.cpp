@@ -8,6 +8,7 @@
 #include "elastos/droid/view/animation/AnimationUtils.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/Build.h"
+#include "elastos/droid/utility/FloatMath.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Droid::Animation::ITimeInterpolator;
@@ -19,6 +20,7 @@ using Elastos::Droid::View::ViewConfiguration;
 using Elastos::Droid::View::Animation::AnimationUtils;
 using Elastos::Droid::View::Animation::EIID_IInterpolator;
 using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Droid::Utility::FloatMath;
 
 namespace Elastos {
 namespace Droid {
@@ -429,7 +431,7 @@ ECode Scroller::Fling(
 
         Float dx = (Float) (mFinalX - mStartX);
         Float dy = (Float) (mFinalY - mStartY);
-        Float hyp = Elastos::Core::Math::Sqrt(dx * dx + dy * dy);//TODO FloatElastos::Core::Math::Sqrt(..);
+        Float hyp = FloatMath::Sqrt(dx * dx + dy * dy);
 
         Float ndx = dx / hyp;
         Float ndy = dy / hyp;
@@ -446,7 +448,7 @@ ECode Scroller::Fling(
     mMode = FLING_MODE;
     mFinished = FALSE;
 
-    Float velocity = Elastos::Core::Math::Sqrt(velocityX * velocityX + velocityY * velocityY);//TODO FloatMath::Sqrt(..);
+    Float velocity = FloatMath::Sqrt(velocityX * velocityX + velocityY * velocityY);
 
     mVelocity = velocity;
     mDuration = GetSplineFlingDuration(velocity);

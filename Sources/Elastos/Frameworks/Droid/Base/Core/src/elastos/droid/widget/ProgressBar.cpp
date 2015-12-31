@@ -1,7 +1,7 @@
 #include "Elastos.Droid.Widget.h"
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/ProgressBar.h"
-// #include "elastos/droid/widget/CProgressBarSavedState.h"
+#include "elastos/droid/widget/CProgressBarSavedState.h"
 #include "elastos/droid/graphics/drawable/Drawable.h"
 #include "elastos/droid/graphics/drawable/CLayerDrawable.h"
 #include "elastos/droid/graphics/drawable/CStateListDrawable.h"
@@ -167,6 +167,43 @@ ProgressBar::ProgressTintInfo::ProgressTintInfo()
     , mHasSecondaryProgressTint(FALSE)
     , mHasSecondaryProgressTintMode(FALSE)
 {}
+
+CAR_INTERFACE_IMPL(ProgressBar::SavedState, BaseSavedState, IProgressBarSavedState);
+ProgressBar::SavedState::SavedState()
+    : mProgress(0)
+    , mSecondaryProgress(0)
+{}
+
+ECode ProgressBar::SavedState::constructor()
+{
+    return NOERROR;
+}
+
+ECode ProgressBar::SavedState::constructor(
+    /* [in] */ IParcelable* superState)
+{
+    return BaseSavedState::constructor(superState);
+}
+
+ECode ProgressBar::SavedState::WriteToParcel(
+    /* [in] */ IParcel* dest)
+{
+    BaseSavedState::WriteToParcel(dest);
+
+    dest->WriteInt32(mProgress);
+    dest->WriteInt32(mSecondaryProgress);
+    return NOERROR;
+}
+
+ECode ProgressBar::SavedState::ReadFromParcel(
+    /* [in] */ IParcel* source)
+{
+    BaseSavedState::ReadFromParcel(source);
+
+    source->ReadInt32(&mProgress);
+    source->ReadInt32(&mSecondaryProgress);
+    return NOERROR;
+}
 
 CAR_INTERFACE_IMPL(ProgressBar, View, IProgressBar);
 ProgressBar::ProgressBar()
@@ -1612,15 +1649,13 @@ AutoPtr<IParcelable> ProgressBar::OnSaveInstanceState()
 {
     // Force our ancestor class to save its state
     AutoPtr<IParcelable> superState = View::OnSaveInstanceState();
-    assert(0 && "TODO");
-    // AutoPtr<CProgressBarSavedState> ss;
-    // CProgressBarSavedState::NewByFriend(superState, (CProgressBarSavedState**)&ss);
+    AutoPtr<CProgressBarSavedState> ss;
+    CProgressBarSavedState::NewByFriend(superState, (CProgressBarSavedState**)&ss);
 
-    // ss->mProgress = mProgress;
-    // ss->mSecondaryProgress = mSecondaryProgress;
+    ss->mProgress = mProgress;
+    ss->mSecondaryProgress = mSecondaryProgress;
 
-    // return (IParcelable*)ss->Probe(EIID_IParcelable);
-    return NULL;
+    return (IParcelable*)ss->Probe(EIID_IParcelable);
 }
 
 void ProgressBar::OnRestoreInstanceState(
@@ -1632,9 +1667,8 @@ void ProgressBar::OnRestoreInstanceState(
     IAbsSavedState::Probe(ss)->GetSuperState((IParcelable**)&p);
     View::OnRestoreInstanceState(p);
 
-    assert(0 && "TODO");
-    // SetProgress(((CProgressBarSavedState*)(ss.Get()))->mProgress);
-    // SetSecondaryProgress(((CProgressBarSavedState*)ss.Get())->mSecondaryProgress);
+    SetProgress(((CProgressBarSavedState*)(ss.Get()))->mProgress);
+    SetSecondaryProgress(((CProgressBarSavedState*)ss.Get())->mSecondaryProgress);
 }
 
 ECode ProgressBar::OnAttachedToWindow()

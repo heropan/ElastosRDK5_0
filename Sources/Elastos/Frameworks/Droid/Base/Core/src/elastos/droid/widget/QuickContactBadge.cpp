@@ -6,15 +6,31 @@
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/net/Uri.h"
 #include "elastos/droid/os/CBundle.h"
+#include "elastos/droid/provider/ContactsContractContacts.h"
+#include "elastos/droid/provider/CContactsContractPhoneLookup.h"
+#include "elastos/droid/provider/CContactsContractCommonDataKindsEmail.h"
+#include "elastos/droid/provider/CContactsContractQuickContact.h"
 #include "elastos/droid/R.h"
 
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Provider::CContactsContractQuickContact;
+using Elastos::Droid::Provider::CContactsContractPhoneLookup;
+using Elastos::Droid::Provider::CContactsContractCommonDataKindsEmail;
+using Elastos::Droid::Provider::ContactsContractContacts;
+using Elastos::Droid::Provider::IBaseColumns;
+using Elastos::Droid::Provider::IContactsIntents;
+using Elastos::Droid::Provider::IContactsContractCommonDataKindsEmail;
+using Elastos::Droid::Provider::IContactsContractQuickContact;
+using Elastos::Droid::Provider::IContactsContractPhoneLookup;
+using Elastos::Droid::Provider::IContactsContractRawContactsColumns;
+using Elastos::Droid::Provider::IContactsContractContactsColumns;
 using Elastos::Droid::R;
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
+using Elastos::Droid::View::EIID_IView;
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::IO::ICloseable;
@@ -28,23 +44,13 @@ const Int32 QuickContactBadge::TOKEN_PHONE_LOOKUP = 1;
 const Int32 QuickContactBadge::TOKEN_EMAIL_LOOKUP_AND_TRIGGER = 2;
 const Int32 QuickContactBadge::TOKEN_PHONE_LOOKUP_AND_TRIGGER = 3;
 const String QuickContactBadge::EXTRA_URI_CONTENT("uri_content");
-
-const String QuickContactBadge::EMAIL_LOOKUP_PROJECTION[] = {
-        // RawContacts.CONTACT_ID, //TODO
-        // Contacts.LOOKUP_KEY, //TODO
-};
-
+Boolean QuickContactBadge::sInit = InitStatic();
+AutoPtr<ArrayOf<String> > QuickContactBadge::EMAIL_LOOKUP_PROJECTION;
 const Int32 QuickContactBadge::EMAIL_ID_COLUMN_INDEX = 0;
 const Int32 QuickContactBadge::EMAIL_LOOKUP_STRING_COLUMN_INDEX = 1;
-
-static const String PHONE_LOOKUP_PROJECTION[] = {
-        // PhoneLookup._ID, //TODO
-        // PhoneLookup.LOOKUP_KEY, //TODO
-};
-
+AutoPtr<ArrayOf<String> > QuickContactBadge::PHONE_LOOKUP_PROJECTION;
 const Int32 QuickContactBadge::PHONE_ID_COLUMN_INDEX = 0;
 const Int32 QuickContactBadge::PHONE_LOOKUP_STRING_COLUMN_INDEX = 1;
-
 
 // ===================================================
 //          QuickContactBadge::QueryHandler::
@@ -88,8 +94,7 @@ ECode QuickContactBadge::QueryHandler::OnQueryComplete(
                 cursor->GetInt64(PHONE_ID_COLUMN_INDEX, &contactId);
                 String lookupKey;
                 cursor->GetString(PHONE_LOOKUP_STRING_COLUMN_INDEX, &lookupKey);
-                assert(0 && "TODO");
-                // Contacts::GetLookupUri(contactId, lookupKey, (IUri**)&lookupUri);
+                ContactsContractContacts::GetLookupUri(contactId, lookupKey, (IUri**)&lookupUri);
             }
 
             break;
@@ -106,8 +111,7 @@ ECode QuickContactBadge::QueryHandler::OnQueryComplete(
                 cursor->GetInt64(EMAIL_ID_COLUMN_INDEX, &contactId);
                 String lookupKey;
                 cursor->GetString(EMAIL_LOOKUP_STRING_COLUMN_INDEX, &lookupKey);
-                assert(0 && "TODO");
-                // Contacts::GetLookupUri(contactId, lookupKey, (IUri**)&lookupUri);
+                ContactsContractContacts::GetLookupUri(contactId, lookupKey, (IUri**)&lookupUri);
             }
             break;
         }
@@ -122,16 +126,18 @@ ECode QuickContactBadge::QueryHandler::OnQueryComplete(
     mHost->OnContactUriChanged();
 
     if (trigger && lookupUri != NULL) {
-        assert(0 && "TODO");
         // Found contact, so trigger QuickContact
-        // QuickContact.showQuickContact(getContext(), QuickContactBadge.this, lookupUri,
-        //         QuickContact.MODE_LARGE, mExcludeMimes);
+        AutoPtr<IContactsContractQuickContact> quickContact;
+        CContactsContractQuickContact::AcquireSingleton((IContactsContractQuickContact**)&quickContact);
+        AutoPtr<IContext> context;
+        mHost->GetContext((IContext**)&context);
+        quickContact->ShowQuickContact(context, (IView*)mHost->Probe(EIID_IView), lookupUri,
+                IContactsContractQuickContact::MODE_LARGE, mHost->mExcludeMimes);
     }
     else if (createUri != NULL) {
         // Prompt user to add this person to contacts
         AutoPtr<IIntent> intent;
-        assert(0 && "TODO");
-        // CIntent::New(Intents.SHOW_OR_CREATE_CONTACT, createUri, (IIntent**)&intent);
+        CIntent::New(IContactsIntents::SHOW_OR_CREATE_CONTACT, createUri, (IIntent**)&intent);
         if (extras != NULL) {
             extras->Remove(EXTRA_URI_CONTENT);
             intent->PutExtras(extras);
@@ -146,6 +152,18 @@ ECode QuickContactBadge::QueryHandler::OnQueryComplete(
 // ===================================================
 //          QuickContactBadge::QuickContactBadgeClickListener
 // ===================================================
+Boolean QuickContactBadge::InitStatic()
+{
+    EMAIL_LOOKUP_PROJECTION = ArrayOf<String>::Alloc(2);
+    (*EMAIL_LOOKUP_PROJECTION)[0] = IContactsContractRawContactsColumns::CONTACT_ID;
+    (*EMAIL_LOOKUP_PROJECTION)[1] = IContactsContractContactsColumns::LOOKUP_KEY;
+
+    PHONE_LOOKUP_PROJECTION = ArrayOf<String>::Alloc(2);
+    (*PHONE_LOOKUP_PROJECTION)[0] = IBaseColumns::ID;
+    (*PHONE_LOOKUP_PROJECTION)[1] = IContactsContractContactsColumns::LOOKUP_KEY;
+    return TRUE;
+}
+
 CAR_INTERFACE_IMPL(QuickContactBadge::QuickContactBadgeClickListener, Object, IViewOnClickListener);
 QuickContactBadge::QuickContactBadgeClickListener::QuickContactBadgeClickListener(
     /* [in] */ QuickContactBadge* host)
@@ -266,7 +284,8 @@ void QuickContactBadge::OnDraw(
 
     if (mPaddingTop == 0 && mPaddingLeft == 0) {
         mOverlay->Draw(canvas);
-    } else {
+    }
+    else {
         Int32 saveCount = 0, tmp = 0;
         canvas->GetSaveCount(&saveCount);
         canvas->Save(&tmp);
@@ -314,11 +333,18 @@ ECode QuickContactBadge::AssignContactFromEmail(
     mContactEmail = emailAddress;
     mExtras = extras;
     if (!lazyLookup && mQueryHandler != NULL) {
-        assert(0 && "TODO");
-        // mQueryHandler->StartQuery(TOKEN_EMAIL_LOOKUP, NULL,
-        //         Uri::WithAppendedPath(Email.CONTENT_LOOKUP_URI, Uri.encode(mContactEmail)),
-        //         EMAIL_LOOKUP_PROJECTION, NULL, NULL, NULL);
-    } else {
+        String value;
+        Uri::Encode(mContactEmail, &value);
+        AutoPtr<IUri> uri0;
+        AutoPtr<IContactsContractCommonDataKindsEmail> email;
+        CContactsContractCommonDataKindsEmail::AcquireSingleton((IContactsContractCommonDataKindsEmail**)&email);
+        email->GetCONTENT_LOOKUP_URI((IUri**)&uri0);
+        AutoPtr<IUri> uri;
+        Uri::WithAppendedPath(uri0, value, (IUri**)&uri);
+        mQueryHandler->StartQuery(TOKEN_EMAIL_LOOKUP, NULL, uri,
+                EMAIL_LOOKUP_PROJECTION, String(NULL), NULL, String(NULL));
+    }
+    else {
         mContactUri = NULL;
         OnContactUriChanged();
     }
@@ -342,11 +368,17 @@ ECode QuickContactBadge::AssignContactFromPhone(
     mContactPhone = phoneNumber;
     mExtras = extras;
     if (!lazyLookup && mQueryHandler != NULL) {
-        assert(0 && "TODO");
-        // mQueryHandler->StartQuery(TOKEN_PHONE_LOOKUP, NULL,
-        //         Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI, mContactPhone),
-        //         PHONE_LOOKUP_PROJECTION, NULL, NULL, NULL);
-    } else {
+        AutoPtr<IUri> uri0;
+        AutoPtr<IContactsContractPhoneLookup> lookup;
+        CContactsContractPhoneLookup::AcquireSingleton((IContactsContractPhoneLookup**)&lookup);
+        lookup->GetCONTENT_FILTER_URI((IUri**)&uri0);
+
+        AutoPtr<IUri> uri;
+        Uri::WithAppendedPath(uri0, mContactPhone, (IUri**)&uri);
+        mQueryHandler->StartQuery(TOKEN_PHONE_LOOKUP, NULL, uri,
+                PHONE_LOOKUP_PROJECTION, String(NULL), NULL, String(NULL));
+    }
+    else {
         mContactUri = NULL;
         OnContactUriChanged();
     }
@@ -379,23 +411,37 @@ ECode QuickContactBadge::OnClick(
         extras = mExtras;
     }
     if (mContactUri != NULL) {
-        assert(0 && "TODO");
-        // QuickContact.showQuickContact(getContext(), QuickContactBadge.this, mContactUri,
-        //         QuickContact.MODE_LARGE, mExcludeMimes);
+        AutoPtr<IContactsContractQuickContact> quickContact;
+        CContactsContractQuickContact::AcquireSingleton((IContactsContractQuickContact**)&quickContact);
+        AutoPtr<IContext> context;
+        GetContext((IContext**)&context);
+        quickContact->ShowQuickContact(context, THIS_PROBE(IView), mContactUri,
+                IContactsContractQuickContact::MODE_LARGE, mExcludeMimes);
     }
     else if (mContactEmail != NULL && mQueryHandler != NULL) {
         extras->PutString(EXTRA_URI_CONTENT, mContactEmail);
-        assert(0 && "TODO");
-        // mQueryHandler->StartQuery(TOKEN_EMAIL_LOOKUP_AND_TRIGGER, extras,
-        //         Uri.withAppendedPath(Email.CONTENT_LOOKUP_URI, Uri.encode(mContactEmail)),
-        //         EMAIL_LOOKUP_PROJECTION, NULL, NULL, NULL);
+        String value;
+        Uri::Encode(mContactEmail, &value);
+        AutoPtr<IUri> uri0;
+        AutoPtr<IContactsContractCommonDataKindsEmail> email;
+        CContactsContractCommonDataKindsEmail::AcquireSingleton((IContactsContractCommonDataKindsEmail**)&email);
+        email->GetCONTENT_LOOKUP_URI((IUri**)&uri0);
+        AutoPtr<IUri> uri;
+        Uri::WithAppendedPath(uri0, value, (IUri**)&uri);
+        mQueryHandler->StartQuery(TOKEN_EMAIL_LOOKUP_AND_TRIGGER, extras, uri,
+                EMAIL_LOOKUP_PROJECTION, String(NULL), NULL, String(NULL));
     }
     else if (mContactPhone != NULL && mQueryHandler != NULL) {
         extras->PutString(EXTRA_URI_CONTENT, mContactPhone);
-        assert(0 && "TODO");
-        // mQueryHandler->StartQuery(TOKEN_PHONE_LOOKUP_AND_TRIGGER, extras,
-        //         Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI, mContactPhone),
-        //         PHONE_LOOKUP_PROJECTION, NULL, NULL, NULL);
+        AutoPtr<IUri> uri0;
+        AutoPtr<IContactsContractPhoneLookup> lookup;
+        CContactsContractPhoneLookup::AcquireSingleton((IContactsContractPhoneLookup**)&lookup);
+        lookup->GetCONTENT_FILTER_URI((IUri**)&uri0);
+
+        AutoPtr<IUri> uri;
+        Uri::WithAppendedPath(uri0, mContactPhone, (IUri**)&uri);
+        mQueryHandler->StartQuery(TOKEN_PHONE_LOOKUP_AND_TRIGGER, extras, uri,
+                PHONE_LOOKUP_PROJECTION, String(NULL), NULL, String(NULL));
     }
     else {
         // If a contact hasn't been assigned, don't react to click.

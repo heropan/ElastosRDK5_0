@@ -1,17 +1,27 @@
 
 #include "elastos/droid/widget/VideoView.h"
-#include <elastos/core/Math.h>
-#include <Elastos.Droid.Core_server.h>
-#include "elastos/droid/net/Uri.h"
-#include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/app/CAlertDialogBuilder.h"
+#include "elastos/droid/content/CIntent.h"
+#include "Elastos.CoreLibrary.IO.h"
+// #include "elastos/droid/media/CMediaPlayer.h"
+#include "elastos/droid/media/CSubtitleController.h"
+#include "elastos/droid/net/Uri.h"
+#include "elastos/droid/os/Looper.h"
 #include "elastos/droid/R.h"
+#include "elastos/droid/utility/CPair.h"
+#include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::CStringWrapper;
-using Elastos::Droid::R;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Droid::App::IAlertDialog;
+using Elastos::Droid::App::IAlertDialogBuilder;
+using Elastos::Droid::App::CAlertDialogBuilder;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
 using Elastos::Droid::Media::IMetadata;
-using Elastos::Droid::Media::CMediaPlayer;
+// using Elastos::Droid::Media::CMediaPlayer;
+using Elastos::Droid::Media::CSubtitleController;
 using Elastos::Droid::Media::IAudioManager;
 using Elastos::Droid::Media::EIID_IMediaPlayerOnPreparedListener;
 using Elastos::Droid::Media::EIID_IMediaPlayerOnCompletionListener;
@@ -19,31 +29,39 @@ using Elastos::Droid::Media::EIID_IMediaPlayerOnErrorListener;
 using Elastos::Droid::Media::EIID_IMediaPlayerOnInfoListener;
 using Elastos::Droid::Media::EIID_IMediaPlayerOnVideoSizeChangedListener;
 using Elastos::Droid::Media::EIID_IMediaPlayerOnBufferingUpdateListener;
+using Elastos::Droid::Media::EIID_ISubtitleControllerAnchor;
+using Elastos::Droid::Media::EIID_ISubtitleTrackRenderingWidgetOnChangedListener;
+using Elastos::Droid::Media::IMediaTimeProvider;
+using Elastos::Droid::Media::ISubtitleController;
+using Elastos::Droid::Media::ISubtitleControllerListener;
+using Elastos::Droid::Media::ISubtitleControllerRenderer;
 using Elastos::Droid::Net::Uri;
-using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::CIntent;
-using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
-using Elastos::Droid::App::IAlertDialog;
-using Elastos::Droid::App::IAlertDialogBuilder;
-using Elastos::Droid::App::CAlertDialogBuilder;
+using Elastos::Droid::Os::Looper;
+using Elastos::Droid::R;
+using Elastos::Droid::Utility::CPair;
+using Elastos::Droid::Utility::IPair;
 using Elastos::Droid::View::EIID_IView;
 using Elastos::Droid::View::EIID_ISurfaceHolderCallback;
 using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IViewOnLayoutChangeListener;
 using Elastos::Droid::View::EIID_IViewOnLayoutChangeListener;
+using Elastos::Core::CString;
+using Elastos::Utility::CVector;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-
 //==============================================================================
 //          VideoView::VVOnVideoSizeChangedListener
 //==============================================================================
-
-CAR_INTERFACE_IMPL(VideoView::VVOnVideoSizeChangedListener,
-        IMediaPlayerOnVideoSizeChangedListener)
+CAR_INTERFACE_IMPL(VideoView::VVOnVideoSizeChangedListener, Object, IMediaPlayerOnVideoSizeChangedListener);
+VideoView::VVOnVideoSizeChangedListener::VVOnVideoSizeChangedListener(
+    /* [in] */ VideoView* host)
+    : mHost(host)
+{}
 
 ECode VideoView::VVOnVideoSizeChangedListener::OnVideoSizeChanged(
     /* [in] */ IMediaPlayer* mp,
@@ -53,7 +71,9 @@ ECode VideoView::VVOnVideoSizeChangedListener::OnVideoSizeChanged(
     mp->GetVideoWidth(&mHost->mVideoWidth);
     mp->GetVideoHeight(&mHost->mVideoHeight);
     if (mHost->mVideoWidth != 0 &&mHost-> mVideoHeight != 0) {
-        mHost->GetHolder()->SetFixedSize(
+        AutoPtr<ISurfaceHolder> holder;
+        mHost->GetHolder((ISurfaceHolder**)&holder);
+        holder->SetFixedSize(
                     mHost->mVideoWidth, mHost->mVideoHeight);
 
         mHost->RequestLayout();
@@ -65,9 +85,11 @@ ECode VideoView::VVOnVideoSizeChangedListener::OnVideoSizeChanged(
 //==============================================================================
 //          VideoView::VVOnPreparedListener
 //==============================================================================
-
-CAR_INTERFACE_IMPL(VideoView::VVOnPreparedListener,
-        IMediaPlayerOnPreparedListener)
+CAR_INTERFACE_IMPL(VideoView::VVOnPreparedListener, Object, IMediaPlayerOnPreparedListener);
+VideoView::VVOnPreparedListener::VVOnPreparedListener(
+    /* [in] */ VideoView* host)
+    : mHost(host)
+{}
 
 ECode VideoView::VVOnPreparedListener::OnPrepared(
     /* [in] */ IMediaPlayer* mp)
@@ -96,7 +118,7 @@ ECode VideoView::VVOnPreparedListener::OnPrepared(
         mHost->mOnPreparedListener->OnPrepared(mHost->mMediaPlayer);
     }
     if (mHost->mMediaController != NULL) {
-        mHost->mMediaController->SetEnabled(TRUE);
+        IView::Probe(mHost->mMediaController)->SetEnabled(TRUE);
     }
     mp->GetVideoWidth(&mHost->mVideoWidth);
     mp->GetVideoHeight(&mHost->mVideoHeight);
@@ -106,21 +128,25 @@ ECode VideoView::VVOnPreparedListener::OnPrepared(
         mHost->SeekTo(seekToPosition);
     }
     if (mHost->mVideoWidth != 0 && mHost->mVideoHeight != 0) {
+        AutoPtr<ISurfaceHolder> holder;
+        mHost->GetHolder((ISurfaceHolder**)&holder);
         //Log.i("@@@@", "video size: " + mVideoWidth +"/"+ mVideoHeight);
-        mHost->GetHolder()->SetFixedSize(mHost->mVideoWidth, mHost->mVideoHeight);
+        holder->SetFixedSize(mHost->mVideoWidth, mHost->mVideoHeight);
         if (mHost->mSurfaceWidth == mHost->mVideoWidth &&
             mHost->mSurfaceHeight == mHost->mVideoHeight) {
             // We didn't actually change the size (it was already at the size
             // we need), so we won't get a "surface changed" callback, so
             // start the video here instead of in the callback.
+            Boolean playing = FALSE;
+            Int32 pos = 0;
             if (mHost->mTargetState == STATE_PLAYING) {
                 mHost->Start();
                 if (mHost->mMediaController != NULL) {
                     mHost->mMediaController->Show();
                 }
             }
-            else if (!mHost->IsPlaying() &&
-                    (seekToPosition != 0 || mHost->GetCurrentPosition() > 0)) {
+            else if ((mHost->IsPlaying(&playing), !playing) &&
+                    (seekToPosition != 0 || (mHost->GetCurrentPosition(&pos), pos) > 0)) {
                 if (mHost->mMediaController != NULL) {
                     // Show the media controls when we're paused into a video and make 'em stick.
                     mHost->mMediaController->Show(0);
@@ -142,9 +168,11 @@ ECode VideoView::VVOnPreparedListener::OnPrepared(
 //==============================================================================
 //          VideoView::VVOnCompletionListener
 //==============================================================================
-
-CAR_INTERFACE_IMPL(VideoView::VVOnCompletionListener,
-        IMediaPlayerOnCompletionListener)
+CAR_INTERFACE_IMPL(VideoView::VVOnCompletionListener, Object, IMediaPlayerOnCompletionListener);
+VideoView::VVOnCompletionListener::VVOnCompletionListener(
+    /* [in] */ VideoView* host)
+    : mHost(host)
+{}
 
 ECode VideoView::VVOnCompletionListener::OnCompletion(
     /* [in] */ IMediaPlayer* mp)
@@ -164,9 +192,11 @@ ECode VideoView::VVOnCompletionListener::OnCompletion(
 //==============================================================================
 //          VideoView::VVOnErrorListener
 //==============================================================================
-
-CAR_INTERFACE_IMPL(VideoView::VVOnErrorListener,
-        IMediaPlayerOnErrorListener)
+CAR_INTERFACE_IMPL(VideoView::VVOnErrorListener, Object, IMediaPlayerOnErrorListener)
+VideoView::VVOnErrorListener::VVOnErrorListener(
+    /* [in] */ VideoView* host)
+    : mHost(host)
+{}
 
 ECode VideoView::VVOnErrorListener::OnError(
     /* [in] */ IMediaPlayer* mp,
@@ -196,7 +226,8 @@ ECode VideoView::VVOnErrorListener::OnError(
      * if we're attached to a window. When we're going away and no
      * longer have a window, don't bother showing the user an error.
      */
-    if (mHost->GetWindowToken() != NULL) {
+    AutoPtr<IBinder> token;
+    if ((mHost->GetWindowToken((IBinder**)&token), token.Get()) != NULL) {
         AutoPtr<IResources> r;
         FAIL_RETURN(mHost->mContext->GetResources((IResources**)&r));
         Int32 messageId;
@@ -230,9 +261,11 @@ ECode VideoView::VVOnErrorListener::OnError(
 //==============================================================================
 //          VideoView::VVDialogOnClickListener
 //==============================================================================
-
-CAR_INTERFACE_IMPL(VideoView::VVDialogOnClickListener,
-        IDialogInterfaceOnClickListener)
+CAR_INTERFACE_IMPL(VideoView::VVDialogOnClickListener, Object, IDialogInterfaceOnClickListener);
+VideoView::VVDialogOnClickListener::VVDialogOnClickListener(
+    /* [in] */ VideoView* host)
+    : mHost(host)
+{}
 
 ECode VideoView::VVDialogOnClickListener::OnClick(
     /* [in] */ IDialogInterface* dialog,
@@ -251,9 +284,11 @@ ECode VideoView::VVDialogOnClickListener::OnClick(
 //==============================================================================
 //          VideoView::VVOnBufferingUpdateListener
 //==============================================================================
-
-CAR_INTERFACE_IMPL(VideoView::VVOnBufferingUpdateListener,
-        IMediaPlayerOnBufferingUpdateListener)
+CAR_INTERFACE_IMPL(VideoView::VVOnBufferingUpdateListener, Object, IMediaPlayerOnBufferingUpdateListener);
+VideoView::VVOnBufferingUpdateListener::VVOnBufferingUpdateListener(
+    /* [in] */ VideoView* host)
+    : mHost(host)
+{}
 
 ECode VideoView::VVOnBufferingUpdateListener::OnBufferingUpdate(
     /* [in] */ IMediaPlayer* mp,
@@ -267,9 +302,11 @@ ECode VideoView::VVOnBufferingUpdateListener::OnBufferingUpdate(
 //==============================================================================
 //          VideoView::VVSurfaceHodlerCallback
 //==============================================================================
-
-CAR_INTERFACE_IMPL(VideoView::VVSurfaceHodlerCallback,
-        ISurfaceHolderCallback)
+CAR_INTERFACE_IMPL(VideoView::VVSurfaceHodlerCallback, Object, ISurfaceHolderCallback);
+VideoView::VVSurfaceHodlerCallback::VVSurfaceHodlerCallback(
+    /* [in] */ VideoView* host)
+    : mHost(host)
+{}
 
 ECode VideoView::VVSurfaceHodlerCallback::SurfaceChanged(
     /* [in] */ ISurfaceHolder* holder,
@@ -310,28 +347,68 @@ ECode VideoView::VVSurfaceHodlerCallback::SurfaceDestroyed(
     // after we return from this we can't use the surface any more
     mHost->mSurfaceHolder = NULL;
     if (mHost->mMediaController != NULL) mHost->mMediaController->Hide();
-        mHost->Release(TRUE);
+    mHost->ReleaseResources(TRUE);
 
     return NOERROR;
 }
 
 //==============================================================================
+//          VideoView::InfoListener
+//==============================================================================
+CAR_INTERFACE_IMPL(VideoView::InfoListener, Object, IMediaPlayerOnInfoListener);
+VideoView::InfoListener::InfoListener(
+    /* [in] */ VideoView* host)
+    : mHost(host)
+{}
+
+ECode VideoView::InfoListener::OnInfo(
+    /* [in] */ IMediaPlayer* mp,
+    /* [in] */ Int32 arg1,
+    /* [in] */ Int32 arg2,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    if (mHost->mOnInfoListener != NULL) {
+        mHost->mOnInfoListener->OnInfo(mp, arg1, arg2, result);
+    }
+    *result = TRUE;
+    return NOERROR;
+}
+
+//==============================================================================
+//          VideoView::ChangedListener
+//==============================================================================
+CAR_INTERFACE_IMPL(VideoView::ChangedListener, Object, ISubtitleTrackRenderingWidgetOnChangedListener);
+VideoView::ChangedListener::ChangedListener(
+    /* [in] */ VideoView* host)
+    : mHost(host)
+{}
+
+ECode VideoView::ChangedListener::OnChanged(
+    /* [in] */ ISubtitleTrackRenderingWidget* renderingWidget)
+{
+    mHost->Invalidate();
+    return NOERROR;
+}
+
+
+//==============================================================================
 //          VideoView
 //==============================================================================
-
 const String VideoView::TAG("VideoView");
-const Int32 VideoView::STATE_ERROR;
-const Int32 VideoView::STATE_IDLE;
-const Int32 VideoView::STATE_PREPARING;
-const Int32 VideoView::STATE_PREPARED;
-const Int32 VideoView::STATE_PLAYING;
-const Int32 VideoView::STATE_PAUSED;
-const Int32 VideoView::STATE_PLAYBACK_COMPLETED;
+const Int32 VideoView::STATE_ERROR = -1;
+const Int32 VideoView::STATE_IDLE = 0;
+const Int32 VideoView::STATE_PREPARING = 1;
+const Int32 VideoView::STATE_PREPARED = 2;
+const Int32 VideoView::STATE_PLAYING = 3;
+const Int32 VideoView::STATE_PAUSED = 4;
+const Int32 VideoView::STATE_PLAYBACK_COMPLETED = 5;
 
-
+CAR_INTERFACE_IMPL_3(VideoView, SurfaceView, IVideoView, IMediaPlayerControl, ISubtitleControllerAnchor);
 VideoView::VideoView()
     : mCurrentState(STATE_IDLE)
     , mTargetState(STATE_IDLE)
+    , mAudioSession(0)
     , mVideoWidth(0)
     , mVideoHeight(0)
     , mSurfaceWidth(0)
@@ -348,67 +425,130 @@ VideoView::VideoView()
     mErrorListener = new VVOnErrorListener(this);
     mBufferingUpdateListener = new VVOnBufferingUpdateListener(this);
     mSHCallback = new VVSurfaceHodlerCallback(this);
+    mInfoListener = new InfoListener(this);
+}
+
+ECode VideoView::constructor(
+    /* [in] */ IContext* context)
+{
+    SurfaceView::constructor(context);
+    InitVideoView();
+    return NOERROR;
+}
+
+ECode VideoView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs)
+{
+    constructor(context, attrs, 0);
+    InitVideoView();
+    return NOERROR;
+}
+
+ECode VideoView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr)
+{
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode VideoView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    SurfaceView::constructor(context, attrs, defStyleAttr, defStyleRes);
+    InitVideoView();
+    return NOERROR;
 }
 
 VideoView::~VideoView()
-{
-    printf("FILE=[%s]\n FUNC=[%s], line=[%d] ++ \n", __FILE__, __FUNCTION__, __LINE__);
-}
-
-ECode VideoView::Init(
-    /* [in] */ IContext* context)
-{
-    FAIL_RETURN(SurfaceView::Init(context));
-    InitVideoView();
-
-    return NOERROR;
-}
-
-ECode VideoView::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-{
-    FAIL_RETURN(SurfaceView::Init(context, attrs, defStyle));
-    InitVideoView();
-
-    return NOERROR;
-}
+{}
 
 void VideoView::InitVideoView()
 {
-    AutoPtr<ISurfaceHolder> holder = GetHolder();
+    AutoPtr<ISurfaceHolder> holder;
+    GetHolder((ISurfaceHolder**)&holder);
     holder->AddCallback(mSHCallback);
     holder->SetType(ISurfaceHolder::SURFACE_TYPE_PUSH_BUFFERS);
     SetFocusable(TRUE);
     SetFocusableInTouchMode(TRUE);
-    RequestFocus();
+    Boolean tmp = FALSE;
+    RequestFocus(&tmp);
+    CVector::New((IVector**)&mPendingSubtitleTracks);
+    mCurrentState = STATE_IDLE;
+    mTargetState  = STATE_IDLE;
 }
 
 void VideoView::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
-    //Log.i("@@@@", "onMeasure");
+    //Log.i("@@@@", "onMeasure(" + MeasureSpec.toString(widthMeasureSpec) + ", "
+    //        + MeasureSpec.toString(heightMeasureSpec) + ")");
+
     Int32 width = GetDefaultSize(mVideoWidth, widthMeasureSpec);
     Int32 height = GetDefaultSize(mVideoHeight, heightMeasureSpec);
-
     if (mVideoWidth > 0 && mVideoHeight > 0) {
-        if ( mVideoWidth * height  > width * mVideoHeight ) {
-            //Log.i("@@@", "image too tall, correcting");
-            height = width * mVideoHeight / mVideoWidth;
+        Int32 widthSpecMode = View::MeasureSpec::GetMode(widthMeasureSpec);
+        Int32 widthSpecSize = View::MeasureSpec::GetSize(widthMeasureSpec);
+        Int32 heightSpecMode = View::MeasureSpec::GetMode(heightMeasureSpec);
+        Int32 heightSpecSize = View::MeasureSpec::GetSize(heightMeasureSpec);
+
+        if (widthSpecMode == View::MeasureSpec::EXACTLY && heightSpecMode == View::MeasureSpec::EXACTLY) {
+            // the size is fixed
+            width = widthSpecSize;
+            height = heightSpecSize;
+
+            // for compatibility, we adjust size based on aspect ratio
+            if ( mVideoWidth * height  < width * mVideoHeight ) {
+                //Log.i("@@@", "image too wide, correcting");
+                width = height * mVideoWidth / mVideoHeight;
+            }
+            else if ( mVideoWidth * height  > width * mVideoHeight ) {
+                //Log.i("@@@", "image too tall, correcting");
+                height = width * mVideoHeight / mVideoWidth;
+            }
         }
-        else if ( mVideoWidth * height  < width * mVideoHeight ) {
-            //Log.i("@@@", "image too wide, correcting");
+        else if (widthSpecMode == View::MeasureSpec::EXACTLY) {
+            // only the width is fixed, adjust the height to match aspect ratio if possible
+            width = widthSpecSize;
+            height = width * mVideoHeight / mVideoWidth;
+            if (heightSpecMode == View::MeasureSpec::AT_MOST && height > heightSpecSize) {
+                // couldn't match aspect ratio within the constraints
+                height = heightSpecSize;
+            }
+        }
+        else if (heightSpecMode == View::MeasureSpec::EXACTLY) {
+            // only the height is fixed, adjust the width to match aspect ratio if possible
+            height = heightSpecSize;
             width = height * mVideoWidth / mVideoHeight;
+            if (widthSpecMode == View::MeasureSpec::AT_MOST && width > widthSpecSize) {
+                // couldn't match aspect ratio within the constraints
+                width = widthSpecSize;
+            }
         }
         else {
-            //Log.i("@@@", "aspect ratio is correct: " +
-                    //width+"/"+height+"="+
-                    //mVideoWidth+"/"+mVideoHeight);
+            // neither the width nor the height are fixed, try to use actual video size
+            width = mVideoWidth;
+            height = mVideoHeight;
+            if (heightSpecMode == View::MeasureSpec::AT_MOST && height > heightSpecSize) {
+                // too tall, decrease both width and height
+                height = heightSpecSize;
+                width = height * mVideoWidth / mVideoHeight;
+            }
+            if (widthSpecMode == View::MeasureSpec::AT_MOST && width > widthSpecSize) {
+                // too wide, decrease both width and height
+                width = widthSpecSize;
+                height = width * mVideoHeight / mVideoWidth;
+            }
         }
     }
-    //Log.i("@@@@@@@@@@", "setting size: " + width + 'x' + height);
+    else {
+        // no size yet, just adopt the given spec sizes
+    }
     SetMeasuredDimension(width, height);
 }
 
@@ -418,8 +558,8 @@ ECode VideoView::OnInitializeAccessibilityEvent(
     SurfaceView::OnInitializeAccessibilityEvent(event);
 
     AutoPtr<ICharSequence> clsName;
-    CStringWrapper::New(String("CVideoView"), (ICharSequence**)&clsName);
-    event->SetClassName(clsName);
+    CString::New(String("CVideoView"), (ICharSequence**)&clsName);
+    IAccessibilityRecord::Probe(event)->SetClassName(clsName);
     return NOERROR;
 }
 
@@ -428,41 +568,19 @@ ECode VideoView::OnInitializeAccessibilityNodeInfo(
 {
     SurfaceView::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> clsName;
-    CStringWrapper::New(String("CVideoView"), (ICharSequence**)&clsName);
+    CString::New(String("CVideoView"), (ICharSequence**)&clsName);
     info->SetClassName(clsName);
     return NOERROR;
 }
 
-Int32 VideoView::ResolveAdjustedSize(
+ECode VideoView::ResolveAdjustedSize(
     /* [in] */ Int32 desiredSize,
-    /* [in] */ Int32 measureSpec)
+    /* [in] */ Int32 measureSpec,
+    /* [out] */ Int32* size)
 {
-    Int32 result = desiredSize;
-    Int32 specMode = MeasureSpec::GetMode(measureSpec);
-    Int32 specSize =  MeasureSpec::GetSize(measureSpec);
-
-    switch (specMode) {
-        case MeasureSpec::UNSPECIFIED:
-            /* Parent says we can be as big as we want. Just don't be larger
-             * than max size imposed on ourselves.
-             */
-            result = desiredSize;
-            break;
-
-        case MeasureSpec::AT_MOST:
-            /* Parent says we can be as big as we want, up to specSize.
-             * Don't be larger than specSize, and don't be larger than
-             * the max size imposed on ourselves.
-             */
-            result = Elastos::Core::Math::Min(desiredSize, specSize);
-            break;
-
-        case MeasureSpec::EXACTLY:
-            // No choice. Do what we are told.
-            result = specSize;
-            break;
-    }
-    return result;
+    VALIDATE_NOT_NULL(size);
+    *size = GetDefaultSize(desiredSize, measureSpec);
+    return NOERROR;
 }
 
 ECode VideoView::SetVideoPath(
@@ -481,16 +599,34 @@ ECode VideoView::SetVideoURI(
 
 ECode VideoView::SetVideoURI(
     /* [in] */ IUri* uri,
-    /* [in] */  HashMap<String, String>* headers)
+    /* [in] */  IMap* headers)
 {
     mUri = uri;
-    if (headers != NULL) {
-        mHeaders = *headers;
-    }
+    mHeaders = headers;
     mSeekWhenPrepared = 0;
     OpenVideo();
     FAIL_RETURN(RequestLayout());
     return Invalidate();
+}
+
+ECode VideoView::AddSubtitleSource(
+    /* [in] */ IInputStream* is,
+    /* [in] */ IMediaFormat* format)
+{
+    if (mMediaPlayer == NULL) {
+        AutoPtr<IPair> pair;
+        CPair::Create(is, format, (IPair**)&pair);
+        mPendingSubtitleTracks->Add(pair);
+    }
+    else {
+        ECode ec = mMediaPlayer->AddSubtitleSource(is, format);
+        if (ec == (ECode)E_ILLEGAL_STATE_EXCEPTION) {
+            Boolean tmp = FALSE;
+            mInfoListener->OnInfo(
+                mMediaPlayer, IMediaPlayer::MEDIA_INFO_UNSUPPORTED_SUBTITLE, 0, &tmp);
+        }
+    }
+    return NOERROR;
 }
 
 ECode VideoView::StopPlayback()
@@ -512,66 +648,116 @@ void VideoView::OpenVideo()
         // not ready for playback just yet, will try again later
         return;
     }
-    // Tell the music playback service to pause
-    // TODO: these constants need to be published somewhere in the framework.
-    AutoPtr<IIntent> i;
-    ASSERT_SUCCEEDED(CIntent::New(
-        String("com.android.music.musicservicecommand"), (IIntent**)&i));
-    i->PutExtra(String("command"), String("pause"));
-    mContext->SendBroadcast(i);
+    AutoPtr<IInterface> service;
+    mContext->GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&service);
+    AutoPtr<IAudioManager> am = IAudioManager::Probe(service);
+    Int32 result = 0;
+    am->RequestAudioFocus(NULL, IAudioManager::STREAM_MUSIC, IAudioManager::AUDIOFOCUS_GAIN, &result);
 
     // we shouldn't clear the target state, because somebody might have
     // called start() previously
-    Release(FALSE);
+    ReleaseResources(FALSE);
     //try {
-    ECode ec = CMediaPlayer::New((IMediaPlayer**)&mMediaPlayer);
-    if (FAILED(ec)) goto exit;
-    ASSERT_SUCCEEDED(mMediaPlayer->SetOnPreparedListener(mPreparedListener));
-    ASSERT_SUCCEEDED(mMediaPlayer->SetOnVideoSizeChangedListener(mSizeChangedListener));
-    ASSERT_SUCCEEDED(mMediaPlayer->SetOnCompletionListener(mCompletionListener));
-    ASSERT_SUCCEEDED(mMediaPlayer->SetOnErrorListener(mErrorListener));
-    mMediaPlayer->SetOnInfoListener(mOnInfoListener);
-    ASSERT_SUCCEEDED(mMediaPlayer->SetOnBufferingUpdateListener(mBufferingUpdateListener));
+    assert(0 && "TODO");
+    // CMediaPlayer::New((IMediaPlayer**)&mMediaPlayer);
+    // TODO: create SubtitleController in MediaPlayer, but we need
+    // a context for the subtitle renderers
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<ISubtitleController> controller;
+    AutoPtr<IMediaTimeProvider> provider;
+    AutoPtr<ISubtitleControllerRenderer> webRenderer;
+    AutoPtr<ISubtitleControllerRenderer> tmlRenderer;
+    AutoPtr<ISubtitleControllerRenderer> closedRenderer;
+    Boolean tmp = FALSE;
+    Int32 size = 0;
+    ECode ec = mMediaPlayer->GetMediaTimeProvider((IMediaTimeProvider**)&provider);
+    FAIL_GOTO(ec, exit);
+    CSubtitleController::New(context, provider, ISubtitleControllerListener::Probe(mMediaPlayer)
+            , (ISubtitleController**)&controller);
+    assert(0 && "TODO");
+    // webRenderer = new WebVttRenderer(context);
+    controller->RegisterRenderer(webRenderer);
+    assert(0 && "TODO");
+    // tmlRenderer = new TtmlRenderer(context);
+    controller->RegisterRenderer(tmlRenderer);
+
+    assert(0 && "TODO");
+    // closedRenderer = new ClosedCaptionRenderer(context);
+    controller->RegisterRenderer(closedRenderer);
+    //TODO : recycle ref?
+    mMediaPlayer->SetSubtitleAnchor(controller, this);
+
+    if (mAudioSession != 0) {
+        mMediaPlayer->SetAudioSessionId(mAudioSession);
+    }
+    else {
+        mMediaPlayer->GetAudioSessionId(&mAudioSession);
+    }
+    mMediaPlayer->SetOnPreparedListener(mPreparedListener);
+    mMediaPlayer->SetOnVideoSizeChangedListener(mSizeChangedListener);
+    mMediaPlayer->SetOnCompletionListener(mCompletionListener);
+    mMediaPlayer->SetOnErrorListener(mErrorListener);
+    mMediaPlayer->SetOnInfoListener(mInfoListener);
+    mMediaPlayer->SetOnBufferingUpdateListener(mBufferingUpdateListener);
     mCurrentBufferPercentage = 0;
-    ec = mMediaPlayer->SetDataSource(mContext, mUri, NULL/*mHeaders*/);
-    if (FAILED(ec)) goto exit;
-    ASSERT_SUCCEEDED(mMediaPlayer->SetDisplay(mSurfaceHolder));
-    ASSERT_SUCCEEDED(mMediaPlayer->SetAudioStreamType(IAudioManager::STREAM_MUSIC));
-    ASSERT_SUCCEEDED(mMediaPlayer->SetScreenOnWhilePlaying(TRUE));
+    ec = mMediaPlayer->SetDataSource(mContext, mUri, mHeaders);
+    FAIL_GOTO(ec, exit);
+    ec = mMediaPlayer->SetDisplay(mSurfaceHolder);
+    FAIL_GOTO(ec, exit);
+    ec = mMediaPlayer->SetAudioStreamType(IAudioManager::STREAM_MUSIC);
+    FAIL_GOTO(ec, exit);
+    ec = mMediaPlayer->SetScreenOnWhilePlaying(TRUE);
+    FAIL_GOTO(ec, exit);
     ec = mMediaPlayer->PrepareAsync();
-    if (FAILED(ec)) goto exit;
+    FAIL_GOTO(ec, exit);
+
+    mPendingSubtitleTracks->GetSize(&size);
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IInterface> obj;
+        mPendingSubtitleTracks->Get(i, (IInterface**)&obj);
+        AutoPtr<IPair> pending = IPair::Probe(obj);
+
+        AutoPtr<IInterface> first;
+        pending->GetFirst((IInterface**)&first);
+        AutoPtr<IInterface> second;
+        pending->GetSecond((IInterface**)&second);
+        ec = mMediaPlayer->AddSubtitleSource(IInputStream::Probe(first), IMediaFormat::Probe(second));
+        if (ec == (ECode)E_ILLEGAL_STATE_EXCEPTION) {
+            ec = mInfoListener->OnInfo(mMediaPlayer, IMediaPlayer::MEDIA_INFO_UNSUPPORTED_SUBTITLE, 0, &tmp);
+            FAIL_GOTO(ec, exit);
+        }
+    }
+
     // we don't set the target state here either, but preserve the
     // target state that was there before.
     mCurrentState = STATE_PREPARING;
     AttachMediaController();
+
 exit:
     if (ec == (ECode)E_IO_EXCEPTION) {
+        String log;
+        if (mUri != NULL) {
+            IObject::Probe(mUri)->ToString(&log);
+        }
+        Logger::W(TAG, String("Unable to open content: ") + log);
         mCurrentState = STATE_ERROR;
         mTargetState = STATE_ERROR;
         Boolean result;
         mErrorListener->OnError(mMediaPlayer, IMediaPlayer::MEDIA_ERROR_UNKNOWN, 0, &result);
-        return;
     }
     else if (ec == (ECode)E_ILLEGAL_ARGUMENT_EXCEPTION) {
+        String log;
+        if (mUri != NULL) {
+            IObject::Probe(mUri)->ToString(&log);
+        }
+        Logger::W(TAG, String("Unable to open content: ") + log);
         mCurrentState = STATE_ERROR;
         mTargetState = STATE_ERROR;
         Boolean result;
         mErrorListener->OnError(mMediaPlayer, IMediaPlayer::MEDIA_ERROR_UNKNOWN, 0, &result);
-        return;
     }
-    // } catch (IOException ex) {
-    //     Log.w(TAG, "Unable to open content: " + mUri, ex);
-    //     mCurrentState = STATE_ERROR;
-    //     mTargetState = STATE_ERROR;
-    //     mErrorListener.onError(mMediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
-    //     return;
-    // } catch (IllegalArgumentException ex) {
-    //     Log.w(TAG, "Unable to open content: " + mUri, ex);
-    //     mCurrentState = STATE_ERROR;
-    //     mTargetState = STATE_ERROR;
-    //     mErrorListener.onError(mMediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
-    //     return;
-    // }
+    mPendingSubtitleTracks->Clear();
 }
 
 ECode VideoView::SetMediaController(
@@ -591,11 +777,12 @@ void VideoView::AttachMediaController()
     if (mMediaPlayer != NULL && mMediaController != NULL) {
         mMediaController->SetMediaPlayer((IMediaPlayerControl*)this->Probe(EIID_IMediaPlayerControl));
 
-        AutoPtr<IViewParent> parent = GetParent();
+        AutoPtr<IViewParent> parent;
+        GetParent((IViewParent**)&parent);
         IView* anchorView = IView::Probe(parent) != NULL ?
                 IView::Probe(parent) : (IView*)this->Probe(EIID_IView);
         mMediaController->SetAnchorView(anchorView);
-        mMediaController->SetEnabled(IsInPlaybackState());
+        IView::Probe(mMediaController)->SetEnabled(IsInPlaybackState());
     }
 }
 
@@ -620,12 +807,6 @@ ECode VideoView::SetOnErrorListener(
     return NOERROR;
 }
 
-/**
- * Register a callback to be invoked when an informational event
- * occurs during playback or setup.
- *
- * @param l The callback that will be run
- */
 ECode VideoView::SetOnInfoListener(
     /* [in] */ IMediaPlayerOnInfoListener* l)
 {
@@ -633,13 +814,14 @@ ECode VideoView::SetOnInfoListener(
     return NOERROR;
 }
 
-void VideoView::Release(
+void VideoView::ReleaseResources(
     /* [in] */ Boolean cleartargetstate)
 {
     if (mMediaPlayer != NULL) {
         mMediaPlayer->Reset();
         mMediaPlayer->ReleaseResources();
         mMediaPlayer = NULL;
+        mPendingSubtitleTracks->Clear();
         mCurrentState = STATE_IDLE;
         if (cleartargetstate) {
             mTargetState  = STATE_IDLE;
@@ -647,28 +829,37 @@ void VideoView::Release(
     }
 }
 
-Boolean VideoView::OnTouchEvent(
-    /* [in] */ IMotionEvent* event)
+ECode VideoView::OnTouchEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     if (IsInPlaybackState() && mMediaController != NULL) {
         ToggleMediaControlsVisiblity();
     }
-    return FALSE;
+    *result = FALSE;
+    return NOERROR;
 }
 
-Boolean VideoView::OnTrackballEvent(
-    /* [in] */ IMotionEvent* event)
+ECode VideoView::OnTrackballEvent(
+    /* [in] */ IMotionEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     if (IsInPlaybackState() && mMediaController != NULL) {
         ToggleMediaControlsVisiblity();
     }
-    return FALSE;
+    *result = FALSE;
+    return NOERROR;
 }
 
-Boolean VideoView::OnKeyDown(
+ECode VideoView::OnKeyDown(
     /* [in] */ Int32 keyCode,
-    /* [in] */ IKeyEvent* event)
+    /* [in] */ IKeyEvent* event,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
+    *result = TRUE;
     Boolean isKeyCodeSupported = keyCode != IKeyEvent::KEYCODE_BACK &&
                                  keyCode != IKeyEvent::KEYCODE_VOLUME_UP &&
                                  keyCode != IKeyEvent::KEYCODE_VOLUME_DOWN &&
@@ -688,14 +879,14 @@ Boolean VideoView::OnKeyDown(
                 Start();
                 mMediaController->Hide();
             }
-            return TRUE;
+            return NOERROR;
         }
         else if (keyCode == IKeyEvent::KEYCODE_MEDIA_PLAY) {
             if (mMediaPlayer->IsPlaying(&isPlaying), !isPlaying) {
                 Start();
                 mMediaController->Hide();
             }
-            return true;
+            return NOERROR;
         }
         else if (keyCode == IKeyEvent::KEYCODE_MEDIA_STOP|| keyCode == IKeyEvent::KEYCODE_MEDIA_PAUSE) {
             if (mMediaPlayer->IsPlaying(&isPlaying), isPlaying) {
@@ -703,14 +894,14 @@ Boolean VideoView::OnKeyDown(
                 mMediaController->Show();
             }
 
-            return true;
+            return NOERROR;
         }
         else {
             ToggleMediaControlsVisiblity();
         }
     }
 
-    return SurfaceView::OnKeyDown(keyCode, event);
+    return SurfaceView::OnKeyDown(keyCode, event, result);
 }
 
 void VideoView::ToggleMediaControlsVisiblity()
@@ -753,8 +944,7 @@ ECode VideoView::Pause()
 
 ECode VideoView::Suspend()
 {
-    Release(FALSE);
-
+    ReleaseResources(FALSE);
     return NOERROR;
 }
 
@@ -765,25 +955,27 @@ ECode VideoView::Resume()
     return NOERROR;
 }
 
-Int32 VideoView::GetDuration()
+ECode VideoView::GetDuration(
+    /* [out] */ Int32* duration)
 {
+    VALIDATE_NOT_NULL(duration);
     if (IsInPlaybackState()) {
-        Int32 rst;
-        mMediaPlayer->GetDuration(&rst);
-        return rst;
+        return mMediaPlayer->GetDuration(duration);
     }
 
-    return -1;
+    *duration = -1;
+    return NOERROR;
 }
 
-Int32 VideoView::GetCurrentPosition()
+ECode VideoView::GetCurrentPosition(
+    /* [out] */ Int32* pos)
 {
+    VALIDATE_NOT_NULL(pos);
     if (IsInPlaybackState()) {
-        Int32 position;
-        mMediaPlayer->GetCurrentPosition(&position);
-        return position;
+        return mMediaPlayer->GetCurrentPosition(pos);
     }
-    return 0;
+    *pos = 0;
+    return NOERROR;
 }
 
 ECode VideoView::SeekTo(
@@ -800,19 +992,25 @@ ECode VideoView::SeekTo(
     return NOERROR;
 }
 
-Boolean VideoView::IsPlaying()
+ECode VideoView::IsPlaying(
+    /* [out] */ Boolean* isPlaying)
 {
-    Boolean isPlaying;
-    mMediaPlayer->IsPlaying(&isPlaying);
-    return IsInPlaybackState() && isPlaying;
+    VALIDATE_NOT_NULL(isPlaying);
+    Boolean tmp = FALSE;
+    *isPlaying = IsInPlaybackState() && (mMediaPlayer->IsPlaying(&tmp), tmp);
+    return NOERROR;
 }
 
-Int32 VideoView::GetBufferPercentage()
+ECode VideoView::GetBufferPercentage(
+    /* [out] */ Int32* percentage)
 {
+    VALIDATE_NOT_NULL(percentage);
     if (mMediaPlayer != NULL) {
-        return mCurrentBufferPercentage;
+        *percentage = mCurrentBufferPercentage;
+        return NOERROR;
     }
-    return 0;
+    *percentage = 0;
+    return NOERROR;
 }
 
 Boolean VideoView::IsInPlaybackState()
@@ -823,19 +1021,161 @@ Boolean VideoView::IsInPlaybackState()
                 mCurrentState != STATE_PREPARING);
 }
 
-Boolean VideoView::CanPause()
+ECode VideoView::CanPause(
+    /* [out] */ Boolean* can)
 {
-    return mCanPause;
+    VALIDATE_NOT_NULL(can);
+    *can = mCanPause;
+    return NOERROR;
 }
 
-Boolean VideoView::CanSeekBackward()
+ECode VideoView::CanSeekBackward(
+    /* [out] */ Boolean* can)
 {
-    return mCanSeekBack;
+    VALIDATE_NOT_NULL(can);
+    *can = mCanSeekBack;
+    return NOERROR;
 }
 
-Boolean VideoView::CanSeekForward()
+ECode VideoView::CanSeekForward(
+    /* [out] */ Boolean* can)
 {
-    return mCanSeekForward;
+    VALIDATE_NOT_NULL(can);
+    *can = mCanSeekForward;
+    return NOERROR;
+}
+
+ECode VideoView::GetAudioSessionId(
+    /* [out] */ Int32* id)
+{
+    VALIDATE_NOT_NULL(id);
+    if (mAudioSession == 0) {
+        AutoPtr<IMediaPlayer> foo;
+        assert(0 && "TODO");
+        // CMediaPlayer::New((IMediaPlayer**)&foo);
+        foo->GetAudioSessionId(&mAudioSession);
+        foo->ReleaseResources();
+    }
+    *id = mAudioSession;
+    return NOERROR;
+}
+
+ECode VideoView::OnAttachedToWindow()
+{
+    SurfaceView::OnAttachedToWindow();
+
+    if (mSubtitleWidget != NULL) {
+        mSubtitleWidget->OnAttachedToWindow();
+    }
+    return NOERROR;
+}
+
+ECode VideoView::OnDetachedFromWindow()
+{
+    SurfaceView::OnDetachedFromWindow();
+
+    if (mSubtitleWidget != NULL) {
+        mSubtitleWidget->OnDetachedFromWindow();
+    }
+    return NOERROR;
+}
+
+ECode VideoView::OnLayout(
+    /* [in] */ Boolean changed,
+    /* [in] */ Int32 left,
+    /* [in] */ Int32 top,
+    /* [in] */ Int32 right,
+    /* [in] */ Int32 bottom)
+{
+    SurfaceView::OnLayout(changed, left, top, right, bottom);
+
+    if (mSubtitleWidget != NULL) {
+        MeasureAndLayoutSubtitleWidget();
+    }
+    return NOERROR;
+}
+
+ECode VideoView::Draw(
+    /* [in] */ ICanvas* canvas)
+{
+    SurfaceView::Draw(canvas);
+
+    if (mSubtitleWidget != NULL) {
+        Int32 saveCount = 0;
+        canvas->Save(&saveCount);
+        Int32 left = 0, top = 0;
+        GetPaddingLeft(&left);
+        GetPaddingTop(&top);
+        canvas->Translate(left, top);
+        mSubtitleWidget->Draw(canvas);
+        canvas->RestoreToCount(saveCount);
+    }
+    return NOERROR;
+}
+
+void VideoView::MeasureAndLayoutSubtitleWidget()
+{
+    Int32 v1 = 0, v2 = 0, v3 = 0;
+    GetWidth(&v1);
+    GetPaddingLeft(&v2);
+    GetPaddingRight(&v3);
+    const Int32 width = v1 - v2 - v3;
+    GetHeight(&v1);
+    GetPaddingTop(&v2);
+    GetPaddingBottom(&v3);
+    const Int32 height = v1 - v2 - v3;
+
+    mSubtitleWidget->SetSize(width, height);
+}
+
+ECode VideoView::SetSubtitleWidget(
+    /* [in] */ ISubtitleTrackRenderingWidget* subtitleWidget)
+{
+    if (mSubtitleWidget.Get() == subtitleWidget) {
+        return NOERROR;
+    }
+
+    Boolean attachedToWindow = FALSE;
+    IsAttachedToWindow(&attachedToWindow);
+    if (mSubtitleWidget != NULL) {
+        if (attachedToWindow) {
+            mSubtitleWidget->OnDetachedFromWindow();
+        }
+
+        mSubtitleWidget->SetOnChangedListener(NULL);
+    }
+
+    mSubtitleWidget = subtitleWidget;
+
+    if (subtitleWidget != NULL) {
+        if (mSubtitlesChangedListener == NULL) {
+            mSubtitlesChangedListener = new ChangedListener(this);
+        }
+
+        SetWillNotDraw(FALSE);
+        subtitleWidget->SetOnChangedListener(mSubtitlesChangedListener);
+
+        if (attachedToWindow) {
+            subtitleWidget->OnAttachedToWindow();
+            RequestLayout();
+        }
+    }
+    else {
+        SetWillNotDraw(TRUE);
+    }
+
+    Invalidate();
+    return NOERROR;
+}
+
+ECode VideoView::GetSubtitleLooper(
+    /* [out] */ ILooper** looper)
+{
+    VALIDATE_NOT_NULL(looper);
+    AutoPtr<ILooper> l = Looper::GetMainLooper();
+    *looper = l;
+    REFCOUNT_ADD(*looper);
+    return NOERROR;
 }
 
 }// namespace Widget

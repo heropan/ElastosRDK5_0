@@ -164,6 +164,8 @@ private:
 
     CARAPI_(void) OnContactUriChanged();
 
+    static CARAPI_(Boolean) InitStatic();
+
 private:
     AutoPtr<IUri> mContactUri;
     String mContactEmail;
@@ -183,11 +185,12 @@ public:
     static const Int32 TOKEN_PHONE_LOOKUP_AND_TRIGGER;
     static const String EXTRA_URI_CONTENT;
 
-    static const String EMAIL_LOOKUP_PROJECTION[];
+    static Boolean sInit;
+    static AutoPtr<ArrayOf<String> > EMAIL_LOOKUP_PROJECTION;
     static const Int32 EMAIL_ID_COLUMN_INDEX;
     static const Int32 EMAIL_LOOKUP_STRING_COLUMN_INDEX;
 
-    static const String PHONE_LOOKUP_PROJECTION[];
+    static AutoPtr<ArrayOf<String> > PHONE_LOOKUP_PROJECTION;
     static const Int32 PHONE_ID_COLUMN_INDEX;
     static const Int32 PHONE_LOOKUP_STRING_COLUMN_INDEX;
 };

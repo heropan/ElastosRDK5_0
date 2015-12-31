@@ -1,37 +1,21 @@
-#ifndef __ELASTOS_DROID_WIDGET_CPROGRESSBARSAVEDSTATE_H__
-#define __ELASTOS_DROID_WIDGET_CPROGRESSBARSAVEDSTATE_H__
+#ifndef  __ELASTOS_DROID_WIDGET_CPROGRESSBARSAVEDSTATE_H__
+#define  __ELASTOS_DROID_WIDGET_CPROGRESSBARSAVEDSTATE_H__
 
 #include "_Elastos_Droid_Widget_CProgressBarSavedState.h"
-#include "ProgressBarSavedState.h"
+#include "elastos/droid/widget/ProgressBar.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-CarClass(CProgressBarSavedState) , ProgressBarSavedState
+CarClass(CProgressBarSavedState) , public ProgressBar::SavedState
 {
 public:
-
-    CARAPI GetSuperState(
-        /* [out] */ IParcelable** superState);
-
-    CARAPI constructor(
-        /* [in] */ IParcelable* superState);
-
-    CARAPI constructor();
-
-    CARAPI ReadFromParcel(
-        /* [in] */ IParcel *source);
-
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel *dest);
-
-    using ProgressBarSavedState::mProgress;
-    using ProgressBarSavedState::mSecondaryProgress;
+    CAR_OBJECT_DECL();
 };
 
 }// namespace Widget
 }// namespace Droid
 }// namespace Elastos
 
-#endif
+#endif // __ELASTOS_DROID_WIDGET_CPROGRESSBARSAVEDSTATE_H__

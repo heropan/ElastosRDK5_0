@@ -1,7 +1,7 @@
 
 #include <Elastos.CoreLibrary.IO.h>
 #include "elastos/droid/widget/CursorAdapter.h"
-// #include "elastos/droid/widget/CCursorFilter.h"
+#include "elastos/droid/widget/CCursorFilter.h"
 #include "elastos/droid/os/CHandler.h"
 #include <elastos/utility/logging/Slogger.h>
 
@@ -144,7 +144,8 @@ ECode CursorAdapter::GetItemId(
         Boolean r;
         if (mCursor->MoveToPosition(position, &r)) {
             return mCursor->GetInt64(mRowIDColumn, id);
-        } else {
+        }
+        else {
             return NOERROR;
         }
     }
@@ -266,7 +267,8 @@ ECode CursorAdapter::SwapCursor(
         mDataValid = TRUE;
         // notify the observers about the new cursor
         NotifyDataSetChanged();
-    } else {
+    }
+    else {
         mRowIDColumn = -1;
         mDataValid = FALSE;
         // notify the observers about the lack of a data set
@@ -308,10 +310,9 @@ ECode CursorAdapter::GetFilter(
 {
     VALIDATE_NOT_NULL(filter);
     if(mCursorFilter == NULL) {
-        assert(0 && "TODO");
-        // CCursorFilter::New(
-        //         (ICursorFilterClient*)this->Probe(EIID_ICursorFilterClient),
-        //         (ICursorFilter**)&mCursorFilter);
+        CCursorFilter::New(
+                (ICursorFilterClient*)this->Probe(EIID_ICursorFilterClient),
+                (ICursorFilter**)&mCursorFilter);
     }
     *filter = IFilter::Probe(mCursorFilter);
     REFCOUNT_ADD(*filter);

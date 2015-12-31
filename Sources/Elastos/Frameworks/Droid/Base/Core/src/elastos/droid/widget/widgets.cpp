@@ -16,6 +16,7 @@
 #include "elastos/droid/widget/CImageView.h"
 #include "elastos/droid/widget/CImageButton.h"
 #include "elastos/droid/widget/CProgressBar.h"
+#include "elastos/droid/widget/CProgressBarSavedState.h"
 #include "elastos/droid/widget/CGallery.h"
 #include "elastos/droid/widget/CGalleryLayoutParams.h"
 #include "elastos/droid/widget/CScroller.h"
@@ -75,6 +76,8 @@
 #include "elastos/droid/widget/CTableLayoutLayoutParams.h"
 #include "elastos/droid/widget/CBlinkLayout.h"
 #include "elastos/droid/widget/CToolBar.h"
+#include "elastos/droid/widget/CHeaderViewListAdapter.h"
+#include "elastos/droid/widget/CVideoView.h"
 
 namespace Elastos {
 namespace Droid {
@@ -122,6 +125,7 @@ CAR_OBJECT_IMPL(CCursorFilter)
 CAR_OBJECT_IMPL(CImageView)
 CAR_OBJECT_IMPL(CImageButton)
 CAR_OBJECT_IMPL(CProgressBar)
+CAR_OBJECT_IMPL(CProgressBarSavedState)
 CAR_OBJECT_IMPL(CActionMenuPresenter)
 CAR_OBJECT_IMPL(CActionMenuPresenterSavedState)
 CAR_OBJECT_IMPL(CAdapterView)
@@ -156,6 +160,8 @@ CAR_OBJECT_IMPL(CTableLayout)
 CAR_OBJECT_IMPL(CTableLayoutLayoutParams)
 CAR_OBJECT_IMPL(CBlinkLayout)
 CAR_OBJECT_IMPL(CToolBar);
+CAR_OBJECT_IMPL(CHeaderViewListAdapter);
+CAR_OBJECT_IMPL(CVideoView);
 
 } // namespace Widget
 } // namespace Droid

@@ -151,8 +151,6 @@ public:
      *
      * @return SurfaceHolder The holder of the surface.
      */
-    virtual CARAPI_(AutoPtr<ISurfaceHolder>) GetHolder();
-
     virtual CARAPI GetHolder(
         /* [out] */ ISurfaceHolder** holder);
 
@@ -225,45 +223,10 @@ public:
      * @return TRUE if the surface has dimensions that are fixed in size
      * @hide
      */
-    virtual CARAPI_(Boolean) IsFixedSize();
-
     virtual CARAPI IsFixedSize(
         /* [out] */ Boolean* isFixedSize);
 
     virtual CARAPI HandleGetNewSurface();
-
-    //todo: for gecko using input method
-    CARAPI_(AutoPtr<IInputConnection>) OnCreateInputConnection(
-        /* [in] */ IEditorInfo* outAttrs);
-
-    //todo: for gecko using input method
-    CARAPI_(Boolean) OnKeyDown(
-        /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
-
-    //todo: for gecko using input method
-    CARAPI_(Boolean) OnKeyLongPress(
-        /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
-
-    //todo: for gecko using input method
-    CARAPI_(Boolean) OnKeyUp(
-        /* [in] */ Int32 keyCode,
-        /* [in] */ IKeyEvent* event);
-
-    //todo: for gecko using input method
-    CARAPI_(Boolean) OnKeyMultiple(
-        /* [in] */ Int32 keyCode,
-        /* [in] */ Int32 repeatCount,
-        /* [in] */ IKeyEvent* event);
-
-    //todo: for gecko using input method
-    CARAPI SetCreateInputConnectionDelegate(
-        /* [in] */ IView* view);
-
-    //todo: for gecko using input method
-    CARAPI SetKeyEventCallbackDelegate(
-        /* [in] */IKeyEventCallback* cb);
 
     CARAPI constructor(
         /* [in] */ IContext* context);
@@ -276,6 +239,12 @@ public:
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyle);
+
+    CARAPI constructor(
+        /* [in] */ IContext* ctx,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
 protected:
     virtual CARAPI OnAttachedToWindow();
@@ -383,10 +352,6 @@ private:
 
     Object mSurfaceLock;
     Object mCallbacksLock;
-
-    //todo: for gecko using input method;
-    AutoPtr<IView> mDelegate;
-    AutoPtr<IKeyEventCallback> mKeyEventCallbackDelegate;
 };
 
 } // namespace View

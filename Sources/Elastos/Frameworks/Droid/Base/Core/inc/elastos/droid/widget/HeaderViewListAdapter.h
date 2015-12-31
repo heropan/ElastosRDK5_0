@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_DROID_WIDGET_HEADERVIEWLISTADAPTER_H__
-#define __ELASTOS_DROID_WIDGET_HEADERVIEWLISTADAPTER_H__
+#ifndef  __ELASTOS_DROID_WIDGET_HEADERVIEWLISTADAPTER_H__
+#define  __ELASTOS_DROID_WIDGET_HEADERVIEWLISTADAPTER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/ListView.h"
@@ -15,59 +15,73 @@ namespace Droid {
 namespace Widget {
 
 class HeaderViewListAdapter
+    : public Object
+    , public IHeaderViewListAdapter
+    , public IWrapperListAdapter
+    , public IListAdapter
+    , public IAdapter
+    , public IFilterable
 {
-
 public:
+    CAR_INTERFACE_DECL();
+
     HeaderViewListAdapter();
 
-    HeaderViewListAdapter(
-        /* [in] */ ArrayOf<IFixedViewInfo*>* mHeaderViewInfos,
-        /* [in] */ ArrayOf<IFixedViewInfo*>* mFooterViewInfos,
+    CARAPI constructor(
+        /* [in] */ IArrayList* headerViewInfos,
+        /* [in] */ IArrayList* footerViewInfos,
         /* [in] */ IListAdapter* adapter);
 
-    ~HeaderViewListAdapter();
+    virtual CARAPI GetHeadersCount(
+        /* [out] */ Int32* count);
 
-    CARAPI Init(
-        /* [in] */ ArrayOf<IFixedViewInfo*>* mHeaderViewInfos,
-        /* [in] */ ArrayOf<IFixedViewInfo*>* mFooterViewInfos,
-        /* [in] */ IListAdapter* adapter);
+    virtual CARAPI GetFootersCount(
+        /* [out] */ Int32* count);
 
-    virtual CARAPI_(Int32) GetHeadersCount();
+    virtual CARAPI IsEmpty(
+        /* [out] */ Boolean* empty);
 
-    virtual CARAPI_(Int32) GetFootersCount();
+    CARAPI RemoveHeader(
+        /* [in] */ IView* v,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) IsEmpty();
+    CARAPI RemoveFooter(
+        /* [in] */ IView* v,
+        /* [out] */ Boolean* result);
 
-    CARAPI_(Boolean) RemoveHeader(
-        /* [in] */ IView* v);
+    CARAPI GetCount(
+        /* [out] */ Int32* count);
 
-    CARAPI_(Boolean) RemoveFooter(
-        /* [in] */ IView* v);
+    CARAPI AreAllItemsEnabled(
+        /* [out] */ Boolean* enabled);
 
-    CARAPI_(Int32) GetCount();
+    CARAPI IsEnabled(
+        /* [in] */ Int32 position,
+        /* [out] */ Boolean* enabled);
 
-    CARAPI_(Boolean) AreAllItemsEnabled();
+    CARAPI GetItem(
+        /* [in] */ Int32 position,
+        /* [out] */ IInterface** item);
 
-    CARAPI_(Boolean) IsEnabled(
-        /* [in] */ Int32 position);
+    CARAPI GetItemId(
+        /* [in] */ Int32 position,
+        /* [out] */ Int64* id);
 
-    CARAPI_(AutoPtr<IInterface>) GetItem(
-        /* [in] */ Int32 position);
+    CARAPI HasStableIds(
+        /* [out] */ Boolean* has);
 
-    CARAPI_(Int64) GetItemId(
-        /* [in] */ Int32 position);
-
-    CARAPI_(Boolean) HasStableIds();
-
-    CARAPI_(AutoPtr<IView>) GetView(
+    CARAPI GetView(
         /* [in] */ Int32 position,
         /* [in] */ IView* convertView,
-        /* [in] */ IViewGroup* parent);
+        /* [in] */ IViewGroup* parent,
+        /* [out] */ IView** view);
 
-    CARAPI_(Int32) GetItemViewType(
-        /* [in] */ Int32 position);
+    CARAPI GetItemViewType(
+        /* [in] */ Int32 position,
+        /* [out] */ Int32* type);
 
-    CARAPI_(Int32) GetViewTypeCount();
+    CARAPI GetViewTypeCount(
+        /* [out] */ Int32* count);
 
     CARAPI RegisterDataSetObserver(
         /* [in] */ IDataSetObserver* observer);
@@ -75,26 +89,34 @@ public:
     CARAPI UnregisterDataSetObserver(
         /* [in] */ IDataSetObserver* observer);
 
-    CARAPI_(AutoPtr<IFilter>) GetFilter();
+    CARAPI GetFilter(
+        /* [out] */ IFilter** filter);
 
-    CARAPI_(AutoPtr<IListAdapter>) GetWrappedAdapter();
+    CARAPI GetWrappedAdapter(
+        /* [out] */ IListAdapter** atapter);
 
 private:
     CARAPI_(Boolean) AreAllListInfosSelectable(
-        /* [in] */ List<AutoPtr<IFixedViewInfo> >& info);
+        /* [in] */ IArrayList* info);
+
+    static CARAPI_(Boolean) InitStatic();
 
 private:
     AutoPtr<IListAdapter> mAdapter;
-    List<AutoPtr<IFixedViewInfo> > mHeaderViewInfos;
-    List<AutoPtr<IFixedViewInfo> > mFooterViewInfos;
+    AutoPtr<IArrayList> mHeaderViewInfos;
+    AutoPtr<IArrayList> mFooterViewInfos;
+
+    // Used as a placeholder in case the provided info views are indeed null.
+    // Currently only used by some CTS tests, which may be removed.
+    static Boolean sInit;
+    static AutoPtr<IArrayList> EMPTY_INFO_LIST;
+
     Boolean mAreAllFixedViewsSelectable;
     Boolean mIsFilterable;
-
-    typedef List<AutoPtr<IFixedViewInfo> >::Iterator Iterator;
 };
 
 }// namespace Widget
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__ELASTOS_DROID_WIDGET_HEADERVIEWLISTADAPTER_H__
+#endif // __ELASTOS_DROID_WIDGET_HEADERVIEWLISTADAPTER_H__
