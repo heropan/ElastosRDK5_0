@@ -1,8 +1,5 @@
 
 #include "elastos/droid/server/lights/LightsManager.h"
-#include <elastos/utility/logging/Logger.h>
-
-using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -23,7 +20,6 @@ const Int32 LightsManager::LIGHT_ID_COUNT = 8;
 
 LightsManager::~LightsManager()
 {
-    Logger::I("LightsManager", "LightsManager::~LightsManager, LightsManager is abstract class");
 }
 
 } // Lights

@@ -25,6 +25,7 @@ public:
 
     virtual CARAPI_(AutoPtr<Light>) GetLight(
         /* [in] */ Int32 id) = 0;
+
 public:
     static const Int32 LIGHT_ID_BACKLIGHT;
     static const Int32 LIGHT_ID_KEYBOARD;

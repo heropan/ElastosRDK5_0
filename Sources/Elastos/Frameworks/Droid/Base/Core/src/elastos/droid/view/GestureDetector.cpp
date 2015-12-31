@@ -228,9 +228,11 @@ ECode GestureDetector::constructor(
         AutoPtr<ILooper> looper;
         handler->GetLooper((ILooper**)&looper);
         mHandler = new GestureHandler(looper, this);
+        mHandler->constructor();
     }
     else {
         mHandler = new GestureHandler(this);
+        mHandler->constructor();
     }
     mListener = listener;
     if (IGestureDetectorOnDoubleTapListener::Probe(listener)) {

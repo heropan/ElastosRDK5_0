@@ -54,7 +54,6 @@ LightImpl::LightImpl(
 
 LightImpl::~LightImpl()
 {
-    Logger::I("LightsService::LightImpl", "~LightImpl() is running.");
 }
 
 void LightImpl::SetBrightness(
@@ -67,7 +66,7 @@ void LightImpl::SetBrightness(
     /* [in] */ Int32 brightness,
     /* [in] */ Int32 brightnessMode)
 {
-    synchronized (mSelfLock) {
+    synchronized (this) {
         Int32 color = brightness & 0x000000ff;
         color = 0xff000000 | (color << 16) | (color << 8) | color;
         SetLightLocked(color, LIGHT_FLASH_NONE, 0, 0, brightnessMode);
@@ -77,7 +76,7 @@ void LightImpl::SetBrightness(
 void LightImpl::SetColor(
     /* [in] */ Int32 color)
 {
-    synchronized (mSelfLock) {
+    synchronized (this) {
         SetLightLocked(color, LIGHT_FLASH_NONE, 0, 0, 0);
     }
 }
@@ -88,7 +87,7 @@ void LightImpl::SetFlashing(
     /* [in] */ Int32 onMS,
     /* [in] */ Int32 offMS)
 {
-    synchronized (mSelfLock) {
+    synchronized (this) {
         SetLightLocked(color, mode, onMS, offMS, BRIGHTNESS_MODE_USER);
     }
 }
@@ -102,7 +101,7 @@ void LightImpl::Pulse(
     /* [in] */ Int32 color,
     /* [in] */ Int32 onMS)
 {
-    synchronized (mSelfLock) {
+    synchronized (this) {
         if (mColor == 0 && !mFlashing) {
             SetLightLocked(color, LIGHT_FLASH_HARDWARE, onMS, 1000, BRIGHTNESS_MODE_USER);
 
@@ -118,14 +117,14 @@ void LightImpl::Pulse(
 
 void LightImpl::TurnOff()
 {
-    synchronized (mSelfLock) {
+    synchronized (this) {
         SetLightLocked(0, LIGHT_FLASH_NONE, 0, 0, 0);
     }
 }
 
 void LightImpl::StopFlashing()
 {
-    synchronized (mSelfLock) {
+    synchronized (this) {
         SetLightLocked(mColor, LIGHT_FLASH_NONE, 0, 0, BRIGHTNESS_MODE_USER);
     }
 }
@@ -138,8 +137,9 @@ void LightImpl::SetLightLocked(
     /* [in] */ Int32 brightnessMode)
 {
     if (color != mColor || mode != mMode || onMS != mOnMS || offMS != mOffMS) {
-        if (mHost->DEBUG)
+        if (mHost->DEBUG) {
             Logger::V(mHost->TAG, "setLight # %d: color=#0x%x", mId, color);
+        }
 
         mColor = color;
         mMode = mode;
@@ -248,7 +248,6 @@ LightsService::MyLightsManager::MyLightsManager(
 
 LightsService::MyLightsManager::~MyLightsManager()
 {
-    Logger::I("LightsService::MyLightsManager", "~MyLightsManager() is running.");
 }
 
 AutoPtr<Light> LightsService::MyLightsManager::GetLight(
@@ -292,7 +291,7 @@ LightsService::~LightsService()
 ECode LightsService::constructor(
     /* [in] */ IContext* context)
 {
-    SystemService::constructor(context);
+    FAIL_RETURN(SystemService::constructor(context));
     mService = new MyLightsManager(this);
     mH = new MyHandler(this);
     mH->constructor();

@@ -24,12 +24,6 @@ class LightImpl
     : public Light
 {
     friend class LightsService;
-private:
-    LightImpl(
-        /* [in] */ Int32 id,
-        /* [in] */ LightsService* host);
-
-    virtual ~LightImpl();
 
 public:
     // @Override
@@ -64,6 +58,12 @@ public:
     virtual CARAPI_(void) TurnOff();
 
 private:
+    LightImpl(
+        /* [in] */ Int32 id,
+        /* [in] */ LightsService* host);
+
+    virtual ~LightImpl();
+
     CARAPI_(void) StopFlashing();
 
     CARAPI_(void) SetLightLocked(
@@ -81,7 +81,6 @@ private:
     Int32 mOffMS;
     Boolean mFlashing;
 
-    Object mSelfLock;
     LightsService* mHost;
 };
 
@@ -101,6 +100,7 @@ class LightsService
     : public SystemService
 {
     friend class LightImpl;
+
 public:
     class LegacyFlashlightHack
         : public Object
@@ -125,6 +125,7 @@ public:
 
         CARAPI ToString(
             /* [out] */ String* str);
+
     private:
         LightsService* mHost;
         static const String FLASHLIGHT_FILE;
