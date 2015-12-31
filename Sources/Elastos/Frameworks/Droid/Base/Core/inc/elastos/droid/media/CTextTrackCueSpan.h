@@ -43,6 +43,12 @@ public:
     CARAPI SetText(
         /* [in] */ const String& result);
 
+    CARAPI GetEnabled(
+        /* [out] */ Boolean* result);
+
+    CARAPI SetEnabled(
+        /* [in] */ Boolean result);
+
 private:
     Int64 mTimestampMs;
     Boolean mEnabled;

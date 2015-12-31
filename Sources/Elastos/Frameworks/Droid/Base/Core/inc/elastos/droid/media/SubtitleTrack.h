@@ -2,7 +2,6 @@
 #define __ELASTOS_DROID_MEDIA_SUBTITLETRACK_H__
 
 #include "Elastos.Droid.Media.h"
-#include "elastos/droid/media/MediaTimeProvider.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 #include <Elastos.CoreLibrary.Utility.h>
@@ -20,8 +19,9 @@ namespace Droid {
 namespace Media {
 
 class SubtitleTrack
-    : public ISubtitleTrack
-    , public MediaTimeProvider::OnMediaTimeListener
+    : public Object
+    , public ISubtitleTrack
+    , public IMediaTimeProviderOnMediaTimeListener
 {
 public:
     class CueList

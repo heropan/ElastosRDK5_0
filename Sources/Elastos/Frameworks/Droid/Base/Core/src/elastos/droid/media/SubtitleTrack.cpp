@@ -1,3 +1,4 @@
+#include "Elastos.Droid.Media.h"
 #include "elastos/droid/media/SubtitleTrack.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/utility/CPair.h"
@@ -6,7 +7,7 @@
 #include <Elastos.CoreLibrary.Utility.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/CoreUtils.h>
-#include <elastos/core/AutoLock.h>
+#include "elastos/core/AutoLock.h"
 
 using Elastos::Droid::Utility::CPair;
 using Elastos::Utility::CVector;
@@ -16,6 +17,7 @@ using Elastos::Utility::IIterator;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::IInteger64;
+using Elastos::Core::AutoLock;
 
 namespace Elastos {
 namespace Droid {

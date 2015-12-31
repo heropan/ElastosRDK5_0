@@ -1,5 +1,6 @@
 #include "Elastos.Droid.Media.h"
 #include "elastos/droid/media/Tokenizer.h"
+#include "elastos/droid/media/WebVttParserHelper.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/Character.h>
 #include <elastos/utility/logging/Slogger.h>
@@ -178,8 +179,7 @@ void Tokenizer::TagTokenizer::Yield_tag()
             // try {
             ECode ec = NOERROR;
             Int64 timestampMs;
-            assert(0 && "TODO");
-            // ec = WebVttParser::ParseTimestampMs(mName, &timestampMs);
+            ec = WebVttParserHelper::ParseTimestampMs(mName, &timestampMs);
             FAIL_GOTO(ec, error);
             ec = listener->OnTimeStamp(timestampMs);
             FAIL_GOTO(ec, error);

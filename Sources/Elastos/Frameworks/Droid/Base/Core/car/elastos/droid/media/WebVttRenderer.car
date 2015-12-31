@@ -30,6 +30,12 @@ module
 
         SetText(
             [in] String result);
+
+        GetEnabled(
+            [out] Boolean* result);
+
+        SetEnabled(
+            [in] Boolean result);
     }
 
     /**
@@ -137,6 +143,60 @@ module
         AppendLinesToBuilder(
             [in] IStringBuilder* builder,
             [out] IStringBuilder** result);
+
+        SetId(
+            [in] String id);
+
+        GetId(
+            [out] String* id);
+
+        SetPauseOnExit(
+            [in] Boolean bPause);
+
+        GetPauseOnExit(
+            [out] Boolean* bPause);
+
+        SetWritingDirection(
+            [in] Int32 wd);
+
+        GetWritingDirection(
+            [out] Int32* wd);
+
+        SetRegionId(
+            [in] String regionId);
+
+        GetRegionId(
+            [out] String* regionId);
+
+        SetSnapToLines(
+            [in] Boolean bSnapToLines);
+
+        GetSnapToLines(
+            [out] Boolean* bSnapToLines);
+
+        SetLinePosition(
+            [in] Int32 linePosition);
+
+        GetLinePosition(
+            [out] Int32* linePosition);
+
+        SetTextPosition(
+            [in] Int32 textPosition);
+
+        GetTextPosition(
+            [out] Int32* textPosition);
+
+        SetSize(
+            [in] Int32 size);
+
+        GetSize(
+            [out] Int32* size);
+
+        SetAlignment(
+            [in] Int32 alignment);
+
+        GetAlignment(
+            [out] Int32* alignment);
     }
 
     /**

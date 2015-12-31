@@ -75,6 +75,21 @@ ECode CTextTrackCueSpan::SetText(
     return NOERROR;
 }
 
+ECode CTextTrackCueSpan::GetEnabled(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mEnabled;
+    return NOERROR;
+}
+
+ECode CTextTrackCueSpan::SetEnabled(
+    /* [in] */ Boolean result)
+{
+    mEnabled = result;
+    return NOERROR;
+}
+
 } // namespace Media
 } // namepsace Droid
 } // namespace Elastos

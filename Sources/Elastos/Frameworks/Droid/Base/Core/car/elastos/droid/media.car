@@ -1153,6 +1153,32 @@ module
         interface ITokenizer;
     }
 
+    class CWebVttRendererTokenizerDataTokenizer {
+
+        constructor(
+            [in] ITokenizer* host);
+
+        interface ITokenizerDataTokenizer;
+        interface ITokenizerTokenizerPhase;
+    }
+
+    class CWebVttRendererTokenizerTagTokenizer {
+
+        constructor(
+            [in] ITokenizer* host);
+
+        interface ITokenizerTagTokenizer;
+        interface ITokenizerTokenizerPhase;
+    }
+
+    class CWebVttRendererTextTrackCue {
+
+        constructor();
+
+        interface ITextTrackCue;
+        interface ISubtitleTrackCue;
+    }
+
     class CWebVttParser {
 
         constructor(

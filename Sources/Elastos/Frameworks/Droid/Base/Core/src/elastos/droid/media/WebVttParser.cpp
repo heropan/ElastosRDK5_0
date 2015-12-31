@@ -1,6 +1,7 @@
 #include "Elastos.CoreLibrary.h"
 #include "Elastos.Droid.Media.h"
 #include "elastos/droid/media/WebVttParser.h"
+#include "elastos/droid/media/CWebVttRendererTextTrackCue.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
 
@@ -91,7 +92,8 @@ ECode WebVttParser::ParseCueIdPhase::Parse(
         mHost->mPhase = mHost->mParseCueText;
     }
 
-    // CTextTrackCue::New((ITextTrackCue**)&mCue);
+    AutoPtr<ITextTrackCue> ttk;
+    CWebVttRendererTextTrackCue::New((ITextTrackCue**)&ttk);
     AutoPtr<IVector> cts = mHost->mCueTexts;
     cts->Clear();
 
@@ -100,9 +102,10 @@ ECode WebVttParser::ParseCueIdPhase::Parse(
         AutoPtr<IWebVttParserPhase> ps = mHost->mPhase;
         ps->Parse(line);
     } else {
-        //TODO
-        // mCue.mId = line;
+        AutoPtr<ITextTrackCue> cue = mHost->mCue;
+        cue->SetId(line);
     }
+    return NOERROR;
 }
 
 //===============================================================
@@ -141,6 +144,7 @@ ECode WebVttParser::ParseCueTimePhase::Parse(
     String end = spaceAt > 0 ? rest.Substring(0, spaceAt) : rest;
     rest = spaceAt > 0 ? rest.Substring(spaceAt + 1) : String("");
 
+    AutoPtr<ITextTrackCue> cue = mHost->mCue;
     //TODO
     // mCue.mStartTimeMs = ParseTimestampMs(start);
     // mCue.mEndTimeMs = ParseTimestampMs(end);
@@ -159,18 +163,13 @@ ECode WebVttParser::ParseCueTimePhase::Parse(
         String value = setting.Substring(colonAt + 1);
 
         if (name.Equals(String("region"))) {
-            //TODO
-            // mCue.mRegionId = value;
+            cue->SetRegionId(value);
         } else if (name.Equals(String("vertical"))) {
             AutoPtr<ITextTrackCue> ttc = mHost->mCue;
             if (value.Equals(String("rl"))) {
-                assert(0 && "TODO");
-                // ttc.mWritingDirection =
-                //     ITextTrackCue::WRITING_DIRECTION_VERTICAL_RL;
+                ttc->SetWritingDirection(ITextTrackCue::WRITING_DIRECTION_VERTICAL_RL);
             } else if (value.Equals(String("lr"))) {
-                // TODO
-                // ttc.mWritingDirection =
-                //     ITextTrackCue::WRITING_DIRECTION_VERTICAL_LR;
+                ttc->SetWritingDirection(ITextTrackCue::WRITING_DIRECTION_VERTICAL_LR);
             } else {
                 Slogger::W("cue setting", "%s has invalid value%s", name.string(), value.string());
             }
@@ -181,14 +180,13 @@ ECode WebVttParser::ParseCueTimePhase::Parse(
                         Boolean bRet = FALSE;
                         StringUtils::Matches(value, String(".*[^0-9].*"), &bRet);
                         if (value.EndWith(String("%"))) {
-                            //TODO
-                            // mCue.mSnapToLines = FALSE;
+                            cue->SetSnapToLines(FALSE);
                             // mCue.mLinePosition = ParseIntPercentage(value);
                         } else if (bRet) {
                             Slogger::W("cue setting", "%s contains an invalid character %s", name.string(), value.string());
                         } else {
-                            // mCue.mSnapToLines = TRUE;
-                            // mCue.mLinePosition = StringUtils::ParseInt32(value);
+                            cue->SetSnapToLines(TRUE);
+                            cue->SetLinePosition(StringUtils::ParseInt32(value));
                         }
                     // } catch (NumberFormatException e) {
                         // Slogger::W("cue setting", "%s is not numeric or percentage%s", name.string(), value.string());
@@ -210,16 +208,15 @@ ECode WebVttParser::ParseCueTimePhase::Parse(
                     // }
                 } else if (name.Equals(String("align"))) {
                     if (value.Equals(String("start"))) {
-                        assert(0 && "TODO");
-                        // mCue.mAlignment = ITextTrackCue::ALIGNMENT_START;
+                        cue->SetAlignment(ITextTrackCue::ALIGNMENT_START);
                     } else if (value.Equals(String("middle"))) {
-                        // mCue.mAlignment = ITextTrackCue::ALIGNMENT_MIDDLE;
+                        cue->SetAlignment(ITextTrackCue::ALIGNMENT_MIDDLE);
                     } else if (value.Equals(String("end"))) {
-                        // mCue.mAlignment = ITextTrackCue::ALIGNMENT_END;
+                        cue->SetAlignment(ITextTrackCue::ALIGNMENT_END);
                     } else if (value.Equals(String("left"))) {
-                        // mCue.mAlignment = ITextTrackCue::ALIGNMENT_LEFT;
+                        cue->SetAlignment(ITextTrackCue::ALIGNMENT_LEFT);
                     } else if (value.Equals(String("right"))) {
-                        // mCue.mAlignment = ITextTrackCue::ALIGNMENT_RIGHT;
+                        cue->SetAlignment(ITextTrackCue::ALIGNMENT_RIGHT);
                     } else {
                         Slogger::W("cue setting", "%s has invalid value %s", name.string(), value.string());
                         continue;
@@ -227,17 +224,19 @@ ECode WebVttParser::ParseCueTimePhase::Parse(
                 }
             }
 
-            // if (mCue.mLinePosition != NULL ||
-            //         mCue.mSize != 100 ||
-            //         (mCue.mWritingDirection !=
-            //             ITextTrackCue::WRITING_DIRECTION_HORIZONTAL)) {
-            //     mCue.mRegionId = String("");
-            // }
+            Int32 size;
+            Int32 writingDirection;
+
+            if (/*mCue.mLinePosition != NULL ||*/
+                    (cue->GetSize(&size), size) != 100 ||
+                    ((cue->GetWritingDirection(&writingDirection), writingDirection) !=
+                        ITextTrackCue::WRITING_DIRECTION_HORIZONTAL)) {
+                cue->SetRegionId(String(""));
+            }
 
            mHost->mPhase = mHost->mParseCueText;
            return NOERROR;
 }
-
 
 //===============================================================
 //                  WebVttParser::ParseCueTextPhase
@@ -353,13 +352,14 @@ ECode WebVttParser::YieldCue()
 {
     Int32 size = 0;
     mCueTexts->GetSize(&size);
-    //TODO
-    // if (mCue != NULL && size > 0) {
-    //     mCue.mStrings = new String[size];
-    //     mCueTexts.toArray(mCue.mStrings);
-    //     mCueTexts.clear();
-    //     mListener.onCueParsed(mCue);
-    // }
+    if (mCue != NULL && size > 0) {
+        mCue->mStrings = ArrayOf<String>::Alloc(size);
+    // ToArray(
+      //      [out, callee] ArrayOf<IInterface *> * array);
+    //     mCueTexts->ToArray(mCue.mStrings);
+        mCueTexts->Clear();
+        mListener->OnCueParsed(mCue);
+    }
     mCue = NULL;
     return NOERROR;
 }

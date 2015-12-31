@@ -61,7 +61,6 @@ SOURCES += CMediaRouterSimpleCallback.cpp
 SOURCES += CTextTrackCueSpan.cpp
 SOURCES += CWebVttRenderer.cpp
 SOURCES += MediaRouterSimpleCallback.cpp
-SOURCES += MediaTimeProvider.cpp
 SOURCES += SubtitleTrack.cpp
 SOURCES += SubtitleController.cpp
 SOURCES += SubtitleData.cpp
@@ -69,6 +68,7 @@ SOURCES += Tokenizer.cpp
 SOURCES += WebVttParser.cpp
 SOURCES += WebVttParserHelper.cpp
 SOURCES += CWebVttParserHelper.cpp
+SOURCES += TextTrackCue.cpp
 
 SOURCES += media.cpp
 
