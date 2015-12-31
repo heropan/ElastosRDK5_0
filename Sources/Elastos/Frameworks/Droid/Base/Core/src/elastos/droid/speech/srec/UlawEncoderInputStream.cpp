@@ -15,7 +15,7 @@ const String UlawEncoderInputStream::TAG("UlawEncoderInputStream");
 const Int32 UlawEncoderInputStream::MAX_ULAW = 8192;
 const Int32 UlawEncoderInputStream::SCALE_BITS = 16;
 
-CAR_INTERFACE_IMPL(UlawEncoderInputStream, IInputStream, IUlawEncoderInputStream);
+CAR_INTERFACE_IMPL_2(UlawEncoderInputStream, Object, IInputStream, IUlawEncoderInputStream);
 
 UlawEncoderInputStream::UlawEncoderInputStream()
 {}
@@ -196,6 +196,36 @@ ECode UlawEncoderInputStream::Available(
     VALIDATE_NOT_NULL(number)
     Int32 numberAvailable;
     *number = ((mIn->Available(&numberAvailable), numberAvailable) + mBufCount) / 2;
+    return NOERROR;
+}
+
+ECode UlawEncoderInputStream::Mark(
+    /* [in]  */ Int32 readLimit)
+{
+    return NOERROR;
+}
+
+ECode UlawEncoderInputStream::IsMarkSupported(
+    /* [out] */ Boolean* supported)
+{
+    return NOERROR;
+}
+
+ECode UlawEncoderInputStream::Reset()
+{
+    return NOERROR;
+}
+
+ECode UlawEncoderInputStream::Skip(
+    /* [in]  */ Int64 byteCount,
+    /* [out] */ Int64* number)
+{
+    return NOERROR;
+}
+
+ECode UlawEncoderInputStream::GetLock(
+    /* [out] */ IInterface** lockobj)
+{
     return NOERROR;
 }
 

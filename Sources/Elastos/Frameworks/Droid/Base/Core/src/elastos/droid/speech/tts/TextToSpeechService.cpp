@@ -1199,7 +1199,7 @@ AutoPtr<IITextToSpeechCallback> TextToSpeechService::CallbackMap::GetCallbackFor
 }
 
 /******************************TextToSpeechService*************************/
-CAR_INTERFACE_IMPL(TextToSpeech::TextToSpeechEngineInfo, Object, ITextToSpeechService)
+CAR_INTERFACE_IMPL(TextToSpeechService::TextToSpeechService, Object, ITextToSpeechService)
 
 TextToSpeechService::TextToSpeechService()
 {

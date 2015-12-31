@@ -40,7 +40,7 @@ public:
      *         larger than this value will not succeed.
      */
     CARAPI GetMaxBufferSize(
-        /* [out] */ Int32* ret);
+        /* [out] */ Int32* ret) = 0;
 
     /**
      * The service should call this when it starts to synthesize audio for this
@@ -60,7 +60,7 @@ public:
         /* [in] */ Int32 sampleRateInHz,
         /* [in] */ Int32 audioFormat,
         /* [in] */ Int32 channelCount,
-        /* [out] */ Int32* ret);
+        /* [out] */ Int32* ret) = 0;
 
     /**
      * The service should call this method when synthesized audio is ready for consumption.
@@ -80,7 +80,7 @@ public:
         /* [in] */ ArrayOf<Byte>* buffer,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 length,
-        /* [out] */ Int32* ret);
+        /* [out] */ Int32* ret) = 0;
 
     /**
      * The service should call this method when all the synthesized audio for a request has
@@ -95,7 +95,7 @@ public:
      *          {@link TextToSpeech#STOPPED}.
      */
     CARAPI Done(
-        /* [out] */ Int32* ret);
+        /* [out] */ Int32* ret) = 0;
 
     /**
      * The service should call this method if the speech synthesis fails.
@@ -103,7 +103,7 @@ public:
      * This method should only be called on the synthesis thread,
      * while in {@link TextToSpeechService#onSynthesizeText}.
      */
-    CARAPI Error();
+    CARAPI Error() = 0;
 
     /**
      * The service should call this method if the speech synthesis fails.
@@ -115,7 +115,7 @@ public:
      *      {@link TextToSpeech}
      */
     CARAPI Error(
-        /* [in] */ Int32 errorCode);
+        /* [in] */ Int32 errorCode) = 0;
 
     /**
      * Check if {@link #start} was called or not.
@@ -126,7 +126,7 @@ public:
      * Useful for checking if a fallback from network request is possible.
      */
     CARAPI HasStarted(
-        /* [out] */ Boolean* started);
+        /* [out] */ Boolean* started) = 0;
 
     /**
      * Check if {@link #done} was called or not.
@@ -137,7 +137,7 @@ public:
      * Useful for checking if a fallback from network request is possible.
      */
     CARAPI HasFinished(
-        /* [out] */ Boolean* finished);
+        /* [out] */ Boolean* finished) = 0;
 };
 
 } // namespace Tts

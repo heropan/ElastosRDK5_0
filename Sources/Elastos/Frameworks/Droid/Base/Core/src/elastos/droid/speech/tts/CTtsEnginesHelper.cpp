@@ -8,6 +8,10 @@ namespace Droid {
 namespace Speech {
 namespace Tts {
 
+CAR_SINGLETON_IMPL(CTtsEnginesHelper)
+
+CAR_INTERFACE_IMPL(CTtsEnginesHelper, Singleton, ITtsEnginesHelper)
+
 ECode CTtsEnginesHelper::NormalizeTTSLocale(
     /* [in] */ ILocale* ttsLocale,
     /* [out] */ ILocale** outLocale)
