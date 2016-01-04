@@ -1,6 +1,7 @@
 #include "Elastos.CoreLibrary.h"
 #include "Elastos.Droid.Media.h"
 #include "elastos/droid/media/WebVttParser.h"
+#include "elastos/droid/media/TextTrackCue.h"
 #include "elastos/droid/media/CWebVttRendererTextTrackCue.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
@@ -353,7 +354,7 @@ ECode WebVttParser::YieldCue()
     Int32 size = 0;
     mCueTexts->GetSize(&size);
     if (mCue != NULL && size > 0) {
-        mCue->mStrings = ArrayOf<String>::Alloc(size);
+        // ((TextTrackCue*)mCue)->mStrings = ArrayOf<String>::Alloc(size);
     // ToArray(
       //      [out, callee] ArrayOf<IInterface *> * array);
     //     mCueTexts->ToArray(mCue.mStrings);
