@@ -666,9 +666,10 @@ ECode Character::ToChar32s(
 
     Int32 charIndex = 0;
     GetOffsetByChars(src, 0, offset, &charIndex);
+    Int32 srcByteLength = src.GetByteLength();
     Int32 nextIndex = 0;
     for(Int32 i = 0; i < count; i++) {
-        (*dst)[i + dstOffset] = (Char32)GetCharAt(src, src.GetLength(), charIndex, &nextIndex);
+        (*dst)[i + dstOffset] = (Char32)GetCharAt(src, srcByteLength, charIndex, &nextIndex);
         charIndex = nextIndex;
     }
 
@@ -712,7 +713,7 @@ ECode Character::GetCharCount(
     if (seq.IsNull()) {
         return E_NULL_POINTER_EXCEPTION;
     }
-    Int32 len = seq.GetLength();
+    Int32 len = seq.GetByteLength();
     Int32 endIndex = offset + count;
     if (offset < 0 || count < 0 || endIndex > len) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;

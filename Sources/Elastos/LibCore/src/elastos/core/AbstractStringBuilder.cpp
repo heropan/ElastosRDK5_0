@@ -736,8 +736,8 @@ ECode AbstractStringBuilder::Reverse()
     mIsCounted = TRUE;
     String prevStr(prev);
 
-    Int32 charCount = GetLength();
-    Int32 len = prevStr.GetLength();
+    Int32 charCount = 0;
+    Int32 len = prevStr.GetByteLength();
     Character::GetCharCount(prevStr, 0, len, &charCount);
     AutoPtr< ArrayOf<Char32> > chars = ArrayOf<Char32>::Alloc(charCount);
     Character::ToChar32s(prevStr, 0, charCount, chars, 0);
