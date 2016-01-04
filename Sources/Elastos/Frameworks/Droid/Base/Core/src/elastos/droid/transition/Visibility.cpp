@@ -4,7 +4,9 @@
 #include "elastos/droid/transition/Visibility.h"
 #include "elastos/droid/transition/CTransitionValues.h"
 #include "elastos/droid/transition/CTransitionUtils.h"
+#include "elastos/droid/R.h"
 
+using Elastos::Droid::R;
 using Elastos::Droid::Animation::EIID_IAnimatorListener;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
@@ -50,11 +52,13 @@ ECode Visibility::constructor(
     /* [in] */ IAttributeSet* attrs)
 {
     Transition::constructor(context, attrs);
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+        const_cast<Int32*>(R::styleable::VisibilityTransition),
+        ArraySize(R::styleable::VisibilityTransition));
     AutoPtr<ITypedArray> a;
-    assert(0 && "TODO");
-//    context->ObtainStyledAttributes(attrs, R.styleable.VisibilityTransition, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
     Int32 mode = 0;
-//    a->GetInt32(R.styleable.VisibilityTransition_transitionVisibilityMode, 0, &mode);
+    a->GetInt32(R::styleable::VisibilityTransition_transitionVisibilityMode, 0, &mode);
     a->Recycle();
     if (mode != 0) {
         SetMode(mode);

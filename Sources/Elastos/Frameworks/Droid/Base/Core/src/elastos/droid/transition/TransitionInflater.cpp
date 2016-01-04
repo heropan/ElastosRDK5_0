@@ -17,13 +17,15 @@
 #include "elastos/droid/transition/CArcMotion.h"
 #include "elastos/droid/transition/CPatternPathMotion.h"
 #include "elastos/droid/transition/CScene.h"
-//#include "elastos/droid/utility/CArrayMap.h"
+#include "elastos/droid/utility/CArrayMap.h"
 #include "elastos/droid/utility/Xml.h"
+#include "elastos/droid/R.h"
 
+using Elastos::Droid::R;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::ITypedArray;
-//using Elastos::Droid::Utility::CArrayMap;
+using Elastos::Droid::Utility::CArrayMap;
 using Elastos::Droid::Utility::Xml;
 
 namespace Elastos {
@@ -43,8 +45,7 @@ CAR_INTERFACE_IMPL(TransitionInflater, Object, ITransitionInflater)
 
 TransitionInflater::TransitionInflater()
 {
-    assert(0 && "TODO");
-//    CArrayMap::New((IArrayMap**)&sConstructors);
+    CArrayMap::New((IArrayMap**)&sConstructors);
 }
 
 ECode TransitionInflater::constructor(
@@ -72,23 +73,10 @@ ECode TransitionInflater::InflateTransition(
     mContext->GetResources((IResources**)&res);
     AutoPtr<IXmlResourceParser> parser;
     res->GetXml(resource, (IXmlResourceParser**)&parser);
-//    try {
     AutoPtr<ITransition> p = CreateTransitionFromXml(IXmlPullParser::Probe(parser), Xml::AsAttributeSet(IXmlPullParser::Probe(parser)), NULL);
     *result = p;
     REFCOUNT_ADD(*result)
-    // } catch (XmlPullParserException e) {
-    //     InflateException ex = new InflateException(e.getMessage());
-    //     ex.initCause(e);
-    //     throw ex;
-    // } catch (IOException e) {
-    //     InflateException ex = new InflateException(
-    //             parser.getPositionDescription()
-    //                     + ": " + e.getMessage());
-    //     ex.initCause(e);
-    //     throw ex;
-    // } finally {
     parser->Close();
-//    }
     return NOERROR;
 }
 
@@ -103,23 +91,10 @@ ECode TransitionInflater::InflateTransitionManager(
     mContext->GetResources((IResources**)&res);
     AutoPtr<IXmlResourceParser> parser;
     res->GetXml(resource, (IXmlResourceParser**)&parser);
-//    try {
     AutoPtr<ITransitionManager> p = CreateTransitionManagerFromXml(IXmlPullParser::Probe(parser), Xml::AsAttributeSet(IXmlPullParser::Probe(parser)), sceneRoot);
     *result = p;
     REFCOUNT_ADD(*result)
-    // } catch (XmlPullParserException e) {
-    //     InflateException ex = new InflateException(e.getMessage());
-    //     ex.initCause(e);
-    //     throw ex;
-    // } catch (IOException e) {
-    //     InflateException ex = new InflateException(
-    //             parser.getPositionDescription()
-    //                     + ": " + e.getMessage());
-    //     ex.initCause(e);
-    //     throw ex;
-    // } finally {
     parser->Close();
-//    }
     return NOERROR;
 }
 
@@ -308,40 +283,39 @@ void TransitionInflater::GetTargetIds(
         String name;
         parser->GetName(&name);
         if (name.Equals(String("target"))) {
-            AutoPtr<ITypedArray> a;// = mContext->ObtainStyledAttributes(attrs, R.styleable.TransitionTarget);
+            AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+                const_cast<Int32*>(R::styleable::TransitionTarget),
+                ArraySize(R::styleable::TransitionTarget));
+            AutoPtr<ITypedArray> a;
+            mContext->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
             Int32 id = 0;
-//            a->GetResourceId(R.styleable.TransitionTarget_targetId, 0, &id);
+            a->GetResourceId(R::styleable::TransitionTarget_targetId, 0, &id);
             String transitionName;
             if (id != 0) {
                 transition->AddTarget(id);
             }
-            // else if ((a->GetResourceId(R.styleable.TransitionTarget_excludeId, 0, &id), id) != 0) {
-            //     transition->ExcludeTarget(id, TRUE);
-            // }
-            // else if ((transitionName = a->GetString(R.styleable.TransitionTarget_targetName))
-            //         != NULL) {
-            //     transition->AddTarget(transitionName);
-            // }
-            // else if ((transitionName = a->GetString(R.styleable.TransitionTarget_excludeName))
-            //         != NULL) {
-            //     transition->ExcludeTarget(transitionName, TRUE);
-            // }
-//             else {
-//                 String className = a->GetString(R.styleable.TransitionTarget_excludeClass);
-// //                 try {
-//                     if (className != NULL) {
-//                         Class clazz = Class.forName(className);
-//                         transition->ExcludeTarget(clazz, TRUE);
-//                     }
-//                     else if ((className =
-//                             a->GetString(R.styleable.TransitionTarget_targetClass)) != NULL) {
-//                         Class clazz = Class.forName(className);
-//                         transition->AddTarget(clazz);
-//                     }
-//                 // } catch (ClassNotFoundException e) {
-//                 //     throw new RuntimeException("Could not create " + className, e);
-//                 // }
-//             }
+            else if ((a->GetResourceId(R::styleable::TransitionTarget_excludeId, 0, &id), id) != 0) {
+                transition->ExcludeTarget(id, TRUE);
+            }
+            else if ((a->GetString(R::styleable::TransitionTarget_targetName, &transitionName), transitionName.IsNull())) {
+                transition->AddTarget(transitionName);
+            }
+            else if ((a->GetString(R::styleable::TransitionTarget_excludeName, &transitionName), transitionName.IsNull())) {
+                transition->ExcludeTarget(transitionName, TRUE);
+            }
+            else {
+                String className;
+                a->GetString(R::styleable::TransitionTarget_excludeClass, &className);
+                // if (className != NULL) {
+                //     Class clazz = Class.forName(className);
+                //     transition->ExcludeTarget(clazz, TRUE);
+                // }
+                // else if ((className =
+                //         a->GetString(R::styleable::TransitionTarget_targetClass)) != NULL) {
+                //     Class clazz = Class.forName(className);
+                //     transition->AddTarget(clazz);
+                // }
+            }
         }
         else {
             return;
@@ -391,12 +365,18 @@ void TransitionInflater::LoadTransition(
     /* [in] */ IViewGroup* sceneRoot,
     /* [in] */ ITransitionManager* transitionManager)
 {
-    assert(0 && "TODO");
-    AutoPtr<ITypedArray> a;// = mContext->ObtainStyledAttributes(attrs, R.styleable.TransitionManager);
-    Int32 transitionId;// = a->GetResourceId(R.styleable.TransitionManager_transition, -1);
-    Int32 fromId;// = a->GetResourceId(R.styleable.TransitionManager_fromScene, -1);
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+                const_cast<Int32*>(R::styleable::TransitionManager),
+                ArraySize(R::styleable::TransitionManager));
+    AutoPtr<ITypedArray> a;
+    mContext->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
+    Int32 transitionId = 0;
+    a->GetResourceId(R::styleable::TransitionManager_transition, -1, &transitionId);
+    Int32 fromId = 0;
+    a->GetResourceId(R::styleable::TransitionManager_fromScene, -1, &fromId);
     AutoPtr<IScene> fromScene = (fromId < 0) ? NULL: CScene::GetSceneForLayout(sceneRoot, fromId, mContext);
-    Int32 toId;// = a->GetResourceId(R.styleable.TransitionManager_toScene, -1);
+    Int32 toId = 0;
+    a->GetResourceId(R::styleable::TransitionManager_toScene, -1, &toId);
     AutoPtr<IScene> toScene = (toId < 0) ? NULL : CScene::GetSceneForLayout(sceneRoot, toId, mContext);
 
     if (transitionId >= 0) {

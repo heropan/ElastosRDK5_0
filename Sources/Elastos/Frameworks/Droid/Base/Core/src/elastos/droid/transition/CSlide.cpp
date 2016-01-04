@@ -4,11 +4,15 @@
 #include "elastos/droid/transition/CTransitionValues.h"
 #include "elastos/droid/transition/CSidePropagation.h"
 #include "elastos/droid/transition/TranslationAnimationCreator.h"
-//#include "elastos/droid/view/animation/CDecelerateInterpolator.h"
+#include "elastos/droid/view/animation/CDecelerateInterpolator.h"
+#include "elastos/droid/view/animation/CAccelerateInterpolator.h"
+#include "elastos/droid/R.h"
 
+using Elastos::Droid::R;
 using Elastos::Droid::Content::Res::ITypedArray;
-//using Elastos::Droid::View::Animation::CDecelerateInterpolator;
 using Elastos::Droid::View::IGravity;
+using Elastos::Droid::View::Animation::CAccelerateInterpolator;
+using Elastos::Droid::View::Animation::CDecelerateInterpolator;
 
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
@@ -119,10 +123,10 @@ ECode CSlide::CalculateSlideVerticalBottom::GetGoneY(
 // CSlide::
 //===============================================================
 
-String CSlide::TAG = String("Slide");
+const String CSlide::TAG("Slide");
 AutoPtr<ITimeInterpolator> CSlide::sDecelerate;
 AutoPtr<ITimeInterpolator> CSlide::sAccelerate;
-String CSlide::PROPNAME_SCREEN_POSITION = String("android:slide:screenPosition");
+const String CSlide::PROPNAME_SCREEN_POSITION("android:slide:screenPosition");
 
 AutoPtr<ICalculateSlide> CSlide::sCalculateLeft = new CalculateSlideHorizontalLeft();
 
@@ -138,8 +142,8 @@ CAR_INTERFACE_IMPL(CSlide, Visibility, ISlide)
 
 CSlide::CSlide()
 {
-//    CDecelerateInterpolator::New((ITimeInterpolator**)&sDecelerate);
-//    CAccelerateInterpolator::New((ITimeInterpolator**)&sAccelerate);
+    CDecelerateInterpolator::New((ITimeInterpolator**)&sDecelerate);
+    CAccelerateInterpolator::New((ITimeInterpolator**)&sAccelerate);
 }
 
 ECode CSlide::constructor()
@@ -159,11 +163,14 @@ ECode CSlide::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    assert(0 && "TODO");
-//    super(context, attrs);
-    AutoPtr<ITypedArray> a;// = context->ObtainStyledAttributes(attrs, R.styleable.Slide);
+    Visibility::constructor(context, attrs);
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+        const_cast<Int32*>(R::styleable::Slide),
+        ArraySize(R::styleable::Slide));
+    AutoPtr<ITypedArray> a;
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
     Int32 edge = 0;
-//    a->GetInt32(R.styleable.Slide_slideEdge, IGravity::BOTTOM, &edge);
+    a->GetInt32(R::styleable::Slide_slideEdge, IGravity::BOTTOM, &edge);
     a->Recycle();
     SetSlideEdge(edge);
     return NOERROR;
@@ -178,8 +185,7 @@ void CSlide::CaptureValues(
     view->GetLocationOnScreen(position);
     AutoPtr<ICharSequence> pro_pos;
     CString::New(PROPNAME_SCREEN_POSITION, (ICharSequence**)&pro_pos);
-    assert(0 && "TODO");
-//    ctv->mValues->Put(pro_pos, position);
+    // ctv->mValues->Put(pro_pos, position);
 }
 
 ECode CSlide::CaptureStartValues(

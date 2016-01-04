@@ -114,11 +114,11 @@ private:
         /* [in] */ ITransitionValues* transitionValues);
 
 private:
-//    static String LOG_TAG;
+    static const String TAG;
 
-    static String PROPNAME_BITMAP;
-    static String PROPNAME_DRAWABLE;
-    static String PROPNAME_BOUNDS;
+    static const String PROPNAME_BITMAP;
+    static const String PROPNAME_DRAWABLE;
+    static const String PROPNAME_BOUNDS;
 
     static AutoPtr<ITypeEvaluator> sRectEvaluator;
 

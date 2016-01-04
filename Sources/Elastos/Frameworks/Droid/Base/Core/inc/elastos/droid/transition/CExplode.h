@@ -68,8 +68,8 @@ private:
 private:
     static AutoPtr<ITimeInterpolator> sDecelerate;
     static AutoPtr<ITimeInterpolator> sAccelerate;
-    static String TAG;
-    static String PROPNAME_SCREEN_BOUNDS;
+    static const String TAG;
+    static const String PROPNAME_SCREEN_BOUNDS;
 
     AutoPtr<ArrayOf<Int32> > mTempLoc;
 };

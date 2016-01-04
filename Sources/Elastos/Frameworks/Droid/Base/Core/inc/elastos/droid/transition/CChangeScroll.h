@@ -43,8 +43,8 @@ public:
         /* [in] */ ITransition* obj);
 
 private:
-    static String PROPNAME_SCROLL_X;
-    static String PROPNAME_SCROLL_Y;
+    static const String PROPNAME_SCROLL_X;
+    static const String PROPNAME_SCROLL_Y;
 };
 
 } // namespace Transition

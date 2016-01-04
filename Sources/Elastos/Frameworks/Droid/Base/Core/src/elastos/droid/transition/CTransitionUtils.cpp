@@ -4,9 +4,12 @@
 #include "elastos/droid/transition/CTransitionUtils.h"
 #include "elastos/droid/transition/CTransitionSet.h"
 #include "elastos/droid/animation/CAnimatorSet.h"
+#include "elastos/droid/graphics/CBitmap.h"
 #include "elastos/droid/graphics/CRectF.h"
-//#include "elastos/droid/view/View.h"
-//#include "elastos/droid/widget/ImageView.h"
+#include "elastos/droid/graphics/CCanvas.h"
+#include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/view/View.h"
+#include "elastos/droid/widget/CImageView.h"
 
 #include <elastos/core/Math.h>
 
@@ -16,9 +19,13 @@ using Elastos::Droid::Animation::EIID_ITypeEvaluator;
 using Elastos::Droid::Graphics::IRectF;
 using Elastos::Droid::Graphics::CRectF;
 using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::CCanvas;
+using Elastos::Droid::Graphics::CMatrix;
+using Elastos::Droid::Graphics::CBitmap;
+using Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
 using Elastos::Droid::Widget::IImageView;
+using Elastos::Droid::Widget::CImageView;
 using Elastos::Droid::Widget::ImageViewScaleType_CENTER_CROP;
-//using Elastos::Droid::View::View;
 
 namespace Elastos {
 namespace Droid {
@@ -111,8 +118,7 @@ ECode CTransitionUtils::CopyViewImage(
     VALIDATE_NOT_NULL(result)
 
     AutoPtr<IMatrix> matrix;
-    assert(0 && "TODO");
-//    CMatrix::New((IMatrix**)&matrix);
+    CMatrix::New((IMatrix**)&matrix);
     Int32 x = 0, y = 0;
     parent->GetScrollX(&x);
     parent->GetScrollY(&y);
@@ -134,17 +140,18 @@ ECode CTransitionUtils::CopyViewImage(
 
     AutoPtr<IContext> c;
     view->GetContext((IContext**)&c);
-    assert(0 && "TODO");
-    AutoPtr<IImageView> copy;// = new ImageView(c);
+    AutoPtr<IImageView> copy;
+    CImageView::New(c, (IImageView**)&copy);
     copy->SetScaleType(ImageViewScaleType_CENTER_CROP);
     AutoPtr<IBitmap> bitmap;
     CreateViewBitmap(view, matrix, bounds, (IBitmap**)&bitmap);
     if (bitmap != NULL) {
         copy->SetImageBitmap(bitmap);
     }
-    assert(0 && "TODO");
-    Int32 widthSpec;// = View::MeasureSpec::MakeMeasureSpec(right - left, MeasureSpec::EXACTLY);
-    Int32 heightSpec;// = MeasureSpec::MakeMeasureSpec(bottom - top, MeasureSpec::EXACTLY);
+    Int32 widthSpec = Elastos::Droid::View::View::MeasureSpec::MakeMeasureSpec(right - left,
+                            Elastos::Droid::View::View::MeasureSpec::EXACTLY);
+    Int32 heightSpec = Elastos::Droid::View::View::MeasureSpec::MakeMeasureSpec(bottom - top,
+                            Elastos::Droid::View::View::MeasureSpec::EXACTLY);
     IView::Probe(copy)->Measure(widthSpec, heightSpec);
     IView::Probe(copy)->Layout(left, top, right, bottom);
     *result = IView::Probe(copy);
@@ -160,7 +167,7 @@ ECode CTransitionUtils::CreateViewBitmap(
 {
     VALIDATE_NOT_NULL(result)
 
-    Float w, h;
+    Float w = 0.0f, h = 0.0f;
     bounds->GetWidth(&w);
     bounds->GetHeight(&h);
     AutoPtr<IBitmap> bitmap;
@@ -174,8 +181,9 @@ ECode CTransitionUtils::CreateViewBitmap(
         Boolean b;
         matrix->PostTranslate(-cB->mLeft, -cB->mTop, &b);
         matrix->PostScale(scale, scale, &b);
-//        bitmap = Bitmap::CreateBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888);
-        AutoPtr<ICanvas> canvas;// = new Canvas(bitmap);
+        CBitmap::CreateBitmap(bitmapWidth, bitmapHeight, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
+        AutoPtr<ICanvas> canvas;
+        CCanvas::New(bitmap, (ICanvas**)&canvas);
         canvas->Concat(matrix);
         view->Draw(canvas);
     }
@@ -195,8 +203,7 @@ CTransitionUtils::MatrixEvaluator::MatrixEvaluator()
 
     mTempEndValues = ArrayOf<Float>::Alloc(9);
 
-    assert(0 && "TODO");
-//    CMatrix::New((IMatrix**)&mTempMatrix);
+    CMatrix::New((IMatrix**)&mTempMatrix);
 }
 
 ECode CTransitionUtils::MatrixEvaluator::Evaluate(

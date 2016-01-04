@@ -64,8 +64,8 @@ public:
     // @Override
     virtual CARAPI Evaluate(
         /* [in] */ Float fraction,
-        /* [in] */ IRect* startValue,
-        /* [in] */ IRect* endValue,
+        /* [in] */ IInterface* startValue,
+        /* [in] */ IInterface* endValue,
         /* [out] */ IInterface** rect);
 
 private:

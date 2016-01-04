@@ -6,18 +6,21 @@
 #include "elastos/droid/transition/CTransitionValues.h"
 #include "elastos/droid/transition/TransitionValuesMaps.h"
 #include "elastos/droid/transition/TransitionValuesMaps.h"
-//#include "elastos/droid/graphics/CPath.h"
-//#include "elastos/droid/utility/CArrayMap.h"
+#include "elastos/droid/graphics/CPath.h"
+#include "elastos/droid/utility/CArrayMap.h"
 //#include "elastos/droid/utility/CSparseInt64Array.h"
 #include "elastos/droid/view/animation/AnimationUtils.h"
+#include "elastos/droid/R.h"
 
 #include <elastos/core/Math.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::R;
 using Elastos::Droid::Animation::EIID_IAnimatorListener;
 using Elastos::Droid::Content::Res::ITypedArray;
-//using Elastos::Droid::Graphics::CPath;
-//using Elastos::Droid::Utility::CArrayMap;
+using Elastos::Droid::Graphics::CPath;
+using Elastos::Droid::Utility::CArrayMap;
 using Elastos::Droid::Utility::ISparseInt64Array;
 //using Elastos::Droid::Utility::CSparseInt64Array;
 using Elastos::Droid::View::Animation::IInterpolator;
@@ -39,6 +42,7 @@ using Elastos::Utility::IMap;
 using Elastos::Utility::IStringTokenizer;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::ISet;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -47,11 +51,11 @@ namespace Transition {
 //===============================================================
 // Transition::
 //===============================================================
-//String Transition::LOG_TAG = "Transition";
+const String Transition::TAG("Transition");
 Boolean Transition::DBG = FALSE;
 
 const Int32 Transition::MATCH_INSTANCE = 0x1;
-Int32 Transition::MATCH_FIRST = MATCH_INSTANCE;
+const Int32 Transition::MATCH_FIRST = MATCH_INSTANCE;
 
 const Int32 Transition::MATCH_NAME = 0x2;
 
@@ -59,14 +63,14 @@ const Int32 Transition::MATCH_ID = 0x3;
 
 const Int32 Transition::MATCH_ITEM_ID = 0x4;
 
-Int32 Transition::MATCH_LAST = MATCH_ITEM_ID;
+const Int32 Transition::MATCH_LAST = MATCH_ITEM_ID;
 
-String Transition::MATCH_INSTANCE_STR = String("instance");
-String Transition::MATCH_NAME_STR = String("name");
-/** To be removed before L release */
-String Transition::MATCH_VIEW_NAME_STR = String("viewName");
-String Transition::MATCH_ID_STR = String("id");
-String Transition::MATCH_ITEM_ID_STR = String("itemId");
+const String Transition::MATCH_INSTANCE_STR("instance");
+const String Transition::MATCH_NAME_STR("name");
+
+const String Transition::MATCH_VIEW_NAME_STR("viewName");
+const String Transition::MATCH_ID_STR("id");
+const String Transition::MATCH_ITEM_ID_STR("itemId");
 
 AutoPtr<ArrayOf<Int32> > Transition::DEFAULT_MATCH_ORDER;
 
@@ -94,27 +98,30 @@ ECode Transition::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+        const_cast<Int32*>(R::styleable::Transition),
+        ArraySize(R::styleable::Transition));
     AutoPtr<ITypedArray> a;
-    assert(0 && "TODO");
-//    context->ObtainStyledAttributes(attrs, R.styleable.Transition, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
     Int64 duration = 0;
-//    a->GetInt(R.styleable.Transition_duration, -1, &duration);
+    a->GetInt32(R::styleable::Transition_duration, -1, (Int32*)&duration);
     if (duration >= 0) {
         SetDuration(duration);
     }
     Int64 startDelay = 0;
-//    a->GetInt(R.styleable.Transition_startDelay, -1, &startDelay);
+    a->GetInt32(R::styleable::Transition_startDelay, -1, (Int32*)&startDelay);
     if (startDelay > 0) {
         SetStartDelay(startDelay);
     }
     Int32 resID = 0;
-//    a->GetResourceId(com.android.internal.R.styleable.Animator_interpolator, 0, &resID);
+    a->GetResourceId(R::styleable::Animator_interpolator, 0, &resID);
     if (resID > 0) {
         AutoPtr<IInterpolator> pol;
         AnimationUtils::LoadInterpolator(context, resID, (IInterpolator**)&pol);
         SetInterpolator(ITimeInterpolator::Probe(pol));
     }
-    String matchOrder;// = a->GetString(R.styleable.Transition_matchOrder);
+    String matchOrder;
+    a->GetString(R::styleable::Transition_matchOrder, &matchOrder);
     if (matchOrder != NULL) {
         SetMatchOrder(ParseMatchOrder(matchOrder));
     }
@@ -440,10 +447,9 @@ void Transition::MatchStartAndEnd(
     AutoPtr<TransitionValuesMaps> cStart = (TransitionValuesMaps*)startValues;
     AutoPtr<TransitionValuesMaps> cEnd = (TransitionValuesMaps*)endValues;
     AutoPtr<IArrayMap> unmatchedStart;
-    assert(0 && "TODO");
-//    CArrayMap::New(cStart->mViewValues, (IArrayMap**)&unmatchedStart);
+    CArrayMap::New(cStart->mViewValues, (IArrayMap**)&unmatchedStart);
     AutoPtr<IArrayMap> unmatchedEnd;
-//    CArrayMap::New(cEnd->mViewValues, (IArrayMap**)&unmatchedEnd);
+    CArrayMap::New(cEnd->mViewValues, (IArrayMap**)&unmatchedEnd);
 
     for (Int32 i = 0; i < mMatchOrder->GetLength(); i++) {
         switch ((*mMatchOrder)[i]) {
@@ -474,9 +480,9 @@ ECode Transition::CreateAnimators(
     /* [in] */ IArrayList* startValuesList,
     /* [in] */ IArrayList* endValuesList)
 {
-    // if (DBG) {
-    //     Log.d(LOG_TAG, "createAnimators() for " + this);
-    // }
+    if (DBG) {
+        Logger::D(LOG_TAG, "createAnimators() for %p", this);
+    }
     AutoPtr<IArrayMap> runningAnimators = GetRunningAnimators();
     Int64 minStartDelay = Elastos::Core::Math::INT64_MAX_VALUE;
     Int32 minAnimator = 0;
@@ -616,8 +622,7 @@ ECode Transition::CreateAnimators(
             mAnimators->Get(index, (IInterface**)&anim);
             AutoPtr<IAnimator> animator = IAnimator::Probe(anim);
             Int64 vl = 0;
-            assert(0 && "TODO");
-//            startDelays->ValueAt(i, &vl);
+            startDelays->ValueAt(i, &vl);
             Int64 d = 0;
             animator->GetStartDelay(&d);
             Int64 delay = vl - minStartDelay + d;
@@ -721,9 +726,9 @@ AutoPtr<IArrayMap> Transition::GetRunningAnimators()
 
 ECode Transition::RunAnimators()
 {
-    // if (DBG) {
-    //     Log.d(LOG_TAG, "runAnimators() on " + this);
-    // }
+    if (DBG) {
+        Logger::D(LOG_TAG, "runAnimators() on %p", this);
+    }
     Start();
     AutoPtr<IArrayMap> runningAnimators = GetRunningAnimators();
     // Now start every Animator that was previously created for this transition
@@ -734,9 +739,9 @@ ECode Transition::RunAnimators()
         AutoPtr<IInterface> p;
         it->GetNext((IInterface**)&p);
         AutoPtr<IAnimator> anim = IAnimator::Probe(p);
-        // if (DBG) {
-        //     Log.d(LOG_TAG, "  anim: " + anim);
-        // }
+        if (DBG) {
+            Logger::D(LOG_TAG, "  anim: %p", anim.Get());
+        }
         Boolean bContainsKey = FALSE;
         if ((IMap::Probe(runningAnimators)->ContainsKey(anim, &bContainsKey), bContainsKey)) {
             Start();
@@ -1414,15 +1419,15 @@ ECode Transition::PlayTransition(
                 if (cancel) {
                     Boolean bRun = FALSE, bStart = FALSE;
                     if ((anim->IsRunning(&bRun), bRun) || (anim->IsStarted(&bStart), bStart)) {
-                        // if (DBG) {
-                        //     Log.d(LOG_TAG, "Canceling anim " + anim);
-                        // }
+                        if (DBG) {
+                            Logger::D(LOG_TAG, "Canceling anim %p", anim.Get());
+                        }
                         anim->Cancel();
                     }
                     else {
-                        // if (DBG) {
-                        //     Log.d(LOG_TAG, "removing anim from info list: " + anim);
-                        // }
+                        if (DBG) {
+                            Logger::D(LOG_TAG, "removing anim from info list: %p", anim.Get());
+                        }
                         IMap::Probe(runningAnimators)->Remove(anim);
                     }
                 }
@@ -1508,9 +1513,9 @@ Boolean Transition::IsValueChanged(
         changed = !Object::Equals(oldValue, newValue);
     }
     if (DBG && changed) {
-        // Log.d(LOG_TAG, "Transition.playTransition: " +
-        //         "oldValue != newValue for " + key +
-        //         ": old, new = " + oldValue + ", " + newValue);
+        Logger::D(LOG_TAG, "Transition.playTransition: "
+                "oldValue != newValue for %s"
+                ": old, new = %p, %p", (const char*)key, oldValue.Get(), newValue.Get());
     }
     return changed;
 }
@@ -2026,8 +2031,7 @@ ECode Transition::PathMotionOverride::GetPath(
     /* [out] */ IPath** result)
 {
     AutoPtr<IPath> path;
-    assert(0 && "TODO");
-//    CPath::New((IPath**)&path);
+    CPath::New((IPath**)&path);
     path->MoveTo(startX, startY);
     path->LineTo(endX, endY);
     *result = path.Get();

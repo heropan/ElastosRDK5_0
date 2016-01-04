@@ -1,14 +1,16 @@
 
+#include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/transition/CArcMotion.h"
+#include "elastos/droid/graphics/CPath.h"
 #include "elastos/droid/utility/FloatMath.h"
 #include "elastos/droid/R.h"
-//#include "elastos/droid/graphics/CPath.h"
+
 #include <elastos/core/Math.h>
 
 using Elastos::Droid::R;
 using Elastos::Droid::Content::Res::ITypedArray;
-//using Elastos::Droid::Graphics::CPath;
+using Elastos::Droid::Graphics::CPath;
 using Elastos::Droid::Utility::FloatMath;
 
 namespace Elastos {
@@ -34,22 +36,24 @@ ECode CArcMotion::constructor(
     /* [in] */ IAttributeSet* attrs)
 {
     PathMotion::constructor(context, attrs);
-    assert(0 && "TODO");
-    // AutoPtr<ITypedArray> a;
-    // context->ObtainStyledAttributes(attrs, R::styleable::ArcMotion, (ITypedArray**)&a);
-    // Float minimumVerticalAngle;
-    // a->GetFloat(R::styleable::ArcMotion_minimumVerticalAngle,
-    //         DEFAULT_MIN_ANGLE_DEGREES, &minimumVerticalAngle);
-    // SetMinimumVerticalAngle(minimumVerticalAngle);
-    // Float minimumHorizontalAngle;
-    // a->GetFloat(R::styleable::ArcMotion_minimumHorizontalAngle,
-    //         DEFAULT_MIN_ANGLE_DEGREES, &minimumHorizontalAngle);
-    // SetMinimumHorizontalAngle(minimumHorizontalAngle);
-    // Float maximumAngle;
-    // a->GetFloat(R::styleable::ArcMotion_maximumAngle,
-    //         DEFAULT_MAX_ANGLE_DEGREES, &maximumAngle);
-    // SetMaximumAngle(maximumAngle);
-    // a->Recycle();
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+        const_cast<Int32*>(R::styleable::ArcMotion),
+        ArraySize(R::styleable::ArcMotion));
+    AutoPtr<ITypedArray> a;
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
+    Float minimumVerticalAngle;
+    a->GetFloat(R::styleable::ArcMotion_minimumVerticalAngle,
+            DEFAULT_MIN_ANGLE_DEGREES, &minimumVerticalAngle);
+    SetMinimumVerticalAngle(minimumVerticalAngle);
+    Float minimumHorizontalAngle;
+    a->GetFloat(R::styleable::ArcMotion_minimumHorizontalAngle,
+            DEFAULT_MIN_ANGLE_DEGREES, &minimumHorizontalAngle);
+    SetMinimumHorizontalAngle(minimumHorizontalAngle);
+    Float maximumAngle;
+    a->GetFloat(R::styleable::ArcMotion_maximumAngle,
+            DEFAULT_MAX_ANGLE_DEGREES, &maximumAngle);
+    SetMaximumAngle(maximumAngle);
+    a->Recycle();
     return NOERROR;
 }
 
@@ -137,12 +141,11 @@ ECode CArcMotion::GetPath(
     VALIDATE_NOT_NULL(result)
 
     AutoPtr<IPath> path;
-    assert(0 && "TODO");
-//    CPath::New((IPath**)&path);
+    CPath::New((IPath**)&path);
     path->MoveTo(startX, startY);
 
-    Float ex;
-    Float ey;
+    Float ex = 0.0f;
+    Float ey = 0.0f;
     if (startY == endY) {
         ex = (startX + endX) / 2;
         ey = startY + mMinimumHorizontalTangent * Elastos::Core::Math::Abs(endX - startX) / 2;

@@ -20,8 +20,8 @@ namespace Transition {
 //===============================================================
 // CChangeScroll::
 //===============================================================
-String CChangeScroll::PROPNAME_SCROLL_X = String("android:changeScroll:x");
-String CChangeScroll::PROPNAME_SCROLL_Y = String("android:changeScroll:y");
+const String CChangeScroll::PROPNAME_SCROLL_X("android:changeScroll:x");
+const String CChangeScroll::PROPNAME_SCROLL_Y("android:changeScroll:y");
 
 CAR_OBJECT_IMPL(CChangeScroll)
 

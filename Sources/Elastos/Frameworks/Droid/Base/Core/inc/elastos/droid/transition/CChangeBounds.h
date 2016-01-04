@@ -219,10 +219,10 @@ public:
     Boolean mReparent;
 
 private:
-    static String PROPNAME_BOUNDS;
-    static String PROPNAME_PARENT;
-    static String PROPNAME_WINDOW_X;
-    static String PROPNAME_WINDOW_Y;
+    static const String PROPNAME_BOUNDS;
+    static const String PROPNAME_PARENT;
+    static const String PROPNAME_WINDOW_X;
+    static const String PROPNAME_WINDOW_Y;
     static AutoPtr<ArrayOf<String> > sTransitionProperties;
 
     static AutoPtr<IProperty> DRAWABLE_ORIGIN_PROPERTY;

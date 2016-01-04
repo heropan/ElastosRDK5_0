@@ -726,17 +726,17 @@ public:
     AutoPtr<IArrayMap> mNameOverrides;
 
 private:
-//    static String LOG_TAG;
+    static const String TAG;
 
-    static Int32 MATCH_FIRST;
-    static Int32 MATCH_LAST;
+    static const Int32 MATCH_FIRST;
+    static const Int32 MATCH_LAST;
 
-    static String MATCH_INSTANCE_STR;
-    static String MATCH_NAME_STR;
+    static const String MATCH_INSTANCE_STR;
+    static const String MATCH_NAME_STR;
     /** To be removed before L release */
-    static String MATCH_VIEW_NAME_STR;
-    static String MATCH_ID_STR;
-    static String MATCH_ITEM_ID_STR;
+    static const String MATCH_VIEW_NAME_STR;
+    static const String MATCH_ID_STR;
+    static const String MATCH_ITEM_ID_STR;
 
     static AutoPtr<ArrayOf<Int32> > DEFAULT_MATCH_ORDER;
 

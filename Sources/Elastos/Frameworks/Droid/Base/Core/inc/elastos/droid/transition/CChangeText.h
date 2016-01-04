@@ -217,12 +217,12 @@ public:
         /* [in] */ IChangeText* obj);
 
 private:
-//    static String LOG_TAG;
+    static const String TAG;
 
-    static String PROPNAME_TEXT;
-    static String PROPNAME_TEXT_SELECTION_START;
-    static String PROPNAME_TEXT_SELECTION_END;
-    static String PROPNAME_TEXT_COLOR;
+    static const String PROPNAME_TEXT;
+    static const String PROPNAME_TEXT_SELECTION_START;
+    static const String PROPNAME_TEXT_SELECTION_END;
+    static const String PROPNAME_TEXT_COLOR;
 
     Int32 mChangeBehavior;
     static AutoPtr<ArrayOf<String> > sTransitionProperties;

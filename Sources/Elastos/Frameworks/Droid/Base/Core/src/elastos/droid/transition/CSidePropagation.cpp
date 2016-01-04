@@ -16,7 +16,7 @@ namespace Transition {
 // CSidePropagation::
 //===============================================================
 
-String CSidePropagation::TAG = String("SlidePropagation");
+const String CSidePropagation::TAG("SlidePropagation");
 
 CAR_OBJECT_IMPL(CSidePropagation)
 
@@ -119,7 +119,6 @@ Int32 CSidePropagation::Distance(
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom)
 {
-    assert(0 && "TODO"); //case value same
     Int32 distance = 0;
     // switch (mSide) {
     //     case IGravity::LEFT:

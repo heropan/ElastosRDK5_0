@@ -5,22 +5,22 @@
 #include "elastos/droid/transition/CTransitionUtils.h"
 #include "elastos/droid/animation/ObjectAnimator.h"
 #include "elastos/droid/graphics/CRect.h"
-//#include "elastos/droid/graphics/CMatrix.h"
-//#include "elastos/droid/widget/ImageView.h"
+#include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/widget/ImageView.h"
 
 using Elastos::Droid::Animation::ObjectAnimator;
 using Elastos::Droid::Animation::IObjectAnimator;
 using Elastos::Droid::Animation::ITypeConverter;
 using Elastos::Droid::Animation::EIID_ITypeEvaluator;
 using Elastos::Droid::Graphics::CRect;
-//using Elastos::Droid::Graphics::CMatrix;
+using Elastos::Droid::Graphics::CMatrix;
 using Elastos::Droid::Graphics::ECLSID_CMatrix;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Transition::CTransitionValues;
 using Elastos::Droid::Transition::CTransitionUtils;
 using Elastos::Droid::Utility::EIID_IProperty;
 using Elastos::Droid::Widget::EIID_IImageView;
-//using Elastos::Droid::Widget::ImageView;
+using Elastos::Droid::Widget::ImageView;
 using Elastos::Droid::Widget::ImageViewScaleType;
 
 using Elastos::Core::ICharSequence;
@@ -33,10 +33,10 @@ namespace Transition {
 //===============================================================
 // CChangeImageTransform::
 //===============================================================
-String CChangeImageTransform::TAG = String("ChangeImageTransform");
+String CChangeImageTransform::TAG("ChangeImageTransform");
 
-String CChangeImageTransform::PROPNAME_MATRIX = String("android:changeImageTransform:matrix");
-String CChangeImageTransform::PROPNAME_BOUNDS = String("android:changeImageTransform:bounds");
+String CChangeImageTransform::PROPNAME_MATRIX("android:changeImageTransform:matrix");
+String CChangeImageTransform::PROPNAME_BOUNDS("android:changeImageTransform:bounds");
 
 AutoPtr<ArrayOf<String> > CChangeImageTransform::sTransitionProperties = ArrayOf<String>::Alloc(2);
 
@@ -105,8 +105,7 @@ void CChangeImageTransform::CaptureValues(
         Boolean bIsIdentity = FALSE;
         matrix->IsIdentity(&bIsIdentity);
         if (!bIsIdentity) {
-            assert(0 && "TODO");
-//            CMatrix::New(matrix, (IMatrix**)&matrix);
+            CMatrix::New(matrix, (IMatrix**)&matrix);
         }
         else {
             Int32 drawableWidth;
@@ -119,8 +118,7 @@ void CChangeImageTransform::CaptureValues(
                 bounds->GetHeight(&h);
                 Float scaleX = ((Float) w) / drawableWidth;
                 Float scaleY = ((Float) h) / drawableHeight;
-                assert(0 && "TODO");
-                // CMatrix::New((IMatrix**)&matrix);
+                CMatrix::New((IMatrix**)&matrix);
                 matrix->SetScale(scaleX, scaleY);
             }
             else {
@@ -131,8 +129,7 @@ void CChangeImageTransform::CaptureValues(
     else {
         AutoPtr<IMatrix> m;
         imageView->GetImageMatrix((IMatrix**)&m);
-        assert(0 && "TODO");
-        // CMatrix::New(m, (IMatrix**)&matrix);
+        CMatrix::New(m, (IMatrix**)&matrix);
     }
     AutoPtr<ICharSequence> pro_matrix;
     CString::New(PROPNAME_MATRIX, (ICharSequence**)&pro_matrix);
@@ -218,12 +215,10 @@ ECode CChangeImageTransform::CreateAnimator(
     }
     else {
         if (startMatrix == NULL) {
-            assert(0 && "TODO");
-        //    startMatrix = CMatrix::IDENTITY_MATRIX;
+            startMatrix = CMatrix::IDENTITY_MATRIX;
         }
         if (endMatrix == NULL) {
-            assert(0 && "TODO");
-        //    endMatrix = CMatrix::IDENTITY_MATRIX;
+            endMatrix = CMatrix::IDENTITY_MATRIX;
         }
         ANIMATED_TRANSFORM_PROPERTY->Set(imageView, startMatrix);
         animator = CreateMatrixAnimator(imageView, startMatrix, endMatrix);
@@ -297,9 +292,8 @@ ECode CChangeImageTransform::MatrixProperty::Set(
     /* [in] */ IInterface* object,
     /* [in] */ IInterface* value)
 {
-    assert(0 && "TODO");
-//    AutoPtr<ImageView> cobj = (ImageView*)IImageView::Probe(object);
-//    cobj->AnimateTransform(value);
+    AutoPtr<ImageView> cobj = (ImageView*)IImageView::Probe(object);
+    cobj->AnimateTransform(IMatrix::Probe(value));
     return NOERROR;
 }
 

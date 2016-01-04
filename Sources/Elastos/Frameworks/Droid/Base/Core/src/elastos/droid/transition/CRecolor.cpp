@@ -24,8 +24,8 @@ namespace Transition {
 // CRecolor::
 //===============================================================
 
-String CRecolor::PROPNAME_BACKGROUND = String("android:recolor:background");
-String CRecolor::PROPNAME_TEXT_COLOR = String("android:recolor:textColor");
+const String CRecolor::PROPNAME_BACKGROUND("android:recolor:background");
+const String CRecolor::PROPNAME_TEXT_COLOR("android:recolor:textColor");
 
 CAR_OBJECT_IMPL(CRecolor)
 

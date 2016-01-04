@@ -31,7 +31,7 @@ public:
         /* [out] */ IAnimator** result);
 
 private:
-    static String PROPNAME_ROTATION;
+    static const String PROPNAME_ROTATION;
 };
 
 } // namespace Transition

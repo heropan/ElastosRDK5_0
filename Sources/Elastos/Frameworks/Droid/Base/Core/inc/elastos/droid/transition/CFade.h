@@ -116,7 +116,7 @@ public:
 private:
     static Boolean DBG;
 
-//    static String LOG_TAG;
+    static const String TAG;
 };
 
 } // namespace Transition

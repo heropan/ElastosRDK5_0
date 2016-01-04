@@ -149,10 +149,10 @@ private:
         /* [in] */ ITransitionValues* transitionValues);
 
 private:
-    static String TAG;
+    static const String TAG;
     static AutoPtr<ITimeInterpolator> sDecelerate;
     static AutoPtr<ITimeInterpolator> sAccelerate;
-    static String PROPNAME_SCREEN_POSITION;
+    static const String PROPNAME_SCREEN_POSITION;
     AutoPtr<ICalculateSlide> mSlideCalculator;
     Int32 mSlideEdge;
 

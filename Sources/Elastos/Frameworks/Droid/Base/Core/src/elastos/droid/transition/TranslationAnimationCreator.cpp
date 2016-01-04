@@ -4,16 +4,17 @@
 #include "elastos/droid/transition/CTransitionValues.h"
 #include "elastos/droid/animation/ObjectAnimator.h"
 #include "elastos/droid/graphics/CPath.h"
-//#include "elastos/droid/view/View.h"
+#include "elastos/droid/view/View.h"
+#include "elastos/droid/R.h"
 
 #include <elastos/core/Math.h>
 
+using Elastos::Droid::R;
 using Elastos::Droid::Animation::IAnimatorListener;
 using Elastos::Droid::Animation::IObjectAnimator;
 using Elastos::Droid::Animation::ObjectAnimator;
 using Elastos::Droid::Graphics::IPath;
 using Elastos::Droid::Graphics::CPath;
-//using Elastos::Droid::View::View;
 
 namespace Elastos {
 namespace Droid {
@@ -39,8 +40,9 @@ AutoPtr<IAnimator> TranslationAnimationCreator::CreateAnimation(
     Float terminalY = 0;
     view->GetTranslationY(&terminalY);
     AutoPtr<ArrayOf<Int32> > startPosition;
+    AutoPtr<CTransitionValues> cvls = (CTransitionValues*)values;
     assert(0 && "TODO");
-//    values->mView->GetTag(R.id.transitionPosition, (ArrayOf<Int32>**)&startPosition);
+    // cvls->mView->GetTag(R::id::transitionPosition, (ArrayOf<Int32>**)&startPosition);
     if (startPosition != NULL) {
         startX = (*startPosition)[0] - viewPosX + terminalX;
         startY = (*startPosition)[1] - viewPosY + terminalY;
@@ -58,9 +60,10 @@ AutoPtr<IAnimator> TranslationAnimationCreator::CreateAnimation(
     CPath::New((IPath**)&path);
     path->MoveTo(startX, startY);
     path->LineTo(endX, endY);
-    assert(0 && "TODO");
-    AutoPtr<IObjectAnimator> anim;// = ObjectAnimator::OfFloat(view, Elastos::Droid::View::View::TRANSLATION_X, View::TRANSLATION_Y,
-            //path);
+    AutoPtr<IObjectAnimator> anim = ObjectAnimator::OfFloat(view,
+                                        Elastos::Droid::View::View::TRANSLATION_X,
+                                        Elastos::Droid::View::View::TRANSLATION_Y,
+                                        path);
 
     AutoPtr<CTransitionValues> ctv = (CTransitionValues*)values;
     AutoPtr<TransitionPositionListener> listener = new TransitionPositionListener(view, ctv->mView,
@@ -95,7 +98,7 @@ TranslationAnimationCreator::TransitionPositionListener::TransitionPositionListe
     assert(0 && "TODO");
 //    mTransitionPosition = (Int32[]) mViewInHierarchy->GetTag(R.id.transitionPosition);
     if (mTransitionPosition != NULL) {
-//        mViewInHierarchy->SetTagInternal(R.id.transitionPosition, NULL);
+        mViewInHierarchy->SetTagInternal(R::id::transitionPosition, NULL);
     }
 }
 
@@ -111,7 +114,7 @@ ECode TranslationAnimationCreator::TransitionPositionListener::OnAnimationCancel
     (*mTransitionPosition)[0] = Elastos::Core::Math::Round(mStartX + x);
     (*mTransitionPosition)[1] = Elastos::Core::Math::Round(mStartY + y);
     assert(0 && "TODO");
-//    mViewInHierarchy->SetTagInternal(R.id.transitionPosition, mTransitionPosition);
+    // mViewInHierarchy->SetTagInternal(R::id::transitionPosition, mTransitionPosition);
     return NOERROR;
 }
 

@@ -1,29 +1,36 @@
 
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/transition/CFade.h"
+#include "elastos/droid/transition/CTransitionValues.h"
 #include "elastos/droid/animation/ObjectAnimator.h"
+#include "elastos/droid/R.h"
 
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::Droid::R;
 using Elastos::Droid::Animation::IObjectAnimator;
 using Elastos::Droid::Animation::ObjectAnimator;
 using Elastos::Droid::Animation::IAnimatorPauseListener;
 using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::Transition::CTransitionValues;
+
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Transition {
 
-//===============================================================
-// CFade::
-//===============================================================
+Boolean CFade::DBG = Transition::DBG && FALSE;
 
-//Boolean CFade::DBG = Transition.DBG && FALSE;
-
-//String CFade::LOG_TAG = "Fade";
+const String CFade::TAG("Fade");
 
 Int32 CFade::IN = Visibility::MODE_IN;
 
 Int32 CFade::OUT = Visibility::MODE_OUT;
 
+//===============================================================
+// CFade::
+//===============================================================
 CAR_OBJECT_IMPL(CFade)
 
 CAR_INTERFACE_IMPL(CFade, Visibility, IFade)
@@ -45,13 +52,15 @@ ECode CFade::constructor(
     /* [in] */ IAttributeSet* attrs)
 {
     Visibility::constructor(context, attrs);
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+        const_cast<Int32*>(R::styleable::Fade),
+        ArraySize(R::styleable::Fade));
     AutoPtr<ITypedArray> a;
-    assert(0 && "TODO");
-//    context->ObtainStyledAttributes(attrs, R.styleable.Fade, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
     Int32 m = 0;
     GetMode(&m);
     Int32 fadingMode = 0;
-//    a->GetInt32(R.styleable.Fade_fadingMode, m, &fadingMode);
+    a->GetInt32(R::styleable::Fade_fadingMode, m, &fadingMode);
     SetMode(fadingMode);
     return NOERROR;
 }
@@ -68,9 +77,9 @@ AutoPtr<IAnimator> CFade::CreateAnimation(
     AutoPtr<ArrayOf<Float> > arr = ArrayOf<Float>::Alloc(1);
     (*arr)[0] = endAlpha;
     AutoPtr<IObjectAnimator> anim = ObjectAnimator::OfFloat(view, String("transitionAlpha"), arr);
-    // if (DBG) {
-    //     Log.d(LOG_TAG, "Created animator " + anim);
-    // }
+    if (DBG) {
+        Logger::D(TAG, "Created animator %p", anim.Get());
+    }
     AutoPtr<FadeAnimatorListener> listener = new FadeAnimatorListener(view);
     IAnimator::Probe(anim)->AddListener(listener);
     IAnimator::Probe(anim)->AddPauseListener(IAnimatorPauseListener::Probe(listener));
@@ -85,11 +94,11 @@ ECode CFade::OnAppear(
     /* [out] */ IAnimator** result)
 {
     VALIDATE_NOT_NULL(result)
-    // if (DBG) {
-    //     AutoPtr<IView> startView = (startValues != NULL) ? startValues->mView : NULL;
-    //     Log.d(LOG_TAG, "Fade.onAppear: startView, startVis, endView, endVis = " +
-    //             startView + ", " + view);
-    // }
+    if (DBG) {
+        AutoPtr<IView> startView = (startValues != NULL) ? ((CTransitionValues*)startValues)->mView : NULL;
+        Logger::D(LOG_TAG, "Fade.onAppear: startView, startVis, endView, endVis = %p, %p",
+                startView.Get(), view);
+    }
     AutoPtr<IAnimator> p = CreateAnimation(view, 0, 1);
     *result = p;
     REFCOUNT_ADD(*result)

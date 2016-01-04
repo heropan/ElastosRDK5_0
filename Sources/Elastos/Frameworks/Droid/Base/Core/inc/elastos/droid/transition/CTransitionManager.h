@@ -195,7 +195,7 @@ public:
     AutoPtr<IArrayMap> mScenePairTransitions;
 
 private:
-//    static String LOG_TAG;
+    static const String TAG;
 
     static AutoPtr<ITransition> sDefaultTransition;
 

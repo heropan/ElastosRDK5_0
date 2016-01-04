@@ -5,8 +5,11 @@
 #include "elastos/droid/animation/ObjectAnimator.h"
 #include "elastos/droid/animation/CAnimatorSet.h"
 #include "elastos/droid/graphics/CRect.h"
-//#include "elastos/droid/graphics/CBitmap.h"
-//#include "elastos/droid/view/View.h"
+#include "elastos/droid/graphics/CBitmap.h"
+#include "elastos/droid/graphics/CCanvas.h"
+#include "elastos/droid/view/View.h"
+
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Animation::RectEvaluator;
 using Elastos::Droid::Animation::IObjectAnimator;
@@ -16,35 +19,36 @@ using Elastos::Droid::Animation::IAnimatorListener;
 using Elastos::Droid::Animation::CAnimatorSet;
 using Elastos::Droid::Animation::EIID_IAnimatorUpdateListener;
 using Elastos::Droid::Graphics::IBitmap;
-//using Elastos::Droid::Graphics::CBitmap;
+using Elastos::Droid::Graphics::CBitmap;
+using Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::CCanvas;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::View::IViewOverlay;
 using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::View::ITextureView;
-//using Elastos::Droid::View::View;
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
 using Elastos::Utility::IMap;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Transition {
 
+const String CCrossfade::TAG("Crossfade");
+
+const String CCrossfade::PROPNAME_BITMAP("android:crossfade:bitmap");
+const String CCrossfade::PROPNAME_DRAWABLE("android:crossfade:drawable");
+const String CCrossfade::PROPNAME_BOUNDS("android:crossfade:bounds");
+
+AutoPtr<ITypeEvaluator> CCrossfade::sRectEvaluator = new RectEvaluator();
+
 //===============================================================
 // CCrossfade::
 //===============================================================
-
-//String CCrossfade::LOG_TAG = "Crossfade";
-
-String CCrossfade::PROPNAME_BITMAP = String("android:crossfade:bitmap");
-String CCrossfade::PROPNAME_DRAWABLE = String("android:crossfade:drawable");
-String CCrossfade::PROPNAME_BOUNDS = String("android:crossfade:bounds");
-
-AutoPtr<ITypeEvaluator> CCrossfade::sRectEvaluator;// = new RectEvaluator();
-
 CAR_OBJECT_IMPL(CCrossfade)
 
 CAR_INTERFACE_IMPL(CCrossfade, Transition, ICrossfade)
@@ -137,10 +141,11 @@ ECode CCrossfade::CreateAnimator(
     AutoPtr<IInterface> eD;
     endVals->Get(pro_drawable, (IInterface**)&eD);
     AutoPtr<IBitmapDrawable> endDrawable = IBitmapDrawable::Probe(eD);
-    // if (Transition.DBG) {
-    //     Log.d(LOG_TAG, "StartBitmap.sameAs(endBitmap) = " + startBitmap.sameAs(endBitmap) +
-    //             " for start, end: " + startBitmap + ", " + endBitmap);
-    // }
+    if (Transition::DBG) {
+        Boolean b = FALSE;
+        Logger::D(LOG_TAG, "StartBitmap.sameAs(endBitmap) = %d for start, end: %p, %p",
+                    (startBitmap->SameAs(endBitmap, &b), b), startBitmap.Get(), endBitmap.Get());
+    }
     Boolean bSame = FALSE;
     if (startDrawable != NULL && endDrawable != NULL && !(startBitmap->SameAs(endBitmap, &bSame), bSame)) {
         AutoPtr<IViewOverlay> overlay;
@@ -177,30 +182,28 @@ ECode CCrossfade::CreateAnimator(
         IValueAnimator::Probe(anim)->AddUpdateListener(new AnimatorUpdateListenerOverride(startDrawable, view));
         AutoPtr<IObjectAnimator> anim1 = NULL;
         if (mFadeBehavior == FADE_BEHAVIOR_OUT_IN) {
-            AutoPtr<ArrayOf<Int32> > arr = ArrayOf<Int32>::Alloc(3);
-            (*arr)[0] = 0;
-            (*arr)[1] = 0;
-            (*arr)[2] = 1;
+            AutoPtr<ArrayOf<Float> > arr = ArrayOf<Float>::Alloc(3);
+            (*arr)[0] = 0.0f;
+            (*arr)[1] = 0.0f;
+            (*arr)[2] = 1.0f;
             // start fading in halfway through the transition
-            assert(0 && "TODO");
-//            anim1 = ObjectAnimator::OfFloat(view, View::ALPHA, arr);
+            anim1 = ObjectAnimator::OfFloat(view, Elastos::Droid::View::View::ALPHA, arr);
         }
         else if (mFadeBehavior == FADE_BEHAVIOR_CROSSFADE) {
-            AutoPtr<ArrayOf<Int32> > arr = ArrayOf<Int32>::Alloc(2);
-            (*arr)[0] = 0;
-            (*arr)[1] = 1;
-            assert(0 && "TODO");
-//            anim1 = ObjectAnimator::OfFloat(view, View::ALPHA, arr);
+            AutoPtr<ArrayOf<Float> > arr = ArrayOf<Float>::Alloc(2);
+            (*arr)[0] = 0.0f;
+            (*arr)[1] = 1.0f;
+            anim1 = ObjectAnimator::OfFloat(view, Elastos::Droid::View::View::ALPHA, arr);
         }
-        // if (Transition.DBG) {
-        //     Log.d(LOG_TAG, "Crossfade: created anim " + anim + " for start, end values " +
-        //             startValues + ", " + endValues);
-        // }
+        if (Transition::DBG) {
+            Logger::D(LOG_TAG, "Crossfade: created anim %p for start, end values %p, %p",
+                                anim.Get(), startValues, endValues);
+        }
         AutoPtr<AnimatorListenerAdapter_1> p = new AnimatorListenerAdapter_1(useParentOverlay,
-                                                                                        view,
-                                                                                        startDrawable,
-                                                                                        endDrawable,
-                                                                                        mFadeBehavior);
+                                                                            view,
+                                                                            startDrawable,
+                                                                            endDrawable,
+                                                                            mFadeBehavior);
         IAnimator::Probe(anim)->AddListener(IAnimatorListener::Probe(p));
         AutoPtr<IAnimatorSet> set;
         CAnimatorSet::New((IAnimatorSet**)&set);
@@ -215,10 +218,10 @@ ECode CCrossfade::CreateAnimator(
         Boolean bEqual = FALSE;
         if (mResizeBehavior == RESIZE_BEHAVIOR_SCALE &&
              !(startBounds->Equals(endBounds, &bEqual), bEqual)) {
-            // if (Transition.DBG) {
-            //     Log.d(LOG_TAG, "animating from startBounds to endBounds: " +
-            //             startBounds + ", " + endBounds);
-            // }
+            if (Transition::DBG) {
+                Logger::D(LOG_TAG, "animating from startBounds to endBounds: %p, %p",
+                        startBounds.Get(), endBounds.Get());
+            }
             AutoPtr<ArrayOf<IInterface*> > vls = ArrayOf<IInterface*>::Alloc(2);
             (*vls)[0] = startBounds;
             (*vls)[1] = endBounds;
@@ -269,19 +272,22 @@ ECode CCrossfade::CaptureValues(
     CString::New(PROPNAME_BOUNDS, (ICharSequence**)&pro_bounds);
     ctv->mValues->Put(pro_bounds, bounds);
 
-    // if (Transition.DBG) {
-    //     Log.d(LOG_TAG, "Captured bounds " + transitionValues->mValues->Get(PROPNAME_BOUNDS));
-    // }
+    if (Transition::DBG) {
+        AutoPtr<IInterface> p;
+        ctv->mValues->Get(pro_bounds, (IInterface**)&p);
+        Logger::D(LOG_TAG, "Captured bounds %p", p.Get());
+    }
     Int32 w1 = 0, h1 = 0;
     view->GetWidth(&w1);
     view->GetHeight(&h1);
-    assert(0 && "TODO");
-    AutoPtr<IBitmap> bitmap;// = CBitmap::CreateBitmap(w1, h1, Bitmap::Config::ARGB_8888);
+    AutoPtr<IBitmap> bitmap;
+    CBitmap::CreateBitmap(w1, h1, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
     if (ITextureView::Probe(view) != NULL) {
         ITextureView::Probe(view)->GetBitmap((IBitmap**)&bitmap);
     }
     else {
-        AutoPtr<ICanvas> c;// = new Canvas(bitmap);
+        AutoPtr<ICanvas> c;
+        CCanvas::New(bitmap, (ICanvas**)&c);
         view->Draw(c);
     }
     AutoPtr<ICharSequence> pro_bmp;

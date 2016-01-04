@@ -72,13 +72,13 @@ private:
     /**
      * The property key used for {@link android.view.View#getVisibility()}.
      */
-    static String PROPNAME_VISIBILITY;
+    static const String PROPNAME_VISIBILITY;
 
     /**
      * The property key used for the center of the View in screen coordinates. This is an
      * int[2] with the index 0 taking the x coordinate and index 1 taking the y coordinate.
      */
-    static String PROPNAME_VIEW_CENTER;
+    static const String PROPNAME_VIEW_CENTER;
 
     static AutoPtr<ArrayOf<String> > VISIBILITY_PROPAGATION_VALUES;
 };

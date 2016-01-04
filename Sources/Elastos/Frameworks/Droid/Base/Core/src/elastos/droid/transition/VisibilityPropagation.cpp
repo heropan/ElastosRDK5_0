@@ -19,9 +19,9 @@ namespace Transition {
 // VisibilityPropagation::
 //===============================================================
 
-String VisibilityPropagation::PROPNAME_VISIBILITY = String("android:visibilityPropagation:visibility");
+const String VisibilityPropagation::PROPNAME_VISIBILITY("android:visibilityPropagation:visibility");
 
-String VisibilityPropagation::PROPNAME_VIEW_CENTER = String("android:visibilityPropagation:center");
+const String VisibilityPropagation::PROPNAME_VIEW_CENTER ("android:visibilityPropagation:center");
 
 AutoPtr<ArrayOf<String> > VisibilityPropagation::VISIBILITY_PROPAGATION_VALUES = ArrayOf<String>::Alloc(2);
 

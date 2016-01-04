@@ -74,9 +74,6 @@ ECode CTransitionValues::ToString(
     while ((it->HasNext(&b), b)) {
         AutoPtr<IInterface> p;
         it->GetNext((IInterface**)&p);
-        // AutoPtr<ICharSequence> c = ICharSequence::Probe(p);
-        // String s;
-        // c->ToString(&s);
         AutoPtr<IInterface> v;
         mValues->Get(p, (IInterface**)&v);
         returnValue += "    ";

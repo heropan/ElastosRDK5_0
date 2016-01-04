@@ -53,10 +53,10 @@ private:
         /* [in] */ ITransitionValues* values);
 
 private:
-    static String TAG;
+    static const String TAG;
 
-    static String PROPNAME_CLIP;
-    static String PROPNAME_BOUNDS;
+    static const String PROPNAME_CLIP;
+    static const String PROPNAME_BOUNDS;
 
     static AutoPtr<ArrayOf<String> > sTransitionProperties;
 };

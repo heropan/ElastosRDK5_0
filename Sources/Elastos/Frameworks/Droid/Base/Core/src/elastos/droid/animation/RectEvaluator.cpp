@@ -21,26 +21,29 @@ RectEvaluator::RectEvaluator(
 
 ECode RectEvaluator::Evaluate(
     /* [in] */ Float fraction,
-    /* [in] */ IRect* startValue,
-    /* [in] */ IRect* endValue,
+    /* [in] */ IInterface* startValue,
+    /* [in] */ IInterface* endValue,
     /* [out] */ IInterface** rect)
 {
     VALIDATE_NOT_NULL(rect);
     Int32 v1 = 0, v2 = 0;
-    startValue->GetLeft(&v1);
-    endValue->GetLeft(&v2);
+    AutoPtr<IRect> realSV = IRect::Probe(startValue);
+    AutoPtr<IRect> realEV = IRect::Probe(endValue);
+
+    realSV->GetLeft(&v1);
+    realEV->GetLeft(&v2);
     Int32 left = v1 + (Int32) ((v2 - v1) * fraction);
 
-    startValue->GetTop(&v1);
-    endValue->GetTop(&v2);
+    realSV->GetTop(&v1);
+    realEV->GetTop(&v2);
     Int32 top = v1 + (Int32) ((v2 - v1) * fraction);
 
-    startValue->GetRight(&v1);
-    endValue->GetRight(&v2);
+    realSV->GetRight(&v1);
+    realEV->GetRight(&v2);
     Int32 right = v1 + (Int32) ((v2 - v1) * fraction);
 
-    startValue->GetBottom(&v1);
-    endValue->GetBottom(&v2);
+    realSV->GetBottom(&v1);
+    realEV->GetBottom(&v2);
     Int32 bottom = v1 + (Int32) ((v2 - v1) * fraction);
     if (mRect == NULL) {
         return CRect::New(left, top, right, bottom, (IRect**)rect);

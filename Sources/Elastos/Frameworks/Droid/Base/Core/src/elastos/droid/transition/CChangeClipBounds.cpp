@@ -2,9 +2,11 @@
 #include "elastos/droid/transition/CChangeClipBounds.h"
 #include "elastos/droid/transition/CTransitionValues.h"
 #include "elastos/droid/animation/ObjectAnimator.h"
+#include "elastos/droid/animation/RectEvaluator.h"
 #include "elastos/droid/graphics/CRect.h"
 
 using Elastos::Droid::Animation::ITypeEvaluator;
+using Elastos::Droid::Animation::RectEvaluator;
 using Elastos::Droid::Animation::ObjectAnimator;
 using Elastos::Droid::Animation::IObjectAnimator;
 using Elastos::Droid::Transition::CTransitionValues;
@@ -20,10 +22,10 @@ namespace Transition {
 //===============================================================
 // CChangeClipBounds::
 //===============================================================
-String CChangeClipBounds::TAG = String("ChangeTransform");
+const String CChangeClipBounds::TAG("ChangeTransform");
 
-String CChangeClipBounds::PROPNAME_CLIP = String("android:clipBounds:clip");
-String CChangeClipBounds::PROPNAME_BOUNDS = String("android:clipBounds:bounds");
+const String CChangeClipBounds::PROPNAME_CLIP("android:clipBounds:clip");
+const String CChangeClipBounds::PROPNAME_BOUNDS("android:clipBounds:bounds");
 
 AutoPtr<ArrayOf<String> > CChangeClipBounds::sTransitionProperties = ArrayOf<String>::Alloc(1);
 
@@ -148,9 +150,11 @@ ECode CChangeClipBounds::CreateAnimator(
     cE->mView->SetClipBounds(start);
     AutoPtr<IRect> r;
     CRect::New((IRect**)&r);
-    assert(0 && "TODO");
-    AutoPtr<ITypeEvaluator> evaluator;// = new RectEvaluator(r);
-    AutoPtr<IObjectAnimator> oA;// = ObjectAnimator::OfObject(cE->mView, "clipBounds", evaluator, start, end);
+    AutoPtr<ITypeEvaluator> evaluator = new RectEvaluator(r);
+    AutoPtr<ArrayOf<IInterface*> > arr = ArrayOf<IInterface*>::Alloc(2);
+    (*arr)[0] = start;
+    (*arr)[1] = end;
+    AutoPtr<IObjectAnimator> oA = ObjectAnimator::OfObject(cE->mView, String("clipBounds"), evaluator, arr);
     *result = IAnimator::Probe(oA);
     REFCOUNT_ADD(*result)
     return NOERROR;

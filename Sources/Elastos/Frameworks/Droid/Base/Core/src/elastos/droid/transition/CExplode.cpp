@@ -23,8 +23,8 @@ namespace Transition {
 //===============================================================
 AutoPtr<ITimeInterpolator> CExplode::sDecelerate;// = new DecelerateInterpolator();
 AutoPtr<ITimeInterpolator> CExplode::sAccelerate;// = new AccelerateInterpolator();
-String CExplode::TAG = String("Explode");
-String CExplode::PROPNAME_SCREEN_BOUNDS = String("android:explode:screenBounds");
+const String CExplode::TAG("Explode");
+const String CExplode::PROPNAME_SCREEN_BOUNDS("android:explode:screenBounds");
 
 CAR_OBJECT_IMPL(CExplode)
 
@@ -102,9 +102,9 @@ ECode CExplode::OnAppear(
     AutoPtr<IInterface> bs;
     cEnd->mValues->Get(pro_screen_bounds, (IInterface**)&bs);
     AutoPtr<IRect> bounds = IRect::Probe(bs);
-    Float endX;
+    Float endX = 0.0f;
     view->GetTranslationX(&endX);
-    Float endY;
+    Float endY = 0.0f;
     view->GetTranslationY(&endY);
     CalculateOut(IView::Probe(sceneRoot), bounds, mTempLoc);
     Float startX = endX + (*mTempLoc)[0];
@@ -140,9 +140,9 @@ ECode CExplode::OnDisappear(
     AutoPtr<CRect> cBounds = (CRect*)bounds.Get();
     Int32 viewPosX = cBounds->mLeft;
     Int32 viewPosY = cBounds->mTop;
-    Float startX;
+    Float startX = 0.0f;
     view->GetTranslationX(&startX);
-    Float startY;
+    Float startY = 0.0f;
     view->GetTranslationY(&startY);
     Float endX = startX;
     Float endY = startY;
@@ -193,9 +193,9 @@ void CExplode::CalculateOut(
         epicenter->GetCenterY(&focalY);
     }
 
-    Int32 centerX;
+    Int32 centerX = 0;
     bounds->GetCenterX(&centerX);
-    Int32 centerY;
+    Int32 centerY = 0;
     bounds->GetCenterY(&centerY);
     Float xVector = centerX - focalX;
     Float yVector = centerY - focalY;
@@ -220,7 +220,7 @@ Float CExplode::CalculateMaxDistance(
     /* [in] */ Int32 focalX,
     /* [in] */ Int32 focalY)
 {
-    Int32 w, h;
+    Int32 w = 0, h = 0;
     sceneRoot->GetWidth(&w);
     sceneRoot->GetHeight(&h);
     Int32 maxX = Elastos::Core::Math::Max(focalX, w - focalX);

@@ -55,8 +55,8 @@ private:
         /* [in] */ ITransitionValues* transitionValues);
 
 private:
-    static String PROPNAME_BACKGROUND;
-    static String PROPNAME_TEXT_COLOR;
+    static const String PROPNAME_BACKGROUND;
+    static const String PROPNAME_TEXT_COLOR;
 };
 
 } // namespace Transition

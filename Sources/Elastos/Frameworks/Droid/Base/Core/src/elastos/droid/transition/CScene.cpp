@@ -1,11 +1,13 @@
 
 #include "Elastos.Droid.Utility.h"
 #include "elastos/droid/transition/CScene.h"
-//#include "elastos/droid/utility/SparseArray.h"
+#include "elastos/droid/utility/SparseArray.h"
 #include "elastos/droid/view/LayoutInflater.h"
+#include "elastos/droid/R.h"
 
+using Elastos::Droid::R;
 using Elastos::Droid::Utility::ISparseArray;
-//using Elastos::Droid::Utility::SparseArray;
+using Elastos::Droid::Utility::SparseArray;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::LayoutInflater;
 
@@ -30,12 +32,12 @@ AutoPtr<IScene> CScene::GetSceneForLayout(
     /* [in] */ Int32 layoutId,
     /* [in] */ IContext* context)
 {
-    assert(0 && "TODO");
-    AutoPtr<ISparseArray> scenes;// = (ISparseArray*) sceneRoot->GetTag(
-//            com.android.internal.R.id.scene_layoutid_cache);
+    AutoPtr<IInterface> pScenes;
+    IView::Probe(sceneRoot)->GetTag(R::id::scene_layoutid_cache, (IInterface**)&pScenes);
+    AutoPtr<ISparseArray> scenes = ISparseArray::Probe(pScenes);
     if (scenes == NULL) {
-//        scenes = new SparseArray();
-//        sceneRoot->SetTagInternal(com.android.internal.R.id.scene_layoutid_cache, scenes);
+        scenes = new SparseArray();
+        IView::Probe(sceneRoot)->SetTagInternal(R::id::scene_layoutid_cache, scenes);
     }
     AutoPtr<IInterface> p;
     scenes->Get(layoutId, (IInterface**)&p);
@@ -118,8 +120,7 @@ ECode CScene::Enter()
 
         if (mLayoutId > 0) {
             AutoPtr<ILayoutInflater> inf;
-            assert(0 && "TODO");
-//            LayoutInflater::From(mContext, (ILayoutInflater**)&inf);
+            LayoutInflater::From(mContext, (ILayoutInflater**)&inf);
             AutoPtr<IView> v;
             inf->Inflate(mLayoutId, mSceneRoot, (IView**)&v);
         }
@@ -141,16 +142,15 @@ void CScene::SetCurrentScene(
     /* [in] */ IView* view,
     /* [in] */ IScene* scene)
 {
-    assert(0 && "TODO");
-//    view->SetTagInternal(com.android.internal.R.id.current_scene, scene);
+    view->SetTagInternal(R::id::current_scene, scene);
 }
 
 AutoPtr<IScene> CScene::GetCurrentScene(
     /* [in] */ IView* view)
 {
-    assert(0 && "TODO");
-//    return (Scene) view->GetTag(com.android.internal.R.id.current_scene);
-    return NULL;
+    AutoPtr<IInterface> p;
+    view->GetTag(R::id::current_scene, (IInterface**)&p);
+    return IScene::Probe(p);
 }
 
 ECode CScene::SetEnterAction(

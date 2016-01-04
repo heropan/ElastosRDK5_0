@@ -1,11 +1,13 @@
 
 #include "Elastos.Droid.Utility.h"
 #include "elastos/droid/transition/TransitionValuesMaps.h"
-//#include "elastos/droid/utility/CArrayMap.h"
-//#include "elastos/droid/utility/SparseArray.h"
+#include "elastos/droid/utility/CArrayMap.h"
+#include "elastos/droid/utility/CInt64SparseArray.h"
+#include "elastos/droid/utility/CSparseArray.h"
 
-//using Elastos::Droid::Utility::CArrayMap;
-//using Elastos::Droid::Utility::SparseArray;
+using Elastos::Droid::Utility::CArrayMap;
+using Elastos::Droid::Utility::CSparseArray;
+using Elastos::Droid::Utility::CInt64SparseArray;
 
 namespace Elastos {
 namespace Droid {
@@ -18,14 +20,13 @@ CAR_INTERFACE_IMPL(TransitionValuesMaps, Object, ITransitionValuesMaps)
 
 TransitionValuesMaps::TransitionValuesMaps()
 {
-    assert(0 && "TODO");
-//    CArrayMap::New((IArrayMap**)&mViewValues);
+    CArrayMap::New((IArrayMap**)&mViewValues);
 
-//    idValues = new SparseArray();
+    CSparseArray::New((ISparseArray**)&mIdValues);
 
-//    CInt64SparseArray::New((ILongSparseArray**)&itemIdValues);
+    CInt64SparseArray::New((IInt64SparseArray**)&mItemIdValues);
 
-//    CArrayMap::New((IArrayMap**)&mNameValues);
+    CArrayMap::New((IArrayMap**)&mNameValues);
 }
 
 } // namespace Transition

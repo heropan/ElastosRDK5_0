@@ -56,7 +56,7 @@ private:
         /* [in] */ IViewGroup* sceneRoot);
 
 private:
-    static String TAG;
+    static const String TAG;
 
     Float mPropagationSpeed;
     Int32 mSide;

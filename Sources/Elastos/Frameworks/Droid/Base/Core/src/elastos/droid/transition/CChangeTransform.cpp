@@ -4,18 +4,22 @@
 #include "elastos/droid/transition/CTransitionValues.h"
 #include "elastos/droid/transition/CTransitionUtils.h"
 #include "elastos/droid/animation/ObjectAnimator.h"
-//#include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/view/GhostView.h"
+#include "elastos/droid/R.h"
 
+using Elastos::Droid::R;
 using Elastos::Droid::Animation::ObjectAnimator;
 using Elastos::Droid::Animation::IAnimatorListener;
 using Elastos::Droid::Animation::IAnimatorPauseListener;
 using Elastos::Droid::Animation::IValueAnimator;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Graphics::IMatrix;
-//using Elastos::Droid::Graphics::CMatrix;
+using Elastos::Droid::Graphics::CMatrix;
 using Elastos::Droid::Graphics::ECLSID_CMatrix;
 using Elastos::Droid::Utility::EIID_IProperty;
 using Elastos::Droid::View::IViewParent;
+using Elastos::Droid::View::GhostView;
 
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
@@ -24,22 +28,22 @@ namespace Elastos {
 namespace Droid {
 namespace Transition {
 
-//===============================================================
-// CChangeTransform::
-//===============================================================
-String CChangeTransform::TAG = String("ChangeTransform");
+const String CChangeTransform::TAG("ChangeTransform");
 
-String CChangeTransform::PROPNAME_MATRIX = String("android:changeTransform:matrix");
-String CChangeTransform::PROPNAME_TRANSFORMS = String("android:changeTransform:transforms");
-String CChangeTransform::PROPNAME_PARENT = String("android:changeTransform:parent");
-String CChangeTransform::PROPNAME_PARENT_MATRIX = String("android:changeTransform:parentMatrix");
-String CChangeTransform::PROPNAME_INTERMEDIATE_PARENT_MATRIX = String("android:changeTransform:intermediateParentMatrix");
-String CChangeTransform::PROPNAME_INTERMEDIATE_MATRIX = String("android:changeTransform:intermediateMatrix");
+const String CChangeTransform::PROPNAME_MATRIX("android:changeTransform:matrix");
+const String CChangeTransform::PROPNAME_TRANSFORMS("android:changeTransform:transforms");
+const String CChangeTransform::PROPNAME_PARENT("android:changeTransform:parent");
+const String CChangeTransform::PROPNAME_PARENT_MATRIX("android:changeTransform:parentMatrix");
+const String CChangeTransform::PROPNAME_INTERMEDIATE_PARENT_MATRIX("android:changeTransform:intermediateParentMatrix");
+const String CChangeTransform::PROPNAME_INTERMEDIATE_MATRIX("android:changeTransform:intermediateMatrix");
 
 AutoPtr<ArrayOf<String> > CChangeTransform::sTransitionProperties = ArrayOf<String>::Alloc(3);
 
 AutoPtr<IProperty> CChangeTransform::ANIMATION_MATRIX_PROPERTY = new MatrixProperty(String("animationMatrix"));
 
+//===============================================================
+// CChangeTransform::
+//===============================================================
 CAR_OBJECT_IMPL(CChangeTransform)
 
 CAR_INTERFACE_IMPL(CChangeTransform, Transition, IChangeTransform)
@@ -61,11 +65,13 @@ ECode CChangeTransform::constructor(
     /* [in] */ IAttributeSet* attrs)
 {
     Transition::constructor(context, attrs);
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+        const_cast<Int32*>(R::styleable::ChangeTransform),
+        ArraySize(R::styleable::ChangeTransform));
     AutoPtr<ITypedArray> a;
-    assert(0 && "TODO");
-    // context->ObtainStyledAttributes(attrs, R.styleable.ChangeTransform, (ITypedArray**)&a);
-    // a->GetBoolean(R.styleable.ChangeTransform_reparentWithOverlay, TRUE, &mUseOverlay);
-    // a->GetBoolean(R.styleable.ChangeTransform_reparent, TRUE, &mReparent);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
+    a->GetBoolean(R::styleable::ChangeTransform_reparentWithOverlay, TRUE, &mUseOverlay);
+    a->GetBoolean(R::styleable::ChangeTransform_reparent, TRUE, &mReparent);
     a->Recycle();
     return NOERROR;
 }
@@ -134,16 +140,14 @@ void CChangeTransform::CaptureValues(
         matrix = NULL;
     }
     else {
-        assert(0 && "TODO");
-//        CMatrix::New(matrix, (IMatrix**)&matrix);
+        CMatrix::New(matrix, (IMatrix**)&matrix);
     }
     AutoPtr<ICharSequence> pro_matrix;
     CString::New(PROPNAME_MATRIX, (ICharSequence**)&pro_matrix);
     ct->mValues->Put(pro_matrix, matrix);
     if (mReparent) {
         AutoPtr<IMatrix> parentMatrix;
-        assert(0 && "TODO");
-//        CMatrix::New((IMatrix**)&parentMatrix);
+        CMatrix::New((IMatrix**)&parentMatrix);
         AutoPtr<IViewParent> p;
         view->GetParent((IViewParent**)&p);
         AutoPtr<IViewGroup> parent = IViewGroup::Probe(p);
@@ -156,11 +160,16 @@ void CChangeTransform::CaptureValues(
         AutoPtr<ICharSequence> pro_parent_matrix;
         CString::New(PROPNAME_PARENT_MATRIX, (ICharSequence**)&pro_parent_matrix);
         ct->mValues->Put(pro_parent_matrix, parentMatrix);
-        assert(0 && "TODO");
-        // ct->mValues->Put(PROPNAME_INTERMEDIATE_MATRIX,
-        //         view->GetTag(R.id->mTransitionTransform));
-        // ct->mValues->Put(PROPNAME_INTERMEDIATE_PARENT_MATRIX,
-        //         view->GetTag(R.id->mParentMatrix));
+        AutoPtr<IInterface> transTag;
+        view->GetTag(R::id::transitionTransform, (IInterface**)&transTag);
+        AutoPtr<ICharSequence> pMatrix;
+        CString::New(PROPNAME_INTERMEDIATE_MATRIX, (ICharSequence**)&pMatrix);
+        ct->mValues->Put(pMatrix, transTag);
+        AutoPtr<IInterface> matTag;
+        view->GetTag(R::id::parentMatrix, (IInterface**)&matTag);
+        AutoPtr<ICharSequence> pPartMatrix;
+        CString::New(PROPNAME_INTERMEDIATE_PARENT_MATRIX, (ICharSequence**)&pPartMatrix);
+        ct->mValues->Put(pPartMatrix, matTag);
     }
     return;
 }
@@ -265,13 +274,11 @@ AutoPtr<IObjectAnimator> CChangeTransform::CreateTransformAnimator(
     AutoPtr<IMatrix> endMatrix = IMatrix::Probe(eM);
 
     if (startMatrix == NULL) {
-        assert(0 && "TODO");
-//        startMatrix = CMatrix::IDENTITY_MATRIX;
+        startMatrix = CMatrix::IDENTITY_MATRIX;
     }
 
     if (endMatrix == NULL) {
-        assert(0 && "TODO");
-//        endMatrix = CMatrix::IDENTITY_MATRIX;
+        endMatrix = CMatrix::IDENTITY_MATRIX;
     }
 
     if (Object::Equals(startMatrix->Probe(EIID_IInterface), endMatrix->Probe(EIID_IInterface))) {
@@ -345,20 +352,19 @@ void CChangeTransform::CreateGhostView(
     cEnd->mValues->Get(pro_p_matrix, (IInterface**)&eM);
     AutoPtr<IMatrix> endMatrix = IMatrix::Probe(eM);
     AutoPtr<IMatrix> localEndMatrix;
-    assert(0 && "TODO");
-//    CMatrix::New(endMatrix, (IMatrix**)&localEndMatrix);
+    CMatrix::New(endMatrix, (IMatrix**)&localEndMatrix);
     IView::Probe(sceneRoot)->TransformMatrixToLocal(localEndMatrix);
 
-//    AutoPtr<IGhostView> ghostView = GhostView::AddGhost(view, sceneRoot, localEndMatrix);
+    AutoPtr<IGhostView> ghostView;
+    GhostView::AddGhost(view, sceneRoot, localEndMatrix, (IGhostView**)&ghostView);
 
     AutoPtr<ITransition> outerTransition = this;
     AutoPtr<Transition> cOuterTrans = (Transition*)outerTransition.Get();
     while (cOuterTrans->mParent != NULL) {
         cOuterTrans = (Transition*)ITransition::Probe(cOuterTrans->mParent);
     }
-//    AutoPtr<IGhostListener> listener;
-//    CGhostListener::New(view, ghostView, endMatrix, (IGhostListener**)&listener);
-//    outerTransition->AddListener(listener);
+    AutoPtr<GhostListener> listener = new GhostListener(view, ghostView, endMatrix);
+    outerTransition->AddListener(listener);
 
     if (!Object::Equals(cStart->mView->Probe(EIID_IInterface), cEnd->mView->Probe(EIID_IInterface))) {
         cStart->mView->SetTransitionAlpha(0);
@@ -376,8 +382,7 @@ void CChangeTransform::SetMatricesForParent(
     AutoPtr<IInterface> eM;
     cEnd->mValues->Get(pro_parent_matrix, (IInterface**)&eM);
     AutoPtr<IMatrix> endParentMatrix = IMatrix::Probe(eM);
-    assert(0 && "TODO");
-//    cEnd->mView->SetTagInternal(R.id.parentMatrix, endParentMatrix);
+    cEnd->mView->SetTagInternal(R::id::parentMatrix, endParentMatrix);
 
     AutoPtr<IMatrix> toLocal = mTempMatrix;
     toLocal->Reset();
@@ -391,8 +396,7 @@ void CChangeTransform::SetMatricesForParent(
     cStart->mValues->Get(pro_matrix, (IInterface**)&sL);
     AutoPtr<IMatrix> startLocal = IMatrix::Probe(sL);
     if (startLocal == NULL) {
-        assert(0 && "TODO");
-//        CMatrix::New((IMatrix**)&startLocal);
+        CMatrix::New((IMatrix**)&startLocal);
         cStart->mValues->Put(pro_matrix, startLocal);
     }
 
@@ -479,6 +483,7 @@ void CChangeTransform::Transforms::Restore(
 Boolean CChangeTransform::Transforms::Equals(
     /* [in] */ IInterface* that)
 {
+    assert(0 && "TODO");
     // if (!(ITransforms::Probe(that) != NULL)) {
     //     return FALSE;
     // }
@@ -496,39 +501,37 @@ Boolean CChangeTransform::Transforms::Equals(
 //===============================================================
 // CChangeTransform::GhostListener::
 //===============================================================
-
-// CChangeTransform::GhostListener::GhostListener(
-//     /* [in] */ IView* view,
-//     /* [in] */ IGhostView* ghostView,
-//     /* [in] */ IMatrix* endMatrix)
-// {
-//     mView = view;
-//     mGhostView = ghostView;
-//     mEndMatrix = endMatrix;
-// }
+CChangeTransform::GhostListener::GhostListener(
+    /* [in] */ IView* view,
+    /* [in] */ IGhostView* ghostView,
+    /* [in] */ IMatrix* endMatrix)
+{
+    mView = view;
+    mGhostView = ghostView;
+    mEndMatrix = endMatrix;
+}
 
 ECode CChangeTransform::GhostListener::OnTransitionEnd(
     /* [in] */ ITransition* transition)
 {
     transition->RemoveListener(this);
-    assert(0 && "TODO");
-//    GhostView->RemoveGhost(mView);
-    // mView->SetTagInternal(R.id.transitionTransform, NULL);
-    // mView->SetTagInternal(R.id.parentMatrix, NULL);
+    GhostView::RemoveGhost(mView);
+    mView->SetTagInternal(R::id::transitionTransform, NULL);
+    mView->SetTagInternal(R::id::parentMatrix, NULL);
     return NOERROR;
 }
 
 ECode CChangeTransform::GhostListener::OnTransitionPause(
     /* [in] */ ITransition* transition)
 {
-//    mGhostView->SetVisibility(View.INVISIBLE);
+    IView::Probe(mGhostView)->SetVisibility(IView::INVISIBLE);
     return NOERROR;
 }
 
 ECode CChangeTransform::GhostListener::OnTransitionResume(
     /* [in] */ ITransition* transition)
 {
-//    mGhostView->SetVisibility(View.VISIBLE);
+    IView::Probe(mGhostView)->SetVisibility(IView::VISIBLE);
     return NOERROR;
 }
 
@@ -567,9 +570,8 @@ ECode CChangeTransform::AnimatorListenerAdapter_1::OnAnimationEnd(
             SetCurrentMatrix(mFinalEndMatrix);
         }
         else {
-            assert(0 && "TODO");
-            // view->SetTagInternal(R.id.transitionTransform, NULL);
-            // view->SetTagInternal(R.id.parentMatrix, NULL);
+            mView->SetTagInternal(R::id::transitionTransform, NULL);
+            mView->SetTagInternal(R::id::parentMatrix, NULL);
         }
     }
     CChangeTransform::ANIMATION_MATRIX_PROPERTY->Set(mView, NULL);
@@ -599,8 +601,7 @@ void CChangeTransform::AnimatorListenerAdapter_1::SetCurrentMatrix(
     /* [in] */ IMatrix* currentMatrix)
 {
     mTempMatrix->Set(currentMatrix);
-    assert(0 && "TODO");
-//    view->SetTagInternal(R.id.transitionTransform, mTempMatrix);
+    mView->SetTagInternal(R::id::transitionTransform, mTempMatrix);
     mTrans->Restore(mView);
 }
 

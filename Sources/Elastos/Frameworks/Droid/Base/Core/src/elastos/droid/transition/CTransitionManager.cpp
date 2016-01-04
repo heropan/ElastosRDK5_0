@@ -2,9 +2,9 @@
 #include "elastos/droid/transition/CTransitionManager.h"
 #include "elastos/droid/transition/CAutoTransition.h"
 #include "elastos/droid/transition/CScene.h"
-//#include "elastos/droid/utility/CArrayMap.h"
+#include "elastos/droid/utility/CArrayMap.h"
 
-//using Elastos::Droid::Utility::CArrayMap;
+using Elastos::Droid::Utility::CArrayMap;
 using Elastos::Droid::View::IViewTreeObserver;
 using Elastos::Droid::View::EIID_IOnPreDrawListener;
 using Elastos::Droid::View::EIID_IViewOnAttachStateChangeListener;
@@ -20,7 +20,7 @@ namespace Transition {
 //===============================================================
 // CTransitionManager::
 //===============================================================
-//String CTransitionManager::LOG_TAG = "TransitionManager";
+const String CTransitionManager::TAG("TransitionManager");
 
 AutoPtr<ITransition> CTransitionManager::sDefaultTransition;
 
@@ -73,8 +73,7 @@ ECode CTransitionManager::SetTransition(
     IMap::Probe(mScenePairTransitions)->Get(toScene, (IInterface**)&p);
     AutoPtr<IArrayMap> sceneTransitionMap = IArrayMap::Probe(p);
     if (sceneTransitionMap == NULL) {
-        assert(0 && "TODO");
-//        CArrayMap::New((IArrayMap**)&sceneTransitionMap);
+        CArrayMap::New((IArrayMap**)&sceneTransitionMap);
         IMap::Probe(mScenePairTransitions)->Put(toScene, sceneTransitionMap);
     }
     IMap::Probe(sceneTransitionMap)->Put(fromScene, transition);
@@ -234,7 +233,7 @@ void CTransitionManager::BeginDelayedTransition(
     if (!(sPendingTransitions->Contains(sceneRoot, &bContain), bContain) &&
         (IView::Probe(sceneRoot)->IsLaidOut(&bLaid), bLaid)) {
         // if (Transition.DBG) {
-        //     Log.d(LOG_TAG, "beginDelayedTransition: root, transition = " +
+        //     Log.d(TAG, "beginDelayedTransition: root, transition = " +
         //             sceneRoot + ", " + transition);
         // }
         sPendingTransitions->Add(sceneRoot);

@@ -2,6 +2,7 @@
 #include "elastos/droid/transition/Rotate.h"
 #include "elastos/droid/transition/CTransitionValues.h"
 #include "elastos/droid/animation/ObjectAnimator.h"
+#include "elastos/droid/view/View.h"
 
 using Elastos::Droid::Animation::IObjectAnimator;
 using Elastos::Droid::Animation::ObjectAnimator;
@@ -19,13 +20,13 @@ namespace Transition {
 // Rotate::
 //===============================================================
 
-String Rotate::PROPNAME_ROTATION = String("android:rotate:rotation");
+const String Rotate::PROPNAME_ROTATION("android:rotate:rotation");
 
 ECode Rotate::CaptureStartValues(
     /* [in] */ ITransitionValues* transitionValues)
 {
     AutoPtr<CTransitionValues> ct = (CTransitionValues*)transitionValues;
-    Float r;
+    Float r = 0.0f;
     ct->mView->GetRotation(&r);
     AutoPtr<IFloat> rf;
     CFloat::New(r, (IFloat**)&rf);
@@ -41,7 +42,7 @@ ECode Rotate::CaptureEndValues(
     AutoPtr<CTransitionValues> ct = (CTransitionValues*)transitionValues;
     AutoPtr<ICharSequence> pro_rot;
     CString::New(PROPNAME_ROTATION, (ICharSequence**)&pro_rot);
-    Float r;
+    Float r = 0.0f;
     ct->mView->GetRotation(&r);
     AutoPtr<IFloat> rf;
     CFloat::New(r, (IFloat**)&rf);
@@ -75,9 +76,11 @@ ECode Rotate::CreateAnimator(
     ef->GetValue(&endRotation);
     if (startRotation != endRotation) {
         view->SetRotation(startRotation);
-        assert(0 && "TODO");
-        AutoPtr<IObjectAnimator> p;// = ObjectAnimator::OfFloat(view, View::ROTATION,
-//                startRotation, endRotation);
+        AutoPtr<ArrayOf<Float> > arr = ArrayOf<Float>::Alloc(2);
+        (*arr)[0] = startRotation;
+        (*arr)[1] = endRotation;
+        AutoPtr<IObjectAnimator> p = ObjectAnimator::OfFloat(view,
+                                    Elastos::Droid::View::View::ROTATION, arr);
         *result = IAnimator::Probe(p);
         REFCOUNT_ADD(*result)
         return NOERROR;

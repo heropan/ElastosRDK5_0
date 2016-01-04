@@ -1,18 +1,20 @@
 
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/transition/CPatternPathMotion.h"
-//#include "elastos/droid/graphics/CPathMeasure.h"
-//#include "elastos/droid/graphics/CPath.h"
+#include "elastos/droid/graphics/CPathMeasure.h"
+#include "elastos/droid/graphics/CPath.h"
 #include "elastos/droid/utility/FloatMath.h"
 #include "elastos/droid/utility/PathParser.h"
+#include "elastos/droid/R.h"
 
 #include <elastos/core/Math.h>
 
+using Elastos::Droid::R;
 using Elastos::Droid::Utility::FloatMath;
 using Elastos::Droid::Utility::PathParser;
 using Elastos::Droid::Graphics::IPathMeasure;
-//using Elastos::Droid::Graphics::CPath;
-//using Elastos::Droid::Graphics::CPathMeasure;
+using Elastos::Droid::Graphics::CPath;
+using Elastos::Droid::Graphics::CPathMeasure;
 using Elastos::Droid::Content::Res::ITypedArray;
 
 namespace Elastos {
@@ -37,11 +39,13 @@ ECode CPatternPathMotion::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    assert(0 && "TODO");
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+        const_cast<Int32*>(R::styleable::PatternPathMotion),
+        ArraySize(R::styleable::PatternPathMotion));
     AutoPtr<ITypedArray> a;
-//    context->ObtainStyledAttributes(attrs, R.styleable.PatternPathMotion, (ITypedArray**)&a);
+    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
     String pathData;
-//    a->GetString(R.styleable.PatternPathMotion_patternPathData, &pathData);
+    a->GetString(R::styleable::PatternPathMotion_patternPathData, &pathData);
     if (pathData == NULL) {
         a->Recycle();
         return E_RUNTIME_EXCEPTION;
@@ -72,8 +76,7 @@ ECode CPatternPathMotion::SetPatternPath(
     /* [in] */ IPath* patternPath)
 {
     AutoPtr<IPathMeasure> pathMeasure;
-    assert(0 && "TODO");
-//    CPathMeasure::New(patternPath, FALSE, (IPathMeasure**)&pathMeasure);
+    CPathMeasure::New(patternPath, FALSE, (IPathMeasure**)&pathMeasure);
     Float length;
     pathMeasure->GetLength(&length);
     AutoPtr<ArrayOf<Float> > pos = ArrayOf<Float>::Alloc(2);
@@ -121,8 +124,7 @@ ECode CPatternPathMotion::GetPath(
     mTempMatrix->PostRotate((Float) Elastos::Core::Math::ToDegrees(angle), &res);
     mTempMatrix->PostTranslate(startX, startY, &res);
     AutoPtr<IPath> path;
-    assert(0 && "TODO");
-//    CPath::New((IPath**)&path);
+    CPath::New((IPath**)&path);
     mPatternPath->Transform(mTempMatrix, path);
     *result = path;
     REFCOUNT_ADD(*result)

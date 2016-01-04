@@ -12,6 +12,7 @@
 using Elastos::Droid::Animation::IObjectAnimator;
 using Elastos::Droid::Graphics::IMatrix;
 using Elastos::Droid::Utility::IProperty;
+using Elastos::Droid::View::IGhostView;
 
 namespace Elastos {
 namespace Droid {
@@ -50,10 +51,10 @@ private:
         : public TransitionListenerAdapter
     {
     public:
-        // GhostListener(
-        //     /* [in] */ IView* view,
-        //      [in]  IGhostView* ghostView,
-        //     /* [in] */ IMatrix* endMatrix);
+        GhostListener(
+            /* [in] */ IView* view,
+            /* [in] */ IGhostView* ghostView,
+            /* [in] */ IMatrix* endMatrix);
 
         CARAPI OnTransitionEnd(
             /* [in] */ ITransition* transition);
@@ -66,7 +67,7 @@ private:
 
     private:
         AutoPtr<IView> mView;
-//        AutoPtr<IGhostView> mGhostView;
+        AutoPtr<IGhostView> mGhostView;
         AutoPtr<IMatrix> mEndMatrix;
     };
 
@@ -229,14 +230,14 @@ private:
         /* [in] */ Float rotationZ);
 
 private:
-    static String TAG;
+    static const String TAG;
 
-    static String PROPNAME_MATRIX;
-    static String PROPNAME_TRANSFORMS;
-    static String PROPNAME_PARENT;
-    static String PROPNAME_PARENT_MATRIX;
-    static String PROPNAME_INTERMEDIATE_PARENT_MATRIX;
-    static String PROPNAME_INTERMEDIATE_MATRIX;
+    static const String PROPNAME_MATRIX;
+    static const String PROPNAME_TRANSFORMS;
+    static const String PROPNAME_PARENT;
+    static const String PROPNAME_PARENT_MATRIX;
+    static const String PROPNAME_INTERMEDIATE_PARENT_MATRIX;
+    static const String PROPNAME_INTERMEDIATE_MATRIX;
 
     static AutoPtr<ArrayOf<String> > sTransitionProperties;
 
