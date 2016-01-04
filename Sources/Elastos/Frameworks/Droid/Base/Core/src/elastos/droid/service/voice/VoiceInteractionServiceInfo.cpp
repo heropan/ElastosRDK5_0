@@ -81,14 +81,11 @@ ECode VoiceInteractionServiceInfo::constructor(
 
     AutoPtr<IAttributeSet> attrs = Xml::AsAttributeSet(IXmlPullParser::Probe(parser));
 
-#if 0 // cannot find "parser->Next(&type)
-    //TODO
+
     Int32 type;
-    parser->Next(&type);
-    while (type != IXmlPullParser::END_DOCUMENT
-            && type != IXmlPullParser::START_TAG) {
+    IXmlPullParser::Probe(parser)->Next(&type);
+    while (type != IXmlPullParser::END_DOCUMENT && type != IXmlPullParser::START_TAG) {
     }
-#endif
 
     String nodeName;
     IXmlPullParser::Probe(parser)->GetName(&nodeName);
@@ -118,6 +115,8 @@ ECode VoiceInteractionServiceInfo::constructor(
         mParseError = "No recogitionService specified";
         return;
     } */
+    assert(0);
+    //TODO
     // } catch (XmlPullParserException e) {
     //     mParseError = "Error parsing voice interation service meta-data: " + e;
     //     Log.w(TAG, "error parsing voice interaction service meta-data", e);

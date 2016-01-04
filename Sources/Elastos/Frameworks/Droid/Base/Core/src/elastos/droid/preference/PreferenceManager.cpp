@@ -354,7 +354,6 @@ ECode PreferenceManager::SetDefaultValues(
             Boolean result = FALSE;
             editor->Commit(&result);
             return E_ABSTRACT_METHOD_ERROR;
-            return NOERROR;
         }
     }
     return NOERROR;

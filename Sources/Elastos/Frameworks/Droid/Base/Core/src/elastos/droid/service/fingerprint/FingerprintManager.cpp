@@ -5,8 +5,7 @@
 #include "elastos/droid/os/CBinder.h"
 #include "elastos/droid/service/fingerprint/FingerprintManager.h"
 #include "elastos/droid/service/fingerprint/FingerprintUtils.h"
-
-// #include "elastos/droid/Provider/Settings.h"
+#include "elastos/droid/provider/Settings.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>
 
@@ -17,7 +16,7 @@ using Elastos::Droid::Content::Pm::IUserInfo;
 using Elastos::Droid::Os::CBinder;
 using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Os::IUserHandle;
-// using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::Provider::Settings;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
 
@@ -177,15 +176,13 @@ ECode FingerprintManager::EnrolledAndEnabled(
     VALIDATE_NOT_NULL(result)
     AutoPtr<IContentResolver> res;
     mContext->GetContentResolver((IContentResolver**)&res);
-    assert(0);
-    //TODO Settings unfinished
-    // Int32 i;
-    // Settings::Secure::GetInt32(res, String("fingerprint_enabled"), 0, &i);
-    // Int32 useid;
-    // GetCurrentUserId(&useid);
-    // AutoPtr<ArrayOf<Int32> > result;
-    // FingerprintUtils::GetFingerprintIdsForUser(res, useid, (ArrayOf<Int32>**)&result);
-    // *result = i != 0 && result->GetLength() > 0;
+    Int32 i;
+    Settings::Secure::GetInt32(res, String("fingerprint_enabled"), 0, &i);
+    Int32 useid;
+    GetCurrentUserId(&useid);
+    AutoPtr<ArrayOf<Int32> > array;
+    FingerprintUtils::GetFingerprintIdsForUser(res, useid, (ArrayOf<Int32>**)&array);
+    *result = i != 0 && array->GetLength() > 0;
     return NOERROR;
 }
 

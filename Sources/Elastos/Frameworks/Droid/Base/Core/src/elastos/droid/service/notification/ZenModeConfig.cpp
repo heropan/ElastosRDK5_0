@@ -161,70 +161,79 @@ ECode ZenModeConfig::constructor()
 ECode ZenModeConfig::constructor(
     /* [in] */ IParcelable* source)
 {
-    //TODO
-    // allowCalls = source.readInt() == 1;
-    // allowMessages = source.readInt() == 1;
-    // allowEvents = source.readInt() == 1;
-    // if (source.readInt() == 1) {
-    //     sleepMode = source.readString();
-    // }
-    // sleepStartHour = source.readInt();
-    // sleepStartMinute = source.readInt();
-    // sleepEndHour = source.readInt();
-    // sleepEndMinute = source.readInt();
-    // int len = source.readInt();
-    // if (len > 0) {
-    //     conditionComponents = new ComponentName[len];
-    //     source.readTypedArray(conditionComponents, ComponentName.CREATOR);
-    // }
-    // len = source.readInt();
-    // if (len > 0) {
-    //     conditionIds = new Uri[len];
-    //     source.readTypedArray(conditionIds, Uri.CREATOR);
-    // }
-    // allowFrom = source.readInt();
+    return NOERROR;
+}
+
+ECode ZenModeConfig::ReadFromParcel(
+    /* [in] */ IParcel* source)
+{
+    Int32 i;
+    source->ReadInt32(&i);
+    mAllowCalls = i == 1;
+    source->ReadInt32(&i);
+    mAllowMessages = i == 1;
+    source->ReadInt32(&i);
+    mAllowEvents = i == 1;
+    source->ReadInt32(&i);
+    if (i == 1) {
+        source->ReadString(&mSleepMode);
+    }
+    source->ReadInt32(&mSleepStartHour);
+    source->ReadInt32(&mSleepStartMinute);
+    source->ReadInt32(&mSleepEndHour);
+    source->ReadInt32(&mSleepEndMinute);
+    Int32 len;
+    source->ReadInt32(&len);
+    if (len > 0) {
+        mConditionComponents = ArrayOf<IComponentName*>::Alloc(len);
+        assert(0);
+        // source.readTypedArray(conditionComponents, ComponentName.CREATOR);
+    }
+    source->ReadInt32(&len);
+    if (len > 0) {
+        mConditionIds = ArrayOf<IUri*>::Alloc(len);
+        assert(0);
+        // source.readTypedArray(conditionIds, Uri.CREATOR);
+    }
+    source->ReadInt32(&mAllowFrom);
+    assert(0);
     // exitCondition = source.readParcelable(null);
     // exitConditionComponent = source.readParcelable(null);
     return NOERROR;
 }
 
-ECode ZenModeConfig::ReadFromParcel(
-    /* [in] */ IParcel* in)
-{
-    //TODO
-    return NOERROR;
-}
-
 ECode ZenModeConfig::WriteToParcel(
-    /* [in] */ IParcel* out)
+    /* [in] */ IParcel* dest)
 {
-    //TODO
-    // dest.writeInt(allowCalls ? 1 : 0);
-    // dest.writeInt(allowMessages ? 1 : 0);
-    // dest.writeInt(allowEvents ? 1 : 0);
-    // if (sleepMode != null) {
-    //     dest.writeInt(1);
-    //     dest.writeString(sleepMode);
-    // } else {
-    //     dest.writeInt(0);
-    // }
-    // dest.writeInt(sleepStartHour);
-    // dest.writeInt(sleepStartMinute);
-    // dest.writeInt(sleepEndHour);
-    // dest.writeInt(sleepEndMinute);
-    // if (conditionComponents != null && conditionComponents.length > 0) {
-    //     dest.writeInt(conditionComponents.length);
-    //     dest.writeTypedArray(conditionComponents, 0);
-    // } else {
-    //     dest.writeInt(0);
-    // }
-    // if (conditionIds != null && conditionIds.length > 0) {
-    //     dest.writeInt(conditionIds.length);
-    //     dest.writeTypedArray(conditionIds, 0);
-    // } else {
-    //     dest.writeInt(0);
-    // }
-    // dest.writeInt(allowFrom);
+    dest->WriteInt32(mAllowCalls ? 1 : 0);
+    dest->WriteInt32(mAllowMessages ? 1 : 0);
+    dest->WriteInt32(mAllowEvents ? 1 : 0);
+    if (!mSleepMode.IsNull()) {
+        dest->WriteInt32(1);
+        dest->WriteString(mSleepMode);
+    } else {
+        dest->WriteInt32(0);
+    }
+    dest->WriteInt32(mSleepStartHour);
+    dest->WriteInt32(mSleepStartMinute);
+    dest->WriteInt32(mSleepEndHour);
+    dest->WriteInt32(mSleepEndMinute);
+    if (mConditionComponents != NULL && mConditionComponents->GetLength() > 0) {
+        dest->WriteInt32(mConditionComponents->GetLength());
+        assert(0);
+        // dest.writeTypedArray(conditionComponents, 0);
+    } else {
+        dest->WriteInt32(0);
+    }
+    if (mConditionIds != NULL && mConditionIds->GetLength() > 0) {
+        dest->WriteInt32(mConditionIds->GetLength());
+        assert(0);
+        // dest.writeTypedArray(conditionIds, 0);
+    } else {
+        dest->WriteInt32(0);
+    }
+    dest->WriteInt32(mAllowFrom);
+    assert(0);
     // dest.writeParcelable(exitCondition, 0);
     // dest.writeParcelable(exitConditionComponent, 0);
     return NOERROR;
@@ -259,10 +268,6 @@ ECode ZenModeConfig::ToString(
     sb += mSleepEndMinute;
     sb += ",conditionComponents=";
 
-    //TODO
-    assert(0);//someone make mistakes  in TextUtils   static CARAPI_(String) Join(ICharSequence* delimiter,ArrayOf<IIterable*>* tokens);
-    //static CARAPI_(String) Join(ICharSequence* delimiter,ArrayOf<IInterface*>* tokens);
-    #if 0
     Int32 length = mConditionComponents->GetLength();
     AutoPtr<ArrayOf<IInterface*> > objs = ArrayOf<IInterface*>::Alloc(length);
     for (Int32 i = 0; i < length; i++) {
@@ -279,7 +284,6 @@ ECode ZenModeConfig::ToString(
     }
 
     sb += mConditionIds == NULL ? "NULL" : TextUtils::Join(cs.Get(), objs2.Get());
-    #endif
     sb += ",exitCondition=";
     sb += mExitCondition;
     sb += ",exitConditionComponent=";
@@ -363,6 +367,7 @@ ECode ZenModeConfig::Equals(
 ECode ZenModeConfig::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
+    assert(0);
     //TODO
     // return Objects.hash(allowCalls, allowMessages, allowFrom, allowEvents, sleepMode,
     //         sleepStartHour, sleepStartMinute, sleepEndHour, sleepEndMinute,
@@ -473,8 +478,6 @@ ECode ZenModeConfig::ReadXml(
     const AutoPtr<IArrayList> conditionComponents, conditionIds;
     CArrayList::New((IArrayList**)&conditionComponents);
     CArrayList::New((IArrayList**)&conditionIds);
-    // final ArrayList<ComponentName> conditionComponents = new ArrayList<ComponentName>();
-    // final ArrayList<Uri> conditionIds = new ArrayList<Uri>();
     Int32 next;
     parser->Next(&next);
     while ((type = next) != IXmlPullParser::END_DOCUMENT) {
@@ -633,16 +636,11 @@ ECode ZenModeConfig::ReadConditionXml(
     const Int32 icon = SafeInt(parser, CONDITION_ATT_ICON, -1);
     const Int32 state = SafeInt(parser, CONDITION_ATT_STATE, -1);
     const Int32 flags = SafeInt(parser, CONDITION_ATT_FLAGS, -1);
-    // try {
     CCondition::New(id, summary, line1, line2, icon, state, flags, result);
     if (*result == NULL) {
         Slogger::W(TAG, "Unable to read condition xml");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    // } catch (IllegalArgumentException e) {
-    //     Slog.w(TAG, "Unable to read condition xml", e);
-    //     return null;
-    // }
     return NOERROR;
 }
 
@@ -729,6 +727,7 @@ AutoPtr<IUri> ZenModeConfig::SafeUri(
 ECode ZenModeConfig::Copy(
     /* [out] */ IZenModeConfig** copy)
 {
+    assert(0);
     //TODO
     // final Parcel parcel = Parcel.obtain();
     // try {

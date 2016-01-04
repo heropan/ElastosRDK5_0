@@ -133,8 +133,6 @@ ECode AlwaysOnHotwordDetector::SoundTriggerListener::OnDetected(
         Slogger::I(TAG, "onDetected");
     }
     AutoPtr<SoundTriggerRecognitionEvent> strevent = (SoundTriggerRecognitionEvent*)event;
-    // AutoPtr<EventPayload> ep = new EventPayload(strevent->mTriggerInData, strevent->mCaptureAvailable,
-    //     strevent->mCaptureFormat, strevent->mCaptureSession, strevent->mData);
     AutoPtr<IAlwaysOnHotwordDetectorEventPayload> eventPayload;
     CAlwaysOnHotwordDetectorEventPayload::New(strevent->mTriggerInData,
         strevent->mCaptureAvailable, strevent->mCaptureFormat, strevent->mCaptureSession,
@@ -529,8 +527,9 @@ ECode AlwaysOnHotwordDetector::OnSoundModelsChanged()
         StopRecognitionLocked(&srl);
 
         // Execute a refresh availability task - which should then notify of a change.
+        AutoPtr<RefreshAvailabiltyTask> task = new RefreshAvailabiltyTask(this);
         assert(0);
-        // new RefreshAvailabiltyTask().execute();
+        // task->Execute();
     }
     return NOERROR;
 }

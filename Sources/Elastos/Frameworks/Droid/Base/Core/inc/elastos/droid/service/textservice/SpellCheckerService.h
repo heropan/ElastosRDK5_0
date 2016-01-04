@@ -3,6 +3,10 @@
 #define __ELASTOS_DROID_SERVICE_TEXTSERVICE_SPELLCHECKERSERVICE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Text.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/droid/app/Service.h"
 
 using Elastos::Droid::App::Service;

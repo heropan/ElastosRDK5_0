@@ -1,14 +1,20 @@
-
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.CoreLibrary.Core.h"
+#include "elastos/droid/graphics/drawable/CColorDrawable.h"
+#include "elastos/droid/internal/policy/CPolicyManager.h"
 #include "elastos/droid/os/CHandler.h"
 #include "elastos/droid/os/ServiceManager.h"
 #include "elastos/droid/service/dreams/DreamService.h"
 #include "elastos/droid/utility/MathUtils.h"
 #include "elastos/droid/view/CWindowManagerGlobalHelper.h"
+#include "elastos/droid/R.h"
 #include <elastos/utility/logging/Slogger.h>
 
-// using Elastos::Droid::Internal::Policy::CPolicyManager;
+using Elastos::Droid::Internal::Policy::CPolicyManager;
 using Elastos::Droid::Internal::Policy::IPolicyManager;
 using Elastos::Droid::Graphics::IPixelFormat;
+using Elastos::Droid::Graphics::Drawable::CColorDrawable;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Os::IPowerManager;
@@ -20,6 +26,8 @@ using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::View::IViewManager;
 using Elastos::Droid::View::IWindowManagerGlobal;
 using Elastos::Droid::View::IWindowManagerGlobalHelper;
+using Elastos::Droid::R;
+using Elastos::Core::IRunnable;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -786,8 +794,6 @@ ECode DreamService::Attach(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     if (!mWindowless) {
-//TODO
-#if 0 //'Elastos::Droid::Internal::Policy::CPolicyManager' has not been declared
         AutoPtr<IPolicyManager> pm;
         CPolicyManager::AcquireSingleton((IPolicyManager**)&pm);
         pm->MakeNewWindow((IContext*)this, (IWindow**)&mWindow);
@@ -802,12 +808,12 @@ ECode DreamService::Attach(
         String wt;
         IObject::Probe(windowToken)->ToString(&wt);
         if (mDebug) Slogger::V(TAG, "Attaching window token: %s to window of type %d",
-                wt, IWindowManagerLayoutParams::TYPE_DREAM));
+                wt.string(), IWindowManagerLayoutParams::TYPE_DREAM);
 
         AutoPtr<IWindowManagerLayoutParams> lp;
         mWindow->GetAttributes((IWindowManagerLayoutParams**)&lp);
         lp->SetType(IWindowManagerLayoutParams::TYPE_DREAM);
-        lp->Settoken(windowToken);
+        lp->SetToken(windowToken);
         lp->SetWindowAnimations(R::style::Animation_Dream);
         Int32 flags;
         lp->GetFlags(&flags);
@@ -845,7 +851,6 @@ ECode DreamService::Attach(
             mWindow = NULL;
             return E_WINDOWMANAGER_BAD_TOKEN_EXCEPTION;
         }
-#endif
     }
     // We need to defer calling onDreamingStarted until after onWindowAttached,
     // which is posted to the handler by addView, so we post onDreamingStarted

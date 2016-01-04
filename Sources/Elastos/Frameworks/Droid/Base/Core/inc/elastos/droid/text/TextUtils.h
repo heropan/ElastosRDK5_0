@@ -160,7 +160,7 @@ public:
      */
     static CARAPI_(String) Join(
         /* [in] */ ICharSequence* delimiter,
-        /* [in] */ ArrayOf<IIterable*>* tokens);
+        /* [in] */ ArrayOf<IInterface*>* tokens);
 
     /**
      * Returns a string containing the tokens joined by delimiters.

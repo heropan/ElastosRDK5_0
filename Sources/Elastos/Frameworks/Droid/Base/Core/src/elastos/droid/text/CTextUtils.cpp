@@ -146,7 +146,7 @@ ECode CTextUtils::Substring(
 
 ECode CTextUtils::Join(
     /* [in] */ ICharSequence* delimiter,
-    /* [in] */ ArrayOf<IIterable*>* tokens,
+    /* [in] */ ArrayOf<IInterface*>* tokens,
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)

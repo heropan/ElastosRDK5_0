@@ -489,7 +489,7 @@ AutoPtr<ICharSequence> TextUtils::Join(
 
 String TextUtils::Join(
     /* [in] */ ICharSequence* delimiter,
-    /* [in] */ ArrayOf<IIterable*>* tokens)
+    /* [in] */ ArrayOf<IInterface*>* tokens)
 {
     StringBuilder sb;
     Boolean firstTime = TRUE;

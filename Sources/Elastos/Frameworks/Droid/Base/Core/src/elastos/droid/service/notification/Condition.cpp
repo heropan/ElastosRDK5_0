@@ -71,14 +71,6 @@ ECode Condition::constructor(
 ECode Condition::constructor(
     /* [in] */ IParcelable* source)
 {
-    // this((Uri)source.readParcelable(Condition.class.getClassLoader()),
-    //         source.readString(),
-    //         source.readString(),
-    //         source.readString(),
-    //         source.readInt(),
-    //         source.readInt(),
-    //         source.readInt());
-    //TODO
     return NOERROR;
 }
 
@@ -91,21 +83,26 @@ Boolean Condition::IsValidState(
 ECode Condition::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    //TODO
+    source->ReadInterfacePtr((Handle32*)((IUri**)&mId));
+    source->ReadString(&mSummary);
+    source->ReadString(&mLine1);
+    source->ReadString(&mLine2);
+    source->ReadInt32(&mIcon);
+    source->ReadInt32(&mState);
+    source->ReadInt32(&mFlags);
     return NOERROR;
 }
 
 ECode Condition::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    // dest.writeParcelable(id, 0);
-    // dest.writeString(summary);
-    // dest.writeString(line1);
-    // dest.writeString(line2);
-    // dest.writeInt(icon);
-    // dest.writeInt(state);
-    // dest.writeInt(this.flags);
-    //TODO
+    dest->WriteInterfacePtr(mId.Get());
+    dest->WriteString(mSummary);
+    dest->WriteString(mLine1);
+    dest->WriteString(mLine2);
+    dest->WriteInt32(mIcon);
+    dest->WriteInt32(mState);
+    dest->WriteInt32(mFlags);
     return NOERROR;
 }
 

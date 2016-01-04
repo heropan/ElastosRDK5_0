@@ -14,11 +14,6 @@ CMediaBrowserServiceBrowserRoot::CMediaBrowserServiceBrowserRoot()
 {
 }
 
-/**
- * Constructs a browser root.
- * @param rootId The root id for browsing.
- * @param extras Any extras about the browser service.
- */
 ECode CMediaBrowserServiceBrowserRoot::constructor(
     /* [in] */ const String& rootId,
     /* [in] */ IBundle * extras)

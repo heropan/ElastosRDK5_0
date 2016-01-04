@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_SERVICE_SANDMAN_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Content.h"
 #include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IComponentName;
@@ -46,7 +47,7 @@ private:
     // The sandman is eternal.  No one instantiates him.
     Sandman();
 
-    static CARAPI_(void) StartDream(
+    static CARAPI StartDream(
         /* [in] */ IContext* context,
         /* [in] */ Boolean docked);
 

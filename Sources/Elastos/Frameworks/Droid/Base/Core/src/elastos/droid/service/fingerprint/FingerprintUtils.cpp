@@ -1,11 +1,13 @@
-// #include "elastos/droid/provider/Settings.h"
+#include "Elastos.Droid.Provider.h"
+#include "elastos/droid/provider/Settings.h"
 #include "elastos/droid/service/fingerprint/FingerprintUtils.h"
 #include "elastos/droid/text/TextUtils.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/Arrays.h>
 #include <elastos/utility/logging/Logger.h>
 
-// using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::Provider::ISettingsSecure;
+using Elastos::Droid::Provider::Settings;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Arrays;
@@ -25,8 +27,6 @@ ECode FingerprintUtils::GetFingerprintIdsForUser(
     /* [out, callee] */ ArrayOf<Int32>** ids)
 {
     VALIDATE_NOT_NULL(ids)
-    //TDOD
-#if 0
     String fingerIdsRaw;
     Settings::Secure::GetStringForUser(res, ISettingsSecure::USER_FINGERPRINT_IDS, userId, &fingerIdsRaw);
 
@@ -34,11 +34,11 @@ ECode FingerprintUtils::GetFingerprintIdsForUser(
 
     if (TextUtils::IsEmpty(fingerIdsRaw)) {
         AutoPtr<ArrayOf<String> > fingerStringIds;
-        StringUtils::Split(fingerIdsRaw.Replace("[", "").Replace("]", ""), String(", "), (ArrayOf<String>**)&fingerStringIds);
+        StringUtils::Split(fingerIdsRaw.Replace('[', ' ').Replace(']', ' '), String(", "), (ArrayOf<String>**)&fingerStringIds);
 
         result = ArrayOf<Int32>::Alloc(fingerStringIds->GetLength());
         for (Int32 i = 0; i < result->GetLength(); i++) {
-            assert(0);
+            //TODO
             // try {
             //     result[i] = Integer.decode(fingerStringIds[i]);
             // } catch (NumberFormatException e) {
@@ -48,8 +48,6 @@ ECode FingerprintUtils::GetFingerprintIdsForUser(
     }
     *ids = result.Get();
     REFCOUNT_ADD(*ids);
-    return result;
-#endif
     return NOERROR;
 }
 
@@ -71,11 +69,9 @@ ECode FingerprintUtils::AddFingerprintIdForUser(
     AutoPtr<ArrayOf<Int32> > newList;
     Arrays::CopyOf(fingerIds, fingerIds->GetLength() + 1, (ArrayOf<Int32>**)&newList);
     (*newList)[fingerIds->GetLength()] = fingerId;
-    assert(0);
-    //TODO
-    // Boolean result;
-    // Settings::Secure::PutStringForUser(res, ISettingsSecure::USER_FINGERPRINT_IDS,
-    //         Arrays::ToString(newList), userId, &result);
+    Boolean result;
+    Settings::Secure::PutStringForUser(res, ISettingsSecure::USER_FINGERPRINT_IDS,
+            Arrays::ToString(newList), userId, &result);
     return NOERROR;
 }
 
@@ -106,11 +102,9 @@ ECode FingerprintUtils::RemoveFingerprintIdForUser(
     if (resultCount > 0) {
         AutoPtr<ArrayOf<Int32> > copyids;
         Arrays::CopyOf(resultIds, resultCount, (ArrayOf<Int32>**)&copyids);
-        assert(0);
-        //TODO
-        // Boolean result;
-        // Settings::Secure::PutStringForUser(res, ISettingsSecure::USER_FINGERPRINT_IDS,
-        //         Arrays::ToString(copyids), userId, &result);
+        Boolean result;
+        Settings::Secure::PutStringForUser(res, ISettingsSecure::USER_FINGERPRINT_IDS,
+                Arrays::ToString(copyids), userId, &result);
         *ret = TRUE;
         return NOERROR;
     }
