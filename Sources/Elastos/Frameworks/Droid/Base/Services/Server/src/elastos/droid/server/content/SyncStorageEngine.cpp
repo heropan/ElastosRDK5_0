@@ -3,38 +3,81 @@
 #include <elastos/droid/server/content/SyncOperation.h>
 #include <elastos/droid/server/content/SyncManager.h>
 #include <elastos/droid/server/content/SyncQueue.h>
+#include <elastos/droid/os/Process.h>
 #include <elastos/droid/R.h>
+#include <elastos/droid/utility/Xml.h>
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/CoreUtils.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/Math.h>
+#include <elastos/utility/etl/Algorithm.h>
+#include <elastos/utility/logging/Logger.h>
+#include <Elastos.Droid.Os.h>
+#include <Elastos.Droid.Content.h>
+#include <Elastos.Droid.Database.h>
+#include <Elastos.Droid.Internal.h>
+#include <Elastos.CoreLibrary.External.h>
 
 using Elastos::Droid::R;
+using Elastos::Droid::Os::Process;
+using Elastos::Droid::Os::IProcess;
 using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Os::CRemoteCallbackList;
 using Elastos::Droid::Os::IEnvironment;
 using Elastos::Droid::Os::CEnvironment;
 using Elastos::Droid::Utility::CAtomicFile;
+using Elastos::Droid::Utility::Xml;
+// using Elastos::Droid::Accounts::CAccount;
+// using Elastos::Droid::Accounts::CAccountAndUser;
+using Elastos::Droid::Content::CSyncInfo;
+using Elastos::Droid::Content::CSyncStatusInfo;
+using Elastos::Droid::Content::CComponentName;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::IPeriodicSync;
+using Elastos::Droid::Content::CPeriodicSync;
 using Elastos::Droid::Content::IContentResolverHelper;
 using Elastos::Droid::Content::CContentResolverHelper;
 using Elastos::Droid::Content::ISyncRequest;
 using Elastos::Droid::Content::ISyncRequestBuilder;
 using Elastos::Droid::Content::CSyncRequestBuilder;
+using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;
 using Elastos::Droid::Database::Sqlite::ISQLiteDatabaseHelper;
 using Elastos::Droid::Database::Sqlite::CSQLiteDatabaseHelper;
 using Elastos::Droid::Database::Sqlite::ISQLiteQueryBuilder;
 using Elastos::Droid::Database::Sqlite::CSQLiteQueryBuilder;
+using Elastos::Droid::Internal::Utility::IFastXmlSerializer;
+using Elastos::Droid::Internal::Utility::CFastXmlSerializer;
+using Elastos::Droid::Server::Content::PendingOperation;
+using Elastos::Droid::Server::Content::AuthorityInfo;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CoreUtils;
+using Elastos::Core::AutoLock;
 using Elastos::Core::StringUtils;
+using Elastos::Core::ISystem;
+using Elastos::Core::CSystem;
+using Elastos::IO::ICloseable;
+using Elastos::IO::IOutputStream;
+using Elastos::IO::IInputStream;
+using Elastos::IO::IFileInputStream;
+using Elastos::IO::IFileOutputStream;
+using Elastos::IO::IFile;
+using Elastos::IO::CFile;
 using Elastos::Utility::ISet;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::IMap;
 using Elastos::Utility::IHashMap;
 using Elastos::Utility::CHashMap;
 using Elastos::Utility::IRandom;
 using Elastos::Utility::CRandom;
+using Elastos::Utility::ITimeZone;
 using Elastos::Utility::ICalendarHelper;
 using Elastos::Utility::CCalendarHelper;
 using Elastos::Utility::ITimeZoneHelper;
 using Elastos::Utility::CTimeZoneHelper;
+using Elastos::Utility::Logging::Logger;
+using Org::Xmlpull::V1::IXmlSerializer;
 
 namespace Elastos {
 namespace Droid {
@@ -42,7 +85,7 @@ namespace Server {
 namespace Content {
 
 
-const Int64 SyncStorageEngine::MILLIS_IN_4WEEKS = 1000L * 60 * 60 * 24 * 7 * 4;
+const Int64 SyncStorageEngine::MILLIS_IN_4WEEKS = ((Int64)1000) * 60 * 60 * 24 * 7 * 4;
 const Int32 SyncStorageEngine::EVENT_START = 0;
 const Int32 SyncStorageEngine::EVENT_STOP = 1;
 
@@ -147,7 +190,6 @@ DayStats::DayStats(
     , mFailureCount(0)
     , mFailureTime(0)
 {
-    mday = day;
 }
 
 //=========================================================================================
@@ -201,14 +243,14 @@ ECode PendingOperation::ToString(
     sb += " user=";
     sb += mTarget->mUserId;
     sb += " auth=";
-    sb += Object::ToString(mTarget)
+    sb += Object::ToString(mTarget);
     sb += " account=";
     sb += Object::ToString(mTarget->mAccount);
     sb += " src=";
     sb += mSyncSource;
     sb += " extras=";
     sb += Object::ToString(mExtras);
-    *str = sb.ToString()
+    *str = sb.ToString();
     return NOERROR;
 }
 
@@ -227,7 +269,7 @@ AccountInfo::AccountInfo(
 
 const AutoPtr<EndPoint> EndPoint::USER_ALL_PROVIDER_ALL_ACCOUNTS_ALL = new EndPoint(NULL, String(NULL), IUserHandle::USER_ALL);
 
-CAR_INTERFACE_DECL(EndPoint, Object, ISyncStorageEngineEndPoint)
+CAR_INTERFACE_IMPL(EndPoint, Object, ISyncStorageEngineEndPoint)
 
 EndPoint::EndPoint(
     /* [in] */ IComponentName* service,
@@ -244,8 +286,8 @@ EndPoint::EndPoint(
     /* [in] */ const String& provider,
     /* [in] */ Int32 userId)
     : mAccount(account)
-    , mProvider(provider)
     , mUserId(userId)
+    , mProvider(provider)
     , mTarget_service(FALSE)
     , mTarget_provider(TRUE)
 {
@@ -263,7 +305,7 @@ ECode EndPoint::MatchesSpec(
 Boolean EndPoint::MatchesSpec(
     /* [in] */ ISyncStorageEngineEndPoint* spec)
 {
-    EndPoint* other = (EndPoint)*spec;
+    EndPoint* other = (EndPoint*)spec;
     if (mUserId != other->mUserId
             && mUserId != IUserHandle::USER_ALL
             && other->mUserId != IUserHandle::USER_ALL) {
@@ -285,7 +327,7 @@ Boolean EndPoint::MatchesSpec(
             providersMatch = TRUE;
         }
         else {
-            providersMatch = Object::Equals(mProvider, other->mProvider);
+            providersMatch = mProvider.Equals(other->mProvider);
         }
         return accountsMatch && providersMatch;
     }
@@ -312,7 +354,7 @@ ECode EndPoint::ToString(
             sb.Append("ALL PDRS");
         }
         else {
-            sb.Append(Object::ToString(mProvider));
+            sb.Append(mProvider);
         }
     }
     else if (mTarget_service) {
@@ -327,7 +369,7 @@ ECode EndPoint::ToString(
         sb.Append("invalid target");
     }
     sb.Append(":u");
-    sb.Append(userId);
+    sb.Append(mUserId);
     *str = sb.ToString();
     return NOERROR;
 }
@@ -366,7 +408,7 @@ AuthorityInfo::AuthorityInfo(
     , mDelayUntil(0)
 {
     mTarget = info;
-    mEnabled = info->mTarget_provider ? SYNC_ENABLED_DEFAULT : TRUE;
+    mEnabled = info->mTarget_provider ? SyncStorageEngine::SYNC_ENABLED_DEFAULT : TRUE;
     // Service is active by default,
     if (info->mTarget_service) {
         mSyncable = 1;
@@ -379,15 +421,15 @@ void AuthorityInfo::DefaultInitialisation()
     mSyncable = -1; // default to "unknown"
     mBackoffTime = -1; // if < 0 then we aren't in backoff mode
     mBackoffDelay = -1; // if < 0 then we aren't in backoff mode
-    Authority<IPeriodicSync> defaultSync;
+    AutoPtr<IPeriodicSync> defaultSync;
     // Old version is one sync a day. Empty bundle gets replaced by any addPeriodicSync()
     // call.
-    if (target->mTarget_provider) {
+    if (mTarget->mTarget_provider) {
         AutoPtr<IBundle> bundle;
         CBundle::New((IBundle**)&bundle);
-        CPeriodicSync::New(target->mAccount, target->mProvider,
-            bundle, DEFAULT_POLL_FREQUENCY_SECONDS,
-            CalculateDefaultFlexTime(DEFAULT_POLL_FREQUENCY_SECONDS),
+        CPeriodicSync::New(mTarget->mAccount, mTarget->mProvider,
+            bundle, SyncStorageEngine::DEFAULT_POLL_FREQUENCY_SECONDS,
+            SyncStorageEngine::CalculateDefaultFlexTime(SyncStorageEngine::DEFAULT_POLL_FREQUENCY_SECONDS),
             (IPeriodicSync**)&defaultSync);
         mPeriodicSyncs.PushBack(defaultSync);
     }
@@ -397,7 +439,7 @@ ECode AuthorityInfo::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
-    StringBuilder sb(Object::ToString(target));
+    StringBuilder sb(Object::ToString(mTarget));
     sb += ", enabled=";
     sb += mEnabled;
     sb += ", syncable=";
@@ -424,7 +466,7 @@ SyncHistoryItem::SyncHistoryItem()
     , mUpstreamActivity(0)
     , mDownstreamActivity(0)
     , mInitialization(FALSE)
-    , mEeason(0)
+    , mReason(0)
 {}
 
 //=========================================================================================
@@ -466,7 +508,8 @@ SyncStorageEngine::SyncStorageEngine(
     AutoPtr<IFile> systemDir, syncDir;
     CFile::New(dataDir, String("system"), (IFile**)&systemDir);
     CFile::New(systemDir, String("sync"), (IFile**)&syncDir);
-    syncDir->Mkdirs();
+    Boolean bval;
+    syncDir->Mkdirs(&bval);
 
     MaybeDeleteLegacyPendingInfoLocked(syncDir);
 
@@ -662,8 +705,9 @@ Boolean SyncStorageEngine::GetSyncAutomatically(
 
         AuthorityInfo* authorityInfo;
         AutoPtr<EndPoint> ep = new EndPoint(account, providerName, userId);
-        HashMap<Int32, AutoPtr<AuthorityInfo> >::ReverseIterator rit;
-        for (rit = mAuthorities.RBegin(); rit != mAuthorities.REnd()； ++rit) {
+        // TODO reserse loop
+        HashMap<Int32, AutoPtr<AuthorityInfo> >::Iterator rit;
+        for (rit = mAuthorities.Begin(); rit != mAuthorities.End(); ++rit) {
             authorityInfo = rit->mSecond;
             if (authorityInfo->mTarget->MatchesSpec(ep) && authorityInfo->mEnabled) {
                 return TRUE;
@@ -724,16 +768,17 @@ Int32 SyncStorageEngine::GetIsSyncable(
 
         AuthorityInfo* authorityInfo;
         AutoPtr<EndPoint> ep = new EndPoint(account, providerName, userId);
-        HashMap<Int32, AutoPtr<AuthorityInfo> >::ReverseIterator rit;
-        for (rit = mAuthorities.RBegin(); rit != mAuthorities.REnd()； ++rit) {
+        // TODO reserse loop
+        HashMap<Int32, AutoPtr<AuthorityInfo> >::Iterator rit;
+        for (rit = mAuthorities.Begin(); rit != mAuthorities.End(); ++rit) {
             authorityInfo = rit->mSecond;
             if (authorityInfo->mTarget != NULL
                     && authorityInfo->mTarget->mProvider.Equals(providerName)) {
                 return authorityInfo->mSyncable;
             }
         }
-        return -1;
     }
+    return -1;
 }
 
 void SyncStorageEngine::SetIsSyncable(
@@ -809,15 +854,15 @@ void SyncStorageEngine::SetSyncableStateForEndPoint(
 AutoPtr< Pair<Int64, Int64> > SyncStorageEngine::GetBackoff(
     /* [in] */ EndPoint* info)
 {
-    AutoPtr< Pair<Int64, Int64> > pair;
+    AutoPtr< Pair<Int64, Int64> > result;
     synchronized(mAuthoritiesLock) {
         AutoPtr<AuthorityInfo> authority = GetAuthorityLocked(info, String("GetBackoff"));
-        if (authority != NULL) {
-            pair = new Pair(authority->mBackoffTime, authority->mBackoffDelay);
+        if (authority.Get() != NULL) {
+            assert(0 && "TODO");
+            result = new Pair<Int64, Int64>(authority->mBackoffTime, authority->mBackoffDelay);
         }
-
     }
-    return pair;
+    return result;
 }
 
 void SyncStorageEngine::SetBackoff(
@@ -866,9 +911,10 @@ Boolean SyncStorageEngine::SetBackoffLocked(
     /* [in] */ Int64 nextDelay)
 {
     Boolean changed = FALSE;
-    AccountInfo* accountInfo;
     HashMap< AutoPtr<IAccountAndUser>, AutoPtr<AccountInfo> >::Iterator it;
     HashMap<String, AutoPtr<AuthorityInfo> >::Iterator ait;
+    AccountInfo* accountInfo;
+    AuthorityInfo* authorityInfo;
     for (it = mAccounts.Begin(); it != mAccounts.End(); ++it) {
         accountInfo = it->mSecond;
         if (account != NULL) {
@@ -878,7 +924,8 @@ Boolean SyncStorageEngine::SetBackoffLocked(
             accountInfo->mAccountAndUser->GetUserId(&uid);
             if (account != NULL && !Object::Equals(account, act)
                 && userId != uid) {
-            continue;
+                continue;
+            }
         }
 
 
@@ -927,8 +974,8 @@ void SyncStorageEngine::ClearAllBackoffsLocked(
                     //             + " authority:" + authorityInfo->mTarget
                     //             + " account:" + accountInfo->mAccountAndUser->mAccount.name
                     //             + " user:" + accountInfo->mAccountAndUser->mUserId
-                    //             + " backoffTime was: " + authorityInfo.backoffTime
-                    //             + " backoffDelay was: " + authorityInfo.backoffDelay);
+                    //             + " backoffTime was: " + authorityInfo->mBackoffTime
+                    //             + " backoffDelay was: " + authorityInfo->mBackoffDelay);
                     // }
                     authorityInfo->mBackoffTime = NOT_IN_BACKOFF_MODE;
                     authorityInfo->mBackoffDelay = NOT_IN_BACKOFF_MODE;
@@ -943,7 +990,7 @@ void SyncStorageEngine::ClearAllBackoffsLocked(
             for (authIt = aInfos->Begin(); authIt != aInfos->End(); ++authIt) {
                 authorityInfo = authIt->mSecond;
                 if (authorityInfo->mBackoffTime != NOT_IN_BACKOFF_MODE
-                        || authorityInfo.backoffDelay != NOT_IN_BACKOFF_MODE) {
+                        || authorityInfo->mBackoffDelay != NOT_IN_BACKOFF_MODE) {
                     authorityInfo->mBackoffTime = NOT_IN_BACKOFF_MODE;
                     authorityInfo->mBackoffDelay = NOT_IN_BACKOFF_MODE;
                 }
@@ -962,11 +1009,11 @@ Int64 SyncStorageEngine::GetDelayUntilTime(
 {
     synchronized(mAuthoritiesLock) {
         AutoPtr<AuthorityInfo> authority = GetAuthorityLocked(info, String("getDelayUntil"));
-        if (authority == NULL) {
-            return 0;
+        if (authority != NULL) {
+            return authority->mDelayUntil;
         }
-        return authority->mDelayUntil;
     }
+    return 0;
 }
 
 void SyncStorageEngine::SetDelayUntilTime(
@@ -1008,7 +1055,6 @@ void SyncStorageEngine::UpdateOrAddPeriodicSync(
 
         AutoPtr<IPeriodicSync> toUpdate;
         if (info->mTarget_provider) {
-            toUpdate
             CPeriodicSync::New(info->mAccount,
                 info->mProvider, extras, period, flextime, (IPeriodicSync**)&toUpdate);
         }
@@ -1021,12 +1067,15 @@ void SyncStorageEngine::UpdateOrAddPeriodicSync(
         AutoPtr<AuthorityInfo> authority = GetOrCreateAuthorityLocked(info, -1, FALSE);
         // add this periodic sync if an equivalent periodic doesn't already exist.
         Boolean alreadyPresent = FALSE;
+        Int64 p, ft;
         for (Int32 i = 0, N = authority->mPeriodicSyncs.GetSize(); i < N; i++) {
             IPeriodicSync* syncInfo = authority->mPeriodicSyncs[i];
-            if (SyncManager::SyncExtrasEquals(syncInfo->mExtras,
-                    extras, TRUE /* includeSyncSettings*/)) {
-                if (period == syncInfo->mPeriod &&
-                        flextime == syncInfo->mFlexTime) {
+            AutoPtr<IBundle> b;
+            syncInfo->GetExtras((IBundle**)&b);
+            if (SyncManager::SyncExtrasEquals(b, extras, TRUE /* includeSyncSettings*/)) {
+                syncInfo->GetPeriod(&p);
+                syncInfo->GetPeriod(&ft);
+                if (period == p && flextime == ft) {
                     // Absolutely the same.
                     WriteAccountInfoLocked();
                     WriteStatusLocked();
@@ -1062,18 +1111,20 @@ void SyncStorageEngine::RemovePeriodicSync(
     /* [in] */ EndPoint* info,
     /* [in] */ IBundle* extras)
 {
-    synchronized(mAuthorities) {
+    synchronized(mAuthoritiesLock) {
         AutoPtr<AuthorityInfo> authority = GetOrCreateAuthorityLocked(info, -1, FALSE);
         // Remove any periodic syncs that match the target and extras.
         HashMap<Int32, AutoPtr<ISyncStatusInfo> >::Iterator it = mSyncStatus.Find(authority->mIdent);
-        AutoPtr<ISyncStatusInfo> status = *it;
+        AutoPtr<ISyncStatusInfo> status = it->mSecond;
         Boolean changed = FALSE;
         List<AutoPtr<IPeriodicSync> >::Iterator iterator;
         Int32 i = 0;
         for (iterator = authority->mPeriodicSyncs.Begin(); iterator != authority->mPeriodicSyncs.End(); ++iterator, ++i) {
             AutoPtr<IPeriodicSync> syncInfo = *iterator;
-            if (SyncManager::SyncExtrasEquals(syncInfo->mExtras, extras, TRUE /* includeSyncSettings */)) {
-                it = authority->mPeriodicSyncs.Erase(it);
+            AutoPtr<IBundle> b;
+            syncInfo->GetExtras((IBundle**)&b);
+            if (SyncManager::SyncExtrasEquals(b, extras, TRUE /* includeSyncSettings */)) {
+                iterator = authority->mPeriodicSyncs.Erase(iterator);
                 changed = TRUE;
                 // If we removed an entry from the periodicSyncs array also
                 // remove the corresponding entry from the status
@@ -1103,7 +1154,7 @@ void SyncStorageEngine::RemovePeriodicSync(
 AutoPtr<List<AutoPtr<IPeriodicSync> > > SyncStorageEngine::GetPeriodicSyncs(
     /* [in] */ EndPoint* info)
 {
-    AutoPtr<List<AutoPtr<IPeriodicSync> > > syncs = new List<AutoPtr<IPeriodicSync>();
+    AutoPtr<List<AutoPtr<IPeriodicSync> > > syncs = new List<AutoPtr<IPeriodicSync> >();
     synchronized(mAuthoritiesLock) {
         AutoPtr<AuthorityInfo> authorityInfo = GetAuthorityLocked(info, String("GetPeriodicSyncs"));
         if (authorityInfo != NULL) {
@@ -1127,7 +1178,7 @@ void SyncStorageEngine::SetMasterSyncAutomatically(
 {
     synchronized(mAuthoritiesLock) {
         HashMap<Int32, Boolean>::Iterator it = mMasterSyncAutomatically.Find(userId);
-        if (it != mMasterSyncAutomatically.End() && *it == flag) {
+        if (it != mMasterSyncAutomatically.End() && it->mSecond == flag) {
             return;
         }
 
@@ -1137,10 +1188,15 @@ void SyncStorageEngine::SetMasterSyncAutomatically(
     if (flag) {
         AutoPtr<IBundle> bundle;
         CBundle::New((IBundle**)&bundle);
-        RequestSync(NULL, userId, SyncOperation::REASON_MASTER_SYNC_AUTO, NULL, bundle);
+        RequestSync(NULL, userId, SyncOperation::REASON_MASTER_SYNC_AUTO, String(NULL), bundle);
     }
     ReportChange(IContentResolver::SYNC_OBSERVER_TYPE_SETTINGS);
-    mContext->SendBroadcast(IContentResolver::ACTION_SYNC_CONN_STATUS_CHANGED);
+    AutoPtr<IContentResolverHelper> crHelper;
+    CContentResolverHelper::AcquireSingleton((IContentResolverHelper**)&crHelper);
+    AutoPtr<IIntent> intent;
+    assert(0 && "TODO");
+    // crHelper->GetACTION_SYNC_CONN_STATUS_CHANGED((IIntent**)&intent);
+    mContext->SendBroadcast(intent);
 }
 
 Boolean SyncStorageEngine::GetMasterSyncAutomatically(
@@ -1150,7 +1206,7 @@ Boolean SyncStorageEngine::GetMasterSyncAutomatically(
     synchronized(mAuthoritiesLock) {
         HashMap<Int32, Boolean>::Iterator it = mMasterSyncAutomatically.Find(userId);
         if (it != mMasterSyncAutomatically.End()) {
-            bval = *it;
+            bval = it->mSecond;
         }
         else {
             bval = mDefaultMasterSyncAutomatically;
@@ -1179,9 +1235,11 @@ Boolean SyncStorageEngine::IsSyncActive(
     synchronized(mAuthoritiesLock) {
         AutoPtr<List<AutoPtr<ISyncInfo> > > list = GetCurrentSyncs(info->mUserId);
         List<AutoPtr<ISyncInfo> >::Iterator it;
+        Int32 id;
         for (it = list->Begin(); it != list->End(); ++it) {
             ISyncInfo* syncInfo = *it;
-            AutoPtr<AuthorityInfo> ainfo = GetAuthority(syncInfo->mAuthorityId);
+            syncInfo->GetAuthorityId(&id);
+            AutoPtr<AuthorityInfo> ainfo = GetAuthority(id);
             if (ainfo != NULL && ainfo->mTarget->MatchesSpec(info)) {
                 return TRUE;
             }
@@ -1211,7 +1269,7 @@ AutoPtr<PendingOperation> SyncStorageEngine::InsertIntoPending(
         AppendPendingOperationLocked(pop);
 
         AutoPtr<ISyncStatusInfo> status = GetOrCreateSyncStatusLocked(authority->mIdent);
-        status->mPending = TRUE;
+        status->SetPending(TRUE);
     }
     ReportChange(IContentResolver::SYNC_OBSERVER_TYPE_PENDING);
     return pop;
@@ -1258,7 +1316,7 @@ Boolean SyncStorageEngine::DeleteFromPending(
                 if (!morePending) {
                     // if (Log.isLoggable(TAG, Log.VERBOSE)) Log.v(TAG, "no more pending!");
                     AutoPtr<ISyncStatusInfo> status = GetOrCreateSyncStatusLocked(authority->mIdent);
-                    status->mPending = FALSE;
+                    status->SetPending(FALSE);
                 }
             }
             res = TRUE;
@@ -1309,18 +1367,22 @@ void SyncStorageEngine::DoDatabaseCleanup(
         //     Log.v(TAG, "Updating for new accounts...");
         // }
         HashMap<Int32, AutoPtr<AuthorityInfo> > removing;
-        HashMap< AutoPtr<IAccountAndUser>, AutoPtr<AccountInfo> > accIt;
-        HashMap<String, AutoPtr<AuthorityInfo> > authIt;
+        HashMap< AutoPtr<IAccountAndUser>, AutoPtr<AccountInfo> >::Iterator accIt;
+        HashMap<String, AutoPtr<AuthorityInfo> >::Iterator authIt;
         for (accIt = mAccounts.Begin(); accIt != mAccounts.End();) {
             AutoPtr<AccountInfo> acc = accIt->mSecond;
-            if (!Contains(accounts, acc->mAccountAndUser->mAccount)
-                && acc->mAccountAndUser->mUserId == userId) {
+            AutoPtr<IAccount> account;
+            acc->mAccountAndUser->GetAccount((IAccount**)&account);
+            Int32 id;
+            acc->mAccountAndUser->GetUserId(&id);
+            if (!Contains(accounts, account)  && id == userId) {
                 // This account no longer exists...
                 // if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 //     Log.v(TAG, "Account removed: " + acc->mAccountAndUser);
                 // }
                 for (authIt = acc->mAuthorities.Begin(); authIt != acc->mAuthorities.End(); ++authIt) {
-                    removing[auth->mIdent] = it->mSecond);
+                    AutoPtr<AuthorityInfo> auth = authIt->mSecond;
+                    removing[auth->mIdent] = auth;
                 }
 
                 mAccounts.Erase(accIt++);
@@ -1331,9 +1393,10 @@ void SyncStorageEngine::DoDatabaseCleanup(
         }
 
         // Clean out all data structures.
-        HashMap<Int32, AutoPtr<AuthorityInfo> >Iterator it;
-        HashMap<Int32, AutoPtr<AuthorityInfo> >::ReverseIterator rit;
-        HashMap<Int32, AutoPtr<ISyncStatusInfo> >::ReverseIterator syncRit;
+        // TODO reserse loop
+        HashMap<Int32, AutoPtr<AuthorityInfo> >::Iterator it;
+        HashMap<Int32, AutoPtr<AuthorityInfo> >::Iterator rit;
+        HashMap<Int32, AutoPtr<ISyncStatusInfo> >::Iterator syncRit;
         List< AutoPtr<SyncHistoryItem> >::ReverseIterator histRit;
         for (rit = removing.Begin(); rit != removing.End(); ++rit) {
             Int32 ident = rit->mFirst;
@@ -1343,9 +1406,9 @@ void SyncStorageEngine::DoDatabaseCleanup(
                 mAuthorities.Erase(it);
             }
 
-            for (syncRit = mSyncStatus.RBegin(); syncRit != mSyncStatus.REnd(); ) {
+            for (syncRit = mSyncStatus.Begin(); syncRit != mSyncStatus.End(); ) {
                 if (syncRit->mFirst == ident) {
-                    mSyncStatus.Erase(syncRit++)
+                    mSyncStatus.Erase(syncRit++);
                 }
                 else {
                     ++syncRit;
@@ -1354,7 +1417,7 @@ void SyncStorageEngine::DoDatabaseCleanup(
 
             for (histRit = mSyncHistory.RBegin(); histRit != mSyncHistory.REnd();) {
                 if ((*histRit)->mAuthorityId == ident) {
-                    mSyncHistory.Erase(histRit++)
+                    histRit = List< AutoPtr<SyncHistoryItem> >::ReverseIterator(mSyncHistory.Erase(--(histRit.GetBase())));
                 }
                 else {
                     ++histRit;
@@ -1386,7 +1449,7 @@ AutoPtr<ISyncInfo> SyncStorageEngine::AddActiveSync(
             info,
             -1 /* assign a new identifier if creating a new target */,
             TRUE /* write to storage if this results in a change */);
-        CISyncInfo::New(
+        CSyncInfo::New(
             authorityInfo->mIdent,
             authorityInfo->mTarget->mAccount,
             authorityInfo->mTarget->mProvider,
@@ -1411,7 +1474,7 @@ void SyncStorageEngine::RemoveActiveSync(
         //             + " auth=" + syncInfo.authority);
         // }
 
-        AutoPtr<List<AutoPtr<ISyncInfo> > > list = GetCurrentSyncs(mUserId);
+        AutoPtr<List<AutoPtr<ISyncInfo> > > list = GetCurrentSyncs(userId);
         AutoPtr<ISyncInfo> obj = syncInfo;
         List<AutoPtr<ISyncInfo> >::Iterator it = Find(list->Begin(), list->End(), obj);
         if (it != list->End()) {
@@ -1441,13 +1504,13 @@ Int64 SyncStorageEngine::InsertStartSyncEvent(
             return -1;
         }
         AutoPtr<SyncHistoryItem> item = new SyncHistoryItem();
-        item->mInitialization = op.isInitialization();
+        item->mInitialization = op->IsInitialization();
         item->mAuthorityId = authority->mIdent;
         item->mHistoryId = mNextHistoryId++;
         if (mNextHistoryId < 0) mNextHistoryId = 0;
         item->mEventTime = now;
         item->mSource = op->mSyncSource;
-        item->mReason = op->meason;
+        item->mReason = op->mReason;
         item->mExtras = op->mExtras;
         item->mEvent = EVENT_START;
         mSyncHistory.PushFront(item);
@@ -1476,7 +1539,7 @@ void SyncStorageEngine::StopSyncEvent(
         AutoPtr<SyncHistoryItem> item;
         List< AutoPtr<SyncHistoryItem> >::ReverseIterator histRit;
         for (histRit = mSyncHistory.RBegin(); histRit != mSyncHistory.REnd();) {
-            if ((*histRit)->mAuthorityId == ident) {
+            if ((*histRit)->mAuthorityId == historyId) {
                 item = (*histRit);
                 break;
             }
@@ -1493,24 +1556,33 @@ void SyncStorageEngine::StopSyncEvent(
         item->mUpstreamActivity = upstreamActivity;
 
         AutoPtr<ISyncStatusInfo> status = GetOrCreateSyncStatusLocked(item->mAuthorityId);
+        Int32 ival;
+        Int64 lval;
+        status->GetNumSyncs(&ival);
+        status->SetNumSyncs(ival + 1);
+        status->GetTotalElapsedTime(&lval);
+        status->SetTotalElapsedTime(lval + elapsedTime);
 
-        status->mNumSyncs++;
-        status->mTotalElapsedTime += elapsedTime;
         switch (item->mSource) {
             case SOURCE_LOCAL:
-                status->mNumSourceLocal++;
+                status->GetNumSourceLocal(&ival);
+                status->SetNumSourceLocal(ival + 1);
                 break;
             case SOURCE_POLL:
-                status->mNumSourcePoll++;
+                status->GetNumSourcePoll(&ival);
+                status->SetNumSourcePoll(ival + 1);
                 break;
             case SOURCE_USER:
-                status->mNumSourceUser++;
+                status->GetNumSourceUser(&ival);
+                status->SetNumSourceUser(ival + 1);
                 break;
             case SOURCE_SERVER:
-                status->mNumSourceServer++;
+                status->GetNumSourceServer(&ival);
+                status->SetNumSourceServer(ival + 1);
                 break;
             case SOURCE_PERIODIC:
-                status->mNumSourcePeriodic++;
+                status->GetNumSourcePeriodic(&ival);
+                status->SetNumSourcePeriodic(ival + 1);
                 break;
         }
 
@@ -1518,12 +1590,12 @@ void SyncStorageEngine::StopSyncEvent(
         Int32 day = GetCurrentDayLocked();
         if ((*mDayStats)[0] == NULL) {
             AutoPtr<DayStats> ds = new DayStats(day);
-            mDayStats-Set(0, ds);
+            mDayStats->Set(0, ds);
         }
         else if (day != (*mDayStats)[0]->mDay) {
             mDayStats->Copy(1, mDayStats, 0, mDayStats->GetLength() - 1);
             AutoPtr<DayStats> ds = new DayStats(day);
-            mDayStats-Set(0, ds);
+            mDayStats->Set(0, ds);
             writeStatisticsNow = TRUE;
         }
         else if ((*mDayStats)[0] == NULL) {
@@ -1535,27 +1607,33 @@ void SyncStorageEngine::StopSyncEvent(
         Boolean writeStatusNow = FALSE;
         if (MESG_SUCCESS.Equals(resultMessage)) {
             // - if successful, update the successful columns
-            if (status->mLastSuccessTime == 0 || status->mLastFailureTime != 0) {
+            Int64 lval2;
+            status->GetLastSuccessTime(&lval);
+            status->GetLastFailureTime(&lval2);
+            if (lval == 0 || lval2 != 0) {
                 writeStatusNow = TRUE;
             }
-            status->mLastSuccessTime = lastSyncTime;
-            status->mLastSuccessSource = item->mSource;
-            status->mLastFailureTime = 0;
-            status->mLastFailureSour = -1;
-            status->mLastFailureMesg = NULL;
-            status->mInitialFailureTime = 0;
+            status->SetLastSuccessTime(lastSyncTime);
+            status->SetLastSuccessSource(item->mSource);
+            status->SetLastFailureTime(0);
+            status->SetLastFailureSource(-1);
+            status->SetLastFailureMesg(String(NULL));
+            status->SetInitialFailureTime(0);
             ds->mSuccessCount++;
             ds->mSuccessTime += elapsedTime;
         }
         else if (!MESG_CANCELED.Equals(resultMessage)) {
-            if (status->mLastFailureTime == 0) {
+            status->GetLastFailureTime(&lval);
+            if (lval == 0) {
                 writeStatusNow = TRUE;
             }
-            status->mLastFailureTime = lastSyncTime;
-            status->mLastFailureSour = item->mSource;
-            status->mLastFailureMesg = resultMessage;
-            if (status->mInitialFailureTime == 0) {
-                status->mInitialFailureTime = lastSyncTime;
+            status->SetLastFailureTime(lastSyncTime);
+            status->SetLastFailureSource(item->mSource);
+            status->SetLastFailureMesg(resultMessage);
+
+            status->GetInitialFailureTime(&lval);
+            if (lval == 0) {
+                status->SetInitialFailureTime(lastSyncTime);
             }
             ds->mFailureCount++;
             ds->mFailureTime += elapsedTime;
@@ -1604,12 +1682,11 @@ AutoPtr<IList> SyncStorageEngine::GetCurrentSyncsCopy(
 
     synchronized(mAuthoritiesLock) {
         AutoPtr<List<AutoPtr<ISyncInfo> > > syncs = GetCurrentSyncsLocked(userId);
-        syncsCopy = new List<AutoPtr<ISyncInfo> >();
         List<AutoPtr<ISyncInfo> >::Iterator it;
         for (it = syncs->Begin(); it != syncs->End(); ++it) {
             AutoPtr<ISyncInfo> si;
             CSyncInfo::New((*it).Get(), (ISyncInfo**)&si);
-            syncsCopy->Add(To_IINTERFACE(si));
+            syncsCopy->Add(TO_IINTERFACE(si));
         }
     }
     return syncsCopy;
@@ -1686,15 +1763,17 @@ AutoPtr<ISyncStatusInfo> SyncStorageEngine::GetStatusByAuthority(
 
     synchronized(mAuthoritiesLock) {
         ISyncStatusInfo* cur;
-        AuthorityInfo* ainfo;
+        AutoPtr<AuthorityInfo> ainfo;
+        Int32 ival;
         HashMap<Int32, AutoPtr<ISyncStatusInfo> >::Iterator it;
         HashMap<Int32, AutoPtr<AuthorityInfo> >::Iterator authIt;
         for (it = mSyncStatus.Begin(); it != mSyncStatus.End(); ++it) {
             cur = it->mSecond;
-            authIt = mAuthorities.Find(cur->mAuthorityId);
+            cur->GetAuthorityId(&ival);
+            authIt = mAuthorities.Find(ival);
             if (authIt != mAuthorities.End()) {
                 ainfo = authIt->mSecond;
-                if (ainfo != NULL && && ainfo->mTarget->MatchesSpec(info)) {
+                if (ainfo.Get() != NULL && ainfo->mTarget->MatchesSpec(info)) {
                     return cur;
                 }
             }
@@ -1708,16 +1787,14 @@ Boolean SyncStorageEngine::IsSyncPending(
 {
     synchronized(mAuthoritiesLock) {
         ISyncStatusInfo* cur;
-        HashMap<Int32, AutoPtr<AuthorityInfo> > authIt;
+        Int32 ival;
+        Boolean bval;
+        HashMap<Int32, AutoPtr<AuthorityInfo> >::Iterator authIt;
         HashMap<Int32, AutoPtr<ISyncStatusInfo> >::Iterator it;
         for (it = mSyncStatus.Begin(); it != mSyncStatus.End(); ++it) {
             cur = it->mSecond;
-            AutoPtr<AuthorityInfo> aInfo =
-        }
-        Int32 N = mSyncStatus.GetSize();
-        for (Int32 i = 0; i < N; i++) {
-            SyncStatusInfo cur = mSyncStatus.valueAt(i);
-            authIt = mAuthorities.Find(cur->mAuthorityId);
+            cur->GetAuthorityId(&ival);
+            authIt = mAuthorities.Find(ival);
             if (authIt == mAuthorities.End()) {
                 continue;
             }
@@ -1729,7 +1806,8 @@ Boolean SyncStorageEngine::IsSyncPending(
             if (!ainfo->mTarget->MatchesSpec(info)) {
                 continue;
             }
-            if (cur->mPending) {
+            cur->GetPending(&bval);
+            if (bval) {
                 return TRUE;
             }
         }
@@ -1741,7 +1819,7 @@ AutoPtr<List<AutoPtr<SyncHistoryItem> > > SyncStorageEngine::GetSyncHistory()
 {
     AutoPtr<List<AutoPtr<SyncHistoryItem> > > items;
     synchronized(mAuthoritiesLock) {
-        list = new List<AutoPtr<SyncHistoryItem> >(mSyncHistory);
+        items = new List<AutoPtr<SyncHistoryItem> >(mSyncHistory);
     }
     return items;
 }
@@ -1760,7 +1838,8 @@ AutoPtr<AuthoritySyncStatusPair> SyncStorageEngine::CreateCopyPairOfAuthorityWit
 {
     AutoPtr<ISyncStatusInfo> syncStatusInfo = GetOrCreateSyncStatusLocked(authorityInfo->mIdent);
     AutoPtr<AuthorityInfo> ai = new AuthorityInfo(authorityInfo);
-    AutoPtr<ISyncStatusInfo> ssi = new SyncStatusInfo(syncStatusInfo);
+    AutoPtr<ISyncStatusInfo> ssi;
+    CSyncStatusInfo::New(syncStatusInfo, (ISyncStatusInfo**)&ssi);
 
     AutoPtr<AuthoritySyncStatusPair> pair = new AuthoritySyncStatusPair(ai, ssi);
     return pair;
@@ -1820,7 +1899,8 @@ AutoPtr<AuthorityInfo> SyncStorageEngine::GetAuthorityLocked(
     }
     else if (info->mTarget_provider){
         AutoPtr<IAccountAndUser> au;
-        CAccountAndUser::New(info->mAccount, info->mUserId, (IAccountAndUser**)&au);
+        assert(0 && "TODO");
+        // CAccountAndUser::New(info->mAccount, info->mUserId, (IAccountAndUser**)&au);
         HashMap< AutoPtr<IAccountAndUser>, AutoPtr<AccountInfo> >::Iterator it = mAccounts.Find(au);
         AutoPtr<AccountInfo> accountInfo;
         if (it != mAccounts.End()) {
@@ -1836,7 +1916,7 @@ AutoPtr<AuthorityInfo> SyncStorageEngine::GetAuthorityLocked(
         }
 
         HashMap<String, AutoPtr<AuthorityInfo> >::Iterator aiIt = accountInfo->mAuthorities.Find(info->mProvider);
-        AutoPtr<AuthorityInfo> authority
+        AutoPtr<AuthorityInfo> authority;
         if (aiIt != accountInfo->mAuthorities.End()) {
             authority = aiIt->mSecond;
         }
@@ -1866,7 +1946,7 @@ AutoPtr<AuthorityInfo> SyncStorageEngine::GetOrCreateAuthorityLocked(
         ServiceMapIterator it = mServices.Find(info->mService);
         AutoPtr<HashMap<Int32, AutoPtr<AuthorityInfo> > > aInfo;
         if (it == mServices.End()) {
-            aInfo = HashMap<Int32, AutoPtr<AuthorityInfo> >();
+            aInfo = new HashMap<Int32, AutoPtr<AuthorityInfo> >();
             mServices[info->mService] = aInfo;
         }
 
@@ -1881,7 +1961,8 @@ AutoPtr<AuthorityInfo> SyncStorageEngine::GetOrCreateAuthorityLocked(
     }
     else if (info->mTarget_provider) {
         AutoPtr<IAccountAndUser> au;
-        CAccountAndUser::New(info->mAccount, info->mUserId, (IAccountAndUser**)&au);
+        assert(0 && "TODO");
+        // CAccountAndUser::New(info->mAccount, info->mUserId, (IAccountAndUser**)&au);
 
         AutoPtr<AccountInfo> account;
         HashMap< AutoPtr<IAccountAndUser>, AutoPtr<AccountInfo> >::Iterator it = mAccounts.Find(au);
@@ -1894,7 +1975,7 @@ AutoPtr<AuthorityInfo> SyncStorageEngine::GetOrCreateAuthorityLocked(
             mAccounts[au] = account;
         }
 
-        HashMap<String, AutoPtr<AuthorityInfo> > aiIt = account->mAuthorities.Find(info->mProvider);
+        HashMap<String, AutoPtr<AuthorityInfo> >::Iterator aiIt = account->mAuthorities.Find(info->mProvider);
         if (aiIt != account->mAuthorities.End()) {
             authority = aiIt->mSecond;
         }
@@ -1951,7 +2032,7 @@ void SyncStorageEngine::RemoveAuthority(
                                 mAuthorities.Erase(ait);
                             }
 
-                            aInfos.Erase(authId);
+                            aInfos->Erase(authId);
                             WriteAccountInfoLocked();
                         }
                     }
@@ -1967,8 +2048,9 @@ void SyncStorageEngine::RemoveAuthorityLocked(
     /* [in] */ const String& authorityName,
     /* [in] */ Boolean doWrite)
 {
-    AutoPtr<AccountAndUser> aau;
-    CAccountAndUser::New(account, userId, (IAccountAndUser**)&aau);
+    AutoPtr<IAccountAndUser> aau;
+    assert(0 && "TODO");
+    // CAccountAndUser::New(account, userId, (IAccountAndUser**)&aau);
     HashMap< AutoPtr<IAccountAndUser>, AutoPtr<AccountInfo> >::Iterator accIt;
     accIt = mAccounts.Find(aau);
     AutoPtr<AccountInfo> accountInfo;
@@ -2012,10 +2094,14 @@ void SyncStorageEngine::SetPeriodicSyncTime(
 
         IPeriodicSync* periodicSync;
         List<AutoPtr<IPeriodicSync> >::Iterator psIt;
+        HashMap<Int32, AutoPtr<ISyncStatusInfo> >::Iterator ssiIt;
+        Int32 i = 0;
         for (psIt = authorityInfo->mPeriodicSyncs.Begin(); psIt != authorityInfo->mPeriodicSyncs.End(); ++psIt) {
             periodicSync = *psIt;
             if (Object::Equals(targetPeriodicSync, periodicSync)) {
-                mSyncStatus.get(authorityId).SetPeriodicSyncTime(i, when);
+                ssiIt = mSyncStatus.Find(authorityId);
+                assert(ssiIt != mSyncStatus.End());
+                ssiIt->mSecond->SetPeriodicSyncTime(i++, when);
                 found = TRUE;
                 break;
             }
@@ -2037,7 +2123,7 @@ AutoPtr<ISyncStatusInfo> SyncStorageEngine::GetOrCreateSyncStatusLocked(
     }
 
     if (status == NULL) {
-        status = new SyncStatusInfo(authorityId);
+        CSyncStatusInfo::New(authorityId, (ISyncStatusInfo**)&status);
         mSyncStatus[authorityId] = status;
     }
     return status;
@@ -2092,7 +2178,7 @@ void SyncStorageEngine::ReadAccountInfoLocked()
     AutoPtr<IPeriodicSync> periodicSync;
 
     ECode ec = NOERROR;
-
+    String nullStr;
     ec = mAccountInfoFile->OpenRead((IFileInputStream**)&fis);
     FAIL_GOTO(ec, _EXIT_)
 
@@ -2101,7 +2187,7 @@ void SyncStorageEngine::ReadAccountInfoLocked()
     // }
     FAIL_GOTO(Xml::NewPullParser((IXmlPullParser**)&parser), _EXIT_)
 
-    FAIL_GOTO(parser->SetInput(fis, NULL), _EXIT_)
+    FAIL_GOTO(parser->SetInput(IInputStream::Probe(fis), String(NULL)), _EXIT_)
     FAIL_GOTO(parser->GetEventType(&eventType), _EXIT_)
     while (eventType != IXmlPullParser::START_TAG &&
             eventType != IXmlPullParser::END_DOCUMENT) {
@@ -2112,19 +2198,20 @@ void SyncStorageEngine::ReadAccountInfoLocked()
         return;
     }
 
-    FAIL_GOTO(parser->GetName(&tagName);
+    FAIL_GOTO(parser->GetName(&tagName), _EXIT_)
+
     if (tagName.Equals("accounts")) {
-        FAIL_GOTO(parser->GetAttributeValue(NULL, XML_ATTR_LISTEN_FOR_TICKLES, &listen), _EXIT_)
-        FAIL_GOTO(parser->GetAttributeValue(NULL, String("version"), &versionString), _EXIT_)
+        FAIL_GOTO(parser->GetAttributeValue(nullStr, XML_ATTR_LISTEN_FOR_TICKLES, &listen), _EXIT_)
+        FAIL_GOTO(parser->GetAttributeValue(nullStr, String("version"), &versionString), _EXIT_)
 
         version = versionString.IsNull() ? 0 : StringUtils::ParseInt32(versionString);
 
-        FAIL_GOTO(parser->GetAttributeValue(NULL, XML_ATTR_NEXT_AUTHORITY_ID, &nextIdString), _EXIT_)
+        FAIL_GOTO(parser->GetAttributeValue(nullStr, XML_ATTR_NEXT_AUTHORITY_ID, &nextIdString), _EXIT_)
 
         id = nextIdString.IsNull() ? 0 : StringUtils::ParseInt32(nextIdString);
         mNextAuthorityId = Elastos::Core::Math::Max(mNextAuthorityId, id);
 
-        FAIL_GOTO(parser->GetAttributeValue(NULL, XML_ATTR_SYNC_RANDOM_OFFSET, &offsetString), _EXIT_)
+        FAIL_GOTO(parser->GetAttributeValue(nullStr, XML_ATTR_SYNC_RANDOM_OFFSET, &offsetString), _EXIT_)
         mSyncRandomOffset = offsetString.IsNull() ? 0 : StringUtils::ParseInt32(offsetString);
 
         if (mSyncRandomOffset == 0) {
@@ -2134,10 +2221,10 @@ void SyncStorageEngine::ReadAccountInfoLocked()
             system->GetCurrentTimeMillis(&ms);
             AutoPtr<IRandom> random;
             CRandom::New(ms, (IRandom**)&random);
-            random->NextInt(86400, &mSyncRandomOffset);
+            random->NextInt32(86400, &mSyncRandomOffset);
         }
 
-        mMasterSyncAutomatically[0] = listen.IsNull() || StringUtils::ParseBoolean(listen));
+        mMasterSyncAutomatically[0] = listen.IsNull() || StringUtils::ParseBoolean(listen);
         FAIL_GOTO(parser->Next(&eventType), _EXIT_)
 
         do {
@@ -2163,7 +2250,9 @@ void SyncStorageEngine::ReadAccountInfoLocked()
                 }
                 else if (depth == 4 && periodicSync != NULL) {
                     if (tagName.Equals("extra")) {
-                        ParseExtra(parser, periodicSync->mExtras);
+                        AutoPtr<IBundle> b;
+                        periodicSync->GetExtras((IBundle**)&b);
+                        ParseExtra(parser, b);
                     }
                 }
             }
@@ -2191,7 +2280,7 @@ _EXIT_:
         ICloseable::Probe(fis)->Close();
     }
 
-    if (FAIED(ec)) return;
+    if (FAILED(ec)) return;
 
     MaybeMigrateSettingsForRenamedAuthorities();
 }
@@ -2261,7 +2350,7 @@ Boolean SyncStorageEngine::MaybeMigrateSettingsForRenamedAuthorities()
 
     AuthorityInfo* authorityInfo;
     List<AutoPtr<AuthorityInfo> >::Iterator lit;
-    for (lit = authoritiesToRemove.Begin(); lit != authoritiesToRemove.End(); ++it) {}
+    for (lit = authoritiesToRemove.Begin(); lit != authoritiesToRemove.End(); ++lit) {
         authorityInfo = *lit;
 
         RemoveAuthorityLocked(
@@ -2279,18 +2368,18 @@ void SyncStorageEngine::ParseListenForTickles(
     /* [in] */ IXmlPullParser* parser)
 {
     String user;
-    parser->GetAttributeValue(NULL, XML_ATTR_USER, &user);
+    parser->GetAttributeValue(String(NULL), XML_ATTR_USER, &user);
     Int32 userId;
     ECode ec = StringUtils::Parse(user, &userId);
     if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
         Logger::E(TAG, "error parsing the user for listen-for-tickles");
     }
-    else if (ec == (ECode)_E_NULL_POINTER_EXCEPTION) {
+    else if (ec == (ECode)E_NULL_POINTER_EXCEPTION) {
         Logger::E(TAG, "the user in listen-for-tickles is NULL");
     }
 
     String enabled;
-    parser->GetAttributeValue(NULL, XML_ATTR_ENABLED, &enabled);
+    parser->GetAttributeValue(String(NULL), XML_ATTR_ENABLED, &enabled);
     Boolean listen = enabled.IsNull() || StringUtils::ParseBoolean(enabled);
     mMasterSyncAutomatically[userId] = listen;
 }
@@ -2300,8 +2389,8 @@ AutoPtr<AuthorityInfo> SyncStorageEngine::ParseAuthority(
     /* [in] */ Int32 version)
 {
     AutoPtr<AuthorityInfo> authority;
-    String idStr;
-    parser->GetAttributeValue(NULL, String("id"), &idStr);
+    String idStr, nullStr;
+    parser->GetAttributeValue(nullStr, String("id"), &idStr);
 
     Int32 id = -1;
     ECode ec = StringUtils::Parse(idStr, &id);
@@ -2309,21 +2398,21 @@ AutoPtr<AuthorityInfo> SyncStorageEngine::ParseAuthority(
         Logger::E(TAG, "error parsing the id of the authority");
         id = -1;
     }
-    else if (ec == (ECode)_E_NULL_POINTER_EXCEPTION) {
+    else if (ec == (ECode)E_NULL_POINTER_EXCEPTION) {
         Logger::E(TAG, "the id of the authority is NULL");
         id = -1;
     }
 
     if (id >= 0) {
-        String authorityName, enabled, syncable, accountName, accountType, user, packageName, classNamel
-        parser->GetAttributeValue(NULL, String("authority"), &authorityName);
-        parser->GetAttributeValue(NULL, XML_ATTR_ENABLED, &enabled);
-        parser->GetAttributeValue(NULL, String("syncable"), &syncable);
-        parser->GetAttributeValue(NULL, String("account"), &accountName);
-        parser->GetAttributeValue(NULL, String("type"), &accountType);
-        parser->GetAttributeValue(NULL, XML_ATTR_USER, &user);
-        parser->GetAttributeValue(NULL, String("package"), &packageName);
-        parser->GetAttributeValue(NULL, String("class"), &classNamel);
+        String authorityName, enabled, syncable, accountName, accountType, user, packageName, className;
+        parser->GetAttributeValue(nullStr, String("authority"), &authorityName);
+        parser->GetAttributeValue(nullStr, XML_ATTR_ENABLED, &enabled);
+        parser->GetAttributeValue(nullStr, String("syncable"), &syncable);
+        parser->GetAttributeValue(nullStr, String("account"), &accountName);
+        parser->GetAttributeValue(nullStr, String("type"), &accountType);
+        parser->GetAttributeValue(nullStr, XML_ATTR_USER, &user);
+        parser->GetAttributeValue(nullStr, String("package"), &packageName);
+        parser->GetAttributeValue(nullStr, String("class"), &className);
         Int32 userId = user.IsNull() ? 0 : StringUtils::ParseInt32(user);
         if (accountType == NULL && packageName == NULL) {
             accountType = "com.google";
@@ -2332,7 +2421,7 @@ AutoPtr<AuthorityInfo> SyncStorageEngine::ParseAuthority(
 
         HashMap<Int32, AutoPtr<AuthorityInfo> >::Iterator authIt = mAuthorities.Find(id);
         if (authIt != mAuthorities.End()) {
-            authority = it->mSecond;
+            authority = authIt->mSecond;
         }
         // if (Log.isLoggable(TAG_FILE, Log.VERBOSE)) {
         //     Log.v(TAG_FILE, "Adding authority:"
@@ -2352,7 +2441,8 @@ AutoPtr<AuthorityInfo> SyncStorageEngine::ParseAuthority(
             AutoPtr<EndPoint> info;
             if (accountName != NULL && authorityName != NULL) {
                 AutoPtr<IAccount> account;
-                CAccount::New(accountName, accountType, (IAccount**)&account);
+                assert(0 && "TODO");
+                // CAccount::New(accountName, accountType, (IAccount**)&account);
                 info = new EndPoint(account, authorityName, userId);
             }
             else {
@@ -2394,9 +2484,9 @@ AutoPtr<IPeriodicSync> SyncStorageEngine::ParsePeriodicSync(
 {
     AutoPtr<IBundle> extras;
     CBundle::New((IBundle**)&extras); // Gets filled in later.
-    String periodValue, flexValue;
-    parser->GetAttributeValue(NULL, String("period"), &periodValue);
-    parser->GetAttributeValue(NULL, String("flex"), &flexValue);
+    String periodValue, flexValue, nullStr;
+    parser->GetAttributeValue(nullStr, String("period"), &periodValue);
+    parser->GetAttributeValue(nullStr, String("flex"), &flexValue);
     Int64 period;
     Int64 flextime;
 
@@ -2405,7 +2495,7 @@ AutoPtr<IPeriodicSync> SyncStorageEngine::ParsePeriodicSync(
         Logger::E(TAG, "error parsing the period of a periodic sync");
         return NULL;
     }
-    else if (ec == (ECode)_E_NULL_POINTER_EXCEPTION) {
+    else if (ec == (ECode)E_NULL_POINTER_EXCEPTION) {
         Logger::E(TAG, "the period of a periodic sync is NULL");
         return NULL;
     }
@@ -2417,21 +2507,21 @@ AutoPtr<IPeriodicSync> SyncStorageEngine::ParsePeriodicSync(
             flexValue.string(), flextime);
         return NULL;
     }
-    else if (ec == (ECode)_E_NULL_POINTER_EXCEPTION) {
+    else if (ec == (ECode)E_NULL_POINTER_EXCEPTION) {
         flextime = CalculateDefaultFlexTime(period);
-        Logger::E(TAG, "No flex time specified for this sync, using a default. period: %s, flex: %lld",
-            period.string(), flextime);
+        Logger::E(TAG, "No flex time specified for this sync, using a default. period: %d, flex: %lld",
+            period, flextime);
         return NULL;
     }
 
     AutoPtr<IPeriodicSync> periodicSync;
     if (authorityInfo->mTarget->mTarget_provider) {
-        periodicSync =
         CPeriodicSync::New(authorityInfo->mTarget->mAccount,
             authorityInfo->mTarget->mProvider,
             extras,
             period, flextime, (IPeriodicSync**)&periodicSync);
-    } else {
+    }
+    else {
         Logger::E(TAG, "Unknown target.");
         return NULL;
     }
@@ -2444,11 +2534,11 @@ void SyncStorageEngine::ParseExtra(
     /* [in] */ IXmlPullParser* parser,
     /* [in] */ IBundle* extras)
 {
-    String name, type, value1, value2;
-    parser->GetAttributeValue(NULL, String("name"), &name);
-    parser->GetAttributeValue(NULL, String("type"), &type);
-    parser->GetAttributeValue(NULL, String("value1"), &value1);
-    parser->GetAttributeValue(NULL, String("value2"), &value2);
+    String name, type, value1, value2, nullStr;
+    parser->GetAttributeValue(nullStr, String("name"), &name);
+    parser->GetAttributeValue(nullStr, String("type"), &type);
+    parser->GetAttributeValue(nullStr, String("value1"), &value1);
+    parser->GetAttributeValue(nullStr, String("value2"), &value2);
 
     ECode ec = NOERROR;
     Int64 lval;
@@ -2474,7 +2564,7 @@ void SyncStorageEngine::ParseExtra(
         extras->PutFloat(name, fval);
     }
     else if (type.Equals("boolean")) {
-        FAIL_GOTO(StringUtils::Parse(value1, &bval), _EXIT_)
+        bval = StringUtils::ParseBoolean(value1);
         extras->PutBoolean(name, bval);
     }
     else if (type.Equals("string")) {
@@ -2482,16 +2572,16 @@ void SyncStorageEngine::ParseExtra(
     }
     else if (type.Equals("account")) {
         AutoPtr<IAccount> account;
-        CAccount::New(value1, value2, (IAccount**)&account);
+        assert(0 && "TODO");
+        // CAccount::New(value1, value2, (IAccount**)&account);
         extras->PutParcelable(name, IParcelable::Probe(account));
     }
 
 _EXIT_:
     if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
         Logger::E(TAG, "error parsing bundle value");
-        return NULL;
     }
-    else if (ec == (ECode)_E_NULL_POINTER_EXCEPTION) {
+    else if (ec == (ECode)E_NULL_POINTER_EXCEPTION) {
         Logger::E(TAG, "error parsing bundle value");
     }
 }
@@ -2503,78 +2593,81 @@ void SyncStorageEngine::WriteAccountInfoLocked()
     // }
     AutoPtr<IFileOutputStream> fos;
     HashMap<Int32, Boolean>::Iterator it;
-    HashMap<Int32, AutoPtr<AuthorityInfo> > authIt;
+    HashMap<Int32, AutoPtr<AuthorityInfo> >::Iterator authIt;
     List<AutoPtr<IPeriodicSync> >::Iterator lit;
     AutoPtr<AuthorityInfo> authority;
     AutoPtr<IPeriodicSync> periodicSync;
     AutoPtr<EndPoint> info;
     AutoPtr<IBundle> bundle;
-    String strVal;
-    Int32 userId, ival;
+    String strVal, nullStr, name, type, pkgName, clsName;
+    Int32 userId;
     Int64 period, flexTime;
     Boolean listen;
     ECode ec = NOERROR;
+    AutoPtr<IXmlSerializer> out;
 
     FAIL_GOTO(mAccountInfoFile->StartWrite((IFileOutputStream**)&fos), _EXIT_)
-    AutoPtr<IXmlSerializer> out;
     CFastXmlSerializer::New((IXmlSerializer**)&out);
-    FAIL_GOTO(out->SetOutput(fos, String("utf-8")), _EXIT_)
-    FAIL_GOTO(out->StartDocument(NULL, TRUE), _EXIT_)
+    FAIL_GOTO(out->SetOutput(IOutputStream::Probe(fos), String("utf-8")), _EXIT_)
+    FAIL_GOTO(out->StartDocument(nullStr, TRUE), _EXIT_)
     FAIL_GOTO(out->SetFeature(String("http://xmlpull.org/v1/doc/features.html#indent-output"), TRUE), _EXIT_)
 
-    FAIL_GOTO(out->StartTag(NULL, String("accounts")), _EXIT_)
-    FAIL_GOTO(out->Attribute(NULL, String( "version"), StringUtils::ToString(ACCOUNTS_VERSION)), _EXIT_)
-    FAIL_GOTO(out->Attribute(NULL, XML_ATTR_NEXT_AUTHORITY_ID, StringUtils::ToString(mNextAuthorityId)), _EXIT_)
-    FAIL_GOTO(out->Attribute(NULL, XML_ATTR_SYNC_RANDOM_OFFSET, StringUtils::ToString(mSyncRandomOffset)), _EXIT_)
+    FAIL_GOTO(out->WriteStartTag(nullStr, String("accounts")), _EXIT_)
+    FAIL_GOTO(out->WriteAttribute(nullStr, String( "version"), StringUtils::ToString(ACCOUNTS_VERSION)), _EXIT_)
+    FAIL_GOTO(out->WriteAttribute(nullStr, XML_ATTR_NEXT_AUTHORITY_ID, StringUtils::ToString(mNextAuthorityId)), _EXIT_)
+    FAIL_GOTO(out->WriteAttribute(nullStr, XML_ATTR_SYNC_RANDOM_OFFSET, StringUtils::ToString(mSyncRandomOffset)), _EXIT_)
 
     // Write the Sync Automatically flags for each user
     for (it = mMasterSyncAutomatically.Begin(); it != mMasterSyncAutomatically.End(); ++it) {
         userId = it->mFirst;
         listen = it->mSecond;
-        FAIL_GOTO(out->StartTag(NULL, XML_TAG_LISTEN_FOR_TICKLES), _EXIT_)
-        FAIL_GOTO(out->Attribute(NULL, XML_ATTR_USER, StringUtils::ToString(userId)), _EXIT_)
-        FAIL_GOTO(out->Attribute(NULL, XML_ATTR_ENABLED, StringUtils::BooleanToString(listen)), _EXIT_)
-        FAIL_GOTO(out.endTag(NULL, XML_TAG_LISTEN_FOR_TICKLES), _EXIT_)
+        FAIL_GOTO(out->WriteStartTag(nullStr, XML_TAG_LISTEN_FOR_TICKLES), _EXIT_)
+        FAIL_GOTO(out->WriteAttribute(nullStr, XML_ATTR_USER, StringUtils::ToString(userId)), _EXIT_)
+        FAIL_GOTO(out->WriteAttribute(nullStr, XML_ATTR_ENABLED, StringUtils::BooleanToString(listen)), _EXIT_)
+        FAIL_GOTO(out->WriteEndTag(nullStr, XML_TAG_LISTEN_FOR_TICKLES), _EXIT_)
     }
 
     for (authIt = mAuthorities.Begin(); authIt != mAuthorities.End(); ++authIt) {
         authority = authIt->mSecond;
         info = authority->mTarget;
-        FAIL_GOTO(out->StartTag(NULL, String("authority"), _EXIT_)
-        FAIL_GOTO(out->Attribute(NULL, String("id"), StringUtils::ToString(authority->mIdent)), _EXIT_)
-        FAIL_GOTO(out->Attribute(NULL, XML_ATTR_USER, StringUtils::ToString(info->mUserId)), _EXIT_)
-        FAIL_GOTO(out->Attribute(NULL, XML_ATTR_ENABLED, StringUtils::BooleanToString(authority->mEnabled)), _EXIT_)
+        FAIL_GOTO(out->WriteStartTag(nullStr, String("authority")), _EXIT_)
+        FAIL_GOTO(out->WriteAttribute(nullStr, String("id"), StringUtils::ToString(authority->mIdent)), _EXIT_)
+        FAIL_GOTO(out->WriteAttribute(nullStr, XML_ATTR_USER, StringUtils::ToString(info->mUserId)), _EXIT_)
+        FAIL_GOTO(out->WriteAttribute(nullStr, XML_ATTR_ENABLED, StringUtils::BooleanToString(authority->mEnabled)), _EXIT_)
         if (info->mService == NULL) {
-            info->mAccount->GetName(&st);
-            FAIL_GOTO(out->Attribute(NULL, String("account"), info->mAccount->mName), _EXIT_)
-            FAIL_GOTO(out->Attribute(NULL, String("type"), info->mAccount->mType), _EXIT_)
-            FAIL_GOTO(out->Attribute(NULL, String("authority"), info->mProvider), _EXIT_)
+            info->mAccount->GetName(&name);
+            info->mAccount->GetType(&type);
+            FAIL_GOTO(out->WriteAttribute(nullStr, String("account"), name), _EXIT_)
+            FAIL_GOTO(out->WriteAttribute(nullStr, String("type"), type), _EXIT_)
+            FAIL_GOTO(out->WriteAttribute(nullStr, String("authority"), info->mProvider), _EXIT_)
         }
         else {
-            FAIL_GOTO(out->Attribute(NULL, String("package"), info->mService.getPackageName()), _EXIT_)
-            FAIL_GOTO(out->Attribute(NULL, String("class"), info->mService.getClassName()), _EXIT_)
+            info->mService->GetPackageName(&pkgName);
+            info->mService->GetClassName(&clsName);
+            FAIL_GOTO(out->WriteAttribute(nullStr, String("package"), pkgName), _EXIT_)
+            FAIL_GOTO(out->WriteAttribute(nullStr, String("class"), clsName), _EXIT_)
         }
         if (authority->mSyncable < 0) {
-            FAIL_GOTO(out->Attribute(NULL, String("syncable"), String("unknown")), _EXIT_)
+            FAIL_GOTO(out->WriteAttribute(nullStr, String("syncable"), String("unknown")), _EXIT_)
         }
         else {
-            FAIL_GOTO(out->Attribute(NULL, String("syncable"), StringUtils::BooleanToString(authority->mSyncable != 0)), _EXIT_)
+            FAIL_GOTO(out->WriteAttribute(nullStr, String("syncable"), StringUtils::BooleanToString(authority->mSyncable != 0)), _EXIT_)
         }
         for (lit = authority->mPeriodicSyncs.Begin(); lit != authority->mPeriodicSyncs.End(); ++lit) {
             periodicSync = *lit;
-            FAIL_GOTO(out->StartTag(NULL, String("periodicSync")), _EXIT_)
+            FAIL_GOTO(out->WriteStartTag(nullStr, String("periodicSync")), _EXIT_)
             periodicSync->GetPeriod(&period);
             periodicSync->GetFlexTime(&flexTime);
-            periodicSync->GetExtras((IBundle)&bundle);
-            FAIL_GOTO(out->Attribute(NULL, String("period"), StringUtils::ToString(period)), _EXIT_)
-            FAIL_GOTO(out->Attribute(NULL, String("flex"), StringUtils::ToString(flexTime)), _EXIT_)
+            periodicSync->GetExtras((IBundle**)&bundle);
+            FAIL_GOTO(out->WriteAttribute(nullStr, String("period"), StringUtils::ToString(period)), _EXIT_)
+            FAIL_GOTO(out->WriteAttribute(nullStr, String("flex"), StringUtils::ToString(flexTime)), _EXIT_)
 
             ExtrasToXml(out, bundle);
-            FAIL_GOTO(out->EndTag(NULL, String("periodicSync")), _EXIT_)
+            FAIL_GOTO(out->WriteEndTag(nullStr, String("periodicSync")), _EXIT_)
         }
-        FAIL_GOTO(out->EndTag(NULL, String("authority")), _EXIT_)
+        FAIL_GOTO(out->WriteEndTag(nullStr, String("authority")), _EXIT_)
     }
-    FAIL_GOTO(out->EndTag(NULL, String("accounts")), _EXIT_)
+    FAIL_GOTO(out->WriteEndTag(nullStr, String("accounts")), _EXIT_)
     FAIL_GOTO(out->EndDocument(), _EXIT_)
     FAIL_GOTO(mAccountInfoFile->FinishWrite(fos), _EXIT_)
 
@@ -2594,7 +2687,7 @@ Int32 SyncStorageEngine::GetInt32Column(
     Int32 index;
     c->GetColumnIndex(name, &index);
     Int32 ival;
-    c->GetInt32(&ival);
+    c->GetInt32(index, &ival);
     return ival;
 }
 
@@ -2604,8 +2697,8 @@ Int64 SyncStorageEngine::GetInt64Column(
 {
     Int32 index;
     c->GetColumnIndex(name, &index);
-    Int32 ival;
-    c->GetInt64(&ival);
+    Int64 ival;
+    c->GetInt64(index, &ival);
     return ival;
 }
 
@@ -2616,7 +2709,7 @@ static void Put(
 {
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<ICharSequence> valueObj = CoreUtils::Convert(value);
-    Put(map, keyObj.Get(), valueObj.Get());
+    map->Put(keyObj.Get(), valueObj.Get());
 }
 
 void SyncStorageEngine::ReadAndDeleteLegacyAccountInfoLocked()
@@ -2671,17 +2764,19 @@ void SyncStorageEngine::ReadAndDeleteLegacyAccountInfoLocked()
         Put(map, "lastFailureMesg", "lastFailureMesg");
         Put(map, "pending", "pending");
         qb->SetProjectionMap(IMap::Probe(map));
-        qb->AppendWhere(String("stats._id = status.stats_id"));
+        qb->AppendWhere(CoreUtils::Convert("stats._id = status.stats_id"));
         AutoPtr<ICursor> c;
-        qb->Query(db, NULL, NULL, NULL, NULL, NULL, NULL, (ICursor**)&c);
+        String nullStr;
+        qb->Query(db, NULL, nullStr, NULL, nullStr, nullStr, nullStr, (ICursor**)&c);
         Boolean bval;
+        String accountName, strVal;
+        Int32 index;
         while (c->MoveToNext(&bval), bval) {
-            String accountName;
-            Int32 index;
-            c->GetColumnIndex("account", &index);
+
+            c->GetColumnIndex(String("account"), &index);
             c->GetString(index, &accountName);
 
-            c->GetColumnIndex("account_type", &index);
+            c->GetColumnIndex(String("account_type"), &index);
             String accountType;
             if (hasType) {
                 c->GetString(index, &accountType);
@@ -2690,54 +2785,59 @@ void SyncStorageEngine::ReadAndDeleteLegacyAccountInfoLocked()
                 accountType = "com.google";
             }
 
-            c->GetColumnIndex("authority", &index);
+            c->GetColumnIndex(String("authority"), &index);
             String authorityName;
             c->GetString(index, &authorityName);
             AutoPtr<IAccount> account;
-            CAccount::New(accountName, accountType, (IAccount**)&account);
+            assert(0 && "TODO");
+            // CAccount::New(accountName, accountType, (IAccount**)&account);
             AutoPtr<EndPoint> ep = new EndPoint(account,
                 authorityName,
                 0 /* legacy is single-user */);
             AutoPtr<AuthorityInfo> authority = GetOrCreateAuthorityLocked(ep, -1, FALSE);
             if (authority != NULL) {
                 Boolean found = FALSE;
+                Int32 id;
                 AutoPtr<ISyncStatusInfo> st;
-                HashMap<Int32, AutoPtr<ISyncStatusInfo> >::ReverseIterator rit;
-                for (rit = mSyncStatus.RBegin(); rit != mSyncStatus.REnd(); ++rit) {
+                HashMap<Int32, AutoPtr<ISyncStatusInfo> >::Iterator rit;
+                for (rit = mSyncStatus.Begin(); rit != mSyncStatus.End(); ++rit) {
                     st = rit->mSecond;
-                    if (st->mAuthorityId == authority->mIdent) {
+                    st->GetAuthorityId(&id);
+                    if (id == authority->mIdent) {
                         found = TRUE;
                         break;
                     }
                 }
                 if (!found) {
-                    st = new SyncStatusInfo(authority->mIdent);
+                    CSyncStatusInfo::New(authority->mIdent, (ISyncStatusInfo**)&st);
                     mSyncStatus[authority->mIdent] = st;
                 }
-                st->mTotalElapsedTime = GetInt64Column(c, String("totalElapsedTime"));
-                st->mNumSyncs = GetInt32Column(c, String("numSyncs"));
-                st->mNumSourceLocal = GetInt32Column(c, String("numSourceLocal"));
-                st->mNumSourcePoll = GetInt32Column(c, String("numSourcePoll"));
-                st->mNumSourceServer = GetInt32Column(c, String("numSourceServer"));
-                st->mNumSourceUser = GetInt32Column(c, String("numSourceUser"));
-                st->mNumSourcePeriodic = 0;
-                st->mLastSuccessSource = GetInt32Column(c, String("lastSuccessSource"));
-                st->mLastSuccessTime = GetInt64Column(c, String("lastSuccessTime"));
-                st->mLastFailureSour = GetInt32Column(c, String("lastFailureSource"));
-                st->mLastFailureTime = GetInt64Column(c, String("lastFailureTime"));
-                st->mLastFailureMesg = c->GetString(c->GetColumnIndex(String("lastFailureMesg")));
-                st->mPending = GetInt32Column(c, String("pending")) != 0;
+                st->SetTotalElapsedTime(GetInt64Column(c, String("totalElapsedTime")));
+                st->SetNumSyncs(GetInt32Column(c, String("numSyncs")));
+                st->SetNumSourceLocal(GetInt32Column(c, String("numSourceLocal")));
+                st->SetNumSourcePoll(GetInt32Column(c, String("numSourcePoll")));
+                st->SetNumSourceServer(GetInt32Column(c, String("numSourceServer")));
+                st->SetNumSourceUser(GetInt32Column(c, String("numSourceUser")));
+                st->SetNumSourcePeriodic(0);
+                st->SetLastSuccessSource(GetInt32Column(c, String("lastSuccessSource")));
+                st->SetLastSuccessTime(GetInt64Column(c, String("lastSuccessTime")));
+                st->SetLastFailureSource(GetInt32Column(c, String("lastFailureSource")));
+                st->SetLastFailureTime(GetInt64Column(c, String("lastFailureTime")));
+                c->GetColumnIndex(String("lastFailureMesg"), &index);
+                c->GetString(index, &strVal);
+                st->SetLastFailureMesg(strVal);
+                st->SetPending(GetInt32Column(c, String("pending")) != 0);
             }
         }
 
-        c->Close();
+        ICloseable::Probe(c)->Close();
 
         // Retrieve the settings.
         qb = NULL;
         CSQLiteQueryBuilder::New((ISQLiteQueryBuilder**)&qb);
-        qb->SetTables("settings");
+        qb->SetTables(String("settings"));
         c = NULL;
-        qb->Query(db, NULL, NULL, NULL, NULL, NULL, NULL, (ICursor**)&qb);
+        qb->Query(db, NULL, nullStr, NULL, nullStr, nullStr, nullStr, (ICursor**)&qb);
         while (c->MoveToNext(&bval), bval) {
             String name, value;
             c->GetColumnIndex(String("name"), &index);
@@ -2751,20 +2851,21 @@ void SyncStorageEngine::ReadAndDeleteLegacyAccountInfoLocked()
             else if (name.StartWith("sync_provider_")) {
                 String sync("sync_provider_");
                 String provider = name.Substring(sync.GetLength(), name.GetLength());
-                HashMap<Int32, AutoPtr<AuthorityInfo> >::ReverseIterator rit;
-                for (rit = mAuthorities.RBegin(); rit = mAuthorities.REnd(); ++rit) {
+                // TODO reserse loop
+                HashMap<Int32, AutoPtr<AuthorityInfo> >::Iterator rit;
+                for (rit = mAuthorities.Begin(); rit != mAuthorities.End(); ++rit) {
                     AutoPtr<AuthorityInfo> authority = rit->mSecond;
                     if (authority->mTarget->mProvider.Equals(provider)) {
-                        authority.mEnabled = value == NULL || StringUtils::ParseBoolean(value);
+                        authority->mEnabled = value == NULL || StringUtils::ParseBoolean(value);
                         authority->mSyncable = 1;
                     }
                 }
             }
         }
 
-        c->Close();
+        ICloseable::Probe(c)->Close();
 
-        db->Close();
+        ICloseable::Probe(db)->Close();
 
         AutoPtr<IFile> file;
         CFile::New(path, (IFile**)&file);
@@ -2778,29 +2879,33 @@ void SyncStorageEngine::ReadStatusLocked()
     //     Log.v(TAG_FILE, "Reading " + mStatusFile.getBaseFile());
     // }
     ECode ec = NOERROR;
+    HashMap<Int32, AutoPtr<AuthorityInfo> >::Iterator it;
+    Int32 token, id;
+    AutoPtr<IParcel> in;
+
     AutoPtr<ArrayOf<Byte> > data;
     ec = mStatusFile->ReadFully((ArrayOf<Byte>**)&data);
     FAIL_GOTO(ec, _EXIT_)
 
-    AutoPtr<IParcel> parcel;
-    CParcel::New((IParcel**)&parcel);
+    CParcel::New((IParcel**)&in);
     ec = in->Unmarshall(data, 0, data->GetLength());
     FAIL_GOTO(ec, _EXIT_)
 
     in->SetDataPosition(0);
-    HashMap<Int32, AutoPtr<AuthorityInfo> >::Iterator it;
-    Int32 token;
     FAIL_GOTO(in->ReadInt32(&token), _EXIT_)
     while (token != STATUS_FILE_END) {
         if (token == STATUS_FILE_ITEM) {
-            AutoPtr<ISyncStatusInfo> status = new SyncStatusInfo(in);
-            it = mAuthorities.Find(status->mAuthorityId);
+            AutoPtr<ISyncStatusInfo> status;
+            CSyncStatusInfo::New((ISyncStatusInfo**)&status);
+            IParcelable::Probe(status)->ReadFromParcel(in);
+            status->GetAuthorityId(&id);
+            it = mAuthorities.Find(id);
             if (it != mAuthorities.End()) {
-                status->mPending = FALSE;
+                status->SetPending(FALSE);
                 // if (Log.isLoggable(TAG_FILE, Log.VERBOSE)) {
                 //     Log.v(TAG_FILE, "Adding status for id " + status->mAuthorityId);
                 // }
-                mSyncStatus[status->mAuthorityId] = status;
+                mSyncStatus[id] = status;
             }
         }
         else {
@@ -2847,7 +2952,7 @@ void SyncStorageEngine::WriteStatusLocked()
 
     out->WriteInt32(STATUS_FILE_END);
     out->Marshall((ArrayOf<Byte>**)&bytes);
-    fos->Write(bytes);
+    IOutputStream::Probe(fos)->Write(bytes);
 
     mStatusFile->FinishWrite(fos);
 
@@ -2864,7 +2969,7 @@ ECode SyncStorageEngine::ReadPendingOperationsLocked()
 {
     AutoPtr<IFileInputStream> fis;
     AutoPtr<IFile> baseFile;
-    mPendingFile.getBaseFile((IFile**)&baseFile);
+    mPendingFile->GetBaseFile((IFile**)&baseFile);
     Boolean exist;
     baseFile->Exists(&exist);
     if (!exist) {
@@ -2879,9 +2984,9 @@ ECode SyncStorageEngine::ReadPendingOperationsLocked()
     AutoPtr<PendingOperation> pop;
     AutoPtr<AuthorityInfo> authorityInfo;
     AutoPtr<IBundle> bundle;
-    Int32 eventType, depth, authorityId, syncSource, reason, strVal;
+    Int32 eventType, depth, authorityId, syncSource, reason;
     Boolean expedited;
-    String tagName, versionString;
+    String tagName, versionString, nullStr, strVal;
     HashMap<Int32, AutoPtr<AuthorityInfo> >::Iterator authIt;
     ECode ec = NOERROR;
 
@@ -2892,7 +2997,7 @@ ECode SyncStorageEngine::ReadPendingOperationsLocked()
     // }
     ec = Xml::NewPullParser((IXmlPullParser**)&parser);
     FAIL_GOTO(ec, _EXIT_)
-    ec = parser->SetInput(fis, NULL);
+    ec = parser->SetInput(IInputStream::Probe(fis), nullStr);
     FAIL_GOTO(ec, _EXIT_)
     parser->GetEventType(&eventType);
     FAIL_GOTO(ec, _EXIT_)
@@ -2901,7 +3006,7 @@ ECode SyncStorageEngine::ReadPendingOperationsLocked()
         ec = parser->Next(&eventType);
         FAIL_GOTO(ec, _EXIT_)
     }
-    if (eventType == IXmlPullParser::END_DOCUMENT) return; // Nothing to read.
+    if (eventType == IXmlPullParser::END_DOCUMENT) return NOERROR; // Nothing to read.
 
     do {
         if (eventType == IXmlPullParser::START_TAG) {
@@ -2910,9 +3015,9 @@ ECode SyncStorageEngine::ReadPendingOperationsLocked()
 
             ec = parser->GetDepth(&depth);
             FAIL_GOTO(ec, _EXIT_)
-            if (depth == 1 && "op".equals(tagName)) {
+            if (depth == 1 && tagName.Equals("op")) {
                 // Verify version.
-                ec = parser->GetAttributeValue(NULL, XML_ATTR_VERSION, &versionString);
+                ec = parser->GetAttributeValue(nullStr, XML_ATTR_VERSION, &versionString);
                 FAIL_GOTO(ec, _EXIT_)
 
                 if (versionString == NULL || StringUtils::ParseInt32(versionString) != PENDING_OPERATION_VERSION) {
@@ -2920,21 +3025,21 @@ ECode SyncStorageEngine::ReadPendingOperationsLocked()
                     return E_IO_EXCEPTION;
                 }
 
-                ec = parser->GetAttributeValue(NULL, XML_ATTR_AUTHORITYID, &strVal);
+                ec = parser->GetAttributeValue(nullStr, XML_ATTR_AUTHORITYID, &strVal);
                 FAIL_GOTO(ec, _EXIT_)
-                authorityId = StringUtils::ParseInt32(strVal)
+                authorityId = StringUtils::ParseInt32(strVal);
 
-                ec = parser->GetAttributeValue(NULL, XML_ATTR_EXPEDITED, &strVal);
+                ec = parser->GetAttributeValue(nullStr, XML_ATTR_EXPEDITED, &strVal);
                 FAIL_GOTO(ec, _EXIT_)
-                expedited = StringUtils::ParseBoolean(strVal)
+                expedited = StringUtils::ParseBoolean(strVal);
 
-                ec = parser->GetAttributeValue(NULL, XML_ATTR_SOURCE, &strVal);
+                ec = parser->GetAttributeValue(nullStr, XML_ATTR_SOURCE, &strVal);
                 FAIL_GOTO(ec, _EXIT_)
-                syncSource = StringUtils::ParseInt32(strVal)
+                syncSource = StringUtils::ParseInt32(strVal);
 
-                ec = parser->GetAttributeValue(NULL, XML_ATTR_REASON, &strVal);
+                ec = parser->GetAttributeValue(nullStr, XML_ATTR_REASON, &strVal);
                 FAIL_GOTO(ec, _EXIT_)
-                reason = StringUtils::ParseInt32(strVal)
+                reason = StringUtils::ParseInt32(strVal);
 
                 authIt = mAuthorities.Find(authorityId);
                 if (authIt != mAuthorities.End()) {
@@ -2944,9 +3049,9 @@ ECode SyncStorageEngine::ReadPendingOperationsLocked()
                 //     Log.v(TAG_FILE, authorityId + " " + expedited + " " + syncSource + " "
                 //             + reason);
                 // }
-                if (authority != NULL) {
+                if (authorityInfo != NULL) {
                     CBundle::New((IBundle**)&bundle);
-                    pop = new PendingOperation(authority, reason, syncSource, bundle, expedited);
+                    pop = new PendingOperation(authorityInfo, reason, syncSource, bundle, expedited);
                     pop->mFlatExtras = NULL; // No longer used.
                     mPendingOperations.PushBack(pop);
                     // if (Log.isLoggable(TAG_FILE, Log.VERBOSE)) {
@@ -2990,6 +3095,7 @@ _EXIT_:
     if (fis != NULL) {
         ICloseable::Probe(fis)->Close();
     }
+    return NOERROR;
 }
 
 AutoPtr< ArrayOf<Byte> > SyncStorageEngine::FlattenBundle(
@@ -3011,7 +3117,7 @@ AutoPtr<IBundle> SyncStorageEngine::UnFlattenBundle(
     CParcel::New((IParcel**)&parcel);
     Int32 length;
 
-    ECod ec = parcel->Unmarshall(flatData, 0, flatData->GetLength());
+    ECode ec = parcel->Unmarshall(flatData, 0, flatData->GetLength());
     FAIL_GOTO(ec, _EXIT_)
 
     parcel->SetDataPosition(0);
@@ -3022,7 +3128,7 @@ AutoPtr<IBundle> SyncStorageEngine::UnFlattenBundle(
     }
 
 _EXIT_:
-    if (ec == (ECode)E_RUNTIME_EXCEPTIN) {
+    if (ec == (ECode)E_RUNTIME_EXCEPTION) {
         // A RuntimeException is thrown if we were unable to parse the parcel.
         // Create an empty parcel in this case.
         bundle = NULL;
@@ -3054,7 +3160,7 @@ void SyncStorageEngine::WritePendingOperationsLocked()
     FAIL_GOTO(ec, _EXIT_)
 
     CFastXmlSerializer::New((IFastXmlSerializer**)&out);
-    ec = out->SetOutput(fos, String("utf-8"));
+    ec = out->SetOutput(IOutputStream::Probe(fos), String("utf-8"));
     FAIL_GOTO(ec, _EXIT_)
 
     for (lit = mPendingOperations.Begin(); lit != mPendingOperations.End(); ++lit) {
@@ -3068,7 +3174,7 @@ void SyncStorageEngine::WritePendingOperationsLocked()
      ec = mPendingFile->FinishWrite(fos);
 
 _EXIT_:
-    if (ec == (ECode)_E_IO_EXCEPTION) {
+    if (ec == (ECode)E_IO_EXCEPTION) {
         Logger::W(TAG, "Error writing pending operations");
         if (fos != NULL) {
             mPendingFile->FailWrite(fos);
@@ -3080,17 +3186,18 @@ void SyncStorageEngine::WritePendingOperationLocked(
     /* [in] */ PendingOperation* pop,
     /* [in] */ IXmlSerializer* out)
 {
+    String nullStr;
     // Pending operation.
-    out->StartTag(NULL, String("op"));
+    out->WriteStartTag(nullStr, String("op"));
 
-    out->Attribute(NULL, XML_ATTR_VERSION, StringUtils::ToString(PENDING_OPERATION_VERSION));
-    out->Attribute(NULL, XML_ATTR_AUTHORITYID, StringUtils::ToString(pop->mAuthorityId));
-    out->Attribute(NULL, XML_ATTR_SOURCE, StringUtils::ToString(pop->mSyncSource));
-    out->Attribute(NULL, XML_ATTR_EXPEDITED, StringUtils::BooleanToString(pop->mExpedited));
-    out->Attribute(NULL, XML_ATTR_REASON, StringUtils::ToString(pop->mReason));
+    out->WriteAttribute(nullStr, XML_ATTR_VERSION, StringUtils::ToString(PENDING_OPERATION_VERSION));
+    out->WriteAttribute(nullStr, XML_ATTR_AUTHORITYID, StringUtils::ToString(pop->mAuthorityId));
+    out->WriteAttribute(nullStr, XML_ATTR_SOURCE, StringUtils::ToString(pop->mSyncSource));
+    out->WriteAttribute(nullStr, XML_ATTR_EXPEDITED, StringUtils::BooleanToString(pop->mExpedited));
+    out->WriteAttribute(nullStr, XML_ATTR_REASON, StringUtils::ToString(pop->mReason));
     ExtrasToXml(out, pop->mExtras);
 
-    out->EndTag(NULL, String("op"));
+    out->WriteEndTag(nullStr, String("op"));
 }
 
 void SyncStorageEngine::AppendPendingOperationLocked(
@@ -3111,7 +3218,7 @@ void SyncStorageEngine::AppendPendingOperationLocked(
 
     AutoPtr<IXmlSerializer> out;
     CFastXmlSerializer::New((IFastXmlSerializer**)&out);
-    ec = out->SetOutput(fos, String("utf-8"));
+    ec = out->SetOutput(IOutputStream::Probe(fos), String("utf-8"));
     FAIL_GOTO(ec, _EXIT_)
 
     WritePendingOperationLocked(op, out);
@@ -3138,50 +3245,51 @@ void SyncStorageEngine::ExtrasToXml(
     Boolean hasNext;
     String type("type");
     String value1("value1");
+    String nullStr;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> keyObj, valueObj;
         it->GetNext((IInterface**)&keyObj);
         String key = Object::ToString(keyObj);
 
-        out->StartTag(NULL, String("extra");
-        out->Attribute(NULL, String("name", key);
+        out->WriteStartTag(nullStr, String("extra"));
+        out->WriteAttribute(nullStr, String("name"), key);
         extras->Get(key, (IInterface**)&valueObj);
         String value = Object::ToString(valueObj);
 
-        if (IInt64::Probe(valueObj) != NULL) {
-            out->Attribute(NULL, type, String("long"));
-            out->Attribute(NULL, value1, value);
+        if (IInteger64::Probe(valueObj) != NULL) {
+            out->WriteAttribute(nullStr, type, String("long"));
+            out->WriteAttribute(nullStr, value1, value);
         }
-        else if (IInt32::Probe(valueObj) != NULL) {
-            out->Attribute(NULL, type, String("integer"));
-            out->Attribute(NULL, value1, value);
+        else if (IInteger32::Probe(valueObj) != NULL) {
+            out->WriteAttribute(nullStr, type, String("integer"));
+            out->WriteAttribute(nullStr, value1, value);
         }
         else if (IBoolean::Probe(valueObj) != NULL) {
-            out->Attribute(NULL, type, String("boolean"));
-            out->Attribute(NULL, value1, value);
+            out->WriteAttribute(nullStr, type, String("boolean"));
+            out->WriteAttribute(nullStr, value1, value);
         }
         else if (IFloat::Probe(valueObj) != NULL) {
-            out->Attribute(NULL, type, String("float"));
-            out->Attribute(NULL, value1, value);
+            out->WriteAttribute(nullStr, type, String("float"));
+            out->WriteAttribute(nullStr, value1, value);
         }
         else if (IDouble::Probe(valueObj) != NULL) {
-            out->Attribute(NULL, type, String("double"));
-            out->Attribute(NULL, value1, value);
+            out->WriteAttribute(nullStr, type, String("double"));
+            out->WriteAttribute(nullStr, value1, value);
         }
-        else if (ICharSequence::Probe(String) != NULL) {
-            out->Attribute(NULL, type, String("string"));
-            out->Attribute(NULL, value1, value);
+        else if (ICharSequence::Probe(valueObj) != NULL) {
+            out->WriteAttribute(nullStr, type, String("string"));
+            out->WriteAttribute(nullStr, value1, value);
         }
         else if (IAccount::Probe(valueObj) != NULL) {
-            out->Attribute(NULL, type, String("account"));
+            out->WriteAttribute(nullStr, type, String("account"));
             IAccount* accont = IAccount::Probe(valueObj);
             String name, type;
             accont->GetName(&name);
             accont->GetType(&type);
-            out->Attribute(NULL, value1, name);
-            out->Attribute(NULL, String("value2"), type);
+            out->WriteAttribute(nullStr, value1, name);
+            out->WriteAttribute(nullStr, String("value2"), type);
         }
-        out->EndTag(NULL, String("extra"));
+        out->WriteEndTag(nullStr, String("extra"));
     }
 }
 
@@ -3292,6 +3400,7 @@ void SyncStorageEngine::ReadStatisticsLocked()
         FAIL_GOTO(ec, _EXIT_)
     }
 
+_EXIT_:
     if (ec == (ECode)E_IO_EXCEPTION) {
         Logger::I(TAG, "No initial statistics");
     }
@@ -3310,7 +3419,7 @@ void SyncStorageEngine::WriteStatisticsLocked()
     AutoPtr<IParcel> out;
     AutoPtr<IFileOutputStream> fos;
     AutoPtr<ArrayOf<Byte> > bytes;
-    ECode ec = mStatisticsFile.startWrite((IFileOutputStream**)&fos);
+    ECode ec = mStatisticsFile->StartWrite((IFileOutputStream**)&fos);
     FAIL_GOTO(ec, _EXIT_)
 
     CParcel::New((IParcel**)&out);
@@ -3330,13 +3439,13 @@ void SyncStorageEngine::WriteStatisticsLocked()
     out->WriteInt32(STATISTICS_FILE_END);
     out->Marshall((ArrayOf<Byte>**)&bytes);
 
-    ec = fos->Write(bytes);
+    ec = IOutputStream::Probe(fos)->Write(bytes);
     FAIL_GOTO(ec, _EXIT_)
 
     ec = mStatisticsFile->FinishWrite(fos);
 
 _EXIT_:
-    if (ec == (ECdoe)E_IO_EXCEPTION) {
+    if (ec == (ECode)E_IO_EXCEPTION) {
         Logger::W(TAG, "Error writing stats");
         if (fos != NULL) {
             mStatisticsFile->FailWrite(fos);
@@ -3348,9 +3457,9 @@ void SyncStorageEngine::DumpPendingOperations(
     /* [in] */ StringBuilder* sb)
 {
     sb->Append("Pending Ops: ");
-    sb->Append(mPendingOperations.GetSize());
+    sb->Append((Int32)mPendingOperations.GetSize());
     sb->Append(" operation(s)\n");
-    List<AutoPtr<PendingOperation> >::IIterator it;
+    List<AutoPtr<PendingOperation> >::Iterator it;
     PendingOperation* pop;
     for (it = mPendingOperations.Begin(); it != mPendingOperations.End(); ++it) {
         pop = *it;

@@ -5,6 +5,10 @@ module
     namespace Droid {
     namespace Accounts {
 
+    /**
+     * @involve
+     * interface IParcelable;
+     */
     interface IAccount {
         GetName(
             [out] String* name);

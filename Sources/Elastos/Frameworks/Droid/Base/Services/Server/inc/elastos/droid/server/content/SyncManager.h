@@ -3,49 +3,35 @@
 
 #include <elastos/droid/ext/frameworkext.h>
 #include <elastos/droid/os/Handler.h>
+#include <elastos/droid/content/BroadcastReceiver.h>
+#include "elastos/droid/server/content/SyncQueue.h"
+#include "elastos/droid/server/content/SyncStorageEngine.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
+#include <Elastos.Droid.Os.h>
+#include <Elastos.Droid.Content.h>
 
 using Elastos::Droid::Accounts::IAccount;
 using Elastos::Droid::Accounts::IAccountAndUser;
-using Elastos::Droid::Accounts::IAccountManager;
-using Elastos::Droid::App::IActivityManager;
 using Elastos::Droid::App::IAlarmManager;
-using Elastos::Droid::App::IAppGlobals;
-using Elastos::Droid::App::INotification;
 using Elastos::Droid::App::INotificationManager;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IComponentName;
-using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IISyncAdapter;
 using Elastos::Droid::Content::IISyncContext;
 using Elastos::Droid::Content::IISyncServiceAdapter;
 using Elastos::Droid::Content::IISyncStatusObserver;
 using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::IIntentFilter;
-using Elastos::Droid::Content::IPeriodicSync;
 using Elastos::Droid::Content::IServiceConnection;
-using Elastos::Droid::Content::ISyncActivityTooManyDeletes;
 using Elastos::Droid::Content::ISyncAdapterType;
 using Elastos::Droid::Content::ISyncAdaptersCache;
 using Elastos::Droid::Content::ISyncInfo;
 using Elastos::Droid::Content::ISyncResult;
-using Elastos::Droid::Content::ISyncStatusInfo;
-using Elastos::Droid::Content::Pm::IRegisteredServicesCache;
-using Elastos::Droid::Content::Pm::IApplicationInfo;
-using Elastos::Droid::Content::Pm::IPackageInfo;
-using Elastos::Droid::Content::Pm::IPackageManager;
-using Elastos::Droid::Content::Pm::IProviderInfo;
-using Elastos::Droid::Content::Pm::IRegisteredServicesCache;
 using Elastos::Droid::Content::Pm::IRegisteredServicesCacheListener;
-using Elastos::Droid::Content::Pm::IResolveInfo;
-using Elastos::Droid::Content::Pm::IUserInfo;
 using Elastos::Droid::Net::IConnectivityManager;
-using Elastos::Droid::Net::INetworkInfo;
-using Elastos::Droid::Os::IBatteryStats;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IHandler;
@@ -53,33 +39,20 @@ using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::IPowerManager;
-using Elastos::Droid::Os::IRemoteException;
-using Elastos::Droid::Os::IServiceManager;
-using Elastos::Droid::Os::ISystemClock;
-using Elastos::Droid::Os::ISystemProperties;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::IUserManager;
-using Elastos::Droid::Os::IWorkSource;
-using Elastos::Droid::Provider::ISettings;
-using Elastos::Droid::Text::Format.DateUtils;
-using Elastos::Droid::Text::Format.Time;
-using Elastos::Droid::Text::TextUtils;
-using Elastos::Droid::Utility::IEventLog;
-using Elastos::Droid::Utility::IPair;
+using Elastos::Droid::Os::IPowerManagerWakeLock;
+using Elastos::Droid::Text::Format::ITime;
 
 using Elastos::Droid::Internal::App::IIBatteryStats;
-using Elastos::Droid::Internal::Os::IBackgroundThread;
 using Elastos::Droid::Internal::Utility::IIndentingPrintWriter;
-using Elastos::Droid::Server::Accounts::CAccountManagerService;
 
+using Elastos::Core::IComparator;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
 using Elastos::Utility::IArrayList;
-using Elastos::Utility::IComparator;
 using Elastos::Utility::IIterator;
-using Elastos::Utility::Map;
 using Elastos::Utility::IRandom;
-using Elastos::Utility::Set;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
 
@@ -100,7 +73,14 @@ class SyncManager
     : public Object
     , public ISyncManager
 {
+class SyncTimeTracker;
+class AccountSyncStats;
+
 public:
+
+    class ActiveSyncContext;
+    class SyncHandler;
+
     class SyncHandlerMessagePayload
         : public Object
     {
@@ -197,6 +177,9 @@ public:
         CARAPI ProxyDied();
 
     private:
+        friend class SyncManager;
+        friend class SyncStorageEngine;
+
         SyncManager* mHost;
         AutoPtr<SyncOperation> mSyncOperation;
         Int64 mHistoryRowId;
@@ -220,6 +203,7 @@ public:
             /* [in] */ ActiveSyncContext* activeSyncContext,
             /* [in] */ IBinder* adapter);
     private:
+        friend class SyncHandler;
         AutoPtr<ActiveSyncContext> mActiveSyncContext;
         AutoPtr<IBinder> mAdapter;
     };
@@ -412,7 +396,10 @@ public:
         AutoPtr<SyncNotificationInfo> mSyncNotificationInfo;
 
         AutoPtr<SyncTimeTracker> mSyncTimeTracker;
+
     private:
+        SyncManager* mHost;
+        friend class SyncManager;
 
         // Messages that can be sent on mHandler
         static const Int32 MESSAGE_SYNC_FINISHED;
@@ -430,11 +417,24 @@ public:
         AutoPtr< List<AutoPtr<IMessage> > > mBootQueue;
     };
 
+    class SyncStatusObserver
+        : public Object
+        , public IISyncStatusObserver
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        CARAPI constructor(
+            /* [in] */ ISyncManager* host);
+
+        CARAPI OnStatusChanged(
+            /* [in] */ Int32 which);
+    private:
+        SyncManager* mHost;
+    };
 //==========================================================================================
 
 private:
-
-    class AccountSyncStats;
 
     class StorageIntentReceiver
         : public BroadcastReceiver
@@ -560,7 +560,8 @@ private:
         : public Object
     {
     public:
-        SyncTimeTracker();
+        SyncTimeTracker(
+            /* [in] */ SyncManager* host);
 
         /** Call to let the tracker know that the sync state may have changed */
         void Update();
@@ -577,6 +578,7 @@ private:
     private:
         /** The cumulative time we have spent syncing */
         Int64 mTimeSpentSyncing;
+        SyncManager* mHost;
     };
 
     class MyOnSyncRequestListener
@@ -611,22 +613,6 @@ private:
             /* [in] */ IInterface* type,
             /* [in] */ Int32 userId,
             /* [in] */ Boolean removed);
-    private:
-        SyncManager* mHost;
-    };
-
-    class SyncStatusObserver
-        : public Object
-        , public IISyncStatusObserver
-    {
-    public:
-        CAR_INTERFACE_DECL()
-
-        CARAPI constructor(
-            /* [in] */ ISyncManager* host);
-
-        CARAPI OnStatusChanged(
-            /* [in] */ Int32 which);
     private:
         SyncManager* mHost;
     };
@@ -669,7 +655,7 @@ public:
      * be run.
      * @param runtimeMillis milliseconds from now by which this sync must be run.
      */
-    void ScheduleSync(
+    CARAPI ScheduleSync(
         /* [in] */ IComponentName* cname,
         /* [in] */ Int32 userId,
         /* [in] */ Int32 uid,
@@ -718,7 +704,7 @@ public:
      * @param runtimeMillis maximum milliseconds in the future to wait before performing sync.
      * @param onlyThoseWithUnkownSyncableState Only sync authorities that have unknown state.
      */
-    void ScheduleSync(
+    CARAPI ScheduleSync(
         /* [in] */ IAccount* requestedAccount,
         /* [in] */ Int32 userId,
         /* [in] */ Int32 reason,
@@ -732,7 +718,7 @@ public:
      * Schedule sync based on local changes to a provider. Occurs within interval
      * [LOCAL_SYNC_DELAY, 2*LOCAL_SYNC_DELAY].
      */
-    void ScheduleLocalSync(
+    CARAPI ScheduleLocalSync(
         /* [in] */ IAccount* account,
         /* [in] */ Int32 userId,
         /* [in] */ Int32 reason,
@@ -799,10 +785,9 @@ private:
     AutoPtr<IList> GetAllUsers();
 
     Boolean ContainsAccountAndUser(
-        /* [in] */ ArrayOf<IAccountAndUser*> accounts,
+        /* [in] */ ArrayOf<IAccountAndUser*>* accounts,
         /* [in] */ IAccount* account,
         /* [in] */ Int32 userId);
-
 
     void DoDatabaseCleanup();
 
@@ -865,11 +850,11 @@ private:
     void OnUserRemoved(
         /* [in] */ Int32 userId);
 
-    protected void Dump(
+    void Dump(
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ IPrintWriter* pw);
 
-    protected void DumpSyncState(
+    void DumpSyncState(
         /* [in] */ IPrintWriter* pw);
 
     String GetLastFailureMessage(
@@ -883,7 +868,7 @@ private:
         /* [in] */ IPrintWriter* pw,
         /* [in] */ DayStats* ds);
 
-    protected void DumpSyncHistory(
+    void DumpSyncHistory(
         /* [in] */ IPrintWriter* pw);
 
     void DumpRecentHistory(
@@ -905,7 +890,7 @@ private:
     static Boolean IsSyncSetting(
         /* [in] */ const String& key);
 
-    AutoPtr<Context> GetContextForUser(
+    AutoPtr<IContext> GetContextForUser(
         /* [in] */ IUserHandle* user);
 
 private:
@@ -952,17 +937,17 @@ private:
     static Int32 MAX_SIMULTANEOUS_REGULAR_SYNCS;
     static Int32 MAX_SIMULTANEOUS_INITIALIZATION_SYNCS;
 
-    AuttoPtr<IContext> mContext;
+    AutoPtr<IContext> mContext;
 
     static const AutoPtr<ArrayOf<IAccountAndUser*> > INITIAL_ACCOUNTS_ARRAY;
 
     // TODO: add better locking around mRunningAccounts
-    volatile AutoPtr<ArrayOf<IAccountAndUser> > mRunningAccounts;
+    /* volatile */ AutoPtr<ArrayOf<IAccountAndUser*> > mRunningAccounts;
 
-    volatile AutoPtr<IPowerManagerWakeLock> mHandleAlarmWakeLock;
-    volatile AutoPtr<IPowerManagerWakeLock> mSyncManagerWakeLock;
-    volatile Boolean mDataConnectionIsConnected;
-    volatile Boolean mStorageIsLow;
+    /* volatile */ AutoPtr<IPowerManagerWakeLock> mHandleAlarmWakeLock;
+    /* volatile */ AutoPtr<IPowerManagerWakeLock> mSyncManagerWakeLock;
+    /* volatile */ Boolean mDataConnectionIsConnected;
+    /* volatile */ Boolean mStorageIsLow;
 
     AutoPtr<INotificationManager> mNotificationMgr;
     AutoPtr<IAlarmManager> mAlarmService;
@@ -992,7 +977,7 @@ private:
     AutoPtr<IBroadcastReceiver> mShutdownIntentReceiver;
     AutoPtr<IBroadcastReceiver> mUserIntentReceiver;
 
-    static String ACTION_SYNC_ALARM;
+    static const String ACTION_SYNC_ALARM;
     AutoPtr<SyncHandler> mSyncHandler;
 
     volatile Boolean mBootCompleted;

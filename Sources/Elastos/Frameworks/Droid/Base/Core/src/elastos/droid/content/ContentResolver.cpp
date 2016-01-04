@@ -4,6 +4,7 @@
 #include "Elastos.Droid.App.h"
 #include "Elastos.Droid.Database.h"
 #include "Elastos.Droid.Net.h"
+#include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/content/ContentResolver.h"
 #include "elastos/droid/content/CContentResolverOpenResourceIdResult.h"
 #include "elastos/droid/content/CContentProviderClient.h"
@@ -157,7 +158,16 @@ static AutoPtr<ArrayOf<String> > InitSYNC_ERROR_NAMES()
     return array;
 }
 
+AutoPtr<IIntent> InitACTION_SYNC_CONN_STATUS_CHANGED()
+{
+    AutoPtr<IIntent> intent;
+    CIntent::New(String("com.android.sync.SYNC_CONN_STATUS_CHANGED"), (IIntent**)&intent);
+    return intent;
+}
+
 const AutoPtr<ArrayOf<String> > ContentResolver::SYNC_ERROR_NAMES = InitSYNC_ERROR_NAMES();
+
+AutoPtr<IIntent> ContentResolver::ACTION_SYNC_CONN_STATUS_CHANGED = InitACTION_SYNC_CONN_STATUS_CHANGED();
 
 const String ContentResolver::TAG("ContentResolver");
 
@@ -1868,7 +1878,7 @@ ECode ContentResolver::IsSyncActive(
 
     AutoPtr<IIContentService> contentService;
     FAIL_RETURN(GetContentService((IIContentService**)&contentService))
-    return contentService->IsSyncActive(account, authority, isSyncActive);
+    return contentService->IsSyncActive(account, authority, NULL, isSyncActive);
 }
 
 ECode ContentResolver::GetCurrentSync(

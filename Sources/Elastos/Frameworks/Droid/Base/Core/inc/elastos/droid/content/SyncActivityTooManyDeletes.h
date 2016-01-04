@@ -2,11 +2,11 @@
 #ifndef __ELASTOS_DROID_CONTENT_SYNCACTIVITYTOOMANYDELETES_H__
 #define __ELASTOS_DROID_CONTENT_SYNCACTIVITYTOOMANYDELETES_H__
 
-//#include "elastos/droid/app/Activity.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/app/Activity.h"
 #include <elastos/core/Object.h>
 
-//using Elastos::Droid::App::Activity;
+using Elastos::Droid::App::Activity;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
@@ -24,7 +24,8 @@ namespace Content {
  * @hide
  */
 class SyncActivityTooManyDeletes
-    : public Object/*Activity*/
+    : public Activity
+    , public ISyncActivityTooManyDeletes
     , public IAdapterViewOnItemClickListener
 {
 public:
@@ -33,6 +34,8 @@ public:
     SyncActivityTooManyDeletes();
 
     virtual ~SyncActivityTooManyDeletes();
+
+    CARAPI constructor();
 
     CARAPI OnCreate(
         /* [in] */ IBundle* savedInstanceState);

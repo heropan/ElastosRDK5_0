@@ -180,11 +180,19 @@ public:
 
     /** @hide */
     CARAPI GetRequiredAccountType(
-        /* [out] */ String* requiredAccountType);
+        /* [out] */ String* type);
 
     /** @hide */
     CARAPI SetRequiredAccountType(
-        /* [in] */ const String& requiredAccountType);
+        /* [in] */ const String& type);
+
+    /** @hide */
+    CARAPI GetRestrictedAccountType(
+        /* [out] */ String* type);
+
+    /** @hide */
+    CARAPI SetRestrictedAccountType(
+        /* [in] */ const String& type);
 
 public:
     /**

@@ -1,22 +1,35 @@
 
-#include "elastos/droid/server/CContentService.h"
+#include "elastos/droid/server/content/CContentService.h"
 #include <elastos/droid/Manifest.h>
 #include "elastos/droid/os/Binder.h"
 #include "elastos/droid/os/UserHandle.h"
 #include "elastos/droid/text/TextUtils.h"
+#include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/AutoLock.h>
+#include <Elastos.Droid.App.h>
+#include <Elastos.Droid.Database.h>
+#include <Elastos.Droid.Net.h>
 
 using Elastos::Droid::Manifest;
 using Elastos::Droid::App::CActivityManagerHelper;
 using Elastos::Droid::App::IActivityManagerHelper;
 using Elastos::Droid::Os::UserHandle;
 using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Os::IServiceManager;
+using Elastos::Droid::Os::CServiceManager;
+using Elastos::Droid::Os::ISystemProperties;
+using Elastos::Droid::Os::CSystemProperties;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::Binder;
+using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Content::EIID_IIContentService;
 using Elastos::Droid::Content::IContentResolverHelper;
 using Elastos::Droid::Content::CContentResolverHelper;
+using Elastos::Core::StringBuilder;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
 
@@ -76,7 +89,7 @@ CContentService::ObserverNode::ObserverEntry::ObserverEntry(
 ECode CContentService::ObserverNode::ObserverEntry::ProxyDied()
 {
     AutoLock lock(mObserversLock);
-    Boolean isRemove = mHost->RemoveObserverLocked(mObserver);
+    mHost->RemoveObserverLocked(mObserver);
     return NOERROR;
 }
 
@@ -167,15 +180,15 @@ String CContentService::ObserverNode::GetUriSegment(
             return s;
         }
         else {
-            AutoPtr< ArrayOf<String> > pathSegments;
-            ASSERT_SUCCEEDED(uri->GetPathSegments((ArrayOf<String>**)&pathSegments))
-            assert(index > 0 && index <= pathSegments->GetLength());
-            return (*pathSegments)[index - 1];
+            AutoPtr<IList> pathSegments;
+            uri->GetPathSegments((IList**)&pathSegments);
+            AutoPtr<IInterface> obj;
+            pathSegments->Get(index - 1, (IInterface**)&obj);
+            return Object::ToString(obj);
         }
     }
-    else {
-        return String(NULL);
-    }
+
+    return String(NULL);
 }
 
 Int32 CContentService::ObserverNode::CountUriSegments(
@@ -184,9 +197,12 @@ Int32 CContentService::ObserverNode::CountUriSegments(
     if (uri == NULL) {
         return 0;
     }
-    AutoPtr< ArrayOf<String> > pathSegments;
-    ASSERT_SUCCEEDED(uri->GetPathSegments((ArrayOf<String>**)&pathSegments))
-    return pathSegments->GetLength() + 1;
+
+    AutoPtr<IList> pathSegments;
+    uri->GetPathSegments((IList**)&pathSegments);
+    Int32 size;
+    pathSegments->GetSize(&size);
+    return size + 1;
 }
 
 ECode CContentService::ObserverNode::AddObserverLocked(
@@ -198,7 +214,8 @@ ECode CContentService::ObserverNode::AddObserverLocked(
     /* [in] */ Int32 pid,
     /* [in] */ Int32 userHandle)
 {
-    return AddObserverLocked(uri, 0, observer, notifyForDescendants, observersLock, uid, pid, userHandle);
+    return AddObserverLocked(uri, 0, observer, notifyForDescendants,
+        observersLock, uid, pid, userHandle);
 }
 
 ECode CContentService::ObserverNode::AddObserverLocked(
@@ -224,9 +241,8 @@ ECode CContentService::ObserverNode::AddObserverLocked(
     // Look to see if the proper child already exists
     String segment = GetUriSegment(uri, index);
     if (segment.IsNull()) {
-        String uriStr, observerStr;
-        uri->ToString(&uriStr);
-        observer->ToString(&observerStr);
+        String uriStr = Object::ToString(uri);
+        String observerStr = Object::ToString(observer);
         Slogger::E(TAG, "Invalid Uri [%s] used for observer [%s]", uriStr.string(), observerStr.string());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -491,7 +507,7 @@ ECode CContentService::RegisterContentObserver(
 
     AutoLock lock(mRootNode);
     FAIL_RETURN(mRootNode->AddObserverLocked(uri, observer, notifyForDescendants,
-            &mRootNode, Binder::GetCallingUid(), Binder::GetCallingPid(), userHandle));
+        mRootNode.Get(), Binder::GetCallingUid(), Binder::GetCallingPid(), userHandle));
     return NOERROR;
 }
 
@@ -532,8 +548,8 @@ ECode CContentService::NotifyChange(
 {
     if (DBG) {
         String uriStr, observerStr;
-        if (uri) uri->ToString(&uriStr);
-        if (observer) observer->ToString(&observerStr);
+        uriStr = Object::ToString(uri);
+        observerStr = Object::ToString(observer);
         Logger::V(TAG, "Notifying update of %s for user %d from observer %s, syncToNetwork %d",
             uriStr.string(), userHandle, observerStr.string(), syncToNetwork);
     }
@@ -561,7 +577,7 @@ ECode CContentService::NotifyChange(
         }
     }
 
-    Int32 uid = Binder.getCallingUid();
+    Int32 uid = Binder::GetCallingUid();
     // This makes it so that future permission checks will be in the context of this
     // process rather than the caller's process. We will restore this before returning.
     Int64 identityToken = Binder::ClearCallingIdentity();
@@ -650,7 +666,7 @@ ECode CContentService::RequestSync(
     FAIL_RETURN(CContentResolverHelper::AcquireSingleton((IContentResolverHelper**)&contentResolverHelper))
     FAIL_RETURN(contentResolverHelper->ValidateSyncExtrasBundle(extras))
     Int32 userId = UserHandle::GetCallingUserId();
-    int uId = Binder.getCallingUid();
+    Int32 uId = Binder::GetCallingUid();
 
     // This makes it so that future permission checks will be in the context of this
     // process rather than the caller's process. We will restore this before returning.
@@ -659,7 +675,7 @@ ECode CContentService::RequestSync(
     AutoPtr<SyncManager> syncManager = GetSyncManager();
     ECode ec = NOERROR;
     if (syncManager != NULL) {
-        ec = syncManager->ScheduleSync(account, userId, uid, authority, extras,
+        ec = syncManager->ScheduleSync(account, userId, uId, authority, extras,
                 0 /* no delay */, 0 /* no delay */,
                 FALSE /* onlyThoseWithUnkownSyncableState */);
     }
@@ -684,7 +700,7 @@ ECode CContentService::SyncAsUser(
     sb += userId;
     FAIL_RETURN(EnforceCrossUserPermission(userId, sb.ToString()))
 
-    Int32 callerUid = Binder::GetCallingUid();
+    Binder::GetCallingUid();
     // This makes it so that future permission checks will be in the context of this
     // process rather than the caller's process. We will restore this before returning.
     Int64 identityToken = Binder::ClearCallingIdentity();
@@ -720,6 +736,8 @@ ECode CContentService::SyncAsUser(
             info, runAtTime, flextime, extras);
     }
     else {
+        Int32 callerUid = Binder::GetCallingUid();
+
         Int64 beforeRuntimeMillis = (flextime) * 1000;
         Int64 runtimeMillis = runAtTime * 1000;
         AutoPtr<IAccount> account;
@@ -739,19 +757,19 @@ ECode CContentService::SyncAsUser(
 ECode CContentService::CancelSync(
     /* [in] */ IAccount* account,
     /* [in] */ const String& authority,
-    /* [in] */ IComponentName* cn)
+    /* [in] */ IComponentName* cname)
 {
-    return CancelSyncAsUser(account, authority, cname, UserHandle::GetCallingUserId());;
+    return CancelSyncAsUser(account, authority, cname, UserHandle::GetCallingUserId());
 }
 
-ECode CContentService::CancelSync(
+ECode CContentService::CancelSyncAsUser(
     /* [in] */ IAccount* account,
     /* [in] */ const String& authority,
-    /* [in] */ IComponentName* cn,
+    /* [in] */ IComponentName* cname,
     /* [in] */ Int32 userId)
 {
-    if (authority.IsNullOrEmpty() {
-        Slogger::E(TAG, ""Authority must be non-empty"")
+    if (authority.IsNullOrEmpty()) {
+        Slogger::E(TAG, "Authority must be non-empty");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -763,7 +781,7 @@ ECode CContentService::CancelSync(
     // process rather than the caller's process. We will restore this before returning.
     Int64 identityToken = Binder::ClearCallingIdentity();
 
-    AutoPtr<SyncManager> syncManager = getSyncManager();
+    AutoPtr<SyncManager> syncManager = GetSyncManager();
     if (syncManager != NULL) {
         AutoPtr<EndPoint> info;
         if (cname == NULL) {
@@ -777,13 +795,14 @@ ECode CContentService::CancelSync(
     }
 
     Binder::RestoreCallingIdentity(identityToken);
+    return NOERROR;
 }
 
 ECode CContentService::CancelRequest(
     /* [in ]*/ ISyncRequest* request)
 {
     AutoPtr<SyncManager> syncManager = GetSyncManager();
-    if (syncManager == NULL) return;
+    if (syncManager == NULL) return NOERROR;
     Int32 userId = UserHandle::GetCallingUserId();
 
     Int64 identityToken = Binder::ClearCallingIdentity();
@@ -837,7 +856,9 @@ ECode CContentService::GetSyncAdapterTypesAsUser(
     Int64 identityToken = Binder::ClearCallingIdentity();
 
     AutoPtr<SyncManager> syncManager = GetSyncManager();
-    syncManager->GetSyncAdapterTypes(userId, result);
+    AutoPtr<ArrayOf<ISyncAdapterType*> > types = syncManager->GetSyncAdapterTypes(userId);
+    *result = types;
+    REFCOUNT_ADD(*result)
 
     Binder::RestoreCallingIdentity(identityToken);
     return NOERROR;
@@ -846,7 +867,6 @@ ECode CContentService::GetSyncAdapterTypesAsUser(
 ECode CContentService::GetSyncAutomatically(
     /* [in] */ IAccount* account,
     /* [in] */ const String& providerName,
-    /* [in] */ Int32 userId,
     /* [out] */ Boolean* result)
 {
     return GetSyncAutomaticallyAsUser(account, providerName, UserHandle::GetCallingUserId(), result);
@@ -855,6 +875,7 @@ ECode CContentService::GetSyncAutomatically(
 ECode CContentService::GetSyncAutomaticallyAsUser(
     /* [in] */ IAccount* account,
     /* [in] */ const String& providerName,
+    /* [in] */ Int32 userId,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
@@ -1014,7 +1035,7 @@ ECode CContentService::GetPeriodicSyncs(
         CArrayList::New((IArrayList**)&al);
         List<AutoPtr<IPeriodicSync> >::Iterator it;
         for (it = list->Begin(); it != list->End(); ++it) {
-            al->Add(TO_IINTERFACE(*it), &bva);
+            al->Add(TO_IINTERFACE(*it), &bval);
         }
 
         *periodicSyncList = IList::Probe(al);
@@ -1107,7 +1128,6 @@ ECode CContentService::GetMasterSyncAutomaticallyAsUser(
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
         Manifest::permission::READ_SYNC_SETTINGS,
         String("no permission to read the sync settings")))
-    Int32 userId = UserHandle::GetCallingUserId();
 
     Int64 identityToken = Binder::ClearCallingIdentity();
     // try {
@@ -1162,7 +1182,7 @@ ECode CContentService::IsSyncActive(
         Manifest::permission::READ_SYNC_STATS,
         String("no permission to read the sync stats")))
     Int32 userId = UserHandle::GetCallingUserId();
-    Int32 callingUid = Binder::GetCallingUid();
+    Binder::GetCallingUid();
     Int64 identityToken = Binder::ClearCallingIdentity();
 
     AutoPtr<SyncManager> syncManager = GetSyncManager();
@@ -1240,7 +1260,7 @@ ECode CContentService::GetSyncStatusAsUser(
         Manifest::permission::READ_SYNC_STATS,
         String("no permission to read the sync stats")))
 
-    Int32 callerUid = Binder::GetCallingUid();
+    Binder::GetCallingUid();
     Int64 identityToken = Binder::ClearCallingIdentity();
 
     AutoPtr<SyncManager> syncManager = GetSyncManager();
@@ -1255,8 +1275,8 @@ ECode CContentService::GetSyncStatusAsUser(
     else {
         Slogger::E(TAG, "Must call sync status with valid authority");
     }
-    AutoPtr<ISyncStatusInfo> info = syncManager->GetSyncStorageEngine()->GetStatusByAuthority(info);
-    *result = info;
+    AutoPtr<ISyncStatusInfo> ssi = syncManager->GetSyncStorageEngine()->GetStatusByAuthority(info);
+    *result = ssi;
     REFCOUNT_ADD(*result)
 
     Binder::RestoreCallingIdentity(identityToken);
@@ -1290,7 +1310,7 @@ ECode CContentService::IsSyncPendingAsUser(
     sb += userId;
     FAIL_RETURN(EnforceCrossUserPermission(userId, sb.ToString()))
 
-    Int32 callerUid = Binder::GetCallingUid();
+    Binder::GetCallingUid();
     Int64 identityToken = Binder::ClearCallingIdentity();
     AutoPtr<SyncManager> syncManager = GetSyncManager();
     if (syncManager == NULL) return NOERROR;
@@ -1316,12 +1336,11 @@ ECode CContentService::AddStatusChangeListener(
     Int64 identityToken = Binder::ClearCallingIdentity();
     // try {
     AutoPtr<SyncManager> syncManager = GetSyncManager();
-    ECode ec = NOERROR;
     if (syncManager != NULL && callback != NULL) {
         syncManager->GetSyncStorageEngine()->AddStatusChangeListener(mask, callback);
     }
     Binder::RestoreCallingIdentity(identityToken);
-    return NULL;
+    return NOERROR;
 }
 
 ECode CContentService::RemoveStatusChangeListener(
@@ -1330,7 +1349,6 @@ ECode CContentService::RemoveStatusChangeListener(
     Int64 identityToken = Binder::ClearCallingIdentity();
     // try {
     AutoPtr<SyncManager> syncManager = GetSyncManager();
-    ECode ec = NOERROR;
     if (syncManager != NULL && callback != NULL) {
         syncManager->GetSyncStorageEngine()->RemoveStatusChangeListener(callback);
     }

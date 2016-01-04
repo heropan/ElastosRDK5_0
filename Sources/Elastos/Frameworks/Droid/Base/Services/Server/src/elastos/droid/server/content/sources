@@ -13,3 +13,5 @@ SOURCES += SyncManager.cpp
 SOURCES += SyncOperation.cpp
 SOURCES += SyncStorageEngine.cpp
 SOURCES += CContentService.cpp
+SOURCES += CSyncStatusObserver.cpp
+SOURCES += CActiveSyncContext.cpp

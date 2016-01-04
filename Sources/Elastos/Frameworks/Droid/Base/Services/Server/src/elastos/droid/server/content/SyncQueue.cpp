@@ -289,13 +289,13 @@ void SyncQueue::Dump(
     sb->Append(" operation(s)\n");
     HashMap<String, AutoPtr<SyncOperation> >::Iterator it = mOperationsMap->Begin();
     for (; it != mOperationsMap->End(); ++it) {
-        SyncOperation* operation = *it;
+        SyncOperation* operation = it->mSecond;
         sb->Append("  ");
         if (operation->mEffectiveRunTime <= now) {
             sb->Append("READY");
         }
         else {
-            sb->Append(DateUtils::FormatElapsedTime((operation.effectiveRunTime - now) / 1000));
+            sb->Append(DateUtils::FormatElapsedTime((operation->mEffectiveRunTime - now) / 1000));
         }
         sb->Append(" - ");
         sb->Append(operation->Dump(mPackageManager, FALSE));

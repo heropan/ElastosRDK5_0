@@ -50,6 +50,7 @@ module
     merge("content/SharedPreferences.car");
     merge("content/SyncAdapterType.car");
     merge("content/SyncAdaptersCache.car");
+    merge("content/SyncActivityTooManyDeletes.car");
     merge("content/SyncContext.car");
     merge("content/SyncInfo.car");
     merge("content/SyncRequest.car");
@@ -748,11 +749,25 @@ module
         class CPeriodicSync {
             constructor();
 
+            /**
+             * Create a copy of a periodic sync.
+             * {@hide}
+             */
+            constructor(
+                [in] IPeriodicSync* other);
+
             constructor(
                 [in] IAccount* account,
                 [in] String authority,
                 [in] IBundle* extras,
                 [in] Int64 period);
+
+            constructor(
+                [in] IAccount* account,
+                [in] String authority,
+                [in] IBundle* extras,
+                [in] Int64 periodInSeconds,
+                [in] Int64 flexTime);
 
             interface IPeriodicSync;
             interface IParcelable;
@@ -831,6 +846,9 @@ module
 
         class CSyncInfo {
             constructor();
+
+            constructor(
+                [in] ISyncInfo* other);
 
             /** @hide */
             constructor(

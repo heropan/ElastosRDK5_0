@@ -1058,6 +1058,10 @@ module
         StaticGetLargeMemoryClass(
             [out] Int32* klass);
 
+        /** @hide */
+        IsLowRamDeviceStatic(
+            [out] Boolean* result);
+
         /**
          * Used by persistent processes to determine if they are running on a
          * higher-end device so should be okay using hardware drawing acceleration

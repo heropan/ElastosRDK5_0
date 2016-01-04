@@ -183,6 +183,14 @@ ECode CContentResolverHelper::SyncErrorToString(
     return NOERROR;
 }
 
+ECode CContentResolverHelper::GetACTION_SYNC_CONN_STATUS_CHANGED(
+    /* [out] */ IIntent** intent)
+{
+    VALIDATE_NOT_NULL(intent)
+    *intent = ContentResolver::ACTION_SYNC_CONN_STATUS_CHANGED;
+    REFCOUNT_ADD(*intent)
+    return NOERROR;
+}
 }
 }
 }

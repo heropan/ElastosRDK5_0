@@ -209,11 +209,19 @@ module
 
         /** @hide */
         GetRequiredAccountType(
-            [out] String* requiredAccountType);
+            [out] String* type);
 
         /** @hide */
         SetRequiredAccountType(
-            [in] String requiredAccountType);
+            [in] String type);
+
+        /** @hide */
+        GetRestrictedAccountType(
+            [out] String* type);
+
+        /** @hide */
+        SetRestrictedAccountType(
+            [in] String type);
     }
 
     } // namespace Pm

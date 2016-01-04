@@ -1330,6 +1330,9 @@ module
         SyncErrorToString(
             [in] Int32 error,
             [out] String* str);
+
+        GetACTION_SYNC_CONN_STATUS_CHANGED(
+            [out] IIntent** intent);
     }
 
     } // namespace Content

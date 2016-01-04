@@ -1366,6 +1366,10 @@ private:
         /* [in] */ const String& operation,
         /* [in] */ const String& selection);
 
+public:
+    /** @hide */
+    static AutoPtr<IIntent> ACTION_SYNC_CONN_STATUS_CHANGED;
+
 private:
     static const AutoPtr<ArrayOf<String> > SYNC_ERROR_NAMES;
 

@@ -121,6 +121,9 @@ public:
     CARAPI SyncErrorToString(
         /* [in] */ Int32 error,
         /* [out] */ String* str);
+
+    CARAPI GetACTION_SYNC_CONN_STATUS_CHANGED(
+        /* [out] */ IIntent** intent);
 };
 
 }

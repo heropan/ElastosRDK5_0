@@ -15,7 +15,8 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
-CAR_INTERFACE_IMPL(SyncActivityTooManyDeletes, Object/*Activity*/, IAdapterViewOnItemClickListener)
+CAR_INTERFACE_IMPL_2(SyncActivityTooManyDeletes, Activity, \
+    ISyncActivityTooManyDeletes, IAdapterViewOnItemClickListener)
 
 SyncActivityTooManyDeletes::SyncActivityTooManyDeletes()
     : mNumDeletes(0)
@@ -23,6 +24,11 @@ SyncActivityTooManyDeletes::SyncActivityTooManyDeletes()
 
 SyncActivityTooManyDeletes::~SyncActivityTooManyDeletes()
 {}
+
+ECode SyncActivityTooManyDeletes::constructor()
+{
+    return NOERROR;
+}
 
 ECode SyncActivityTooManyDeletes::OnCreate(
     /* [in] */ IBundle* savedInstanceState)

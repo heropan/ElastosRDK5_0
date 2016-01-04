@@ -36,6 +36,14 @@ ECode CActivityManagerHelper::IsHighEndGfx(
     return NOERROR;
 }
 
+ECode CActivityManagerHelper::IsLowRamDeviceStatic(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = CActivityManager::IsLowRamDeviceStatic();
+    return NOERROR;
+}
+
 ECode CActivityManagerHelper::GetMaxRecentTasksStatic(
     /* [out] */ Int32* cls)
 {

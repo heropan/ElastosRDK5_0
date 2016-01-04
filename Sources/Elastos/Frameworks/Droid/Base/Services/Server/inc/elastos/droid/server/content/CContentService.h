@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_CONTENT_CCONTENTSERVICE_H__
 
 #include "_Elastos_Droid_Server_Content_CContentService.h"
-#include "elastos/droid/server/SyncManager.h"
+#include "elastos/droid/server/content/SyncManager.h"
 #include "elastos/droid/ext/frameworkdef.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
@@ -35,7 +35,7 @@ namespace Server {
 namespace Content {
 
 CarClass(CContentService)
-    : public Object
+    , public Object
     , public IIContentService
 {
 public:
@@ -85,8 +85,6 @@ public:
                 /* [in] */ Int32 uid,
                 /* [in] */ Int32 pid,
                 /* [in] */ Int32 userHandle);
-
-            CAR_INTERFACE_DECL()
 
             CARAPI ProxyDied();
 

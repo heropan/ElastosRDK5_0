@@ -106,6 +106,10 @@ module
     merge("../../../car/elastos/droid/text2.car"); //should after widget.car, app.car
     }
 
+    submodule Elastos.Droid.Content {
+    merge("../../../car/elastos/droid/content2.car");
+    }
+
     submodule Elastos.Droid.Internal {
     merge("../../../car/elastos/droid/internal/policy.car");
     }

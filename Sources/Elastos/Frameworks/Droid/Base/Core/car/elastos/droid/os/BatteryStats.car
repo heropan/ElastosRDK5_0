@@ -115,6 +115,9 @@ module
         // Magic sensor number for the GPS.
         const Int32 GPS = -10000;
 
+        GetHandle(
+            [out] Int32* handle);
+
         GetSensorTime(
             [out] IBatteryStatsTimer** time);
     }

@@ -208,6 +208,7 @@ module
         IsSyncActive(
             [in] IAccount* account,
             [in] String authority,
+            [in] IComponentName* name,
             [out] Boolean* isActive);
 
         /**

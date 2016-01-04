@@ -6,6 +6,7 @@
 #include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/content/CRestrictionEntry.h"
 #include "elastos/droid/content/CSyncAdaptersCache.h"
+#include "elastos/droid/content/CSyncActivityTooManyDeletes.h"
 
 namespace Elastos {
 namespace Droid {
@@ -18,6 +19,7 @@ CAR_OBJECT_IMPL(CIntent)
 CAR_OBJECT_IMPL(CIntentFilter)
 CAR_OBJECT_IMPL(CRestrictionEntry)
 CAR_OBJECT_IMPL(CSyncAdaptersCache)
+CAR_OBJECT_IMPL(CSyncActivityTooManyDeletes)
 
 
 }

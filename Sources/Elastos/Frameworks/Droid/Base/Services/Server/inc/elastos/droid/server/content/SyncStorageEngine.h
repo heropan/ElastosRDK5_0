@@ -232,7 +232,7 @@ public:
     String mMsg;
     Boolean mInitialization;
     AutoPtr<IBundle> mExtras;
-    Int32 mEeason;
+    Int32 mReason;
 };
 
 //=========================================================================================
@@ -552,7 +552,7 @@ private:
      * @param providerName provider for which to set backoff. Null to specify all providers.
      * @return true if a change occured.
      */
-    Boolean setBackoffLocked(
+    Boolean SetBackoffLocked(
         /* [in] */ IAccount* account,
         /* [in] */ Int32 userId,
         /* [in] */ const String& providerName,
@@ -782,6 +782,7 @@ public:
     static const Int32 PENDING_FINISH_TO_WRITE;
 
 private:
+    friend class AuthorityInfo;
 
     static const String XML_ATTR_VERSION;
     static const String XML_ATTR_AUTHORITYID;
@@ -851,7 +852,7 @@ private:
 
     AutoPtr<IContext> mContext;
 
-    static volatile AutoPtr<SyncStorageEngine> sSyncStorageEngine;
+    static /*volatile*/ AutoPtr<SyncStorageEngine> sSyncStorageEngine;
 
     Int32 mSyncRandomOffset;
 

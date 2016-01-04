@@ -8,9 +8,13 @@
 
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Content::IContentResolver;
 using Elastos::Core::CoreUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
+using Elastos::Core::EIID_IComparable;
+using Elastos::Utility::ISet;
+using Elastos::Utility::IIterator;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -146,8 +150,8 @@ SyncOperation::SyncOperation(
     /* [in] */ Int64 newRunTimeFromNow)
 {
     AutoPtr<IBundle> extras;
-    CBundle::other->mExtras, (IBundle**)&extras);
-    Init(other->mTarget, other->mReason, other->mSyncSource, extras),
+    CBundle::New(other->mExtras, (IBundle**)&extras);
+    Init(other->mTarget, other->mReason, other->mSyncSource, extras,
         newRunTimeFromNow,
         0 /* In back-off so no flex */,
         other->mBackoff,
@@ -190,7 +194,7 @@ Boolean SyncOperation::IsConflict(
     /* [in] */ SyncOperation* toRun)
 {
     AutoPtr<EndPoint> other = toRun->mTarget;
-    if (target->mTarget_provider) {
+    if (mTarget->mTarget_provider) {
         String t1, t2, n1, n2;
         mTarget->mAccount->GetType(&t1);
         mTarget->mAccount->GetName(&n1);
@@ -199,18 +203,20 @@ Boolean SyncOperation::IsConflict(
         return t1.Equals(t2)
             && mTarget->mProvider.Equals(other->mProvider)
             && mTarget->mUserId == other->mUserId
-            && (!allowParallelSyncs || n1.Equals(n2));
+            && (!mAllowParallelSyncs || n1.Equals(n2));
     }
 
     // Ops that target a service default to allow parallel syncs, which is handled by the
     // service returning SYNC_IN_PROGRESS if they don't.
-    return Object::Equals(mTarget->mService, other->mService) && !allowParallelSyncs;
+    return Object::Equals(mTarget->mService, other->mService) && !mAllowParallelSyncs;
 }
 
 ECode SyncOperation::ToString(
     /* [out] */ String* str)
 {
-    return Dump(NULL, TRUE);
+    VALIDATE_NOT_NULL(str)
+    *str = Dump(NULL, TRUE);
+    return NOERROR;
 }
 
 String SyncOperation::Dump(
@@ -240,26 +246,26 @@ String SyncOperation::Dump(
         sb.Append(" u");
         sb.Append(mTarget->mUserId);
         sb.Append(" (");
-        sb.Append(clsName;
+        sb.Append(clsName);
         sb.Append(")");
         sb.Append(", ");
     }
-    sb.Append((*SyncStorageEngine::SOURCES)[syncSource]);
+    sb.Append((*SyncStorageEngine::SOURCES)[mSyncSource]);
     sb.Append(", currentRunTime ");
-    sb.Append(effectiveRunTime);
-    if (expedited) {
+    sb.Append(mEffectiveRunTime);
+    if (mExpedited) {
         sb.Append(", EXPEDITED");
     }
     sb.Append(", reason: ");
-    sb.Append(ReasonToString(pm, reason));
+    sb.Append(ReasonToString(pm, mReason));
     if (!useOneLine) {
         AutoPtr<ISet> set;
-        extras->GetKeySet((ISet**)&set);
+        mExtras->GetKeySet((ISet**)&set);
         Boolean isEmpty;
         set->IsEmpty(&isEmpty);
         if (!isEmpty) {
             sb.Append("\n    ");
-            ExtrasToStringBuilder(extras, sb);
+            ExtrasToStringBuilder(mExtras, sb);
         }
     }
 
@@ -298,45 +304,45 @@ String SyncOperation::ReasonToString(
 Boolean SyncOperation::IsInitialization()
 {
     Boolean bval;
-    extras->GetBoolean(IContentResolver::SYNC_EXTRAS_INITIALIZE, FALSE, &bval);
+    mExtras->GetBoolean(IContentResolver::SYNC_EXTRAS_INITIALIZE, FALSE, &bval);
     return bval;
 }
 
 Boolean SyncOperation::IsExpedited()
 {
-    return expedited;
+    return mExpedited;
 }
 
 Boolean SyncOperation::IgnoreBackoff()
 {
     Boolean bval;
-    extras->GetBoolean(IContentResolver::SYNC_EXTRAS_IGNORE_BACKOFF, FALSE, &bval);
+    mExtras->GetBoolean(IContentResolver::SYNC_EXTRAS_IGNORE_BACKOFF, FALSE, &bval);
     return bval;
 }
 
 Boolean SyncOperation::IsNotAllowedOnMetered()
 {
     Boolean bval;
-    extras->GetBoolean(IContentResolver::SYNC_EXTRAS_DISALLOW_METERED, FALSE, &bval);
+    mExtras->GetBoolean(IContentResolver::SYNC_EXTRAS_DISALLOW_METERED, FALSE, &bval);
     return bval;
 }
 
 Boolean SyncOperation::IsManual()
 {
     Boolean bval;
-    extras->GetBoolean(IContentResolver::SYNC_EXTRAS_MANUAL, FALSE, &bval);
+    mExtras->GetBoolean(IContentResolver::SYNC_EXTRAS_MANUAL, FALSE, &bval);
     return bval;
 }
 
 Boolean SyncOperation::IsIgnoreSettings()
 {
     Boolean bval;
-    extras->GetBoolean(IContentResolver::SYNC_EXTRAS_IGNORE_SETTINGS, FALSE, &bval);
+    mExtras->GetBoolean(IContentResolver::SYNC_EXTRAS_IGNORE_SETTINGS, FALSE, &bval);
     return bval;
 }
 
 /** Changed in V3. */
-static String SyncOperation::ToKey(
+String SyncOperation::ToKey(
     /* [in] */ EndPoint* info,
     /* [in] */ IBundle* extras)
 {
@@ -421,7 +427,7 @@ String SyncOperation::WakeLockName()
         mWakeLockName = sb.ToString();
         return mWakeLockName;
     }
-    else if (mTarget->target_service) {
+    else if (mTarget->mTarget_service) {
         String pkgName, clsName;
         mTarget->mService->GetPackageName(&pkgName);
         mTarget->mService->GetClassName(&clsName);
@@ -436,7 +442,7 @@ String SyncOperation::WakeLockName()
     }
 
     Logger::W(TAG, "Invalid target getting wakelock name for operation - %s", mKey.string());
-    return NULL;
+    return String(NULL);
 }
 
 void SyncOperation::UpdateEffectiveRunTime()
@@ -462,8 +468,8 @@ ECode SyncOperation::CompareTo(
         *result = mExpedited ? -1 : 1;
         return NOERROR;
     }
-    Int64 thisIntervalStart = Math::Max(mEffectiveRunTime - mFlexTime, 0);
-    Int64 otherIntervalStart = Math::Max(other->mEffectiveRunTime - other->mFlexTime, 0);
+    Int64 thisIntervalStart = Math::Max(mEffectiveRunTime - mFlexTime, (Int64)0);
+    Int64 otherIntervalStart = Math::Max(other->mEffectiveRunTime - other->mFlexTime, (Int64)0);
     if (thisIntervalStart < otherIntervalStart) {
         *result = -1;
     }
@@ -483,17 +489,17 @@ AutoPtr<ArrayOf<IInterface*> > SyncOperation::ToEventLog(
     AutoPtr<ArrayOf<IInterface*> > logArray = ArrayOf<IInterface*>::Alloc(4);
     logArray->Set(1, CoreUtils::Convert(event).Get());
     logArray->Set(2, CoreUtils::Convert(mSyncSource).Get());
-    if (target->mTarget_provider) {
-        logArray->Set(0, CoreUtils::Convert(target->mProvider).Get());
+    if (mTarget->mTarget_provider) {
+        logArray->Set(0, CoreUtils::Convert(mTarget->mProvider).Get());
         String name;
         mTarget->mAccount->GetName(&name);
         Int32 hash = name.GetHashCode();
         logArray->Set(3, CoreUtils::Convert(hash).Get());
     }
-    else if (target->target_service) {
+    else if (mTarget->mTarget_service) {
         String pkgName;
         mTarget->mService->GetPackageName(&pkgName);
-        Int32 hash = Object.GetHashCode(mTarget->mService);
+        Int32 hash = Object::GetHashCode(mTarget->mService);
         logArray->Set(0, CoreUtils::Convert(pkgName).Get());
         logArray->Set(3, CoreUtils::Convert(hash).Get());
     }

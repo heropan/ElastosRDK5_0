@@ -27,6 +27,10 @@ public:
     CARAPI StaticGetLargeMemoryClass(
         /* [out] */ Int32* cls);
 
+    /** @hide */
+    CARAPI IsLowRamDeviceStatic(
+        /* [out] */ Boolean* result);
+
     /**
      * Used by persistent processes to determine if they are running on a
      * higher-end device so should be okay using hardware drawing acceleration
@@ -35,7 +39,6 @@ public:
      */
     CARAPI IsHighEndGfx(
         /* [out] */ Boolean* result);
-
 
     /**
      * Return the maximum number of recents entries that we will maintain and show.

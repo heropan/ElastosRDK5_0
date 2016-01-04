@@ -493,6 +493,22 @@ ECode CPackageInfo::SetRequiredAccountType(
     return NOERROR;
 }
 
+/** @hide */
+ECode CPackageInfo::GetRestrictedAccountType(
+    /* [out] */ String* type)
+{
+    VALIDATE_NOT_NULL(type);
+    *type = mRestrictedAccountType;
+    return NOERROR;
+}
+
+/** @hide */
+ECode CPackageInfo::SetRestrictedAccountType(
+    /* [in] */ const String& type)
+{
+    mRestrictedAccountType = type;
+    return NOERROR;
+}
 
 } // namespace Pm
 } // namespace Content

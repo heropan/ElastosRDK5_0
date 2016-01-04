@@ -1,43 +1,115 @@
-#include "elastos/droid/server/SyncManager.h"
-#include "elastos/droid/server/SyncOperation.h"
-#include "elastos/droid/server/SyncStorageEngine.h"
+#include "elastos/droid/server/content/SyncManager.h"
+#include "elastos/droid/server/content/SyncOperation.h"
+#include "elastos/droid/server/content/SyncStorageEngine.h"
+#include "elastos/droid/server/content/CSyncStatusObserver.h"
+#include "elastos/droid/server/content/CActiveSyncContext.h"
 // #include "elastos/droid/server/accounts/CAccountManagerService.h"
-
 #include <elastos/droid/os/UserHandle.h>
-
+#include <elastos/droid/os/SystemClock.h>
+#include <elastos/droid/text/TextUtils.h>
+#include <elastos/droid/app/AppGlobals.h>
+#include <elastos/droid/R.h>
 #include <elastos/core/Math.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/CoreUtils.h>
 #include <elastos/utility/Arrays.h>
+#include <elastos/utility/etl/Algorithm.h>
+#include <elastos/utility/etl/Set.h>
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/logging/Logger.h>
+#include <Elastos.Droid.App.h>
+#include <Elastos.Droid.Os.h>
+#include <Elastos.Droid.Text.h>
+#include <Elastos.Droid.Content.h>
+#include <Elastos.Droid.Net.h>
+#include <Elastos.Droid.Internal.h>
+#include <Elastos.Droid.Provider.h>
+#include <Elastos.Droid.Accounts.h>
 
 using Elastos::Droid::R;
+using Elastos::Droid::Os::IBatteryStats;
+using Elastos::Droid::Os::IServiceManager;
+using Elastos::Droid::Os::CServiceManager;
+using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IHandlerThread;
+using Elastos::Droid::Os::IWorkSource;
+using Elastos::Droid::Os::CWorkSource;
+using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Os::UserHandle;
 using Elastos::Droid::Os::CUserHandle;
 using Elastos::Droid::Os::IMessageHelper;
 using Elastos::Droid::Os::CMessageHelper;
 using Elastos::Droid::Os::ISystemProperties;
 using Elastos::Droid::Os::CSystemProperties;
+using Elastos::Droid::Os::IUserManagerHelper;
+using Elastos::Droid::Os::CUserManagerHelper;
+using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::App::AppGlobals;
+using Elastos::Droid::App::INotification;
+using Elastos::Droid::App::CNotification;
+using Elastos::Droid::App::IActivityManager;
 using Elastos::Droid::App::IActivityManagerHelper;
 using Elastos::Droid::App::CActivityManagerHelper;
-using Elastos::Droid::Content::IPendingIntentHelper;
-using Elastos::Droid::Content::CPendingIntentHelper;
+using Elastos::Droid::App::IPendingIntentHelper;
+using Elastos::Droid::App::CPendingIntentHelper;
+using Elastos::Droid::Accounts::IAccountManager;
+// using Elastos::Droid::Accounts::CAccountAndUser;
+using Elastos::Droid::Net::INetworkInfo;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::ISyncStats;
+using Elastos::Droid::Content::CSyncResult;
+using Elastos::Droid::Content::CSyncAdaptersCache;
+using Elastos::Droid::Content::CIntentFilter;
+using Elastos::Droid::Content::ISyncAdapterTypeHelper;
+using Elastos::Droid::Content::CSyncAdapterTypeHelper;
 using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Content::IPeriodicSync;
 using Elastos::Droid::Content::IContentResolverHelper;
 using Elastos::Droid::Content::CContentResolverHelper;
+using Elastos::Droid::Content::ISyncAdaptersCache;
+using Elastos::Droid::Content::ISyncStatusInfo;
+using Elastos::Droid::Content::EIID_IServiceConnection;
+using Elastos::Droid::Content::EIID_IISyncContext;
+using Elastos::Droid::Content::EIID_IISyncStatusObserver;
+// using Elastos::Droid::Content::ECLSID_CSyncActivityTooManyDeletes;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Content::Pm::IPackageInfo;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::Pm::IProviderInfo;
+using Elastos::Droid::Content::Pm::IResolveInfo;
+using Elastos::Droid::Content::Pm::IUserInfo;
+using Elastos::Droid::Content::Pm::IActivityInfo;
+using Elastos::Droid::Content::Pm::IServiceInfo;
+using Elastos::Droid::Content::Pm::IComponentInfo;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
+using Elastos::Droid::Content::Pm::IRegisteredServicesCache;
+using Elastos::Droid::Content::Pm::EIID_IRegisteredServicesCacheListener;
+using Elastos::Droid::Content::Pm::IRegisteredServicesCacheServiceInfo;
+using Elastos::Droid::Provider::ISettings;
+using Elastos::Droid::Provider::ISettingsGlobal;
+using Elastos::Droid::Provider::CSettingsGlobal;
+using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Text::Format::ITime;
 using Elastos::Droid::Text::Format::CTime;
+using Elastos::Droid::Internal::Os::IBackgroundThread;
 using Elastos::Droid::Internal::Os::IBackgroundThreadHelper;
 using Elastos::Droid::Internal::Os::CBackgroundThreadHelper;
 // using Elastos::Droid::Server::Accounts::CAccountManagerService;
+using Elastos::Core::CoreUtils;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Utility::IRandom;
 using Elastos::Utility::CRandom;
-using Elastos::Utility::Arrays;
-using Elastos::Utility::ICollection;
 using Elastos::Utility::ICollections;
+using Elastos::Utility::CCollections;
+using Elastos::Utility::ISet;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::Arrays;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::Etl::Set;
 using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::Logging::Logger;
 
@@ -52,10 +124,9 @@ const Int32 SyncManager::SyncHandler::MESSAGE_CHECK_ALARMS = 3;
 const Int32 SyncManager::SyncHandler::MESSAGE_SERVICE_CONNECTED = 4;
 const Int32 SyncManager::SyncHandler::MESSAGE_SERVICE_DISCONNECTED = 5;
 const Int32 SyncManager::SyncHandler::MESSAGE_CANCEL = 6;
-Int32 SyncManager::SyncHandler::MESSAGE_SYNC_EXPIRED = 7;
+const Int32 SyncManager::SyncHandler::MESSAGE_SYNC_EXPIRED = 7;
 
-
-const String TAG("SyncManager");
+const String SyncManager::TAG("SyncManager");
 
 const Int64 SyncManager::INITIAL_SYNC_RETRY_TIME_IN_MS = 30 * 1000; // 30 seconds
 const Int64 SyncManager::DEFAULT_MAX_SYNC_RETRY_TIME_IN_SECONDS = 60 * 60; // one hour
@@ -66,18 +137,18 @@ const String SyncManager::SYNC_WAKE_LOCK_PREFIX("*sync*/");
 const String SyncManager::HANDLE_SYNC_ALARM_WAKE_LOCK("SyncManagerHandleSyncAlarm");
 const String SyncManager::SYNC_LOOP_WAKE_LOCK("SyncLoopWakeLock");
 
-static String SyncManager::ACTION_SYNC_ALARM("android.content.syncmanager.SYNC_ALARM");
+const String SyncManager::ACTION_SYNC_ALARM("android.content.syncmanager.SYNC_ALARM");
 
 const Int64 SyncManager::SYNC_ALARM_TIMEOUT_MIN = 30 * 1000; // 30 seconds
 const Int64 SyncManager::SYNC_ALARM_TIMEOUT_MAX = 2 * 60 * 60 * 1000; // two hours
 
 const AutoPtr<ArrayOf<IAccountAndUser*> > SyncManager::INITIAL_ACCOUNTS_ARRAY = ArrayOf<IAccountAndUser*>::Alloc(0);
 
-const Int64 SyncManager::LOCAL_SYNC_DELAY;
-const Int64 SyncManager::MAX_TIME_PER_SYNC;
-const Int64 SyncManager::SYNC_NOTIFICATION_DELAY;
-const Int32 SyncManager::MAX_SIMULTANEOUS_REGULAR_SYNCS;
-const Int32 SyncManager::MAX_SIMULTANEOUS_INITIALIZATION_SYNCS;
+Int64 SyncManager::LOCAL_SYNC_DELAY;
+Int64 SyncManager::MAX_TIME_PER_SYNC;
+Int64 SyncManager::SYNC_NOTIFICATION_DELAY;
+Int32 SyncManager::MAX_SIMULTANEOUS_REGULAR_SYNCS;
+Int32 SyncManager::MAX_SIMULTANEOUS_INITIALIZATION_SYNCS;
 
 const SyncManager::StaticInitializer SyncManager::sInitializer;
 
@@ -92,7 +163,7 @@ SyncManager::StaticInitializer::StaticInitializer()
     Int32 defaultMaxRegularSyncs = isLargeRAM ? 2 : 1;
 
     AutoPtr<ISystemProperties> sysProp;
-    CSystemProperties::New((ISystemProperties**)&sysProp);
+    CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     sysProp->GetInt32(String("sync.max_init_syncs"), defaultMaxInitSyncs,
         &SyncManager::MAX_SIMULTANEOUS_INITIALIZATION_SYNCS);
     sysProp->GetInt32(String("sync.max_regular_syncs"), defaultMaxRegularSyncs,
@@ -150,19 +221,22 @@ SyncManager::ActiveSyncContext::ActiveSyncContext()
     , mIsLinkedToDeath(FALSE)
 {}
 
+SyncManager::ActiveSyncContext::~ActiveSyncContext()
+{}
+
 ECode SyncManager::ActiveSyncContext::constructor(
     /* [in] */ ISyncManager* syncMgr,
     /* [in] */ ISyncOperation* syncOperation,
     /* [in] */ Int64 historyRowId,
     /* [in] */ Int32 syncAdapterUid)
 {
-    mHost = syncMgr;
+    mHost = (SyncManager*)syncMgr;
     mSyncAdapterUid = syncAdapterUid;
     mSyncOperation = (SyncOperation*)syncOperation;
     mHistoryRowId = historyRowId;
     mStartTime = SystemClock::GetElapsedRealtime();
     mTimeoutStartTime = mStartTime;
-    mSyncWakeLock = mSyncHandler->GetSyncWakeLock(mSyncOperation);
+    mSyncWakeLock = mHost->mSyncHandler->GetSyncWakeLock(mSyncOperation);
     AutoPtr<IWorkSource> ws;
     CWorkSource::New(syncAdapterUid, (IWorkSource**)&ws);
     mSyncWakeLock->SetWorkSource(ws);
@@ -183,7 +257,8 @@ ECode SyncManager::ActiveSyncContext::OnFinished(
     // include "this" in the message so that the handler can ignore it if this
     // ActiveSyncContext is no longer the mActiveSyncContext at message handling
     // time
-    return mHost->SendSyncFinishedOrCanceledMessage(this, result);
+    mHost->SendSyncFinishedOrCanceledMessage(this, result);
+    return NOERROR;
 }
 
 ECode SyncManager::ActiveSyncContext::ToString(
@@ -205,24 +280,26 @@ ECode SyncManager::ActiveSyncContext::OnServiceConnected(
     /* [in] */ IBinder* service)
 {
     AutoPtr<IMessage> msg;
-    mSyncHandler->ObtainMessage((IMessage**)&msg);
+    mHost->mSyncHandler->ObtainMessage((IMessage**)&msg);
     msg->SetWhat(SyncHandler::MESSAGE_SERVICE_CONNECTED);
     AutoPtr<ServiceConnectionData> data = new ServiceConnectionData(this, service);
     msg->SetObj(TO_IINTERFACE(data));
     Boolean bval;
-    return mSyncHandler->SendMessage(msg, &bval);
+    mHost->mSyncHandler->SendMessage(msg, &bval);
+    return NOERROR;
 }
 
 ECode SyncManager::ActiveSyncContext::OnServiceDisconnected(
     /* [in] */ IComponentName* name)
 {
     AutoPtr<IMessage> msg;
-    mSyncHandler->ObtainMessage((IMessage**)&msg);
+    mHost->mSyncHandler->ObtainMessage((IMessage**)&msg);
     msg->SetWhat(SyncHandler::MESSAGE_SERVICE_DISCONNECTED);
-    AutoPtr<ServiceConnectionData> data = new ServiceConnectionData(this, null);
+    AutoPtr<ServiceConnectionData> data = new ServiceConnectionData(this, NULL);
     msg->SetObj(TO_IINTERFACE(data));
     Boolean bval;
-    return mSyncHandler->SendMessage(msg, &bval);
+    mHost->mSyncHandler->SendMessage(msg, &bval);
+    return NOERROR;
 }
 
 Boolean SyncManager::ActiveSyncContext::BindToSyncAdapter(
@@ -243,16 +320,16 @@ Boolean SyncManager::ActiveSyncContext::BindToSyncAdapter(
     AutoPtr<IIntent> settingsIntent;
     CIntent::New(ISettings::ACTION_SYNC_SETTINGS, (IIntent**)&settingsIntent);
     AutoPtr<IUserHandle> uh;
-    CUserHandler::New(userId, (IUserHandle**)&uh);
+    CUserHandle::New(userId, (IUserHandle**)&uh);
     AutoPtr<IPendingIntent> pi;
-    helper->GetActivityAsUser(mContext, 0, settingsIntent, 0,
+    helper->GetActivityAsUser(mHost->mContext, 0, settingsIntent, 0,
         NULL, uh, (IPendingIntent**)&pi);
     intent->PutExtra(IIntent::EXTRA_CLIENT_INTENT, IParcelable::Probe(pi));
     mBound = TRUE;
     AutoPtr<IUserHandle> user;
-    CUserHandler::New(mSyncOperation->mTarget->mUserId, (IUserHandle**)&user);
+    CUserHandle::New(mSyncOperation->mTarget->mUserId, (IUserHandle**)&user);
     Boolean bindResult;
-    mContext->BindServiceAsUser(intent, (IServiceConnection*)this,
+    mHost->mContext->BindServiceAsUser(intent, (IServiceConnection*)this,
         IContext::BIND_AUTO_CREATE | IContext::BIND_NOT_FOREGROUND
             | IContext::BIND_ALLOW_OOM_MANAGEMENT,
         user, &bindResult);
@@ -262,7 +339,7 @@ Boolean SyncManager::ActiveSyncContext::BindToSyncAdapter(
     else {
 
         mEventName = mSyncOperation->WakeLockName();
-        mBatteryStats->NoteSyncStart(mEventName, mSyncAdapterUid);
+        mHost->mBatteryStats->NoteSyncStart(mEventName, mSyncAdapterUid);
     }
     return bindResult;
 }
@@ -274,8 +351,8 @@ ECode SyncManager::ActiveSyncContext::Close()
     // }
     if (mBound) {
         mBound = FALSE;
-        mContext->UnbindService(this);
-        mBatteryStats->NoteSyncFinish(mEventName, mSyncAdapterUid);
+        mHost->mContext->UnbindService(this);
+        mHost->mBatteryStats->NoteSyncFinish(mEventName, mSyncAdapterUid);
     }
     mSyncWakeLock->ReleaseLock();
     mSyncWakeLock->SetWorkSource(NULL);
@@ -294,7 +371,8 @@ ECode SyncManager::ActiveSyncContext::ToString(
 
 ECode SyncManager::ActiveSyncContext::ProxyDied()
 {
-    return mHost->SendSyncFinishedOrCanceledMessage(this, NULL);
+    mHost->SendSyncFinishedOrCanceledMessage(this, NULL);
+    return NOERROR;
 }
 
 //===============================================================================
@@ -334,7 +412,7 @@ ECode SyncManager::PrintTable::Set(
 
     Int32 size = mTable.GetSize();
     for (Int32 i = size; i <= row; ++i) {
-        AutoPtr<ArrayOf<String> > list = new ArrayOf<String>::Alloc(mCols);
+        AutoPtr<ArrayOf<String> > list = ArrayOf<String>::Alloc(mCols);
         mTable.PushBack(list);
         for (Int32 j = 0; j < mCols; j++) {
             (*list)[j] = "";
@@ -342,7 +420,7 @@ ECode SyncManager::PrintTable::Set(
     }
 
     AutoPtr<ArrayOf<String> > array = mTable[row];
-    array->Copy(col, values, 0, values.GetLength());
+    array->Copy(col, values, 0, values->GetLength());
     return NOERROR;
 }
 
@@ -350,7 +428,7 @@ void SyncManager::PrintTable::WriteTo(
     /* [in] */ IPrintWriter* out)
 {
     AutoPtr< ArrayOf<String> > formats = ArrayOf<String>::Alloc(mCols);
-    List<AutoPtr<ArrayOf<String> > >::It;
+    List<AutoPtr<ArrayOf<String> > >::Iterator it;
     Int32 totalLength = 0;
     for (Int32 col = 0; col < mCols; ++col) {
         Int32 maxLength = 0;
@@ -363,7 +441,7 @@ void SyncManager::PrintTable::WriteTo(
         }
         totalLength += maxLength;
         String str;
-        str.Format("%%-%ds", maxLength);
+        str.AppendFormat("%%-%ds", maxLength);
         (*formats)[col] = str;
     }
 
@@ -395,8 +473,8 @@ void SyncManager::PrintTable::PrintRow(
 {
     for (Int32 j = 0, rowLength = row->GetLength(); j < rowLength; j++) {
         String str;
-        str.Format((*formats)[j], (*row)[j]);
-        out->Print("  ");
+        str.AppendFormat((*formats)[j].string(), (*row)[j].string());
+        out->Print(String("  "));
     }
     out->Println();
 }
@@ -406,17 +484,18 @@ void SyncManager::PrintTable::PrintRow(
 // SyncManager::SyncHandler::SyncNotificationInfo
 //=================================================================================
 
-ECode SyncManager::SyncHandler::ToString(
+ECode SyncManager::SyncHandler::SyncNotificationInfo::ToString(
     /* [in] */ StringBuilder& sb)
 {
     sb.Append("isActive ");
     sb.Append(mIsActive ? "TRUE" : "FALSE");
     sb.Append(", startTime ");
     sb.Append(mStartTime);
+    return NOERROR;
 }
 
 //@Override
-ECode SyncManager::SyncHandler::ToString(
+ECode SyncManager::SyncHandler::SyncNotificationInfo::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
@@ -433,10 +512,10 @@ ECode SyncManager::SyncHandler::ToString(
 SyncManager::SyncHandler::SyncHandler(
     /* [in] */ SyncManager* host)
     : mHost(host)
-    , mAlarmScheduleTime(0)
+    , mAlarmScheduleTime(-1)
 {
     mBootQueue = new List<AutoPtr<IMessage> >();
-    mSyncTimeTracker = new SyncTimeTracker();
+    mSyncTimeTracker = new SyncTimeTracker(host);
     mSyncNotificationInfo = new SyncNotificationInfo();
 }
 
@@ -451,17 +530,18 @@ ECode SyncManager::SyncHandler::OnBootCompleted()
     // if (Log.isLoggable(TAG, Log.VERBOSE)) {
     //     Logger::V(TAG, "Boot completed, clearing boot queue.");
     // }
-    DoDatabaseCleanup();
+    mHost->DoDatabaseCleanup();
+
     synchronized(this) {
         // Dispatch any stashed messages.
         Boolean bval;
         List<AutoPtr<IMessage> >::Iterator it;
-        for (it = mBootQueue.Begin(); it != mBootQueue.End(); ++it) {
+        for (it = mBootQueue->Begin(); it != mBootQueue->End(); ++it) {
             AutoPtr<IMessage> message;
             SendMessage(message, &bval);
         }
         mBootQueue = NULL;
-        mBootCompleted = TRUE;
+        mHost->mBootCompleted = TRUE;
     }
     return NOERROR;
 }
@@ -480,7 +560,7 @@ AutoPtr<IPowerManagerWakeLock> SyncManager::SyncHandler::GetSyncWakeLock(
     if (wakeLock == NULL) {
         String name(SyncManager::SYNC_WAKE_LOCK_PREFIX);
         name += wakeLockKey;
-        mPowerManager->NewWakeLock(IPowerManager::PARTIAL_WAKE_LOCK, name, (IPowerManagerWakeLock**)&wakeLock);
+        mHost->mPowerManager->NewWakeLock(IPowerManager::PARTIAL_WAKE_LOCK, name, (IPowerManagerWakeLock**)&wakeLock);
         wakeLock->SetReferenceCounted(FALSE);
         mWakeLocks[wakeLockKey] = wakeLock;
     }
@@ -491,17 +571,17 @@ Boolean SyncManager::SyncHandler::TryEnqueueMessageUntilReadyToRun(
     /* [in] */ IMessage* msg)
 {
     synchronized(this) {
-        if (!mBootCompleted) {
+        if (!mHost->mBootCompleted) {
             // Need to copy the message bc looper will recycle it.
             AutoPtr<IMessageHelper> helper;
             CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
             AutoPtr<IMessage> msg;
             helper->Obtain((IMessage**)&msg);
-            mBootQueue.PushBack(msg);
+            mBootQueue->PushBack(msg);
             return TRUE;
         }
-        return FALSE;
     }
+    return FALSE;
 }
 
 ECode SyncManager::SyncHandler::HandleMessage(
@@ -511,14 +591,14 @@ ECode SyncManager::SyncHandler::HandleMessage(
         return NOERROR;
     }
 
-    uing Elastos::Core::Math;
+    using Elastos::Core::Math;
     Int64 earliestFuturePollTime = Math::INT64_MAX_VALUE;
     Int64 nextPendingSyncTime = Math::INT64_MAX_VALUE;
     // Setting the value here instead of a method because we want the dumpsys logs
     // to have the most recent value used.
 
-    mDataConnectionIsConnected = ReadDataConnectionState();
-    mSyncManagerWakeLock->AcquireLock();
+    mHost->mDataConnectionIsConnected = mHost->ReadDataConnectionState();
+    mHost->mSyncManagerWakeLock->AcquireLock();
     // Always do this first so that we be sure that any periodic syncs that
     // are ready to run have been converted into pending syncs. This allows the
     // logic that considers the next steps to take based on the set of pending syncs
@@ -526,23 +606,24 @@ ECode SyncManager::SyncHandler::HandleMessage(
     earliestFuturePollTime = ScheduleReadyPeriodicSyncs();
 
     Int32 what;
-    msg->GetWaht(&what);
+    msg->GetWhat(&what);
     AutoPtr<IInterface> obj;
     msg->GetObj((IInterface**)&obj);
     switch (what) {
-        case SyncHandler::MESSAGE_SYNC_EXPIRED:
-            ActiveSyncContext* expiredContext = (ActiveSyncContext*) msg.obj;
+        case SyncHandler::MESSAGE_SYNC_EXPIRED: {
+            ActiveSyncContext* expiredContext = (ActiveSyncContext*)IObject::Probe(obj);
             // if (Log.isLoggable(TAG, Log.DEBUG)) {
             //     Logger::D(TAG, "handleSyncHandlerMessage: MESSAGE_SYNC_EXPIRED: expiring "
             //             + expiredContext);
             // }
-            CancelActiveSync(expiredContext->mSyncOperation0->mTarget,
+            mHost->CancelActiveSync(expiredContext->mSyncOperation->mTarget,
                 expiredContext->mSyncOperation->mExtras);
             nextPendingSyncTime = MaybeStartNextSyncLocked();
             break;
+        }
 
         case SyncHandler::MESSAGE_CANCEL: {
-            EndPoint* payload = (EndPoint*)obj;
+            EndPoint* payload = (EndPoint*)IObject::Probe(obj);
             AutoPtr<IBundle> extras;
             msg->PeekData((IBundle**)&extras);
             // if (Log.isLoggable(TAG, Log.DEBUG)) {
@@ -554,12 +635,12 @@ ECode SyncManager::SyncHandler::HandleMessage(
             break;
         }
 
-        case SyncHandler::MESSAGE_SYNC_FINISHED:
+        case SyncHandler::MESSAGE_SYNC_FINISHED: {
             // if (Log.isLoggable(TAG, Log.VERBOSE)) {
             //     Logger::V(TAG, "handleSyncHandlerMessage: MESSAGE_SYNC_FINISHED");
             // }
-            SyncHandlerMessagePayload* payload = (SyncHandlerMessagePayload*)obj;
-            if (!IsSyncStillActive(payload->mActiveSyncContext)) {
+            SyncHandlerMessagePayload* payload = (SyncHandlerMessagePayload*)IObject::Probe(obj);
+            if (!mHost->IsSyncStillActive(payload->mActiveSyncContext)) {
                 // Logger::D(TAG, "handleSyncHandlerMessage: dropping since the "
                 //         + "sync is no longer active: "
                 //         + payload.activeSyncContext);
@@ -571,29 +652,30 @@ ECode SyncManager::SyncHandler::HandleMessage(
             // since a sync just finished check if it is time to start a new sync
             nextPendingSyncTime = MaybeStartNextSyncLocked();
             break;
+        }
 
         case SyncHandler::MESSAGE_SERVICE_CONNECTED: {
-            ServiceConnectionData* msgData = (ServiceConnectionData*)obj;
+            ServiceConnectionData* msgData = (ServiceConnectionData*)IObject::Probe(obj);
             // if (Log.isLoggable(TAG, Log.VERBOSE)) {
             //     Logger::D(TAG, "handleSyncHandlerMessage: MESSAGE_SERVICE_CONNECTED: "
             //             + msgData.activeSyncContext);
             // }
             // check that this isn't an old message
-            if (IsSyncStillActive(msgData->mActiveSyncContext)) {
+            if (mHost->IsSyncStillActive(msgData->mActiveSyncContext)) {
                 RunBoundToAdapter(msgData->mActiveSyncContext, msgData->mAdapter);
             }
             break;
         }
 
         case SyncHandler::MESSAGE_SERVICE_DISCONNECTED: {
-            ServiceConnectionData* msgData = (ServiceConnectionData*)obj;
+            ServiceConnectionData* msgData = (ServiceConnectionData*)IObject::Probe(obj);
             ActiveSyncContext* currentSyncContext = msgData->mActiveSyncContext;
             // if (Log.isLoggable(TAG, Log.VERBOSE)) {
             //     Logger::D(TAG, "handleSyncHandlerMessage: MESSAGE_SERVICE_DISCONNECTED: "
             //             + currentSyncContext);
             // }
             // check that this isn't an old message
-            if (IsSyncStillActive(currentSyncContext)) {
+            if (mHost->IsSyncStillActive(currentSyncContext)) {
                 // cancel the sync if we have a syncadapter, which means one is
                 // outstanding
                 // try {
@@ -611,7 +693,11 @@ ECode SyncManager::SyncHandler::HandleMessage(
                 // which is a soft error
                 AutoPtr<ISyncResult> syncResult;
                 CSyncResult::New((ISyncResult**)&syncResult);
-                syncResult->mStats->mNumIoExceptions++;
+                AutoPtr<ISyncStats> stats;
+                syncResult->GetStats((ISyncStats**)&stats);
+                Int64 num;
+                stats->GetNumIoExceptions(&num);
+                stats->SetNumIoExceptions(++num);
                 RunSyncFinishedOrCanceledLocked(syncResult, currentSyncContext);
 
                 // since a sync just finished check if it is time to start a new sync
@@ -626,11 +712,11 @@ ECode SyncManager::SyncHandler::HandleMessage(
             // if (isLoggable) {
             //     Logger::V(TAG, "handleSyncHandlerMessage: MESSAGE_SYNC_ALARM");
             // }
-            mAlarmScheduleTime = NULL;
+            mAlarmScheduleTime = -1;
             // try {
                 nextPendingSyncTime = MaybeStartNextSyncLocked();
             // } finally {
-                mHandleAlarmWakeLock->ReleaseLock();
+                mHost->mHandleAlarmWakeLock->ReleaseLock();
             // }
             break;
         }
@@ -643,11 +729,10 @@ ECode SyncManager::SyncHandler::HandleMessage(
             break;
     }
 
-_EXIT:
     ManageSyncNotificationLocked();
     ManageSyncAlarmLocked(earliestFuturePollTime, nextPendingSyncTime);
     mSyncTimeTracker->Update();
-    mSyncManagerWakeLock->ReleaseLock();
+    mHost->mSyncManagerWakeLock->ReleaseLock();
     return NOERROR;
 }
 
@@ -657,26 +742,27 @@ Boolean SyncManager::SyncHandler::IsDispatchable(
     // Boolean isLoggable = Log.isLoggable(TAG, Log.VERBOSE);
     if (target->mTarget_provider) {
         // skip the sync if the account of this operation no longer exists
-        AutoPtr<ArrayOf<IAccountAndUser*> > accounts = mRunningAccounts;
-        if (!ContainsAccountAndUser(accounts, target->mAccount, target->mUserId)) {
+        AutoPtr<ArrayOf<IAccountAndUser*> > accounts = mHost->mRunningAccounts;
+        if (!mHost->ContainsAccountAndUser(accounts, target->mAccount, target->mUserId)) {
             return FALSE;
         }
-        if (!mSyncStorageEngine->GetMasterSyncAutomatically(target->mUserId)
-                || !mSyncStorageEngine->GetSyncAutomatically(
+        if (!mHost->mSyncStorageEngine->GetMasterSyncAutomatically(target->mUserId)
+                || !mHost->mSyncStorageEngine->GetSyncAutomatically(
                     target->mAccount, target->mUserId, target->mProvider)) {
             // if (isLoggable) {
             //     Logger::V(TAG, "    Not scheduling periodic operation: sync turned off.");
             // }
             return FALSE;
         }
-        if (GetIsSyncable(target->mAccount, target->mUserId, target->mProvider) == 0) {
+        if (mHost->GetIsSyncable(target->mAccount, target->mUserId, target->mProvider) == 0) {
             // if (isLoggable) {
             //     Logger::V(TAG, "    Not scheduling periodic operation: isSyncable == 0.");
             // }
             return FALSE;
         }
-    } else if (target->mTarget_service) {
-        if (mSyncStorageEngine->GetIsTargetServiceActive(target->mService, target->mUserId)) {
+    }
+    else if (target->mTarget_service) {
+        if (mHost->mSyncStorageEngine->GetIsTargetServiceActive(target->mService, target->mUserId)) {
             // if (isLoggable) {
             //     Logger::V(TAG, "   Not scheduling periodic operation: isEnabled == 0.");
             // }
@@ -699,14 +785,14 @@ Int64 SyncManager::SyncHandler::ScheduleReadyPeriodicSyncs()
     CSystem::AcquireSingleton((ISystem**)&system);
     Int64 nowAbsolute;
     system->GetCurrentTimeMillis(&nowAbsolute);
-    Int64 shiftedNowAbsolute = (0 < nowAbsolute - mSyncRandomOffsetMillis)
-            ? (nowAbsolute - mSyncRandomOffsetMillis) : 0;
+    Int64 shiftedNowAbsolute = (0 < nowAbsolute - mHost->mSyncRandomOffsetMillis)
+            ? (nowAbsolute - mHost->mSyncRandomOffsetMillis) : 0;
 
     AutoPtr<List<AutoPtr<AuthoritySyncStatusPair> > > infos;
-    infos = mSyncStorageEngine->GetCopyOfAllAuthoritiesWithSyncStatus();
+    infos = mHost->mSyncStorageEngine->GetCopyOfAllAuthoritiesWithSyncStatus();
 
     List<AutoPtr<AuthoritySyncStatusPair> >::Iterator it;
-    List<AutoPtr<IPeriodicSync> > psIt;
+    List<AutoPtr<IPeriodicSync> >::Iterator psIt;
     for (it = infos->Begin(); it != infos->End(); ++it) {
         AutoPtr<AuthoritySyncStatusPair> info = *it;
         AutoPtr<AuthorityInfo> authorityInfo = info->mFirst;
@@ -714,7 +800,7 @@ Int64 SyncManager::SyncHandler::ScheduleReadyPeriodicSyncs()
 
         if (TextUtils::IsEmpty(authorityInfo->mTarget->mProvider)) {
             Logger::E(TAG, "Got an empty provider string. Skipping: %s",
-                authorityInfo->mTarget->mProvider);
+                authorityInfo->mTarget->mProvider.string());
             continue;
         }
 
@@ -723,7 +809,8 @@ Int64 SyncManager::SyncHandler::ScheduleReadyPeriodicSyncs()
         }
 
         psIt = authorityInfo->mPeriodicSyncs.Begin();
-        for (Int32 i = 0; psIt != authorityInfo->mPeriodicSyncs.End(); ++psIt, ++i) {
+        Int32 i = 0;
+        for (; psIt != authorityInfo->mPeriodicSyncs.End(); ++psIt, ++i) {
             AutoPtr<IPeriodicSync> sync = *psIt;
             AutoPtr<IBundle> extras;
             sync->GetExtras((IBundle**)&extras);
@@ -739,9 +826,9 @@ Int64 SyncManager::SyncHandler::ScheduleReadyPeriodicSyncs()
             // Find when this periodic sync was last scheduled to run.
             Int64 lastPollTimeAbsolute;
             status->GetPeriodicSyncTime(i, &lastPollTimeAbsolute);
-            Int64 shiftedLastPollTimeAbsolute =
-                (0 < lastPollTimeAbsolute - mSyncRandomOffsetMillis) ?
-                        (lastPollTimeAbsolute - mSyncRandomOffsetMillis) : 0;
+            // Int64 shiftedLastPollTimeAbsolute =
+            //     (0 < lastPollTimeAbsolute - mHost->mSyncRandomOffsetMillis) ?
+            //             (lastPollTimeAbsolute - mHost->mSyncRandomOffsetMillis) : 0;
             Int64 remainingMillis = periodInMillis - (shiftedNowAbsolute % periodInMillis);
             Int64 timeSinceLastRunMillis = (nowAbsolute - lastPollTimeAbsolute);
             // Schedule this periodic sync to run early if it's close enough to its next
@@ -779,8 +866,8 @@ Int64 SyncManager::SyncHandler::ScheduleReadyPeriodicSyncs()
                     || runEarly) { // Case 4
                 // Sync now
                 EndPoint* target = authorityInfo->mTarget;
-                AutoPtr< Pair<Int64, Int64> > backoff = mSyncStorageEngine->GetBackoff(target);
-                mSyncStorageEngine->SetPeriodicSyncTime(authorityInfo->mIdent,
+                AutoPtr< Pair<Int64, Int64> > backoff = mHost->mSyncStorageEngine->GetBackoff(target);
+                mHost->mSyncStorageEngine->SetPeriodicSyncTime(authorityInfo->mIdent,
                     authorityInfo->mPeriodicSyncs[i], nowAbsolute);
 
                 if (target->mTarget_provider) {
@@ -791,7 +878,8 @@ Int64 SyncManager::SyncHandler::ScheduleReadyPeriodicSyncs()
                     AutoPtr<ISyncAdapterType> sat;
                     helper->NewKey(target->mProvider, type, (ISyncAdapterType**)&sat);
                     AutoPtr<IRegisteredServicesCacheServiceInfo> syncAdapterInfo;
-                    IRegisteredServicesCache::Probe(mSyncAdapters)->GetServiceInfo(sat, target->mUserId,
+                    IRegisteredServicesCache::Probe(mHost->mSyncAdapters)->GetServiceInfo(
+                        sat, target->mUserId,
                         (IRegisteredServicesCacheServiceInfo**)&syncAdapterInfo);
                     if (syncAdapterInfo == NULL) {
                         continue;
@@ -799,7 +887,7 @@ Int64 SyncManager::SyncHandler::ScheduleReadyPeriodicSyncs()
 
                     AutoPtr<IInterface> obj;
                     syncAdapterInfo->GetType((IInterface**)&obj);
-                    ISyncAdapterType* sat = ISyncAdapterType::Probe(obj);
+                    sat = ISyncAdapterType::Probe(obj);
                     Boolean bval;
                     sat->AllowParallelSyncs(&bval);
                     AutoPtr<SyncOperation> op = new SyncOperation(
@@ -807,8 +895,8 @@ Int64 SyncManager::SyncHandler::ScheduleReadyPeriodicSyncs()
                         SyncOperation::REASON_PERIODIC, SyncStorageEngine::SOURCE_PERIODIC,
                         target->mProvider, extras, 0 /* runtime */, 0 /* flex */,
                         backoff != NULL ? backoff->mFirst : 0,
-                        mSyncStorageEngine->GetDelayUntilTime(target), bval)
-                    ScheduleSyncOperation(op);
+                        mHost->mSyncStorageEngine->GetDelayUntilTime(target), bval);
+                    mHost->ScheduleSyncOperation(op);
                 }
                 else if (target->mTarget_service) {
                     AutoPtr<SyncOperation> op = new SyncOperation(
@@ -816,9 +904,8 @@ Int64 SyncManager::SyncHandler::ScheduleReadyPeriodicSyncs()
                         SyncOperation::REASON_PERIODIC, SyncStorageEngine::SOURCE_PERIODIC,
                         extras, 0 /* runtime */, 0 /* flex */,
                         backoff != NULL ? backoff->mFirst : 0,
-                        mSyncStorageEngine->GetDelayUntilTime(target))
-
-                    ScheduleSyncOperation(op);
+                        mHost->mSyncStorageEngine->GetDelayUntilTime(target));
+                    mHost->ScheduleSyncOperation(op);
                 }
             }
 
@@ -842,8 +929,9 @@ Int64 SyncManager::SyncHandler::ScheduleReadyPeriodicSyncs()
     }
 
     // convert absolute time to elapsed time
-    return SystemClock::GetElapsedRealtime() +
+    Int64 result = SystemClock::GetElapsedRealtime() +
         ((earliestFuturePollTime < nowAbsolute) ? 0 : (earliestFuturePollTime - nowAbsolute));
+    return result;
 }
 
 Int64 SyncManager::SyncHandler::MaybeStartNextSyncLocked()
@@ -853,14 +941,14 @@ Int64 SyncManager::SyncHandler::MaybeStartNextSyncLocked()
 
     using Elastos::Core::Math;
     // If we aren't ready to run (e.g. the data connection is down), get out.
-    if (!mDataConnectionIsConnected) {
+    if (!mHost->mDataConnectionIsConnected) {
         // if (isLoggable) {
         //     Logger::V(TAG, "maybeStartNextSync: no data connection, skipping");
         // }
         return Math::INT64_MAX_VALUE;
     }
 
-    if (mStorageIsLow) {
+    if (mHost->mStorageIsLow) {
         // if (isLoggable) {
         //     Logger::V(TAG, "maybeStartNextSync: memory low, skipping");
         // }
@@ -869,7 +957,7 @@ Int64 SyncManager::SyncHandler::MaybeStartNextSyncLocked()
 
     // If the accounts aren't known yet then we aren't ready to run. We will be kicked
     // when the account lookup request does complete.
-    if (mRunningAccounts == INITIAL_ACCOUNTS_ARRAY) {
+    if (mHost->mRunningAccounts == INITIAL_ACCOUNTS_ARRAY) {
         // if (isLoggable) {
         //     Logger::V(TAG, "maybeStartNextSync: accounts not known, skipping");
         // }
@@ -887,18 +975,18 @@ Int64 SyncManager::SyncHandler::MaybeStartNextSyncLocked()
     // order the sync queue, dropping syncs that are not allowed
     AutoPtr<IList> operations;
     CArrayList::New((IList**)&operations);
-    Object* obj = mSyncQueue.Get();
-    synchronized(obj) {
+    Object* lockObj = mHost->mSyncQueue.Get();
+    synchronized(lockObj) {
         // if (isLoggable) {
         //     Logger::V(TAG, "build the operation array, syncQueue size is "
         //         + mSyncQueue.getOperations().size());
         // }
         AutoPtr<IInterface> obj;
-        mContext->GetSystemService(IContext::ACTIVITY_SERVICE, (IInterface**)&obj);
+        mHost->mContext->GetSystemService(IContext::ACTIVITY_SERVICE, (IInterface**)&obj);
         AutoPtr<IActivityManager> activityManager = IActivityManager::Probe(obj);
 
         Set<Int32> removedUsers;
-        AutoPtr< HashMap<String, AutoPtr<SyncOperation> > > map = mSyncQueue->GetOperations();
+        AutoPtr< HashMap<String, AutoPtr<SyncOperation> > > map = mHost->mSyncQueue->GetOperations();
         HashMap<String, AutoPtr<SyncOperation> >::Iterator it = map->Begin();
         Boolean bval;
         for (; it != map->End();) {
@@ -908,7 +996,7 @@ Int64 SyncManager::SyncHandler::MaybeStartNextSyncLocked()
             activityManager->IsUserRunning(op->mTarget->mUserId, &bval);
             if (!bval) {
                 AutoPtr<IUserInfo> userInfo;
-                mUserManager->GetUserInfo(op->mTarget->mUserId, (IUserInfo**)&userInfo);
+                mHost->mUserManager->GetUserInfo(op->mTarget->mUserId, (IUserInfo**)&userInfo);
                 if (userInfo == NULL) {
                     removedUsers.Insert(op->mTarget->mUserId);
                 }
@@ -917,18 +1005,17 @@ Int64 SyncManager::SyncHandler::MaybeStartNextSyncLocked()
                 //             + op->mTarget->mUserId + ": user not running.");
                 // }
 
-                 ++it;
+                ++it;
                 continue;
             }
 
             if (!IsOperationValidLocked(op)) {
-                map->Erase(it++)
-
-                mSyncStorageEngine->DeleteFromPending(op->mPendingOperation);
+                map->Erase(it++);
+                mHost->mSyncStorageEngine->DeleteFromPending(op->mPendingOperation);
                 continue;
             }
 
-             ++it;
+            ++it;
 
             // If the next run time is in the future, even given the flexible scheduling,
             // return the time.
@@ -951,9 +1038,9 @@ Int64 SyncManager::SyncHandler::MaybeStartNextSyncLocked()
         for (; sit != removedUsers.End(); ++sit) {
             // if it's still removed
             AutoPtr<IUserInfo> ui;
-            mUserManager->GetUserInfo(*sit, (IUserInfo**)&ui);
+            mHost->mUserManager->GetUserInfo(*sit, (IUserInfo**)&ui);
             if (ui == NULL) {
-                OnUserRemoved(user);
+                mHost->OnUserRemoved(*sit);
             }
         }
     }
@@ -985,7 +1072,7 @@ Int64 SyncManager::SyncHandler::MaybeStartNextSyncLocked()
         AutoPtr<ActiveSyncContext> oldestNonExpeditedRegular = NULL;
 
         List<AutoPtr<ActiveSyncContext> >::Iterator ascIt;
-        for (ascIt = mActiveSyncContext.Begin(); ascIt != mActiveSyncContext.End(); ++it) {
+        for (ascIt = mHost->mActiveSyncContexts.Begin(); ascIt != mHost->mActiveSyncContexts.End(); ++ascIt) {
             ActiveSyncContext* activeSyncContext = *ascIt;
             SyncOperation* activeOp = activeSyncContext->mSyncOperation;
             if (activeOp->IsInitialization()) {
@@ -1080,12 +1167,11 @@ Int64 SyncManager::SyncHandler::MaybeStartNextSyncLocked()
 
         if (toReschedule != NULL) {
             RunSyncFinishedOrCanceledLocked(NULL, toReschedule);
-            ScheduleSyncOperation(toReschedule->mSyncOperation);
+            mHost->ScheduleSyncOperation(toReschedule->mSyncOperation);
         }
 
-        Object* obj = mSyncQueue.Get();
-        synchronized(obj) {
-            mSyncQueue.remove(candidate);
+        synchronized(lockObj) {
+            mHost->mSyncQueue->Remove(candidate);
         }
         DispatchSyncOperation(candidate);
     }
@@ -1100,25 +1186,25 @@ Boolean SyncManager::SyncHandler::IsOperationValidLocked(
     Int32 targetUid;
     Int32 state;
     EndPoint* target = op->mTarget;
-    Boolean syncEnabled = mSyncStorageEngine->GetMasterSyncAutomatically(target->mUserId);
+    Boolean syncEnabled = mHost->mSyncStorageEngine->GetMasterSyncAutomatically(target->mUserId);
     if (target->mTarget_provider) {
         // Drop the sync if the account of this operation no longer exists.
-        AutoPtr<ArrayOf<IAccountAndUser*> > accounts = mRunningAccounts;
-        if (!ContainsAccountAndUser(accounts, target->mAccount, target->mUserId)) {
+        AutoPtr<ArrayOf<IAccountAndUser*> > accounts = mHost->mRunningAccounts;
+        if (!mHost->ContainsAccountAndUser(accounts, target->mAccount, target->mUserId)) {
             // if (isLoggable) {
             //     Logger::V(TAG, "    Dropping sync operation: account doesn't exist.");
             // }
             return FALSE;
         }
         // Drop this sync request if it isn't syncable.
-        state = GetIsSyncable(target->mAccount, target->mUserId, target->mProvider);
+        state = mHost->GetIsSyncable(target->mAccount, target->mUserId, target->mProvider);
         if (state == 0) {
             // if (isLoggable) {
             //     Logger::V(TAG, "    Dropping sync operation: isSyncable == 0.");
             // }
             return FALSE;
         }
-        syncEnabled = syncEnabled && mSyncStorageEngine->GetSyncAutomatically(
+        syncEnabled = syncEnabled && mHost->mSyncStorageEngine->GetSyncAutomatically(
                 target->mAccount, target->mUserId, target->mProvider);
 
         AutoPtr<ISyncAdapterTypeHelper> helper;
@@ -1129,7 +1215,7 @@ Boolean SyncManager::SyncHandler::IsOperationValidLocked(
         helper->NewKey(target->mProvider, type, (ISyncAdapterType**)&sat);
 
         AutoPtr<IRegisteredServicesCacheServiceInfo> syncAdapterInfo;
-        IRegisteredServicesCache::Probe(mSyncAdapters)->GetServiceInfo(sat, target->mUserId,
+        IRegisteredServicesCache::Probe(mHost->mSyncAdapters)->GetServiceInfo(sat, target->mUserId,
             (IRegisteredServicesCacheServiceInfo**)&syncAdapterInfo);
         if (syncAdapterInfo != NULL) {
             syncAdapterInfo->GetUid(&targetUid);
@@ -1143,7 +1229,7 @@ Boolean SyncManager::SyncHandler::IsOperationValidLocked(
         }
     }
     else if (target->mTarget_service) {
-        state = mSyncStorageEngine->GetIsTargetServiceActive(target->mService, target->mUserId)
+        state = mHost->mSyncStorageEngine->GetIsTargetServiceActive(target->mService, target->mUserId)
                     ? 1 : 0;
         if (state == 0) {
             // TODO: Change this to not drop disabled syncs - keep them in the pending queue.
@@ -1154,7 +1240,7 @@ Boolean SyncManager::SyncHandler::IsOperationValidLocked(
         }
 
         AutoPtr<IPackageManager> pkgMgr;
-        mContext->GetPackageManager((IPackageManager**)&pkgMgr);
+        mHost->mContext->GetPackageManager((IPackageManager**)&pkgMgr);
         AutoPtr<IServiceInfo> si;
         AutoPtr<IApplicationInfo> ai;
         ECode ec = pkgMgr->GetServiceInfo(target->mService, 0, (IServiceInfo**)&si);
@@ -1172,7 +1258,7 @@ Boolean SyncManager::SyncHandler::IsOperationValidLocked(
     // 2) it's an initialisation sync - we just need to connect to it.
     Boolean ignoreSystemConfiguration, bval;
     op->mExtras->GetBoolean(IContentResolver::SYNC_EXTRAS_IGNORE_SETTINGS, FALSE, &ignoreSystemConfiguration);
-    ignoreSystemConfiguration ||= (state < 0);
+    ignoreSystemConfiguration |= (state < 0);
 
     // Sync not enabled.
     if (!syncEnabled && !ignoreSystemConfiguration) {
@@ -1182,7 +1268,7 @@ Boolean SyncManager::SyncHandler::IsOperationValidLocked(
         return FALSE;
     }
     // Network down.
-    AutoPtr<IConnectivityManager> connMgr = GetConnectivityManager();
+    AutoPtr<IConnectivityManager> connMgr = mHost->GetConnectivityManager();
     AutoPtr<INetworkInfo> networkInfo;
     connMgr->GetActiveNetworkInfoForUid(targetUid, (INetworkInfo**)&networkInfo);
     Boolean uidNetworkConnected = FALSE;
@@ -1229,22 +1315,22 @@ Boolean SyncManager::SyncHandler::DispatchSyncOperation(
         AutoPtr<ISyncAdapterType> syncAdapterType;
         helper->NewKey(info->mProvider, type, (ISyncAdapterType**)&syncAdapterType);
         AutoPtr<IRegisteredServicesCacheServiceInfo> syncAdapterInfo;
-        IRegisteredServicesCache::Probe(mSyncAdapters)->GetServiceInfo(syncAdapterType, info->mUserId,
+        IRegisteredServicesCache::Probe(mHost->mSyncAdapters)->GetServiceInfo(syncAdapterType, info->mUserId,
             (IRegisteredServicesCacheServiceInfo**)&syncAdapterInfo);
         if (syncAdapterInfo == NULL) {
             // Logger::D(TAG, "can't find a sync adapter for " + syncAdapterType
             //         + ", removing settings for it");
-            mSyncStorageEngine->RemoveAuthority(info);
+            mHost->mSyncStorageEngine->RemoveAuthority(info);
             return FALSE;
         }
-        targetUid = syncAdapterInfo->mUid;
-        targetComponent = syncAdapterInfo->mComponentName;
+        syncAdapterInfo->GetUid(&targetUid);
+        syncAdapterInfo->GetComponentName((IComponentName**)&targetComponent);
     }
     else {
         // TODO: Store the uid of the service as part of the authority info in order to
         // avoid this call?
         AutoPtr<IPackageManager> pkgMgr;
-        mContext->GetPackageManager((IPackageManager**)&pkgMgr);
+        mHost->mContext->GetPackageManager((IPackageManager**)&pkgMgr);
         AutoPtr<IServiceInfo> si;
         AutoPtr<IApplicationInfo> ai;
         ECode ec = pkgMgr->GetServiceInfo(info->mService, 0, (IServiceInfo**)&si);
@@ -1257,22 +1343,23 @@ Boolean SyncManager::SyncHandler::DispatchSyncOperation(
         targetComponent = info->mService;
     }
 
-    AutoPtr<IActiveSyncContext> activeSyncContext;
-    CActiveSyncContext::New(op, InsertStartSyncEvent(op), targetUid, (IActiveSyncContext**)&activeSyncContext);
-    activeSyncContext->mSyncInfo = mSyncStorageEngine->AddActiveSync(activeSyncContext);
-    AutoPtr<ActiveSyncContext> asc = (ActiveSyncContext*)activeSyncContext.Get();
-    mActiveSyncContexts.PuashBack(activeSyncContext);
-    if (!asc->mSyncOperation->IsInitialization() &&
-            !asc->mSyncOperation->IsExpedited() &&
-            !asc->mSyncOperation->IsManual() &&
-            !asc->mSyncOperation->IsIgnoreSettings()) {
+    AutoPtr<IActiveSyncContext> activeSyncContextObj;
+    CActiveSyncContext::New((ISyncManager*)mHost, op, InsertStartSyncEvent(op), targetUid,
+        (IActiveSyncContext**)&activeSyncContextObj);
+    AutoPtr<ActiveSyncContext> activeSyncContext = (ActiveSyncContext*)activeSyncContextObj.Get();
+    activeSyncContext->mSyncInfo = mHost->mSyncStorageEngine->AddActiveSync(activeSyncContext);
+    mHost->mActiveSyncContexts.PushBack(activeSyncContext);
+    if (!activeSyncContext->mSyncOperation->IsInitialization() &&
+        !activeSyncContext->mSyncOperation->IsExpedited() &&
+        !activeSyncContext->mSyncOperation->IsManual() &&
+        !activeSyncContext->mSyncOperation->IsIgnoreSettings()) {
         // Post message to expire this sync if it runs for too Int64.
-        PostSyncExpiryMessage(activeSyncContext);
+        mHost->PostSyncExpiryMessage(activeSyncContext);
     }
     // if (Log.isLoggable(TAG, Log.VERBOSE)) {
     //     Logger::V(TAG, "DispatchSyncOperation: starting " + activeSyncContext);
     // }
-    if (!asc->BindToSyncAdapter(targetComponent, info->mUserId)) {
+    if (!activeSyncContext->BindToSyncAdapter(targetComponent, info->mUserId)) {
         Logger::E(TAG, "Bind attempt failed - target: %s", Object::ToString(targetComponent).string());
         CloseActiveSyncContext(activeSyncContext);
         return FALSE;
@@ -1289,15 +1376,16 @@ void SyncManager::SyncHandler::RunBoundToAdapter(
     // try {
     activeSyncContext->mIsLinkedToDeath = TRUE;
 
-    AutoPtr<IProxy> proxy = IProxy::Probe(syncAdapter);
-    if (proxy != NULL) proxy->LinkToDeath(IProxyDeathRecipient::Probe(activeSyncContext), 0);
+    AutoPtr<IProxy> proxy = (IProxy*)syncAdapter->Probe(EIID_IProxy);
+    IProxyDeathRecipient* pdr = (IProxyDeathRecipient*)activeSyncContext->Probe(EIID_IProxyDeathRecipient);
+    if (proxy != NULL) proxy->LinkToDeath(pdr, 0);
 
     ECode ec = NOERROR;
     if (syncOperation->mTarget->mTarget_provider) {
         activeSyncContext->mSyncAdapter = IISyncAdapter::Probe(syncAdapter);
         ec = activeSyncContext->mSyncAdapter->StartSync(activeSyncContext,
             syncOperation->mTarget->mProvider,
-            syncOperation->mTarget->mAccount, syncOperation.extras);
+            syncOperation->mTarget->mAccount, syncOperation->mExtras);
     }
     else if (syncOperation->mTarget->mTarget_service) {
         activeSyncContext->mSyncServiceAdapter = IISyncServiceAdapter::Probe(syncAdapter);
@@ -1306,11 +1394,11 @@ void SyncManager::SyncHandler::RunBoundToAdapter(
 
     // } catch (RemoteException remoteExc) {
     if (ec == (ECode)E_REMOTE_EXCEPTION) {
-        Logger::D(TAG, "maybeStartNextSync: caught a RemoteException, rescheduling", remoteExc);
+        Logger::D(TAG, "maybeStartNextSync: caught a RemoteException, rescheduling");
         CloseActiveSyncContext(activeSyncContext);
-        IncreaseBackoffSetting(syncOperation);
+        mHost->IncreaseBackoffSetting(syncOperation);
         AutoPtr<SyncOperation> so = new SyncOperation(syncOperation, 0L /* newRunTimeFromNow */);
-        ScheduleSyncOperation(so);
+        mHost->ScheduleSyncOperation(so);
     }
     // } catch (RuntimeException exc) {
     else if (ec == (ECode)E_RUNTIME_EXCEPTION) {
@@ -1325,7 +1413,7 @@ void SyncManager::SyncHandler::CancelActiveSyncLocked(
     /* [in] */ EndPoint* info,
     /* [in] */ IBundle* extras)
 {
-    List<AutoPtr<ActiveSyncContext> > activeSyncs(mActiveSyncContexts);
+    List<AutoPtr<ActiveSyncContext> > activeSyncs(mHost->mActiveSyncContexts);
     List<AutoPtr<ActiveSyncContext> >::Iterator it;
     for (it = activeSyncs.Begin(); it != activeSyncs.End(); ++it) {
         ActiveSyncContext* activeSyncContext = *it;
@@ -1356,15 +1444,17 @@ void SyncManager::SyncHandler::RunSyncFinishedOrCanceledLocked(
     EndPoint* info = syncOperation->mTarget;
 
     if (activeSyncContext->mIsLinkedToDeath) {
+        IProxyDeathRecipient* pdr = (IProxyDeathRecipient*)activeSyncContext->Probe(EIID_IProxyDeathRecipient);
+        Boolean result;
         if (info->mTarget_provider) {
-            AutoPtr<IProxy> proxy = IProxy::Probe(activeSyncContext->mSyncAdapter);
+            AutoPtr<IProxy> proxy = (IProxy*)activeSyncContext->mSyncAdapter->Probe(EIID_IProxy);
             assert(proxy != NULL);
-            proxy->UnlinkToDeath(IProxyDeathRecipient::Probe(activeSyncContext), 0, result);
+            proxy->UnlinkToDeath(pdr, 0, &result);
         }
         else {
-            AutoPtr<IProxy> proxy = IProxy::Probe(activeSyncContext->mSyncServiceAdapter);
+            AutoPtr<IProxy> proxy = (IProxy*)activeSyncContext->mSyncServiceAdapter->Probe(EIID_IProxy);
             assert(proxy != NULL);
-            proxy->UnlinkToDeath(IProxyDeathRecipient::Probe(activeSyncContext), 0, result);
+            proxy->UnlinkToDeath(pdr, 0, &result);
         }
         activeSyncContext->mIsLinkedToDeath = FALSE;
     }
@@ -1386,7 +1476,7 @@ void SyncManager::SyncHandler::RunSyncFinishedOrCanceledLocked(
             // TODO: set these correctly when the SyncResult is extended to include it
             downstreamActivity = 0;
             upstreamActivity = 0;
-            ClearBackoffSetting(syncOperation);
+            mHost->ClearBackoffSetting(syncOperation);
         }
         else {
             Logger::D(TAG, "failed sync operation %s, %s",
@@ -1394,9 +1484,9 @@ void SyncManager::SyncHandler::RunSyncFinishedOrCanceledLocked(
                 Object::ToString(syncResult).string());
 
             // the operation failed so increase the backoff time
-            IncreaseBackoffSetting(syncOperation);
+            mHost->IncreaseBackoffSetting(syncOperation);
             // reschedule the sync if so indicated by the syncResult
-            MaybeRescheduleSync(syncResult, syncOperation);
+            mHost->MaybeRescheduleSync(syncResult, syncOperation);
             AutoPtr<IContentResolverHelper> helper;
             CContentResolverHelper::AcquireSingleton((IContentResolverHelper**)&helper);
             helper->SyncErrorToString(SyncResultToErrorNumber(syncResult), &historyMessage);
@@ -1407,7 +1497,7 @@ void SyncManager::SyncHandler::RunSyncFinishedOrCanceledLocked(
 
         Int64 until;
         syncResult->GetDelayUntil(&until);
-        SetDelayUntilTime(syncOperation, until);
+        mHost->SetDelayUntilTime(syncOperation, until);
     }
     else {
         // if (isLoggable) {
@@ -1452,14 +1542,14 @@ void SyncManager::SyncHandler::RunSyncFinishedOrCanceledLocked(
         else {
             AutoPtr<IUserHandle> handle;
             CUserHandle::New(info->mUserId, (IUserHandle**)&handle);
-            mNotificationMgr->CancelAsUser(NULL,
-                Object::HashCode(info->mAccount) ^ Object::HashCode(info->mProvider),
+            mHost->mNotificationMgr->CancelAsUser(String(NULL),
+                Object::GetHashCode(info->mAccount) ^ info->mProvider.GetHashCode(),
                 handle);
         }
 
         bval = FALSE;
         if (syncResult) {
-            syncResult->GetFullSyncRequested(&bval)
+            syncResult->GetFullSyncRequested(&bval);
         }
         if (bval) {
             AutoPtr<IBundle> bundle;
@@ -1471,13 +1561,13 @@ void SyncManager::SyncHandler::RunSyncFinishedOrCanceledLocked(
                 0 /* delay */, 0 /* flex */,
                 syncOperation->mBackoff, syncOperation->mDelayUntil,
                 syncOperation->mAllowParallelSyncs);
-            ScheduleSyncOperation(op);
+            mHost->ScheduleSyncOperation(op);
         }
     }
     else {
         bval = FALSE;
         if (syncResult) {
-            syncResult->GetFullSyncRequested(&bval)
+            syncResult->GetFullSyncRequested(&bval);
         }
         if (bval) {
             AutoPtr<IBundle> bundle;
@@ -1487,7 +1577,7 @@ void SyncManager::SyncHandler::RunSyncFinishedOrCanceledLocked(
                 syncOperation->mSyncSource, bundle,
                 0 /* delay */, 0 /* flex */,
                 syncOperation->mBackoff, syncOperation->mDelayUntil);
-            ScheduleSyncOperation(op);
+            mHost->ScheduleSyncOperation(op);
         }
     }
     // no need to schedule an alarm, as that will be done by our caller.
@@ -1497,17 +1587,17 @@ void SyncManager::SyncHandler::CloseActiveSyncContext(
     /* [in] */ ActiveSyncContext* activeSyncContext)
 {
     activeSyncContext->Close();
-    AutoPtr<activeSyncContext> asc = activeSyncContext;
+    AutoPtr<ActiveSyncContext> asc = activeSyncContext;
     List<AutoPtr<ActiveSyncContext> >::Iterator it;
-    it = Find(mActiveSyncContexts.Begin(), mActiveSyncContexts.End(), asc);
-    if (it != mActiveSyncContexts.End()) {
-        mActiveSyncContexts.Erase(it);
+    it = Find(mHost->mActiveSyncContexts.Begin(), mHost->mActiveSyncContexts.End(), asc);
+    if (it != mHost->mActiveSyncContexts.End()) {
+        mHost->mActiveSyncContexts.Erase(it);
     }
 
-    mSyncStorageEngine->RemoveActiveSync(
+    mHost->mSyncStorageEngine->RemoveActiveSync(
         activeSyncContext->mSyncInfo,
         activeSyncContext->mSyncOperation->mTarget->mUserId);
-    RemoveSyncExpiryMessage(activeSyncContext);
+    mHost->RemoveSyncExpiryMessage(activeSyncContext);
 }
 
 Int32 SyncManager::SyncHandler::SyncResultToErrorNumber(
@@ -1551,7 +1641,7 @@ Int32 SyncManager::SyncHandler::SyncResultToErrorNumber(
 
     Logger::E(TAG, "we are not in an error state, %s",
         Object::ToString(syncResult).string());
-    return 0:
+    return 0;
 }
 
 void SyncManager::SyncHandler::ManageSyncNotificationLocked()
@@ -1559,7 +1649,7 @@ void SyncManager::SyncHandler::ManageSyncNotificationLocked()
     Boolean shouldCancel;
     Boolean shouldInstall;
 
-    if (mActiveSyncContexts.IsEmpty()) {
+    if (mHost->mActiveSyncContexts.IsEmpty()) {
         mSyncNotificationInfo->mStartTime = -1;
 
         // we aren't syncing. if the notification is active then remember that we need
@@ -1594,11 +1684,10 @@ void SyncManager::SyncHandler::ManageSyncNotificationLocked()
             else {
                 // show the notification immediately if this is a manual sync
                 shouldInstall = FALSE;
+                Boolean manualSync;
                 List<AutoPtr<ActiveSyncContext> >::Iterator it;
-                for (it = mActiveSyncContexts.Begin(); it != mActiveSyncContexts.End(); ++it) {
-                    ActiveSyncContext* asc = *it;
-                    Boolean manualSync;
-                    asc->mSyncOperation->mExtras->GetBoolean(
+                for (it = mHost->mActiveSyncContexts.Begin(); it != mHost->mActiveSyncContexts.End(); ++it) {
+                    (*it)->mSyncOperation->mExtras->GetBoolean(
                         IContentResolver::SYNC_EXTRAS_MANUAL, FALSE, &manualSync);
                     if (manualSync) {
                         shouldInstall = TRUE;
@@ -1610,13 +1699,13 @@ void SyncManager::SyncHandler::ManageSyncNotificationLocked()
     }
 
     if (shouldCancel && !shouldInstall) {
-        mNeedSyncActiveNotification = FALSE;
+        mHost->mNeedSyncActiveNotification = FALSE;
         SendSyncStateIntent();
         mSyncNotificationInfo->mIsActive = FALSE;
     }
 
     if (shouldInstall) {
-        mNeedSyncActiveNotification = TRUE;
+        mHost->mNeedSyncActiveNotification = TRUE;
         SendSyncStateIntent();
         mSyncNotificationInfo->mIsActive = TRUE;
     }
@@ -1628,23 +1717,22 @@ void SyncManager::SyncHandler::ManageSyncAlarmLocked(
 {
     // in each of these cases the sync loop will be kicked, which will cause this
     // method to be called again
-    if (!mDataConnectionIsConnected) return;
-    if (mStorageIsLow) return;
+    if (!mHost->mDataConnectionIsConnected) return;
+    if (mHost->mStorageIsLow) return;
 
     using Elastos::Core::Math;
     // When the status bar notification should be raised
     Int64 notificationTime =
-        (!mSyncHandler->mSyncNotificationInfo->mIsActive
-                && mSyncHandler->mSyncNotificationInfo->mStartTime != NULL)
-                ? mSyncHandler->mSyncNotificationInfo->mStartTime + SYNC_NOTIFICATION_DELAY
+        (!mHost->mSyncHandler->mSyncNotificationInfo->mIsActive
+                && mHost->mSyncHandler->mSyncNotificationInfo->mStartTime != -1)
+                ? mHost->mSyncHandler->mSyncNotificationInfo->mStartTime + SYNC_NOTIFICATION_DELAY
                 : Math::INT64_MAX_VALUE;
 
     // When we should consider canceling an active sync
     Int64 earliestTimeoutTime = Math::INT64_MAX_VALUE;
     List<AutoPtr<ActiveSyncContext> >::Iterator it;
-    for (it = mActiveSyncContexts.Begin(); it != mActiveSyncContexts.End(); ++it) {
-        ActiveSyncContext* asc = *it;
-        Int64 currentSyncTimeoutTime = currentSyncContext->mTimeoutStartTime + MAX_TIME_PER_SYNC;
+    for (it = mHost->mActiveSyncContexts.Begin(); it != mHost->mActiveSyncContexts.End(); ++it) {
+        Int64 currentSyncTimeoutTime = (*it)->mTimeoutStartTime + MAX_TIME_PER_SYNC;
         // if (Log.isLoggable(TAG, Log.VERBOSE)) {
         //     Logger::V(TAG, "manageSyncAlarm: active sync, mTimeoutStartTime + MAX is "
         //             + currentSyncTimeoutTime);
@@ -1695,7 +1783,7 @@ void SyncManager::SyncHandler::ManageSyncAlarmLocked(
     // determine if we need to set or cancel the alarm
     Boolean shouldSet = FALSE;
     Boolean shouldCancel = FALSE;
-    Boolean alarmIsActive = (mAlarmScheduleTime != NULL) && (now < mAlarmScheduleTime);
+    Boolean alarmIsActive = (mAlarmScheduleTime != -1) && (now < mAlarmScheduleTime);
     Boolean needAlarm = alarmTime != Math::INT64_MAX_VALUE;
     if (needAlarm) {
         // Need the alarm if
@@ -1710,7 +1798,7 @@ void SyncManager::SyncHandler::ManageSyncAlarmLocked(
     }
 
     // Set or cancel the alarm as directed.
-    EnsureAlarmService();
+    mHost->EnsureAlarmService();
     if (shouldSet) {
         // if (Log.isLoggable(TAG, Log.VERBOSE)) {
         //     Logger::V(TAG, "requesting that the alarm manager wake us up at elapsed time "
@@ -1718,12 +1806,12 @@ void SyncManager::SyncHandler::ManageSyncAlarmLocked(
         //             + " secs from now");
         // }
         mAlarmScheduleTime = alarmTime;
-        mAlarmService->SetExact(IAlarmManager::ELAPSED_REALTIME_WAKEUP,
-            alarmTime, mSyncAlarmIntent);
+        mHost->mAlarmService->SetExact(IAlarmManager::ELAPSED_REALTIME_WAKEUP,
+            alarmTime, mHost->mSyncAlarmIntent);
     }
     else if (shouldCancel) {
-        mAlarmScheduleTime = NULL;
-        mAlarmService->Cancel(mSyncAlarmIntent);
+        mAlarmScheduleTime = -1;
+        mHost->mAlarmService->Cancel(mHost->mSyncAlarmIntent);
     }
 }
 
@@ -1732,9 +1820,9 @@ void SyncManager::SyncHandler::SendSyncStateIntent()
     AutoPtr<IIntent> syncStateIntent;
     CIntent::New(IIntent::ACTION_SYNC_STATE_CHANGED, (IIntent**)&syncStateIntent);
     syncStateIntent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
-    syncStateIntent->PutExtra(String("active"), mNeedSyncActiveNotification);
+    syncStateIntent->PutExtra(String("active"), mHost->mNeedSyncActiveNotification);
     syncStateIntent->PutExtra(String("failing"), FALSE);
-    mContext->SendBroadcastAsUser(syncStateIntent, UserHandle::OWNER);
+    mHost->mContext->SendBroadcastAsUser(syncStateIntent, UserHandle::OWNER);
 }
 
 void SyncManager::SyncHandler::InstallHandleTooManyDeletesNotification(
@@ -1743,21 +1831,22 @@ void SyncManager::SyncHandler::InstallHandleTooManyDeletesNotification(
     /* [in] */ Int64 numDeletes,
     /* [in] */ Int32 userId)
 {
-    if (mNotificationMgr == NULL) return;
+    if (mHost->mNotificationMgr == NULL) return;
 
     AutoPtr<IProviderInfo> providerInfo;
     AutoPtr<IPackageManager> pkgMgr;
-    mContext->GetPackageManager((IPackageManager**)&pkgMgr);
-    pkgMgr->ResolveContentProvider(authority, 0 /* flags */, (IPackageManager**)&pkgMgr);
+    mHost->mContext->GetPackageManager((IPackageManager**)&pkgMgr);
+    pkgMgr->ResolveContentProvider(authority, 0 /* flags */, (IProviderInfo**)&providerInfo);
     if (providerInfo == NULL) {
         return;
     }
     AutoPtr<ICharSequence> authorityName;
-    providerInfo->LoadLabel(pkgMgr, (ICharSequence**)&authorityName);
+    IPackageItemInfo::Probe(providerInfo)->LoadLabel(pkgMgr, (ICharSequence**)&authorityName);
 
     AutoPtr<IIntent> clickIntent;
-    CIntent::New(mContext, ECLSID_CSyncActivityTooManyDeletes, (IIntent**)&clickIntent);
-    clickIntent->PutExtra(String("account"), account);
+    assert(0 && "TODO0");
+    // CIntent::New(mHost->mContext, ECLSID_CSyncActivityTooManyDeletes, (IIntent**)&clickIntent);
+    clickIntent->PutExtra(String("account"), IParcelable::Probe(account));
     clickIntent->PutExtra(String("authority"), authority);
     clickIntent->PutExtra(String("provider"), Object::ToString(authorityName));
     clickIntent->PutExtra(String("numDeletes"), numDeletes);
@@ -1772,11 +1861,11 @@ void SyncManager::SyncHandler::InstallHandleTooManyDeletesNotification(
     AutoPtr<IPendingIntentHelper> piHelper;
     CPendingIntentHelper::AcquireSingleton((IPendingIntentHelper**)&piHelper);
     AutoPtr<IPendingIntent> pendingIntent;
-    piHelper->GetActivityAsUser(mContext, 0, clickIntent,
+    piHelper->GetActivityAsUser(mHost->mContext, 0, clickIntent,
         IPendingIntent::FLAG_CANCEL_CURRENT, NULL, user, (IPendingIntent**)&pendingIntent);
 
     AutoPtr<IResources> resources;
-    mContext->GetResources((IResources**)&resources);
+    mHost->mContext->GetResources((IResources**)&resources);
     AutoPtr<ICharSequence> tooManyDeletesDescFormat;
     resources->GetText(R::string::contentServiceTooManyDeletesNotificationDesc,
         (ICharSequence**)&tooManyDeletesDescFormat);
@@ -1785,13 +1874,12 @@ void SyncManager::SyncHandler::InstallHandleTooManyDeletesNotification(
     CSystem::AcquireSingleton((ISystem**)&system);
     Int64 ms;
     system->GetCurrentTimeMillis(&ms);
-    AutoPtr<IContext> contextForUser;
-    GetContextForUser(user, (IContext**)&contextForUser);
+    AutoPtr<IContext> contextForUser = mHost->GetContextForUser(user);
     String str;
-    mContext->GetString(R::string::contentServiceSync, &str);
+    mHost->mContext->GetString(R::string::contentServiceSync, &str);
     AutoPtr<INotification> notification;
     CNotification::New(R::drawable::stat_notify_sync_error,
-        str, ms, (INotification**)&notification);
+        CoreUtils::Convert(str), ms, (INotification**)&notification);
 
     AutoPtr<IResources> cfuRes;
     contextForUser->GetResources((IResources**)&cfuRes);
@@ -1799,14 +1887,16 @@ void SyncManager::SyncHandler::InstallHandleTooManyDeletesNotification(
     cfuRes->GetColor(R::color::system_notification_accent_color, &color);
     contextForUser->GetString(R::string::contentServiceSyncNotificationTitle, &str);
     String text;
-    text.Format(Object::ToString(tooManyDeletesDescFormat), authorityName);
+    text.AppendFormat(
+        Object::ToString(tooManyDeletesDescFormat).string(),
+        Object::ToString(authorityName).string());
     notification->SetColor(color);
     notification->SetLatestEventInfo(contextForUser,
         CoreUtils::Convert(str), CoreUtils::Convert(text), pendingIntent);
     Int32 flags;
     notification->GetFlags(&flags);
     notification->SetFlags(flags | INotification::FLAG_ONGOING_EVENT);
-    mNotificationMgr->NotifyAsUser(NULL,
+    mHost->mNotificationMgr->NotifyAsUser(String(NULL),
         Object::GetHashCode(account) ^ authority.GetHashCode(),
         notification, user);
 }
@@ -1815,10 +1905,10 @@ Boolean SyncManager::SyncHandler::IsActivityAvailable(
     /* [in] */ IIntent* intent)
 {
     AutoPtr<IPackageManager> pm;
-    mContext->GetPackageManager((IPackageManager**)&pm);
+    mHost->mContext->GetPackageManager((IPackageManager**)&pm);
     AutoPtr<IList> list;
     pm->QueryIntentActivities(intent, 0, (IList**)&list);
-    Int32 listSize;
+    Int32 listSize, flags;
     list->GetSize(&listSize);
     for (Int32 i = 0; i < listSize; i++) {
         AutoPtr<IInterface> obj;
@@ -1827,8 +1917,7 @@ Boolean SyncManager::SyncHandler::IsActivityAvailable(
         AutoPtr<IActivityInfo> ai;
         resolveInfo->GetActivityInfo((IActivityInfo**)&ai);
         AutoPtr<IApplicationInfo> appInfo;
-        ai->GetApplicationInfo((IApplicationInfo**)&appInfo);
-        Int32 flags;
+        IComponentInfo::Probe(ai)->GetApplicationInfo((IApplicationInfo**)&appInfo);
         appInfo->GetFlags(&flags);
         if ((flags & IApplicationInfo::FLAG_SYSTEM) != 0) {
             return TRUE;
@@ -1848,7 +1937,8 @@ Int64 SyncManager::SyncHandler::InsertStartSyncEvent(
     system->GetCurrentTimeMillis(&now);
     // EventLogger::WriteEvent(2720,
     //         syncOperation.toEventLog(SyncStorageEngine::EVENT_START));
-    return mSyncStorageEngine->InsertStartSyncEvent(syncOperation, now);
+    mHost->mSyncStorageEngine->InsertStartSyncEvent(syncOperation, now);
+    return NOERROR;
 }
 
 void SyncManager::SyncHandler::StopSyncEvent(
@@ -1861,8 +1951,8 @@ void SyncManager::SyncHandler::StopSyncEvent(
 {
     // EventLogger::WriteEvent(2720,
     //         syncOperation.toEventLog(SyncStorageEngine::EVENT_STOP));
-    mSyncStorageEngine->StopSyncEvent(rowId, elapsedTime,
-            resultMessage, downstreamActivity, upstreamActivity);
+    mHost->mSyncStorageEngine->StopSyncEvent(rowId, elapsedTime,
+        resultMessage, downstreamActivity, upstreamActivity);
 }
 
 //==========================================================================================
@@ -1939,7 +2029,7 @@ ECode SyncManager::AccountsUpdatedReceiver::OnReceive(
 
     // Kick off sync for everyone, since this was a radical account change
     mHost->ScheduleSync(NULL, IUserHandle::USER_ALL,
-        SyncOperation::REASON_ACCOUNTS_UPDATED, NULL,
+        SyncOperation::REASON_ACCOUNTS_UPDATED, String(NULL),
         NULL, 0 /* no delay */, 0/* no delay */, FALSE);
     return NOERROR;
 }
@@ -1971,7 +2061,7 @@ ECode SyncManager::ConnectivityIntentReceiver::OnReceive(
             // }
             Object* obj = mHost->mSyncQueue.Get();
             synchronized(obj) {
-                mHost->mSyncStorageEngine->clearAllBackoffsLocked(mHost->mSyncQueue);
+                mHost->mSyncStorageEngine->ClearAllBackoffsLocked(mHost->mSyncQueue);
             }
         }
         mHost->SendCheckAlarmsMessage();
@@ -2059,10 +2149,12 @@ SyncManager::AccountSyncStats::AccountSyncStats(
 // SyncManager::SyncTimeTracker
 //==========================================================================================
 
-SyncManager::SyncTimeTracker::SyncTimeTracker()
+SyncManager::SyncTimeTracker::SyncTimeTracker(
+    /* [in] */ SyncManager* host)
     : mLastWasSyncing(FALSE)
     , mWhenSyncStarted(0)
     , mTimeSpentSyncing(0)
+    , mHost(host)
 {
 }
 
@@ -2090,7 +2182,7 @@ void SyncManager::SyncTimeTracker::Update()
         if (!mLastWasSyncing) return mTimeSpentSyncing;
 
         Int64 now = SystemClock::GetElapsedRealtime();
-        *result = mTimeSpentSyncing + (now - mWhenSyncStarted);
+        result = mTimeSpentSyncing + (now - mWhenSyncStarted);
     }
     return result;
 }
@@ -2186,7 +2278,7 @@ AutoPtr<IList> SyncManager::GetAllUsers()
 }
 
 Boolean SyncManager::ContainsAccountAndUser(
-    /* [in] */ ArrayOf<IAccountAndUser*> accounts,
+    /* [in] */ ArrayOf<IAccountAndUser*>* accounts,
     /* [in] */ IAccount* account,
     /* [in] */ Int32 userId)
 {
@@ -2239,11 +2331,12 @@ void SyncManager::DoDatabaseCleanup()
     Boolean hasNext, bval;
     while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> obj;
-        it->GetNext((IInterface**)&obj)
+        it->GetNext((IInterface**)&obj);
         IUserInfo* user = IUserInfo::Probe(obj);
 
         // Skip any partially created/removed users
-        if (user->GetPartial(&bval), bval) continue;
+        user->GetPartial(&bval);
+        if (bval) continue;
         Int32 id;
         user->GetId(&id);
         AutoPtr<ArrayOf<IAccount*> > accountsForUser;
@@ -2258,7 +2351,10 @@ Boolean SyncManager::ReadDataConnectionState()
     AutoPtr<INetworkInfo> networkInfo;
     connMgr->GetActiveNetworkInfo((INetworkInfo**)&networkInfo);
     Boolean bval = FALSE;
-    return (networkInfo != NULL) && (networkInfo->IsConnected(&bval), bval);
+    if (networkInfo != NULL) {
+        networkInfo->IsConnected(&bval);
+    }
+    return bval;
 }
 
 AutoPtr<IConnectivityManager> SyncManager::GetConnectivityManager()
@@ -2316,43 +2412,50 @@ SyncManager::SyncManager(
     CIntent::New(ACTION_SYNC_ALARM, (IIntent**)&alarmIntent);
     piHelper->GetBroadcast(mContext, 0 /* ignored */, alarmIntent, 0, (IPendingIntent**)&mSyncAlarmIntent);
 
+    AutoPtr<IIntent> stickyIntent;
     AutoPtr<IIntentFilter> intentFilter;
     CIntentFilter::New(IConnectivityManager::CONNECTIVITY_ACTION, (IIntentFilter**)&intentFilter);
-    context->RegisterReceiver(mConnectivityIntentReceiver, intentFilter);
+    context->RegisterReceiver(mConnectivityIntentReceiver, intentFilter, (IIntent**)&stickyIntent);
 
     if (!factoryTest) {
         intentFilter = NULL;
-        CIntentFilter::New(IConnectivityManager::ACTION_BOOT_COMPLETED, (IIntentFilter**)&intentFilter);
+        stickyIntent = NULL;
+        CIntentFilter::New(IIntent::ACTION_BOOT_COMPLETED, (IIntentFilter**)&intentFilter);
         intentFilter->SetPriority(IIntentFilter::SYSTEM_HIGH_PRIORITY);
-        context->RegisterReceiver(mBootCompletedReceiver, intentFilter);
+        context->RegisterReceiver(mBootCompletedReceiver, intentFilter, (IIntent**)&stickyIntent);
     }
 
     intentFilter = NULL;
-    CIntentFilter::New(IConnectivityManager::ACTION_DEVICE_STORAGE_LOW, (IIntentFilter**)&intentFilter);
-    intentFilter.addAction(IIntent::ACTION_DEVICE_STORAGE_OK);
-    context->RegisterReceiver(mStorageIntentReceiver, intentFilter);
+    stickyIntent = NULL;
+    CIntentFilter::New(IIntent::ACTION_DEVICE_STORAGE_LOW, (IIntentFilter**)&intentFilter);
+    intentFilter->AddAction(IIntent::ACTION_DEVICE_STORAGE_OK);
+    context->RegisterReceiver(mStorageIntentReceiver, intentFilter, (IIntent**)&stickyIntent);
 
     intentFilter = NULL;
-    CIntentFilter::New(IConnectivityManager::ACTION_SHUTDOWN, (IIntentFilter**)&intentFilter);
+    stickyIntent = NULL;
+    CIntentFilter::New(IIntent::ACTION_SHUTDOWN, (IIntentFilter**)&intentFilter);
     intentFilter->SetPriority(100);
-    context->RegisterReceiver(mShutdownIntentReceiver, intentFilter);
+    context->RegisterReceiver(mShutdownIntentReceiver, intentFilter, (IIntent**)&stickyIntent);
 
     intentFilter = NULL;
-    CIntentFilter::New(IConnectivityManager::CONNECTIVITY_ACTION, (IIntentFilter**)&intentFilter);
+    stickyIntent = NULL;
+    String nullStr;
+    CIntentFilter::New((IIntentFilter**)&intentFilter);
     intentFilter->AddAction(IIntent::ACTION_USER_REMOVED);
     intentFilter->AddAction(IIntent::ACTION_USER_STARTING);
     intentFilter->AddAction(IIntent::ACTION_USER_STOPPING);
     mContext->RegisterReceiverAsUser(
-        mUserIntentReceiver, UserHandle::ALL, intentFilter, NULL, NULL);
+        mUserIntentReceiver, UserHandle::ALL, intentFilter, nullStr, NULL, (IIntent**)&stickyIntent);
 
     if (!factoryTest) {
         AutoPtr<IInterface> obj;
         context->GetSystemService(IContext::NOTIFICATION_SERVICE, (IInterface**)&obj);
         mNotificationMgr = INotificationManager::Probe(obj);
         intentFilter = NULL;
+        stickyIntent = NULL;
         CIntentFilter::New(ACTION_SYNC_ALARM, (IIntentFilter**)&intentFilter);
         AutoPtr<IBroadcastReceiver> br = new SyncAlarmIntentReceiver(this);
-        context->RegisterReceiver(br, intentFilter);
+        context->RegisterReceiver(br, intentFilter, (IIntent**)&stickyIntent);
     }
     else {
         mNotificationMgr = NULL;
@@ -2396,10 +2499,11 @@ SyncManager::SyncManager(
 
     if (!factoryTest) {
         intentFilter = NULL;
+        stickyIntent = NULL;
         CIntentFilter::New(IAccountManager::LOGIN_ACCOUNTS_CHANGED_ACTION, (IIntentFilter**)&intentFilter);
         // Register for account list updates for all users
         mContext->RegisterReceiverAsUser(mAccountsUpdatedReceiver,
-            UserHandle::ALL, intentFilter), NULL, NULL);
+            UserHandle::ALL, intentFilter, nullStr, NULL, (IIntent**)&stickyIntent);
     }
 
     // Pick a random second in a day to seed all periodic syncs
@@ -2413,7 +2517,7 @@ Int64 SyncManager::Jitterize(
     AutoPtr<IRandom> random;
     CRandom::New(SystemClock::GetElapsedRealtime(), (IRandom**)&random);
     Int64 spread = maxValue - minValue;
-    if (spread > Elastos::Core::Math::MAX_VALUE) {
+    if (spread > Elastos::Core::Math::INT64_MAX_VALUE) {
         Logger::E(TAG, "IllegalArgumentException: the difference between the maxValue and the ",
             "minValue must be less than Integer.MAX_VALUE");
         // throw new IllegalArgumentException("the difference between the maxValue and the "
@@ -2421,7 +2525,7 @@ Int64 SyncManager::Jitterize(
         return 0;
     }
     Int32 ival;
-    random->NextInt32(Int32)spread, &ival);
+    random->NextInt32((Int32)spread, &ival);
     return minValue + ival;
 }
 
@@ -2474,13 +2578,12 @@ Int32 SyncManager::GetIsSyncable(
     if (pInfo == NULL) return isSyncable;
 
     String rattype;
-    pInfo->RestrictedAccountType(&rattype);
+    pInfo->GetRestrictedAccountType(&rattype);
     if (rattype != NULL && rattype.Equals(type)) {
         return isSyncable;
     }
-    else {
-        return 0;
-    }
+
+    return 0;
 }
 
 void SyncManager::EnsureAlarmService()
@@ -2492,7 +2595,7 @@ void SyncManager::EnsureAlarmService()
     }
 }
 
-void SyncManager::ScheduleSync(
+ECode SyncManager::ScheduleSync(
     /* [in] */ IComponentName* cname,
     /* [in] */ Int32 userId,
     /* [in] */ Int32 uid,
@@ -2524,13 +2627,13 @@ void SyncManager::ScheduleSync(
         // if (isLoggable) {
         //     Logger::D(TAG, "ScheduleSync: sync of " + cname + " not allowed, dropping request.");
         // }
-        return;
+        return NOERROR;
     }
     if (!isEnabled) {
         // if (isLoggable) {
         //     Logger::D(TAG, "ScheduleSync: " + cname + " is not enabled, dropping request");
         // }
-        return;
+        return NOERROR;
     }
     EndPoint* info = new EndPoint(cname, userId);
     AutoPtr< Pair<Int64, Int64> > backoff = mSyncStorageEngine->GetBackoff(info);
@@ -2548,11 +2651,12 @@ void SyncManager::ScheduleSync(
     AutoPtr<SyncOperation> so = new SyncOperation(
         cname, userId, uid, source, extras,
         runtimeMillis /* runtime */, beforeRunTimeMillis /* flextime */,
-        backoffTime, delayUntil)
+        backoffTime, delayUntil);
     ScheduleSyncOperation(so);
+    return NOERROR;
 }
 
-void SyncManager::ScheduleSync(
+CARAPI SyncManager::ScheduleSync(
     /* [in] */ IAccount* requestedAccount,
     /* [in] */ Int32 userId,
     /* [in] */ Int32 reason,
@@ -2580,7 +2684,8 @@ void SyncManager::ScheduleSync(
     AutoPtr<ArrayOf<IAccountAndUser*> > accounts;
     if (requestedAccount != NULL && userId != IUserHandle::USER_ALL) {
         AutoPtr<IAccountAndUser> aau;
-        CAccountAndUser::New(requestedAccount, userId, (IAccountAndUser**)&aau);
+        assert(0 && "TODO");
+        // CAccountAndUser::New(requestedAccount, userId, (IAccountAndUser**)&aau);
 
         accounts = ArrayOf<IAccountAndUser*>::Alloc(1);
         accounts->Set(0, aau);
@@ -2588,10 +2693,10 @@ void SyncManager::ScheduleSync(
     else {
         accounts = mRunningAccounts;
         if (accounts->GetLength() == 0) {
-            if (isLoggable) {
-                Logger::V(TAG, "ScheduleSync: no accounts configured, dropping");
-            }
-            return;
+            // if (isLoggable) {
+            //     Logger::V(TAG, "ScheduleSync: no accounts configured, dropping");
+            // }
+            return NOERROR;
         }
     }
 
@@ -2624,12 +2729,12 @@ void SyncManager::ScheduleSync(
     IRegisteredServicesCache* syncAdapters = IRegisteredServicesCache::Probe(mSyncAdapters);
     AutoPtr<ISyncAdapterTypeHelper> satHelper;
     CSyncAdapterTypeHelper::AcquireSingleton((ISyncAdapterTypeHelper**)&satHelper);
-    Int32 userId;
+    Int32 uid;
     Boolean allowParallelSyncs, isAlwaysSyncable, bval;
 
     for (Int32 i = 0; i < accounts->GetLength(); ++i) {
         IAccountAndUser* accountAndUser = (*accounts)[i];
-        accountAndUser->GetUserId(&userId);
+        accountAndUser->GetUserId(&uid);
         AutoPtr<IAccount> account;
         accountAndUser->GetAccount((IAccount**)&account);
 
@@ -2637,7 +2742,7 @@ void SyncManager::ScheduleSync(
         // For each authority sync each account that matches a sync adapter.
         HashSet<String> syncableAuthorities;
         AutoPtr<IList> services;
-        syncAdapters->GetAllServices(userId, (IList**)&services);
+        syncAdapters->GetAllServices(uid, (IList**)&services);
         AutoPtr<IIterator> sit;
         services->GetIterator((IIterator**)&sit);
         Boolean hasNext;
@@ -2665,7 +2770,7 @@ void SyncManager::ScheduleSync(
         HashSet<String>::Iterator it;
         for (it = syncableAuthorities.Begin(); it != syncableAuthorities.End(); ++it) {
             authority = *it;
-            Int32 isSyncable = GetIsSyncable(account, userId, authority);
+            Int32 isSyncable = GetIsSyncable(account, uid, authority);
             if (isSyncable == 0) {
                 continue;
             }
@@ -2675,7 +2780,7 @@ void SyncManager::ScheduleSync(
             AutoPtr<ISyncAdapterType> sat;
             satHelper->NewKey(authority, type, (ISyncAdapterType**)&sat);
             AutoPtr<IRegisteredServicesCacheServiceInfo> syncAdapterInfo;
-            syncAdapters->GetServiceInfo(sat, userId,
+            syncAdapters->GetServiceInfo(sat, uid,
                 (IRegisteredServicesCacheServiceInfo**)&syncAdapterInfo);
             if (syncAdapterInfo == NULL) {
                 continue;
@@ -2688,7 +2793,7 @@ void SyncManager::ScheduleSync(
             satObj->IsAlwaysSyncable(&isAlwaysSyncable);
 
             if (isSyncable < 0 && isAlwaysSyncable) {
-                mSyncStorageEngine->SetIsSyncable(account, userId, authority, 1);
+                mSyncStorageEngine->SetIsSyncable(account, uid, authority, 1);
                 isSyncable = 1;
             }
             if (onlyThoseWithUnkownSyncableState && isSyncable >= 0) {
@@ -2703,8 +2808,8 @@ void SyncManager::ScheduleSync(
             Boolean syncAllowed =
                 (isSyncable < 0) // always allow if the isSyncable state is unknown
                 || ignoreSettings
-                || (mSyncStorageEngine->GetMasterSyncAutomatically(userId)
-                    && mSyncStorageEngine->GetSyncAutomatically(account, userId, authority));
+                || (mSyncStorageEngine->GetMasterSyncAutomatically(uid)
+                    && mSyncStorageEngine->GetSyncAutomatically(account, uid, authority));
             if (!syncAllowed) {
                 // if (isLoggable) {
                 //     Logger::D(TAG, "ScheduleSync: sync of " + account + ", " + authority
@@ -2713,7 +2818,7 @@ void SyncManager::ScheduleSync(
                 continue;
             }
 
-            AutoPtr<EndPoint> info = new EndPoint(account, authority, userId);
+            AutoPtr<EndPoint> info = new EndPoint(account, authority, uid);
             AutoPtr<Pair<Int64, Int64> > backoff = mSyncStorageEngine->GetBackoff(info);
             Int64 delayUntil = mSyncStorageEngine->GetDelayUntilTime(info);
             Int64 backoffTime = backoff != NULL ? backoff->mFirst : 0;
@@ -2732,7 +2837,7 @@ void SyncManager::ScheduleSync(
                 //             + ", authority " + authority
                 //             + ", extras " + newExtras);
                 // }
-                AutoPtr<SyncOperation> so = new SyncOperation(account, userId, reason, source,
+                AutoPtr<SyncOperation> so = new SyncOperation(account, uid, reason, source,
                     authority, newExtras, 0 /* immediate */, 0 /* No flex time*/,
                     backoffTime, delayUntil, allowParallelSyncs);
                 ScheduleSyncOperation(so);
@@ -2749,16 +2854,17 @@ void SyncManager::ScheduleSync(
                 //             + ", authority " + authority
                 //             + ", extras " + extras);
                 // }
-                AutoPtr<SyncOperation> so =  new SyncOperation(account, userId, reason, source,
+                AutoPtr<SyncOperation> so =  new SyncOperation(account, uid, reason, source,
                     authority, extras, runtimeMillis, beforeRuntimeMillis,
                     backoffTime, delayUntil, allowParallelSyncs);
                 ScheduleSyncOperation(so);
             }
         }
     }
+    return NOERROR;
 }
 
-void SyncManager::ScheduleLocalSync(
+ECode SyncManager::ScheduleLocalSync(
     /* [in] */ IAccount* account,
     /* [in] */ Int32 userId,
     /* [in] */ Int32 reason,
@@ -2767,10 +2873,10 @@ void SyncManager::ScheduleLocalSync(
     AutoPtr<IBundle> extras;
     CBundle::New((IBundle**)&extras);
     extras->PutBoolean(IContentResolver::SYNC_EXTRAS_UPLOAD, TRUE);
-    ScheduleSync(account, userId, reason, authority, extras,
-            LOCAL_SYNC_DELAY /* earliest run time */,
-            2 * LOCAL_SYNC_DELAY /* latest sync time. */,
-            FALSE /* onlyThoseWithUnkownSyncableState */);
+    return ScheduleSync(account, userId, reason, authority, extras,
+        LOCAL_SYNC_DELAY /* earliest run time */,
+        2 * LOCAL_SYNC_DELAY /* latest sync time. */,
+        FALSE /* onlyThoseWithUnkownSyncableState */);
 }
 
 AutoPtr<ArrayOf<ISyncAdapterType*> > SyncManager::GetSyncAdapterTypes(
@@ -2912,7 +3018,7 @@ void SyncManager::IncreaseBackoffSetting(
     Int64 maxSyncRetryTimeInSeconds;
     AutoPtr<IContentResolver>  resolve;
     mContext->GetContentResolver((IContentResolver**)&resolve);
-    global->GetLong(resolve,
+    global->GetInt64(resolve,
         ISettingsGlobal::SYNC_MAX_RETRY_DELAY_IN_SECONDS,
         DEFAULT_MAX_SYNC_RETRY_TIME_IN_SECONDS, &maxSyncRetryTimeInSeconds);
     if (newDelayInMs > maxSyncRetryTimeInSeconds * 1000) {
@@ -2949,7 +3055,7 @@ void SyncManager::SetDelayUntilTime(
     mSyncStorageEngine->SetDelayUntilTime(op->mTarget, newDelayUntilTime);
     Object* obj = mSyncQueue.Get();
     synchronized(obj) {
-        mSyncQueue.onDelayUntilTimeChanged(op->mTarget, newDelayUntilTime);
+        mSyncQueue->OnDelayUntilTimeChanged(op->mTarget, newDelayUntilTime);
     }
 }
 
@@ -3062,14 +3168,14 @@ void SyncManager::MaybeRescheduleSync(
         // }
         ScheduleSyncOperation(operation);
     }
-    else if (syncResult->syncAlreadyInProgress) {
-        if (isLoggable) {
-            Logger::D(TAG, "retrying sync operation that failed because there was already a "
-                    + "sync in progress: " + operation);
-        }
+    else if (syncResult->GetSyncAlreadyInProgress(&bval), bval) {
+        // if (isLoggable) {
+        //     Logger::D(TAG, "retrying sync operation that failed because there was already a "
+        //             + "sync in progress: " + operation);
+        // }
         AutoPtr<SyncOperation> so = new SyncOperation(
             operation,
-            DELAY_RETRY_SYNC_IN_PROGRESS_IN_SECONDS * 1000 /* newRunTimeFromNow */)
+            DELAY_RETRY_SYNC_IN_PROGRESS_IN_SECONDS * 1000 /* newRunTimeFromNow */);
 
         ScheduleSyncOperation(so);
     }
@@ -3094,7 +3200,7 @@ void SyncManager::OnUserStarting(
     // Make sure that accounts we're about to use are valid
     ECode ec = NOERROR;
     assert(0 && "TODO");
-    ec = CAccountManagerService::GetSingleton()->ValidateAccounts(userId);
+    // ec = CAccountManagerService::GetSingleton()->ValidateAccounts(userId);
     if (FAILED(ec)) return;
 
     IRegisteredServicesCache::Probe(mSyncAdapters)->InvalidateCache(userId);
@@ -3107,12 +3213,13 @@ void SyncManager::OnUserStarting(
     }
 
     // Schedule sync for any accounts under started user
-    AutoPtr<ArrayOf<IAccount> > accounts;
+    String nullStr;
+    AutoPtr<ArrayOf<IAccount*> > accounts;
     assert(0 && "TODO");
-    //CAccountManagerService->GetSingleton()->GetAccounts(userId, (ArrayOf<IAccount>**)&accounts);
+    //CAccountManagerService->GetSingleton()->GetAccounts(userId, (ArrayOf<IAccount*>**)&accounts);
     for (Int32 i = 0; i < accounts->GetLength(); ++i) {
         IAccount* account = (*accounts)[i];
-        ScheduleSync(account, userId, SyncOperation::REASON_USER_START, NULL, NULL,
+        ScheduleSync(account, userId, SyncOperation::REASON_USER_START, nullStr, NULL,
             0 /* no delay */, 0 /* No flex */,
             TRUE /* onlyThoseWithUnknownSyncableState */);
     }
@@ -3125,7 +3232,7 @@ void SyncManager::OnUserStopping(
 {
     UpdateRunningAccounts();
 
-    AutoPtr<EndPoint> ep = new EndPoint(NULL /* any account */, NULL /* any authority */, userId);
+    AutoPtr<EndPoint> ep = new EndPoint(NULL /* any account */, String(NULL) /* any authority */, userId);
     CancelActiveSync(ep, NULL /* any sync. */);
 }
 
@@ -3135,7 +3242,7 @@ void SyncManager::OnUserRemoved(
     UpdateRunningAccounts();
 
     // Clean up the storage engine database
-    AutoPtr<ArrayOf<IIAccount*> > accounts = ArrayOf<IIAccount*>::Alloc(0);
+    AutoPtr<ArrayOf<IAccount*> > accounts = ArrayOf<IAccount*>::Alloc(0);
     mSyncStorageEngine->DoDatabaseCleanup(accounts, userId);
     Object* obj = mSyncQueue.Get();
     synchronized(obj) {
@@ -3200,7 +3307,7 @@ void SyncManager::DumpSyncState(
     //         pw->Print(" (HH:MM:SS), sync ");
     //         pw->Print(mSyncHandler->mSyncTimeTracker.mLastWasSyncing ? "" : "not ");
     //         pw->Println("in progress");
-    // if (mSyncHandler->mAlarmScheduleTime != NULL) {
+    // if (mSyncHandler->mAlarmScheduleTime != -1) {
     //     pw->Print("next alarm time: "); pw->Print(mSyncHandler->mAlarmScheduleTime);
     //             pw->Print(" (");
     //             pw->Print(DateUtils.formatElapsedTime((mSyncHandler->mAlarmScheduleTime-now)/1000));
@@ -3345,32 +3452,30 @@ String SyncManager::GetLastFailureMessage(
 {
     switch (code) {
         case IContentResolver::SYNC_ERROR_SYNC_ALREADY_IN_PROGRESS:
-            return "sync already in progress";
+            return String("sync already in progress");
 
         case IContentResolver::SYNC_ERROR_AUTHENTICATION:
-            return "authentication error";
+            return String("authentication error");
 
         case IContentResolver::SYNC_ERROR_IO:
-            return "I/O error";
+            return String("I/O error");
 
         case IContentResolver::SYNC_ERROR_PARSE:
-            return "parse error";
+            return String("parse error");
 
         case IContentResolver::SYNC_ERROR_CONFLICT:
-            return "conflict error";
+            return String("conflict error");
 
         case IContentResolver::SYNC_ERROR_TOO_MANY_DELETIONS:
-            return "too many deletions error";
+            return String("too many deletions error");
 
         case IContentResolver::SYNC_ERROR_TOO_MANY_RETRIES:
-            return "too many retries error";
+            return String("too many retries error");
 
         case IContentResolver::SYNC_ERROR_INTERNAL:
-            return "internal error";
-
-        default:
-            return "unknown";
+            return String("internal error");
     }
+    return String("unknown");
 }
 
 void SyncManager::DumpTimeSec(
@@ -3849,14 +3954,14 @@ Boolean SyncManager::IsSyncSetting(
     return FALSE;
 }
 
-AutoPtr<Context> SyncManager::GetContextForUser(
+AutoPtr<IContext> SyncManager::GetContextForUser(
     /* [in] */ IUserHandle* user)
 {
     String pkgName;
     mContext->GetPackageName(&pkgName);
     AutoPtr<IContext> ctx;
     ECode ec = mContext->CreatePackageContextAsUser(pkgName, 0, user, (IContext**)&ctx);
-    if (ec == E_NAME_NOT_FOUND_EXCEPTION) {
+    if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
         // Default to mContext, not finding the package system is running as is unlikely.
         return mContext;
     }

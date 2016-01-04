@@ -103,10 +103,6 @@ SOURCES += CWorkSource.cpp
 SOURCES += BinderProxy.cpp
 #SOURCES += CBinderDeathRecipient.cpp
 SOURCES += NativeBinder.cpp
-#SOURCES += CProcessStats.cpp
-#SOURCES += ZygoteConnection.cpp
-#SOURCES += CPkgUsageStats.cpp
-#SOURCES += CParcelStringList.cpp
 #SOURCES += CZigbeeManager.cpp
 
 ELASTOS_LIBS += storage/storage.lib
