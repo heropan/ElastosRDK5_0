@@ -301,7 +301,7 @@ ECode StringBuffer::Append(
     }
 
     String str;
-    ((StringBuffer*)sb)->ToString(&str);
+    ((StringBuilder*)sb)->ToString(&str);
     return AbstractStringBuilder::Append(str);
 }
 
