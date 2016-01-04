@@ -1,10 +1,12 @@
 
 #include "elastos/droid/app/CNotification.h"
+#include "elastos/droid/os/UserHandle.h"
 #include "elastos/droid/service/notification/CStatusBarNotification.h"
 #include "elastos/droid/service/notification/StatusBarNotification.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Droid::App::CNotification;
+using Elastos::Droid::Os::UserHandle;
 using Elastos::Droid::Service::Notification::CStatusBarNotification;
 using Elastos::Core::CSystem;
 using Elastos::Core::ICloneable;
@@ -78,23 +80,6 @@ ECode StatusBarNotification::constructor(
 ECode StatusBarNotification::constructor(
     /* [in] */ IParcelable* in)
 {
-    // this.pkg = in.readString();
-    // this.opPkg = in.readString();
-    // this.id = in.readInt();
-    // if (in.readInt() != 0) {
-    //     this.tag = in.readString();
-    // } else {
-    //     this.tag = null;
-    // }
-    // this.uid = in.readInt();
-    // this.initialPid = in.readInt();
-    // this.score = in.readInt();
-    // this.notification = new Notification(in);
-    // this.user = UserHandle.readFromParcel(in);
-    // this.postTime = in.readLong();
-    // this.key = key();
-    // this.groupKey = groupKey();
-    //TODO
     return NOERROR;
 }
 
@@ -155,30 +140,47 @@ ECode StatusBarNotification::GroupKey(
 ECode StatusBarNotification::ReadFromParcel(
     /* [in] */ IParcel* in)
 {
-    //TODO
+    in->ReadString(&mPkg);
+    in->ReadString(&mOpPkg);
+    in->ReadInt32(&mId);
+    if (mId != 0) {
+        in->ReadString(&mTag);
+    }
+    else {
+        mTag = NULL;
+    }
+    in->ReadInt32(&mUid);
+    in->ReadInt32(&mInitialPid);
+    in->ReadInt32(&mScore);
+
+    // this.notification = new Notification(in);
+    UserHandle::ReadFromParcel(in, (IUserHandle**)&mUser);
+    in->ReadInt64(&mPostTime);
+    Key(&mKey);
+    GroupKey(&mGroupKey);
     return NOERROR;
 }
 
 ECode StatusBarNotification::WriteToParcel(
     /* [in] */ IParcel* out)
 {
-    // out.writeString(this.pkg);
-    // out.writeString(this.opPkg);
-    // out.writeInt(this.id);
-    // if (this.tag != null) {
-    //     out.writeInt(1);
-    //     out.writeString(this.tag);
-    // } else {
-    //     out.writeInt(0);
-    // }
-    // out.writeInt(this.uid);
-    // out.writeInt(this.initialPid);
-    // out.writeInt(this.score);
+    out->WriteString(mPkg);
+    out->WriteString(mOpPkg);
+    out->WriteInt32(mId);
+    if (!mTag.IsNull()) {
+        out->WriteInt32(1);
+        out->WriteString(mTag);
+    }
+    else {
+        out->WriteInt32(0);
+    }
+    out->WriteInt32(mUid);
+    out->WriteInt32(mInitialPid);
+    out->WriteInt32(mScore);
     // this.notification.writeToParcel(out, flags);
     // user.writeToParcel(out, flags);
 
-    // out.writeLong(this.postTime);
-    //TODO
+    out->WriteInt64(mPostTime);
     return NOERROR;
 }
 

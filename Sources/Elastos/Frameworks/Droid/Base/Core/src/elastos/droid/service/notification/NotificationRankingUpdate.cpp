@@ -29,29 +29,26 @@ ECode NotificationRankingUpdate::constructor(
 ECode NotificationRankingUpdate::constructor(
     /* [in] */ IParcelable* in)
 {
-    // mKeys = in.readStringArray();
-    // mFirstAmbientIndex = in.readInt();
-    // mInterceptedKeys = in.readStringArray();
-    // mVisibilityOverrides = in.readBundle();
-    //TODO
     return NOERROR;
 }
 
 ECode NotificationRankingUpdate::ReadFromParcel(
     /* [in] */ IParcel* in)
 {
-    //TODO
+    in->ReadArrayOfString((ArrayOf<String>**)&mKeys);
+    in->ReadInt32(&mFirstAmbientIndex);
+    in->ReadArrayOfString((ArrayOf<String>**)&mInterceptedKeys);
+    in->ReadInterfacePtr((Handle32*)((IBundle**)&mVisibilityOverrides));
     return NOERROR;
 }
 
 ECode NotificationRankingUpdate::WriteToParcel(
     /* [in] */ IParcel* out)
 {
-    // out.writeStringArray(mKeys);
+    out->WriteArrayOfString(mKeys.Get());
     out->WriteInt32(mFirstAmbientIndex);
-    // out.writeStringArray(mInterceptedKeys);
-    // out.writeBundle(mVisibilityOverrides);
-    //TODO
+    out->WriteArrayOfString(mInterceptedKeys.Get());
+    out->WriteInterfacePtr(mVisibilityOverrides.Get());
     return NOERROR;
 }
 

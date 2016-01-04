@@ -1,6 +1,6 @@
 
-#include <Elastos.CoreLibrary.Text.h>
-#include <Elastos.CoreLibrary.Utility.h>
+#include "Elastos.CoreLibrary.Core.h"
+#include "Elastos.CoreLibrary.Text.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/service/textservice/CInternalISpellCheckerSession.h"
 #include "elastos/droid/service/textservice/CSpellCheckerServiceBinder.h"
@@ -219,15 +219,16 @@ ECode SpellCheckerService::InternalISpellCheckerSession::OnGetSuggestionsMultipl
     Int32 pri;
     Process::GetThreadPriority(Process::MyTid(), &pri);
     Process::SetThreadPriority(IProcess::THREAD_PRIORITY_BACKGROUND);
-//?????
-    // AutoPtr<ArrayOf<ISuggestionsInfo*> > results;
-    // ECode ec = mSession->OnGetSuggestionsMultiple(
-    //     textInfos, suggestionsLimit, sequentialWords, (ArrayOf<ISuggestionsInfo*>**)&results);
-    // if (FAILED(ec)) {
-    //     Process::SetThreadPriority(pri);
-    //     return E_REMOTE_EXCEPTION;
-    // }
-    // mListener->OnGetSuggestions(results.Get());
+#if 0 //TODO
+    AutoPtr<ArrayOf<ISuggestionsInfo*> > results;
+    ECode ec = mSession->OnGetSuggestionsMultiple(
+        textInfos, suggestionsLimit, sequentialWords, (ArrayOf<ISuggestionsInfo*>**)&results);
+    if (FAILED(ec)) {
+        Process::SetThreadPriority(pri);
+        return E_REMOTE_EXCEPTION;
+    }
+    mListener->OnGetSuggestions(results.Get());
+#endif
     return NOERROR;
 }
 
@@ -235,13 +236,14 @@ ECode SpellCheckerService::InternalISpellCheckerSession::OnGetSentenceSuggestion
     /* [in] */ ArrayOf<ITextInfo*>* textInfos,
     /* [in] */ Int32 suggestionsLimit)
 {
-//?????
-    // AutoPtr<ArrayOf<ISentenceSuggestionsInfo*> > results;
-    // ECode ec = mSession->OnGetSentenceSuggestionsMultiple(textInfos, suggestionsLimit, (ArrayOf<ISentenceSuggestionsInfo*>**)&results);
-    // if (FAILED(ec)) {
-    //     return E_REMOTE_EXCEPTION;
-    // }
-    // mListener->OnGetSentenceSuggestions(results.Get());
+#if 0 //TODO
+    AutoPtr<ArrayOf<ISentenceSuggestionsInfo*> > results;
+    ECode ec = mSession->OnGetSentenceSuggestionsMultiple(textInfos, suggestionsLimit, (ArrayOf<ISentenceSuggestionsInfo*>**)&results);
+    if (FAILED(ec)) {
+        return E_REMOTE_EXCEPTION;
+    }
+    mListener->OnGetSentenceSuggestions(results.Get());
+#endif
     return NOERROR;
 }
 
@@ -356,6 +358,7 @@ SpellCheckerService::SentenceLevelAdapter::SentenceTextInfoParams::SentenceTextI
 //============================
 // SpellCheckerService::SentenceLevelAdapter
 //============================
+
 static AutoPtr<ISuggestionsInfo> Init()
 {
     AutoPtr<CSuggestionsInfo> cs;
@@ -388,7 +391,6 @@ AutoPtr<SpellCheckerService::SentenceLevelAdapter::SentenceTextInfoParams> Spell
     Int32 end;
     originalText->GetLength(&end);
     AutoPtr<IArrayList> wordItems;
-    //final ArrayList<SentenceWordItem> wordItems = new ArrayList<SentenceWordItem>();
     wordIterator->SetCharSequence(originalText, 0, end);
     Int32 wordEnd;
     ISelectionPositionIterator::Probe(wordIterator)->Following(start, &wordEnd);

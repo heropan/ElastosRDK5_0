@@ -199,8 +199,7 @@ ECode TrustAgentService::OnCreate()
         String str2;
         component->ToShortString(&str2);
         Logger::E(TAG, str + str2);
-        // return E_PACKAGEMANAGER_NAME_NOT_FOUND_EXCEPTION;//TODO
-        return NOERROR;
+        return E_PACKAGEMANAGER_NAME_NOT_FOUND_EXCEPTION;
     }
     String permission;
     serviceInfo->GetPermission(&permission);

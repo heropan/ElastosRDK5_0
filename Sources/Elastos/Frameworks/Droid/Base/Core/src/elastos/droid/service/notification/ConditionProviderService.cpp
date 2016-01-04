@@ -52,15 +52,15 @@ ECode ConditionProviderService::NotifyConditions(
     /* [in] */ ArrayOf<ICondition*>* conditions)
 {
     if (!IsBound() || conditions == NULL) return E_NULL_POINTER_EXCEPTION;
-    // try {
     AutoPtr<IINotificationManager> nm;
     GetNotificationInterface((IINotificationManager**)&nm);
     String pm;
     GetPackageName(&pm);
-    nm->NotifyConditions(pm, mProvider, conditions);
-    // } catch (android.os.RemoteException ex) {
-    //     Log.v(TAG, "Unable to contact notification manager", ex);
-    // }
+    ECode ec = nm->NotifyConditions(pm, mProvider, conditions);
+    if (FAILED(ec)) {
+        Logger::V(TAG, "Unable to contact notification manager%08x", ec);
+        return E_REMOTE_EXCEPTION;
+    }
     return NOERROR;
 }
 

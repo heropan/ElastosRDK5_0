@@ -100,7 +100,7 @@ public:
 
     CARAPI Join(
         /* [in] */ ICharSequence* delimiter,
-        /* [in] */ ArrayOf<IIterable*>* tokens,
+        /* [in] */ ArrayOf<IInterface*>* tokens,
         /* [out] */ String* result);
 
     CARAPI Join(

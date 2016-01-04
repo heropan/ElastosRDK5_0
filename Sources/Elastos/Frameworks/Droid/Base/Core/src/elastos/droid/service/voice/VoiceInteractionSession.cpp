@@ -747,8 +747,7 @@ ECode VoiceInteractionSession::constructor(
     mContext = context;
     AutoPtr<ILooper> l;
     handler->GetLooper((ILooper**)&l);
-    assert(0);// someone make mistake in CHandlerCaller::constructor
-    // CHandlerCaller::New(context, l.Get(), (IHandlerCallerCallback*)mCallbacks.Get(), TRUE, (IHandlerCaller**)&mHandlerCaller);
+    CHandlerCaller::New(context, l.Get(), (IHandlerCallerCallback*)mCallbacks.Get(), TRUE, TRUE, (IHandlerCaller**)&mHandlerCaller);
     return NOERROR;
 }
 

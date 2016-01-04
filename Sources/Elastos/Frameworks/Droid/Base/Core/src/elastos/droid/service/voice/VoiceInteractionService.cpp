@@ -1,8 +1,9 @@
 
+#include "Elastos.Droid.Provider.h"
 #include "elastos/droid/content/CComponentName.h"
 #include "elastos/droid/service/voice/CAlwaysOnHotwordDetector.h"
 #include "elastos/droid/service/voice/VoiceInteractionService.h"
-// #include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/provider/Settings.h"
 #include "elastos/droid/os/ServiceManager.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>
@@ -11,9 +12,10 @@ using Elastos::Droid::App::Service;
 using Elastos::Droid::Content::CComponentName;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::Pm::IPackageManager;
-// using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::Provider::Settings;
 using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Os::ServiceManager;
+using Elastos::Droid::Provider::ISettingsSecure;
 using Elastos::Droid::Service::Voice::CAlwaysOnHotwordDetector;
 using Elastos::Core::AutoLock;
 using Elastos::Utility::Logging::Slogger;
@@ -113,7 +115,6 @@ ECode VoiceInteractionService::IsActiveService(
     VALIDATE_NOT_NULL(isActiveService)
     AutoPtr<IContentResolver> cr;
     context->GetContentResolver((IContentResolver**)&cr);
-#if 0 //TODO for Settings not provided
     String cur;
     Settings::Secure::GetString(cr, ISettingsSecure::VOICE_INTERACTION_SERVICE, &cur);
     if (cur.IsNullOrEmpty()) {
@@ -126,8 +127,7 @@ ECode VoiceInteractionService::IsActiveService(
         *isActiveService = FALSE;
         return NOERROR;
     }
-    IObject::probe(curComp)->Equals(service, isActiveService);
-#endif
+    IObject::Probe(curComp)->Equals(service, isActiveService);
     return NOERROR;
 }
 
