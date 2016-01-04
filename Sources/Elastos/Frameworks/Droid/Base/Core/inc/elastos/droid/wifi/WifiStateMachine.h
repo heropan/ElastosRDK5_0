@@ -33,7 +33,7 @@ using Elastos::Droid::Wifi::P2p::IWifiP2pManager;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::IBatteryStats;
 using Elastos::Droid::Os::IMessenger;
-using Elastos::Droid::Os::INetworkManagementService;
+using Elastos::Droid::Os::IINetworkManagementService;
 using Elastos::Droid::Os::IPowerManagerWakeLock;
 using Elastos::Droid::Os::IWorkSource;
 using Elastos::Droid::Os::IUserHandle;
@@ -1640,7 +1640,7 @@ private:
     AutoPtr<WifiMonitor> mWifiMonitor;
     AutoPtr<WifiNative> mWifiNative;
     AutoPtr<WifiConfigStore> mWifiConfigStore;
-    AutoPtr<INetworkManagementService> mNwService;
+    AutoPtr<IINetworkManagementService> mNwService;
     AutoPtr<IConnectivityManager> mConnectivityManager;
 
     Boolean mP2pSupported;

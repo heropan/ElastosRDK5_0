@@ -56,7 +56,7 @@ using Elastos::Droid::Net::NetworkInfoDetailedState_FAILED;
 using Elastos::Droid::Net::NetworkInfoState;
 using Elastos::Droid::Net::NetworkInfoState_DISCONNECTED;
 using Elastos::Droid::Os::Build;
-using Elastos::Droid::Os::INetworkManagementService;
+using Elastos::Droid::Os::IINetworkManagementService;
 using Elastos::Droid::R;
 // using Elastos::Droid::Security::ICredentials;
 // using Elastos::Droid::Security::CKeyStoreHelper;
@@ -105,7 +105,7 @@ LockdownVpnTracker::LockdownVpnTracker()
 
 ECode LockdownVpnTracker::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ INetworkManagementService* netService,
+    /* [in] */ IINetworkManagementService* netService,
     /* [in] */ IIConnectivityManager* connService,
     /* [in] */ IBaseNetworkStateTracker* vpn,
     /* [in] */ IVpnProfile* profile)

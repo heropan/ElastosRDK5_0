@@ -406,10 +406,10 @@ ECode CPppoeStateTracker::ConfigureInterfaceStatic(
 ECode CPppoeStateTracker::ConfigureInterface(
     /* [in] */ IPppoeDevInfo* info)
 {
-    // wait for INetworkManagementService.Stub.asInterface
+    // wait for IINetworkManagementService.Stub.asInterface
     /*
     IBinder b = ServiceManager::GetService(Context.NETWORKMANAGEMENT_SERVICE);
-    INetworkManagementService netd = INetworkManagementService::Probe(b);
+    IINetworkManagementService netd = IINetworkManagementService::Probe(b);
     InterfaceConfiguration ifcg = new InterfaceConfiguration();
     ifcg.setLinkAddress(dhcpInfoInternal.makeLinkAddress());
     Log.v(TAG, "configureInterfaceStatic: ifname:" + ifname);

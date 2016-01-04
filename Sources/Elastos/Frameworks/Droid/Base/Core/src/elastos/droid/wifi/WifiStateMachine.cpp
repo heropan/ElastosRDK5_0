@@ -3422,7 +3422,7 @@ WifiStateMachine::WifiStateMachine(
     mBatteryStats = IIBatteryStats::Probe(obj);
 
     obj = ServiceManager::GetService(IContext::NETWORKMANAGEMENT_SERVICE);
-    mNwService = INetworkManagementService::Probe(obj);
+    mNwService = IINetworkManagementService::Probe(obj);
 
     AutoPtr<IPackageManager> pm;
     mContext->GetPackageManager((IPackageManager**)&pm);

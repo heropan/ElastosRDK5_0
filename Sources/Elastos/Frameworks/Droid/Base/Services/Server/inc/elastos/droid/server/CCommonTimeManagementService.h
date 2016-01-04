@@ -9,7 +9,7 @@
 
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::Os::INetworkManagementService;
+using Elastos::Droid::Os::IINetworkManagementService;
 using Elastos::Droid::Net::INetworkManagementEventObserver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
@@ -222,7 +222,7 @@ private:
      * Internal state
      */
     AutoPtr<IContext> mContext;
-    AutoPtr<INetworkManagementService> mNetMgr;
+    AutoPtr<IINetworkManagementService> mNetMgr;
 //TODO
 //    AutoPtr<CommonTimeConfig> mCTConfig;
     String mCurIface;

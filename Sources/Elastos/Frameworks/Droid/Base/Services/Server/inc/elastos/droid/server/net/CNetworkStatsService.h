@@ -33,7 +33,7 @@ using Elastos::Droid::Os::IHandlerCallback;
 using Elastos::Droid::Os::IHandlerThread;
 using Elastos::Droid::Os::IIPowerManager;
 using Elastos::Droid::Os::IPowerManagerWakeLock;
-using Elastos::Droid::Os::INetworkManagementService;
+using Elastos::Droid::Os::IINetworkManagementService;
 using Elastos::Droid::Telephony::ITelephonyManager;
 
 
@@ -398,12 +398,12 @@ public:
 
     CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ INetworkManagementService* networkManager,
+        /* [in] */ IINetworkManagementService* networkManager,
         /* [in] */ IIAlarmManager* alarmManager);
 
     CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ INetworkManagementService* networkManager,
+        /* [in] */ IINetworkManagementService* networkManager,
         /* [in] */ IIAlarmManager* alarmManager,
         /* [in] */ ITrustedTime* time,
         /* [in] */ IFile* systemDir,
@@ -556,7 +556,7 @@ private:
     static const String PREFIX_UID_TAG;
 
     AutoPtr<IContext> mContext;
-    AutoPtr<INetworkManagementService> mNetworkManager;
+    AutoPtr<IINetworkManagementService> mNetworkManager;
     AutoPtr<IIAlarmManager> mAlarmManager;
     AutoPtr<ITrustedTime> mTime;
     AutoPtr<ITelephonyManager> mTeleManager;

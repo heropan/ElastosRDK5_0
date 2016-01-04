@@ -37,7 +37,7 @@ using Elastos::Droid::Os::IIdleHandler;
 using Elastos::Droid::Os::IIPowerManager;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::IHandlerCallback;
-using Elastos::Droid::Os::INetworkManagementService;
+using Elastos::Droid::Os::IINetworkManagementService;
 using Elastos::Droid::Os::IPowerManagerInternal;
 using Elastos::Droid::Utility::IAtomicFile;
 using Elastos::Droid::Utility::ITrustedTime;
@@ -440,14 +440,14 @@ public:
         /* [in] */ IIActivityManager* activityManager,
         /* [in] */ IIPowerManager* powerManager,
         /* [in] */ INetworkStatsService* networkStats,
-        /* [in] */ INetworkManagementService* networkManagement);
+        /* [in] */ IINetworkManagementService* networkManagement);
 
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IIActivityManager* activityManager,
         /* [in] */ IIPowerManager* powerManager,
         /* [in] */ INetworkStatsService* networkStats,
-        /* [in] */ INetworkManagementService* networkManagement,
+        /* [in] */ IINetworkManagementService* networkManagement,
         /* [in] */ ITrustedTime* time,
         /* [in] */ IFile* systemDir,
         /* [in] */ Boolean suppressDefaultPolicy);
@@ -821,7 +821,7 @@ private:
     AutoPtr<IIActivityManager> mActivityManager;
     AutoPtr<IIPowerManager> mPowerManager;
     AutoPtr<INetworkStatsService> mNetworkStats;
-    AutoPtr<INetworkManagementService> mNetworkManager;
+    AutoPtr<IINetworkManagementService> mNetworkManager;
     AutoPtr<ITrustedTime> mTime;
 
     AutoPtr<IIConnectivityManager> mConnManager;

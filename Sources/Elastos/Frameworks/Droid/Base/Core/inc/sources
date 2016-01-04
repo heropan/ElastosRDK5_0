@@ -32,6 +32,8 @@ EXPORT_HEADERS += elastos/droid/ext/frameworkhash.h
 //EXPORT_HEADERS += elastos/droid/inputmethodservice/AbstractInputMethodSessionImpl.h
 //EXPORT_HEADERS += elastos/droid/inputmethodservice/Keyboard.h
 EXPORT_HEADERS += elastos/droid/internal/utility/XmlUtils.h
+EXPORT_HEADERS += elastos/droid/internal/utility/State.h
+EXPORT_HEADERS += elastos/droid/internal/utility/StateMachine.h
 EXPORT_HEADERS += elastos/droid/internal/content/PackageMonitor.h
 
 //EXPORT_HEADERS += elastos/droid/Manifest.h
@@ -58,6 +60,15 @@ EXPORT_HEADERS += elastos/droid/os/FactoryTest.h
 EXPORT_HEADERS += elastos/droid/os/RemoteCallbackList.h
 
 
+//EXPORT_HEADERS += elastos/droid/preference/PreferenceActivity.h
+EXPORT_HEADERS += elastos/droid/server/LocalServices.h
+EXPORT_HEADERS += elastos/droid/server/net/BaseNetworkObserver.h
+//EXPORT_HEADERS += elastos/droid/service/wallpaper/WallpaperService.h
+
+EXPORT_HEADERS += elastos/droid/text/format/DateUtils.h
+//EXPORT_HEADERS += elastos/droid/text/method/BaseKeyListener.h
+//EXPORT_HEADERS += elastos/droid/text/method/NumberKeyListener.h
+//EXPORT_HEADERS += elastos/droid/text/method/TimeKeyListener.h
 EXPORT_HEADERS += elastos/droid/text/TextUtils.h
 //EXPORT_HEADERS += elastos/droid/text/MeasuredText.h
 //EXPORT_HEADERS += elastos/droid/text/AndroidBidi.h
@@ -80,14 +91,6 @@ EXPORT_HEADERS += elastos/droid/utility/FloatProperty.h
 //EXPORT_HEADERS += elastos/droid/view/NativeInputChannel.h
 //EXPORT_HEADERS += elastos/droid/view/SoundEffectConstants.h
 EXPORT_HEADERS += elastos/droid/view/WindowIdFocusObserver.h
-
-//EXPORT_HEADERS += elastos/droid/preference/PreferenceActivity.h
-EXPORT_HEADERS += elastos/droid/server/LocalServices.h
-//EXPORT_HEADERS += elastos/droid/service/wallpaper/WallpaperService.h
-EXPORT_HEADERS += elastos/droid/text/format/DateUtils.h
-//EXPORT_HEADERS += elastos/droid/text/method/BaseKeyListener.h
-//EXPORT_HEADERS += elastos/droid/text/method/NumberKeyListener.h
-//EXPORT_HEADERS += elastos/droid/text/method/TimeKeyListener.h
 
 //EXPORT_HEADERS += elastos/droid/webkit/WebViewClient.h
 //EXPORT_HEADERS += elastos/droid/webkit/WebChromeClient.h

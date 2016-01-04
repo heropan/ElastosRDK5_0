@@ -961,7 +961,7 @@ ECode CConnectivityManager::GetMobileDataEnabled(
 }
 
 ECode CConnectivityManager::GetNetworkManagementService(
-    /* [out] */ INetworkManagementService** result)
+    /* [out] */ IINetworkManagementService** result)
 {
     VALIDATE_NOT_NULL(result)
     *result = NULL;
@@ -973,7 +973,7 @@ ECode CConnectivityManager::GetNetworkManagementService(
         }
         AutoPtr<IInterface> obj = ServiceManager::GetService(IContext::TELEPHONY_SERVICE);
         AutoPtr<IBinder> b = IBinder::Probe(obj);
-        mNMService = INetworkManagementService::Probe(b);
+        mNMService = IINetworkManagementService::Probe(b);
         *result = mNMService;
     }
     return NOERROR;
@@ -1012,8 +1012,8 @@ ECode CConnectivityManager::AddDefaultNetworkActiveListener(
     //     mNetworkActivityListeners.put(l, rl);
     // } catch (RemoteException e) {
     // }
-    AutoPtr<INetworkManagementService> nms;
-    ECode ec = GetNetworkManagementService((INetworkManagementService**)&nms);
+    AutoPtr<IINetworkManagementService> nms;
+    ECode ec = GetNetworkManagementService((IINetworkManagementService**)&nms);
     if (FAILED(ec)) {
         if (E_REMOTE_EXCEPTION == ec)
             return NOERROR;
@@ -1045,8 +1045,8 @@ ECode CConnectivityManager::RemoveDefaultNetworkActiveListener(
     //     getNetworkManagementService().unregisterNetworkActivityListener(rl);
     // } catch (RemoteException e) {
     // }
-    AutoPtr<INetworkManagementService> nms;
-    ECode ec = GetNetworkManagementService((INetworkManagementService**)&nms);
+    AutoPtr<IINetworkManagementService> nms;
+    ECode ec = GetNetworkManagementService((IINetworkManagementService**)&nms);
     if (FAILED(ec)) {
         if (E_REMOTE_EXCEPTION == ec)
             return NOERROR;
@@ -1065,8 +1065,8 @@ ECode CConnectivityManager::IsDefaultNetworkActive(
     //     return getNetworkManagementService().isNetworkActive();
     // } catch (RemoteException e) {
     // }
-    AutoPtr<INetworkManagementService> nms;
-    ECode ec = GetNetworkManagementService((INetworkManagementService**)&nms);
+    AutoPtr<IINetworkManagementService> nms;
+    ECode ec = GetNetworkManagementService((IINetworkManagementService**)&nms);
     if (FAILED(ec)) {
         if (E_REMOTE_EXCEPTION != ec) {
             return ec;

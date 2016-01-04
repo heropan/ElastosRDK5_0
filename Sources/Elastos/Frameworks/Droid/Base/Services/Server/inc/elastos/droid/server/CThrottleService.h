@@ -17,7 +17,7 @@ using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Database::ContentObserver;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::IHandlerThread;
-using Elastos::Droid::Os::INetworkManagementService;
+using Elastos::Droid::Os::IINetworkManagementService;
 using Elastos::Droid::Net::INetworkManagementEventObserver;
 using Elastos::Droid::Utility::ITrustedTime;
 using Elastos::IO::IFile;
@@ -290,7 +290,7 @@ public:
 
     CARAPI constructor(
         /* [in] */  IContext* context,
-        /* [in] */  INetworkManagementService* nmService,
+        /* [in] */  IINetworkManagementService* nmService,
         /* [in] */  ITrustedTime* time,
         /* [in] */  const String& iface);
 
@@ -351,7 +351,7 @@ public:
         /* [out] */ String* result);
 
 private:
-    static CARAPI_(AutoPtr<INetworkManagementService>) GetNetworkManagementService();
+    static CARAPI_(AutoPtr<IINetworkManagementService>) GetNetworkManagementService();
 
     CARAPI EnforceAccessPermission();
 
@@ -394,7 +394,7 @@ private:
     static Int32 RESET_REQUEST;
     AutoPtr<IPendingIntent> mPendingResetIntent;
 
-    AutoPtr<INetworkManagementService> mNMService;
+    AutoPtr<IINetworkManagementService> mNMService;
     AutoPtr<IAlarmManager> mAlarmManager;
     AutoPtr<INotificationManager> mNotificationManager;
 

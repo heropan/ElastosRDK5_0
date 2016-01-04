@@ -12,7 +12,7 @@ using Elastos::Droid::Net::BaseNetworkStateTracker;
 using Elastos::Droid::Net::ILinkProperties;
 using Elastos::Droid::Net::ILocalSocket;
 using Elastos::Droid::Net::NetworkInfoDetailedState;
-using Elastos::Droid::Os::INetworkManagementService;
+using Elastos::Droid::Os::IINetworkManagementService;
 using Elastos::Droid::Internal::Net::IVpnConfig;
 using Elastos::Droid::Internal::Net::IVpnProfile;
 using Elastos::Droid::Internal::Net::ILegacyVpnInfo;
@@ -93,7 +93,7 @@ public:
     Vpn(
         /* [in] */ IContext* context,
         /* [in] */ CConnectivityService::VpnCallback* callback,
-        /* [in] */ INetworkManagementService* netService);
+        /* [in] */ IINetworkManagementService* netService);
 
     CARAPI SetEnableNotifications(
         /* [in] */ Boolean enableNotif);

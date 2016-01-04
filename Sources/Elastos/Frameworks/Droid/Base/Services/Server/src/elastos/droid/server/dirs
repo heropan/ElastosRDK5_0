@@ -1,6 +1,7 @@
 
 
 DIRS += am
+DIRS += connectivity
 DIRS += content
 DIRS += display
 DIRS += lights
@@ -9,7 +10,6 @@ DIRS += wallpaper
 
 
 #DIRS = accessibility
-#DIRS += connectivity
 #DIRS += input
 #DIRS += location
 DIRS += net

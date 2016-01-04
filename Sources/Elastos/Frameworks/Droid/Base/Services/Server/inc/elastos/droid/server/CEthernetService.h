@@ -144,7 +144,7 @@ private:
     /*  the first String is now system_name, second String is boot_name  */
     HashMap<String, AutoPtr<IEthernetDevInfo> > mDeviceMap;
     Object mDeviceMapLock;
-    AutoPtr<INetworkManagementService> mNMService;
+    AutoPtr<IINetworkManagementService> mNMService;
     AutoPtr<BroadcastReceiver> mEthStateReceiver;
     AutoPtr<IIntentFilter> mFilter;
 

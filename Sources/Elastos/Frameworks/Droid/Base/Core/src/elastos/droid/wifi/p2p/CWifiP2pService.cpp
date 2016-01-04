@@ -277,7 +277,7 @@ P2pStatus CWifiP2pService::ValueOf(
 ECode CWifiP2pService::ConnectivityServiceReady()
 {
     AutoPtr<IInterface> obj = ServiceManager::GetService(IContext::NETWORKMANAGEMENT_SERVICE);
-    mNwService = INetworkManagementService::Probe(obj);
+    mNwService = IINetworkManagementService::Probe(obj);
     return NOERROR;
 }
 

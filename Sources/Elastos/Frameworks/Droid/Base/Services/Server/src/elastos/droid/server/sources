@@ -92,6 +92,7 @@ SOURCES += Elastos.Droid.Core.cpp
 SOURCES += Elastos.CoreLibrary.cpp
 
 ELASTOS_LIBS += am/am.lib
+ELASTOS_LIBS += connectivity/connectivity.lib
 ELASTOS_LIBS += content/content.lib
 ELASTOS_LIBS += display/display.lib
 ELASTOS_LIBS += lights/lights.lib
@@ -104,7 +105,6 @@ ELASTOS_LIBS += net/net.lib
 #ELASTOS_LIBS += pm/pm.lib
 #ELASTOS_LIBS += usb/usb.lib
 #ELASTOS_LIBS += wm/wm.lib
-#ELASTOS_LIBS += connectivity/connectivity.lib
 #ELASTOS_LIBS += accessibility/accessibility.lib
 #ELASTOS_LIBS += accounts/accounts.lib
 #ELASTOS_LIBS += power/power.lib

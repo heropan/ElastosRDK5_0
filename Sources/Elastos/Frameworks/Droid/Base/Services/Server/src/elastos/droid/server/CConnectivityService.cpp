@@ -707,7 +707,7 @@ CConnectivityService::~CConnectivityService()
 
 ECode CConnectivityService::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ INetworkManagementService* netd,
+    /* [in] */ IINetworkManagementService* netd,
     /* [in] */ INetworkStatsService* statsService,
     /* [in] */ IINetworkPolicyManager* policyManager)
 {
@@ -718,7 +718,7 @@ ECode CConnectivityService::constructor(
 
 ECode CConnectivityService::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ INetworkManagementService* netManager,
+    /* [in] */ IINetworkManagementService* netManager,
     /* [in] */ INetworkStatsService* statsService,
     /* [in] */ IINetworkPolicyManager* policyManager,
     /* [in] */ Handle32 netFac)

@@ -14,6 +14,10 @@ BaseNetworkObserver::BaseNetworkObserver()
 {
 }
 
+BaseNetworkObserver::~BaseNetworkObserver()
+{
+}
+
 ECode BaseNetworkObserver::constructor()
 {
     return NOERROR;
@@ -102,6 +106,12 @@ ECode BaseNetworkObserver::RouteRemoved(
 {
     // default no-op
     return NOERROR;
+}
+
+ECode BaseNetworkObserver::ToString(
+    /* [out] */ String* str)
+{
+    return Object::ToString(str);
 }
 
 } // namespace Net

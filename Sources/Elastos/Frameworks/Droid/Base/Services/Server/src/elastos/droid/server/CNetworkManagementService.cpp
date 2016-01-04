@@ -403,7 +403,7 @@ void CNetworkManagementService::PrepareNativeDaemon()
 }
 
 // //
-// // INetworkManagementService members
+// // IINetworkManagementService members
 // //
 
 ECode CNetworkManagementService::ListInterfaces(

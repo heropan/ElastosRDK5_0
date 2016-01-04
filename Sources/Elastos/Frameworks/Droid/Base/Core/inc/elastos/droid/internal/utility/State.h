@@ -17,7 +17,7 @@ namespace Utility {
  *
  * The class for implementing states in a StateMachine
  */
-class State
+class ECO_PUBLIC State
     : public Object
     , public IState
 {

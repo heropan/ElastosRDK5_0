@@ -406,7 +406,7 @@ CNetworkStatsService::CNetworkStatsService()
 
 ECode CNetworkStatsService::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ INetworkManagementService* networkManager,
+    /* [in] */ IINetworkManagementService* networkManager,
     /* [in] */ IIAlarmManager* alarmManager)
 {
     AutoPtr<INtpTrustedTimeHelper> helper;
@@ -432,7 +432,7 @@ AutoPtr<IFile> CNetworkStatsService::GetDefaultSystemDir()
 
 ECode CNetworkStatsService::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ INetworkManagementService* networkManager,
+    /* [in] */ IINetworkManagementService* networkManager,
     /* [in] */ IIAlarmManager* alarmManager,
     /* [in] */ ITrustedTime* time,
     /* [in] */ IFile* systemDir,

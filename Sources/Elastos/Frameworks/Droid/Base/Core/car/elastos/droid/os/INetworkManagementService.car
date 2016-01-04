@@ -19,7 +19,7 @@ module
      * @hide
      */
     [deprecated]
-    interface INetworkManagementService {
+    interface IINetworkManagementService {
         /**
          ** GENERAL
          **/

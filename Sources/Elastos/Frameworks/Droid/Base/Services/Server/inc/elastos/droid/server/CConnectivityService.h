@@ -34,7 +34,7 @@ using Elastos::Droid::Net::INetworkStateTracker;
 using Elastos::Droid::Net::IProxyProperties;
 using Elastos::Droid::Net::IRouteInfo;
 using Elastos::Droid::Os::HandlerBase;
-using Elastos::Droid::Os::INetworkManagementService;
+using Elastos::Droid::Os::IINetworkManagementService;
 using Elastos::Droid::Server::Net::LockdownVpnTracker;
 using Elastos::Droid::Internal::Net::IVpnConfig;
 using Elastos::Droid::Internal::Net::IVpnProfile;
@@ -281,13 +281,13 @@ public:
 
     CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ INetworkManagementService* netd,
+        /* [in] */ IINetworkManagementService* netd,
         /* [in] */ INetworkStatsService* statsService,
         /* [in] */ IINetworkPolicyManager* policyManager);
 
     CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ INetworkManagementService* netManager,
+        /* [in] */ IINetworkManagementService* netManager,
         /* [in] */ INetworkStatsService* statsService,
         /* [in] */ IINetworkPolicyManager* policyManager,
         /* [in] */ Handle32 netFac);
@@ -1020,7 +1020,7 @@ private:
     Boolean mTestMode;
     static AutoPtr<CConnectivityService> sServiceInstance;
 
-    AutoPtr<INetworkManagementService> mNetd;
+    AutoPtr<IINetworkManagementService> mNetd;
     AutoPtr<IINetworkPolicyManager> mPolicyManager;
 
     static const Int32 ENABLED;

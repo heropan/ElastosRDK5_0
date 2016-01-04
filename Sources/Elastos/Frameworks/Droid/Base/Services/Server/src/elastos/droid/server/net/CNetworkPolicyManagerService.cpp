@@ -709,7 +709,7 @@ ECode CNetworkPolicyManagerService::constructor(
     /* [in] */ IIActivityManager* activityManager,
     /* [in] */ IIPowerManager* powerManager,
     /* [in] */ INetworkStatsService* networkStats,
-    /* [in] */ INetworkManagementService* networkManagement)
+    /* [in] */ IINetworkManagementService* networkManagement)
 {
     AutoPtr<INtpTrustedTimeHelper> helper;
     CNtpTrustedTimeHelper::AcquireSingleton((INtpTrustedTimeHelper**)&helper);
@@ -725,7 +725,7 @@ ECode CNetworkPolicyManagerService::constructor(
     /* [in] */ IIActivityManager* activityManager,
     /* [in] */ IIPowerManager* powerManager,
     /* [in] */ INetworkStatsService* networkStats,
-    /* [in] */ INetworkManagementService* networkManagement,
+    /* [in] */ IINetworkManagementService* networkManagement,
     /* [in] */ ITrustedTime* time,
     /* [in] */ IFile* systemDir,
     /* [in] */ Boolean suppressDefaultPolicy)

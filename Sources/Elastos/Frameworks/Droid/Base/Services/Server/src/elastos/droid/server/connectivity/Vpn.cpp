@@ -483,7 +483,7 @@ const Boolean Vpn::LOGD = TRUE;
 Vpn::Vpn(
     /* [in] */ IContext* context,
     /* [in] */ CConnectivityService::VpnCallback* callback,
-    /* [in] */ INetworkManagementService* netService)
+    /* [in] */ IINetworkManagementService* netService)
     : BaseNetworkStateTracker(IConnectivityManager::TYPE_DUMMY)
     , mCallback(callback)
     , mPackage(IVpnConfig::LEGACY_VPN)

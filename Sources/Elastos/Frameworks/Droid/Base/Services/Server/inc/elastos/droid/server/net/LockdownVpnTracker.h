@@ -16,7 +16,7 @@ using Elastos::Droid::Net::IIConnectivityManager;
 using Elastos::Droid::Net::IBaseNetworkStateTracker;
 using Elastos::Droid::Net::ILinkAddress;
 using Elastos::Droid::Net::INetworkInfo;
-using Elastos::Droid::Os::INetworkManagementService;
+using Elastos::Droid::Os::IINetworkManagementService;
 using Elastos::Droid::Internal::Net::IVpnProfile;
 using Elastos::Utility::IList;
 
@@ -64,7 +64,7 @@ public:
 
     CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ INetworkManagementService* netService,
+        /* [in] */ IINetworkManagementService* netService,
         /* [in] */ IIConnectivityManager* connService,
         /* [in] */ IBaseNetworkStateTracker* vpn,
         /* [in] */ IVpnProfile* profile);
@@ -121,7 +121,7 @@ private:
     static const Int32 ROOT_UID;
 
     AutoPtr<IContext> mContext;
-    AutoPtr<INetworkManagementService> mNetService;
+    AutoPtr<IINetworkManagementService> mNetService;
     // AutoPtr<CConnectivityService> mConnService;
     // AutoPtr<Elastos::Droid::Server::Connectivity::Vpn> mVpn;
     AutoPtr<IVpnProfile> mProfile;

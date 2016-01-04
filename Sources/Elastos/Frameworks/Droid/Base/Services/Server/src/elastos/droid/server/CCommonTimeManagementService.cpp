@@ -251,7 +251,7 @@ ECode CCommonTimeManagementService::SystemReady()
     mDetectedAtStartup = TRUE;
 
     AutoPtr<IInterface> tmpObj = ServiceManager::GetService(IContext::NETWORKMANAGEMENT_SERVICE);
-    mNetMgr = INetworkManagementService::Probe(tmpObj.Get());
+    mNetMgr = IINetworkManagementService::Probe(tmpObj.Get());
     assert(mNetMgr != NULL);
 
     // Network manager is running along-side us, so we should never receiver a remote exception

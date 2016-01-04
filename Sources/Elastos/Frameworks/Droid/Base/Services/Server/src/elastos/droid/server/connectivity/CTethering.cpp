@@ -1138,7 +1138,7 @@ CTethering::~CTethering()
 
 ECode CTethering::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ INetworkManagementService* nmService,
+    /* [in] */ IINetworkManagementService* nmService,
     /* [in] */ INetworkStatsService* statsService,
     /* [in] */ IIConnectivityManager* connService,
     /* [in] */ ILooper* looper)

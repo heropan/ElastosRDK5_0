@@ -13,6 +13,8 @@ module
     merge("am/ProcessRecord.car");
     merge("am/UriPermissionOwnerExternalToken.car");
 
+    merge("connectivity/NetworkAgentInfo.car");
+
     merge("content/SyncManager.car");
     merge("content/SyncOperation.car");
     merge("content/SyncStorageEngine.car");
@@ -49,8 +51,12 @@ module
     using interface Elastos.Droid.App.IWallpaperInfo;
     using interface Elastos.Droid.App.IIWallpaperManager;
     using interface Elastos.Droid.Os.IBinder;
+    using interface Elastos.Droid.Os.IHandler;
     using interface Elastos.Droid.Os.IIHardwareService;
     using interface Elastos.Droid.Os.IISchedulingPolicyService;
+    using interface Elastos.Droid.Os.IINetworkManagementService;
+    using interface Elastos.Droid.Net.IIConnectivityManager;
+    using interface Elastos.Droid.Net.IINetworkManagementEventObserver;
     using interface Elastos.Droid.Content.IContext;
     using interface Elastos.Droid.Content.IISyncContext;
     using interface Elastos.Droid.Content.IServiceConnection;
@@ -61,13 +67,14 @@ module
     using interface Elastos.Droid.Media.Projection.IIMediaProjectionCallback;
     using interface Elastos.Droid.View.IApplicationToken;
     using interface Elastos.Droid.Service.Wallpaper.IIWallpaperConnection;
-    using interface Elastos.IO.IFile;
     using interface Elastos.Droid.Internal.App.IIProcessStats;
 
     interface Elastos.Droid.Server.ISystemService;
     interface Elastos.Droid.Server.Wallpaper.IWallpaperConnection;
     interface Elastos.Droid.Server.Wallpaper.IWallpaperData;
     interface Elastos.Droid.Server.Wallpaper.IWallpaperManagerService;
+
+    using interface Elastos.IO.IFile;
 
     namespace Elastos {
     namespace Droid {
@@ -293,7 +300,7 @@ module
 
 //         constructor(
 //             [in] IContext* ctx,
-//             [in] INetworkManagementService* nmService,
+//             [in] IINetworkManagementService* nmService,
 //             [in] ITrustedTime* time,
 //             [in] String iface);
 
@@ -385,31 +392,6 @@ module
 
 //     } // namespace Am
 
-//     namespace Connectivity {
-
-//     [local]
-//     class CTethering {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] INetworkManagementService* nmService,
-//             [in] INetworkStatsService* statsService,
-//             [in] IIConnectivityManager* connService,
-//             [in] ILooper* looper);
-
-//         interface INetworkManagementEventObserver;
-//         interface IBinder;
-//     }
-
-//     class CVpnObserver {
-//         constructor(
-//             [in] Handle32 owner);
-
-//         interface INetworkManagementEventObserver;
-//         interface IBinder;
-//     }
-
-//     } // namespace Connectivity
-
 //     namespace Dreams {
 
 //     [local]
@@ -467,14 +449,14 @@ module
 //                 [in] IIActivityManager* activityManager,
 //                 [in] IIPowerManager* powerManager,
 //                 [in] INetworkStatsService* networkStats,
-//                 [in] INetworkManagementService* networkManagement);
+//                 [in] IINetworkManagementService* networkManagement);
 
 //             constructor(
 //                 [in] IContext* ctx,
 //                 [in] IIActivityManager* activityManager,
 //                 [in] IIPowerManager* powerManager,
 //                 [in] INetworkStatsService* networkStats,
-//                 [in] INetworkManagementService* networkManagement,
+//                 [in] IINetworkManagementService* networkManagement,
 //                 [in] ITrustedTime* time,
 //                 [in] IFile* systemDir,
 //                 [in] Boolean suppressDefaultPolicy);
@@ -486,12 +468,12 @@ module
 //         class CNetworkStatsService {
 //             constructor(
 //                 [in] IContext* ctx,
-//                 [in] INetworkManagementService* networkManager,
+//                 [in] IINetworkManagementService* networkManager,
 //                 [in] IIAlarmManager* alarmManager);
 
 //             constructor(
 //                 [in] IContext* ctx,
-//                 [in] INetworkManagementService* networkManager,
+//                 [in] IINetworkManagementService* networkManager,
 //                 [in] IIAlarmManager* alarmManager,
 //                 [in] ITrustedTime* time,
 //                 [in] IFile* systemDir,
@@ -747,13 +729,13 @@ module
 //     class CConnectivityService {
 //         constructor(
 //             [in] IContext* ctx,
-//             [in] INetworkManagementService* netManager,
+//             [in] IINetworkManagementService* netManager,
 //             [in] INetworkStatsService* statsService,
 //             [in] IINetworkPolicyManager* policyManager);
 
 //         constructor(
 //             [in] IContext* ctx,
-//             [in] INetworkManagementService* netManager,
+//             [in] IINetworkManagementService* netManager,
 //             [in] INetworkStatsService* statsService,
 //             [in] IINetworkPolicyManager* policyManager,
 //             [in] Handle32 netFactory);
@@ -792,7 +774,7 @@ module
 //         constructor(
 //             [in] IContext* ctx);
 
-//         interface INetworkManagementService;
+//         interface IINetworkManagementService;
 //     }
 
 //     [local]
@@ -1141,6 +1123,50 @@ module
 //     } // namespace Widget
 //     } // namespace Droid
 //     } // namespace Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+    namespace Connectivity {
+
+
+//     [local]
+//     class CTethering {
+//         constructor(
+//             [in] IContext* ctx,
+//             [in] IINetworkManagementService* nmService,
+//             [in] INetworkStatsService* statsService,
+//             [in] IIConnectivityManager* connService,
+//             [in] ILooper* looper);
+
+//         interface INetworkManagementEventObserver;
+//         interface IBinder;
+//     }
+
+//     class CVpnObserver {
+//         constructor(
+//             [in] Handle32 owner);
+
+//         interface INetworkManagementEventObserver;
+//         interface IBinder;
+//     }
+
+        [local]
+        class CNat464Xlat {
+            constructor(
+                [in] IContext* context,
+                [in] IINetworkManagementService* nmService,
+                [in] IIConnectivityManager* connService,
+                [in] IHandler* handler);
+
+            interface IINetworkManagementEventObserver;
+            interface IBinder;
+        }
+
+    } // namespace Connectivity
+    } // namespace Server
+    } // namepsace Droid
+    } // namespace Elastos
 
     namespace Elastos {
     namespace Droid {

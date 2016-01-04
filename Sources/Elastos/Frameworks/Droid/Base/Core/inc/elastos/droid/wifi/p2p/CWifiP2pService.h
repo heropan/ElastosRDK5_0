@@ -15,7 +15,7 @@ using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Os::IMessenger;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::SystemProperties;
-using Elastos::Droid::Os::INetworkManagementService;
+using Elastos::Droid::Os::IINetworkManagementService;
 using Elastos::Droid::App::IAlertDialog;
 using Elastos::Droid::App::INotification;
 using Elastos::Droid::App::IActivityManager;
@@ -936,7 +936,7 @@ public:
     //tether mode with p2p
     AutoPtr<IConnectivityManager> mConnectivityManager;
 
-    AutoPtr<INetworkManagementService> mNwService;
+    AutoPtr<IINetworkManagementService> mNwService;
     AutoPtr<DhcpStateMachine> mDhcpStateMachine;
 
     AutoPtr<IActivityManager> mActivityMgr;

@@ -105,13 +105,13 @@ CThrottleService::CThrottleService()
     mWarningNotificationSent = FALSE;
 }
 
-AutoPtr<INetworkManagementService> CThrottleService::GetNetworkManagementService()
+AutoPtr<IINetworkManagementService> CThrottleService::GetNetworkManagementService()
 {
     AutoPtr<IServiceManager> sm;
     CServiceManager::AcquireSingleton((IServiceManager**)&sm);
     AutoPtr<IBinder> b;
     sm->GetService(IContext::NETWORKMANAGEMENT_SERVICE, (IInterface**)(IBinder**)&b);
-    return INetworkManagementService::Probe(b.Get());
+    return IINetworkManagementService::Probe(b.Get());
 }
 
 ECode CThrottleService::constructor(
@@ -131,7 +131,7 @@ ECode CThrottleService::constructor(
 
 ECode CThrottleService::constructor(
     /* [in] */  IContext* context,
-    /* [in] */  INetworkManagementService* nmService,
+    /* [in] */  IINetworkManagementService* nmService,
     /* [in] */  ITrustedTime* time,
     /* [in] */  const String& iface)
 {

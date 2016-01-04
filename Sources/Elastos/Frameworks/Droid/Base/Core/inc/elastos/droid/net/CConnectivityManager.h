@@ -14,7 +14,7 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IMessenger;
-using Elastos::Droid::Os::INetworkManagementService;
+using Elastos::Droid::Os::IINetworkManagementService;
 using Elastos::Droid::Utility::IArrayMap;
 
 using Elastos::Net::IInetAddress;
@@ -1272,7 +1272,7 @@ private:
         /* [out] */ IConnectivityManagerNetworkCallback** result);
 
     CARAPI GetNetworkManagementService(
-        /* [out] */ INetworkManagementService** result);
+        /* [out] */ IINetworkManagementService** result);
 
     CARAPI IncCallbackHandlerRefCount();
 
@@ -1297,7 +1297,7 @@ private:
     static const String TAG;
     static const Boolean LEGACY_DBG; // STOPSHIP
     AutoPtr<IIConnectivityManager> mService;
-    AutoPtr<INetworkManagementService> mNMService;
+    AutoPtr<IINetworkManagementService> mNMService;
     static const AutoPtr<IHashMap> sLegacyRequests;
     AutoPtr<IArrayMap> mNetworkActivityListeners;
     static const Int32 BASE;

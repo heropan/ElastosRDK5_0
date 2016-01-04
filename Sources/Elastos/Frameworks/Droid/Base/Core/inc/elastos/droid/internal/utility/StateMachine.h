@@ -1,6 +1,6 @@
 
-#ifndef __STATEMACHINE_H__
-#define __STATEMACHINE_H__
+#ifndef __ELASTOS_DROID_INTERNAL_UTILITY_STATEMACHINE_H__
+#define __ELASTOS_DROID_INTERNAL_UTILITY_STATEMACHINE_H__
 
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/internal/utility/State.h"
@@ -22,7 +22,7 @@ namespace Droid {
 namespace Internal {
 namespace Utility {
 
-class StateMachine
+class ECO_PUBLIC StateMachine
     : public Object
     , public IStateMachine
 {
@@ -1086,10 +1086,10 @@ private:
     String mName;
 
     /** Message.what value when quitting */
-    static const Int32 SM_QUIT_CMD = -1;
+    ECO_LOCAL static const Int32 SM_QUIT_CMD = -1;
 
     /** Message.what value when initializing */
-    static const Int32 SM_INIT_CMD = -2;
+    ECO_LOCAL static const Int32 SM_INIT_CMD = -2;
 
     AutoPtr<SmHandler> mSmHandler;
     AutoPtr<IHandlerThread> mSmThread;
@@ -1106,4 +1106,4 @@ struct Conversion<Elastos::Droid::Internal::Utility::StateMachine::SmHandler::St
     enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
 };
 
-#endif //__STATEMACHINE_H__
+#endif //__ELASTOS_DROID_INTERNAL_UTILITY_STATEMACHINE_H__

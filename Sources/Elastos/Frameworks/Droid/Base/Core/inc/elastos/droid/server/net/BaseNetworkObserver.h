@@ -23,7 +23,7 @@ namespace Net {
  *
  * @hide
  */
-class BaseNetworkObserver
+class ECO_PUBLIC BaseNetworkObserver
     : public Object
     , public IINetworkManagementEventObserver
     , public IBinder
@@ -32,6 +32,8 @@ public:
     CAR_INTERFACE_DECL()
 
     BaseNetworkObserver();
+
+    virtual ~BaseNetworkObserver();
 
     CARAPI constructor();
 
@@ -89,10 +91,7 @@ public:
 
     ///pay for someone's error,he write a ToString in Binder.car
     CARAPI ToString(
-        /* [out] */ String* str)
-    {
-        return NOERROR;
-    }
+        /* [out] */ String* str);
     ///pay for someone's error
 };
 

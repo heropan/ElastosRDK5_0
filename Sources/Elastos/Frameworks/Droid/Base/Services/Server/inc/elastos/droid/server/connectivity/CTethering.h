@@ -419,7 +419,7 @@ public:
 
     CARAPI constructor(
           /* [in] */ IContext* context,
-          /* [in] */ INetworkManagementService* nmService,
+          /* [in] */ IINetworkManagementService* nmService,
           /* [in] */ INetworkStatsService* statsService,
           /* [in] */ IIConnectivityManager* connService,
           /* [in] */ ILooper* looper);
@@ -549,7 +549,7 @@ private:
     // upstream type list and the DUN_REQUIRED secure-setting
     Int32 mPreferredUpstreamMobileApn;
 
-    AutoPtr<INetworkManagementService> mNMService;
+    AutoPtr<IINetworkManagementService> mNMService;
     AutoPtr<INetworkStatsService> mStatsService;
     AutoPtr<IIConnectivityManager> mConnService;
     AutoPtr<ILooper> mLooper;
