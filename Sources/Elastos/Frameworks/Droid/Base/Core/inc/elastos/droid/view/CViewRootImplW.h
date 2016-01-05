@@ -2,10 +2,13 @@
 #ifndef __ELASTOS_DROID_VIEW_CVIEWROOTIMPLW_H__
 #define __ELASTOS_DROID_VIEW_CVIEWROOTIMPLW_H__
 
+#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_View_CViewRootImplW.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Content::Res::IConfiguration;
 
@@ -13,18 +16,27 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-class ViewRootImpl;
+#ifndef VIEWIMPL_PROBE
+#define VIEWIMPL_PROBE(host) ((ViewRootImpl*)IViewRootImpl::Probe(host))
+#endif
 
 CarClass(CViewRootImplW)
+    , public Object
+    , public IIWindow
+    , public IBinder
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CARAPI constructor(
         /* [in] */ Handle32 viewRoot);
 
     CARAPI Resized(
         /* [in] */ IRect* frame,
-        /* [in] */ IRect* coveredInsets,
+        /* [in] */ IRect* overscanInsets,
+        /* [in] */ IRect* contentInsets,
         /* [in] */ IRect* visibleInsets,
+        /* [in] */ IRect* stableInsets,
         /* [in] */ Boolean reportDraw,
         /* [in] */ IConfiguration* newConfig);
 
@@ -34,9 +46,6 @@ public:
 
     CARAPI DispatchAppVisibility(
         /* [in] */ Boolean visible);
-
-    CARAPI DispatchScreenState(
-        /* [in] */ Boolean on);
 
     CARAPI DispatchGetNewSurface();
 
@@ -87,7 +96,7 @@ private:
     static CARAPI_(Int32) CheckCallingPermission(
         /* [in] */ const String& permission);
 
-    CARAPI_(AutoPtr<ViewRootImpl>) GetViewRootImpl();
+    CARAPI_(AutoPtr<IViewRootImpl>) GetViewRootImpl();
 
 private:
     AutoPtr<IWeakReference> mViewAncestor;

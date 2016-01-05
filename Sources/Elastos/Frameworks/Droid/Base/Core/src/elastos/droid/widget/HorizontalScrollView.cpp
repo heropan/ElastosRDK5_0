@@ -853,7 +853,9 @@ ECode HorizontalScrollView::OnGenericMotionEvent(
                     }
 
                     if(hscroll != 0) {
-                        Int32 delta = (Int32)(hscroll * GetHorizontalScrollFactor());
+                        Float scrollFactor;
+                        GetHorizontalScrollFactor(&scrollFactor);
+                        Int32 delta = (Int32)(hscroll * scrollFactor);
                         Int32 range = GetScrollRange();
                         Int32 oldScrollX = mScrollX;
                         Int32 newScrollX = oldScrollX + delta;

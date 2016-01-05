@@ -1638,7 +1638,7 @@ ECode CResources::GetIdentifier(
     return NOERROR;
 }
 
-Boolean ResourceHasPackage(
+Boolean CResources::ResourceHasPackage(
     /* [in] */ Int32 resid)
 {
     return (resid >> 24) != 0;

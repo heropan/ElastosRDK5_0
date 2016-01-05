@@ -6254,7 +6254,9 @@ ECode AbsListView::OnGenericMotionEvent(
                     Float vscroll;
                     event->GetAxisValue(IMotionEvent::AXIS_VSCROLL, &vscroll);
                     if (vscroll != 0) {
-                        Int32 delta = (Int32) (vscroll * GetVerticalScrollFactor());
+                        Float scrollFactor;
+                        GetVerticalScrollFactor(&scrollFactor);
+                        Int32 delta = (Int32) (vscroll * scrollFactor);
                         if (!TrackMotionScroll(delta, delta)) {
                             *res = TRUE;
                             return NOERROR;

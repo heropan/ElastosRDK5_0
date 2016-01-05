@@ -1,5 +1,6 @@
 
 #include <Elastos.CoreLibrary.Utility.h>
+#include "elastos/droid/animation/CLayoutTransition.h"
 #include "elastos/droid/graphics/Insets.h"
 #include "elastos/droid/graphics/CPointF.h"
 #include "elastos/droid/graphics/Color.h"
@@ -8,10 +9,19 @@
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/view/ViewGroup.h"
+#include "elastos/droid/view/ViewRootImpl.h"
+#include "elastos/droid/view/FocusFinder.h"
+#include "elastos/droid/view/CMotionEvent.h"
+#include "elastos/droid/view/CViewGroupOverlay.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
+#include "elastos/droid/view/animation/CTransformation.h"
+#include "elastos/droid/view/animation/AnimationUtils.h"
+#include "elastos/droid/view/animation/LayoutAnimationController.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::Animation::CLayoutTransition;
 using Elastos::Droid::Animation::EIID_ITransitionListener;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Pm::IPackageManager;
@@ -23,9 +33,18 @@ using Elastos::Droid::Graphics::CPaint;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Utility::IDisplayMetrics;
+using Elastos::Droid::View::ViewRootImpl;
+using Elastos::Droid::View::FocusFinder;
+using Elastos::Droid::View::CMotionEvent;
+using Elastos::Droid::View::CViewGroupOverlay;
+using Elastos::Droid::View::CViewGroupLayoutParams;
 using Elastos::Droid::View::Animation::IAnimationParameters;
+using Elastos::Droid::View::Animation::CTransformation;
+using Elastos::Droid::View::Animation::AnimationUtils;
+using Elastos::Droid::View::Animation::LayoutAnimationController;
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Core::CString;
+using Elastos::Core::StringUtils;
 using Elastos::Utility::ICollections;
 using Elastos::Utility::CCollections;
 using Elastos::Utility::CArrayList;
@@ -140,7 +159,7 @@ ECode ViewGroup::LayoutParams::SizeToString(
         *des = String("match-parent");
         return NOERROR;
     }
-//    return String.valueOf(size);
+    *des = StringUtils::ToString(size);
     return E_NOT_IMPLEMENTED;
 }
 
@@ -555,6 +574,7 @@ ECode ViewGroup::MarginLayoutParams::OnDebugDraw(
     /* [in] */ IView* view,
     /* [in] */ ICanvas* canvas)
 {
+    assert(0 && "TODO");
     /*AutoPtr<IInsets> oi = IsLayoutModeOptical(view.mParent) ? view.getOpticalInsets() : Insets.NONE;
 
     fillDifference(canvas,
@@ -1094,8 +1114,7 @@ ViewGroup::ViewGroup()
     , mLayoutCalledWhileSuppressed(FALSE)
     , mChildCountWithTransientState(0)
 {
-    assert(0 && "TODO");
-    //CTransformation::New((ITransformation**)&mChildTransformation);
+    CTransformation::New((ITransformation**)&mChildTransformation);
     CPointF::New((IPointF**)&mLocalPoint);
 
     mLayoutTransitionListener = new LayoutTransitionListener(this);
@@ -1232,9 +1251,8 @@ void ViewGroup::InitFromAttributes(
                 a->GetResourceId(attr, -1, &id);
                 if (id > 0) {
                     AutoPtr<ILayoutAnimationController> controller;
-                    assert(0 && "TODO");
-                    /*AnimationUtils::LoadLayoutAnimation(
-                        mContext, id, (ILayoutAnimationController**)&controller);*/
+                    AnimationUtils::LoadLayoutAnimation(
+                        mContext, id, (ILayoutAnimationController**)&controller);
                     SetLayoutAnimation(controller);
                 }
                 break;
@@ -1257,14 +1275,12 @@ void ViewGroup::InitFromAttributes(
                 a->GetBoolean(attr, FALSE, &animateLayoutChanges);
                 if (animateLayoutChanges) {
                     AutoPtr<ILayoutTransition> transition;
-                    assert(0 && "TODO");
-                    //CLayoutTransition::New((ILayoutTransition**)&transition);
+                    CLayoutTransition::New((ILayoutTransition**)&transition);
                     SetLayoutTransition(transition);
                 }
                 break;
             }
-            assert(0 && "TODO");
-            /*case R::styleable::ViewGroup_layoutMode: {
+            case R::styleable::ViewGroup_layoutMode: {
                 Int32 temp;
                 a->GetInt32(attr, LAYOUT_MODE_UNDEFINED, &temp);
                 SetLayoutMode(temp);
@@ -1282,7 +1298,7 @@ void ViewGroup::InitFromAttributes(
                 a->GetBoolean(attr, FALSE, &value);
                 SetTouchscreenBlocksFocus(value);
                 break;
-            }*/
+            }
             default:
                 break;
         }
@@ -1428,9 +1444,8 @@ ECode ViewGroup::FocusSearch(
         // tree for focus searching; otherwise we could be focus searching
         // into other tabs.  see LocalActivityManager and TabHost for more info
         //
-        assert(0 && "TODO");
-        /*FocusFinder::GetInstance()->FindNextFocus(
-            THIS_PROBE(IViewGroup), focused, direction, res);*/
+        FocusFinder::GetInstance()->FindNextFocus(
+            THIS_PROBE(IViewGroup), focused, direction, res);
     }
     else if (mParent != NULL) {
         mParent->FocusSearch(focused, direction, res);
@@ -2232,8 +2247,7 @@ ECode ViewGroup::DispatchDragEvent(
         // the way down to the final leaf view that is handling the LOCATION event
         // before reporting the new potential recipient to the framework.
         if (mCurrentDragView != target) {
-            assert(0 && "TODO");
-            //root->SetDragFocus(IView::Probe(target));
+            root->SetDragFocus(IView::Probe(target));
 
             // If we've dragged off of a child view, send it the EXITED message
             if (mCurrentDragView != NULL) {
@@ -2727,15 +2741,14 @@ Boolean ViewGroup::DispatchHoverEvent(
 void ViewGroup::ExitHoverTargets()
 {
     if (mHoveredSelf || mFirstHoverTarget != NULL) {
-        assert(0 && "TODO");
-        /*Int64 now = SystemClock::GetUptimeMillis();
-        AutoPtr<CMotionEvent> event;
+        Int64 now = SystemClock::GetUptimeMillis();
+        AutoPtr<IMotionEvent> event;
         CMotionEvent::Obtain(
             now, now, IMotionEvent::ACTION_HOVER_EXIT,
-            0.0f, 0.0f, 0, (CMotionEvent**)&event);
-        event->SetSource(IInputDevice::SOURCE_TOUCHSCREEN);
-        DispatchHoverEvent(event.Get());
-        event->Recycle();*/
+            0.0f, 0.0f, 0, (IMotionEvent**)&event);
+        IInputEvent::Probe(event)->SetSource(IInputDevice::SOURCE_TOUCHSCREEN);
+        DispatchHoverEvent(event);
+        IInputEvent::Probe(event)->Recycle();
     }
 }
 
@@ -2756,15 +2769,14 @@ void ViewGroup::CancelHoverTarget(
 
             target->Recycle();
 
-            assert(0 && "TODO");
-            /*Int64 now = SystemClock::GetUptimeMillis();
-            AutoPtr<CMotionEvent> event;
+            Int64 now = SystemClock::GetUptimeMillis();
+            AutoPtr<IMotionEvent> event;
             CMotionEvent::Obtain(
                 now, now, IMotionEvent::ACTION_HOVER_EXIT,
-                0.0f, 0.0f, 0, (CMotionEvent**)&event);
-            event->SetSource(IInputDevice::SOURCE_TOUCHSCREEN);
-            (VIEW_PROBE(view))->DispatchHoverEvent(event.Get());
-            event->Recycle();*/
+                0.0f, 0.0f, 0, (IMotionEvent**)&event);
+            IInputEvent::Probe(event)->SetSource(IInputDevice::SOURCE_TOUCHSCREEN);
+            (VIEW_PROBE(view))->DispatchHoverEvent(event);
+            IInputEvent::Probe(event)->Recycle();
             return;
         }
 
@@ -2818,12 +2830,10 @@ AutoPtr<IMotionEvent> ViewGroup::ObtainMotionEventNoHistoryOrSelf(
     if (size == 0) {
         return event;
     }
-    assert(0 && "TODO");
-    /*AutoPtr<CMotionEvent> motionEvent;
-    CMotionEvent::ObtainNoHistory((CMotionEvent*)event, (CMotionEvent**)&motionEvent);
+    AutoPtr<IMotionEvent> motionEvent;
+    CMotionEvent::ObtainNoHistory((CMotionEvent*)event, (IMotionEvent**)&motionEvent);
 
-    return motionEvent;*/
-    return NULL;
+    return motionEvent;
 }
 
 Boolean ViewGroup::DispatchGenericPointerEvent(
@@ -2893,15 +2903,15 @@ Boolean ViewGroup::DispatchTransformedGenericPointerEvent(
 
     Boolean handled = FALSE;
     if (!child->HasIdentityMatrix()) {
-        assert(0 && "TODO");
-        /*AutoPtr<CMotionEvent> transformedEvent;
-        CMotionEvent::Obtain((CMotionEvent*)event, (CMotionEvent**)&transformedEvent);
+        AutoPtr<IMotionEvent> transformedEvent;
+        CMotionEvent::Obtain(event, (IMotionEvent**)&transformedEvent);
         transformedEvent->OffsetLocation(offsetX, offsetY);
 
-        AutoPtr<IMatrix> matrix = child->GetInverseMatrix();
+        AutoPtr<IMatrix> matrix;
+        child->GetInverseMatrix((IMatrix**)&matrix);
         transformedEvent->Transform(matrix);
-        handled = child->DispatchGenericMotionEvent(transformedEvent);
-        transformedEvent->Recycle();*/
+        child->DispatchGenericMotionEvent(transformedEvent, &handled);
+        IInputEvent::Probe(transformedEvent)->Recycle();
     }
     else {
         event->OffsetLocation(offsetX, offsetY);
@@ -3160,12 +3170,11 @@ void ViewGroup::CancelAndClearTouchTargets(
         Boolean syntheticEvent = FALSE;
         AutoPtr<IMotionEvent> temp = event;
         if (temp == NULL) {
-            assert(0 && "TODO");
-            /*Int64 now = SystemClock::GetUptimeMillis();
+            Int64 now = SystemClock::GetUptimeMillis();
             CMotionEvent::Obtain(
                 now, now, IMotionEvent::ACTION_CANCEL,
-                0.0f, 0.0f, 0, (CMotionEvent**)&temp);
-            temp->SetSource(IInputDevice::SOURCE_TOUCHSCREEN);*/
+                0.0f, 0.0f, 0, (IMotionEvent**)&temp);
+            IInputEvent::Probe(temp)->SetSource(IInputDevice::SOURCE_TOUCHSCREEN);
             syntheticEvent = TRUE;
         }
 
@@ -3245,16 +3254,15 @@ void ViewGroup::CancelTouchTarget(
             }
             target->Recycle();
 
-            assert(0 && "TODO");
-            /*Int64 now = SystemClock::GetUptimeMillis();
-            AutoPtr<CMotionEvent> event;
+            Int64 now = SystemClock::GetUptimeMillis();
+            AutoPtr<IMotionEvent> event;
             CMotionEvent::Obtain(
                 now, now, IMotionEvent::ACTION_CANCEL,
-                0.0f, 0.0f, 0, (CMotionEvent**)&event);
-            event->SetSource(IInputDevice::SOURCE_TOUCHSCREEN);
+                0.0f, 0.0f, 0, (IMotionEvent**)&event);
+            IInputEvent::Probe(event)->SetSource(IInputDevice::SOURCE_TOUCHSCREEN);
             Boolean res;
             view->DispatchTouchEvent(event, &res);
-            event->Recycle();*/
+            IInputEvent::Probe(event)->Recycle();
             return;
         }
         predecessor = target;
@@ -3360,11 +3368,10 @@ Boolean ViewGroup::DispatchTransformedTouchEvent(
             }
             return handled;
         }
-        assert(0 && "TODO");
-        /*AutoPtr<CMotionEvent> temp;
+        AutoPtr<IMotionEvent> temp;
         CMotionEvent::Obtain(
-            (CMotionEvent*)event, (CMotionEvent**)&temp);
-        transformedEvent = temp;*/
+            event, (IMotionEvent**)&temp);
+        transformedEvent = temp;
     }
     else {
         event->Split(newPointerIdBits, (IMotionEvent**)&transformedEvent);
@@ -4327,8 +4334,7 @@ void ViewGroup::DispatchDraw(
             more |= DrawChild(canvas, child, drawingTime);
         }
     }
-    assert(0 && "TODO");
-    //if (usingRenderNodeProperties) canvas->InsertInorderBarrier();
+    if (usingRenderNodeProperties) canvas->InsertInorderBarrier();
 
     if (DebugDraw()) {
         OnDebugDraw(canvas);
@@ -4383,8 +4389,7 @@ ECode ViewGroup::GetOverlay(
     VALIDATE_NOT_NULL(overlay)
     if (mOverlay == NULL) {
         AutoPtr<IViewGroupOverlay> temp;
-        assert(0 && "TODO");
-        //ViewGroupOverlay::New((IViewGroupOverlay**)&temp);
+        CViewGroupOverlay::New(mContext, (IView*)this->Probe(EIID_IView), (IViewGroupOverlay**)&temp);
         mOverlay = IViewOverlay::Probe(temp);
         *overlay = IViewGroupOverlay::Probe(mOverlay);
         REFCOUNT_ADD(*overlay)
@@ -4704,8 +4709,7 @@ Boolean ViewGroup::GetChildStaticTransformation(
 AutoPtr<ITransformation> ViewGroup::GetChildTransformation()
 {
     if (mChildTransformation == NULL) {
-        assert(0 && "TODO");
-        //CTransformation::New((ITransformation**)&mChildTransformation);
+        CTransformation::New((ITransformation**)&mChildTransformation);
     }
     return mChildTransformation;
 }
@@ -5221,8 +5225,7 @@ ECode ViewGroup::AttachLayoutAnimationParameters(
     AutoPtr<IAnimationParameters> animationParams;
     params->GetLayoutAnimationParameters((IAnimationParameters**)&animationParams);
     if (animationParams == NULL) {
-        assert(0 && "TODO");
-        //animationParams = new LayoutAnimationController::AnimationParameters();
+        animationParams = new LayoutAnimationController::AnimationParameters();
         params->SetLayoutAnimationParameters(animationParams);
     }
 
@@ -5738,12 +5741,11 @@ ECode ViewGroup::InvalidateChild(
                     view->mPrivateFlags |= PFLAG_DRAW_ANIMATION;
                 }
                 else if (parent != NULL) {
-                    assert(0 && "TODO");
-                    /*ViewRootImpl* viewRootImpl = (ViewRootImpl*)parent.Get();
+                    ViewRootImpl* viewRootImpl = VIEWIMPL_PROBE(parent);
 
                     if (viewRootImpl != NULL) {
                         viewRootImpl->mIsAnimating = TRUE;
-                    }*/
+                    }
                 }
             }
 
@@ -5875,16 +5877,15 @@ ECode ViewGroup::DamageChildDeferred(
     AutoPtr<IViewParent> parent;
     GetParent((IViewParent**)&parent);
     while (parent != NULL) {
-        assert(0 && "TODO");
-        /*if (IViewGroup::Probe(parent)) {
+        if (IViewGroup::Probe(parent)) {
            parent->GetParent((IViewParent**)&parent);
-        } else if (ViewRootImpl::Probe(parent)) {
-            ((ViewRootImpl*)parent)->Invalidate();
+        } else if (IViewRootImpl::Probe(parent)) {
+            VIEWIMPL_PROBE(parent)->Invalidate();
             *res = TRUE;
             return NOERROR;
         } else {
             parent = NULL;
-        }*/
+        }
     }
     *res = FALSE;
     return NOERROR;
@@ -6392,8 +6393,7 @@ ECode ViewGroup::GenerateLayoutParams(
     AutoPtr<IViewGroupLayoutParams> temp;
     AutoPtr<IContext> ctx;
     GetContext((IContext**)&ctx);
-    assert(0 && "TODO");
-    //CViewGroupLayoutParams::New(ctx, attrs, (IViewGroupLayoutParams**)&temp);
+    CViewGroupLayoutParams::New(ctx, attrs, (IViewGroupLayoutParams**)&temp);
     *params = temp;
     REFCOUNT_ADD(*params);
     return NOERROR;
@@ -6417,10 +6417,9 @@ ECode ViewGroup::GenerateDefaultLayoutParams(
 {
     VALIDATE_NOT_NULL(params);
     AutoPtr<IViewGroupLayoutParams> temp;
-    assert(0 && "TODO");
-    /*CViewGroupLayoutParams::New(
+    CViewGroupLayoutParams::New(
         IViewGroupLayoutParams::WRAP_CONTENT,
-        IViewGroupLayoutParams::WRAP_CONTENT, (IViewGroupLayoutParams**)&temp);*/
+        IViewGroupLayoutParams::WRAP_CONTENT, (IViewGroupLayoutParams**)&temp);
     *params = temp;
     REFCOUNT_ADD(*params);
     return NOERROR;
@@ -6850,8 +6849,7 @@ ECode ViewGroup::DispatchApplyWindowInsets(
         for (Int32 i = 0; i < count; i++) {
             AutoPtr<IView> temp;
             GetChildAt(i, (IView**)&temp);
-            assert(0 && "TODO");
-            //temp->DispatchApplyWindowInsets(insets, (IWindowInsets**)&insets);
+            temp->DispatchApplyWindowInsets(insets, (IWindowInsets**)&insets);
             if ((insets->IsConsumed(&isConsumed), isConsumed)) {
                 break;
             }
@@ -7010,12 +7008,11 @@ ECode ViewGroup::SetLayoutAnimationListener(
 ECode ViewGroup::RequestTransitionStart(
     /* [in] */ ILayoutTransition* transition)
 {
-    assert(0 && "TODO");
-    /*AutoPtr<IViewRootImpl> viewAncestor;
+    AutoPtr<IViewRootImpl> viewAncestor;
     GetViewRootImpl((IViewRootImpl**)&viewAncestor);
     if (viewAncestor != NULL) {
         viewAncestor->RequestTransitionStart(transition);
-    }*/
+    }
 
     return NOERROR;
 }

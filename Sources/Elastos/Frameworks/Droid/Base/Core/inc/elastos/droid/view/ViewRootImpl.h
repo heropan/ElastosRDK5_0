@@ -6,7 +6,9 @@
 #include "Elastos.Droid.Animation.h"
 #include "Elastos.Droid.Hardware.h"
 #include "elastos/droid/graphics/CRegion.h"
+#include "elastos/droid/internal/view/BaseSurfaceHolder.h"
 #include "elastos/droid/view/View.h"
+#include "elastos/droid/view/InputEventReceiver.h"
 #include "elastos/droid/os/Handler.h"
 #include <elastos/utility/etl/HashSet.h>
 
@@ -14,12 +16,14 @@ using Elastos::Droid::Animation::ILayoutTransition;
 using Elastos::Droid::Content::IComponentCallbacks;
 using Elastos::Droid::Content::IClipDescription;
 using Elastos::Droid::Content::Res::ICompatibilityInfoTranslator;
-using Elastos::Droid::Graphics::CRegion;
-using Elastos::Droid::Graphics::IPointF;
 using Elastos::Droid::Hardware::Display::IDisplayListener;
 using Elastos::Droid::Hardware::Display::IDisplayManager;
+using Elastos::Droid::Graphics::CRegion;
+using Elastos::Droid::Graphics::IPointF;
+using Elastos::Droid::Internal::View::BaseSurfaceHolder;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Utility::ITypedValue;
+using Elastos::Droid::View::InputEventReceiver;
 using Elastos::Droid::View::InputMethod::IInputMethodManagerFinishedInputEventCallback;
 using Elastos::Droid::View::Accessibility::IAccessibilityManager;
 using Elastos::Droid::View::Accessibility::IAccessibilityManagerAccessibilityStateChangeListener;
@@ -27,13 +31,18 @@ using Elastos::Droid::View::Accessibility::IAccessibilityManagerHighTextContrast
 using Elastos::Droid::Widget::IScroller;
 using Elastos::Droid::Media::IAudioManager;
 using Elastos::Core::IStringBuilder;
+using Elastos::Core::IThread;
+using Elastos::Utility::IHashSet;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileDescriptor;
-using Elastos::Utility::Etl::HashSet;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
+
+#ifndef WINLAY_PROBE
+#define WINLAY_PROBE(obj) ((CWindowManagerLayoutParams*)IWindowManagerLayoutParams::Probe(obj))
+#endif
 
 //class Scroller;
 class CViewRootImplW;
@@ -216,8 +225,7 @@ private:
 
 
     class WindowInputEventReceiver
-        : public Object
-        //: public InputEventReceiver
+        : public InputEventReceiver
     {
     public:
         WindowInputEventReceiver(
@@ -293,8 +301,7 @@ private:
 
 
     class TakenSurfaceHolder
-        : public Object
-        //: public BaseSurfaceHolder
+        : public BaseSurfaceHolder
     {
     public:
         TakenSurfaceHolder(
@@ -302,7 +309,7 @@ private:
 
         CARAPI_(Boolean) OnAllowLockCanvas();
 
-        CARAPI_(void) OnRelayoutContainer();
+        CARAPI OnRelayoutContainer();
 
         CARAPI SetFormat(
             /* [in] */ Int32 format);
@@ -1768,7 +1775,7 @@ public:
 
     AutoPtr<ITypedValue> mTmpValue;
 
-    //AutoPtr<IThread> mThread; // final Thread mThread;
+    AutoPtr<IThread> mThread; // final Thread mThread;
 
     // final WindowLeaked mLocation;
 
@@ -1917,7 +1924,7 @@ public:
 
     AutoPtr<SendWindowContentChangedAccessibilityEvent> mSendWindowContentChangedAccessibilityEvent;
 
-    //HashSet<AutoPtr<IView> > mTempHashSet;
+    AutoPtr<IHashSet> mTempHashSet;
 
     Int32 mHardwareXOffset;
     Int32 mHardwareYOffset;

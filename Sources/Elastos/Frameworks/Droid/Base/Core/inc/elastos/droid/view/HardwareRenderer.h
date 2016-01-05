@@ -4,11 +4,12 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
+#include "elastos/droid/view/View.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::IRect;
-
+using Elastos::Droid::View::View;
 using Elastos::IO::IFile;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileDescriptor;
@@ -84,6 +85,29 @@ public:
      */
     static CARAPI_(void) SetupDiskCache(
         /* [in] */ IFile* cacheDir);
+
+    /**
+     * Creates a hardware renderer using OpenGL.
+     *
+     * @param translucent True if the surface is translucent, false otherwise
+     *
+     * @return A hardware renderer backed by OpenGL.
+     */
+    static CARAPI_(AutoPtr<HardwareRenderer>) Create(
+        /* [in] */ IContext* context,
+        /* [in] */ Boolean translucent);
+
+    /**
+     * Draws the specified view.
+     *
+     * @param view The view to draw.
+     * @param attachInfo AttachInfo tied to the specified view.
+     * @param callbacks Callbacks invoked when drawing happens.
+     */
+    virtual void Draw(
+        /* [in] */ IView* view,
+        /* [in] */ View::AttachInfo* attachInfo,
+        /* [in] */ IHardwareDrawCallbacks* callbacks) = 0;
 
 protected:
     /**
@@ -198,18 +222,6 @@ protected:
     virtual CARAPI_(void) InvalidateRoot() = 0;
 
     /**
-     * Draws the specified view.
-     *
-     * @param view The view to draw.
-     * @param attachInfo AttachInfo tied to the specified view.
-     * @param callbacks Callbacks invoked when drawing happens.
-     */
-    // virtual void Draw(
-    //     /* [in] */ IView* view,
-    //     /* [in] */ View::AttachInfo* attachInfo,
-    //     /* [in] */ HardwareDrawCallbacks* callbacks) = 0;
-
-    /**
      * Creates a new hardware layer. A hardware layer built by calling this
      * method will be treated as a texture layer, instead of as a render target.
      *
@@ -271,17 +283,6 @@ protected:
      */
     virtual CARAPI_(void) SetOpaque(
         /* [in] */ Boolean opaque) = 0;
-
-    /**
-     * Creates a hardware renderer using OpenGL.
-     *
-     * @param translucent True if the surface is translucent, false otherwise
-     *
-     * @return A hardware renderer backed by OpenGL.
-     */
-    static CARAPI_(AutoPtr<HardwareRenderer>) Create(
-        /* [in] */ IContext* context,
-        /* [in] */ Boolean translucent);
 
     /**
      * Invoke this method when the system is running out of memory. This
