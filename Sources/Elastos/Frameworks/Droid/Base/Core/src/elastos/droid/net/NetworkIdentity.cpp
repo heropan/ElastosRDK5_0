@@ -1,6 +1,7 @@
 
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Wifi.h"
+#include "Elastos.Droid.Telephony.h"
 #include "_Elastos.Droid.Core.h"
 #include "elastos/droid/net/NetworkIdentity.h"
 #include "elastos/droid/net/CConnectivityManager.h"

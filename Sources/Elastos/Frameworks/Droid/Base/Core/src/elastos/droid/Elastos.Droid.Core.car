@@ -166,13 +166,16 @@ module
     //merge("../../../car/elastos/droid/bluetooth.car");
     //merge("../../../car/elastos/droid/menu1.car");
     //merge("../../../car/elastos/droid/menu2.car");
-    //merge("../../../car/elastos/droid/content2.car");
     //merge("../../../car/elastos/droid/app/ResolverActivity.car");
     //merge("../../../car/elastos/droid/pppoe.car");
     //merge("../../../car/elastos/droid/ethernet.car");
 
     submodule Elastos.Droid.Speech {
     merge("../../../car/elastos/droid/speech.car");
+    }
+
+    submodule Elastos.Droid.Telephony {
+    merge("../../../car/elastos/droid/telephony.car");
     }
 
     submodule Elastos.Droid.Webkit {
@@ -191,5 +194,4 @@ module
 
     //merge("../../../car/elastos/droid/systemui.car");
     //merge("../../../car/elastos/droid/swextend.car");
-    //merge("../../../car/elastos/droid/telephony.car");
 }

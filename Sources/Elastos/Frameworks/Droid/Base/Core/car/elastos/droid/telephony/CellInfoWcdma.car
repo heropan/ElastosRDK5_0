@@ -1,8 +1,7 @@
 
 module
 {
-
-    interface Elastos.Droid.Telephony.ICellSignalStrengthGsm;
+    interface Elastos.Droid.Telephony.ICellSignalStrengthWcdma;
 
     namespace Elastos {
     namespace Droid {
@@ -13,19 +12,19 @@ module
      * interface Elastos.Droid.Telephony.ICellInfo
      * interface IParcelable
      */
-    interface ICellInfoGsm {
+    interface ICellInfoWcdma {
 
         GetCellIdentity(
-            [out] ICellIdentityGsm** res);
+            [out] ICellIdentityWcdma** res);
 
         SetCellIdentity(
-            [in] ICellIdentityGsm* cid);
+            [in] ICellIdentityWcdma* cid);
 
         GetCellSignalStrength(
-            [out] ICellSignalStrengthGsm** res);
+            [out] ICellSignalStrengthWcdma** res);
 
         SetCellSignalStrength(
-            [in] ICellSignalStrengthGsm* css);
+            [in] ICellSignalStrengthWcdma* css);
 
     }
 

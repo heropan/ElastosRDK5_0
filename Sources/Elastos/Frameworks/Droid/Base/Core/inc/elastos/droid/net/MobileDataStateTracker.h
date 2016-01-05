@@ -4,6 +4,7 @@
 
 #include <Elastos.CoreLibrary.Utility.Concurrent.h>
 #include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Telephony.h"
 #include "_Elastos.Droid.Core.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/BroadcastReceiver.h"

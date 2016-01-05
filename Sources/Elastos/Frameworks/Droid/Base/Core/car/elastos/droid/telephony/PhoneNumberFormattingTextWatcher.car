@@ -1,8 +1,6 @@
 
 module
 {
-
-
     namespace Elastos {
     namespace Droid {
     namespace Telephony {
@@ -12,7 +10,6 @@ module
      * interface Elastos.Droid.Text.ITextWatcher
      */
     interface IPhoneNumberFormattingTextWatcher {
-
     }
 
     } // namespace Telephony

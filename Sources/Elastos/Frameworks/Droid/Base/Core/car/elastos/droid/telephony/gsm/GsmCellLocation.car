@@ -1,10 +1,12 @@
 
 module
 {
+    interface Elastos.Droid.Os.IBundle;
 
     namespace Elastos {
     namespace Droid {
     namespace Telephony {
+    namespace Gsm {
 
     /**
      * @Involve
@@ -36,18 +38,16 @@ module
             [in] Int32 lac,
             [in] Int32 cid);
 
-        GetHashCode(
-            [out] Int32* hashCode);
-
-        Equals(
-            [in] IInterface* o,
-            [out] Boolean* result);
-
-        ToString(
-            [out] String* str);
-
+        /**
+         * Set intent notifier Bundle based on service state
+         *
+         * @param m intent notifier Bundle
+         */
+        FillInNotifierBundle(
+            [in] IBundle* m);
     }
 
+    } // namespace Gsm
     } // namespace Telephony
     } // namespace Droid
     } // namespace Elastos

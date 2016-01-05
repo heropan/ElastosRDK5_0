@@ -6,6 +6,10 @@ module
     namespace Droid {
     namespace Telephony {
 
+    /**
+     * @Involve
+     * interface IParcelable
+     */
     interface ICellInfo {
         // Type to distinguish where time stamp gets recorded.
 
@@ -37,16 +41,6 @@ module
 
         SetTimeStampType(
             [in] Int32 timeStampType);
-
-        GetHashCode(
-            [out] Int32* hashCode);
-
-        Equals(
-            [in] IInterface* other,
-            [out] Boolean* result);
-
-        ToString(
-            [out] String* str);
     }
 
     } // namespace Telephony

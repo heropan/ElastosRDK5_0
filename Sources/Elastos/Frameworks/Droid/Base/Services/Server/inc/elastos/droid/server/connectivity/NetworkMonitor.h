@@ -13,45 +13,31 @@ using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Net::IConnectivityManager;
 using Elastos::Droid::Net::INetwork;
 using Elastos::Droid::Net::INetworkCapabilities;
 using Elastos::Droid::Net::INetworkInfo;
 using Elastos::Droid::Net::ITrafficStats;
-using Elastos::Droid::Net::Wifi::IWifiInfo;
-using Elastos::Droid::Net::Wifi::IWifiManager;
+using Elastos::Droid::Wifi::IWifiInfo;
+using Elastos::Droid::Wifi::IWifiManager;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IMessage;
-using Elastos::Droid::Os::ISystemClock;
 using Elastos::Droid::Os::ISystemProperties;
 using Elastos::Droid::Os::IUserHandle;
-using Elastos::Droid::Provider::ISettings;
-using Elastos::Droid::Telephony::ICellIdentityCdma;
-using Elastos::Droid::Telephony::ICellIdentityGsm;
-using Elastos::Droid::Telephony::ICellIdentityLte;
-using Elastos::Droid::Telephony::ICellIdentityWcdma;
-using Elastos::Droid::Telephony::ICellInfo;
-using Elastos::Droid::Telephony::ICellInfoCdma;
-using Elastos::Droid::Telephony::ICellInfoGsm;
-using Elastos::Droid::Telephony::ICellInfoLte;
-using Elastos::Droid::Telephony::ICellInfoWcdma;
 using Elastos::Droid::Telephony::ITelephonyManager;
 
-using Elastos::Droid::Internal::Utility::IProtocol;
 using Elastos::Droid::Internal::Utility::State;
 using Elastos::Droid::Internal::Utility::StateMachine;
-using Elastos::Droid::Server::CConnectivityService;
 using Elastos::Droid::Server::Connectivity::INetworkAgentInfo;
 
-using Elastos::Net::IHttpURLConnection;
-using Elastos::Net::IURL;
 using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Connectivity {
+
+class NetworkAgentInfo;
 
 /**
  * {@hide}
@@ -71,6 +57,9 @@ private:
         CARAPI ProcessMessage(
             /* [in] */ IMessage* msg,
             /* [out] */ Boolean* result);
+
+        CARAPI_(String) GetName();
+
     private:
         NetworkMonitor* mHost;
     };
@@ -87,6 +76,8 @@ private:
         CARAPI ProcessMessage(
             /* [in] */ IMessage* msg,
             /* [out] */ Boolean* result);
+
+        CARAPI_(String) GetName();
     private:
         NetworkMonitor* mHost;
     };
@@ -103,6 +94,8 @@ private:
         CARAPI ProcessMessage(
             /* [in] */ IMessage* msg,
             /* [out] */ Boolean* result);
+
+        CARAPI_(String) GetName();
     private:
         NetworkMonitor* mHost;
     };
@@ -124,6 +117,8 @@ private:
 
         //@Override
         CARAPI Exit();
+
+        CARAPI_(String) GetName();
 
     private:
         NetworkMonitor* mHost;
@@ -171,6 +166,8 @@ private:
         //@Override
         CARAPI Exit();
 
+        CARAPI_(String) GetName();
+
     private:
 
         // Intent broadcast when user selects sign-in notification.
@@ -181,14 +178,13 @@ private:
         NetworkMonitor* mHost;
     };
 
-    class CaptivePortalState : public State
-    {
         class CaptivePortalLoggedInBroadcastReceiver
             : public BroadcastReceiver
         {
         public:
             CaptivePortalLoggedInBroadcastReceiver(
-                /* [in] */ Int32 token);
+                /* [in] */ Int32 token,
+                /* [in] */ NetworkMonitor* host);
 
             //@Override
             CARAPI OnReceive(
@@ -196,7 +192,11 @@ private:
                 /* [in] */ IIntent* intent);
         private:
             Int32 mToken;
+            NetworkMonitor* mHost;
         };
+
+    class CaptivePortalState : public State
+    {
 
     public:
         CaptivePortalState(
@@ -212,6 +212,8 @@ private:
 
         //@Override
         CARAPI Exit();
+
+        CARAPI_(String) GetName();
     private:
         NetworkMonitor* mHost;
     };
@@ -231,11 +233,13 @@ private:
 
         //@Override
         CARAPI Exit();
+
+        CARAPI_(String) GetName();
     private:
         NetworkMonitor* mHost;
 
     private:
-        static const String ACTION_LINGER_EXPIRED = "android.net.netmon.lingerExpired";
+        static const String ACTION_LINGER_EXPIRED;
 
         AutoPtr<CustomIntentReceiver> mBroadcastReceiver;
         AutoPtr<IPendingIntent> mIntent;
@@ -423,7 +427,7 @@ private:
 
     AutoPtr<IContext> mContext;
     AutoPtr<IHandler> mConnectivityServiceHandler;
-    NetworkAgentInfo mNetworkAgentInfo;
+    NetworkAgentInfo* mNetworkAgentInfo;
     AutoPtr<ITelephonyManager> mTelephonyManager;
     AutoPtr<IWifiManager> mWifiManager;
     AutoPtr<IAlarmManager> mAlarmManager;

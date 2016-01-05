@@ -5,6 +5,7 @@
 #include "Elastos.Droid.App.h"
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Telephony.h"
 #include "Elastos.Droid.Media.h"
 #include "Elastos.Droid.View.h"
 #include "_Elastos.Droid.Core.h"

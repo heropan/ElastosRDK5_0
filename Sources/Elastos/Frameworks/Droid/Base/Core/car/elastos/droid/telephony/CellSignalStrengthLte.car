@@ -9,6 +9,7 @@ module
     /**
      * @Involve
      * interface ICellSignalStrength
+     * interface IParcelable
      */
     interface ICellSignalStrengthLte {
 
@@ -27,44 +28,8 @@ module
         Copy(
             [out] ICellSignalStrengthLte** res);
 
-        ToString(
-            [out] String* res);
-
-        GetSignalStrength(
-            [out] Int32* val);
-
-        SetSignalStrength(
-            [in] Int32 signalStrength);
-
-        GetRsrp(
-            [out] Int32* val);
-
-        SetRsrp(
-            [in] Int32 rsrp);
-
-        GetRsrq(
-            [out] Int32* val);
-
-        SetRsrq(
-            [in] Int32 rsrq);
-
-        GetRssnr(
-            [out] Int32* val);
-
-        SetRssnr(
-            [in] Int32 rssnr);
-
-        GetCqi(
-            [out] Int32* val);
-
-        SetCqi(
-            [in] Int32 cqi);
-
         GetTimingAdvance(
             [out] Int32* val);
-
-        SetTimingAdvance(
-            [in] Int32 timingAdvance);
     }
 
     } // namespace Telephony
