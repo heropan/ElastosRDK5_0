@@ -1,16 +1,26 @@
 
 module
 {
+    interface Elastos.Droid.Os.IBundle;
 
     namespace Elastos {
     namespace Droid {
     namespace Telephony {
+    namespace Cdma {
 
+    /**
+     * Represents the cell location on a CDMA phone.
+     */
     /**
      * @Involve
      * interface Elastos.Droid.Telephony.ICellLocation
      */
     interface ICdmaCellLocation {
+
+        /**
+         * @hide
+         */
+        const Int32 INVALID_LAT_LONG = 0x7FFFFFFF; //Integer.MAX_VALUE;
 
         GetBaseStationId(
             [out] Int32* baseStationId);
@@ -41,16 +51,19 @@ module
             [in] Int32 systemId,
             [in] Int32 networkId);
 
-        GetHashCode(
-            [out] Int32* hashCode);
+        /**
+         * Fill the cell location data into the intent notifier Bundle based on service state
+         *
+         * @param bundleToFill intent notifier Bundle
+         */
+        FillInNotifierBundle(
+            [in] IBundle* bundleToFill);
 
-        Equals(
-            [in] IInterface* o,
+        /**
+         * @hide
+         */
+        IsEmpty(
             [out] Boolean* result);
-
-        ToString(
-            [out] String* str);
-
     }
 
     interface ICdmaCellLocationHelper {
@@ -61,6 +74,7 @@ module
 
     }
 
+    } // namespace Cdma
     } // namespace Telephony
     } // namespace Droid
     } // namespace Elastos

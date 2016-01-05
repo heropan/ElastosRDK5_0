@@ -46,7 +46,7 @@ NetworkAgentInfo::NetworkAgentInfo(
     mLinkProperties = lp;
     mNetworkCapabilities = nc;
     mCurrentScore = score;
-    // mNetworkMonitor = new NetworkMonitor(context, handler, this);
+    mNetworkMonitor = new NetworkMonitor(context, handler, this);
     mNetworkMisc = misc;
     mCreated = FALSE;
     mValidated = FALSE;
@@ -141,6 +141,12 @@ ECode NetworkAgentInfo::Name(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
+    *str = Name();
+    return NOERROR;
+}
+
+String NetworkAgentInfo::Name()
+{
     String type, subType;
     mNetworkInfo->GetTypeName(&type);
     mNetworkInfo->GetSubtypeName(&subType);
@@ -156,8 +162,7 @@ ECode NetworkAgentInfo::Name(
         sb += "null";
     }
     sb += "]";
-    *str = sb.ToString();
-    return NOERROR;
+    return sb.ToString();
 }
 
 } // Connectivity

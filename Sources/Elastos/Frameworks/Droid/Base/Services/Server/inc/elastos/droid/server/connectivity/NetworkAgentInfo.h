@@ -2,9 +2,8 @@
 #ifndef __ELASTOS_DROID_SERVER_CONNECTIVITY_NETWORK_AGENT_INFO_H__
 #define __ELASTOS_DROID_SERVER_CONNECTIVITY_NETWORK_AGENT_INFO_H__
 
-// #include <elastos/droid/server/connectivity/NetworkMonitor.h>
+#include <elastos/droid/server/connectivity/NetworkMonitor.h>
 #include "_Elastos.Droid.Server.h"
-#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Net::ILinkProperties;
@@ -17,7 +16,7 @@ using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IMessenger;
 using Elastos::Droid::Utility::ISparseArray;
 using Elastos::Droid::Internal::Utility::IAsyncChannel;
-// using Elastos::Droid::Server::Connectivity::NetworkMonitor;
+using Elastos::Droid::Server::Connectivity::NetworkMonitor;
 
 using Elastos::Utility::IArrayList;
 
@@ -70,12 +69,14 @@ public:
     CARAPI Name(
         /* [out] */ String* str);
 
+    CARAPI_(String) Name();
+
 public:
     AutoPtr<INetworkInfo> mNetworkInfo;
     AutoPtr<INetwork> mNetwork;
     AutoPtr<ILinkProperties> mLinkProperties;
     AutoPtr<INetworkCapabilities> mNetworkCapabilities;
-    // AutoPtr<NetworkMonitor> mNetworkMonitor;
+    AutoPtr<NetworkMonitor> mNetworkMonitor;
     AutoPtr<INetworkMisc> mNetworkMisc;
     Boolean mCreated;
     Boolean mValidated;

@@ -9,6 +9,7 @@ module
     /**
      * @Involve
      * interface ICellSignalStrength
+     * interface IParcelable
      */
     interface ICellSignalStrengthCdma {
 
@@ -57,9 +58,6 @@ module
 
         SetEvdoSnr(
             [in] Int32 evdoSnr);
-
-        ToString(
-            [out] String* str);
     }
 
     } // namespace Telephony

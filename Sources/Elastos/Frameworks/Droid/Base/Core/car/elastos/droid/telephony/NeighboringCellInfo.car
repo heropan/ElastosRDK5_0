@@ -2,12 +2,14 @@
 module
 {
 
-    interface IParcelable;
-
     namespace Elastos {
     namespace Droid {
     namespace Telephony {
 
+    /**
+     * @Involve
+     * interface IParcelable
+     */
     interface INeighboringCellInfo {
 
         /**
@@ -39,9 +41,6 @@ module
 
         SetRssi(
             [in] Int32 rssi);
-
-        ToString(
-            [out] String* str);
     }
 
     } // namespace Telephony
