@@ -190,6 +190,8 @@ public:
         /* [in] */ Boolean result);
 
 private:
+    friend class ViewRootImpl;
+
     static const Int32 MAX_RECYCLED = 10;
     static Mutex sRecyclerLock;
     static Int32 sRecyclerUsed;

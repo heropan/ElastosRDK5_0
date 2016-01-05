@@ -95,7 +95,7 @@ class RenderNodeAnimator;
 #define VIEWGROUP_PROBE(host) ((ViewGroup*)IViewGroup::Probe(host))
 #endif
 
-#ifndef VIEWIMPL_PROB
+#ifndef VIEWIMPL_PROBE
 #define VIEWIMPL_PROBE(host) ((ViewRootImpl*)IViewRootImpl::Probe(host))
 #endif
 
@@ -5538,7 +5538,8 @@ protected:
      * @return The vertical scroll scale factor.
      * @hide
      */
-    virtual CARAPI_(Float) GetVerticalScrollFactor();
+    virtual CARAPI GetVerticalScrollFactor(
+        /* [out] */ Float* scroll);
 
     /**
      * Gets a scale factor that determines the distance the view should scroll
@@ -5546,7 +5547,8 @@ protected:
      * @return The horizontal scroll scale factor.
      * @hide
      */
-    virtual CARAPI_(Float) GetHorizontalScrollFactor();
+    virtual CARAPI GetHorizontalScrollFactor(
+        /* [out] */ Float* scroll);
 
     virtual CARAPI_(Boolean) ComputeFitSystemWindows(
         /* [in] */ IRect* inoutInsets,
@@ -6099,7 +6101,7 @@ protected:
 
     AutoPtr<ArrayOf<Int32> > mDrawableState;
 
-    AutoPtr<IViewOutlineProvider> mOutlineProvider;// = ViewOutlineProvider.BACKGROUND;
+    AutoPtr<IViewOutlineProvider> mOutlineProvider;
 
     AutoPtr<IStateListAnimator> mStateListAnimator;
 
@@ -6277,12 +6279,12 @@ private:
     /**
      * Cache if a left padding has been defined
      */
-    Boolean mLeftPaddingDefined;// = false;
+    Boolean mLeftPaddingDefined;
 
     /**
      * Cache if a right padding has been defined
      */
-    Boolean mRightPaddingDefined;// = false;
+    Boolean mRightPaddingDefined;
 
     HashMap<Int64, Int64> mMeasureCache;
     AutoPtr<TintInfo> mBackgroundTint;

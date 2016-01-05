@@ -3,15 +3,21 @@
 #include "elastos/droid/view/ViewRootImpl.h"
 #include "elastos/droid/app/ActivityManagerNative.h"
 #include "elastos/droid/os/Binder.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
 
 using Elastos::Droid::App::IIActivityManager;
 using Elastos::Droid::App::ActivityManagerNative;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Os::Binder;
+using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::View::EIID_IIWindow;
 
 namespace Elastos {
 namespace Droid {
 namespace View {
+
+CAR_INTERFACE_IMPL_2(CViewRootImplW, Object, IIWindow, IBinder)
 
 ECode CViewRootImplW::constructor(
     /* [in] */ Handle32 _viewRoot)
@@ -26,15 +32,17 @@ ECode CViewRootImplW::constructor(
 
 ECode CViewRootImplW::Resized(
     /* [in] */ IRect* frame,
-    /* [in] */ IRect* coveredInsets,
+    /* [in] */ IRect* overscanInsets,
+    /* [in] */ IRect* contentInsets,
     /* [in] */ IRect* visibleInsets,
+    /* [in] */ IRect* stableInsets,
     /* [in] */ Boolean reportDraw,
     /* [in] */ IConfiguration* newConfig)
 {
-    AutoPtr<ViewRootImpl> viewRoot = GetViewRootImpl();
+    AutoPtr<IViewRootImpl> viewRoot = GetViewRootImpl();
     if (viewRoot != NULL) {
-        viewRoot->DispatchResized(frame, coveredInsets,
-            visibleInsets, reportDraw, newConfig);
+        viewRoot->DispatchResized(frame, overscanInsets,
+            contentInsets, visibleInsets, stableInsets, reportDraw, newConfig);
     }
 
     return NOERROR;
@@ -44,7 +52,7 @@ ECode CViewRootImplW::Moved(
     /* [in] */ Int32 newX,
     /* [in] */ Int32 newY)
 {
-    AutoPtr<ViewRootImpl> viewRoot = GetViewRootImpl();
+    AutoPtr<IViewRootImpl> viewRoot = GetViewRootImpl();
     if (viewRoot != NULL) {
         viewRoot->DispatchMoved(newX, newY);
     }
@@ -55,7 +63,7 @@ ECode CViewRootImplW::Moved(
 ECode CViewRootImplW::DispatchAppVisibility(
     /* [in] */ Boolean visible)
 {
-    AutoPtr<ViewRootImpl> viewRoot = GetViewRootImpl();
+    AutoPtr<IViewRootImpl> viewRoot = GetViewRootImpl();
     if (viewRoot != NULL) {
         viewRoot->DispatchAppVisibility(visible);
     }
@@ -63,20 +71,9 @@ ECode CViewRootImplW::DispatchAppVisibility(
     return NOERROR;
 }
 
-ECode CViewRootImplW::DispatchScreenState(
-    /* [in] */ Boolean on)
-{
-    AutoPtr<ViewRootImpl> viewRoot = GetViewRootImpl();
-    if (viewRoot != NULL) {
-        viewRoot->DispatchScreenStateChange(on);
-    }
-
-    return NOERROR;
-}
-
 ECode CViewRootImplW::DispatchGetNewSurface()
 {
-    AutoPtr<ViewRootImpl> viewRoot = GetViewRootImpl();
+    AutoPtr<IViewRootImpl> viewRoot = GetViewRootImpl();
     if (viewRoot != NULL) {
         viewRoot->DispatchGetNewSurface();
     }
@@ -88,7 +85,7 @@ ECode CViewRootImplW::WindowFocusChanged(
     /* [in] */ Boolean hasFocus,
     /* [in] */ Boolean inTouchMode)
 {
-    AutoPtr<ViewRootImpl> viewRoot = GetViewRootImpl();
+    AutoPtr<IViewRootImpl> viewRoot = GetViewRootImpl();
     if (viewRoot != NULL) {
         viewRoot->WindowFocusChanged(hasFocus, inTouchMode);
     }
@@ -149,7 +146,7 @@ ECode CViewRootImplW::ExecuteCommand(
 ECode CViewRootImplW::CloseSystemDialogs(
     /* [in] */ const String& reason)
 {
-    AutoPtr<ViewRootImpl> viewRoot = GetViewRootImpl();
+    AutoPtr<IViewRootImpl> viewRoot = GetViewRootImpl();
     if (viewRoot != NULL) {
         viewRoot->DispatchCloseSystemDialogs(reason);
     }
@@ -190,7 +187,7 @@ ECode CViewRootImplW::DispatchWallpaperCommand(
 ECode CViewRootImplW::DispatchDragEvent(
     /* [in] */ IDragEvent* event)
 {
-    AutoPtr<ViewRootImpl> viewRoot = GetViewRootImpl();
+    AutoPtr<IViewRootImpl> viewRoot = GetViewRootImpl();
     if (viewRoot != NULL) {
         viewRoot->DispatchDragEvent(event);
     }
@@ -204,7 +201,7 @@ ECode CViewRootImplW::DispatchSystemUiVisibilityChanged(
     /* [in] */ Int32 localValue,
     /* [in] */ Int32 localChanges)
 {
-    AutoPtr<ViewRootImpl> viewRoot = GetViewRootImpl();
+    AutoPtr<IViewRootImpl> viewRoot = GetViewRootImpl();
     if (viewRoot != NULL) {
         viewRoot->DispatchSystemUiVisibilityChanged(
             seq, globalVisibility, localValue, localChanges);
@@ -215,7 +212,7 @@ ECode CViewRootImplW::DispatchSystemUiVisibilityChanged(
 
 ECode CViewRootImplW::DoneAnimating()
 {
-    AutoPtr<ViewRootImpl> viewRoot = GetViewRootImpl();
+    AutoPtr<IViewRootImpl> viewRoot = GetViewRootImpl();
     if (viewRoot != NULL) {
         viewRoot->DispatchDoneAnimating();
     }
@@ -231,13 +228,13 @@ ECode CViewRootImplW::ToString(
     return NOERROR;
 }
 
-AutoPtr<ViewRootImpl> CViewRootImplW::GetViewRootImpl()
+AutoPtr<IViewRootImpl> CViewRootImplW::GetViewRootImpl()
 {
     AutoPtr<IInterface> infc;
     mViewAncestor->Resolve(EIID_IInterface, (IInterface**)&infc);
-    AutoPtr<ViewRootImpl> viewRoot;
+    AutoPtr<IViewRootImpl> viewRoot;
     if (infc != NULL) {
-        viewRoot = reinterpret_cast<ViewRootImpl*>(infc->Probe(EIID_ViewRootImpl));
+        viewRoot = IViewRootImpl::Probe(infc);
     }
     return viewRoot;
 }

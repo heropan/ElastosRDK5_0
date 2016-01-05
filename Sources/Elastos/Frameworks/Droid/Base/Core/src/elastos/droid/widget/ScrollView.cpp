@@ -913,7 +913,9 @@ ECode ScrollView::OnGenericMotionEvent(
                     Float vscroll;
                     event->GetAxisValue(IMotionEvent::AXIS_VSCROLL, &vscroll);
                     if (vscroll != 0) {
-                        Int32 delta = (Int32) (vscroll * GetVerticalScrollFactor());
+                        Float scrollFactor;
+                        GetVerticalScrollFactor(&scrollFactor);
+                        Int32 delta = (Int32) (vscroll * scrollFactor);
                         Int32 range = GetScrollRange();
                         Int32 oldScrollY = mScrollY;
                         Int32 newScrollY = oldScrollY - delta;
