@@ -194,10 +194,12 @@ CalendarView::LegacyCalendarViewDelegate::LegacyCalendarViewDelegate(
     hlp->GetDefault((ILocale**)&loc);
     SetCurrentLocale(loc);
 
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+        const_cast<Int32*>(R::styleable::CalendarView),
+        ArraySize(R::styleable::CalendarView));
     AutoPtr<ITypedArray> attributesArray;
-    assert(0 && "TODO");
-    // context->ObtainStyledAttributes(attrs,
-    //         R::styleable::CalendarView, defStyleAttr, defStyleRes, (ITypedArray**)&attributesArray);
+    context->ObtainStyledAttributes(attrs,
+            attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&attributesArray);
     attributesArray->GetBoolean(R::styleable::CalendarView_showWeekNumber,
             DEFAULT_SHOW_WEEK_NUMBER, &mShowWeekNumber);
     AutoPtr<ILocaleDataHelper> locDtHlp;
@@ -721,10 +723,12 @@ void CalendarView::LegacyCalendarViewDelegate::UpdateDateTextSize()
 {
     AutoPtr<IContext> cxt;
     IView::Probe(mDelegator)->GetContext((IContext**)&cxt);
+    AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
+        const_cast<Int32*>(R::styleable::TextAppearance),
+        ArraySize(R::styleable::TextAppearance));
     AutoPtr<ITypedArray> dateTextAppearance;
-    assert(0 && "TODO");
-    // cxt->ObtainStyledAttributes(
-    //         mDateTextAppearanceResId, R::styleable::TextAppearance, (ITypedArray**)&dateTextAppearance);
+    cxt->ObtainStyledAttributes(
+            mDateTextAppearanceResId, attrIds, (ITypedArray**)&dateTextAppearance);
     dateTextAppearance->GetDimensionPixelSize(
             R::styleable::TextAppearance_textSize, DEFAULT_DATE_TEXT_SIZE, &mDateTextSize);
     dateTextAppearance->Recycle();
@@ -917,15 +921,10 @@ Boolean CalendarView::LegacyCalendarViewDelegate::ParseDate(
     /* [in] */ const String& date,
     /* [in] */ ICalendar* outDate)
 {
-//     try {
     AutoPtr<IDate> d;
     mDateFormat->Parse(date, (IDate**)&d);
     outDate->SetTime(d);
     return TRUE;
-    // } catch (ParseException e) {
-    //     Log.w(LOG_TAG, "Date: " + date + " not in format: " + DATE_FORMAT);
-    //     return FALSE;
-    // }
 }
 
 void CalendarView::LegacyCalendarViewDelegate::OnScrollStateChanged(
@@ -1709,7 +1708,7 @@ ECode CalendarView::LegacyCalendarViewDelegate::_DataSetObserver::OnInvalidated(
 //========================================================================================
 //              CalendarView::
 //========================================================================================
-//String CalendarView::LOG_TAG;// = CalendarView.class.getSimpleName();
+const String CalendarView::TAG("CalendarView");
 
 CAR_INTERFACE_IMPL(CalendarView, FrameLayout, ICalendarView)
 

@@ -354,7 +354,7 @@ void CheckedTextView::OnDraw(
 
     AutoPtr<IDrawable> checkMarkDrawable = mCheckMarkDrawable;
     if (checkMarkDrawable != NULL) {
-        Int32 gravity;
+        Int32 gravity = 0;
         GetGravity(&gravity);
         Int32 verticalGravity = gravity & IGravity::VERTICAL_GRAVITY_MASK;
         Int32 height = 0;

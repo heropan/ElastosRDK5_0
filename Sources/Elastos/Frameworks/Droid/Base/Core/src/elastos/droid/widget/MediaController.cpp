@@ -364,9 +364,8 @@ void MediaController::UpdateFloatingWindowLayout()
     mAnchor->GetHeight(&h);
     mDecor->GetMeasuredHeight(&mesH);
 
-    assert(0 && "TODO");
-    // mDecor->Measure(MeasureSpec.makeMeasureSpec(w, IMeasureSpec::AT_MOST),
-    //             MeasureSpec.makeMeasureSpec(h, IMeasureSpec::AT_MOST));
+    mDecor->Measure(MeasureSpec::MakeMeasureSpec(w, MeasureSpec::AT_MOST),
+                MeasureSpec::MakeMeasureSpec(h, MeasureSpec::AT_MOST));
 
     CWindowManagerLayoutParams* cp = (CWindowManagerLayoutParams*)mDecorLayoutParams.Get();
     cp->mWidth = w;

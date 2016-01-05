@@ -13,6 +13,7 @@
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Graphics::CPaint;
 using Elastos::Droid::Graphics::CPaintFontMetricsInt;
@@ -35,6 +36,7 @@ using Elastos::Droid::View::IMotionRange;
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::CArrayList;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -297,7 +299,7 @@ ECode PointerLocationView::constructor(
     String altStrategy;
     sp->Get(ALT_STRATEGY_PROPERY_KEY, &altStrategy);
     if (altStrategy.GetLength() != 0) {
-        // Log.d(TAG, "Comparing default velocity tracker strategy with " + altStrategy);
+        Logger::D(TAG, "Comparing default velocity tracker strategy with %s", (const char*)altStrategy);
         mAltVelocity = VelocityTracker::Obtain(altStrategy);
     }
     else {

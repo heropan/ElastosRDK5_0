@@ -1,5 +1,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Provider.h"
 #include "Elastos.Droid.Widget.h"
 #include "Elastos.Droid.Net.h"
 #include "elastos/droid/widget/DateTimeView.h"
@@ -7,7 +8,7 @@
 #include "elastos/droid/text/format/CDateFormat.h"
 #include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/content/CIntent.h"
-//#include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/provider/Settings.h"
 #include "elastos/droid/R.h"
 
 #include <elastos/utility/logging/Slogger.h>
@@ -20,7 +21,7 @@ using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Text::Format::ITime;
 using Elastos::Droid::Text::Format::CTime;
 using Elastos::Droid::Net::IUri;
-//using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::Provider::Settings;
 using Elastos::Droid::Provider::ISettingsSystem;
 using Elastos::Droid::Widget::TextView;
 
@@ -267,8 +268,7 @@ AutoPtr<IDateFormat> DateTimeView::GetDateFormat()
     GetContext((IContext**)&context);
     context->GetContentResolver((IContentResolver**)&resolver);
     String format;
-    assert(0 && "TODO");
-//    Settings::System::GetString(resolver, ISettingsSystem::DATE_FORMAT, &format);
+    Settings::System::GetString(resolver, ISettingsSystem::DATE_FORMAT, &format);
 
     AutoPtr<IDateFormat> df;
     if (format.IsNullOrEmpty()) {
@@ -305,8 +305,7 @@ ECode DateTimeView::RegisterReceivers()
     context->RegisterReceiver(mBroadcastReceiver, filter, (IIntent**)&registerIntent);
 
     AutoPtr<IUri> uri;
-    assert(0 && "TODO");
-//    Settings::System::GetUriFor(ISettingsSystem::DATE_FORMAT, (IUri**)&uri);
+    Settings::System::GetUriFor(ISettingsSystem::DATE_FORMAT, (IUri**)&uri);
 
     AutoPtr<IContentResolver> resolver;
     context->GetContentResolver((IContentResolver**)&resolver);

@@ -2,6 +2,8 @@
 #include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/ShareActionProvider.h"
+#include "elastos/droid/widget/CActivityChooserModelHelper.h"
+#include "elastos/droid/widget/CActivityChooserView.h"
 #include "elastos/droid/utility/CTypedValue.h"
 #include "elastos/droid/R.h"
 
@@ -17,6 +19,8 @@ using Elastos::Droid::Utility::CTypedValue;
 using Elastos::Droid::View::EIID_IOnMenuItemClickListener;
 using Elastos::Droid::View::IMenu;
 using Elastos::Droid::View::EIID_IActionProvider;
+using Elastos::Droid::Widget::CActivityChooserModelHelper;
+using Elastos::Droid::Widget::CActivityChooserView;
 
 using Elastos::Core::CString;
 
@@ -67,8 +71,7 @@ ECode ShareActionProvider::ShareMenuItemOnMenuItemClickListener::OnMenuItemClick
     VALIDATE_NOT_NULL(isConsumed)
 
     AutoPtr<IActivityChooserModelHelper> helper;
-    assert(0 && "TODO");
-    //CActivityChooserModelHelper::AcquireSingleton((IActivityChooserModelHelper**)&helper);
+    CActivityChooserModelHelper::AcquireSingleton((IActivityChooserModelHelper**)&helper);
     AutoPtr<IActivityChooserModel> dataModel;
     helper->Get(mHost->mContext, mHost->mShareHistoryFileName, (IActivityChooserModel**)&dataModel);
     Int32 itemId = 0;
@@ -128,13 +131,11 @@ ECode ShareActionProvider::OnCreateActionView(
 
     // Create the view and set its data model.
     AutoPtr<IActivityChooserView> activityChooserView;
-    assert(0 && "TODO");
-    //CActivityChooserView::New(mContext, (IActivityChooserView**)&activityChooserView);
+    CActivityChooserView::New(mContext, (IActivityChooserView**)&activityChooserView);
     Boolean bEdMod = FALSE;
     if (!(IView::Probe(activityChooserView)->IsInEditMode(&bEdMod), bEdMod)) {
         AutoPtr<IActivityChooserModelHelper> helper;
-        assert(0 && "TODO");
-        //CActivityChooserModelHelper::AcquireSingleton((IActivityChooserModelHelper**)&helper);
+        CActivityChooserModelHelper::AcquireSingleton((IActivityChooserModelHelper**)&helper);
         AutoPtr<IActivityChooserModel> dataModel;
         helper->Get(mContext, mShareHistoryFileName, (IActivityChooserModel**)&dataModel);
         activityChooserView->SetActivityChooserModel(dataModel);
@@ -179,8 +180,7 @@ ECode ShareActionProvider::OnPrepareSubMenu(
     IMenu::Probe(subMenu)->Clear();
 
     AutoPtr<IActivityChooserModelHelper> helper;
-    assert(0 && "TODO");
-    //CActivityChooserModelHelper::AcquireSingleton((IActivityChooserModelHelper**)&helper);
+    CActivityChooserModelHelper::AcquireSingleton((IActivityChooserModelHelper**)&helper);
     AutoPtr<IActivityChooserModel> dataModel;
     helper->Get(mContext, mShareHistoryFileName, (IActivityChooserModel**)&dataModel);
 
@@ -250,8 +250,7 @@ ECode ShareActionProvider::SetShareIntent(
         }
     }
     AutoPtr<IActivityChooserModelHelper> helper;
-    assert(0 && "TODO");
-    //CActivityChooserModelHelper::AcquireSingleton((IActivityChooserModelHelper**)&helper);
+    CActivityChooserModelHelper::AcquireSingleton((IActivityChooserModelHelper**)&helper);
     AutoPtr<IActivityChooserModel> dataModel;
     helper->Get(mContext, mShareHistoryFileName, (IActivityChooserModel**)&dataModel);
     dataModel->SetIntent(shareIntent);
@@ -267,8 +266,7 @@ void ShareActionProvider::SetActivityChooserPolicyIfNeeded()
         mOnChooseActivityListener = new ShareActivityChooserModelPolicy(this);
     }
     AutoPtr<IActivityChooserModelHelper> helper;
-    assert(0 && "TODO");
-    //CActivityChooserModelHelper::AcquireSingleton((IActivityChooserModelHelper**)&helper);
+    CActivityChooserModelHelper::AcquireSingleton((IActivityChooserModelHelper**)&helper);
     AutoPtr<IActivityChooserModel> dataModel;
     helper->Get(mContext, mShareHistoryFileName, (IActivityChooserModel**)&dataModel);
     dataModel->SetOnChooseActivityListener(mOnChooseActivityListener);

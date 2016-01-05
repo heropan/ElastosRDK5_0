@@ -160,6 +160,7 @@ public:
     static Int32 sSpacebarVerticalCorrection;
 
 private:
+    static const String TAG;
     static const Int32 SHIFT_OFF;
     static const Int32 SHIFT_ON;
     static const Int32 SHIFT_LOCKED;

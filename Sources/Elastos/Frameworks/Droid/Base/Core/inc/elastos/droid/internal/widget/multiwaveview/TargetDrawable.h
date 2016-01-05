@@ -136,8 +136,8 @@ public:
     static AutoPtr<ArrayOf<Int32> > STATE_FOCUSED;
 
 private:
-    static String TAG;
-    static Boolean DEBUG;
+    static const String TAG;
+    static const Boolean DEBUG;
     Float mTranslationX;
     Float mTranslationY;
     Float mPositionX;

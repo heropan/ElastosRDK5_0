@@ -1,6 +1,7 @@
 
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Provider.h"
 #include "elastos/droid/internal/widget/multiwaveview/GlowPadView.h"
 #include "elastos/droid/internal/widget/multiwaveview/Tweener.h"
 #include "elastos/droid/internal/widget/multiwaveview/CTargetDrawable.h"
@@ -8,7 +9,7 @@
 #include "elastos/droid/internal/widget/multiwaveview/Ease.h"
 #include "elastos/droid/content/pm/CActivityInfo.h"
 #include "elastos/droid/media/CAudioAttributesBuilder.h"
-//#include "elastos/droid/Provider/Settings.h"
+#include "elastos/droid/provider/Settings.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/utility/CTypedValue.h"
 #include "elastos/droid/utility/CTypedValueHelper.h"
@@ -35,7 +36,8 @@ using Elastos::Droid::Internal::Widget::Multiwaveview::Ease;
 using Elastos::Droid::Media::IAudioAttributesBuilder;
 using Elastos::Droid::Media::CAudioAttributesBuilder;
 using Elastos::Droid::Os::IUserHandle;
-//using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::Provider::ISettingsSystem;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Droid::Utility::CTypedValue;
@@ -1012,11 +1014,11 @@ void GlowPadView::Vibrate()
 {
     AutoPtr<IContentResolver> cr;
     mContext->GetContentResolver((IContentResolver**)&cr);
-    Boolean hapticEnabled = FALSE;
-    assert(0 && "TODO");
-    // Boolean hapticEnabled = Settings::System::GetIntForUser(
-    //         cr, Settings::System::HAPTIC_FEEDBACK_ENABLED, 1,
-    //         IUserHandle::USER_CURRENT) != 0;
+    Int32 val = 0;
+    Settings::System::GetInt32ForUser(
+            cr, ISettingsSystem::HAPTIC_FEEDBACK_ENABLED, 1,
+            IUserHandle::USER_CURRENT, &val);
+    Boolean hapticEnabled = val != 0;
     if (mVibrator != NULL && hapticEnabled) {
         mVibrator->Vibrate(mVibrationDuration, VIBRATION_ATTRIBUTES);
     }
@@ -1163,15 +1165,17 @@ ECode GlowPadView::Ping()
         // Don't do a wave if there's already one in progress
         Int32 s = 0;
         IList::Probe(waveAnimations)->GetSize(&s);
-        assert(0 && "TODO");
-        // AutoPtr<IInterface> p;
-        // IList::Probe(waveAnimations)->Get(0, (IInterface**)&p);
-        // if (s > 0 && p->mAnimator->IsRunning()) {
-        //     Int64 t = p->mAnimator->GetCurrentPlayTime();
-        //     if (t < WAVE_ANIMATION_DURATION/2) {
-        //         doWaveAnimation = FALSE;
-        //     }
-        // }
+        AutoPtr<IInterface> p;
+        IList::Probe(waveAnimations)->Get(0, (IInterface**)&p);
+        AutoPtr<Tweener> realNode = (Tweener*)ITweener::Probe(p);
+        Boolean bIsRn = FALSE;
+        if (s > 0 && (IAnimator::Probe(realNode->mAnimator)->IsRunning(&bIsRn), bIsRn)) {
+            Int64 t = 0;
+            IValueAnimator::Probe(realNode->mAnimator)->GetCurrentPlayTime(&t);
+            if (t < WAVE_ANIMATION_DURATION/2) {
+                doWaveAnimation = FALSE;
+            }
+        }
 
         if (doWaveAnimation) {
             StartWaveAnimation();

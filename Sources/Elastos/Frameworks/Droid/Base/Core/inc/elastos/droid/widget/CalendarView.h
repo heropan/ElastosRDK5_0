@@ -1291,7 +1291,7 @@ private:
     /**
      * Tag for logging.
      */
-//    static const String LOG_TAG;
+    static const String TAG;
 
     AutoPtr<ICalendarViewDelegate> mDelegate;
 };
