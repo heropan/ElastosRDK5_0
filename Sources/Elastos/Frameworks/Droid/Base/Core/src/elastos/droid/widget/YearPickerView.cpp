@@ -47,6 +47,7 @@ ECode YearPickerView::YearAdapter::GetView(
         v.setCircleColor(mYearSelectedCircleColor);
     }
     return v;*/
+    return NOERROR;
 }
 
 ECode YearPickerView::YearAdapter::SetItemTextAppearance(
@@ -59,6 +60,7 @@ ECode YearPickerView::YearAdapter::SetItemTextAppearance(
 ///////////////////////////////////////////////////////////////
 //                  YearPickerView
 ///////////////////////////////////////////////////////////////
+CAR_INTERFACE_IMPL_3(YearPickerView, ListView, IYearPickerView, IAdapterViewOnItemClickListener, IOnDateChangedListener)
 
 YearPickerView::YearPickerView()
     : ListView()

@@ -7,6 +7,7 @@
 #include "elastos/droid/view/inputmethod/CInputMethodManager.h"
 #include "elastos/droid/widget/CNumberPickerHelper.h"
 #include "elastos/droid/widget/DatePicker.h"
+#include "elastos/droid/widget/DatePickerCalendarDelegate.h"
 #include "elastos/droid/content/res/CConfiguration.h"
 #include "elastos/droid/R.h"
 
@@ -28,6 +29,7 @@ using Elastos::Droid::View::InputMethod::CInputMethodManager;
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Droid::Widget::INumberPickerHelper;
 using Elastos::Droid::Widget::CNumberPickerHelper;
+using Elastos::Droid::Widget::DatePickerCalendarDelegate;
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -54,7 +56,7 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-//const String DatePicker::LOG_TAG("DatePicker");// DatePicker.class.getSimpleName();
+const String DatePicker::TAG("DatePicker");
 
 const Int32 DatePicker::MODE_SPINNER = 1;
 const Int32 DatePicker::MODE_CALENDAR = 2;
@@ -62,6 +64,7 @@ const Int32 DatePicker::MODE_CALENDAR = 2;
 // ==================================================================
 //                DatePicker::DatePickerOnChangeListener
 // ==================================================================
+CAR_INTERFACE_IMPL(DatePicker::DatePickerOnChangeListener, Object, INumberPickerOnValueChangeListener)
 
 DatePicker::DatePickerOnChangeListener::DatePickerOnChangeListener(
     /* [in] */ DatePickerSpinnerDelegate* host)
@@ -123,8 +126,9 @@ ECode DatePicker::DatePickerOnChangeListener::OnValueChange(
 }
 
 // ==================================================================
-//                DatePicker::DatePickerOnDateChangedListener
+//                DatePicker::DatePickerOnDateChangeListener
 // ==================================================================
+CAR_INTERFACE_IMPL(DatePicker::DatePickerOnDateChangeListener, Object, IOnDateChangeListener)
 
 DatePicker::DatePickerOnDateChangeListener::DatePickerOnDateChangeListener(
     /* [in] */ DatePickerSpinnerDelegate* host)
@@ -193,8 +197,12 @@ ECode DatePicker::DatePickerSavedState::GetSuperState(
 //===============================================================
 // DatePicker::AbstractDatePickerDelegate::
 //===============================================================
+CAR_INTERFACE_IMPL(DatePicker::AbstractDatePickerDelegate, Object, IDatePickerDelegate)
 
-DatePicker::AbstractDatePickerDelegate::AbstractDatePickerDelegate(
+DatePicker::AbstractDatePickerDelegate::AbstractDatePickerDelegate()
+{}
+
+ECode DatePicker::AbstractDatePickerDelegate::constructor(
     /* [in] */ IDatePicker* delegator,
     /* [in] */ IContext* context)
 {
@@ -207,6 +215,7 @@ DatePicker::AbstractDatePickerDelegate::AbstractDatePickerDelegate(
     AutoPtr<ILocale> loc;
     hlp->GetDefault((ILocale**)&loc);
     SetCurrentLocale(loc);
+    return NOERROR;
 }
 
 void DatePicker::AbstractDatePickerDelegate::SetCurrentLocale(
@@ -250,15 +259,19 @@ const Boolean DatePicker::DatePickerSpinnerDelegate::DEFAULT_SPINNERS_SHOWN = TR
 
 const Boolean DatePicker::DatePickerSpinnerDelegate::DEFAULT_ENABLED_STATE = TRUE;
 
-DatePicker::DatePickerSpinnerDelegate::DatePickerSpinnerDelegate(
+DatePicker::DatePickerSpinnerDelegate::DatePickerSpinnerDelegate()
+    : mIsEnabled(DEFAULT_ENABLED_STATE)
+{}
+
+ECode DatePicker::DatePickerSpinnerDelegate::constructor(
     /* [in] */ IDatePicker* delegator,
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
-    : AbstractDatePickerDelegate(delegator, context)
-    , mIsEnabled(DEFAULT_ENABLED_STATE)
 {
+    AbstractDatePickerDelegate::constructor(delegator, context);
+
     CSimpleDateFormat::New(DATE_FORMAT, (IDateFormat**)&mDateFormat);
 
     mDelegator = delegator;
@@ -416,6 +429,7 @@ DatePicker::DatePickerSpinnerDelegate::DatePickerSpinnerDelegate(
     if (acc == IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
         IView::Probe(mDelegator)->SetImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
     }
+    return NOERROR;
 }
 
 ECode DatePicker::DatePickerSpinnerDelegate::Init(
@@ -1106,11 +1120,9 @@ AutoPtr<IDatePickerDelegate> DatePicker::CreateSpinnerUIDelegate(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    assert(0 && "TODO");
-    // AutoPtr<DatePickerSpinnerDelegate> res = new DatePickerSpinnerDelegate(
-    //                                         this, context, attrs, defStyleAttr, defStyleRes);
-    // return IDatePickerDelegate::Probe(res);
-    return NULL;
+    AutoPtr<DatePickerSpinnerDelegate> res = new DatePickerSpinnerDelegate();
+    res->constructor(this, context, attrs, defStyleAttr, defStyleRes);
+    return IDatePickerDelegate::Probe(res);
 }
 
 AutoPtr<IDatePickerDelegate> DatePicker::CreateCalendarUIDelegate(
@@ -1119,11 +1131,9 @@ AutoPtr<IDatePickerDelegate> DatePicker::CreateCalendarUIDelegate(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-    assert(0 && "TODO");
-    // AutoPtr<DatePickerCalendarDelegate> res = new DatePickerCalendarDelegate(
-    //                                         this, context, attrs, defStyleAttr, defStyleRes);
-    // return IDatePickerDelegate::Probe(res);
-    return NULL;
+    AutoPtr<DatePickerCalendarDelegate> res = new DatePickerCalendarDelegate();
+    res->constructor(this, context, attrs, defStyleAttr, defStyleRes);
+    return IDatePickerDelegate::Probe(res);
 }
 
 ECode DatePicker::Init(

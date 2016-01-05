@@ -6,7 +6,6 @@
 #include "elastos/droid/view/View.h"
 
 using Elastos::Droid::View::IViewOnClickListener;
-using Elastos::Droid::View::View;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::Internal::Widget::IAccessibleDateAnimator;
 
@@ -30,8 +29,7 @@ private:
      * Class for managing state storing/restoring.
      */
     class SavedState
-        : public Object
-//        : public View::BaseSavedState
+        : public Elastos::Droid::View::View::BaseSavedState
     {
     public:
         /**
@@ -285,7 +283,7 @@ private:
     AutoPtr<ITextView> mHeaderDayOfMonthTextView;
     AutoPtr<ITextView> mHeaderYearTextView;
     AutoPtr<IDayPickerView> mDayPickerView;
-//    AutoPtr<IYearPickerView> mYearPickerView;
+    AutoPtr<IYearPickerView> mYearPickerView;
 
     Boolean mIsEnabled;
 

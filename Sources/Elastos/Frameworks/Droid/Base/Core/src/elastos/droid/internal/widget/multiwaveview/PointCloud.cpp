@@ -21,11 +21,11 @@ namespace Internal {
 namespace Widget {
 namespace Multiwaveview {
 
-Float PointCloud::MIN_POINT_SIZE = 2.0f;
-Float PointCloud::MAX_POINT_SIZE = 4.0f;
-Int32 PointCloud::INNER_POINTS = 8;
-String PointCloud::TAG(String("PointCloud"));
-Float PointCloud::PI = (Float) Elastos::Core::Math::PI;
+const Float PointCloud::MIN_POINT_SIZE = 2.0f;
+const Float PointCloud::MAX_POINT_SIZE = 4.0f;
+const Int32 PointCloud::INNER_POINTS = 8;
+const String PointCloud::TAG(String("PointCloud"));
+const Float PointCloud::PI = (Float) Elastos::Core::Math::PI;
 
 //=====================================================================
 //               PointCloud::WaveManager::

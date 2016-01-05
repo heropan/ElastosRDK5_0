@@ -75,8 +75,8 @@ private:
     // Listener to watch for completed animations and remove them.
     static AutoPtr<IAnimatorListener> mCleanupListener;
 
-    static String TAG;
-    static Boolean DEBUG;
+    static const String TAG;
+    static const Boolean DEBUG;
 
     static AutoPtr<IHashMap> sTweens;
 };

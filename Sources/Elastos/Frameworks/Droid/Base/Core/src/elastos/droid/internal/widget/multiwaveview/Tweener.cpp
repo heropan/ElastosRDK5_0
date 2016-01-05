@@ -28,8 +28,8 @@ namespace Internal {
 namespace Widget {
 namespace Multiwaveview {
 
-String Tweener::TAG(String("Tweener"));
-Boolean Tweener::DEBUG = FALSE;
+const String Tweener::TAG(String("Tweener"));
+const Boolean Tweener::DEBUG = FALSE;
 
 AutoPtr<IHashMap> Tweener::sTweens;
 

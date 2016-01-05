@@ -40,7 +40,9 @@ public:
     public:
         CAR_INTERFACE_DECL()
 
-        AbstractDatePickerDelegate(
+        AbstractDatePickerDelegate();
+
+        CARAPI constructor(
             /* [in] */ IDatePicker* delegator,
             /* [in] */ IContext* context);
 
@@ -77,7 +79,9 @@ private:
         : public AbstractDatePickerDelegate
     {
     public:
-        DatePickerSpinnerDelegate(
+        DatePickerSpinnerDelegate();
+
+        CARAPI constructor(
             /* [in] */ IDatePicker* delegator,
             /* [in] */ IContext* context,
             /* [in] */ IAttributeSet* attrs,
@@ -485,7 +489,7 @@ private:
         /* [in] */ Int32 defStyleRes);
 
 private:
-//    static const String LOG_TAG;
+    static const String TAG;
 
     static const Int32 MODE_SPINNER;
     static const Int32 MODE_CALENDAR;

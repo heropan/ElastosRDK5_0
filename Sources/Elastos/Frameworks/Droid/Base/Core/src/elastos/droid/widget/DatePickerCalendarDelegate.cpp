@@ -3,6 +3,7 @@
 #include <Elastos.CoreLibrary.Libcore.h>
 #include "elastos/droid/widget/DatePickerCalendarDelegate.h"
 #include "elastos/droid/widget/CDayPickerView.h"
+#include "elastos/droid/widget/YearPickerView.h"
 #include "elastos/droid/content/res/CColorStateList.h"
 #include "elastos/droid/content/res/CConfiguration.h"
 #include "elastos/droid/text/format/CDateFormat.h"
@@ -21,6 +22,7 @@ using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::View::Animation::CAlphaAnimation;
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Droid::Widget::CDayPickerView;
+using Elastos::Droid::Widget::YearPickerView;
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
@@ -33,6 +35,7 @@ using Elastos::Utility::CCalendarHelper;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::CLocaleHelper;
 using Elastos::Utility::CHashSet;
+using Elastos::Utility::IIterator;
 
 namespace Elastos {
 namespace Droid {
@@ -52,7 +55,6 @@ DatePickerCalendarDelegate::SavedState::SavedState(
     /* [in] */ Int32 currentView,
     /* [in] */ Int32 listPosition,
     /* [in] */ Int32 listPositionOffset)
-    // : View::BaseSavedState(superState)
     : mSelectedYear(year)
     , mSelectedMonth(month)
     , mSelectedDay(day)
@@ -62,12 +64,13 @@ DatePickerCalendarDelegate::SavedState::SavedState(
     , mListPosition(listPosition)
     , mListPositionOffset(listPositionOffset)
 {
+    Elastos::Droid::View::View::BaseSavedState::constructor(superState);
 }
 
 ECode DatePickerCalendarDelegate::SavedState::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-//    View::BaseSavedState::ReadFromParcel(source);
+    Elastos::Droid::View::View::BaseSavedState::ReadFromParcel(source);
     source->ReadInt32(&mSelectedYear);
     source->ReadInt32(&mSelectedMonth);
     source->ReadInt32(&mSelectedDay);
@@ -82,7 +85,7 @@ ECode DatePickerCalendarDelegate::SavedState::ReadFromParcel(
 ECode DatePickerCalendarDelegate::SavedState::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-//    View::BaseSavedState::WriteToParcel(dest);
+    Elastos::Droid::View::View::BaseSavedState::WriteToParcel(dest);
     dest->WriteInt32(mSelectedYear);
     dest->WriteInt32(mSelectedMonth);
     dest->WriteInt32(mSelectedDay);
@@ -161,7 +164,7 @@ ECode DatePickerCalendarDelegate::constructor(
     /* [in] */ Int32 defStyleAttr,
     /* [in] */ Int32 defStyleRes)
 {
-//    DatePicker::AbstractDatePickerDelegate(delegator, context);
+    DatePicker::AbstractDatePickerDelegate::constructor(delegator, context);
 
     AutoPtr<ILocaleHelper> hlp;
     CLocaleHelper::AcquireSingleton((ILocaleHelper**)&hlp);
@@ -292,15 +295,14 @@ ECode DatePickerCalendarDelegate::constructor(
             cl, R::attr::state_selected, headerSelectedTextColor));
 
     CDayPickerView::New(mContext, this, (IDayPickerView**)&mDayPickerView);
-    assert(0 && "TODO");
-    // CYearPickerView::New(mContext, (IYearPickerView**)&mYearPickerView);
-    // mYearPickerView->Init(this);
+    mYearPickerView = new YearPickerView();
+    ((YearPickerView*)mYearPickerView.Get())->constructor(mContext);
+    mYearPickerView->Init(this);
 
     Int32 yearSelectedCircleColor = 0;
     a->GetColor(R::styleable::DatePicker_yearListSelectorColor,
             defaultHighlightColor, &yearSelectedCircleColor);
-    assert(0 && "TODO");
-    // mYearPickerView->SetYearSelectedCircleColor(yearSelectedCircleColor);
+    mYearPickerView->SetYearSelectedCircleColor(yearSelectedCircleColor);
 
     AutoPtr<IColorStateList> calendarTextColor;
     a->GetColorStateList(
@@ -320,8 +322,7 @@ ECode DatePickerCalendarDelegate::constructor(
     mainView->FindViewById(R::id::animator, (IView**)&v);
     mAnimator = IAccessibleDateAnimator::Probe(v);
     IViewGroup::Probe(mAnimator)->AddView(IView::Probe(mDayPickerView));
-    assert(0 && "TODO");
-    // mAnimator->AddView(mYearPickerView);
+    IViewGroup::Probe(mAnimator)->AddView(IView::Probe(mYearPickerView));
     Int64 mils = 0;
     mCurrentDate->GetTimeInMillis(&mils);
     mAnimator->SetDateMillis(mils);
@@ -519,8 +520,7 @@ void DatePickerCalendarDelegate::SetCurrentView(
             break;
         }
         case YEAR_VIEW: {
-            assert(0 && "TODO");
-            // mYearPickerView->OnDateChanged();
+            IOnDateChangedListener::Probe(mYearPickerView)->OnDateChanged();
             if (mCurrentView != viewIndex) {
                 IView::Probe(mMonthAndDayLayout)->SetSelected(FALSE);
                 IView::Probe(mHeaderYearTextView)->SetSelected(TRUE);
@@ -809,9 +809,8 @@ ECode DatePickerCalendarDelegate::OnSaveInstanceState(
         mDayPickerView->GetMostVisiblePosition(&listPosition);
     }
     else if (mCurrentView == YEAR_VIEW) {
-        assert(0 && "TODO");
-        // mYearPickerView->GetFirstVisiblePosition(&listPosition);
-        // mYearPickerView->GetFirstPositionOffset(&listPositionOffset);
+        IAdapterView::Probe(mYearPickerView)->GetFirstVisiblePosition(&listPosition);
+        mYearPickerView->GetFirstPositionOffset(&listPositionOffset);
     }
 
     Int64 minMils = 0, maxMils = 0;
@@ -844,8 +843,7 @@ ECode DatePickerCalendarDelegate::OnRestoreInstanceState(
             mDayPickerView->PostSetSelection(listPosition);
         }
         else if (mCurrentView == YEAR_VIEW) {
-            assert(0 && "TODO");
-            // mYearPickerView->PostSetSelectionFromTop(listPosition, ss->GetListPositionOffset());
+            mYearPickerView->PostSetSelectionFromTop(listPosition, ss->GetListPositionOffset());
         }
     }
     return NOERROR;
@@ -962,9 +960,15 @@ ECode DatePickerCalendarDelegate::OnDayOfMonthSelected(
 
 void DatePickerCalendarDelegate::UpdatePickers()
 {
-    // for (OnDateChangedListener listener : mListeners) {
-    //     listener->OnDateChanged();
-    // }
+    AutoPtr<IIterator> it;
+    mListeners->GetIterator((IIterator**)&it);
+    Boolean b = FALSE;
+    while ((it->HasNext(&b), b)) {
+        AutoPtr<IInterface> p;
+        it->GetNext((IInterface**)&p);
+        AutoPtr<IOnDateChangedListener> listener = IOnDateChangedListener::Probe(p);
+        listener->OnDateChanged();
+    }
 }
 
 ECode DatePickerCalendarDelegate::RegisterOnDateChangedListener(

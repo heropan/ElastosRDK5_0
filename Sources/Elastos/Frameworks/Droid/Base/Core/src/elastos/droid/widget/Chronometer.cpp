@@ -12,6 +12,7 @@ using Elastos::Droid::Text::Format::DateUtils;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Droid::View::IView;
+
 using Elastos::Core::AutoLock;
 using Elastos::Core::CString;
 using Elastos::Core::IAppendable;

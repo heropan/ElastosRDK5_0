@@ -3,10 +3,13 @@
 #include "elastos/droid/internal/widget/PasswordEntryKeyboard.h"
 #include "elastos/droid/R.h"
 
+#include <elastos/utility/logging/Logger.h>
+
 using Elastos::Droid::R;
 using Elastos::Droid::InputMethodService::IKeyboard;
 
 using Elastos::Core::CString;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
@@ -16,6 +19,8 @@ namespace Widget {
 //0c08c3b7-3cd7-4772-8340-d42f0613bd47
 extern "C" const InterfaceID EIID_LatinKey =
         { 0x0c08c3b7, 0x3cd7, 0x4772, { 0x83, 0x40, 0xd4, 0x2f, 0x06, 0x13, 0xbd, 0x47 } };
+
+const String PasswordEntryKeyboard::TAG("PasswordEntryKeyboard");
 
 const Int32 PasswordEntryKeyboard::KEYCODE_SPACE = ' ';
 Int32 PasswordEntryKeyboard::sSpacebarVerticalCorrection;
@@ -46,10 +51,10 @@ PasswordEntryKeyboard::LatinKey::LatinKey(
 PInterface PasswordEntryKeyboard::LatinKey::Probe(
     /* [in] */ REIID riid)
 {
-    if(riid == EIID_LatinKey) {
+    if (riid == EIID_LatinKey) {
         return reinterpret_cast<PInterface>(this);
     }
-    else{
+    else {
         return Key::Probe(riid);
     }
 }
@@ -72,7 +77,7 @@ ECode PasswordEntryKeyboard::LatinKey::OnReleased(
         return Key::OnReleased(inside);
     }
     else {
-       mPressed = !mPressed;
+        mPressed = !mPressed;
     }
     return NOERROR;
 }
@@ -177,7 +182,9 @@ AutoPtr<Keyboard::Key> PasswordEntryKeyboard::CreateKeyFromXml(
     AutoPtr<LatinKey> key = new LatinKey(res, parent, x, y, parser);
     Int32 code = (*(key->mCodes))[0];
     if (code >= 0 && code != '\n' && (code < 32 || code > 127)) {
-        // Log.w(TAG, "Key code for " + key.label + " is not latin-1");
+        String str;
+        key->mLabel->ToString(&str);
+        Logger::W(TAG, "Key code for %s is not latin-1", (const char*)str);
         CString::New(String(" "), (ICharSequence**)(&(key->mLabel)));
         key->SetEnabled(FALSE);
     }
@@ -287,7 +294,7 @@ ECode PasswordEntryKeyboard::SetShifted(
             }
         }
         else {
-            // Keyboard::SetShifted(shiftState, rst);
+            Keyboard::SetShifted(shiftState, rst);
             return NOERROR;
         }
     }

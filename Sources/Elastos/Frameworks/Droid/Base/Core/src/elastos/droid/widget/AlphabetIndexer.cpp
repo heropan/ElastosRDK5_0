@@ -2,7 +2,6 @@
 #include "Elastos.Droid.Widget.h"
 #include <Elastos.CoreLibrary.Text.h>
 #include "elastos/droid/widget/AlphabetIndexer.h"
-//#include "elastos/droid/text/Collator.h"
 #include "elastos/droid/utility/CSparseInt32Array.h"
 
 #include <elastos/core/Math.h>

@@ -155,17 +155,17 @@ private:
         /* [in] */ Float f);
 
 public:
-    static Float MIN_POINT_SIZE;
-    static Float MAX_POINT_SIZE;
-    static Int32 INNER_POINTS;
-    static String TAG;
+    static const Float MIN_POINT_SIZE;
+    static const Float MAX_POINT_SIZE;
+    static const Int32 INNER_POINTS;
+    static const String TAG;
     AutoPtr<IArrayList> mPointCloud;
     AutoPtr<IDrawable> mDrawable;
     Float mCenterX;
     Float mCenterY;
     AutoPtr<IPaint> mPaint;
     Float mScale;
-    static Float PI;
+    static const Float PI;
 
     // These allow us to have multiple concurrent animations.
     AutoPtr<IWaveManager> mWaveManager;

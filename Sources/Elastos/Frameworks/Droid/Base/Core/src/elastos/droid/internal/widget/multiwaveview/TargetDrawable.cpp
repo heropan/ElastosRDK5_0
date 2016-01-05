@@ -18,8 +18,8 @@ namespace Internal {
 namespace Widget {
 namespace Multiwaveview {
 
-String TargetDrawable::TAG(String("TargetDrawable"));
-Boolean TargetDrawable::DEBUG = FALSE;
+const String TargetDrawable::TAG(String("TargetDrawable"));
+const Boolean TargetDrawable::DEBUG = FALSE;
 
 AutoPtr<ArrayOf<Int32> > TargetDrawable::STATE_ACTIVE = ArrayOf<Int32>::Alloc(2);
 
