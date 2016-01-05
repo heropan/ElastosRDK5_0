@@ -3,22 +3,22 @@
 #define __ELASTOS_DROID_SERVER_AM_ACTIVESERVICES_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/HashMap.h>
-#include <elastos/utility/etl/List.h>
 #include "elastos/droid/server/am/TaskRecord.h"
 #include "elastos/droid/server/am/CServiceRecord.h"
-#include "elastos/droid/server/am/TransferPipe.h"
+#include "elastos/droid/os/Handler.h"
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/List.h>
 
-using Elastos::Utility::Etl::List;
-using Elastos::IO::IPrintWriter;
-using Elastos::IO::IFileDescriptor;
-using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::App::IIServiceConnection;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::App::IActivityManagerRunningServiceInfo;
 using Elastos::Droid::App::IApplicationThread;
-
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::Handler;
+using Elastos::IO::IPrintWriter;
+using Elastos::IO::IFileDescriptor;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
@@ -36,57 +36,43 @@ typedef HashMap<AutoPtr<IIntentFilterComparison>, AutoPtr<CServiceRecord> > IInt
 class ActiveServices : public Object
 {
 public:
-    class ServiceMap : public Object
+    class ServiceMap : public Handler
     {
-    friend class ActiveServices;
+        friend class ActiveServices;
+    public:
+        ServiceMap(
+            /* [in] */ ILooper* looper,
+            /* [in] */ Int32 userId,
+            /* [in] */ ActiveServices* host);
+
+        // @Override
+        CARAPI HandleMessage(
+            /* [in] */ IMessage* msg);
+
+        CARAPI_(void) EnsureNotStartingBackground(
+            /* [in] */ CServiceRecord* r);
+
+        CARAPI_(void) RescheduleDelayedStarts();
 
     public:
-        ServiceMap();
+        const Int32 mUserId;
+        IComponentNameCServiceRecordHashMap mServicesByName;
+        IIntentFilterComparisonCServiceRecordHashMap mServicesByIntent;
 
-        ~ServiceMap();
+        List<AutoPtr<CServiceRecord> > mDelayedStartList;
+        /* XXX eventually I'd like to have this based on processes instead of services.
+         * That is, if we try to start two services in a row both running in the same
+         * process, this should be one entry in mStartingBackground for that one process
+         * that remains until all services in it are done.
+        final ArrayMap<ProcessRecord, DelayingProcess> mStartingBackgroundMap
+                = new ArrayMap<ProcessRecord, DelayingProcess>();
+        final ArrayList<DelayingProcess> mStartingProcessList
+                = new ArrayList<DelayingProcess>();
+        */
 
-        CARAPI_(AutoPtr<CServiceRecord>) GetServiceByName(
-            /* [in] */ IComponentName* name,
-            /* [in] */ Int32 callingUser);
+        List<AutoPtr<CServiceRecord> > mStartingBackground;
 
-        CARAPI_(AutoPtr<CServiceRecord>) GetServiceByName(
-            /* [in] */ IComponentName* name);
-
-        CARAPI_(AutoPtr<CServiceRecord>) GetServiceByIntent(
-            /* [in] */ IIntentFilterComparison* filter,
-            /* [in] */ Int32 callingUser);
-
-        CARAPI_(AutoPtr<CServiceRecord>) GetServiceByIntent(
-            /* [in] */ IIntentFilterComparison* filter);
-
-        CARAPI_(void) PutServiceByName(
-            /* [in] */ IComponentName* name,
-            /* [in] */ Int32 callingUser,
-            /* [in] */ CServiceRecord* value);
-
-        CARAPI_(void) PutServiceByIntent(
-            /* [in] */ IIntentFilterComparison* filter,
-            /* [in] */ Int32 callingUser,
-            /* [in] */ CServiceRecord* value);
-
-        CARAPI_(void) RemoveServiceByName(
-            /* [in] */ IComponentName* name,
-            /* [in] */ Int32 callingUser);
-
-        CARAPI_(void) RemoveServiceByIntent(
-            /* [in] */ IIntentFilterComparison* filter,
-            /* [in] */ Int32 callingUser);
-
-    private:
-        CARAPI_(AutoPtr<IComponentNameCServiceRecordHashMap> ) GetServices(
-            /* [in] */ Int32 callingUser);
-
-        CARAPI_(AutoPtr<IIntentFilterComparisonCServiceRecordHashMap>) GetServicesByIntent(
-            /* [in] */ Int32 callingUser);
-
-    private:
-        HashMap<Int32, AutoPtr<IComponentNameCServiceRecordHashMap> > mServicesByNamePerUser;
-        HashMap<Int32, AutoPtr<IIntentFilterComparisonCServiceRecordHashMap> > mServicesByIntentPerUser;
+        static const Int32 MSG_BG_START_TIMEOUT = 1;
     };
 
     class ServiceLookupResult : public Object
@@ -136,6 +122,16 @@ public:
 
     ~ActiveServices();
 
+    CARAPI_(AutoPtr<CServiceRecord>) GetServiceByName(
+        /* [in] */ IComponentName* name,
+        /* [in] */ Int32 callingUser);
+
+    CARAPI_(Boolean) HasBackgroundServices(
+        /* [in] */ Int32 callingUser);
+
+    CARAPI_(IComponentNameCServiceRecordHashMap) GetServices(
+        /* [in] */ Int32 callingUser);
+
     CARAPI StartServiceLocked(
         /* [in] */ IApplicationThread* caller,
         /* [in] */ IIntent* service,
@@ -144,6 +140,13 @@ public:
         /* [in] */ Int32 callingUid,
         /* [in] */ Int32 userId,
         /* [out] */ IComponentName** name);
+
+    CARAPI_(AutoPtr<IComponentName>) StartServiceInnerLocked(
+        /* [in] */ ServiceMap* smap,
+        /* [in] */ IIntent* service,
+        /* [in] */ CServiceRecord* r,
+        /* [in] */ Boolean callerFg,
+        /* [in] */ Boolean addToStarting);
 
     CARAPI StopServiceLocked(
         /* [in] */ IApplicationThread* caller,
@@ -169,6 +172,9 @@ public:
         /* [in] */ Int32 id,
         /* [in] */ INotification* notification,
         /* [in] */ Boolean removeNotification);
+
+    CARAPI UpdateServiceConnectionActivitiesLocked(
+        /* [in] */ ProcessRecord* clientProc);
 
     CARAPI BindServiceLocked(
         /* [in] */ IApplicationThread* caller,
@@ -272,12 +278,20 @@ public:
         /* [in] */ Boolean dumpAll);
 
 private:
+    CARAPI_(AutoPtr<ServiceMap>) GetServiceMap(
+        /* [in] */ Int32 callingUser);
+
     CARAPI StopServiceLocked(
         /* [in] */ CServiceRecord* service);
 
     CARAPI UpdateServiceForegroundLocked(
         /* [in] */ ProcessRecord* proc,
         /* [in] */ Boolean oomAdj);
+
+    CARAPI_(Boolean) UpdateServiceClientActivitiesLocked(
+        /* [in] */ ProcessRecord* proc,
+        /* [in] */ ConnectionRecord* modCr,
+        /* [in] */ Boolean updateLru);
 
     CARAPI_(AutoPtr<CServiceRecord>) FindServiceLocked(
         /* [in] */ IComponentName* name,
@@ -355,16 +369,22 @@ private:
 public:
     static const Boolean DEBUG_SERVICE;
     static const Boolean DEBUG_SERVICE_EXECUTING;
+    static const Boolean DEBUG_DELAYED_SERVICE;
+    static const Boolean DEBUG_DELAYED_STARTS;
     static const Boolean DEBUG_MU;
+    static const Boolean LOG_SERVICE_START_STOP;
     static const String TAG;
     static const String TAG_MU;
 
     // How long we wait for a service to finish executing.
     static const Int32 SERVICE_TIMEOUT = 20*1000;
 
+    // How long we wait for a service to finish executing.
+    static const Int32 SERVICE_BACKGROUND_TIMEOUT = SERVICE_TIMEOUT * 10;
+
     // How long a service needs to be running until restarting its process
     // is no longer considered to be a relaunch of the service.
-    static const Int32 SERVICE_RESTART_DURATION = 5*1000;
+    static const Int32 SERVICE_RESTART_DURATION = 1*1000;
 
     // How long a service needs to be running until it will start back at
     // SERVICE_RESTART_DURATION after being killed.
@@ -384,9 +404,17 @@ public:
     // LRU background list.
     static const Int32 MAX_SERVICE_INACTIVITY = 30*60*1000;
 
+    // How long we wait for a background started service to stop itself before
+    // allowing the next pending start to run.
+    static const Int32 BG_START_TIMEOUT = 15*1000;
+
     CActivityManagerService* mAm; // weak-ref
 
-    AutoPtr<ServiceMap> mServiceMap;
+    // Maximum number of services that we allow to start in the background
+    // at the same time.
+    const Int32 mMaxStartingBackground;
+
+    HashMap<Int32, AutoPtr<ServiceMap> > mServiceMap;
 
     /**
      * All currently bound service connections.  Keys are the IBinder of
@@ -410,9 +438,9 @@ public:
     List< AutoPtr<CServiceRecord> > mRestartingServices;
 
     /**
-     * List of services that are in the process of being stopped.
+     * List of services that are in the process of being destroyed.
      */
-    List< AutoPtr<CServiceRecord> > mStoppingServices;
+    List< AutoPtr<CServiceRecord> > mDestroyingServices;
 
     Object mLock;
 };

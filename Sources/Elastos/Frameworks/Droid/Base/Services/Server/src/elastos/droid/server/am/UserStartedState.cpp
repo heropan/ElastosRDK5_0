@@ -1,21 +1,18 @@
 
 #include "elastos/droid/server/am/UserStartedState.h"
+#include "Elastos.CoreLibrary.IO.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Am {
 
-// 02edec2f-11c5-4a99-b562-2813a924ad2a
-extern "C" const InterfaceID EIID_UserStartedState =
-    { 0x02edec2f, 0x11c5, 0x4a99, { 0xb5, 0x62, 0x28, 0x13, 0xa9, 0x24, 0xad, 0x2a } };
-
 const Int32 UserStartedState::STATE_BOOTING = 0;
 const Int32 UserStartedState::STATE_RUNNING = 1;
 const Int32 UserStartedState::STATE_STOPPING = 2;
 const Int32 UserStartedState::STATE_SHUTDOWN = 3;
 
-CAR_INTERFACE_IMPL_WITH_CPP_CAST(UserStartedState, IInterface, UserStartedState)
+CAR_INTERFACE_IMPL(UserStartedState, Object, IUserStartedState)
 
 UserStartedState::UserStartedState(
     /* [in] */ IUserHandle* handle,
@@ -26,23 +23,28 @@ UserStartedState::UserStartedState(
     , mInitializing(FALSE)
 {}
 
-UserStartedState::~UserStartedState()
-{}
-
 void UserStartedState::Dump(
     /* [in] */ const String& prefix,
     /* [in] */ IPrintWriter* pw)
 {
-    pw->PrintString(prefix); pw->PrintString(String("mState="));
+    pw->Print(prefix);
+    pw->Print(String("mState="));
     switch (mState) {
-        case STATE_BOOTING: pw->PrintString(String("BOOTING")); break;
-        case STATE_RUNNING: pw->PrintString(String("RUNNING")); break;
-        case STATE_STOPPING: pw->PrintString(String("STOPPING")); break;
-        case STATE_SHUTDOWN: pw->PrintString(String("SHUTDOWN")); break;
-        default: pw->PrintInt32(mState); break;
+        case STATE_BOOTING:
+            pw->Print(String("BOOTING")); break;
+        case STATE_RUNNING:
+            pw->Print(String("RUNNING")); break;
+        case STATE_STOPPING:
+            pw->Print(String("STOPPING")); break;
+        case STATE_SHUTDOWN:
+            pw->Print(String("SHUTDOWN")); break;
+        default:
+            pw->Print(mState); break;
     }
-    if (mSwitching) pw->PrintString(String(" SWITCHING"));
-    if (mInitializing) pw->PrintString(String(" INITIALIZING"));
+    if (mSwitching)
+        pw->Print(String(" SWITCHING"));
+    if (mInitializing)
+        pw->Print(String(" INITIALIZING"));
     pw->Println();
 }
 

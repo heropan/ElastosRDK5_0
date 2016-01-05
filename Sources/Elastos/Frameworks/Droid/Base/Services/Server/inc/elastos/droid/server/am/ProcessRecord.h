@@ -10,8 +10,8 @@
 #include <elastos/core/StringBuilder.h>
 #include "elastos/droid/server/am/ReceiverList.h"
 #include "elastos/droid/server/am/ConnectionRecord.h"
-// #include "elastos/droid/server/am/ContentProviderRecord.h"
-// #include "elastos/droid/server/am/CServiceRecord.h"
+#include "elastos/droid/server/am/ContentProviderRecord.h"
+#include "elastos/droid/server/am/CServiceRecord.h"
 #include "elastos/droid/server/am/ActivityRecord.h"
 #include "elastos/droid/server/am/BroadcastRecord.h"
 
@@ -42,7 +42,7 @@ namespace Droid {
 namespace Server {
 namespace Am {
 
-class ProcessStatsService;
+class CProcessStatsService;
 
 class ProcessRecord
     : public Object
@@ -68,10 +68,10 @@ public:
 
     CARAPI_(void) MakeActive(
         /* [in] */ IApplicationThread* thread,
-        /* [in] */ ProcessStatsService* tracker);
+        /* [in] */ CProcessStatsService* tracker);
 
     CARAPI_(void) MakeInactive(
-        /* [in] */ ProcessStatsService* tracker);
+        /* [in] */ CProcessStatsService* tracker);
 
     /**
      * This method returns true if any of the activities within the process record are interesting
@@ -110,7 +110,7 @@ public:
     CARAPI_(Boolean) AddPackage(
         /* [in] */ const String& pkg,
         /* [in] */ Int32 versionCode,
-        /* [in] */ ProcessStatsService* tracker);
+        /* [in] */ CProcessStatsService* tracker);
 
     CARAPI_(Int32) GetSetAdjWithServices();
 
@@ -121,7 +121,7 @@ public:
      *  Delete all packages from list except the package indicated in info
      */
     CARAPI_(void) ResetPackageList(
-        /* [in] */ ProcessStatsService* tracker);
+        /* [in] */ CProcessStatsService* tracker);
 
     CARAPI_(AutoPtr< ArrayOf<String> >) GetPackageList();
 
@@ -211,18 +211,18 @@ public:
 
     // contains HistoryRecord objects
     List< AutoPtr<ActivityRecord> > mActivities;
-    // // all ServiceRecord running in this process
-    // HashSet< AutoPtr<CServiceRecord> > mServices;
-    // // services that are currently executing code (need to remain foreground).
-    // HashSet< AutoPtr<CServiceRecord> > mExecutingServices;
+    // all ServiceRecord running in this process
+    HashSet< AutoPtr<CServiceRecord> > mServices;
+    // services that are currently executing code (need to remain foreground).
+    HashSet< AutoPtr<CServiceRecord> > mExecutingServices;
     // All ConnectionRecord this process holds
     HashSet< AutoPtr<ConnectionRecord> > mConnections;
     // all IIntentReceivers that are registered from this process.
     HashSet< AutoPtr<ReceiverList> > mReceivers;
     // class (String) -> ContentProviderRecord
-    // HashMap<String, AutoPtr<ContentProviderRecord> > mPubProviders;
-    // // All ContentProviderRecord process is using
-    // List< AutoPtr<CContentProviderConnection> > mConProviders;
+    HashMap<String, AutoPtr<ContentProviderRecord> > mPubProviders;
+    // All ContentProviderRecord process is using
+    List< AutoPtr<CContentProviderConnection> > mConProviders;
 
     Boolean mExecServicesFg;     // do we need to be executing services in the foreground?
     Boolean mPersistent;         // always keep this application running?

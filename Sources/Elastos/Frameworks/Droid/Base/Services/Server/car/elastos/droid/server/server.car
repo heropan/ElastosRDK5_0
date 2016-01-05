@@ -12,6 +12,7 @@ module
     merge("am/PendingIntentRecord.car");
     merge("am/ProcessRecord.car");
     merge("am/UriPermissionOwnerExternalToken.car");
+    merge("am/UserStartedState.car");
 
     merge("connectivity/NetworkAgentInfo.car");
 

@@ -1,6 +1,9 @@
 
 #include "elastos/droid/server/am/ProcessRecord.h"
+#include "elastos/droid/server/am/CActivityManagerService.h"
+#include "elastos/droid/server/am/CProcessStatsService.h"
 #include "elastos/droid/server/am/ProcessList.h"
+#include "Elastos.Droid.Utility.h"
 #include <elastos/droid/os/Process.h>
 #include <elastos/droid/os/SystemClock.h>
 #include <elastos/core/CoreUtils.h>
@@ -9,13 +12,17 @@
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Pm::IPackageItemInfo;
+using Elastos::Droid::Internal::App::CProcessStateHolder;
+using Elastos::Droid::Internal::App::IProcessState;
+using Elastos::Droid::Internal::App::IProcessStats;
 using Elastos::Droid::Os::CUserHandleHelper;
 using Elastos::Droid::Os::IUserHandleHelper;
+using Elastos::Droid::Os::IProcess;
 using Elastos::Droid::Os::Process;
 using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Utility::CArrayMap;
 using Elastos::Core::CoreUtils;
 using Elastos::Core::StringUtils;
-using Elastos::Utility::CArrayMap;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -131,7 +138,7 @@ ECode ProcessRecord::SetPid(
 
 void ProcessRecord::MakeActive(
     /* [in] */ IApplicationThread* thread,
-    /* [in] */ ProcessStatsService* tracker)
+    /* [in] */ CProcessStatsService* tracker)
 {
     if (mThread == NULL) {
         AutoPtr<IProcessState> origBase = mBaseProcessTracker;
@@ -147,7 +154,7 @@ void ProcessRecord::MakeActive(
         Int32 versionCode;
         mInfo->GetVersionCode(&versionCode);
         mBaseProcessTracker = tracker->GetProcessStateLocked(packageName, uid,
-            versionCode, processName);
+            versionCode, mProcessName);
         mBaseProcessTracker->MakeActive();
         Int32 size;
         mPkgList->GetSize(&size);
@@ -165,7 +172,7 @@ void ProcessRecord::MakeActive(
             String strKey;
             ICharSequence::Probe(key)->ToString(&strKey);
             state = tracker->GetProcessStateLocked(strKey, uid,
-                    versionCode, processName);
+                    versionCode, mProcessName);
             holder->SetState(state);
             if (state != mBaseProcessTracker) {
                 state->MakeActive();
@@ -176,14 +183,14 @@ void ProcessRecord::MakeActive(
 }
 
 void ProcessRecord::MakeInactive(
-    /* [in] */ ProcessStatsService* tracker)
+    /* [in] */ CProcessStatsService* tracker)
 {
     mThread = NULL;
     AutoPtr<IProcessState> origBase = mBaseProcessTracker;
     if (origBase != NULL) {
         if (origBase != NULL) {
             origBase->SetState(IProcessStats::STATE_NOTHING,
-                    tracker->GetMemFactorLocked(), SystemClock::GetUptimeMillis(), pkgList);
+                    tracker->GetMemFactorLocked(), SystemClock::GetUptimeMillis(), mPkgList);
             origBase->MakeInactive();
         }
         mBaseProcessTracker = NULL;
@@ -242,9 +249,9 @@ ECode ProcessRecord::UpdateHasAboveClientLocked()
 {
     mHasAboveClient = FALSE;
     if (mConnections.IsEmpty() == FALSE) {
-        HashSet< AutoPtr<ConnectionRecord> >::ReverseIterator rit = mConnections.RBegin();
-        for (; rit != mConnections.REnd(); ++rit) {
-            AutoPtr<ConnectionRecord> cr = *rit;
+        HashSet< AutoPtr<ConnectionRecord> >::Iterator it = mConnections.Begin();
+        for (; it != mConnections.End(); ++it) {
+            AutoPtr<ConnectionRecord> cr = *it;
             if ((cr->mFlags & IContext::BIND_ABOVE_CLIENT) != 0) {
                 mHasAboveClient = TRUE;
                 break;
@@ -292,10 +299,10 @@ void ProcessRecord::Kill(
                 ToShortString().string(), mSetAdj, reason.string());
         }
         // EventLog.writeEvent(EventLogTags.AM_KILL, userId, pid, processName, setAdj, reason);
-        Process::KillProcessQuiet(pid);
+        Process::KillProcessQuiet(mPid);
         Int32 uid;
         mInfo->GetUid(&uid);
-        Process::KillProcessGroup(uid, pid);
+        Process::KillProcessGroup(uid, mPid);
         if (!mPersistent) {
             mKilled = TRUE;
             mKilledByAm = TRUE;
@@ -323,7 +330,7 @@ ECode ProcessRecord::ToShortString(
     sb.AppendChar('/');
     Int32 uid;
     mInfo->GetUid(&uid);
-    if (uid < Process::FIRST_APPLICATION_UID) {
+    if (uid < IProcess::FIRST_APPLICATION_UID) {
         sb.Append(uid);
     }
     else {
@@ -333,9 +340,9 @@ ECode ProcessRecord::ToShortString(
         CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
         Int32 appId;
         helper->GetAppId(uid, &appId);
-        if (appId >= Process::FIRST_APPLICATION_UID) {
+        if (appId >= IProcess::FIRST_APPLICATION_UID) {
             sb.AppendChar('a');
-            sb.Append(appId - Process::FIRST_APPLICATION_UID);
+            sb.Append(appId - IProcess::FIRST_APPLICATION_UID);
         }
         else {
             sb.AppendChar('s');
@@ -344,7 +351,7 @@ ECode ProcessRecord::ToShortString(
         if (mUid != uid) {
             sb.AppendChar('i');
             helper->GetAppId(mUid, &appId);
-            sb.Append(appId - Process::FIRST_ISOLATED_UID);
+            sb.Append(appId - IProcess::FIRST_ISOLATED_UID);
         }
     }
     return NOERROR;
@@ -408,7 +415,7 @@ String ProcessRecord::MakeAdjReason()
 Boolean ProcessRecord::AddPackage(
     /* [in] */ const String& pkg,
     /* [in] */ Int32 versionCode,
-    /* [in] */ ProcessStatsService* tracker)
+    /* [in] */ CProcessStatsService* tracker)
 {
     Boolean containsKey;
     mPkgList->ContainsKey(CoreUtils::Convert(pkg), &containsKey);
@@ -419,7 +426,7 @@ Boolean ProcessRecord::AddPackage(
             Int32 uid;
             mInfo->GetUid(&uid);
             AutoPtr<IProcessState> state = tracker->GetProcessStateLocked(
-                    pkg, uid, versionCode, processName);
+                    pkg, uid, versionCode, mProcessName);
             holder->SetState(state);
             mPkgList->Put(CoreUtils::Convert(pkg), holder);
             if (state != mBaseProcessTracker) {
@@ -427,7 +434,7 @@ Boolean ProcessRecord::AddPackage(
             }
         }
         else {
-            mmPkgList->Put(CoreUtils::Convert(pkg), holder);
+            mPkgList->Put(CoreUtils::Convert(pkg), holder);
         }
         return TRUE;
     }
@@ -453,7 +460,7 @@ void ProcessRecord::ForceProcessStateUpTo(
 }
 
 void ProcessRecord::ResetPackageList(
-    /* [in] */ ProcessStatsService* tracker)
+    /* [in] */ CProcessStatsService* tracker)
 {
     Int32 N;
     mPkgList->GetSize(&N);
@@ -480,7 +487,7 @@ void ProcessRecord::ResetPackageList(
             Int32 versionCode;
             mInfo->GetVersionCode(&versionCode);
             AutoPtr<IProcessState> ps = tracker->GetProcessStateLocked(
-                    packageName, uid, versionCode, processName);
+                    packageName, uid, versionCode, mProcessName);
             AutoPtr<IProcessStateHolder> holder;
             CProcessStateHolder::New(versionCode, (IProcessStateHolder**)&holder);
             holder->SetState(ps);
@@ -511,10 +518,9 @@ AutoPtr<ArrayOf<String> > ProcessRecord::GetPackageList()
     }
 
     AutoPtr< ArrayOf<String> > list = ArrayOf<String>::Alloc(size);
-    HashSet<String>::Iterator it = mPkgList.Begin();
     for (Int32 i = 0; i < size; ++i) {
         AutoPtr<IInterface> key;
-        mPkgList->GetKeyAt((IInterface**)&key);
+        mPkgList->GetKeyAt(i, (IInterface**)&key);
         String strKey;
         ICharSequence::Probe(key)->ToString(&strKey);
         (*list)[i] = strKey;

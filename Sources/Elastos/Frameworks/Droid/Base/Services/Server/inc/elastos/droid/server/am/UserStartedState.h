@@ -3,32 +3,32 @@
 #define __ELASTOS_DROID_SERVER_AM_USERSTARTEDSTATE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "_Elastos.Droid.Server.h"
+#include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Os.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
+using Elastos::Droid::App::IStopUserCallback;
+using Elastos::Droid::Os::IUserHandle;
 using Elastos::IO::IPrintWriter;
 using Elastos::Utility::Etl::List;
-using Elastos::Droid::Os::IUserHandle;
-using Elastos::Droid::App::IStopUserCallback;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Am {
 
-extern "C" const InterfaceID EIID_UserStartedState;
-
 class UserStartedState
     : public Object
-    , public IInterface
+    , public IUserStartedState
 {
 public:
-    CAR_INTERFACE_DECL()
-
     UserStartedState(
         /* [in] */ IUserHandle * handle,
         /* [in] */ Boolean initial);
 
-    virtual ~UserStartedState();
+    CAR_INTERFACE_DECL()
 
     CARAPI_(void) Dump(
         /* [in] */ const String& prefix,
