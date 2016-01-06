@@ -198,6 +198,7 @@ module
     interface Elastos.Droid.View.ISubUiVisibilityListener;
     interface Elastos.Droid.View.ILayoutInflaterFilter;
     interface Elastos.Droid.View.IBlinkLayout;
+    interface Elastos.Droid.View.IViewOnFocusChangeListener;
 
     namespace Elastos {
     namespace Droid {
@@ -222,6 +223,88 @@ module
    //      interface IKeyEventCallback;
    //      interface IAccessibilityEventSource;
    //  }
+
+   class CTableRow {
+        constructor(
+            [in] IContext* ctx);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        interface ITableRow;
+        interface ILinearLayout;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+   }
+
+   [local]
+    class CTableRowLayoutParams {
+        constructor();
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] Int32 width,
+            [in] Int32 height);
+
+        constructor(
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] Float weight);
+
+        constructor(
+            [in] Int32 column);
+
+        constructor(
+            [in] IViewGroupLayoutParams* source);
+
+        constructor(
+            [in] IViewGroupMarginLayoutParams* marginSource);
+
+        interface ITableRowLayoutParams;
+        interface ILinearLayoutLayoutParams;
+        interface IViewGroupMarginLayoutParams;
+        interface IViewGroupLayoutParams;
+    }
+
+   class CTabWidget {
+        constructor(
+            [in] IContext* ctx);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface ITabWidget;
+        interface IViewOnFocusChangeListener;
+        interface ILinearLayout;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+   }
 
    class CToolBar {
         constructor(

@@ -8,24 +8,85 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-// {cd3e5b3e-2721-41f2-8793-bcc39e03482f}
-extern "C" const InterfaceID EIID_TableRowLayoutParams =
-{ 0xcd3e5b3e, 0x2721, 0x41f2, { 0x87, 0x93, 0xbc, 0xc3, 0x9e, 0x03, 0x48, 0x2f} };
-
 const Int32 TableRowLayoutParams::LOCATION;
 const Int32 TableRowLayoutParams::LOCATION_NEXT;
+
+CAR_INTERFACE_IMPL(TableRowLayoutParams, LinearLayout::LayoutParams, ITableRowLayoutParams)
 
 /**
  * {@inheritDoc}
  */
-TableRowLayoutParams::TableRowLayoutParams(
+TableRowLayoutParams::TableRowLayoutParams()
+    : mColumn(0)
+    , mSpan(0)
+{}
+
+ECode TableRowLayoutParams::constructor(
     /* [in] */ IContext* c,
     /* [in] */ IAttributeSet* attrs)
-    : LinearLayout::LayoutParams(c, attrs)
-    , mColumn(0)
-    , mSpan(0)
 {
-    ASSERT_SUCCEEDED(InitFromAttributes(c, attrs));
+    FAIL_RETURN(LinearLayout::LayoutParams::constructor(c, attrs));
+    return InitFromAttributes(c, attrs);
+}
+
+ECode TableRowLayoutParams::constructor(
+    /* [in] */ Int32 w,
+    /* [in] */ Int32 h)
+{
+    FAIL_RETURN(LinearLayout::LayoutParams::constructor(w, h));
+    mColumn = -1;
+    mSpan = 1;
+    return NOERROR;
+}
+
+ECode TableRowLayoutParams::constructor(
+    /* [in] */ Int32 w,
+    /* [in] */ Int32 h,
+    /* [in] */ Float initWeight)
+{
+    FAIL_RETURN(LinearLayout::LayoutParams::constructor(w, h, initWeight));
+    mColumn = -1;
+    mSpan = 1;
+    return NOERROR;
+}
+
+ECode TableRowLayoutParams::constructor()
+{
+    FAIL_RETURN(LinearLayout::LayoutParams::constructor(
+            IViewGroupLayoutParams::MATCH_PARENT,
+            IViewGroupLayoutParams::WRAP_CONTENT));
+    mColumn = -1;
+    mSpan = 1;
+    return NOERROR;
+}
+
+ECode TableRowLayoutParams::constructor(
+    /* [in] */ Int32 column)
+{
+    FAIL_RETURN(LinearLayout::LayoutParams::constructor(
+            IViewGroupLayoutParams::MATCH_PARENT,
+            IViewGroupLayoutParams::WRAP_CONTENT));
+    mColumn = column;
+    mSpan = 1;
+    return NOERROR;
+}
+
+ECode TableRowLayoutParams::constructor(
+    /* [in] */ IViewGroupLayoutParams* p)
+{
+    FAIL_RETURN(LinearLayout::LayoutParams::constructor(p));
+    mColumn = -1;
+    mSpan = 1;
+    return NOERROR;
+}
+
+ECode TableRowLayoutParams::constructor(
+    /* [in] */ IViewGroupMarginLayoutParams* source)
+{
+    FAIL_RETURN(LinearLayout::LayoutParams::constructor(source));
+    mColumn = -1;
+    mSpan = 1;
+    return NOERROR;
 }
 
 ECode TableRowLayoutParams::InitFromAttributes(
@@ -52,93 +113,6 @@ ECode TableRowLayoutParams::InitFromAttributes(
     return NOERROR;
 }
 
-/**
- * <p>Sets the child width and the child height.</p>
- *
- * @param w the desired width
- * @param h the desired height
- */
-TableRowLayoutParams::TableRowLayoutParams(
-    /* [in] */ Int32 w,
-    /* [in] */ Int32 h)
-    : LinearLayout::LayoutParams(w, h)
-    , mColumn(-1)
-    , mSpan(1)
-{
-}
-
-/**
- * <p>Sets the child width, height and weight.</p>
- *
- * @param w the desired width
- * @param h the desired height
- * @param initWeight the desired weight
- */
-TableRowLayoutParams::TableRowLayoutParams(
-    /* [in] */ Int32 w,
-    /* [in] */ Int32 h,
-    /* [in] */ Float initWeight)
-    : LinearLayout::LayoutParams(w, h, initWeight)
-    , mColumn(-1)
-    , mSpan(1)
-{
-}
-
-/**
- * <p>Sets the child width to {@link android.view.ViewGroup.LayoutParams}
- * and the child height to
- * {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}.</p>
- */
-TableRowLayoutParams::TableRowLayoutParams()
-    : LinearLayout::LayoutParams(
-            IViewGroupLayoutParams::MATCH_PARENT,
-            IViewGroupLayoutParams::WRAP_CONTENT)
-    , mColumn(-1)
-    , mSpan(1)
-{
-}
-
-/**
- * <p>Puts the view in the specified column.</p>
- *
- * <p>Sets the child width to {@link android.view.ViewGroup.LayoutParams#MATCH_PARENT}
- * and the child height to
- * {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}.</p>
- *
- * @param column the column index for the view
- */
-TableRowLayoutParams::TableRowLayoutParams(
-    /* [in] */ Int32 column)
-    : LinearLayout::LayoutParams(
-        IViewGroupLayoutParams::MATCH_PARENT,
-        IViewGroupLayoutParams::WRAP_CONTENT)
-    , mColumn(column)
-    , mSpan(1)
-{
-}
-
-/**
- * {@inheritDoc}
- */
-TableRowLayoutParams::TableRowLayoutParams(
-    /* [in] */ LayoutParams* p)
-    : LinearLayout::LayoutParams(p)
-    , mColumn(-1)
-    , mSpan(1)
-{
-}
-
-/**
- * {@inheritDoc}
- */
-TableRowLayoutParams::TableRowLayoutParams(
-    /* [in] */ ViewGroup::MarginLayoutParams* source)
-    : LinearLayout::LayoutParams(source)
-    , mColumn(-1)
-    , mSpan(1)
-{
-}
-
 ECode TableRowLayoutParams::SetColumn(
     /* [in] */ Int32 column)
 {
@@ -146,9 +120,12 @@ ECode TableRowLayoutParams::SetColumn(
     return NOERROR;
 }
 
-Int32 TableRowLayoutParams::GetColumn()
+ECode TableRowLayoutParams::GetColumn(
+    /* [out] */ Int32* column)
 {
-    return mColumn;
+    VALIDATE_NOT_NULL(column)
+    *column = mColumn;
+    return NOERROR;
 }
 
 ECode TableRowLayoutParams::SetSpan(
@@ -158,9 +135,12 @@ ECode TableRowLayoutParams::SetSpan(
     return NOERROR;
 }
 
-Int32 TableRowLayoutParams::GetSpan()
+ECode TableRowLayoutParams::GetSpan(
+    /* [out] */ Int32* span)
 {
-    return mSpan;
+    VALIDATE_NOT_NULL(span)
+    *span = mSpan;
+    return NOERROR;
 }
 
 ECode TableRowLayoutParams::SetBaseAttributes(
@@ -187,74 +167,6 @@ ECode TableRowLayoutParams::SetBaseAttributes(
     else {
         mHeight = IViewGroupLayoutParams::WRAP_CONTENT;
     }
-    return NOERROR;
-}
-
-ECode TableRowLayoutParams::Init(
-    /* [in] */ IContext* c,
-    /* [in] */ IAttributeSet* attrs)
-{
-    FAIL_RETURN(LinearLayout::LayoutParams::Init(c, attrs));
-    return InitFromAttributes(c, attrs);
-}
-
-ECode TableRowLayoutParams::Init(
-    /* [in] */ Int32 w,
-    /* [in] */ Int32 h)
-{
-    FAIL_RETURN(LinearLayout::LayoutParams::Init(w, h));
-    mColumn = -1;
-    mSpan = 1;
-    return NOERROR;
-}
-
-ECode TableRowLayoutParams::Init(
-    /* [in] */ Int32 w,
-    /* [in] */ Int32 h,
-    /* [in] */ Float initWeight)
-{
-    FAIL_RETURN(LinearLayout::LayoutParams::Init(w, h, initWeight));
-    mColumn = -1;
-    mSpan = 1;
-    return NOERROR;
-}
-
-ECode TableRowLayoutParams::Init()
-{
-    FAIL_RETURN(LinearLayout::LayoutParams::Init(
-            IViewGroupLayoutParams::MATCH_PARENT,
-            IViewGroupLayoutParams::WRAP_CONTENT));
-    mColumn = -1;
-    mSpan = 1;
-    return NOERROR;
-}
-
-ECode TableRowLayoutParams::Init(
-    /* [in] */ Int32 column)
-{
-    FAIL_RETURN(LinearLayout::LayoutParams::Init(
-            IViewGroupLayoutParams::MATCH_PARENT,
-            IViewGroupLayoutParams::WRAP_CONTENT));
-    mColumn = column;
-    mSpan = 1;
-    return NOERROR;
-}
-
-ECode TableRowLayoutParams::Init(
-    /* [in] */ IViewGroupLayoutParams* p)
-{
-    FAIL_RETURN(LinearLayout::LayoutParams::Init(p));
-    mColumn = -1;
-    mSpan = 1;
-    return NOERROR;
-}
-
-ECode TableRowLayoutParams::Init(
-    /* [in] */ IViewGroupMarginLayoutParams* source)
-{
-    FAIL_RETURN(LinearLayout::LayoutParams::Init(source));
-    mColumn = -1;
-    mSpan = 1;
     return NOERROR;
 }
 

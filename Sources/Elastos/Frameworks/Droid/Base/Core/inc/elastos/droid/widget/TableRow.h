@@ -10,8 +10,6 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-extern "C" const InterfaceID EIID_TableRow;
-
 using Elastos::Droid::View::IViewGroupOnHierarchyChangeListener;
 using Elastos::Droid::View::IViewGroup;
 
@@ -31,12 +29,14 @@ using Elastos::Droid::View::IViewGroup;
  * Also see {@link TableRow.LayoutParams android.widget.TableRow.LayoutParams}
  * for layout attributes </p>
  */
-class TableRow : public LinearLayout
+class TableRow
+    : public LinearLayout
+    , public ITableRow
 {
 private:
     // special transparent hierarchy change listener
     class ChildrenTracker
-        : public ElRefBase
+        : public Object
         , public IViewGroupOnHierarchyChangeListener
     {
         friend class TableRow;
@@ -65,12 +65,16 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    TableRow();
+
     /**
      * <p>Creates a new TableRow for the given context.</p>
      *
      * @param context the application environment
      */
-    TableRow(
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
     /**
@@ -80,11 +84,9 @@ public:
      * @param context the application environment
      * @param attrs a collection of attributes
      */
-    TableRow(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
-
-    virtual ~TableRow();
 
     /**
      * {@inheritDoc}
@@ -108,14 +110,16 @@ public:
      * {@inheritDoc}
      */
     //@Override
-    virtual CARAPI_(AutoPtr<IView>) GetVirtualChildAt(
-        /* [in] */ Int32 i);
+    virtual CARAPI GetVirtualChildAt(
+        /* [in] */ Int32 i,
+        /* [out] */ IView** v);
 
     /**
      * {@inheritDoc}
      */
     //@Override
-    virtual CARAPI_(Int32) GetVirtualChildCount();
+    virtual CARAPI GetVirtualChildCount(
+        /* [out] */ Int32* count);
 
     /**
      * {@inheritDoc}
@@ -200,27 +204,6 @@ public:
 
 
 protected:
-    TableRow();
-
-    /**
-     * <p>Creates a new TableRow for the given context.</p>
-     *
-     * @param context the application environment
-     */
-    CARAPI Init(
-        /* [in] */ IContext* context);
-
-    /**
-     * <p>Creates a new TableRow for the given context and with the
-     * specified set attributes.</p>
-     *
-     * @param context the application environment
-     * @param attrs a collection of attributes
-     */
-    CARAPI Init(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
     /**
      * {@inheritDoc}
      */
@@ -233,7 +216,7 @@ protected:
      * {@inheritDoc}
      */
     //@Override
-    virtual CARAPI_(void) OnLayout(
+    virtual CARAPI OnLayout(
         /* [in] */ Boolean changed,
         /* [in] */ Int32 l,
         /* [in] */ Int32 t,
@@ -246,7 +229,8 @@ protected:
      * a height of {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT} and no spanning.
      */
     //@Override
-    virtual CARAPI_(AutoPtr<ILinearLayoutLayoutParams>) GenerateDefaultLayoutParams();
+    CARAPI GenerateDefaultLayoutParams(
+        /* [out] */ IViewGroupLayoutParams** params);
 
     /**
      * {@inheritDoc}

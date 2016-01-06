@@ -78,6 +78,9 @@
 #include "elastos/droid/widget/CToolBar.h"
 #include "elastos/droid/widget/CHeaderViewListAdapter.h"
 #include "elastos/droid/widget/CVideoView.h"
+#include "elastos/droid/widget/CTableRow.h"
+#include "elastos/droid/widget/CTabWidget.h"
+#include "elastos/droid/widget/CTableRowLayoutParams.h"
 
 namespace Elastos {
 namespace Droid {
@@ -162,6 +165,9 @@ CAR_OBJECT_IMPL(CBlinkLayout)
 CAR_OBJECT_IMPL(CToolBar);
 CAR_OBJECT_IMPL(CHeaderViewListAdapter);
 CAR_OBJECT_IMPL(CVideoView);
+CAR_OBJECT_IMPL(CTableRow);
+CAR_OBJECT_IMPL(CTabWidget);
+CAR_OBJECT_IMPL(CTableRowLayoutParams);
 
 } // namespace Widget
 } // namespace Droid

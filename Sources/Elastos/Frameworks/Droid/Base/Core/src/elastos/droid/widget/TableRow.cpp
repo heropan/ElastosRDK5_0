@@ -1,6 +1,6 @@
 
 #include "elastos/droid/widget/TableRow.h"
-#include "elastos/droid/widget/CTableRowLayoutParams.h"
+#include "elastos/droid/widget/TableRowLayoutParams.h"
 #include "elastos/droid/view/CGravity.h"
 #include <elastos/core/Math.h>
 
@@ -8,7 +8,8 @@ using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::CGravity;
 using Elastos::Droid::View::EIID_IViewGroupOnHierarchyChangeListener;
-using Elastos::Core::CStringWrapper;
+using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -18,7 +19,7 @@ namespace Widget {
 //              TableRow::ChildrenTracker
 //==============================================================================
 
-CAR_INTERFACE_IMPL(TableRow::ChildrenTracker, IViewGroupOnHierarchyChangeListener)
+CAR_INTERFACE_IMPL(TableRow::ChildrenTracker, Object, IViewGroupOnHierarchyChangeListener)
 
 TableRow::ChildrenTracker::ChildrenTracker(
     /* [in] */ TableRow* owner)
@@ -64,11 +65,7 @@ ECode TableRow::ChildrenTracker::OnChildViewRemoved(
 //==============================================================================
 //              TableRow
 //==============================================================================
-
-// {D6AA0095-3075-4C69-814B-1FE58D273B07}
-extern "C" const InterfaceID EIID_TableRow =
-{ 0xd6aa0095, 0x3075, 0x4c69, { 0x81, 0x4b, 0x1f, 0xe5, 0x8d, 0x27, 0x3b, 0x7 } };
-
+CAR_INTERFACE_IMPL(TableRow, LinearLayout, ITableRow)
 
 TableRow::TableRow()
     : mNumColumns(0)
@@ -80,17 +77,12 @@ TableRow::TableRow()
  *
  * @param context the application environment
  */
-TableRow::TableRow(
+ECode TableRow::constructor(
     /* [in] */ IContext* context)
-    : LinearLayout(context)
-    , mNumColumns(0)
 {
+    LinearLayout::constructor(context);
     InitTableRow();
-}
-
-TableRow::~TableRow()
-{
-    mColumnToChildIndex = NULL;
+    return NOERROR;
 }
 
 /**
@@ -100,13 +92,13 @@ TableRow::~TableRow()
  * @param context the application environment
  * @param attrs a collection of attributes
  */
-TableRow::TableRow(
+TableRow::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
-    : LinearLayout(context, attrs)
-    , mNumColumns(0)
 {
+    LinearLayout::constructor(context, attrs);
     InitTableRow();
+    return NOERROR;
 }
 
 void TableRow::InitTableRow()
@@ -141,7 +133,8 @@ ECode TableRow::SetColumnCollapsed(
     /* [in] */ Int32 columnIndex,
     /* [in] */ Boolean collapsed)
 {
-    AutoPtr<IView> child = GetVirtualChildAt(columnIndex);
+    AutoPtr<IView> child;
+    GetVirtualChildAt(columnIndex, (IView**)&child);
     if (child != NULL) {
         child->SetVisibility(collapsed ? IView::GONE : IView::VISIBLE);
     }
@@ -163,7 +156,7 @@ void TableRow::OnMeasure(
 /**
  * {@inheritDoc}
  */
-void TableRow::OnLayout(
+ECode TableRow::OnLayout(
     /* [in] */ Boolean changed,
     /* [in] */ Int32 l,
     /* [in] */ Int32 t,
@@ -171,15 +164,18 @@ void TableRow::OnLayout(
     /* [in] */ Int32 b)
 {
     // enforce horizontal layout
-    LayoutHorizontal();
+    LayoutHorizontal(l, t, r, b);
+    return NOERROR;
 }
 
 /**
  * {@inheritDoc}
  */
-AutoPtr<IView> TableRow::GetVirtualChildAt(
-    /* [in] */ Int32 i)
+ECode TableRow::GetVirtualChildAt(
+    /* [in] */ Int32 i,
+    /* [out] */ IView** v)
 {
+    VALIDATE_NOT_NULL(v)
     if (mColumnToChildIndex == NULL) {
         MapIndexAndColumns();
     }
@@ -190,16 +186,18 @@ AutoPtr<IView> TableRow::GetVirtualChildAt(
         deflectedIndex = it->mSecond;
     }
     if (deflectedIndex != -1) {
-        return GetChildAt(deflectedIndex);
+        return GetChildAt(deflectedIndex, v);
     }
 
-    return NULL;
+    *v = NULL;
+    return NOERROR;
 }
 
 /**
  * {@inheritDoc}
  */
-Int32 TableRow::GetVirtualChildCount()
+ECode TableRow::GetVirtualChildCount(
+    /* [out] */ Int32* count)
 {
     if (mColumnToChildIndex == NULL) {
         MapIndexAndColumns();
@@ -211,14 +209,18 @@ void TableRow::MapIndexAndColumns()
 {
     if (mColumnToChildIndex == NULL) {
         Int32 virtualCount = 0;
-        Int32 count = GetChildCount();
+        Int32 count;
+        GetChildCount(&count);
 
         mColumnToChildIndex = new HashMap<Int32, Int32>(5);
 
+        AutoPtr<IView> child;
         for (Int32 i = 0; i < count; i++) {
-            AutoPtr<IView> child = GetChildAt(i);
-            AutoPtr<ITableRowLayoutParams> layoutParams;
-            child->GetLayoutParams((IViewGroupLayoutParams**)&layoutParams);
+            child = NULL;
+            GetChildAt(i, (IView**)&child);
+            AutoPtr<IViewGroupLayoutParams> temp;
+            child->GetLayoutParams((IViewGroupLayoutParams**)&temp);
+            AutoPtr<ITableRowLayoutParams> layoutParams = ITableRowLayoutParams::Probe(temp);
             Int32 column, span;
             layoutParams->GetColumn(&column);
             layoutParams->GetSpan(&span);
@@ -257,20 +259,21 @@ void TableRow::MeasureChildBeforeLayout(
     /* [in] */ Int32 totalHeight)
 {
     if (mConstrainedColumnWidths != NULL) {
-        AutoPtr<ITableRowLayoutParams> _lp;
-        child->GetLayoutParams((IViewGroupLayoutParams**)&_lp);
-        TableRowLayoutParams* lp = reinterpret_cast<TableRowLayoutParams*>(_lp->Probe(EIID_TableRowLayoutParams));
-        assert(lp != 0);
+        AutoPtr<IViewGroupLayoutParams> temp;
+        child->GetLayoutParams((IViewGroupLayoutParams**)&temp);
+        AutoPtr<ITableRowLayoutParams> _lp = ITableRowLayoutParams::Probe(temp);
         Int32 measureMode = MeasureSpec::EXACTLY;
         Int32 columnWidth = 0;
 
-        Int32 span = lp->mSpan;
+        Int32 span;
+        _lp->GetSpan(&span);
         ArrayOf<Int32>* constrainedColumnWidths = mConstrainedColumnWidths;
         for (Int32 i = 0; i < span; i++) {
             columnWidth += (*constrainedColumnWidths)[childIndex + i];
         }
 
-        Int32 gravity = lp->mGravity;
+        Int32 gravity;
+        ILinearLayoutLayoutParams::Probe(_lp)->GetGravity(&gravity);
         Boolean isHorizontalGravity;
         AutoPtr<IGravity> g;
         CGravity::AcquireSingleton((IGravity**)&g);
@@ -283,20 +286,27 @@ void TableRow::MeasureChildBeforeLayout(
         // no need to care about padding here,
         // ViewGroup.getChildMeasureSpec() would get rid of it anyway
         // because of the EXACTLY measure spec we use
+        Int32 leftMargin, rightMargin, topMargin, bottomMargin, heightLayout;
+        IViewGroupMarginLayoutParams::Probe(_lp)->GetLeftMargin(&leftMargin);
+        IViewGroupMarginLayoutParams::Probe(_lp)->GetRightMargin(&rightMargin);
         Int32 childWidthMeasureSpec = MeasureSpec::MakeMeasureSpec(
-            Elastos::Core::Math::Max(0, columnWidth - lp->mLeftMargin - lp->mRightMargin), measureMode);
+            Elastos::Core::Math::Max(0, columnWidth - leftMargin - rightMargin), measureMode);
+        IViewGroupMarginLayoutParams::Probe(_lp)->GetTopMargin(&topMargin);
+        IViewGroupMarginLayoutParams::Probe(_lp)->GetBottomMargin(&bottomMargin);
+        IViewGroupLayoutParams::Probe(_lp)->GetHeight(&heightLayout);
         Int32 childHeightMeasureSpec = GetChildMeasureSpec(heightMeasureSpec,
-                mPaddingTop + mPaddingBottom + lp->mTopMargin +
-                lp->mBottomMargin + totalHeight, lp->mHeight);
+                mPaddingTop + mPaddingBottom + topMargin +
+                bottomMargin + totalHeight, heightLayout);
 
         child->Measure(childWidthMeasureSpec, childHeightMeasureSpec);
-
+        TableRowLayoutParams* lp = (TableRowLayoutParams*)_lp.Get();
         if (isHorizontalGravity) {
             Int32 childWidth;
             child->GetMeasuredWidth(&childWidth);
-            lp->mOffset[TableRowLayoutParams::LOCATION_NEXT] = columnWidth - childWidth;
+            (*lp->mOffset)[TableRowLayoutParams::LOCATION_NEXT] = columnWidth - childWidth;
 
-            Int32 layoutDirection = GetLayoutDirection();
+            Int32 layoutDirection;
+            GetLayoutDirection(&layoutDirection);
             Int32 absoluteGravity;
             g->GetAbsoluteGravity(gravity, layoutDirection, &absoluteGravity);
             switch (absoluteGravity & IGravity::HORIZONTAL_GRAVITY_MASK) {
@@ -304,15 +314,15 @@ void TableRow::MeasureChildBeforeLayout(
                     // don't offset on X axis
                     break;
                 case IGravity::RIGHT:
-                    lp->mOffset[TableRowLayoutParams::LOCATION] = lp->mOffset[TableRowLayoutParams::LOCATION_NEXT];
+                    (*lp->mOffset)[TableRowLayoutParams::LOCATION] = (*lp->mOffset)[TableRowLayoutParams::LOCATION_NEXT];
                     break;
                 case IGravity::CENTER_HORIZONTAL:
-                    lp->mOffset[TableRowLayoutParams::LOCATION] = lp->mOffset[TableRowLayoutParams::LOCATION_NEXT] / 2;
+                    (*lp->mOffset)[TableRowLayoutParams::LOCATION] = (*lp->mOffset)[TableRowLayoutParams::LOCATION_NEXT] / 2;
                     break;
             }
         }
         else {
-            lp->mOffset[TableRowLayoutParams::LOCATION] = lp->mOffset[TableRowLayoutParams::LOCATION_NEXT] = 0;
+            (*lp->mOffset)[TableRowLayoutParams::LOCATION] = (*lp->mOffset)[TableRowLayoutParams::LOCATION_NEXT] = 0;
         }
     }
     else {
@@ -329,10 +339,10 @@ Int32 TableRow::GetChildrenSkipCount(
     /* [in] */ IView* child,
     /* [in] */ Int32 index)
 {
-    AutoPtr<ITableRowLayoutParams> layoutParams;
+    AutoPtr<IViewGroupLayoutParams> layoutParams;
     child->GetLayoutParams((IViewGroupLayoutParams**)&layoutParams);
     Int32 span;
-    layoutParams->GetSpan(&span);
+    ITableRowLayoutParams::Probe(layoutParams)->GetSpan(&span);
 
     // when the span is 1 (default), we need to skip 0 child
     return span - 1;
@@ -344,10 +354,10 @@ Int32 TableRow::GetChildrenSkipCount(
 Int32 TableRow::GetLocationOffset(
     /* [in] */ IView* child)
 {
-    AutoPtr<ITableRowLayoutParams> layoutParams;
+    AutoPtr<IViewGroupLayoutParams> layoutParams;
     child->GetLayoutParams((IViewGroupLayoutParams**)&layoutParams);
-
-    return ((CTableRowLayoutParams*)layoutParams.Get())->mOffset[TableRowLayoutParams::LOCATION];
+    TableRowLayoutParams* lp = (TableRowLayoutParams*)ITableRowLayoutParams::Probe(layoutParams);
+    return (*lp->mOffset)[TableRowLayoutParams::LOCATION];
 }
 
 /**
@@ -356,10 +366,10 @@ Int32 TableRow::GetLocationOffset(
 Int32 TableRow::GetNextLocationOffset(
     /* [in] */ IView* child)
 {
-    AutoPtr<ITableRowLayoutParams> layoutParams;
+    AutoPtr<IViewGroupLayoutParams> layoutParams;
     child->GetLayoutParams((IViewGroupLayoutParams**)&layoutParams);
-
-    return ((CTableRowLayoutParams*)layoutParams.Get())->mOffset[TableRowLayoutParams::LOCATION_NEXT];
+    TableRowLayoutParams* lp = (TableRowLayoutParams*)ITableRowLayoutParams::Probe(layoutParams);
+    return (*lp->mOffset)[TableRowLayoutParams::LOCATION_NEXT];
 }
 
 /**
@@ -374,20 +384,23 @@ Int32 TableRow::GetNextLocationOffset(
 AutoPtr<ArrayOf<Int32> > TableRow::GetColumnsWidths(
     /* [in] */ Int32 widthMeasureSpec)
 {
-    Int32 numColumns = GetVirtualChildCount();
+    Int32 numColumns;
+    GetVirtualChildCount(&numColumns);
     if (mColumnWidths == NULL || numColumns != mColumnWidths->GetLength()) {
         mColumnWidths = ArrayOf<Int32>::Alloc(numColumns);
     }
 
     AutoPtr<ArrayOf<Int32> > columnWidths = mColumnWidths;
 
+    AutoPtr<IView> child;
     for (Int32 i = 0; i < numColumns; i++) {
-        AutoPtr<IView> child = GetVirtualChildAt(i);
+        child = NULL;
+        GetVirtualChildAt(i, (IView**)&child);
         Int32 visible;
         if (child != NULL && (child->GetVisibility(&visible), visible != IView::GONE)) {
-            AutoPtr<ITableRowLayoutParams> layoutParams;
+            AutoPtr<IViewGroupLayoutParams> layoutParams;
             child->GetLayoutParams((IViewGroupLayoutParams**)&layoutParams);
-            CTableRowLayoutParams* lp = (CTableRowLayoutParams*)layoutParams.Get();
+            TableRowLayoutParams* lp = (TableRowLayoutParams*)ITableRowLayoutParams::Probe(layoutParams);
 
             if (lp->mSpan == 1) {
                 Int32 spec;
@@ -433,7 +446,9 @@ AutoPtr<ArrayOf<Int32> > TableRow::GetColumnsWidths(
 ECode TableRow::SetColumnsWidthConstraints(
     /* [in] */ ArrayOf<Int32>* columnWidths)
 {
-    if (columnWidths == NULL || columnWidths->GetLength() < GetVirtualChildCount()) {
+    Int32 count;
+    if (columnWidths == NULL ||
+        columnWidths->GetLength() < (GetVirtualChildCount(&count), count)) {
 //        throw new IllegalArgumentException(
 //                "columnWidths should be >= getVirtualChildCount()");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -453,7 +468,10 @@ ECode TableRow::GenerateLayoutParams(
 {
     VALIDATE_NOT_NULL(params);
     AutoPtr<ITableRowLayoutParams> lp;
-    FAIL_RETURN(CTableRowLayoutParams::New(GetContext(), attrs, (ITableRowLayoutParams**)&lp));
+    AutoPtr<IContext> ctx;
+    GetContext((IContext**)&ctx);
+    assert(0);
+    //FAIL_RETURN(CTableRowLayoutParams::New(ctx, attrs, (ITableRowLayoutParams**)&lp));
     *params = IViewGroupLayoutParams::Probe(lp);
     REFCOUNT_ADD(*params);
     return NOERROR;
@@ -464,11 +482,16 @@ ECode TableRow::GenerateLayoutParams(
  * {@link android.view.ViewGroup.LayoutParams#MATCH_PARENT},
  * a height of {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT} and no spanning.
  */
-AutoPtr<ILinearLayoutLayoutParams> TableRow::GenerateDefaultLayoutParams()
+ECode TableRow::GenerateDefaultLayoutParams(
+    /* [out] */ IViewGroupLayoutParams** params)
 {
+    VALIDATE_NOT_NULL(params)
     AutoPtr<ITableRowLayoutParams> lp;
-    CTableRowLayoutParams::New((ITableRowLayoutParams**)&lp);
-    return (ILinearLayoutLayoutParams*)lp.Get();
+    assert(0);
+    //CTableRowLayoutParams::New((ITableRowLayoutParams**)&lp);
+    *params = (IViewGroupLayoutParams*)lp.Get();
+    REFCOUNT_ADD(*params);
+    return NOERROR;
 }
 
 /**
@@ -487,7 +510,8 @@ AutoPtr<IViewGroupLayoutParams> TableRow::GenerateLayoutParams(
     /* [in] */ IViewGroupLayoutParams* p)
 {
     AutoPtr<IViewGroupLayoutParams> lp;
-    CTableRowLayoutParams::New((ITableRowLayoutParams**)&lp);
+    assert(0);
+    //CTableRowLayoutParams::New((ITableRowLayoutParams**)&lp);
     return lp;
 }
 
@@ -496,8 +520,8 @@ ECode TableRow::OnInitializeAccessibilityEvent(
 {
     LinearLayout::OnInitializeAccessibilityEvent(event);
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("CTableRow"), (ICharSequence**)&seq);
-    return event->SetClassName(seq);
+    CString::New(String("CTableRow"), (ICharSequence**)&seq);
+    return IAccessibilityRecord::Probe(event)->SetClassName(seq);
 }
 
 
@@ -506,32 +530,8 @@ ECode TableRow::OnInitializeAccessibilityNodeInfo(
 {
     LinearLayout::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("CTableRow"), (ICharSequence**)&seq);
+    CString::New(String("CTableRow"), (ICharSequence**)&seq);
     return info->SetClassName(seq);
-}
-
-ECode TableRow::Init(
-        /* [in] */ IContext* context)
-{
-    FAIL_RETURN(LinearLayout::Init(context));
-    InitTableRow();
-    return NOERROR;
-}
-
-/**
- * <p>Creates a new TableRow for the given context and with the
- * specified set attributes.</p>
- *
- * @param context the application environment
- * @param attrs a collection of attributes
- */
-ECode TableRow::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs)
-{
-    FAIL_RETURN(LinearLayout::Init(context, attrs));
-    InitTableRow();
-    return NOERROR;
 }
 
 } // namespace Widget
