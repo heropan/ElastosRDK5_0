@@ -295,16 +295,22 @@ void PackageSettingBase::SetUserState(
     /* [in] */ Boolean installed,
     /* [in] */ Boolean stopped,
     /* [in] */ Boolean notLaunched,
+    /* [in] */ Boolean hidden,
+    /* [in] */ const String& lastDisableAppCaller,
     /* [in] */ HashSet<String>* enabledComponents,
-    /* [in] */ HashSet<String>* disabledComponents)
+    /* [in] */ HashSet<String>* disabledComponents,
+    /* [in] */ Boolean blockUninstall)
 {
     AutoPtr<PackageUserState> state = ModifyUserState(userId);
     state->mEnabled = enabled;
     state->mInstalled = installed;
     state->mStopped = stopped;
     state->mNotLaunched = notLaunched;
+    state->mHidden = hidden;
+    state->mLastDisableAppCaller = lastDisableAppCaller;
     state->mEnabledComponents = enabledComponents;
     state->mDisabledComponents = disabledComponents;
+    state->mBlockUninstall = blockUninstall;
 }
 
 AutoPtr<HashSet<String> > PackageSettingBase::GetEnabledComponents(

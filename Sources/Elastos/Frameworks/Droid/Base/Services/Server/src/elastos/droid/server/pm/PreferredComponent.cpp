@@ -1,31 +1,43 @@
 
 #include "PreferredComponent.h"
 #include "util/XmlUtils.h"
-#include <elastos/core/StringUtils.h>
+#include "elastos/droid/internal/utility/XmlUtils.h"
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Core::StringUtils;
 using Elastos::Droid::Content::IComponentNameHelper;
 using Elastos::Droid::Content::CComponentNameHelper;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::Pm::IResolveInfo;
 using Elastos::Droid::Content::Pm::IActivityInfo;
 using Elastos::Droid::Utility::XmlUtils;
+using Elastos::Core::ISystem;
+using Elastos::Core::CSystem;
+using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::IIterator;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
+namespace Pm {
+
+const String PreferredComponent::TAG_SET("set");
+const String PreferredComponent::ATTR_ALWAYS("always");
+const String PreferredComponent::ATTR_MATCH("match");
+const String PreferredComponent::ATTR_NAME("name");
+const String PreferredComponent::ATTR_SET("set");
 
 PreferredComponent::PreferredComponent(
     /* [in] */ ICallbacks* callbacks,
     /* [in] */ Int32 match,
     /* [in] */ ArrayOf<IComponentName*>* set,
-    /* [in] */ IComponentName* component)
+    /* [in] */ IComponentName* component,
+    /* [in] */ Boolean always)
 {
     mCallbacks = callbacks;
     mMatch = match & IIntentFilter::MATCH_CATEGORY_MASK;
     mComponent = component;
+    mAlways = always;
     component->FlattenToShortString(&mShortComponent);
     if (set != NULL) {
         const Int32 N = set->GetLength();
@@ -46,7 +58,7 @@ PreferredComponent::PreferredComponent(
             cn->FlattenToShortString(&shortStr);
             (*myPackages)[i] = packageName;
             (*myClasses)[i] = className;
-            (*myComponents)[i] = shortStr;
+            cn->FlattenToShortString(&(*myComponents)[i]);
         }
         mSetPackages = myPackages;
         mSetClasses = myClasses;
@@ -59,7 +71,7 @@ PreferredComponent::PreferredComponent(
     /* [in] */ IXmlPullParser* parser)
 {
     mCallbacks = callbacks;
-    parser->GetAttributeValue(String(NULL), String("name"), &mShortComponent);
+    parser->GetAttributeValue(String(NULL), ATTR_NAME, &mShortComponent);
     AutoPtr<IComponentNameHelper> componentNameHelper;
     CComponentNameHelper::AcquireSingleton((IComponentNameHelper**)&componentNameHelper);
     componentNameHelper->UnflattenFromString(mShortComponent, (IComponentName**)&mComponent);
@@ -67,11 +79,14 @@ PreferredComponent::PreferredComponent(
         mParseError = String("Bad activity name ") + mShortComponent;
     }
     String matchStr;
-    parser->GetAttributeValue(String(NULL), String("match"), &matchStr);
+    parser->GetAttributeValue(String(NULL), ATTR_MATCH), &matchStr);
     mMatch = matchStr != NULL ? StringUtils::ParseInt32(matchStr, 16) : 0;
     String setCountStr;
-    parser->GetAttributeValue(String(NULL), String("set"), &setCountStr);
+    parser->GetAttributeValue(String(NULL), ATTR_SET, &setCountStr);
     Int32 setCount = setCountStr != NULL ? StringUtils::ParseInt32(setCountStr) : 0;
+    String alwaysStr;
+    parser->GetAttributeValue(String(NULL), ATTR_ALWAYS, alwaysStr);
+    mAlways = !alwaysStr.IsNull() ? StringUtils::ParseBoolean(alwaysStr) : TRUE;
 
     AutoPtr<ArrayOf<String> > myPackages = setCount > 0 ? ArrayOf<String>::Alloc(setCount) : NULL;
     AutoPtr<ArrayOf<String> > myClasses = setCount > 0 ? ArrayOf<String>::Alloc(setCount) : NULL;
@@ -94,9 +109,9 @@ PreferredComponent::PreferredComponent(
         parser->GetName(&tagName);
         //Log.i(TAG, "Parse outerDepth=" + outerDepth + " depth="
         //        + parser.getDepth() + " tag=" + tagName);
-        if (tagName.Equals("set")) {
+        if (tagName.Equals(TAG_SET)) {
             String name;
-            parser->GetAttributeValue(String(NULL), String("name"), &name);
+            parser->GetAttributeValue(String(NULL), ATTR_NAME, &name);
             if (name.IsNull()) {
                 if (mParseError.IsNull()) {
                     mParseError = String("No name in set tag in preferred activity ")
@@ -156,46 +171,49 @@ String PreferredComponent::GetParseError()
 }
 
 ECode PreferredComponent::WriteToXml(
-    /* [in] */ IXmlSerializer* serializer)
+    /* [in] */ IXmlSerializer* serializer,
+    /* [in] */ Boolean full)
 {
     assert(serializer != NULL);
-    String nullStr;
-    String setStr("set");
-    String nameStr("name");
     Int32 NS = mSetClasses != NULL ? mSetClasses->GetLength() : 0;
-    serializer->WriteAttribute(nullStr, nameStr, mShortComponent);
-    if (mMatch != 0) {
-        serializer->WriteAttribute(nullStr, String("match"), StringUtils::Int32ToHexString(mMatch));
-    }
-    serializer->WriteAttribute(nullStr, setStr, StringUtils::Int32ToString(NS));
-    for (Int32 s = 0; s < NS; s++) {
-       serializer->WriteStartTag(nullStr, setStr);
-       serializer->WriteAttribute(nullStr, nameStr, (*mSetComponents)[s]);
-       serializer->WriteEndTag(nullStr, setStr);
+    serializer->WriteAttribute(String(NULL), ATTR_NAME, mShortComponent);
+    if (full) {
+        if (mMatch != 0) {
+            serializer->WriteAttribute(String(NULL), ATTR_MATCH, StringUtils::Int32ToHexString(mMatch));
+        }
+        serializer->WriteAttribute(String(NULL), ATTR_ALWAYS, StringUtils::ToString(mAlways));
+        serializer->WriteAttribute(String(NULL), ATTR_SET, StringUtils::ToString(NS));
+        for (Int32 s = 0; s < NS; s++) {
+            serializer->WriteStartTag(String(NULL), TAG_SET);
+            serializer->WriteAttribute(String(NULL), ATTR_NAME, (*mSetComponents)[s]);
+            serializer->WriteEndTag(String(NULL), TAG_SET);
+        }
     }
     return NOERROR;
 }
 
 Boolean PreferredComponent::SameSet(
-    /* [in] */ IObjectContainer* query,
+    /* [in] */ IList* query,
     /* [in] */ Int32 priority)
 {
-    if (mSetPackages == NULL)
+    if (mSetPackages == NULL) {
+        return query == NULL;
+    }
+    if (query == NULL) {
         return FALSE;
-    const Int32 NS = mSetPackages->GetLength();
+    }
+    Int32 NS = mSetPackages->GetLength();
     Int32 numMatch = 0;
     Boolean hasNext = FALSE;
-    AutoPtr<IObjectEnumerator> enumerator;
-    query->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-    while (enumerator->MoveNext(&hasNext), hasNext) {
+    AutoPtr<IIterator> it;
+    query->GetIterator((IIterator**)&it);
+    while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> item;
-        enumerator->Current((IInterface**)&item);
-
+        it->GetNext((IInterface**)&item);
         AutoPtr<IResolveInfo> ri = IResolveInfo::Probe(item);
         Int32 riPriority;
         ri->GetPriority(&riPriority);
-        if (riPriority != priority)
-            continue;
+        if (riPriority != priority) continue;
         AutoPtr<IActivityInfo> ai;
         ri->GetActivityInfo((IActivityInfo**)&ai);
         String packageName, name;
@@ -203,17 +221,41 @@ Boolean PreferredComponent::SameSet(
         ai->GetName(&name);
         Boolean good = FALSE;
         for (Int32 j = 0; j < NS; j++) {
-            if ((*mSetPackages)[j].Equals(packageName)
-                && (*mSetClasses)[j].Equals(name)) {
+            if ((*mSetPackages)[j].Equals(packageName) && (*mSetClasses)[j].Equals(name)) {
                 numMatch++;
                 good = TRUE;
                 break;
             }
         }
-        if (!good)
-            return FALSE;
+        if (!good) return FALSE;
     }
 
+    return numMatch == NS;
+}
+
+Boolean PreferredComponent::SameSet(
+    /* [in] */ ArrayOf<IComponentName*>* comps)
+{
+    if (mSetPackages == NULL) return FALSE;
+    Int32 NQ = comps->GetLength();
+    Int32 NS = mSetPackages->GetLength();
+    Int32 numMatch = 0;
+    for (Int32 i = 0; i < NQ; i++) {
+        AutoPtr<IComponentName> cn = (*comps)[i];
+        String packageName, className;
+        cn->GetPackageName(&packageName);
+        cn->GetClassName(&className);
+        Boolean good = FALSE;
+        for (Int32 j = 0; j < NS; j++) {
+            if ((*mSetPackages)[j].Equals(packageName)
+                    && (*mSetClasses)[j].Equals(className)) {
+                numMatch++;
+                good = TRUE;
+                break;
+            }
+        }
+        if (!good) return FALSE;
+    }
     return numMatch == NS;
 }
 
@@ -222,26 +264,31 @@ void PreferredComponent::Dump(
     /* [in] */ const String& prefix,
     /* [in] */ IInterface* ident)
 {
-    out->PrintString(prefix);
-    out->PrintString(StringUtils::Int32ToString((Int32)ident/*System.identityHashCode(ident)*/, 16));
+    out->Print(prefix);
+    AutoPtr<ISystem> sys;
+    CSystem::AcquireSingleton((ISystem**)&sys);
+    Int32 hashCode;
+    sys->IdentityHashCode(&hashCode);
+    out->Print(StringUtils::ToHexString(hashCode));
     out->PrintChar(' ');
-    String str;
-    mComponent->FlattenToShortString(&str);
-    out->PrintString(str);
-    out->PrintString(String(" match=0x"));
-    out->PrintStringln(StringUtils::Int32ToString(mMatch, 16));
+    out->println(mShortComponent);
+    out->Print(prefix)
+    out->Print(" match=0x");
+    out->Print(StringUtils::ToHexString(mMatch));
+    out->Print(" mAlways=");
+    out->Println(mAlways);
     if (mSetComponents != NULL) {
         out->PrintString(prefix);
-        out->PrintStringln(String("  Selected from:"));
-        Int32 length = mSetComponents->GetLength();
-        for (Int32 i = 0; i < length; i++) {
-            out->PrintString(prefix);
-            out->PrintString(String("    "));
-            out->PrintStringln((*mSetComponents)[i]);
+        out->PrintStringln("  Selected from:");
+        for (Int32 i = 0; i < mSetComponents->GetLength(); i++) {
+            out->Print(prefix);
+            out->Print("    ");
+            out->Println((*mSetComponents)[i]);
         }
     }
 }
 
+} // namespace Pm
 } // namespace Server
 } // namespace Droid
 } // namespace Elastos

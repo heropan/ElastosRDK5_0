@@ -133,7 +133,7 @@ ECode CPackageInstallerSession::constructor(
     /* [in] */ Int32 userId,
     /* [in] */ const String& installerPackageName,
     /* [in] */ Int32 installerUid,
-    /* [in] */ IPackageInstallerSessionParams* stagingDir,
+    /* [in] */ IPackageInstallerSessionParams* params,
     /* [in] */ Int64 createdMillis,
     /* [in] */ IFile* stagingDir,
     /* [in] */ const String& stageCid,

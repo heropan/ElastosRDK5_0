@@ -8,7 +8,7 @@
 #include <elastos/utility/logging/Slogger.h>
 //#include "elastos/droid/net/Uri.h"
 
-using Elastos::Utility::Set;
+using Elastos::Utility::Etl::Set;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
 using Elastos::IO::IPrintWriter;

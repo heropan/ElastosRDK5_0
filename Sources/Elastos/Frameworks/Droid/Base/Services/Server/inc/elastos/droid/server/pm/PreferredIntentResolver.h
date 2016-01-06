@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_SERVER_PM_PREFERREDINTENTRESOLVER_H__
 #define __ELASTOS_DROID_SERVER_PM_PREFERREDINTENTRESOLVER_H__
 
-#include "IntentResolver.h"
-#include "pm/PreferredActivity.h"
+#include "elastos/droid/server/IntentResolver.h"
+#include "elastos/droid/server/pm/PreferredActivity.h"
 
 using Elastos::Droid::Content::IIntentFilter;
 
@@ -11,35 +11,23 @@ namespace Droid {
 namespace Server {
 namespace Pm {
 
-class PreferredIntentResolver
-    : public IntentResolver<PreferredActivity, PreferredActivity>
+class PreferredIntentResolver : public IntentResolver<PreferredActivity, PreferredActivity>
 {
 protected:
     // @Override
-    CARAPI_(AutoPtr< ArrayOf<PreferredActivity*> >) NewArray(
-        /* [in] */ Int32 size)
-    {
-        AutoPtr<ArrayOf<PreferredActivity*> > ret = ArrayOf<PreferredActivity*>::Alloc(size);
-        return ret;
-    }
+    CARAPI_(AutoPtr<ArrayOf<PreferredActivity*> >) NewArray(
+        /* [in] */ Int32 size);
 
     // @Override
-    CARAPI_(String) PackageForFilter(
-        /* [in] */ PreferredActivity* filter)
-    {
-        String pkg;
-        filter->mPref->mComponent->GetPackageName(&pkg);
-        return pkg;
-    }
+    CARAPI_(Boolean) IsPackageForFilter(
+        /* [in] */ const String& packageName,
+        /* [in] */ PreferredActivity* filter);
 
     // @Override
     CARAPI_(void) DumpFilter(
         /* [in] */ IPrintWriter* out,
         /* [in] */ const String& prefix,
-        /* [in] */ PreferredActivity* filter)
-    {
-        filter->mPref->Dump(out, prefix, (IIntentFilter*)filter);
-    }
+        /* [in] */ PreferredActivity* filter);
 };
 
 } // namespace Pm

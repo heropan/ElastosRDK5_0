@@ -5,7 +5,7 @@
 #include "elastos/droid/ext/frameworkdef.h"
 #include "_Elastos_Droid_Server_CMountService.h"
 #include "NativeDaemonConnector.h"
-#include "pm/CPackageManagerService.h"
+#include "elastos/droid/server/pm/CPackageManagerService.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/os/HandlerBase.h"
 #include <elastos/utility/etl/HashMap.h>

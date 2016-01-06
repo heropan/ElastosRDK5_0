@@ -46,13 +46,6 @@ void PackageSignatures::WriteXml(
         serializer->WriteStartTag(String(NULL), String("cert"));
         AutoPtr<ISignature> sig = (*mSignatures)[i];
 
-        //add by AW:lisidong
-        //in some case ,sig will fail,skip this
-        if (sig == NULL) {
-            CPackageManagerService::ReportSettingsProblem(5/*TODO: Log.WARN*/, String("sig == null,skip this"));
-            continue;
-        }
-
         Int32 sigHash;
         sig->GetHashCode(&sigHash);
         Int32 j;

@@ -3,9 +3,9 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos.Droid.Server.h"
-#include "pm/GrantedPermissions.h"
-#include "pm/PackageSetting.h"
-#include "pm/PackageSignatures.h"
+#include "elastos/droid/server/pm/GrantedPermissions.h"
+#include "elastos/droid/server/pm/PackageSetting.h"
+#include "elastos/droid/server/pm/PackageSignatures.h"
 #include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Utility::Etl::HashSet;
@@ -36,23 +36,32 @@ namespace Pm {
 
 extern const InterfaceID EIID_SharedUserSetting;
 
-class SharedUserSetting
-    : public GrantedPermissions
-    , public IInterface
+class SharedUserSetting : public GrantedPermissions
 {
 public:
-    CAR_INTERFACE_DECL()
-
     SharedUserSetting(
         /* [in] */ const String& name,
         /* [in] */ Int32 pkgFlags);
 
-    virtual ~SharedUserSetting();
+    CARAPI_(PInterface) Probe(
+        /* [in]  */ REIID riid);
+
+    CARAPI ToString(
+        /* [out] */ String* str);
+
+    CARAPI_(void) RemovePackage(
+        /* [in]  */ PackageSetting* packageSetting);
+
+    CARAPI_(void) AddPackage(
+        /* [in]  */ PackageSetting* packageSetting);
 
 public:
     String mName;
 
     Int32 mUserId;
+
+    // flags that are associated with this uid, regardless of any package flags
+    Int32 mUidFlags;
 
     HashSet<AutoPtr<PackageSetting> > mPackages; // TODO using IWeakReference
 

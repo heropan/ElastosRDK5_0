@@ -11,6 +11,7 @@
 #include "elastos/droid/utility/Xml.h"
 #include "Elastos.Droid.Internal.h"
 #include "Elastos.Droid.Graphics.h"
+#include <Elastos.CoreLibrary.Libcore.h>
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/Objects.h>

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_PM_CPACKAGEINSTALLOBSERVER2_H__
 
 #include "_Elastos_Droid_Server_Pm_CPackageInstallObserver2.h"
-#include "pm/CPackageManagerService.h"
+#include "elastos/droid/server/pm/CPackageManagerService.h"
 
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Content::IIntent;

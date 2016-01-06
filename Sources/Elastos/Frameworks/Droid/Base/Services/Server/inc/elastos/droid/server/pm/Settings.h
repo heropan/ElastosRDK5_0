@@ -2,13 +2,17 @@
 #define __ELASTOS_DROID_SERVER_PM_SETTINGS_H__
 
 #include "_Elastos.Droid.Server.h"
-#include "pm/PackageSetting.h"
-#include "pm/SharedUserSetting.h"
-#include "pm/PreferredIntentResolver.h"
-#include "pm/BasePermission.h"
-#include "pm/Installer.h"
-#include "pm/DumpState.h"
-#include "pm/PendingPackage.h"
+#include "elastos/droid/server/pm/CUserManagerService.h"
+#include "elastos/droid/server/pm/PackageSetting.h"
+#include "elastos/droid/server/pm/SharedUserSetting.h"
+#include "elastos/droid/server/pm/PreferredIntentResolver.h"
+#include "elastos/droid/server/pm/BasePermission.h"
+#include "elastos/droid/server/pm/Installer.h"
+#include "elastos/droid/server/pm/DumpState.h"
+#include "elastos/droid/server/pm/PendingPackage.h"
+#include "elastos/droid/server/pm/PersistentPreferredIntentResolver.h"
+#include "elastos/droid/server/pm/CrossProfileIntentResolver.h"
+#include "elastos/droid/server/pm/KeySetManagerService.h"
 #include "elastos/droid/content/pm/PackageParser.h"
 #include <elastos/core/StringBuilder.h>
 
@@ -16,6 +20,7 @@ using Elastos::Core::IBoolean;
 using Elastos::Core::StringBuilder;
 using Elastos::IO::IFile;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntentFilterAuthorityEntry;
 using Elastos::Droid::Content::Pm::PackageParser;
 using Elastos::Droid::Content::Pm::IPackageCleanItem;
 using Elastos::Droid::Content::Pm::IUserInfo;
@@ -97,7 +102,7 @@ public:
         /* [in] */ Int32 pkgFlags,
         /* [in] */ Boolean create);
 
-    CARAPI_(HashMap<String, AutoPtr<SharedUserSetting> >&) GetAllSharedUsersLPw();
+    HashMap<String, AutoPtr<SharedUserSetting> >& GetAllSharedUsersLPw();
 
     CARAPI_(Boolean) DisableSystemPackageLPw(
         /* [in] */ const String& name);

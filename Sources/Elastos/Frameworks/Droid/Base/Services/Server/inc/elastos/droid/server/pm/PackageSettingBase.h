@@ -11,7 +11,6 @@
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::IO::IFile;
-
 using Elastos::Droid::Content::Pm::PackageUserState;
 
 namespace Elastos {
@@ -124,8 +123,11 @@ public:
         /* [in] */ Boolean installed,
         /* [in] */ Boolean stopped,
         /* [in] */ Boolean notLaunched,
+        /* [in] */ Boolean hidden,
+        /* [in] */ const String& lastDisableAppCaller,
         /* [in] */ HashSet<String>* enabledComponents,
-        /* [in] */ HashSet<String>* disabledComponents);
+        /* [in] */ HashSet<String>* disabledComponents,
+        /* [in] */ Boolean blockUninstall);
 
     CARAPI_(AutoPtr<HashSet<Elastos::String> >) GetEnabledComponents(
         /* [in] */ Int32 userId);
@@ -218,7 +220,7 @@ public:
      * package is uninstalled.
      */
     // @Deprecated
-    String m:egacyNativeLibraryPathString;
+    String mEgacyNativeLibraryPathString;
 
     /**
      * The primary CPU abi for this package. This value is regenerated at every

@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SERVER_PM_PENDINGPACKAGE_H__
 
 #include "_Elastos.Droid.Server.h"
-#include "pm/PackageSettingBase.h"
+#include "elastos/droid/server/pm/PackageSettingBase.h"
 
 using Elastos::IO::IFile;
 
@@ -19,12 +19,16 @@ public:
         /* [in] */ const String& realName,
         /* [in] */ IFile* codePath,
         /* [in] */ IFile* resourcePath,
-        /* [in] */ const String& nativeLibraryPathString,
+        /* [in] */ const String& legacyNativeLibraryPathString,
+        /* [in] */ const String& primaryCpuAbiString,
+        /* [in] */ const String& secondaryCpuAbiString,
+        /* [in] */ const String& cpuAbiOverrideString,
         /* [in] */ Int32 sharedId,
         /* [in] */ Int32 pVersionCode,
         /* [in] */ Int32 pkgFlags)
         : PackageSettingBase(name, realName, codePath, resourcePath,
-                nativeLibraryPathString, pVersionCode, pkgFlags)
+                legacyNativeLibraryPathString, primaryCpuAbiString,
+                secondaryCpuAbiString, cpuAbiOverrideString, pVersionCode, pkgFlags)
         , mSharedId(sharedId)
     {}
 

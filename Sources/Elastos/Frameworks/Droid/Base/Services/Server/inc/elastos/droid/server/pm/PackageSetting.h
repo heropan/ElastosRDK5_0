@@ -1,8 +1,8 @@
 #ifndef __ELASTOS_DROID_SERVER_PM_PACKAGESETTING_H__
 #define __ELASTOS_DROID_SERVER_PM_PACKAGESETTING_H__
 
-#include "pm/PackageSettingBase.h"
-#include "pm/SharedUserSetting.h"
+#include "elastos/droid/server/pm/PackageSettingBase.h"
+#include "elastos/droid/server/pm/SharedUserSetting.h"
 #include "elastos/droid/content/pm/PackageParser.h"
 
 using Elastos::Droid::Content::Pm::PackageParser;
@@ -14,15 +14,9 @@ namespace Pm {
 
 extern const InterfaceID EIID_PackageSetting;
 
-class SharedUserSetting;
-
-class PackageSetting
-    : public PackageSettingBase
-    , public IInterface
+class PackageSetting : public PackageSettingBase
 {
 public:
-    CAR_INTERFACE_DECL()
-
     PackageSetting(
         /* [in] */ const String& name,
         /* [in] */ const String& realName,
@@ -37,6 +31,16 @@ public:
 
     PackageSetting(
         /* [in] */ const PackageSetting* orig);
+
+    CARAPI_(PInterface) Probe(
+        /* [in]  */ REIID riid);
+
+    CARAPI ToString(
+        /* [out] */ String* str);
+
+    CARAPI_(AutoPtr<ArrayOf<Int32> >) GetGids();
+
+    CARAPI_(Boolean) IsPrivileged();
 
 public:
     Int32 mAppId;

@@ -51,11 +51,14 @@ module
 
     using interface Elastos.Droid.App.IWallpaperInfo;
     using interface Elastos.Droid.App.IIWallpaperManager;
+    using interface Elastos.Droid.App.IStopUserCallback;
     using interface Elastos.Droid.Os.IBinder;
     using interface Elastos.Droid.Os.IHandler;
     using interface Elastos.Droid.Os.IIHardwareService;
     using interface Elastos.Droid.Os.IISchedulingPolicyService;
     using interface Elastos.Droid.Os.IINetworkManagementService;
+    using interface Elastos.Droid.Os.ILooper;
+    using interface Elastos.Droid.Os.IIUserManager;
     using interface Elastos.Droid.Net.IIConnectivityManager;
     using interface Elastos.Droid.Net.IINetworkManagementEventObserver;
     using interface Elastos.Droid.Content.IContext;
@@ -64,11 +67,20 @@ module
     using interface Elastos.Droid.Content.IIIntentSender;
     using interface Elastos.Droid.Content.IIContentService;
     using interface Elastos.Droid.Content.IISyncStatusObserver;
+    using interface Elastos.Droid.Content.IIntentReceiver;
+    using interface Elastos.Droid.Content.Pm.IIPackageManager;
+    using interface Elastos.Droid.Content.Pm.IIPackageMoveObserver;
+    using interface Elastos.Droid.Content.Pm.IIPackageInstallObserver2;
+    using interface Elastos.Droid.Content.Pm.IILauncherApps;
+    using interface Elastos.Droid.Content.Pm.IIPackageInstaller;
+    using interface Elastos.Droid.Content.Pm.IPackageInstallerSessionParams;
+    using interface Elastos.Droid.Content.Pm.IIPackageInstallerSession;
     using interface Elastos.Droid.Hardware.Display.IIDisplayManager;
     using interface Elastos.Droid.Media.Projection.IIMediaProjectionCallback;
     using interface Elastos.Droid.View.IApplicationToken;
     using interface Elastos.Droid.Service.Wallpaper.IIWallpaperConnection;
     using interface Elastos.Droid.Internal.App.IIProcessStats;
+    using interface Elastos.Droid.Internal.Os.IIParcelFileDescriptorFactory;
 
     interface Elastos.Droid.Server.ISystemService;
     interface Elastos.Droid.Server.Wallpaper.IWallpaperConnection;
@@ -76,6 +88,7 @@ module
     interface Elastos.Droid.Server.Wallpaper.IWallpaperManagerService;
 
     using interface Elastos.IO.IFile;
+    using interface Elastos.Utility.ISet;
 
     namespace Elastos {
     namespace Droid {
@@ -251,7 +264,7 @@ module
 //     class CDeviceStorageMonitorService {
 //         constructor(
 //             [in] IContext* ctx);
-
+//
 //         interface IDeviceStorageMonitorService;
 //         interface IBinder;
 //     }
@@ -506,126 +519,128 @@ module
 
 //     } // namespace Net
 
-//     namespace Pm {
+    namespace Pm {
 
-//     [local]
-//     class CPackageManagerService {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] Handle32 installer,
-//             [in] Boolean factoryTest,
-//             [in] Boolean onlyCore);
+    [local]
+    class CPackageManagerService {
+        constructor(
+            [in] IContext* ctx,
+            [in] Handle32 installer,
+            [in] Boolean factoryTest,
+            [in] Boolean onlyCore);
 
-//         interface IIPackageManager;
-//         interface IBinder;
-//     }
+        interface IIPackageManager;
+        interface IBinder;
+    }
 
-//     class CParcelFileDescriptorFactory {
-//         constructor(
-//             [in] IFile* codeFile);
+    class CParcelFileDescriptorFactory {
+        constructor(
+            [in] IFile* codeFile);
 
-//         interface IIParcelFileDescriptorFactory;
-//         interface IBinder;
-//     }
+        interface IIParcelFileDescriptorFactory;
+        interface IBinder;
+    }
 
-//     class CResourcesChangedReceiver {
-//         constructor(
-//             [in] IIPackageManager* owner,
-//             [in] ISet* keys,
-//             [in] Boolean reportStatus);
+    class CResourcesChangedReceiver {
+        constructor(
+            [in] IIPackageManager* owner,
+            [in] ISet* keys,
+            [in] Boolean reportStatus);
 
-//         interface IIntentReceiver;
-//         interface IBinder;
-//     }
+        interface IIntentReceiver;
+        interface IBinder;
+    }
 
-//     class CPackageInstallObserver2 {
-//         constructor(
-//             [in] IIPackageManager* owner,
-//             [in] IPackageMoveObserver* observer);
+    class CPackageInstallObserver2 {
+        constructor(
+            [in] IIPackageManager* owner,
+            [in] IIPackageMoveObserver* observer);
 
-//         interface IIPackageInstallObserver2;
-//         interface IBinder;
-//     }
+        interface IIPackageInstallObserver2;
+        interface IBinder;
+    }
 
-//     class CKeySetHandle {
-//         constructor();
+    class CKeySetHandle {
+        constructor();
 
-//         interface IBinder;
-//     }
+        interface IBinder;
+    }
 
-//     [local]
-//     class CLauncherAppsImpl {
-//         constructor(
-//             [in] IContext* context);
+    [local]
+    class CLauncherAppsImpl {
+        constructor(
+            [in] IContext* context);
 
-//         interface IILauncherApps;
-//         interface IBinder;
-//     }
+        interface IILauncherApps;
+        interface IBinder;
+    }
 
-//     [local]
-//     class CPackageInstallerService {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IIPackageManager* pm,
-//             [in] IFile* stagingDir);
+    [local]
+    class CPackageInstallerService {
+        constructor(
+            [in] IContext* ctx,
+            [in] IIPackageManager* pm,
+            [in] IFile* stagingDir);
 
-//         interface IIPackageInstaller;
-//         interface IBinder;
-//     }
+        interface IIPackageInstaller;
+        interface IBinder;
+    }
 
-//     [local]
-//     class CPackageInstallerSession {
-//         constructor(
-//             [in] Handle64 callback,
-//             [in] IContext* ctx,
-//             [in] IIPackageManager* pm,
-//             [in] ILooper* looper,
-//             [in] Int32 sessionId,
-//             [in] Int32 userId,
-//             [in] String installerPackageName,
-//             [in] Int32 installerUid,
-//             [in] IPackageInstallerSessionParams* stagingDir,
-//             [in] Int64 createdMillis,
-//             [in] IFile* stagingDir,
-//             [in] String stageCid,
-//             [in] Boolean prepared,
-//             [in] Boolean sealed);
+    [local]
+    class CPackageInstallerSession {
+        constructor(
+            [in] Handle64 cb,
+            [in] IContext* ctx,
+            [in] IIPackageManager* pm,
+            [in] ILooper* l,
+            [in] Int32 sessionId,
+            [in] Int32 userId,
+            [in] String installerPackageName,
+            [in] Int32 installerUid,
+            [in] IPackageInstallerSessionParams* params,
+            [in] Int64 createdMillis,
+            [in] IFile* stagingDir,
+            [in] String stageCid,
+            [in] Boolean prepared,
+            [in] Boolean sealed);
 
-//         interface IIPackageInstallerSession;
-//         interface IBinder;
-//     }
+        interface IIPackageInstallerSession;
+        interface IBinder;
+    }
 
-//     class CLocalObserver {
-//         constructor(
-//             [in] IIPackageInstallerSession* session);
+    class CLocalObserver {
+        constructor(
+            [in] IIPackageInstallerSession* session);
 
-//         interface IIPackageInstallObserver2;
-//         interface IBinder;
-//     }
+        interface IIPackageInstallObserver2;
+        interface IBinder;
+    }
 
-//     [local]
-//     class CUserManagerService {
-//         constructor(
-//             [in] IFile* dataDir,
-//             [in] IFile* baseUserPath);
+    [local]
+    class CUserManagerService {
+        constructor(
+            [in] IFile* dataDir,
+            [in] IFile* baseUserPath);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] Handle32 pm,
-//             [in] Handle32 installLock,
-//             [in] Handle32 packagesLock);
+        constructor(
+            [in] IContext* ctx,
+            [in] IIPackageManager* pm,
+            [in] IObject* installLock,
+            [in] IObject* packagesLock);
 
-//         interface IIUserManager;
-//     }
+        interface IIUserManager;
+        interface IBinder;
+    }
 
-//     class CUserStopUserCallback {
-//         constructor(
-//             [in] IIUserManager* mUm);
+    class CUserStopUserCallback {
+        constructor(
+            [in] IIUserManager* mUm);
 
-//         interface IStopUserCallback;
-//     }
+        interface IStopUserCallback;
+        interface IBinder;
+    }
 
-//     } // namespace Pm
+    } // namespace Pm
 
 // //    namespace Updates {
 // //

@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Server_Pm_CPackageInstallerService.h"
 #include "elastos/droid/server/pm/CPackageManagerService.h"
+#include "elastos/droid/os/Handler.h"
 #include "elastos/droid/app/PackageDeleteObserver.h"
 #include "elastos/droid/app/PackageInstallObserver.h"
 #include "Elastos.Droid.App.h"
@@ -22,6 +23,8 @@ using Elastos::Droid::Content::Pm::IIPackageInstallerSession;
 using Elastos::Droid::Content::Pm::IPackageInstallerCallback;
 using Elastos::Droid::Os::IRemoteCallbackList;
 using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Text::Format::IDateUtils;
 using Elastos::Droid::Utility::IAtomicFile;
 using Elastos::IO::IFilenameFilter;
@@ -236,7 +239,7 @@ public:
     CAR_OBJECT_DECL()
 
     CARAPI constructor(
-        /* [in] */ IContext* ctx
+        /* [in] */ IContext* ctx,
         /* [in] */ IIPackageManager* pm,
         /* [in] */ IFile* stagingDir);
 

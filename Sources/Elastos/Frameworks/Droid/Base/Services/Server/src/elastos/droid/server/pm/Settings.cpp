@@ -1,8 +1,8 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
-#include "pm/Settings.h"
-#include "pm/CPackageManagerService.h"
-#include "pm/PackageSettingBase.h"
+#include "elastos/droid/server/pm/Settings.h"
+#include "elastos/droid/server/pm/CPackageManagerService.h"
+#include "elastos/droid/server/pm/PackageSettingBase.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/droid/os/FileUtils.h"
 #include "elastos/droid/os/UserHandle.h"

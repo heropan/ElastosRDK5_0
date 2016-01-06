@@ -3,9 +3,10 @@
 #define __ELASTOS_DROID_SERVER_PM_CUSERSTOPUSERCALLBACK_H__
 
 #include "_Elastos_Droid_Server_Pm_CUserStopUserCallback.h"
-#include "pm/CUserManagerService.h"
+#include "elastos/droid/server/pm/CUserManagerService.h"
 
-using Elastos::Droid::Os::IIUserManager;
+using Elastos::Droid::App::IStopUserCallback;
+using Elastos::Droid::Os::IBinder;
 
 namespace Elastos {
 namespace Droid {
@@ -13,8 +14,15 @@ namespace Server {
 namespace Pm {
 
 CarClass(CUserStopUserCallback)
+    , public Object
+    , public IStopUserCallback
+    , public IBinder
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ IIUserManager* mUm);
 

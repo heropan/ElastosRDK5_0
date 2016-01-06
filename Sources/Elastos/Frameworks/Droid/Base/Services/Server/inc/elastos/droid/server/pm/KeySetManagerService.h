@@ -3,9 +3,9 @@
 
 #include "_Elastos.Droid.Server.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/server/pm/CKeySetHandle.h"
+#include "elastos/droid/server/pm/PackageSetting.h"
 #include "Elastos.CoreLibrary.Security.h"
-#include "pm/CKeySetHandle.h"
-#include "pm/PackageSetting.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Security::IPublicKey;
@@ -132,7 +132,7 @@ public:
         /* [in] */ const String& packageName);
 
     CARAPI EncodePublicKey(
-        /* [in] */ IPublicKey* k
+        /* [in] */ IPublicKey* k,
         /* [out] */ String* key);
 
     // public void dumpLPr(PrintWriter pw, String packageName,

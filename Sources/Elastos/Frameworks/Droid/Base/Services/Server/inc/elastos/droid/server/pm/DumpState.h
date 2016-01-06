@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_PM_DUMPSTATE_H__
 
 #include "_Elastos.Droid.Server.h"
-#include "pm/SharedUserSetting.h"
+#include "elastos/droid/server/pm/SharedUserSetting.h"
 
 namespace Elastos {
 namespace Droid {

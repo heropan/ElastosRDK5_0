@@ -1,11 +1,13 @@
 
-#include "pm/CrossProfileIntentFilter.h"
-#include "pm/CPackageManagerService.h"
-#include "pm/Settings.h"
-#include "util/XmlUtils.h"
+#include "elastos/droid/server/pm/CrossProfileIntentFilter.h"
+#include "elastos/droid/server/pm/CPackageManagerService.h"
+#include "elastos/droid/server/pm/Settings.h"
+#include "elastos/droid/util/XmlUtils.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
+using Elastos::Core::ISystem;
+using Elastos::Core::CSystem;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Utility::XmlUtils;
 using Elastos::Droid::Utility::ILogHelper;
@@ -35,7 +37,7 @@ CrossProfileIntentFilter::CrossProfileIntentFilter(
     , mFlags(flags)
 {}
 
-CrossProfileIntentFilter(
+CrossProfileIntentFilter::CrossProfileIntentFilter(
     /* [in] */ IXmlPullParser* parser)
     : mTargetUserId(0)
     , mOwnerUserId(0)

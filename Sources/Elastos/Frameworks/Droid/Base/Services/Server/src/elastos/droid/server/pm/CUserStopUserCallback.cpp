@@ -1,10 +1,14 @@
 
-#include "pm/CUserStopUserCallback.h"
+#include "elastos/droid/server/pm/CUserStopUserCallback.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Pm {
+
+CAR_INTERFACE_IMPL_2(CUserStopUserCallback, Object, IStopUserCallback, IBinder)
+
+CAR_OBJECT_IMPL(CUserStopUserCallback)
 
 CARAPI CUserStopUserCallback::constructor(
     /* [in] */ IIUserManager* um)

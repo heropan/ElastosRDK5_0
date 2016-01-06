@@ -64,7 +64,7 @@ protected:
 
     CARAPI_(AutoPtr<Int64>) GetDefinedKeySets();
 
-    CARAPI_(HashMap<String, Int64>&) GetAliases();
+    HashMap<String, Int64>& GetAliases();
 
     CARAPI_(Boolean) IsUsingDefinedKeySets();
 

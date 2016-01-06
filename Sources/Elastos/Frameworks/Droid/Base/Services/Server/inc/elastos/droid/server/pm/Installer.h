@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SERVER_PM_INSTALLER_H__
 
 #include "Elastos.Droid.Internal.h"
-#include "SystemService.h"
+#include "elastos/droid/server/SystemService.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
