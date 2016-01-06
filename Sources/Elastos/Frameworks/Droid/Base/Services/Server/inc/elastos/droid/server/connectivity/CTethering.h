@@ -3,18 +3,18 @@
 #define __ELASTOS_DROID_SERVER_CONNECTIVITY_CTETHERING_H__
 
 #include "_Elastos_Droid_Server_Connectivity_CTethering.h"
+#include "elastos/droid/server/net/BaseNetworkObserver.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
-#include "util/State.h"
-#include "util/StateMachine.h"
-#include <elastos/core/Object.h>
+#include "elastos/droid/internal/utility/State.h"
+#include "elastos/droid/internal/utility/StateMachine.h"
 
 using Elastos::Core::IInteger32;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Net::IIConnectivityManager;
-using Elastos::Droid::Net::INetworkStatsService;
+using Elastos::Droid::Net::IConnectivityManager;
+using Elastos::Droid::Net::IINetworkStatsService;
 using Elastos::Droid::Internal::Utility::State;
 using Elastos::Droid::Internal::Utility::StateMachine;
 
@@ -24,18 +24,18 @@ namespace Server {
 namespace Connectivity {
 
 CarClass(CTethering)
+    , public BaseNetworkObserver
 {
 public:
     class TetherInterfaceSM
         : public StateMachine
-        , public IInterface
     {
     public:
         class InitialState : public State
         {
         public:
             InitialState(
-                /* [in] */ TetherInterfaceSM* owner) : mOwner(owner)
+                /* [in] */ TetherInterfaceSM* host) : mHost(host)
             {}
 
             CARAPI Enter();
@@ -45,14 +45,14 @@ public:
                 /* [out] */ Boolean* value);
 
         private:
-            TetherInterfaceSM* mOwner;
+            TetherInterfaceSM* mHost;
         };
 
         class StartingState : public State
         {
         public:
             StartingState(
-                /* [in] */ TetherInterfaceSM* owner) : mOwner(owner)
+                /* [in] */ TetherInterfaceSM* host) : mHost(host)
             {}
 
             CARAPI Enter();
@@ -62,14 +62,14 @@ public:
                 /* [out] */ Boolean* value);
 
         private:
-            TetherInterfaceSM* mOwner;
+            TetherInterfaceSM* mHost;
         };
 
         class TetheredState : public State
         {
         public:
             TetheredState(
-                /* [in] */ TetherInterfaceSM* owner) : mOwner(owner)
+                /* [in] */ TetherInterfaceSM* host) : mHost(host)
             {}
 
             CARAPI Enter();
@@ -82,14 +82,14 @@ public:
             CARAPI_(void) CleanupUpstream();
 
         private:
-            TetherInterfaceSM* mOwner;
+            TetherInterfaceSM* mHost;
         };
 
         class UnavailableState : public State
         {
         public:
             UnavailableState(
-                /* [in] */ TetherInterfaceSM* owner) : mOwner(owner)
+                /* [in] */ TetherInterfaceSM* host) : mHost(host)
             {}
 
             CARAPI Enter();
@@ -99,7 +99,7 @@ public:
                 /* [out] */ Boolean* value);
 
         private:
-            TetherInterfaceSM* mOwner;
+            TetherInterfaceSM* mHost;
         };
 
     public:
@@ -107,7 +107,7 @@ public:
             /* [in] */ const String& name,
             /* [in] */ ILooper* looper,
             /* [in] */ Boolean usb,
-            /* [in] */ CTethering* owner);
+            /* [in] */ CTethering* host);
 
         CAR_INTERFACE_DECL();
 
@@ -151,7 +151,7 @@ public:
         static const Int32 CMD_IP_FORWARDING_ENABLE_ERROR = 7;
         // notification from the master SM that it had trouble disabling IP Forwarding
         static const Int32 CMD_IP_FORWARDING_DISABLE_ERROR = 8;
-        // notification from the master SM that it had trouble staring tethering
+        // notification from the master SM that it had trouble starting tethering
         static const Int32 CMD_START_TETHERING_ERROR = 9;
         // notification from the master SM that it had trouble stopping tethering
         static const Int32 CMD_STOP_TETHERING_ERROR = 10;
@@ -183,7 +183,7 @@ public:
         Boolean mAvailable;
         Boolean mTethered;
 
-        CTethering* mOwner;
+        CTethering* mHost;
     };
 
     class TetherMasterSM : public StateMachine
@@ -193,7 +193,7 @@ public:
         {
         public:
             TetherMasterUtilState(
-                /* [in] */ TetherMasterSM* owner) : mOwner(owner)
+                /* [in] */ TetherMasterSM* host) : mHost(host)
             {}
 
             CARAPI ProcessMessage(
@@ -224,15 +224,15 @@ public:
             static const Boolean WAIT_FOR_NETWORK_TO_SETTLE;
 
         protected:
-            TetherMasterSM* mOwner;
+            TetherMasterSM* mHost;
         };
 
         class InitialState : public TetherMasterUtilState
         {
         public:
             InitialState(
-                /* [in] */ TetherMasterSM* owner)
-                : TetherMasterUtilState(owner)
+                /* [in] */ TetherMasterSM* host)
+                : TetherMasterUtilState(host)
             {}
 
             CARAPI Enter();
@@ -246,8 +246,8 @@ public:
         {
         public:
             TetherModeAliveState(
-                /* [in] */ TetherMasterSM* owner)
-                : TetherMasterUtilState(owner)
+                /* [in] */ TetherMasterSM* host)
+                : TetherMasterUtilState(host)
                 , mTryCell(!WAIT_FOR_NETWORK_TO_SETTLE)
             {}
 
@@ -267,9 +267,9 @@ public:
         {
         public:
             ErrorState(
-                /* [in] */ TetherMasterSM* owner)
+                /* [in] */ TetherMasterSM* host)
                 : mErrorNotification(0)
-                , mOwner(owner)
+                , mHost(host)
             {}
 
             CARAPI ProcessMessage(
@@ -283,15 +283,15 @@ public:
             Int32 mErrorNotification;
 
         protected:
-            TetherMasterSM* mOwner;
+            TetherMasterSM* mHost;
         };
 
         class SetIpForwardingEnabledErrorState : public ErrorState
         {
         public:
             SetIpForwardingEnabledErrorState(
-                /* [in] */ TetherMasterSM* owner)
-                : ErrorState(owner)
+                /* [in] */ TetherMasterSM* host)
+                : ErrorState(host)
             {}
 
             CARAPI Enter();
@@ -301,8 +301,8 @@ public:
         {
         public:
             SetIpForwardingDisabledErrorState(
-                /* [in] */ TetherMasterSM* owner)
-                : ErrorState(owner)
+                /* [in] */ TetherMasterSM* host)
+                : ErrorState(host)
             {}
 
             CARAPI Enter();
@@ -312,8 +312,8 @@ public:
         {
         public:
             StartTetheringErrorState(
-                /* [in] */ TetherMasterSM* owner)
-                : ErrorState(owner)
+                /* [in] */ TetherMasterSM* host)
+                : ErrorState(host)
             {}
 
             CARAPI Enter();
@@ -323,8 +323,8 @@ public:
         {
         public:
             StopTetheringErrorState(
-                /* [in] */ TetherMasterSM* owner)
-                : ErrorState(owner)
+                /* [in] */ TetherMasterSM* host)
+                : ErrorState(host)
             {}
 
             CARAPI Enter();
@@ -334,8 +334,8 @@ public:
         {
         public:
             SetDnsForwardersErrorState(
-                /* [in] */ TetherMasterSM* owner)
-                : ErrorState(owner)
+                /* [in] */ TetherMasterSM* host)
+                : ErrorState(host)
             {}
 
             CARAPI Enter();
@@ -345,7 +345,7 @@ public:
         TetherMasterSM(
             /* [in] */ const String& name,
             /* [in] */ ILooper* looper,
-            /* [in] */ CTethering* owner);
+            /* [in] */ CTethering* host);
 
         ~TetherMasterSM();
 
@@ -385,7 +385,7 @@ public:
 
         static const Int32 UPSTREAM_SETTLE_TIME_MS = 10000;
         static const Int32 CELL_CONNECTION_RENEW_MS = 40000;
-        CTethering* mOwner;
+        CTethering* mHost;
     };
 
 private:
@@ -393,7 +393,7 @@ private:
     {
     public:
         StateReceiver(
-            /* [in] */ CTethering* owner) : mOwner(owner)
+            /* [in] */ CTethering* host) : mHost(host)
         {}
 
         CARAPI OnReceive(
@@ -409,7 +409,7 @@ private:
             return NOERROR;
         }
     private:
-        CTethering* mOwner;
+        CTethering* mHost;
     };
 
 public:
@@ -420,8 +420,7 @@ public:
     CARAPI constructor(
           /* [in] */ IContext* context,
           /* [in] */ IINetworkManagementService* nmService,
-          /* [in] */ INetworkStatsService* statsService,
-          /* [in] */ IIConnectivityManager* connService,
+          /* [in] */ IINetworkStatsService* statsService,
           /* [in] */ ILooper* looper);
 
     CARAPI_(void) UpdateConfiguration();
@@ -445,14 +444,6 @@ public:
 
     CARAPI InterfaceRemoved(
         /* [in] */ const String& iface);
-
-    CARAPI LimitReached(
-        /* [in] */ const String& limitName,
-        /* [in] */ const String& iface);
-
-    CARAPI InterfaceClassDataActivityChanged(
-        /* [in] */ const String& lable,
-        /* [in] */ Boolean active);
 
     CARAPI Tether(
         /* [in] */ const String& iface,
@@ -486,15 +477,13 @@ public:
     CARAPI GetTetheredIfaces(
         /* [out] */ ArrayOf<String>** result);
 
-    CARAPI GetTetheredIfacePairs(
-        /* [out] */ ArrayOf<String>** result);
-
     CARAPI GetTetherableIfaces(
         /* [out] */ ArrayOf<String>** result);
 
-    CARAPI_(AutoPtr< ArrayOf<String> >) GetErroredIfaces();
+    CARAPI GetTetheredDhcpRanges(
+        /* [out] */ ArrayOf<String>** result);
 
-    CARAPI_(void) HandleTetherIfaceChange();
+    CARAPI_(AutoPtr< ArrayOf<String> >) GetErroredIfaces();
 
     CARAPI Dump(
         /* [in] */ IFileDescriptor* fd,
@@ -505,6 +494,10 @@ public:
         /* [out] */ String* str);
 
 private:
+    // We can't do this once in the Tethering() constructor and cache the value, because the
+    // CONNECTIVITY_SERVICE is registered only after the Tethering() constructor has completed.
+    CARAPI_(AutoPtr<IConnectivityManager>) GetConnectivityManager();
+
     CARAPI_(Boolean) IsUsb(
         /* [in] */ const String& iface);
 
@@ -550,10 +543,8 @@ private:
     Int32 mPreferredUpstreamMobileApn;
 
     AutoPtr<IINetworkManagementService> mNMService;
-    AutoPtr<INetworkStatsService> mStatsService;
-    AutoPtr<IIConnectivityManager> mConnService;
+    AutoPtr<IINetworkStatsService> mStatsService;
     AutoPtr<ILooper> mLooper;
-    AutoPtr<IHandlerThread> mThread;
 
     HashMap<String, AutoPtr<TetherInterfaceSM> > mIfaces; // all tethered/tetherable ifaces
 
@@ -566,6 +557,7 @@ private:
     // Wifi is 192.168.43.1 and 255.255.255.0
     // BT is limited to max default of 5 connections. 192.168.44.1 to 192.168.48.1
     // with 255.255.255.0
+    // P2P is 192.168.49.1 and 255.255.255.0
 
     AutoPtr< ArrayOf<String> > mDhcpRange;
     static AutoPtr< ArrayOf<String> > DHCP_DEFAULT_RANGE;

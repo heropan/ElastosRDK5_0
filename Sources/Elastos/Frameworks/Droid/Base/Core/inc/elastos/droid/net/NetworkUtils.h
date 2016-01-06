@@ -19,7 +19,7 @@ namespace Net {
  *
  * {@hide}
  */
-class NetworkUtils
+class ECO_PUBLIC NetworkUtils
 {
 public:
     /**
@@ -271,15 +271,16 @@ public:
         /* [out] */ String* result);
 
 private:
-    NetworkUtils();
+    ECO_LOCAL NetworkUtils();
+    ECO_LOCAL NetworkUtils(const NetworkUtils&);
 
-    static CARAPI_(Boolean) NativeRunDhcpCommon(
+    ECO_LOCAL static CARAPI_(Boolean) NativeRunDhcpCommon(
         /* [in] */ const String& ifname,
         /* [in] */ IDhcpResults* dhcpResults,
         /* [in] */ Boolean renew);
 
 private:
-    static const String TAG;
+    ECO_LOCAL static const String TAG;
 };
 
 } // namespace Net

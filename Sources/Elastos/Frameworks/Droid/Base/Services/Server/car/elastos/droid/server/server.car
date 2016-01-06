@@ -58,6 +58,16 @@ module
     using interface Elastos.Droid.App.IIWallpaperManager;
     using interface Elastos.Droid.App.IStopUserCallback;
     using interface Elastos.Droid.App.IWallpaperInfo;
+    using interface Elastos.Droid.Os.IBinder;
+    using interface Elastos.Droid.Os.IHandler;
+    using interface Elastos.Droid.Os.IIHardwareService;
+    using interface Elastos.Droid.Os.IISchedulingPolicyService;
+    using interface Elastos.Droid.Os.IINetworkManagementService;
+    using interface Elastos.Droid.Os.ILooper;
+    using interface Elastos.Droid.Os.IIUserManager;
+    using interface Elastos.Droid.Net.IINetworkStatsService;
+    using interface Elastos.Droid.Net.IIConnectivityManager;
+    using interface Elastos.Droid.Net.IINetworkManagementEventObserver;
     using interface Elastos.Droid.Content.IContext;
     using interface Elastos.Droid.Content.IIContentService;
     using interface Elastos.Droid.Content.IIIntentSender;
@@ -1150,27 +1160,24 @@ module
     namespace Server {
     namespace Connectivity {
 
+        class CTethering {
+            constructor(
+                [in] IContext* ctx,
+                [in] IINetworkManagementService* nmService,
+                [in] IINetworkStatsService* statsService,
+                [in] ILooper* looper);
 
-//     [local]
-//     class CTethering {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IINetworkManagementService* nmService,
-//             [in] INetworkStatsService* statsService,
-//             [in] IIConnectivityManager* connService,
-//             [in] ILooper* looper);
+            interface IINetworkManagementEventObserver;
+            interface IBinder;
+        }
 
-//         interface INetworkManagementEventObserver;
-//         interface IBinder;
-//     }
+        class CVpnObserver {
+            constructor(
+                [in] Handle32 owner);
 
-//     class CVpnObserver {
-//         constructor(
-//             [in] Handle32 owner);
-
-//         interface INetworkManagementEventObserver;
-//         interface IBinder;
-//     }
+            interface IINetworkManagementEventObserver;
+            interface IBinder;
+        }
 
         [local]
         class CNat464Xlat {

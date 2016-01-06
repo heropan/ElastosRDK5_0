@@ -1,20 +1,20 @@
 
-#include "connectivity/CTethering.h"
-#include "elastos/droid/net/NetworkUtils.h"
-#include "elastos/droid/R.h"
+#include "elastos/droid/server/connectivity/CTethering.h"
+#include "elastos/droid/server/IoThread.h"
+#include <elastos/droid/net/NetworkUtils.h>
+#include <elastos/droid/R.h>
+#include <elastos/utility/Arrays.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/CoreUtils.h>
+#include <Elastos.Droid.Content.h>
+#include <Elastos.Droid.Net.h>
+#include <Elastos.Droid.Hardware.h>
+#include <Elastos.Droid.Provider.h>
+#include <Elastos.Droid.Internal.h>
+#include <Elastos.CoreLibrary.Utility.h>
+#include <Elastos.CoreLibrary.Net.h>
 
-using Elastos::Core::ICharSequence;
-using Elastos::Core::StringBuilder;
-using Elastos::Core::CObjectContainer;
-using Elastos::Core::CString;
-using Elastos::Core::CInteger32;
-using Elastos::Utility::Regex::IPatternHelper;
-using Elastos::Utility::Regex::CPatternHelper;
-using Elastos::Net::IInet4Address;
-using Elastos::Net::IInetAddress;
-using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::R;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::CIntentFilter;
@@ -26,6 +26,9 @@ using Elastos::Droid::Content::Res::CResourcesHelper;
 using Elastos::Droid::Hardware::Usb::IUsbManager;
 using Elastos::Droid::Net::IConnectivityManager;
 using Elastos::Droid::Net::INetworkInfo;
+using Elastos::Droid::Net::IRouteInfo;
+using Elastos::Droid::Net::IRouteInfoHelper;
+using Elastos::Droid::Net::CRouteInfoHelper;
 using Elastos::Droid::Net::ILinkProperties;
 using Elastos::Droid::Net::NetworkInfoDetailedState;
 using Elastos::Droid::Net::NetworkInfoDetailedState_FAILED;
@@ -40,6 +43,25 @@ using Elastos::Droid::Provider::ISettingsSecure;
 using Elastos::Droid::Utility::CParcelableObjectContainer;
 using Elastos::Droid::Internal::Utility::IState;
 using Elastos::Droid::Internal::Telephony::IPhoneConstants;
+using Elastos::Droid::Server::IoThread;
+
+using Elastos::Core::CoreUtils;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::CString;
+using Elastos::Core::CInteger32;
+using Elastos::Utility::Arrays;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::Regex::IPatternHelper;
+using Elastos::Utility::Regex::CPatternHelper;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Net::IInet4Address;
+using Elastos::Net::IInetAddress;
+using Elastos::Net::IInet4AddressHelper;
+using Elastos::Net::CInet4AddressHelper;
 
 namespace Elastos {
 namespace Droid {
@@ -55,18 +77,19 @@ ECode CTethering::StateReceiver::OnReceive(
 {
     String action;
     intent->GetAction(&action);
+    if (action.IsNull()) return NOERROR;
+
     if (action.Equals(IUsbManager::ACTION_USB_STATE)) {
-        {
-            AutoLock lock(mOwner->mPublicSync);
-            Boolean usbConnected;
-            intent->GetBooleanExtra(IUsbManager::USB_CONNECTED, FALSE, &usbConnected);
-            intent->GetBooleanExtra(IUsbManager::USB_FUNCTION_RNDIS, FALSE, &mOwner->mRndisEnabled);
-            // start tethering if we have a request pending
-            if (usbConnected && mOwner->mRndisEnabled && mOwner->mUsbTetherRequested) {
-                mOwner->TetherUsb(TRUE);
-            }
-            mOwner->mUsbTetherRequested = FALSE;
+        Object& lockObj = mHost->mPublicSync;
+        AutoLock lock(lockObj);
+        Boolean usbConnected;
+        intent->GetBooleanExtra(IUsbManager::USB_CONNECTED, FALSE, &usbConnected);
+        intent->GetBooleanExtra(IUsbManager::USB_FUNCTION_RNDIS, FALSE, &mHost->mRndisEnabled);
+        // start tethering if we have a request pending
+        if (usbConnected && mHost->mRndisEnabled && mHost->mUsbTetherRequested) {
+            mHost->TetherUsb(TRUE);
         }
+        mHost->mUsbTetherRequested = FALSE;
     }
     else if (action.Equals(IConnectivityManager::CONNECTIVITY_ACTION)) {
         AutoPtr<IParcelable> obj;
@@ -77,8 +100,11 @@ ECode CTethering::StateReceiver::OnReceive(
         if (networkInfo != NULL &&
                 (networkInfo->GetDetailedState(&state), state != NetworkInfoDetailedState_FAILED)) {
             if (VDBG) Logger::D(TAG, "Tethering got CONNECTIVITY_ACTION");
-            mOwner->mTetherMasterSM->SendMessage(TetherMasterSM::CMD_UPSTREAM_CHANGED);
+            mHost->mTetherMasterSM->SendMessage(TetherMasterSM::CMD_UPSTREAM_CHANGED);
         }
+    }
+    else if (action.Equals(IIntent::ACTION_CONFIGURATION_CHANGED)) {
+        mHost->UpdateConfiguration();
     }
     return NOERROR;
 }
@@ -89,9 +115,9 @@ ECode CTethering::StateReceiver::OnReceive(
 //===========================================================================
 ECode CTethering::TetherInterfaceSM::InitialState::Enter()
 {
-    mOwner->SetAvailable(TRUE);
-    mOwner->SetTethered(FALSE);
-    mOwner->mOwner->SendTetherStateChangedBroadcast();
+    mHost->SetAvailable(TRUE);
+    mHost->SetTethered(FALSE);
+    mHost->mHost->SendTetherStateChangedBroadcast();
     return NOERROR;
 }
 
@@ -108,13 +134,13 @@ ECode CTethering::TetherInterfaceSM::InitialState::ProcessMessage(
     Boolean retValue = TRUE;
     switch (what) {
         case CMD_TETHER_REQUESTED:
-            mOwner->SetLastError(IConnectivityManager::TETHER_ERROR_NO_ERROR);
-            mOwner->mOwner->mTetherMasterSM->SendMessage(TetherMasterSM::CMD_TETHER_MODE_REQUESTED,
-                    mOwner);
-            mOwner->TransitionTo(mOwner->mStartingState);
+            mHost->SetLastError(IConnectivityManager::TETHER_ERROR_NO_ERROR);
+            mHost->mHost->mTetherMasterSM->SendMessage(TetherMasterSM::CMD_TETHER_MODE_REQUESTED,
+                    mHost);
+            mHost->TransitionTo(mHost->mStartingState);
             break;
         case CMD_INTERFACE_DOWN:
-            mOwner->TransitionTo(mOwner->mUnavailableState);
+            mHost->TransitionTo(mHost->mUnavailableState);
             break;
         default:
             retValue = FALSE;
@@ -130,21 +156,21 @@ ECode CTethering::TetherInterfaceSM::InitialState::ProcessMessage(
 //===========================================================================
 ECode CTethering::TetherInterfaceSM::StartingState::Enter()
 {
-    mOwner->SetAvailable(FALSE);
-    if (mOwner->mUsb) {
-        if (!mOwner->mOwner->ConfigureUsbIface(TRUE)) {
-            mOwner->mOwner->mTetherMasterSM->SendMessage(TetherInterfaceSM::CMD_TETHER_UNREQUESTED,
-                    mOwner);
-            mOwner->SetLastError(IConnectivityManager::TETHER_ERROR_IFACE_CFG_ERROR);
+    mHost->SetAvailable(FALSE);
+    if (mHost->mUsb) {
+        if (!mHost->mHost->ConfigureUsbIface(TRUE)) {
+            mHost->mHost->mTetherMasterSM->SendMessage(TetherInterfaceSM::CMD_TETHER_UNREQUESTED,
+                    mHost);
+            mHost->SetLastError(IConnectivityManager::TETHER_ERROR_IFACE_CFG_ERROR);
 
-            mOwner->TransitionTo(mOwner->mInitialState);
+            mHost->TransitionTo(mHost->mInitialState);
             return NOERROR;
         }
     }
-    mOwner->mOwner->SendTetherStateChangedBroadcast();
+    mHost->mHost->SendTetherStateChangedBroadcast();
 
     // Skipping StartingState
-    mOwner->TransitionTo(mOwner->mTetheredState);
+    mHost->TransitionTo(mHost->mTetheredState);
     return NOERROR;
 }
 
@@ -162,16 +188,16 @@ ECode CTethering::TetherInterfaceSM::StartingState::ProcessMessage(
     switch (what) {
         // maybe a parent class?
         case CMD_TETHER_UNREQUESTED:
-            mOwner->mOwner->mTetherMasterSM->SendMessage(TetherMasterSM::CMD_TETHER_MODE_UNREQUESTED,
-                    mOwner);
-            if (mOwner->mUsb) {
-                if (!mOwner->mOwner->ConfigureUsbIface(FALSE)) {
-                    mOwner->SetLastErrorAndTransitionToInitialState(
+            mHost->mHost->mTetherMasterSM->SendMessage(TetherMasterSM::CMD_TETHER_MODE_UNREQUESTED,
+                    mHost);
+            if (mHost->mUsb) {
+                if (!mHost->mHost->ConfigureUsbIface(FALSE)) {
+                    mHost->SetLastErrorAndTransitionToInitialState(
                             IConnectivityManager::TETHER_ERROR_IFACE_CFG_ERROR);
                     break;
                 }
             }
-            mOwner->TransitionTo(mOwner->mInitialState);
+            mHost->TransitionTo(mHost->mInitialState);
             break;
         case CMD_CELL_DUN_ERROR:
         case CMD_IP_FORWARDING_ENABLE_ERROR:
@@ -179,13 +205,13 @@ ECode CTethering::TetherInterfaceSM::StartingState::ProcessMessage(
         case CMD_START_TETHERING_ERROR:
         case CMD_STOP_TETHERING_ERROR:
         case CMD_SET_DNS_FORWARDERS_ERROR:
-            mOwner->SetLastErrorAndTransitionToInitialState(
+            mHost->SetLastErrorAndTransitionToInitialState(
                     IConnectivityManager::TETHER_ERROR_MASTER_ERROR);
             break;
         case CMD_INTERFACE_DOWN:
-            mOwner->mOwner->mTetherMasterSM->SendMessage(TetherMasterSM::CMD_TETHER_MODE_UNREQUESTED,
-                    mOwner);
-            mOwner->TransitionTo(mOwner->mUnavailableState);
+            mHost->mHost->mTetherMasterSM->SendMessage(TetherMasterSM::CMD_TETHER_MODE_UNREQUESTED,
+                    mHost);
+            mHost->TransitionTo(mHost->mUnavailableState);
             break;
         default:
             retValue = FALSE;
@@ -200,38 +226,38 @@ ECode CTethering::TetherInterfaceSM::StartingState::ProcessMessage(
 //===========================================================================
 ECode CTethering::TetherInterfaceSM::TetheredState::Enter()
 {
-    ECode ec = mOwner->mOwner->mNMService->TetherInterface(mOwner->mIfaceName);
+    ECode ec = mHost->mHost->mNMService->TetherInterface(mHost->mIfaceName);
     if(FAILED(ec)){
         Logger::E(CTethering::TAG, "Error Tethering: 0x%x", ec);
-        mOwner->SetLastError(IConnectivityManager::TETHER_ERROR_TETHER_IFACE_ERROR);
-        mOwner->TransitionTo(mOwner->mInitialState);
+        mHost->SetLastError(IConnectivityManager::TETHER_ERROR_TETHER_IFACE_ERROR);
+        mHost->TransitionTo(mHost->mInitialState);
         return ec;
     }
-    if (DBG) Logger::D(CTethering::TAG, "Tethered %s", mOwner->mIfaceName.string());
-    mOwner->SetAvailable(FALSE);
-    mOwner->SetTethered(TRUE);
-    mOwner->mOwner->SendTetherStateChangedBroadcast();
+    if (DBG) Logger::D(CTethering::TAG, "Tethered %s", mHost->mIfaceName.string());
+    mHost->SetAvailable(FALSE);
+    mHost->SetTethered(TRUE);
+    mHost->mHost->SendTetherStateChangedBroadcast();
     return NOERROR;
 }
 
 void CTethering::TetherInterfaceSM::TetheredState::CleanupUpstream()
 {
     ECode ec = NOERROR;
-    if (!mOwner->mMyUpstreamIfaceName.IsNull()) {
+    if (!mHost->mMyUpstreamIfaceName.IsNull()) {
         // note that we don't care about errors here.
         // sometimes interfaces are gone before we get
         // to remove their rules, which generates errors.
         // just do the best we can.
         // about to tear down NAT; gather remaining statistics
-        ec = mOwner->mOwner->mStatsService->ForceUpdate();
+        ec = mHost->mHost->mStatsService->ForceUpdate();
         if (FAILED(ec)) {
             if (VDBG) Logger::E(CTethering::TAG, "Exception in forceUpdate: %x", ec);
         }
-        ec = mOwner->mOwner->mNMService->DisableNat(mOwner->mIfaceName, mOwner->mMyUpstreamIfaceName);
+        ec = mHost->mHost->mNMService->DisableNat(mHost->mIfaceName, mHost->mMyUpstreamIfaceName);
         if (FAILED(ec)) {
             if (VDBG) Logger::E(CTethering::TAG, "Exception in disableNat: %x", ec);
         }
-        mOwner->mMyUpstreamIfaceName = NULL;
+        mHost->mMyUpstreamIfaceName = NULL;
     }
 }
 
@@ -251,27 +277,27 @@ ECode CTethering::TetherInterfaceSM::TetheredState::ProcessMessage(
         case CMD_TETHER_UNREQUESTED:
         case CMD_INTERFACE_DOWN:
             CleanupUpstream();
-            ec = mOwner->mOwner->mNMService->UntetherInterface(mOwner->mIfaceName);
+            ec = mHost->mHost->mNMService->UntetherInterface(mHost->mIfaceName);
             if (FAILED(ec)) {
-                mOwner->SetLastErrorAndTransitionToInitialState(
+                mHost->SetLastErrorAndTransitionToInitialState(
                         IConnectivityManager::TETHER_ERROR_UNTETHER_IFACE_ERROR);
                 break;
             }
-            mOwner->mOwner->mTetherMasterSM->SendMessage(TetherMasterSM::CMD_TETHER_MODE_UNREQUESTED,
-                    mOwner);
+            mHost->mHost->mTetherMasterSM->SendMessage(TetherMasterSM::CMD_TETHER_MODE_UNREQUESTED,
+                    mHost);
             if (what == CMD_TETHER_UNREQUESTED) {
-                if (mOwner->mUsb) {
-                    if (!mOwner->mOwner->ConfigureUsbIface(FALSE)) {
-                        mOwner->SetLastError(
+                if (mHost->mUsb) {
+                    if (!mHost->mHost->ConfigureUsbIface(FALSE)) {
+                        mHost->SetLastError(
                                 IConnectivityManager::TETHER_ERROR_IFACE_CFG_ERROR);
                     }
                 }
-                mOwner->TransitionTo(mOwner->mInitialState);
+                mHost->TransitionTo(mHost->mInitialState);
             }
             else if (what == CMD_INTERFACE_DOWN) {
-                mOwner->TransitionTo(mOwner->mUnavailableState);
+                mHost->TransitionTo(mHost->mUnavailableState);
             }
-            if (DBG) Logger::D(CTethering::TAG, "Untethered %s", mOwner->mIfaceName.string());
+            if (DBG) Logger::D(CTethering::TAG, "Untethered %s", mHost->mIfaceName.string());
             break;
 
         case CMD_TETHER_CONNECTION_CHANGED: {
@@ -279,27 +305,27 @@ ECode CTethering::TetherInterfaceSM::TetheredState::ProcessMessage(
             message->GetObj((IInterface**)&obj);
             String newUpstreamIfaceName;
             if (obj != NULL) ICharSequence::Probe(obj)->ToString(&newUpstreamIfaceName);
-            if ((mOwner->mMyUpstreamIfaceName.IsNull() && newUpstreamIfaceName.IsNull()) ||
-                    (!mOwner->mMyUpstreamIfaceName.IsNull() &&
-                    mOwner->mMyUpstreamIfaceName.Equals(newUpstreamIfaceName))) {
+            if ((mHost->mMyUpstreamIfaceName.IsNull() && newUpstreamIfaceName.IsNull()) ||
+                    (!mHost->mMyUpstreamIfaceName.IsNull() &&
+                    mHost->mMyUpstreamIfaceName.Equals(newUpstreamIfaceName))) {
                 if (VDBG) Logger::D(CTethering::TAG, "Connection changed noop - dropping");
                 break;
             }
             CleanupUpstream();
             if (!newUpstreamIfaceName.IsNull()) {
-                ec = mOwner->mOwner->mNMService->EnableNat(mOwner->mIfaceName, newUpstreamIfaceName);
+                ec = mHost->mHost->mNMService->EnableNat(mHost->mIfaceName, newUpstreamIfaceName);
                 if (FAILED(ec)) {
                     Logger::E(CTethering::TAG, "Exception enabling Nat: %d", ec);
-                    ec = mOwner->mOwner->mNMService->UntetherInterface(mOwner->mIfaceName);
+                    ec = mHost->mHost->mNMService->UntetherInterface(mHost->mIfaceName);
                     if (FAILED(ec)) {}
 
-                    mOwner->SetLastError(IConnectivityManager::TETHER_ERROR_ENABLE_NAT_ERROR);
-                    mOwner->TransitionTo(mOwner->mInitialState);
+                    mHost->SetLastError(IConnectivityManager::TETHER_ERROR_ENABLE_NAT_ERROR);
+                    mHost->TransitionTo(mHost->mInitialState);
                     *value = TRUE;
                     return ec;
                 }
             }
-            mOwner->mMyUpstreamIfaceName = newUpstreamIfaceName;
+            mHost->mMyUpstreamIfaceName = newUpstreamIfaceName;
             break;
         }
         case CMD_CELL_DUN_ERROR:
@@ -312,27 +338,27 @@ ECode CTethering::TetherInterfaceSM::TetheredState::ProcessMessage(
             // fall through
         case CMD_TETHER_MODE_DEAD:
             CleanupUpstream();
-            ec = mOwner->mOwner->mNMService->UntetherInterface(mOwner->mIfaceName);
+            ec = mHost->mHost->mNMService->UntetherInterface(mHost->mIfaceName);
             if (FAILED(ec)) {
-                mOwner->SetLastErrorAndTransitionToInitialState(
+                mHost->SetLastErrorAndTransitionToInitialState(
                         IConnectivityManager::TETHER_ERROR_UNTETHER_IFACE_ERROR);
                 break;
             }
             if (error) {
-                mOwner->SetLastErrorAndTransitionToInitialState(
+                mHost->SetLastErrorAndTransitionToInitialState(
                         IConnectivityManager::TETHER_ERROR_MASTER_ERROR);
                 break;
             }
             if (DBG) {
-                Logger::D(CTethering::TAG, "Tether lost upstream connection %s", mOwner->mIfaceName.string());
+                Logger::D(CTethering::TAG, "Tether lost upstream connection %s", mHost->mIfaceName.string());
             }
-            mOwner->mOwner->SendTetherStateChangedBroadcast();
-            if (mOwner->mUsb) {
-                if (!mOwner->mOwner->ConfigureUsbIface(FALSE)) {
-                    mOwner->SetLastError(IConnectivityManager::TETHER_ERROR_IFACE_CFG_ERROR);
+            mHost->mHost->SendTetherStateChangedBroadcast();
+            if (mHost->mUsb) {
+                if (!mHost->mHost->ConfigureUsbIface(FALSE)) {
+                    mHost->SetLastError(IConnectivityManager::TETHER_ERROR_IFACE_CFG_ERROR);
                 }
             }
-            mOwner->TransitionTo(mOwner->mInitialState);
+            mHost->TransitionTo(mHost->mInitialState);
             break;
         default:
             retValue = FALSE;
@@ -348,10 +374,10 @@ ECode CTethering::TetherInterfaceSM::TetheredState::ProcessMessage(
 //===========================================================================
 ECode CTethering::TetherInterfaceSM::UnavailableState::Enter()
 {
-    mOwner->SetAvailable(FALSE);
-    mOwner->SetLastError(IConnectivityManager::TETHER_ERROR_NO_ERROR);
-    mOwner->SetTethered(FALSE);
-    mOwner->mOwner->SendTetherStateChangedBroadcast();
+    mHost->SetAvailable(FALSE);
+    mHost->SetLastError(IConnectivityManager::TETHER_ERROR_NO_ERROR);
+    mHost->SetTethered(FALSE);
+    mHost->mHost->SendTetherStateChangedBroadcast();
     return NOERROR;
 }
 
@@ -364,7 +390,7 @@ ECode CTethering::TetherInterfaceSM::UnavailableState::ProcessMessage(
     message->GetWhat(&what);
     switch (what) {
         case CMD_INTERFACE_UP:
-            mOwner->TransitionTo(mOwner->mInitialState);
+            mHost->TransitionTo(mHost->mInitialState);
             break;
         default:
             retValue = FALSE;
@@ -395,14 +421,14 @@ CTethering::TetherInterfaceSM::TetherInterfaceSM(
     /* [in] */ const String& name,
     /* [in] */ ILooper* looper,
     /* [in] */ Boolean usb,
-    /* [in] */ CTethering* owner)
+    /* [in] */ CTethering* host)
     : StateMachine(name, looper)
     , mLastError(0)
     , mIfaceName(name)
     , mUsb(usb)
     , mAvailable(FALSE)
     , mTethered(FALSE)
-    , mOwner(owner)
+    , mHost(host)
 {
     SetLastError(IConnectivityManager::TETHER_ERROR_NO_ERROR);
 
@@ -439,14 +465,14 @@ String CTethering::TetherInterfaceSM::ToString()
 
 Int32 CTethering::TetherInterfaceSM::GetLastError()
 {
-    AutoLock lock(mOwner->mPublicSync);
+    AutoLock lock(mHost->mPublicSync);
     return mLastError;
 }
 
 void CTethering::TetherInterfaceSM::SetLastError(
     /* [in] */ Int32 error)
 {
-    AutoLock lock(mOwner->mPublicSync);
+    AutoLock lock(mHost->mPublicSync);
 
     mLastError = error;
 
@@ -454,40 +480,40 @@ void CTethering::TetherInterfaceSM::SetLastError(
         if (mUsb) {
             // note everything's been unwound by this point so nothing to do on
             // further error..
-            mOwner->ConfigureUsbIface(FALSE);
+            mHost->ConfigureUsbIface(FALSE);
         }
     }
 }
 
 Boolean CTethering::TetherInterfaceSM::IsAvailable()
 {
-    AutoLock lock(mOwner->mPublicSync);
+    AutoLock lock(mHost->mPublicSync);
     return mAvailable;
 }
 
 void CTethering::TetherInterfaceSM::SetAvailable(
     /* [in] */ Boolean available)
 {
-    AutoLock lock(mOwner->mPublicSync);
+    AutoLock lock(mHost->mPublicSync);
     mAvailable = available;
 }
 
 Boolean CTethering::TetherInterfaceSM::IsTethered()
 {
-    AutoLock lock(mOwner->mPublicSync);
+    AutoLock lock(mHost->mPublicSync);
     return mTethered;
 }
 
 void CTethering::TetherInterfaceSM::SetTethered(
     /* [in] */ Boolean tethered)
 {
-    AutoLock lock(mOwner->mPublicSync);
+    AutoLock lock(mHost->mPublicSync);
     mTethered = tethered;
 }
 
 Boolean CTethering::TetherInterfaceSM::IsErrored()
 {
-    AutoLock lock(mOwner->mPublicSync);
+    AutoLock lock(mHost->mPublicSync);
     return mLastError != IConnectivityManager::TETHER_ERROR_NO_ERROR;
 }
 
@@ -536,7 +562,7 @@ Boolean CTethering::TetherMasterSM::TetherMasterUtilState::TurnOnUpstreamMobileC
 {
     Boolean retValue = TRUE;
     if (apnType == IConnectivityManager::TYPE_NONE) return FALSE;
-    if (apnType != mOwner->mMobileApnReserved) TurnOffUpstreamMobileConnection();
+    if (apnType != mHost->mMobileApnReserved) TurnOffUpstreamMobileConnection();
 
     String enableString = EnableString(apnType);
     if (enableString.IsNull()) return FALSE;
@@ -544,16 +570,16 @@ Boolean CTethering::TetherMasterSM::TetherMasterUtilState::TurnOnUpstreamMobileC
     AutoPtr<IBinder> binder;
     CBinder::New((IBinder**)&binder);
     Int32 result = IPhoneConstants::APN_REQUEST_FAILED;
-    mOwner->mOwner->mConnService->StartUsingNetworkFeature(
+    mHost->mHost->mConnService->StartUsingNetworkFeature(
         IConnectivityManager::TYPE_MOBILE, enableString, binder, &result);
 
     switch (result) {
         case IPhoneConstants::APN_ALREADY_ACTIVE:
         case IPhoneConstants::APN_REQUEST_STARTED: {
-            mOwner->mMobileApnReserved = apnType;
-            AutoPtr<IMessage> m = mOwner->ObtainMessage(CMD_CELL_CONNECTION_RENEW);
-            m->SetArg1(++mOwner->mCurrentConnectionSequence);
-            mOwner->SendMessageDelayed(m, CELL_CONNECTION_RENEW_MS);
+            mHost->mMobileApnReserved = apnType;
+            AutoPtr<IMessage> m = mHost->ObtainMessage(CMD_CELL_CONNECTION_RENEW);
+            m->SetArg1(++mHost->mCurrentConnectionSequence);
+            mHost->SendMessageDelayed(m, CELL_CONNECTION_RENEW_MS);
             break;
         }
         case IPhoneConstants::APN_REQUEST_FAILED:
@@ -568,55 +594,51 @@ Boolean CTethering::TetherMasterSM::TetherMasterUtilState::TurnOnUpstreamMobileC
 Boolean CTethering::TetherMasterSM::TetherMasterUtilState::TurnOffUpstreamMobileConnection()
 {
     // ignore pending renewal requests
-    ++mOwner->mCurrentConnectionSequence;
-    if (mOwner->mMobileApnReserved != IConnectivityManager::TYPE_NONE) {
+    ++mHost->mCurrentConnectionSequence;
+    if (mHost->mMobileApnReserved != IConnectivityManager::TYPE_NONE) {
         Int32 result;
-        ECode ec = mOwner->mOwner->mConnService->StopUsingNetworkFeature(IConnectivityManager::TYPE_MOBILE,
-                EnableString(mOwner->mMobileApnReserved), &result);
+        ECode ec = mHost->mHost->mConnService->StopUsingNetworkFeature(IConnectivityManager::TYPE_MOBILE,
+                EnableString(mHost->mMobileApnReserved), &result);
         if (FAILED(ec)) {
             return FALSE;
         }
-        mOwner->mMobileApnReserved = IConnectivityManager::TYPE_NONE;
+        mHost->mMobileApnReserved = IConnectivityManager::TYPE_NONE;
     }
     return TRUE;
 }
 
 Boolean CTethering::TetherMasterSM::TetherMasterUtilState::TurnOnMasterTetherSettings()
 {
-    ECode ec = mOwner->mOwner->mNMService->SetIpForwardingEnabled(TRUE);
+    ECode ec = mHost->mHost->mNMService->SetIpForwardingEnabled(TRUE);
     if (FAILED(ec)) {
-        mOwner->TransitionTo(mOwner->mSetIpForwardingEnabledErrorState);
+        mHost->TransitionTo(mHost->mSetIpForwardingEnabledErrorState);
         return FALSE;
     }
-    ec = mOwner->mOwner->mNMService->StartTethering(mOwner->mOwner->mDhcpRange);
+    ec = mHost->mHost->mNMService->StartTethering(mHost->mHost->mDhcpRange);
     if (FAILED(ec)) {
-        if (FAILED(mOwner->mOwner->mNMService->StopTethering()) ||
-            FAILED(mOwner->mOwner->mNMService->StartTethering(mOwner->mOwner->mDhcpRange))) {
-            mOwner->TransitionTo(mOwner->mStartTetheringErrorState);
+        if (FAILED(mHost->mHost->mNMService->StopTethering()) ||
+            FAILED(mHost->mHost->mNMService->StartTethering(mHost->mHost->mDhcpRange))) {
+            mHost->TransitionTo(mHost->mStartTetheringErrorState);
             return FALSE;
         }
     }
-    ec = mOwner->mOwner->mNMService->SetDnsForwarders(mOwner->mOwner->mDefaultDnsServers);
-    if (FAILED(ec)) {
-        mOwner->TransitionTo(mOwner->mSetDnsForwardersErrorState);
-        return FALSE;
-    }
+
     return TRUE;
 }
 
 Boolean CTethering::TetherMasterSM::TetherMasterUtilState::TurnOffMasterTetherSettings()
 {
-    ECode ec = mOwner->mOwner->mNMService->StopTethering();
+    ECode ec = mHost->mHost->mNMService->StopTethering();
     if (FAILED(ec)) {
-        mOwner->TransitionTo(mOwner->mStopTetheringErrorState);
+        mHost->TransitionTo(mHost->mStopTetheringErrorState);
         return FALSE;
     }
-    ec = mOwner->mOwner->mNMService->SetIpForwardingEnabled(FALSE);
+    ec = mHost->mHost->mNMService->SetIpForwardingEnabled(FALSE);
     if (FAILED(ec)) {
-        mOwner->TransitionTo(mOwner->mSetIpForwardingDisabledErrorState);
+        mHost->TransitionTo(mHost->mSetIpForwardingDisabledErrorState);
         return FALSE;
     }
-    mOwner->TransitionTo(mOwner->mInitialState);
+    mHost->TransitionTo(mHost->mInitialState);
     return TRUE;
 }
 
@@ -626,81 +648,41 @@ void CTethering::TetherMasterSM::TetherMasterUtilState::ChooseUpstreamType(
     ECode ec = NOERROR;
     Int32 upType = IConnectivityManager::TYPE_NONE;
     String iface;
-    AutoPtr<IContentResolver> cr;
-    mOwner->mOwner->mContext->GetContentResolver((IContentResolver**)&cr);
-    AutoPtr<ISettingsSecure> settingsSecure;
-    CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
-    Int32 wifi_cheat_on;
-    settingsSecure->GetInt32(cr, ISettingsSecure::WIFI_CHEAT_ON, 0, &wifi_cheat_on);
 
-    mOwner->mOwner->UpdateConfiguration();
+    mHost->mHost->UpdateConfiguration(); // TODO - remove?
+    IConnectivityManager* connMgr = mHost->mHost->GetConnectivityManager();
 
+    synchronized (mPublicSync)
     {
-        AutoLock lock(mOwner->mOwner->mPublicSync);
-
+        Object& lockOb = mHost->mHost->mPublicSync;
+        AutoLock lock(lockOb);
         if (VDBG) {
             Logger::D(CTethering::TAG, "chooseUpstreamType has upstream iface types:");
-            List< AutoPtr<IInteger32> >::Iterator it = mOwner->mOwner->mUpstreamIfaceTypes.Begin();
-            for (; it != mOwner->mOwner->mUpstreamIfaceTypes.End(); ++it) {
+            List< AutoPtr<IInteger32> >::Iterator it = mHost->mHost->mUpstreamIfaceTypes.Begin();
+            for (; it != mHost->mHost->mUpstreamIfaceTypes.End(); ++it) {
                 Int32 netType;
                 (*it)->GetValue(&netType);
                 Logger::D(CTethering::TAG, " %d", netType);
             }
         }
 
-        List< AutoPtr<IInteger32> >::Iterator it = mOwner->mOwner->mUpstreamIfaceTypes.Begin();
-        for (; it != mOwner->mOwner->mUpstreamIfaceTypes.End(); ++it) {
+        Boolean connected;
+        List< AutoPtr<IInteger32> >::Iterator it = mHost->mHost->mUpstreamIfaceTypes.Begin();
+        for (; it != mHost->mHost->mUpstreamIfaceTypes.End(); ++it) {
             Int32 netType;
             (*it)->GetValue(&netType);
             AutoPtr<INetworkInfo> info;
-            ec = mOwner->mOwner->mConnService->GetNetworkInfo(netType, (INetworkInfo **)&info);
-            if (FAILED(ec)) {}
-            Boolean connected;
+            connMgr->GetNetworkInfo(netType, (INetworkInfo**)&info);
             if ((info != NULL) && (info->IsConnected(&connected), connected)) {
-                AutoPtr<ILinkProperties> linkProperties0;
-                ec = mOwner->mOwner->mConnService->GetLinkProperties(netType, (ILinkProperties**)&linkProperties0);
-                if (FAILED(ec)) {}
-                if (linkProperties0 != NULL) {
-                    linkProperties0->GetInterfaceName(&iface);
-                }
-                if (!iface.IsNull()){
-                    upType = netType;
-                    break;
-                }
-            }
-        }
-
-        if (upType == IConnectivityManager::TYPE_NONE) {
-            List< AutoPtr<IInteger32> >::Iterator it = mOwner->mOwner->mUpstreamIfaceTypes.Begin();
-            for (; it != mOwner->mOwner->mUpstreamIfaceTypes.End(); ++it) {
-                Int32 netType;
-                (*it)->GetValue(&netType);
-                AutoPtr<INetworkInfo> info;
-                AutoPtr<INetworkInfo> info_eth;
-                ec = mOwner->mOwner->mConnService->GetNetworkInfo(netType, (INetworkInfo**)&info);
-                if (SUCCEEDED(ec)) {
-                    if (wifi_cheat_on != 0) {
-                        ec = mOwner->mOwner->mConnService->GetNetworkInfo(IConnectivityManager::TYPE_ETHERNET, (INetworkInfo**)&info_eth);
-                    }
-                }
-                Boolean connected;
-                if ((info != NULL) && (info->IsConnected(&connected), connected)) {
-                    upType = netType;
-                    if (wifi_cheat_on != 0) {
-                        //eth cheated as wifi when eth connected,funct getNetworkInfo@ConnectivityService.java
-                        if (upType == IConnectivityManager::TYPE_WIFI
-                                && info_eth != NULL && (info_eth->IsConnected(&connected), connected))
-                            upType = IConnectivityManager::TYPE_ETHERNET;
-                    }
-                    break;
-                }
+                upType = netType;
+                break;
             }
         }
     }
 
     if (DBG) {
         Logger::D(CTethering::TAG, "chooseUpstreamType(%d), preferredApn =%d, got type=%d", tryCell,
-                mOwner->mOwner->mPreferredUpstreamMobileApn, upType);
+                mHost->mHost->mPreferredUpstreamMobileApn, upType);
     }
 
     // if we're on DUN, put our own grab on it
@@ -721,49 +703,95 @@ void CTethering::TetherMasterSM::TetherMasterUtilState::ChooseUpstreamType(
     if (upType == IConnectivityManager::TYPE_NONE) {
         Boolean tryAgainLater = TRUE;
         if ((tryCell == TRY_TO_SETUP_MOBILE_CONNECTION) &&
-                TurnOnUpstreamMobileConnection(mOwner->mOwner->mPreferredUpstreamMobileApn)) {
+                TurnOnUpstreamMobileConnection(mHost->mHost->mPreferredUpstreamMobileApn)) {
             // we think mobile should be coming up - don't set a retry
             tryAgainLater = FALSE;
         }
         if (tryAgainLater) {
-            mOwner->SendMessageDelayed(CMD_RETRY_UPSTREAM, UPSTREAM_SETTLE_TIME_MS);
+            mHost->SendMessageDelayed(CMD_RETRY_UPSTREAM, UPSTREAM_SETTLE_TIME_MS);
         }
     }
     else {
         AutoPtr<ILinkProperties> linkProperties;
-        ec = mOwner->mOwner->mConnService->GetLinkProperties(upType, (ILinkProperties**)&linkProperties);
-        if (FAILED(ec)) {}
+        connMgr->GetLinkProperties(upType, (ILinkProperties**)&linkProperties);
         if (linkProperties != NULL) {
-            linkProperties->GetInterfaceName(&iface);
-            AutoPtr< ArrayOf<String> > dnsServers = mOwner->mOwner->mDefaultDnsServers;
-            AutoPtr<IObjectContainer> dnses;
-            linkProperties->GetDnses((IObjectContainer**)&dnses);
+            // Find the interface with the default IPv4 route. It may be the
+            // interface described by linkProperties, or one of the interfaces
+            // stacked on top of it.
+            Logger::I(TAG, "Finding IPv4 upstream interface on: %s",
+                Object::ToString(linkProperties).string());
+            AutoPtr<IList> allRoutes;
+            linkProperties->GetAllRoutes((IList**)&allRoutes);
+            AutoPtr<IRouteInfoHelper> riHelper;
+            CRouteInfoHelper::AcquireSingleton((IRouteInfoHelper**)&riHelper);
+            AutoPtr<IInet4AddressHelper> i4aHelper;
+            CInet4AddressHelper::AcquireSingleton((IInet4AddressHelper**)&i4aHelper);
+            AutoPtr<IInetAddress> iaddr;
+            i4aHelper->GetANY((IInetAddress**)&iaddr);
+            AutoPtr<IRouteInfo> ipv4Default;
+            riHelper->SelectBestRoute(allRoutes, iaddr, (IRouteInfo**)&ipv4Default);
+            if (ipv4Default != NULL) {
+                ipv4Default->GetInterface(&iface);
+                Logger::I(TAG, "Found interface %s", iface.string());
+            }
+            else {
+                Logger::I(TAG, "No IPv4 upstream interface, giving up.");
+            }
+        }
+
+        if (!iface.IsNull()) {
+            AutoPtr<ArrayOf<String> > dnsServers = mDefaultDnsServers;
+            AutoPtr<IList> dnses;
+            linkProperties->GetDnsServers((IList**)&dnses);
+            Collection<InetAddress> dnses =
             if (dnses != NULL) {
                 // we currently only handle IPv4
-                AutoPtr<IObjectContainer> v4Dnses;
-                CObjectContainer::New((IObjectContainer**)&v4Dnses);
-                AutoPtr<IObjectEnumerator> it;
-                dnses->GetObjectEnumerator((IObjectEnumerator**)&it);
-                Boolean succeeded;
-                while (it->MoveNext(&succeeded), succeeded) {
+                Int32 size;
+                dnses->GetSize(&size);
+                AutoPtr<IArrayList> v4Dnses;
+                CArrayList::New(size, (IArrayList**)&v4Dnses);
+                AutoPtr<IIterator> it;
+                dnses->GetIterator((IIterator**)&it);
+                Boolean hasNext;
+                while (it->HasNext(&hasNext), hasNext) {
                     AutoPtr<IInterface> obj;
-                    it->Current((IInterface**)&obj);
-                    if (IInet4Address::Probe(obj) != NULL) {
-                        v4Dnses->Add(IInetAddress::Probe(obj));
+                    it->GetNext((IInterface**)&obj);
+                    IInet4Address* dnsAddress = IInet4Address::Probe(obj);
+                    if (dnsAddress) {
+                        v4Dnses->Add(dnsAddress);
                     }
                 }
-                Int32 count;
-                v4Dnses->GetObjectCount(&count);
-                if (count > 0) {
-                    dnsServers = NetworkUtils::MakeStrings(v4Dnses);
+
+                v4Dnses->GetSize(&size);
+                if (size > 0) {
+                    dnsServers = NULL;
+                    NetworkUtils::MakeStrings(
+                        ICollection::Probe(v4Dnses), (ArrayOf<String>**)&dnsServers);
                 }
             }
-            ec = mOwner->mOwner->mNMService->SetDnsForwarders(dnsServers);
+
+            AutoPtr<INetwork> network;
+            ec = connMgr->GetNetworkForType(upType, (INetwork**)&network);
+            FAIL_GOTO(ec, _EXIT_)
+
+            if (network == NULL) {
+                Logger::E(TAG, "No Network for upstream type %d!", upType);
+            }
+            if (VDBG) {
+                Logger::D(TAG, "Setting DNS forwarders: Network=%s, dnsServers=%s",
+                    Object::ToString(network).string(), Arrays::ToString(dnsServers).string());
+            }
+            mHost->->mHost->mNMService->SetDnsForwarders(network, dnsServers);
+
+        _EXIT_:
             if (FAILED(ec)) {
-                mOwner->TransitionTo(mOwner->mSetDnsForwardersErrorState);
+                Logger::E(TAG, "Setting DNS forwarders failed!");
+                mHost->->mHost->TransitionTo(
+                    mHost->mHost->mSetDnsForwardersErrorState);
             }
         }
     }
+
     NotifyTetheredOfNewUpstreamIface(iface);
 }
 
@@ -771,9 +799,9 @@ void CTethering::TetherMasterSM::TetherMasterUtilState::NotifyTetheredOfNewUpstr
     /* [in]*/ const String& ifaceName)
 {
     if (DBG) Logger::D(CTethering::TAG, "notifying tethered with iface =%s", ifaceName.string());
-    mOwner->mUpstreamIfaceName = ifaceName;
+    mHost->mUpstreamIfaceName = ifaceName;
     List< AutoPtr<TetherInterfaceSM> >::Iterator it;
-    for (it = mOwner->mNotifyList.Begin(); it != mOwner->mNotifyList.End(); ++it) {
+    for (it = mHost->mNotifyList.Begin(); it != mHost->mNotifyList.End(); ++it) {
         AutoPtr<TetherInterfaceSM> sm = *it;
         AutoPtr<ICharSequence> cs;
         CString::New(ifaceName, (ICharSequence**)&cs);
@@ -805,8 +833,8 @@ ECode CTethering::TetherMasterSM::InitialState::ProcessMessage(
             message->GetObj((IInterface**)&obj);
             TetherInterfaceSM* who = (TetherInterfaceSM*)obj.Get();
             if (VDBG) Logger::D(CTethering::TAG, "Tether Mode requested by %p", who);
-            mOwner->mNotifyList.PushBack(who);
-            mOwner->TransitionTo(mOwner->mTetherModeAliveState);
+            mHost->mNotifyList.PushBack(who);
+            mHost->TransitionTo(mHost->mTetherModeAliveState);
             break;
         }
         case CMD_TETHER_MODE_UNREQUESTED: {
@@ -814,7 +842,7 @@ ECode CTethering::TetherMasterSM::InitialState::ProcessMessage(
             message->GetObj((IInterface**)&obj);
             TetherInterfaceSM* who = (TetherInterfaceSM*)obj.Get();
             if (VDBG) Logger::D(CTethering::TAG, "Tether Mode unrequested by %p", who);
-            mOwner->mNotifyList.Remove(who);
+            mHost->mNotifyList.Remove(who);
             break;
         }
         default:
@@ -862,9 +890,9 @@ ECode CTethering::TetherMasterSM::TetherModeAliveState::ProcessMessage(
             message->GetObj((IInterface**)&obj);
             TetherInterfaceSM* who = (TetherInterfaceSM*)obj.Get();
             if (VDBG) Logger::D(CTethering::TAG, "Tether Mode requested by %p", who);
-            mOwner->mNotifyList.PushBack(who);
+            mHost->mNotifyList.PushBack(who);
             AutoPtr<ICharSequence> cs;
-            CString::New(mOwner->mUpstreamIfaceName, (ICharSequence**)&cs);
+            CString::New(mHost->mUpstreamIfaceName, (ICharSequence**)&cs);
             who->SendMessage(TetherInterfaceSM::CMD_TETHER_CONNECTION_CHANGED, cs);
             break;
         }
@@ -874,17 +902,17 @@ ECode CTethering::TetherMasterSM::TetherModeAliveState::ProcessMessage(
             AutoPtr<TetherInterfaceSM> who = (TetherInterfaceSM*)obj.Get();
             if (VDBG) Logger::D(CTethering::TAG, "Tether Mode unrequested by %p", who.Get());
             List< AutoPtr<TetherInterfaceSM> >::Iterator it = Find(
-                    mOwner->mNotifyList.Begin(), mOwner->mNotifyList.End(), who);
-            if (it != mOwner->mNotifyList.End()) {
+                    mHost->mNotifyList.Begin(), mHost->mNotifyList.End(), who);
+            if (it != mHost->mNotifyList.End()) {
                 if (DBG) Logger::D(CTethering::TAG, "TetherModeAlive removing notifyee %p", who.Get());
-                mOwner->mNotifyList.Erase(it);
-                if (mOwner->mNotifyList.IsEmpty()) {
+                mHost->mNotifyList.Erase(it);
+                if (mHost->mNotifyList.IsEmpty()) {
                     TurnOffMasterTetherSettings(); // transitions appropriately
                 }
                 else {
                     if (DBG) {
                         Logger::D(CTethering::TAG, "TetherModeAlive still has %s  live requests:",
-                                mOwner->mNotifyList.GetSize());
+                                mHost->mNotifyList.GetSize());
                         // for (Object o : mNotifyList) Log.d(TAG, "  " + o);
                     }
                 }
@@ -905,12 +933,12 @@ ECode CTethering::TetherMasterSM::TetherModeAliveState::ProcessMessage(
             // wifi or something since then.
             Int32 arg1;
             message->GetArg1(&arg1);
-            if (mOwner->mCurrentConnectionSequence == arg1) {
+            if (mHost->mCurrentConnectionSequence == arg1) {
                 if (VDBG) {
                     Logger::D(CTethering::TAG, "renewing mobile connection - requeuing for another %sms",
                             CELL_CONNECTION_RENEW_MS);
                 }
-                TurnOnUpstreamMobileConnection(mOwner->mMobileApnReserved);
+                TurnOnUpstreamMobileConnection(mHost->mMobileApnReserved);
             }
             break;
         }
@@ -958,7 +986,7 @@ void CTethering::TetherMasterSM::ErrorState::Notify(
 {
     mErrorNotification = msgType;
     List< AutoPtr<TetherInterfaceSM> >::Iterator it;
-    for (it = mOwner->mNotifyList.Begin(); it != mOwner->mNotifyList.End(); ++it) {
+    for (it = mHost->mNotifyList.Begin(); it != mHost->mNotifyList.End(); ++it) {
         AutoPtr<TetherInterfaceSM> sm = *it;
         sm->SendMessage(msgType);
     }
@@ -994,7 +1022,7 @@ ECode CTethering::TetherMasterSM::StartTetheringErrorState::Enter()
 {
     Logger::E(CTethering::TAG, "Error in startTethering");
     Notify(TetherInterfaceSM::CMD_START_TETHERING_ERROR);
-    ECode ec = mOwner->mOwner->mNMService->SetIpForwardingEnabled(FALSE);
+    ECode ec = mHost->mHost->mNMService->SetIpForwardingEnabled(FALSE);
     if (FAILED(ec)) {}
     return NOERROR;
 }
@@ -1007,7 +1035,7 @@ ECode CTethering::TetherMasterSM::StopTetheringErrorState::Enter()
 {
     Logger::E(CTethering::TAG, "Error in stopTethering");
     Notify(TetherInterfaceSM::CMD_STOP_TETHERING_ERROR);
-    ECode ec = mOwner->mOwner->mNMService->SetIpForwardingEnabled(FALSE);
+    ECode ec = mHost->mHost->mNMService->SetIpForwardingEnabled(FALSE);
     if (FAILED(ec)) {}
     return NOERROR;
 }
@@ -1020,9 +1048,9 @@ ECode CTethering::TetherMasterSM::SetDnsForwardersErrorState::Enter()
 {
     Logger::E(CTethering::TAG, "Error in setDnsForwarders");
     Notify(TetherInterfaceSM::CMD_SET_DNS_FORWARDERS_ERROR);
-    ECode ec = mOwner->mOwner->mNMService->StopTethering();
+    ECode ec = mHost->mHost->mNMService->StopTethering();
     if (FAILED(ec)) {}
-    ec = mOwner->mOwner->mNMService->SetIpForwardingEnabled(FALSE);
+    ec = mHost->mHost->mNMService->SetIpForwardingEnabled(FALSE);
     if (FAILED(ec)) {}
     return NOERROR;
 }
@@ -1042,12 +1070,12 @@ const Int32 CTethering::TetherMasterSM::CELL_CONNECTION_RENEW_MS;
 CTethering::TetherMasterSM::TetherMasterSM(
     /* [in] */ const String& name,
     /* [in] */ ILooper* looper,
-    /* [in] */ CTethering* owner)
+    /* [in] */ CTethering* host)
     : StateMachine(name, looper)
     , mSequenceNumber(0)
     , mCurrentConnectionSequence(0)
     , mMobileApnReserved(0)
-    , mOwner(owner)
+    , mHost(host)
 {
     //Add states
     mInitialState = new InitialState(this);
@@ -1088,7 +1116,7 @@ static AutoPtr<IInteger32> InitType(
 
 static AutoPtr< ArrayOf<String> > InitDhcpDefaultRange()
 {
-    AutoPtr< ArrayOf<String> > range = ArrayOf<String>::Alloc(14);
+    AutoPtr< ArrayOf<String> > range = ArrayOf<String>::Alloc(16);
     (*range)[0] = "192.168.42.2";
     (*range)[1] = "192.168.42.254";
     (*range)[2] = "192.168.43.2";
@@ -1103,6 +1131,8 @@ static AutoPtr< ArrayOf<String> > InitDhcpDefaultRange()
     (*range)[11] = "192.168.47.254";
     (*range)[12] = "192.168.48.2";
     (*range)[13] = "192.168.48.254";
+    (*range)[14] = "192.168.49.2";
+    (*range)[15] = "192.168.49.254"
     return range;
 }
 
@@ -1139,20 +1169,17 @@ CTethering::~CTethering()
 ECode CTethering::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IINetworkManagementService* nmService,
-    /* [in] */ INetworkStatsService* statsService,
-    /* [in] */ IIConnectivityManager* connService,
+    /* [in] */ IINetworkStatsService* statsService,
     /* [in] */ ILooper* looper)
 {
     mContext = context;
     mNMService = nmService;
     mStatsService = statsService;
-    mConnService = connService;
     mLooper = looper;
 
     // make our own thread so we don't anr the system
-    CHandlerThread::New(String("Tethering"), (IHandlerThread**)&mThread);
-    mThread->Start();
-    mThread->GetLooper((ILooper**)&mLooper);
+    AutoPtr<IoThread> thread = IoThread::Get();
+    thread->GetLooper((ILooper**)&mLooper);
     mTetherMasterSM = new TetherMasterSM(String("TetherMaster"), mLooper, this);
     mTetherMasterSM->Start();
 
@@ -1168,6 +1195,7 @@ ECode CTethering::constructor(
     CIntentFilter::New((IIntentFilter**)&filter);
     filter->AddAction(IIntent::ACTION_MEDIA_SHARED);
     filter->AddAction(IIntent::ACTION_MEDIA_UNSHARED);
+    filter->AddAction(IIntent::ACTION_CONFIGURATION_CHANGED);
     filter->AddDataScheme(String("file"));
     result = NULL;
     mContext->RegisterReceiver(mStateReceiver, filter, (IIntent**)&result);
@@ -1188,6 +1216,13 @@ ECode CTethering::constructor(
     (*mDefaultDnsServers)[0] = DNS_DEFAULT_SERVER1;
     (*mDefaultDnsServers)[1] = DNS_DEFAULT_SERVER2;
     return NOERROR;
+}
+
+AutoPtr<IConnectivityManager> CTethering::GetConnectivityManager()
+{
+    AutoPtr<IInterface> obj;
+    mContext->GetSystemService(IContext::CONNECTIVITY_SERVICE, (IInterface**)&obj);
+    return IConnectivityManager::Probe(obj);
 }
 
 void CTethering::UpdateConfiguration()
@@ -1264,10 +1299,6 @@ ECode CTethering::InterfaceStatusChanged(
                 if (VDBG) Logger::D(TAG, "ignore interface down for %s", iface.string());
             }
             else if (sm != NULL) {
-                if (iface.Equals("p2p0")) {
-                    // Logger::D(TAG, "Ignore p2p0 down flags, nosense !!!!!");
-                    return NOERROR;
-                }
                 sm->SendMessage(TetherInterfaceSM::CMD_INTERFACE_DOWN);
                 mIfaces.Erase(it);
             }
@@ -1403,20 +1434,6 @@ ECode CTethering::InterfaceRemoved(
     return NOERROR;
 }
 
-ECode CTethering::LimitReached(
-    /* [in] */ const String& limitName,
-    /* [in] */ const String& iface)
-{
-    return NOERROR;
-}
-
-ECode CTethering::InterfaceClassDataActivityChanged(
-    /* [in] */ const String& lable,
-    /* [in] */ Boolean active)
-{
-    return NOERROR;
-}
-
 ECode CTethering::Tether(
     /* [in] */ const String& iface,
     /* [out] */ Int32* value)
@@ -1504,14 +1521,15 @@ ECode CTethering::GetLastTetherError(
 // to clarify what needs synchronized protection.
 void CTethering::SendTetherStateChangedBroadcast()
 {
+    AutoPtr<IConnectivityManager> connMgr = GetConnectivityManager();
     Boolean result = FALSE;
-    ECode ec = mConnService->IsTetheringSupported(&result);
+    ECode ec = connMgr->IsTetheringSupported(&result);
     if (FAILED(ec) || !result) return;
 
-    AutoPtr<IObjectContainer> availableList, activeList, erroredList;
-    CParcelableObjectContainer::New((IObjectContainer**)&availableList);
-    CParcelableObjectContainer::New((IObjectContainer**)&activeList);
-    CParcelableObjectContainer::New((IObjectContainer**)&erroredList);
+    AutoPtr<IArrayList> availableList, activeList, erroredList;
+    CArrayList::New((IArrayList**)&availableList);
+    CArrayList::New((IArrayList**)&activeList);
+    CArrayList::New((IArrayList**)&erroredList);
 
     Boolean wifiTethered = FALSE;
     Boolean usbTethered = FALSE;
@@ -1526,14 +1544,12 @@ void CTethering::SendTetherStateChangedBroadcast()
             AutoPtr<TetherInterfaceSM> sm = it->mSecond;
             if (sm != NULL) {
                 if (sm->IsErrored()) {
-                    AutoPtr<ICharSequence> cs;
-                    CString::New(iface, (ICharSequence**)&cs);
-                    erroredList->Add(cs);
+                    AutoPtr<ICharSequence> cs = CoreUtils::Convert(iface);
+                    erroredList->Add(cs.Get());
                 }
                 else if (sm->IsAvailable()) {
-                    AutoPtr<ICharSequence> cs;
-                    CString::New(iface, (ICharSequence**)&cs);
-                    availableList->Add(cs);
+                    AutoPtr<ICharSequence> cs = CoreUtils::Convert(iface);
+                    availableList->Add(cs.Get());
                 }
                 else if (sm->IsTethered()) {
                     if (IsUsb(iface)) {
@@ -1545,9 +1561,8 @@ void CTethering::SendTetherStateChangedBroadcast()
                     else if (IsBluetooth(iface)) {
                         bluetoothTethered = TRUE;
                     }
-                    AutoPtr<ICharSequence> cs;
-                    CString::New(iface, (ICharSequence**)&cs);
-                    activeList->Add(cs);
+                    AutoPtr<ICharSequence> cs = CoreUtils::Convert(iface);
+                    activeList->Add(cs.Get());
                 }
             }
         }
@@ -1649,7 +1664,14 @@ void CTethering::ShowTetheredNotification(
     mTetheredNotification->SetDefaults(defaultValue & ~INotification::DEFAULT_SOUND);
     mTetheredNotification->SetFlags(INotification::FLAG_ONGOING_EVENT);
     mTetheredNotification->SetTickerText(title);
+    mTetheredNotification->SetVisibility(INotification::VISIBILITY_PUBLIC);
+    AutoPtr<IResources> res;
+    mContext->GetResources((IResources**)&res);
+    Int32 color;
+    res->GetColor(R::color::system_notification_accent_color, &color);
+    mTetheredNotification->SetColor(color);
     mTetheredNotification->SetLatestEventInfo(mContext, title, message, pi);
+    mTetheredNotification->SetCategory(INotification::CATEGORY_STATUS);
 
     notificationManager->NotifyAsUser(String(NULL), icon, mTetheredNotification, ALL);
 }
@@ -1815,7 +1837,7 @@ AutoPtr< ArrayOf<Int32> > CTethering::GetUpstreamIfaceTypes()
     AutoPtr< ArrayOf<Int32> > values;
     {
         AutoLock lock(mPublicSync);
-        UpdateConfiguration();
+        UpdateConfiguration();  // TODO - remove?
         values = ArrayOf<Int32>::Alloc(mUpstreamIfaceTypes.GetSize());
         List< AutoPtr<IInteger32> >::Iterator it = mUpstreamIfaceTypes.Begin();
         Int32 i = 0;
@@ -1909,33 +1931,6 @@ ECode CTethering::GetTetheredIfaces(
     return NOERROR;
 }
 
-ECode CTethering::GetTetheredIfacePairs(
-    /* [out, callee] */ ArrayOf<String>** result)
-{
-    VALIDATE_NOT_NULL(result);
-    List<String> list;
-    {
-        AutoLock lock(mPublicSync);
-        HashMap<String, AutoPtr<TetherInterfaceSM> >::Iterator it;
-        for (it = mIfaces.Begin(); it != mIfaces.End(); ++it) {
-            AutoPtr<TetherInterfaceSM> sm = it->mSecond;
-            if (sm->IsTethered()) {
-                list.PushBack(sm->mMyUpstreamIfaceName);
-                list.PushBack(sm->mIfaceName);
-            }
-        }
-    }
-    AutoPtr< ArrayOf<String> > retVal = ArrayOf<String>::Alloc(list.GetSize());
-    List<String>::Iterator it;
-    Int32 i;
-    for (it = list.Begin(), i = 0; it != list.End(); ++it, ++i) {
-        (*retVal)[i] = *it;
-    }
-    *result = retVal;
-    REFCOUNT_ADD(*result);
-    return NOERROR;
-}
-
 ECode CTethering::GetTetherableIfaces(
     /* [out, callee] */ ArrayOf<String>** result)
 {
@@ -1962,6 +1957,15 @@ ECode CTethering::GetTetherableIfaces(
     return NOERROR;
 }
 
+ECode CTethering::GetTetherableIfaces(
+    /* [out, callee] */ ArrayOf<String>** result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mDhcpRange;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
+}
+
 AutoPtr< ArrayOf<String> > CTethering::GetErroredIfaces()
 {
     List<String> list;
@@ -1982,15 +1986,6 @@ AutoPtr< ArrayOf<String> > CTethering::GetErroredIfaces()
         (*retVal)[i] = *it;
     }
     return retVal;
-}
-
-//TODO: Temporary handling upstream change triggered without
-//      CONNECTIVITY_ACTION. Only to accomodate interface
-//      switch during HO.
-//      @see bug/4455071
-void CTethering::HandleTetherIfaceChange()
-{
-    mTetherMasterSM->SendMessage(TetherMasterSM::CMD_UPSTREAM_CHANGED);
 }
 
 ECode CTethering::Dump(
