@@ -519,128 +519,128 @@ module
 
 //     } // namespace Net
 
-    namespace Pm {
-
-    [local]
-    class CPackageManagerService {
-        constructor(
-            [in] IContext* ctx,
-            [in] Handle32 installer,
-            [in] Boolean factoryTest,
-            [in] Boolean onlyCore);
-
-        interface IIPackageManager;
-        interface IBinder;
-    }
-
-    class CParcelFileDescriptorFactory {
-        constructor(
-            [in] IFile* codeFile);
-
-        interface IIParcelFileDescriptorFactory;
-        interface IBinder;
-    }
-
-    class CResourcesChangedReceiver {
-        constructor(
-            [in] IIPackageManager* owner,
-            [in] ISet* keys,
-            [in] Boolean reportStatus);
-
-        interface IIntentReceiver;
-        interface IBinder;
-    }
-
-    class CPackageInstallObserver2 {
-        constructor(
-            [in] IIPackageManager* owner,
-            [in] IIPackageMoveObserver* observer);
-
-        interface IIPackageInstallObserver2;
-        interface IBinder;
-    }
-
-    class CKeySetHandle {
-        constructor();
-
-        interface IBinder;
-    }
-
-    [local]
-    class CLauncherAppsImpl {
-        constructor(
-            [in] IContext* context);
-
-        interface IILauncherApps;
-        interface IBinder;
-    }
-
-    [local]
-    class CPackageInstallerService {
-        constructor(
-            [in] IContext* ctx,
-            [in] IIPackageManager* pm,
-            [in] IFile* stagingDir);
-
-        interface IIPackageInstaller;
-        interface IBinder;
-    }
-
-    [local]
-    class CPackageInstallerSession {
-        constructor(
-            [in] Handle64 cb,
-            [in] IContext* ctx,
-            [in] IIPackageManager* pm,
-            [in] ILooper* l,
-            [in] Int32 sessionId,
-            [in] Int32 userId,
-            [in] String installerPackageName,
-            [in] Int32 installerUid,
-            [in] IPackageInstallerSessionParams* params,
-            [in] Int64 createdMillis,
-            [in] IFile* stagingDir,
-            [in] String stageCid,
-            [in] Boolean prepared,
-            [in] Boolean sealed);
-
-        interface IIPackageInstallerSession;
-        interface IBinder;
-    }
-
-    class CLocalObserver {
-        constructor(
-            [in] IIPackageInstallerSession* session);
-
-        interface IIPackageInstallObserver2;
-        interface IBinder;
-    }
-
-    [local]
-    class CUserManagerService {
-        constructor(
-            [in] IFile* dataDir,
-            [in] IFile* baseUserPath);
-
-        constructor(
-            [in] IContext* ctx,
-            [in] IIPackageManager* pm,
-            [in] IObject* installLock,
-            [in] IObject* packagesLock);
-
-        interface IIUserManager;
-        interface IBinder;
-    }
-
-    class CUserStopUserCallback {
-        constructor(
-            [in] IIUserManager* mUm);
-
-        interface IStopUserCallback;
-        interface IBinder;
-    }
-
-    } // namespace Pm
+//    namespace Pm {
+//
+//    [local]
+//    class CPackageManagerService {
+//        constructor(
+//            [in] IContext* ctx,
+//            [in] Handle32 installer,
+//            [in] Boolean factoryTest,
+//            [in] Boolean onlyCore);
+//
+//        interface IIPackageManager;
+//        interface IBinder;
+//    }
+//
+//    class CParcelFileDescriptorFactory {
+//        constructor(
+//            [in] IFile* codeFile);
+//
+//        interface IIParcelFileDescriptorFactory;
+//        interface IBinder;
+//    }
+//
+//    class CResourcesChangedReceiver {
+//        constructor(
+//            [in] IIPackageManager* owner,
+//            [in] ISet* keys,
+//            [in] Boolean reportStatus);
+//
+//        interface IIntentReceiver;
+//        interface IBinder;
+//    }
+//
+//    class CPackageInstallObserver2 {
+//        constructor(
+//            [in] IIPackageManager* owner,
+//            [in] IIPackageMoveObserver* observer);
+//
+//        interface IIPackageInstallObserver2;
+//        interface IBinder;
+//    }
+//
+//    class CKeySetHandle {
+//        constructor();
+//
+//        interface IBinder;
+//    }
+//
+//    [local]
+//    class CLauncherAppsImpl {
+//        constructor(
+//            [in] IContext* context);
+//
+//        interface IILauncherApps;
+//        interface IBinder;
+//    }
+//
+//    [local]
+//    class CPackageInstallerService {
+//        constructor(
+//            [in] IContext* ctx,
+//            [in] IIPackageManager* pm,
+//            [in] IFile* stagingDir);
+//
+//        interface IIPackageInstaller;
+//        interface IBinder;
+//    }
+//
+//    [local]
+//    class CPackageInstallerSession {
+//        constructor(
+//            [in] Handle64 cb,
+//            [in] IContext* ctx,
+//            [in] IIPackageManager* pm,
+//            [in] ILooper* l,
+//            [in] Int32 sessionId,
+//            [in] Int32 userId,
+//            [in] String installerPackageName,
+//            [in] Int32 installerUid,
+//            [in] IPackageInstallerSessionParams* params,
+//            [in] Int64 createdMillis,
+//            [in] IFile* stagingDir,
+//            [in] String stageCid,
+//            [in] Boolean prepared,
+//            [in] Boolean sealed);
+//
+//        interface IIPackageInstallerSession;
+//        interface IBinder;
+//    }
+//
+//    class CLocalObserver {
+//        constructor(
+//            [in] IIPackageInstallerSession* session);
+//
+//        interface IIPackageInstallObserver2;
+//        interface IBinder;
+//    }
+//
+//    [local]
+//    class CUserManagerService {
+//        constructor(
+//            [in] IFile* dataDir,
+//            [in] IFile* baseUserPath);
+//
+//        constructor(
+//            [in] IContext* ctx,
+//            [in] IIPackageManager* pm,
+//            [in] IObject* installLock,
+//            [in] IObject* packagesLock);
+//
+//        interface IIUserManager;
+//        interface IBinder;
+//    }
+//
+//    class CUserStopUserCallback {
+//        constructor(
+//            [in] IIUserManager* mUm);
+//
+//        interface IStopUserCallback;
+//        interface IBinder;
+//    }
+//
+//    } // namespace Pm
 
 // //    namespace Updates {
 // //
