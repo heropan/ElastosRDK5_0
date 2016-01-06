@@ -45,7 +45,7 @@ namespace Content {
  * up-calls for application-level operations such as launching activities,
  * broadcasting and receiving intents, etc.
  */
-class Context
+class ECO_PUBLIC Context
     : public Object
     , public IContext
 {

@@ -192,6 +192,5 @@ module
     merge("../../../car/elastos/droid/service.car");
     }
 
-    //merge("../../../car/elastos/droid/systemui.car");
     //merge("../../../car/elastos/droid/swextend.car");
 }
