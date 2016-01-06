@@ -9,10 +9,10 @@ C_DEFINES += -DDROID_SERVER
 include $(MAKEDIR)/../../../../../../../../sources.inc
 
 SOURCES = connectivity.cpp
-#SOURCES += DataConnectionStats.cpp
+SOURCES += DataConnectionStats.cpp
 SOURCES += Nat464Xlat.cpp
-#SOURCES += NetworkAgentInfo.cpp
-#SOURCES += NetworkMonitor.cpp
+SOURCES += NetworkAgentInfo.cpp
+SOURCES += NetworkMonitor.cpp
 #SOURCES = CTethering.cpp
 #SOURCES += Vpn.cpp
 #SOURCES += CVpnObserver.cpp

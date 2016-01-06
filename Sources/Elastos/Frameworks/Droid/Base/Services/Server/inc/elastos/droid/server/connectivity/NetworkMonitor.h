@@ -103,9 +103,7 @@ private:
     class EvaluatingState : public State {
     public:
         EvaluatingState(
-            /* [in] */ NetworkMonitor* host)
-            : mHost(host)
-        {}
+            /* [in] */ NetworkMonitor* host);
 
         //@Override
         CARAPI Enter();
@@ -268,7 +266,7 @@ private:
      */
     void SendNetworkConditionsBroadcast(
         /* [in] */ Boolean responseReceived,
-        /* [in] */ Boolean IsCaptivePortal,
+        /* [in] */ Boolean isCaptivePortal,
         /* [in] */ Int64 requestTimestampMs,
          /* [in] */ Int64 responseTimestampMs);
 
@@ -389,7 +387,7 @@ public:
      */
     static const Int32 EVENT_APP_INDICATES_SIGN_IN_IMPOSSIBLE;// = BASE + 14;
 
-    Boolean systemReady;
+    Boolean mSystemReady;
 private:
     static const Boolean DBG;// = true;
     static const String TAG;// = "NetworkMonitor";

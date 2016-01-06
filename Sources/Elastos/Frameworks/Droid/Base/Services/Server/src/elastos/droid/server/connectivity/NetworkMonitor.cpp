@@ -3,9 +3,11 @@
 #include <elastos/droid/server/connectivity/NetworkAgentInfo.h>
 #include <elastos/droid/os/SystemClock.h>
 #include <elastos/droid/os/UserHandle.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 
 #include <Elastos.Droid.App.h>
-//#include <Elastos.Droid.Telephony.h>
+#include <Elastos.Droid.Telephony.h>
 #include <Elastos.Droid.Content.h>
 #include <Elastos.Droid.Net.h>
 #include <Elastos.Droid.Os.h>
@@ -13,17 +15,20 @@
 #include <Elastos.Droid.Wifi.h>
 #include <Elastos.Droid.Internal.h>
 #include <Elastos.CoreLibrary.Net.h>
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.Utility.h>
 
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::UserHandle;
 using Elastos::Droid::Os::ISystemProperties;
 using Elastos::Droid::Os::CSystemProperties;
 using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::CComponentName;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::CIntentFilter;
-using Elastos::Droid::Content::IPendingIntentHelper;
-using Elastos::Droid::Content::CPendingIntentHelper;
+using Elastos::Droid::App::IPendingIntentHelper;
+using Elastos::Droid::App::CPendingIntentHelper;
 using Elastos::Droid::Provider::ISettingsGlobal;
 using Elastos::Droid::Provider::CSettingsGlobal;
 using Elastos::Droid::Provider::ISettings;
@@ -41,7 +46,15 @@ using Elastos::Droid::Internal::Utility::IProtocol;
 using Elastos::Droid::Net::ITrafficStats;
 using Elastos::Droid::Net::CTrafficStats;
 
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::IO::IInputStream;
+using Elastos::Utility::IMap;
+using Elastos::Utility::IList;
+using Elastos::Utility::IIterator;
+using Elastos::Net::IURLConnection;
 using Elastos::Net::IHttpURLConnection;
+using Elastos::Net::IURLConnection;
 using Elastos::Net::IURL;
 using Elastos::Net::CURL;
 
@@ -117,12 +130,13 @@ ECode NetworkMonitor::DefaultState::ProcessMessage(
 
     if (NetworkMonitor::DBG) {
         StringBuilder sb(GetName());
-        sb += Object::ToString(m);
+        sb += Object::ToString(message);
         mHost->Log(sb.ToString());
     }
 
-    Int32 what;
+    Int32 what, arg1;
     message->GetWhat(&what);
+    message->GetArg1(&arg1);
     switch (what) {
         case NetworkMonitor::CMD_NETWORK_LINGER:
             if (NetworkMonitor::DBG) mHost->Log(String("Lingering"));
@@ -138,7 +152,7 @@ ECode NetworkMonitor::DefaultState::ProcessMessage(
             return NOERROR;
         case NetworkMonitor::CMD_FORCE_REEVALUATION:
             if (NetworkMonitor::DBG) mHost->Log(String("Forcing reevaluation"));
-            mUidResponsibleForReeval = message.arg1;
+            mHost->mUidResponsibleForReeval = arg1;
             mHost->TransitionTo(mHost->mEvaluatingState);
             return NOERROR;
         default:
@@ -167,7 +181,7 @@ ECode NetworkMonitor::OfflineState::Enter()
     mHost->ObtainMessage(
         NetworkMonitor::EVENT_NETWORK_TESTED,
         NetworkMonitor::NETWORK_TEST_RESULT_INVALID, 0,
-        mHost->mNetworkAgentInfo, (IMessage**)&msg);
+        TO_IINTERFACE(mHost->mNetworkAgentInfo), (IMessage**)&msg);
     Boolean bval;
     mHost->mConnectivityServiceHandler->SendMessage(msg, &bval);
     return NOERROR;
@@ -182,7 +196,7 @@ ECode NetworkMonitor::OfflineState::ProcessMessage(
 
     if (NetworkMonitor::DBG) {
         StringBuilder sb(GetName());
-        sb += Object::ToString(m);
+        sb += Object::ToString(message);
         mHost->Log(sb.ToString());
     }
 
@@ -222,7 +236,7 @@ ECode NetworkMonitor::ValidatedState::Enter()
     mHost->ObtainMessage(
         NetworkMonitor::EVENT_NETWORK_TESTED,
         NetworkMonitor::NETWORK_TEST_RESULT_VALID, 0,
-        mHost->mNetworkAgentInfo, (IMessage**)&msg);
+        TO_IINTERFACE(mHost->mNetworkAgentInfo), (IMessage**)&msg);
     Boolean bval;
     mHost->mConnectivityServiceHandler->SendMessage(msg, &bval);
     return NOERROR;
@@ -237,7 +251,7 @@ ECode NetworkMonitor::ValidatedState::ProcessMessage(
 
     if (NetworkMonitor::DBG) {
         StringBuilder sb(GetName());
-        sb += Object::ToString(m);
+        sb += Object::ToString(message);
         mHost->Log(sb.ToString());
     }
 
@@ -289,7 +303,7 @@ ECode NetworkMonitor::EvaluatingState::ProcessMessage(
 
     if (NetworkMonitor::DBG) {
         StringBuilder sb(GetName());
-        sb += Object::ToString(m);
+        sb += Object::ToString(message);
         mHost->Log(sb.ToString());
     }
 
@@ -310,24 +324,22 @@ ECode NetworkMonitor::EvaluatingState::ProcessMessage(
                 return NOERROR;
             }
             // If network provides no internet connectivity adjust evaluation.
-            AutoPtr<INetworkCapabilities> netCap;
-            mHost->mNetworkAgentInfo->GetNetworkCapabilities((INetworkCapabilities**)&netCap);
-            netCap->HasCapability(INetworkCapabilities::NET_CAPABILITY_INTERNET, &bval);
+            mHost->mNetworkAgentInfo->mNetworkCapabilities->HasCapability(
+                INetworkCapabilities::NET_CAPABILITY_INTERNET, &bval);
             if (!bval) {
                 // TODO: Try to verify something works.  Do all gateways respond to pings?
                 mHost->TransitionTo(mHost->mValidatedState);
                 *result = IState::HANDLED;
                 return NOERROR;
             }
-            Int32 httpResponseCode;
-            mHost->IsCaptivePortal(&httpResponseCode);
+            Int32 httpResponseCode = mHost->IsCaptivePortal();
             if (httpResponseCode == 204) {
                 mHost->TransitionTo(mHost->mValidatedState);
             }
             else if (httpResponseCode >= 200 && httpResponseCode <= 399) {
                 mHost->TransitionTo(mHost->mUserPromptedState);
             }
-            else if (++mHost->mRetries > MAX_RETRIES) {
+            else if (++mRetries > MAX_RETRIES) {
                 mHost->TransitionTo(mHost->mOfflineState);
             }
             else if (mHost->mReevaluateDelayMs >= 0) {
@@ -335,7 +347,7 @@ ECode NetworkMonitor::EvaluatingState::ProcessMessage(
                 mHost->ObtainMessage(
                     NetworkMonitor::CMD_REEVALUATE,
                     ++mHost->mReevaluateToken, 0, (IMessage**)&msg);
-                mHost->SendMessageDelayed(msg, mHost->mReevaluateDelayMs, &bval);
+                mHost->SendMessageDelayed(msg, mHost->mReevaluateDelayMs);
             }
             *result = IState::HANDLED;
             return NOERROR;
@@ -378,7 +390,7 @@ NetworkMonitor::CustomIntentReceiver::CustomIntentReceiver(
     mHost = host;
     mHost->ObtainMessage(message, token, (IMessage**)&mMessage);
 
-    NetworkAgentInfo* nai = (NetworkAgentInfo*)mHost->mNetworkAgentInfo.Get();
+    NetworkAgentInfo* nai = (NetworkAgentInfo*)mHost->mNetworkAgentInfo;
     Int32 id;
     nai->mNetwork->GetNetId(&id);
     StringBuilder sb(action);
@@ -390,7 +402,7 @@ NetworkMonitor::CustomIntentReceiver::CustomIntentReceiver(
     AutoPtr<IIntentFilter> filter;
     CIntentFilter::New(mAction, (IIntentFilter**)&filter);
     AutoPtr<IIntent> intent;
-    mContext->RegisterReceiver(this, filter, (IIntent**)&intent);
+    mHost->mContext->RegisterReceiver(this, filter, (IIntent**)&intent);
 }
 
 ECode NetworkMonitor::CustomIntentReceiver::GetPendingIntent(
@@ -401,7 +413,7 @@ ECode NetworkMonitor::CustomIntentReceiver::GetPendingIntent(
     CPendingIntentHelper::AcquireSingleton((IPendingIntentHelper**)&helper);
     AutoPtr<IIntent> intent;
     CIntent::New(mAction, (IIntent**)&intent);
-    return helper->GetBroadcast(mContext, 0, intent, 0, pi);
+    return helper->GetBroadcast(mHost->mContext, 0, intent, 0, pi);
 }
 
 ECode NetworkMonitor::CustomIntentReceiver::OnReceive(
@@ -409,7 +421,7 @@ ECode NetworkMonitor::CustomIntentReceiver::OnReceive(
     /* [in] */ IIntent* intent)
 {
     String action;
-    intent->GetActiong(&action);
+    intent->GetAction(&action);
     if (action.Equals(mAction)) {
         mHost->SendMessage(mMessage);
     }
@@ -433,18 +445,18 @@ ECode NetworkMonitor::UserPromptedState::Enter()
     mHost->ObtainMessage(
         NetworkMonitor::EVENT_NETWORK_TESTED,
         NetworkMonitor::NETWORK_TEST_RESULT_INVALID, 0,
-        mHost->mNetworkAgentInfo, (IMessage**)&msg);
+        TO_IINTERFACE(mHost->mNetworkAgentInfo), (IMessage**)&msg);
     Boolean bval;
     mHost->mConnectivityServiceHandler->SendMessage(msg, &bval);
 
     // Wait for user to select sign-in notifcation.
     mUserRespondedBroadcastReceiver = new CustomIntentReceiver(
         ACTION_SIGN_IN_REQUESTED,
-        ++mUserPromptedToken,
+        ++mHost->mUserPromptedToken,
         NetworkMonitor::CMD_USER_WANTS_SIGN_IN, mHost);
 
     // Initiate notification to sign-in.
-    NetworkAgentInfo* nai = (NetworkAgentInfo*)mHost->mNetworkAgentInfo.Get();
+    NetworkAgentInfo* nai = (NetworkAgentInfo*)mHost->mNetworkAgentInfo;
     Int32 id;
     nai->mNetwork->GetNetId(&id);
     AutoPtr<IPendingIntent> pi;
@@ -454,20 +466,19 @@ ECode NetworkMonitor::UserPromptedState::Enter()
     mHost->ObtainMessage(
         NetworkMonitor::EVENT_PROVISIONING_NOTIFICATION, 1,
         id, pi.Get(), (IMessage**)&message);
-    Boolean bval;
     mHost->mConnectivityServiceHandler->SendMessage(message, &bval);
     return NOERROR;
 }
 
 ECode NetworkMonitor::UserPromptedState::ProcessMessage(
-    /* [in] */ IMessage* msg,
+    /* [in] */ IMessage* message,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     *result = IState::NOT_HANDLED;
     if (NetworkMonitor::DBG) {
         StringBuilder sb(GetName());
-        sb += Object::ToString(m);
+        sb += Object::ToString(message);
         mHost->Log(sb.ToString());
     }
 
@@ -476,7 +487,7 @@ ECode NetworkMonitor::UserPromptedState::ProcessMessage(
     message->GetArg1(&arg1);
     switch (what) {
         case NetworkMonitor::CMD_USER_WANTS_SIGN_IN:
-            if (arg1 != mUserPromptedToken) {
+            if (arg1 != mHost->mUserPromptedToken) {
                 *result = IState::HANDLED;
                 return NOERROR;
             }
@@ -492,7 +503,7 @@ ECode NetworkMonitor::UserPromptedState::ProcessMessage(
 
 ECode NetworkMonitor::UserPromptedState::Exit()
 {
-    NetworkAgentInfo* nai = (NetworkAgentInfo*)mHost->mNetworkAgentInfo.Get();
+    NetworkAgentInfo* nai = (NetworkAgentInfo*)mHost->mNetworkAgentInfo;
     Int32 id;
     nai->mNetwork->GetNetId(&id);
 
@@ -504,8 +515,8 @@ ECode NetworkMonitor::UserPromptedState::Exit()
     Boolean bval;
     mHost->mConnectivityServiceHandler->SendMessage(msg, &bval);
 
-    mContext->UnregisterReceiver(mContext->mUserRespondedBroadcastReceiver);
-    mContext->mUserRespondedBroadcastReceiver = NULL;
+    mHost->mContext->UnregisterReceiver(mUserRespondedBroadcastReceiver);
+    mUserRespondedBroadcastReceiver = NULL;
     return NOERROR;
 }
 
@@ -529,14 +540,14 @@ ECode NetworkMonitor::CaptivePortalLoggedInBroadcastReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
-    NetworkAgentInfo* nai = (NetworkAgentInfo*)mHost->mNetworkAgentInfo.Get();
+    NetworkAgentInfo* nai = (NetworkAgentInfo*)mHost->mNetworkAgentInfo;
     Int32 id;
     nai->mNetwork->GetNetId(&id);
 
     String strVal;
     intent->GetStringExtra(IIntent::EXTRA_TEXT, &strVal);
     if (StringUtils::ParseInt32(strVal) == id) {
-        intent->GetStringExtra(IIntent::LOGGED_IN_RESULT, &strVal);
+        intent->GetStringExtra(NetworkMonitor::LOGGED_IN_RESULT, &strVal);
         Int32 result = StringUtils::ParseInt32(strVal);
         AutoPtr<IMessage> msg;
         mHost->ObtainMessage(
@@ -557,7 +568,7 @@ NetworkMonitor::CaptivePortalState::CaptivePortalState(
 
 ECode NetworkMonitor::CaptivePortalState::Enter()
 {
-    NetworkAgentInfo* nai = (NetworkAgentInfo*)mHost->mNetworkAgentInfo.Get();
+    NetworkAgentInfo* nai = (NetworkAgentInfo*)mHost->mNetworkAgentInfo;
     Int32 id;
     nai->mNetwork->GetNetId(&id);
 
@@ -569,7 +580,7 @@ ECode NetworkMonitor::CaptivePortalState::Enter()
     CComponentName::New(
         String("com.android.captiveportallogin"),
         String("com.android.captiveportallogin.CaptivePortalLoginActivity"),
-        (IComponentName**)&cn)
+        (IComponentName**)&cn);
     intent->SetComponent(cn);
     intent->SetFlags(IIntent::FLAG_ACTIVITY_BROUGHT_TO_FRONT | IIntent::FLAG_ACTIVITY_NEW_TASK);
 
@@ -578,15 +589,15 @@ ECode NetworkMonitor::CaptivePortalState::Enter()
             ++mHost->mCaptivePortalLoggedInToken, mHost);
     AutoPtr<IIntentFilter> filter;
     CIntentFilter::New(NetworkMonitor::ACTION_CAPTIVE_PORTAL_LOGGED_IN, (IIntentFilter**)&filter);
-    AutoPtr<IIntent> intent;
-    mHost->mContext->RegisterReceiver(mHost->mCaptivePortalLoggedInBroadcastReceiver, filter, (IIntent**)&intent);
+    AutoPtr<IIntent> stickyIntent;
+    mHost->mContext->RegisterReceiver(mHost->mCaptivePortalLoggedInBroadcastReceiver, filter, (IIntent**)&stickyIntent);
     // Initiate app to log in.
     mHost->mContext->StartActivityAsUser(intent, UserHandle::CURRENT);
     return NOERROR;
 }
 
 ECode NetworkMonitor::CaptivePortalState::ProcessMessage(
-    /* [in] */ IMessage* msg,
+    /* [in] */ IMessage* message,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -594,7 +605,7 @@ ECode NetworkMonitor::CaptivePortalState::ProcessMessage(
 
     if (NetworkMonitor::DBG) {
         StringBuilder sb(GetName());
-        sb += Object::ToString(m);
+        sb += Object::ToString(message);
         mHost->Log(sb.ToString());
     }
 
@@ -627,7 +638,7 @@ ECode NetworkMonitor::CaptivePortalState::ProcessMessage(
 
 ECode NetworkMonitor::CaptivePortalState::Exit()
 {
-    mContext->UnregisterReceiver(mHost->mCaptivePortalLoggedInBroadcastReceiver);
+    mHost->mContext->UnregisterReceiver(mHost->mCaptivePortalLoggedInBroadcastReceiver);
     mHost->mCaptivePortalLoggedInBroadcastReceiver = NULL;
     return NOERROR;
 }
@@ -669,7 +680,7 @@ ECode NetworkMonitor::LingeringState::ProcessMessage(
     *result = IState::NOT_HANDLED;
     if (NetworkMonitor::DBG) {
         StringBuilder sb(GetName());
-        sb += Object::ToString(m);
+        sb += Object::ToString(message);
         mHost->Log(sb.ToString());
     }
 
@@ -689,8 +700,9 @@ ECode NetworkMonitor::LingeringState::ProcessMessage(
             }
             AutoPtr<IMessage> msg;
             mHost->ObtainMessage(NetworkMonitor::EVENT_NETWORK_LINGER_COMPLETE,
-                mHost->mNetworkAgentInfo.Get(), (IMessage**)&msg);
-            mHost->mConnectivityServiceHandler->SendMessage(msg);
+                TO_IINTERFACE(mHost->mNetworkAgentInfo), (IMessage**)&msg);
+            Boolean bval;
+            mHost->mConnectivityServiceHandler->SendMessage(msg, &bval);
             *result = IState::HANDLED;
             return NOERROR;
         }
@@ -795,7 +807,8 @@ Int32 NetworkMonitor::IsCaptivePortal()
 {
     if (!mIsCaptivePortalCheckEnabled) return 204;
 
-    AutoPtr<IHttpURLConnection> urlConnection;
+    AutoPtr<IURLConnection> conn;
+    IHttpURLConnection* urlConnection;
     Int32 httpResponseCode = 599, length;
     Int64 requestTimestamp, responseTimestamp;
     AutoPtr<IInputStream> is;
@@ -813,22 +826,23 @@ Int32 NetworkMonitor::IsCaptivePortal()
         Log(sb.ToString());
     }
 
-    ECode ec = mNetworkAgentInfo->mNetwork->OpenConnection(url, (IURLConnection**)&urlConnection);
+    ECode ec = mNetworkAgentInfo->mNetwork->OpenConnection(url, (IURLConnection**)&conn);
     FAIL_GOTO(ec, _EXIT_)
 
+    urlConnection = IHttpURLConnection::Probe(conn);
     urlConnection->SetInstanceFollowRedirects(FALSE);
-    urlConnection->SetConnectTimeout(SOCKET_TIMEOUT_MS);
-    urlConnection->SetReadTimeout(SOCKET_TIMEOUT_MS);
-    urlConnection->SetUseCaches(FALSE);
+    conn->SetConnectTimeout(SOCKET_TIMEOUT_MS);
+    conn->SetReadTimeout(SOCKET_TIMEOUT_MS);
+    conn->SetUseCaches(FALSE);
 
     // Time how Int64 it takes to get a response to our request
     requestTimestamp = SystemClock::GetElapsedRealtime();
 
-    ec = urlConnection->GetInputStream((IInputStream**)&is);
+    ec = conn->GetInputStream((IInputStream**)&is);
     FAIL_GOTO(ec, _EXIT_)
 
     // Time how Int64 it takes to get a response to our request
-    responseTimestamp = SystemClock::GetelapsedRealtime();
+    responseTimestamp = SystemClock::GetElapsedRealtime();
 
     ec = urlConnection->GetResponseCode(&httpResponseCode);
     FAIL_GOTO(ec, _EXIT_)
@@ -836,9 +850,9 @@ Int32 NetworkMonitor::IsCaptivePortal()
         StringBuilder sb("IsCaptivePortal: ret=");
         sb += httpResponseCode;
         sb += " headers=";
-        String str;
-        urlConnection->GetHeaderFields(&str);
-        sb += str;
+        AutoPtr<IMap> map;
+        conn->GetHeaderFields((IMap**)&map);
+        sb += Object::ToString(map);
         Log(sb.ToString());
     }
     // NOTE: We may want to consider an "HTTP/1.0 204" response to be a captive
@@ -852,11 +866,11 @@ Int32 NetworkMonitor::IsCaptivePortal()
     // There's no point in considering this a captive portal as the user cannot
     // sign-in to an empty page.  Probably the result of a broken transparent proxy.
     // See http://b/9972012.
-    ec = urlConnection->GetContentLength(&length);
+    ec = conn->GetContentLength(&length);
     FAIL_GOTO(ec, _EXIT_)
 
     if (httpResponseCode == 200 && length == 0) {
-        if (DBG) Log("Empty 200 response interpreted as 204 response.");
+        if (DBG) Log(String("Empty 200 response interpreted as 204 response."));
         httpResponseCode = 204;
     }
 
@@ -865,7 +879,7 @@ Int32 NetworkMonitor::IsCaptivePortal()
 
 _EXIT_:
     if (ec == (ECode)E_IO_EXCEPTION) {
-        if (DBG) Log("Probably not a portal: IOException ");
+        if (DBG) Log(String("Probably not a portal: IOException "));
         if (httpResponseCode == 599) {
             // TODO: Ping gateway and DNS server and log results.
         }
@@ -879,7 +893,7 @@ _EXIT_:
 
 void NetworkMonitor::SendNetworkConditionsBroadcast(
     /* [in] */ Boolean responseReceived,
-    /* [in] */ Boolean IsCaptivePortal,
+    /* [in] */ Boolean isCaptivePortal,
     /* [in] */ Int64 requestTimestampMs,
      /* [in] */ Int64 responseTimestampMs)
 {
@@ -891,7 +905,7 @@ void NetworkMonitor::SendNetworkConditionsBroadcast(
     Int32 ival;
     sg->GetInt32(resolver, ISettingsGlobal::WIFI_SCAN_ALWAYS_AVAILABLE, 0, &ival);
     if (ival == 0) {
-        if (DBG) Log("Don't send network conditions - lacking user consent.");
+        if (DBG) Log(String("Don't send network conditions - lacking user consent."));
         return;
     }
 
@@ -920,7 +934,7 @@ void NetworkMonitor::SendNetworkConditionsBroadcast(
                 latencyBroadcast->PutExtra(EXTRA_BSSID, bssid);
             }
             else {
-                if (DBG) Logw("network info is TYPE_WIFI but no ConnectionInfo found");
+                if (DBG) Logw(String("network info is TYPE_WIFI but no ConnectionInfo found"));
                 return;
             }
             break;
@@ -930,19 +944,22 @@ void NetworkMonitor::SendNetworkConditionsBroadcast(
             Int32 type;
             mTelephonyManager->GetNetworkType(&type);
             latencyBroadcast->PutExtra(EXTRA_NETWORK_TYPE, type);
-            // AutoPtr<IList> info;
-            AutoPtr<ArrayOf<ICellInfo*> > info;
-            mTelephonyManager->GetAllCellInfo((ArrayOf<ICellInfo*>**)&info);
+            AutoPtr<IList> info;
+            mTelephonyManager->GetAllCellInfo((IList**)&info);
             if (info == NULL) return;
             Int32 numRegisteredCellInfo = 0;
-            Boolean bval;
-            for (Int32 i = 0; i < info->GetLength(); ++i) {
-                ICellInfo* cellInfo = (*info)[i];
-                cellInfo->IsRegistered(&bval)
+            Boolean hasNext, bval;
+            AutoPtr<IIterator> it;
+            info->GetIterator((IIterator**)&it);
+            while (it->HasNext(&hasNext), hasNext) {
+                AutoPtr<IInterface> obj;
+                it->GetNext((IInterface**)&obj);
+                ICellInfo* cellInfo = ICellInfo::Probe(obj);
+                cellInfo->IsRegistered(&bval);
                 if (bval) {
                     numRegisteredCellInfo++;
                     if (numRegisteredCellInfo > 1) {
-                        if (DBG) Log("more than one registered CellInfo.  Can't tell which is active.  Bailing.");
+                        if (DBG) Log(String("more than one registered CellInfo.  Can't tell which is active.  Bailing."));
                         return;
                     }
                     if (ICellInfoCdma::Probe(cellInfo)) {
@@ -966,7 +983,7 @@ void NetworkMonitor::SendNetworkConditionsBroadcast(
                         latencyBroadcast->PutExtra(EXTRA_CELL_ID, IParcelable::Probe(cellId));
                     }
                     else {
-                        if (DBG) Logw("Registered cellinfo is unrecognized");
+                        if (DBG) Logw(String("Registered cellinfo is unrecognized"));
                         return;
                     }
                 }
@@ -982,7 +999,7 @@ void NetworkMonitor::SendNetworkConditionsBroadcast(
     latencyBroadcast->PutExtra(EXTRA_REQUEST_TIMESTAMP_MS, requestTimestampMs);
 
     if (responseReceived) {
-        latencyBroadcast->PutExtra(EXTRA_IS_CAPTIVE_PORTAL, IsCaptivePortal());
+        latencyBroadcast->PutExtra(EXTRA_IS_CAPTIVE_PORTAL, isCaptivePortal);
         latencyBroadcast->PutExtra(EXTRA_RESPONSE_TIMESTAMP_MS, responseTimestampMs);
     }
     mContext->SendBroadcastAsUser(latencyBroadcast, UserHandle::CURRENT, PERMISSION_ACCESS_NETWORK_CONDITIONS);

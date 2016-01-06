@@ -1,7 +1,9 @@
 
+#include <Elastos.Droid.Net.h>
 #include "elastos/droid/server/connectivity/DataConnectionStats.h"
 #include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Telephony::EIID_IPhoneStateListener;
 using Elastos::Droid::Internal::Telephony::IccCardConstantsState_UNKNOWN;
 using Elastos::Droid::Internal::Telephony::IccCardConstantsState_ABSENT;
@@ -22,7 +24,7 @@ namespace Connectivity {
 //=====================================================================
 // DataConnectionStats::MyPhoneStateListener
 //=====================================================================
-CAR_INTERFACE_IMPL(DataConnectionStats::MyPhoneStateListener, Object, IPhoneStateListener)
+// CAR_INTERFACE_IMPL(DataConnectionStats::MyPhoneStateListener, Object, IPhoneStateListener)
 
 DataConnectionStats::MyPhoneStateListener::MyPhoneStateListener(
     /* [in] */ DataConnectionStats* host)
@@ -37,7 +39,7 @@ ECode DataConnectionStats::MyPhoneStateListener::OnSignalStrengthsChanged(
 }
 
 ECode DataConnectionStats::MyPhoneStateListener::OnServiceStateChanged(
-    /* [in] */ IServiceState state)
+    /* [in] */ IServiceState* state)
 {
     mHost->mServiceState = state;
     mHost->NotePhoneDataConnectionState();
@@ -73,7 +75,7 @@ DataConnectionStats::DataConnectionStats(
     mSimState = IccCardConstantsState_READY;
     assert(0 && "TODO");
     // mDataState = ITelephonyManager::DATA_DISCONNECTED;
-    mPhoneStateListener = new MyPhoneStateListener(this);
+    mPhoneStateListener = (IPhoneStateListener*)new MyPhoneStateListener(this);
 
     mContext = context;
     // mBatteryStats = CBatteryStatsService::GetService();
@@ -127,10 +129,10 @@ ECode DataConnectionStats::OnReceive(
     Boolean visible = (simReadyOrUnknown || IsCdma()) // we only check the sim state for GSM
         && HasService()
         && mDataState == ITelephonyManager::DATA_CONNECTED;
-    String networkType;
+    Int32 networkType;
     mServiceState->GetDataNetworkType(&networkType);
     if (DEBUG) {
-        Logger::D(TAG,"Noting data connection for network type %s: %svisible",
+        Logger::D(TAG,"Noting data connection for network type %d: %svisible",
             networkType, visible ? "" : "not ");
     }
     // try {
