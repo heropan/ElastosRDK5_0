@@ -27,12 +27,11 @@ namespace Net {
 extern "C" const InterfaceID EIID_NetworkStatsCollection;
 
 class NetworkStatsCollection
-    : public ElRefBase
-    , public FileRotator::Reader
-    , public IWeakReferenceSource
+    : public FileRotator::Reader
 {
 public:
-    class Key : public ElRefBase
+    class Key
+        : public Object
     {
     public:
         Key(
@@ -49,13 +48,31 @@ public:
         Int32 mUid;
         Int32 mSet;
         Int32 mTag;
+
+    private:
+        Int32 mHashCode;
+    };
+
+    struct HashPK
+    {
+        size_t operator()(const Key* s) const
+        {
+            return (size_t)s;
+        }
+    };
+
+    struct PKEq
+    {
+        Boolean operator()(const Key* x,
+                           const Key* y) const
+        {
+            return x->Equals(y);
+        }
     };
 
 public:
     NetworkStatsCollection(
         /* [in] */ Int64 bucketDuration);
-
-    CAR_INTERFACE_DECL()
 
     CARAPI GetWeakReference(
         /* [out] */ IWeakReference** weakReference);
@@ -192,24 +209,6 @@ private:
         /* [in] */ INetworkTemplate* templ,
         /* [in] */ NetworkIdentitySet* identSet);
 
-public:
-    struct HashPK
-    {
-        size_t operator()(const Key* s) const
-        {
-            return (size_t)s;
-        }
-    };
-
-    struct PKEq
-    {
-        Boolean operator()(const Key* x,
-                           const Key* y) const
-        {
-            return x->Equals(y);
-        }
-    };
-
 private:
     /** File header magic number: "ANET" */
     static const Int32 FILE_MAGIC = 0x414E4554;
@@ -231,7 +230,6 @@ private:
     Int64 mEndMillis;
     Int64 mTotalBytes;
     Boolean mDirty;
-
 };
 
 } // namespace Net

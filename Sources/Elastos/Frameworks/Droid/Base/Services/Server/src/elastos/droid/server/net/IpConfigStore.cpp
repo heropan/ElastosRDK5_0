@@ -130,7 +130,7 @@ ECode IpConfigStore::WriteConfig(
                         AutoPtr<ILinkAddress> ipAddress;
                         staticIpConfiguration->GetIpAddress((ILinkAddress**)&ipAddress);
                         FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(LINK_ADDRESS_KEY), label)
-                        String s = Ptr(ipAddress)->Ptr(ipAddress->GetAddress)->Func(IInetAddress::GetHostAddress);
+                        String s = Ptr(ipAddress)->GetPtr(ipAddress->GetAddress)->Func(IInetAddress::GetHostAddress);
                         FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteUTF(s), label)
                         FAIL_GOTO(ec = IDataOutput::Probe(out)->WriteInt32(Ptr(ipAddress)->Func(ipAddress->GetPrefixLength)), label)
                     }

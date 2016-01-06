@@ -21,7 +21,7 @@ namespace Droid {
 namespace Server {
 namespace Net {
 
-class NetworkStatsRecorder : public ElRefBase
+class NetworkStatsRecorder
 {
 private:
     /**
@@ -109,7 +109,8 @@ public:
      * {@link #recordSnapshotLocked(NetworkStats, Map, long)} snapshots as long
      * as reference is valid.
      */
-    CARAPI_(AutoPtr<NetworkStatsCollection>) GetOrLoadCompleteLocked();
+    CARAPI GetOrLoadCompleteLocked(
+        /* [out] */ NetworkStatsCollection* result);
 
     /**
      * Record any delta that occurred since last {@link NetworkStats} snapshot,
@@ -131,14 +132,14 @@ public:
     /**
      * Force persisting any pending deltas.
      */
-    CARAPI_(void) ForcePersistLocked(
+    CARAPI ForcePersistLocked(
         /* [in] */ Int64 currentTimeMillis);
 
     /**
      * Remove the given UID from all {@link FileRotator} history, migrating it
      * to {@link TrafficStats#UID_REMOVED}.
      */
-    CARAPI_(void) RemoveUidsLocked(
+    CARAPI RemoveUidsLocked(
         /* [in] */ ArrayOf<Int32>* uids);
 
 

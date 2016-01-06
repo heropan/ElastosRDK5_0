@@ -1,10 +1,13 @@
 
 #include "elastos/droid/server/net/NetworkIdentitySet.h"
+#include <elastos/droid/net/ReturnOutValue.h>
 #include <Elastos.Droid.Net.h>
 #include <Elastos.CoreLibrary.IO.h>
 #include <Elastos.CoreLibrary.Utility.h>
 
 using Elastos::Droid::Net::CNetworkIdentity;
+
+using Elastos::Utility::IIterator;
 
 namespace Elastos {
 namespace Droid {
@@ -55,7 +58,7 @@ ECode NetworkIdentitySet::constructor(
         AutoPtr<INetworkIdentity> identity;
         CNetworkIdentity::New(type, subType, subscriberId, networkId, FALSE,
                                 (INetworkIdentity**)&identity);
-        Insert(identity);
+        Add(identity);
     }
     return NOERROR;
 }
@@ -65,10 +68,13 @@ ECode NetworkIdentitySet::WriteToStream(
 {
     VALIDATE_NOT_NULL(out);
     out->WriteInt32(VERSION_ADD_NETWORK_ID);
-    out->WriteInt32(GetSize());
-    HashSet<AutoPtr<INetworkIdentity> >::Iterator it;
-    for(it = Begin(); it != End(); ++it) {
-        AutoPtr<INetworkIdentity> ident = *it;
+    Int32 size;
+    GetSize(&size);
+    out->WriteInt32(size);
+    AutoPtr<IIterator> iter;
+    GetIterator((IIterator**)&iter);
+    while (Ptr(iter)->Func(iter->HasNext)) {
+        AutoPtr<INetworkIdentity> ident = INetworkIdentity::Probe(Ptr(iter)->Func(iter->GetNext));
         Int32 type;
         ident->GetType(&type);
         out->WriteInt32(type);

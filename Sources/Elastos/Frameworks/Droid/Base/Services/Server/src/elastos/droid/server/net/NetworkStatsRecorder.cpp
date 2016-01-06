@@ -227,7 +227,8 @@ ECode NetworkStatsRecorder::GetTotalSinceBootLocked(
     return collection->GetTotal(NULL, entry);
 }
 
-AutoPtr<NetworkStatsCollection> NetworkStatsRecorder::GetOrLoadCompleteLocked()
+ECode NetworkStatsRecorder::GetOrLoadCompleteLocked(
+    /* [out] */ NetworkStatsCollection* result)
 {
     AutoPtr<NetworkStatsCollection> complete;
     if (mComplete != NULL) {
@@ -236,26 +237,39 @@ AutoPtr<NetworkStatsCollection> NetworkStatsRecorder::GetOrLoadCompleteLocked()
         complete = reinterpret_cast<NetworkStatsCollection*>(temp->Probe(EIID_NetworkStatsCollection));
     }
     if (complete == NULL) {
-        if (LOGD) Slogger::D(TAG, "getOrLoadCompleteLocked() reading from disk for %s", mCookie.string());
-        // try {
-        complete = new NetworkStatsCollection(mBucketDuration);
-        if (FAILED(mRotator->ReadMatching(complete, Elastos::Core::Math::INT64_MIN_VALUE,
-                Elastos::Core::Math::INT64_MAX_VALUE))) {
-            Slogger::E(TAG, "problem completely reading network stats");
-            RecoverFromWtf();
-            return complete;
+        ECode ec;
+        do {
+            if (LOGD) Slogger::D(TAG, "getOrLoadCompleteLocked() reading from disk for %s", mCookie.string());
+            // try {
+            complete = new NetworkStatsCollection(mBucketDuration);
+            if (FAILED(ec = mRotator->ReadMatching(complete, Elastos::Core::Math::INT64_MIN_VALUE,
+                    Elastos::Core::Math::INT64_MAX_VALUE))) break;
+            complete->RecordCollection(mPending);
+            IWeakReferenceSource* wr = (IWeakReferenceSource*)complete->Probe(EIID_IWeakReferenceSource);
+            if (wr) {
+                wr->GetWeakReference((IWeakReference**)&mComplete);
+            }
+        } while(FALSE);
+        if (FAILED(ec)) {
+            // } catch (IOException e) {
+            if ((ECode)E_IO_EXCEPTION == ec || ) {
+                Slogger::E(TAG, "problem completely reading network stats");
+                RecoverFromWtf();
+                FUNC_RETURN(complete)
+            }
+            // }
+            // } catch (OutOfMemoryError e) {
+            else if ((ECode)E_OUT_OF_MEMORY_ERROR == ec) {
+                Slogger::E(TAG, "problem completely reading network stats");
+                RecoverFromWtf();
+                FUNC_RETURN(complete)
+            }
+            // }
+            else
+                return ec;
         }
-        complete->RecordCollection(mPending);
-        IWeakReferenceSource* wr = (IWeakReferenceSource*)complete->Probe(EIID_IWeakReferenceSource);
-        if (wr) {
-            wr->GetWeakReference((IWeakReference**)&mComplete);
-        }
-        // } catch (IOException e) {
-        //     Log.wtf(TAG, "problem completely reading network stats", e);
-        //     recoverFromWtf();
-        // }
     }
-    return complete;
+    FUNC_RETURN(complete)
 }
 
 void NetworkStatsRecorder::RecordSnapshotLocked(
@@ -366,39 +380,58 @@ void NetworkStatsRecorder::MaybePersistLocked(
     }
 }
 // begin from this
-void NetworkStatsRecorder::ForcePersistLocked(
+ECode NetworkStatsRecorder::ForcePersistLocked(
     /* [in] */ Int64  currentTimeMillis)
 {
     if (mPending->IsDirty()) {
         if (LOGD) Slogger::D(TAG, "forcePersistLocked() writing for %s", mCookie.string());
         // try {
-        if (FAILED(mRotator->RewriteActive(mPendingRewriter, currentTimeMillis))) {
-            Slogger::E(TAG, "problem persisting pending stats");
-            RecoverFromWtf();
+        ECode ec;
+        do {
+            if (ec = mRotator->RewriteActive(mPendingRewriter, currentTimeMillis)) break;
+            mRotator->MaybeRotate(currentTimeMillis);
+            mPending->Reset();
+        } while(FALSE);
+        if (FAILED(ec)) {
+            // } catch (IOException e) {
+            if ((ECode)E_IO_EXCEPTION == ec) {
+                Slogger::E(TAG, "problem persisting pending stats");
+                RecoverFromWtf();
+            }
+            else if ((ECode)E_OUT_OF_MEMORY_ERROR == ec) {
+                Slogger::E(TAG, "problem persisting pending stats");
+                RecoverFromWtf();
+            }
+            else
+                return ec;
+            // }
         }
-        mRotator->MaybeRotate(currentTimeMillis);
-        mPending->Reset();
-        // } catch (IOException e) {
-        //     Log.wtf(TAG, "problem persisting pending stats", e);
-        //     recoverFromWtf();
-        // }
     }
+    return NOERROR;
 }
 
-void NetworkStatsRecorder::RemoveUidsLocked(
+ECode NetworkStatsRecorder::RemoveUidsLocked(
     /* [in] */ ArrayOf<Int32>* uids)
 {
     // try {
     // Rewrite all persisted data to migrate UID stats
     AutoPtr<RemoveUidRewriter> rewriter = new RemoveUidRewriter(mBucketDuration, uids);
-    if (FAILED(mRotator->RewriteAll(rewriter))) {
-        Slogger::E(TAG, "problem removing UIDs "/* + Arrays.toString(uids), e*/);
-        RecoverFromWtf();
+    ECode ec = mRotator->RewriteAll(rewriter);
+    if (FAILED(ec)) {
+        // } catch (IOException e) {
+        if ((ECode)E_IO_EXCEPTION == ec) {
+            Slogger::E(TAG, "problem removing UIDs %s %d", Arrays::ToString(uids).string(), ec);
+            RecoverFromWtf();
+        }
+        // } catch (OutOfMemoryError e) {
+        else if ((ECode)E_OUT_OF_MEMORY_ERROR == ec) {
+            Slogger::E(TAG, "problem removing UIDs %s %d", Arrays::ToString(uids).string(), ec);
+            RecoverFromWtf();
+        }
+        // }
+        else
+            return ec;
     }
-    // } catch (IOException e) {
-    //     Log.wtf(TAG, "problem removing UIDs " + Arrays.toString(uids), e);
-    //     recoverFromWtf();
-    // }
 
     // Remove any pending stats
     mPending->RemoveUids(uids);
@@ -420,6 +453,7 @@ void NetworkStatsRecorder::RemoveUidsLocked(
     if (complete != NULL) {
         complete->RemoveUids(uids);
     }
+    return NOERROR;
 }
 
 void NetworkStatsRecorder::ImportLegacyNetworkLocked(

@@ -2,46 +2,54 @@
 #ifndef __ELASTOS_DROID_SERVER_NET_CNETWORKPOLICYMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_NET_CNETWORKPOLICYMANAGERSERVICE_H__
 
-#include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Server_Net_CNetworkPolicyManagerService.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <Elastos.Droid.App.h>
+#include <elastos/droid/server/net/BaseNetworkObserver.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/HashSet.h>
 
-using Org::Xmlpull::V1::IXmlPullParser;
-using Org::Xmlpull::V1::IXmlSerializer;
 using Elastos::Core::IArrayOf;
+using Elastos::Droid::App::IIActivityManager;
+using Elastos::Droid::App::IINotificationManager;
+using Elastos::Droid::App::IIProcessObserver;
+using Elastos::Droid::Content::BroadcastReceiver;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Net::IIConnectivityManager;
+using Elastos::Droid::Net::IINetworkManagementEventObserver;
+using Elastos::Droid::Net::IINetworkPolicyListener;
+using Elastos::Droid::Net::IINetworkPolicyManager;
+using Elastos::Droid::Net::IINetworkStatsService;
+using Elastos::Droid::Net::INetworkIdentity;
+using Elastos::Droid::Net::INetworkPolicy;
+using Elastos::Droid::Net::INetworkQuotaInfo;
+using Elastos::Droid::Net::INetworkState;
+using Elastos::Droid::Net::INetworkTemplate;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IHandlerCallback;
+using Elastos::Droid::Os::IINetworkManagementService;
+using Elastos::Droid::Os::IIPowerManager;
+using Elastos::Droid::Os::IIdleHandler;
+using Elastos::Droid::Os::ILowPowerModeListener;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Os::IPowerManagerInternal;
+using Elastos::Droid::Os::IRemoteCallbackList;
+using Elastos::Droid::Utility::IArrayMap;
+using Elastos::Droid::Utility::IArraySet;
+using Elastos::Droid::Utility::IAtomicFile;
+using Elastos::Droid::Utility::ISparseArray;
+using Elastos::Droid::Utility::ISparseBooleanArray;
+using Elastos::Droid::Utility::ISparseInt32Array;
+using Elastos::Droid::Utility::ITrustedTime;
 using Elastos::IO::IFile;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
-using Elastos::Utility::IArrayMap;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::HashSet;
-using Elastos::Droid::App::IINotificationManager;
-using Elastos::Droid::App::IIActivityManager;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::BroadcastReceiver;
-using Elastos::Droid::Net::IIConnectivityManager;
-using Elastos::Droid::Net::INetworkPolicy;
-using Elastos::Droid::Net::INetworkPolicyListener;
-using Elastos::Droid::Net::INetworkTemplate;
-using Elastos::Droid::Net::INetworkQuotaInfo;
-using Elastos::Droid::Net::INetworkState;
-using Elastos::Droid::Net::INetworkStatsService;
-using Elastos::Droid::Net::INetworkIdentity;
-using Elastos::Droid::Net::INetworkManagementEventObserver;
-using Elastos::Droid::Os::IRemoteCallbackList;
-using Elastos::Droid::Os::IIdleHandler;
-using Elastos::Droid::Os::IIPowerManager;
-using Elastos::Droid::Os::HandlerBase;
-using Elastos::Droid::Os::IHandlerCallback;
-using Elastos::Droid::Os::IINetworkManagementService;
-using Elastos::Droid::Os::IPowerManagerInternal;
-using Elastos::Droid::Utility::IAtomicFile;
-using Elastos::Droid::Utility::ITrustedTime;
-using Elastos::Droid::Utility::ISparseBooleanArray;
+using Org::Xmlpull::V1::IXmlPullParser;
+using Org::Xmlpull::V1::IXmlSerializer;
 
 namespace Elastos {
 namespace Droid {
@@ -65,9 +73,7 @@ public:
         CAR_INTERFACE_DECL()
 
         MyHandlerCallback(
-            /* [in] */ CNetworkPolicyManagerService* host)
-            : mHost(host)
-        {}
+            /* [in] */ CNetworkPolicyManagerService* host);
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg,
@@ -77,61 +83,21 @@ public:
         CNetworkPolicyManagerService* mHost;
     };
 
-    class XmlUtils
-    {
-    public:
-        static CARAPI ReadInt32Attribute(
-            /* [in] */ IXmlPullParser* in,
-            /* [in] */ const String& name,
-            /* [out] */ Int32* attr);
-
-        static CARAPI WriteInt32Attribute(
-            /* [in] */ IXmlSerializer* out,
-            /* [in] */ const String& name,
-            /* [in] */ Int32 value);
-
-        static CARAPI ReadInt64Attribute(
-            /* [in] */ IXmlPullParser* in,
-            /* [in] */ const String& name,
-            /* [out] */ Int64* attr);
-
-        static CARAPI WriteInt64Attribute(
-            /* [in] */ IXmlSerializer* out,
-            /* [in] */ const String& name,
-            /* [in] */ Int64 value);
-
-        static CARAPI ReadBooleanAttribute(
-            /* [in] */ IXmlPullParser* in,
-            /* [in] */ const String& name,
-            /* [out] */ Boolean* attr);
-
-        static CARAPI WriteBooleanAttribute(
-            /* [in] */ IXmlSerializer* out,
-            /* [in] */ const String& name,
-            /* [in] */ Boolean value);
-    };
-
 private:
     class ScreenReceiver
         : public BroadcastReceiver
     {
     public:
         ScreenReceiver(
-            /* [in] */ CNetworkPolicyManagerService* owner) : mOwner(owner)
-        {}
+            /* [in] */ CNetworkPolicyManagerService* owner);
 
         CARAPI OnReceive(
             /* [in] */ IContext* context,
             /* [in] */ IIntent* intent);
 
         CARAPI ToString(
-            /* [out] */ String* info)
-        {
-            VALIDATE_NOT_NULL(info);
-            *info = String("CNetworkPolicyManagerService::ScreenReceiver: ");
-            (*info).AppendFormat("%p", this);
-            return NOERROR;
-        }
+            /* [out] */ String* info);
+
     private:
         CNetworkPolicyManagerService* mOwner;
     };
@@ -156,6 +122,7 @@ private:
             (*info).AppendFormat("%p", this);
             return NOERROR;
         }
+
     private:
         CNetworkPolicyManagerService* mOwner;
     };
@@ -180,6 +147,7 @@ private:
             (*info).AppendFormat("%p", this);
             return NOERROR;
         }
+
     private:
         CNetworkPolicyManagerService* mOwner;
     };
@@ -204,6 +172,7 @@ private:
             (*info).AppendFormat("%p", this);
             return NOERROR;
         }
+
     private:
         CNetworkPolicyManagerService* mOwner;
     };
@@ -377,9 +346,12 @@ private:
     };
 
     class InnerSub_LowPowerModeListener
-        : public PowerManagerInternal::LowPowerModeListener
+        : public Object
+        , public ILowPowerModeListener
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerSub_LowPowerModeListener(
             /* [in] */ CNetworkPolicyManagerService* host,
             /* [in] */ IObject* rulesLock,
@@ -396,10 +368,13 @@ private:
     };
 
     class InnerSub_IProcessObserver
-        : public IIProcessObserver
+        : public Object
+        , public IIProcessObserver
         , public IBinder
     {
     public:
+        CAR_INTERFACE_DECL()
+
         InnerSub_IProcessObserver(
             /* [in] */ CNetworkPolicyManagerService* host,
             /* [in] */ IObject* rulesLock,
@@ -422,31 +397,51 @@ private:
             /* [in] */ Int32 pid,
             /* [in] */ Int32 uid);
 
+        // for IBinder
+        CARAPI ToString(
+            /* [out] */ String* info);
+
     private:
         CNetworkPolicyManagerService* mHost;
         AutoPtr<IObject> mRulesLock;
         AutoPtr<ISparseArray> mUidPidState;
     };
 
+    class InnerSub_AlertObserver
+        : public BaseNetworkObserver
+    {
+    public:
+        InnerSub_AlertObserver(
+            /* [in] */ CNetworkPolicyManagerService* host);
+
+        // @Override
+        CARAPI LimitReached(
+            /* [in] */ const String& limitName,
+            /* [in] */ const String& iface);
+
+    private:
+        CNetworkPolicyManagerService* mHost;
+    };
+
 public:
+    CAR_INTERFACE_DECL()
+
     CNetworkPolicyManagerService();
 
     ~CNetworkPolicyManagerService();
-
-    CAR_INTERFACE_DECL()
 
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IIActivityManager* activityManager,
         /* [in] */ IIPowerManager* powerManager,
-        /* [in] */ INetworkStatsService* networkStats,
+        /* [in] */ IINetworkStatsService* networkStats,
         /* [in] */ IINetworkManagementService* networkManagement);
 
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IIActivityManager* activityManager,
         /* [in] */ IIPowerManager* powerManager,
-        /* [in] */ INetworkStatsService* networkStats,
+        /* [in] */ IINetworkStatsService* networkStats,
         /* [in] */ IINetworkManagementService* networkManagement,
         /* [in] */ ITrustedTime* time,
         /* [in] */ IFile* systemDir,
@@ -473,10 +468,10 @@ public:
         /* [out, callee] */ ArrayOf<Int32>** uids);
 
     CARAPI RegisterListener(
-        /* [in] */ INetworkPolicyListener* listener);
+        /* [in] */ IINetworkPolicyListener* listener);
 
     CARAPI UnregisterListener(
-        /* [in] */ INetworkPolicyListener* listener);
+        /* [in] */ IINetworkPolicyListener* listener);
 
     CARAPI SetNetworkPolicies(
         /* [in] */ ArrayOf<INetworkPolicy*>* policies);
@@ -531,7 +526,75 @@ public:
     CARAPI_(void) UpdateNetworkRulesLocked();
 
     // package
-    CARAPI_(void) WritePolicyLocked();
+    CARAPI WritePolicyLocked();
+
+    // @Override
+    CARAPI AddUidPolicy(
+        /* [in] */ Int32 uid,
+        /* [in] */ Int32 policy);
+
+    // @Override
+    CARAPI RemoveUidPolicy(
+        /* [in] */ Int32 uid,
+        /* [in] */ Int32 policy);
+
+    // @Override
+    CARAPI GetPowerSaveAppIdWhitelist(
+        /* [out, callee] */ ArrayOf<Int32>** result);
+
+    // package
+    /**
+     * Remove any policies associated with given {@link UserHandle}, persisting
+     * if any changes are made.
+     */
+    CARAPI_(void) RemovePoliciesForUserLocked(
+        /* [in] */ Int32 userId);
+
+    // package
+    CARAPI_(void) AddNetworkPolicyLocked(
+        /* [in] */ INetworkPolicy* policy);
+
+    // package
+    CARAPI PerformSnooze(
+        /* [in] */ INetworkTemplate* templ,
+        /* [in] */ Int32 type);
+
+    // package
+    CARAPI_(Boolean) IsUidForegroundLocked(
+        /* [in] */ Int32 uid);
+
+    // package
+    /**
+     * Process state of PID changed; recompute state at UID level. If
+     * changed, will trigger {@link #updateRulesForUidLocked(int)}.
+     */
+    CARAPI_(void) ComputeUidStateLocked(
+        /* [in] */ Int32 uid);
+
+    // package
+    /**
+     * Update rules that might be changed by {@link #mRestrictBackground}
+     * or {@link #mRestrictPower} value.
+     */
+    CARAPI_(void) UpdateRulesForScreenLocked();
+
+    // package
+    /**
+     * Update rules that might be changed by {@link #mRestrictBackground}
+     * or {@link #mRestrictPower} value.
+     */
+    CARAPI_(void) UpdateRulesForGlobalChangeLocked(
+        /* [in] */ Boolean restrictedNetworksChanged);
+
+    // package
+    CARAPI_(void) UpdateRulesForUidLocked(
+        /* [in] */ Int32 uid);
+
+    // package
+    /**
+     * Try refreshing {@link #mTime} when stale.
+     */
+    CARAPI_(void) MaybeRefreshTrustedTime();
 
 protected:
     CARAPI_(void) Dump(
@@ -602,7 +665,8 @@ private:
      */
     CARAPI_(void) EnsureActiveMobilePolicyLocked();
 
-    CARAPI_(void) ReadPolicyLocked();
+    CARAPI ReadPolicyLocked();
+
     /**
      * Upgrade legacy background data flags, notifying listeners of one last
      * change to always-true.
@@ -614,49 +678,15 @@ private:
         /* [in] */ Int32 policy,
         /* [in] */ Boolean persist);
 
-    /**
-     * Remove any policies associated with given {@link UserHandle}, persisting
-     * if any changes are made.
-     */
-    CARAPI_(void) RemovePoliciesForUserLocked(
-        /* [in] */ Int32 userId);
-
-    CARAPI_(void) AddNetworkPolicyLocked(
-        /* [in] */ INetworkPolicy* policy);
-
-    CARAPI PerformSnooze(
-        /* [in] */ INetworkTemplate* templ,
-        /* [in] */ Int32 type);
-
     CARAPI_(AutoPtr<INetworkPolicy>) FindPolicyForNetworkLocked(
         /* [in] */ INetworkIdentity* ident);
 
     CARAPI_(AutoPtr<INetworkQuotaInfo>) GetNetworkQuotaInfoUnchecked(
         /* [in] */ INetworkState* state);
 
-    /**
-     * Foreground for PID changed; recompute foreground at UID level. If
-     * changed, will trigger {@link #updateRulesForUidLocked(int)}.
-     */
-    CARAPI_(void) ComputeUidForegroundLocked(
-        /* [in] */ Int32 uid);
-
     CARAPI_(void) UpdateScreenOn();
 
-    /**
-     * Update rules that might be changed by {@link #mScreenOn} value.
-     */
-    CARAPI_(void) UpdateRulesForScreenLocked();
-
-    /**
-    * Update rules that might be changed by {@link #mRestrictBackground} value.
-    */
-    CARAPI_(void) UpdateRulesForRestrictBackgroundLocked();
-
     static CARAPI_(Boolean) IsUidValidForRules(
-        /* [in] */ Int32 uid);
-
-    CARAPI_(void) UpdateRulesForUidLocked(
         /* [in] */ Int32 uid);
 
     CARAPI_(void) SetInterfaceQuota(
@@ -684,11 +714,6 @@ private:
 
     CARAPI_(Boolean) IsBandwidthControlEnabled();
 
-    /**
-     * Try refreshing {@link #mTime} when stale.
-     */
-    CARAPI_(void) MaybeRefreshTrustedTime();
-
     CARAPI_(Int64) CurrentTimeMillis();
 
     static CARAPI_(AutoPtr<IIntent>) BuildAllowBackgroundDataIntent();
@@ -703,12 +728,8 @@ private:
         /* [in] */ INetworkTemplate* templ);
 
     static CARAPI_(void) CollectKeys(
-        /* [in] */ HashMap<Int32, Int32>* source,
-        /* [in] */ HashMap<Int32, Boolean>* target);
-
-    static CARAPI_(void) CollectKeys(
-        /* [in] */ HashMap<Int32, Boolean>* source,
-        /* [in] */ HashMap<Int32, Boolean>* target);
+        /* [in] */ ISparseInt32Array* source,
+        /* [in] */ ISparseBooleanArray* target);
 
     static CARAPI_(void) DumpHashMap(
         /* [in] */ IPrintWriter* fout,
@@ -721,15 +742,6 @@ private:
     CARAPI_(void) HandleMsgMeteredIfacesChanged(
         /* [in] */ IArrayOf* meteredIfaces);
 
-    CARAPI_(void) HandleMsgForegroundActivitiesChanged(
-        /* [in] */ Int32 pid,
-        /* [in] */ Int32 uid,
-        /* [in] */ Boolean foregroundActivities);
-
-    CARAPI_(void) HandleMsgProcessDied(
-        /* [in] */ Int32 pid,
-        /* [in] */ Int32 uid);
-
     CARAPI_(void) HandleMsgLimitReached(
         /* [in] */ const String& iface);
 
@@ -740,6 +752,10 @@ private:
         /* [in] */ Int64 lowestRule);
 
     CARAPI_(void) HandleMsgScreenOnChanged();
+
+    static CARAPI_(void) DumpSparseInt32Array(
+        /* [in] */ IPrintWriter* fout,
+        /* [in] */ ISparseInt32Array* value);
 
 public:
     static const Int32 TYPE_WARNING;
@@ -820,7 +836,7 @@ private:
     AutoPtr<IContext> mContext;
     AutoPtr<IIActivityManager> mActivityManager;
     AutoPtr<IIPowerManager> mPowerManager;
-    AutoPtr<INetworkStatsService> mNetworkStats;
+    AutoPtr<IINetworkStatsService> mNetworkStats;
     AutoPtr<IINetworkManagementService> mNetworkManager;
     AutoPtr<ITrustedTime> mTime;
 
@@ -836,7 +852,7 @@ private:
     /* const */ AutoPtr<IArrayMap> mNetworkRules;
 
     /** Currently derived rules for each UID. */
-    /* const */ HashMap<Int32, Int32> mUidRules;
+    /* const */ AutoPtr<ISparseInt32Array> mUidRules;
 
     /** UIDs that have been white-listed to always be able to have network access in
      * power save mode. */
@@ -851,7 +867,7 @@ private:
     /* const */ AutoPtr<IArraySet> mActiveNotifs;
 
     /** Foreground at both UID and PID granularity. */
-    /* const */ AutoPtr<ISparseIntArray> mUidState;
+    /* const */ AutoPtr<ISparseInt32Array> mUidState;
 
     /** The current maximum process state that we are considering to be foreground. */
     Int32 mCurForegroundState;
@@ -864,7 +880,7 @@ private:
 
     AutoPtr<IAtomicFile> mPolicyFile;
 
-    AutoPtr<IProcessObserver> mProcessObserver;
+    AutoPtr<IIProcessObserver> mProcessObserver;
     AutoPtr<ScreenReceiver> mScreenReceiver;
     AutoPtr<PackageReceiver> mPackageReceiver;
     AutoPtr<UidRemovedReceiver> mUidRemovedReceiver;
@@ -874,7 +890,12 @@ private:
     AutoPtr<SnoozeWarningReceiver> mSnoozeWarningReceiver;
     AutoPtr<WifiConfigReceiver> mWifiConfigReceiver;
     AutoPtr<WifiStateReceiver> mWifiStateReceiver;
-    AutoPtr<INetworkManagementEventObserver> mAlertObserver;
+
+    /**
+     * Observer that watches for {@link INetworkManagementService} alerts.
+     */
+    AutoPtr<IINetworkManagementEventObserver> mAlertObserver;
+
     AutoPtr<ConnReceiver> mConnReceiver;
 
     friend class CNetworkPolicyManagerServiceAlertObserber;

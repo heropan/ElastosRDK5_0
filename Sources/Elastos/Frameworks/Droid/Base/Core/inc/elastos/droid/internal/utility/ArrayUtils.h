@@ -11,7 +11,7 @@ namespace Droid {
 namespace Internal {
 namespace Utility {
 
-class ArrayUtils
+class ECO_PUBLIC ArrayUtils
 {
 public:
     static CARAPI_(AutoPtr<ArrayOf<Byte> >) NewUnpaddedByteArray(
@@ -200,7 +200,7 @@ public:
         /* [in] */ IInterface* val);
 
 private:
-    ArrayUtils() {}
+    ECO_LOCAL ArrayUtils() {}
 };
 
 template<typename T>

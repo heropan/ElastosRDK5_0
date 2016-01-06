@@ -5,9 +5,9 @@
 #include "elastos/droid/ext/frameworkext.h"
 #define HASH_FOR_NET
 #include <elastos/droid/ext/frameworkhash.h>
-#include <elastos/utility/etl/HashSet.h>
+#include <elastos/utility/HashSet.h>
 
-using Elastos::Utility::Etl::HashSet;
+using Elastos::Utility::HashSet;
 using Elastos::IO::IDataInput;
 using Elastos::IO::IDataOutput;
 using Elastos::Droid::Net::INetworkIdentity;
@@ -24,7 +24,7 @@ namespace Net {
  * @hide
  */
 class NetworkIdentitySet
-    : public HashSet<AutoPtr<INetworkIdentity> >
+    : public HashSet
 {
 public:
     CARAPI constructor();

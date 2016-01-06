@@ -46,10 +46,12 @@ class CNetworkStatsSession;
 class CNetworkStatsServiceAlertObserber;
 
 CarClass(CNetworkStatsService)
+    , public Object
+    , public IINetworkStatsService
 {
 public:
     class MyHandlerCallback
-        : public ElRefBase
+        : public Object
         , public IHandlerCallback
     {
     public:
@@ -350,7 +352,63 @@ private:
         AutoPtr<IContentResolver> mResolver;
     };
 
+    class InnerSub_INetworkStatsSession
+        : public Object
+        , public IINetworkStatsSession
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        InnerSub_INetworkStatsSession(
+            /* [in] */ CNetworkStatsService* host);
+
+        // @Override
+        CARAPI GetSummaryForNetwork(
+            /* [in] */ INetworkTemplate* template,
+            /* [in] */ Int64 start,
+            /* [in] */ Int64 end,
+            /* [out] */ INetworkStats** result);
+
+        // @Override
+        CARAPI GetHistoryForNetwork(
+            /* [in] */ INetworkTemplate* template,
+            /* [in] */ Int32 fields,
+            /* [out] */ INetworkStatsHistory** result);
+
+        // @Override
+        CARAPI GetSummaryForAllUid(
+            /* [in] */ INetworkTemplate* template,
+            /* [in] */ Int64 start,
+            /* [in] */ Int64 end,
+            /* [in] */ Boolean includeTags,
+            /* [out] */ INetworkStats** result);
+
+        // @Override
+        CARAPI GetHistoryForUid(
+            /* [in] */ INetworkTemplate* template,
+            /* [in] */ Int32 uid,
+            /* [in] */ Int32 set,
+            /* [in] */ Int32 tag,
+            /* [in] */ Int32 fields,
+            /* [out] */ INetworkStatsHistory** result);
+
+        // @Override
+        CARAPI Close();
+
+    private:
+        CARAPI_(AutoPtr<INetworkStatsCollection>) GetUidComplete();
+
+        CARAPI_(AutoPtr<INetworkStatsCollection>) GetUidTagComplete();
+
+    private:
+        CNetworkStatsService* mHost;
+        AutoPtr<INetworkStatsCollection> mUidComplete;
+        AutoPtr<INetworkStatsCollection> mUidTagComplete;
+    };
+
 public:
+    CAR_INTERFACE_DECL()
+
     CNetworkStatsService();
 
     CARAPI BindConnectivityManager(
@@ -360,7 +418,7 @@ public:
 
     //@Override
     CARAPI OpenSession(
-        /* [out] */ INetworkStatsSession** comple);
+        /* [out] */ IINetworkStatsSession** comple);
 
     //@Override
     CARAPI GetNetworkTotalBytes(
@@ -425,7 +483,7 @@ private:
 
     CARAPI_(void) ShutdownLocked();
 
-    CARAPI_(void) MaybeUpgradeLegacyStatsLocked();
+    CARAPI MaybeUpgradeLegacyStatsLocked();
 
     /**
      * Clear any existing {@link #ACTION_NETWORK_STATS_POLL} alarms, and
@@ -529,6 +587,10 @@ private:
 
     CARAPI_(void) HandleMsgRegisterGlobalAlert();
 
+    static CARAPI_(AutoPtr<INetworkIdentitySet>) FindOrCreateNetworkIdentitySet(
+        /* [in] */ IArrayMap* map,
+        /* [in] */ IInterface* key);
+
 public:
     // @VisibleForTesting
     static const String ACTION_NETWORK_STATS_POLL;
@@ -567,8 +629,10 @@ private:
     AutoPtr<IIConnectivityManager> mConnManager;
     AutoPtr<IPendingIntent> mPollIntent;
 
+    AutoPtr<IObject> mStatsLock;
     /** Set of currently active ifaces. */
-    HashMap<String, AutoPtr<NetworkIdentitySet> > mActiveIfaces;
+    AutoPtr<IArrayMap> mActiveIfaces;
+    AutoPtr<IArrayMap> mActiveUidIfaces;
     /** Current default active iface. */
     String mActiveIface;
     /** Set of any ifaces associated with mobile networks since boot. */
@@ -592,7 +656,6 @@ private:
     /** Data layer operation counters for splicing into other structures. */
     AutoPtr<INetworkStats> mUidOperations;// = new NetworkStats(0L, 10);
 
-    AutoPtr<IHandlerThread> mHandlerThread;
     AutoPtr<IHandler> mHandler;
     AutoPtr<IHandlerCallback> mHandlerCallback;
 

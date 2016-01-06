@@ -349,7 +349,7 @@ const String CNetworkStatsService::PREFIX_XT("xt");
 const String CNetworkStatsService::PREFIX_UID("uid");
 const String CNetworkStatsService::PREFIX_UID_TAG("uid_tag");
 
-CAR_INTERFACE_IMPL(CNetworkStatsService::MyHandlerCallback, IHandlerCallback)
+CAR_INTERFACE_IMPL(CNetworkStatsService::MyHandlerCallback, Object, IHandlerCallback)
 
 ECode CNetworkStatsService::MyHandlerCallback::HandleMessage(
     /* [in] */ IMessage* msg,
@@ -383,6 +383,96 @@ ECode CNetworkStatsService::MyHandlerCallback::HandleMessage(
     return NOERROR;
 }
 
+//======================================================================
+// CNetworkStatsService::InnerSub_INetworkStatsSession
+//======================================================================
+CAR_INTERFACE_IMPL(CNetworkStatsService::InnerSub_INetworkStatsSession, Object, IINetworkStatsSession)
+
+CNetworkStatsService::InnerSub_INetworkStatsSession::InnerSub_INetworkStatsSession(
+    /* [in] */ CNetworkStatsService* host)
+    : mHost(host)
+{}
+
+AutoPtr<INetworkStatsCollection> CNetworkStatsService::InnerSub_INetworkStatsSession::GetUidComplete()
+{
+    synchronized(mHost->mStatsLock) {
+        if (mUidComplete == NULL) {
+            mHost->mUidRecorder->GetOrLoadCompleteLocked((INetworkStatsCollection**)&mUidComplete);
+        }
+    }
+    return mUidComplete;
+}
+
+AutoPtr<INetworkStatsCollection> CNetworkStatsService::InnerSub_INetworkStatsSession::GetUidTagComplete()
+{
+    synchronized(mHost->mStatsLock) {
+        if (mUidTagComplete == NULL) {
+            mUidTagRecorder->GetOrLoadCompleteLocked((INetworkStatsCollection**)&mUidTagComplete);
+        }
+    }
+    return mUidTagComplete;
+}
+
+ECode CNetworkStatsService::InnerSub_INetworkStatsSession::GetSummaryForNetwork(
+    /* [in] */ INetworkTemplate* template,
+    /* [in] */ Int64 start,
+    /* [in] */ Int64 end,
+    /* [out] */ INetworkStats** result)
+{
+    FUNC_RETURN(mHost->InternalGetSummaryForNetwork(template, start, end))
+}
+
+ECode CNetworkStatsService::InnerSub_INetworkStatsSession::GetHistoryForNetwork(
+    /* [in] */ INetworkTemplate* template,
+    /* [in] */ Int32 fields,
+    /* [out] */ INetworkStatsHistory** result)
+{
+    FUNC_RETURN(mHost->InternalGetHistoryForNetwork(template, fields))
+}
+
+ECode CNetworkStatsService::InnerSub_INetworkStatsSession::GetSummaryForAllUid(
+    /* [in] */ INetworkTemplate* template,
+    /* [in] */ Int64 start,
+    /* [in] */ Int64 end,
+    /* [in] */ Boolean includeTags,
+    /* [out] */ INetworkStats** result)
+{
+    AutoPtr<INetworkStats> stats = GetUidComplete()->GetSummary(template, start, end);
+    if (includeTags) {
+        AutoPtr<INetworkStats> tagStats = GetUidTagComplete()->GetSummary(template, start, end);
+        stats->CombineAllValues(tagStats);
+    }
+    FUNC_RETURN(stats)
+}
+
+ECode CNetworkStatsService::InnerSub_INetworkStatsSession::GetHistoryForUid(
+    /* [in] */ INetworkTemplate* template,
+    /* [in] */ Int32 uid,
+    /* [in] */ Int32 set,
+    /* [in] */ Int32 tag,
+    /* [in] */ Int32 fields,
+    /* [out] */ INetworkStatsHistory** result)
+{
+    if (tag == TAG_NONE) {
+        FUNC_RETURN(GetUidComplete()->GetHistory(template, uid, set, tag, fields))
+    } else {
+        FUNC_RETURN(GetUidTagComplete()->GetHistory(template, uid, set, tag, fields))
+    }
+    return NOERROR;
+}
+
+ECode CNetworkStatsService::InnerSub_INetworkStatsSession::Close()
+{
+    mUidComplete = NULL;
+    mUidTagComplete = NULL;
+    return NOERROR;
+}
+
+//======================================================================
+// CNetworkStatsService
+//======================================================================
+CAR_INTERFACE_IMPL(CNetworkStatsService, Object, IINetworkStatsService)
+
 CNetworkStatsService::CNetworkStatsService()
     : mSystemReady(FALSE)
     , mPersistThreshold(2 * ITrafficStats::MB_IN_BYTES)
@@ -390,6 +480,9 @@ CNetworkStatsService::CNetworkStatsService()
     , mLastPhoneState(ITelephonyManager::DATA_UNKNOWN)
     , mLastPhoneNetworkType(ITelephonyManager::NETWORK_TYPE_UNKNOWN)
 {
+    Elastos::Core::CObject::New((IObject**)&mStatsLock);
+    CArrayMap::New((IArrayMap**)&mActiveIfaces);
+    CArrayMap::New((IArrayMap**)&mActiveUidIfaces);
     mMobileIfaces = ArrayOf<String>::Alloc(0);
 
     mNonMonotonicObserver = new DropBoxNonMonotonicObserver(this);
@@ -459,10 +552,11 @@ ECode CNetworkStatsService::constructor(
     context->GetSystemService(IContext::POWER_SERVICE, (IInterface**)&powerManager);
     powerManager->NewWakeLock(IPowerManager::PARTIAL_WAKE_LOCK, TAG, (IPowerManagerWakeLock**)&mWakeLock);
 
-    CHandlerThread::New(TAG, (IHandlerThread**)&mHandlerThread);
-    mHandlerThread->Start();
+    AutoPtr<IHandlerThread> thread;
+    CHandlerThread::New(TAG, (IHandlerThread**)&thread);
+    thread->Start();
     AutoPtr<ILooper> looper;
-    mHandlerThread->GetLooper((ILooper**)&looper);
+    thread->GetLooper((ILooper**)&looper);
     mHandlerCallback = new MyHandlerCallback(this);
     CHandler::New(looper, mHandlerCallback, TRUE, (IHandler**)&mHandler);
 
@@ -528,7 +622,7 @@ void CNetworkStatsService::SystemReady()
     AutoPtr<IIntentFilter> tetherFilter;
     CIntentFilter::New(IConnectivityManager::ACTION_TETHER_STATE_CHANGED, (IIntentFilter**)&tetherFilter);
     AutoPtr<IIntent> intent2;
-    mContext->RegisterReceiver(mTetherReceiver, tetherFilter, Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL, mHandler, (IIntent**)&intent2);
+    mContext->RegisterReceiver(mTetherReceiver, tetherFilter, NULL, mHandler, (IIntent**)&intent2);
 
     // listen for periodic polling events
     AutoPtr<IIntentFilter> pollFilter;
@@ -624,42 +718,64 @@ void CNetworkStatsService::ShutdownLocked()
     mSystemReady = FALSE;
 }
 
-void CNetworkStatsService::MaybeUpgradeLegacyStatsLocked()
+ECode CNetworkStatsService::MaybeUpgradeLegacyStatsLocked()
 {
     AutoPtr<IFile> file;
     //try {
-    CFile::New(mSystemDir, String("netstats.bin"), (IFile**)&file);
-    Boolean exists = FALSE;
-    if (file->Exists(&exists), exists) {
-        mDevRecorder->ImportLegacyNetworkLocked(file);
-        Boolean isDeleted;
-        file->Delete(&isDeleted);
-    }
+    ECode ec;
+    do {
+        ec = CFile::New(mSystemDir, String("netstats.bin"), (IFile**)&file);
+        if (FAILED(ec)) break;
+        Boolean exists = FALSE;
+        if (file->Exists(&exists), exists) {
+            ec = mDevRecorder->ImportLegacyNetworkLocked(file);
+            if (FAILED(ec)) break;
+            Boolean isDeleted;
+            file->Delete(&isDeleted);
+        }
 
-    file = NULL;
-    CFile::New(mSystemDir, String("netstats_xt.bin"), (IFile**)&file);
-    if (file->Exists(&exists), exists) {
-        Boolean isDeleted;
-        file->Delete(&isDeleted);
-    }
+        file = NULL;
+        ec = CFile::New(mSystemDir, String("netstats_xt.bin"), (IFile**)&file);
+        if (FAILED(ec)) break;
+        if (file->Exists(&exists), exists) {
+            Boolean isDeleted;
+            file->Delete(&isDeleted);
+        }
 
-    file = NULL;
-    CFile::New(mSystemDir, String("netstats_uid.bin"), (IFile**)&file);
-    if (file->Exists(&exists), exists) {
-        mUidRecorder->ImportLegacyUidLocked(file);
-        mUidTagRecorder->ImportLegacyUidLocked(file);
-        Boolean isDeleted;
-        file->Delete(&isDeleted);
+        file = NULL;
+        ec = CFile::New(mSystemDir, String("netstats_uid.bin"), (IFile**)&file);
+        if (FAILED(ec)) break;
+        if (file->Exists(&exists), exists) {
+            ec = mUidRecorder->ImportLegacyUidLocked(file);
+            if (FAILED(ec)) break;
+            ec = mUidTagRecorder->ImportLegacyUidLocked(file);
+            if (FAILED(ec)) break;
+            Boolean isDeleted;
+            file->Delete(&isDeleted);
+        }
+    } while(FALSE);
+    if (FAILED(ec)) {
+        //} catch (IOException e) {
+        //}
+        // } catch (OutOfMemoryError e) {
+        //     Log.wtf(TAG, "problem during legacy upgrade", e);
+        // }
+        if ((ECode)E_IO_EXCEPTION == ec) {
+            Logger::Wtf(TAG, "problem during legacy upgrade %d", ec);
+        }
+        else if ((ECode)E_OUT_OF_MEMORY_ERROR == ec) {
+            Logger::Wtf(TAG, "problem during legacy upgrade %d", ec);
+        }
+        else
+            return ec;
     }
-    //} catch (IOException e) {
-    //    Log.wtf(TAG, "problem during legacy upgrade", e);
-    //}
+    return NOERROR;
 }
 
 void CNetworkStatsService::RegisterPollAlarmLocked()
 {
     if (mPollIntent != NULL) {
-        mAlarmManager->Remove(mPollIntent);
+        mAlarmManager->Cancel(mPollIntent);
     }
     AutoPtr<IPendingIntentHelper> pendingIntentHelper;
     CPendingIntentHelper::AcquireSingleton((IPendingIntentHelper**)&pendingIntentHelper);
@@ -686,7 +802,7 @@ void CNetworkStatsService::RegisterGlobalAlert()
 }
 
 ECode CNetworkStatsService::OpenSession(
-    /* [out] */ INetworkStatsSession** comple)
+    /* [out] */ IINetworkStatsSession** comple)
 {
     VALIDATE_NOT_NULL(comple)
     *comple = NULL;
@@ -697,8 +813,7 @@ ECode CNetworkStatsService::OpenSession(
     // return an IBinder which holds strong references to any loaded stats
     // for its lifetime; when caller closes only weak references remain.
 
-    AutoPtr<INetworkStatsSession> session;
-    CNetworkStatsSession::New((Handle32)this, (INetworkStatsSession**)&session);
+    AutoPtr<IINetworkStatsSession> session = new InnerSub_INetworkStatsSession(this);
     *comple = session;
     REFCOUNT_ADD(*comple)
     return NOERROR;
@@ -982,54 +1097,61 @@ void CNetworkStatsService::UpdateIfacesLocked()
         mActiveIface = String(NULL);
     }
 
-    // rebuild active interfaces based on connected networks
-    mActiveIfaces.Clear();
+    // Rebuild active interfaces based on connected networks
+    mActiveIfaces->Clear();
+    mActiveUidIfaces->Clear();
 
-    for (Int32 i = 0; i < states->GetLength(); i++) {
+    AutoPtr<IArraySet> mobileIfaces;
+    CArraySet::New((IArraySet**)&mobileIfaces);
+    for (Int32 i = 0; i < states->GetLength(); ++i) {
         AutoPtr<INetworkState> state = (*states)[i];
-        AutoPtr<INetworkInfo> netInfo;
-        state->GetNetworkInfo((INetworkInfo**)&netInfo);
-        Boolean connected = FALSE;
-        if (netInfo->IsConnected(&connected), connected) {
-            // collect networks under their parent interfaces
-            AutoPtr<ILinkProperties> linkProp;
-            state->GetLinkProperties((ILinkProperties**)&linkProp);
-            String iface;
-            linkProp->GetInterfaceName(&iface);
+        if (Ptr(state)->GetPtr(state->GetNetworkInfo)->Func(INetworkInfo::IsConnected)) {
+            Boolean isMobile;
+            IsNetworkTypeMobile(Ptr(state)->GetPtr(state->GetNetworkInfo)->Func(INetworkInfo::GetType), &isMobile);
+            AutoPtr<INetworkIdentity> ident;
+            AutoPtr<INetworkIdentityHelper> helper;
+            CNetworkIdentityHelper::AcquireSingleton((INetworkIdentityHelper**)&helper);
+            helper->BuildNetworkIdentity(mContext, state);
 
-            AutoPtr<NetworkIdentitySet> ident = mActiveIfaces[iface];
-            if (ident == NULL) {
-                ident = new NetworkIdentitySet();
-                mActiveIfaces[iface] = ident;
+            // Traffic occurring on the base interface is always counted for
+            // both total usage and UID details.
+            String baseIface;
+            Ptr(state)->Func(state->GetLinkProperties)->GetInterfaceName(&baseIface);
+            if (baseIface != NULL) {
+                AutoPtr<INetworkIdentitySet> networkIdentitySet;
+                FindOrCreateNetworkIdentitySet(mActiveIfaces, baseIface, (INetworkIdentitySet**)&networkIdentitySet);
+                networkIdentitySet->Add(ident);
+                networkIdentitySet = NULL;
+                FindOrCreateNetworkIdentitySet(mActiveUidIfaces, baseIface, (INetworkIdentitySet**)&networkIdentitySet);
+                networkIdentitySet->Add(ident);
+                if (isMobile) {
+                    mobileIfaces->Add(baseIface);
+                }
             }
 
-            AutoPtr<INetworkIdentityHelper> identHelper;
-            CNetworkIdentityHelper::AcquireSingleton((INetworkIdentityHelper**)&identHelper);
-            AutoPtr<INetworkIdentity> identTemp;
-            identHelper->BuildNetworkIdentity(mContext, state, (INetworkIdentity**)&identTemp);
-            ident->Insert(identTemp);
-
-            // remember any ifaces associated with mobile networks
-            Int32 type;
-            netInfo->GetType(&type);
-            AutoPtr<IConnectivityManagerHelper> connMgrHelper;
-            CConnectivityManagerHelper::AcquireSingleton((IConnectivityManagerHelper**)&connMgrHelper);
-            Boolean isTypeMobile;
-            connMgrHelper->IsNetworkTypeMobile(type, &isTypeMobile);
-            if (isTypeMobile && iface.IsNull()) {
-                Boolean isContains = FALSE;
-                for (Int32 i = 0; i < mMobileIfaces->GetLength(); ++i) {
-                    if ((*mMobileIfaces)[i].Equals(iface)) {
-                        isContains = TRUE;
-                        break;
+            // Traffic occurring on stacked interfaces is usually clatd,
+            // which is already accounted against its final egress interface
+            // by the kernel. Thus, we only need to collect stacked
+            // interface stats at the UID level.
+            AutoPtr<IList> stackedLinks;
+            Ptr(state)->Func(state->GetLinkProperties)->GetStackedLinks((IList**)&stackedLinks);
+            FOR_EACH(iter, stackedLinks) {
+                AutoPtr<ILinkProperties> stackedLink = ILinkProperties::Probe(Ptr(iter)->Func(iter->GetNext));
+                String stackedIface;
+                stackedLink->GetInterfaceName(&stackedIface);
+                if (stackedIface != NULL) {
+                    AutoPtr<INetworkIdentitySet> networkIdentitySet;
+                    FindOrCreateNetworkIdentitySet(mActiveUidIfaces, stackedIface, (INetworkIdentitySet**)&networkIdentitySet);
+                    networkIdentitySet->Add(ident);
+                    if (isMobile) {
+                        mobileIfaces->Add(stackedIface);
                     }
-                }
-                if (!isContains) {
-                    (*mMobileIfaces)[mMobileIfaces->GetLength()] = iface;
                 }
             }
         }
     }
+
+    mobileIfaces->ToArray(ArrayOf<String>::Alloc(Ptr(mobileIfaces)->Func(mobileIfaces->GetSize)), &mMobileIfaces);
 }
 
 void CNetworkStatsService::BootstrapStatsLocked()
@@ -1066,8 +1188,8 @@ void CNetworkStatsService::BootstrapStatsLocked()
 
     mDevRecorder->RecordSnapshotLocked(devSnapshot, mActiveIfaces, currentTime);
     mXtRecorder->RecordSnapshotLocked(xtSnapshot, mActiveIfaces, currentTime);
-    mUidRecorder->RecordSnapshotLocked(uidSnapshot, mActiveIfaces, currentTime);
-    mUidTagRecorder->RecordSnapshotLocked(uidSnapshot, mActiveIfaces, currentTime);
+    mUidRecorder->RecordSnapshotLocked(uidSnapshot, mActiveUidIfaces, currentTime);
+    mUidTagRecorder->RecordSnapshotLocked(uidSnapshot, mActiveUidIfaces, currentTime);
     //} catch (IllegalStateException e) {
     //    Slog.w(TAG, "problem reading network stats: " + e);
     //} catch (RemoteException e) {
@@ -1078,9 +1200,6 @@ void CNetworkStatsService::BootstrapStatsLocked()
 void CNetworkStatsService::PerformPoll(
     /* [in] */ Int32 flags)
 {
-    AutoLock lock(this);
-    mWakeLock->AcquireLock();
-
     // try refreshing time source when stale
     Int64 cacheAge;
     if (mTime->GetCacheAge(&cacheAge), cacheAge > mSettings->GetTimeCacheMaxAge()) {
@@ -1088,8 +1207,12 @@ void CNetworkStatsService::PerformPoll(
         mTime->ForceRefresh(&result);
     }
 
-    PerformPollLocked(flags);
-    mWakeLock->ReleaseLock();
+    synchronized(mStatsLock) {
+        mWakeLock->AcquireLock();
+
+        PerformPollLocked(flags);
+        mWakeLock->ReleaseLock();
+    }
 }
 
 void CNetworkStatsService::PerformPollLocked(
@@ -1464,6 +1587,20 @@ Boolean CNetworkStatsService::IsBandwidthControlEnabled()
         return FALSE;
     }
     return bol;
+}
+
+AutoPtr<INetworkIdentitySet> CNetworkStatsService::FindOrCreateNetworkIdentitySet(
+    /* [in] */ IArrayMap* map,
+    /* [in] */ IInterface* key)
+{
+    AutoPtr<IInterface> value;
+    map->Get(key, (IInterface**)&value);
+    AutoPtr<INetworkIdentitySet> ident = INetworkIdentitySet::Probe(value);
+    if (ident == NULL) {
+        CNetworkIdentitySet::New((INetworkIdentitySet**)&ident);
+        map->Put(key, ident);
+    }
+    return ident;
 }
 
 } // namespace Net

@@ -1,106 +1,146 @@
 
 #include "elastos/droid/server/net/CNetworkPolicyManagerService.h"
+// #include "elastos/droid/server/CNetworkManagementService.h"
 #include "elastos/droid/server/SystemConfig.h"
-#include "elastos/droid/net/CProcessObserver.h"
-#include "elastos/droid/net/CNetworkStatsService.h"
-#include "elastos/droid/net/CNetworkPolicyManagerServiceAlertObserber.h"
-#include "CNetworkManagementService.h"
-#include "elastos/droid/os/Binder.h"
-#include "elastos/droid/os/Handler.h"
-#include "util/ArrayUtils.h"
-#include "util/Xml.h"
-#include "elastos/droid/R.h"
-#include "elastos/droid/Manifest.h"
-#include <elastos/utility/logging/Slogger.h>
-#include <elastos/core/StringUtils.h>
+#include <Elastos.CoreLibrary.Libcore.h>
+#include <Elastos.CoreLibrary.Utility.h>
+#include <Elastos.Droid.Internal.h>
+#include <Elastos.Droid.Provider.h>
+#include <Elastos.Droid.Telephony.h>
+#include <Elastos.Droid.Text.h>
+#include <Elastos.Droid.Utility.h>
+#include <Elastos.Droid.Wifi.h>
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/droid/Manifest.h>
+#include <elastos/droid/R.h>
+#include <elastos/droid/internal/utility/ArrayUtils.h>
+#include <elastos/droid/internal/utility/XmlUtils.h>
+#include <elastos/droid/net/ReturnOutValue.h>
+#include <elastos/droid/os/Binder.h>
+#include <elastos/droid/os/Handler.h>
+#include <elastos/droid/server/LocalServices.h>
+#include <elastos/droid/utility/Xml.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Droid::Server::SystemConfig;
-
-using Elastos::Core::StringUtils;
-using Elastos::Core::ICharSequence;
-using Elastos::Core::CString;
-using Elastos::Core::IBoolean;
-using Elastos::Core::CBoolean;
-using Elastos::Core::ISystem;
-using Elastos::Core::CSystem;
-using Elastos::Core::IInteger64;
-using Elastos::Core::CInteger64;
-using Elastos::Core::IBoolean;
 using Elastos::Core::CArrayOf;
+using Elastos::Core::CBoolean;
+using Elastos::Core::CInteger64;
+using Elastos::Core::CString;
+using Elastos::Core::CSystem;
 using Elastos::Core::EIID_ICharSequence;
-using Elastos::IO::CFile;;
-using Elastos::IO::IFileInputStream;
-using Elastos::IO::IFileOutputStream;
-using Elastos::IO::IIoUtils;
-using Elastos::IO::CIoUtils;
-using Elastos::Utility::Logging::Slogger;
+using Elastos::Core::IBoolean;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IInteger64;
+using Elastos::Core::ISystem;
+using Elastos::Core::IThread;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::StringUtils;
+using Elastos::Droid::App::CNotificationBuilder;
+using Elastos::Droid::App::CPendingIntentHelper;
+using Elastos::Droid::App::EIID_IIProcessObserver;
 using Elastos::Droid::App::IActivityManager;
+using Elastos::Droid::App::INotification;
+using Elastos::Droid::App::INotificationBuilder;
+using Elastos::Droid::App::IPendingIntent;
+using Elastos::Droid::App::IPendingIntentHelper;
+using Elastos::Droid::Content::CComponentName;
 using Elastos::Droid::Content::CIntent;
-using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::IComponentName;
-using Elastos::Droid::Content::CComponentName;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::IUserInfo;
-using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Net::CNetworkPolicy;
-using Elastos::Droid::Net::INetworkTemplateHelper;
-using Elastos::Droid::Net::CNetworkTemplateHelper;
-using Elastos::Droid::Net::CNetworkTemplate;
-using Elastos::Droid::Net::ILinkProperties;
+using Elastos::Droid::Internal::Utility::ArrayUtils;
+using Elastos::Droid::Internal::Utility::CFastXmlSerializer;
+using Elastos::Droid::Internal::Utility::CIndentingPrintWriter;
+using Elastos::Droid::Internal::Utility::IFastXmlSerializer;
+using Elastos::Droid::Internal::Utility::IIndentingPrintWriter;
+using Elastos::Droid::Internal::Utility::XmlUtils;
+using Elastos::Droid::Net::CConnectivityManagerHelper;
 using Elastos::Droid::Net::CNetworkIdentity;
-using Elastos::Droid::Net::INetworkIdentityHelper;
 using Elastos::Droid::Net::CNetworkIdentityHelper;
-using Elastos::Droid::Net::INetworkInfo;
-using Elastos::Droid::Net::INetworkPolicyManager;
-using Elastos::Droid::Net::IConnectivityManager;
-using Elastos::Droid::Net::INetworkPolicyManagerHelper;
+using Elastos::Droid::Net::CNetworkPolicy;
 using Elastos::Droid::Net::CNetworkPolicyManagerHelper;
 using Elastos::Droid::Net::CNetworkQuotaInfo;
+using Elastos::Droid::Net::CNetworkTemplate;
+using Elastos::Droid::Net::CNetworkTemplateHelper;
+using Elastos::Droid::Net::EIID_IINetworkPolicyManager;
+using Elastos::Droid::Net::IConnectivityManager;
 using Elastos::Droid::Net::IConnectivityManagerHelper;
-using Elastos::Droid::Net::CConnectivityManagerHelper;
-using Elastos::Droid::Utility::CPairHelper;
-using Elastos::Droid::Utility::IPair;
-using Elastos::Droid::Utility::IPairHelper;
-using Elastos::Droid::Wifi::IWifiInfoHelper;
-using Elastos::Droid::Wifi::IWifiInfo;
-using Elastos::Droid::Wifi::IWifiInfoHelper;
-using Elastos::Droid::Wifi::CWifiInfoHelper;
-using Elastos::Droid::Wifi::IWifiConfiguration;
-using Elastos::Droid::Wifi::IWifiManager;
-using Elastos::Droid::Os::EIID_IHandlerCallback;
+using Elastos::Droid::Net::ILinkProperties;
+using Elastos::Droid::Net::INetworkIdentityHelper;
+using Elastos::Droid::Net::INetworkInfo;
+using Elastos::Droid::Net::INetworkPolicyManager;
+using Elastos::Droid::Net::INetworkPolicyManagerHelper;
+using Elastos::Droid::Net::INetworkTemplateHelper;
+using Elastos::Droid::Net::ITrafficStats;
 using Elastos::Droid::Os::Binder;
-using Elastos::Droid::Os::IUserHandle;
-using Elastos::Droid::Os::IUserManager;
-using Elastos::Droid::Os::IIdleHandler;
-using Elastos::Droid::Os::CRemoteCallbackList;
-using Elastos::Droid::Os::IEnvironment;
 using Elastos::Droid::Os::CEnvironment;
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::CHandlerThread;
+using Elastos::Droid::Os::CRemoteCallbackList;
+using Elastos::Droid::Os::CUserHandleHelper;
+using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::Os::EIID_IHandlerCallback;
+using Elastos::Droid::Os::EIID_ILowPowerModeListener;
+using Elastos::Droid::Os::EIID_IPowerManagerInternal;
+using Elastos::Droid::Os::IEnvironment;
 using Elastos::Droid::Os::IHandlerThread;
+using Elastos::Droid::Os::IIdleHandler;
+using Elastos::Droid::Os::IProcess;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Os::IUserHandleHelper;
+using Elastos::Droid::Os::IUserManager;
 using Elastos::Droid::Provider::CSettingsSecure;
 using Elastos::Droid::Provider::ISettingsSecure;
+using Elastos::Droid::Server::LocalServices;
+using Elastos::Droid::Server::SystemConfig;
+// using Elastos::Droid::Telephony::CTelephonyManager;
+// using Elastos::Droid::Telephony::CTelephonyManagerHelper;
+using Elastos::Droid::Telephony::ITelephonyManager;
+using Elastos::Droid::Telephony::ITelephonyManagerHelper;
 using Elastos::Droid::Text::Format::CFormatter;
-using Elastos::Droid::Text::Format::IFormatter;
-using Elastos::Droid::Text::Format::ITime;
 using Elastos::Droid::Text::Format::CTime;
 using Elastos::Droid::Text::Format::IDateUtils;
 using Elastos::Droid::Text::Format::IFormatter;
-using Elastos::Droid::Text::Format::CFormatter;
-using Elastos::Droid::Telephony::CTelephonyManager;
-using Elastos::Droid::Telephony::ITelephonyManager;
-using Elastos::Droid::Telephony::CTelephonyManagerHelper;
-using Elastos::Droid::Telephony::ITelephonyManagerHelper;
+using Elastos::Droid::Text::Format::ITime;
+using Elastos::Droid::Utility::CArrayMap;
+using Elastos::Droid::Utility::CArraySet;
+using Elastos::Droid::Utility::CAtomicFile;
+using Elastos::Droid::Utility::CNtpTrustedTimeHelper;
+using Elastos::Droid::Utility::CPairHelper;
+using Elastos::Droid::Utility::CSparseArray;
+using Elastos::Droid::Utility::CSparseBooleanArray;
+using Elastos::Droid::Utility::CSparseInt32Array;
 using Elastos::Droid::Utility::INtpTrustedTime;
 using Elastos::Droid::Utility::INtpTrustedTimeHelper;
-using Elastos::Droid::Utility::CNtpTrustedTimeHelper;
-using Elastos::Droid::Utility::CAtomicFile;
+using Elastos::Droid::Utility::IPair;
+using Elastos::Droid::Utility::IPairHelper;
 using Elastos::Droid::Utility::Xml;
-using Elastos::Droid::Utility::IFastXmlSerializer;
-using Elastos::Droid::Utility::CFastXmlSerializer;
-using Elastos::Droid::Utility::CSparseBooleanArray;
-using Elastos::Droid::Internal::Utility::ArrayUtils;
+using Elastos::Droid::Wifi::CWifiInfoHelper;
+using Elastos::Droid::Wifi::IWifiConfiguration;
+using Elastos::Droid::Wifi::IWifiInfo;
+using Elastos::Droid::Wifi::IWifiInfoHelper;
+using Elastos::Droid::Wifi::IWifiManager;
+using Elastos::IO::CFile;;
+using Elastos::IO::ICloseable;
+using Elastos::IO::IFileInputStream;
+using Elastos::IO::IFileOutputStream;
+using Elastos::IO::IWriter;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::IList;
+using Elastos::Utility::ISet;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::Logging::Slogger;
+using Libcore::IO::CIoUtils;
+using Libcore::IO::IIoUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -111,6 +151,11 @@ namespace Net {
 //              CNetworkPolicyManagerService::MyHandlerCallback
 //==============================================================================
 CAR_INTERFACE_IMPL(CNetworkPolicyManagerService::MyHandlerCallback, Object, IHandlerCallback)
+
+CNetworkPolicyManagerService::MyHandlerCallback::MyHandlerCallback(
+    /* [in] */ CNetworkPolicyManagerService* host)
+    : mHost(host)
+{}
 
 ECode CNetworkPolicyManagerService::MyHandlerCallback::HandleMessage(
     /* [in] */ IMessage* msg,
@@ -124,60 +169,39 @@ ECode CNetworkPolicyManagerService::MyHandlerCallback::HandleMessage(
     msg->GetArg1(&arg1);
     msg->GetArg2(&arg2);
 
-    switch(what) {
-        case CNetworkPolicyManagerService::MSG_RULES_CHANGED: {
-            mHost->HandleMsgRulesChanged(arg1, arg2);
-            break;
-        }
-        case CNetworkPolicyManagerService::MSG_METERED_IFACES_CHANGED: {
-            AutoPtr<IInterface> obj;
-            msg->GetObj((IInterface**)&obj);
-            IArrayOf* array = IArrayOf::Probe(obj);
-            mHost->HandleMsgMeteredIfacesChanged(array);
-            break;
-        }
-        case CNetworkPolicyManagerService::MSG_FOREGROUND_ACTIVITIES_CHANGED: {
-            AutoPtr<IInterface> obj;
-            msg->GetObj((IInterface**)&obj);
-            IBoolean* bl = IBoolean::Probe(obj);
-            Boolean value;
-            bl->GetValue(&value);
-            mHost->HandleMsgForegroundActivitiesChanged(arg1, arg2, value);
-            break;
-        }
-        case CNetworkPolicyManagerService::MSG_PROCESS_DIED: {
-            mHost->HandleMsgProcessDied(arg1, arg2);
-            break;
-        }
-        case CNetworkPolicyManagerService::MSG_LIMIT_REACHED: {
-            AutoPtr<IInterface> obj;
-            msg->GetObj((IInterface**)&obj);
-            ICharSequence* seq = ICharSequence::Probe(obj);
-            String info;
-            seq->ToString(&info);
-            mHost->HandleMsgLimitReached(info);
-            break;
-        }
-        case CNetworkPolicyManagerService::MSG_RESTRICT_BACKGROUND_CHANGED: {
-            mHost->HandleMsgRestrictBackgroundChanged(arg1 != 0);
-            break;
-        }
-        case CNetworkPolicyManagerService::MSG_ADVISE_PERSIST_THRESHOLD: {
-            AutoPtr<IInterface> obj;
-            msg->GetObj((IInterface**)&obj);
-            IInteger64* iobj = IInteger64::Probe(obj);
-            Int64 lowestRule = 0;
-            iobj->GetValue(&lowestRule);
-            mHost->HandleMsgAdvisePersistThreshold(lowestRule);
-            break;
-        }
-        case CNetworkPolicyManagerService::MSG_SCREEN_ON_CHANGED: {
-            mHost->HandleMsgScreenOnChanged();
-            break;
-        }
-        default:
-            *result = FALSE;
-            break;
+    if (what == CNetworkPolicyManagerService::MSG_RULES_CHANGED) {
+        mHost->HandleMsgRulesChanged(arg1, arg2);
+    }
+    else if (what ==  CNetworkPolicyManagerService::MSG_METERED_IFACES_CHANGED) {
+        AutoPtr<IInterface> obj;
+        msg->GetObj((IInterface**)&obj);
+        IArrayOf* array = IArrayOf::Probe(obj);
+        mHost->HandleMsgMeteredIfacesChanged(array);
+    }
+    else if (what == CNetworkPolicyManagerService::MSG_LIMIT_REACHED) {
+        AutoPtr<IInterface> obj;
+        msg->GetObj((IInterface**)&obj);
+        ICharSequence* seq = ICharSequence::Probe(obj);
+        String info;
+        seq->ToString(&info);
+        mHost->HandleMsgLimitReached(info);
+    }
+    else if (what == CNetworkPolicyManagerService::MSG_RESTRICT_BACKGROUND_CHANGED) {
+        mHost->HandleMsgRestrictBackgroundChanged(arg1 != 0);
+    }
+    else if (what == CNetworkPolicyManagerService::MSG_ADVISE_PERSIST_THRESHOLD) {
+        AutoPtr<IInterface> obj;
+        msg->GetObj((IInterface**)&obj);
+        IInteger64* iobj = IInteger64::Probe(obj);
+        Int64 lowestRule = 0;
+        iobj->GetValue(&lowestRule);
+        mHost->HandleMsgAdvisePersistThreshold(lowestRule);
+    }
+    else if (what == CNetworkPolicyManagerService::MSG_SCREEN_ON_CHANGED) {
+        mHost->HandleMsgScreenOnChanged();
+    }
+    else {
+        *result = FALSE;
     }
     return NOERROR;
 }
@@ -185,6 +209,11 @@ ECode CNetworkPolicyManagerService::MyHandlerCallback::HandleMessage(
 //==============================================================================
 //              CNetworkPolicyManagerService::ScreenReceiver
 //==============================================================================
+CNetworkPolicyManagerService::ScreenReceiver::ScreenReceiver(
+    /* [in] */ CNetworkPolicyManagerService* owner)
+    : mOwner(owner)
+{}
+
 ECode CNetworkPolicyManagerService::ScreenReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
@@ -197,6 +226,14 @@ ECode CNetworkPolicyManagerService::ScreenReceiver::OnReceive(
         &result);
 }
 
+ECode CNetworkPolicyManagerService::ScreenReceiver::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = String("CNetworkPolicyManagerService::ScreenReceiver: ");
+    (*info).AppendFormat("%p", this);
+    return NOERROR;
+}
 
 //==============================================================================
 //              CNetworkPolicyManagerService::PackageReceiver
@@ -217,7 +254,8 @@ ECode CNetworkPolicyManagerService::PackageReceiver::OnReceive(
         // global background data policy
         if (LOGV) Slogger::V(TAG, "ACTION_PACKAGE_ADDED for uid=%d", uid);
         {
-            synchronized(mOwner->mRulesLock) {
+            AutoPtr<IObject> tmp = mOwner->mRulesLock;
+            synchronized(tmp) {
                 mOwner->UpdateRulesForUidLocked(uid);
             }
         }
@@ -241,7 +279,8 @@ ECode CNetworkPolicyManagerService::UidRemovedReceiver::OnReceive(
     // remove any policy and update rules to clean up
     if (LOGV) Slogger::V(TAG, "ACTION_UID_REMOVED for uid=%d", uid);
     {
-        synchronized(mOwner->mRulesLock) {
+        AutoPtr<IObject> tmp = mOwner->mRulesLock;
+        synchronized(tmp) {
             mOwner->mUidPolicy.Erase(uid);
             mOwner->UpdateRulesForUidLocked(uid);
             mOwner->WritePolicyLocked();
@@ -267,7 +306,8 @@ ECode CNetworkPolicyManagerService::UserReceiver::OnReceive(
     if (userId == -1) return NOERROR;
 
     // Update global restrict for new user
-    synchronized(mOwner->mRulesLock) {
+    AutoPtr<IObject> tmp = mOwner->mRulesLock;
+    synchronized(tmp) {
         // Remove any policies for given user; both cleaning up after a
         // USER_REMOVED, and one last sanity check during USER_ADDED
         mOwner->RemovePoliciesForUserLocked(userId);
@@ -289,7 +329,8 @@ ECode CNetworkPolicyManagerService::StatsReceiver::OnReceive(
     // READ_NETWORK_USAGE_HISTORY permission above.
     mOwner->MaybeRefreshTrustedTime();
     {
-        synchronized(mOwner->mRulesLock) {
+        AutoPtr<IObject> tmp = mOwner->mRulesLock;
+        synchronized(tmp) {
             mOwner->UpdateNetworkEnabledLocked();
             mOwner->UpdateNotificationsLocked();
         }
@@ -351,11 +392,12 @@ ECode CNetworkPolicyManagerService::WifiConfigReceiver::OnReceive(
             CNetworkTemplateHelper::AcquireSingleton((INetworkTemplateHelper**)&netTempHelper);
             AutoPtr<INetworkTemplate> networkTemp;
             netTempHelper->BuildTemplateWifi(configSSID, (INetworkTemplate**)&networkTemp);
-            synchronized(mOwner->mRulesLock) {
-                HashMap<AutoPtr<INetworkTemplate>, AutoPtr<INetworkPolicy> >::Iterator it =
-                        mOwner->mNetworkPolicy.Find(networkTemp);
-                if (it != mOwner->mNetworkPolicy.End()) {
-                    mOwner->mNetworkPolicy.Erase(it);
+            AutoPtr<IObject> tmp = mOwner->mRulesLock;
+            synchronized(tmp) {
+                Boolean isContains;
+                mOwner->mNetworkPolicy->ContainsKey(networkTemp, &isContains);
+                if (isContains) {
+                    mOwner->mNetworkPolicy->Remove(networkTemp);
                     mOwner->WritePolicyLocked();
                 }
             }
@@ -396,14 +438,13 @@ ECode CNetworkPolicyManagerService::WifiStateReceiver::OnReceive(
 
     String wifiSSID;
     wifiInfo->GetSSID(&wifiSSID);
+    AutoPtr<INetworkTemplate> networkTemp;
     netTempHelper->BuildTemplateWifi(wifiSSID, (INetworkTemplate**)&networkTemp);
-    synchronized(mOwner->mRulesLock){
-        AutoPtr<INetworkPolicy> policy;
-        HashMap< AutoPtr<INetworkTemplate>, AutoPtr<INetworkPolicy> >::Iterator it =
-                mOwner->mNetworkPolicy.Find(networkTemp);
-        if (it != mOwner->mNetworkPolicy.End()) {
-            policy = it->mSecond;
-        }
+    AutoPtr<IObject> tmp = mOwner->mRulesLock;
+    synchronized(tmp){
+        AutoPtr<IInterface> obj;
+        mOwner->mNetworkPolicy->Get(networkTemp, (IInterface**)&obj);
+        AutoPtr<INetworkPolicy> policy = INetworkPolicy::Probe(obj);
         Boolean isInferred;
         if (policy == NULL && meteredHint) {
             // policy doesn't exist, and AP is hinting that it's
@@ -441,7 +482,8 @@ ECode CNetworkPolicyManagerService::ConnReceiver::OnReceive(
 
     mOwner->MaybeRefreshTrustedTime();
     {
-        synchronized(mOwner->mRulesLock) {
+        AutoPtr<IObject> tmp = mOwner->mRulesLock;
+        synchronized(tmp) {
             mOwner->EnsureActiveMobilePolicyLocked();
             mOwner->UpdateNetworkEnabledLocked();
             mOwner->UpdateNetworkRulesLocked();
@@ -451,80 +493,11 @@ ECode CNetworkPolicyManagerService::ConnReceiver::OnReceive(
     return NOERROR;
 }
 
-
-//==============================================================================
-//              CNetworkPolicyManagerService::XmlUtils
-//==============================================================================
-ECode CNetworkPolicyManagerService::XmlUtils::ReadInt32Attribute(
-    /* [in] */ IXmlPullParser* in,
-    /* [in] */ const String& name,
-    /* [out] */ Int32* attr)
-{
-    String value;
-    in->GetAttributeValue(String(NULL), name, &value);
-    //try {
-    ECode ec = StringUtils::ParseInt32(value, attr);
-    if (FAILED(ec)) return E_PROTOCOL_EXCEPTION;
-    //} catch (NumberFormatException e) {
-    //    throw new ProtocolException("problem parsing " + name + "=" + value + " as int");
-    //}
-    return NOERROR;
-}
-
-ECode CNetworkPolicyManagerService::XmlUtils::WriteInt32Attribute(
-    /* [in] */ IXmlSerializer* out,
-    /* [in] */ const String& name,
-    /* [in] */ Int32 value)
-{
-    return out->WriteAttribute(String(NULL), name, StringUtils::Int32ToString(value));
-}
-
-ECode CNetworkPolicyManagerService::XmlUtils::ReadInt64Attribute(
-    /* [in] */ IXmlPullParser* in,
-    /* [in] */ const String& name,
-    /* [out] */ Int64* attr)
-{
-    String value;
-    in->GetAttributeValue(String(NULL), name, &value);
-    //try {
-    ECode ec = StringUtils::ParseInt64(value, attr);
-    if (FAILED(ec)) return E_PROTOCOL_EXCEPTION;
-    //} catch (NumberFormatException e) {
-    //    throw new ProtocolException("problem parsing " + name + "=" + value + " as long");
-    //}
-    return NOERROR;
-}
-
-ECode CNetworkPolicyManagerService::XmlUtils::WriteInt64Attribute(
-    /* [in] */ IXmlSerializer* out,
-    /* [in] */ const String& name,
-    /* [in] */ Int64 value)
-{
-    return out->WriteAttribute(String(NULL), name, StringUtils::Int64ToString(value));
-}
-
-ECode CNetworkPolicyManagerService::XmlUtils::ReadBooleanAttribute(
-    /* [in] */ IXmlPullParser* in,
-    /* [in] */ const String& name,
-    /* [out] */ Boolean* attr)
-{
-    String value;
-    in->GetAttributeValue(String(NULL), name, &value);
-    *attr = value.EqualsIgnoreCase("TRUE") ? 1 : 0;
-    return NOERROR;
-}
-
-ECode CNetworkPolicyManagerService::XmlUtils::WriteBooleanAttribute(
-    /* [in] */ IXmlSerializer* out,
-    /* [in] */ const String& name,
-    /* [in] */ Boolean value)
-{
-    return out->WriteAttribute(String(NULL), name, StringUtils::BooleanToString(value));
-}
-
 //==============================================================================
 //              CNetworkPolicyManagerService::InnerSub_LowPowerModeListener
 //==============================================================================
+CAR_INTERFACE_IMPL(CNetworkPolicyManagerService::InnerSub_LowPowerModeListener, Object, ILowPowerModeListener)
+
 CNetworkPolicyManagerService::InnerSub_LowPowerModeListener::InnerSub_LowPowerModeListener(
     /* [in] */ CNetworkPolicyManagerService* host,
     /* [in] */ IObject* rulesLock,
@@ -549,6 +522,8 @@ ECode CNetworkPolicyManagerService::InnerSub_LowPowerModeListener::OnLowPowerMod
 //==============================================================================
 //              CNetworkPolicyManagerService::InnerSub_IProcessObserver
 //==============================================================================
+CAR_INTERFACE_IMPL_2(CNetworkPolicyManagerService::InnerSub_IProcessObserver, Object, IIProcessObserver, IBinder)
+
 CNetworkPolicyManagerService::InnerSub_IProcessObserver::InnerSub_IProcessObserver(
     /* [in] */ CNetworkPolicyManagerService* host,
     /* [in] */ IObject* rulesLock,
@@ -576,10 +551,11 @@ ECode CNetworkPolicyManagerService::InnerSub_IProcessObserver::OnProcessStateCha
         // remember all pid states and summarize foreground at uid level.
 
         // record foreground for this specific pid
-        AutoPtr<ISparseIntArray> pidState;
-        mUidPidState->Get(uid, (ISparseIntArray**)&pidState);
+        AutoPtr<IInterface> obj;
+        mUidPidState->Get(uid, (IInterface**)&obj);
+        AutoPtr<ISparseInt32Array> pidState = ISparseInt32Array::Probe(obj);
         if (pidState == NULL) {
-            CSparseIntArray::New(2, (ISparseIntArray**)&pidState);
+            CSparseInt32Array::New(2, (ISparseInt32Array**)&pidState);
             mUidPidState->Put(uid, pidState);
         }
         pidState->Put(pid, procState);
@@ -594,16 +570,47 @@ ECode CNetworkPolicyManagerService::InnerSub_IProcessObserver::OnProcessDied(
 {
     synchronized (mRulesLock) {
         // clear records and recompute, when they exist
-        AutoPtr<ISparseIntArray> pidState;
-        mUidPidState->Get(uid, (ISparseIntArray**)&pidState);
+        AutoPtr<IInterface> obj;
+        mUidPidState->Get(uid, (IInterface**)&obj);
+        AutoPtr<ISparseInt32Array> pidState = ISparseInt32Array::Probe(obj);
         if (pidState != NULL) {
             pidState->Delete(pid);
-            if (Ptr(pidState)->Func(pidState->GetSize)) <= 0) {
+            if (Ptr(pidState)->Func(pidState->GetSize) <= 0) {
                 mUidPidState->Remove(uid);
             }
             mHost->ComputeUidStateLocked(uid);
         }
     }
+    return NOERROR;
+}
+
+ECode CNetworkPolicyManagerService::InnerSub_IProcessObserver::ToString(
+    /* [out] */ String* info)
+{
+    return Object::ToString(info);
+}
+//==============================================================================
+//              CNetworkPolicyManagerService::InnerSub_AlertObserver
+//==============================================================================
+CNetworkPolicyManagerService::InnerSub_AlertObserver::InnerSub_AlertObserver(
+    /* [in] */ CNetworkPolicyManagerService* host)
+    : mHost(host)
+{}
+
+ECode CNetworkPolicyManagerService::InnerSub_AlertObserver::LimitReached(
+    /* [in] */ const String& limitName,
+    /* [in] */ const String& iface)
+{
+    // only someone like NMS should be calling us
+    mHost->mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::CONNECTIVITY_INTERNAL, TAG);
+
+    // TODO: Waiting for CNetworkManagementService
+    assert(0);
+    // if (!CNetworkManagementService::LIMIT_GLOBAL_ALERT.Equals(limitName)) {
+    //     AutoPtr<IMessage> msg;
+    //     mHost->mHandler->ObtainMessage(MSG_LIMIT_REACHED, iface, (IMessage**)&msg);
+    //     msg->SendToTarget();
+    // }
     return NOERROR;
 }
 
@@ -676,7 +683,7 @@ CNetworkPolicyManagerService::CNetworkPolicyManagerService()
     , mCurForegroundState(IActivityManager::PROCESS_STATE_TOP)
 {
     ASSERT_SUCCEEDED(CRemoteCallbackList::New((IRemoteCallbackList**)&mListeners));
-    ASSERT_SUCCEEDED(CProcessObserver::New((Handle32)this, (IProcessObserver**)&mProcessObserver));
+    mProcessObserver = new InnerSub_IProcessObserver(this, mRulesLock, mUidPidState);
     mScreenReceiver = new ScreenReceiver(this);
     mPackageReceiver = new PackageReceiver(this);
     mUidRemovedReceiver = new UidRemovedReceiver(this);
@@ -686,29 +693,28 @@ CNetworkPolicyManagerService::CNetworkPolicyManagerService()
     mSnoozeWarningReceiver = new SnoozeWarningReceiver(this);
     mWifiConfigReceiver = new WifiConfigReceiver(this);
     mWifiStateReceiver = new WifiStateReceiver(this);
-    CNetworkPolicyManagerServiceAlertObserber::New((Handle32)this, (INetworkManagementEventObserver**)&mAlertObserver);
+    mAlertObserver = new InnerSub_AlertObserver(this);
     mConnReceiver = new ConnReceiver(this);
-    CObject::New((IObject**)&mRulesLock);
+    Elastos::Core::CObject::New((IObject**)&mRulesLock);
     CArrayMap::New((IArrayMap**)&mNetworkPolicy);
     CArrayMap::New((IArrayMap**)&mNetworkRules);
     CSparseBooleanArray::New((ISparseBooleanArray**)&mPowerSaveWhitelistAppIds);
     CArraySet::New((IArraySet**)&mMeteredIfaces);
     CArraySet::New((IArraySet**)&mOverLimitNotified);
     CArraySet::New((IArraySet**)&mActiveNotifs);
-    CSparseIntArray::New((ISparseIntArray**)&mUidState);
+    CSparseInt32Array::New((ISparseInt32Array**)&mUidState);
     CSparseArray::New((ISparseArray**)&mUidPidState);
 }
 
 CNetworkPolicyManagerService::~CNetworkPolicyManagerService()
 {
-    mUidPidForeground.Clear();
 }
 
 ECode CNetworkPolicyManagerService::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IIActivityManager* activityManager,
     /* [in] */ IIPowerManager* powerManager,
-    /* [in] */ INetworkStatsService* networkStats,
+    /* [in] */ IINetworkStatsService* networkStats,
     /* [in] */ IINetworkManagementService* networkManagement)
 {
     AutoPtr<INtpTrustedTimeHelper> helper;
@@ -717,14 +723,14 @@ ECode CNetworkPolicyManagerService::constructor(
     helper->GetInstance(context, (INtpTrustedTime**)&trustedTime);
     AutoPtr<IFile> systemdir = GetSystemDir();
     return constructor(context, activityManager, powerManager, networkStats, networkManagement,
-            trustedTime, systemdir, FALSE);
+            ITrustedTime::Probe(trustedTime), systemdir, FALSE);
 }
 
 ECode CNetworkPolicyManagerService::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IIActivityManager* activityManager,
     /* [in] */ IIPowerManager* powerManager,
-    /* [in] */ INetworkStatsService* networkStats,
+    /* [in] */ IINetworkStatsService* networkStats,
     /* [in] */ IINetworkManagementService* networkManagement,
     /* [in] */ ITrustedTime* time,
     /* [in] */ IFile* systemDir,
@@ -745,7 +751,7 @@ ECode CNetworkPolicyManagerService::constructor(
 
     AutoPtr<IHandlerThread> thread;
     CHandlerThread::New(TAG, (IHandlerThread**)&thread);
-    thread->Start();
+    IThread::Probe(thread)->Start();
     AutoPtr<ILooper> looper;
     thread->GetLooper((ILooper**)&looper);
     mHandlerCallback = new MyHandlerCallback(this);
@@ -797,15 +803,14 @@ ECode CNetworkPolicyManagerService::SystemReady()
     mContext->GetPackageManager((IPackageManager**)&pm);
 
     synchronized(mRulesLock) {
-            AutoPtr<ISystemConfig> sysConfig;
-            SystemConfig::GetInstance((ISystemConfig**)&sysConfig);
+            AutoPtr<SystemConfig> sysConfig = SystemConfig::GetInstance();
             AutoPtr<IArraySet> allowPower;
             // TODO: Waiting for SystemConfig
             assert(0);
             // allowPower = sysConfig->GetAllowInPowerSave();
-            for (Int32 i=0; i < Ptr(allowPower)->Func(allowPower->GetSize); i++) {
+            for (Int32 i=0; i < Ptr(ISet::Probe(allowPower))->Func(ISet::GetSize); i++) {
                 AutoPtr<IInterface> obj;
-                allowPower->ValueAt(i, (IInterface**)&obj);
+                allowPower->GetValueAt(i, (IInterface**)&obj);
                 String pkg;
                 ICharSequence::Probe(obj)->ToString(&pkg);
                 // try {
@@ -817,19 +822,19 @@ ECode CNetworkPolicyManagerService::SystemReady()
                         AutoPtr<IUserHandleHelper> helper;
                         CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
                         Int32 appId;
-                        helper->GetAppID(Ptr(ai)->Func(ai->GetUid));
+                        helper->GetAppId(Ptr(ai)->Func(ai->GetUid), &appId);
                         mPowerSaveWhitelistAppIds->Put(appId, TRUE);
                     }
                 } while(FALSE);
                 // } catch (PackageManager.NameNotFoundException e) {
                 if (FAILED(ec)) {
-                    if (ec != E_NAME_NOT_FOUND_EXCEPTION)
+                    if (ec != (ECode)E_NAME_NOT_FOUND_EXCEPTION)
                         return ec;
                 }
                 // }
             }
 
-            mPowerManagerInternal = LocalServices::GetService(EIID_IPowerManagerInternal);
+            mPowerManagerInternal = IPowerManagerInternal::Probe(LocalServices::GetService(EIID_IPowerManagerInternal));
             mPowerManagerInternal->RegisterLowPowerModeObserver(
                 new InnerSub_LowPowerModeListener(this, mRulesLock, mRestrictPower));
             mPowerManagerInternal->GetLowPowerModeEnabled(&mRestrictPower);
@@ -897,7 +902,7 @@ ECode CNetworkPolicyManagerService::SystemReady()
 
     // listen for stats update events
     AutoPtr<IIntentFilter> statsFilter;
-    CIntentFilter::New(CNetworkStatsService::ACTION_NETWORK_STATS_UPDATED, (IIntentFilter**)&statsFilter);
+    CIntentFilter::New(INetworkStatsService::ACTION_NETWORK_STATS_UPDATED, (IIntentFilter**)&statsFilter);
     resIntent = NULL;
     mContext->RegisterReceiver(
         mStatsReceiver, statsFilter, Elastos::Droid::Manifest::permission::READ_NETWORK_USAGE_HISTORY,
@@ -924,14 +929,14 @@ ECode CNetworkPolicyManagerService::SystemReady()
     CIntentFilter::New(IWifiManager::CONFIGURED_NETWORKS_CHANGED_ACTION, (IIntentFilter**)&wifiConfigFilter);
     resIntent = NULL;
     mContext->RegisterReceiver(
-        mWifiConfigReceiver, wifiConfigFilter, NULL, mHandler, (IIntent**)&resIntent);
+        mWifiConfigReceiver, wifiConfigFilter, String(NULL), mHandler, (IIntent**)&resIntent);
 
     // listen for wifi state changes to catch metered hint
     AutoPtr<IIntentFilter> wifiStateFilter;
     CIntentFilter::New(IWifiManager::NETWORK_STATE_CHANGED_ACTION, (IIntentFilter**)&wifiStateFilter);
     resIntent = NULL;
     mContext->RegisterReceiver(
-        mWifiStateReceiver, wifiStateFilter, NULL, mHandler, (IIntent**)&resIntent);
+        mWifiStateReceiver, wifiStateFilter, String(NULL), mHandler, (IIntent**)&resIntent);
 
     return NOERROR;
 }
@@ -947,7 +952,7 @@ void CNetworkPolicyManagerService::UpdateNotificationsLocked()
     // keep track of previously active notifications
     AutoPtr<IArraySet> beforeNotifs;
     CArraySet::New(mActiveNotifs, (IArraySet**)&beforeNotifs);
-    mActiveNotifs->Clear();
+    ISet::Probe(mActiveNotifs)->Clear();
 
     // TODO: when switching to kernel notifications, compute next future
     // cycle boundary to recompute notifications.
@@ -956,8 +961,9 @@ void CNetworkPolicyManagerService::UpdateNotificationsLocked()
     Int64 currentTime = CurrentTimeMillis();
     HashMap< AutoPtr<INetworkTemplate>, AutoPtr<INetworkPolicy> >::Iterator npIt;
     for(Int32 i = Ptr(mNetworkPolicy)->Func(mNetworkPolicy->GetSize) - 1; i >= 0; --i) {
-        AutoPtr<INetworkPolicy> policy;
-        mNetworkPolicy->ValueAt(i, (INetworkPolicy**)&policy);
+        AutoPtr<IInterface> obj;
+        mNetworkPolicy->GetValueAt(i, (IInterface**)&obj);
+        AutoPtr<INetworkPolicy> policy = INetworkPolicy::Probe(obj);
         // ignore policies that aren't relevant to user
         AutoPtr<INetworkTemplate> netTmpl;
         policy->GetTemplate((INetworkTemplate**)&netTmpl);
@@ -1004,28 +1010,26 @@ void CNetworkPolicyManagerService::UpdateNotificationsLocked()
     }
 
     // cancel stale notifications that we didn't renew above
-    for (Int32 i = Ptr(beforeNotifs)->Func(beforeNotifs->GetSize) - 1; i >= 0; --i) {
+    for (Int32 i = Ptr(ISet::Probe(beforeNotifs))->Func(ISet::GetSize) - 1; i >= 0; --i) {
         AutoPtr<IInterface> obj;
-        beforeNotifs->ValueAt(i, (IInterface**)&obj);
+        beforeNotifs->GetValueAt(i, (IInterface**)&obj);
         String tag;
         ICharSequence::Probe(obj)->ToString(&tag);
-        if (mActiveNotifs.Find(tag) == mActiveNotifs.End()) {
+        Boolean isContains;
+        ISet::Probe(mActiveNotifs)->Contains(StringUtils::ParseCharSequence(tag), &isContains);
+        if (isContains) {
             CancelNotification(tag);
         }
     }
 }
 
-/**
- * Test if given {@link NetworkTemplate} is relevant to user based on
- * current device state, such as when
- * {@link TelephonyManager#getSubscriberId()} matches. This is regardless of
- * data connection status.
- */
 Boolean CNetworkPolicyManagerService::IsTemplateRelevant(
     /* [in] */ INetworkTemplate* templ)
 {
     AutoPtr<ITelephonyManagerHelper> teleHelper;
-    CTelephonyManagerHelper::AcquireSingleton((ITelephonyManagerHelper**)&teleHelper);
+    // TODO: Waiting for CTelephonyManagerHelper
+    assert(0);
+    // CTelephonyManagerHelper::AcquireSingleton((ITelephonyManagerHelper**)&teleHelper);
     AutoPtr<ITelephonyManager> tele;
     teleHelper->From(mContext, (ITelephonyManager**)&tele);
     Int32 rule;
@@ -1051,29 +1055,23 @@ Boolean CNetworkPolicyManagerService::IsTemplateRelevant(
     return TRUE;
 }
 
-/**
- * Notify that given {@link NetworkTemplate} is over
- * {@link NetworkPolicy#limitBytes}, potentially showing dialog to user.
- */
 void CNetworkPolicyManagerService::NotifyOverLimitLocked(
     /* [in] */ INetworkTemplate* templ)
 {
-    if (mOverLimitNotified.Find(templ) == mOverLimitNotified.End()) {
+    Boolean isContains;
+    ISet::Probe(mOverLimitNotified)->Contains(templ, &isContains);
+    if (isContains) {
         mContext->StartActivity(BuildNetworkOverLimitIntent(templ));
-        mOverLimitNotified.Insert(templ);
+        ISet::Probe(mOverLimitNotified)->Add(templ);
     }
 }
 
 void CNetworkPolicyManagerService::NotifyUnderLimitLocked(
     /* [in] */ INetworkTemplate* templ)
 {
-    mOverLimitNotified.Erase(templ);
+    ISet::Probe(mOverLimitNotified)->Remove(templ);
 }
 
-/**
- * Build unique tag that identifies an active {@link NetworkPolicy}
- * notification of a specific type, like {@link #TYPE_LIMIT}.
- */
 String CNetworkPolicyManagerService::BuildNotificationTag(
     /* [in] */ INetworkPolicy* policy,
     /* [in] */ Int32 type)
@@ -1081,7 +1079,7 @@ String CNetworkPolicyManagerService::BuildNotificationTag(
     AutoPtr<INetworkTemplate> netTmpl;
     policy->GetTemplate((INetworkTemplate**)&netTmpl);
     Int32 hashCode;
-    netTmpl->GetHashCode(&hashCode);
+    IObject::Probe(netTmpl)->GetHashCode(&hashCode);
     StringBuilder sb(TAG);
     sb += ":";
     sb += hashCode;
@@ -1090,10 +1088,6 @@ String CNetworkPolicyManagerService::BuildNotificationTag(
     return sb.ToString();
 }
 
-/**
- * Show notification for combined {@link NetworkPolicy} and specific type,
- * like {@link #TYPE_LIMIT}. Okay to call multiple times.
- */
 void CNetworkPolicyManagerService::EnqueueNotification(
     /* [in] */ INetworkPolicy* policy,
     /* [in] */ Int32 type,
@@ -1173,7 +1167,6 @@ void CNetworkPolicyManagerService::EnqueueNotification(
 
             builder->SetOngoing(TRUE);
             builder->SetSmallIcon(icon);
-            builder->SetSmallIcon(R::drawable::stat_notify_disabled);
             builder->SetTicker(title);
             builder->SetContentTitle(title);
             builder->SetContentText(body);
@@ -1254,15 +1247,12 @@ void CNetworkPolicyManagerService::EnqueueNotification(
     AutoPtr< ArrayOf<Int32> > idReceived;
     AutoPtr<INotification> notification;
     builder->GetNotification((INotification**)&notification);
+    AutoPtr<ArrayOf<Int32> > outIdReceived;
     mNotifManager->EnqueueNotificationWithTag(packageName, packageName, tag,
-            0x0, notification, (ArrayOf<Int32>**)&idReceived, IUserHandle::USER_OWNER);
-    mActiveNotifs.Insert(tag);
+            0x0, notification, idReceived, IUserHandle::USER_OWNER, (ArrayOf<Int32>**)&outIdReceived);
+    ISet::Probe(mActiveNotifs)->Add(StringUtils::ParseCharSequence(tag));
 }
 
-/**
- * Show ongoing notification to reflect that {@link #mRestrictBackground}
- * has been enabled.
- */
 void CNetworkPolicyManagerService::EnqueueRestrictedNotification(
     /* [in] */ const String& tag)
 {
@@ -1299,9 +1289,10 @@ void CNetworkPolicyManagerService::EnqueueRestrictedNotification(
     AutoPtr<ArrayOf<Int32> > idReceived;
     AutoPtr<INotification> notification;
     builder->GetNotification((INotification**)&notification);
+    AutoPtr<ArrayOf<Int32> > outIdReceived;
     mNotifManager->EnqueueNotificationWithTag(packageName, packageName, tag,
-            0x0, notification, (ArrayOf<Int32>**)&idReceived, IUserHandle::USER_OWNER);
-    mActiveNotifs.Insert(tag);
+            0x0, notification, idReceived, IUserHandle::USER_OWNER, (ArrayOf<Int32>**)&outIdReceived);
+    ISet::Probe(mActiveNotifs)->Add(StringUtils::ParseCharSequence(tag));
 }
 
 void CNetworkPolicyManagerService::CancelNotification(
@@ -1315,10 +1306,6 @@ void CNetworkPolicyManagerService::CancelNotification(
             packageName, tag, 0x0, IUserHandle::USER_OWNER);
 }
 
-/**
- * Proactively control network data connections when they exceed
- * {@link NetworkPolicy#limitBytes}.
- */
 void CNetworkPolicyManagerService::UpdateNetworkEnabledLocked()
 {
     if (LOGV) Slogger::V(TAG, "updateNetworkEnabledLocked()");
@@ -1328,8 +1315,9 @@ void CNetworkPolicyManagerService::UpdateNetworkEnabledLocked()
 
     Int64 currentTime = CurrentTimeMillis();
     for (Int32 i = Ptr(mNetworkPolicy)->Func(mNetworkPolicy->GetSize) - 1; i >= 0; --i) {
-        AutoPtr<INetworkPolicy> policy;
-        mNetworkPolicy->ValueAt(i, (INetworkPolicy**)&policy);
+        AutoPtr<IInterface> obj;
+        mNetworkPolicy->GetValueAt(i, (IInterface**)&obj);
+        AutoPtr<INetworkPolicy> policy = INetworkPolicy::Probe(obj);
         AutoPtr<INetworkTemplate> netTempl;
         policy->GetTemplate((INetworkTemplate**)&netTempl);
         // shortcut when policy has no limit
@@ -1361,16 +1349,14 @@ void CNetworkPolicyManagerService::UpdateNetworkEnabledLocked()
     }
 }
 
-/**
- * Control {@link IConnectivityManager#setPolicyDataEnable(int, boolean)}
- * for the given {@link NetworkTemplate}.
- */
 void CNetworkPolicyManagerService::SetNetworkTemplateEnabled(
     /* [in] */  INetworkTemplate* templ,
     /* [in] */  Boolean enabled)
 {
     AutoPtr<ITelephonyManagerHelper> teleHelper;
-    CTelephonyManagerHelper::AcquireSingleton((ITelephonyManagerHelper**)&teleHelper);
+    // TODO: Waiting for CTelephonyManagerHelper
+    assert(0);
+    // CTelephonyManagerHelper::AcquireSingleton((ITelephonyManagerHelper**)&teleHelper);
     AutoPtr<ITelephonyManager> tele;
     teleHelper->From(mContext, (ITelephonyManager**)&tele);
     Int32 rule;
@@ -1407,11 +1393,6 @@ void CNetworkPolicyManagerService::SetNetworkTemplateEnabled(
     }
 }
 
-/**
- * Examine all connected {@link NetworkState}, looking for
- * {@link NetworkPolicy} that need to be enforced. When matches found, set
- * remaining quota based on usage cycle and historical stats.
- */
 void CNetworkPolicyManagerService::UpdateNetworkRulesLocked()
 {
     if (LOGV) Slogger::V(TAG, "updateIfacesLocked()");
@@ -1435,7 +1416,7 @@ void CNetworkPolicyManagerService::UpdateNetworkRulesLocked()
     AutoPtr<IArrayList> connIdents;
     CArrayList::New(states->GetLength(), (IArrayList**)&connIdents);
     AutoPtr<IArraySet> connIfaces;
-    CArraySet::New(states->GetLength(), (IArrayList**)&connIfaces);
+    CArraySet::New(states->GetLength(), (IArraySet**)&connIfaces);
     for(Int32 i = 0; i < states->GetLength(); i++) {
         AutoPtr<INetworkState> state = (*states)[i];
         AutoPtr<INetworkInfo> info;
@@ -1458,7 +1439,7 @@ void CNetworkPolicyManagerService::UpdateNetworkRulesLocked()
                 pairHelper->Create(StringUtils::ParseCharSequence(baseIface), ident, (IPair**)&pair);
                 connIdents->Add(pair);
                 if (powerSave) {
-                    connIfaces->Add(StringUtils::ParseCharSequence(baseIface));
+                    ISet::Probe(connIfaces)->Add(StringUtils::ParseCharSequence(baseIface));
                 }
             }
 
@@ -1475,7 +1456,7 @@ void CNetworkPolicyManagerService::UpdateNetworkRulesLocked()
                     pairHelper->Create(StringUtils::ParseCharSequence(stackedIface), ident, (IPair**)&pair);
                     connIdents->Add(pair);
                     if (powerSave) {
-                        connIfaces->Add(StringUtils::ParseCharSequence(stackedIface));
+                        ISet::Probe(connIfaces)->Add(StringUtils::ParseCharSequence(stackedIface));
                     }
                 }
             }
@@ -1487,17 +1468,18 @@ void CNetworkPolicyManagerService::UpdateNetworkRulesLocked()
     AutoPtr<IArrayList> ifaceList;
     CArrayList::New((IArrayList**)&ifaceList);
     for (Int32 i = Ptr(mNetworkPolicy)->Func(mNetworkPolicy->GetSize) - 1; i >= 0; --i) {
-        AutoPtr<INetworkPolicy> policy;
-        mNetworkPolicy->ValueAt(i, (INetworkPolicy**)policy);
+        AutoPtr<IInterface> obj;
+        mNetworkPolicy->GetValueAt(i, (IInterface**)&obj);
+        AutoPtr<INetworkPolicy> policy = INetworkPolicy::Probe(obj);
         ifaceList.Clear();
         for (Int32 j = Ptr(connIdents)->Func(connIdents->GetSize) - 1; j >= 0; j--) {
             AutoPtr<IInterface> obj;
             connIdents->Get(j, (IInterface**)&obj);
             AutoPtr<IPair> ident = IPair::Probe(obj);
             Boolean isMatches;
-            Ptr(policy)->Func(policy->GetTemplate)->Matches(Ptr(ident)->Func(ident->GetSecond), &isMatches);
+            Ptr(policy)->Func(policy->GetTemplate)->Matches(INetworkIdentity::Probe(Ptr(ident)->Func(ident->GetSecond)), &isMatches);
             if (isMatches) {
-                ifaceList->Add(ident.first);
+                ifaceList->Add(Ptr(ident)->Func(ident->GetFirst));
             }
         }
 
@@ -1544,9 +1526,7 @@ void CNetworkPolicyManagerService::UpdateNetworkRulesLocked()
         }
 
         if (LOGD) {
-//            Slogger::D(TAG, "applying policy " + policy.toString() + " to ifaces "
-//                    + Arrays.toString(ifaces));
-            Slogger::D(TAG, "applying policy");
+            Slogger::D(TAG, "applying policy %s to ifaces %s", Object::ToString(policy).string(), Object::ToString(ifaces).string());
         }
 
         Int64 waringBytes;
@@ -1588,9 +1568,9 @@ void CNetworkPolicyManagerService::UpdateNetworkRulesLocked()
                 ICharSequence::Probe(obj)->ToString(&iface);
                 RemoveInterfaceQuota(iface);
                 SetInterfaceQuota(iface, quotaBytes);
-                newMeteredIfaces->Add(Obj);
+                ISet::Probe(newMeteredIfaces)->Add(StringUtils::ParseCharSequence(iface));
                 if (powerSave) {
-                    connIfaces->Remove(obj);
+                    ISet::Probe(connIfaces)->Remove(StringUtils::ParseCharSequence(iface));
                 }
             }
         }
@@ -1604,14 +1584,14 @@ void CNetworkPolicyManagerService::UpdateNetworkRulesLocked()
         }
     }
 
-        for (Int32 i = Ptr(connIfaces)->Func(GetSize)-1; i >= 0; i--) {
+        for (Int32 i = Ptr(ISet::Probe(connIfaces))->Func(ISet::GetSize)-1; i >= 0; i--) {
             AutoPtr<IInterface> obj;
             connIfaces->GetValueAt(i, (IInterface**)&obj);
             String iface;
-            ICharSequence::Probe(obj)->ToString(iface);
+            ICharSequence::Probe(obj)->ToString(&iface);
             RemoveInterfaceQuota(iface);
-            SetInterfaceQuota(iface, Math::INT64_MAX_VALUE);
-            newMeteredIfaces->Add(Obj);
+            SetInterfaceQuota(iface, Elastos::Core::Math::INT64_MAX_VALUE);
+            ISet::Probe(newMeteredIfaces)->Add(StringUtils::ParseCharSequence(iface));
         }
 
     AutoPtr<IInteger64> iobj;
@@ -1623,27 +1603,25 @@ void CNetworkPolicyManagerService::UpdateNetworkRulesLocked()
     mHandler->SendMessage(msg, &result);
 
     // remove quota on any trailing interfaces
-    for (Int32 i = Ptr(mMeteredIfaces)->Func(mMeteredIfaces->GetSize) - 1; i >= 0; i--) {
+    for (Int32 i = Ptr(ISet::Probe(mMeteredIfaces))->Func(ISet::GetSize) - 1; i >= 0; i--) {
         AutoPtr<IInterface> obj;
         mMeteredIfaces->GetValueAt(i, (IInterface**)&obj);
         String iface;
         ICharSequence::Probe(obj)->ToString(&iface);
         Boolean bContains;
-        newMeteredIfaces->Contains(obj, &bContains);
+        ISet::Probe(newMeteredIfaces)->Contains(obj, &bContains);
         if (!bContains) {
-            RemoveInterfaceQuota(obj);
+            RemoveInterfaceQuota(iface);
         }
     }
-    mMeteredIfaces.Clear();
-    mMeteredIfaces.Insert(newMeteredIfaces.Begin(), newMeteredIfaces.End());
+    mMeteredIfaces = newMeteredIfaces;
 
     AutoPtr<IArrayOf> meteredIfaces;
-    CArrayOf::New(EIID_ICharSequence, mMeteredIfaces.GetSize(), (IArrayOf**)&meteredIfaces);
-    Int32 i;
-    for (i = 0, miIt = mMeteredIfaces.Begin(); miIt != mMeteredIfaces.End(); ++miIt) {
-        AutoPtr<ICharSequence> seq;
-        CString::New(*miIt, (ICharSequence**)&seq);
-        meteredIfaces->Put(i, seq);
+    CArrayOf::New(EIID_ICharSequence, Ptr(ISet::Probe(mMeteredIfaces))->Func(ISet::GetSize), (IArrayOf**)&meteredIfaces);
+    for (Int32 i = 0; i < Ptr(ISet::Probe(mMeteredIfaces))->Func(ISet::GetSize); ++i) {
+        AutoPtr<IInterface> obj;
+        mMeteredIfaces->GetValueAt(i, (IInterface**)&obj);
+        meteredIfaces->Set(i, obj);
     }
 
     AutoPtr<IMessage> msg2;
@@ -1652,10 +1630,6 @@ void CNetworkPolicyManagerService::UpdateNetworkRulesLocked()
     mHandler->SendMessage(msg2, &result);
 }
 
-/**
- * Once any {@link #mNetworkPolicy} are loaded from disk, ensure that we
- * have at least a default mobile policy defined.
- */
 void CNetworkPolicyManagerService::EnsureActiveMobilePolicyLocked()
 {
     if (LOGV) {
@@ -1667,7 +1641,9 @@ void CNetworkPolicyManagerService::EnsureActiveMobilePolicyLocked()
     }
 
     AutoPtr<ITelephonyManagerHelper> teleHelper;
-    CTelephonyManagerHelper::AcquireSingleton((ITelephonyManagerHelper**)&teleHelper);
+    // TODO: Waiting for CTelephonyManagerHelper
+    assert(0);
+    // CTelephonyManagerHelper::AcquireSingleton((ITelephonyManagerHelper**)&teleHelper);
     AutoPtr<ITelephonyManager> tele;
     teleHelper->From(mContext, (ITelephonyManager**)&tele);
 
@@ -1731,7 +1707,7 @@ void CNetworkPolicyManagerService::EnsureActiveMobilePolicyLocked()
     }
 }
 
-void CNetworkPolicyManagerService::ReadPolicyLocked()
+ECode CNetworkPolicyManagerService::ReadPolicyLocked()
 {
     if (LOGV) Slogger::V(TAG, "readPolicyLocked()");
 
@@ -1740,11 +1716,12 @@ void CNetworkPolicyManagerService::ReadPolicyLocked()
     mUidPolicy.Clear();
 
     AutoPtr<IFileInputStream> fis;
-//     //try {
+    //try {
+    ECode ec;
     AutoPtr<IXmlPullParser> in;
     Int32 type, version;
-    FAIL_GOTO(mPolicyFile->OpenRead((IFileInputStream**)&fis), ERROR);
-    in = Xml::NewPullParser();
+    FAIL_GOTO(ec = mPolicyFile->OpenRead((IFileInputStream**)&fis), ERROR);
+    Xml::NewPullParser((IXmlPullParser**)&in);
     in->SetInput((IInputStream*)fis.Get(), String(NULL));
 
     version = VERSION_INIT;
@@ -1753,9 +1730,9 @@ void CNetworkPolicyManagerService::ReadPolicyLocked()
         in->GetName(&tag);
         if (type == IXmlPullParser::START_TAG) {
             if (TAG_POLICY_LIST.Equals(tag)) {
-                FAIL_GOTO(XmlUtils::ReadInt32Attribute(in, ATTR_VERSION, &version), ERROR);
+                FAIL_GOTO(ec = XmlUtils::ReadInt32Attribute(in, ATTR_VERSION, &version), ERROR);
                 if (version >= VERSION_ADDED_RESTRICT_BACKGROUND) {
-                    FAIL_GOTO(XmlUtils::ReadBooleanAttribute(
+                    FAIL_GOTO(ec = XmlUtils::ReadBooleanAttribute(
                             in, ATTR_RESTRICT_BACKGROUND, &mRestrictBackground), ERROR);
                 }
                 else {
@@ -1776,34 +1753,34 @@ void CNetworkPolicyManagerService::ReadPolicyLocked()
                 Boolean inferred;
                 AutoPtr<INetworkTemplate> nwkTemplate;
                 AutoPtr<INetworkPolicy> policy;
-                FAIL_GOTO(XmlUtils::ReadInt32Attribute(in, ATTR_NETWORK_TEMPLATE, &networkTemplate), ERROR);
-                FAIL_GOTO(in->GetAttributeValue(String(NULL), ATTR_SUBSCRIBER_ID, &subscriberId), ERROR);
+                FAIL_GOTO(ec = XmlUtils::ReadInt32Attribute(in, ATTR_NETWORK_TEMPLATE, &networkTemplate), ERROR);
+                FAIL_GOTO(ec = in->GetAttributeValue(String(NULL), ATTR_SUBSCRIBER_ID, &subscriberId), ERROR);
                 if (version >= VERSION_ADDED_NETWORK_ID) {
-                    FAIL_GOTO(in->GetAttributeValue(String(NULL), ATTR_NETWORK_ID, &networkId), ERROR);
+                    FAIL_GOTO(ec = in->GetAttributeValue(String(NULL), ATTR_NETWORK_ID, &networkId), ERROR);
                 }
                 else {
                     networkId = NULL;
                 }
-                FAIL_GOTO(XmlUtils::ReadInt32Attribute(in, ATTR_CYCLE_DAY, &cycleDay), ERROR);
+                FAIL_GOTO(ec = XmlUtils::ReadInt32Attribute(in, ATTR_CYCLE_DAY, &cycleDay), ERROR);
                 if (version >= VERSION_ADDED_TIMEZONE) {
-                    FAIL_GOTO(in->GetAttributeValue(String(NULL), ATTR_CYCLE_TIMEZONE, &cycleTimezone), ERROR);
+                    FAIL_GOTO(ec = in->GetAttributeValue(String(NULL), ATTR_CYCLE_TIMEZONE, &cycleTimezone), ERROR);
                 }
                 else {
                     cycleTimezone = ITime::TIMEZONE_UTC;
                 }
-                FAIL_GOTO(XmlUtils::ReadInt64Attribute(in, ATTR_WARNING_BYTES, &warningBytes), ERROR);
-                FAIL_GOTO(XmlUtils::ReadInt64Attribute(in, ATTR_LIMIT_BYTES, &limitBytes), ERROR);
+                FAIL_GOTO(ec = XmlUtils::ReadInt64Attribute(in, ATTR_WARNING_BYTES, &warningBytes), ERROR);
+                FAIL_GOTO(ec = XmlUtils::ReadInt64Attribute(in, ATTR_LIMIT_BYTES, &limitBytes), ERROR);
                 if (version >= VERSION_SPLIT_SNOOZE) {
-                    FAIL_GOTO(XmlUtils::ReadInt64Attribute(in, ATTR_LAST_LIMIT_SNOOZE, &lastLimitSnooze), ERROR);
+                    FAIL_GOTO(ec = XmlUtils::ReadInt64Attribute(in, ATTR_LAST_LIMIT_SNOOZE, &lastLimitSnooze), ERROR);
                 }
                 else if (version >= VERSION_ADDED_SNOOZE) {
-                    FAIL_GOTO(XmlUtils::ReadInt64Attribute(in, ATTR_LAST_SNOOZE, &lastLimitSnooze), ERROR);
+                    FAIL_GOTO(ec = XmlUtils::ReadInt64Attribute(in, ATTR_LAST_SNOOZE, &lastLimitSnooze), ERROR);
                 }
                 else {
                     lastLimitSnooze = INetworkPolicy::SNOOZE_NEVER;
                 }
                 if (version >= VERSION_ADDED_METERED) {
-                    FAIL_GOTO(XmlUtils::ReadBooleanAttribute(in, ATTR_METERED, &metered), ERROR);
+                    FAIL_GOTO(ec = XmlUtils::ReadBooleanAttribute(in, ATTR_METERED, &metered), ERROR);
                 }
                 else {
                     switch (networkTemplate) {
@@ -1817,13 +1794,13 @@ void CNetworkPolicyManagerService::ReadPolicyLocked()
                     }
                 }
                 if (version >= VERSION_SPLIT_SNOOZE) {
-                    FAIL_GOTO(XmlUtils::ReadInt64Attribute(in, ATTR_LAST_WARNING_SNOOZE, &lastWarningSnooze), ERROR);
+                    FAIL_GOTO(ec = XmlUtils::ReadInt64Attribute(in, ATTR_LAST_WARNING_SNOOZE, &lastWarningSnooze), ERROR);
                 }
                 else {
                     lastWarningSnooze = INetworkPolicy::SNOOZE_NEVER;
                 }
                 if (version >= VERSION_ADDED_INFERRED) {
-                    FAIL_GOTO(XmlUtils::ReadBooleanAttribute(in, ATTR_INFERRED, &inferred), ERROR);
+                    FAIL_GOTO(ec = XmlUtils::ReadBooleanAttribute(in, ATTR_INFERRED, &inferred), ERROR);
                 }
                 else {
                     inferred = FALSE;
@@ -1833,15 +1810,15 @@ void CNetworkPolicyManagerService::ReadPolicyLocked()
                 CNetworkPolicy::New(nwkTemplate, cycleDay,
                         cycleTimezone, warningBytes, limitBytes, lastWarningSnooze,
                         lastLimitSnooze, metered, inferred, (INetworkPolicy**)&policy);
-                mNetworkPolicy[nwkTemplate] = policy;
+                mNetworkPolicy->Put(nwkTemplate, policy);
             }
             else if (TAG_UID_POLICY.Equals(tag)) {
                 Int32 uid;
                 Int32 policy;
                 AutoPtr<IUserHandleHelper> helper;
                 Boolean isapp;
-                FAIL_GOTO(XmlUtils::ReadInt32Attribute(in, ATTR_UID, &uid), ERROR);
-                FAIL_GOTO(XmlUtils::ReadInt32Attribute(in, ATTR_POLICY, &policy), ERROR);
+                FAIL_GOTO(ec = XmlUtils::ReadInt32Attribute(in, ATTR_UID, &uid), ERROR);
+                FAIL_GOTO(ec = XmlUtils::ReadInt32Attribute(in, ATTR_POLICY, &policy), ERROR);
 
                 CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
                 helper->IsApp(uid, &isapp);
@@ -1858,8 +1835,8 @@ void CNetworkPolicyManagerService::ReadPolicyLocked()
                 AutoPtr<IUserHandleHelper> helper;
                 Int32 uid;
                 Boolean isapp;
-                FAIL_GOTO(XmlUtils::ReadInt32Attribute(in, ATTR_APP_ID, &appId), ERROR);
-                FAIL_GOTO(XmlUtils::ReadInt32Attribute(in, ATTR_POLICY, &policy), ERROR);
+                FAIL_GOTO(ec = XmlUtils::ReadInt32Attribute(in, ATTR_APP_ID, &appId), ERROR);
+                FAIL_GOTO(ec = XmlUtils::ReadInt32Attribute(in, ATTR_POLICY, &policy), ERROR);
 
                 // TODO: set for other users during upgrade
                 CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
@@ -1875,24 +1852,32 @@ void CNetworkPolicyManagerService::ReadPolicyLocked()
         }
     }
 ERROR:
-// //    } catch (FileNotFoundException e) {
-// //        // missing policy is okay, probably first boot
-// //        upgradeLegacyBackgroundData();
-// //    } catch (IOException e) {
-// //        Log.wtf(TAG, "problem reading network policy", e);
-// //    } catch (XmlPullParserException e) {
-// //        Log.wtf(TAG, "problem reading network policy", e);
-// //    } finally {
+    if (FAILED(ec)) {
+    // } catch (FileNotFoundException e) {
+        if ((ECode)E_FILE_NOT_FOUND_EXCEPTION == ec) {
+            // missing policy is okay, probably first boot
+            UpgradeLegacyBackgroundData();
+            ec = NOERROR;
+        }
+    // } catch (IOException e) {
+        else if ((ECode)E_IO_EXCEPTION == ec) {
+            Logger::W(TAG, "problem reading network policy %d", ec);
+            ec = NOERROR;
+        }
+    // } catch (XmlPullParserException e) {
+        else if ((ECode)E_XML_PULL_PARSER_EXCEPTION == ec) {
+            Logger::W(TAG, "problem reading network policy %d", ec);
+            ec = NOERROR;
+        }
+    }
+    // } finally {
     AutoPtr<IIoUtils> ioUtils;
     CIoUtils::AcquireSingleton((IIoUtils**)&ioUtils);
-    ioUtils->CloseQuietly(fis);
-// //    }
+    ioUtils->CloseQuietly(ICloseable::Probe(fis));
+    // }
+    return ec;
 }
 
-/**
- * Upgrade legacy background data flags, notifying listeners of one last
- * change to always-true.
- */
 void CNetworkPolicyManagerService::UpgradeLegacyBackgroundData()
 {
     AutoPtr<IContentResolver> resolver;
@@ -1915,25 +1900,26 @@ void CNetworkPolicyManagerService::UpgradeLegacyBackgroundData()
     }
 }
 
-void CNetworkPolicyManagerService::WritePolicyLocked()
+ECode CNetworkPolicyManagerService::WritePolicyLocked()
 {
-    //if (LOGV) Slog.v(TAG, "writePolicyLocked()");
+    if (LOGV) Slogger::V(TAG, "writePolicyLocked()");
 
     AutoPtr<IFileOutputStream> fos;
     AutoPtr<IXmlSerializer> out;
     AutoPtr<IBoolean> value;
     HashMap<Int32, Int32>::Iterator uidPolicyIt;
-    // //try {
-    FAIL_GOTO(mPolicyFile->StartWrite((IFileOutputStream**)&fos), ERROR);
+    // try {
+    ECode ec;
+    FAIL_GOTO(ec = mPolicyFile->StartWrite((IFileOutputStream**)&fos), ERROR);
 
     CFastXmlSerializer::New((IFastXmlSerializer**)&out);
-    FAIL_GOTO(out->SetOutput((IOutputStream*)fos.Get(), String("utf-8")), ERROR);
+    FAIL_GOTO(ec = out->SetOutput((IOutputStream*)fos.Get(), String("utf-8")), ERROR);
     CBoolean::New(TRUE, (IBoolean**)&value);
-    FAIL_GOTO(out->StartDocument(String(NULL), value), ERROR);
+    FAIL_GOTO(ec = out->StartDocument(String(NULL), Ptr(value)->Func(value->GetValue)), ERROR);
 
-    FAIL_GOTO(out->WriteStartTag(String(NULL), TAG_POLICY_LIST), ERROR);
-    FAIL_GOTO(XmlUtils::WriteInt32Attribute(out, ATTR_VERSION, VERSION_LATEST), ERROR);
-    FAIL_GOTO(XmlUtils::WriteBooleanAttribute(out, ATTR_RESTRICT_BACKGROUND, mRestrictBackground), ERROR);
+    FAIL_GOTO(ec = out->WriteStartTag(String(NULL), TAG_POLICY_LIST), ERROR);
+    FAIL_GOTO(ec = XmlUtils::WriteInt32Attribute(out, ATTR_VERSION, VERSION_LATEST), ERROR);
+    FAIL_GOTO(ec = XmlUtils::WriteBooleanAttribute(out, ATTR_RESTRICT_BACKGROUND, mRestrictBackground), ERROR);
 
     // write all known network policies
     for (Int32 i = 0; i < Ptr(mNetworkPolicy)->Func(mNetworkPolicy->GetSize); i++) {
@@ -1950,34 +1936,34 @@ void CNetworkPolicyManagerService::WritePolicyLocked()
         Boolean metered, inferred;
         policy->GetTemplate((INetworkTemplate**)&nwkTemplate);
 
-        FAIL_GOTO(out->WriteStartTag(String(NULL), TAG_NETWORK_POLICY), ERROR);
+        FAIL_GOTO(ec = out->WriteStartTag(String(NULL), TAG_NETWORK_POLICY), ERROR);
         nwkTemplate->GetMatchRule(&rule);
-        FAIL_GOTO(XmlUtils::WriteInt32Attribute(out, ATTR_NETWORK_TEMPLATE, rule), ERROR);
+        FAIL_GOTO(ec = XmlUtils::WriteInt32Attribute(out, ATTR_NETWORK_TEMPLATE, rule), ERROR);
         nwkTemplate->GetSubscriberId(&subscriberId);
         if (!subscriberId.IsNull()) {
-            FAIL_GOTO(out->WriteAttribute(String(NULL), ATTR_SUBSCRIBER_ID, subscriberId), ERROR);
+            FAIL_GOTO(ec = out->WriteAttribute(String(NULL), ATTR_SUBSCRIBER_ID, subscriberId), ERROR);
         }
         nwkTemplate->GetNetworkId(&networkId);
         if (!networkId.IsNull()) {
-            FAIL_GOTO(out->WriteAttribute(String(NULL), ATTR_NETWORK_ID, networkId), ERROR);
+            FAIL_GOTO(ec = out->WriteAttribute(String(NULL), ATTR_NETWORK_ID, networkId), ERROR);
         }
         policy->GetCycleDay(&cycleDay);
-        FAIL_GOTO(XmlUtils::WriteInt32Attribute(out, ATTR_CYCLE_DAY, cycleDay), ERROR);
+        FAIL_GOTO(ec = XmlUtils::WriteInt32Attribute(out, ATTR_CYCLE_DAY, cycleDay), ERROR);
         policy->GetCycleTimezone(&cycleTimezone);
-        FAIL_GOTO(out->WriteAttribute(String(NULL), ATTR_CYCLE_TIMEZONE, cycleTimezone), ERROR);
+        FAIL_GOTO(ec = out->WriteAttribute(String(NULL), ATTR_CYCLE_TIMEZONE, cycleTimezone), ERROR);
         policy->GetWarningBytes(&waringBytes);
-        FAIL_GOTO(XmlUtils::WriteInt64Attribute(out, ATTR_WARNING_BYTES, waringBytes), ERROR);
+        FAIL_GOTO(ec = XmlUtils::WriteInt64Attribute(out, ATTR_WARNING_BYTES, waringBytes), ERROR);
         policy->GetLimitBytes(&limitBytes);
-        FAIL_GOTO(XmlUtils::WriteInt64Attribute(out, ATTR_LIMIT_BYTES, limitBytes), ERROR);
+        FAIL_GOTO(ec = XmlUtils::WriteInt64Attribute(out, ATTR_LIMIT_BYTES, limitBytes), ERROR);
         policy->GetLastWarningSnooze(&lastWarningSnooze);
-        FAIL_GOTO(XmlUtils::WriteInt64Attribute(out, ATTR_LAST_WARNING_SNOOZE, lastWarningSnooze), ERROR);
+        FAIL_GOTO(ec = XmlUtils::WriteInt64Attribute(out, ATTR_LAST_WARNING_SNOOZE, lastWarningSnooze), ERROR);
         policy->GetLastLimitSnooze(&lastLimitSnooze);
-        FAIL_GOTO(XmlUtils::WriteInt64Attribute(out, ATTR_LAST_LIMIT_SNOOZE, lastLimitSnooze), ERROR);
+        FAIL_GOTO(ec = XmlUtils::WriteInt64Attribute(out, ATTR_LAST_LIMIT_SNOOZE, lastLimitSnooze), ERROR);
         policy->GetMetered(&metered);
-        FAIL_GOTO(XmlUtils::WriteBooleanAttribute(out, ATTR_METERED, metered), ERROR);
+        FAIL_GOTO(ec = XmlUtils::WriteBooleanAttribute(out, ATTR_METERED, metered), ERROR);
         policy->GetInferred(&inferred);
-        FAIL_GOTO(XmlUtils::WriteBooleanAttribute(out, ATTR_INFERRED, inferred), ERROR);
-        FAIL_GOTO(out->WriteEndTag(String(NULL), TAG_NETWORK_POLICY), ERROR);
+        FAIL_GOTO(ec = XmlUtils::WriteBooleanAttribute(out, ATTR_INFERRED, inferred), ERROR);
+        FAIL_GOTO(ec = out->WriteEndTag(String(NULL), TAG_NETWORK_POLICY), ERROR);
     }
 
     // write all known uid policies
@@ -1990,23 +1976,29 @@ void CNetworkPolicyManagerService::WritePolicyLocked()
             continue;
         }
 
-        FAIL_GOTO(out->WriteStartTag(String(NULL), TAG_UID_POLICY), ERROR);
-        FAIL_GOTO(XmlUtils::WriteInt32Attribute(out, ATTR_UID, uid), ERROR);
-        FAIL_GOTO(XmlUtils::WriteInt32Attribute(out, ATTR_POLICY, policy), ERROR);
-        FAIL_GOTO(out->WriteEndTag(String(NULL), TAG_UID_POLICY), ERROR);
+        FAIL_GOTO(ec = out->WriteStartTag(String(NULL), TAG_UID_POLICY), ERROR);
+        FAIL_GOTO(ec = XmlUtils::WriteInt32Attribute(out, ATTR_UID, uid), ERROR);
+        FAIL_GOTO(ec = XmlUtils::WriteInt32Attribute(out, ATTR_POLICY, policy), ERROR);
+        FAIL_GOTO(ec = out->WriteEndTag(String(NULL), TAG_UID_POLICY), ERROR);
     }
 
-    FAIL_GOTO(out->WriteEndTag(String(NULL), TAG_POLICY_LIST), ERROR);
-    FAIL_GOTO(out->EndDocument(), ERROR);
+    FAIL_GOTO(ec = out->WriteEndTag(String(NULL), TAG_POLICY_LIST), ERROR);
+    FAIL_GOTO(ec = out->EndDocument(), ERROR);
 
-    FAIL_GOTO(mPolicyFile->FinishWrite(fos), ERROR);
-    return;
-    // //} catch (IOException e) {
+    FAIL_GOTO(ec = mPolicyFile->FinishWrite(fos), ERROR);
+    return NOERROR;
 ERROR:
-    if (fos != NULL) {
-        mPolicyFile->FailWrite(fos);
-    }
+    if (FAILED(ec)) {
+    // //} catch (IOException e) {
+        if ((ECode) E_IO_EXCEPTION == ec) {
+            if (fos != NULL) {
+                mPolicyFile->FailWrite(fos);
+            }
+            ec = NOERROR;
+        }
     // //}
+    }
+    return ec;
 }
 
 ECode CNetworkPolicyManagerService::SetUidPolicy(
@@ -2025,8 +2017,61 @@ ECode CNetworkPolicyManagerService::SetUidPolicy(
     }
 
     synchronized(mRulesLock) {
-        Int32 oldPolicy;
-        mUidPolicy->Get(uid, POLICY_NONE, &oldPolicy);
+        Int32 oldPolicy = INetworkPolicyManager::POLICY_NONE;
+        if (mUidPolicy.Find(uid) != mUidPolicy.End())
+            oldPolicy = mUidPolicy[uid];
+        if (oldPolicy != policy) {
+            SetUidPolicyUncheckedLocked(uid, policy, TRUE);
+        }
+    }
+    return NOERROR;
+}
+
+ECode CNetworkPolicyManagerService::AddUidPolicy(
+    /* [in] */ Int32 uid,
+    /* [in] */ Int32 policy)
+{
+    mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::MANAGE_NETWORK_POLICY, TAG);
+
+    AutoPtr<IUserHandleHelper> helper;
+    CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
+    Boolean isApp;
+    helper->IsApp(uid, &isApp);
+    if (!isApp) {
+        Logger::E(TAG, "cannot apply policy to UID %d", uid);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    synchronized(mRulesLock) {
+        Int32 oldPolicy = INetworkPolicyManager::POLICY_NONE;
+        if (mUidPolicy.Find(uid) != mUidPolicy.End())
+            oldPolicy = mUidPolicy[uid];
+        policy |= oldPolicy;
+        if (oldPolicy != policy) {
+            SetUidPolicyUncheckedLocked(uid, policy, TRUE);
+        }
+    }
+    return NOERROR;
+}
+
+ECode CNetworkPolicyManagerService::RemoveUidPolicy(
+    /* [in] */ Int32 uid,
+    /* [in] */ Int32 policy)
+{
+    mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::MANAGE_NETWORK_POLICY, TAG);
+
+    AutoPtr<IUserHandleHelper> helper;
+    CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
+    Boolean isApp;
+    helper->IsApp(uid, &isApp);
+    if (!isApp) {
+        Logger::E(TAG, "cannot apply policy to UID %d", uid);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    synchronized(mRulesLock) {
+        Int32 oldPolicy = INetworkPolicyManager::POLICY_NONE;
+        if (mUidPolicy.Find(uid) != mUidPolicy.End())
+            oldPolicy = mUidPolicy[uid];
+        policy = oldPolicy & ~policy;
         if (oldPolicy != policy) {
             SetUidPolicyUncheckedLocked(uid, policy, TRUE);
         }
@@ -2089,10 +2134,22 @@ ECode CNetworkPolicyManagerService::GetUidsWithPolicy(
     return NOERROR;
 }
 
-/**
- * Remove any policies associated with given {@link UserHandle}, persisting
- * if any changes are made.
- */
+ECode CNetworkPolicyManagerService::GetPowerSaveAppIdWhitelist(
+    /* [out, callee] */ ArrayOf<Int32>** result)
+{
+    mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::MANAGE_NETWORK_POLICY, TAG);
+    synchronized(mRulesLock) {
+        Int32 size;
+        mPowerSaveWhitelistAppIds->GetSize(&size);
+        AutoPtr<ArrayOf<Int32> > appids = ArrayOf<Int32>::Alloc(size);
+        for (Int32 i = 0; i < size; i++) {
+            mPowerSaveWhitelistAppIds->KeyAt(i, &((*appids)[i]));
+        }
+        FUNC_RETURN(appids)
+    }
+    return NOERROR;
+}
+
 void CNetworkPolicyManagerService::RemovePoliciesForUserLocked(
     /* [in] */ Int32 userId)
 {
@@ -2124,7 +2181,7 @@ void CNetworkPolicyManagerService::RemovePoliciesForUserLocked(
 }
 
 ECode CNetworkPolicyManagerService::RegisterListener(
-    /* [in] */ INetworkPolicyListener* listener)
+    /* [in] */ IINetworkPolicyListener* listener)
 {
     // TODO: create permission for observing network policy
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
@@ -2137,7 +2194,7 @@ ECode CNetworkPolicyManagerService::RegisterListener(
 }
 
 ECode CNetworkPolicyManagerService::UnregisterListener(
-    /* [in] */ INetworkPolicyListener* listener)
+    /* [in] */ IINetworkPolicyListener* listener)
 {
     // TODO: create permission for observing network policy
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
@@ -2160,7 +2217,7 @@ ECode CNetworkPolicyManagerService::SetNetworkPolicies(
             AutoPtr<INetworkPolicy> policy = (*policies)[i];
             AutoPtr<INetworkTemplate> nwkTemplate;
             policy->GetTemplate((INetworkTemplate**)&nwkTemplate);
-            mNetworkPolicy[nwkTemplate] = policy;
+            mNetworkPolicy->Put(nwkTemplate, policy);
         }
 
         UpdateNetworkEnabledLocked();
@@ -2176,7 +2233,7 @@ void CNetworkPolicyManagerService::AddNetworkPolicyLocked(
 {
     AutoPtr<INetworkTemplate> nwkTemplate;
     policy->GetTemplate((INetworkTemplate**)&nwkTemplate);
-    mNetworkPolicy[nwkTemplate] = policy;
+    mNetworkPolicy->Put(nwkTemplate, policy);
 
     UpdateNetworkEnabledLocked();
     UpdateNetworkRulesLocked();
@@ -2195,13 +2252,13 @@ ECode CNetworkPolicyManagerService::GetNetworkPolicies(
             Elastos::Droid::Manifest::permission::READ_PHONE_STATE, TAG));
 
     synchronized(mRulesLock) {
-        *policies = ArrayOf<INetworkPolicy*>::Alloc(mNetworkPolicy.GetSize());
-        REFCOUNT_ADD(*policies);
-        Int32 index = 0;
-        HashMap<AutoPtr<INetworkTemplate>, AutoPtr<INetworkPolicy> >::Iterator it;
-        for (it = mNetworkPolicy.Begin(); it != mNetworkPolicy.End(); ++it, ++index) {
-            (*policies)->Set(index, it->mSecond);
+        AutoPtr<ArrayOf<IInterface*> > newArray;
+        Ptr(mNetworkPolicy)->Func(mNetworkPolicy->GetValues)->ToArray(ArrayOf<IInterface*>::Alloc(Ptr(mNetworkPolicy)->Func(mNetworkPolicy->GetSize)), (ArrayOf<IInterface*>**)&newArray);
+        *policies = ArrayOf<INetworkPolicy*>::Alloc(newArray->GetLength());
+        for (Int32 i = 0; i < newArray->GetLength(); ++i) {
+            (*policies)->Set(i, INetworkPolicy::Probe((*newArray)[i]));
         }
+        REFCOUNT_ADD(*policies)
     }
     return NOERROR;
 }
@@ -2229,12 +2286,9 @@ ECode CNetworkPolicyManagerService::PerformSnooze(
     Int64 currentTime = CurrentTimeMillis();
     synchronized(mRulesLock) {
         // find and snooze local policy that matches
-        AutoPtr<INetworkPolicy> policy;
-        HashMap< AutoPtr<INetworkTemplate>, AutoPtr<INetworkPolicy> >::Iterator it
-                = mNetworkPolicy.Find(templ);
-        if (it != mNetworkPolicy.End()) {
-            policy = it->mSecond;
-        }
+        AutoPtr<IInterface> obj;
+        mNetworkPolicy->Get(templ, (IInterface**)&obj);
+        AutoPtr<INetworkPolicy> policy = INetworkPolicy::Probe(obj);
         if (policy == NULL) {
             //throw new IllegalArgumentException("unable to find policy for " + templ);
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -2269,7 +2323,7 @@ ECode CNetworkPolicyManagerService::SetRestrictBackground(
     MaybeRefreshTrustedTime();
     synchronized(mRulesLock) {
         mRestrictBackground = restrictBackground;
-        UpdateRulesForRestrictBackgroundLocked();
+        UpdateRulesForGlobalChangeLocked(FALSE);
         UpdateNotificationsLocked();
         WritePolicyLocked();
     }
@@ -2298,9 +2352,10 @@ ECode CNetworkPolicyManagerService::GetRestrictBackground(
 AutoPtr<INetworkPolicy> CNetworkPolicyManagerService::FindPolicyForNetworkLocked(
     /* [in] */ INetworkIdentity* ident)
 {
-    HashMap<AutoPtr<INetworkTemplate>, AutoPtr<INetworkPolicy> >::Iterator it;
-    for(it = mNetworkPolicy.Begin(); it != mNetworkPolicy.End(); ++it) {
-        AutoPtr<INetworkPolicy> policy = it->mSecond;
+    for (Int32 i = Ptr(mNetworkPolicy)->Func(mNetworkPolicy->GetSize) - 1; i >= 0; i--) {
+        AutoPtr<IInterface> obj;
+        mNetworkPolicy->GetValueAt(i, (IInterface**)&obj);
+        AutoPtr<INetworkPolicy> policy = INetworkPolicy::Probe(obj);
         AutoPtr<INetworkTemplate> nwkTemplate;
         policy->GetTemplate((INetworkTemplate**)&nwkTemplate);
         Boolean isMatched;
@@ -2429,26 +2484,28 @@ void CNetworkPolicyManagerService::Dump(
     /* [in] */ IPrintWriter* writer,
     /* [in] */ const ArrayOf<String>& args)
 {
-    FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP, TAG));
+    mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP, TAG);
 
     AutoPtr<IIndentingPrintWriter> fout;
-    CIndentingPrintWriter::New(writer, String("  "), (IIndentingPrintWriter**)&fout);
-    AutoPtr<IPrintWriter> fout;
-    CPrintWriter::New(writer, String("  "), (IPrintWriter**)&fout);
+    CIndentingPrintWriter::New(IWriter::Probe(writer), String("  "), (IIndentingPrintWriter**)&fout);
 
-    AutoPtr<HashSet<String> > argSet = new HashSet<String>();
+    AutoPtr<IArraySet> argSet;
+    CArraySet::New(args.GetLength(), (IArraySet**)&argSet);
 
     for(Int32 i = 0; i < args.GetLength(); i++) {
         String arg = args[i];
-        argSet->Insert(arg);
+        ISet::Probe(argSet)->Add(StringUtils::ParseCharSequence(arg));
     }
 
     synchronized(mRulesLock) {
-        AutoPtr<HashSet<String> >::Iterator iter1 = argSet->Find(String("--unsnooze"));
-        if (iter1 != argSet->End()) {
-            HashMap<AutoPtr<INetworkTemplate>, AutoPtr<INetworkPolicy> >::Iterator iter2;
-            for(iter2 = mNetworkPolicy->Begin(); iter2 != mNetworkPolicy->End(); iter2++) {
-                AutoPtr<INetworkPolicy> policy = iter2->mSecond;
+        Boolean isContains;
+        ISet::Probe(argSet)->Contains(StringUtils::ParseCharSequence(String("--unsnooze")), &isContains);
+
+        if (isContains) {
+            for (Int32 i = Ptr(mNetworkPolicy)->Func(mNetworkPolicy->GetSize) - 1; i >= 0; i--) {
+                AutoPtr<IInterface> obj;
+                mNetworkPolicy->GetValueAt(i, (IInterface**)&obj);
+                AutoPtr<INetworkPolicy> policy = INetworkPolicy::Probe(obj);
                 policy->ClearSnooze();
             }
 
@@ -2457,81 +2514,121 @@ void CNetworkPolicyManagerService::Dump(
             UpdateNotificationsLocked();
             WritePolicyLocked();
 
-            fout->PrintStringln(String("Cleared snooze timestamps"));
+            IPrintWriter::Probe(fout)->Println(String("Cleared snooze timestamps"));
             return;
         }
 
-        fout->PrintString(String("Restrict background: "));
-        fout->PrintBooleanln(mRestrictBackground);
-        fout->PrintStringln(String("Network policies:"));
+        IPrintWriter::Probe(fout)->Print(String("Restrict background: "));
+        IPrintWriter::Probe(fout)->Println(mRestrictBackground);
+        IPrintWriter::Probe(fout)->Print(String("Restrict power: "));
+        IPrintWriter::Probe(fout)->Println(mRestrictPower);
+        IPrintWriter::Probe(fout)->Print(String("Current foreground state: "));
+        IPrintWriter::Probe(fout)->Println(mCurForegroundState);
+        IPrintWriter::Probe(fout)->Println(String("Network policies:"));
         fout->IncreaseIndent();
 
-        HashMap<AutoPtr<INetworkTemplate>, AutoPtr<INetworkPolicy> >::Iterator iter3;
-        for(iter3 = mNetworkPolicy->Begin(); iter3 != mNetworkPolicy->End(); iter3++) {
-            AutoPtr<INetworkPolicy> policy = iter3->mSecond;
+        for (Int32 i = Ptr(mNetworkPolicy)->Func(mNetworkPolicy->GetSize) - 1; i >= 0; i--) {
+            AutoPtr<IInterface> obj;
+            mNetworkPolicy->GetValueAt(i, (IInterface**)&obj);
+            AutoPtr<INetworkPolicy> policy = INetworkPolicy::Probe(obj);
             String result;
-            policy->ToString(&result);
-            fout->PrintStringln(result);
+            IObject::Probe(policy)->ToString(&result);
+            IPrintWriter::Probe(fout)->Println(result);
         }
 
         fout->DecreaseIndent();
 
-        fout->PrintStringln(String("Policy for UIDs:"));
+        IPrintWriter::Probe(fout)->Print(String("Metered ifaces: "));
+        IPrintWriter::Probe(fout)->Println(Object::ToString(mMeteredIfaces));
+
+        IPrintWriter::Probe(fout)->Println(String("Policy for UIDs:"));
         fout->IncreaseIndent();
 
-        HashMap<Int32, Int32>::Iterator iter4 = mUidPolicy->Begin();
-        for (; iter4 != mUidPolicy->End(); iter4++) {
+        HashMap<Int32, Int32>::Iterator iter4 = mUidPolicy.Begin();
+        for (; iter4 != mUidPolicy.End(); iter4++) {
             Int32 uid = iter4->mFirst;
             Int32 policy = iter4->mSecond;
-            fout->PrintString(String("UID="));
-            fout->PrintInt32(uid);
-            fout->PrintString(String(" policy="));
-            CNetworkPolicyManager::DumpPolicy(fout, policy);
-            fout->Println();
+            IPrintWriter::Probe(fout)->Print(String("UID="));
+            IPrintWriter::Probe(fout)->Print(uid);
+            IPrintWriter::Probe(fout)->Print(String(" policy="));
+            AutoPtr<INetworkPolicyManagerHelper> helper;
+            CNetworkPolicyManagerHelper::AcquireSingleton((INetworkPolicyManagerHelper**)&helper);
+            helper->DumpPolicy(IPrintWriter::Probe(fout), policy);
+            IPrintWriter::Probe(fout)->Println();
         }
         fout->DecreaseIndent();
 
-        AutoPtr<HashSet<Int32> > knownUids = new HashSet<Int32>();
-        CollectKeys(mUidForeground, knownUids);//HashMap<Int32, Boolean>
-        CollectKeys(mUidRules, knownUids);//HashMap<Int32, Int32>
+        Int32 size;
+        mPowerSaveWhitelistAppIds->GetSize(&size);
+        if (size > 0) {
+            IPrintWriter::Probe(fout)->Println(String("Power save whitelist app ids:"));
+            fout->IncreaseIndent();
+            for (Int32 i = 0; i < size; i++) {
+                IPrintWriter::Probe(fout)->Print(String("UID="));
+                Int32 key;
+                mPowerSaveWhitelistAppIds->KeyAt(i, &key);
+                IPrintWriter::Probe(fout)->Print(key);
+                IPrintWriter::Probe(fout)->Print(String(": "));
+                Boolean value;
+                mPowerSaveWhitelistAppIds->ValueAt(i, &value);
+                IPrintWriter::Probe(fout)->Print(value);
+                IPrintWriter::Probe(fout)->Println();
+            }
+            fout->DecreaseIndent();
+        }
 
-        fout->PrintStringln(String("Status for known UIDs:"));
+        AutoPtr<ISparseBooleanArray> knownUids;
+        CSparseBooleanArray::New((ISparseBooleanArray**)&knownUids);
+        CollectKeys(mUidState, knownUids);
+        CollectKeys(mUidRules, knownUids);
+
+        IPrintWriter::Probe(fout)->Println(String("Status for known UIDs:"));
         fout->IncreaseIndent();
 
-        size = knownUids->Size();
-        HashSet<Int32>::Iterator iter5 = knownUids->Begin();
-        for (Int32 i = 0; i < size; i++)
-        for(; iter5 != knownUids->End(); iter5++) {
-            Int32 uid = *iter5;
-            fout->PrintString(String("UID="));
-            fout->PrintInt32(uid);
+        knownUids->GetSize(&size);
+        for (Int32 i = 0; i < size; i++) {
+            Int32 uid;
+            knownUids->KeyAt(i, &uid);
+            IPrintWriter::Probe(fout)->Print(String("UID="));
+            IPrintWriter::Probe(fout)->Print(uid);
 
-            fout->PrintString(String(" foreground="));
-            Int32 foregroundIndex = mUidPidForeground.IndexOfKey(uid);
-            HashMap<Int32, AutoPtr<HashMap<Int32, Boolean> > >::Iterator iter6 = mUidPidForeground.Find(uid);
-            if (iter6 == mUidPidForeground.End())
+            Int32 state;
+            mUidState->Get(uid, IActivityManager::PROCESS_STATE_CACHED_EMPTY, &state);
+            IPrintWriter::Probe(fout)->Print(String(" state="));
+            IPrintWriter::Probe(fout)->Print(state);
+            IPrintWriter::Probe(fout)->Print(state <= mCurForegroundState ? String(" (fg)") : String(" (bg)"));
+
+            IPrintWriter::Probe(fout)->Print(String(" pids="));
+            Int32 foregroundIndex;
+            mUidPidState->IndexOfKey(uid, &foregroundIndex);
+            if (foregroundIndex < 0)
             {
-                fout->PrintString(String("UNKNOWN"));
+                IPrintWriter::Probe(fout)->Print(String("UNKNOWN"));
             }
             else
             {
-                DumpSparseBooleanArray(fout, iter6->mSecond);
-                DumpHashMap(fout, iter6->mSecond);
+                AutoPtr<IInterface> obj;
+                mUidPidState->ValueAt(foregroundIndex, (IInterface**)&obj);
+                DumpSparseInt32Array(IPrintWriter::Probe(fout), ISparseInt32Array::Probe(obj));
             }
 
-            fout->PrintString(String(" rules="));
-            Int32 rulesIndex = mUidRules->IndexOfKey(uid);
-            HashMap<Int32, Int32>::Iterator iter7 = mUidRules->Find(uid);
-            if (iter7 == mUidRules->End())
+            IPrintWriter::Probe(fout)->Print(String(" rules="));
+            Int32 rulesIndex;
+            mUidRules->IndexOfKey(uid, &rulesIndex);
+            if (rulesIndex < 0)
             {
-                fout->PrintString(String("UNKNOWN"));
+                IPrintWriter::Probe(fout)->Print(String("UNKNOWN"));
             }
             else
             {
-                CNetworkPolicyManager::DumpRules(fout, iter7->mSecond);//??
+                Int32 value;
+                mUidRules->ValueAt(rulesIndex, &value);
+                AutoPtr<INetworkPolicyManagerHelper> helper;
+                CNetworkPolicyManagerHelper::AcquireSingleton((INetworkPolicyManagerHelper**)&helper);
+                helper->DumpRules(IPrintWriter::Probe(fout), value);
             }
 
-            fout->Println();
+            IPrintWriter::Probe(fout)->Println();
         }
         fout->DecreaseIndent();
     }
@@ -2547,48 +2644,51 @@ ECode CNetworkPolicyManagerService::IsUidForeground(
             Elastos::Droid::Manifest::permission::MANAGE_NETWORK_POLICY, TAG));
 
     synchronized(mRulesLock) {
-        // only really in foreground when screen is also on
-        //*isUidForeground = (mUidForeground->Get(uid, FALSE) && mScreenOn);
-        Boolean isForeground = FALSE;
-        Int32BooleanMapIterator it = mUidForeground.Find(uid);
-        if (it != mUidForeground.End()) {
-            isForeground = it->mSecond;
-        }
-        *isUidForeground = isForeground && mScreenOn;
+        *isUidForeground = IsUidForegroundLocked(uid);
     }
     return NOERROR;
 }
 
-/**
- * Foreground for PID changed; recompute foreground at UID level. If
- * changed, will trigger {@link #updateRulesForUidLocked(int)}.
- */
-void CNetworkPolicyManagerService::ComputeUidForegroundLocked(
-    /* [in] */  Int32 uid)
+Boolean CNetworkPolicyManagerService::IsUidForegroundLocked(
+    /* [in] */ Int32 uid)
 {
-    UidPidForegroundMapIterator it = mUidPidForeground.Find(uid);
-    assert(it != mUidPidForeground.End());
+        // only really in foreground when screen is also on
+        Int32 state;
+        mUidState->Get(uid, IActivityManager::PROCESS_STATE_CACHED_EMPTY, &state);
+        return mScreenOn && state <= mCurForegroundState;
+}
 
-    AutoPtr<Int32BooleanMap> pidForeground = it->mSecond;
+void CNetworkPolicyManagerService::ComputeUidStateLocked(
+    /* [in] */ Int32 uid)
+{
+    AutoPtr<IInterface> obj;
+    mUidPidState->Get(uid, (IInterface**)&obj);
+    AutoPtr<ISparseInt32Array> pidState = ISparseInt32Array::Probe(obj);
+
     // current pid is dropping foreground; examine other pids
-    Boolean uidForeground = FALSE;
-    Int32BooleanMapIterator it2;
-    for (it2 = pidForeground->Begin(); it2 != pidForeground->End(); ++it2) {
-        if (it2->mSecond == TRUE) {
-            uidForeground = TRUE;
-            break;
+    Int32 uidState = IActivityManager::PROCESS_STATE_CACHED_EMPTY;
+    if (pidState != NULL) {
+        Int32 size;
+        pidState->GetSize(&size);
+        for (Int32 i = 0; i < size; i++) {
+            Int32 state;
+            pidState->ValueAt(i, &state);
+            if (state < uidState) {
+                uidState = state;
+            }
         }
     }
 
-    Boolean oldUidForeground = FALSE;
-    it2 = mUidForeground.Find(uid);
-    if(it2 != mUidForeground.End()) {
-        oldUidForeground = it2->mSecond;
-    }
-    if (oldUidForeground != uidForeground) {
-        // foreground changed, push updated rules
-        mUidForeground[uid] = uidForeground;
-        UpdateRulesForUidLocked(uid);
+    Int32 oldUidState;
+    mUidState->Get(uid, IActivityManager::PROCESS_STATE_CACHED_EMPTY, &oldUidState);
+    if (oldUidState != uidState) {
+        // state changed, push updated rules
+        mUidState->Put(uid, uidState);
+        Boolean oldForeground = oldUidState <= mCurForegroundState;
+        Boolean newForeground = uidState <= mCurForegroundState;
+        if (oldForeground != newForeground) {
+            UpdateRulesForUidLocked(uid);
+        }
     }
 }
 
@@ -2596,34 +2696,32 @@ void CNetworkPolicyManagerService::UpdateScreenOn()
 {
     synchronized(mRulesLock) {
         //try {
-        mPowerManager->IsScreenOn(&mScreenOn);
+        mPowerManager->IsInteractive(&mScreenOn);
         //} catch (RemoteException e) {
             // ignored; service lives in system_server
         //}
         UpdateRulesForScreenLocked();
-        //}
     }
 }
 
-/**
- * Update rules that might be changed by {@link #mScreenOn} value.
- */
 void CNetworkPolicyManagerService::UpdateRulesForScreenLocked()
 {
     // only update rules for anyone with foreground activities
-    Int32BooleanMapIterator it;
-    for(it = mUidForeground.Begin(); it != mUidForeground.End(); ++it) {
-        if (it->mSecond == TRUE) {
-            Int32 uid = it->mFirst;
+    Int32 size;
+    mUidState->GetSize(&size);
+    for (Int32 i = 0; i < size; ++i) {
+        Int32 value;
+        mUidState->ValueAt(i, &value);
+        if (value <= mCurForegroundState) {
+            Int32 uid;
+            mUidState->KeyAt(i, &uid);
             UpdateRulesForUidLocked(uid);
         }
     }
 }
 
-/**
-* Update rules that might be changed by {@link #mRestrictBackground} value.
-*/
-void CNetworkPolicyManagerService::UpdateRulesForRestrictBackgroundLocked()
+void CNetworkPolicyManagerService::UpdateRulesForGlobalChangeLocked(
+    /* [in] */ Boolean restrictedNetworksChanged)
 {
     AutoPtr<IPackageManager> pm;
     mContext->GetPackageManager((IPackageManager**)&pm);
@@ -2631,33 +2729,31 @@ void CNetworkPolicyManagerService::UpdateRulesForRestrictBackgroundLocked()
     mContext->GetSystemService(IContext::USER_SERVICE, (IInterface**)&obj);
     AutoPtr<IUserManager> um = IUserManager::Probe(obj);
 
+    // If we are in restrict power mode, we allow all important apps
+    // to have data access.  Otherwise, we restrict data access to only
+    // the top apps.
+    mCurForegroundState = (!mRestrictBackground && mRestrictPower)
+            ? IActivityManager::PROCESS_STATE_IMPORTANT_FOREGROUND
+            : IActivityManager::PROCESS_STATE_TOP;
+
     // update rules for all installed applications
-    AutoPtr<IObjectContainer> users;
-    um->GetUsers((IObjectContainer**)&users);
-    AutoPtr<IObjectContainer> apps;
+    AutoPtr<IList> users;
+    um->GetUsers((IList**)&users);
+    AutoPtr<IList> apps;
     Int32 flags = IPackageManager::GET_UNINSTALLED_PACKAGES | IPackageManager::GET_DISABLED_COMPONENTS;
-    pm->GetInstalledApplications(flags , (IObjectContainer**)&apps);
+    pm->GetInstalledApplications(flags , (IList**)&apps);
 
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
 
-    AutoPtr<IObjectEnumerator> usersIt;
-    users->GetObjectEnumerator((IObjectEnumerator**)&usersIt);
-    Boolean usersNext;
-    while ((usersIt->MoveNext(&usersNext), usersNext)) {
-        AutoPtr<IUserInfo> user;
-        usersIt->Current((IInterface**)&user);
-        Int32 id;
-        user->GetId(&id);
-        AutoPtr<IObjectEnumerator> appsIt;
-        apps->GetObjectEnumerator((IObjectEnumerator**)&appsIt);
-        Boolean appNext;
-        while ((appsIt->MoveNext(&appNext), appNext)) {
-            AutoPtr<IApplicationInfo> app;
-            appsIt->Current((IInterface**)&app);
+    FOR_EACH(iter, users) {
+        AutoPtr<IUserInfo> user = IUserInfo::Probe(Ptr(iter)->Func(iter->GetNext));
+        FOR_EACH(itApp, apps) {
+            AutoPtr<IApplicationInfo> app = IApplicationInfo::Probe(Ptr(itApp)->Func(itApp->GetNext));
             Int32 uid;
-            app->GetUid(&uid);
-            helper->GetUid(id, uid, &uid);
+            AutoPtr<IUserHandleHelper> helper;
+            CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
+            helper->GetUid(Ptr(user)->Func(user->GetId), Ptr(app)->Func(app->GetUid), &uid);
             UpdateRulesForUidLocked(uid);
         }
     }
@@ -2665,6 +2761,11 @@ void CNetworkPolicyManagerService::UpdateRulesForRestrictBackgroundLocked()
     // limit data usage for some internal system services
     UpdateRulesForUidLocked(IProcess::MEDIA_UID);
     UpdateRulesForUidLocked(IProcess::DRM_UID);
+
+    // If the set of restricted networks may have changed, re-evaluate those.
+    if (restrictedNetworksChanged) {
+        UpdateNetworkRulesLocked();
+    }
 }
 
 Boolean CNetworkPolicyManagerService::IsUidValidForRules(
@@ -2688,10 +2789,10 @@ void CNetworkPolicyManagerService::UpdateRulesForUidLocked(
 {
     if (!IsUidValidForRules(uid)) return;
 
-    Int32 uidPolicy;
-    GetUidPolicy(uid, &uidPolicy);
-    Boolean uidForeground;
-    IsUidForeground(uid, &uidForeground);
+    Int32 uidPolicy = INetworkPolicyManager::POLICY_NONE;
+    if (mUidPolicy.Find(uid) != mUidPolicy.End())
+        uidPolicy = mUidPolicy[uid];
+    Boolean uidForeground = IsUidForegroundLocked(uid);
 
     // derive active rules based on policy and active state
     Int32 uidRules = INetworkPolicyManager::RULE_ALLOW_ALL;
@@ -2699,18 +2800,34 @@ void CNetworkPolicyManagerService::UpdateRulesForUidLocked(
         // uid in background, and policy says to block metered data
         uidRules = INetworkPolicyManager::RULE_REJECT_METERED;
     }
-    if (!uidForeground && mRestrictBackground) {
-        // uid in background, and global background disabled
-        uidRules = INetworkPolicyManager::RULE_REJECT_METERED;
+    else if (mRestrictBackground) {
+        if (!uidForeground) {
+            // uid in background, and global background disabled
+            uidRules = INetworkPolicyManager::RULE_REJECT_METERED;
+        }
+    } else if (mRestrictPower) {
+        Int32 appId;
+        AutoPtr<IUserHandleHelper> helper;
+        CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
+        helper->GetAppId(uid, &appId);
+        Boolean whitelisted;
+        mPowerSaveWhitelistAppIds->Get(appId, &whitelisted);
+        if (!whitelisted && !uidForeground
+                && (uidPolicy & INetworkPolicyManager::POLICY_ALLOW_BACKGROUND_BATTERY_SAVE) == 0) {
+            // uid is in background, restrict power use mode is on (so we want to
+            // restrict all background network access), and this uid is not on the
+            // white list of those allowed background access.
+            uidRules = INetworkPolicyManager::RULE_REJECT_METERED;
+        }
     }
 
     // TODO: only dispatch when rules actually change
 
     if (uidRules == INetworkPolicyManager::RULE_ALLOW_ALL) {
-        mUidRules.Erase(uid);
+        mUidRules->Delete(uid);
     }
     else {
-        mUidRules[uid] = uidRules;
+        mUidRules->Put(uid, uidRules);
     }
 
     Boolean rejectMetered = (uidRules & INetworkPolicyManager::RULE_REJECT_METERED) != 0;
@@ -2770,9 +2887,6 @@ void CNetworkPolicyManagerService::SetUidNetworkRules(
 //    }
 }
 
-/**
- * Control {@link IConnectivityManager#setPolicyDataEnable(int, boolean)}.
- */
 void CNetworkPolicyManagerService::SetPolicyDataEnable(
     /* [in] */ Int32 networkType,
     /* [in] */ Boolean enabled)
@@ -2819,9 +2933,6 @@ Boolean CNetworkPolicyManagerService::IsBandwidthControlEnabled()
     return result;
 }
 
-/**
- * Try refreshing {@link #mTime} when stale.
- */
 void CNetworkPolicyManagerService::MaybeRefreshTrustedTime()
 {
     Int64 cacheAge;
@@ -2904,24 +3015,15 @@ ECode CNetworkPolicyManagerService::AddIdleHandler(
 }
 
 void CNetworkPolicyManagerService::CollectKeys(
-    /* [in] */ HashMap<Int32, Int32>* source,
-    /* [in] */ HashMap<Int32, Boolean>* target)
+    /* [in] */ ISparseInt32Array* source,
+    /* [in] */ ISparseBooleanArray* target)
 {
-    HashMap<Int32, Int32>::Iterator srcIt;
-    for(srcIt = source->Begin(); srcIt != source->End(); ++srcIt) {
-        Int32 key = srcIt->mFirst;
-        (*target)[key] = TRUE;
-    }
-}
-
-void CNetworkPolicyManagerService::CollectKeys(
-    /* [in] */ HashMap<Int32, Boolean>* source,
-    /* [in] */ HashMap<Int32, Boolean>* target)
-{
-    Int32BooleanMapIterator srcIt;
-    for(srcIt = source->Begin(); srcIt != source->End(); ++srcIt) {
-        Int32 key = srcIt->mFirst;
-        (*target)[key] = TRUE;
+    Int32 size;
+    source->GetSize(&size);
+    for (Int32 i = 0; i < size; i++) {
+        Int32 key;
+        source->KeyAt(i, &key);
+        target->Put(key, TRUE);
     }
 }
 
@@ -2929,17 +3031,17 @@ void CNetworkPolicyManagerService::DumpHashMap(
     /* [in] */ IPrintWriter* fout,
     /* [in] */ HashMap<Int32, Boolean>* value)
 {
-    fout->PrintString(String("["));
+    IPrintWriter::Probe(fout)->Print(String("["));
     Int32 i = 0;
     Int32 count = value->GetSize();
-    Int32BooleanMapIterator iter;
+    HashMap<Int32, Boolean>::Iterator iter;
     for (iter = value->Begin(); iter != value->End(); ++iter, ++i) {
-        fout->PrintString(StringUtils::Int32ToString(iter->mFirst) + "=" + StringUtils::BooleanToString(iter->mSecond));
+        IPrintWriter::Probe(fout)->Print(StringUtils::ToString(iter->mFirst) + "=" + StringUtils::ToString(iter->mSecond));
         if (i < count - 1) {
-            fout->PrintString(String(","));
+            IPrintWriter::Probe(fout)->Print(String(","));
         }
     }
-    fout->PrintString(String("]"));
+    IPrintWriter::Probe(fout)->Print(String("]"));
 }
 
 void CNetworkPolicyManagerService::HandleMsgRulesChanged(
@@ -2951,7 +3053,7 @@ void CNetworkPolicyManagerService::HandleMsgRulesChanged(
     for (Int32 i = 0; i < length; i++) {
         AutoPtr<IInterface> obj;
         mListeners->GetBroadcastItem(i, (IInterface**)&obj);
-        AutoPtr<INetworkPolicyListener> listener = INetworkPolicyListener::Probe(obj);
+        AutoPtr<IINetworkPolicyListener> listener = IINetworkPolicyListener::Probe(obj);
         if (listener != NULL) {
             listener->OnUidRulesChanged(uid, uidRules);
         }
@@ -2985,7 +3087,7 @@ void CNetworkPolicyManagerService::HandleMsgMeteredIfacesChanged(
     for (Int32 i = 0; i < length; i++) {
         AutoPtr<IInterface> obj;
         mListeners->GetBroadcastItem(i, (IInterface**)&obj);
-        AutoPtr<INetworkPolicyListener> listener = INetworkPolicyListener::Probe(obj);
+        AutoPtr<IINetworkPolicyListener> listener = IINetworkPolicyListener::Probe(obj);
         if (listener != NULL) {
             listener->OnMeteredIfacesChanged(array);
         }
@@ -2993,54 +3095,14 @@ void CNetworkPolicyManagerService::HandleMsgMeteredIfacesChanged(
     mListeners->FinishBroadcast();
 }
 
-void CNetworkPolicyManagerService::HandleMsgForegroundActivitiesChanged(
-    /* [in] */ Int32 pid,
-    /* [in] */ Int32 uid,
-    /* [in] */ Boolean foregroundActivities)
-{
-    synchronized(mRulesLock) {
-        // because a uid can have multiple pids running inside, we need to
-        // remember all pid states and summarize foreground at uid level.
-
-        // record foreground for this specific pid
-        AutoPtr<Int32BooleanMap> pidForeground;
-        UidPidForegroundMapIterator it = mUidPidForeground.Find(uid);
-        if (it != mUidPidForeground.End()) {
-            pidForeground = it->mSecond;
-        }
-        if (pidForeground == NULL) {
-            pidForeground = new Int32BooleanMap();
-            mUidPidForeground[uid] = pidForeground;
-        }
-        (*pidForeground)[pid] = foregroundActivities;
-        ComputeUidForegroundLocked(uid);
-    }
-}
-
-void CNetworkPolicyManagerService::HandleMsgProcessDied(
-    /* [in] */ Int32 pid,
-    /* [in] */ Int32 uid)
-{
-    synchronized(mRulesLock) {
-        // clear records and recompute, when they exist
-        AutoPtr<Int32BooleanMap> pidForeground;
-        UidPidForegroundMapIterator it = mUidPidForeground.Find(uid);
-        if (it != mUidPidForeground.End()) {
-            pidForeground = it->mSecond;
-        }
-        if (pidForeground != NULL) {
-            pidForeground->Erase(pid);
-            ComputeUidForegroundLocked(uid);
-        }
-    }
-}
-
 void CNetworkPolicyManagerService::HandleMsgLimitReached(
     /* [in] */ const String& iface)
 {
     MaybeRefreshTrustedTime();
     synchronized(mRulesLock) {
-        if (mMeteredIfaces.Find(iface) != mMeteredIfaces.End()) {
+        Boolean isContains;
+        ISet::Probe(mMeteredIfaces)->Contains(StringUtils::ParseCharSequence(iface), &isContains);
+        if (isContains) {
             // force stats update to make sure we have
             // numbers that caused alert to trigger.
             mNetworkStats->ForceUpdate();
@@ -3057,7 +3119,7 @@ void CNetworkPolicyManagerService::HandleMsgRestrictBackgroundChanged(
     Int32 length;
     mListeners->BeginBroadcast(&length);
     for (Int32 i = 0; i < length; i++) {
-        AutoPtr<INetworkPolicyListener> listener;
+        AutoPtr<IINetworkPolicyListener> listener;
         mListeners->GetBroadcastItem(i, (IInterface**)&listener);
         if (listener != NULL) {
             listener->OnRestrictBackgroundChanged(restrictBackground);
@@ -3078,6 +3140,23 @@ void CNetworkPolicyManagerService::HandleMsgAdvisePersistThreshold(
 void CNetworkPolicyManagerService::HandleMsgScreenOnChanged()
 {
     UpdateScreenOn();
+}
+
+void CNetworkPolicyManagerService::DumpSparseInt32Array(
+    /* [in] */ IPrintWriter* fout,
+    /* [in] */ ISparseInt32Array* out)
+{
+    fout->Print(String("["));
+    Int32 size;
+    out->GetSize(&size);
+    for (Int32 i = 0; i < size; i++) {
+        Int32 key, value;
+        out->KeyAt(i, &key);
+        out->ValueAt(i, &value);
+        fout->Print(StringUtils::ToString(key) + "=" + StringUtils::ToString(value));
+        if (i < size - 1) fout->Print(String(","));
+    }
+    fout->Print(String("]"));
 }
 
 } // namespace Net

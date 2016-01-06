@@ -57,7 +57,16 @@ NetworkStatsCollection::Key::Key(
     , mUid(uid)
     , mSet(set)
     , mTag(tag)
-{}
+{
+    Int32 hashCode;
+    IObject::Probe(ident)->GetHashCode(&hashCode);
+    AutoPtr<ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(4);
+    (*array)[0] = hashCode;
+    (*array)[1] = mUid;
+    (*array)[2] = mSet;
+    (*array)[3] = mTag;
+    mHashCode = Arrays::GetHashCode(array);
+}
 
 Boolean NetworkStatsCollection::Key::Equals(
     /* [in] */ const Key* o) const

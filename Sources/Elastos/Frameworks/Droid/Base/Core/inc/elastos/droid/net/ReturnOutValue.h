@@ -155,11 +155,11 @@ public:
     }
 
     template <typename T_REV>
-    AutoPtr<Redefine<T_REV> > Ptr(ECode (T_OBJ::*func)(T_REV**))
+    AutoPtr<Redefine<T_REV> > GetPtr(ECode (T_OBJ::*func)(T_REV**))
     {
         AutoPtr<T_REV> rev;
         (mPtr->*func)((T_REV**)&rev);
-        return ::Ptr(rev);
+        return Ptr(rev);
     }
 
 private:
