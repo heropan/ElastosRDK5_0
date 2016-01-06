@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_APP_SERVICE_H__
 
 #include "Elastos.Droid.App.h"
-#include "elastos/droid/content/ContextWrapper.h"
+#include <elastos/droid/content/ContextWrapper.h>
 
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Content::ContextWrapper;
@@ -18,7 +18,7 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-class Service
+class ECO_PUBLIC Service
     : public ContextWrapper
     , public IService
     , public IComponentCallbacks

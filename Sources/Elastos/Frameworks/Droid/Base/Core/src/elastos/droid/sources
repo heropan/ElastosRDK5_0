@@ -56,7 +56,6 @@ ELASTOS_LIBS += service/voice/voice.lib
 ELASTOS_LIBS += service/notification/notification.lib
 ELASTOS_LIBS += service/media/media.lib
 ELASTOS_LIBS += speech/speech.lib
-#ELASTOS_LIBS += systemui/systemui.lib
 ELASTOS_LIBS += text/text.lib
 ELASTOS_LIBS += transition/transition.lib
 ELASTOS_LIBS += utility/utility.lib

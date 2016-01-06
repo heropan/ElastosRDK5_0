@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_APP_APPLICATION_H__
 #define __ELASTOS_DROID_APP_APPLICATION_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/droid/ext/frameworkext.h>
 #include "Elastos.Droid.App.h"
-#include "elastos/droid/content/ContextWrapper.h"
+#include <elastos/droid/content/ContextWrapper.h>
 // #include "elastos/droid/app/LoadedPkg.h"
 #include <elastos/utility/etl/List.h>
 
@@ -20,7 +20,7 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-class Application
+class ECO_PUBLIC Application
     : public ContextWrapper
     , public IApplication
     , public IComponentCallbacks

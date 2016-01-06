@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CONTEXTWRAPPER_H__
 #define __ELASTOS_DROID_CONTENT_CONTEXTWRAPPER_H__
 
-#include "elastos/droid/content/Context.h"
+#include <elastos/droid/content/Context.h>
 
 namespace Elastos {
 namespace Droid {
@@ -13,7 +13,7 @@ namespace Content {
  * another Context.  Can be subclassed to modify behavior without changing
  * the original Context.
  */
-class ContextWrapper
+class ECO_PUBLIC ContextWrapper
     : public Context
     , public IContextWrapper
 {
