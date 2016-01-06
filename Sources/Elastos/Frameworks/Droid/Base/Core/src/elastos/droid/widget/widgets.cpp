@@ -80,6 +80,7 @@
 #include "elastos/droid/widget/CVideoView.h"
 #include "elastos/droid/widget/CTableRow.h"
 #include "elastos/droid/widget/CTabWidget.h"
+#include "elastos/droid/widget/CTabHost.h"
 #include "elastos/droid/widget/CTableRowLayoutParams.h"
 
 namespace Elastos {
@@ -167,6 +168,7 @@ CAR_OBJECT_IMPL(CHeaderViewListAdapter);
 CAR_OBJECT_IMPL(CVideoView);
 CAR_OBJECT_IMPL(CTableRow);
 CAR_OBJECT_IMPL(CTabWidget);
+CAR_OBJECT_IMPL(CTabHost);
 CAR_OBJECT_IMPL(CTableRowLayoutParams);
 
 } // namespace Widget
