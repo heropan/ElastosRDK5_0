@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_WIDGET_TABHOST_H__
 
 #include "elastos/droid/widget/FrameLayout.h"
+#include "Elastos.Droid.App.h"
 #include "elastos/droid/R.h"
 
 using Elastos::Droid::Content::IIntent;
