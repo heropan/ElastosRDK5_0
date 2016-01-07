@@ -205,7 +205,7 @@ ECode NetworkUtils::IntToInetAddress(
     ECode ec = helper->GetByAddress(addressBytes, result);
         // } catch (UnknownHostException e) {
     if (FAILED(ec)) {
-        if (ec == E_UNKNOWN_HOST_EXCEPTION)
+        if (ec == (ECode)E_UNKNOWN_HOST_EXCEPTION)
            return E_ASSERTION_ERROR;
         return ec;
     }
@@ -293,7 +293,7 @@ ECode NetworkUtils::UnparcelInetAddress(
     ECode ec = inetaddresshelper->GetByAddress(addressArray, result);
         // } catch (UnknownHostException e) {
     if (FAILED(ec)) {
-        if (ec == E_UNKNOWN_HOST_EXCEPTION) FUNC_RETURN(NULL)
+        if (ec == (ECode)E_UNKNOWN_HOST_EXCEPTION) FUNC_RETURN(NULL)
         return ec;
     }
         // }

@@ -11,10 +11,6 @@ module
      * Socket implementation used for android.net.LocalSocket and
      * android.net.LocalServerSocket. Supports only AF_LOCAL sockets.
      */
-    /**
-     * @Involved
-     * none super interface
-     */
     [deprecated]
     interface ILocalSocketImpl {
 

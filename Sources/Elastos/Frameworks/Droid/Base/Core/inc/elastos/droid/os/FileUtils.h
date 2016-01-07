@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_OS_FILEUTILS_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/core/Object.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::IComparator;
 using Elastos::Utility::Regex::IPattern;
@@ -19,7 +19,7 @@ namespace Os {
  * Tools for managing files.  Not for public consumption.
  * @hide
  */
-class FileUtils
+class ECO_PUBLIC FileUtils
 {
 public:
     /**
@@ -206,10 +206,10 @@ public:
 
 private:
     /** Regular expression for safe filenames: no spaces or metacharacters */
-    static AutoPtr<IPattern> SAFE_FILENAME_PATTERN;
+    ECO_LOCAL static AutoPtr<IPattern> SAFE_FILENAME_PATTERN;
 
 private:
-    class FileComparator
+    class ECO_LOCAL FileComparator
         : public Object
         , public IComparator
     {

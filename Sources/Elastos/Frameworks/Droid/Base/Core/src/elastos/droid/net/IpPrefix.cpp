@@ -108,7 +108,7 @@ ECode IpPrefix::GetAddress(
     CInetAddressHelper::AcquireSingleton((IInetAddressHelper**)&helper);
     ECode ec = helper->GetByAddress(mAddress, result);
         // } catch (UnknownHostException e) {
-    if (ec == E_UNKNOWN_HOST_EXCEPTION) {
+    if (ec == (ECode)E_UNKNOWN_HOST_EXCEPTION) {
         // Cannot happen. InetAddress.getByAddress can only throw an exception if the byte
         // array is the wrong length, but we check that in the constructor.
         *result = NULL;
@@ -149,14 +149,14 @@ ECode IpPrefix::ToString(
     AutoPtr<IInetAddress> inetAddress;
     ECode ec = helper->GetByAddress(mAddress, (IInetAddress**)&inetAddress);
         // } catch(UnknownHostException e) {
-    if (ec == E_UNKNOWN_HOST_EXCEPTION) {
+    if (ec == (ECode)E_UNKNOWN_HOST_EXCEPTION) {
         // Cosmic rays?
         Logger::E("IpPrefix", "IpPrefix with invalid address! Shouldn't happen.");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
         // }
     ec = inetAddress->GetHostAddress(result);
-    if (ec == E_UNKNOWN_HOST_EXCEPTION) {
+    if (ec == (ECode)E_UNKNOWN_HOST_EXCEPTION) {
         // Cosmic rays?
         Logger::E("IpPrefix", "IpPrefix with invalid address! Shouldn't happen.");
         return E_ILLEGAL_STATE_EXCEPTION;

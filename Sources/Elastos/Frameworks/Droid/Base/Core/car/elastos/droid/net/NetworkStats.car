@@ -25,6 +25,9 @@ module
      */
     [deprecated]
     interface INetworkStats {
+        /** {@link #iface} value when interface details unavailable. */
+        //const String IFACE_ALL = null;
+
         /** {@link #uid} value when UID details unavailable. */
         const Int32 UID_ALL = -1;
 

@@ -8628,7 +8628,7 @@ jobject Util::ToJavaVpnProfile(
     profile->GetMppe(&booleanTemp);
     Util::SetJavaBoolField(env, vpKlass, jprofile, booleanTemp, "mppe", "ToJavaVpnProfile");
 
-    profile->Get12tpSecret(&tempString);
+    profile->GetL2tpSecret(&tempString);
     Util::SetJavaStringField(env, vpKlass, jprofile, tempString, "l2tpSecret", "ToJavaVpnProfile");
 
     profile->GetIpsecIdentifier(&tempString);

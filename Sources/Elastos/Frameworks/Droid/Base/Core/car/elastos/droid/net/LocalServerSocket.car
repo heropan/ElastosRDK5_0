@@ -18,10 +18,6 @@ module
      * On simulator platforms, this may be created in a temporary directory on
      * the filesystem
      */
-    /**
-     * @Involved
-     * none super interface
-     */
     interface ILocalServerSocket {
 
         /**

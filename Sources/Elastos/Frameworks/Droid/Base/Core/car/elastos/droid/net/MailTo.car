@@ -17,10 +17,6 @@ module
      * the parsed parameters. This implements RFC 2368.
      *
      */
-    /**
-     * @Involved
-     * none super interface
-     */
     interface IMailTo {
         const String MAILTO_SCHEME =  "mailto:";
 

@@ -9,10 +9,6 @@ module
      * The namespace that this address exists in. See also
      * include/cutils/sockets.h ANDROID_SOCKET_NAMESPACE_*
      */
-    /**
-     * @Involved
-     * none super interface
-     */
     enum LocalSocketAddressNamespace {
         /** A socket in the Linux abstract namespace */
         LocalSocketAddressNamespace_ABSTRACT = 0,
@@ -29,10 +25,6 @@ module
         LocalSocketAddressNamespace_FILESYSTEM= 2
     }
 
-    /**
-     * @Involved
-     * none super interface
-     */
     interface ILocalSocketAddress {
         GetName(
             [out] String* name);

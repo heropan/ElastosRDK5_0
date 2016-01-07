@@ -3,6 +3,9 @@
 #define __ELASTOS_DROID_SERVER_CONNECTIVITY_CVPNOBSERVER_H__
 
 #include "_Elastos_Droid_Server_Connectivity_CVpnObserver.h"
+#include "elastos/droid/server/net/BaseNetworkObserver.h"
+
+using Elastos::Droid::Server::Net::BaseNetworkObserver;
 
 namespace Elastos {
 namespace Droid {
@@ -12,51 +15,26 @@ namespace Connectivity {
 class Vpn;
 
 CarClass(CVpnObserver)
+    , public BaseNetworkObserver
 {
 public:
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
-        /* [in] */ Handle32 owner);
+        /* [in] */ Handle32 vpnHost);
 
     CARAPI InterfaceStatusChanged(
         /* [in] */ const String& iface,
         /* [in] */ Boolean up);
 
-    CARAPI InterfaceLinkStateChanged(
-        /* [in] */ const String& iface,
-        /* [in] */ Boolean up);
-
-    CARAPI InterfaceAdded(
-        /* [in] */ const String& iface);
-
     CARAPI InterfaceRemoved(
         /* [in] */ const String& iface);
-
-    /**
-     * A networking quota limit has been reached. The quota might not
-     * be specific to an interface.
-     *
-     * @param limitName The name of the limit that triggered.
-     * @param iface The interface on which the limit was detected.
-     */
-    CARAPI LimitReached(
-        /* [in] */ const String& limitName,
-        /* [in] */ const String& iface);
-
-    /**
-     * Interface data activity status is changed.
-     *
-     * @param iface The interface.
-     * @param active  True if the interface is actively transmitting data, false if it is idle.
-     */
-    CARAPI InterfaceClassDataActivityChanged(
-        /* [in] */ const String& label,
-        /* [in] */ Boolean active);
 
     CARAPI ToString(
         /* [out] */ String* str);
 
 private:
-    Vpn* mOwner;
+    Vpn* mHost;
 };
 
 } // Connectivity

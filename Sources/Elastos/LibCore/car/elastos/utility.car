@@ -503,6 +503,7 @@ module
         interface ICollection;
         interface IIterable;
         interface INavigableSet;
+        interface ISortedSet;
         interface ICloneable;
         interface ISerializable;
     }

@@ -18,10 +18,6 @@ module
      *
      * @hide
      */
-    /**
-     * @Involved
-     * none super interface
-     */
     interface INetworkScorerAppManager {
         /**
          * Returns the list of available scorer apps.

@@ -395,7 +395,7 @@ ECode DhcpPacket::ReadIpAddress(
             // ipAddr is numeric, so this should not be
             // triggered.  However, if it is, just nullify
     if (FAILED(ec)) {
-        if (ec == E_UNKNOWN_HOST_EXCEPTION) {
+        if (ec == (ECode)E_UNKNOWN_HOST_EXCEPTION) {
             result = NULL;
         }
         else
@@ -522,7 +522,7 @@ ECode DhcpPacket::DecodeFullPacket(
         packet->Get(ipv4addr);
         ECode ec = inetAddressHelper->GetByAddress(ipv4addr, (IInetAddress**)&clientIp);
         if (FAILED(ec)) {
-            if (ec == E_UNKNOWN_HOST_EXCEPTION) {
+            if (ec == (ECode)E_UNKNOWN_HOST_EXCEPTION) {
                 FUNC_RETURN(NULL)
             }
             return ec;
@@ -530,7 +530,7 @@ ECode DhcpPacket::DecodeFullPacket(
         packet->Get(ipv4addr);
         ec = inetAddressHelper->GetByAddress(ipv4addr, (IInetAddress**)&yourIp);
         if (FAILED(ec)) {
-            if (ec == E_UNKNOWN_HOST_EXCEPTION) {
+            if (ec == (ECode)E_UNKNOWN_HOST_EXCEPTION) {
                 FUNC_RETURN(NULL)
             }
             return ec;
@@ -538,7 +538,7 @@ ECode DhcpPacket::DecodeFullPacket(
         packet->Get(ipv4addr);
         ec = inetAddressHelper->GetByAddress(ipv4addr, (IInetAddress**)&nextIp);
         if (FAILED(ec)) {
-            if (ec == E_UNKNOWN_HOST_EXCEPTION) {
+            if (ec == (ECode)E_UNKNOWN_HOST_EXCEPTION) {
                 FUNC_RETURN(NULL)
             }
             return ec;
@@ -546,7 +546,7 @@ ECode DhcpPacket::DecodeFullPacket(
         packet->Get(ipv4addr);
         ec = inetAddressHelper->GetByAddress(ipv4addr, (IInetAddress**)&relayIp);
         if (FAILED(ec)) {
-            if (ec == E_UNKNOWN_HOST_EXCEPTION) {
+            if (ec == (ECode)E_UNKNOWN_HOST_EXCEPTION) {
                 FUNC_RETURN(NULL)
             }
             return ec;

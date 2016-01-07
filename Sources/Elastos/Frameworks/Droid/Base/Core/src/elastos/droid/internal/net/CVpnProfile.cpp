@@ -323,7 +323,7 @@ ECode CVpnProfile::SetMppe(
     return NOERROR;
 }
 
-ECode CVpnProfile::Get12tpSecret(
+ECode CVpnProfile::GetL2tpSecret(
     /* [out] */ String* l2tpSecret)
 {
     VALIDATE_NOT_NULL(l2tpSecret);
@@ -331,7 +331,7 @@ ECode CVpnProfile::Get12tpSecret(
     return NOERROR;
 }
 
-ECode CVpnProfile::Set12tpSecret(
+ECode CVpnProfile::SetL2tpSecret(
     /* [in] */ const String& l2tpSecret)
 {
     mL2tpSecret = l2tpSecret;

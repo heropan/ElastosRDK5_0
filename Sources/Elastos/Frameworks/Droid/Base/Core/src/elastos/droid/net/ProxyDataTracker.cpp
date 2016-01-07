@@ -89,7 +89,7 @@ ECode ProxyDataTracker::constructor()
     AutoPtr<IInetAddress> dns1, dns2;
     ECode ec = helper->GetByName(DNS1, (IInetAddress**)&dns1);
     if (FAILED(ec)) {
-        if (ec == E_UNKNOWN_HOST_EXCEPTION) {
+        if (ec == (ECode)E_UNKNOWN_HOST_EXCEPTION) {
             Logger::E(TAG, "Could not add DNS address %d", ec);
         }
         else return ec;
@@ -98,7 +98,7 @@ ECode ProxyDataTracker::constructor()
     mLinkProperties->AddDnsServer(dns1, &b);
     ec = helper->GetByName(DNS2, (IInetAddress**)&dns2);
     if (FAILED(ec)) {
-        if (ec == E_UNKNOWN_HOST_EXCEPTION) {
+        if (ec == (ECode)E_UNKNOWN_HOST_EXCEPTION) {
             Logger::E(TAG, "Could not add DNS address %d", ec);
         }
         else return ec;
@@ -145,7 +145,7 @@ ECode ProxyDataTracker::Teardown(
         AutoPtr<IMessage> msg = CMessage::Obtain(NULL, MSG_TEAR_DOWN_REQUEST);
         ECode ec = mProxyStatusService->Send(msg);
         if (FAILED(ec)) {
-            if (ec == E_REMOTE_EXCEPTION) {
+            if (ec == (ECode)E_REMOTE_EXCEPTION) {
                 Logger::E(TAG, "Unable to connect to proxy status service %d", ec);
                 *result = FALSE;
                 return NOERROR;
@@ -178,7 +178,7 @@ ECode ProxyDataTracker::Reconnect(
     ECode ec = mProxyStatusService->Send(msg);
     // } catch (RemoteException e) {
     if (FAILED(ec)) {
-        if (ec == E_REMOTE_EXCEPTION) {
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
             Logger::E(TAG, "Unable to connect to proxy status service %d", ec);
             SetDetailedState(NetworkInfoDetailedState_DISCONNECTED, REASON_PROXY_DOWN, String(NULL));
             *result = FALSE;

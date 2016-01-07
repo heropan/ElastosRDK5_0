@@ -112,6 +112,9 @@ module
         SetBlocking(
             [in] Boolean blocking);
 
+        GetBlocking(
+            [out] Boolean* blocking);
+
         GetAllowBypass(
             [out] Boolean* allowBypass);
 

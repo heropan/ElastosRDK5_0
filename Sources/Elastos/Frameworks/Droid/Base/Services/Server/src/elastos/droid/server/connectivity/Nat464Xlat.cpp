@@ -5,9 +5,7 @@
 #include <elastos/utility/logging/Slogger.h>
 #include <Elastos.Droid.Content.h>
 #include <Elastos.Droid.Net.h>
-//#include <Elastos.Droid.Os.h>
-//#include <Elastos.Droid.Utility.h>
-//#include <Elastos.Droid.Internal.h>
+#include <Elastos.Droid.Os.h>
 #include <Elastos.CoreLibrary.Utility.h>
 #include <Elastos.CoreLibrary.Net.h>
 
@@ -48,6 +46,8 @@ ECode Nat464Xlat::constructor(
     /* [in] */ IIConnectivityManager* connService,
     /* [in] */ IHandler* handler)
 {
+    BaseNetworkObserver::constructor();
+
     mContext = context;
     mNMService = nmService;
     mConnService = connService;

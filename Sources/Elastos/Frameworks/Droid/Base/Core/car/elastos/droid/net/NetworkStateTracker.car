@@ -23,10 +23,6 @@ module
      *
      * {@hide}
      */
-    /**
-     * @Involved
-     * none super interface
-     */
     [local]
     interface INetworkStateTracker {
         /**

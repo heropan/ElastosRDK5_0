@@ -183,7 +183,7 @@ ECode VpnService::AddAddress(
     ECode ec = GetService()->AddVpnAddress(Ptr(address)->Func(address->GetHostAddress), prefixLength, result);
     if (!FAILED(ec)) return NOERROR;
         // } catch (RemoteException e) {
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         Logger::E("VpnService", "%d", ec);
         return E_ILLEGAL_STATE_EXCEPTION;
     }
@@ -203,7 +203,7 @@ ECode VpnService::RemoveAddress(
     ECode ec = GetService()->RemoveVpnAddress(Ptr(address)->Func(address->GetHostAddress), prefixLength, result);
     if (!FAILED(ec)) return NOERROR;
         // } catch (RemoteException e) {
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         Logger::E("VpnService", "%d", ec);
         return E_ILLEGAL_STATE_EXCEPTION;
     }
@@ -478,7 +478,7 @@ ECode VpnServiceBuilder::VerifyApp(
     ECode ec = pm->GetApplicationInfo(packageName, 0, userId, (IApplicationInfo**)&appInfo);
         // } catch (RemoteException e) {
     if (FAILED(ec)) {
-        if (ec == E_REMOTE_EXCEPTION) {
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
             Logger::E("VpnService", "%d", ec);
             return E_ILLEGAL_STATE_EXCEPTION;
         }

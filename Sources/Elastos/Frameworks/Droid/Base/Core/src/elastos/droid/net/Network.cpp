@@ -285,7 +285,7 @@ ECode Network::NetworkBoundSocketFactory::ConnectToHost(
             }
         }
         // } catch (IOException e) {
-        if (ec == E_IO_EXCEPTION) {
+        if (ec == (ECode)E_IO_EXCEPTION) {
             if (i == (hostAddresses->GetLength() - 1)) return E_IO_EXCEPTION;
             continue;
         }

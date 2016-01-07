@@ -192,7 +192,7 @@ ECode NetworkScorerAppManager::IsCallerActiveScorer(
     // try {
         ECode ec = appOpsMgr->CheckPackage(callingUid, Ptr(defaultApp)->Func(defaultApp->GetPackageName));
     // } catch (SecurityException e) {
-        if (ec == E_SECURITY_EXCEPTION) {
+        if (ec == (ECode)E_SECURITY_EXCEPTION) {
             *result = FALSE;
             return NOERROR;
         }

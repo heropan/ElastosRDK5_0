@@ -522,14 +522,14 @@ module
 //             constructor(
 //                 [in] Handle32 owner);
 
-//             interface INetworkManagementEventObserver;
+//             interface IINetworkManagementEventObserver;
 //         }
 
 //         class CNetworkStatsServiceAlertObserber {
 //             constructor(
 //                 [in] Handle32 owner);
 
-//             interface INetworkManagementEventObserver;
+//             interface IINetworkManagementEventObserver;
 //         }
 
 //     } // namespace Net
@@ -753,7 +753,7 @@ module
 //         constructor(
 //             [in] Handle32 owner);
 
-//         interface INetworkManagementEventObserver;
+//         interface IINetworkManagementEventObserver;
 //     }
 
 //     [local]
@@ -1135,7 +1135,6 @@ module
     } // namespace Elastos
 
 
-//     //==========================================================================
 //     namespace Elastos {
 //     namespace Droid {
 //     namespace Widget {

@@ -68,7 +68,7 @@ ECode NetworkPolicyManager::AddUidPolicy(
         // try {
     ECode ec = mService->AddUidPolicy(uid, policy);
         // } catch (RemoteException e) {
-    if (ec == E_REMOTE_EXCEPTION) return NOERROR;
+    if (ec == (ECode)E_REMOTE_EXCEPTION) return NOERROR;
         // }
     return ec;
 }
@@ -80,7 +80,7 @@ ECode NetworkPolicyManager::RemoveUidPolicy(
         // try {
     ECode ec = mService->RemoveUidPolicy(uid, policy);
         // } catch (RemoteException e) {
-    if (ec == E_REMOTE_EXCEPTION) return NOERROR;
+    if (ec == (ECode)E_REMOTE_EXCEPTION) return NOERROR;
         // }
     return ec;
 }
@@ -118,7 +118,7 @@ ECode NetworkPolicyManager::GetPowerSaveAppIdWhitelist(
         // try {
     ECode ec =  mService->GetPowerSaveAppIdWhitelist(result);
         // } catch (RemoteException e) {
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         *result = ArrayOf<Int32>::Alloc(0);
         return NOERROR;
     }
@@ -313,7 +313,7 @@ ECode NetworkPolicyManager::IsUidValidForPolicy(
         AutoPtr<IPackageInfo> packageinfo;
         ECode ec = pm->GetPackageInfo(String("android"), IPackageManager::GET_SIGNATURES, (IPackageInfo**)&packageinfo);
         if (FAILED(ec)) {
-            if (ec == E_NAME_NOT_FOUND_EXCEPTION) {
+            if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
                 Logger::E("NetworkPolicyManager", "problem finding system signature");
                 return E_RUNTIME_EXCEPTION;
             }

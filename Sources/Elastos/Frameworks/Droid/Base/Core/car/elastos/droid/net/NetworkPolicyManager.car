@@ -10,10 +10,6 @@ module
      *
      * {@hide}
      */
-    /**
-     * @Involved
-     * none super interface
-     */
     [deprecated]
     interface INetworkPolicyManager {
         /** No specific network policy, use system default. */

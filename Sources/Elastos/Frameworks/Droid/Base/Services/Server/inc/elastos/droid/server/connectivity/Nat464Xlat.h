@@ -38,7 +38,7 @@ public:
 
     virtual ~Nat464Xlat();
 
-    constructor(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IINetworkManagementService* nmService,
         /* [in] */ IIConnectivityManager* connService,

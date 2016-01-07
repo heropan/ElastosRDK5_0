@@ -20,10 +20,6 @@ module
      * state of network connectivity.
      */
     /** {@hide} */
-    /**
-     * @Involved
-     * none super interface
-     */
     [deprecated, local]
     interface IIConnectivityManager {
         GetActiveNetworkInfo(

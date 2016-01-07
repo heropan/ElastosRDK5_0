@@ -496,11 +496,11 @@ ECode CameraManager::GetCameraCharacteristics(
             CCameraCharacteristics::New(info, (ICameraCharacteristics**)&characteristics);
         }
         //} catch (CameraRuntimeException e) {
-        // if (ec == E_CAMERA_RUNTIME_EXCEPTION) {
+        // if (ec == (ECode)E_CAMERA_RUNTIME_EXCEPTION) {
         //     return ec;
         // }
         // //} catch (RemoteException e) {
-        // if (ec == E_REMOTE_EXCEPTION) {
+        // if (ec == (ECode)E_REMOTE_EXCEPTION) {
         //     // Camera service died - act as if the camera was disconnected
         //     // throw new CameraAccessException(CameraAccessException.CAMERA_DISCONNECTED,
         //     //         "Camera service is currently unavailable", e);

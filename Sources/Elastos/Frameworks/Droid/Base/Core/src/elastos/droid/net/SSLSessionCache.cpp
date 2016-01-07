@@ -78,7 +78,7 @@ ECode SSLSessionCache::constructor(
     // ECode ec = CFileClientSessionCache::UsingDirectory(dir, (ISSLClientSessionCache**)&cache);
     // // } catch (IOException e) {
     // if (FAILED(ec)) {
-    //     if (ec == E_IO_EXCEPTION) {
+    //     if (ec == (ECode)E_IO_EXCEPTION) {
     //         String s;
     //         IObject::Probe(dir)->ToString(&s);
     //         Logger::W(TAG, "Unable to create SSL session cache in %s, %d", s.string(), ec);

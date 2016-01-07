@@ -577,7 +577,7 @@ ECode DocumentsContract::GetDocumentThumbnail(
         // } catch (ErrnoException e) {
         if(!SUCCEEDED(ec)) {
             // e.rethrowAsIOException();
-            if (ec == E_ERRNO_EXCEPTION) {
+            if (ec == (ECode)E_ERRNO_EXCEPTION) {
                 goto EXIT;
                 return E_IO_EXCEPTION;
             }

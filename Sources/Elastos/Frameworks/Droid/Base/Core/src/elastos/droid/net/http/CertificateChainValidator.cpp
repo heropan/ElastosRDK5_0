@@ -102,11 +102,11 @@ ECode CertificateChainValidator::constructor()
     AutoPtr<ITrustManagerFactory> tmf;
     ECode ec = helper->GetInstance(String("X.509"), (ITrustManagerFactory**)&tmf);
     if (FAILED(ec)) {
-        if (ec == E_NO_SUCH_ALGORITHM_EXCEPTION) {
+        if (ec == (ECode)E_NO_SUCH_ALGORITHM_EXCEPTION) {
             Logger::E(TAG, "X.509 TrustManagerFactory must be available %d", ec);
             return E_RUNTIME_EXCEPTION;
         }
-        if (ec == E_KEY_STORE_EXCEPTION) {
+        if (ec == (ECode)E_KEY_STORE_EXCEPTION) {
             Logger::E(TAG, "X.509 TrustManagerFactory cannot be initialized %d", ec);
             return E_RUNTIME_EXCEPTION;
         }
@@ -114,11 +114,11 @@ ECode CertificateChainValidator::constructor()
     }
     ec = tmf->Init((IKeyStore*) NULL);
     if (FAILED(ec)) {
-        if (ec == E_NO_SUCH_ALGORITHM_EXCEPTION) {
+        if (ec == (ECode)E_NO_SUCH_ALGORITHM_EXCEPTION) {
             Logger::E(TAG, "X.509 TrustManagerFactory must be available %d", ec);
             return E_RUNTIME_EXCEPTION;
         }
-        if (ec == E_KEY_STORE_EXCEPTION) {
+        if (ec == (ECode)E_KEY_STORE_EXCEPTION) {
             Logger::E(TAG, "X.509 TrustManagerFactory cannot be initialized %d", ec);
             return E_RUNTIME_EXCEPTION;
         }
@@ -194,7 +194,7 @@ ECode CertificateChainValidator::VerifyServerCertificates(
     AutoPtr<ICertificateFactory> cf;
     ECode ec = helper->GetInstance(String("X.509"), (ICertificateFactory**)&cf);
     if (FAILED(ec)) {
-        if (ec == E_CERTIFICATE_EXCEPTION) {
+        if (ec == (ECode)E_CERTIFICATE_EXCEPTION) {
             Logger::E(TAG, "can't read certificate %d", ec);
             return E_IO_EXCEPTION;
         }
@@ -215,7 +215,7 @@ ECode CertificateChainValidator::VerifyServerCertificates(
         AutoPtr<ICertificate> certificate;
         ec = cf->GenerateCertificate(IInputStream::Probe(newByteArrayInputStream), (ICertificate**)&certificate);
         if (FAILED(ec)) {
-            if (ec == E_CERTIFICATE_EXCEPTION) {
+            if (ec == (ECode)E_CERTIFICATE_EXCEPTION) {
                 Logger::E(TAG, "can't read certificate %d", ec);
                 return E_IO_EXCEPTION;
             }
@@ -236,11 +236,11 @@ ECode CertificateChainValidator::HandleTrustStorageUpdate()
     CTrustManagerFactoryHelper::AcquireSingleton((ITrustManagerFactoryHelper**)&helper);
     ECode ec = helper->GetInstance(String("X.509"), (ITrustManagerFactory**)&tmf);
     if (FAILED(ec)) {
-        if (ec == E_NO_SUCH_ALGORITHM_EXCEPTION) {
+        if (ec == (ECode)E_NO_SUCH_ALGORITHM_EXCEPTION) {
             Slogger::W(TAG, "Couldn't find default X.509 TrustManagerFactory");
             return NOERROR;
         }
-        if (ec == E_KEY_STORE_EXCEPTION) {
+        if (ec == (ECode)E_KEY_STORE_EXCEPTION) {
             Slogger::W(TAG, "Couldn't initialize default X.509 TrustManagerFactory %d", ec);
             return NOERROR;
         }
@@ -248,11 +248,11 @@ ECode CertificateChainValidator::HandleTrustStorageUpdate()
     }
     ec = tmf->Init((IKeyStore*) NULL);
     if (FAILED(ec)) {
-        if (ec == E_NO_SUCH_ALGORITHM_EXCEPTION) {
+        if (ec == (ECode)E_NO_SUCH_ALGORITHM_EXCEPTION) {
             Slogger::W(TAG, "Couldn't find default X.509 TrustManagerFactory");
             return NOERROR;
         }
-        if (ec == E_KEY_STORE_EXCEPTION) {
+        if (ec == (ECode)E_KEY_STORE_EXCEPTION) {
             Slogger::W(TAG, "Couldn't initialize default X.509 TrustManagerFactory %d", ec);
             return NOERROR;
         }
@@ -321,7 +321,7 @@ ECode CertificateChainValidator::VerifyServerDomainAndCertificates(
     assert(0);
     // ec = impl->GetDefaultTrustManager((IX509TrustManager**)&x509TrustManager);
     if(FAILED(ec)) {
-        if (ec == E_GENERAL_SECURITY_EXCEPTION) {
+        if (ec == (ECode)E_GENERAL_SECURITY_EXCEPTION) {
             if (HttpLog::LOGV) {
                 HttpLog::V("failed to validate the certificate chain, error: %d", ec);
             }
@@ -339,7 +339,7 @@ ECode CertificateChainValidator::VerifyServerDomainAndCertificates(
         ec = x509TrustManager->CheckServerTrusted(chain, authType);
     }
     if(FAILED(ec)) {
-        if (ec == E_GENERAL_SECURITY_EXCEPTION) {
+        if (ec == (ECode)E_GENERAL_SECURITY_EXCEPTION) {
             if (HttpLog::LOGV) {
                 HttpLog::V("failed to validate the certificate chain, error: %d", ec);
             }

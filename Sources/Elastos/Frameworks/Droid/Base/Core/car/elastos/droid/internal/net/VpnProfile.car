@@ -98,10 +98,10 @@ module
         SetMppe(
             [in] Boolean mppe);
 
-        Get12tpSecret(
+        GetL2tpSecret(
             [out] String* value);
 
-        Set12tpSecret(
+        SetL2tpSecret(
             [in] String value);
 
         GetIpsecIdentifier(

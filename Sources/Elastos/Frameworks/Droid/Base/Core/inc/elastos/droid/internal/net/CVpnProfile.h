@@ -98,10 +98,10 @@ public:
     CARAPI SetMppe(
         /* [in] */ Boolean mppe);
 
-    CARAPI Get12tpSecret(
+    CARAPI GetL2tpSecret(
         /* [out] */ String* value);
 
-    CARAPI Set12tpSecret(
+    CARAPI SetL2tpSecret(
         /* [in] */ const String& value);
 
     CARAPI GetIpsecIdentifier(

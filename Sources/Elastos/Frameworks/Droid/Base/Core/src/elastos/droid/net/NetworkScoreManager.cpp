@@ -52,7 +52,7 @@ ECode NetworkScoreManager::UpdateScores(
         // try {
     ECode ec = mService->UpdateScores(networks, result);
         // } catch (RemoteException e) {
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         *result = FALSE;
         return NOERROR;
     }
@@ -68,7 +68,7 @@ ECode NetworkScoreManager::ClearScores(
         // try {
     ECode ec = mService->ClearScores(result);
         // } catch (RemoteException e) {
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         *result = FALSE;
         return NOERROR;
     }
@@ -85,7 +85,7 @@ ECode NetworkScoreManager::SetActiveScorer(
         // try {
     ECode ec = mService->SetActiveScorer(packageName, result);
         // } catch (RemoteException e) {
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         *result = FALSE;
         return NOERROR;
     }
@@ -98,7 +98,7 @@ ECode NetworkScoreManager::DisableScoring()
         // try {
     ECode ec = mService->DisableScoring();
         // } catch (RemoteException e) {
-    if (ec == E_REMOTE_EXCEPTION) return NOERROR;
+    if (ec == (ECode)E_REMOTE_EXCEPTION) return NOERROR;
         // }
     return ec;
 }
@@ -139,7 +139,7 @@ ECode NetworkScoreManager::RegisterNetworkScoreCache(
         // try {
     ECode ec = mService->RegisterNetworkScoreCache(networkType, scoreCache);
         // } catch (RemoteException e) {
-    if (ec == E_REMOTE_EXCEPTION) return NOERROR;
+    if (ec == (ECode)E_REMOTE_EXCEPTION) return NOERROR;
         // }
     return ec;
 }

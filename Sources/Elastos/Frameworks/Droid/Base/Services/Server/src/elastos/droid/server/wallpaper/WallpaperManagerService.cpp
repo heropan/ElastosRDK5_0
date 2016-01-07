@@ -1417,7 +1417,7 @@ ECode WallpaperManagerService::BindWallpaperComponentLocked(
                 IPackageItemInfo::Probe(si)->GetPackageName(&siPackageName);
                 if (rsiName.Equals(siName) && rsiPackageName.Equals(siPackageName)) {
                     ECode ec = CWallpaperInfo::New(mContext.Get(), ri.Get(), (IWallpaperInfo**)&wi);
-                    if (ec == E_XML_PULL_PARSER_EXCEPTION) {
+                    if (ec == (ECode)E_XML_PULL_PARSER_EXCEPTION) {
                         if (fromUser) {
                             return E_ILLEGAL_ARGUMENT_EXCEPTION;
                         }
@@ -1425,7 +1425,7 @@ ECode WallpaperManagerService::BindWallpaperComponentLocked(
                         *isBinded = FALSE;
                         return ec;
                     }
-                    if (ec == E_IO_EXCEPTION) {
+                    if (ec == (ECode)E_IO_EXCEPTION) {
                         if (fromUser) {
                             return E_ILLEGAL_ARGUMENT_EXCEPTION;
                         }

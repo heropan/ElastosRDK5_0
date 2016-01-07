@@ -18,6 +18,7 @@ CarClass(CTreeSet)
     , public AbstractSet
     , public ITreeSet
     , public INavigableSet
+    , public ISortedSet
     , public ICloneable
     , public ISerializable
 {

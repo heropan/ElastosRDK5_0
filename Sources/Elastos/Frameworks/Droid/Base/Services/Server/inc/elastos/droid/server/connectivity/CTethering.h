@@ -8,7 +8,9 @@
 #include "elastos/droid/internal/utility/State.h"
 #include "elastos/droid/internal/utility/StateMachine.h"
 
-using Elastos::Core::IInteger32;
+using Elastos::Droid::Os::IINetworkManagementService;
+using Elastos::Droid::Os::IPowerManagerWakeLock;
+using Elastos::Droid::App::INotification;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IContext;
@@ -17,6 +19,8 @@ using Elastos::Droid::Net::IConnectivityManager;
 using Elastos::Droid::Net::IINetworkStatsService;
 using Elastos::Droid::Internal::Utility::State;
 using Elastos::Droid::Internal::Utility::StateMachine;
+using Elastos::Droid::Server::Net::BaseNetworkObserver;
+using Elastos::Core::IInteger32;
 
 namespace Elastos {
 namespace Droid {
@@ -44,6 +48,11 @@ public:
                 /* [in] */ IMessage* message,
                 /* [out] */ Boolean* value);
 
+            String GetName()
+            {
+                return String("InitialState");
+            }
+
         private:
             TetherInterfaceSM* mHost;
         };
@@ -61,6 +70,11 @@ public:
                 /* [in] */ IMessage* message,
                 /* [out] */ Boolean* value);
 
+            String GetName()
+            {
+                return String("StartingState");
+            }
+
         private:
             TetherInterfaceSM* mHost;
         };
@@ -77,6 +91,11 @@ public:
             CARAPI ProcessMessage(
                 /* [in] */ IMessage* message,
                 /* [out] */ Boolean* value);
+
+            String GetName()
+            {
+                return String("TetheredState");
+            }
 
         private:
             CARAPI_(void) CleanupUpstream();
@@ -98,6 +117,10 @@ public:
                 /* [in] */ IMessage* message,
                 /* [out] */ Boolean* value);
 
+            String GetName()
+            {
+                return String("UnavailableState");
+            }
         private:
             TetherInterfaceSM* mHost;
         };
@@ -109,9 +132,8 @@ public:
             /* [in] */ Boolean usb,
             /* [in] */ CTethering* host);
 
-        CAR_INTERFACE_DECL();
-
-        CARAPI_(String) ToString();
+        CARAPI ToString(
+            /* [out] */ String* str);
 
         CARAPI_(Int32) GetLastError();
 
@@ -200,6 +222,11 @@ public:
                 /* [in] */ IMessage* m,
                 /* [out]*/ Boolean* result);
 
+            String GetName()
+            {
+                return String("TetherMasterUtilState");
+            }
+
         protected:
             CARAPI_(String) EnableString(
                 /* [in] */ Int32 apnType);
@@ -240,6 +267,11 @@ public:
             CARAPI ProcessMessage(
                 /* [in] */ IMessage* message,
                 /* [out] */ Boolean* value);
+
+            String GetName()
+            {
+                return String("InitialState");
+            }
         };
 
         class TetherModeAliveState : public TetherMasterUtilState
@@ -259,6 +291,10 @@ public:
                     /* [in] */ IMessage* message,
                     /* [out] */ Boolean* value);
 
+            String GetName()
+            {
+                return String("TetherModeAliveState");
+            }
         public:
             Boolean mTryCell;
         };
@@ -279,6 +315,10 @@ public:
             CARAPI_(void) Notify(
                     /* [in] */Int32 msgType);
 
+            String GetName()
+            {
+                return String("ErrorState");
+            }
         public:
             Int32 mErrorNotification;
 
@@ -295,6 +335,11 @@ public:
             {}
 
             CARAPI Enter();
+
+            String GetName()
+            {
+                return String("SetIpForwardingEnabledErrorState");
+            }
         };
 
         class SetIpForwardingDisabledErrorState : public ErrorState
@@ -306,6 +351,11 @@ public:
             {}
 
             CARAPI Enter();
+
+            String GetName()
+            {
+                return String("SetIpForwardingDisabledErrorState");
+            }
         };
 
         class StartTetheringErrorState : public ErrorState
@@ -317,6 +367,11 @@ public:
             {}
 
             CARAPI Enter();
+
+            String GetName()
+            {
+                return String("StartTetheringErrorState");
+            }
         };
 
         class StopTetheringErrorState : public ErrorState
@@ -328,6 +383,11 @@ public:
             {}
 
             CARAPI Enter();
+
+            String GetName()
+            {
+                return String("StopTetheringErrorState");
+            }
         };
 
         class SetDnsForwardersErrorState : public ErrorState
@@ -339,6 +399,11 @@ public:
             {}
 
             CARAPI Enter();
+
+            String GetName()
+            {
+                return String("SetDnsForwardersErrorState");
+            }
         };
 
     public:
@@ -413,6 +478,8 @@ private:
     };
 
 public:
+    CAR_OBJECT_DECL()
+
     CTethering();
 
     ~CTethering();

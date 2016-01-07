@@ -13,10 +13,6 @@ module
      *
      * @hide
      */
-    /**
-     * @Involved
-     * none super interface
-     */
     interface INetworkIdentity {
 
         /**

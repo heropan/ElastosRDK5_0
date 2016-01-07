@@ -87,7 +87,7 @@ ECode CLockPatternUtilsCache::constructor(
 {
     mService = service;
     ECode ec = service->RegisterObserver(mObserver);
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         // Not safe to do caching without the observer. System process has probably died
         // anyway, so crashing here is fine.
         // throw new RuntimeException(e);

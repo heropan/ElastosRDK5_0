@@ -187,7 +187,7 @@ ECode LocalSocketImpl::SocketOutputStream::Flush()
         ECode ec = Thread::Sleep(10);
         // } catch (InterruptedException ie) {
         if (FAILED(ec)) {
-            if (ec == E_INTERRUPTED_EXCEPTION) return NOERROR;
+            if (ec == (ECode)E_INTERRUPTED_EXCEPTION) return NOERROR;
             return ec;
         }
         // }
@@ -925,7 +925,7 @@ ECode LocalSocketImpl::Create(
         // try {
         ECode ec = Elastos::Droid::System::Os::Socket(OsConstants::_AF_UNIX, osType, 0, (IFileDescriptor**)&mFd);
         if (FAILED(ec)) {
-            if (ec == E_ERRNO_EXCEPTION)
+            if (ec == (ECode)E_ERRNO_EXCEPTION)
                 return E_IO_EXCEPTION;
             return ec;
         }
@@ -947,7 +947,7 @@ ECode LocalSocketImpl::Close()
         ECode ec = Elastos::Droid::System::Os::Close(mFd);
         // } catch (ErrnoException e) {
         if (FAILED(ec)) {
-            if (ec == E_ERRNO_EXCEPTION) return E_IO_EXCEPTION;
+            if (ec == (ECode)E_ERRNO_EXCEPTION) return E_IO_EXCEPTION;
             return ec;
         }
         // }

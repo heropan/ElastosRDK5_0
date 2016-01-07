@@ -16,7 +16,7 @@ namespace Os {
 
 CarClass(CParcelFileDescriptorHelper)
     , public Singleton
-    , IParcelFileDescriptorHelper
+    , public IParcelFileDescriptorHelper
 {
 public:
     CAR_INTERFACE_DECL()

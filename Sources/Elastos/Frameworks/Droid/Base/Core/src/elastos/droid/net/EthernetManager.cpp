@@ -30,7 +30,7 @@ ECode EthernetManager::GetConfiguration(
         // try {
     ECode ec = mService->GetConfiguration(result);
         // } catch (RemoteException e) {
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         return CIpConfiguration::New(result);
     }
         // }
@@ -46,7 +46,7 @@ ECode EthernetManager::SetConfiguration(
         // try {
     ECode ec = mService->SetConfiguration(config);
         // } catch (RemoteException e) {
-    if (ec == E_REMOTE_EXCEPTION) return NOERROR;
+    if (ec == (ECode)E_REMOTE_EXCEPTION) return NOERROR;
         // }
     return ec;
 }

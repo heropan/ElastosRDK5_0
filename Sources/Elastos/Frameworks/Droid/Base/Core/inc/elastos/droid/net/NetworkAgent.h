@@ -28,7 +28,7 @@ namespace Net {
  *
  * @hide
  */
-class NetworkAgent
+class ECO_PUBLIC NetworkAgent
     : public Handler
     , public INetworkAgent
 {
@@ -36,6 +36,8 @@ public:
     CAR_INTERFACE_DECL()
 
     NetworkAgent();
+
+    virtual ~NetworkAgent();
 
     CARAPI constructor(
         /* [in] */ ILooper* looper,
@@ -135,12 +137,12 @@ public:
         /* [in] */ const char* fmt, ...);
 
 private:
-    CARAPI QueueOrSendMessage(
+    ECO_LOCAL CARAPI QueueOrSendMessage(
         /* [in] */ Int32 what,
         /* [in] */ IInterface* obj);
 
     // to initialize mPreConnectedQueue
-    CARAPI_(AutoPtr<IArrayList>) CreatePreConnectQueue();
+    ECO_LOCAL CARAPI_(AutoPtr<IArrayList>) CreatePreConnectQueue();
 
     /* const */ AutoPtr<IArrayList> mPreConnectedQueue;
 
@@ -149,13 +151,13 @@ private:
     // LOG_TAG has duplicated macro
     String mLOG_TAG;
 
-    static const Boolean DBG;
+    ECO_LOCAL static const Boolean DBG;
 
-    static const Boolean VDBG;
+    ECO_LOCAL static const Boolean VDBG;
 
     /* const */ AutoPtr<IContext> mContext;
 
-    static const Int32 BASE;
+    ECO_LOCAL static const Int32 BASE;
 };
 
 } // namespace Net

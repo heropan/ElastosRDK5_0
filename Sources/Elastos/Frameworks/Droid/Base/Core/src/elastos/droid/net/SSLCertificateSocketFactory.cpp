@@ -211,7 +211,7 @@ ECode SSLCertificateSocketFactory::MakeSocketFactory(
     // COpenSSLContextImpl::New((IOpenSSLContextImpl**)&sslContext);
     // ec = sslContext->EngineInit(keyManagers, trustManagers, NULL);
     if (FAILED(ec)) {
-        if (ec == E_KEY_MANAGEMENT_EXCEPTION) {
+        if (ec == (ECode)E_KEY_MANAGEMENT_EXCEPTION) {
             Logger::W(TAG, "%d", ec);
             AutoPtr<ISSLSocketFactoryHelper> helper;
             CSSLSocketFactoryHelper::AcquireSingleton((ISSLSocketFactoryHelper**)&helper);

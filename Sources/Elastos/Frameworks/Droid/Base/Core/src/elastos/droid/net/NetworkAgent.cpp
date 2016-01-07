@@ -56,6 +56,9 @@ NetworkAgent::NetworkAgent()
     : mPreConnectedQueue(CreatePreConnectQueue())
 {}
 
+NetworkAgent::~NetworkAgent()
+{}
+
 ECode NetworkAgent::constructor(
     /* [in] */ ILooper* looper,
     /* [in] */ IContext* context,

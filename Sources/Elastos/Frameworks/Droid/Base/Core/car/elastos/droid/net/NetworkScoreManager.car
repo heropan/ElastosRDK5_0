@@ -35,10 +35,6 @@ module
      * @hide
      */
     // @SystemApi
-    /**
-     * @Involved
-     * none super interface
-     */
     [deprecated]
     interface INetworkScoreManager {
         /**

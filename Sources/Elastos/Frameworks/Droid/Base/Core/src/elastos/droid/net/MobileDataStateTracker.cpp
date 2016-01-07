@@ -703,7 +703,7 @@ ECode MobileDataStateTracker::SetRadio(
 //        try {
         ECode ec = mPhoneService->SetRadio(turnOn, result);
 //        } catch (RemoteException e) {
-        if (ec == E_REMOTE_EXCEPTION) {
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
             if (retry == 0) GetPhoneService(TRUE);
         }
         else if (FAILED(ec)) return ec;
@@ -828,7 +828,7 @@ ECode MobileDataStateTracker::IsProvisioningNetwork(
         // *result = arg1 == CDctConstants::ENABLED;
     }
         // } catch (NullPointerException e) {
-    if (ec == E_NULL_POINTER_EXCEPTION) {
+    if (ec == (ECode)E_NULL_POINTER_EXCEPTION) {
         Loge("isProvisioningNetwork: X %08X", ec);
         *result = FALSE;
     }

@@ -2293,7 +2293,7 @@ ECode Uri::GetQueryParameters(
     ECode ec = helper->Encode(key, DEFAULT_ENCODING, &encodedKey);
     // } catch (UnsupportedEncodingException e) {
     if (FAILED(ec)) {
-        if (ec == E_UNSUPPORTED_ENCODING_EXCEPTION) {
+        if (ec == (ECode)E_UNSUPPORTED_ENCODING_EXCEPTION) {
             Logger::E("Uri", "%d", ec);
             return E_ASSERTION_ERROR;
         }

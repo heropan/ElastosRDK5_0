@@ -256,7 +256,7 @@ ECode Proxy::Validate(
         ECode ec = StringUtils::Parse(port, &portVal);
         // } catch (NumberFormatException ex) {
         if (FAILED(ec)) {
-            if (ec == E_NUMBER_FORMAT_EXCEPTION) {
+            if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
                 *result = IProxy::PROXY_PORT_INVALID;
                 return NOERROR;
             }

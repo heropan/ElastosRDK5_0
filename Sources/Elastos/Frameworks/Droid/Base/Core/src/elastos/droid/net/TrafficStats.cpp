@@ -636,7 +636,7 @@ ECode TrafficStats::GetMobileIfaces(
     ECode ec = GetStatsService()->GetMobileIfaces(result);
         // } catch (RemoteException e) {
     if (FAILED(ec)) {
-        if (ec == E_REMOTE_EXCEPTION) {
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
             Logger::E("TrafficStats", "%d", ec);
             return E_RUNTIME_EXCEPTION;
         }

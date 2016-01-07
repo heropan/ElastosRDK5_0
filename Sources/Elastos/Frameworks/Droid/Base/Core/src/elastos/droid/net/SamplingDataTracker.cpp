@@ -127,11 +127,11 @@ ECode SamplingDataTracker::GetSamplingSnapshots(
     return NOERROR;
 _ERR_EXIT_:
         // } catch(FileNotFoundException e) {
-    if (ec == E_FILE_NOT_FOUND_EXCEPTION) {
+    if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
         Slogger::E(TAG, "could not find /proc/net/dev");
     }
         // } catch (IOException e) {
-    if (ec == E_IO_EXCEPTION) {
+    if (ec == (ECode)E_IO_EXCEPTION) {
         Slogger::E(TAG, "could not read /proc/net/dev");
     }
         // } finally {
@@ -140,7 +140,7 @@ _ERR_EXIT_:
         ec = ICloseable::Probe(reader)->Close();
     }
             // } catch (IOException e) {
-    if (ec == E_IO_EXCEPTION) {
+    if (ec == (ECode)E_IO_EXCEPTION) {
         Slogger::E(TAG, "could not close /proc/net/dev");
     }
             // }

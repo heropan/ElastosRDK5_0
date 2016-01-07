@@ -471,7 +471,7 @@ ECode RequestHandle::H(
         AutoPtr<IMessageDigest> md5;
         ec = helper->GetInstance(String("MD5"), (IMessageDigest**)&md5);
         if (FAILED(ec)) {
-            if (ec == E_NO_SUCH_ALGORITHM_EXCEPTION)
+            if (ec == (ECode)E_NO_SUCH_ALGORITHM_EXCEPTION)
                 return E_RUNTIME_EXCEPTION;
             return ec;
         }

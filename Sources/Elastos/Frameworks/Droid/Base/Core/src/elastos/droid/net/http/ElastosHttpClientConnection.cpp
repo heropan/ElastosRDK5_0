@@ -527,7 +527,7 @@ ECode ElastosHttpClientConnection::IsStale(
     ECode ec;
     ec = mInbuffer->IsDataAvailable(1, &available);
     if (FAILED(ec)) {
-        if (ec == E_IO_EXCEPTION) {
+        if (ec == (ECode)E_IO_EXCEPTION) {
             *result = TRUE;
             return NOERROR;
         }

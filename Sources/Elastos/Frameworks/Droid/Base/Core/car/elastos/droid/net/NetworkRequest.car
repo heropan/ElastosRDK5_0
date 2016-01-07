@@ -47,10 +47,7 @@ module
      * Builder used to create {@link NetworkRequest} objects.  Specify the Network features
      * needed in terms of {@link NetworkCapabilities} features
      */
-    /**
-     * @Involved
-     * none super interface
-     */
+
     interface INetworkRequestBuilder {
         /**
          * Build {@link NetworkRequest} give the current set of capabilities.
