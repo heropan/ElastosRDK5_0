@@ -350,7 +350,7 @@ void CMountService::UmsEnableCallBack::HandleFinished()
 
 CMountService::ShutdownCallBack::ShutdownCallBack(
     /* [in] */ const String& path,
-    /* [in] */ IMountShutdownObserver* observer,
+    /* [in] */ IIMountShutdownObserver* observer,
     /* [in] */ CMountService* host)
     : UnmountCallBack(path, TRUE, FALSE, host)
     , mObserver(observer)
@@ -2133,7 +2133,7 @@ ECode CMountService::UnregisterListener(
 }
 
 ECode CMountService::Shutdown(
-    /* [in] */ IMountShutdownObserver* observer)
+    /* [in] */ IIMountShutdownObserver* observer)
 {
     FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::permission::SHUTDOWN));
 

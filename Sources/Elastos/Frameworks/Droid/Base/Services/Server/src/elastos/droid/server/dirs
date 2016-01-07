@@ -6,6 +6,7 @@ DIRS += content
 DIRS += display
 DIRS += lights
 DIRS += os
+DIRS += power
 DIRS += wallpaper
 
 
@@ -17,7 +18,6 @@ DIRS += net
 #DIRS += usb
 #DIRS += wm
 #DIRS += accounts
-#DIRS += power
 #DIRS += dreams
 #DIRS += search
 #DIRS += zigbee

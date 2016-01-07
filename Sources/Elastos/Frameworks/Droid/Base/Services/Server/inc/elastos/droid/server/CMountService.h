@@ -29,7 +29,7 @@ using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::IHandlerThread;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::Storage::IObbActionListener;
-using Elastos::Droid::Os::Storage::IMountShutdownObserver;
+using Elastos::Droid::Os::Storage::IIMountShutdownObserver;
 using Elastos::Droid::Os::Storage::IMountServiceListener;
 using Elastos::Droid::Os::Storage::IStorageVolume;
 using Elastos::Droid::Server::Pm::CPackageManagerService;
@@ -236,14 +236,14 @@ public:
     public:
         ShutdownCallBack(
             /* [in] */ const String& path,
-            /* [in] */ IMountShutdownObserver* observer,
+            /* [in] */ IIMountShutdownObserver* observer,
             /* [in] */ CMountService* host);
 
 
         CARAPI_(void) HandleFinished();
 
     private:
-        AutoPtr<IMountShutdownObserver> mObserver;
+        AutoPtr<IIMountShutdownObserver> mObserver;
     };
 
     class ObbAction
@@ -482,7 +482,7 @@ public:
         /* [in] */ IMountServiceListener* listener);
 
     CARAPI Shutdown(
-        /* [in] */ IMountShutdownObserver* observer);
+        /* [in] */ IIMountShutdownObserver* observer);
 
     CARAPI IsUsbMassStorageConnected(
         /* [out] */ Boolean* connected);

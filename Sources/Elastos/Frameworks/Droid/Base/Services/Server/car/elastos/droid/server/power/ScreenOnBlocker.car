@@ -9,8 +9,7 @@ module
      * Low-level screen on blocker mechanism which is used to keep the screen off
      * or the contents of the screen hidden until the window manager is ready to show new content.
      */
-    interface IScreenOnBlocker
-    {
+    interface IScreenOnBlocker {
         /**
          * Acquires the screen on blocker.
          * Prevents the screen from turning on.
@@ -27,7 +26,7 @@ module
          * It is an error to call release() if the screen on blocker has not been acquired.
          * The system may crash.
          */
-        Release();
+        ReleaseScreenOnBlocker();
     }
 
     } // namespace Power

@@ -40,8 +40,8 @@ module
 
     // merge("StatusBarManagerService.car");
     // merge("NetworkManagementService.car");
-    // merge("power/SuspendBlocker.car");
-    // merge("power/ScreenOnBlocker.car");
+    merge("power/SuspendBlocker.car");
+    merge("power/ScreenOnBlocker.car");
     // merge("accessibility/EventStreamTransformation.car");
     // merge("accessibility/ScreenMagnifier.car");
     // merge("RecognitionManagerService.car");
@@ -60,14 +60,13 @@ module
     using interface Elastos.Droid.App.IWallpaperInfo;
     using interface Elastos.Droid.Os.IBinder;
     using interface Elastos.Droid.Os.IHandler;
+    using interface Elastos.Droid.Os.ILooper;
+    using interface Elastos.Droid.Os.IIUserManager;
+    using interface Elastos.Droid.Os.IIPowerManager;
     using interface Elastos.Droid.Os.IIHardwareService;
     using interface Elastos.Droid.Os.IISchedulingPolicyService;
     using interface Elastos.Droid.Os.IINetworkManagementService;
-    using interface Elastos.Droid.Os.ILooper;
-    using interface Elastos.Droid.Os.IIUserManager;
-    using interface Elastos.Droid.Net.IINetworkStatsService;
-    using interface Elastos.Droid.Net.IIConnectivityManager;
-    using interface Elastos.Droid.Net.IINetworkManagementEventObserver;
+    using interface Elastos.Droid.Os.Storage.IIMountShutdownObserver;
     using interface Elastos.Droid.Content.IContext;
     using interface Elastos.Droid.Content.IIContentService;
     using interface Elastos.Droid.Content.IIIntentSender;
@@ -90,18 +89,11 @@ module
     using interface Elastos.Droid.Net.IINetworkManagementEventObserver;
     using interface Elastos.Droid.Net.IINetworkPolicyManager;
     using interface Elastos.Droid.Net.IINetworkStatsService;
-    using interface Elastos.Droid.Os.IBinder;
-    using interface Elastos.Droid.Os.IHandler;
-    using interface Elastos.Droid.Os.IIHardwareService;
-    using interface Elastos.Droid.Os.IINetworkManagementService;
-    using interface Elastos.Droid.Os.IIPowerManager;
-    using interface Elastos.Droid.Os.IISchedulingPolicyService;
-    using interface Elastos.Droid.Os.IIUserManager;
-    using interface Elastos.Droid.Os.ILooper;
-    using interface Elastos.Droid.Os.INetworkManagementService;
     using interface Elastos.Droid.Service.Wallpaper.IIWallpaperConnection;
     using interface Elastos.Droid.Utility.ITrustedTime;
     using interface Elastos.Droid.View.IApplicationToken;
+
+    using interface Elastos.Core.IThread;
     using interface Elastos.IO.IFile;
     using interface Elastos.Utility.ISet;
 
@@ -1074,27 +1066,6 @@ module
 
 //     } // Accounts
 
-//     namespace Power {
-
-//     /**
-//      * The power manager service is responsible for coordinating power management
-//      * functions on the device.
-//      */
-//     class CPowerManagerService {
-//         constructor();
-
-//         interface IIPowerManager;
-//     }
-
-//     class CMountShutdownObserver {
-//         constructor(
-//             [in] Handle32 host);
-
-//         interface IMountShutdownObserver;
-//     }
-
-//     } // Power
-
 //     [local]
 //     class CWifiService {
 //         constructor(
@@ -1401,4 +1372,32 @@ module
     } // namespace Server
     } // namepsace Droid
     } // namespace Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+    namespace Power {
+
+    [local]
+    class CPowerManagerServiceBinderService {
+        constructor(
+            [in] ISystemService* service);
+
+        interface IIPowerManager;
+        interface IBinder;
+    }
+
+    class CMountShutdownObserver {
+        constructor(
+            [in] IThread* host);
+
+        interface IIMountShutdownObserver;
+        interface IBinder;
+    }
+
+    } // Power
+    } // namespace Server
+    } // namepsace Droid
+    } // namespace Elastos
+
 }

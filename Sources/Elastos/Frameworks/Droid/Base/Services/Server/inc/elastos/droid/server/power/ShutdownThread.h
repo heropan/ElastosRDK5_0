@@ -2,26 +2,28 @@
 #ifndef __ELASTOS_DROID_SERVER_POWER_SHUTDOWNTHREAD_H__
 #define __ELASTOS_DROID_SERVER_POWER_SHUTDOWNTHREAD_H__
 
-#include "_Elastos.Droid.Server.h"
+#include <Elastos.Droid.Media.h>
+#include <Elastos.Droid.Os.h>
 #include "elastos/droid/ext/frameworkdef.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
-#include "elastos/droid/os/HandlerBase.h"
 #include <elastos/core/Object.h>
+#include <elastos/core/Thread.h>
 
-
+using Elastos::Droid::App::IDialog;
+using Elastos::Droid::App::IAlertDialog;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IDialogInterfaceOnDismissListener;
 using Elastos::Droid::Content::IDialogInterfaceOnClickListener;
-using Elastos::Droid::Content::IDialogInterfaceOnMultiChoiceClickListener;
 using Elastos::Droid::Content::IDialogInterface;
-using Elastos::Droid::App::IDialog;
-using Elastos::Droid::App::IAlertDialog;
-using Elastos::Droid::App::IProgressDialog;
+using Elastos::Droid::Media::IAudioAttributes;
+using Elastos::Droid::Os::Storage::IIMountShutdownObserver;
+using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IPowerManager;
 using Elastos::Droid::Os::IPowerManagerWakeLock;
-using Elastos::Droid::View::IWindowManagerPolicy;
+using Elastos::Core::Thread;
+using Elastos::Core::IThread;
 
 namespace Elastos {
 namespace Droid {
@@ -29,32 +31,58 @@ namespace Server {
 namespace Power {
 
 class ShutdownThread
-    : public ThreadBase
+    : public Thread
 {
+public:
+    class MountShutdownObserver
+        : public Object
+        , public IIMountShutdownObserver
+        , public IBinder
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        MountShutdownObserver();
+
+        ~MountShutdownObserver();
+
+        CARAPI constructor(
+            /* [in] */ IThread* host);
+
+        //@Override
+        CARAPI OnShutDownComplete(
+            /* [in] */ Int32 statusCode);
+
+        CARAPI ToString(
+            /* [out] */ String* info)
+        {
+            VALIDATE_NOT_NULL(info);
+            *info = String("ShutdownThread::MountShutdownObserver: ");
+            (*info).AppendFormat("%p", this);
+            return NOERROR;
+        }
+
+    private:
+        ShutdownThread* mHost;
+    };
+
 private:
     class CloseDialogReceiver
         : public BroadcastReceiver
         , public IDialogInterfaceOnDismissListener
     {
     public:
+        CAR_INTERFACE_DECL();
+
         CloseDialogReceiver(
             /* [in] */IContext* context);
 
-        CARAPI_(PInterface) Probe(
-            /* [in]  */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* pObject,
-            /* [out] */ InterfaceID* pIID);
-
+        //@Override
         CARAPI OnReceive(
             /* [in] */ IContext* context,
             /* [in] */ IIntent* intent);
 
+        //@Override
         CARAPI OnDismiss(
             /* [in] */ IDialogInterface* unused);
 
@@ -66,6 +94,7 @@ private:
             (*info).AppendFormat("%p", this);
             return NOERROR;
         }
+
     public:
         AutoPtr<IDialog> mDialog;
 
@@ -73,16 +102,18 @@ private:
         AutoPtr<IContext> mContext;
     };
 
+    // used in function ShutdownInner();
     class DialogInterfaceOnClickListener
-        : public ElRefBase
+        : public Object
         , public IDialogInterfaceOnClickListener
     {
     public:
+        CAR_INTERFACE_DECL();
+
         DialogInterfaceOnClickListener(
             /* [in] */ IContext* context);
 
-        CAR_INTERFACE_DECL();
-
+        //@Override
         CARAPI OnClick(
             /* [in] */ IDialogInterface* dialog,
             /* [in] */ Int32 which);
@@ -91,46 +122,9 @@ private:
         AutoPtr<IContext> mContext;
     };
 
-    class DialogInterfaceOnMultiChoiceClickListener
-        : public ElRefBase
-        , public IDialogInterfaceOnMultiChoiceClickListener
-    {
-    public:
-        DialogInterfaceOnMultiChoiceClickListener(
-            /* [in] */ IContext* context);
-
-        CAR_INTERFACE_DECL();
-
-        CARAPI OnClick(
-            /* [in] */ IDialogInterface* dialog,
-            /* [in] */ Int32 which,
-            /* [in] */ Boolean isChecked);
-
-    private:
-        AutoPtr<IContext> mContext;
-    };
-
-    class DialogInterfaceOnClickListener2
-        : public ElRefBase
-        , public IDialogInterfaceOnClickListener
-    {
-    public:
-        DialogInterfaceOnClickListener2(
-            /* [in] */ IContext* context,
-            /* [in] */ IWindowManagerPolicy* policy);
-
-        CAR_INTERFACE_DECL()
-
-        CARAPI OnClick(
-            /* [in] */ IDialogInterface* dialog,
-            /* [in] */ Int32 which);
-
-    private:
-        AutoPtr<IContext> mContext;
-        AutoPtr<IWindowManagerPolicy> mPolicy;
-    };
-
-    class ActionDoneBroadcastReceiver : public BroadcastReceiver
+    // used in function Run();
+    class ActionDoneBroadcastReceiver
+        : public BroadcastReceiver
     {
     public:
         ActionDoneBroadcastReceiver(
@@ -149,37 +143,26 @@ private:
             (*info).AppendFormat("%p", this);
             return NOERROR;
         }
+
     private:
         ShutdownThread* mHost;
     };
 
+    // used in function ShutdownRadios();
     class ShutdownRadiosThread
-        : public ThreadBase
+        : public Thread
     {
     public:
         ShutdownRadiosThread(
             /* [in] */ ArrayOf<Boolean>* done,
             /* [in] */ Int64 endTime);
 
+        //@Override
         virtual CARAPI Run();
 
     private:
         AutoPtr< ArrayOf<Boolean> > mDone;
         Int64 mEndTime;
-    };
-
-    class ShutdownThreadHandler
-        : public HandlerBase
-    {
-    public:
-        ShutdownThreadHandler(
-            /* [in] */ IProgressDialog* pd);
-
-        virtual CARAPI HandleMessage(
-            /* [in] */ IMessage* msg);
-
-    private:
-        AutoPtr<IProgressDialog> mPd;
     };
 
 public:
@@ -192,11 +175,6 @@ public:
      * @param confirm true if user confirmation is needed before shutting down.
      */
     static CARAPI_(void) Shutdown(
-        /* [in] */ IContext* context,
-        /* [in] */ Boolean confirm,
-        /* [in] */ IWindowManagerPolicy* policy);
-
-    static CARAPI_(void) ShutdownInner(
         /* [in] */ IContext* context,
         /* [in] */ Boolean confirm);
 
@@ -225,8 +203,6 @@ public:
         /* [in] */ IContext* context,
         /* [in] */ Boolean confirm);
 
-    CARAPI_(void) ActionDone();
-
     /**
      * Makes sure we handle the shutdown gracefully.
      * Shuts off power regardless of radio and bluetooth state if the alloted time has passed.
@@ -244,30 +220,27 @@ public:
         /* [in] */ Boolean reboot,
         /* [in] */ const String& reason);
 
+protected:
+    static CARAPI_(void) ShutdownInner(
+        /* [in] */ IContext* context,
+        /* [in] */ Boolean confirm);
+
+    CARAPI_(void) ActionDone();
+
 private:
     ShutdownThread();
 
     ~ShutdownThread();
 
-    CARAPI_(void) SaveAirplaneModeState(
-        /* [in] */ Boolean enabled);
-
-    CARAPI_(void) EnableAirplaneModeState();
-
-    CARAPI_(void) SetAirplaneModeState(
-        /* [in] */ Boolean enabled);
-
     static CARAPI_(void) BeginShutdownSequence(
-        /* [in] */ IContext* context);
-
-    CARAPI_(void) KillRemoveActivity(
-        /* [in] */ IContext* context);
-
-    CARAPI_(void) KillRemoveService(
         /* [in] */ IContext* context);
 
     CARAPI_(void) ShutdownRadios(
         /* [in] */ Int32 timeout);
+
+    static CARAPI_(AutoPtr<ShutdownThread>) InitsInstance();
+
+    static CARAPI_(AutoPtr<IAudioAttributes>) InitVIBRATION_ATTRIBUTES();
 
 public:
     // Provides shutdown assurance in case the system_server is killed
@@ -288,25 +261,18 @@ private:
     // length of vibration before shutting down
     static const Int32 SHUTDOWN_VIBRATE_MS;
 
-    static const Int32 CLOSE_PROCESS_DIALOG;
-
-    static const Int32 MAX_SERVICES;
-
-    static const Int32 MAX_ACTIVITYS;
-
-    static const Int32 BOOTFAST_WAIT_TIME;
-
     // state tracking
     static Object sIsStartedGuard;
     static Boolean sIsStarted;
 
     static Boolean mReboot;
     static Boolean mRebootSafeMode;
-    static AutoPtr<IWindowManagerPolicy> mPolicy;
     static String mRebootReason;
 
     // static instance of this thread
     static AutoPtr<ShutdownThread> sInstance;
+
+    static AutoPtr<IAudioAttributes> VIBRATION_ATTRIBUTES;
 
     Object mActionDoneSync;
     Boolean mActionDone;
@@ -314,9 +280,7 @@ private:
     AutoPtr<IPowerManager> mPowerManager;
     AutoPtr<IPowerManagerWakeLock> mCpuWakeLock;
     AutoPtr<IPowerManagerWakeLock> mScreenWakeLock;
-    AutoPtr<ShutdownThreadHandler> mHandler;
-
-    static Boolean mBootFastEnable;
+    AutoPtr<IHandler> mHandler;
 
     static AutoPtr<IAlertDialog> sConfirmDialog;
 };

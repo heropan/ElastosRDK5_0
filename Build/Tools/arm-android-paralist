@@ -310,7 +310,7 @@
 #< Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/wm
 #  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/accessibility
 #  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/accounts
-#  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/power
+  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/power
 #  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/search
 > Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server
 > Elastos/Frameworks/Droid/Base/Services/Server/
