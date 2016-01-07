@@ -4,6 +4,8 @@
 #include "Elastos.Droid.Media.h"
 #include "elastos/droid/media/SubtitleTrack.h"
 
+using Elastos::Core::IArrayOf;
+using Elastos::Core::IInteger32;
 using Elastos::Core::IStringBuilder;
 
 namespace Elastos {
@@ -98,20 +100,38 @@ public:
     CARAPI GetAlignment(
         /* [out] */ Int32* alignment);
 
+    CARAPI GetStrings(
+        /* [out, callee] */ ArrayOf<ICharSequence*>** strings);
+
+    CARAPI SetStrings(
+        /* [in] */ ArrayOf<ICharSequence*>* strings);
+
+    CARAPI GetLines(
+        /* [out, callee] */ ArrayOf<IArrayOf*>** lines);
+
+    CARAPI SetLines(
+        /* [in] */ ArrayOf<IArrayOf*>* lines);
+
+    CARAPI GetRegion(
+        /* [out] */ ITextTrackRegion** result);
+
+    CARAPI SetRegion(
+        /* [in] */ ITextTrackRegion* ttr);
+
 public:
     String  mId;
     Boolean mPauseOnExit;
     Int32   mWritingDirection;
     String  mRegionId;
     Boolean mSnapToLines;
-    Int32 mLinePosition;  // null means AUTO
+    AutoPtr<IInteger32> mLinePosition;  // null means AUTO
     Boolean mAutoLinePosition;
     Int32 mTextPosition;
     Int32 mSize;
     Int32 mAlignment;
     // Vector<String> mText;
-    AutoPtr<ArrayOf<String> > mStrings;
-    AutoPtr<ArrayOf<AutoPtr<ArrayOf<ITextTrackCueSpan*> > > > mLines;
+    AutoPtr<ArrayOf<ICharSequence*> > mStrings;
+    AutoPtr<ArrayOf<IArrayOf*> > mLines;
     AutoPtr<ITextTrackRegion> mRegion;
 };
 
