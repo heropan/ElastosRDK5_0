@@ -498,7 +498,7 @@ public:
         /* [in] */ Int32 taskId,
         /* [in] */ ActivityRecord* reason);
 
-    CARAPI_(void) LogStartActivity(
+    static CARAPI_(void) LogStartActivity(
         /* [in] */ Int32 tag,
         /* [in] */ ActivityRecord* r,
         /* [in] */ TaskRecord* task);

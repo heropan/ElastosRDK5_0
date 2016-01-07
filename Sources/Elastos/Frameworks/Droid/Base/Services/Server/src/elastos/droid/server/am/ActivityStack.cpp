@@ -1,5 +1,4 @@
 #include "elastos/droid/server/am/ActivityStack.h"
-#include "elastos/droid/app/AppGlobals.h"
 #include "elastos/droid/app/CActivityOptions.h"
 #include "elastos/droid/app/CActivityOptionsHelper.h"
 #include "elastos/droid/app/CActivityManager.h"
