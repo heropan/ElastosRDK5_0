@@ -4,7 +4,6 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/internal/widget/AbsActionBarView.h"
-//#include "elastos/droid/internal/widget/DecorToolbar.h"
 #include "elastos/droid/widget/FrameLayout.h"
 #include "Elastos.Droid.App.h"
 
@@ -20,10 +19,9 @@ using Elastos::Droid::Internal::View::Menu::IMenuPresenterCallback;
 using Elastos::Droid::Internal::View::Menu::IMenuView;
 using Elastos::Droid::Internal::View::Menu::ISubMenuBuilder;
 using Elastos::Droid::Internal::Widget::AbsActionBarView;
-//using Elastos::Droid::Internal::Widget::DecorToolbar;
+using Elastos::Droid::Internal::Widget::IDecorToolbar;
 using Elastos::Droid::Internal::Widget::IActionBarContextView;
 using Elastos::Droid::Internal::Widget::IActionBarView;
-using Elastos::Droid::Internal::Widget::IDecorToolbar;
 using Elastos::Droid::Internal::Widget::IScrollingTabContainerView;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
@@ -55,26 +53,24 @@ namespace Widget {
   */
 class ActionBarView
     : public AbsActionBarView
-    //, public DecorToolbar
+    , public IDecorToolbar
     , public IActionBarView
 {
 public:
     class SavedState
         : public View::BaseSavedState
     {
-        friend class InnerParcelableCreator;
     public:
         SavedState(
             /* [in] */ IParcelable* superState);
+
+        SavedState(
+            /* [in] */ IParcel* in);
 
         // @Override
         CARAPI WriteToParcel(
             /* [in] */ IParcel* out,
             /* [in] */ Int32 flags);
-
-    private:
-        SavedState(
-            /* [in] */ IParcel* in);
 
     public:
         Int32 expandedMenuItemId;
@@ -494,6 +490,41 @@ public:
     // @Override
     CARAPI SetDefaultNavigationContentDescription(
         /* [in] */ Int32 defaultNavigationContentDescription);
+
+    virtual CARAPI GetContext(
+        /* [out] */ IContext** result);
+
+    virtual CARAPI SetSplitView(
+        /* [in] */ IViewGroup* splitView);
+
+    virtual CARAPI SetSplitWhenNarrow(
+        /* [in] */ Boolean splitWhenNarrow);
+
+    virtual CARAPI CanShowOverflowMenu(
+        /* [out] */ Boolean* result);
+
+    virtual CARAPI IsOverflowMenuShowing(
+        /* [out] */ Boolean* result);
+
+    virtual CARAPI IsOverflowMenuShowPending(
+        /* [out] */ Boolean* result);
+
+    virtual CARAPI ShowOverflowMenu(
+        /* [out] */ Boolean* result);
+
+    virtual CARAPI HideOverflowMenu(
+        /* [out] */ Boolean* result);
+
+    virtual CARAPI DismissPopupMenus();
+
+    virtual CARAPI AnimateToVisibility(
+        /* [in] */ Int32 visibility);
+
+    virtual CARAPI SaveHierarchyState(
+        /* [in] */ ISparseArray* toolbarStates);
+
+    virtual CARAPI RestoreHierarchyState(
+        /* [in] */ ISparseArray* toolbarStates);
 
 protected:
     // @Override

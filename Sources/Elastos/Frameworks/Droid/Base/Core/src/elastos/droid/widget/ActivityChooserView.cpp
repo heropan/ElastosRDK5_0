@@ -1412,7 +1412,7 @@ ECode ActivityChooserView::OnLayout(
     return NOERROR;
 }
 
-void ActivityChooserView::ShowPopupUnchecked(
+ECode ActivityChooserView::ShowPopupUnchecked(
     /* [in] */ Int32 maxActivityCount)
 {
     // ==================before translated======================
@@ -1457,7 +1457,7 @@ void ActivityChooserView::ShowPopupUnchecked(
     mAdapter->GetDataModel((IActivityChooserModel**)&dataModel);
     if (dataModel == NULL) {
         //throw new IllegalStateException("No data model. Did you call #setDataModel?");
-        return ;
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     AutoPtr<IViewTreeObserver> viewTreeObserver;
@@ -1510,6 +1510,7 @@ void ActivityChooserView::ShowPopupUnchecked(
         CString::New(str, (ICharSequence**)&charSequence);
         (IView::Probe(listView))->SetContentDescription(charSequence);
     }
+    return NOERROR;
 }
 
 AutoPtr<ListPopupWindow> ActivityChooserView::GetListPopupWindow()

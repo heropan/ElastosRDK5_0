@@ -2,6 +2,7 @@
 #include "elastos/droid/webkit/native/net/NetworkChangeNotifier.h"
 #include "elastos/droid/webkit/native/net/api/NetworkChangeNotifier_dec.h"
 #include <elastos/utility/logging/Logger.h>
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -149,16 +150,19 @@ ECode NetworkChangeNotifier::NotifyObserversOfConnectionTypeChange(
     // }
 
     Int64 nativeChangeNotifier;
-    for (Int32 i=0; i<(Int32)mNativeChangeNotifiers->GetSize(); ++i)
-    {
+    for (Int32 i=0; i<(Int32)mNativeChangeNotifiers->GetSize(); ++i) {
         nativeChangeNotifier = (*mNativeChangeNotifiers)[i];
         NativeNotifyConnectionTypeChanged(nativeChangeNotifier, newConnectionType);
     }
-    //for (Int32 i=0; i<mConnectionTypeObservers->GetLength(); ++i)
-    //{
-    //    AutoPtr<ConnectionTypeObserver> observer = (*mConnectionTypeObservers)[i];
-    //    observer->OnConnectionTypeChanged(newConnectionType);
-    //}
+    Int32 size = 0;
+    mConnectionTypeObservers->GetSize(&size);
+    for (Int32 i=0; i<size; ++i) {
+        AutoPtr<IInterface> interfaceTmp;
+        mConnectionTypeObservers->Get(i, (IInterface**)&interfaceTmp);
+        IObject* objTmp = IObject::Probe(interfaceTmp);
+        ConnectionTypeObserver* observer = (ConnectionTypeObserver*)objTmp;
+        observer->OnConnectionTypeChanged(newConnectionType);
+    }
     return NOERROR;
 }
 
@@ -212,7 +216,7 @@ NetworkChangeNotifier::NetworkChangeNotifier(
 
     context->GetApplicationContext((IContext**)&mContext);
     mNativeChangeNotifiers = new List<Int64>();
-    //mConnectionTypeObservers = new ObserverList<ConnectionTypeObserver*>();
+    CArrayList::New((IList**)&mConnectionTypeObservers);
 }
 
 ECode NetworkChangeNotifier::DestroyAutoDetector()
@@ -298,7 +302,7 @@ ECode NetworkChangeNotifier::AddConnectionTypeObserverInternal(
     // ==================before translated======================
     // mConnectionTypeObservers.addObserver(observer);
 
-    //--mConnectionTypeObservers->AddObserver(observer);
+    mConnectionTypeObservers->Add(TO_IINTERFACE(observer));
     return NOERROR;
 }
 
@@ -309,7 +313,7 @@ ECode NetworkChangeNotifier::RemoveConnectionTypeObserverInternal(
     // ==================before translated======================
     // mConnectionTypeObservers.removeObserver(observer);
 
-    //--mConnectionTypeObservers->RemoveObserver(observer);
+    mConnectionTypeObservers->Remove(TO_IINTERFACE(observer));
     return NOERROR;
 }
 

@@ -1,12 +1,13 @@
 
 #include <Elastos.CoreLibrary.IO.h>
 #include "Elastos.Droid.Provider.h"
-#include "elastos/droid/content/CIntent.h"
+#include "elastos/droid/content/CIntentHelper.h"
 #include "elastos/droid/graphics/CBitmapFactory.h"
 #include "elastos/droid/graphics/CCanvas.h"
 #include "elastos/droid/graphics/CPicture.h"
 #include "elastos/droid/net/CUriHelper.h"
 #include "elastos/droid/net/http/CErrorStrings.h"
+#include "elastos/droid/webkit/CJsDialogHelper.h"
 #include "elastos/droid/webkit/DebugFlags.h"
 #include "elastos/droid/webkit/native/base/ThreadUtils.h"
 #include "elastos/droid/webkit/native/base/TraceEvent.h"
@@ -19,8 +20,9 @@
 #include "elastos/core/CoreUtils.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::CIntentHelper;
 using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IIntentHelper;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Graphics::BitmapConfig;
 using Elastos::Droid::Graphics::CBitmapFactory;
@@ -33,12 +35,14 @@ using Elastos::Droid::Net::Http::CErrorStrings;
 using Elastos::Droid::Net::Http::IErrorStrings;
 using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Provider::IBrowser;
+using Elastos::Droid::Webkit::CJsDialogHelper;
 using Elastos::Droid::Webkit::DebugFlags;
 using Elastos::Droid::Webkit::Base::ThreadUtils;
 using Elastos::Droid::Webkit::Base::TraceEvent;
 using Elastos::Droid::Webkit::Content::Browser::ContentViewClient;
-//using Elastos::Droid::Webkit::IWebBackForwardList;
-//using Elastos::Droid::Webkit::IWebResourceResponse;
+using Elastos::Droid::Webkit::IJsDialogHelper;
+using Elastos::Droid::Webkit::IWebBackForwardList;
+using Elastos::Droid::Webkit::IWebResourceResponse;
 using Elastos::Droid::Webkit::Webview::Chromium::FileChooserParamsAdapter;
 using Elastos::Droid::Webkit::Webview::Chromium::UnimplementedWebViewApi;
 using Elastos::Droid::Webkit::Webview::Chromium::WebViewChromium;
@@ -120,10 +124,12 @@ ECode WebViewContentsClientAdapter::NullWebViewClient::ShouldOverrideUrlLoading(
     // return true;
 
     assert(0);
+    AutoPtr<IIntentHelper> helper;
+    CIntentHelper::AcquireSingleton((IIntentHelper**)&helper);
     AutoPtr<IIntent> intent;
     // Perform generic parsing of the URI to turn it into an Intent.
     // try {
-        //-CIntent::New(url, IIntent::URI_INTENT_SCHEME, (IIntent**)&intent);
+        helper->ParseUri(url, IIntent::URI_INTENT_SCHEME, (IIntent**)&intent);
     // } catch (URISyntaxException ex) {
         // Logger::W(TAG, "Bad URI " + url + ": " + ex.getMessage());
         // return FALSE;
@@ -361,6 +367,7 @@ ECode WebViewContentsClientAdapter::InnerHandler::HandleMessage(
                 if (newWebViewInterfaceTmp == webViewInterfaceTmp) {
                     //throw new IllegalArgumentException(String("Parent WebView cannot host it's own popup window. Please ") +
                     //    String("use WebSettings.setSupportMultipleWindows(false)"));
+                    return E_ILLEGAL_ARGUMENT_EXCEPTION;
                 }
 
                 AutoPtr<IWebBackForwardList> forwardList;
@@ -370,6 +377,7 @@ ECode WebViewContentsClientAdapter::InnerHandler::HandleMessage(
                 if (newWebView != NULL && size != 0) {
                     //throw new IllegalArgumentException(String("New WebView for popup window must not have been previously ") +
                     //    String("navigated."));
+                    return E_ILLEGAL_ARGUMENT_EXCEPTION;
                 }
 
                 WebViewChromium::CompleteWindowCreation(mOwner->mWebView, newWebView);
@@ -377,7 +385,7 @@ ECode WebViewContentsClientAdapter::InnerHandler::HandleMessage(
             break;
         default:
             //throw new IllegalStateException();
-            break;
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     return NOERROR;
@@ -746,6 +754,7 @@ ECode WebViewContentsClientAdapter::InnerValueCallback1::OnReceiveValue(
     assert(0);
     if (mCompleted) {
         //throw new IllegalStateException("showFileChooser result was already called");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mCompleted = TRUE;
     IList* uriListTmp = IList::Probe(uriList);
@@ -800,6 +809,7 @@ ECode WebViewContentsClientAdapter::InnerValueCallback2::OnReceiveValue(
     assert(0);
     if (mCompleted) {
         //throw new IllegalStateException("showFileChooser result was already called");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mCompleted = TRUE;
     AutoPtr<ICharSequence> s = NULL;
@@ -928,6 +938,7 @@ WebViewContentsClientAdapter::WebViewContentsClientAdapter(
 
     if (NULL == webView) {
         //throw new IllegalArgumentException("webView can't be null");
+        return ;
     }
     mWebView = webView;
     SetWebViewClient(NULL);
@@ -1129,7 +1140,8 @@ AutoPtr<AwWebResourceResponse> WebViewContentsClientAdapter::ShouldInterceptRequ
 
     String reasonPhrase;
     response->GetReasonPhrase(&reasonPhrase);
-    AutoPtr<AwWebResourceResponse> result;// = new AwWebResourceResponse(mimeType, encoding, data, statusCode, reasonPhrase, /* need Map<String, String>*/responseHeaders);
+    assert(0);
+    AutoPtr<AwWebResourceResponse> result;//-- need map: = new AwWebResourceResponse(mimeType, encoding, data, statusCode, reasonPhrase, /* need Map<String, String>*/responseHeaders);
     return result;
 }
 
@@ -1805,16 +1817,20 @@ ECode WebViewContentsClientAdapter::HandleJsAlert(
     TraceEvent::Begin();
     if (mWebChromeClient != NULL) {
         AutoPtr<JsPromptResultReceiverAdapter> resultReceiver = new JsPromptResultReceiverAdapter(receiver);
-        AutoPtr<JsPromptResult> promptResult = resultReceiver->GetPromptResult();
+        AutoPtr<JsPromptResult> res = resultReceiver->GetPromptResult();
         if (TRACE) {
             Logger::D(TAG, "onJsAlert");
         }
 
         Boolean jsAlert = FALSE;
-        mWebChromeClient->OnJsAlert(mWebView, url, message, promptResult, &jsAlert);
+        mWebChromeClient->OnJsAlert(mWebView, url, message, res, &jsAlert);
         if (!jsAlert) {
-            // no JsDialogHelper now: new JsDialogHelper(res, JsDialogHelper.ALERT, null, message, url)
-            //        .showDialog(mWebView.getContext());
+            AutoPtr<IJsDialogHelper> helper;
+            assert(0);
+            //-- helper hasnot base class named Singleton : CJsDialogHelper::AcquireSingleton(res, IJsDialogHelper::ALERT, NULL, message, url, (IJsDialogHelper**)&helper);
+            AutoPtr<IContext> context;
+            IView::Probe(mWebView)->GetContext((IContext**)&context);
+            helper->ShowDialog(context);
         }
     }
     else {
@@ -1849,16 +1865,20 @@ void WebViewContentsClientAdapter::HandleJsBeforeUnload(
     TraceEvent::Begin();
     if (mWebChromeClient != NULL) {
         AutoPtr<JsPromptResultReceiverAdapter> receiverAdapter = new JsPromptResultReceiverAdapter(receiver);
-        AutoPtr<JsPromptResult> promptResult = receiverAdapter->GetPromptResult();
+        AutoPtr<JsPromptResult> res = receiverAdapter->GetPromptResult();
         if (TRACE) {
             Logger::D(TAG, "onJsBeforeUnload");
         }
 
         Boolean result = FALSE;
-        mWebChromeClient->OnJsBeforeUnload(mWebView, url, message, promptResult, &result);
+        mWebChromeClient->OnJsBeforeUnload(mWebView, url, message, res, &result);
         if (!result) {
-            //new JsDialogHelper(res, JsDialogHelper.UNLOAD, null, message, url)
-            //        .showDialog(mWebView.getContext());
+            AutoPtr<IJsDialogHelper> helper;
+            assert(0);
+            //-- helper hasnot base class named Singleton : CJsDialogHelper::AcquireSingleton(res, IJsDialogHelper::UNLOAD, NULL, message, url, (IJsDialogHelper**)&helper);
+            AutoPtr<IContext> context;
+            IView::Probe(mWebView)->GetContext((IContext**)&context);
+            helper->ShowDialog(context);
         }
     }
     else {
@@ -1892,16 +1912,20 @@ void WebViewContentsClientAdapter::HandleJsConfirm(
     TraceEvent::Begin();
     if (mWebChromeClient != NULL) {
         AutoPtr<JsPromptResultReceiverAdapter> receiverAdapter = new JsPromptResultReceiverAdapter(receiver);
-        AutoPtr<JsPromptResult> promptResult = receiverAdapter->GetPromptResult();
+        AutoPtr<JsPromptResult> res = receiverAdapter->GetPromptResult();
         if (TRACE) {
             Logger::D(TAG, "onJsConfirm");
         }
 
         Boolean result = FALSE;
-        mWebChromeClient->OnJsConfirm(mWebView, url, message, promptResult, &result);
+        mWebChromeClient->OnJsConfirm(mWebView, url, message, res, &result);
         if (!result) {
-            //new JsDialogHelper(res, JsDialogHelper.CONFIRM, null, message, url)
-            //        .showDialog(mWebView.getContext());
+            AutoPtr<IJsDialogHelper> helper;
+            assert(0);
+            //-- helper hasnot base class named Singleton : CJsDialogHelper::AcquireSingleton(res, IJsDialogHelper::CONFIRM, NULL, message, url, (IJsDialogHelper**)&helper);
+            AutoPtr<IContext> context;
+            IView::Probe(mWebView)->GetContext((IContext**)&context);
+            helper->ShowDialog(context);
         }
     }
     else {
@@ -1936,16 +1960,20 @@ void WebViewContentsClientAdapter::HandleJsPrompt(
     TraceEvent::Begin();
     if (mWebChromeClient != NULL) {
         AutoPtr<JsPromptResultReceiverAdapter> receiverAdapter = new JsPromptResultReceiverAdapter(receiver);
-        AutoPtr<JsPromptResult> promptResult = receiverAdapter->GetPromptResult();
+        AutoPtr<JsPromptResult> res = receiverAdapter->GetPromptResult();
         if (TRACE) {
             Logger::D(TAG, "onJsConfirm");
         }
 
         Boolean result = FALSE;
-        mWebChromeClient->OnJsPrompt(mWebView, url, message, defaultValue, promptResult, &result);
+        mWebChromeClient->OnJsPrompt(mWebView, url, message, defaultValue, res, &result);
         if (!result) {
-            //new JsDialogHelper(res, JsDialogHelper.PROMPT, defaultValue, message, url)
-            //        .showDialog(mWebView.getContext());
+            AutoPtr<IJsDialogHelper> helper;
+            assert(0);
+            //-- helper hasnot base class named Singleton : CJsDialogHelper::AcquireSingleton(res, IJsDialogHelper::PROMPT, NULL, message, url, (IJsDialogHelper**)&helper);
+            AutoPtr<IContext> context;
+            IView::Probe(mWebView)->GetContext((IContext**)&context);
+            helper->ShowDialog(context);
         }
     }
     else {

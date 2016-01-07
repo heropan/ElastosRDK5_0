@@ -4,19 +4,21 @@
 #include "Elastos.Droid.Database.h"
 #include "Elastos.Droid.Provider.h"
 #include "elastos/droid/net/Uri.h"
-#include "elastos/droid/provider/ContactsContractProfile.h"
+#include "elastos/droid/provider/CContactsContractProfile.h"
 #include "elastos/droid/webkit/native/components/PersonalAutofillPopulator.h"
 #include "elastos/droid/webkit/native/components/api/PersonalAutofillPopulator_dec.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Net::Uri;
-using Elastos::Droid::Provider::ContactsContractProfile;
+using Elastos::Droid::Provider::CContactsContractProfile;
 using Elastos::Droid::Provider::IContactsContractCommonDataKindsEmail;
 using Elastos::Droid::Provider::IContactsContractCommonDataKindsPhone;
 using Elastos::Droid::Provider::IContactsContractCommonDataKindsStructuredName;
 using Elastos::Droid::Provider::IContactsContractCommonDataKindsStructuredPostal;
 using Elastos::Droid::Provider::IContactsContractContactsData;
+using Elastos::Droid::Provider::IContactsContractDataColumns;
+using Elastos::Droid::Provider::IContactsContractProfile;
 using Elastos::IO::ICloseable;
 using Elastos::Utility::Logging::Logger;
 
@@ -39,8 +41,10 @@ AutoPtr<IUri> PersonalAutofillPopulator::ProfileQuery::MiddleInitProfiledataUri(
     // ->WWZ_SIGN: FUNC_CALL_END }
 
     assert(0);
+    AutoPtr<IContactsContractProfile> profile;
+    CContactsContractProfile::AcquireSingleton((IContactsContractProfile**)&profile);
     AutoPtr<IUri> contentUri;
-    //TODO ContactsContractProfile::GetCONTENT_URI((IUri**)&contentUri);
+    profile->GetCONTENT_URI((IUri**)&contentUri);
     AutoPtr<IUri> uri;
     Uri::WithAppendedPath(contentUri, IContactsContractContactsData::CONTENT_DIRECTORY, (IUri**)&uri);
     return uri;
@@ -228,14 +232,14 @@ AutoPtr<ICursor> PersonalAutofillPopulator::CursorFromProfileQuery(
     //         sortDescriptor
     //         );
 
-    String sortDescriptor = String(""); //wwz: IS_PRIMARY isnot exist now; IContactsContractContactsData::IS_PRIMARY + " DESC";
+    String sortDescriptor = IContactsContractDataColumns::IS_PRIMARY + String(" DESC");
     AutoPtr<ICursor> result;
     AutoPtr< ArrayOf<String> > mimeType = ArrayOf<String>::Alloc(1);
     mimeType->Set(0, query->MimeType());
     contentResolver->Query(
         query->mProfileDataUri,
         query->Projection(),
-        /* wwz: MIMETYPE isnot exist; IContactsContractContactsData::MIMETYPE + */ String(" = ?"),
+        IContactsContractDataColumns::MIMETYPE +  String(" = ?"),
         mimeType,
         sortDescriptor,
         (ICursor**)&result

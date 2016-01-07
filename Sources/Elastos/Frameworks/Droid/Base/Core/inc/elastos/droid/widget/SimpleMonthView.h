@@ -5,6 +5,7 @@
 #include <Elastos.CoreLibrary.Text.h>
 #include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/internal/widget/ExploreByTouchHelper.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/core/StringBuilder.h"
 
@@ -14,7 +15,7 @@ using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Graphics::IRect;
-using Elastos::Droid::Internal::Widget::IExploreByTouchHelper;
+using Elastos::Droid::Internal::Widget::ExploreByTouchHelper;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Text::Format::ITime;
 using Elastos::Droid::Utility::IAttributeSet;
@@ -50,13 +51,9 @@ private:
       * service.
       */
     class MonthViewTouchHelper
-        // need inherit real class : public ExploreByTouchHelper
-        : public Object
-        , public IExploreByTouchHelper
+        : public ExploreByTouchHelper
     {
     public:
-        CAR_INTERFACE_DECL()
-
         MonthViewTouchHelper(
             /* [in] */ SimpleMonthView* owner);
 
@@ -72,16 +69,16 @@ private:
             /* [in] */ Float y);
 
         // @Override
-        CARAPI GetVisibleVirtualViews(
+        CARAPI_(void) GetVisibleVirtualViews(
             /* [in] */ IList* virtualViewIds);
 
         // @Override
-        CARAPI OnPopulateEventForVirtualView(
+        CARAPI_(void) OnPopulateEventForVirtualView(
             /* [in] */ Int32 virtualViewId,
             /* [in] */ IAccessibilityEvent* event);
 
         // @Override
-        CARAPI OnPopulateNodeForVirtualView(
+        CARAPI_(void) OnPopulateNodeForVirtualView(
             /* [in] */ Int32 virtualViewId,
             /* [in] */ IAccessibilityNodeInfo* node);
 

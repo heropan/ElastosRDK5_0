@@ -9,7 +9,7 @@
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/ui/base/ViewElastosDelegate.h"
-//#include "elastos/droid/widget/ListPopupWindow.h"
+#include "elastos/droid/widget/ListPopupWindow.h"
 
 // package org.chromium.ui;
 // import android.content.Context;
@@ -30,7 +30,7 @@ using Elastos::Droid::View::IViewOnLayoutChangeListener;
 using Elastos::Droid::Webkit::Ui::Base::ViewElastosDelegate;
 using Elastos::Droid::Widget::IListAdapter;
 using Elastos::Droid::Widget::IPopupWindowOnDismissListener;
-//using Elastos::Droid::Widget::ListPopupWindow;
+using Elastos::Droid::Widget::ListPopupWindow;
 
 namespace Elastos {
 namespace Droid {
@@ -41,8 +41,7 @@ namespace Ui {
   * The dropdown list popup window.
   */
 class DropdownPopupWindow
-    : public Object
-    //: public ListPopupWindow
+    : public ListPopupWindow
 {
 public:
     class InnerOnLayoutChangeListener

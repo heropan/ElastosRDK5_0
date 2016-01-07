@@ -76,7 +76,7 @@ Int32 ActivityWindowElastos::ShowCancelableIntent(
         intent->GetIntentSender((IIntentSender**)&sender);
         AutoPtr<IIntent> newIntent;
         CIntent::New((IIntent**)&newIntent);
-        //-- hasno matching func activity->StartIntentSenderForResult(sender, requestCode, newIntent, 0, 0, 0);
+        activity->StartIntentSenderForResult(sender, requestCode, newIntent, 0, 0, 0);
     //} catch (SendIntentException e) {
     //    return START_INTENT_FAILURE;
     //}
@@ -115,10 +115,7 @@ Int32 ActivityWindowElastos::ShowCancelableIntent(
     Int32 requestCode = GenerateNextRequestCode();
 
     //try {
-        AutoPtr<IIntent> newIntent;
-        CIntent::New((IIntent**)&newIntent);
-        //-- hasno matching func activity->StartIntentSenderForResult(sender, requestCode, newIntent, 0, 0, 0);
-        // java call: activity->StartActivityForResult(intent, requestCode);
+        activity->StartActivityForResult(intent, requestCode);
     //} catch (SendIntentException e) {
     //    return START_INTENT_FAILURE;
     //}

@@ -135,25 +135,6 @@ ECode ViewTreeObserver::InternalInsetsInfo::Equals(
     return NOERROR;
 }
 
-ECode ViewTreeObserver::InternalInsetsInfo::GetHashCode(
-    /* [out] */ Int32* result)
-{
-    VALIDATE_NOT_NULL(result);
-    assert(NULL == mContentInsets);
-    assert(NULL == mVisibleInsets);
-    assert(NULL == mTouchableRegion);
-
-    mContentInsets->GetHashCode(result);
-    Int32 temp = 0;
-    mVisibleInsets->GetHashCode(&temp);
-    *result = 31 * (*result) + temp;
-    temp = 0;
-    // Region has no this func: mTouchableRegion->GetHashCode(&temp);
-    *result = 31 * (*result) + temp;
-    *result = 31 * (*result) + mTouchableInsets;
-    return NOERROR;
-}
-
 ECode ViewTreeObserver::InternalInsetsInfo::Set(
     /* [in] */ InternalInsetsInfo* other)
 {
@@ -1065,7 +1046,6 @@ ECode ViewTreeObserver::DispatchOnComputeInternalInsets(
         }
     }
     return NOERROR;
-
 }
 
 ECode ViewTreeObserver::Kill()

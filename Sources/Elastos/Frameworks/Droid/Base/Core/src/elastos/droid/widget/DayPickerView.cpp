@@ -20,6 +20,7 @@ using Elastos::Text::CSimpleDateFormat;
 using Elastos::Utility::CCalendarHelper;
 using Elastos::Utility::CLocaleHelper;
 using Elastos::Utility::ICalendarHelper;
+using Elastos::Utility::IDate;
 using Elastos::Utility::ILocaleHelper;
 using Elastos::Utility::Logging::Logger;
 
@@ -913,8 +914,8 @@ String DayPickerView::GetMonthAndYearString(
     sbuf->Append(name);
     sbuf->Append(" ");
 
-    //AutoPtr<IDate> dateTime;
-    //day->GetTime((IDate**)&dateTime);
+    AutoPtr<IDate> dateTime;
+    day->GetTime((IDate**)&dateTime);
     AutoPtr<IStringBuffer> yearFormat; // = mYearFormat.format(dateTime);
     sbuf->Append(yearFormat);
     String result;

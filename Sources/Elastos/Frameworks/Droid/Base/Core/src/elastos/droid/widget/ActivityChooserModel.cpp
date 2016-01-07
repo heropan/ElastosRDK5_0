@@ -8,6 +8,7 @@
 #include "elastos/droid/content/CComponentName.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/content/pm/CApplicationInfo.h"
+#include "elastos/droid/os/Process.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/utility/Xml.h"
 #include "elastos/droid/widget/ActivityChooserModel.h"
@@ -25,8 +26,10 @@ using Elastos::Droid::Content::Pm::CApplicationInfo;
 using Elastos::Droid::Content::Pm::IActivityInfo;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Pm::IPackageItemInfo;
+using Elastos::Droid::Content::Pm::IComponentInfo;
 using Elastos::Droid::Database::EIID_IDataSetObservable;
 using Elastos::Droid::Database::EIID_IObservable;
+using Elastos::Droid::Os::Process;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Utility::Xml;
 using Elastos::Droid::Widget::EIID_IHistoricalRecord;
@@ -385,6 +388,7 @@ ActivityChooserModel::DataModelPackageMonitor::DataModelPackageMonitor(
     /* [in] */ ActivityChooserModel* host)
     : mHost(host)
 {
+    assert(mHost);
 }
 
 ECode ActivityChooserModel::DataModelPackageMonitor::OnSomePackagesChanged()
@@ -760,8 +764,10 @@ Boolean ActivityChooserModel::LoadActivitiesIfNeeded()
             AutoPtr<IActivityInfo> activityInfo;
             resolveInfo->GetActivityInfo((IActivityInfo**)&activityInfo);
             activityInfo->GetPermission(&permission);
-            helper->CheckComponentPermission(permission, -1/*android.os.Process.myUid()*/, applicationUId,
-                FALSE/*activityInfo.exported*/, &checkPermissionRes);
+
+            Boolean exported;
+            IComponentInfo::Probe(activityInfo)->GetExported(&exported);
+            helper->CheckComponentPermission(permission, Process::MyUid(), applicationUId, exported, &checkPermissionRes);
             if (checkPermissionRes == IPackageManager::PERMISSION_GRANTED) {
                 AutoPtr<ActivityResolveInfo> activityResolveInfo = new ActivityResolveInfo(resolveInfo, this);
                 mActivities.PushBack(activityResolveInfo);

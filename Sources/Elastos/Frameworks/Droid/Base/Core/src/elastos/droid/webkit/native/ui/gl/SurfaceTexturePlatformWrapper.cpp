@@ -220,7 +220,6 @@ void SurfaceTexturePlatformWrapper::DetachFromGLContext(
     DetachFromGLContext(st);
 }
 
-
 } // namespace Gl
 } // namespace Ui
 } // namespace Webkit

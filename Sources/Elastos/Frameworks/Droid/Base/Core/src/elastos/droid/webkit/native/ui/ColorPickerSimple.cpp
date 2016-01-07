@@ -6,6 +6,7 @@
 
 using Elastos::Droid::Graphics::IColor;
 using Elastos::Droid::Webkit::Ui::ColorSuggestion;
+using Elastos::Droid::Webkit::Ui::EIID_IOnColorSuggestionClickListener;
 
 namespace Elastos {
 namespace Droid {
@@ -18,40 +19,45 @@ namespace Ui {
 AutoPtr< ArrayOf<Int32> > ColorPickerSimple::DEFAULT_COLORS = ColorPickerSimple::MiddleInitDefaultColors();
 AutoPtr< ArrayOf<Int32> > ColorPickerSimple::DEFAULT_COLOR_LABEL_IDS = ColorPickerSimple::MiddleInitDefaultColorLabelIds();
 
+CAR_INTERFACE_IMPL(ColorPickerSimple, ListView, IOnColorSuggestionClickListener)
+
 ColorPickerSimple::ColorPickerSimple(
     /* [in] */ IContext* context)
-    //: ListView(context)
     : mOnColorChangedListener(NULL)
 {
     // ==================before translated======================
     // super(context);
+
+    ListView::constructor(context);
 }
 
 ColorPickerSimple::ColorPickerSimple(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
-    //: ListView(context, attrs)
     : mOnColorChangedListener(NULL)
 {
     // ==================before translated======================
     // super(context, attrs);
+
+    ListView::constructor(context, attrs);
 }
 
 ColorPickerSimple::ColorPickerSimple(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle)
-    //: ListView(context, attrs, defStyle)
     : mOnColorChangedListener(NULL)
 {
     // ==================before translated======================
     // super(context, attrs, defStyle);
+
+    ListView::constructor(context, attrs, defStyle);
 }
 
 // suggestion type is ColorSuggestion
 ECode ColorPickerSimple::Init(
     /* [in] */ ArrayOf<IInterface*>* suggestions,
-    /* [in] */ OnColorChangedListener* onColorChangedListener)
+    /* [in] */ IOnColorChangedListener* onColorChangedListener)
 {
     VALIDATE_NOT_NULL(onColorChangedListener);
     // ==================before translated======================
@@ -77,7 +83,7 @@ ECode ColorPickerSimple::Init(
         suggestions = ArrayOf<IInterface*>::Alloc(DEFAULT_COLORS->GetLength());
         String idsTemp;
         AutoPtr<IContext> context;
-        //GetContext(&context);
+        GetContext((IContext**)&context);
         for (Int32 i = 0; i < suggestions->GetLength(); ++i) {
             context->GetString((*DEFAULT_COLOR_LABEL_IDS)[i], &idsTemp);
             const String kk("kk");
@@ -86,21 +92,23 @@ ECode ColorPickerSimple::Init(
     }
 
     AutoPtr<IContext> context;
-    //GetContext(&context);
+    GetContext((IContext**)&context);
     AutoPtr<ColorSuggestionListAdapter> adapter = new ColorSuggestionListAdapter(context, suggestions);
     adapter->SetOnColorSuggestionClickListener(this);
-    //SetAdapter(adapter);
+    SetAdapter(adapter);
     return NOERROR;
 }
 
 ECode ColorPickerSimple::OnColorSuggestionClick(
-    /* [in] */ ColorSuggestion* suggestion)
+    /* [in] */ IInterface* suggestion)
 {
     VALIDATE_NOT_NULL(suggestion);
     // ==================before translated======================
     // mOnColorChangedListener.onColorChanged(suggestion.mColor);
 
-    mOnColorChangedListener->OnColorChanged(suggestion->mColor);
+    IObject* objTmp = IObject::Probe(suggestion);
+    ColorSuggestion* suggestionTmp = (ColorSuggestion*)objTmp;
+    mOnColorChangedListener->OnColorChanged(suggestionTmp->mColor);
     return NOERROR;
 }
 

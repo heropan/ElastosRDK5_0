@@ -857,7 +857,7 @@ AutoPtr<IAudioAttributes> WaveView::MiddleInitVibrationAttributes()
     builder->SetUsage(IAudioAttributes::USAGE_ASSISTANCE_SONIFICATION);
 
     AutoPtr<IAudioAttributes> result;
-    //builder->Build((IAudioAttributes**)&result);
+    builder->Build((IAudioAttributes**)&result);
     return result;
 }
 

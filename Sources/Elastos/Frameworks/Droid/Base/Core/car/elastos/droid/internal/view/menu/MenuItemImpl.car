@@ -96,7 +96,7 @@ module
                 [in] IContextMenuInfo* menuInfo);
 
             GetActionView(
-            	[out] IView** result);
+                [out] IView** result);
         }
 
     } // namespace Menu
@@ -105,3 +105,4 @@ module
     } // namepsace Droid
     } // namespace Elastos
 }
+

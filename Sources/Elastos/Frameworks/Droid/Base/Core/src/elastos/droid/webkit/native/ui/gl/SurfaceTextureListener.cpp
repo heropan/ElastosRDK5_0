@@ -46,11 +46,12 @@ ECode SurfaceTextureListener::Finalize()
     //     super.finalize();
     // }
 
+    assert(0);
     //try {
         NativeDestroy(mNativeSurfaceTextureListener);
     //}
     // finally {
-        //SurfaceTexture::OnFrameAvailableListener::Finalize();
+        //--: base class has no this func; super.finalize();
     //}
     return NOERROR;
 }

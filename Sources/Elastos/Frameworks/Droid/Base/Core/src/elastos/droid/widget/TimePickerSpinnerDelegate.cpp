@@ -792,7 +792,7 @@ ECode TimePickerSpinnerDelegate::SetCurrentHour(
         return NOERROR;
     }
     mInitialHourOfDay = currentHour;
-    UpdateHeaderHour(currentHour, TRUE /* accessibility announce */);
+    UpdateHeaderHour(currentHour, TRUE);
     UpdateHeaderAmPm();
     mRadialTimePickerView->SetCurrentHour(currentHour);
     mRadialTimePickerView->SetAmOrPm(mInitialHourOfDay < 12 ? AM : PM);
@@ -897,7 +897,7 @@ ECode TimePickerSpinnerDelegate::SetIs24HourView(
     Int32 hour = 0;
     mRadialTimePickerView->GetCurrentHour(&hour);
     mInitialHourOfDay = hour;
-    UpdateHeaderHour(hour, FALSE /* no accessibility announce */);
+    UpdateHeaderHour(hour, FALSE);
     UpdateHeaderAmPm();
     Int32 radialPicker = 0;
     mRadialTimePickerView->GetCurrentItemShowing(&radialPicker);

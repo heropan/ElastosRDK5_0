@@ -135,7 +135,6 @@ AutoPtr<ProxyChangeListener::ProxyConfig> ProxyChangeListener::ProxyReceiver::Ex
             sProxyInfo = String("android.intent.extra.PROXY_INFO");
         }
 
-        // question: reflection
         AutoPtr<IInterface> props;
         AutoPtr<IBundle> extras;
         intent->GetExtras((IBundle**)&extras);
@@ -145,13 +144,12 @@ AutoPtr<ProxyChangeListener::ProxyConfig> ProxyChangeListener::ProxyReceiver::Ex
             return ret;
         }
 
-        // question: reflection
         AutoPtr<IProxyProperties> proxyProperties;
         AutoPtr<IProxyInfo> proxyInfo;
         String host;
         Int32 port;
         if (Build::VERSION::SDK_INT <= Build::VERSION_CODES::KITKAT) {
-            //CProxyProperties::New((IProxyProperties**)&proxyProperties);
+            //--:CProxyProperties::New((IProxyProperties**)&proxyProperties);
             proxyProperties->GetHost(&host);
             proxyProperties->GetPort(&port);
         }
@@ -289,7 +287,6 @@ ECode ProxyChangeListener::ProxySettingsChanged(
     // }
 
     assert(0);
-    // question: return ECode what value is, return NOERROR temporarily
     if (!sEnabled) {
         return NOERROR;
     }
@@ -322,7 +319,6 @@ ECode ProxyChangeListener::RegisterReceiver()
     // mContext.getApplicationContext().registerReceiver(mProxyReceiver, filter);
 
     assert(0);
-    // question: return ECode what value is, return NOERROR temporarily
     if (mProxyReceiver != NULL) {
         return NOERROR;
     }
@@ -399,7 +395,6 @@ void ProxyChangeListener::Stop(
     }
     mObj->Stop();
 }
-
 
 } // namespace Net
 } // namespace Webkit

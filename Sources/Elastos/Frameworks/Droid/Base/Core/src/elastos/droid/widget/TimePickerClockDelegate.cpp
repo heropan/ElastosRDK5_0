@@ -6,7 +6,7 @@
 #include "elastos/droid/text/format/CDateFormat.h"
 #include "elastos/droid/text/format/CDateUtils.h"
 #include "elastos/droid/view/LayoutInflater.h"
-//#include "elastos/droid/widget/CNumberPickerHelper.h"
+#include "elastos/droid/widget/CNumberPickerHelper.h"
 #include "elastos/droid/widget/TimePickerClockDelegate.h"
 //#include "libcore/icu/LocaleData.h"
 
@@ -19,7 +19,7 @@ using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::InputMethod::IInputMethodManager;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::LayoutInflater;
-//using Elastos::Droid::Widget::CNumberPickerHelper;
+using Elastos::Droid::Widget::CNumberPickerHelper;
 using Elastos::Core::CString;
 using Elastos::Utility::CCalendarHelper;
 using Elastos::Utility::ICalendar;
@@ -557,7 +557,7 @@ ECode TimePickerClockDelegate::constructor(
     mMinuteSpinner->SetOnLongPressUpdateInterval(100);
 
     AutoPtr<INumberPickerHelper> helper;
-    //CNumberPickerHelper::AcquireSingleton((INumberPickerHelper**)&helper);
+    CNumberPickerHelper::AcquireSingleton((INumberPickerHelper**)&helper);
     AutoPtr<INumberPickerFormatter> formatter;
     helper->GetTwoDigitFormatter((INumberPickerFormatter**)&formatter);
     mMinuteSpinner->SetFormatter(formatter);
@@ -1365,7 +1365,7 @@ void TimePickerClockDelegate::UpdateHourControl()
     }
 
     AutoPtr<INumberPickerHelper> helper;
-    //CNumberPickerHelper::AcquireSingleton((INumberPickerHelper**)&helper);
+    CNumberPickerHelper::AcquireSingleton((INumberPickerHelper**)&helper);
     AutoPtr<INumberPickerFormatter> formatter;
     helper->GetTwoDigitFormatter((INumberPickerFormatter**)&formatter);
     mHourSpinner->SetFormatter(mHourWithTwoDigit ? formatter: NULL);

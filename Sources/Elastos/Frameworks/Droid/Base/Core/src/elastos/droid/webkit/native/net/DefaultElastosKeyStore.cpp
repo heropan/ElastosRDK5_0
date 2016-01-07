@@ -1,15 +1,16 @@
 
 #include <Elastos.CoreLibrary.Security.h>
-#include "elastos/droid/content/pm/CSignature.h"
 #include "elastos/droid/webkit/native/net/DefaultElastosKeyStore.h"
 #include "elastos/droid/webkit/native/net/PrivateKeyType.h"
+//#include "elastos/security/Signature.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Droid::Content::Pm::CSignature;
 using Elastos::Droid::Webkit::Net::PrivateKeyType;
 using Elastos::Math::CBigInteger;
 using Elastos::Math::IBigInteger;
 using Elastos::Utility::Logging::Logger;
+//using Elastos::Security::CSignature;
+using Elastos::Security::ISignature;
 using Elastos::Security::Interfaces::EIID_IDSAKey;
 using Elastos::Security::Interfaces::EIID_IDSAPrivateKey;
 using Elastos::Security::Interfaces::EIID_IECKey;
@@ -23,8 +24,8 @@ using Elastos::Security::Interfaces::IECKey;
 using Elastos::Security::Interfaces::IECPrivateKey;
 using Elastos::Security::Interfaces::IRSAKey;
 using Elastos::Security::Interfaces::IRSAPrivateKey;
+using Elastos::Security::IKey;
 using Elastos::Security::IPrivateKey;
-using Elastos::Security::ISignature;
 using Elastos::Security::Spec::IECParameterSpec;
 
 namespace Elastos {
@@ -73,7 +74,6 @@ AutoPtr<ElastosPrivateKey> DefaultElastosKeyStore::CreateKey(
 {
     // ==================before translated======================
     // return new DefaultAndroidPrivateKey(javaKey, this);
-
 
     AutoPtr<ElastosPrivateKey> result = new DefaultElastosPrivateKey(javaKey, this);;
     return result;
@@ -180,7 +180,7 @@ AutoPtr< ArrayOf<Byte> > DefaultElastosKeyStore::GetPrivateKeyEncodedBytes(
     assert(0);
     AutoPtr<IPrivateKey> javaKey = ((DefaultElastosPrivateKey*)key)->GetJavaKey();
     AutoPtr< ArrayOf<Byte> > result;
-    //javaKey->GetEncoded((ArrayOf<Byte>**)&result); // no matching function
+    IKey::Probe(javaKey)->GetEncoded((ArrayOf<Byte>**)&result);
     return result;
 }
 
@@ -252,13 +252,15 @@ AutoPtr< ArrayOf<Byte> > DefaultElastosKeyStore::RawSignDigestWithPrivateKey(
     //}
 
     if (signature == NULL) {
-        //Logger::E(TAG, String("Unsupported private key algorithm: ") + javaKey.getAlgorithm());
+        String algorithm;
+        IKey::Probe(javaKey)->GetAlgorithm(&algorithm);
+        Logger::E(TAG, String("Unsupported private key algorithm: ") + algorithm);
         return NULL;
     }
 
     // Sign the message.
     //try {
-        signature->InitSign((IPrivateKey*)&javaKey);
+        //signature->InitSign((IPrivateKey*)&javaKey);
         signature->Update(message);
         AutoPtr< ArrayOf<Byte> > res;
         signature->Sign((ArrayOf<Byte>**)&res);

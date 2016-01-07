@@ -36,7 +36,8 @@ CPointerIcon::CPointerIcon()
     , mSystemIconResourceId(0)
     , mHotSpotX(0.0f)
     , mHotSpotY(0.0f)
-{}
+{
+}
 
 ECode CPointerIcon::constructor()
 {

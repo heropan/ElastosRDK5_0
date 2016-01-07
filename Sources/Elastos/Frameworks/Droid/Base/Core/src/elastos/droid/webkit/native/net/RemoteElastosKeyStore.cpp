@@ -45,7 +45,7 @@ AutoPtr<ElastosKeyStore> RemoteElastosKeyStore::RemotePrivateKey::GetKeyStore()
 const String RemoteElastosKeyStore::TAG("ElastosKeyStoreRemoteImpl");
 
 RemoteElastosKeyStore::RemoteElastosKeyStore(
-    /* [in] */ RemoteElastosKeyStore* manager)
+    /* [in] */ IRemoteElastosKeyStore* manager)
     : mRemoteManager(manager)
 {
     // ==================before translated======================
@@ -68,7 +68,8 @@ AutoPtr< ArrayOf<Byte> > RemoteElastosKeyStore::GetRSAKeyModulus(
     RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
     //try {
         Logger::D(TAG, "getRSAKeyModulus");
-        AutoPtr< ArrayOf<Byte> > ret = mRemoteManager->GetRSAKeyModulus((ElastosPrivateKey*)remoteKey->GetHandle());
+        AutoPtr< ArrayOf<Byte> > ret;
+        mRemoteManager->GetRSAKeyModulus(remoteKey->GetHandle(), (ArrayOf<Byte>**)&ret);
         return ret;
     //} catch (RemoteException e) {
     //    e.printStackTrace();
@@ -92,7 +93,8 @@ AutoPtr< ArrayOf<Byte> > RemoteElastosKeyStore::GetDSAKeyParamQ(
     RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
     //try {
         Logger::D(TAG, "getDSAKeyParamQ");
-        AutoPtr< ArrayOf<Byte> > ret = mRemoteManager->GetDSAKeyParamQ((ElastosPrivateKey*)remoteKey->GetHandle());
+        AutoPtr< ArrayOf<Byte> > ret;
+        mRemoteManager->GetDSAKeyParamQ(remoteKey->GetHandle(), (ArrayOf<Byte>**)&ret);
         return ret;
     //} catch (RemoteException e) {
     //    e.printStackTrace();
@@ -116,7 +118,8 @@ AutoPtr< ArrayOf<Byte> > RemoteElastosKeyStore::GetECKeyOrder(
     RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
     //try {
         Logger::D(TAG, "getECKeyOrder");
-        AutoPtr< ArrayOf<Byte> > ret = mRemoteManager->GetECKeyOrder((ElastosPrivateKey*)remoteKey->GetHandle());
+        AutoPtr< ArrayOf<Byte> > ret;
+        mRemoteManager->GetECKeyOrder(remoteKey->GetHandle(), (ArrayOf<Byte>**)&ret);
         return ret;
     //} catch (RemoteException e) {
     //    e.printStackTrace();
@@ -141,7 +144,8 @@ AutoPtr< ArrayOf<Byte> > RemoteElastosKeyStore::RawSignDigestWithPrivateKey(
     RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
     //try {
         Logger::D(TAG, "rawSignDigestWithPrivateKey");
-        AutoPtr< ArrayOf<Byte> > ret = mRemoteManager->RawSignDigestWithPrivateKey((ElastosPrivateKey*)remoteKey->GetHandle(), message);
+        AutoPtr< ArrayOf<Byte> > ret;
+        mRemoteManager->RawSignDigestWithPrivateKey(remoteKey->GetHandle(), message, (ArrayOf<Byte>**)&ret);
         return ret;
     //} catch (RemoteException e) {
     //    e.printStackTrace();
@@ -165,7 +169,9 @@ Int32 RemoteElastosKeyStore::GetPrivateKeyType(
     RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
     //try {
         Logger::D(TAG, "getPrivateKeyType");
-        return mRemoteManager->GetPrivateKeyType((ElastosPrivateKey*)remoteKey->GetHandle());
+        Int32 result = 0;
+        mRemoteManager->GetPrivateKeyType(remoteKey->GetHandle(), &result);
+        return result;
     //} catch (RemoteException e) {
     //    e.printStackTrace();
     //    return 0;
@@ -212,8 +218,8 @@ AutoPtr<ElastosPrivateKey> RemoteElastosKeyStore::CreateKey(
 
     assert (0);
     //try {
-        /* java file mRemoteManager is belong type IRemoteAndroidKeyStore that suffix is .aidl file */
-        Int32 handle;// = mRemoteManager->GetPrivateKeyHandle(alias);
+        Int32 handle = 0;
+        mRemoteManager->GetPrivateKeyHandle(alias, &handle);
         AutoPtr<ElastosPrivateKey> ret = new RemotePrivateKey(handle, this);
         return ret;
     //} catch (RemoteException e) {
@@ -238,7 +244,7 @@ ECode RemoteElastosKeyStore::ReleaseKey(
     RemotePrivateKey* remoteKey = (RemotePrivateKey*) key;
     //try {
         Logger::D(TAG, "releaseKey");
-        mRemoteManager->ReleaseKey((ElastosPrivateKey*)remoteKey->GetHandle());
+        mRemoteManager->ReleaseKey(remoteKey->GetHandle());
     //} catch (RemoteException e) {
     //    e.printStackTrace();
     //}

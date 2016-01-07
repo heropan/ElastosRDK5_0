@@ -8,6 +8,7 @@
 #include "Elastos.Droid.View.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/BaseAdapter.h"
+#include "Elastos.Droid.Webkit.h"
 
 // package org.chromium.ui;
 // import android.content.Context;
@@ -26,6 +27,7 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::IViewOnClickListener;
+using Elastos::Droid::Webkit::Ui::IOnColorSuggestionClickListener;
 using Elastos::Droid::Widget::BaseAdapter;
 
 namespace Elastos {
@@ -39,30 +41,12 @@ class ColorSuggestion;
   * The adapter used to populate ColorPickerSimple.
   */
 class ColorSuggestionListAdapter
-    // BaseAdapter parent hasno Object
     : public BaseAdapter
     , public IViewOnClickListener
 {
 public:
     CAR_INTERFACE_DECL()
 
-    /**
-      * The callback used to indicate the user has clicked on a suggestion.
-      */
-    class OnColorSuggestionClickListener
-        : public Object
-    {
-    public:
-        /**
-          * Called upon a click on a suggestion.
-          *
-          * @param suggestion The suggestion that was clicked.
-          */
-        virtual CARAPI OnColorSuggestionClick(
-            /* [in] */ ColorSuggestion* suggestion) = 0;
-    };
-
-public:
     ColorSuggestionListAdapter(
         /* [in] */ IContext* context,
         /* [in] */ ArrayOf<IInterface*>* suggestions);// type is ColorSuggestion
@@ -71,7 +55,7 @@ public:
       * Sets the listener that will be notified upon a click on a suggestion.
       */
     virtual CARAPI SetOnColorSuggestionClickListener(
-        /* [in] */ OnColorSuggestionClickListener* listener);
+        /* [in] */ IOnColorSuggestionClickListener* listener);
 
     // @Override
     CARAPI OnClick(
@@ -113,7 +97,7 @@ private:
 private:
     AutoPtr<IContext> mContext;
     AutoPtr< ArrayOf<IInterface*> > mSuggestions;//type is ColorSuggestion
-    AutoPtr<OnColorSuggestionClickListener> mListener;
+    AutoPtr<IOnColorSuggestionClickListener> mListener;
     static const Int32 COLORS_PER_ROW = 4;
 };
 

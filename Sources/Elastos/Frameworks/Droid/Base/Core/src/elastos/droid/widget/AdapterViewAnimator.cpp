@@ -8,6 +8,7 @@
 #include "elastos/droid/view/CViewGroupLayoutParams.h"
 #include "elastos/droid/widget/AdapterViewAnimator.h"
 #include "elastos/droid/widget/CFrameLayout.h"
+#include "elastos/droid/widget/CRemoteViewsAdapter.h"
 #include "elastos/core/IntegralToString.h"
 #include <elastos/core/Math.h>
 
@@ -24,6 +25,7 @@ using Elastos::Droid::View::CViewGroupLayoutParams;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::Widget::CFrameLayout;
+using Elastos::Droid::Widget::CRemoteViewsAdapter;
 using Elastos::Droid::Widget::IFrameLayout;
 using Elastos::Core::CString;
 using Elastos::Core::EIID_IRunnable;
@@ -96,7 +98,8 @@ ECode AdapterViewAnimator::ActionUpRun::Run()
 {
     mHost->HideTapFeedback(mView);
     AutoPtr<IRunnable> run = new ActionUpInner(mHost, mData, mView);
-    //mHost->Post(run);
+    Boolean resTmp;
+    mHost->Post(run, &resTmp);
     return NOERROR;
 }
 
@@ -164,9 +167,9 @@ ECode AdapterViewAnimator::CheckDataRun::Run()
 AdapterViewAnimator::SavedState::SavedState(
     /* [in] */ IParcelable* superState,
     /* [in] */ Int32 whichChild)
-    //: ViewBaseSavedState(superState);
     : mWhichChild(whichChild)
 {
+    View::BaseSavedState::constructor(superState);
 }
 
 /**
@@ -182,8 +185,8 @@ ECode AdapterViewAnimator::SavedState::WriteToParcel(
     /* [in] */ Int32 flags)
 {
     assert(0);
-    //ViewBaseSavedState::WriteToParcel(out, flags);
-    //out->WriteInt(this->mWhichChild);
+    //-- base class has corresponding func: ViewBaseSavedState::WriteToParcel(out, flags);
+    out->WriteInt32(this->mWhichChild);
     return NOERROR;
 }
 
@@ -322,7 +325,8 @@ ECode AdapterViewAnimator::OnTouchEvent(
                             mPendingCheckForTap = new CheckForTap(this);
                         }
                         mTouchMode = TOUCH_MODE_DOWN_IN_CURRENT_VIEW;
-                        //PostDelayed(mPendingCheckForTap, CViewConfiguration::GetTapTimeout());
+                        Boolean resTmp;
+                        PostDelayed(mPendingCheckForTap, CViewConfiguration::GetTapTimeout(), &resTmp);
                     }
                 }
             }
@@ -340,12 +344,14 @@ ECode AdapterViewAnimator::OnTouchEvent(
                         event->GetX(&x);
                         event->GetY(&y);
                         if (IsTransformedTouchPointInView(x, y, v, NULL)) {
-                            AutoPtr<IHandler> handler;// = GetHandler();
+                            AutoPtr<IHandler> handler;
+                            GetHandler((IHandler**)&handler);
                             if (handler) {
                                 handler->RemoveCallbacks(mPendingCheckForTap);
                                 ShowTapFeedback(v);
                                 AutoPtr<IRunnable> run = new ActionUpRun(this, viewData, v);
-                                //PostDelayed(run, CViewConfiguration::GetTapTimeout());
+                                Boolean resTmp;
+                                PostDelayed(run, CViewConfiguration::GetTapTimeout(), &resTmp);
                             }
 
                             handled = TRUE;
@@ -380,6 +386,7 @@ ECode AdapterViewAnimator::OnSaveInstanceState(
         mRemoteViewsAdapter->SaveRemoteViewsCache();
     }
 
+    assert(0);
     //*result = new SavedState(superState, mWhichChild);
     //REFCOUNT_ADD(*result);
     return NOERROR;
@@ -389,7 +396,8 @@ void AdapterViewAnimator::OnRestoreInstanceState(
     /* [in] */ IParcelable* state)
 {
     SavedState* ss = (SavedState*)state;
-    //AdapterView::OnRestoreInstanceState(ss->GetSuperState());
+    assert(0);
+    //--: AdapterView::OnRestoreInstanceState(ss->GetSuperState());
 
     // Here we set mWhichChild in addition to setDisplayedChild
     // We do the former in case mAdapter is null, and hence setDisplayedChild won't
@@ -541,8 +549,10 @@ ECode AdapterViewAnimator::SetRemoteViewsAdapter(
     }
     mDeferNotifyDataSetChanged = FALSE;
     assert(0 && "TODO");
-    /*CRemoteViewsAdapter::New(GetContext(), intent, (IRemoteAdapterConnectionCallback*)this->Probe(EIID_IRemoteAdapterConnectionCallback),
-        (IRemoteViewsAdapter**)&mRemoteViewsAdapter);*/
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    CRemoteViewsAdapter::New(context, intent, IRemoteAdapterConnectionCallback::Probe(this),
+        (IRemoteViewsAdapter**)&mRemoteViewsAdapter);
     Boolean ready = FALSE;
     mRemoteViewsAdapter->IsDataReady(&ready);
     if (ready) {
@@ -659,6 +669,7 @@ void AdapterViewAnimator::ConfigureViewAnimator(
 {
     if (activeOffset > numVisibleViews - 1) {
         // Throw an exception here.
+        return ;
     }
     mMaxNumActiveViews = numVisibleViews;
     mActiveOffset = activeOffset;
@@ -675,13 +686,13 @@ void AdapterViewAnimator::TransformViewForTransition(
     /* [in] */ IView* v,
     /* [in] */ Boolean animate)
 {
-    IAnimation* animationTmp = IAnimation::Probe(mInAnimation);
+    IAnimator* animationTmp = IAnimator::Probe(mInAnimation);
     if (fromIndex == -1) {
-        //animationTmp->SetTarget(TO_IINTERFACE(v));
+        animationTmp->SetTarget(TO_IINTERFACE(v));
         animationTmp->Start();
     }
     else if (toIndex == -1) {
-        //animationTmp->SetTarget(TO_IINTERFACE(v));
+        animationTmp->SetTarget(TO_IINTERFACE(v));
         animationTmp->Start();
     }
 }
@@ -695,8 +706,8 @@ AutoPtr<IObjectAnimator> AdapterViewAnimator::GetDefaultInAnimation()
     CObjectAnimatorHelper::AcquireSingleton((IObjectAnimatorHelper**)&helper);
     AutoPtr<IObjectAnimator> anim;
     helper->OfFloat(NULL, String("alpha"), array, (IObjectAnimator**)&anim);
-    //IValueAnimator* valueAnimator = IValueAnimator::Probe(anim);
-    //valueAnimator->SetDuration(DEFAULT_ANIMATION_DURATION);
+    IValueAnimator* valueAnimator = IValueAnimator::Probe(anim);
+    valueAnimator->SetDuration(DEFAULT_ANIMATION_DURATION);
     return anim;
 }
 
@@ -709,8 +720,8 @@ AutoPtr<IObjectAnimator> AdapterViewAnimator::GetDefaultOutAnimation()
     CObjectAnimatorHelper::AcquireSingleton((IObjectAnimatorHelper**)&helper);
     AutoPtr<IObjectAnimator> anim;
     helper->OfFloat(NULL, String("alpha"), array, (IObjectAnimator**)&anim);
-    //IValueAnimator* valueAnimator = IValueAnimator::Probe(anim);
-    //valueAnimator->SetDuration(DEFAULT_ANIMATION_DURATION);
+    IValueAnimator* valueAnimator = IValueAnimator::Probe(anim);
+    valueAnimator->SetDuration(DEFAULT_ANIMATION_DURATION);
     return anim;
 }
 
@@ -1010,9 +1021,10 @@ void AdapterViewAnimator::CheckForAndHandleDataChanged()
     Boolean dataChanged = mDataChanged;
     if (dataChanged) {
         AutoPtr<IRunnable> run = new CheckDataRun(this);
-        //Post(run);
+        Boolean resTmp;
+        Post(run, &resTmp);
     }
-    mDataChanged = false;
+    mDataChanged = FALSE;
 }
 
 ECode AdapterViewAnimator::OnLayout(
@@ -1059,11 +1071,14 @@ void AdapterViewAnimator::SetDisplayedChild(
             mWhichChild = mLoopViews ? GetWindowSize() - 1 : 0;
         }
 
-        Boolean hasFocus = FALSE;// GetFocusedChild() != NULL;
+        AutoPtr<IView> viewTmp;
+        GetFocusedChild((IView**)&viewTmp);
+        Boolean hasFocus =  viewTmp != NULL;
 
         ShowOnly(mWhichChild, animate);
         if (hasFocus) {
-            //RequestFocus(IView::FOCUS_FORWARD);
+            Boolean resTmp;
+            RequestFocus(IView::FOCUS_FORWARD, &resTmp);
         }
     }
 }
@@ -1095,7 +1110,6 @@ void AdapterViewAnimator::AddChild(
 
 void AdapterViewAnimator::MeasureChildren()
 {
-    assert(0);
     Int32 count = 0;
     GetChildCount(&count);
     Int32 measureWidth = 0;
@@ -1105,8 +1119,9 @@ void AdapterViewAnimator::MeasureChildren()
     Int32 childWidth = measureWidth - mPaddingLeft - mPaddingRight;
     Int32 childHeight = measureHeight - mPaddingTop - mPaddingBottom;
 
-    for (Int32 i = 0; i < count; i++) {
-        AutoPtr<IView> child;// = GetChildAt(i);
+    for (Int32 i = 0; i < count; ++i) {
+        AutoPtr<IView> child;
+        GetChildAt(i, (IView**)&child);
         child->Measure(MeasureSpec::MakeMeasureSpec(childWidth, MeasureSpec::EXACTLY),
             MeasureSpec::MakeMeasureSpec(childHeight, MeasureSpec::EXACTLY));
     }

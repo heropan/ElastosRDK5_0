@@ -3,7 +3,7 @@
 #include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.Utility.h"
 #include "Elastos.Droid.View.h"
-//#include "elastos/droid/graphics/CBitmapHelper.h"
+#include "elastos/droid/graphics/CBitmapHelper.h"
 #include "elastos/droid/graphics/CCanvas.h"
 #include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/webkit/native/ui/UiUtils.h"
@@ -11,7 +11,7 @@
 
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Graphics::BitmapConfig;
-//using Elastos::Droid::Graphics::CBitmapHelper;
+using Elastos::Droid::Graphics::CBitmapHelper;
 using Elastos::Droid::Graphics::CCanvas;
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Graphics::IBitmapHelper;
@@ -260,7 +260,7 @@ AutoPtr<IBitmap> UiUtils::GenerateScaledScreenshot(
             }
 
             AutoPtr<IBitmapHelper> helper;
-            //CBitmapHelper::AcquireSingleton((IBitmapHelper**)&helper);
+            CBitmapHelper::AcquireSingleton((IBitmapHelper**)&helper);
             AutoPtr<IBitmap> scaledScreenshot;
             helper->CreateScaledBitmap(originalBitmap, newWidth, newHeight, TRUE, (IBitmap**)&scaledScreenshot);
 
@@ -291,7 +291,7 @@ AutoPtr<IBitmap> UiUtils::GenerateScaledScreenshot(
             }
 
             AutoPtr<IBitmapHelper> helper;
-            //CBitmapHelper::AcquireSingleton((IBitmapHelper**)&helper);
+            CBitmapHelper::AcquireSingleton((IBitmapHelper**)&helper);
             AutoPtr<IBitmap> bitmap;
             helper->CreateBitmap(newWidth, newHeight, bitmapConfig, (IBitmap**)&bitmap);
 

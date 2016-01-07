@@ -4,6 +4,7 @@
 #include "Elastos.Droid.View.h"
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/text/TextUtils.h"
+#include "elastos/droid/view/CViewGroupLayoutParams.h"
 #include "elastos/droid/webkit/native/base/ApiCompatibilityUtils.h"
 #include "elastos/droid/webkit/native/ui/DropdownAdapter.h"
 #include "elastos/droid/webkit/native/ui/DropdownDividerDrawable.h"
@@ -14,6 +15,7 @@ using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Graphics::IColor;
 using Elastos::Droid::Graphics::ITypeface;
 using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::View::CViewGroupLayoutParams;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
@@ -36,7 +38,6 @@ DropdownAdapter::DropdownAdapter(
     /* [in] */ IContext* context,
     /* [in] */ IList* items,
     /* [in] */ ISet* separators)
-    //: ArrayAdapter<DropdownItem*>(context, -1/*R::layout::dropdown_item*/, items)
     : mContext(context)
     , mSeparators(separators)
     , mAreAllItemsEnabled(FALSE)
@@ -48,14 +49,14 @@ DropdownAdapter::DropdownAdapter(
     // mAreAllItemsEnabled = checkAreAllItemsEnabled();
 
     assert(0);
-    //mAreAllItemsEnabled = CheckAreAllItemsEnabled();
+    ArrayAdapter::constructor(context, -1/*R::layout::dropdown_item*/, items);
+    mAreAllItemsEnabled = CheckAreAllItemsEnabled();
 }
 
 DropdownAdapter::DropdownAdapter(
     /* [in] */ IContext* context,
     /* [in] */ ArrayOf<DropdownItem*>* items,
     /* [in] */ ISet* separators)
-    //: ArrayAdapter<DropdownItem*>(context, -1/*R::layout::dropdown_item*/, items)
     : mContext(context)
     , mSeparators(separators)
     , mAreAllItemsEnabled(FALSE)
@@ -67,7 +68,12 @@ DropdownAdapter::DropdownAdapter(
     // mAreAllItemsEnabled = checkAreAllItemsEnabled();
 
     assert(0);
-    //mAreAllItemsEnabled = checkAreAllItemsEnabled();
+    AutoPtr< ArrayOf<IInterface*> > itemsTmp = ArrayOf<IInterface*>::Alloc(items->GetLength());
+    for (Int32 idx=0; idx<items->GetLength(); ++idx) {
+        itemsTmp->Set(idx, TO_IINTERFACE((*items)[idx]));
+    }
+    ArrayAdapter::constructor(context, -1/*R::layout::dropdown_item*/, itemsTmp);
+    mAreAllItemsEnabled = CheckAreAllItemsEnabled();
 }
 
 AutoPtr<IView> DropdownAdapter::GetView(
@@ -139,7 +145,10 @@ AutoPtr<IView> DropdownAdapter::GetView(
         ApiCompatibilityUtils::SetBackgroundForView(layout, drawableTmp);
     }
 
-    AutoPtr<DropdownItem> item;// = GetItem(position);
+    AutoPtr<IInterface> interfaceTmp;
+    GetItem(position, (IInterface**)&interfaceTmp);
+    IObject* objTmp = IObject::Probe(interfaceTmp);
+    DropdownItem* item = (DropdownItem*)objTmp;
     AutoPtr<IView> viewTmp;
     layout->FindViewById(-1/*R::id::dropdown_label*/, (IView**)&viewTmp);
     ITextView* labelView = ITextView::Probe(viewTmp);
@@ -195,10 +204,9 @@ AutoPtr<IView> DropdownAdapter::GetView(
         }
     }
 
-    //AutoPtr<ILayoutParams> params;
-    //CLayoutParams::New(ILayoutParams::MATCH_PARENT, height, (ILayoutParams**)&params);
-    IViewGroupLayoutParams* layoutParamsTmp;// = IViewGroupLayoutParams::Probe(params);
-    layout->SetLayoutParams(layoutParamsTmp);
+    AutoPtr<IViewGroupLayoutParams> layoutParams;
+    CViewGroupLayoutParams::New(IViewGroupLayoutParams::MATCH_PARENT, height, (IViewGroupLayoutParams**)&layoutParams);
+    layout->SetLayoutParams(layoutParams);
 
     AutoPtr<IView> viewTmp1;
     layout->FindViewById(-1/*R::id::dropdown_sublabel*/, (IView**)&viewTmp1);
@@ -234,10 +242,15 @@ Boolean DropdownAdapter::IsEnabled(
     // DropdownItem item = getItem(position);
     // return item.isEnabled() && !item.isGroupHeader();
 
-    assert(0);
-    if (position < 0 || position >= -1/*GetCount()*/)
+    Int32 count = 0;
+    GetCount(&count);
+    if (position < 0 || position >= count)
         return FALSE;
-    AutoPtr<DropdownItem> item;// = GetItem(position);
+
+    AutoPtr<IInterface> interfaceTmp;
+    GetItem(position, (IInterface**)&interfaceTmp);
+    IObject* objTmp = IObject::Probe(interfaceTmp);
+    DropdownItem* item = (DropdownItem*)objTmp;
     return item->IsEnabled() && !item->IsGroupHeader();
 }
 
@@ -252,9 +265,13 @@ Boolean DropdownAdapter::CheckAreAllItemsEnabled()
     // }
     // return true;
 
-    assert(0);
-    for (Int32 i = 0; i < -1/*GetCount()*/; ++i) {
-        AutoPtr<DropdownItem> item;// = GetItem(i);
+    Int32 count = 0;
+    GetCount(&count);
+    for (Int32 i = 0; i < count; ++i) {
+        AutoPtr<IInterface> interfaceTmp;
+        GetItem(i, (IInterface**)&interfaceTmp);
+        IObject* objTmp = IObject::Probe(interfaceTmp);
+        DropdownItem* item = (DropdownItem*)objTmp;
         if (item->IsEnabled() && !item->IsGroupHeader()) {
             return FALSE;
         }

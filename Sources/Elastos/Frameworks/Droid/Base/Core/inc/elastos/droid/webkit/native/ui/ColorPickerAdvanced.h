@@ -8,8 +8,8 @@
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/ui/ColorPickerAdvancedComponent.h"
-#include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"
-//#include "elastos/droid/widget/LinearLayout.h"
+#include "elastos/droid/widget/LinearLayout.h"
+#include "Elastos.Droid.Webkit.h"
 
 // package org.chromium.ui;
 // import android.content.Context;
@@ -24,10 +24,10 @@
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Webkit::Ui::ColorPickerAdvancedComponent;
-using Elastos::Droid::Webkit::Ui::OnColorChangedListener;
+using Elastos::Droid::Webkit::Ui::IOnColorChangedListener;
 using Elastos::Droid::Widget::ISeekBar;
 using Elastos::Droid::Widget::ISeekBarOnSeekBarChangeListener;
-//using Elastos::Droid::Widget::LinearLayout;
+using Elastos::Droid::Widget::LinearLayout;
 
 namespace Elastos {
 namespace Droid {
@@ -39,10 +39,12 @@ namespace Ui {
   * the Hue, Saturation and Value attributes.s
   */
 class ColorPickerAdvanced
-    //: public LinearLayout
-    : public ISeekBarOnSeekBarChangeListener
+    : public LinearLayout
+    , public ISeekBarOnSeekBarChangeListener
 {
 public:
+    CAR_INTERFACE_DECL()
+
     ColorPickerAdvanced(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
@@ -76,7 +78,7 @@ public:
       * @param onColorChangedListener The object listening for the change in color.
       */
     virtual CARAPI SetListener(
-        /* [in] */ OnColorChangedListener* onColorChangedListener);
+        /* [in] */ IOnColorChangedListener* onColorChangedListener);
 
     /**
       * @return The color the user has currently chosen.
@@ -161,7 +163,7 @@ private:
     static const Int32 SATURATION_COLOR_COUNT = 2;
     static const Int32 VALUE_SEEK_BAR_MAX = 100;
     static const Int32 VALUE_COLOR_COUNT = 2;
-    AutoPtr<OnColorChangedListener> mOnColorChangedListener;
+    AutoPtr<IOnColorChangedListener> mOnColorChangedListener;
     Int32 mCurrentColor;
     AutoPtr< ArrayOf<Float> > mCurrentHsvValues;
 };

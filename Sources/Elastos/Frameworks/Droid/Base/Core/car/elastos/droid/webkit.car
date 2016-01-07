@@ -38,7 +38,12 @@ module
     merge("webkit/WebViewFragment.car");
     merge("webkit/WebViewFactory.car");
     merge("webkit/WebViewFactoryProvider.car");
-    merge("webkit/webview/chromium/WebViewChromiumFactoryProvider.car");    
+    merge("webkit/webview/chromium/WebViewChromiumFactoryProvider.car");
+    merge("webkit/native/ui/OnColorChangedListener.car");
+    merge("webkit/native/ui/ColorSuggestionListAdapter.car");
+    merge("webkit/native/net/IRemoteElastosKeyStore.car");
+    merge("webkit/native/net/IRemoteElastosKeyStoreCallbacks.car");
+    merge("webkit/native/net/IRemoteElastosKeyStoreInterface.car");
 
     using interface Elastos.IO.IInputStream;
     using interface Elastos.Utility.IMap;
@@ -309,19 +314,19 @@ module
     } // namespace Webkit
     } // namepsace Droid
     } // namespace Elastos
-    
+
     namespace Elastos {
     namespace Droid {
     namespace Webkit {
     namespace Webview {
     namespace Chromium {
-    
+
     class CWebViewChromiumFactoryProvider {
         constructor();
-        
+
         interface IWebViewChromiumFactoryProvider;
     }
-        
+
     } // namespace Chromium
     } // namespace Webview
     } // namespace Webkit

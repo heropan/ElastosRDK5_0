@@ -58,9 +58,6 @@ public:
             /* [in] */ IInterface* other,
             /* [out] */ Boolean* result);
 
-        CARAPI GetHashCode(
-            /* [out] */ Int32* result);
-
         CARAPI Set(
             /* [in] */ InternalInsetsInfo* other);
 

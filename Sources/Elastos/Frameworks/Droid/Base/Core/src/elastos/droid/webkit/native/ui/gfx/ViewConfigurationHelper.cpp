@@ -1,13 +1,13 @@
 
 #include "Elastos.Droid.View.h"
-//#include "elastos/droid/view/CViewConfigurationHelper.h"
+#include "elastos/droid/view/CViewConfigurationHelper.h"
 #include "elastos/droid/webkit/native/ui/gfx/ViewConfigurationHelper.h"
 #include "elastos/droid/webkit/native/ui/api/ViewConfigurationHelper_dec.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::EIID_IComponentCallbacks;
 using Elastos::Droid::Content::Res::IResources;
-//using Elastos::Droid::View::CViewConfigurationHelper;
+using Elastos::Droid::View::CViewConfigurationHelper;
 using Elastos::Droid::View::IViewConfigurationHelper;
 using Elastos::Utility::Logging::Logger;
 
@@ -61,11 +61,9 @@ ViewConfigurationHelper::ViewConfigurationHelper(
     // mAppContext = context.getApplicationContext();
     // mViewConfiguration = ViewConfiguration.get(mAppContext);
 
-    assert(0);
     context->GetApplicationContext((IContext**)&mAppContext);
-
     AutoPtr<IViewConfigurationHelper> helper;
-    //CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
+    CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
     helper->Get(mAppContext, (IViewConfiguration**)&mViewConfiguration);
 }
 
@@ -106,9 +104,8 @@ ECode ViewConfigurationHelper::UpdateNativeViewConfigurationIfNecessary()
     //         getScaledMinScalingTouchMajor());
 
 
-    assert(0);
     AutoPtr<IViewConfigurationHelper> helper;
-    //CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
+    CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
 
     AutoPtr<IViewConfiguration> configuration;
     helper->Get(mAppContext, (IViewConfiguration**)&configuration);
@@ -133,9 +130,8 @@ Int32 ViewConfigurationHelper::GetDoubleTapTimeout()
     // ==================before translated======================
     // return ViewConfiguration.getDoubleTapTimeout();
 
-    assert(0);
     AutoPtr<IViewConfigurationHelper> helper;
-    //CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
+    CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
 
     Int32 result = 0;
     helper->GetDoubleTapTimeout(&result);
@@ -147,9 +143,8 @@ Int32 ViewConfigurationHelper::GetLongPressTimeout()
     // ==================before translated======================
     // return ViewConfiguration.getLongPressTimeout();
 
-    assert(0);
     AutoPtr<IViewConfigurationHelper> helper;
-    //CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
+    CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
 
     Int32 result = 0;
     helper->GetLongPressTimeout(&result);
@@ -161,9 +156,8 @@ Int32 ViewConfigurationHelper::GetTapTimeout()
     // ==================before translated======================
     // return ViewConfiguration.getTapTimeout();
 
-    assert(0);
     AutoPtr<IViewConfigurationHelper> helper;
-    //CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
+    CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
 
     Int32 result = 0;
     helper->GetTapTimeout(&result);
@@ -175,9 +169,8 @@ Float ViewConfigurationHelper::GetScrollFriction()
     // ==================before translated======================
     // return ViewConfiguration.getScrollFriction();
 
-    assert(0);
     AutoPtr<IViewConfigurationHelper> helper;
-    //CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
+    CViewConfigurationHelper::AcquireSingleton((IViewConfigurationHelper**)&helper);
 
     Float result = 0.0f;
     helper->GetScrollFriction(&result);
@@ -239,6 +232,7 @@ Int32 ViewConfigurationHelper::GetScaledMinScalingSpan()
     //             res.getDisplayMetrics());
     // }
 
+    assert(0);
     AutoPtr<IResources> res;
     mAppContext->GetResources((IResources**)&res);
 
@@ -273,6 +267,7 @@ Int32 ViewConfigurationHelper::GetScaledMinScalingTouchMajor()
     //             MIN_SCALING_TOUCH_MAJOR_DIP, res.getDisplayMetrics());
     // }
 
+    assert(0);
     AutoPtr<IResources> res;
     mAppContext->GetResources((IResources**)&res);
 
@@ -300,7 +295,6 @@ AutoPtr<ViewConfigurationHelper> ViewConfigurationHelper::CreateWithListener(
     // viewConfigurationHelper.registerListener();
     // return viewConfigurationHelper;
 
-    assert(0);
     AutoPtr<ViewConfigurationHelper> viewConfigurationHelper = new ViewConfigurationHelper(context);
     viewConfigurationHelper->RegisterListener();
     return viewConfigurationHelper;
@@ -391,7 +385,6 @@ AutoPtr<IInterface> ViewConfigurationHelper::CreateWithListener(
     IContext* c = IContext::Probe(context);
     return TO_IINTERFACE(CreateWithListener(c));
 }
-
 
 } // namespace Gfx
 } // namespace Ui

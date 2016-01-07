@@ -8,7 +8,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/utility/etl/List.h"
 #include "elastos/utility/etl/Set.h"
-// TODO #include "elastos/droid/widget/ArrayAdapter.h"
+#include "elastos/droid/widget/ArrayAdapter.h"
 
 // package org.chromium.ui;
 // import android.content.Context;
@@ -31,7 +31,7 @@ using Elastos::Droid::View::IViewGroup;
 using Elastos::Core::IInteger32;
 using Elastos::Utility::IList;
 using Elastos::Utility::ISet;
-// TODO using Elastos::Droid::Widget::ArrayAdapter;
+using Elastos::Droid::Widget::ArrayAdapter;
 
 namespace Elastos {
 namespace Droid {
@@ -44,8 +44,7 @@ class DropdownItem;
   * Dropdown item adapter for DropdownPopupWindow.
   */
 class DropdownAdapter
-    : public Object
-    // TODO : public ArrayAdapter
+    : public ArrayAdapter
 {
 public:
     DropdownAdapter(

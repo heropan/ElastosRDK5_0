@@ -3,10 +3,12 @@
 #include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/widget/CExpandableListPosition.h"
 #include "elastos/droid/widget/ExpandableListPosition.h"
+#include "elastos/droid/widget/ExpandableListView.h"
 #include "elastos/core/AutoLock.h"
 
 using Elastos::Droid::Widget::CExpandableListPosition;
 using Elastos::Droid::Widget::EIID_IExpandableListPosition;
+using Elastos::Droid::Widget::ExpandableListView;
 using Elastos::Core::AutoLock;
 using Elastos::Utility::CArrayList;
 
@@ -45,10 +47,10 @@ ECode ExpandableListPosition::GetPackedPosition(
     // else return ExpandableListView.getPackedPositionForGroup(groupPos);
 
     if (mType == IExpandableListPosition::CHILD) {
-        //*result = ExpandableListView::GetPackedPositionForChild(groupPos, childPos);
+        *result = ExpandableListView::GetPackedPositionForChild(mGroupPos, mChildPos);
     }
     else {
-        //*result = ExpandableListView::GetPackedPositionForGroup(groupPos);
+        *result = ExpandableListView::GetPackedPositionForGroup(mGroupPos);
     }
     return NOERROR;
 }
@@ -96,10 +98,10 @@ AutoPtr<ExpandableListPosition> ExpandableListPosition::ObtainPosition(
     }
 
     AutoPtr<ExpandableListPosition> elp = GetRecycledOrCreate();
-    elp->mGroupPos = -1;//ExpandableListView::GetPackedPositionGroup(packedPosition);
-    if (-1/*ExpandableListView::GetPackedPositionType(packedPosition) == ExpandableListView::PACKED_POSITION_TYPE_CHILD*/) {
+    elp->mGroupPos = ExpandableListView::GetPackedPositionGroup(packedPosition);
+    if (ExpandableListView::GetPackedPositionType(packedPosition) == ExpandableListView::PACKED_POSITION_TYPE_CHILD) {
         elp->mType = IExpandableListPosition::CHILD;
-        elp->mChildPos = -1;//ExpandableListView::GetPackedPositionChild(packedPosition);
+        elp->mChildPos = ExpandableListView::GetPackedPositionChild(packedPosition);
     }
     else {
         elp->mType = IExpandableListPosition::GROUP;

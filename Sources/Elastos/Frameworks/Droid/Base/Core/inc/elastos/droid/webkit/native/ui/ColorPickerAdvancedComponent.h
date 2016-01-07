@@ -49,10 +49,10 @@ public:
       * @param seekBarListener The listener for when the seek bar value changes.
       */
     ColorPickerAdvancedComponent(
-        /* [in] */ /*const*/ IView* rootView,
+        /* [in] */ IView* rootView,
         /* [in] */ const Int32& textResourceId,
         /* [in] */ const Int32& seekBarMax,
-        /* [in] */ /*const*/ ISeekBarOnSeekBarChangeListener* seekBarListener);
+        /* [in] */ ISeekBarOnSeekBarChangeListener* seekBarListener);
 
     /**
       * @return The value represented by this component, maintained by the seek bar progress.

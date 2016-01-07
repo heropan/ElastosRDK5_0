@@ -93,14 +93,12 @@ ECode ActionBarContainer::ActionBarBackgroundDrawable::GetOutline(
 ECode ActionBarContainer::ActionBarBackgroundDrawable::SetAlpha(
     /* [in] */ Int32 alpha)
 {
-    assert(0);
     return NOERROR;
 }
 
 ECode ActionBarContainer::ActionBarBackgroundDrawable::SetColorFilter(
     /* [in] */ IColorFilter* cf)
 {
-    VALIDATE_NOT_NULL(cf);
     return NOERROR;
 }
 

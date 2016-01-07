@@ -423,7 +423,7 @@ private:
       *
       * @param maxActivityCount The max number of activities to display.
       */
-    CARAPI_(void) ShowPopupUnchecked(
+    CARAPI ShowPopupUnchecked(
         /* [in] */ Int32 maxActivityCount);
 
     /**

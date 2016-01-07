@@ -1,10 +1,16 @@
 
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/webkit/native/ui/autofill/AutofillPopup.h"
-#include "elastos/utility/Arrays.h"
+#include "elastos/droid/webkit/native/ui/DropdownAdapter.h"
+#include "elastos/core/CoreUtils.h"
 
+using Elastos::Droid::Webkit::Ui::DropdownAdapter;
 using Elastos::Droid::Widget::EIID_IAdapterViewOnItemClickListener;
-using Elastos::Utility::Arrays;
+using Elastos::Droid::Widget::IAdapter;
+using Elastos::Core::CoreUtils;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::CHashSet;
+using Elastos::Utility::ISet;
 
 namespace Elastos {
 namespace Droid {
@@ -37,8 +43,7 @@ AutofillPopup::AutofillPopup(
     //
     // setOnItemClickListener(this);
 
-    assert(0);
-    //SetOnItemClickListener(this);
+    SetOnItemClickListener(this);
 }
 
 ECode AutofillPopup::FilterAndShow(
@@ -62,30 +67,43 @@ ECode AutofillPopup::FilterAndShow(
     // setAdapter(new DropdownAdapter(mContext, cleanedData, separators));
     // show();
 
-    assert(0);/*
-    AutoPtr<IList> tmpSuggestion;
-    Arrays<AutofillSuggestion*>::AsList(suggestions, (IList**)&tmpSuggestion);
+    assert(0);
+    CArrayList::New((IList**)&mSuggestions);
+    for (Int32 idx=0; idx<suggestions->GetLength(); ++idx) {
+        AutoPtr<IInterface> interfaceTmp = (*suggestions)[idx];
+        mSuggestions->Add(interfaceTmp);
+    }
 
-    mSuggestions = new List< AutoPtr<AutofillSuggestion> >(suggestions);
     // Remove the AutofillSuggestions with IDs that are not supported by Android
-    AutoPtr< ArrayOf< AutoPtr<DropdownItem> > > cleanedData = ArrayOf< AutoPtr<DropdownItem> >::Alloc(1);
-    AutoPtr<IHashSet> separators;
-    CHashSet::New((IHashSet**)&separators);
+    AutoPtr<IList> cleanedData;
+    CArrayList::New((IList**)&cleanedData);
 
-    for (Int32 i = 0; i < suggestions->GetLength(); ++i) {
-        Int32 itemId = (*suggestions)[i]->mUniqueId;
+    AutoPtr<ISet> separators;
+    CHashSet::New((ISet**)&separators);
+
+    Int32 size = 0;
+    mSuggestions->GetSize(&size);
+    for (Int32 i = 0; i < size; ++i) {
+        AutoPtr<IInterface> interfaceTmp;
+        mSuggestions->Get(i, (IInterface**)&interfaceTmp);
+        IObject* objTmp = IObject::Probe(interfaceTmp);
+        AutofillSuggestion* suggestion = (AutofillSuggestion*)objTmp;
+        assert(suggestion);
+        Int32 itemId = suggestion->mUniqueId;
         if (itemId > 0 || itemId == ITEM_ID_AUTOCOMPLETE_ENTRY ||
                 itemId == ITEM_ID_PASSWORD_ENTRY || itemId == ITEM_ID_DATA_LIST_ENTRY) {
-            cleanedData->Append(suggestions[i]);
+            cleanedData->Add(interfaceTmp);
         }
         else if (itemId == ITEM_ID_SEPARATOR_ENTRY) {
-            separators->Append(cleanedData->GetLength());
+            Int32 size = 0;
+            cleanedData->GetSize(&size);
+            separators->Add(TO_IINTERFACE(CoreUtils::Convert(size)));
         }
     }
 
     AutoPtr<DropdownAdapter> dropDownAdapter = new DropdownAdapter(mContext, cleanedData, separators);
     SetAdapter(dropDownAdapter);
-    Show();*/
+    Show();
     return NOERROR;
 }
 
@@ -122,10 +140,17 @@ ECode AutofillPopup::OnItemClick(
     // mAutofillCallback.suggestionSelected(listIndex);
 
     assert(0);
-    //AutoPtr<DropdownAdapter> adapter = GetAdapter();
-    //int listIndex = mSuggestions->IndexOf(adapter.getItem(position));
-    //assert listIndex > -1;
-    //mAutofillCallback->SuggestionSelected(listIndex);
+    AutoPtr<IAdapter> adapterTmp;
+    parent->GetAdapter((IAdapter**)&adapterTmp);
+    DropdownAdapter* adapter = (DropdownAdapter*)adapterTmp.Get();
+
+    AutoPtr<IInterface> interfaceTmp;
+    adapter->GetItem(position, (IInterface**)&interfaceTmp);
+
+    Int32 listIndex = 0;
+    mSuggestions->IndexOf(interfaceTmp, &listIndex);
+    assert (listIndex > -1);
+    mAutofillCallback->SuggestionSelected(listIndex);
     return NOERROR;
 }
 

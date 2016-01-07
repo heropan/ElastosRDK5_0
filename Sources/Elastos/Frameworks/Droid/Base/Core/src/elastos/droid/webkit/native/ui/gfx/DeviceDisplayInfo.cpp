@@ -2,7 +2,7 @@
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Utility.h"
 #include "Elastos.Droid.View.h"
-#include "elastos/droid/graphics/PixelFormat.h"
+#include "elastos/droid/graphics/CPixelFormat.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/webkit/native/ui/gfx/DeviceDisplayInfo.h"
 #include "elastos/droid/webkit/native/ui/api/DeviceDisplayInfo_dec.h"
@@ -10,8 +10,8 @@
 
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Graphics::CPixelFormat;
 using Elastos::Droid::Graphics::IPixelFormat;
-using Elastos::Droid::Graphics::PixelFormat;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::View::ISurface;
 using Elastos::Utility::Logging::Logger;
@@ -95,9 +95,10 @@ Int32 DeviceDisplayInfo::GetBitsPerPixel()
 
     assert(0);
     Int32 format = GetPixelFormat();
-    AutoPtr<PixelFormat> infoTmp;// class PixelFormat has pure func; = new PixelFormat();
-    IPixelFormat* info = (IPixelFormat*)infoTmp;
+    AutoPtr<IPixelFormat> info;
+    CPixelFormat::AcquireSingleton((IPixelFormat**)&info);
     info->GetPixelFormatInfo(format, info);
+    CPixelFormat* infoTmp = (CPixelFormat*)info.Get();
     return infoTmp->mBitsPerPixel;
 }
 
@@ -412,7 +413,6 @@ AutoPtr<IInterface> DeviceDisplayInfo::Create(
     IContext* c = IContext::Probe(context);
     return TO_IINTERFACE(Create(c));
 }
-
 
 } // namespace Gfx
 } // namespace Ui

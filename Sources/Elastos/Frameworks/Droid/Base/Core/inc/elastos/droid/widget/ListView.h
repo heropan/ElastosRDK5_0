@@ -389,6 +389,26 @@ public:
         /* [in] */ Int32 position,
         /* [in] */ IAccessibilityNodeInfo* info);
 
+    /**
+     * Find a position that can be selected (i.e., is not a separator).
+     *
+     * @param position The starting position to look at.
+     * @param lookDown Whether to look down for other positions.
+     * @return The next selectable position starting at position and then searching either up or
+     *         down. Returns {@link #INVALID_POSITION} if nothing can be found.
+     */
+    //@Override
+    virtual CARAPI_(Int32) LookForSelectablePosition(
+        /* [in] */ Int32 position,
+        /* [in] */ Boolean lookDown);
+
+    virtual CARAPI_(Int32) MeasureHeightOfChildren(
+        /* [in] */ Int32 widthMeasureSpec,
+        /* [in] */ Int32 startPosition,
+        /* [in] */ Int32 endPosition,
+        /* [in] */ Int32 maxHeight,
+        /* [in] */ Int32 disallowPartialChildPosition);
+
 protected:
     //@Override
     virtual CARAPI_(void) ResetList();
@@ -411,13 +431,6 @@ protected:
 
     virtual CARAPI_(Boolean) RecycleOnMeasure();
 
-    virtual CARAPI_(Int32) MeasureHeightOfChildren(
-        /* [in] */ Int32 widthMeasureSpec,
-        /* [in] */ Int32 startPosition,
-        /* [in] */ Int32 endPosition,
-        /* [in] */ Int32 maxHeight,
-        /* [in] */ Int32 disallowPartialChildPosition);
-
     //@Override
     virtual CARAPI_(Int32) FindMotionRow(
         /* [in] */ Int32 y);
@@ -431,19 +444,6 @@ protected:
     //@Override
     virtual CARAPI SetSelectionInt(
         /* [in] */ Int32 position);
-
-    /**
-     * Find a position that can be selected (i.e., is not a separator).
-     *
-     * @param position The starting position to look at.
-     * @param lookDown Whether to look down for other positions.
-     * @return The next selectable position starting at position and then searching either up or
-     *         down. Returns {@link #INVALID_POSITION} if nothing can be found.
-     */
-    //@Override
-    virtual CARAPI_(Int32) LookForSelectablePosition(
-        /* [in] */ Int32 position,
-        /* [in] */ Boolean lookDown);
 
     /**
      * Find a position that can be selected (i.e., is not a separator). If there
@@ -710,12 +710,13 @@ private:
     CARAPI_(Boolean) ShouldAdjustHeightForDivider(
         /* [in] */ Int32 itemIndex);
 
-protected:
+public:
     /**
     * Used to indicate a no preference for a position type.
     */
     static const Int32 NO_POSITION;
 
+protected:
     AutoPtr<IDrawable> mDivider;
     Int32 mDividerHeight;
 

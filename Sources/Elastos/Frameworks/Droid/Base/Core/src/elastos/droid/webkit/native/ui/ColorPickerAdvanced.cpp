@@ -8,6 +8,7 @@
 using Elastos::Droid::Graphics::CColor;
 using Elastos::Droid::Graphics::IColor;
 using Elastos::Droid::View::ILayoutInflater;
+using Elastos::Droid::Widget::EIID_ISeekBarOnSeekBarChangeListener;
 using Elastos::Droid::Widget::ILinearLayout;
 
 namespace Elastos {
@@ -25,10 +26,11 @@ const Int32 ColorPickerAdvanced::SATURATION_COLOR_COUNT;
 const Int32 ColorPickerAdvanced::VALUE_SEEK_BAR_MAX;
 const Int32 ColorPickerAdvanced::VALUE_COLOR_COUNT;
 
+CAR_INTERFACE_IMPL(ColorPickerAdvanced, LinearLayout, ISeekBarOnSeekBarChangeListener)
+
 ColorPickerAdvanced::ColorPickerAdvanced(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
-    //: LinearLayout(context, attrs)
     : mHueDetails(NULL)
     , mSaturationDetails(NULL)
     , mValueDetails(NULL)
@@ -39,6 +41,7 @@ ColorPickerAdvanced::ColorPickerAdvanced(
     // super(context, attrs);
     // init();
 
+    LinearLayout::constructor(context, attrs);
     Init();
 }
 
@@ -46,7 +49,6 @@ ColorPickerAdvanced::ColorPickerAdvanced(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle)
-    //: LinearLayout(context, attrs, defStyle)
     : mHueDetails(NULL)
     , mSaturationDetails(NULL)
     , mValueDetails(NULL)
@@ -57,12 +59,12 @@ ColorPickerAdvanced::ColorPickerAdvanced(
     // super(context, attrs, defStyle);
     // init();
 
+    LinearLayout::constructor(context, attrs, defStyle);
     Init();
 }
 
 ColorPickerAdvanced::ColorPickerAdvanced(
     /* [in] */ IContext* context)
-    //: LinearLayout(context)
     : mHueDetails(NULL)
     , mSaturationDetails(NULL)
     , mValueDetails(NULL)
@@ -73,6 +75,7 @@ ColorPickerAdvanced::ColorPickerAdvanced(
     // super(context);
     // init();
 
+    LinearLayout::constructor(context);
     Init();
 }
 
@@ -93,11 +96,8 @@ AutoPtr<ColorPickerAdvancedComponent> ColorPickerAdvanced::CreateAndAddNewGradie
     //         seekBarListener);
 
     assert(0);
-    //LinearLayout* linearLayout = (LinearLayout*)this;
-    IView* view = NULL;//(LinearLayout*)linearLayout;
-
     AutoPtr<IContext> content;
-    view->GetContext((IContext**)&content);
+    GetContext((IContext**)&content);
 
     AutoPtr<IInterface> interfaceTmp;
     content->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&interfaceTmp);
@@ -105,13 +105,13 @@ AutoPtr<ColorPickerAdvancedComponent> ColorPickerAdvanced::CreateAndAddNewGradie
 
     AutoPtr<IView> newComponent;
     inflater->Inflate(-1/*R::Layout::color_picker_advanced_component*/, NULL, (IView**)&newComponent);
-    //AddView(newComponent);
+    AddView(newComponent);
     AutoPtr<ColorPickerAdvancedComponent> result = new ColorPickerAdvancedComponent(newComponent, textResourceId, seekBarMax, seekBarListener);
     return result;
 }
 
 ECode ColorPickerAdvanced::SetListener(
-    /* [in] */ OnColorChangedListener* onColorChangedListener)
+    /* [in] */ IOnColorChangedListener* onColorChangedListener)
 {
     VALIDATE_NOT_NULL(onColorChangedListener);
     // ==================before translated======================
@@ -228,7 +228,7 @@ ECode ColorPickerAdvanced::Init()
     // refreshGradientComponents();
 
     assert(0);
-    //SetOrientation(ILinearLayout::VERTICAL);
+    SetOrientation(ILinearLayout::VERTICAL);
 
     mHueDetails = CreateAndAddNewGradient(-1/*R::string::color_picker_hue*/,
             HUE_SEEK_BAR_MAX, this);

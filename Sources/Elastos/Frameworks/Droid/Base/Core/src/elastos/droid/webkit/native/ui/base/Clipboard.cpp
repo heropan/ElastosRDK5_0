@@ -264,7 +264,6 @@ void Clipboard::SetHTMLText(
     mObj->SetHTMLText(html, text);
 }
 
-
 } // namespace Base
 } // namespace Ui
 } // namespace Webkit

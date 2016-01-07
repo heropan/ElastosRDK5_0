@@ -334,7 +334,7 @@ ECode SelectFileDialog::SelectFile(
     getContentIntent->AddCategory(IIntent::CATEGORY_OPENABLE);
 
     AutoPtr<IArrayList> extraIntents;
-    //CArrayList::New((IArrayList**)&extraIntents);
+    CArrayList::New((IArrayList**)&extraIntents);
     if (!NoSpecificType()) {
         // Create a chooser based on the accept type that was specified in the webpage. Note
         // that if the web page specified multiple accept types, we will have built a generic
@@ -363,11 +363,17 @@ ECode SelectFileDialog::SelectFile(
         extraIntents->Add(soundRecorder);
     }
 
-    AutoPtr< ArrayOf< AutoPtr<IInterface> > > toArray;
-    //extraIntents->ToArray(&toArray);
+    AutoPtr< ArrayOf<IInterface*> > toArray;
+    extraIntents->ToArray((ArrayOf<IInterface*>**)&toArray);
     assert(0);
-    //chooser->PutExtra(IIntent::EXTRA_INITIAL_INTENTS, &toArray);
-    //chooser->PutExtra(IIntent::EXTRA_INTENT, getContentIntent);
+    AutoPtr< ArrayOf<IParcelable*> > parcelableArrayTmp = ArrayOf<IParcelable*>::Alloc(toArray->GetLength());
+    for (Int32 idx=0; idx<toArray->GetLength(); ++idx) {
+        AutoPtr<IInterface> interfaceTmp = (*toArray)[idx];
+        IParcelable* parcelableTmp = IParcelable::Probe(interfaceTmp.Get());
+        parcelableArrayTmp->Set(idx, parcelableTmp);
+    }
+    chooser->PutExtra(IIntent::EXTRA_INITIAL_INTENTS, parcelableArrayTmp);
+    chooser->PutExtra(IIntent::EXTRA_INTENT, IParcelable::Probe(getContentIntent));
 
     if (!window->ShowIntent(chooser, this, -1/*R::string::low_memory_error*/)) {
         OnFileNotSelected();

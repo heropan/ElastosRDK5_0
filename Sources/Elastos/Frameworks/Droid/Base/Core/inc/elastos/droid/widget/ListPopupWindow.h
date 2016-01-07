@@ -7,18 +7,19 @@
 #include "Elastos.Droid.View.h"
 #include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.Content.h"
-//#include "elastos/droid/animation/AnimatorListenerAdapter.h"
+#include "elastos/droid/animation/AnimatorListenerAdapter.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/utility/Int32Property.h"
-//#include "elastos/droid/widget/ListView.h"
+#include "elastos/droid/widget/ListView.h"
 #include "elastos/core/Object.h"
 
-//using Elastos::Droid::Animation::AnimatorListenerAdapter;
+using Elastos::Droid::Animation::AnimatorListenerAdapter;
 using Elastos::Droid::Animation::IAnimator;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Database::IDataSetObserver;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Internal::Widget::IAbsListViewAutoScroller;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Utility::Int32Property;
@@ -37,7 +38,7 @@ using Elastos::Droid::Widget::IListPopupWindow;
 using Elastos::Droid::Widget::IListView;
 using Elastos::Droid::Widget::IPopupWindow;
 using Elastos::Droid::Widget::IPopupWindowOnDismissListener;
-//using Elastos::Droid::Widget::ListView;
+using Elastos::Droid::Widget::ListView;
 using Elastos::Core::IRunnable;
 
 namespace Elastos {
@@ -206,11 +207,11 @@ private:
       * passed to the drop down in this mode; the list only looks focused.</p>
       */
     class DropDownListView
-        : public Object//ListView
+        : public ListView
     {
     private:
         class InnerAnimatorListenerAdapter
-            : public Object//AnimatorListenerAdapter
+            : public AnimatorListenerAdapter
         {
         public:
             InnerAnimatorListenerAdapter(
@@ -323,7 +324,7 @@ private:
         Boolean mHijackFocus;
         Boolean mDrawsInPressedState;
         AutoPtr<IAnimator> mClickAnimation;
-        AutoPtr<IInterface/*AbsListViewAutoScroller*/> mScrollHelper;
+        AutoPtr<IAbsListViewAutoScroller> mScrollHelper;
     };
 
     class InnerInt32Property

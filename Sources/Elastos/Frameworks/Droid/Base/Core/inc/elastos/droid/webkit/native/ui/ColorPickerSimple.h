@@ -7,9 +7,8 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/ui/ColorSuggestionListAdapter.h"
-#include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"
-#include "elastos/droid/webkit/native/ui/OnColorChangedListener.h"
-//#include "elastos/droid/widget/ListView.h"
+#include "elastos/droid/widget/ListView.h"
+#include "Elastos.Droid.Webkit.h"
 
 // package org.chromium.ui;
 // import android.content.Context;
@@ -21,8 +20,9 @@
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Webkit::Ui::ColorSuggestionListAdapter;
-using Elastos::Droid::Webkit::Ui::OnColorChangedListener;
-//using Elastos::Droid::Widget::ListView;
+using Elastos::Droid::Webkit::Ui::IOnColorChangedListener;
+using Elastos::Droid::Webkit::Ui::IOnColorSuggestionClickListener;
+using Elastos::Droid::Widget::ListView;
 
 namespace Elastos {
 namespace Droid {
@@ -36,10 +36,12 @@ class ColorSuggestion;
   * those colors.
   */
 class ColorPickerSimple
-    //: public ListView
-    : public ColorSuggestionListAdapter::OnColorSuggestionClickListener
+    : public ListView
+    , public IOnColorSuggestionClickListener
 {
 public:
+    CAR_INTERFACE_DECL()
+
     ColorPickerSimple(
         /* [in] */ IContext* context);
 
@@ -62,11 +64,11 @@ public:
       */// ColorSuggestion for suggestions
     virtual CARAPI Init(
         /* [in] */ ArrayOf<IInterface*>* suggestions,
-        /* [in] */ OnColorChangedListener* onColorChangedListener);
+        /* [in] */ IOnColorChangedListener* onColorChangedListener);
 
     // @Override
     CARAPI OnColorSuggestionClick(
-        /* [in] */ ColorSuggestion* suggestion);
+        /* [in] */ IInterface* suggestion);
 
 private:
     static CARAPI_(AutoPtr< ArrayOf<Int32> >) MiddleInitDefaultColors();
@@ -74,7 +76,7 @@ private:
     static CARAPI_(AutoPtr< ArrayOf<Int32> >) MiddleInitDefaultColorLabelIds();
 
 private:
-    AutoPtr<OnColorChangedListener> mOnColorChangedListener;
+    AutoPtr<IOnColorChangedListener> mOnColorChangedListener;
     static AutoPtr< ArrayOf<Int32> > DEFAULT_COLORS;
     static AutoPtr< ArrayOf<Int32> > DEFAULT_COLOR_LABEL_IDS;
 };

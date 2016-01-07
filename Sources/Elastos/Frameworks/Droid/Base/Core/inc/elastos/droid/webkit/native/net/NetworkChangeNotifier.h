@@ -5,23 +5,15 @@
 #ifndef _ELASTOS_DROID_WEBKIT_NET_NETWORKCHANGENOTIFIER_H_
 #define _ELASTOS_DROID_WEBKIT_NET_NETWORKCHANGENOTIFIER_H_
 
-// #include "elastos/droid/ext/frameworkext.h"
-// #include "elastos/droid/webkit/native/base/ObserverList.h" /* ObserverList cannot compile */
+#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/native/net/NetworkChangeNotifierAutoDetect.h"
 #include <elastos/utility/etl/List.h>
-
-// package org.chromium.net;
-// import android.content.Context;
-// import org.chromium.base.CalledByNative;
-// import org.chromium.base.JNINamespace;
-// import org.chromium.base.NativeClassQualifiedName;
-// import org.chromium.base.ObserverList;
-// import java.util.ArrayList;
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Webkit::Net::NetworkChangeNotifierAutoDetect;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::Etl::List;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -210,7 +202,7 @@ public:
 private:
     /*const*/ AutoPtr<IContext> mContext;
     /*const*/ AutoPtr< List<Int64> > mNativeChangeNotifiers;
-    /*const*/ //AutoPtr< /*CArrayList*/ List<ConnectionTypeObserver> > mConnectionTypeObservers;
+    /*const*/ AutoPtr<IList> mConnectionTypeObservers;
     Int32 mCurrentConnectionType;
     static AutoPtr<NetworkChangeNotifier> sInstance;
 };

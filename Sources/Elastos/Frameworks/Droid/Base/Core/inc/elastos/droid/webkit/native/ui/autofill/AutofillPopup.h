@@ -10,7 +10,6 @@
 #include "elastos/droid/webkit/native/ui/autofill/AutofillSuggestion.h"
 #include "elastos/droid/webkit/native/ui/base/ViewElastosDelegate.h"
 #include "elastos/droid/webkit/native/ui/DropdownPopupWindow.h"
-#include "elastos/utility/etl/List.h"
 
 // package org.chromium.ui.autofill;
 // import android.content.Context;
@@ -32,7 +31,7 @@ using Elastos::Droid::Webkit::Ui::Base::ViewElastosDelegate;
 using Elastos::Droid::Webkit::Ui::DropdownPopupWindow;
 using Elastos::Droid::Widget::IAdapterView;
 using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
-using Elastos::Utility::Etl::List;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -120,7 +119,7 @@ private:
     static const Int32 ITEM_ID_DATA_LIST_ENTRY = -6;
     /*const*/ AutoPtr<IContext> mContext;
     /*const*/ AutoPtr<AutofillPopupDelegate> mAutofillCallback;
-    AutoPtr< List< AutoPtr<AutofillSuggestion> > > mSuggestions;
+    AutoPtr<IList> mSuggestions;
 };
 
 } // namespace Autofill

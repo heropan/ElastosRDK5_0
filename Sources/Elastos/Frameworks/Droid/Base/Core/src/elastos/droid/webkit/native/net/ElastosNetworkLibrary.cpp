@@ -11,6 +11,7 @@
 #include "elastos/droid/webkit/native/net/api/ElastosNetworkLibrary_dec.h"
 #include "elastos/droid/webkit/native/net/X509Util.h"
 #include "elastos/core/IntegralToString.h"
+//#include "elastos/net/URLConnection.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::CIntent;
@@ -151,7 +152,7 @@ String ElastosNetworkLibrary::GetMimeTypeFromExtension(
     // return URLConnection.guessContentTypeFromName("foo." + extension);
 
     assert(0);
-    String result("");// = URLConnection::GuessContentTypeFromName(String("foo.") + extension, &result);
+    String result("");// = URLConnection::GuessContentTypeFromName(String("foo.") + extension);
     return result;
 }
 
@@ -326,7 +327,6 @@ String ElastosNetworkLibrary::GetNetworkList()
                 Int16 prefixLength = 0;
                 interfaceAddress->GetNetworkPrefixLength(&prefixLength);
 
-                // question: Int16 to String
                 String tmpStr = IntegralToString::ToString(prefixLength);
                 addressString.Append(tmpStr);
                 addressString.Append(String("\t"));
@@ -409,7 +409,7 @@ String ElastosNetworkLibrary::GetNetworkCountryIso(
     ITelephonyManager* telephonyManager = ITelephonyManager::Probe(telephonyManagerTmp);
     String result("");
     if (telephonyManager != NULL) {
-        // telephonyManager->GetNetworkCountryIso(&result);
+        //--: telephonyManager->GetNetworkCountryIso(&result);
         return result;
     }
     return result;
@@ -432,7 +432,7 @@ String ElastosNetworkLibrary::GetNetworkOperator(
     ITelephonyManager* telephonyManager = ITelephonyManager::Probe(telephonyManagerTmp);
     String result("");
     if (telephonyManager != NULL) {
-        // telephonyManager->GetNetworkOperator(&result);
+        //--: telephonyManager->GetNetworkOperator(&result);
         return result;
     }
     return result;

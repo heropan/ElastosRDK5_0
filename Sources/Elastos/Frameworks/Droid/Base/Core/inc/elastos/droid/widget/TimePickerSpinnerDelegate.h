@@ -35,7 +35,7 @@ namespace Widget {
 class TimePickerSpinnerDelegate
     : public TimePicker::AbstractTimePickerDelegate
     , public ITimePickerSpinnerDelegate
-    , public IOnValueSelectedListener /*RadialTimePickerView::*/
+    , public IOnValueSelectedListener
 {
 private:
     class InnerViewHourOnClickListener

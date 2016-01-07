@@ -7,7 +7,7 @@
 #include "Elastos.Droid.Net.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/content/CIntentFilter.h"
-//#include "elastos/droid/net/http/CX509TrustManagerExtensions.h"
+#include "elastos/droid/net/http/CX509TrustManagerExtensions.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/utility/CPairHelper.h"
 #include "elastos/droid/webkit/native/net/X509Util.h"
@@ -16,7 +16,6 @@
 #include "elastos/core/AutoLock.h"
 #include "elastos/core/IntegralToString.h"
 #include <elastos/utility/logging/Logger.h>
-//#include "elastos/security/cert/CCertificateFactoryHelper.h"
 //#include "elastos/security/CKeyStoreHelper.h"
 
 using Elastos::Droid::Content::CIntent;
@@ -24,7 +23,7 @@ using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Keystore::Security::IKeyChain;
-//using Elastos::Droid::Net::Http::CX509TrustManagerExtensions;
+using Elastos::Droid::Net::Http::CX509TrustManagerExtensions;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Utility::CPairHelper;
 using Elastos::Droid::Utility::IPair;
@@ -35,10 +34,11 @@ using Elastos::Core::CSystem;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IntegralToString;
 using Elastos::Core::ISystem;
+using Elastos::IO::CByteArrayInputStream;
 using Elastos::IO::CFile;
 using Elastos::IO::IInputStream;
 using Elastos::Utility::Logging::Logger;
-//using Elastos::Security::Cert::CCertificateFactoryHelper;
+using Elastos::Security::Cert::CCertificateFactoryHelper;
 using Elastos::Security::Cert::ICertificate;
 using Elastos::Security::Cert::ICertificateFactory;
 using Elastos::Security::Cert::ICertificateFactoryHelper;
@@ -48,6 +48,7 @@ using Elastos::Security::IKeyStoreHelper;
 using Elastos::Security::IMessageDigest;
 using Elastos::Security::IMessageDigestHelper;
 using Elastos::Security::IPrincipal;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::CHashSet;
 using Elastosx::Net::Ssl::CTrustManagerFactoryHelper;
 using Elastosx::Net::Ssl::ITrustManager;
@@ -113,7 +114,7 @@ X509Util::X509TrustManagerIceCreamSandwich::X509TrustManagerIceCreamSandwich(
 }
 
 AutoPtr<IList> X509Util::X509TrustManagerIceCreamSandwich::CheckServerTrusted(
-    /* [in] */ ArrayOf<ICertificate*>* chain, // ArrayOf<IX509Certificate*>* chain,
+    /* [in] */ /*ArrayOf<ICertificate*>* chain, //*/ ArrayOf<IX509Certificate*>* chain,
     /* [in] */ const String& authType,
     /* [in] */ const String& host)
 {
@@ -122,9 +123,16 @@ AutoPtr<IList> X509Util::X509TrustManagerIceCreamSandwich::CheckServerTrusted(
     // return Collections.<X509Certificate>emptyList();
 
     assert(0);
-    mTrustManager->CheckServerTrusted(chain, authType);
+    AutoPtr< ArrayOf<ICertificate*> > chainTmp = ArrayOf<ICertificate*>::Alloc(chain->GetLength());
+    for (Int32 idx=0; idx<chain->GetLength(); ++idx) {
+        AutoPtr<IX509Certificate> itemTmp = (*chain)[idx];
+        ICertificate* item = ICertificate::Probe(itemTmp.Get());
+        chainTmp->Set(idx, item);
+    }
+
+    mTrustManager->CheckServerTrusted(chainTmp, authType);
     AutoPtr<IList> result;
-    //CArrayList::New((IList**)&result);
+    CArrayList::New((IList**)&result);
     return result;
 }
 
@@ -138,20 +146,19 @@ X509Util::X509TrustManagerJellyBean::X509TrustManagerJellyBean(
     // mTrustManagerExtensions = new X509TrustManagerExtensions(trustManager);
 
     assert(0);
-    //--CX509TrustManagerExtensions::New(trustManager, (IX509TrustManagerExtensions**)&mTrustManagerExtensions);
+    CX509TrustManagerExtensions::New(trustManager, (IX509TrustManagerExtensions**)&mTrustManagerExtensions);
 }
 
 AutoPtr<IList> X509Util::X509TrustManagerJellyBean::CheckServerTrusted(
-    /* [in] */ ArrayOf<ICertificate*>* chain, // ArrayOf<IX509Certificate*>* chain,
+    /* [in] */ ArrayOf<IX509Certificate*>* chain,
     /* [in] */ const String& authType,
     /* [in] */ const String& host)
 {
     // ==================before translated======================
     // return mTrustManagerExtensions.checkServerTrusted(chain, authType, host);
 
-    assert(0);
     AutoPtr<IList> result;
-    //--mTrustManagerExtensions->CheckServerTrusted(chain, authType, host, (IList**)&result); /* car func define failed */
+    mTrustManagerExtensions->CheckServerTrusted(chain, authType, host, (IList**)&result);
     return result;
 }
 
@@ -184,14 +191,13 @@ AutoPtr<IX509Certificate> X509Util::CreateCertificateFromBytes(
     // return (X509Certificate) sCertificateFactory.generateCertificate(
     //         new ByteArrayInputStream(derBytes));
 
-    assert(0);
     EnsureInitialized();
     AutoPtr<IInputStream> inputStream;
-    //--constructor IInputStream
+    CByteArrayInputStream::New(derBytes, (IInputStream**)&inputStream);
+
     AutoPtr<ICertificate> cert;
     sCertificateFactory->GenerateCertificate(inputStream, (ICertificate**)&cert);
-    //--AutoPtr<IX509Certificate> result = IX509Certificate::Probe(&cert);
-    AutoPtr<IX509Certificate> result;
+    AutoPtr<IX509Certificate> result = IX509Certificate::Probe(cert.Get());
     return result;
 }
 
@@ -208,11 +214,10 @@ ECode X509Util::AddTestRootCertificate(
     //     reloadTestTrustManager();
     // }
 
-    assert(0);
     EnsureInitialized();
     AutoPtr<IX509Certificate> rootCert = CreateCertificateFromBytes(rootCertBytes);
     {
-        //--AutoLock lock(&sLock);
+        AutoLock lock(sLock);
         Int32 size = 0;
         sTestKeyStore->GetSize(&size);
         String sSize = IntegralToString::ToString(size);
@@ -440,10 +445,7 @@ AutoPtr<ElastosCertVerifyResult> X509Util::VerifyServerCertificates(
 
     AutoPtr<IList> verifiedChain;
     //try {
-        ArrayOf<ICertificate*>* tmpChain;
-        //AutoPtr< ArrayOf< AutoPtr<IX509Certificate> > > serverCertificates;
-        //verifiedChain = sDefaultTrustManager->CheckServerTrusted(serverCertificates, authType, host);
-        verifiedChain = sDefaultTrustManager->CheckServerTrusted(tmpChain, authType, host);
+        verifiedChain = sDefaultTrustManager->CheckServerTrusted(serverCertificates, authType, host);
     //} catch (CertificateException eDefaultManager) {
     //    try {
     //        verifiedChain = sTestTrustManager->CheckServerTrusted(serverCertificates, authType, host);
@@ -463,8 +465,7 @@ AutoPtr<ElastosCertVerifyResult> X509Util::VerifyServerCertificates(
     if (verifiedSize > 0) {
         AutoPtr<IInterface> tmp;
         verifiedChain->Get(verifiedSize - 1, (IInterface**)&tmp);
-        //--AutoPtr<IX509Certificate> root = IX509Certificate::Probe(&tmp);
-        AutoPtr<IX509Certificate> root;
+        AutoPtr<IX509Certificate> root = IX509Certificate::Probe(tmp.Get());
         isIssuedByKnownRoot = IsKnownRoot((IX509Certificate*)&root);
     }
 
@@ -533,10 +534,10 @@ ECode X509Util::EnsureInitialized()
     // }
 
     assert(0);
-    //--AutoLock lock(sLock);
+    AutoLock lock(sLock);
     if (sCertificateFactory == NULL) {
         AutoPtr<ICertificateFactoryHelper> helper;
-        //CCertificateFactoryHelper::AcquireSingleton((ICertificateFactoryHelper**)&helper);
+        CCertificateFactoryHelper::AcquireSingleton((ICertificateFactoryHelper**)&helper);
         helper->GetInstance(String("X.509"), (ICertificateFactory**)&sCertificateFactory);
     }
     if (sDefaultTrustManager == NULL) {
@@ -545,7 +546,7 @@ ECode X509Util::EnsureInitialized()
     if (!sLoadedSystemKeyStore) {
         //try {
             AutoPtr<IKeyStoreHelper> helper;
-            //CKeyStoreHelper::AcquireSingleton((IKeyStoreHelper**)&helper);
+            //--: CKeyStoreHelper::AcquireSingleton((IKeyStoreHelper**)&helper);
             helper->GetInstance(String("AndroidCAStore"), (IKeyStore**)&sSystemKeyStore);
             //try {
                 sSystemKeyStore->Load(NULL, NULL);
@@ -571,7 +572,7 @@ ECode X509Util::EnsureInitialized()
 
     if (NULL == sTestKeyStore) {
         AutoPtr<IKeyStoreHelper> keyStore;
-        //CKeyStoreHelper::AcquireSingleton((IKeyStoreHelper**)&keyStore);
+        //--: CKeyStoreHelper::AcquireSingleton((IKeyStoreHelper**)&keyStore);
         String defaultType;
         keyStore->GetDefaultType(&defaultType);
         keyStore->GetInstance(defaultType, (IKeyStore**)&sTestKeyStore);
@@ -718,7 +719,6 @@ String X509Util::HashPrincipal(
     // }
     // return new String(hexChars);
 
-    assert(0);
     // Android hashes a principal as the first four bytes of its MD5 digest, encoded in
     // lowercase hex and reversed. Verified in 4.2, 4.3, and 4.4.
     AutoPtr<IMessageDigestHelper> helper;
@@ -874,7 +874,7 @@ Boolean X509Util::IsKnownRoot(
         Boolean equalPrincipal = FALSE;
         principalTmp->Equals(anchorx509Principal, &equalPrincipal);
 
-        if (equalPrincipal /* cannot find func equals && publicKey->Equals(anchorx509PublicKey)*/) {
+        if (equalPrincipal && TO_IINTERFACE(publicKey) == TO_IINTERFACE(anchorx509PublicKey)) {
             sSystemTrustAnchorCache->Add(key);
             return TRUE;
         }

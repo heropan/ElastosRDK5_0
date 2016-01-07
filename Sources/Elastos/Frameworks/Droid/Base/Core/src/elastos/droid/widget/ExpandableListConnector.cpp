@@ -344,7 +344,6 @@ ECode ExpandableListConnector::InnerParcelableCreator::NewArray(
     // ==================before translated======================
     // return new GroupMetadata[size];
 
-    assert(0);
     *result = ArrayOf<GroupMetadata*>::Alloc(size);
     for (Int32 idx=0; idx<size; ++idx) {
         (**result)[idx] = GroupMetadata::Obtain(0, 0, 0, 0);
@@ -358,7 +357,6 @@ ECode ExpandableListConnector::InnerParcelableCreator::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
     VALIDATE_NOT_NULL(source);
-    assert(0);
     return NOERROR;
 }
 
@@ -367,7 +365,6 @@ ECode ExpandableListConnector::InnerParcelableCreator::WriteToParcel(
     /* [in] */ IParcel* source)
 {
     VALIDATE_NOT_NULL(source);
-    assert(0);
     return NOERROR;
 }
 
@@ -625,8 +622,6 @@ ECode ExpandableListConnector::GetUnflattenedPos(
         groupPos = rightExpGm->mGPos - (rightExpGm->mFlPos - flPos);
     }
     else {
-        //return new runtimeException;
-        assert(0);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -1763,7 +1758,7 @@ ECode ExpandableListConnector::RefreshExpGroupMetadataList(
 
     Int32 gChildrenCount = 0;
     Int32 lastGPos = 0;
-    for (Int32 i = 0; i < egmlSize; i++) {
+    for (Int32 i = 0; i < egmlSize; ++i) {
         AutoPtr<IInterface> interfaceTmp;
         egml->Get(i, (IInterface**)&interfaceTmp);
         IObject* objTmp = IObject::Probe(interfaceTmp);
