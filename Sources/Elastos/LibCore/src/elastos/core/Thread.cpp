@@ -947,7 +947,26 @@ ECode Thread::ParkUntil(
     return NOERROR;
 }
 
-//static CARAPI_(Boolean) HoldsLock(Object object);
+Boolean Thread::NativeHoldsLock(
+    /* [in] */ Object* object)
+{
+    if (object == NULL) {
+        return FALSE;
+    }
+
+    assert(0 && "TODO");
+    // NativeThread* thread = NativeGetThreadFromThreadObject(reinterpret_cast<Int32>(this));
+    // return object->GetLockOwnerThreadId() == GetThreadId();
+    return TRUE;
+}
+
+Boolean Thread::HoldsLock(
+    /* [in] */ Object* object)
+{
+    AutoPtr<IThread> thread = NativeGetCurrentThread();
+    Thread* t = (Thread*)thread.Get();
+    return t->NativeHoldsLock(object);
+}
 
 ECode Thread::Attach(
     /* [out] */ IThread** thread)

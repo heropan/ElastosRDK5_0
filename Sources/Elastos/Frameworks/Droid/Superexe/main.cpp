@@ -34,7 +34,7 @@ using Elastos::Droid::Server::CSystemServer;
    } while(0);
 #endif
 
-static const CString TAG = CString("superexe");
+static const String TAG("superexe");
 
 static Boolean s_bDebugFlag = FALSE;
 Int32 option = 0;                       //For Framework App Testing

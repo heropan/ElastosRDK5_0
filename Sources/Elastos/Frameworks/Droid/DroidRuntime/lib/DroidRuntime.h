@@ -45,6 +45,12 @@ public:
     CARAPI_(void) Exit(
         /* [in] */ Int32 code);
 
+    CARAPI_(void) SetExitWithoutCleanup(
+        /* [in] */ Boolean exitWithoutCleanup)
+    {
+        mExitWithoutCleanup = exitWithoutCleanup;
+    }
+
     static CARAPI_(AutoPtr<DroidRuntime>) GetRuntime();
 
     /**

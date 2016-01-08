@@ -772,7 +772,8 @@ public:
      * @return true if the current thread has a monitor lock on the specified
      *         object; false otherwise
      */
-    //static CARAPI_(Boolean) HoldsLock(Object object);
+    static CARAPI_(Boolean) HoldsLock(
+        /* [in] */ Object* object);
 
     /**
      * Unparks this thread. This unblocks the thread it if it was
@@ -906,6 +907,9 @@ private:
         /* [in] */ Int64 stackSize);
 
     ECO_LOCAL static CARAPI_(AutoPtr<IThread>) NativeGetCurrentThread();
+
+    ECO_LOCAL CARAPI_(Boolean) NativeHoldsLock(
+        /* [in] */ Object* object);
 
     ECO_LOCAL CARAPI_(Int32) NativeGetState();
 

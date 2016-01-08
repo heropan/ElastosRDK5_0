@@ -196,7 +196,7 @@ EXTERN_C pthread_key_t *getTlSystemSlotBase();
 #define _MAX_PATH     260     /* max length of full pathname */
 
 template<typename T, int N>
-CAR_INLINE int ArraySize(T (&)[N])
+CAR_INLINE int ArraySize(const T (&)[N])
 {
     return N;
 }

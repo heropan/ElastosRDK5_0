@@ -7,7 +7,7 @@
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/Math.h>
 
-#include <skia/images/SkImageDecoder.h>
+#include <skia/core/SkImageDecoder.h>
 #include <skia/core/SkStream.h>
 
 using Elastos::Droid::View::IKeyEvent;

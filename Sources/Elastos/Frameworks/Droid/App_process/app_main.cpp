@@ -11,6 +11,8 @@
 #include <DroidRuntime.h>
 //#include <private/android_filesystem_config.h>  // for AID_SYSTEM
 
+#include <skia/core/SkGraphics.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -31,6 +33,12 @@ public:
         /* [in] */ const size_t argBlockLength)
         : DroidRuntime(argBlockStart, argBlockLength)
     {
+        SkGraphics::Init();
+    }
+
+    virtual ~AppRuntime()
+    {
+        SkGraphics::Term();
     }
 
     CARAPI_(void) SetClassNameAndArgs(

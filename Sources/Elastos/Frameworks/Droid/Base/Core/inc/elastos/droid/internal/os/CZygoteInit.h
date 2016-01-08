@@ -8,6 +8,7 @@
 #include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Net::ILocalServerSocket;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Core::Singleton;
@@ -212,6 +213,24 @@ private:
         /* [in] */ IRunnable** task);
 
     static CARAPI_(void) Preload();
+
+    static CARAPI_(void) PreloadOpenGL();
+
+    /**
+     * Load in commonly used resources, so they can be shared across
+     * processes.
+     *
+     * These tend to be a few Kbytes, but are frequently in the 20-40K
+     * range, and occasionally even larger.
+     */
+    static CARAPI_(void) PreloadResources();
+
+    static CARAPI_(Int32) PreloadColorStateLists(
+        /* [in] */ ITypedArray* ar);
+
+    static CARAPI_(Int32) PreloadDrawables(
+        /* [in] */ ITypedArray* ar);
+
 
 public:
     /**

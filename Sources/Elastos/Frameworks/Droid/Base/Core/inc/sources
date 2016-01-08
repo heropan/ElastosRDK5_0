@@ -98,9 +98,6 @@ EXPORT_HEADERS += elastos/droid/utility/FloatProperty.h
 //EXPORT_HEADERS += elastos/droid/view/SoundEffectConstants.h
 EXPORT_HEADERS += elastos/droid/view/WindowIdFocusObserver.h
 
-EXPORT_HEADERS += elastos/droid/server/LocalServices.h
-EXPORT_HEADERS += elastos/droid/server/net/BaseNetworkObserver.h
-EXPORT_HEADERS += elastos/droid/text/format/DateUtils.h
 //EXPORT_HEADERS += elastos/droid/webkit/WebViewClient.h
 //EXPORT_HEADERS += elastos/droid/webkit/WebChromeClient.h
 //EXPORT_HEADERS += elastos/droid/widget/ArrayAdapter.h

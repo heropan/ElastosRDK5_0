@@ -1,29 +1,39 @@
 
 #include "elastos/droid/ext/frameworkdef.h"
 #include "Elastos.Droid.Content.h"
-#include "elastos/droid/internal/os/CZygoteInit.h"
-#include "elastos/droid/internal/os/RuntimeInit.h"
-#include "elastos/droid/internal/os/Zygote.h"
+#include "Elastos.Droid.Graphics.h"
+#include "elastos/droid/R.h"
 #include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/SystemProperties.h"
 #include "elastos/droid/net/CLocalServerSocket.h"
+#include "elastos/droid/content/res/CResources.h"
+#include <elastos/droid/system/Os.h>
+#include <elastos/droid/system/OsConstants.h>
+#include "elastos/droid/internal/os/Zygote.h"
+#include "elastos/droid/internal/os/CZygoteInit.h"
+#include "elastos/droid/internal/os/RuntimeInit.h"
 #include <Elastos.CoreLibrary.h>
-#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/Thread.h>
 #include <elastos/utility/etl/Vector.h>
+#include <elastos/utility/logging/Logger.h>
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/select.h>
-#include <elastos/core/StringUtils.h>
-#include <elastos/core/StringBuilder.h>
-#include <elastos/core/Thread.h>
-#include <elastos/droid/system/Os.h>
-#include <elastos/droid/system/OsConstants.h>
 
-using Elastos::Droid::Net::CLocalServerSocket;
+using Elastos::Droid::R;
 using Elastos::Droid::Os::Process;
+using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::SystemProperties;
 using Elastos::Droid::System::OsConstants;
+using Elastos::Droid::Net::CLocalServerSocket;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::Content::Res::CResources;
+using Elastos::Droid::Content::Res::IColorStateList;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::Thread;
@@ -176,8 +186,8 @@ void CZygoteInit::Preload()
 {
     Logger::D(TAG, "begin preload");
     // preloadClasses();
-    // preloadResources();
-    // preloadOpenGL();
+    PreloadResources();
+    PreloadOpenGL();
     // preloadSharedLibraries();
     // Ask the WebViewFactory to do any initialization that must run in the zygote process,
     // for memory sharing purposes.
@@ -185,10 +195,121 @@ void CZygoteInit::Preload()
     Logger::D(TAG, "end preload");
 }
 
+void CZygoteInit::PreloadOpenGL()
+{
+    Boolean bval;
+    SystemProperties::GetBoolean(PROPERTY_DISABLE_OPENGL_PRELOADING, FALSE, &bval);
+    if (!bval) {
+        assert(0 && "TODO");
+        // EGL14::eglGetDisplay(IEGL14::EGL_DEFAULT_DISPLAY);
+    }
+}
+
+void CZygoteInit::PreloadResources()
+{
+    // Debug.startAllocCounting();
+
+    mResources = CResources::GetSystem();
+    mResources->StartPreloading();
+    if (PRELOAD_RESOURCES) {
+        Logger::I(TAG, "Preloading resources...");
+
+        Int64 startTime = SystemClock::GetUptimeMillis();
+        AutoPtr<ITypedArray> ar;
+        mResources->ObtainTypedArray(R::array::preloaded_drawables, (ITypedArray**)&ar);
+        Int32 N = PreloadDrawables(ar);
+        ar->Recycle();
+        Logger::I(TAG, "...preloaded %d drawables in %lld ms",
+            N, (SystemClock::GetUptimeMillis() - startTime));
+
+        startTime = SystemClock::GetUptimeMillis();
+        ar = NULL;
+        mResources->ObtainTypedArray(R::array::preloaded_color_state_lists, (ITypedArray**)&ar);
+        N = PreloadColorStateLists(ar);
+        ar->Recycle();
+        Logger::I(TAG, "...preloaded %d color state lists in %lld ms",
+            N, (SystemClock::GetUptimeMillis() - startTime));
+    }
+    mResources->FinishPreloading();
+
+    // Debug.stopAllocCounting();
+}
+
+Int32 CZygoteInit::PreloadColorStateLists(
+    /* [in] */ ITypedArray* ar)
+{
+    Int32 N, id;
+    ar->GetLength(&N);
+    for (Int32 i = 0; i < N; i++) {
+        // if (Debug.getGlobalAllocSize() > PRELOAD_GC_THRESHOLD) {
+        //     if (false) {
+        //         Logger::V(TAG, " GC at " + Debug.getGlobalAllocSize());
+        //     }
+        //     System.gc();
+        //     runtime.runFinalizationSync();
+        //     Debug.resetGlobalAllocSize();
+        // }
+
+        ar->GetResourceId(i, 0, &id);
+        if (FALSE) {
+            Logger::V(TAG, "Preloading resource #0x%08x", id);
+        }
+        if (id != 0) {
+            AutoPtr<IColorStateList> csl;
+            mResources->GetColorStateList(id, (IColorStateList**)&csl);
+            if (csl == NULL) {
+                String str;
+                ar->GetString(i, &str);
+                Logger::E(TAG, "Unable to find preloaded color resource %d/%d #0x%08x (%s)",
+                    i + 1, N, id, str.string());
+                return i;
+            }
+        }
+    }
+    return N;
+}
+
+Int32 CZygoteInit::PreloadDrawables(
+    /* [in] */ ITypedArray* ar)
+{
+    Int32 N, id;
+    ar->GetLength(&N);
+    for (Int32 i = 0; i < N; i++) {
+        // if (Debug.getGlobalAllocSize() > PRELOAD_GC_THRESHOLD) {
+        //     if (false) {
+        //         Logger::V(TAG, " GC at " + Debug.getGlobalAllocSize());
+        //     }
+        //     System.gc();
+        //     runtime.runFinalizationSync();
+        //     Debug.resetGlobalAllocSize();
+        // }
+
+        ar->GetResourceId(i, 0, &id);
+        if (FALSE) {
+            Logger::V(TAG, "Preloading resource #0x%08x", id);
+        }
+        if (id != 0) {
+            AutoPtr<IDrawable> drawable;
+            mResources->GetDrawable(id, NULL, (IDrawable**)&drawable);
+            if (drawable == NULL) {
+                String str;
+                ar->GetString(i, &str);
+                Logger::E(TAG, "Unable to find preloaded drawable resource %d/%d #0x%08x (%s)",
+                    i + 1, N, id, str.string());
+                return i;
+            }
+        }
+    }
+    return N;
+}
+
 ECode CZygoteInit::HandleSystemServerProcess(
     /* [in] */ ZygoteConnection::Arguments* parsedArgs,
     /* [out] */ IRunnable** task)
 {
+    VALIDATE_NOT_NULL(task);
+    *task = NULL;
+
     CloseServerSocket();
 
     // set umask to 0077 so new files and directories will default to owner-only permissions.
@@ -425,8 +546,11 @@ void CZygoteInit::WaitForSecondaryZygote(
 
 ECode CZygoteInit::RunSelectLoop(
     /* [in] */ const String& abiList,
-    /* [in] */ IRunnable** task)
+    /* [out] */ IRunnable** task)
 {
+    VALIDATE_NOT_NULL(task);
+    *task = NULL;
+
     Vector< AutoPtr<IFileDescriptor> > fds;
     Vector< AutoPtr<ZygoteConnection> > peers;
     AutoPtr< ArrayOf<IFileDescriptor*> > fdArray = ArrayOf<IFileDescriptor*>::Alloc(4);
@@ -512,6 +636,8 @@ ECode CZygoteInit::Getpgid(
     /* [out] */ Int32* pgid)
 {
     VALIDATE_NOT_NULL(pgid);
+    *pgid = 0;
+
     pid_t ret;
     ret = getpgid(pid);
 
@@ -588,9 +714,11 @@ ECode CZygoteInit::SelectReadable(
     /* [in] */ ArrayOf<IFileDescriptor*>* fds,
     /* [out] */ Int32* index)
 {
+    VALIDATE_NOT_NULL(index)
+    *index = -1;
+
     if (fds == NULL) {
         // jniThrowNullPointerException(env, "fds == null");
-        *index = -1;
         return E_NULL_POINTER_EXCEPTION;
     }
 
@@ -622,7 +750,6 @@ ECode CZygoteInit::SelectReadable(
 
     if (err < 0) {
         // jniThrowIOException(env, errno);
-        *index = -1;
         return E_IO_EXCEPTION;
     }
 
@@ -638,7 +765,7 @@ ECode CZygoteInit::SelectReadable(
             return NOERROR;
         }
     }
-    *index = -1;
+
     return NOERROR;
 }
 

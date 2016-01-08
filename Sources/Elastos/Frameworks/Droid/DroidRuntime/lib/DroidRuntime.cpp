@@ -11,9 +11,6 @@
 #include <utils/threads.h>
 #include <cutils/properties.h>
 
-//#include <SkGraphics.h>
-//#include <SkImageDecoder.h>
-
 #include <stdio.h>
 #include <signal.h>
 #include <sys/stat.h>
@@ -68,12 +65,13 @@ static void BlockSigpipe()
 
 DroidRuntime::DroidRuntime(
     /* [in] */ char* argBlockStart,
-    /* [in] */ const size_t argBlockLength) :
-    mExitWithoutCleanup(FALSE),
-    mArgBlockStart(argBlockStart),
-    mArgBlockLength(argBlockLength)
+    /* [in] */ const size_t argBlockLength)
+    : mExitWithoutCleanup(FALSE)
+    , mArgBlockStart(argBlockStart)
+    , mArgBlockLength(argBlockLength)
 {
-    //TODO SkGraphics::Init();
+    // move to AppRuntime　in app_main.cpp
+    //SkGraphics::Init();
     // There is also a global font cache, but its budget is specified in code
     // see SkFontHost_android.cpp
 
@@ -86,7 +84,8 @@ DroidRuntime::DroidRuntime(
 
 DroidRuntime::~DroidRuntime()
 {
-    //TODO SkGraphics::Term();
+    // move to AppRuntime　in app_main.cpp
+    //SkGraphics::Term();
 }
 
 void DroidRuntime::SetArgv0(
@@ -111,6 +110,8 @@ ECode DroidRuntime::CallMain(
     /* [in] */ const String& className,
     /* [in] */ ArrayOf<String>* args)
 {
+    Logger::D("Calling main entry \"%s/%s\"", moduleName.string(), className.string());
+
     AutoPtr<IModuleInfo> moduleInfo;
     AutoPtr<IClassInfo> classInfo;
     AutoPtr<IInterface> object;
@@ -119,13 +120,15 @@ ECode DroidRuntime::CallMain(
 
     ECode ec = _CReflector_AcquireModuleInfo(moduleName, (IModuleInfo**)&moduleInfo);
     if (FAILED(ec)) {
-        Logger::E(TAG, "Acquire \"%s\" module info failed!\n", moduleName.string());
+        Logger::E(TAG, "Acquire \"%s\" module info failed!\n",
+            moduleName.string());
         return ec;
     }
 
     ec = moduleInfo->GetClassInfo(className, (IClassInfo**)&classInfo);
     if (FAILED(ec)) {
-        Logger::E(TAG, "Acquire \"%s\" class info failed!\n", className.string());
+        Logger::E(TAG, "Acquire \"%s/%s\" class info failed!\n",
+            moduleName.string(), className.string());
         return ec;
     }
 
@@ -138,20 +141,23 @@ ECode DroidRuntime::CallMain(
     ec = classInfo->GetMethodInfo(
             String("Main"), String("[LElastos/String;)E"), (IMethodInfo**)&methodInfo);
     if (FAILED(ec)) {
-        Logger::E(TAG, "Acquire \"Main\" method info failed!\n");
+        Logger::E(TAG, "Acquire \"%s/%s\" \"Main\" method info failed!\n",
+            moduleName.string(), className.string());
         return ec;
     }
 
     ec = methodInfo->CreateArgumentList((IArgumentList**)&argumentList);
     if (FAILED(ec)) {
-        Logger::E(TAG, "Create \"Main\" method argument list failed!\n");
+        Logger::E(TAG, "Create \"%s/%s\" \"Main\" method argument list failed!\n",
+            moduleName.string(), className.string());
         return ec;
     }
 
     argumentList->SetInputArgumentOfCarArray(0, args);
     ec = methodInfo->Invoke(object, argumentList);
     if (FAILED(ec)) {
-        Logger::E(TAG, "Invoke \"Main\" method failed!\n");
+        Logger::E(TAG, "Invoke \"%s/%s\" \"Main\" method failed!\n",
+            moduleName.string(), className.string());
         return ec;
     }
     return NOERROR;
@@ -202,7 +208,7 @@ void DroidRuntime::Start(
     /* [in] */ const String& className,
     /* [in] */ ArrayOf<String>* options)
 {
-    Logger::D(TAG, "\n>>>>>> DroidRuntime START %s - %s <<<<<<\n",
+    Logger::D(TAG, "\n>>>>>> DroidRuntime START \"%s/%s\" <<<<<<\n",
             !moduleName.IsNull() ? moduleName.string() : "(unknown)",
             !className.IsNull() ? className.string() : "(unknown)");
 
