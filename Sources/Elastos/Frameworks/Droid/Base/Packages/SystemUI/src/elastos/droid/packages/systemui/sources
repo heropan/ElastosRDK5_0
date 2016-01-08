@@ -60,5 +60,6 @@ LIBRARIES += $(XDK_USER_LIB)/crt0.lib
 LIBRARIES += -lm -licuuc -llog -lutils -landroidfw
 
 APPPACK = 1
+EXTRA_RES_DIR = $(MAKEDIR)/../../../../../../Keyguard/res
+AAPT_FLAGS = --auto-add-overlay --extra-packages com.android.keyguard
 DIRRESOURCES += $(MAKEDIR)/../../../../../res;
-DIRRESOURCES += $(MAKEDIR)/../../../../../../Keyguard/res;

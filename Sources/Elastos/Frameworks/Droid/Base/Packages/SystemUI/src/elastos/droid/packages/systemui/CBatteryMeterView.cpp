@@ -43,22 +43,21 @@ namespace Droid {
 namespace SystemUI {
 
 //===============================================================
-// CBatteryMeterView::BatteryTracker::
+// CBatteryMeterView::BatteryTracker
 //===============================================================
-
 Int32 CBatteryMeterView::BatteryTracker::UNKNOWN_LEVEL = -1;
-
-CBatteryMeterView::BatteryTracker::BatteryTracker()
+CBatteryMeterView::BatteryTracker::BatteryTracker(
+    /* [in] */ CBatteryMeterView* host)
+    : mLevel(UNKNOWN_LEVEL)
+    , mPlugType(0)
+    , mPlugged(FALSE)
+    , mHealth(0)
+    , mStatus(0)
+    , mVoltage(0)
+    , mTemperature(0)
+    , mTestmode(FALSE)
+    , mHost(host)
 {
-    // current battery status
-    mLevel = UNKNOWN_LEVEL;
-    mPlugType = 0;
-    mPlugged = FALSE;
-    mHealth = 0;
-    mStatus = 0;
-    mVoltage = 0;
-    mTemperature = 0;
-    mTestmode = FALSE;
 }
 
 ECode CBatteryMeterView::BatteryTracker::OnReceive(
@@ -88,21 +87,21 @@ ECode CBatteryMeterView::BatteryTracker::OnReceive(
         intent->GetInt32Extra(IBatteryManager::EXTRA_TEMPERATURE, 0, &mTemperature);
 
         String str;
-        assert(0 && "TODO");
-//        context->GetString(R::string::accessibility_battery_level, mLevel, &str);
-//        View::SetContentDescription(str);
-//        View::PostInvalidate();
+        context->GetString(R::string::accessibility_battery_level, mLevel, &str);
+        mHost->SetContentDescription(str);
+        mHost->PostInvalidate();
     }
     else if (action.Equals(ACTION_LEVEL_TEST)) {
         mTestmode = TRUE;
-        assert(0 && "TODO");
-//        View::Post(new Runnable_1());
+        AutoPtr<IRunnable> r = new Runnable_1();
+        Boolean result = FALSE;
+        mHost->Post(r, &result);
     }
     return NOERROR;
 }
 
 //===============================================================
-// CBatteryMeterView::Runnable_1::
+// CBatteryMeterView::Runnable_1
 //===============================================================
 CBatteryMeterView::Runnable_1::Runnable_1(
     /* [in] */ Int32 level,
@@ -151,40 +150,40 @@ ECode CBatteryMeterView::Runnable_1::Run()
 //===============================================================
 // CBatteryMeterView::
 //===============================================================
-String CBatteryMeterView::TAG;// = BatteryMeterView.class.getSimpleName();
+String CBatteryMeterView::TAG("BatteryMeterView");// = BatteryMeterView.class.getSimpleName();
 String CBatteryMeterView::ACTION_LEVEL_TEST = String("com.android.systemui.BATTERY_LEVEL_TEST");
-
 Boolean CBatteryMeterView::ENABLE_PERCENT = TRUE;
 Boolean CBatteryMeterView::SINGLE_DIGIT_PERCENT = FALSE;
 Boolean CBatteryMeterView::SHOW_100_PERCENT = FALSE;
-
 Int32 CBatteryMeterView::FULL = 96;
-
 Float CBatteryMeterView::BOLT_LEVEL_THRESHOLD = 0.3f;  // opaque bolt below this fraction
 
-CAR_OBJECT_IMPL(CBatteryMeterView)
-
-CAR_INTERFACE_IMPL_2(CBatteryMeterView, Object, IDemoMode, IBatteryStateChangeCallback)
-
+CAR_OBJECT_IMPL(CBatteryMeterView);
+CAR_INTERFACE_IMPL_2(CBatteryMeterView, View, IDemoMode, IBatteryStateChangeCallback);
 CBatteryMeterView::CBatteryMeterView()
+    : mShowPercent(TRUE)
+    , mButtonHeightFraction(0)
+    , mSubpixelSmoothingLeft(0)
+    , mSubpixelSmoothingRight(0)
+    , mTextHeight(0)
+    , mWarningTextHeight(0)
+    , mHeight(0)
+    , mWidth(0)
+    , mCriticalLevel(0)
+    , mChargeColor(0)
+    , mPowerSaveEnabled(FALSE)
+    , mDemoMode(FALSE)
 {
-    mShowPercent = TRUE;
-
     CPath::New((IPath**)&mBoltPath);
-
     CRectF::New((IRectF**)&mFrame);
     CRectF::New((IRectF**)&mButtonFrame);
     CRectF::New((IRectF**)&mBoltFrame);
-
     CPath::New((IPath**)&mShapePath);
     CPath::New((IPath**)&mClipPath);
     CPath::New((IPath**)&mTextPath);
 
-    mPowerSaveEnabled = FALSE;
-//    mTracker = new BatteryTracker();
-
-    mDemoMode = FALSE;
-//    mDemoTracker = new BatteryTracker();
+    mTracker = new BatteryTracker();
+    mDemoTracker = new BatteryTracker();
 }
 
 ECode CBatteryMeterView::OnAttachedToWindow()
