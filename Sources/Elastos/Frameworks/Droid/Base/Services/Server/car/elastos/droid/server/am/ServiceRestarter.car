@@ -6,7 +6,7 @@ module
     namespace Am {
 
     [local]
-    interface IProcessRecord {
+    interface IServiceRestarter {
     }
 
     } // namespace Am

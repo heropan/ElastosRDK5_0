@@ -5,6 +5,7 @@ module
     namespace Server {
     namespace Am {
 
+    [local]
     interface IUserStartedState {
     }
 

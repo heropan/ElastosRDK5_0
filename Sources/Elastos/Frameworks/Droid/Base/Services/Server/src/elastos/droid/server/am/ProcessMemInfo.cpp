@@ -6,6 +6,8 @@ namespace Droid {
 namespace Server {
 namespace Am {
 
+CAR_INTERFACE_IMPL(ProcessMemInfo, Object, IProcessMemInfo)
+
 ProcessMemInfo::ProcessMemInfo(
     /* [in] */ const String& name,
     /* [in] */ Int32 pid,

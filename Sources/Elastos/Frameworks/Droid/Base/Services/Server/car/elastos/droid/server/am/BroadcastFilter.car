@@ -9,6 +9,7 @@ module
      * @Involve
      * interface Elastos.Droid.Content.IIntentFilter
      */
+    [local]
     interface IBroadcastFilter {
     }
 

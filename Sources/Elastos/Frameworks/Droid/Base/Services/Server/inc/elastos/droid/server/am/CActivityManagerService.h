@@ -5,7 +5,9 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/core/Object.h>
 
-#if 1
+#define UN_FINISHED 1
+
+#if UN_FINISHED
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Net.h"
 #include <elastos/utility/etl/List.h>
@@ -178,6 +180,7 @@ public:
 #include "IntentResolver.h"
 #include "wm/CWindowManagerService.h"
 #include "elastos/droid/server/am/ContentProviderRecord.h"
+#include "elastos/droid/server/am/CPendingAssistExtras.h"
 #include "elastos/droid/server/am/CPendingIntentRecord.h"
 #include "elastos/droid/server/am/CBatteryStatsService.h"
 #include "elastos/droid/server/am/CUsageStatsService.h"
@@ -187,12 +190,11 @@ public:
 #include "elastos/droid/server/am/UriPermission.h"
 #include "elastos/droid/server/am/UriPermissionOwner.h"
 #include "elastos/droid/server/am/PendingThumbnailsRecord.h"
-#include "elastos/droid/server/am/ActivityRecord.h"
 #include "elastos/droid/server/am/ProcessRecord.h"
 #include "elastos/droid/server/am/ProcessList.h"
 #include "elastos/droid/server/am/CompatModePackages.h"
 #include "elastos/droid/os/FileObserver.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
 #include "pm/CUserManagerService.h"
 // #include <binder/IPermissionController.h>
 #include <Elastos.Droid.Core.h>
@@ -202,7 +204,6 @@ public:
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 #include <pthread.h>
-
 
 using Elastos::Utility::ILocale;
 using Elastos::Core::IInteger32;
@@ -227,7 +228,7 @@ using Elastos::Droid::Internal::Os::IProcessStats;
 using Elastos::Droid::Internal::Os::CProcessStats;
 using Elastos::Droid::Internal::Os::IProcessStatsStats;
 using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Net::IProxyProperties;
+using Elastos::Droid::Net::IProxyInfo;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentReceiver;
@@ -279,7 +280,6 @@ using Elastos::Droid::Server::Pm::CUserManagerService;
 using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger64;
 
-
 namespace Elastos {
 namespace Droid {
 namespace Server {
@@ -307,9 +307,44 @@ class UserStartedState;
 class CUsageStatsService;
 class CompatModeDialog;
 
-//
-// NeededUriGrants
-//
+class GrantUri : public Object
+{
+public:
+    GrantUri(
+        /* [in] */ Int32 sourceUserId,
+        /* [in] */ IUri* uri,
+        /* [in] */ Boolean prefix);
+
+    // @Override
+    CARAPI GetHashCode(
+        /* [out] */ Int32* hashCode);
+
+    // @Override
+    CARAPI Equals(
+        /* [in] */ IInterface* other,
+        /* [out] */ Boolean* result);
+
+    CARAPI_(Boolean) Equals(
+        /* [in] */ GrantUri* other);
+
+    // @Override
+    CARAPI ToString(
+        /* [out] */ String* info);
+
+    CARAPI_(String) ToString();
+
+    CARAPI_(String) ToSafeString();
+
+    static CARAPI_(AutoPtr<GrantUri>) Resolve(
+        /* [in] */ Int32 defaultSourceUserHandle,
+        /* [in] */ IUri* uri);
+
+public:
+    const Int32 mSourceUserId;
+    const AutoPtr<IUri> mUri;
+    Boolean mPrefix;
+};
+
 class NeededUriGrants
     : public List< AutoPtr<IUri> >
 {
@@ -325,10 +360,6 @@ public:
     Int32 mFlags;
 };
 
-
-//
-// CActivityManagerService
-//
 CarClass(CActivityManagerService)
 {
     friend class ActivityRecord;
@@ -337,18 +368,29 @@ CarClass(CActivityManagerService)
     friend class CoreSettingsObserver;
 
 public:
-    class MyHandler
-        : public HandlerBase
+    /**
+     * Information about a process that is currently marked as bad.
+     */
+    class BadProcessInfo : public Object
     {
     public:
-        MyHandler(
-            /* [in] */ CActivityManagerService* host);
+        BadProcessInfo(
+            /* [in] */ Int64 time,
+            /* [in] */ const String& shortMsg,
+            /* [in] */ const String& longMsg,
+            /* [in] */ const String& stack)
+            : mTime(time)
+            , mShortMsg(shortMsg)
+            , mLongMsg(longMsg)
+            , mStack(stack)
+        {
+        }
 
-        virtual CARAPI HandleMessage(
-            /* [in] */ IMessage* msg);
-
-    private:
-        CActivityManagerService* mHost;
+    public:
+        const Int64 mTime;
+        const String mShortMsg;
+        const String mLongMsg;
+        const String mStack;
     };
 
     class StringObjectHashMap
@@ -357,20 +399,6 @@ public:
     {
     public:
         CAR_INTERFACE_DECL()
-    };
-
-    /**
-     * Description of a request to start a new activity, which has been held
-     * due to app switches being disabled.
-     */
-    class PendingActivityLaunch : public Object
-    {
-    public:
-        PendingActivityLaunch();
-    public:
-        AutoPtr<ActivityRecord> mR;
-        AutoPtr<ActivityRecord> mSourceRecord;
-        Int32 mStartFlags;
     };
 
     /**
@@ -399,12 +427,40 @@ public:
         ProcessChangeItem();
     public:
         static const Int32 CHANGE_ACTIVITIES = 1<<0;
-        static const Int32 CHANGE_IMPORTANCE= 1<<1;
+        static const Int32 CHANGE_PROCESS_STATE= 1<<1;
         Int32 mChanges;
         Int32 mUid;
         Int32 mPid;
-        Int32 mImportance;
+        Int32 mProcessState;
         Boolean mForegroundActivities;
+    };
+
+    class MainHandler : public Handler
+    {
+    public:
+        MainHandler(
+            /* [in] */ ILooper* looper,
+            /* [in] */ CActivityManagerService* host);
+
+        CARAPI HandleMessage(
+            /* [in] */ IMessage* msg);
+
+    private:
+        CActivityManagerService* mHost;
+    };
+
+    class BgHandler : public Handler
+    {
+    public:
+        BgHandler(
+            /* [in] */ ILooper* looper,
+            /* [in] */ CActivityManagerService* host);
+
+        CARAPI HandleMessage(
+            /* [in] */ IMessage* msg);
+
+    private:
+        CActivityManagerService* mHost;
     };
 
     class AThread
@@ -493,7 +549,8 @@ public:
         AutoPtr< ArrayOf<BroadcastFilter*> > NewArray(
             /* [in] */ Int32 size);
 
-        String PackageForFilter(
+        Boolean IsPackageForFilter(
+            /* [in] */ const String& packageName,
             /* [in] */ BroadcastFilter* filter);
     };
 
@@ -594,14 +651,30 @@ private:
     class ReportMemUsageThread
         : public ThreadBase
     {
+    private:
+        class ProcessMemInfoComparator
+            : public Object
+            , public IComparator
+        {
+        public:
+            CAR_INTERFACE_DECL()
+
+            // @Override
+            CARAPI Compare(
+                /* [in] */ IInterface* _lhs,
+                /* [in] */ IInterface* _rhs);
+        };
+
     public:
         ReportMemUsageThread(
+            /* [in] */ IList* memInfos,
             /* [in] */ CActivityManagerService* host);
 
         CARAPI Run();
 
     public:
         CActivityManagerService* mHost;
+        AutoPtr<IList> mMemInfos;
     };
 
     class DumpStackTracesFileObserver
@@ -2270,7 +2343,7 @@ public:
     CARAPI_(void) HandleClearDnsCache();
 
     CARAPI_(void) HandleUpdateHttpProxy(
-        /* [in] */ IProxyProperties* proxy);
+        /* [in] */ IProxyInfo* proxy);
 
     CARAPI_(void) HandleShowUidErrorMsg();
 
@@ -2284,7 +2357,7 @@ public:
     CARAPI_(void) HandleKillApplicationMsg(
         /* [in] */ Int32 appid,
         /* [in] */ Boolean restart,
-        /* [in] */ const String& pkg);
+        /* [in] */ IBundle* bundle);
 
     CARAPI_(void) HandlePostHeavyNotificationMsg(
         /* [in] */ ActivityRecord* activityRecord);
@@ -2297,7 +2370,10 @@ public:
     CARAPI_(void) HandleShowCompatModeDialogMsg(
         /* [in] */ ActivityRecord* activityRecord);
 
-    CARAPI_(void) HandleReportMemUsage();
+    CARAPI_(void) HandleReportMemUsageMsg(
+        /* [in] */ IList* memInfos);
+
+    CARAPI_(void) HandleCollectPssBgMsg();
 
 private:
     /**
@@ -2782,34 +2858,44 @@ protected:
         /* [in] */ Int32 userId);
 
 public:
+    // File that stores last updated system version and called preboot receivers
+    static const String CALLED_PRE_BOOTS_FILENAME;
+
     static const String TAG;
     static const String TAG_MU;
     static const Boolean DEBUG;
     static const Boolean localLOGV;
+    static const Boolean DEBUG_BACKUP;
+    static const Boolean DEBUG_BROADCAST;
+    static const Boolean DEBUG_BROADCAST_LIGHT;
+    static const Boolean DEBUG_BACKGROUND_BROADCAST;
+    static const Boolean DEBUG_CLEANUP;
+    static const Boolean DEBUG_CONFIGURATION;
+    static const Boolean DEBUG_FOCUS;
+    static const Boolean DEBUG_IMMERSIVE;
+    static const Boolean DEBUG_MU;
+    static const Boolean DEBUG_OOM_ADJ;
+    static const Boolean DEBUG_LRU;
+    static const Boolean DEBUG_PAUSE;
+    static const Boolean DEBUG_POWER;
+    static const Boolean DEBUG_POWER_QUICK;
+    static const Boolean DEBUG_PROCESS_OBSERVERS;
+    static const Boolean DEBUG_PROCESSES;
+    static const Boolean DEBUG_PROVIDER;
+    static const Boolean DEBUG_RESULTS;
+    static const Boolean DEBUG_SERVICE;
+    static const Boolean DEBUG_SERVICE_EXECUTING;
+    static const Boolean DEBUG_STACK;
     static const Boolean DEBUG_SWITCH;
     static const Boolean DEBUG_TASKS;
     static const Boolean DEBUG_THUMBNAILS;
-    static const Boolean DEBUG_PAUSE;
-    static const Boolean DEBUG_OOM_ADJ;
     static const Boolean DEBUG_TRANSITION;
-    static const Boolean DEBUG_BROADCAST;
-    static const Boolean DEBUG_BACKGROUND_BROADCAST;
-    static const Boolean DEBUG_BROADCAST_LIGHT;
-    static const Boolean DEBUG_SERVICE;
-    static const Boolean DEBUG_SERVICE_EXECUTING;
-    static const Boolean DEBUG_VISBILITY;
-    static const Boolean DEBUG_PROCESSES;
-    static const Boolean DEBUG_PROCESS_OBSERVERS;
-    static const Boolean DEBUG_CLEANUP;
-    static const Boolean DEBUG_PROVIDER;
     static const Boolean DEBUG_URI_PERMISSION;
     static const Boolean DEBUG_USER_LEAVING;
-    static const Boolean DEBUG_RESULTS;
-    static const Boolean DEBUG_BACKUP;
-    static const Boolean DEBUG_CONFIGURATION;
-    static const Boolean DEBUG_POWER;
-    static const Boolean DEBUG_POWER_QUICK;
-    static const Boolean DEBUG_MU;
+    static const Boolean DEBUG_VISBILITY;
+    static const Boolean DEBUG_PSS;
+    static const Boolean DEBUG_LOCKSCREEN;
+    static const Boolean DEBUG_RECENTS;
     static const Boolean VALIDATE_TOKENS;
     static const Boolean SHOW_ACTIVITY_START_TIME;
 
@@ -2825,8 +2911,8 @@ public:
 
     static const Boolean IS_USER_BUILD;
 
-    // Maximum number of recent tasks that we can remember.
-    static const Int32 MAX_RECENT_TASKS = 20;
+    // Maximum number recent bitmaps to keep in memory.
+    static const Int32 MAX_RECENT_BITMAPS = 5;
 
     // Amount of time after a call to stopAppSwitches() during which we will
     // prevent further untrusted switches from happening.
@@ -2840,13 +2926,20 @@ public:
     // before we decide it's never going to come up for real, when the process was
     // started with a wrapper for instrumentation (such as Valgrind) because it
     // could take much longer than usual.
-    static const Int32 PROC_START_TIMEOUT_WITH_WRAPPER = 300 * 1000;
+    static const Int32 PROC_START_TIMEOUT_WITH_WRAPPER = 1200 * 1000;
 
     // How long to wait after going idle before forcing apps to GC.
     static const Int32 GC_TIMEOUT = 5 * 1000;
 
     // The minimum amount of time between successive GC requests for a process.
     static const Int32 GC_MIN_INTERVAL = 60  *1000;
+
+    // The minimum amount of time between successive PSS requests for a process.
+    static const Int32 FULL_PSS_MIN_INTERVAL = 10*60*1000;
+
+    // The minimum amount of time between successive PSS requests for a process
+    // when the request is due to the memory state being lowered.
+    static const Int32 FULL_PSS_LOWERED_INTERVAL = 2*60*1000;
 
     // The rate at which we check for apps using excessive power -- 15 mins.
     static const Int32 POWER_CHECK_DELAY;
@@ -2876,13 +2969,34 @@ public:
     // Maximum number of users we allow to be running at a time.
     static const Int32 MAX_RUNNING_USERS;
 
+    // How long to wait in getAssistContextExtras for the activity and foreground services
+    // to respond with the result.
+    static const Int32 PENDING_ASSIST_EXTRAS_TIMEOUT = 500;
+
+    // Maximum number of persisted Uri grants a package is allowed
+    static const Int32 MAX_PERSISTED_URI_GRANTS = 128;
+
     static const Int32 MY_PID;
 
     static const AutoPtr< ArrayOf<String> > EMPTY_STRING_ARRAY;
 
-    AutoPtr<ActivityStack> mMainStack;
+    // How many bytes to write into the dropbox log before truncating
+    static const Int32 DROPBOX_MAX_SIZE = 256 * 1024;
 
-    List< AutoPtr<PendingActivityLaunch> > mPendingActivityLaunches;
+    // Access modes for handleIncomingUser.
+    static const Int32 ALLOW_NON_FULL = 0;
+    static const Int32 ALLOW_NON_FULL_IN_PROFILE = 1;
+    static const Int32 ALLOW_FULL_ONLY = 2;
+
+    static const Int32 LAST_PREBOOT_DELIVERED_FILE_VERSION = 10000;
+
+    /** All system services */
+    AutoPtr<SystemServiceManager> mSystemServiceManager;
+
+    /** Run all ActivityStacks through this */
+    AutoPtr<ActivityStackSupervisor> mStackSupervisor;
+
+    AutoPtr<IntentFirewall> mIntentFirewall;
 
     AutoPtr<BroadcastQueue> mFgBroadcastQueue;
     AutoPtr<BroadcastQueue> mBgBroadcastQueue;
@@ -2894,10 +3008,29 @@ public:
      * Activity we have told the window manager to have key focus.
      */
     AutoPtr<ActivityRecord> mFocusedActivity;
+
     /**
      * List of intents that were used to start the most recent tasks.
      */
-    List< AutoPtr<TaskRecord> > mRecentTasks;
+    AutoPtr<List<AutoPtr<TaskRecord> > > mRecentTasks;
+    List<AutoPtr<TaskRecord> > mTmpRecents;
+
+    /**
+     * For addAppTask: cached of the last activity component that was added.
+     */
+    AutoPtr<IComponentName> mLastAddedTaskComponent;
+
+    /**
+     * For addAppTask: cached of the last activity uid that was added.
+     */
+    Int32 mLastAddedTaskUid;
+
+    /**
+     * For addAppTask: cached of the last ActivityInfo that was added.
+     */
+    AutoPtr<IActivityInfo> mLastAddedTaskActivity;
+
+    List<AutoPtr<CPendingAssistExtras> > mPendingAssistExtras;
 
     /**
      * Process management.
@@ -2911,6 +3044,12 @@ public:
      * objects.
      */
     AutoPtr< ProcessMap< AutoPtr<ProcessRecord> > > mProcessNames;
+
+    /**
+     * Tracking long-term execution of processes to look for abuse and other
+     * bad app behavior.
+     */
+    AutoPtr<CProcessStatsService> mProcessStats;
 
     /**
      * The currently running isolated processes.
@@ -2941,7 +3080,7 @@ public:
      * later restarted (hopefully due to some user action).  The value is the
      * time it was added to the list.
      */
-    AutoPtr< ProcessMap<Int64> > mBadProcesses;
+    AutoPtr<ProcessMap<AutoPtr<BadProcessInfo> > > mBadProcesses;
 
     /**
      * All of the processes we currently have running organized by pid.
@@ -2983,15 +3122,40 @@ public:
     /**
      * List of running applications, sorted by recent usage.
      * The first entry in the list is the least recently used.
-     * It contains ApplicationRecord objects.  This list does NOT include
-     * any persistent application records (since we never want to exit them).
      */
     List< AutoPtr<ProcessRecord> > mLruProcesses;
+
+    /**
+     * Where in mLruProcesses that the processes hosting activities start.
+     */
+    Int32 mLruProcessActivityStart;
+
+    /**
+     * Where in mLruProcesses that the processes hosting services start.
+     * This is after (lower index) than mLruProcessesActivityStart.
+     */
+    Int32 mLruProcessServiceStart;
 
     /**
      * List of processes that should gc as soon as things are idle.
      */
     List< AutoPtr<ProcessRecord> > mProcessesToGc;
+
+    /**
+     * Processes we want to collect PSS data from.
+     */
+    List<AutoPtr<ProcessRecord> > mPendingPssProcesses;
+
+    /**
+     * Last time we requested PSS data of all processes.
+     */
+    Int64 mLastFullPssTime;
+
+    /**
+     * If set, the next time we collect PSS data we should do a full collection
+     * with data from native processes and the kernel.
+     */
+    Boolean mFullPssPending;
 
     /**
      * This is the process holding what we currently consider to be
@@ -3043,11 +3207,6 @@ public:
     AutoPtr<CompatModePackages> mCompatModePackages;
 
     /**
-     * Set of PendingResultRecord objects that are currently active.
-     */
-    //HashSet mPendingResultRecords = new HashSet();
-
-    /**
      * Set of IntentSenderRecord objects that are currently active.
      */
     typedef HashMap< AutoPtr<CPendingIntentRecord::Key>, AutoPtr<IWeakReference> > PendingIntentRecordHashMap;
@@ -3058,7 +3217,7 @@ public:
      * broadcasts.  Hash keys are the receiver IBinder, hash value is
      * a ReceiverList.
      */
-    HashMap<AutoPtr<IIntentReceiver>, AutoPtr<ReceiverList> > mRegisteredReceivers;
+    HashMap<AutoPtr<IBinder>, AutoPtr<ReceiverList> > mRegisteredReceivers;
 
     /**
      * Resolver for broadcast intents to registered receivers.
@@ -3087,18 +3246,6 @@ public:
     String mBackupAppName;
     AutoPtr<BackupRecord> mBackupTarget;
 
-    /**
-     * List of PendingThumbnailsRecord objects of clients who are still
-     * waiting to receive all of the thumbnails for a task.
-     */
-    List< AutoPtr<PendingThumbnailsRecord> > mPendingThumbnails;
-
-    /**
-     * List of HistoryRecord objects that have been finished and must
-     * still report back to a pending thumbnail receiver.
-     */
-    List< AutoPtr<ActivityRecord> > mCancelledThumbnails;
-
     AutoPtr<ProviderMap> mProviderMap;
 
     /**
@@ -3119,7 +3266,17 @@ public:
     /**
      * information about component usage
      */
-    AutoPtr<CUsageStatsService> mUsageStatsService;
+    AutoPtr<IUsageStatsManagerInternal> mUsageStatsService;
+
+    /**
+     * Information about and control over application operations
+     */
+    AutoPtr<CAppOpsService> mAppOpsService;
+
+    /**
+     * Save recent tasks information across reboots.
+     */
+    AutoPtr<TaskPersister> mTaskPersister;
 
     /**
      * Current configuration information.  HistoryRecord objects are given
@@ -3153,13 +3310,14 @@ public:
     /**
      * Used to control how we initialize the service.
      */
-    Boolean mStartRunning;
     AutoPtr<IComponentName> mTopComponent;
     String mTopAction;
     String mTopData;
     Boolean mProcessesReady;
     Boolean mSystemReady;
     Boolean mBooting;
+    Boolean mCallFinishBooting;
+    Boolean mBootAnimationComplete;
     Boolean mWaitingUpdate;
     Boolean mDidUpdate;
     Boolean mOnBattery;
@@ -3196,33 +3354,9 @@ public:
     Int64 mLastPowerCheckUptime;
 
     /**
-     * Set while we are wanting to sleep, to prevent any
-     * activities from being started/resumed.
-     */
-    Boolean mSleeping;
-
-    /**
-     * State of external calls telling us if the device is asleep.
-     */
-    Boolean mWentToSleep;
-
-    /**
-     * State of external call telling us if the lock screen is shown.
-     */
-    Boolean mLockScreenShown;
-
-    /**
      * Set if we are shutting down the system, similar to sleeping.
      */
     Boolean mShuttingDown;
-
-    /**
-     * Task identifier that activities are currently being started
-     * in.  Incremented each time a new task is created.
-     * todo: Replace this with a TokenSpace class that generates non-repeating
-     * integers that won't wrap.
-     */
-    Int32 mCurTask;
 
     /**
      * Current sequence id for oom_adj computation traversal.
@@ -3235,35 +3369,77 @@ public:
     Int32 mLruSeq;
 
     /**
-     * Keep track of the non-hidden/empty process we last found, to help
-     * determine how to distribute hidden/empty processes next time.
+     * Keep track of the non-cached/empty process we last found, to help
+     * determine how to distribute cached/empty processes next time.
      */
-    Int32 mNumNonHiddenProcs;
+    Int32 mNumNonCachedProcs;
 
     /**
-     * Keep track of the number of hidden procs, to balance oom adj
+     * Keep track of the number of cached hidden procs, to balance oom adj
      * distribution between those and empty procs.
      */
-    Int32 mNumHiddenProcs;
+    Int32 mNumCachedHiddenProcs;
 
     /**
      * Keep track of the number of service processes we last found, to
      * determine on the next iteration which should be B services.
      */
     Int32 mNumServiceProcs;
+    Int32 mNewNumAServiceProcs;
     Int32 mNewNumServiceProcs;
 
     /**
-     * System monitoring: number of processes that died since the last
-     * N procs were started.
+     * Allow the current computed overall memory level of the system to go down?
+     * This is set to false when we are killing processes for reasons other than
+     * memory management, so that the now smaller process list will not be taken as
+     * an indication that memory is tighter.
      */
-    AutoPtr< ArrayOf<Int32> > mProcDeaths;
+    Boolean mAllowLowerMemLevel;
+
+    /**
+     * The last computed memory level, for holding when we are in a state that
+     * processes are going away for other reasons.
+     */
+    Int32 mLastMemoryLevel;
+
+    /**
+     * The last total number of process we have, to determine if changes actually look
+     * like a shrinking number of process due to lower RAM.
+     */
+    Int32 mLastNumProcesses;
+
+    /**
+     * The uptime of the last time we performed idle maintenance.
+     */
+    Int64 mLastIdleTime;
+
+    /**
+     * Total time spent with RAM that has been added in the past since the last idle time.
+     */
+    Int64 mLowRamTimeSinceLastIdle;
+
+    /**
+     * If RAM is currently low, when that horrible situation started.
+     */
+    Int64 mLowRamStartTime;
+
+    /**
+     * For reporting to battery stats the apps currently running foreground
+     * service.  The ProcessMap is package/uid tuples; each of these contain
+     * an array of the currently foreground processes.
+     */
+    AutoPtr<ProcessMap<AutoPtr<List<ProcessRecord> > > > mForegroundPackages;
 
     /**
      * This is set if we had to do a delayed dexopt of an app before launching
-     * it, to increasing the ANR timeouts in that case.
+     * it, to increase the ANR timeouts in that case.
      */
     Boolean mDidDexOpt;
+
+     /**
+     * Set if the systemServer made a call to enterSafeMode.
+     */
+    Boolean mSafeMode;
 
     String mDebugApp;
     Boolean mWaitForDebugger;
@@ -3276,8 +3452,9 @@ public:
     AutoPtr<ProcessRecord> mProfileProc;
     String mProfileFile;
     AutoPtr<IParcelFileDescriptor> mProfileFd;
-    Int32 mProfileType;
+    Int32 mSamplingInterval;
     Boolean mAutoStopProfiler;
+    Int32 mProfileType;
     String mOpenGlTraceApp;
 
     AutoPtr<IRemoteCallbackList> mProcessObservers;
@@ -3288,33 +3465,29 @@ public:
     List< AutoPtr<ProcessChangeItem> > mAvailProcessChanges;
 
     /**
-     * Callback of last caller to {@link #requestPss}.
+     * Runtime CPU use collection thread.  This object's lock is used to
+     * perform synchronization with the thread (notifying it to run).
      */
-    AutoPtr<IRunnable> mRequestPssCallback;
+    AutoPtr<IThread> mProcessCpuThread;
 
     /**
-     * Remaining processes for which we are waiting results from the last
-     * call to {@link #requestPss}.
+     * Used to collect per-process CPU use for ANRs, battery stats, etc.
+     * Must acquire this object's lock when accessing it.
+     * NOTE: this lock will be held while doing long operations (trawling
+     * through all processes in /proc), so it should never be acquired by
+     * any critical paths such as when holding the main activity manager lock.
      */
-    List< AutoPtr<ProcessRecord> > mRequestPssList;
-
-    /**
-     * Runtime statistics collection thread.  This object's lock is used to
-     * protect all related state.
-     */
-    AutoPtr<ProcessStatsThread> mProcessStatsThread;
-
-    Object mProcessStatsThreadLock;
-
-    /**
-     * Used to collect process stats when showing not responding dialog.
-     * Protected by mProcessStatsThread.
-     */
-    AutoPtr<IProcessStats> mProcessStats;
+    AutoPtr<IProcessCpuTracker> mProcessCpuTracker;
     AutoPtr<IAtomicInteger64> mLastCpuTime;
-    AutoPtr<IAtomicBoolean> mProcessStatsMutexFree;
+    AutoPtr<IAtomicBoolean> mProcessCpuMutexFree;
 
     Int64 mLastWriteTime;
+
+    /**
+     * Used to retain an update lock when the foreground activity is in
+     * immersive mode.
+     */
+    AutoPtr<IUpdateLock> mUpdateLock;
 
     /**
      * Set to true after the system has finished booting.
@@ -3326,8 +3499,20 @@ public:
 
     AutoPtr<CWindowManagerService> mWindowManager;
 
-    static AutoPtr<CActivityManagerService> mSelf;
-    static AutoPtr<IActivityThread> mSystemThread;
+    AutoPtr<IActivityThread> mSystemThread;
+
+    // Holds the current foreground user's id
+    Int32 mCurrentUserId;
+    // Holds the target user's id during a user switch
+    Int32 mTargetUserId;
+    // If there are multiple profiles for the current user, their ids are here
+    // Currently only the primary user can have managed profiles
+    AutoPtr<ArrayOf<Int32> > mCurrentProfileIds; // Accessed by ActivityStack
+
+    /**
+     * Mapping from each known user ID to the profile group ID it is associated with.
+     */
+    HashMap<Int32, Int32> mUserProfileGroupIdsSelfLocked;
 
     static const Int32 SHOW_ERROR_MSG;
     static const Int32 SHOW_NOT_RESPONDING_MSG;
@@ -3347,23 +3532,49 @@ public:
     static const Int32 CANCEL_HEAVY_NOTIFICATION_MSG;
     static const Int32 SHOW_STRICT_MODE_VIOLATION_MSG;
     static const Int32 CHECK_EXCESSIVE_WAKE_LOCKS_MSG;
-    static const Int32 CLEAR_DNS_CACHE;
-    static const Int32 UPDATE_HTTP_PROXY;
+    static const Int32 CLEAR_DNS_CACHE_MSG;
+    static const Int32 UPDATE_HTTP_PROXY_MSG;
     static const Int32 SHOW_COMPAT_MODE_DIALOG_MSG;
     static const Int32 DISPATCH_PROCESSES_CHANGED;
     static const Int32 DISPATCH_PROCESS_DIED;
-    static const Int32 REPORT_MEM_USAGE;
+    static const Int32 REPORT_MEM_USAGE_MSG;
     static const Int32 REPORT_USER_SWITCH_MSG;
     static const Int32 CONTINUE_USER_SWITCH_MSG;
     static const Int32 USER_SWITCH_TIMEOUT_MSG;
+    static const Int32 IMMERSIVE_MODE_LOCK_MSG;
+    static const Int32 PERSIST_URI_GRANTS_MSG;
+    static const Int32 REQUEST_ALL_PSS_MSG;
+    static const Int32 START_PROFILES_MSG;
+    static const Int32 UPDATE_TIME;
+    static const Int32 SYSTEM_USER_START_MSG;
+    static const Int32 SYSTEM_USER_CURRENT_MSG;
+    static const Int32 ENTER_ANIMATION_COMPLETE_MSG;
+    static const Int32 FINISH_BOOTING_MSG;
+    static const Int32 START_USER_SWITCH_MSG;
+    static const Int32 SEND_LOCALE_TO_MOUNT_DAEMON_MSG;
 
     static const Int32 FIRST_ACTIVITY_STACK_MSG;
     static const Int32 FIRST_BROADCAST_QUEUE_MSG;
     static const Int32 FIRST_COMPAT_MODE_MSG;
+    static const Int32 FIRST_SUPERVISOR_STACK_MSG;
 
     AutoPtr<IAlertDialog> mUidAlert;
     AutoPtr<CompatModeDialog> mCompatModeDialog;
     Int64 mLastMemUsageReportTime;
+
+    /** Flag whether the device has a Recents UI */
+    Boolean mHasRecents;
+
+    /** The dimensions of the thumbnails in the Recents UI. */
+    Int32 mThumbnailWidth;
+    Int32 mThumbnailHeight;
+
+    AutoPtr<ServiceThread> mHandlerThread;
+    AutoPtr<MainHandler> mHandler;
+
+    static const Int32 COLLECT_PSS_BG_MSG;
+
+    AutoPtr<Handler> mBgHandler;
 
     static const Int32 LAST_DONE_VERSION;
 
@@ -3377,27 +3588,15 @@ public:
 
     Object mPidsSelfLock;
 
-    AutoPtr<IHandler> mHandler;
-
-    Object mLock;
-
 private:
     static const String USER_DATA_DIR;
 
     static const String SYSTEM_DEBUGGABLE;
 
-    Boolean mHeadless;
-
     // Whether we should show our dialogs (ANR, crash, etc) or just perform their
     // default actuion automatically.  Important for devices without direct input
     // devices.
     Boolean mShowDialogs;
-
-    /* add by Gary. start {{----------------------------------- */
-    /* 2012-9-8 */
-    /* launch the defualt launcher when the system boots for the first time */
-    Boolean mFirstLaunch;
-    /* add by Gary. end   -----------------------------------}} */
 
     /**
      * Fingerprints (hashCode()) of stack traces that we've
@@ -3418,7 +3617,35 @@ private:
      * in-flight.
      */
     AutoPtr<StringBuilder> mStrictModeBuffer;
-    Object mStrictModeBufferLock;
+
+
+    /**
+     * File storing persisted {@link #mGrantedUriPermissions}.
+     */
+    AutoPtr<IAtomicFile> mGrantFile;
+
+    /** XML constants used in {@link #mGrantFile} */
+    static const String TAG_URI_GRANTS = "uri-grants";
+    static const String TAG_URI_GRANT = "uri-grant";
+    static const String ATTR_USER_HANDLE = "userHandle";
+    static const String ATTR_SOURCE_USER_ID = "sourceUserId";
+    static const String ATTR_TARGET_USER_ID = "targetUserId";
+    static const String ATTR_SOURCE_PKG = "sourcePkg";
+    static const String ATTR_TARGET_PKG = "targetPkg";
+    static const String ATTR_URI = "uri";
+    static const String ATTR_MODE_FLAGS = "modeFlags";
+    static const String ATTR_CREATED_TIME = "createdTime";
+    static const String ATTR_PREFIX = "prefix";
+
+    /**
+     * Global set of specific {@link Uri} permissions that have been granted.
+     * This optimized lookup structure maps from {@link UriPermission#targetUid}
+     * to {@link UriPermission#uri} to {@link UriPermission}.
+     */
+    // @GuardedBy("this")
+    typedef HashMap<AutoPtr<GrantUri>, AutoPtr<IUriPermission> > GrantUriPermissionMap;
+    typedef HashMap<Int32, AutoPtr<GrantUriPermissionMap> > GrantUriPermissionMapMap;
+    GrantUriPermissionMapMap mGrantedUriPermissions;
 
     /**
      * Global set of specific Uri permissions that have been granted.
@@ -3431,9 +3658,44 @@ private:
 
     static pthread_key_t sCallerIdentity;
 
-    Int32 mCurrentUserId;
-    AutoPtr< ArrayOf<Int32> > mCurrentUserArray;
+
+    /**
+     * Set while we are wanting to sleep, to prevent any
+     * activities from being started/resumed.
+     */
+    Boolean mSleeping;
+
+    /**
+     * Set while we are running a voice interaction.  This overrides
+     * sleeping while it is active.
+     */
+    Boolean mRunningVoice;
+
+    /**
+     * State of external calls telling us if the device is asleep.
+     */
+    Boolean mWentToSleep;
+
+    /**
+     * State of external call telling us if the lock screen is shown.
+     */
+    Boolean mLockScreenShown;
+
+    /**
+     * For reporting to battery stats the current top application.
+     */
+    String mCurResumedPackage;
+    Int32 mCurResumedUid;
+
     AutoPtr<CUserManagerService> mUserManager;
+
+    AutoPtr<LockToAppRequestDialog> mLockToAppRequest;
+
+    /**
+     * Flag whether the current user is a "monkey", i.e. whether
+     * the UI is driven by a UI automation tool.
+     */
+    Boolean mUserIsMonkey;
 
     AutoPtr<AThread> mThread;
 };

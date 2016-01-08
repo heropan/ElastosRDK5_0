@@ -82,29 +82,20 @@ public:
             /* [in] */ CServiceRecord* record,
             /* [in] */ const String& permission);
     public:
-        AutoPtr<CServiceRecord> mRecord;
-        String mPermission;
+        const AutoPtr<CServiceRecord> mRecord;
+        const String mPermission;
     };
 
 private:
     class ServiceRestarter
-        : public Object
-        , public IRunnable
+        : public Runnable
+        , public IServiceRestarter
     {
     public:
         ServiceRestarter(
             /* [in] */ ActiveServices* owner);
 
-        CARAPI_(PInterface) Probe(
-            /* [in]  */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
+        CAR_INTERFACE_DECL()
 
         CARAPI_(void) SetService(
             /* [in] */ CServiceRecord* service);
@@ -129,7 +120,7 @@ public:
     CARAPI_(Boolean) HasBackgroundServices(
         /* [in] */ Int32 callingUser);
 
-    CARAPI_(IComponentNameCServiceRecordHashMap) GetServices(
+    CARAPI_(IComponentNameCServiceRecordHashMap&) GetServices(
         /* [in] */ Int32 callingUser);
 
     CARAPI StartServiceLocked(
@@ -222,12 +213,11 @@ public:
     CARAPI ProcessStartTimedOutLocked(
         /* [in] */ ProcessRecord* proc);
 
-    CARAPI ForceStopLocked(
+    CARAPI_(Boolean) ForceStopLocked(
         /* [in] */ const String& name,
         /* [in] */ Int32 userId,
         /* [in] */ Boolean evenPersistent,
-        /* [in] */ Boolean doit,
-        /* [out] */ Boolean* result);
+        /* [in] */ Boolean doit);
 
     CARAPI CleanUpRemovedTaskLocked(
         /* [in] */ TaskRecord* tr,
@@ -252,7 +242,10 @@ public:
     CARAPI ServiceTimeout(
         /* [in] */ ProcessRecord* proc);
 
-    CARAPI_(Boolean) DumpServicesLocked(
+    CARAPI_(void) ScheduleServiceTimeoutLocked(
+        /* [in] */ ProcessRecord* proc);
+
+    CARAPI_(void) DumpServicesLocked(
         /* [in] */ IFileDescriptor* fd,
         /* [in] */ IPrintWriter* pw,
         /* [in] */ ArrayOf<String>* args,
@@ -304,15 +297,18 @@ private:
         /* [in] */ Int32 callingPid,
         /* [in] */ Int32 callingUid,
         /* [in] */ Int32 userId,
-        /* [in] */ Boolean createIfNeeded);
+        /* [in] */ Boolean createIfNeeded,
+        /* [in] */ Boolean callingFromFg);
 
     CARAPI_(void) BumpServiceExecutingLocked(
         /* [in] */ CServiceRecord* r,
+        /* [in] */ Boolean fg,
         /* [in] */ const String& why);
 
     CARAPI_(Boolean) RequestServiceBindingLocked(
         /* [in] */ CServiceRecord* r,
         /* [in] */ IntentBindRecord* i,
+        /* [in] */ Boolean execInFg,
         /* [in] */ Boolean rebind);
 
     CARAPI_(Boolean) ScheduleServiceRestartLocked(
@@ -322,29 +318,49 @@ private:
     CARAPI_(Boolean) UnscheduleServiceRestartLocked(
         /* [in] */ CServiceRecord* r);
 
+    CARAPI_(void) ClearRestartingIfNeededLocked(
+        /* [in] */ CServiceRecord* r);
+
     CARAPI_(String) BringUpServiceLocked(
         /* [in] */ CServiceRecord* r,
         /* [in] */ Int32 intentFlags,
+        /* [in] */ Boolean execInFg,
         /* [in] */ Boolean whileRestarting);
 
     CARAPI RequestServiceBindingsLocked(
-        /* [in] */ CServiceRecord* r);
+        /* [in] */ CServiceRecord* r,
+        /* [in] */ Boolean execInFg);
 
     CARAPI RealStartServiceLocked(
         /* [in] */ CServiceRecord* r,
-        /* [in] */ ProcessRecord* app);
+        /* [in] */ ProcessRecord* app,
+        /* [in] */ Boolean execInFg);
 
     CARAPI SendServiceArgsLocked(
         /* [in] */ CServiceRecord* r,
+        /* [in] */ Boolean execInFg,
         /* [in] */ Boolean oomAdjusted);
 
-    CARAPI BringDownServiceLocked(
+    CARAPI_(Boolean) IsServiceNeeded(
         /* [in] */ CServiceRecord* r,
-        /* [in] */ Boolean force);
+        /* [in] */ Boolean knowConn,
+        /* [in] */ Boolean hasConn);
+
+    CARAPI BringDownServiceIfNeededLocked(
+        /* [in] */ CServiceRecord* r,
+        /* [in] */ Boolean knowConn,
+        /* [in] */ Boolean hasConn);
+
+    CARAPI BringDownServiceLocked(
+        /* [in] */ CServiceRecord* r);
+
+    CARAPI_(void) ServiceProcessGoneLocked(
+        /* [in] */ CServiceRecord* r);
 
     CARAPI ServiceDoneExecutingLocked(
         /* [in] */ CServiceRecord* r,
-        /* [in] */ Boolean inStopping);
+        /* [in] */ Boolean inDestroying,
+        /* [in] */ Boolean finishing);
 
     CARAPI_(Boolean) CollectForceStopServicesLocked(
         /* [in] */ const String& name,

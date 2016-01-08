@@ -35,6 +35,7 @@ SOURCES += ConnectionRecord.cpp
 SOURCES += CContentProviderConnection.cpp
 SOURCES += ContentProviderRecord.cpp
 SOURCES += CoreSettingsObserver.cpp
+SOURCES += CPendingAssistExtras.cpp
 SOURCES += CPendingIntentRecord.cpp
 SOURCES += CProcessStatsService.cpp
 SOURCES += CServiceRecord.cpp

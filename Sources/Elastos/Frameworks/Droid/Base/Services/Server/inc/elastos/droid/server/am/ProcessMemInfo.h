@@ -2,6 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_PROCESSMEMINFO_H__
 #define __ELASTOS_DROID_SERVER_AM_PROCESSMEMINFO_H__
 
+#include "_Elastos.Droid.Server.h"
 #include <elastos/core/Object.h>
 
 namespace Elastos {
@@ -9,7 +10,9 @@ namespace Droid {
 namespace Server {
 namespace Am {
 
-class ProcessMemInfo : public Object
+class ProcessMemInfo
+    : public Object
+    , public IProcessMemInfo
 {
 public:
     ProcessMemInfo(
@@ -19,6 +22,8 @@ public:
         /* [in] */ Int32 procState,
         /* [in] */ const String& adjType,
         /* [in] */ const String& adjReason);
+
+    CAR_INTERFACE_DECL()
 
 public:
     const String mName;

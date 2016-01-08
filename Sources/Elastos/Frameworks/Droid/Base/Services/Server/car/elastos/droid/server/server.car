@@ -10,7 +10,9 @@ module
     merge("am/ActivityRecord.car");
     merge("am/BroadcastFilter.car");
     merge("am/PendingIntentRecord.car");
+    merge("am/ProcessMemInfo.car");
     merge("am/ProcessRecord.car");
+    merge("am/ServiceRestarter.car");
     merge("am/UriPermissionOwnerExternalToken.car");
     merge("am/UserStartedState.car");
 
@@ -59,6 +61,7 @@ module
     using interface Elastos.Droid.App.IStopUserCallback;
     using interface Elastos.Droid.App.IWallpaperInfo;
     using interface Elastos.Droid.Os.IBinder;
+    using interface Elastos.Droid.Os.IBundle;
     using interface Elastos.Droid.Os.IHandler;
     using interface Elastos.Droid.Os.ILooper;
     using interface Elastos.Droid.Os.IIUserManager;
@@ -70,7 +73,9 @@ module
     using interface Elastos.Droid.Content.IContext;
     using interface Elastos.Droid.Content.IIContentService;
     using interface Elastos.Droid.Content.IIIntentSender;
+    using interface Elastos.Droid.Content.IIntent;
     using interface Elastos.Droid.Content.IISyncContext;
+
     using interface Elastos.Droid.Content.IISyncStatusObserver;
     using interface Elastos.Droid.Content.IIntentReceiver;
     using interface Elastos.Droid.Content.IServiceConnection;
@@ -93,6 +98,7 @@ module
     using interface Elastos.Droid.Utility.ITrustedTime;
     using interface Elastos.Droid.View.IApplicationToken;
 
+    using interface Elastos.Core.IRunnable;
     using interface Elastos.Core.IThread;
     using interface Elastos.IO.IFile;
     using interface Elastos.Utility.ISet;
@@ -1267,6 +1273,7 @@ module
     namespace Server {
     namespace Am {
 
+    [local]
     class CActivityRecordToken {
         constructor(
             [in] IActivityRecord* activity);
@@ -1281,6 +1288,19 @@ module
             [in] Handle32 client);
 
         interface IBinder;
+    }
+
+    [local]
+    class CPendingAssistExtras {
+        constructor(
+            [in] IActivityRecord* activity,
+            [in] IBundle* extras,
+            [in] IIntent* intent,
+            [in] String hint,
+            [in] Int32 userHandle);
+
+        interface IBinder;
+        interface IRunnable;
     }
 
     class CPendingIntentRecord {

@@ -65,9 +65,6 @@ public:
 
     CAR_INTERFACE_DECL()
 
-    CARAPI GetWeakReference(
-        /* [out] */ IWeakReference** weakReference);
-
     CARAPI_(void) Dump(
         /* [in] */ IPrintWriter* pw,
         /* [in] */ const String& prefix);
