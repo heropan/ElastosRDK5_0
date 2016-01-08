@@ -3,7 +3,7 @@ module
 {
     interface Elastos.Droid.Os.Storage.IObbActionListener;
     interface Elastos.Droid.Os.Storage.IMountServiceListener;
-    interface Elastos.Droid.Os.Storage.IMountShutdownObserver;
+    interface Elastos.Droid.Os.Storage.IIMountShutdownObserver;
     interface Elastos.Droid.Os.Storage.IStorageVolume;
 
     namespace Elastos {
@@ -187,7 +187,7 @@ module
          * Invokes call back once the shutdown is complete.
          */
         Shutdown(
-            [in] IMountShutdownObserver* observer);
+            [in] IIMountShutdownObserver* observer);
 
         /**
          * Unmounts an Opaque Binary Blob (OBB). When the force flag is specified,

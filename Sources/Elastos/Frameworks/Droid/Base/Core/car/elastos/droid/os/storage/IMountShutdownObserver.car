@@ -6,7 +6,7 @@ module
     namespace Os {
     namespace Storage {
 
-    interface IMountShutdownObserver {
+    interface IIMountShutdownObserver {
         /**
          * This method is called when the shutdown of MountService
          * completed.

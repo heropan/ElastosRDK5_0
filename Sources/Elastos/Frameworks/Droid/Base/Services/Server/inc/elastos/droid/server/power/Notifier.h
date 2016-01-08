@@ -1,21 +1,30 @@
 #ifndef __ELASTOS_DROID_SERVER_POWER_NOTIFIER_H__
 #define __ELASTOS_DROID_SERVER_POWER_NOTIFIER_H__
 
+#include <Elastos.Droid.App.h>
+#include <Elastos.Droid.Hardware.h>
+#include <Elastos.Droid.Internal.h>
+#include <Elastos.Droid.View.h>
+#include <_Elastos.Droid.Server.h>
 #include "elastos/droid/ext/frameworkdef.h"
-#include "_Elastos.Droid.Server.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/Runnable.h"
 
-using Elastos::Droid::Os::HandlerBase;
-using Elastos::Droid::Os::ILooper;
-using Elastos::Droid::Os::IWorkSource;
+using Elastos::Droid::App::IActivityManagerInternal;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::View::IWindowManagerPolicy;
-using Elastos::Droid::View::IScreenOnListener;
+using Elastos::Droid::Hardware::Input::IInputManagerInternal;
+using Elastos::Droid::Internal::App::IIAppOpsService;
 using Elastos::Droid::Internal::App::IIBatteryStats;
+using Elastos::Droid::Server::Power::ISuspendBlocker;
+using Elastos::Droid::Os::Runnable;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::IWorkSource;
+using Elastos::Droid::View::IWindowManagerPolicy;
 
 namespace Elastos {
 namespace Droid {
@@ -39,44 +48,12 @@ namespace Power {
  * tell the system when we go to sleep so that it can lock the keyguard if needed.
  * </p>
  */
-class Notifier : public ElRefBase
+class Notifier
+    : public Object
 {
 private:
-    class NotifierHandler
-        : public HandlerBase
-    {
-    public:
-        NotifierHandler(
-            /* [in] */ ILooper* looper,
-            /* [in] */ Notifier* service)
-            : HandlerBase(looper)
-            , mHost(service)
-        {}
-
-        CARAPI HandleMessage(
-            /* [in] */ IMessage* msg);
-
-    private:
-        Notifier* mHost;
-    };
-
-    class ScreenOnListener
-        : public ElRefBase
-        , public IScreenOnListener
-    {
-    public:
-        ScreenOnListener(
-            /* [in] */ Notifier* host);
-
-        CAR_INTERFACE_DECL();
-
-        CARAPI OnScreenOn();
-
-    private:
-        Notifier* mHost;
-    };
-
-    class WakeUpBroadcastDone : public BroadcastReceiver
+    class WakeUpBroadcastDone
+        : public BroadcastReceiver
     {
     public:
         WakeUpBroadcastDone(
@@ -94,11 +71,13 @@ private:
             (*info).AppendFormat("%p", this);
             return NOERROR;
         }
+
     private:
         Notifier* mHost;
     };
 
-    class GoToSleepBroadcastDone : public BroadcastReceiver
+    class GoToSleepBroadcastDone
+        : public BroadcastReceiver
     {
     public:
         GoToSleepBroadcastDone(
@@ -116,6 +95,53 @@ private:
             (*info).AppendFormat("%p", this);
             return NOERROR;
         }
+
+    private:
+        Notifier* mHost;
+    };
+
+    class NotifierHandler
+        : public Handler
+    {
+    public:
+        NotifierHandler(
+            /* [in] */ ILooper* looper,
+            /* [in] */ Notifier* service)
+            : Handler(looper, NULL, TRUE /*async*/)
+            , mHost(service)
+        {}
+
+        CARAPI HandleMessage(
+            /* [in] */ IMessage* msg);
+
+    private:
+        Notifier* mHost;
+    };
+
+    class StartedRunnable
+        : public Runnable
+    {
+    public:
+        StartedRunnable(
+            /* [in] */ Notifier* host);
+
+        // @Override
+        CARAPI Run();
+
+    private:
+        Notifier* mHost;
+    };
+
+    class FinishedRunnable
+        : public Runnable
+    {
+    public:
+        FinishedRunnable(
+            /* [in] */ Notifier* host);
+
+        // @Override
+        CARAPI Run();
+
     private:
         Notifier* mHost;
     };
@@ -125,8 +151,8 @@ public:
         /* [in] */ ILooper* looper,
         /* [in] */ IContext* context,
         /* [in] */ IIBatteryStats* batteryStats,
+        /* [in] */ IIAppOpsService* appOps,
         /* [in] */ ISuspendBlocker* suspendBlocker,
-        /* [in] */ IScreenOnBlocker* screenOnBlocker,
         /* [in] */ IWindowManagerPolicy* policy);
 
     /**
@@ -135,9 +161,30 @@ public:
     CARAPI_(void) OnWakeLockAcquired(
         /* [in] */ Int32 flags,
         /* [in] */ const String& tag,
+        /* [in] */ const String& packageName,
         /* [in] */ Int32 ownerUid,
         /* [in] */ Int32 ownerPid,
-        /* [in] */ IWorkSource* workSource);
+        /* [in] */ IWorkSource* workSource,
+        /* [in] */ const String& historyTag);
+
+    /**
+     * Called when a wake lock is changing.
+     */
+    CARAPI_(void) OnWakeLockChanging(
+        /* [in] */ Int32 flags,
+        /* [in] */ const String& tag,
+        /* [in] */ const String& packageName,
+        /* [in] */ Int32 ownerUid,
+        /* [in] */ Int32 ownerPid,
+        /* [in] */ IWorkSource* workSource,
+        /* [in] */ const String& historyTag,
+        /* [in] */ Int32 newFlags,
+        /* [in] */ const String& newTag,
+        /* [in] */ const String& newPackageName,
+        /* [in] */ Int32 newOwnerUid,
+        /* [in] */ Int32 newOwnerPid,
+        /* [in] */ IWorkSource* newWorkSource,
+        /* [in] */ const String& newHistoryTag);
 
     /**
      * Called when a wake lock is released.
@@ -145,54 +192,24 @@ public:
     CARAPI_(void) OnWakeLockReleased(
         /* [in] */ Int32 flags,
         /* [in] */ const String& tag,
+        /* [in] */ const String& packageName,
         /* [in] */ Int32 ownerUid,
         /* [in] */ Int32 ownerPid,
-        /* [in] */ IWorkSource* workSource);
+        /* [in] */ IWorkSource* workSource,
+        /* [in] */ const String& historyTag);
 
     /**
-     * Called when the screen is turned on.
+     * Notifies that the device is changing interactive state.
      */
-    CARAPI_(void) OnScreenOn();
-
-    /**
-     * Called when the screen is turned off.
-     */
-    CARAPI_(void) OnScreenOff();
-
-    /**
-     * Called when the screen changes brightness.
-     */
-    CARAPI_(void) OnScreenBrightness(
-        /* [in] */ Int32 brightness);
-
-    /**
-     * Called when the device is waking up from sleep and the
-     * display is about to be turned on.
-     */
-    CARAPI_(void) OnWakeUpStarted();
-
-    /**
-     * Called when the device has finished waking up from sleep
-     * and the display has been turned on.
-     */
-    CARAPI_(void) OnWakeUpFinished();
-
-    /**
-     * Called when the device is going to sleep.
-     */
-    CARAPI_(void) OnGoToSleepStarted(
+    CARAPI_(void) OnInteractiveStateChangeStarted(
+        /* [in] */ Boolean interactive,
         /* [in] */ Int32 reason);
 
     /**
-     * Called when the device has finished going to sleep and the
-     * display has been turned off.
-     *
-     * This is a good time to make transitions that we don't want the user to see,
-     * such as bringing the key guard to focus.  There's no guarantee for this,
-     * however because the user could turn the device on again at any time.
-     * Some things may need to be protected by other mechanisms that defer screen on.
+     * Notifies that the device has finished changing interactive state.
      */
-    CARAPI_(void) OnGoToSleepFinished();
+    CARAPI_(void) OnInteractiveStateChangeFinished(
+        /* [in] */ Boolean interactive);
 
     /**
      * Called when there has been user activity.
@@ -200,10 +217,6 @@ public:
     CARAPI_(void) OnUserActivity(
         /* [in] */ Int32 event,
         /* [in] */ Int32 uid);
-
-    CARAPI_(void) OnBootFastWake();
-
-    CARAPI_(void) OnBootFastSleep();
 
     CARAPI_(void) OnWirelessChargingStarted();
 
@@ -217,16 +230,11 @@ private:
 
     CARAPI_(void) SendUserActivity();
 
-    CARAPI_(void) SendBootFastWake();
-
-    CARAPI_(void) SendBootFastSleep();
-
     CARAPI_(void) SendNextBroadcast();
 
     CARAPI_(void) SendWakeUpBroadcast();
 
-    CARAPI_(void) SendGoToSleepBroadcast(
-        /* [in] */ Int32 reason);
+    CARAPI_(void) SendGoToSleepBroadcast();
 
     CARAPI_(void) PlayWirelessChargingStartedSound();
 
@@ -242,18 +250,19 @@ private:
     static const Int32 MSG_USER_ACTIVITY;// = 1;
     static const Int32 MSG_BROADCAST;// = 2;
     static const Int32 MSG_WIRELESS_CHARGING_STARTED;// = 3;
-    static const Int32 MSG_BOOT_FAST_WAKE;// = 4;
-    static const Int32 MSG_BOOT_FAST_SLEEP;// = 5;
 
     Object mLock;
 
     AutoPtr<IContext> mContext;
     AutoPtr<IIBatteryStats> mBatteryStats;
+    AutoPtr<IIAppOpsService> mAppOps;
     AutoPtr<ISuspendBlocker> mSuspendBlocker;
-    AutoPtr<IScreenOnBlocker> mScreenOnBlocker;
     AutoPtr<IWindowManagerPolicy> mPolicy;
 
-    AutoPtr<IHandler> mHandler;
+    AutoPtr<IActivityManagerInternal> mActivityManagerInternal;
+    AutoPtr<IInputManagerInternal> mInputManagerInternal;
+
+    AutoPtr<NotifierHandler> mHandler;
     AutoPtr<IIntent> mScreenOnIntent;
     AutoPtr<IIntent> mScreenOffIntent;
 
@@ -274,18 +283,9 @@ private:
     // True if a user activity message should be sent.
     Boolean mUserActivityPending;
 
-    Boolean mBootFastWakePending;
-
-    Boolean mBootFastSleepPending;
-
-    // True if the screen on blocker has been acquired.
-    Boolean mScreenOnBlockerAcquired;
-
-    AutoPtr<IScreenOnListener> mScreenOnListener;
     AutoPtr<IBroadcastReceiver> mWakeUpBroadcastDone;
     AutoPtr<IBroadcastReceiver> mGoToSleepBroadcastDone;
 
-    friend class ScreenOnListener;
     friend class WakeUpBroadcastDone;
     friend class GoToSleepBroadcastDone;
 };

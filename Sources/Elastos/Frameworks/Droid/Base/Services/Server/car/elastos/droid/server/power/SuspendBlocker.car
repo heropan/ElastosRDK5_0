@@ -11,8 +11,7 @@ module
      * This interface is used internally to avoid introducing internal dependencies
      * on the high-level wake lock mechanism.
      */
-    interface ISuspendBlocker
-    {
+    interface ISuspendBlocker {
         /**
          * Acquires the suspend blocker.
          * Prevents the CPU from going to sleep.
@@ -29,11 +28,7 @@ module
          * It is an error to call release() if the suspend blocker has not been acquired.
          * The system may crash.
          */
-        Release();
-
-        BootFastSleepRelease();
-
-        BootFastWakeAcquire();
+        ReleaseSuspendBlocker();
     }
 
     } // namespace Power

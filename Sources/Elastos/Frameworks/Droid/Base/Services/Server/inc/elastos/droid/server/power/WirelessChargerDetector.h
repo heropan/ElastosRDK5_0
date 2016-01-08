@@ -2,13 +2,23 @@
 #ifndef __ELASTOS_DROID_SERVER_POWER_WIRELESSCHARGERDETECTOR_H__
 #define __ELASTOS_DROID_SERVER_POWER_WIRELESSCHARGERDETECTOR_H__
 
-#include "_Elastos.Droid.Server.h"
+#include <Elastos.CoreLibrary.Core.h>
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.Droid.Hardware.h>
+#include <Elastos.Droid.Os.h>
+#include <_Elastos.Droid.Server.h>
 #include "elastos/droid/ext/frameworkdef.h"
+#include "elastos/droid/os/Runnable.h"
 
 using Elastos::Droid::Hardware::ISensorManager;
 using Elastos::Droid::Hardware::ISensor;
 using Elastos::Droid::Hardware::ISensorEventListener;
 using Elastos::Droid::Hardware::ISensorEvent;
+using Elastos::Droid::Os::Runnable;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Server::Power::ISuspendBlocker;
+using Elastos::Core::IRunnable;
+using Elastos::IO::IPrintWriter;
 
 namespace Elastos {
 namespace Droid {
@@ -55,22 +65,25 @@ namespace Power {
  * sensor to detect this case.
  * </p>
  */
-class WirelessChargerDetector : public ElRefBase
+class WirelessChargerDetector
+    : public Object
 {
 private:
     class MySensorEventListener
-        : public ISensorEventListener
-        , public ElRefBase
+        : public Object
+        , public ISensorEventListener
     {
     public:
         MySensorEventListener(
             /* [in] */ WirelessChargerDetector* host);
 
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
+        // @Override
         CARAPI OnSensorChanged(
             /* [in] */ ISensorEvent* event);
 
+        // @Override
         CARAPI OnAccuracyChanged(
             /* [in] */ ISensor* sensor,
             /* [in] */ Int32 accuracy);
@@ -79,14 +92,28 @@ private:
         WirelessChargerDetector* mHost;
     };
 
+    class MyRunnable
+        : public Runnable
+    {
+    public:
+        MyRunnable(
+            /* [in] */ WirelessChargerDetector* host);
+
+        // @Override
+        CARAPI Run();
+
+    private:
+        WirelessChargerDetector* mHost;
+    };
+
 public:
     WirelessChargerDetector(
         /* [in] */ ISensorManager* sensorManager,
-        /* [in] */ ISuspendBlocker* suspendBlocker);
+        /* [in] */ ISuspendBlocker* suspendBlocker,
+        /* [in] */ IHandler* handler);
 
-    // void dump(PrintWriter pw);
-
-    static CARAPI_(AutoPtr<WirelessChargerDetector>) GetInstance();
+    CARAPI_(void) Dump(
+        /* [in] */ IPrintWriter* pw);
 
     /**
      * Updates the charging state and returns true if docking was detected.
@@ -105,8 +132,9 @@ public:
 private:
     CARAPI_(void) StartDetectionLocked();
 
-    CARAPI_(void) ProcessSample(
-        /* [in] */ Int64 timeNanos,
+    CARAPI_(void) FinishDetectionLocked();
+
+    CARAPI_(void) ProcessSampleLocked(
         /* [in] */ Float x,
         /* [in] */ Float y,
         /* [in] */ Float z);
@@ -124,12 +152,13 @@ private:
 private:
     static const String TAG;
     static const Boolean DEBUG = FALSE;
-    // Number of nanoseconds per millisecond.
-    static const Int64 NANOS_PER_MS = 1000000;
 
     // The minimum amount of time to spend watching the sensor before making
     // a determination of whether movement occurred.
-    static const Int64 SETTLE_TIME_NANOS = 500 * NANOS_PER_MS;
+    static const Int64 SETTLE_TIME_MILLIS = 800;
+
+    // The sensor sampling interval.
+    static const Int32 SAMPLING_INTERVAL_MILLIS = 50;
 
     // The minimum number of samples that must be collected.
     static const Int32 MIN_SAMPLES = 3;
@@ -151,6 +180,7 @@ private:
 
     AutoPtr<ISensorManager> mSensorManager;
     AutoPtr<ISuspendBlocker> mSuspendBlocker;
+    AutoPtr<IHandler> mHandler;
 
     // The gravity sensor, or null if none.
     AutoPtr<ISensor> mGravitySensor;
@@ -172,6 +202,9 @@ private:
     // The suspend blocker is held while this is the case.
     Boolean mDetectionInProgress;
 
+    // The time when detection was last performed.
+    Int64 mDetectionStartTime;
+
     // True if the rest position should be updated if at rest.
     // Otherwise, the current rest position is simply checked and cleared if movement
     // is detected but no new rest position is stored.
@@ -183,13 +216,18 @@ private:
     // The number of samples collected that showed evidence of not being at rest.
     Int32 mMovingSamples;
 
-    // The time and value of the first sample that was collected.
-    Int64 mFirstSampleTime;
+    // The value of the first sample that was collected.
     Float mFirstSampleX;
     Float mFirstSampleY;
     Float mFirstSampleZ;
 
+    // The value of the last sample that was collected.
+    Float mLastSampleX;
+    Float mLastSampleY;
+    Float mLastSampleZ;
+
     AutoPtr<ISensorEventListener> mListener;
+    AutoPtr<IRunnable> mSensorTimeout;
 
     friend class MySensorEventListener;
 };
