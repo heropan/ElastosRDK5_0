@@ -17,7 +17,7 @@ ECode ByteBufferAsFloatBuffer::constructor(
     /* [in] */ ByteBuffer* byteBuffer)
 {
     byteBuffer->GetCapacity(&mCap);
-    FAIL_RETURN(FloatBuffer::constructor(((Double)mCap) / ISizeOf::FLOAT, byteBuffer->mEffectiveDirectAddress))
+    FAIL_RETURN(FloatBuffer::constructor(mCap / ISizeOf::FLOAT, byteBuffer->mEffectiveDirectAddress))
     mByteBuffer = byteBuffer;
     mByteBuffer->Clear();
     return NOERROR;

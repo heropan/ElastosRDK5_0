@@ -1046,7 +1046,8 @@ ECode CPosix::GetsockoptLinger(
         *linger = NULL;
         return E_ERRNO_EXCEPTION;
     }
-    *linger = MakeStructLinger(l);
+    AutoPtr<IStructLinger> lingerObj = MakeStructLinger(l);
+    *linger = lingerObj;
     REFCOUNT_ADD(*linger)
     return NOERROR;
 }
@@ -1069,7 +1070,8 @@ ECode CPosix::GetsockoptTimeval(
         *timeval = NULL;
         return E_ERRNO_EXCEPTION;
     }
-    *timeval = MakeStructTimeval(tv);
+    AutoPtr<IStructTimeval> timevalObj = MakeStructTimeval(tv);
+    *timeval = timevalObj;
     REFCOUNT_ADD(*timeval)
     return NOERROR;
 }
@@ -1092,7 +1094,8 @@ ECode CPosix::GetsockoptUcred(
         *ucred = NULL;
         return E_ERRNO_EXCEPTION;
     }
-    *ucred = MakeStructUcred(u);
+    AutoPtr<IStructUcred> ucredObj = MakeStructUcred(u);
+    *ucred = ucredObj;
     REFCOUNT_ADD(*ucred)
     return NOERROR;
 }
@@ -2113,7 +2116,8 @@ ECode CPosix::Stat(
     /* [in] */ const String& path,
     /* [out] */ IStructStat** stat)
 {
-    *stat = DoStat(path, FALSE);
+    AutoPtr<IStructStat> statObj = DoStat(path, FALSE);
+    *stat = statObj;
     REFCOUNT_ADD(*stat)
     return NOERROR;
 }
@@ -2227,7 +2231,8 @@ ECode CPosix::Uname(
     if (TEMP_FAILURE_RETRY(uname(&buf)) == -1) {
         *unameOut = NULL; // Can't happen.
     }
-    *unameOut = MakeStructUtsname(buf);
+    AutoPtr<IStructUtsname> utsnameObj = MakeStructUtsname(buf);
+    *unameOut = utsnameObj;
     REFCOUNT_ADD(*unameOut)
     return NOERROR;
 }

@@ -98,6 +98,7 @@ ECode ZoneInfo::OffsetInterval::Create(
         CheckedAdd((*zoneInfo->mTransitions)[0], rawOffsetSeconds, &endWallTimeSeconds);
         *result = new OffsetInterval(Math::INT32_MIN_VALUE, endWallTimeSeconds, 0 /* isDst */,
                 rawOffsetSeconds);
+        REFCOUNT_ADD(*result)
         return NOERROR;
     }
 

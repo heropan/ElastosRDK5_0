@@ -19,7 +19,7 @@ ECode ByteBufferAsCharBuffer::constructor(
 {
     VALIDATE_NOT_NULL(byteBuffer)
     byteBuffer->GetCapacity(&mCap);
-    FAIL_RETURN(CharBuffer::constructor(mCap/ ISizeOf::CHAR, mByteBuffer->mEffectiveDirectAddress))
+    FAIL_RETURN(CharBuffer::constructor(mCap / ISizeOf::CHAR, byteBuffer->mEffectiveDirectAddress))
     mByteBuffer = byteBuffer;
     mByteBuffer->Clear();
     return NOERROR;

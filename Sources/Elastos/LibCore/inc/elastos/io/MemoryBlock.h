@@ -185,6 +185,8 @@ protected:
         /* [in] */ Int64 size)
         : mAddress(address)
         , mSize(size)
+        , mAccessible(TRUE)
+        , mFreed(FALSE)
     {}
 
 protected:

@@ -7,7 +7,7 @@
 namespace Elastos {
 namespace IO {
 
-CAR_INTERFACE_IMPL_2(Reader, Object, IReadable, IReader)
+CAR_INTERFACE_IMPL_3(Reader, Object, IReadable, IReader, ICloseable)
 
 Reader::Reader()
     : mLock(NULL)

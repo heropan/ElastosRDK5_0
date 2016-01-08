@@ -49,12 +49,12 @@ AutoPtr<ILocale> LocaleData::MapInvalidAndNullLocales(
     AutoPtr<ILocale> rev = locale;
     if (NULL == rev) {
         rev = CLocale::GetDefault();
+        return rev;
     }
 
     String s;
     rev->ToLanguageTag(&s);
-    if (s.Equals("und"))
-        rev = CLocale::ROOT;
+    if (s.Equals("und")) rev = CLocale::ROOT;
 
     return rev;
 }

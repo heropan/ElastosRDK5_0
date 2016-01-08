@@ -13,7 +13,8 @@ ECode CZoneInfoHelper::MakeTimeZone(
     /* [in] */ IBufferIterator* it,
     /* [out] */ IZoneInfo** zoneInfo)
 {
-    *zoneInfo =ZoneInfo::MakeTimeZone(id, it);
+    AutoPtr<IZoneInfo> zoneInfoObj = ZoneInfo::MakeTimeZone(id, it);
+    *zoneInfo = zoneInfoObj;
     REFCOUNT_ADD(*zoneInfo)
     return NOERROR;
 }

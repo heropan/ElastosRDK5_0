@@ -38,7 +38,7 @@ ECode DataInputStream::Read(
     VALIDATE_NOT_NULL(number)
     *number = 0;
     VALIDATE_NOT_NULL(buffer)
-    return Read(buffer, number);
+    return InputStream::Read(buffer, number);
 }
 
 ECode DataInputStream::Read(
