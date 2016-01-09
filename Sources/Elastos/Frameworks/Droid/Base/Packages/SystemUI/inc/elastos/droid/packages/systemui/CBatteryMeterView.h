@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SYSTEMUI_CBATTERYMETERVIEW_H__
 
 #include "_Elastos_Droid_SystemUI_CBatteryMeterView.h"
-//#include "elastos/droid/view/View.h"
+#include "elastos/droid/view/View.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/os/Runnable.h"
 
@@ -16,6 +16,7 @@ using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Graphics::IPath;
 using Elastos::Droid::Graphics::IRectF;
 using Elastos::Droid::Os::Runnable;
+using Elastos::Droid::View::View;
 using Elastos::Droid::SystemUI::StatusBar::Policy::IBatteryController;
 using Elastos::Droid::SystemUI::StatusBar::Policy::IBatteryStateChangeCallback;
 using Elastos::Droid::Utility::IAttributeSet;
@@ -25,8 +26,7 @@ namespace Droid {
 namespace SystemUI {
 
 CarClass(CBatteryMeterView)
-//    , public View
-    , public Object
+    , public View
     , public IDemoMode
     , public IBatteryStateChangeCallback
 {
@@ -35,7 +35,8 @@ private:
         : public BroadcastReceiver
     {
     public:
-        BatteryTracker();
+        BatteryTracker(
+            /* [in] */ CBatteryMeterView* host);
 
         CARAPI OnReceive(
             /* [in] */ IContext* context,
@@ -55,6 +56,7 @@ private:
         Int32 mVoltage;
         Int32 mTemperature;
         Boolean mTestmode;
+        CBatteryMeterView* mHost;
     };
 
     class Runnable_1
@@ -80,9 +82,9 @@ private:
     };
 
 public:
-    CAR_OBJECT_DECL()
+    CAR_OBJECT_DECL();
 
-    CAR_INTERFACE_DECL()
+    CAR_INTERFACE_DECL();
 
     CBatteryMeterView();
 
@@ -157,7 +159,8 @@ private:
     Float mSubpixelSmoothingLeft;
     Float mSubpixelSmoothingRight;
     AutoPtr<IPaint> mFramePaint, mBatteryPaint, mWarningTextPaint, mTextPaint, mBoltPaint;
-    Float mTextHeight, mWarningTextHeight;
+    Float mTextHeight;
+    Float mWarningTextHeight;
 
     Int32 mHeight;
     Int32 mWidth;

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:androidprv="http://schemas.android.com/apk/prv/res/android"
       package="com.android.systemui"
       android:sharedUserId="android.uid.systemui"
       coreApp="true">
@@ -132,8 +133,7 @@
                 android:permission="android.permission.BIND_WALLPAPER"
                 android:exported="true" />
 
-        <!-- TODO -->
-        <!--<receiver android:name=".BootReceiver" androidprv:primaryUserOnly="true">
+        <receiver android:name=".BootReceiver" androidprv:primaryUserOnly="true">
             <intent-filter android:priority="1000">
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
@@ -144,7 +144,7 @@
             <intent-filter>
                 <action android:name="android.net.wifi.WIFI_AP_STATE_CHANGED" />
             </intent-filter>
-        </receiver> -->
+        </receiver>
 
         <activity android:name=".usb.UsbStorageActivity"
                   android:label="@*android:string/usb_storage_activity_title"
