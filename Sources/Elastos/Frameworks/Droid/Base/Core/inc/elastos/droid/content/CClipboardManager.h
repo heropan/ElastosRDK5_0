@@ -124,12 +124,12 @@ private:
     friend class PrimaryClipChangedServiceListener;
 
     static CARAPI GetService(
-        /* [out] */ IClipboard** clipboard);
+        /* [out] */ IIClipboard** clipboard);
 
     CARAPI ReportPrimaryClipChanged();
 
 private:
-    static AutoPtr<IClipboard> sService;
+    static AutoPtr<IIClipboard> sService;
     static Object sStaticLock;
     static const Int32 MSG_REPORT_PRIMARY_CLIP_CHANGED;
 

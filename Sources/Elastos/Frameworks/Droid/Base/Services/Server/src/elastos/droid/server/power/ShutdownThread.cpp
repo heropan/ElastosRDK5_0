@@ -4,8 +4,8 @@
 #include "elastos/droid/server/power/ShutdownThread.h"
 #include "elastos/droid/server/power/CMountShutdownObserver.h"
 #include "elastos/droid/server/power/PowerManagerService.h"
+// #include "elastos/droid/server/pm/CPackageManagerService.h"
 #include "elastos/droid/os/SystemClock.h"
-// #include "elastos/droid/os/ServiceManager.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
@@ -22,6 +22,7 @@ using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnDismissListener;
+using Elastos::Droid::Content::Pm::IIPackageManager;;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Internal::Telephony::IITelephony;
 using Elastos::Droid::Media::IAudioAttributesBuilder;
@@ -34,12 +35,14 @@ using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::IUserHandleHelper;
 using Elastos::Droid::Os::CUserHandleHelper;
 using Elastos::Droid::Os::SystemClock;
-// using Elastos::Droid::Os::ServiceManager;
+using Elastos::Droid::Os::CServiceManager;
+using Elastos::Droid::Os::IServiceManager;
 using Elastos::Droid::Os::IVibrator;
 using Elastos::Droid::Os::CSystemVibrator;
 using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Os::Storage::EIID_IIMountShutdownObserver;
 using Elastos::Droid::Os::Storage::IMountService;
+// using Elastos::Droid::Server::Pm::CPackageManagerService;
 using Elastos::Droid::View::IWindow;
 using Elastos::Droid::View::IWindowManagerLayoutParams;
 using Elastos::Core::ICharSequence;
@@ -67,13 +70,7 @@ Boolean ShutdownThread::mReboot = FALSE;
 Boolean ShutdownThread::mRebootSafeMode = FALSE;
 String ShutdownThread::mRebootReason(NULL);
 
-AutoPtr<ShutdownThread> ShutdownThread::InitsInstance()
-{
-    AutoPtr<ShutdownThread> thread = new ShutdownThread();
-    return thread;
-}
-
-AutoPtr<ShutdownThread> ShutdownThread::sInstance = InitsInstance();
+AutoPtr<ShutdownThread> ShutdownThread::sInstance = new ShutdownThread();
 
 AutoPtr<IAudioAttributes> ShutdownThread::InitVIBRATION_ATTRIBUTES()
 {
@@ -199,46 +196,50 @@ ShutdownThread::ShutdownRadiosThread::ShutdownRadiosThread(
 
 ECode ShutdownThread::ShutdownRadiosThread::Run()
 {
-    assert(0 && "TODO");
-    // Boolean nfcOff;
-    // Boolean bluetoothOff;
-    // Boolean radioOff;
+    Boolean nfcOff;
+    Boolean bluetoothOff;
+    Boolean radioOff;
 
-    // AutoPtr<IInterface> obj = ServiceManager::CheckService(String("nfc"));
-    // AutoPtr<IINfcAdapter> nfc = IINfcAdapter::Probe(obj);
+    AutoPtr<IServiceManager> serviceManager;
+    CServiceManager::AcquireSingleton((IServiceManager**)&serviceManager);
+    AutoPtr<IInterface> obj;
+    serviceManager->CheckService(String("nfc"), (IInterface**)&obj);
+    AutoPtr<IINfcAdapter> nfc = IINfcAdapter::Probe(obj);
 
-    // obj = ServiceManager::CheckService(String("phone"));
-    // AutoPtr<IITelephony> phone = IITelephony::Probe(obj);
+    obj = NULL;
+    serviceManager->CheckService(String("phone"), (IInterface**)&obj);
+    AutoPtr<IITelephony> phone = IITelephony::Probe(obj);
 
-
-    // obj = ServiceManager::CheckService(IBluetoothAdapter::BLUETOOTH_MANAGER_SERVICE);
+    // obj = NULL;
+    // serviceManager->CheckService(IBluetoothAdapter::BLUETOOTH_MANAGER_SERVICE, (IInterface**)&obj);
     // AutoPtr<IIBluetoothManager> bluetooth = IIBluetoothManager::Probe(obj);
 
-    // Boolean res;
+    Boolean res;
 
-    // // try {
-    // Int32 state;
-    // ECode ec = nfc->GetState(&state);
-    // if (FAILED(ec)) {
-    //     Logger::E(TAG, "RemoteException during NFC shutdown");
-    //     nfcOff = TRUE;
+    // try {
+    Int32 state;
+    ECode ec = nfc->GetState(&state);
+    if (FAILED(ec)) {
+        Logger::E(TAG, "RemoteException during NFC shutdown");
+        nfcOff = TRUE;
+    }
+    else {
+        assert(0 && "TODO");
+        // nfcOff = nfc == NULL || state == INfcAdapter::STATE_OFF;
+        if (!nfcOff) {
+            Logger::W(TAG, "Turning off NFC...");
+            if (FAILED(nfc->Disable(FALSE, &res))) { // Don't persist new state
+                Logger::E(TAG, "RemoteException during NFC shutdown");
+                nfcOff = TRUE;
+            }
+        }
+    }
+    // } catch (RemoteException ex) {
+    //     Log.e(TAG, "RemoteException during NFC shutdown", ex);
+    //     nfcOff = true;
     // }
-    // else {
-    //     nfcOff = nfc == NULL || state == INfcAdapter::STATE_OFF;
-    //     if (!nfcOff) {
-    //         Logger::W(TAG, "Turning off NFC...");
-    //         if (FAILED(nfc->Disable(FALSE, &res))) { // Don't persist new state
-    //             Logger::E(TAG, "RemoteException during NFC shutdown");
-    //             nfcOff = TRUE;
-    //         }
-    //     }
-    // }
-    // // } catch (RemoteException ex) {
-    // //     Log.e(TAG, "RemoteException during NFC shutdown", ex);
-    // //     nfcOff = true;
-    // // }
 
-    // Boolean isEnabled;
+    Boolean isEnabled;
     // // try {
     // ec = bluetooth->IsEnabled(&isEnabled);
     // if (FAILED(ec)) {
@@ -260,84 +261,86 @@ ECode ShutdownThread::ShutdownRadiosThread::Run()
     // //     bluetoothOff = true;
     // // }
 
-    // // try {
-    // ec = phone->NeedMobileRadioShutdown(&isEnabled);
-    // if (FAILED(ec)) {
-    //     Logger::E(TAG, "RemoteException during radio shutdown");
-    //     radioOff = TRUE;
+    // try {
+    ec = phone->NeedMobileRadioShutdown(&isEnabled);
+    if (FAILED(ec)) {
+        Logger::E(TAG, "RemoteException during radio shutdown");
+        radioOff = TRUE;
+    }
+    else {
+        radioOff = phone == NULL || !isEnabled;
+        if (!radioOff) {
+            Logger::W(TAG, "Turning off cellular radios...");
+            if (FAILED(phone->ShutdownMobileRadios())) {
+                Logger::E(TAG, "RemoteException during radio shutdown");
+                radioOff = TRUE;
+            }
+        }
+    }
+    // } catch (RemoteException ex) {
+    //     Log.e(TAG, "RemoteException during radio shutdown", ex);
+    //     radioOff = true;
     // }
-    // else {
-    //     radioOff = phone == NULL || !isEnabled;
-    //     if (!radioOff) {
-    //         Logger::W(TAG, "Turning off cellular radios...");
-    //         if (FAILED(phone->ShutdownMobileRadios())) {
-    //             Logger::E(TAG, "RemoteException during radio shutdown");
-    //             radioOff = TRUE;
-    //         }
-    //     }
-    // }
-    // // } catch (RemoteException ex) {
-    // //     Log.e(TAG, "RemoteException during radio shutdown", ex);
-    // //     radioOff = true;
-    // // }
 
-    // Logger::I(TAG, "Waiting for NFC, Bluetooth and Radio...");
+    Logger::I(TAG, "Waiting for NFC, Bluetooth and Radio...");
 
-    // while (SystemClock::GetElapsedRealtime() < mEndTime) {
-    //     if (!bluetoothOff) {
-    //         // try {
-    //         if (FAILED(bluetooth->IsEnabled(&res))) {
-    //             Logger::E(TAG, "RemoteException during bluetooth shutdown");
-    //             bluetoothOff = TRUE;
-    //         }
-    //         bluetoothOff = !res;
-    //         // } catch (RemoteException ex) {
-    //         //     Log.e(TAG, "RemoteException during bluetooth shutdown", ex);
-    //         //     bluetoothOff = true;
-    //         // }
-    //         if (bluetoothOff) {
-    //             Logger::I(TAG, "Bluetooth turned off.");
-    //         }
-    //     }
-    //     if (!radioOff) {
-    //         // try {
-    //         if (FAILED(phone->NeedMobileRadioShutdown(&res))) {
-    //             Logger::E(TAG, "RemoteException during radio shutdown");
-    //             radioOff = TRUE;
-    //         }
-    //         radioOff = !res;
-    //         // } catch (RemoteException ex) {
-    //         //     Log.e(TAG, "RemoteException during radio shutdown", ex);
-    //         //     radioOff = true;
-    //         // }
-    //         if (radioOff) {
-    //             Logger::I(TAG, "Radio turned off.");
-    //         }
-    //     }
-    //     if (!nfcOff) {
-    //         // try {
-    //         if (FAILED(nfc->GetState(&state))) {
-    //             Logger::E(TAG, "RemoteException during NFC shutdown");
-    //             nfcOff = TRUE;
-    //         }
-    //         nfcOff = state == INfcAdapter::STATE_OFF;
+    while (SystemClock::GetElapsedRealtime() < mEndTime) {
+        if (!bluetoothOff) {
+            assert(0 && "TODO");
+            // // try {
+            // if (FAILED(bluetooth->IsEnabled(&res))) {
+            //     Logger::E(TAG, "RemoteException during bluetooth shutdown");
+            //     bluetoothOff = TRUE;
+            // }
+            // bluetoothOff = !res;
+            // // } catch (RemoteException ex) {
+            // //     Log.e(TAG, "RemoteException during bluetooth shutdown", ex);
+            // //     bluetoothOff = true;
+            // // }
+            // if (bluetoothOff) {
+            //     Logger::I(TAG, "Bluetooth turned off.");
+            // }
+        }
+        if (!radioOff) {
+            // try {
+            if (FAILED(phone->NeedMobileRadioShutdown(&res))) {
+                Logger::E(TAG, "RemoteException during radio shutdown");
+                radioOff = TRUE;
+            }
+            radioOff = !res;
+            // } catch (RemoteException ex) {
+            //     Log.e(TAG, "RemoteException during radio shutdown", ex);
+            //     radioOff = true;
+            // }
+            if (radioOff) {
+                Logger::I(TAG, "Radio turned off.");
+            }
+        }
+        if (!nfcOff) {
+            // try {
+            if (FAILED(nfc->GetState(&state))) {
+                Logger::E(TAG, "RemoteException during NFC shutdown");
+                nfcOff = TRUE;
+            }
+            assert(0 && "TODO");
+            // nfcOff = state == INfcAdapter::STATE_OFF;
 
-    //         } catch (RemoteException ex) {
-    //             Log.e(TAG, "RemoteException during NFC shutdown", ex);
-    //             nfcOff = true;
-    //         }
-    //         if (nfcOff) {
-    //             Logger::I(TAG, "NFC turned off.");
-    //         }
-    //     }
+            // } catch (RemoteException ex) {
+            //     Log.e(TAG, "RemoteException during NFC shutdown", ex);
+            //     nfcOff = true;
+            // }
+            if (nfcOff) {
+                Logger::I(TAG, "NFC turned off.");
+            }
+        }
 
-    //     if (radioOff && bluetoothOff && nfcOff) {
-    //         Logger::I(TAG, "NFC, Radio and Bluetooth shutdown complete.");
-    //         (*mDone)[0] = TRUE;
-    //         break;
-    //     }
-    //     SystemClock::Sleep(PHONE_STATE_POLL_SLEEP_MSEC);
-    // }
+        if (radioOff && bluetoothOff && nfcOff) {
+            Logger::I(TAG, "NFC, Radio and Bluetooth shutdown complete.");
+            (*mDone)[0] = TRUE;
+            break;
+        }
+        SystemClock::Sleep(PHONE_STATE_POLL_SLEEP_MSEC);
+    }
     return NOERROR;
 }
 
@@ -406,11 +409,11 @@ void ShutdownThread::ShutdownInner(
         ASSERT_SUCCEEDED(dialogBuilder->Create((IAlertDialog**)&sConfirmDialog));
 
         closer->mDialog = IDialog::Probe(sConfirmDialog);
-        IDialog::Probe(sConfirmDialog)->SetOnDismissListener(closer);
+        closer->mDialog->SetOnDismissListener(closer);
         AutoPtr<IWindow> win;
-        ASSERT_SUCCEEDED(IDialog::Probe(sConfirmDialog)->GetWindow((IWindow**)&win));
+        ASSERT_SUCCEEDED(closer->mDialog->GetWindow((IWindow**)&win));
         win->SetType(IWindowManagerLayoutParams::TYPE_KEYGUARD_DIALOG);
-        ASSERT_SUCCEEDED(IDialog::Probe(sConfirmDialog)->Show());
+        ASSERT_SUCCEEDED(closer->mDialog->Show());
     }
     else {
         BeginShutdownSequence(context);
@@ -582,64 +585,70 @@ ECode ShutdownThread::Run()
 
     Logger::I(TAG, "Shutting down activity manager...");
 
-    // AutoPtr<IInterface> obj = ServiceManager::CheckService(String("activity"));
-    // AutoPtr<IIActivityManager> am = IIActivityManager::Probe(obj);
-    // if (am != NULL) {
-    //     // try {
-    //     Boolean result;
-    //     am->Shutdown(MAX_BROADCAST_TIME, &result);
-    //     // } catch (RemoteException e) {
-    //     // }
+    AutoPtr<IServiceManager> serviceManager;
+    CServiceManager::AcquireSingleton((IServiceManager**)&serviceManager);
+    AutoPtr<IInterface> obj;
+
+    serviceManager->CheckService(String("activity"), (IInterface**)&obj);
+    AutoPtr<IIActivityManager> am = IIActivityManager::Probe(obj);
+    if (am != NULL) {
+        // try {
+        Boolean result;
+        am->Shutdown(MAX_BROADCAST_TIME, &result);
+        // } catch (RemoteException e) {
+        // }
+    }
+
+    Logger::I(TAG, "Shutting down package manager...");
+
+    obj = NULL;
+    serviceManager->GetService(String("package"), (IInterface**)&obj);
+    assert(0 && "TODO");
+    // AutoPtr<CPackageManagerService> pm = (CPackageManagerService*)IIPackageManager::Probe(obj);
+    // if (pm != NULL) {
+    //     pm->Shutdown();
     // }
 
-    // Logger::I(TAG, "Shutting down package manager...");
+    // Shutdown radios.
+    ShutdownRadios(MAX_RADIO_WAIT_TIME);
 
-    // assert(0 && "TODO");
-    // // obj = ServiceManager::GetService(String("package"));
-    // // AutoPtr<IPackageManagerService> pm = IPackageManagerService::Probe(obj);
-    // // if (pm != NULL) {
-    // //     pm->Shutdown();
-    // // }
+    // Shutdown MountService to ensure media is in a safe state
+    AutoPtr<IIMountShutdownObserver> observer;
+    CMountShutdownObserver::New((IThread*)this, (IIMountShutdownObserver**)&observer);
 
-    // // Shutdown radios.
-    // ShutdownRadios(MAX_RADIO_WAIT_TIME);
+    Logger::I(TAG, "Shutting down MountService");
 
-    // // Shutdown MountService to ensure media is in a safe state
-    // AutoPtr<IIMountShutdownObserver> observer;
-    // CMountShutdownObserver::New((IThread*)this, (IIMountShutdownObserver**)&observer);
-
-    // Logger::I(TAG, "Shutting down MountService");
-
-    // // Set initial variables and time out time.
-    // mActionDone = FALSE;
-    // Int64 endShutTime = SystemClock::GetElapsedRealtime() + MAX_SHUTDOWN_WAIT_TIME;
-    // synchronized(mActionDoneSync) {
-    //     // try {
-    //     obj = ServiceManager::CheckService(String("mount"));
-    //     AutoPtr<IMountService> mount = IMountService::Probe(obj);
-    //     if (mount != NULL) {
-    //         if (FAILED(mount->Shutdown(observer))) {
-    //             Logger::E(TAG, "Exception during MountService shutdown");
-    //         }
-    //     }
-    //     else {
-    //         Logger::W(TAG, "MountService unavailable for shutdown");
-    //     }
-    //     // } catch (Exception e) {
-    //     //     Log.e(TAG, "Exception during MountService shutdown", e);
-    //     // }
-    //     while (!mActionDone) {
-    //         Int64 delay = endShutTime - SystemClock::GetElapsedRealtime();
-    //         if (delay <= 0) {
-    //             Logger::W(TAG, "Shutdown wait timed out");
-    //             break;
-    //         }
-    //         // try {
-    //         mActionDoneSync.Wait(delay);
-    //         // } catch (InterruptedException e) {
-    //         // }
-    //     }
-    // }
+    // Set initial variables and time out time.
+    mActionDone = FALSE;
+    Int64 endShutTime = SystemClock::GetElapsedRealtime() + MAX_SHUTDOWN_WAIT_TIME;
+    synchronized(mActionDoneSync) {
+        // try {
+        obj = NULL;
+        serviceManager->CheckService(String("mount"), (IInterface**)&obj);
+        AutoPtr<IMountService> mount = IMountService::Probe(obj);
+        if (mount != NULL) {
+            if (FAILED(mount->Shutdown(observer))) {
+                Logger::E(TAG, "Exception during MountService shutdown");
+            }
+        }
+        else {
+            Logger::W(TAG, "MountService unavailable for shutdown");
+        }
+        // } catch (Exception e) {
+        //     Log.e(TAG, "Exception during MountService shutdown", e);
+        // }
+        while (!mActionDone) {
+            Int64 delay = endShutTime - SystemClock::GetElapsedRealtime();
+            if (delay <= 0) {
+                Logger::W(TAG, "Shutdown wait timed out");
+                break;
+            }
+            // try {
+            mActionDoneSync.Wait(delay);
+            // } catch (InterruptedException e) {
+            // }
+        }
+    }
 
     RebootOrShutdown(mReboot, mRebootReason);
 

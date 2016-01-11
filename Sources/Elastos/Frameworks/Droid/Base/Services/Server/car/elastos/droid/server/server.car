@@ -71,6 +71,7 @@ module
     using interface Elastos.Droid.Os.IINetworkManagementService;
     using interface Elastos.Droid.Os.Storage.IIMountShutdownObserver;
     using interface Elastos.Droid.Content.IContext;
+    using interface Elastos.Droid.Content.IIClipboard;
     using interface Elastos.Droid.Content.IIContentService;
     using interface Elastos.Droid.Content.IIIntentSender;
     using interface Elastos.Droid.Content.IIntent;
@@ -232,15 +233,6 @@ module
 // //
 //     //     interface IIPppoeManager;
 //     // }
-
-//     [local]
-//     class CClipboardService {
-//         constructor(
-//             [in] IContext* ctx);
-
-//         interface IClipboard;
-//         interface IBinder;
-//     }
 
 //     [local]
 //     class CVibratorService {
@@ -1336,6 +1328,25 @@ module
     }
 
     } // namespace Am
+    } // namespace Server
+    } // namepsace Droid
+    } // namespace Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+    namespace Clipboard {
+
+    [local]
+    class CClipboardService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IIClipboard;
+        interface IBinder;
+    }
+
+    } // namespace Clipboard
     } // namespace Server
     } // namepsace Droid
     } // namespace Elastos

@@ -282,8 +282,8 @@ private:
             /* [out] */ String* info)
         {
             VALIDATE_NOT_NULL(info);
-            *info = String("PowerManagerService::BatteryReceiver: ");
-            (*info).AppendFormat("%p", this);
+            *info = "PowerManagerService::BatteryReceiver: ";
+            info->AppendFormat("%p", this);
             return NOERROR;
         }
 
@@ -306,8 +306,8 @@ private:
             /* [out] */ String* info)
         {
             VALIDATE_NOT_NULL(info);
-            *info = String("PowerManagerService::DreamReceiver: ");
-            (*info).AppendFormat("%p", this);
+            *info = "PowerManagerService::DreamReceiver: ";
+            info->AppendFormat("%p", this);
             return NOERROR;
         }
 
@@ -330,8 +330,8 @@ private:
             /* [out] */ String* info)
         {
             VALIDATE_NOT_NULL(info);
-            *info = String("PowerManagerService::UserSwitchedReceiver: ");
-            (*info).AppendFormat("%p", this);
+            *info = "PowerManagerService::UserSwitchedReceiver: ";
+            info->AppendFormat("%p", this);
             return NOERROR;
         }
 
@@ -354,8 +354,8 @@ private:
             /* [out] */ String* info)
         {
             VALIDATE_NOT_NULL(info);
-            *info = String("PowerManagerService::DockReceiver: ");
-            (*info).AppendFormat("%p", this);
+            *info = "PowerManagerService::DockReceiver: ";
+            info->AppendFormat("%p", this);
             return NOERROR;
         }
 
@@ -483,10 +483,10 @@ private:
         ~SuspendBlockerImpl();
 
         // @Override
-        CARAPI Acquire();
+        CARAPI AcquireBlocker();
 
         // @Override
-        CARAPI ReleaseSuspendBlocker();
+        CARAPI ReleaseBlocker();
 
         // @Override
         CARAPI ToString(
@@ -623,7 +623,8 @@ private:
         CrashThread(
             /* [in] */ const String& s);
 
-        virtual CARAPI Run();
+        // @Override
+        CARAPI Run();
     };
 
 public:
@@ -667,7 +668,7 @@ public:
     CARAPI Monitor();
 
     // method for NativeInputManager
-    static CARAPI_(void) userActivity(
+    static CARAPI_(void) UserActivity(
         /* [in] */ nsecs_t eventTime,
         /* [in] */ int32_t eventType);
 

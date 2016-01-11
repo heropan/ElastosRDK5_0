@@ -701,7 +701,6 @@ module
             [in] String process,
             [in] Int32 userId,
             [in] Boolean start,
-            [in] String path,
             [in] IParcelFileDescriptor* fd,
             [in] Int32 profileType,
             [out] Boolean* result);
@@ -792,18 +791,22 @@ module
             [in] Int32 fromUid,
             [in] String targetPkg,
             [in] IUri* uri,
-            [in] Int32 mode);
+            [in] Int32 mode,
+            [in] Int32 sourceUserId,
+            [in] Int32 targetUserId);
 
         RevokeUriPermissionFromOwner(
             [in] IBinder* owner,
             [in] IUri* uri,
-            [in] Int32 mode);
+            [in] Int32 mode,
+            [in] Int32 userId);
 
         CheckGrantUriPermission(
             [in] Int32 callingUid,
             [in] String targetPkg,
             [in] IUri* uri,
             [in] Int32 modeFlags,
+            [in] Int32 userId,
             [out] Int32* result);
 
         // Cause the specified process to dump the specified heap.
