@@ -1,14 +1,15 @@
 
 #include "elastos/droid/internal/widget/ResolverDrawerLayout.h"
+#include "elastos/droid/graphics/CRect.h"
 //#include "elastos/droid/view/CVelocityTrackerHelper.h"
 #include "elastos/droid/view/CViewConfigurationHelper.h"
 #include "elastos/droid/view/animation/CAnimationUtils.h"
 #include "elastos/droid/widget/COverScroller.h"
 #include "elastos/droid/R.h"
-
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::R;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IVelocityTrackerHelper;

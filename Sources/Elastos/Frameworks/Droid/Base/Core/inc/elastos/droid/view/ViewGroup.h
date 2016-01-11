@@ -5,7 +5,7 @@
 #include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Animation.h"
 #include "Elastos.Droid.Content.h"
-#include "elastos/droid/view/View.h"
+#include <elastos/droid/view/View.h>
 
 using Elastos::Droid::Animation::ITransitionListener;
 using Elastos::Droid::Animation::ILayoutTransition;
@@ -26,7 +26,7 @@ namespace View {
 
 class COverlayViewGroup;
 
-class ViewGroup
+class ECO_PUBLIC ViewGroup
     : public View
     , public IViewGroup
     , public IViewParent
@@ -550,7 +550,7 @@ private:
         static AutoPtr<Pools::SynchronizedPool<ViewLocationHolder> > sPool;// = new SynchronizedPool<ViewLocationHolder>(MAX_POOL_SIZE);
 
         static Int32 sComparisonStrategy;
-        AutoPtr<CRect> mLocation;
+        AutoPtr<IRect> mLocation;
 
         Int32 mLayoutDirection;
     };
@@ -2455,7 +2455,7 @@ private:
     /**
      * Used to track the current invalidation region.
      */
-    AutoPtr<CRectF> mInvalidateRegion;
+    AutoPtr<IRectF> mInvalidateRegion;
 
     /**
      * A Transformation used to calculate a correct

@@ -4,12 +4,14 @@
 
 #include "elastos/droid/widget/FrameLayout.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/os/Handler.h"
 
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::BroadcastReceiver;
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::View::IViewOnClickListener;

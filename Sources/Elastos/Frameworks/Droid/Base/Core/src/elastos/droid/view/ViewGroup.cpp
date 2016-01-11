@@ -3,6 +3,7 @@
 #include "elastos/droid/animation/CLayoutTransition.h"
 #include "elastos/droid/graphics/Insets.h"
 #include "elastos/droid/graphics/CPointF.h"
+#include "elastos/droid/graphics/CRectF.h"
 #include "elastos/droid/graphics/Color.h"
 #include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/os/Build.h"
@@ -25,6 +26,7 @@ using Elastos::Droid::Animation::CLayoutTransition;
 using Elastos::Droid::Animation::EIID_ITransitionListener;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Graphics::CRectF;
 using Elastos::Droid::Graphics::CPointF;
 using Elastos::Droid::Graphics::Insets;
 using Elastos::Droid::Graphics::IColor;
@@ -1026,32 +1028,32 @@ Int32 ViewGroup::ViewLocationHolder::CompareTo(
 
     if (sComparisonStrategy == COMPARISON_STRATEGY_STRIPE) {
         // First is above second.
-        if (mLocation->mBottom - another->mLocation->mTop <= 0) {
+        if (((CRect*)mLocation.Get())->mBottom - ((CRect*)another->mLocation.Get())->mTop <= 0) {
             return -1;
         }
         // First is below second.
-        if (mLocation->mTop - another->mLocation->mBottom >= 0) {
+        if (((CRect*)mLocation.Get())->mTop - ((CRect*)another->mLocation.Get())->mBottom >= 0) {
             return 1;
         }
     }
 
     // We are ordering left-to-right, top-to-bottom.
     if (mLayoutDirection == IView::LAYOUT_DIRECTION_LTR) {
-        Int32 leftDifference = mLocation->mLeft - another->mLocation->mLeft;
+        Int32 leftDifference = ((CRect*)mLocation.Get())->mLeft - ((CRect*)another->mLocation.Get())->mLeft;
         // First more to the left than second.
         if (leftDifference != 0) {
             return leftDifference;
         }
     }
     else { // RTL
-        Int32 rightDifference = mLocation->mRight - another->mLocation->mRight;
+        Int32 rightDifference = ((CRect*)mLocation.Get())->mRight - ((CRect*)another->mLocation.Get())->mRight;
         // First more to the right than second.
         if (rightDifference != 0) {
             return -rightDifference;
         }
     }
     // Break tie by top.
-    Int32 topDiference = mLocation->mTop - another->mLocation->mTop;
+    Int32 topDiference = ((CRect*)mLocation.Get())->mTop - ((CRect*)another->mLocation.Get())->mTop;
     if (topDiference != 0) {
         return topDiference;
     }

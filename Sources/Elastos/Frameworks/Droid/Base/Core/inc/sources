@@ -65,7 +65,7 @@ EXPORT_HEADERS += elastos/droid/os/FileObserver.h
 EXPORT_HEADERS += elastos/droid/os/FactoryTest.h
 EXPORT_HEADERS += elastos/droid/os/RemoteCallbackList.h
 
-
+EXPORT_HEADERS += elastos/droid/provider/Settings.h
 //EXPORT_HEADERS += elastos/droid/preference/PreferenceActivity.h
 EXPORT_HEADERS += elastos/droid/server/LocalServices.h
 EXPORT_HEADERS += elastos/droid/server/net/BaseNetworkObserver.h
@@ -90,7 +90,11 @@ EXPORT_HEADERS += elastos/droid/utility/FloatMath.h
 //EXPORT_HEADERS += elastos/droid/utility/LruCache.h
 EXPORT_HEADERS += elastos/droid/utility/Int32Property.h
 EXPORT_HEADERS += elastos/droid/utility/FloatProperty.h
+EXPORT_HEADERS += elastos/droid/utility/Pools.h
 
+EXPORT_HEADERS += elastos/droid/view/AbsSavedState.h
+EXPORT_HEADERS += elastos/droid/view/View.h
+EXPORT_HEADERS += elastos/droid/view/ViewGroup.h
 //EXPORT_HEADERS += elastos/droid/view/InputFilter.h
 //EXPORT_HEADERS += elastos/droid/view/BaseSurfaceHolder.h
 //EXPORT_HEADERS += elastos/droid/view/InputEventReceiver.h
@@ -105,3 +109,4 @@ EXPORT_HEADERS += elastos/droid/view/WindowIdFocusObserver.h
 //EXPORT_HEADERS += elastos/droid/widget/Adapter.h
 //EXPORT_HEADERS += elastos/droid/widget/Filter.h
 //EXPORT_HEADERS += elastos/droid/widget/AdapterMacro.h
+EXPORT_HEADERS += elastos/droid/widget/FrameLayout.h

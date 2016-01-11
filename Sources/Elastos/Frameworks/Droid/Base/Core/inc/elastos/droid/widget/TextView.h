@@ -6,10 +6,14 @@
 #include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CRectF.h"
 #include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/view/View.h"
 
 using Elastos::Droid::Content::IUndoManager;
+using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Graphics::CRectF;
 using Elastos::Droid::Graphics::ITypeface;
 using Elastos::Droid::Graphics::IPath;
 using Elastos::Droid::Text::ITextPaint;

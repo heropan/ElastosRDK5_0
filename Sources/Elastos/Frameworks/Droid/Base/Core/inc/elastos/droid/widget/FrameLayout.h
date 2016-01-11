@@ -14,12 +14,11 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class FrameLayout
+class ECO_PUBLIC FrameLayout
     : public ViewGroup
     , public IFrameLayout
 {
 public:
-
     class LayoutParams
         : public ViewGroup::MarginLayoutParams
         , public IFrameLayoutLayoutParams
@@ -284,8 +283,8 @@ private:
     Int32 mForegroundPaddingTop;
     Int32 mForegroundPaddingRight;
     Int32 mForegroundPaddingBottom;
-    AutoPtr<CRect> mSelfBounds;
-    AutoPtr<CRect> mOverlayBounds;
+    AutoPtr<IRect> mSelfBounds;
+    AutoPtr<IRect> mOverlayBounds;
     Int32 mForegroundGravity;
     Boolean mForegroundBoundsChanged;
 

@@ -1,12 +1,14 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/FrameLayout.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/drawable/Drawable.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/view/Gravity.h"
 #include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
 #include <elastos/core/Math.h>
 
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Graphics::Drawable::Drawable;
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;

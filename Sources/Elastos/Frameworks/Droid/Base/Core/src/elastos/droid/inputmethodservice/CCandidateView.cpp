@@ -1,11 +1,13 @@
 
 #include "elastos/droid/inputmethodservice/CCandidateView.h"
 #include "Elastos.Droid.Content.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/R.h"
 
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Graphics::CPaint;
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::R;
 
 namespace Elastos {

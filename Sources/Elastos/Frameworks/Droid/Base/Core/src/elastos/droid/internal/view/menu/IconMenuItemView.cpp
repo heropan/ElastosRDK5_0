@@ -8,11 +8,12 @@
 #include "elastos/droid/view/SoundEffectConstants.h"
 #include "elastos/droid/R.h"
 
-using Elastos::Core::CString;
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Text::Layout;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::Gravity;
 using Elastos::Droid::View::SoundEffectConstants;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {

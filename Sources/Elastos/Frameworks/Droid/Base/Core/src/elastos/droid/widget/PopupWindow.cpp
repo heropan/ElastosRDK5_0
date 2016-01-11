@@ -1,6 +1,7 @@
 
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/PopupWindow.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/view/CWindowManagerLayoutParams.h"
 #include "elastos/droid/view/Gravity.h"
@@ -10,6 +11,7 @@
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
 using Elastos::Droid::Graphics::Drawable::IStateListDrawable;

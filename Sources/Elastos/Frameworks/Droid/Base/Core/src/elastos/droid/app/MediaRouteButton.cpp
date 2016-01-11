@@ -4,6 +4,7 @@
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/app/MediaRouteButton.h"
 // #include "elastos/droid/internal/app/MediaRouteDialogPresenter.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/view/SoundEffectConstants.h"
 // #include "elastos/droid/widget/Toast.h"

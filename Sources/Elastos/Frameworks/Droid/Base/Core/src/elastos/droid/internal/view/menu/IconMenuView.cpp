@@ -1,5 +1,6 @@
 
 #include "Elastos.Droid.Content.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/internal/view/menu/IconMenuView.h"
 #include "elastos/droid/internal/view/menu/CIconMenuItemView.h"
 #include "elastos/droid/internal/view/menu/MenuBuilder.h"
@@ -11,12 +12,13 @@
 #include <elastos/core/Math.h>
 #include "elastos/droid/R.h"
 
+using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Graphics::Drawable::IDrawableConstantState;
 using Elastos::Droid::View::CViewConfiguration;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::View::IAbsSavedState;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::LayoutInflater;
-using Elastos::Droid::Graphics::Drawable::IDrawableConstantState;
 using Elastos::Core::EIID_IRunnable;
 
 namespace Elastos {

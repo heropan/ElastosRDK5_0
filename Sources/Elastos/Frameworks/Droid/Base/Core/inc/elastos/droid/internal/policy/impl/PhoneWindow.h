@@ -8,6 +8,7 @@
 #include "Elastos.Droid.Transition.h"
 #include "Elastos.Droid.View.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/view/Window.h"
@@ -17,6 +18,7 @@ using Elastos::Droid::App::IKeyguardManager;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 //using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 using Elastos::Droid::Graphics::ICanvas;

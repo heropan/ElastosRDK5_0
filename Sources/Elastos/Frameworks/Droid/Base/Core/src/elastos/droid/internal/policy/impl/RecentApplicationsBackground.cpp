@@ -1,8 +1,10 @@
 
 #include "elastos/droid/internal/policy/impl/RecentApplicationsBackground.h"
 #include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CRect.h"
 #include <elastos/core/Math.h>
 
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Graphics::CPaint;
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;

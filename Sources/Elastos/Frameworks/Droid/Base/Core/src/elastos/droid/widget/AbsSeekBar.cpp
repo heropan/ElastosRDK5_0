@@ -3,6 +3,7 @@
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/widget/AbsSeekBar.h"
 #include "elastos/droid/animation/ObjectAnimator.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/drawable/Drawable.h"
 #include "elastos/droid/view/CViewConfiguration.h"
 #include "elastos/droid/R.h"
@@ -10,6 +11,7 @@
 
 using Elastos::Droid::Animation::IAnimator;
 using Elastos::Droid::Animation::ObjectAnimator;
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Graphics::Drawable::Drawable;
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;

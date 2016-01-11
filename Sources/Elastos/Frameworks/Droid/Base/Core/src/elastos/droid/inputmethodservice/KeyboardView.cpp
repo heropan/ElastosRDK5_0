@@ -3,6 +3,7 @@
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.View.h"
 #include "elastos/droid/inputmethodservice/KeyboardView.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/CBitmap.h"
 #include "elastos/droid/graphics/CCanvas.h"
 #include "elastos/droid/graphics/CRectF.h"
@@ -23,6 +24,7 @@
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
 using Elastos::Droid::Graphics::CRectF;
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Graphics::CCanvas;
 using Elastos::Droid::Graphics::CPaint;
 using Elastos::Droid::Graphics::CBitmap;
