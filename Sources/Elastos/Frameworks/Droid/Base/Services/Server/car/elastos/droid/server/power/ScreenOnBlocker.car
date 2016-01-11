@@ -17,7 +17,7 @@ module
          * Calls to acquire() nest and must be matched by the same number
          * of calls to release().
          */
-        Acquire();
+        AcquireScreen();
 
         /**
          * Releases the screen on blocker.
@@ -26,7 +26,7 @@ module
          * It is an error to call release() if the screen on blocker has not been acquired.
          * The system may crash.
          */
-        ReleaseScreenOnBlocker();
+        ReleaseScreen();
     }
 
     } // namespace Power

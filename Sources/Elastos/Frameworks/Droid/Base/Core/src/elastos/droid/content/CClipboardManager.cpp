@@ -10,7 +10,7 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
-AutoPtr<IClipboard> CClipboardManager::sService;
+AutoPtr<IIClipboard> CClipboardManager::sService;
 Object CClipboardManager::sStaticLock;
 const Int32 CClipboardManager::MSG_REPORT_PRIMARY_CLIP_CHANGED = 1;
 
@@ -66,8 +66,8 @@ ECode CClipboardManager::SetPrimaryClip(
 {
     String pkg;
     FAIL_RETURN(mContext->GetOpPackageName(&pkg));
-    AutoPtr<IClipboard> clipboard;
-    FAIL_RETURN(GetService((IClipboard**)&clipboard));
+    AutoPtr<IIClipboard> clipboard;
+    FAIL_RETURN(GetService((IIClipboard**)&clipboard));
     FAIL_RETURN(clipboard->SetPrimaryClip(clip, pkg));
     return NOERROR;
 }
@@ -78,8 +78,8 @@ ECode CClipboardManager::GetPrimaryClip(
     VALIDATE_NOT_NULL(clipData)
     *clipData = NULL;
 
-    AutoPtr<IClipboard> clipboard;
-    FAIL_RETURN(GetService((IClipboard**)&clipboard));
+    AutoPtr<IIClipboard> clipboard;
+    FAIL_RETURN(GetService((IIClipboard**)&clipboard));
     String pkg;
     FAIL_RETURN(mContext->GetOpPackageName(&pkg));
     FAIL_RETURN(clipboard->GetPrimaryClip(pkg, clipData));
@@ -94,8 +94,8 @@ ECode CClipboardManager::GetPrimaryClipDescription(
 
     String pkg;
     FAIL_RETURN(mContext->GetOpPackageName(&pkg));
-    AutoPtr<IClipboard> clipboard;
-    FAIL_RETURN(GetService((IClipboard**)&clipboard));
+    AutoPtr<IIClipboard> clipboard;
+    FAIL_RETURN(GetService((IIClipboard**)&clipboard));
     FAIL_RETURN(clipboard->GetPrimaryClipDescription(pkg, clipDescription));
     return NOERROR;
 }
@@ -108,8 +108,8 @@ ECode CClipboardManager::HasPrimaryClip(
 
     String pkg;
     FAIL_RETURN(mContext->GetOpPackageName(&pkg));
-    AutoPtr<IClipboard> clipboard;
-    FAIL_RETURN(GetService((IClipboard**)&clipboard));
+    AutoPtr<IIClipboard> clipboard;
+    FAIL_RETURN(GetService((IIClipboard**)&clipboard));
     FAIL_RETURN(clipboard->HasPrimaryClip(pkg, hasClip));
     return NOERROR;
 }
@@ -121,8 +121,8 @@ ECode CClipboardManager::AddPrimaryClipChangedListener(
     if (mPrimaryClipChangedListeners.IsEmpty()) {
         String pkg;
         FAIL_RETURN(mContext->GetOpPackageName(&pkg));
-        AutoPtr<IClipboard> clipboard;
-        FAIL_RETURN(GetService((IClipboard**)&clipboard));
+        AutoPtr<IIClipboard> clipboard;
+        FAIL_RETURN(GetService((IIClipboard**)&clipboard));
         FAIL_RETURN(clipboard->AddPrimaryClipChangedListener(
             mPrimaryClipChangedServiceListener, pkg));
     }
@@ -136,8 +136,8 @@ ECode CClipboardManager::RemovePrimaryClipChangedListener(
     AutoLock lock(mPrimaryClipChangedListenersLock);
     mPrimaryClipChangedListeners.Remove(what);
     if (mPrimaryClipChangedListeners.IsEmpty()) {
-        AutoPtr<IClipboard> clipboard;
-        FAIL_RETURN(GetService((IClipboard**)&clipboard));
+        AutoPtr<IIClipboard> clipboard;
+        FAIL_RETURN(GetService((IIClipboard**)&clipboard));
         FAIL_RETURN(clipboard->RemovePrimaryClipChangedListener(mPrimaryClipChangedServiceListener));
     }
     return NOERROR;
@@ -181,8 +181,8 @@ ECode CClipboardManager::HasText(
 
     String pkg;
     FAIL_RETURN(mContext->GetOpPackageName(&pkg));
-    AutoPtr<IClipboard> clipboard;
-    FAIL_RETURN(GetService((IClipboard**)&clipboard));
+    AutoPtr<IIClipboard> clipboard;
+    FAIL_RETURN(GetService((IIClipboard**)&clipboard));
     FAIL_RETURN(clipboard->HasClipboardText(pkg, hasText));
     return NOERROR;
 }
@@ -195,12 +195,12 @@ ECode CClipboardManager::constructor(
 }
 
 ECode CClipboardManager::GetService(
-    /* [out] */ IClipboard** clipboard)
+    /* [out] */ IIClipboard** clipboard)
 {
     VALIDATE_NOT_NULL(clipboard)
     AutoLock lock(sStaticLock);
     if (NULL == sService) {
-        sService = IClipboard::Probe(ServiceManager::GetService(String("clipboard")));
+        sService = IIClipboard::Probe(ServiceManager::GetService(String("clipboard")));
     }
     *clipboard = sService;
     REFCOUNT_ADD(*clipboard);

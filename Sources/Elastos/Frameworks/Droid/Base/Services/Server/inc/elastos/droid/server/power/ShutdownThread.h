@@ -57,8 +57,8 @@ public:
             /* [out] */ String* info)
         {
             VALIDATE_NOT_NULL(info);
-            *info = String("ShutdownThread::MountShutdownObserver: ");
-            (*info).AppendFormat("%p", this);
+            *info = "ShutdownThread::MountShutdownObserver: ";
+            info->AppendFormat("%p", this);
             return NOERROR;
         }
 
@@ -90,8 +90,8 @@ private:
             /* [out] */ String* info)
         {
             VALIDATE_NOT_NULL(info);
-            *info = String("ShutdownThread::CloseDialogReceiver: ");
-            (*info).AppendFormat("%p", this);
+            *info = "ShutdownThread::CloseDialogReceiver: ";
+            info->AppendFormat("%p", this);
             return NOERROR;
         }
 
@@ -139,8 +139,8 @@ private:
             /* [out] */ String* info)
         {
             VALIDATE_NOT_NULL(info);
-            *info = String("ShutdownThread::ActionDoneBroadcastReceiver: ");
-            (*info).AppendFormat("%p", this);
+            *info = "ShutdownThread::ActionDoneBroadcastReceiver: ";
+            info->AppendFormat("%p", this);
             return NOERROR;
         }
 
@@ -158,7 +158,7 @@ private:
             /* [in] */ Int64 endTime);
 
         //@Override
-        virtual CARAPI Run();
+        CARAPI Run();
 
     private:
         AutoPtr< ArrayOf<Boolean> > mDone;
@@ -207,7 +207,7 @@ public:
      * Makes sure we handle the shutdown gracefully.
      * Shuts off power regardless of radio and bluetooth state if the alloted time has passed.
      */
-    virtual CARAPI Run();
+    CARAPI Run();
 
     /**
      * Do not call this directly. Use {@link #reboot(Context, String, boolean)}
@@ -237,8 +237,6 @@ private:
 
     CARAPI_(void) ShutdownRadios(
         /* [in] */ Int32 timeout);
-
-    static CARAPI_(AutoPtr<ShutdownThread>) InitsInstance();
 
     static CARAPI_(AutoPtr<IAudioAttributes>) InitVIBRATION_ATTRIBUTES();
 

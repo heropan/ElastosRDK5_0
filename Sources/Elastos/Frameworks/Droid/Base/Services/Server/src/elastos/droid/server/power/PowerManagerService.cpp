@@ -80,13 +80,13 @@ namespace Droid {
 namespace Server {
 namespace Power {
 
-static PowerManagerService* gPowerManagerService = NULL;
-static struct power_module* gPowerModule = NULL;
+static PowerManagerService* sPowerManagerService = NULL;
+static struct power_module* sPowerModule = NULL;
 
-static nsecs_t gLastEventTime[android::USER_ACTIVITY_EVENT_LAST + 1];
+static nsecs_t sLastEventTime[android::USER_ACTIVITY_EVENT_LAST + 1];
 
 // Throttling interval for user activity calls.
-static const nsecs_t MIN_TIME_BETWEEN_USERACTIVITIES = 500 * 1000000L; // 500ms
+static const nsecs_t MIN_TIME_BETWEEN_USERACTIVITIES = 500 * 1000000LL; // 500ms
 
 const String PowerManagerService::TAG("PowerManagerService");
 const Boolean PowerManagerService::DEBUG = FALSE;
@@ -167,7 +167,7 @@ ECode PowerManagerService::BinderService::PowerHint(
         // Service not ready yet, so who the heck cares about power hints, bah.
         return NOERROR;
     }
-    mHost->mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DEVICE_POWER, String(NULL));
+    FAIL_RETURN(mHost->mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DEVICE_POWER, String(NULL)));
     mHost->PowerHintInternal(hintId, data);
     return NOERROR;
 }
@@ -198,8 +198,8 @@ ECode PowerManagerService::BinderService::AcquireWakeLock(
     FAIL_RETURN(mHost->mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::WAKE_LOCK, String(NULL)));
     if ((flags & IPowerManager::DOZE_WAKE_LOCK) != 0) {
-        mHost->mContext->EnforceCallingOrSelfPermission(
-                Elastos::Droid::Manifest::permission::DEVICE_POWER, String(NULL));
+        FAIL_RETURN(mHost->mContext->EnforceCallingOrSelfPermission(
+                Elastos::Droid::Manifest::permission::DEVICE_POWER, String(NULL)));
     }
     Int32 size;
     if (ws != NULL && (ws->GetSize(&size), size != 0)) {
@@ -470,7 +470,8 @@ ECode PowerManagerService::BinderService::Reboot(
             Elastos::Droid::Manifest::permission::REBOOT, String(NULL)));
 
     if (IPowerManager::REBOOT_RECOVERY.Equals(reason)) {
-        mHost->mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::permission::RECOVERY, String(NULL));
+        FAIL_RETURN(mHost->mContext->EnforceCallingOrSelfPermission(
+                Elastos::Droid::Manifest::permission::RECOVERY, String(NULL)));
     }
 
     Int64 ident = Binder::ClearCallingIdentity();
@@ -769,16 +770,16 @@ PowerManagerService::WakeLock::WakeLock(
     /* [in] */ Int32 ownerUid,
     /* [in] */ Int32 ownerPid,
     /* [in] */ PowerManagerService* host)
-    : mHost(host)
+    : mLock(lock)
+    , mFlags(flags)
+    , mTag(tag)
+    , mPackageName(packageName)
+    , mHistoryTag(historyTag)
+    , mOwnerUid(ownerUid)
+    , mOwnerPid(ownerPid)
+    , mHost(host)
 {
-    mLock = lock;
-    mFlags = flags;
-    mTag = tag;
-    mPackageName = packageName;
     mWorkSource = PowerManagerService::CopyWorkSource(workSource);
-    mHistoryTag = historyTag;
-    mOwnerUid = ownerUid;
-    mOwnerPid = ownerPid;
 }
 
 ECode PowerManagerService::WakeLock::ProxyDied()
@@ -842,7 +843,7 @@ ECode PowerManagerService::WakeLock::UpdateProperties(
 Boolean PowerManagerService::WakeLock::HasSameWorkSource(
     /* [in] */ IWorkSource* workSource)
 {
-    return Object::Equals(IWorkSource::Probe(mWorkSource), IWorkSource::Probe(workSource));
+    return Object::Equals(mWorkSource, workSource);
 }
 
 void PowerManagerService::WakeLock::UpdateWorkSource(
@@ -897,10 +898,10 @@ String PowerManagerService::WakeLock::GetLockFlagsString()
 {
     String result("");
     if ((mFlags & IPowerManager::ACQUIRE_CAUSES_WAKEUP) != 0) {
-        result += String(" ACQUIRE_CAUSES_WAKEUP");
+        result += " ACQUIRE_CAUSES_WAKEUP";
     }
     if ((mFlags & IPowerManager::ON_AFTER_RELEASE) != 0) {
-        result += String(" ON_AFTER_RELEASE");
+        result += " ON_AFTER_RELEASE";
     }
     return result;
 }
@@ -914,7 +915,6 @@ CAR_INTERFACE_IMPL(PowerManagerService::SuspendBlockerImpl, Object, ISuspendBloc
 PowerManagerService::SuspendBlockerImpl::SuspendBlockerImpl(
     /* [in] */ const String& name)
     : mName(name)
-    , mTraceName(String(NULL))
     , mReferenceCount(0)
 {
     StringBuilder buider;
@@ -941,7 +941,7 @@ PowerManagerService::SuspendBlockerImpl::~SuspendBlockerImpl()
     // }
 }
 
-ECode PowerManagerService::SuspendBlockerImpl::Acquire()
+ECode PowerManagerService::SuspendBlockerImpl::AcquireBlocker()
 {
     synchronized(this) {
         mReferenceCount += 1;
@@ -956,7 +956,7 @@ ECode PowerManagerService::SuspendBlockerImpl::Acquire()
     return NOERROR;
 }
 
-ECode PowerManagerService::SuspendBlockerImpl::ReleaseSuspendBlocker()
+ECode PowerManagerService::SuspendBlockerImpl::ReleaseBlocker()
 {
     synchronized(this) {
         mReferenceCount -= 1;
@@ -1108,7 +1108,7 @@ ECode PowerManagerService::UpdateLowPowerModeLockedRunnable::Run()
     for (Int32 i=0; i < size; i++) {
         AutoPtr<IInterface> obj;
         listeners->Get(i, (IInterface**)&obj);
-        AutoPtr<ILowPowerModeListener> listener;
+        AutoPtr<ILowPowerModeListener> listener = ILowPowerModeListener::Probe(obj);
         listener->OnLowPowerModeChanged(mArg);
     }
     intent = NULL;
@@ -1128,8 +1128,8 @@ CAR_INTERFACE_IMPL(PowerManagerService::MyDisplayPowerCallbacks, Object, IDispla
 PowerManagerService::MyDisplayPowerCallbacks::MyDisplayPowerCallbacks(
     /* [in] */ PowerManagerService* host)
     : mHost(host)
+    , mDisplayState(IDisplay::STATE_UNKNOWN)
 {
-    mDisplayState = IDisplay::STATE_UNKNOWN;
 }
 
 ECode PowerManagerService::MyDisplayPowerCallbacks::OnStateChanged()
@@ -1199,12 +1199,12 @@ ECode PowerManagerService::MyDisplayPowerCallbacks::OnDisplayStateChange(
 
 ECode PowerManagerService::MyDisplayPowerCallbacks::AcquireSuspendBlocker()
 {
-    return mHost->mDisplaySuspendBlocker->Acquire();
+    return mHost->mDisplaySuspendBlocker->AcquireBlocker();
 }
 
 ECode PowerManagerService::MyDisplayPowerCallbacks::ReleaseSuspendBlocker()
 {
-    return mHost->mDisplaySuspendBlocker->ReleaseSuspendBlocker();
+    return mHost->mDisplaySuspendBlocker->ReleaseBlocker();
 }
 
 ECode PowerManagerService::MyDisplayPowerCallbacks::ToString(
@@ -1214,7 +1214,7 @@ ECode PowerManagerService::MyDisplayPowerCallbacks::ToString(
 
     synchronized(this) {
         assert(0 && "TODO");
-        *str = String("state="); /* + Display::StateToString(mDisplayState)*/;
+        *str = "state="; /* + Display::StateToString(mDisplayState)*/;
         return NOERROR;
     }
     return NOERROR;
@@ -1368,7 +1368,7 @@ ECode PowerManagerService::constructor(
     synchronized(mLock) {
         mWakeLockSuspendBlocker = CreateSuspendBlockerLocked(String("PowerManagerService.WakeLocks"));
         mDisplaySuspendBlocker = CreateSuspendBlockerLocked(String("PowerManagerService.Display"));
-        mDisplaySuspendBlocker->Acquire();
+        mDisplaySuspendBlocker->AcquireBlocker();
         mHoldingDisplaySuspendBlocker = TRUE;
         mHalAutoSuspendModeEnabled = FALSE;
         mHalInteractiveModeEnabled = TRUE;
@@ -1847,14 +1847,14 @@ void PowerManagerService::ReleaseWakeLockInternal(
         AutoPtr<WakeLock> wakeLock = (WakeLock*)(IProxyDeathRecipient::Probe(obj));
         if (DEBUG_SPEW) {
             Slogger::D(TAG, "releaseWakeLockInternal: lock=%d [%s], flags=0x%08x",
-                    Objects::GetHashCode(lock), (wakeLock->mTag).string(), flags);
+                    Objects::GetHashCode(lock), wakeLock->mTag.string(), flags);
         }
 
         if ((flags & IPowerManager::RELEASE_FLAG_WAIT_FOR_NO_PROXIMITY) != 0) {
             mRequestWaitForNegativeProximity = TRUE;
         }
 
-        AutoPtr<IProxy> proxy = (IProxy*)(wakeLock->mLock)->Probe(EIID_IProxy);
+        AutoPtr<IProxy> proxy = (IProxy*)wakeLock->mLock->Probe(EIID_IProxy);
         Boolean res;
         proxy->UnlinkToDeath(wakeLock, 0, &res);
         RemoveWakeLockLocked(wakeLock, index);
@@ -1867,7 +1867,7 @@ void PowerManagerService::HandleWakeLockDeath(
     synchronized(mLock) {
         if (DEBUG_SPEW) {
             Slogger::D(TAG, "handleWakeLockDeath: lock=%d [%s]",
-                    Objects::GetHashCode(wakeLock->mLock), (wakeLock->mTag).string());
+                    Objects::GetHashCode(wakeLock->mLock), wakeLock->mTag.string());
         }
 
         Int32 index;
@@ -1928,7 +1928,7 @@ ECode PowerManagerService::UpdateWakeLockWorkSourceInternal(
         AutoPtr<WakeLock> wakeLock = (WakeLock*)(IProxyDeathRecipient::Probe(obj));
         if (DEBUG_SPEW) {
             Slogger::D(TAG, "UpdateWakeLockWorkSourceInternal: lock=%d [%s], ws=%p",
-                    Objects::GetHashCode(lock), (wakeLock->mTag).string(), ws);
+                    Objects::GetHashCode(lock), wakeLock->mTag.string(), ws);
         }
 
         if (!wakeLock->HasSameWorkSource(ws)) {
@@ -3020,21 +3020,21 @@ void PowerManagerService::UpdateSuspendBlockerLocked()
 
     // First acquire suspend blockers if needed.
     if (needWakeLockSuspendBlocker && !mHoldingWakeLockSuspendBlocker) {
-        mWakeLockSuspendBlocker->Acquire();
+        mWakeLockSuspendBlocker->AcquireBlocker();
         mHoldingWakeLockSuspendBlocker = TRUE;
     }
     if (needDisplaySuspendBlocker && !mHoldingDisplaySuspendBlocker) {
-        mDisplaySuspendBlocker->Acquire();
+        mDisplaySuspendBlocker->AcquireBlocker();
         mHoldingDisplaySuspendBlocker = TRUE;
     }
 
     // Then release suspend blockers if needed.
     if (!needWakeLockSuspendBlocker && mHoldingWakeLockSuspendBlocker) {
-        mWakeLockSuspendBlocker->ReleaseSuspendBlocker();
+        mWakeLockSuspendBlocker->ReleaseBlocker();
         mHoldingWakeLockSuspendBlocker = FALSE;
     }
     if (!needDisplaySuspendBlocker && mHoldingDisplaySuspendBlocker) {
-        mDisplaySuspendBlocker->ReleaseSuspendBlocker();
+        mDisplaySuspendBlocker->ReleaseBlocker();
         mHoldingDisplaySuspendBlocker = FALSE;
     }
 
@@ -3361,11 +3361,11 @@ ECode PowerManagerService::LowLevelReboot(
         // there's a very large update package, so lengthen the
         // timeout.
         sp->Set(String("ctl.start"), String("pre-recovery"));
-        duration = 120 * 1000L;
+        duration = 120 * 1000LL;
     }
     else {
         sp->Set(String("sys.powerctl"), String("reboot,") + str);
-        duration = 20 * 1000L;
+        duration = 20 * 1000LL;
     }
     // try {
     Thread::Sleep(duration);
@@ -3588,16 +3588,16 @@ AutoPtr<IWorkSource> PowerManagerService::CopyWorkSource(
 }
 
 // method for NativeInputManager
-void PowerManagerService::userActivity(
+void PowerManagerService::UserActivity(
     /* [in] */ nsecs_t eventTime,
     /* [in] */ int32_t eventType)
 {
     // Tell the power HAL when user activity occurs.
-    if (gPowerModule && gPowerModule->powerHint) {
-        gPowerModule->powerHint(gPowerModule, (power_hint_t)POWER_HINT_INTERACTION, NULL);
+    if (sPowerModule && sPowerModule->powerHint) {
+        sPowerModule->powerHint(sPowerModule, (power_hint_t)POWER_HINT_INTERACTION, NULL);
     }
 
-    if (gPowerManagerService) {
+    if (sPowerManagerService) {
         // Throttle calls into user activity by event type.
         // We're a little conservative about argument checking here in case the caller
         // passes in bad data which could corrupt system state.
@@ -3607,12 +3607,12 @@ void PowerManagerService::userActivity(
                 eventTime = now;
             }
 
-            if (gLastEventTime[eventType] + MIN_TIME_BETWEEN_USERACTIVITIES > eventTime) {
+            if (sLastEventTime[eventType] + MIN_TIME_BETWEEN_USERACTIVITIES > eventTime) {
                 return;
             }
-            gLastEventTime[eventType] = eventTime;
+            sLastEventTime[eventType] = eventTime;
         }
-        gPowerManagerService->UserActivityFromNative(nanoseconds_to_milliseconds(eventTime), eventType, 0);
+        sPowerManagerService->UserActivityFromNative(nanoseconds_to_milliseconds(eventTime), eventType, 0);
     }
 }
 
@@ -3620,10 +3620,12 @@ void PowerManagerService::userActivity(
 
 void PowerManagerService::NativeInit()
 {
+    sPowerManagerService = this;
+
     Int32 err = hw_get_module(POWER_HARDWARE_MODULE_ID,
-            (hw_module_t const**)&gPowerModule);
+            (hw_module_t const**)&sPowerModule);
     if (!err) {
-        gPowerModule->init(gPowerModule);
+        sPowerModule->init(sPowerModule);
     }
     else {
         ALOGE("Couldn't load %s module (%s)", POWER_HARDWARE_MODULE_ID,
@@ -3632,7 +3634,7 @@ void PowerManagerService::NativeInit()
 
     // Initialize
     for (Int32 i = 0; i <= android::USER_ACTIVITY_EVENT_LAST; i++) {
-        gLastEventTime[i] = LLONG_MIN;
+        sLastEventTime[i] = LLONG_MIN;
     }
 }
 
@@ -3651,14 +3653,14 @@ void PowerManagerService::NativeReleaseSuspendBlocker(
 void PowerManagerService::NativeSetInteractive(
     /* [in] */ Boolean enable)
 {
-    if (gPowerModule) {
+    if (sPowerModule) {
         if (enable) {
             ALOGD_IF_SLOW(20, "Excessive delay in setInteractive(true) while turning screen on");
-            gPowerModule->setInteractive(gPowerModule, TRUE);
+            sPowerModule->setInteractive(sPowerModule, TRUE);
         }
         else {
             ALOGD_IF_SLOW(20, "Excessive delay in setInteractive(false) while turning screen off");
-            gPowerModule->setInteractive(gPowerModule, FALSE);
+            sPowerModule->setInteractive(sPowerModule, FALSE);
         }
     }
 }
@@ -3682,11 +3684,11 @@ void PowerManagerService::NativeSendPowerHint(
 {
     int data_param = data;
 
-    if (gPowerModule && gPowerModule->powerHint) {
+    if (sPowerModule && sPowerModule->powerHint) {
         if(data)
-            gPowerModule->powerHint(gPowerModule, (power_hint_t)hintId, &data_param);
+            sPowerModule->powerHint(sPowerModule, (power_hint_t)hintId, &data_param);
         else {
-            gPowerModule->powerHint(gPowerModule, (power_hint_t)hintId, NULL);
+            sPowerModule->powerHint(sPowerModule, (power_hint_t)hintId, NULL);
         }
     }
 }

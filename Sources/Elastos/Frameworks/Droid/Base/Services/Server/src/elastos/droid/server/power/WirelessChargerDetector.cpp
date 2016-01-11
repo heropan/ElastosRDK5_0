@@ -99,7 +99,7 @@ WirelessChargerDetector::WirelessChargerDetector(
     , mRestY(0)
     , mRestZ(0)
     , mDetectionInProgress(FALSE)
-    , mDetectionStartTime(0LL)
+    , mDetectionStartTime(0)
     , mMustUpdateRestPosition(FALSE)
     , mTotalSamples(0)
     , mMovingSamples(0)
@@ -215,7 +215,7 @@ void WirelessChargerDetector::StartDetectionLocked()
         mSensorManager->RegisterListener(mListener, mGravitySensor,
                 SAMPLING_INTERVAL_MILLIS * 1000, &result);
         if (result) {
-            mSuspendBlocker->Acquire();
+            mSuspendBlocker->AcquireBlocker();
             mDetectionInProgress = TRUE;
             mDetectionStartTime = SystemClock::GetUptimeMillis();
             mTotalSamples = 0;
@@ -258,7 +258,7 @@ void WirelessChargerDetector::FinishDetectionLocked()
         }
 
         mDetectionInProgress = FALSE;
-        mSuspendBlocker->ReleaseSuspendBlocker();
+        mSuspendBlocker->ReleaseBlocker();
     }
 }
 

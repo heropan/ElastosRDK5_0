@@ -1,6 +1,7 @@
 
 
 DIRS += am
+DIRS += clipboard
 DIRS += connectivity
 DIRS += content
 DIRS += display

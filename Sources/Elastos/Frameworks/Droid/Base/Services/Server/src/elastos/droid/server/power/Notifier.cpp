@@ -169,21 +169,20 @@ Notifier::Notifier(
     /* [in] */ IIAppOpsService* appOps,
     /* [in] */ ISuspendBlocker* suspendBlocker,
     /* [in] */ IWindowManagerPolicy* policy)
-    : mActualPowerState(0)
+    : mContext(context)
+    , mBatteryStats(batteryStats)
+    , mAppOps(appOps)
+    , mSuspendBlocker(suspendBlocker)
+    , mPolicy(policy)
+    , mActualPowerState(0)
     , mLastGoToSleepReason(0)
     , mPendingWakeUpBroadcast(FALSE)
     , mPendingGoToSleepBroadcast(FALSE)
     , mBroadcastedPowerState(0)
     , mBroadcastInProgress(FALSE)
-    , mBroadcastStartTime(0LL)
+    , mBroadcastStartTime(0)
     , mUserActivityPending(FALSE)
 {
-    mContext = context;
-    mBatteryStats = batteryStats;
-    mAppOps = appOps;
-    mSuspendBlocker = suspendBlocker;
-    mPolicy = policy;
-
     AutoPtr<IInterface> obj = LocalServices::GetService(EIID_IActivityManagerInternal);
     mActivityManagerInternal = IActivityManagerInternal::Probe(obj);
     obj = LocalServices::GetService(EIID_IInputManagerInternal);
@@ -433,7 +432,7 @@ void Notifier::OnWirelessChargingStarted()
         Slogger::D(TAG, "onWirelessChargingStarted");
     }
 
-    mSuspendBlocker->Acquire();
+    mSuspendBlocker->AcquireBlocker();
     AutoPtr<IMessage> msg;
     mHandler->ObtainMessage(MSG_WIRELESS_CHARGING_STARTED, (IMessage**)&msg);
     msg->SetAsynchronous(TRUE);
@@ -448,7 +447,7 @@ void Notifier::UpdatePendingBroadcastLocked()
             && (mPendingWakeUpBroadcast || mPendingGoToSleepBroadcast
                     || mActualPowerState != mBroadcastedPowerState)) {
         mBroadcastInProgress = TRUE;
-        mSuspendBlocker->Acquire();
+        mSuspendBlocker->AcquireBlocker();
         AutoPtr<IMessage> msg;
         mHandler->ObtainMessage(MSG_BROADCAST, (IMessage**)&msg);
         msg->SetAsynchronous(TRUE);
@@ -460,7 +459,7 @@ void Notifier::UpdatePendingBroadcastLocked()
 void Notifier::FinishPendingBroadcastLocked()
 {
     mBroadcastInProgress = FALSE;
-    mSuspendBlocker->ReleaseSuspendBlocker();
+    mSuspendBlocker->ReleaseBlocker();
 }
 
 void Notifier::SendUserActivity()
@@ -584,7 +583,7 @@ void Notifier::PlayWirelessChargingStartedSound()
         }
     }
 
-    mSuspendBlocker->ReleaseSuspendBlocker();
+    mSuspendBlocker->ReleaseBlocker();
 }
 
 } // namespace Power

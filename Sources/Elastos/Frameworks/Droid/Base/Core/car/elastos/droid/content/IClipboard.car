@@ -14,7 +14,7 @@ module
      * between applications.
      * {@hide}
      */
-    interface IClipboard {
+    interface IIClipboard {
         SetPrimaryClip(
             [in] IClipData* clip,
             [in] String callingPackage);
