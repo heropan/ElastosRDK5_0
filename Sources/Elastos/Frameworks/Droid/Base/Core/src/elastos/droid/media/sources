@@ -69,6 +69,8 @@ SOURCES += WebVttParser.cpp
 SOURCES += WebVttParserHelper.cpp
 SOURCES += CWebVttParserHelper.cpp
 SOURCES += TextTrackCue.cpp
+SOURCES += TextTrackRegion.cpp
+SOURCES += WebVttRenderingWidget.cpp
 
 SOURCES += media.cpp
 

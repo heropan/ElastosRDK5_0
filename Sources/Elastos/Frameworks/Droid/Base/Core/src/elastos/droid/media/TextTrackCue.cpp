@@ -4,6 +4,7 @@
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/Arrays.h>
 
+using Elastos::Core::CInteger32;
 using Elastos::Utility::Arrays;
 
 namespace Elastos {
@@ -16,7 +17,6 @@ TextTrackCue::TextTrackCue()
     , mWritingDirection(ITextTrackCue::WRITING_DIRECTION_HORIZONTAL)
     , mRegionId(String(""))
     , mSnapToLines(TRUE)
-    , mLinePosition(0)
     , mAutoLinePosition(FALSE)
     , mTextPosition(50)
     , mSize(100)
@@ -49,7 +49,7 @@ ECode TextTrackCue::Equals(
     // try {
     Int32 length = mLines->GetLength();
     AutoPtr<TextTrackCue> cue = (TextTrackCue*)(ITextTrackCue::Probe(other));
-    AutoPtr<ArrayOf<AutoPtr<ArrayOf<ITextTrackCueSpan*> > > > lines = cue->mLines;
+    AutoPtr<ArrayOf<IArrayOf*> > lines = cue->mLines;
     Int32 len = lines->GetLength();
     Boolean res = mId.Equals(cue->mId) &&
             mPauseOnExit == cue->mPauseOnExit &&
@@ -63,9 +63,11 @@ ECode TextTrackCue::Equals(
             length == len;
     if (res == TRUE) {
         for (Int32 line = 0; line < length; line++) {
-            ArrayOf<ITextTrackCueSpan*>* spans = (*mLines)[line];
-            ArrayOf<ITextTrackCueSpan*>* spans_ = (*lines)[line];
-            if (!Arrays::Equals(spans, spans_)) {
+            AutoPtr<IArrayOf> spans = (*mLines)[line];
+            AutoPtr<IArrayOf> spans_ = (*lines)[line];
+            Boolean bEqual = FALSE;
+            spans->DeepEquals(spans_, &bEqual);
+            if (!bEqual) {
                 *result = FALSE;
                 return NOERROR;
             }
@@ -92,7 +94,7 @@ ECode TextTrackCue::AppendStringsToBuilder(
         Boolean first = TRUE;
         Int32 len = mStrings->GetLength();
         for (Int32 i = 0; i < len; i++) {
-            String s = (*mStrings)[i];
+            AutoPtr<ICharSequence> s = (*mStrings)[i];
             if (!first) {
                 builder->Append(String(", "));
             }
@@ -128,16 +130,19 @@ ECode TextTrackCue::AppendLinesToBuilder(
             if (!first) {
                 builder->Append(String(", "));
             }
-            AutoPtr<ArrayOf<ITextTrackCueSpan*> > spans = (*mLines)[i];
+            AutoPtr<IArrayOf> spans = (*mLines)[i];
             if (spans == NULL) {
                 builder->Append(String("NULL"));
             } else {
                 builder->Append(String("\""));
                 Boolean innerFirst = TRUE;
                 Int64 lastTimestamp = -1;
-                Int32 len = spans->GetLength();
+                Int32 len;
+                spans->GetLength(&len);
                 for (Int32 i = 0; i < len; i++) {
-                    AutoPtr<ITextTrackCueSpan> span = (*spans)[i];
+                    AutoPtr<IInterface> obj;
+                    spans->Get(i, (IInterface**)&obj);
+                    AutoPtr<ITextTrackCueSpan> span = ITextTrackCueSpan::Probe(obj);
                     if (!innerFirst) {
                         builder->Append(String(" "));
                     }
@@ -233,10 +238,13 @@ ECode TextTrackCue::OnTime(
 {
     Int32 len = mLines->GetLength();
     for (Int32 i = 0; i < len; i++) {
-        AutoPtr<ArrayOf<ITextTrackCueSpan*> > spans = (*mLines)[i];
-        Int32 length = spans->GetLength();
+        AutoPtr<IArrayOf> spans = (*mLines)[i];
+        Int32 length;
+        spans->GetLength(&length);
         for (Int32 j = 0; j < length; j++) {
-            AutoPtr<ITextTrackCueSpan> span = (*spans)[i];
+            AutoPtr<IInterface> obj;
+            spans->Get(j, (IInterface**)&obj);
+            AutoPtr<ITextTrackCueSpan> span = ITextTrackCueSpan::Probe(obj);
             Int64 timestampMs;
             span->GetTimeStampMs(&timestampMs);
             Boolean flag = timeMs >= timestampMs;
@@ -324,7 +332,9 @@ ECode TextTrackCue::GetSnapToLines(
 ECode TextTrackCue::SetLinePosition(
     /* [in] */ Int32 linePosition)
 {
-    mLinePosition = linePosition;
+    AutoPtr<IInteger32> lp;
+    CInteger32::New(linePosition, (IInteger32**)&lp);
+    mLinePosition = lp;
     return NOERROR;
 }
 
@@ -332,7 +342,9 @@ ECode TextTrackCue::GetLinePosition(
     /* [out] */ Int32* linePosition)
 {
     VALIDATE_NOT_NULL(linePosition)
-    *linePosition = mLinePosition;
+    Int32 lp;
+    mLinePosition->GetValue(&lp);
+    *linePosition = lp;
     return NOERROR;
 }
 
@@ -378,6 +390,54 @@ ECode TextTrackCue::GetAlignment(
 {
     VALIDATE_NOT_NULL(alignment);
     *alignment = mAlignment;
+    return NOERROR;
+}
+
+ECode TextTrackCue::GetStrings(
+    /* [out, callee] */ ArrayOf<ICharSequence*>** strings)
+{
+    VALIDATE_NOT_NULL(strings);
+    *strings = mStrings;
+    REFCOUNT_ADD(*strings);
+    return NOERROR;
+}
+
+ECode TextTrackCue::SetStrings(
+    /* [in] */ ArrayOf<ICharSequence*>* strings)
+{
+    mStrings = strings;
+    return NOERROR;
+}
+
+ECode TextTrackCue::GetLines(
+    /* [out, callee] */ ArrayOf<IArrayOf*>** lines)
+{
+    VALIDATE_NOT_NULL(lines);
+    *lines = mLines;
+    REFCOUNT_ADD(*lines);
+    return NOERROR;
+}
+
+ECode TextTrackCue::SetLines(
+    /* [in] */ ArrayOf<IArrayOf*>* lines)
+{
+    mLines = lines;
+    return NOERROR;
+}
+
+ECode TextTrackCue::GetRegion(
+    /* [out] */ ITextTrackRegion** result)
+{
+    VALIDATE_NOT_NULL(result);
+    *result = mRegion;
+    REFCOUNT_ADD(*result);
+    return NOERROR;
+}
+
+ECode TextTrackCue::SetRegion(
+    /* [in] */ ITextTrackRegion* ttr)
+{
+    mRegion = ttr;
     return NOERROR;
 }
 

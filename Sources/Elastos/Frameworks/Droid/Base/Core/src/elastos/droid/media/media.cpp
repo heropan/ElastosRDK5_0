@@ -7,6 +7,8 @@
 #include "elastos/droid/media/CWebVttRendererTokenizerTagTokenizer.h"
 #include "elastos/droid/media/CWebVttRendererTextTrackCue.h"
 #include "elastos/droid/media/CWebVttParser.h"
+#include "elastos/droid/media/CTextTrackRegion.h"
+#include "elastos/droid/media/CWebVttRenderingWidget.h"
 
 namespace Elastos {
 namespace Droid {
@@ -21,6 +23,8 @@ CAR_OBJECT_IMPL(CWebVttRendererTokenizerDataTokenizer)
 CAR_OBJECT_IMPL(CWebVttRendererTokenizerTagTokenizer)
 CAR_OBJECT_IMPL(CWebVttRendererTextTrackCue)
 CAR_OBJECT_IMPL(CWebVttParser)
+CAR_OBJECT_IMPL(CTextTrackRegion)
+CAR_OBJECT_IMPL(CWebVttRenderingWidget)
 
 } // namespace Media
 } // namepsace Droid

@@ -1,9 +1,9 @@
 module
 {
-    using interface Elastos.Core.IStringBuilder;
-    using interface Elastos.Core.IArrayOf;
     using interface Elastos.Utility.IVector;
-
+    using interface Elastos.Core.IArrayOf;
+    using interface Elastos.Core.ICharSequence;
+    using interface Elastos.Core.IStringBuilder;
 
     namespace Elastos {
     namespace Droid {
@@ -118,12 +118,61 @@ module
     {
         const Int32 SCROLL_VALUE_NONE = 300;
         const Int32 SCROLL_VALUE_SCROLL_UP = 301;
+
+        GetId(
+            [out] String* id);
+
+        SetId(
+            [in] String id);
+
+        GetWidth(
+            [out] Float* width);
+
+        SetWidth(
+            [in] Float width);
+
+        GetLines(
+            [out] Int32* lines);
+
+        SetLines(
+            [in] Int32 lines);
+
+        GetAnchorPointX(
+            [out] Float* anchorPointX);
+
+        SetAnchorPointX(
+            [in] Float anchorPointX);
+
+        GetAnchorPointY(
+            [out] Float* anchorPointY);
+
+        SetAnchorPointY(
+            [in] Float anchorPointY);
+
+        GetViewportAnchorPointX(
+            [out] Float* pointX);
+
+        SetViewportAnchorPointX(
+            [in] Float pointX);
+
+        GetViewportAnchorPointY(
+            [out] Float* pointY);
+
+        SetViewportAnchorPointY(
+            [in] Float pointY);
+
+        GetScrollValue(
+            [out] Int32* scrollValue);
+
+        SetScrollValue(
+            [in] Int32 scrollValue);
     }
 
     /**
      * @Involve
      * interface ISubtitleTrackCue
      */
+    [deprecated]
     interface ITextTrackCue
     {
         const Int32 WRITING_DIRECTION_HORIZONTAL = 100;
@@ -197,6 +246,24 @@ module
 
         GetAlignment(
             [out] Int32* alignment);
+
+        GetStrings(
+            [out, callee] ArrayOf<ICharSequence*>* strings);
+
+        SetStrings(
+            [in] ArrayOf<ICharSequence*>* strings);
+
+        GetLines(
+            [out, callee] ArrayOf<IArrayOf*>* lines);
+
+        SetLines(
+            [in] ArrayOf<IArrayOf*>* lines);
+
+        GetRegion(
+            [out] ITextTrackRegion** result);
+
+        SetRegion(
+            [in] ITextTrackRegion* ttr);
     }
 
     /**

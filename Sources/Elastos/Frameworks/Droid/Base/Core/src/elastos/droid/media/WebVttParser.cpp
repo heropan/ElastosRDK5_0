@@ -354,10 +354,9 @@ ECode WebVttParser::YieldCue()
     Int32 size = 0;
     mCueTexts->GetSize(&size);
     if (mCue != NULL && size > 0) {
-        // ((TextTrackCue*)mCue)->mStrings = ArrayOf<String>::Alloc(size);
-    // ToArray(
-      //      [out, callee] ArrayOf<IInterface *> * array);
-    //     mCueTexts->ToArray(mCue.mStrings);
+        AutoPtr<ArrayOf<ICharSequence*> > strings;
+        mCueTexts->ToArray((ArrayOf<IInterface*>**)&strings);
+        ((TextTrackCue*)mCue.Get())->mStrings = strings;
         mCueTexts->Clear();
         mListener->OnCueParsed(mCue);
     }

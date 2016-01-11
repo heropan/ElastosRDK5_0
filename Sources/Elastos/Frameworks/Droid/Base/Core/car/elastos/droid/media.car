@@ -195,7 +195,9 @@ module
     interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
     interface Elastos.Droid.View.IInputChannel;
     interface Elastos.Droid.View.IKeyEventCallback;
+    interface Elastos.Droid.View.IViewManager;
     interface Elastos.Droid.View.IViewGroup;
+    interface Elastos.Droid.View.IViewParent;
     interface Elastos.Droid.View.IView;
     interface Elastos.Core.ICharSequence;
     interface Elastos.Core.IRunnable;
@@ -1189,6 +1191,43 @@ module
 
     singleton class CWebVttParserHelper {
         interface IWebVttParserHelper;
+    }
+
+    class CTextTrackRegion {
+
+        constructor();
+
+        interface ITextTrackRegion;
+    }
+
+    class CWebVttRenderingWidget {
+
+        constructor(
+            [in] IContext* context);
+
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs);
+
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr);
+
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
+        interface IWebVttRenderingWidget;
+        interface ISubtitleTrackRenderingWidget;
+        interface IView;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+        interface IViewParent;
+        interface IViewManager;
     }
 
     } // namespace media
