@@ -9,6 +9,11 @@
 #include "elastos/droid/media/CWebVttParser.h"
 #include "elastos/droid/media/CTextTrackRegion.h"
 #include "elastos/droid/media/CWebVttRenderingWidget.h"
+#include "elastos/droid/media/CTextTrackCue.h"
+#include "elastos/droid/media/CUnstyledTextExtractor.h"
+#include "elastos/droid/media/CMediaSyncEvent.h"
+#include "elastos/droid/media/CSRTRenderer.h"
+#include "elastos/droid/media/CWebVttTrack.h"
 
 namespace Elastos {
 namespace Droid {
@@ -25,6 +30,11 @@ CAR_OBJECT_IMPL(CWebVttRendererTextTrackCue)
 CAR_OBJECT_IMPL(CWebVttParser)
 CAR_OBJECT_IMPL(CTextTrackRegion)
 CAR_OBJECT_IMPL(CWebVttRenderingWidget)
+CAR_OBJECT_IMPL(CTextTrackCue)
+CAR_OBJECT_IMPL(CUnstyledTextExtractor)
+CAR_OBJECT_IMPL(CMediaSyncEvent)
+CAR_OBJECT_IMPL(CSRTRenderer)
+CAR_OBJECT_IMPL(CWebVttTrack)
 
 } // namespace Media
 } // namepsace Droid

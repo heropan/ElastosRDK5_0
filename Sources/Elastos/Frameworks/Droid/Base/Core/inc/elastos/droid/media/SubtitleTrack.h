@@ -174,6 +174,12 @@ public:
 
         CARAPI SetRunID(
             /* [in] */ Int64 runID);
+
+        CARAPI GetInnerTimesMs(
+            /* [out, callee] */ ArrayOf<Int64>** innerTimesMs);
+
+        CARAPI SetInnerTimesMs(
+            /* [in] */ ArrayOf<Int64>* innerTimesMs);
     public:
         Int64 mStartTimeMs;
         Int64 mEndTimeMs;

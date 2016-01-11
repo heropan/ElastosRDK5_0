@@ -3,14 +3,22 @@
 #define __ELASTOS_DROID_MEDIA_CMEDIASYNCEVENTHELPER_H__
 
 #include "_Elastos_Droid_Media_CMediaSyncEventHelper.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
 
 CarClass(CMediaSyncEventHelper)
+    , public Singleton
+    , public IMediaSyncEventHelper
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     /**
      * Creates a synchronization event of the sepcified type.
      *

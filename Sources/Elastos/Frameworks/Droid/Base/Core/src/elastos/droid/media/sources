@@ -71,6 +71,13 @@ SOURCES += CWebVttParserHelper.cpp
 SOURCES += TextTrackCue.cpp
 SOURCES += TextTrackRegion.cpp
 SOURCES += WebVttRenderingWidget.cpp
+SOURCES += UnstyledTextExtractor.cpp
+SOURCES += VolumeProvider.cpp
+SOURCES += MediaSyncEvent.cpp
+SOURCES += CMediaSyncEventHelper.cpp
+SOURCES += CResampleInputStream.cpp
+SOURCES += SRTRenderer.cpp
+SOURCES += WebVttTrack.cpp
 
 SOURCES += media.cpp
 

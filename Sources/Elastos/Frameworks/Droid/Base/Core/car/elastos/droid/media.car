@@ -188,6 +188,7 @@ module
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Os.IUserHandle;
     interface Elastos.Droid.Os.Storage.IStorageVolume;
     interface Elastos.Droid.Utility.IAttributeSet;
@@ -1228,6 +1229,67 @@ module
         interface IAccessibilityEventSource;
         interface IViewParent;
         interface IViewManager;
+    }
+
+    class CTextTrackCue {
+
+        constructor();
+
+        interface ITextTrackCue;
+        interface ISubtitleTrackCue;
+    }
+
+    class CUnstyledTextExtractor {
+
+        constructor();
+
+        interface IUnstyledTextExtractor;
+        interface ITokenizerOnTokenListener;
+    }
+
+    class CMediaSyncEvent {
+
+        constructor(
+            [in] Int32 eventType);
+
+        interface IMediaSyncEvent;
+    }
+
+    singleton class CMediaSyncEventHelper {
+        interface IMediaSyncEventHelper;
+    }
+
+    class CResampleInputStream {
+
+        constructor(
+            [in] IInputStream* inputStream,
+            [in] Int32 rateIn,
+            [in] Int32 rateOut);
+
+        interface IResampleInputStream;
+    }
+
+    class CSRTRenderer {
+
+        constructor(
+            [in] IContext* context);
+
+        constructor(
+            [in] IContext* context,
+            [in] IHandler* eventHandler);
+
+        interface ISubtitleControllerRenderer;
+    }
+
+    class CWebVttTrack {
+
+        constructor(
+            [in] IWebVttRenderingWidget* renderingWidget,
+            [in] IMediaFormat* format);
+
+        interface IWebVttCueListener;
+        interface ISubtitleTrack;
+        interface IMediaTimeProviderOnMediaTimeListener;
     }
 
     } // namespace media

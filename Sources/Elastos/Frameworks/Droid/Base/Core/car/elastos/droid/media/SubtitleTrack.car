@@ -108,6 +108,12 @@ module
 
         SetRunID(
             [in] Int64 runID);
+
+        GetInnerTimesMs(
+            [out, callee] ArrayOf<Int64>* innerTimesMs);
+
+        SetInnerTimesMs(
+            [in] ArrayOf<Int64>* innerTimesMs);
     }
 
     /** @hide */

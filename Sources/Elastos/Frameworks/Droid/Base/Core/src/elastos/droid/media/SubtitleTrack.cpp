@@ -434,6 +434,22 @@ ECode SubtitleTrack::Cue::SetRunID(
     return NOERROR;
 }
 
+ECode SubtitleTrack::Cue::GetInnerTimesMs(
+    /* [out] */ ArrayOf<Int64>** innerTimesMs)
+{
+    VALIDATE_NOT_NULL(innerTimesMs);
+    *innerTimesMs = mInnerTimesMs;
+    REFCOUNT_ADD(*innerTimesMs);
+    return NOERROR;
+}
+
+ECode SubtitleTrack::Cue::SetInnerTimesMs(
+    /* [in] */ ArrayOf<Int64>* innerTimesMs)
+{
+    mInnerTimesMs = innerTimesMs;
+    return NOERROR;
+}
+
 //===============================================================
             // SubtitleTrack::Run
 //===============================================================
@@ -508,6 +524,8 @@ ECode SubtitleTrack::SubTrackRunnable::Run()
 //===============================================================
             // SubtitleTrack
 //===============================================================
+const String SubtitleTrack::TAG("SubtitleTrack");
+
 CAR_INTERFACE_IMPL_2(SubtitleTrack, Object, ISubtitleTrack, IMediaTimeProviderOnMediaTimeListener)
 
 SubtitleTrack::SubtitleTrack()

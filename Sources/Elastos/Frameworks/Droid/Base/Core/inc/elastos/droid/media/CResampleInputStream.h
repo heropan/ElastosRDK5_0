@@ -16,7 +16,6 @@ namespace Media {
 CarClass(CResampleInputStream), public InputStream
 {
 public:
-
     /**
      * Create a new ResampleInputStream, which converts the sample rate
      * @param inputStream InputStream containing 16 bit PCM.
@@ -28,8 +27,9 @@ public:
 
     ~CResampleInputStream();
 
-    PInterface Probe(
-        /* [in] */ REIID riid);
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
 
     CARAPI Available(
         /* [out] */ Int32 * pNumber);
@@ -60,9 +60,6 @@ public:
     CARAPI Skip(
         /* [in] */ Int64 count,
         /* [out] */ Int64 * pNumber);
-
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockObj);
 
     CARAPI constructor(
         /* [in] */ IInputStream * inputStream,

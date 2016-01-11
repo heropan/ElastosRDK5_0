@@ -2,7 +2,8 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/media/CResampleInputStream.h"
 
-using namespace Elastos::Core;
+using Elastos::IO::EIID_ICloseable;
+using Elastos::IO::EIID_IInputStream;
 
 namespace Elastos {
 namespace Droid {
@@ -74,11 +75,9 @@ CResampleInputStream::~CResampleInputStream()
     mBuf = NULL;
 }
 
-PInterface CResampleInputStream::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CResampleInputStream::Probe(riid);
-}
+CAR_OBJECT_IMPL(CResampleInputStream)
+
+CAR_INTERFACE_IMPL_2(CResampleInputStream, Object, IInputStream, ICloseable)
 
 ECode CResampleInputStream::Available(
     /* [out] */ Int32 * number)
@@ -167,7 +166,7 @@ ECode CResampleInputStream::ReadBytes(
         }
         // TODO: should mBuf.length below be nIn instead?
         Int32 n;
-        mInputStream->ReadBytes(mBuf, mBuf->GetLength() - mBufCount, mBufCount, &n);
+        mInputStream->Read(mBuf, mBuf->GetLength() - mBufCount, mBufCount, &n);
         if (n == -1) {
             *number = -1;
             return NOERROR;
@@ -218,17 +217,6 @@ ECode CResampleInputStream::constructor(
     mRateIn = rateIn;
     mRateOut = rateOut;
 
-    return NOERROR;
-}
-
-ECode CResampleInputStream::GetLock(
-    /* [out] */ IInterface** lockObj)
-{
-    VALIDATE_NOT_NULL(lockObj);
-
-    AutoPtr<IInterface> obj = InputStream::GetLock();
-    *lockObj = obj;
-    REFCOUNT_ADD(*lockObj);
     return NOERROR;
 }
 
