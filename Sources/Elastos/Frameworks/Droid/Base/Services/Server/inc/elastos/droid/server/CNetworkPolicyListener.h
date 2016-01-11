@@ -11,10 +11,17 @@ namespace Server {
 class CConnectivityService;
 
 CarClass(CNetworkPolicyListener)
+    , public Object
+    , public IINetworkPolicyListener
+    , public IBinder
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
-        /* [in] */ Handle32 owner);
+        /* [in] */ IIConnectivityManager* owner);
 
     CARAPI OnUidRulesChanged(
         /* [in] */ Int32 uid,

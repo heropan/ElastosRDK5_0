@@ -13,6 +13,7 @@ SOURCES += DataConnectionStats.cpp
 SOURCES += Nat464Xlat.cpp
 SOURCES += NetworkAgentInfo.cpp
 SOURCES += NetworkMonitor.cpp
+SOURCES += PacManager.cpp
 SOURCES += CTethering.cpp
 SOURCES += Vpn.cpp
 SOURCES += CVpnObserver.cpp

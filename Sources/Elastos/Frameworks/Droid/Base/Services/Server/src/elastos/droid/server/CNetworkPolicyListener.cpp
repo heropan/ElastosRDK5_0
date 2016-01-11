@@ -9,6 +9,10 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 
+CAR_INTERFACE_IMPL_2(CNetworkPolicyListener, Object, IINetworkPolicyListener, IBinder)
+
+CAR_OBJECT_IMPL(CNetworkPolicyListener)
+
 ECode CNetworkPolicyListener::constructor(
     /* [in] */ Handle32 owner)
 {

@@ -95,6 +95,7 @@ module
     using interface Elastos.Droid.Net.IINetworkManagementEventObserver;
     using interface Elastos.Droid.Net.IINetworkPolicyManager;
     using interface Elastos.Droid.Net.IINetworkStatsService;
+    using interface Elastos.Droid.Net.IINetworkPolicyListener;
     using interface Elastos.Droid.Service.Wallpaper.IIWallpaperConnection;
     using interface Elastos.Droid.Utility.ITrustedTime;
     using interface Elastos.Droid.View.IApplicationToken;
@@ -326,30 +327,6 @@ module
 //         interface IIThrottleManager;
 //         interface IBinder;
 //     }
-
-    namespace Wallpaper {
-        [local]
-        class CWallpaperManagerService  {
-            constructor(
-                [in] IContext* ctx);
-
-            interface IWallpaperManagerService;
-            interface IIWallpaperManager;
-            interface IBinder;
-         }
-
-        [local]
-        class CWallpaperConnection {
-            constructor(
-                [in] IWallpaperInfo* info,
-                [in] IWallpaperData* wallpaper);
-
-            interface IWallpaperConnection;
-            interface IIWallpaperConnection;
-            interface IServiceConnection;
-            interface IBinder;
-         }
-    }//namespace Wallpaper
 
 //     class CWMSUserSwitchObserver {
 //         constructor(
@@ -732,37 +709,33 @@ module
 
 //     } // Wm
 
-//     class CNetworkPolicyListener {
-//         constructor(
-//             [in] Handle32 service);
+    // class CNetworkPolicyListener {
+    //     constructor(
+    //         [in] IIConnectivityManager* connectivityService);
 
-//         interface INetworkPolicyListener;
-//     }
+    //     interface IINetworkPolicyListener;
+    //     interface IBinder;
+    // }
 
-//     class CDataActivityObserver {
-//         constructor(
-//             [in] Handle32 owner);
+    // class CDataActivityObserver {
+    //     constructor(
+    //         [in] IIConnectivityManager* connectivityService);
 
-//         interface IINetworkManagementEventObserver;
-//     }
+    //     interface IINetworkManagementEventObserver;
+    //     interface IBinder;
+    // }
 
-//     [local]
-//     class CConnectivityService {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IINetworkManagementService* netManager,
-//             [in] INetworkStatsService* statsService,
-//             [in] IINetworkPolicyManager* policyManager);
+    // [local]
+    // class CConnectivityService {
+    //     constructor(
+    //         [in] IContext* ctx,
+    //         [in] IINetworkManagementService* netManager,
+    //         [in] INetworkStatsService* statsService,
+    //         [in] IINetworkPolicyManager* policyManager);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IINetworkManagementService* netManager,
-//             [in] INetworkStatsService* statsService,
-//             [in] IINetworkPolicyManager* policyManager,
-//             [in] Handle32 netFactory);
-
-//         interface IIConnectivityManager;
-//     }
+    //     interface IIConnectivityManager;
+    //     interface IBinder;
+    // }
 
 //     [local]
 //     class CInputMethodManagerService {
@@ -1122,6 +1095,37 @@ module
 //     } // namespace Widget
 //     } // namespace Droid
 //     } // namespace Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+    namespace Wallpaper {
+
+        [local]
+        class CWallpaperManagerService  {
+            constructor(
+                [in] IContext* ctx);
+
+            interface IWallpaperManagerService;
+            interface IIWallpaperManager;
+            interface IBinder;
+         }
+
+        [local]
+        class CWallpaperConnection {
+            constructor(
+                [in] IWallpaperInfo* info,
+                [in] IWallpaperData* wallpaper);
+
+            interface IWallpaperConnection;
+            interface IIWallpaperConnection;
+            interface IServiceConnection;
+            interface IBinder;
+         }
+    } //namespace Wallpaper
+    } // namespace Server
+    } // namepsace Droid
+    } // namespace Elastos
 
     namespace Elastos {
     namespace Droid {

@@ -8,16 +8,15 @@
 #include "elastos/droid/net/CaptivePortalTracker.h"
 #include "elastos/droid/net/LockdownVpnTracker.h"
 #include "elastos/droid/net/NetworkStateTracker.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/server/connectivity/PermissionMonitor.h"
+#include "elastos/droid/server/connectivity/Nat464Xlat.h"
+#include "elastos/droid/server/connectivity/CTethering.h"
+#include "elastos/droid/server/connectivity/Vpn.h"
+#include "elastos/droid/server/connectivity/DataConnectionStats.h"
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/HashMap.h>
-#include "elastos/droid/os/HandlerBase.h"
 
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::Etl::HashSet;
-using Elastos::Security::IKeyStore;
-using Elastos::IO::IFileDescriptor;
-using Elastos::IO::IPrintWriter;
-using Elastos::Net::IInetAddress;
 using Elastos::Droid::Database::ContentObserver;
 using Elastos::Droid::Net::CaptivePortalTracker;
 using Elastos::Droid::Net::ILinkProperties;
@@ -28,177 +27,223 @@ using Elastos::Droid::Net::INetworkConfig;
 using Elastos::Droid::Net::INetworkManagementEventObserver;
 using Elastos::Droid::Net::INetworkPolicyListener;
 using Elastos::Droid::Net::INetworkQuotaInfo;
-using Elastos::Droid::Net::INetworkStatsService;
 using Elastos::Droid::Net::INetworkState;
 using Elastos::Droid::Net::INetworkStateTracker;
+using Elastos::Droid::Net::IINetworkStatsService;
+using Elastos::Droid::Net::IIConnectivityManager;
 using Elastos::Droid::Net::IProxyProperties;
 using Elastos::Droid::Net::IRouteInfo;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IINetworkManagementService;
+using Elastos::Droid::Server::Connectivity::PermissionMonitor;
+using Elastos::Droid::Server::Connectivity::Nat464Xlat;
+using Elastos::Droid::Server::Connectivity::CTethering;
+using Elastos::Droid::Server::Connectivity::Vpn;
 using Elastos::Droid::Server::Net::LockdownVpnTracker;
 using Elastos::Droid::Internal::Net::IVpnConfig;
 using Elastos::Droid::Internal::Net::IVpnProfile;
 using Elastos::Droid::Internal::Net::ILegacyVpnInfo;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::HashSet;
+using Elastos::Security::IKeyStore;
+using Elastos::IO::IFileDescriptor;
+using Elastos::IO::IPrintWriter;
+using Elastos::Net::IInetAddress;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 
-namespace Connectivity {
-class CTethering;
-class Vpn;
-}
-
 class CDataActivityObserver;
 
 CarClass(CConnectivityService)
+    , public IIConnectivityManager
+    , public IBinder
 {
 public:
-    friend class RadioAttributes;
+
     friend class InternalBroadcastReciver;
-    friend class VpnCallback;
-    friend class DefaultNetworkFactory;
     friend class NetworkStateTrackerHandler;
     friend class SettingsObserver;
-    friend class FeatureUser;
     friend class CNetworkPolicyListener;
     friend class CDataActivityObserver;
 
     /**
-     * Factory that creates {@link NetworkStateTracker} instances using given
-     * {@link NetworkConfig}.
+     * Implements support for the legacy "one network per network type" model.
+     *
+     * We used to have a static array of NetworkStateTrackers, one for each
+     * network type, but that doesn't work any more now that we can have,
+     * for example, more that one wifi network. This class stores all the
+     * NetworkAgentInfo objects that support a given type, but the legacy
+     * API will only see the first one.
+     *
+     * It serves two main purposes:
+     *
+     * 1. Provide information about "the network for a given type" (since this
+     *    API only supports one).
+     * 2. Send legacy connectivity change broadcasts. Broadcasts are sent if
+     *    the first network for a given type changes, or if the default network
+     *    changes.
      */
-    interface INetworkFactory : public IInterface
-    {
-        virtual CARAPI CreateTracker(
-            /* [in] */ Int32 targetNetworkType,
-            /* [in] */ INetworkConfig* config,
-            /* [out] */ INetworkStateTracker** tracker) = 0;
-    };
-
-    /**
-     * Callback for VPN subsystem. Currently VPN is not adapted to the service
-     * through NetworkStateTracker since it works differently. For example, it
-     * needs to override DNS servers but never takes the default routes. It
-     * relies on another data network, and it could keep existing connections
-     * alive after reconnecting, switching between networks, or even resuming
-     * from deep sleep. Calls from applications should be done synchronously
-     * to avoid race conditions. As these are all hidden APIs, refactoring can
-     * be done whenever a better abstraction is developed.
-     */
-    class VpnCallback : public ElRefBase
+    class LegacyTypeTracker
+        : public Object
     {
     public:
-        VpnCallback(
-            /* [in] */ CConnectivityService* owner)
-            : mOwner(owner)
-        {}
+        LegacyTypeTracker(
+            /* [in] */ CConnectivityService* host);
 
-        CARAPI OnStateChanged(
-            /* [in] */ INetworkInfo* info);
+        CARAPI AddSupportedType(
+            /* [in] */ Int32 type);
 
-        CARAPI Override(
-            /* [in] */ IObjectContainer* dnsServers,
-            /* [in] */ IObjectContainer* searchDomains);
+        Boolean IsTypeSupported(
+            /* [in] */ Int32 type);
 
-        CARAPI Restore();
+        AutoPtr<INetworkAgentInfo> GetNetworkForType(
+            /* [in] */ Int32 type);
+
+        /** Adds the given network to the specified legacy type list. */
+        void Add(
+            /* [in] */ Int32 type,
+            /* [in] */ INetworkAgentInfo* nai);
+
+        /** Removes the given network from the specified legacy type list. */
+        void Remove(
+            /* [in] */ Int32 type,
+            /* [in] */ INetworkAgentInfo* nai);
+
+        /** Removes the given network from all legacy type lists. */
+        void Remove(
+            /* [in] */ INetworkAgentInfo* nai);
+
+        CARAPI Dump(
+            /* [in] */ IIndentingPrintWriter* pw);
 
     private:
-        CConnectivityService* mOwner;
+        // This class needs its own log method because it has a different TAG.
+        void Log(
+            /* [in] */ const String& s);
+
+        String NaiToString(
+            /* [in] */ INetworkAgentInfo* nai);
+
+        void MaybeLogBroadcast(
+            /* [in] */ INetworkAgentInfo* nai,
+            /* [in] */ Boolean connected,
+            /* [in] */ Int32 type);
+
+    public:
+        static const Boolean DBG;
+        static const Boolean VDBG;
+        static const String TAG;
+
+    private:
+        /**
+         * Array of lists, one per legacy network type (e.g., TYPE_MOBILE_MMS).
+         * Each list holds references to all NetworkAgentInfos that are used to
+         * satisfy requests for that network type.
+         *
+         * This array is built out at startup such that an unsupported network
+         * doesn't get an ArrayList instance, making this a tristate:
+         * unsupported, supported but not active and active.
+         *
+         * The actual lists are populated when we scan the network types that
+         * are supported on this device.
+         */
+         AutoPtr<ArrayOf<IArrayList*> > mTypeLists;// ArrayList<NetworkAgentInfo> []
+         CConnectivityService* mHost;
     };
 
 private:
-    class RadioAttributes : public ElLightRefBase
-    {
-    public:
-        RadioAttributes(
-            /* [in] */ const String& init);
-
-    public:
-        Int32 mSimultaneity;
-        Int32 mType;
-    };
-
-    class DefaultNetworkFactory
-        : public ElRefBase
-        , public INetworkFactory
-    {
-    public:
-        DefaultNetworkFactory(
-            /* [in] */ IContext* context,
-            /* [in] */ IHandler* trackerHandler,
-            /* [in] */ CConnectivityService* owner);
-
-        CAR_INTERFACE_DECL();
-
-        CARAPI CreateTracker(
-            /* [in] */ Int32 targetNetworkType,
-            /* [in] */ INetworkConfig* config,
-            /* [out] */ INetworkStateTracker** tracker);
-
-    private:
-        AutoPtr<IContext> mContext;
-        AutoPtr<IHandler> mTrackerHandler;
-        CConnectivityService* mOwner;
-    };
 
     /**
-     * Used to notice when the calling process dies so we can self-expire
-     *
-     * Also used to know if the process has cleaned up after itself when
-     * our auto-expire timer goes off.  The timer has a link to an object.
-     *
+     * Tracks info about the requester.
+     * Also used to notice when the calling process dies so we can self-expire
      */
-    class FeatureUser
-        : public ElRefBase
+    class NetworkRequestInfo
+        : public Object
         , public IProxyDeathRecipient
     {
-        friend class CConnectivityService;
-
     public:
-        FeatureUser(
-            /* [in] */ Int32 type,
-            /* [in] */ const String& feature,
-            /* [in] */ IBinder* binder,
-            /* [in] */ CConnectivityService* owner);
-
         CAR_INTERFACE_DECL()
 
-        CARAPI_(void) UnlinkDeathRecipient();
+        NetworkRequestInfo(
+            /* [in] */ IMessenger* m,
+            /* [in] */ INetworkRequest* r,
+            /* [in] */ IBinder* binder,
+            /* [in] */ Boolean isRequest,
+            /* [in] */ CConnectivityService* host);
+
+        void UnlinkDeathRecipient();
 
         CARAPI ProxyDied();
 
-        CARAPI Expire();
+        CARAPI ToString(
+            /* [out] */ String* str);
 
-        CARAPI_(Boolean) IsSameUser(
-            /* [in] */ FeatureUser* u);
+    private:
+        static const Boolean REQUEST;
+        static const Boolean LISTEN;
 
-        CARAPI_(Boolean) IsSameUser(
-            /* [in] */ Int32 pid,
-            /* [in] */ Int32 uid,
-            /* [in] */ Int32 networkType,
-            /* [in] */ const String& feature);
-
-        CARAPI_(String) ToString();
-
-    public:
-        Int32 mNetworkType;
-        String mFeature;
+        AutoPtr<INetworkRequest> request;
         AutoPtr<IBinder> mBinder;
         Int32 mPid;
         Int32 mUid;
-        Int64 mCreateTime;
-
-    private:
-        CConnectivityService* mOwner;
+        AutoPtr<IMessenger> messenger;
+        Boolean isRequest;
+        CConnectivityService* mHost;
     };
 
-    class InternalBroadcastReciver: public BroadcastReceiver
+    class NetworkFactoryInfo
+        : public Object
+    {
+    public:
+        NetworkFactoryInfo(
+            /* [in] */ const String& name,
+            /* [in] */ IMessenger* messenger,
+            /* [in] */ IAsyncChannel* asyncChannel)
+            : mName(name)
+            , mMessenger(messenger)
+            , mAsyncChannel(asyncChannel)
+        {
+        }
+
+    public:
+        String mName;
+        AutoPtr<IMessenger> mMessenger;
+        AutoPtr<IAsyncChannel> mAsyncChannel;
+    };
+
+    class UserIntentReceiver
+        : public BroadcastReceiver
+    {
+    public:
+        UserIntentReceiver(
+            /* [in] */ CConnectivityService* host);
+
+        //@Override
+        CARAPI OnReceive(
+            /* [in] */ IContext* context,
+            /* [in] */ IIntent* intent);
+
+        CARAPI ToString(
+            /* [out] */ String* info)
+        {
+            VALIDATE_NOT_NULL(info);
+            *info = String("CConnectivityService::UserIntentReceiver: ");
+            (*info).AppendFormat("%p", this);
+            return NOERROR;
+        }
+    private:
+        CConnectivityService* mHost;
+    };
+
+    class InternalBroadcastReciver
+        : public BroadcastReceiver
     {
     public:
         InternalBroadcastReciver(
-            /* [in] */ CConnectivityService* owner)
-            : mOwner(owner)
+            /* [in] */ CConnectivityService* host)
+            : mHost(host)
         {}
 
         CARAPI OnReceive(
@@ -214,53 +259,78 @@ private:
             return NOERROR;
         }
     private:
-        CConnectivityService* mOwner;
+        CConnectivityService* mHost;
+    };
+
+    class PktCntSampleIntervalElapsedeceiver
+        : public BroadcastReceiver
+    {
+    public:
+        PktCntSampleIntervalElapsedeceiver(
+            /* [in] */ CConnectivityService* host);
+
+        //@Override
+        CARAPI OnReceive(
+            /* [in] */ IContext* context,
+            /* [in] */ IIntent* intent);
+
+        CARAPI ToString(
+            /* [out] */ String* info)
+        {
+            VALIDATE_NOT_NULL(info);
+            *info = String("CConnectivityService::PktCntSampleIntervalElapsedeceiver: ");
+            (*info).AppendFormat("%p", this);
+            return NOERROR;
+        }
+    private:
+        CConnectivityService* mHost;
     };
 
     class InternalHandler
-        : public HandlerBase
+        : public Handler
     {
     public:
         InternalHandler(
             /* [in] */ ILooper* looper,
-            /* [in] */ CConnectivityService* owner)
-            : HandlerBase(looper)
-            , mOwner(owner)
+            /* [in] */ CConnectivityService* host)
+            : Handler(looper)
+            , mHost(host)
         {}
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
 
     private:
-        CConnectivityService* mOwner;
+        CConnectivityService* mHost;
     };
 
     // must be stateless - things change under us.
     class NetworkStateTrackerHandler
-        : public HandlerBase
+        : public Handler
     {
     public:
         NetworkStateTrackerHandler(
             /* [in] */ ILooper* looper,
-            /* [in] */ CConnectivityService* owner)
-            : HandlerBase(looper)
-            , mOwner(owner)
+            /* [in] */ CConnectivityService* host)
+            : Handler(looper)
+            , mHost(host)
         {}
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
 
     private:
-        CConnectivityService* mOwner;
+        CConnectivityService* mHost;
     };
 
-    class SettingsObserver : public ContentObserver
+    class SettingsObserver
+        : public ContentObserver
     {
     public:
         SettingsObserver(
             /* [in] */ IHandler* observerHandler,
             /* [in] */ Int32 what,
-            /* [in] */ CConnectivityService* owner);
+            /* [in] */ CConnectivityService* host);
 
         CARAPI_(void) Observe(
             /* [in] */ IContext* context);
@@ -271,10 +341,14 @@ private:
     private:
         AutoPtr<IHandler> mHandler;
         Int32 mWhat;
-        CConnectivityService* mOwner;
+        CConnectivityService* mHost;
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CConnectivityService();
 
     ~CConnectivityService();
@@ -292,15 +366,6 @@ public:
         /* [in] */ IINetworkPolicyManager* policyManager,
         /* [in] */ Handle32 netFac);
 
-    /**
-    * Sets the preferred network.
-    * @param preference the new preference
-    */
-    CARAPI SetNetworkPreference(
-        /* [in] */ Int32 preference);
-
-    CARAPI GetNetworkPreference(
-        /* [out] */ Int32* preference);
 
     /**
     * Return NetworkInfo for the active (i.e., connected) network interface.
@@ -310,6 +375,16 @@ public:
     * active
     */
     CARAPI GetActiveNetworkInfo(
+        /* [out] */ INetworkInfo** info);
+
+    /**
+     * Find the first Provisioning network or the ActiveDefaultNetwork
+     * if there is no Provisioning network
+     *
+     * @return NetworkInfo or null if none.
+     */
+    // @Override
+    CARAPI GetProvisioningOrActiveNetworkInfo(
         /* [out] */ INetworkInfo** info);
 
     CARAPI GetActiveNetworkInfoUnfiltered(
@@ -323,8 +398,19 @@ public:
         /* [in] */ Int32 networkType,
         /* [out] */ INetworkInfo** info);
 
+    CARAPI GetNetworkInfoForNetwork(
+        /* [in] */ INetwork* network,
+        /* [out] */ INetworkInfo** info);
+
     CARAPI GetAllNetworkInfo(
         /* [out, callee] */ ArrayOf<INetworkInfo*>** allInfo);
+
+    CARAPI GetNetworkForType(
+        /* [in] */ Int32 networkType,
+        /* [out] */ INetwork** network);
+
+    CARAPI GetAllNetworks(
+        /* [out, callee] */ ArrayOf<INetwork*>** networks);
 
     CARAPI IsNetworkSupported(
         /* [in] */ Int32 networkType,
@@ -341,9 +427,18 @@ public:
     CARAPI GetActiveLinkProperties(
         /* [out] */ ILinkProperties** properties);
 
-    CARAPI GetLinkProperties(
+    CARAPI GetLinkPropertiesForType(
         /* [in] */ Int32 networkType,
         /* [out] */ ILinkProperties** properties);
+
+    // TODO - this should be ALL networks
+    CARAPI GetLinkProperties(
+        /* [in] */ INetwork* network,
+        /* [out] */ ILinkProperties** properties);
+
+    CARAPI GetNetworkCapabilities(
+        /* [in] */ INetwork* network,
+        /* [out] */ INetworkCapabilities** result);
 
     CARAPI GetAllNetworkState(
         /* [out] */ ArrayOf<INetworkState*>** allStates);
@@ -352,42 +447,6 @@ public:
         /* [out] */ INetworkQuotaInfo** info);
 
     CARAPI IsActiveNetworkMetered(
-        /* [out] */ Boolean* result);
-
-    CARAPI SetRadios(
-        /* [in] */ Boolean turnOn,
-        /* [out] */ Boolean* result);
-
-    CARAPI SetRadio(
-        /* [in] */ Int32 netType,
-        /* [in] */ Boolean turnOn,
-        /* [out] */ Boolean* result);
-
-    CARAPI StartUsingNetworkFeature(
-        /* [in] */ Int32 networkType,
-        /* [in] */ const String& feature,
-        /* [in] */ IBinder* binder,
-        /* [out] */ Int32* status);
-
-    CARAPI StopUsingNetworkFeature(
-        /* [in] */ Int32 networkType,
-        /* [in] */ const String& feature,
-        /* [out] */ Int32* status);
-
-    /**
-    * @deprecated use requestRouteToHostAddress instead
-    *
-    * Ensure that a network route exists to deliver traffic to the specified
-    * host via the specified network interface.
-    * @param networkType the type of the network over which traffic to the
-    * specified host is to be routed
-    * @param hostAddress the IP address of the host to which the route is
-    * desired
-    * @return {@code true} on success, {@code false} on failure
-    */
-    CARAPI RequestRouteToHost(
-        /* [in] */ Int32 networkType,
-        /* [in] */ Int32 hostAddress,
         /* [out] */ Boolean* result);
 
     /**
@@ -404,21 +463,9 @@ public:
         /* [in] */ ArrayOf<Byte>* hostAddress,
         /* [out] */ Boolean* result);
 
-    /**
-    * @see ConnectivityManager#getMobileDataEnabled()
-    */
-    CARAPI GetMobileDataEnabled(
-        /* [out] */ Boolean* result);
-
     CARAPI SetDataDependency(
         /* [in] */ Int32 networkType,
         /* [in] */ Boolean met);
-
-    /**
-    * @see ConnectivityManager#setMobileDataEnabled(boolean)
-    */
-    CARAPI SetMobileDataEnabled(
-        /* [in] */ Boolean enabled);
 
     CARAPI SetPolicyDataEnable(
         /* [in] */ Int32 networkType,
@@ -430,16 +477,9 @@ public:
     CARAPI_(void) SystemReady();
 
     /** @hide */
-    CARAPI CaptivePortalCheckComplete(
-        /* [in] */ INetworkInfo* info);
-
-    /**
-    * Reads the network specific TCP buffer sizes from SystemProperties
-    * net.tcp.buffersize.[default|wifi|umts|edge|gprs] and set them for system
-    * wide use
-    */
-    CARAPI UpdateNetworkSettings(
-        /* [in] */ INetworkStateTracker* nt);
+    CARAPI CaptivePortalCheckCompleted(
+        /* [in] */ INetworkInfo* info,
+        /* [in] */ Boolean isCaptivePortal);
 
     CARAPI Tether(
         /* [in] */ const String& iface,
@@ -475,7 +515,7 @@ public:
     CARAPI GetTetheredIfaces(
         /* [out, callee] */ ArrayOf<String>** ifaces);
 
-    CARAPI GetTetheredIfacePairs(
+    CARAPI GetTetheredDhcpRanges(
         /* [out, callee] */ ArrayOf<String>** ifaces);
 
     CARAPI GetTetheringErroredIfaces(
@@ -499,39 +539,43 @@ public:
         /* [in] */ Int32 networkType,
         /* [in] */ Int32 percentage);
 
+    CARAPI ReportBadNetwork(
+        /* [in] */ INetwork* network);
+
     CARAPI GetProxy(
-        /* [out] */ IProxyProperties** proxyProperties);
+        /* [out] */ IProxyInfo** proxyInfo);
 
     CARAPI SetGlobalProxy(
-        /* [in] */ IProxyProperties* proxyProperties);
+        /* [in] */ IProxyInfo* proxyInfo);
 
     CARAPI GetGlobalProxy(
-        /* [out] */ IProxyProperties** proxyProperties);
+        /* [out] */ IProxyInfo** proxyInfo);
 
     CARAPI_(Int32) ConvertFeatureToNetworkType(
         /* [in] */ Int32 networkType,
         /* [in] */ const String& feature);
 
     /**
-     * Protect a socket from VPN routing rules. This method is used by
-     * VpnBuilder and not available in ConnectivityManager. Permissions
-     * are checked in Vpn class.
+     * Set whether the current VPN package has the ability to launch VPNs without
+     * user intervention. This method is used by system UIs and not available
+     * in ConnectivityManager. Permissions are checked in Vpn class.
      * @hide
      */
-    CARAPI ProtectVpn(
-        /* [in] */ IParcelFileDescriptor* socket,
-        /* [out] */ Boolean* status);
-
-    /**
-     * Prepare for a VPN application. This method is used by VpnDialogs
-     * and not available in ConnectivityManager. Permissions are checked
-     * in Vpn class.
-     * @hide
-     */
+    // @Override
     CARAPI PrepareVpn(
         /* [in] */ const String& oldPackage,
         /* [in] */ const String& newPackage,
         /* [out] */ Boolean* status);
+
+    /**
+     * Set whether the current VPN package has the ability to launch VPNs without
+     * user intervention. This method is used by system UIs and not available
+     * in ConnectivityManager. Permissions are checked in Vpn class.
+     * @hide
+     */
+    //@Override
+    CARAPI SetVpnPackageAuthorization(
+        /* [in] */ Boolean authorized);
 
     /**
      * Configure a TUN interface and return its file descriptor. Parameters
@@ -560,13 +604,126 @@ public:
     CARAPI GetLegacyVpnInfo(
         /* [out] */ ILegacyVpnInfo** info);
 
-//    //@Override
-//    CARAPI SendMessage(
-//        /* [in] */ Int32 what,
-//        /* [in] */ INetworkInfo* info);
+    /**
+     * Returns the information of the ongoing VPN. This method is used by VpnDialogs and
+     * not available in ConnectivityManager.
+     * Permissions are checked in Vpn class.
+     * @hide
+     */
+    // @Override
+    CARAPI GetVpnConfig(
+        /* [out] */ IVpnConfig** config);
 
     CARAPI UpdateLockdownVpn(
         /* [out] */ Boolean* status);
+
+    CARAPI GetRestoreDefaultNetworkDelay(
+        /* [in] */ Int32 networkType,
+        /* [out] */ Int32* result);
+
+    CARAPI SupplyMessenger(
+        /* [in] */ Int32 networkType,
+        /* [in] */ IMessenger* messenger);
+
+    CARAPI FindConnectionTypeForIface(
+        /* [in] */ const String& iface,
+        /* [out] */ Int32* result);
+
+    CARAPI CheckMobileProvisioning(
+        /* [in] */ Int32 suggestedTimeOutMs,
+        /* [out] */ Int32** result);
+
+    //@Override
+    CARAPI GetMobileRedirectedProvisioningUrl(
+        /* [out] */ String* result);
+
+    //@Override
+    CARAPI GetMobileProvisioningUrl(
+        /* [out] */ String* result);
+
+    //@Override
+    CARAPI SetProvisioningNotificationVisible(
+        /* [in] */ Boolean visible,
+        /* [in] */ Int32 networkType,
+        /* [in] */ const String& action);
+
+    //@Override
+    CARAPI SetAirplaneMode(
+        /* [in] */ Boolean enable);
+
+    //@Override
+    CARAPI GetLinkQualityInfo(
+        /* [in] */ Int32 networkType,
+        /* [out] */ ILinkQualityInfo** info);
+
+    //@Override
+    CARAPI GetActiveLinkQualityInfo(
+        /* [in] */ Int32 networkType,
+        /* [out] */ ILinkQualityInfo** info);
+
+    //@Override
+    CARAPI GetAllLinkQualityInfo(
+        /* [out, callee] */ ArrayOf<ILinkQualityInfo*>** infos);
+
+    //@Override
+    CARAPI RequestNetwork(
+        /* [in] */ INetworkCapabilities* networkCapabilities,
+        /* [in] */ IMessenger* messenger,
+        /* [in] */ Int32 timeoutMs,
+        /* [in] */ IBinder* binder,
+        /* [in] */ IInt32 legacyType,
+        /* [out] */ INetworkRequest** request);
+
+    //@Override
+    CARAPI PendingRequestForNetwork(
+        /* [in] */ INetworkCapabilities* networkCapabilities,
+        /* [in] */ IPendingIntent* operation,
+        /* [out] */ INetworkRequest** request);
+
+    //@Override
+    CARAPI ListenForNetwork(
+        /* [in] */ INetworkCapabilities* networkCapabilities,
+        /* [in] */ IMessenger* messenger,
+        /* [in] */ IBinder* binder,
+        /* [out] */ INetworkRequest** request);
+
+    //@Override
+    CARAPI PendingListenForNetwork(
+        /* [in] */ INetworkCapabilities* networkCapabilities,
+        /* [in] */ IPendingIntent* operation);
+
+    //@Override
+    CARAPI ReleaseNetworkRequest(
+        /* [in] */ INetworkRequest* networkRequest);
+
+    //@Override
+    CARAPI RegisterNetworkFactory(
+        /* [in] */ IMessenger* messenger,
+        /* [in] */ const String& name);
+
+    //@Override
+    CARAPI UnregisterNetworkFactory(
+        /* [in] */ IMessenger* messenger);
+
+    CARAPI RegisterNetworkAgent(
+        /* [in] */ IMessenger* messenger,
+        /* [in] */ INetworkInfo* networkInfo,
+        /* [in] */ ILinkProperties* linkProperties,
+        /* [in] */ INetworkCapabilities* networkCapabilities,
+        /* [in] */ Int32 currentScore,
+        /* [in] */ INetworkMisc* networkMisc);
+
+    //@Override
+    CARAPI AddVpnAddress(
+        /* [in] */ const String& address,
+        /* [in] */ Int32 prefixLength,
+        /* [out] */ Boolean* result);
+
+    //@Override
+    CARAPI RemoveVpnAddress(
+        /* [in] */ const String& address,
+        /* [in] */ Int32 prefixLength,
+        /* [out] */ Boolean* result);
 
 protected:
     //@Override
@@ -576,49 +733,66 @@ protected:
         /* [in] */ const ArrayOf<String>& args);
 
 private:
-    /**
-     * Loads external WiMAX library and registers as system service, returning a
-     * {@link NetworkStateTracker} for WiMAX. Caller is still responsible for
-     * invoking {@link NetworkStateTracker#startMonitoring(Context, Handler)}.
-     */
-    static CARAPI_(AutoPtr<INetworkStateTracker>) MakeWimaxStateTracker(
-        /* [in] */ IContext* context,
-        /* [in] */ IHandler* trackerHandler);
+    CARAPI_(Int32) NextNetworkRequestId();
 
-    CARAPI_(void) HandleSetNetworkPreference(
-        /* [in] */ Int32 preference);
+    /**
+     * Find the first Provisioning network.
+     *
+     * @return NetworkInfo or null if none.
+     */
+    AutoPtr<INetworkInfo> GetProvisioningNetworkInfo();
+
+    CARAPI AssignNextNetId(
+        /* [in] */ INetworkAgentInfo* nai);
 
     CARAPI_(Int32) GetConnectivityChangeDelay();
-
-    CARAPI_(Int32) GetPersistedNetworkPreference();
-
-    /**
-     * Make the state of network connectivity conform to the preference settings
-     * In this method, we only tear down a non-preferred network. Establishing
-     * a connection to the preferred network is taken care of when we handle
-     * the disconnect event from the non-preferred network
-     * (see {@link #handleDisconnect(NetworkInfo)}).
-     */
-    CARAPI_(void) EnforcePreference();
 
     CARAPI_(Boolean) Teardown(
         /* [in] */ INetworkStateTracker* netTracker);
 
     /**
-     * Check if UID should be blocked from using the network represented by the
-     * given {@link NetworkStateTracker}.
+     * Check if UID should be blocked from using the network represented by the given networkType.
+     * @deprecated Uses mLegacyTypeTracker; cannot deal with multiple Networks of the same type.
      */
     CARAPI_(Boolean) IsNetworkBlocked(
-        /* [in] */ INetworkStateTracker* tracker,
+        /* [in] */ Int32 networkType,
+        /* [in] */ Int32 uid);
+
+    /**
+     * Check if UID should be blocked from using the network represented by the given
+     * NetworkAgentInfo.
+     */
+    Boolean IsNetworkBlocked(
+        /* [in] */ INetworkAgentInfo* nai,
+        /* [in] */ Int32 uid);
+
+    /**
+     * Check if UID should be blocked from using the network with the given LinkProperties.
+     */
+    Boolean IsNetworkWithLinkPropertiesBlocked(
+        /* [in] */ ILinkProperties* lp,
         /* [in] */ Int32 uid);
 
     /**
      * Return a filtered {@link NetworkInfo}, potentially marked
      * {@link DetailedState#BLOCKED} based on
-     * {@link #isNetworkBlocked(NetworkStateTracker, int)}.
+     * {@link #isNetworkBlocked}.
+     * @deprecated Uses mLegacyTypeTracker; cannot deal with multiple Networks of the same type.
      */
     CARAPI_(AutoPtr<INetworkInfo>) GetFilteredNetworkInfo(
-        /* [in] */ INetworkStateTracker* tracker,
+        /* [in] */ Int32 networkType,
+        /* [in] */ Int32 uid);
+
+    /*
+     * @deprecated Uses mLegacyTypeTracker; cannot deal with multiple Networks of the same type.
+     */
+    AutoPtr<INetworkInfo> CConnectivityService::GetFilteredNetworkInfo(
+        /* [in] */ INetworkInfo* info,
+        /* [in] */ Int32 networkType,
+        /* [in] */ Int32 uid);
+
+    AutoPtr<INetworkInfo> CConnectivityService::GetFilteredNetworkInfo(
+        /* [in] */ INetworkAgentInfo* nai,
         /* [in] */ Int32 uid);
 
     CARAPI GetNetworkInfo(
@@ -632,76 +806,44 @@ private:
     CARAPI_(Boolean) IsNetworkMeteredUnchecked(
         /* [in] */ Int32 networkType);
 
-    CARAPI_(Int32) StopUsingNetworkFeature(
-        /* [in] */ FeatureUser* u,
-        /* [in] */ Boolean ignoreDups);
+    CARAPI_(Boolean) IsLiveNetworkAgent(
+        /* [in] */ INetworkAgentInfo* nai,
+        /* [in] */ const String& msg);
 
-    CARAPI_(Boolean) AddRoute(
-        /* [in] */ ILinkProperties* p,
-        /* [in] */ IRouteInfo* r,
-        /* [in] */ Boolean toDefaultTable);
+    CARAPI_(Boolean) IsRequest(
+        /* [in] */ INetworkRequest* request);
 
-    CARAPI_(Boolean) RemoveRoute(
-        /* [in] */ ILinkProperties* p,
-        /* [in] */ IRouteInfo* r,
-        /* [in] */ Boolean toDefaultTable);
+    CARAPI_(void) HandleAsyncChannelHalfConnect(
+        /* [in] */ IMessage* msg);
 
-    CARAPI_(Boolean) AddRouteToAddress(
-        /* [in] */ ILinkProperties* lp,
-        /* [in] */ IInetAddress* addr);
+    CARAPI_(void) HandleAsyncChannelDisconnected(
+        /* [in] */ IMessage* msg);
 
-    CARAPI_(Boolean) RemoveRouteToAddress(
-        /* [in] */ ILinkProperties* lp,
-        /* [in] */ IInetAddress* addr);
+    CARAPI_(void) HandleRegisterNetworkRequest(
+        /* [in] */ IMessage* msg);
 
-    CARAPI_(Boolean) ModifyRouteToAddress(
-        /* [in] */ ILinkProperties* lp,
-        /* [in] */ IInetAddress* addr,
-        /* [in] */ Boolean doAdd,
-        /* [in] */ Boolean toDefaultTable);
-
-    CARAPI_(Boolean) ModifyRoute(
-        /* [in] */ const String& ifaceName,
-        /* [in] */ ILinkProperties* lp,
-        /* [in] */ IRouteInfo* r,
-        /* [in] */ Int32 cycleCount,
-        /* [in] */ Boolean doAdd,
-        /* [in] */ Boolean toDefaultTable);
+    CARAPI_(void) HandleReleaseNetworkRequest(
+        /* [in] */ INetworkRequest* request,
+        /* [in] */ Int32 callingUid);
 
     CARAPI_(void) HandleSetDependencyMet(
         /* [in] */ Int32 networkType,
         /* [in] */ Boolean met);
 
-    CARAPI_(void) HandleSetMobileData(
-        /* [in] */ Boolean enabled);
-
     CARAPI_(void) HandleSetPolicyDataEnable(
         /* [in] */ Int32 networkType,
         /* [in] */ Boolean enabled);
 
+    CARAPI EnforceInternetPermission();
+
     CARAPI EnforceAccessPermission();
 
-    CARAPI EnforceChangePermission();
-
     // TODO Make this a special check when it goes public
-    CARAPI EnforceTetherChangePermission();
+    CARAPI EnforceChangePermission();
 
     CARAPI EnforceTetherAccessPermission();
 
     CARAPI EnforceConnectivityInternalPermission();
-
-    /**
-     * Handle a {@code DISCONNECTED} event. If this pertains to the non-active
-     * network, we ignore it. If it is for the active network, we send out a
-     * broadcast. But first, we check whether it might be possible to connect
-     * to a different network.
-     * @param info the {@code NetworkInfo} for the network
-     */
-    CARAPI_(void) HandleDisconnect(
-        /* [in] */ INetworkInfo* info);
-
-    CARAPI_(void) TryFailover(
-        /* [in] */ Int32 prevNetType);
 
     CARAPI_(void) SendConnectedBroadcastDelayed(
         /* [in] */ INetworkInfo* info,
@@ -725,14 +867,8 @@ private:
 
     CARAPI_(void) SendDataActivityBroadcast(
         /* [in] */ Int32 deviceType,
-        /* [in] */ Boolean active);
-
-    /**
-     * Called when an attempt to fail over to another network has failed.
-     * @param info the {@link NetworkInfo} for the failed network
-     */
-    CARAPI_(void) HandleConnectionFailure(
-        /* [in] */ INetworkInfo* info);
+        /* [in] */ Boolean active,
+        /* [in] */ Int64 tsNanos);
 
     CARAPI_(void) SendStickyBroadcast(
         /* [in] */ IIntent* intent);
@@ -741,109 +877,43 @@ private:
         /* [in] */ IIntent* intent,
         /* [in] */ Int32 delayMs);
 
-    CARAPI_(Boolean) IsNewNetTypePreferredOverCurrentNetType(
-        /* [in] */ Int32 type);
-
-    CARAPI_(void) HandleConnect(
-        /* [in] */ INetworkInfo* info);
-
-    CARAPI_(void) HandleCaptivePortalTrackerCheck(
-        /* [in] */ INetworkInfo* info);
-
     /**
-     * Setup data activity tracking for the given network interface.
+     * Setup data activity tracking for the given network.
      *
      * Every {@code setupDataActivityTracking} should be paired with a
-     * {@link removeDataActivityTracking} for cleanup.
+     * {@link #removeDataActivityTracking} for cleanup.
      */
     CARAPI_(void) SetupDataActivityTracking(
-        /* [in] */ Int32 type);
+        /* [in] */ INetworkAgentInfo* networkAgent);
 
     /**
      * Remove data activity tracking when network disconnects.
      */
     CARAPI_(void) RemoveDataActivityTracking(
-        /* [in] */ Int32 type);
+        /* [in] */ INetworkAgentInfo* networkAgent);
 
     /**
-     * After a change in the connectivity state of a network. We're mainly
-     * concerned with making sure that the list of DNS servers is set up
-     * according to which networks are connected, and ensuring that the
-     * right routing table entries exist.
+     * Reads the network specific MTU size from reources.
+     * and set it on it's iface.
      */
-    CARAPI_(void) HandleConnectivityChange(
-        /* [in] */ Int32 netType,
-        /* [in] */ Boolean doReset);
-
-    /**
-     * Add and remove routes using the old properties (null if not previously connected),
-     * new properties (null if becoming disconnected).  May even be double null, which
-     * is a noop.
-     * Uses isLinkDefault to determine if default routes should be set or conversely if
-     * host routes should be set to the dns servers
-     * returns a boolean indicating the routes changed
-     */
-    CARAPI_(Boolean) UpdateRoutes(
+    CARAPI_(void) UpdateMtu(
         /* [in] */ ILinkProperties* newLp,
-        /* [in] */ ILinkProperties* curLp,
-        /* [in] */ Boolean isLinkDefault);
+        /* [in] */ ILinkProperties* oldLp);
 
-    /**
-     * Writes TCP buffer sizes to /sys/kernel/ipv4/tcp_[r/w]mem_[min/def/max]
-     * which maps to /proc/sys/net/ipv4/tcp_rmem and tcpwmem
-     *
-     * @param bufferSizes in the format of "readMin, readInitial, readMax,
-     *        writeMin, writeInitial, writeMax"
-     */
-    CARAPI_(void) SetBufferSize(
-        /* [in] */ const String& bufferSizes);
+    CARAPI_(void) UpdateTcpBufferSizes(
+        /* [in] */ INetworkAgentInfo* nai);
 
-    /**
-     * Adjust the per-process dns entries (net.dns<x>.<pid>) based
-     * on the highest priority active net which this process requested.
-     * If there aren't any, clear it out
-     */
-    CARAPI_(void) ReassessPidDns(
-        /* [in] */ Int32 myPid,
-        /* [in] */ Boolean doBump);
-
-    // return true if results in a change
-    CARAPI_(Boolean) WritePidDns(
-        /* [in] */ IObjectContainer* dnses,
-        /* [in] */ Int32 pid);
-
-    CARAPI_(void) BumpDns();
-
-    // Caller must grab mDnsLock.
-    CARAPI_(Boolean) UpdateDns(
-        /* [in] */ const String& network,
-        /* [in] */ const String& iface,
-        /* [in] */ List< AutoPtr<IInetAddress> >& dnses,
-        /* [in] */ const String& domains);
-
-    CARAPI_(void) HandleDnsConfigurationChange(
-        /* [in] */ Int32 netType);
-
-    CARAPI_(Int32) GetRestoreDefaultNetworkDelay(
-        /* [in] */ Int32 networkType);
-
-    CARAPI_(void) HandleInetConditionChange(
-        /* [in] */ Int32 netType,
-        /* [in] */ Int32 condition);
-
-    CARAPI_(void) HandleInetConditionHoldEnd(
-        /* [in] */ Int32 netType,
-        /* [in] */ Int32 sequence);
+    CARAPI_(void) FlushVmDnsCache();
 
     CARAPI_(void) LoadGlobalProxy();
 
     CARAPI_(void) HandleApplyDefaultProxy(
-        /* [in] */ IProxyProperties* proxy);
+        /* [in] */ IProxyInfo* proxy);
 
     CARAPI_(void) HandleDeprecatedGlobalHttpProxy();
 
     CARAPI_(void) SendProxyBroadcast(
-        /* [in] */ IProxyProperties* proxy);
+        /* [in] */ IProxyInfo* proxy);
 
     /**
      * Internally set new {@link LockdownVpnTracker}, shutting down any existing
@@ -864,14 +934,212 @@ private:
     CARAPI_(void) HandleEventVpnStateChanged(
         /* [in] */ INetworkInfo* info);
 
+    /**
+     * Have mobile data fail fast if enabled.
+     *
+     * @param enabled DctConstants.ENABLED/DISABLED
+     */
+    void SetEnableFailFastMobileData(
+        /* [in] */ Int32 enabled);
+
+    void SetProvNotificationVisible(
+        /* [in] */ Boolean visible,
+        /* [in] */ Int32 networkType,
+        /* [in] */ const String& action)
+
+    /**
+     * Show or hide network provisioning notificaitons.
+     *
+     * @param id an identifier that uniquely identifies this notification.  This must match
+     *         between show and hide calls.  We use the NetID value but for legacy callers
+     *         we concatenate the range of types with the range of NetIDs.
+     */
+    void SetProvNotificationVisibleIntent(
+        /* [in] */ Boolean visible,
+        /* [in] */ Int32 id,
+        /* [in] */ Int32 networkType,
+        /* [in] */ const String& extraInfo,
+        /* [in] */ IPendingIntent* intent);
+
+    String GetProvisioningUrlBaseFromFile(
+        /* [in] */ Int32 type);
+
+    void OnUserStart(
+        /* [in] */ Int32 userId);
+
+    void OnUserStop(
+        /* [in] */ Int32 userId);
+
+    /* Infrastructure for network sampling */
+
+    void HandleNetworkSamplingTimeout();
+
+    /**
+     * Sets a network sampling alarm.
+     */
+    void SetAlarm(
+        /* [in] */ Int32 timeoutInMilliseconds,
+        /* [in] */ IPendingIntent* intent);
+
+    void HandleRegisterNetworkFactory(
+        /* [in] */ INetworkFactoryInfo* nfi);
+
+    void HandleUnregisterNetworkFactory(
+        /* [in] */ IMessenger* messenger);
+
+    Boolean IsDefaultNetwork(
+        /* [in] */ INetworkAgentInfo* nai);
+
+    void HandleRegisterNetworkAgent(
+        /* [in] */ INetworkAgentInfo* na);
+
+    void UpdateLinkProperties(
+        /* [in] */ INetworkAgentInfo* networkAgent,
+        /* [in] */ ILinkProperties* oldLp);
+
+
+    void UpdateClat(
+        /* [in] */ ILinkProperties* newLp,
+        /* [in] */ ILinkProperties* oldLp,
+        /* [in] */ INetworkAgentInfo* na);
+
+    void UpdateInterfaces(
+        /* [in] */ ILinkProperties* newLp,
+        /* [in] */ ILinkProperties* oldLp,
+        /* [in] */ Int32 netId);
+
+    /**
+     * Have netd update routes from oldLp to newLp.
+     * @return true if routes changed between oldLp and newLp
+     */
+    Boolean UpdateRoutes(
+        /* [in] */ ILinkProperties* newLp,
+        /* [in] */ ILinkProperties* oldLp,
+        /* [in] */ Int32 netId);
+
+    void UpdateDnses(
+        /* [in] */ ILinkProperties* newLp,
+        /* [in] */ ILinkProperties* oldLp,
+        /* [in] */ Int32 netId,
+        /* [in] */ Boolean flush);
+
+    void SetDefaultDnsSystemProperties(
+        /* [in] */ ICollection* dnses);
+
+    void UpdateCapabilities(
+        /* [in] */ INetworkAgentInfo* networkAgent,
+        /* [in] */ INetworkCapabilities* networkCapabilities);
+
+    void SendUpdatedScoreToFactories(
+        /* [in] */ INetworkAgentInfo* nai);
+
+    void SendUpdatedScoreToFactories(
+        /* [in] */ INetworkRequest* networkRequest,
+        /* [in] */ Int32 score);
+
+    void CallCallbackForRequest(
+        /* [in] */ INetworkRequestInfo* nri,
+        /* [in] */ INetworkAgentInfo* networkAgent,
+        /* [in] */ Int32 notificationType);
+
+    void TeardownUnneededNetwork(
+        /* [in] */ INetworkAgentInfo* nai);
+
+    void HandleLingerComplete(
+        /* [in] */ INetworkAgentInfo* oldNetwork);
+
+    void MakeDefault(
+        /* [in] */ INetworkAgentInfo* newNetwork);
+
+    // Handles a network appearing or improving its score.
+    //
+    // - Evaluates all current NetworkRequests that can be
+    //   satisfied by newNetwork, and reassigns to newNetwork
+    //   any such requests for which newNetwork is the best.
+    //
+    // - Lingers any Networks that as a result are no longer
+    //   needed. A network is needed if it is the best network for
+    //   one or more NetworkRequests, or if it is a VPN.
+    //
+    // - Tears down newNetwork if it just became validated
+    //   (i.e. nascent==true) but turns out to be unneeded.
+    //   Does not tear down newNetwork if it is unvalidated,
+    //   because future validation may improve newNetwork's
+    //   score enough that it is needed.
+    //
+    // NOTE: This function only adds NetworkRequests that "newNetwork" could satisfy,
+    // it does not remove NetworkRequests that other Networks could better satisfy.
+    // If you need to handle decreases in score, use {@link rematchAllNetworksAndRequests}.
+    // This function should be used when possible instead of {@code rematchAllNetworksAndRequests}
+    // as it performs better by a factor of the number of Networks.
+    //
+    // @param nascent indicates if newNetwork just became validated, in which case it should be
+    //               torn down if unneeded.  If nascent is false, no action is taken if newNetwork
+    //               is found to be unneeded by this call.  Presumably, in this case, either:
+    //               - newNetwork is unvalidated (and left alive), or
+    //               - the NetworkRequests keeping newNetwork alive have been transitioned to
+    //                 another higher scoring network by another call to rematchNetworkAndRequests()
+    //                 and this other call also lingered newNetwork.
+    void RematchNetworkAndRequests(
+        /* [in] */ INetworkAgentInfo* newNetwork,
+        /* [in] */ Boolean nascent);
+
+    // Attempt to rematch all Networks with NetworkRequests.  This may result in Networks
+    // being disconnected.
+    // If only one Network's score or capabilities have been modified since the last time
+    // this function was called, pass this Network in via the "changed" arugment, otherwise
+    // pass null.
+    // If only one Network has been changed but its NetworkCapabilities have not changed,
+    // pass in the Network's score (from getCurrentScore()) prior to the change via
+    // "oldScore", otherwise pass changed.getCurrentScore() or 0 if "changed" is null.
+    void RematchAllNetworksAndRequests(
+        /* [in] */ INetworkAgentInfo* changed,
+        /* [in] */ Int32 oldScore);
+
+    void UpdateInetCondition(
+        /* [in] */ INetworkAgentInfo* nai,
+        /* [in] */ Boolean valid);
+
+    void NotifyLockdownVpn(
+        /* [in] */ INetworkAgentInfo* nai);
+
+    void UpdateNetworkInfo(
+        /* [in] */ INetworkAgentInfo* networkAgent,
+        /* [in] */ INetworkInfo* newInfo);
+
+    void UpdateNetworkScore(
+        /* [in] */ INetworkAgentInfo* nai,
+        /* [in] */ Int32 score);
+
+    // notify only this one new request of the current state
+    void NotifyNetworkCallback(
+        /* [in] */ INetworkAgentInfo* nai,
+        /* [in] */ INetworkRequestInfo* nri);
+
+    void SendLegacyNetworkBroadcast(
+        /* [in] */ INetworkAgentInfo* nai,
+        /* [in] */ Boolean connected,
+        /* [in] */ Int32 type);
+
+    void NotifyNetworkCallbacks(
+        /* [in] */ INetworkAgentInfo* networkAgent,
+        /* [in] */ Int32 notifyType);
+
+    String NotifyTypeToName(
+        /* [in] */ Int32 notifyType);
+
+    AutoPtr<ILinkProperties> GetLinkPropertiesForTypeInternal(
+        /* [in] */ Int32 networkType);
+
+    AutoPtr<INetworkInfo> GetNetworkInfoForType(
+        /* [in] */ Int32 networkType);
+
+    AutoPtr<INetworkCapabilities> GetNetworkCapabilitiesForType(
+        /* [in] */ Int32 networkType);
+
 public:
     friend class InternalHandler;
 
-    /**
-     * used internally as a delayed event to make us switch back to the
-     * default network
-     */
-    static const Int32 EVENT_RESTORE_DEFAULT_NETWORK;
 
     /**
      * used internally to change our mobile data enabled flag
@@ -879,33 +1147,10 @@ public:
     static const Int32 EVENT_CHANGE_MOBILE_DATA_ENABLED; // = 2;
 
     /**
-     * used internally to change our network preference setting
-     * arg1 = networkType to prefer
-     */
-    static const Int32 EVENT_SET_NETWORK_PREFERENCE; // = 3;
-
-    /**
-     * used internally to synchronize inet condition reports
-     * arg1 = networkType
-     * arg2 = condition (0 bad, 100 good)
-     */
-    static const Int32 EVENT_INET_CONDITION_CHANGE; // = 4;
-
-    /**
-     * used internally to mark the end of inet condition hold periods
-     * arg1 = networkType
-     */
-    static const Int32 EVENT_INET_CONDITION_HOLD_END; // = 5;
-
-    /**
-     * used internally to set enable/disable cellular data
-     * arg1 = ENBALED or DISABLED
-     */
-    static const Int32 EVENT_SET_MOBILE_DATA; // = 7;
-
-    /**
      * used internally to clear a wakelock when transitioning
-     * from one net to another
+     * from one net to another.  Clear happens when we get a new
+     * network - EVENT_EXPIRE_NET_TRANSITION_WAKELOCK happens
+     * after a timeout if no network is found (typically 1 min).
      */
     static const Int32 EVENT_CLEAR_NET_TRANSITION_WAKELOCK; // = 8;
 
@@ -922,30 +1167,98 @@ public:
     static const Int32 EVENT_SET_DEPENDENCY_MET; // = 10;
 
     /**
-     * used internally to restore DNS properties back to the
-     * default network
-     */
-    static const Int32 EVENT_RESTORE_DNS; // = 11;
-
-    /**
      * used internally to send a sticky broadcast delayed.
      */
-    static const Int32 EVENT_SEND_STICKY_BROADCAST_INTENT; // = 12;
+    static const Int32 EVENT_SEND_STICKY_BROADCAST_INTENT; // = 11;
 
     /**
      * Used internally to
-     * {@link NetworkStateTracker#setPolicyDataEnable(boolean)}.
+     * {@link NetworkStateTracker#setPolicyDataEnable(Boolean)}.
      */
-    static const Int32 EVENT_SET_POLICY_DATA_ENABLE; // = 13;
+    static const Int32 EVENT_SET_POLICY_DATA_ENABLE; // = 12;
 
-    static const Int32 EVENT_VPN_STATE_CHANGED; // = 14;
+    /**
+     * Used internally to disable fail fast of mobile data
+     */
+    static const Int32 EVENT_ENABLE_FAIL_FAST_MOBILE_DATA; // = 14;
 
+    /**
+     * used internally to indicate that data sampling interval is up
+     */
+    static const Int32 EVENT_SAMPLE_INTERVAL_ELAPSED; // = 15;
+
+    /**
+     * PAC manager has received new port.
+     */
+    static const Int32 EVENT_PROXY_HAS_CHANGED; // = 16;
+
+    /**
+     * used internally when registering NetworkFactories
+     * obj = NetworkFactoryInfo
+     */
+    static const Int32 EVENT_REGISTER_NETWORK_FACTORY; // = 17;
+
+    /**
+     * used internally when registering NetworkAgents
+     * obj = Messenger
+     */
+    static const Int32 EVENT_REGISTER_NETWORK_AGENT; // = 18;
+
+    /**
+     * used to add a network request
+     * includes a NetworkRequestInfo
+     */
+    static const Int32 EVENT_REGISTER_NETWORK_REQUEST; // = 19;
+
+    /**
+     * indicates a timeout period is over - check if we had a network yet or not
+     * and if not, call the timeout calback (but leave the request live until they
+     * cancel it.
+     * includes a NetworkRequestInfo
+     */
+    static const Int32 EVENT_TIMEOUT_NETWORK_REQUEST; // = 20;
+
+    /**
+     * used to add a network listener - no request
+     * includes a NetworkRequestInfo
+     */
+    static const Int32 EVENT_REGISTER_NETWORK_LISTENER; // = 21;
+
+    /**
+     * used to remove a network request, either a listener or a real request
+     * arg1 = UID of caller
+     * obj = NetworkRequest
+     */
+    static const Int32 EVENT_RELEASE_NETWORK_REQUEST; // = 22;
+
+    /**
+     * used internally when registering NetworkFactories
+     * obj = Messenger
+     */
+    static const Int32 EVENT_UNREGISTER_NETWORK_FACTORY; // = 23;
+
+    /**
+     * used internally to expire a wakelock when transitioning
+     * from one net to another.  Expire happens when we fail to find
+     * a new network (typically after 1 minute) -
+     * EVENT_CLEAR_NET_TRANSITION_WAKELOCK happens if we had found
+     * a replacement network.
+     */
+    static const Int32 EVENT_EXPIRE_NET_TRANSITION_WAKELOCK; // = 24;
+
+    /**
+     * Used internally to indicate the system is ready.
+     */
+    static const Int32 EVENT_SYSTEM_READY; // = 25;
 
 private:
     static const String TAG;
 
     static const Boolean DBG;
     static const Boolean VDBG;
+
+    // network sampling debugging
+    static Boolean SAMPLE_DBG;
 
     static const Boolean LOGD_RULES;
 
@@ -956,20 +1269,39 @@ private:
     // system property that can override the above value
     static const String NETWORK_RESTORE_DELAY_PROP_NAME;
 
-    // used in recursive route setting to add gateways for the host for which
-    // a host route was requested.
-    static const Int32 MAX_HOSTROUTE_CYCLE_COUNT;
+    // Default value if FAIL_FAST_TIME_MS is not set
+    static const Int32 DEFAULT_FAIL_FAST_TIME_MS;
+    // system property that can override DEFAULT_FAIL_FAST_TIME_MS
+    static const String FAIL_FAST_TIME_MS;
 
-    AutoPtr<Elastos::Droid::Server::Connectivity::CTethering> mTethering;
-    Boolean mTetheringConfigValid;
+    static const String ACTION_PKT_CNT_SAMPLE_INTERVAL_ELAPSED;
+
+    static const int SAMPLE_INTERVAL_ELAPSED_REQUEST_CODE;
+
+    AutoPtr<IPendingIntent> mSampleIntervalElapsedIntent;
+
+    // Set network sampling interval at 12 minutes, this way, even if the timers get
+    // aggregated, it will fire at around 15 minutes, which should allow us to
+    // aggregate this timer with other timers (specially the socket keep alive timers)
+    static const int DEFAULT_SAMPLING_INTERVAL_IN_SECONDS;
+
+    // start network sampling a minute after booting ...
+    static const int DEFAULT_START_SAMPLING_INTERVAL_IN_SECONDS;
+
+    AutoPtr<IAlarmManager> mAlarmManager;
+
+    AutoPtr<CTethering> mTethering;
+
+    AutoPtr<PermissionMonitor> mPermissionMonitor;
 
     AutoPtr<IKeyStore> mKeyStore;
 
-    AutoPtr<Elastos::Droid::Server::Connectivity::Vpn> mVpn;
-    AutoPtr<VpnCallback> mVpnCallback;
+    HashMap<Int32, AutoPtr<Vpn> > mVpns;
 
     Boolean mLockdownEnabled;
     AutoPtr<LockdownVpnTracker> mLockdownTracker;
+
+    AutoPtr<Nat464Xlat> mClat;
 
     /** Lock around {@link #mUidRules} and {@link #mMeteredIfaces}. */
     Object mRulesLock;
@@ -985,43 +1317,22 @@ private:
      */
     AutoPtr< ArrayOf<INetworkStateTracker*> > mNetTrackers;
 
-    /* Handles captive portal check on a network */
-    AutoPtr<CaptivePortalTracker> mCaptivePortalTracker;
-
-    /**
-     * The link properties that define the current links
-     */
-    AutoPtr< ArrayOf<ILinkProperties*> > mCurrentLinkProperties;
-
-    /**
-     * A per Net list of the PID's that requested access to the net
-     * used both as a refcount and for per-PID DNS selection
-     */
-    AutoPtr< ArrayOf< AutoPtr< List<Int32> > > > mNetRequestersPids;
-
-    // priority order of the nettrackers
-    // (excluding dynamically set mNetworkPreference)
-    // TODO - move mNetworkTypePreference into this
-    AutoPtr< ArrayOf<Int32> > mPriorityList;
-
     AutoPtr<IContext> mContext;
     Int32 mNetworkPreference;
     Int32 mActiveDefaultNetwork;
     // 0 is full bad, 100 is full good
-    Int32 mDefaultInetCondition;
     Int32 mDefaultInetConditionPublished;
-    Boolean mInetConditionChangeInFlight;
-    Int32 mDefaultConnectionSequence;
 
     Object mDnsLock;
     Int32 mNumDnsEntries;
-    Boolean mDnsOverridden;
 
     Boolean mTestMode;
     static AutoPtr<CConnectivityService> sServiceInstance;
 
     AutoPtr<IINetworkManagementService> mNetd;
     AutoPtr<IINetworkPolicyManager> mPolicyManager;
+
+    String mCurrentTcpBufferSizes;
 
     static const Int32 ENABLED;
     static const Int32 DISABLED;
@@ -1033,14 +1344,9 @@ private:
     static const Boolean TO_SECONDARY_TABLE;
 
     /** Handler used for internal events. */
-    AutoPtr<IHandler> mHandler;
-    Object mLockInteral;
+    AutoPtr<InternalHandler> mHandler;
     /** Handler used for incoming {@link NetworkStateTracker} events. */
     AutoPtr<NetworkStateTrackerHandler> mTrackerHandler;
-
-    // list of DeathRecipients used to make sure features are turned off when
-    // a process dies
-    List< AutoPtr<FeatureUser> > mFeatureUsers;
 
     Boolean mSystemReady;
     AutoPtr<IIntent> mInitialBroadcast;
@@ -1052,37 +1358,103 @@ private:
 
     AutoPtr<IInetAddress> mDefaultDns;
 
-    // this collection is used to refcount the added routes - if there are none left
-    // it's time to remove the route from the route table
-    List< AutoPtr<IRouteInfo> > mAddedRoutes;
-
     // used in DBG mode to track inet condition reports
     static const Int32 INET_CONDITION_LOG_MAX_SIZE;
     AutoPtr< List<String> > mInetLog;
 
     // track the current default http proxy - tell the world if we get a new one (real change)
-    AutoPtr<IProxyProperties> mDefaultProxy;
-    Object mDefaultProxyLock;
+    AutoPtr<IProxyInfo> mDefaultProxy;
+    Object mProxyLock;
     Boolean mDefaultProxyDisabled;
 
     // track the global proxy.
-    AutoPtr<IProxyProperties> mGlobalProxy;
-    Object mGlobalProxyLock;
+    AutoPtr<IProxyInfo> mGlobalProxy;
 
     AutoPtr<SettingsObserver> mSettingsObserver;
+
+    AutoPtr<IUserManager> mUserManager;
 
     AutoPtr< ArrayOf<INetworkConfig*> > mNetConfigs;
     Int32 mNetworksDefined;
 
-    AutoPtr< ArrayOf<RadioAttributes*> > mRadioAttributes;
+
     // the set of network types that can only be enabled by system/sig apps
     List<Int32> mProtectedNetworks;
+
+    AutoPtr<DataConnectionStats> mDataConnectionStats;
+
+    AutoPtr<IAtomicInteger32> mEnableFailFastMobileDataTag;
+
+    AutoPtr<ITelephonyManager> mTelephonyManager;
+    // sequence number for Networks; keep in sync with system/netd/NetworkController.cpp
+    static const Int32 MIN_NET_ID; // some reserved marks
+    static const Int32 MAX_NET_ID;
+    Int32 mNextNetId;
+
+    // sequence number of NetworkRequests
+    Int32 mNextNetworkRequestId;
+
+    AutoPtr<LegacyTypeTracker> mLegacyTypeTracker;
+
+    static const String DEFAULT_TCP_BUFFER_SIZES;
+
+
+    /** Location to an updatable file listing carrier provisioning urls.
+     *  An example:
+     *
+     * <?xml version="1.0" encoding="utf-8"?>
+     *  <provisioningUrls>
+     *   <provisioningUrl mcc="310" mnc="4">http://myserver.com/foo?mdn=%3$s&amp;iccid=%1$s&amp;imei=%2$s</provisioningUrl>
+     *   <redirectedUrl mcc="310" mnc="4">http://www.google.com</redirectedUrl>
+     *  </provisioningUrls>
+     */
+    static const String PROVISIONING_URL_PATH;
+
+    AutoPtr<IFile> mProvisioningUrlFile;
+
+    /** XML tag for root element. */
+    static const String TAG_PROVISIONING_URLS;
+    /** XML tag for individual url */
+    static const String TAG_PROVISIONING_URL;
+    /** XML tag for redirected url */
+    static const String TAG_REDIRECTED_URL;
+    /** XML attribute for mcc */
+    static const String ATTR_MCC;
+    /** XML attribute for mnc */
+    static const String ATTR_MNC;
+
+    static const Int32 REDIRECTED_PROVISIONING;
+    static const Int32 PROVISIONING;
+
+    static const String NOTIFICATION_ID;
+    volatile Boolean mIsNotificationVisible;;
 
     AutoPtr<INetworkManagementEventObserver> mDataActivityObserver;
 
     AutoPtr<INetworkPolicyListener> mPolicyListener;
 
     AutoPtr<IBroadcastReceiver> mUserPresentReceiver;
+
+    AutoPtr<IBroadcastReceiver> mUserIntentReceiver;
+
+    AutoPtr<IHashMap> mNetworkFactoryInfos; //= new HashMap<Messenger, NetworkFactoryInfo>();
+    AutoPtr<IHashMap> mNetworkRequests; //= new HashMap<NetworkRequest, NetworkRequestInfo>();
+
+    /**
+     * NetworkAgentInfo supporting a request by requestId.
+     * These have already been vetted (their Capabilities satisfy the request)
+     * and the are the highest scored network available.
+     * the are keyed off the Requests requestId.
+     */
+    AutoPtr<ISparseArray＞ mNetworkForRequestId; //=new SparseArray<NetworkAgentInfo>();
+
+    AutoPtr<ISparseArray＞ mNetworkForNetId; //= new SparseArray<NetworkAgentInfo>();
+
+    // NetworkAgentInfo keyed off its connecting messenger
+    // TODO - eval if we can reduce the number of lists/hashmaps/sparsearrays
+    AutoPtr<IHashMap> mNetworkAgentInfos; //= new HashMap<Messenger, NetworkAgentInfo>();
+
+    AutoPtr<INetworkRequest> mDefaultRequest;
 };
 
 } //namespace Server
