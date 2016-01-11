@@ -197,12 +197,12 @@ ECode NativeConverter::Decode(
     Int32* targetOffset = &((*data)[1]);
     const char* mySource = reinterpret_cast<const char*>(source->GetPayload() + *sourceOffset);
     const char* mySourceLimit = reinterpret_cast<const char*>(source->GetPayload() + sourceEnd);
-    UChar* cTarget = (UChar*) (target->GetPayload() + *targetOffset);
-    const UChar* cTargetLimit = (UChar*) (target->GetPayload() + targetEnd);
+    UChar* cTarget = (UChar*) target->GetPayload() + *targetOffset;
+    const UChar* cTargetLimit = (UChar*) target->GetPayload() + targetEnd;
     UErrorCode errorCode = U_ZERO_ERROR;
     ucnv_toUnicode(cnv, &cTarget, cTargetLimit, &mySource, mySourceLimit, NULL, flush, &errorCode);
     *sourceOffset = mySource - reinterpret_cast<const char*>(source->GetPayload()) - *sourceOffset;
-    *targetOffset = cTarget - (UChar*) (target->GetPayload() + *targetOffset);
+    *targetOffset = cTarget - (UChar*) target->GetPayload() + *targetOffset;
 
     // If there was an error, count the problematic bytes.
     if (U_ILLEGAL_CHAR_FOUND == errorCode
@@ -256,8 +256,8 @@ ECode NativeConverter::Encode(
     // Do the conversion.
     Int32* sourceOffset = &((*data)[0]);
     Int32* targetOffset = &((*data)[1]);
-    const UChar* mySource = (UChar*) (source->GetPayload() + *sourceOffset);
-    const UChar* mySourceLimit = (UChar*) (source->GetPayload() + sourceEnd);
+    const UChar* mySource = (UChar*) source->GetPayload() + *sourceOffset;
+    const UChar* mySourceLimit = (UChar*) source->GetPayload() + sourceEnd;
     char* cTarget = reinterpret_cast<char*>(target->GetPayload() + *targetOffset);
     const char* cTargetLimit = reinterpret_cast<const char*>(target->GetPayload() + targetEnd);
     UErrorCode errorCode = U_ZERO_ERROR;
@@ -575,16 +575,14 @@ ECode NativeConverter::SetCallbackEncode(
 {
     AutoPtr<ICodingErrorAction> cm;
     AutoPtr<ICodingErrorAction> cu;
-    ICharsetDecoder::Probe(encoder)->MalformedInputAction((ICodingErrorAction**)&cm);
-    ICharsetDecoder::Probe(encoder)->UnmappableCharacterAction((ICodingErrorAction**)&cu);
+    encoder->GetMalformedInputAction((ICodingErrorAction**)&cm);
+    encoder->GetUnmappableCharacterAction((ICodingErrorAction**)&cu);
 
     Int32 im, iu;
     TranslateCodingErrorAction(cm, &im);
     TranslateCodingErrorAction(cu, &iu);
-    String str;
-    ICharsetDecoder::Probe(encoder)->Replacement(&str);
-
-    AutoPtr<ArrayOf<Byte> > bytes = str.GetBytes();
+    AutoPtr<ArrayOf<Byte> > bytes;
+    encoder->GetReplacement((ArrayOf<Byte>**)&bytes);
     return SetCallbackEncode(converterHandle, im, iu, bytes);
 }
 

@@ -3,6 +3,7 @@
 
 #include "Writer.h"
 
+using Elastos::IO::Charset::ICharset;
 using Elastos::IO::Charset::ICharsetEncoder;
 
 namespace Elastos {
@@ -46,6 +47,30 @@ public:
         /* [in] */ IOutputStream *os,
         /* [in] */ const String &enc);
 
+    /**
+     * Constructs a new OutputStreamWriter using {@code out} as the target
+     * stream to write converted characters to and {@code cs} as the character
+     * encoding.
+     *
+     * @param out
+     *            the target stream to write converted bytes to.
+     * @param charset
+     *            the {@code Charset} that specifies the character encoding.
+     */
+     CARAPI constructor(
+        /* [in] */ IOutputStream *os,
+        /* [in] */ ICharset* charset);
+
+    /**
+     * Constructs a new OutputStreamWriter using {@code out} as the target
+     * stream to write converted characters to and {@code charsetEncoder} as the character
+     * encoder.
+     *
+     * @param out
+     *            the target stream to write converted bytes to.
+     * @param charsetEncoder
+     *            the character encoder used for character conversion.
+     */
     CARAPI constructor(
         /* [in] */ IOutputStream *os,
         /* [in] */ ICharsetEncoder* charsetEncoder);

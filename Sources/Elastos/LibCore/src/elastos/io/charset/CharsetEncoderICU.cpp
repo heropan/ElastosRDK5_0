@@ -335,11 +335,9 @@ ECode CharsetEncoderICU::SetPosition(
     VALIDATE_NOT_NULL(outBuffer)
     Boolean has = FALSE;
     if ((IBuffer::Probe(outBuffer)->HasArray(&has), has)) {
-        Int32 pos = 0;
-        IBuffer::Probe(outBuffer)->GetPosition(&pos);
         Int32 offset = 0;
         IBuffer::Probe(outBuffer)->GetArrayOffset(&offset);
-        IBuffer::Probe(outBuffer)->SetPosition(pos + (*mData)[OUTPUT_OFFSET] - offset);
+        IBuffer::Probe(outBuffer)->SetPosition((*mData)[OUTPUT_OFFSET] - offset);
     }
     else {
         outBuffer->Put(mOutput, 0, (*mData)[OUTPUT_OFFSET]);

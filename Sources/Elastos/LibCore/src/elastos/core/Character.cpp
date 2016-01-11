@@ -694,7 +694,7 @@ ECode Character::GetCharCount(
     Int32 result = 0;
     const char* src = (const char*)seq.GetPayload();
     while (offset < endIndex) {
-        GetCharAt(src, len, offset, &offset);
+        if (GetCharAt(src, len, offset, &offset) <= 0) break;
         result++;
     }
     *number = result;
@@ -722,7 +722,7 @@ ECode Character::GetCharCount(
     Int32 result = 0;
     const char* src = seq.string();
     while (offset < endIndex) {
-        GetCharAt(src, len, offset, &offset);
+        if (GetCharAt(src, len, offset, &offset) <= 0) break;
         result++;
     }
     *number = result;

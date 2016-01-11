@@ -325,7 +325,7 @@ ECode ByteBuffer::Put(
         // throw new IllegalArgumentException("src == this");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    if (src->IsAccessible(&isflag), isflag) {
+    if (src->IsAccessible(&isflag), !isflag) {
         // throw new IllegalStateException("src buffer is inaccessible");
         return E_ILLEGAL_STATE_EXCEPTION;
     }

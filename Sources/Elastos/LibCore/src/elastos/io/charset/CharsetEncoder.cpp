@@ -128,7 +128,7 @@ ECode CharsetEncoder::CanEncode(
     return ImplCanEncode(cb.Get(), result);
 }
 
-ECode CharsetEncoder::Charset(
+ECode CharsetEncoder::GetCharset(
     /* [out] */ ICharset** charset)
 {
     VALIDATE_NOT_NULL(charset);
@@ -559,12 +559,6 @@ ECode CharsetEncoder::AllocateMore(
     FAIL_RETURN(IBuffer::Probe(output)->Flip());
     FAIL_RETURN((*byteBuffer)->Put(output));
     return NOERROR;
-}
-
-ECode CharsetEncoder::GetCharset(
-    /* [in] */ ICharset** charset)
-{
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode CharsetEncoder::GetMalformedInputAction(

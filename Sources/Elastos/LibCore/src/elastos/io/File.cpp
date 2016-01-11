@@ -790,7 +790,7 @@ static Boolean ReadDirectory(const String& path, DirEntries& entries)
     while ((filename = dir.next()) != NULL) {
         if (strcmp(filename, ".") != 0 && strcmp(filename, "..") != 0) {
             // TODO: this hides allocation failures from us. Push directory iteration up into Java?
-            // entries.PushBack(String(filename));
+            entries.PushBack(String(filename));
         }
     }
     return !dir.isBad();
@@ -1213,10 +1213,10 @@ ECode File::GetUsableSpace(
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
     AutoPtr<IStructStatVfs> sb;
-    // if (FAILED(IoUtils::Libcore2IoECode(os->StatVfs(mPath, (IStructStatVfs**)&sb)))) {
-    //     *space = 0;
-    //     return NOERROR;
-    // }
+    if (FAILED(os->StatVfs(mPath, (IStructStatVfs**)&sb))) {
+        *space = 0;
+        return NOERROR;
+    }
     Int64 bavail, bsize;
     sb->GetBavail(&bavail);
     sb->GetBsize(&bsize);
@@ -1237,10 +1237,10 @@ ECode File::GetFreeSpace(
     AutoPtr<IOs> os;
     libcore->GetOs((IOs**)&os);
     AutoPtr<IStructStatVfs> sb;
-    // if (FAILED(IoUtils::Libcore2IoECode(os->StatVfs(mPath, (IStructStatVfs**)&sb)))) {
-    //     *space = 0;
-    //     return NOERROR;
-    // }
+    if (FAILED(os->StatVfs(mPath, (IStructStatVfs**)&sb))) {
+        *space = 0;
+        return NOERROR;
+    }
     Int64 bfree, bsize;
     sb->GetBfree(&bfree);
     sb->GetBsize(&bsize);

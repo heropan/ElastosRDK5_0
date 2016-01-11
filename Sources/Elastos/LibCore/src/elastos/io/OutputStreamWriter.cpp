@@ -32,8 +32,7 @@ ECode OutputStreamWriter::constructor(
 {
     AutoPtr<ICharset> cs;
     Charset::Charset::DefaultCharset((ICharset**)&cs);
-    String charsetName = Object::ToString(cs);
-    return constructor(out, charsetName);
+    return constructor(out, cs);
 }
 
 ECode OutputStreamWriter::constructor(
@@ -57,6 +56,20 @@ ECode OutputStreamWriter::constructor(
     // } catch (Exception e) {
     //     throw new UnsupportedEncodingException(charsetName);
     // }
+    AutoPtr<ICodingErrorAction> replace;
+    CCodingErrorAction::GetREPLACE((ICodingErrorAction**)&replace);
+    mEncoder->OnMalformedInput(replace);
+    mEncoder->OnUnmappableCharacter(replace);
+    return NOERROR;
+}
+
+ECode OutputStreamWriter::constructor(
+    /* [in] */ IOutputStream *out,
+    /* [in] */ ICharset* charset)
+{
+    FAIL_RETURN(Writer::constructor(ISynchronize::Probe(out)));
+    mOut = out;
+    charset->NewEncoder((ICharsetEncoder**)&mEncoder);
     AutoPtr<ICodingErrorAction> replace;
     CCodingErrorAction::GetREPLACE((ICodingErrorAction**)&replace);
     mEncoder->OnMalformedInput(replace);
@@ -150,7 +163,6 @@ ECode OutputStreamWriter::Convert(
 
 ECode OutputStreamWriter::DrainEncoder()
 {
-    assert(0);
     // Strictly speaking, I think it's part of the CharsetEncoder contract that you call
     // encode with endOfInput true before flushing. Our ICU-based implementations don't
     // actually need this, and you'd hope that any reasonable implementation wouldn't either.

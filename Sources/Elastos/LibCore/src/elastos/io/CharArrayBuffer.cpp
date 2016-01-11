@@ -32,7 +32,7 @@ ECode CharArrayBuffer::constructor(
     FAIL_RETURN(CharBuffer::constructor(capacity, 0))
     mBackingArray = backingArray;
     mArrayOffset = offset;
-    mIsReadOnly = mIsReadOnly;
+    mIsReadOnly = isReadOnly;
     return NOERROR;
 }
 

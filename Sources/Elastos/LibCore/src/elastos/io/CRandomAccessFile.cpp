@@ -38,7 +38,7 @@ namespace IO {
 
 CAR_OBJECT_IMPL(CRandomAccessFile)
 
-CAR_INTERFACE_IMPL(CRandomAccessFile, Object, IRandomAccessFile)
+CAR_INTERFACE_IMPL_4(CRandomAccessFile, Object, IRandomAccessFile, IDataInput, IDataOutput, ICloseable)
 
 CRandomAccessFile::CRandomAccessFile()
     : mSyncMetadata(FALSE)
@@ -107,7 +107,9 @@ ECode CRandomAccessFile::constructor(
 
     Int32 ifd;
     fd->GetDescriptor(&ifd);
-    CFileDescriptor::NewByFriend((CFileDescriptor**)&mFd);
+    AutoPtr<CFileDescriptor> fdObj;
+    FAIL_RETURN(CFileDescriptor::NewByFriend((CFileDescriptor**)&fdObj));
+    mFd = (IFileDescriptor*)fdObj;
     mFd->SetDescriptor(ifd);
 
     // if we are in "rws" mode, attempt to sync file+metadata

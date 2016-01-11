@@ -17,7 +17,7 @@ ECode ByteBufferAsInt64Buffer::constructor(
     /* [in] */ ByteBuffer* byteBuffer)
 {
     byteBuffer->GetCapacity(&mCap);
-    FAIL_RETURN(Int64Buffer::constructor(mCap, byteBuffer->mEffectiveDirectAddress))
+    FAIL_RETURN(Int64Buffer::constructor(mCap / ISizeOf::LONG, byteBuffer->mEffectiveDirectAddress))
     mByteBuffer = byteBuffer;
     IBuffer::Probe(mByteBuffer)->Clear();
     return NOERROR;

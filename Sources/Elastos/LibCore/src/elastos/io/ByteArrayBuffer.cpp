@@ -26,15 +26,7 @@ ByteArrayBuffer::ByteArrayBuffer()
 ECode ByteArrayBuffer::constructor(
     /* [in] */ ArrayOf<Byte>* backingArray)
 {
-    FAIL_RETURN(ByteBuffer::constructor(backingArray->GetLength(), 0))
-
-    if (mArrayOffset + mBackingArray->GetLength() > mBackingArray->GetLength()) {
-        // throw new IndexOutOfBoundsException("mBackingArray.length=" + mBackingArray.length +
-                                              // ", capacity=" + capacity + ", mArrayOffset=" + mArrayOffset);
-        return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
-    }
-
-    mBackingArray = backingArray;
+    FAIL_RETURN(ByteArrayBuffer::constructor(backingArray->GetLength(), backingArray, 0, FALSE))
     return NOERROR;
 }
 
@@ -46,9 +38,9 @@ ECode ByteArrayBuffer::constructor(
 {
     FAIL_RETURN(ByteBuffer::constructor(capacity, 0))
 
-    if (mArrayOffset + capacity > mBackingArray->GetLength()) {
-        // throw new IndexOutOfBoundsException("mBackingArray.length=" + mBackingArray.length +
-                                              // ", capacity=" + capacity + ", mArrayOffset=" + mArrayOffset);
+    if (mArrayOffset + capacity > backingArray->GetLength()) {
+//        throw new IndexOutOfBoundsException("backingArray.length=" + backingArray.length +
+//                                              ", capacity=" + capacity + ", arrayOffset=" + arrayOffset);
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
     mBackingArray = backingArray;
@@ -68,7 +60,7 @@ ECode ByteArrayBuffer::Copy(
     AutoPtr<ByteArrayBuffer> buf = new ByteArrayBuffer();
     FAIL_RETURN(buf->constructor(capvalue, other->mBackingArray, other->mArrayOffset, mIsReadOnly))
     buf->mLimit = other->mLimit;
-    buf->mPosition = capvalue;
+    buf->mPosition = other->mPosition;
     buf->mMark = markOfOther;
     *bab = IByteBuffer::Probe(buf);
     REFCOUNT_ADD(*bab)
@@ -220,7 +212,7 @@ ECode ByteArrayBuffer::GetChar(
         // throw new BufferUnderflowException();
         return E_BUFFER_UNDERFLOW_EXCEPTION;
     }
-    Char32 result = (Char32) Memory::PeekInt16(mBackingArray, mArrayOffset + mPosition, mOrder);
+    Char32 result = (Char32) Memory::PeekInt32(mBackingArray, mArrayOffset + mPosition, mOrder);
     mPosition = newPosition;
     *value = result;
     return NOERROR;
@@ -234,7 +226,7 @@ ECode ByteArrayBuffer::GetChar(
     *value = '\0';
 
     FAIL_RETURN(CheckIndex(index, ISizeOf::CHAR));
-    *value = (Char32) Memory::PeekInt16(mBackingArray, mArrayOffset + index, mOrder);
+    *value = (Char32) Memory::PeekInt32(mBackingArray, mArrayOffset + index, mOrder);
     return NOERROR;
 }
 
@@ -243,7 +235,7 @@ ECode ByteArrayBuffer::GetDouble(
 {
     VALIDATE_NOT_NULL(value)
     Int64 l;
-    GetInt64(&l);
+    FAIL_RETURN(GetInt64(&l));
     *value = Elastos::Core::Math::Int64BitsToDouble(l);
     return NOERROR;
 }
@@ -255,7 +247,7 @@ ECode ByteArrayBuffer::GetDouble(
     VALIDATE_NOT_NULL(value)
 
     Int64 l;
-    GetInt64(index, &l);
+    FAIL_RETURN(GetInt64(index, &l));
     *value = Elastos::Core::Math::Int64BitsToDouble(l);
     return NOERROR;
 }
@@ -265,7 +257,7 @@ ECode ByteArrayBuffer::GetFloat(
 {
     VALIDATE_NOT_NULL(value)
     Int32 i;
-    GetInt32(&i);
+    FAIL_RETURN(GetInt32(&i));
     *value = Elastos::Core::Math::Int32BitsToFloat(i);
     return NOERROR;
 }
@@ -276,7 +268,7 @@ ECode ByteArrayBuffer::GetFloat(
 {
     VALIDATE_NOT_NULL(value)
     Int32 i;
-    GetInt32(index, &i);
+    FAIL_RETURN(GetInt32(index, &i));
     *value = Elastos::Core::Math::Int32BitsToFloat(i);
     return NOERROR;
 }
@@ -428,7 +420,7 @@ ECode ByteArrayBuffer::PutChar(
         // throw new BufferOverflowException();
         return E_BUFFER_OVERFLOW_EXCEPTION;
     }
-    Memory::PokeInt16(mBackingArray, mArrayOffset + mPosition, (Int16) value, mOrder);
+    Memory::PokeInt32(mBackingArray, mArrayOffset + mPosition, (Int32) value, mOrder);
     mPosition = newPosition;
     return NOERROR;
 }
@@ -442,7 +434,7 @@ ECode ByteArrayBuffer::PutChar(
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
     FAIL_RETURN(CheckIndex(index, ISizeOf::CHAR));
-    Memory::PokeInt16(mBackingArray, mArrayOffset + index, (Int16) value, mOrder);
+    Memory::PokeInt32(mBackingArray, mArrayOffset + index, (Int32) value, mOrder);
     return NOERROR;
 }
 

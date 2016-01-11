@@ -15,8 +15,8 @@ ECode CLocaleDataHelper::MapInvalidAndNullLocales(
     /* [out] */ ILocale** rst)
 {
     VALIDATE_NOT_NULL(rst);
-
-    *rst = LocaleData::MapInvalidAndNullLocales(locale);
+    AutoPtr<ILocale> localeObj = LocaleData::MapInvalidAndNullLocales(locale);
+    *rst = localeObj;
     REFCOUNT_ADD(*rst);
 
     return NOERROR;
