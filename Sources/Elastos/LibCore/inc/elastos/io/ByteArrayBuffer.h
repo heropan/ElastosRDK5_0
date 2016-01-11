@@ -9,6 +9,7 @@ namespace IO {
 
 class ByteArrayBuffer
     : public ByteBuffer
+    , public IByteArrayBuffer
 {
 public:
     ByteArrayBuffer();
@@ -21,6 +22,8 @@ public:
         /* [in] */ ArrayOf<Byte>* backingArray,
         /* [in] */ Int32 arrayOffset,
         /* [in] */ Boolean isReadOnly);
+
+    CAR_INTERFACE_DECL()
 
     CARAPI AsReadOnlyBuffer(
         /* [out] */ IByteBuffer** buffer);

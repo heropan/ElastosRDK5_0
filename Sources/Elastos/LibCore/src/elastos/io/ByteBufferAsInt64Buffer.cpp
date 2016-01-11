@@ -17,7 +17,7 @@ ECode ByteBufferAsInt64Buffer::constructor(
     /* [in] */ ByteBuffer* byteBuffer)
 {
     byteBuffer->GetCapacity(&mCap);
-    FAIL_RETURN(Int64Buffer::constructor(mCap / ISizeOf::LONG, byteBuffer->mEffectiveDirectAddress))
+    FAIL_RETURN(Int64Buffer::constructor(mCap / ISizeOf::INT64, byteBuffer->mEffectiveDirectAddress))
     mByteBuffer = byteBuffer;
     IBuffer::Probe(mByteBuffer)->Clear();
     return NOERROR;
@@ -65,8 +65,8 @@ ECode ByteBufferAsInt64Buffer::Compact()
         // throw new ReadOnlyBufferException();
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * ISizeOf::LONG);
-    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * ISizeOf::LONG);
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * ISizeOf::INT64);
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * ISizeOf::INT64);
     mByteBuffer->Compact();
     IBuffer::Probe(mByteBuffer)->Clear();
     mPosition = mLimit - mPosition;
@@ -104,7 +104,7 @@ ECode ByteBufferAsInt64Buffer::Get(
         // throw new BufferUnderflowException();
         return E_BUFFER_UNDERFLOW_EXCEPTION;
     }
-    return mByteBuffer->GetInt64(mPosition++ * ISizeOf::LONG, value);
+    return mByteBuffer->GetInt64(mPosition++ * ISizeOf::INT64, value);
 }
 
 ECode ByteBufferAsInt64Buffer::Get(
@@ -114,7 +114,7 @@ ECode ByteBufferAsInt64Buffer::Get(
     VALIDATE_NOT_NULL(value)
 
     FAIL_RETURN(CheckIndex(index));
-    return mByteBuffer->GetInt64(index * ISizeOf::LONG, value);
+    return mByteBuffer->GetInt64(index * ISizeOf::INT64, value);
 }
 
 ECode ByteBufferAsInt64Buffer::Get(
@@ -124,8 +124,8 @@ ECode ByteBufferAsInt64Buffer::Get(
 {
     VALIDATE_NOT_NULL(dst)
 
-    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * ISizeOf::LONG);
-    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * ISizeOf::LONG);
+    IBuffer::Probe(mByteBuffer)->SetLimit(mLimit * ISizeOf::INT64);
+    IBuffer::Probe(mByteBuffer)->SetPosition(mPosition * ISizeOf::INT64);
     AutoPtr<DirectByteBuffer> res = static_cast<DirectByteBuffer*>(mByteBuffer.Get());
     if (res) {
         res->GetInt64s(dst, dstOffset, charCount);
@@ -162,7 +162,7 @@ ECode ByteBufferAsInt64Buffer::Put(
         // throw new BufferOverflowException();
         return E_BUFFER_UNDERFLOW_EXCEPTION;
     }
-    return mByteBuffer->PutInt64(mPosition++ * ISizeOf::LONG, c);
+    return mByteBuffer->PutInt64(mPosition++ * ISizeOf::INT64, c);
 }
 
 ECode ByteBufferAsInt64Buffer::Put(
@@ -170,7 +170,7 @@ ECode ByteBufferAsInt64Buffer::Put(
     /* [in] */ Int64 c)
 {
     FAIL_RETURN(CheckIndex(index));
-    return mByteBuffer->PutInt64(index * ISizeOf::LONG, c);
+    return mByteBuffer->PutInt64(index * ISizeOf::INT64, c);
 }
 
 ECode ByteBufferAsInt64Buffer::Put(
@@ -178,8 +178,8 @@ ECode ByteBufferAsInt64Buffer::Put(
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 charCount)
 {
-    mByteBuffer->SetLimit(mLimit * ISizeOf::LONG);
-    mByteBuffer->SetPosition(mPosition * ISizeOf::LONG);
+    mByteBuffer->SetLimit(mLimit * ISizeOf::INT64);
+    mByteBuffer->SetPosition(mPosition * ISizeOf::INT64);
     AutoPtr<DirectByteBuffer> res = static_cast<DirectByteBuffer*>(mByteBuffer.Get());
     if (res) {
         res->PutInt64s(src, srcOffset, charCount);
@@ -195,8 +195,8 @@ ECode ByteBufferAsInt64Buffer::Slice(
 {
     VALIDATE_NOT_NULL(buffer)
 
-    mByteBuffer->SetLimit(mLimit * ISizeOf::LONG);
-    mByteBuffer->SetPosition(mPosition * ISizeOf::LONG);
+    mByteBuffer->SetLimit(mLimit * ISizeOf::INT64);
+    mByteBuffer->SetPosition(mPosition * ISizeOf::INT64);
     AutoPtr<IByteBuffer> bb;
     mByteBuffer->Slice((IByteBuffer**)&bb);
     ByteOrder midorder;

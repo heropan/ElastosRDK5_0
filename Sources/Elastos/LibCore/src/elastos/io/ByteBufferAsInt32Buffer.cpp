@@ -17,7 +17,7 @@ ECode ByteBufferAsInt32Buffer::constructor(
     /* [in] */ ByteBuffer* byteBuffer)
 {
     byteBuffer->GetCapacity(&mCap);
-    FAIL_RETURN(Int32Buffer::constructor(mCap / ISizeOf::INT, byteBuffer->mEffectiveDirectAddress))
+    FAIL_RETURN(Int32Buffer::constructor(mCap / ISizeOf::INT32, byteBuffer->mEffectiveDirectAddress))
     mByteBuffer = byteBuffer;
     mByteBuffer->Clear();
     return NOERROR;
@@ -64,8 +64,8 @@ ECode ByteBufferAsInt32Buffer::Compact()
         // throw new ReadOnlyBufferException();
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    mByteBuffer->SetLimit(mLimit * ISizeOf::INT);
-    mByteBuffer->SetPosition(mPosition * ISizeOf::INT);
+    mByteBuffer->SetLimit(mLimit * ISizeOf::INT32);
+    mByteBuffer->SetPosition(mPosition * ISizeOf::INT32);
     mByteBuffer->Compact();
     mByteBuffer->Clear();
     mPosition = mLimit - mPosition;
@@ -99,7 +99,7 @@ ECode ByteBufferAsInt32Buffer::Get(
         // throw new BufferUnderflowException();
         return E_BUFFER_UNDERFLOW_EXCEPTION;
     }
-    return mByteBuffer->GetInt32(mPosition++ * ISizeOf::INT, value);
+    return mByteBuffer->GetInt32(mPosition++ * ISizeOf::INT32, value);
 }
 
 ECode ByteBufferAsInt32Buffer::Get(
@@ -107,7 +107,7 @@ ECode ByteBufferAsInt32Buffer::Get(
     /* [out] */ Int32* value)
 {
     FAIL_RETURN(CheckIndex(index));
-    return mByteBuffer->GetInt32(index * ISizeOf::INT, value);
+    return mByteBuffer->GetInt32(index * ISizeOf::INT32, value);
 }
 
 ECode ByteBufferAsInt32Buffer::Get(
@@ -115,8 +115,8 @@ ECode ByteBufferAsInt32Buffer::Get(
     /* [in] */ Int32 dstOffset,
     /* [in] */ Int32 charCount)
 {
-    mByteBuffer->SetLimit(mLimit * ISizeOf::INT);
-    mByteBuffer->SetPosition(mPosition * ISizeOf::INT);
+    mByteBuffer->SetLimit(mLimit * ISizeOf::INT32);
+    mByteBuffer->SetPosition(mPosition * ISizeOf::INT32);
     AutoPtr<DirectByteBuffer> res = static_cast<DirectByteBuffer*>(mByteBuffer.Get());
     if (res) {
         res->GetInt32s(dst, dstOffset, charCount);
@@ -153,7 +153,7 @@ ECode ByteBufferAsInt32Buffer::Put(
         // throw new BufferOverflowException();
         return E_BUFFER_UNDERFLOW_EXCEPTION;
     }
-    return mByteBuffer->PutInt32(mPosition++ * ISizeOf::INT, c);
+    return mByteBuffer->PutInt32(mPosition++ * ISizeOf::INT32, c);
 }
 
 ECode ByteBufferAsInt32Buffer::Put(
@@ -161,7 +161,7 @@ ECode ByteBufferAsInt32Buffer::Put(
     /* [in] */ Int32 c)
 {
     FAIL_RETURN(CheckIndex(index));
-    return mByteBuffer->PutInt32(index * ISizeOf::INT, c);
+    return mByteBuffer->PutInt32(index * ISizeOf::INT32, c);
 }
 
 ECode ByteBufferAsInt32Buffer::Put(
@@ -169,8 +169,8 @@ ECode ByteBufferAsInt32Buffer::Put(
     /* [in] */ Int32 srcOffset,
     /* [in] */ Int32 charCount)
 {
-    mByteBuffer->SetLimit(mLimit * ISizeOf::INT);
-    mByteBuffer->SetPosition(mPosition * ISizeOf::INT);
+    mByteBuffer->SetLimit(mLimit * ISizeOf::INT32);
+    mByteBuffer->SetPosition(mPosition * ISizeOf::INT32);
     AutoPtr<DirectByteBuffer> res = static_cast<DirectByteBuffer*>(mByteBuffer.Get());
     if (res) {
         res->PutInt32s(src, srcOffset, charCount);
@@ -186,8 +186,8 @@ ECode ByteBufferAsInt32Buffer::Slice(
 {
     VALIDATE_NOT_NULL(buffer)
 
-    mByteBuffer->SetLimit(mLimit * ISizeOf::INT);
-    mByteBuffer->SetPosition(mPosition * ISizeOf::INT);
+    mByteBuffer->SetLimit(mLimit * ISizeOf::INT32);
+    mByteBuffer->SetPosition(mPosition * ISizeOf::INT32);
     AutoPtr<IByteBuffer> bb;
     mByteBuffer->Slice((IByteBuffer**)&bb);
     ByteOrder midorder;

@@ -157,7 +157,7 @@ ECode DirectByteBuffer::GetInt64s(
 {
     VALIDATE_NOT_NULL(dst);
     Int32 byteCount = 0;
-    FAIL_RETURN(CheckGetBounds(ISizeOf::LONG, dst->GetLength(), dstOffset, int64Count, &byteCount))
+    FAIL_RETURN(CheckGetBounds(ISizeOf::INT64, dst->GetLength(), dstOffset, int64Count, &byteCount))
     AutoPtr<IByteOrderHelper> helper;
     ASSERT_SUCCEEDED(CByteOrderHelper::AcquireSingleton((IByteOrderHelper**)&helper))
     Boolean needsSwap = FALSE;
@@ -316,7 +316,7 @@ ECode DirectByteBuffer::GetInt64(
 {
     VALIDATE_NOT_NULL(value);
     *value = 0;
-    Int32 newPosition = mPosition + ISizeOf::LONG;
+    Int32 newPosition = mPosition + ISizeOf::INT64;
     if (newPosition > mLimit) {
         // throw new BufferUnderflowException();
         return E_BUFFER_UNDER_FLOW_EXCEPTION;
@@ -332,7 +332,7 @@ ECode DirectByteBuffer::GetInt64(
 {
     VALIDATE_NOT_NULL(value);
     *value = 0;
-    FAIL_RETURN(CheckIndex(index, ISizeOf::LONG))
+    FAIL_RETURN(CheckIndex(index, ISizeOf::INT64))
     *value = mBlock->PeekInt64(mOffset + index, mOrder);
     return NOERROR;
 }
@@ -573,7 +573,7 @@ ECode DirectByteBuffer::PutInt16(
         // throw new ReadOnlyBufferException();
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    Int32 newPosition = mPosition + ISizeOf::SHORT;
+    Int32 newPosition = mPosition + ISizeOf::INT16;
     if (newPosition > mLimit) {
         // throw new BufferOverflowException();
         return E_BUFFER_OVERFLOW_EXCEPTION;
@@ -592,7 +592,7 @@ ECode DirectByteBuffer::PutInt16(
         // throw new ReadOnlyBufferException();
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    FAIL_RETURN(CheckIndex(index, ISizeOf::SHORT));
+    FAIL_RETURN(CheckIndex(index, ISizeOf::INT16));
     mBlock->PokeInt16(mOffset + index, value, mOrder);
     return NOERROR;
 }
@@ -605,7 +605,7 @@ ECode DirectByteBuffer::PutInt32(
         // throw new ReadOnlyBufferException();
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    Int32 newPosition = mPosition + ISizeOf::INT;
+    Int32 newPosition = mPosition + ISizeOf::INT32;
     if (newPosition > mLimit) {
         // throw new BufferOverflowException();
         return E_BUFFER_OVERFLOW_EXCEPTION;
@@ -624,7 +624,7 @@ ECode DirectByteBuffer::PutInt32(
         // throw new ReadOnlyBufferException();
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    FAIL_RETURN(CheckIndex(index, ISizeOf::INT));
+    FAIL_RETURN(CheckIndex(index, ISizeOf::INT32));
     mBlock->PokeInt32(mOffset + index, value, mOrder);
     return NOERROR;
 }
@@ -637,7 +637,7 @@ ECode DirectByteBuffer::PutInt64(
         // throw new ReadOnlyBufferException();
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    Int32 newPosition = mPosition + ISizeOf::LONG;
+    Int32 newPosition = mPosition + ISizeOf::INT64;
     if (newPosition > mLimit) {
         // throw new BufferOverflowException();
         return E_BUFFER_OVERFLOW_EXCEPTION;
@@ -656,7 +656,7 @@ ECode DirectByteBuffer::PutInt64(
         // throw new ReadOnlyBufferException();
         return E_READ_ONLY_BUFFER_EXCEPTION;
     }
-    FAIL_RETURN(CheckIndex(index, ISizeOf::LONG));
+    FAIL_RETURN(CheckIndex(index, ISizeOf::INT64));
     mBlock->PokeInt64(mOffset + index, value, mOrder);
     return NOERROR;
 }
@@ -844,7 +844,7 @@ ECode DirectByteBuffer::PutInt32s(
 {
     FAIL_RETURN(CheckIsAccessible());
     Int32 byteCount = 0;
-    FAIL_RETURN(CheckPutBounds(ISizeOf::INT, src->GetLength(), srcOffset, intCount, &byteCount));
+    FAIL_RETURN(CheckPutBounds(ISizeOf::INT32, src->GetLength(), srcOffset, intCount, &byteCount));
     mBlock->PokeInt32Array(mOffset + mPosition, src, srcOffset, intCount, CByteOrderHelper::_IsNeedsSwap(mOrder));
     mPosition += byteCount;
     return NOERROR;
@@ -857,7 +857,7 @@ ECode DirectByteBuffer::PutInt64s(
 {
     FAIL_RETURN(CheckIsAccessible());
     Int32 byteCount = 0;
-    FAIL_RETURN(CheckPutBounds(ISizeOf::LONG, src->GetLength(), srcOffset, longCount, &byteCount));
+    FAIL_RETURN(CheckPutBounds(ISizeOf::INT64, src->GetLength(), srcOffset, longCount, &byteCount));
     mBlock->PokeInt64Array(mOffset + mPosition, src, srcOffset, longCount, CByteOrderHelper::_IsNeedsSwap(mOrder));
     mPosition += byteCount;
     return NOERROR;
@@ -870,7 +870,7 @@ ECode DirectByteBuffer::PutInt16s(
 {
     FAIL_RETURN(CheckIsAccessible());
     Int32 byteCount = 0;
-    FAIL_RETURN(CheckPutBounds(ISizeOf::SHORT, src->GetLength(), srcOffset, shortCount, &byteCount));
+    FAIL_RETURN(CheckPutBounds(ISizeOf::INT16, src->GetLength(), srcOffset, shortCount, &byteCount));
     mBlock->PokeInt16Array(mOffset + mPosition, src, srcOffset, shortCount, CByteOrderHelper::_IsNeedsSwap(mOrder));
     mPosition += byteCount;
     return NOERROR;
