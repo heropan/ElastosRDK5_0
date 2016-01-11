@@ -2,6 +2,7 @@
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/RelativeLayout.h"
 #include "elastos/droid/widget/CRelativeLayoutLayoutParams.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/view/Gravity.h"
@@ -10,6 +11,7 @@
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
 using Elastos::Droid::View::Gravity;

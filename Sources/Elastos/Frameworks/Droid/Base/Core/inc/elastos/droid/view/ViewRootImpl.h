@@ -5,6 +5,7 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Animation.h"
 #include "Elastos.Droid.Hardware.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/CRegion.h"
 #include "elastos/droid/internal/view/BaseSurfaceHolder.h"
 #include "elastos/droid/view/View.h"
@@ -18,6 +19,7 @@ using Elastos::Droid::Content::IClipDescription;
 using Elastos::Droid::Content::Res::ICompatibilityInfoTranslator;
 using Elastos::Droid::Hardware::Display::IDisplayListener;
 using Elastos::Droid::Hardware::Display::IDisplayManager;
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Graphics::CRegion;
 using Elastos::Droid::Graphics::IPointF;
 using Elastos::Droid::Internal::View::BaseSurfaceHolder;

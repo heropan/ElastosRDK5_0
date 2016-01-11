@@ -281,11 +281,11 @@ module
     using interface Elastos.Droid.App.IActivity;
 //     using interface Elastos.Droid.App.INotification;
 //     using interface Elastos.Droid.App.IActivityOptionsOnAnimationStartedListener;
-//     using interface Elastos.Droid.View.IView;
+    using interface Elastos.Droid.View.IView;
 //     using interface Elastos.Droid.View.IViewParent;
 //     using interface Elastos.Droid.View.IViewManager;
 //     using interface Elastos.Droid.View.IKeyEventCallback;
-//     using interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
+    using interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
 //     using interface Elastos.Droid.View.IViewOnClickListener;
 //     using interface Elastos.Droid.View.IOnComputeInternalInsetsListener;
 //     using interface Elastos.Droid.View.IOnPreDrawListener;
@@ -294,7 +294,7 @@ module
     using interface Elastos.Droid.View.IKeyEventCallback;
     using interface Elastos.Droid.View.IViewOnCreateContextMenuListener;
     using interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener;
-    using interface Elastos.Droid.SystemUI.StatusBar.Policy.IBatteryStateChangeCallback;
+    using interface Elastos.Droid.Packages.SystemUI.StatusBar.Policy.IBatteryStateChangeCallback;
     using interface Elastos.Droid.Service.Dreams.IDreamService;
     using interface Elastos.Droid.Widget.IFrameLayout;
     using interface Elastos.Core.ICharSequence;
@@ -322,22 +322,26 @@ module
         interface IService;
     }
 
-//    class CBatteryMeterView {
-//        constructor(
-//            [in] IContext* context);
+    class CBatteryMeterView {
+        constructor(
+            [in] IContext* context);
 
-//        constructor(
-//            [in] IContext* context,
-//            [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs);
 
-//        constructor(
-//            [in] IContext* context,
-//            [in] IAttributeSet* attrs,
-//            [in] Int32 defStyle);
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyle);
 
-//        interface IBatteryStateChangeCallback;
-//        interface IDemoMode;
-//    }
+        interface IView;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+        interface IBatteryStateChangeCallback;
+        interface IDemoMode;
+    }
 
 //    singleton class CBitmapHelper {
 //        interface IBitmapHelper;

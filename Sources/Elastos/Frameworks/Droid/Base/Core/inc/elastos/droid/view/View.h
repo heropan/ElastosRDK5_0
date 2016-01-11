@@ -2,18 +2,12 @@
 #ifndef __ELASTOS_DROID_VIEW_View_H__
 #define __ELASTOS_DROID_VIEW_View_H__
 
+#include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.Internal.h"
-#include "elastos/droid/ext/frameworkext.h"
-#include "Elastos.Droid.Internal.h"
-#include "elastos/droid/graphics/CRect.h"
-#include "elastos/droid/graphics/CRectF.h"
-
-#include "elastos/droid/os/Runnable.h"
-#include "elastos/droid/utility/FloatProperty.h"
-#include "elastos/droid/utility/Pools.h"
-
-#include "elastos/droid/view/AbsSavedState.h"
-
+#include <elastos/droid/os/Runnable.h>
+#include <elastos/droid/utility/FloatProperty.h>
+#include <elastos/droid/utility/Pools.h>
+#include <elastos/droid/view/AbsSavedState.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 
@@ -26,8 +20,6 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Content::Res::ITypedArray;
-using Elastos::Droid::Graphics::CRect;
-using Elastos::Droid::Graphics::CRectF;
 using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Graphics::IPoint;
 using Elastos::Droid::Graphics::IRect;
@@ -99,7 +91,7 @@ class RenderNodeAnimator;
 #define VIEWIMPL_PROBE(host) ((ViewRootImpl*)IViewRootImpl::Probe(host))
 #endif
 
-class View
+class ECO_PUBLIC View
     : public Object
     , public IView
     , public IDrawableCallback
@@ -1798,28 +1790,28 @@ public:
          * of the screen areas, these are the current insets to appear inside
          * the overscan area of the display.
          */
-        AutoPtr<CRect> mOverscanInsets;// = new Rect();
+        AutoPtr<IRect> mOverscanInsets;// = new Rect();
 
         /**
         * For windows that are full-screen but using insets to layout inside
         * of the screen decorations, these are the current insets for the
         * content of the window.
         */
-        AutoPtr<CRect> mContentInsets;
+        AutoPtr<IRect> mContentInsets;
 
         /**
         * For windows that are full-screen but using insets to layout inside
         * of the screen decorations, these are the current insets for the
         * actual visible parts of the window.
         */
-        AutoPtr<CRect> mVisibleInsets;
+        AutoPtr<IRect> mVisibleInsets;
 
         /**
          * For windows that are full-screen but using insets to layout inside
          * of the screen decorations, these are the current insets for the
          * stable system windows.
          */
-        AutoPtr<CRect> mStableInsets;// = new Rect();
+        AutoPtr<IRect> mStableInsets;// = new Rect();
 
         /**
          * The internal insets given by this window.  This value is
@@ -1984,7 +1976,7 @@ public:
          * Temporary for use in computing invalidate rectangles while
          * calling up the hierarchy.
          */
-        AutoPtr<CRect> mTmpInvalRect;
+        AutoPtr<IRect> mTmpInvalRect;
 
         /**
          * Temporary for use in computing hit areas with transformed views
@@ -5935,7 +5927,7 @@ protected:
 
     Boolean mLastIsOpaque;
 
-    AutoPtr<CRect> mClipBounds;
+    AutoPtr<IRect> mClipBounds;
 
     /**
      * The distance in pixels from the left edge of this view's parent

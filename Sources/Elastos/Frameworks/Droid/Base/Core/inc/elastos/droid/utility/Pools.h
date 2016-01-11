@@ -10,7 +10,7 @@ namespace Elastos {
 namespace Droid {
 namespace Utility {
 
-class Pools
+class ECO_PUBLIC Pools
 {
 private:
     Pools() {}

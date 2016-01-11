@@ -1,15 +1,17 @@
 
 #include "elastos/droid/inputmethodservice/CSoftInputWindow.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/view/CWindowManagerLayoutParams.h"
 
-using Elastos::Core::CString;
-using Elastos::Core::ICharSequence;
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::View::CWindowManagerLayoutParams;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::IInputEvent;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IWindow;
 using Elastos::Droid::View::IViewGroupLayoutParams;
+using Elastos::Core::CString;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {

@@ -1,6 +1,7 @@
 
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Graphics.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "Elastos.Droid.Utility.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/webkit/native/ui/DropdownPopupWindow.h"
@@ -8,6 +9,7 @@
 #include "elastos/core/Math.h"
 
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::View::EIID_IViewOnLayoutChangeListener;

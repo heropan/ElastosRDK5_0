@@ -1,17 +1,19 @@
 
 #include "elastos/droid/widget/TabWidget.h"
-#include <elastos/core/Math.h>
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
 #include "elastos/droid/widget/CImageView.h"
+#include <elastos/core/Math.h>
 
-using Elastos::Core::CString;
-using Elastos::Droid::Os::Build;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Os::Build;
 using Elastos::Droid::View::EIID_IViewOnFocusChangeListener;
 using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::View::EIID_IView;
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {

@@ -43,14 +43,25 @@ $(MAKEDIR)/R.cpp: $(MAKEDIR)/AndroidManifest.xml $(MAKEDIR)/res $(DEPEND_LIST) $
 	if [ ! -d $(MAKEDIR)/gen ]; then mkdir $(MAKEDIR)/gen;fi
 ifndef RES_NAMESPACE
 	@cd $(MAKEDIR); \
-	sed -n 's/    namespace \(.*\) [\{]/\1/p' $(MAKEDIR)/$(TARGET_NAME).car | tr -s "\n" "\." | sed -n 's/\(.*\)\./\1/p' >temp; \
-	aapt package -f -m -J gen -S res --cpp `cat $(MAKEDIR)/temp` -I $(EMULATOR_PATH)/platforms/android-23/android.jar -M $(MAKEDIR)/AndroidManifest.xml
+	sed -n 's/    namespace \(.*\) [\{]/\1/p' $(MAKEDIR)/$(TARGET_NAME).car | tr -s "\n" "\." | tr -d "\/\/ " | sed -n 's/\(.*\)\./\1/p' >$(MAKEDIR)/temp; \
+	if [ ! -z $(EXTRA_RES_DIR) ] && [ -d $(EXTRA_RES_DIR) ]; then \
+		aapt package $(AAPT_FLAGS) -f -m -J $(MAKEDIR)/gen -S $(EXTRA_RES_DIR) -S $(MAKEDIR)/res --cpp $(RES_NAMESPACE) -I $(EMULATOR_PATH)/platforms/android-23/package-export.apk -M $(MAKEDIR)/AndroidManifest.xml
+	else \
+		aapt package $(AAPT_FLAGS) -f -m -J $(MAKEDIR)/gen -S $(MAKEDIR)/res --cpp $(RES_NAMESPACE) -I $(EMULATOR_PATH)/platforms/android-23/package-export.apk -M $(MAKEDIR)/AndroidManifest.xml
+	fi
 else
 	@cd $(MAKEDIR); \
-	aapt package -f -m -J gen -S res --cpp $(RES_NAMESPACE) -I $(EMULATOR_PATH)/platforms/android-23/android.jar -M $(MAKEDIR)/AndroidManifest.xml
+	if [ ! -z $(EXTRA_RES_DIR) ] && [ -d $(EXTRA_RES_DIR) ]; then \
+		aapt package $(AAPT_FLAGS) -f -m -J $(MAKEDIR)/gen -S $(EXTRA_RES_DIR) -S $(MAKEDIR)/res --cpp $(RES_NAMESPACE) -I $(EMULATOR_PATH)/platforms/android-23/package-export.apk -M $(MAKEDIR)/AndroidManifest.xml; \
+	else \
+		aapt package $(AAPT_FLAGS) -f -m -J $(MAKEDIR)/gen -S $(MAKEDIR)/res --cpp $(RES_NAMESPACE) -I $(EMULATOR_PATH)/platforms/android-23/package-export.apk -M $(MAKEDIR)/AndroidManifest.xml; \
+	fi
 endif
-	mv -f $(MAKEDIR)/gen/$(TARGET_NAME)/R.cpp $(MAKEDIR)/gen/$(TARGET_NAME)/R.h $(MAKEDIR)
-	rm -rf $(MAKEDIR)/temp
+	if [ ! -z $(APP_PACKAGE_NAME) ]; then \
+		mv -f $(MAKEDIR)/gen/$(subst .,\/,$(APP_PACKAGE_NAME))/R.cpp $(MAKEDIR)/gen/$(subst .,\/,$(APP_PACKAGE_NAME))/R.h $(MAKEDIR); \
+	else \
+		mv -f $(MAKEDIR)/gen/$(TARGET_NAME)/R.cpp $(MAKEDIR)/gen/$(TARGET_NAME)/R.h $(MAKEDIR); \
+	fi
 	rm -rf $(MAKEDIR)/gen
 endif
 endif

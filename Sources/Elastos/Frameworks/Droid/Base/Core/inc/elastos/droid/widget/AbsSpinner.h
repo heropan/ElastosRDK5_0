@@ -3,11 +3,13 @@
 #define  __ELASTOS_DROID_WIDGET_ABSSPANNER_H__
 
 #include "elastos/droid/widget/AdapterView.h"
+#include "elastos/droid/graphics/CRect.h"
 #include <elastos/utility/etl/HashMap.h>
 #include "elastos/droid/R.h"
 #include "elastos/droid/view/View.h"
 
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::R;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;

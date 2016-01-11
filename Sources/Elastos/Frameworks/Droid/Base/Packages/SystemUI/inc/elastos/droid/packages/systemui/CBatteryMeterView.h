@@ -2,10 +2,10 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_CBATTERYMETERVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_CBATTERYMETERVIEW_H__
 
-#include "_Elastos_Droid_SystemUI_CBatteryMeterView.h"
-#include "elastos/droid/view/View.h"
-#include "elastos/droid/content/BroadcastReceiver.h"
-#include "elastos/droid/os/Runnable.h"
+#include "_Elastos_Droid_Packages_SystemUI_CBatteryMeterView.h"
+#include <elastos/droid/view/View.h>
+#include <elastos/droid/content/BroadcastReceiver.h>
+#include <elastos/droid/os/Runnable.h>
 
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;
@@ -17,16 +17,17 @@ using Elastos::Droid::Graphics::IPath;
 using Elastos::Droid::Graphics::IRectF;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::View::View;
-using Elastos::Droid::SystemUI::StatusBar::Policy::IBatteryController;
-using Elastos::Droid::SystemUI::StatusBar::Policy::IBatteryStateChangeCallback;
+using Elastos::Droid::Packages::SystemUI::StatusBar::Policy::IBatteryController;
+using Elastos::Droid::Packages::SystemUI::StatusBar::Policy::IBatteryStateChangeCallback;
 using Elastos::Droid::Utility::IAttributeSet;
 
 namespace Elastos {
 namespace Droid {
+namespace Packages {
 namespace SystemUI {
 
 CarClass(CBatteryMeterView)
-    , public View
+    , public Elastos::Droid::View::View
     , public IDemoMode
     , public IBatteryStateChangeCallback
 {
@@ -124,7 +125,7 @@ public:
         /* [in] */ const String& command,
         /* [in] */ IBundle* args);
 
-    CARAPI OnSizeChanged(
+    CARAPI_(void) OnSizeChanged(
         /* [in] */ Int32 w,
         /* [in] */ Int32 h,
         /* [in] */ Int32 oldw,
@@ -185,8 +186,9 @@ private:
     AutoPtr<BatteryTracker> mDemoTracker;
 };
 
-} // namespace SystemUI
-} // namespace Droid
-} // namespace Elastos
+} // SystemUI
+} // Packages
+} // Droid
+} // Elastos
 
 #endif //__ELASTOS_DROID_SYSTEMUI_CBATTERYMETERVIEW_H__

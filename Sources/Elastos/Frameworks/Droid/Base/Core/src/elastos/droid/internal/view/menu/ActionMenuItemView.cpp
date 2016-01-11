@@ -1,6 +1,7 @@
 
 #include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Content.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/internal/view/menu/ActionMenuItemView.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/text/TextUtils.h"
@@ -9,6 +10,7 @@
 
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::ITypedArray;
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::View::IMenuItem;

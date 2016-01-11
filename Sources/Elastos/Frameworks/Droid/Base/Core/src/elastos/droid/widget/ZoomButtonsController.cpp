@@ -1,7 +1,6 @@
 
 #include "elastos/droid/widget/ZoomButtonsController.h"
 #include "elastos/droid/content/CIntentFilter.h"
-#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/view/CViewConfiguration.h"
@@ -14,7 +13,6 @@
 
 using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Graphics::IPixelFormat;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
 using Elastos::Droid::Os::IBinder;
@@ -630,7 +628,7 @@ AutoPtr<IView> ZoomButtonsController::FindViewForTouch(
     // Reverse order so the child drawn on top gets first dibs.
     Int32 containerCoordsX = rawX - (*mContainerRawLocation)[0];
     Int32 containerCoordsY = rawY - (*mContainerRawLocation)[1];
-    AutoPtr<CRect> frame = mTempRect;
+    AutoPtr<CRect> frame = (CRect*)mTempRect.Get();
 
     AutoPtr<IView> closestChild = NULL;
     Int32 closestChildDistanceSq = Elastos::Core::Math::INT32_MAX_VALUE;

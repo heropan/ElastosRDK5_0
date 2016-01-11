@@ -6,10 +6,11 @@
 #include "elastos/droid/view/VelocityTracker.h"
 #include "elastos/droid/graphics/CRect.h"
 
+using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Os::IStrictModeSpan;
 using Elastos::Droid::View::VelocityTracker;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IMotionEvent;
-using Elastos::Droid::Os::IStrictModeSpan;
 
 namespace Elastos {
 namespace Droid {

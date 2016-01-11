@@ -32,6 +32,8 @@
 #include "elastos/droid/view/accessibility/CAccessibilityEvent.h"
 #include "elastos/droid/view/accessibility/CAccessibilityNodeInfo.h"
 #include "elastos/droid/view/inputmethod/CInputMethodManager.h"
+#include "elastos/droid/graphics/CRect.h"
+#include "elastos/droid/graphics/CRectF.h"
 #include "elastos/droid/graphics/CCanvas.h"
 #include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/graphics/CPoint.h"
@@ -64,16 +66,6 @@
 #include <elastos/core/StringBuilder.h>
 #include "elastos/droid/R.h"
 
-using Elastos::Utility::CLocaleHelper;
-using Elastos::Utility::ILocaleHelper;
-using Elastos::Utility::ILocale;
-using Elastos::Core::StringBuilder;
-using Elastos::Core::CString;
-using Elastos::Core::IFloat;
-using Elastos::Core::CFloat;
-
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Animation::AnimatorInflater;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Res::CResources;
@@ -89,6 +81,8 @@ using Elastos::Droid::Graphics::COutline;
 using Elastos::Droid::Graphics::CPaint;
 using Elastos::Droid::Graphics::CPoint;
 using Elastos::Droid::Graphics::CRegion;
+using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Graphics::CRectF;
 using Elastos::Droid::Graphics::IPath;
 using Elastos::Droid::Graphics::IPixelFormat;
 using Elastos::Droid::Graphics::CBitmap;
@@ -105,6 +99,16 @@ using Elastos::Droid::Graphics::Drawable::CColorDrawable;
 using Elastos::Droid::Graphics::Drawable::IColorDrawable;
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
+using Elastos::Droid::Internal::Utility::EIID_IPredicate;
+using Elastos::Droid::Internal::View::Menu::IMenuBuilder;
+using Elastos::Droid::Internal::View::Menu::IMenuBuilder;
+using Elastos::Droid::Os::Build;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Os::SystemProperties;
+using Elastos::Droid::Os::IBaseBundle;
+using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Utility::CTypedValue;
+using Elastos::Droid::Utility::Pools;
 using Elastos::Droid::View::InputMethod::IInputMethodManager;
 using Elastos::Droid::View::Accessibility::IAccessibilityManager;
 using Elastos::Droid::View::Accessibility::IAccessibilityRecord;
@@ -122,7 +126,6 @@ using Elastos::Droid::View::Accessibility::EIID_IAccessibilityEventSource;
 using Elastos::Droid::View::Animation::CTransformation;
 using Elastos::Droid::View::Animation::AnimationUtils;
 using Elastos::Droid::View::InputMethod::CInputMethodManager;
-using Elastos::Droid::Internal::View::Menu::IMenuBuilder;
 using Elastos::Droid::View::Animation::Animation;
 using Elastos::Droid::View::CChoreographerHelper;
 using Elastos::Droid::View::Accessibility::CAccessibilityNodeInfo;
@@ -136,19 +139,19 @@ using Elastos::Droid::View::CViewConfiguration;
 using Elastos::Droid::View::CViewTreeObserver;
 using Elastos::Droid::View::CDispatcherState;
 using Elastos::Droid::View::ViewOutlineProvider;
-using Elastos::Droid::Os::Build;
-using Elastos::Droid::Os::SystemClock;
-using Elastos::Droid::Os::SystemProperties;
-using Elastos::Droid::Os::IBaseBundle;
-using Elastos::Droid::Text::TextUtils;
-using Elastos::Droid::Internal::View::Menu::IMenuBuilder;
-using Elastos::Droid::Utility::CTypedValue;
-using Elastos::Droid::Internal::Utility::EIID_IPredicate;
 using Elastos::Droid::Widget::IScrollBarDrawable;
-using Elastos::Utility::CArrayList;
-using Elastos::Droid::Utility::Pools;
-using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Widget::CScrollBarDrawable;
+using Elastos::Core::CFloat;
+using Elastos::Core::CString;
+using Elastos::Core::IFloat;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::CLocaleHelper;
+using Elastos::Utility::ILocaleHelper;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Logging::Logger;
 
 
 namespace Elastos {
@@ -880,11 +883,11 @@ View::AttachInfo::AttachInfo(
     , mAccessibilityWindowId(IAccessibilityNodeInfo::UNDEFINED_ITEM_ID)
 {
     SystemProperties::GetBoolean(IView::DEBUG_LAYOUT_PROPERTY, FALSE, &mDebugLayout);
-    ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mOverscanInsets));
-    ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mContentInsets));
-    ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mVisibleInsets));
-    ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mStableInsets));
-    ASSERT_SUCCEEDED(CRect::NewByFriend((CRect**)&mTmpInvalRect));
+    ASSERT_SUCCEEDED(CRect::New((IRect**)&mOverscanInsets));
+    ASSERT_SUCCEEDED(CRect::New((IRect**)&mContentInsets));
+    ASSERT_SUCCEEDED(CRect::New((IRect**)&mVisibleInsets));
+    ASSERT_SUCCEEDED(CRect::New((IRect**)&mStableInsets));
+    ASSERT_SUCCEEDED(CRect::New((IRect**)&mTmpInvalRect));
     ASSERT_SUCCEEDED(CRectF::New((IRectF**)&mTmpTransformRect));
     ASSERT_SUCCEEDED(CRectF::New((IRectF**)&mTmpTransformRect1));
     ASSERT_SUCCEEDED(CMatrix::New((IMatrix**)&mTmpMatrix));
@@ -3731,12 +3734,15 @@ Boolean View::ComputeFitSystemWindows(
     } else {
         // The application wants to take care of fitting system window for
         // the content...  however we still need to take care of any overscan here.
-        AutoPtr<CRect> overscan = mAttachInfo->mOverscanInsets;
-        outLocalInsets->Set(overscan.Get());
-        inoutInsets->SetLeft(overscan->mLeft);
-        inoutInsets->SetTop(overscan->mTop);
-        inoutInsets->SetRight(overscan->mRight);
-        inoutInsets->SetBottom(overscan->mBottom);
+        AutoPtr<IRect> overscan = mAttachInfo->mOverscanInsets;
+        outLocalInsets->Set(overscan);
+        Int32 left = 0, top = 0, right = 0, bottom = 0;
+        overscan->Get(&left, &top, &right, &bottom);
+
+        ((CRect*)inoutInsets)->mLeft -= left;
+        ((CRect*)inoutInsets)->mTop -= top;
+        ((CRect*)inoutInsets)->mRight -= right;
+        ((CRect*)inoutInsets)->mBottom -= bottom;
         return FALSE;
     }
 }
@@ -6306,13 +6312,14 @@ ECode View::GetWindowVisibleDisplayFrame(
         // XXX This is really broken, and probably all needs to be done
         // in the window manager, and we need to know more about whether
         // we want the area behind or in front of the IME.
-        CRect* insets = mAttachInfo->mVisibleInsets.Get();
+        Int32 left = 0, top = 0, right = 0, bottom = 0;
+        mAttachInfo->mVisibleInsets->Get(&left, &top, &right, &bottom);
         CRect* _r = (CRect*)r.Get();
         CRect* _outRect = (CRect*)outRect;
-        _outRect->mLeft = _r->mLeft + insets->mLeft;
-        _outRect->mTop = _r->mTop + insets->mTop;
-        _outRect->mRight = _r->mRight - insets->mRight;
-        _outRect->mBottom = _r->mBottom - insets->mBottom;
+        _outRect->mLeft = _r->mLeft + left;
+        _outRect->mTop = _r->mTop + top;
+        _outRect->mRight = _r->mRight - right;
+        _outRect->mBottom = _r->mBottom - bottom;
         return NOERROR;
     }
     AutoPtr<IDisplay> d;
@@ -9271,7 +9278,7 @@ void View::InvalidateInternal(
         AutoPtr<AttachInfo> ai = mAttachInfo;
         AutoPtr<IViewParent> p = mParent;
         if (p && ai && l < r && t < b) {
-            AutoPtr<CRect> damage = ai->mTmpInvalRect;
+            AutoPtr<IRect> damage = ai->mTmpInvalRect;
             damage->Set(l, t, r, b);
             p->InvalidateChild(THIS_PROBE(IView), (IRect*)damage);
         }
@@ -9371,12 +9378,13 @@ ECode View::DamageInParent()
     AutoPtr<AttachInfo> ai = mAttachInfo;
     AutoPtr<IViewParent> p = mParent;
     if (p != NULL && ai != NULL) {
-        AutoPtr<CRect> r = ai->mTmpInvalRect;
+        AutoPtr<IRect> r = ai->mTmpInvalRect;
         r->Set(0, 0, mRight - mLeft, mBottom - mTop);
         if (IViewGroup::Probe(mParent)) {
-            (IViewGroup::Probe(mParent))->DamageChild(THIS_PROBE(IView), (IRect*)r);
-        } else {
-            mParent->InvalidateChild(THIS_PROBE(IView), (IRect*)r);
+            (IViewGroup::Probe(mParent))->DamageChild(THIS_PROBE(IView), r);
+        }
+        else {
+            mParent->InvalidateChild(THIS_PROBE(IView), r);
         }
     }
     return NOERROR;
@@ -12433,16 +12441,18 @@ ECode View::SetClipBounds(
         }
         if (mClipBounds == NULL) {
             Invalidate();
-            CRect::NewByFriend((CRect**)&mClipBounds);
-        } else {
+            CRect::New((IRect**)&mClipBounds);
+        }
+        else {
             CRect* temp = (CRect*)clipBounds;
-            Invalidate(Elastos::Core::Math::Min(mClipBounds->mLeft, temp->mLeft),
-                    Elastos::Core::Math::Min(mClipBounds->mTop, temp->mTop),
-                    Elastos::Core::Math::Min(mClipBounds->mRight, temp->mRight),
-                    Elastos::Core::Math::Min(mClipBounds->mBottom, temp->mBottom));
+            Invalidate(Elastos::Core::Math::Min(((CRect*)mClipBounds.Get())->mLeft, temp->mLeft),
+                    Elastos::Core::Math::Min(((CRect*)mClipBounds.Get())->mTop, temp->mTop),
+                    Elastos::Core::Math::Min(((CRect*)mClipBounds.Get())->mRight, temp->mRight),
+                    Elastos::Core::Math::Min(((CRect*)mClipBounds.Get())->mBottom, temp->mBottom));
             mClipBounds->Set(clipBounds);
         }
-    } else {
+    }
+    else {
         if (mClipBounds != NULL) {
             Invalidate();
             mClipBounds = NULL;
@@ -13244,7 +13254,7 @@ void View::DrawAccessibilityFocus(
         return;
     }
 
-    AutoPtr<CRect> bounds = mAttachInfo->mTmpInvalRect;
+    AutoPtr<IRect> bounds = mAttachInfo->mTmpInvalRect;
     AutoPtr<IViewRootImpl> viewRoot;
     GetViewRootImpl((IViewRootImpl**)&viewRoot);
     AutoPtr<IView> leftHandle;
@@ -13270,7 +13280,7 @@ void View::DrawAccessibilityFocus(
     AutoPtr<IAccessibilityNodeInfo> virtualView;
     viewRoot->GetAccessibilityFocusedVirtualView((IAccessibilityNodeInfo**)&virtualView);
     if (virtualView != NULL) {
-        virtualView->GetBoundsInScreen((IRect*)bounds);
+        virtualView->GetBoundsInScreen(bounds);
         GetLocationOnScreen((ArrayOf<Int32>**)&(mAttachInfo->mTmpLocation));
         bounds->Offset((*mAttachInfo->mTmpLocation)[0], (*mAttachInfo->mTmpLocation)[1]);
     } else {
@@ -13280,7 +13290,7 @@ void View::DrawAccessibilityFocus(
     canvas->Save(&save);
     canvas->Translate(mScrollX, mScrollY);
     Boolean clipRect;
-    canvas->ClipRect(IRect::Probe(bounds), Elastos::Droid::Graphics::RegionOp_REPLACE, &clipRect);
+    canvas->ClipRect(bounds, Elastos::Droid::Graphics::RegionOp_REPLACE, &clipRect);
     drawable->SetBounds(bounds);
     drawable->Draw(canvas);
     canvas->Restore();

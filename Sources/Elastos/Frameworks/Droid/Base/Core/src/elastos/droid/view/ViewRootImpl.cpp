@@ -4053,8 +4053,8 @@ ECode ViewRootImpl::ScrollToRectOrFocus(
     /* [out] */ Boolean* res)
 {
     VALIDATE_NOT_NULL(res)
-    CRect* ci = mAttachInfo->mContentInsets;
-    CRect* vi = mAttachInfo->mVisibleInsets;
+    CRect* ci = (CRect*)mAttachInfo->mContentInsets.Get();
+    CRect* vi = (CRect*)mAttachInfo->mVisibleInsets.Get();
     Int32 scrollY = 0;
     Boolean handled = FALSE;
 

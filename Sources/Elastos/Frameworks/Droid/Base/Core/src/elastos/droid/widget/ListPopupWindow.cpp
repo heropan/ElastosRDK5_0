@@ -1,5 +1,6 @@
 
 #include "elastos/droid/animation/CObjectAnimatorHelper.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/text/CTextUtils.h"
@@ -24,6 +25,7 @@ using Elastos::Droid::Animation::IObjectAnimator;
 using Elastos::Droid::Animation::IObjectAnimatorHelper;
 using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Database::EIID_IDataSetObserver;
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Internal::Widget::CAbsListViewAutoScroller;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Text::CTextUtils;

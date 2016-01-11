@@ -1,5 +1,6 @@
 
 #include "Elastos.Droid.Content.h"
+#include "elastos/droid/graphics/CRectF.h"
 #include "elastos/droid/internal/widget/PointerLocationView.h"
 #include "elastos/droid/view/CViewConfiguration.h"
 #include "elastos/droid/view/CKeyEvent.h"
@@ -9,12 +10,12 @@
 #include "elastos/droid/graphics/CPaint.h"
 #include "elastos/droid/graphics/CPaintFontMetricsInt.h"
 #include "elastos/droid/os/CSystemProperties.h"
-
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Graphics::CRectF;
 using Elastos::Droid::Graphics::CPaint;
 using Elastos::Droid::Graphics::CPaintFontMetricsInt;
 using Elastos::Droid::Graphics::PaintStyle_STROKE;

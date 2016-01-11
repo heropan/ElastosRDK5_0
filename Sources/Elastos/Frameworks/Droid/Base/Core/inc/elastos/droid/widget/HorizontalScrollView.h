@@ -8,6 +8,7 @@
 #include "elastos/droid/view/VelocityTracker.h"
 #include "elastos/droid/R.h"
 
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::VelocityTracker;

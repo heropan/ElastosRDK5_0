@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_SETTINGS_H__
 #define __ELASTOS_DROID_PROVIDER_SETTINGS_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/droid/ext/frameworkext.h>
 #include <elastos/utility/HashMap.h>
 
 using Elastos::Droid::Content::IContentResolver;
@@ -24,7 +24,7 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-class Settings
+class ECO_PUBLIC Settings
 {
 private:
     // Thread-safe.

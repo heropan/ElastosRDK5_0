@@ -2,6 +2,7 @@
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/widget/ProgressBar.h"
 #include "elastos/droid/widget/CProgressBarSavedState.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/drawable/Drawable.h"
 #include "elastos/droid/graphics/drawable/CLayerDrawable.h"
 #include "elastos/droid/graphics/drawable/CStateListDrawable.h"
@@ -19,7 +20,7 @@
 #include <elastos/core/Math.h>
 #include <elastos/core/Thread.h>
 
-using Elastos::Droid::R;
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Graphics::CBitmapShader;
 using Elastos::Droid::Graphics::IBitmapShader;
 using Elastos::Droid::Graphics::IPaint;
@@ -50,6 +51,7 @@ using Elastos::Droid::Graphics::Drawable::IClipDrawable;
 using Elastos::Droid::Graphics::Drawable::IAnimatable;
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
+using Elastos::Droid::R;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::IAbsSavedState;
 using Elastos::Droid::View::Animation::IAnimation;
