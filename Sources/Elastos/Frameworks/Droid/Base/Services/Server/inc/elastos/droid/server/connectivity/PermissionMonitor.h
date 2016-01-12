@@ -2,38 +2,30 @@
 #ifndef __ELASTOS_DROID_SERVER_CONNECTIVITY_NETWORK_MONITOR_H__
 #define __ELASTOS_DROID_SERVER_CONNECTIVITY_NETWORK_MONITOR_H__
 
-#include <elastos/droid/content/BroadcastReceiver.h>
+#include <elastos/droid/ext/frameworkext.h>
 #include "_Elastos.Droid.Server.h"
+#include <elastos/droid/content/BroadcastReceiver.h>
+#include <elastos/utility/etl/HashMap.h>
+#include <elastos/utility/etl/HashSet.h>
+#include <elastos/utility/etl/List.h>
 
-import static android.Manifest.permission.CHANGE_NETWORK_STATE;
-import static android.Manifest.permission.CONNECTIVITY_INTERNAL;
-import static android.content.pm.ApplicationInfo.FLAG_SYSTEM;
-import static android.content.pm.ApplicationInfo.FLAG_UPDATED_SYSTEM_APP;
-import static android.content.pm.PackageManager.GET_PERMISSIONS;
+using Elastos::Droid::Content::BroadcastReceiver;
+using Elastos::Droid::Content::IBroadcastReceiver;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Content::Pm::IPackageInfo;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::Pm::IUserInfo;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.pm.UserInfo;
-import android.net.Uri;
-import android.os.INetworkManagementService;
-import android.os.RemoteException;
-import android.os.UserHandle;
-import android.os.UserManager;
-import android.text.TextUtils;
-import android.util.Log;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Os::IINetworkManagementService;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Os::IUserManager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Map;
-import java.util.Set;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::HashSet;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
@@ -47,224 +39,91 @@ namespace Connectivity {
  * @hide
  */
 class PermissionMonitor
+    : public Object
 {
+private:
+
+    class IntentReceiver
+        : public BroadcastReceiver
+    {
+    public:
+        IntentReceiver(
+            /* [in] */ PermissionMonitor* host);
+
+        CARAPI OnReceive(
+            /* [in] */ IContext* context,
+            /* [in] */ IIntent* intent);
+
+        CARAPI ToString(
+            /* [out] */ String* str)
+        {
+            VALIDATE_NOT_NULL(str)
+            *str = String("PermissionMonitor::IntentReceiver");
+            return NOERROR;
+        }
+    private:
+        PermissionMonitor* mHost;
+    };
+
 public:
 
-    public PermissionMonitor(Context context, INetworkManagementService netd) {
-        mContext = context;
-        mPackageManager = context.getPackageManager();
-        mUserManager = UserManager.get(context);
-        mNetd = netd;
-        mIntentReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                int user = intent.getIntExtra(Intent.EXTRA_USER_HANDLE, UserHandle.USER_NULL);
-                int appUid = intent.getIntExtra(Intent.EXTRA_UID, -1);
-                Uri appData = intent.getData();
-                String appName = appData != null ? appData.getSchemeSpecificPart() : null;
-
-                if (Intent.ACTION_USER_ADDED.equals(action)) {
-                    onUserAdded(user);
-                } else if (Intent.ACTION_USER_REMOVED.equals(action)) {
-                    onUserRemoved(user);
-                } else if (Intent.ACTION_PACKAGE_ADDED.equals(action)) {
-                    onAppAdded(appName, appUid);
-                } else if (Intent.ACTION_PACKAGE_REMOVED.equals(action)) {
-                    onAppRemoved(appUid);
-                }
-            }
-        };
-    }
+    PermissionMonitor(
+        /* [in] */ IContext* context,
+        /* [in] */ IINetworkManagementService* netd);
 
     // Intended to be called only once at startup, after the system is ready. Installs a broadcast
     // receiver to monitor ongoing UID changes, so this shouldn't/needn't be called again.
-    public synchronized void startMonitoring() {
-        log("Monitoring");
-
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_USER_ADDED);
-        intentFilter.addAction(Intent.ACTION_USER_REMOVED);
-        mContext.registerReceiverAsUser(mIntentReceiver, UserHandle.ALL, intentFilter, null, null);
-
-        intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
-        intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        intentFilter.addDataScheme("package");
-        mContext.registerReceiverAsUser(mIntentReceiver, UserHandle.ALL, intentFilter, null, null);
-
-        List<PackageInfo> apps = mPackageManager.getInstalledPackages(GET_PERMISSIONS);
-        if (apps == null) {
-            loge("No apps");
-            return;
-        }
-
-        for (PackageInfo app : apps) {
-            int uid = app.applicationInfo != null ? app.applicationInfo.uid : -1;
-            if (uid < 0) {
-                continue;
-            }
-
-            boolean isNetwork = hasNetworkPermission(app);
-            boolean isSystem = hasSystemPermission(app);
-
-            if (isNetwork || isSystem) {
-                Boolean permission = mApps.get(uid);
-                // If multiple packages share a UID (cf: android:sharedUserId) and ask for different
-                // permissions, don't downgrade (i.e., if it's already SYSTEM, leave it as is).
-                if (permission == null || permission == NETWORK) {
-                    mApps.put(uid, isSystem);
-                }
-            }
-        }
-
-        List<UserInfo> users = mUserManager.getUsers(true);  // exclude dying users
-        if (users != null) {
-            for (UserInfo user : users) {
-                mUsers.add(user.id);
-            }
-        }
-
-        log("Users: " + mUsers.size() + ", Apps: " + mApps.size());
-        update(mUsers, mApps, true);
-    }
-
-    private boolean hasPermission(PackageInfo app, String permission) {
-        if (app.requestedPermissions != null) {
-            for (String p : app.requestedPermissions) {
-                if (permission.equals(p)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean hasNetworkPermission(PackageInfo app) {
-        return hasPermission(app, CHANGE_NETWORK_STATE);
-    }
-
-    private boolean hasSystemPermission(PackageInfo app) {
-        int flags = app.applicationInfo != null ? app.applicationInfo.flags : 0;
-        if ((flags & FLAG_SYSTEM) != 0 || (flags & FLAG_UPDATED_SYSTEM_APP) != 0) {
-            return true;
-        }
-        return hasPermission(app, CONNECTIVITY_INTERNAL);
-    }
-
-    private int[] toIntArray(List<Integer> list) {
-        int[] array = new int[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-            array[i] = list.get(i);
-        }
-        return array;
-    }
-
-    private void update(Set<Integer> users, Map<Integer, Boolean> apps, boolean add) {
-        List<Integer> network = new ArrayList<Integer>();
-        List<Integer> system = new ArrayList<Integer>();
-        for (Entry<Integer, Boolean> app : apps.entrySet()) {
-            List<Integer> list = app.getValue() ? system : network;
-            for (int user : users) {
-                list.add(UserHandle.getUid(user, app.getKey()));
-            }
-        }
-        try {
-            if (add) {
-                mNetd.setPermission(CHANGE_NETWORK_STATE, toIntArray(network));
-                mNetd.setPermission(CONNECTIVITY_INTERNAL, toIntArray(system));
-            } else {
-                mNetd.clearPermission(toIntArray(network));
-                mNetd.clearPermission(toIntArray(system));
-            }
-        } catch (RemoteException e) {
-            loge("Exception when updating permissions: " + e);
-        }
-    }
-
-    private synchronized void onUserAdded(int user) {
-        if (user < 0) {
-            loge("Invalid user in onUserAdded: " + user);
-            return;
-        }
-        mUsers.add(user);
-
-        Set<Integer> users = new HashSet<Integer>();
-        users.add(user);
-        update(users, mApps, true);
-    }
-
-    private synchronized void onUserRemoved(int user) {
-        if (user < 0) {
-            loge("Invalid user in onUserRemoved: " + user);
-            return;
-        }
-        mUsers.remove(user);
-
-        Set<Integer> users = new HashSet<Integer>();
-        users.add(user);
-        update(users, mApps, false);
-    }
-
-    private synchronized void onAppAdded(String appName, int appUid) {
-        if (TextUtils.isEmpty(appName) || appUid < 0) {
-            loge("Invalid app in onAppAdded: " + appName + " | " + appUid);
-            return;
-        }
-
-        try {
-            PackageInfo app = mPackageManager.getPackageInfo(appName, GET_PERMISSIONS);
-            boolean isNetwork = hasNetworkPermission(app);
-            boolean isSystem = hasSystemPermission(app);
-            if (isNetwork || isSystem) {
-                Boolean permission = mApps.get(appUid);
-                // If multiple packages share a UID (cf: android:sharedUserId) and ask for different
-                // permissions, don't downgrade (i.e., if it's already SYSTEM, leave it as is).
-                if (permission == null || permission == NETWORK) {
-                    mApps.put(appUid, isSystem);
-
-                    Map<Integer, Boolean> apps = new HashMap<Integer, Boolean>();
-                    apps.put(appUid, isSystem);
-                    update(mUsers, apps, true);
-                }
-            }
-        } catch (NameNotFoundException e) {
-            loge("NameNotFoundException in onAppAdded: " + e);
-        }
-    }
-
-    private synchronized void onAppRemoved(int appUid) {
-        if (appUid < 0) {
-            loge("Invalid app in onAppRemoved: " + appUid);
-            return;
-        }
-        mApps.remove(appUid);
-
-        Map<Integer, Boolean> apps = new HashMap<Integer, Boolean>();
-        apps.put(appUid, NETWORK);  // doesn't matter which permission we pick here
-        update(mUsers, apps, false);
-    }
-
+    void StartMonitoring();
 
 private:
-    private static final String TAG = "PermissionMonitor";
-    private static final boolean DBG = true;
-    private static final boolean SYSTEM = true;
-    private static final boolean NETWORK = false;
+    Boolean HasPermission(
+        /* [in] */ IPackageInfo* app,
+        /* [in] */ const String& permission);
 
-    private final Context mContext;
-    private final PackageManager mPackageManager;
-    private final UserManager mUserManager;
-    private final INetworkManagementService mNetd;
-    private final BroadcastReceiver mIntentReceiver;
+    Boolean HasNetworkPermission(
+        /* [in] */ IPackageInfo* app);
+
+    Boolean HasSystemPermission(
+        /* [in] */ IPackageInfo* app);
+
+    AutoPtr<ArrayOf<Int32> > ToInt32Array(
+        /* [in] */ List<Int32>* list);
+
+    CARAPI Update(
+        /* [in] */ HashSet<Int32>* users,
+        /* [in] */ HashMap<Int32, Boolean>* apps,
+        /* [in] */ Boolean add);
+
+    CARAPI OnUserAdded(
+        /* [in] */ Int32 user);
+
+    CARAPI OnUserRemoved(
+        /* [in] */ Int32 user);
+
+    CARAPI OnAppAdded(
+        /* [in] */ const String& appName,
+        /* [in] */ const Int32 appUid);
+
+    CARAPI OnAppRemoved(
+        /* [in] */ Int32 appUid);
+
+private:
+    static const String TAG;
+    static const Boolean DBG;
+    static const Boolean SYSTEM;
+    static const Boolean NETWORK;
+
+    AutoPtr<IContext> mContext;
+    AutoPtr<IPackageManager> mPackageManager;
+    AutoPtr<IUserManager> mUserManager;
+    AutoPtr<IINetworkManagementService> mNetd;
+    AutoPtr<IBroadcastReceiver> mIntentReceiver;
 
     // Values are User IDs.
-    private final Set<Integer> mUsers = new HashSet<Integer>();
+    HashSet<Int32> mUsers;
 
     // Keys are App IDs. Values are true for SYSTEM permission and false for NETWORK permission.
-    private final Map<Integer, Boolean> mApps = new HashMap<Integer, Boolean>();
-
-
+    HashMap<Int32, Boolean> mApps;
 };
 
 } // Connectivity

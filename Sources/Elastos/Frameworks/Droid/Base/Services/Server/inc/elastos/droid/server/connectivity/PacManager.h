@@ -5,9 +5,11 @@
 #include <elastos/droid/content/BroadcastReceiver.h>
 #include <elastos/droid/os/Runnable.h>
 #include "_Elastos.Droid.Server.h"
+#include <Elastos.Droid.Net.h>
 
 using Elastos::Droid::App::IAlarmManager;
 using Elastos::Droid::App::IPendingIntent;
+using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IContentResolver;
@@ -15,8 +17,10 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::IServiceConnection;
+// using Elastos::Droid::Net::IIProxyService;
 using Elastos::Droid::Net::IProxyInfo;
 using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IServiceManager;
@@ -24,12 +28,6 @@ using Elastos::Droid::Os::ISystemClock;
 using Elastos::Droid::Os::ISystemProperties;
 using Elastos::Droid::Provider::ISettings;
 
-using Elastos::Droid::Net::IProxyCallback;
-using Elastos::Droid::Net::IProxyPortListener;
-using Elastos::Droid::Net::IProxyService;
-using Elastos::Droid::Server::IoThread;
-
-using Libcore::IO::IStreams;
 
 using Elastos::Net::IURL;
 using Elastos::Net::IURLConnection;
@@ -40,6 +38,7 @@ namespace Server {
 namespace Connectivity {
 
 class PacManager
+    : public Object
 {
 private:
 
@@ -48,7 +47,7 @@ private:
         , public IServiceConnection
     {
     public:
-        CAR_INTREFACE_DECL()
+        CAR_INTERFACE_DECL()
 
         ServiceConnection(
             /* [in] */ PacManager* host);
@@ -69,7 +68,7 @@ private:
         , public IServiceConnection
     {
     public:
-        CAR_INTREFACE_DECL()
+        CAR_INTERFACE_DECL()
 
         ProxyConnection(
             /* [in] */ PacManager* host);
@@ -110,6 +109,13 @@ private:
             /* [in] */ IContext* context,
             /* [in] */ IIntent* intent);
 
+        CARAPI ToString(
+            /* [out] */ String* str)
+        {
+            VALIDATE_NOT_NULL(str)
+            *str = String("PacManager::PacRefreshIntentReceiver");
+            return NOERROR;
+        }
     private:
         PacManager* mHost;
     };
@@ -174,32 +180,32 @@ private:
     void SendProxyIfNeeded();
 
 public:
-    static const String PAC_PACKAGE = "com.android.pacprocessor";
-    static const String PAC_SERVICE = "com.android.pacprocessor.PacService";
-    static const String PAC_SERVICE_NAME = "com.android.net.IProxyService";
+    static const String PAC_PACKAGE;
+    static const String PAC_SERVICE;
+    static const String PAC_SERVICE_NAME;
 
-    static const String PROXY_PACKAGE = "com.android.proxyhandler";
-    static const String PROXY_SERVICE = "com.android.proxyhandler.ProxyService";
+    static const String PROXY_PACKAGE;
+    static const String PROXY_SERVICE;
 
 private:
-    static const String TAG = "PacManager";
+    static const String TAG;
 
-    static const String ACTION_PAC_REFRESH = "android.net.proxy.PAC_REFRESH";
+    static const String ACTION_PAC_REFRESH;
 
-    static const String DEFAULT_DELAYS = "8 32 120 14400 43200";
-    static const Int32 DELAY_1 = 0;
-    static const Int32 DELAY_4 = 3;
-    static const Int32 DELAY_LONG = 4;
+    static const String DEFAULT_DELAYS;
+    static const Int32 DELAY_1;
+    static const Int32 DELAY_4;
+    static const Int32 DELAY_LONG;
 
     /** Keep these values up-to-date with ProxyService.java */
-    static const String KEY_PROXY = "keyProxy";
+    static const String KEY_PROXY;
     String mCurrentPac;
     // @GuardedBy("mProxyLock")
-    AutoPtr<IUri> mPacUrl = Uri.EMPTY;
+    AutoPtr<IUri> mPacUrl;
 
     AutoPtr<IAlarmManager> mAlarmManager;
     // @GuardedBy("mProxyLock")
-    AutoPtr<IIProxyService> mProxyService;
+    // AutoPtr<IIProxyService> mProxyService;
     AutoPtr<IPendingIntent> mPacRefreshIntent;
     AutoPtr<IServiceConnection> mConnection;
     AutoPtr<IServiceConnection> mProxyConnection;

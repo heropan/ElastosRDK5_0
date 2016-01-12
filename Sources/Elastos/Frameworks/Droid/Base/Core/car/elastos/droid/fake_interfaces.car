@@ -10,7 +10,23 @@ module
 
         interface ILinkCapabilities {}  // deleted in V5
 
-        interface IIProxyService {}
+        interface IIProxyService {
+            ResolvePacFile(
+                [in] String host,
+                [in] String url,
+                [out] String* result);
+
+            SetPacFile(
+                [in] String scriptContents);
+
+            StartPacSystem();
+
+            StopPacSystem();
+        }
+
+        interface IIProxyCallback {}
+
+        interface IIProxyPortListener {}
 
     }}} // Elastos.Droid.Net
 
