@@ -2,6 +2,7 @@
 module
 {
     using interface Elastos.Security.IPublicKey;
+    using interface Elastos.Security.Cert.ICertificateFactory;
 
     namespace Elastos {
     namespace Droid {
@@ -62,6 +63,28 @@ module
          */
         GetPublicKey(
             [out] IPublicKey** publicKey);
+
+        GetChainSignatures(
+            [out, callee] ArrayOf<ISignature*>* result);
+    }
+
+    [deprecated]
+    interface ISignatureHelper {
+
+        AreExactMatch(
+            [in] ArrayOf<ISignature*>* a,
+            [in] ArrayOf<ISignature*>* b,
+            [out] Boolean* match);
+
+        AreEffectiveMatch(
+            [in] ArrayOf<ISignature*>* a,
+            [in] ArrayOf<ISignature*>* b,
+            [out] Boolean* match);
+
+        Bounce(
+            [in] ICertificateFactory* cf,
+            [in] ISignature* s,
+            [out] ISignature** sig);
     }
 
     } // namespace Pm

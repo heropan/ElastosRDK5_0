@@ -660,6 +660,12 @@ public:
     CARAPI_(void) SetOnlyCoreApps(
         /* [in] */ Boolean onlyCoreApps);
 
+    CARAPI_(void) SetDisplayMetrics(
+        /* [in] */ IDisplayMetrics* metrics);
+
+    static CARAPI_(Boolean) IsApkFile(
+        /* [in] */ IFile* file);
+
     /**
      * Generate and return the {@link PackageInfo} for a parsed package.
      *
@@ -699,7 +705,7 @@ public:
      *
      * @see PackageParser#parsePackage(File, int)
      */
-    CARAPI ParsePackageLite(
+    static CARAPI ParsePackageLite(
         /* [in] */ IFile* packageFile,
         /* [in] */ Int32 flags,
         /* [in] */ ArrayOf<Byte>* readBuffer,
@@ -843,11 +849,9 @@ public:
         /* [in] */ ArrayOf<Byte>* readBuffer,
         /* [out] */ Package** pkgLite);
 
+    CARAPI_(Int32) GetParseError();
+
 private:
-
-    static CARAPI_(Boolean) IsApkFile(
-        /* [in] */ IFile* file);
-
     static CARAPI_(Boolean) IsApkPath(
         /* [in] */ const String& name);
 
@@ -1264,5 +1268,15 @@ private:
 } // namespace Content
 } // namespace Droid
 } // namespace Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::Content::Pm::PackageParser::ActivityIntentInfo, IInterface)
+DEFINE_CONVERSION_FOR(Elastos::Droid::Content::Pm::PackageParser::ServiceIntentInfo, IInterface)
+DEFINE_CONVERSION_FOR(Elastos::Droid::Content::Pm::PackageParser::ProviderIntentInfo, IInterface)
+DEFINE_CONVERSION_FOR(Elastos::Droid::Content::Pm::PackageParser::Package, IInterface)
+
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Content::Pm::PackageParser::ActivityIntentInfo)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Content::Pm::PackageParser::ProviderIntentInfo)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Content::Pm::PackageParser::ServiceIntentInfo)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Content::Pm::PackageParser::Package)
 
 #endif //__ELASTOS_DROID_CONTENT_PM_PACKAGEPARSER_H__

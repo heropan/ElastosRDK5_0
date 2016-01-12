@@ -31,6 +31,8 @@ PreferredActivity::PreferredActivity(
     mPref = new PreferredComponent(this, match, set, activity, always);
 }
 
+CAR_INTERFACE_IMPL(PreferredActivity, IntentFilter, PreferredComponent::ICallbacks)
+
 PreferredActivity::PreferredActivity(
     /* [in] */ IXmlPullParser* parser)
 {

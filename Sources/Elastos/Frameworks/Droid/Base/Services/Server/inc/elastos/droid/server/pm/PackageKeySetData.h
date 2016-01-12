@@ -14,6 +14,7 @@ namespace Server {
 namespace Pm {
 
 class PackageSettingBase;
+class CPackageManagerService;
 
 class PackageKeySetData : public Object
 {
@@ -58,11 +59,11 @@ protected:
     CARAPI_(Boolean) PackageIsSignedBy(
         /* [in] */ Int64 ks);
 
-    CARAPI_(AutoPtr<Int64>) GetSigningKeySets();
+    CARAPI_(AutoPtr<ArrayOf<Int64> >) GetSigningKeySets();
 
-    CARAPI_(AutoPtr<Int64>) GetUpgradeKeySets();
+    CARAPI_(AutoPtr<ArrayOf<Int64> >) GetUpgradeKeySets();
 
-    CARAPI_(AutoPtr<Int64>) GetDefinedKeySets();
+    CARAPI_(AutoPtr<ArrayOf<Int64> >) GetDefinedKeySets();
 
     HashMap<String, Int64>& GetAliases();
 
@@ -86,6 +87,7 @@ private:
     HashMap<String, Int64> mKeySetAliases;
 
     friend class PackageSettingBase;
+    friend class CPackageManagerService;
 };
 
 } // namespace Pm

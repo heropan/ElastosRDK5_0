@@ -131,6 +131,10 @@ private:
 public:
     CUserManagerService();
 
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor(
         /* [in] */ IFile* dataDir,
         /* [in] */ IFile* baseUserPath);

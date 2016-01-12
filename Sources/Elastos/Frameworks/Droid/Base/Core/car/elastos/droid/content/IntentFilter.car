@@ -394,6 +394,10 @@ module
             [in] String data,
             [out] Boolean* result);
 
+        HasDataSchemeSpecificPart(
+            [in] IPatternMatcher* data,
+            [out] Boolean* result);
+
         /**
          * Return an iterator over the filter's data scheme specific parts.
          */
@@ -450,6 +454,10 @@ module
          */
         HasDataAuthority(
             [in] IUri* data,
+            [out] Boolean* result);
+
+        HasDataAuthority(
+            [in] IIntentFilterAuthorityEntry* entry,
             [out] Boolean* hasDataAuthority);
 
         /**
@@ -516,6 +524,10 @@ module
         HasDataPath(
             [in] String data,
             [out] Boolean* hasDataPath);
+
+        HasDataPath(
+            [in] IPatternMatcher* pm,
+            [out] Boolean* result);
 
         /**
          * Return an iterator over the filter's data paths.

@@ -305,6 +305,39 @@ module
          */
         SetReferrerUri(
             [in] IUri* referrerUri);
+
+        GetMode(
+            [out] Int32* mode);
+
+        GetInstallFlags(
+            [out] Int32* flags);
+
+        GetInstallLocation(
+            [out] Int32* loc);
+
+        GetSizeBytes(
+            [out] Int64* bytes);
+
+        GetAppPackageName(
+            [out] String* name);
+
+        GetAppIcon(
+            [out] IBitmap** icon);
+
+        GetAppLabel(
+            [out] String* label);
+
+        GetAppIconLastModified(
+            [out] Int64* lastModified);
+
+        GetOriginatingUri(
+            [out] IUri** uri);
+
+        GetReferrerUri(
+            [out] IUri** uri);
+
+        GetAbiOverride(
+            [out] String* override);
     }
 
 

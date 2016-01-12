@@ -220,7 +220,7 @@ public:
      * package is uninstalled.
      */
     // @Deprecated
-    String mEgacyNativeLibraryPathString;
+    String mLegacyNativeLibraryPathString;
 
     /**
      * The primary CPU abi for this package. This value is regenerated at every
@@ -232,14 +232,14 @@ public:
      * The secondary CPU abi for this package. This value is regenerated at every
      * boot scan.
      */
-    String secondaryCpuAbiString;
+    String mSecondaryCpuAbiString;
 
     /**
      * The install time CPU override, if any. This value is written at install time
      * and doesn't change during the life of an install. If non-null,
      * {@code primaryCpuAbiString} will contain the same value.
      */
-    String cpuAbiOverrideString;
+    String mCpuAbiOverrideString;
 
     Int64 mTimeStamp;
     Int64 mFirstInstallTime;

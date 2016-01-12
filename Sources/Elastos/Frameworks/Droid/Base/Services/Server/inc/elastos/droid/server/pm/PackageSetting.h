@@ -2,7 +2,6 @@
 #define __ELASTOS_DROID_SERVER_PM_PACKAGESETTING_H__
 
 #include "elastos/droid/server/pm/PackageSettingBase.h"
-#include "elastos/droid/server/pm/SharedUserSetting.h"
 #include "elastos/droid/content/pm/PackageParser.h"
 
 using Elastos::Droid::Content::Pm::PackageParser;
@@ -11,6 +10,8 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Pm {
+
+class SharedUserSetting;
 
 extern const InterfaceID EIID_PackageSetting;
 
@@ -52,5 +53,7 @@ public:
 } // namespace Server
 } // namespace Droid
 } // namespace Elastos
+
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Server::Pm::PackageSetting)
 
 #endif //__ELASTOS_DROID_SERVER_PM_PACKAGESETTING_H__

@@ -435,7 +435,7 @@ const String CPackageInstallerService::ATTR_APP_LABEL("appLabel");
 const String CPackageInstallerService::ATTR_ORIGINATING_URI("originatingUri");
 const String CPackageInstallerService::ATTR_REFERRER_URI("referrerUri");
 const String CPackageInstallerService::ATTR_ABI_OVERRIDE("abiOverride");
-const Int64 CPackageInstallerService::MAX_AGE_MILLIS;
+const Int64 CPackageInstallerService::MAX_AGE_MILLIS = 3 * IDateUtils::DAY_IN_MILLIS;
 const Int64 CPackageInstallerService::MAX_ACTIVE_SESSIONS;
 const Int64 CPackageInstallerService::MAX_HISTORICAL_SESSIONS;
 

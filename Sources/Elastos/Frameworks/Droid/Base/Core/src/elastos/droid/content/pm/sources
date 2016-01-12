@@ -50,6 +50,7 @@ SOURCES += ResolveInfo.cpp
 SOURCES += CResolveInfoDisplayNameComparator.cpp
 SOURCES += ServiceInfo.cpp
 SOURCES += CSignature.cpp
+SOURCES += CSignatureHelper.cpp
 SOURCES += CUserInfo.cpp
 SOURCES += CVerificationParams.cpp
 SOURCES += CVerifierDeviceIdentity.cpp

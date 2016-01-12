@@ -357,6 +357,21 @@ ECode PackageItemInfo::SetMetaData(
     return NOERROR;
 }
 
+ECode PackageItemInfo::GetShowUserIcon(
+    /* [out] */ Int32* icon)
+{
+    VALIDATE_NOT_NULL(icon)
+    *icon = mShowUserIcon;
+    return NOERROR;
+}
+
+ECode PackageItemInfo::SetShowUserIcon(
+    /* [in] */ Int32 icon)
+{
+    mShowUserIcon = icon;
+    return NOERROR;
+}
+
 } // namespace Pm
 } // namespace Content
 } // namespace Droid

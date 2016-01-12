@@ -4,7 +4,6 @@
 
 #include "_Elastos_Droid_Server_Pm_CPackageInstallerService.h"
 #include "elastos/droid/server/pm/CPackageManagerService.h"
-#include "elastos/droid/os/Handler.h"
 #include "elastos/droid/app/PackageDeleteObserver.h"
 #include "elastos/droid/app/PackageInstallObserver.h"
 #include "Elastos.Droid.App.h"
@@ -24,6 +23,7 @@ using Elastos::Droid::Content::Pm::IPackageInstallerCallback;
 using Elastos::Droid::Os::IRemoteCallbackList;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Os::IHandlerThread;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Text::Format::IDateUtils;
 using Elastos::Droid::Utility::IAtomicFile;
@@ -75,7 +75,7 @@ public:
         PackageInstallObserverAdapter(
             /* [in] */ IContext* context,
             /* [in] */ IIntentSender* target,
-            /* [in] */ Int32 sessionId) {
+            /* [in] */ Int32 sessionId)
             : mContext(context)
             , mTarget(target)
             , mSessionId(sessionId)
@@ -174,7 +174,7 @@ private:
 
         private:
             CPackageInstallerService* mHost;
-            AutoPtr<CPackageInstallerSession> mSession;
+            CPackageInstallerSession* mSession;
         };
 
     public:
@@ -388,7 +388,7 @@ private:
     static const String ATTR_ABI_OVERRIDE;
 
     /** Automatically destroy sessions older than this */
-    static const Int64 MAX_AGE_MILLIS = 3 * IDateUtils::DAY_IN_MILLIS;
+    static const Int64 MAX_AGE_MILLIS;
     /** Upper bound on number of active sessions for a UID */
     static const Int64 MAX_ACTIVE_SESSIONS = 1024;
     /** Upper bound on number of historical sessions for a UID */

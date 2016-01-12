@@ -73,5 +73,7 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
+DEFINE_CONVERSION_FOR(Elastos::Droid::Server::Pm::CrossProfileIntentFilter, IInterface)
+
 #endif //__ELASTOS_DROID_SERVER_PM_CROSSPROFILEINTENTFILTER_H__
 

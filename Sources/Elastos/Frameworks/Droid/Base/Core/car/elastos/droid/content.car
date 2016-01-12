@@ -1358,6 +1358,10 @@ module
         interface IParcelable;
     }
 
+    singleton class CSignatureHelper {
+        interface ISignatureHelper;
+    }
+
     class CUserInfo {
         constructor();
 

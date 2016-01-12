@@ -175,6 +175,12 @@ public:
     CARAPI SetMetaData(
         /* [in] */ IBundle* metaData);
 
+    CARAPI GetShowUserIcon(
+        /* [out] */ Int32* icon);
+
+    CARAPI SetShowUserIcon(
+        /* [in] */ Int32 icon);
+
     /**
      * Retrieve the default graphical icon associated with this item.
      *

@@ -264,9 +264,13 @@ public:
 
     CARAPI_(Boolean) ReadLPw(
         /* [in] */ CPackageManagerService* service,
-        /* [in] */ List< AutoPtr<IUserInfo> >& users,
+        /* [in] */ IList* users,
         /* [in] */ Int32 sdkVersion,
         /* [in] */ Boolean onlyCore);
+
+    CARAPI_(void) ReadDefaultPreferredAppsLPw(
+        /* [in] */ CPackageManagerService* service,
+        /* [in] */ Int32 userId);
 
     CARAPI_(void) CreateNewUserLILPw(
         /* [in] */ CPackageManagerService* service,
@@ -402,10 +406,6 @@ private:
     CARAPI ReadDefaultPreferredActivitiesLPw(
         /* [in] */ CPackageManagerService* service,
         /* [in] */ IXmlPullParser* parser,
-        /* [in] */ Int32 userId);
-
-    CARAPI_(void) ReadDefaultPreferredAppsLPw(
-        /* [in] */ CPackageManagerService* service,
         /* [in] */ Int32 userId);
 
     CARAPI_(Int32) ReadInt32(

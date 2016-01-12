@@ -715,7 +715,8 @@ module
 
         KillApplicationWithAppId(
             [in] String pkg,
-            [in] Int32 appid);
+            [in] Int32 appid,
+            [in] String reason);
 
         CloseSystemDialogs(
             [in] String reason);

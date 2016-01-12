@@ -26,6 +26,8 @@ public:
         /* [in] */ IComponentName* activity,
         /* [in] */ Boolean always);
 
+    CAR_INTERFACE_DECL()
+
     PreferredActivity(
         /* [in] */ IXmlPullParser* parser);
 
@@ -55,10 +57,7 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-template <>
-struct Conversion<Elastos::Droid::Server::Pm::PreferredActivity*, IInterface*>
-{
-    enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
-};
+DEFINE_CONVERSION_FOR(Elastos::Droid::Server::Pm::PreferredActivity, IInterface)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Server::Pm::PreferredActivity)
 
 #endif //__ELASTOS_DROID_SERVER_PM_PREFERREDACTIVITY_H__

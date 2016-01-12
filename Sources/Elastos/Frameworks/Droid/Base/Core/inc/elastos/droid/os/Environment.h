@@ -15,7 +15,7 @@ namespace Os {
 /**
  * Provides access to environment variables.
  */
-class Environment
+class ECO_PUBLIC Environment
 {
 public:
 
