@@ -4,10 +4,11 @@
 
 #include "_Elastos_Droid_Media_CMediaCrypto.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include <utils/RefBase.h>
+#include <binder/IServiceManager.h>
+#include <elastos/core/Object.h>
 #include <media/ICrypto.h>
 #include <media/IMediaPlayerService.h>
-#include <binder/IServiceManager.h>
+#include <utils/RefBase.h>
 
 using Elastos::Utility::IUUID;
 
@@ -45,11 +46,19 @@ private:
 
 
 CarClass(CMediaCrypto)
+    , public Object
+    , public IMediaCrypto
 {
 public:
     CMediaCrypto();
 
-    ~CMediaCrypto();
+    virtual ~CMediaCrypto();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor();
 
     /**
      * Instantiate a MediaCrypto object using opaque, crypto scheme specific
@@ -57,7 +66,7 @@ public:
      * @param uuid The UUID of the crypto scheme.
      * @param initData Opaque initialization data specific to the crypto scheme.
      */
-    constructor(
+    CARAPI constructor(
         /* [in] */ IUUID* uuid,
         /* [in] */ ArrayOf<Byte>* initData);
 

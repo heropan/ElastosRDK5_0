@@ -109,6 +109,7 @@ module
     merge("media/IAudioRoutesObserver.car");
     merge("media/IAudioService.car");
     merge("media/IMediaHTTPConnection.car");
+    merge("media/IMediaHTTPService.car");
     merge("media/IMediaRouterClient.car");
     merge("media/IMediaRouterService.car");
     merge("media/IMediaScannerListener.car");
@@ -125,7 +126,6 @@ module
     merge("media/ImageReader.car");
     merge("media/JetPlayer.car");
     merge("media/MediaActionSound.car");
-    merge("media/MediaFormat.car");
     merge("media/MediaCodec.car");
     merge("media/MediaCodecInfo.car");
     merge("media/MediaCodecList.car");
@@ -134,6 +134,7 @@ module
     merge("media/MediaDrm.car");
     merge("media/MediaExtractor.car");
     merge("media/MediaFile.car");
+    merge("media/MediaFormat.car");
     merge("media/MediaInserter.car");
     merge("media/MediaMetadata.car");
     merge("media/MediaMetadataEditor.car");
@@ -177,6 +178,8 @@ module
     interface Elastos.Droid.Content.Pm.IApplicationInfo;
     interface Elastos.Droid.Content.Pm.IResolveInfo;
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
+    interface Elastos.Droid.Graphics.IBitmap;
+    interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Hardware.Usb.IUsbDevice;
     interface Elastos.Droid.Internal.Os.IHandlerCallerCallback;
     interface Elastos.Droid.Media.IAudioAttributes;
@@ -203,9 +206,11 @@ module
     interface Elastos.Core.ICharSequence;
     interface Elastos.Core.IRunnable;
     interface Elastos.IO.ICloseable;
+    interface Elastos.IO.IByteBuffer;
     interface Elastos.IO.IInputStream;
     interface Elastos.Utility.IArrayList;
     interface Elastos.Utility.IList;
+    interface Elastos.Utility.IMap;
     interface Elastos.Utility.IUUID;
 
 //        // media/media/AudioManager
@@ -1104,6 +1109,297 @@ module
         constructor();
 
         interface IMediaActionSound;
+    }
+
+    [deprecated]
+    class CMediaCodecInfo {
+        constructor(
+            [in] String name,
+            [in] Boolean isEncoder,
+            [in] ArrayOf<IMediaCodecInfoCodecCapabilities*>* caps);
+
+        interface IMediaCodecInfo;
+    }
+
+    class CMediaCodecInfoCodecProfileLevel {
+        constructor();
+
+        interface IMediaCodecInfoCodecProfileLevel;
+    }
+
+    [deprecated]
+    class CMediaCodecInfoCodecCapabilities {
+        constructor();
+
+        constructor(
+            [in] ArrayOf<IMediaCodecInfoCodecProfileLevel*>* profLevs,
+            [in] ArrayOf<Int32>* colFmts,
+            [in] Boolean encoder,
+            [in] Int32 flags,
+            [in] IMap* defaultFormatMap,
+            [in] IMap* capabilitiesMap);
+
+        constructor(
+            [in] ArrayOf<IMediaCodecInfoCodecProfileLevel*>* profLevs,
+            [in] ArrayOf<Int32>* colFmts,
+            [in] Boolean encoder,
+            [in] Int32 flags,
+            [in] IMediaFormat* defaultFormat,
+            [in] IMediaFormat* info);
+
+        interface IMediaCodecInfoCodecCapabilities;
+    }
+
+    singleton class CMediaCodecInfoCodecCapabilitiesHelper {
+        interface IMediaCodecInfoCodecCapabilitiesHelper;
+    }
+
+    class CMediaCodecInfoAudioCapabilities {
+        constructor();
+
+        interface IMediaCodecInfoAudioCapabilities;
+    }
+
+    singleton class CMediaCodecInfoAudioCapabilitiesHelper {
+        interface IMediaCodecInfoAudioCapabilitiesHelper;
+    }
+
+    class CMediaCodecInfoEncoderCapabilities {
+        constructor();
+
+        interface IMediaCodecInfoEncoderCapabilities;
+    }
+
+    singleton class CMediaCodecInfoEncoderCapabilitiesHelper {
+        interface IMediaCodecInfoEncoderCapabilitiesHelper;
+    }
+
+    class CMediaCodecInfoVideoCapabilities {
+        constructor();
+
+        interface IMediaCodecInfoVideoCapabilities;
+    }
+
+    singleton class CMediaCodecInfoVideoCapabilitiesHelper {
+        interface IMediaCodecInfoVideoCapabilitiesHelper;
+    }
+
+    class CMediaCodecList {
+        constructor();
+
+        constructor(
+            [in] Int32 kind);
+
+        interface IMediaCodecList;
+    }
+
+    class CMediaCodecBufferInfo {
+        constructor();
+
+        interface IMediaCodecBufferInfo;
+    }
+
+    class CMediaCodecCryptoInfo {
+        constructor();
+
+        interface IMediaCodecCryptoInfo;
+    }
+
+    class CMediaCodecMediaImage {
+        constructor();
+
+        constructor(
+            [in] IByteBuffer* buffer,
+            [in] IByteBuffer* info,
+            [in] Boolean readOnly,
+            [in] Int64 timestamp,
+            [in] Int32 xOffset,
+            [in] Int32 yOffset,
+            [in] IRect* cropRect);
+
+        interface IMediaCodecMediaImage;
+    }
+
+    class CMediaCodec {
+        constructor();
+
+        constructor(
+            [in] String name,
+            [in] Boolean nameIsType,
+            [in] Boolean encoder);
+
+        interface IMediaCodec;
+    }
+
+//    [deprecated]
+//    class CMediaCrypto {
+//        constructor();
+//
+//        constructor(
+//            [in] IUUID* uuid,
+//            [in] ArrayOf<Byte>* initData);
+//
+//        interface IMediaCrypto;
+//    }
+//
+//    singleton class CMediaCryptoHelper {
+//        interface IMediaCryptoHelper;
+//    }
+
+    class CMediaDescription {
+        constructor();
+
+        constructor(
+            [in] String mediaId,
+            [in] ICharSequence* title,
+            [in] ICharSequence* subtitle,
+            [in] ICharSequence* description,
+            [in] IBitmap* icon,
+            [in] IUri* iconUri,
+            [in] IBundle* extras);
+
+        interface IMediaDescription;
+        interface IParcelable;
+    }
+
+    class CMediaDescriptionBuilder {
+        constructor();
+
+        interface IMediaDescriptionBuilder;
+    }
+
+    class CMediaDrm {
+        constructor();
+
+        constructor(
+            [in] IUUID* uuid);
+
+        interface IMediaDrm;
+    }
+
+//    class CMediaExtractor {
+//        constructor();
+//
+//        interface IMediaExtractor;
+//    }
+
+    singleton class CMediaFile {
+        interface IMediaFile;
+    }
+
+    class CMediaFileType {
+        constructor();
+
+        constructor(
+            [in] Int32 fileType,
+            [in] String mimeType);
+
+        interface IMediaFileType;
+    }
+
+    class CMediaFormat {
+        constructor();
+
+        constructor(
+            [in] IMap* map);
+
+        interface IMediaFormat;
+    }
+
+    singleton class CMediaFormatHelper {
+        interface IMediaFormatHelper;
+    }
+
+    class CMediaHTTPConnection {
+        constructor();
+
+        interface IIMediaHTTPConnection;
+        interface IBinder;
+    }
+
+    class CMediaHTTPService {
+        constructor();
+
+        interface IIMediaHTTPService;
+        interface IBinder;
+    }
+
+    class CMediaInserter {
+        constructor();
+
+        constructor(
+            [in] IIContentProvider* provider,
+            [in] String packageName,
+            [in] Int32 bufferSizePerUri);
+
+        interface IMediaInserter;
+    }
+
+    class CMediaMetadataBuilder {
+        constructor();
+
+        constructor(
+            [in] IMediaMetadata* aa);
+
+        interface IMediaMetadataBuilder;
+    }
+
+    class CMediaMetadata {
+        constructor();
+
+        constructor(
+            [in] IBundle* bundle);
+
+        interface IMediaMetadata;
+        interface IParcelable;
+    }
+
+    singleton class CMediaMetadataHelper {
+        interface IMediaMetadataHelper;
+    }
+
+//    class CMediaMetadataRetriever {
+//        constructor();
+//
+//        interface IMediaMetadataRetriever;
+//    }
+
+    class CMediaMuxer {
+        constructor();
+
+        constructor(
+            [in] String bundle,
+            [in] Int32 format);
+
+        interface IMediaMuxer;
+    }
+
+    class CMediaRecorder {
+        constructor();
+
+        interface IMediaRecorder;
+    }
+
+    singleton class CMediaRecorderHelper {
+        interface IMediaRecorderHelper;
+    }
+
+    class CMediaPlayerTrackInfo {
+        constructor();
+
+        constructor(
+            [in] Int32 type,
+            [in] IMediaFormat* format);
+
+        interface IMediaPlayerTrackInfo;
+        interface IParcelable;
+    }
+
+    class CMediaPlayer {
+        constructor();
+
+        interface IMediaPlayer;
+        interface ISubtitleControllerListener;
     }
 
     class CMediaRouterSimpleCallback {

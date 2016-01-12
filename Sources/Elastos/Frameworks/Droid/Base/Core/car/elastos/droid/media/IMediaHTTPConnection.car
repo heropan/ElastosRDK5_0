@@ -8,27 +8,26 @@ module
     namespace Media {
 
     interface IIMediaHTTPConnection {
-        connect(
+        Connect(
             [in] String uri,
             [in] String headers,
-            [out] IBinder ** result);
+            [out] IBinder** result);
 
         Disconnect();
 
         ReadAt(
             [in] Int64 offset,
             [in] Int32 size,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         GetSize(
-            [out] Int64 * result);
+            [out] Int64* result);
 
         GetMIMEType(
-            [out] String * result);
+            [out] String* result);
 
         GetUri(
-            [out] String * result);
-
+            [out] String* result);
     }
     } // namespace media
     } // namepsace Droid

@@ -1,33 +1,78 @@
+#include "elastos/droid/app/CActivityThread.h"
+#include "elastos/droid/media/CAudioAttributes.h"
+#include "elastos/droid/media/CAudioAttributesBuilder.h"
+#include "elastos/droid/media/CMediaFormat.h"
+#include "elastos/droid/media/CMediaHTTPService.h"
 #include "elastos/droid/media/CMediaPlayer.h"
-#include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/media/CMetadata.h"
-#include "elastos/droid/media/CTimedText.h"
-#include "elastos/droid/media/CMediaPlayerSubInfo.h"
-#include "elastos/droid/media/CTrackInfoVendor.h"
-#include "elastos/droid/media/Media_Utils.h"
+#include "elastos/droid/media/CMediaPlayerTrackInfo.h"
+// TODO: Need CMetadata
+// #include "elastos/droid/media/CMetadata.h"
+// TODO: Need CSRTRenderer
+// #include "elastos/droid/media/CSRTRenderer.h"
+// TODO: Need CTimedText
+// #include "elastos/droid/media/CTimedText.h"
+// TODO: Need CTrackInfoVendor
+// #include "elastos/droid/media/CTrackInfoVendor.h"
+// TODO: Need Media_Utils
+// #include "elastos/droid/media/Media_Utils.h"
+#include "elastos/droid/net/CUriHelper.h"
+#include "elastos/droid/os/CHandler.h"
+#include "elastos/droid/os/CHandlerThread.h"
 #include "elastos/droid/os/Looper.h"
-#include <elastos/utility/logging/Slogger.h>
+#include "elastos/droid/os/Process.h"
+#include "elastos/droid/os/ServiceManager.h"
+#include <elastos/droid/system/OsConstants.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Logger.h>
 #include <binder/Parcel.h>
 #include <gui/Surface.h>
 #include <utils/String8.h>
+#include <media/IMediaHTTPService.h>
 #include <media/mediaplayer.h>
 
+using Elastos::Droid::App::CActivityThread;
+using Elastos::Droid::App::IApplication;
+using Elastos::Droid::App::IAppOpsManager;
 using Elastos::Droid::Content::Res::IAssetFileDescriptor;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Net::CUriHelper;
+using Elastos::Droid::Net::IUriHelper;
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::CHandlerThread;
 using Elastos::Droid::Os::IPowerManager;
+using Elastos::Droid::Os::IProcess;
 using Elastos::Droid::Os::Looper;
-using Elastos::Net::IInetAddress;
-using Elastos::Utility::Logging::Logger;
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Core::ICharSequence;
+using Elastos::Droid::Os::Process;
+using Elastos::Droid::Os::ServiceManager;
+using Elastos::Droid::System::OsConstants;
 using Elastos::Core::CString;
-using Elastos::IO::IFile;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IThread;
+using Elastos::Core::StringBuilder;
+using Elastos::IO::CByteArrayOutputStream;
 using Elastos::IO::CFile;
 using Elastos::IO::CFileDescriptor;
-using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;
+using Elastos::IO::IByteArrayOutputStream;
+using Elastos::IO::ICloseable;
+using Elastos::IO::IFile;
+using Elastos::IO::IFileInputStream;
+using Elastos::IO::IOutputStream;
+using Elastos::Net::IInetAddress;
+using Elastos::Utility::CScanner;
+using Elastos::Utility::CVector;
+using Elastos::Utility::IMapEntry;
+using Elastos::Utility::IScanner;
+using Elastos::Utility::IVector;
+using Elastos::Utility::Logging::Logger;
+using Libcore::IO::CIoBridge;
+using Libcore::IO::CLibcore;
+using Libcore::IO::IIoBridge;
+using Libcore::IO::ILibcore;
+using Libcore::IO::IOs;
 
 namespace Elastos {
 namespace Droid {
@@ -41,14 +86,13 @@ const Boolean CMediaPlayer::LOGV = FALSE;
 // macro invocation in IMediaPlayer.cpp
 const String CMediaPlayer::IMEDIA_PLAYER("android.media.IMediaPlayer");
 
-const String CMediaPlayer::SOFTWINNER_DLNA_SOURCE_DETECTOR("com.softwinner.dlnasourcedetector");
-
 const Int32 CMediaPlayer::INVOKE_ID_GET_TRACK_INFO = 1;
 const Int32 CMediaPlayer::INVOKE_ID_ADD_EXTERNAL_SOURCE = 2;
 const Int32 CMediaPlayer::INVOKE_ID_ADD_EXTERNAL_SOURCE_FD = 3;
 const Int32 CMediaPlayer::INVOKE_ID_SELECT_TRACK = 4;
 const Int32 CMediaPlayer::INVOKE_ID_DESELECT_TRACK = 5;
 const Int32 CMediaPlayer::INVOKE_ID_SET_VIDEO_SCALE_MODE = 6;
+const Int32 CMediaPlayer::INVOKE_ID_GET_SELECTED_TRACK = 7;
 
 const Int32 CMediaPlayer::MEDIA_NOP = 0; // interface test message
 const Int32 CMediaPlayer::MEDIA_PREPARED = 1;
@@ -56,13 +100,16 @@ const Int32 CMediaPlayer::MEDIA_PLAYBACK_COMPLETE = 2;
 const Int32 CMediaPlayer::MEDIA_BUFFERING_UPDATE = 3;
 const Int32 CMediaPlayer::MEDIA_SEEK_COMPLETE = 4;
 const Int32 CMediaPlayer::MEDIA_SET_VIDEO_SIZE = 5;
+const Int32 CMediaPlayer::MEDIA_STARTED = 6;
+const Int32 CMediaPlayer::MEDIA_PAUSED = 7;
+const Int32 CMediaPlayer::MEDIA_STOPPED = 8;
+const Int32 CMediaPlayer::MEDIA_SKIPPED = 9;
 const Int32 CMediaPlayer::MEDIA_TIMED_TEXT = 99;
 const Int32 CMediaPlayer::MEDIA_ERROR = 100;
 const Int32 CMediaPlayer::MEDIA_INFO = 200;
-const Int32 CMediaPlayer::MEDIA_SOURCE_DETECTED = 234;   //Add by Bevis.
-const Int32 CMediaPlayer::MEDIA_IO_ERROR = 300;  //Add by leven
+const Int32 CMediaPlayer::MEDIA_SUBTITLE_DATA = 201;
 
-Int32 CMediaPlayer::mRawDataMode = 1;//IMediaPlayer::AUDIO_DATA_MODE_PCM;
+const Int32 CMediaPlayer::KEY_PARAMETER_AUDIO_ATTRIBUTES = 1400;
 
 static Object sLock;
 
@@ -109,10 +156,10 @@ static android::sp<android::MediaPlayer> getMediaPlayer(CMediaPlayer* thiz)
     return android::sp<android::MediaPlayer>(p);
 }
 
-static android::sp<android::ISurfaceTexture> getVideoSurfaceTexture(CMediaPlayer* thiz)
+static android::sp<android::IGraphicBufferProducer> getVideoSurfaceTexture(CMediaPlayer* thiz)
 {
-    android::ISurfaceTexture * const p = reinterpret_cast<android::ISurfaceTexture *>(thiz->mNativeSurfaceTexture);
-    return android::sp<android::ISurfaceTexture>(p);
+    android::IGraphicBufferProducer * const p = reinterpret_cast<android::IGraphicBufferProducer *>(thiz->mNativeSurfaceTexture);
+    return android::sp<android::IGraphicBufferProducer>(p);
 }
 
 static android::sp<android::MediaPlayer> setMediaPlayer(CMediaPlayer* thiz, const android::sp<android::MediaPlayer>& player)
@@ -165,17 +212,496 @@ static ECode process_media_player_call(CMediaPlayer* thiz, android::status_t opS
 
 static android::sp<android::Surface> android_view_Surface_getSurface(ISurface* surfaceObj)
 {
-    Handle32 surface;
-    return reinterpret_cast<android::Surface*>(surfaceObj->GetSurface(&surface), surface);
+    android::sp<android::Surface> sur;
+// TODO: Need jni code
+    // jobject lock = env->GetObjectField(surfaceObj, gSurfaceClassInfo.mLock);
+    // if (env->MonitorEnter(lock) == JNI_OK) {
+    //     sur = reinterpret_cast<android::Surface *>(env->GetLongField(surfaceObj, gSurfaceClassInfo.mNativeObject));
+    //     env->MonitorExit(lock);
+    // }
+    // env->DeleteLocalRef(lock);
+    return sur;
+}
+
+//===================================================================
+//                  CMediaPlayer::TimeProvider
+//===================================================================
+
+CAR_INTERFACE_IMPL_2(CMediaPlayer::TimeProvider, Object,
+        IMediaPlayerOnSeekCompleteListener, IMediaTimeProvider)
+
+const String CMediaPlayer::TimeProvider::TAG("MTP");
+const Int64 CMediaPlayer::TimeProvider::MAX_NS_WITHOUT_POSITION_CHECK = 5000000000L;
+const Int64 CMediaPlayer::TimeProvider::MAX_EARLY_CALLBACK_US = 1000;
+const Int64 CMediaPlayer::TimeProvider::TIME_ADJUSTMENT_RATE = 2;  /* meaning 1/2 */
+const Int32 CMediaPlayer::TimeProvider::NOTIFY = 1;
+const Int32 CMediaPlayer::TimeProvider::NOTIFY_TIME = 0;
+const Int32 CMediaPlayer::TimeProvider::REFRESH_AND_NOTIFY_TIME = 1;
+const Int32 CMediaPlayer::TimeProvider::NOTIFY_STOP = 2;
+const Int32 CMediaPlayer::TimeProvider::NOTIFY_SEEK = 3;
+
+CMediaPlayer::TimeProvider::TimeProvider(
+    /* [in] */ CMediaPlayer* mp)
+    : DEBUG(FALSE)
+    , mLastTimeUs(0)
+    , mPaused(TRUE)
+    , mStopped(TRUE)
+    , mLastReportedTime(0)
+    , mTimeAdjustment(0)
+    , mLastNanoTime(0)
+    , mRefresh(FALSE)
+    , mPausing(FALSE)
+    , mSeeking(FALSE)
+{
+    mPlayer = mp;
+    // try {
+    Int64 result;
+    GetCurrentTimeUs(TRUE, FALSE, &result);
+    // } catch (IllegalStateException e) {
+    //     // we assume starting position
+    //     mRefresh = true;
+    // }
+
+    AutoPtr<ILooper> looper;
+    if ((looper = Looper::GetMyLooper()) == NULL &&
+        (looper = Looper::GetMainLooper()) == NULL) {
+        // Create our own looper here in case MP was created without one
+        CHandlerThread::New(String("MediaPlayerMTPEventThread"),
+              IProcess::THREAD_PRIORITY_FOREGROUND,
+              (IHandlerThread**)&mHandlerThread);
+        IThread::Probe(mHandlerThread)->Start();
+        mHandlerThread->GetLooper((ILooper**)&looper);
+    }
+    mEventHandler = new EventHandler(this, looper);
+
+    mListeners = ArrayOf<IMediaTimeProviderOnMediaTimeListener*>::Alloc(0);
+    mTimes = ArrayOf<Int64>::Alloc(0);
+    mLastTimeUs = 0;
+    mTimeAdjustment = 0;
+}
+
+CMediaPlayer::TimeProvider::~TimeProvider()
+{
+    if (mHandlerThread != NULL) {
+        Boolean b;
+        mHandlerThread->QuitSafely(&b);
+    }
+}
+
+ECode CMediaPlayer::TimeProvider::Close()
+{
+    mEventHandler->RemoveMessages(NOTIFY);
+    if (mHandlerThread != NULL) {
+        Boolean b;
+        mHandlerThread->QuitSafely(&b);
+        mHandlerThread = NULL;
+    }
+    return NOERROR;
+}
+
+ECode CMediaPlayer::TimeProvider::OnPaused(
+    /* [in] */ Boolean paused)
+{
+    synchronized(this) {
+        if (DEBUG) Logger::D(TAG, "onPaused: %d", paused);
+        if (mStopped) { // handle as seek if we were stopped
+            mStopped = FALSE;
+            mSeeking = TRUE;
+            ScheduleNotification(NOTIFY_SEEK, 0 /* delay */);
+        }
+        else {
+            mPausing = paused;  // special handling if player disappeared
+            mSeeking = FALSE;
+            ScheduleNotification(REFRESH_AND_NOTIFY_TIME, 0 /* delay */);
+        }
+    }
+    return NOERROR;
+}
+
+ECode CMediaPlayer::TimeProvider::OnStopped()
+{
+    synchronized(this) {
+        if (DEBUG) Logger::D(TAG, "onStopped");
+        mPaused = TRUE;
+        mStopped = TRUE;
+        mSeeking = FALSE;
+        ScheduleNotification(NOTIFY_STOP, 0 /* delay */);
+    }
+    return NOERROR;
+}
+
+ECode CMediaPlayer::TimeProvider::OnSeekComplete(
+    /* [in] */ IMediaPlayer* mp)
+{
+    synchronized(this) {
+        mStopped = FALSE;
+        mSeeking = TRUE;
+        ScheduleNotification(NOTIFY_SEEK, 0 /* delay */);
+    }
+    return NOERROR;
+}
+
+ECode CMediaPlayer::TimeProvider::OnNewPlayer()
+{
+    if (mRefresh) {
+        synchronized(this) {
+            mStopped = FALSE;
+            mSeeking = TRUE;
+            ScheduleNotification(NOTIFY_SEEK, 0 /* delay */);
+        }
+    }
+    return NOERROR;
+}
+
+ECode CMediaPlayer::TimeProvider::NotifyAt(
+    /* [in] */ Int64 timeUs,
+    /* [in] */ IMediaTimeProviderOnMediaTimeListener* listener)
+{
+    synchronized(this) {
+        if (DEBUG) Logger::D(TAG, "notifyAt %ld", timeUs);
+        mTimes->Set(RegisterListener(listener), timeUs);
+        ScheduleNotification(NOTIFY_TIME, 0 /* delay */);
+    }
+    return NOERROR;
+}
+
+ECode CMediaPlayer::TimeProvider::ScheduleUpdate(
+    /* [in] */ IMediaTimeProviderOnMediaTimeListener* listener)
+{
+    synchronized(this) {
+        if (DEBUG) Logger::D(TAG, "scheduleUpdate");
+        Int32 i = RegisterListener(listener);
+
+        if (!mStopped) {
+            mTimes->Set(i, 0);
+            ScheduleNotification(NOTIFY_TIME, 0 /* delay */);
+        }
+    }
+    return NOERROR;
+}
+
+ECode CMediaPlayer::TimeProvider::CancelNotifications(
+    /* [in] */ IMediaTimeProviderOnMediaTimeListener* listener)
+{
+    synchronized(this) {
+        Int32 i = 0;
+        for (; i < mListeners->GetLength(); i++) {
+            if ((*mListeners)[i] == listener) {
+                mListeners->Copy(i, mListeners, i + 1, mListeners->GetLength() - i - 1);
+                // System.arraycopy(mListeners, i + 1,
+                //         mListeners, i, mListeners->GetLength() - i - 1);
+                mTimes->Copy(i, mTimes, i + 1, mTimes->GetLength() - i - 1);
+                // System.arraycopy(mTimes, i + 1,
+                //         mTimes, i, mTimes->GetLength() - i - 1);
+                mListeners->Set(mListeners->GetLength() - 1, NULL);
+                mTimes->Set(mTimes->GetLength() - 1, NO_TIME);
+                break;
+            }
+            else if ((*mListeners)[i] == NULL) {
+                break;
+            }
+        }
+
+        ScheduleNotification(NOTIFY_TIME, 0 /* delay */);
+    }
+    return NOERROR;
+}
+
+ECode CMediaPlayer::TimeProvider::GetCurrentTimeUs(
+    /* [in] */ Boolean refreshTime,
+    /* [in] */ Boolean monotonic,
+    /* [out] */ Int64* result)
+{
+    VALIDATE_NOT_NULL(result)
+    synchronized(this) {
+        // we always refresh the time when the paused-state changes, because
+        // we expect to have received the pause-change event delayed.
+        if (mPaused && !refreshTime) {
+            *result = mLastReportedTime;
+            return NOERROR;
+        }
+
+        AutoPtr<Elastos::Core::ISystem> system;
+        Elastos::Core::CSystem::AcquireSingleton((Elastos::Core::ISystem**)&system);
+        Int64 nanoTime;
+        system->GetNanoTime(&nanoTime);
+
+        if (refreshTime ||
+                nanoTime >= mLastNanoTime + MAX_NS_WITHOUT_POSITION_CHECK) {
+            // try {
+            Int32 val;
+            mPlayer->GetCurrentPosition(&val);
+            mLastTimeUs = val * 1000L;
+            Boolean b;
+            mPlayer->IsPlaying(&b);
+            mPaused = !b;
+            // if (DEBUG) Logger::V(TAG, (mPaused ? "paused" : "playing") + " at " + mLastTimeUs);
+            // } catch (IllegalStateException e) {
+            //     if (mPausing) {
+            //         // if we were pausing, get last estimated timestamp
+            //         mPausing = false;
+            //         getEstimatedTime(nanoTime, monotonic);
+            //         mPaused = true;
+            //         if (DEBUG) Log.d(TAG, "illegal state, but pausing: estimating at " + mLastReportedTime);
+            //         return mLastReportedTime;
+            //     }
+            //     // TODO get time when prepared
+            //     throw e;
+            // }
+            mLastNanoTime = nanoTime;
+            if (monotonic && mLastTimeUs < mLastReportedTime) {
+                /* have to adjust time */
+                mTimeAdjustment = mLastReportedTime - mLastTimeUs;
+                if (mTimeAdjustment > 1000000) {
+                    // schedule seeked event if time jumped significantly
+                    // TODO: do this properly by introducing an exception
+                    mStopped = FALSE;
+                    mSeeking = TRUE;
+                    ScheduleNotification(NOTIFY_SEEK, 0 /* delay */);
+                }
+            }
+            else {
+                mTimeAdjustment = 0;
+            }
+        }
+
+        *result = GetEstimatedTime(nanoTime, monotonic);
+        return NOERROR;
+    }
+}
+
+void CMediaPlayer::TimeProvider::ScheduleNotification(
+    /* [in] */ Int32 type,
+    /* [in] */ Int64 delayUs)
+{
+    // ignore time notifications until seek is handled
+    if (mSeeking &&
+            (type == NOTIFY_TIME || type == REFRESH_AND_NOTIFY_TIME)) {
+        return;
+    }
+
+    if (DEBUG) Logger::V(TAG, "scheduleNotification %d in %ld", type, delayUs);
+    mEventHandler->RemoveMessages(NOTIFY);
+    AutoPtr<IMessage> msg;
+    mEventHandler->ObtainMessage(NOTIFY, type, 0, (IMessage**)&msg);
+    Boolean b;
+    mEventHandler->SendMessageDelayed(msg, (Int32) (delayUs / 1000), &b);
+}
+
+/*synchronized*/
+void CMediaPlayer::TimeProvider::NotifySeek()
+{
+    mSeeking = FALSE;
+    // try {
+    Int64 timeUs;
+    GetCurrentTimeUs(TRUE, FALSE, &timeUs);
+    if (DEBUG) Logger::D(TAG, "onSeekComplete at %ld", timeUs);
+
+    for (Int32 i = 0; i < mListeners->GetLength(); i++) {
+        AutoPtr<IMediaTimeProviderOnMediaTimeListener> listener = (*mListeners)[i];
+        if (listener == NULL) {
+            break;
+        }
+        listener->OnSeek(timeUs);
+    }
+    // } catch (IllegalStateException e) {
+    //     // we should not be there, but at least signal pause
+    //     if (DEBUG) Log.d(TAG, "onSeekComplete but no player");
+    //     mPausing = TRUE;  // special handling if player disappeared
+    //     notifyTimedEvent(FALSE /* refreshTime */);
+    // }
+}
+
+/*synchronized*/
+void CMediaPlayer::TimeProvider::NotifyStop()
+{
+    for (Int32 i = 0; i < mListeners->GetLength(); i++) {
+        AutoPtr<IMediaTimeProviderOnMediaTimeListener> listener = (*mListeners)[i];
+        if (listener == NULL) {
+            break;
+        }
+        listener->OnStop();
+    }
+}
+
+Int32 CMediaPlayer::TimeProvider::RegisterListener(
+    /* [in] */ IMediaTimeProviderOnMediaTimeListener* listener)
+{
+    Int32 i = 0;
+    for (; i < mListeners->GetLength(); i++) {
+        if ((*mListeners)[i] == listener || (*mListeners)[i] == NULL) {
+            break;
+        }
+    }
+
+    // new listener
+    if (i >= mListeners->GetLength()) {
+        AutoPtr<ArrayOf<IMediaTimeProviderOnMediaTimeListener*> > newListeners =
+            ArrayOf<IMediaTimeProviderOnMediaTimeListener*>::Alloc(i + 1);
+        AutoPtr<ArrayOf<Int64> > newTimes = ArrayOf<Int64>::Alloc(i + 1);
+        newListeners->Copy(0, mListeners, 0, mListeners->GetLength());
+        // System.arraycopy(mListeners, 0, newListeners, 0, mListeners.length);
+        newTimes->Copy(0, mTimes, 0, mTimes->GetLength());
+        // System.arraycopy(mTimes, 0, newTimes, 0, mTimes.length);
+        mListeners = newListeners;
+        mTimes = newTimes;
+    }
+
+    if ((*mListeners)[i] == NULL) {
+        mListeners->Set(i, listener);
+        mTimes->Set(i, IMediaTimeProvider::NO_TIME);
+    }
+    return i;
+}
+
+/*synchronized*/
+void CMediaPlayer::TimeProvider::NotifyTimedEvent(
+    /* [in] */ Boolean refreshTime)
+{
+    // figure out next callback
+    Int64 nowUs;
+    // try {
+    GetCurrentTimeUs(refreshTime, TRUE, &nowUs);
+    // } catch (IllegalStateException e) {
+    //     // assume we paused until new player arrives
+    //     mRefresh = true;
+    //     mPausing = true; // this ensures that call succeeds
+    //     nowUs = getCurrentTimeUs(refreshTime, true);
+    // }
+    Int64 nextTimeUs = nowUs;
+
+    if (mSeeking) {
+        // skip timed-event notifications until seek is complete
+        return;
+    }
+
+    if (DEBUG) {
+        StringBuilder sb;
+        sb.Append("notifyTimedEvent(");
+        sb.Append(mLastTimeUs);
+        sb.Append(" -> ");
+        sb.Append(nowUs);
+        sb.Append(") from {");
+
+        Boolean first = TRUE;
+        for (Int32 i = 0; i < mTimes->GetLength(); i++) {
+            Int64 time = (*mTimes)[i];
+            if (time == NO_TIME) {
+                continue;
+            }
+            if (!first) sb.Append(", ");
+            sb.Append(time);
+            first = FALSE;
+        }
+        sb.Append("}");
+        String str;
+        sb.ToString(&str);
+        Logger::D(TAG, str);
+    }
+
+    AutoPtr<IVector> activatedListeners;
+    CVector::New((IVector**)&activatedListeners);
+    // Vector<MediaTimeProvider.OnMediaTimeListener> activatedListeners =
+    //     new Vector<MediaTimeProvider.OnMediaTimeListener>();
+    for (Int32 ix = 0; ix < mTimes->GetLength(); ix++) {
+        if ((*mListeners)[ix] == NULL) {
+            break;
+        }
+        if ((*mTimes)[ix] <= NO_TIME) {
+            // ignore, unless we were stopped
+        }
+        else if ((*mTimes)[ix] <= nowUs + MAX_EARLY_CALLBACK_US) {
+            activatedListeners->Add((*mListeners)[ix]);
+            if (DEBUG) Logger::D(TAG, "removed");
+            mTimes->Set(ix, NO_TIME);
+        }
+        else if (nextTimeUs == nowUs || (*mTimes)[ix] < nextTimeUs) {
+            nextTimeUs = (*mTimes)[ix];
+        }
+    }
+
+    if (nextTimeUs > nowUs && !mPaused) {
+        // schedule callback at nextTimeUs
+        if (DEBUG) Logger::D(TAG, "scheduling for %ld and %ld", nextTimeUs, nowUs);
+        ScheduleNotification(NOTIFY_TIME, nextTimeUs - nowUs);
+    }
+    else {
+        mEventHandler->RemoveMessages(NOTIFY);
+        // no more callbacks
+    }
+
+    Int32 size;
+    activatedListeners->GetSize(&size);
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IInterface> obj;
+        activatedListeners->Get(i, (IInterface**)&obj);
+        IMediaTimeProviderOnMediaTimeListener::Probe(obj)->OnTimedEvent(nowUs);
+    }
+}
+
+Int64 CMediaPlayer::TimeProvider::GetEstimatedTime(
+    /* [in] */ Int64 nanoTime,
+    /* [in] */ Boolean monotonic)
+{
+    if (mPaused) {
+        mLastReportedTime = mLastTimeUs + mTimeAdjustment;
+    }
+    else {
+        Int64 timeSinceRead = (nanoTime - mLastNanoTime) / 1000;
+        mLastReportedTime = mLastTimeUs + timeSinceRead;
+        if (mTimeAdjustment > 0) {
+            Int64 adjustment =
+                mTimeAdjustment - timeSinceRead / TIME_ADJUSTMENT_RATE;
+            if (adjustment <= 0) {
+                mTimeAdjustment = 0;
+            }
+            else {
+                mLastReportedTime += adjustment;
+            }
+        }
+    }
+    return mLastReportedTime;
+}
+
+//===================================================================
+//                  CMediaPlayer::TimeProvider::EventHandler
+//===================================================================
+
+ECode CMediaPlayer::TimeProvider::EventHandler::HandleMessage(
+    /* [in] */ IMessage* msg)
+{
+    Int32 what;
+    msg->GetWhat(&what);
+
+    if (what == NOTIFY) {
+        Int32 arg1;
+        msg->GetArg1(&arg1);
+        switch (arg1) {
+        case CMediaPlayer::TimeProvider::NOTIFY_TIME:
+            mHost->NotifyTimedEvent(FALSE /* refreshTime */);
+            break;
+        case CMediaPlayer::TimeProvider::REFRESH_AND_NOTIFY_TIME:
+            mHost->NotifyTimedEvent(TRUE /* refreshTime */);
+            break;
+        case CMediaPlayer::TimeProvider::NOTIFY_STOP:
+            mHost->NotifyStop();
+            break;
+        case CMediaPlayer::TimeProvider::NOTIFY_SEEK:
+            mHost->NotifySeek();
+            break;
+        }
+    }
+    return NOERROR;
 }
 
 //===================================================================
 //                  CMediaPlayer::EventHandler
 //===================================================================
+
 CMediaPlayer::EventHandler::EventHandler(
-    /* [in] */ IWeakReference* host,
+    /* [in] */ CMediaPlayer* host,
     /* [in] */ ILooper* looper)
-    : HandlerBase(looper)
+    : Handler(looper)
     , mMediaPlayer(host)
 {
 }
@@ -185,14 +711,7 @@ ECode CMediaPlayer::EventHandler::HandleMessage(
 {
     VALIDATE_NOT_NULL(msg);
 
-    AutoPtr<IMediaPlayer> mp;
-    mMediaPlayer->Resolve(EIID_IMediaPlayer, (IInterface**)&mp);
-    if (mp == NULL) {
-        return NOERROR;
-    }
-
-    CMediaPlayer* mediaPlayer = (CMediaPlayer*)mp.Get();
-    if (mediaPlayer->mNativeContext == 0) {
+    if (mMediaPlayer->mNativeContext == 0) {
         Logger::W(CMediaPlayer::TAG, "mediaplayer went away with unhandled events");
         return NOERROR;
     }
@@ -204,105 +723,297 @@ ECode CMediaPlayer::EventHandler::HandleMessage(
     AutoPtr<IInterface> obj;
     msg->GetObj((IInterface**)&obj);
 
-    switch (what) {
-    case CMediaPlayer::MEDIA_PREPARED:
-        if (mediaPlayer->mOnPreparedListener != NULL)
-            mediaPlayer->mOnPreparedListener->OnPrepared(mediaPlayer);
-        return NOERROR;
-
-    case CMediaPlayer::MEDIA_PLAYBACK_COMPLETE:
-        if (mediaPlayer->mOnCompletionListener != NULL)
-            mediaPlayer->mOnCompletionListener->OnCompletion(mediaPlayer);
-        mediaPlayer->StayAwake(FALSE);
-        return NOERROR;
-
-    case CMediaPlayer::MEDIA_BUFFERING_UPDATE:
-        if (mediaPlayer->mOnBufferingUpdateListener != NULL)
-            mediaPlayer->mOnBufferingUpdateListener->OnBufferingUpdate(
-                mediaPlayer, arg1);
-        return NOERROR;
-
-    case CMediaPlayer::MEDIA_SEEK_COMPLETE:
-      if (mediaPlayer->mOnSeekCompleteListener != NULL)
-          mediaPlayer->mOnSeekCompleteListener->OnSeekComplete(mediaPlayer);
-      return NOERROR;
-
-    case CMediaPlayer::MEDIA_SET_VIDEO_SIZE:
-      if (mediaPlayer->mOnVideoSizeChangedListener != NULL)
-          mediaPlayer->mOnVideoSizeChangedListener->OnVideoSizeChanged(
-            mediaPlayer, arg1, arg2);
-      return NOERROR;
-
-    case CMediaPlayer::MEDIA_ERROR: {
-        Logger::E(CMediaPlayer::TAG, "Error (%d, %d)", arg1, arg2);
-        Boolean error_was_handled = FALSE;
-        if (mediaPlayer->mOnErrorListener != NULL) {
-            mediaPlayer->mOnErrorListener->OnError(
-                mediaPlayer, arg1, arg2, &error_was_handled);
-        }
-        if (mediaPlayer->mOnCompletionListener != NULL && ! error_was_handled) {
-            mediaPlayer->mOnCompletionListener->OnCompletion(mediaPlayer);
-        }
-        mediaPlayer->StayAwake(FALSE);
-        return NOERROR;
-    }
-
-    case CMediaPlayer::MEDIA_INFO:
-        if (arg1 != CMediaPlayer::MEDIA_INFO_VIDEO_TRACK_LAGGING) {
-            Logger::I(CMediaPlayer::TAG, "Info (%d, %d)", arg1, arg2);
-        }
-        if (mediaPlayer->mOnInfoListener != NULL) {
-            Boolean result;
-            mediaPlayer->mOnInfoListener->OnInfo(mediaPlayer, arg1, arg2, &result);
-        }
-        // No real default action so far.
-        return NOERROR;
-
-    case CMediaPlayer::MEDIA_TIMED_TEXT:
-        if (mediaPlayer->mOnTimedTextListener == NULL)
+    switch(what) {
+        case MEDIA_PREPARED:
+            mMediaPlayer->ScanInternalSubtitleTracks();
+            if (mMediaPlayer->mOnPreparedListener != NULL)
+                mMediaPlayer->mOnPreparedListener->OnPrepared(mMediaPlayer);
             return NOERROR;
-        if (obj == NULL) {
-            mediaPlayer->mOnTimedTextListener->OnTimedText(mediaPlayer, NULL);
+
+        case MEDIA_PLAYBACK_COMPLETE:
+            if (mMediaPlayer->mOnCompletionListener != NULL)
+                mMediaPlayer->mOnCompletionListener->OnCompletion(mMediaPlayer);
+            mMediaPlayer->StayAwake(FALSE);
+            return NOERROR;
+
+        case MEDIA_STOPPED:
+            if (mMediaPlayer->mTimeProvider != NULL) {
+                mMediaPlayer->mTimeProvider->OnStopped();
+            }
+            break;
+
+        case MEDIA_STARTED:
+        case MEDIA_PAUSED:
+            if (mMediaPlayer->mTimeProvider != NULL) {
+                mMediaPlayer->mTimeProvider->OnPaused(what == MEDIA_PAUSED);
+            }
+            break;
+
+        case MEDIA_BUFFERING_UPDATE:
+            if (mMediaPlayer->mOnBufferingUpdateListener != NULL)
+                mMediaPlayer->mOnBufferingUpdateListener->OnBufferingUpdate(mMediaPlayer, arg1);
+            return NOERROR;
+
+        case MEDIA_SEEK_COMPLETE:
+          if (mMediaPlayer->mOnSeekCompleteListener != NULL) {
+              mMediaPlayer->mOnSeekCompleteListener->OnSeekComplete(mMediaPlayer);
+          }
+          // fall through
+
+        case MEDIA_SKIPPED:
+          if (mMediaPlayer->mTimeProvider != NULL) {
+              mMediaPlayer->mTimeProvider->OnSeekComplete(mMediaPlayer);
+          }
+          return NOERROR;
+
+        case MEDIA_SET_VIDEO_SIZE:
+          if (mMediaPlayer->mOnVideoSizeChangedListener != NULL)
+              mMediaPlayer->mOnVideoSizeChangedListener->OnVideoSizeChanged(mMediaPlayer, arg1, arg2);
+          return NOERROR;
+
+        case MEDIA_ERROR: {
+            Logger::E(CMediaPlayer::TAG, "Error (%d, %d)", arg1, arg2);
+            Boolean error_was_handled = FALSE;
+            if (mMediaPlayer->mOnErrorListener != NULL) {
+                Boolean b;
+                error_was_handled = mMediaPlayer->mOnErrorListener->OnError(mMediaPlayer, arg1, arg2, &b);
+            }
+            if (mMediaPlayer->mOnCompletionListener != NULL && ! error_was_handled) {
+                mMediaPlayer->mOnCompletionListener->OnCompletion(mMediaPlayer);
+            }
+            mMediaPlayer->StayAwake(FALSE);
+            return NOERROR;
         }
-        else {
-            IParcel* parcel = IParcel::Probe(obj.Get());
-            if (parcel != NULL) {
-                AutoPtr<ITimedText> text;
-                CTimedText::New(parcel, (ITimedText**)&text);
+        case MEDIA_INFO: {
+            switch (arg1) {
+            case MEDIA_INFO_VIDEO_TRACK_LAGGING:
+                Logger::I(CMediaPlayer::TAG, "Info (%d, %d)", arg1, arg2);
+                break;
+            case MEDIA_INFO_METADATA_UPDATE:
+                mMediaPlayer->ScanInternalSubtitleTracks();
+                // fall through
+
+            case MEDIA_INFO_EXTERNAL_METADATA_UPDATE:
+                arg1 = MEDIA_INFO_METADATA_UPDATE;
+                // update default track selection
+                if (mMediaPlayer->mSubtitleController != NULL) {
+                    mMediaPlayer->mSubtitleController->SelectDefaultTrack();
+                }
+                break;
+            }
+
+            if (mMediaPlayer->mOnInfoListener != NULL) {
+                Boolean b;
+                mMediaPlayer->mOnInfoListener->OnInfo(mMediaPlayer, arg1, arg2, &b);
+            }
+            // No real default action so far.
+            return NOERROR;
+        }
+        case MEDIA_TIMED_TEXT: {
+            if (mMediaPlayer->mOnTimedTextListener == NULL)
+                return NOERROR;
+            if (obj == NULL) {
+                mMediaPlayer->mOnTimedTextListener->OnTimedText(mMediaPlayer, NULL);
+            }
+            else {
+                if (IParcel::Probe(obj) != NULL) {
+                    AutoPtr<ITimedText> text;
+                    assert(0);
+                    // AutoPtr<IParcel> parcel = IParcel::Probe(obj);
+                    // CTimedText::New(parcel, (ITimedText**)&text);
+                    // parcel->Recycle();
+                    mMediaPlayer->mOnTimedTextListener->OnTimedText(mMediaPlayer, text);
+                }
+            }
+            return NOERROR;
+        }
+        case MEDIA_SUBTITLE_DATA: {
+            if (mMediaPlayer->mOnSubtitleDataListener == NULL) {
+                return NOERROR;
+            }
+            if (IParcel::Probe(obj) != NULL) {
+                AutoPtr<ISubtitleData> data;
+                assert(0);
+                // AutoPtr<IParcel> parcel = IParcel::Probe(obj);
+                // CSubtitleData::New(parcel, (ISubtitleData**)&data);
                 // parcel->Recycle();
-
-                mediaPlayer->mOnTimedTextListener->OnTimedText(mediaPlayer, text);
+                mMediaPlayer->mOnSubtitleDataListener->OnSubtitleData(mMediaPlayer, data);
             }
+            return NOERROR;
         }
-        return NOERROR;
+        case MEDIA_NOP: // interface test message - ignore
+            break;
 
-    case CMediaPlayer::MEDIA_NOP: // interface test message - ignore
-        break;
-
-    /*Start by Bevis. Detect http data source from other application.*/
-    case CMediaPlayer::MEDIA_SOURCE_DETECTED:
-        if (mediaPlayer->mDlnaSourceDetector != NULL && obj != NULL) {
-            IParcel* parcel = IParcel::Probe(obj.Get());
-            if (parcel != NULL) {
-                String url;
-                parcel->ReadString(&url);
-                Logger::D(CMediaPlayer::TAG, "######MEDIA_SOURCE_DETECTED! url = %s", url.string());
-                mediaPlayer->mDlnaSourceDetector->OnSourceDetected(url);
-            }
-        }
-        return NOERROR;
-
-    /*End by Bevis. Detect http data source from other application. */
-    default:
-        Logger::E(CMediaPlayer::TAG, "Unknown message type %d", what);
-        return NOERROR;
+        default:
+            Logger::E(CMediaPlayer::TAG, "Unknown message type %d", what);
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NOERROR;
 }
 
 //===================================================================
+//                  CMediaPlayer::MediaPlayerOnSubtitleDataListener
+//===================================================================
+
+CAR_INTERFACE_IMPL(CMediaPlayer::MediaPlayerOnSubtitleDataListener,
+        Object, IMediaPlayerOnSubtitleDataListener)
+
+ECode CMediaPlayer::MediaPlayerOnSubtitleDataListener::OnSubtitleData(
+    /* [in] */ IMediaPlayer* mp,
+    /* [in] */ ISubtitleData* data)
+{
+    Int32 index;
+    data->GetTrackIndex(&index);
+    if (index >= mHost->mInbandSubtitleTracks->GetLength()) {
+        return NOERROR;
+    }
+    AutoPtr<ISubtitleTrack> track = (*mHost->mInbandSubtitleTracks)[index];
+    if (track != NULL) {
+        track->OnData(data);
+    }
+    return NOERROR;
+}
+
+//===================================================================
+//                  CMediaPlayer::HandlerRunnable
+//===================================================================
+
+ECode CMediaPlayer::HandlerRunnable::Run()
+{
+    Int32 res = AddTrack();
+    if (mHost->mEventHandler != NULL) {
+        AutoPtr<IMessage> m;
+        mHost->mEventHandler->ObtainMessage(MEDIA_INFO, res, 0, NULL);
+        Boolean b;
+        mHost->mEventHandler->SendMessage(m, &b);
+    }
+    AutoPtr<ILooper> looper;
+    mThread->GetLooper((ILooper**)&looper);
+    looper->QuitSafely();
+    return NOERROR;
+}
+
+Int32 CMediaPlayer::HandlerRunnable::AddTrack()
+{
+    if (mIs == NULL || mHost->mSubtitleController == NULL) {
+        return MEDIA_INFO_UNSUPPORTED_SUBTITLE;
+    }
+
+    AutoPtr<ISubtitleTrack> track;
+    mHost->mSubtitleController->AddTrack(mFormat, (ISubtitleTrack**)&track);
+    if (track == NULL) {
+        return MEDIA_INFO_UNSUPPORTED_SUBTITLE;
+    }
+
+    // TODO: do the conversion in the subtitle track
+    AutoPtr<IScanner> scanner;
+    CScanner::New(mIs, String("UTF-8"), (IScanner**)&scanner);
+    AutoPtr<IScanner> tmp;
+    scanner->UseDelimiter(String("\\A"), (IScanner**)&tmp);
+    String contents;
+    tmp->Next(&contents);
+    AutoPtr<IVector> lock = mHost->mOpenSubtitleSources;
+    synchronized(lock) {
+        mHost->mOpenSubtitleSources->Remove(mIs);
+    }
+    scanner->Close();
+    mHost->mOutOfBandSubtitleTracks->Add(track);
+    track->OnData(contents.GetBytes(), true /* eos */, ~0 /* runID: keep forever */);
+    return MEDIA_INFO_EXTERNAL_METADATA_UPDATE;
+}
+
+//===================================================================
+//                  CMediaPlayer::MyAnchor
+//===================================================================
+
+CAR_INTERFACE_IMPL(CMediaPlayer::MyAnchor, Object, ISubtitleControllerAnchor)
+
+ECode CMediaPlayer::MyAnchor::SetSubtitleWidget(
+    /* [in] */ ISubtitleTrackRenderingWidget* subtitleWidget)
+{
+    return NOERROR;
+}
+
+ECode CMediaPlayer::MyAnchor::GetSubtitleLooper(
+    /* [out] */ ILooper** result)
+{
+    *result = Looper::GetMainLooper();
+    REFCOUNT_ADD(*result)
+    return NOERROR;
+}
+
+//===================================================================
+//                  CMediaPlayer::MyRunnable
+//===================================================================
+
+ECode CMediaPlayer::MyRunnable::Run()
+{
+    Int32 res = AddTrack();
+    if (mHost->mEventHandler != NULL) {
+        AutoPtr<IMessage> m;
+        mHost->mEventHandler->ObtainMessage(MEDIA_INFO, res, 0, NULL, (IMessage**)&m);
+        Boolean b;
+        mHost->mEventHandler->SendMessage(m, &b);
+    }
+    AutoPtr<ILooper> looper;
+    mThread->GetLooper((ILooper**)&looper);
+    looper->QuitSafely();
+    return NOERROR;
+}
+
+Int32 CMediaPlayer::MyRunnable::AddTrack()
+{
+    AutoPtr<IInputStream> is;
+    AutoPtr<IByteArrayOutputStream> bos;
+    CByteArrayOutputStream::New((IByteArrayOutputStream**)&bos);
+    // try {
+    AutoPtr<ILibcore> lc;
+    CLibcore::AcquireSingleton((ILibcore**)&lc);
+    AutoPtr<IOs> os;
+    lc->GetOs((IOs**)&os);
+    Int64 size = 0;
+    os->Lseek(mFd, mOffset, OsConstants::_SEEK_SET, &size);
+
+    AutoPtr<ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(4096);
+    for (Int64 total = 0; total < mLength;) {
+        Int32 bytesToRead = (Int32) Elastos::Core::Math::Min((Int64)buffer->GetLength(), mLength - total);
+        AutoPtr<IIoBridge> ib;
+        CIoBridge::AcquireSingleton((IIoBridge**)&ib);
+        Int32 bytes;
+        ib->Read(mFd, buffer, 0, bytesToRead, &bytes);
+        if (bytes < 0) {
+            break;
+        }
+        else {
+            IOutputStream::Probe(bos)->Write(buffer, 0, bytes);
+            total += bytes;
+        }
+    }
+    AutoPtr<ArrayOf<Byte> > bytes;
+    bos->ToByteArray((ArrayOf<Byte>**)&bytes);
+    mTrack->OnData(bytes, TRUE /* eos */, ~0 /* runID: keep forever */);
+    // } catch (Exception e) {
+    //     Log.e(TAG, e.getMessage(), e);
+    //     return MEDIA_INFO_TIMED_TEXT_ERROR;
+    // } finally {
+    if (is != NULL) {
+        // try {
+        is->Close();
+        // } catch (IOException e) {
+        //     Log.e(TAG, e.getMessage(), e);
+        // }
+    }
+    // }
+    return MEDIA_INFO_EXTERNAL_METADATA_UPDATE;
+}
+
+//===================================================================
 //                  CMediaPlayer
 //===================================================================
+
+CAR_INTERFACE_IMPL(CMediaPlayer, Object, IMediaPlayer)
+
+CAR_OBJECT_IMPL(CMediaPlayer)
 
 CMediaPlayer::CMediaPlayer()
     : mNativeContext(0)
@@ -310,7 +1021,11 @@ CMediaPlayer::CMediaPlayer()
     , mListenerContext(0)
     , mScreenOnWhilePlaying(FALSE)
     , mStayAwake(FALSE)
+    , mStreamType(IAudioManager::USE_DEFAULT_STREAM_TYPE)
+    , mUsage(-1)
+    , mSelectedSubtitleTrackIndex(-1)
 {
+    mSubtitleDataListener = new MediaPlayerOnSubtitleDataListener(this);
 }
 
 CMediaPlayer::~CMediaPlayer()
@@ -322,18 +1037,22 @@ ECode CMediaPlayer::constructor()
 {
     AutoPtr<ILooper> looper = Looper::GetMyLooper();
     if (looper != NULL) {
-        AutoPtr<IWeakReference> wr;
-        GetWeakReference((IWeakReference**)&wr);
-        mEventHandler = new EventHandler(wr, looper);
+        mEventHandler = new EventHandler(this, looper);
     }
     else if ((looper = Looper::GetMainLooper()) != NULL) {
-        AutoPtr<IWeakReference> wr;
-        GetWeakReference((IWeakReference**)&wr);
-        mEventHandler = new EventHandler(wr, looper);
+        mEventHandler = new EventHandler(this, looper);
     }
     else {
         mEventHandler = NULL;
     }
+
+    mTimeProvider = new TimeProvider(this);
+    CVector::New((IVector**)&mOutOfBandSubtitleTracks);
+    CVector::New((IVector**)&mOpenSubtitleSources);
+    mInbandSubtitleTracks = ArrayOf<ISubtitleTrack*>::Alloc(0);
+
+    AutoPtr<IInterface> service = ServiceManager::GetService(IContext::APP_OPS_SERVICE);
+    mAppOps = IIAppOpsService::Probe(service);
 
     /* Native setup requires a weak reference to our object.
     * It's easier to create it here than in C++.
@@ -350,7 +1069,7 @@ ECode CMediaPlayer::DecVideoSurfaceRef()
         return NOERROR;
     }
 
-    android::sp<android::ISurfaceTexture> old_st = getVideoSurfaceTexture(this);
+    android::sp<android::IGraphicBufferProducer> old_st = getVideoSurfaceTexture(this);
     if (old_st != NULL) {
         old_st->decStrong(this);
     }
@@ -371,11 +1090,11 @@ ECode CMediaPlayer::SetVideoSurface(
 
     DecVideoSurfaceRef();
 
-    android::sp<android::ISurfaceTexture> new_st;
+    android::sp<android::IGraphicBufferProducer> new_st;
     if (insurface) {
         android::sp<android::Surface> surface(android_view_Surface_getSurface(insurface));
         if (surface != NULL) {
-            new_st = surface->getSurfaceTexture();
+            new_st = surface->getIGraphicBufferProducer();
             if (new_st == NULL) {
                 Logger::E(TAG, "The surface does not have a binding SurfaceTexture!");
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -496,36 +1215,73 @@ ECode CMediaPlayer::Create(
     /* [in] */ ISurfaceHolder* holder,
     /* [out] */ IMediaPlayer** player)
 {
+    Int32 s;
+// TODO: Need CAudioSystem
+    // CAudioSystem::NewAudioSessionId(&s);
+    return Create(context, uri, holder, NULL, s > 0 ? s : 0, player);
+}
+
+ECode CMediaPlayer::Create(
+    /* [in] */ IContext* context,
+    /* [in] */ IUri* uri,
+    /* [in] */ ISurfaceHolder* holder,
+    /* [in] */ IAudioAttributes* audioAttributes,
+    /* [in] */ Int32 audioSessionId,
+    /* [out] */ IMediaPlayer** player)
+{
     VALIDATE_NOT_NULL(player);
-    *player = NULL;
 
-    //try {
+    // try {
     AutoPtr<IMediaPlayer> mp;
-    ECode ec = CMediaPlayer::New((IMediaPlayer**)&mp);
-    FAIL_GOTO(ec, _EXIT_);
-
-    ec = mp->SetDataSource(context, uri);
-    FAIL_GOTO(ec, _EXIT_);
-    if (holder != NULL) {
-        ec = mp->SetDisplay(holder);
-        FAIL_GOTO(ec, _EXIT_);
+    CMediaPlayer::New((IMediaPlayer**)&mp);
+    AutoPtr<IAudioAttributes> aa;
+    if (audioAttributes != NULL) {
+        aa = audioAttributes;
+    }
+    else {
+        AutoPtr<IAudioAttributesBuilder> aabb;
+        CAudioAttributesBuilder::New((IAudioAttributesBuilder**)&aabb);
+        aabb->Build((IAudioAttributes**)&aa);
     }
 
-    ec = mp->Prepare();
-    FAIL_GOTO(ec, _EXIT_);
-
+    mp->SetAudioAttributes(aa);
+    mp->SetAudioSessionId(audioSessionId);
+    mp->SetDataSource(context, uri);
+    if (holder != NULL) {
+        mp->SetDisplay(holder);
+    }
+    mp->Prepare();
     *player = mp;
-    REFCOUNT_ADD(*player);
+    REFCOUNT_ADD(*player)
     return NOERROR;
-
-_EXIT_:
-    Logger::D(TAG, "create MediaPlayer failed: %08x", ec);
-    return ec;
+    // } catch (IOException ex) {
+    //     Log.d(TAG, "create failed:", ex);
+    //     // fall through
+    // } catch (IllegalArgumentException ex) {
+    //     Log.d(TAG, "create failed:", ex);
+    //     // fall through
+    // } catch (SecurityException ex) {
+    //     Log.d(TAG, "create failed:", ex);
+    //     // fall through
+    // }
 }
 
 ECode CMediaPlayer::Create(
     /* [in] */ IContext* context,
     /* [in] */ Int32 resid,
+    /* [out] */ IMediaPlayer** player)
+{
+    Int32 s;
+// TODO: Need CAudioSystem
+    // CAudioSystem::NewAudioSessionId(&s);
+    return Create(context, resid, NULL, s > 0 ? s : 0, player);
+}
+
+ECode CMediaPlayer::Create(
+    /* [in] */ IContext* context,
+    /* [in] */ Int32 resid,
+    /* [in] */ IAudioAttributes* audioAttributes,
+    /* [in] */ Int32 audioSessionId,
     /* [out] */ IMediaPlayer** player)
 {
     VALIDATE_NOT_NULL(player);
@@ -546,6 +1302,18 @@ ECode CMediaPlayer::Create(
 
     AutoPtr<IMediaPlayer> mp;
     ECode ec = CMediaPlayer::New((IMediaPlayer**)&mp);
+
+    AutoPtr<IAudioAttributes> aa;
+    if (audioAttributes != NULL) {
+        aa = audioAttributes;
+    }
+    else {
+        AutoPtr<IAudioAttributesBuilder> aabb;
+        CAudioAttributesBuilder::New((IAudioAttributesBuilder**)&aabb);
+        aabb->Build((IAudioAttributes**)&aa);
+    }
+    mp->SetAudioAttributes(aa);
+    mp->SetAudioSessionId(audioSessionId);
 
     afd->GetFileDescriptor((IFileDescriptor**)&fd);
     afd->GetStartOffset(&offset);
@@ -580,17 +1348,14 @@ ECode CMediaPlayer::SetDataSource(
     /* [in] */ IContext* context,
     /* [in] */ IUri* uri)
 {
-    if (LOGV) Logger::V(TAG, "SetDataSource uri");
     return SetDataSource(context, uri, NULL);
 }
 
 ECode CMediaPlayer::SetDataSource(
     /* [in] */ IContext* context,
     /* [in] */ IUri* uri,
-    /* [in] */ IObjectStringMap* headers)
+    /* [in] */ IMap* headers)
 {
-    if (LOGV) Logger::V(TAG, "SetDataSourceEx uri headers");
-
     VALIDATE_NOT_NULL(context);
     VALIDATE_NOT_NULL(uri);
 
@@ -599,7 +1364,7 @@ ECode CMediaPlayer::SetDataSource(
     if(scheme.IsNull() || scheme.Equals("file")) {
         String path;
         uri->GetPath(&path);
-        return SetDataSource(path, headers);
+        return SetDataSource(path);
     }
 
     AutoPtr<IAssetFileDescriptor> afd;
@@ -645,7 +1410,7 @@ _EXIT_:
     }
 
     Logger::D(TAG, "Couldn't open file on client side, trying server side");
-    uri->ToString(&uriStr);
+    IObject::Probe(uri)->ToString(&uriStr);
     return SetDataSource(uriStr, headers);
 }
 
@@ -653,36 +1418,40 @@ ECode CMediaPlayer::SetDataSource(
     /* [in] */ const String& path)
 {
     ECode ec = SetDataSource(path, NULL, NULL);
-    if (LOGV) Logger::V(TAG, "SetDataSourceEx2 path: %s", path.string());
     return ec;
 }
 
 ECode CMediaPlayer::SetDataSource(
     /* [in] */ const String& path,
-    /* [in] */ IObjectStringMap* headers)
+    /* [in] */ IMap* headers)
 {
     AutoPtr<ArrayOf<String> > keys;
     AutoPtr<ArrayOf<String> > values;
 
     if (headers != NULL) {
-        headers->GetKeys((ArrayOf<String>**)&keys);
-        if (keys != NULL)
-        {
-            AutoPtr<IInterface> tmpObj;
-            ICharSequence* seq;
-            String value, nullStr;
-            for (Int32 i = 0; i < keys->GetLength(); ++i) {
-                tmpObj = NULL;
-                headers->Get((*keys)[i], (IInterface**)&tmpObj);
-                seq = ICharSequence::Probe(tmpObj.Get());
-                if (seq != NULL) {
-                    seq->ToString(&value);
-                    values->Set(i, value);
-                }
-                else {
-                    values->Set(i, nullStr);
-                }
-            }
+        Int32 size;
+        headers->GetSize(&size);
+        keys = ArrayOf<String>::Alloc(size);
+        values = ArrayOf<String>::Alloc(size);
+
+        AutoPtr<ISet> entrySet;
+        headers->GetEntrySet((ISet**)&entrySet);
+        AutoPtr<ArrayOf<IInterface*> > array;
+        entrySet->ToArray((ArrayOf<IInterface*>**)&array);
+
+        for (Int32 i = 0; i < array->GetLength(); ++i) {
+            AutoPtr<IMapEntry> entry;
+            entry = IMapEntry::Probe((*array)[i]);
+            AutoPtr<IInterface> iKey;
+            entry->GetKey((IInterface**)&iKey);
+            String key;
+            ICharSequence::Probe(iKey)->ToString(&key);
+            keys->Set(i, key);
+            AutoPtr<IInterface> iValue;
+            entry->GetValue((IInterface**)&iValue);
+            String value;
+            ICharSequence::Probe(iKey)->ToString(&value);
+            values->Set(i, value);
         }
     }
 
@@ -690,16 +1459,37 @@ ECode CMediaPlayer::SetDataSource(
 }
 
 ECode CMediaPlayer::SetDataSource(
-    /* [in] */ const String& path,
+    /* [in] */ const String& _path,
     /* [in] */ ArrayOf<String>* keys,
     /* [in] */ ArrayOf<String>* values)
 {
+    String path = _path;
+    AutoPtr<IUriHelper> uriHelper;
+    CUriHelper::AcquireSingleton((IUriHelper**)&uriHelper);
+    AutoPtr<IUri> uri;
+    uriHelper->Parse(path, (IUri**)&uri);
+
+    String scheme;
+    uri->GetScheme(&scheme);
+    if (scheme.Equals("file")) {
+        uri->GetPath(&path);
+    }
+    else if (scheme != NULL) {
+        // handle non-file sources
+        AutoPtr<IBinder> binder;
+        CMediaHTTPService::CreateHttpServiceBinderIfNecessary(path, (IBinder**)&binder);
+        return NativeSetDataSource(
+            binder,
+            path,
+            keys,
+            values);
+    }
+
     AutoPtr<IFile> file;
     CFile::New(path, (IFile**)&file);
 
-    if (LOGV) Logger::V(TAG, "SetDataSource keys/values withpath: %s", path.string());
-    // Boolean bol;
-    if (FALSE) {
+    Boolean b;
+    if (file->Exists(&b), b) {
     // if (file != NULL && (file->Exists(&bol), bol)) {
         AutoPtr<IFileInputStream> is;
         CFileInputStream::New(file, (IFileInputStream**)&is);
@@ -707,15 +1497,17 @@ ECode CMediaPlayer::SetDataSource(
         AutoPtr<IFileDescriptor> fd;
         is->GetFD((IFileDescriptor**)&fd);
         ECode ec = SetDataSource(fd);
-        is->Close();
+        ICloseable::Probe(is)->Close();
         return ec;
     }
     else {
-        return NativeSetDataSource(path, keys, values);
+        // throw new IOException("setDataSource failed.");
+        return E_IO_EXCEPTION;
     }
 }
 
 ECode CMediaPlayer::NativeSetDataSource(
+    /* [in] */ IBinder* httpServiceBinderObj,
     /* [in] */ const String& path,
     /* [in] */ ArrayOf<String>* keys,
     /* [in] */ ArrayOf<String>* values)
@@ -736,11 +1528,19 @@ ECode CMediaPlayer::NativeSetDataSource(
     // headers is a Map<String, String>.
     // We build a similar KeyedVector out of it.
     android::KeyedVector<android::String8, android::String8> headersVector;
-    FAIL_RETURN(Media_Utils::ConvertKeyValueArraysToKeyedVector(
-        keys, values, &headersVector));
+// TODO: Need Media_Utils
+    // FAIL_RETURN(Media_Utils::ConvertKeyValueArraysToKeyedVector(
+    //     keys, values, &headersVector));
+
+    android::sp<android::IMediaHTTPService> httpService;
+    if (httpServiceBinderObj != NULL) {
+// TODO: Need jni code
+        // android::sp<IBinder> binder = ibinderForJavaObject(env, httpServiceBinderObj);
+        // httpService = interface_cast<android::IMediaHTTPService>(binder);
+    }
 
     android::status_t opStatus = mp->setDataSource(
-        pathStr, headersVector.size() > 0? &headersVector : NULL);
+        httpService, pathStr, headersVector.size() > 0? &headersVector : NULL);
     return process_media_player_call(this, opStatus, E_IO_EXCEPTION, "NativeSetDataSource failed.");
 }
 
@@ -752,6 +1552,14 @@ ECode CMediaPlayer::SetDataSource(
 }
 
 ECode CMediaPlayer::SetDataSource(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ Int64 offset,
+    /* [in] */ Int64 length)
+{
+    return NativeSetDataSource(fd, offset, length);
+}
+
+ECode CMediaPlayer::NativeSetDataSource(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int64 offset,
     /* [in] */ Int64 length)
@@ -777,12 +1585,19 @@ ECode CMediaPlayer::SetDataSource(
 
 ECode CMediaPlayer::Prepare()
 {
+    NativePrepare();
+    ScanInternalSubtitleTracks();
+    return NOERROR;
+}
+
+ECode CMediaPlayer::NativePrepare()
+{
     android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
     if (mp == NULL ) {
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-    android::sp<android::ISurfaceTexture> st = getVideoSurfaceTexture(this);
+    android::sp<android::IGraphicBufferProducer> st = getVideoSurfaceTexture(this);
     mp->setVideoSurfaceTexture(st);
 
     return process_media_player_call(this, mp->prepare(),
@@ -796,7 +1611,7 @@ ECode CMediaPlayer::PrepareAsync()
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-    android::sp<android::ISurfaceTexture> st = getVideoSurfaceTexture(this);
+    android::sp<android::IGraphicBufferProducer> st = getVideoSurfaceTexture(this);
     mp->setVideoSurfaceTexture(st);
 
     return process_media_player_call(this, mp->prepareAsync(),
@@ -805,6 +1620,10 @@ ECode CMediaPlayer::PrepareAsync()
 
 ECode CMediaPlayer::Start()
 {
+    if (IsRestricted()) {
+        NativeSetVolume(0, 0);
+    }
+
     StayAwake(TRUE);
     return NativeStart();
 }
@@ -818,6 +1637,45 @@ ECode CMediaPlayer::NativeStart()
     }
 
     return process_media_player_call(this, mp->start(), NOERROR, "NativeStart");
+}
+
+Boolean CMediaPlayer::IsRestricted()
+{
+    // try {
+    Int32 usage;
+    if (mUsage != -1) {
+        usage = mUsage;
+    }
+    else {
+        CAudioAttributes::UsageForLegacyStreamType(GetAudioStreamType(), &usage);
+    }
+    Int32 mode;
+    mAppOps->CheckAudioOperation(IAppOpsManager::OP_PLAY_AUDIO, usage,
+            Process::MyUid(), CActivityThread::GetCurrentPackageName(), &mode);
+    return mode != IAppOpsManager::MODE_ALLOWED;
+    // } catch (RemoteException e) {
+    //     return false;
+    // }
+}
+
+Int32 CMediaPlayer::GetAudioStreamType()
+{
+    if (mStreamType == IAudioManager::USE_DEFAULT_STREAM_TYPE) {
+        mStreamType = NativeGetAudioStreamType();
+    }
+    return mStreamType;
+}
+
+Int32 CMediaPlayer::NativeGetAudioStreamType()
+{
+    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
+    if (mp == NULL ) {
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+    audio_stream_type_t streamtype;
+    process_media_player_call(this, mp->getAudioStreamType(&streamtype), NOERROR);
+    ALOGV("getAudioStreamType: %d (streamtype)", streamtype);
+    return (Int32)streamtype;
 }
 
 ECode CMediaPlayer::Stop()
@@ -1048,7 +1906,8 @@ ECode CMediaPlayer::GetMetadata(
     CCallbackParcel::New((IParcel**)&reply);
 
     AutoPtr<IMetadata> data;
-    FAIL_RETURN(CMetadata::New((IMetadata**)&data));
+// TODO: Need CMetadata
+    // FAIL_RETURN(CMetadata::New((IMetadata**)&data));
     Boolean succeeded;
     FAIL_RETURN(NativeGetMetadata(update_only, apply_filter, reply, &succeeded));
     if (!succeeded) {
@@ -1069,8 +1928,9 @@ ECode CMediaPlayer::GetMetadata(
 }
 
 ECode CMediaPlayer::SetMetadataFilter(
-    /* [in] */ IObjectContainer* allow,
-    /* [in] */ IObjectContainer* block)
+    /* [in] */ ISet* allow,
+    /* [in] */ ISet* block,
+    /* [out] */ Int32* result)
 {
     assert(0 && "TODO");
     // Do our serialization manually instead of calling
@@ -1146,6 +2006,11 @@ ECode CMediaPlayer::ReleaseResources()
     mOnInfoListener = NULL;
     mOnVideoSizeChangedListener = NULL;
     mOnTimedTextListener = NULL;
+    if (mTimeProvider != NULL) {
+        mTimeProvider->Close();
+        mTimeProvider = NULL;
+    }
+    mOnSubtitleDataListener = NULL;
     NativeRelease();
 
     return NOERROR;
@@ -1166,11 +2031,38 @@ ECode CMediaPlayer::NativeRelease()
 
 ECode CMediaPlayer::Reset()
 {
+    mSelectedSubtitleTrackIndex = -1;
+    synchronized(mOpenSubtitleSources) {
+        Int32 size;
+        mOpenSubtitleSources->GetSize(&size);
+        for (Int32 i = 0; i < size; i++) {
+            AutoPtr<IInterface> obj;
+            mOpenSubtitleSources->Get(i, (IInterface**)&obj);
+            // try {
+            IInputStream::Probe(obj)->Close();
+            // } catch (IOException e) {
+            // }
+        }
+        mOpenSubtitleSources->Clear();
+    }
+    mOutOfBandSubtitleTracks->Clear();
+    mInbandSubtitleTracks = ArrayOf<ISubtitleTrack*>::Alloc(0);
+    if (mSubtitleController != NULL) {
+        mSubtitleController->Reset();
+    }
+    if (mTimeProvider != NULL) {
+        mTimeProvider->Close();
+        mTimeProvider = NULL;
+    }
+
     StayAwake(FALSE);
     FAIL_RETURN(NativeReset());
 
     // make sure none of the listeners get called anymore
-    return mEventHandler->RemoveCallbacksAndMessages(NULL);
+    if (mEventHandler != NULL) {
+        mEventHandler->RemoveCallbacksAndMessages(NULL);
+    }
+    return NOERROR;
 }
 
 ECode CMediaPlayer::NativeReset()
@@ -1186,6 +2078,14 @@ ECode CMediaPlayer::NativeReset()
 ECode CMediaPlayer::SetAudioStreamType(
     /* [in] */ Int32 streamtype)
 {
+    NativeSetAudioStreamType(streamtype);
+    mStreamType = streamtype;
+    return NOERROR;
+}
+
+ECode CMediaPlayer::NativeSetAudioStreamType(
+    /* [in] */ Int32 streamtype)
+{
     if (LOGV) Logger::V(TAG, "setAudioStreamType: %d", streamtype);
     android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
     if (mp == NULL ) {
@@ -1193,6 +2093,46 @@ ECode CMediaPlayer::SetAudioStreamType(
     }
     return process_media_player_call(this,
         mp->setAudioStreamType((audio_stream_type_t)streamtype), NOERROR, "SetAudioStreamType");
+}
+
+Boolean CMediaPlayer::NativeSetParameter(
+    /* [in] */ Int32 key,
+    /* [in] */ IParcel* value)
+{
+    ALOGV("setParameter: key %d", key);
+    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
+    if (mp == NULL ) {
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+
+// TODO: Need jni code
+    android::Parcel *request;
+    // request = parcelForJavaObject(env, java_request);
+    android::status_t err = mp->setParameter(key, *request);
+    if (err == android::OK) {
+        return TRUE;
+    }
+    else {
+        return FALSE;
+    }
+}
+
+ECode CMediaPlayer::SetAudioAttributes(
+    /* [in] */ IAudioAttributes* attributes)
+{
+    if (attributes == NULL) {
+        String msg("Cannot set AudioAttributes to null");
+        // throw new IllegalArgumentException(msg);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    attributes->GetUsage(&mUsage);
+    assert(0);
+    // AutoPtr<IParcel> pattributes; // = Parcel.obtain();
+    // CParcel::New((IParcel**)&pattributes);
+    // IParcelable::Probe(attributes)->WriteToParcel(pattributes, IAudioAttributes::FLATTEN_TAGS);
+    // NativeSetParameter(KEY_PARAMETER_AUDIO_ATTRIBUTES, pattributes);
+    // pattributes->Recycle();
+    return NOERROR;
 }
 
 ECode CMediaPlayer::SetLooping(
@@ -1225,6 +2165,16 @@ ECode CMediaPlayer::SetVolume(
     /* [in] */ Float leftVolume,
     /* [in] */ Float rightVolume)
 {
+    if (IsRestricted()) {
+        return NOERROR;
+    }
+    NativeSetVolume(leftVolume, rightVolume);
+}
+
+ECode CMediaPlayer::NativeSetVolume(
+    /* [in] */ Float leftVolume,
+    /* [in] */ Float rightVolume)
+{
     if (LOGV) Logger::V(TAG, "setVolume: left %f  right %f", leftVolume, rightVolume);
     android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
     if (mp == NULL ) {
@@ -1234,13 +2184,10 @@ ECode CMediaPlayer::SetVolume(
         NOERROR, NULL);
 }
 
-ECode CMediaPlayer::GetFrameAt(
-    /* [in] */ Int32 msec,
-    /* [out] */ IBitmap** frame)
+ECode CMediaPlayer::SetVolume(
+    /* [in] */ Float volume)
 {
-    VALIDATE_NOT_NULL(frame);
-    *frame = NULL;
-    return NOERROR;
+    return SetVolume(volume, volume);
 }
 
 ECode CMediaPlayer::SetAudioSessionId(
@@ -1281,204 +2228,16 @@ ECode CMediaPlayer::AttachAuxEffect(
     return process_media_player_call(this, mp->attachAuxEffect(effectId), NOERROR);
 }
 
-ECode CMediaPlayer::SetParameter(
-    /* [in] */ Int32 key,
-    /* [in] */ IParcel* value,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = FALSE;
-
-    if (LOGV) Logger::V(TAG, "setParameter: key %d", key);
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    android::Parcel* _request;
-    value->GetElementPayload((Handle32*)&_request);
-    android::status_t err = mp->setParameter(key, *_request);
-    if (err != android::OK) {
-        return E_FAIL;
-    }
-
-    *result = TRUE;
-    return NOERROR;
-}
-
-ECode CMediaPlayer::SetParameter(
-    /* [in] */ Int32 key,
-    /* [in] */ const String& value,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    AutoPtr<IParcel> params;
-    CCallbackParcel::New((IParcel**)&params);
-    params->WriteString(value);
-
-    ECode ec = SetParameter(key, params, result);
-    //p->Recycle();
-    return ec;
-}
-
-ECode CMediaPlayer::SetParameter(
-    /* [in] */ Int32 key,
-    /* [in] */ Int32 value,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    AutoPtr<IParcel> p ;
-    CCallbackParcel::New((IParcel**)&p);
-    p->WriteInt32(value);
-
-    ECode ec = SetParameter(key, p, result);
-    //p->Recycle();
-    return ec;
-}
-
-ECode CMediaPlayer::GetParameter(
-    /* [in] */ Int32 key,
-    /* [in] */ IParcel* reply)
-{
-    if (LOGV) Logger::V(TAG, "getParameter: key %d", key);
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    android::Parcel* _reply;
-    reply->GetElementPayload((Handle32*)&_reply);
-    return process_media_player_call(this, mp->getParameter(key, _reply), NOERROR);
-}
-
-ECode CMediaPlayer::GetParcelParameter(
-    /* [in] */ Int32 key,
-    /* [out] */ IParcel** result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = NULL;
-
-    AutoPtr<IParcel> p;
-    CCallbackParcel::New((IParcel**)&p);
-    FAIL_RETURN(GetParameter(key, p));
-    *result = p;
-    REFCOUNT_ADD(*result);
-    return NOERROR;
-}
-
-ECode CMediaPlayer::GetStringParameter(
-    /* [in] */ Int32 key,
-    /* [out] */ String* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = String(NULL);
-
-    AutoPtr<IParcel> p;
-    CCallbackParcel::New((IParcel**)&p);
-    FAIL_RETURN(GetParameter(key, p));
-    return p->ReadString(result);
-}
-
-ECode CMediaPlayer::GetInt32Parameter(
-    /* [in] */ Int32 key,
-    /* [out] */ Int32* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = 0;
-
-    AutoPtr<IParcel> p;
-    CCallbackParcel::New((IParcel**)&p);
-    FAIL_RETURN(GetParameter(key, p));
-    return p->ReadInt32(result);
-}
-
-ECode CMediaPlayer::GetSubInfo(
-    /* [out, callee] */ ArrayOf<IMediaPlayerSubInfoN*>** subInfoN)
-{
-    VALIDATE_NOT_NULL(subInfoN);
-    assert(0 && "TODO");
-    // AutoPtr<IParcel> params;
-    // CCallbackParcel::New((IParcel**)&params);
-//     Parcel p = Parcel.obtain();
-//     getParameter(2, p);
-//     int num = p.readInt();
-//     int i;
-//     Log.e("Mediaplayer.java","getSubinfo num="+num);
-//     SubInfon_[] sub=null;
-//     if( num > 0)
-//     {
-//         sub= new SubInfon_[num];
-//         Log.e("Mediaplayer.java"," 1num="+num);
-//         for( i=0; i<num; i++)
-//         { Log.e("Mediaplayer.java"," 2");
-//             sub[i]=new SubInfon_();
-//             sub[i].format=p.readString();
-//             Log.e("Mediaplayer.java","1 format="+sub[i].format);
-//             //   sub[i].charset=p.readString();
-//             //Log.e("Mediaplayer.java","1 charset="+sub[i].charset);
-//             sub[i].lang=p.readString();
-//             Log.e("Mediaplayer.java"," lang="+sub[i].lang);
-//             sub[i].inline=p.readInt();
-//             Log.e("Mediaplayer.java"," inline="+sub[i].lang);
-//             sub[i].num=num;
-
-//         }
-//         Log.e("Mediaplayer.java","getSubinfo 6");
-//     }
-//     p.recycle();
-//     Log.e("Mediaplayer.java","getSubinfo7");
-//     return sub;
-    return NOERROR;
-}
-
-ECode CMediaPlayer::GetAudioInfo(
-    /* [out, callee] */ ArrayOf<IMediaPlayerAudioInfoN*>** audioInfoN)
-{
-    VALIDATE_NOT_NULL(audioInfoN);
-    assert(0 && "TODO");
-
-    // AutoPtr<IParcel> params;
-    // CCallbackParcel::New((IParcel**)&params);
-//     Parcel p = Parcel.obtain();
-//     getParameter(3, p);
-//     int n = p.readInt();
-//     int i;
-//     Log.e("Mediaplayer.java","getAudioinfo 0");
-//     AudioInfon_[] ainfo=null;
-//     if( n > 0)
-//     {
-//         ainfo= new AudioInfon_[n];
-//         Log.e("Mediaplayer.java"," 1num="+n);
-//         for( i=0; i<n; i++)
-//         {
-
-//             Log.e("Mediaplayer.java"," 2");
-//             ainfo[i]=new AudioInfon_();
-//             ainfo[i].lang=p.readString();
-
-//             Log.e("Mediaplayer.java","1 lang="+ainfo[i].lang);
-//             ainfo[i].format=p.readString();
-//             Log.e("Mediaplayer.java","1 format="+ainfo[i].format);
-
-//             ainfo[i].channle_l=p.readInt();
-//             Log.e("Mediaplayer.java","1 channle_l="+ainfo[i].channle_l);
-//             ainfo[i].audiochannel=p.readInt();
-//             Log.e("Mediaplayer.java","1 audiochannel="+ainfo[i].audiochannel);
-//             ainfo[i].sample=p.readInt();
-//             Log.e("Mediaplayer.java","1 sample="+ainfo[i].sample);
-
-
-//             ainfo[i].num=n;
-//         }
-//         Log.e("Mediaplayer.java","getAudioinfo 6");
-//     }
-//     p.recycle();
-//     Log.e("Mediaplayer.java","getAudioinfo7");
-//     return ainfo;
-    return NOERROR;
-}
-
 ECode CMediaPlayer::SetAuxEffectSendLevel(
+    /* [in] */ Float level)
+{
+    if (IsRestricted()) {
+        return NOERROR;
+    }
+    NativeSetAuxEffectSendLevel(level);
+}
+
+ECode CMediaPlayer::NativeSetAuxEffectSendLevel(
     /* [in] */ Float level)
 {
     if (LOGV) Logger::V(TAG, "setAuxEffectSendLevel: level %f", level);
@@ -1584,7 +2343,49 @@ ECode CMediaPlayer::NativeSetup()
 }
 
 ECode CMediaPlayer::GetTrackInfo(
-    /* [out, callee] */ ArrayOf<IMediaPlayerTrackInfo>** result)
+    /* [out, callee] */ ArrayOf<IMediaPlayerTrackInfo*>** result)
+{
+    AutoPtr<ArrayOf<IMediaPlayerTrackInfo*> > trackInfo;
+    GetInbandTrackInfo((ArrayOf<IMediaPlayerTrackInfo*>**)&trackInfo);
+
+    // add out-of-band tracks
+    Int32 size;
+    mOutOfBandSubtitleTracks->GetSize(&size);
+    AutoPtr<ArrayOf<IMediaPlayerTrackInfo*> > allTrackInfo =
+    ArrayOf<IMediaPlayerTrackInfo*>::Alloc(trackInfo->GetLength() + size);
+
+    // System.arraycopy(trackInfo, 0, allTrackInfo, 0, trackInfo.length);
+    allTrackInfo->Copy(0, trackInfo, 0, trackInfo->GetLength());
+
+    Int32 i = trackInfo->GetLength();
+    for (Int32 j = 0; j < size; j++) {
+        AutoPtr<IInterface> obj;
+        mOutOfBandSubtitleTracks->Get(j, (IInterface**)&obj);
+        AutoPtr<ISubtitleTrack> track = ISubtitleTrack::Probe(obj);
+        Boolean b;
+        track->IsTimedText(&b);
+        Int32 type;
+        if (b) {
+            type = IMediaPlayerTrackInfo::MEDIA_TRACK_TYPE_TIMEDTEXT;
+        }
+        else {
+            type = IMediaPlayerTrackInfo::MEDIA_TRACK_TYPE_SUBTITLE;
+        }
+        AutoPtr<IMediaFormat> mf;
+        track->GetFormat((IMediaFormat**)&mf);
+        AutoPtr<IMediaPlayerTrackInfo> ti;
+
+        CMediaPlayerTrackInfo::New(type, mf, (IMediaPlayerTrackInfo**)&ti);
+        allTrackInfo->Set(i, ti);
+        ++i;
+    }
+    *result = allTrackInfo;
+    REFCOUNT_ADD(*result)
+    return NOERROR;
+}
+
+ECode CMediaPlayer::GetInbandTrackInfo(
+    /* [out, callee] */ ArrayOf<IMediaPlayerTrackInfo*>** result)
 {
     VALIDATE_NOT_NULL(result);
     *result = NULL;
@@ -1612,7 +2413,108 @@ ECode CMediaPlayer::GetTrackInfo(
 Boolean CMediaPlayer::AvailableMimeTypeForExternalSource(
     /* [in] */ const String& mimeType)
 {
-    return (mimeType == MEDIA_MIMETYPE_TEXT_SUBRIP);
+    return (mimeType.Equals(MEDIA_MIMETYPE_TEXT_SUBRIP));
+}
+
+ECode CMediaPlayer::SetSubtitleAnchor(
+    /* [in] */ ISubtitleController* controller,
+    /* [in] */ ISubtitleControllerAnchor* anchor)
+{
+    // TODO: create SubtitleController in MediaPlayer
+    mSubtitleController = controller;
+    mSubtitleController->SetAnchor(anchor);
+    return NOERROR;
+}
+
+ECode CMediaPlayer::OnSubtitleTrackSelected(
+    /* [in] */ ISubtitleTrack* track)
+{
+    if (mSelectedSubtitleTrackIndex >= 0) {
+        // try {
+        SelectOrDeselectInbandTrack(mSelectedSubtitleTrackIndex, FALSE);
+        // } catch (IllegalStateException e) {
+        // }
+        mSelectedSubtitleTrackIndex = -1;
+    }
+    SetOnSubtitleDataListener(NULL);
+    if (track == NULL) {
+        return NOERROR;
+    }
+
+    for (Int32 i = 0; i < mInbandSubtitleTracks->GetLength(); i++) {
+        if ((*mInbandSubtitleTracks)[i] == track) {
+            Logger::V(TAG, "Selecting subtitle track %d", i);
+            mSelectedSubtitleTrackIndex = i;
+            // try {
+            SelectOrDeselectInbandTrack(mSelectedSubtitleTrackIndex, TRUE);
+            // } catch (IllegalStateException e) {
+            // }
+            SetOnSubtitleDataListener(mSubtitleDataListener);
+            break;
+        }
+    }
+    // no need to select out-of-band tracks
+    return NOERROR;
+}
+
+ECode CMediaPlayer::AddSubtitleSource(
+    /* [in] */ IInputStream* is,
+    /* [in] */ IMediaFormat* format)
+{
+    AutoPtr<IInputStream> fIs = is;
+    AutoPtr<IMediaFormat> fFormat = format;
+
+    // Ensure all input streams are closed.  It is also a handy
+    // way to implement timeouts in the future.
+    synchronized(mOpenSubtitleSources) {
+        mOpenSubtitleSources->Add(is);
+    }
+
+    // process each subtitle in its own thread
+    AutoPtr<IHandlerThread> thread;
+    CHandlerThread::New(String("SubtitleReadThread"),
+            IProcess::THREAD_PRIORITY_BACKGROUND + IProcess::THREAD_PRIORITY_MORE_FAVORABLE,
+            (IHandlerThread**)&thread);
+    IThread::Probe(thread)->Start();
+    AutoPtr<ILooper> looper;
+    thread->GetLooper((ILooper**)&looper);
+    AutoPtr<IHandler> handler;
+    CHandler::New(looper, (IHandler**)&handler);
+    AutoPtr<HandlerRunnable> run = new HandlerRunnable(this, thread, fIs, fFormat);
+    Boolean b;
+    return handler->Post(run, &b);
+}
+
+void CMediaPlayer::ScanInternalSubtitleTracks()
+{
+    if (mSubtitleController == NULL) {
+        Logger::E(TAG, "Should have subtitle controller already set");
+        return;
+    }
+
+    AutoPtr<ArrayOf<IMediaPlayerTrackInfo*> > tracks;
+    GetInbandTrackInfo((ArrayOf<IMediaPlayerTrackInfo*>**)&tracks);
+    synchronized (mInbandSubtitleLock) {
+        AutoPtr<ArrayOf<ISubtitleTrack*> > inbandTracks = ArrayOf<ISubtitleTrack*>::Alloc(tracks->GetLength());
+        for (Int32 i = 0; i < tracks->GetLength(); i++) {
+            Int32 type;
+            (*tracks)[i]->GetTrackType(&type);
+            if (type == IMediaPlayerTrackInfo::MEDIA_TRACK_TYPE_SUBTITLE) {
+                if (i < mInbandSubtitleTracks->GetLength()) {
+                    inbandTracks->Set(i, (*mInbandSubtitleTracks)[i]);
+                }
+                else {
+                    AutoPtr<IMediaFormat> mf;
+                    (*tracks)[i]->GetFormat((IMediaFormat**)&mf);
+                    AutoPtr<ISubtitleTrack> track;
+                    mSubtitleController->AddTrack(mf, (ISubtitleTrack**)&track);
+                    inbandTracks->Set(i, track);
+                }
+            }
+        }
+        mInbandSubtitleTracks = inbandTracks;
+    }
+    mSubtitleController->SelectDefaultTrack();
 }
 
 ECode CMediaPlayer::AddTimedTextSource(
@@ -1634,7 +2536,7 @@ ECode CMediaPlayer::AddTimedTextSource(
         AutoPtr<IFileDescriptor> fd;
         is->GetFD((IFileDescriptor**)&fd);
         ECode ec = AddTimedTextSource(fd, mimeType);
-        is->Close();
+        ICloseable::Probe(is)->Close();
         return ec;
     }
     else {
@@ -1692,11 +2594,90 @@ ECode CMediaPlayer::AddTimedTextSource(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ Int64 offset,
     /* [in] */ Int64 length,
-    /* [in] */ const String& mimeType)
+    /* [in] */ const String& mime)
 {
-    if (!AvailableMimeTypeForExternalSource(mimeType)) {
-        Logger::E(TAG, "Illegal mimeType for timed text source: %s", mimeType.string());
+    if (!AvailableMimeTypeForExternalSource(mime)) {
+        Logger::E(TAG, "Illegal mimeType for timed text source: %s", mime.string());
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    AutoPtr<IFileDescriptor> fd2;
+    // try {
+    AutoPtr<ILibcore> lc;
+    CLibcore::AcquireSingleton((ILibcore**)&lc);
+    AutoPtr<IOs> os;
+    lc->GetOs((IOs**)&os);
+    Int64 size = 0;
+    os->Dup(fd, (IFileDescriptor**)&fd2);
+
+    // } catch (ErrnoException ex) {
+    //     Log.e(TAG, ex.getMessage(), ex);
+    //     throw new RuntimeException(ex);
+    // }
+
+    AutoPtr<IMediaFormat> fFormat;
+    CMediaFormat::New((IMediaFormat**)&fFormat);
+    fFormat->SetString(IMediaFormat::KEY_MIME, mime);
+    fFormat->SetInt32(IMediaFormat::KEY_IS_TIMED_TEXT, 1);
+
+    AutoPtr<IApplication> app = CActivityThread::GetCurrentApplication();
+    AutoPtr<IContext> context = IContext::Probe(app);
+    // A MediaPlayer created by a VideoView should already have its mSubtitleController set.
+    if (mSubtitleController == NULL) {
+// TODO: Need CSubtitleController
+        // CSubtitleController::New(context, mTimeProvider,
+        //         THIS_PROBE(ISubtitleControllerListener),
+        //         (ISubtitleController**)&mSubtitleController);
+
+        AutoPtr<MyAnchor> anchor = new MyAnchor(this);
+        mSubtitleController->SetAnchor(anchor);
+    }
+
+    Boolean b;
+    mSubtitleController->HasRendererFor(fFormat, &b);
+    if (!b) {
+        // test and add not atomic
+        AutoPtr<ISRTRenderer> srtr;
+// TODO: Need CSRTRenderer
+        // CSRTRenderer::New(context, mEventHandler, (ISRTRenderer**)&srtr);
+        mSubtitleController->RegisterRenderer(ISubtitleControllerRenderer::Probe(srtr));
+    }
+    AutoPtr<ISubtitleTrack> track;
+    mSubtitleController->AddTrack(fFormat, (ISubtitleTrack**)&track);
+    mOutOfBandSubtitleTracks->Add(track);
+
+    AutoPtr<IFileDescriptor> fd3 = fd2;
+    Int64 offset2 = offset;
+    Int64 length2 = length;
+    AutoPtr<IHandlerThread> thread;
+    CHandlerThread::New(String("TimedTextReadThread"),
+            IProcess::THREAD_PRIORITY_BACKGROUND + IProcess::THREAD_PRIORITY_MORE_FAVORABLE,
+            (IHandlerThread**)&thread);
+    IThread::Probe(thread)->Start();
+    AutoPtr<ILooper> looper;
+    thread->GetLooper((ILooper**)&looper);
+    AutoPtr<IHandler> handler;
+    CHandler::New(looper, (IHandler**)&handler);
+    AutoPtr<MyRunnable> run = new MyRunnable(this, thread, fd3, offset2, length2, track);
+    return handler->Post(run, &b);
+}
+
+ECode CMediaPlayer::GetSelectedTrack(
+    /* [in] */ Int32 trackType,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+    if (trackType == IMediaPlayerTrackInfo::MEDIA_TRACK_TYPE_SUBTITLE && mSubtitleController != NULL) {
+        AutoPtr<ISubtitleTrack> subtitleTrack;
+        mSubtitleController->GetSelectedTrack((ISubtitleTrack**)&subtitleTrack);
+        if (subtitleTrack != NULL) {
+            Int32 index;
+            mOutOfBandSubtitleTracks->IndexOf(subtitleTrack, &index);
+            if (index >= 0) {
+                *result = mInbandSubtitleTracks->GetLength() + index;
+                return NOERROR;
+            }
+        }
     }
 
     AutoPtr<IParcel> request;
@@ -1707,18 +2688,17 @@ ECode CMediaPlayer::AddTimedTextSource(
     assert(0 && "TODO");
     //try {
     // request->WriteInterfaceToken(IMEDIA_PLAYER);
-    // request->WriteInt(INVOKE_ID_ADD_EXTERNAL_SOURCE_FD);
-    // request->WriteFileDescriptor(fd);
-    // request->WriteLong(offset);
-    // request->WriteLong(length);
-    // request->WriteString(mimeType);
-    ECode ec = Invoke(request, reply);
+    // request->WriteInt32(INVOKE_ID_GET_SELECTED_TRACK);
+    // request->WriteInt32(trackType);
+    // Invoke(request, reply);
+    // Int32 selectedTrack;
+    // reply->ReadInt(&selectedTrack);
+    // *result = selectedTrack;
     //} finally {
         // request->Recycle();
         // reply->Recycle();
     //}
-
-    return ec;
+    return NOERROR;
 }
 
 ECode CMediaPlayer::SelectTrack(
@@ -1734,6 +2714,70 @@ ECode CMediaPlayer::DeselectTrack(
 }
 
 ECode CMediaPlayer::SelectOrDeselectTrack(
+    /* [in] */ Int32 index,
+    /* [in] */ Boolean select)
+{
+    // handle subtitle track through subtitle controller
+    AutoPtr<ISubtitleTrack> track;
+    synchronized(mInbandSubtitleLock) {
+        if (mInbandSubtitleTracks->GetLength() == 0) {
+            AutoPtr<ArrayOf<IMediaPlayerTrackInfo*> > tracks;
+            GetInbandTrackInfo((ArrayOf<IMediaPlayerTrackInfo*>**)&tracks);
+            mInbandSubtitleTracks = ArrayOf<ISubtitleTrack*>::Alloc(tracks->GetLength());
+            for (Int32 i=0; i < tracks->GetLength(); i++) {
+                Int32 type;
+                (*tracks)[i]->GetTrackType(&type);
+                if (type == IMediaPlayerTrackInfo::MEDIA_TRACK_TYPE_SUBTITLE) {
+                    AutoPtr<IMediaFormat> mf;
+                    (*tracks)[i]->GetFormat((IMediaFormat**)&mf);
+                    AutoPtr<ISubtitleTrack> st;
+                    mSubtitleController->AddTrack(mf, (ISubtitleTrack**)&st);
+                    mInbandSubtitleTracks->Set(i, st);
+                }
+            }
+        }
+    }
+
+    Int32 size;
+    mOutOfBandSubtitleTracks->GetSize(&size);
+    if (index < mInbandSubtitleTracks->GetLength()) {
+        track = (*mInbandSubtitleTracks)[index];
+    }
+    else if (index < mInbandSubtitleTracks->GetLength() + size) {
+        AutoPtr<IInterface> obj;
+        mOutOfBandSubtitleTracks->Get(index - mInbandSubtitleTracks->GetLength(), (IInterface**)&obj);
+        track = ISubtitleTrack::Probe(obj);
+    }
+
+    if (mSubtitleController != NULL && track != NULL) {
+        AutoPtr<ISubtitleTrack> st;
+        mSubtitleController->GetSelectedTrack((ISubtitleTrack**)&st);
+        if (select) {
+            Boolean b;
+            if (track->IsTimedText(&b), b) {
+                Int32 ttIndex;
+                GetSelectedTrack(IMediaPlayerTrackInfo::MEDIA_TRACK_TYPE_TIMEDTEXT, &ttIndex);
+                if (ttIndex >= 0 && ttIndex < mInbandSubtitleTracks->GetLength()) {
+                    // deselect inband counterpart
+                    SelectOrDeselectInbandTrack(ttIndex, FALSE);
+                }
+            }
+            mSubtitleController->SelectTrack(track, &b);
+        }
+        else if (st == track) {
+            Boolean b;
+            mSubtitleController->SelectTrack(NULL, &b);
+        }
+        else {
+            Logger::W(TAG, "trying to deselect track that was not selected");
+        }
+        return NOERROR;
+    }
+
+    return SelectOrDeselectInbandTrack(index, select);
+}
+
+ECode CMediaPlayer::SelectOrDeselectInbandTrack(
     /* [in] */ Int32 index,
     /* [in] */ Boolean select)
 {
@@ -1816,6 +2860,18 @@ ECode CMediaPlayer::NativeSetRetransmitEndpoint(
     }
 
     return (ret == android::OK) ? NOERROR : E_FAIL;
+}
+
+ECode CMediaPlayer::GetMediaTimeProvider(
+    /* [out] */ IMediaTimeProvider** result)
+{
+    VALIDATE_NOT_NULL(result)
+    if (mTimeProvider == NULL) {
+        mTimeProvider = new TimeProvider(this);
+    }
+    *result = IMediaTimeProvider::Probe(mTimeProvider);
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 ECode CMediaPlayer::NativeFinalize()
@@ -1902,6 +2958,13 @@ ECode CMediaPlayer::SetOnTimedTextListener(
     return NOERROR;
 }
 
+ECode CMediaPlayer::SetOnSubtitleDataListener(
+    /* [in] */ IMediaPlayerOnSubtitleDataListener* listener)
+{
+    mOnSubtitleDataListener = listener;
+    return NOERROR;
+}
+
 ECode CMediaPlayer::SetOnErrorListener(
     /* [in] */ IMediaPlayerOnErrorListener* listener)
 {
@@ -1921,869 +2984,6 @@ Boolean CMediaPlayer::IsVideoScalingModeSupported(
 {
     return (mode == VIDEO_SCALING_MODE_SCALE_TO_FIT ||
             mode == VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
-}
-
-ECode CMediaPlayer::SetScreen(
-    /* [in] */ Int32 screen)
-{
-    android::MediaPlayer::setScreen(screen);
-    return NOERROR;
-}
-
-ECode CMediaPlayer::GetScreen(
-    /* [out] */ Int32* screen)
-{
-    VALIDATE_NOT_NULL(screen);
-    int screen_;
-    if (android::MediaPlayer::getScreen(&screen_) != android::OK) {
-        *screen = MASTER_SCREEN;
-    }
-    else {
-        *screen = screen_;
-    }
-    return NOERROR;
-}
-
-ECode CMediaPlayer::IsPlayingVideo(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = FALSE;
-
-    bool playing;
-    if (android::OK != android::MediaPlayer::isPlayingVideo(&playing)){
-        Logger::E(TAG, "Fail in isPlayingVideo()");
-        return E_FAIL;
-    }
-    *result = playing;
-    return NOERROR;
-}
-
-static AutoPtr<IMediaPlayerSubInfo> _composeObjSubInfo(
-    MediaPlayer_SubInfo * info)
-{
-    String charset(info->charset);
-    AutoPtr<ArrayOf<Byte> > name = ArrayOf<Byte>::Alloc(info->len);
-    memcpy(name->GetPayload(), info->name, info->len);
-    AutoPtr<IMediaPlayerSubInfo> subInfo;
-    CMediaPlayerSubInfo::New(
-        name, charset, info->type, (IMediaPlayerSubInfo**)&subInfo);
-    return subInfo;
-}
-ECode CMediaPlayer::GetSubList(
-    /* [out, callee] */ ArrayOf<IMediaPlayerSubInfo*>** infoArray)
-{
-    VALIDATE_NOT_NULL(infoArray);
-    *infoArray = NULL;
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    Int32 count = mp->getSubCount();
-    if (count < 0) {
-        return NOERROR;
-    }
-
-    ECode ec = NOERROR;
-    MediaPlayer_SubInfo *csubList = NULL;
-
-    AutoPtr<ArrayOf<IMediaPlayerSubInfo*> > infos = ArrayOf<IMediaPlayerSubInfo*>::Alloc(count);
-    if (infos == NULL) {
-        ec = E_OUT_OF_MEMORY;
-        goto error;
-    }
-
-    csubList = new MediaPlayer_SubInfo[count];
-    if (csubList == NULL) {
-        ec = E_OUT_OF_MEMORY;
-        goto error;
-    }
-
-    count = mp->getSubList(csubList, count);
-    if(count <= 0){
-        Logger::E(TAG, "Fail in getting sublist.");
-        goto error;
-    }
-
-    for (Int32 i = 0; i < count; ++i) {
-        infos->Set(i, _composeObjSubInfo(csubList + i));
-    }
-
-    *infoArray = infos;
-    REFCOUNT_ADD(*infoArray);
-
-error:
-    if (csubList != NULL) delete[] csubList;
-    return ec;
-}
-
-ECode CMediaPlayer::GetCurSub(
-    /* [out] */ Int32* index)
-{
-    VALIDATE_NOT_NULL(index);
-    *index = -1;
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    *index = mp->getCurSub();
-    return NOERROR;
-}
-
-ECode CMediaPlayer::SwitchSub(
-    /* [in] */ Int32 index)
-{
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    Int32 err = mp->switchSub(index);
-    return (err == android::OK) ? NOERROR : E_FAIL;
-}
-
-ECode CMediaPlayer::SetSubGate(
-    /* [in] */ Boolean showSub)
-{
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    Int32 err = mp->setSubGate((bool)showSub);
-    return (err == android::OK) ? NOERROR : E_FAIL;
-}
-
-ECode CMediaPlayer::GetSubGate(
-    /* [out] */ Boolean* showSub)
-{
-    VALIDATE_NOT_NULL(showSub);
-    *showSub = FALSE;
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    *showSub = mp->getSubGate();
-    return NOERROR;
-}
-
-ECode CMediaPlayer::SetSubColor(
-    /* [in] */ Int32 color)
-{
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    Int32 err = mp->setSubColor(color);
-    return (err == android::OK) ? NOERROR : E_FAIL;
-}
-
-ECode CMediaPlayer::GetSubColor(
-   /* [out] */ Int32* color)
-{
-    VALIDATE_NOT_NULL(color);
-    *color = 0;
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    *color = mp->getSubColor();
-    return NOERROR;
-}
-
-ECode CMediaPlayer::SetSubFrameColor(
-    /* [in] */ Int32 color)
-{
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    Int32 err = mp->setSubFrameColor(color);
-    return (err == android::OK) ? NOERROR : E_FAIL;
-}
-
-ECode CMediaPlayer::GetSubFrameColor(
-    /* [out] */ Int32* color)
-{
-    VALIDATE_NOT_NULL(color);
-    *color = 0;
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    *color = mp->getSubFrameColor();
-    return NOERROR;
-}
-
-ECode CMediaPlayer::SetSubFontSize(
-    /* [in] */ Int32 size)
-{
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    Int32 err = mp->setSubFontSize(size);
-    return (err == android::OK) ? NOERROR : E_FAIL;
-}
-
-ECode CMediaPlayer::GetSubFontSize(
-    /* [out] */ Int32* size)
-{
-    VALIDATE_NOT_NULL(size);
-    *size = 0;
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    *size = mp->getSubFontSize();
-    return NOERROR;
-}
-
-ECode CMediaPlayer::SetSubFontPath(
-    /* [in] */ const String& path)
-{
-    if (path.IsNull())
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    Int32 err = mp->setSubFontPath(path.string());
-    return (err == android::OK) ? NOERROR : E_FAIL;
-}
-
-ECode CMediaPlayer::SetSubCharset(
-    /* [in] */ const String& charset)
-{
-    if (charset.IsNull())
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    Int32 err = mp->setSubCharset(charset.string());
-    return (err == android::OK) ? NOERROR : E_FAIL;
-}
-
-ECode CMediaPlayer::GetSubCharset(
-    /* [out] */ String* charset)
-{
-    VALIDATE_NOT_NULL(charset);
-    *charset = String(NULL);
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    char *ccharset = new char[MEDIAPLAYER_NAME_LEN_MAX];
-    if(ccharset == NULL){
-        Logger::E(TAG, "Fail in allocating memory.");
-        return E_OUT_OF_MEMORY;
-    }
-
-    android::status_t ret = mp->getSubCharset(ccharset);
-    if (ret == android::OK){
-        *charset = String(ccharset);
-    }
-
-    delete[] ccharset;
-    return NOERROR;
-}
-
-ECode CMediaPlayer::SetSubPosition(
-    /* [in] */ Int32 percent)
-{
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    Int32 err = mp->setSubPosition(percent);
-    return (err == android::OK) ? NOERROR : E_FAIL;
-}
-
-ECode CMediaPlayer::GetSubPosition(
-    /* [out] */ Int32* percent)
-{
-    VALIDATE_NOT_NULL(percent);
-    *percent = 0;
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    *percent = mp->getSubPosition();
-    return NOERROR;
-}
-
-ECode CMediaPlayer::SetSubDelay(
-    /* [in] */ Int32 delay)
-{
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    Int32 err = mp->setSubDelay(delay);
-    return (err == android::OK) ? NOERROR : E_FAIL;
-}
-
-ECode CMediaPlayer::GetSubDelay(
-    /* [out] */ Int32* delay)
-{
-    VALIDATE_NOT_NULL(delay);
-    *delay = 0;
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    *delay = mp->getSubDelay();
-    return NOERROR;
-}
-
-static AutoPtr<ITrackInfoVendor> _composeObjTrackInfo(
-    const MediaPlayer_TrackInfo * info)
-{
-    AutoPtr<ITrackInfoVendor> vendor;
-    String charset(info->charset);
-    AutoPtr<ArrayOf<Byte> > name = ArrayOf<Byte>::Alloc(info->len);
-    memcpy(name->GetPayload(), info->name, info->len);
-
-    CTrackInfoVendor::New(name, charset, (ITrackInfoVendor**)&vendor);
-    return vendor;
-}
-
-ECode CMediaPlayer::GetTrackList(
-    /* [out, callee] */ ArrayOf<ITrackInfoVendor*>** trackArray)
-{
-    VALIDATE_NOT_NULL(trackArray);
-    *trackArray = NULL;
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    int count = mp->getTrackCount();
-    if (count <= 0)
-        return NOERROR;
-
-    AutoPtr<ArrayOf<ITrackInfoVendor*> > tracks;
-    ECode ec = NOERROR;
-    Int32 i;
-    MediaPlayer_TrackInfo *ctrackList = new MediaPlayer_TrackInfo[count];
-    if(ctrackList == NULL ){
-        Logger::E(TAG, "Fail in allocating memory.");
-        ec = E_OUT_OF_MEMORY;
-        goto error;
-    }
-
-    count = mp->getTrackList(ctrackList, count);
-    if(count < 0){
-        Logger::E(TAG, "Fail in getting tracklist.");
-        goto error;
-    }
-
-    tracks = ArrayOf<ITrackInfoVendor*>::Alloc(count);
-    for (i = 0; i < count; ++i) {
-        tracks->Set(i, _composeObjTrackInfo(ctrackList+i));
-    }
-
-    *trackArray = tracks;
-    REFCOUNT_ADD(*trackArray);
-
-error:
-    if (ctrackList) delete[] ctrackList;
-    return ec;
-}
-
-ECode CMediaPlayer::GetCurTrack(
-    /* [out] */ Int32* index)
-{
-    VALIDATE_NOT_NULL(index);
-    *index = 0;
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    *index = mp->getCurTrack();
-    return NOERROR;
-}
-
-ECode CMediaPlayer::SwitchTrack(
-    /* [in] */ Int32 index)
-{
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    android::status_t err = mp->switchTrack(index);
-    return (err == android::OK) ? NOERROR : E_FAIL;
-}
-
-ECode CMediaPlayer::SetInputDimensionType(
-    /* [in] */ Int32 type)
-{
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    Int32 err = mp->setInputDimensionType(type);
-    return (err == android::OK) ? NOERROR : E_FAIL;
-}
-
-ECode CMediaPlayer::GetInputDimensionType(
-    /* [out] */ Int32* type)
-{
-    VALIDATE_NOT_NULL(type);
-    *type = 0;
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    *type = mp->getInputDimensionType();
-    return NOERROR;
-}
-
-ECode CMediaPlayer::SetInputDimensionValue(
-    /* [in] */ Int32 type,
-    /* [in] */ Int32 value)
-{
-    assert(0 && "TODO");
-    // android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    // if (mp == NULL ) {
-    //     return E_ILLEGAL_STATE_EXCEPTION;
-    // }
-
-    // Int32 err = mp->setInputDimensionValue(delay);
-    // if (err != android::OK) return E_FAIL;
-    return NOERROR;
-}
-
-
-ECode CMediaPlayer::SetOutputDimensionType(
-    /* [in] */ Int32 type)
-{
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    Int32 err = mp->setOutputDimensionType(type);
-    return (err == android::OK) ? NOERROR : E_FAIL;
-}
-
-ECode CMediaPlayer::GetOutputDimensionType(
-    /* [out] */ Int32* type)
-{
-    VALIDATE_NOT_NULL(type);
-    *type = 0;
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    *type = mp->getOutputDimensionType();
-    return NOERROR;
-}
-
-ECode CMediaPlayer::SetOutputDimensionValue(
-    /* [in] */ Int32 type,
-    /* [in] */ Int32 value)
-{
-    assert(0 && "TODO");
-    // android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    // if (mp == NULL ) {
-    //     return E_ILLEGAL_STATE_EXCEPTION;
-    // }
-
-    // Int32 err = mp->setOutputDimensionValue(delay);
-    // if (err != android::OK) return E_ILLEGAL_STATE_EXCEPTION;
-    return NOERROR;
-}
-
-ECode CMediaPlayer::SetAnaglaghType(
-    /* [in] */ Int32 type)
-{
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    Int32 err = mp->setAnaglaghType(type);
-    return (err == android::OK) ? NOERROR : E_FAIL;
-}
-
-ECode CMediaPlayer::GetAnaglaghType(
-    /* [out] */ Int32* type)
-{
-    VALIDATE_NOT_NULL(type);
-    *type = 0;
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    *type = mp->getAnaglaghType();
-    return NOERROR;
-}
-
-ECode CMediaPlayer::GetVideoEncode(
-    /* [out] */ String* encode)
-{
-    VALIDATE_NOT_NULL(encode);
-    *encode = String(NULL);
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    char *ccencode = new char[MEDIAPLAYER_NAME_LEN_MAX];
-    if (encode == NULL){
-        Logger::E(TAG, "Fail in allocating memory.");
-        return E_OUT_OF_MEMORY;
-    }
-
-    android::status_t ret = mp->getVideoEncode(ccencode);
-    ECode ec = E_FAIL;
-    if(ret == android::OK){
-        ec = NOERROR;
-        *encode = String(ccencode);
-    }
-    delete[] ccencode;
-    return ec;
-}
-
-ECode CMediaPlayer::GetVideoFrameRate(
-    /* [out] */ Int32* rate)
-{
-    VALIDATE_NOT_NULL(rate);
-    *rate = 0;
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    *rate = mp->getVideoFrameRate();
-    return NOERROR;
-}
-
-ECode CMediaPlayer::GetAudioEncode(
-    /* [out] */ String* encode)
-{
-    VALIDATE_NOT_NULL(encode);
-    *encode = String(NULL);
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    char *ccencode = new char[MEDIAPLAYER_NAME_LEN_MAX];
-    if (encode == NULL){
-        Logger::E(TAG, "Fail in allocating memory.");
-        return E_OUT_OF_MEMORY;
-    }
-
-    ECode ec = E_FAIL;
-    android::status_t ret = mp->getAudioEncode(ccencode);
-    if(ret == android::OK){
-        ec = NOERROR;
-        *encode = String(ccencode);
-    }
-    delete[] ccencode;
-    return ec;
-}
-
-ECode CMediaPlayer::GetAudioBitRate(
-    /* [out] */ Int32* rate)
-{
-    VALIDATE_NOT_NULL(rate);
-    *rate = 0;
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    *rate = mp->getAudioBitRate();
-    return NOERROR;
-}
-
-ECode CMediaPlayer::GetAudioSampleRate(
-    /* [out] */ Int32* rate)
-{
-    VALIDATE_NOT_NULL(rate);
-    *rate = 0;
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    *rate = mp->getAudioSampleRate();
-    return NOERROR;
-}
-
-ECode CMediaPlayer::EnableScaleMode(
-    /* [in] */ Boolean enable,
-    /* [in] */ Int32 width,
-    /* [in] */ Int32 height)
-{
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    Int32 err = mp->enableScaleMode((bool)enable, width, height);
-    return (err == android::OK) ? NOERROR : E_FAIL;
-}
-
-ECode CMediaPlayer::SetVppGate(
-    /* [in] */ Boolean enableVpp)
-{
-    android::MediaPlayer::setVppGate(enableVpp);
-    return NOERROR;
-}
-
-ECode CMediaPlayer::GetVppGate(
-    /* [out] */ Boolean* enableVpp)
-{
-    VALIDATE_NOT_NULL(enableVpp);
-    *enableVpp = android::MediaPlayer::getVppGate();
-    return NOERROR;
-}
-
-ECode CMediaPlayer::SetLumaSharp(
-    /* [in] */ Int32 value)
-{
-    if (android::OK == android::MediaPlayer::setLumaSharp(value)) {
-        return NOERROR;
-    }
-    return E_FAIL;
-}
-
-ECode CMediaPlayer::GetLumaSharp(
-    /* [out] */ Int32* value)
-{
-    VALIDATE_NOT_NULL(value);
-    *value = android::MediaPlayer::getLumaSharp();
-    return NOERROR;
-}
-
-ECode CMediaPlayer::SetChromaSharp(
-    /* [in] */ Int32 value)
-{
-    if (android::OK == android::MediaPlayer::setChromaSharp(value)) {
-        return NOERROR;
-    }
-    return E_FAIL;
-}
-
-ECode CMediaPlayer::GetChromaSharp(
-    /* [out] */ Int32* value)
-{
-    VALIDATE_NOT_NULL(value);
-    *value = android::MediaPlayer::getChromaSharp();
-    return NOERROR;
-}
-
-ECode CMediaPlayer::SetWhiteExtend(
-    /* [in] */ Int32 value)
-{
-    if (android::OK == android::MediaPlayer::setWhiteExtend(value)) {
-        return NOERROR;
-    }
-    return E_FAIL;
-}
-
-ECode CMediaPlayer::GetWhiteExtend(
-    /* [out] */ Int32* value)
-{
-    VALIDATE_NOT_NULL(value);
-    *value = android::MediaPlayer::getWhiteExtend();
-    return NOERROR;
-}
-
-ECode CMediaPlayer::SetBlackExtend(
-    /* [in] */ Int32 value)
-{
-    if (android::OK == android::MediaPlayer::setBlackExtend(value)) {
-        return NOERROR;
-    }
-    return E_FAIL;
-}
-
-ECode CMediaPlayer::GetBlackExtend(
-    /* [out] */ Int32* value)
-{
-    VALIDATE_NOT_NULL(value);
-    *value = android::MediaPlayer::getBlackExtend();
-    return NOERROR;
-}
-
-ECode CMediaPlayer::SetChannelMuteMode(
-    /* [in] */ Int32 mode)
-{
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    Int32 err = mp->setChannelMuteMode(mode);
-    return (err == android::OK) ? NOERROR : E_FAIL;
-}
-
-ECode CMediaPlayer::GetChannelMuteMode(
-    /* [out] */ Int32* mode)
-{
-    VALIDATE_NOT_NULL(mode);
-    *mode = 0;
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    *mode = mp->getChannelMuteMode();
-    return NOERROR;
-}
-
-ECode CMediaPlayer::SetGlobalSubGate(
-    /* [in] */ Boolean showSub)
-{
-    if (android::OK == android::MediaPlayer::setGlobalSubGate(showSub)) {
-        return NOERROR;
-    }
-    return E_FAIL;
-}
-
-ECode CMediaPlayer::GetGlobalSubGate(
-    /* [out] */ Boolean* showSub)
-{
-    VALIDATE_NOT_NULL(showSub);
-    *showSub = android::MediaPlayer::getGlobalSubGate();
-    return NOERROR;
-}
-
-ECode CMediaPlayer::SetBdFolderPlayMode(
-    /* [in] */ Boolean enable)
-{
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    int input = enable? 1 : 0;
-    android::status_t err = mp->generalInterface(
-        MEDIAPLAYER_CMD_SET_BD_FOLDER_PLAY_MODE,
-        input, 0, 0, NULL);
-    return (err == android::OK) ? NOERROR : E_FAIL;
-}
-
-ECode CMediaPlayer::GetBdFolderPlayMode(
-    /* [out] */ Boolean* enable)
-{
-    VALIDATE_NOT_NULL(enable);
-    *enable = FALSE;
-
-    android::sp<android::MediaPlayer> mp = getMediaPlayer(this);
-    if (mp == NULL ) {
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    int ienable = 0;
-    mp->generalInterface(MEDIAPLAYER_CMD_GET_BD_FOLDER_PLAY_MODE, 0, 0, 0, &ienable);
-    *enable = ienable == 1;
-    return NOERROR;
-}
-
-ECode CMediaPlayer::IsRotatable(
-    /* [out] */ Boolean* enable)
-{
-    VALIDATE_NOT_NULL(enable);
-    *enable = 0;
-
-    int ienable = 0;
-    android::MediaPlayer::generalGlobalInterface(
-        MEDIAPLAYER_CMD_IS_ROTATABLE, 0, 0, 0, &ienable);
-    *enable = ienable == 1;
-    return NOERROR;
-}
-
-ECode CMediaPlayer::SetRotation(
-    /* [in] */ Int32 rotation)
-{
-    if (android::OK == android::MediaPlayer::generalGlobalInterface(
-        MEDIAPLAYER_CMD_SET_ROTATION, rotation, 0, 0, NULL)) {
-        return NOERROR;
-    }
-    return E_FAIL;
-}
-
-ECode CMediaPlayer::SetHdmiState(
-    /* [in] */ Boolean bHdmiPlugged)
-{
-    if (android::OK == android::MediaPlayer::generalGlobalInterface(
-        MEDIAPLAYER_CMD_SET_HDMISTATE, bHdmiPlugged, 0, 0, NULL)) {
-        return NOERROR;
-    }
-    return E_FAIL;
-}
-
-ECode CMediaPlayer::SetDlnaSourceDetector(
-    /* [in] */ IDlnaSourceDetector* detector)
-{
-    mDlnaSourceDetector = detector;
-
-    ECode ec = SetDataSource(SOFTWINNER_DLNA_SOURCE_DETECTOR);
-    if (FAILED(ec)) {
-        Logger::E(TAG, "Fail to set DlnaSourceDetector..");
-    }
-    return ec;
-}
-
-ECode CMediaPlayer::SetRawDataMode(
-    /* [in] */ Int32 audioDataMode)
-{
-    mRawDataMode = audioDataMode;
-    Logger::D(TAG, "setRawDataMode() in MediaPlayer.java");
-    Int32 result = android::MediaPlayer::generalGlobalInterface(
-        MEDIAPLAYER_GLOBAL_CMD_SET_RAWDATA_MODE, audioDataMode, 0, 0, NULL);
-    return result == android::OK ? NOERROR : E_FAIL;
 }
 
 } // namespace Media

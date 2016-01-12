@@ -1,5 +1,3 @@
-
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/media/CMediaPlayerHelper.h"
 #include "elastos/droid/media/CMediaPlayer.h"
 
@@ -7,6 +5,9 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 
+CAR_INTERFACE_IMPL(CMediaPlayerHelper, Singleton, IMediaPlayerHelper)
+
+CAR_SINGLETON_IMPL(CMediaPlayerHelper)
 
 ECode CMediaPlayerHelper::Create(
     /* [in] */ IContext* ctx,
@@ -66,7 +67,6 @@ ECode CMediaPlayerHelper::SetHdmiState(
 {
     return CMediaPlayer::SetHdmiState(bHdmiPlugged);
 }
-
 
 } // namespace Media
 } // namepsace Droid

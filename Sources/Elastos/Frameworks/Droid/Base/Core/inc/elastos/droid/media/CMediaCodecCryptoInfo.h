@@ -1,17 +1,29 @@
 
-#ifndef __ELASTOS_DROID_MEDIA_CCRYPTOINFO_H__
-#define __ELASTOS_DROID_MEDIA_CCRYPTOINFO_H__
+#ifndef __ELASTOS_DROID_MEDIA_CMEDIACODECCRYPTOINFO_H__
+#define __ELASTOS_DROID_MEDIA_CMEDIACODECCRYPTOINFO_H__
 
 #include "_Elastos_Droid_Media_CMediaCodecCryptoInfo.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
 
 CarClass(CMediaCodecCryptoInfo)
+    , public Object
+    , public IMediaCodecCryptoInfo
 {
 public:
     CMediaCodecCryptoInfo();
+
+    virtual ~CMediaCodecCryptoInfo();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor();
 
     CARAPI Set(
         /* [in] */ Int32 newNumSubSamples,
@@ -22,7 +34,7 @@ public:
         /* [in] */ Int32 newMode);
 
     CARAPI GetNumSubSamples(
-        /* [out] */ Int32 *result);
+        /* [out] */ Int32* result);
 
     CARAPI GetNumBytesOfClearData(
         /* [out, callee] */ ArrayOf<Int32>** result);
@@ -33,11 +45,11 @@ public:
     CARAPI GetKey(
         /* [out, callee] */ ArrayOf<Byte>** result);
 
-    CARAPI GetInitVector(
+    CARAPI GetIv(
         /* [out, callee] */ ArrayOf<Byte>** result);
 
     CARAPI GetMode(
-        /* [out] */ Int32 *result);
+        /* [out] */ Int32* result);
 
     CARAPI SetNumSubSamples(
         /* [in] */ Int32 samples);
@@ -51,7 +63,7 @@ public:
     CARAPI SetKey(
         /* [in] */ ArrayOf<Byte>* key);
 
-    CARAPI SetInitVector(
+    CARAPI SetIv(
         /* [in] */ ArrayOf<Byte>* iv);
 
     CARAPI SetMode(
@@ -77,7 +89,7 @@ private:
     /**
      * A 16-byte initialization vector
      */
-    AutoPtr<ArrayOf<Byte> > mInitVector;
+    AutoPtr<ArrayOf<Byte> > mIv;
     /**
      * The type of encryption that has been applied,
      * see {@link #CRYPTO_MODE_UNENCRYPTED} and {@link #CRYPTO_MODE_AES_CTR}.
@@ -85,9 +97,8 @@ private:
     Int32 mMode;
 };
 
-
 } // namespace Media
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMEDIACODEC_H__
+#endif // __ELASTOS_DROID_MEDIA_CMEDIACODECCRYPTOINFO_H__

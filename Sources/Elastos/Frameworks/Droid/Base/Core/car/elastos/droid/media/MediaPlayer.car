@@ -1,25 +1,25 @@
 
 module
 {
-    interface Elastos.Droid.Os.IParcel;
-    interface Elastos.Utility.IMap;
-    interface Elastos.Utility.ISet;
-    interface Elastos.IO.IFileDescriptor;
-    interface Elastos.IO.IInputStream;
-    interface Elastos.Droid.Net.IUri;
-    interface Elastos.Net.IInetSocketAddress;
-    interface Elastos.Droid.View.ISurface;
-    interface Elastos.Droid.View.ISurfaceHolder;
     interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Media.IMediaPlayer;
-    interface Elastos.Droid.Media.ITimedText;
-    interface Elastos.Droid.Media.ISubtitleData;
-    interface Elastos.Droid.Media.IMediaFormat;
-    interface Elastos.Droid.Media.IMetadata;
     interface Elastos.Droid.Media.IAudioAttributes;
+    interface Elastos.Droid.Media.IMediaFormat;
+    interface Elastos.Droid.Media.IMediaPlayer;
+    interface Elastos.Droid.Media.IMediaTimeProvider;
+    interface Elastos.Droid.Media.IMetadata;
     interface Elastos.Droid.Media.ISubtitleController;
     interface Elastos.Droid.Media.ISubtitleControllerAnchor;
-    interface Elastos.Droid.Media.IMediaTimeProvider;
+    interface Elastos.Droid.Media.ISubtitleData;
+    interface Elastos.Droid.Media.ITimedText;
+    interface Elastos.Droid.Net.IUri;
+    interface Elastos.Droid.Os.IParcel;
+    interface Elastos.Droid.View.ISurface;
+    interface Elastos.Droid.View.ISurfaceHolder;
+    interface Elastos.IO.IFileDescriptor;
+    interface Elastos.IO.IInputStream;
+    interface Elastos.Net.IInetSocketAddress;
+    interface Elastos.Utility.IMap;
+    interface Elastos.Utility.ISet;
 
     namespace Elastos {
     namespace Droid {
@@ -36,7 +36,7 @@ module
          * @param mp the MediaPlayer that is ready for playback
          */
         OnPrepared(
-            [in] IMediaPlayer * mp);
+            [in] IMediaPlayer* mp);
     }
 
     /**
@@ -50,7 +50,7 @@ module
          * @param mp the MediaPlayer that reached the end of the file
          */
         OnCompletion(
-            [in] IMediaPlayer * mp);
+            [in] IMediaPlayer* mp);
     }
 
     /**
@@ -71,7 +71,7 @@ module
          *                that has been buffered or played thus far
          */
         OnBufferingUpdate(
-            [in] IMediaPlayer * mp,
+            [in] IMediaPlayer* mp,
             [in] Int32 percent);
     }
 
@@ -86,7 +86,7 @@ module
          * @param mp the MediaPlayer that issued the seek operation
          */
         OnSeekComplete(
-            [in] IMediaPlayer * mp);
+            [in] IMediaPlayer* mp);
     }
 
     /**
@@ -105,7 +105,7 @@ module
          * @param height    the height of the video
          */
         OnVideoSizeChanged(
-            [in] IMediaPlayer * mp,
+            [in] IMediaPlayer* mp,
             [in] Int32 width,
             [in] Int32 height);
     }
@@ -123,8 +123,8 @@ module
          *                       needed to be displayed and the display format.
          */
         OnTimedText(
-            [in] IMediaPlayer * mp,
-            [in] ITimedText * text);
+            [in] IMediaPlayer* mp,
+            [in] ITimedText* text);
     }
 
     /**
@@ -135,8 +135,8 @@ module
      */
     interface IMediaPlayerOnSubtitleDataListener {
         OnSubtitleData(
-            [in] IMediaPlayer * mp,
-            [in] ISubtitleData * data);
+            [in] IMediaPlayer* mp,
+            [in] ISubtitleData* data);
     }
 
     /**
@@ -167,10 +167,10 @@ module
          * cause the OnCompletionListener to be called.
          */
         OnError(
-            [in] IMediaPlayer * mp,
+            [in] IMediaPlayer* mp,
             [in] Int32 what,
             [in] Int32 extra,
-            [out] Boolean * result);
+            [out] Boolean* result);
     }
 
     /**
@@ -202,10 +202,10 @@ module
          * cause the info to be discarded.
          */
         OnInfo(
-            [in] IMediaPlayer * mp,
+            [in] IMediaPlayer* mp,
             [in] Int32 what,
             [in] Int32 extra,
-            [out] Boolean * result);
+            [out] Boolean* result);
     }
 
     /**
@@ -225,7 +225,7 @@ module
          * @return TrackType which indicates if the track is video, audio, timed text.
          */
         GetTrackType(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Gets the language code of the track.
@@ -234,15 +234,14 @@ module
          * ISO-639-2 language code, "und", is returned.
          */
         GetLanguage(
-            [out] String * result);
+            [out] String* result);
 
         /**
          * Gets the {@link MediaFormat} of the track.  If the format is
          * unknown or could not be determined, null is returned.
          */
         GetFormat(
-            [out] IMediaFormat ** result);
-
+            [out] IMediaFormat** result);
     }
 
     /**
@@ -920,7 +919,7 @@ module
          * {@hide}
          */
         NewRequest(
-            [out] IParcel ** result);
+            [out] IParcel** result);
 
         /**
          * Invoke a generic method on the native player using opaque
@@ -937,8 +936,8 @@ module
          * {@hide}
          */
         Invoke(
-            [in] IParcel * request,
-            [in] IParcel * reply);
+            [in] IParcel* request,
+            [in] IParcel* reply);
 
         /**
          * Sets the {@link SurfaceHolder} to use for displaying the video
@@ -953,7 +952,7 @@ module
          * @param sh the SurfaceHolder to use for video display
          */
         SetDisplay(
-            [in] ISurfaceHolder * sh);
+            [in] ISurfaceHolder* sh);
 
         /**
          * Sets the {@link Surface} to be used as the sink for the video portion of
@@ -974,7 +973,7 @@ module
          * the media.
          */
         SetSurface(
-            [in] ISurface * surface);
+            [in] ISurface* surface);
 
         /**
          * Sets video scaling mode. To make the target video scaling mode
@@ -1005,8 +1004,8 @@ module
          * @throws IllegalStateException if it is called in an invalid state
          */
         SetDataSource(
-            [in] IContext * context,
-            [in] IUri * uri);
+            [in] IContext* context,
+            [in] IUri* uri);
 
         /**
          * Sets the data source as a content Uri.
@@ -1021,9 +1020,9 @@ module
          * @throws IllegalStateException if it is called in an invalid state
          */
         SetDataSource(
-            [in] IContext * context,
-            [in] IUri * uri,
-            [in] IMap * headers);
+            [in] IContext* context,
+            [in] IUri* uri,
+            [in] IMap* headers);
 
         /**
          * Sets the data source (file-path or http/rtsp URL) to use.
@@ -1051,7 +1050,7 @@ module
          */
         SetDataSource(
             [in] String path,
-            [in] IMap * headers);
+            [in] IMap* headers);
 
         /**
          * Sets the data source (FileDescriptor) to use. It is the caller's responsibility
@@ -1061,7 +1060,7 @@ module
          * @throws IllegalStateException if it is called in an invalid state
          */
         SetDataSource(
-            [in] IFileDescriptor * fd);
+            [in] IFileDescriptor* fd);
 
         /**
          * Sets the data source (FileDescriptor) to use.  The FileDescriptor must be
@@ -1074,7 +1073,7 @@ module
          * @throws IllegalStateException if it is called in an invalid state
          */
         SetDataSource(
-            [in] IFileDescriptor * fd,
+            [in] IFileDescriptor* fd,
             [in] Int64 offset,
             [in] Int64 length);
 
@@ -1145,7 +1144,7 @@ module
          * @see android.os.PowerManager
          */
         SetWakeMode(
-            [in] IContext * context,
+            [in] IContext* context,
             [in] Int32 mode);
 
         /**
@@ -1171,7 +1170,7 @@ module
          * to provide a notification when the width is available.
          */
         GetVideoWidth(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Returns the height of the video.
@@ -1183,7 +1182,7 @@ module
          * to provide a notification when the height is available.
          */
         GetVideoHeight(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Checks whether the MediaPlayer is playing.
@@ -1193,7 +1192,7 @@ module
          * initialized or has been released.
          */
         IsPlaying(
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         /**
          * Seeks to specified time position.
@@ -1211,7 +1210,7 @@ module
          * @return the current position in milliseconds
          */
         GetCurrentPosition(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Gets the duration of the file.
@@ -1220,7 +1219,7 @@ module
          *         (for example, if streaming live content), -1 is returned.
          */
         GetDuration(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Gets the media metadata.
@@ -1241,7 +1240,7 @@ module
         GetMetadata(
             [in] Boolean update_only,
             [in] Boolean apply_filter,
-            [out] IMetadata ** result);
+            [out] IMetadata** result);
 
         /**
          * Set a filter for the metadata update notification and update
@@ -1263,9 +1262,9 @@ module
          * {@hide}
          */
         SetMetadataFilter(
-            [in] ISet * allow,
-            [in] ISet * block,
-            [out] Int32 * result);
+            [in] ISet* allow,
+            [in] ISet* block,
+            [out] Int32* result);
 
         /**
          * Set the MediaPlayer to start when this MediaPlayer finishes playback
@@ -1285,7 +1284,7 @@ module
          *
          */
         SetNextMediaPlayer(
-            [in] IMediaPlayer * next);
+            [in] IMediaPlayer* next);
 
         /**
          * Releases resources associated with this MediaPlayer object.
@@ -1334,7 +1333,7 @@ module
          * @param attributes a non-null set of audio attributes
          */
         SetAudioAttributes(
-            [in] IAudioAttributes * attributes);
+            [in] IAudioAttributes* attributes);
 
         /**
          * Sets the player to be looping or non-looping.
@@ -1350,7 +1349,7 @@ module
          * @return true if the MediaPlayer is currently looping, false otherwise
          */
         IsLooping(
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         /**
          * Sets the volume on this player.
@@ -1406,7 +1405,7 @@ module
          * Note that the audio session ID is 0 only if a problem occured when the MediaPlayer was contructed.
          */
         GetAudioSessionId(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Attaches an auxiliary effect to the player. A typical auxiliary effect is a reverberation
@@ -1450,17 +1449,17 @@ module
          * @throws IllegalStateException if it is called in an invalid state.
          */
         GetTrackInfo(
-            [out, callee] ArrayOf<IMediaPlayerTrackInfo*> * result);
+            [out, callee] ArrayOf<IMediaPlayerTrackInfo*>* result);
 
         /** @hide */
         SetSubtitleAnchor(
-            [in] ISubtitleController * controller,
-            [in] ISubtitleControllerAnchor * anchor);
+            [in] ISubtitleController* controller,
+            [in] ISubtitleControllerAnchor* anchor);
 
         /** @hide */
         AddSubtitleSource(
-            [in] IInputStream * is,
-            [in] IMediaFormat * format);
+            [in] IInputStream* is,
+            [in] IMediaFormat* format);
 
         /* TODO: Limit the total number of external timed text source to a reasonable number.
          */
@@ -1498,8 +1497,8 @@ module
          * @throws IllegalStateException if called in an invalid state.
          */
         AddTimedTextSource(
-            [in] IContext * context,
-            [in] IUri * uri,
+            [in] IContext* context,
+            [in] IUri* uri,
             [in] String mimeType);
 
         /**
@@ -1519,7 +1518,7 @@ module
          * @throws IllegalStateException if called in an invalid state.
          */
         AddTimedTextSource(
-            [in] IFileDescriptor * fd,
+            [in] IFileDescriptor* fd,
             [in] String mimeType);
 
         /**
@@ -1541,7 +1540,7 @@ module
          * @throws IllegalStateException if called in an invalid state.
          */
         AddTimedTextSource(
-            [in] IFileDescriptor * fd,
+            [in] IFileDescriptor* fd,
             [in] Int64 offset,
             [in] Int64 length,
             [in] String mime);
@@ -1565,7 +1564,7 @@ module
          */
         GetSelectedTrack(
             [in] Int32 trackType,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Selects a track.
@@ -1643,11 +1642,11 @@ module
          * {@hide} pending API council
          */
         SetRetransmitEndpoint(
-            [in] IInetSocketAddress * endpoint);
+            [in] IInetSocketAddress* endpoint);
 
         /** @hide */
         GetMediaTimeProvider(
-            [out] IMediaTimeProvider ** result);
+            [out] IMediaTimeProvider** result);
 
         /**
          * Register a callback to be invoked when the media source is ready
@@ -1656,7 +1655,7 @@ module
          * @param listener the callback that will be run
          */
         SetOnPreparedListener(
-            [in] IMediaPlayerOnPreparedListener * listener);
+            [in] IMediaPlayerOnPreparedListener* listener);
 
         /**
          * Register a callback to be invoked when the end of a media source
@@ -1665,7 +1664,7 @@ module
          * @param listener the callback that will be run
          */
         SetOnCompletionListener(
-            [in] IMediaPlayerOnCompletionListener * listener);
+            [in] IMediaPlayerOnCompletionListener* listener);
 
         /**
          * Register a callback to be invoked when the status of a network
@@ -1674,7 +1673,7 @@ module
          * @param listener the callback that will be run.
          */
         SetOnBufferingUpdateListener(
-            [in] IMediaPlayerOnBufferingUpdateListener * listener);
+            [in] IMediaPlayerOnBufferingUpdateListener* listener);
 
         /**
          * Register a callback to be invoked when a seek operation has been
@@ -1683,7 +1682,7 @@ module
          * @param listener the callback that will be run
          */
         SetOnSeekCompleteListener(
-            [in] IMediaPlayerOnSeekCompleteListener * listener);
+            [in] IMediaPlayerOnSeekCompleteListener* listener);
 
         /**
          * Register a callback to be invoked when the video size is
@@ -1692,7 +1691,7 @@ module
          * @param listener the callback that will be run
          */
         SetOnVideoSizeChangedListener(
-            [in] IMediaPlayerOnVideoSizeChangedListener * listener);
+            [in] IMediaPlayerOnVideoSizeChangedListener* listener);
 
         /**
          * Register a callback to be invoked when a timed text is available
@@ -1701,7 +1700,7 @@ module
          * @param listener the callback that will be run
          */
         SetOnTimedTextListener(
-            [in] IMediaPlayerOnTimedTextListener * listener);
+            [in] IMediaPlayerOnTimedTextListener* listener);
 
         /**
          * Register a callback to be invoked when a track has data available.
@@ -1711,7 +1710,7 @@ module
          * @hide
          */
         SetOnSubtitleDataListener(
-            [in] IMediaPlayerOnSubtitleDataListener * listener);
+            [in] IMediaPlayerOnSubtitleDataListener* listener);
 
         /**
          * Register a callback to be invoked when an error has happened
@@ -1720,7 +1719,7 @@ module
          * @param listener the callback that will be run
          */
         SetOnErrorListener(
-            [in] IMediaPlayerOnErrorListener * listener);
+            [in] IMediaPlayerOnErrorListener* listener);
 
         /**
          * Register a callback to be invoked when an info/warning is available.
@@ -1728,7 +1727,7 @@ module
          * @param listener the callback that will be run
          */
         SetOnInfoListener(
-            [in] IMediaPlayerOnInfoListener * listener);
+            [in] IMediaPlayerOnInfoListener* listener);
 
     }
 
@@ -1749,9 +1748,9 @@ module
          * @return a MediaPlayer object, or null if creation failed
          */
         Create(
-            [in] IContext * context,
-            [in] IUri * uri,
-            [out] IMediaPlayer ** result);
+            [in] IContext* context,
+            [in] IUri* uri,
+            [out] IMediaPlayer** result);
 
         /**
          * Convenience method to create a MediaPlayer for a given Uri.
@@ -1770,10 +1769,10 @@ module
          * @return a MediaPlayer object, or null if creation failed
          */
         Create(
-            [in] IContext * context,
-            [in] IUri * uri,
-            [in] ISurfaceHolder * holder,
-            [out] IMediaPlayer ** result);
+            [in] IContext* context,
+            [in] IUri* uri,
+            [in] ISurfaceHolder* holder,
+            [out] IMediaPlayer** result);
 
         /**
          * Same factory method as {@link #create(Context, Uri, SurfaceHolder)} but that lets you specify
@@ -1787,12 +1786,12 @@ module
          * @return a MediaPlayer object, or null if creation failed
          */
         Create(
-            [in] IContext * context,
-            [in] IUri * uri,
-            [in] ISurfaceHolder * holder,
-            [in] IAudioAttributes * audioAttributes,
+            [in] IContext* context,
+            [in] IUri* uri,
+            [in] ISurfaceHolder* holder,
+            [in] IAudioAttributes* audioAttributes,
             [in] Int32 audioSessionId,
-            [out] IMediaPlayer ** result);
+            [out] IMediaPlayer** result);
 
         /**
          * Convenience method to create a MediaPlayer for a given resource id.
@@ -1811,9 +1810,9 @@ module
          * @return a MediaPlayer object, or null if creation failed
          */
         Create(
-            [in] IContext * context,
+            [in] IContext* context,
             [in] Int32 resid,
-            [out] IMediaPlayer ** result);
+            [out] IMediaPlayer** result);
 
         /**
          * Same factory method as {@link #create(Context, int)} but that lets you specify the audio
@@ -1827,11 +1826,11 @@ module
          * @return a MediaPlayer object, or null if creation failed
          */
         Create(
-            [in] IContext * context,
+            [in] IContext* context,
             [in] Int32 resid,
-            [in] IAudioAttributes * audioAttributes,
+            [in] IAudioAttributes* audioAttributes,
             [in] Int32 audioSessionId,
-            [out] IMediaPlayer ** result);
+            [out] IMediaPlayer** result);
 
         /**
          * @param reply Parcel with audio/video duration info for battery
@@ -1840,9 +1839,8 @@ module
          * {@hide}
          */
         NativePullBatteryData(
-            [in] IParcel * reply,
-            [out] Int32 * result);
-
+            [in] IParcel* reply,
+            [out] Int32* result);
     }
 
     } // namespace media

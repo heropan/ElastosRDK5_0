@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Media_CMediaCryptoHelper.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Utility::IUUID;
 
@@ -12,8 +13,14 @@ namespace Droid {
 namespace Media {
 
 CarClass(CMediaCryptoHelper)
+    , public Singleton
+    , public IMediaCryptoHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Query if the given scheme identified by its UUID is supported on
      * this device.

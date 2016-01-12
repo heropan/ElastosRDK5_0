@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 
+CAR_INTERFACE_IMPL(CMediaRecorderHelper, Singleton, IMediaRecorderHelper)
+
+CAR_SINGLETON_IMPL(CMediaRecorderHelper)
+
 ECode CMediaRecorderHelper::GetAudioSourceMax(
     /* [out] */ Int32* result)
 {

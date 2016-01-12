@@ -2,10 +2,10 @@
 module
 {
     interface Elastos.Droid.Bluetooth.IBluetoothDevice;
-    interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Content.IComponentName;
-    interface Elastos.Droid.Media.IIVolumeController;
     interface Elastos.Droid.Media.AudioPolicy.IAudioPolicyConfig;
+    interface Elastos.Droid.Media.IIVolumeController;
+    interface Elastos.Droid.Os.IBinder;
 
     namespace Elastos {
     namespace Droid {
@@ -46,50 +46,50 @@ module
         SetStreamSolo(
             [in] Int32 streamType,
             [in] Boolean state,
-            [in] IBinder * cb);
+            [in] IBinder* cb);
 
         SetStreamMute(
             [in] Int32 streamType,
             [in] Boolean state,
-            [in] IBinder * cb);
+            [in] IBinder* cb);
 
         IsStreamMute(
             [in] Int32 streamType,
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         ForceRemoteSubmixFullVolume(
             [in] Boolean startForcing,
-            [in] IBinder * cb);
+            [in] IBinder* cb);
 
         SetMasterMute(
             [in] Boolean state,
             [in] Int32 flags,
             [in] String callingPackage,
-            [in] IBinder * cb);
+            [in] IBinder* cb);
 
         IsMasterMute(
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         GetStreamVolume(
             [in] Int32 streamType,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         GetMasterVolume(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         GetStreamMaxVolume(
             [in] Int32 streamType,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         GetMasterMaxVolume(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         GetLastAudibleStreamVolume(
             [in] Int32 streamType,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         GetLastAudibleMasterVolume(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         SetMicrophoneMute(
             [in] Boolean on,
@@ -100,7 +100,7 @@ module
             [in] Boolean checkZen);
 
         GetRingerMode(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         SetVibrateSetting(
             [in] Int32 vibrateType,
@@ -108,18 +108,18 @@ module
 
         GetVibrateSetting(
             [in] Int32 vibrateType,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         ShouldVibrate(
             [in] Int32 vibrateType,
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         SetMode(
             [in] Int32 mode,
-            [in] IBinder * cb);
+            [in] IBinder* cb);
 
         GetMode(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         [oneway] PlaySoundEffect(
             [in] Int32 effectType);
@@ -129,7 +129,7 @@ module
             [in] Float volume);
 
         LoadSoundEffects(
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         [oneway] UnloadSoundEffects();
 
@@ -143,39 +143,39 @@ module
             [in] Boolean on);
 
         IsSpeakerphoneOn(
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         SetBluetoothScoOn(
             [in] Boolean on);
 
         IsBluetoothScoOn(
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         SetBluetoothA2dpOn(
             [in] Boolean on);
 
         IsBluetoothA2dpOn(
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         RequestAudioFocus(
             [in] Int32 mainStreamType,
             [in] Int32 durationHint,
-            [in] IBinder * cb,
-            [in] IIAudioFocusDispatcher * fd,
+            [in] IBinder* cb,
+            [in] IIAudioFocusDispatcher* fd,
             [in] String clientId,
             [in] String callingPackageName,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         AbandonAudioFocus(
-            [in] IIAudioFocusDispatcher * fd,
+            [in] IIAudioFocusDispatcher* fd,
             [in] String clientId,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         UnregisterAudioFocusClient(
             [in] String clientId);
 
         GetCurrentAudioFocus(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         /**
          * Register an IRemoteControlDisplay.
@@ -190,10 +190,10 @@ module
          *   display doesn't need to receive artwork.
          */
         RegisterRemoteControlDisplay(
-            [in] IIRemoteControlDisplay * rcd,
+            [in] IIRemoteControlDisplay* rcd,
             [in] Int32 w,
             [in] Int32 h,
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         /**
          * Like registerRemoteControlDisplay, but with success being subject to a check on
@@ -202,11 +202,11 @@ module
          *   components.
          */
         RegisterRemoteController(
-            [in] IIRemoteControlDisplay * rcd,
+            [in] IIRemoteControlDisplay* rcd,
             [in] Int32 w,
             [in] Int32 h,
-            [in] IComponentName * listenerComp,
-            [out] Boolean * result);
+            [in] IComponentName* listenerComp,
+            [out] Boolean* result);
 
         /**
          * Unregister an IRemoteControlDisplay.
@@ -214,7 +214,7 @@ module
          * @param rcd the IRemoteControlDisplay to unregister. No effect if null.
          */
         [oneway] UnregisterRemoteControlDisplay(
-            [in] IIRemoteControlDisplay * rcd);
+            [in] IIRemoteControlDisplay* rcd);
         /**
          * Update the size of the artwork used by an IRemoteControlDisplay.
          * @param rcd the IRemoteControlDisplay with the new artwork size requirement
@@ -224,7 +224,7 @@ module
          *   display doesn't need to receive artwork.
          */
         [oneway] RemoteControlDisplayUsesBitmapSize(
-            [in] IIRemoteControlDisplay * rcd,
+            [in] IIRemoteControlDisplay* rcd,
             [in] Int32 w,
             [in] Int32 h);
         /**
@@ -240,31 +240,31 @@ module
          *     detected.
          */
         [oneway] RemoteControlDisplayWantsPlaybackPositionSync(
-            [in] IIRemoteControlDisplay * rcd,
+            [in] IIRemoteControlDisplay* rcd,
             [in] Boolean wantsSync);
 
         StartBluetoothSco(
-            [in] IBinder * cb,
+            [in] IBinder* cb,
             [in] Int32 targetSdkVersion);
 
         StartBluetoothScoVirtualCall(
-            [in] IBinder * cb);
+            [in] IBinder* cb);
 
         StopBluetoothSco(
-            [in] IBinder * cb);
+            [in] IBinder* cb);
 
         ForceVolumeControlStream(
             [in] Int32 streamType,
-            [in] IBinder * cb);
+            [in] IBinder* cb);
 
         SetRingtonePlayer(
-            [in] IIRingtonePlayer * player);
+            [in] IIRingtonePlayer* player);
 
         GetRingtonePlayer(
-            [out] IIRingtonePlayer ** result);
+            [out] IIRingtonePlayer** result);
 
         GetMasterStreamType(
-            [out] Int32 * result);
+            [out] Int32* result);
 
         SetWiredDeviceConnectionState(
             [in] Int32 device,
@@ -272,45 +272,45 @@ module
             [in] String name);
 
         SetBluetoothA2dpDeviceConnectionState(
-            [in] IBluetoothDevice * device,
+            [in] IBluetoothDevice* device,
             [in] Int32 state,
             [in] Int32 profile,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         StartWatchingRoutes(
-            [in] IIAudioRoutesObserver * observer,
-            [out] IAudioRoutesInfo ** result);
+            [in] IIAudioRoutesObserver* observer,
+            [out] IAudioRoutesInfo** result);
 
         IsCameraSoundForced(
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         SetVolumeController(
-            [in] IIVolumeController * controller);
+            [in] IIVolumeController* controller);
 
         NotifyVolumeControllerVisible(
-            [in] IIVolumeController * controller,
+            [in] IIVolumeController* controller,
             [in] Boolean visible);
 
         IsStreamAffectedByRingerMode(
             [in] Int32 streamType,
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         DisableSafeMediaVolume();
 
         SetHdmiSystemAudioSupported(
             [in] Boolean on,
-            [out] Int32 * result);
+            [out] Int32* result);
 
         IsHdmiSystemAudioSupported(
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         RegisterAudioPolicy(
-            [in] IAudioPolicyConfig * policyConfig,
-            [in] IBinder * cb,
-            [out] Boolean * result);
+            [in] IAudioPolicyConfig* policyConfig,
+            [in] IBinder* cb,
+            [out] Boolean* result);
 
         [oneway] UnregisterAudioPolicyAsync(
-            [in] IBinder * cb);
+            [in] IBinder* cb);
 
     }
 

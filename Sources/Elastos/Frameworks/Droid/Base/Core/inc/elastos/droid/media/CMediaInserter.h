@@ -2,34 +2,40 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIAINSERTER_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIAINSERTER_H__
 
+#include "Elastos.Droid.Net.h"
+#include <Elastos.CoreLibrary.Utility.h>
 #include "_Elastos_Droid_Media_CMediaInserter.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/List.h>
-#include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/Object.h>
 
-using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Content::IIContentProvider;
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::Etl::List;
+using Elastos::Droid::Net::IUri;
+using Elastos::Utility::IHashMap;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
 
 CarClass(CMediaInserter)
+    , public Object
+    , public IMediaInserter
 {
 public:
     CMediaInserter();
 
-    ~CMediaInserter();
+    virtual ~CMediaInserter();
 
-    CARAPI Init(
-        /* [in] */ IIContentProvider* provider,
-        /* [in] */ Int32 bufferSizePerUri);
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor();
 
     CARAPI constructor(
         /* [in] */ IIContentProvider* provider,
+        /* [in] */ const String& packageName,
         /* [in] */ Int32 bufferSizePerUri);
 
     CARAPI Insert(
@@ -52,18 +58,20 @@ private:
 
     CARAPI Flush(
         /* [in] */ IUri* tableUri,
-        /* [in] */ List< AutoPtr<IContentValues> >* list);
+        /* [in] */ IList* list);
 
 private:
-    typedef List< AutoPtr<IContentValues> > ContentValuesList;
-    typedef typename ContentValuesList::Iterator ContentValuesListIterator;
-    typedef HashMap<AutoPtr<IUri>, AutoPtr<ContentValuesList> > UriContentValuesMap;
-    typedef typename UriContentValuesMap::Iterator UriContentValuesMapIterator;
-    UriContentValuesMap mRowMap;
-    UriContentValuesMap mPriorityRowMap;
+    // typedef List< AutoPtr<IContentValues> > ContentValuesList;
+    // typedef typename ContentValuesList::Iterator ContentValuesListIterator;
+    // typedef HashMap<AutoPtr<IUri>, AutoPtr<ContentValuesList> > UriContentValuesMap;
+    // typedef typename UriContentValuesMap::Iterator UriContentValuesMapIterator;
+    // UriContentValuesMap mRowMap;
+    // UriContentValuesMap mPriorityRowMap;
+    AutoPtr<IHashMap> mRowMap;
+    AutoPtr<IHashMap> mPriorityRowMap;
 
     AutoPtr<IIContentProvider> mProvider;
-
+    String mPackageName;
     Int32 mBufferSizePerUri;
 };
 

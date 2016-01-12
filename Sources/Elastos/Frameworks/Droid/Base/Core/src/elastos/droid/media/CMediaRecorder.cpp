@@ -1,62 +1,39 @@
-
+#include "elastos/droid/app/CActivityThread.h"
+#include "elastos/droid/hardware/CHardwareCamera.h"
 #include "elastos/droid/media/CMediaRecorder.h"
 #include "elastos/droid/media/CCamcorderProfile.h"
+#include "elastos/droid/os/Environment.h"
 #include "elastos/droid/os/Looper.h"
 #include "elastos/droid/os/Process.h"
-#include "elastos/droid/os/Environment.h"
 #include "elastos/droid/os/ServiceManager.h"
-#include "elastos/droid/hardware/CHardwareCamera.h"
-#include "elastos/droid/privacy/CPrivacySettingsManager.h"
-#include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>
-#include <gui/Surface.h>
-#include <hardware/camera.h>
+#include <elastos/utility/logging/Logger.h>
 #include <camera/Camera.h>
 #include <camera/ICameraService.h>
+#include <gui/Surface.h>
+#include <hardware/camera.h>
 #include <media/mediarecorder.h>
 
-
+using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Hardware::CHardwareCamera;
-using Elastos::Droid::Os::Looper;
-using Elastos::Droid::Os::ILooperHelper;
 using Elastos::Droid::Os::Environment;
+using Elastos::Droid::Os::ILooperHelper;
+using Elastos::Droid::Os::Looper;
 using Elastos::Droid::Os::Process;
 using Elastos::Droid::Os::ServiceManager;
-using Elastos::Droid::Content::Pm::IPackageManager;
-using Elastos::Droid::Privacy::IPrivacySettings;
-using Elastos::Droid::Privacy::CPrivacySettingsManager;
-using Elastos::Droid::Privacy::IIPrivacySettingsManager;
-using Elastos::Utility::Logging::Logger;
-using Elastos::IO::IFlushable;
-using Elastos::IO::ICloseable;
-using Elastos::IO::IFileWriter;
-using Elastos::IO::CFileWriter;
-using Elastos::IO::IFileOutputStream;
-using Elastos::IO::CFileOutputStream;
-using Elastos::IO::IFile;
 using Elastos::IO::CFile;
-using Elastos::Core::IRandom;
-using Elastos::Utility::CRandom;
+using Elastos::IO::CRandomAccessFile;
+using Elastos::IO::ICloseable;
+using Elastos::IO::IFile;
+using Elastos::IO::IRandomAccessFile;
 using Elastos::Core::StringBuilder;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
 
 const String CMediaRecorder::TAG("CMediaRecorder");
-const String CMediaRecorder::PRIVACY_PATH_DEF("/data/data/");
-const String CMediaRecorder::PRIVACY_TAG("PM,MediaRecorder");
-
-const Int32 CMediaRecorder::STATE_RECORD_AUDIO = 0;
-const Int32 CMediaRecorder::STATE_RECORD_BOTH = 1;
-const Int32 CMediaRecorder::MODE_RECORD_AUDIO = 2;
-const Int32 CMediaRecorder::MODE_RECORD_BOTH = 3;
-const Int32 CMediaRecorder::IS_ALLOWED = -1;
-const Int32 CMediaRecorder::IS_NOT_ALLOWED = -2;
-const Int32 CMediaRecorder::GOT_ERROR = -3;
-
-const Int32 CMediaRecorder::MIC_DATA_ACCESS = 10;
-const Int32 CMediaRecorder::BOTH_DATA_ACCESS = 11;
 
 static Object sLock;
 
@@ -124,17 +101,16 @@ static android::sp<android::MediaRecorder> setMediaRecorder(
     if (old != 0) {
         old->decStrong(thiz);
     }
-    thiz->mNativeContext = (Int32)recorder.get();
+    thiz->mNativeContext = (Int64)recorder.get();
     return old;
 }
 
 static android::sp<android::Surface> get_surface(ISurface* clazz)
 {
     //ALOGV("get_surface");
-    Handle32 surface;
-    clazz->GetSurface(&surface);
-    android::Surface* const p = (android::Surface*)surface;
-    return android::sp<android::Surface>(p);
+// TODO: Need jni code
+    // return android_view_Surface_getSurface(env, clazz);
+    return NOERROR;
 }
 
 static android::sp<android::Camera> get_native_camera(
@@ -150,20 +126,20 @@ static android::sp<android::Camera> get_native_camera(
 //              CMediaRecorder::EventHandler
 //================================================================================
 
-const Int32 CMediaRecorder::EventHandler::MEDIA_RECORDER_EVENT_LIST_START =  1;
-const Int32 CMediaRecorder::EventHandler::MEDIA_RECORDER_EVENT_ERROR =  1;
-const Int32 CMediaRecorder::EventHandler::MEDIA_RECORDER_EVENT_INFO =  2;
-const Int32 CMediaRecorder::EventHandler::MEDIA_RECORDER_EVENT_LIST_END   =  99;
+const Int32 CMediaRecorder::EventHandler::MEDIA_RECORDER_EVENT_LIST_START = 1;
+const Int32 CMediaRecorder::EventHandler::MEDIA_RECORDER_EVENT_ERROR      = 1;
+const Int32 CMediaRecorder::EventHandler::MEDIA_RECORDER_EVENT_INFO       = 2;
+const Int32 CMediaRecorder::EventHandler::MEDIA_RECORDER_EVENT_LIST_END   = 99;
 
-const Int32 CMediaRecorder::EventHandler::MEDIA_RECORDER_TRACK_EVENT_LIST_START =  100;
-const Int32 CMediaRecorder::EventHandler::MEDIA_RECORDER_TRACK_EVENT_ERROR      =  100;
-const Int32 CMediaRecorder::EventHandler::MEDIA_RECORDER_TRACK_EVENT_INFO       =  101;
-const Int32 CMediaRecorder::EventHandler::MEDIA_RECORDER_TRACK_EVENT_LIST_END   =  1000;
+const Int32 CMediaRecorder::EventHandler::MEDIA_RECORDER_TRACK_EVENT_LIST_START = 100;
+const Int32 CMediaRecorder::EventHandler::MEDIA_RECORDER_TRACK_EVENT_ERROR      = 100;
+const Int32 CMediaRecorder::EventHandler::MEDIA_RECORDER_TRACK_EVENT_INFO       = 101;
+const Int32 CMediaRecorder::EventHandler::MEDIA_RECORDER_TRACK_EVENT_LIST_END   = 1000;
 
 CMediaRecorder::EventHandler::EventHandler(
     /* [in] */ CMediaRecorder* host,
     /* [in] */ ILooper* looper)
-    : HandlerBase(looper)
+    : Handler(looper)
     , mMediaRecorder(host)
 {
 }
@@ -206,83 +182,19 @@ ECode CMediaRecorder::EventHandler::HandleMessage(
 }
 
 //================================================================================
-//              CMediaRecorder::PrivacyRunner
-//================================================================================
-
-CMediaRecorder::PrivacyRunner::PrivacyRunner(
-    /* [in] */ CMediaRecorder* owner)
-    : mMediaRecorder(owner)
-{
-}
-
-ECode CMediaRecorder::PrivacyRunner::Run()
-{
-    // try{
-        Thread::Sleep(mDelay);
-        //now we're going to stop stream
-        mMediaRecorder->PrivacyStop();
-        if (!mMediaRecorder->mPath.IsNull()){
-            AutoPtr<IFile> tmp;
-            CFile::New(mMediaRecorder->mPath, (IFile**)&tmp);
-            Boolean bval;
-            tmp->Delete(&bval);
-            if (bval) mMediaRecorder->mDeletedFile = TRUE;
-        }
-        else if (mMediaRecorder->mFileDescriptor != NULL
-            && !mMediaRecorder->mFileDescriptorPath.IsNull()) {
-            AutoPtr<IFile> tmp;
-            CFile::New(mMediaRecorder->mFileDescriptorPath, (IFile**)&tmp);
-            Boolean bval;
-            tmp->Delete(&bval);
-            if (bval) mMediaRecorder->mDeletedFile = TRUE;
-        }
-        else {
-            Logger::E(CMediaRecorder::PRIVACY_TAG, "Can't delete temporary File, because all is null?! It could be that we only want to record audio?!");
-            mMediaRecorder->mDeletedFile = FALSE;
-        }
-    // }
-    // catch(Exception e){
-    //     Log.e(PRIVACY_TAG,"Something went wrong while waiting for cancel the stream!");
-    //     e.printStackTrace();
-    // }
-    // finally{
-        mMediaRecorder->PrivacyStop();
-    // }
-    return NOERROR;
-}
-
-//================================================================================
 //              CMediaRecorder
 //================================================================================
+
+CAR_INTERFACE_IMPL(CMediaRecorder, Object, IMediaRecorder)
+
+CAR_OBJECT_IMPL(CMediaRecorder)
+
 CMediaRecorder::CMediaRecorder()
     : mNativeContext(0)
-    , mDeletedFile(FALSE)
-    , mPrivacyMode(FALSE)
-    , mStoppedStream(FALSE)
-    , ACTUAL_STATE(STATE_RECORD_AUDIO)
 {}
 
 CMediaRecorder::~CMediaRecorder()
 {
-    if (!mDeletedFile){
-        if(mPath != NULL){
-            AutoPtr< IFile > tmp;
-            CFile::New(mPath,(IFile**)&tmp);
-            Boolean t;
-            if(tmp->Delete(&t))
-                mDeletedFile = TRUE;
-        } else if(mFileDescriptor != NULL && mFileDescriptorPath != NULL){
-            AutoPtr< IFile > tmp;
-            CFile::New(mFileDescriptorPath,(IFile**)&tmp);
-            Boolean t;
-            if(tmp->Delete(&t))
-                mDeletedFile = TRUE;
-        } else{
-            // Log.e(PRIVACY_TAG,"Can't delete temporary File, because all is NULL?! It could be that we only want to record audio?!");
-            mDeletedFile = FALSE;
-        }
-    }
-
     NativeFinalize();
 }
 
@@ -299,18 +211,12 @@ ECode CMediaRecorder::constructor()
         mEventHandler = NULL;
     }
 
-    ////////////////////////////////////////////////////////////////////////
-    //BEGIN PRIVACY
-
-    FAIL_RETURN(Initiate());
-
-    //END PRIVACY
-    ///////////////////////////////////////////////////////////////////////
+     String packageName = Elastos::Droid::App::CActivityThread::GetCurrentPackageName();
 
     /* Native setup requires a weak reference to our object.
      * It's easier to create it here than in C++.
      */
-    return NativeSetup();
+    return NativeSetup(packageName);
 }
 
 ECode CMediaRecorder::SetCamera(
@@ -323,6 +229,10 @@ ECode CMediaRecorder::SetCamera(
     }
 
     android::sp<android::Camera> c = get_native_camera(camera, NULL);
+    if (c == NULL) {
+        // get_native_camera will throw an exception in this case
+        return NOERROR;
+    }
     android::sp<android::MediaRecorder> mr = getMediaRecorder(this);
 
     return process_media_recorder_call(
@@ -330,377 +240,36 @@ ECode CMediaRecorder::SetCamera(
         E_RUNTIME_EXCEPTION, "setCamera failed.");
 }
 
+ECode CMediaRecorder::GetSurface(
+    /* [out] */ ISurface** result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
+    ALOGV("getSurface");
+    android::sp<android::MediaRecorder> mr = getMediaRecorder(this);
+
+    android::sp<android::IGraphicBufferProducer> bufferProducer = mr->querySurfaceMediaSourceFromMediaServer();
+    if (bufferProducer == NULL) {
+        // jniThrowException(
+        //         env,
+        //         "java/lang/IllegalStateException",
+        //         "failed to get surface");
+        return E_ILLEGAL_STATE_EXCEPTION;
+    }
+
+    // Wrap the IGBP in a Java-language Surface.
+// TODO: Need jni code
+    // return android_view_Surface_createFromIGraphicBufferProducer(env, bufferProducer);
+    return NOERROR;
+}
+
 ECode CMediaRecorder::SetPreviewDisplay(
     /* [in] */ ISurface* sv)
 {
-    //////////////////////////////////////////////////////////
-    //BEGIN PRIVACY
-    ACTUAL_STATE = STATE_RECORD_BOTH;
-    //END PRIVACY
-    //////////////////////////////////////////////////////////
-
     mSurface = sv;
     return NOERROR;
 }
-
-//////////////////////////////////////////////////////////
-//BEGIN PRIVACY
-
-ECode CMediaRecorder::PrivacyStop()
-{
-    // try{
-    ECode ec = Stop();
-    if (FAILED(ec)) {
-        Logger::E(PRIVACY_TAG, "Got exception while trying to call privacyStop()");
-    }
-    return ec;
-}
-
-ECode CMediaRecorder::MakePrivacyPath(
-    /* [in] */ const String& path)
-{
-    // try{
-    AutoPtr<IFileWriter> fWriter;
-    AutoPtr<IFile> deleteMe;
-    Boolean isDeleted;
-
-    ECode ec = CFileWriter::New(path, (IFileWriter**)&fWriter);
-    FAIL_GOTO(ec, _EXIT_)
-
-    ec = fWriter->WriteString( String("test") );
-    FAIL_GOTO(ec, _EXIT_)
-
-    ec = IFlushable::Probe(fWriter.Get())->Flush();
-    FAIL_GOTO(ec, _EXIT_)
-    ec = ICloseable::Probe(fWriter.Get())->Close();
-    FAIL_GOTO(ec, _EXIT_)
-
-    ec = CFile::New(path, (IFile**)&deleteMe);
-    FAIL_GOTO(ec, _EXIT_)
-
-    ec = deleteMe->Delete(&isDeleted);
-    FAIL_GOTO(ec, _EXIT_)
-
-    Logger::I(PRIVACY_TAG, "found our package with internal path. File: %s", path.string());
-
-_EXIT_:
-    fWriter = NULL;
-    deleteMe = NULL;
-    return ec;
-    // } catch(Exception e){
-        //we're not allowed to write in this directory -> this is not our package!
-    // } finally{
-        // fWriter = NULL;
-        // deleteMe = NULL;
-        // System.gc();
-    // }
-}
-
-String CMediaRecorder::GetPrivacyPath()
-{
-    AutoPtr< ArrayOf<String> > packages = GetPackageName();
-    AutoPtr <IRandom> value;
-    CRandom::New((IRandom**)&value);
-    String currentPath, currentPackage, data_name;
-    Int64 temp;
-    value->NextInt64(&temp);
-
-    StringBuilder sb(32);
-    sb.Append(temp);
-    sb.Append(".tmp");
-    sb.ToString(&data_name);
-
-    ECode ec = NOERROR;
-    Boolean succeeded;
-    String path;
-
-    for (Int32 i = 0; i < packages->GetLength(); i++){
-        currentPackage = (*packages)[i];
-
-        //first check if cache folder exist
-        StringBuilder sb1(32);
-        sb1.AppendString(PRIVACY_PATH_DEF);
-        sb1.AppendString(currentPackage);
-        sb1.AppendCStr("/cache/");
-        sb1.ToString(&path);
-
-        AutoPtr<IFile> folder;
-        CFile::New(path,(IFile**)&folder);
-        ec = folder->Mkdirs(&succeeded);
-        if (SUCCEEDED(ec) && succeeded) {
-            sb1.AppendString(data_name);
-            sb1.ToString(&path);
-
-            ec = MakePrivacyPath(path);
-            if (SUCCEEDED(ec)) {
-                //all is fine, break now and save our current package name!
-                currentPath = path;
-                break;
-            }
-        }
-    }
-
-    if (!currentPath.IsNull()){
-        Logger::I(PRIVACY_TAG, "returned file: %s for package: %s with internal path. Path: %s/",
-            data_name.string(), currentPackage.string(), currentPath.string());
-        return currentPath;
-    }
-    else { //last chance, try to write to SD-Card
-        String sdPath;
-        AutoPtr<IFile> t = Environment::GetExternalStorageDirectory();
-        t->GetAbsolutePath(&sdPath);
-
-        StringBuilder sb(32);
-        sb.Append(sdPath);
-        sb.Append("/");
-        sb.Append(data_name);
-        sb.ToString(&currentPath);
-
-        ec = MakePrivacyPath(currentPath);
-        if (SUCCEEDED(ec)) {
-            Logger::I(PRIVACY_TAG, "Return filePath:  %s. It is on SDCard!", currentPath.string());
-
-            return currentPath;
-        }
-    }
-
-    return String(NULL);
-}
-
-AutoPtr< IFileDescriptor > CMediaRecorder::GetPrivacyFileDescriptor()
-{
-    AutoPtr< ArrayOf<String> > packages = GetPackageName();
-    AutoPtr <IRandom> value;
-    CRandom::New((IRandom**)&value);
-    String currentPath, currentPackage, data_name;
-    Int64 temp;
-    StringBuilder sb(32);
-    value->NextInt64(&temp);
-    sb.Append(temp);
-    sb.Append( ".tmp" );
-    sb.ToString(&data_name);
-
-    ECode ec = NOERROR;
-    Boolean succeeded;
-    String path;
-
-    for (Int32 i = 0 ; i < packages->GetLength() ; i++){
-        currentPackage = (*packages)[i];
-
-        //first check if cache folder exist
-        StringBuilder sb1(32);
-        sb1.AppendString(PRIVACY_PATH_DEF);
-        sb1.AppendString(currentPackage);
-        sb1.AppendCStr("/cache/");
-        sb1.ToString(&path);
-
-        AutoPtr<IFile> folder;
-        CFile::New(path, (IFile**)&folder);
-        ec = folder->Mkdirs(&succeeded);
-        if (SUCCEEDED(ec) && succeeded) {
-            sb1.AppendString(data_name);
-            sb1.ToString(&path);
-
-            ec = MakePrivacyPath(path);
-            if (SUCCEEDED(ec)) {
-                //all is fine, break now and save our current package name!
-                currentPath = path;
-                break;
-            }
-        }
-    }
-
-    Boolean isSDCard = FALSE;
-    if (currentPath.IsNull()) {
-        //last chance, try to write to SD-Card
-        String sdPath;
-        AutoPtr<IFile> t = Environment::GetExternalStorageDirectory();
-        t->GetAbsolutePath(&sdPath);
-
-        StringBuilder sb(32);
-        sb.Append(sdPath);
-        sb.Append("/");
-        sb.Append(data_name);
-        sb.ToString(&path);
-
-        ec = MakePrivacyPath(path);
-        if (SUCCEEDED(ec)) {
-            isSDCard = TRUE;
-            Logger::I(PRIVACY_TAG, "Return filePath:  %s. It is on SDCard!", path.string());
-            currentPath = path;
-        }
-    }
-
-    if (!currentPath.IsNull()){
-        AutoPtr<IFileOutputStream> fos;
-        CFileOutputStream::New(currentPath, (IFileOutputStream**)&fos);
-
-        AutoPtr<IFileDescriptor> fD;
-        ec = fos->GetFD((IFileDescriptor**)&fD);
-        if (FAILED(ec)) {
-            Logger::E(PRIVACY_TAG, "Got exception while creating fileDescriptor -> return NULL");
-            return NULL;
-        }
-
-        if (!isSDCard) {
-            Logger::I(PRIVACY_TAG, "returned fileDescriptor for package: %s with internal path. Path: %s",
-                currentPackage.string(), currentPath.string());
-        }
-        else {
-            Logger::I(PRIVACY_TAG, "returned fileDescriptor. Path:  Path: %s",
-                currentPath.string());
-        }
-
-        mFileDescriptorPath = currentPath;
-        return fD;
-    }
-
-    return NULL;
-}
-
-AutoPtr< ArrayOf<String> > CMediaRecorder::GetPackageName()
-{
-    // try{
-    if (mPackageManager == NULL) {
-        AutoPtr<IInterface> tmpObj = ServiceManager::GetService(String("package"));
-        mPackageManager = IIPackageManager::Probe(tmpObj.Get());
-    }
-
-    if (mPackageManager != NULL) {
-        Int32 uid = Process::MyUid();
-        AutoPtr< ArrayOf<String> > package_names;
-        mPackageManager->GetPackagesForUid(uid,(ArrayOf<String>**)&package_names);
-        return package_names;
-    }
-    else {
-        Logger::E(PRIVACY_TAG, "something went wrong with getting package name");
-        return NULL;
-    }
-    // }
-    // catch(Exception e){
-        // e.printStackTrace();
-        // Log.e(PRIVACY_TAG,"something went wrong with getting package name");
-        // return NULL;
-    // }
-}
-
-Int32 CMediaRecorder::CheckIfPackagesAllowed(
-    /* [in] */ Int32 privacySetting)
-{
-    // try{
-    //boolean isAllowed = false;
-    if (mPrivacySettingsManager != NULL) {
-        AutoPtr< IPrivacySettings > pSet;
-        AutoPtr< ArrayOf<String> > package_names = GetPackageName();
-        Int32 uid = Process::MyUid();
-        if (package_names != NULL){
-            switch(privacySetting) {
-                case MODE_RECORD_AUDIO:
-                    for (Int32 i = 0; i < package_names->GetLength(); i++) {
-                        pSet = NULL;
-                        mPrivacySettingsManager->GetSettings(
-                            (*package_names)[i], uid,(IPrivacySettings**)&pSet);
-                        //if pSet is NULL, we allow application to access to mic
-                        if (pSet != NULL) {
-                            Byte t;
-                            pSet->GetRecordAudioSetting(&t);
-                            if (t != IPrivacySettings::REAL) {
-                                return IS_NOT_ALLOWED;
-                            }
-                        }
-                        pSet = NULL;
-                    }
-                    return IS_ALLOWED;
-
-                case MODE_RECORD_BOTH: {
-                    for (Int32 i = 0; i < package_names->GetLength(); i++) {
-                        pSet = NULL;
-                        mPrivacySettingsManager->GetSettings(
-                            (*package_names)[i], uid,(IPrivacySettings**)&pSet);
-                        //if pSet is NULL, we allow application to access to mic
-                        if (pSet != NULL) {
-                            Byte t;
-                            pSet->GetRecordAudioSetting(&t);
-                            if (t != IPrivacySettings::REAL) {
-                                return IS_NOT_ALLOWED;
-                            }
-                        }
-                        pSet = NULL;
-                    }
-                    return IS_ALLOWED;
-                }
-
-                default: return GOT_ERROR;
-            }
-        }
-        else{
-            Logger::E(PRIVACY_TAG, "return GOT_ERROR, because package_names are NULL");
-            return GOT_ERROR;
-        }
-    }
-    else{
-        Logger::E(PRIVACY_TAG, "return GOT_ERROR, because mPrivacySettingsManager is NULL");
-        return GOT_ERROR;
-    }
-    // }
-    // catch (Exception e){
-        // e.printStackTrace();
-        // Log.e(PRIVACY_TAG,"Got exception in checkIfPackagesAllowed");
-        // return GOT_ERROR;
-    // }
-    return GOT_ERROR;
-}
-
-ECode CMediaRecorder::Initiate()
-{
-        context = NULL;
-        AutoPtr<IIPrivacySettingsManager> ps = (IIPrivacySettingsManager*)ServiceManager::GetService(String("privacy")).Get();
-        CPrivacySettingsManager::New(context, ps, (IPrivacySettingsManager**)&mPrivacySettingsManager);
-        mPackageManager = (IIPackageManager*)ServiceManager::GetService(String("package")).Get();
-        mPrivacyMode = TRUE;
-    // }
-    // catch(Exception e){
-    //     e.printStackTrace();
-    //     Log.e(PRIVACY_TAG, "Something went wrong with initalize variables");
-    //     privacyMode = false;
-    // }
-
-    return NOERROR;
-}
-
-void CMediaRecorder::DataAccess(
-    /* [in] */ Boolean success,
-    /* [in] */ Int32 micOrBoth)
-{
-    AutoPtr< ArrayOf<String> > package_names = GetPackageName();
-    if (success && package_names != NULL){
-        switch(micOrBoth){
-        case MIC_DATA_ACCESS:
-            for (Int32 i = 0; i < package_names->GetLength(); i++)
-                Logger::I(PRIVACY_TAG, "Allowed Package: -%s- accessing microphone.", (*package_names)[i].string());
-            break;
-        case BOTH_DATA_ACCESS:
-            for (Int32 i=0; i < package_names->GetLength(); i++)
-                Logger::I(PRIVACY_TAG, "Allowed Package: -%s- accessing microphone and camera.", (*package_names)[i].string());
-            break;
-        }
-    }
-    else if (package_names != NULL){
-        switch(micOrBoth){
-        case MIC_DATA_ACCESS:
-            for (Int32 i = 0; i < package_names->GetLength(); i++)
-                Logger::I(PRIVACY_TAG, "Blocked Package: -%s- accessing microphone.", (*package_names)[i].string());
-            break;
-
-        case BOTH_DATA_ACCESS:
-            for (Int32 i = 0; i < package_names->GetLength(); i++)
-                Logger::I(PRIVACY_TAG, "Blocked Package: -%s- accessing microphone and camera.", (*package_names)[i].string());
-            break;
-        }
-    }
-}
-//END PRIVACY
-//////////////////////////////////////////////////////////
 
 ECode CMediaRecorder::SetAudioSource(
     /* [in] */ Int32 audio_source)
@@ -724,7 +293,7 @@ ECode CMediaRecorder::GetAudioSourceMax(
 
     // FIXME disable selection of the remote submxi source selection once test code
     //       doesn't rely on it
-    *result = IAudioSource::REMOTE_SUBMIX_SOURCE;
+    *result = IMediaRecorderAudioSource::REMOTE_SUBMIX;
     //return IAudioSource::VOICE_COMMUNICATION;
     return NOERROR;
 }
@@ -750,12 +319,6 @@ ECode CMediaRecorder::SetProfile(
     Int32 fileFormat;
     Int32 videoFrameRate, videoFrameWidth, videoFrameHeight;
     Int32 videoBitRate, videoCodec;
-
-    //////////////////////////////////////////////////////////
-    //BEGIN PRIVACY
-    ACTUAL_STATE = STATE_RECORD_BOTH;
-    //END PRIVACY
-    //////////////////////////////////////////////////////////
 
     profile->GetFileFormat(&fileFormat);
     profile->GetVideoFrameRate(&videoFrameRate);
@@ -796,19 +359,13 @@ ECode CMediaRecorder::SetProfile(
 ECode CMediaRecorder::SetCaptureRate(
     /* [in] */ Double fps)
 {
-    //////////////////////////////////////////////////////////
-    //BEGIN PRIVACY
-    ACTUAL_STATE = STATE_RECORD_BOTH;
-    //END PRIVACY
-    //////////////////////////////////////////////////////////
-
     // Make sure that time lapse is enabled when this method is called.
     SetParameter("time-lapse-enable=1");
 
     Double timeBetweenFrameCapture = 1 / fps;
-    Int32 timeBetweenFrameCaptureMs = (Int32) (1000 * timeBetweenFrameCapture);
+    Int64 timeBetweenFrameCaptureUs = (Int64) (1000000 * timeBetweenFrameCapture);
     StringBuilder sb("time-between-time-lapse-frame-capture=");
-    sb.Append(timeBetweenFrameCaptureMs);
+    sb.Append(timeBetweenFrameCaptureUs);
     return SetParameter(sb.ToString().string());
 }
 
@@ -988,12 +545,6 @@ ECode CMediaRecorder::SetAudioEncodingBitRate(
 ECode CMediaRecorder::SetVideoEncodingBitRate(
     /* [in] */ Int32 bitRate)
 {
-    //////////////////////////////////////////////////////////
-    //BEGIN PRIVACY
-    ACTUAL_STATE = STATE_RECORD_BOTH;
-    //END PRIVACY
-    //////////////////////////////////////////////////////////
-
     if (bitRate <= 0) {
         Logger::E(TAG, "Video encoding bit rate is not positive");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -1022,17 +573,15 @@ ECode CMediaRecorder::SetOutputFile(
     /* [in] */ IFileDescriptor* fd)
 {
     mPath = NULL;
-    mFileDescriptor = fd;
-    mDeletedFile = FALSE;
+    mFd = fd;
     return NOERROR;
 }
 
 ECode CMediaRecorder::SetOutputFile(
     /* [in] */ const String& path)
 {
-    mFileDescriptor = NULL;
+    mFd = NULL;
     mPath = path;
-    mDeletedFile = FALSE;
     return NOERROR;
 }
 
@@ -1069,8 +618,8 @@ ECode CMediaRecorder::NativePrepare()
             return E_IO_EXCEPTION;
         }
 
-        Logger::I(TAG, "prepare: surface=%p (identity=%d)", native_surface.get(), native_surface->getIdentity());
-        ECode ec = process_media_recorder_call(mr->setPreviewSurface(native_surface),
+        Logger::I(TAG, "prepare: surface=%p ", native_surface.get());
+        ECode ec = process_media_recorder_call(mr->setPreviewSurface(native_surface->getIGraphicBufferProducer()),
             E_RUNTIME_EXCEPTION, "setPreviewSurface failed.");
         if (SUCCEEDED(ec)) return NOERROR;
     }
@@ -1081,127 +630,27 @@ ECode CMediaRecorder::NativePrepare()
 
 ECode CMediaRecorder::Prepare()
 {
-    ECode ec = NOERROR;
-
-    //////////////////////////////////////////////////////////
-    //BEGIN PRIVACY
-    if(!mPrivacyMode){
-        Initiate();
-    }
-
-    mDeletedFile = FALSE;
-    Boolean skip = FALSE;
-    String nullStr;
-
-    switch (ACTUAL_STATE) {
-        case STATE_RECORD_AUDIO:
-            if (CheckIfPackagesAllowed(MODE_RECORD_AUDIO) == IS_NOT_ALLOWED
-            /* || checkIfPackagesAllowed(MODE_RECORD_BOTH) == IS_NOT_ALLOWED*/) {
-                AutoPtr<ArrayOf<String> > x = GetPackageName();
-                if(x != NULL && x->GetLength() > 0)
-                    mPrivacySettingsManager->Notification(
-                        (*x)[0], 0, IPrivacySettings::EMPTY,
-                        IPrivacySettings::DATA_RECORD_AUDIO, nullStr, NULL);
-
-                mRunner = new PrivacyRunner(this);
-                //here wo do not need to exchange the path or filedescriptor, because we can interrupt very quick!
-                mRunner->SetDelay(50); // try very low value
-                mRunner->Start();
-                skip = TRUE;
-//              if(x != NULL) Log.i(PRIVACY_TAG,"now throw exception in prepare method for package: " + x[0]);
-//              else Log.i(PRIVACY_TAG,"now throw exception in prepare method");
-//              if(ACTUAL_STATE == STATE_RECORD_BOTH){
-//                  dataAccess(false, BOTH_DATA_ACCESS);
-//                  if(x != NULL)
-//                      mPrivacySettingsManager.notification(x[0], 0, PrivacySettings.EMPTY, PrivacySettings.DATA_CAMERA, NULL, mPrivacySettingsManager.getSettings(x[0], Process.myUid()));
-//              }
-//              else{
-//                  dataAccess(false, MIC_DATA_ACCESS);
-//                  if(x != NULL)
-//                      mPrivacySettingsManager.notification(x[0], 0, PrivacySettings.EMPTY, PrivacySettings.DATA_RECORD_AUDIO, NULL, mPrivacySettingsManager.getSettings(x[0], Process.myUid()));
-//                  //now test something, because a lot of applications crashes if we throw illegalstateException. We intercept now when applications wants to record audio!
-//                  //skip = true;
-//                  //break;
-//              }
-//              throw new IllegalStateException(); //now throw exception to prevent recording
-            }
-            break;
-
-        case STATE_RECORD_BOTH:
-            if (CheckIfPackagesAllowed(MODE_RECORD_BOTH) == IS_NOT_ALLOWED){
-                AutoPtr<ArrayOf<String> > x = GetPackageName();
-                if(x != NULL && x->GetLength() > 0)
-                    mPrivacySettingsManager->Notification(
-                        (*x)[0], 0, IPrivacySettings::EMPTY,
-                        IPrivacySettings::DATA_CAMERA, nullStr, NULL);
-
-                if (mPath != NULL){
-                    //now overwrite path
-                    mPath = GetPrivacyPath();
-                }
-                else if (mFileDescriptor != NULL){
-                    //now overwrite fileDescriptor
-                    mFileDescriptor = GetPrivacyFileDescriptor();
-                }
-                else {
-                    //no chance to get it, throw exception
-                    Logger::E(TAG, "No valid output file");
-                    return E_IO_EXCEPTION;
-                }
-
-                mRunner = new PrivacyRunner(this);
-                //we use default time for video record
-                mRunner->Start();
-                skip = TRUE;
-
-            }
-            break;
-     }
-    //END PRIVACY
-    //////////////////////////////////////////////////////////
-    AutoPtr<ArrayOf<String> > packageName = GetPackageName();
-    if(!skip){
-        if (ACTUAL_STATE == STATE_RECORD_BOTH && packageName != NULL && packageName->GetLength() > 0) {
-            mPrivacySettingsManager->Notification(
-                (*packageName)[0], 0, IPrivacySettings::REAL,
-                IPrivacySettings::DATA_CAMERA, nullStr, NULL);
-        }
-        else if (packageName != NULL && packageName->GetLength() > 0) {
-            mPrivacySettingsManager->Notification(
-                (*packageName)[0], 0, IPrivacySettings::REAL,
-                IPrivacySettings::DATA_RECORD_AUDIO, nullStr, NULL);
-        }
-        mDeletedFile = true;
-    }
-
-
     if (mPath != NULL) {
-        AutoPtr<IFileOutputStream> fos;
-        CFileOutputStream::New(mPath, (IFileOutputStream**)&fos);
-        //try {
-            AutoPtr<IFileDescriptor> fileDescriptor;
-            ec = fos->GetFD((IFileDescriptor**)&fileDescriptor);
-            if (FAILED(ec)) {
-                fos->Close();
-                goto Last;
-            }
-            NativeSetOutputFile(fileDescriptor, 0, 0);
-        //} finally {
-            fos->Close();
-        //}
+        AutoPtr<IRandomAccessFile> file;
+        CRandomAccessFile::New(mPath, String("rws"), (IRandomAccessFile**)&file);
 
+        // try {
+        AutoPtr<IFileDescriptor> fileDescriptor;
+        file->GetFD((IFileDescriptor**)&fileDescriptor);
+        NativeSetOutputFile(fileDescriptor, 0, 0);
+        // } finally {
+        ICloseable::Probe(file)->Close();
+        // }
     }
-    else if (mFileDescriptor != NULL) {
-        NativeSetOutputFile(mFileDescriptor, 0, 0);
+    else if (mFd != NULL) {
+        NativeSetOutputFile(mFd, 0, 0);
     }
     else {
-        //throw new IOException("No valid output file");
+        // throw new IOException("No valid output file");
         return E_IO_EXCEPTION;
     }
 
-Last:
     NativePrepare();
-    return ec;
 }
 
 ECode CMediaRecorder::Start()
@@ -1223,30 +672,6 @@ ECode CMediaRecorder::Stop()
 ECode CMediaRecorder::Reset()
 {
     NativeReset();
-
-    if (!mDeletedFile) {
-        if (!mPath.IsNull()) {
-            AutoPtr< IFile > tmp;
-            CFile::New(mPath,(IFile**)&tmp);
-            Boolean t;
-            tmp->Delete(&t);
-            if (t) mDeletedFile = TRUE;
-        }
-        else if (mFileDescriptor != NULL && mFileDescriptorPath != NULL) {
-            AutoPtr< IFile > tmp;
-            CFile::New(mFileDescriptorPath, (IFile**)&tmp);
-            Boolean t;
-            tmp->Delete(&t);
-            if (t) mDeletedFile = TRUE;
-        }
-        else{
-            Logger::E(PRIVACY_TAG, "Can't delete temporary File, because all is NULL?!"
-                " It could be that we only want to record audio?!");
-            mDeletedFile = FALSE;
-        }
-    }
-
-    mRunner = NULL;
 
     // make sure none of the listeners get called anymore
     mEventHandler->RemoveCallbacksAndMessages(NULL);
@@ -1296,7 +721,8 @@ ECode CMediaRecorder::ReleaseResources()
     return NOERROR;
 }
 
-ECode CMediaRecorder::NativeSetup()
+ECode CMediaRecorder::NativeSetup(
+    /* [in] */ const String& packageName)
 {
     //ALOGV("setup");
     android::sp<android::MediaRecorder> mr = new android::MediaRecorder();
@@ -1315,6 +741,12 @@ ECode CMediaRecorder::NativeSetup()
     GetWeakReference((IWeakReference**)&wr);
     android::sp<JNIMediaRecorderListener> listener = new JNIMediaRecorderListener(wr);
     mr->setListener(listener);
+
+   // Convert client name jstring to String16
+    android::String16 clientName(packageName.string(), packageName.GetLength());
+
+    // pass client package name for permissions tracking
+    mr->setClientName(clientName);
 
     setMediaRecorder(this, mr);
     return NOERROR;

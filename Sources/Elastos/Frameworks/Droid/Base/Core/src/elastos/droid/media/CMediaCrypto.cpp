@@ -1,5 +1,3 @@
-
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/media/CMediaCrypto.h"
 #include "elastos/droid/media/Media_Utils.h"
 #include <elastos/utility/logging/Logger.h>
@@ -13,6 +11,10 @@ using Elastos::Core::ICharSequence;
 namespace Elastos {
 namespace Droid {
 namespace Media {
+
+CAR_INTERFACE_IMPL(CMediaCrypto, Object, IMediaCrypto)
+
+CAR_OBJECT_IMPL(CMediaCrypto)
 
 const String CMediaCrypto::TAG("CMediaCrypto");
 
@@ -162,6 +164,11 @@ CMediaCrypto::CMediaCrypto()
 CMediaCrypto::~CMediaCrypto()
 {
     Finalize();
+}
+
+ECode CMediaCrypto::constructor()
+{
+    return NOERROR;
 }
 
 ECode CMediaCrypto::constructor(

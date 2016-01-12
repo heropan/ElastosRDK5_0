@@ -1,17 +1,29 @@
 
-#ifndef __ELASTOS_DROID_MEDIA_CCRYPTOINFO_H__
-#define __ELASTOS_DROID_MEDIA_CCRYPTOINFO_H__
+#ifndef __ELASTOS_DROID_MEDIA_CMEDIACODECBUFFERINFO_H__
+#define __ELASTOS_DROID_MEDIA_CMEDIACODECBUFFERINFO_H__
 
 #include "_Elastos_Droid_Media_CMediaCodecBufferInfo.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
 
 CarClass(CMediaCodecBufferInfo)
+    , public Object
+    , public IMediaCodecBufferInfo
 {
 public:
     CMediaCodecBufferInfo();
+
+    virtual ~CMediaCodecBufferInfo();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor();
 
     CARAPI Set(
         /* [in] */ Int32 newOffset,
@@ -22,7 +34,7 @@ public:
     CARAPI SetOffset(
         /* [in] */ Int32 offset);
 
-    CARAPI SetNewSize(
+    CARAPI SetSize(
         /* [in] */ Int32 newSize);
 
     CARAPI SetPresentationTimeUs(
@@ -34,7 +46,7 @@ public:
     CARAPI GetOffset(
         /* [out] */ Int32* offset);
 
-    CARAPI GetNewSize(
+    CARAPI GetSize(
         /* [out] */ Int32* newSize);
 
     CARAPI GetPresentationTimeUs(
@@ -50,9 +62,8 @@ private:
     Int32 mFlags;
 };
 
-
 } // namespace Media
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMEDIACODEC_H__
+#endif // __ELASTOS_DROID_MEDIA_CMEDIACODECBUFFERINFO_H__

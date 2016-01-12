@@ -46,7 +46,6 @@ module
          */
         const Int32 KEY_EDITABLE_MASK = 0x1FFFFFFF;
 
-
         /**
          * Applies all of the metadata changes that have been set since the MediaMetadataEditor instance
          * was created or since {@link #clear()} was called.
@@ -69,7 +68,7 @@ module
          * @param key the type of metadata that can be edited. The supported key is
          *     {@link #RATING_KEY_BY_USER}.
          */
-        SddEditableKey(
+        AddEditableKey(
             [in] Int32 key);
 
         /**
@@ -82,7 +81,7 @@ module
          * @return null if there are no editable keys, or an array containing the keys.
          */
         GetEditableKeys(
-            [out, callee] ArrayOf<Int32> * result);
+            [out, callee] ArrayOf<Int32>* result);
 
         /**
          * Adds textual information.
@@ -106,8 +105,7 @@ module
          */
         PutString(
             [in] Int32 key,
-            [in] String value,
-            [out] IMediaMetadataEditor ** result);
+            [in] String value);
 
         /**
          * Adds numerical information.
@@ -124,10 +122,9 @@ module
          *      calls together.
          * @throws IllegalArgumentException
          */
-        PutLong(
+        PutInt64(
             [in] Int32 key,
-            [in] Int64 value,
-            [out] IMediaMetadataEditor ** result);
+            [in] Int64 value);
 
         /**
          * Adds image.
@@ -141,8 +138,7 @@ module
          */
         PutBitmap(
             [in] Int32 key,
-            [in] IBitmap * bitmap,
-            [out] IMediaMetadataEditor ** result);
+            [in] IBitmap* bitmap);
 
         /**
          * Adds information stored as an instance.
@@ -163,9 +159,7 @@ module
          */
         PutObject(
             [in] Int32 key,
-            [in] IInterface * value,
-            [out] IMediaMetadataEditor ** result);
-
+            [in] IInterface* value);
 
         /**
          * Returns the long value for the key.
@@ -174,10 +168,10 @@ module
          * @return the long value for the key, or the supplied default value if the key is not present
          * @throws IllegalArgumentException
          */
-        GetLong(
+        GetInt64(
             [in] Int32 key,
             [in] Int64 defaultValue,
-            [out] Int64 * result);
+            [out] Int64* result);
 
         /**
          * Returns the {@link String} value for the key.
@@ -190,7 +184,7 @@ module
         GetString(
             [in] Int32 key,
             [in] String defaultValue,
-            [out] String * result);
+            [out] String* result);
 
         /**
          * Returns the {@link Bitmap} value for the key.
@@ -202,8 +196,8 @@ module
          */
         GetBitmap(
             [in] Int32 key,
-            [in] IBitmap * defaultValue,
-            [out] IBitmap ** result);
+            [in] IBitmap* defaultValue,
+            [out] IBitmap** result);
 
         /**
          * Returns an object representation of the value for the key
@@ -216,9 +210,8 @@ module
          */
         GetObject(
             [in] Int32 key,
-            [in] IInterface * defaultValue,
-            [out] IInterface ** result);
-
+            [in] IInterface* defaultValue,
+            [out] IInterface** result);
     }
     } // namespace media
     } // namepsace Droid

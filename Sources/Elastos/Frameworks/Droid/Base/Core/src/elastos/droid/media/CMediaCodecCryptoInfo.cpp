@@ -1,17 +1,26 @@
-
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/media/CMediaCodecCryptoInfo.h"
-
-using Elastos::Droid::Media::IMediaCodecCryptoInfo;
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
 
+CAR_INTERFACE_IMPL(CMediaCodecCryptoInfo, Object, IMediaCodecCryptoInfo)
+
+CAR_OBJECT_IMPL(CMediaCodecCryptoInfo)
+
 CMediaCodecCryptoInfo::CMediaCodecCryptoInfo()
     : mNumSubSamples(0)
     , mMode(0)
 {
+}
+
+CMediaCodecCryptoInfo::~CMediaCodecCryptoInfo()
+{
+}
+
+ECode CMediaCodecCryptoInfo::constructor()
+{
+    return NOERROR;
 }
 
 ECode CMediaCodecCryptoInfo::Set(
@@ -26,13 +35,13 @@ ECode CMediaCodecCryptoInfo::Set(
     mNumBytesOfClearData = newNumBytesOfClearData ? newNumBytesOfClearData->Clone() : NULL;
     mNumBytesOfEncryptedData = newNumBytesOfEncryptedData ? newNumBytesOfEncryptedData->Clone() : NULL;
     mKey = newKey ? newKey->Clone() : NULL;
-    mInitVector = newIV ? newIV->Clone() : NULL;
+    mIv = newIV ? newIV->Clone() : NULL;
     mMode = newMode;
     return NOERROR;
 }
 
 ECode CMediaCodecCryptoInfo::GetNumSubSamples(
-    /* [out] */ Int32 *result)
+    /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
     *result = mNumSubSamples;
@@ -66,17 +75,17 @@ ECode CMediaCodecCryptoInfo::GetKey(
     return NOERROR;
 }
 
-ECode CMediaCodecCryptoInfo::GetInitVector(
+ECode CMediaCodecCryptoInfo::GetIv(
     /* [out, callee] */ ArrayOf<Byte>** result)
 {
     VALIDATE_NOT_NULL(result);
-    *result = mInitVector;
+    *result = mIv;
     REFCOUNT_ADD(*result);
     return NOERROR;
 }
 
 ECode CMediaCodecCryptoInfo::GetMode(
-    /* [out] */ Int32 *result)
+    /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
     *result = mMode;
@@ -111,10 +120,10 @@ ECode CMediaCodecCryptoInfo::SetKey(
     return NOERROR;
 }
 
-ECode CMediaCodecCryptoInfo::SetInitVector(
+ECode CMediaCodecCryptoInfo::SetIv(
     /* [in] */ ArrayOf<Byte>* iv)
 {
-    mInitVector = iv ? iv->Clone() : NULL;
+    mIv = iv ? iv->Clone() : NULL;
     return NOERROR;
 }
 

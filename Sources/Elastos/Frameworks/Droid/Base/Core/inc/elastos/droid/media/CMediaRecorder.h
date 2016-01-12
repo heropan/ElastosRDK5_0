@@ -4,16 +4,18 @@
 
 #include "_Elastos_Droid_Media_CMediaRecorder.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
+#include <elastos/core/Object.h>
+#include <elastos/core/Thread.h>
 
-using Elastos::Droid::Hardware::IHardwareCamera;
-using Elastos::Droid::View::ISurface;
-using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Pm::IIPackageManager;
+using Elastos::Droid::Hardware::IHardwareCamera;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Privacy::IPrivacySettingsManager;
+using Elastos::Droid::View::ISurface;
+using Elastos::Core::Thread;
 using Elastos::IO::IFileDescriptor;
-
 
 namespace Elastos {
 namespace Droid {
@@ -62,35 +64,12 @@ namespace Media {
  * </div>
  */
 CarClass(CMediaRecorder)
+    , public Object
+    , public IMediaRecorder
 {
 public:
-    class PrivacyRunner : public ThreadBase {
-    public:
-        PrivacyRunner(
-            /* [in] */ CMediaRecorder* owner);
-
-        //@Override /*implements Thread*/
-        virtual CARAPI Run();
-
-        CARAPI_(void) SetDelay(
-            /* [in] */ Int64 delay)
-        {
-            mDelay = delay;
-        }
-
-        CARAPI_(Int64) GetDelay()
-        {
-            return mDelay;
-        }
-    private:
-        CMediaRecorder* mMediaRecorder;
-        Int32 mDelay;
-
-        static const Int64 OFFSET_DELAY;// = 2500;
-    };
-
     class EventHandler
-        : public HandlerBase
+        : public Handler
     {
     public:
         EventHandler(
@@ -105,16 +84,16 @@ public:
         /* Do not change these values without updating their counterparts
          * in include/media/mediarecorder.h!
          */
-        static const Int32 MEDIA_RECORDER_EVENT_LIST_START; // = 1;
-        static const Int32 MEDIA_RECORDER_EVENT_ERROR; // = 1;
-        static const Int32 MEDIA_RECORDER_EVENT_INFO; // = 2;
-        static const Int32 MEDIA_RECORDER_EVENT_LIST_END  ; // = 99;
+        static const Int32 MEDIA_RECORDER_EVENT_LIST_START;
+        static const Int32 MEDIA_RECORDER_EVENT_ERROR;
+        static const Int32 MEDIA_RECORDER_EVENT_INFO;
+        static const Int32 MEDIA_RECORDER_EVENT_LIST_END;
 
         /* Events related to individual tracks */
-        static const Int32 MEDIA_RECORDER_TRACK_EVENT_LIST_START; // = 100;
-        static const Int32 MEDIA_RECORDER_TRACK_EVENT_ERROR     ; // = 100;
-        static const Int32 MEDIA_RECORDER_TRACK_EVENT_INFO      ; // = 101;
-        static const Int32 MEDIA_RECORDER_TRACK_EVENT_LIST_END  ; // = 1000;
+        static const Int32 MEDIA_RECORDER_TRACK_EVENT_LIST_START;
+        static const Int32 MEDIA_RECORDER_TRACK_EVENT_ERROR     ;
+        static const Int32 MEDIA_RECORDER_TRACK_EVENT_INFO      ;
+        static const Int32 MEDIA_RECORDER_TRACK_EVENT_LIST_END  ;
 
         CMediaRecorder* mMediaRecorder;
     };
@@ -122,7 +101,11 @@ public:
 public:
     CMediaRecorder();
 
-    ~CMediaRecorder();
+    virtual ~CMediaRecorder();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     /**
      * Default constructor.
@@ -139,6 +122,19 @@ public:
      */
     CARAPI SetCamera(
         /* [in] */ IHardwareCamera* c);
+
+    /**
+     * Gets the surface to record from when using SURFACE video source.
+     *
+     * <p> May only be called after {@link #prepare}. Frames rendered to the Surface before
+     * {@link #start} will be discarded.</p>
+     *
+     * @throws IllegalStateException if it is called before {@link #prepare}, after
+     * {@link #stop}, or is called when VideoSource is not set to SURFACE.
+     * @see android.media.MediaRecorder.VideoSource
+     */
+    CARAPI GetSurface(
+        /* [out] */ ISurface** result);
 
     /**
      * Sets a Surface to show a preview of recorded media (video). Calls this
@@ -175,7 +171,6 @@ public:
      */
     static CARAPI GetAudioSourceMax(
         /* [out] */ Int32* result);
-
 
     /**
      * Sets the video source to be used for recording. If this method is not
@@ -561,7 +556,8 @@ private:
 
     CARAPI NativeReset();
 
-    CARAPI NativeSetup();
+    CARAPI NativeSetup(
+        /* [in] */ const String& clientName);
 
     CARAPI NativeFinalize();
 
@@ -582,68 +578,9 @@ private:
         /* [in] */ Int32 arg2,
         /* [in] */ IInterface* obj);
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //BEGIN PRIVACY
-
-    CARAPI MakePrivacyPath(
-        /* [in] */ const String& path);
-
-    /**
-     * PrivacyStop. Should be called within privacyRunner
-     */
-    CARAPI PrivacyStop();
-
-    /**
-     * This method search automatically the current package path and return it. If we haven't found any path, we return the path to SDcard if we are able to write to it.
-     * If we're not able to write to sdCard -> return null
-     * @return internal path to package directory or path to SDCard if package not found and we have rights to save files on SDCard. If something went wrong or we couldn't find
-     * anything of it -> return null
-     */
-    CARAPI_(String) GetPrivacyPath();
-
-    /**
-     * This method does exactly what the method getPrivacyPath() does, but it returns an FileDescriptor to path
-     * @return FileDescriptor to privacyFile or null if something went wrong
-     */
-    CARAPI_( AutoPtr< IFileDescriptor > ) GetPrivacyFileDescriptor();
-
-    /**
-     * {@hide}
-     * @return package names of current process which is using this object or null if something went wrong
-     */
-    CARAPI_( AutoPtr< ArrayOf<String> > ) GetPackageName();
-
-    /**
-     * {@hide}
-     * This method should be used, because in some devices the uid has more than one package within!
-     * @param privacySetting the Mode which has to be tested -> MODE_RECORD_AUDIO, MODE_RECORD_BOTH
-     * @return IS_ALLOWED (-1) if all packages allowed, IS_NOT_ALLOWED(-2) if one of these packages not allowed, GOT_ERROR (-3) if something went wrong
-     */
-    CARAPI_(Int32) CheckIfPackagesAllowed(
-        /* [in] */ Int32 privacySetting);
-
-    /**
-     * {@hide}
-     * This method sets up all variables which are needed for privacy mode! It also writes to privacyMode, if everything was successfull or not!
-     * -> privacyMode = true ok! otherwise false!
-     * CALL THIS METHOD IN CONSTRUCTOR!
-     */
-    CARAPI Initiate();
-
-     /**
-     * Loghelper method, true = access successful, false = blocked access.
-     * {@hide}
-     */
-    CARAPI_(void) DataAccess(
-        /* [in] */ Boolean success,
-        /* [in] */ Int32 micOrBoth);
-
-    //END PRIVACY
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 public:
     // The two fields below are accessed by native methods
-    Handle32 mNativeContext;
+    Handle64 mNativeContext;
 
     //@SuppressWarnings("unused")
     AutoPtr<ISurface> mSurface;
@@ -658,62 +595,6 @@ private:
     AutoPtr<EventHandler> mEventHandler;
     AutoPtr<IMediaRecorderOnErrorListener> mOnErrorListener;
     AutoPtr<IMediaRecorderOnInfoListener> mOnInfoListener;
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //BEGIN PRIVACY
-
-    /** default value of privacy path. You have to add the package name at the end to write file in directory of the app itself*/
-    static const String PRIVACY_PATH_DEF;// = "/data/data/";
-
-    /**
-     * This variable will be set if user use path to save file. Only if user is not allowed!
-     */
-    String mPrivacyPath;
-
-    /**
-     * Path where Filedescriptor linked to.
-     */
-    String mFileDescriptorPath;
-
-    /**
-     * This variable will be set if user use FileDescriptor so save file. Only if user is not allowed!
-     */
-    AutoPtr< IFileDescriptor > mFileDescriptor;
-
-    AutoPtr< PrivacyRunner > mRunner;
-
-    Boolean mDeletedFile;// = FALSE;
-
-    static const Int32 STATE_RECORD_AUDIO; // = 0;
-    static const Int32 STATE_RECORD_BOTH; // = 1;
-    static const Int32 MODE_RECORD_AUDIO; // = 2;
-    static const Int32 MODE_RECORD_BOTH; // = 3;
-    static const Int32 IS_ALLOWED; // = -1;
-    static const Int32 IS_NOT_ALLOWED; // = -2;
-    static const Int32 GOT_ERROR; // = -3;
-
-    static const Int32 MIC_DATA_ACCESS; // = 10;
-    static const Int32 BOTH_DATA_ACCESS; // = 11;
-
-    static const String PRIVACY_TAG;// = "PM,MediaRecorder";
-
-    /**
-     * {@hide} This context will ever be null, because we dont need it but pass it to the pSetMan!
-     */
-    AutoPtr< IContext > context;
-
-    AutoPtr< IPrivacySettingsManager > mPrivacySettingsManager;
-
-    AutoPtr< IIPackageManager > mPackageManager;
-
-    Boolean mPrivacyMode;// = FALSE;
-
-    Boolean mStoppedStream;// = FALSE;
-
-    Int32 ACTUAL_STATE;// = STATE_RECORD_AUDIO;
-
-    //END PRIVACY
-    ///////////////////////////////////////////////////////////////////////////////////////////////////
 };
 
 } // namespace Media

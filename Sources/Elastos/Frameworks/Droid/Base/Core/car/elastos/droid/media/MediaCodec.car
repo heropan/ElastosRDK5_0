@@ -8,6 +8,7 @@ module
     interface Elastos.Droid.Media.IMediaCrypto;
     interface Elastos.Droid.Media.IMediaCodecInfo;
     interface Elastos.Droid.Media.IMediaCodec;
+    interface Elastos.Droid.Media.IMediaFormat;
 
     namespace Elastos {
     namespace Droid {
@@ -1008,7 +1009,6 @@ module
          */
         GetCodecInfo(
             [out] IMediaCodecInfo** result);
-
     }
 
     interface IMediaCodecHelper {
@@ -1064,7 +1064,6 @@ module
         CreateByCodecName(
             [in] String name,
             [out] IMediaCodec** result);
-
     }
 
     } // namespace media

@@ -114,8 +114,13 @@ module
     const E_MUST_OVERRIDE_EXCEPTION                     =  0xEB010000;
 
     //==========================================================================
-    // Elastos Droid sax exception codes (Family: 0x6C - EC)
+    // Elastos Droid sax/media exception codes (Family: 0x6C - EC)
     const E_BAD_XML_EXCEPTION                           =  0xEC010000;
+    const E_MEDIACODEC_CODEC_EXCEPTION                  =  0xEC020000;
+    const E_MEDIACODEC_CRYPTO_EXCEPTION                 =  0xEC030000;
+    const E_MEDIA_CRYPTO_EXCEPTION                      =  0xEC040000;
+    const E_MEDIA_DRM_EXCEPTION                         =  0xEC050000;
+    const E_MEDIA_DRM_STATE_EXCEPTION                   =  0xEC060000;
 
     //==========================================================================
     // Elastos Droid internal exception codes (Family: 0x6D - ED)

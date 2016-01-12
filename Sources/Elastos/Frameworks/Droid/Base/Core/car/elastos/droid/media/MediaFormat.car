@@ -496,7 +496,7 @@ module
          * key is missing or is for another type value.
          * @hide
          */
-        GetInteger(
+        GetInt32(
             [in] String name,
             [in] Int32 defaultValue,
             [out] Int32* result);
@@ -540,7 +540,7 @@ module
          */
         GetFeatureEnabled(
             [in] String feature,
-            [out] Boolean * result);
+            [out] Boolean* result);
 
         /**
          * Sets the value of an integer key.
@@ -599,7 +599,6 @@ module
         SetFeatureEnabled(
             [in] String feature,
             [in] Boolean enabled);
-
     }
 
     interface IMediaFormatHelper{

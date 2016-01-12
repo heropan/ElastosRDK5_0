@@ -2,6 +2,8 @@
 #define __ELASTOS_DROID_MEDIA_CMEDIAPLAYERTRACKINFO_H__
 
 #include "_Elastos_Droid_Media_CMediaPlayerTrackInfo.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -13,11 +15,24 @@ namespace Media {
  * @see android.media.MediaPlayer#getTrackInfo
  */
 CarClass(CMediaPlayerTrackInfo)
+    , public Object
+    , public IMediaPlayerTrackInfo
+    , public IParcelable
 {
 public:
     CMediaPlayerTrackInfo();
 
+    virtual ~CMediaPlayerTrackInfo();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ Int32 type,
+        /* [in] */ IMediaFormat* format);
 
     /**
      * Gets the track type.
@@ -38,8 +53,15 @@ public:
     CARAPI GetLanguage(
         /* [out] */ String* language);
 
-    CARAPI SetLanguage(
-        /* [in] */ const String& language);
+    /**
+     * Gets the {@link MediaFormat} of the track.  If the format is
+     * unknown or could not be determined, null is returned.
+     */
+    CARAPI GetFormat(
+        /* [out] */ IMediaFormat** result);
+
+    CARAPI SetFormat(
+        /* [in] */ IMediaFormat* format);
 
     /**
      * {@inheritDoc}
@@ -52,9 +74,13 @@ public:
      */
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* src);
+
+    CARAPI ToString(
+        /* [out] */ String* s);
+
 public:
     Int32 mTrackType;
-    String mLanguage;
+    AutoPtr<IMediaFormat> mFormat;
 };
 
 } // namespace media

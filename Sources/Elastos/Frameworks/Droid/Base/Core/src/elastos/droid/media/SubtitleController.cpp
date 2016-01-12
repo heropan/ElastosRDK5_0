@@ -267,13 +267,13 @@ ECode SubtitleController::GetDefaultTrack(
 
             Boolean forced = FALSE;
             Int32 iRet;
-            format->GetInteger(IMediaFormat::KEY_IS_FORCED_SUBTITLE, 0, &iRet);
+            format->GetInt32(IMediaFormat::KEY_IS_FORCED_SUBTITLE, 0, &iRet);
             forced = iRet != 0;
             Boolean autoselect = FALSE;
-            format->GetInteger(IMediaFormat::KEY_IS_AUTOSELECT, 1, &iRet);
+            format->GetInt32(IMediaFormat::KEY_IS_AUTOSELECT, 1, &iRet);
             autoselect = iRet != 0;
             Boolean is_default = FALSE;
-            format->GetInteger(IMediaFormat::KEY_IS_DEFAULT, 0, &iRet);
+            format->GetInt32(IMediaFormat::KEY_IS_DEFAULT, 0, &iRet);
             is_default = iRet != 0;
 
             String language_;
@@ -330,7 +330,7 @@ void SubtitleController::DoSelectDefaultTrack()
         AutoPtr<IMediaFormat> format;
         mSelectedTrack->GetFormat((IMediaFormat**)&format);
         Int32 result = 0;
-        format->GetInteger(IMediaFormat::KEY_IS_FORCED_SUBTITLE, 0, &result);
+        format->GetInt32(IMediaFormat::KEY_IS_FORCED_SUBTITLE, 0, &result);
 
         if (flag || (mSelectedTrack != NULL && result != 0)) {
             Show();

@@ -4,12 +4,14 @@
 
 #include "_Elastos_Droid_Media_CMediaMetadataRetriever.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 #include <media/mediametadataretriever.h>
 
-using Elastos::IO::IFileDescriptor;
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Net::IUri;
+using Elastos::IO::IFileDescriptor;
+using Elastos::Utility::IMap;
 
 namespace Elastos {
 namespace Droid {
@@ -19,11 +21,17 @@ namespace Media {
  * frame and meta data from an input media file.
  */
 CarClass(CMediaMetadataRetriever)
+    , public Object
+    , public IMediaMetadataRetriever
 {
 public:
     CMediaMetadataRetriever();
 
-    ~CMediaMetadataRetriever();
+    virtual ~CMediaMetadataRetriever();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor();
 
@@ -49,7 +57,7 @@ public:
      */
     CARAPI SetDataSource(
         /* [in] */ const String& uri,
-        /* [in] */ IObjectStringMap* headers);
+        /* [in] */ IMap* headers);
 
     /**
      * Sets the data source (FileDescriptor) to use.  It is the caller's
@@ -206,6 +214,7 @@ protected:
 
 private:
     CARAPI NativeSetDataSource(
+        /* [in] */ IBinder* httpServiceBinder,
         /* [in] */ const String& uri,
         /* [in] */ ArrayOf<String>* keys,
         /* [in] */ ArrayOf<String>* values);

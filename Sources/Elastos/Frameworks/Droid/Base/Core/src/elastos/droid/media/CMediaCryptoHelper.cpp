@@ -8,6 +8,10 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 
+CAR_INTERFACE_IMPL(CMediaCryptoHelper, Singleton, IMediaCryptoHelper)
+
+CAR_SINGLETON_IMPL(CMediaCryptoHelper)
+
 ECode CMediaCryptoHelper::IsCryptoSchemeSupported(
     /* [in] */ IUUID* uuid,
     /* [out] */ Boolean* result)

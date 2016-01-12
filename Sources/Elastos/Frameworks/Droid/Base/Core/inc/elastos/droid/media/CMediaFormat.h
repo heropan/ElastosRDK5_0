@@ -2,10 +2,15 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIAFORMAT_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIAFORMAT_H__
 
+#include <Elastos.CoreLibrary.Core.h>
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.Utility.h>
 #include "_Elastos_Droid_Media_CMediaFormat.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::IO::IByteBuffer;
+using Elastos::Utility::IMap;
 
 namespace Elastos {
 namespace Droid {
@@ -49,17 +54,22 @@ namespace Media {
  *
  */
 CarClass(CMediaFormat)
+    , public Object
+    , public IMediaFormat
 {
 public:
     CMediaFormat();
 
-    /**
-     * Creates an empty MediaFormat
-     */
-    constructor();
+    virtual ~CMediaFormat();
 
-    constructor(
-        /* [in] */ IObjectStringMap* map);
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ IMap* map);
 
     /**
      * Returns true iff a key of the given name exists in the format.
@@ -73,6 +83,16 @@ public:
      */
     CARAPI GetInt32(
         /* [in] */ const String& name,
+        /* [out] */ Int32* result);
+
+    /**
+     * Returns the value of an integer key, or the default value if the
+     * key is missing or is for another type value.
+     * @hide
+     */
+    CARAPI GetInt32(
+        /* [in] */ const String& name,
+        /* [in] */ Int32 defaultValue,
         /* [out] */ Int32* result);
 
     /**
@@ -102,6 +122,19 @@ public:
     CARAPI GetByteBuffer(
         /* [in] */ const String& name,
         /* [out] */ IByteBuffer** result);
+
+    /**
+     * Returns whether a feature is to be enabled ({@code true}) or disabled
+     * ({@code false}).
+     *
+     * @param feature the name of a {@link MediaCodecInfo.CodecCapabilities} feature.
+     *
+     * @throws IllegalArgumentException if the feature was neither set to be enabled
+     *        nor to be disabled.
+     */
+    CARAPI GetFeatureEnabled(
+        /* [in] */ const String& feature,
+        /* [out] */ Boolean* result);
 
     /**
      * Sets the value of an integer key.
@@ -154,6 +187,19 @@ public:
         /* [out] */ IMediaFormat** result);
 
     /**
+     * Creates a minimal subtitle format.
+     * @param mime The mime type of the content.
+     * @param language The language of the content, using either ISO 639-1 or 639-2/T
+     *        codes.  Specify null or "und" if language information is only included
+     *        in the content.  (This will also work if there are multiple language
+     *        tracks in the content.)
+     */
+    static CARAPI CreateSubtitleFormat(
+        /* [in] */ const String& mime,
+        /* [in] */ const String& language,
+        /* [out] */ IMediaFormat** result);
+
+    /**
      * Creates a minimal video format.
      * @param mime The mime type of the content.
      * @param width The width of the content (in pixels)
@@ -166,10 +212,27 @@ public:
         /* [out] */ IMediaFormat** result);
 
     CARAPI GetMap(
-        /* [out] */ IObjectStringMap** result);
+        /* [out] */ IMap** result);
+
+    /**
+     * Sets whether a feature is to be enabled ({@code true}) or disabled
+     * ({@code false}).
+     *
+     * If {@code enabled} is {@code true}, the feature is requested to be present.
+     * Otherwise, the feature is requested to be not present.
+     *
+     * @param feature the name of a {@link MediaCodecInfo.CodecCapabilities} feature.
+     *
+     * @see MediaCodecList#findDecoderForFormat
+     * @see MediaCodecList#findEncoderForFormat
+     * @see MediaCodecInfo.CodecCapabilities#isFormatSupported
+     */
+    CARAPI SetFeatureEnabled(
+        /* [in] */ const String& feature,
+        /* [in] */ Boolean enabled);
 
 private:
-    AutoPtr<IObjectStringMap> mMap;
+    AutoPtr<IMap> mMap;
 };
 
 } // namespace Media

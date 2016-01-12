@@ -299,10 +299,10 @@ public:
     CARAPI IsTimedText(
         /* [out] */ Boolean* result);
 
-protected:
     CARAPI OnData(
         /* [in] */ ISubtitleData* data);
 
+protected:
     /** @hide */
     CARAPI UpdateActiveCues(
         /* [in] */ Boolean rebuild,

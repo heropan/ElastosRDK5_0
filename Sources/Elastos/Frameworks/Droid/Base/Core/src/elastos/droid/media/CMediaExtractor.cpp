@@ -1,24 +1,30 @@
-
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/media/CMediaExtractor.h"
 #include "elastos/droid/media/CMediaFormat.h"
-#include <media/Media_Utils.h>
 #include <elastos/utility/logging/Logger.h>
-#include <elastos/utility/logging/Slogger.h>
-#include <media/stagefright/foundation/AMessage.h>
+#include <media/Media_Utils.h>
 #include <media/stagefright/foundation/ABuffer.h>
+#include <media/stagefright/foundation/AMessage.h>
 #include <media/stagefright/MediaSource.h>
 
-using Elastos::Droid::Content::Res::IAssetFileDescriptor;
 using Elastos::Droid::Content::IContentResolver;
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Utility::Logging::Logger;
-using Elastos::IO::IBuffer;
+using Elastos::Droid::Content::Res::IAssetFileDescriptor;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
+using Elastos::IO::ByteOrder;
+using Elastos::IO::CByteOrderHelper;
+using Elastos::IO::IByteOrderHelper;
+using Elastos::IO::IBuffer;
+using Elastos::Utility::CUUID;
+using Elastos::Utility::IUUID;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
+
+CAR_INTERFACE_IMPL(CMediaExtractor, Object, IMediaExtractor)
+
+CAR_OBJECT_IMPL(CMediaExtractor)
 
 //==========================================================================
 //                  JavaDataSourceBridge
@@ -120,7 +126,7 @@ ECode CMediaExtractor::SetDataSource(
 ECode CMediaExtractor::SetDataSource(
     /* [in] */ IContext* context,
     /* [in] */ IUri* uri,
-    /* [in] */ IObjectStringMap* headers)
+    /* [in] */ IMap* headers)
 {
     VALIDATE_NOT_NULL(uri);
 
@@ -177,7 +183,7 @@ _EXIT_:
 
 ECode CMediaExtractor::SetDataSource(
     /* [in] */ const String& path,
-    /* [in] */ IObjectStringMap* headers)
+    /* [in] */ IMap* headers)
 {
     AutoPtr<ArrayOf<String> > keys;
     AutoPtr<ArrayOf<String> > values;
@@ -202,7 +208,11 @@ ECode CMediaExtractor::SetDataSource(
         }
     }
 
-    return NativeSetDataSource(path, keys, values);
+    AutoPtr<IBinder> binder;
+    MediaHTTPService.createHttpServiceBinderIfNecessary(
+            path, (IBinder**)&binder);
+    return NativeSetDataSource(
+        binder, path, keys, values);
 }
 
 ECode CMediaExtractor::NativeSetDataSource(
@@ -235,6 +245,7 @@ ECode  CMediaExtractor::NativeSetDataSource(
 }
 
 ECode  CMediaExtractor::NativeSetDataSource(
+    /* [in] */ IBinder* httpServiceBinder,
     /* [in] */ const String& path,
     /* [in] */ ArrayOf<String>* keys,
     /* [in] */ ArrayOf<String>* values)
@@ -248,7 +259,10 @@ ECode  CMediaExtractor::NativeSetDataSource(
 ECode CMediaExtractor::SetDataSource(
     /* [in] */ const String& path)
 {
-    return NativeSetDataSource(path, NULL, NULL);
+    AutoPtr<IBinder> binder;
+    MediaHTTPService::CreateHttpServiceBinderIfNecessary(
+                path, (IBinder**)&binder);
+    return nativeSetDataSource(binder, path, NULL, NULL);
 }
 
 ECode CMediaExtractor::SetDataSource(
@@ -288,6 +302,53 @@ ECode CMediaExtractor::GetTrackCount(
     return NOERROR;
 }
 
+ECode CMediaExtractor::GetTrackCount(
+    /* [out] */ IMap** result)
+{
+    VALIDATE_NOT_NULL(result);
+    AutoPtr<IHashMap> psshMap;
+    AutoPtr<IMap> formatMap = GetFileFormatNative();
+
+    AutoPtr<ICharSequence> cs;
+    CString::New("pssh", (ICharSequence**)&cs);
+    Boolean b;
+    if (formatMap != NULL && (formatMap->ContainsKey(cs, &b), b)) {
+        AutoPtr<IInterface> obj;
+        formatMap->Get(cs, (IInterface**)&obj);
+        AutoPtr<IByteBuffer> rawpssh = IByteBuffer::Probe(obj);
+
+        AutoPtr<IByteOrderHelper> orderHelper;
+        CByteOrderHelper::AcquireSingleton((IByteOrderHelper**)&orderHelper);
+        ByteOrder nativeOrder;
+        orderHelper->GetNativeOrder(&nativeOrder);
+
+        rawpssh->SetOrder(nativeOrder);
+        rawpssh->Rewind();
+        formatMap->Remove(cs);
+
+        // parse the flat pssh bytebuffer into something more manageable
+        CHashMap::New((IHashMap**)&psshMap);
+        Int32 remaining;
+        rawpssh->GetRemaining(&remaining);
+        while (remaining > 0) {
+            rawpssh->SetOrder(Elastos::IO::ByteOrder_BIG_ENDIAN);
+            Int64 msb;
+            rawpssh->GetInt64(&msb);
+            Int64 lsb;
+            rawpssh->GetInt64(&lsb);
+            AutoPtr<IUUID> uuid;
+            CUUID::New(msb, lsb, (IUUID**)&uuid);
+            rawpssh->SetOrder(nativeOrder);
+            Int32 datalen;
+            rawpssh->GetInt32(&datalen);
+            AutoPtr<ArrayOf<Byte> > psshdata = ArrayOf<Byte>::Alloc(datalen);
+            rawpssh->GetArray((ArrayOf<Byte>**)&psshdata);
+            psshMap->Put(uuid, psshdata);
+        }
+    }
+    return psshMap;
+}
+
 ECode CMediaExtractor::GetTrackFormat(
     /* [in] */ Int32 index,
     /* [out] */ IMediaFormat** result)
@@ -295,21 +356,33 @@ ECode CMediaExtractor::GetTrackFormat(
     VALIDATE_NOT_NULL(result);
     *result = NULL;
 
-    AutoPtr<IObjectStringMap> tiMap;
+    AutoPtr<IMap> tiMap;
     tiMap = GetTrackFormatNative(index);
 
     return CMediaFormat::New(tiMap, result);
 }
 
-AutoPtr<IObjectStringMap> CMediaExtractor::GetTrackFormatNative(
+AutoPtr<IMap> CMediaExtractor::GetFileFormatNative()
+{
+    android::sp<android::AMessage> msg;
+    mImpl->getFileFormat(&msg);
+
+    //convert message to map
+    AutoPtr<IMap> format;
+    Media_Utils::ConvertMessageToMap(msg, (IMap**)&format);
+
+    return msgMap;
+}
+
+AutoPtr<IMap> CMediaExtractor::GetTrackFormatNative(
     /* [in] */ Int32 index)
 {
     android::sp<android::AMessage> msg;
     mImpl->getTrackFormat((ssize_t)index, &msg);
 
     //convert message to map
-    AutoPtr<IObjectStringMap> msgMap;
-    Media_Utils::ConvertMessageToMap(msg, (IObjectStringMap**)&msgMap);
+    AutoPtr<IMap> msgMap;
+    Media_Utils::ConvertMessageToMap(msg, (IMap**)&msgMap);
 
     return msgMap;
 }
@@ -407,7 +480,7 @@ ECode CMediaExtractor::GetSampleTrackIndex(
         return NOERROR;
     }
     else if (err != android::OK) {
-        Slogger::E(TAG, "CMediaExtractor::GetSampleTrackIndex error");
+        Logger::E(TAG, "CMediaExtractor::GetSampleTrackIndex error");
         *result = FALSE;
         return E_ILLEGAL_STATE_EXCEPTION;
     }
@@ -427,7 +500,7 @@ ECode CMediaExtractor::GetSampleTime(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     else if (err != android::OK){
-        Slogger::E(TAG, "CMediaExtractor::GetSampleTime error");
+        Logger::E(TAG, "CMediaExtractor::GetSampleTime error");
         *result = FALSE;
         return E_ILLEGAL_STATE_EXCEPTION;
     }
@@ -472,7 +545,7 @@ _EXIT_:
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     else if (err != android::OK){
-        Slogger::E(TAG, "CMediaExtractor::GetSampleFlags error");
+        Logger::E(TAG, "CMediaExtractor::GetSampleFlags error");
         *result = FALSE;
         return E_ILLEGAL_STATE_EXCEPTION;
     }

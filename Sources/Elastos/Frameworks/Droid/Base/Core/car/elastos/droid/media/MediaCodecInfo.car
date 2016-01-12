@@ -1,12 +1,12 @@
 
 module
 {
-    interface Elastos.Droid.Utility.IRange;
-    interface Elastos.Droid.Utility.ISize;
-    interface Elastos.Droid.Media.IMediaFormat;
     interface Elastos.Droid.Media.IMediaCodecInfoCodecCapabilities;
     interface Elastos.Droid.Media.IMediaCodecInfoEncoderCapabilities;
     interface Elastos.Droid.Media.IMediaCodecInfoVideoCapabilities;
+    interface Elastos.Droid.Media.IMediaFormat;
+    interface Elastos.Droid.Utility.IRange;
+    interface Elastos.Droid.Utility.ISize;
 
     namespace Elastos {
     namespace Droid {
@@ -65,7 +65,6 @@ module
         SupportsFormat(
             [in] IMediaFormat* format,
             [out] Boolean* result);
-
     }
 
     interface IMediaCodecInfoAudioCapabilitiesHelper {
@@ -395,7 +394,6 @@ module
             [in] IMediaFormat* info,
             [in] IMediaCodecInfoCodecCapabilities* parent,
             [out] IMediaCodecInfoVideoCapabilities** result);
-
     }
 
     /**
@@ -448,7 +446,6 @@ module
         SupportsFormat(
             [in] IMediaFormat* format,
             [out] Boolean* result);
-
     }
 
     interface IMediaCodecInfoEncoderCapabilitiesHelper {
@@ -595,7 +592,6 @@ module
         const Int32 HEVCHighTierLevel61 = 0x800000;
         const Int32 HEVCMainTierLevel62 = 0x1000000;
         const Int32 HEVCHighTierLevel62 = 0x2000000;
-
     }
 
     /**
@@ -656,6 +652,7 @@ module
         MakeRegular(
             [out] IMediaCodecInfo** result);
     }
+
     } // namespace media
     } // namepsace Droid
     } // namespace Elastos

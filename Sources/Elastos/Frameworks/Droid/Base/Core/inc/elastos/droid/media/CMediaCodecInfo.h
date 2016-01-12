@@ -4,11 +4,14 @@
 
 #include "_Elastos_Droid_Media_CMediaCodecInfo.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/utility/Range.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Utility::IRational;
-using Elastos::Droid::Utility::Range;
+using Elastos::Droid::Utility::IRange;
+using Elastos::Core::IInteger32;
+using Elastos::Core::IInteger64;
+using Elastos::Utility::IMap;
+using Elastos::Utility::ISet;
 
 namespace Elastos {
 namespace Droid {
@@ -39,6 +42,11 @@ private:
     };
 
 public:
+    friend class CMediaCodecInfoAudioCapabilities;
+    friend class CMediaCodecInfoCodecCapabilities;
+    friend class CMediaCodecInfoEncoderCapabilities;
+    friend class CMediaCodecInfoVideoCapabilities;
+
     CMediaCodecInfo();
 
     virtual ~CMediaCodecInfo();
@@ -72,7 +80,7 @@ public:
 
     CARAPI GetCapabilitiesForType(
         /* [in] */ const String& type,
-        /* [out] */ ICodecCapabilities** result);
+        /* [out] */ IMediaCodecInfoCodecCapabilities** result);
 
     CARAPI MakeRegular(
         /* [out] */ IMediaCodecInfo** result);
@@ -87,18 +95,18 @@ private:
 
 private:
     // COMMON CONSTANTS
-    static AutoPtr<Range<IInteger32> > POSITIVE_INTEGERS;// = Range.create(1, Integer.MAX_VALUE);
-    static AutoPtr<Range<IInteger64> > POSITIVE_LONGS;// = Range.create(1l, Long.MAX_VALUE);
-    static AutoPtr<Range<IRational> > POSITIVE_RATIONALS;// = Range.create(new Rational(1, Integer.MAX_VALUE), new Rational(Integer.MAX_VALUE, 1));
-    static AutoPtr<Range<IInteger32> > SIZE_RANGE;// = Range.create(1, 32768);
-    static AutoPtr<Range<IInteger32> > FRAME_RATE_RANGE;// = Range.create(0, 960);
+    static AutoPtr<IRange> POSITIVE_INTEGERS;
+    static AutoPtr<IRange> POSITIVE_LONGS;
+    static AutoPtr<IRange> POSITIVE_RATIONALS;
+    static AutoPtr<IRange> SIZE_RANGE;
+    static AutoPtr<IRange> FRAME_RATE_RANGE;
 
     // found stuff that is not supported by framework (=> this should not happen)
-    static const Int32 ERROR_UNRECOGNIZED; // = (1 << 0);
+    static const Int32 ERROR_UNRECOGNIZED;
     // found profile/level for which we don't have capability estimates
-    static const Int32 ERROR_UNSUPPORTED; // = (1 << 1);
+    static const Int32 ERROR_UNSUPPORTED;
     // have not found any profile/level for which we don't have capability estimate
-    static const Int32 ERROR_NONE_SUPPORTED; // = (1 << 2);
+    static const Int32 ERROR_NONE_SUPPORTED;
 
     Boolean mIsEncoder;
     String mName;

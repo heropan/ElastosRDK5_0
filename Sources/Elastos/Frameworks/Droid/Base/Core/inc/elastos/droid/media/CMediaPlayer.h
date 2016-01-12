@@ -2,19 +2,37 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIAPLAYER_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIAPLAYER_H__
 
+#include <Elastos.CoreLibrary.Core.h>
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.Libcore.h>
+#include <Elastos.CoreLibrary.Net.h>
+#include <Elastos.CoreLibrary.Utility.h>
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Internal.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.View.h"
 #include "_Elastos_Droid_Media_CMediaPlayer.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/Runnable.h"
 
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Internal::App::IIAppOpsService;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::IHandlerThread;
+using Elastos::Droid::Os::IPowerManagerWakeLock;
+using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::View::ISurface;
 using Elastos::Droid::View::ISurfaceHolder;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Graphics::IBitmap;
-using Elastos::Droid::Os::HandlerBase;
-using Elastos::Droid::Os::IPowerManagerWakeLock;
-using Elastos::Net::IInetSocketAddress;
 using Elastos::IO::IFileDescriptor;
+using Elastos::IO::IInputStream;
+using Elastos::Net::IInetSocketAddress;
+using Elastos::Utility::IMap;
+using Elastos::Utility::ISet;
+using Elastos::Utility::IVector;
 
 namespace Elastos {
 namespace Droid {
@@ -473,28 +491,255 @@ namespace Media {
  * element.
  *
  */
-
 CarClass(CMediaPlayer)
+    , public Object
+    , public IMediaPlayer
+    , public ISubtitleControllerListener
 {
-private:
-    class EventHandler
-        : public HandlerBase
+public:
+    class TimeProvider
+        : public Object
+        , public IMediaPlayerOnSeekCompleteListener
+        , public IMediaTimeProvider
     {
-    friend class CMediaPlayer;
+    private:
+        class EventHandler
+            : public Handler
+        {
+        public:
+            EventHandler(
+                /* [in] */ TimeProvider* host,
+                /* [in] */ ILooper* looper)
+                    : Handler(looper)
+                    , mHost(host)
+                {}
+
+            CARAPI HandleMessage(
+                /* [in] */ IMessage* msg);
+
+        private:
+            TimeProvider* mHost;
+        };
 
     public:
+        CAR_INTERFACE_DECL()
+
+        TimeProvider(
+            /* [in] */ CMediaPlayer* mp);
+
+        ~TimeProvider();
+
+        CARAPI Close();
+
+        CARAPI OnPaused(
+            /* [in] */ Boolean paused);
+
+        CARAPI OnStopped();
+
+        CARAPI OnSeekComplete(
+            /* [in] */ IMediaPlayer* mp);
+
+        CARAPI OnNewPlayer();
+
+        CARAPI NotifyAt(
+            /* [in] */ Int64 timeUs,
+            /* [in] */ IMediaTimeProviderOnMediaTimeListener* listener);
+
+        CARAPI ScheduleUpdate(
+            /* [in] */ IMediaTimeProviderOnMediaTimeListener* listener);
+
+        CARAPI CancelNotifications(
+            /* [in] */ IMediaTimeProviderOnMediaTimeListener* listener);
+
+        CARAPI GetCurrentTimeUs(
+            /* [in] */ Boolean refreshTime,
+            /* [in] */ Boolean monotonic,
+            /* [out] */ Int64* result);
+
+    private:
+        CARAPI_(void) ScheduleNotification(
+            /* [in] */ Int32 type,
+            /* [in] */ Int64 delayUs);
+
+        /*synchronized*/
+        CARAPI_(void) NotifySeek();
+
+        /*synchronized*/
+        CARAPI_(void) NotifyStop();
+
+        CARAPI_(Int32) RegisterListener(
+            /* [in] */ IMediaTimeProviderOnMediaTimeListener* listener);
+
+        /*synchronized*/
+        CARAPI_(void) NotifyTimedEvent(
+            /* [in] */ Boolean refreshTime);
+
+        CARAPI_(Int64) GetEstimatedTime(
+            /* [in] */ Int64 nanoTime,
+            /* [in] */ Boolean monotonic);
+
+    public:
+        /** @hide */
+        Boolean DEBUG;
+
+    private:
+        static const String TAG;
+        static const Int64 MAX_NS_WITHOUT_POSITION_CHECK;
+        static const Int64 MAX_EARLY_CALLBACK_US;
+        static const Int64 TIME_ADJUSTMENT_RATE;
+        Int64 mLastTimeUs;
+        AutoPtr<CMediaPlayer> mPlayer;
+        Boolean mPaused;
+        Boolean mStopped;
+        Int64 mLastReportedTime;
+        Int64 mTimeAdjustment;
+        // since we are expecting only a handful listeners per stream, there is
+        // no need for log(N) search performance
+        AutoPtr<ArrayOf<IMediaTimeProviderOnMediaTimeListener*> > mListeners;
+        AutoPtr<ArrayOf<Int64> > mTimes;
+        Int64 mLastNanoTime;
+        AutoPtr<IHandler> mEventHandler;
+        Boolean mRefresh;
+        Boolean mPausing;
+        Boolean mSeeking;
+        static const Int32 NOTIFY;
+        static const Int32 NOTIFY_TIME;
+        static const Int32 REFRESH_AND_NOTIFY_TIME;
+        static const Int32 NOTIFY_STOP;
+        static const Int32 NOTIFY_SEEK;
+        AutoPtr<IHandlerThread> mHandlerThread;
+    };
+
+private:
+    class EventHandler
+        : public Handler
+    {
+    public:
+        friend class CMediaPlayer;
+
         EventHandler(
-            /* [in] */ IWeakReference* host,
+            /* [in] */ CMediaPlayer* host,
             /* [in] */ ILooper* looper);
 
         //@Override
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+
     private:
-        AutoPtr<IWeakReference> mMediaPlayer;
+        CMediaPlayer* mMediaPlayer;
+    };
+
+    class MediaPlayerOnSubtitleDataListener
+        : public Object
+        , public IMediaPlayerOnSubtitleDataListener
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        MediaPlayerOnSubtitleDataListener(
+            /* [in] */ CMediaPlayer* host)
+            : mHost(host)
+        {}
+
+        CARAPI OnSubtitleData(
+            /* [in] */ IMediaPlayer* mp,
+            /* [in] */ ISubtitleData* data);
+
+    private:
+        CMediaPlayer* mHost;
+    };
+
+    class HandlerRunnable
+        : public Runnable
+    {
+    public:
+        HandlerRunnable(
+            /* [in] */ CMediaPlayer* host,
+            /* [in] */ IHandlerThread* thread,
+            /* [in] */ IInputStream* is,
+            /* [in] */ IMediaFormat* format)
+            : mHost(host)
+            , mThread(thread)
+            , mIs(is)
+            , mFormat(format)
+        {}
+
+        CARAPI Run();
+
+    private:
+        CARAPI_(Int32) AddTrack();
+
+    private:
+        CMediaPlayer* mHost;
+        AutoPtr<IHandlerThread> mThread;
+        AutoPtr<IInputStream> mIs;
+        AutoPtr<IMediaFormat> mFormat;
+    };
+
+    class MyAnchor
+        : public Object
+        , public ISubtitleControllerAnchor
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        MyAnchor(
+            /* [in] */ CMediaPlayer* host)
+            : mHost(host)
+        {}
+
+        CARAPI SetSubtitleWidget(
+            /* [in] */ ISubtitleTrackRenderingWidget* subtitleWidget);
+
+        CARAPI GetSubtitleLooper(
+            /* [out] */ ILooper** result);
+
+    private:
+        CMediaPlayer* mHost;
+    };
+
+    class MyRunnable
+        : public Runnable
+    {
+    public:
+        MyRunnable(
+            /* [in] */ CMediaPlayer* host,
+            /* [in] */ IHandlerThread* thread,
+            /* [in] */ IFileDescriptor* fd,
+            /* [in] */ Int64 offset,
+            /* [in] */ Int64 length,
+            /* [in] */ ISubtitleTrack* track)
+            : mHost(host)
+            , mThread(thread)
+            , mFd(fd)
+            , mOffset(offset)
+            , mLength(length)
+            , mTrack(track)
+        {}
+
+        CARAPI Run();
+
+    private:
+        CARAPI_(Int32) AddTrack();
+
+    private:
+        CMediaPlayer* mHost;
+        AutoPtr<IHandlerThread> mThread;
+        AutoPtr<IFileDescriptor> mFd;
+        Int64 mOffset;
+        Int64 mLength;
+        AutoPtr<ISubtitleTrack> mTrack;
     };
 
 public:
+    CMediaPlayer();
+
+    virtual ~CMediaPlayer();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     /**
      * Default constructor. Consider using one of the create() methods for
      * synchronously instantiating a MediaPlayer from a Uri or resource.
@@ -502,11 +747,7 @@ public:
      * to free the resources. If not released, too many MediaPlayer instances may
      * result in an exception.</p>
      */
-    CMediaPlayer();
-
-    ~CMediaPlayer();
-
-    constructor();
+    CARAPI constructor();
 
     /**
      * Create a request parcel which can be routed to the  native  media
@@ -634,6 +875,25 @@ public:
         /* [out] */ IMediaPlayer ** player);
 
     /**
+     * Same factory method as {@link #create(Context, Uri, SurfaceHolder)} but that lets you specify
+     * the audio attributes and session ID to be used by the new MediaPlayer instance.
+     * @param context the Context to use
+     * @param uri the Uri from which to get the datasource
+     * @param holder the SurfaceHolder to use for displaying the video, may be null.
+     * @param audioAttributes the {@link AudioAttributes} to be used by the media player.
+     * @param audioSessionId the audio session ID to be used by the media player,
+     *     see {@link AudioManager#generateAudioSessionId()} to obtain a new session.
+     * @return a MediaPlayer object, or null if creation failed
+     */
+    static CARAPI Create(
+        /* [in] */ IContext* context,
+        /* [in] */ IUri* uri,
+        /* [in] */ ISurfaceHolder* holder,
+        /* [in] */ IAudioAttributes* audioAttributes,
+        /* [in] */ Int32 audioSessionId,
+        /* [out] */ IMediaPlayer** result);
+
+    /**
      * Convenience method to create a MediaPlayer for a given resource id.
      * On success, {@link #prepare()} will already have been called and must not be called again.
      * <p>When done with the MediaPlayer, you should call  {@link #release()},
@@ -649,6 +909,24 @@ public:
         /* [in] */ IContext* context,
         /* [in] */ Int32 resid,
         /* [out] */ IMediaPlayer** player);
+
+    /**
+     * Same factory method as {@link #create(Context, int)} but that lets you specify the audio
+     * attributes and session ID to be used by the new MediaPlayer instance.
+     * @param context the Context to use
+     * @param resid the raw resource id (<var>R.raw.&lt;something></var>) for
+     *              the resource to use as the datasource
+     * @param audioAttributes the {@link AudioAttributes} to be used by the media player.
+     * @param audioSessionId the audio session ID to be used by the media player,
+     *     see {@link AudioManager#generateAudioSessionId()} to obtain a new session.
+     * @return a MediaPlayer object, or null if creation failed
+     */
+    static CARAPI Create(
+        /* [in] */ IContext* context,
+        /* [in] */ Int32 resid,
+        /* [in] */ IAudioAttributes* audioAttributes,
+        /* [in] */ Int32 audioSessionId,
+        /* [out] */ IMediaPlayer** result);
 
     /**
      * Sets the data source as a content Uri.
@@ -673,7 +951,7 @@ public:
     CARAPI SetDataSource(
         /* [in] */ IContext* context,
         /* [in] */ IUri* uri,
-        /* [in] */ IObjectStringMap* headers);
+        /* [in] */ IMap* headers);
 
     /**
      * Sets the data source (file-path or http/rtsp URL) to use.
@@ -701,7 +979,7 @@ public:
      */
     CARAPI SetDataSource(
         /* [in] */ const String& path,
-        /* [in] */ IObjectStringMap* headers);
+        /* [in] */ IMap* headers);
 
     /**
      * Sets the data source (FileDescriptor) to use. It is the caller's responsibility
@@ -910,8 +1188,9 @@ public:
      * {@hide}
      */
     CARAPI SetMetadataFilter(
-        /* [in] */ IObjectContainer* allow,
-        /* [in] */ IObjectContainer* block);
+        /* [in] */ ISet* allow,
+        /* [in] */ ISet* block,
+        /* [out] */ Int32* result);
 
     /**
      * Set the MediaPlayer to start when this MediaPlayer finishes playback
@@ -973,6 +1252,16 @@ public:
         /* [in] */ Int32 streamtype);
 
     /**
+     * Sets the audio attributes for this MediaPlayer.
+     * See {@link AudioAttributes} for how to build and configure an instance of this class.
+     * You must call this method before {@link #prepare()} or {@link #prepareAsync()} in order
+     * for the audio attributes to become effective thereafter.
+     * @param attributes a non-null set of audio attributes
+     */
+    CARAPI SetAudioAttributes(
+        /* [in] */ IAudioAttributes* attributes);
+
+    /**
      * Sets the player to be looping or non-looping.
      *
      * @param looping whether to loop or not
@@ -1005,13 +1294,11 @@ public:
         /* [in] */ Float rightVolume);
 
     /**
-     * Currently not implemented, returns null.
-     * @deprecated
+     * Similar, excepts sets volume of all channels to same value.
      * @hide
      */
-    CARAPI GetFrameAt(
-        /* [in] */ Int32 msec,
-        /* [out] */ IBitmap** frame);
+    CARAPI SetVolume(
+        /* [in] */ Float volume);
 
     /**
      * Sets the audio session ID.
@@ -1059,79 +1346,6 @@ public:
         /* [in] */ Int32 effectId);
 
     /**
-     * Sets the parameter indicated by key.
-     * @param key key indicates the parameter to be set.
-     * @param value value of the parameter to be set.
-     * @return true if the parameter is set successfully, false otherwise
-     * {@hide}
-     */
-    CARAPI SetParameter(
-        /* [in] */ Int32 key,
-        /* [in] */ IParcel* value,
-        /* [out] */ Boolean* result);
-
-    /**
-     * Sets the parameter indicated by key.
-     * @param key key indicates the parameter to be set.
-     * @param value value of the parameter to be set.
-     * @return true if the parameter is set successfully, false otherwise
-     * {@hide}
-     */
-    CARAPI SetParameter(
-        /* [in] */ Int32 key,
-        /* [in] */ const String& value,
-        /* [out] */ Boolean* result);
-
-    /**
-     * Sets the parameter indicated by key.
-     * @param key key indicates the parameter to be set.
-     * @param value value of the parameter to be set.
-     * @return true if the parameter is set successfully, false otherwise
-     * {@hide}
-     */
-    CARAPI SetParameter(
-        /* [in] */ Int32 key,
-        /* [in] */ Int32 value,
-        /* [out] */ Boolean* result);
-
-    /**
-     * Gets the value of the parameter indicated by key.
-     * The caller is responsible for recycling the returned parcel.
-     * @param key key indicates the parameter to get.
-     * @return value of the parameter.
-     * {@hide}
-     */
-    CARAPI GetParcelParameter(
-        /* [in] */ Int32 key,
-        /* [out] */ IParcel** result);
-
-    /**
-     * Gets the value of the parameter indicated by key.
-     * @param key key indicates the parameter to get.
-     * @return value of the parameter.
-     * {@hide}
-     */
-    CARAPI GetStringParameter(
-        /* [in] */ Int32 key,
-        /* [out] */ String* result);
-
-    /**
-     * Gets the value of the parameter indicated by key.
-     * @param key key indicates the parameter to get.
-     * @return value of the parameter.
-     * {@hide}
-     */
-    CARAPI GetInt32Parameter(
-        /* [in] */ Int32 key,
-        /* [out] */ Int32* result);
-
-    CARAPI GetSubInfo(
-        /* [out, callee] */ ArrayOf<IMediaPlayerSubInfoN*>** subInfoN);
-
-    CARAPI GetAudioInfo(
-        /* [out, callee] */ ArrayOf<IMediaPlayerAudioInfoN*>** subInfoN);
-
-    /**
      * Sets the send level of the player to the attached auxiliary effect
      * {@see #attachAuxEffect(int)}. The level value range is 0 to 1.0.
      * <p>By default the send level is 0, so even if an effect is attached to the player
@@ -1155,7 +1369,20 @@ public:
      * @throws IllegalStateException if it is called in an invalid state.
      */
     CARAPI GetTrackInfo(
-        /* [out, callee] */ ArrayOf<IMediaPlayerTrackInfo>** result);
+        /* [out, callee] */ ArrayOf<IMediaPlayerTrackInfo*>** result);
+
+    /** @hide */
+    CARAPI SetSubtitleAnchor(
+            /* [in] */ ISubtitleController* controller,
+            /* [in] */ ISubtitleControllerAnchor* anchor);
+
+    CARAPI OnSubtitleTrackSelected(
+        /* [in] */ ISubtitleTrack* track);
+
+    /** @hide */
+    CARAPI AddSubtitleSource(
+        /* [in] */ IInputStream* is,
+        /* [in] */ IMediaFormat* format);
 
     /* TODO: Limit the total number of external timed text source to a reasonable number.
      */
@@ -1240,6 +1467,27 @@ public:
         /* [in] */ Int64 offset,
         /* [in] */ Int64 length,
         /* [in] */ const String& mimeType);
+
+    /**
+     * Returns the index of the audio, video, or subtitle track currently selected for playback,
+     * The return value is an index into the array returned by {@link #getTrackInfo()}, and can
+     * be used in calls to {@link #selectTrack(int)} or {@link #deselectTrack(int)}.
+     *
+     * @param trackType should be one of {@link TrackInfo#MEDIA_TRACK_TYPE_VIDEO},
+     * {@link TrackInfo#MEDIA_TRACK_TYPE_AUDIO}, or
+     * {@link TrackInfo#MEDIA_TRACK_TYPE_SUBTITLE}
+     * @return index of the audio, video, or subtitle track currently selected for playback;
+     * a negative integer is returned when there is no selected track for {@code trackType} or
+     * when {@code trackType} is not one of audio, video, or subtitle.
+     * @throws IllegalStateException if called after {@link #release()}
+     *
+     * @see {@link #getTrackInfo()}
+     * @see {@link #selectTrack(int)}
+     * @see {@link #deselectTrack(int)}
+     */
+    CARAPI GetSelectedTrack(
+        /* [in] */ Int32 trackType,
+        /* [out] */ Int32* result);
 
     /**
      * Selects a track.
@@ -1329,6 +1577,10 @@ public:
     CARAPI SetRetransmitEndpoint(
         /* [in] */ IInetSocketAddress* endpoint);
 
+    /** @hide */
+    CARAPI GetMediaTimeProvider(
+        /* [out] */ IMediaTimeProvider** result);
+
     /**
      * Register a callback to be invoked when the media source is ready
      * for playback.
@@ -1384,6 +1636,16 @@ public:
         /* [in] */ IMediaPlayerOnTimedTextListener* listener);
 
     /**
+     * Register a callback to be invoked when a track has data available.
+     *
+     * @param listener the callback that will be run
+     *
+     * @hide
+     */
+    CARAPI SetOnSubtitleDataListener(
+        /* [in] */ IMediaPlayerOnSubtitleDataListener* listener);
+
+    /**
      * Register a callback to be invoked when an info/warning is available.
      *
      * @param listener the callback that will be run
@@ -1400,519 +1662,6 @@ public:
     CARAPI SetOnErrorListener(
         /* [in] */ IMediaPlayerOnErrorListener* listener);
 
-    /* add by Gary. start {{----------------------------------- */
-
-    CARAPI SetScreen(
-        /* [in] */ Int32 screen);
-
-    CARAPI GetScreen(
-        /* [out] */ Int32* screen);
-
-    CARAPI IsPlayingVideo(
-        /* [out] */ Boolean* result);
-
-    /**
-     * Get the subtitle list of the current playing video.
-     * <p>
-     *
-     * @return subtitle list. null means there is no subtitle.
-     */
-    CARAPI GetSubList(
-        /* [out, callee] */ ArrayOf<IMediaPlayerSubInfo*>** infos);
-
-    /**
-     * get the index of the current showing subtitle in the subtitle list.
-     * <p>
-     *
-     * @return the index of the current showing subtitle in the subtitle list. <0 means no subtitle.
-     */
-    CARAPI GetCurSub(
-        /* [out] */ Int32* index);
-
-    /**
-     * switch another subtitle to show.
-     * <p>
-     *
-     * @param index the subtitle's index in the subtitle list?
-     */
-    CARAPI SwitchSub(
-        /* [in] */ Int32 index);
-
-    /**
-     *@deprecated Use {@link #setGlobalSubGate(boolean)} instead
-     * show or hide a subitle.
-     * <p>
-     *
-     * @param showSub  whether to show subtitle or not
-     */
-    CARAPI SetSubGate(
-        /* [in] */ Boolean showSub);
-
-    /**
-     *@deprecated Use {@link #getGlobalSubGate()} instead
-     * check whether subtitles is allowed showing.
-     * <p>
-     *
-     * @return true if subtitles is allowed showing, false otherwise.
-     */
-    CARAPI GetSubGate(
-        /* [out] */ Boolean* showSub);
-
-    /**
-     * Set the subtitle's color.
-     * <p>
-     *
-     * @param color  subtitle's color.
-     */
-    CARAPI SetSubColor(
-        /* [in] */ Int32 color);
-
-    /**
-     * Get the subtitle's color.
-     * <p>
-     *
-     * @return the subtitle's color.
-     */
-    CARAPI GetSubColor(
-       /* [out] */ Int32* color);
-
-    /**
-     * Set the subtitle frame's color.
-     * <p>
-     *
-     * @param color  subtitle frame's color.
-     */
-    CARAPI SetSubFrameColor(
-        /* [in] */ Int32 color);
-
-    /**
-     * Get the subtitle frame's color.
-     * <p>
-     *
-     * @return the subtitle frame's color.
-     */
-    CARAPI GetSubFrameColor(
-        /* [out] */ Int32* color);
-
-    /**
-     * Set the subtitle's font size.
-     * <p>
-     *
-     * @param size  font size in pixel.
-     */
-    CARAPI SetSubFontSize(
-        /* [in] */ Int32 size);
-
-    /**
-     * Get the subtitle's font size.
-     * <p>
-     *
-     * @return the subtitle's font size. <0 means failed.
-     */
-    CARAPI GetSubFontSize(
-        /* [out] */ Int32* color);
-
-    CARAPI SetSubFontPath(
-        /* [in] */ const String& charset);
-
-    /**
-     * Set the subtitle's charset. If the underlying mediaplayer can absolutely parse the charset
-     * of the subtitles, still use the parsed charset; otherwise, use the charset argument.
-     * <p>
-     *
-     * @param charset  the canonical name of a charset.
-     */
-    CARAPI SetSubCharset(
-        /* [in] */ const String& charset);
-
-    /**
-    * Get the subtitle's charset.
-    * <p>
-    *
-    * @return the canonical name of a charset.
-    */
-    CARAPI GetSubCharset(
-        /* [out] */ String* charset);
-
-    /**
-     * Set the subtitle's position vertically in the screen.
-     * <p>
-     *
-     * @param percent  ????????????????????????????????,???,10%,?????10.
-     */
-    CARAPI SetSubPosition(
-        /* [in] */ Int32 percent);
-
-    /**
-     * Get the subtitle's position vertically in the screen.
-     * <p>
-     *
-     * @return percent  ????????????????????????????????,???,10%,????10.
-     */
-    CARAPI GetSubPosition(
-        /* [out] */ Int32* percent);
-
-    /**
-     * Set the subtitle's delay time.
-     * <p>
-     *
-     * @param time delay time in milliseconds. It can be <0.
-     */
-    CARAPI SetSubDelay(
-        /* [in] */ Int32 time);
-
-    /**
-     * Get the subtitle's delay time.
-     * <p>
-     *
-     * @return delay time in milliseconds.
-     */
-    CARAPI GetSubDelay(
-        /* [out] */ Int32* time);
-
-    /**
-     * Get the track list of the current playing video.
-     * <p>
-     *
-     * @return track list. null means there is no track.
-     */
-    CARAPI GetTrackList(
-        /* [out, callee] */ ArrayOf<ITrackInfoVendor*>** tracks);
-
-    /**
-     * get the index of the current track in the track list.
-     * <p>
-     *
-     * @return the index of the current track in the track list. <0 means no track.
-     */
-    CARAPI GetCurTrack(
-        /* [out] */ Int32* index);
-
-    /**
-     * switch another track to play.
-     * <p>
-     *
-     * @param index the track's index in the track list?
-     */
-    CARAPI SwitchTrack(
-        /* [in] */ Int32 index);
-
-    /**
-     * set the dimension type of the source file.
-     * <p>
-     *
-     * @param type the  3D picture format of the source file
-     */
-    CARAPI SetInputDimensionType(
-        /* [in] */ Int32 type);
-
-    /**
-     * get the dimension type of the source file.
-     * <p>
-     *
-     * @return the 3D picture format of the source file. -1 means failed.
-     */
-    CARAPI GetInputDimensionType(
-        /* [out] */ Int32* type);
-
-    /**
-     * set the dimension type of the source file.
-     * <p>
-     *
-     * @param type  the  3D picture format of the source file
-     * @param value the  3D picture interlace range
-     */
-    CARAPI SetInputDimensionValue(
-        /* [in] */ Int32 type,
-        /* [in] */ Int32 value);
-
-    /**
-     * set display method of the 3D pictures.
-     * <p>
-     *
-     * @param type the display method of the 3D pictures
-     */
-    CARAPI SetOutputDimensionType(
-        /* [in] */ Int32 type);
-
-    /**
-     * set display method of the 3D pictures.
-     * <p>
-     *
-     * @param type the display method of the 3D pictures
-     * @param value the  3D picture interlace range
-     */
-    CARAPI SetOutputDimensionValue(
-        /* [in] */ Int32 type,
-        /* [in] */ Int32 value);
-
-    /**
-     * get the dimension type of the output.
-     * <p>
-     *
-     * @return the dimension type of the output. -1 means failed.
-     */
-    CARAPI GetOutputDimensionType(
-        /* [out] */ Int32* type);
-
-    /**
-     * set the anaglagh type of the output.
-     * <p>
-     *
-     * @param type the anaglagh type of the output
-     */
-    CARAPI SetAnaglaghType(
-        /* [in] */ Int32 type);
-
-    /**
-     * get the anaglagh type of the output.
-     * <p>
-     *
-     * @return the anaglagh type of the output. -1 means failed.
-     */
-    CARAPI GetAnaglaghType(
-        /* [out] */ Int32* type);
-
-    /**
-     * get the video encode.
-     * <p>
-     *
-     * @return the name of the video encode. null means unknown.
-     */
-    CARAPI GetVideoEncode(
-        /* [out] */ String* encode);
-
-    /**
-     * get the video frame rate.
-     * <p>
-     *
-     * @return the video frame rate. <0 means unknown.
-     */
-    CARAPI GetVideoFrameRate(
-        /* [out] */ Int32* rate);
-
-    /**
-     * get the audio encode.
-     * <p>
-     *
-     * @return the name of the audio encode. null means unknown.
-     */
-    CARAPI GetAudioEncode(
-        /* [out] */ String* encode);
-
-    /**
-     * get the audio bit rate.
-     * <p>
-     *
-     * @return the audio bit rate. <0 means unknown.
-     */
-    CARAPI GetAudioBitRate(
-        /* [out] */ Int32* rate);
-
-    /**
-     * get the audio sample rate.
-     * <p>
-     *
-     * @return the audio sample rate. <0 means unknown.
-     */
-    CARAPI GetAudioSampleRate(
-        /* [out] */ Int32* rate);
-
-    /* support scale mode */
-    /**
-     * enable or disable scale mode for playing video.
-     * <p>
-     *
-     * @param enable if true, enable the scale mode, else disable the scale mode.
-     * @param width  the expected width of the video. Only valid when enable.
-     * @param height  the expected height of the video. Only valid when enable.
-     */
-    CARAPI EnableScaleMode(
-        /* [in] */ Boolean enable,
-        /* [in] */ Int32 width,
-        /* [in] */ Int32 height);
-
-    /* support adjusting colors while playing video */
-    /**
-     * enable or disable VPP for playing video.
-     * <p>
-     *
-     * @param enableVpp if true, enable VPP, else disable VPP.
-     */
-    CARAPI SetVppGate(
-        /* [in] */ Boolean enableVpp);
-
-    /**
-     * get the VPP's status.
-     * <p>
-     *
-     * @return the VPP's status.
-     */
-    CARAPI GetVppGate(
-        /* [out] */ Boolean* enableVpp);
-
-    /**
-     * adjust the luma.
-     * <p>
-     *
-     * @param value the value of luma. value ranges 0~~4.
-     */
-    CARAPI SetLumaSharp(
-        /* [in] */ Int32 value);
-
-    /**
-     * get the value of the luma.
-     * <p>
-     *
-     * @return the value of the luma.
-     */
-    CARAPI GetLumaSharp(
-        /* [out] */ Int32* value);
-
-    /**
-     * adjust the chroma.
-     * <p>
-     *
-     * @param value the value of chroma. value ranges 0~~4.
-     */
-    CARAPI SetChromaSharp(
-        /* [in] */ Int32 value);
-
-    /**
-     * get the value of the chroma.
-     * <p>
-     *
-     * @return the value of the chroma.
-     */
-    CARAPI GetChromaSharp(
-        /* [out] */ Int32* value);
-
-    /**
-     * adjust the white extended.
-     * <p>
-     *
-     * @param value the value of white extended. value ranges 0~~4.
-     */
-    CARAPI SetWhiteExtend(
-        /* [in] */ Int32 value);
-
-    /**
-     * get the value of the white extended.
-     * <p>
-     *
-     * @return the value of the white extended.
-     */
-    CARAPI GetWhiteExtend(
-        /* [out] */ Int32* value);
-
-    /**
-     * adjust the black extended.
-     * <p>
-     *
-     * @param value the value of black extended. value ranges 0~~4.
-     */
-    CARAPI SetBlackExtend(
-        /* [in] */ Int32 value);
-
-    /**
-     * get the value of the black extended.
-     * <p>
-     *
-     * @return the value of the black extended.
-     */
-    CARAPI GetBlackExtend(
-        /* [out] */ Int32* value);
-
-    /**
-     * set the audio channel mute mode
-     * <p>
-     *
-     * @param muteMode  mute mode
-     */
-    CARAPI SetChannelMuteMode(
-        /* [in] */ Int32 mode);
-
-    /**
-     * get the audio channel mute mode
-     * <p>
-     *
-     * @return the audio channel mute mode.
-     */
-    CARAPI GetChannelMuteMode(
-        /* [out] */ Int32* mode);
-
-     /* add the global interfaces to control the subtitle gate  */
-
-    /**
-     * show or hide a subitle.
-     * <p>
-     *
-     * @param showSub  whether to show subtitle or not
-     */
-    CARAPI SetGlobalSubGate(
-        /* [in] */ Boolean showSub);
-
-    /**
-     * check whether subtitles is allowed showing.
-     * <p>
-     *
-     * @return true if subtitles is allowed showing, false otherwise.
-     */
-    CARAPI GetGlobalSubGate(
-        /* [out] */ Boolean* showSub);
-
-    /* add two general interfaces for expansibility */
-
-    /**
-     * show or hide a subitle.
-     * <p>
-     *
-     * @param enable  whether to start the BD folder play mode.
-     */
-    CARAPI SetBdFolderPlayMode(
-        /* [in] */ Boolean enable);
-
-    /**
-     * check whether is in BD folder play mode.
-     * <p>
-     *
-     * @return true if is in BD folder play mode, false otherwise.
-     */
-    CARAPI GetBdFolderPlayMode(
-        /* [out] */ Boolean* enable);
-
-    /* Rotate the video. */
-    static CARAPI IsRotatable(
-        /* [out] */ Boolean* enable);
-
-    static CARAPI SetRotation(
-        /* [in] */ Int32 value);
-
-    /*  Notify hdmi status. */
-    static CARAPI SetHdmiState(
-        /* [in] */ Boolean bHdmiPlugged);
-
-    /* Detect http data source from other application. */
-    CARAPI SetDlnaSourceDetector(
-        /* [in] */ IDlnaSourceDetector* detector);
-
-    /* control the raw data mode */
-    /**
-     * set the status of the raw data mode.
-     * <p>
-     *
-     * @param enable  whether to enable the raw data mode.
-     * @return NOERROR means successful, E_FAIL means failed.
-     */
-    static ECode SetRawDataMode(
-        /* [in] */ Int32 audioDataMode);
-
-    static Int32 GetRawDataMode()
-    {
-        return mRawDataMode;
-    }
-
-public:
     /**
      * Called from  native  code when an interesting event happens.  This method
      * just uses the EventHandler system to post the event back to the main app thread.
@@ -1941,19 +1690,31 @@ private:
     CARAPI NativeSetVideoSurface(
         /* [in] */ ISurface* surface);
 
-
-
     CARAPI SetDataSource(
         /* [in] */ const String& path,
         /* [in] */ ArrayOf<String>* keys,
         /* [in] */ ArrayOf<String>* values);
 
     CARAPI NativeSetDataSource(
+        /* [in] */ IBinder* httpServiceBinder,
         /* [in] */ const String& path,
         /* [in] */ ArrayOf<String>* keys,
         /* [in] */ ArrayOf<String>* values);
 
+    CARAPI NativeSetDataSource(
+        /* [in] */ IFileDescriptor* fd,
+        /* [in] */ Int64 offset,
+        /* [in] */ Int64 length);
+
+    CARAPI NativePrepare();
+
     CARAPI NativeStart();
+
+    CARAPI_(Boolean) IsRestricted();
+
+    CARAPI_(Int32) GetAudioStreamType();
+
+    CARAPI_(Int32) NativeGetAudioStreamType();
 
     CARAPI NativeStop();
 
@@ -1967,6 +1728,27 @@ private:
     CARAPI NativeRelease();
 
     CARAPI NativeReset();
+
+    CARAPI NativeSetAudioStreamType(
+        /* [in] */ Int32 streamtype);
+
+    /**
+     * Sets the parameter indicated by key.
+     * @param key key indicates the parameter to be set.
+     * @param value value of the parameter to be set.
+     * @return true if the parameter is set successfully, false otherwise
+     * {@hide}
+     */
+    CARAPI_(Boolean) NativeSetParameter(
+        /* [in] */ Int32 key,
+        /* [in] */ IParcel* value);
+
+    CARAPI NativeSetVolume(
+        /* [in] */ Float leftVolume,
+        /* [in] */ Float rightVolume);
+
+    CARAPI NativeSetAuxEffectSendLevel(
+        /* [in] */ Float level);
 
     /*
      * Gets the value of the parameter indicated by key.
@@ -2022,13 +1804,22 @@ private:
 
     CARAPI NativeFinalize();
 
+    CARAPI GetInbandTrackInfo(
+        /* [out, callee] */ ArrayOf<IMediaPlayerTrackInfo*>** result);
+
     /*
      * A helper function to check if the mime type is supported by media framework.
      */
     static CARAPI_(Boolean) AvailableMimeTypeForExternalSource(
         /* [in] */ const String& mimeType);
 
+    CARAPI_(void) ScanInternalSubtitleTracks();
+
     CARAPI SelectOrDeselectTrack(
+        /* [in] */ Int32 index,
+        /* [in] */ Boolean select);
+
+    CARAPI SelectOrDeselectInbandTrack(
         /* [in] */ Int32 index,
         /* [in] */ Boolean select);
 
@@ -2043,8 +1834,8 @@ private:
         /* [in] */ Int32 mode);
 
 public:
-    Handle32 mNativeContext; // accessed by native methods
-    Handle32 mNativeSurfaceTexture;  // accessed by native methods
+    Int64 mNativeContext; // accessed by native methods
+    Int64 mNativeSurfaceTexture;  // accessed by native methods
 
     static const String TAG;
     static const Boolean LOGV;
@@ -2055,9 +1846,7 @@ private:
     // macro invocation in IMediaPlayer.cpp
     static const String IMEDIA_PLAYER;
 
-    static Int32 mRawDataMode;
-
-    Handle32 mListenerContext; // accessed by native methods
+    Int32 mListenerContext; // accessed by native methods
 
     AutoPtr<ISurfaceHolder> mSurfaceHolder;
     AutoPtr<IHandler> mEventHandler;
@@ -2066,30 +1855,38 @@ private:
     Boolean mScreenOnWhilePlaying;
     Boolean mStayAwake;
 
+    AutoPtr<IIAppOpsService> mAppOps;
+    Int32 mStreamType;
+    Int32 mUsage;
+
     /* Do not change these values (starting with INVOKE_ID) without updating
      * their counterparts in include/media/mediaplayer.h!
      */
-    static const Int32 INVOKE_ID_GET_TRACK_INFO; // = 1;
-    static const Int32 INVOKE_ID_ADD_EXTERNAL_SOURCE; // = 2;
-    static const Int32 INVOKE_ID_ADD_EXTERNAL_SOURCE_FD; // = 3;
-    static const Int32 INVOKE_ID_SELECT_TRACK; // = 4;
-    static const Int32 INVOKE_ID_DESELECT_TRACK; // = 5;
-    static const Int32 INVOKE_ID_SET_VIDEO_SCALE_MODE; // = 6;
+    static const Int32 INVOKE_ID_GET_TRACK_INFO;
+    static const Int32 INVOKE_ID_ADD_EXTERNAL_SOURCE;
+    static const Int32 INVOKE_ID_ADD_EXTERNAL_SOURCE_FD;
+    static const Int32 INVOKE_ID_SELECT_TRACK;
+    static const Int32 INVOKE_ID_DESELECT_TRACK;
+    static const Int32 INVOKE_ID_SET_VIDEO_SCALE_MODE;
+    static const Int32 INVOKE_ID_GET_SELECTED_TRACK;
 
     /* Do not change these values without updating their counterparts
      * in include/media/mediaplayer.h!
      */
-    static const Int32 MEDIA_NOP; // = 0; // interface test message
-    static const Int32 MEDIA_PREPARED; // = 1;
-    static const Int32 MEDIA_PLAYBACK_COMPLETE; // = 2;
-    static const Int32 MEDIA_BUFFERING_UPDATE; // = 3;
-    static const Int32 MEDIA_SEEK_COMPLETE; // = 4;
-    static const Int32 MEDIA_SET_VIDEO_SIZE; // = 5;
-    static const Int32 MEDIA_TIMED_TEXT; // = 99;
-    static const Int32 MEDIA_ERROR; // = 100;
-    static const Int32 MEDIA_INFO; // = 200;
-    static const Int32 MEDIA_SOURCE_DETECTED;// = 234;   //Add by Bevis.
-    static const Int32 MEDIA_IO_ERROR;// = 300;  //Add by leven
+    static const Int32 MEDIA_NOP;
+    static const Int32 MEDIA_PREPARED;
+    static const Int32 MEDIA_PLAYBACK_COMPLETE;
+    static const Int32 MEDIA_BUFFERING_UPDATE;
+    static const Int32 MEDIA_SEEK_COMPLETE;
+    static const Int32 MEDIA_SET_VIDEO_SIZE;
+    static const Int32 MEDIA_STARTED;
+    static const Int32 MEDIA_PAUSED;
+    static const Int32 MEDIA_STOPPED;
+    static const Int32 MEDIA_SKIPPED;
+    static const Int32 MEDIA_TIMED_TEXT;
+    static const Int32 MEDIA_ERROR;
+    static const Int32 MEDIA_INFO;
+    static const Int32 MEDIA_SUBTITLE_DATA;
 
     AutoPtr<IMediaPlayerOnPreparedListener> mOnPreparedListener;
     AutoPtr<IMediaPlayerOnCompletionListener> mOnCompletionListener;
@@ -2100,8 +1897,19 @@ private:
     AutoPtr<IMediaPlayerOnInfoListener> mOnInfoListener;
     AutoPtr<IMediaPlayerOnTimedTextListener> mOnTimedTextListener;
 
-    AutoPtr<IDlnaSourceDetector> mDlnaSourceDetector;
-    static const String SOFTWINNER_DLNA_SOURCE_DETECTOR;
+    // Keep KEY_PARAMETER_* in sync with include/media/mediaplayer.h
+    static const Int32 KEY_PARAMETER_AUDIO_ATTRIBUTES;
+
+    AutoPtr<ISubtitleController> mSubtitleController;
+
+    Object mInbandSubtitleLock;
+    AutoPtr<ArrayOf<ISubtitleTrack*> > mInbandSubtitleTracks;
+    Int32 mSelectedSubtitleTrackIndex;
+    AutoPtr<IVector> mOutOfBandSubtitleTracks;
+    AutoPtr<IVector> mOpenSubtitleSources;
+    AutoPtr<MediaPlayerOnSubtitleDataListener> mSubtitleDataListener;
+    AutoPtr<TimeProvider> mTimeProvider;
+    AutoPtr<IMediaPlayerOnSubtitleDataListener> mOnSubtitleDataListener;
 };
 
 } // namespace Media

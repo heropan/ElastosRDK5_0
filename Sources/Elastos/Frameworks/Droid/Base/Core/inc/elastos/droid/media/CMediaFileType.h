@@ -3,17 +3,27 @@
 #define __ELASTOS_DROID_MEDIA_CMEDIAFILETYPE_H__
 
 #include "_Elastos_Droid_Media_CMediaFileType.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
 
 CarClass(CMediaFileType)
+    , public Object
+    , public IMediaFileType
 {
 public:
     CMediaFileType();
 
-    ~CMediaFileType();
+    virtual ~CMediaFileType();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor();
 
     CARAPI constructor(
         /* [in] */ Int32 fileType,

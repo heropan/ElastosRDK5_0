@@ -1,12 +1,12 @@
-
-#include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/media/CMediaCodecBufferInfo.h"
-
-using Elastos::Droid::Media::IMediaCodecCryptoInfo;
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
+
+CAR_INTERFACE_IMPL(CMediaCodecBufferInfo, Object, IMediaCodecBufferInfo)
+
+CAR_OBJECT_IMPL(CMediaCodecBufferInfo)
 
 CMediaCodecBufferInfo::CMediaCodecBufferInfo()
     : mOffset(0)
@@ -14,6 +14,15 @@ CMediaCodecBufferInfo::CMediaCodecBufferInfo()
     , mPresentationTimeUs(0)
     , mFlags(0)
 {
+}
+
+CMediaCodecBufferInfo::~CMediaCodecBufferInfo()
+{
+}
+
+ECode CMediaCodecBufferInfo::constructor()
+{
+    return NOERROR;
 }
 
 ECode CMediaCodecBufferInfo::Set(
@@ -36,7 +45,7 @@ ECode CMediaCodecBufferInfo::SetOffset(
     return NOERROR;
 }
 
-ECode CMediaCodecBufferInfo::SetNewSize(
+ECode CMediaCodecBufferInfo::SetSize(
     /* [in] */ Int32 newSize)
 {
     mSize = newSize;
@@ -65,7 +74,7 @@ ECode CMediaCodecBufferInfo::GetOffset(
     return NOERROR;
 }
 
-ECode CMediaCodecBufferInfo::GetNewSize(
+ECode CMediaCodecBufferInfo::GetSize(
     /* [out] */ Int32* newSize)
 {
     VALIDATE_NOT_NULL(newSize);
@@ -88,7 +97,6 @@ ECode CMediaCodecBufferInfo::GetFlags(
     *flags = mFlags;
     return NOERROR;
 }
-
 
 } // namespace Media
 } // namepsace Droid

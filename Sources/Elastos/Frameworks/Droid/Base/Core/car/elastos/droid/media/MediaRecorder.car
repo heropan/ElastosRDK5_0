@@ -1,8 +1,8 @@
 
 module
 {
-    interface Elastos.Droid.Media.IMediaRecorder;
     interface Elastos.Droid.Hardware.IHardwareCamera;
+    interface Elastos.Droid.Media.IMediaRecorder;
     interface Elastos.Droid.View.ISurface;
     interface Elastos.IO.IFileDescriptor;
 
@@ -401,7 +401,7 @@ module
          * @see android.media.MediaRecorder.VideoSource
          */
         GetSurface(
-            [out] ISurface ** result);
+            [out] ISurface** result);
 
         /**
          * Sets a Surface to show a preview of recorded media (video). Calls this

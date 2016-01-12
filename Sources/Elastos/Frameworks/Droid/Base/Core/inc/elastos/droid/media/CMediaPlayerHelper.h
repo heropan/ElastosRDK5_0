@@ -3,16 +3,20 @@
 #define __ELASTOS_DROID_MEDIA_CMEDIAPLAYERHELPER_H__
 
 #include "_Elastos_Droid_Media_CMediaPlayerHelper.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
 
+using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::View::ISurfaceHolder;
-using Elastos::Droid::Content::IContext;
 
 CarClass(CMediaPlayerHelper)
+    , public Singleton
+    , public IMediaPlayerHelper
 {
 public:
 

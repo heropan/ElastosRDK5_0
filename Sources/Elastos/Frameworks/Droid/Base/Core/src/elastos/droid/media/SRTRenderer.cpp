@@ -46,9 +46,9 @@ ECode SRTRenderer::Supports(
 	    }
 
 	    Int32 ret;
-	    format->GetInteger(IMediaFormat::KEY_IS_TIMED_TEXT, 0, &ret);
+	    format->GetInt32(IMediaFormat::KEY_IS_TIMED_TEXT, 0, &ret);
 
-        *result = mRender == (format->GetInteger(IMediaFormat::KEY_IS_TIMED_TEXT, 0, &ret), ret == 0);
+        *result = mRender == (format->GetInt32(IMediaFormat::KEY_IS_TIMED_TEXT, 0, &ret), ret == 0);
 		return NOERROR;
     }
 

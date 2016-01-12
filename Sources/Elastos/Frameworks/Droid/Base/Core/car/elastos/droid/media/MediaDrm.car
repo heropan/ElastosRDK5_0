@@ -26,11 +26,11 @@ module
          * @param data optional byte array of data that may be associated with the event
          */
         OnEvent(
-            [in] IMediaDrm * md,
-            [in] ArrayOf<Byte> * sessionId,
+            [in] IMediaDrm* md,
+            [in] ArrayOf<Byte>* sessionId,
             [in] Int32 event,
             [in] Int32 extra,
-            [in] ArrayOf<Byte> * data);
+            [in] ArrayOf<Byte>* data);
     }
 
     /**
@@ -41,7 +41,7 @@ module
          * Get the opaque message data
          */
         GetData(
-            [out, callee] ArrayOf<Byte> * result);
+            [out, callee] ArrayOf<Byte>* result);
 
         /**
          * Get the default URL to use when sending the key request message to a
@@ -49,8 +49,7 @@ module
          * server URL from other sources.
          */
         GetDefaultUrl(
-            [out] String * result);
-
+            [out] String* result);
     }
 
     /**
@@ -62,7 +61,7 @@ module
          * Get the opaque message data
          */
         GetData(
-            [out, callee] ArrayOf<Byte> * result);
+            [out, callee] ArrayOf<Byte>* result);
 
         /**
          * Get the default URL to use when sending the provision request
@@ -70,7 +69,7 @@ module
          * provisioning server URL obtained from other sources.
          */
         GetDefaultUrl(
-            [out] String * result);
+            [out] String* result);
     }
 
     /**
@@ -106,10 +105,10 @@ module
          * @param iv the initialization vector to use for the cipher
          */
         Encrypt(
-            [in] ArrayOf<Byte> * keyid,
-            [in] ArrayOf<Byte> * input,
-            [in] ArrayOf<Byte> * iv,
-            [out, callee] ArrayOf<Byte> * result);
+            [in] ArrayOf<Byte>* keyid,
+            [in] ArrayOf<Byte>* input,
+            [in] ArrayOf<Byte>* iv,
+            [out, callee] ArrayOf<Byte>* result);
 
         /**
          * Decrypt data using the CryptoSessions's cipher algorithm
@@ -119,10 +118,10 @@ module
          * @param iv the initialization vector to use for the cipher
          */
         Decrypt(
-            [in] ArrayOf<Byte> * keyid,
-            [in] ArrayOf<Byte> * input,
-            [in] ArrayOf<Byte> * iv,
-            [out, callee] ArrayOf<Byte> * result);
+            [in] ArrayOf<Byte>* keyid,
+            [in] ArrayOf<Byte>* input,
+            [in] ArrayOf<Byte>* iv,
+            [out, callee] ArrayOf<Byte>* result);
 
         /**
          * Sign data using the CryptoSessions's mac algorithm.
@@ -131,9 +130,9 @@ module
          * @param message the data for which a signature is to be computed
          */
         Sign(
-            [in] ArrayOf<Byte> * keyid,
-            [in] ArrayOf<Byte> * message,
-            [out, callee] ArrayOf<Byte> * result);
+            [in] ArrayOf<Byte>* keyid,
+            [in] ArrayOf<Byte>* message,
+            [out, callee] ArrayOf<Byte>* result);
 
         /**
          * Verify a signature using the CryptoSessions's mac algorithm. Return true
@@ -145,10 +144,10 @@ module
          *        computed signature
          */
         Verify(
-            [in] ArrayOf<Byte> * keyid,
-            [in] ArrayOf<Byte> * message,
-            [in] ArrayOf<Byte> * signature,
-            [out] Boolean * result);
+            [in] ArrayOf<Byte>* keyid,
+            [in] ArrayOf<Byte>* message,
+            [in] ArrayOf<Byte>* signature,
+            [out] Boolean* result);
     }
 
     /**
@@ -162,7 +161,7 @@ module
          * Get the opaque message data
          */
         GetData(
-            [out, callee] ArrayOf<Byte> * result);
+            [out, callee] ArrayOf<Byte>* result);
 
         /**
          * Get the default URL to use when sending the certificate request
@@ -170,8 +169,7 @@ module
          * certificate server URL obtained from other sources.
          */
         GetDefaultUrl(
-            [out] String * result);
-
+            [out] String* result);
     }
 
     /**
@@ -185,13 +183,13 @@ module
          * Get the wrapped private key data
          */
         GetWrappedPrivateKey(
-            [out, callee] ArrayOf<Byte> * result);
+            [out, callee] ArrayOf<Byte>* result);
 
         /**
          * Get the PEM-encoded certificate chain
          */
         GetContent(
-            [out, callee] ArrayOf<Byte> * result);
+            [out, callee] ArrayOf<Byte>* result);
     }
 
     /**
@@ -352,7 +350,7 @@ module
          * @param listener the callback that will be run
          */
         SetOnEventListener(
-            [in] IMediaDrmOnEventListener * listener);
+            [in] IMediaDrmOnEventListener* listener);
 
         /**
          * Open a new session with the MediaDrm object.  A session ID is returned.
@@ -361,14 +359,14 @@ module
          * @throws ResourceBusyException if required resources are in use
          */
         OpenSession(
-            [out, callee] ArrayOf<Byte> * result);
+            [out, callee] ArrayOf<Byte>* result);
 
         /**
          * Close a session on the MediaDrm object that was previously opened
          * with {@link #openSession}.
          */
         CloseSession(
-            [in] ArrayOf<Byte> * sessionId);
+            [in] ArrayOf<Byte>* sessionId);
 
         /**
          * A key request/response exchange occurs between the app and a license server
@@ -404,12 +402,12 @@ module
          * problem with the certifcate
          */
         GetKeyRequest(
-            [in] ArrayOf<Byte> * scope,
-            [in] ArrayOf<Byte> * init,
+            [in] ArrayOf<Byte>* scope,
+            [in] ArrayOf<Byte>* init,
             [in] String mimeType,
             [in] Int32 keyType,
-            [in] IHashMap * optionalParameters,
-            [out] IMediaDrmKeyRequest ** result);
+            [in] IHashMap* optionalParameters,
+            [out] IMediaDrmKeyRequest** result);
 
         /**
          * A key response is received from the license server by the app, then it is
@@ -432,9 +430,9 @@ module
          * @throws ResourceBusyException if required resources are in use
          */
         ProvideKeyResponse(
-            [in] ArrayOf<Byte> * scope,
-            [in] ArrayOf<Byte> * response,
-            [out, callee] ArrayOf<Byte> * result);
+            [in] ArrayOf<Byte>* scope,
+            [in] ArrayOf<Byte>* response,
+            [out, callee] ArrayOf<Byte>* result);
 
 
         /**
@@ -445,8 +443,8 @@ module
          * @param keySetId identifies the saved key set to restore
          */
         RestoreKeys(
-            [in] ArrayOf<Byte> * sessionId,
-            [in] ArrayOf<Byte> * keySetId);
+            [in] ArrayOf<Byte>* sessionId,
+            [in] ArrayOf<Byte>* keySetId);
 
         /**
          * Remove the current keys from a session.
@@ -454,7 +452,7 @@ module
          * @param sessionId the session ID for the DRM session
          */
         RemoveKeys(
-            [in] ArrayOf<Byte> * sessionId);
+            [in] ArrayOf<Byte>* sessionId);
 
         /**
          * Request an informative description of the key status for the session.  The status is
@@ -466,8 +464,8 @@ module
          * @param sessionId the session ID for the DRM session
          */
         QueryKeyStatus(
-            [in] ArrayOf<Byte> * sessionId,
-            [out] IHashMap ** result);
+            [in] ArrayOf<Byte>* sessionId,
+            [out] IHashMap** result);
 
         /**
          * A provision request/response exchange occurs between the app and a provisioning
@@ -479,7 +477,7 @@ module
          * request to is returned in ProvisionRequest.defaultUrl.
          */
         GetProvisionRequest(
-            [out] IMediaDrmProvisionRequest ** result);
+            [out] IMediaDrmProvisionRequest** result);
 
         /**
          * After a provision response is received by the app, it is provided to the DRM
@@ -492,7 +490,7 @@ module
          * server rejected the request
          */
         ProvideProvisionResponse(
-            [in] ArrayOf<Byte> * response);
+            [in] ArrayOf<Byte>* response);
 
         /**
          * Remove provisioning from a device.  Only system apps may unprovision a
@@ -522,7 +520,7 @@ module
          * received the message using releaseSecureStops().
          */
         GetSecureStops(
-            [out] IList ** result);
+            [out] IList** result);
 
 
         /**
@@ -532,7 +530,7 @@ module
          * @param ssRelease the server response indicating which secure stops to release
          */
         ReleaseSecureStops(
-            [in] ArrayOf<Byte> * ssRelease);
+            [in] ArrayOf<Byte>* ssRelease);
 
         /**
          * Read a DRM engine plugin String property value, given the property name string.
@@ -543,7 +541,7 @@ module
          */
         GetPropertyString(
             [in] String propertyName,
-            [out] String * result);
+            [out] String* result);
 
         /**
          * Read a DRM engine plugin byte array property value, given the property name string.
@@ -552,8 +550,7 @@ module
          */
         GetPropertyByteArray(
             [in] String propertyName,
-            [out, callee] ArrayOf<Byte> * result);
-
+            [out, callee] ArrayOf<Byte>* result);
 
         /**
          * Set a DRM engine plugin String property value.
@@ -567,7 +564,7 @@ module
          */
         SetPropertyByteArray(
             [in] String propertyName,
-            [in] ArrayOf<Byte> * value);
+            [in] ArrayOf<Byte>* value);
 
         /**
          * Obtain a CryptoSession object which can be used to encrypt, decrypt,
@@ -590,10 +587,10 @@ module
          * "algorithms".
          */
         GetCryptoSession(
-            [in] ArrayOf<Byte> * sessionId,
+            [in] ArrayOf<Byte>* sessionId,
             [in] String cipherAlgorithm,
             [in] String macAlgorithm,
-            [out] IMediaDrmCryptoSession ** result);
+            [out] IMediaDrmCryptoSession** result);
 
         /**
          * Generate a certificate request, specifying the certificate type
@@ -610,7 +607,7 @@ module
         GetCertificateRequest(
             [in] Int32 certType,
             [in] String certAuthority,
-            [out] IMediaDrmCertificateRequest ** result);
+            [out] IMediaDrmCertificateRequest** result);
 
         /**
          * Process a response from the certificate server.  The response
@@ -630,8 +627,8 @@ module
          * @hide - not part of the public API at this time
          */
         ProvideCertificateResponse(
-            [in] ArrayOf<Byte> * response,
-            [out] IMediaDrmCertificate ** result);
+            [in] ArrayOf<Byte>* response,
+            [out] IMediaDrmCertificate** result);
 
         /**
          * Sign data using an RSA key
@@ -645,11 +642,11 @@ module
          * @hide - not part of the public API at this time
          */
         SignRSA(
-            [in] ArrayOf<Byte> * sessionId,
+            [in] ArrayOf<Byte>* sessionId,
             [in] String algorithm,
-            [in] ArrayOf<Byte> * wrappedKey,
-            [in] ArrayOf<Byte> * message,
-            [out, callee] ArrayOf<Byte> * result);
+            [in] ArrayOf<Byte>* wrappedKey,
+            [in] ArrayOf<Byte>* message,
+            [out, callee] ArrayOf<Byte>* result);
 
         ReleaseResources();
     }
@@ -661,8 +658,8 @@ module
          * @param uuid The UUID of the crypto scheme.
          */
         IsCryptoSchemeSupported(
-            [in] IUUID * uuid,
-            [out] Boolean * result);
+            [in] IUUID* uuid,
+            [out] Boolean* result);
 
         /**
          * Query if the given scheme identified by its UUID is supported on
@@ -673,10 +670,9 @@ module
          *   or "video/webm"
          */
         IsCryptoSchemeSupported(
-            [in] IUUID * uuid,
+            [in] IUUID* uuid,
             [in] String mimeType,
-            [out] Boolean * result);
-
+            [out] Boolean* result);
     }
 
     } // namespace media

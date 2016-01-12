@@ -7,8 +7,7 @@ module
 
     interface IIMediaHTTPService {
         MakeHTTPConnection(
-            [out] IIMediaHTTPConnection ** result);
-
+            [out] IIMediaHTTPConnection** result);
     }
     } // namespace media
     } // namepsace Droid

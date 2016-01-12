@@ -1,17 +1,27 @@
 
 #include "elastos/droid/media/CMediaFileType.h"
-#include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
 
+CAR_INTERFACE_IMPL(CMediaFileType, Object, IMediaFileType)
+
+CAR_OBJECT_IMPL(CMediaFileType)
+
 CMediaFileType::CMediaFileType()
     : mFileType(0)
-{}
+{
+}
 
 CMediaFileType::~CMediaFileType()
-{}
+{
+}
+
+ECode CMediaFileType::constructor()
+{
+    return NOERROR;
+}
 
 ECode CMediaFileType::constructor(
     /* [in] */ Int32 fileType,

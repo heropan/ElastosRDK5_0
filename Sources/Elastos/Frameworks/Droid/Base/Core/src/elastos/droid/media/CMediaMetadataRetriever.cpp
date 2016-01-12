@@ -1,27 +1,26 @@
 
-#include "elastos/droid/media/CMediaMetadataRetriever.h"
-#include <elastos/utility/logging/Slogger.h>
-#include "elastos/droid/media/Media_Utils.h"
 #include "elastos/droid/graphics/CBitmap.h"
 #include "elastos/droid/graphics/CBitmapFactory.h"
+#include "elastos/droid/media/CMediaMetadataRetriever.h"
+#include "elastos/droid/media/Media_Utils.h"
+#include <elastos/utility/logging/Slogger.h>
 
 #include <assert.h>
+#include <private/media/VideoFrame.h>
+#include <skia/core/SkBitmap.h>
 #include <utils/Log.h>
 #include <utils/threads.h>
-#include <skia/core/SkBitmap.h>
-#include <private/media/VideoFrame.h>
 
-using namespace Elastos::Core;
-using Elastos::Utility::Logging::Slogger;
-using Elastos::IO::IFileInputStream;
-using Elastos::IO::CFileInputStream;
-using Elastos::Droid::Content::Res::IAssetFileDescriptor;
 using Elastos::Droid::Content::IContentResolver;
-using Elastos::Droid::Graphics::CBitmap;
+using Elastos::Droid::Content::Res::IAssetFileDescriptor;
 using Elastos::Droid::Graphics::BitmapConfig;
-using Elastos::Droid::Graphics::IBitmapFactory;
+using Elastos::Droid::Graphics::CBitmap;
 using Elastos::Droid::Graphics::CBitmapFactory;
-
+using Elastos::Droid::Graphics::IBitmapFactory;
+using namespace Elastos::Core;
+using Elastos::IO::CFileInputStream;
+using Elastos::IO::IFileInputStream;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
@@ -104,6 +103,10 @@ static ECode process_media_retriever_call(android::status_t opStatus, ECode exce
 const Int32 CMediaMetadataRetriever::EMBEDDED_PICTURE_TYPE_ANY = 0xFFFF;
 const String CMediaMetadataRetriever::TAG("CMediaMetadataRetriever");
 
+CAR_INTERFACE_IMPL(CMediaMetadataRetriever, Object, IMediaMetadataRetriever)
+
+CAR_OBJECT_IMPL(CMediaMetadataRetriever)
+
 CMediaMetadataRetriever::CMediaMetadataRetriever()
     : mContext(NULL)
 {
@@ -132,7 +135,10 @@ void CMediaMetadataRetriever::SetRetriever(android::MediaMetadataRetriever* retr
 ECode CMediaMetadataRetriever::SetDataSource(
     /* [in] */ const String& path)
 {
-  if (FALSE) {
+    if (path == NULL) {
+        // throw new IllegalArgumentException();
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     AutoPtr<IFileInputStream> is;
     //try {
         AutoPtr<IFileDescriptor> fd;
@@ -160,14 +166,11 @@ _EXIT_:
 
         return NOERROR;
     }
-    else {
-        return NativeSetDataSource(path, NULL, NULL);
-    }
 }
 
 ECode CMediaMetadataRetriever::SetDataSource(
     /* [in] */ const String& uri,
-    /* [in] */ IObjectStringMap* headers)
+    /* [in] */ IMap* headers)
 {
     AutoPtr<ArrayOf<String> > keys;
     AutoPtr<ArrayOf<String> > values;
@@ -192,10 +195,14 @@ ECode CMediaMetadataRetriever::SetDataSource(
         }
     }
 
-    return NativeSetDataSource(uri, keys, values);
+    AutoPtr<IBinder> binder;
+    CMediaHTTPService::CreateHttpServiceBinderIfNecessary(uri,
+            (IBinder**)&binder);
+    return NativeSetDataSource(binder, uri, keys, values);
 }
 
 ECode CMediaMetadataRetriever::NativeSetDataSource(
+    /* [in] */ IBinder* httpServiceBinder,
     /* [in] */ const String& path,
     /* [in] */ ArrayOf<String>* keys,
     /* [in] */ ArrayOf<String>* values)
@@ -230,8 +237,15 @@ ECode CMediaMetadataRetriever::NativeSetDataSource(
     android::KeyedVector<android::String8, android::String8> headersVector;
     FAIL_RETURN(Media_Utils::ConvertKeyValueArraysToKeyedVector(keys, values, &headersVector));
 
+    sp<IMediaHTTPService> httpService;
+// TODO: Need jni code
+    // if (httpServiceBinderObj != NULL) {
+    //     sp<IBinder> binder = ibinderForJavaObject(env, httpServiceBinderObj);
+    //     httpService = interface_cast<IMediaHTTPService>(binder);
+    // }
+
     android::status_t status = retriever->setDataSource(
-        pathStr.string(), headersVector.size() > 0 ? &headersVector : NULL);
+        httpService, pathStr.string(), headersVector.size() > 0 ? &headersVector : NULL);
     return process_media_retriever_call(
         status, E_RUNTIME_EXCEPTION, "setDataSource failed");
 }

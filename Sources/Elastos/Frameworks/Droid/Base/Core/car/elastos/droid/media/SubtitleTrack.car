@@ -181,6 +181,9 @@ module
             [in] Boolean eos,
             [in] Int64 runID);
 
+        OnData(
+            [in] ISubtitleData* data);
+
         /**
          * Called when adding the subtitle rendering widget to the view hierarchy,
          * as well as when showing or hiding the subtitle track, or when the video

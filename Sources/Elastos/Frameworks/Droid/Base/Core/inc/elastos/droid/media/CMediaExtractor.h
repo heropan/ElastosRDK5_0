@@ -4,26 +4,23 @@
 
 #include "_Elastos_Droid_Media_CMediaExtractor.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/Map.h>
-#include "CMediaCodec.h"
+#include <elastos/core/Object.h>
+#include <media/stagefright/DataSource.h>
 #include <media/stagefright/MediaExtractor.h>
-#include <media/stagefright/NuMediaExtractor.h>
 #include <media/stagefright/MediaSource.h>
 #include <media/stagefright/MetaData.h>
-#include <media/stagefright/DataSource.h>
+#include <media/stagefright/NuMediaExtractor.h>
+#include <utils/Compat.h>  // off64_t
 #include <utils/KeyedVector.h>
 #include <utils/String8.h>
-#include <utils/Compat.h>  // off64_t
 
 //test
 #include <binder/MemoryHeapBase.h>
 
-
-using Elastos::Utility::Map;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Net::IUri;
-using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IByteBuffer;
+using Elastos::IO::IFileDescriptor;
 using Elastos::Droid::Media::IDataSource;
 using Elastos::Droid::Media::IMediaCodecCryptoInfo;
 //using android::NuMediaExtractor;
@@ -31,7 +28,6 @@ using Elastos::Droid::Media::IMediaCodecCryptoInfo;
 namespace Elastos {
 namespace Droid {
 namespace Media {
-
 
 struct android::NuMediaExtractor;
 
@@ -79,8 +75,18 @@ public:
  * </pre>
  */
 CarClass(CMediaExtractor)
+    , public Object
+    , public IMediaExtractor
 {
 public:
+    CMediaExtractor();
+
+    virtual ~CMediaExtractor();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI constructor();
 
     /**
@@ -100,7 +106,7 @@ public:
     CARAPI SetDataSource(
         /* [in] */ IContext* context,
         /* [in] */ IUri* uri,
-        /* [in] */ IObjectStringMap* headers);
+        /* [in] */ IMap* headers);
 
     /**
      * Sets the data source (file-path or http URL) to use.
@@ -110,7 +116,7 @@ public:
      */
     CARAPI SetDataSource(
         /* [in] */ const String& path,
-        /* [in] */ IObjectStringMap* headers);
+        /* [in] */ IMap* headers);
 
     /**
      * Sets the data source (file-path or http URL) to use.
@@ -162,6 +168,14 @@ public:
      */
     CARAPI GetTrackCount(
         /* [out] */ Int32* result);
+
+    /**
+     * Get the PSSH info if present.
+     * @return a map of uuid-to-bytes, with the uuid specifying
+     * the crypto scheme, and the bytes being the data specific to that scheme.
+     */
+    CARAPI GetPsshInfo(
+        /* [out] */ IMap** result);
 
     /**
      * Get the track format at the specified index.
@@ -274,6 +288,7 @@ protected:
 
 private:
     CARAPI NativeSetDataSource(
+        /* [in] */ IBinder* httpServiceBinder,
         /* [in] */ const String& path,
         /* [in] */ ArrayOf<String>* keys,
         /* [in] */ ArrayOf<String>* values);
@@ -287,7 +302,9 @@ private:
         /* [in] */ Int64 offset,
         /* [in] */ Int64 size);
 
-    AutoPtr<IObjectStringMap> GetTrackFormatNative(
+    CARAPI_(AutoPtr<IMap>) GetFileFormatNative();
+
+    CARAPI_(AutoPtr<IMap>) GetTrackFormatNative(
         /* [in] */ Int32 index);
 
     static CARAPI NativeInit();
