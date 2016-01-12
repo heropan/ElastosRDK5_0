@@ -103,12 +103,14 @@ public:
         : public Object
     {
     public:
-        ActivityDisplay();
+        ActivityDisplay(
+            /* [in] */ ActivityStackSupervisor* owner);
 
         // After instantiation, check that mDisplay is not null before using this. The alternative
         // is for this to throw an exception if mDisplayManager.getDisplay() returns null.
         ActivityDisplay(
-            /* [in] */ Int32 displayId);
+            /* [in] */ Int32 displayId,
+            /* [in] */ ActivityStackSupervisor* owner);
 
         virtual CARAPI Init(
             /* [in] */ IDisplay* display);
@@ -142,6 +144,7 @@ public:
           * stacks, bottommost behind. Accessed directly by ActivityManager package classes */
         AutoPtr<IArrayList> mStacks;//ActivityStack
         AutoPtr<ActivityRecord> mVisibleBehindActivity;
+        ActivityStackSupervisor* mOwner;
     };
 
     class ActivityContainer
@@ -279,7 +282,6 @@ public:
 
     public:
         AutoPtr<IVirtualDisplay> mVirtualDisplay;
-        ActivityStackSupervisor* mOwner;
     };
 
 private:
@@ -323,7 +325,6 @@ private:
     public:
         AutoPtr<ISurface> mSurface;
         Boolean mDrawn;
-        ActivityStackSupervisor* mOwner;
     };
 
 public:
@@ -791,20 +792,20 @@ public:
     static const Int32 SLEEP_TIMEOUT = 5*1000;
     // How long we can hold the launch wake lock before giving up.
     static const Int32 LAUNCH_TIMEOUT = 10*1000;
-    static const Int32 IDLE_TIMEOUT_MSG;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG;
-    static const Int32 IDLE_NOW_MSG;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 1;
-    static const Int32 RESUME_TOP_ACTIVITY_MSG;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 2;
-    static const Int32 SLEEP_TIMEOUT_MSG;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 3;
-    static const Int32 LAUNCH_TIMEOUT_MSG;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 4;
-    static const Int32 HANDLE_DISPLAY_ADDED;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 5;
-    static const Int32 HANDLE_DISPLAY_CHANGED;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 6;
-    static const Int32 HANDLE_DISPLAY_REMOVED;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 7;
-    static const Int32 CONTAINER_CALLBACK_VISIBILITY;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 8;
-    static const Int32 LOCK_TASK_START_MSG;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 9;
-    static const Int32 LOCK_TASK_END_MSG;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 10;
-    static const Int32 CONTAINER_CALLBACK_TASK_LIST_EMPTY;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 11;
-    static const Int32 CONTAINER_TASK_LIST_EMPTY_TIMEOUT;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 12;
-    static const Int32 LAUNCH_TASK_BEHIND_COMPLETE;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 13;
+    static const Int32 IDLE_TIMEOUT_MSG = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG;
+    static const Int32 IDLE_NOW_MSG = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 1;
+    static const Int32 RESUME_TOP_ACTIVITY_MSG = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 2;
+    static const Int32 SLEEP_TIMEOUT_MSG = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 3;
+    static const Int32 LAUNCH_TIMEOUT_MSG = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 4;
+    static const Int32 HANDLE_DISPLAY_ADDED = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 5;
+    static const Int32 HANDLE_DISPLAY_CHANGED = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 6;
+    static const Int32 HANDLE_DISPLAY_REMOVED = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 7;
+    static const Int32 CONTAINER_CALLBACK_VISIBILITY = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 8;
+    static const Int32 LOCK_TASK_START_MSG = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 9;
+    static const Int32 LOCK_TASK_END_MSG = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 10;
+    static const Int32 CONTAINER_CALLBACK_TASK_LIST_EMPTY = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 11;
+    static const Int32 CONTAINER_TASK_LIST_EMPTY_TIMEOUT = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 12;
+    static const Int32 LAUNCH_TASK_BEHIND_COMPLETE = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 13;
     // For debugging to make sure the caller when acquiring/releasing our
     // wake lock is the system process.
     static const Boolean VALIDATE_WAKE_LOCK_CALLER;

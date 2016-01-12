@@ -1,68 +1,110 @@
-
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Hardware.h"
+#include "Elastos.Droid.Provider.h"
+#include "Elastos.Droid.Core.h"
+#include "Elastos.Droid.Utility.h"
+#include "elastos/droid/app/AppGlobals.h"
+//#include "elastos/droid/app/CActivityManagerStackInfo.h"
+//#include "elastos/droid/app/CProfilerInfo.h"
+//#include "elastos/droid/content/CIntent.h"
+//#include "elastos/droid/content/res/CConfiguration.h"
+//#include "elastos/droid/hardware/display/CDisplayManagerGlobalHelper.h"
+//#include "elastos/droid/internal/widget/CLockPatternUtils.h"
+//#include "elastos/droid/internal/os/CTransferPipe.h"
+#include "elastos/droid/Manifest.h"
+//#include "elastos/droid/os/CBinder.h"
+//#include "elastos/droid/os/CServiceManager.h"
+#include "elastos/droid/os/SystemClock.h"
+//#include "elastos/droid/os/CBinderHelper.h"
+#include "elastos/droid/os/Process.h"
+//#include "elastos/droid/os/CMessageHelper.h"
+#include "elastos/droid/provider/Settings.h"
 #include "elastos/droid/server/am/LockTaskNotify.h"
+#include "elastos/droid/server/am/ActivityStack.h"
 #include "elastos/droid/server/am/ActivityStackSupervisor.h"
 #include "elastos/droid/server/am/CPendingIntentRecord.h"
-#include "elastos/droid/app/AppGlobals.h"
-#include "elastos/droid/app/CProfilerInfo.h"
-#include "elastos/droid/app/CActivityManagerStackInfo.h"
-#include "elastos/droid/content/res/CConfiguration.h"
-#include "/elastos/droid/hardware/display/CDisplayManagerGlobalHelper.h"
-#include "elastos/droid/internal/widget/CLockPatternUtils.h"
-#include "elastos/droid/internal/os/CTransferPipe.h"
-#include "elastos/droid/Manifest.h"
-#include "elastos/droid/os/CBinder.h"
-#include "elastos/droid/os/CServiceManager.h"
-#include "elastos/droid/os/SystemClock.h"
-#include "elastos/droid/os/CBinderHelper.h"
-#include "elastos/droid/os/Process.h"
-#include "elastos/droid/os/CMessageHelper.h"
-#include "elastos/droid/provider/Settings.h"
+#include "elastos/droid/server/am/ProcessRecord.h"
 #include "elastos/droid/server/LocalServices.h"
-#include "elastos/droid/utility/CSparseInt32Array.h"
-#include "elastos/droid/content/CIntent.h"
-#include "elastos/droid/view/CDisplayInfo.h"
+//#include "elastos/droid/utility/CSparseInt32Array.h"
+//#include "elastos/droid/view/CDisplayInfo.h"
 
-#include "elastos/core/CSystem.h"
+//#include "elastos/core/CSystem.h"
+#include "elastos/core/AutoLock.h"
+#include "elastos/core/Math.h"
 #include "elastos/core/StringUtils.h"
+#include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Droid::App::IActivityManagerRunningTaskInfo;
 using Elastos::Droid::App::AppGlobals;
 using Elastos::Droid::App::CActivityManagerStackInfo;
-using Elastos::Droid::App::IProfilerInfo;
+using Elastos::Droid::App::CActivityOptionsHelper;
 using Elastos::Droid::App::CProfilerInfo;
+using Elastos::Droid::App::EIID_IActivityContainer;
+using Elastos::Droid::App::IActivity;
+using Elastos::Droid::App::IActivityManager;
+using Elastos::Droid::App::IActivityManagerRunningTaskInfo;
+using Elastos::Droid::App::IActivityOptionsHelper;
+using Elastos::Droid::App::IPendingIntent;
+using Elastos::Droid::App::IStatusBarManager;
+using Elastos::Droid::Content::CComponentName;
 using Elastos::Droid::Content::CIntent;
-using Elastos::Droid::Content::Res::CConfiguration;
+using Elastos::Droid::Content::CIntentSender;
+using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntentSender;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Content::Pm::IComponentInfo;
+using Elastos::Droid::Content::Pm::IPackageItemInfo;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Content::Pm::IResolveInfo;
+using Elastos::Droid::Content::Res::CConfiguration;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Hardware::Display::CDisplayManagerGlobalHelper;
+using Elastos::Droid::Hardware::Display::EIID_IDisplayListener;
+using Elastos::Droid::Hardware::Display::IDisplayManagerGlobal;
+using Elastos::Droid::Hardware::Display::IDisplayManagerGlobalHelper;
+using Elastos::Droid::Hardware::Input::EIID_IInputManagerInternal;
+using Elastos::Droid::Hardware::Input::IInputManager;
 using Elastos::Droid::Internal::App::IHeavyWeightSwitcherActivity;
-using Elastos::Droid::Internal::OS::CTransferPipe;
-using Elastos::Droid::Internal::OS::ITransferPipe;
+using Elastos::Droid::Internal::Os::CTransferPipe;
+using Elastos::Droid::Internal::Os::ITransferPipe;
 using Elastos::Droid::Internal::Widget::CLockPatternUtils;
 using Elastos::Droid::Internal::Widget::ILockPatternUtils;
 using Elastos::Droid::Manifest;
-using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::CBinder;
 using Elastos::Droid::Os::CBinderHelper;
-using Elastos::Droid::Os::IBinderHelper;
-using Elastos::Droid::Os::CServiceManager;
-using Elastos::Droid::Hardware::Input::EIID_IInputManagerInternal;
-using Elastos::Droid::Os::IServiceManager;
-using Elastos::Droid::Os::SystemClock;
-using Elastos::Droid::Os::Process;
 using Elastos::Droid::Os::CMessageHelper;
+using Elastos::Droid::Os::CServiceManager;
+using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::Os::IBinderHelper;
 using Elastos::Droid::Os::IMessageHelper;
+using Elastos::Droid::Os::IParcelFileDescriptor;
+using Elastos::Droid::Os::IPowerManager;
+using Elastos::Droid::Os::IServiceManager;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Os::Process;
+using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::Provider::ISettingsSystem;
+using Elastos::Droid::Server::Am::IPendingIntentRecord;
 using Elastos::Droid::Server::Am::LockTaskNotify;
-using Elastos::Droid::Server::Wm::CWindowManagerService;
 using Elastos::Droid::Server::LocalServices;
+using Elastos::Droid::Utility::CArraySet;
 using Elastos::Droid::Utility::CSparseInt32Array;
+using Elastos::Droid::Utility::IArraySet;
+using Elastos::Droid::View::CDisplayInfo;
 
+using Elastos::Core::AutoLock;
 using Elastos::Core::CString;
+using Elastos::Core::CSystem;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IComparable;
-using Elastos::Core::CSystem;
-using Elastos::Core::AutoLock;
+using Elastos::Core::ISystem;
 using Elastos::Core::StringUtils;
 using Elastos::Utility::CArrayList;
+using Elastos::Utility::ICollection;
+using Elastos::Utility::ISet;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -147,7 +189,7 @@ ECode ActivityStackSupervisor::ActivityStackSupervisorHandler::HandleMessage(
                 AutoLock lock(mOwner->mService);
                 if (mOwner->mService->IsSleepingOrShuttingDown()) {
                     Slogger::W(CActivityManagerService::TAG, "Sleep timeout!  Sleeping now.");
-                    mSleepTimeout = TRUE;
+                    mOwner->mSleepTimeout = TRUE;
                     mOwner->CheckReadyForSleepLocked();
                 }
             }
@@ -213,7 +255,7 @@ ECode ActivityStackSupervisor::ActivityStackSupervisorHandler::HandleMessage(
                 if (mOwner->mLockTaskNotify == NULL) {
                     mOwner->mLockTaskNotify = new LockTaskNotify(mOwner->mService->mContext);
                 }
-                mLockTaskNotify->Show(TRUE);
+                mOwner->mLockTaskNotify->Show(TRUE);
                 Int32 arg2;
                 msg->GetArg2(&arg2);
                 mOwner->mLockTaskIsLocked = arg2 == 0;
@@ -226,10 +268,10 @@ ECode ActivityStackSupervisor::ActivityStackSupervisorHandler::HandleMessage(
                     }
                     String packageName;
                     mOwner->mService->mContext->GetPackageName(&packageName);
-                    mOwner->GetStatusBarService()->Disable(flags, mToken,
+                    mOwner->GetStatusBarService()->Disable(flags, mOwner->mToken,
                             packageName);
                 }
-                mOwner->mWindowManager->DisableKeyguard(mOwner->mToken, LOCK_TASK_TAG);
+                //TODO mOwner->mWindowManager->DisableKeyguard(mOwner->mToken, LOCK_TASK_TAG);
                 if (mOwner->GetDevicePolicyManager() != NULL) {
                     Int32 arg1;
                     msg->GetArg1(&arg1);
@@ -253,14 +295,14 @@ ECode ActivityStackSupervisor::ActivityStackSupervisorHandler::HandleMessage(
                 if (mOwner->GetStatusBarService() != NULL) {
                     String packageName;
                     mOwner->mService->mContext->GetPackageName(&packageName);
-                    mOwner->GetStatusBarService()->Disable(IStatusBarManager::DISABLE_NONE, mToken,
+                    mOwner->GetStatusBarService()->Disable(IStatusBarManager::DISABLE_NONE, mOwner->mToken,
                             packageName);
                 }
-                mOwner->mWindowManager->ReenableKeyguard(mToken);
+                //TODO mOwner->mWindowManager->ReenableKeyguard(mToken);
                 if (mOwner->GetDevicePolicyManager() != NULL) {
                     Int32 arg1;
                     msg->GetArg1(&arg1);
-                    mOwner->GetDevicePolicyManager()->NotifyLockTaskModeChanged(FALSE, NULL,
+                    mOwner->GetDevicePolicyManager()->NotifyLockTaskModeChanged(FALSE,String(NULL),
                             arg1);
                 }
                 if (mOwner->mLockTaskNotify == NULL) {
@@ -270,18 +312,18 @@ ECode ActivityStackSupervisor::ActivityStackSupervisorHandler::HandleMessage(
                 //try {
                     Int32 iTemp;
                     AutoPtr<IContentResolver> contentResolver;
-                    mService->mContext->GetContentResolver((IContentResolver**)&contentResolver);
+                    mOwner->mService->mContext->GetContentResolver((IContentResolver**)&contentResolver);
                     Settings::System::GetInt32(
                             contentResolver,
-                            Settings::System::LOCK_TO_APP_EXIT_LOCKED, &iTemp);
+                            ISettingsSystem::LOCK_TO_APP_EXIT_LOCKED, &iTemp);
                     Boolean shouldLockKeyguard = iTemp != 0;
                     if (!mOwner->mLockTaskIsLocked && shouldLockKeyguard) {
-                        mOwner->mWindowManager->LockNow(NULL);
-                        mOwner->mWindowManager->DismissKeyguard();
+                        //TODO mOwner->mWindowManager->LockNow(NULL);
+                        //TODO mOwner->mWindowManager->DismissKeyguard();
                         AutoPtr<ILockPatternUtils> lpu;
-                        CLockPatternUtils::New(mOwner->mContext, (ILockPatternUtils**)&lpu);
+                        CLockPatternUtils::New(mOwner->mService->mContext, (ILockPatternUtils**)&lpu);
                         //new LockPatternUtils(mService.mContext).requireCredentialEntry(UserHandle.USER_ALL);
-                        lpu->RequireCredentialEntry(IUserHandle::User_ALL);
+                        lpu->RequireCredentialEntry(IUserHandle::USER_ALL);
                     }
                 //} catch (SettingNotFoundException e) {
                     // No setting, don't lock.
@@ -368,7 +410,7 @@ ECode ActivityStackSupervisor::ActivityContainer::AttachToDisplayLocked(
     mStack->mStacks = activityDisplay->mStacks;
 
     activityDisplay->AttachActivities(mStack);
-    mOwner->mWindowManager->AttachStack(mStackId, activityDisplay->mDisplayId);
+    //TODO mOwner->mWindowManager->AttachStack(mStackId, activityDisplay->mDisplayId);
     return NOERROR;
 }
 
@@ -379,10 +421,10 @@ ECode ActivityStackSupervisor::ActivityContainer::AttachToDisplay(
         AutoLock lock(mOwner->mService);
         //ActivityDisplay activityDisplay = mActivityDisplays.get(displayId);
         AutoPtr<IInterface> adobj;
-        mActivityDisplays->Get(displayId, (IInterface**)&adobj);
+        mOwner->mActivityDisplays->Get(displayId, (IInterface**)&adobj);
         ActivityDisplay* activityDisplay = (ActivityDisplay*)(IObject::Probe(adobj));
         if (activityDisplay == NULL) {
-            return;
+            return NOERROR;
         }
         AttachToDisplayLocked(activityDisplay);
     }
@@ -417,7 +459,7 @@ ECode ActivityStackSupervisor::ActivityContainer::InjectEvent(
         {
             AutoLock lock(mOwner->mService);
             if (mActivityDisplay != NULL) {
-                return mInputManagerInternal->InjectInputEvent(event,
+                return mOwner->mInputManagerInternal->InjectInputEvent(event,
                         mActivityDisplay->mDisplayId,
                         IInputManager::INJECT_INPUT_EVENT_MODE_ASYNC, result);
             }
@@ -440,7 +482,7 @@ ECode ActivityStackSupervisor::ActivityContainer::ReleaseResources()
         mContainerState = CONTAINER_STATE_FINISHING;
 
         AutoPtr<IMessage> msg;
-        mOwner->mHandler->ObtainMessage(CONTAINER_TASK_LIST_EMPTY_TIMEOUT, TO_IINTERFACE(this), (IMessage**)msg);
+        mOwner->mHandler->ObtainMessage(CONTAINER_TASK_LIST_EMPTY_TIMEOUT, TO_IINTERFACE(this), (IMessage**)&msg);
         Boolean res;
         mOwner->mHandler->SendMessageDelayed(msg, 2000, &res);
 
@@ -468,12 +510,12 @@ ECode ActivityStackSupervisor::ActivityContainer::StartActivity(
     CBinderHelper::AcquireSingleton((IBinderHelper**)&binderHelper);
     Int32 callingPid, callingUid;
     binderHelper->GetCallingPid(&callingPid);
-    binderHelper->getCallingUid(&callingUid);
+    binderHelper->GetCallingUid(&callingUid);
     Int32 userId;
     mOwner->mService->HandleIncomingUser(callingPid,
-            callingUid, mCurrentUser, FALSE,
+            callingUid, mOwner->mCurrentUser, FALSE,
             CActivityManagerService::ALLOW_FULL_ONLY,
-            String("ActivityContainer"), NULL, &userId);
+            String("ActivityContainer"), String(NULL), &userId);
     // TODO: Switch to user app stacks here.
     intent->AddFlags(FORCE_NEW_TASK_FLAGS);
     String mimeType;
@@ -483,7 +525,7 @@ ECode ActivityStackSupervisor::ActivityContainer::StartActivity(
         intent->GetData((IUri**)&iData);
         String scheme;
         if(iData != NULL
-                && String("content").Equals(iData->GetScheme(&scheme), scheme)) {
+                && String("content").Equals((iData->GetScheme(&scheme), scheme))) {
             mOwner->mService->GetProviderMimeType(iData, userId, &mimeType);
         }
     }
@@ -514,7 +556,7 @@ ECode ActivityStackSupervisor::ActivityContainer::StartActivityIntentSender(
 ECode ActivityStackSupervisor::ActivityContainer::CheckEmbeddedAllowed(
     /* [in] */ IIntent* intent)
 {
-    CheckEmbeddedAllowedInner(intent, NULL);
+    CheckEmbeddedAllowedInner(intent, String(NULL));
     return NOERROR;
 }
 
@@ -586,7 +628,7 @@ ECode ActivityStackSupervisor::ActivityContainer::SetVisible(
         if (mCallback != NULL) {
             AutoPtr<IMessage> msg;
             mOwner->mHandler->ObtainMessage(CONTAINER_CALLBACK_VISIBILITY, visible ? 1 : 0,
-                    0 /* unused */, TO_IINTERFACE(this));
+                    0 /* unused */, TO_IINTERFACE(this), (IMessage**)&msg);
             msg->SendToTarget();
         }
     }
@@ -639,13 +681,13 @@ void ActivityStackSupervisor::ActivityContainer::DetachLocked()
         mActivityDisplay = NULL;
         mStack->mDisplayId = -1;
         mStack->mStacks = NULL;
-        mOwner->mWindowManager->DetachStack(mStackId);
+        //TODO mOwner->mWindowManager->DetachStack(mStackId);
     }
 }
 
 ECode ActivityStackSupervisor::ActivityContainer::CheckEmbeddedAllowedInner(
     /* [in] */ IIntent* intent,
-    /* [in] */ const String& resolvedType)
+    /* [in] */ const String& _resolvedType)
 {
     AutoPtr<IBinderHelper> binderHelper;
     CBinderHelper::AcquireSingleton((IBinderHelper**)&binderHelper);
@@ -654,9 +696,10 @@ ECode ActivityStackSupervisor::ActivityContainer::CheckEmbeddedAllowedInner(
     binderHelper->GetCallingUid(&callingUid);
     Int32 userId;
     mOwner->mService->HandleIncomingUser(callingPid,
-            callingUid, mCurrentUser, FALSE,
-            CActivityManagerService::ALLOW_FULL_ONLY, String("ActivityContainer"), NULL, &userId);
+            callingUid, mOwner->mCurrentUser, FALSE,
+            CActivityManagerService::ALLOW_FULL_ONLY, String("ActivityContainer"), String(NULL), &userId);
 
+    String resolvedType = _resolvedType;
     if (resolvedType.IsNullOrEmpty()) {
         intent->GetType(&resolvedType);
         if (resolvedType.IsNullOrEmpty()) {
@@ -664,7 +707,7 @@ ECode ActivityStackSupervisor::ActivityContainer::CheckEmbeddedAllowedInner(
             intent->GetData((IUri**)&iData);
             String scheme;
             if(iData != NULL
-                    && String("content").Equals(iData->GetScheme(&scheme), scheme)) {
+                    && String("content").Equals((iData->GetScheme(&scheme), scheme))) {
                 mOwner->mService->GetProviderMimeType(iData, userId, &resolvedType);
             }
         }
@@ -684,14 +727,18 @@ ECode ActivityStackSupervisor::ActivityContainer::CheckEmbeddedAllowedInner(
 //=====================================================================
 //               ActivityStackSupervisor::ActivityDisplay
 //=====================================================================
-ActivityStackSupervisor::ActivityDisplay::ActivityDisplay()
+ActivityStackSupervisor::ActivityDisplay::ActivityDisplay(
+    /* [in] */ ActivityStackSupervisor* owner)
+    : mOwner(owner)
 {
     CDisplayInfo::New((IDisplayInfo**)&mDisplayInfo);
     CArrayList::New((IArrayList**)&mStacks);
 }
 
 ActivityStackSupervisor::ActivityDisplay::ActivityDisplay(
-    /* [in] */ Int32 displayId)
+    /* [in] */ Int32 displayId,
+    /* [in] */ ActivityStackSupervisor* owner)
+    : mOwner(owner)
 {
     CDisplayInfo::New((IDisplayInfo**)&mDisplayInfo);
     CArrayList::New((IArrayList**)&mStacks);
@@ -734,12 +781,12 @@ ECode ActivityStackSupervisor::ActivityDisplay::DetachActivitiesLocked(
 ECode ActivityStackSupervisor::ActivityDisplay::GetBounds(
     /* [in] */ IPoint* bounds)
 {
-    mDisplay->GetDisplayInfo(mDisplayInfo);
+    Boolean res;
+    mDisplay->GetDisplayInfo(mDisplayInfo, &res);
     Int32 appWidth, appHeight;
     mDisplayInfo->GetAppWidth(&appWidth);
     mDisplayInfo->GetAppHeight(&appHeight);
-    bounds->SetX(appWidth);
-    bounds->SetY(appHeight);
+    bounds->Set(appWidth, appHeight);
     return NOERROR;
 }
 
@@ -750,12 +797,9 @@ ECode ActivityStackSupervisor::ActivityDisplay::SetVisibleBehindActivity(
     return NOERROR;
 }
 
-ECode ActivityStackSupervisor::ActivityDisplay::HasVisibleBehindActivity(
-    /* [out] */ Boolean* result)
+Boolean ActivityStackSupervisor::ActivityDisplay::HasVisibleBehindActivity()
 {
-    VALIDATE_NOT_NULL(result);
-    *result = mVisibleBehindActivity != NULL;
-    return NOERROR;
+    return mVisibleBehindActivity != NULL;
 }
 
 String ActivityStackSupervisor::ActivityDisplay::ToString()
@@ -789,7 +833,7 @@ ActivityStackSupervisor::VirtualActivityDisplay::VirtualActivityDisplay(
     /* [in] */ Int32 height,
     /* [in] */ Int32 density,
     /* [in] */ ActivityStackSupervisor* owner)
-    : mOwner(owner)
+    : ActivityDisplay(owner)
 {
     AutoPtr<IDisplayManagerGlobalHelper> helper;
     CDisplayManagerGlobalHelper::AcquireSingleton((IDisplayManagerGlobalHelper**)&helper);
@@ -804,7 +848,7 @@ ActivityStackSupervisor::VirtualActivityDisplay::VirtualActivityDisplay(
     mVirtualDisplay->GetDisplay((IDisplay**)&display);
     Init(display);
 
-    mOwner->mWindowManager->HandleDisplayAdded(mDisplayId);
+    //TODO mOwner->mWindowManager->HandleDisplayAdded(mDisplayId);
 }
 
 ECode ActivityStackSupervisor::VirtualActivityDisplay::SetSurface(
@@ -819,7 +863,7 @@ ECode ActivityStackSupervisor::VirtualActivityDisplay::SetSurface(
 ECode ActivityStackSupervisor::VirtualActivityDisplay::DetachActivitiesLocked(
     /* [in] */ ActivityStack* stack)
 {
-    super.detachActivitiesLocked(stack);
+    ActivityDisplay::DetachActivitiesLocked(stack);
     if (mVirtualDisplay != NULL) {
         //TODO mVirtualDisplay.release();
         mVirtualDisplay = NULL;
@@ -853,9 +897,8 @@ ActivityStackSupervisor::VirtualActivityContainer::VirtualActivityContainer(
     /* [in] */ ActivityRecord* parent,
     /* [in] */ IActivityContainerCallback* callback,
     /* [in] */ ActivityStackSupervisor* owner)
-    : ActivityContainer(GetNextStackId())
+    : ActivityContainer(owner->GetNextStackId(), owner)
     , mDrawn(FALSE)
-    , mOwner(owner)
 {
     //ActivityContainer(GetNextStackId());
     mParentActivity = parent;
@@ -914,7 +957,7 @@ ECode ActivityStackSupervisor::VirtualActivityContainer::OnTaskListEmptyLocked()
     DetachLocked();
     mOwner->DeleteActivityContainer(this);
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessage(CONTAINER_CALLBACK_TASK_LIST_EMPTY, TO_IINTERFACE(this), (IMessage**)&msg);
+    mOwner->mHandler->ObtainMessage(CONTAINER_CALLBACK_TASK_LIST_EMPTY, TO_IINTERFACE(this), (IMessage**)&msg);
     msg->SendToTarget();
     return NOERROR;
 }
@@ -929,12 +972,12 @@ void ActivityStackSupervisor::VirtualActivityContainer::SetSurfaceLocked(
         return;
     }
     AutoPtr<VirtualActivityDisplay> virtualActivityDisplay =
-            (VirtualActivityDisplay*)mActivityDisplay;
+            (VirtualActivityDisplay*)(mActivityDisplay.Get());
     if (virtualActivityDisplay == NULL) {
         virtualActivityDisplay =
-                new VirtualActivityDisplay(width, height, density);
+                new VirtualActivityDisplay(width, height, density, mOwner);
         mActivityDisplay = virtualActivityDisplay;
-        mOwner->mActivityDisplays->Put(virtualActivityDisplay->mDisplayId, virtualActivityDisplay);
+        mOwner->mActivityDisplays->Put(virtualActivityDisplay->mDisplayId, TO_IINTERFACE(virtualActivityDisplay));
         AttachToDisplayLocked(virtualActivityDisplay);
     }
 
@@ -947,7 +990,7 @@ void ActivityStackSupervisor::VirtualActivityContainer::SetSurfaceLocked(
         mStack->ResumeTopActivityLocked(NULL);
     } else {
         mContainerState = CONTAINER_STATE_NO_SURFACE;
-        ((VirtualActivityDisplay*)mActivityDisplay)->SetSurface(NULL);
+        ((VirtualActivityDisplay*)mActivityDisplay.Get())->SetSurface(NULL);
         if (mStack->mPausingActivity == NULL && mStack->mResumedActivity != NULL) {
             mStack->StartPausingLocked(FALSE, TRUE, FALSE, FALSE);
         }
@@ -964,7 +1007,7 @@ void ActivityStackSupervisor::VirtualActivityContainer::SetSurfaceIfReadyLocked(
     //if (CActivityManagerService::DEBUG_STACK) Slog.v(CActivityManagerService::TAG, "setSurfaceIfReadyLocked: mDrawn=" + mDrawn +
     //        " mContainerState=" + mContainerState + " mSurface=" + mSurface);
     if (mDrawn && mSurface != NULL && mContainerState == CONTAINER_STATE_NO_SURFACE) {
-        ((VirtualActivityDisplay*)mActivityDisplay)->SetSurface(mSurface);
+        ((VirtualActivityDisplay*)mActivityDisplay.Get())->SetSurface(mSurface);
         mContainerState = CONTAINER_STATE_HAS_SURFACE;
     }
 }
@@ -987,31 +1030,31 @@ const Int32 ActivityStackSupervisor::HOME_STACK_ID;
 const Int32 ActivityStackSupervisor::IDLE_TIMEOUT;
 const Int32 ActivityStackSupervisor::SLEEP_TIMEOUT;
 const Int32 ActivityStackSupervisor::LAUNCH_TIMEOUT;
-const Int32 ActivityStackSupervisor::IDLE_TIMEOUT_MSG = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG;
-const Int32 ActivityStackSupervisor::IDLE_NOW_MSG = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 1;
-const Int32 ActivityStackSupervisor::RESUME_TOP_ACTIVITY_MSG = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 2;
-const Int32 ActivityStackSupervisor::SLEEP_TIMEOUT_MSG = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 3;
-const Int32 ActivityStackSupervisor::LAUNCH_TIMEOUT_MSG = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 4;
-const Int32 ActivityStackSupervisor::HANDLE_DISPLAY_ADDED = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 5;
-const Int32 ActivityStackSupervisor::HANDLE_DISPLAY_CHANGED = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 6;
-const Int32 ActivityStackSupervisor::HANDLE_DISPLAY_REMOVED = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 7;
-const Int32 ActivityStackSupervisor::CONTAINER_CALLBACK_VISIBILITY = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 8;
-const Int32 ActivityStackSupervisor::LOCK_TASK_START_MSG = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 9;
-const Int32 ActivityStackSupervisor::LOCK_TASK_END_MSG = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 10;
-const Int32 ActivityStackSupervisor::CONTAINER_CALLBACK_TASK_LIST_EMPTY = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 11;
-const Int32 ActivityStackSupervisor::CONTAINER_TASK_LIST_EMPTY_TIMEOUT = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 12;
-const Int32 ActivityStackSupervisor::LAUNCH_TASK_BEHIND_COMPLETE = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 13;
+const Int32 ActivityStackSupervisor::IDLE_TIMEOUT_MSG;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG;
+const Int32 ActivityStackSupervisor::IDLE_NOW_MSG;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 1;
+const Int32 ActivityStackSupervisor::RESUME_TOP_ACTIVITY_MSG;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 2;
+const Int32 ActivityStackSupervisor::SLEEP_TIMEOUT_MSG;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 3;
+const Int32 ActivityStackSupervisor::LAUNCH_TIMEOUT_MSG;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 4;
+const Int32 ActivityStackSupervisor::HANDLE_DISPLAY_ADDED;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 5;
+const Int32 ActivityStackSupervisor::HANDLE_DISPLAY_CHANGED;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 6;
+const Int32 ActivityStackSupervisor::HANDLE_DISPLAY_REMOVED;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 7;
+const Int32 ActivityStackSupervisor::CONTAINER_CALLBACK_VISIBILITY;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 8;
+const Int32 ActivityStackSupervisor::LOCK_TASK_START_MSG;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 9;
+const Int32 ActivityStackSupervisor::LOCK_TASK_END_MSG;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 10;
+const Int32 ActivityStackSupervisor::CONTAINER_CALLBACK_TASK_LIST_EMPTY;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 11;
+const Int32 ActivityStackSupervisor::CONTAINER_TASK_LIST_EMPTY_TIMEOUT;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 12;
+const Int32 ActivityStackSupervisor::LAUNCH_TASK_BEHIND_COMPLETE;// = CActivityManagerService::FIRST_SUPERVISOR_STACK_MSG + 13;
 const Boolean ActivityStackSupervisor::VALIDATE_WAKE_LOCK_CALLER = FALSE;
 const String ActivityStackSupervisor::VIRTUAL_DISPLAY_BASE_NAME("ActivityViewVirtualDisplay");
 const String ActivityStackSupervisor::LOCK_TASK_TAG("Lock-to-App");
 
 ActivityStackSupervisor::ActivityStackSupervisor(
     /* [in] */ CActivityManagerService* service)
-    : mLastStackId(HOME_STACK_ID)
+    : mUserLeaving(FALSE)
+    , mSleepTimeout(FALSE)
+    , mLastStackId(HOME_STACK_ID)
     , mCurTaskId(0)
     , mCurrentUser(0)
-    , mUserLeaving(FALSE)
-    , mSleepTimeout(FALSE)
     , mLeanbackOnlyDevice(FALSE)
     , mLockTaskIsLocked(FALSE)
 {
@@ -1024,9 +1067,9 @@ ActivityStackSupervisor::ActivityStackSupervisor(
     CArrayList::New((IArrayList**)&mGoingToSleepActivities);
     CArrayList::New((IArrayList**)&mStartingUsers);
     CArrayList::New((IArrayList**)&mStartingBackgroundUsers);
-    CSparseInt32Array(2, (ISparseInt32Array**)&mUserStackInFront);
-    CSparseInt32Array((ISparseInt32Array**)&mActivityContainers);
-    CSparseInt32Array((ISparseInt32Array**)&mActivityDisplays);
+    CSparseInt32Array::New(2, (ISparseInt32Array**)&mUserStackInFront);
+    CSparseInt32Array::New((ISparseInt32Array**)&mActivityContainers);
+    CSparseInt32Array::New((ISparseInt32Array**)&mActivityDisplays);
     CArrayList::New((IArrayList**)&mPendingActivityLaunches);
 
     mService = service;
@@ -1040,18 +1083,18 @@ ECode ActivityStackSupervisor::InitPowerManagement()
     AutoPtr<IInterface> obj;
     mService->mContext->GetSystemService(IContext::POWER_SERVICE, (IInterface**)&obj);
     IPowerManager* pm = IPowerManager::Probe(obj);
-    pm->NewWakeLock(IPowerManager::PARTIAL_WAKE_LOCK, String("ActivityManager-Sleep"), &mGoingToSleep);
-    pm->NewWakeLock(IPowerManager::PARTIAL_WAKE_LOCK, String("ActivityManager-Launch"), &mLaunchingActivity);
+    pm->NewWakeLock(IPowerManager::PARTIAL_WAKE_LOCK, String("ActivityManager-Sleep"), (IPowerManagerWakeLock**)&mGoingToSleep);
+    pm->NewWakeLock(IPowerManager::PARTIAL_WAKE_LOCK, String("ActivityManager-Launch"), (IPowerManagerWakeLock**)&mLaunchingActivity);
     mLaunchingActivity->SetReferenceCounted(FALSE);
     return NOERROR;
 }
 
 ECode ActivityStackSupervisor::SetWindowManager(
-    /* [in] */ CWindowManagerService* wm)
+    /* [in] */ /*TODO CWindowManagerService*/IInterface* wm)
 {
     {
         AutoLock lock(mService);
-        mWindowManager = wm;
+        //TODO mWindowManager = wm;
 
         AutoPtr<IInterface> obj;
         mService->mContext->GetSystemService(IContext::DISPLAY_SERVICE, (IInterface**)&obj);
@@ -1063,7 +1106,7 @@ ECode ActivityStackSupervisor::SetWindowManager(
         for (Int32 displayNdx = displays->GetLength() - 1; displayNdx >= 0; --displayNdx) {
             Int32 displayId;
             (*displays)[displayNdx]->GetDisplayId(&displayId);
-            AutoPtr<ActivityDisplay> activityDisplay = new ActivityDisplay(displayId);
+            AutoPtr<ActivityDisplay> activityDisplay = new ActivityDisplay(displayId, this);
             if (activityDisplay->mDisplay == NULL) {
                 //throw new IllegalStateException("Default Display does not exist");
                 return E_ILLEGAL_STATE_EXCEPTION;
@@ -1086,7 +1129,7 @@ ECode ActivityStackSupervisor::SetWindowManager(
 ECode ActivityStackSupervisor::NotifyActivityDrawnForKeyguard()
 {
     if (CActivityManagerService::DEBUG_LOCKSCREEN) mService->LogLockScreen(String(""));
-    mWindowManager->NotifyActivityDrawnForKeyguard();
+    //TODO mWindowManager->NotifyActivityDrawnForKeyguard();
     return NOERROR;
 }
 
@@ -1152,7 +1195,7 @@ ECode ActivityStackSupervisor::MoveHomeStackTaskToTop(
     /* [in] */ Int32 homeStackTaskType)
 {
     if (homeStackTaskType == ActivityRecord::RECENTS_ACTIVITY_TYPE) {
-        mWindowManager->ShowRecentApps();
+        //TODO mWindowManager->ShowRecentApps();
         return NOERROR;
     }
     MoveHomeStack(TRUE);
@@ -1170,7 +1213,7 @@ Boolean ActivityStackSupervisor::ResumeHomeStackTask(
     }
 
     if (homeStackTaskType == ActivityRecord::RECENTS_ACTIVITY_TYPE) {
-        mWindowManager->ShowRecentApps();
+        //TODO mWindowManager->ShowRecentApps();
         return FALSE;
     }
     MoveHomeStackTaskToTop(homeStackTaskType);
@@ -1189,7 +1232,7 @@ Boolean ActivityStackSupervisor::ResumeHomeStackTask(
 
 ECode ActivityStackSupervisor::KeyguardWaitingForActivityDrawn()
 {
-    mWindowManager->KeyguardWaitingForActivityDrawn();
+    //TODO mWindowManager->KeyguardWaitingForActivityDrawn();
     return NOERROR;
 }
 
@@ -1205,7 +1248,7 @@ AutoPtr<TaskRecord> ActivityStackSupervisor::AnyTaskForIdLocked(
         ActivityDisplay* ad = (ActivityDisplay*)(IObject::Probe(adobj));
         AutoPtr<IArrayList> stacks = ad->mStacks;
         Int32 stackSize;
-        stacks->GetSize(stackSize);
+        stacks->GetSize(&stackSize);
         for (Int32 stackNdx = stackSize - 1; stackNdx >= 0; --stackNdx) {
             //ActivityStack stack = stacks.get(stackNdx);
             AutoPtr<IInterface> stackobj;
@@ -1232,7 +1275,7 @@ AutoPtr<ActivityRecord> ActivityStackSupervisor::IsInAnyStackLocked(
         ActivityDisplay* ad = (ActivityDisplay*)(IObject::Probe(adobj));
         AutoPtr<IArrayList> stacks = ad->mStacks;
         Int32 stackSize;
-        stacks->GetSize(stackSize);
+        stacks->GetSize(&stackSize);
         for (Int32 stackNdx = stackSize - 1; stackNdx >= 0; --stackNdx) {
             AutoPtr<IInterface> stackobj;
             stacks->Get(stackNdx, (IInterface**)&stackobj);
@@ -1296,7 +1339,7 @@ Boolean ActivityStackSupervisor::AttachApplicationLocked(
         ActivityDisplay* ad = (ActivityDisplay*)(IObject::Probe(adobj));
         AutoPtr<IArrayList> stacks = ad->mStacks;
         Int32 stackSize;
-        stacks->GetSize(stackSize);
+        stacks->GetSize(&stackSize);
         for (Int32 stackNdx = stackSize - 1; stackNdx >= 0; --stackNdx) {
             //final ActivityStack stack = stacks.get(stackNdx);
             AutoPtr<IInterface> stackobj;
@@ -1308,14 +1351,15 @@ Boolean ActivityStackSupervisor::AttachApplicationLocked(
             AutoPtr<ActivityRecord> hr = stack->TopRunningActivityLocked(NULL);
             if (hr != NULL) {
                 AutoPtr<IApplicationInfo> appInfo;
-                IComponentInfo::Probe(h->mInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
+                IComponentInfo::Probe(hr->mInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
                 Int32 uid;
                 appInfo->GetUid(&uid);
 
                 if (hr->mApp == NULL && app->mUid == uid
                         && processName.Equals(hr->mProcessName)) {
                     //try {
-                        if (RealStartActivityLocked(hr, app, TRUE, TRUE)) {
+                        Boolean bTemp;
+                        if (RealStartActivityLocked(hr, app, TRUE, TRUE, &bTemp), bTemp) {
                             didSomething = TRUE;
                         }
                     //} catch (RemoteException e) {
@@ -1344,7 +1388,7 @@ Boolean ActivityStackSupervisor::AllResumedActivitiesIdle()
         ActivityDisplay* ad = (ActivityDisplay*)(IObject::Probe(adobj));
         AutoPtr<IArrayList> stacks = ad->mStacks;
         Int32 stackSize;
-        stacks->GetSize(stackSize);
+        stacks->GetSize(&stackSize);
         for (Int32 stackNdx = stackSize - 1; stackNdx >= 0; --stackNdx) {
             //final ActivityStack stack = stacks.get(stackNdx);
             AutoPtr<IInterface> stackobj;
@@ -1375,7 +1419,7 @@ Boolean ActivityStackSupervisor::AllResumedActivitiesComplete()
         ActivityDisplay* ad = (ActivityDisplay*)(IObject::Probe(adobj));
         AutoPtr<IArrayList> stacks = ad->mStacks;
         Int32 stackSize;
-        stacks->GetSize(stackSize);
+        stacks->GetSize(&stackSize);
         for (Int32 stackNdx = stackSize - 1; stackNdx >= 0; --stackNdx) {
             //final ActivityStack stack = stacks.get(stackNdx);
             AutoPtr<IInterface> stackobj;
@@ -1408,7 +1452,7 @@ Boolean ActivityStackSupervisor::AllResumedActivitiesVisible()
         ActivityDisplay* ad = (ActivityDisplay*)(IObject::Probe(adobj));
         AutoPtr<IArrayList> stacks = ad->mStacks;
         Int32 stackSize;
-        stacks->GetSize(stackSize);
+        stacks->GetSize(&stackSize);
         for (Int32 stackNdx = stackSize - 1; stackNdx >= 0; --stackNdx) {
             //final ActivityStack stack = stacks.get(stackNdx);
             AutoPtr<IInterface> stackobj;
@@ -1438,7 +1482,7 @@ Boolean ActivityStackSupervisor::PauseBackStacks(
         ActivityDisplay* ad = (ActivityDisplay*)(IObject::Probe(adobj));
         AutoPtr<IArrayList> stacks = ad->mStacks;
         Int32 stackSize;
-        stacks->GetSize(stackSize);
+        stacks->GetSize(&stackSize);
         for (Int32 stackNdx = stackSize - 1; stackNdx >= 0; --stackNdx) {
             //final ActivityStack stack = stacks.get(stackNdx);
             AutoPtr<IInterface> stackobj;
@@ -1467,7 +1511,7 @@ Boolean ActivityStackSupervisor::AllPausedActivitiesComplete()
         ActivityDisplay* ad = (ActivityDisplay*)(IObject::Probe(adobj));
         AutoPtr<IArrayList> stacks = ad->mStacks;
         Int32 stackSize;
-        stacks->GetSize(stackSize);
+        stacks->GetSize(&stackSize);
         for (Int32 stackNdx = stackSize - 1; stackNdx >= 0; --stackNdx) {
             //final ActivityStack stack = stacks.get(stackNdx);
             AutoPtr<IInterface> stackobj;
@@ -1506,14 +1550,14 @@ ECode ActivityStackSupervisor::PauseChildStacks(
         ActivityDisplay* ad = (ActivityDisplay*)(IObject::Probe(adobj));
         AutoPtr<IArrayList> stacks = ad->mStacks;
         Int32 stackSize;
-        stacks->GetSize(stackSize);
+        stacks->GetSize(&stackSize);
         for (Int32 stackNdx = stackSize - 1; stackNdx >= 0; --stackNdx) {
             //final ActivityStack stack = stacks.get(stackNdx);
             AutoPtr<IInterface> stackobj;
             stacks->Get(stackNdx, (IInterface**)&stackobj);
             ActivityStack* stack = (ActivityStack*)(IObject::Probe(stackobj));
             if (stack->mResumedActivity != NULL &&
-                    stack->mActivityContainer->mParentActivity == parent) {
+                    stack->mActivityContainer->mParentActivity.Get() == parent) {
                 stack->StartPausingLocked(userLeaving, uiSleeping, resuming, dontWait);
             }
         }
@@ -1561,7 +1605,7 @@ ECode ActivityStackSupervisor::SendWaitingVisibleReportLocked(
         }
     }
     if (changed) {
-        IObject::Probe(mService)->NotifyAll();
+        mService->NotifyAll();
     }
     return NOERROR;
 }
@@ -1599,7 +1643,7 @@ ECode ActivityStackSupervisor::ReportActivityLaunchedLocked(
         }
     }
     if (changed) {
-        IObject::Probe(mService)->NotifyAll();
+        mService->NotifyAll();
     }
     return NOERROR;
 }
@@ -1618,7 +1662,7 @@ AutoPtr<ActivityRecord> ActivityStackSupervisor::TopRunningActivityLocked()
     stacks->GetSize(&stackSize);
     for (Int32 stackNdx = stackSize - 1; stackNdx >= 0; --stackNdx) {
         AutoPtr<IInterface> stackobj;
-        stacks->Get(stackNdx, (IInterface**)&stackobj;
+        stacks->Get(stackNdx, (IInterface**)&stackobj);
         ActivityStack* stack = (ActivityStack*)(IObject::Probe(stackobj));
         if (stack != focusedStack.Get() && IsFrontStack(stack)) {
             r = stack->TopRunningActivityLocked(NULL);
@@ -1650,7 +1694,7 @@ ECode ActivityStackSupervisor::GetTasksLocked(
         ActivityDisplay* ad = (ActivityDisplay*)(IObject::Probe(adobj));
         AutoPtr<IArrayList> stacks = ad->mStacks;
         Int32 stackSize;
-        stacks->GetSize(stackSize);
+        stacks->GetSize(&stackSize);
         for (Int32 stackNdx = stackSize - 1; stackNdx >= 0; --stackNdx) {
             //final ActivityStack stack = stacks.get(stackNdx);
             AutoPtr<IInterface> stackobj;
@@ -1660,7 +1704,7 @@ ECode ActivityStackSupervisor::GetTasksLocked(
             AutoPtr<IArrayList> stackTaskList;
             CArrayList::New((IArrayList**)&stackTaskList);
             runningTaskLists->Add(TO_IINTERFACE(stackTaskList));
-            stack->GetTasksLocked(stackTaskList, callingUid, allowed);
+            stack->GetTasksLocked(IList::Probe(stackTaskList), callingUid, allowed);
         }
     }
 
@@ -1677,13 +1721,14 @@ ECode ActivityStackSupervisor::GetTasksLocked(
             AutoPtr<IInterface> listobj;
             runningTaskLists->Get(stackNdx, (IInterface**)&listobj);
             IArrayList* stackTaskList = IArrayList::Probe(listobj);
-            Boolean isEmpty
+            Boolean isEmpty;
             if (!(stackTaskList->IsEmpty(&isEmpty), isEmpty)) {
                 AutoPtr<IInterface> rtiobj;// IActivityManagerRunningTaskInfo
                 stackTaskList->Get(0, (IInterface**)&rtiobj);
                 IActivityManagerRunningTaskInfo* amrti = IActivityManagerRunningTaskInfo::Probe(rtiobj);
-                Int64 lastActiveTime;
-                amrti->GetLastActiveTime(lastActiveTime);//stackTaskList.get(0).lastActiveTime;
+                Int64 lastActiveTime = 0;
+                assert(amrti); //TODO remove
+                //TODO amrti->GetLastActiveTime(lastActiveTime);//stackTaskList.get(0).lastActiveTime;
                 if (lastActiveTime > mostRecentActiveTime) {
                     mostRecentActiveTime = lastActiveTime;
                     selectedStackList = stackTaskList;
@@ -1774,8 +1819,9 @@ ECode ActivityStackSupervisor::StartHomeActivity(
     /* [in] */ IActivityInfo* aInfo)
 {
     MoveHomeStackTaskToTop(ActivityRecord::HOME_ACTIVITY_TYPE);
+    Int32 result;
     StartActivityLocked(NULL, intent, String(NULL), aInfo, NULL, NULL, NULL, String(NULL), 0, 0, 0, String(NULL),
-            0, 0, 0, NULL, FALSE, NULL, NULL, NULL);
+            0, 0, 0, NULL, FALSE, NULL, NULL, NULL, &result);
     return NOERROR;
 }
 
@@ -1784,7 +1830,7 @@ ECode ActivityStackSupervisor::StartActivityMayWait(
     /* [in] */ Int32 callingUid,
     /* [in] */ const String& callingPackage,
     /* [in] */ IIntent* intent,
-    /* [in] */ const String& resolvedType,
+    /* [in] */ const String& _resolvedType,
     /* [in] */ IIVoiceInteractionSession* voiceSession,
     /* [in] */ IIVoiceInteractor* voiceInteractor,
     /* [in] */ IBinder* resultTo,
@@ -1802,6 +1848,7 @@ ECode ActivityStackSupervisor::StartActivityMayWait(
 {
     VALIDATE_NOT_NULL(result);
     // Refuse possible leaked file descriptors
+    String resolvedType = _resolvedType;
     Boolean hasFileDescriptors;
     if (intent != NULL && (intent->HasFileDescriptors(&hasFileDescriptors), hasFileDescriptors)) {
         //throw new IllegalArgumentException("File descriptors passed in Intent");
@@ -1824,7 +1871,7 @@ ECode ActivityStackSupervisor::StartActivityMayWait(
 
     AutoPtr<ActivityContainer> container = (ActivityContainer*)iContainer;
     {
-        AutoLock lock(IObject::Probe(mService));
+        AutoLock lock(mService);
         AutoPtr<IBinderHelper> binderHelper;
         CBinderHelper::AcquireSingleton((IBinderHelper**)&binderHelper);
         Int32 realCallingPid;
@@ -1857,14 +1904,14 @@ ECode ActivityStackSupervisor::StartActivityMayWait(
         binderHelper->ClearCallingIdentity(&origId);
 
         Int32 flags;
+        AutoPtr<IApplicationInfo> appInfo;
+        IComponentInfo::Probe(aInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
         if (aInfo != NULL &&
-                ((aInfo->mApplicationInfo->GetFlags(&flags), flags)&IApplicationInfo::FLAG_CANT_SAVE_STATE) != 0) {
+                ((appInfo->GetFlags(&flags), flags)&IApplicationInfo::FLAG_CANT_SAVE_STATE) != 0) {
             // This may be a heavy-weight process!  Check to see if we already
             // have another, different heavy-weight process running.
             String infoProcessName, appInfoPackageName;
             IComponentInfo::Probe(aInfo)->GetProcessName(&infoProcessName);
-            AutoPtr<IApplicationInfo> appInfo;
-            IComponentInfo::Probe(aInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
             IPackageItemInfo::Probe(appInfo)->GetPackageName(&appInfoPackageName);
             Int32 appInfoUid;
             appInfo->GetUid(&appInfoUid);
@@ -1878,13 +1925,13 @@ ECode ActivityStackSupervisor::StartActivityMayWait(
                         if (caller != NULL) {
                             AutoPtr<ProcessRecord> callerApp = mService->GetRecordForAppLocked(caller);
                             if (callerApp != NULL) {
-                                callerApp->mInfo->GetUid(appCallingUid);
+                                callerApp->mInfo->GetUid(&appCallingUid);
                             } else {
                                 //Slog.w(CActivityManagerService::TAG, "Unable to find app for caller " + caller
                                 //        + " (pid=" + callingPid + ") when starting: "
                                 //        + intent.toString());
                                 AutoPtr<IActivityOptionsHelper> aoHelper;
-                                CActivityOptionsHelper::New((IActivityOptionsHelper**)&aoHelper);
+                                CActivityOptionsHelper::AcquireSingleton((IActivityOptionsHelper**)&aoHelper);
                                 aoHelper->Abort(options);
 
                                 *result = IActivityManager::START_PERMISSION_DENIED;
@@ -1938,7 +1985,7 @@ ECode ActivityStackSupervisor::StartActivityMayWait(
                         //callingUid = Binder.getCallingUid();
                         binderHelper->GetCallingUid(&callingUid);
                         //callingPid = Binder.getCallingPid();
-                        binderHelper->GetCallingPid(callingPid);
+                        binderHelper->GetCallingPid(&callingPid);
                         componentSpecified = TRUE;
                         //try {
                             AutoPtr<IResolveInfo> rInfo;
@@ -1948,7 +1995,7 @@ ECode ActivityStackSupervisor::StartActivityMayWait(
                                         | CActivityManagerService::STOCK_PM_FLAGS, userId,
                                         (IResolveInfo**)&rInfo);
                         if (!FAILED(ec)) {
-                            aInfo = rInfo != NULL ? rInfo.activityInfo : NULL;
+                            //aInfo = rInfo != NULL ? rInfo.activityInfo : NULL;
                             if (rInfo != NULL)
                                 rInfo->GetActivityInfo((IActivityInfo**)&aInfo);
                             aInfo = mService->GetActivityInfoForUser(aInfo, userId);
@@ -2165,7 +2212,7 @@ const ECode ActivityStackSupervisor::RealStartActivityLocked(
     *result = FALSE;
     r->StartFreezingScreenLocked(app, 0);
     //if (FALSE) Slog.d(CActivityManagerService::TAG, "realStartActivity: setting app visibility TRUE");
-    mWindowManager->SetAppVisibility(IBinder::Probe(r->mAppToken), TRUE);
+    //TODO mWindowManager->SetAppVisibility(IBinder::Probe(r->mAppToken), TRUE);
 
     // schedule launch ticks to collect information about slow apps.
     r->StartLaunchTickingLocked();
@@ -2178,7 +2225,7 @@ const ECode ActivityStackSupervisor::RealStartActivityLocked(
     // just restarting it anyway.
     if (checkConfig) {
         AutoPtr<IConfiguration> config;
-        mWindowManager->UpdateOrientationFromAppTokens(
+        //TODO mWindowManager->UpdateOrientationFromAppTokens(
                 mService->mConfiguration,
                 r->MayFreezeScreenLocked(app) ? (IBinder::Probe(r->mAppToken)) : NULL,
                 (IConfiguration**)&config);
@@ -2883,7 +2930,7 @@ ECode ActivityStackSupervisor::StartActivityUncheckedLocked(
 {
     VALIDATE_NOT_NULL(result);
     *result = IActivityManager::START_SUCCESS;
-    AutoPtr<Intent> intent = r->mIntent;
+    AutoPtr<IIntent> intent = r->mIntent;
     Int32 callingUid = r->mLaunchedFromUid;
 
     // In some flows in to this function, we retrieve the task record and hold on to it
@@ -3430,7 +3477,7 @@ ECode ActivityStackSupervisor::StartActivityUncheckedLocked(
         if (topTask != sourceTask) {
             targetStack->MoveTaskToFrontLocked(sourceTask, r, options);
         } else {
-            mWindowManager->MoveTaskToTop(topTask->mTaskId);
+            //TODO mWindowManager->MoveTaskToTop(topTask->mTaskId);
         }
         if (!addingToTask && (launchFlags&IIntent::FLAG_ACTIVITY_CLEAR_TOP) != 0) {
             // In this case, we are adding the activity to an existing
@@ -3491,7 +3538,7 @@ ECode ActivityStackSupervisor::StartActivityUncheckedLocked(
         targetStack = inTask->mStack;
         targetStack->MoveTaskToFrontLocked(inTask, r, options);
         targetStack->MoveToFront();
-        mWindowManager->MoveTaskToTop(inTask->mTaskId);
+        //TODO mWindowManager->MoveTaskToTop(inTask->mTaskId);
 
         // Check whether we should actually launch the new activity in to the task,
         // or just reuse the current activity on top.
@@ -3539,7 +3586,7 @@ ECode ActivityStackSupervisor::StartActivityUncheckedLocked(
         AutoPtr<ActivityRecord> prev = targetStack->TopActivity();
         r->SetTask(prev != NULL ? prev->mTask : targetStack->CreateTaskRecord(GetNextTaskId(),
                         r->mInfo, intent, NULL, NULL, TRUE), NULL);
-        mWindowManager->MoveTaskToTop(r->mTask->mTaskId);
+        //TODO mWindowManager->MoveTaskToTop(r->mTask->mTaskId);
         //if (CActivityManagerService::DEBUG_TASKS) Slog.v(CActivityManagerService::TAG, "Starting new activity " + r
         //        + " in new guessed " + r.task);
     }
@@ -4125,7 +4172,7 @@ ECode ActivityStackSupervisor::DeleteActivityContainer(
         //        new RuntimeException("here").fillInStackTrace());
         Int32 stackId = activityContainer->mStackId;
         mActivityContainers->Remove(stackId);
-        mWindowManager->RemoveStack(stackId);
+        //TODO mWindowManager->RemoveStack(stackId);
     }
     return NOERROR;
 }
@@ -4170,11 +4217,11 @@ ECode ActivityStackSupervisor::CreateStackForRestoredTaskHistory(
             //r.info.configChanges
             Int32 configChanges;
             info->GetConfigChanges(&configChanges);
-            mWindowManager->AddAppToken(0, r->mAppToken, taskId, stackId,
-                    screenOrientation, r->mFullscreen,
-                    (flags & IActivityInfo::FLAG_SHOW_ON_LOCK_SCREEN) != 0,
-                    r->mUserId, configChanges, task->mVoiceSession != NULL,
-                    r->mLaunchTaskBehind);
+            //TODO mWindowManager->AddAppToken(0, r->mAppToken, taskId, stackId,
+            //        screenOrientation, r->mFullscreen,
+            //        (flags & IActivityInfo::FLAG_SHOW_ON_LOCK_SCREEN) != 0,
+            //        r->mUserId, configChanges, task->mVoiceSession != NULL,
+            //        r->mLaunchTaskBehind);
         }
     }
     return NOERROR;
@@ -4196,7 +4243,7 @@ ECode ActivityStackSupervisor::MoveTaskToStack(
     }
     task->stack->RemoveTask(task);
     stack->AddTask(task, toTop, TRUE);
-    mWindowManager->AddTask(taskId, stackId, toTop);
+    //TODO mWindowManager->AddTask(taskId, stackId, toTop);
     ResumeTopActivitiesLocked();
     return NOERROR;
 }
@@ -4466,7 +4513,7 @@ Boolean ActivityStackSupervisor::ReportResumedActivityLocked(
     }
     if (AllResumedActivitiesComplete()) {
         EnsureActivitiesVisibleLocked(NULL, 0);
-        mWindowManager->ExecuteAppTransition();
+        //TODO mWindowManager->ExecuteAppTransition();
         return TRUE;
     }
     return FALSE;
@@ -4559,7 +4606,7 @@ ECode ActivityStackSupervisor::HandleLaunchTaskBehindCompleteLocked(
     AutoPtr<TaskRecord> task = r->mTask;
     task->SetLastThumbnail(task->mStack->ScreenshotActivities(r));
     mService->AddRecentTaskLocked(task);
-    mWindowManager->SetAppVisibility(r->mAppToken, FALSE);
+    //TODO mWindowManager->SetAppVisibility(r->mAppToken, FALSE);
     return NOERROR;
 }
 
@@ -4724,7 +4771,7 @@ Boolean ActivityStackSupervisor::SwitchUserLocked(
             stack->SwitchUserLocked(userId);
             AutoPtr<TaskRecord> task = stack->TopTask();
             if (task != NULL) {
-                mWindowManager->MoveTaskToTop(task->mTaskId);
+                //TODO mWindowManager->MoveTaskToTop(task->mTaskId);
             }
         }
     }
@@ -4738,7 +4785,7 @@ Boolean ActivityStackSupervisor::SwitchUserLocked(
         MoveHomeStack(homeInFront);
         AutoPtr<TaskRecord> task = stack->TopTask();
         if (task != NULL) {
-            mWindowManager->MoveTaskToTop(task->mTaskId);
+            //TODO mWindowManager->MoveTaskToTop(task->mTaskId);
         }
     } else {
         // Stack was moved to another display while user was swapped out.
@@ -4782,7 +4829,7 @@ AutoPtr<IArrayList> ActivityStackSupervisor::ProcessStoppingActivitiesLocked(
                 // normal flow and hide it once we determine that it is
                 // hidden by the activities in front of it.
                 //if (CActivityManagerService::localLOGV) Slog.v(CActivityManagerService::TAG, "Before stopping, can hide: " + s);
-                mWindowManager->SetAppVisibility(s->mAppToken, FALSE);
+                //TODO mWindowManager->SetAppVisibility(s->mAppToken, FALSE);
             }
         }
         if ((!s->mWaitingVisible || mService->IsSleepingOrShuttingDown()) && remove) {
@@ -5160,7 +5207,7 @@ ECode ActivityStackSupervisor::HandleDisplayAddedLocked(
         ActivityDisplay* ad = (ActivityDisplay*)(IObject::Probe(obj));
         newDisplay = ad == NULL;
         if (newDisplay) {
-            AutoPtr<ActivityDisplay> activityDisplay = new ActivityDisplay(displayId);
+            AutoPtr<ActivityDisplay> activityDisplay = new ActivityDisplay(displayId, this);
             if (activityDisplay->mDisplay == NULL) {
                 //Slog.w(CActivityManagerService::TAG, "Display " + displayId + " gone before initialization complete");
                 return NOERROR;
@@ -5169,7 +5216,7 @@ ECode ActivityStackSupervisor::HandleDisplayAddedLocked(
         }
     }
     if (newDisplay) {
-        mWindowManager->OnDisplayAdded(displayId);
+        //TODO mWindowManager->OnDisplayAdded(displayId);
     }
     return NOERROR;
 }
@@ -5195,7 +5242,7 @@ ECode ActivityStackSupervisor::HandleDisplayRemovedLocked(
             mActivityDisplays->Remove(displayId);
         }
     }
-    mWindowManager->OnDisplayRemoved(displayId);
+    //TODO mWindowManager->OnDisplayRemoved(displayId);
     return NOERROR;
 }
 
@@ -5212,7 +5259,7 @@ ECode ActivityStackSupervisor::HandleDisplayChangedLocked(
             // TODO: Update the bounds.
         }
     }
-    mWindowManager->OnDisplayChanged(displayId);
+    //TODO mWindowManager->OnDisplayChanged(displayId);
     return NOERROR;
 }
 
@@ -5223,7 +5270,7 @@ AutoPtr<IActivityManagerStackInfo> ActivityStackSupervisor::GetStackInfo(
     CActivityManagerStackInfo::New((IActivityManagerStackInfo**)&info);
     AutoPtr<IRect> bounds;
     info->GetBounds((IRect**)&bounds);
-    mWindowManager->GetStackBounds(stack->mStackId, bounds);
+    //TODO mWindowManager->GetStackBounds(stack->mStackId, bounds);
     //info.displayId = Display.DEFAULT_DISPLAY;
     //info.stackId = stack.mStackId;
     info->SetDisplayId(IDisplay::DEFAULT_DISPLAY);

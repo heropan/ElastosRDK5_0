@@ -2,6 +2,7 @@ TARGET_NAME= am
 TARGET_TYPE= lib
 
 INCLUDES += ../
+#INCLUDES += $(MAKEDIR)/../../../../../../../Core/inc
 INCLUDES += $(MAKEDIR)/../../../../../inc
 #INCLUDES += $(PREBUILD_INC)/skia/utils
 #INCLUDES += $(PREBUILD_INC)/skia/core
@@ -15,6 +16,7 @@ SOURCES += CActivityRecordToken.cpp
 SOURCES += ActivityRecord.cpp
 SOURCES += ActivityResult.cpp
 #SOURCES += ActivityStack.cpp
+#SOURCES += ActivityStackSupervisor.cpp
 SOURCES += AppErrorResult.cpp
 #SOURCES += AppBindRecord.cpp
 #SOURCES += AppErrorDialog.cpp

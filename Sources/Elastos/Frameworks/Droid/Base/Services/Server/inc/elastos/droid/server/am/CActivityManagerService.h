@@ -10,11 +10,15 @@
 #if UN_FINISHED
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Net.h"
+#include "elastos/droid/server/am/ProcessRecord.h"
 #include <elastos/utility/etl/List.h>
 
+using Elastos::Droid::App::IApplicationThread;
+using Elastos::Droid::App::IProfilerInfo;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Net::IUri;
 using Elastos::Utility::Etl::List;
 
@@ -161,7 +165,117 @@ public:
     {
         return FALSE;
     }
-
+//begin add leliang compile ActivityStack
+    static const Int32 ALLOW_FULL_ONLY = 2;
+    static const Int32 FIRST_SUPERVISOR_STACK_MSG = 100;
+    Boolean mDidDexOpt;
+    Boolean mBooting;
+    Boolean mBooted;
+    AutoPtr<ProcessRecord> mHeavyWeightProcess;
+    CARAPI_(Boolean) IsSleepingOrShuttingDown()
+    {
+        return FALSE;
+    }
+    CARAPI HandleIncomingUser(
+        /* [in] */ Int32 callingPid,
+        /* [in] */ Int32 callingUid,
+        /* [in] */ Int32 userId,
+        /* [in] */ Boolean allowAll,
+        /* [in] */ Boolean requireFull,
+        /* [in] */ const String& name,
+        /* [in] */ const String& callerPackage,
+        /* [out] */ Int32* result)
+    {
+        return NOERROR;
+    }
+    CARAPI GetProviderMimeType(
+        /* [in] */ IUri* uri,
+        /* [in] */ Int32 userId,
+        /* [out] */ String* type)
+    {
+        return NOERROR;
+    }
+    CARAPI EnforceNotIsolatedCaller(
+        /* [in] */ const String& caller)
+    {
+        return NOERROR;
+    }
+    CARAPI_(void) LogLockScreen(
+        /* [in] */ const String msg)
+    {
+    }
+    CARAPI SetFocusedActivityLocked(
+        /* [in] */ ActivityRecord* r)
+    {
+        return NOERROR;
+    }
+    CARAPI_(Boolean) StartHomeActivityLocked(
+        /* [in] */ Int32 userId)
+    {
+        return FALSE;
+    }
+    CARAPI SetDebugApp(
+        /* [in] */ const String& packageName,
+        /* [in] */ Boolean waitForDebugger,
+        /* [in] */ Boolean persistent)
+    {
+        return NOERROR;
+    }
+    CARAPI SetOpenGlTraceApp(
+        /* [in] */ IApplicationInfo* app,
+        /* [in] */ const String& processName)
+    {
+        return NOERROR;
+    }
+    CARAPI SetProfileApp(
+        /* [in] */ IApplicationInfo* app,
+        /* [in] */ const String& processName,
+        /* [in] */  IProfilerInfo* profilerInfo)
+    {
+        return NOERROR;
+    }
+    CARAPI_(AutoPtr<ProcessRecord>) GetRecordForAppLocked(
+        /* [in] */ IApplicationThread* thread)
+    {
+        return NULL;
+    }
+    CARAPI GetIntentSenderLocked(
+        /* [in] */ Int32 type,
+        /* [in] */ const String& capsuleName,
+        /* [in] */ Int32 callingUid,
+        /* [in] */ Int32 userId,
+        /* [in] */ IBinder* token,
+        /* [in] */ const String& resultWho,
+        /* [in] */ Int32 requestCode,
+        /* [in] */ ArrayOf<IIntent*>* intents,
+        /* [in] */ ArrayOf<String>* resolvedTypes,
+        /* [in] */ Int32 flags,
+        /* [in] */ IBundle* options,
+        /* [out] */ IIIntentSender** sender)
+    {
+        return NOERROR;
+    }
+    CARAPI_(AutoPtr<IActivityInfo>) GetActivityInfoForUser(
+        /* [in] */ IActivityInfo* aInfo,
+        /* [in] */ Int32 userId)
+    {
+        return NOERROR;
+    }
+    CARAPI EnforceCallingPermission(
+        /* [in] */ const String& permission,
+        /* [in] */ const String& func)
+    {
+        return NOERROR;
+    }
+    CARAPI_(Boolean) UpdateConfigurationLocked(
+        /* [in] */ IConfiguration* values,
+        /* [in] */ ActivityRecord* starting,
+        /* [in] */ Boolean persistent,
+        /* [in] */ Boolean initLocale)
+    {
+        return FALSE;
+    }
+//end add leliang compile ActivityStack
 public:
     AutoPtr<IConfiguration> mConfiguration;
     AutoPtr<IHandler> mHandler;
@@ -3556,7 +3670,7 @@ public:
     static const Int32 FIRST_ACTIVITY_STACK_MSG;
     static const Int32 FIRST_BROADCAST_QUEUE_MSG;
     static const Int32 FIRST_COMPAT_MODE_MSG;
-    static const Int32 FIRST_SUPERVISOR_STACK_MSG;
+    static const Int32 FIRST_SUPERVISOR_STACK_MSG = 100;
 
     AutoPtr<IAlertDialog> mUidAlert;
     AutoPtr<CompatModeDialog> mCompatModeDialog;

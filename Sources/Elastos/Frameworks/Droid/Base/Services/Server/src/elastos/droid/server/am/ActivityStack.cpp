@@ -26,7 +26,6 @@ using Elastos::Droid::App::AppGlobals;
 using Elastos::Droid::App::CActivityManagerRunningTaskInfo;
 using Elastos::Droid::App::IActivityManagerRunningTaskInfo;
 using Elastos::Droid::App::CActivityOptions;
-using Elastos::Droid::App::IActivityOptions;
 using Elastos::Droid::App::CActivityOptionsHelper;
 using Elastos::Droid::App::IActivityOptionsHelper;
 using Elastos::Droid::App::CActivityManager;
@@ -185,13 +184,13 @@ const Int64 ActivityStack::START_WARN_TIME;
 const Boolean ActivityStack::SHOW_APP_STARTING_PREVIEW = TRUE;
 const Int64 ActivityStack::TRANSLUCENT_CONVERSION_TIMEOUT;
 const Boolean ActivityStack::SCREENSHOT_FORCE_565 = CActivityManager::IsLowRamDeviceStatic();//TODO more check is this OK?
-const Int32 ActivityStack::PAUSE_TIMEOUT_MSG;
-const Int32 ActivityStack::DESTROY_TIMEOUT_MSG;
-const Int32 ActivityStack::LAUNCH_TICK_MSG;
-const Int32 ActivityStack::STOP_TIMEOUT_MSG;
-const Int32 ActivityStack::DESTROY_ACTIVITIES_MSG;
-const Int32 ActivityStack::TRANSLUCENT_TIMEOUT_MSG;
-const Int32 ActivityStack::RELEASE_BACKGROUND_RESOURCES_TIMEOUT_MSG;
+const Int32 ActivityStack::PAUSE_TIMEOUT_MSG = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 1;
+const Int32 ActivityStack::DESTROY_TIMEOUT_MSG = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 2;
+const Int32 ActivityStack::LAUNCH_TICK_MSG  = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 3;
+const Int32 ActivityStack::STOP_TIMEOUT_MSG  = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 4;
+const Int32 ActivityStack::DESTROY_ACTIVITIES_MSG  = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 5;
+const Int32 ActivityStack::TRANSLUCENT_TIMEOUT_MSG  = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 6;
+const Int32 ActivityStack::RELEASE_BACKGROUND_RESOURCES_TIMEOUT_MSG  = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 7;
 const Int32 ActivityStack::FINISH_IMMEDIATELY;
 const Int32 ActivityStack::FINISH_AFTER_PAUSE;
 const Int32 ActivityStack::FINISH_AFTER_VISIBLE;
@@ -2035,7 +2034,7 @@ void ActivityStack::ValidateAppTokensLocked()
     mWindowManager->ValidateAppTokens(mStackId, mValidateAppTokens);
 }
 
-AutoPtr<ActivityRecord> ActivityStack::ResetTargetTaskIfNeededLocked(
+AutoPtr<IActivityOptions> ActivityStack::ResetTargetTaskIfNeededLocked(
     /* [in] */ TaskRecord* task,
     /* [in] */ Boolean forceReset)
 {

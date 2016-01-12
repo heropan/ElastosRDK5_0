@@ -1,83 +1,34 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_ACTIVITYSTACK_H__
 #define __ELASTOS_DROID_SERVER_AM_ACTIVITYSTACK_H__
 
-#if 1
-using Elastos::Droid::Os::IHandler;
-namespace Elastos {
-namespace Droid {
-namespace Server {
-namespace Am {
-class ActivityStack : public Object
-{
-public:
-        // Ticks during which we check progress while waiting for an app to launch.
-    static const Int32 LAUNCH_TICK = 500;
-    // How long we wait until giving up on the last activity to pause.  This
-    // is short because it directly impacts the responsiveness of starting the
-    // next activity.
-    static const Int32 PAUSE_TIMEOUT = 500;
-    // How long we wait for the activity to tell us it has stopped before
-    // giving up.  This is a good amount of time because we really need this
-    // from the application in order to get its saved state.
-    static const Int32 STOP_TIMEOUT = 10*1000;
-    // How long we wait until giving up on an activity telling us it has
-    // finished destroying itself.
-    static const Int32 DESTROY_TIMEOUT = 10*1000;
-    // How long until we reset a task when the user returns to it.  Currently
-    // disabled.
-    static const Int64 ACTIVITY_INACTIVE_RESET_TIME = 0;
-    // How long between activity launches that we consider safe to not warn
-    // the user about an unexpected activity being launched on top.
-    static const Int64 START_WARN_TIME = 5*1000;
-    // Set to false to disable the preview that is shown while a new activity
-    // is being started.
-    static const Boolean SHOW_APP_STARTING_PREVIEW = TRUE;
-    // How long to wait for all background Activities to redraw following a call to
-    // convertToTranslucent().
-    static const Int64 TRANSLUCENT_CONVERSION_TIMEOUT = 2000;
-    static const Boolean SCREENSHOT_FORCE_565/* = ActivityManager.isLowRamDeviceStatic()*/;
-    static const Int32 SLEEP_TIMEOUT_MSG;
-    static const Int32 PAUSE_TIMEOUT_MSG;
-    static const Int32 IDLE_TIMEOUT_MSG;
-    static const Int32 IDLE_NOW_MSG;
-    static const Int32 LAUNCH_TIMEOUT_MSG;
-    static const Int32 DESTROY_TIMEOUT_MSG;
-    static const Int32 RESUME_TOP_ACTIVITY_MSG;
-    static const Int32 LAUNCH_TICK_MSG;
-    static const Int32 STOP_TIMEOUT_MSG;
-    static const Int32 DESTROY_ACTIVITIES_MSG;
-    Boolean IsHomeStack()
-    {
-        return FALSE;
-    }
-public:
-    AutoPtr<IHandler> mHandler;
-    Int64 mLaunchStartTime;
-    Int64 mFullyDrawnStartTime;
-};
-} // namespace Am
-} // namespace Server
-} // namespace Droid
-} // namespace Elastos
-#else
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/server/am/ActivityStackSupervisor.h"
 #include "elastos/droid/server/am/CActivityManagerService.h"
+//TODO #include "elastos/droid/server/wm/CWindowManagerService.h"
 
-using Elastos::Droid::Os::ILooper;
-using Elastos::Droid::Os::IMessage;
-using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::App::IActivityOptions;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::Pm::IActivityInfo;
-using Elastos::Droid::Os::Handler;
-using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Os::IPersistableBundle;
-using Elastos::Droid::Service::Voice::IIVoiceInteractionSession;
-using Elastos::Io::IFileDescriptor;
-using Elastos::Io::IPrintWriter;
+using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Internal::App::IIVoiceInteractor;
 
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Os::IPersistableBundle;
+//TODO using Elastos::Droid::Server::Wm::CWindowManagerService;
+using Elastos::Droid::Service::Voice::IIVoiceInteractionSession;
+using Elastos::Droid::Utility::IArraySet;
+
+using Elastos::Core::ICharSequence;
+using Elastos::IO::IFileDescriptor;
+using Elastos::IO::IPrintWriter;
 using Elastos::Utility::IArrayList;
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -105,7 +56,7 @@ protected:
     };
 
     class ActivityStackHandler
-        , public Handler
+        : public Handler
     {
     public:
         ActivityStackHandler(
@@ -324,7 +275,7 @@ public:
       * @param forceReset
       * @return An ActivityOptions that needs to be processed.
       */
-    CARAPI_(AutoPtr<ActivityOptions>) ResetTargetTaskIfNeededLocked(
+    CARAPI_(AutoPtr<IActivityOptions>) ResetTargetTaskIfNeededLocked(
         /* [in] */ TaskRecord* task,
         /* [in] */ Boolean forceReset);
 
@@ -657,7 +608,7 @@ private:
         /* [in] */ Int32 changes,
         /* [in] */ Boolean andResume);
 
-protected:
+public:
     // Ticks during which we check progress while waiting for an app to launch.
     static const Int32 LAUNCH_TICK = 500;
     // How long we wait until giving up on the last activity to pause.  This
@@ -686,7 +637,7 @@ protected:
     static const Boolean SCREENSHOT_FORCE_565;
 
     AutoPtr<CActivityManagerService> mService;
-    AutoPtr<IWindowManagerService> mWindowManager;//TODO CWindowManagerService->IIWindowManager
+    //TODO AutoPtr<CWindowManagerService> mWindowManager;//TODO CWindowManagerService->IIWindowManager
     /**
       * Used for validating app tokens with window manager.
       */
@@ -752,13 +703,13 @@ protected:
     Int32 mDisplayId;
     /** Run all ActivityStacks through this */
     AutoPtr<ActivityStackSupervisor> mStackSupervisor;
-    static const Int32 PAUSE_TIMEOUT_MSG = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 1;
-    static const Int32 DESTROY_TIMEOUT_MSG = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 2;
-    static const Int32 LAUNCH_TICK_MSG = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 3;
-    static const Int32 STOP_TIMEOUT_MSG = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 4;
-    static const Int32 DESTROY_ACTIVITIES_MSG = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 5;
-    static const Int32 TRANSLUCENT_TIMEOUT_MSG = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 6;
-    static const Int32 RELEASE_BACKGROUND_RESOURCES_TIMEOUT_MSG = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 7;
+    static const Int32 PAUSE_TIMEOUT_MSG;// = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 1;
+    static const Int32 DESTROY_TIMEOUT_MSG;// = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 2;
+    static const Int32 LAUNCH_TICK_MSG;// = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 3;
+    static const Int32 STOP_TIMEOUT_MSG;// = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 4;
+    static const Int32 DESTROY_ACTIVITIES_MSG;// = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 5;
+    static const Int32 TRANSLUCENT_TIMEOUT_MSG;// = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 6;
+    static const Int32 RELEASE_BACKGROUND_RESOURCES_TIMEOUT_MSG;// = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 7;
     AutoPtr<IHandler> mHandler;
     static const Int32 FINISH_IMMEDIATELY = 0;
     static const Int32 FINISH_AFTER_PAUSE = 1;
@@ -785,6 +736,5 @@ private:
 } // namespace Server
 } // namespace Droid
 } // namespace Elastos
-#endif
 
 #endif // __ELASTOS_DROID_SERVER_AM_ACTIVITYSTACK_H__
