@@ -48,4 +48,6 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
+DEFINE_CONVERSION_FOR(Elastos::Droid::Server::Pm::PersistentPreferredActivity, IInterface)
+
 #endif //__ELASTOS_DROID_SERVER_PM_PERSISTENTPREFERREDACTIVITY_H__

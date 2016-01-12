@@ -114,17 +114,17 @@ Boolean PackageKeySetData::PackageIsSignedBy(
     return ArrayUtils::Contains(mSigningKeySets, ks);
 }
 
-ArrayOf<Int64> PackageKeySetData::GetSigningKeySets()
+ArrayOf<ArrayOf<Int64> > PackageKeySetData::GetSigningKeySets()
 {
     return mSigningKeySets;
 }
 
-ArrayOf<Int64> PackageKeySetData::GetUpgradeKeySets()
+ArrayOf<ArrayOf<Int64> > PackageKeySetData::GetUpgradeKeySets()
 {
     return mUpgradeKeySets;
 }
 
-ArrayOf<Int64> PackageKeySetData::GetDefinedKeySets()
+ArrayOf<ArrayOf<Int64> > PackageKeySetData::GetDefinedKeySets()
 {
     return mDefinedKeySets;
 }

@@ -150,6 +150,12 @@ module
 
         SetMetaData(
             [in] IBundle* metaData);
+
+        GetShowUserIcon(
+            [out] Int32* icon);
+
+        SetShowUserIcon(
+            [in] Int32 icon);
     }
 
     } // namespace Pm

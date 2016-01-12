@@ -84,6 +84,12 @@ module
         SetServiceInfo(
             [in] IServiceInfo* serviceInfo);
 
+        GetProviderInfo(
+            [out] IProviderInfo** providerInfo);
+
+        SetProviderInfo(
+            [in] IProviderInfo* providerInfo);
+
         GetFilter(
             [out] IIntentFilter** filter);
 
@@ -143,6 +149,18 @@ module
 
         SetResolvePackageName(
             [in] String resolvePackageName);
+
+        GetTargetUserId(
+            [out] Int32* userId);
+
+        SetTargetUserId(
+            [in] Int32 userId);
+
+        GetNoResourceId(
+            [out] Boolean* id);
+
+        SetNoResourceId(
+            [in] Boolean id);
 
         GetSystem(
             [out] Boolean* system);

@@ -350,6 +350,22 @@ ECode ResolveInfo::SetServiceInfo(
     return NOERROR;
 }
 
+ECode ResolveInfo::GetProviderInfo(
+    /* [out] */ IProviderInfo** providerInfo)
+{
+    VALIDATE_NOT_NULL(providerInfo)
+    *providerInfo = mProviderInfo;
+    REFCOUNT_ADD(*providerInfo)
+    return NOERROR;
+}
+
+ECode ResolveInfo::SetProviderInfo(
+    /* [in] */ IProviderInfo* providerInfo)
+{
+    mProviderInfo = providerInfo;
+    return NOERROR;
+}
+
 ECode ResolveInfo::GetFilter(
     /* [out] */ IIntentFilter** filter)
 {
@@ -502,10 +518,40 @@ ECode ResolveInfo::SetResolvePackageName(
     return NOERROR;
 }
 
+ECode ResolveInfo::GetTargetUserId(
+    /* [out] */ Int32* userId)
+{
+    VALIDATE_NOT_NULL(userId)
+    *userId = mTargetUserId;
+    return NOERROR;
+}
+
+ECode ResolveInfo::SetTargetUserId(
+    /* [in] */ Int32 userId)
+{
+    mTargetUserId = userId;
+    return NOERROR;
+}
+
+ECode ResolveInfo::GetNoResourceId(
+    /* [out] */ Boolean* id)
+{
+    VALIDATE_NOT_NULL(id)
+    *id = mNoResourceId;
+    return NOERROR;
+}
+
+ECode ResolveInfo::SetNoResourceId(
+    /* [in] */ Boolean id)
+{
+    mNoResourceId = id;
+    return NOERROR;
+}
+
 ECode ResolveInfo::GetSystem(
     /* [out] */ Boolean* sys)
 {
-    VALIDATE_NOT_NULL(sys);
+    VALIDATE_NOT_NULL(sys)
     *sys = mSystem;
     return NOERROR;
 }

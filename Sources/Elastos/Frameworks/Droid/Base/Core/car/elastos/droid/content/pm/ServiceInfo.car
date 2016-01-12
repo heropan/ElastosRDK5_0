@@ -19,6 +19,7 @@ module
     /**
      * @Involve
      * interface Elastos.Droid.Content.Pm.IComponentInfo
+     * interface Elastos.Droid.Content.Pm.IPackageItemInfo
      */
     interface IServiceInfo {
         /**

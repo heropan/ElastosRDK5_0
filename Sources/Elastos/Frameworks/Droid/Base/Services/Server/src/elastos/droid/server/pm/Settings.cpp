@@ -2347,7 +2347,7 @@ void Settings::AddPackageToCleanLPw(
 
 Boolean Settings::ReadLPw(
     /* [in] */ CPackageManagerService* service,
-    /* [in] */ List< AutoPtr<IUserInfo> >& users,
+    /* [in] */ IList* users,
     /* [in] */ Int32 sdkVersion,
     /* [in] */ Boolean onlyCore)
 {
@@ -2619,12 +2619,18 @@ EXIT:
             // Migrate to new file format
             WritePackageRestrictionsLPr(0);
         } else {
-            if (0 == users.GetSize()) {
+            Int32 size;
+            if (users->GetSize(&size), size == 0) {
                 ReadPackageRestrictionsLPr(0);
-            } else {
-                List< AutoPtr<IUserInfo> >::Iterator it2 = users.Begin();
-                for (; it2 != users.End(); it2++) {
-                    AutoPtr<IUserInfo> user = it2->Get();
+            }
+            else {
+                AutoPtr<IIterator> it;
+                users->GetIterator((IIterator**)&it);
+                Boolean hasNext;
+                while (it->HasNext(&hasNext), hasNext) {
+                    AutoPtr<IInterface> value;
+                    it->GetNext((IInterface**)&value);
+                    AutoPtr<IUserInfo> user = IUserInfo::Probe(value);
                     Int32 userId;
                     user->GetId(&userId);
                     ReadPackageRestrictionsLPr(userId);

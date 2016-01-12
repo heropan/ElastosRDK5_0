@@ -420,6 +420,54 @@ module
         SetPublicSourceDir(
             [in] String pubicSourceDir);
 
+        /** {@hide} */
+        SetCodePath(
+            [in] String codePath);
+
+        /** {@hide} */
+        SetBaseCodePath(
+            [in] String baseCodePath);
+
+        /** {@hide} */
+        SetSplitCodePaths(
+            [in] ArrayOf<String>* splitCodePaths);
+
+        /** {@hide} */
+        SetResourcePath(
+            [in] String resourcePath);
+
+        /** {@hide} */
+        SetBaseResourcePath(
+            [in] String baseResourcePath);
+
+        /** {@hide} */
+        SetSplitResourcePaths(
+            [in] ArrayOf<String>* splitResourcePaths);
+
+        /** {@hide} */
+        GetCodePath(
+            [out] String* result);
+
+        /** {@hide} */
+        GetBaseCodePath(
+            [out] String* result);
+
+        /** {@hide} */
+        GetSplitCodePaths(
+            [out, callee] ArrayOf<String>* result);
+
+        /** {@hide} */
+        GetResourcePath(
+            [out] String* result);
+
+        /** {@hide} */
+        GetBaseResourcePath(
+            [out] String* result);
+
+        /** {@hide} */
+        GetSplitResourcePaths(
+            [out, callee] ArrayOf<String>* result);
+
         GetSplitSourceDirs(
             [out, callee] ArrayOf<String>* resourceDirs);
 

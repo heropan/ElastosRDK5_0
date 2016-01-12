@@ -109,6 +109,39 @@ public:
     /** {@hide} */
     CARAPI SetInstallFlagsExternal();
 
+    CARAPI GetMode(
+        /* [out] */ Int32* mode);
+
+    CARAPI GetInstallFlags(
+        /* [out] */ Int32* flags);
+
+    CARAPI GetInstallLocation(
+        /* [out] */ Int32* loc);
+
+    CARAPI GetSizeBytes(
+        /* [out] */ Int64* bytes);
+
+    CARAPI GetAppPackageName(
+        /* [out] */ String* name);
+
+    CARAPI GetAppIcon(
+        /* [out] */ IBitmap** icon);
+
+    CARAPI GetAppLabel(
+        /* [out] */ String* label);
+
+    CARAPI GetAppIconLastModified(
+        /* [out] */ Int64* lastModified);
+
+    CARAPI GetOriginatingUri(
+        /* [out] */ IUri** uri);
+
+    CARAPI GetReferrerUri(
+        /* [out] */ IUri** uri);
+
+    CARAPI GetAbiOverride(
+        /* [out] */ String* override);
+
 public:
     /** {@hide} */
     Int32 mMode;// = MODE_INVALID;

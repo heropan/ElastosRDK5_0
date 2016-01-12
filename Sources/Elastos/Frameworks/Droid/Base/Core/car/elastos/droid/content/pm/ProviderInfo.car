@@ -11,7 +11,7 @@ module
 
     /**
      * Holds information about a specific content provider. This is returned by PackageManager.resolveContentProvider().
-     * 
+     *
      * @sa content provider
      * @sa PackageManager.resolveContentProvider()
      * @implements Elastos.Droid.Content.Pm.Elastos.Droid.Content.Pm.IComponentInfo
@@ -20,6 +20,7 @@ module
     /**
      * @Involve
      * interface Elastos.Droid.Content.Pm.IComponentInfo
+     * interface Elastos.Droid.Content.Pm.IPackageItemInfo
      */
     [deprecated]
     interface IProviderInfo {

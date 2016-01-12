@@ -962,6 +962,12 @@ void PackageParser::SetOnlyCoreApps(
     mOnlyCoreApps = onlyCoreApps;
 }
 
+void PackageParser::SetDisplayMetrics(
+    /* [in] */ IDisplayMetrics* metrics)
+{
+    mMetrics = metrics;
+}
+
 Boolean PackageParser::IsApkFile(
     /* [in] */ IFile* file)
 {
@@ -6719,6 +6725,11 @@ ECode PackageParser::CloseQuietly(
         // }
     }
     return NOERROR;
+}
+
+Int32 PackageParser::GetParseError()
+{
+    return mParseError;
 }
 
 } // namespace Pm

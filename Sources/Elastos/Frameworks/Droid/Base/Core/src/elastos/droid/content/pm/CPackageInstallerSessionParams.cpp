@@ -140,6 +140,97 @@ ECode CPackageInstallerSessionParams::SetInstallFlagsExternal()
     return NOERROR;
 }
 
+ECode CPackageInstallerSessionParams::GetMode(
+    /* [out] */ Int32* mode)
+{
+    VALIDATE_NOT_NULL(mode)
+    *mode = mMode;
+    return NOERROR;
+}
+
+ECode CPackageInstallerSessionParams::GetInstallFlags(
+    /* [out] */ Int32* flags)
+{
+    VALIDATE_NOT_NULL(flags)
+    *flags = mInstallFlags;
+    return NOERROR;
+}
+
+ECode CPackageInstallerSessionParams::GetInstallLocation(
+    /* [out] */ Int32* loc)
+{
+    VALIDATE_NOT_NULL(loc)
+    *loc = mInstallLocation;
+    return NOERROR;
+}
+
+ECode CPackageInstallerSessionParams::GetSizeBytes(
+    /* [out] */ Int64* bytes)
+{
+    VALIDATE_NOT_NULL(bytes)
+    *bytes = mSizeBytes;
+    return NOERROR;
+}
+
+ECode CPackageInstallerSessionParams::GetAppPackageName(
+    /* [out] */ String* name)
+{
+    VALIDATE_NOT_NULL(name)
+    *name = mAppPackageName;
+    return NOERROR;
+}
+
+ECode CPackageInstallerSessionParams::GetAppIcon(
+    /* [out] */ IBitmap** icon)
+{
+    VALIDATE_NOT_NULL(icon)
+    *icon = mAppIcon;
+    REFCOUNT_ADD(*icon)
+    return NOERROR;
+}
+
+ECode CPackageInstallerSessionParams::GetAppLabel(
+    /* [out] */ String* label)
+{
+    VALIDATE_NOT_NULL(label)
+    *label = mAppLabel;
+    return NOERROR;
+}
+
+ECode CPackageInstallerSessionParams::GetAppIconLastModified(
+    /* [out] */ Int64* lastModified)
+{
+    VALIDATE_NOT_NULL(lastModified)
+    *lastModified = mAppIconLastModified;
+    return NOERROR;
+}
+
+ECode CPackageInstallerSessionParams::GetOriginatingUri(
+    /* [out] */ IUri** uri)
+{
+    VALIDATE_NOT_NULL(uri)
+    *uri = mOriginatingUri;
+    REFCOUNT_ADD(*uri)
+    return NOERROR;
+}
+
+ECode CPackageInstallerSessionParams::GetReferrerUri(
+    /* [out] */ IUri** uri)
+{
+    VALIDATE_NOT_NULL(uri)
+    *uri = mReferrerUri;
+    REFCOUNT_ADD(*uri)
+    return NOERROR;
+}
+
+ECode CPackageInstallerSessionParams::GetAbiOverride(
+    /* [out] */ String* override)
+{
+    VALIDATE_NOT_NULL(override)
+    *override = mAbiOverride;
+    return NOERROR;
+}
+
 } // namespace Pm
 } // namespace Content
 } // namespace Droid

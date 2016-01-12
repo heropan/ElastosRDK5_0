@@ -223,6 +223,10 @@ CUserManagerService::CUserManagerService()
     CBundle::New((IBundle**)&mGuestRestrictions);
 }
 
+CAR_INTERFACE_IMPL2(CUserManagerService, Object, IIUserManager, IBinder)
+
+CAR_OBJECT_IMPL(CUserManagerService)
+
 ECode CUserManagerService::constructor(
     /* [in] */ IFile* dataDir,
     /* [in] */ IFile* baseUserPath)

@@ -2,18 +2,20 @@
 #define __ELASTOS_DROID_SERVER_INTENTRESOLVER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/Set.h>
+#include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/logging/Slogger.h>
 //#include "elastos/droid/net/Uri.h"
 
-using Elastos::Utility::Etl::Set;
+using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Content::IIntentFilterAuthorityEntry;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -21,7 +23,7 @@ namespace Droid {
 namespace Server {
 
 template <typename F, typename R>
-class IntentResolver : public ElRefBase
+class IntentResolver : public Object
 {
 public:
     IntentResolver();
@@ -30,6 +32,9 @@ public:
 
     virtual CARAPI_(void) AddFilter(
         /* [in] */ F* filter);
+
+    virtual CARAPI_(AutoPtr<List<AutoPtr<F> > >) FindFilters(
+        /* [in] */ IIntentFilter* matching);
 
     virtual CARAPI_(void) RemoveFilter(
         /* [in] */ F* f);
@@ -52,7 +57,7 @@ public:
     /**
      * Returns a read-only set of the filters.
      */
-    virtual CARAPI_(AutoPtr<Set< AutoPtr<F> > >) FilterSet()
+    virtual CARAPI_(AutoPtr<HashSet< AutoPtr<F> > >) FilterSet()
     {
 //        return Collections.unmodifiableSet(mFilters);
         return mFilters;
@@ -96,7 +101,13 @@ protected:
         return FALSE;
     }
 
-    virtual CARAPI_(String) PackageForFilter(
+    /**
+     * Returns whether this filter is owned by this package. This must be
+     * implemented to provide correct filtering of Intents that have
+     * specified a package name they are to be delivered to.
+     */
+    virtual CARAPI_(Boolean) IsPackageForFilter(
+        /* [in] */ const String& packageName,
         /* [in] */ F* filter) = 0;
 
     virtual CARAPI_(AutoPtr< ArrayOf<F*> >) NewArray(
@@ -116,6 +127,14 @@ protected:
         /* [in] */ F* filter);
 
 private:
+    CARAPI_(Boolean) FilterEquals(
+        /* [in] */ IIntentFilter* f1,
+        /* [in] */ IIntentFilter* f2);
+
+    CARAPI_(AutoPtr<List<AutoPtr<F> > >) CollectFilters(
+        /* [in] */ ArrayOf<F*>* array,
+        /* [in] */ IIntentFilter* matching);
+
     CARAPI_(void) AddFilter(
         /* [in] */ HashMap<String, AutoPtr< ArrayOf<F*> > >& map,
         /* [in] */ const String& name,
@@ -166,10 +185,9 @@ private:
     //         HashMap<String, ArrayList<F>> old);
 
 private:
-    // final private static String TAG = "IntentResolver";
-    // final private static boolean DEBUG = false;
-    // final private static boolean localLOGV = DEBUG || false;
-    // final private static boolean VALIDATE = false;
+    static const String TAG;
+    static const Boolean DEBUG = FALSE;
+    static const Boolean localLOGV = DEBUG || FALSE;
 
     // private final IntentResolverOld<F, R> mOldResolver = new IntentResolverOld<F, R>() {
     //     @Override protected String packageForFilter(F filter) {
@@ -192,7 +210,7 @@ private:
     /**
      * All filters that have been registered.
      */
-    AutoPtr<Set< AutoPtr<F> > > mFilters;
+    AutoPtr<HashSet< AutoPtr<F> > > mFilters;
 
     /**
      * All of the MIME types that have been registered, such as "image/jpeg",
@@ -234,6 +252,13 @@ private:
 };
 
 template <typename F, typename R>
+const String IntentResolver<F, R>::TAG("IntentResolver");
+template <typename F, typename R>
+const Boolean IntentResolver<F, R>::DEBUG;
+template <typename F, typename R>
+const Boolean IntentResolver<F, R>::localLOGV;
+
+template <typename F, typename R>
 IntentResolver<F, R>::IntentResolver()
     : mTypeToFilter(7)
     , mBaseTypeToFilter(7)
@@ -242,7 +267,7 @@ IntentResolver<F, R>::IntentResolver()
     , mActionToFilter(7)
     , mTypedActionToFilter(7)
 {
-    mFilters = new Set< AutoPtr<F> >();
+    mFilters = new HashSet< AutoPtr<F> >();
 }
 
 template <typename F, typename R>
@@ -292,11 +317,187 @@ void IntentResolver<F, R>::AddFilter(
                 f, actions,
                 &mTypedActionToFilter, "    TypedAction: ");
     }
+}
 
-    // if (VALIDATE) {
-    //     mOldResolver.addFilter(f);
-    //     verifyDataStructures(f);
-    // }
+template <typename F, typename R>
+Boolean IntentResolver<F, R>::FilterEquals(
+    /* [in] */ IIntentFilter* f1,
+    /* [in] */ IIntentFilter* f2)
+{
+    Int32 s1;
+    f1->CountActions(&s1);
+    Int32 s2;
+    f2->CountActions(&s2);
+    if (s1 != s2) {
+        return FALSE;
+    }
+    for (Int32 i = 0; i < s1; i++) {
+        String action;
+        f1->GetAction(i, &action);
+        Boolean hasAction;
+        if (f2->HasAction(action, &hasAction), !hasAction) {
+            return FALSE;
+        }
+    }
+    f1->CountCategories(&s1);
+    f2->CountCategories(&s2);
+    if (s1 != s2) {
+        return FALSE;
+    }
+    for (Int32 i = 0; i < s1; i++) {
+        String category;
+        f1->GetCategory(i, &category);
+        Boolean hasCategory;
+        if (f2->HasCategory(category, &hasCategory), !hasCategory) {
+            return FALSE;
+        }
+    }
+    f1->CountDataTypes(&s1);
+    f2->CountDataTypes(&s2);
+    if (s1 != s2) {
+        return FALSE;
+    }
+    for (Int32 i = 0; i < s1; i++) {
+        String type;
+        f1->GetDataType(i, &type);
+        Boolean hasType;
+        if (f2->HasExactDataType(type, &hasType), !hasType) {
+            return FALSE;
+        }
+    }
+    f1->CountDataSchemes(&s1);
+    f2->CountDataSchemes(&s2);
+    if (s1 != s2) {
+        return FALSE;
+    }
+    for (Int32 i = 0; i < s1; i++) {
+        String scheme;
+        f1->GetDataScheme(i, &scheme);
+        Boolean hasScheme;
+        if (f2->HasDataScheme(scheme, &hasScheme), !hasScheme) {
+            return FALSE;
+        }
+    }
+    f1->CountDataAuthorities(&s1);
+    f2->CountDataAuthorities(&s2);
+    if (s1 != s2) {
+        return FALSE;
+    }
+    for (Int32 i = 0; i < s1; i++) {
+        AutoPtr<IIntentFilterAuthorityEntry> auth;
+        f1->GetDataAuthority(i, (IIntentFilterAuthorityEntry**)&auth);
+        Boolean hasAuth;
+        if (f2->HasDataAuthority(auth, &hasAuth), !hasAuth) {
+            return FALSE;
+        }
+    }
+    f1->CountDataPaths(&s1);
+    f2->CountDataPaths(&s2);
+    if (s1 != s2) {
+        return FALSE;
+    }
+    for (Int32 i = 0; i < s1; i++) {
+        AutoPtr<IPatternMatcher> path;
+        f1->GetDataPath(i, (IPatternMatcher**)&path);
+        Boolean hasDataPath;
+        if (f2->HasDataPath(path, &hasDataPath), !hasDataPath) {
+            return FALSE;
+        }
+    }
+    f1->CountDataSchemeSpecificParts(&s1);
+    f2->CountDataSchemeSpecificParts(&s2);
+    if (s1 != s2) {
+        return FALSE;
+    }
+    for (Int32 i = 0; i < s1; i++) {
+        AutoPtr<IPatternMatcher> part;
+        f1->GetDataSchemeSpecificPart(i, (IPatternMatcher**)&part);
+        Boolean hasSpecificPart;
+        if (f2->HasDataSchemeSpecificPart(part, &hasSpecificPart), !hasSpecificPart) {
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+
+template <typename F, typename R>
+AutoPtr<List<AutoPtr<F> > > IntentResolver<F, R>::CollectFilters(
+    /* [in] */ ArrayOf<F*>* array,
+    /* [in] */ IIntentFilter* matching)
+{
+    AutoPtr<List<AutoPtr<F> > > res;
+    if (array != NULL) {
+        for (Int32 i = 0; i < array->GetLength(); i++) {
+            AutoPtr<F> cur = (*array)[i];
+            if (cur == NULL) {
+                break;
+            }
+            if (FilterEquals(IIntentFilter::Probe(cur), matching)) {
+                if (res == NULL) {
+                    res = new List<AutoPtr<F> >();
+                }
+                res->PushBack(cur);
+            }
+        }
+    }
+    return res;
+}
+
+template <typename F, typename R>
+AutoPtr<List<AutoPtr<F> > > IntentResolver<F, R>::FindFilters(
+    /* [in] */ IIntentFilter* matching)
+{
+    Int32 count, countActions, countDataSchemes;
+    if (matching->CountDataSchemes(&count), count == 1) {
+        // Fast case.
+        AutoPtr< ArrayOf<F*> > f;
+        String scheme;
+        matching->GetDataScheme(0, &scheme);
+        typename HashMap<String, AutoPtr<ArrayOf<F*> > >::Iterator it = mSchemeToFilter.Find(scheme);
+        if (it != mSchemeToFilter.End()) {
+            f = it->mSecond;
+        }
+        return CollectFilters(f, matching);
+    }
+    else if ((matching->CountDataTypes(&count), count != 0) &&
+            (matching->CountActions(&countActions), countActions == 1)) {
+        // Another fast case.
+        AutoPtr< ArrayOf<F*> > f;
+        String action;
+        matching->GetAction(0, &action);
+        typename HashMap<String, AutoPtr<ArrayOf<F*> > >::Iterator it = mTypedActionToFilter.Find(action);
+        if (it != mTypedActionToFilter.End()) {
+            f = it->mSecond;
+        }
+        return CollectFilters(f, matching);
+    }
+    else if ((matching->CountDataTypes(&count), count == 0) &&
+            (matching->CountDataSchemes(&countDataSchemes), countDataSchemes == 0) &&
+            (matching->CountActions(&countActions), countActions == 1)) {
+        // Last fast case.
+        AutoPtr< ArrayOf<F*> > f;
+        String action;
+        matching->GetAction(0, &action);
+        typename HashMap<String, AutoPtr<ArrayOf<F*> > >::Iterator it = mActionToFilter.Find(action);
+        if (it != mActionToFilter.End()) {
+            f = it->mSecond;
+        }
+        return CollectFilters(f, matching);
+    }
+    else {
+        AutoPtr<List<AutoPtr<F> > > res;
+        typename HashSet<AutoPtr<F> >::Iterator it = mFilters->Begin();
+        for (; it != mFilters->End(); ++it) {
+            AutoPtr<F> cur = *it;
+            if (FilterEquals(IIntentFilter::Probe(cur), matching)) {
+                if (res == NULL) {
+                    res = new List<AutoPtr<F> >();
+                }
+                res->PushBack(cur);
+            }
+        }
+        return res;
+    }
 }
 
 template <typename F, typename R>
@@ -309,11 +510,6 @@ void IntentResolver<F, R>::RemoveFilter(
 
     RemoveFilterInternal(f);
     mFilters->Erase(f);
-
-    // if (VALIDATE) {
-    //     mOldResolver.removeFilter(f);
-    //     verifyDataStructures(f);
-    // }
 }
 
 template <typename F, typename R>
@@ -332,9 +528,7 @@ void IntentResolver<F, R>::RemoveFilterInternal(
     AutoPtr< ArrayOf<String> > schemes;
     AutoPtr< ArrayOf<String> > actions;
     f->GetSchemes((ArrayOf<String>**)&schemes);
-    Int32 numS = UnregisterIntentFilter(
-            f, schemes,
-            &mSchemeToFilter, "      Scheme: ");
+    Int32 numS = UnregisterIntentFilter(f, schemes, &mSchemeToFilter, "      Scheme: ");
     Int32 numT = UnregisterMimeTypes(f, "      Type: ");
     if (numS == 0 && numT == 0) {
         f->GetActions((ArrayOf<String>**)&actions);
@@ -393,9 +587,9 @@ AutoPtr< List< AutoPtr<R> > > IntentResolver<F, R>::QueryIntent(
 //    Boolean debug = localLOGV ||
 //                ((intent.getFlags() & Intent.FLAG_DEBUG_LOG_RESOLUTION) != 0);
 
-//    if (debug) Log.v(
-//            TAG, "Resolving type " + resolvedType + " scheme " + scheme
-//            + " of intent " + intent);
+    // if (debug) Slog.v(
+    //         TAG, "Resolving type=" + resolvedType + " scheme=" + scheme
+    //         + " defaultOnly=" + defaultOnly + " userId=" + userId + " of " + intent);
 
     AutoPtr< ArrayOf<F*> > firstTypeCut;
     AutoPtr< ArrayOf<F*> > secondTypeCut;
@@ -417,24 +611,25 @@ AutoPtr< List< AutoPtr<R> > > IntentResolver<F, R>::QueryIntent(
                     if (it != mTypeToFilter.End()) {
                         firstTypeCut = it->mSecond;
                     }
-                    // if (debug) Slog.v(TAG, "First type cut: " + firstTypeCut);
+                    // if (debug) Slog.v(TAG, "First type cut: " + Arrays.toString(firstTypeCut));
                     it = mWildTypeToFilter.Find(baseType);
                     if (it != mWildTypeToFilter.End()) {
                         secondTypeCut = it->mSecond;
                     }
-                    // if (debug) Slog.v(TAG, "Second type cut: " + secondTypeCut);
-                } else {
+                    // if (debug) Slog.v(TAG, "Second type cut: " + Arrays.toString(secondTypeCut));
+                }
+                else {
                     // We can match anything with our base type.
                     typename HashMap<String, AutoPtr< ArrayOf<F*> > >::Iterator it = mBaseTypeToFilter.Find(baseType);
                     if (it != mBaseTypeToFilter.End()) {
                         firstTypeCut = it->mSecond;
                     }
-                    // if (debug) Slog.v(TAG, "First type cut: " + firstTypeCut);
+                    // if (debug) Slog.v(TAG, "First type cut: " + Arrays.toString(firstTypeCut));
                     it = mWildTypeToFilter.Find(baseType);
                     if (it != mWildTypeToFilter.End()) {
                         secondTypeCut = it->mSecond;
                     }
-                    // if (debug) Slog.v(TAG, "Second type cut: " + secondTypeCut);
+                    // if (debug) Slog.v(TAG, "Second type cut: " + Arrays.toString(secondTypeCut));
                 }
 
                 // Any */* types always apply, but we only need to do this
@@ -443,20 +638,21 @@ AutoPtr< List< AutoPtr<R> > > IntentResolver<F, R>::QueryIntent(
                 if (it != mWildTypeToFilter.End()) {
                     thirdTypeCut = it->mSecond;
                 }
-                // if (debug) Slog.v(TAG, "Third type cut: " + thirdTypeCut);
-            } else {
+                // if (debug) Slog.v(TAG, "Third type cut: " + Arrays.toString(thirdTypeCut));
+            }
+            else {
                 String action;
                 intent->GetAction(&action);
                 if (!action.IsNull()) {
-                // The intent specified any type ({@literal *}/*).  This
-                // can be a whole heck of a lot of things, so as a first
-                // cut let's use the action instead.
-                typename HashMap<String, AutoPtr< ArrayOf<F*> > >::Iterator it = mTypedActionToFilter.Find(action);
-                if (it != mTypedActionToFilter.End()) {
-                    firstTypeCut = it->mSecond;
+                    // The intent specified any type ({@literal *}/*).  This
+                    // can be a whole heck of a lot of things, so as a first
+                    // cut let's use the action instead.
+                    typename HashMap<String, AutoPtr< ArrayOf<F*> > >::Iterator it = mTypedActionToFilter.Find(action);
+                    if (it != mTypedActionToFilter.End()) {
+                        firstTypeCut = it->mSecond;
+                    }
+                    // if (debug) Slog.v(TAG, "Typed Action list: " + Arrays.toString(firstTypeCut));
                 }
-                // if (debug) Slog.v(TAG, "Typed Action list: " + firstTypeCut);
-            }
             }
         }
     }
@@ -469,7 +665,7 @@ AutoPtr< List< AutoPtr<R> > > IntentResolver<F, R>::QueryIntent(
         if (it != mSchemeToFilter.End()) {
             schemeCut = it->mSecond;
         }
-        // if (debug) Slog.v(TAG, "Scheme list: " + schemeCut);
+        // if (debug) Slog.v(TAG, "Scheme list: " + Arrays.toString(schemeCut));
     }
 
     // If the intent does not specify any data -- either a MIME type or
@@ -482,7 +678,7 @@ AutoPtr< List< AutoPtr<R> > > IntentResolver<F, R>::QueryIntent(
         if (it != mActionToFilter.End()) {
             firstTypeCut = it->mSecond;
         }
-        // if (debug) Slog.v(TAG, "Action list: " + firstTypeCut);
+        // if (debug) Slog.v(TAG, "Action list: " + Arrays.toString(firstTypeCut));
     }
 
     AutoPtr< ArrayOf<String> > categories = GetFastIntentCategories(intent);
@@ -504,20 +700,10 @@ AutoPtr< List< AutoPtr<R> > > IntentResolver<F, R>::QueryIntent(
     }
     SortResults(finalList);
 
-    // if (VALIDATE) {
-    //     List<R> oldList = mOldResolver.queryIntent(intent, resolvedType, defaultOnly, userId);
-    //     if (oldList.size() != finalList.size()) {
-    //         ValidationFailure here = new ValidationFailure();
-    //         here.fillInStackTrace();
-    //         Log.wtf(TAG, "Query result " + intent + " size is " + finalList.size()
-    //                 + "; old implementation is " + oldList.size(), here);
-    //     }
-    // }
-
     // if (debug) {
     //     Slog.v(TAG, "Final result list:");
-    //     for (R r : finalList) {
-    //         Slog.v(TAG, "  " + r);
+    //     for (int i=0; i<finalList.size(); i++) {
+    //         Slog.v(TAG, "  " + finalList.get(i));
     //     }
     // }
     return finalList;
@@ -767,6 +953,16 @@ void IntentResolver<F, R>::BuildResolveList(
     Boolean excludingStopped;
     intent->IsExcludingStopped(&excludingStopped);
 
+    // AutoPtr<IPrinter> logPrinter;
+    // AutoPtr<IPrintWriter> logPrintWriter;
+    // if (debug) {
+    //     logPrinter = new LogPrinter(Log.VERBOSE, TAG, Log.LOG_ID_SYSTEM);
+    //     logPrintWriter = new FastPrintWriter(logPrinter);
+    // } else {
+    //     logPrinter = null;
+    //     logPrintWriter = null;
+    // }
+
     const Int32 N = src != NULL ? src->GetLength() : 0;
     Boolean hasNonDefaults = FALSE;
     Int32 i;
@@ -783,7 +979,7 @@ void IntentResolver<F, R>::BuildResolveList(
         }
 
         // Is delivery being limited to filters owned by a particular package?
-        if (!packageName.IsNull() && !packageName.Equals(PackageForFilter(filter))) {
+        if (!packageName.IsNull() && !IsPackageForFilter(packageName, filter)) {
             // if (debug) {
             //     Slog.v(TAG, "  Filter is not from package " + packageName + "; skipping");
             // }
@@ -802,12 +998,18 @@ void IntentResolver<F, R>::BuildResolveList(
                 categories, String("IntentResolver"));
 
         if (match >= 0) {
-//                if (debug) Slog.v(TAG, "  Filter matched!  match=0x" +
-//                        Integer.toHexString(match));
+            // if (debug) Slog.v(TAG, "  Filter matched!  match=0x" +
+            //         Integer.toHexString(match) + " hasDefault="
+            //         + filter.hasCategory(Intent.CATEGORY_DEFAULT));
             if (!defaultOnly || filter->HasCategory(IIntent::CATEGORY_DEFAULT)) {
                 AutoPtr<R> oneResult = NewResult(filter, match, userId);
                 if (oneResult != NULL) {
                     dest->PushBack(oneResult);
+                    // if (debug) {
+                    //     dumpFilter(logPrintWriter, "    ", filter);
+                    //     logPrintWriter.flush();
+                    //     filter.dump(logPrinter, "    ");
+                    // }
                 }
             }
             else {
@@ -829,8 +1031,13 @@ void IntentResolver<F, R>::BuildResolveList(
         }
     }
 
-    if (dest->Begin() == dest->End() && hasNonDefaults) {
-//        Slog.w(TAG, "resolveIntent failed: found match, but none with Intent.CATEGORY_DEFAULT");
+    if (hasNonDefaults) {
+        if (dest->Begin() == dest->End()) {
+            Slogger::W(TAG, "resolveIntent failed: found match, but none with CATEGORY_DEFAULT");
+        }
+        else if (dest->GetSize() > 1) {
+            Slogger::W(TAG, "resolveIntent: multiple matches, only some with CATEGORY_DEFAULT");
+        }
     }
 }
 

@@ -2,20 +2,14 @@
 #ifndef __ELASTOS_DROID_SERVER_PM_PACKAGEVERIFICATIONSTATE_H__
 #define __ELASTOS_DROID_SERVER_PM_PACKAGEVERIFICATIONSTATE_H__
 
-#include "elastos/droid/ext/frameworkext.h"
-#include "_Elastos.Droid.Server.h"
-#include <elastos/utility/etl/HashMap.h>
-
-using Elastos::Utility::Etl::HashMap;
+#include "elastos/droid/server/pm/CPackageManagerService.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Pm {
 
-class InstallArgs;
-
-class PackageVerificationState : public ElRefBase
+class PackageVerificationState : public Object
 {
 public:
     /**
@@ -28,9 +22,9 @@ public:
      */
     PackageVerificationState(
         /* [in] */ Int32 requiredVerifierUid,
-        /* [in] */ InstallArgs* args);
+        /* [in] */ CPackageManagerService::InstallArgs* args);
 
-    CARAPI_(AutoPtr<InstallArgs>) GetInstallArgs();
+    CARAPI_(AutoPtr<CPackageManagerService::InstallArgs>) GetInstallArgs();
 
     CARAPI_(void) AddSufficientVerifier(
         /* [in] */ Int32 uid);
@@ -48,7 +42,7 @@ public:
     CARAPI_(Boolean) TimeoutExtended();
 
 private:
-    AutoPtr<InstallArgs> mArgs;
+    AutoPtr<CPackageManagerService::InstallArgs> mArgs;
 
     HashMap<Int32, Boolean> mSufficientVerifierUids;
 

@@ -107,6 +107,12 @@ public:
     CARAPI SetServiceInfo(
         /* [in] */ IServiceInfo* serviceInfo);
 
+    CARAPI GetProviderInfo(
+        /* [out] */ IProviderInfo** providerInfo);
+
+    CARAPI SetProviderInfo(
+        /* [in] */ IProviderInfo* providerInfo);
+
     CARAPI GetFilter(
         /* [out] */IIntentFilter** filter);
 
@@ -166,6 +172,18 @@ public:
 
     CARAPI SetResolvePackageName(
         /* [in] */ const String& resolvePackageName);
+
+    CARAPI GetTargetUserId(
+        /* [out] */ Int32* userId);
+
+    CARAPI SetTargetUserId(
+        /* [in] */ Int32 userId);
+
+    CARAPI GetNoResourceId(
+        /* [out] */ Boolean* id);
+
+    CARAPI SetNoResourceId(
+        /* [in] */ Boolean id);
 
     CARAPI GetSystem(
         /* [out] */ Boolean* sys);

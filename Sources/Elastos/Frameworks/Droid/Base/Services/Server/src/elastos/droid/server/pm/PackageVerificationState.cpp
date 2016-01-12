@@ -1,6 +1,6 @@
 
-#include "pm/PackageVerificationState.h"
-#include "pm/CPackageManagerService.h"
+#include "elastos/droid/server/pm/PackageVerificationState.h"
+#include "elastos/droid/server/pm/CPackageManagerService.h"
 
 namespace Elastos {
 namespace Droid {
@@ -9,7 +9,7 @@ namespace Pm {
 
 PackageVerificationState::PackageVerificationState(
     /* [in] */ Int32 requiredVerifierUid,
-    /* [in] */ InstallArgs* args)
+    /* [in] */ CPackageManagerService::InstallArgs* args)
     : mArgs(args)
     , mSufficientVerifierUids(10)
     , mRequiredVerifierUid(requiredVerifierUid)
@@ -20,7 +20,7 @@ PackageVerificationState::PackageVerificationState(
     , mExtendedTimeout(FALSE)
 {}
 
-AutoPtr<InstallArgs> PackageVerificationState::GetInstallArgs()
+AutoPtr<CPackageManagerService::InstallArgs> PackageVerificationState::GetInstallArgs()
 {
     return mArgs;
 }

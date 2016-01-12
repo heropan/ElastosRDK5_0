@@ -15,7 +15,7 @@ namespace Server {
 namespace Pm {
 
 CarClass(CResourcesChangedReceiver)
-    : public Object
+    , public Object
     , public IIntentReceiver
     , public IBinder
 {
