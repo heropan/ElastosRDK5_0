@@ -2225,7 +2225,7 @@ ECode CBigDecimal::ToString(
     result.Append(intString);
     if ((mScale > 0) && (exponent >= -6)) {
         if (exponent >= 0) {
-            result.Insert(end - mScale, '.');
+            result.InsertChar(end - mScale, '.');
         } else {
             AutoPtr<ArrayOf<Char32> > array = ArrayOf<Char32>::Alloc(2);
             (*array)[0] = '0';
@@ -2235,12 +2235,12 @@ ECode CBigDecimal::ToString(
         }
     } else {
         if (end - begin >= 1) {
-            result.Insert(begin, '.');
+            result.InsertChar(begin, '.');
             end++;
         }
-        result.Insert(end, 'E');
+        result.InsertChar(end, 'E');
         if (exponent > 0) {
-            result.Insert(++end, '+');
+            result.InsertChar(++end, '+');
         }
         result.Insert(++end, StringUtils::ToString(exponent));
     }
@@ -2371,7 +2371,7 @@ ECode CBigDecimal::ToPlainString(
             delta = begin - delta;
             String subStr = intStr.Substring(begin, delta);
             result.Append(subStr);
-            result.Append('.');
+            result.AppendChar('.');
             subStr = intStr.Substring(delta);
             result.Append(subStr);
         }
