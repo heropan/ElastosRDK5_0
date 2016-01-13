@@ -16,7 +16,7 @@ ECode CLinkPropertiesHelper::IsValidMtu(
     /* [in] */ Boolean ipv6,
     /* [out] */ Boolean* result)
 {
-    return LinkPropertiesHelper::IsValidMtu(mtu, ipv6, result);
+    return LinkProperties::IsValidMtu(mtu, ipv6, result);
 }
 
 } // namespace Net

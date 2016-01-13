@@ -2,78 +2,137 @@
 #include "elastos/droid/server/CConnectivityService.h"
 #include "elastos/droid/server/CNetworkPolicyListener.h"
 #include "elastos/droid/server/CDataActivityObserver.h"
-#include "elastos/droid/server/am/CBatteryStatsService.h"
-#include "elastos/droid/net/DummyDataStateTracker.h"
-#include "elastos/droid/net/ethernet/EthernetDataTracker.h"
+#include "elastos/droid/server/connectivity/CNat464Xlat.h"
+#include "elastos/droid/server/connectivity/NetworkAgentInfo.h"
+#include "elastos/droid/server/connectivity/NetworkMonitor.h"
 #include "elastos/droid/net/NetworkUtils.h"
-#include "elastos/droid/net/wifi/WifiStateTracker.h"
 #include "elastos/droid/os/Binder.h"
+#include "elastos/droid/os/UserHandle.h"
 #include "elastos/droid/os/FileUtils.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/Manifest.h"
-#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/CoreUtils.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/utility/etl/Algorithm.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <cutils/properties.h>
+#include <Elastos.Droid.App.h>
+#include <Elastos.Droid.Content.h>
+#include <Elastos.Droid.Net.h>
+#include <Elastos.Droid.Internal.h>
+#include <Elastos.Droid.Os.h>
+#include <Elastos.Droid.Provider.h>
+#include <Elastos.Droid.Text.h>
+#include <Elastos.Droid.Utility.h>
+#include <Elastos.Droid.KeyStore.h>
+#include <Elastos.CoreLibrary.IO.h>
+#include <Elastos.CoreLibrary.Net.h>
+#include <Elastos.CoreLibrary.Utility.h>
+#include <Elastos.CoreLibrary.Utility.Concurrent.h>
 
 using Elastos::Droid::R;
+using Elastos::Droid::Os::Binder;
+using Elastos::Droid::Os::CBinder;
+using Elastos::Droid::Os::UserHandle;
+using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::Os::IProcess;
+using Elastos::Droid::Os::FileUtils;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Os::CSystemProperties;
+using Elastos::Droid::Os::CHandlerThread;
+using Elastos::Droid::Os::IPowerManager;
+using Elastos::Droid::App::IPendingIntentHelper;
+using Elastos::Droid::App::CPendingIntentHelper;
+using Elastos::Droid::App::INotification;
+using Elastos::Droid::App::CNotification;
+using Elastos::Droid::App::INotificationManager;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::CIntentFilter;
+using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::IResourcesHelper;
+using Elastos::Droid::Content::Res::CResourcesHelper;
+using Elastos::Droid::Net::IUriHelper;
+using Elastos::Droid::Net::CUriHelper;
 using Elastos::Droid::Net::IConnectivityManager;
-using Elastos::Droid::Net::ICompareResult;
-using Elastos::Droid::Net::CCompareResult;
 using Elastos::Droid::Net::ILinkAddress;
 using Elastos::Droid::Net::ILinkCapabilities;
-using Elastos::Droid::Net::INetworkPolicyManager;
+using Elastos::Droid::Net::CLinkProperties;
+using Elastos::Droid::Net::ILinkPropertiesHelper;
+using Elastos::Droid::Net::CLinkPropertiesHelper;
+using Elastos::Droid::Net::CProxyInfo;
 using Elastos::Droid::Net::IRouteInfoHelper;
 using Elastos::Droid::Net::CRouteInfoHelper;
 using Elastos::Droid::Net::IConnectivityManagerHelper;
 using Elastos::Droid::Net::CConnectivityManagerHelper;
+using Elastos::Droid::Net::EIID_IIConnectivityManager;
+using Elastos::Droid::Net::IMobileDataStateTracker;
+using Elastos::Droid::Net::CNetwork;
+using Elastos::Droid::Net::CNetworkCapabilities;
+using Elastos::Droid::Net::CNetworkRequest;
 using Elastos::Droid::Net::CNetworkConfig;
 using Elastos::Droid::Net::CNetworkInfo;
 using Elastos::Droid::Net::CNetworkState;
-using Elastos::Droid::Net::CProxyProperties;
-using Elastos::Droid::Net::DummyDataStateTracker;
+using Elastos::Droid::Net::INetworkFactory;
+using Elastos::Droid::Net::INetworkPolicyManager;
+using Elastos::Droid::Net::NetworkInfoState;
 using Elastos::Droid::Net::NetworkInfoState_CONNECTED;
 using Elastos::Droid::Net::NetworkInfoState_DISCONNECTED;
 using Elastos::Droid::Net::NetworkInfoState_SUSPENDED;
 using Elastos::Droid::Net::NetworkInfoState_CONNECTING;
+using Elastos::Droid::Net::NetworkInfoDetailedState;
+using Elastos::Droid::Net::NetworkInfoDetailedState_DISCONNECTED;
 using Elastos::Droid::Net::NetworkInfoDetailedState_BLOCKED;
 using Elastos::Droid::Net::NetworkInfoDetailedState_FAILED;
 using Elastos::Droid::Net::NetworkInfoDetailedState_CAPTIVE_PORTAL_CHECK;
 using Elastos::Droid::Net::NetworkInfoDetailedState_CONNECTED;
 using Elastos::Droid::Net::NetworkUtils;
-using Elastos::Droid::Net::Ethernet::EthernetDataTracker;
-using Elastos::Droid::Wifi::WifiStateTracker;
-using Elastos::Droid::Os::Binder;
-using Elastos::Droid::Os::FileUtils;
-using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Internal::Net::IVpnProfileHelper;
+using Elastos::Droid::Internal::Net::CVpnProfileHelper;
+using Elastos::Droid::Internal::Telephony::IDctConstants;
 using Elastos::Droid::Provider::CSettingsGlobal;
 using Elastos::Droid::Provider::ISettingsGlobal;
 using Elastos::Droid::Provider::CSettingsSecure;
 using Elastos::Droid::Provider::ISettingsSecure;
+using Elastos::Droid::Provider::ISettingsSystem;
+using Elastos::Droid::Provider::CSettingsSystem;
 using Elastos::Droid::Text::TextUtils;
-using Elastos::Droid::Server::Am::CBatteryStatsService;
-using Elastos::Droid::Server::Connectivity::CTethering;
-using Elastos::Droid::Server::Connectivity::Vpn;
+using Elastos::Droid::Utility::CSparseArray;
+using Elastos::Droid::KeyStore::Security::ICredentials;
+using Elastos::Droid::KeyStore::Security::IKeyStoreHelper;
+// using Elastos::Droid::KeyStore::Security::CKeyStoreHelper;
+using Elastos::Droid::Server::Connectivity::CNat464Xlat;
+using Elastos::Droid::Server::Connectivity::NetworkAgentInfo;
+using Elastos::Droid::Server::Connectivity::NetworkMonitor;
 
+using Elastos::Core::CoreUtils;
 using Elastos::Core::StringUtils;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::CObjectContainer;
+using Elastos::Core::IArrayOf;
+using Elastos::Core::IInteger32;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IThread;
+using Elastos::IO::IPrintWriter;
+using Elastos::IO::CFile;
 using Elastos::Net::IInetAddress;
 using Elastos::Net::IInetAddressHelper;
 using Elastos::Net::CInetAddressHelper;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::ISet;
+using Elastos::Utility::IMapEntry;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::CHashMap;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Security::IKeyStoreHelper;
-using Elastos::Security::CKeyStoreHelper;
+using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
 
 namespace Elastos {
 namespace Droid {
@@ -152,6 +211,24 @@ const Int32 CConnectivityService::PROVISIONING = 2;
 
 const String CConnectivityService::NOTIFICATION_ID("CaptivePortal.Notification");
 
+static Boolean IsNetworkTypeValid(
+    /* [in] */ Int32 networkType,
+    /* [out] */ Boolean* result)
+{
+    AutoPtr<IConnectivityManagerHelper> helper;
+    CConnectivityManagerHelper::AcquireSingleton((IConnectivityManagerHelper**)&helper);
+    return helper->IsNetworkTypeValid(networkType, result);
+}
+
+static ECode GetNetworkTypeName(
+    /* [in] */ Int32 networkType,
+    /* [out] */ String* result)
+{
+    AutoPtr<IConnectivityManagerHelper> helper;
+    CConnectivityManagerHelper::AcquireSingleton((IConnectivityManagerHelper**)&helper);
+    return helper->GetNetworkTypeName(networkType, result);
+}
+
 //==============================================================================
 // CConnectivityService::LegacyTypeTracker
 //==============================================================================
@@ -173,7 +250,7 @@ ECode CConnectivityService::LegacyTypeTracker::AddSupportedType(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-    AutoLock<IArrayList> list;
+    AutoPtr<IArrayList> list;
     CArrayList::New((IArrayList**)&list);
     mTypeLists->Set(type, list);
     return NOERROR;
@@ -182,7 +259,9 @@ ECode CConnectivityService::LegacyTypeTracker::AddSupportedType(
 Boolean CConnectivityService::LegacyTypeTracker::IsTypeSupported(
     /* [in] */ Int32 type)
 {
-    return mHost->IsNetworkTypeValid(type) && (mTypeLists*)[type] != NULL;
+    Boolean bval;
+    IsNetworkTypeValid(type, &bval);
+    return bval && (*mTypeLists)[type] != NULL;
 }
 
 AutoPtr<INetworkAgentInfo> CConnectivityService::LegacyTypeTracker::GetNetworkForType(
@@ -207,7 +286,7 @@ void CConnectivityService::LegacyTypeTracker::MaybeLogBroadcast(
     if (DBG) {
         String name;
         nai->Name(&name);
-        Slogger::D(TAG, "Sending %s broadcast for type %d %s isDefaultNetwork=%d.",
+        Slogger::D(TAG, "Sending %s broadcast for type %d %s IsDefaultNetwork=%d.",
             connected ? "connected" : "disconnected", type, name.string(), mHost->IsDefaultNetwork(nai));
     }
 }
@@ -222,7 +301,7 @@ void CConnectivityService::LegacyTypeTracker::Add(
     }
     if (VDBG) {
         Slogger::D(TAG, "Adding agent %s for legacy network type %d",
-            Object::ToString(nai), type);
+            Object::ToString(nai).string(), type);
     }
 
     AutoPtr<IArrayList> list = (*mTypeLists)[type];
@@ -231,7 +310,7 @@ void CConnectivityService::LegacyTypeTracker::Add(
     list->Contains(naiObj, &bval);
     if (bval) {
         Slogger::E(TAG, "Attempting to register duplicate agent for type %d: %s",
-            type, Object::ToString(nai));
+            type, Object::ToString(nai).string());
         return;
     }
 
@@ -240,9 +319,9 @@ void CConnectivityService::LegacyTypeTracker::Add(
     // Send a broadcast if this is the first network of its type or if it's the default.
     Int32 ival;
     list->GetSize(&ival);
-    if (ival == 1 || IsDefaultNetwork(nai)) {
+    if (ival == 1 || mHost->IsDefaultNetwork(nai)) {
         MaybeLogBroadcast(nai, TRUE, type);
-        SendLegacyNetworkBroadcast(nai, TRUE, type);
+        mHost->SendLegacyNetworkBroadcast(nai, TRUE, type);
     }
 }
 
@@ -267,9 +346,9 @@ void CConnectivityService::LegacyTypeTracker::Remove(
         return;
     }
 
-    if (wasFirstNetwork || IsDefaultNetwork(nai)) {
+    if (wasFirstNetwork || mHost->IsDefaultNetwork(nai)) {
         MaybeLogBroadcast(nai, FALSE, type);
-        SendLegacyNetworkBroadcast(nai, FALSE, type);
+        mHost->SendLegacyNetworkBroadcast(nai, FALSE, type);
     }
 
     list->IsEmpty(&bval);
@@ -283,7 +362,7 @@ void CConnectivityService::LegacyTypeTracker::Remove(
         list->Get(0, (IInterface**)&obj);
         INetworkAgentInfo* info = INetworkAgentInfo::Probe(obj);
         MaybeLogBroadcast(info, FALSE, type);
-        SendLegacyNetworkBroadcast(info, FALSE, type);
+        mHost->SendLegacyNetworkBroadcast(info, FALSE, type);
     }
 }
 
@@ -305,7 +384,7 @@ String CConnectivityService::LegacyTypeTracker::NaiToString(
     }
 
     NetworkAgentInfo* info = (NetworkAgentInfo*)nai;
-    String state("???/???");
+    String stateStr("???/???");
     if (info->mNetworkInfo != NULL) {
         NetworkInfoState state;
         NetworkInfoDetailedState detailedState;
@@ -315,29 +394,31 @@ String CConnectivityService::LegacyTypeTracker::NaiToString(
         sb += (Int32)state;
         sb += "/";
         sb += (Int32)detailedState;
-        state = sb.ToString();
+        stateStr = sb.ToString();
     }
 
     StringBuilder sb(name);
     sb += " ";
-    sb += state;
+    sb += stateStr;
     return sb.ToString();
 }
 
 ECode CConnectivityService::LegacyTypeTracker::Dump(
     /* [in] */ IIndentingPrintWriter* pw)
 {
+    IPrintWriter* writer = IPrintWriter::Probe(pw);
     Int32 size;
-    for (Int32 type = 0; type < mTypeLists->GetLength; type++) {
+    for (Int32 type = 0; type < mTypeLists->GetLength(); type++) {
         if ((*mTypeLists)[type] == NULL) continue;
-        pw->Print(type + " ");
+        writer->Print(type);
+        writer->Print(String(" "));
         pw->IncreaseIndent();
-        if ((*mTypeLists)[type]->GetSize(&size) == 0) pw->Println("none");
+        if ((*mTypeLists)[type]->GetSize(&size) == 0) writer->Println(String("none"));
         for (Int32 i = 0; i < size; ++i) {
             AutoPtr<IInterface> obj;
             (*mTypeLists)[type]->Get(i, (IInterface**)&obj);
             INetworkAgentInfo* nai = INetworkAgentInfo::Probe(obj);
-            pw->Println(NaiToString(nai));
+            writer->Println(NaiToString(nai));
         }
         pw->DecreaseIndent();
     }
@@ -355,10 +436,10 @@ void CConnectivityService::LegacyTypeTracker::Log(
 // CConnectivityService::NetworkRequestInfo
 //==============================================================================
 
-static const Boolean CConnectivityService::NetworkRequestInfo::REQUEST = true;
-static const Boolean CConnectivityService::NetworkRequestInfo::LISTEN = false;
+const Boolean CConnectivityService::NetworkRequestInfo::REQUEST = TRUE;
+const Boolean CConnectivityService::NetworkRequestInfo::LISTEN = FALSE;
 
-CAR_INTERFACE_DECL(NetworkRequestInfo, Object, IProxyDeathRecipient)
+CAR_INTERFACE_IMPL(CConnectivityService::NetworkRequestInfo, Object, IProxyDeathRecipient)
 
 CConnectivityService::NetworkRequestInfo::NetworkRequestInfo(
     /* [in] */ IMessenger* m,
@@ -371,19 +452,26 @@ CConnectivityService::NetworkRequestInfo::NetworkRequestInfo(
     mMessenger = m;
     mRequest = r;
     mBinder = binder;
-    mPid = GetCallingPid();
-    mUid = GetCallingUid();
+    mPid = Binder::GetCallingPid();
+    mUid = Binder::GetCallingUid();
     mIsRequest = isRequest;
 
-    ECode ec = mBinder->LinkToDeath((IProxyDeathRecipient*)this, 0);
-    if (ec == E_REMOTE_EXCEPTION) {
-        ProxyDied();
+    AutoPtr<IProxy> proxy = (IProxy*)mBinder->Probe(EIID_IProxy);
+    if (proxy != NULL) {
+        ECode ec = proxy->LinkToDeath((IProxyDeathRecipient*)this, 0);
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
+            ProxyDied();
+        }
     }
 }
 
 void CConnectivityService::NetworkRequestInfo::UnlinkDeathRecipient()
 {
-    mBinder->UnlinkToDeath((IProxyDeathRecipient*)this, 0);
+    AutoPtr<IProxy> proxy = (IProxy*)mBinder->Probe(EIID_IProxy);
+    if (proxy != NULL) {
+        Boolean bval;
+        proxy->UnlinkToDeath((IProxyDeathRecipient*)this, 0, &bval);
+    }
 }
 
 ECode CConnectivityService::NetworkRequestInfo::ProxyDied()
@@ -398,13 +486,13 @@ ECode CConnectivityService::NetworkRequestInfo::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str)
-    StringBuilder sb(isRequest ? "Request" : "Listen");
+    StringBuilder sb(mIsRequest ? "Request" : "Listen");
     sb += " from uid/pid:";
     sb += mUid;
     sb += "/";
     sb += mPid;
     sb += " for ";
-    sb += Object::ToString(mRequest.string());
+    sb += Object::ToString(mRequest).string();
     return NOERROR;
 }
 
@@ -423,22 +511,22 @@ ECode CConnectivityService::UserIntentReceiver::OnReceive(
     String action;
     intent->GetAction(&action);
     Int32 userId;
-    intent->GetInt32Extra(IIntent::EXTRA_USER_HANDLE, IUserHandle::USER_NULL);
+    intent->GetInt32Extra(IIntent::EXTRA_USER_HANDLE, IUserHandle::USER_NULL, &userId);
     if (userId == IUserHandle::USER_NULL) return NOERROR;
 
     if (IIntent::ACTION_USER_STARTING.Equals(action)) {
         mHost->OnUserStart(userId);
     }
-    else if (Intent.ACTION_USER_STOPPING.Equals(action)) {
+    else if (IIntent::ACTION_USER_STOPPING.Equals(action)) {
         mHost->OnUserStop(userId);
     }
     return NOERROR;
 }
 
 //==============================================================================
-// CConnectivityService::InternalBroadcastReciver
+// CConnectivityService::InternalBroadcastReceiver
 //==============================================================================
-ECode CConnectivityService::InternalBroadcastReciver::OnReceive(
+ECode CConnectivityService::InternalBroadcastReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
@@ -460,7 +548,7 @@ CConnectivityService::PktCntSampleIntervalElapsedeceiver::PktCntSampleIntervalEl
     : mHost(host)
 {}
 
-//@Override
+//
 ECode CConnectivityService::PktCntSampleIntervalElapsedeceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
@@ -473,6 +561,7 @@ ECode CConnectivityService::PktCntSampleIntervalElapsedeceiver::OnReceive(
         Boolean bval;
         mHost->mHandler->SendMessage(msg, &bval);
     }
+    return NOERROR;
 }
 
 //==============================================================================
@@ -493,24 +582,26 @@ ECode CConnectivityService::InternalHandler::HandleMessage(
         case CConnectivityService::EVENT_EXPIRE_NET_TRANSITION_WAKELOCK:
         case CConnectivityService::EVENT_CLEAR_NET_TRANSITION_WAKELOCK: {
             String causedBy;
-            synchronized(mHost) {
+            ISynchronize* syncObj = (ISynchronize*)mHost->Probe(EIID_ISynchronize);
+            synchronized(syncObj) {
                 Boolean bval;
-                if (arg1 == mNetTransitionWakeLockSerialNumber &&
-                        (mNetTransitionWakeLock->IsHeld(&bval), bval)) {
-                    mNetTransitionWakeLock->ReleaseLock();
-                    causedBy = mNetTransitionWakeLockCausedBy;
-                } else {
+                if (arg1 == mHost->mNetTransitionWakeLockSerialNumber
+                    && (mHost->mNetTransitionWakeLock->IsHeld(&bval), bval)) {
+                    mHost->mNetTransitionWakeLock->ReleaseLock();
+                    causedBy = mHost->mNetTransitionWakeLockCausedBy;
+                }
+                else {
                     break;
                 }
             }
             if (what == CConnectivityService::EVENT_EXPIRE_NET_TRANSITION_WAKELOCK) {
-                Slogg::D("CConnectivityService", "Failed to find a new network"
+                Slogger::D("CConnectivityService", "Failed to find a new network"
                     " - expiring NetTransition Wakelock");
             }
             else {
-                Slogg::D("CConnectivityService", "NetTransition Wakelock (%s)"
+                Slogger::D("CConnectivityService", "NetTransition Wakelock (%s)"
                     " cleared because we found a replacement network",
-                    causedBy.IsNull() ? "unknown" : causedBy);
+                    causedBy.IsNull() ? "unknown" : causedBy.string());
             }
             break;
         }
@@ -539,12 +630,13 @@ ECode CConnectivityService::InternalHandler::HandleMessage(
             mHost->mEnableFailFastMobileDataTag->Get(&tag);
             if (arg1 == tag) {
                 AutoPtr<IMobileDataStateTracker> mobileDst;
-                mobileDst = IMobileDataStateTracker::Probe((*mNetTrackers)[IConnectivityManager::TYPE_MOBILE]);
+                mobileDst = IMobileDataStateTracker::Probe(
+                    (*mHost->mNetTrackers)[IConnectivityManager::TYPE_MOBILE]);
                 if (mobileDst != NULL) {
                     mobileDst->SetEnableFailFastMobileData(arg2);
                 }
             } else {
-                Slogg::D("CConnectivityService", "EVENT_ENABLE_FAIL_FAST_MOBILE_DATA: stale arg1:%d != %d",
+                Slogger::D("CConnectivityService", "EVENT_ENABLE_FAIL_FAST_MOBILE_DATA: stale arg1:%d != %d",
                     arg1, tag);
             }
             break;
@@ -559,7 +651,7 @@ ECode CConnectivityService::InternalHandler::HandleMessage(
             break;
         }
         case CConnectivityService::EVENT_REGISTER_NETWORK_FACTORY: {
-            INetworkFactoryInfo* nfi = INetworkFactoryInfo::Probe(obj);
+            NetworkFactoryInfo* nfi = (NetworkFactoryInfo*)IObject::Probe(obj);
             mHost->HandleRegisterNetworkFactory(nfi);
             break;
         }
@@ -611,8 +703,10 @@ ECode CConnectivityService::NetworkStateTrackerHandler::HandleMessage(
     AutoPtr<IInterface> obj;
     msg->GetObj((IInterface**)&obj);
     AutoPtr<INetworkInfo> info = INetworkInfo::Probe(obj);
-    Int32 what;
+    Int32 what, arg1, arg2;
     msg->GetWhat(&what);
+    msg->GetArg1(&arg1);
+    msg->GetArg2(&arg2);
     AutoPtr<IMessenger> replyToMsger;
     msg->GetReplyTo((IMessenger**)&replyToMsger);
     IInterface* replyTo = (IInterface*)replyToMsger;
@@ -630,7 +724,7 @@ ECode CConnectivityService::NetworkStateTrackerHandler::HandleMessage(
             break;
         }
         case IAsyncChannel::CMD_CHANNEL_DISCONNECTED: {
-            mHost->handleAsyncChannelDisconnected(msg);
+            mHost->HandleAsyncChannelDisconnected(msg);
             break;
         }
         case INetworkAgent::EVENT_NETWORK_CAPABILITIES_CHANGED: {
@@ -638,7 +732,7 @@ ECode CConnectivityService::NetworkStateTrackerHandler::HandleMessage(
             mHost->mNetworkAgentInfos->Get(replyTo, (IInterface**)&naiObj);
             NetworkAgentInfo* nai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(naiObj);
             if (nai == NULL) {
-                Slogg::E("CConnectivityService", "EVENT_NETWORK_CAPABILITIES_CHANGED from unknown NetworkAgent");
+                Slogger::E("CConnectivityService", "EVENT_NETWORK_CAPABILITIES_CHANGED from unknown NetworkAgent");
             } else {
                 mHost->UpdateCapabilities(nai, INetworkCapabilities::Probe(obj));
             }
@@ -649,10 +743,10 @@ ECode CConnectivityService::NetworkStateTrackerHandler::HandleMessage(
             mHost->mNetworkAgentInfos->Get(replyTo, (IInterface**)&naiObj);
             NetworkAgentInfo* nai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(naiObj);
             if (nai == NULL) {
-                Slogg::E("CConnectivityService", "NetworkAgent not found for EVENT_NETWORK_PROPERTIES_CHANGED");
+                Slogger::E("CConnectivityService", "NetworkAgent not found for EVENT_NETWORK_PROPERTIES_CHANGED");
             } else {
                 if (VDBG) {
-                    Slogg::D("CConnectivityService", "Update of LinkProperties for %s; created=",
+                    Slogger::D("CConnectivityService", "Update of LinkProperties for %s; created=",
                         nai->Name().string(), nai->mCreated);
                 }
                 AutoPtr<ILinkProperties> oldLp = nai->mLinkProperties;
@@ -668,7 +762,7 @@ ECode CConnectivityService::NetworkStateTrackerHandler::HandleMessage(
             mHost->mNetworkAgentInfos->Get(replyTo, (IInterface**)&naiObj);
             NetworkAgentInfo* nai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(naiObj);
             if (nai == NULL) {
-                Slogg::E("CConnectivityService", "EVENT_NETWORK_INFO_CHANGED from unknown NetworkAgent");
+                Slogger::E("CConnectivityService", "EVENT_NETWORK_INFO_CHANGED from unknown NetworkAgent");
                 break;
             }
             info = INetworkInfo::Probe(obj);
@@ -680,10 +774,10 @@ ECode CConnectivityService::NetworkStateTrackerHandler::HandleMessage(
             mHost->mNetworkAgentInfos->Get(replyTo, (IInterface**)&naiObj);
             NetworkAgentInfo* nai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(naiObj);
             if (nai == NULL) {
-                Slogg::E("CConnectivityService", "EVENT_NETWORK_SCORE_CHANGED from unknown NetworkAgent");
+                Slogger::E("CConnectivityService", "EVENT_NETWORK_SCORE_CHANGED from unknown NetworkAgent");
                 break;
             }
-            IInteger32 score = IInteger32::Probe(obj);
+            IInteger32* score = IInteger32::Probe(obj);
             if (score != NULL) {
                 Int32 ival;
                 score->GetValue(&ival);
@@ -696,7 +790,7 @@ ECode CConnectivityService::NetworkStateTrackerHandler::HandleMessage(
             mHost->mNetworkAgentInfos->Get(replyTo, (IInterface**)&naiObj);
             NetworkAgentInfo* nai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(naiObj);
             if (nai == NULL) {
-                Slogg::E("CConnectivityService", "EVENT_UID_RANGES_ADDED from unknown NetworkAgent");
+                Slogger::E("CConnectivityService", "EVENT_UID_RANGES_ADDED from unknown NetworkAgent");
                 break;
             }
             Int32 id;
@@ -716,7 +810,7 @@ ECode CConnectivityService::NetworkStateTrackerHandler::HandleMessage(
             ECode ec = mHost->mNetd->AddVpnUidRanges(id, array);
             if (FAILED(ec)) {
                 // Never crash!
-                Slogg::E("CConnectivityService", "Exception in addVpnUidRanges: %08x", ec);
+                Slogger::E("CConnectivityService", "Exception in addVpnUidRanges: %08x", ec);
             }
             break;
         }
@@ -725,7 +819,7 @@ ECode CConnectivityService::NetworkStateTrackerHandler::HandleMessage(
             mHost->mNetworkAgentInfos->Get(replyTo, (IInterface**)&naiObj);
             NetworkAgentInfo* nai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(naiObj);
             if (nai == NULL) {
-                Slogg::E("CConnectivityService", "EVENT_UID_RANGES_REMOVED from unknown NetworkAgent");
+                Slogger::E("CConnectivityService", "EVENT_UID_RANGES_REMOVED from unknown NetworkAgent");
                 break;
             }
 
@@ -743,10 +837,10 @@ ECode CConnectivityService::NetworkStateTrackerHandler::HandleMessage(
                     array->Set(i, IUidRange::Probe(o));
                 }
             }
-            ECode ec = mNetd->RemoveVpnUidRanges(id, array);
+            ECode ec = mHost->mNetd->RemoveVpnUidRanges(id, array);
             if (FAILED(ec)) {
                 // Never crash!
-                Slogg::E("CConnectivityService", "Exception in removeVpnUidRanges:　%08x", ec);
+                Slogger::E("CConnectivityService", "Exception in removeVpnUidRanges:　%08x", ec);
             }
             break;
         }
@@ -755,25 +849,25 @@ ECode CConnectivityService::NetworkStateTrackerHandler::HandleMessage(
             mHost->mNetworkAgentInfos->Get(replyTo, (IInterface**)&naiObj);
             NetworkAgentInfo* nai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(naiObj);
             if (nai == NULL) {
-                Slogg::E("CConnectivityService", "EVENT_SET_EXPLICITLY_SELECTED from unknown NetworkAgent");
+                Slogger::E("CConnectivityService", "EVENT_SET_EXPLICITLY_SELECTED from unknown NetworkAgent");
                 break;
             }
             Boolean bval;
             nai->mNetworkMisc->GetExplicitlySelected(&bval);
             if (nai->mCreated && !bval) {
-                Slogg::E("CConnectivityService", "ERROR: created network explicitly selected.");
+                Slogger::E("CConnectivityService", "ERROR: created network explicitly selected.");
             }
             nai->mNetworkMisc->SetExplicitlySelected(TRUE);
             break;
         }
-        case INetworkMonitor::EVENT_NETWORK_TESTED: {
+        case NetworkMonitor::EVENT_NETWORK_TESTED: {
             AutoPtr<IInterface> naiObj;
             mHost->mNetworkAgentInfos->Get(replyTo, (IInterface**)&naiObj);
             NetworkAgentInfo* nai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(naiObj);
             if (mHost->IsLiveNetworkAgent(nai, String("EVENT_NETWORK_VALIDATED"))) {
-                Boolean valid = (arg1 == INetworkMonitor::NETWORK_TEST_RESULT_VALID);
+                Boolean valid = (arg1 == NetworkMonitor::NETWORK_TEST_RESULT_VALID);
                 if (valid) {
-                    if (DBG) Slogg::D("CConnectivityService", "Validated %s", nai->Name().string());
+                    if (DBG) Slogger::D("CConnectivityService", "Validated %s", nai->Name().string());
                     Boolean previouslyValidated = nai->mValidated;
                     Int32 previousScore, curScore;
                     nai->GetCurrentScore(&previousScore);
@@ -794,28 +888,29 @@ ECode CConnectivityService::NetworkStateTrackerHandler::HandleMessage(
             }
             break;
         }
-        case INetworkMonitor::EVENT_NETWORK_LINGER_COMPLETE: {
+        case NetworkMonitor::EVENT_NETWORK_LINGER_COMPLETE: {
             AutoPtr<IInterface> naiObj;
             mHost->mNetworkAgentInfos->Get(replyTo, (IInterface**)&naiObj);
             NetworkAgentInfo* nai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(naiObj);
-            if (IsLiveNetworkAgent(nai, String("EVENT_NETWORK_LINGER_COMPLETE"))) {
+            if (mHost->IsLiveNetworkAgent(nai, String("EVENT_NETWORK_LINGER_COMPLETE"))) {
                 mHost->HandleLingerComplete(nai);
             }
             break;
         }
-        case INetworkMonitor::EVENT_PROVISIONING_NOTIFICATION: {
+        case NetworkMonitor::EVENT_PROVISIONING_NOTIFICATION: {
             if (arg1 == 0) {
-                mHost->setProvNotificationVisibleIntent(FALSE, arg2, 0, NULL, NULL);
-            } else {
-                AutoPtr<INetworkAgentInfo> nai;
-                ISynchronize* lockObj = ISynchronize::Probe(mNetworkForNetId);
-                synchronized(mNetworkForNetId) {
+                mHost->SetProvNotificationVisibleIntent(FALSE, arg2, 0, String(NULL), NULL);
+            }
+            else {
+                AutoPtr<NetworkAgentInfo> nai;
+                ISynchronize* syncObj = (ISynchronize*)mHost->mNetworkForNetId->Probe(EIID_ISynchronize);
+                synchronized(syncObj) {
                     AutoPtr<IInterface> obj;
-                    mNetworkForNetId->Get(arg2, (IInterface**)&obj);;
-                    nai = INetworkAgentInfo::Probe(obj);
+                    mHost->mNetworkForNetId->Get(arg2, (IInterface**)&obj);;
+                    nai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(obj);
                 }
                 if (nai == NULL) {
-                    Slogg::E("CConnectivityService", "EVENT_PROVISIONING_NOTIFICATION from unknown NetworkMonitor");
+                    Slogger::E("CConnectivityService", "EVENT_PROVISIONING_NOTIFICATION from unknown NetworkMonitor");
                     break;
                 }
 
@@ -829,7 +924,7 @@ ECode CConnectivityService::NetworkStateTrackerHandler::HandleMessage(
             }
             break;
         }
-        case NetworkStateTracker.EVENT_STATE_CHANGED: {
+        case INetworkStateTracker::EVENT_STATE_CHANGED: {
             info = INetworkInfo::Probe(obj);
             NetworkInfoState state;
             info->GetState(&state);
@@ -839,14 +934,14 @@ ECode CConnectivityService::NetworkStateTrackerHandler::HandleMessage(
                     (state == NetworkInfoState_SUSPENDED)) {
                 String name;
                 info->GetTypeName(&name);
-                NetworkDetailedState detailedState;
+                NetworkInfoDetailedState detailedState;
                 info->GetDetailedState(&detailedState);
-                Slogg::D("CConnectivityService", "ConnectivityChange for %s: %d/%%d",
-                    name.string(), state, detailedState)
+                Slogger::D("CConnectivityService", "ConnectivityChange for %s: %d/%%d",
+                    name.string(), state, detailedState);
             }
 
             // EventLogTags.writeConnectivityStateChanged(
-            //         info.getType(), info.getSubtype(), info.getDetailedState().ordinal());
+            //         info.GetType(), info.GetSubtype(), info.GetDetailedState().ordinal());
 
             Boolean bval;
             info->IsConnectedToProvisioningNetwork(&bval);
@@ -865,8 +960,8 @@ ECode CConnectivityService::NetworkStateTrackerHandler::HandleMessage(
                 info->GetType(&type);
                 AutoPtr<ILinkProperties> lp = mHost->GetLinkPropertiesForTypeInternal(type);
                 if (DBG) {
-                    Slogg::D("CConnectivityService", "EVENT_STATE_CHANGED: connected to provisioning network, lp=%s",
-                        Object::ToString(lp));
+                    Slogger::D("CConnectivityService", "EVENT_STATE_CHANGED: connected to provisioning network, lp=%s",
+                        Object::ToString(lp).string());
                 }
 
                 // Clear any default routes setup by the radio so
@@ -874,9 +969,9 @@ ECode CConnectivityService::NetworkStateTrackerHandler::HandleMessage(
                 // connection will fail until the provisioning network
                 // is enabled.
                 /*
-                for (RouteInfo r : lp.getRoutes()) {
+                for (RouteInfo r : lp.GetRoutes()) {
                     removeRoute(lp, r, TO_DEFAULT_TABLE,
-                                mNetTrackers[info.getType()].getNetwork().netId);
+                                mNetTrackers[info.GetType()].GetNetwork().netId);
                 }
                 */
             } else if (state == NetworkInfoState_DISCONNECTED) {
@@ -887,13 +982,13 @@ ECode CConnectivityService::NetworkStateTrackerHandler::HandleMessage(
             mHost->NotifyLockdownVpn(NULL);
             break;
         }
-        case NetworkStateTracker.EVENT_CONFIGURATION_CHANGED: {
+        case INetworkStateTracker::EVENT_CONFIGURATION_CHANGED: {
             // TODO: Temporary allowing network configuration
             //       change not resetting sockets.
             //       @see bug/4455071
             /*
             info = INetworkInfo::Probe(obj);
-            handleConnectivityChange(info.getType(), mCurrentLinkProperties[info.getType()],
+            handleConnectivityChange(info.GetType(), mCurrentLinkProperties[info.GetType()],
                     FALSE);
             */
             break;
@@ -909,13 +1004,12 @@ CConnectivityService::SettingsObserver::SettingsObserver(
     /* [in] */ IHandler* handler,
     /* [in] */ Int32 what,
     /* [in] */ CConnectivityService* host)
-    : ContentObserver(handler)
-    , mHandler(handler)
+    : mHandler(handler)
     , mWhat(what)
     , mHost(host)
 {}
 
-void CConnectivityService::SettingsObserver::Observe(
+ECode CConnectivityService::SettingsObserver::Observe(
     /* [in] */ IContext* context)
 {
     AutoPtr<IContentResolver> resolver;
@@ -924,7 +1018,7 @@ void CConnectivityService::SettingsObserver::Observe(
     AutoPtr<ISettingsGlobal> settingsGlobal;
     CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
     settingsGlobal->GetUriFor(ISettingsGlobal::HTTP_PROXY, (IUri**)&uri);
-    resolver->RegisterContentObserver(uri, FALSE, (IContentObserver*)this);
+    return resolver->RegisterContentObserver(uri, FALSE, (IContentObserver*)this);
 }
 
 ECode CConnectivityService::SettingsObserver::OnChange(
@@ -946,7 +1040,7 @@ CAR_OBJECT_IMPL(CConnectivityService)
 CConnectivityService::CConnectivityService()
     : mLockdownEnabled(FALSE)
     , mNetworkPreference(0)
-    , mActiveDefaultNetwork(TYPE_NONE)
+    , mActiveDefaultNetwork(IConnectivityManager::TYPE_NONE)
     , mDefaultInetConditionPublished(0)
     , mNumDnsEntries(0)
     , mTestMode(FALSE)
@@ -959,12 +1053,24 @@ CConnectivityService::CConnectivityService()
     , mNextNetId(MIN_NET_ID)
     , mNextNetworkRequestId(-1)
     , mIsNotificationVisible(FALSE)
-    , mGlobalProxy(NULL)
-    , mNetworksDefined(0)
 {
-    mVpnCallback = new VpnCallback(this);
+}
 
-    CLegacyTypeTracker::((ILegacyTypeTracker**)&mLegacyTypeTracker);
+CConnectivityService::~CConnectivityService()
+{
+    mInetLog = NULL;
+}
+
+ECode CConnectivityService::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IINetworkManagementService* netManager,
+    /* [in] */ IINetworkStatsService* statsService,
+    /* [in] */ IINetworkPolicyManager* policyManager)
+{
+    if (DBG) Slogger::D(TAG, "ConnectivityService starting up!");
+
+    mLegacyTypeTracker = new LegacyTypeTracker(this);
+
     CFile::New(PROVISIONING_URL_PATH, (IFile**)&mProvisioningUrlFile);
     CAtomicInteger32::New(0, (IAtomicInteger32**)&mEnableFailFastMobileDataTag);
 
@@ -976,41 +1082,26 @@ CConnectivityService::CConnectivityService()
 
     CHashMap::New((IHashMap**)&mNetworkAgentInfos);
 
-    CNetworkPolicyListener::New((Handle32)this, (INetworkPolicyListener**)&mPolicyListener);
+    CNetworkPolicyListener::New(this, (IINetworkPolicyListener**)&mPolicyListener);
 
-    mUserPresentReceiver = new InternalBroadcastReciver(this);
-    CDataActivityObserver::New(this, (INetworkManagementEventObserver**)&mDataActivityObserver);
-}
-
-CConnectivityService::~CConnectivityService()
-{
-    mNetRequestersPids = NULL;
-    mInetLog = NULL;
-}
-
-ECode CConnectivityService::constructor(
-    /* [in] */ IContext* context,
-    /* [in] */ IINetworkManagementService* netd,
-    /* [in] */ INetworkStatsService* statsService,
-    /* [in] */ IINetworkPolicyManager* policyManager)
-{
-    if (DBG) Slogger::D(TAG, "ConnectivityService starting up!");
+    mUserPresentReceiver = new InternalBroadcastReceiver(this);
+    CDataActivityObserver::New(this, (IINetworkManagementEventObserver**)&mDataActivityObserver);
 
     AutoPtr<INetworkCapabilities> netCap;
     CNetworkCapabilities::New((INetworkCapabilities**)&netCap);
     netCap->AddCapability(INetworkCapabilities::NET_CAPABILITY_INTERNET);
     netCap->AddCapability(INetworkCapabilities::NET_CAPABILITY_NOT_RESTRICTED);
-    CNetworkRequest::New(netCap, TYPE_NONE, NextNetworkRequestId(), (INetworkRequest**)&mDefaultRequest);
+    CNetworkRequest::New(netCap, IConnectivityManager::TYPE_NONE,
+        NextNetworkRequestId(), (INetworkRequest**)&mDefaultRequest);
     AutoPtr<IBinder> binder;
     CBinder::New((IBinder**)&binder);
-    AutoPtr<INetworkRequestInfo> nri;
-    CNetworkRequestInfo::New(NULL, mDefaultRequest, binder,
-        INetworkRequestInfo::REQUEST, (INetworkRequestInfo**)&nri);
+    AutoPtr<NetworkRequestInfo> nri = new NetworkRequestInfo(
+        NULL, mDefaultRequest, binder,  NetworkRequestInfo::REQUEST, this);
     mNetworkRequests->Put(TO_IINTERFACE(mDefaultRequest), TO_IINTERFACE(nri));
 
     AutoPtr<IHandlerThread> handlerThread;
     CHandlerThread::New(String("ConnectivityServiceThread"), (IHandlerThread**)&handlerThread);
-    handlerThread->Start();
+    IThread::Probe(handlerThread)->Start();
     AutoPtr<ILooper> looper;
     handlerThread->GetLooper((ILooper**)&looper);
     mHandler = new InternalHandler(looper, this);
@@ -1056,8 +1147,9 @@ ECode CConnectivityService::constructor(
     assert(mNetd != NULL);
     mPolicyManager = policyManager;
     assert(mPolicyManager != NULL);
+    assert(0 && "TODO");
     AutoPtr<IKeyStoreHelper> ksHelper;
-    CKeyStoreHelper::AcquireSingleton((IKeyStoreHelper**)&ksHelper);
+    // CKeyStoreHelper::AcquireSingleton((IKeyStoreHelper**)&ksHelper);
     ksHelper->GetInstance((IKeyStore**)&mKeyStore);
     AutoPtr<IInterface> service;
     mContext->GetSystemService(IContext::TELEPHONY_SERVICE, (IInterface**)&service);
@@ -1066,7 +1158,7 @@ ECode CConnectivityService::constructor(
     ec = mPolicyManager->RegisterListener(mPolicyListener);
     if (FAILED(ec)) {
         // ouch, no rules updates means some processes may never get network
-        Slogger::E(TAG, "unable to register INetworkPolicyListener");
+        Slogger::E(TAG, "unable to register IINetworkPolicyListener");
     }
 
     service = NULL;
@@ -1082,27 +1174,30 @@ ECode CConnectivityService::constructor(
     mNetConfigs = ArrayOf<INetworkConfig*>::Alloc(IConnectivityManager::MAX_NETWORK_TYPE + 1);
 
     // TODO: What is the "correct" way to do determine if this is a wifi only device?
-    Boolean wifiOnly = SystemProperties.getBoolean("ro.radio.noril", FALSE);
-    Slogg::D("CConnectivityService", "wifiOnly=" + wifiOnly);
+    Boolean wifiOnly, bval;
+    sysProp->GetBoolean(String("ro.radio.noril"), FALSE, &wifiOnly);
+    Slogger::D(TAG, "wifiOnly=%d", wifiOnly);
 
+    AutoPtr<IConnectivityManagerHelper> cmHelper;
+    CConnectivityManagerHelper::AcquireSingleton((IConnectivityManagerHelper**)&cmHelper);
     AutoPtr<ArrayOf<String> > naStrings;
     resources->GetStringArray(R::array::networkAttributes, (ArrayOf<String>**)&naStrings);
+    Int32 nType;
     for (Int32 i = 0; i < naStrings->GetLength(); i++) {
         String naString = (*naStrings)[i];
         AutoPtr<INetworkConfig> n;
         CNetworkConfig::New(naString, (INetworkConfig**)&n);
-        if (VDBG) Slogg::D("CConnectivityService", "naString=" + naString + " config=" + n);
+        if (VDBG) Slogger::D(TAG, "naString=%s config=%s",
+            naString.string(), Object::ToString(n).string());
 
-        Int32 nType;
         n->GetType(&nType);
         if (nType > IConnectivityManager::MAX_NETWORK_TYPE) {
             Slogger::E(TAG, "Error in networkAttributes - ignoring attempt to define type %d", nType);
             continue;
         }
 
-        if (wifiOnly && ConnectivityManager.isNetworkTypeMobile(n.type)) {
-            Slogg::D("CConnectivityService", "networkAttributes - ignoring mobile as this dev is wifiOnly " +
-                    n.type);
+        if (wifiOnly && (cmHelper->IsNetworkTypeMobile(nType, &bval), bval)) {
+            Slogger::D(TAG, "networkAttributes - ignoring mobile as this dev is wifiOnly %d", nType);
             continue;
         }
 
@@ -1111,13 +1206,13 @@ ECode CConnectivityService::constructor(
             continue;
         }
 
-        mLegacyTypeTracker.addSupportedType(n.type);
+        mLegacyTypeTracker->AddSupportedType(nType);
 
         mNetConfigs->Set(nType, n);
         mNetworksDefined++;
     }
 
-    if (VDBG) Slogg::D("CConnectivityService", "mNetworksDefined=" + mNetworksDefined);
+    if (VDBG) Slogger::D(TAG, "mNetworksDefined=" + mNetworksDefined);
 
     AutoPtr< ArrayOf<Int32> > protectedNetworks;
     resources->GetInt32Array(R::array::config_protectedNetworks, (ArrayOf<Int32>**)&protectedNetworks);
@@ -1134,22 +1229,28 @@ ECode CConnectivityService::constructor(
 
     String modeStr, typeStr;
     sysProp->Get(String("cm.test.mode"), &modeStr);
-    sysProp->Get(String("ro.build.type");
-    mTestMode = modeStr.Equals("TRUE") && typeStr.Equals("eng"));
+    sysProp->Get(String("ro.build.type"), &typeStr);
+    mTestMode = modeStr.Equals("TRUE") && typeStr.Equals("eng");
 
-    mTethering = new Tethering(mContext, mNetd, statsService, mHandler.getLooper());
+    looper = NULL;
+    mHandler->GetLooper((ILooper**)&looper);
+    CTethering::NewByFriend(mContext, mNetd, statsService, looper, (CTethering**)&mTethering);
 
     mPermissionMonitor = new PermissionMonitor(mContext, mNetd);
 
     //set up the listener for user state for creating user VPNs
+    mUserIntentReceiver = new UserIntentReceiver(this);
     AutoPtr<IIntentFilter> intentFilter;
     CIntentFilter::New((IIntentFilter**)&intentFilter);
     intentFilter->AddAction(IIntent::ACTION_USER_STARTING);
     intentFilter->AddAction(IIntent::ACTION_USER_STOPPING);
+    AutoPtr<IIntent> intent;
     mContext->RegisterReceiverAsUser(
-            mUserIntentReceiver, UserHandle::ALL, intentFilter, NULL, NULL);
+        mUserIntentReceiver, UserHandle::ALL, intentFilter,
+        String(NULL), NULL, (IIntent**)&intent);
     AutoPtr<IINetworkManagementEventObserver> clat;
-    CNat464Xlat::New(mContext, mNetd, this, mTrackerHandler, (IINetworkManagementEventObserver**)&clat);
+    CNat464Xlat::New(mContext, mNetd, this, mTrackerHandler,
+        (IINetworkManagementEventObserver**)&clat);
     mClat = (Nat464Xlat*)clat.Get();
 
     //try {
@@ -1165,6 +1266,7 @@ ECode CConnectivityService::constructor(
     }
 
     mSettingsObserver = new SettingsObserver(mHandler, EVENT_APPLY_GLOBAL_HTTP_PROXY, this);
+    mSettingsObserver->constructor(mHandler);
     mSettingsObserver->Observe(mContext);
 
     mDataConnectionStats = new DataConnectionStats(mContext);
@@ -1177,39 +1279,49 @@ ECode CConnectivityService::constructor(
     AutoPtr<IIntentFilter> filter, newFilter;
     CIntentFilter::New((IIntentFilter**)&filter);
     filter->AddAction(CConnectivityService::ACTION_PKT_CNT_SAMPLE_INTERVAL_ELAPSED);
-    AutoPtr<IBroadcastReciver> receiver = new PktCntSampleIntervalElapsedeceiver(this);
+    AutoPtr<IBroadcastReceiver> receiver = new PktCntSampleIntervalElapsedeceiver(this);
     CIntentFilter::New(filter, (IIntentFilter**)&newFilter);
     AutoPtr<IIntent> stickyIntent;
     mContext->RegisterReceiver(receiver, newFilter, (IIntent**)&stickyIntent);
 
     mPacManager = new PacManager(mContext, mHandler, EVENT_PROXY_HAS_CHANGED);
 
-    mUserManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
+    service = NULL;
+    context->GetSystemService(IContext::USER_SERVICE, (IInterface**)&service);
+    mUserManager = IUserManager::Probe(service);
     return NOERROR;
 }
 
-
-synchronized Int32 CConnectivityService::NextNetworkRequestId()
+Int32 CConnectivityService::NextNetworkRequestId()
 {
+    ISynchronize* syncObj = (ISynchronize*)Probe(EIID_ISynchronize);
+    AutoLock lock(syncObj);
     return mNextNetworkRequestId++;
 }
 
 ECode CConnectivityService::AssignNextNetId(
-    /* [in] */ INetworkAgentInfo* nai)
+    /* [in] */ INetworkAgentInfo* naiObj)
 {
-    synchronized(mNetworkForNetId) {
+    NetworkAgentInfo* nai = (NetworkAgentInfo*)naiObj;
+    ISynchronize* syncObj = (ISynchronize*)mNetworkForNetId->Probe(EIID_ISynchronize);
+    synchronized(syncObj) {
         for (Int32 i = MIN_NET_ID; i <= MAX_NET_ID; i++) {
             Int32 netId = mNextNetId;
             if (++mNextNetId > MAX_NET_ID) mNextNetId = MIN_NET_ID;
             // Make sure NetID unused.  http://b/16815182
-            if (mNetworkForNetId.get(netId) == NULL) {
-                nai.network = new Network(netId);
-                mNetworkForNetId.put(netId, nai);
-                return;
+            AutoPtr<IInterface> obj;
+            mNetworkForNetId->Get(netId, (IInterface**)&obj);
+            if (obj == NULL) {
+                nai->mNetwork = NULL;
+                CNetwork::New(netId, (INetwork**)&nai->mNetwork);
+                mNetworkForNetId->Put(netId, naiObj);
+                return NOERROR;
             }
         }
     }
-    throw new IllegalStateException("No free netIds");
+
+    Slogger::E(TAG, "IllegalStateException: No free netIds");
+    return E_ILLEGAL_STATE_EXCEPTION;
 }
 
 Int32 CConnectivityService::GetConnectivityChangeDelay()
@@ -1234,28 +1346,30 @@ Int32 CConnectivityService::GetConnectivityChangeDelay()
 Boolean CConnectivityService::Teardown(
     /* [in] */ INetworkStateTracker* netTracker)
 {
-    Boolean result;
-    if (netTracker->Teardown(&result), result) {
+    Boolean bval;
+    if (netTracker->Teardown(&bval), bval) {
         netTracker->SetTeardownRequested(TRUE);
         return TRUE;
     }
-    else {
-        return FALSE;
-    }
+
+    return FALSE;
 }
 
 Boolean CConnectivityService::IsNetworkBlocked(
     /* [in] */ Int32 networkType,
     /* [in] */ Int32 uid)
 {
-    return isNetworkWithLinkPropertiesBlocked(getLinkPropertiesForType(networkType), uid);
+    AutoPtr<ILinkProperties> lp;
+    GetLinkPropertiesForType(networkType, (ILinkProperties**)&lp);
+    return IsNetworkWithLinkPropertiesBlocked(lp, uid);
 }
 
 Boolean CConnectivityService::IsNetworkBlocked(
-    /* [in] */ INetworkAgentInfo* nai,
+    /* [in] */ INetworkAgentInfo* naiObj,
     /* [in] */ Int32 uid)
 {
-    return isNetworkWithLinkPropertiesBlocked(nai.linkProperties, uid);
+    NetworkAgentInfo* nai = (NetworkAgentInfo*)naiObj;
+    return IsNetworkWithLinkPropertiesBlocked(nai->mLinkProperties, uid);
 }
 
 Boolean CConnectivityService::IsNetworkWithLinkPropertiesBlocked(
@@ -1265,7 +1379,10 @@ Boolean CConnectivityService::IsNetworkWithLinkPropertiesBlocked(
     Boolean networkCostly = FALSE;
     Int32 uidRules;
 
-    final String iface = (lp == NULL ? "" : lp.getInterfaceName());
+    String iface("");
+    if (lp != NULL) {
+        lp->GetInterfaceName(&iface);
+    }
 
     {
         AutoLock lock(mRulesLock);
@@ -1287,45 +1404,52 @@ AutoPtr<INetworkInfo> CConnectivityService::GetFilteredNetworkInfo(
     /* [in] */ Int32 networkType,
     /* [in] */ Int32 uid)
 {
-    NetworkInfo info = getNetworkInfoForType(networkType);
-    return getFilteredNetworkInfo(info, networkType, uid);
+    AutoPtr<INetworkInfo> info = GetNetworkInfoForType(networkType);
+    return GetFilteredNetworkInfo(info, networkType, uid);
 }
 
-/*
- * @deprecated Uses mLegacyTypeTracker; cannot deal with multiple Networks of the same type.
- */
 AutoPtr<INetworkInfo> CConnectivityService::GetFilteredNetworkInfo(
     /* [in] */ INetworkInfo* info,
     /* [in] */ Int32 networkType,
     /* [in] */ Int32 uid)
 {
-    if (isNetworkBlocked(networkType, uid)) {
+    AutoPtr<INetworkInfo> networkInfo = info;
+    if (IsNetworkBlocked(networkType, uid)) {
         // network is blocked; clone and override state
-        info = new NetworkInfo(info);
-        info.setDetailedState(DetailedState.BLOCKED, NULL, NULL);
-        if (VDBG) Slogg::D("CConnectivityService", "returning Blocked NetworkInfo");
+        networkInfo = NULL;
+        CNetworkInfo::New(info, (INetworkInfo**)&networkInfo);
+        String nullStr;
+        info->SetDetailedState(NetworkInfoDetailedState_BLOCKED, nullStr, nullStr);
+        if (VDBG) Slogger::D(TAG, "returning Blocked NetworkInfo");
     }
     if (mLockdownTracker != NULL) {
-        info = mLockdownTracker.augmentNetworkInfo(info);
-        if (VDBG) Slogg::D("CConnectivityService", "returning Locked NetworkInfo");
+        networkInfo = mLockdownTracker->AugmentNetworkInfo(info);
+        if (VDBG) Slogger::D(TAG, "returning Locked NetworkInfo");
     }
     return info;
 }
 
 AutoPtr<INetworkInfo> CConnectivityService::GetFilteredNetworkInfo(
-    /* [in] */ INetworkAgentInfo* nai,
+    /* [in] */ INetworkAgentInfo* naiObj,
     /* [in] */ Int32 uid)
 {
-    NetworkInfo info = nai.networkInfo;
-    if (isNetworkBlocked(nai, uid)) {
+    NetworkAgentInfo* nai = (NetworkAgentInfo*)naiObj;
+    AutoPtr<INetworkInfo> info = nai->mNetworkInfo;
+    if (IsNetworkBlocked(naiObj, uid)) {
         // network is blocked; clone and override state
-        info = new NetworkInfo(info);
-        info.setDetailedState(DetailedState.BLOCKED, NULL, NULL);
-        if (DBG) Slogg::D("CConnectivityService", "returning Blocked NetworkInfo");
+        AutoPtr<INetworkInfo> networkInfo = info;
+        info = NULL;
+        CNetworkInfo::New(networkInfo, (INetworkInfo**)&info);
+        String nullStr;
+        info->SetDetailedState(NetworkInfoDetailedState_BLOCKED, nullStr, nullStr);
+
+        if (DBG) Slogger::D(TAG, "returning Blocked NetworkInfo");
     }
+
     if (mLockdownTracker != NULL) {
-        info = mLockdownTracker.augmentNetworkInfo(info);
-        if (DBG) Slogg::D("CConnectivityService", "returning Locked NetworkInfo");
+        AutoPtr<INetworkInfo> networkInfo = info;
+        info = mLockdownTracker->AugmentNetworkInfo(networkInfo);
+        if (DBG) Slogger::D(TAG, "returning Locked NetworkInfo");
     }
     return info;
 }
@@ -1336,41 +1460,52 @@ ECode CConnectivityService::GetActiveNetworkInfo(
     VALIDATE_NOT_NULL(result);
     *result = NULL;
 
-    FAIL_RETURN(EnforceInternetPermission());
+    FAIL_RETURN(EnforceInternetPermission())
     Int32 uid = Binder::GetCallingUid();
     return GetNetworkInfo(mActiveDefaultNetwork, uid, result);
 }
 
 AutoPtr<INetworkInfo> CConnectivityService::GetProvisioningNetworkInfo()
 {
-    EnforceInternetPermission();
+    if (FAILED(EnforceInternetPermission())) {
+        return NULL;
+    }
 
     // Find the first Provisioning Network
-    NetworkInfo provNi = NULL;
-    for (NetworkInfo ni : getAllNetworkInfo()) {
-        if (ni.isConnectedToProvisioningNetwork()) {
+    AutoPtr<INetworkInfo> provNi;
+    AutoPtr< ArrayOf<INetworkInfo*> > infos;
+    GetAllNetworkInfo((ArrayOf<INetworkInfo*>**)&infos);
+    Boolean bval;
+    for (Int32 i = 0; i < infos->GetLength(); ++i) {
+        INetworkInfo* ni = (*infos)[i];
+        if (ni->IsConnectedToProvisioningNetwork(&bval), bval) {
             provNi = ni;
             break;
         }
     }
-    if (DBG) Slogg::D("CConnectivityService", "getProvisioningNetworkInfo: X provNi=" + provNi);
+    if (DBG) Slogger::D(TAG, "GetProvisioningNetworkInfo: X provNi=%s",
+        Object::ToString(provNi).string());
     return provNi;
 }
 
-ECode GetProvisioningOrActiveNetworkInfo(
+ECode CConnectivityService::GetProvisioningOrActiveNetworkInfo(
     /* [out] */ INetworkInfo** info)
 {
-    EnforceInternetPermission();
+    VALIDATE_NOT_NULL(info)
+    *info = NULL;
+    FAIL_RETURN(EnforceInternetPermission())
 
-    NetworkInfo provNi = getProvisioningNetworkInfo();
+    AutoPtr<INetworkInfo> provNi = GetProvisioningNetworkInfo();
     if (provNi == NULL) {
-        final Int32 uid = Binder.getCallingUid();
-        provNi = getNetworkInfo(mActiveDefaultNetwork, uid);
+        Int32 uid = Binder::GetCallingUid();
+        GetNetworkInfo(mActiveDefaultNetwork, uid, (INetworkInfo**)&provNi);
     }
-    if (DBG) Slogg::D("CConnectivityService", "getProvisioningOrActiveNetworkInfo: X provNi=" + provNi);
-    return provNi;
+    if (DBG) Slogger::D(TAG, "getProvisioningOrActiveNetworkInfo: X provNi=%s",
+         Object::ToString(provNi).string());
+    *info = provNi;
+    REFCOUNT_ADD(*info)
+    return NOERROR;
 }
-
 
 ECode CConnectivityService::GetActiveNetworkInfoUnfiltered(
     /* [out] */ INetworkInfo** info)
@@ -1378,15 +1513,13 @@ ECode CConnectivityService::GetActiveNetworkInfoUnfiltered(
     VALIDATE_NOT_NULL(info);
     *info = NULL;
 
-    FAIL_RETURN(EnforceInternetPermission());
-    AutoPtr<IConnectivityManagerHelper> helper;
-    CConnectivityManagerHelper::AcquireSingleton((IConnectivityManagerHelper**)&helper);
-    Boolean isValid = FALSE;
-
+    FAIL_RETURN(EnforceInternetPermission())
     Boolean isValid = FALSE;
     IsNetworkTypeValid(mActiveDefaultNetwork, &isValid);
     if (isValid) {
-        return GetNetworkInfoForType(mActiveDefaultNetwork);
+        AutoPtr<INetworkInfo> ni = GetNetworkInfoForType(mActiveDefaultNetwork);
+        *info = ni;
+        REFCOUNT_ADD(*info)
     }
 
     return NOERROR;
@@ -1399,7 +1532,7 @@ ECode CConnectivityService::GetActiveNetworkInfoForUid(
     VALIDATE_NOT_NULL(info);
     *info = NULL;
 
-    FAIL_RETURN(EnforceConnectivityInternalPermission());
+    FAIL_RETURN(EnforceConnectivityInternalPermission())
     return GetNetworkInfo(mActiveDefaultNetwork, uid, info);
 }
 
@@ -1410,7 +1543,7 @@ ECode CConnectivityService::GetNetworkInfo(
     VALIDATE_NOT_NULL(result);
     *result = NULL;
 
-    FAIL_RETURN(EnforceInternetPermission());
+    FAIL_RETURN(EnforceInternetPermission())
     Int32 uid = Binder::GetCallingUid();
     return GetNetworkInfo(networkType, uid, result);
 }
@@ -1426,8 +1559,10 @@ ECode CConnectivityService::GetNetworkInfo(
     Boolean isValid = FALSE;
     IsNetworkTypeValid(networkType, &isValid);
     if (isValid) {
-        if (getNetworkInfoForType(networkType) != NULL) {
-            info = getFilteredNetworkInfo(networkType, uid);
+        if (GetNetworkInfoForType(networkType) != NULL) {
+            AutoPtr<INetworkInfo> ni = GetFilteredNetworkInfo(networkType, uid);
+            *info = ni;
+            REFCOUNT_ADD(*info)
         }
     }
     return NOERROR;
@@ -1437,34 +1572,48 @@ ECode CConnectivityService::GetNetworkInfoForNetwork(
     /* [in] */ INetwork* network,
     /* [out] */ INetworkInfo** info)
 {
-    EnforceInternetPermission();
-    if (network == NULL) return NULL;
+    VALIDATE_NOT_NULL(info)
+    *info = NULL;
 
-    final Int32 uid = Binder.getCallingUid();
-    NetworkAgentInfo nai = NULL;
-    synchronized(mNetworkForNetId) {
-        nai = mNetworkForNetId.get(network.netId);
-    }
-    if (nai == NULL) return NULL;
-    synchronized(nai) {
-        if (nai.networkInfo == NULL) return NULL;
+    FAIL_RETURN(EnforceInternetPermission())
+    if (network == NULL) return NOERROR;
 
-        return getFilteredNetworkInfo(nai, uid);
+    Int32 uid = Binder::GetCallingUid();
+    AutoPtr<INetworkAgentInfo> nai;
+    ISynchronize* syncObj = (ISynchronize*)mNetworkForNetId->Probe(EIID_ISynchronize);
+    synchronized(syncObj) {
+        Int32 id;
+        network->GetNetId(&id);
+        AutoPtr<IInterface> obj;
+        mNetworkForNetId->Get(id, (IInterface**)&obj);
+        nai = INetworkAgentInfo::Probe(obj);
     }
+    if (nai == NULL) return NOERROR;
+    NetworkAgentInfo* naiObj = (NetworkAgentInfo*)nai.Get();
+    synchronized(naiObj) {
+        if (naiObj->mNetworkInfo == NULL) return NOERROR;
+        AutoPtr<INetworkInfo> ni = GetFilteredNetworkInfo(nai, uid);
+        *info = ni;
+        REFCOUNT_ADD(*info)
+    }
+    return NOERROR;
 }
 
 ECode CConnectivityService::GetAllNetworkInfo(
     /* [out, callee] */ ArrayOf<INetworkInfo*>** allInfo)
 {
     VALIDATE_NOT_NULL(allInfo);
-    FAIL_RETURN(EnforceInternetPermission());
+    *allInfo = NULL;
+
+    FAIL_RETURN(EnforceInternetPermission())
     Int32 uid = Binder::GetCallingUid();
     List< AutoPtr<INetworkInfo> > result;
 
-    for (Int32 networkType = 0; networkType <= ConnectivityManager.MAX_NETWORK_TYPE;
+    for (Int32 networkType = 0; networkType <= IConnectivityManager::MAX_NETWORK_TYPE;
             networkType++) {
-        if (getNetworkInfoForType(networkType) != NULL) {
-            result.add(getFilteredNetworkInfo(networkType, uid));
+        if (GetNetworkInfoForType(networkType) != NULL) {
+            AutoPtr<INetworkInfo> ni = GetFilteredNetworkInfo(networkType, uid);
+            result.PushBack(ni);
         }
     }
 
@@ -1483,26 +1632,49 @@ ECode CConnectivityService::GetNetworkForType(
     /* [in] */ Int32 networkType,
     /* [out] */ INetwork** network)
 {
-    EnforceInternetPermission();
-    final Int32 uid = Binder.getCallingUid();
-    if (isNetworkBlocked(networkType, uid)) {
-        return NULL;
+    VALIDATE_NOT_NULL(network)
+    *network = NULL;
+
+    FAIL_RETURN(EnforceInternetPermission())
+    Int32 uid = Binder::GetCallingUid();
+    if (IsNetworkBlocked(networkType, uid)) {
+        return NOERROR;
     }
-    NetworkAgentInfo nai = mLegacyTypeTracker.getNetworkForType(networkType);
-    return (nai == NULL) ? NULL : nai.network;
+
+    AutoPtr<INetworkAgentInfo> nai = mLegacyTypeTracker->GetNetworkForType(networkType);
+    if (nai != NULL) {
+        NetworkAgentInfo* naiObj = (NetworkAgentInfo*)nai.Get();
+        *network = naiObj->mNetwork;
+        REFCOUNT_ADD(*network)
+    }
+    return NOERROR;
 }
 
 ECode CConnectivityService::GetAllNetworks(
     /* [out, callee] */ ArrayOf<INetwork*>** networks)
 {
-    EnforceInternetPermission();
-    final ArrayList<Network> result = new ArrayList();
-    synchronized(mNetworkForNetId) {
-        for (Int32 i = 0; i < mNetworkForNetId.size(); i++) {
-            result.add(new Network(mNetworkForNetId.valueAt(i).network));
+    VALIDATE_NOT_NULL(networks)
+    FAIL_RETURN(EnforceInternetPermission())
+
+    AutoPtr< ArrayOf<INetwork*> > array;
+    ISynchronize* syncObj = (ISynchronize*)mNetworkForNetId->Probe(EIID_ISynchronize);
+    synchronized(syncObj) {
+        Int32 size = 0;
+        mNetworkForNetId->GetSize(&size);
+        array = ArrayOf<INetwork*>::Alloc(size);
+        for (Int32 i = 0; i < size; i++) {
+            AutoPtr<IInterface> obj;
+            mNetworkForNetId->ValueAt(i, (IInterface**)&obj);
+            NetworkAgentInfo* nai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(obj);
+            AutoPtr<INetwork> network;
+            CNetwork::New(nai->mNetwork, (INetwork**)&network);
+            array->Set(i, network);
         }
     }
-    return result.toArray(new Network[result.size()]);
+
+    *networks = array;
+    REFCOUNT_ADD(*networks)
+    return NOERROR;
 }
 
 ECode CConnectivityService::IsNetworkSupported(
@@ -1510,11 +1682,11 @@ ECode CConnectivityService::IsNetworkSupported(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    FAIL_RETURN(EnforceInternetPermission());
-    AutoPtr<IConnectivityManagerHelper> helper;
-    CConnectivityManagerHelper::AcquireSingleton((IConnectivityManagerHelper**)&helper);
+    *result = FALSE;
+    FAIL_RETURN(EnforceInternetPermission())
+
     Boolean isValid = FALSE;
-    helper->IsNetworkTypeValid(networkType, &isValid);
+    IsNetworkTypeValid(networkType, &isValid);
     AutoPtr<INetworkInfo> info = GetNetworkInfoForType(networkType);
     *result = (isValid && info != NULL);
     return NOERROR;
@@ -1530,47 +1702,68 @@ ECode CConnectivityService::GetLinkPropertiesForType(
     /* [in] */ Int32 networkType,
     /* [out] */ ILinkProperties** properties)
 {
-    EnforceInternetPermission();
-    if (IsNetworkTypeValid(networkType)) {
-        return getLinkPropertiesForTypeInternal(networkType);
+    VALIDATE_NOT_NULL(properties)
+    *properties = NULL;
+    FAIL_RETURN(EnforceInternetPermission())
+    Boolean bval;
+    IsNetworkTypeValid(networkType, &bval);
+    if (bval) {
+        AutoPtr<ILinkProperties> lp = GetLinkPropertiesForTypeInternal(networkType);
+        *properties = lp;
+        REFCOUNT_ADD(*properties)
     }
-    return NULL;
+    return NOERROR;
 }
 
-// TODO - this should be ALL networks
 ECode CConnectivityService::GetLinkProperties(
     /* [in] */ INetwork* network,
     /* [out] */ ILinkProperties** properties)
 {
-    EnforceInternetPermission();
-    NetworkAgentInfo nai = NULL;
-    synchronized(mNetworkForNetId) {
-        nai = mNetworkForNetId.get(network.netId);
+    VALIDATE_NOT_NULL(properties)
+    *properties = NULL;
+
+    FAIL_RETURN(EnforceInternetPermission())
+    AutoPtr<NetworkAgentInfo> nai;
+    ISynchronize* syncObj = (ISynchronize*)mNetworkForNetId->Probe(EIID_ISynchronize);
+    synchronized(syncObj) {
+        Int32 id;
+        network->GetNetId(&id);
+        AutoPtr<IInterface> obj;
+        mNetworkForNetId->Get(id, (IInterface**)&obj);
+        nai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(obj);
     }
 
     if (nai != NULL) {
         synchronized(nai) {
-            return new LinkProperties(nai.linkProperties);
+            return CLinkProperties::New(nai->mLinkProperties, properties);
         }
     }
-    return NULL;
+    return NOERROR;
 }
 
 ECode CConnectivityService::GetNetworkCapabilities(
     /* [in] */ INetwork* network,
     /* [out] */ INetworkCapabilities** result)
 {
-    EnforceInternetPermission();
-    NetworkAgentInfo nai = NULL;
-    synchronized(mNetworkForNetId) {
-        nai = mNetworkForNetId.get(network.netId);
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+    FAIL_RETURN(EnforceInternetPermission())
+
+    AutoPtr<NetworkAgentInfo> nai;
+    ISynchronize* syncObj = (ISynchronize*)mNetworkForNetId->Probe(EIID_ISynchronize);
+    synchronized(syncObj) {
+        Int32 id;
+        network->GetNetId(&id);
+        AutoPtr<IInterface> obj;
+        mNetworkForNetId->Get(id, (IInterface**)&obj);
+        nai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(obj);
     }
     if (nai != NULL) {
         synchronized(nai) {
-            return new NetworkCapabilities(nai.networkCapabilities);
+            return CNetworkCapabilities::New(nai->mNetworkCapabilities, result);
         }
     }
-    return NULL;
+    return NOERROR;
 }
 
 ECode CConnectivityService::GetAllNetworkState(
@@ -1579,31 +1772,33 @@ ECode CConnectivityService::GetAllNetworkState(
     VALIDATE_NOT_NULL(allStates);
     *allStates = NULL;
 
-    FAIL_RETURN(EnforceInternetPermission());
+    FAIL_RETURN(EnforceInternetPermission())
     Int32 uid = Binder::GetCallingUid();
 
-    final ArrayList<NetworkState> result = Lists.newArrayList();
-    for (Int32 networkType = 0; networkType <= ConnectivityManager.MAX_NETWORK_TYPE;
-            networkType++) {
-        if (getNetworkInfoForType(networkType) != NULL) {
-            final NetworkInfo info = getFilteredNetworkInfo(networkType, uid);
-            final LinkProperties lp = getLinkPropertiesForTypeInternal(networkType);
-            final NetworkCapabilities netcap = getNetworkCapabilitiesForType(networkType);
-            result.add(new NetworkState(info, lp, netcap));
+    List<AutoPtr<INetworkState> > result;
+    AutoPtr<INetworkInfo> info;
+    AutoPtr<ILinkProperties> lp;
+    AutoPtr<INetworkCapabilities> netcap;
+    for (Int32 networkType = 0; networkType <= IConnectivityManager::MAX_NETWORK_TYPE; networkType++) {
+        info = GetNetworkInfoForType(networkType);
+        if (info != NULL) {
+            info = GetFilteredNetworkInfo(networkType, uid);
+            lp = GetLinkPropertiesForTypeInternal(networkType);
+            netcap = GetNetworkCapabilitiesForType(networkType);
+            AutoPtr<INetworkState> state;
+            CNetworkState::New(info, lp, netcap, (INetworkState**)&state);
+            result.PushBack(state);
         }
     }
 
-    result.toArray(new NetworkState[result.size()]);
-
-    // List< AutoPtr<INetworkState> > result;
-    // AutoPtr< ArrayOf<INetworkState*> > stateArray = ArrayOf<INetworkState*>::Alloc(result.GetSize());
-    // List< AutoPtr<INetworkState> >::Iterator it = result.Begin();
-    // for (Int32 i = 0; it != result.End(); ++it, ++i) {
-    //     AutoPtr<INetworkState> netState = *it;
-    //     stateArray->Set(i, netState);
-    // }
-    // *allStates = stateArray;
-    // REFCOUNT_ADD(*allStates);
+    AutoPtr< ArrayOf<INetworkState*> > stateArray = ArrayOf<INetworkState*>::Alloc(result.GetSize());
+    List< AutoPtr<INetworkState> >::Iterator it = result.Begin();
+    for (Int32 i = 0; it != result.End(); ++it, ++i) {
+        AutoPtr<INetworkState> netState = *it;
+        stateArray->Set(i, netState);
+    }
+    *allStates = stateArray;
+    REFCOUNT_ADD(*allStates);
     return NOERROR;
 }
 
@@ -1613,11 +1808,13 @@ AutoPtr<INetworkState> CConnectivityService::GetNetworkStateUnchecked(
     Boolean isValid = FALSE;
     IsNetworkTypeValid(networkType, &isValid);
     if (isValid) {
-        NetworkInfo info = getNetworkInfoForType(networkType);
+        AutoPtr<INetworkInfo> info = GetNetworkInfoForType(networkType);
         if (info != NULL) {
-            return new NetworkState(info,
-                    getLinkPropertiesForTypeInternal(networkType),
-                    getNetworkCapabilitiesForType(networkType));
+            AutoPtr<ILinkProperties> lp = GetLinkPropertiesForTypeInternal(networkType);
+            AutoPtr<INetworkCapabilities> netcap = GetNetworkCapabilitiesForType(networkType);
+            AutoPtr<INetworkState> state;
+            CNetworkState::New(info, lp, netcap, (INetworkState**)&state);
+            return state;
         }
     }
     return NULL;
@@ -1628,19 +1825,16 @@ ECode CConnectivityService::GetActiveNetworkQuotaInfo(
 {
     VALIDATE_NOT_NULL(info);
     *info = NULL;
-
-    FAIL_RETURN(EnforceInternetPermission());
+    FAIL_RETURN(EnforceInternetPermission())
 
     Int64 token = Binder::ClearCallingIdentity();
     AutoPtr<INetworkState> state = GetNetworkStateUnchecked(mActiveDefaultNetwork);
     if (state != NULL) {
         ECode ec = mPolicyManager->GetNetworkQuotaInfo(state, info);
         Binder::RestoreCallingIdentity(token);
-        if (FAILED(ec)) *info = NULL;
-        return NOERROR;
+        return ec;
     }
     Binder::RestoreCallingIdentity(token);
-    *info = NULL;
     return NOERROR;
 }
 
@@ -1648,7 +1842,8 @@ ECode CConnectivityService::IsActiveNetworkMetered(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    FAIL_RETURN(EnforceInternetPermission());
+    *result = FALSE;
+    FAIL_RETURN(EnforceInternetPermission())
     Int64 token = Binder::ClearCallingIdentity();
     *result = IsNetworkMeteredUnchecked(mActiveDefaultNetwork);
     Binder::RestoreCallingIdentity(token);
@@ -1667,108 +1862,124 @@ Boolean CConnectivityService::IsNetworkMeteredUnchecked(
     return FALSE;
 }
 
-/**
-* Ensure that a network route exists to deliver traffic to the specified
-* host via the specified network interface.
-* @param networkType the type of the network over which traffic to the
-* specified host is to be routed
-* @param hostAddress the IP address of the host to which the route is
-* desired
-* @return {@code TRUE} on success, {@code FALSE} on failure
-*/
 ECode CConnectivityService::RequestRouteToHostAddress(
     /* [in] */ Int32 networkType,
     /* [in] */ ArrayOf<Byte>* hostAddress,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    FAIL_RETURN(EnforceChangePermission());
+    *result = FALSE;
+    FAIL_RETURN(EnforceChangePermission())
 
     if (Find(mProtectedNetworks.Begin(), mProtectedNetworks.End(), networkType)
             != mProtectedNetworks.End()) {
-        FAIL_RETURN(EnforceConnectivityInternalPermission());
+        FAIL_RETURN(EnforceConnectivityInternalPermission())
     }
 
-    InetAddress addr;
-    try {
-        addr = InetAddress.getByAddress(hostAddress);
-    } catch (UnknownHostException e) {
-        if (DBG) Slogg::D("CConnectivityService", "requestRouteToHostAddress got " + e.toString());
+    AutoPtr<IInetAddressHelper> iaHelper;
+    CInetAddressHelper::AcquireSingleton((IInetAddressHelper**)&iaHelper);
+    AutoPtr<IInetAddress> addr;
+    ECode ec = iaHelper->GetByAddress(hostAddress, (IInetAddress**)&addr);
+    if (ec == (ECode)E_UNKNOWN_HOST_EXCEPTION) {
+        if (DBG) Slogger::D(TAG, "requestRouteToHostAddress got E_UNKNOWN_HOST_EXCEPTION");
         return FALSE;
     }
 
-    AutoPtr<IConnectivityManagerHelper> helper;
-    CConnectivityManagerHelper::AcquireSingleton((IConnectivityManagerHelper**)&helper);
     Boolean isValid;
-    if ((helper->IsNetworkTypeValid(networkType, &isValid), !isValid)) {
+    IsNetworkTypeValid(networkType, &isValid);
+    if (!isValid) {
         if (DBG) Slogger::D(TAG, "requestRouteToHostAddress on invalid network: %d", networkType);
         *result = FALSE;
         return NOERROR;
     }
 
-    NetworkAgentInfo nai = mLegacyTypeTracker.getNetworkForType(networkType);
+    AutoPtr<INetworkAgentInfo> nai = mLegacyTypeTracker->GetNetworkForType(networkType);
     if (nai == NULL) {
-        if (mLegacyTypeTracker.IsTypeSupported(networkType) == FALSE) {
-            if (DBG) Slogg::D("CConnectivityService", "requestRouteToHostAddress on unsupported network: " + networkType);
-        } else {
-            if (DBG) Slogg::D("CConnectivityService", "requestRouteToHostAddress on down network: " + networkType);
+        if (mLegacyTypeTracker->IsTypeSupported(networkType) == FALSE) {
+            if (DBG) Slogger::D(TAG, "requestRouteToHostAddress on unsupported network: %d", networkType);
+        }
+        else {
+            if (DBG) Slogger::D(TAG, "requestRouteToHostAddress on down network: %d", networkType);
         }
         return FALSE;
     }
 
-    DetailedState netState;
-    synchronized(nai) {
-        netState = nai.networkInfo.getDetailedState();
+    NetworkInfoDetailedState netState;
+    NetworkAgentInfo* naiObj = (NetworkAgentInfo*)nai.Get();
+    synchronized(naiObj) {
+        naiObj->mNetworkInfo->GetDetailedState(&netState);
     }
 
-    if (netState != DetailedState.CONNECTED && netState != DetailedState.CAPTIVE_PORTAL_CHECK) {
+    if (netState != NetworkInfoDetailedState_CONNECTED
+        && netState != NetworkInfoDetailedState_CAPTIVE_PORTAL_CHECK) {
         if (VDBG) {
-            Slogg::D("CConnectivityService", "requestRouteToHostAddress on down network "
-                    + "(" + networkType + ") - dropped"
-                    + " netState=" + netState);
+            Slogger::D(TAG, "requestRouteToHostAddress on down network "
+                "(%d) - dropped  netState=%d", networkType, netState);
         }
         return FALSE;
     }
 
-    final Int32 uid = Binder.getCallingUid();
-    final long token = Binder.clearCallingIdentity();
-    try {
-        LinkProperties lp;
-        Int32 netId;
-        synchronized(nai) {
-            lp = nai.linkProperties;
-            netId = nai.network.netId;
-        }
-        Boolean ok = addLegacyRouteToHost(lp, addr, netId, uid);
-        if (DBG) Slogg::D("CConnectivityService", "requestRouteToHostAddress ok=" + ok);
-        return ok;
-    } finally {
-        Binder.restoreCallingIdentity(token);
+    Int32 uid = Binder::GetCallingUid();
+    Int64 token = Binder::ClearCallingIdentity();
+
+    AutoPtr<ILinkProperties> lp;
+    Int32 netId;
+    synchronized(naiObj) {
+        lp = naiObj->mLinkProperties;
+        naiObj->mNetwork->GetNetId(&netId);
     }
+    Boolean ok = AddLegacyRouteToHost(lp, addr, netId, uid);
+    if (DBG) Slogger::D(TAG, "requestRouteToHostAddress ok=%d", ok);
+    *result = ok;
+
+    Binder::RestoreCallingIdentity(token);
+
     return NOERROR;
 }
 
-Boolean addLegacyRouteToHost(LinkProperties lp, InetAddress addr, Int32 netId, Int32 uid) {
-    RouteInfo bestRoute = RouteInfo.selectBestRoute(lp.getAllRoutes(), addr);
+Boolean CConnectivityService::AddLegacyRouteToHost(
+    /* [in] */ ILinkProperties* lp,
+    /* [in] */ IInetAddress* addr,
+    /* [in] */ Int32 netId,
+    /* [in] */ Int32 uid)
+{
+    AutoPtr<IRouteInfo> bestRoute;
+    AutoPtr<IRouteInfoHelper> riHelper;
+    CRouteInfoHelper::AcquireSingleton((IRouteInfoHelper**)&riHelper);
+    AutoPtr<IList> routes;
+    lp->GetAllRoutes((IList**)&routes);
+    riHelper->SelectBestRoute(ICollection::Probe(routes), addr, (IRouteInfo**)&bestRoute);
     if (bestRoute == NULL) {
-        bestRoute = RouteInfo.makeHostRoute(addr, lp.getInterfaceName());
-    } else {
-        String iface = bestRoute.getInterface();
-        if (bestRoute.getGateway().Equals(addr)) {
+        String iface;
+        lp->GetInterfaceName(&iface);
+        riHelper->MakeHostRoute(addr, iface, (IRouteInfo**)&bestRoute);
+    }
+    else {
+        String iface;
+        bestRoute->GetInterface(&iface);
+        AutoPtr<IInetAddress> gateway;
+        bestRoute->GetGateway((IInetAddress**)&gateway);
+        if (Object::Equals(gateway, addr)) {
             // if there is no better route, add the implied hostroute for our gateway
-            bestRoute = RouteInfo.makeHostRoute(addr, iface);
-        } else {
+            riHelper->MakeHostRoute(addr, iface, (IRouteInfo**)&bestRoute);
+        }
+        else {
             // if we will connect to this through another route, add a direct route
             // to it's gateway
-            bestRoute = RouteInfo.makeHostRoute(addr, bestRoute.getGateway(), iface);
+            riHelper->MakeHostRoute(addr, gateway, iface, (IRouteInfo**)&bestRoute);
         }
     }
-    if (DBG) Slogg::D("CConnectivityService", "Adding " + bestRoute + " for interface " + bestRoute.getInterface());
-    try {
-        mNetd.addLegacyRouteForNetId(netId, bestRoute, uid);
-    } catch (Exception e) {
+    if (DBG) {
+        String iface;
+        bestRoute->GetInterface(&iface);
+        Slogger::D(TAG, "Adding %s for interface %s",
+            Object::ToString(bestRoute).string(), iface.string());
+    }
+
+    ECode ec = mNetd->AddLegacyRouteForNetId(netId, bestRoute, uid);
+    if (FAILED(ec)) {
         // never crash - catch them all
-        if (DBG) Slogg::E("CConnectivityService", "Exception trying to add a route: " + e);
+        if (DBG) Slogger::E(TAG, "Exception trying to add a route: error code = %08x", ec);
         return FALSE;
     }
     return TRUE;
@@ -1778,7 +1989,7 @@ ECode CConnectivityService::SetDataDependency(
     /* [in] */ Int32 networkType,
     /* [in] */ Boolean met)
 {
-    FAIL_RETURN(EnforceConnectivityInternalPermission());
+    FAIL_RETURN(EnforceConnectivityInternalPermission())
 
     AutoPtr<IMessage> msg;
     mHandler->ObtainMessage(EVENT_SET_DEPENDENCY_MET,
@@ -1787,149 +1998,245 @@ ECode CConnectivityService::SetDataDependency(
     return mHandler->SendMessage(msg, &result);
 }
 
-
-void HandleAsyncChannelHalfConnect(
+void CConnectivityService::HandleAsyncChannelHalfConnect(
     /* [in] */ IMessage* msg)
 {
-    AsyncChannel ac = (AsyncChannel) msg.obj;
-    if (mNetworkFactoryInfos.containsKey(msg.replyTo)) {
-        if (msg.arg1 == IAsyncChannel::STATUS_SUCCESSFUL) {
-            if (VDBG) Slogg::D("CConnectivityService", "NetworkFactory connected");
+    Int32 arg1, arg2;
+    msg->GetArg1(&arg1);
+    msg->GetArg2(&arg2);
+    AutoPtr<IInterface> obj;
+    msg->GetObj((IInterface**)&obj);
+    AutoPtr<IMessenger> replyTo;
+    msg->GetReplyTo((IMessenger**)&replyTo);
+    AutoPtr<IAsyncChannel> ac = IAsyncChannel::Probe(obj);
+    Boolean bval;
+    mNetworkFactoryInfos->ContainsKey(TO_IINTERFACE(replyTo), &bval);
+    if (bval) {
+        if (arg1 == IAsyncChannel::STATUS_SUCCESSFUL) {
+            if (VDBG) Slogger::D(TAG, "NetworkFactory connected");
             // A network factory has connected.  Send it all current NetworkRequests.
-            for (NetworkRequestInfo nri : mNetworkRequests.values()) {
-                if (nri.isRequest == FALSE) continue;
-                NetworkAgentInfo nai = mNetworkForRequestId.get(nri.request.requestId);
-                ac.sendMessage(android.net.NetworkFactory.CMD_REQUEST_NETWORK,
-                        (nai != NULL ? nai.getCurrentScore() : 0), 0, nri.request);
+            AutoPtr<ICollection> values;
+            mNetworkRequests->GetValues((ICollection**)&values);
+            AutoPtr<IIterator> it;
+            values->GetIterator((IIterator**)&it);
+            Boolean hasNext;
+            Int32 requestId, score;
+            while (it->HasNext(&hasNext), hasNext) {
+                AutoPtr<IInterface> tmp;
+                it->GetNext((IInterface**)&tmp);
+                AutoPtr<NetworkRequestInfo> nri = (NetworkRequestInfo*)IProxyDeathRecipient::Probe(tmp);
+                if (nri->mIsRequest == FALSE) continue;
+                nri->mRequest->GetRequestId(&requestId);
+                tmp = NULL;
+                mNetworkForRequestId->Get(requestId, (IInterface**)&tmp);
+                NetworkAgentInfo* nai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(tmp);
+                score = 0;
+                if (nai != NULL) {
+                    nai->GetCurrentScore(&score);
+                }
+                ac->SendMessage(INetworkFactory::CMD_REQUEST_NETWORK,
+                    score, 0, nri->mRequest);
             }
-        } else {
-            Slogg::E("CConnectivityService", "Error connecting NetworkFactory");
-            mNetworkFactoryInfos.remove(msg.obj);
         }
-    } else if (mNetworkAgentInfos.containsKey(msg.replyTo)) {
-        if (msg.arg1 == IAsyncChannel::STATUS_SUCCESSFUL) {
-            if (VDBG) Slogg::D("CConnectivityService", "NetworkAgent connected");
+        else {
+            Slogger::E(TAG, "Error connecting NetworkFactory");
+            mNetworkFactoryInfos->Remove(obj);
+        }
+    }
+    else if (mNetworkAgentInfos->ContainsKey(replyTo, &bval), bval) {
+        if (arg1 == IAsyncChannel::STATUS_SUCCESSFUL) {
+            if (VDBG) Slogger::D(TAG, "NetworkAgent connected");
             // A network agent has requested a connection.  Establish the connection.
-            mNetworkAgentInfos.get(msg.replyTo).asyncChannel.
-                    sendMessage(IAsyncChannel::CMD_CHANNEL_FULL_CONNECTION);
-        } else {
-            Slogg::E("CConnectivityService", "Error connecting NetworkAgent");
-            NetworkAgentInfo nai = mNetworkAgentInfos.remove(msg.replyTo);
+            AutoPtr<IInterface> tmp;
+            mNetworkAgentInfos->Get(TO_IINTERFACE(replyTo), (IInterface**)&tmp);
+            NetworkAgentInfo* nai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(tmp);
+            nai->mAsyncChannel->SendMessage(IAsyncChannel::CMD_CHANNEL_FULL_CONNECTION);
+        }
+        else {
+            Slogger::E(TAG, "Error connecting NetworkAgent");
+            AutoPtr<IInterface> tmp;
+            mNetworkAgentInfos->Remove(replyTo, (IInterface**)&tmp);
+            NetworkAgentInfo* nai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(tmp);
             if (nai != NULL) {
-                synchronized(mNetworkForNetId) {
-                    mNetworkForNetId.remove(nai.network.netId);
+                ISynchronize* syncObj = (ISynchronize*)mNetworkForNetId->Probe(EIID_ISynchronize);
+                synchronized(syncObj) {
+                    Int32 id;
+                    nai->mNetwork->GetNetId(&id);
+                    mNetworkForNetId->Remove(id);
                 }
                 // Just in case.
-                mLegacyTypeTracker.remove(nai);
+                mLegacyTypeTracker->Remove(nai);
             }
         }
     }
 }
 
-void HandleAsyncChannelDisconnected(
+void CConnectivityService::HandleAsyncChannelDisconnected(
     /* [in] */ IMessage* msg)
 {
-    NetworkAgentInfo nai = mNetworkAgentInfos.get(msg.replyTo);
+    AutoPtr<IMessenger> replyTo;
+    msg->GetReplyTo((IMessenger**)&replyTo);
+    AutoPtr<IInterface> tmp;
+    mNetworkAgentInfos->Get(TO_IINTERFACE(replyTo), (IInterface**)&tmp);
+    NetworkAgentInfo* nai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(tmp);
     if (nai != NULL) {
         if (DBG) {
-            Slogg::D("CConnectivityService", nai.name() + " got DISCONNECTED, was satisfying " + nai.networkRequests.size());
+            Int32 size;
+            nai->mNetworkRequests->GetSize(&size);
+            Slogger::D(TAG, "%s got DISCONNECTED, was satisfying %d",
+                nai->Name().string(), size);
         }
         // A network agent has disconnected.
-        if (nai.created) {
+        if (nai->mCreated) {
             // Tell netd to clean up the configuration for this network
             // (routing rules, DNS, etc).
-            try {
-                mNetd.removeNetwork(nai.network.netId);
-            } catch (Exception e) {
-                Slogg::E("CConnectivityService", "Exception removing network: " + e);
+            Int32 id;
+            nai->mNetwork->GetNetId(&id);
+            ECode ec =  mNetd->RemoveNetwork(id);
+            if (FAILED(ec)) {
+                Slogger::E(TAG, "Exception removing network: %08x", ec);
             }
         }
         // TODO - if we move the logic to the network agent (have them disconnect
         // because they lost all their requests or because their score isn't good)
         // then they would disconnect organically, report their new state and then
         // disconnect the channel.
-        if (nai.networkInfo.isConnected()) {
-            nai.networkInfo.setDetailedState(NetworkInfo.DetailedState.DISCONNECTED,
-                    NULL, NULL);
+        Boolean bval;
+        if (nai->mNetworkInfo->IsConnected(&bval), bval) {
+            String nullStr;
+            nai->mNetworkInfo->SetDetailedState(NetworkInfoDetailedState_DISCONNECTED, nullStr, nullStr);
         }
         if (IsDefaultNetwork(nai)) {
             mDefaultInetConditionPublished = 0;
         }
-        notifyNetworkCallbacks(nai, ConnectivityManager.CALLBACK_LOST);
-        nai.networkMonitor.sendMessage(INetworkMonitor::CMD_NETWORK_DISCONNECTED);
-        mNetworkAgentInfos.remove(msg.replyTo);
-        updateClat(NULL, nai.linkProperties, nai);
-        mLegacyTypeTracker.remove(nai);
-        synchronized(mNetworkForNetId) {
-            mNetworkForNetId.remove(nai.network.netId);
+        NotifyNetworkCallbacks(nai, IConnectivityManager::CALLBACK_LOST);
+        nai->mNetworkMonitor->SendMessage(NetworkMonitor::CMD_NETWORK_DISCONNECTED);
+        mNetworkAgentInfos->Remove(TO_IINTERFACE(replyTo));
+        UpdateClat(NULL, nai->mLinkProperties, nai);
+        mLegacyTypeTracker->Remove(nai);
+        Int32 id ;
+        nai->mNetwork->GetNetId(&id);
+        ISynchronize* syncObj = (ISynchronize*)mNetworkForNetId->Probe(EIID_ISynchronize);
+        synchronized(syncObj) {
+            mNetworkForNetId->Remove(id);
         }
+
         // Since we've lost the network, go through all the requests that
         // it was satisfying and see if any other factory can satisfy them.
-        // TODO: This logic may be better replaced with a call to rematchAllNetworksAndRequests
-        final ArrayList<NetworkAgentInfo> toActivate = new ArrayList<NetworkAgentInfo>();
-        for (Int32 i = 0; i < nai.networkRequests.size(); i++) {
-            NetworkRequest request = nai.networkRequests.valueAt(i);
-            NetworkAgentInfo currentNetwork = mNetworkForRequestId.get(request.requestId);
-            if (currentNetwork != NULL && currentNetwork.network.netId == nai.network.netId) {
+        // TODO: This logic may be better replaced with a call to RematchAllNetworksAndRequests
+        List<AutoPtr<NetworkAgentInfo> > toActivate;
+        List<AutoPtr<NetworkAgentInfo> >::Iterator lit;
+        Int32 size = 0, netId, requestId;
+        nai->mNetworkRequests->GetSize(&size);
+        for (Int32 i = 0; i < size; i++) {
+            AutoPtr<IInterface> obj;
+            nai->mNetworkRequests->ValueAt(i, (IInterface**)&obj);
+            AutoPtr<INetworkRequest> request = INetworkRequest::Probe(obj);
+            request->GetRequestId(&requestId);
+            AutoPtr<IInterface> tmpObj;
+            mNetworkForRequestId->Get(requestId, (IInterface**)&tmpObj);
+            AutoPtr<NetworkAgentInfo> currentNetwork = (NetworkAgentInfo*)INetworkAgentInfo::Probe(tmpObj);
+            if (currentNetwork != NULL && (currentNetwork->mNetwork->GetNetId(&netId), netId) == id) {
                 if (DBG) {
-                    Slogg::D("CConnectivityService", "Checking for replacement network to handle request " + request );
+                    Slogger::D(TAG, "Checking for replacement network to handle request %s",
+                        Object::ToString(request).string());
                 }
-                mNetworkForRequestId.remove(request.requestId);
-                sendUpdatedScoreToFactories(request, 0);
-                NetworkAgentInfo alternative = NULL;
-                for (Map.Entry entry : mNetworkAgentInfos.entrySet()) {
-                    NetworkAgentInfo existing = (NetworkAgentInfo)entry.getValue();
-                    if (existing.networkInfo.isConnected() &&
-                            request.networkCapabilities.satisfiedByNetworkCapabilities(
-                            existing.networkCapabilities) &&
-                            (alternative == NULL ||
-                             alternative.getCurrentScore() < existing.getCurrentScore())) {
-                        alternative = existing;
+                mNetworkForRequestId->Remove(requestId);
+                SendUpdatedScoreToFactories(request, 0);
+                AutoPtr<NetworkAgentInfo> alternative;
+                AutoPtr<ISet> set;
+                mNetworkAgentInfos->GetEntrySet((ISet**)&set);
+                AutoPtr<IIterator> it;
+                set->GetIterator((IIterator**)&it);
+                Boolean hasNext;
+                Int32 score1, score2;
+                AutoPtr<INetworkCapabilities> netcap;
+                request->GetNetworkCapabilities((INetworkCapabilities**)&netcap);
+                while (it->HasNext(&hasNext), hasNext) {
+                    AutoPtr<IInterface> mpObj, valueObj;
+                    it->GetNext((IInterface**)&mpObj);
+                    IMapEntry* entry = IMapEntry::Probe(mpObj);
+                    entry->GetValue((IInterface**)&valueObj);
+                    AutoPtr<NetworkAgentInfo> existing = (NetworkAgentInfo*)INetworkAgentInfo::Probe(valueObj);
+                    existing->mNetworkInfo->IsConnected(&bval);
+                    if (bval) {
+                        netcap->SatisfiedByNetworkCapabilities(existing->mNetworkCapabilities, &bval);
+                        if (bval) {
+                            existing->GetCurrentScore(&score2);
+                            if (alternative == NULL || (alternative->GetCurrentScore(&score1), score1) < score2) {
+                                alternative = existing;
+                            }
+                        }
                     }
                 }
                 if (alternative != NULL) {
-                    if (DBG) Slogg::D("CConnectivityService", " found replacement in " + alternative.name());
-                    if (!toActivate.contains(alternative)) {
-                        toActivate.add(alternative);
+                    if (DBG) {
+                        Slogger::D(TAG, " found replacement in %s", alternative->Name().string());
+                    }
+                    lit = Find(toActivate.Begin(), toActivate.End(), alternative);
+                    if (lit == toActivate.End()) {
+                        toActivate.PushBack(alternative);
                     }
                 }
             }
         }
-        if (nai.networkRequests.get(mDefaultRequest.requestId) != NULL) {
-            removeDataActivityTracking(nai);
-            mActiveDefaultNetwork = ConnectivityManager.TYPE_NONE;
+
+        mDefaultRequest->GetRequestId(&requestId);
+        AutoPtr<IInterface> tmpObj;
+        nai->mNetworkRequests->Get(requestId, (IInterface**)&tmpObj);
+        if (tmpObj != NULL) {
+            RemoveDataActivityTracking(nai);
+            mActiveDefaultNetwork = IConnectivityManager::TYPE_NONE;
             NotifyLockdownVpn(nai);
-            requestNetworkTransitionWakelock(nai.name());
+            RequestNetworkTransitionWakelock(nai->Name());
         }
-        for (NetworkAgentInfo networkToActivate : toActivate) {
-            networkToActivate.networkLingered.clear();
-            networkToActivate.networkMonitor.sendMessage(INetworkMonitor::CMD_NETWORK_CONNECTED);
-            rematchNetworkAndRequests(networkToActivate, FALSE);
+
+        for (lit = toActivate.Begin(); lit != toActivate.End(); ++lit) {
+            NetworkAgentInfo* networkToActivate = *lit;
+            networkToActivate->mNetworkLingered->Clear();
+            networkToActivate->mNetworkMonitor->SendMessage(NetworkMonitor::CMD_NETWORK_CONNECTED);
+            RematchNetworkAndRequests((INetworkAgentInfo*)networkToActivate, FALSE);
         }
     }
 }
 
-void HandleRegisterNetworkRequest(
+void CConnectivityService::HandleRegisterNetworkRequest(
     /* [in] */ IMessage* msg)
 {
-    final NetworkRequestInfo nri = (NetworkRequestInfo) (msg.obj);
-    final NetworkCapabilities newCap = nri.request.networkCapabilities;
-    Int32 score = 0;
+    AutoPtr<IInterface> obj;
+    msg->GetObj((IInterface**)&obj);
+    AutoPtr<NetworkRequestInfo> nri = (NetworkRequestInfo*)IProxyDeathRecipient::Probe(obj);
+    AutoPtr<INetworkCapabilities> newCap;
+    nri->mRequest->GetNetworkCapabilities((INetworkCapabilities**)&newCap);
 
     // Check for the best currently alive network that satisfies this request
-    NetworkAgentInfo bestNetwork = NULL;
-    for (NetworkAgentInfo network : mNetworkAgentInfos.values()) {
-        if (DBG) Slogg::D("CConnectivityService", "handleRegisterNetworkRequest checking " + network.name());
-        if (newCap.satisfiedByNetworkCapabilities(network.networkCapabilities)) {
-            if (DBG) Slogg::D("CConnectivityService", "apparently satisfied.  currentScore=" + network.getCurrentScore());
-            if ((bestNetwork == NULL) ||
-                    bestNetwork.getCurrentScore() < network.getCurrentScore()) {
-                if (!nri.isRequest) {
+    AutoPtr<NetworkAgentInfo> bestNetwork;
+
+    AutoPtr<ICollection> values;
+    mNetworkRequests->GetValues((ICollection**)&values);
+    AutoPtr<IIterator> it;
+    values->GetIterator((IIterator**)&it);
+    Boolean hasNext, bval;
+    Int32 score, bestScore;
+    while (it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> tmp;
+        it->GetNext((IInterface**)&tmp);
+        NetworkAgentInfo* network = (NetworkAgentInfo*)INetworkAgentInfo::Probe(tmp);
+
+        if (DBG) Slogger::D(TAG, "handleRegisterNetworkRequest checking %s", network->Name().string());
+        if (newCap->SatisfiedByNetworkCapabilities(network->mNetworkCapabilities, &bval), bval) {
+            network->GetCurrentScore(&score);
+            if (DBG) {
+                Slogger::D(TAG, "apparently satisfied.  currentScore=%d", score);
+            }
+            if ((bestNetwork == NULL)
+                || (bestNetwork->GetCurrentScore(&bestScore), bestScore) < score) {
+                if (!nri->mIsRequest) {
                     // Not setting bestNetwork here as a listening NetworkRequest may be
                     // satisfied by multiple Networks.  Instead the request is added to
                     // each satisfying Network and notified about each.
-                    network.addRequest(nri.request);
-                    notifyNetworkCallback(network, nri);
+                    network->AddRequest(nri->mRequest);
+                    NotifyNetworkCallback(network, nri);
                 } else {
                     bestNetwork = network;
                 }
@@ -1937,66 +2244,99 @@ void HandleRegisterNetworkRequest(
         }
     }
     if (bestNetwork != NULL) {
-        if (DBG) Slogg::D("CConnectivityService", "using " + bestNetwork.name());
-        if (bestNetwork.networkInfo.isConnected()) {
+        if (DBG) Slogger::D(TAG, "using %s", bestNetwork->Name().string());
+        Boolean bval;
+        bestNetwork->mNetworkInfo->IsConnected(&bval);
+        if (bval) {
             // Cancel any lingering so the linger timeout doesn't teardown this network
             // even though we have a request for it.
-            bestNetwork.networkLingered.clear();
-            bestNetwork.networkMonitor.sendMessage(INetworkMonitor::CMD_NETWORK_CONNECTED);
+            bestNetwork->mNetworkLingered->Clear();
+            bestNetwork->mNetworkMonitor->SendMessage(NetworkMonitor::CMD_NETWORK_CONNECTED);
         }
-        // TODO: This logic may be better replaced with a call to rematchNetworkAndRequests
-        bestNetwork.addRequest(nri.request);
-        mNetworkForRequestId.put(nri.request.requestId, bestNetwork);
-        notifyNetworkCallback(bestNetwork, nri);
-        score = bestNetwork.getCurrentScore();
-        if (nri.request.legacyType != TYPE_NONE) {
-            mLegacyTypeTracker.add(nri.request.legacyType, bestNetwork);
+        // TODO: This logic may be better replaced with a call to RematchNetworkAndRequests
+        bestNetwork->AddRequest(nri->mRequest);
+        Int32 id;
+        nri->mRequest->GetRequestId(&id);
+        mNetworkForRequestId->Put(id, TO_IINTERFACE(bestNetwork));
+        NotifyNetworkCallback((INetworkAgentInfo*)bestNetwork.Get(), nri);
+        bestNetwork->GetCurrentScore(&score);
+        Int32 type;
+        nri->mRequest->GetLegacyType(&type);
+        if (type != IConnectivityManager::TYPE_NONE) {
+            mLegacyTypeTracker->Add(type, (INetworkAgentInfo*)bestNetwork.Get());
         }
     }
-    mNetworkRequests.put(nri.request, nri);
-    if (nri.isRequest) {
-        if (DBG) Slogg::D("CConnectivityService", "sending new NetworkRequest to factories");
-        for (NetworkFactoryInfo nfi : mNetworkFactoryInfos.values()) {
-            nfi.asyncChannel.sendMessage(android.net.NetworkFactory.CMD_REQUEST_NETWORK, score,
-                    0, nri.request);
+    mNetworkRequests->Put((IInterface*)(nri->mRequest.Get()), TO_IINTERFACE(nri));
+    if (nri->mIsRequest) {
+        if (DBG) Slogger::D(TAG, "sending new NetworkRequest to factories");
+
+        values = NULL;
+        it = NULL;
+        mNetworkFactoryInfos->GetValues((ICollection**)&values);
+        values->GetIterator((IIterator**)&it);
+        while (it->HasNext(&hasNext), hasNext) {
+            AutoPtr<IInterface> tmp;
+            it->GetNext((IInterface**)&tmp);
+            NetworkFactoryInfo* nfi = (NetworkFactoryInfo*)IObject::Probe(tmp);
+            nfi->mAsyncChannel->SendMessage(INetworkFactory::CMD_REQUEST_NETWORK, score, 0, nri->mRequest);
         }
     }
 }
 
-void HandleReleaseNetworkRequest(
+void CConnectivityService::HandleReleaseNetworkRequest(
     /* [in] */ INetworkRequest* request,
     /* [in] */ Int32 callingUid)
 {
-    NetworkRequestInfo nri = mNetworkRequests.get(request);
+    AutoPtr<IInterface> obj;
+    mNetworkRequests->Get(request, (IInterface**)&obj);
+    AutoPtr<NetworkRequestInfo> nri = (NetworkRequestInfo*)IProxyDeathRecipient::Probe(obj);
     if (nri != NULL) {
-        if (Process.SYSTEM_UID != callingUid && nri.mUid != callingUid) {
-            if (DBG) Slogg::D("CConnectivityService", "Attempt to release unowned NetworkRequest " + request);
+        if (IProcess::SYSTEM_UID != callingUid && nri->mUid != callingUid) {
+            if (DBG) Slogger::D(TAG, "Attempt to release unowned NetworkRequest %s",
+                Object::ToString(request).string());
             return;
         }
-        if (DBG) Slogg::D("CConnectivityService", "releasing NetworkRequest " + request);
-        nri.unlinkDeathRecipient();
-        mNetworkRequests.remove(request);
-        if (nri.isRequest) {
+        if (DBG) Slogger::D(TAG, "releasing NetworkRequest %s",
+            Object::ToString(request).string());
+
+        nri->UnlinkDeathRecipient();
+        Int32 requestId, size;
+        nri->mRequest->GetRequestId(&requestId);
+
+        mNetworkRequests->Remove(request);
+        if (nri->mIsRequest) {
             // Find all networks that are satisfying this request and remove the request
             // from their request lists.
-            for (NetworkAgentInfo nai : mNetworkAgentInfos.values()) {
-                if (nai.networkRequests.get(nri.request.requestId) != NULL) {
-                    nai.networkRequests.remove(nri.request.requestId);
+            AutoPtr<ICollection> values;
+            mNetworkRequests->GetValues((ICollection**)&values);
+            AutoPtr<IIterator> it;
+            values->GetIterator((IIterator**)&it);
+            Boolean hasNext, keep;
+            while (it->HasNext(&hasNext), hasNext) {
+                AutoPtr<IInterface> tmp, requestObj;
+                it->GetNext((IInterface**)&tmp);
+                NetworkAgentInfo* nai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(tmp);
+                nai->mNetworkRequests->Get(requestId, (IInterface**)&requestObj);
+                if (requestObj != NULL) {
+                    nai->mNetworkRequests->Remove(requestId);
+                    nai->mNetworkRequests->GetSize(&size);
                     if (DBG) {
-                        Slogg::D("CConnectivityService", " Removing from current network " + nai.name() +
-                                ", leaving " + nai.networkRequests.size() +
-                                " requests.");
+                        Slogger::D(TAG, " Removing from current network %s, leaving %d requests.",
+                            nai->Name().string(), size);
                     }
                     // check if has any requests remaining and if not,
                     // disconnect (unless it's a VPN).
-                    Boolean keep = nai.isVPN();
-                    for (Int32 i = 0; i < nai.networkRequests.size() && !keep; i++) {
-                        NetworkRequest r = nai.networkRequests.valueAt(i);
-                        if (isRequest(r)) keep = TRUE;
+                    nai->IsVPN(&keep);
+                    for (Int32 i = 0; i < size && !keep; i++) {
+                        AutoPtr<IInterface> nrObj;
+                        nai->mNetworkRequests->ValueAt(i, (IInterface**)&nrObj);
+                        AutoPtr<INetworkRequest> r = INetworkRequest::Probe(nrObj);
+                        if (IsRequest(r)) keep = TRUE;
                     }
                     if (!keep) {
-                        if (DBG) Slogg::D("CConnectivityService", "no live requests for " + nai.name() + "; disconnecting");
-                        nai.asyncChannel.disconnect();
+                        if (DBG) Slogger::D(TAG, "no live requests for %s; disconnecting",
+                            nai->Name().string());
+                        nai->mAsyncChannel->Disconnect();
                     }
                 }
             }
@@ -2006,26 +2346,45 @@ void HandleReleaseNetworkRequest(
             // connected.  Now that this request has gone away, we might have to pretend
             // that the network disconnected.  LegacyTypeTracker will generate that
             // phatom disconnect for this type.
-            NetworkAgentInfo nai = mNetworkForRequestId.get(nri.request.requestId);
+            AutoPtr<IInterface> naiObj;
+            mNetworkForRequestId->Get(requestId, (IInterface**)&naiObj);
+            AutoPtr<INetworkAgentInfo> nai = INetworkAgentInfo::Probe(naiObj);
             if (nai != NULL) {
-                mNetworkForRequestId.remove(nri.request.requestId);
-                if (nri.request.legacyType != TYPE_NONE) {
-                    mLegacyTypeTracker.remove(nri.request.legacyType, nai);
+                mNetworkForRequestId->Remove(requestId);
+                Int32 type;
+                nri->mRequest->GetLegacyType(&type);
+                if (type != IConnectivityManager::TYPE_NONE) {
+                    mLegacyTypeTracker->Remove(type, nai);
                 }
             }
 
-            for (NetworkFactoryInfo nfi : mNetworkFactoryInfos.values()) {
-                nfi.asyncChannel.sendMessage(android.net.NetworkFactory.CMD_CANCEL_REQUEST,
-                        nri.request);
-            }
-        } else {
-            // listens don't have a singular affectedNetwork.  Check all networks to see
-            // if this listen request applies and remove it.
-            for (NetworkAgentInfo nai : mNetworkAgentInfos.values()) {
-                nai.networkRequests.remove(nri.request.requestId);
+            values = NULL;
+            it = NULL;
+            mNetworkFactoryInfos->GetValues((ICollection**)&values);
+            values->GetIterator((IIterator**)&it);
+            while (it->HasNext(&hasNext), hasNext) {
+                AutoPtr<IInterface> tmp;
+                it->GetNext((IInterface**)&tmp);
+                NetworkFactoryInfo* nfi = (NetworkFactoryInfo*)IObject::Probe(tmp);
+                nfi->mAsyncChannel->SendMessage(INetworkFactory::CMD_CANCEL_REQUEST, nri->mRequest);
             }
         }
-        callCallbackForRequest(nri, NULL, ConnectivityManager.CALLBACK_RELEASED);
+        else {
+            // listens don't have a singular affectedNetwork.  Check all networks to see
+            // if this listen request applies and remove it.
+            AutoPtr<ICollection> values;
+            mNetworkAgentInfos->GetValues((ICollection**)&values);
+            AutoPtr<IIterator> it;
+            values->GetIterator((IIterator**)&it);
+            Boolean hasNext;
+            while (it->HasNext(&hasNext), hasNext) {
+                AutoPtr<IInterface> tmp;
+                it->GetNext((IInterface**)&tmp);
+                NetworkAgentInfo* nai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(tmp);
+                nai->mNetworkRequests->Remove(requestId);
+            }
+        }
+        CallCallbackForRequest(nri, NULL, IConnectivityManager::CALLBACK_RELEASED);
     }
 }
 
@@ -2047,7 +2406,7 @@ ECode CConnectivityService::SetPolicyDataEnable(
 {
     // only someone like NPMS should only be calling us
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
-            Elastos::Droid::Manifest::permission::MANAGE_NETWORK_POLICY, TAG));
+        Elastos::Droid::Manifest::permission::MANAGE_NETWORK_POLICY, TAG));
 
     AutoPtr<IMessage> msg;
     mHandler->ObtainMessage(EVENT_SET_POLICY_DATA_ENABLE,
@@ -2061,10 +2420,8 @@ void CConnectivityService::HandleSetPolicyDataEnable(
     /* [in] */ Boolean enabled)
 {
     // TODO - handle this passing to factories
-    // AutoPtr<IConnectivityManagerHelper> helper;
-    // CConnectivityManagerHelper::AcquireSingleton((IConnectivityManagerHelper**)&helper);
     // Boolean isValid = FALSE;
-    // if ((helper->IsNetworkTypeValid(networkType, &isValid), isValid)) {
+    // if ((IsNetworkTypeValid(networkType, &isValid), isValid)) {
     //     AutoPtr<INetworkStateTracker> tracker = (*mNetTrackers)[networkType];
     //     if (tracker != NULL) {
     //         tracker->SetPolicyDataEnable(enabled);
@@ -2079,14 +2436,13 @@ ECode CConnectivityService::EnforceInternetPermission()
             String("ConnectivityService"));
 }
 
-ECode CConnectivityService::EnforceChangePermission()
+ECode CConnectivityService::EnforceAccessPermission()
 {
     return mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::permission::ACCESS_NETWORK_STATE,
             String("ConnectivityService"));
 }
 
-// TODO Make this a special check when it goes public
 ECode CConnectivityService::EnforceChangePermission()
 {
     return mContext->EnforceCallingOrSelfPermission(
@@ -2194,20 +2550,17 @@ void CConnectivityService::SendDataActivityBroadcast(
     intent->PutBooleanExtra(IConnectivityManager::EXTRA_IS_ACTIVE, active);
     intent->PutExtra(IConnectivityManager::EXTRA_REALTIME_NS, tsNanos);
     Int64 ident = Binder::ClearCallingIdentity();
-    AutoPtr<IUserHandleHelper> helper;
-    CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
-    AutoPtr<IUserHandle> ALL;
-    helper->GetALL((IUserHandle**)&ALL);
-    mContext->SendOrderedBroadcastAsUser(intent, ALL,
-                Elastos::Droid::Manifest::permission::RECEIVE_DATA_ACTIVITY_CHANGE,
-                NULL, NULL, 0, String(NULL), NULL);
+    mContext->SendOrderedBroadcastAsUser(intent, UserHandle::ALL,
+            Elastos::Droid::Manifest::permission::RECEIVE_DATA_ACTIVITY_CHANGE,
+            NULL, NULL, 0, String(NULL), NULL);
     Binder::RestoreCallingIdentity(ident);
 }
 
 void CConnectivityService::SendStickyBroadcast(
     /* [in] */ IIntent* intent)
 {
-    AutoLock lock(this);
+    ISynchronize* syncObj = (ISynchronize*)Probe(EIID_ISynchronize);
+    AutoLock lock(syncObj);
     if (!mSystemReady) {
         mInitialBroadcast = NULL;
         CIntent::New(intent, (IIntent**)&mInitialBroadcast);
@@ -2220,11 +2573,7 @@ void CConnectivityService::SendStickyBroadcast(
     }
 
     Int64 ident = Binder::ClearCallingIdentity();
-    AutoPtr<IUserHandleHelper> helper;
-    CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
-    AutoPtr<IUserHandle> ALL;
-    helper->GetALL((IUserHandle**)&ALL);
-    mContext->SendStickyBroadcastAsUser(intent, ALL);
+    mContext->SendStickyBroadcastAsUser(intent, UserHandle::ALL);
     Binder::RestoreCallingIdentity(ident);
 }
 
@@ -2253,24 +2602,27 @@ void CConnectivityService::SendStickyBroadcastDelayed(
 void CConnectivityService::SystemReady()
 {
     // start network sampling ..
-    Intent intent = new Intent(ACTION_PKT_CNT_SAMPLE_INTERVAL_ELAPSED);
-    intent.setPackage(mContext.getPackageName());
+    AutoPtr<IIntent> intent;
+    CIntent::New(ACTION_PKT_CNT_SAMPLE_INTERVAL_ELAPSED, (IIntent**)&intent);
+    String pkgName;
+    mContext->GetPackageName(&pkgName);
+    intent->SetPackage(pkgName);
 
-    mSampleIntervalElapsedIntent = PendingIntent.getBroadcast(mContext,
-            SAMPLE_INTERVAL_ELAPSED_REQUEST_CODE, intent, 0);
-    setAlarm(DEFAULT_START_SAMPLING_INTERVAL_IN_SECONDS * 1000, mSampleIntervalElapsedIntent);
+    AutoPtr<IPendingIntentHelper> piHelper;
+    CPendingIntentHelper::AcquireSingleton((IPendingIntentHelper**)&piHelper);
+    mSampleIntervalElapsedIntent = NULL;
+    piHelper->GetBroadcast(mContext, SAMPLE_INTERVAL_ELAPSED_REQUEST_CODE, intent, 0,
+        (IPendingIntent**)&mSampleIntervalElapsedIntent);
+    SetAlarm(DEFAULT_START_SAMPLING_INTERVAL_IN_SECONDS * 1000, mSampleIntervalElapsedIntent);
 
-    loadGlobalProxy();
+    LoadGlobalProxy();
 
     {
-        AutoLock lock(this);
+        ISynchronize* syncObj = (ISynchronize*)Probe(EIID_ISynchronize);
+        AutoLock lock(syncObj);
         mSystemReady = TRUE;
         if (mInitialBroadcast != NULL) {
-            AutoPtr<IUserHandleHelper> helper;
-            CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
-            AutoPtr<IUserHandle> ALL;
-            helper->GetALL((IUserHandle**)&ALL);
-            mContext->SendStickyBroadcastAsUser(mInitialBroadcast, ALL);
+            mContext->SendStickyBroadcastAsUser(mInitialBroadcast, UserHandle::ALL);
             mInitialBroadcast = NULL;
         }
     }
@@ -2281,157 +2633,192 @@ void CConnectivityService::SystemReady()
 
     // Try bringing up tracker, but if KeyStore isn't ready yet, wait
     // for user to unlock device.
-    Boolean update;
-    if ((UpdateLockdownVpn(&update), !update)) {
+    if ((UpdateLockdownVpn(&result), !result)) {
         AutoPtr<IIntentFilter> filter;
         CIntentFilter::New(IIntent::ACTION_USER_PRESENT, (IIntentFilter**)&filter);
         AutoPtr<IIntent> intent;
         mContext->RegisterReceiver(mUserPresentReceiver, filter, (IIntent**)&intent);
     }
 
-
-    mHandler.sendMessage(mHandler.obtainMessage(EVENT_SYSTEM_READY));
-
-    mPermissionMonitor.startMonitoring();
+    AutoPtr<IMessage> msg;
+    mHandler->ObtainMessage(EVENT_SYSTEM_READY, (IMessage**)&msg);
+    mHandler->SendMessage(msg, &result);
+    mPermissionMonitor->StartMonitoring();
 }
 
-
-/** @hide */
 ECode CConnectivityService::CaptivePortalCheckCompleted(
     /* [in] */ INetworkInfo* info,
     /* [in] */ Boolean isCaptivePortal)
 {
-    enforceConnectivityInternalPermission();
-    if (DBG) Slogg::D("CConnectivityService", "captivePortalCheckCompleted: ni=" + info + " captive=" + isCaptivePortal);
-//        mNetTrackers[info.getType()].captivePortalCheckCompleted(isCaptivePortal);
+    FAIL_RETURN(EnforceConnectivityInternalPermission())
+    if (DBG) {
+        Slogger::D(TAG, "captivePortalCheckCompleted: ni=%s captive=%d",
+            Object::ToString(info).string(), isCaptivePortal);
+    }
+//        mNetTrackers[info.GetType()].captivePortalCheckCompleted(isCaptivePortal);
+    return NOERROR;
 }
 
-
 void CConnectivityService::SetupDataActivityTracking(
-    /* [in] */ INetworkAgentInfo* networkAgent)
+    /* [in] */ INetworkAgentInfo* nai)
 {
-    final String iface = networkAgent.linkProperties.getInterfaceName();
+    NetworkAgentInfo* networkAgent = (NetworkAgentInfo* )nai;
+    String iface;
+    networkAgent->mLinkProperties->GetInterfaceName(&iface);
 
-    final Int32 timeout;
-    Int32 type = ConnectivityManager.TYPE_NONE;
+    Int32 timeout;
+    Int32 type = IConnectivityManager::TYPE_NONE;
 
-    if (networkAgent.networkCapabilities.hasTransport(
-            NetworkCapabilities.TRANSPORT_CELLULAR)) {
-        timeout = Settings.Global.getInt(mContext.getContentResolver(),
-                                         Settings.Global.DATA_ACTIVITY_TIMEOUT_MOBILE,
-                                         5);
-        type = ConnectivityManager.TYPE_MOBILE;
-    } else if (networkAgent.networkCapabilities.hasTransport(
-            NetworkCapabilities.TRANSPORT_WIFI)) {
-        timeout = Settings.Global.getInt(mContext.getContentResolver(),
-                                         Settings.Global.DATA_ACTIVITY_TIMEOUT_WIFI,
-                                         0);
-        type = ConnectivityManager.TYPE_WIFI;
-    } else {
+    AutoPtr<IContentResolver> cr;
+    mContext->GetContentResolver((IContentResolver**)&cr);
+
+    AutoPtr<ISettingsGlobal> sg;
+    CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&sg);
+    Boolean bval;
+    if (networkAgent->mNetworkCapabilities->HasTransport(
+        INetworkCapabilities::TRANSPORT_CELLULAR, &bval), bval) {
+        sg->GetInt32(cr, ISettingsGlobal::DATA_ACTIVITY_TIMEOUT_MOBILE, 5, &timeout);
+        type = IConnectivityManager::TYPE_MOBILE;
+    }
+    else if (networkAgent->mNetworkCapabilities->HasTransport(
+        INetworkCapabilities::TRANSPORT_WIFI, &bval), &bval) {
+        sg->GetInt32(cr, ISettingsGlobal::DATA_ACTIVITY_TIMEOUT_WIFI, 0, &timeout);
+        type = IConnectivityManager::TYPE_WIFI;
+    }
+    else {
         // do not track any other networks
         timeout = 0;
     }
 
-    if (timeout > 0 && iface != NULL && type != ConnectivityManager.TYPE_NONE) {
-        try {
-            mNetd.addIdleTimer(iface, timeout, type);
-        } catch (Exception e) {
+    if (timeout > 0 && iface != NULL && type != IConnectivityManager::TYPE_NONE) {
+        ECode ec = mNetd->AddIdleTimer(iface, timeout, type);
+        if (FAILED(ec)) {
             // You shall not crash!
-            Slogg::E("CConnectivityService", "Exception in setupDataActivityTracking " + e);
+            Slogger::E(TAG, "Exception in setupDataActivityTracking %08x", ec);
         }
     }
 }
 
 void CConnectivityService::RemoveDataActivityTracking(
-    /* [in] */ INetworkAgentInfo* networkAgent)
+    /* [in] */ INetworkAgentInfo* nai)
 {
-    final String iface = networkAgent.linkProperties.getInterfaceName();
-    final NetworkCapabilities caps = networkAgent.networkCapabilities;
+    NetworkAgentInfo* networkAgent = (NetworkAgentInfo*)nai;
+    String iface;
+    networkAgent->mLinkProperties->GetInterfaceName(&iface);
+    AutoPtr<INetworkCapabilities> caps = networkAgent->mNetworkCapabilities;
 
-    if (iface != NULL && (caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
-                          caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI))) {
-        try {
+    if (iface != NULL) {
+        Boolean b1, b2;
+        caps->HasTransport(INetworkCapabilities::TRANSPORT_CELLULAR, &b1);
+        caps->HasTransport(INetworkCapabilities::TRANSPORT_WIFI, &b2);
+        if (b1 || b2) {
             // the call fails silently if no idletimer setup for this interface
-            mNetd.removeIdleTimer(iface);
-        } catch (Exception e) {
-            Slogg::E("CConnectivityService", "Exception in removeDataActivityTracking " + e);
+            ECode ec = mNetd->RemoveIdleTimer(iface);
+            if (FAILED(ec)) {
+                Slogger::E(TAG, "Exception in RemoveDataActivityTracking %08x", ec);
+            }
         }
     }
 }
 
 void CConnectivityService::UpdateMtu(
-        /* [in] */ ILinkProperties* newLp,
-        /* [in] */ ILinkProperties* oldLp)
+    /* [in] */ ILinkProperties* newLp,
+    /* [in] */ ILinkProperties* oldLp)
 {
-    final String iface = newLp.getInterfaceName();
-    final Int32 mtu = newLp.getMtu();
-    if (oldLp != NULL && newLp.isIdenticalMtu(oldLp)) {
-        if (VDBG) Slogg::D("CConnectivityService", "identical MTU - not setting");
+    String iface;
+    newLp->GetInterfaceName(&iface);
+    Int32 mtu;
+    newLp->GetMtu(&mtu);
+    Boolean bval;
+    if (oldLp != NULL && (newLp->IsIdenticalMtu(oldLp, &bval), bval)) {
+        if (VDBG) Slogger::D(TAG, "identical MTU - not setting");
         return;
     }
 
-    if (LinkProperties.isValidMtu(mtu, newLp.hasGlobalIPv6Address()) == FALSE) {
-        Slogg::E("CConnectivityService", "Unexpected mtu value: " + mtu + ", " + iface);
+    AutoPtr<ILinkPropertiesHelper> lpHelper;
+    CLinkPropertiesHelper::AcquireSingleton((ILinkPropertiesHelper**)&lpHelper);
+
+    Boolean isMtu = FALSE;
+    newLp->HasGlobalIPv6Address(&bval);
+    lpHelper->IsValidMtu(mtu, bval, &isMtu);
+    if (isMtu == FALSE) {
+        Slogger::E(TAG, "Unexpected mtu value: %d, %s", mtu, iface.string());
         return;
     }
 
     // Cannot set MTU without interface name
-    if (TextUtils.isEmpty(iface)) {
-        Slogg::E("CConnectivityService", "Setting MTU size with NULL iface.");
+    if (TextUtils::IsEmpty(iface)) {
+        Slogger::E(TAG, "Setting MTU size with NULL iface.");
         return;
     }
 
-    try {
-        if (DBG) Slogg::D("CConnectivityService", "Setting MTU size: " + iface + ", " + mtu);
-        mNetd.setMtu(iface, mtu);
-    } catch (Exception e) {
-        Slog.e(TAG, "exception in setMtu()" + e);
+    if (DBG) Slogger::D(TAG, "Setting MTU size: %s, %d", iface.string(), mtu);
+    ECode ec = mNetd->SetMtu(iface, mtu);
+    if (FAILED(ec)) {
+        Slogger::E(TAG, "exception in setMtu()");
     }
 }
 
 void CConnectivityService::UpdateTcpBufferSizes(
-    /* [in] */ INetworkAgentInfo* nai)
+    /* [in] */ INetworkAgentInfo* networkAgent)
 {
-    if (IsDefaultNetwork(nai) == FALSE) {
+    if (IsDefaultNetwork(networkAgent) == FALSE) {
         return;
     }
 
-    String tcpBufferSizes = nai.linkProperties.getTcpBufferSizes();
-    String[] values = NULL;
+    NetworkAgentInfo* nai = (NetworkAgentInfo*)networkAgent;
+    String tcpBufferSizes;
+    nai->mLinkProperties->GetTcpBufferSizes(&tcpBufferSizes);
+    AutoPtr<ArrayOf<String> > values;
     if (tcpBufferSizes != NULL) {
-        values = tcpBufferSizes.split(",");
+        StringUtils::Split(tcpBufferSizes, ",", (ArrayOf<String>**)&values);
     }
 
-    if (values == NULL || values.length != 6) {
-        if (DBG) Slogg::D("CConnectivityService", "Invalid tcpBufferSizes string: " + tcpBufferSizes +", using defaults");
+    if (values == NULL || values->GetLength() != 6) {
+        if (DBG) {
+            Slogger::D(TAG, "Invalid tcpBufferSizes string: %s, using defaults",
+                tcpBufferSizes.string());
+        }
         tcpBufferSizes = DEFAULT_TCP_BUFFER_SIZES;
-        values = tcpBufferSizes.split(",");
+        values = NULL;
+        StringUtils::Split(tcpBufferSizes, ",", (ArrayOf<String>**)&values);
     }
 
     if (tcpBufferSizes.Equals(mCurrentTcpBufferSizes)) return;
 
-    try {
-        if (DBG) Slog.d(TAG, "Setting tx/rx TCP buffers to " + tcpBufferSizes);
 
-        final String prefix = "/sys/kernel/ipv4/tcp_";
-        FileUtils.stringToFile(prefix + "rmem_min", values[0]);
-        FileUtils.stringToFile(prefix + "rmem_def", values[1]);
-        FileUtils.stringToFile(prefix + "rmem_max", values[2]);
-        FileUtils.stringToFile(prefix + "wmem_min", values[3]);
-        FileUtils.stringToFile(prefix + "wmem_def", values[4]);
-        FileUtils.stringToFile(prefix + "wmem_max", values[5]);
-        mCurrentTcpBufferSizes = tcpBufferSizes;
-    } catch (IOException e) {
-        Slogg::E("CConnectivityService", "Can't set TCP buffer sizes:" + e);
+    if (DBG) Slogger::D(TAG, "Setting tx/rx TCP buffers to %s", tcpBufferSizes.string());
+
+    String defaultRwndKey("net.tcp.default_init_rwnd");
+    String sysctlKey("sys.sysctl.tcp_def_init_rwnd");
+    AutoPtr<ISystemProperties> sysProp;
+    CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
+    AutoPtr<ISettingsGlobal> sg;
+    CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&sg);
+    AutoPtr<IContentResolver> cr;
+    mContext->GetContentResolver((IContentResolver**)&cr);
+    Int32 defaultRwndValue, rwndValue;
+
+    String prefix("/sys/kernel/ipv4/tcp_");
+    ECode ec = NOERROR;
+    ec = FileUtils::StringToFile(prefix + "rmem_min", (*values)[0]); FAIL_GOTO(ec, _EXIT_);
+    ec = FileUtils::StringToFile(prefix + "rmem_def", (*values)[1]); FAIL_GOTO(ec, _EXIT_);
+    ec = FileUtils::StringToFile(prefix + "rmem_max", (*values)[2]); FAIL_GOTO(ec, _EXIT_);
+    ec = FileUtils::StringToFile(prefix + "wmem_min", (*values)[3]); FAIL_GOTO(ec, _EXIT_);
+    ec = FileUtils::StringToFile(prefix + "wmem_def", (*values)[4]); FAIL_GOTO(ec, _EXIT_);
+    ec = FileUtils::StringToFile(prefix + "wmem_max", (*values)[5]); FAIL_GOTO(ec, _EXIT_);
+    mCurrentTcpBufferSizes = tcpBufferSizes;
+
+_EXIT_:
+    if (FAILED(ec)) {
+        Slogger::E(TAG, "Can't set TCP buffer sizes:%08x", ec);
     }
 
-    final String defaultRwndKey = "net.tcp.default_init_rwnd";
-    Int32 defaultRwndValue = SystemProperties.getInt(defaultRwndKey, 0);
-    Integer rwndValue = Settings.Global.getInt(mContext.getContentResolver(),
-        Settings.Global.TCP_DEFAULT_INIT_RWND, defaultRwndValue);
-    final String sysctlKey = "sys.sysctl.tcp_def_init_rwnd";
+    sysProp->GetInt32(defaultRwndKey, 0, &defaultRwndValue);
+
+    sg->GetInt32(cr, ISettingsGlobal::TCP_DEFAULT_INIT_RWND, defaultRwndValue, &rwndValue);
     if (rwndValue != 0) {
-        SystemProperties.set(sysctlKey, rwndValue.toString());
+        sysProp->Set(sysctlKey, StringUtils::ToString(rwndValue));
     }
 }
 
@@ -2448,11 +2835,7 @@ void CConnectivityService::FlushVmDnsCache()
      */
     intent->AddFlags(IIntent::FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
     Int64 ident = Binder::ClearCallingIdentity();
-    AutoPtr<IUserHandleHelper> helper;
-    CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
-    AutoPtr<IUserHandle> ALL;
-    helper->GetALL((IUserHandle**)&ALL);
-    mContext->SendBroadcastAsUser(intent, ALL);
+    mContext->SendBroadcastAsUser(intent, UserHandle::ALL);
     Binder::RestoreCallingIdentity(ident);
 }
 
@@ -2460,13 +2843,16 @@ ECode CConnectivityService::GetRestoreDefaultNetworkDelay(
     /* [in] */ Int32 networkType,
     /* [out] */ Int32* result)
 {
+    VALIDATE_NOT_NULL(result)
+    *result = 0;
+
     AutoPtr<ISystemProperties> sysProp;
     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String restoreDefaultNetworkDelayStr;
     sysProp->Get(NETWORK_RESTORE_DELAY_PROP_NAME, &restoreDefaultNetworkDelayStr);
     if (!restoreDefaultNetworkDelayStr.IsNullOrEmpty()) {
         Int32 v;
-        ECode ec = StringUtils::ParseInt32(restoreDefaultNetworkDelayStr, &v);
+        ECode ec = StringUtils::Parse(restoreDefaultNetworkDelayStr, &v);
         if (SUCCEEDED(ec)) return v;
     }
     // if the system property isn't set, use the value for the apn type
@@ -2485,13 +2871,13 @@ void CConnectivityService::Dump(
     /* [in] */ const ArrayOf<String>& args)
 {
     assert(0);
-    // final IndentingPrintWriter pw = new IndentingPrintWriter(writer, "  ");
-    // if (mContext.checkCallingOrSelfPermission(
+    // IndentingPrintWriter pw = new IndentingPrintWriter(writer, "  ");
+    // if (mContext->checkCallingOrSelfPermission(
     //         android.Manifest.permission.DUMP)
     //         != PackageManager.PERMISSION_GRANTED) {
     //     pw.println("Permission Denial: can't dump ConnectivityService " +
-    //             "from from pid=" + Binder.getCallingPid() + ", uid=" +
-    //             Binder.getCallingUid());
+    //             "from from pid=" + Binder.GetCallingPid() + ", uid=" +
+    //             Binder::GetCallingUid());
     //     return;
     // }
 
@@ -2503,7 +2889,7 @@ void CConnectivityService::Dump(
     // pw.decreaseIndent();
     // pw.println();
 
-    // NetworkAgentInfo defaultNai = mNetworkForRequestId.get(mDefaultRequest.requestId);
+    // NetworkAgentInfo defaultNai = mNetworkForRequestId.Get(mDefaultRequest.requestId);
     // pw.print("Active default network: ");
     // if (defaultNai == NULL) {
     //     pw.println("none");
@@ -2519,13 +2905,13 @@ void CConnectivityService::Dump(
     //     pw.increaseIndent();
     //     pw.println("Requests:");
     //     pw.increaseIndent();
-    //     for (Int32 i = 0; i < nai.networkRequests.size(); i++) {
-    //         pw.println(nai.networkRequests.valueAt(i).toString());
+    //     for (Int32 i = 0; i < nai->mNetworkRequests.size(); i++) {
+    //         pw.println(nai->mNetworkRequests.ValueAt(i).toString());
     //     }
     //     pw.decreaseIndent();
     //     pw.println("Lingered:");
     //     pw.increaseIndent();
-    //     for (NetworkRequest nr : nai.networkLingered) pw.println(nr.toString());
+    //     for (NetworkRequest nr : nai->mNetworkLingered) pw.println(nr.toString());
     //     pw.decreaseIndent();
     //     pw.decreaseIndent();
     // }
@@ -2541,18 +2927,18 @@ void CConnectivityService::Dump(
     // pw.decreaseIndent();
 
     // pw.print("mActiveDefaultNetwork: " + mActiveDefaultNetwork);
-    // if (mActiveDefaultNetwork != TYPE_NONE) {
+    // if (mActiveDefaultNetwork != IConnectivityManager::TYPE_NONE) {
     //     NetworkInfo activeNetworkInfo = getActiveNetworkInfo();
     //     if (activeNetworkInfo != NULL) {
-    //         pw.print(" " + activeNetworkInfo.getState() +
-    //                  "/" + activeNetworkInfo.getDetailedState());
+    //         pw.print(" " + activeNetworkInfo.GetState() +
+    //                  "/" + activeNetworkInfo.GetDetailedState());
     //     }
     // }
     // pw.println();
 
     // pw.println("mLegacyTypeTracker:");
     // pw.increaseIndent();
-    // mLegacyTypeTracker.dump(pw);
+    // mLegacyTypeTracker->dump(pw);
     // pw.decreaseIndent();
     // pw.println();
 
@@ -2570,25 +2956,31 @@ void CConnectivityService::Dump(
     //     pw.println("Inet condition reports:");
     //     pw.increaseIndent();
     //     for(Int32 i = 0; i < mInetLog.size(); i++) {
-    //         pw.println(mInetLog.get(i));
+    //         pw.println(mInetLog.Get(i));
     //     }
     //     pw.decreaseIndent();
     // }
 }
 
 Boolean CConnectivityService::IsLiveNetworkAgent(
-    /* [in] */ INetworkAgentInfo* nai,
+    /* [in] */ INetworkAgentInfo* networkAgent,
     /* [in] */ const String& msg)
 {
-    if (nai.network == NULL) return FALSE;
-    final NetworkAgentInfo officialNai;
-    synchronized(mNetworkForNetId) {
-        officialNai = mNetworkForNetId.get(nai.network.netId);
+    NetworkAgentInfo* nai = (NetworkAgentInfo*)networkAgent;
+    if (nai->mNetwork == NULL) return FALSE;
+    AutoPtr<NetworkAgentInfo> officialNai;
+    ISynchronize* syncObj = (ISynchronize*)mNetworkForNetId->Probe(EIID_ISynchronize);
+    synchronized(syncObj) {
+        Int32 netId;
+        nai->mNetwork->GetNetId(&netId);
+        AutoPtr<IInterface> obj;
+        mNetworkForNetId->Get(netId, (IInterface**)&obj);
+        officialNai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(obj);
     }
-    if (officialNai != NULL && officialNai.Equals(nai)) return TRUE;
+    if (officialNai != NULL && Object::Equals(officialNai, nai)) return TRUE;
     if (officialNai != NULL || VDBG) {
-        Slogg::E("CConnectivityService", msg + " - IsLiveNetworkAgent found mismatched netId: " + officialNai +
-            " - " + nai);
+        Slogger::E(TAG, "%s - IsLiveNetworkAgent found mismatched netId: %s - %s",
+            msg.string(), Object::ToString(officialNai).string(), Object::ToString(nai).string());
     }
     return FALSE;
 }
@@ -2596,7 +2988,10 @@ Boolean CConnectivityService::IsLiveNetworkAgent(
 Boolean CConnectivityService::IsRequest(
     /* [in] */ INetworkRequest* request)
 {
-    return mNetworkRequests.get(request).isRequest;
+    AutoPtr<IInterface> obj;
+    mNetworkRequests->Get(request, (IInterface**)&obj);
+    NetworkRequestInfo* nri = (NetworkRequestInfo*)IObject::Probe(obj);
+    return nri->mIsRequest;
 }
 
 ECode CConnectivityService::Tether(
@@ -2604,8 +2999,11 @@ ECode CConnectivityService::Tether(
     /* [out] */ Int32* status)
 {
     VALIDATE_NOT_NULL(status);
+    *status = 0;
 
-    ConnectivityManager.enforceTetherChangePermission(mContext);
+    AutoPtr<IConnectivityManagerHelper> helper;
+    CConnectivityManagerHelper::AcquireSingleton((IConnectivityManagerHelper**)&helper);
+    FAIL_RETURN(helper->EnforceTetherChangePermission(mContext))
 
     Boolean supported;
     if (IsTetheringSupported(&supported), supported) {
@@ -2622,7 +3020,11 @@ ECode CConnectivityService::Untether(
     /* [out] */ Int32* status)
 {
     VALIDATE_NOT_NULL(status);
-    ConnectivityManager.enforceTetherChangePermission(mContext);
+    *status = 0;
+
+    AutoPtr<IConnectivityManagerHelper> helper;
+    CConnectivityManagerHelper::AcquireSingleton((IConnectivityManagerHelper**)&helper);
+    FAIL_RETURN(helper->EnforceTetherChangePermission(mContext))
 
     Boolean supported;
     if (IsTetheringSupported(&supported), supported) {
@@ -2638,7 +3040,8 @@ ECode CConnectivityService::GetLastTetherError(
     /* [in] */ const String& iface,
     /* [out] */ Int32* status)
 {
-    VALIDATE_NOT_NULL(status);
+    VALIDATE_NOT_NULL(status)
+    *status = 0;
     FAIL_RETURN(EnforceTetherAccessPermission());
 
     Boolean supported;
@@ -2651,11 +3054,11 @@ ECode CConnectivityService::GetLastTetherError(
     }
 }
 
-// TODO - proper iface API for selection by property, inspection, etc
 ECode CConnectivityService::GetTetherableUsbRegexs(
     /* [out, callee] */ ArrayOf<String>** regexs)
 {
-    VALIDATE_NOT_NULL(regexs);
+    VALIDATE_NOT_NULL(regexs)
+    *regexs = NULL;
     FAIL_RETURN(EnforceTetherAccessPermission());
     Boolean supported;
     if (IsTetheringSupported(&supported), supported) {
@@ -2672,7 +3075,8 @@ ECode CConnectivityService::GetTetherableUsbRegexs(
 ECode CConnectivityService::GetTetherableWifiRegexs(
     /* [out, callee] */ ArrayOf<String>** regexs)
 {
-    VALIDATE_NOT_NULL(regexs);
+    VALIDATE_NOT_NULL(regexs)
+    *regexs = NULL;
     FAIL_RETURN(EnforceTetherAccessPermission());
     Boolean supported;
     if (IsTetheringSupported(&supported), supported) {
@@ -2689,7 +3093,9 @@ ECode CConnectivityService::GetTetherableWifiRegexs(
 ECode CConnectivityService::GetTetherableBluetoothRegexs(
     /* [out, callee] */ ArrayOf<String>** regexs)
 {
-    VALIDATE_NOT_NULL(regexs);
+    VALIDATE_NOT_NULL(regexs)
+    *regexs = NULL;
+
     FAIL_RETURN(EnforceTetherAccessPermission());
     Boolean supported;
     if (IsTetheringSupported(&supported), supported) {
@@ -2708,7 +3114,11 @@ ECode CConnectivityService::SetUsbTethering(
     /* [out] */ Int32* status)
 {
     VALIDATE_NOT_NULL(status);
-    ConnectivityManager.enforceTetherChangePermission(mContext);
+    *status = 0;
+
+    AutoPtr<IConnectivityManagerHelper> helper;
+    CConnectivityManagerHelper::AcquireSingleton((IConnectivityManagerHelper**)&helper);
+    FAIL_RETURN(helper->EnforceTetherChangePermission(mContext))
     Boolean supported;
     if (IsTetheringSupported(&supported), supported) {
         return mTethering->SetUsbTethering(enable, status);
@@ -2723,7 +3133,8 @@ ECode CConnectivityService::SetUsbTethering(
 ECode CConnectivityService::GetTetherableIfaces(
     /* [out, callee] */ ArrayOf<String>** ifaces)
 {
-    VALIDATE_NOT_NULL(ifaces);
+    VALIDATE_NOT_NULL(ifaces)
+    *ifaces = NULL;
     FAIL_RETURN(EnforceTetherAccessPermission());
     return mTethering->GetTetherableIfaces(ifaces);
 }
@@ -2731,7 +3142,8 @@ ECode CConnectivityService::GetTetherableIfaces(
 ECode CConnectivityService::GetTetheredIfaces(
     /* [out, callee] */ ArrayOf<String>** ifaces)
 {
-    VALIDATE_NOT_NULL(ifaces);
+    VALIDATE_NOT_NULL(ifaces)
+    *ifaces = NULL;
     FAIL_RETURN(EnforceTetherAccessPermission());
     return mTethering->GetTetheredIfaces(ifaces);
 }
@@ -2739,7 +3151,8 @@ ECode CConnectivityService::GetTetheredIfaces(
 ECode CConnectivityService::GetTetheredDhcpRanges(
     /* [out, callee] */ ArrayOf<String>** ifaces)
 {
-    VALIDATE_NOT_NULL(ifaces);
+    VALIDATE_NOT_NULL(ifaces)
+    *ifaces = NULL;
     FAIL_RETURN(EnforceTetherAccessPermission());
     return mTethering->GetTetheredDhcpRanges(ifaces);
 }
@@ -2747,7 +3160,8 @@ ECode CConnectivityService::GetTetheredDhcpRanges(
 ECode CConnectivityService::GetTetheringErroredIfaces(
     /* [out, callee] */ ArrayOf<String>** ifaces)
 {
-    VALIDATE_NOT_NULL(ifaces);
+    VALIDATE_NOT_NULL(ifaces)
+    *ifaces = NULL;
     FAIL_RETURN(EnforceTetherAccessPermission());
     AutoPtr< ArrayOf<String> > i = mTethering->GetErroredIfaces();
     *ifaces = i.Get();
@@ -2755,257 +3169,227 @@ ECode CConnectivityService::GetTetheringErroredIfaces(
     return NOERROR;
 }
 
-
 ECode CConnectivityService::IsTetheringSupported(
     /* [out] */ Boolean* status)
 {
-    // VALIDATE_NOT_NULL(status);
-    // FAIL_RETURN(EnforceTetherAccessPermission());
+    VALIDATE_NOT_NULL(status)
+    *status = FALSE;
+    FAIL_RETURN(EnforceTetherAccessPermission());
 
-    // AutoPtr<ISystemProperties> sysProp;
-    // CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
-    // String denied;
-    // sysProp->Get(String("ro.tether.denied"), &denied);
-    // Int32 defaultVal =  denied.Equals("TRUE") ? 0 : 1;
+    AutoPtr<ISystemProperties> sysProp;
+    CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
+    String denied;
+    sysProp->Get(String("ro.tether.denied"), &denied);
+    Int32 defaultVal =  denied.Equals("TRUE") ? 0 : 1;
 
-    // AutoPtr<IContentResolver> resolver;
-    // mContext->GetContentResolver((IContentResolver**)&resolver);
-    // Int32 value;
-    // AutoPtr<ISettingsGlobal> settingsGlobal;
-    // CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
-    // settingsGlobal->GetInt32(resolver, ISettingsGlobal::TETHER_SUPPORTED, defaultVal, &value);
-    // Boolean tetherEnabledInSettings = (value != 0);
-    // *status = tetherEnabledInSettings;
-    // return NOERROR;
+    AutoPtr<IContentResolver> resolver;
+    mContext->GetContentResolver((IContentResolver**)&resolver);
+    Int32 value;
+    Boolean bval;
+    AutoPtr<ISettingsGlobal> settingsGlobal;
+    CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
+    settingsGlobal->GetInt32(resolver, ISettingsGlobal::TETHER_SUPPORTED, defaultVal, &value);
+    Boolean tetherEnabledInSettings = (value != 0)
+        && !(mUserManager->HasUserRestriction(IUserManager::DISALLOW_CONFIG_TETHERING, &bval), bval);
 
-    enforceTetherAccessPermission();
-    Int32 defaultVal = (SystemProperties.get("ro.tether.denied").Equals("TRUE") ? 0 : 1);
-    Boolean tetherEnabledInSettings = (Settings.Global.getInt(mContext.getContentResolver(),
-            Settings.Global.TETHER_SUPPORTED, defaultVal) != 0)
-            && !mUserManager.hasUserRestriction(UserManager.DISALLOW_CONFIG_TETHERING);
-    return tetherEnabledInSettings && ((mTethering.getTetherableUsbRegexs().length != 0 ||
-            mTethering.getTetherableWifiRegexs().length != 0 ||
-            mTethering.getTetherableBluetoothRegexs().length != 0) &&
-            mTethering.getUpstreamIfaceTypes().length != 0);
+    if (tetherEnabledInSettings) {
+        Boolean sc = FALSE;
+        AutoPtr<ArrayOf<String> > usb, wifi, bt, types;
+        mTethering->GetTetherableUsbRegexs((ArrayOf<String>**)&usb);
+        if (usb->GetLength() > 0) sc = TRUE;
+        if (!sc) {
+            mTethering->GetTetherableWifiRegexs((ArrayOf<String>**)&wifi);
+            if (usb->GetLength() > 0) sc = TRUE;
+        }
+        if (!sc) {
+            mTethering->GetTetherableBluetoothRegexs((ArrayOf<String>**)&bt);
+            if (usb->GetLength() > 0) sc = TRUE;
+        }
+
+        if (sc) {
+            *status = mTethering->GetUpstreamIfaceTypes()->GetLength() != 0;
+        }
+    }
+    return NOERROR;
 }
 
 ECode CConnectivityService::RequestNetworkTransitionWakelock(
     /* [in] */ const String& forWhom)
 {
-    // FAIL_RETURN(EnforceConnectivityInternalPermission());
-    // {
-    //     AutoLock lock(this);
+    Int32 serialNum = 0;
+    {
+        ISynchronize* syncObj = (ISynchronize*)Probe(EIID_ISynchronize);
+        AutoLock lock(syncObj);
 
-    //     Boolean  isHeld = FALSE;
-    //     if ((mNetTransitionWakeLock->IsHeld(&isHeld), isHeld)) {
-    //         return NOERROR;
-    //     }
-    //     mNetTransitionWakeLockSerialNumber++;
-    //     mNetTransitionWakeLock->AcquireLock();
-    //     mNetTransitionWakeLockCausedBy = forWhom;
-    // }
-
-    // AutoPtr<IMessage> msg;
-    // mHandler->ObtainMessage(EVENT_CLEAR_NET_TRANSITION_WAKELOCK,
-    //     mNetTransitionWakeLockSerialNumber, 0, (IMessage**)&msg);
-    // Boolean result;
-    // return mHandler->SendMessageDelayed(msg, mNetTransitionWakeLockTimeout, &result);
-
-        Int32 serialNum = 0;
-        synchronized(this) {
-            if (mNetTransitionWakeLock.isHeld()) return;
-            serialNum = ++mNetTransitionWakeLockSerialNumber;
-            mNetTransitionWakeLock.acquire();
-            mNetTransitionWakeLockCausedBy = forWhom;
+        Boolean isHeld = FALSE;
+        mNetTransitionWakeLock->IsHeld(&isHeld);
+        if (isHeld) {
+            return NOERROR;
         }
-        mHandler.sendMessageDelayed(mHandler.obtainMessage(
-                EVENT_EXPIRE_NET_TRANSITION_WAKELOCK, serialNum, 0),
-                mNetTransitionWakeLockTimeout);
-        return;
+        serialNum = ++mNetTransitionWakeLockSerialNumber;
+        mNetTransitionWakeLock->AcquireLock();
+        mNetTransitionWakeLockCausedBy = forWhom;
+    }
 
+    AutoPtr<IMessage> msg;
+    mHandler->ObtainMessage(EVENT_EXPIRE_NET_TRANSITION_WAKELOCK,
+        serialNum, 0, (IMessage**)&msg);
+    Boolean result;
+    return mHandler->SendMessageDelayed(msg, mNetTransitionWakeLockTimeout, &result);
 }
 
-// 100 percent is full good, 0 is full bad.
 ECode CConnectivityService::ReportInetCondition(
     /* [in] */ Int32 networkType,
     /* [in] */ Int32 percentage)
 {
-    if (percentage > 50) return;  // don't handle good network reports
-    NetworkAgentInfo nai = mLegacyTypeTracker.getNetworkForType(networkType);
-    if (nai != NULL) reportBadNetwork(nai.network);
+    if (percentage > 50) return NOERROR;  // don't handle good network reports
+    AutoPtr<INetworkAgentInfo> nai = mLegacyTypeTracker->GetNetworkForType(networkType);
+    if (nai != NULL) return ReportBadNetwork(((NetworkAgentInfo*)(nai.Get()))->mNetwork);
+    return NOERROR;
 }
 
 ECode CConnectivityService::ReportBadNetwork(
     /* [in] */ INetwork* network)
 {
-    enforceAccessPermission();
-    enforceInternetPermission();
+    FAIL_RETURN(EnforceAccessPermission())
+    FAIL_RETURN(EnforceInternetPermission())
 
-    if (network == NULL) return;
+    if (network == NULL) return NOERROR;
 
-    final Int32 uid = Binder.getCallingUid();
-    NetworkAgentInfo nai = NULL;
-    synchronized(mNetworkForNetId) {
-        nai = mNetworkForNetId.get(network.netId);
+    Int32 uid = Binder::GetCallingUid();
+    AutoPtr<NetworkAgentInfo> nai;
+    ISynchronize* syncObj = (ISynchronize*)mNetworkForNetId->Probe(EIID_ISynchronize);
+    synchronized(syncObj) {
+        Int32 netId;
+        network->GetNetId(&netId);
+        AutoPtr<IInterface> obj;
+        mNetworkForNetId->Get(netId, (IInterface**)&obj);
+        nai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(obj);
     }
-    if (nai == NULL) return;
-    if (DBG) Slogg::D("CConnectivityService", "reportBadNetwork(" + nai.name() + ") by " + uid);
+    if (nai == NULL) return NOERROR;
+    if (DBG) Slogger::D(TAG, "reportBadNetwork(%s) by %d", nai->Name().string(), uid);
     synchronized(nai) {
-        // Validating an uncreated network could result in a call to rematchNetworkAndRequests()
+        // Validating an uncreated network could result in a call to RematchNetworkAndRequests()
         // which isn't meant to work on uncreated networks.
-        if (!nai.created) return;
+        if (!nai->mCreated) return NOERROR;
 
-        if (isNetworkBlocked(nai, uid)) return;
+        if (IsNetworkBlocked((INetworkAgentInfo*)nai.Get(), uid)) return NOERROR;
 
-        nai.networkMonitor.sendMessage(INetworkMonitor::CMD_FORCE_REEVALUATION, uid);
+        nai->mNetworkMonitor->SendMessage(NetworkMonitor::CMD_FORCE_REEVALUATION, uid);
     }
+    return NOERROR;
 }
 
 ECode CConnectivityService::GetProxy(
     /* [out] */ IProxyInfo** proxyInfo)
 {
-    // VALIDATE_NOT_NULL(proxyProperties);
-    // AutoLock lock(mProxyLock);
-    // *proxyProperties = mDefaultProxyDisabled ? NULL : mDefaultProxy;
-    // REFCOUNT_ADD(*proxyProperties);
-    // return NOERROR;
+    VALIDATE_NOT_NULL(proxyInfo);
+    *proxyInfo = NULL;
 
     // this information is already available as a world read/writable jvm property
     // so this API change wouldn't have a benifit.  It also breaks the passing
     // of proxy info to all the JVMs.
-    // enforceAccessPermission();
+    // FAIL_RETURN(EnforceAccessPermission())
     synchronized(mProxyLock) {
-        ProxyInfo ret = mGlobalProxy;
+        AutoPtr<IProxyInfo> ret = mGlobalProxy;
         if ((ret == NULL) && !mDefaultProxyDisabled) ret = mDefaultProxy;
-        return ret;
+        *proxyInfo = ret;
+        REFCOUNT_ADD(*proxyInfo)
     }
+    return NOERROR;
 }
 
 ECode CConnectivityService::SetGlobalProxy(
-    /* [in] */ IProxyInfo* proxyInfo)
+    /* [in] */ IProxyInfo* proxyProperties)
 {
-    // FAIL_RETURN(EnforceChangePermission());
-    // {
-    //     AutoLock lock(mGlobalProxyLock);
-    //     if (proxyProperties == mGlobalProxy) {
-    //         return NOERROR;
-    //     }
-    //     Boolean isEqual = FALSE;
-    //     if (proxyProperties != NULL &&
-    //         (proxyProperties->Equals(mGlobalProxy, &isEqual), isEqual)) {
-    //         return NOERROR;
-    //     }
-    //     if (mGlobalProxy != NULL &&
-    //         (mGlobalProxy->Equals(proxyProperties, &isEqual), isEqual)) {
-    //         return NOERROR;
-    //     }
-
-    //     String host("");
-    //     Int32 port = 0;
-    //     String exclList("");
-    //     if (proxyProperties != NULL) {
-    //         String hozt;
-    //         proxyProperties->GetHost(&hozt);
-    //         if (!TextUtils::IsEmpty(hozt)) {
-    //             mGlobalProxy = NULL;
-    //             CProxyProperties::New(proxyProperties, (IProxyProperties**)&mGlobalProxy);
-    //             mGlobalProxy->GetHost(&host);
-    //             mGlobalProxy->GetPort(&port);
-    //             mGlobalProxy->GetExclusionList(&exclList);
-    //         }
-    //         else {
-    //             mGlobalProxy = NULL;
-    //         }
-    //     }
-    //     else {
-    //         mGlobalProxy = NULL;
-    //     }
-    //     AutoPtr<IContentResolver> res;
-    //     mContext->GetContentResolver((IContentResolver**)&res);
-    //     Boolean bol;
-    //     AutoPtr<ISettingsGlobal> settingsGlobal;
-    //     CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
-    //     settingsGlobal->PutString(res, ISettingsGlobal::GLOBAL_HTTP_PROXY_HOST, host, &bol);
-    //     settingsGlobal->PutInt32(res, ISettingsGlobal::GLOBAL_HTTP_PROXY_PORT, port, &bol);
-    //     settingsGlobal->PutString(res, ISettingsGlobal::GLOBAL_HTTP_PROXY_EXCLUSION_LIST,
-    //             exclList, &bol);
-    // }
-
-    // if (mGlobalProxy == NULL) {
-    //     proxyProperties = mDefaultProxy;
-    // }
-    // //sendProxyBroadcast(proxyProperties);
-    // return NOERROR;
-
-    enforceConnectivityInternalPermission();
+    FAIL_RETURN(EnforceConnectivityInternalPermission())
 
     synchronized(mProxyLock) {
-        if (proxyProperties == mGlobalProxy) return;
-        if (proxyProperties != NULL && proxyProperties.Equals(mGlobalProxy)) return;
-        if (mGlobalProxy != NULL && mGlobalProxy.Equals(proxyProperties)) return;
+        if (proxyProperties == mGlobalProxy) return NOERROR;
+        if (proxyProperties != NULL && Object::Equals(proxyProperties, mGlobalProxy)) return NOERROR;
+        if (mGlobalProxy != NULL && Object::Equals(mGlobalProxy, proxyProperties)) return NOERROR;
 
-        String host = "";
+        String host("");
         Int32 port = 0;
-        String exclList = "";
-        String pacFileUrl = "";
-        if (proxyProperties != NULL && (!TextUtils.isEmpty(proxyProperties.getHost()) ||
-                !Uri.EMPTY.Equals(proxyProperties.getPacFileUrl()))) {
-            if (!proxyProperties.isValid()) {
-                if (DBG)
-                    Slogg::D("CConnectivityService", "Invalid proxy properties, ignoring: " + proxyProperties.toString());
-                return;
+        String exclList("");
+        String pacFileUrl("");
+        mGlobalProxy = NULL;
+        Boolean bval;
+
+        if (proxyProperties != NULL) {
+            String hozt;
+            proxyProperties->GetHost(&hozt);
+            AutoPtr<IUriHelper> uriHelper;
+            CUriHelper::AcquireSingleton((IUriHelper**)&uriHelper);
+            AutoPtr<IUri> empty, pfUrl;
+            uriHelper->GetEMPTY((IUri**)&empty);
+            proxyProperties->GetPacFileUrl((IUri**)&pfUrl);
+            if (!TextUtils::IsEmpty(hozt) || !Object::Equals(empty, pfUrl)) {
+                proxyProperties->IsValid(&bval);
+                if (!bval) {
+                    if (DBG)
+                        Slogger::D(TAG, "Invalid proxy properties, ignoring: %s",
+                            Object::ToString(proxyProperties).string());
+                    return NOERROR;
+                }
+
+                mGlobalProxy = NULL;
+                CProxyInfo::New(proxyProperties, (IProxyInfo**)&mGlobalProxy);
+                mGlobalProxy->GetHost(&host);
+                mGlobalProxy->GetPort(&port);
+                mGlobalProxy->GetExclusionListAsString(&exclList);
+                if (!Object::Equals(empty, pfUrl)) {
+                    pacFileUrl = Object::ToString(pfUrl);
+                }
             }
-            mGlobalProxy = new ProxyInfo(proxyProperties);
-            host = mGlobalProxy.getHost();
-            port = mGlobalProxy.getPort();
-            exclList = mGlobalProxy.getExclusionListAsString();
-            if (!Uri.EMPTY.Equals(proxyProperties.getPacFileUrl())) {
-                pacFileUrl = proxyProperties.getPacFileUrl().toString();
-            }
-        } else {
-            mGlobalProxy = NULL;
         }
-        ContentResolver res = mContext.getContentResolver();
-        final long token = Binder.clearCallingIdentity();
-        try {
-            Settings.Global.putString(res, Settings.Global.GLOBAL_HTTP_PROXY_HOST, host);
-            Settings.Global.putInt(res, Settings.Global.GLOBAL_HTTP_PROXY_PORT, port);
-            Settings.Global.putString(res, Settings.Global.GLOBAL_HTTP_PROXY_EXCLUSION_LIST,
-                    exclList);
-            Settings.Global.putString(res, Settings.Global.GLOBAL_HTTP_PROXY_PAC, pacFileUrl);
-        } finally {
-            Binder.restoreCallingIdentity(token);
-        }
+
+        AutoPtr<IContentResolver> res;
+        mContext->GetContentResolver((IContentResolver**)&res);
+        Int64 token = Binder::ClearCallingIdentity();
+        AutoPtr<ISettingsGlobal> settingsGlobal;
+        CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
+        settingsGlobal->PutString(res, ISettingsGlobal::GLOBAL_HTTP_PROXY_HOST, host, &bval);
+        settingsGlobal->PutInt32(res, ISettingsGlobal::GLOBAL_HTTP_PROXY_PORT, port, &bval);
+        settingsGlobal->PutString(res, ISettingsGlobal::GLOBAL_HTTP_PROXY_EXCLUSION_LIST, exclList, &bval);
+        settingsGlobal->PutString(res, ISettingsGlobal::GLOBAL_HTTP_PROXY_PAC, pacFileUrl, &bval);
+        Binder::RestoreCallingIdentity(token);
 
         if (mGlobalProxy == NULL) {
             proxyProperties = mDefaultProxy;
         }
-        sendProxyBroadcast(proxyProperties);
+        SendProxyBroadcast(proxyProperties);
     }
+    return NOERROR;
 }
 
 void CConnectivityService::LoadGlobalProxy()
 {
     AutoPtr<IContentResolver> res;
     mContext->GetContentResolver((IContentResolver**)&res);
-    String host;
     AutoPtr<ISettingsGlobal> settingsGlobal;
     CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
+
+    String host, exclList, pacFileUrl;
     settingsGlobal->GetString(res, ISettingsGlobal::GLOBAL_HTTP_PROXY_HOST, &host);
     Int32 port;
     settingsGlobal->GetInt32(res, ISettingsGlobal::GLOBAL_HTTP_PROXY_PORT, 0, &port);
-    String exclList;
     settingsGlobal->GetString(res, ISettingsGlobal::GLOBAL_HTTP_PROXY_EXCLUSION_LIST, &exclList);
-    String pacFileUrl = Settings.Global.getString(res, Settings.Global.GLOBAL_HTTP_PROXY_PAC);
-    if (!TextUtils.isEmpty(host) || !TextUtils.isEmpty(pacFileUrl)) {
-        ProxyInfo proxyProperties;
-        if (!TextUtils.isEmpty(pacFileUrl)) {
-            proxyProperties = new ProxyInfo(pacFileUrl);
-        } else {
-            proxyProperties = new ProxyInfo(host, port, exclList);
+    settingsGlobal->GetString(res, ISettingsGlobal::GLOBAL_HTTP_PROXY_PAC, &pacFileUrl);
+    if (!TextUtils::IsEmpty(host) || !TextUtils::IsEmpty(pacFileUrl)) {
+        AutoPtr<IProxyInfo> proxyProperties;
+        if (!TextUtils::IsEmpty(pacFileUrl)) {
+            CProxyInfo::New(pacFileUrl, (IProxyInfo**)&proxyProperties);
         }
-        if (!proxyProperties.isValid()) {
-            if (DBG) Slogg::D("CConnectivityService", "Invalid proxy properties, ignoring: " + proxyProperties.toString());
+        else {
+            CProxyInfo::New(host, port, exclList, (IProxyInfo**)&proxyProperties);
+        }
+
+        Boolean bval;
+        proxyProperties->IsValid(&bval);
+        if (!bval) {
+            if (DBG) Slogger::D(TAG, "Invalid proxy properties, ignoring: %s",
+                Object::ToString(proxyProperties).string());
             return;
         }
 
@@ -3018,27 +3402,44 @@ void CConnectivityService::LoadGlobalProxy()
 ECode CConnectivityService::GetGlobalProxy(
     /* [out] */ IProxyInfo** proxyProperties)
 {
+    VALIDATE_NOT_NULL(proxyProperties)
+    *proxyProperties = NULL;
     // this information is already available as a world read/writable jvm property
     // so this API change wouldn't have a benifit.  It also breaks the passing
     // of proxy info to all the JVMs.
-    // enforceAccessPermission();
+    // FAIL_RETURN(EnforceAccessPermission())
     synchronized(mProxyLock) {
-        return mGlobalProxy;
+        *proxyProperties = mGlobalProxy;
+        REFCOUNT_ADD(*proxyProperties)
     }
+    return NOERROR;
 }
 
 void CConnectivityService::HandleApplyDefaultProxy(
-    /* [in] */ IProxyInfo* proxy)
+    /* [in] */ IProxyInfo* pi)
 {
-    if (proxy != NULL && TextUtils.isEmpty(proxy.getHost())
-            && Uri.EMPTY.Equals(proxy.getPacFileUrl())) {
-        proxy = NULL;
+    AutoPtr<IUriHelper> uriHelper;
+    CUriHelper::AcquireSingleton((IUriHelper**)&uriHelper);
+    AutoPtr<IUri> empty, pfUrl;
+    uriHelper->GetEMPTY((IUri**)&empty);
+
+    AutoPtr<IProxyInfo> proxy = pi;
+    if (proxy != NULL) {
+        String host;
+        proxy->GetHost(&host);
+        proxy->GetPacFileUrl((IUri**)&pfUrl);
+        if (TextUtils::IsEmpty(host) && Object::Equals(empty, pfUrl)) {
+            proxy = NULL;
+        }
     }
+
+    Boolean bval;
     synchronized(mProxyLock) {
-        if (mDefaultProxy != NULL && mDefaultProxy.Equals(proxy)) return;
+        if (mDefaultProxy != NULL && Object::Equals(mDefaultProxy, proxy)) return;
         if (mDefaultProxy == proxy) return; // catches repeated nulls
-        if (proxy != NULL &&  !proxy.isValid()) {
-            if (DBG) Slogg::D("CConnectivityService", "Invalid proxy properties, ignoring: " + proxy.toString());
+        if (proxy != NULL && (proxy->IsValid(&bval), !bval)) {
+            if (DBG) Slogger::D(TAG, "Invalid proxy properties, ignoring: %s",
+                Object::ToString(proxy).string());
             return;
         }
 
@@ -3047,18 +3448,23 @@ void CConnectivityService::HandleApplyDefaultProxy(
         // global (to get the correct local port), and send a broadcast.
         // TODO: Switch PacManager to have its own message to send back rather than
         // reusing EVENT_HAS_CHANGED_PROXY and this call to HandleApplyDefaultProxy.
+        pfUrl = NULL;
+        proxy->GetPacFileUrl((IUri**)&pfUrl);
+        AutoPtr<IUri> gpfUrl;
+        if (mGlobalProxy != NULL) mGlobalProxy->GetPacFileUrl((IUri**)&gpfUrl);
+
         if ((mGlobalProxy != NULL) && (proxy != NULL)
-                && (!Uri.EMPTY.Equals(proxy.getPacFileUrl()))
-                && proxy.getPacFileUrl().Equals(mGlobalProxy.getPacFileUrl())) {
+                && !Object::Equals(empty, pfUrl)
+                && Object::Equals(pfUrl, gpfUrl)) {
             mGlobalProxy = proxy;
-            sendProxyBroadcast(mGlobalProxy);
+            SendProxyBroadcast(mGlobalProxy);
             return;
         }
         mDefaultProxy = proxy;
 
         if (mGlobalProxy != NULL) return;
         if (!mDefaultProxyDisabled) {
-            sendProxyBroadcast(proxy);
+            SendProxyBroadcast(proxy);
         }
     }
 }
@@ -3074,19 +3480,19 @@ void CConnectivityService::HandleDeprecatedGlobalHttpProxy()
     if (!TextUtils::IsEmpty(proxy)) {
         AutoPtr< ArrayOf<String> > data;
         StringUtils::Split(proxy, String(":"), (ArrayOf<String>**)&data);
-        if (data.length == 0) {
+        if (data == NULL || data->GetLength() == 0) {
             return;
         }
 
         String proxyHost = (*data)[0];
         Int32 proxyPort = 8080;
         if (data->GetLength() > 1) {
-            ECode ec = StringUtils::ParseInt32((*data)[1], &proxyPort);
+            ECode ec = StringUtils::Parse((*data)[1], &proxyPort);
             if (FAILED(ec)) return;
         }
 
         AutoPtr<IProxyInfo> p;
-        IProxyInfo::New((*data)[0], proxyPort, String(""), (IProxyInfo**)&p);
+        CProxyInfo::New((*data)[0], proxyPort, String(""), (IProxyInfo**)&p);
         SetGlobalProxy(p);
     }
 }
@@ -3105,11 +3511,7 @@ void CConnectivityService::SendProxyBroadcast(
         IIntent::FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
     intent->PutExtra(Elastos::Droid::Net::IProxy::EXTRA_PROXY_INFO, IParcelable::Probe(proxyProp));
     Int64 ident = Binder::ClearCallingIdentity();
-    AutoPtr<IUserHandleHelper> helper;
-    CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
-    AutoPtr<IUserHandle> ALL;
-    helper->GetALL((IUserHandle**)&ALL);
-    mContext->SendStickyBroadcastAsUser(intent, ALL);
+    mContext->SendStickyBroadcastAsUser(intent, UserHandle::ALL);
     Binder::RestoreCallingIdentity(ident);
 }
 
@@ -3120,29 +3522,40 @@ Int32 CConnectivityService::ConvertFeatureToNetworkType(
     Int32 usedNetworkType = networkType;
 
     if (networkType == IConnectivityManager::TYPE_MOBILE) {
-        if (TextUtils::Equals(feature, String("enableMMS")/*Phone::FEATURE_ENABLE_MMS*/)) {
+        // // "Features" accessible through the connectivity manager
+        // static final String FEATURE_ENABLE_MMS = "enableMMS";
+        // static final String FEATURE_ENABLE_SUPL = "enableSUPL";
+        // static final String FEATURE_ENABLE_DUN = "enableDUN";
+        // static final String FEATURE_ENABLE_HIPRI = "enableHIPRI";
+        // static final String FEATURE_ENABLE_DUN_ALWAYS = "enableDUNAlways";
+        // static final String FEATURE_ENABLE_FOTA = "enableFOTA";
+        // static final String FEATURE_ENABLE_IMS = "enableIMS";
+        // static final String FEATURE_ENABLE_CBS = "enableCBS";
+        // static final String FEATURE_ENABLE_EMERGENCY = "enableEmergency";
+
+        if (TextUtils::Equals(feature, String("enableMMS")/*IPhone::FEATURE_ENABLE_MMS*/)) {
             usedNetworkType = IConnectivityManager::TYPE_MOBILE_MMS;
         }
-        else if (TextUtils::Equals(feature, String("enableSUPL")/*Phone::FEATURE_ENABLE_SUPL*/)) {
+        else if (TextUtils::Equals(feature, String("enableSUPL")/*IPhone::FEATURE_ENABLE_SUPL*/)) {
             usedNetworkType = IConnectivityManager::TYPE_MOBILE_SUPL;
         }
-        else if (TextUtils::Equals(feature, String("enableDUN")/*Phone::FEATURE_ENABLE_DUN*/) ||
-                TextUtils::Equals(feature, String("enableDUNAlways")/*Phone::FEATURE_ENABLE_DUN_ALWAYS*/)) {
+        else if (TextUtils::Equals(feature, String("enableDUN")/*IPhone::FEATURE_ENABLE_DUN*/) ||
+            TextUtils::Equals(feature, String("enableDUNAlways")/*IPhone::FEATURE_ENABLE_DUN_ALWAYS*/)) {
             usedNetworkType = IConnectivityManager::TYPE_MOBILE_DUN;
         }
-        else if (TextUtils::Equals(feature, String("enableHIPRI")/*Phone::FEATURE_ENABLE_HIPRI*/)) {
+        else if (TextUtils::Equals(feature, String("enableHIPRI")/*IPhone::FEATURE_ENABLE_HIPRI*/)) {
             usedNetworkType = IConnectivityManager::TYPE_MOBILE_HIPRI;
         }
-        else if (TextUtils::Equals(feature, String("enableFOTA")/*Phone::FEATURE_ENABLE_FOTA*/)) {
+        else if (TextUtils::Equals(feature, String("enableFOTA")/*IPhone::FEATURE_ENABLE_FOTA*/)) {
             usedNetworkType = IConnectivityManager::TYPE_MOBILE_FOTA;
         }
-        else if (TextUtils::Equals(feature, String("enableIMS")/*Phone::FEATURE_ENABLE_IMS*/)) {
+        else if (TextUtils::Equals(feature, String("enableIMS")/*IPhone::FEATURE_ENABLE_IMS*/)) {
             usedNetworkType = IConnectivityManager::TYPE_MOBILE_IMS;
         }
-        else if (TextUtils::Equals(feature, String("enableCBS")/*Phone::FEATURE_ENABLE_CBS*/)) {
+        else if (TextUtils::Equals(feature, String("enableCBS")/*IPhone::FEATURE_ENABLE_CBS*/)) {
             usedNetworkType = IConnectivityManager::TYPE_MOBILE_CBS;
         }
-        else if (TextUtils::Equals(feature, String("enableEMERGENCY")/*Phone::FEATURE_ENABLE_EMERGENCY*/)) {
+        else if (TextUtils::Equals(feature, String("enableEmergency")/*IPhone::FEATURE_ENABLE_EMERGENCY*/)) {
             usedNetworkType = IConnectivityManager::TYPE_MOBILE_EMERGENCY;
         }
         else {
@@ -3163,61 +3576,38 @@ Int32 CConnectivityService::ConvertFeatureToNetworkType(
     return usedNetworkType;
 }
 
-/**
- * Protect a socket from VPN routing rules. This method is used by
- * VpnBuilder and not available in ConnectivityManager. Permissions
- * are checked in Vpn class.
- * @hide
- */
-ECode CConnectivityService::ProtectVpn(
-    /* [in] */ IParcelFileDescriptor* socket,
-    /* [out] */ Boolean* status)
-{
-    VALIDATE_NOT_NULL(status);
-    *status = FALSE;
-    FAIL_RETURN(ThrowIfLockdownEnabled());
-
-    //try {
-    Int32 type = mActiveDefaultNetwork;
-    AutoPtr<IConnectivityManagerHelper> helper;
-    CConnectivityManagerHelper::AcquireSingleton((IConnectivityManagerHelper**)&helper);
-    Boolean isValid = FALSE;
-    if (helper->IsNetworkTypeValid(type, &isValid), isValid) {
-        AutoPtr<ILinkProperties> linkProperties;
-        (*mNetTrackers)[type]->GetLinkProperties((ILinkProperties**)&linkProperties);
-        String iface;
-        linkProperties->GetInterfaceName(&iface);
-        ECode ec = mVpn->Protect(socket, iface);
-        if (SUCCEEDED(ec)) *status = TRUE;
-        else *status = FALSE;
-        socket->Close();
-        return NOERROR;
-    }
-    socket->Close();
-    return NOERROR;
-}
-
 ECode CConnectivityService::PrepareVpn(
     /* [in] */ const String& oldPackage,
     /* [in] */ const String& newPackage,
     /* [out] */ Boolean* status)
 {
-    // VALIDATE_NOT_NULL(status);
-    // *status = FALSE;
-        throwIfLockdownEnabled();
-        Int32 user = UserHandle.getUserId(Binder.getCallingUid());
-        synchronized(mVpns) {
-            return mVpns.get(user).prepare(oldPackage, newPackage);
+    VALIDATE_NOT_NULL(status);
+    *status = FALSE;
+
+    FAIL_RETURN(ThrowIfLockdownEnabled())
+    Int32 user = UserHandle::GetUserId(Binder::GetCallingUid());
+    synchronized(mVpnsLock) {
+        HashMap<Int32, AutoPtr<Vpn> >::Iterator it = mVpns.Find(user);
+        if (it != mVpns.End()) {
+            AutoPtr<Vpn> vpn = it->mSecond;
+            return vpn->Prepare(oldPackage, newPackage, status);
         }
+    }
+    return NOERROR;
 }
 
 ECode CConnectivityService::SetVpnPackageAuthorization(
     /* [in] */ Boolean authorized)
 {
-    Int32 user = UserHandle.getUserId(Binder.getCallingUid());
-    synchronized(mVpns) {
-        mVpns.get(user).setPackageAuthorization(authorized);
+    Int32 user = UserHandle::GetUserId(Binder::GetCallingUid());
+    synchronized(mVpnsLock) {
+        HashMap<Int32, AutoPtr<Vpn> >::Iterator it = mVpns.Find(user);
+        if (it != mVpns.End()) {
+            AutoPtr<Vpn> vpn = it->mSecond;
+            return vpn->SetPackageAuthorization(authorized);
+        }
     }
+    return NOERROR;
 }
 
 ECode CConnectivityService::EstablishVpn(
@@ -3227,10 +3617,15 @@ ECode CConnectivityService::EstablishVpn(
     VALIDATE_NOT_NULL(fd);
     *fd = NULL;
 
-    Int32 user = UserHandle.getUserId(Binder.getCallingUid());
-    synchronized(mVpns) {
-        return mVpns.get(user).establish(config);
+    Int32 user = UserHandle::GetUserId(Binder::GetCallingUid());
+    synchronized(mVpnsLock) {
+        HashMap<Int32, AutoPtr<Vpn> >::Iterator it = mVpns.Find(user);
+        if (it != mVpns.End()) {
+            AutoPtr<Vpn> vpn = it->mSecond;
+            return vpn->Establish(config, fd);
+        }
     }
+    return NOERROR;
 }
 
 ECode CConnectivityService::StartLegacyVpn(
@@ -3244,10 +3639,15 @@ ECode CConnectivityService::StartLegacyVpn(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-    Int32 user = UserHandle.getUserId(Binder.getCallingUid());
-    synchronized(mVpns) {
-        mVpns.get(user).startLegacyVpn(profile, mKeyStore, egress);
+    Int32 user = UserHandle::GetUserId(Binder::GetCallingUid());
+    synchronized(mVpnsLock) {
+        HashMap<Int32, AutoPtr<Vpn> >::Iterator it = mVpns.Find(user);
+        if (it != mVpns.End()) {
+            AutoPtr<Vpn> vpn = it->mSecond;
+            return vpn->StartLegacyVpn(profile, mKeyStore, egress);
+        }
     }
+    return NOERROR;
 }
 
 ECode CConnectivityService::GetLegacyVpnInfo(
@@ -3257,19 +3657,34 @@ ECode CConnectivityService::GetLegacyVpnInfo(
     *info = NULL;
 
     FAIL_RETURN(ThrowIfLockdownEnabled());
-    Int32 user = UserHandle.getUserId(Binder.getCallingUid());
-    synchronized(mVpns) {
-        return mVpns.get(user).getLegacyVpnInfo();
+    Int32 user = UserHandle::GetUserId(Binder::GetCallingUid());
+    synchronized(mVpnsLock) {
+        HashMap<Int32, AutoPtr<Vpn> >::Iterator it = mVpns.Find(user);
+        if (it != mVpns.End()) {
+            AutoPtr<Vpn> vpn = it->mSecond;
+            return vpn->GetLegacyVpnInfo(info);
+        }
     }
+    return NOERROR;
 }
 
 ECode CConnectivityService::GetVpnConfig(
     /* [out] */ IVpnConfig** config)
 {
-    Int32 user = UserHandle.getUserId(Binder.getCallingUid());
-    synchronized(mVpns) {
-        return mVpns.get(user).getVpnConfig();
+    VALIDATE_NOT_NULL(config)
+    *config = NULL;
+
+    Int32 user = UserHandle::GetUserId(Binder::GetCallingUid());
+    synchronized(mVpnsLock) {
+        HashMap<Int32, AutoPtr<Vpn> >::Iterator it = mVpns.Find(user);
+        if (it != mVpns.End()) {
+            AutoPtr<Vpn> vpn = it->mSecond;
+            AutoPtr<IVpnConfig> vc = vpn->GetVpnConfig();
+            *config = vc;
+            REFCOUNT_ADD(*config)
+        }
     }
+    return NOERROR;
 }
 
 ECode CConnectivityService::UpdateLockdownVpn(
@@ -3278,31 +3693,44 @@ ECode CConnectivityService::UpdateLockdownVpn(
     VALIDATE_NOT_NULL(status);
     *status = FALSE;
 
-    if (Binder.getCallingUid() != Process.SYSTEM_UID) {
-        Slog.w(TAG, "Lockdown VPN only available to AID_SYSTEM");
-        return FALSE;
+    if (Binder::GetCallingUid() != IProcess::SYSTEM_UID) {
+        Slogger::W(TAG, "Lockdown VPN only available to AID_SYSTEM");
+        return NOERROR;
     }
-
-    FAIL_RETURN(EnforceSystemUid());
 
     // Tear down existing lockdown if profile was removed
     mLockdownEnabled = LockdownVpnTracker::IsEnabled();
     if (mLockdownEnabled) {
-        assert(0);
-        // if (!mKeyStore.isUnlocked()) {
-        //     Slogger::W(TAG, "KeyStore locked; unable to create LockdownTracker");
-        //     *status = FALSE;
-        //     return NOERROR;
-        // }
+        Boolean bval;
+        mKeyStore->IsUnlocked(&bval);
+        if (!bval) {
+            Slogger::W(TAG, "KeyStore locked; unable to create LockdownTracker");
+            return NOERROR;
+        }
 
-        // String profileName(mKeyStore->Get(Credentials::LOCKDOWN_VPN));
-        // AutoPtr<IVpnProfile> profile;
-        // VpnProfile::Decode(profileName, mKeyStore->Get(Credentials::VPN + profileName));
-        // Int32 user = UserHandle.getUserId(Binder.getCallingUid());
-        // synchronized(mVpns) {
-        //     setLockdownTracker(new LockdownVpnTracker(mContext, mNetd, this, mVpns.get(user),
-        //                 profile));
-        // }
+        AutoPtr<ArrayOf<Byte> > value, pn;
+        mKeyStore->Get(ICredentials::LOCKDOWN_VPN, (ArrayOf<Byte>**)&pn);
+        String profileName(*pn);
+        StringBuilder sb(ICredentials::VPN);
+        sb += profileName;
+        mKeyStore->Get(sb.ToString(), (ArrayOf<Byte>**)&value);
+        AutoPtr<IVpnProfileHelper> helper;
+        CVpnProfileHelper::AcquireSingleton((IVpnProfileHelper**)&helper);
+        AutoPtr<IVpnProfile> profile;
+        helper->Decode(profileName, value, (IVpnProfile**)&profile);
+
+        Int32 user = UserHandle::GetUserId(Binder::GetCallingUid());
+        synchronized(mVpnsLock) {
+            AutoPtr<Vpn> vpn;
+            HashMap<Int32, AutoPtr<Vpn> >::Iterator it = mVpns.Find(user);
+            if (it != mVpns.End()) {
+                vpn = it->mSecond;
+            }
+
+            AutoPtr<LockdownVpnTracker> lvt = new LockdownVpnTracker();
+            lvt->constructor(mContext, mNetd, this, vpn, profile);
+            SetLockdownTracker(lvt);
+        }
     }
     else {
         SetLockdownTracker(NULL);
@@ -3323,14 +3751,15 @@ void CConnectivityService::SetLockdownTracker(
     }
 
     //try {
+    Boolean bval;
     if (tracker != NULL) {
-        mNetd->SetFirewallEnabled(TRUE);
-        mNetd.setFirewallInterfaceRule("lo", TRUE);
+        mNetd->SetFirewallEnabled(TRUE, &bval);
+        mNetd->SetFirewallInterfaceRule(String("lo"), TRUE);
         mLockdownTracker = tracker;
         mLockdownTracker->Init();
     }
     else {
-        mNetd->SetFirewallEnabled(FALSE);
+        mNetd->SetFirewallEnabled(FALSE, &bval);
     }
     //} catch (RemoteException e) {
         // ignored; NMS lives inside system_server
@@ -3346,47 +3775,1429 @@ ECode CConnectivityService::ThrowIfLockdownEnabled()
     return NOERROR;
 }
 
-ECode CConnectivityService::EnforceSystemUid()
+//===========================================================
+//+++++++++++++++++
+//===========================================================
+
+ECode CConnectivityService::SupplyMessenger(
+    /* [in] */ Int32 networkType,
+    /* [in] */ IMessenger* messenger)
 {
-    Int32 uid = Binder::GetCallingUid();
-    if (uid != IProcess::SYSTEM_UID) {
-        //throw new SecurityException("Only available to AID_SYSTEM");
-        return E_SECURITY_EXCEPTION;
+    FAIL_RETURN(EnforceConnectivityInternalPermission())
+
+    Boolean bval;
+    IsNetworkTypeValid(networkType, &bval);
+    if (bval && (*mNetTrackers)[networkType] != NULL) {
+        (*mNetTrackers)[networkType]->SupplyMessenger(messenger);
     }
     return NOERROR;
 }
 
-void CConnectivityService::HandleEventClearNetTransitionWakelock(
-    /* [in] */ Int32 arg1)
+ECode CConnectivityService::FindConnectionTypeForIface(
+    /* [in] */ const String& iface,
+    /* [out] */ Int32* result)
 {
-    String causedBy;
-    {
-        AutoLock lock(this);
-        Boolean held = FALSE;
-        if (arg1 == mNetTransitionWakeLockSerialNumber &&
-                (mNetTransitionWakeLock->IsHeld(&held), held)) {
-            mNetTransitionWakeLock->ReleaseLock();
-            causedBy = mNetTransitionWakeLockCausedBy;
+    VALIDATE_NOT_NULL(result)
+    *result = IConnectivityManager::TYPE_NONE;
+
+    FAIL_RETURN(EnforceConnectivityInternalPermission())
+
+    if (TextUtils::IsEmpty(iface)) return NOERROR;
+
+    ISynchronize* syncObj = (ISynchronize*)mNetworkForNetId->Probe(EIID_ISynchronize);
+    synchronized(syncObj) {
+        Int32 size;
+        mNetworkForNetId->GetSize(&size);
+        for (Int32 i = 0; i < size; i++) {
+            AutoPtr<IInterface> obj;
+            mNetworkForNetId->ValueAt(i, (IInterface**)&obj);
+            NetworkAgentInfo* nai = (NetworkAgentInfo*)INetworkAgentInfo::Probe(obj);
+            ILinkProperties* lp = nai->mLinkProperties;
+            String in;
+            lp->GetInterfaceName(&in);
+            if (lp != NULL && iface.Equals(in) && nai->mNetworkInfo != NULL) {
+                return nai->mNetworkInfo->GetType(result);
+            }
         }
     }
-    if (!causedBy.IsNull()) {
-        Slogger::D(TAG, "NetTransition Wakelock for %s released by timeout", causedBy.string());
-    }
+    return NOERROR;
 }
 
-void CConnectivityService::HandleEventRestoreDns()
+void CConnectivityService::SetEnableFailFastMobileData(
+    /* [in] */ Int32 enabled)
 {
-    if (mActiveDefaultNetwork != -1) {
-        HandleDnsConfigurationChange(mActiveDefaultNetwork);
+    Int32 tag;
+
+    if (enabled == IDctConstants::ENABLED) {
+        mEnableFailFastMobileDataTag->IncrementAndGet(&tag);
     }
+    else {
+        mEnableFailFastMobileDataTag->Get(&tag);
+    }
+    AutoPtr<IMessage> msg;
+    mHandler->ObtainMessage(EVENT_ENABLE_FAIL_FAST_MOBILE_DATA, tag, enabled, (IMessage**)&msg);
+    Boolean bval;
+    mHandler->SendMessage(msg, &bval);
 }
 
-void CConnectivityService::HandleEventVpnStateChanged(
-    /* [in] */ INetworkInfo* info)
+ECode CConnectivityService::CheckMobileProvisioning(
+    /* [in] */ Int32 suggestedTimeOutMs,
+    /* [out] */ Int32* result)
 {
-    if (mLockdownTracker != NULL) {
-        mLockdownTracker->OnVpnStateChanged(info);
+    VALIDATE_NOT_NULL(result)
+    // TODO: Remove?  Any reason to trigger a provisioning check?
+    *result = -1;
+    return NOERROR;
+}
+
+void CConnectivityService::SetProvNotificationVisible(
+    /* [in] */ Boolean visible,
+    /* [in] */ Int32 networkType,
+    /* [in] */ const String& action)
+{
+    if (DBG) {
+        Slogger::D(TAG, "SetProvNotificationVisible: E visible=%d networkType=%d action=%s",
+            visible, networkType, action.string());
     }
+
+    AutoPtr<IIntent> intent;
+    CIntent::New(action, (IIntent**)&intent);
+    AutoPtr<IPendingIntentHelper> piHelper;
+    CPendingIntentHelper::AcquireSingleton((IPendingIntentHelper**)&piHelper);
+
+    AutoPtr<IPendingIntent> pendingIntent;
+    piHelper->GetBroadcast(mContext, 0, intent, 0, (IPendingIntent**)&pendingIntent);
+    // Concatenate the range of types onto the range of NetIDs.
+    Int32 id = MAX_NET_ID + 1 + (networkType - IConnectivityManager::TYPE_NONE);
+    SetProvNotificationVisibleIntent(visible, id, networkType, String(NULL), pendingIntent);
+}
+
+void CConnectivityService::SetProvNotificationVisibleIntent(
+    /* [in] */ Boolean visible,
+    /* [in] */ Int32 id,
+    /* [in] */ Int32 networkType,
+    /* [in] */ const String& extraInfo,
+    /* [in] */ IPendingIntent* intent)
+{
+    if (DBG) {
+        Slogger::D(TAG, "SetProvNotificationVisibleIntent: E visible=%d networkType=%d extraInfo=%s",
+            visible, networkType, extraInfo.string());
+    }
+
+    // AutoPtr<IResourcesHelper> resHelper;
+    // CResourcesHelper::AcquireSingleton((IResourcesHelper**)&resHelper);
+    // AutoPtr<IResources> r;
+    // resHelper->GetSystem((IResources**)&r);
+    // AutoPtr<IInterface> service;
+    // mContext->GetSystemService(IContext::NOTIFICATION_SERVICE, (IInterface**)&service);
+    // AutoPtr<INotificationManager> notificationManager = INotificationManager::Probe(service);
+
+    // if (visible) {
+    //     String title, details;
+    //     Int32 icon;
+    //     AutoPtr<INotification> notification;
+    //     CNotification::New((INotification**)&notification);
+    //     switch (networkType) {
+    //         case IConnectivityManager::TYPE_WIFI:
+    //             r->GetString(R::string::wifi_available_sign_in, 0, &title);
+    //             r->GetString(R::string::network_available_sign_in_detailed, extraInfo, &details);
+    //             icon = R::drawable::stat_notify_wifi_in_range;
+    //             break;
+    //         case IConnectivityManager::TYPE_MOBILE:
+    //         case IConnectivityManager::TYPE_MOBILE_HIPRI:
+    //             r->GetString(R::string::network_available_sign_in, 0, &title);
+    //             // TODO: Change this to pull from NetworkInfo once a printable
+    //             // name has been added to it
+    //             mTelephonyManager->GetNetworkOperatorName(&details);
+    //             icon = R::drawable::stat_notify_rssi_in_range;
+    //             break;
+    //         default:
+    //             r->GetString(R::string::network_available_sign_in, 0, &title);
+    //             r->GetString(R::string::network_available_sign_in_detailed, extraInfo, &details);
+    //             icon = R::drawable::stat_notify_rssi_in_range;
+    //             break;
+    //     }
+
+    //     AutoPtr<ICharSequence> titleSeq = CoreUtils::Convert(title);
+    //     AutoPtr<ICharSequence> detailsSeq = CoreUtils::Convert(details);
+    //     notification->SetWhen(0);
+    //     notification->SetIcon(icon);
+    //     notification->SetFlags(INotification::FLAG_AUTO_CANCEL);
+    //     notification->SetTickerText(titleSeq);
+
+    //     AutoPtr<IResources> ctxRes;
+    //     mContext->GetResources((IResources**)&ctxRes);
+    //     Int32 realColor;
+    //     ctxRes->GetColor(R::color::system_notification_accent_color, &realColor);
+    //     notification->SetColor(realColor);
+    //     AutoPtr<IIntent> prevIntent;
+    //     notification->GetContentIntent((IIntent**)&prevIntent);
+    //     notification->SetLatestEventInfo(mContext, titleSeq, detailsSeq, prevIntent);
+    //     notification->SetContentIntent(intent);
+
+    //     ECode ec = notificationManager->Notify(NOTIFICATION_ID, id, notification);
+    //     if (ec == (ECode)E_NULL_POINTER_EXCEPTION) {
+    //         Slogger::E(TAG, "setNotificaitionVisible: visible notificationManager npe=");
+    //     }
+    // }
+    // else {
+    //     ECode ec = notificationManager->Cancel(NOTIFICATION_ID, id);
+    //     if (ec == (ECode)E_NULL_POINTER_EXCEPTION) {
+    //         Slogger::E(TAG, "setNotificaitionVisible: cancel notificationManager npe=");
+    //     }
+    // }
+    // mIsNotificationVisible = visible;
+}
+
+String CConnectivityService::GetProvisioningUrlBaseFromFile(
+    /* [in] */ Int32 type)
+{
+    // FileReader fileReader = NULL;
+    // XmlPullParser parser = NULL;
+    // Configuration config = mContext->GetResources()->GetConfiguration();
+    // String tagType;
+
+    // switch (type) {
+    //     case PROVISIONING:
+    //         tagType = TAG_PROVISIONING_URL;
+    //         break;
+    //     case REDIRECTED_PROVISIONING:
+    //         tagType = TAG_REDIRECTED_URL;
+    //         break;
+    //     default:
+    //         throw new RuntimeException("GetProvisioningUrlBaseFromFile: Unexpected parameter " +
+    //                 type);
+    // }
+
+    // try {
+    //     fileReader = new FileReader(mProvisioningUrlFile);
+    //     parser = Xml.newPullParser();
+    //     parser->SetInput(fileReader);
+    //     XmlUtils.beginDocument(parser, TAG_PROVISIONING_URLS);
+
+    //     while (true) {
+    //         XmlUtils.nextElement(parser);
+
+    //         String element = parser->GetName();
+    //         if (element == NULL) break;
+
+    //         if (element.Equals(tagType)) {
+    //             String mcc = parser->GetAttributeValue(NULL, ATTR_MCC);
+    //             try {
+    //                 if (mcc != NULL && Integer.parseInt(mcc) == config.mcc) {
+    //                     String mnc = parser->GetAttributeValue(NULL, ATTR_MNC);
+    //                     if (mnc != NULL && Integer.parseInt(mnc) == config.mnc) {
+    //                         parser.next();
+    //                         if (parser->GetEventType() == XmlPullParser.TEXT) {
+    //                             return parser->GetText();
+    //                         }
+    //                     }
+    //                 }
+    //             } catch (NumberFormatException e) {
+    //                 Slogger::E(TAG, "NumberFormatException in GetProvisioningUrlBaseFromFile: " + e);
+    //             }
+    //         }
+    //     }
+    //     return NULL;
+    // } catch (FileNotFoundException e) {
+    //     Slogger::E(TAG, "Carrier Provisioning Urls file not found");
+    // } catch (XmlPullParserException e) {
+    //     Slogger::E(TAG, "Xml parser exception reading Carrier Provisioning Urls file: " + e);
+    // } catch (IOException e) {
+    //     Slogger::E(TAG, "I/O exception reading Carrier Provisioning Urls file: " + e);
+    // } finally {
+    //     if (fileReader != NULL) {
+    //         try {
+    //             fileReader.close();
+    //         } catch (IOException e) {}
+    //     }
+    // }
+    return String(NULL);
+}
+
+ECode CConnectivityService::GetMobileRedirectedProvisioningUrl(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = String(NULL);
+
+    // FAIL_RETURN(EnforceConnectivityInternalPermission())
+    // String url = GetProvisioningUrlBaseFromFile(REDIRECTED_PROVISIONING);
+    // if (TextUtils::IsEmpty(url)) {
+    //     url = mContext->GetResources()->GetString(R::string::mobile_redirected_provisioning_url);
+    // }
+    // return url;
+    return NOERROR;
+}
+
+ECode CConnectivityService::GetMobileProvisioningUrl(
+    /* [out] */ String* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = String(NULL);
+
+    // FAIL_RETURN(EnforceConnectivityInternalPermission())
+    // String url = GetProvisioningUrlBaseFromFile(PROVISIONING);
+    // if (TextUtils::IsEmpty(url)) {
+    //     url = mContext->GetResources()->GetString(R::string::mobile_provisioning_url);
+    //     Slogger::D(TAG, "GetMobileProvisioningUrl: mobile_provisioining_url from resource =" + url);
+    // } else {
+    //     Slogger::D(TAG, "GetMobileProvisioningUrl: mobile_provisioning_url from File =" + url);
+    // }
+    // // populate the iccid, imei and phone number in the provisioning url.
+    // if (!TextUtils::IsEmpty(url)) {
+    //     String phoneNumber = mTelephonyManager->GetLine1Number();
+    //     if (TextUtils::IsEmpty(phoneNumber)) {
+    //         phoneNumber = "0000000000";
+    //     }
+    //     url = String.format(url,
+    //             mTelephonyManager->GetSimSerialNumber() /* ICCID */,
+    //             mTelephonyManager->GetDeviceId() /* IMEI */,
+    //             phoneNumber /* Phone numer */);
+    // }
+
+    // return url;
+    return NOERROR;
+}
+
+ECode CConnectivityService::SetProvisioningNotificationVisible(
+    /* [in] */ Boolean visible,
+    /* [in] */ Int32 networkType,
+    /* [in] */ const String& action)
+{
+    // FAIL_RETURN(EnforceConnectivityInternalPermission())
+    // final long ident = Binder.clearCallingIdentity();
+    // try {
+    //     SetProvNotificationVisible(visible, networkType, action);
+    // } finally {
+    //     Binder.restoreCallingIdentity(ident);
+    // }
+    return NOERROR;
+}
+
+ECode CConnectivityService::SetAirplaneMode(
+    /* [in] */ Boolean enable)
+{
+    // FAIL_RETURN(EnforceConnectivityInternalPermission())
+    // final long ident = Binder.clearCallingIdentity();
+    // try {
+    //     final ContentResolver cr = mContext->GetContentResolver();
+    //     Settings.Global.putInt(cr, Settings.Global.AIRPLANE_MODE_ON, enable ? 1 : 0);
+    //     Intent intent = new Intent(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+    //     intent.putExtra("state", enable);
+    //     mContext->sendBroadcast(intent);
+    // } finally {
+    //     Binder.restoreCallingIdentity(ident);
+    // }
+    return NOERROR;
+}
+
+void CConnectivityService::OnUserStart(
+    /* [in] */ Int32 userId)
+{
+    // synchronized(mVpns) {
+    //     Vpn userVpn = mVpns->Get(userId);
+    //     if (userVpn != NULL) {
+    //         Slogger::E(TAG, "Starting user already has a VPN");
+    //         return;
+    //     }
+    //     userVpn = new Vpn(mHandler->GetLooper(), mContext, mNetd, this, userId);
+    //     mVpns.put(userId, userVpn);
+    // }
+}
+
+void CConnectivityService::OnUserStop(
+    /* [in] */ Int32 userId)
+{
+    // synchronized(mVpns) {
+    //     Vpn userVpn = mVpns->Get(userId);
+    //     if (userVpn == NULL) {
+    //         Slogger::E(TAG, "Stopping user has no VPN");
+    //         return;
+    //     }
+    //     mVpns.delete(userId);
+    // }
+}
+
+ECode CConnectivityService::GetLinkQualityInfo(
+    /* [in] */ Int32 networkType,
+    /* [out] */ ILinkQualityInfo** info)
+{
+    VALIDATE_NOT_NULL(info)
+    *info = NULL;
+
+    // FAIL_RETURN(EnforceAccessPermission())
+    // if (IsNetworkTypeValid(networkType) && (*mNetTrackers)[networkType] != NULL) {
+    //     return (*mNetTrackers)[networkType]->GetLinkQualityInfo();
+    // } else {
+    //     return NULL;
+    // }
+    return NOERROR;
+}
+
+ECode CConnectivityService::GetActiveLinkQualityInfo(
+    /* [out] */ ILinkQualityInfo** info)
+{
+    VALIDATE_NOT_NULL(info)
+    *info = NULL;
+
+    // FAIL_RETURN(EnforceAccessPermission())
+    // if (IsNetworkTypeValid(mActiveDefaultNetwork) &&
+    //         (*mNetTrackers)[mActiveDefaultNetwork] != NULL) {
+    //     return (*mNetTrackers)[mActiveDefaultNetwork].GetLinkQualityInfo();
+    // } else {
+    //     return NULL;
+    // }
+    return NOERROR;
+}
+
+ECode CConnectivityService::GetAllLinkQualityInfo(
+    /* [out, callee] */ ArrayOf<ILinkQualityInfo*>** result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
+    // FAIL_RETURN(EnforceAccessPermission())
+    // final ArrayList<LinkQualityInfo> result = Lists.newArrayList();
+    // for (NetworkStateTracker tracker : mNetTrackers) {
+    //     if (tracker != NULL) {
+    //         LinkQualityInfo li = tracker.GetLinkQualityInfo();
+    //         if (li != NULL) {
+    //             result.add(li);
+    //         }
+    //     }
+    // }
+
+    // return result.toArray(new LinkQualityInfo[result.size()]);
+    return NOERROR;
+}
+
+/* Infrastructure for network sampling */
+
+void CConnectivityService::HandleNetworkSamplingTimeout()
+{
+    // if (SAMPLE_DBG) Slogger::D(TAG, "Sampling interval elapsed, updating statistics ..");
+
+    // // initialize list of interfaces ..
+    // Map<String, SamplingDataTracker.SamplingSnapshot> mapIfaceToSample =
+    //         new HashMap<String, SamplingDataTracker.SamplingSnapshot>();
+    // for (NetworkStateTracker tracker : mNetTrackers) {
+    //     if (tracker != NULL) {
+    //         String ifaceName = tracker->GetNetworkInterfaceName();
+    //         if (ifaceName != NULL) {
+    //             mapIfaceToSample.put(ifaceName, NULL);
+    //         }
+    //     }
+    // }
+
+    // // Read samples for all interfaces
+    // SamplingDataTracker->GetSamplingSnapshots(mapIfaceToSample);
+
+    // // process samples for all networks
+    // for (NetworkStateTracker tracker : mNetTrackers) {
+    //     if (tracker != NULL) {
+    //         String ifaceName = tracker->GetNetworkInterfaceName();
+    //         SamplingDataTracker.SamplingSnapshot ss = mapIfaceToSample->Get(ifaceName);
+    //         if (ss != NULL) {
+    //             // end the previous sampling cycle
+    //             tracker.stopSampling(ss);
+    //             // start a new sampling cycle ..
+    //             tracker.startSampling(ss);
+    //         }
+    //     }
+    // }
+
+    // if (SAMPLE_DBG) Slogger::D(TAG, "Done.");
+
+    // Int32 samplingIntervalInSeconds = Settings.Global->GetInt(mContext->GetContentResolver(),
+    //         Settings.Global.CONNECTIVITY_SAMPLING_INTERVAL_IN_SECONDS,
+    //         DEFAULT_SAMPLING_INTERVAL_IN_SECONDS);
+
+    // if (SAMPLE_DBG) {
+    //     Slogger::D(TAG, "Setting timer for " + String.valueOf(samplingIntervalInSeconds) + "seconds");
+    // }
+
+    // SetAlarm(samplingIntervalInSeconds * 1000, mSampleIntervalElapsedIntent);
+}
+
+
+void CConnectivityService::SetAlarm(
+    /* [in] */ Int32 timeoutInMilliseconds,
+    /* [in] */ IPendingIntent* intent)
+{
+    // long wakeupTime = SystemClock.elapsedRealtime() + timeoutInMilliseconds;
+    // Int32 alarmType;
+    // if (Resources->GetSystem()->GetBoolean(
+    //         R.bool.config_networkSamplingWakesDevice)) {
+    //     alarmType = AlarmManager.ELAPSED_REALTIME_WAKEUP;
+    // } else {
+    //     alarmType = AlarmManager.ELAPSED_REALTIME;
+    // }
+    // mAlarmManager->Set(alarmType, wakeupTime, intent);
+}
+
+ECode CConnectivityService::RequestNetwork(
+    /* [in] */ INetworkCapabilities* networkCapabilities,
+    /* [in] */ IMessenger* messenger,
+    /* [in] */ Int32 timeoutMs,
+    /* [in] */ IBinder* binder,
+    /* [in] */ Int32 legacyType,
+    /* [out] */ INetworkRequest** request)
+{
+    VALIDATE_NOT_NULL(request)
+    *request = NULL;
+    // if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
+    //         == false) {
+    //     FAIL_RETURN(EnforceConnectivityInternalPermission())
+    // } else {
+    //     enforceChangePermission();
+    // }
+
+    // networkCapabilities = new NetworkCapabilities(networkCapabilities);
+
+    // // if UID is restricted, don't allow them to bring up metered APNs
+    // if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
+    //         == false) {
+    //     final Int32 uidRules;
+    //     final Int32 uid = Binder::GetCallingUid();
+    //     synchronized(mRulesLock) {
+    //         uidRules = mUidRules->Get(uid, RULE_ALLOW_ALL);
+    //     }
+    //     if ((uidRules & RULE_REJECT_METERED) != 0) {
+    //         // we could silently fail or we can filter the available nets to only give
+    //         // them those they have access to.  Chose the more useful
+    //         networkCapabilities.addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED);
+    //     }
+    // }
+
+    // if (timeoutMs < 0 || timeoutMs > IConnectivityManager::MAX_NETWORK_REQUEST_TIMEOUT_MS) {
+    //     throw new IllegalArgumentException("Bad timeout specified");
+    // }
+    // NetworkRequest networkRequest = new NetworkRequest(networkCapabilities, legacyType,
+    //         nextNetworkRequestId());
+    // if (DBG) Slogger::D(TAG, "RequestNetwork for " + networkRequest);
+    // NetworkRequestInfo nri = new NetworkRequestInfo(messenger, networkRequest, binder,
+    //         NetworkRequestInfo.REQUEST);
+
+    // mHandler->SendMessage(mHandler->ObtainMessage(EVENT_REGISTER_NETWORK_REQUEST, nri));
+    // if (timeoutMs > 0) {
+    //     mHandler->SendMessageDelayed(mHandler->ObtainMessage(EVENT_TIMEOUT_NETWORK_REQUEST,
+    //             nri), timeoutMs);
+    // }
+    // return networkRequest;
+    return NOERROR;
+}
+
+ECode CConnectivityService::PendingRequestForNetwork(
+    /* [in] */ INetworkCapabilities* networkCapabilities,
+    /* [in] */ IPendingIntent* operation,
+    /* [out] */ INetworkRequest** request)
+{
+    VALIDATE_NOT_NULL(request)
+    // TODO
+    *request = NULL;
+    return NOERROR;
+}
+
+ECode CConnectivityService::ListenForNetwork(
+    /* [in] */ INetworkCapabilities* networkCapabilities,
+    /* [in] */ IMessenger* messenger,
+    /* [in] */ IBinder* binder,
+    /* [out] */ INetworkRequest** request)
+{
+    VALIDATE_NOT_NULL(request)
+    *request = NULL;
+    // FAIL_RETURN(EnforceAccessPermission())
+
+    // NetworkRequest networkRequest = new NetworkRequest(new NetworkCapabilities(
+    //         networkCapabilities), TYPE_NONE, nextNetworkRequestId());
+    // if (DBG) Slogger::D(TAG, "ListenForNetwork for " + networkRequest);
+    // NetworkRequestInfo nri = new NetworkRequestInfo(messenger, networkRequest, binder,
+    //         NetworkRequestInfo.LISTEN);
+
+    // mHandler->SendMessage(mHandler->ObtainMessage(EVENT_REGISTER_NETWORK_LISTENER, nri));
+    // return networkRequest;
+    return NOERROR;
+}
+
+ECode CConnectivityService::PendingListenForNetwork(
+    /* [in] */ INetworkCapabilities* networkCapabilities,
+    /* [in] */ IPendingIntent* operation)
+{
+    return NOERROR;
+}
+
+ECode CConnectivityService::ReleaseNetworkRequest(
+    /* [in] */ INetworkRequest* networkRequest)
+{
+    // mHandler->SendMessage(mHandler->ObtainMessage(EVENT_RELEASE_NETWORK_REQUEST, getCallingUid(),
+    //         0, networkRequest));
+    return NOERROR;
+}
+
+ECode CConnectivityService::RegisterNetworkFactory(
+    /* [in] */ IMessenger* messenger,
+    /* [in] */ const String& name)
+{
+    // FAIL_RETURN(EnforceConnectivityInternalPermission())
+    // NetworkFactoryInfo nfi = new NetworkFactoryInfo(name, messenger, new AsyncChannel());
+    // mHandler->SendMessage(mHandler->ObtainMessage(EVENT_REGISTER_NETWORK_FACTORY, nfi));
+    return NOERROR;
+}
+
+void CConnectivityService::HandleRegisterNetworkFactory(
+    /* [in] */ NetworkFactoryInfo* nfi)
+{
+    // if (DBG) Slogger::D(TAG, "Got NetworkFactory Messenger for " + nfi.name);
+    // mNetworkFactoryInfos.put(nfi.messenger, nfi);
+    // nfi.asyncChannel.connect(mContext, mTrackerHandler, nfi.messenger);
+}
+
+
+ECode CConnectivityService::UnregisterNetworkFactory(
+    /* [in] */ IMessenger* messenger)
+{
+    // FAIL_RETURN(EnforceConnectivityInternalPermission())
+    // mHandler->SendMessage(mHandler->ObtainMessage(EVENT_UNREGISTER_NETWORK_FACTORY, messenger));
+    return NOERROR;
+}
+
+void CConnectivityService::HandleUnregisterNetworkFactory(
+    /* [in] */ IMessenger* messenger)
+{
+    // NetworkFactoryInfo nfi = mNetworkFactoryInfos.remove(messenger);
+    // if (nfi == NULL) {
+    //     Slogger::E(TAG, "Failed to find Messenger in UnregisterNetworkFactory");
+    //     return;
+    // }
+    // if (DBG) Slogger::D(TAG, "UnregisterNetworkFactory for " + nfi.name);
+}
+
+Boolean CConnectivityService::IsDefaultNetwork(
+    /* [in] */ INetworkAgentInfo* nai)
+{
+    // return mNetworkForRequestId->Get(mDefaultRequest.requestId) == nai;
+    return FALSE;
+}
+
+ECode CConnectivityService::RegisterNetworkAgent(
+    /* [in] */ IMessenger* messenger,
+    /* [in] */ INetworkInfo* networkInfo,
+    /* [in] */ ILinkProperties* linkProperties,
+    /* [in] */ INetworkCapabilities* networkCapabilities,
+    /* [in] */ Int32 currentScore,
+    /* [in] */ INetworkMisc* networkMisc)
+{
+    // FAIL_RETURN(EnforceConnectivityInternalPermission())
+
+    // NetworkAgentInfo nai = new NetworkAgentInfo(messenger, new AsyncChannel(),
+    //     new NetworkInfo(networkInfo), new LinkProperties(linkProperties),
+    //     new NetworkCapabilities(networkCapabilities), currentScore, mContext, mTrackerHandler,
+    //     new NetworkMisc(networkMisc));
+    // synchronized (this) {
+    //     nai.networkMonitor.systemReady = mSystemReady;
+    // }
+    // if (DBG) Slogger::D(TAG, "RegisterNetworkAgent " + nai);
+    // mHandler->SendMessage(mHandler->ObtainMessage(EVENT_REGISTER_NETWORK_AGENT, nai));
+    return NOERROR;
+}
+
+void CConnectivityService::HandleRegisterNetworkAgent(
+    /* [in] */ INetworkAgentInfo* na)
+{
+    // if (VDBG) Slogger::D(TAG, "Got NetworkAgent Messenger");
+    // mNetworkAgentInfos.put(na.messenger, na);
+    // assignNextNetId(na);
+    // na.asyncChannel.connect(mContext, mTrackerHandler, na.messenger);
+    // NetworkInfo networkInfo = na->mNetworkInfo;
+    // na->mNetworkInfo = NULL;
+    // UpdateNetworkInfo(na, networkInfo);
+}
+
+void CConnectivityService::UpdateLinkProperties(
+    /* [in] */ INetworkAgentInfo* networkAgent,
+    /* [in] */ ILinkProperties* oldLp)
+{
+//     LinkProperties newLp = networkAgent->mLinkProperties;
+//     Int32 netId = networkAgent.network.netId;
+
+//     // The NetworkAgentInfo does not know whether clatd is running on its network or not. Before
+//     // we do anything else, make sure its LinkProperties are accurate.
+//     mClat.fixupLinkProperties(networkAgent, oldLp);
+
+//     UpdateInterfaces(newLp, oldLp, netId);
+//     updateMtu(newLp, oldLp);
+//     // TODO - figure out what to do for clat
+// //        for (LinkProperties lp : newLp->GetStackedLinks()) {
+// //            updateMtu(lp, NULL);
+// //        }
+//     updateTcpBufferSizes(networkAgent);
+//     final Boolean flushDns = UpdateRoutes(newLp, oldLp, netId);
+//     UpdateDnses(newLp, oldLp, netId, flushDns);
+//     UpdateClat(newLp, oldLp, networkAgent);
+//     if (IsDefaultNetwork(networkAgent)) handleApplyDefaultProxy(newLp->GetHttpProxy());
+//     // TODO - move this check to cover the whole function
+//     if (!Objects.Equals(newLp, oldLp)) {
+//         NotifyNetworkCallbacks(networkAgent, IConnectivityManager::CALLBACK_IP_CHANGED);
+//     }
+}
+
+void CConnectivityService::UpdateClat(
+    /* [in] */ ILinkProperties* newLp,
+    /* [in] */ ILinkProperties* oldLp,
+    /* [in] */ INetworkAgentInfo* na)
+{
+    // final Boolean wasRunningClat = mClat.isRunningClat(na);
+    // final Boolean shouldRunClat = Nat464Xlat.requiresClat(na);
+
+    // if (!wasRunningClat && shouldRunClat) {
+    //     // Start clatd. If it's already been started but is not running yet, this is a no-op.
+    //     mClat.startClat(na);
+    // } else if (wasRunningClat && !shouldRunClat) {
+    //     mClat.stopClat();
+    // }
+}
+
+void CConnectivityService::UpdateInterfaces(
+    /* [in] */ ILinkProperties* newLp,
+    /* [in] */ ILinkProperties* oldLp,
+    /* [in] */ Int32 netId)
+{
+    // CompareResult<String> interfaceDiff = new CompareResult<String>();
+    // if (oldLp != NULL) {
+    //     interfaceDiff = oldLp.compareAllInterfaceNames(newLp);
+    // } else if (newLp != NULL) {
+    //     interfaceDiff.added = newLp->GetAllInterfaceNames();
+    // }
+    // for (String iface : interfaceDiff.added) {
+    //     try {
+    //         if (DBG) Slogger::D(TAG, "Adding iface " + iface + " to network " + netId);
+    //         mNetd.addInterfaceToNetwork(iface, netId);
+    //     } catch (Exception e) {
+    //         Slogger::E(TAG, "Exception adding interface: " + e);
+    //     }
+    // }
+    // for (String iface : interfaceDiff.removed) {
+    //     try {
+    //         if (DBG) Slogger::D(TAG, "Removing iface " + iface + " from network " + netId);
+    //         mNetd.removeInterfaceFromNetwork(iface, netId);
+    //     } catch (Exception e) {
+    //         Slogger::E(TAG, "Exception removing interface: " + e);
+    //     }
+    // }
+}
+
+Boolean CConnectivityService::UpdateRoutes(
+    /* [in] */ ILinkProperties* newLp,
+    /* [in] */ ILinkProperties* oldLp,
+    /* [in] */ Int32 netId)
+{
+    // CompareResult<RouteInfo> routeDiff = new CompareResult<RouteInfo>();
+    // if (oldLp != NULL) {
+    //     routeDiff = oldLp.compareAllRoutes(newLp);
+    // } else if (newLp != NULL) {
+    //     routeDiff.added = newLp->GetAllRoutes();
+    // }
+
+    // // add routes before removing old in case it helps with continuous connectivity
+
+    // // do this twice, adding non-nexthop routes first, then routes they are dependent on
+    // for (RouteInfo route : routeDiff.added) {
+    //     if (route.hasGateway()) continue;
+    //     if (DBG) Slogger::D(TAG, "Adding Route [" + route + "] to network " + netId);
+    //     try {
+    //         mNetd.addRoute(netId, route);
+    //     } catch (Exception e) {
+    //         if ((route->GetDestination()->GetAddress() instanceof Inet4Address) || VDBG) {
+    //             Slogger::E(TAG, "Exception in addRoute for non-gateway: " + e);
+    //         }
+    //     }
+    // }
+    // for (RouteInfo route : routeDiff.added) {
+    //     if (route.hasGateway() == false) continue;
+    //     if (DBG) Slogger::D(TAG, "Adding Route [" + route + "] to network " + netId);
+    //     try {
+    //         mNetd.addRoute(netId, route);
+    //     } catch (Exception e) {
+    //         if ((route->GetGateway() instanceof Inet4Address) || VDBG) {
+    //             Slogger::E(TAG, "Exception in addRoute for gateway: " + e);
+    //         }
+    //     }
+    // }
+
+    // for (RouteInfo route : routeDiff.removed) {
+    //     if (DBG) Slogger::D(TAG, "Removing Route [" + route + "] from network " + netId);
+    //     try {
+    //         mNetd.removeRoute(netId, route);
+    //     } catch (Exception e) {
+    //         Slogger::E(TAG, "Exception in removeRoute: " + e);
+    //     }
+    // }
+    // return !routeDiff.added.isEmpty() || !routeDiff.removed.isEmpty();
+    return FALSE;
+}
+
+void CConnectivityService::UpdateDnses(
+    /* [in] */ ILinkProperties* newLp,
+    /* [in] */ ILinkProperties* oldLp,
+    /* [in] */ Int32 netId,
+    /* [in] */ Boolean flush)
+{
+    // if (oldLp == NULL || (newLp.isIdenticalDnses(oldLp) == false)) {
+    //     Collection<InetAddress> dnses = newLp->GetDnsServers();
+    //     if (dnses.size() == 0 && mDefaultDns != NULL) {
+    //         dnses = new ArrayList();
+    //         dnses.add(mDefaultDns);
+    //         if (DBG) {
+    //             Slogger::E(TAG, "no dns provided for netId " + netId + ", so using defaults");
+    //         }
+    //     }
+    //     if (DBG) Slogger::D(TAG, "Setting Dns servers for network " + netId + " to " + dnses);
+    //     try {
+    //         mNetd->SetDnsServersForNetwork(netId, NetworkUtils.makeStrings(dnses),
+    //             newLp->GetDomains());
+    //     } catch (Exception e) {
+    //         Slogger::E(TAG, "Exception in setDnsServersForNetwork: " + e);
+    //     }
+    //     NetworkAgentInfo defaultNai = mNetworkForRequestId->Get(mDefaultRequest.requestId);
+    //     if (defaultNai != NULL && defaultNai.network.netId == netId) {
+    //         SetDefaultDnsSystemProperties(dnses);
+    //     }
+    //     flushVmDnsCache();
+    // } else if (flush) {
+    //     try {
+    //         mNetd.flushNetworkDnsCache(netId);
+    //     } catch (Exception e) {
+    //         Slogger::E(TAG, "Exception in flushNetworkDnsCache: " + e);
+    //     }
+    //     flushVmDnsCache();
+    // }
+}
+
+void CConnectivityService::SetDefaultDnsSystemProperties(
+    /* [in] */ ICollection* dnses)
+{
+    // Int32 last = 0;
+    // for (InetAddress dns : dnses) {
+    //     ++last;
+    //     String key = "net.dns" + last;
+    //     String value = dns->GetHostAddress();
+    //     SystemProperties->Set(key, value);
+    // }
+    // for (Int32 i = last + 1; i <= mNumDnsEntries; ++i) {
+    //     String key = "net.dns" + i;
+    //     SystemProperties->Set(key, "");
+    // }
+    // mNumDnsEntries = last;
+}
+
+void CConnectivityService::UpdateCapabilities(
+    /* [in] */ INetworkAgentInfo* networkAgent,
+    /* [in] */ INetworkCapabilities* networkCapabilities)
+{
+    // //  TODO - turn this on in MR1 when we have more dogfooding time.
+    // // RematchAllNetworksAndRequests();
+    // if (!Objects.Equals(networkAgent->mNetworkCapabilities, networkCapabilities)) {
+    //     synchronized (networkAgent) {
+    //         networkAgent->mNetworkCapabilities = networkCapabilities;
+    //     }
+    //     NotifyNetworkCallbacks(networkAgent, IConnectivityManager::CALLBACK_CAP_CHANGED);
+    // }
+}
+
+void CConnectivityService::SendUpdatedScoreToFactories(
+    /* [in] */ INetworkAgentInfo* nai)
+{
+    // for (Int32 i = 0; i < nai.networkRequests.size(); i++) {
+    //     NetworkRequest nr = nai.networkRequests.valueAt(i);
+    //     // Don't send listening requests to factories. b/17393458
+    //     if (!isRequest(nr)) continue;
+    //     SendUpdatedScoreToFactories(nr, nai->GetCurrentScore());
+    // }
+}
+
+void CConnectivityService::SendUpdatedScoreToFactories(
+    /* [in] */ INetworkRequest* networkRequest,
+    /* [in] */ Int32 score)
+{
+    // if (VDBG) Slogger::D(TAG, "sending new Min Network Score(" + score + "): " + networkRequest.toString());
+    // for (NetworkFactoryInfo nfi : mNetworkFactoryInfos.values()) {
+    //     nfi.asyncChannel.SendMessage(android.net.NetworkFactory.CMD_REQUEST_NETWORK, score, 0,
+    //             networkRequest);
+    // }
+}
+
+void CConnectivityService::CallCallbackForRequest(
+    /* [in] */ NetworkRequestInfo* nri,
+    /* [in] */ INetworkAgentInfo* networkAgent,
+    /* [in] */ Int32 notificationType)
+{
+    // if (nri.messenger == NULL) return;  // Default request has no msgr
+    // Bundle bundle = new Bundle();
+    // bundle.putParcelable(NetworkRequest.class->GetSimpleName(),
+    //         new NetworkRequest(nri.request));
+    // Message msg = Message.obtain();
+    // if (notificationType != IConnectivityManager::CALLBACK_UNAVAIL &&
+    //         notificationType != IConnectivityManager::CALLBACK_RELEASED) {
+    //     bundle.putParcelable(Network.class->GetSimpleName(), networkAgent.network);
+    // }
+    // switch (notificationType) {
+    //     case IConnectivityManager::CALLBACK_LOSING: {
+    //         msg.arg1 = 30 * 1000; // TODO - read this from NetworkMonitor
+    //         break;
+    //     }
+    //     case IConnectivityManager::CALLBACK_CAP_CHANGED: {
+    //         bundle.putParcelable(NetworkCapabilities.class->GetSimpleName(),
+    //                 new NetworkCapabilities(networkAgent->mNetworkCapabilities));
+    //         break;
+    //     }
+    //     case IConnectivityManager::CALLBACK_IP_CHANGED: {
+    //         bundle.putParcelable(LinkProperties.class->GetSimpleName(),
+    //                 new LinkProperties(networkAgent->mLinkProperties));
+    //         break;
+    //     }
+    // }
+    // msg.what = notificationType;
+    // msg->SetData(bundle);
+    // try {
+    //     if (VDBG) {
+    //         Slogger::D(TAG, "sending notification " + NotifyTypeToName(notificationType) +
+    //                 " for " + nri.request);
+    //     }
+    //     nri.messenger.send(msg);
+    // } catch (RemoteException e) {
+    //     // may occur naturally in the race of binder death.
+    //     Slogger::E(TAG, "RemoteException caught trying to send a callback msg for " + nri.request);
+    // }
+}
+
+void CConnectivityService::TeardownUnneededNetwork(
+    /* [in] */ INetworkAgentInfo* nai)
+{
+    // for (Int32 i = 0; i < nai.networkRequests.size(); i++) {
+    //     NetworkRequest nr = nai.networkRequests.valueAt(i);
+    //     // Ignore listening requests.
+    //     if (!isRequest(nr)) continue;
+    //     Slogger::E(TAG, "Dead network still had at least " + nr);
+    //     break;
+    // }
+    // nai.asyncChannel.disconnect();
+}
+
+void CConnectivityService::HandleLingerComplete(
+    /* [in] */ INetworkAgentInfo* oldNetwork)
+{
+    // if (oldNetwork == NULL) {
+    //     Slogger::E(TAG, "Unknown NetworkAgentInfo in HandleLingerComplete");
+    //     return;
+    // }
+    // if (DBG) Slogger::D(TAG, "HandleLingerComplete for " + oldNetwork.name());
+    // TeardownUnneededNetwork(oldNetwork);
+}
+
+void CConnectivityService::MakeDefault(
+    /* [in] */ INetworkAgentInfo* newNetwork)
+{
+    // if (DBG) Slogger::D(TAG, "Switching to new default network: " + newNetwork);
+    // mActiveDefaultNetwork = newNetwork->mNetworkInfo->GetType();
+    // setupDataActivityTracking(newNetwork);
+    // try {
+    //     mNetd->SetDefaultNetId(newNetwork.network.netId);
+    // } catch (Exception e) {
+    //     Slogger::E(TAG, "Exception setting default network :" + e);
+    // }
+    // NotifyLockdownVpn(newNetwork);
+    // handleApplyDefaultProxy(newNetwork->mLinkProperties->GetHttpProxy());
+    // updateTcpBufferSizes(newNetwork);
+}
+
+void CConnectivityService::RematchNetworkAndRequests(
+    /* [in] */ INetworkAgentInfo* newNetwork,
+    /* [in] */ Boolean nascent)
+{
+    // if (!newNetwork.created) Slogger::E(TAG, "ERROR: uncreated network being rematched.");
+    // if (nascent && !newNetwork.validated) Slogger::E(TAG, "ERROR: nascent network not validated.");
+    // Boolean keep = newNetwork.isVPN();
+    // Boolean isNewDefault = false;
+    // if (DBG) Slogger::D(TAG, "rematching " + newNetwork.name());
+    // // Find and migrate to this Network any NetworkRequests for
+    // // which this network is now the best.
+    // ArrayList<NetworkAgentInfo> affectedNetworks = new ArrayList<NetworkAgentInfo>();
+    // if (VDBG) log(" network has: " + newNetwork->mNetworkCapabilities);
+    // for (NetworkRequestInfo nri : mNetworkRequests.values()) {
+    //     NetworkAgentInfo currentNetwork = mNetworkForRequestId->Get(nri.request.requestId);
+    //     if (newNetwork == currentNetwork) {
+    //         if (DBG) {
+    //             Slogger::D(TAG, "Network " + newNetwork.name() + " was already satisfying" +
+    //                     " request " + nri.request.requestId + ". No change.");
+    //         }
+    //         keep = true;
+    //         continue;
+    //     }
+
+    //     // check if it satisfies the NetworkCapabilities
+    //     if (VDBG) log("  checking if request is satisfied: " + nri.request);
+    //     if (nri.request->mNetworkCapabilities.satisfiedByNetworkCapabilities(
+    //             newNetwork->mNetworkCapabilities)) {
+    //         if (!nri.isRequest) {
+    //             // This is not a request, it's a callback listener.
+    //             // Add it to newNetwork regardless of score.
+    //             newNetwork.addRequest(nri.request);
+    //             continue;
+    //         }
+
+    //         // next check if it's better than any current network we're using for
+    //         // this request
+    //         if (VDBG) {
+    //             Slogger::D(TAG, "currentScore = " +
+    //                     (currentNetwork != NULL ? currentNetwork->GetCurrentScore() : 0) +
+    //                     ", newScore = " + newNetwork->GetCurrentScore());
+    //         }
+    //         if (currentNetwork == NULL ||
+    //                 currentNetwork->GetCurrentScore() < newNetwork->GetCurrentScore()) {
+    //             if (currentNetwork != NULL) {
+    //                 if (DBG) log("   accepting network in place of " + currentNetwork.name());
+    //                 currentNetwork.networkRequests.remove(nri.request.requestId);
+    //                 currentNetwork.networkLingered.add(nri.request);
+    //                 affectedNetworks.add(currentNetwork);
+    //             } else {
+    //                 if (DBG) log("   accepting network in place of NULL");
+    //             }
+    //             mNetworkForRequestId.put(nri.request.requestId, newNetwork);
+    //             newNetwork.addRequest(nri.request);
+    //             if (nri.isRequest && nri.request.legacyType != TYPE_NONE) {
+    //                 mLegacyTypeTracker.add(nri.request.legacyType, newNetwork);
+    //             }
+    //             keep = true;
+    //             // Tell NetworkFactories about the new score, so they can stop
+    //             // trying to connect if they know they cannot match it.
+    //             // TODO - this could get expensive if we have alot of requests for this
+    //             // network.  Think about if there is a way to reduce this.  Push
+    //             // netid->request mapping to each factory?
+    //             SendUpdatedScoreToFactories(nri.request, newNetwork->GetCurrentScore());
+    //             if (mDefaultRequest.requestId == nri.request.requestId) {
+    //                 isNewDefault = true;
+    //                 // TODO: Remove following line.  It's redundant with MakeDefault call.
+    //                 mActiveDefaultNetwork = newNetwork->mNetworkInfo->GetType();
+    //                 if (newNetwork->mLinkProperties != NULL) {
+    //                     updateTcpBufferSizes(newNetwork);
+    //                     SetDefaultDnsSystemProperties(
+    //                             newNetwork->mLinkProperties->GetDnsServers());
+    //                 } else {
+    //                     SetDefaultDnsSystemProperties(new ArrayList<InetAddress>());
+    //                 }
+    //                 // Maintain the illusion: since the legacy API only
+    //                 // understands one network at a time, we must pretend
+    //                 // that the current default network disconnected before
+    //                 // the new one connected.
+    //                 if (currentNetwork != NULL) {
+    //                     mLegacyTypeTracker.remove(currentNetwork->mNetworkInfo->GetType(),
+    //                                               currentNetwork);
+    //                 }
+    //                 mDefaultInetConditionPublished = newNetwork.validated ? 100 : 0;
+    //                 mLegacyTypeTracker.add(newNetwork->mNetworkInfo->GetType(), newNetwork);
+    //                 NotifyLockdownVpn(newNetwork);
+    //             }
+    //         }
+    //     }
+    // }
+    // // Linger any networks that are no longer needed.
+    // for (NetworkAgentInfo nai : affectedNetworks) {
+    //     Boolean teardown = !nai.isVPN() && nai.validated;
+    //     for (Int32 i = 0; i < nai.networkRequests.size() && teardown; i++) {
+    //         NetworkRequest nr = nai.networkRequests.valueAt(i);
+    //         try {
+    //         if (isRequest(nr)) {
+    //             teardown = false;
+    //         }
+    //         } catch (Exception e) {
+    //             Slogger::E(TAG, "Request " + nr + " not found in mNetworkRequests.");
+    //             Slogger::E(TAG, "  it came from request list  of " + nai.name());
+    //         }
+    //     }
+    //     if (teardown) {
+    //         nai.networkMonitor.SendMessage(NetworkMonitor.CMD_NETWORK_LINGER);
+    //         NotifyNetworkCallbacks(nai, IConnectivityManager::CALLBACK_LOSING);
+    //     } else {
+    //         // not going to linger, so kill the list of linger networks..  only
+    //         // notify them of linger if it happens as the result of gaining another,
+    //         // but if they transition and old network stays up, don't tell them of linger
+    //         // or very delayed loss
+    //         nai.networkLingered.clear();
+    //         if (VDBG) Slogger::D(TAG, "Lingered for " + nai.name() + " cleared");
+    //     }
+    // }
+    // if (keep) {
+    //     if (isNewDefault) {
+    //         // Notify system services that this network is up.
+    //         MakeDefault(newNetwork);
+    //         synchronized (ConnectivityService.this) {
+    //             // have a new default network, release the transition wakelock in
+    //             // a second if it's held.  The second pause is to allow apps
+    //             // to reconnect over the new network
+    //             if (mNetTransitionWakeLock.isHeld()) {
+    //                 mHandler->SendMessageDelayed(mHandler->ObtainMessage(
+    //                         EVENT_CLEAR_NET_TRANSITION_WAKELOCK,
+    //                         mNetTransitionWakeLockSerialNumber, 0),
+    //                         1000);
+    //             }
+    //         }
+    //     }
+
+    //     // Notify battery stats service about this network, both the normal
+    //     // interface and any stacked links.
+    //     // TODO: Avoid redoing this; this must only be done once when a network comes online.
+    //     try {
+    //         final IBatteryStats bs = BatteryStatsService->GetService();
+    //         final Int32 type = newNetwork->mNetworkInfo->GetType();
+
+    //         final String baseIface = newNetwork->mLinkProperties->GetInterfaceName();
+    //         bs.noteNetworkInterfaceType(baseIface, type);
+    //         for (LinkProperties stacked : newNetwork->mLinkProperties->GetStackedLinks()) {
+    //             final String stackedIface = stacked->GetInterfaceName();
+    //             bs.noteNetworkInterfaceType(stackedIface, type);
+    //             NetworkStatsFactory.noteStackedIface(stackedIface, baseIface);
+    //         }
+    //     } catch (RemoteException ignored) {
+    //     }
+
+    //     NotifyNetworkCallbacks(newNetwork, IConnectivityManager::CALLBACK_AVAILABLE);
+    // } else if (nascent) {
+    //     // Only tear down newly validated networks here.  Leave unvalidated to either become
+    //     // validated (and get evaluated against peers, one losing here) or
+    //     // NetworkMonitor reports a bad network and we tear it down then.
+    //     // Networks that have been up for a while and are validated should be torn down via
+    //     // the lingering process so communication on that network is given time to wrap up.
+    //     // TODO: Could teardown unvalidated networks when their NetworkCapabilities
+    //     // satisfy no NetworkRequests.
+    //     if (DBG) Slogger::D(TAG, "Validated network turns out to be unwanted.  Tear it down.");
+    //     TeardownUnneededNetwork(newNetwork);
+    // }
+}
+
+void CConnectivityService::RematchAllNetworksAndRequests(
+    /* [in] */ INetworkAgentInfo* changed,
+    /* [in] */ Int32 oldScore)
+{
+    // // TODO: This may get slow.  The "changed" parameter is provided for future optimization
+    // // to avoid the slowness.  It is not simply enough to process just "changed", for
+    // // example in the case where "changed"'s score decreases and another network should begin
+    // // satifying a NetworkRequest that "changed" currently satisfies.
+
+    // // Optimization: Only reprocess "changed" if its score improved.  This is safe because it
+    // // can only add more NetworkRequests satisfied by "changed", and this is exactly what
+    // // RematchNetworkAndRequests() handles.
+    // if (changed != NULL && oldScore < changed->GetCurrentScore()) {
+    //     RematchNetworkAndRequests(changed, false);
+    // } else {
+    //     for (NetworkAgentInfo nai : mNetworkAgentInfos.values()) {
+    //         RematchNetworkAndRequests(nai, false);
+    //     }
+    // }
+}
+
+void CConnectivityService::UpdateInetCondition(
+    /* [in] */ INetworkAgentInfo* nai,
+    /* [in] */ Boolean valid)
+{
+    // // Don't bother updating until we've graduated to validated at least once.
+    // if (!nai.validated) return;
+    // // For now only update icons for default connection.
+    // // TODO: Update WiFi and cellular icons separately. b/17237507
+    // if (!IsDefaultNetwork(nai)) return;
+
+    // Int32 newInetCondition = valid ? 100 : 0;
+    // // Don't repeat publish.
+    // if (newInetCondition == mDefaultInetConditionPublished) return;
+
+    // mDefaultInetConditionPublished = newInetCondition;
+    // sendInetConditionBroadcast(nai->mNetworkInfo);
+}
+
+void CConnectivityService::NotifyLockdownVpn(
+    /* [in] */ INetworkAgentInfo* nai)
+{
+    // if (mLockdownTracker != NULL) {
+    //     if (nai != NULL && nai.isVPN()) {
+    //         mLockdownTracker.onVpnStateChanged(nai->mNetworkInfo);
+    //     } else {
+    //         mLockdownTracker.onNetworkInfoChanged();
+    //     }
+    // }
+}
+
+void CConnectivityService::UpdateNetworkInfo(
+    /* [in] */ INetworkAgentInfo* networkAgent,
+    /* [in] */ INetworkInfo* newInfo)
+{
+    // NetworkInfo.State state = newInfo->GetState();
+    // NetworkInfo oldInfo = NULL;
+    // synchronized (networkAgent) {
+    //     oldInfo = networkAgent->mNetworkInfo;
+    //     networkAgent->mNetworkInfo = newInfo;
+    // }
+    // NotifyLockdownVpn(networkAgent);
+
+    // if (oldInfo != NULL && oldInfo->GetState() == state) {
+    //     if (VDBG) Slogger::D(TAG, "ignoring duplicate network state non-change");
+    //     return;
+    // }
+    // if (DBG) {
+    //     log(networkAgent.name() + " EVENT_NETWORK_INFO_CHANGED, going from " +
+    //             (oldInfo == NULL ? "NULL" : oldInfo->GetState()) +
+    //             " to " + state);
+    // }
+
+    // if (state == NetworkInfo.State.CONNECTED && !networkAgent.created) {
+    //     try {
+    //         // This should never fail.  Specifying an already in use NetID will cause failure.
+    //         if (networkAgent.isVPN()) {
+    //             mNetd.createVirtualNetwork(networkAgent.network.netId,
+    //                     !networkAgent->mLinkProperties->GetDnsServers().isEmpty(),
+    //                     (networkAgent.networkMisc == NULL ||
+    //                         !networkAgent.networkMisc.allowBypass));
+    //         } else {
+    //             mNetd.createPhysicalNetwork(networkAgent.network.netId);
+    //         }
+    //     } catch (Exception e) {
+    //         Slogger::E(TAG, "Error creating network " + networkAgent.network.netId + ": "
+    //                 + e->GetMessage());
+    //         return;
+    //     }
+    //     networkAgent.created = true;
+    //     UpdateLinkProperties(networkAgent, NULL);
+    //     NotifyNetworkCallbacks(networkAgent, IConnectivityManager::CALLBACK_PRECHECK);
+    //     networkAgent.networkMonitor.SendMessage(NetworkMonitor::CMD_NETWORK_CONNECTED);
+    //     if (networkAgent.isVPN()) {
+    //         // Temporarily disable the default proxy (not global).
+    //         synchronized (mProxyLock) {
+    //             if (!mDefaultProxyDisabled) {
+    //                 mDefaultProxyDisabled = true;
+    //                 if (mGlobalProxy == NULL && mDefaultProxy != NULL) {
+    //                     sendProxyBroadcast(NULL);
+    //                 }
+    //             }
+    //         }
+    //         // TODO: support proxy per network.
+    //     }
+    //     // Consider network even though it is not yet validated.
+    //     RematchNetworkAndRequests(networkAgent, false);
+    // } else if (state == NetworkInfo.State.DISCONNECTED ||
+    //         state == NetworkInfo.State.SUSPENDED) {
+    //     networkAgent.asyncChannel.disconnect();
+    //     if (networkAgent.isVPN()) {
+    //         synchronized (mProxyLock) {
+    //             if (mDefaultProxyDisabled) {
+    //                 mDefaultProxyDisabled = false;
+    //                 if (mGlobalProxy == NULL && mDefaultProxy != NULL) {
+    //                     sendProxyBroadcast(mDefaultProxy);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+}
+
+void CConnectivityService::UpdateNetworkScore(
+    /* [in] */ INetworkAgentInfo* nai,
+    /* [in] */ Int32 score)
+{
+    // if (DBG) Slogger::D(TAG, "UpdateNetworkScore for " + nai.name() + " to " + score);
+    // if (score < 0) {
+    //     Slogger::E(TAG, "UpdateNetworkScore for " + nai.name() + " got a negative score (" + score +
+    //             ").  Bumping score to min of 0");
+    //     score = 0;
+    // }
+
+    // final Int32 oldScore = nai->GetCurrentScore();
+    // nai->SetCurrentScore(score);
+
+    // if (nai.created) RematchAllNetworksAndRequests(nai, oldScore);
+
+    // SendUpdatedScoreToFactories(nai);
+}
+
+// notify only this one new request of the current state
+void CConnectivityService::NotifyNetworkCallback(
+    /* [in] */ INetworkAgentInfo* nai,
+    /* [in] */ NetworkRequestInfo* nri)
+{
+//     Int32 notifyType = IConnectivityManager::CALLBACK_AVAILABLE;
+//     // TODO - read state from monitor to decide what to send.
+// //        if (nai.networkMonitor.isLingering()) {
+// //            notifyType = NetworkCallbacks.LOSING;
+// //        } else if (nai.networkMonitor.isEvaluating()) {
+// //            notifyType = NetworkCallbacks.CallCallbackForRequest(request, nai, notifyType);
+// //        }
+//     CallCallbackForRequest(nri, nai, notifyType);
+}
+
+void CConnectivityService::SendLegacyNetworkBroadcast(
+    /* [in] */ INetworkAgentInfo* nai,
+    /* [in] */ Boolean connected,
+    /* [in] */ Int32 type)
+{
+    // // The NetworkInfo we actually send out has no bearing on the real
+    // // state of affairs. For example, if the default connection is mobile,
+    // // and a request for HIPRI has just gone away, we need to pretend that
+    // // HIPRI has just disconnected. So we need to set the type to HIPRI and
+    // // the state to DISCONNECTED, even though the network is of type MOBILE
+    // // and is still connected.
+    // NetworkInfo info = new NetworkInfo(nai->mNetworkInfo);
+    // info->SetType(type);
+    // if (connected) {
+    //     info->SetDetailedState(DetailedState.CONNECTED, NULL, info->GetExtraInfo());
+    //     sendConnectedBroadcastDelayed(info, getConnectivityChangeDelay());
+    // } else {
+    //     info->SetDetailedState(DetailedState.DISCONNECTED, NULL, info->GetExtraInfo());
+    //     Intent intent = new Intent(IConnectivityManager::CONNECTIVITY_ACTION);
+    //     intent.putExtra(IConnectivityManager::EXTRA_NETWORK_INFO, info);
+    //     intent.putExtra(IConnectivityManager::EXTRA_NETWORK_TYPE, info->GetType());
+    //     if (info.isFailover()) {
+    //         intent.putExtra(IConnectivityManager::EXTRA_IS_FAILOVER, true);
+    //         nai->mNetworkInfo->SetFailover(false);
+    //     }
+    //     if (info->GetReason() != NULL) {
+    //         intent.putExtra(IConnectivityManager::EXTRA_REASON, info->GetReason());
+    //     }
+    //     if (info->GetExtraInfo() != NULL) {
+    //         intent.putExtra(IConnectivityManager::EXTRA_EXTRA_INFO, info->GetExtraInfo());
+    //     }
+    //     NetworkAgentInfo newDefaultAgent = NULL;
+    //     if (nai.networkRequests->Get(mDefaultRequest.requestId) != NULL) {
+    //         newDefaultAgent = mNetworkForRequestId->Get(mDefaultRequest.requestId);
+    //         if (newDefaultAgent != NULL) {
+    //             intent.putExtra(IConnectivityManager::EXTRA_OTHER_NETWORK_INFO,
+    //                     newDefaultAgent->mNetworkInfo);
+    //         } else {
+    //             intent.putExtra(IConnectivityManager::EXTRA_NO_CONNECTIVITY, true);
+    //         }
+    //     }
+    //     intent.putExtra(IConnectivityManager::EXTRA_INET_CONDITION,
+    //             mDefaultInetConditionPublished);
+    //     final Intent immediateIntent = new Intent(intent);
+    //     immediateIntent->SetAction(CONNECTIVITY_ACTION_IMMEDIATE);
+    //     sendStickyBroadcast(immediateIntent);
+    //     sendStickyBroadcastDelayed(intent, getConnectivityChangeDelay());
+    //     if (newDefaultAgent != NULL) {
+    //         sendConnectedBroadcastDelayed(newDefaultAgent->mNetworkInfo,
+    //         getConnectivityChangeDelay());
+    //     }
+    // }
+}
+
+void CConnectivityService::NotifyNetworkCallbacks(
+    /* [in] */ INetworkAgentInfo* networkAgent,
+    /* [in] */ Int32 notifyType)
+{
+    // if (DBG) Slogger::D(TAG, "notifyType " + NotifyTypeToName(notifyType) + " for " + networkAgent.name());
+    // for (Int32 i = 0; i < networkAgent.networkRequests.size(); i++) {
+    //     NetworkRequest nr = networkAgent.networkRequests.valueAt(i);
+    //     NetworkRequestInfo nri = mNetworkRequests->Get(nr);
+    //     if (VDBG) log(" sending notification for " + nr);
+    //     CallCallbackForRequest(nri, networkAgent, notifyType);
+    // }
+}
+
+String CConnectivityService::NotifyTypeToName(
+    /* [in] */ Int32 notifyType)
+{
+    // switch (notifyType) {
+    //     case IConnectivityManager::CALLBACK_PRECHECK:    return "PRECHECK";
+    //     case IConnectivityManager::CALLBACK_AVAILABLE:   return "AVAILABLE";
+    //     case IConnectivityManager::CALLBACK_LOSING:      return "LOSING";
+    //     case IConnectivityManager::CALLBACK_LOST:        return "LOST";
+    //     case IConnectivityManager::CALLBACK_UNAVAIL:     return "UNAVAILABLE";
+    //     case IConnectivityManager::CALLBACK_CAP_CHANGED: return "CAP_CHANGED";
+    //     case IConnectivityManager::CALLBACK_IP_CHANGED:  return "IP_CHANGED";
+    //     case IConnectivityManager::CALLBACK_RELEASED:    return "RELEASED";
+    // }
+    return String("UNKNOWN");
+}
+
+AutoPtr<ILinkProperties> CConnectivityService::GetLinkPropertiesForTypeInternal(
+    /* [in] */ Int32 networkType)
+{
+    // NetworkAgentInfo nai = mLegacyTypeTracker->GetNetworkForType(networkType);
+    // if (nai != NULL) {
+    //     synchronized (nai) {
+    //         return new LinkProperties(nai->mLinkProperties);
+    //     }
+    // }
+    // return new LinkProperties();
+    return NULL;
+}
+
+AutoPtr<INetworkInfo> CConnectivityService::GetNetworkInfoForType(
+    /* [in] */ Int32 networkType)
+{
+    // if (!mLegacyTypeTracker.isTypeSupported(networkType))
+    //     return NULL;
+
+    // NetworkAgentInfo nai = mLegacyTypeTracker->GetNetworkForType(networkType);
+    // if (nai != NULL) {
+    //     NetworkInfo result = new NetworkInfo(nai->mNetworkInfo);
+    //     result->SetType(networkType);
+    //     return result;
+    // } else {
+    //     NetworkInfo result = new NetworkInfo(
+    //             networkType, 0, ConnectivityManager->GetNetworkTypeName(networkType), "");
+    //     result->SetDetailedState(NetworkInfo.DetailedState.DISCONNECTED, NULL, NULL);
+    //     result->SetIsAvailable(true);
+    //     return result;
+    // }
+    return NULL;
+}
+
+AutoPtr<INetworkCapabilities> CConnectivityService::GetNetworkCapabilitiesForType(
+    /* [in] */ Int32 networkType)
+{
+    // NetworkAgentInfo nai = mLegacyTypeTracker->GetNetworkForType(networkType);
+    // if (nai != NULL) {
+    //     synchronized (nai) {
+    //         return new NetworkCapabilities(nai->mNetworkCapabilities);
+    //     }
+    // }
+    // return new NetworkCapabilities();
+    return NULL;
+}
+
+ECode CConnectivityService::AddVpnAddress(
+    /* [in] */ const String& address,
+    /* [in] */Int32 prefixLength,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    // FAIL_RETURN(ThrowIfLockdownEnabled())
+    // Int32 user = UserHandle::GetUserId(Binder::GetCallingUid());
+    // synchronized (mVpns) {
+    //     return mVpns->Get(user).addAddress(address, prefixLength);
+    // }
+    return NOERROR;
+}
+
+ECode CConnectivityService::RemoveVpnAddress(
+    /* [in] */ const String& address,
+    /* [in] */ Int32 prefixLength,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    // FAIL_RETURN(ThrowIfLockdownEnabled())
+    // Int32 user = UserHandle::GetUserId(Binder::GetCallingUid());
+    // synchronized (mVpns) {
+    //     return mVpns->Get(user).removeAddress(address, prefixLength);
+    // }
+    return NOERROR;
+}
+
+ECode CConnectivityService::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    Object::ToString(str);
+    return NOERROR;
 }
 
 } //namespace Server

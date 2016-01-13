@@ -3,6 +3,11 @@
 #define __ELASTOS_DROID_SERVER_CNETWORKPOLICYLISTENER_H__
 
 #include "_Elastos_Droid_Server_CNetworkPolicyListener.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Droid::Net::IIConnectivityManager;
+using Elastos::Droid::Net::IINetworkPolicyListener;
+using Elastos::Droid::Os::IBinder;
 
 namespace Elastos {
 namespace Droid {
@@ -33,6 +38,8 @@ public:
     CARAPI OnRestrictBackgroundChanged(
         /* [in] */ Boolean restrictBackground);
 
+    CARAPI ToString(
+        /* [out] */ String* str);
 private:
     CConnectivityService* mOwner;
 };

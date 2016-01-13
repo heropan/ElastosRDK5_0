@@ -35,9 +35,6 @@ public:
         /* [in] */ const String& subscriberId,
         /* [in] */ const String& networkId);
 
-    CARAPI constructor(
-        /* [in] */ IParcel* in);
-
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* parcel);
 

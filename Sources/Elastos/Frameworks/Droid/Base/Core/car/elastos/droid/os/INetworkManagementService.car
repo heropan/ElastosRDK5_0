@@ -362,9 +362,7 @@ module
          * reference-counting if an idletimer already exists for given
          * {@code iface}.
          *
-         * {@code label} usually represents the network type of {@code iface}.
-         * Caller should ensure that {@code label} for an {@code iface} remains the
-         * same for all calls to addIdleTimer.
+         * {@code type} is the type of the interface, such as TYPE_MOBILE.
          *
          * Every {@code addIdleTimer} should be paired with a
          * {@link removeIdleTimer} to cleanup when the network disconnects.
@@ -372,7 +370,7 @@ module
         AddIdleTimer(
             [in] String iface,
             [in] Int32 timeout,
-            [in] String label);
+            [in] Int32 type);
 
         /**
          * Removes idletimer for an interface.

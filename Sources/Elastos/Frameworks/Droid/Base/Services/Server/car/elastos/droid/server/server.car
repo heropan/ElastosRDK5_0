@@ -709,67 +709,38 @@ module
 
 //     } // Wm
 
-    // class CNetworkPolicyListener {
-    //     constructor(
-    //         [in] IIConnectivityManager* connectivityService);
 
-    //     interface IINetworkPolicyListener;
-    //     interface IBinder;
-    // }
+        singleton class CSystemServer {
+            interface ISystemServer;
+        }
 
-    // class CDataActivityObserver {
-    //     constructor(
-    //         [in] IIConnectivityManager* connectivityService);
+        class CNetworkPolicyListener {
+            constructor(
+                [in] IIConnectivityManager* connectivityService);
 
-    //     interface IINetworkManagementEventObserver;
-    //     interface IBinder;
-    // }
+            interface IINetworkPolicyListener;
+            interface IBinder;
+        }
 
-    // [local]
-    // class CConnectivityService {
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IINetworkManagementService* netManager,
-    //         [in] INetworkStatsService* statsService,
-    //         [in] IINetworkPolicyManager* policyManager);
+        class CDataActivityObserver {
+            constructor(
+                [in] IIConnectivityManager* connectivityService);
 
-    //     interface IIConnectivityManager;
-    //     interface IBinder;
-    // }
+            interface IINetworkManagementEventObserver;
+            interface IBinder;
+        }
 
-//     [local]
-//     class CInputMethodManagerService {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] Handle32 windowManagerService);
+        [local]
+        class CConnectivityService {
+            constructor(
+                [in] IContext* ctx,
+                [in] IINetworkManagementService* netManager,
+                [in] IINetworkStatsService* statsService,
+                [in] IINetworkPolicyManager* policyManager);
 
-//         interface IIInputMethodManager;
-//         interface IServiceConnection;
-//         interface IHandlerCallback;
-//     }
-
-//     class CInputMethodManagerServiceMethodCallback {
-//         constructor(
-//             [in] IIInputMethod* method,
-//             [in] Handle32 inputMethodManagerService);
-
-//         interface IInputMethodCallback;
-//     }
-
-//     class CInputMethodManagerServiceUserSwitchObserver {
-//         constructor(
-//             [in] Handle32 inputMethodManagerService);
-
-//         interface IUserSwitchObserver;
-//     }
-
-//     [local]
-//     class CNetworkManagementService {
-//         constructor(
-//             [in] IContext* ctx);
-
-//         interface IINetworkManagementService;
-//     }
+            interface IIConnectivityManager;
+            interface IBinder;
+        }
 
 //     [local]
 //     class CMountService {
@@ -779,11 +750,6 @@ module
 //         interface IMountService;
 //         interface INativeDaemonConnectorCallbacks;
 //     }
-
-    singleton class CSystemServer {
-        interface ISystemServer;
-    }
-
 
 //     [local]
 //     class CRecognitionManagerService {

@@ -20,7 +20,7 @@ module
      * state of network connectivity.
      */
     /** {@hide} */
-    [deprecated, local]
+    [deprecated]
     interface IIConnectivityManager {
         GetActiveNetworkInfo(
             [out] INetworkInfo** result);

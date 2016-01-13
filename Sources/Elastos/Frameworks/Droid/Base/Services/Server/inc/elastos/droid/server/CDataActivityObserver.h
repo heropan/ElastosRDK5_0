@@ -3,14 +3,16 @@
 #define __ELASTOS_DROID_SERVER_CDATAACTIVITYOBSERVER_H__
 
 #include "_Elastos_Droid_Server_CDataActivityObserver.h"
-#include "CConnectivityService.h"
-#include "elastos/droid/net/BaseNetworkObserver.h"
+#include "elastos/droid/server/net/BaseNetworkObserver.h"
 
+using Elastos::Droid::Net::IIConnectivityManager;
 using Elastos::Droid::Server::Net::BaseNetworkObserver;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
+
+class CConnectivityService;
 
 CarClass(CDataActivityObserver), public BaseNetworkObserver
 {

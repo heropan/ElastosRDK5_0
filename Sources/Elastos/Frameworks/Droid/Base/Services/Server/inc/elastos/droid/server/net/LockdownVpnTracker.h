@@ -4,7 +4,7 @@
 
 #include "_Elastos.Droid.Server.h"
 #include "elastos/droid/ext/frameworkext.h"
-// #include "elastos/droid/server/connectivity/Vpn.h"
+#include "elastos/droid/server/connectivity/Vpn.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 
 using Elastos::Droid::App::IPendingIntent;
@@ -18,6 +18,7 @@ using Elastos::Droid::Net::ILinkAddress;
 using Elastos::Droid::Net::INetworkInfo;
 using Elastos::Droid::Os::IINetworkManagementService;
 using Elastos::Droid::Internal::Net::IVpnProfile;
+using Elastos::Droid::Server::Connectivity::Vpn;
 using Elastos::Utility::IList;
 
 namespace Elastos {
@@ -66,7 +67,7 @@ public:
         /* [in] */ IContext* context,
         /* [in] */ IINetworkManagementService* netService,
         /* [in] */ IIConnectivityManager* connService,
-        /* [in] */ IBaseNetworkStateTracker* vpn,
+        /* [in] */ Vpn* vpn,
         /* [in] */ IVpnProfile* profile);
 
     static CARAPI_(Boolean) IsEnabled();

@@ -107,7 +107,7 @@ ECode LockdownVpnTracker::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IINetworkManagementService* netService,
     /* [in] */ IIConnectivityManager* connService,
-    /* [in] */ IBaseNetworkStateTracker* vpn,
+    /* [in] */ Vpn* vpn,
     /* [in] */ IVpnProfile* profile)
 {
     mResetReceiver = new InnerSub_BroadcastReceiver(this);

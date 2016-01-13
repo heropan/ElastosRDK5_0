@@ -18,7 +18,7 @@
 #include <Elastos.Droid.Os.h>
 #include <Elastos.Droid.Net.h>
 #include <Elastos.Droid.Graphics.h>
-#include <Elastos.Droid.Keystore.h>
+#include <Elastos.Droid.KeyStore.h>
 #include <Elastos.Droid.Internal.h>
 #include <Elastos.CoreLibrary.IO.h>
 #include <Elastos.CoreLibrary.Net.h>
@@ -108,7 +108,7 @@ using Elastos::Droid::Internal::Net::IVpnConfigHelper;
 using Elastos::Droid::Internal::Net::CVpnConfigHelper;
 using Elastos::Droid::Internal::Net::ILegacyVpnInfoHelper;
 using Elastos::Droid::Internal::Net::CLegacyVpnInfoHelper;
-using Elastos::Droid::Keystore::Security::ICredentials;
+using Elastos::Droid::KeyStore::Security::ICredentials;
 
 using Elastos::Core::CoreUtils;
 using Elastos::Core::StringUtils;

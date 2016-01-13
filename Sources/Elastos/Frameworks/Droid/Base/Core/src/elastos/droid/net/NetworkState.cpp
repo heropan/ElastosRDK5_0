@@ -33,12 +33,6 @@ ECode NetworkState::constructor(
     return NOERROR;
 }
 
-ECode NetworkState::constructor(
-    /* [in] */ IParcel* in)
-{
-    return ReadFromParcel(in);
-}
-
 ECode NetworkState::ReadFromParcel(
     /* [in] */ IParcel* source)
 {

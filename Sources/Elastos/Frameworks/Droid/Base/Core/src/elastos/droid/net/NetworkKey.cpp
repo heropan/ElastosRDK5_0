@@ -28,23 +28,6 @@ NetworkKey::NetworkKey()
     : mType(0)
 {}
 
-ECode NetworkKey::constructor(
-    /* [in] */ IParcel* in)
-{
-    in->ReadInt32(&mType);
-    AutoPtr<IInterface> obj;
-    switch (mType) {
-        case TYPE_WIFI:
-            in->ReadInterfacePtr((Handle32*)&obj);
-            mWifiKey = IWifiKey::Probe(obj);
-            break;
-        default:
-            Logger::E("NetworkKey", "Parcel has unknown type: %d", mType);
-            return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return NOERROR;
-}
-
 ECode NetworkKey::Equals(
     /* [in] */ IInterface* o,
     /* [out] */ Boolean* result)

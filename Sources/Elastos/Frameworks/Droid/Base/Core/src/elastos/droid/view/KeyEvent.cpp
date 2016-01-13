@@ -452,12 +452,6 @@ ECode KeyEvent::constructor(
     return NOERROR;
 }
 
-ECode KeyEvent::constructor(
-    /* [in] */ IParcel* in)
-{
-    return ReadFromParcel(in);
-}
-
 AutoPtr<IKeyEvent> KeyEvent::Obtain()
 {
     AutoPtr<IKeyEvent> ev;
@@ -1498,7 +1492,13 @@ ECode KeyEvent::CreateFromParcelBody(
     /* [in] */ IParcel* in,
     /* [out] */ IKeyEvent** newEvent)
 {
-    return CKeyEvent::New(in, newEvent);
+    VALIDATE_NOT_NULL(newEvent)
+    AutoPtr<CKeyEvent> event;
+    CKeyEvent::NewByFriend((CKeyEvent**)&event);
+    event->ReadFromParcel(in);
+    *newEvent = (IKeyEvent*)event.Get();
+    REFCOUNT_ADD(*newEvent);
+    return NOERROR;
 }
 
 ECode KeyEvent::ReadFromParcel(

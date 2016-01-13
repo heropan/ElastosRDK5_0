@@ -73,9 +73,6 @@ public:
         /* [out] */ IWifiKey** result);
 
 private:
-    CARAPI constructor(
-        /* [in] */ IParcel* in);
-
     /**
      * The type of this network.
      * @see #TYPE_WIFI

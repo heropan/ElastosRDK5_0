@@ -1,9 +1,24 @@
 
-#include "CNetworkPolicyListener.h"
-#include "CConnectivityService.h"
+#include "elastos/droid/server/CNetworkPolicyListener.h"
+#include "elastos/droid/server/CConnectivityService.h"
+#include <elastos/core/AutoLock.h>
+#include <Elastos.Droid.Net.h>
+#include <Elastos.Droid.Os.h>
+#include <Elastos.Droid.App.h>
+#include <Elastos.Droid.Utility.h>
+#include <Elastos.CoreLibrary.Utility.h>
+#include <Elastos.CoreLibrary.IO.h>
 
+using Elastos::Droid::App::IAlarmManager;
+using Elastos::Droid::Net::IProxyInfo;
+using Elastos::Droid::Net::INetworkRequest;
 using Elastos::Droid::Net::INetworkPolicyManager;
 using Elastos::Droid::Net::CConnectivityManagerHelper;
+using Elastos::Droid::Net::EIID_IINetworkPolicyListener;
+using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::Utility::ISparseArray;
+using Elastos::Utility::IHashMap;
+using Elastos::IO::IFile;
 
 namespace Elastos {
 namespace Droid {
@@ -14,7 +29,7 @@ CAR_INTERFACE_IMPL_2(CNetworkPolicyListener, Object, IINetworkPolicyListener, IB
 CAR_OBJECT_IMPL(CNetworkPolicyListener)
 
 ECode CNetworkPolicyListener::constructor(
-    /* [in] */ Handle32 owner)
+    /* [in] */ IIConnectivityManager* owner)
 {
     mOwner = (CConnectivityService*)owner;
     return NOERROR;
@@ -90,6 +105,14 @@ ECode CNetworkPolicyListener::OnRestrictBackgroundChanged(
             }
         }
     }
+    return NOERROR;
+}
+
+ECode CNetworkPolicyListener::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    Object::ToString(str);
     return NOERROR;
 }
 
