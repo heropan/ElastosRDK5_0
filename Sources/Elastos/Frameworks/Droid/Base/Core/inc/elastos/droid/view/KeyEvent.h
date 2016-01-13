@@ -491,10 +491,6 @@ public:
         /* [in] */ IKeyEvent* origEvent,
         /* [in] */ Int32 action);
 
-    // private
-    CARAPI constructor(
-        /* [in] */ IParcel* in);
-
     //@Override
     CARAPI Copy(
         /* [out] */ IInputEvent** event);

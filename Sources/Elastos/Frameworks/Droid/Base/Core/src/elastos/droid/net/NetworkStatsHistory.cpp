@@ -377,12 +377,6 @@ ECode NetworkStatsHistory::constructor(
 }
 
 ECode NetworkStatsHistory::constructor(
-    /* [in] */ IParcel* in)
-{
-    return ReadFromParcel(in);
-}
-
-ECode NetworkStatsHistory::constructor(
     /* [in] */ IDataInputStream* in)
 {
     Int32 version;

@@ -24,6 +24,7 @@ SOURCES += IpConfiguration.cpp
 SOURCES += IpPrefix.cpp
 SOURCES += LinkAddress.cpp
 SOURCES += LinkProperties.cpp
+SOURCES += CLinkPropertiesHelper.cpp
 SOURCES += LinkQualityInfo.cpp
 SOURCES += LocalServerSocket.cpp
 SOURCES += LocalSocket.cpp

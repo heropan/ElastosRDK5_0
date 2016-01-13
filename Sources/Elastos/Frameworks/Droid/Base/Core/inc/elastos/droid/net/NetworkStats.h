@@ -47,9 +47,6 @@ public:
         /* [in] */ Int64 elapsedRealtime,
         /* [in] */ Int32 initialSize);
 
-    CARAPI constructor(
-        /* [in] */ IParcel* parcel);
-
     // @Override
     CARAPI Clone(
         /* [out] */ INetworkStats** result);

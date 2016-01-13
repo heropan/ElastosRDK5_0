@@ -79,21 +79,21 @@ const String NetworkMonitor::EXTRA_RESPONSE_TIMESTAMP_MS("extra_response_timesta
 const Int32 NetworkMonitor::NETWORK_TEST_RESULT_VALID = 0;
 const Int32 NetworkMonitor::NETWORK_TEST_RESULT_INVALID = 1;
 
-const Int32 NetworkMonitor::BASE = IProtocol::BASE_NETWORK_MONITOR;
-const Int32 NetworkMonitor::CMD_NETWORK_CONNECTED = BASE + 1;
-const Int32 NetworkMonitor::EVENT_NETWORK_TESTED = BASE + 2;
-const Int32 NetworkMonitor::CMD_NETWORK_LINGER = BASE + 3;
-const Int32 NetworkMonitor::CMD_LINGER_EXPIRED = BASE + 4;
-const Int32 NetworkMonitor::EVENT_NETWORK_LINGER_COMPLETE = BASE + 5;
-const Int32 NetworkMonitor::CMD_REEVALUATE = BASE + 6;
-const Int32 NetworkMonitor::CMD_NETWORK_DISCONNECTED = BASE + 7;
-const Int32 NetworkMonitor::CMD_FORCE_REEVALUATION = BASE + 8;
-const Int32 NetworkMonitor::CMD_CAPTIVE_PORTAL_LOGGED_IN = BASE + 9;
-const Int32 NetworkMonitor::CMD_USER_WANTS_SIGN_IN = BASE + 10;
-const Int32 NetworkMonitor::EVENT_PROVISIONING_NOTIFICATION = BASE + 11;
-const Int32 NetworkMonitor::EVENT_APP_BYPASSED_CAPTIVE_PORTAL = BASE + 12;
-const Int32 NetworkMonitor::EVENT_NO_APP_RESPONSE = BASE + 13;
-const Int32 NetworkMonitor::EVENT_APP_INDICATES_SIGN_IN_IMPOSSIBLE = BASE + 14;
+const Int32 NetworkMonitor::BASE; // = IProtocol::BASE_NETWORK_MONITOR;
+const Int32 NetworkMonitor::CMD_NETWORK_CONNECTED; // = BASE + 1;
+const Int32 NetworkMonitor::EVENT_NETWORK_TESTED; // = BASE + 2;
+const Int32 NetworkMonitor::CMD_NETWORK_LINGER; // = BASE + 3;
+const Int32 NetworkMonitor::CMD_LINGER_EXPIRED; // = BASE + 4;
+const Int32 NetworkMonitor::EVENT_NETWORK_LINGER_COMPLETE; // = BASE + 5;
+const Int32 NetworkMonitor::CMD_REEVALUATE; // = BASE + 6;
+const Int32 NetworkMonitor::CMD_NETWORK_DISCONNECTED; // = BASE + 7;
+const Int32 NetworkMonitor::CMD_FORCE_REEVALUATION; // = BASE + 8;
+const Int32 NetworkMonitor::CMD_CAPTIVE_PORTAL_LOGGED_IN; // = BASE + 9;
+const Int32 NetworkMonitor::CMD_USER_WANTS_SIGN_IN; // = BASE + 10;
+const Int32 NetworkMonitor::EVENT_PROVISIONING_NOTIFICATION; // = BASE + 11;
+const Int32 NetworkMonitor::EVENT_APP_BYPASSED_CAPTIVE_PORTAL; // = BASE + 12;
+const Int32 NetworkMonitor::EVENT_NO_APP_RESPONSE; // = BASE + 13;
+const Int32 NetworkMonitor::EVENT_APP_INDICATES_SIGN_IN_IMPOSSIBLE; // = BASE + 14;
 
 const Boolean NetworkMonitor::DBG = TRUE;
 const String NetworkMonitor::TAG("NetworkMonitor");

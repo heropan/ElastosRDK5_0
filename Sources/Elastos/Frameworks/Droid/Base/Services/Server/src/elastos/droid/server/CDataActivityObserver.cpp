@@ -1,5 +1,6 @@
 
-#include "CDataActivityObserver.h"
+#include "elastos/droid/server/CDataActivityObserver.h"
+#include "elastos/droid/server/CConnectivityService.h"
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;

@@ -28,7 +28,7 @@ using Elastos::Droid::Net::INetworkCapabilities;
 using Elastos::Droid::Net::IIConnectivityManager;
 using Elastos::Droid::Net::IINetworkManagementEventObserver;
 using Elastos::Droid::Net::NetworkInfoDetailedState;
-using Elastos::Droid::Keystore::Security::IKeyStore;
+using Elastos::Droid::KeyStore::Security::IKeyStore;
 using Elastos::Droid::Internal::Net::IVpnConfig;
 using Elastos::Droid::Internal::Net::IVpnProfile;
 using Elastos::Droid::Internal::Net::ILegacyVpnInfo;

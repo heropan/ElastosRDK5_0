@@ -3,7 +3,7 @@
 #include <Elastos.CoreLibrary.IO.h>
 #include <Elastos.CoreLibrary.Security.h>
 #include <Elastos.CoreLibrary.Utility.h>
-#include "Elastos.Droid.Keystore.h"
+#include "Elastos.Droid.KeyStore.h"
 #include "Elastos.Droid.Net.h"
 #include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/content/CIntentFilter.h"
@@ -22,7 +22,7 @@ using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IIntentFilter;
-using Elastos::Droid::Keystore::Security::IKeyChain;
+using Elastos::Droid::KeyStore::Security::IKeyChain;
 using Elastos::Droid::Net::Http::CX509TrustManagerExtensions;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Utility::CPairHelper;

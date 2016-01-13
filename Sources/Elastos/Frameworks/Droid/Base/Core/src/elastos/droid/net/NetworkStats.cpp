@@ -72,12 +72,6 @@ ECode NetworkStats::constructor(
     return NOERROR;
 }
 
-ECode NetworkStats::constructor(
-    /* [in] */ IParcel* parcel)
-{
-    return ReadFromParcel(parcel);
-}
-
 ECode NetworkStats::Clone(
     /* [out] */ INetworkStats** result)
 {

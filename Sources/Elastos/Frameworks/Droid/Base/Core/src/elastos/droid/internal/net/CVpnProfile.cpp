@@ -59,11 +59,13 @@ ECode CVpnProfile::constructor(
 
 ECode CVpnProfile::Decode(
     /* [in] */ const String& key,
-    /* [in] */ const ArrayOf<Byte>& value,
+    /* [in] */ ArrayOf<Byte>* value,
     /* [out] */ IVpnProfile** result)
 {
     VALIDATE_NOT_NULL(result);
     *result = NULL;
+    VALIDATE_NOT_NULL(value)
+
     // try {
     if (key.IsNull()) {
         return NOERROR;
@@ -71,7 +73,7 @@ ECode CVpnProfile::Decode(
 
     AutoPtr<ArrayOf<String> > values;
     //TODO: String[] values = new String(value, StandardCharsets.UTF_8).split("\0", -1);
-    StringUtils::Split(String(value), "\0", -1, (ArrayOf<String>**)&values);
+    StringUtils::Split(String(*value), "\0", -1, (ArrayOf<String>**)&values);
     // There can be 14 or 15 values in ICS MR1.
     if (values->GetLength() < 14 || values->GetLength() > 15) {
         return NOERROR;

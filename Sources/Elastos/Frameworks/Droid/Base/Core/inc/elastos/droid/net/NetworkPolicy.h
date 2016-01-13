@@ -49,9 +49,6 @@ public:
         /* [in] */ Boolean metered,
         /* [in] */ Boolean inferred);
 
-    CARAPI constructor(
-        /* [in] */ IParcel* in);
-
     /**
      * Test if given measurement is over {@link #warningBytes}.
      */

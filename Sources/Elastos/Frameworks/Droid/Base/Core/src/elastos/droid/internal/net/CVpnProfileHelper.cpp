@@ -13,7 +13,7 @@ CAR_SINGLETON_IMPL(CVpnProfileHelper)
 
 ECode CVpnProfileHelper::Decode(
     /* [in] */ const String& key,
-    /* [in] */ const ArrayOf<Byte>& value,
+    /* [in] */ ArrayOf<Byte>* value,
     /* [out] */ IVpnProfile** profile)
 {
     return CVpnProfile::Decode(key, value, profile);

@@ -18,15 +18,6 @@ ECode NetworkQuotaInfo::constructor(
     return NOERROR;
 }
 
-ECode NetworkQuotaInfo::constructor(
-    /* [in] */ IParcel* in)
-{
-    in->ReadInt64(&mEstimatedBytes);
-    in->ReadInt64(&mSoftLimitBytes);
-    in->ReadInt64(&mHardLimitBytes);
-    return NOERROR;
-}
-
 ECode NetworkQuotaInfo::GetEstimatedBytes(
     /* [out] */ Int64* result)
 {

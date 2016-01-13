@@ -4,28 +4,32 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "_Elastos_Droid_Server_CConnectivityService.h"
-#include "elastos/droid/database/ContentObserver.h"
-#include "elastos/droid/net/CaptivePortalTracker.h"
-#include "elastos/droid/net/LockdownVpnTracker.h"
-#include "elastos/droid/net/NetworkStateTracker.h"
-#include "elastos/droid/os/Handler.h"
 #include "elastos/droid/server/connectivity/PermissionMonitor.h"
 #include "elastos/droid/server/connectivity/Nat464Xlat.h"
 #include "elastos/droid/server/connectivity/CTethering.h"
 #include "elastos/droid/server/connectivity/Vpn.h"
 #include "elastos/droid/server/connectivity/DataConnectionStats.h"
+#include "elastos/droid/server/connectivity/PacManager.h"
+#include "elastos/droid/server/net/LockdownVpnTracker.h"
+#include "elastos/droid/database/ContentObserver.h"
+#include "elastos/droid/os/Handler.h"
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/HashMap.h>
 
+using Elastos::Droid::App::IAlarmManager;
 using Elastos::Droid::Database::ContentObserver;
-using Elastos::Droid::Net::CaptivePortalTracker;
+using Elastos::Droid::Net::INetworkRequest;
+using Elastos::Droid::Net::ILinkQualityInfo;
 using Elastos::Droid::Net::ILinkProperties;
 using Elastos::Droid::Net::IConnectivityManagerHelper;
 using Elastos::Droid::Net::IINetworkPolicyManager;
+using Elastos::Droid::Net::IProxyInfo;
+using Elastos::Droid::Net::INetwork;
 using Elastos::Droid::Net::INetworkInfo;
 using Elastos::Droid::Net::INetworkConfig;
-using Elastos::Droid::Net::INetworkManagementEventObserver;
-using Elastos::Droid::Net::INetworkPolicyListener;
+using Elastos::Droid::Net::INetworkMisc;
+using Elastos::Droid::Net::IINetworkManagementEventObserver;
+using Elastos::Droid::Net::IINetworkPolicyListener;
 using Elastos::Droid::Net::INetworkQuotaInfo;
 using Elastos::Droid::Net::INetworkState;
 using Elastos::Droid::Net::INetworkStateTracker;
@@ -35,17 +39,24 @@ using Elastos::Droid::Net::IProxyProperties;
 using Elastos::Droid::Net::IRouteInfo;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IINetworkManagementService;
+using Elastos::Droid::Utility::ISparseArray;
+using Elastos::Droid::Internal::Net::IVpnConfig;
+using Elastos::Droid::Internal::Net::IVpnProfile;
+using Elastos::Droid::Internal::Net::ILegacyVpnInfo;
+using Elastos::Droid::Internal::Utility::IIndentingPrintWriter;
 using Elastos::Droid::Server::Connectivity::PermissionMonitor;
 using Elastos::Droid::Server::Connectivity::Nat464Xlat;
 using Elastos::Droid::Server::Connectivity::CTethering;
 using Elastos::Droid::Server::Connectivity::Vpn;
+using Elastos::Droid::Server::Connectivity::INetworkAgentInfo;
+using Elastos::Droid::Server::Connectivity::DataConnectionStats;
+using Elastos::Droid::Server::Connectivity::PacManager;
 using Elastos::Droid::Server::Net::LockdownVpnTracker;
-using Elastos::Droid::Internal::Net::IVpnConfig;
-using Elastos::Droid::Internal::Net::IVpnProfile;
-using Elastos::Droid::Internal::Net::ILegacyVpnInfo;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::HashSet;
-using Elastos::Security::IKeyStore;
+using Elastos::Utility::IHashMap;
+using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
+using Elastos::IO::IFile;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
 using Elastos::Net::IInetAddress;
@@ -57,12 +68,13 @@ namespace Server {
 class CDataActivityObserver;
 
 CarClass(CConnectivityService)
+    , public Object
     , public IIConnectivityManager
     , public IBinder
 {
 public:
 
-    friend class InternalBroadcastReciver;
+    friend class InternalBroadcastReceiver;
     friend class NetworkStateTrackerHandler;
     friend class SettingsObserver;
     friend class CNetworkPolicyListener;
@@ -150,7 +162,7 @@ public:
          * are supported on this device.
          */
          AutoPtr<ArrayOf<IArrayList*> > mTypeLists;// ArrayList<NetworkAgentInfo> []
-         CConnectivityService* mHost;
+          CConnectivityService* mHost;
     };
 
 private:
@@ -181,16 +193,18 @@ private:
             /* [out] */ String* str);
 
     private:
+        friend class CConnectivityService;
+
         static const Boolean REQUEST;
         static const Boolean LISTEN;
 
-        AutoPtr<INetworkRequest> request;
+        AutoPtr<INetworkRequest> mRequest;
         AutoPtr<IBinder> mBinder;
         Int32 mPid;
         Int32 mUid;
-        AutoPtr<IMessenger> messenger;
-        Boolean isRequest;
-        CConnectivityService* mHost;
+        AutoPtr<IMessenger> mMessenger;
+        Boolean mIsRequest;
+         CConnectivityService* mHost;
     };
 
     class NetworkFactoryInfo
@@ -229,19 +243,19 @@ private:
             /* [out] */ String* info)
         {
             VALIDATE_NOT_NULL(info);
-            *info = String("CConnectivityService::UserIntentReceiver: ");
+            *info = String("::UserIntentReceiver: ");
             (*info).AppendFormat("%p", this);
             return NOERROR;
         }
     private:
-        CConnectivityService* mHost;
+         CConnectivityService* mHost;
     };
 
-    class InternalBroadcastReciver
+    class InternalBroadcastReceiver
         : public BroadcastReceiver
     {
     public:
-        InternalBroadcastReciver(
+        InternalBroadcastReceiver(
             /* [in] */ CConnectivityService* host)
             : mHost(host)
         {}
@@ -254,12 +268,12 @@ private:
             /* [out] */ String* info)
         {
             VALIDATE_NOT_NULL(info);
-            *info = String("CConnectivityService::InternalBroadcastReciver: ");
+            *info = String("::InternalBroadcastReceiver: ");
             (*info).AppendFormat("%p", this);
             return NOERROR;
         }
     private:
-        CConnectivityService* mHost;
+         CConnectivityService* mHost;
     };
 
     class PktCntSampleIntervalElapsedeceiver
@@ -278,12 +292,12 @@ private:
             /* [out] */ String* info)
         {
             VALIDATE_NOT_NULL(info);
-            *info = String("CConnectivityService::PktCntSampleIntervalElapsedeceiver: ");
+            *info = String("::PktCntSampleIntervalElapsedeceiver: ");
             (*info).AppendFormat("%p", this);
             return NOERROR;
         }
     private:
-        CConnectivityService* mHost;
+         CConnectivityService* mHost;
     };
 
     class InternalHandler
@@ -301,7 +315,7 @@ private:
             /* [in] */ IMessage* msg);
 
     private:
-        CConnectivityService* mHost;
+         CConnectivityService* mHost;
     };
 
     // must be stateless - things change under us.
@@ -320,7 +334,7 @@ private:
             /* [in] */ IMessage* msg);
 
     private:
-        CConnectivityService* mHost;
+         CConnectivityService* mHost;
     };
 
     class SettingsObserver
@@ -332,7 +346,7 @@ private:
             /* [in] */ Int32 what,
             /* [in] */ CConnectivityService* host);
 
-        CARAPI_(void) Observe(
+        CARAPI Observe(
             /* [in] */ IContext* context);
 
         CARAPI OnChange(
@@ -356,13 +370,13 @@ public:
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IINetworkManagementService* netd,
-        /* [in] */ INetworkStatsService* statsService,
+        /* [in] */ IINetworkStatsService* statsService,
         /* [in] */ IINetworkPolicyManager* policyManager);
 
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IINetworkManagementService* netManager,
-        /* [in] */ INetworkStatsService* statsService,
+        /* [in] */ IINetworkStatsService* statsService,
         /* [in] */ IINetworkPolicyManager* policyManager,
         /* [in] */ Handle32 netFac);
 
@@ -631,7 +645,7 @@ public:
 
     CARAPI CheckMobileProvisioning(
         /* [in] */ Int32 suggestedTimeOutMs,
-        /* [out] */ Int32** result);
+        /* [out] */ Int32* result);
 
     //@Override
     CARAPI GetMobileRedirectedProvisioningUrl(
@@ -658,7 +672,6 @@ public:
 
     //@Override
     CARAPI GetActiveLinkQualityInfo(
-        /* [in] */ Int32 networkType,
         /* [out] */ ILinkQualityInfo** info);
 
     //@Override
@@ -671,7 +684,7 @@ public:
         /* [in] */ IMessenger* messenger,
         /* [in] */ Int32 timeoutMs,
         /* [in] */ IBinder* binder,
-        /* [in] */ IInt32 legacyType,
+        /* [in] */ Int32 legacyType,
         /* [out] */ INetworkRequest** request);
 
     //@Override
@@ -725,6 +738,8 @@ public:
         /* [in] */ Int32 prefixLength,
         /* [out] */ Boolean* result);
 
+    CARAPI ToString(
+        /* [out] */ String* str);
 protected:
     //@Override
     CARAPI_(void) Dump(
@@ -786,12 +801,12 @@ private:
     /*
      * @deprecated Uses mLegacyTypeTracker; cannot deal with multiple Networks of the same type.
      */
-    AutoPtr<INetworkInfo> CConnectivityService::GetFilteredNetworkInfo(
+    AutoPtr<INetworkInfo> GetFilteredNetworkInfo(
         /* [in] */ INetworkInfo* info,
         /* [in] */ Int32 networkType,
         /* [in] */ Int32 uid);
 
-    AutoPtr<INetworkInfo> CConnectivityService::GetFilteredNetworkInfo(
+    AutoPtr<INetworkInfo> GetFilteredNetworkInfo(
         /* [in] */ INetworkAgentInfo* nai,
         /* [in] */ Int32 uid);
 
@@ -825,6 +840,12 @@ private:
     CARAPI_(void) HandleReleaseNetworkRequest(
         /* [in] */ INetworkRequest* request,
         /* [in] */ Int32 callingUid);
+
+    CARAPI_(Boolean) AddLegacyRouteToHost(
+        /* [in] */ ILinkProperties* lp,
+        /* [in] */ IInetAddress* addr,
+        /* [in] */ Int32 netId,
+        /* [in] */ Int32 uid);
 
     CARAPI_(void) HandleSetDependencyMet(
         /* [in] */ Int32 networkType,
@@ -924,16 +945,6 @@ private:
 
     CARAPI ThrowIfLockdownEnabled();
 
-    static CARAPI EnforceSystemUid();
-
-    CARAPI_(void) HandleEventClearNetTransitionWakelock(
-        /* [in] */ Int32 arg1);
-
-    CARAPI_(void) HandleEventRestoreDns();
-
-    CARAPI_(void) HandleEventVpnStateChanged(
-        /* [in] */ INetworkInfo* info);
-
     /**
      * Have mobile data fail fast if enabled.
      *
@@ -945,7 +956,7 @@ private:
     void SetProvNotificationVisible(
         /* [in] */ Boolean visible,
         /* [in] */ Int32 networkType,
-        /* [in] */ const String& action)
+        /* [in] */ const String& action);
 
     /**
      * Show or hide network provisioning notificaitons.
@@ -982,7 +993,7 @@ private:
         /* [in] */ IPendingIntent* intent);
 
     void HandleRegisterNetworkFactory(
-        /* [in] */ INetworkFactoryInfo* nfi);
+        /* [in] */ NetworkFactoryInfo* nfi);
 
     void HandleUnregisterNetworkFactory(
         /* [in] */ IMessenger* messenger);
@@ -1038,7 +1049,7 @@ private:
         /* [in] */ Int32 score);
 
     void CallCallbackForRequest(
-        /* [in] */ INetworkRequestInfo* nri,
+        /* [in] */ NetworkRequestInfo* nri,
         /* [in] */ INetworkAgentInfo* networkAgent,
         /* [in] */ Int32 notificationType);
 
@@ -1114,7 +1125,7 @@ private:
     // notify only this one new request of the current state
     void NotifyNetworkCallback(
         /* [in] */ INetworkAgentInfo* nai,
-        /* [in] */ INetworkRequestInfo* nri);
+        /* [in] */ NetworkRequestInfo* nri);
 
     void SendLegacyNetworkBroadcast(
         /* [in] */ INetworkAgentInfo* nai,
@@ -1258,7 +1269,7 @@ private:
     static const Boolean VDBG;
 
     // network sampling debugging
-    static Boolean SAMPLE_DBG;
+    static const Boolean SAMPLE_DBG;
 
     static const Boolean LOGD_RULES;
 
@@ -1297,6 +1308,7 @@ private:
     AutoPtr<IKeyStore> mKeyStore;
 
     HashMap<Int32, AutoPtr<Vpn> > mVpns;
+    Object mVpnsLock;
 
     Boolean mLockdownEnabled;
     AutoPtr<LockdownVpnTracker> mLockdownTracker;
@@ -1370,6 +1382,8 @@ private:
     // track the global proxy.
     AutoPtr<IProxyInfo> mGlobalProxy;
 
+    AutoPtr<PacManager> mPacManager;
+
     AutoPtr<SettingsObserver> mSettingsObserver;
 
     AutoPtr<IUserManager> mUserManager;
@@ -1427,11 +1441,11 @@ private:
     static const Int32 PROVISIONING;
 
     static const String NOTIFICATION_ID;
-    volatile Boolean mIsNotificationVisible;;
+    volatile Boolean mIsNotificationVisible;
 
-    AutoPtr<INetworkManagementEventObserver> mDataActivityObserver;
+    AutoPtr<IINetworkManagementEventObserver> mDataActivityObserver;
 
-    AutoPtr<INetworkPolicyListener> mPolicyListener;
+    AutoPtr<IINetworkPolicyListener> mPolicyListener;
 
     AutoPtr<IBroadcastReceiver> mUserPresentReceiver;
 
@@ -1446,9 +1460,9 @@ private:
      * and the are the highest scored network available.
      * the are keyed off the Requests requestId.
      */
-    AutoPtr<ISparseArray＞ mNetworkForRequestId; //=new SparseArray<NetworkAgentInfo>();
+    AutoPtr<ISparseArray> mNetworkForRequestId; //=new SparseArray<NetworkAgentInfo>();
 
-    AutoPtr<ISparseArray＞ mNetworkForNetId; //= new SparseArray<NetworkAgentInfo>();
+    AutoPtr<ISparseArray> mNetworkForNetId; //= new SparseArray<NetworkAgentInfo>();
 
     // NetworkAgentInfo keyed off its connecting messenger
     // TODO - eval if we can reduce the number of lists/hashmaps/sparsearrays

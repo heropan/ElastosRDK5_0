@@ -298,6 +298,10 @@ module
         interface IParcelable;
     }
 
+    singleton class CLinkPropertiesHelper {
+        interface ILinkPropertiesHelper;
+    }
+
     class CLinkPropertiesCompareResult {
         constructor();
 
@@ -482,12 +486,9 @@ module
             [in] Boolean metered,
             [in] Boolean inferred);
 
-        constructor(
-            [in] IParcel* parcel);
-
+        interface INetworkPolicy;
         interface IParcelable;
         interface IComparable;
-        interface INetworkPolicy;
     }
 
     class CNetworkPolicyManager {
@@ -507,11 +508,8 @@ module
             [in] Int64 softLimitBytes,
             [in] Int64 hardLimitBytes);
 
-        constructor(
-            [in] IParcel* parcel);
-
-        interface IParcelable;
         interface INetworkQuotaInfo;
+        interface IParcelable;
     }
 
     class CNetworkRequest {
@@ -523,8 +521,8 @@ module
         constructor(
             [in] INetworkRequest* that);
 
-        interface IParcelable;
         interface INetworkRequest;
+        interface IParcelable;
     }
 
     class CNetworkRequestBuilder {
@@ -566,11 +564,8 @@ module
             [in] String subscriberId,
             [in] String networkId);
 
-        constructor(
-            [in] IParcel* parcel);
-
-        interface IParcelable;
         interface INetworkState;
+        interface IParcelable;
     }
 
     class CNetworkStats {
@@ -578,11 +573,8 @@ module
             [in] Int64 elapsedRealtime,
             [in] Int32 initialSize);
 
-        constructor(
-            [in] IParcel* parcel);
-
-        interface IParcelable;
         interface INetworkStats;
+        interface IParcelable;
     }
 
     singleton class CNetworkStatsHelper {
@@ -631,11 +623,8 @@ module
             [in] INetworkStatsHistory* existing,
             [in] Int64 bucketDuration);
 
-        constructor(
-            [in] IParcel* parcel);
-
-        interface IParcelable;
         interface INetworkStatsHistory;
+        interface IParcelable;
     }
 
     singleton class CNetworkStatsHistoryHelper {
@@ -662,8 +651,8 @@ module
             [in] String subscriberId,
             [in] String networkId);
 
-        interface IParcelable;
         interface INetworkTemplate;
+        interface IParcelable;
     }
 
     singleton class CNetworkTemplateHelper {
@@ -711,8 +700,8 @@ module
         constructor(
             [in] IProxyInfo* source);
 
-        interface IParcelable;
         interface IProxyInfo;
+        interface IParcelable;
     }
 
     class CRouteInfo {
@@ -753,8 +742,8 @@ module
             [in] IIpPrefix* destination,
             [in] Int32 type);
 
-        interface IParcelable;
         interface IRouteInfo;
+        interface IParcelable;
     }
 
     singleton class CRouteInfoHelper {
@@ -768,8 +757,8 @@ module
             [in] Int32 bucketWidth,
             [in] ArrayOf<Byte>* rssiBuckets);
 
-        interface IParcelable;
         interface IRssiCurve;
+        interface IParcelable;
     }
 
     class CSSLCertificateSocketFactory {
@@ -823,8 +812,8 @@ module
             [in] INetworkKey* networkKey,
             [in] IRssiCurve* rssiCurve);
 
-        interface IParcelable;
         interface IScoredNetwork;
+        interface IParcelable;
     }
 
     class CSntpClient {
@@ -839,8 +828,8 @@ module
         constructor(
             [in] IStaticIpConfiguration* source);
 
-        interface IParcelable;
         interface IStaticIpConfiguration;
+        interface IParcelable;
     }
 
     singleton class CTrafficStats {
@@ -858,8 +847,8 @@ module
             [in] Int32 startUid,
             [in] Int32 stopUid);
 
-        interface IParcelable;
         interface IUidRange;
+        interface IParcelable;
     }
 
     singleton class CUidRangeHelper {
@@ -931,16 +920,16 @@ module
             [in] String ssid,
             [in] String bssid);
 
-        interface IParcelable;
         interface IWifiKey;
+        interface IParcelable;
     }
 
     class CWifiLinkQualityInfo {
         constructor();
 
+        interface IWifiLinkQualityInfo;
         interface ILinkQualityInfo;
         interface IParcelable;
-        interface IWifiLinkQualityInfo;
     }
 
     } // namespace Net
@@ -1170,8 +1159,8 @@ module
         constructor(
             [in] IDnsSdTxtRecord* src);
 
-        interface IParcelable;
         interface IDnsSdTxtRecord;
+        interface IParcelable;
     }
 
     class CNsdManager {
@@ -1189,8 +1178,8 @@ module
             [in] String sn,
             [in] String rt);
 
-        interface IParcelable;
         interface INsdServiceInfo;
+        interface IParcelable;
     }
 
     } // namespace Nsd

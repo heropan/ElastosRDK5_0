@@ -141,11 +141,11 @@ module
             [in] Boolean saveLogin);
     }
 
-    [local]
+    [deprecated, local]
     interface IVpnProfileHelper {
         Decode(
             [in] String key,
-            [in] ArrayOf<Byte> value,
+            [in] ArrayOf<Byte>* value,
             [out] IVpnProfile** profile);
     }
 

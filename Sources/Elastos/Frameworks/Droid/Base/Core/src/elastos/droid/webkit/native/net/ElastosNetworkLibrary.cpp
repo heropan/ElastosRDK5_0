@@ -1,7 +1,7 @@
 
 #include <Elastos.CoreLibrary.Net.h>
 #include <Elastos.CoreLibrary.Utility.h>
-#include "Elastos.Droid.Keystore.h"
+#include "Elastos.Droid.KeyStore.h"
 #include "_Elastos.Droid.Core.h"
 #include "_Elastos.Droid.Telephony.h"
 #include "elastos/droid/content/CIntent.h"
@@ -16,7 +16,7 @@
 
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Keystore::Security::IKeyChain;
+using Elastos::Droid::KeyStore::Security::IKeyChain;
 //using Elastos::Droid::Telephony::CTelephonyManager;
 using Elastos::Droid::Telephony::ITelephonyManager;
 using Elastos::Droid::Webkit::Net::CertificateMimeType;

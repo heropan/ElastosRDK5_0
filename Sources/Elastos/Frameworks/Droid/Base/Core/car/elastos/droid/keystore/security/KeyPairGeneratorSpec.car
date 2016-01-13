@@ -6,12 +6,12 @@ module
     using interface Elastos.Math.IBigInteger;
     using interface Elastos.Utility.IDate;
 
-    interface Elastos.Droid.Keystore.Security.IKeyPairGeneratorSpec;
+    interface Elastos.Droid.KeyStore.Security.IKeyPairGeneratorSpec;
     interface Elastos.Droid.Content.IContext;
 
     namespace Elastos {
     namespace Droid {
-    namespace Keystore {
+    namespace KeyStore {
     namespace Security {
 
     /**
@@ -216,7 +216,7 @@ module
     }
 
     }// namespace Security
-    }// namespace Keystore
+    }// namespace KeyStore
     }// namespace Droid
     }// namespace Elastos
 

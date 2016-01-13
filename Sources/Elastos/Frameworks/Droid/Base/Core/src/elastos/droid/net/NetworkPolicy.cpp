@@ -60,12 +60,6 @@ ECode NetworkPolicy::constructor(
     return NOERROR;
 }
 
-ECode NetworkPolicy::constructor(
-    /* [in] */ IParcel* in)
-{
-    return ReadFromParcel(in);
-}
-
 ECode NetworkPolicy::IsOverWarning(
     /* [in] */ Int64 totalBytes,
     /* [out] */ Boolean* result)

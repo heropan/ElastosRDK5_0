@@ -159,7 +159,7 @@ module
     merge("../../../car/elastos/droid/inputmethodservice.car");
     }
 
-    submodule Elastos.Droid.Keystore {
+    submodule Elastos.Droid.KeyStore {
     merge("../../../car/elastos/droid/keystore.car");
     }
 

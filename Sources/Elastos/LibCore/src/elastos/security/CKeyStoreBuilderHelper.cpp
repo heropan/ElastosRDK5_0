@@ -5,8 +5,10 @@
 namespace Elastos {
 namespace Security {
 
-CAR_SINGLETON_IMPL(CKeyStoreBuilderHelper);
-CAR_INTERFACE_IMPL(CKeyStoreBuilderHelper, Singleton, IKeyStoreBuilderHelper);
+CAR_SINGLETON_IMPL(CKeyStoreBuilderHelper)
+
+CAR_INTERFACE_IMPL(CKeyStoreBuilderHelper, Singleton, IKeyStoreBuilderHelper)
+
 ECode CKeyStoreBuilderHelper::NewInstance(
     /* [in] */ IKeyStore* keyStore,
     /* [in] */ IKeyStoreProtectionParameter* protectionParameter,

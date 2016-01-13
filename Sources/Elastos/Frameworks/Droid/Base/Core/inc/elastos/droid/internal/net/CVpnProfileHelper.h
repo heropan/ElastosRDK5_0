@@ -23,7 +23,7 @@ public:
 
     CARAPI Decode(
         /* [in] */ const String& key,
-        /* [in] */ const ArrayOf<Byte>& value,
+        /* [in] */ ArrayOf<Byte>* value,
         /* [out] */ IVpnProfile** profile);
 };
 

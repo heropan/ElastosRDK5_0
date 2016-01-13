@@ -295,19 +295,19 @@ public:
     // 3. a broken network (e.g. DNS failed, connect failed, HTTP request failed).
     static const Int32 NETWORK_TEST_RESULT_INVALID;// = 1;
 
-    static const Int32 BASE;// = Protocol.BASE_NETWORK_MONITOR;
+    static const Int32 BASE = 0x00082000;// = IProtocol::BASE_NETWORK_MONITOR;
     /**
      * Inform NetworkMonitor that their network is connected.
      * Initiates Network Validation.
      */
-    static const Int32 CMD_NETWORK_CONNECTED;// = BASE + 1;
+    static const Int32 CMD_NETWORK_CONNECTED = 0x00082000 + 1;// = BASE + 1;
 
     /**
      * Inform ConnectivityService that the network has been tested.
      * obj = NetworkAgentInfo
      * arg1 = One of the NETWORK_TESTED_RESULT_* constants.
      */
-    static const Int32 EVENT_NETWORK_TESTED;// = BASE + 2;
+    static const Int32 EVENT_NETWORK_TESTED = 0x00082000 + 2;// = BASE + 2;
 
     /**
      * Inform NetworkMonitor to linger a network.  The Monitor should
@@ -319,50 +319,50 @@ public:
      * it indicates further desire to keep the network alive and so
      * the LINGER is aborted.
      */
-    static const Int32 CMD_NETWORK_LINGER;// = BASE + 3;
+    static const Int32 CMD_NETWORK_LINGER = 0x00082000 + 3;// = BASE + 3;
 
     /**
      * Message to self indicating linger delay has expired.
      * arg1 = Token to ignore old messages.
      */
-    static const Int32 CMD_LINGER_EXPIRED;// = BASE + 4;
+    static const Int32 CMD_LINGER_EXPIRED = 0x00082000 + 4;// = BASE + 4;
 
     /**
      * Inform ConnectivityService that the network LINGER period has
      * expired.
      * obj = NetworkAgentInfo
      */
-    static const Int32 EVENT_NETWORK_LINGER_COMPLETE;// = BASE + 5;
+    static const Int32 EVENT_NETWORK_LINGER_COMPLETE = 0x00082000 + 5;// = BASE + 5;
 
     /**
      * Message to self indicating it's time to evaluate a network's connectivity.
      * arg1 = Token to ignore old messages.
      */
-    static const Int32 CMD_REEVALUATE;// = BASE + 6;
+    static const Int32 CMD_REEVALUATE = 0x00082000 + 6;// = BASE + 6;
 
     /**
      * Inform NetworkMonitor that the network has disconnected.
      */
-    static const Int32 CMD_NETWORK_DISCONNECTED;// = BASE + 7;
+    static const Int32 CMD_NETWORK_DISCONNECTED = 0x00082000 + 7;// = BASE + 7;
 
     /**
      * Force evaluation even if it has succeeded in the past.
      * arg1 = UID responsible for requesting this reeval.  Will be billed for data.
      */
-    static const Int32 CMD_FORCE_REEVALUATION;// = BASE + 8;
+    static const Int32 CMD_FORCE_REEVALUATION = 0x00082000 + 8;// = BASE + 8;
 
     /**
      * Message to self indicating captive portal login is complete.
      * arg1 = Token to ignore old messages.
      * arg2 = 1 if we should use this network, 0 otherwise.
      */
-    static const Int32 CMD_CAPTIVE_PORTAL_LOGGED_IN;// = BASE + 9;
+    static const Int32 CMD_CAPTIVE_PORTAL_LOGGED_IN = 0x00082000 + 9;// = BASE + 9;
 
     /**
      * Message to self indicating user desires to log into captive portal.
      * arg1 = Token to ignore old messages.
      */
-    static const Int32 CMD_USER_WANTS_SIGN_IN;// = BASE + 10;
+    static const Int32 CMD_USER_WANTS_SIGN_IN = 0x00082000 + 10;// = BASE + 10;
 
     /**
      * Request ConnectivityService display provisioning notification.
@@ -370,58 +370,58 @@ public:
      * arg2    = NetID.
      * obj     = Intent to be launched when notification selected by user, null if !arg1.
      */
-    static const Int32 EVENT_PROVISIONING_NOTIFICATION;// = BASE + 11;
+    static const Int32 EVENT_PROVISIONING_NOTIFICATION = 0x00082000 + 11;// = BASE + 11;
 
     /**
      * Message to self indicating sign-in app bypassed captive portal.
      */
-    static const Int32 EVENT_APP_BYPASSED_CAPTIVE_PORTAL;// = BASE + 12;
+    static const Int32 EVENT_APP_BYPASSED_CAPTIVE_PORTAL = 0x00082000 + 12;// = BASE + 12;
 
     /**
      * Message to self indicating no sign-in app responded.
      */
-    static const Int32 EVENT_NO_APP_RESPONSE;// = BASE + 13;
+    static const Int32 EVENT_NO_APP_RESPONSE = 0x00082000 + 13;// = BASE + 13;
 
     /**
      * Message to self indicating sign-in app indicates sign-in is not possible.
      */
-    static const Int32 EVENT_APP_INDICATES_SIGN_IN_IMPOSSIBLE;// = BASE + 14;
+    static const Int32 EVENT_APP_INDICATES_SIGN_IN_IMPOSSIBLE = 0x00082000 + 14;// = BASE + 14;
 
     Boolean mSystemReady;
 private:
-    static const Boolean DBG;// = true;
-    static const String TAG;// = "NetworkMonitor";
-    static const String DEFAULT_SERVER;// = "clients3.google.com";
-    static const Int32 SOCKET_TIMEOUT_MS;// = 10000;
+    static const Boolean DBG;
+    static const String TAG;
+    static const String DEFAULT_SERVER;
+    static const Int32 SOCKET_TIMEOUT_MS;
 
-    static const String PERMISSION_ACCESS_NETWORK_CONDITIONS;// = "android.permission.ACCESS_NETWORK_CONDITIONS";
+    static const String PERMISSION_ACCESS_NETWORK_CONDITIONS;
 
     // Keep these in sync with CaptivePortalLoginActivity.java.
     // Intent broadcast from CaptivePortalLogin indicating sign-in is complete.
     // Extras:
     //     EXTRA_TEXT       = netId
     //     LOGGED_IN_RESULT = "1" if we should use network, "0" if not.
-    static const String ACTION_CAPTIVE_PORTAL_LOGGED_IN;// = "android.net.netmon.captive_portal_logged_in";
-    static const String LOGGED_IN_RESULT;// = "result";
+    static const String ACTION_CAPTIVE_PORTAL_LOGGED_IN;
+    static const String LOGGED_IN_RESULT;
 
-    static const String LINGER_DELAY_PROPERTY;// = "persist.netmon.linger";
+    static const String LINGER_DELAY_PROPERTY;
     // Default to 30s linger time-out.
-    static const Int32 DEFAULT_LINGER_DELAY_MS;// = 30000;
+    static const Int32 DEFAULT_LINGER_DELAY_MS;
     Int32 mLingerDelayMs;
-    Int32 mLingerToken;// = 0;
+    Int32 mLingerToken;
 
     // Negative values disable reevaluation.
-    static const String REEVALUATE_DELAY_PROPERTY;// = "persist.netmon.reeval_delay";
+    static const String REEVALUATE_DELAY_PROPERTY;
     // Default to 5s reevaluation delay.
-    static const Int32 DEFAULT_REEVALUATE_DELAY_MS;// = 5000;
-    static const Int32 MAX_RETRIES;// = 10;
+    static const Int32 DEFAULT_REEVALUATE_DELAY_MS;
+    static const Int32 MAX_RETRIES;
     Int32 mReevaluateDelayMs;
     Int32 mReevaluateToken;
-    static const Int32 INVALID_UID;// = -1;
-    Int32 mUidResponsibleForReeval;// = INVALID_UID;
+    static const Int32 INVALID_UID;
+    Int32 mUidResponsibleForReeval;
 
-    Int32 mCaptivePortalLoggedInToken;// = 0;
-    Int32 mUserPromptedToken;// = 0;
+    Int32 mCaptivePortalLoggedInToken;
+    Int32 mUserPromptedToken;
 
     AutoPtr<IContext> mContext;
     AutoPtr<IHandler> mConnectivityServiceHandler;
@@ -431,10 +431,10 @@ private:
     AutoPtr<IAlarmManager> mAlarmManager;
 
     String mServer;
-    Boolean mIsCaptivePortalCheckEnabled;// = false;
+    Boolean mIsCaptivePortalCheckEnabled;
 
     // Set if the user explicitly selected "Do not use this network" in captive portal sign-in app.
-    Boolean mUserDoesNotWant;// = false;
+    Boolean mUserDoesNotWant;
 
     AutoPtr<State> mDefaultState;
     AutoPtr<State> mOfflineState;

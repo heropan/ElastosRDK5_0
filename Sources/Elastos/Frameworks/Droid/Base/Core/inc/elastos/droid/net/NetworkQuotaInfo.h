@@ -29,10 +29,6 @@ public:
         /* [in] */ Int64 softLimitBytes,
         /* [in] */ Int64 hardLimitBytes);
 
-    /** {@hide} */
-    CARAPI constructor(
-        /* [in] */ IParcel* in);
-
     CARAPI GetEstimatedBytes(
         /* [out] */ Int64* result);
 

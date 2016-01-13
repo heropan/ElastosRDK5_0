@@ -52,9 +52,6 @@ public:
         /* [in] */ Int64 bucketDuration);
 
     CARAPI constructor(
-        /* [in] */ IParcel* in);
-
-    CARAPI constructor(
         /* [in] */ IDataInputStream* in);
 
     CARAPI WriteToStream(

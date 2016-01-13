@@ -718,10 +718,6 @@ module
             [in] IKeyEvent* origEvent,
             [in] Int32 action);
 
-        // private
-        constructor(
-            [in] IParcel* parcel);
-
         constructor();
 
         interface IKeyEvent;
