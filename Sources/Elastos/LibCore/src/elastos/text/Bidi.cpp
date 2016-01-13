@@ -153,11 +153,7 @@ ECode Bidi::constructor(
 
     Int64 ubidi = 0ll;
     //try {
-    ECode ec = CreateUBiDi(text, 0, embeddings, 0, length, flags, &ubidi);
-    if (FAILED(ec)) {
-        Ubidi_close(ubidi);
-        return ec;
-    }
+    FAIL_RETURN(CreateUBiDi(text, 0, embeddings, 0, length, flags, &ubidi));
     ReadBidiInfo(ubidi);
     //} finally {
     Ubidi_close(ubidi);
@@ -195,12 +191,8 @@ ECode Bidi::constructor(
 
     Int64 ubidi = 0ll;
     //try {
-    ECode ec = CreateUBiDi(text, textStart, embeddings, embStart,
-            paragraphLength, flags, &ubidi);
-    if (FAILED(ec)) {
-        Ubidi_close(ubidi);
-        return ec;
-    }
+    FAIL_RETURN(CreateUBiDi(text, textStart, embeddings, embStart,
+            paragraphLength, flags, &ubidi));
     ReadBidiInfo(ubidi);
     //} finally {
     Ubidi_close(ubidi);
@@ -364,23 +356,23 @@ ECode Bidi::CreateLineBidi(
     Int32 dir = isLefttoRight ? IBidi::DIRECTION_LEFT_TO_RIGHT : IBidi::DIRECTION_RIGHT_TO_LEFT;
     Int64 parent = 0ll;
 
-    ECode ec = CreateUBiDi(text, 0, embeddings, 0, mLength, dir, &parent);
-    if (FAILED(ec)) {
-        Ubidi_close(parent);
-        return ec;
-    }
+    FAIL_RETURN(CreateUBiDi(text, 0, embeddings, 0, mLength, dir, &parent));
+    ECode ec = NOERROR;
     if (lineStart == lineLimit) {
-        return CreateEmptyLineBidi(parent, lineBidi);
+        ec = CreateEmptyLineBidi(parent, lineBidi);
     }
-
-    AutoPtr<IBidi> temp;
-    Int64 line;
-    Ubidi_setLine(parent, lineStart, lineLimit, &line);
-    //TODO: is CBidi::New(line, (IBidi**)&temp) correct?
-    ASSERT_SUCCEEDED(CBidi::New(line, (IBidi**)&temp));
-    *lineBidi = temp;
-    REFCOUNT_ADD(*lineBidi);
-    return NOERROR;
+    else {
+        Int64 line;
+        Ubidi_setLine(parent, lineStart, lineLimit, &line);
+        AutoPtr<CBidi> temp = new CBidi();
+        ec = temp->constructor(line);
+        if (SUCCEEDED(ec)) {
+            *lineBidi = IBidi::Probe(temp);
+            REFCOUNT_ADD(*lineBidi);
+        }
+    }
+    Ubidi_close(parent);
+    return ec;
 }
 
 ECode Bidi::CreateEmptyLineBidi(
@@ -389,14 +381,14 @@ ECode Bidi::CreateEmptyLineBidi(
 {
     VALIDATE_NOT_NULL(lineBidi);
     // ICU4C doesn't allow this case, but the RI does.
-    AutoPtr<CBidi> result;
-    ASSERT_SUCCEEDED(CBidi::NewByFriend(parent, (CBidi**)&result));
+    AutoPtr<CBidi> result = new CBidi();
+    FAIL_RETURN(result->constructor(parent))
     result->mLength = 0;
     result->mOffsetLevel = NULL;
     result->mRuns = NULL;
     result->mUnidirectional = TRUE;
 
-    *lineBidi = (IBidi*)result->Probe(EIID_IBidi);
+    *lineBidi = IBidi::Probe(result);
     REFCOUNT_ADD(*lineBidi);
     return NOERROR;
 }
