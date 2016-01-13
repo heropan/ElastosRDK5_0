@@ -40,6 +40,12 @@ module
         IsValid(
             [out] Boolean * result);
 
+        GetDisplays(
+            [out] IArrayList** displays);
+
+        SetDisplays(
+            [in] IArrayList* displays);
+
     }
     } // namespace media
     } // namepsace Droid

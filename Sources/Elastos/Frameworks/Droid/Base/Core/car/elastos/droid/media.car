@@ -1577,6 +1577,22 @@ module
         interface ISubtitleControllerRenderer;
     }
 
+    class CSRTTrack {
+
+        constructor(
+            [in] IWebVttRenderingWidget* renderingWidget,
+            [in] IMediaFormat* format);
+
+        constructor(
+            [in] IHandler* eventHandler,
+            [in] IMediaFormat* format);
+
+        interface IWebVttCueListener;
+        interface ISubtitleTrack;
+        interface IMediaTimeProviderOnMediaTimeListener;
+        interface ISRTTrack;
+    }
+
     class CWebVttTrack {
 
         constructor(
@@ -1586,6 +1602,50 @@ module
         interface IWebVttCueListener;
         interface ISubtitleTrack;
         interface IMediaTimeProviderOnMediaTimeListener;
+    }
+
+    class CMediaRouterClientState {
+
+        constructor();
+
+        interface IMediaRouterClientState;
+        interface IParcelable;
+    }
+
+    class CMediaRouterClientStateRouteInfo {
+
+        constructor(
+            [in] String id);
+
+        constructor(
+            [in] IMediaRouterClientStateRouteInfo* other);
+
+        constructor();
+
+        interface IMediaRouterClientStateRouteInfo;
+        interface IParcelable;
+    }
+
+    class CRemoteDisplayState {
+
+        constructor();
+
+        interface IRemoteDisplayState;
+        interface IParcelable;
+    }
+
+    class CRemoteDisplayInfo {
+
+        constructor();
+
+        constructor(
+            [in] String id);
+
+        constructor(
+            [in] IRemoteDisplayStateRemoteDisplayInfo* other);
+
+        interface IRemoteDisplayStateRemoteDisplayInfo;
+        interface IParcelable;
     }
 
     } // namespace media

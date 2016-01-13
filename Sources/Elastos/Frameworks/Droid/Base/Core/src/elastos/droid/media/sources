@@ -117,7 +117,10 @@ SOURCES += MediaSyncEvent.cpp
 SOURCES += CMediaSyncEventHelper.cpp
 SOURCES += CResampleInputStream.cpp
 SOURCES += SRTRenderer.cpp
+SOURCES += SRTTrack.cpp
 SOURCES += WebVttTrack.cpp
+SOURCES += MediaRouterClientState.cpp
+SOURCES += RemoteDisplayState.cpp
 
 SOURCES += media.cpp
 
