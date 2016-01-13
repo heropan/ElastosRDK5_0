@@ -134,7 +134,7 @@ public:
     String mProcessName;    // name of the process
     // List of packages running in the process
     AutoPtr<IArrayMap> mPkgList;
-    HashSet<String> mPkgDeps;   // additional packages we have a dependency on
+    AutoPtr<HashSet<String> > mPkgDeps;   // additional packages we have a dependency on
     AutoPtr<IApplicationThread> mThread; // the actual proc...  may be null only if
                                 // 'persistent' is true (in which case we
                                 // are in the process of launching the app)
