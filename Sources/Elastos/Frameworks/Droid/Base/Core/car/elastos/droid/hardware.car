@@ -200,7 +200,11 @@ module
     interface Elastos.Droid.Os.IHandlerCallback;
     interface Elastos.Droid.Utility.IRational;
     interface Elastos.Droid.Utility.ISize;
+    interface Elastos.Droid.Hardware.Camera2.ICameraDevice;
+    interface Elastos.Droid.Hardware.Camera2.ICameraDeviceStateCallback;
+    interface Elastos.Droid.Hardware.Camera2.ICameraCaptureSessionStateCallback;
     interface Elastos.Droid.Hardware.Camera2.ICaptureRequest;
+    interface Elastos.Droid.Hardware.Camera2.ICameraCaptureSession;
     interface Elastos.Droid.Hardware.Camera2.ICameraCharacteristics;
     interface Elastos.Droid.Hardware.Camera2.IICameraDeviceUser;
     interface Elastos.Droid.Hardware.Camera2.IICameraDeviceCallbacks;
@@ -208,6 +212,7 @@ module
     interface Elastos.Droid.Hardware.Camera2.Impl.ICaptureResultExtras;
     interface Elastos.Droid.Hardware.Camera2.Impl.ICameraMetadataNativeKey;
     interface Elastos.Droid.Hardware.Camera2.Utils.ITypeReference;
+    interface Elastos.Droid.Hardware.Camera2.Dispatch.IDispatchable;
     interface Elastos.Droid.Hardware.IParameters;
     interface Elastos.Droid.Hardware.ICameraArea;
     interface Elastos.Droid.Hardware.IHardwareCamera;
@@ -640,6 +645,109 @@ module
             interface ICameraMetadataNative;
             interface IParcelable;
         }
+
+        [local]
+        class CCallbackProxiesDeviceStateCallbackProxy {
+            constructor();
+
+            constructor(
+                [in] IDispatchable* dispatchTarget);
+
+            interface ICameraDeviceStateCallback;
+            interface ICameraDeviceImplStateCallbackKK;
+            interface ICallbackProxiesDeviceStateCallbackProxy;
+        }
+
+        [local]
+        class CCallbackProxiesDeviceCaptureCallbackProxy {
+            constructor();
+
+            constructor(
+                [in] IDispatchable* dispatchTarget);
+
+            interface ICallbackProxiesDeviceCaptureCallbackProxy;
+        }
+
+        [local]
+        class CCallbackProxiesSessionStateCallbackProxy {
+            constructor();
+
+            constructor(
+                [in] IDispatchable* dispatchTarget);
+
+            interface ICallbackProxiesSessionStateCallbackProxy;
+        }
+
+        class CCameraCaptureSessionImpl {
+            constructor();
+
+            /**
+             * Create a new CameraCaptureSession.
+             *
+             * <p>The camera device must already be in the {@code IDLE} state when this is invoked.
+             * There must be no pending actions
+             * (e.g. no pending captures, no repeating requests, no flush).</p>
+             */
+            constructor(
+                [in] Int32 id,
+                [in] IList* outputs,
+                [in] ICameraCaptureSessionStateCallback* _callback,
+                [in] IHandler* stateHandler,
+                [in] ICameraDeviceImpl* deviceImpl,
+                [in] IHandler* deviceStateHandler,
+                [in] Boolean configureSuccess);
+
+            interface ICameraCaptureSessionImpl;
+            interface ICameraCaptureSession;
+            interface ICloseable;
+        }
+
+        class CCameraDeviceImplCaptureCallbackHolder {
+            constructor();
+
+            constructor(
+                [in] ICameraDeviceImplCaptureCallback* _callback,
+                [in] IList* requestList,
+                [in] IHandler* handler,
+                [in] Boolean repeating);
+
+            interface ICameraDeviceImplCaptureCallbackHolder;
+        }
+
+        class CCameraDeviceImplFrameNumberTracker {
+            constructor();
+
+            constructor(
+                [in] ICameraDeviceImpl* host);
+
+            interface ICameraDeviceImplFrameNumberTracker;
+        }
+
+        class CCameraDeviceImplCameraDeviceCallbacks {
+            constructor();
+
+            constructor(
+                [in] ICameraDeviceImpl* host);
+
+            interface ICameraDeviceImplCameraDeviceCallbacks;
+            interface IICameraDeviceCallbacks;
+            interface IBinder;
+        }
+
+        class CCameraDeviceImpl {
+            constructor();
+
+            constructor(
+                [in] String cameraId,
+                [in] ICameraDeviceStateCallback* _callback,
+                [in] IHandler* handler,
+                [in] ICameraCharacteristics* characteristics);
+
+            interface ICameraDeviceImpl;
+            interface ICameraDevice;
+            interface ICloseable;
+        }
+
     } //namespace Impl
 
     namespace Legacy {

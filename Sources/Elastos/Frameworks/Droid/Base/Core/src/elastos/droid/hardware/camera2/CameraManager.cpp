@@ -8,7 +8,7 @@
 #include "elastos/droid/hardware/camera2/legacy/LegacyMetadataMapper.h"
 #include "elastos/droid/hardware/camera2/legacy/CameraDeviceUserShim.h"
 #include "elastos/droid/hardware/camera2/impl/CCameraMetadataNative.h"
-//#include "elastos/droid/hardware/camera2/impl/CCameraDeviceImpl.h"
+#include "elastos/droid/hardware/camera2/impl/CCameraDeviceImpl.h"
 #include "elastos/droid/hardware/camera2/utils/BinderHolder.h"
 #include "elastos/droid/hardware/camera2/utils/CameraServiceBinderDecorator.h"
 #include "elastos/droid/utility/CArrayMap.h"
@@ -28,8 +28,9 @@ using Elastos::Droid::Hardware::Camera2::Legacy::CameraDeviceUserShim;
 using Elastos::Droid::Hardware::Camera2::Legacy::LegacyMetadataMapper;
 using Elastos::Droid::Hardware::Camera2::Legacy::ICameraDeviceUserShim;
 using Elastos::Droid::Hardware::Camera2::Impl::CCameraMetadataNative;
-//using Elastos::Droid::Hardware::Camera2::Impl::CCameraDeviceImpl;
+using Elastos::Droid::Hardware::Camera2::Impl::CCameraDeviceImpl;
 using Elastos::Droid::Hardware::Camera2::Impl::ICameraDeviceImpl;
+using Elastos::Droid::Hardware::Camera2::Impl::ICameraDeviceImplCameraDeviceCallbacks;
 using Elastos::Droid::Hardware::Camera2::Utils::IBinderHolder;
 using Elastos::Droid::Hardware::Camera2::Utils::BinderHolder;
 using Elastos::Droid::Hardware::Camera2::Utils::ICameraBinderDecorator;
@@ -516,7 +517,7 @@ ECode CameraManager::GetCameraCharacteristics(
 
 ECode CameraManager::OpenCameraDeviceUserAsync(
     /* [in] */ const String& cameraId,
-    /* [in] */ ICameraDeviceStateCallback* _callback,
+    /* [in] */ ICameraDeviceStateCallback* ccallback,
     /* [in] */ IHandler* handler,
     /* [out] */ ICameraDevice** _device)
 {
@@ -531,15 +532,14 @@ ECode CameraManager::OpenCameraDeviceUserAsync(
     synchronized (mLock) {
 
         AutoPtr<IICameraDeviceUser> cameraUser;
-
-        assert(0);
-        AutoPtr<ICameraDeviceImpl> deviceImpl;// =
-        //        CCameraDeviceImpl::New(cameraId, _callback, handler, characteristics);
+        AutoPtr<ICameraDeviceImpl> deviceImpl;
+        CCameraDeviceImpl::New(cameraId, ccallback, handler, characteristics, (ICameraDeviceImpl**)&deviceImpl);
 
         AutoPtr<IBinderHolder> holder = new BinderHolder();
 
-        AutoPtr<IICameraDeviceCallbacks> callbacks;
-        deviceImpl->GetCallbacks((IICameraDeviceCallbacks**)&callbacks);
+        AutoPtr<ICameraDeviceImplCameraDeviceCallbacks> _callbacks;
+        deviceImpl->GetCallbacks((ICameraDeviceImplCameraDeviceCallbacks**)&_callbacks);
+        AutoPtr<IICameraDeviceCallbacks> callbacks = IICameraDeviceCallbacks::Probe(_callbacks);
         Int32 id = StringUtils::ParseInt32(cameraId);
 
         //try {

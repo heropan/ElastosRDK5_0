@@ -7,6 +7,31 @@ module
     namespace Camera2 {
     namespace Impl {
 
+    // TODO: replace with codegen
+    /*
+     * @invoke
+     * interface ICameraDeviceStateCallback
+     * interface ICameraDeviceImplStateCallbackKK
+     */
+    interface ICallbackProxiesDeviceStateCallbackProxy {
+    }
+
+    //@SuppressWarnings("deprecation")
+    /*
+     * @invoke
+     * interface ICameraDeviceImplCaptureCallback
+     */
+    interface ICallbackProxiesDeviceCaptureCallbackProxy {
+    }
+
+    /*
+     * @invoke
+     * interface ICameraCaptureSessionStateCallback
+     */
+    interface ICallbackProxiesSessionStateCallbackProxy {
+
+    }
+
     /**
      * Proxy out invocations to the camera2 API callbacks into a {@link Dispatchable}.
      *
