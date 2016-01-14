@@ -13,7 +13,12 @@
 #include "elastos/droid/media/CUnstyledTextExtractor.h"
 #include "elastos/droid/media/CMediaSyncEvent.h"
 #include "elastos/droid/media/CSRTRenderer.h"
+#include "elastos/droid/media/CSRTTrack.h"
 #include "elastos/droid/media/CWebVttTrack.h"
+#include "elastos/droid/media/CMediaRouterClientState.h"
+#include "elastos/droid/media/CMediaRouterClientStateRouteInfo.h"
+#include "elastos/droid/media/CRemoteDisplayState.h"
+#include "elastos/droid/media/CRemoteDisplayInfo.h"
 
 namespace Elastos {
 namespace Droid {
@@ -34,7 +39,12 @@ CAR_OBJECT_IMPL(CTextTrackCue)
 CAR_OBJECT_IMPL(CUnstyledTextExtractor)
 CAR_OBJECT_IMPL(CMediaSyncEvent)
 CAR_OBJECT_IMPL(CSRTRenderer)
+CAR_OBJECT_IMPL(CSRTTrack)
 CAR_OBJECT_IMPL(CWebVttTrack)
+CAR_OBJECT_IMPL(CMediaRouterClientState)
+CAR_OBJECT_IMPL(CMediaRouterClientStateRouteInfo)
+CAR_OBJECT_IMPL(CRemoteDisplayState)
+CAR_OBJECT_IMPL(CRemoteDisplayInfo)
 
 } // namespace Media
 } // namepsace Droid

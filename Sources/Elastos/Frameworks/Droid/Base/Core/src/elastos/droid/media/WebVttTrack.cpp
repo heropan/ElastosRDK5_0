@@ -203,8 +203,10 @@ ECode WebVttTrack::UpdateView(
     }
 
     if (mRenderingWidget != NULL) {
-        mRenderingWidget->SetActiveCues(activeCues);
+        return mRenderingWidget->SetActiveCues(activeCues);
     }
+
+    return NOERROR;
 }
 
 } // namespace Media
