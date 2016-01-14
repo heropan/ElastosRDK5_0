@@ -41,7 +41,6 @@ CaptureResultExtras::CaptureResultExtras(
 {
 }
 
-//@Override
 ECode CaptureResultExtras::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
@@ -54,7 +53,6 @@ ECode CaptureResultExtras::WriteToParcel(
     return NOERROR;
 }
 
-//@Override
 ECode CaptureResultExtras::ReadFromParcel(
     /* [in] */ IParcel* source)
 {

@@ -71,9 +71,71 @@ module
      * @invoke
      * interface IParcelable
      */
+    [deprecated]
     interface ICameraMetadataNative {
         // this should be in sync with HAL_PIXEL_FORMAT_BLOB defined in graphics.h
         const Int32 NATIVE_JPEG_FORMAT = 0x21;
+
+        // Keep up-to-date with camera_metadata.h
+        /**
+         * @hide
+         */
+        const Int32 TYPE_BYTE = 0;
+        /**
+         * @hide
+         */
+        const Int32 TYPE_INT32 = 1;
+        /**
+         * @hide
+         */
+        const Int32 TYPE_FLOAT = 2;
+        /**
+         * @hide
+         */
+        const Int32 TYPE_INT64 = 3;
+        /**
+         * @hide
+         */
+        const Int32 TYPE_DOUBLE = 4;
+        /**
+         * @hide
+         */
+        const Int32 TYPE_RATIONAL = 5;
+        /**
+         * @hide
+         */
+        const Int32 NUM_TYPES = 6;
+
+        /**
+         * @hide
+         */
+        Get(
+            [in] ICameraCharacteristicsKey* key,
+            [out] IInterface** result);
+
+        /**
+         * @hide
+         */
+        Get(
+            [in] ICaptureResultKey* key,
+            [out] IInterface** result);
+
+        /**
+         * @hide
+         */
+        Get(
+            [in] ICaptureRequestKey* key,
+            [out] IInterface** result);
+
+        /**
+         * Look-up a metadata field value by its key.
+         *
+         * @param key a non-{@code null} key instance
+         * @return the field corresponding to the {@code key}, or {@code null} if no value was set
+         */
+        Get(
+            [in] ICameraMetadataNativeKey* key,
+            [out] IInterface** result);
 
         /**
          * Set a camera metadata field to a value. The field definitions can be
@@ -113,45 +175,10 @@ module
             [in] ICameraMetadataNative* other);
 
         /**
-         * Dumps the native metadata contents to logcat.
-         *
-         * <p>Visibility for testing/debugging only. The results will not
-         * include any synthesized keys, as they are invisible to the native layer.</p>
-         *
          * @hide
          */
-        DumpToLog();
-
-        /**
-         * @hide
-         */
-        Get(
-            [in] ICameraCharacteristicsKey* key,
-            [out] IInterface** result);
-
-        /**
-         * @hide
-         */
-        Get(
-            [in] ICaptureResultKey* key,
-            [out] IInterface** result);
-
-        /**
-         * @hide
-         */
-        Get(
-            [in] ICaptureRequestKey* key,
-            [out] IInterface** result);
-
-        /**
-         * Look-up a metadata field value by its key.
-         *
-         * @param key a non-{@code null} key instance
-         * @return the field corresponding to the {@code key}, or {@code null} if no value was set
-         */
-        Get(
-            [in] ICameraMetadataNativeKey* key,
-            [out] IInterface** result);
+        GetEntryCount(
+            [out] Int32* count);
 
         /**
          * Does this metadata contain at least 1 entry?
@@ -160,9 +187,74 @@ module
          */
         IsEmpty(
             [out] Boolean* result);
+
+        /**
+         * <p>Updates the existing entry for tag with the new bytes pointed by src, erasing
+         * the entry if src was null.</p>
+         *
+         * <p>An empty array can be passed in to update the entry to 0 elements.</p>
+         *
+         * @param tag An integer tag, see e.g. {@link #getTag}
+         * @param src An array of bytes, or null to erase the entry
+         *
+         * @hide
+         */
+        WriteValues(
+            [in] Int32 tag,
+            [in] ArrayOf<Byte>* src);
+
+        /**
+         * <p>Returns a byte[] of data corresponding to this tag. Use a wrapped bytebuffer to unserialize
+         * the data properly.</p>
+         *
+         * <p>An empty array can be returned to denote an existing entry with 0 elements.</p>
+         *
+         * @param tag An integer tag, see e.g. {@link #getTag}
+         *
+         * @return {@code null} if there were 0 entries for this tag, a byte[] otherwise.
+         * @hide
+         */
+        ReadValues(
+            [in] Int32 tag,
+            [out, callee] ArrayOf<Byte>* values);
+
+        /**
+         * Dumps the native metadata contents to logcat.
+         *
+         * <p>Visibility for testing/debugging only. The results will not
+         * include any synthesized keys, as they are invisible to the native layer.</p>
+         *
+         * @hide
+         */
+        DumpToLog();
     }
 
     interface ICameraMetadataNativeHelper {
+        /**
+         * Move the contents from {@code other} into a new camera metadata instance.</p>
+         *
+         * <p>After this call, {@code other} will become empty.</p>
+         *
+         * @param other the previous metadata instance which will get pilfered
+         * @return a new metadata instance with the values from {@code other} moved into it
+         */
+        Move(
+            [in] ICameraMetadataNative* other,
+            [out] ICameraMetadataNative** result);
+
+        /**
+         * Set the global client-side vendor tag descriptor to allow use of vendor
+         * tags in camera applications.
+         *
+         * @return int A native status_t value corresponding to one of the
+         * {@link CameraBinderDecorator} integer constants.
+         * @see CameraBinderDecorator#throwOnError
+         *
+         * @hide
+         */
+        NativeSetupGlobalVendorTagDescriptor(
+            [out] Int32* descriptor);
+
         /**
          * Convert a key string into the equivalent native tag.
          *
@@ -176,16 +268,16 @@ module
             [out] Int32* tag);
 
         /**
-         * Move the contents from {@code other} into a new camera metadata instance.</p>
+         * Get the underlying native type for a tag.
          *
-         * <p>After this call, {@code other} will become empty.</p>
+         * @param tag An integer tag, see e.g. {@link #getTag}
+         * @return An int enum for the metadata type, see e.g. {@link #TYPE_BYTE}
          *
-         * @param other the previous metadata instance which will get pilfered
-         * @return a new metadata instance with the values from {@code other} moved into it
+         * @hide
          */
-        Move(
-            [in] ICameraMetadataNative* other,
-            [out] ICameraMetadataNative** result);
+        GetNativeType(
+            [in] Int32 tag,
+            [out] Int32* type);
     }
 
     } // namespace Impl
