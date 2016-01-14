@@ -972,8 +972,9 @@ private:
         /* [in] */ const String& extraInfo,
         /* [in] */ IPendingIntent* intent);
 
-    String GetProvisioningUrlBaseFromFile(
-        /* [in] */ Int32 type);
+    CARAPI GetProvisioningUrlBaseFromFile(
+        /* [in] */ Int32 type,
+        /* [out] */ String* result);
 
     void OnUserStart(
         /* [in] */ Int32 userId);

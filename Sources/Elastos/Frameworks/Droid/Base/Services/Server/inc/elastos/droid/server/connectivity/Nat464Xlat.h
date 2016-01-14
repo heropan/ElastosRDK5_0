@@ -68,13 +68,13 @@ public:
      */
     CARAPI StopClat();
 
-private:
-    void UpdateConnectivityService();
-
     // Copies the stacked clat link in oldLp, if any, to the LinkProperties in nai.
     CARAPI FixupLinkProperties(
         /* [in] */ INetworkAgentInfo* nai,
         /* [in] */ ILinkProperties* oldLp);
+
+private:
+    void UpdateConnectivityService();
 
     //@Override
     CARAPI InterfaceAdded(

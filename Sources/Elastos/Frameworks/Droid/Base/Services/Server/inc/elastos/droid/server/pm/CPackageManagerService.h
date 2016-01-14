@@ -12,9 +12,10 @@
 #include "elastos/droid/os/FileObserver.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/Runnable.h"
-#include "Elastos.Droid.Content.h"
-#include "Elastos.Droid.Os.h"
-#include "Elastos.Droid.Utility.h"
+#include <Elastos.Droid.Content.h>
+#include <Elastos.Droid.Os.h>
+#include <Elastos.Droid.Net.h>
+#include <Elastos.Droid.Utility.h>
 #include <Elastos.CoreLibrary.IO.h>
 #include <Elastos.CoreLibrary.Utility.h>
 #include <elastos/core/Thread.h>
@@ -1659,6 +1660,10 @@ public:
         /* [in] */ Int32 uid,
         /* [out] */ Boolean* result);
 
+    CARAPI GetAppOpPermissionPackages(
+        /* [in] */ const String& permissionName,
+        /* [out, callee] */ ArrayOf<String>** result);
+
     CARAPI ResolveIntent(
         /* [in] */ IIntent* intent,
         /* [in] */ const String& resolvedType,
@@ -2874,6 +2879,9 @@ private:
 
     CARAPI_(Boolean) UserNeedsBadging(
         /* [in] */ Int32 userId);
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 
 public:/*package*/
     static const String TAG;

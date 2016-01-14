@@ -23,10 +23,7 @@
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Internal::Telephony::IITelephony;
 using Elastos::Droid::Internal::Telephony::IPhoneConstants;
-using Elastos::Droid::Net::ECLSID_CLinkProperties;
-using Elastos::Droid::Net::ECLSID_CNetwork;
-using Elastos::Droid::Net::ECLSID_CNetworkCapabilities;
-using Elastos::Droid::Net::ECLSID_CNetworkRequest;
+using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::CBinder;
 using Elastos::Droid::Os::CHandlerThread;
 using Elastos::Droid::Os::CMessenger;
@@ -1988,12 +1985,12 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
     switch (what) {
         case CALLBACK_PRECHECK: {
             AutoPtr<IInterface> request;
-            GetObject(message, ECLSID_CNetworkRequest, (IInterface**)&request);
+            GetObject(message, String("CNetworkRequest"), (IInterface**)&request);
             AutoPtr<IConnectivityManagerNetworkCallback> callbacks;
             GetCallbacks(INetworkRequest::Probe(request), (IConnectivityManagerNetworkCallback**)&callbacks);
             if (callbacks != NULL) {
                 AutoPtr<IInterface> network;
-                GetObject(message, ECLSID_CNetwork, (IInterface**)&network);
+                GetObject(message, String("CNetwork"), (IInterface**)&network);
                 callbacks->OnPreCheck(INetwork::Probe(network));
             }
             else {
@@ -2003,12 +2000,12 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
         }
         case CALLBACK_AVAILABLE: {
             AutoPtr<IInterface> request;
-            GetObject(message, ECLSID_CNetworkRequest, (IInterface**)&request);
+            GetObject(message, String("CNetworkRequest"), (IInterface**)&request);
             AutoPtr<IConnectivityManagerNetworkCallback> callbacks;
             GetCallbacks(INetworkRequest::Probe(request), (IConnectivityManagerNetworkCallback**)&callbacks);
             if (callbacks != NULL) {
                 AutoPtr<IInterface> network;
-                GetObject(message, ECLSID_CNetwork, (IInterface**)&network);
+                GetObject(message, String("CNetwork"), (IInterface**)&network);
                 callbacks->OnAvailable(INetwork::Probe(network));
             }
             else {
@@ -2018,13 +2015,13 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
         }
         case CALLBACK_LOSING: {
             AutoPtr<IInterface> request;
-            GetObject(message, ECLSID_CNetworkRequest, (IInterface**)&request);
+            GetObject(message, String("CNetworkRequest"), (IInterface**)&request);
 
             AutoPtr<IConnectivityManagerNetworkCallback> callbacks;
             GetCallbacks(INetworkRequest::Probe(request), (IConnectivityManagerNetworkCallback**)&callbacks);
             if (callbacks != NULL) {
                 AutoPtr<IInterface> network;
-                GetObject(message, ECLSID_CNetwork, (IInterface**)&network);
+                GetObject(message, String("CNetwork"), (IInterface**)&network);
                 Int32 arg1;
                 message->GetArg1(&arg1);
                 callbacks->OnLosing(INetwork::Probe(network), arg1);
@@ -2036,12 +2033,12 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
         }
         case CALLBACK_LOST: {
             AutoPtr<IInterface> request;
-            GetObject(message, ECLSID_CNetworkRequest, (IInterface**)&request);
+            GetObject(message,String("CNetworkRequest"), (IInterface**)&request);
             AutoPtr<IConnectivityManagerNetworkCallback> callbacks;
             GetCallbacks(INetworkRequest::Probe(request), (IConnectivityManagerNetworkCallback**)&callbacks);
             if (callbacks != NULL) {
                 AutoPtr<IInterface> network;
-                GetObject(message, ECLSID_CNetwork, (IInterface**)&network);
+                GetObject(message, String("CNetwork"), (IInterface**)&network);
                 callbacks->OnLost(INetwork::Probe(network));
             }
             else {
@@ -2051,14 +2048,14 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
         }
         case CALLBACK_UNAVAIL: {
             AutoPtr<IInterface> request;
-            GetObject(message, ECLSID_CNetworkRequest, (IInterface**)&request);
+            GetObject(message, String("CNetworkRequest"), (IInterface**)&request);
             AutoPtr<IInterface> callbacks = NULL;
             synchronized(mCallbackMap) {
                 mCallbackMap->Get(request, (IInterface**)&callbacks);
             }
             if (callbacks != NULL) {
                 AutoPtr<IInterface> network;
-                GetObject(message, ECLSID_CNetwork, (IInterface**)&network);
+                GetObject(message, String("CNetwork"), (IInterface**)&network);
                 IConnectivityManagerNetworkCallback::Probe(callbacks)->OnUnavailable();
             }
             else {
@@ -2068,14 +2065,14 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
         }
         case CALLBACK_CAP_CHANGED: {
             AutoPtr<IInterface> request;
-            GetObject(message, ECLSID_CNetworkRequest, (IInterface**)&request);
+            GetObject(message, String("CNetworkRequest"), (IInterface**)&request);
             AutoPtr<IConnectivityManagerNetworkCallback> callbacks;
             GetCallbacks(INetworkRequest::Probe(request), (IConnectivityManagerNetworkCallback**)&callbacks);
             if (callbacks != NULL) {
                 AutoPtr<IInterface> network;
-                GetObject(message, ECLSID_CNetwork, (IInterface**)&network);
+                GetObject(message, String("CNetwork"), (IInterface**)&network);
                 AutoPtr<IInterface> cap;
-                GetObject(message, ECLSID_CNetworkCapabilities, (IInterface**)&cap);
+                GetObject(message, String("CNetworkCapabilities"), (IInterface**)&cap);
                 callbacks->OnCapabilitiesChanged(INetwork::Probe(network), INetworkCapabilities::Probe(cap));
             }
             else {
@@ -2085,14 +2082,14 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
         }
         case CALLBACK_IP_CHANGED: {
             AutoPtr<IInterface> request;
-            GetObject(message, ECLSID_CNetworkRequest, (IInterface**)&request);
+            GetObject(message, String("CNetworkRequest"), (IInterface**)&request);
             AutoPtr<IConnectivityManagerNetworkCallback> callbacks;
             GetCallbacks(INetworkRequest::Probe(request), (IConnectivityManagerNetworkCallback**)&callbacks);
             if (callbacks != NULL) {
                 AutoPtr<IInterface> network;
-                GetObject(message, ECLSID_CNetwork, (IInterface**)&network);
+                GetObject(message, String("CNetwork"), (IInterface**)&network);
                 AutoPtr<IInterface> lp;
-                GetObject(message, ECLSID_CLinkProperties, (IInterface**)&lp);
+                GetObject(message, String("CLinkProperties"), (IInterface**)&lp);
 
                 callbacks->OnLinkPropertiesChanged(INetwork::Probe(network), ILinkProperties::Probe(lp));
             }
@@ -2103,7 +2100,7 @@ ECode CConnectivityManager::CallbackHandler::HandleMessage(
         }
         case CALLBACK_RELEASED: {
             AutoPtr<IInterface> req;
-            GetObject(message, ECLSID_CNetworkRequest, (IInterface**)&req);
+            GetObject(message, String("CNetworkRequest"), (IInterface**)&req);
             AutoPtr<IInterface> callbacks = NULL;
             synchronized(mCallbackMap) {
                 mCallbackMap->Remove(req, (IInterface**)&callbacks);
@@ -2177,17 +2174,20 @@ ECode CConnectivityManager::LegacyRequest::InnerSub_ConnectivityManagerNetworkCa
 
 ECode CConnectivityManager::CallbackHandler::GetObject(
     /* [in] */ IMessage* msg,
-    /* [in] */ ClassID c,
+    /* [in] */ const String& clsName,
     /* [out] */ IInterface** result)
 {
     VALIDATE_NOT_NULL(result)
     *result = NULL;
     VALIDATE_NOT_NULL(msg)
 
-    // TODO: Waiting for the method to get name from classid
-    assert(0);
-    return E_NOT_IMPLEMENTED;
-    // return msg.getData().getParcelable(c.getSimpleName());
+    AutoPtr<IBundle> data;
+    msg->GetData((IBundle**)&data);
+    AutoPtr<IParcelable> p;
+    data->GetParcelable(clsName, (IParcelable**)&p);
+    *result = p.Get();
+    REFCOUNT_ADD(*result)
+    return NOERROR;
 }
 
 ECode CConnectivityManager::CallbackHandler::GetCallbacks(

@@ -6783,6 +6783,34 @@ ECode CPackageManagerService::IsUidPrivileged(
     return NOERROR;
 }
 
+ECode CPackageManagerService::GetAppOpPermissionPackages(
+    /* [in] */ const String& permissionName,
+    /* [out, callee] */ ArrayOf<String>** result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = String(NULL);
+    synchronized (mPackagesLock) {
+
+        AutoPtr<HashSet<String> > pkgs;
+        HashMap<String, AutoPtr<HashSet<String> > >::Iterator pkgIt = mAppOpPermissionPackages.Find(permissionName);
+        if (pkgIt != mAppOpPermissionPackages.End()) {
+            pkgs = pkgIt->mSecond;
+        }
+        if (pkgs == NULL) {
+            return NOERROR;
+        }
+
+        AutoPtr<ArrayOf<String> > array = ArrayOf<String>::Alloc(pkgs->GetSize());
+        HashSet<String>::Iterator it = pkgs->Begin();
+        for (Int32 i = 0; it != pkgs->End(); ++it) {
+            array->Set(i++, *it);
+        }
+        *result = array;
+        REFCOUNT_ADD(*result)
+    }
+    return NOERROR;
+}
+
 ECode CPackageManagerService::ResolveIntent(
     /* [in] */ IIntent* intent,
     /* [in] */ const String& resolvedType,
@@ -14337,6 +14365,12 @@ void CPackageManagerService::InstallPackageLI(
             res->mNewUsers = ps->QueryInstalledUsers(*sUserManager->GetUserIds(), TRUE);
         }
     }
+}
+
+ECode CPackageManagerService::ToString(
+    /* [out] */ String* str)
+{
+    return Object::ToString(str);
 }
 
 // Boolean CPackageManagerService::IsForwardLocked(

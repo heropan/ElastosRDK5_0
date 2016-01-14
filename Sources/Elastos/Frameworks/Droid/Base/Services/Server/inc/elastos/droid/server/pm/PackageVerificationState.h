@@ -9,7 +9,8 @@ namespace Droid {
 namespace Server {
 namespace Pm {
 
-class PackageVerificationState : public Object
+class PackageVerificationState
+    : public Object
 {
 public:
     /**

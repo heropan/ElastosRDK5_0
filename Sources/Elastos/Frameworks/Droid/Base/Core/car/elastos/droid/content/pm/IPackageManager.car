@@ -186,7 +186,7 @@ module
 
         GetAppOpPermissionPackages(
             [in] String permissionName,
-            [out] String* result);
+            [out, callee] ArrayOf<String>* result);
 
         ResolveIntent(
             [in] IIntent* intent,

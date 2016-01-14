@@ -106,14 +106,14 @@ module
          * Add the specified route to the interface.
          */
         AddRoute(
-            [in] String iface,
+            [in] Int32 netId,
             [in] IRouteInfo* route);
 
         /**
          * Remove the specified route from the interface.
          */
         RemoveRoute(
-            [in] String iface,
+            [in] Int32 netId,
             [in] IRouteInfo* route);
 
         /**
@@ -379,10 +379,18 @@ module
             [in] String iface);
 
         /**
-         * Sets the name of the default interface in the DNS resolver.
+         * Bind name servers to a network in the DNS resolver.
          */
-        SetDefaultInterfaceForDns(
-            [in] String iface);
+        SetDnsServersForNetwork(
+            [in] Int32 netId,
+            [in] ArrayOf<String>* servers,
+            [in] String domains);
+
+        /**
+         * Flush the DNS cache associated with the specified network.
+         */
+        FlushNetworkDnsCache(
+            [in] Int32 netId);
 
         /**
          * Bind name servers to an interface in the DNS resolver.
@@ -390,12 +398,6 @@ module
         SetDnsServersForInterface(
             [in] String iface,
             [in] ArrayOf<String>* servers);
-
-        /**
-         * Flush the DNS cache associated with the default interface.
-         */
-        FlushNetworkDnsCache(
-            [in] Int32 netId);
 
         /**
          * Flush the DNS cache associated with the specified interface.

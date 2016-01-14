@@ -1,9 +1,8 @@
-// CLinkPropertiesCompareResult.h
 #ifndef __ELASTOS_DROID_NET_CLINKPROPERTIESCOMPARERESULT_H__
 #define __ELASTOS_DROID_NET_CLINKPROPERTIESCOMPARERESULT_H__
 
 #include "_Elastos_Droid_Net_CLinkPropertiesCompareResult.h"
-#include "LinkProperties.h"
+#include "elastos/droid/net/LinkProperties.h"
 
 namespace Elastos {
 namespace Droid {

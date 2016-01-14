@@ -199,7 +199,7 @@ private:
 
         CARAPI GetObject(
             /* [in] */ IMessage* msg,
-            /* [in] */ ClassID c,
+            /* [in] */ const String& clsName,
             /* [out] */ IInterface** result);
 
         CARAPI GetCallbacks(
