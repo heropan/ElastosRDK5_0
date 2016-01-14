@@ -5,8 +5,8 @@
 #include "Elastos.Droid.App.h"
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.View.h"
-#include "elastos/droid/os/Runnable.h"
-#include "elastos/droid/os/Handler.h"
+#include <elastos/droid/os/Runnable.h>
+#include <elastos/droid/os/Handler.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::App::IActionBar;
@@ -47,7 +47,7 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-class Dialog
+class ECO_PUBLIC Dialog
     : public Object
     , public IDialog
     , public IDialogInterface
@@ -57,15 +57,15 @@ class Dialog
     , public IOnWindowDismissedCallback
 {
 private:
-    static const Int32 DISMISS = 0x43;
-    static const Int32 CANCEL = 0x44;
-    static const Int32 SHOW = 0x45;
+    ECO_LOCAL static const Int32 DISMISS = 0x43;
+    ECO_LOCAL static const Int32 CANCEL = 0x44;
+    ECO_LOCAL static const Int32 SHOW = 0x45;
 
-    static const String DIALOG_SHOWING_TAG;
-    static const String DIALOG_HIERARCHY_TAG;
+    ECO_LOCAL static const String DIALOG_SHOWING_TAG;
+    ECO_LOCAL static const String DIALOG_HIERARCHY_TAG;
 
 private:
-    class DismissAction
+    class ECO_LOCAL DismissAction
         : public Runnable
     {
     public:
@@ -78,7 +78,7 @@ private:
         Dialog* mHost;
     };
 
-    class ListenersHandler
+    class ECO_LOCAL ListenersHandler
         : public Handler
     {
     public:
@@ -506,7 +506,6 @@ public:
             /* [in] */ Int32 attrId);
 
 protected:
-
     virtual CARAPI OnCreate(
         /* [in] */ IBundle* savedInstanceState);
 
@@ -536,7 +535,7 @@ public:
     Boolean mCancelable;
 
 private:
-    const static String TAG;
+    ECO_LOCAL const static String TAG;
 
     AutoPtr<IWeakReference> mWeakOwnerActivity;
     // AutoPtr<IActivity> mOwnerActivity;

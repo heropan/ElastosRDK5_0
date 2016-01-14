@@ -1,28 +1,19 @@
 
-#include "elastos/droid/systemui/CDessertCaseView.h"
-//#include "elastos/droid/utility/SparseArray.h"
-#include "elastos/droid/os/Handler.h"
-#include "elastos/droid/animation/CAnimatorSet.h"
-#include "elastos/droid/animation/ObjectAnimator.h"
-#include "elastos/droid/graphics/CBitmapFactoryOptions.h"
-#include "elastos/droid/graphics/CBitmapFactory.h"
-#include "elastos/droid/graphics/CColorMatrixColorFilter.h"
-#include "elastos/droid/graphics/CCanvas.h"
-#include "elastos/droid/graphics/CPaint.h"
-#include "elastos/droid/graphics/CPoint.h"
-#include "elastos/droid/graphics/CRect.h"
-#include "elastos/droid/graphics/drawable/BitmapDrawable.h"
-//#include "elastos/droid/webkit/ui/gfx/BitmapHelper.h"
-//#include "elastos/droid/widget/CFrameLayoutLayoutParams.h"
-
+#include "elastos/droid/packages/systemui/CDessertCaseView.h"
+#include "R.h"
 #include <elastos/core/Math.h>
+#include <elastos/utility/logging/Logger.h>
 
+using Elastos::Droid::Animation::CAnimatorSet;
+using Elastos::Droid::Animation::CObjectAnimatorHelper;
+using Elastos::Droid::Animation::EIID_IAnimatorListener;
 using Elastos::Droid::Animation::ITimeInterpolator;
 using Elastos::Droid::Animation::IAnimatorSet;
-using Elastos::Droid::Animation::CAnimatorSet;
-using Elastos::Droid::Animation::ObjectAnimator;
-using Elastos::Droid::Animation::EIID_IAnimatorListener;
+using Elastos::Droid::Animation::IObjectAnimator;
+using Elastos::Droid::Animation::IObjectAnimatorHelper;
 using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Graphics::CBitmapHelper;
+using Elastos::Droid::Graphics::IBitmapHelper;
 using Elastos::Droid::Graphics::BitmapConfig_ALPHA_8;
 using Elastos::Droid::Graphics::IBitmapFactoryOptions;
 using Elastos::Droid::Graphics::CBitmapFactoryOptions;
@@ -31,6 +22,8 @@ using Elastos::Droid::Graphics::CBitmapFactory;
 using Elastos::Droid::Graphics::IColorMatrixColorFilter;
 using Elastos::Droid::Graphics::CColorMatrixColorFilter;
 using Elastos::Droid::Graphics::IColorFilter;
+using Elastos::Droid::Graphics::CColor;
+using Elastos::Droid::Graphics::IColor;
 using Elastos::Droid::Graphics::CCanvas;
 using Elastos::Droid::Graphics::IPaint;
 using Elastos::Droid::Graphics::CPaint;
@@ -38,105 +31,70 @@ using Elastos::Droid::Graphics::CPoint;
 using Elastos::Droid::Graphics::PaintStyle_STROKE;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Graphics::Drawable::CBitmapDrawable;
 using Elastos::Droid::Graphics::Drawable::IBitmapDrawable;
-using Elastos::Droid::Graphics::Drawable::BitmapDrawable;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
-using Elastos::Droid::Os::Handler;
-using Elastos::Droid::Widget::IFrameLayoutLayoutParams;
-//using Elastos::Droid::Webkit::Ui::Gfx::BitmapHelper;
-//using Elastos::Droid::Utility::SparseArray;
-using Elastos::Droid::View::IViewOverlay;
-using Elastos::Droid::View::IViewPropertyAnimator;
-using Elastos::Droid::View::IViewGroup;
-using Elastos::Droid::View::EIID_IViewOnClickListener;
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Utility::CSparseArray;
+using Elastos::Droid::View::Animation::CAnticipateOvershootInterpolator;
+using Elastos::Droid::View::Animation::CDecelerateInterpolator;
 using Elastos::Droid::View::Animation::IAccelerateInterpolator;
 using Elastos::Droid::View::Animation::IAnticipateOvershootInterpolator;
 using Elastos::Droid::View::Animation::IDecelerateInterpolator;
-//using Elastos::Droid::View::Animation::CAccelerateInterpolator;
-
+using Elastos::Droid::View::Animation::CAccelerateInterpolator;
+using Elastos::Droid::View::IViewOverlay;
+using Elastos::Droid::View::IViewPropertyAnimator;
+using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::View::IViewGroupLayoutParams;
+using Elastos::Droid::View::EIID_IViewOnClickListener;
+using Elastos::Droid::Widget::CImageView;
+using Elastos::Droid::Widget::CFrameLayoutLayoutParams;
+using Elastos::Droid::Widget::IFrameLayoutLayoutParams;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Utility::CHashSet;
 using Elastos::Utility::IIterator;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
+namespace Packages {
 namespace SystemUI {
 
 //===============================================================
 // CDessertCaseView::
 //===============================================================
-String CDessertCaseView::TAG;// = DessertCaseView.class.getSimpleName();
-
+String CDessertCaseView::TAG("DessertCaseView");// = DessertCaseView.class.getSimpleName();
 Boolean CDessertCaseView::DEBUG = FALSE;
-
 Int32 CDessertCaseView::START_DELAY = 5000;
 Int32 CDessertCaseView::DELAY = 2000;
 Int32 CDessertCaseView::DURATION = 500;
-
 Int32 CDessertCaseView::TAG_POS = 0x2000001;
 Int32 CDessertCaseView::TAG_SPAN = 0x2000002;
-
-AutoPtr<ArrayOf<Int32> > CDessertCaseView::PASTRIES;// = {
-//         R.drawable.dessert_kitkat,      // used with permission
-//         R.drawable.dessert_android,     // thx irina
-// };
-
-AutoPtr<ArrayOf<Int32> > CDessertCaseView::RARE_PASTRIES;// = {
-//         R.drawable.dessert_cupcake,     // 2009
-//         R.drawable.dessert_donut,       // 2009
-//         R.drawable.dessert_eclair,      // 2009
-//         R.drawable.dessert_froyo,       // 2010
-//         R.drawable.dessert_gingerbread, // 2010
-//         R.drawable.dessert_honeycomb,   // 2011
-//         R.drawable.dessert_ics,         // 2011
-//         R.drawable.dessert_jellybean,   // 2012
-// };
-
-AutoPtr<ArrayOf<Int32> > CDessertCaseView::XRARE_PASTRIES;// = {
-//         R.drawable.dessert_petitfour,   // the original and still delicious
-
-//         R.drawable.dessert_donutburger, // remember kids, this was long before cronuts
-
-//         R.drawable.dessert_flan,        //     sholes final approach
-//                                         //     landing gear punted to flan
-//                                         //     runway foam glistens
-//                                         //         -- mcleron
-
-//         R.drawable.dessert_keylimepie,  // from an alternative timeline
-// };
-
-AutoPtr<ArrayOf<Int32> > CDessertCaseView::XXRARE_PASTRIES;// = {
-//         R.drawable.dessert_zombiegingerbread, // thx hackbod
-//         R.drawable.dessert_dandroid,    // thx morrildl
-//         R.drawable.dessert_jandycane,   // thx nes
-// };
-
+Boolean CDessertCaseView::sInit = InitStatic();
+AutoPtr<ArrayOf<Int32> > CDessertCaseView::PASTRIES;
+AutoPtr<ArrayOf<Int32> > CDessertCaseView::RARE_PASTRIES;
+AutoPtr<ArrayOf<Int32> > CDessertCaseView::XRARE_PASTRIES;
+AutoPtr<ArrayOf<Int32> > CDessertCaseView::XXRARE_PASTRIES;
 Int32 CDessertCaseView::NUM_PASTRIES = PASTRIES->GetLength() + RARE_PASTRIES->GetLength()
         + XRARE_PASTRIES->GetLength() + XXRARE_PASTRIES->GetLength();
 
 AutoPtr<ArrayOf<Float> > CDessertCaseView::MASK;
-
 AutoPtr<ArrayOf<Float> > CDessertCaseView::ALPHA_MASK;
-
 AutoPtr<ArrayOf<Float> > CDessertCaseView::WHITE_MASK;
-
 Float CDessertCaseView::SCALE = 0.25f; // natural display size will be SCALE*mCellSize
-
 Float CDessertCaseView::PROB_2X = 0.33f;
 Float CDessertCaseView::PROB_3X = 0.1f;
 Float CDessertCaseView::PROB_4X = 0.01f;
 
-//CAR_INTERFACE_IMPL(CDessertCaseView, FrameLayout, IDessertCaseView)
-CAR_INTERFACE_IMPL(CDessertCaseView, Object, IDessertCaseView)
-
+CAR_OBJECT_IMPL(CDessertCaseView);
+CAR_INTERFACE_IMPL(CDessertCaseView, FrameLayout, IDessertCaseView)
 CDessertCaseView::CDessertCaseView()
 {
-//    mDrawables = new SparseArray(NUM_PASTRIES);
+    CSparseArray::New(NUM_PASTRIES, (ISparseArray**)&mDrawables);
 
     CHashSet::New((IHashSet**)&mFreeList);
-
-    mHandler = new Handler();
+    CHandler::New((IHandler**)&mHandler);
 
     mJuggle = new Runnable_1(this);
 
@@ -146,28 +104,6 @@ CDessertCaseView::CDessertCaseView()
     (*mHsv)[2] = .85f;
 
     CHashSet::New((IHashSet**)&mTmpSet);
-    assert(0 && "TODO");
-
-    // AutoPtr<ArrayOf<Float> > CDessertCaseView::MASK = {
-    //         0.f,  0.f,  0.f,  0.f, 255.f,
-    //         0.f,  0.f,  0.f,  0.f, 255.f,
-    //         0.f,  0.f,  0.f,  0.f, 255.f,
-    //         1.f,  0.f,  0.f,  0.f, 0.f
-    // };
-
-    // AutoPtr<ArrayOf<Float> > CDessertCaseView::ALPHA_MASK = {
-    //         0.f,  0.f,  0.f,  0.f, 255.f,
-    //         0.f,  0.f,  0.f,  0.f, 255.f,
-    //         0.f,  0.f,  0.f,  0.f, 255.f,
-    //         0.f,  0.f,  0.f,  1.f, 0.f
-    // };
-
-    // AutoPtr<ArrayOf<Float> > CDessertCaseView::WHITE_MASK = {
-    //         0.f,  0.f,  0.f,  0.f, 255.f,
-    //         0.f,  0.f,  0.f,  0.f, 255.f,
-    //         0.f,  0.f,  0.f,  0.f, 255.f,
-    //         -1.f,  0.f,  0.f,  0.f, 255.f
-    // };
 }
 
 ECode CDessertCaseView::constructor(
@@ -188,43 +124,105 @@ ECode CDessertCaseView::constructor(
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle)
 {
-    assert(0 && "TODO");
-//    FrameLayout(context, attrs, defStyle);
+    FrameLayout::constructor(context, attrs, defStyle);
 
     AutoPtr<IResources> res;
-//    View::GetResources((IResources**)&res);
+    GetResources((IResources**)&res);
 
     mStarted = FALSE;
 
-//    res->GetDimensionPixelSize(R::dimen::dessert_case_cell_size, &mCellSize);
+    res->GetDimensionPixelSize(R::dimen::dessert_case_cell_size, &mCellSize);
     AutoPtr<IBitmapFactoryOptions> opts;
     CBitmapFactoryOptions::New((IBitmapFactoryOptions**)&opts);
-    AutoPtr<CBitmapFactoryOptions> copts = (CBitmapFactoryOptions*)opts.Get();
     if (mCellSize < 512) { // assuming 512x512 images
-        copts->mInSampleSize = 2;
+        opts->SetInSampleSize(2);
     }
-    copts->mInMutable = TRUE;
+    opts->SetInMutable(TRUE);
     AutoPtr<IBitmap> loaded;
-    // new Int32[][] { PASTRIES, RARE_PASTRIES, XRARE_PASTRIES, XXRARE_PASTRIES };
-    // for () {
-        AutoPtr<ArrayOf<Int32> > list;
+    AutoPtr<ArrayOf<AutoPtr<ArrayOf<Int32> > > > lists = ArrayOf<AutoPtr<ArrayOf<Int32> > >::Alloc(4);
+    lists->Set(0, PASTRIES);
+    lists->Set(1, RARE_PASTRIES);
+    lists->Set(2, XRARE_PASTRIES);
+    lists->Set(3, XXRARE_PASTRIES);
+    for (Int32 pos = 0; pos < lists->GetLength(); pos++) {
+        AutoPtr<ArrayOf<Int32> > list = (*lists)[pos];
         for (Int32 i = 0; i < list->GetLength(); i++) {
             Int32 resid = (*list)[i];
-            copts->mInBitmap = loaded;
+            opts->SetInBitmap(loaded);
             AutoPtr<IBitmapFactory> bmpf;
             CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bmpf);
             bmpf->DecodeResource(res, resid, opts, (IBitmap**)&loaded);
-            AutoPtr<IBitmapDrawable> d = new BitmapDrawable(res, ConvertToAlphaMask(loaded));
+            AutoPtr<IBitmapDrawable> d;
+            CBitmapDrawable::New(res, ConvertToAlphaMask(loaded), (IBitmapDrawable**)&d);
             AutoPtr<IColorMatrixColorFilter> cmcf;
             CColorMatrixColorFilter::New(*ALPHA_MASK, (IColorMatrixColorFilter**)&cmcf);
             IDrawable::Probe(d)->SetColorFilter(IColorFilter::Probe(cmcf));
             IDrawable::Probe(d)->SetBounds(0, 0, mCellSize, mCellSize);
             mDrawables->Append(resid, d);
         }
-//     }
+    }
     loaded = NULL;
-//    if (DEBUG) View::SetWillNotDraw(FALSE);
+    if (DEBUG) SetWillNotDraw(FALSE);
     return NOERROR;
+}
+
+Boolean CDessertCaseView::InitStatic()
+{
+    PASTRIES = ArrayOf<Int32>::Alloc(2);
+    (*PASTRIES)[0] = R::drawable::dessert_kitkat;      // used with permission
+    (*PASTRIES)[1] = R::drawable::dessert_android;      // thx irina
+
+    RARE_PASTRIES = ArrayOf<Int32>::Alloc(8);
+    (*RARE_PASTRIES)[0] = R::drawable::dessert_cupcake;     // 2009
+    (*RARE_PASTRIES)[1] = R::drawable::dessert_donut;       // 2009
+    (*RARE_PASTRIES)[2] = R::drawable::dessert_eclair;      // 2009
+    (*RARE_PASTRIES)[3] = R::drawable::dessert_froyo;       // 2010
+    (*RARE_PASTRIES)[4] = R::drawable::dessert_gingerbread; // 2010
+    (*RARE_PASTRIES)[5] = R::drawable::dessert_honeycomb;   // 2011
+    (*RARE_PASTRIES)[6] = R::drawable::dessert_ics;         // 2011
+    (*RARE_PASTRIES)[7] = R::drawable::dessert_jellybean;   // 2012
+
+    XRARE_PASTRIES = ArrayOf<Int32>::Alloc(4);
+    (*XRARE_PASTRIES)[0] = R::drawable::dessert_petitfour;   // the original and still delicious
+
+    (*XRARE_PASTRIES)[1] = R::drawable::dessert_donutburger; // remember kids, this was long before cronuts
+
+    (*XRARE_PASTRIES)[2] = R::drawable::dessert_flan;        //     sholes final approach
+                                    //     landing gear punted to flan
+                                    //     runway foam glistens
+                                    //         -- mcleron
+
+    (*XRARE_PASTRIES)[3] = R::drawable::dessert_keylimepie;  // from an alternative timeline
+
+    XXRARE_PASTRIES = ArrayOf<Int32>::Alloc(3);
+    (*XXRARE_PASTRIES)[0] = R::drawable::dessert_zombiegingerbread; // thx hackbod
+    (*XXRARE_PASTRIES)[1] = R::drawable::dessert_dandroid;    // thx morrildl
+    (*XXRARE_PASTRIES)[2] = R::drawable::dessert_jandycane;   // thx nes
+
+    Float array_MASK[] = {
+            0.f,  0.f,  0.f,  0.f, 255.f,
+            0.f,  0.f,  0.f,  0.f, 255.f,
+            0.f,  0.f,  0.f,  0.f, 255.f,
+            1.f,  0.f,  0.f,  0.f, 0.f
+    };
+    MASK = ArrayOf<Float>::Alloc(array_MASK, sizeof(array_MASK) / sizeof(array_MASK[0]));
+
+    Float array_ALPHA_MASK[] = {
+            0.f,  0.f,  0.f,  0.f, 255.f,
+            0.f,  0.f,  0.f,  0.f, 255.f,
+            0.f,  0.f,  0.f,  0.f, 255.f,
+            0.f,  0.f,  0.f,  1.f, 0.f
+    };
+    ALPHA_MASK = ArrayOf<Float>::Alloc(array_ALPHA_MASK, sizeof(array_ALPHA_MASK) / sizeof(array_ALPHA_MASK[0]));
+
+    Float array_WHITE_MASK[] = {
+            0.f,  0.f,  0.f,  0.f, 255.f,
+            0.f,  0.f,  0.f,  0.f, 255.f,
+            0.f,  0.f,  0.f,  0.f, 255.f,
+            -1.f,  0.f,  0.f,  0.f, 255.f
+    };
+    WHITE_MASK = ArrayOf<Float>::Alloc(array_WHITE_MASK, sizeof(array_WHITE_MASK) / sizeof(array_WHITE_MASK[0]));
+    return TRUE;
 }
 
 AutoPtr<IBitmap> CDessertCaseView::ConvertToAlphaMask(
@@ -233,7 +231,10 @@ AutoPtr<IBitmap> CDessertCaseView::ConvertToAlphaMask(
     Int32 w = 0, h = 0;
     b->GetWidth(&w);
     b->GetHeight(&h);
-    AutoPtr<IBitmap> a;// = BitmapHelper::CreateBitmap(w, h, BitmapConfig_ALPHA_8);
+    AutoPtr<IBitmapHelper> helper;
+    CBitmapHelper::AcquireSingleton((IBitmapHelper**)&helper);
+    AutoPtr<IBitmap> a;
+    helper->CreateBitmap(w, h, BitmapConfig_ALPHA_8, (IBitmap**)&a);
     AutoPtr<ICanvas> c;
     CCanvas::New(a, (ICanvas**)&c);
     AutoPtr<IPaint> pt;
@@ -266,13 +267,13 @@ ECode CDessertCaseView::Stop()
 Int32 CDessertCaseView::Pick(
     /* [in] */ ArrayOf<Int32>* a)
 {
-    return (*a)[(Int32)(Elastos::Core::Math::Random()*a->GetLength())];
+    return (*a)[(Int32)(Elastos::Core::Math::Random() * a->GetLength())];
 }
 
 AutoPtr<IInterface> CDessertCaseView::Pick(
     /* [in] */ ArrayOf<IInterface*>* a)
 {
-    return (*a)[(Int32)(Elastos::Core::Math::Random()*a->GetLength())];
+    return (*a)[(Int32)(Elastos::Core::Math::Random() * a->GetLength())];
 }
 
 AutoPtr<IInterface> CDessertCaseView::Pick(
@@ -281,7 +282,7 @@ AutoPtr<IInterface> CDessertCaseView::Pick(
     Int32 s = 0;
     sa->GetSize(&s);
     AutoPtr<IInterface> node;
-    sa->ValueAt((Int32)(Elastos::Core::Math::Random()*s), (IInterface**)&node);
+    sa->ValueAt((Int32)(Elastos::Core::Math::Random() * s), (IInterface**)&node);
     return node;
 }
 
@@ -290,9 +291,11 @@ Int32 CDessertCaseView::Random_color()
 //        return 0xFF000000 | (int) (Math.random() * (Float) 0xFFFFFF); // totally random
     Int32 COLORS = 12;
     (*mHsv)[0] = Irand(0, COLORS) * (360.f/COLORS);
-    assert(0 && "TODO");
-//    return Color::HSVToColor(mHsv);
-    return 0;
+    AutoPtr<IColor> color;
+    CColor::AcquireSingleton((IColor**)&color);
+    Int32 c = 0;
+    color->HSVToColor(mHsv, &c);
+    return c;
 }
 
 // synchronized
@@ -302,8 +305,8 @@ void CDessertCaseView::OnSizeChanged (
     /* [in] */ Int32 oldw,
     /* [in] */ Int32 oldh)
 {
-    assert(0 && "TODO");
-//    FrameLayout::OnSizeChanged(w, h, oldw, oldh);
+    AutoLock lock(this);
+    FrameLayout::OnSizeChanged(w, h, oldw, oldh);
     if (mWidth == w && mHeight == h) return;
 
     Boolean wasStarted = mStarted;
@@ -315,7 +318,7 @@ void CDessertCaseView::OnSizeChanged (
     mHeight = h;
 
     mCells = NULL;
-//    ViewGroup::RemoveAllViewsInLayout();
+    RemoveAllViewsInLayout();
     mFreeList->Clear();
 
     mRows = mHeight / mCellSize;
@@ -323,12 +326,12 @@ void CDessertCaseView::OnSizeChanged (
 
     mCells = ArrayOf<IView*>::Alloc(mRows * mColumns);
 
-//    if (DEBUG) Log.v(TAG, String.format("New dimensions: %dx%d", mColumns, mRows));
+    if (DEBUG) Logger::V(TAG, "New dimensions: %dx%d", mColumns, mRows);
 
-//    View::SetScaleX(SCALE);
-//    View::SetScaleY(SCALE);
-//    View::SetTranslationX(0.5f * (mWidth - mCellSize * mColumns) * SCALE);
-//    View::SetTranslationY(0.5f * (mHeight - mCellSize * mRows) * SCALE);
+    SetScaleX(SCALE);
+    SetScaleY(SCALE);
+    SetTranslationX(0.5f * (mWidth - mCellSize * mColumns) * SCALE);
+    SetTranslationY(0.5f * (mHeight - mCellSize * mRows) * SCALE);
 
     for (Int32 j = 0; j < mRows; j++) {
         for (Int32 i = 0; i < mColumns; i++) {
@@ -352,11 +355,11 @@ ECode CDessertCaseView::FillFreeList()
 ECode CDessertCaseView::FillFreeList(
     /* [in] */ Int32 animationLen)
 {
-    assert(0 && "TODO");
+    AutoLock lock(this);
     AutoPtr<IContext> ctx;
-//    View::GetContext((IContext**)&ctx);
+    GetContext((IContext**)&ctx);
     AutoPtr<IFrameLayoutLayoutParams> lp;
-//    CFrameLayoutLayoutParams::New(mCellSize, mCellSize, (IFrameLayoutLayoutParams**)&lp);
+    CFrameLayoutLayoutParams::New(mCellSize, mCellSize, (IFrameLayoutLayoutParams**)&lp);
 
     Boolean bEmp = FALSE;
     while (! (mFreeList->IsEmpty(&bEmp), bEmp)) {
@@ -366,13 +369,12 @@ ECode CDessertCaseView::FillFreeList(
         it->GetNext((IInterface**)&nt);
         AutoPtr<IPoint> pt = IPoint::Probe(nt);
         mFreeList->Remove(pt);
-        AutoPtr<CPoint> cpt = (CPoint*)pt.Get();
-        Int32 i = cpt->mX;
-        Int32 j = cpt->mY;
+        Int32 i = 0, j = 0;
+        pt->Get(&i, &j);
 
         if ((*mCells)[j*mColumns+i] != NULL) continue;
         AutoPtr<IImageView> v;
-        // CImageView::New(ctx, (IImageView**)&v);
+        CImageView::New(ctx, (IImageView**)&v);
         IView::Probe(v)->SetOnClickListener(new OnClickListener(this, v));
 
         Int32 c = Random_color();
@@ -404,12 +406,16 @@ ECode CDessertCaseView::FillFreeList(
             ol->Add(d);
         }
 
-        // AutoPtr<CFrameLayoutLayoutParams> clp = (CFrameLayoutLayoutParams*)lp.Get();
-        // clp->mWidth = clp->mHeight = mCellSize;
-        // ViewGroup::AddView(v, lp);
+        IViewGroupLayoutParams::Probe(lp)->SetWidth(mCellSize);
+        IViewGroupLayoutParams::Probe(lp)->SetHeight(mCellSize);
+        AddView(IView::Probe(v), IViewGroupLayoutParams::Probe(lp));
         Place(IView::Probe(v), pt, FALSE);
         if (animationLen > 0) {
-            Float s;// = (Integer) v->GetTag(TAG_SPAN);
+            AutoPtr<IInterface> obj;
+            IView::Probe(v)->GetTag(TAG_SPAN, (IInterface**)&obj);
+            Int32 value = 0;
+            IInteger32::Probe(obj)->GetValue(&value);
+            Float s = value;
             IView::Probe(v)->SetScaleX(0.5f * s);
             IView::Probe(v)->SetScaleY(0.5f * s);
             IView::Probe(v)->SetAlpha(0.f);
@@ -446,9 +452,9 @@ ECode CDessertCaseView::Place(
     /* [in] */ IPoint* pt,
     /* [in] */ Boolean animate)
 {
-    AutoPtr<CPoint> cpt = (CPoint*)pt;
-    Int32 i = cpt->mX;
-    Int32 j = cpt->mY;
+    AutoLock lock(this);
+    Int32 i = 0, j = 0;
+    pt->Get(&i, &j);
     Float rnd = Frand();
     AutoPtr<IInterface> t;
     v->GetTag(TAG_POS, (IInterface**)&t);
@@ -457,8 +463,9 @@ ECode CDessertCaseView::Place(
         for (Int32 i = 0; i < arr->GetLength(); i++) {
             AutoPtr<IPoint> oc = (*arr)[i];
             mFreeList->Add(oc);
-            AutoPtr<CPoint> coc = (CPoint*)oc.Get();
-            (*mCells)[coc->mY*mColumns + coc->mX] = NULL;
+            Int32 x = 0, y = 0;
+            oc->Get(&x, &y);
+            (*mCells)[y * mColumns + x] = NULL;
         }
     }
     Int32 scale = 1;
@@ -488,8 +495,9 @@ ECode CDessertCaseView::Place(
     AutoPtr<ArrayOf<IPoint*> > occupied = GetOccupied(v);
     for (Int32 i = 0; i < occupied->GetLength(); i++) {
         AutoPtr<IPoint> oc = (*occupied)[i];
-        AutoPtr<CPoint> coc = (CPoint*)oc.Get();
-        AutoPtr<IView> squatter = (*mCells)[coc->mY*mColumns + coc->mX];
+        Int32 x = 0, y = 0;
+        oc->Get(&x, &y);
+        AutoPtr<IView> squatter = (*mCells)[y * mColumns + x];
         if (squatter != NULL) {
             mTmpSet->Add(squatter);
         }
@@ -506,8 +514,9 @@ ECode CDessertCaseView::Place(
         for (Int32 i = 0; i < arr->GetLength(); i++) {
             AutoPtr<IPoint> sq = (*arr)[i];
             mFreeList->Add(sq);
-            AutoPtr<CPoint> csq = (CPoint*)sq.Get();
-            (*mCells)[csq->mY*mColumns + csq->mX] = NULL;
+            Int32 x = 0, y = 0;
+            sq->Get(&x, &y);
+            (*mCells)[y * mColumns + x] = NULL;
         }
         if (!Object::Equals(squatter->Probe(EIID_IInterface), v->Probe(EIID_IInterface))) {
             squatter->SetTag(TAG_POS, NULL);
@@ -520,23 +529,22 @@ ECode CDessertCaseView::Place(
                 anim->Alpha(0);
                 anim->SetDuration(DURATION);
                 AutoPtr<IAccelerateInterpolator> ai;
-                assert(0 && "TODO");
-                // CAccelerateInterpolator::New((IAccelerateInterpolator**)&ai);
+                CAccelerateInterpolator::New((IAccelerateInterpolator**)&ai);
                 anim->SetInterpolator(ITimeInterpolator::Probe(ai));
-                anim->SetListener(new AnimatorListener(this));
+                anim->SetListener(new AnimatorListener(this, squatter));
                 anim->Start();
             }
             else {
-                assert(0 && "TODO");
-                // ViewGroup::RemoveView(squatter);
+                RemoveView(squatter);
             }
         }
     }
 
     for (Int32 i = 0; i < occupied->GetLength(); i++) {
         AutoPtr<IPoint> oc = (*occupied)[i];
-        AutoPtr<CPoint> coc = (CPoint*)oc.Get();
-        (*mCells)[coc->mY*mColumns + coc->mX] = v;
+        Int32 x = 0, y = 0;
+        oc->Get(&x, &y);
+        (*mCells)[y * mColumns + x] = v;
         mFreeList->Remove(oc);
     }
 
@@ -545,29 +553,42 @@ ECode CDessertCaseView::Place(
     if (animate) {
         v->BringToFront();
 
+        AutoPtr<IObjectAnimatorHelper> helper;
+        CObjectAnimatorHelper::AcquireSingleton((IObjectAnimatorHelper**)&helper);
         AutoPtr<IAnimatorSet> set1;
         CAnimatorSet::New((IAnimatorSet**)&set1);
-        assert(0 && "TODO");
-        // set1->PlayTogether(
-        //         ObjectAnimator::OfFloat(v, View::SCALE_X, (Float) scale),
-        //         ObjectAnimator::OfFloat(v, View::SCALE_Y, (Float) scale)
-        // );
+        AutoPtr<IObjectAnimator> oa1, oa2;
+        AutoPtr<ArrayOf<Float> > fa = ArrayOf<Float>::Alloc(1);
+        (*fa)[0] = scale;
+        helper->OfFloat(v, View::SCALE_X, fa, (IObjectAnimator**)&oa1);
+        helper->OfFloat(v, View::SCALE_Y, fa, (IObjectAnimator**)&oa2);
+        AutoPtr<ArrayOf<IAnimator*> > array = ArrayOf<IAnimator*>::Alloc(2);
+        array->Set(0, IAnimator::Probe(oa1));
+        array->Set(1, IAnimator::Probe(oa2));
+        set1->PlayTogether(array);
         AutoPtr<IAnticipateOvershootInterpolator> p;
-        assert(0 && "TODO");
-//        CAnticipateOvershootInterpolator::New((IAnticipateOvershootInterpolator**)&p);
+        CAnticipateOvershootInterpolator::New((IAnticipateOvershootInterpolator**)&p);
         IAnimator::Probe(set1)->SetInterpolator(ITimeInterpolator::Probe(p));
         IAnimator::Probe(set1)->SetDuration(DURATION);
 
         AutoPtr<IAnimatorSet> set2;
         CAnimatorSet::New((IAnimatorSet**)&set2);
-        assert(0 && "TODO");
-        // set2->PlayTogether(
-        //         ObjectAnimator::OfFloat(v, View::ROTATION, rot),
-        //         ObjectAnimator::OfFloat(v, View::X, i* mCellSize + (scale-1) * mCellSize /2),
-        //         ObjectAnimator::OfFloat(v, View::Y, j* mCellSize + (scale-1) * mCellSize /2)
-        // );
+        oa1 = oa2 = NULL;
+        (*fa)[0] = rot;
+        helper->OfFloat(v, View::ROTATION, fa, (IObjectAnimator**)&oa1);
+        (*fa)[0] = i* mCellSize + (scale-1) * mCellSize /2;
+        helper->OfFloat(v, View::X, fa, (IObjectAnimator**)&oa2);
+        AutoPtr<IObjectAnimator> oa3;
+        (*fa)[0] = j * mCellSize + (scale - 1) * mCellSize / 2;
+        helper->OfFloat(v, View::Y, fa, (IObjectAnimator**)&oa3);
+
+        AutoPtr<ArrayOf<IAnimator*> > array2 = ArrayOf<IAnimator*>::Alloc(3);
+        array2->Set(0, IAnimator::Probe(oa1));
+        array2->Set(1, IAnimator::Probe(oa2));
+        array2->Set(2, IAnimator::Probe(oa3));
+        set2->PlayTogether(array2);
         AutoPtr<IDecelerateInterpolator> di;
-//        CDecelerateInterpolator::New((IDecelerateInterpolator**)&di);
+        CDecelerateInterpolator::New((IDecelerateInterpolator**)&di);
         IAnimator::Probe(set2)->SetInterpolator(ITimeInterpolator::Probe(di));
         IAnimator::Probe(set2)->SetDuration(DURATION);
 
@@ -609,8 +630,9 @@ AutoPtr<ArrayOf<IPoint*> > CDessertCaseView::GetOccupied(
     Int32 p = 0;
     for (Int32 i = 0; i < scale; i++) {
         for (Int32 j = 0; j < scale; j++) {
-            AutoPtr<CPoint> cpt = (CPoint*)pt.Get();
-            CPoint::New(cpt->mX + i, cpt->mY + j, &((*result)[p++]));
+            Int32 x = 0, y = 0;
+            pt->Get(&x, &y);
+            CPoint::New(x + i, y + j, &((*result)[p++]));
         }
     }
     return result;
@@ -638,8 +660,7 @@ Int32 CDessertCaseView::Irand(
 void CDessertCaseView::OnDraw(
     /* [in] */ ICanvas* c)
 {
-    assert(0 && "TODO");
-//    FrameLayout::OnDraw(c);
+    FrameLayout::OnDraw(c);
     if (!DEBUG) return;
 
     AutoPtr<IPaint> pt;
@@ -651,10 +672,10 @@ void CDessertCaseView::OnDraw(
     AutoPtr<IRect> check;
     CRect::New((IRect**)&check);
     Int32 N = 0;
-//    ViewGroup::GetChildCount(&N);
+    GetChildCount(&N);
     for (Int32 i = 0; i < N; i++) {
         AutoPtr<IView> stone;
-//        ViewGroup::GetChildAt(i, (IView**)&stone);
+        GetChildAt(i, (IView**)&stone);
 
         stone->GetHitRect(check);
 
@@ -663,45 +684,43 @@ void CDessertCaseView::OnDraw(
 }
 
 //===============================================================
-// CDessertCaseView::RescalingContainer::
+// CDessertCaseView::RescalingContainer
 //===============================================================
-
 CDessertCaseView::RescalingContainer::RescalingContainer(
     /* [in] */ IContext* context)// : FrameLayout(context)
 {
-    assert(0 && "TODO");
-    // View::SetSystemUiVisibility(0
-    //         | IView::SYSTEM_UI_FLAG_FULLSCREEN
-    //         | IView::SYSTEM_UI_FLAG_HIDE_NAVIGATION
-    //         | IView::SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-    //         | IView::SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-    //         | IView::SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-    // );
+    FrameLayout::constructor(context);
+    SetSystemUiVisibility(0
+            | IView::SYSTEM_UI_FLAG_FULLSCREEN
+            | IView::SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            | IView::SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            | IView::SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            | IView::SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+    );
 }
 
 void CDessertCaseView::RescalingContainer::SetView(
     /* [in] */ IDessertCaseView* v)
 {
-    assert(0 && "TODO");
-//    ViewGroup::AddView(v);
+    AddView(IView::Probe(v));
     mView = v;
 }
 
-void CDessertCaseView::RescalingContainer::OnLayout (
+ECode CDessertCaseView::RescalingContainer::OnLayout (
     /* [in] */ Boolean changed,
     /* [in] */ Int32 left,
     /* [in] */ Int32 top,
     /* [in] */ Int32 right,
     /* [in] */ Int32 bottom)
 {
-    assert(0 && "TODO");
-    // Float w = right-left;
-    // Float h = bottom-top;
-    // Int32 w2 = (Int32) (w / mView->SCALE / 2);
-    // Int32 h2 = (Int32) (h / mView->SCALE / 2);
-    // Int32 cx = (Int32) (left + w * 0.5f);
-    // Int32 cy = (Int32) (top + h * 0.5f);
-//    mView->Layout(cx - w2, cy - h2, cx + w2, cy + h2);
+    Float w = right-left;
+    Float h = bottom-top;
+    Int32 w2 = (Int32) (w / mView->SCALE / 2);
+    Int32 h2 = (Int32) (h / mView->SCALE / 2);
+    Int32 cx = (Int32) (left + w * 0.5f);
+    Int32 cy = (Int32) (top + h * 0.5f);
+    IView::Probe(mView)->Layout(cx - w2, cy - h2, cx + w2, cy + h2);
+    return NOERROR;
 }
 
 void CDessertCaseView::RescalingContainer::SetDarkness(
@@ -710,8 +729,7 @@ void CDessertCaseView::RescalingContainer::SetDarkness(
     mDarkness = p;
     GetDarkness();
     Int32 x = (Int32) (p * 0xff);
-    assert(0 && "TODO");
-//    View::SetBackgroundColor(x << 24 & 0xFF000000);
+    SetBackgroundColor(x << 24 & 0xFF000000);
 }
 
 Float CDessertCaseView::RescalingContainer::GetDarkness()
@@ -720,20 +738,18 @@ Float CDessertCaseView::RescalingContainer::GetDarkness()
 }
 
 //===============================================================
-// CDessertCaseView::Runnable_1::
+// CDessertCaseView::Runnable_1
 //===============================================================
-
 CDessertCaseView::Runnable_1::Runnable_1(
     /* [in] */ CDessertCaseView* owner)
+    : mOwner(owner)
 {
-    mOwner = owner;
 }
 
 ECode CDessertCaseView::Runnable_1::Run()
 {
     Int32 N = 0;
-    assert(0 && "TODO");
-//    ViewGroup::GetChildCount(&N);
+    mOwner->GetChildCount(&N);
 
     Int32 K = 1; //irand(1,3);
     for (Int32 i = 0; i < K; i++) {
@@ -752,12 +768,12 @@ ECode CDessertCaseView::Runnable_1::Run()
 }
 
 //===============================================================
-// CDessertCaseView::AnimatorListenerAdapter_1::
+// CDessertCaseView::AnimatorListenerAdapter_1
 //===============================================================
 CDessertCaseView::AnimatorListenerAdapter_1::AnimatorListenerAdapter_1(
     /* [in] */ IView* v)
+    : mV(v)
 {
-    mV = v;
 }
 
 ECode CDessertCaseView::AnimatorListenerAdapter_1::OnAnimationStart(
@@ -779,11 +795,12 @@ ECode CDessertCaseView::AnimatorListenerAdapter_1::OnAnimationEnd(
 // CDessertCaseView::AnimatorListener::
 //===============================================================
 CAR_INTERFACE_IMPL(CDessertCaseView::AnimatorListener, Object, IAnimatorListener)
-
 CDessertCaseView::AnimatorListener::AnimatorListener(
-    /* [in] */ CDessertCaseView* owner)
+    /* [in] */ CDessertCaseView* owner,
+    /* [in] */ IView* view)
+    : mOwner(owner)
+    , mView(view)
 {
-    mOwner = owner;
 }
 
 ECode CDessertCaseView::AnimatorListener::OnAnimationStart(
@@ -795,7 +812,7 @@ ECode CDessertCaseView::AnimatorListener::OnAnimationStart(
 ECode CDessertCaseView::AnimatorListener::OnAnimationEnd(
     /* [in] */ IAnimator* animator)
 {
-//    mOwner->RemoveView(squatter);
+    mOwner->RemoveView(mView);
     return NOERROR;
 }
 
@@ -812,16 +829,15 @@ ECode CDessertCaseView::AnimatorListener::OnAnimationRepeat(
 }
 
 //===============================================================
-// CDessertCaseView::OnClickListener::
+// CDessertCaseView::OnClickListener
 //===============================================================
 CAR_INTERFACE_IMPL(CDessertCaseView::OnClickListener, Object, IViewOnClickListener)
-
 CDessertCaseView::OnClickListener::OnClickListener(
     /* [in] */ CDessertCaseView* owner,
     /* [in] */ IImageView* v)
+    : mOwner(owner)
+    , mV(v)
 {
-    mOwner = owner;
-    mV = v;
 }
 
 ECode CDessertCaseView::OnClickListener::OnClick(
@@ -834,12 +850,12 @@ ECode CDessertCaseView::OnClickListener::OnClick(
 }
 
 //===============================================================
-// CDessertCaseView::Runnable_2::
+// CDessertCaseView::Runnable_2
 //===============================================================
 CDessertCaseView::Runnable_2::Runnable_2(
     /* [in] */ CDessertCaseView* owner)
+    : mOwner(owner)
 {
-    mOwner = owner;
 }
 
 ECode CDessertCaseView::Runnable_2::Run()
@@ -849,5 +865,6 @@ ECode CDessertCaseView::Runnable_2::Run()
 }
 
 } // namespace SystemUI
+} // namespace Packages
 } // namepsace Droid
 } // namespace Elastos

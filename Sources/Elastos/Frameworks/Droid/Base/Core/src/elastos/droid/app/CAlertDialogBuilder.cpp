@@ -432,7 +432,9 @@ ECode CAlertDialogBuilder::Create(
     mP->GetContext((IContext**)&context);
     AutoPtr<CAlertDialog> cdialog;
     CAlertDialog::NewByFriend(context, mTheme, (CAlertDialog**)&cdialog);
-    mP->Apply(cdialog->mAlert);
+    AutoPtr<IAlertController> alert;
+    cdialog->GetAlertController((IAlertController**)&alert);
+    mP->Apply(alert);
 
     Boolean cancelable;
     mP->GetCancelable(&cancelable);

@@ -9,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-class AnimatorListenerAdapter
+class ECO_PUBLIC AnimatorListenerAdapter
     : public Object
     , public IAnimatorListener
     , public IAnimatorPauseListener
@@ -44,4 +44,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__ANIMATORLISTENERADAPTER_H__
+#endif // __ELASTOS_DROID_ANIMATION_ANIMATORLISTENERADAPTER_H__

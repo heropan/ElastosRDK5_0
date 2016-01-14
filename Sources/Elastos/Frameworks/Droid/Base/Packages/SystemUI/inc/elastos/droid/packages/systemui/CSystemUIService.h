@@ -14,8 +14,13 @@ namespace SystemUI {
 
 CarClass(CSystemUIService)
     , public Elastos::Droid::App::Service
+    , public ISystemUIService
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI OnCreate();
 
     CARAPI OnBind(

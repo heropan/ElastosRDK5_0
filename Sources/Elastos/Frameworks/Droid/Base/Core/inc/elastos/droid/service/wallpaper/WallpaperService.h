@@ -5,11 +5,12 @@
 #include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.Service.h"
 #include "Elastos.Droid.Utility.h"
-#include "elastos/droid/app/Service.h"
-#include "elastos/droid/content/BroadcastReceiver.h"
-#include "elastos/droid/internal/view/BaseIWindow.h"
-#include "elastos/droid/internal/view/BaseSurfaceHolder.h"
-#include "elastos/droid/view/InputEventReceiver.h"
+#include "Elastos.CoreLibrary.Utility.h"
+#include <elastos/droid/app/Service.h>
+#include <elastos/droid/content/BroadcastReceiver.h>
+#include <elastos/droid/internal/view/BaseIWindow.h>
+#include <elastos/droid/internal/view/BaseSurfaceHolder.h>
+#include <elastos/droid/view/InputEventReceiver.h>
 
 using Elastos::Droid::App::Service;
 using Elastos::Droid::Content::BroadcastReceiver;
@@ -50,7 +51,7 @@ namespace Wallpaper {
  * and implementing {@link #onCreateEngine()} to return a new instance of
  * your engine.
  */
-class WallpaperService
+class ECO_PUBLIC WallpaperService
     : public Elastos::Droid::App::Service
     , public IWallpaperService
 {

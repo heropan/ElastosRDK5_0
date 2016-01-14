@@ -1,41 +1,56 @@
-#ifndef __ELASTOS_DROID_SYSTEMUI_CEXPANDHELPER_H__
-#define __ELASTOS_DROID_SYSTEMUI_CEXPANDHELPER_H__
 
-#include "_Elastos_Droid_SystemUI_CExpandHelper.h"
-#include "elastos/droid/systemui/CViewScaller.h"
-#include "elastos/droid/view/ScaleGestureDetector.h"
-#include "elastos/droid/animation/AnimatorListenerAdapter.h"
+#ifndef  __ELASTOS_DROID_PACKAGES_SYSTEMUI_CEXPANDHELPER_H__
+#define  __ELASTOS_DROID_PACKAGES_SYSTEMUI_CEXPANDHELPER_H__
 
-using Elastos::Droid::Os::IVibrator;
-using Elastos::Droid::Animation::IAnimatorSet;
-using Elastos::Droid::Animation::IObjectAnimator;
-using Elastos::Droid::Animation::IObjectAnimator;
+#include "_Elastos_Droid_Packages_SystemUI_CExpandHelper.h"
+#include "Elastos.Droid.Content.h"
+#include <elastos/droid/view/ScaleGestureDetector.h>
+#include <elastos/droid/animation/AnimatorListenerAdapter.h>
+
 using Elastos::Droid::Animation::AnimatorListenerAdapter;
+using Elastos::Droid::Animation::IAnimatorSet;
+using Elastos::Droid::Animation::IAnimator;
+using Elastos::Droid::Animation::IObjectAnimator;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Media::IAudioAttributes;
+using Elastos::Droid::Os::IVibrator;
 using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IVelocityTracker;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IViewOnClickListener;
 using Elastos::Droid::View::IScaleGestureDetector;
 using Elastos::Droid::View::IScaleGestureDetectorOnScaleGestureListener;
 using Elastos::Droid::View::IViewGroupLayoutParams;
 using Elastos::Droid::View::ScaleGestureDetector;
-using Elastos::Droid::SystemUI::IExpandHelperCallback;
+using Elastos::Droid::Packages::SystemUI::IExpandHelperCallback;
+using Elastos::Droid::Packages::SystemUI::StatusBar::IExpandableView;
+using Elastos::Droid::Packages::SystemUI::StatusBar::IFlingAnimationUtils;
+using Elastos::Droid::Packages::SystemUI::StatusBar::Policy::IScrollAdapter;
 
 namespace Elastos {
 namespace Droid {
+namespace Packages {
 namespace SystemUI {
 
 CarClass(CExpandHelper)
+    , public Object
+    , public IExpandHelper
+    , public IGefingerpoken
 {
 private:
     class AnimatorListener : public AnimatorListenerAdapter
     {
     public:
-        virtual CARAPI OnAnimationStart(
+        AnimatorListener(
+            /* [in] */ CExpandHelper* host,
+            /* [in] */ IView* scaledView);
+
+        CARAPI OnAnimationEnd(
             /* [in] */ IAnimator* animation);
 
-        virtual CARAPI OnAnimationEnd(
-            /* [in] */ IAnimator* animation);
+    private:
+        CExpandHelper* mHost;
+        AutoPtr<IView> mView;
     };
 
     class ExpandScaleGestureListener
@@ -59,7 +74,39 @@ private:
         CExpandHelper* mHost;
     };
 
+    class ViewScaler
+        : public Object
+        , public IViewScaler
+    {
+    public:
+        ViewScaler(
+            /* [in] */ CExpandHelper* host);
+
+        CAR_INTERFACE_DECL();
+
+        CARAPI SetView(
+            /* [in] */ IExpandableView* v);
+
+        CARAPI SetHeight(
+            /* [in] */ Float h);
+
+        CARAPI GetHeight(
+            /* [out] */ Float* rst);
+
+        CARAPI GetNaturalHeight(
+            /* [in] */ Int32 maximum,
+            /* [out] */ Int32* naturalHeight);
+    private:
+        CExpandHelper* mHost;
+        AutoPtr<IExpandableView> mView;
+        friend class CExpandHelper;
+    };
+
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CExpandHelper();
 
     /**
@@ -83,16 +130,8 @@ public:
     CARAPI SetGravity(
         /* [in] */ Int32 gravity);
 
-    CARAPI SetScrollView(
-        /* [in] */ IView* scrollView);
-
-    CARAPI SetGlow(
-        /* [in] */ Float glow);
-
-    CARAPI HandleGlowVisibility();
-
-    CARAPI OnClick(
-        /* [in] */ IView* v);
+    CARAPI SetScrollAdapter(
+        /* [in] */ IScrollAdapter* adapter);
 
     CARAPI OnInterceptTouchEvent(
         /* [in] */ IMotionEvent* ev,
@@ -105,55 +144,78 @@ public:
     /**
      * Use this to abort any pending expansions in progress.
      */
-     CARAPI Cancel();
+    CARAPI Cancel();
 
-protected:
-    Float CalculateGlow(
-        /* [in] */ Float target,
-        /* [in] */ Float actual);
+    CARAPI SetEnabled(
+        /* [in] */ Boolean enable);
+
+    /**
+     * Change the expansion mode to only observe movements and don't perform any resizing.
+     * This is needed when the expanding is finished and the scroller kicks in,
+     * performing an overscroll motion. We only want to shrink it again when we are not
+     * overscrolled.
+     *
+     * @param onlyMovements Should only movements be observed?
+     */
+    CARAPI OnlyObserveMovements(
+        /* [in] */ Boolean onlyMovements);
 
 private:
-    void UpdateExpansion();
+    CARAPI_(void) UpdateExpansion();
 
-    Float Clamp(
+    CARAPI_(Float) Clamp(
         /* [in] */ Float target);
 
-    AutoPtr<IView> FindView(
+    CARAPI_(AutoPtr<IExpandableView>) FindView(
         /* [in] */ Float x,
         /* [in] */ Float y);
 
-    Boolean IsInside(
+    CARAPI_(Boolean) IsInside(
         /* [in] */ IView* v,
         /* [in] */ Float x,
         /* [in] */ Float y);
 
-    void StartExpanding(
+    /**
+     * @return True if the view is expandable, false otherwise.
+     */
+    CARAPI_(Boolean) StartExpanding(
         /* [in] */ IView* v,
         /* [in] */ Int32 expandType);
 
-    void FinishExpanding(
-        /* [in] */ Boolean force);
+    CARAPI_(void) FinishExpanding(
+        /* [in] */ Boolean force,
+        /* [in] */ Float velocity);
 
-    void ClearView();
-
-    void SetView(
-        /* [in] */ IView* v);
+    CARAPI_(void) ClearView();
 
     /**
      * Triggers haptic feedback.
      */
-    void Vibrate(
+    CARAPI_(void) Vibrate(
          /* [in] */ Int64 duration);
+
+    CARAPI_(void) TrackVelocity(
+        /* [in] */ IMotionEvent* event);
+
+    CARAPI_(void) MaybeRecycleVelocityTracker(
+        /* [in] */ IMotionEvent* event);
+
+    CARAPI_(Float) GetCurrentVelocity();
+
+    CARAPI_(Boolean) IsEnabled();
+
+    CARAPI_(Boolean) IsFullyExpanded(
+        /* [in] */ IExpandableView* underFocus);
+
+    static CARAPI_(Boolean) InitStatic();
 
 protected:
     static const Boolean DEBUG;// = FALSE;
     static const Boolean DEBUG_SCALE;// = FALSE;
-    static const Boolean DEBUG_GLOW;// = FALSE;
 
 private:
     static const String TAG;// = "ExpandHelper";
-    static const Int64 EXPAND_DURATION;// = 250;
-    static const Int64 GLOW_DURATION;// = 150;
+    static const Float EXPAND_DURATION;
 
     // Set to FALSE to disable focus-based gestures (spread-finger vertical pull).
     static const Boolean USE_DRAG;// = TRUE;
@@ -171,6 +233,9 @@ private:
     // overstretch fills the range (GLOW_BASE, 1.0]
     static const Float GLOW_BASE;// = 0.5f;
 
+    static AutoPtr<IAudioAttributes> VIBRATION_ATTRIBUTES;
+    static Boolean sInit;
+
     // @SuppressWarnings("unused")
     AutoPtr<IContext> mContext;
 
@@ -183,9 +248,6 @@ private:
     Boolean mWatchingForPull;
     Boolean mHasPopped;
     AutoPtr<IView> mEventSource;
-    AutoPtr<IView> mCurrView;
-    AutoPtr<IView> mCurrViewTopGlow;
-    AutoPtr<IView> mCurrViewBottomGlow;
     Float mOldHeight;
     Float mNaturalHeight;
     Float mInitialTouchFocusY;
@@ -194,34 +256,33 @@ private:
     Float mLastFocusY;
     Float mLastSpanY;
     Int32 mTouchSlop;
-    Int32 mLastMotionY;
-    Float mPopLimit;
+    Float mLastMotionY;
     Int32 mPopDuration;
     Float mPullGestureMinXSpan;
     AutoPtr<IExpandHelperCallback> mCallback;
     AutoPtr<IScaleGestureDetector> mSGD;
     AutoPtr<ExpandScaleGestureListener> mScaleGestureListener;
-    AutoPtr<IViewScaller> mScaler;
+    AutoPtr<IViewScaler> mScaler;
     AutoPtr<IObjectAnimator> mScaleAnimation;
-    AutoPtr<IAnimatorSet> mGlowAnimationSet;
-    AutoPtr<IObjectAnimator> mGlowTopAnimation;
-    AutoPtr<IObjectAnimator> mGlowBottomAnimation;
     AutoPtr<IVibrator> mVibrator;
+    Boolean mEnabled;
+    AutoPtr<IExpandableView> mResizedView;
+    Float mCurrentHeight;
 
     Int32 mSmallSize;
     Int32 mLargeSize;
     Float mMaximumStretch;
+    Boolean mOnlyMovements;
 
     Int32 mGravity;
-
-    AutoPtr<IView> mScrollView;
-
-    Object mVibrateLock;
+    AutoPtr<IScrollAdapter> mScrollAdapter;
+    AutoPtr<IFlingAnimationUtils> mFlingAnimationUtils;
+    AutoPtr<IVelocityTracker> mVelocityTracker;
 };
 
-}// namespace SystemUI
-}// namespace Droid
-}// namespace Elastos
+} // namespace SystemUI
+} // namespace Packages
+} // namespace Droid
+} // namespace Elastos
 
-
-#endif //__ELASTOS_DROID_SYSTEMUI_CEXPANDHELPER_H__
+#endif // __ELASTOS_DROID_PACKAGES_SYSTEMUI_CEXPANDHELPER_H__

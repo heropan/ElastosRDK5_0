@@ -23,9 +23,18 @@ module
     /**
      * Like {@link ExpandableView}, but setting an outline for the height and clipping.
      */
-     /**
+    /**
      * @Involve
      * interface IExpandableView
+     * interface Elastos.Droid.Widget.IFrameLayout
+     * extends Elastos.Droid.View.IView
+     * extends Elastos.Droid.View.IViewGroup
+     *
+     * interface Elastos.Droid.View.IViewParent
+     * interface Elastos.Droid.View.IViewManager
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
+     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
     interface IExpandableOutlineView {
 
@@ -55,9 +64,17 @@ module
     /**
      * An abstract view for expandable views.
      */
-     /**
+    /**
      * @Involve
-     * interface IFrameLayout
+     * interface Elastos.Droid.Widget.IFrameLayout
+     * extends Elastos.Droid.View.IView
+     * extends Elastos.Droid.View.IViewGroup
+     *
+     * interface Elastos.Droid.View.IViewParent
+     * interface Elastos.Droid.View.IViewManager
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
+     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
     interface IExpandableView {
         /**

@@ -1,24 +1,22 @@
 
-#ifndef __ELASTOS_DROID_SYSTEMUI_CDESSERTCASE_H__
-#define __ELASTOS_DROID_SYSTEMUI_CDESSERTCASE_H__
+#ifndef  __ELASTOS_DROID_PACKAGES_SYSTEMUI_CDESSERTCASE_H__
+#define  __ELASTOS_DROID_PACKAGES_SYSTEMUI_CDESSERTCASE_H__
 
-#include "_Elastos_Droid_SystemUI_CDessertCase.h"
-//#include "elastos/droid/app/Activity.h"
-#include "elastos/droid/os/Runnable.h"
-#include <elastos/core/Object.h>
+#include "_Elastos_Droid_Packages_SystemUI_CDessertCase.h"
+#include <elastos/droid/app/Activity.h>
+#include <elastos/droid/os/Runnable.h>
 
-//using Elastos::Droid::App::Activity;
+using Elastos::Droid::App::Activity;
 using Elastos::Droid::Os::Runnable;
-using Elastos::Droid::SystemUI::IDessertCaseView;
-
+using Elastos::Droid::Packages::SystemUI::IDessertCaseView;
 
 namespace Elastos {
 namespace Droid {
+namespace Packages {
 namespace SystemUI {
 
 CarClass(CDessertCase)
-//    , public Activity
-    , public Object
+    , public Activity
     , public IDessertCase
 {
 private:
@@ -34,8 +32,11 @@ private:
     public:
         CDessertCase* mOwner;
     };
+
 public:
-    CAR_INTERFACE_DECL()
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
 
     CARAPI OnStart();
 
@@ -48,7 +49,8 @@ public:
 };
 
 } // namespace SystemUI
+} // namespace Packages
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_SYSTEMUI_CDESSERTCASE_H__
+#endif // __ELASTOS_DROID_PACKAGES_SYSTEMUI_CDESSERTCASE_H__

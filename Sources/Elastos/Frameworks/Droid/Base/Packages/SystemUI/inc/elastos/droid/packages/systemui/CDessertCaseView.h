@@ -1,10 +1,11 @@
 
-#ifndef __ELASTOS_DROID_SYSTEMUI_CDESSERTCASEVIEW_H__
-#define __ELASTOS_DROID_SYSTEMUI_CDESSERTCASEVIEW_H__
+#ifndef  __ELASTOS_DROID_PACKAGES_SYSTEMUI_CDESSERTCASEVIEW_H__
+#define  __ELASTOS_DROID_PACKAGES_SYSTEMUI_CDESSERTCASEVIEW_H__
 
-#include "_Elastos_Droid_SystemUI_CDessertCaseView.h"
-//#include "elastos/droid/Widget/FrameLayout.h"
-#include "elastos/droid/os/Runnable.h"
+#include "_Elastos_Droid_Packages_SystemUI_CDessertCaseView.h"
+#include "Elastos.Droid.Os.h"
+#include <elastos/droid/widget/FrameLayout.h>
+#include <elastos/droid/os/Runnable.h>
 #include "elastos/droid/animation/AnimatorListenerAdapter.h"
 
 using Elastos::Droid::Animation::AnimatorListenerAdapter;
@@ -20,7 +21,7 @@ using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Utility::ISparseArray;
 using Elastos::Droid::View::IViewOnClickListener;
 using Elastos::Droid::View::IView;
-//using Elastos::Droid::Widget::FrameLayout;
+using Elastos::Droid::Widget::FrameLayout;
 using Elastos::Droid::Widget::IImageView;
 
 using Elastos::Utility::ISet;
@@ -28,16 +29,16 @@ using Elastos::Utility::IHashSet;
 
 namespace Elastos {
 namespace Droid {
+namespace Packages {
 namespace SystemUI {
 
 CarClass(CDessertCaseView)
-//    , public FrameLayout
-    , public Object
+    , public FrameLayout
     , public IDessertCaseView
 {
 public:
     class RescalingContainer
-//        : public FrameLayout
+       : public FrameLayout
     {
     public:
         RescalingContainer(
@@ -52,7 +53,7 @@ public:
         Float GetDarkness();
 
     protected:
-        void OnLayout (
+        CARAPI OnLayout(
             /* [in] */ Boolean changed,
             /* [in] */ Int32 left,
             /* [in] */ Int32 top,
@@ -103,7 +104,8 @@ private:
         CAR_INTERFACE_DECL()
 
         AnimatorListener(
-            /* [in] */ CDessertCaseView* owner);
+            /* [in] */ CDessertCaseView* owner,
+            /* [in] */ IView* view);
 
         CARAPI OnAnimationStart(
             /* [in] */ IAnimator* animator);
@@ -119,6 +121,7 @@ private:
 
     public:
         CDessertCaseView* mOwner;
+        AutoPtr<IView> mView;
     };
 
     class OnClickListener
@@ -154,6 +157,8 @@ private:
     };
 
 public:
+    CAR_OBJECT_DECL();
+
     CAR_INTERFACE_DECL()
 
     CDessertCaseView();
@@ -230,6 +235,8 @@ private:
     AutoPtr<ArrayOf<IPoint*> > GetOccupied(
         /* [in] */ IView* v);
 
+    static CARAPI_(Boolean) InitStatic();
+
 public:
     static Int32 START_DELAY;
     static Int32 DELAY;
@@ -241,7 +248,6 @@ public:
 
 private:
     static String TAG;
-
     static Boolean DEBUG;
 
     static Int32 TAG_POS;
@@ -267,6 +273,7 @@ private:
     static Float PROB_2X;
     static Float PROB_3X;
     static Float PROB_4X;
+    static Boolean sInit;
 
     Boolean mStarted;
 
@@ -285,7 +292,8 @@ private:
 };
 
 } // namespace SystemUI
+} // namespace Packages
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_SYSTEMUI_CDESSERTCASEVIEW_H__
+#endif // __ELASTOS_DROID_PACKAGES_SYSTEMUI_CDESSERTCASEVIEW_H__

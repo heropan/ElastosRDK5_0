@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_BASESURFACEHOLDER_H__
 #define __ELASTOS_DROID_VIEW_BASESURFACEHOLDER_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/droid/ext/frameworkext.h>
 #include "Elastos.Droid.View.h"
 #include <elastos/core/Object.h>
 
@@ -20,7 +20,7 @@ namespace Droid {
 namespace Internal {
 namespace View {
 
-class BaseSurfaceHolder
+class ECO_PUBLIC BaseSurfaceHolder
     : public Object
     , public ISurfaceHolder
 {
@@ -98,7 +98,7 @@ public:
     AutoPtr<ISurface> mSurface;
 
 protected:
-    static const Boolean DEBUG;
+    ECO_LOCAL static const Boolean DEBUG;
     AutoPtr<ArrayOf<ISurfaceHolderCallback*> > mGottenCallbacks;
     Boolean mHaveGottenCallbacks;
     Int32 mRequestedWidth;
@@ -112,7 +112,7 @@ protected:
     AutoPtr<IRect> mTmpDirty;
 
 private:
-    static const String TAG;
+    ECO_LOCAL static const String TAG;
 };
 
 } // namespace View

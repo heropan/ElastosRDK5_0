@@ -2,6 +2,7 @@
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/view/ScaleGestureDetector.h"
+#include "elastos/droid/view/InputEventConsistencyVerifier.h"
 #include "elastos/droid/view/CGestureDetector.h"
 #include "elastos/droid/view/ViewConfiguration.h"
 #include "elastos/droid/os/Build.h"

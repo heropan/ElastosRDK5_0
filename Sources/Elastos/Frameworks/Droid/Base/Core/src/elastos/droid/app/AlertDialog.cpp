@@ -215,7 +215,6 @@ ECode AlertDialog::OnKeyDown(
     return Dialog::OnKeyDown(keyCode, event, result);
 }
 
-//@Override
 ECode AlertDialog::OnKeyUp(
     /* [in] */ Int32 keyCode,
     /* [in] */ IKeyEvent* event,
@@ -230,6 +229,22 @@ ECode AlertDialog::OnKeyUp(
     }
 
     return Dialog::OnKeyUp(keyCode, event, result);
+}
+
+ECode AlertDialog::GetAlertController(
+    /* [out] */ IAlertController** alert)
+{
+    VALIDATE_NOT_NULL(alert);
+    *alert = mAlert;
+    REFCOUNT_ADD(*alert);
+    return NOERROR;
+}
+
+ECode AlertDialog::SetAlertController(
+    /* [in] */ IAlertController* alert)
+{
+    mAlert = alert;
+    return NOERROR;
 }
 
 } // namespace App

@@ -8,6 +8,7 @@
 #include "elastos/droid/view/animation/CDecelerateInterpolator.h"
 #include "elastos/droid/widget/CAbsListViewLayoutParams.h"
 #include "elastos/droid/widget/CLinearLayout.h"
+#include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
 #include "elastos/droid/widget/CSpinner.h"
 #include "elastos/droid/widget/CImageView.h"
 #include "elastos/droid/widget/CTextView.h"

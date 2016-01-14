@@ -11,6 +11,11 @@ module
     /**
      * @Involve
      * interface Elastos.Droid.Service.Wallpaper.IWallpaperService
+     * interface Elastos.Droid.App.IService
+     * interface Elastos.Droid.Content.IContext
+     * interface Elastos.Droid.Content.IContextWrapper
+     * interface IComponentCallbacks
+     * interface IComponentCallbacks2
      */
     interface IImageWallpaper {
     }

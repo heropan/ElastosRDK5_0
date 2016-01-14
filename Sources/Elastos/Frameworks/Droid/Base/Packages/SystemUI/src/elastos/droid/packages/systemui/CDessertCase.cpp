@@ -1,76 +1,76 @@
 
-#include "elastos/droid/systemui/CDessertCase.h"
+#include "elastos/droid/packages/systemui/CDessertCase.h"
+#include "elastos/droid/packages/systemui/CDessertCaseView.h"
+#include "elastos/droid/packages/systemui/Utils.h"
+#include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::Content::CComponentName;
+using Elastos::Droid::Content::EIID_IContext;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IContextWrapper;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::View::IView;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
+namespace Packages {
 namespace SystemUI {
 
-//===============================================================
-// CDessertCase::
-//===============================================================
-CAR_INTERFACE_IMPL(CDessertCase, Object, IDessertCase)
-
+CAR_OBJECT_IMPL(CDessertCase);
+CAR_INTERFACE_IMPL(CDessertCase, Activity, IDessertCase);
 ECode CDessertCase::OnStart()
 {
-    assert(0 && "TODO");
-//    Activity::OnStart();
+    Activity::OnStart();
 
     AutoPtr<IPackageManager> pm;
-//    IContextWrapper::Probe(this)->GetPackageManager((IPackageManager**)&pm);
+    GetPackageManager((IPackageManager**)&pm);
     AutoPtr<IComponentName> cn;
-//    CComponentName::New(this, DessertCaseDream.class, (IComponentName**)&cn);
-    Int32 ces = 0;
-    pm->GetComponentEnabledSetting(cn, &ces);
-    if (ces != IPackageManager::COMPONENT_ENABLED_STATE_ENABLED) {
-    //     Slog.v("DessertCase", "ACHIEVEMENT UNLOCKED");
+
+    AutoPtr<IClassInfo> classInfo = Utils::GetClassInfo(String("CDessertCaseDream"));
+    CComponentName::New(THIS_PROBE(IContext), classInfo, (IComponentName**)&cn);
+    Int32 value = 0;
+    pm->GetComponentEnabledSetting(cn, &value);
+    if (value != IPackageManager::COMPONENT_ENABLED_STATE_ENABLED) {
+        Slogger::V("DessertCase", "ACHIEVEMENT UNLOCKED");
         pm->SetComponentEnabledSetting(cn,
                 IPackageManager::COMPONENT_ENABLED_STATE_ENABLED,
                 IPackageManager::DONT_KILL_APP);
     }
 
-    assert(0 && "TODO");
-//     mView = new DessertCaseView(this);
+    CDessertCaseView::New(THIS_PROBE(IContext), (IDessertCaseView**)&mView);
+    AutoPtr<CDessertCaseView::RescalingContainer> container =
+        new CDessertCaseView::RescalingContainer(THIS_PROBE(IContext));
 
-//    DessertCaseView.RescalingContainer container = new DessertCaseView.RescalingContainer(this);
-
-//    container.setView(mView);
-
-//    SetContentView(container);
+    container->SetView(mView);
+    SetContentView(IView::Probe(container));
     return NOERROR;
 }
 
 ECode CDessertCase::OnResume()
 {
-    assert(0 && "TODO");
-//    Activity::OnResume();
+    Activity::OnResume();
     AutoPtr<Runnable_1> r = new Runnable_1(this);
     Boolean res = FALSE;
-    IView::Probe(mView)->PostDelayed(IRunnable::Probe(r), 1000, &res);
+    IView::Probe(mView)->PostDelayed(r, 1000, &res);
     return NOERROR;
 }
 
 ECode CDessertCase::OnPause()
 {
-    assert(0 && "TODO");
-//    Activity::OnPause();
+    Activity::OnPause();
     mView->Stop();
     return NOERROR;
 }
 
 //===============================================================
-// CDessertCase::Runnable_1::
+// CDessertCase::Runnable_1
 //===============================================================
-
 CDessertCase::Runnable_1::Runnable_1(
     /* [in] */ CDessertCase* owner)
+    : mOwner(owner)
 {
-    mOwner = owner;
 }
 
 ECode CDessertCase::Runnable_1::Run()
@@ -80,5 +80,6 @@ ECode CDessertCase::Runnable_1::Run()
 }
 
 } // namespace SystemUI
+} // namespace Packages
 } // namepsace Droid
 } // namespace Elastos
