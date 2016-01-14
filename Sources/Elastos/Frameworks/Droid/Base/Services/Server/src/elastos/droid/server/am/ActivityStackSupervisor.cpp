@@ -24,6 +24,7 @@
 #include "elastos/droid/server/am/ActivityStackSupervisor.h"
 #include "elastos/droid/server/am/CPendingIntentRecord.h"
 #include "elastos/droid/server/am/ProcessRecord.h"
+#include "elastos/droid/server/am/UserStartedState.h"
 #include "elastos/droid/server/LocalServices.h"
 //#include "elastos/droid/utility/CSparseInt32Array.h"
 //#include "elastos/droid/view/CDisplayInfo.h"
@@ -102,6 +103,7 @@ using Elastos::Core::ICharSequence;
 using Elastos::Core::IComparable;
 using Elastos::Core::ISystem;
 using Elastos::Core::StringUtils;
+using Elastos::IO::IFlushable;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::ISet;
@@ -2075,7 +2077,7 @@ ECode ActivityStackSupervisor::StartActivityMayWait(
     return NOERROR;
 }
 
-const ECode ActivityStackSupervisor::StartActivities(
+ECode ActivityStackSupervisor::StartActivities(
     /* [in] */ IApplicationThread* caller,
     /* [in] */ Int32 callingUid,
     /* [in] */ const String& callingPackage,
@@ -2123,7 +2125,7 @@ const ECode ActivityStackSupervisor::StartActivities(
             AutoLock lock(mService);
             //ActivityRecord[] outActivity = new ActivityRecord[1];
             AutoPtr<ArrayOf<ActivityRecord*> > outActivity = ArrayOf<ActivityRecord*>::Alloc(1);
-            outActivity->Set(0, new ActivityRecord());
+            //outActivity->Set(0, new ActivityRecord());
             for (Int32 i=0; i < intents->GetLength(); ++i) {
                 AutoPtr<IIntent> intent = (*intents)[i];
                 if (intent == NULL) {
@@ -2200,7 +2202,7 @@ const ECode ActivityStackSupervisor::StartActivities(
     return NOERROR;
 }
 
-const ECode ActivityStackSupervisor::RealStartActivityLocked(
+ECode ActivityStackSupervisor::RealStartActivityLocked(
     /* [in] */ ActivityRecord* r,
     /* [in] */ ProcessRecord* app,
     /* [in] */ Boolean andResume,
@@ -2226,9 +2228,9 @@ const ECode ActivityStackSupervisor::RealStartActivityLocked(
     if (checkConfig) {
         AutoPtr<IConfiguration> config;
         //TODO mWindowManager->UpdateOrientationFromAppTokens(
-                mService->mConfiguration,
-                r->MayFreezeScreenLocked(app) ? (IBinder::Probe(r->mAppToken)) : NULL,
-                (IConfiguration**)&config);
+        //        mService->mConfiguration,
+        //        r->MayFreezeScreenLocked(app) ? (IBinder::Probe(r->mAppToken)) : NULL,
+        //        (IConfiguration**)&config);
         mService->UpdateConfigurationLocked(config, r, FALSE, FALSE);
     }
 
@@ -2241,7 +2243,7 @@ const ECode ActivityStackSupervisor::RealStartActivityLocked(
 
     //app.activities.indexOf(r);
     Int32 idx = -1;
-    for(Int32 i = 0; i < app->mActivities.GetSize(); ++i) {
+    for(UInt32 i = 0; i < app->mActivities.GetSize(); ++i) {
         if ((app->mActivities[i]).Get() == r) {
             idx = i;
             break;
@@ -2256,6 +2258,7 @@ const ECode ActivityStackSupervisor::RealStartActivityLocked(
 
     AutoPtr<ActivityStack> stack = r->mTask->mStack;
     //try {
+    {
         if (app->mThread == NULL) {
             //throw new RemoteException();
             goto RemoteException;
@@ -2281,7 +2284,7 @@ const ECode ActivityStackSupervisor::RealStartActivityLocked(
             // Home process is the root process of the task.
             //mService->mHomeProcess = r->mTask->mActivities.get(0).app;
             AutoPtr<List<AutoPtr<ActivityRecord> > > activities = r->mTask->mActivities;
-            <AutoPtr<ActivityRecord> ar = (*activities)[0];
+            AutoPtr<ActivityRecord> ar = (*activities)[0];
             mService->mHomeProcess = ar->mApp;
         }
 
@@ -2299,7 +2302,7 @@ const ECode ActivityStackSupervisor::RealStartActivityLocked(
         String profileFile;
         AutoPtr<IParcelFileDescriptor> profileFd;
         if (mService->mProfileApp.Equals(app->mProcessName)) {
-            if (mService->mProfileProc == NULL || mService->mProfileProc == app) {
+            if (mService->mProfileProc == NULL || mService->mProfileProc.Get() == app) {
                 mService->mProfileProc = app;
                 profileFile = mService->mProfileFile;
                 profileFd = mService->mProfileFd;
@@ -2340,10 +2343,25 @@ const ECode ActivityStackSupervisor::RealStartActivityLocked(
         system->IdentityHashCode(TO_IINTERFACE(r), &hash);
         AutoPtr<IConfiguration> slaConfig;
         CConfiguration::New(mService->mConfiguration, (IConfiguration**)&slaConfig);
+        AutoPtr<IList> resultsList;
+        CArrayList::New((IList**)&resultsList);
+        List< AutoPtr<ActivityResult> >::Iterator iter = results->Begin();
+        while (iter != results->End()) {
+            resultsList->Add(TO_IINTERFACE(*iter));
+            ++iter;
+        }
+        AutoPtr<IList> newIntentsList;
+        CArrayList::New((IList**)&newIntentsList);
+        List< AutoPtr<IIntent> >::Iterator iter2 = newIntents->Begin();
+        while (iter2 != newIntents->End()) {
+            newIntentsList->Add(TO_IINTERFACE(*iter2));
+            ++iter2;
+        }
+
         app->mThread->ScheduleLaunchActivity(slaIntent, IBinder::Probe(r->mAppToken),
                 hash, r->mInfo, slaConfig,
                 r->mCompat, r->mTask->mVoiceInteractor, app->mRepProcState, r->mIcicle, r->mPersistentState,
-                results, newIntents, !andResume, mService->IsNextTransitionForward(),
+                resultsList, newIntentsList, !andResume, mService->IsNextTransitionForward(),
                 profilerInfo);
 
         Int32 flags;
@@ -2357,7 +2375,7 @@ const ECode ActivityStackSupervisor::RealStartActivityLocked(
             IPackageItemInfo::Probe(app->mInfo)->GetPackageName(&packageName);
             if (app->mProcessName.Equals(packageName)) {
                 if (mService->mHeavyWeightProcess != NULL
-                        && mService->mHeavyWeightProcess != app) {
+                        && mService->mHeavyWeightProcess.Get() != app) {
                     //Slog.w(CActivityManagerService::TAG, "Starting new heavy weight process " + app
                     //        + " when already running "
                     //        + mService.mHeavyWeightProcess);
@@ -2371,8 +2389,9 @@ const ECode ActivityStackSupervisor::RealStartActivityLocked(
                 mService->mHandler->SendMessage(msg, &tmpRes);
             }
         }
-    goto CONTINUE;
+    goto CONTINUE;;
     //} catch (RemoteException e) {
+    }
 RemoteException:
         if (r->mLaunchFailed) {
             // This is the second time we failed -- finish activity
@@ -2389,7 +2408,7 @@ RemoteException:
 
         // This is the first time we failed -- restart process and
         // retry.
-        app->mActivities->Remove(r);
+        app->mActivities.Remove(r);
         //throw e;
         return E_REMOTE_EXCEPTION;
     //}
@@ -2439,7 +2458,7 @@ ECode ActivityStackSupervisor::StartSpecificActivityLocked(
     // Is this activity's application already running?
     Int32 uid;
     AutoPtr<IApplicationInfo> appInfo;
-    IComponentInfo::Probe(aInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
+    IComponentInfo::Probe(r->mInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
     appInfo->GetUid(&uid);
     AutoPtr<ProcessRecord> app = mService->GetProcessRecordLocked(r->mProcessName,
             uid, TRUE);
@@ -2458,14 +2477,13 @@ ECode ActivityStackSupervisor::StartSpecificActivityLocked(
                 // to run in multiple processes, because this is actually
                 // part of the framework so doesn't make sense to track as a
                 // separate apk in the process.
-                AutoPtr<IApplicationInfo> appInfo;
-                IComponentInfo::Probe(r->mInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
                 Int32 versionCode;
-                appInfo->GetVersionCode(versionCode);
+                appInfo->GetVersionCode(&versionCode);
                 app->AddPackage(packageName, versionCode, mService->mProcessStats);
             }
-            RealStartActivityLocked(r, app, andResume, checkConfig);
-            return;
+            Boolean bTemp;
+            RealStartActivityLocked(r, app, andResume, checkConfig, &bTemp);
+            return NOERROR;
         //} catch (RemoteException e) {
         //    Slog.w(CActivityManagerService::TAG, "Exception when starting activity "
         //            + r.intent.getComponent().flattenToShortString(), e);
@@ -2474,8 +2492,6 @@ ECode ActivityStackSupervisor::StartSpecificActivityLocked(
         // If a dead object exception was thrown -- fall through to
         // restart the application.
     }
-    AutoPtr<IApplicationInfo> appInfo;
-    IComponentInfo::Probe(r->mInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
 
     AutoPtr<IComponentName> icn;
     r->mIntent->GetComponent((IComponentName**)&icn);
@@ -2492,11 +2508,11 @@ ECode ActivityStackSupervisor::StartActivityLocked(
     /* [in] */ IIVoiceInteractionSession* voiceSession,
     /* [in] */ IIVoiceInteractor* voiceInteractor,
     /* [in] */ IBinder* resultTo,
-    /* [in] */ const String& resultWho,
+    /* [in] */ const String& _resultWho,
     /* [in] */ Int32 requestCode,
     /* [in] */ Int32 callingPid,
     /* [in] */ Int32 callingUid,
-    /* [in] */ const String& callingPackage,
+    /* [in] */ const String& _callingPackage,
     /* [in] */ Int32 realCallingPid,
     /* [in] */ Int32 realCallingUid,
     /* [in] */ Int32 startFlags,
@@ -2507,8 +2523,9 @@ ECode ActivityStackSupervisor::StartActivityLocked(
     /* [in] */ TaskRecord* inTask,
     /* [out] */ Int32* status)
 {
-    VALIDATE_NOT_NULL(result);
-    String resultWho(who);
+    VALIDATE_NOT_NULL(status);
+    String resultWho(_resultWho);
+    String callingPackage = _callingPackage;
 
     Int32 err = IActivityManager::START_SUCCESS;
 
@@ -2534,7 +2551,7 @@ ECode ActivityStackSupervisor::StartActivityLocked(
         Int32 userId = 0;
         if (aInfo != NULL) {
             AutoPtr<IApplicationInfo> appInfo;
-            aInfo->GetApplicationInfo((IApplicationInfo**)&appInfo);
+            IComponentInfo::Probe(aInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
             appInfo->GetUid(&userId);
         }
         //String intDes;
@@ -2551,7 +2568,7 @@ ECode ActivityStackSupervisor::StartActivityLocked(
     AutoPtr<ActivityRecord> resultRecord;
     if (resultTo != NULL) {
         sourceRecord = IsInAnyStackLocked(resultTo);
-        if (DEBUG_RESULTS) {
+        if (CActivityManagerService::DEBUG_RESULTS) {
             // String ibDes;
             // resultTo->GetDescription(&ibDes);
             // Slogger::V(TAG, StringBuffer("Will send result to ") + ibDes
@@ -2624,11 +2641,11 @@ ECode ActivityStackSupervisor::StartActivityLocked(
         // be part of the voice session, we can only launch it if it has explicitly
         // said it supports the VOICE category, or it is a part of the calling app.
         AutoPtr<IApplicationInfo> appInfo;
-        sourceRecord->mInfo->GetApplicationInfo((IApplicationInfo**)&appInfo);
+        IComponentInfo::Probe(sourceRecord->mInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
         Int32 sourceRecordUid;
         appInfo->GetUid(&sourceRecordUid);
         AutoPtr<IApplicationInfo> aAppInfo;
-        aInfo->GetApplicationInfo((IApplicationInfo**)&aAppInfo);
+        IComponentInfo::Probe(aInfo)->GetApplicationInfo((IApplicationInfo**)&aAppInfo);
         Int32 aUid;
         aAppInfo->GetUid(&aUid);
         if ((launchFlags & IIntent::FLAG_ACTIVITY_NEW_TASK) == 0
@@ -2686,11 +2703,11 @@ ECode ActivityStackSupervisor::StartActivityLocked(
     String permission;
     aInfo->GetPermission(&permission);
     AutoPtr<IApplicationInfo> appInfo;
-    aInfo->GetApplicationInfo((IApplicationInfo**)&appInfo);
+    IComponentInfo::Probe(aInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
     Int32 uid;
     appInfo->GetUid(&uid);
     Boolean exported;
-    aInfo->GetExported(&exported);
+    IComponentInfo::Probe(aInfo)->GetExported(&exported);
     Int32 componentPerm = mService->CheckComponentPermission(permission, callingPid,
            callingUid, uid, exported);
     if (startAnyPerm != IPackageManager::PERMISSION_GRANTED
@@ -2702,13 +2719,13 @@ ECode ActivityStackSupervisor::StartActivityLocked(
         }
         StringBuilder msg;
         Boolean exported;
-        aInfo->GetExported(&exported);
+        IComponentInfo::Probe(aInfo)->GetExported(&exported);
         String intDes, appDes, permission;
         intent->ToString(&intDes);
         appDes = callerApp->ToString();
         aInfo->GetPermission(&permission);
         AutoPtr<IApplicationInfo> appInfo;
-        aInfo->GetApplicationInfo((IApplicationInfo**)&appInfo);
+        IComponentInfo::Probe(aInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
         Int32 uid;
         appInfo->GetUid(&uid);
         if (!exported) {
@@ -2736,12 +2753,12 @@ ECode ActivityStackSupervisor::StartActivityLocked(
             msg += " requires ";
             msg += permission;
         }
-        Slogger::W(TAG, msg.ToString());
+        Slogger::W(CActivityManagerService::TAG, msg.ToString());
         return E_SECURITY_EXCEPTION;
     }
 
-    AutoPtr<IApplicationInfo> appInfo;
-    aInfo->GetApplicationInfo((IApplicationInfo**)&appInfo);
+    //AutoPtr<IApplicationInfo> appInfo;
+    //IComponentInfo::Probe(aInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
     Boolean abort;
     //TODO abort = !mService->mIntentFirewall->CheckStartActivity(intent, callingUid,
     //TODO                        callingPid, resolvedType, appInfo);
@@ -2752,9 +2769,9 @@ ECode ActivityStackSupervisor::StartActivityLocked(
         AutoPtr<IIntent> watchIntent;
         intent->CloneFilter((IIntent**)&watchIntent);
         AutoPtr<IApplicationInfo> appInfo;
-        aInfo->GetApplicationInfo((IApplicationInfo**)&appInfo);
+        IComponentInfo::Probe(aInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
         String cname;
-        appInfo->GetPackageName(&cname);
+        IPackageItemInfo::Probe((appInfo))->GetPackageName(&cname);
         if (SUCCEEDED(mService->mController->ActivityStarting(
                         watchIntent, cname, &abort))) {
             abort |= !abort;
@@ -2791,15 +2808,15 @@ ECode ActivityStackSupervisor::StartActivityLocked(
         Int32 uid;
         if (stack->mResumedActivity != NULL) {
             AutoPtr<IApplicationInfo> appInfo;
-            IComponentInfo::Probe(mResumedActivity->mInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
+            IComponentInfo::Probe(stack->mResumedActivity->mInfo)->GetApplicationInfo((IApplicationInfo**)&appInfo);
             appInfo->GetUid(&uid);
         }
 
-        if (mResumedActivity == NULL || uid != callingUid) {
+        if (stack->mResumedActivity == NULL || uid != callingUid) {
             if (!mService->CheckAppSwitchAllowedLocked(callingPid, callingUid, realCallingPid, realCallingUid, String("Activity start"))) {
-                CActivityManagerService::PendingActivityLaunch* pal =
-                      new CActivityManagerService::PendingActivityLaunch(r, sourceRecord, startFlags, stack);
-                mService->mPendingActivityLaunches.PushBack(pal);
+                AutoPtr<PendingActivityLaunch> pal =
+                      new PendingActivityLaunch(r, sourceRecord, startFlags, stack);
+                mPendingActivityLaunches->Add(TO_IINTERFACE(pal));
                 AutoPtr<IActivityOptionsHelper> helper;
                 CActivityOptionsHelper::AcquireSingleton((IActivityOptionsHelper**)&helper);
                 helper->Abort(options);
@@ -2822,7 +2839,7 @@ ECode ActivityStackSupervisor::StartActivityLocked(
 
     DoPendingActivityLaunchesLocked(FALSE);
 
-    ECode ec = StartActivityUncheckedLocked(r, sourceRecord, voiceSession, voiceInteractor,
+    StartActivityUncheckedLocked(r, sourceRecord, voiceSession, voiceInteractor,
             startFlags, TRUE, options, inTask, &err);
     if (err < 0) {
         // Someone asked to have the keyguard dismissed on the next
@@ -2839,7 +2856,7 @@ AutoPtr<ActivityStack> ActivityStackSupervisor::AdjustStackFocus(
     /* [in] */ ActivityRecord* r,
     /* [in] */ Boolean newTask)
 {
-    AutoPtr<TaskRecord> task = r.task;
+    AutoPtr<TaskRecord> task = r->mTask;
 
     // On leanback only devices we should keep all activities in the same stack.
     if (!mLeanbackOnlyDevice &&
@@ -2859,7 +2876,7 @@ AutoPtr<ActivityStack> ActivityStackSupervisor::AdjustStackFocus(
             return taskStack;
         }
 
-        AutoPtr<ActivityContainer> container = r->mInitialActivityContainer;
+        AutoPtr<ActivityContainer> container = (ActivityContainer*)(r->mInitialActivityContainer.Get());
         if (container != NULL) {
             // The first time put it on the desired stack, after this put on task stack.
             r->mInitialActivityContainer = NULL;
@@ -2880,7 +2897,7 @@ AutoPtr<ActivityStack> ActivityStackSupervisor::AdjustStackFocus(
         for (Int32 stackNdx = size - 1; stackNdx >= 0; --stackNdx) {
             AutoPtr<IInterface> stackobj;
             homeDisplayStacks->Get(stackNdx, (IInterface**)&stackobj);
-            AutoPtr<ActivityStack> stack = (ActivityStack*)(IObjct::Probe(stackobj));
+            AutoPtr<ActivityStack> stack = (ActivityStack*)(IObject::Probe(stackobj));
             if (!stack->IsHomeStack()) {
                 //if (CActivityManagerService::DEBUG_FOCUS || CActivityManagerService::DEBUG_STACK) Slog.d(CActivityManagerService::TAG,
                 //        "adjustStackFocus: Setting focused stack=" + stack);
@@ -3064,9 +3081,9 @@ ECode ActivityStackSupervisor::StartActivityUncheckedLocked(
         // determines the root, and must be launching as a NEW_TASK.
         if (launchSingleInstance || launchSingleTask) {
             AutoPtr<IComponentName> baseCN;
-            baseIntent->GetComponent((IComponentName**)&basCN);
+            baseIntent->GetComponent((IComponentName**)&baseCN);
             AutoPtr<IComponentName> rCN;
-            r->mIntent->GetComponent((IComponentName**)&basCN);
+            r->mIntent->GetComponent((IComponentName**)&rCN);
             Int32 compareRes;
             IComparable::Probe(baseCN)->CompareTo(TO_IINTERFACE(rCN), &compareRes);
             Boolean equals = compareRes == 0;
@@ -3619,8 +3636,9 @@ ECode ActivityStackSupervisor::DoPendingActivityLaunchesLocked(
         AutoPtr<IInterface> obj;
         mPendingActivityLaunches->Remove(0, (IInterface**)&obj);
         PendingActivityLaunch* pal = (PendingActivityLaunch*)(IObject::Probe(obj));
+        Int32 result;
         StartActivityUncheckedLocked(pal->mR, pal->mSourceRecord, NULL, NULL, pal->mStartFlags,
-                doResume && (mPendingActivityLaunches->IsEmpty(&bTemp), bTemp), NULL, NULL);
+                doResume && (mPendingActivityLaunches->IsEmpty(&bTemp), bTemp), NULL, NULL, &result);
     }
     return NOERROR;
 }
@@ -3634,7 +3652,7 @@ ECode ActivityStackSupervisor::RemovePendingActivityLaunchesLocked(
         AutoPtr<IInterface> obj;
         mPendingActivityLaunches->Get(palNdx, (IInterface**)&obj);
         PendingActivityLaunch* pal = (PendingActivityLaunch*)(IObject::Probe(obj));
-        if (pal->mstack == stack) {
+        if (pal->mStack.Get() == stack) {
             mPendingActivityLaunches->Remove(palNdx);
         }
     }
@@ -3652,7 +3670,7 @@ ECode ActivityStackSupervisor::AcquireLaunchWakelock()
         Slogger::E("ActivityStackSupervisor::AcquireLaunchWakelock", "Calling must be system uid");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
-    mLaunchingActivity->Acquire();
+    mLaunchingActivity->AcquireLock();
     Boolean hasMessages;
     if (!(mHandler->HasMessages(LAUNCH_TIMEOUT_MSG, &hasMessages), hasMessages)) {
         // To be safe, don't allow the wake lock to be held for too long.
@@ -3742,17 +3760,17 @@ ECode ActivityStackSupervisor::ActivityIdleInternalLocked(
     stops = ProcessStoppingActivitiesLocked(TRUE);
     Int32 size;
     NS = stops != NULL ? (stops->GetSize(&size), size) : 0;
-    if (NF=(mFinishingActivities->GetSize(&size), size) > 0) {
+    if ((NF=(mFinishingActivities->GetSize(&size), size)) > 0) {
         //finishes = new ArrayList<ActivityRecord>(mFinishingActivities);
         finishes = NULL;
-        CArrayList::New(mFinishingActivities, (IArrayList**)&finishes);
+        CArrayList::New(ICollection::Probe(mFinishingActivities), (IArrayList**)&finishes);
         mFinishingActivities->Clear();
     }
 
     if ((mStartingUsers->GetSize(&size), size) > 0) {
         //startingUsers = new ArrayList<IUserStartedState>(mStartingUsers);
         startingUsers = NULL;
-        CArrayList::New(mStartingUsers, (IArrayList**)&startingUsers);
+        CArrayList::New(ICollection::Probe(mStartingUsers), (IArrayList**)&startingUsers);
         mStartingUsers->Clear();
     }
 
@@ -3797,7 +3815,7 @@ ECode ActivityStackSupervisor::ActivityIdleInternalLocked(
         if (sbuSize > 0) {
             //startingUsers = new ArrayList<IUserStartedState>(mStartingBackgroundUsers);
             startingUsers = NULL;
-            CArrayList::New(mStartingBackgroundUsers, (IArrayList**)&startingUsers);
+            CArrayList::New(ICollection::Probe(mStartingBackgroundUsers), (IArrayList**)&startingUsers);
             mStartingBackgroundUsers->Clear();
             Int32 suSize;
             startingUsers->GetSize(&suSize);
@@ -4083,8 +4101,7 @@ AutoPtr<ActivityStack> ActivityStackSupervisor::GetStack(
     return NULL;
 }
 
-AutoPtr<IArrayList> ActivityStackSupervisor::GetStacks(
-    /* [out] */ ArrayList<ActivityStack>** result)
+AutoPtr<IArrayList> ActivityStackSupervisor::GetStacks()
 {
     //ArrayList<ActivityStack> allStacks = new ArrayList<ActivityStack>();
     AutoPtr<IArrayList> allStacks;
@@ -4136,7 +4153,7 @@ AutoPtr<ActivityRecord> ActivityStackSupervisor::GetHomeActivity()
     return NULL;
 }
 
-AutoPtr<ActivityContainer> ActivityStackSupervisor::CreateActivityContainer(
+AutoPtr<ActivityStackSupervisor::ActivityContainer> ActivityStackSupervisor::CreateActivityContainer(
     /* [in] */ ActivityRecord* parentActivity,
     /* [in] */ IActivityContainerCallback* callback)
 {
@@ -4144,7 +4161,7 @@ AutoPtr<ActivityContainer> ActivityStackSupervisor::CreateActivityContainer(
             new VirtualActivityContainer(parentActivity, callback, this);
     mActivityContainers->Put(activityContainer->mStackId, TO_IINTERFACE(activityContainer));
     //if (DEBUG_CONTAINERS) Slog.d(CActivityManagerService::TAG, "createActivityContainer: " + activityContainer);
-    parentActivity->mChildContainers->PushBack(activityContainer);
+    parentActivity->mChildContainers.PushBack(activityContainer);
     return activityContainer;
 }
 
@@ -4157,7 +4174,7 @@ ECode ActivityStackSupervisor::RemoveChildActivityContainers(
         parentActivity->mChildContainers.Remove(containerNdx);
         //if (DEBUG_CONTAINERS) Slog.d(CActivityManagerService::TAG, "removeChildActivityContainers: removing " +
         //        container);
-        ActivityContainer* container = (ActivityContainer*)ac;
+        ActivityContainer* container = (ActivityContainer*)(ac.Get());
         container->ReleaseResources();
     }
     return NOERROR;
@@ -4217,6 +4234,7 @@ ECode ActivityStackSupervisor::CreateStackForRestoredTaskHistory(
             //r.info.configChanges
             Int32 configChanges;
             info->GetConfigChanges(&configChanges);
+            assert(taskId);//TODO remove
             //TODO mWindowManager->AddAppToken(0, r->mAppToken, taskId, stackId,
             //        screenOrientation, r->mFullscreen,
             //        (flags & IActivityInfo::FLAG_SHOW_ON_LOCK_SCREEN) != 0,
@@ -4234,14 +4252,14 @@ ECode ActivityStackSupervisor::MoveTaskToStack(
 {
     AutoPtr<TaskRecord> task = AnyTaskForIdLocked(taskId);
     if (task == NULL) {
-        return;
+        return NOERROR;
     }
     AutoPtr<ActivityStack> stack = GetStack(stackId);
     if (stack == NULL) {
         Slogger::W(CActivityManagerService::TAG, "moveTaskToStack: no stack for id=%d", stackId);
-        return;
+        return NOERROR;
     }
-    task->stack->RemoveTask(task);
+    task->mStack->RemoveTask(task);
     stack->AddTask(task, toTop, TRUE);
     //TODO mWindowManager->AddTask(taskId, stackId, toTop);
     ResumeTopActivitiesLocked();
@@ -4317,9 +4335,10 @@ AutoPtr<ActivityRecord> ActivityStackSupervisor::FindActivityLocked(
 ECode ActivityStackSupervisor::GoingToSleepLocked()
 {
     ScheduleSleepTimeout();
-    if (!mGoingToSleep->IsHeld()) {
-        mGoingToSleep->Acquire();
-        if (mLaunchingActivity->IsHeld()) {
+    Boolean isHeld;
+    if (!(mGoingToSleep->IsHeld(&isHeld), isHeld)) {
+        mGoingToSleep->AcquireLock();
+        if (mLaunchingActivity->IsHeld(&isHeld), isHeld) {
             AutoPtr<IBinderHelper> binderHelper;
             CBinderHelper::AcquireSingleton((IBinderHelper**)&binderHelper);
             Int32 callingUid;
@@ -4330,7 +4349,7 @@ ECode ActivityStackSupervisor::GoingToSleepLocked()
                 return E_ILLEGAL_STATE_EXCEPTION;
             }
             mLaunchingActivity->ReleaseLock();
-            mService->mHandler->removeMessages(LAUNCH_TIMEOUT_MSG);
+            mService->mHandler->RemoveMessages(LAUNCH_TIMEOUT_MSG);
         }
     }
     CheckReadyForSleepLocked();
@@ -4343,7 +4362,11 @@ Boolean ActivityStackSupervisor::ShutdownLocked(
     GoingToSleepLocked();
 
     Boolean timedout = FALSE;
-    Int64 endTime = System::GetCurrentTimeMillis() + timeout;
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+    Int64 endTime;
+    system->GetCurrentTimeMillis(&endTime);
+    endTime += timeout;
     while (TRUE) {
         Boolean cantShutdown = FALSE;
         Int32 size;
@@ -4364,7 +4387,11 @@ Boolean ActivityStackSupervisor::ShutdownLocked(
             }
         }
         if (cantShutdown) {
-            Int64 timeRemaining = endTime - System::GetCurrentTimeMillis();
+            AutoPtr<ISystem> system;
+            CSystem::AcquireSingleton((ISystem**)&system);
+            Int64 currentTime;
+            system->GetCurrentTimeMillis(&currentTime);
+            Int64 timeRemaining = endTime - currentTime;
             if (timeRemaining > 0) {
                 //try {
                     mService->Wait(timeRemaining);
@@ -4390,7 +4417,8 @@ Boolean ActivityStackSupervisor::ShutdownLocked(
 ECode ActivityStackSupervisor::ComeOutOfSleepIfNeededLocked()
 {
     RemoveSleepTimeouts();
-    if (mGoingToSleep->IsHeld()) {
+    Boolean isHeld;
+    if (mGoingToSleep->IsHeld(&isHeld), isHeld) {
         mGoingToSleep->ReleaseLock();
     }
     Int32 size;
@@ -4430,7 +4458,7 @@ ECode ActivityStackSupervisor::CheckReadyForSleepLocked()
 {
     if (!mService->IsSleepingOrShuttingDown()) {
         // Do not care.
-        return;
+        return NOERROR;
     }
 
     if (!mSleepTimeout) {
@@ -4470,7 +4498,7 @@ ECode ActivityStackSupervisor::CheckReadyForSleepLocked()
         }
 
         if (dontSleep) {
-            return;
+            return NOERROR;
         }
     }
 
@@ -4495,7 +4523,8 @@ ECode ActivityStackSupervisor::CheckReadyForSleepLocked()
 
     RemoveSleepTimeouts();
 
-    if (mGoingToSleep->IsHeld()) {
+    Boolean isHeld;
+    if (mGoingToSleep->IsHeld(&isHeld), isHeld) {
         mGoingToSleep->ReleaseLock();
     }
     if (mService->mShuttingDown) {
@@ -4559,7 +4588,7 @@ Boolean ActivityStackSupervisor::RequestVisibleBehindLocked(
     //        visible + " isVisible=" + isVisible);
 
     AutoPtr<ActivityRecord> top = TopRunningActivityLocked();
-    if (top == NULL || top == r || (visible == isVisible)) {
+    if (top == NULL || top.Get() == r || (visible == isVisible)) {
         //if (DEBUG_VISIBLE_BEHIND) Slog.d(CActivityManagerService::TAG, "requestVisibleBehind: quick return");
         stack->SetVisibleBehindActivity(visible ? r : NULL);
         return TRUE;
@@ -4572,7 +4601,7 @@ Boolean ActivityStackSupervisor::RequestVisibleBehindLocked(
         //        + top.fullscreen + " top.state=" + top.state + " top.app=" + top.app +
         //        " top.app.thread=" + top.app.thread);
         return FALSE;
-    } else if (!visible && stack->GetVisibleBehindActivity() != r) {
+    } else if (!visible && stack->GetVisibleBehindActivity().Get() != r) {
         // Only the activity set as currently visible behind should actively reset its
         // visible behind state.
         //if (DEBUG_VISIBLE_BEHIND) Slog.d(CActivityManagerService::TAG, "requestVisibleBehind: returning visible="
@@ -4586,13 +4615,13 @@ Boolean ActivityStackSupervisor::RequestVisibleBehindLocked(
         // Make the activity immediately above r opaque.
         AutoPtr<ActivityRecord> next = stack->FindNextTranslucentActivity(r);
         if (next != NULL) {
-            mService->ConvertFromTranslucent(next->mAppToken);
+            mService->ConvertFromTranslucent(IBinder::Probe(next->mAppToken));
         }
     }
     if (top->mApp != NULL && top->mApp->mThread != NULL) {
         // Notify the top app of the change.
         //try {
-            top->mApp->mThread->ScheduleBackgroundVisibleBehindChanged(top->mAppToken, visible);
+            top->mApp->mThread->ScheduleBackgroundVisibleBehindChanged(IBinder::Probe(top->mAppToken), visible);
         //} catch (RemoteException e) {
         //}
     }
@@ -4614,7 +4643,7 @@ ECode ActivityStackSupervisor::ScheduleLaunchTaskBehindComplete(
     /* [in] */ IBinder* token)
 {
     AutoPtr<IMessage> msg;
-    mHandler->ObtainMessage(LAUNCH_TASK_BEHIND_COMPLETE, TO_IINTERFACE(token), (IMessage)&msg);
+    mHandler->ObtainMessage(LAUNCH_TASK_BEHIND_COMPLETE, TO_IINTERFACE(token), (IMessage**)&msg);
     msg->SendToTarget();
     return NOERROR;
 }
@@ -4681,7 +4710,7 @@ ECode ActivityStackSupervisor::ReleaseSomeActivitiesLocked(
     // Tasks is non-NULL only if two or more tasks are found.
     AutoPtr<IArraySet> tasks = NULL;
     //if (DEBUG_RELEASE) Slog.d(CActivityManagerService::TAG, "Trying to release some activities in " + app);
-    for (Int32 i=0; i<app->mActivities.GetSize(); i++) {
+    for (UInt32 i=0; i<app->mActivities.GetSize(); i++) {
         AutoPtr<ActivityRecord> r = (app->mActivities)[i];
         // First, if we find an activity that is in the process of being destroyed,
         // then we just aren't going to do anything for now; we want things to settle
@@ -4689,7 +4718,7 @@ ECode ActivityStackSupervisor::ReleaseSomeActivitiesLocked(
         if (r->mFinishing || r->mState == ActivityState_DESTROYING
                 || r->mState == ActivityState_DESTROYED) {
             //if (DEBUG_RELEASE) Slog.d(CActivityManagerService::TAG, "Abort release; already destroying: " + r);
-            return;
+            return NOERROR;
         }
         // Don't consider any activies that are currently not in a state where they
         // can be destroyed.
@@ -4710,13 +4739,13 @@ ECode ActivityStackSupervisor::ReleaseSomeActivitiesLocked(
                     CArraySet::New((IArraySet**)&tasks);
                     ISet::Probe(tasks)->Add(TO_IINTERFACE(firstTask));
                 }
-                ISet::Probe(tasks)->Add(r->mTask);
+                ISet::Probe(tasks)->Add(TO_IINTERFACE(r->mTask));
             }
         }
     }
     if (tasks == NULL) {
         if (DEBUG_RELEASE) Slogger::D(CActivityManagerService::TAG, "Didn't find two or more tasks to release");
-        return;
+        return NOERROR;
     }
     // If we have activities in multiple tasks that are in a position to be destroyed,
     // let's iterate through the tasks and release the oldest one.
@@ -4737,7 +4766,7 @@ ECode ActivityStackSupervisor::ReleaseSomeActivitiesLocked(
             ActivityStack* stack = (ActivityStack*)(IObject::Probe(stackobj));
             // Try to release activities in this stack; if we manage to, we are done.
             if (stack->ReleaseSomeActivitiesLocked(app, tasks, reason) > 0) {
-                return;
+                return NOERROR;
             }
         }
     }
@@ -4820,7 +4849,7 @@ AutoPtr<IArrayList> ActivityStackSupervisor::ProcessStoppingActivitiesLocked(
         //        + nowVisible + " waitingVisible=" + s.waitingVisible
         //        + " finishing=" + s.finishing);
         if (s->mWaitingVisible && nowVisible) {
-            mWaitingVisibleActivitiesi->Remove(TO_IINTERFACE(s));
+            mWaitingVisibleActivities->Remove(TO_IINTERFACE(s));
             s->mWaitingVisible = FALSE;
             if (s->mFinishing) {
                 // If this activity is finishing, it is sitting on top of
@@ -4943,7 +4972,7 @@ Boolean ActivityStackSupervisor::DumpActivitiesLocked(
         pw->Print(String("Display #")); pw->Print(StringUtils::ToString(activityDisplay->mDisplayId));
         pw->Println(String(" (activities from top to bottom):"));
         //ArrayList<ActivityStack> stacks = activityDisplay.mStacks;
-        AutoPtr<IArrayList> stacks = ad->mStacks;
+        AutoPtr<IArrayList> stacks = activityDisplay->mStacks;
         Int32 stackSize;
         stacks->GetSize(&stackSize);
         for (Int32 stackNdx = stackSize; stackNdx >= 0; --stackNdx) {
@@ -4958,7 +4987,7 @@ Boolean ActivityStackSupervisor::DumpActivitiesLocked(
             stackHeader += String(":");
             printed |= stack->DumpActivitiesLocked(fd, pw, dumpAll, dumpClient, dumpPackage,
                     needSep, stackHeader);
-            printed |= DumpHistoryList(fd, pw, stack->mLRUActivities, String("    "), String("Run"), FALSE,
+            printed |= DumpHistoryList(fd, pw, IList::Probe(stack->mLRUActivities), String("    "), String("Run"), FALSE,
                     !dumpAll, FALSE, dumpPackage, TRUE,
                     String("    Running activities (most recent first):"), String(NULL));
 
@@ -4989,16 +5018,16 @@ Boolean ActivityStackSupervisor::DumpActivitiesLocked(
         }
     }
 
-    printed |= DumpHistoryList(fd, pw, mFinishingActivities, String("  "), String("Fin"), FALSE, !dumpAll,
+    printed |= DumpHistoryList(fd, pw, IList::Probe(mFinishingActivities), String("  "), String("Fin"), FALSE, !dumpAll,
             FALSE, dumpPackage, TRUE, String("  Activities waiting to finish:"), String(NULL));
-    printed |= DumpHistoryList(fd, pw, mStoppingActivities, String("  "), String("Stop"), FALSE, !dumpAll,
+    printed |= DumpHistoryList(fd, pw, IList::Probe(mStoppingActivities), String("  "), String("Stop"), FALSE, !dumpAll,
             FALSE, dumpPackage, TRUE, String("  Activities waiting to stop:"), String(NULL));
-    printed |= DumpHistoryList(fd, pw, mWaitingVisibleActivities, String("  "), String("Wait"), FALSE, !dumpAll,
+    printed |= DumpHistoryList(fd, pw, IList::Probe(mWaitingVisibleActivities), String("  "), String("Wait"), FALSE, !dumpAll,
             FALSE, dumpPackage, TRUE, String("  Activities waiting for another to become visible:"),
             String(NULL));
-    printed |= DumpHistoryList(fd, pw, mGoingToSleepActivities, String("  "), String("Sleep"), FALSE, !dumpAll,
+    printed |= DumpHistoryList(fd, pw, IList::Probe(mGoingToSleepActivities), String("  "), String("Sleep"), FALSE, !dumpAll,
             FALSE, dumpPackage, TRUE, String("  Activities waiting to sleep:"), String(NULL));
-    printed |= DumpHistoryList(fd, pw, mGoingToSleepActivities, String("  "), String("Sleep"), FALSE, !dumpAll,
+    printed |= DumpHistoryList(fd, pw, IList::Probe(mGoingToSleepActivities), String("  "), String("Sleep"), FALSE, !dumpAll,
             FALSE, dumpPackage, TRUE, String("  Activities waiting to sleep:"), String(NULL));
 
     return printed;
@@ -5015,9 +5044,11 @@ Boolean ActivityStackSupervisor::DumpHistoryList(
     /* [in] */ Boolean client,
     /* [in] */ const String& dumpPackage,
     /* [in] */ Boolean needNL,
-    /* [in] */ const String& header1,
-    /* [in] */ const String& header2)
+    /* [in] */ const String& _header1,
+    /* [in] */ const String& _header2)
 {
+    String header1 = _header1;
+    String header2 = _header2;
     AutoPtr<TaskRecord> lastTask = NULL;
     String innerPrefix;
     //String[] args = NULL;
@@ -5083,7 +5114,7 @@ Boolean ActivityStackSupervisor::DumpHistoryList(
         if (client && r->mApp != NULL && r->mApp->mThread != NULL) {
             // flush anything that is already in the PrintWriter since the thread is going
             // to write to the file descriptor directly
-            pw->Flush();
+            IFlushable::Probe(pw)->Flush();
             //try {
                 //TransferPipe tp = new TransferPipe();
                 AutoPtr<ITransferPipe> tp;
@@ -5435,7 +5466,6 @@ AutoPtr<IIStatusBarService> ActivityStackSupervisor::GetStatusBarService()
 
 AutoPtr<IIDevicePolicyManager> ActivityStackSupervisor::GetDevicePolicyManager()
 {
-            mStatusBarService = IIStatusBarService::Probe(obj);
     {
         AutoLock lock(mService);
         if (mDevicePolicyManager == NULL) {

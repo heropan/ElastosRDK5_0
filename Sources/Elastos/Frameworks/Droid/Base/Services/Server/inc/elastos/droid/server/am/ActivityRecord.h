@@ -354,5 +354,6 @@ private:
 } // namespace Elastos
 
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Server::Am::ActivityRecord)
+DEFINE_CONVERSION_FOR(Elastos::Droid::Server::Am::ActivityRecord, IInterface)
 
 #endif // __ELASTOS_DROID_SERVER_AM_ACTIVITYRECORD_H__

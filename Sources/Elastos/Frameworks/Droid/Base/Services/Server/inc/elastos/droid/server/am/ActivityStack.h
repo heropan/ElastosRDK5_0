@@ -60,14 +60,18 @@ protected:
     {
     public:
         ActivityStackHandler(
-            /* [in] */ ILooper* looper);
+            /* [in] */ ILooper* looper,
+            /* [in] */ ActivityStack* owner);
 
         // @Override
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
+    private:
+        ActivityStack* mOwner;
     };
 
 protected:
+    /*
     enum ActivityState {
         ActivityState_INITIALIZING,
         ActivityState_RESUMED,
@@ -79,6 +83,7 @@ protected:
         ActivityState_DESTROYING,
         ActivityState_DESTROYED
     };
+    */
 
 public:
     ActivityStack(
@@ -703,13 +708,13 @@ public:
     Int32 mDisplayId;
     /** Run all ActivityStacks through this */
     AutoPtr<ActivityStackSupervisor> mStackSupervisor;
-    static const Int32 PAUSE_TIMEOUT_MSG;// = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 1;
-    static const Int32 DESTROY_TIMEOUT_MSG;// = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 2;
-    static const Int32 LAUNCH_TICK_MSG;// = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 3;
-    static const Int32 STOP_TIMEOUT_MSG;// = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 4;
-    static const Int32 DESTROY_ACTIVITIES_MSG;// = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 5;
-    static const Int32 TRANSLUCENT_TIMEOUT_MSG;// = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 6;
-    static const Int32 RELEASE_BACKGROUND_RESOURCES_TIMEOUT_MSG;// = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 7;
+    static const Int32 PAUSE_TIMEOUT_MSG = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 1;
+    static const Int32 DESTROY_TIMEOUT_MSG = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 2;
+    static const Int32 LAUNCH_TICK_MSG = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 3;
+    static const Int32 STOP_TIMEOUT_MSG = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 4;
+    static const Int32 DESTROY_ACTIVITIES_MSG = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 5;
+    static const Int32 TRANSLUCENT_TIMEOUT_MSG = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 6;
+    static const Int32 RELEASE_BACKGROUND_RESOURCES_TIMEOUT_MSG = CActivityManagerService::FIRST_ACTIVITY_STACK_MSG + 7;
     AutoPtr<IHandler> mHandler;
     static const Int32 FINISH_IMMEDIATELY = 0;
     static const Int32 FINISH_AFTER_PAUSE = 1;

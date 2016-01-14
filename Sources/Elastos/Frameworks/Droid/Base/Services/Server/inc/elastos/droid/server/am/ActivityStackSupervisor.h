@@ -232,7 +232,6 @@ public:
         virtual CARAPI ToString(
             /* [out] */ String* info);
 
-    protected:
         CARAPI_(void) DetachLocked();
 
     private:
@@ -458,15 +457,16 @@ public:
         /* [in] */ TaskRecord* inTask,
         /* [out] */ Int32* result);
 
-    virtual CARAPI_(Int32) StartActivities(
+    virtual CARAPI StartActivities(
         /* [in] */ IApplicationThread* caller,
         /* [in] */ Int32 callingUid,
         /* [in] */ const String& callingPackage,
-        /* [in] */ ArrayOf<IIntent>* intents,
+        /* [in] */ ArrayOf<IIntent*>* intents,
         /* [in] */ ArrayOf<String>* resolvedTypes,
         /* [in] */ IBinder* resultTo,
         /* [in] */ IBundle* options,
-        /* [in] */ Int32 userId);
+        /* [in] */ Int32 userId,
+        /* [out] */ Int32* result);
 
     virtual CARAPI RealStartActivityLocked(
         /* [in] */ ActivityRecord* r,
@@ -510,7 +510,7 @@ public:
     virtual CARAPI SetFocusedStack(
         /* [in] */ ActivityRecord* r);
 
-    virtual const CARAPI StartActivityUncheckedLocked(
+    virtual CARAPI StartActivityUncheckedLocked(
         /* [in] */ ActivityRecord* r,
         /* [in] */ ActivityRecord* sourceRecord,
         /* [in] */ IIVoiceInteractionSession* voiceSession,
@@ -865,7 +865,7 @@ private:
     /** Status Bar Service **/
     AutoPtr<IBinder> mToken;
     AutoPtr<IIStatusBarService> mStatusBarService;
-    AutoPtr<IDevicePolicyManager> mDevicePolicyManager;
+    AutoPtr<IIDevicePolicyManager> mDevicePolicyManager;
     /** Identifier counter for all ActivityStacks */
     Int32 mLastStackId;
     /** Task identifier that activities are currently being started in.  Incremented each time a

@@ -10,16 +10,28 @@
 #if UN_FINISHED
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Graphics.h"
+#include "elastos/droid/server/ProcessMap.h"
 #include "elastos/droid/server/am/ProcessRecord.h"
+#include "elastos/droid/server/am/ActiveServices.h"
+//#include "elastos/droid/server/am/CBatteryStatsService.h"
+#include "elastos/droid/server/am/CProcessStatsService.h"
+#include "elastos/droid/server/am/TaskPersister.h"
+#include "elastos/droid/server/am/UserStartedState.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::App::IApplicationThread;
+using Elastos::Droid::App::IActivityController;
 using Elastos::Droid::App::IProfilerInfo;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Internal::Os::IProcessCpuTracker;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Server::ProcessMap;
+
+using Elastos::Core::IInteger32;
 using Elastos::Utility::Etl::List;
 
 namespace Elastos {
@@ -166,12 +178,205 @@ public:
         return FALSE;
     }
 //begin add leliang compile ActivityStack
+    class ItemMatcher : public Object
+    {
+    public:
+        ItemMatcher();
+
+        ~ItemMatcher();
+
+        CARAPI_(void) Build(
+            /* [in] */ const String& name);
+
+        CARAPI_(Int32) Build(
+            /* [in] */ const ArrayOf<String>* args,
+            /* [in] */ Int32 opti);
+
+        CARAPI_(Boolean) Match(
+            /* [in] */ IInterface* object,
+            /* [in] */ IComponentName* comp);
+
+    public:
+        List< AutoPtr<IComponentName> > mComponents;
+        List<String> mStrings;
+        List< AutoPtr<IInteger32> > mObjects;
+        Boolean mAll;
+    };
     static const Int32 ALLOW_FULL_ONLY = 2;
     static const Int32 FIRST_SUPERVISOR_STACK_MSG = 100;
+    static const Int32 FIRST_ACTIVITY_STACK_MSG = 100;
+    static const Int32 CANCEL_HEAVY_NOTIFICATION_MSG = 25;
     Boolean mDidDexOpt;
     Boolean mBooting;
     Boolean mBooted;
+    String mProfileApp;
     AutoPtr<ProcessRecord> mHeavyWeightProcess;
+    AutoPtr<ProcessRecord> mHomeProcess;
+    AutoPtr<ProcessRecord> mProfileProc;
+    String mProfileFile;
+    AutoPtr<IParcelFileDescriptor> mProfileFd;
+    Int32 mSamplingInterval;
+    Boolean mAutoStopProfiler;
+    Int32 mProfileType;
+    String mOpenGlTraceApp;
+    static const Int32 POST_HEAVY_NOTIFICATION_MSG;
+    AutoPtr<ActiveServices> mServices;
+    AutoPtr<CProcessStatsService> mProcessStats;
+    AutoPtr<IActivityController> mController;
+    Boolean mDidAppSwitch;
+    Int64 mAppSwitchesAllowedTime;
+    Int64 mPreviousProcessVisibleTime;
+    AutoPtr<ProcessRecord> mPreviousProcess;
+    Boolean mShuttingDown;
+    Int32 mCurrentUserId;
+    Int32 mThumbnailWidth;
+    Int32 mThumbnailHeight;
+    Boolean mHasRecents;
+    HashMap<Int32, AutoPtr<UserStartedState> > mStartedUsers;
+    AutoPtr< ProcessMap< AutoPtr<ProcessRecord> > > mProcessNames;
+    AutoPtr<List<AutoPtr<TaskRecord> > > mRecentTasks;
+    AutoPtr<TaskPersister> mTaskPersister;
+    AutoPtr<ArrayOf<Int32> > mCurrentProfileIds; // Accessed by ActivityStack
+    AutoPtr<IInterface/*CBatteryStatsService*/> mBatteryStatsService;
+    AutoPtr<IProcessCpuTracker> mProcessCpuTracker;
+    AutoPtr<ActivityRecord> mFocusedActivity;
+    CARAPI CancelIntentSenderLocked(
+        /* [in] */ IIIntentSender* rec,
+        /* [in] */ Boolean cleanActivity)
+    {
+        return NOERROR;
+    }
+    CARAPI ClearFocusedActivity(
+        /* [in] */ ActivityRecord* r)
+    {
+        return NOERROR;
+    }
+    CARAPI NotifyTaskPersisterLocked(
+        /* [in] */ TaskRecord* task,
+        /* [in] */ Boolean flush)
+    {
+        return NOERROR;
+    }
+    CARAPI UpdateCpuStats()
+    {
+        return NOERROR;
+    }
+    CARAPI LogAppTooSlow(
+        /* [in] */ ProcessRecord* app,
+        /* [in] */ Int64 startTime,
+        /* [in] */ const String& msg)
+    {
+        return NOERROR;
+    }
+    CARAPI KillAppAtUsersRequest(
+        /* [in] */ ProcessRecord* app,
+        /* [in] */ IDialog* fromDialog)
+    {
+        return NOERROR;
+    }
+    CARAPI AddRecentTaskLocked(
+        /* [in] */ TaskRecord* task)
+    {
+        return NOERROR;
+    }
+    CARAPI_(Boolean) ConvertFromTranslucent(
+        /* [in] */ IBinder* token)
+    {
+        return FALSE;
+    }
+    CARAPI UpdateUsageStats(
+        /* [in] */ ActivityRecord* resumedComponent,
+        /* [in] */ Boolean resumed)
+    {
+        return NOERROR;
+    }
+    CARAPI GrantUriPermissionFromIntentLocked(
+        /* [in] */ Int32 callingUid,
+        /* [in] */ const String& targetPkg,
+        /* [in] */ IIntent* intent,
+        /* [in] */ UriPermissionOwner* owner,
+        /* [in] */ Int32 targetUserId)
+    {
+        return NOERROR;
+    }
+    CARAPI PostFinishBooting(
+        /* [in] */ Boolean,
+        /* [in] */ Boolean)
+    {
+        return NOERROR;
+    }
+    CARAPI TrimApplications()
+    {
+        return NOERROR;
+    }
+    CARAPI FinishUserBoot (
+        /* [in] */ UserStartedState* uss)
+    {
+        return NOERROR;
+    }
+    CARAPI FinishUserSwitch(
+        /* [in] */ UserStartedState* uss)
+    {
+        return NOERROR;
+    }
+    CARAPI ScheduleAppGcsLocked()
+    {
+        return NOERROR;
+    }
+    CARAPI_(Boolean) CheckAppSwitchAllowedLocked(
+        /* [in] */ Int32 callingPid,
+        /* [in] */ Int32 callingUid,
+        /* [in] */ Int32 realcallingPid,
+        /* [in] */ Int32 realcallingUid,
+        /* [in] */ const String& name)
+    {
+        return FALSE;
+    }
+    CARAPI_(Int32) CheckComponentPermission(
+        /* [in] */ const String& permission,
+        /* [in] */ Int32 pid,
+        /* [in] */ Int32 uid,
+        /* [in] */ Int32 owningUid,
+        /* [in] */ Boolean exported)
+    {
+        return 0;
+    }
+    CARAPI CheckPermission(
+        /* [in] */ const String& permission,
+        /* [in] */ Int32 pid,
+        /* [in] */ Int32 uid,
+        /* [out] */ Int32* result)
+    {
+        return NOERROR;
+    }
+    CARAPI StartSetupActivityLocked()
+    {
+        return NOERROR;
+    }
+    CARAPI AppDiedLocked(
+        /* [in] */ ProcessRecord* app)
+    {
+        return NOERROR;
+    }
+    CARAPI_(Boolean) IsNextTransitionForward()
+    {
+        return FALSE;
+    }
+    CARAPI_(AutoPtr<ICompatibilityInfo>) CompatibilityInfoForPackageLocked(
+        /* [in] */ IApplicationInfo* ai)
+    {
+        return NULL;
+    }
+    CARAPI ShowAskCompatModeDialogLocked(
+        /* [in] */ ActivityRecord* r)
+    {
+        return NOERROR;
+    }
+    CARAPI EnsurePackageDexOpt(
+        /* [in] */ const String& packageName)
+    {
+        return NOERROR;
+    }
     CARAPI_(Boolean) IsSleepingOrShuttingDown()
     {
         return FALSE;
@@ -274,6 +479,37 @@ public:
         /* [in] */ Boolean initLocale)
     {
         return FALSE;
+    }
+    AutoPtr<ProcessRecord> GetProcessRecordLocked(
+        /* [in] */ const String& processName,
+        /* [in] */ Int32 uid,
+        /* [in] */ Boolean keepIfLarge)
+    {
+        return NULL;
+    }
+    AutoPtr<ProcessRecord> StartProcessLocked(
+        /* [in] */ const String& processName,
+        /* [in] */ IApplicationInfo* info,
+        /* [in] */ Boolean knownToBeDead,
+        /* [in] */ Int32 intentFlags,
+        /* [in] */ const String& hostingType,
+        /* [in] */ IComponentName* hostingName,
+        /* [in] */ Boolean allowWhileBooting,
+        /* [in] */ Boolean isolated,
+        /* [in] */ Boolean keepIfLarge)
+    {
+        return NULL;
+    }
+    CARAPI UpdateLruProcessLocked(
+        /* [in] */ ProcessRecord* app,
+        /* [in] */ Boolean oomAdj,
+        /* [in] */ ProcessRecord* client)
+    {
+        return NOERROR;
+    }
+    CARAPI UpdateOomAdjLocked()
+    {
+        return NOERROR;
     }
 //end add leliang compile ActivityStack
 public:
