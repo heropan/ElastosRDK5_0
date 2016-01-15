@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_VIEW_BASEIWINDOW_H__
 #define __ELASTOS_DROID_INTERNAL_VIEW_BASEIWINDOW_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/droid/ext/frameworkext.h>
 #include "Elastos.Droid.Internal.h"
 #include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.View.h"
@@ -23,7 +23,7 @@ namespace Droid {
 namespace Internal {
 namespace View {
 
-class BaseIWindow
+class ECO_PUBLIC BaseIWindow
     : public Object
     , public IBaseIWindow
     , public IIWindow

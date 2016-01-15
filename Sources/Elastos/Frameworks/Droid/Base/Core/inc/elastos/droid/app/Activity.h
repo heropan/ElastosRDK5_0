@@ -64,7 +64,7 @@ namespace Elastos {
 namespace Droid {
 namespace App {
 
-class Activity
+class ECO_PUBLIC Activity
     : public ContextThemeWrapper
     , public IActivity
     , public ILayoutInflaterFactory

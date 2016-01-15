@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_VIEW_CONTEXTTHEMEWRAPPER_H__
 
 #include "Elastos.Droid.View.h"
-#include "elastos/droid/content/ContextWrapper.h"
+#include <elastos/droid/content/ContextWrapper.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::ContextWrapper;
@@ -11,7 +11,7 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-class ContextThemeWrapper
+class ECO_PUBLIC ContextThemeWrapper
     : public ContextWrapper
     , public IContextThemeWrapper
 {
@@ -65,7 +65,6 @@ protected:
         /* [in] */ IResourcesTheme* theme,
         /* [in] */ Int32 resid,
         /* [in] */ Boolean first);
-
 
 private:
     CARAPI InitializeTheme();

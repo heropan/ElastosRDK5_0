@@ -543,6 +543,28 @@ module
             [out] IUserInfo** userInfo);
 
         /**
+         * Creates a guest user and configures it.
+         * @param context an application context
+         * @param name the name to set for the user
+         * @hide
+         */
+        CreateGuest(
+            [in] IContext* context,
+            [in] String name,
+            [out] IUserInfo** userInfo);
+
+        /**
+         * @hide
+         * Marks the guest user for deletion to allow a new guest to be created before deleting
+         * the current user who is a guest.
+         * @param userHandle
+         * @return
+         */
+        MarkGuestForDeletion(
+            [in] Int32 userHandle,
+            [out] Boolean* result);
+
+        /**
          * Return the number of users currently created on the device.
          */
         GetUserCount(

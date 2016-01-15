@@ -4,13 +4,11 @@ module
     importlib("Elastos.Droid.Core.eco");
 
     merge("../../../../../car/elastos/droid/BatteryMeterView.car");
-    merge("../../../../../car/elastos/droid/BitmapHelper.car");
     merge("../../../../../car/elastos/droid/DemoMode.car");
     merge("../../../../../car/elastos/droid/DessertCase.car");
     merge("../../../../../car/elastos/droid/DessertCaseDream.car");
     merge("../../../../../car/elastos/droid/DessertCaseView.car");
     merge("../../../../../car/elastos/droid/ExpandHelper.car");
-    merge("../../../../../car/elastos/droid/FontSizeUtils.car");
     merge("../../../../../car/elastos/droid/Gefingerpoken.car");
     merge("../../../../../car/elastos/droid/GuestResumeSessionReceiver.car");
     merge("../../../../../car/elastos/droid/ImageWallpaper.car");
@@ -268,10 +266,15 @@ module
     merge("../../../../../car/elastos/droid/settings/ToggleSlider.car");
 
 
+    using interface Elastos.Droid.App.IAlertDialog;
+    using interface Elastos.Droid.App.IDialog;
     using interface Elastos.Droid.App.IService;
-    using interface Elastos.Droid.Content.IContext;
     using interface Elastos.Droid.Content.IBroadcastReceiver;
+    using interface Elastos.Droid.Content.IContext;
+    using interface Elastos.Droid.Content.IContextWrapper;
+    using interface Elastos.Droid.Content.IComponentCallbacks;
     using interface Elastos.Droid.Content.IComponentCallbacks2;
+    using interface Elastos.Droid.Content.IDialogInterface;
     using interface Elastos.Droid.Content.IIntent;
     using interface Elastos.Droid.Content.Pm.IResolveInfo;
     using interface Elastos.Droid.Utility.IAttributeSet;
@@ -286,16 +289,24 @@ module
 //     using interface Elastos.Droid.View.IViewManager;
 //     using interface Elastos.Droid.View.IKeyEventCallback;
     using interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
-//     using interface Elastos.Droid.View.IViewOnClickListener;
+    using interface Elastos.Droid.View.IViewOnClickListener;
 //     using interface Elastos.Droid.View.IOnComputeInternalInsetsListener;
 //     using interface Elastos.Droid.View.IOnPreDrawListener;
+    using interface Elastos.Droid.View.IContextThemeWrapper;
+    using interface Elastos.Droid.View.ILayoutInflaterFactory;
     using interface Elastos.Droid.View.ILayoutInflaterFactory2;
+    using interface Elastos.Droid.View.IOnWindowDismissedCallback;
+    using interface Elastos.Droid.View.IViewGroup;
+    using interface Elastos.Droid.View.IViewManager;
+    using interface Elastos.Droid.View.IViewParent;
     using interface Elastos.Droid.View.IWindowCallback;
     using interface Elastos.Droid.View.IKeyEventCallback;
     using interface Elastos.Droid.View.IViewOnCreateContextMenuListener;
     using interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener;
     using interface Elastos.Droid.Packages.SystemUI.StatusBar.Policy.IBatteryStateChangeCallback;
+    using interface Elastos.Droid.Packages.SystemUI.StatusBar.Phone.ISystemUIDialog;
     using interface Elastos.Droid.Service.Dreams.IDreamService;
+    using interface Elastos.Droid.Service.Wallpaper.IWallpaperService;
     using interface Elastos.Droid.Widget.IFrameLayout;
     using interface Elastos.Core.ICharSequence;
 
@@ -304,10 +315,15 @@ module
     namespace Packages {
     namespace SystemUI {
 
-//    class CImageWallpaper {
-//        interface IImageWallpaper;
-//        interface IComponentCallbacks2;
-//    }
+    class CImageWallpaper {
+        interface IImageWallpaper;
+        interface IWallpaperService;
+        interface IService;
+        interface IContext;
+        interface IContextWrapper;
+        interface IComponentCallbacks;
+        interface IComponentCallbacks2;
+    }
 
 //    class CRecentsActivityOne {
 //        interface IActivity;
@@ -319,7 +335,12 @@ module
 //    }
 
     class CSystemUIService {
+        interface ISystemUIService;
         interface IService;
+        interface IContext;
+        interface IContextWrapper;
+        interface IComponentCallbacks;
+        interface IComponentCallbacks2;
     }
 
     class CBatteryMeterView {
@@ -343,46 +364,53 @@ module
         interface IDemoMode;
     }
 
-//    singleton class CBitmapHelper {
-//        interface IBitmapHelper;
-//    }
+    class CBootReceiver {
+        interface IBroadcastReceiver;
+    }
 
-//    class CBootReceiver {
-//        interface IBroadcastReceiver;
-//    }
-
-//    class CDessertCase {
-//        interface IObject;
-//        interface IActivity;
-//        interface ILayoutInflaterFactory2;
-//        interface IWindowCallback;
-//        interface IKeyEventCallback;
-//        interface IViewOnCreateContextMenuListener;
-//        interface IComponentCallbacks2;
-//        interface IWeakReferenceSource;
-//    }
+   class CDessertCase {
+        interface IDessertCase;
+        interface IActivity;
+        interface IContext;
+        interface IContextThemeWrapper;
+        interface ILayoutInflaterFactory;
+        interface ILayoutInflaterFactory2;
+        interface IWindowCallback;
+        interface IKeyEventCallback;
+        interface IViewOnCreateContextMenuListener;
+        interface IComponentCallbacks;
+        interface IComponentCallbacks2;
+        interface IOnWindowDismissedCallback;
+   }
 
 //    class CDessertCaseDream {
 //        interface IDessertCaseDream;
 //        interface IDreamService;
 //    }
 
-//    class CDessertCaseView {
-//        constructor(
-//            [in] IContext* context);
+    class CDessertCaseView {
+        constructor(
+            [in] IContext* context);
 
-//        constructor(
-//            [in] IContext* context,
-//            [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs);
 
-//        constructor(
-//            [in] IContext* context,
-//            [in] IAttributeSet* attrs,
-//            [in] Int32 defStyle);
+        constructor(
+            [in] IContext* context,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyle);
 
-//        interface IDessertCaseView;
-//        interface IFrameLayout;
-//    }
+        interface IDessertCaseView;
+        interface IFrameLayout;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
 //     [local]
 //     class CSwipeHelper {
@@ -395,32 +423,46 @@ module
 //         interface ISwipeHelper;
 //     }
 
-//     class CViewScaller {
-//         constructor();
+    [local]
+    class CExpandHelper {
+        /**
+         * Handle expansion gestures to expand and contract children of the callback.
+         *
+         * @param context application context
+         * @param callback the container that holds the items to be manipulated
+         * @param small the smallest allowable size for the manuipulated items.
+         * @param large the largest allowable size for the manuipulated items.
+         * @param scoller if non-null also manipulate the scroll position to obey the gravity.
+         */
+        constructor(
+            [in] IContext* ctx,
+            [in] IExpandHelperCallback* cb,
+            [in] Int32 small,
+            [in] Int32 large);
 
-//         interface IViewScaller;
-//     }
+        interface IExpandHelper;
+        interface IViewOnClickListener;
+    }
 
-//     [local]
-//     class CExpandHelper {
-//         /**
-//          * Handle expansion gestures to expand and contract children of the callback.
-//          *
-//          * @param context application context
-//          * @param callback the container that holds the items to be manipulated
-//          * @param small the smallest allowable size for the manuipulated items.
-//          * @param large the largest allowable size for the manuipulated items.
-//          * @param scoller if non-null also manipulate the scroll position to obey the gravity.
-//          */
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IExpandHelperCallback* cb,
-//             [in] Int32 small,
-//             [in] Int32 large);
+    class CGuestResumeSessionReceiver {
+        interface IGuestResumeSessionReceiver;
+        interface IBroadcastReceiver;
+    }
 
-//         interface IExpandHelper;
-//         interface IViewOnClickListener;
-//     }
+    class CResetSessionDialog {
+        constructor(
+            [in] IContext* ctx,
+            [in] Int32 userId);
+
+        interface ISystemUIDialog;
+        interface IAlertDialog;
+        interface IDialog;
+        interface IDialogInterface;
+        interface IWindowCallback;
+        interface IKeyEventCallback;
+        interface IViewOnCreateContextMenuListener;
+        interface IOnWindowDismissedCallback;
+    }
 
 //     [local]
 //     class CSearchPanelView {
@@ -580,11 +622,10 @@ module
 //         }
 //     } // Recent
 
-//     //===========================================================================
-//     //                              StatusBar
-//     //===========================================================================
-//     namespace StatusBar {
-
+    //===========================================================================
+    //                              StatusBar
+    //===========================================================================
+    namespace StatusBar {
 //     class CCommandQueue {
 //         constructor(
 //             [in] ICommandQueueCallbacks* cbs);
@@ -865,10 +906,23 @@ module
 
 //     } // namespace Policy
 
-//     //===========================================================================
-//     //                                  Phone
-//     //===========================================================================
-//     namespace Phone {
+    //===========================================================================
+    //                                  Phone
+    //===========================================================================
+    namespace Phone {
+        class CSystemUIDialog {
+            constructor(
+                [in] IContext* ctx);
+
+            interface ISystemUIDialog;
+            interface IAlertDialog;
+            interface IDialog;
+            interface IDialogInterface;
+            interface IWindowCallback;
+            interface IKeyEventCallback;
+            interface IViewOnCreateContextMenuListener;
+            interface IOnWindowDismissedCallback;
+        }
 
 //     class CFastColorDrawable {
 //         constructor(
@@ -962,7 +1016,7 @@ module
 //     }
 
 
-//     } // namespace Phone
+    } // namespace Phone
 
 //     //===========================================================================
 //     //                                  Tablet
@@ -1217,7 +1271,7 @@ module
 
 //     } // namespace Tablet
 
-//     } // namespace StatusBar
+    } // namespace StatusBar
 
     } // namespace SystemUI
     } // namespace Packages

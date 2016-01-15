@@ -1,6 +1,8 @@
 
 module
 {
+    using interface Elastos.Droid.Content.IDialogInterfaceOnClickListener;
+
     namespace Elastos {
     namespace Droid {
     namespace Packages {
@@ -14,22 +16,23 @@ module
     /**
      * @Involve
      * interface IAlertDialog
+     * interface IDialog
+     * interface IDialogInterface
      */
     interface ISystemUIDialog {
-
         SetShowForAllUsers(
             [in] Boolean show);
 
         SetMessage(
             [in] Int32 resId);
 
-//        SetPositiveButton(
-//            [in] Int32 resId,
-//            [in] IOnClickListener* onClick);
+        SetPositiveButton(
+            [in] Int32 resId,
+            [in] IDialogInterfaceOnClickListener* onClick);
 
-//        SetNegativeButton(
-//            [in] Int32 resId,
-//            [in] IOnClickListener* onClick);
+        SetNegativeButton(
+            [in] Int32 resId,
+            [in] IDialogInterfaceOnClickListener* onClick);
     }
 
     } // namespace Phone

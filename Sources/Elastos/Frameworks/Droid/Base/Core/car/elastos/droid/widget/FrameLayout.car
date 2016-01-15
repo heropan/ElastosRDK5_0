@@ -12,6 +12,7 @@ module
     /**
      * @Involve
      * interface Elastos.Droid.View.IViewGroupMarginLayoutParams
+     * interface Elastos.Droid.View.IViewGroupLayoutParams
      */
     interface IFrameLayoutLayoutParams {
         /**

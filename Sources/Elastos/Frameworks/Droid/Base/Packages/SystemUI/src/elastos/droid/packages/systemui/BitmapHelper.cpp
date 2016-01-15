@@ -1,16 +1,13 @@
 
-#include "elastos/droid/systemui/CBitmapHelper.h"
-#include "elastos/droid/graphics/CBitmap.h"
-#include "elastos/droid/graphics/CCanvas.h"
-#include "elastos/droid/graphics/CPaint.h"
-#include "elastos/droid/graphics/CBitmapShader.h"
-#include "elastos/droid/graphics/CRectF.h"
-#include "elastos/droid/graphics/CMatrix.h"
+#include "elastos/droid/packages/systemui/BitmapHelper.h"
+#include "Elastos.Droid.Graphics.h"
 
 using Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
 using Elastos::Droid::Graphics::MatrixScaleToFit_CENTER;
 using Elastos::Droid::Graphics::ShaderTileMode_CLAMP;
 using Elastos::Droid::Graphics::CBitmap;
+using Elastos::Droid::Graphics::CBitmapHelper;
+using Elastos::Droid::Graphics::IBitmapHelper;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::CCanvas;
 using Elastos::Droid::Graphics::IPaint;
@@ -25,34 +22,26 @@ using Elastos::Droid::Graphics::IShader;
 
 namespace Elastos {
 namespace Droid {
+namespace Packages {
 namespace SystemUI {
 
-//===============================================================
-// CBitmapHelper::
-//===============================================================
-CAR_SINGLETON_IMPL(CBitmapHelper)
-
-CAR_INTERFACE_IMPL(CBitmapHelper, Singleton, IBitmapHelper)
-
-ECode CBitmapHelper::CreateCircularClip(
+AutoPtr<IBitmap> BitmapHelper::CreateCircularClip(
     /* [in] */ IBitmap* input,
     /* [in] */ Int32 width,
-    /* [in] */ Int32 height,
-    /* [out] */ IBitmap** result)
+    /* [in] */ Int32 height)
 {
-    VALIDATE_NOT_NULL(result)
-
     if (input == NULL) {
-        *result = NULL;
-        return NOERROR;
+        return NULL;
     }
 
     Int32 inWidth = 0;
     input->GetWidth(&inWidth);
     Int32 inHeight = 0;
     input->GetHeight(&inHeight);
+    AutoPtr<IBitmapHelper> helper;
+    CBitmapHelper::AcquireSingleton((IBitmapHelper**)&helper);
     AutoPtr<IBitmap> output;
-    CBitmap::CreateBitmap(width, height, BitmapConfig_ARGB_8888, (IBitmap**)&output);
+    helper->CreateBitmap(width, height, BitmapConfig_ARGB_8888, (IBitmap**)&output);
     AutoPtr<ICanvas> canvas;
     CCanvas::New(output, (ICanvas**)&canvas);
     AutoPtr<IPaint> paint;
@@ -71,11 +60,10 @@ ECode CBitmapHelper::CreateCircularClip(
     m->SetRectToRect(srcRect, dstRect, MatrixScaleToFit_CENTER, &bRes);
     canvas->SetMatrix(m);
     canvas->DrawCircle(inWidth / 2, inHeight / 2, inWidth / 2, paint);
-    *result = output;
-    REFCOUNT_ADD(*result)
-    return NOERROR;
+    return output;
 }
 
 } // namespace SystemUI
+} // namespace Packages
 } // namepsace Droid
 } // namespace Elastos

@@ -1,9 +1,8 @@
 #ifndef __ELASTOS_DROID_VIEW_SCALEGESTUREDETECTOR_H__
 #define __ELASTOS_DROID_VIEW_SCALEGESTUREDETECTOR_H__
 
-#include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/view/InputEventConsistencyVerifier.h"
-#include "elastos/droid/view/GestureDetector.h"
+#include <elastos/droid/ext/frameworkext.h>
+#include <elastos/droid/view/GestureDetector.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
@@ -29,12 +28,12 @@ namespace View {
  *          callback will be executed when the events occur.
  * </ul>
  */
-class ScaleGestureDetector
+class ECO_PUBLIC ScaleGestureDetector
     : public Object
     , public IScaleGestureDetector
 {
 public:
-    class ECO_PUBLIC SimpleOnScaleGestureListener
+    class SimpleOnScaleGestureListener
         : public Object
         , public IScaleGestureDetectorOnScaleGestureListener
     {
@@ -265,24 +264,24 @@ private:
      * some hardware/driver combos. Smooth it out to get kinder, gentler behavior.
      * @param ev MotionEvent to add to the ongoing history
      */
-    CARAPI_(void) AddTouchHistory(
+    ECO_LOCAL CARAPI_(void) AddTouchHistory(
         /* [in] */ IMotionEvent* ev);
 
     /**
      * Clear all touch history tracking. Useful in ACTION_CANCEL or ACTION_UP.
      * @see #addTouchHistory(MotionEvent)
      */
-    CARAPI_(void) ClearTouchHistory();
+    ECO_LOCAL CARAPI_(void) ClearTouchHistory();
 
-    CARAPI_(Boolean) InDoubleTapMode();
+    ECO_LOCAL CARAPI_(Boolean) InDoubleTapMode();
 
 private:
-    static const String TAG;
+    ECO_LOCAL static const String TAG;
 
-    static const Int64 TOUCH_STABILIZE_TIME; // ms
-    static const Int32 DOUBLE_TAP_MODE_NONE;
-    static const Int32 DOUBLE_TAP_MODE_IN_PROGRESS;
-    static const Float SCALE_FACTOR;
+    ECO_LOCAL static const Int64 TOUCH_STABILIZE_TIME; // ms
+    ECO_LOCAL static const Int32 DOUBLE_TAP_MODE_NONE;
+    ECO_LOCAL static const Int32 DOUBLE_TAP_MODE_IN_PROGRESS;
+    ECO_LOCAL static const Float SCALE_FACTOR;
 
     AutoPtr<IContext> mContext;
     AutoPtr<IScaleGestureDetectorOnScaleGestureListener> mListener;
@@ -319,7 +318,7 @@ private:
     /**
      * Consistency verifier for debugging purposes.
      */
-    AutoPtr<InputEventConsistencyVerifier> mInputEventConsistencyVerifier;
+    AutoPtr<IInputEventConsistencyVerifier> mInputEventConsistencyVerifier;
     AutoPtr<IGestureDetector> mGestureDetector;
     Boolean mEventBeforeOrAboveStartingGestureEvent;
 };

@@ -2,27 +2,25 @@
 #ifndef __ELASTOS_DROID_APP_ALERTDIALOG_H__
 #define __ELASTOS_DROID_APP_ALERTDIALOG_H__
 
-#include "elastos/droid/app/Dialog.h"
+#include <elastos/droid/app/Dialog.h>
 
-using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Content::IDialogInterfaceOnCancelListener;
 using Elastos::Droid::Content::IDialogInterfaceOnClickListener;
+using Elastos::Droid::Internal::App::IAlertController;
+using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Widget::IButton;
 using Elastos::Droid::Widget::IListView;
-using Elastos::Droid::Internal::App::IAlertController;
 
 namespace Elastos {
 namespace Droid {
 namespace App {
 
-class AlertDialog
+class ECO_PUBLIC AlertDialog
     : public Dialog
     , public IAlertDialog
 {
-    friend class CAlertDialogBuilder;
-
 public:
-    CAR_INTERFACE_DECL()
+    CAR_INTERFACE_DECL();
 
     AlertDialog();
 
@@ -179,6 +177,12 @@ public:
         /* [in] */ Int32 keyCode,
         /* [in] */ IKeyEvent* event,
         /* [out] */ Boolean* result);
+
+    CARAPI GetAlertController(
+        /* [out] */ IAlertController** alert);
+
+    CARAPI SetAlertController(
+        /* [in] */ IAlertController* alert);
 
 protected:
     //@Override

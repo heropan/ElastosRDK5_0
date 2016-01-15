@@ -2,9 +2,9 @@
 #ifndef __ELASTOS_DROID_VIEW_GESTUREDETECTOR_H__
 #define __ELASTOS_DROID_VIEW_GESTUREDETECTOR_H__
 
-#include "elastos/droid/os/Handler.h"
+#include "Elastos.Droid.View.h"
+#include <elastos/droid/os/Handler.h>
 // #include "elastos/droid/view/VelocityTracker.h"
-#include "elastos/droid/view/InputEventConsistencyVerifier.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
@@ -14,12 +14,12 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-class GestureDetector
+class ECO_PUBLIC GestureDetector
     : public Object
     , public IGestureDetector
 {
 public:
-    class ECO_PUBLIC SimpleOnGestureListener
+    class SimpleOnGestureListener
         : public Object
         , public IGestureDetectorOnGestureListener
         , public IGestureDetectorOnDoubleTapListener
@@ -75,7 +75,7 @@ public:
     };
 
 private:
-    class GestureHandler : public Handler
+    class ECO_LOCAL GestureHandler : public Handler
     {
     public:
         GestureHandler(
@@ -232,16 +232,16 @@ public:
         /* [out] */ Boolean* result);
 
 private:
-    CARAPI_(void) Cancel();
+    ECO_LOCAL CARAPI_(void) Cancel();
 
-    CARAPI_(void) CancelTaps();
+    ECO_LOCAL CARAPI_(void) CancelTaps();
 
-    CARAPI_(Boolean) IsConsideredDoubleTap(
+    ECO_LOCAL CARAPI_(Boolean) IsConsideredDoubleTap(
         /* [in] */ IMotionEvent* firstDown,
         /* [in] */ IMotionEvent* firstUp,
         /* [in] */ IMotionEvent* secondDown);
 
-    CARAPI_(void) DispatchLongPress();
+    ECO_LOCAL CARAPI_(void) DispatchLongPress();
 
 private:
     Int32 mTouchSlopSquare;
@@ -250,10 +250,10 @@ private:
     Int32 mMinimumFlingVelocity;
     Int32 mMaximumFlingVelocity;
 
-    static Int32 LONGPRESS_TIMEOUT;
-    static Int32 TAP_TIMEOUT;
-    static Int32 DOUBLE_TAP_TIMEOUT;
-    static Int32 DOUBLE_TAP_MIN_TIME;
+    ECO_LOCAL static Int32 LONGPRESS_TIMEOUT;
+    ECO_LOCAL static Int32 TAP_TIMEOUT;
+    ECO_LOCAL static Int32 DOUBLE_TAP_TIMEOUT;
+    ECO_LOCAL static Int32 DOUBLE_TAP_MIN_TIME;
 
     // constants for Message.what used by GestureHandler below
     static const Int32 SHOW_PRESS;
@@ -294,7 +294,7 @@ private:
     /**
      * Consistency verifier for debugging purposes.
      */
-    AutoPtr<InputEventConsistencyVerifier> mInputEventConsistencyVerifier;
+    AutoPtr<IInputEventConsistencyVerifier> mInputEventConsistencyVerifier;
 };
 
 } // namespace View
