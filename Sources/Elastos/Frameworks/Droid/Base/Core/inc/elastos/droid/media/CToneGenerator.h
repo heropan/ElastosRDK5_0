@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Media_CToneGenerator.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -16,11 +17,17 @@ namespace Media {
  * This API is not for generating tones over the uplink audio path.
  */
 CarClass(CToneGenerator)
+    , public Object
+    , IToneGenerator
 {
 public:
     CToneGenerator();
 
     ~CToneGenerator();
+
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
 
     CARAPI constructor(
         /* [in] */ Int32 streamType,

@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 
+CAR_SINGLETON_IMPL(CMetadataHelper)
+
+CAR_INTERFACE_IMPL(CMetadataHelper, Singleton, IMetadataHelper)
+
 ECode CMetadataHelper::LastSytemId(
     /* [out] */ Int32* result)
 {

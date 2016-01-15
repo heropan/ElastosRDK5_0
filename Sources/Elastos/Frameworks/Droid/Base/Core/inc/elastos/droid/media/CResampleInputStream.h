@@ -13,7 +13,8 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 
-CarClass(CResampleInputStream), public InputStream
+CarClass(CResampleInputStream)
+    , public InputStream
 {
 public:
     /**

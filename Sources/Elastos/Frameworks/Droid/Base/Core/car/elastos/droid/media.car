@@ -501,54 +501,6 @@ module
 ////          interface IMediaScannerClient;
 ////      }
 //
-//        // media/media/MediaScannerConnection
-//        [local]
-//        class CMediaScannerConnection {
-//            constructor(
-//                [in] IContext* ctx,
-//                [in] IMediaScannerConnectionClient* client);
-//
-//            interface IMediaScannerConnection;
-//        }
-//
-//        singleton class CMediaScannerConnectionHelper {
-//            interface IMediaScannerConnectionHelper;
-//        }
-//
-//        class CMediaSyncEvent {
-//            constructor(
-//                [in] Int32 eventType);
-//
-//            interface IMediaSyncEvent;
-//        }
-//
-//        singleton class CMediaSyncEventHelper {
-//            interface IMediaSyncEventHelper;
-//        }
-//
-//        // media/media/Metadata
-//        class CMetadata {
-//            constructor();
-//
-//            interface IMetadata;
-//        }
-//
-//        singleton class CMetadataHelper {
-//            interface IMetadataHelper;
-//        }
-//
-//        // media/media/MiniThumbFile
-//        class CMiniThumbFile {
-//            constructor(
-//                [in] IUri* uri);
-//
-//            interface IMiniThumbFile;
-//        }
-//
-//        singleton class CMiniThumbFileHelper {
-//            interface IMiniThumbFileHelper;
-//        }
-//
 //        // media/media/RemoteControlClient
 //        class CRemoteControlClient {
 //            constructor(
@@ -559,28 +511,6 @@ module
 //                [in] ILooper* looper);
 //
 //            interface IRemoteControlClient;
-//        }
-//
-//        // media/media/RemoteDisplay
-//        class CRemoteDisplay {
-//            constructor(
-//                [in] IRemoteDisplayListener* listener,
-//                [in] IHandler* handler);
-//
-//            interface IRemoteDisplay;
-//        }
-//
-//        singleton class CRemoteDisplayHelper {
-//            interface IRemoteDisplayHelper;
-//        }
-//
-//        class CResampleInputStream {
-//            constructor(
-//                [in] IInputStream* inputStream,
-//                [in] Int32 rateIn,
-//                [in] Int32 rateOut);
-//
-//            interface IResampleInputStream;
 //        }
 //
 //        [local]
@@ -618,9 +548,6 @@ module
 //            interface ISoundPool;
 //        }
 //
-//        singleton class CThumbnailUtils {
-//            interface IThumbnailUtils;
-//        }
 //
 //        // media/media/TimeText
 //        class CTimedText {
@@ -630,14 +557,6 @@ module
 //            interface ITimedText;
 //        }
 //
-//        class CToneGenerator {
-//
-//            constructor(
-//                [in] Int32 streamType,
-//                [in] Int32 volume);
-//
-//            interface IToneGenerator;
-//        }
 //
 //        class CMediaCodec {
 //            constructor(
@@ -1647,6 +1566,70 @@ module
         interface IRemoteDisplayStateRemoteDisplayInfo;
         interface IParcelable;
     }
+
+    class CToneGenerator {
+
+        constructor(
+            [in] Int32 streamType,
+            [in] Int32 volume);
+
+        interface IToneGenerator;
+    }
+
+    singleton class CThumbnailUtils {
+        interface IThumbnailUtils;
+    }
+
+    class CMiniThumbFile {
+
+        constructor(
+            [in] IUri* uri);
+
+        interface IMiniThumbFile;
+    }
+
+    singleton class CMiniThumbFileHelper {
+        interface IMiniThumbFileHelper;
+    }
+
+    class CMetadata {
+
+        constructor();
+
+        interface IMetadata;
+    }
+
+    singleton class CMetadataHelper {
+        interface IMetadataHelper;
+    }
+
+    [local]
+    class CMediaScannerConnection {
+        constructor(
+            [in] IContext* ctx,
+            [in] IMediaScannerConnectionClient* client);
+
+        interface IMediaScannerConnection;
+    }
+
+    singleton class CMediaScannerConnectionHelper {
+
+        interface IMediaScannerConnectionHelper;
+    }
+
+    //class CRemoteDisplay {
+
+        //constructor(
+        //    [in] IRemoteDisplayListener* listener,
+        //    [in] IHandler* handler);
+
+      //  interface IRemoteDisplay;
+    //}
+
+    //singleton class CRemoteDisplayHelper {
+
+      //  interface IRemoteDisplayHelper;
+    //}
 
     } // namespace media
     } // namepsace Droid

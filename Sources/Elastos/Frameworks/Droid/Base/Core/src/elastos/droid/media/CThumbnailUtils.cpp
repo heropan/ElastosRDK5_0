@@ -6,15 +6,16 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 
+CAR_SINGLETON_IMPL(CThumbnailUtils)
+
+CAR_INTERFACE_IMPL(CThumbnailUtils, Singleton, IThumbnailUtils)
+
 ECode CThumbnailUtils::CreateImageThumbnail(
     /* [in] */ const String& filePath,
     /* [in] */ Int32 kind,
     /* [out] */ IBitmap** result)
 {
-    VALIDATE_NOT_NULL(result);
-    *result = ThumbnailUtils::CreateImageThumbnail(filePath, kind);
-    REFCOUNT_ADD(*result);
-    return NOERROR;
+    return ThumbnailUtils::CreateImageThumbnail(filePath, kind, result);
 }
 
 ECode CThumbnailUtils::CreateVideoThumbnail(
@@ -22,10 +23,7 @@ ECode CThumbnailUtils::CreateVideoThumbnail(
     /* [in] */ Int32 kind,
     /* [out] */ IBitmap** result)
 {
-    VALIDATE_NOT_NULL(result);
-    *result = ThumbnailUtils::CreateVideoThumbnail(filePath, kind);
-    REFCOUNT_ADD(*result);
-    return NOERROR;
+    return ThumbnailUtils::CreateVideoThumbnail(filePath, kind, result);
 }
 
 ECode CThumbnailUtils::ExtractThumbnail(
@@ -34,10 +32,7 @@ ECode CThumbnailUtils::ExtractThumbnail(
     /* [in] */ Int32 height,
     /* [out] */ IBitmap** result)
 {
-    VALIDATE_NOT_NULL(result);
-    *result = ThumbnailUtils::ExtractThumbnail(source, width, height);
-    REFCOUNT_ADD(*result);
-    return NOERROR;
+    return ThumbnailUtils::ExtractThumbnail(source, width, height, result);
 }
 
 ECode CThumbnailUtils::ExtractThumbnail(
@@ -47,10 +42,7 @@ ECode CThumbnailUtils::ExtractThumbnail(
     /* [in] */ Int32 options,
     /* [out] */ IBitmap** result)
 {
-    VALIDATE_NOT_NULL(result);
-    *result = ThumbnailUtils::ExtractThumbnail(source, width, height, options);
-    REFCOUNT_ADD(*result);
-    return NOERROR;
+    return ThumbnailUtils::ExtractThumbnail(source, width, height, options, result);
 }
 
 } // namespace Media

@@ -1,6 +1,8 @@
 
 module
 {
+    interface Elastos.Utility.IArrayList;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {

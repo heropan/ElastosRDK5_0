@@ -99,8 +99,6 @@ module
          */
         GetPercentRating(
             [out] Float * result);
-
-
     }
 
     interface IRatingHelper {

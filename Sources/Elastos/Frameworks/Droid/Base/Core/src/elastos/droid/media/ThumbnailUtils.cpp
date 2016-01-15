@@ -1,8 +1,11 @@
 
+#include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Provider.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/media/ThumbnailUtils.h"
 #include "elastos/droid/media/CMediaFile.h"
-#include "elastos/droid/media/CMediaMetadataRetriever.h"
+// #include "elastos/droid/media/CMediaMetadataRetriever.h"
 #include "elastos/droid/media/CExifInterface.h"
 #include "elastos/droid/graphics/CBitmap.h"
 #include "elastos/droid/graphics/CBitmapFactory.h"
@@ -12,21 +15,24 @@
 #include "elastos/droid/graphics/CBitmapFactoryOptions.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
+#include <Elastos.CoreLibrary.IO.h>
 
-using Elastos::Utility::Logging::Slogger;
-using Elastos::IO::IFileInputStream;
-using Elastos::IO::CFileInputStream;
-using Elastos::Droid::Graphics::IRect;
-using Elastos::Droid::Graphics::CRect;
-using Elastos::Droid::Graphics::ICanvas;
-using Elastos::Droid::Graphics::CCanvas;
-using Elastos::Droid::Graphics::IBitmapFactory;
-using Elastos::Droid::Graphics::CBitmapFactory;
+
 using Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
-using Elastos::Droid::Graphics::CMatrix;
 using Elastos::Droid::Graphics::CBitmap;
+using Elastos::Droid::Graphics::CBitmapFactory;
 using Elastos::Droid::Graphics::CBitmapFactoryOptions;
+using Elastos::Droid::Graphics::CCanvas;
+using Elastos::Droid::Graphics::CMatrix;
+using Elastos::Droid::Graphics::CRect;
+using Elastos::Droid::Graphics::IBitmapFactory;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Provider::IMediaStoreImagesThumbnails;
+using Elastos::Utility::Logging::Slogger;
+using Elastos::IO::CFileInputStream;
+using Elastos::IO::IFileInputStream;
+using Elastos::IO::ICloseable;
 
 namespace Elastos {
 namespace Droid {
@@ -36,17 +42,19 @@ String ThumbnailUtils::TAG("ThumbnailUtils");
 
 /* Maximum pixels size for created bitmap. */
 const Int32 ThumbnailUtils::MAX_NUM_PIXELS_THUMBNAIL = 512 * 384;
-const Int32 ThumbnailUtils::MAX_NUM_PIXELS_MICRO_THUMBNAIL = 128 * 128;
+const Int32 ThumbnailUtils::MAX_NUM_PIXELS_MICRO_THUMBNAIL = 160 * 120;
 const Int32 ThumbnailUtils::UNCONSTRAINED = -1;
 
 /* Options used internally. */
 const Int32 ThumbnailUtils::OPTIONS_NONE = 0x0;
 const Int32 ThumbnailUtils::OPTIONS_SCALE_UP = 0x1;
 
-AutoPtr<IBitmap> ThumbnailUtils::CreateImageThumbnail(
+ECode ThumbnailUtils::CreateImageThumbnail(
     /* [in] */ const String& filePath,
-    /* [in] */ Int32 kind)
+    /* [in] */ Int32 kind,
+    /* [out] */ IBitmap** result)
 {
+    VALIDATE_NOT_NULL(result);
     Boolean wantMini = (kind == IMediaStoreImagesThumbnails::MINI_KIND);
 
     Int32 targetSize = wantMini
@@ -103,7 +111,8 @@ AutoPtr<IBitmap> ThumbnailUtils::CreateImageThumbnail(
         options->GetOutWidth(&outWidth);
         options->GetOutHeight(&outHeight);
         if (isCancel|| outWidth == -1 || outHeight -1) {
-            return NULL;
+            *result = NULL;
+            return NOERROR;
         }
 
         options->SetInSampleSize(ComputeSampleSize(options, targetSize, maxPixels));
@@ -124,7 +133,7 @@ _EXIT_:
         }
         // try {
         if (stream != NULL) {
-            stream->Close();
+            ICloseable::Probe(stream)->Close();
             stream = NULL;
         }
         // } catch (IOException ex) {
@@ -137,19 +146,24 @@ _EXIT_:
         return ExtractThumbnail(bitmap,
             IThumbnailUtils::TARGET_SIZE_MICRO_THUMBNAIL,
             IThumbnailUtils::TARGET_SIZE_MICRO_THUMBNAIL,
-            IThumbnailUtils::OPTIONS_RECYCLE_INPUT);
+            IThumbnailUtils::OPTIONS_RECYCLE_INPUT, result);
     }
 
-    return bitmap;
+    *result = bitmap.Get();
+    REFCOUNT_ADD(*result);
+    return NOERROR;
 }
 
-AutoPtr<IBitmap> ThumbnailUtils::CreateVideoThumbnail(
+ECode ThumbnailUtils::CreateVideoThumbnail(
     /* [in] */ const String& filePath,
-    /* [in] */ Int32 kind)
+    /* [in] */ Int32 kind,
+    /* [out] */ IBitmap** result)
 {
+    VALIDATE_NOT_NULL(result);
     AutoPtr<IBitmap> bitmap;
     AutoPtr<IMediaMetadataRetriever> retriever;
-    CMediaMetadataRetriever::New((IMediaMetadataRetriever**)&retriever);
+    assert(0 && "TODO");
+    // CMediaMetadataRetriever::New((IMediaMetadataRetriever**)&retriever);
 
     AutoPtr<IBitmapFactory> bitmapFactory;
     CBitmapFactory::AcquireSingleton((IBitmapFactory**)&bitmapFactory);
@@ -180,10 +194,14 @@ _EXIT_:
     }
 
     if (FAILED(ec)) {
-        return NULL;
+        *result = NULL;
+        return NOERROR;
     }
 
-    if (bitmap == NULL) return NULL;
+    if (bitmap == NULL) {
+        *result = NULL;
+        return NOERROR;
+    }
 
     if (kind == IMediaStoreImagesThumbnails::MINI_KIND) {
         // Scale down the bitmap if it's too large.
@@ -195,7 +213,7 @@ _EXIT_:
             scale = 512.0f / max;
             w = Elastos::Core::Math::Round(scale * width);
             h = Elastos::Core::Math::Round(scale * height);
-            bitmapFactory->CreateScaledBitmap(bitmap, w, h, true, (IBitmap**)&temp);
+            CBitmap::CreateScaledBitmap(bitmap.Get(), w, h, true, (IBitmap**)&temp);
             bitmap = temp;
         }
     }
@@ -203,27 +221,34 @@ _EXIT_:
         return ExtractThumbnail(bitmap,
            IThumbnailUtils::TARGET_SIZE_MICRO_THUMBNAIL,
            IThumbnailUtils::TARGET_SIZE_MICRO_THUMBNAIL,
-           IThumbnailUtils::OPTIONS_RECYCLE_INPUT);
+           IThumbnailUtils::OPTIONS_RECYCLE_INPUT, result);
     }
-    return bitmap;
+    *result = bitmap.Get();
+    REFCOUNT_ADD(*result);
+    return NOERROR;
 }
 
-AutoPtr<IBitmap> ThumbnailUtils::ExtractThumbnail(
-    /* [in] */ IBitmap* source,
-    /* [in] */ Int32 width,
-    /* [in] */ Int32 height)
-{
-    return ExtractThumbnail(source, width, height, OPTIONS_NONE);
-}
-
-AutoPtr<IBitmap> ThumbnailUtils::ExtractThumbnail(
+ECode ThumbnailUtils::ExtractThumbnail(
     /* [in] */ IBitmap* source,
     /* [in] */ Int32 width,
     /* [in] */ Int32 height,
-    /* [in] */ Int32 options)
+    /* [out] */ IBitmap** result)
 {
+    VALIDATE_NOT_NULL(result);
+    return ExtractThumbnail(source, width, height, OPTIONS_NONE, result);
+}
+
+ECode ThumbnailUtils::ExtractThumbnail(
+    /* [in] */ IBitmap* source,
+    /* [in] */ Int32 width,
+    /* [in] */ Int32 height,
+    /* [in] */ Int32 options,
+    /* [out] */ IBitmap** result)
+{
+    VALIDATE_NOT_NULL(result);
     if (source == NULL) {
-        return NULL;
+        *result = NULL;
+        return NOERROR;
     }
 
     Float scale;
@@ -245,7 +270,9 @@ AutoPtr<IBitmap> ThumbnailUtils::ExtractThumbnail(
     matrix->SetScale(scale, scale);
     AutoPtr<IBitmap> thumbnail = Transform(matrix, source, width, height,
         OPTIONS_SCALE_UP | options);
-    return thumbnail;
+    *result = thumbnail.Get();
+    REFCOUNT_ADD(*result);
+    return NOERROR;
 }
 
 Int32 ThumbnailUtils::ComputeSampleSize(
@@ -527,7 +554,7 @@ void ThumbnailUtils::CreateThumbnailFromEXIF(
     if (thumbData != NULL) {
         exifOptions->SetInJustDecodeBounds(TRUE);
 
-        bf->DecodeByteArray(*thumbData.Get(), 0, thumbData->GetLength(), exifOptions, (IBitmap**)&tempBitmap);
+        bf->DecodeByteArray(thumbData.Get(), 0, thumbData->GetLength(), exifOptions, (IBitmap**)&tempBitmap);
         inSampleSize = ComputeSampleSize(exifOptions, targetSize, maxPixels);
         exifOptions->SetInSampleSize(inSampleSize);
         exifOptions->GetOutWidth(&outWidth);
@@ -550,7 +577,7 @@ void ThumbnailUtils::CreateThumbnailFromEXIF(
         exifOptions->GetOutHeight(&height);
         exifOptions->SetInJustDecodeBounds(FALSE);
         sizedThumbBitmap->mBitmap = NULL;
-        bf->DecodeByteArray(*thumbData, 0, thumbData->GetLength(), exifOptions,
+        bf->DecodeByteArray(thumbData.Get(), 0, thumbData->GetLength(), exifOptions,
             (IBitmap**)&sizedThumbBitmap->mBitmap);
         if (sizedThumbBitmap->mBitmap != NULL) {
             sizedThumbBitmap->mThumbnailData = thumbData;

@@ -1,23 +1,31 @@
 
 #include "elastos/droid/media/CMetadata.h"
-#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
+#include <Elastos.CoreLibrary.Utility.h>
+#include <elastos/core/CoreUtils.h>
 
-using Elastos::Core::StringUtils;
-using Elastos::Utility::Logging::Logger;
-
-using Elastos::Core::CInteger32;
 using Elastos::Utility::CDate;
+using Elastos::Utility::ICollections;
 using Elastos::Utility::ITimeZone;
 using Elastos::Utility::ITimeZoneHelper;
-using Elastos::Utility::CTimeZoneHelper;
 using Elastos::Utility::ICalendar;
 using Elastos::Utility::ICalendarHelper;
+using Elastos::Utility::CCollections;
 using Elastos::Utility::CCalendarHelper;
+using Elastos::Utility::CTimeZoneHelper;
+using Elastos::Utility::Logging::Slogger;
+using Elastos::Core::CoreUtils;
+using Elastos::Core::IInteger32;
+using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
+
+CAR_OBJECT_IMPL(CMetadata)
+
+CAR_INTERFACE_IMPL(CMetadata, Object, IMetadata)
 
 const String CMetadata::TAG("media.Metadata");
 
@@ -33,24 +41,26 @@ const Int32 CMetadata::kMetaHeaderSize = 2 * kInt32Size; //  size + marker
 const Int32 CMetadata::kRecordHeaderSize = 3 * kInt32Size; // size + id + type
 const Int32 CMetadata::kMetaMarker = 0x4d455441;  // 'M' 'E' 'T' 'A'
 
-static AutoPtr<IObjectContainer> InitMATCH_NONE()
+static AutoPtr<ISet> InitMATCH_NONE()
 {
-    AutoPtr<IObjectContainer> none;
-    CObjectContainer::New((IObjectContainer**)&none);
+    AutoPtr<ISet> none;
+    AutoPtr<ICollections> c;
+    CCollections::AcquireSingleton((ICollections**)&c);
+    c->GetEmptySet((ISet**)&none);
     return none;
 }
 
-static AutoPtr<IObjectContainer> InitMATCH_ALL()
+static AutoPtr<ISet> InitMATCH_ALL()
 {
-    AutoPtr<IObjectContainer> all;
-    CObjectContainer::New((IObjectContainer**)&all);
-    AutoPtr<IInteger32> zero;
-    CInteger32::New(IMetadata::ANY, (IInteger32**)&zero);
+    AutoPtr<ISet> all;
+    AutoPtr<ICollections> c;
+    CCollections::AcquireSingleton((ICollections**)&c);
+    c->Singleton(CoreUtils::Convert(IMetadata::ANY).Get(), (ISet**)&all);
     return all;
 }
 
-AutoPtr<IObjectContainer> CMetadata::MATCH_NONE = InitMATCH_NONE();
-AutoPtr<IObjectContainer> CMetadata::MATCH_ALL = InitMATCH_ALL();
+AutoPtr<ISet> CMetadata::MATCH_NONE = InitMATCH_NONE();
+AutoPtr<ISet> CMetadata::MATCH_ALL = InitMATCH_ALL();
 
 CMetadata::CMetadata()
 {
@@ -71,7 +81,7 @@ ECode CMetadata::Parse(
     Int32 avail;
     parcel->GetElementSize(&avail);
     if (avail < kMetaHeaderSize) {
-        Logger::E(TAG, String("Not enough data ") + StringUtils::Int32ToString(avail));
+        Slogger::E(TAG, "Not enough data %s", StringUtils::ToString(avail).string());
         return NOERROR;
     }
 
@@ -82,7 +92,7 @@ ECode CMetadata::Parse(
 
     // The extra kInt32Size below is to account for the int32 'size' just read.
     if (avail + kInt32Size < size || size < kMetaHeaderSize) {
-        Logger::E(TAG, "Bad size %d, avail %d, position %d, ", size, avail, pin);
+        Slogger::E(TAG, "Bad size %d, avail %d, position %d, ", size, avail, pin);
         parcel->SetDataPosition(pin);
         *result = FALSE;
         return NOERROR;
@@ -92,7 +102,7 @@ ECode CMetadata::Parse(
     Int32 kShouldBeMetaMarker;
     parcel->ReadInt32(&kShouldBeMetaMarker);
     if (kShouldBeMetaMarker != kMetaMarker ) {
-        Logger::E(TAG, "Marker missing %08x", kShouldBeMetaMarker);
+        Slogger::E(TAG, "Marker missing %08x", kShouldBeMetaMarker);
         parcel->SetDataPosition(pin);
         *result = FALSE;
         return NOERROR;
@@ -110,19 +120,10 @@ ECode CMetadata::Parse(
 }
 
 ECode CMetadata::KeySet(
-    /* [out] */ IObjectContainer** result)
+    /* [out] */ ISet** result)
 {
     VALIDATE_NOT_NULL(result);
-
-    HashMap< AutoPtr<IInteger32>, AutoPtr<IInteger32> >::Iterator it = mKeyToPosMap.Begin();
-    AutoPtr<IObjectContainer> oc;
-    CObjectContainer::New((IObjectContainer**)&oc);
-    for(; it != mKeyToPosMap.End(); ++it) {
-        oc->Add(it->mFirst);
-    }
-    *result = oc;
-    REFCOUNT_ADD(*result);
-    return NOERROR;
+    return mKeyToPosMap->GetKeySet(result);
 }
 
 ECode CMetadata::Has(
@@ -136,13 +137,7 @@ ECode CMetadata::Has(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoPtr<IInteger32> integer32;
-    CInteger32::New(metadataId, (IInteger32**)&integer32);
-    HashMap< AutoPtr<IInteger32>, AutoPtr<IInteger32> >::Iterator it = mKeyToPosMap.Find(integer32);
-    if (it != mKeyToPosMap.End()) {
-        *result = TRUE;
-    }
-    return NOERROR;
+    return mKeyToPosMap->ContainsKey(CoreUtils::Convert(metadataId).Get(), result);
 }
 
 ECode CMetadata::GetString(
@@ -292,7 +287,7 @@ Boolean CMetadata::ScanAllRecords(
     Int32 recCount = 0;
     Boolean error = FALSE;
 
-    mKeyToPosMap.Clear();
+    mKeyToPosMap->Clear();
     while (bytesLeft > kRecordHeaderSize) {
         Int32 start;
         parcel->GetDataPosition(&start);
@@ -301,7 +296,7 @@ Boolean CMetadata::ScanAllRecords(
         parcel->ReadInt32(&size);
 
         if (size <= kRecordHeaderSize) {  // at least 1 byte should be present.
-            Logger::E(TAG, "Record is too short");
+            Slogger::E(TAG, "Record is too short");
             error = TRUE;
             break;
         }
@@ -317,26 +312,23 @@ Boolean CMetadata::ScanAllRecords(
         // Store the record offset which points to the type
         // field so we can later on read/unmarshall the record
         // payload.
-        AutoPtr<IInteger32> integer1;
-        CInteger32::New(metadataId, (IInteger32**)&integer1);
-        HashMap< AutoPtr<IInteger32>, AutoPtr<IInteger32> >::Iterator it = mKeyToPosMap.Find(integer1);
-        if (it != mKeyToPosMap.End()) {
-            Logger::E(TAG, "Duplicate metadata ID found");
+        Boolean flag = FALSE;
+        mKeyToPosMap->ContainsKey(CoreUtils::Convert(metadataId).Get(), &flag);
+        if (flag) {
+            Slogger::E(TAG, "Duplicate metadata ID found");
             error = TRUE;
             break;
         }
 
         Int32 tempValue;
         parcel->GetDataPosition(&tempValue);
-        AutoPtr<IInteger32> integer2;
-        CInteger32::New(tempValue, (IInteger32**)&integer2);
-        mKeyToPosMap[integer1] = integer2;
+        mKeyToPosMap->Put(CoreUtils::Convert(metadataId).Get(), CoreUtils::Convert(tempValue).Get());
 
         // Check the metadata type.
         Int32 metadataType;
         parcel->ReadInt32(&metadataType);
         if (metadataType <= 0 || metadataType > LAST_TYPE) {
-            Logger::E(TAG, "Invalid metadata type %d", metadataType);
+            Slogger::E(TAG, "Invalid metadata type %d", metadataType);
             error = TRUE;
             break;
         }
@@ -348,8 +340,8 @@ Boolean CMetadata::ScanAllRecords(
     }
 
     if (0 != bytesLeft || error) {
-        Logger::E(TAG, "Ran out of data or error on record %d", recCount);
-        mKeyToPosMap.Clear();
+        Slogger::E(TAG, "Ran out of data or error on record %d", recCount);
+        mKeyToPosMap->Clear();
         return FALSE;
     } else {
         return TRUE;
@@ -360,7 +352,7 @@ Boolean CMetadata::CheckMetadataId(
     /* [in] */ Int32 val)
 {
     if (val <= ANY || (LAST_SYSTEM < val && val < FIRST_CUSTOM)) {
-        Logger::E(TAG, "Invalid metadata ID %d", val);
+        Slogger::E(TAG, "Invalid metadata ID %d", val);
         return FALSE;
     }
     return TRUE;
@@ -370,18 +362,18 @@ ECode CMetadata::CheckType(
     /* [in] */ Int32 key,
     /* [in] */ Int32 expectedType)
 {
-    AutoPtr<IInteger32> integer32;
-    CInteger32::New(key, (IInteger32**)&integer32);
-    HashMap< AutoPtr<IInteger32>, AutoPtr<IInteger32> >::Iterator it = mKeyToPosMap.Find(integer32);
+    AutoPtr<IInterface> obj;
+    mKeyToPosMap->Get(CoreUtils::Convert(key).Get(), (IInterface**)&obj);
+    AutoPtr<IInteger32> i = IInteger32::Probe(obj);
     Int32 pos;
-    it->mSecond->GetValue(&pos);
+    i->GetValue(&pos);
 
     mParcel->SetDataPosition(pos);
 
     Int32 type;
     mParcel->ReadInt32(&type);
     if (type != expectedType) {
-        Logger::E(TAG, "Wrong type %d but got %d", expectedType, type);
+        Slogger::E(TAG, "Wrong type %d but got %d", expectedType, type);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NOERROR;

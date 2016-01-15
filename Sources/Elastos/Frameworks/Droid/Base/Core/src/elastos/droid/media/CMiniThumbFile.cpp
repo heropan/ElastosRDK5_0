@@ -1,21 +1,26 @@
 
 #include "elastos/droid/media/CMiniThumbFile.h"
-
 #include <elastos/utility/logging/Logger.h>
 #include "elastos/droid/net/CUriHelper.h"
 #include "elastos/droid/os/Environment.h"
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/AutoLock.h>
+#include <Elastos.CoreLibrary.Utility.h>
 
-using Elastos::Core::StringUtils;
-using Elastos::IO::IByteBufferHelper;
-using Elastos::IO::CByteBufferHelper;
-using Elastos::IO::Channels::IFileLock;
-using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Net::CUriHelper;
 using Elastos::Droid::Os::Environment;
+using Elastos::IO::CByteBufferHelper;
 using Elastos::IO::CFile;
+using Elastos::IO::Channels::IFileLock;
 using Elastos::IO::CRandomAccessFile;
+using Elastos::IO::IByteBufferHelper;
+using Elastos::IO::IBuffer;
+using Elastos::IO::ICloseable;
+using Elastos::Utility::IList;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Core::AutoLock;
+using Elastos::Core::StringUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -29,6 +34,10 @@ namespace Media {
 
 const Int32 CMiniThumbFile::MINI_THUMB_DATA_FILE_VERSION = 3;
 const Int32 CMiniThumbFile::HEADER_SIZE = 1 + 8 + 4;
+
+CAR_OBJECT_IMPL(CMiniThumbFile)
+
+CAR_INTERFACE_IMPL(CMiniThumbFile, Object, IMiniThumbFile)
 
 CMiniThumbFile::CMiniThumbFile()
 {}
@@ -50,7 +59,7 @@ ECode CMiniThumbFile::Deactivate()
 
     if (mMiniThumbFile != NULL) {
 //        try {
-            mMiniThumbFile->Close();
+            ICloseable::Probe(mMiniThumbFile)->Close();
             mMiniThumbFile = NULL;
 //        } catch (IOException ex) {
 //            // ignore exception
@@ -75,18 +84,18 @@ ECode CMiniThumbFile::GetMagic(
         Int64 pos = id * BYTES_PER_MINTHUMB;
         AutoPtr<IFileLock> fileLock = NULL;
 //        try {
-            mBuffer->Clear();
-            mBuffer->SetLimit(1 + 8);
+            IBuffer::Probe(mBuffer)->Clear();
+            IBuffer::Probe(mBuffer)->SetLimit(1 + 8);
 
             mChannel->Lock(pos, 1 + 8, TRUE, (IFileLock**)&fileLock);
             // check that we can read the following 9 bytes
             // (1 for the "status" and 8 for the long)
             Int32 tempValue1;
-            mChannel->ReadByteBuffer(mBuffer, pos, &tempValue1);
+            mChannel->Read(mBuffer.Get(), pos, &tempValue1);
             if (tempValue1 == 9) {
-                mBuffer->SetPosition(0);
+                IBuffer::Probe(mBuffer)->SetPosition(0);
                 Byte tempValue2;
-                mBuffer->GetByte(&tempValue2);
+                mBuffer->Get(&tempValue2);
                 if (tempValue2 == 1) {
                     mBuffer->GetInt64(result);
                     return NOERROR;
@@ -134,16 +143,16 @@ ECode CMiniThumbFile::SaveMiniThumbToFile( // throws IOException
                 // not enough space to store it.
                 return NOERROR;
             }
-            mBuffer->Clear();
-            mBuffer->PutByte((Byte) 1);
+            IBuffer::Probe(mBuffer)->Clear();
+            mBuffer->Put((Byte) 1);
             mBuffer->PutInt64(magic);
             mBuffer->PutInt32(data->GetLength());
-            mBuffer->PutBytes(*data);
-            mBuffer->Flip();
+            mBuffer->Put(data);
+            IBuffer::Probe(mBuffer)->Flip();
 
             mChannel->Lock(pos, BYTES_PER_MINTHUMB, FALSE, (IFileLock**)&fileLock);
             Int32 tempValue;
-            mChannel->WriteByteBuffer(mBuffer, pos, &tempValue);
+            mChannel->Write(mBuffer.Get(), pos, &tempValue);
         }
 //    } catch (IOException ex) {
 //        Logger::E(TAG, String("couldn't save mini thumbnail data for ")
@@ -184,21 +193,21 @@ ECode CMiniThumbFile::GetMiniThumbFromFile(
     Int64 pos = id * BYTES_PER_MINTHUMB;
     AutoPtr<IFileLock> fileLock = NULL;
 //    try {
-        mBuffer->Clear();
+        IBuffer::Probe(mBuffer)->Clear();
         mChannel->Lock(pos, BYTES_PER_MINTHUMB, TRUE, (IFileLock**)&fileLock);
         Int32 size;
-        mChannel->ReadByteBuffer(mBuffer, pos, &size);
+        mChannel->Read(mBuffer.Get(), pos, &size);
         if (size > 1 + 8 + 4) { // flag, magic, length
-            mBuffer->SetPosition(0);
+            IBuffer::Probe(mBuffer)->SetPosition(0);
             Byte flag;
-            mBuffer->GetByte(&flag);
+            mBuffer->Get(&flag);
             Int64 magic;
             mBuffer->GetInt64(&magic);
             Int32 length;
             mBuffer->GetInt32(&length);
 
             if (size >= 1 + 8 + 4 + length && data->GetLength() >= length) {
-                mBuffer->GetBytes(data, 0, length);
+                mBuffer->Get(data, 0, length);
                 *result = data;
             }
         }
@@ -247,9 +256,13 @@ ECode CMiniThumbFile::Instance(
 
     AutoLock lock(mStaticThislock);
 
-    AutoPtr< ArrayOf<String> > tempMatrix;
-    uri->GetPathSegments((ArrayOf<String>**)&tempMatrix);
-    String type = (*tempMatrix)[1];
+    AutoPtr<IList> list;
+    uri->GetPathSegments((IList**)&list);
+    AutoPtr<IInterface> obj;
+    list->Get(1, (IInterface**)&obj);
+    AutoPtr<ICharSequence> cs = ICharSequence::Probe(obj);
+    String type;
+    cs->ToString(&type);
 
     HashMap< String, AutoPtr<IMiniThumbFile> >::Iterator it = sThumbFiles.Find(type);
     AutoPtr<IMiniThumbFile> file = it->mSecond;
@@ -279,8 +292,11 @@ String CMiniThumbFile::RandomAccessFilePath(
     String directoryName = tempText + "/DCIM/.thumbnails";
 
     Int32 tempValue;
-    mUri->GetHashCode(&tempValue);
-    String result = directoryName + "/thumbdata" + StringUtils::Int32ToString(version) + "-" + StringUtils::Int32ToString(tempValue);
+    IObject* obj = IObject::Probe(mUri.Get());
+    if (obj != NULL) {
+        obj->GetHashCode(&tempValue);
+    }
+    String result = directoryName + "/thumbdata" + StringUtils::ToString(version) + "-" + StringUtils::ToString(tempValue);
     return result;
 }
 

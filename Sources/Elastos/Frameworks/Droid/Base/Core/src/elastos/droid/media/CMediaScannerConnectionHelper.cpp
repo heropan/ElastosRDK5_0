@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 
+CAR_SINGLETON_IMPL(CMediaScannerConnectionHelper)
+
+CAR_INTERFACE_IMPL(CMediaScannerConnectionHelper, Object, IMediaScannerConnectionHelper)
+
 ECode CMediaScannerConnectionHelper::ScanFile(
     /* [in] */ IContext* context,
     /* [in] */ ArrayOf<String>* paths,

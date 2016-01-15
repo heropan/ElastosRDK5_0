@@ -3,13 +3,17 @@
 #define __ELASTOS_DROID_MEDIA_CMINITHUMBFILE_H__
 
 #include "_Elastos_Droid_Media_CMiniThumbFile.h"
+#include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
+#include <Elastos.CoreLibrary.IO.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Net::IUri;
-using Elastos::IO::IRandomAccessFile;
 using Elastos::IO::Channels::IFileChannel;
 using Elastos::IO::IByteBuffer;
+using Elastos::IO::IRandomAccessFile;
 using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
@@ -17,9 +21,15 @@ namespace Droid {
 namespace Media {
 
 CarClass(CMiniThumbFile)
+    , public Object
+    , public IMiniThumbFile
 {
 public:
     CMiniThumbFile();
+
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
 
     CARAPI constructor(
         /* [in] */ IUri* uri);

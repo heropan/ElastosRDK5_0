@@ -12,6 +12,10 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 
+CAR_OBJECT_IMPL(CToneGenerator)
+
+CAR_INTERFACE_IMPL(CToneGenerator, Object, IToneGenerator)
+
 CToneGenerator::CToneGenerator()
     : mNativeContext(0)
 {}

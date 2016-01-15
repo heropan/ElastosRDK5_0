@@ -3,7 +3,9 @@
 #define __ELASTOS_DROID_MEDIA_CMEDIASCANNERCONNECTIONHELPER_H__
 
 #include "_Elastos_Droid_Media_CMediaScannerConnectionHelper.h"
+#include "Elastos.Droid.Media.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
 
@@ -12,8 +14,14 @@ namespace Droid {
 namespace Media {
 
 CarClass(CMediaScannerConnectionHelper)
+    , public Singleton
+    , public IMediaScannerConnectionHelper
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     /**
      * Convenience for constructing a {@link MediaScannerConnection}, calling
      * {@link #connect} on it, and calling {@link #scanFile} with the given

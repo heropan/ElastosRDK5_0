@@ -2,7 +2,12 @@
 #ifndef __ELASTOS_DROID_MEDIA_THUMBNAILUTILS_H__
 #define __ELASTOS_DROID_MEDIA_THUMBNAILUTILS_H__
 
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Net.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Graphics::IMatrix;
 using Elastos::Droid::Graphics::IBitmap;
@@ -37,9 +42,10 @@ public:
      *
      * @hide This method is only used by media framework and media provider internally.
      */
-    static AutoPtr<IBitmap> CreateImageThumbnail(
+    static CARAPI CreateImageThumbnail(
         /* [in] */ const String& filePath,
-        /* [in] */ Int32 kind);
+        /* [in] */ Int32 kind,
+        /* [out] */ IBitmap** result);
 
     /**
      * Create a video thumbnail for a video. May return NULL if the video is
@@ -48,9 +54,10 @@ public:
      * @param filePath the path of video file
      * @param kind could be MINI_KIND or MICRO_KIND
      */
-    static AutoPtr<IBitmap> CreateVideoThumbnail(
+    static CARAPI CreateVideoThumbnail(
         /* [in] */ const String& filePath,
-        /* [in] */ Int32 kind);
+        /* [in] */ Int32 kind,
+        /* [out] */ IBitmap** result);
 
     /**
      * Creates a centered bitmap of the desired size.
@@ -59,10 +66,11 @@ public:
      * @param width targeted width
      * @param height targeted height
      */
-    static AutoPtr<IBitmap> ExtractThumbnail(
+    static CARAPI ExtractThumbnail(
         /* [in] */ IBitmap* source,
         /* [in] */ Int32 width,
-        /* [in] */ Int32 height);
+        /* [in] */ Int32 height,
+        /* [out] */ IBitmap** result);
 
     /**
      * Creates a centered bitmap of the desired size.
@@ -72,11 +80,12 @@ public:
      * @param height targeted height
      * @param options options used during thumbnail extraction
      */
-    static AutoPtr<IBitmap> ExtractThumbnail(
+    static CARAPI ExtractThumbnail(
         /* [in] */ IBitmap* source,
         /* [in] */ Int32 width,
         /* [in] */ Int32 height,
-        /* [in] */ Int32 options);
+        /* [in] */ Int32 options,
+        /* [out] */ IBitmap** result);
 
 private:
     /*
@@ -149,7 +158,8 @@ private:
      *
      * The width/height of the sized bitmap may be different from mThumbnailWidth/mThumbnailHeight.
      */
-    class SizedThumbnailBitmap : public ElRefBase
+    class SizedThumbnailBitmap
+        : public Object
     {
     public:
         SizedThumbnailBitmap()
@@ -175,16 +185,16 @@ private:
         /* [in] */ SizedThumbnailBitmap* sizedThumbBitmap);
 
 private:
-    static String TAG;// = "ThumbnailUtils";
+    static String TAG;
 
     /* Maximum pixels size for created bitmap. */
-    static const Int32 MAX_NUM_PIXELS_THUMBNAIL;// = 512 * 384;
-    static const Int32 MAX_NUM_PIXELS_MICRO_THUMBNAIL;// = 128 * 128;
-    static const Int32 UNCONSTRAINED;// = -1;
+    static const Int32 MAX_NUM_PIXELS_THUMBNAIL;
+    static const Int32 MAX_NUM_PIXELS_MICRO_THUMBNAIL;
+    static const Int32 UNCONSTRAINED;
 
     /* Options used internally. */
-    static const Int32 OPTIONS_NONE;// = 0x0;
-    static const Int32 OPTIONS_SCALE_UP;// = 0x1;
+    static const Int32 OPTIONS_NONE;
+    static const Int32 OPTIONS_SCALE_UP;
 };
 
 } // namespace Media

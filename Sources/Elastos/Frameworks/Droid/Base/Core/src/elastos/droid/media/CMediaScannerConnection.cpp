@@ -1,12 +1,15 @@
 
 #include "elastos/droid/media/CMediaScannerConnection.h"
-
-#include <elastos/utility/logging/Logger.h>
+#include "elastos/droid/content/CComponentName.h"
+#include <elastos/utility/logging/Slogger.h>
 #include "elastos/droid/content/CIntent.h"
+#include <elastos/core/AutoLock.h>
 
-using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::CComponentName;
+using Elastos::Utility::Logging::Slogger;
+using Elastos::Core::AutoLock;
 
 namespace Elastos {
 namespace Droid {
@@ -18,7 +21,7 @@ const String CMediaScannerConnection::TAG("MediaScannerConnection");
 //    CMediaScannerConnection::MyMediaScannerListener
 //---------------------------------------------------
 
-CAR_INTERFACE_IMPL(CMediaScannerConnection::MyMediaScannerListener, IIMediaScannerListener);
+CAR_INTERFACE_IMPL(CMediaScannerConnection::MyMediaScannerListener, Object, IIMediaScannerListener);
 
 CMediaScannerConnection::MyMediaScannerListener::MyMediaScannerListener(
     /* [in] */ IWeakReference* host)
@@ -35,7 +38,7 @@ ECode CMediaScannerConnection::MyMediaScannerListener::ScanCompleted(
         CMediaScannerConnection* msc = (CMediaScannerConnection*)connection.Get();
         AutoPtr<IMediaScannerConnectionClient> client = msc->mClient;
         if (client != NULL) {
-            client->OnScanCompleted(path, uri);
+            IOnScanCompletedListener::Probe(client)->OnScanCompleted(path, uri);
         }
     }
     return NOERROR;
@@ -45,7 +48,7 @@ ECode CMediaScannerConnection::MyMediaScannerListener::ScanCompleted(
 //    CMediaScannerConnection::ClientProxy
 //----------------------------------------
 
-CAR_INTERFACE_IMPL(CMediaScannerConnection::ClientProxy, IMediaScannerConnectionClient);
+CAR_INTERFACE_IMPL(CMediaScannerConnection::ClientProxy, Object, IMediaScannerConnectionClient);
 
 CMediaScannerConnection::ClientProxy::ClientProxy(
     /* [in] */ ArrayOf<String>* paths,
@@ -93,6 +96,9 @@ void CMediaScannerConnection::ClientProxy::ScanNextPath()
 //----------------------------------------
 //    CMediaScannerConnection
 //----------------------------------------
+CAR_OBJECT_IMPL(CMediaScannerConnection)
+
+CAR_INTERFACE_IMPL(CMediaScannerConnection, Object, IMediaScannerConnection)
 
 CMediaScannerConnection::CMediaScannerConnection()
     : mConnected(FALSE)
@@ -118,9 +124,13 @@ ECode CMediaScannerConnection::Connect()
    if (!mConnected) {
        AutoPtr<IIntent> intent;
        // CIntent::New(MediaScannerService.class.getName(), (IIntent**)&intent);
-       CIntent::New(String("IMediaScannerService"), (IIntent**)&intent);
+       CIntent::New(String("IIMediaScannerService"), (IIntent**)&intent);
+       AutoPtr<IComponentName> component;
+       CComponentName::New(String("com.android.providers.media"),
+            String("com.android.providers.media.MediaScannerService"), (IComponentName**)&component);
+       intent->SetComponent(component.Get());
        Boolean tempState;
-       mContext->BindService(intent, this, IContext::BIND_AUTO_CREATE, &tempState);
+       mContext->BindService(intent.Get(), IServiceConnection::Probe(this), IContext::BIND_AUTO_CREATE, &tempState);
        mConnected = TRUE;
    }
 
@@ -134,15 +144,15 @@ ECode CMediaScannerConnection::Disconnect()
     ECode ec = NOERROR;
     if (mConnected) {
         if (FALSE) {
-            Logger::V(TAG, "Disconnecting from Media Scanner");
+            Slogger::V(TAG, "Disconnecting from Media Scanner");
         }
 
 //      try {
-        ec = mContext->UnbindService(this);
+        ec = mContext->UnbindService(IServiceConnection::Probe(this));
     //      } catch (IllegalArgumentException ex) {
         if (ec == (ECode)E_ILLEGAL_ARGUMENT_EXCEPTION) {
             if (FALSE) {
-                Logger::V(TAG, "disconnect failed: " /*+ ex*/);
+                Slogger::V(TAG, "disconnect failed: " /*+ ex*/);
             }
             ec = NOERROR;
         }
@@ -172,19 +182,19 @@ ECode CMediaScannerConnection::ScanFile(
     AutoLock lock(mThisLock);
 
     if (mService == NULL || !mConnected) {
-        Logger::E(TAG, "not connected to MediaScannerService");
+        Slogger::E(TAG, "not connected to MediaScannerService");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
 //        try {
     if (FALSE) {
-        Logger::V(TAG, "Scanning file %s", path.string());
+        Slogger::V(TAG, "Scanning file %s", path.string());
     }
     ECode ec = mService->RequestScanFile(path, mimeType, mListener);
 //        } catch (RemoteException e) {
     if (ec == (ECode)E_REMOTE_EXCEPTION) {
         if (FALSE) {
-            Logger::D(TAG, "Failed to scan file %s", path.string());
+            Slogger::D(TAG, "Failed to scan file %s", path.string());
         }
         ec = NOERROR;
     }
@@ -198,14 +208,14 @@ ECode CMediaScannerConnection::OnServiceConnected(
     /* [in] */ IBinder* service)
 {
     if (FALSE) {
-        Logger::V(TAG, "Connected to Media Scanner");
+        Slogger::V(TAG, "Connected to Media Scanner");
     }
 
-    AutoLock lock(mThisLock);
-
-    mService = IIMediaScannerService::Probe(service);
-    if (mService != NULL && mClient != NULL) {
-        mClient->OnMediaScannerConnected();
+    synchronized(this) {
+        mService = IIMediaScannerService::Probe((IObject*)service);
+        if (mService != NULL && mClient != NULL) {
+            mClient->OnMediaScannerConnected();
+        }
     }
 
     return NOERROR;
@@ -215,7 +225,7 @@ ECode CMediaScannerConnection::OnServiceDisconnected(
     /* [in] */ IComponentName* className)
 {
     if (FALSE) {
-        Logger::V(TAG, "Disconnected from Media Scanner");
+        Slogger::V(TAG, "Disconnected from Media Scanner");
     }
 
     AutoLock lock(mThisLock);

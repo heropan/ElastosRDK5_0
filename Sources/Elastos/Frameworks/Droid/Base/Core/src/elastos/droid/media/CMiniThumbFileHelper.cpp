@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 
+CAR_SINGLETON_IMPL(CMiniThumbFileHelper)
+
+CAR_INTERFACE_IMPL(CMiniThumbFileHelper, Singleton, IMiniThumbFileHelper)
+
 ECode CMiniThumbFileHelper::Reset()
 {
     return CMiniThumbFile::Reset();

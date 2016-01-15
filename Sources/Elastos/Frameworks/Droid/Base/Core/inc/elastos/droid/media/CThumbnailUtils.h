@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Media_CThumbnailUtils.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IBitmap;
@@ -13,8 +14,14 @@ namespace Droid {
 namespace Media {
 
 CarClass(CThumbnailUtils)
+    , public Singleton
+    , public IThumbnailUtils
 {
 public:
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
+
     /**
      * This method first examines if the thumbnail embedded in EXIF is bigger than our target
      * size. If not, then it'll create a thumbnail from original image. Due to efficiency

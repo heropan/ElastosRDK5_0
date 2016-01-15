@@ -4,10 +4,13 @@
 
 #include "_Elastos_Droid_Media_CMetadata.h"
 #include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/HashMap.h>
+#include "Elastos.Droid.Media.h"
+#include <elastos/core/Object.h>
+#include <Elastos.CoreLibrary.Utility.h>
 
 using Elastos::Utility::IDate;
-using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::IHashMap;
+using Elastos::Utility::ISet;
 using Elastos::Core::IInteger32;
 
 namespace Elastos {
@@ -15,8 +18,14 @@ namespace Droid {
 namespace Media {
 
 CarClass(CMetadata)
+    , public Object
+    , public IMetadata
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CMetadata();
 
     CARAPI constructor();
@@ -56,7 +65,7 @@ public:
      * @return The set of metadata ID found.
      */
     CARAPI KeySet(
-        /* [out] */ IObjectContainer** result);
+        /* [out] */ ISet** result);
 
     /**
      * @return true if a value is present for the given key.
@@ -186,13 +195,13 @@ public:
      * {@hide}
      */
     //public static final Set<Integer> MATCH_NONE = Collections.EMPTY_SET;
-    static AutoPtr<IObjectContainer> MATCH_NONE;
+    static AutoPtr<ISet> MATCH_NONE;
 
     /**
      * {@hide}
      */
     //public static final Set<Integer> MATCH_ALL = Collections.singleton(ANY);
-    static AutoPtr<IObjectContainer> MATCH_ALL;
+    static AutoPtr<ISet> MATCH_ALL;
 
 private:
     static const Int32 LAST_SYSTEM;// = 31;
@@ -217,7 +226,8 @@ private:
     // Used to look up if a key was present too.
     // Key: Metadata ID
     // Value: Offset of the metadata type field in the record.
-    HashMap< AutoPtr<IInteger32>, AutoPtr<IInteger32> > mKeyToPosMap; // = new HashMap<Integer, Integer>();
+    // HashMap< AutoPtr<IInteger32>, AutoPtr<IInteger32> > mKeyToPosMap; // = new HashMap<Integer, Integer>();
+    AutoPtr<IHashMap> mKeyToPosMap;
 };
 
 } // namespace Media

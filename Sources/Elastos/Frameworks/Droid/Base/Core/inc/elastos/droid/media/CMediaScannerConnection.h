@@ -3,22 +3,31 @@
 #define __ELASTOS_DROID_MEDIA_CMEDIASCANNERCONNECTION_H__
 
 #include "_Elastos_Droid_Media_CMediaScannerConnection.h"
+#include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.Content.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::IServiceConnection;
+using Elastos::Droid::Media::IIMediaScannerService;
+using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::IBinder;
+
 
 namespace Elastos {
 namespace Droid {
 namespace Media {
 
 CarClass(CMediaScannerConnection)
+    , public Object
+    , public IMediaScannerConnection
+    , public IServiceConnection
 {
 public:
     class MyMediaScannerListener
-        : public ElRefBase
+        : public Object
         , public IIMediaScannerListener
     {
     public:
@@ -36,7 +45,7 @@ public:
     };
 
     /*static*/ class ClientProxy
-        : public ElRefBase
+        : public Object
         , public IMediaScannerConnectionClient
     {
     friend class CMediaScannerConnection;
@@ -66,6 +75,10 @@ public:
 
         Int32 mNextPath;
     };
+
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
 
     CMediaScannerConnection();
 
