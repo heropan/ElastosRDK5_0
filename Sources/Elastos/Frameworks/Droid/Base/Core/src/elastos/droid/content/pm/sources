@@ -19,6 +19,7 @@ SOURCES += CFeatureInfo.cpp
 SOURCES += CFeatureGroupInfo.cpp
 SOURCES += CConfigurationInfo.cpp
 SOURCES += KeySet.cpp
+SOURCES += CKeySet.cpp
 SOURCES += LabeledIntent.cpp
 SOURCES += CLauncherActivityInfo.cpp
 SOURCES += CLauncherApps.cpp

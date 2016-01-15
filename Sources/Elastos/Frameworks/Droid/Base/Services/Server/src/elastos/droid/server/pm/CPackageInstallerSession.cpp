@@ -142,7 +142,7 @@ ECode CPackageInstallerSession::constructor(
 {
     mCallback = (CPackageInstallerService::InternalCallback*)callback;
     mContext = context;
-    mPm = reinterpret_cast<CPackageManagerService*>(pm->Probe(EIID_CPackageManagerService));
+    mPm = (CPackageManagerService*)pm;
     CHandler::New(looper, mHandlerCallback, (IHandler**)&mHandler);
 
     mSessionId = sessionId;

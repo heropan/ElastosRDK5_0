@@ -651,6 +651,8 @@ public:/* package */
         CPackageManagerService* mHost;
         // for epk
         Boolean mIsEpk;
+
+        friend class CPackageManagerService;
     };
 
     /**
@@ -1225,13 +1227,11 @@ private:
             /* [in] */ IIPackageDeleteObserver2* observer,
             /* [in] */ Int32 userId,
             /* [in] */ Int32 flags,
-            /* [in] */ Int32 uid,
             /* [in] */ CPackageManagerService* host)
             : mPackageName(packageName)
             , mObserver(observer)
             , mUserId(userId)
             , mFlags(flags)
-            , mUid(uid)
             , mHost(host)
         {}
 
@@ -1242,7 +1242,6 @@ private:
         AutoPtr<IIPackageDeleteObserver2> mObserver;
         Int32 mUserId;
         Int32 mFlags;
-        Int32 mUid;
         CPackageManagerService* mHost;
     };
 
@@ -2879,9 +2878,6 @@ private:
 
     CARAPI_(Boolean) UserNeedsBadging(
         /* [in] */ Int32 userId);
-
-    CARAPI ToString(
-        /* [out] */ String* str);
 
 public:/*package*/
     static const String TAG;

@@ -49,5 +49,6 @@ private:
 } // namespace Elastos
 
 DEFINE_CONVERSION_FOR(Elastos::Droid::Server::Pm::PersistentPreferredActivity, IInterface)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Server::Pm::PersistentPreferredActivity)
 
 #endif //__ELASTOS_DROID_SERVER_PM_PERSISTENTPREFERREDACTIVITY_H__

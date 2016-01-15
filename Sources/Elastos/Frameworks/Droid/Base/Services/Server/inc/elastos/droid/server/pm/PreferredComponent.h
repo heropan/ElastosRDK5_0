@@ -19,6 +19,8 @@ namespace Droid {
 namespace Server {
 namespace Pm {
 
+extern "C" const InterfaceID EIID_IPreferredComponentCallbacks;
+
 class PreferredComponent : public Object
 {
 public:
