@@ -1199,6 +1199,10 @@ module
         constructor(
             [in] IPackageStats* pStats);
 
+        constructor(
+            [in] String pkgName,
+            [in] Int32 userHanlde);
+
         interface IPackageStats;
         interface IParcelable;
     }
@@ -1420,6 +1424,16 @@ module
         constructor();
 
         interface IVerifierInfo;
+        interface IParcelable;
+    }
+
+    class CKeySet {
+        constructor(
+            [in] IBinder* b);
+
+        constructor();
+
+        interface IKeySet;
         interface IParcelable;
     }
 

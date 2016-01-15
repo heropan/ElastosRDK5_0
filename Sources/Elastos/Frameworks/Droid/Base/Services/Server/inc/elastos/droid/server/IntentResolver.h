@@ -11,6 +11,7 @@
 using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
+using Elastos::Utility::IIterator;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IIntent;
@@ -49,10 +50,13 @@ public:
     // public boolean dump(PrintWriter out, String title, String prefix, String packageName,
     //         boolean printFilter);
 
-//    /**
-//     * Returns an iterator allowing filters to be removed.
-//     */
-//    public Iterator<F> filterIterator();
+    /**
+     * Returns an iterator allowing filters to be removed.
+     */
+    virtual CARAPI_(AutoPtr<IIterator>) FilterIterator()
+    {
+        assert(0);
+    }
 
     /**
      * Returns a read-only set of the filters.

@@ -19,7 +19,7 @@ ECode CPackageInstallObserver2::constructor(
     /* [in] */ IIPackageManager* host,
     /* [in] */ IIPackageInstallObserver2* observer)
 {
-    mHost = reinterpret_cast<CPackageManagerService*>(host->Probe(EIID_CPackageManagerService));
+    mHost = (CPackageManagerService*)host;
     mObserver = observer;
     return NOERROR;
 }

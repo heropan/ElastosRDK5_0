@@ -1,6 +1,9 @@
 
 #include "elastos/droid/server/pm/CUserStopUserCallback.h"
 
+using Elastos::Droid::App::EIID_IStopUserCallback;
+using Elastos::Droid::Os::EIID_IBinder;
+
 namespace Elastos {
 namespace Droid {
 namespace Server {

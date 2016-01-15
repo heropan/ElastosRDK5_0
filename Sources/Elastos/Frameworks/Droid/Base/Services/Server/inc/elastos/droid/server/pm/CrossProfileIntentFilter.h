@@ -74,6 +74,7 @@ private:
 } // namespace Elastos
 
 DEFINE_CONVERSION_FOR(Elastos::Droid::Server::Pm::CrossProfileIntentFilter, IInterface)
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Server::Pm::CrossProfileIntentFilter)
 
 #endif //__ELASTOS_DROID_SERVER_PM_CROSSPROFILEINTENTFILTER_H__
 

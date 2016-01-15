@@ -89,7 +89,7 @@ ECode BackgroundDexOptService::OnStartJob(
 
     Logger::I(TAG, "onIdleStart");
     AutoPtr<IInterface> p = ServiceManager::GetService(String("package"));
-    AutoPtr<CPackageManagerService> pm = p->Probe(EIID_CPackageManagerService);
+    AutoPtr<CPackageManagerService> pm = (CPackageManagerService*)p.Get();
     Boolean isStorageLow;
     if (pm->IsStorageLow(&isStorageLow), isStorageLow) {
         *result = FALSE;

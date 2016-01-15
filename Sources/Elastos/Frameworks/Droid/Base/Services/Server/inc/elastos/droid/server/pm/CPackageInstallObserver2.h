@@ -8,6 +8,7 @@
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::Pm::IIPackageInstallObserver2;
+using Elastos::Droid::Content::Pm::IIPackageMoveObserver;
 
 namespace Elastos {
 namespace Droid {
@@ -26,7 +27,7 @@ public:
 
     constructor(
         /* [in] */ IIPackageManager* host,
-        /* [in] */ IPackageMoveObserver* observer);
+        /* [in] */ IIPackageMoveObserver* observer);
 
     CARAPI OnUserActionRequired(
         /* [in] */ IIntent* intent);
@@ -39,7 +40,7 @@ public:
 
 private:
     CPackageManagerService* mHost;
-    AutoPtr<IPackageMoveObserver> mObserver;
+    AutoPtr<IIPackageMoveObserver> mObserver;
 };
 
 } // namespace Pm

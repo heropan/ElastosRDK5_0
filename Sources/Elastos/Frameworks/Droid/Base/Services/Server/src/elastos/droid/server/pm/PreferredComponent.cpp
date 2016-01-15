@@ -21,6 +21,10 @@ namespace Droid {
 namespace Server {
 namespace Pm {
 
+// {5169C3ED-4FBC-4306-A108-376EB189B823}
+extern "C" const InterfaceID EIID_IPreferredComponentCallbacks =
+        { 0x5169c3ed, 0x4fbc, 0x4306, { 0xa1, 0x8, 0x37, 0x6e, 0xb1, 0x89, 0xb8, 0x23 } };
+
 const String PreferredComponent::TAG_SET("set");
 const String PreferredComponent::ATTR_ALWAYS("always");
 const String PreferredComponent::ATTR_MATCH("match");

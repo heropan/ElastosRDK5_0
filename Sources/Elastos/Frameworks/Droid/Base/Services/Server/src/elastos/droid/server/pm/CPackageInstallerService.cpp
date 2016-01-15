@@ -461,7 +461,7 @@ ECode CPackageInstallerService::constructor(
     /* [in] */ IFile* stagingDir)
 {
     mContext = context;
-    mPm = reinterpret_cast<CPackageManagerService*>(pm->Probe(EIID_CPackageManagerService));
+    mPm = (CPackageManagerService*)pm;
     AutoPtr<IInterface> service;
     mContext->GetSystemservice(IContext::APP_OPS_SERVICE, (IInterface**)&service);
     mAppOps = IAppOpsManager::Probe(service);
