@@ -10,7 +10,7 @@ include $(MAKEDIR)/../../../../../../../../sources.inc
 C_DEFINES += -DDROID_SERVER
 
 SOURCES = BasePermission.cpp
-SOURCES += CPackageManagerService.cpp
+#SOURCES += CPackageManagerService.cpp
 #SOURCES += CResourcesChangedReceiver.cpp
 #SOURCES += CUserManagerService.cpp
 #SOURCES += CUserStopUserCallback.cpp
