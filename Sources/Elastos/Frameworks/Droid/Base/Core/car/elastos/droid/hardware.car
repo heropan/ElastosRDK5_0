@@ -987,6 +987,16 @@ module
         }
     } //namespace Legacy
 
+    namespace Marshal {
+        singleton class CMarshalHelpers {
+            interface IMarshalHelpers;
+        }
+
+        singleton class CMarshalRegistry {
+            interface IMarshalRegistryHelper;
+        }
+    } //namespace Marshal
+
     namespace Params {
         [deprecated]
         class CBlackLevelPattern {
