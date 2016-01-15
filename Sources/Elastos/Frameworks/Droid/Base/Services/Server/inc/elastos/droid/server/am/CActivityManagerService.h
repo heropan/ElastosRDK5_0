@@ -820,16 +820,37 @@ public:
         AutoPtr<CActivityManagerService> mService;
     };
 
-    class mProcessCpuThread
+    class ProcessCpuThread
         : public Thread
     {
     public:
-        mProcessCpuThread(
+        ProcessCpuThread(
             /* [in] */ CActivityManagerService* host);
 
         CARAPI Run();
 
     public:
+        CActivityManagerService* mHost;
+    };
+
+    class IntentFirewallInterface : public IntentFirewall::AMSInterface
+    {
+    public:
+        IntentFirewallInterface(
+            /* [in] */ CActivityManagerService* host);
+
+        // @Override
+        CARAPI_(Int32) CheckComponentPermission(
+            /* [in] */ const String& permission,
+            /* [in] */ Int32 pid,
+            /* [in] */ Int32 uid,
+            /* [in] */ Int32 owningUid,
+            /* [in] */ Boolean exported);
+
+        // @Override
+        CARAPI_(Object) GetAMSLock();
+
+    private:
         CActivityManagerService* mHost;
     };
 
@@ -1125,31 +1146,6 @@ private:
         CActivityManagerService* mHost;
         AutoPtr<ActivityRecord> mCur;
         AutoPtr<ActivityRecord> mNext;
-    };
-
-    class FinishBootingBroadcastReceiver
-        : public BroadcastReceiver
-    {
-    public:
-        FinishBootingBroadcastReceiver(
-            /* [in] */ CActivityManagerService* host)
-            : mHost(host)
-        {}
-
-        CARAPI OnReceive(
-            /* [in] */ IContext* context,
-            /* [in] */ IIntent* intent);
-
-        CARAPI ToString(
-            /* [out] */ String* info)
-        {
-            VALIDATE_NOT_NULL(info);
-            *info = String("CActivityManagerService::FinishBootingBroadcastReceiver: ");
-            (*info).AppendFormat("%p", this);
-            return NOERROR;
-        }
-    private:
-        CActivityManagerService* mHost;
     };
 
     class SetProcessForegroundToken
@@ -1591,13 +1587,22 @@ public:
     CARAPI ActivityStopped(
         /* [in] */ IBinder* token,
         /* [in] */ IBundle* state,
-        /* [in] */ IBitmap* thumbnail,
+        /* [in] */ IPersistableBundle* persistentState,
         /* [in] */ ICharSequence* description);
 
     CARAPI ActivitySlept(
         /* [in] */ IBinder* token);
 
     CARAPI ActivityDestroyed(
+        /* [in] */ IBinder* token);
+
+    CARAPI BackgroundResourcesReleased(
+        /* [in] */ IBinder token);
+
+    CARAPI NotifyLaunchTaskBehindComplete(
+        /* [in] */ IBinder* token);
+
+    CARAPI NotifyEnterAnimationComplete(
         /* [in] */ IBinder* token);
 
     CARAPI GetCallingPackage(
@@ -1865,6 +1870,11 @@ public:
         /* [in] */ IIIntentSender* sender,
         /* [out] */ IIntent** intent);
 
+    CARAPI GetTagForIntentSender(
+        /* [in] */ IIntentSender* pendingResult,
+        /* [in] */ const String& prefix,
+        /* [out] */ String* tag);
+
     CARAPI SetProcessLimit(
         /* [in] */ Int32 max);
 
@@ -1887,6 +1897,7 @@ public:
         /* [in] */ Int32 pid,
         /* [in] */ Int32 uid,
         /* [in] */ Int32 mode,
+        /* [in] */ Int32 userId,
         /* [out] */ Int32* result);
 
     CARAPI GrantUriPermission(
@@ -2193,7 +2204,7 @@ public:
         /* [in] */ ICharSequence* msg,
         /* [in] */ Boolean always);
 
-    CARAPI DismissKeyguardOnNextActivity();
+    CARAPI KeyguardWaitingForActivityDrawn();
 
     CARAPI TargetTaskAffinityMatchesActivity(
         /* [in] */ IBinder* token,
@@ -2395,11 +2406,15 @@ public:
     CARAPI CloseSystemDialogsLocked(
         /* [in] */ const String& reason);
 
+    CARAPI PostFinishBooting(
+        /* [in] */ Boolean finishBooting,
+        /* [in] */ Boolean enableScreen);
+
     CARAPI EnableScreenAfterBoot();
 
     CARAPI FinishBooting();
 
-    CARAPI SendBootFastComplete();
+    CARAPI BootAnimationComplete();
 
     CARAPI EnsureBootCompleted();
 
@@ -3002,19 +3017,41 @@ private:
     CARAPI_(Boolean) CheckHoldingPermissionsLocked(
         /* [in] */ IIPackageManager* pm,
         /* [in] */ IProviderInfo* pi,
-        /* [in] */ IUri* uri,
+        /* [in] */ GrantUri* grantUri,
         /* [in] */ Int32 uid,
         /* [in] */ Int32 modeFlags);
 
+    CARAPI_(Boolean) CheckHoldingPermissionsInternalLocked(
+        /* [in] */ IIPackageManager* pm,
+        /* [in] */ IProviderInfo* pi,
+        /* [in] */ GrantUri* grantUri,
+        /* [in] */ Int32 uid,
+        /* [in] */ Int32 modeFlags,
+        /* [in] */ Boolean considerUidPermissions);
+
+    CARAPI_(AutoPtr<IProviderInfo>) GetProviderInfoLocked(
+        /* [in] */ const String& authority,
+        /* [in] */ Int32 userHandle);
+
+    CARAPI_(AutoPtr<UriPermission>) FindUriPermissionLocked(
+        /* [in] */ Int32 targetUid,
+        /* [in] */ GrantUri* grantUri);
+
+    CARAPI_(AutoPtr<UriPermission>) FindOrCreateUriPermissionLocked(
+        /* [in] */ String sourcePkg,
+        /* [in] */ const String& targetPkg,
+        /* [in] */ Int32 targetUid,
+        /* [in] */ GrantUri* grantUri);
+
     CARAPI_(Boolean) CheckUriPermissionLocked(
-        /* [in] */ IUri* uri,
+        /* [in] */ GrantUri* grantUri,
         /* [in] */ Int32 uid,
         /* [in] */ Int32 modeFlags);
 
     CARAPI CheckGrantUriPermissionLocked(
         /* [in] */ Int32 callingUid,
         /* [in] */ const String& targetPkg,
-        /* [in] */ IUri* uri,
+        /* [in] */ GrantUri* grantUri,
         /* [in] */ Int32 modeFlags,
         /* [in] */ Int32 lastTargetUid,
         /* [out] */ Int32* permission);
@@ -4180,21 +4217,11 @@ private:
      * to {@link UriPermission#uri} to {@link UriPermission}.
      */
     // @GuardedBy("this")
-    typedef HashMap<AutoPtr<GrantUri>, AutoPtr<IUriPermission> > GrantUriPermissionMap;
+    typedef HashMap<AutoPtr<GrantUri>, AutoPtr<UriPermission> > GrantUriPermissionMap;
     typedef HashMap<Int32, AutoPtr<GrantUriPermissionMap> > GrantUriPermissionMapMap;
     GrantUriPermissionMapMap mGrantedUriPermissions;
 
-    /**
-     * Global set of specific Uri permissions that have been granted.
-     */
-    typedef HashMap<AutoPtr<IUri>, AutoPtr<UriPermission> > PermissionMap;
-    typedef HashMap<Int32, AutoPtr<PermissionMap> > UriPermissionHashMap;
-    typedef typename UriPermissionHashMap::ValueType UriPermissionValueType;
-    typedef typename UriPermissionHashMap::Iterator UriPermissionIterator;
-    UriPermissionHashMap mGrantedUriPermissions;
-
     static pthread_key_t sCallerIdentity;
-
 
     /**
      * Set while we are wanting to sleep, to prevent any

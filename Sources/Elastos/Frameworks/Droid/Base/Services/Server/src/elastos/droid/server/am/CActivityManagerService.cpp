@@ -671,6 +671,32 @@ ECode CActivityManagerService::ProcessCpuThread::Run()
     return NOERROR;
 }
 
+//==============================================================================
+// CActivityManagerService::IntentFirewallInterface
+//==============================================================================
+
+CActivityManagerService::IntentFirewallInterface::IntentFirewallInterface(
+    /* [in] */ CActivityManagerService* host)
+    : mHost(host)
+{}
+
+// @Override
+Int32 CActivityManagerService::IntentFirewallInterface::CheckComponentPermission(
+    /* [in] */ const String& permission,
+    /* [in] */ Int32 pid,
+    /* [in] */ Int32 uid,
+    /* [in] */ Int32 owningUid,
+    /* [in] */ Boolean exported)
+{
+    return mHost->CheckComponentPermission(permission, pid, uid,
+            owningUid, exported);
+}
+
+// @Override
+Object CActivityManagerService::IntentFirewallInterface::GetAMSLock()
+{
+    return mHost;
+}
 
 //==============================================================================
 // CActivityManagerService::ItemMatcher
@@ -1183,31 +1209,6 @@ ECode CActivityManagerService::ShowLaunchWarningLockedRunnable::Run()
     AutoPtr<IRunnable> runnable = new ShowRunnable(mHost, d);
     Boolean result;
     mHost->mHandler->PostDelayed(runnable, 4000, &result);
-    return NOERROR;
-}
-
-//==============================================================================
-// CActivityManagerService::FinishBootingBroadcastReceiver
-//==============================================================================
-
-ECode CActivityManagerService::FinishBootingBroadcastReceiver::OnReceive(
-    /* [in] */ IContext* context,
-    /* [in] */ IIntent* intent)
-{
-    AutoPtr<ArrayOf<String> > pkgs;
-    intent->GetStringArrayExtra(IIntent::EXTRA_PACKAGES, (ArrayOf<String>**)&pkgs);
-    if (pkgs != NULL) {
-        for (Int32 i = 0; i < pkgs->GetLength(); ++i) {
-            String pkg = (*pkgs)[i];
-            {
-                AutoLock lock(mHost->mLock);
-                if (mHost->ForceStopPackageLocked(pkg, -1, FALSE, FALSE, FALSE, FALSE, 0)) {
-                    SetResultCode(IActivity::RESULT_OK);
-                    return NOERROR;
-                }
-            }
-        }
-    }
     return NOERROR;
 }
 
@@ -7182,6 +7183,7 @@ Boolean CActivityManagerService::AttachApplicationLocked(
         //EventLog.writeEvent(EventLogTags.AM_DROP_PROCESS, pid);
         if (pid > 0 && pid != MY_PID) {
             Process::KillProcessQuiet(pid);
+            //TODO: Process.killProcessGroup(app.info.uid, pid);
         }
         else {
             thread->ScheduleExit();
@@ -7208,28 +7210,29 @@ Boolean CActivityManagerService::AttachApplicationLocked(
     AutoPtr< ::IProxy > proxy = (::IProxy*)thread->Probe(::EIID_IProxy);
     assert(proxy != NULL);
     if (FAILED(proxy->LinkToDeath(adr.Get(), 0))) {
-        app->ResetPackageList();
+        app->ResetPackageList(mProcessStats);
         StartProcessLocked(app, String("link fail"), processName);
         return FALSE;
     }
     app->mDeathRecipient = adr;
 //    EventLog.writeEvent(EventLogTags.AM_PROC_BOUND, app.userId, app.pid, app.processName);
 
-    app->mThread = thread;
+    app->MakeActive(thread, mProcessStats);
     app->mCurAdj = app->mSetAdj = -100;
     app->mCurSchedGroup = IProcess::THREAD_GROUP_DEFAULT;
-    app->mSetSchedGroup = IProcess::THREAD_GROUP_BG_NONINTERACTIVE;
+    app->mSetSchedGroup = IProcess::THREAD_GROUP_DEFAULT;
     app->mForcingToForeground = NULL;
-    app->mForegroundServices = FALSE;
+    UpdateProcessForegroundLocked(app, FALSE, FALSE);
     app->mHasShownUi = FALSE;
     app->mDebugging = FALSE;
+    app->mCached = FALSE;
 
     mHandler->RemoveMessages(PROC_START_TIMEOUT_MSG, app->Probe(EIID_IInterface));
 
-    AutoPtr<IObjectContainer> providers;
+    AutoPtr<IList> providers;
     Boolean normalMode = mProcessesReady || IsAllowedWhileBooting(app->mInfo);
     if (normalMode) {
-        GenerateApplicationProvidersLocked(app, (IObjectContainer**)&providers);
+        GenerateApplicationProvidersLocked(app, (IList**)&providers);
     }
 
     if (!normalMode) {
@@ -7258,11 +7261,13 @@ Boolean CActivityManagerService::AttachApplicationLocked(
 
     String profileFile = app->mInstrumentationProfileFile;
     AutoPtr<IParcelFileDescriptor> profileFd;
+    Int32 samplingInterval = 0;
     Boolean profileAutoStop = FALSE;
     if (!mProfileApp.IsNull() && mProfileApp.Equals(processName)) {
         mProfileProc = app;
         profileFile = mProfileFile;
         profileFd = mProfileFd;
+        samplingInterval = mSamplingInterval;
         profileAutoStop = mAutoStopProfiler;
     }
 
@@ -7302,34 +7307,33 @@ Boolean CActivityManagerService::AttachApplicationLocked(
     AutoPtr<IApplicationInfo> appInfo = app->mInstrumentationInfo != NULL
             ? app->mInstrumentationInfo : app->mInfo;
     app->mCompat = CompatibilityInfoForPackageLocked(appInfo);
-   if (profileFd != NULL) {
-        AutoPtr<IFileDescriptor> fd;
-        profileFd->GetFileDescriptor((IFileDescriptor**)&fd);
-        AutoPtr<IParcelFileDescriptorHelper> helper;
-        CParcelFileDescriptorHelper::AcquireSingleton((IParcelFileDescriptorHelper**)&helper);
+    if (profileFd != NULL) {
         AutoPtr<IParcelFileDescriptor> pfd;
-        helper->Dup(fd, (IParcelFileDescriptor**)&pfd);
-        profileFd = NULL;
+        profileFd->Dup((IParcelFileDescriptor**)&pfd);
         profileFd = pfd;
-   }
+    }
+    AutoPtr<IProfilerInfo> profilerInfo;
+    if (profileFile != NULL)
+        CProfilerInfo::New(profileFile, profileFd, samplingInterval,
+            profileAutoStop, (IProfilerInfo**)&profilerInfo);
     AutoPtr<IHashMap> services = GetCommonServicesLocked();
     AutoPtr<IConfiguration> configuration;
     CConfiguration::New(mConfiguration, (IConfiguration**)&configuration);
     AutoPtr<IBundle> coreSettings = mCoreSettingsObserver->GetCoreSettingsLocked();
     thread->BindApplication(processName, appInfo, providers,
-            app->mInstrumentationClass, profileFile, profileFd, profileAutoStop,
-            app->mInstrumentationArguments, app->mInstrumentationWatcher, testMode,
+            app->mInstrumentationClass, profilerInfo, app->mInstrumentationArguments,
+            app->mInstrumentationWatcher app->mInstrumentationUiAutomationConnection,, testMode,
             enableOpenGlTrace, isRestrictedBackupMode || !normalMode, app->mPersistent,
             configuration, app->mCompat, services, coreSettings);
-    UpdateLruProcessLocked(app, FALSE);
+    UpdateLruProcessLocked(app, FALSE, NULL);
     app->mLastRequestedGc = app->mLastLowMemory = SystemClock::GetUptimeMillis();
 //    } catch (Exception e) {
 //        // todo: Yikes!  What should we do?  For now we will try to
 //        // start another process, but that could easily get us in
 //        // an infinite loop of restarting processes...
-//        Slogger::W(TAG, "Exception thrown during bind!", e);
+//        Slogger::wtf(TAG, "Exception thrown during bind of " + app, e);
 //
-//        app.resetPackageList();
+//        app.resetPackageList(mProcessStats);
 //        app.unlinkDeathRecipient();
 //        startProcessLocked(app, "bind fail", processName);
 //        return FALSE;
@@ -7348,55 +7352,36 @@ Boolean CActivityManagerService::AttachApplicationLocked(
     Boolean didSomething = FALSE;
 
     // See if the top visible activity is waiting to run in this process...
-    AutoPtr<ActivityRecord> hr = mMainStack->GetTopRunningActivityLocked(NULL);
-    if (hr != NULL && normalMode) {
-        AutoPtr<IApplicationInfo> hrAppInfo;
-        hr->mInfo->GetApplicationInfo((IApplicationInfo**)&hrAppInfo);
-        Int32 hrUid;
-        hrAppInfo->GetUid(&hrUid);
-        if (hr->mApp == NULL && app->mUid == hrUid && !processName.Compare(hr->mProcessName)) {
-//            try {
-            Boolean succeeded;
-            if (mHeadless) {
-                Slogger::E(TAG, "Starting activities not supported on headless device: %p", hr.Get());
-            }
-            else if (SUCCEEDED(mMainStack->RealStartActivityLocked(hr, app, TRUE, TRUE, &succeeded))
-                    && succeeded) {
+    if (normalMode) {
+        // try {
+            if (mStackSupervisor->AttachApplicationLocked(app)) {
                 didSomething = TRUE;
             }
-//            } catch (Exception e) {
-//                Slogger::W(TAG, "Exception in new application when starting activity "
-//                      + hr.intent.getComponent().flattenToShortString(), e);
-//                badApp = TRUE;
-//            }
-        }
-        else {
-            mStackSupervisor->EnsureActivitiesVisibleLocked(hr, NULL, processName, 0);
-        }
+        // } catch (Exception e) {
+        //     Slog.wtf(TAG, "Exception thrown launching activities in " + app, e);
+        //     badApp = true;
+        // }
     }
 
     // Find any services that should be running in this process...
     if (!badApp) {
-//        try {
         Boolean result = FALSE;
         ECode ec = mServices->AttachApplicationLocked(app, processName, &result);
         didSomething |= result;
         if (FAILED(ec)) {
+            Slogger::W/*wtf*/(TAG, "Exception thrown starting services in %s", ToChars(app));
             badApp = TRUE;
         }
-//        } catch (Exception e) {
-//            badApp = TRUE;
-//        }
     }
 
     // Check if a next-broadcast receiver is in this process...
     if (!badApp && IsPendingBroadcastProcessLocked(pid)) {
         // try {
-        didSomething = SendPendingBroadcastsLocked(app);
+        didSomething |= SendPendingBroadcastsLocked(app);
         //} catch (Exception e) {
             // If the app died trying to launch the receiver we declare it 'bad'
-            //TODO
-            //badApp = TRUE;
+            // Slog.wtf(TAG, "Exception thrown dispatching broadcasts in " + app, e);
+            // badApp = TRUE;
         //}
     }
     // Check whether the next backup agent is in this process...
@@ -7406,19 +7391,18 @@ Boolean CActivityManagerService::AttachApplicationLocked(
         String pkgName;
         mBackupTarget->mAppInfo->GetPackageName(&pkgName);
         EnsurePackageDexOpt(pkgName);
-        //try {
-        thread->ScheduleCreateBackupAgent(mBackupTarget->mAppInfo,
-        CompatibilityInfoForPackageLocked(mBackupTarget->mAppInfo),
-        mBackupTarget->mBackupMode);
-        // } catch (Exception e) {
-        //     Slogger::W(TAG, "Exception scheduling backup agent creation: ");
-        //     e.printStackTrace();
-        // }
+        if (FAILED(thread->ScheduleCreateBackupAgent(mBackupTarget->mAppInfo,
+            CompatibilityInfoForPackageLocked(mBackupTarget->mAppInfo),
+            mBackupTarget->mBackupMode))) {
+            Slogger::W/*wtf*/(TAG, "Exception thrown creating backup agent in %s", ToChars(app));
+            badApp = TRUE;
+        }
     }
 
     if (badApp) {
         // todo: Also need to kill application to deal with all
         // kinds of exceptions.
+        app->Kill(String("error during init"), TRUE);
         HandleAppDiedLocked(app, FALSE, TRUE);
         return FALSE;
     }
@@ -7448,21 +7432,33 @@ ECode CActivityManagerService::ActivityIdle(
     /* [in] */ Boolean stopProfiling)
 {
     const Int64 origId = Binder::ClearCallingIdentity();
-    AutoPtr<ActivityRecord> r = mMainStack->ActivityIdleInternal(token, FALSE, config);
-    if (stopProfiling) {
-         AutoLock lock(this);
-         if (mProfileProc.Get() == r->mApp) {
-             if (mProfileFd != NULL) {
-//                 try {
-                     mProfileFd->Close();
-//                 } catch (IOException e) {
-//                 }
-                 ClearProfilerLocked();
-             }
-         }
-     }
+    {
+        AutoLock lock(this);
+        AutoPtr<ActivityStack> stack = ActivityRecord::GetStackLocked(token);
+        if (stack != NULL) {
+            AutoPtr<ActivityRecord> r =
+                mStackSupervisor->ActivityIdleInternalLocked(token, FALSE, config);
+            if (stopProfiling) {
+                if ((mProfileProc == r->mApp) && (mProfileFd != NULL)) {
+                    mProfileFd->Close();
+                    ClearProfilerLocked();
+                }
+            }
+        }
+    }
     Binder::RestoreCallingIdentity(origId);
     return NOERROR;
+}
+
+ECode CActivityManagerService::PostFinishBooting(
+    /* [in] */ Boolean finishBooting,
+    /* [in] */ Boolean enableScreen)
+{
+    AutoPtr<IMessage> msg;
+    mHandler->ObtainMessage(FINISH_BOOTING_MSG,
+        finishBooting? 1 : 0, enableScreen ? 1 : 0, (IMessage**)&msg);
+    Boolean result;
+    return mHandler->SendMessage(msg, &result);
 }
 
 ECode CActivityManagerService::EnableScreenAfterBoot()
@@ -7485,18 +7481,19 @@ ECode CActivityManagerService::ShowBootMessage(
     return NOERROR;
 }
 
-ECode CActivityManagerService::DismissKeyguardOnNextActivity()
+ECode CActivityManagerService::KeyguardWaitingForActivityDrawn()
 {
-    FAIL_RETURN(EnforceNotIsolatedCaller(String("dismissKeyguardOnNextActivity")));
+    FAIL_RETURN(EnforceNotIsolatedCaller(String("KeyguardWaitingForActivityDrawn")));
     const Int64 token = Binder::ClearCallingIdentity();
 //     try {
         {
             AutoLock lock(this);
+            if (DEBUG_LOCKSCREEN) LogLockScreen(String(""));
+                mWindowManager->KeyguardWaitingForActivityDrawn();
             if (mLockScreenShown) {
                 mLockScreenShown = FALSE;
                 ComeOutOfSleepIfNeededLocked();
             }
-            mMainStack->DismissKeyguardOnNextActivityLocked();
         }
 //     } finally {
         Binder::RestoreCallingIdentity(token);
@@ -7506,13 +7503,23 @@ ECode CActivityManagerService::DismissKeyguardOnNextActivity()
 
 ECode CActivityManagerService::FinishBooting()
 {
-    AutoPtr<IIntentFilter> pkgFilter;
-    CIntentFilter::New((IIntentFilter**)&pkgFilter);
-    pkgFilter->AddAction(IIntent::ACTION_QUERY_PACKAGE_RESTART);
-    pkgFilter->AddDataScheme(String("package"));
-    AutoPtr<IBroadcastReceiver> receiver = new FinishBootingBroadcastReceiver(this);
-    AutoPtr<IIntent> intent;
-    mContext->RegisterReceiver(receiver, pkgFilter, (IIntent**)&intent);
+    synchronized (this) {
+        if (!mBootAnimationComplete) {
+            mCallFinishBooting = TRUE;
+            return NOERROR;
+        }
+        mCallFinishBooting = FALSE;
+    }
+
+    // Register receivers to handle package update events
+    AutoPtr<ILooperHelper> lHelper;
+    CLooperHelper::AcquireSingleton((ILooperHelper**)&lHelper);
+    AutoPtr<ILooper> looper;
+    lHelper->GetMainLooper((ILooper**)&looper);
+    mPackageMonitor->Register(mContext, looper, IUserHandle::ALL, FALSE);
+
+    // Let system services know.
+    mSystemServiceManager->StartBootPhase(SystemService::PHASE_BOOT_COMPLETED);
 
     {
         AutoLock lock(this);
@@ -7529,7 +7536,7 @@ ECode CActivityManagerService::FinishBooting()
             }
         }
 
-        if (mFactoryTest != CSystemServer::FACTORY_TEST_LOW_LEVEL) {
+        if (mFactoryTest != FactoryTest::FACTORY_TEST_LOW_LEVEL) {
             // Start looking for apps that are abusing wake locks.
             Boolean result;
             mHandler->SendEmptyMessageDelayed(CHECK_EXCESSIVE_WAKE_LOCKS_MSG, POWER_CHECK_DELAY, &result);
@@ -7538,10 +7545,16 @@ ECode CActivityManagerService::FinishBooting()
             AutoPtr<ISystemProperties> sysProp;
             CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
             sysProp->Set(String("sys.boot_completed"), String("1"));
-            sysProp->Set(String("dev.bootcomplete"), String("1"));
-            HashMap<Int32, AutoPtr<UserStartedState> >::Iterator it;
+            // And trigger dev.bootcomplete if we are not showing encryption progress
+            String str1, str2;
+            sysProp->Get(String("vold.decrypt"), &str1);
+            sysProp->Get(String("vold.encrypt_progress"), &str2);
+            if (!str1.Equals("trigger_restart_min_framework") || str2.Equals("")) {
+                sysProp->Set(String("dev.bootcomplete"), String("1"));
+            }
 
             Int32 userId, ival;
+            HashMap<Int32, AutoPtr<UserStartedState> >::Iterator it;
             for (it = mStartedUsers.Begin(); it != mStartedUsers.End(); ++it) {
                 AutoPtr<UserStartedState> uss = it->mSecond;
                 if (uss->mState == UserStartedState::STATE_BOOTING) {
@@ -7550,73 +7563,31 @@ ECode CActivityManagerService::FinishBooting()
                     AutoPtr<IIntent> intent;
                     CIntent::New(IIntent::ACTION_BOOT_COMPLETED, NULL, (IIntent**)&intent);
                     intent->PutExtra(IIntent::EXTRA_USER_HANDLE, userId);
+                    intent->AddFlags(IIntent::FLAG_RECEIVER_NO_ABORT);
+                    AutoPtr<IIntentReceiver> receiver;
+                    CBootCompletedReceiver::New((IIntentReceiver**)&receiver);
                     BroadcastIntentLocked(NULL, nullStr, intent,
-                        nullStr, NULL, 0, nullStr, NULL,
-                        Elastos::Droid::Manifest::permission::RECEIVE_BOOT_COMPLETED,
-                        FALSE, FALSE, MY_PID, IProcess::SYSTEM_UID, userId, &ival);
+                        nullStr, receiver, 0, nullStr, NULL,
+                        Manifest::permission::RECEIVE_BOOT_COMPLETED, IAppOpsManager::OP_NONE
+                        TRUE, FALSE, MY_PID, IProcess::SYSTEM_UID, userId, &ival);
                 }
             }
+            ScheduleStartProfilesLocked();
         }
     }
     return NOERROR;
 }
 
-ECode CActivityManagerService::SendBootFastComplete()
+ECode CActivityManagerService::BootAnimationComplete()
 {
-    Slogger::D(TAG,"sendBootFastComplete");
-    FAIL_RETURN(EnforceNotIsolatedCaller(String("sendBootFastComplete")));
-    const Int64 token = Binder::ClearCallingIdentity();
-//     try {
-    {
-        AutoLock lock(this);
-        String nullStr;
-
-        // Ensure that any processes we had put on hold are now started
-        // up.
-        if (!mProcessesOnHold.IsEmpty()) {
-            List< AutoPtr<ProcessRecord> > procs = mProcessesOnHold;
-            List< AutoPtr<ProcessRecord> >::Iterator it;
-            for (it = procs.Begin(); it != procs.End(); ++it) {
-                if (DEBUG_PROCESSES) Slogger::V(TAG, "Starting process on hold: %p", (*it).Get());
-                StartProcessLocked(*it, String("on-hold"), nullStr);
-            }
-        }
-
-        if (mFactoryTest != CSystemServer::FACTORY_TEST_LOW_LEVEL) {
-            Slogger::D(TAG,"not mFactoryTest");
-            // Start looking for apps that are abusing wake locks.
-            Boolean result;
-            mHandler->SendEmptyMessageDelayed(CHECK_EXCESSIVE_WAKE_LOCKS_MSG, POWER_CHECK_DELAY, &result);
-
-            // Tell anyone interested that we are done booting!
-            AutoPtr<ISystemProperties> sysProp;
-            CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
-            sysProp->Set(String("sys.boot_completed"), String("1"));
-            sysProp->Set(String("dev.bootcomplete"), String("1"));
-            HashMap<Int32, AutoPtr<UserStartedState> >::Iterator it;
-            Int32 i = 0;
-            for (it = mStartedUsers.Begin(); it != mStartedUsers.End(); ++it, ++i) {
-                Slogger::D(TAG,"sendBootFastComplete start user = %d", i);
-                AutoPtr<UserStartedState> uss = it->mSecond;
-                //if (uss.mState == UserStartedState.STATE_BOOTING) {
-                    uss->mState = UserStartedState::STATE_RUNNING;
-                    const Int32 userId = it->mFirst;
-                    AutoPtr<IIntent> intent;
-                    CIntent::New(IIntent::ACTION_BOOT_COMPLETED, NULL, (IIntent**)&intent);
-                    FAIL_RETURN(intent->PutExtra(IIntent::EXTRA_USER_HANDLE, userId));
-                    Int32 result;
-                    FAIL_RETURN(BroadcastIntentLocked(NULL, nullStr, intent,
-                           nullStr, NULL, 0, nullStr, NULL,
-                           Elastos::Droid::Manifest::permission::RECEIVE_BOOT_COMPLETED,
-                           FALSE, FALSE, MY_PID, IProcess::SYSTEM_UID, userId, &result));
-                    Slogger::D(TAG,"real send boot complete");
-                //}
-            }
-        }
+    Boolean callFinishBooting;
+    synchronized (this) {
+        callFinishBooting = mCallFinishBooting;
+        mBootAnimationComplete = TRUE;
     }
-//     } finally {
-    Binder::RestoreCallingIdentity(token);
-//     }
+    if (callFinishBooting) {
+        FinishBooting();
+    }
     return NOERROR;
 }
 
@@ -7646,54 +7617,54 @@ ECode CActivityManagerService::ActivityResumed(
     /* [in] */ IBinder* token)
 {
     const Int64 origId = Binder::ClearCallingIdentity();
-    ECode ec = mMainStack->ActivityResumed(token);
+    synchronized(this) {
+        AutoPtr<ActivityStack> stack = ActivityRecord::GetStackLocked(token);
+        if (stack != NULL) {
+            ActivityRecord::ActivityResumedLocked(token);
+        }
+    }
     Binder::RestoreCallingIdentity(origId);
-    return ec;
+    return NOERROR;
 }
 
 ECode CActivityManagerService::ActivityPaused(
     /* [in] */ IBinder* token)
 {
     const Int64 origId = Binder::ClearCallingIdentity();
-    ECode ec = mMainStack->ActivityPaused(token, FALSE);
+    synchronized(this) {
+        AutoPtr<ActivityStack> stack = ActivityRecord::GetStackLocked(token);
+        if (stack != NULL) {
+            ActivityRecord::ActivityPausedLocked(token);
+        }
+    }
     Binder::RestoreCallingIdentity(origId);
-    return ec;
+    return NOERROR;
 }
 
 ECode CActivityManagerService::ActivityStopped(
     /* [in] */ IBinder* token,
     /* [in] */ IBundle* icicle,
-    /* [in] */ IBitmap* thumbnail,
+    /* [in] */ IPersistableBundle* persistentState,
     /* [in] */ ICharSequence* description)
 {
-    VALIDATE_NOT_NULL(token);
-    VALIDATE_NOT_NULL(icicle);
     if (localLOGV) {
-        String tokenDes;
-        token->ToString(&tokenDes);
-        Slogger::V(TAG, "Activity stopped: token=%s", tokenDes.string());
+        Slogger::V(TAG, "Activity stopped: token=%s", ToChars(token));
     }
     // Refuse possible leaked file descriptors
     Boolean hasFD = FALSE;
     if (icicle != NULL && (icicle->HasFileDescriptors(&hasFD), hasFD)) {
-        //throw new IllegalArgumentException("File descriptors passed in Bundle");
+        Slogger::E(TAG, "File descriptors passed in Bundle");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-
-    AutoPtr<ActivityRecord> r;
 
     const Int64 origId = Binder::ClearCallingIdentity();
 
     {
         AutoLock lock(this);
-        r = ActivityRecord::IsInStackLocked(token);
+        AutoPtr<ActivityRecord> r = ActivityRecord::IsInStackLocked(token);
         if (r != NULL) {
-            r->mStack->ActivityStoppedLocked(r, icicle, thumbnail, description);
+            r->mTask->mStack->ActivityStoppedLocked(r, icicle, persistentState, description);
         }
-    }
-
-    if (r != NULL) {
-        SendPendingThumbnail(r, NULL, NULL, NULL, FALSE);
     }
 
     TrimApplications();
@@ -7705,13 +7676,45 @@ ECode CActivityManagerService::ActivityStopped(
 ECode CActivityManagerService::ActivityDestroyed(
     /* [in] */ IBinder* token)
 {
-    VALIDATE_NOT_NULL(token);
     if (DEBUG_SWITCH) {
-        String tokenDes;
-        token->ToString(&tokenDes);
-        Slogger::V(TAG, "ACTIVITY DESTROYED: %s", tokenDes.string());
+        Slogger::V(TAG, "ACTIVITY DESTROYED: %s", ToChars(token));
     }
-    return mMainStack->ActivityDestroyed(token);
+    synchronized(this) {
+        AutoPtr<ActivityStack> stack = ActivityRecord::GetStackLocked(token);
+        if (stack != NULL) {
+            stack->ActivityDestroyedLocked(token);
+        }
+    }
+    return NOERROR;
+}
+
+ECode CActivityManagerService::BackgroundResourcesReleased(
+    /* [in] */ IBinder token)
+{
+    const Int64 origId = Binder::ClearCallingIdentity();
+    synchronized(this) {
+        AutoPtr<ActivityStack> stack = ActivityRecord::GetStackLocked(token);
+        if (stack != NULL) {
+            stack->BackgroundResourcesReleased(token);
+        }
+    }
+    Binder::RestoreCallingIdentity(origId);
+    return NOERROR;
+}
+
+ECode CActivityManagerService::NotifyLaunchTaskBehindComplete(
+    /* [in] */ IBinder* token)
+{
+    return mStackSupervisor->ScheduleLaunchTaskBehindComplete(token);
+}
+
+ECode CActivityManagerService::NotifyEnterAnimationComplete(
+    /* [in] */ IBinder* token)
+{
+    AutoPtr<IMessage> msg;
+    mHandler->ObtainMessage(ENTER_ANIMATION_COMPLETE_MSG, token, (IMessage**)&msg);
+    Boolean result;
+    mHandler->SendMessage(msg, &result);
 }
 
 ECode CActivityManagerService::GetCallingPackage(
@@ -7723,7 +7726,7 @@ ECode CActivityManagerService::GetCallingPackage(
 
     AutoLock lock(this);
     AutoPtr<ActivityRecord> r = GetCallingRecordLocked(token);
-    if (r != NULL && r->mApp != NULL && r->mInfo != NULL) {
+    if (r != NULL && r->mInfo != NULL) {
         return r->mInfo->GetPackageName(package);
     }
 
@@ -7857,7 +7860,7 @@ ECode CActivityManagerService::GetIntentSender(
         Int32 origUserId = userId;
         Int32 result;
         userId = HandleIncomingUser(Binder::GetCallingPid(), callingUid, userId,
-                type == IActivityManager::INTENT_SENDER_BROADCAST, FALSE,
+                type == IActivityManager::INTENT_SENDER_BROADCAST, ALLOW_NON_FULL,
                 String("getIntentSender"), String(NULL), &result);
         if (origUserId == IUserHandle::USER_CURRENT) {
             // We don't want to evaluate this until the pending intent is
@@ -7995,7 +7998,7 @@ ECode CActivityManagerService::GetIntentSenderLocked(
 ECode CActivityManagerService::CancelIntentSender(
     /* [in] */ IIIntentSender* sender)
 {
-    if (sender == NULL || sender->Probe(EIID_PendingIntentRecord) == NULL) {
+    if (IPendingIntentRecord::Probe(sender) == NULL) {
         return NOERROR;
     }
 
@@ -8048,7 +8051,7 @@ ECode CActivityManagerService::GetPackageForIntentSender(
     VALIDATE_NOT_NULL(packageName);
     *packageName = NULL;
 
-    if (pendingResult == NULL || pendingResult->Probe(EIID_PendingIntentRecord) == NULL) {
+    if (IPendingIntentRecord::Probe(pendingResult) == NULL) {
         return NOERROR;
     }
 
@@ -8067,7 +8070,7 @@ ECode CActivityManagerService::GetUidForIntentSender(
     VALIDATE_NOT_NULL(uid);
     *uid = -1;
 
-    if (sender == NULL || sender->Probe(EIID_PendingIntentRecord) == NULL) {
+    if (IPendingIntentRecord::Probe(sender) == NULL) {
         return NOERROR;
     }
 
@@ -8087,7 +8090,7 @@ ECode CActivityManagerService::IsIntentSenderTargetedToPackage(
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
 
-    if (pendingResult == NULL || pendingResult->Probe(EIID_PendingIntentRecord) == NULL) {
+    if (IPendingIntentRecord::Probe(pendingResult) == NULL) {
         return NOERROR;
     }
 
@@ -8122,7 +8125,7 @@ ECode CActivityManagerService::IsIntentSenderAnActivity(
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
 
-    if (pendingResult == NULL || pendingResult->Probe(EIID_PendingIntentRecord) == NULL) {
+    if (IPendingIntentRecord::Probe(pendingResult) == NULL) {
         return NOERROR;
     }
 
@@ -8144,7 +8147,7 @@ ECode CActivityManagerService::GetIntentForIntentSender(
     VALIDATE_NOT_NULL(intent);
     *intent = NULL;
 
-    if (sender == NULL || sender->Probe(EIID_PendingIntentRecord) == NULL) {
+    if (IPendingIntentRecord::Probe(sender) == NULL) {
         return NOERROR;
     }
 
@@ -8160,18 +8163,63 @@ ECode CActivityManagerService::GetIntentForIntentSender(
 //     return null;
 }
 
+ECode CActivityManagerService::GetTagForIntentSender(
+    /* [in] */ IIntentSender* pendingResult,
+    /* [in] */ const String& prefix,
+    /* [out] */ String* tag)
+{
+    VALIDATE_NOT_NULL(tag);
+    *tag = NULL;
+
+    if (IPendingIntentRecord::Probe(sender) == NULL) {
+        return NOERROR;
+    }
+    // try {
+        CPendingIntentRecord* res = (CPendingIntentRecord*)pendingResult;
+        AutoPtr<IIntent> intent = res->mKey->mRequestIntent;
+        if (intent != NULL) {
+            if (res->mLastTag != NULL && res->mLastTagPrefix == prefix && (res->mLastTagPrefix == NULL
+                || res->mLastTagPrefix.Equals(prefix))) {
+                *tag = res->mLastTag;
+                return NOERROR;
+            }
+            res->mLastTagPrefix = prefix;
+            StringBuilder sb(128);
+            if (prefix != NULL) {
+                sb.Append(prefix);
+            }
+            String action;
+            intent->GetAction(&action);
+            AutoPtr<IComponentName> component;
+            if (action != NULL) {
+                sb.Append(action);
+            }
+            else if (intent->GetComponent((IComponentName**)&component), component != NULL) {
+                component->AppendShortString(sb);
+            }
+            else {
+                sb.Append("?");
+            }
+            *tag = res->mLastTag = sb.ToString();
+            return NOERROR;
+        }
+    // } catch (ClassCastException e) {
+    // }
+    return NOERROR;
+}
+
 ECode CActivityManagerService::SetProcessLimit(
     /* [in] */ Int32 max)
 {
-    ECode ec = EnforceCallingPermission(Elastos::Droid::Manifest::permission::SET_PROCESS_LIMIT,
-            String("setProcessLimit()"));
+    FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::SET_PROCESS_LIMIT,
+            String("setProcessLimit()")));
     {
         AutoLock lock(this);
-        mProcessLimit = max < 0 ? ProcessList::MAX_HIDDEN_APPS : max;
+        mProcessLimit = max < 0 ? ProcessList::MAX_CACHED_APPS : max;
         mProcessLimitOverride = max;
     }
     TrimApplications();
-    return ec;
+    return NOERROR;
 }
 
 ECode CActivityManagerService::GetProcessLimit(
@@ -8201,7 +8249,7 @@ ECode CActivityManagerService::ForegroundTokenDied(
             return NOERROR;
         }
         pr->mForcingToForeground = NULL;
-        pr->mForegroundServices = FALSE;
+        UpdateProcessForegroundLocked(pr, FALSE, FALSE);
     }
     UpdateOomAdjLocked();
     return NOERROR;
@@ -8345,13 +8393,33 @@ ECode CActivityManagerService::EnforceCallingPermission(
 Boolean CActivityManagerService::CheckHoldingPermissionsLocked(
     /* [in] */ IIPackageManager* pm,
     /* [in] */ IProviderInfo* pi,
-    /* [in] */ IUri* uri,
+    /* [in] */ GrantUri* grantUri,
     /* [in] */ Int32 uid,
     /* [in] */ Int32 modeFlags)
 {
     if (DEBUG_URI_PERMISSION) {
-        Slogger::V(TAG, "checkHoldingPermissionsLocked: uri=%p uid=%d", uri, uid);
+        Slogger::V(TAG, "checkHoldingPermissionsLocked: uri=%s uid=%d", ToChars(grantUri), uid);
     }
+    if (UserHandleGetUserId(uid) != grantUri->mSourceUserId) {
+        AutoPtr<IActivityManagerHelper> amhelper;
+        CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&amhelper);
+        amhelper->CheckComponentPermission(INTERACT_ACROSS_USERS, uid, -1, TRUE);
+        Int32 result;
+        if (result != PERMISSION_GRANTED) {
+            return FALSE;
+        }
+    }
+    return CheckHoldingPermissionsInternalLocked(pm, pi, grantUri, uid, modeFlags, TRUE);
+}
+
+Boolean CActivityManagerService::CheckHoldingPermissionsInternalLocked(
+    /* [in] */ IIPackageManager* pm,
+    /* [in] */ IProviderInfo* pi,
+    /* [in] */ GrantUri* grantUri,
+    /* [in] */ Int32 uid,
+    /* [in] */ Int32 modeFlags,
+    /* [in] */ Boolean considerUidPermissions)
+{
     AutoPtr<IApplicationInfo> piAppInfo;
     pi->GetApplicationInfo((IApplicationInfo**)&piAppInfo);
     Int32 piUid;
@@ -8373,14 +8441,16 @@ Boolean CActivityManagerService::CheckHoldingPermissionsLocked(
     pi->GetReadPermission(&piReadPermission);
     Int32 perm;
     ASSERT_SUCCEEDED(pm->CheckUidPermission(piReadPermission, uid, &perm));
-    if (!readMet && !piReadPermission.IsNull() && perm == IPackageManager::PERMISSION_GRANTED) {
+    if (!readMet && !piReadPermission.IsNull() && considerUidPermissions
+        && perm == IPackageManager::PERMISSION_GRANTED) {
         readMet = TRUE;
     }
     String piWritePermission;
     pi->GetWritePermission(&piWritePermission);
     Int32 perm2;
     ASSERT_SUCCEEDED(pm->CheckUidPermission(piWritePermission, uid, &perm2));
-    if (!writeMet && !piWritePermission.IsNull() && perm2 == IPackageManager::PERMISSION_GRANTED) {
+    if (!writeMet && !piWritePermission.IsNull() && considerUidPermissions
+        && perm2 == IPackageManager::PERMISSION_GRANTED) {
         writeMet = TRUE;
     }
 
@@ -8394,7 +8464,7 @@ Boolean CActivityManagerService::CheckHoldingPermissionsLocked(
     pi->GetPathPermissions((ArrayOf<IPathPermission*>**)&pps);
     if (pps != NULL) {
         String path;
-        uri->GetPath(&path);
+        grantUri->mUri->GetPath(&path);
         Int32 i = pps->GetLength();
         while (i > 0 && (!readMet || !writeMet)) {
             i--;
@@ -8415,7 +8485,7 @@ Boolean CActivityManagerService::CheckHoldingPermissionsLocked(
                                 isMatch, perm);
                     }
                     if (!pprperm.IsNull()) {
-                        if (perm == IPackageManager::PERMISSION_GRANTED) {
+                        if (considerUidPermissions && perm == IPackageManager::PERMISSION_GRANTED) {
                             readMet = TRUE;
                         }
                         else {
@@ -8437,7 +8507,7 @@ Boolean CActivityManagerService::CheckHoldingPermissionsLocked(
                             ppwperm.string(), pathLog.string(), isMatch, perm);
                     }
                     if (!ppwperm.IsNull()) {
-                        if (perm == IPackageManager::PERMISSION_GRANTED) {
+                        if (considerUidPermissions && perm == IPackageManager::PERMISSION_GRANTED) {
                             writeMet = TRUE;
                         }
                         else {
@@ -8460,23 +8530,100 @@ Boolean CActivityManagerService::CheckHoldingPermissionsLocked(
     return readMet && writeMet;
 }
 
+AutoPtr<IProviderInfo> CActivityManagerService::GetProviderInfoLocked(
+    /* [in] */ const String& authority,
+    /* [in] */ Int32 userHandle)
+{
+    AutoPtr<IProviderInfo> pi;
+    AutoPtr<ContentProviderRecord> cpr = mProviderMap->GetProviderByName(authority, userHandle);
+    if (cpr != null) {
+        pi = cpr->mInfo;
+    }
+    else {
+        AppGlobals::GetPackageManager()->ResolveContentProvider(
+            authority, PackageManager.GET_URI_PERMISSION_PATTERNS, userHandle,
+            (IProviderInfo**)&pi);
+    }
+    return pi;
+}
+
+AutoPtr<UriPermission> CActivityManagerService::FindUriPermissionLocked(
+    /* [in] */ Int32 targetUid,
+    /* [in] */ GrantUri* grantUri)
+{
+    GrantUriPermissionMapMap::Iterator find = mGrantedUriPermissions.Find(targetUid);
+    AutoPtr<GrantUriPermissionMap> targetUris;
+    if (find != mGrantedUriPermissions.End())
+        targetUris = *find;
+    if (targetUris != NULL) {
+        GrantUriPermissionMap::Iterator it = targetUris.Find(grantUri);
+        if (it != targetUris.End())
+            return *it;
+    }
+    return NULL;
+}
+
+AutoPtr<UriPermission> CActivityManagerService::FindOrCreateUriPermissionLocked(
+    /* [in] */ String sourcePkg,
+    /* [in] */ const String& targetPkg,
+    /* [in] */ Int32 targetUid,
+    /* [in] */ GrantUri* grantUri)
+{
+    AutoPtr<GrantUriPermissionMap> targetUris; = mGrantedUriPermissions[targetUid];
+    if (targetUris == NULL) {
+        targetUris = new GrantUriPermissionMap;
+        mGrantedUriPermissions[targetUid] = targetUris;
+    }
+
+    AutoPtr<UriPermission> perm = (*targetUris)[grantUri];
+    if (perm == NULL) {
+        perm = new UriPermission(sourcePkg, targetPkg, targetUid, grantUri);
+        (*targetUris)[grantUri] = perm;
+    }
+
+    return perm;
+}
+
 Boolean CActivityManagerService::CheckUriPermissionLocked(
-    /* [in] */ IUri* uri,
+    /* [in] */ GrantUri* grantUri,
     /* [in] */ Int32 uid,
     /* [in] */ Int32 modeFlags)
 {
+    Boolean persistable = (modeFlags & IIntent::FLAG_GRANT_PERSISTABLE_URI_PERMISSION) != 0;
+    Int32 minStrength = persistable ? UriPermission::STRENGTH_PERSISTABLE
+            : UriPermission::STRENGTH_OWNED;
+
     // Root gets to do everything.
     if (uid == 0) {
         return TRUE;
     }
 
-    UriPermissionIterator it = mGrantedUriPermissions.Find(uid);
-    if (it == mGrantedUriPermissions.End()) return FALSE;
+    GrantUriPermissionMapMap::Iterator it = mGrantedUriPermissions.Find(uid);
+    AutoPtr<GrantUriPermissionMap> perms;
+    if (it != mGrantedUriPermissions.End())
+        perms = *it;
+    if (perms == NULL)
+        return FALSE;
 
-    AutoPtr<PermissionMap> perms = it->mSecond;
-    AutoPtr<UriPermission> perm = (*perms)[uri];
-    if (perm == NULL) return FALSE;
-    return (modeFlags & perm->mModeFlags) == modeFlags;
+    AutoPtr<UriPermission> exactPerm;
+    GrantUriPermissionMap::Iterator it2 = perms.Find(grantUri);
+    if (it2 != perms.End())
+        exactPerm = *it2;
+    if (exactPerm != NULL && exactPerm->GetStrength(modeFlags) >= minStrength) {
+        return TRUE;
+    }
+
+    // No exact match, look for prefixes
+    it2 = perms.Begin();
+    for (; it2 != perms.End(); ++it2) {
+        AutoPtr<UriPermission> perm = it2->mSecond;
+        if (perm->mUri->mPrefix && grantUri->mUri->IsPathPrefixMatch(perm->mUri->mUri)
+                && perm->GetStrength(modeFlags) >= minStrength) {
+            return TRUE;
+        }
+    }
+
+    return FALSE;
 }
 
 ECode CActivityManagerService::CheckUriPermission(
@@ -8484,6 +8631,7 @@ ECode CActivityManagerService::CheckUriPermission(
     /* [in] */ Int32 pid,
     /* [in] */ Int32 uid,
     /* [in] */ Int32 modeFlags,
+    /* [in] */ Int32 userId,
     /* [out] */ Int32* permission)
 {
     VALIDATE_NOT_NULL(permission);
@@ -8507,7 +8655,8 @@ ECode CActivityManagerService::CheckUriPermission(
 
    {
        AutoLock lock(this);
-       *permission = CheckUriPermissionLocked(uri, uid, modeFlags)
+       AutoPtr<GrantUri> guri = new GrantUri(userId, uri, FALSE);
+       *permission = CheckUriPermissionLocked(guri, uid, modeFlags)
               ? IPackageManager::PERMISSION_GRANTED
               : IPackageManager::PERMISSION_DENIED;
         return NOERROR;
@@ -8517,23 +8666,25 @@ ECode CActivityManagerService::CheckUriPermission(
 ECode CActivityManagerService::CheckGrantUriPermissionLocked(
     /* [in] */ Int32 callingUid,
     /* [in] */ const String& targetPkg,
-    /* [in] */ IUri* uri,
+    /* [in] */ GrantUri* grantUri,
     /* [in] */ Int32 modeFlags,
     /* [in] */ Int32 lastTargetUid,
     /* [out] */ Int32* permission)
 {
     VALIDATE_NOT_NULL(permission);
 
-    modeFlags &= (IIntent::FLAG_GRANT_READ_URI_PERMISSION
-            | IIntent::FLAG_GRANT_WRITE_URI_PERMISSION);
-    if (modeFlags == 0) {
+    AutoPtr<IIntentHelper> iHelper;
+    CIntentHelper::AcquireSingleton((IIntentHelper**)&&iHelper);
+    Boolean res;
+    iHelper->IsAccessUriMode(modeFlags, &res);
+    if (!res) {
         *permission = -1;
         return NOERROR;
     }
 
     if (!targetPkg.IsNull()) {
         if (DEBUG_URI_PERMISSION) {
-            Slogger::V(TAG, "Checking grant %s permission to %p", targetPkg.string(), uri);
+            Slogger::V(TAG, "Checking grant %s permission to %s", targetPkg.string(), ToChars(grantUri));
         }
     }
 
@@ -8541,31 +8692,21 @@ ECode CActivityManagerService::CheckGrantUriPermissionLocked(
 
     // If this is not a content: uri, we can't do anything with it.
     String scheme;
-    uri->GetScheme(&scheme);
+    grantUri->mUri->GetScheme(&scheme);
     if (!scheme.Equals(IContentResolver::SCHEME_CONTENT)) {
         if (DEBUG_URI_PERMISSION) {
-           Slogger::V(TAG, "Can't grant URI permission for non-content URI: %p", uri);
+           Slogger::V(TAG, "Can't grant URI permission for non-content URI: %s", ToChars(grantUri));
         }
         *permission = -1;
         return NOERROR;
     }
 
-    String name;
-    uri->GetAuthority(&name);
-    AutoPtr<IProviderInfo> pi;
-    AutoPtr<ContentProviderRecord> cpr = mProviderMap->GetProviderByName(name,
-               UserHandleGetUserId(callingUid));
-    if (cpr != NULL) {
-        pi = cpr->mInfo;
-    }
-    else {
-        FAIL_RETURN(pm->ResolveContentProvider(name,
-                IPackageManager::GET_URI_PERMISSION_PATTERNS, UserHandleGetUserId(callingUid),
-                (IProviderInfo**)&pi));
-    }
+    String authority;
+    grantUri->mUri->GetAuthority(&authority);
+    AutoPtr<IProviderInfo> pi = GetProviderInfoLocked(authority, grantUri->mSourceUserId);
     if (pi == NULL) {
         String uriString;
-        uri->ToSafeString(&uriString);
+        grantUri->mUri->ToSafeString(&uriString);
         Slogger::W(TAG, "No content provider found for permission check: %s", uriString.string());
         *permission = -1;
         return NOERROR;
@@ -8590,10 +8731,10 @@ ECode CActivityManagerService::CheckGrantUriPermissionLocked(
 
     if (targetUid >= 0) {
         // First...  does the target actually need this permission?
-        if (CheckHoldingPermissionsLocked(pm, pi, uri, targetUid, modeFlags)) {
+        if (CheckHoldingPermissionsLocked(pm, pi, grantUri, targetUid, modeFlags)) {
             // No need to grant the target this permission.
             if (DEBUG_URI_PERMISSION) {
-                Slogger::V(TAG, "Target %s already has full permission to %p", targetPkg.string(), uri);
+                Slogger::V(TAG, "Target %s already has full permission to %s", targetPkg.string(), ToChars(grantUri));
             }
             *permission = -1;
             return NOERROR;
@@ -8623,50 +8764,62 @@ ECode CActivityManagerService::CheckGrantUriPermissionLocked(
         }
     }
 
-    // Second...  is the provider allowing granting of URI permissions?
-    Boolean grant;
-    pi->GetGrantUriPermissions(&grant);
-    if (!grant) {
-        String piCName, piName;
-        pi->GetPackageName(&piCName);
-        pi->GetName(&piName);
-        Slogger::E(TAG, "Provider %s/ does not allow granting of Uri permissions (uri %p)",
-                piCName.string(), piName.string(), uri);
-        return E_SECURITY_EXCEPTION;
-    }
+    /* There is a special cross user grant if:
+     * - The target is on another user.
+     * - Apps on the current user can access the uri without any uid permissions.
+     * In this case, we grant a uri permission, even if the ContentProvider does not normally
+     * grant uri permissions.
+     */
+    Boolean specialCrossUserGrant = UserHandleGetUserId(targetUid) != grantUri->mSourceUserId
+            && CheckHoldingPermissionsInternalLocked(pm, pi, grantUri, callingUid,
+            modeFlags, FALSE /*without considering the uid permissions*/);
 
-    AutoPtr<ArrayOf<IPatternMatcher*> > patterns;
-    pi->GetUriPermissionPatterns((ArrayOf<IPatternMatcher*>**)&patterns);
-    if (patterns != NULL) {
-        const Int32 N = patterns->GetLength();
-        Boolean allowed = FALSE;
-        for (Int32 i=0; i<N; i++) {
-            String uriPath;
-            uri->GetPath(&uriPath);
-            Boolean matched;
-            (*patterns)[i]->Match(uriPath, &matched);
-            if ((*patterns)[i] != NULL && matched) {
-                allowed = TRUE;
-                break;
-            }
-        }
-        if (!allowed) {
+
+    // Second...  is the provider allowing granting of URI permissions?
+    if (!specialCrossUserGrant) {
+        Boolean grant;
+        pi->GetGrantUriPermissions(&grant);
+        if (!grant) {
             String piCName, piName;
             pi->GetPackageName(&piCName);
             pi->GetName(&piName);
-            Slogger::E(TAG, "Provider %s/%s does not allow granting of permission to path of Uri %p", piCName.string(),
-                    piName.string(), uri);
+            Slogger::E(TAG, "Provider %s/%s does not allow granting of Uri permissions (uri %s)",
+                    piCName.string(), piName.string(), ToChars(grantUri));
             return E_SECURITY_EXCEPTION;
+        }
+
+        AutoPtr<ArrayOf<IPatternMatcher*> > patterns;
+        pi->GetUriPermissionPatterns((ArrayOf<IPatternMatcher*>**)&patterns);
+        if (patterns != NULL) {
+            const Int32 N = patterns->GetLength();
+            Boolean allowed = FALSE;
+            for (Int32 i=0; i<N; i++) {
+                String uriPath;
+                grantUri->uri->GetPath(&uriPath);
+                Boolean matched;
+                if ((*patterns)[i] != NULL && ((*patterns)[i]->Match(uriPath, &matched), matched)) {
+                    allowed = TRUE;
+                    break;
+                }
+            }
+            if (!allowed) {
+                String piCName, piName;
+                pi->GetPackageName(&piCName);
+                pi->GetName(&piName);
+                Slogger::E(TAG, "Provider %s/%s does not allow granting of permission to path of Uri %s",
+                    piCName.string(), piName.string(), ToChars(grantUri));
+                return E_SECURITY_EXCEPTION;
+            }
         }
     }
 
     // Third...  does the caller itself have permission to access
     // this uri?
-    if (callingUid != Process::MyUid()) {
-        if (!CheckHoldingPermissionsLocked(pm, pi, uri, callingUid, modeFlags)) {
-            if (!CheckUriPermissionLocked(uri, callingUid, modeFlags)) {
-               Slogger::E(TAG, "Uid %d does not have permission to uri %p", callingUid,
-                        uri);
+    if (UserHandleGetAppId(callingUid) != IProcess::SYSTEM_UID) {
+        if (!CheckHoldingPermissionsLocked(pm, pi, grantUri, callingUid, modeFlags)) {
+            if (!CheckUriPermissionLocked(grantUri, callingUid, modeFlags)) {
+               Slogger::E(TAG, "Uid %d does not have permission to uri %s",
+                    callingUid, ToChars(grantUri));
                 return E_SECURITY_EXCEPTION;
             }
         }
@@ -11715,7 +11868,7 @@ ECode CActivityManagerService::ShowSafeModeOverlay()
 ECode CActivityManagerService::NoteWakeupAlarm(
     /* [in] */ IIIntentSender* sender)
 {
-    if (sender == NULL || sender->Probe(EIID_PendingIntentRecord) == NULL) {
+    if (IPendingIntentRecord::Probe(sender) == NULL) {
         return NOERROR;
     }
 
