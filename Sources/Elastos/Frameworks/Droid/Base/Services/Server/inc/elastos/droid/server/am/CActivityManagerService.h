@@ -15,13 +15,16 @@
 #include "elastos/droid/server/am/ProcessRecord.h"
 #include "elastos/droid/server/am/ActiveServices.h"
 //#include "elastos/droid/server/am/CBatteryStatsService.h"
+#include "elastos/droid/server/am/CompatModePackages.h"
 #include "elastos/droid/server/am/CProcessStatsService.h"
 #include "elastos/droid/server/am/TaskPersister.h"
 #include "elastos/droid/server/am/UserStartedState.h"
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Droid::App::IApplicationThread;
 using Elastos::Droid::App::IActivityController;
+using Elastos::Droid::App::IApplicationThread;
+using Elastos::Droid::App::IApplicationErrorReportCrashInfo;
+using Elastos::Droid::App::IDialog;
 using Elastos::Droid::App::IProfilerInfo;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
@@ -240,6 +243,35 @@ public:
     AutoPtr<IInterface/*CBatteryStatsService*/> mBatteryStatsService;
     AutoPtr<IProcessCpuTracker> mProcessCpuTracker;
     AutoPtr<ActivityRecord> mFocusedActivity;
+    AutoPtr<CompatModePackages> mCompatModePackages;
+    Object mPidsSelfLockedLock;
+    HashMap<Int32, AutoPtr<ProcessRecord> > mPidsSelfLocked;
+    CARAPI HandleApplicationCrashInner(
+        /* [in] */ const String& eventType,
+        /* [in] */ ProcessRecord* r,
+        /* [in] */ const String& processName,
+        /* [in] */ IApplicationErrorReportCrashInfo* crashInfo)
+    {
+        return NOERROR;
+    }
+    CARAPI_(Boolean) StartUserInForeground(
+        /* [in] */ Int32 userId,
+        /* [in] */ IDialog* dlg)
+    {
+        return FALSE;
+    }
+    CARAPI StartLockTaskMode(
+        /* [in] */ TaskRecord* task)
+    {
+        return NOERROR;
+    }
+    CARAPI_(AutoPtr<IIntent>) CreateAppErrorIntentLocked(
+        /* [in] */ ProcessRecord* r,
+        /* [in] */ Int64 timeMillis,
+        /* [in] */ IApplicationErrorReportCrashInfo* crashInfo)
+    {
+        return NULL;
+    }
     CARAPI CancelIntentSenderLocked(
         /* [in] */ IIIntentSender* rec,
         /* [in] */ Boolean cleanActivity)
