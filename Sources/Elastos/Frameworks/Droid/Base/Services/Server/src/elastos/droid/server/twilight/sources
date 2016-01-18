@@ -1,4 +1,4 @@
-TARGET_NAME= dreams
+TARGET_NAME= twilight
 TARGET_TYPE= lib
 
 INCLUDES += ../
@@ -8,6 +8,5 @@ INCLUDES += $(MAKEDIR)/../../../../../../../Core/inc/
 C_DEFINES += -DDROID_SERVER
 include $(MAKEDIR)/../../../../../../../../sources.inc
 
-SOURCES = DreamController.cpp
-SOURCES += CDreamManagerService.cpp
-SOURCES += CDreamManagerBinderService.cpp
+SOURCES = TwilightService.cpp
+SOURCES += TwilightState.cpp

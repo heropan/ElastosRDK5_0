@@ -36,6 +36,8 @@ module
     merge("net/NetworkPolicyManagerService.car");
     merge("net/NetworkStatsService.car");
 
+    merge("twilight/TwilightState.car");
+    merge("twilight/TwilightManager.car");
     merge("twilight/TwilightListener.car");
 
     merge("wallpaper/WallpaperManagerService.car");
@@ -48,7 +50,6 @@ module
     // merge("accessibility/ScreenMagnifier.car");
     // merge("RecognitionManagerService.car");
     // merge("DeviceStorageMonitorService.car");
-    // merge("dreams/DreamManagerService.car");
     // merge("search/Searchables.car");
 
     interface Elastos.Droid.Server.ISystemService;
@@ -97,9 +98,10 @@ module
     using interface Elastos.Droid.Net.IINetworkPolicyManager;
     using interface Elastos.Droid.Net.IINetworkStatsService;
     using interface Elastos.Droid.Net.IINetworkPolicyListener;
-    using interface Elastos.Droid.Service.Wallpaper.IIWallpaperConnection;
     using interface Elastos.Droid.Utility.ITrustedTime;
     using interface Elastos.Droid.View.IApplicationToken;
+    using interface Elastos.Droid.Service.Dreams.IIDreamManager;
+    using interface Elastos.Droid.Service.Wallpaper.IIWallpaperConnection;
 
     using interface Elastos.Core.IRunnable;
     using interface Elastos.Core.IThread;
@@ -389,19 +391,6 @@ module
 
 //     } // namespace Am
 
-//     namespace Dreams {
-
-//     [local]
-//     class CDreamManagerService {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IHandler* mainHandler);
-
-//         interface IDreamManagerService;
-//         interface IBinder;
-//     }
-
-//     } // namespace Dreams
 
 //     namespace Input {
 
@@ -1070,6 +1059,31 @@ module
     // } // namepsace Droid
     // } // namespace Elastos
 
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+    namespace Dreams {
+
+    class CDreamManagerService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface ISystemService;
+        interface IBinder;
+    }
+
+    class CDreamManagerBinderService {
+        constructor(
+            [in] ISystemService* dreamManagerService);
+
+        interface IIDreamManager;
+        interface IBinder;
+    }
+
+    } // namespace Dreams
+    } // namespace Server
+    } // namepsace Droid
+    } // namespace Elastos
 
     namespace Elastos {
     namespace Droid {
@@ -1097,7 +1111,7 @@ module
             interface IServiceConnection;
             interface IBinder;
          }
-    } //namespace Wallpaper
+    } // namespace Wallpaper
     } // namespace Server
     } // namepsace Droid
     } // namespace Elastos

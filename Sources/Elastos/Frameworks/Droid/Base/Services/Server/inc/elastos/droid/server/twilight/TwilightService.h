@@ -1,15 +1,19 @@
 
-#ifndef __ELASTOS_DROID_SERVER_TWILIGHTSERVICE_H__
-#define __ELASTOS_DROID_SERVER_TWILIGHTSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_TWILIGHT_TWILIGHTSERVICE_H__
+#define __ELASTOS_DROID_SERVER_TWILIGHT_TWILIGHTSERVICE_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "_Elastos.Droid.Server.h"
+#include "elastos/droid/server/SystemService.h"
+#include "elastos/droid/server/TwilightCalculator.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
-#include "TwilightCalculator.h"
 #include "elastos/droid/os/Runnable.h"
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
 #include <elastos/utility/etl/List.h>
+#include <Elastos.Droid.Location.h>
+#include <Elastos.Droid.Content.h>
+#include <Elastos.Droid.Os.h>
 
-using Elastos::Utility::Etl::List;
 using Elastos::Droid::App::IAlarmManager;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
@@ -18,88 +22,22 @@ using Elastos::Droid::Location::ILocation;
 using Elastos::Droid::Location::ILocationManager;
 using Elastos::Droid::Location::ILocationListener;
 using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;
+using Elastos::Droid::Server::SystemService;
 using Elastos::Droid::Server::TwilightCalculator;
+using Elastos::Utility::Etl::List;
 
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
+namespace Twilight {
 
 class TwilightService
-    : public ElRefBase
+    : public SystemService
 {
-public:
-    /**
-     * Describes whether it is day or night.
-     * This object is immutable.
-     */
-    class TwilightState
-        : public ElRefBase
-    {
-    public:
-        TwilightState(
-            /* [in] */ Boolean isNight,
-            /* [in] */ Int64 yesterdaySunset,
-            /* [in] */ Int64 todaySunrise,
-            /* [in] */ Int64 todaySunset,
-            /* [in] */ Int64 tomorrowSunrise);
-
-        /**
-         * Returns true if it is currently night time.
-         */
-        CARAPI_(Boolean) IsNight();
-
-        /**
-         * Returns the time of yesterday's sunset in the System.currentTimeMillis() timebase,
-         * or -1 if the sun never sets.
-         */
-        CARAPI_(Int64) GetYesterdaySunset();
-
-        /**
-         * Returns the time of today's sunrise in the System.currentTimeMillis() timebase,
-         * or -1 if the sun never rises.
-         */
-        CARAPI_(Int64) GetTodaySunrise();
-
-        /**
-         * Returns the time of today's sunset in the System.currentTimeMillis() timebase,
-         * or -1 if the sun never sets.
-         */
-        CARAPI_(Int64) GetTodaySunset();
-
-        /**
-         * Returns the time of tomorrow's sunrise in the System.currentTimeMillis() timebase,
-         * or -1 if the sun never rises.
-         */
-        CARAPI_(Int64) GetTomorrowSunrise();
-
-        CARAPI_(Boolean) Equals(
-            /* [in] */ TwilightState* other);
-
-        CARAPI_(Int32) GetHashCode();
-
-        CARAPI_(String) ToString();
-
-    private:
-        Boolean mIsNight;
-        Int64 mYesterdaySunset;
-        Int64 mTodaySunrise;
-        Int64 mTodaySunset;
-        Int64 mTomorrowSunrise;
-    };
-
-    /**
-     * Listener for changes in twilight state.
-     */
-    interface ITwilightListener
-        : public IInterface
-    {
-    public:
-        virtual CARAPI OnTwilightStateChanged() = 0;
-    };
-
 private:
     class TwilightListenerRecord
         : public Runnable
@@ -109,7 +47,7 @@ private:
             /* [in] */ ITwilightListener* listener,
             /* [in] */ IHandler* handler);
 
-        CARAPI Post();
+        CARAPI PostUpdate();
 
         //@Override
         CARAPI Run();
@@ -118,8 +56,43 @@ private:
         AutoPtr<IHandler> mHandler;
     };
 
+    class MyTwilightManager
+        : public Object
+        , public ITwilightManager
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        MyTwilightManager(
+            /* [in] */ TwilightService* host)
+            : mHost(host)
+        {}
+
+        /**
+         * Gets the current twilight state.
+         *
+         * @return The current twilight state, or null if no information is available.
+         */
+        //@Override
+        CARAPI GetCurrentState(
+            /* [out] */ ITwilightState** state);
+
+        /**
+         * Listens for twilight time.
+         *
+         * @param listener The listener.
+         */
+        //@Override
+        CARAPI RegisterListener(
+            /* [in] */ ITwilightListener* listener,
+            /* [in] */ IHandler* handler);
+
+        private:
+            TwilightService* mHost;
+    };
+
     class LocationHandler
-        : public HandlerBase
+        : public Handler
     {
     public:
         LocationHandler(
@@ -167,7 +140,7 @@ private:
         AutoPtr<TwilightCalculator> mTwilightCalculator;
 
         AutoPtr<IHandler> mHandler;
-        AutoPtr<TwilightService> mOwner;
+        TwilightService* mHost;
     };
 
     class UpdateLocationReceiver
@@ -190,20 +163,19 @@ private:
             return NOERROR;
         }
     private:
-        AutoPtr<TwilightService> mOwner;
+        AutoPtr<TwilightService> mHost;
     };
 
     // A LocationListener to initialize the network location provider. The location updates
     // are handled through the passive location provider.
     class EmptyLocationListener
-        : public ElRefBase
+        : public Object
         , public ILocationListener
     {
     public:
         CAR_INTERFACE_DECL();
 
         EmptyLocationListener();
-
 
         CARAPI OnLocationChanged(
             /* [in] */ ILocation* location);
@@ -220,16 +192,15 @@ private:
             /* [in] */ IBundle* extras);
     };
 
-    class _LocationListener
-        : public ElRefBase
+    class MyLocationListener
+        : public Object
         , public ILocationListener
     {
     public:
         CAR_INTERFACE_DECL();
 
-        _LocationListener(
+        MyLocationListener(
             /* [in] */ TwilightService* owner);
-
 
         CARAPI OnLocationChanged(
             /* [in] */ ILocation* location);
@@ -245,36 +216,20 @@ private:
             /* [in] */ Int32 status,
             /* [in] */ IBundle* extras);
     private:
-        AutoPtr<TwilightService> mOwner;
+        TwilightService* mHost;
     };
 
 public:
-    TwilightService(
+    TwilightService();
+
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    /**
-     * Gets the current twilight state.
-     *
-     * @return The current twilight state, or null if no information is available.
-     */
-    CARAPI GetCurrentState(
-        /* [out] */ TwilightState** result);
-
-    /**
-     * Listens for twilight time.
-     *
-     * @param listener The listener.
-     * @param handler The handler on which to post calls into the listener.
-     */
-    CARAPI RegisterListener(
-        /* [in] */ ITwilightListener* listener,
-        /* [in] */ IHandler* handler);
-
-    CARAPI_(void) SystemReady();
+    CARAPI OnStart();
 
 private:
     CARAPI_(void) SetTwilightState(
-        /* [in] */ TwilightState* state);
+        /* [in] */ ITwilightState* state);
 
     // The user has moved if the accuracy circles of the two locations don't overlap.
     static CARAPI_(Boolean) HasMoved(
@@ -286,29 +241,29 @@ private:
     static const Boolean DEBUG;
     static const String ACTION_UPDATE_TWILIGHT_STATE;
 
-    AutoPtr<IContext> mContext;
+    Object mLock;
+
     AutoPtr<IAlarmManager> mAlarmManager;
     AutoPtr<ILocationManager> mLocationManager;
     AutoPtr<LocationHandler> mLocationHandler;
 
-    Object mLock;
-
     List<AutoPtr<TwilightListenerRecord> > mListeners;
-    Boolean mSystemReady;
 
-    AutoPtr<TwilightState> mTwilightState;
+    AutoPtr<ITwilightState> mTwilightState;
 
     AutoPtr<UpdateLocationReceiver> mUpdateLocationReceiver;
 
     AutoPtr<EmptyLocationListener> mEmptyLocationListener;
 
-    AutoPtr<_LocationListener> mLocationListener;
+    AutoPtr<MyLocationListener> mLocationListener;
+
+    AutoPtr<ITwilightManager> mService;
 };
 
 
-
+} // namespace Twilight
 } // namespace Server
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_SERVER_TWILIGHTSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_TWILIGHT_TWILIGHTSERVICE_H__

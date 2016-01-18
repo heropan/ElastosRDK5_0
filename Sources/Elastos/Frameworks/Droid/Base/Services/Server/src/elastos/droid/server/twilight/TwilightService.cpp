@@ -1,16 +1,18 @@
 
-#include "TwilightService.h"
+#include "elastos/droid/server/twilight/TwilightService.h"
+#include "elastos/droid/server/twilight/TwilightState.h"
+
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/SystemClock.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>
+#include <Elastos.Droid.App.h>
+#include <Elastos.Droid.Text.h>
+#include <Elastos.CoreLibrary.Utility.h>
 
-using Elastos::Core::IRunnable;
-using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::ISystem;
-using Elastos::Core::CSystem;
-using Elastos::Core::ICharSequence;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::App::IPendingIntentHelper;
+using Elastos::Droid::App::CPendingIntentHelper;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::CIntentFilter;
@@ -23,74 +25,25 @@ using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Text::Format::IDateUtils;
 using Elastos::Droid::Text::Format::ITime;
 using Elastos::Droid::Text::Format::CTime;
+using Elastos::Core::IRunnable;
+using Elastos::Core::EIID_IRunnable;
+using Elastos::Core::ISystem;
+using Elastos::Core::CSystem;
+using Elastos::Core::ICharSequence;
+using Elastos::Utility::IList;
+using Elastos::Utility::IIterator;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
+namespace Twilight {
 
 const String TwilightService::TAG("TwilightService");
 const Boolean TwilightService::DEBUG = FALSE;
 const String TwilightService::ACTION_UPDATE_TWILIGHT_STATE("com.android.server.action.UPDATE_TWILIGHT_STATE");
 
 
-//====================================================================
-// TwilightService::TwilightState
-//====================================================================
-TwilightService::TwilightState::TwilightState(
-    /* [in] */ Boolean isNight,
-    /* [in] */ Int64 yesterdaySunset,
-    /* [in] */ Int64 todaySunrise,
-    /* [in] */ Int64 todaySunset,
-    /* [in] */ Int64 tomorrowSunrise)
-    : mIsNight(isNight)
-    , mYesterdaySunset(yesterdaySunset)
-    , mTodaySunrise(todaySunrise)
-    , mTodaySunset(todaySunset)
-    , mTomorrowSunrise(tomorrowSunrise)
-{
-}
-
-Boolean TwilightService::TwilightState::IsNight()
-{
-    return mIsNight;
-}
-
-Int64 TwilightService::TwilightState::GetYesterdaySunset()
-{
-    return mYesterdaySunset;
-}
-
-Int64 TwilightService::TwilightState::GetTodaySunrise()
-{
-    return mTodaySunrise;
-}
-
-Int64 TwilightService::TwilightState::GetTodaySunset()
-{
-    return mTodaySunset;
-}
-
-Int64 TwilightService::TwilightState::GetTomorrowSunrise()
-{
-    return mTomorrowSunrise;
-}
-
-Boolean TwilightService::TwilightState::Equals(
-    /* [in] */ TwilightState* other)
-{
-    return other != NULL
-            && mIsNight == other->IsNight()
-            && mYesterdaySunset == other->GetYesterdaySunset()
-            && mTodaySunrise == other->GetTodaySunrise()
-            && mTodaySunset == other->GetTodaySunset()
-            && mTomorrowSunrise == other->GetTomorrowSunrise();
-}
-
-Int32 TwilightService::TwilightState::GetHashCode()
-{
-    return 0;
-}
 
 //====================================================================
 // TwilightService::TwilightListenerRecord
@@ -103,7 +56,7 @@ TwilightService::TwilightListenerRecord::TwilightListenerRecord(
 {
 }
 
-ECode TwilightService::TwilightListenerRecord::Post()
+ECode TwilightService::TwilightListenerRecord::PostUpdate()
 {
     Boolean result;
     return mHandler->Post(this, &result);
@@ -111,7 +64,35 @@ ECode TwilightService::TwilightListenerRecord::Post()
 
 ECode TwilightService::TwilightListenerRecord::Run()
 {
-    mListener->OnTwilightStateChanged();
+    return mListener->OnTwilightStateChanged();
+}
+
+//====================================================================
+// TwilightService::MyTwilightManager
+//====================================================================
+CAR_INTERFACE_IMPL(TwilightService::MyTwilightManager, Object, ITwilightManager)
+
+ECode TwilightService::MyTwilightManager::GetCurrentState(
+    /* [out] */ ITwilightState** state)
+{
+    VALIDATE_NOT_NULL(state)
+    AutoLock lock(mHost->mLock);
+    *state = mHost->mTwilightState;
+    REFCOUNT_ADD(*state)
+    return NOERROR;
+}
+
+ECode TwilightService::MyTwilightManager::RegisterListener(
+    /* [in] */ ITwilightListener* listener,
+    /* [in] */ IHandler* handler)
+{
+    AutoLock lock(mHost->mLock);
+    AutoPtr<TwilightListenerRecord> record = new TwilightListenerRecord(listener, handler);
+    mHost->mListeners.PushBack(record);
+
+    if (mHost->mListeners.GetSize() == 1) {
+        mHost->mLocationHandler->EnableLocationUpdates();
+    }
     return NOERROR;
 }
 
@@ -130,13 +111,13 @@ const Int64 TwilightService::LocationHandler::LOCATION_UPDATE_ENABLE_INTERVAL_MA
 const Double TwilightService::LocationHandler::FACTOR_GMT_OFFSET_LONGITUDE = IDateUtils::DAY_IN_MILLIS;
 
 TwilightService::LocationHandler::LocationHandler(
-    /* [in] */ TwilightService* owner)
-    : mOwner(owner)
-    , mPassiveListenerEnabled(FALSE)
+    /* [in] */ TwilightService* host)
+    : mPassiveListenerEnabled(FALSE)
     , mNetworkListenerEnabled(FALSE)
     , mDidFirstInit(FALSE)
     , mLastNetworkRegisterTime(-MIN_LOCATION_UPDATE_MS)
     , mLastUpdateInterval(0LL)
+    , mHost(host)
 {
     mTwilightCalculator = new TwilightCalculator();
 }
@@ -180,7 +161,7 @@ ECode TwilightService::LocationHandler::HandleMessage(
             AutoPtr<IInterface> obj;
             msg->GetObj((IInterface**)&obj);
             AutoPtr<ILocation> location = ILocation::Probe(obj);
-            Boolean hasMoved = mOwner->HasMoved(mLocation, location);
+            Boolean hasMoved = mHost->HasMoved(mLocation, location);
             Float accuracy, accuracy2;
             location->GetAccuracy(&accuracy);
             mLocation->GetAccuracy(&accuracy2);
@@ -213,7 +194,7 @@ ECode TwilightService::LocationHandler::HandleMessage(
             // Unregister the current location monitor, so we can
             // register a new one for it to get an immediate update.
             mNetworkListenerEnabled = FALSE;
-            mOwner->mLocationManager->RemoveUpdates((ILocationListener*)(mOwner->mEmptyLocationListener));
+            mHost->mLocationManager->RemoveUpdates((ILocationListener*)(mHost->mEmptyLocationListener));
 
             // Fall through to re-register listener.
         case MSG_ENABLE_LOCATION_UPDATES:
@@ -221,7 +202,7 @@ ECode TwilightService::LocationHandler::HandleMessage(
             // distance.
             Boolean networkLocationEnabled;
 
-            if (FAILED(mOwner->mLocationManager->IsProviderEnabled(ILocationManager::NETWORK_PROVIDER, &networkLocationEnabled))) {
+            if (FAILED(mHost->mLocationManager->IsProviderEnabled(ILocationManager::NETWORK_PROVIDER, &networkLocationEnabled))) {
                 // we may get IllegalArgumentException if network location provider
                 // does not exist or is not yet installed.
                 networkLocationEnabled = FALSE;
@@ -230,8 +211,8 @@ ECode TwilightService::LocationHandler::HandleMessage(
             if (!mNetworkListenerEnabled && networkLocationEnabled) {
                 mNetworkListenerEnabled = TRUE;
                 mLastNetworkRegisterTime = SystemClock::GetElapsedRealtime();
-                mOwner->mLocationManager->RequestLocationUpdates(ILocationManager::NETWORK_PROVIDER,
-                        LOCATION_UPDATE_MS, 0, (ILocationListener*)(mOwner->mEmptyLocationListener));
+                mHost->mLocationManager->RequestLocationUpdates(ILocationManager::NETWORK_PROVIDER,
+                        LOCATION_UPDATE_MS, 0, (ILocationListener*)(mHost->mEmptyLocationListener));
 
                 if (!mDidFirstInit) {
                     mDidFirstInit = TRUE;
@@ -245,7 +226,7 @@ ECode TwilightService::LocationHandler::HandleMessage(
             // and network).
             Boolean passiveLocationEnabled;
 
-            if (FAILED(mOwner->mLocationManager->IsProviderEnabled(ILocationManager::PASSIVE_PROVIDER, &passiveLocationEnabled))) {
+            if (FAILED(mHost->mLocationManager->IsProviderEnabled(ILocationManager::PASSIVE_PROVIDER, &passiveLocationEnabled))) {
                 // we may get IllegalArgumentException if passive location provider
                 // does not exist or is not yet installed.
                 passiveLocationEnabled = FALSE;
@@ -253,8 +234,8 @@ ECode TwilightService::LocationHandler::HandleMessage(
 
             if (!mPassiveListenerEnabled && passiveLocationEnabled) {
                 mPassiveListenerEnabled = TRUE;
-                mOwner->mLocationManager->RequestLocationUpdates(ILocationManager::PASSIVE_PROVIDER,
-                        0, LOCATION_UPDATE_DISTANCE_METER , (ILocationListener*)(mOwner->mLocationListener));
+                mHost->mLocationManager->RequestLocationUpdates(ILocationManager::PASSIVE_PROVIDER,
+                        0, LOCATION_UPDATE_DISTANCE_METER , (ILocationListener*)(mHost->mLocationListener));
             }
 
             if (!(mNetworkListenerEnabled && mPassiveListenerEnabled)) {
@@ -286,20 +267,20 @@ void TwilightService::LocationHandler::RetrieveLocation()
     AutoPtr<ICriteria> criteria;
     CCriteria::New((ICriteria**)&criteria);
 
-    AutoPtr<IObjectContainer> providers;
-    mOwner->mLocationManager->GetProviders(criteria, TRUE, (IObjectContainer**)&providers);
+    AutoPtr<IList> providers;
+    mHost->mLocationManager->GetProviders(criteria, TRUE, (IList**)&providers);
 
-    AutoPtr<IObjectEnumerator> enumerator;
-    providers->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
+    AutoPtr<IIterator> it;
+    providers->GetIterator((IIterator**)&it);
     Boolean hasNext;
 
-    while(enumerator->MoveNext(&hasNext), hasNext) {
+    while(it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> current;
+        it->GetNext((IInterface**)&current);
+        String currentStr = Object::ToString(current);
+
         AutoPtr<ILocation> lastKnownLocation;
-        AutoPtr<ICharSequence> current;
-        enumerator->Current((IInterface**)&current);
-        String currentStr;
-        current->ToString(&currentStr);
-        mOwner->mLocationManager->GetLastKnownLocation(currentStr, (ILocation**)&lastKnownLocation);
+        mHost->mLocationManager->GetLastKnownLocation(currentStr, (ILocation**)&lastKnownLocation);
         //pick the most recent location
         Int64 elapsedRealtimeNanos, lastElapsedRealtimeNanos;
         location->GetElapsedRealtimeNanos(&elapsedRealtimeNanos);
@@ -352,7 +333,7 @@ void TwilightService::LocationHandler::SetLocation(
 void TwilightService::LocationHandler::UpdateTwilightState()
 {
     if (mLocation == NULL) {
-        mOwner->SetTwilightState(NULL);
+        mHost->SetTwilightState(NULL);
         return;
     }
 
@@ -383,12 +364,12 @@ void TwilightService::LocationHandler::UpdateTwilightState()
     Int64 tomorrowSunrise = mTwilightCalculator->GetSunrise();
 
     // set twilight state
-    AutoPtr<TwilightState> state = new TwilightState(isNight, yesterdaySunset,
+    AutoPtr<ITwilightState> state = new TwilightState(isNight, yesterdaySunset,
             todaySunrise, todaySunset, tomorrowSunrise);
     if (DEBUG) {
         //Slog.d(TAG, "Updating twilight state: " + state);
     }
-    mOwner->SetTwilightState(state);
+    mHost->SetTwilightState(state);
 
     // schedule next update
     Int64 nextUpdate = 0L;
@@ -419,12 +400,14 @@ void TwilightService::LocationHandler::UpdateTwilightState()
 
     AutoPtr<IIntent> updateIntent;
     CIntent::New(ACTION_UPDATE_TWILIGHT_STATE, (IIntent**)&updateIntent);
+    AutoPtr<IContext> context;
+    mHost->GetContext((IContext**)&context);
     AutoPtr<IPendingIntent> pendingIntent;
     AutoPtr<IPendingIntentHelper> helper;
     CPendingIntentHelper::AcquireSingleton((IPendingIntentHelper**)&helper);
-    helper->GetBroadcast(mOwner->mContext, 0, updateIntent, 0, (IPendingIntent**)&pendingIntent);
-    mOwner->mAlarmManager->Cancel(pendingIntent);
-    mOwner->mAlarmManager->Set(IAlarmManager::RTC_WAKEUP, nextUpdate, pendingIntent);
+    helper->GetBroadcast(context, 0, updateIntent, 0, (IPendingIntent**)&pendingIntent);
+    mHost->mAlarmManager->Cancel(pendingIntent);
+    mHost->mAlarmManager->SetExact(IAlarmManager::RTC, nextUpdate, pendingIntent);
 }
 
 
@@ -433,7 +416,7 @@ void TwilightService::LocationHandler::UpdateTwilightState()
 //====================================================================
 TwilightService::UpdateLocationReceiver::UpdateLocationReceiver(
     /* [in] */ TwilightService* owner)
-    : mOwner(owner)
+    : mHost(owner)
 {
 }
 
@@ -448,12 +431,12 @@ ECode TwilightService::UpdateLocationReceiver::OnReceive(
     if (IIntent::ACTION_AIRPLANE_MODE_CHANGED.Equals(action)
             && !result) {
         // Airplane mode is now off!
-        mOwner->mLocationHandler->RequestLocationUpdate();
+        mHost->mLocationHandler->RequestLocationUpdate();
         return NOERROR;
     }
 
     // Time zone has changed or alarm expired.
-    mOwner->mLocationHandler->RequestTwilightUpdate();
+    mHost->mLocationHandler->RequestTwilightUpdate();
     return NOERROR;
 }
 
@@ -461,7 +444,7 @@ ECode TwilightService::UpdateLocationReceiver::OnReceive(
 //====================================================================
 // TwilightService::EmptyLocationListener
 //====================================================================
-CAR_INTERFACE_IMPL(TwilightService::EmptyLocationListener, ILocationListener);
+CAR_INTERFACE_IMPL(TwilightService::EmptyLocationListener, Object, ILocationListener);
 
 
 TwilightService::EmptyLocationListener::EmptyLocationListener()
@@ -496,36 +479,36 @@ ECode TwilightService::EmptyLocationListener::OnStatusChanged(
 
 
 //====================================================================
-// TwilightService::_LocationListener
+// TwilightService::MyLocationListener
 //====================================================================
-CAR_INTERFACE_IMPL(TwilightService::_LocationListener, ILocationListener);
+CAR_INTERFACE_IMPL(TwilightService::MyLocationListener, Object, ILocationListener);
 
-TwilightService::_LocationListener::_LocationListener(
+TwilightService::MyLocationListener::MyLocationListener(
     /* [in] */ TwilightService* owner)
-    : mOwner(owner)
+    : mHost(owner)
 {
 }
 
-ECode TwilightService::_LocationListener::OnLocationChanged(
+ECode TwilightService::MyLocationListener::OnLocationChanged(
     /* [in] */ ILocation* location)
 {
-    mOwner->mLocationHandler->ProcessNewLocation(location);
+    mHost->mLocationHandler->ProcessNewLocation(location);
     return NOERROR;
 }
 
-ECode TwilightService::_LocationListener::OnProviderEnabled(
+ECode TwilightService::MyLocationListener::OnProviderEnabled(
     /* [in] */ const String& provider)
 {
     return E_NOT_IMPLEMENTED;
 }
 
-ECode TwilightService::_LocationListener::OnProviderDisabled(
+ECode TwilightService::MyLocationListener::OnProviderDisabled(
     /* [in] */ const String& provider)
 {
     return E_NOT_IMPLEMENTED;
 }
 
-ECode TwilightService::_LocationListener::OnStatusChanged(
+ECode TwilightService::MyLocationListener::OnStatusChanged(
     /* [in] */ const String& provider,
     /* [in] */ Int32 status,
     /* [in] */ IBundle* extras)
@@ -537,25 +520,31 @@ ECode TwilightService::_LocationListener::OnStatusChanged(
 //====================================================================
 // TwilightService
 //====================================================================
-TwilightService::TwilightService(
+TwilightService::TwilightService()
+{
+}
+
+ECode TwilightService::constructor(
     /* [in] */ IContext* context)
-    : mSystemReady(FALSE)
-    , mContext(context)
+{
+    return SystemService::constructor(context);
+}
+
+ECode TwilightService::OnStart()
 {
     mUpdateLocationReceiver = new UpdateLocationReceiver(this);
     mEmptyLocationListener = new EmptyLocationListener();
-    mLocationListener = new _LocationListener(this);
+    mLocationListener = new MyLocationListener(this);
 
-    mContext->GetSystemService(IContext::ALARM_SERVICE, (IInterface**)&mAlarmManager);
-    mContext->GetSystemService(IContext::LOCATION_SERVICE, (IInterface**)&mLocationManager);
+    AutoPtr<IContext> context;
+    GetContext((IContext**)&context);
+    AutoPtr<IInterface> service;
+    context->GetSystemService(IContext::ALARM_SERVICE, (IInterface**)&service);
+    mAlarmManager = IAlarmManager::Probe(service);
+    service = NULL;
+    context->GetSystemService(IContext::LOCATION_SERVICE, (IInterface**)&service);
+    mLocationManager = ILocationManager::Probe(service);
     mLocationHandler = new LocationHandler(this);
-}
-
-void TwilightService::SystemReady()
-{
-
-    AutoLock lock(&mLock);
-    mSystemReady = TRUE;
 
     AutoPtr<IIntentFilter> filter;
     CIntentFilter::New(IIntent::ACTION_AIRPLANE_MODE_CHANGED,(IIntentFilter**)&filter);
@@ -563,53 +552,25 @@ void TwilightService::SystemReady()
     filter->AddAction(IIntent::ACTION_TIMEZONE_CHANGED);
     filter->AddAction(ACTION_UPDATE_TWILIGHT_STATE);
     AutoPtr<IIntent> intent;
-    mContext->RegisterReceiver((IBroadcastReceiver*)mUpdateLocationReceiver, filter, (IIntent**)&intent);
+    context->RegisterReceiver((IBroadcastReceiver*)mUpdateLocationReceiver, filter, (IIntent**)&intent);
 
-    if (!mListeners.IsEmpty()) {
-        mLocationHandler->EnableLocationUpdates();
-    }
-
-}
-
-ECode TwilightService::GetCurrentState(
-    /* [out] */ TwilightState** result)
-{
-    VALIDATE_NOT_NULL(result);
-
-    AutoLock lock(&mLock);
-    *result = mTwilightState;
-    return NOERROR;
-}
-
-ECode TwilightService::RegisterListener(
-    /* [in] */ ITwilightListener* listener,
-    /* [in] */ IHandler* handler)
-{
-    AutoLock lock(&mLock);
-    AutoPtr<TwilightListenerRecord> r = new TwilightListenerRecord(listener, handler);
-    mListeners.PushBack(r);
-
-    if (mSystemReady && mListeners.GetSize() == 1) {
-        mLocationHandler->EnableLocationUpdates();
-    }
-
+    PublishLocalService(EIID_ITwilightManager, mService);
     return NOERROR;
 }
 
 void TwilightService::SetTwilightState(
-    /* [in] */ TwilightState* state)
+    /* [in] */ ITwilightState* state)
 {
-
-    AutoLock lock(&mLock);
+    AutoLock lock(mLock);
     if (mTwilightState.Get() != state) {
         if (DEBUG) {
-            //Slogger::D(TAG, "Twilight state changed: " + state);
+            Slogger::D(TAG, "Twilight state changed: %s", Object::ToString(state).string());
         }
 
         mTwilightState = state;
         List<AutoPtr<TwilightListenerRecord> >::Iterator iter = mListeners.Begin();
         for (; iter != mListeners.End(); ++iter) {
-            (*iter)->Post();
+            (*iter)->PostUpdate();
         }
     }
 }
@@ -649,8 +610,7 @@ Boolean TwilightService::HasMoved(
     return distance >= totalAccuracy;
 }
 
+} // namespace Twilight
 } // namespace Server
 } // namespace Droid
 } // namespace Elastos
-
-

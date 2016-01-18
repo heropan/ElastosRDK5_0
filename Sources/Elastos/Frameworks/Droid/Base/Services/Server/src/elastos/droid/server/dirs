@@ -5,10 +5,12 @@ DIRS += clipboard
 DIRS += connectivity
 DIRS += content
 DIRS += display
+DIRS += dreams
 DIRS += lights
 DIRS += net
 DIRS += os
 DIRS += power
+DIRS += twilight
 DIRS += wallpaper
 
 
@@ -19,7 +21,6 @@ DIRS += wallpaper
 #DIRS += usb
 #DIRS += wm
 #DIRS += accounts
-#DIRS += dreams
 #DIRS += search
 #DIRS += zigbee
 #DIRS += remote

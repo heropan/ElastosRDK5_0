@@ -11,6 +11,7 @@
  *      elcopy helloCar
  *
  * run:
+        adb root
  *      adb shell
  *      cd /data/data/com.elastos.runtime/elastos
  *      ./helloCar
