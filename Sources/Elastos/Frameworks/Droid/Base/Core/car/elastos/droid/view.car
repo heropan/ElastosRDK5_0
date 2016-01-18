@@ -1272,9 +1272,9 @@ module
         interface IScaleGestureDetectorOnScaleGestureListener;
     }
 
-    // singleton class CVelocityTrackerHelper {
-    //     interface IVelocityTrackerHelper;
-    // }
+    singleton class CVelocityTrackerHelper {
+        interface IVelocityTrackerHelper;
+    }
 
     // singleton class CWindowManagerPolicyThread {
     //     interface IWindowManagerPolicyThread;
