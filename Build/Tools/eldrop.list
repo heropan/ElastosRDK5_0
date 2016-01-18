@@ -6,7 +6,7 @@
 ;
 Elastos.Runtime.eco
 Elastos.CoreLibrary.eco
-Elastos.Droid.System.eco
+;Elastos.Droid.System.eco
 Elastos.Droid.Core.eco
 ;Elastos.Droid.Server.eco
 ;Elastos.Droid.JavaProxy.eco
