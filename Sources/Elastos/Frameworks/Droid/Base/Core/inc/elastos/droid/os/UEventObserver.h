@@ -33,7 +33,7 @@ namespace Os {
  *
  * @hide
 */
-class UEventObserver
+class ECO_PUBLIC UEventObserver
     : public Object
 {
 public:
@@ -61,7 +61,7 @@ public:
     };
 
 private:
-    class UEventThread
+    class ECO_LOCAL UEventThread
          : public Thread
     {
     public:
@@ -126,27 +126,27 @@ public:
      * Subclasses of UEventObserver should override this method to handle
      * UEvents.
      */
-    virtual CARAPI_(void) OnUEvent(
+    virtual CARAPI OnUEvent(
         /* [in] */ UEvent* event) = 0;
 
 private:
-    static CARAPI NativeSetup();
+    ECO_LOCAL static CARAPI NativeSetup();
 
-    static CARAPI_(String) NativeWaitForNextEvent();
+    ECO_LOCAL static CARAPI_(String) NativeWaitForNextEvent();
 
-    static CARAPI_(void) NativeAddMatch(
+    ECO_LOCAL static CARAPI_(void) NativeAddMatch(
         /* [in] */ const String& match);
 
-    static CARAPI_(void) NativeRemoveMatch(
+    ECO_LOCAL static CARAPI_(void) NativeRemoveMatch(
         /* [in] */ const String& match);
 
-    static CARAPI_(AutoPtr<UEventThread>) GetThread();
+    ECO_LOCAL static CARAPI_(AutoPtr<UEventThread>) GetThread();
 
-    static CARAPI_(AutoPtr<UEventThread>) PeekThread();
+    ECO_LOCAL static CARAPI_(AutoPtr<UEventThread>) PeekThread();
 
 private:
-    static const String TAG;
-    static const Boolean DEBUG;
+    ECO_LOCAL static const String TAG;
+    ECO_LOCAL static const Boolean DEBUG;
 
     static AutoPtr<UEventThread> sThread;
 

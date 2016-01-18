@@ -38,6 +38,12 @@ SOURCES += Watchdog.cpp
 SOURCES += CNetworkPolicyListener.cpp
 SOURCES += CDataActivityObserver.cpp
 SOURCES += CConnectivityService.cpp
+#SOURCES += WiredAccessoryManager.cpp
+
+
+#=========================================
+# TODO
+#=========================================
 
 #SOURCES += CAlarmManagerService.cpp
 #SOURCES += CBootReceiver.cpp
@@ -55,10 +61,8 @@ SOURCES += BrickReceiver.cpp
 #SOURCES += CClipboardService.cpp
 #SOURCES += TwilightCalculator.cpp
 #SOURCES += CVibratorService.cpp
-#SOURCES += TwilightService.cpp
 #SOURCES += CRecognitionManagerService.cpp
 #SOURCES += CTextServicesManagerService.cpp
-#SOURCES += CStatusBarManagerService.cpp
 #SOURCES += CDeviceStorageMonitorService.cpp
 #SOURCES += CUiModeManagerService.cpp
 #SOURCES += CBatteryService.cpp
@@ -68,9 +72,6 @@ SOURCES += BrickReceiver.cpp
 #SOURCES += CWallpaperManagerService.cpp
 #SOURCES += CWMSWallpaperConnection.cpp
 #SOURCES += CWMSUserSwitchObserver.cpp
-#SOURCES += CInputMethodManagerService.cpp
-#SOURCES += CInputMethodManagerServiceMethodCallback.cpp
-#SOURCES += CInputMethodManagerServiceUserSwitchObserver.cpp
 #SOURCES += NativeDaemonConnector.cpp
 #SOURCES += NativeDaemonEvent.cpp
 #SOURCES += NetworkManagementSocketTagger.cpp
@@ -81,12 +82,13 @@ SOURCES += BrickReceiver.cpp
 #SOURCES += CPrivacySettingsManagerService.cpp
 #SOURCES += CWifiService.cpp
 #SOURCES += invokeCallback_gnuc.S
-# TODO: Add ECO_PUBLIC to R.h and Manifest.h
-SOURCES += R.cpp
-SOURCES += Manifest.cpp
 #SOURCES += AudioDeviceManagerObserver.cpp
 #SOURCES += CZigbeeService.cpp
 #SOURCES += CKortideRemoteService.cpp
+
+# TODO: Add ECO_PUBLIC to R.h and Manifest.h
+SOURCES += R.cpp
+SOURCES += Manifest.cpp
 SOURCES += Elastos.Droid.Core.cpp
 SOURCES += Elastos.CoreLibrary.cpp
 

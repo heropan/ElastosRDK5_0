@@ -16,6 +16,7 @@ using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::BroadcastReceiver;
+using Elastos::Droid::View::IIWindowManager;
 using Elastos::Droid::StatusBar::IIStatusBar;
 using Elastos::Droid::StatusBar::IStatusBarIconList;
 using Elastos::Droid::StatusBar::IStatusBarNotification;
@@ -26,38 +27,48 @@ namespace Droid {
 namespace Server {
 
 CarClass(CStatusBarManagerService)
-    , public CWindowManagerService::IOnHardKeyboardStatusChangeListener
+    , public Object
+    , public IIStatusBarService
+    , public IBinder
 {
-public:
-    interface INotificationCallbacks : public IInterface
+private:
+
+    /**
+     * Private API used by NotificationManagerService.
+     */
+    class MyStatusBarManagerInternal
+        : public IStatusBarManagerInternal
     {
-        virtual CARAPI OnSetDisabled(
-            /* [in] */ Int32 status) = 0;
+    public:
+        CAR_INTERFACE_DECL()
 
-        virtual CARAPI OnClearAll() = 0;
+        MyStatusBarManagerInternal(
+            /* [in] */ CStatusBarManagerService* host);
 
-        virtual CARAPI OnNotificationClick(
-            /* [in] */ const String& pkg,
-            /* [in] */ const String& tag,
-            /* [in] */ Int32 id) = 0;
+        CARAPI ToString(
+            /* [out] */ String* str);
 
-        virtual CARAPI OnNotificationClear(
-            /* [in] */ const String& pkg,
-            /* [in] */ const String& tag,
-            /* [in] */ Int32 id) = 0;
+        //@Override
+        CARAPI SetNotificationDelegate(
+            /* [in] */ INotificationDelegate* delegate);
 
-        virtual CARAPI OnPanelRevealed() = 0;
+        //@Override
+        CARAPI BuzzBeepBlinked();
 
-        virtual CARAPI OnNotificationError(
-            /* [in] */ const String& pkg,
-            /* [in] */ const String& tag,
-            /* [in] */ Int32 id,
-            /* [in] */ Int32 uid,
-            /* [in] */ Int32 initialPid,
-            /* [in] */ const String& message) = 0;
+        //@Override
+        CARAPI NotificationLightPulse(
+            /* [in] */ Int32 argb,
+            /* [in] */ Int32 onMillis,
+            /* [in] */ Int32 offMillis);
+
+        //@Override
+        CARAPI NotificationLightOff();
+
+    private:
+        Boolean mNotificationLightOn;
+        CStatusBarManagerService* mHost;
     };
 
-private:
     class DisableRecord
         : public ElRefBase
         , public IProxyDeathRecipient
@@ -110,13 +121,15 @@ private:
         CStatusBarManagerService* mHost;
     };
 
-    class SetImeWindowStatusRunnable : public Runnable
+    class SetImeWindowStatusRunnable
+        : public Runnable
     {
     public:
         SetImeWindowStatusRunnable(
             /* [in] */ IBinder* token,
             /* [in] */ Int32 vis,
             /* [in] */ Int32 backDisposition,
+            /* [in] */ Boolean showImeSwitcher,
             /* [in] */ CStatusBarManagerService* host);
 
         CARAPI Run();
@@ -125,6 +138,7 @@ private:
         AutoPtr<IBinder> mToken;
         Int32 mVisible;
         Int32 mBackDisposition;
+        Boolean mShowImeSwitcher;
         CStatusBarManagerService* mHost;
     };
 
@@ -145,79 +159,21 @@ private:
         CStatusBarManagerService* mHost;
     };
 
-    class SetHardKeyboardEnabledRunnable
-        : public Runnable
-    {
-    public:
-        SetHardKeyboardEnabledRunnable(
-            /* [in] */ Boolean enable,
-            /* [in] */ CStatusBarManagerService* host);
-
-        CARAPI Run();
-
-    private:
-        Boolean mEnabled;
-        CStatusBarManagerService* mHost;
-    };
-
-    class HardKeyboardStatusChangeRunnable
-        : public Runnable
-    {
-    public:
-        HardKeyboardStatusChangeRunnable(
-            /* [in] */ Boolean available,
-            /* [in] */ Boolean enabled,
-            /* [in] */ CStatusBarManagerService* host);
-
-        CARAPI Run();
-
-    private:
-        Boolean mAvailable;
-        Boolean mEnabled;
-        CStatusBarManagerService* mHost;
-    };
-
-    class MBroadcastReceiver
-        : public BroadcastReceiver
-    {
-    public:
-        MBroadcastReceiver(
-            /* [in] */ CStatusBarManagerService* host);
-
-        CARAPI OnReceive(
-            /* [in] */ IContext* context,
-            /* [in] */ IIntent* intent);
-
-        CARAPI ToString(
-            /* [out] */ String* info)
-        {
-            VALIDATE_NOT_NULL(info);
-            *info = String("CStatusBarManagerService::MBroadcastReceiver: ");
-            (*info).AppendFormat("%p", this);
-            return NOERROR;
-        }
-    private:
-        CStatusBarManagerService* mHost;
-    };
-
 public:
-    CStatusBarManagerService();
-
     CAR_INTERFACE_DECL()
 
-    //@Override
-    CARAPI ToString(
-        /* [out] */ String* result);
+    CStatusBarManagerService();
 
     /**
      * Construct the service, add the status bar view to the window manager
      */
     CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ Handle32 windowManager);
+        /* [in] */ IIWindowManager* wm);
 
-    CARAPI SetNotificationCallbacks(
-        /* [in] */ INotificationCallbacks* listener);
+    //@Override
+    CARAPI ToString(
+        /* [out] */ String* result);
 
     // ================================================================================
     // From IStatusBarService
@@ -257,19 +213,12 @@ public:
     CARAPI SetImeWindowStatus(
         /* [in] */ IBinder* token,
         /* [in] */ Int32 vis,
-        /* [in] */ Int32 backDisposition);
+        /* [in] */ Int32 backDisposition,
+        /* [in] */ Boolean showImeSwitcher);
 
     CARAPI SetSystemUiVisibility(
         /* [in] */ Int32 vis,
         /* [in] */ Int32 mask);
-
-    CARAPI SetHardKeyboardEnabled(
-        /* [in] */ Boolean enabled);
-
-    //@Override
-    CARAPI_(void) OnHardKeyboardStatusChange(
-        /* [in] */ Boolean available,
-        /* [in] */ Boolean enabled);
 
     //@Override
     CARAPI ToggleRecentApps();
@@ -281,8 +230,22 @@ public:
     CARAPI CancelPreloadRecentApps();
 
     //@Override
+    CARAPI ShowRecentApps(
+        /* [in] */ Boolean triggeredFromAltTab);
+
+    //@Override
+    CARAPI HideRecentApps(
+        /* [in] */ Boolean triggeredFromAltTab,
+        /* [in] */ Boolean triggeredFromHomeKey);
+
+    //@Override
     CARAPI SetCurrentUser(
         /* [in] */ Int32 newUserId);
+
+    //@Override
+    CARAPI SetWindowState(
+        /* [in] */ Int32 window,
+        /* [in] */ Int32 state);
 
     // ================================================================================
     // Callbacks from the status bar service.
@@ -290,10 +253,8 @@ public:
     CARAPI RegisterStatusBar(
         /* [in] */ IIStatusBar* bar,
         /* [out] */ IStatusBarIconList** iconList,
-        /* [out] */ IObjectContainer** notificationKeys,/*List<IBinder*>*/
-        /* [out] */ IObjectContainer** notifications,/*List<IStatusBarNotification*>*/
-        /* [out,callee] */ ArrayOf<Int32>** switches,
-        /* [out] */ IObjectContainer** binders);/*List<IBinder*>*/
+        /* [out, callee] */ ArrayOf<Int32>** switches,
+        /* [out] */ List** binders);/*List<IBinder*>*/
 
     /**
      * The status bar service should call this each time the user brings the panel from
@@ -301,10 +262,10 @@ public:
      */
     CARAPI OnPanelRevealed();
 
+    CARAPI OnPanelHidden();
+
     CARAPI OnNotificationClick(
-        /* [in] */ const String& pkg,
-        /* [in] */ const String& tag,
-        /* [in] */ Int32 id);
+        /* [in] */ const String& key);
 
     CARAPI OnNotificationError(
         /* [in] */ const String& pkg,
@@ -312,28 +273,28 @@ public:
         /* [in] */ Int32 id,
         /* [in] */ Int32 uid,
         /* [in] */ Int32 initialPid,
-        /* [in] */ const String& message);
+        /* [in] */ const String& message,
+        /* [in] */ Int32 userId);
 
     CARAPI OnNotificationClear(
         /* [in] */ const String& pkg,
         /* [in] */ const String& tag,
-        /* [in] */ Int32 id);
+        /* [in] */ Int32 id,
+        /* [in] */ Int32 userId);
 
-    CARAPI OnClearAllNotifications();
+    //@Override
+    CARAPI OnNotificationVisibilityChanged(
+        /* [in] */ ArrayOf<String>* newlyVisibleKeys,
+        /* [in] */ ArrayOf<String>* noLongerVisibleKeys);
 
-    // ================================================================================
-    // Callbacks for NotificationManagerService.
-    // ================================================================================
-    CARAPI AddNotification(
-        /* [in] */ IStatusBarNotification* notification,
-        /* [out] */ IBinder** binder);
+    //@Override
+    CARAPI OnNotificationExpansionChanged(
+        /* [in] */ const String& key,
+        /* [in] */ Boolean userAction,
+        /* [in] */ Boolean expanded);
 
-    CARAPI UpdateNotification(
-        /* [in] */ IBinder* key,
-        /* [in] */ IStatusBarNotification* notification);
-
-    CARAPI RemoveNotification(
-        /* [in] */ IBinder* key);
+    CARAPI OnClearAllNotifications(
+        /* [in] */ Int32 userId);
 
 protected:
     // ================================================================================
@@ -380,15 +341,12 @@ public:
     static const Boolean SPEW;
 
     AutoPtr<IContext> mContext;
-    AutoPtr<CWindowManagerService> mWindowManager;
+    AutoPtr<CWindowManagerService> mWindowManager; // TODO: weak ref?
     AutoPtr<IHandler> mHandler;
-    AutoPtr<INotificationCallbacks> mNotificationCallbacks;
+    AutoPtr<INotificationDelegate> mNotificationDelegate;
     AutoPtr<IIStatusBar> mBar;
     AutoPtr<IStatusBarIconList> mIcons;
     Object mIconsLock;
-
-    HashMap<AutoPtr<IBinder>, AutoPtr<IStatusBarNotification> > mNotifications;
-    Object mNotificationsLock;
 
     // for disabling the status bar
     List<AutoPtr<DisableRecord> > mDisableRecords;
@@ -400,11 +358,11 @@ public:
     Boolean mMenuVisible;
     Int32 mImeWindowVis;
     Int32 mImeBackDisposition;
+    Boolean mShowImeSwitcher;
     AutoPtr<IBinder> mImeToken;
     Int32 mCurrentUserId;
 
-private:
-    AutoPtr<MBroadcastReceiver> mBroadcastReceiver;
+    AutoPtr<IStatusBarManagerInternal> mInternalService;
 };
 
 }//namespace Server

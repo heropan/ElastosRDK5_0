@@ -22,7 +22,7 @@ using Elastos::Droid::StatusBar::IIStatusBarService;
 using Elastos::Droid::StatusBar::CStatusBarIconList;
 using Elastos::Droid::StatusBar::IStatusBarIcon;
 using Elastos::Droid::StatusBar::CStatusBarIcon;
-using Elastos::Droid::Utility::CParcelableObjectContainer;
+
 
 namespace Elastos {
 namespace Droid {
@@ -30,6 +30,63 @@ namespace Server {
 
 const String CStatusBarManagerService::TAG("StatusBarManagerService");
 const Boolean CStatusBarManagerService::SPEW = FALSE;
+
+
+//==================================================================================
+//              CStatusBarManagerService::MyStatusBarManagerInternal
+//==================================================================================
+CAR_INTERFACE_IMPL(CStatusBarManagerService::MyStatusBarManagerInternal, Object, IStatusBarManagerInternal)
+
+CStatusBarManagerService::MyStatusBarManagerInternal::MyStatusBarManagerInternal(
+    /* [in] */ CStatusBarManagerService* host)
+    : mHost(host)
+{}
+
+ECode CStatusBarManagerService::MyStatusBarManagerInternal::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = "CStatusBarManagerService::MyStatusBarManagerInternal";
+    return NOERROR;
+}
+
+ECode CStatusBarManagerService::MyStatusBarManagerInternal::SetNotificationDelegate(
+    /* [in] */ INotificationDelegate* delegate)
+{
+    mHost->mNotificationDelegate = delegate;
+    return NOERROR;
+}
+
+ECode CStatusBarManagerService::MyStatusBarManagerInternal::BuzzBeepBlinked()
+{
+    if (mHost->mBar != NULL) {
+        mHost->mBar->BuzzBeepBlinked();
+    }
+    return NOERROR;
+}
+
+ECode CStatusBarManagerService::MyStatusBarManagerInternal::NotificationLightPulse(
+    /* [in] */ Int32 argb,
+    /* [in] */ Int32 onMillis,
+    /* [in] */ Int32 offMillis)
+{
+    mHost->mNotificationLightOn = true;
+    if (mHost->mBar != NULL) {
+        mHost->mBar->NotificationLightPulse(argb, onMillis, offMillis);
+    }
+    return NOERROR;
+}
+
+ECode CStatusBarManagerService::MyStatusBarManagerInternal::NotificationLightOff()
+{
+    if (mHost->mNotificationLightOn) {
+        mHost->mNotificationLightOn = FALSE;
+        if (mHost->mBar != NULL) {
+            mHost->mBar->NotificationLightOff();
+        }
+    }
+    return NOERROR;
+}
 
 //==================================================================================
 //              CStatusBarManagerService::DisableRecord
@@ -70,8 +127,8 @@ CStatusBarManagerService::DisableNotificationRunnable::DisableNotificationRunnab
 
 ECode CStatusBarManagerService::DisableNotificationRunnable::Run()
 {
-    if (mHost->mNotificationCallbacks) {
-        mHost->mNotificationCallbacks->OnSetDisabled(mStatus);
+    if (mHost->mNotificationDelegate) {
+        mHost->mNotificationDelegate->OnSetDisabled(mStatus);
     }
     return NOERROR;
 }
@@ -103,10 +160,12 @@ CStatusBarManagerService::SetImeWindowStatusRunnable::SetImeWindowStatusRunnable
     /* [in] */ IBinder* token,
     /* [in] */ Int32 vis,
     /* [in] */ Int32 backDisposition,
+    /* [in] */ Boolean showImeSwitcher,
     /* [in] */ CStatusBarManagerService* host)
     : mToken(token)
     , mVisible(vis)
     , mBackDisposition(backDisposition)
+    , mShowImeSwitcher(showImeSwitcher)
     , mHost(host)
 {
 }
@@ -115,7 +174,7 @@ ECode CStatusBarManagerService::SetImeWindowStatusRunnable::Run()
 {
     if (mHost->mBar != NULL) {
         // try {
-            mHost->mBar->SetImeWindowStatus(mToken, mVisible, mBackDisposition);
+            mHost->mBar->SetImeWindowStatus(mToken, mVisible, mBackDisposition, mShowImeSwitcher);
         // } catch (RemoteException ex) {
         // }
     }
@@ -144,47 +203,6 @@ ECode CStatusBarManagerService::UpdateUiVisibilityRunnable::Run()
     return NOERROR;
 }
 
-
-//==================================================================================
-//              CStatusBarManagerService::SetHardKeyboardEnabledRunnable
-//==================================================================================
-CStatusBarManagerService::SetHardKeyboardEnabledRunnable::SetHardKeyboardEnabledRunnable(
-    /* [in] */ Boolean enable,
-    /* [in] */ CStatusBarManagerService* host)
-    : mEnabled(enable)
-    , mHost(host)
-{}
-
-ECode CStatusBarManagerService::SetHardKeyboardEnabledRunnable::Run()
-{
-    mHost->mWindowManager->SetHardKeyboardEnabled(mEnabled);
-    return NOERROR;
-}
-
-
-//==================================================================================
-//              CStatusBarManagerService::HardKeyboardStatusChangeRunnable
-//==================================================================================
-CStatusBarManagerService::HardKeyboardStatusChangeRunnable::HardKeyboardStatusChangeRunnable(
-    /* [in] */ Boolean available,
-    /* [in] */ Boolean enabled,
-    /* [in] */ CStatusBarManagerService* host)
-    : mAvailable(available)
-    , mEnabled(enabled)
-    , mHost(host)
-{}
-
-ECode CStatusBarManagerService::HardKeyboardStatusChangeRunnable::Run()
-{
-    if (mHost->mBar != NULL) {
-        // try {
-            mHost->mBar->SetHardKeyboardStatus(mAvailable, mEnabled);
-        // } catch (RemoteException ex) {
-        // }
-    }
-    return NOERROR;
-}
-
 //==================================================================================
 //              CStatusBarManagerService
 //==================================================================================
@@ -194,6 +212,7 @@ CStatusBarManagerService::CStatusBarManagerService()
     , mMenuVisible(FALSE)
     , mImeWindowVis(0)
     , mImeBackDisposition(0)
+    , mShowImeSwitcher(FALSE)
     , mCurrentUserId(0)
 {
     CHandler::New((IHandler**)&mHandler);
@@ -203,11 +222,10 @@ CStatusBarManagerService::CStatusBarManagerService()
 
 ECode CStatusBarManagerService::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ Handle32 windowManager)
+    /* [in] */ IIWindowManager* wm)
 {
     mContext = context;
-    mWindowManager = (CWindowManagerService*)windowManager;
-    mWindowManager->SetOnHardKeyboardStatusChangeListener((IOnHardKeyboardStatusChangeListener*)this);
+    mWindowManager = (mWindowManager*)windowManager;
 
     AutoPtr<IResources> res;
     context->GetResources((IResources**)&res);
@@ -217,6 +235,7 @@ ECode CStatusBarManagerService::constructor(
     assert(array != NULL);
     mIcons->DefineSlots(*array);
 
+    LocalServices::AddService(EIID_IStatusBarManagerInternal, mInternalService);
     return NOERROR;
 }
 
@@ -248,13 +267,6 @@ ECode CStatusBarManagerService::ToString(
 {
     VALIDATE_NOT_NULL(result);
     *result = TAG;
-    return NOERROR;
-}
-
-ECode CStatusBarManagerService::SetNotificationCallbacks(
-    /* [in] */ INotificationCallbacks* listener)
-{
-    mNotificationCallbacks = listener;
     return NOERROR;
 }
 
@@ -448,7 +460,8 @@ ECode CStatusBarManagerService::TopAppWindowChanged(
 ECode CStatusBarManagerService::SetImeWindowStatus(
     /* [in] */ IBinder* token,
     /* [in] */ Int32 vis,
-    /* [in] */ Int32 backDisposition)
+    /* [in] */ Int32 backDisposition,
+    /* [in] */ Boolean showImeSwitcher)
 {
     FAIL_RETURN(EnforceStatusBar());
 
@@ -463,9 +476,11 @@ ECode CStatusBarManagerService::SetImeWindowStatus(
         mImeWindowVis = vis;
         mImeBackDisposition = backDisposition;
         mImeToken = token;
+        mShowImeSwitcher = showImeSwitcher;
 
         Boolean result;
-        AutoPtr<IRunnable> runnable = new SetImeWindowStatusRunnable(token, vis, backDisposition, this);
+        AutoPtr<IRunnable> runnable = new SetImeWindowStatusRunnable(
+            token, vis, backDisposition, showImeSwitcher, this);
         return mHandler->Post(runnable, &result);
     }
 }
@@ -505,23 +520,6 @@ void CStatusBarManagerService::UpdateUiVisibilityLocked(
     }
 }
 
-ECode CStatusBarManagerService::SetHardKeyboardEnabled(
-    /* [in] */ Boolean enabled)
-{
-    Boolean result;
-    AutoPtr<IRunnable> runnable = new SetHardKeyboardEnabledRunnable(enabled, this);
-    return mHandler->Post(runnable, &result);
-}
-
-void CStatusBarManagerService::OnHardKeyboardStatusChange(
-    /* [in] */ Boolean available,
-    /* [in] */ Boolean enabled)
-{
-    Boolean result;
-    AutoPtr<IRunnable> runnable = new HardKeyboardStatusChangeRunnable(available, enabled, this);
-    mHandler->Post(runnable, &result);
-}
-
 ECode CStatusBarManagerService::ToggleRecentApps()
 {
     if (mBar != NULL) {
@@ -546,6 +544,25 @@ ECode CStatusBarManagerService::CancelPreloadRecentApps()
     return NOERROR;
 }
 
+ECode CStatusBarManagerService::ShowRecentApps(
+    /* [in] */ Boolean triggeredFromAltTab)
+{
+    if (mBar != NULL) {
+        mBar->ShowRecentApps(triggeredFromAltTab);
+    }
+    return NOERROR;
+}
+
+ECode CStatusBarManagerService::HideRecentApps(
+    /* [in] */ Boolean triggeredFromAltTab,
+    /* [in] */ Boolean triggeredFromHomeKey)
+{
+    if (mBar != NULL) {
+        mBar->HideRecentApps(triggeredFromAltTab, triggeredFromHomeKey);
+    }
+    return NOERROR;
+}
+
 ECode CStatusBarManagerService::SetCurrentUser(
     /* [in] */ Int32 newUserId)
 {
@@ -553,6 +570,16 @@ ECode CStatusBarManagerService::SetCurrentUser(
         Slogger::D(TAG, "Setting current user to user %d", newUserId);
     }
     mCurrentUserId = newUserId;
+    return NOERROR;
+}
+
+ECode CStatusBarManagerService::setWindowState(
+    /* [in] */ Int32 window,
+    /* [in] */ Int32 state)
+{
+    if (mBar != NULL) {
+        mBar->SetWindowState(window, state);
+    }
     return NOERROR;
 }
 
@@ -577,21 +604,16 @@ ECode CStatusBarManagerService::EnforceStatusBarService()
 ECode CStatusBarManagerService::RegisterStatusBar(
     /* [in] */ IIStatusBar* bar,
     /* [out] */ IStatusBarIconList** iconList,
-    /* [out] */ IObjectContainer** notificationKeys,/*List<IBinder*>*/
-    /* [out] */ IObjectContainer** notifications,/*List<IStatusBarNotification*>*/
-    /* [out,callee] */ ArrayOf<Int32>** switches,
-    /* [out] */ IObjectContainer** binders)/*List<IBinder*>*/
+    /* [out, callee] */ ArrayOf<Int32>** switches,
+    /* [out] */ IList** binders)/*List<IBinder*>*/
 {
-    VALIDATE_NOT_NULL(iconList);
-    VALIDATE_NOT_NULL(notificationKeys);
-    VALIDATE_NOT_NULL(notifications);
     VALIDATE_NOT_NULL(binders);
+    *binders = NULL;
+    VALIDATE_NOT_NULL(iconList);
     VALIDATE_NOT_NULL(switches);
 
-    CParcelableObjectContainer::New(notificationKeys);
-    CParcelableObjectContainer::New(notifications);
     CParcelableObjectContainer::New(binders);
-    *switches = ArrayOf<Int32>::Alloc(7);
+    *switches = ArrayOf<Int32>::Alloc(6);
     REFCOUNT_ADD(*switches);
     CStatusBarIconList::New(iconList);
 
@@ -606,26 +628,15 @@ ECode CStatusBarManagerService::RegisterStatusBar(
     } while (FALSE);
 
     do {
-        AutoLock Lock(mNotificationsLock);
-        HashMap<AutoPtr<IBinder>, AutoPtr<IStatusBarNotification> >::Iterator iter = mNotifications.Begin();
-        for(; iter != mNotifications.End(); ++iter) {
-            (*notificationKeys)->Add(iter->mFirst);
-            (*notifications)->Add(iter->mSecond);
-        }
-    } while (FALSE);
-
-    do {
         AutoLock lock(this);
         GatherDisableActionsLocked(mCurrentUserId, &((**switches)[0]));
         (**switches)[1] = mSystemUiVisibility;
         (**switches)[2] = mMenuVisible ? 1 : 0;
         (**switches)[3] = mImeWindowVis;
         (**switches)[4] = mImeBackDisposition;
+        (**switches)[5] = mShowImeSwitcher ? 1 : 0;
         (*binders)->Add(mImeToken);
     } while (FALSE);
-
-    (**switches)[5] = mWindowManager->IsHardKeyboardAvailable() ? 1 : 0;
-    (**switches)[6] = mWindowManager->IsHardKeyboardEnabled() ? 1 : 0;
 
     return NOERROR;
 }
@@ -634,23 +645,40 @@ ECode CStatusBarManagerService::OnPanelRevealed()
 {
     FAIL_RETURN(EnforceStatusBarService());
 
+    Int64 identity = Binder::ClearCallingIdentity();
     // tell the notification manager to turn off the lights.
-    if (mNotificationCallbacks) {
-        mNotificationCallbacks->OnPanelRevealed();
+    if (mNotificationDelegate) {
+        mNotificationDelegate->OnPanelRevealed();
     }
+    Binder::RestoreCallingIdentity(identity);
+    return NOERROR;
+}
+
+ECode CStatusBarManagerService::OnPanelHidden()
+{
+    FAIL_RETURN(EnforceStatusBarService());
+
+    Int64 identity = Binder::ClearCallingIdentity();
+    // tell the notification manager to turn off the lights.
+    if (mNotificationDelegate) {
+        mNotificationDelegate->OnPanelHidden();
+    }
+    Binder::RestoreCallingIdentity(identity);
     return NOERROR;
 }
 
 ECode CStatusBarManagerService::OnNotificationClick(
-    /* [in] */ const String& pkg,
-    /* [in] */ const String& tag,
-    /* [in] */ Int32 id)
+    /* [in] */ const String& key)
 {
     FAIL_RETURN(EnforceStatusBarService());
 
-    if (mNotificationCallbacks) {
-        mNotificationCallbacks->OnNotificationClick(pkg, tag, id);
+    Int32 callingUid = Binder::GetetCallingUid();
+    Int32 callingPid = Binder::GetetCallingPid();
+    Int64 identity = Binder::ClearCallingIdentity();
+    if (mNotificationDelegate) {
+        mNotificationDelegate->OnNotificationClick(callingUid, callingPid, key);
     }
+    Binder::RestoreCallingIdentity(identity);
     return NOERROR;
 }
 
@@ -660,87 +688,85 @@ ECode CStatusBarManagerService::OnNotificationError(
     /* [in] */ Int32 id,
     /* [in] */ Int32 uid,
     /* [in] */ Int32 initialPid,
-    /* [in] */ const String& message)
+    /* [in] */ const String& message,
+    /* [in] */ Int32 userId)
 {
     FAIL_RETURN(EnforceStatusBarService());
 
+    Int32 callingUid = Binder::GetetCallingUid();
+    Int32 callingPid = Binder::GetetCallingPid();
+    Int64 identity = Binder::ClearCallingIdentity();
     // WARNING: this will call back into us to do the remove.  Don't hold any locks.
-    if (mNotificationCallbacks) {
-        mNotificationCallbacks->OnNotificationError(pkg, tag, id, uid, initialPid, message);
+    if (mNotificationDelegate) {
+        mNotificationDelegate->OnNotificationError(callingUid, callingPid,
+            pkg, tag, id, uid, initialPid, message, userId);
     }
+    Binder::RestoreCallingIdentity(identity);
     return NOERROR;
 }
 
 ECode CStatusBarManagerService::OnNotificationClear(
     /* [in] */ const String& pkg,
     /* [in] */ const String& tag,
-    /* [in] */ Int32 id)
+    /* [in] */ Int32 id,
+    /* [in] */ Int32 userId)
 {
     FAIL_RETURN(EnforceStatusBarService());
 
-    if (mNotificationCallbacks) {
-        mNotificationCallbacks->OnNotificationClear(pkg, tag, id);
+    Int32 callingUid = Binder::GetetCallingUid();
+    Int32 callingPid = Binder::GetetCallingPid();
+    Int64 identity = Binder::ClearCallingIdentity();
+    if (mNotificationDelegate) {
+        mNotificationDelegate->OnNotificationClear(callingUid, callingPid, pkg, tag, id, userId);
     }
+    Binder::RestoreCallingIdentity(identity);
     return NOERROR;
 }
 
-ECode CStatusBarManagerService::OnClearAllNotifications()
+ECode CStatusBarManagerService::OnNotificationVisibilityChanged(
+    /* [in] */ ArrayOf<String>* newlyVisibleKeys,
+    /* [in] */ ArrayOf<String>* noLongerVisibleKeys)
+{
+    FAIL_RETURN(EnforceStatusBarService());
+    Int64 identity = Binder::ClearCallingIdentity();
+    ECode ec = NOERROR;
+    if (mNotificationDelegate != NULL) {
+        ec = mNotificationDelegate->OnNotificationVisibilityChanged(
+                newlyVisibleKeys, noLongerVisibleKeys);
+    }
+    Binder::RestoreCallingIdentity(identity);
+    return ec;
+}
+
+ECode CStatusBarManagerService::OnNotificationExpansionChanged(
+    /* [in] */ const String& key,
+    /* [in] */ Boolean userAction,
+    /* [in] */ Boolean expanded)
+{
+    FAIL_RETURN(EnforceStatusBarService());
+    Int64 identity = Binder::ClearCallingIdentity();
+    ECode ec = NOERROR;
+
+    if (mNotificationDelegate != NULL) {
+        ec = mNotificationDelegate->NnNotificationExpansionChanged(
+                key, userAction, expanded);
+    }
+    Binder::RestoreCallingIdentity(identity);
+    return ec;
+}
+
+ECode CStatusBarManagerService::OnClearAllNotifications(
+    /* [in] */ Int32 userId)
 {
     FAIL_RETURN(EnforceStatusBarService());
 
-    if (mNotificationCallbacks) {
-        mNotificationCallbacks->OnClearAll();
+    Int32 callingUid = Binder::GetetCallingUid();
+    Int32 callingPid = Binder::GetetCallingPid();
+    Int64 identity = Binder::ClearCallingIdentity();
+    if (mNotificationDelegate) {
+        mNotificationDelegate->OnClearAll(callingUid, callingPid, userId);
     }
-    return NOERROR;
-}
-
-ECode CStatusBarManagerService::AddNotification(
-    /* [in] */ IStatusBarNotification* notification,
-    /* [out] */ IBinder** binder)
-{
-    VALIDATE_NOT_NULL(binder);
-    AutoLock Lock(mNotificationsLock);
-    AutoPtr<IBinder> key;
-    CBinder::New((IBinder**)&key);
-    mNotifications[key] = notification;
-    if (mBar != NULL) {
-        mBar->AddNotification(key, notification);
-    }
-    *binder = key;
-    REFCOUNT_ADD(*binder);
-    return NOERROR;
-}
-
-ECode CStatusBarManagerService::UpdateNotification(
-    /* [in] */ IBinder* key,
-    /* [in] */ IStatusBarNotification* notification)
-{
-    AutoLock Lock(mNotificationsLock);
-    HashMap<AutoPtr<IBinder>, AutoPtr<IStatusBarNotification> >::Iterator iter = mNotifications.Find(key);
-    if (iter == mNotifications.End()) {
-        Slogger::E(TAG, "updateNotification key not found: %p", key);
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    mNotifications[key] = notification;
-    if (mBar != NULL) {
-        mBar->UpdateNotification(key, notification);
-    }
-    return NOERROR;
-}
-
-ECode CStatusBarManagerService::RemoveNotification(
-    /* [in] */ IBinder* key)
-{
-    AutoLock Lock(mNotificationsLock);
-    AutoPtr<IStatusBarNotification> n = mNotifications[key];
-    mNotifications.Erase(key);
-    if (n == NULL) {
-        Slogger::E(TAG, "removeNotification key not found: %p", key);
-        return E_NULL_POINTER_EXCEPTION;
-    }
-    if (mBar != NULL) {
-        mBar->RemoveNotification(key);
-    }
+    Binder::RestoreCallingIdentity(identity);
     return NOERROR;
 }
 
@@ -812,26 +838,6 @@ ECode CStatusBarManagerService::GatherDisableActionsLocked(
     *result = net;
     return NOERROR;
 }
-
-CStatusBarManagerService::MBroadcastReceiver::MBroadcastReceiver(
-    /* [in] */ CStatusBarManagerService* host)
-        : mHost(host)
-{
-}
-
-ECode CStatusBarManagerService::MBroadcastReceiver::OnReceive(
-    /* [in] */ IContext* context,
-    /* [in] */ IIntent* intent)
-{
-    String action;
-    intent->GetAction(&action);
-    if (IIntent::ACTION_CLOSE_SYSTEM_DIALOGS.Equals(action)
-            || IIntent::ACTION_SCREEN_OFF.Equals(action)) {
-        mHost->CollapsePanels();
-    }
-    return NOERROR;
-}
-
 
 }//namespace Server
 }//namespace Droid
