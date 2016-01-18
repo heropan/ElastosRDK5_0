@@ -1186,9 +1186,9 @@ module
         interface IComparator;
     }
 
-//    singleton class CPackageManagerHelper {
-//        interface IPackageManagerHelper;
-//    }
+    singleton class CPackageManagerHelper {
+        interface IPackageManagerHelper;
+    }
 
     class CPackageStats {
         constructor();

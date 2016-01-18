@@ -37,6 +37,7 @@ SOURCES += CPackageInstallerSession.cpp
 SOURCES += CPackageInstallerSessionParams.cpp
 SOURCES += CPackageInstallerSessionInfo.cpp
 SOURCES += PackageManager.cpp
+SOURCES += CPackageManagerHelper.cpp
 SOURCES += PackageParser.cpp
 SOURCES += CPackageStats.cpp
 SOURCES += PackageUserState.cpp

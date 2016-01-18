@@ -1958,7 +1958,7 @@ public:
         /* [in] */ Int32 userId,
         /* [in] */ Int32 flags);
 
-    CARAPI_(Boolean) LocationIsPrivileged(
+    static CARAPI_(Boolean) LocationIsPrivileged(
         /* [in] */ IFile* path);
 
     CARAPI SetBlockUninstallForUser(

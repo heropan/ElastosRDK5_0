@@ -849,6 +849,10 @@ public:
         /* [in] */ ArrayOf<Byte>* readBuffer,
         /* [out] */ Package** pkgLite);
 
+    static CARAPI ParsePublicKey(
+        /* [in] */ const String& encodedPublicKey,
+        /* [out] */ IPublicKey** key);
+
     CARAPI_(Int32) GetParseError();
 
 private:
@@ -1156,10 +1160,6 @@ private:
         /* [in] */ IXmlPullParser* parser,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 flags);
-
-    static CARAPI ParsePublicKey(
-        /* [in] */ const String& encodedPublicKey,
-        /* [out] */ IPublicKey** key);
 
     CARAPI_(Boolean) ParseIntent(
         /* [in] */ IResources* res,

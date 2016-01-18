@@ -24,6 +24,7 @@ using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IUserManager;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::RemoteCallbackList;
 using Elastos::Utility::IList;
 
 namespace Elastos {

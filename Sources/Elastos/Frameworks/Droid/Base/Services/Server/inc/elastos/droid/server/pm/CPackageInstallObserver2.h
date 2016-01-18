@@ -6,6 +6,7 @@
 #include "elastos/droid/server/pm/CPackageManagerService.h"
 
 using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::Pm::IIPackageInstallObserver2;
 using Elastos::Droid::Content::Pm::IIPackageMoveObserver;
@@ -25,9 +26,10 @@ public:
 
     CAR_OBJECT_DECL()
 
-    constructor(
+    CARAPI constructor(
         /* [in] */ IIPackageManager* host,
-        /* [in] */ IIPackageMoveObserver* observer);
+        /* [in] */ IIPackageMoveObserver* observer,
+        /* [in] */ const String& packageName);
 
     CARAPI OnUserActionRequired(
         /* [in] */ IIntent* intent);
@@ -41,6 +43,7 @@ public:
 private:
     CPackageManagerService* mHost;
     AutoPtr<IIPackageMoveObserver> mObserver;
+    String mPackageName;
 };
 
 } // namespace Pm

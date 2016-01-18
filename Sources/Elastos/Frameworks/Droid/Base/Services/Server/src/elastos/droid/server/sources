@@ -41,7 +41,7 @@ SOURCES += CConnectivityService.cpp
 
 #SOURCES += CAlarmManagerService.cpp
 #SOURCES += CBootReceiver.cpp
-#SOURCES += CBrickReceiver.cpp
+SOURCES += BrickReceiver.cpp
 #SOURCES += CaptivePortalTracker.cpp
 #SOURCES += CSerialService.cpp
 #SOURCES += CDiskStatsService.cpp

@@ -4,9 +4,13 @@
 
 #include "_Elastos_Droid_Server_Pm_CParcelFileDescriptorFactory.h"
 #include "elastos/droid/ext/frameworkext.h"
+#include <Elastos.CoreLibrary.IO.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Internal::Os::IIParcelFileDescriptorFactory;
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IParcelFileDescriptor;
+using Elastos::IO::IFile;
 
 namespace Elastos {
 namespace Droid {

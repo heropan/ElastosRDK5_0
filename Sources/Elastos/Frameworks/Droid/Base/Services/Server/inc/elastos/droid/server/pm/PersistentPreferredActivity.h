@@ -25,8 +25,7 @@ public:
         /* [in] */ IXmlPullParser* parser);
 
     CARAPI WriteToXml(
-        /* [in] */ IXmlSerializer* serializer,
-        /* [in] */ Boolean full);
+        /* [in] */ IXmlSerializer* serializer);
 
     CARAPI ToString(
         /* [out] */ String* str);

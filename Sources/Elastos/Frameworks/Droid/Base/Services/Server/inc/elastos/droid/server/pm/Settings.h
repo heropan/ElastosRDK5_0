@@ -452,7 +452,7 @@ private:
     CARAPI_(String) CompToString(
         /* [in] */ HashSet<String>* cmp);
 
-    CARAPI_(AutoPtr< List< AutoPtr<IUserInfo> > >) GetAllUsers();
+    CARAPI_(AutoPtr<IList>) GetAllUsers();
 
 public:
     static const String TAG_CROSS_PROFILE_INTENT_FILTERS;

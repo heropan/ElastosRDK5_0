@@ -2,10 +2,12 @@
 #define __ELASTOS_DROID_SERVER_INTENTRESOLVER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Os.h"
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/Object.h>
 //#include "elastos/droid/net/Uri.h"
 
 using Elastos::Utility::Etl::HashSet;
@@ -17,6 +19,7 @@ using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::IIntentFilterAuthorityEntry;
+using Elastos::Droid::Os::IPatternMatcher;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {

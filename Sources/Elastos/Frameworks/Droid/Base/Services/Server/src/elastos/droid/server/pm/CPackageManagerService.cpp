@@ -1078,7 +1078,7 @@ void CPackageManagerService::PackageHandler::DoHandleMessage(
             Int32 verificationId = arg1;
             AutoPtr<IInterface> obj;
             msg->GetObj((IInterface**)&obj);
-            AutoPtr<PackageVerificationResponse> response = (PackageVerificationResponse*)obj.Get();
+            AutoPtr<PackageVerificationResponse> response = (PackageVerificationResponse*)(IObject*)obj.Get();
             HashMap<Int32, AutoPtr<PackageVerificationState> >::Iterator it
                     = mHost->mPendingVerification.Find(verificationId);
             AutoPtr<PackageVerificationState> state;
@@ -13026,7 +13026,7 @@ ECode CPackageManagerService::VerifyPendingInstall(
 
     AutoPtr<IMessage> msg;
     mHandler->ObtainMessage(PACKAGE_VERIFIED, (IMessage**)&msg);
-    msg->SetObj(response);
+    msg->SetObj((IObject*)response);
     msg->SetArg1(id);
     Boolean result;
     return mHandler->SendMessage(msg, &result);
@@ -13063,7 +13063,7 @@ ECode CPackageManagerService::ExtendVerificationTimeout(
 
         AutoPtr<IMessage> msg;
         mHandler->ObtainMessage(PACKAGE_VERIFIED, (IMessage**)&msg);
-        msg->SetObj(response);
+        msg->SetObj((IObject*)response);
         msg->SetArg1(id);
         Boolean result;
         mHandler->SendMessageDelayed(msg, millisecondsToDelay, &result);
