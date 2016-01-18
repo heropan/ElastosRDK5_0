@@ -13,6 +13,10 @@ module
     /**
      * @Involve
      * interface Elastos.Droid.App.IApplication
+     * interface Elastos.Droid.Content.IContextWrapper
+     * interface Elastos.Droid.Content.IContext
+     * interface Elastos.Droid.Content.IComponentCallbacks2;
+     * interface Elastos.Droid.Content.IComponentCallbacks;
      */
     [local]
     interface ISystemUIApplication {

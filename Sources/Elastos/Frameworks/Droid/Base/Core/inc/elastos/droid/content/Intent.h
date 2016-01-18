@@ -19,6 +19,7 @@ using Elastos::Core::StringBuilder;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IStringBuilder;
 using Elastos::Core::IClassLoader;
+using Elastos::Core::ICloneable;
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::Etl::HashSet;
 using Org::Xmlpull::V1::IXmlPullParser;
@@ -31,6 +32,8 @@ namespace Content {
 class Intent
     : public Object
     , public IIntent
+    , public IParcelable
+    , public ICloneable
 {
 public:
     CAR_INTERFACE_DECL()

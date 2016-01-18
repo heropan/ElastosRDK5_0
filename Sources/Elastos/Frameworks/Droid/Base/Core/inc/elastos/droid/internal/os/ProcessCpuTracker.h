@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_OS_PROCESSCPUTRACKER_H__
 #define __ELASTOS_DROID_INTERNAL_OS_PROCESSCPUTRACKER_H__
 
-#include "elastos/droid/ext/frameworkext.h"
+#include <elastos/droid/ext/frameworkext.h>
 #include "Elastos.Droid.Internal.h"
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
@@ -14,7 +14,7 @@ namespace Droid {
 namespace Internal {
 namespace Os {
 
-class ProcessCpuTracker
+class ECO_PUBLIC ProcessCpuTracker
     : public Object
     , public IProcessCpuTracker
 {
@@ -210,10 +210,10 @@ public:
         /* [out] */ String* str);
 
 private:
-    static AutoPtr<ArrayOf<Int32> > InitPROCESS_STATS_FORMAT();
-    static AutoPtr<ArrayOf<Int32> > InitPROCESS_FULL_STATS_FORMAT();
-    static AutoPtr<ArrayOf<Int32> > InitSYSTEM_CPU_FORMAT();
-    static AutoPtr<ArrayOf<Int32> > InitLOAD_AVERAGE_FORMAT();
+    ECO_LOCAL static AutoPtr<ArrayOf<Int32> > InitPROCESS_STATS_FORMAT();
+    ECO_LOCAL static AutoPtr<ArrayOf<Int32> > InitPROCESS_FULL_STATS_FORMAT();
+    ECO_LOCAL static AutoPtr<ArrayOf<Int32> > InitSYSTEM_CPU_FORMAT();
+    ECO_LOCAL static AutoPtr<ArrayOf<Int32> > InitLOAD_AVERAGE_FORMAT();
 
     CARAPI_(AutoPtr< ArrayOf<Int32> >) CollectStats(
         /* [in] */ const String& statsFile,
@@ -267,11 +267,11 @@ protected:
     static const Int32 PROCESS_FULL_STAT_VSIZE = 5;
 
 private:
-    static const String TAG;
-    static const Boolean DEBUG;
-    static const Boolean localLOGV;
+    ECO_LOCAL static const String TAG;
+    ECO_LOCAL static const Boolean DEBUG;
+    ECO_LOCAL static const Boolean localLOGV;
 
-    static const AutoPtr< ArrayOf<Int32> > PROCESS_STATS_FORMAT;
+    ECO_LOCAL static const AutoPtr< ArrayOf<Int32> > PROCESS_STATS_FORMAT;
 
     /** Stores user time and system time in 100ths of a second. */
     AutoPtr< ArrayOf<Int64> > mProcessStatsData;
@@ -280,16 +280,16 @@ private:
     AutoPtr< ArrayOf<Int64> > mSinglePidStatsData;
     Object mSinglePidStatsDataLock;
 
-    static const AutoPtr< ArrayOf<Int32> > PROCESS_FULL_STATS_FORMAT;
+    ECO_LOCAL static const AutoPtr< ArrayOf<Int32> > PROCESS_FULL_STATS_FORMAT;
 
     AutoPtr< ArrayOf<String> > mProcessFullStatsStringData;
     AutoPtr< ArrayOf<Int64> > mProcessFullStatsData;
 
-    static const AutoPtr< ArrayOf<Int32> >SYSTEM_CPU_FORMAT;
+    ECO_LOCAL static const AutoPtr< ArrayOf<Int32> >SYSTEM_CPU_FORMAT;
 
     AutoPtr< ArrayOf<Int64> > mSystemCpuData;
 
-    static const AutoPtr< ArrayOf<Int32> > LOAD_AVERAGE_FORMAT;
+    ECO_LOCAL static const AutoPtr< ArrayOf<Int32> > LOAD_AVERAGE_FORMAT;
 
     AutoPtr< ArrayOf<Float> > mLoadAverageData;
 

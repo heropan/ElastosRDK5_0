@@ -266,6 +266,7 @@ module
     merge("../../../../../car/elastos/droid/settings/ToggleSlider.car");
 
 
+    using interface Elastos.Droid.App.IApplication;
     using interface Elastos.Droid.App.IAlertDialog;
     using interface Elastos.Droid.App.IDialog;
     using interface Elastos.Droid.App.IService;
@@ -325,6 +326,30 @@ module
         interface IComponentCallbacks2;
     }
 
+    class CLoadAverageService {
+        interface ILoadAverageService;
+        interface IService;
+        interface IContext;
+        interface IContextWrapper;
+        interface IComponentCallbacks;
+        interface IComponentCallbacks2;
+    }
+
+    class CSomnambulator {
+        interface IActivity;
+        interface IContext;
+        interface IContextWrapper;
+        interface IContextThemeWrapper;
+        interface ILayoutInflaterFactory;
+        interface ILayoutInflaterFactory2;
+        interface IWindowCallback;
+        interface IKeyEventCallback;
+        interface IViewOnCreateContextMenuListener;
+        interface IComponentCallbacks;
+        interface IComponentCallbacks2;
+        interface IOnWindowDismissedCallback;
+    }
+
 //    class CRecentsActivityOne {
 //        interface IActivity;
 //        interface IRecentsActivity;
@@ -341,6 +366,15 @@ module
         interface IContextWrapper;
         interface IComponentCallbacks;
         interface IComponentCallbacks2;
+    }
+
+    class CSystemUIApplication {
+        interface ISystemUIApplication;
+        interface IApplication;
+        interface IContextWrapper;
+        interface IContext;
+        interface IComponentCallbacks2;
+        interface IComponentCallbacks;
     }
 
     class CBatteryMeterView {
@@ -412,16 +446,16 @@ module
         interface IAccessibilityEventSource;
     }
 
-//     [local]
-//     class CSwipeHelper {
-//         constructor(
-//             [in] Int32 swipeDirection,
-//             [in] ISwipeHelperCallback* cb,
-//             [in] Float densityScale,
-//             [in] Float pagingTouchSlop);
+    [local]
+    class CSwipeHelper {
+        constructor(
+            [in] Int32 swipeDirection,
+            [in] ISwipeHelperCallback* cb,
+            [in] IContext* context);
 
-//         interface ISwipeHelper;
-//     }
+        interface ISwipeHelper;
+        interface IGefingerpoken;
+    }
 
     [local]
     class CExpandHelper {
