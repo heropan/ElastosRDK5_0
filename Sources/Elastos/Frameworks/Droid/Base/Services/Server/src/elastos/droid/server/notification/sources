@@ -1,0 +1,14 @@
+TARGET_NAME= notification
+TARGET_TYPE= lib
+
+INCLUDES += ../
+INCLUDES += $(MAKEDIR)/../../../../../inc
+INCLUDES += $(MAKEDIR)/../../../../../../../Core/inc/
+
+C_DEFINES += -DDROID_SERVER
+include $(MAKEDIR)/../../../../../../../../sources.inc
+
+#SOURCES = NotificationManagerService.cpp
+#SOURCES += ManagedServices.cpp
+#SOURCES += NotificationRecord.cpp
+#SOURCES += notification.cpp

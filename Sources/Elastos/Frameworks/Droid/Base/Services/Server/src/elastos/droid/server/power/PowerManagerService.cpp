@@ -80,7 +80,7 @@ namespace Droid {
 namespace Server {
 namespace Power {
 
-static PowerManagerService* sPowerManagerService = NULL;
+static AutoPtr<PowerManagerService> sPowerManagerService;
 static struct power_module* sPowerModule = NULL;
 
 static nsecs_t sLastEventTime[android::USER_ACTIVITY_EVENT_LAST + 1];

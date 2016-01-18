@@ -8,6 +8,7 @@ DIRS += display
 DIRS += dreams
 DIRS += lights
 DIRS += net
+DIRS += notification
 DIRS += os
 DIRS += power
 DIRS += twilight

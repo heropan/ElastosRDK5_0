@@ -31,11 +31,16 @@ module
 
     merge("lights/LightsManager.car");
 
+    merge("notification/NotificationDelegate.car");
     merge("notification/NotificationManagerInternal.car");
+    merge("notification/NotificationRecord.car");
+    merge("notification/NotificationSignalExtractor.car");
+    merge("notification/RankingConfig.car");
+    merge("notification/RankingReconsideration.car");
 
     merge("net/NetworkPolicyManagerService.car");
     merge("net/NetworkStatsService.car");
-
+    merge("statusbar/StatusBarManagerInternal.car");
     merge("twilight/TwilightState.car");
     merge("twilight/TwilightManager.car");
     merge("twilight/TwilightListener.car");
@@ -255,17 +260,6 @@ module
 //             [in] Handle32 windowManager);
 
 //         interface IIStatusBarService;
-//         interface IBinder;
-//     }
-
-//     [local]
-//     class CNotificationManagerService {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] Handle32 statusBar,
-//             [in] Handle32 lights);
-
-//         interface IINotificationManager;
 //         interface IBinder;
 //     }
 
@@ -1412,6 +1406,16 @@ module
     } // namespace Server
     } // namepsace Droid
     } // namespace Elastos
+
+//    namespace Elastos {
+//    namespace Droid {
+//    namespace Server {
+//    namespace Notification {
+
+//    } // namespace Notification
+//    } // namespace Server
+//    } // namepsace Droid
+//    } // namespace Elastos
 
     namespace Elastos {
     namespace Droid {

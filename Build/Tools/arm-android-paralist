@@ -306,6 +306,7 @@
 > Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/lights
 #  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/location
   Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/net
+> Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/notification
 #< Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/pm
 #  Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/usb
 > Elastos/Frameworks/Droid/Base/Services/Server/src/elastos/droid/server/wallpaper

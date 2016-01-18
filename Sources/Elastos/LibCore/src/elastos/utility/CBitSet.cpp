@@ -258,6 +258,7 @@ ECode CBitSet::Get(
     /* [out] */ IBitSet** bs)
 {
     VALIDATE_NOT_NULL(bs);
+    *bs = NULL;
 
     FAIL_RETURN(CheckRange(fromIndex, toIndex));
     Int32 last = 64 * mInt64Count;
