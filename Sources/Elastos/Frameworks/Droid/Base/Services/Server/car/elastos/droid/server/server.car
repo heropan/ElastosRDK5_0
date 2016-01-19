@@ -31,6 +31,7 @@ module
 
     merge("lights/LightsManager.car");
 
+    merge("notification/DowntimeConditionProvider.car");
     merge("notification/NotificationDelegate.car");
     merge("notification/NotificationManagerInternal.car");
     merge("notification/NotificationRecord.car");

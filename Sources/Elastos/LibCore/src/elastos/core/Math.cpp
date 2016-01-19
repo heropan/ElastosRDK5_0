@@ -1056,6 +1056,13 @@ Int32 Math::ReverseBytes(
 }
 
 Int32 Math::Compare(
+    /* [in] */ Int32 lhs,
+    /* [in] */ Int32 rhs)
+{
+    return lhs < rhs ? -1 : (lhs == rhs ? 0 : 1);
+}
+
+Int32 Math::Compare(
     /* [in] */ Float float1,
     /* [in] */ Float float2)
 {
