@@ -14,6 +14,7 @@
 #include "StringUtils.h"
 #include "CString.h"
 #include "Collections.h"
+#include <ustrenum.h>
 
 #include <unicode/ucat.h>
 #include <unicode/ureslocs.h>
@@ -68,7 +69,10 @@ static String getCurrencyName(const String& languageTag, const String& currencyC
     }
     UnicodeString icuCurrencyCode = UnicodeString::fromUTF8(currencyCode.string());
     UErrorCode status = U_ZERO_ERROR;
+    UBool isChoiceFormat = false;
     Int32 charCount;
+    const UChar* chars = ucurr_getName(icuCurrencyCode.getTerminatedBuffer(), languageTag,
+                                     nameStyle, &isChoiceFormat, &charCount, &status);
     if (U_USING_DEFAULT_WARNING == status) {
         if (UCURR_SYMBOL_NAME == nameStyle) {
             // ICU doesn't distinguish between falling back to the root locale and meeting a genuinely
@@ -79,10 +83,11 @@ static String getCurrencyName(const String& languageTag, const String& currencyC
         }
         if (UCURR_LONG_NAME == nameStyle) {
             // ICU's default is English. We want the ISO 4217 currency code instead.
+            chars = icuCurrencyCode.getBuffer();
             charCount = icuCurrencyCode.length();
         }
     }
-    return (0 == charCount) ? String(NULL) : UnicodeStringToString(icuCurrencyCode);
+    return (0 == charCount) ? String(NULL) : UnicodeStringToString(chars);
 }
 
 // TODO: put this in a header file and use it everywhere!
@@ -688,13 +693,9 @@ ECode ICUUtil::GetAvailableCurrencyCodes(
     /* [out, callee] */ ArrayOf<String>** codes)
 {
     UErrorCode status = U_ZERO_ERROR;
-#if 0 // TODO: Waiting for external eco
+
     UStringEnumeration e(ucurr_openISOCurrencies(UCURR_COMMON|UCURR_NON_DEPRECATED, &status));
     return fromStringEnumeration(status, "ucurr_openISOCurrencies", &e, codes);
-#else
-    assert(0);
-    return NOERROR;
-#endif
 }
 
 // TODO: rewrite this with int32_t ucurr_forLocale(const char* locale, UChar* buff, int32_t buffCapacity, UErrorCode* ec)...
@@ -1474,12 +1475,7 @@ Int32 ICUUtil::GetCurrencyNumericCode(
         return 0;
     }
     UnicodeString icuCurrencyCode = UnicodeString::fromUTF8(currencyCode.string());
-#if 0 // TODO: Waiting for external eco
     return ucurr_getNumericCode(icuCurrencyCode.getTerminatedBuffer());
-#else
-    assert(0);
-    return 0;
-#endif
 }
 
 ECode ICUUtil::GetCurrencyDisplayName(
