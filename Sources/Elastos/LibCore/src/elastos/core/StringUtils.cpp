@@ -618,7 +618,7 @@ ECode StringUtils::ParsePositiveInt64(
     /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result);
-    if (radix < Character::MIN_RADIX || Character::MAX_RADIX) {
+    if (radix < Character::MIN_RADIX || radix > Character::MAX_RADIX) {
         return E_NUMBER_FORMAT_EXCEPTION;
     }
     if (input.IsEmpty() || input.GetLength() == 0) {
