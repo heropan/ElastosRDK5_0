@@ -6,6 +6,7 @@ namespace Droid {
 namespace Server {
 namespace Am {
 const String CActivityManagerService::TAG("CActivityManagerService");
+const Boolean CActivityManagerService::IS_USER_BUILD = FALSE;
 
 } // namespace Am
 } // namespace Server
