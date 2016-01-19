@@ -3099,7 +3099,7 @@ void ActivityStack::CleanUpActivityServicesLocked(
         //}
         while (iter != r->mConnections->End()) {
             AutoPtr<ConnectionRecord> cr = *iter;
-            mService->mServices->RemoveConnectionLocked(cr, NULL, r);
+            //TODO mService->mServices->RemoveConnectionLocked(cr, NULL, r);
             ++iter;
         }
         r->mConnections = NULL;
@@ -3268,7 +3268,7 @@ Boolean ActivityStack::DestroyActivityLocked(
             if (r->mApp->mActivities.IsEmpty()) {
                 // Update any services we are bound to that might care about whether
                 // their client may have activities.
-                mService->mServices->UpdateServiceConnectionActivitiesLocked(r->mApp);
+                //TODO mService->mServices->UpdateServiceConnectionActivitiesLocked(r->mApp);
                 // No longer have activities, so update LRU list and oom adj.
                 mService->UpdateLruProcessLocked(r->mApp, FALSE, NULL);
                 mService->UpdateOomAdjLocked();

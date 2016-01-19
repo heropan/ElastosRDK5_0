@@ -155,6 +155,12 @@ public:
     public:
         CAR_INTERFACE_DECL();
 
+        ActivityContainer();
+
+        CARAPI constructor(
+            /* [in] */ Int32 stackId,
+            /* [in] */ IInterface* owner);//ActivityStackSupervisor
+
         ActivityContainer(
             /* [in] */ Int32 stackId,
             /* [in] */ ActivityStackSupervisor* owner);

@@ -386,6 +386,29 @@ const Int32 ActivityStackSupervisor::ActivityContainer::CONTAINER_STATE_HAS_SURF
 const Int32 ActivityStackSupervisor::ActivityContainer::CONTAINER_STATE_NO_SURFACE = 1;
 const Int32 ActivityStackSupervisor::ActivityContainer::CONTAINER_STATE_FINISHING = 2;
 
+ActivityStackSupervisor::ActivityContainer::ActivityContainer()
+{
+}
+
+ECode ActivityStackSupervisor::ActivityContainer::constructor(
+    /* [in] */ Int32 stackId,
+    /* [in] */ IInterface* owner)
+{
+    mVisible = TRUE;
+    mContainerState = CONTAINER_STATE_HAS_SURFACE;
+    mOwner = (ActivityStackSupervisor*)(IObject::Probe(owner));
+
+    {
+        AutoLock lock(mOwner->mService);
+        mStackId = stackId;
+        mStack = new ActivityStack(this);
+        mIdString = String("ActivtyContainer{") + StringUtils::ToString(mStackId) + String("}");
+        //if (CActivityManagerService::DEBUG_STACK) Slog.d(CActivityManagerService::TAG, "Creating " + this);
+    }
+    return NOERROR;
+}
+
+
 ActivityStackSupervisor::ActivityContainer::ActivityContainer(
     /* [in] */ Int32 stackId,
     /* [in] */ ActivityStackSupervisor* owner)
