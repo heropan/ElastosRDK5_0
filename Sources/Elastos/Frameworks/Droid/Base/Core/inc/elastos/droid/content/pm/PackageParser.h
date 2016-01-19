@@ -158,16 +158,50 @@ public:
     /**
      * Lightweight parsed details about a single package.
      */
-    class PackageLite : public Object
+    class PackageLite
+        : public Object
+        , public IPackageLite
     {
     public:
+        CAR_INTERFACE_DECL()
+
         PackageLite(
             /* [in] */ const String& codePath,
             /* [in] */ ApkLite* baseApk,
             /* [in] */ ArrayOf<String>* splitNames,
             /* [in] */ ArrayOf<String>* splitCodePaths);
 
-        AutoPtr<List<String> > GetAllCodePaths();
+        CARAPI_(AutoPtr<List<String> >) GetAllCodePaths();
+
+        CARAPI GetPackageName(
+            /* [out] */ String* name);
+
+        CARAPI GetVersionCode(
+            /* [out] */ Int32* code);
+
+        CARAPI GetInstallLocation(
+            /* [out] */ Int32* location);
+
+        CARAPI GetVerifiers(
+            /* [out, callee] */ ArrayOf<IVerifierInfo*> ** verifiers);
+
+        CARAPI GetSplitNames(
+            /* [out, callee] */ ArrayOf<String> ** splitNames);
+
+        CARAPI GetCodePath(
+            /* [out] */ String* path);
+
+        CARAPI GetBaseCodePath(
+            /* [out] */ String* path);
+
+        CARAPI GetSplitCodePaths(
+            /* [out, callee] */ ArrayOf<String> ** paths);
+
+        CARAPI GetCoreApp(
+            /* [out] */ Boolean* app);
+
+        CARAPI GetMultiArch(
+            /* [out] */ Boolean* arch);
 
     public:
         String mPackageName;
@@ -709,7 +743,7 @@ public:
         /* [in] */ IFile* packageFile,
         /* [in] */ Int32 flags,
         /* [in] */ ArrayOf<Byte>* readBuffer,
-        /* [out] */ PackageLite** pkgLite);
+        /* [out] */ IPackageLite** pkgLite);
 
     /**
      * Parse the package at the given location. Automatically detects if the
@@ -887,13 +921,13 @@ private:
         /* [in] */ IFile* packageFile,
         /* [in] */ Int32 flags,
         /* [in] */ ArrayOf<Byte>* readBuffer,
-        /* [out] */ PackageLite** pkgLite);
+        /* [out] */ IPackageLite** pkgLite);
 
     static CARAPI ParseClusterPackageLite(
         /* [in] */ IFile* packageFile,
         /* [in] */ Int32 flags,
         /* [in] */ ArrayOf<Byte>* readBuffer,
-        /* [out] */ PackageLite** pkgLite);
+        /* [out] */ IPackageLite** pkgLite);
 
     /**
      * Parse all APKs contained in the given directory, treating them as a

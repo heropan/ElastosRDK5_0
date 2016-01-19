@@ -39,6 +39,7 @@ SOURCES += CPackageInstallerSessionInfo.cpp
 SOURCES += PackageManager.cpp
 SOURCES += CPackageManagerHelper.cpp
 SOURCES += PackageParser.cpp
+SOURCES += CPackageParserHelper.cpp
 SOURCES += CPackageStats.cpp
 SOURCES += PackageUserState.cpp
 SOURCES += CParceledListSlice.cpp
