@@ -38,8 +38,15 @@ SOURCES += Watchdog.cpp
 SOURCES += CNetworkPolicyListener.cpp
 SOURCES += CDataActivityObserver.cpp
 SOURCES += CConnectivityService.cpp
-#SOURCES += WiredAccessoryManager.cpp
+SOURCES += CSerialService.cpp
+SOURCES += CTextServicesManagerService.cpp
 
+#SOURCES += EntropyMixer.cpp
+#SOURCES += NativeDaemonEvent.cpp
+#SOURCES += RandomBlock.cpp
+#SOURCES += RandomBlock.cpp
+#SOURCES += ShutdownActivity.cpp
+#SOURCES += WiredAccessoryManager.cpp
 
 #=========================================
 # TODO
@@ -49,7 +56,6 @@ SOURCES += CConnectivityService.cpp
 #SOURCES += CBootReceiver.cpp
 SOURCES += BrickReceiver.cpp
 #SOURCES += CaptivePortalTracker.cpp
-#SOURCES += CSerialService.cpp
 #SOURCES += CDiskStatsService.cpp
 #SOURCES += CUpdateLockService.cpp
 #SOURCES += CSamplingProfilerService.cpp
@@ -62,7 +68,6 @@ SOURCES += BrickReceiver.cpp
 #SOURCES += TwilightCalculator.cpp
 #SOURCES += CVibratorService.cpp
 #SOURCES += CRecognitionManagerService.cpp
-#SOURCES += CTextServicesManagerService.cpp
 #SOURCES += CDeviceStorageMonitorService.cpp
 #SOURCES += CUiModeManagerService.cpp
 #SOURCES += CBatteryService.cpp
@@ -73,7 +78,6 @@ SOURCES += BrickReceiver.cpp
 #SOURCES += CWMSWallpaperConnection.cpp
 #SOURCES += CWMSUserSwitchObserver.cpp
 #SOURCES += NativeDaemonConnector.cpp
-#SOURCES += NativeDaemonEvent.cpp
 #SOURCES += NetworkManagementSocketTagger.cpp
 #SOURCES += CNetworkManagementService.cpp
 #SOURCES += CMountService.cpp
@@ -100,9 +104,10 @@ ELASTOS_LIBS += display/display.lib
 ELASTOS_LIBS += dreams/dreams.lib
 ELASTOS_LIBS += lights/lights.lib
 ELASTOS_LIBS += net/net.lib
-ELASTOS_LIBS += notification/notification.lib
+#ELASTOS_LIBS += notification/notification.lib
 ELASTOS_LIBS += os/os.lib
 ELASTOS_LIBS += power/power.lib
+ELASTOS_LIBS += statusbar/statusbar.lib
 ELASTOS_LIBS += twilight/twilight.lib
 ELASTOS_LIBS += wallpaper/wallpaper.lib
 

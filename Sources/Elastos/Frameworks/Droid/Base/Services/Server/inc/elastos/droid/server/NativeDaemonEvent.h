@@ -8,18 +8,13 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 
-extern "C" const InterfaceID EIID_NativeDaemonEvent;
-
 /**
  * Parsed event from native side of {@link NativeDaemonConnector}.
  */
 class NativeDaemonEvent
-    : public ElRefBase
-    , public IInterface
+    : public Object
 {
 public:
-    CAR_INTERFACE_DECL()
-
     CARAPI_(Int32) GetCmdNumber();
 
     CARAPI_(Int32) GetCode();

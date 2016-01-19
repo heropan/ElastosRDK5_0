@@ -1025,10 +1025,11 @@ PhoneWindowManager::HDMIUEventObserver::HDMIUEventObserver(
 {
 }
 
-void PhoneWindowManager::HDMIUEventObserver::OnUEvent(
+ECode PhoneWindowManager::HDMIUEventObserver::OnUEvent(
     /* [in] */ UEvent* event)
 {
-    mHost->SetHdmiPlugged(String("1").Equals(event->Get(String("SWITCH_STATE"))));
+    mHost->SetHdmiPlugged(event->Get(String("SWITCH_STATE")).Equals("1"));
+    return NOERROR;
 }
 
 //==============================================================================

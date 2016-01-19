@@ -1,32 +1,44 @@
-#include "CStatusBarManagerService.h"
+#include "elastos/droid/server/statusbar/CStatusBarManagerService.h"
+#include "elastos/droid/server/LocalServices.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/Manifest.h"
 #include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/Binder.h"
 #include "elastos/droid/os/UserHandle.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/AutoLock.h>
+#include <Elastos.Droid.Os.h>
+#include <Elastos.Droid.App.h>
+#include <Elastos.Droid.Content.h>
 
-using Elastos::Core::ICharSequence;
-using Elastos::Core::CString;
-using Elastos::Core::StringUtils;
-using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::Os::Binder;
 using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::UserHandle;
 using Elastos::Droid::Os::CBinder;
+using Elastos::Droid::App::IStatusBarManager;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::StatusBar::IIStatusBarService;
-using Elastos::Droid::StatusBar::CStatusBarIconList;
-using Elastos::Droid::StatusBar::IStatusBarIcon;
-using Elastos::Droid::StatusBar::CStatusBarIcon;
+using Elastos::Droid::Internal::StatusBar::EIID_IIStatusBarService;
+using Elastos::Droid::Internal::StatusBar::CStatusBarIconList;
+using Elastos::Droid::Internal::StatusBar::IStatusBarIcon;
+using Elastos::Droid::Internal::StatusBar::CStatusBarIcon;
+using Elastos::Droid::Server::LocalServices;
+using Elastos::Droid::Server::StatusBar::EIID_IStatusBarManagerInternal;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::CString;
+using Elastos::Core::StringUtils;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::Logging::Slogger;
 
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
+namespace StatusBar {
 
 const String CStatusBarManagerService::TAG("StatusBarManagerService");
 const Boolean CStatusBarManagerService::SPEW = FALSE;
@@ -39,7 +51,8 @@ CAR_INTERFACE_IMPL(CStatusBarManagerService::MyStatusBarManagerInternal, Object,
 
 CStatusBarManagerService::MyStatusBarManagerInternal::MyStatusBarManagerInternal(
     /* [in] */ CStatusBarManagerService* host)
-    : mHost(host)
+    : mNotificationLightOn(FALSE)
+    , mHost(host)
 {}
 
 ECode CStatusBarManagerService::MyStatusBarManagerInternal::ToString(
@@ -70,7 +83,7 @@ ECode CStatusBarManagerService::MyStatusBarManagerInternal::NotificationLightPul
     /* [in] */ Int32 onMillis,
     /* [in] */ Int32 offMillis)
 {
-    mHost->mNotificationLightOn = true;
+    mNotificationLightOn = true;
     if (mHost->mBar != NULL) {
         mHost->mBar->NotificationLightPulse(argb, onMillis, offMillis);
     }
@@ -79,8 +92,8 @@ ECode CStatusBarManagerService::MyStatusBarManagerInternal::NotificationLightPul
 
 ECode CStatusBarManagerService::MyStatusBarManagerInternal::NotificationLightOff()
 {
-    if (mHost->mNotificationLightOn) {
-        mHost->mNotificationLightOn = FALSE;
+    if (mNotificationLightOn) {
+        mNotificationLightOn = FALSE;
         if (mHost->mBar != NULL) {
             mHost->mBar->NotificationLightOff();
         }
@@ -91,7 +104,7 @@ ECode CStatusBarManagerService::MyStatusBarManagerInternal::NotificationLightOff
 //==================================================================================
 //              CStatusBarManagerService::DisableRecord
 //==================================================================================
-CAR_INTERFACE_IMPL(CStatusBarManagerService::DisableRecord, IProxyDeathRecipient);
+CAR_INTERFACE_IMPL(CStatusBarManagerService::DisableRecord, Object, IProxyDeathRecipient);
 
 CStatusBarManagerService::DisableRecord::DisableRecord(
     /* [in] */ CStatusBarManagerService* host)
@@ -206,6 +219,10 @@ ECode CStatusBarManagerService::UpdateUiVisibilityRunnable::Run()
 //==================================================================================
 //              CStatusBarManagerService
 //==================================================================================
+CAR_INTERFACE_IMPL_2(CStatusBarManagerService, Object, IIStatusBarService, IBinder)
+
+CAR_OBJECT_IMPL(CStatusBarManagerService)
+
 CStatusBarManagerService::CStatusBarManagerService()
     : mDisabled(0)
     , mSystemUiVisibility(0)
@@ -225,7 +242,7 @@ ECode CStatusBarManagerService::constructor(
     /* [in] */ IIWindowManager* wm)
 {
     mContext = context;
-    mWindowManager = (mWindowManager*)windowManager;
+    // mWindowManager = (mWindowManager*)windowManager;
 
     AutoPtr<IResources> res;
     context->GetResources((IResources**)&res);
@@ -237,29 +254,6 @@ ECode CStatusBarManagerService::constructor(
 
     LocalServices::AddService(EIID_IStatusBarManagerInternal, mInternalService);
     return NOERROR;
-}
-
-UInt32 CStatusBarManagerService::AddRef()
-{
-    return _CStatusBarManagerService::AddRef();
-}
-
-UInt32 CStatusBarManagerService::Release()
-{
-    return _CStatusBarManagerService::Release();
-}
-
-PInterface CStatusBarManagerService::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CStatusBarManagerService::Probe(riid);
-}
-
-ECode CStatusBarManagerService::GetInterfaceID(
-    /* [in] */ IInterface* pObject,
-    /* [in] */ InterfaceID* pIID)
-{
-    return _CStatusBarManagerService::GetInterfaceID(pObject, pIID);
 }
 
 ECode CStatusBarManagerService::ToString(
@@ -493,14 +487,14 @@ ECode CStatusBarManagerService::SetSystemUiVisibility(
     FAIL_RETURN(EnforceStatusBarService());
 
     if (SPEW)
-        Slogger::D(TAG, "setSystemUiVisibility(0x%s)", StringUtils::Int32ToString(vis).string());
+        Slogger::D(TAG, "setSystemUiVisibility(0x%s)", StringUtils::ToString(vis).string());
     {
         AutoLock lock(this);
         UpdateUiVisibilityLocked(vis, mask);
 
         DisableLocked(
                 mCurrentUserId,
-                vis & IStatusBarManager::DISABLE_MASK,
+                (vis & IStatusBarManager::DISABLE_MASK),
                 mSysUiVisToken,
                 String("WindowManager.LayoutParams"));
     }
@@ -573,7 +567,7 @@ ECode CStatusBarManagerService::SetCurrentUser(
     return NOERROR;
 }
 
-ECode CStatusBarManagerService::setWindowState(
+ECode CStatusBarManagerService::SetWindowState(
     /* [in] */ Int32 window,
     /* [in] */ Int32 state)
 {
@@ -612,7 +606,9 @@ ECode CStatusBarManagerService::RegisterStatusBar(
     VALIDATE_NOT_NULL(iconList);
     VALIDATE_NOT_NULL(switches);
 
-    CParcelableObjectContainer::New(binders);
+    AutoPtr<IList> list;
+    CArrayList::New((IList**)&list);
+
     *switches = ArrayOf<Int32>::Alloc(6);
     REFCOUNT_ADD(*switches);
     CStatusBarIconList::New(iconList);
@@ -622,12 +618,12 @@ ECode CStatusBarManagerService::RegisterStatusBar(
     Slogger::I(TAG, "RegisterStatusBar bar=%p", bar);
     mBar = bar;
 
-    do {
+    {
         AutoLock Lock(mIconsLock);
         (*iconList)->CopyFrom(mIcons);
-    } while (FALSE);
+    }
 
-    do {
+    {
         AutoLock lock(this);
         GatherDisableActionsLocked(mCurrentUserId, &((**switches)[0]));
         (**switches)[1] = mSystemUiVisibility;
@@ -635,9 +631,11 @@ ECode CStatusBarManagerService::RegisterStatusBar(
         (**switches)[3] = mImeWindowVis;
         (**switches)[4] = mImeBackDisposition;
         (**switches)[5] = mShowImeSwitcher ? 1 : 0;
-        (*binders)->Add(mImeToken);
-    } while (FALSE);
+        list->Add(mImeToken);
+    }
 
+    *binders = list;
+    REFCOUNT_ADD(*binders)
     return NOERROR;
 }
 
@@ -672,8 +670,8 @@ ECode CStatusBarManagerService::OnNotificationClick(
 {
     FAIL_RETURN(EnforceStatusBarService());
 
-    Int32 callingUid = Binder::GetetCallingUid();
-    Int32 callingPid = Binder::GetetCallingPid();
+    Int32 callingUid = Binder::GetCallingUid();
+    Int32 callingPid = Binder::GetCallingPid();
     Int64 identity = Binder::ClearCallingIdentity();
     if (mNotificationDelegate) {
         mNotificationDelegate->OnNotificationClick(callingUid, callingPid, key);
@@ -693,8 +691,8 @@ ECode CStatusBarManagerService::OnNotificationError(
 {
     FAIL_RETURN(EnforceStatusBarService());
 
-    Int32 callingUid = Binder::GetetCallingUid();
-    Int32 callingPid = Binder::GetetCallingPid();
+    Int32 callingUid = Binder::GetCallingUid();
+    Int32 callingPid = Binder::GetCallingPid();
     Int64 identity = Binder::ClearCallingIdentity();
     // WARNING: this will call back into us to do the remove.  Don't hold any locks.
     if (mNotificationDelegate) {
@@ -713,8 +711,8 @@ ECode CStatusBarManagerService::OnNotificationClear(
 {
     FAIL_RETURN(EnforceStatusBarService());
 
-    Int32 callingUid = Binder::GetetCallingUid();
-    Int32 callingPid = Binder::GetetCallingPid();
+    Int32 callingUid = Binder::GetCallingUid();
+    Int32 callingPid = Binder::GetCallingPid();
     Int64 identity = Binder::ClearCallingIdentity();
     if (mNotificationDelegate) {
         mNotificationDelegate->OnNotificationClear(callingUid, callingPid, pkg, tag, id, userId);
@@ -748,7 +746,7 @@ ECode CStatusBarManagerService::OnNotificationExpansionChanged(
     ECode ec = NOERROR;
 
     if (mNotificationDelegate != NULL) {
-        ec = mNotificationDelegate->NnNotificationExpansionChanged(
+        ec = mNotificationDelegate->OnNotificationExpansionChanged(
                 key, userAction, expanded);
     }
     Binder::RestoreCallingIdentity(identity);
@@ -760,8 +758,8 @@ ECode CStatusBarManagerService::OnClearAllNotifications(
 {
     FAIL_RETURN(EnforceStatusBarService());
 
-    Int32 callingUid = Binder::GetetCallingUid();
-    Int32 callingPid = Binder::GetetCallingPid();
+    Int32 callingUid = Binder::GetCallingUid();
+    Int32 callingPid = Binder::GetCallingPid();
     Int64 identity = Binder::ClearCallingIdentity();
     if (mNotificationDelegate) {
         mNotificationDelegate->OnClearAll(callingUid, callingPid, userId);
@@ -777,7 +775,8 @@ ECode CStatusBarManagerService::ManageDisableListLocked(
     /* [in] */ const String& pkg)
 {
     if (SPEW) {
-        Slogger::D(TAG, "manageDisableList userId=%d what=0x%s pkg=%s", userId, (StringUtils::Int32ToString(what)).string(), pkg.string());
+        Slogger::D(TAG, "manageDisableList userId=%d what=0x%s pkg=%s", userId,
+            StringUtils::ToString(what).string(), pkg.string());
     }
     // update the list
     AutoPtr<DisableRecord> tok;
@@ -839,6 +838,7 @@ ECode CStatusBarManagerService::GatherDisableActionsLocked(
     return NOERROR;
 }
 
+}//namespace StatusBar
 }//namespace Server
 }//namespace Droid
 }//namespace Elastos

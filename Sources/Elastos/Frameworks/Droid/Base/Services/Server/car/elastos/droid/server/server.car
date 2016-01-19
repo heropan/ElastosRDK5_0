@@ -40,7 +40,12 @@ module
 
     merge("net/NetworkPolicyManagerService.car");
     merge("net/NetworkStatsService.car");
+
+    merge("power/SuspendBlocker.car");
+    merge("power/ScreenOnBlocker.car");
+
     merge("statusbar/StatusBarManagerInternal.car");
+
     merge("twilight/TwilightState.car");
     merge("twilight/TwilightManager.car");
     merge("twilight/TwilightListener.car");
@@ -48,8 +53,6 @@ module
     merge("wallpaper/WallpaperManagerService.car");
 
     // merge("NetworkManagementService.car");
-    merge("power/SuspendBlocker.car");
-    merge("power/ScreenOnBlocker.car");
     // merge("accessibility/EventStreamTransformation.car");
     // merge("accessibility/ScreenMagnifier.car");
     // merge("RecognitionManagerService.car");
@@ -93,10 +96,12 @@ module
     using interface Elastos.Droid.Content.Pm.IIPackageManager;
     using interface Elastos.Droid.Content.Pm.IIPackageMoveObserver;
     using interface Elastos.Droid.Content.Pm.IPackageInstallerSessionParams;
+    using interface Elastos.Droid.Hardware.IISerialManager;
     using interface Elastos.Droid.Hardware.Display.IIDisplayManager;
     using interface Elastos.Droid.Internal.App.IIProcessStats;
     using interface Elastos.Droid.Internal.Os.IIParcelFileDescriptorFactory;
     using interface Elastos.Droid.Internal.StatusBar.IIStatusBarService;
+    using interface Elastos.Droid.Internal.TextService.IITextServicesManager;
     using interface Elastos.Droid.Media.Projection.IIMediaProjectionCallback;
     using interface Elastos.Droid.Net.IIConnectivityManager;
     using interface Elastos.Droid.Net.IINetworkManagementEventObserver;
@@ -105,6 +110,7 @@ module
     using interface Elastos.Droid.Net.IINetworkPolicyListener;
     using interface Elastos.Droid.Utility.ITrustedTime;
     using interface Elastos.Droid.View.IApplicationToken;
+    using interface Elastos.Droid.View.IIWindowManager;
     using interface Elastos.Droid.Service.Dreams.IIDreamManager;
     using interface Elastos.Droid.Service.Wallpaper.IIWallpaperConnection;
 
@@ -126,13 +132,17 @@ module
 //     }
 
 //     [local]
-//     class CSerialService {
-//         constructor(
-//             [in] IContext* ctx);
-
-//         interface IISerialManager;
-//         interface IBinder;
+//     class CBrickReceiver {
+//         interface IBroadcastReceiver;
 //     }
+
+    class CSerialService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IISerialManager;
+        interface IBinder;
+    }
 
 //     [local]
 //     class CDisplayManagerServiceAw {
@@ -604,13 +614,14 @@ module
 //         interface IBinder;
 //     }
 
-//     [local]
-//     class CTextServicesManagerService {
-//         constructor(
-//             [in] IContext* ctx);
-//         interface IITextServicesManager;
-//         interface IBinder;
-//     }
+
+    class CTextServicesManagerService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IITextServicesManager;
+        interface IBinder;
+    }
 
 //     [local]
 //     class CPrivacySettingsManagerService {
@@ -1044,7 +1055,8 @@ module
 
     class CStatusBarManagerService {
         constructor(
-            [in] IContext* ctx);
+            [in] IContext* ctx,
+            [in] IIWindowManager* wm);
 
         interface IIStatusBarService;
         interface IBinder;

@@ -89,6 +89,7 @@ module
     using interface Elastos.IO.IOutputStream;
     using interface Elastos.IO.IFileInputStream;
     using interface Elastos.IO.IFileOutputStream;
+    using interface Elastos.IO.IFileDescriptor;
     using interface Elastos.Utility.IUUID;
 
     interface Elastos.Droid.Content.IContext;
@@ -345,6 +346,15 @@ module
 
         constructor(
             [in] IParcelFileDescriptor* pfd);
+
+        /** {@hide} */
+        constructor(
+            [in] IFileDescriptor* fd);
+
+        /** {@hide} */
+        constructor(
+            [in] IFileDescriptor* fd,
+            [in] IFileDescriptor* commChannel);
 
         interface IParcelFileDescriptor;
         interface IParcelable;

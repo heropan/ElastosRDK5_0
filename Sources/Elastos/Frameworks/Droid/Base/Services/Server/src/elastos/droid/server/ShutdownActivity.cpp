@@ -1,5 +1,5 @@
 
-#include "ShutdownActivity.h"
+#include "elastos/droid/server/ShutdownActivity.h"
 #include "elastos/droid/os/ServiceManager.h"
 #include <elastos/utility/logging/Slogger.h>
 
@@ -29,6 +29,10 @@ ECode ShutdownActivity::LocalThread::Run()
     return NOERROR;
 }
 
+ShutdownActivity::ShutdownActivity()
+    : mReboot(FALSE)
+    , mConfirm(FALSE)
+{}
 
 ECode ShutdownActivity::OnCreate(
     /* [in] */ IBundle* savedInstanceState)
@@ -43,9 +47,11 @@ ECode ShutdownActivity::OnCreate(
     intent->GetBooleanExtra(IIntent::EXTRA_KEY_CONFIRM, FALSE, &mConfirm);
     Slogger::I(TAG, "onCreate(): confirm=%d", mConfirm);
 
-    AutoPtr<LocalThread> thr = new LocalThread(this, String("ShutdownActivity"));
+    AutoPtr<LocalThread> thr = new LocalThread(this);
+    thr->constructor(String("ShutdownActivity"));
 
     thr->Start();
+    Finish();
     // Wait for us to tell the power manager to shutdown.
 //    try {
     FAIL_RETURN(thr->Join());

@@ -230,9 +230,9 @@ module
     interface Elastos.Droid.Graphics.ISurfaceTexture;
     interface Elastos.Droid.Graphics.ICanvasProperty;
     interface Elastos.Droid.Animation.IAnimator;
-    interface Elastos.Droid.View.Internal.TextService.IISpellCheckerSessionListener;
-    interface Elastos.Droid.View.Internal.TextService.IITextServicesSessionListener;
-    interface Elastos.Droid.View.Internal.TextService.IITextServicesManager;
+    interface Elastos.Droid.Internal.TextService.IISpellCheckerSessionListener;
+    interface Elastos.Droid.Internal.TextService.IITextServicesSessionListener;
+    interface Elastos.Droid.Internal.TextService.IITextServicesManager;
     interface Elastos.Droid.Content.IContextWrapper;
 
     // interface Elastos.Droid.View.Accessibility.IIAccessibilityInteractionConnection;

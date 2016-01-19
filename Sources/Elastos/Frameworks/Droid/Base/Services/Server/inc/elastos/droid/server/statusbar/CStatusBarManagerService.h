@@ -1,15 +1,16 @@
 #ifndef __ELASTOS_DROID_SERVER_CSTATUSBARMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_CSTATUSBARMANAGERSERVICE_H__
 
-#include "_Elastos_Droid_Server_CStatusBarManagerService.h"
+#include "_Elastos_Droid_Server_StatusBar_CStatusBarManagerService.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
-#include "wm/CWindowManagerService.h"
+#include "elastos/droid/os/Runnable.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
+// #include "elastos/droid/server/wm/CWindowManagerService.h"
+#include <Elastos.Droid.Internal.h>
+#include <Elastos.CoreLibrary.Utility.h>
 
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IHandler;
@@ -17,14 +18,20 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::View::IIWindowManager;
-using Elastos::Droid::StatusBar::IIStatusBar;
-using Elastos::Droid::StatusBar::IStatusBarIconList;
-using Elastos::Droid::StatusBar::IStatusBarNotification;
-using Elastos::Droid::Server::Wm::CWindowManagerService;
+using Elastos::Droid::Internal::StatusBar::IIStatusBar;
+using Elastos::Droid::Internal::StatusBar::IStatusBarIconList;
+using Elastos::Droid::Internal::StatusBar::IIStatusBarService;
+// using Elastos::Droid::Server::Wm::CWindowManagerService;
+using Elastos::Droid::Server::Notification::INotificationDelegate;
+using Elastos::Droid::Server::StatusBar::IStatusBarManagerInternal;
+using Elastos::Utility::IList;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Etl::List;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
+namespace StatusBar {
 
 CarClass(CStatusBarManagerService)
     , public Object
@@ -37,7 +44,8 @@ private:
      * Private API used by NotificationManagerService.
      */
     class MyStatusBarManagerInternal
-        : public IStatusBarManagerInternal
+        : public Object
+        , public IStatusBarManagerInternal
     {
     public:
         CAR_INTERFACE_DECL()
@@ -70,7 +78,7 @@ private:
     };
 
     class DisableRecord
-        : public ElRefBase
+        : public Object
         , public IProxyDeathRecipient
     {
         friend class CStatusBarManagerService;
@@ -161,6 +169,8 @@ private:
 
 public:
     CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CStatusBarManagerService();
 
@@ -254,7 +264,7 @@ public:
         /* [in] */ IIStatusBar* bar,
         /* [out] */ IStatusBarIconList** iconList,
         /* [out, callee] */ ArrayOf<Int32>** switches,
-        /* [out] */ List** binders);/*List<IBinder*>*/
+        /* [out] */ IList** binders);/*List<IBinder*>*/
 
     /**
      * The status bar service should call this each time the user brings the panel from
@@ -341,7 +351,7 @@ public:
     static const Boolean SPEW;
 
     AutoPtr<IContext> mContext;
-    AutoPtr<CWindowManagerService> mWindowManager; // TODO: weak ref?
+    // AutoPtr<CWindowManagerService> mWindowManager; // TODO: weak ref?
     AutoPtr<IHandler> mHandler;
     AutoPtr<INotificationDelegate> mNotificationDelegate;
     AutoPtr<IIStatusBar> mBar;
@@ -365,6 +375,7 @@ public:
     AutoPtr<IStatusBarManagerInternal> mInternalService;
 };
 
+}//namespace StatusBar
 }//namespace Server
 }//namespace Droid
 }//namespace Elastos

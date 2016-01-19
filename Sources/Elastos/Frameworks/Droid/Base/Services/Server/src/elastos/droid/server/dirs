@@ -8,9 +8,10 @@ DIRS += display
 DIRS += dreams
 DIRS += lights
 DIRS += net
-DIRS += notification
+#DIRS += notification
 DIRS += os
 DIRS += power
+DIRS += statusbar
 DIRS += twilight
 DIRS += wallpaper
 
