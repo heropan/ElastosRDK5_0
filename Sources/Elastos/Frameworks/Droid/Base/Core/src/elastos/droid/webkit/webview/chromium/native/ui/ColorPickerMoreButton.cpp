@@ -1,5 +1,5 @@
 
-#include "elastos/droid/graphics/CPaint.h"
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/ColorPickerMoreButton.h"
 
 using Elastos::Droid::Graphics::CPaint;

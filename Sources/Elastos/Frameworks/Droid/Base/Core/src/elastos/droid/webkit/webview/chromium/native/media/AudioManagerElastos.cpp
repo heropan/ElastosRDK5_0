@@ -1,21 +1,18 @@
 
+#include "Elastos.Droid.Bluetooth.h"
+#include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Media.h"
 #include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Provider.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/AudioManagerElastos.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/api/AudioManagerElastos_dec.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/Process.h"
-#include "elastos/droid/os/CHandlerThread.h"
 #include "elastos/droid/Manifest.h"
-#include "elastos/droid/content/CIntentFilter.h"
 #include "elastos/droid/provider/Settings.h"
-#include "elastos/droid/provider/CSettingsSystem.h"
 //TODO #include "elastos/droid/media/CAudioRecordHelper.h"
-#include "elastos/droid/media/CAudioTrackHelper.h"
-#include "elastos/droid/media/audiofx/CAcousticEchoCanceler.h"
-#include "elastos/droid/media/audiofx/CAcousticEchoCancelerHelper.h"
-#include "elastos/droid/bluetooth/CBluetoothAdapterHelper.h"
-//#include <elastos/core/Thread.h>
+#include <elastos/core/Thread.h>
 #include <elastos/core/AutoLock.h>
 #include <elastos/core/IntegralToString.h>
 #include <elastos/core/StringToIntegral.h>
@@ -58,6 +55,7 @@ using Elastos::Core::IntegralToString;
 using Elastos::Core::StringToIntegral;
 
 using Elastos::Core::IThread;
+using Elastos::Core::Thread;
 using Elastos::Core::EIID_IThread;
 using Elastos::Core::AutoLock;
 using Elastos::Utility::Logging::Logger;

@@ -1,9 +1,10 @@
+
+#include <Elastos.Droid.Widget.h>
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/AwContentViewClient.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/CommandLine.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ContentVideoView.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/common/ContentSwitches.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/AwContents.h"
-#include "elastos/droid/widget/CFrameLayout.h"
 #include "elastos/droid/webkit/URLUtil.h"
 
 using Elastos::Droid::View::IViewGroup;

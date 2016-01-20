@@ -1,11 +1,10 @@
 
 #include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Hardware.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/VideoCaptureFactory.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/VideoCaptureElastos.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/VideoCaptureTango.h"
 
-#include "elastos/droid/hardware/CHardwareCamera.h"
-#include "elastos/droid/hardware/CHardwareCameraHelper.h"
 #include "elastos/droid/os/Build.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>

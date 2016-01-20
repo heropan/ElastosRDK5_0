@@ -1,8 +1,6 @@
 
-#include "elastos/droid/content/res/CResourcesHelper.h"
-#include "elastos/droid/graphics/CBitmapFactory.h"
-#include "elastos/droid/graphics/CBitmapFactoryOptions.h"
-#include "elastos/droid/graphics/CBitmapHelper.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/gfx/BitmapHelper.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/gfx/BitmapFormat.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/api/BitmapHelper_dec.h"

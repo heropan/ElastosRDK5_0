@@ -1,15 +1,13 @@
 
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/text/TextUtils.h"
-#include "elastos/droid/view/CView.h"
-#include "elastos/droid/view/CViewGroupLayoutParams.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ApiCompatibilityUtils.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/ColorSuggestion.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/ColorSuggestionListAdapter.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/R_Ui.h"
-#include "elastos/droid/widget/CLinearLayout.h"
-#include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
 
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Graphics::Drawable::IDrawable;

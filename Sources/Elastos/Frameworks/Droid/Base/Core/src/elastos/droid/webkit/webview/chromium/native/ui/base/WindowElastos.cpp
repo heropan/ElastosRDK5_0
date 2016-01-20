@@ -5,10 +5,8 @@
 #include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.Utility.h"
 #include "Elastos.Droid.Widget.h"
-#include "elastos/droid/utility/CSparseArray.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/base/WindowElastos.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/api/WindowElastos_dec.h"
-#include "elastos/droid/widget/CToastHelper.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::Pm::IPackageManager;

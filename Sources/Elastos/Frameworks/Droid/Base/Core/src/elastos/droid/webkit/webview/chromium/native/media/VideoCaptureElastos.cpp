@@ -1,16 +1,12 @@
 
 #include <Elastos.CoreLibrary.Utility.h>
 #include <Elastos.CoreLibrary.Utility.Concurrent.h>
+#include "Elastos.Droid.Hardware.h"
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Graphics.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/VideoCaptureElastos.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/ImageFormat.h"
-
-#include "elastos/droid/graphics/CImageFormat.h"
-#include "elastos/droid/hardware/CHardwareCameraHelper.h"
-#include "elastos/droid/hardware/CHardwareCamera.h"
 #include "elastos/droid/os/Build.h"
-
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Graphics::IImageFormat;
@@ -18,7 +14,7 @@ using Elastos::Droid::Graphics::CImageFormat;
 using Elastos::Droid::Hardware::ICameraSize;
 using Elastos::Droid::Hardware::IHardwareCameraHelper;
 using Elastos::Droid::Hardware::CHardwareCameraHelper;
-using Elastos::Droid::Hardware::CHardwareCamera;
+using Elastos::Droid::Hardware::CHardwareCameraSize;
 
 using Elastos::Utility::Concurrent::Locks::ILock;
 using Elastos::Utility::Concurrent::Locks::EIID_ILock;
@@ -224,7 +220,8 @@ AutoPtr<ArrayOf<VideoCapture::CaptureFormat*> > VideoCaptureElastos::GetDeviceSu
             if ((supportedSizes == NULL)||(supportedSizes->GetLength() == 0)) {
                 //supportedSizes = new ArrayList<Camera.Size>();
                 supportedSizes = ArrayOf<ICameraSize*>::Alloc(1);
-                AutoPtr<ICameraSize> cameraSize = new CHardwareCamera::Size(0,0);
+                AutoPtr<ICameraSize> cameraSize;
+                CHardwareCameraSize::New(0, 0, (ICameraSize**)&cameraSize);
                 supportedSizes->Set(0, cameraSize.Get());
             }
             //if (supportedSizes.size() == 0) {
@@ -238,9 +235,10 @@ AutoPtr<ArrayOf<VideoCapture::CaptureFormat*> > VideoCaptureElastos::GetDeviceSu
                 AutoPtr<ICameraSize> size = (*supportedSizes)[i];
                 //TODO if ICameraSize and the interface to get width/heigth
                 //below cast should be removed
-                AutoPtr<CHardwareCamera::Size> v_size = (CHardwareCamera::Size*)size.Get();
-                Int32 width = v_size->mWidth;
-                Int32 height = v_size->mHeight;
+                Int32 width = 0;
+                Int32 height = 0;
+                size->GetWidth(&width);
+                size->GetHeight(&height);
                 //formatList.add(new CaptureFormat
                 formatList->Set(i, new VideoCapture::CaptureFormat(width,
                                                  height,

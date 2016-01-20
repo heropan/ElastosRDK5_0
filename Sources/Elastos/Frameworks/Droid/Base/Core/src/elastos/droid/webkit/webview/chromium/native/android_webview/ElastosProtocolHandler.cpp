@@ -4,10 +4,9 @@
 #include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/ElastosProtocolHandler.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/api/ElastosProtocolHandler_dec.h"
-#include "elastos/droid/net/CUriHelper.h"
-#include "elastos/droid/utility/CTypedValue.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::EIID_IContext;

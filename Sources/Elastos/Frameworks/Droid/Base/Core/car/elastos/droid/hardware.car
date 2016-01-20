@@ -238,6 +238,7 @@ module
     interface Elastos.Droid.Hardware.IParameters;
     interface Elastos.Droid.Hardware.ICameraArea;
     interface Elastos.Droid.Hardware.IHardwareCamera;
+    interface Elastos.Droid.Hardware.ICameraSize;
 
     using interface Elastos.Core.IComparator;
     using interface Elastos.IO.ICloseable;
@@ -314,6 +315,14 @@ module
 
         singleton class CHardwareCameraHelper {
             interface IHardwareCameraHelper;
+        }
+
+        class CHardwareCameraSize {
+            constructor(
+                [in] Int32 w,
+                [in] Int32 h);
+
+            interface ICameraSize;
         }
 
         class CTriggerEvent {

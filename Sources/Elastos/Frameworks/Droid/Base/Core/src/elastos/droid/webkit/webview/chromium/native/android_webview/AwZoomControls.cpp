@@ -1,6 +1,7 @@
+
+#include <Elastos.Droid.Widget.h>
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/AwZoomControls.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/AwContents.h"
-#include "elastos/droid/widget/CZoomButtonsController.h"
 
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::IViewGroup;

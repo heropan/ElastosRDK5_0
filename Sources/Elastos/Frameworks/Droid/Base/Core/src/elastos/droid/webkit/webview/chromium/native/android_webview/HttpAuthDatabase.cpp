@@ -1,8 +1,8 @@
 
 #include <Elastos.CoreLibrary.IO.h>
+#include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Database.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/HttpAuthDatabase.h"
-#include "elastos/droid/content/CContentValues.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
 

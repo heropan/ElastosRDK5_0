@@ -1,7 +1,7 @@
+
+#include <Elastos.Droid.Os.h>
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/AwCookieManager.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/api/AwCookieManager_dec.h"
-#include "elastos/droid/os/CHandler.h"
-#include "elastos/droid/os/CLooperHelper.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Os::CHandler;

@@ -1,19 +1,16 @@
 
+#include <Elastos.CoreLibrary.IO.h>
 #include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Media.h"
 #include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.Utility.h"
 #include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/MediaPlayerBridge.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/api/MediaPlayerBridge_dec.h"
-
-#include "elastos/droid/os/CParcelFileDescriptorHelper.h"
 #include "elastos/droid/text/TextUtils.h"
-#include "elastos/droid/utility/CBase64InputStream.h"
-#include "elastos/droid/net/CUriHelper.h"
-#include "elastos/droid/media/CMediaPlayer.h"
 #include "elastos/droid/os/Build.h"
-
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::IContext;

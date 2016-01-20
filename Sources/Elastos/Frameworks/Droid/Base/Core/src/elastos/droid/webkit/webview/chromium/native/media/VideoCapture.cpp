@@ -3,15 +3,12 @@
 #include <Elastos.CoreLibrary.Utility.Concurrent.h>
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Hardware.h"
 #include "Elastos.Droid.Opengl.h"
 #include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/VideoCapture.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/api/VideoCapture_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/ImageFormat.h"
-#include "elastos/droid/hardware/CHardwareCamera.h"
-#include "elastos/droid/hardware/CHardwareCameraHelper.h"
-#include "elastos/droid/opengl/CGLES20.h"
-#include "elastos/droid/graphics/CSurfaceTexture.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 

@@ -1,13 +1,18 @@
 
+#include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Webkit.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Utility.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/Looper.h"
 #include "elastos/droid/webkit/webview/chromium/R_Chromium.h"
 #include "elastos/droid/text/TextUtils.h"
-#include "elastos/droid/utility/CBase64.h"
-#include "elastos/droid/view/CView.h"
-#include "elastos/droid/webkit/CWebViewFactory.h"
-#include "elastos/droid/webkit/CWebViewHitTestResult.h"
+//#include "elastos/droid/utility/CBase64.h"
+//#include "elastos/droid/view/CView.h"
+//#include "elastos/droid/webkit/CWebViewFactory.h"
+//#include "elastos/droid/webkit/CWebViewHitTestResult.h"
 #include "elastos/droid/webkit/FindActionModeCallback.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/AwBrowserContext.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/AwContentsClient.h"
@@ -18,12 +23,13 @@
 #include "elastos/droid/webkit/webview/chromium/UnimplementedWebViewApi.h"
 #include "elastos/droid/webkit/webview/chromium/WebBackForwardListChromium.h"
 #include "elastos/droid/webkit/webview/chromium/WebViewChromium.h"
-#include "elastos/droid/widget/CTextView.h"
+//#include "elastos/droid/widget/CTextView.h"
 #include "elastos/core/CoreUtils.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::EIID_IContextWrapper;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
+using Elastos::Droid::Content::Pm::IPackageInfo;
 using Elastos::Droid::Content::Res::IAssetManager;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::Looper;

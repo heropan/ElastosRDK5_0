@@ -5,6 +5,7 @@
 #ifndef _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_NET_REMOTEANDROIDKEYSTORE_H_
 #define _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_NET_REMOTEANDROIDKEYSTORE_H_
 
+#include <Elastos.Droid.Webkit.Native.h>
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/webview/chromium/native/net/ElastosKeyStore.h"
 #include "elastos/droid/webkit/webview/chromium/native/net/ElastosPrivateKey.h"

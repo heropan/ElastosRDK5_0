@@ -1,11 +1,12 @@
+
+#include <Elastos.Droid.Graphics.h>
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/CppBrowserViewRendererHelper.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/api/CppBrowserViewRendererHelper_dec.h"
-
-#include "elastos/droid/graphics/CBitmap.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/Math.h>
 
-using Elastos::Droid::Graphics::CBitmap;
+using Elastos::Droid::Graphics::CBitmapHelper;
+using Elastos::Droid::Graphics::IBitmapHelper;
 using Elastos::Droid::Graphics::BitmapConfig_ARGB_8888;
 using Elastos::Utility::Logging::Logger;
 
@@ -46,7 +47,9 @@ AutoPtr<IInterface> CppBrowserViewRendererHelper::CreateBitmap(
 
     AutoPtr<IBitmap> bitmap;
     // try {
-        ECode ecode = CBitmap::CreateBitmap(width, height, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
+        AutoPtr<IBitmapHelper> helper;
+        CBitmapHelper::AcquireSingleton((IBitmapHelper**)&helper);
+        ECode ecode = helper->CreateBitmap(width, height, BitmapConfig_ARGB_8888, (IBitmap**)&bitmap);
     // } catch (OutOfMemoryError e) {
     //     android.util.Log.w(LOGTAG, "Error allocating bitmap");
     // }

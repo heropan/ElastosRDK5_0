@@ -4,10 +4,7 @@
 #include "Elastos.Droid.Media.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/AudioRecordInput.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/api/AudioRecordInput_dec.h"
-
-#include "elastos/droid/media/CAudioRecord.h"
 //TODO: #include "elastos/droid/media/CAudioRecordHelper.h"
-#include "elastos/droid/media/audiofx/CAcousticEchoCancelerHelper.h"
 #include "elastos/droid/os/Process.h"
 
 #include <elastos/core/Math.h>

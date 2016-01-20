@@ -316,7 +316,7 @@ private:
 
     Int32 mGravity;
 
-    AutoPtr<CRect> mTempRect;
+    AutoPtr<IRect> mTempRect;
 };
 
 } // namespace Widget

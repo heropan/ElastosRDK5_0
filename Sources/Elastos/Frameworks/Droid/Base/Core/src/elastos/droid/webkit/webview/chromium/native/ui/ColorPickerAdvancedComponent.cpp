@@ -1,8 +1,8 @@
 
 #include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.View.h"
 #include "Elastos.Droid.Widget.h"
-#include "elastos/droid/graphics/drawable/CGradientDrawable.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ApiCompatibilityUtils.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/ColorPickerAdvancedComponent.h"

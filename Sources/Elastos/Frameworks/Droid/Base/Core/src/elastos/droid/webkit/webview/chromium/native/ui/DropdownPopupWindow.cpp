@@ -1,12 +1,11 @@
 
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Graphics.h"
-#include "elastos/droid/graphics/CRect.h"
 #include "Elastos.Droid.Utility.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/DropdownPopupWindow.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/R_Ui.h"
-#include "elastos/droid/widget/CLinearLayoutLayoutParams.h"
 #include "elastos/core/Math.h"
 
 using Elastos::Droid::Content::Res::IResources;

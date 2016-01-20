@@ -1,7 +1,7 @@
 
+#include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Net.h"
 #include "Elastos.Droid.Os.h"
-#include "elastos/droid/content/CIntentFilter.h"
 //TODO: #include "elastos/droid/net/CProxyProperties.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/webkit/webview/chromium/native/net/ProxyChangeListener.h"

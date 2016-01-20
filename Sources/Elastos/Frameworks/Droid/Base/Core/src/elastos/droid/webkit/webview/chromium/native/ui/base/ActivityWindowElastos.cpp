@@ -1,8 +1,8 @@
 
 #include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Utility.h"
-#include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/base/ActivityWindowElastos.h"
 
 using Elastos::Droid::Content::CIntent;

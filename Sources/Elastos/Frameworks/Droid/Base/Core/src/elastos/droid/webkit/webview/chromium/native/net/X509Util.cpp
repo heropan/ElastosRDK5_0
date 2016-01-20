@@ -5,11 +5,9 @@
 #include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.KeyStore.h"
 #include "Elastos.Droid.Net.h"
-#include "elastos/droid/content/CIntent.h"
-#include "elastos/droid/content/CIntentFilter.h"
-#include "elastos/droid/net/http/CX509TrustManagerExtensions.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/os/Build.h"
-#include "elastos/droid/utility/CPairHelper.h"
 #include "elastos/droid/webkit/webview/chromium/native/net/X509Util.h"
 #include "elastos/droid/webkit/webview/chromium/native/net/CertVerifyStatusElastos.h"
 #include "elastos/droid/webkit/webview/chromium/native/net/api/X509Util_dec.h"

@@ -1,11 +1,11 @@
 
+#include <Elastos.Droid.Os.h>
 #include "elastos/droid/webkit/webview/chromium/native/base/TraceEvent.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/api/TraceEvent_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/CommandLine.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/BaseSwitches.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ThreadUtils.h"
 #include "elastos/droid/os/SystemClock.h"
-#include "elastos/droid/os/CLooperHelper.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
 

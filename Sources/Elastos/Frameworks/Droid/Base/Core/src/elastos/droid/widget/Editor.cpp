@@ -11,6 +11,7 @@
 #include "elastos/droid/graphics/CMatrix.h"
 #include "elastos/droid/graphics/CPath.h"
 #include "elastos/droid/graphics/CPaint.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/graphics/CRectF.h"
 #include "elastos/droid/internal/utility/GrowingArrayUtils.h"
 #include "elastos/droid/os/SystemClock.h"
@@ -90,6 +91,7 @@ using Elastos::Droid::Graphics::Color;
 using Elastos::Droid::Graphics::CMatrix;
 using Elastos::Droid::Graphics::CPath;
 using Elastos::Droid::Graphics::CPaint;
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Graphics::CRectF;
 using Elastos::Droid::Graphics::IColor;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;

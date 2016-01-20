@@ -2,14 +2,11 @@
 #include <Elastos.CoreLibrary.IO.h>
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/WebAudioMediaCodecBridge.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/api/WebAudioMediaCodecBridge_dec.h"
-
-#include "elastos/droid/os/CParcelFileDescriptorHelper.h"
 //TODO #include "elastos/droid/media/CMediaExtractor.h"
-#include "elastos/droid/media/CMediaCodecBufferInfo.h"
 //TODO #include "elastos/droid/media/CMediaCodecHelper.h"
-
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::IContext;

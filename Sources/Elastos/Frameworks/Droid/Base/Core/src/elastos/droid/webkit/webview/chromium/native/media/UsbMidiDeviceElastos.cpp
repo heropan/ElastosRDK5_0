@@ -1,13 +1,14 @@
 
+#include <Elastos.CoreLibrary.Core.h>
+#include <Elastos.CoreLibrary.IO.h>
+#include "Elastos.Droid.Hardware.h"
+#include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.Utility.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/UsbMidiDeviceElastos.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/api/UsbMidiDeviceElastos_dec.h"
 
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/Handler.h"
-#include "elastos/droid/os/CHandler.h"
-#include "elastos/droid/hardware/usb/CUsbRequest.h"
-#include "elastos/droid/utility/CSparseArray.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Hardware::Usb::IUsbConstants;

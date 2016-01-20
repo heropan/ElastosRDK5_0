@@ -6,6 +6,7 @@
 #define _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_UI_COLORSUGGESTIONLISTADAPTER_H_
 
 #include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Webkit.Native.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/widget/BaseAdapter.h"
 #include "Elastos.Droid.Webkit.h"

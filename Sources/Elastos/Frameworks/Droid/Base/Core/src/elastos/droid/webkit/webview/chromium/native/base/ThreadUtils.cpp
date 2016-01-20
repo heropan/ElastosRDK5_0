@@ -2,7 +2,6 @@
 #include "Elastos.Droid.Os.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ThreadUtils.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/api/ThreadUtils_dec.h"
-#include "elastos/droid/os/CHandler.h"
 #include "elastos/droid/os/Looper.h"
 #include "elastos/droid/os/Process.h"
 #include "elastos/core/AutoLock.h"

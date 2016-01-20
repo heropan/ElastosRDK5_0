@@ -2,6 +2,7 @@
 #include "Elastos.Droid.App.h"
 #include "Elastos.Droid.Provider.h"
 #include "Elastos.Droid.Net.h"
+#include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.Utility.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ContentViewCore.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/api/ContentViewCore_dec.h"
@@ -18,7 +19,6 @@
 #include "elastos/droid/webkit/webview/chromium/native/base/TraceEvent.h"
 //TODO #include "elastos/droid/content/CIntent.h"
 //TODO #include "elastos/droid/content/CIntentHelper.h"
-#include "elastos/droid/os/CHandler.h"
 #include "elastos/droid/text/TextUtils.h"
 //TODO #include "elastos/droid/text/CEditableFactory.h"
 //TODO #include "elastos/droid/text/CSelection.h"
@@ -26,7 +26,6 @@
 //TODO #include "elastos/droid/widget/CView.h"
 //TODO #include "elastos/droid/view/CMotionEventHelper.h"
 //TODO #include "elastos/droid/utility/CArrayList.h"
-#include "elastos/droid/utility/CPairHelper.h"
 
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>

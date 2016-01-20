@@ -1,6 +1,5 @@
 
-#include "elastos/droid/graphics/CPaint.h"
-#include "elastos/droid/graphics/CRect.h"
+#include <Elastos.Droid.Graphics.h>
 #include "elastos/droid/webkit/webview/chromium/native/ui/DropdownDividerDrawable.h"
 
 using Elastos::Droid::Graphics::CPaint;

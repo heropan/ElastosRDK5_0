@@ -1,15 +1,11 @@
 
 #include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Hardware.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/UsbMidiDeviceFactoryElastos.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/api/UsbMidiDeviceFactoryElastos_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/UsbMidiDeviceElastos.h"
-
-#include "elastos/droid/content/CIntentFilter.h"
-#include "elastos/droid/app/CPendingIntentHelper.h"
-#include "elastos/droid/content/CIntent.h"
-
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Content::IBroadcastReceiver;

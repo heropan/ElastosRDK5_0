@@ -6,7 +6,6 @@
 #include "Elastos.CoreLibrary.IO.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ContentUriUtils.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/api/ContentUriUtils_dec.h"
-#include "elastos/droid/net/CUriHelper.h"
 
 using Elastos::Droid::Net::CUriHelper;
 using Elastos::Droid::Net::IUriHelper;

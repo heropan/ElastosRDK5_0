@@ -1,6 +1,7 @@
 
 #include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/BrowserStartupController.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/api/BrowserStartupController_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/ResourceExtractor.h"
@@ -8,8 +9,6 @@
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/PepperPluginManager.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/app/ContentMain.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ThreadUtils.h"
-
-#include "elastos/droid/os/CHandler.h"
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Os::CHandler;

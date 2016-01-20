@@ -1,8 +1,8 @@
+
+#include <Elastos.Droid.Net.h>
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/permission/AwPermissionRequest.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/api/AwPermissionRequest_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ThreadUtils.h"
-
-#include "elastos/droid/net/CUriHelper.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Net::IUri;

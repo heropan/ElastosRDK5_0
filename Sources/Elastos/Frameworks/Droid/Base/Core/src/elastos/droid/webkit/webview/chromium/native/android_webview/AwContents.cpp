@@ -3,7 +3,10 @@
 #include <Elastos.CoreLibrary.Net.h>
 #include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Graphics.h"
+#include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.Utility.h"
+#include "Elastos.Droid.Widget.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/AwContents.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/api/AwContents_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ThreadUtils.h"
@@ -19,12 +22,8 @@
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/FullScreenView.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/SslUtil.h"
 #include "elastos/droid/os/Build.h"
-#include "elastos/droid/os/CBundle.h"
-#include "elastos/droid/os/CMessageHelper.h"
-#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/net/Uri.h"
 #include "elastos/droid/text/TextUtils.h"
-#include "elastos/droid/widget/COverScroller.h"
 #include <elastos/core/Math.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>

@@ -3,9 +3,6 @@
 #include "elastos/droid/webkit/webview/chromium/native/base/PowerMonitor.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/api/PowerMonitor_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ApplicationState.h"
-#include "elastos/droid/content/CIntentFilter.h"
-#include "elastos/droid/os/CHandler.h"
-#include "elastos/droid/os/CLooperHelper.h"
 #include "elastos/core/AutoLock.h"
 
 using Elastos::Droid::Content::CIntentFilter;

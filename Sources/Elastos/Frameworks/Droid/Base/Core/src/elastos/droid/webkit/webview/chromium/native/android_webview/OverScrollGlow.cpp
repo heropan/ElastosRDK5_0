@@ -3,7 +3,6 @@
 #include "Elastos.Droid.View.h"
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/OverScrollGlow.h"
-#include "elastos/droid/widget/CEdgeEffect.h"
 #include <elastos/core/Math.h>
 
 using Elastos::Droid::Widget::CEdgeEffect;

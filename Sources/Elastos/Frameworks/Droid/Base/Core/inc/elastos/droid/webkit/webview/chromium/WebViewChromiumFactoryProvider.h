@@ -2,6 +2,8 @@
 #ifndef _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_WEBVIEWCHROMIUMFACTORYPROVIDER_H_
 #define _ELASTOS_DROID_WEBKIT_WEBVIEW_CHROMIUM_WEBVIEWCHROMIUMFACTORYPROVIDER_H_
 
+#include <Elastos.Droid.Webkit.h>
+#include <Elastos.Droid.Webkit.Webview.h>
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/AwBrowserContext.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/AwDevToolsServer.h"
@@ -27,6 +29,7 @@ using Elastos::Droid::Webkit::Webview::Chromium::GeolocationPermissionsAdapter;
 using Elastos::Droid::Webkit::Webview::Chromium::WebIconDatabaseAdapter;
 using Elastos::Droid::Webkit::Webview::Chromium::WebStorageAdapter;
 using Elastos::Droid::Webkit::Webview::Chromium::WebViewDatabaseAdapter;
+using Elastos::Droid::Webkit::Webview::Chromium::IWebViewChromiumFactoryProvider;
 using Elastos::Droid::Webkit::IWebView;
 using Elastos::Droid::Webkit::IWebViewPrivateAccess;
 using Elastos::Droid::Webkit::IWebViewProvider;
@@ -43,6 +46,7 @@ namespace Chromium {
 class ECO_PUBLIC WebViewChromiumFactoryProvider
     : public Object
     , public IWebViewFactoryProvider
+    , public IWebViewChromiumFactoryProvider
 {
 private:
     class InnerSyncATraceStateRunnable

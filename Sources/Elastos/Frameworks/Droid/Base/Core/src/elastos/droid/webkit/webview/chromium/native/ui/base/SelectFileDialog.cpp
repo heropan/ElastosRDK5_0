@@ -1,10 +1,11 @@
 
+#include <Elastos.CoreLibrary.Core.h>
 #include <Elastos.CoreLibrary.IO.h>
 #include "Elastos.Droid.App.h"
+#include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.Provider.h"
-#include "elastos/droid/content/CIntent.h"
 #include "elastos/droid/net/Uri.h"
-#include "elastos/droid/os/CEnvironment.h"
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ContentUriUtils.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/base/SelectFileDialog.h"
@@ -35,6 +36,7 @@ using Elastos::IO::IFile;
 using Elastos::IO::IFileHelper;
 using Elastos::Utility::Arrays;
 using Elastos::Utility::CArrayList;
+using Elastos::Utility::IArrayList;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {

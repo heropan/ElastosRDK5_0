@@ -5,7 +5,6 @@
 #include "Elastos.Droid.Database.h"
 #include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.View.h"
-#include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.Content.h"
 #include "elastos/droid/animation/AnimatorListenerAdapter.h"
 #include "elastos/droid/ext/frameworkext.h"
@@ -45,7 +44,7 @@ namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-class ListPopupWindow
+class ECO_PUBLIC ListPopupWindow
     : public Object
     , public IListPopupWindow
 {

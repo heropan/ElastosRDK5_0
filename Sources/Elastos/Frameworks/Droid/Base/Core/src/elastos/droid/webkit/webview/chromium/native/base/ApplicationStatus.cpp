@@ -5,7 +5,6 @@
 #include "elastos/droid/webkit/webview/chromium/native/base/ApplicationState.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ActivityState.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ThreadUtils.h"
-#include "elastos/droid/content/pm/CActivityInfo.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
 

@@ -1,8 +1,7 @@
 
+#include <Elastos.Droid.Os.h>
 #include "elastos/droid/webkit/webview/chromium/native/base/CppHandlerThread.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/api/CppHandlerThread_dec.h"
-#include "elastos/droid/os/CHandler.h"
-#include "elastos/droid/os/CHandlerThread.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Os::ILooper;

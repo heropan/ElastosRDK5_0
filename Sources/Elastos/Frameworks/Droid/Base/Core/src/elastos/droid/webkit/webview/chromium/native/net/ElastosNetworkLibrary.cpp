@@ -1,16 +1,17 @@
 
 #include <Elastos.CoreLibrary.Net.h>
 #include <Elastos.CoreLibrary.Utility.h>
+#include <Elastos.Droid.Content.h>
 #include "Elastos.Droid.KeyStore.h"
 #include "_Elastos.Droid.Core.h"
 #include "_Elastos.Droid.Telephony.h"
-#include "elastos/droid/content/CIntent.h"
 //TODO: #include "elastos/droid/telephony/CTelephonyManager.h"
 #include "elastos/droid/webkit/webview/chromium/native/net/ElastosNetworkLibrary.h"
 #include "elastos/droid/webkit/webview/chromium/native/net/CertificateMimeType.h"
 #include "elastos/droid/webkit/webview/chromium/native/net/api/ElastosNetworkLibrary_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/net/X509Util.h"
 #include "elastos/core/IntegralToString.h"
+#include "elastos/core/StringBuilder.h"
 //TODO: #include "elastos/net/URLConnection.h"
 #include <elastos/utility/logging/Logger.h>
 
@@ -22,6 +23,7 @@ using Elastos::Droid::Telephony::ITelephonyManager;
 using Elastos::Droid::Webkit::Webview::Chromium::Net::CertificateMimeType;
 using Elastos::Droid::Webkit::Webview::Chromium::Net::X509Util;
 using Elastos::Core::IntegralToString;
+using Elastos::Core::StringBuilder;
 using Elastos::Net::CNetworkInterfaceHelper;
 using Elastos::Net::EIID_IInet6Address;
 using Elastos::Net::IInet6Address;

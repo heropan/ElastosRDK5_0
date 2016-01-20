@@ -4,7 +4,6 @@
 #include "Elastos.Droid.View.h"
 #include "Elastos.Droid.Widget.h"
 #include "elastos/droid/text/TextUtils.h"
-#include "elastos/droid/view/CViewGroupLayoutParams.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ApiCompatibilityUtils.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/DropdownAdapter.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/DropdownDividerDrawable.h"

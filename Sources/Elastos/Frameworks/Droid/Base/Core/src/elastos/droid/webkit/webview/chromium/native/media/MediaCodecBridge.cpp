@@ -2,19 +2,14 @@
 #include <Elastos.CoreLibrary.IO.h>
 #include <Elastos.CoreLibrary.Utility.h>
 #include "Elastos.Droid.Media.h"
+#include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.View.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/MediaCodecBridge.h"
 #include "elastos/droid/webkit/webview/chromium/native/media/api/MediaCodecBridge_dec.h"
 
 //TODO #include "elastos/droid/media/CMediaCodecListHelper.h"
 //TODO #include "elastos/droid/media/CMediaCodecHelper.h"
-#include "elastos/droid/media/CMediaCodecBufferInfo.h"
-#include "elastos/droid/media/CMediaFormatHelper.h"
-#include "elastos/droid/media/CAudioTrackHelper.h"
-#include "elastos/droid/media/CAudioTrack.h"
-#include "elastos/droid/media/CMediaCodecCryptoInfo.h"
 #include "elastos/droid/os/Build.h"
-#include "elastos/droid/os/CBundle.h"
 
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>

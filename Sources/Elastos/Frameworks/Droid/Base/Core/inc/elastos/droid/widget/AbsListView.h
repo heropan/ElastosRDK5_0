@@ -5,12 +5,14 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Widget.h"
 #include "Elastos.Droid.Text.h"
+#include <Elastos.Droid.Graphics.h>
 #include "elastos/droid/widget/AdapterView.h"
-#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/view/VelocityTracker.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/view/ViewGroup.h"
 #include <Elastos.CoreLibrary.h>
+
+using Elastos::Droid::Graphics::IRect;
 
 namespace Elastos {
 namespace Droid {
@@ -21,7 +23,7 @@ class CAbsListViewSavedState;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Graphics::IRect;
-using Elastos::Droid::Graphics::CRect;
+
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IStrictModeSpan;
 using Elastos::Droid::Text::IEditable;
@@ -2564,7 +2566,7 @@ protected:
     /**
      * This view's padding
      */
-    AutoPtr<CRect> mListPadding;
+    AutoPtr<IRect> mListPadding;
 
     /**
      * Subclasses must retain their measure spec from onMeasure() into this member

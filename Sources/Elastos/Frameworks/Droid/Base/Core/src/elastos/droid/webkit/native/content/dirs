@@ -1,3 +1,0 @@
-DIRS = app
-DIRS += browser
-DIRS += common

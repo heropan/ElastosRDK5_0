@@ -4,8 +4,6 @@
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/SslUtil.h"
 #include "elastos/droid/webkit/webview/chromium/native/net/NetError.h"
 #include "elastos/droid/webkit/webview/chromium/native/net/X509Util.h"
-#include "elastos/droid/net/http/CSslError.h"
-#include "elastos/droid/net/http/CSslCertificate.h"
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Droid::Net::Http::CSslError;

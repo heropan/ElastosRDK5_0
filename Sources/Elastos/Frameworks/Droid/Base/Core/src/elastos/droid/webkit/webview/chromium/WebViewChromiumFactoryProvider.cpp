@@ -1,13 +1,11 @@
 
-#include "elastos/droid/app/CActivityManagerHelper.h"
-#include "elastos/droid/app/CActivityThreadHelper.h"
+#include <Elastos.Droid.Webkit.h>
+#include <Elastos.Droid.Os.h>
+#include <Elastos.Droid.App.h>
 #include "elastos/droid/os/Build.h"
-#include "elastos/droid/os/CLooperHelper.h"
 //#include "elastos/droid/os/CStrictMode.h"
 #include "elastos/droid/os/FileUtils.h"
-#include "elastos/droid/os/SystemProperties.h"
 #include "elastos/droid/R.h"
-#include "elastos/droid/webkit/CWebViewFactory.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/AwBrowserProcess.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/AwContentsStatics.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/AwResource.h"
@@ -45,7 +43,8 @@ using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::ILooperHelper;
 using Elastos::Droid::Os::IStrictMode;
 using Elastos::Droid::Os::IStrictModeThreadPolicy;
-using Elastos::Droid::Os::SystemProperties;
+using Elastos::Droid::Os::ISystemProperties;
+using Elastos::Droid::Os::CSystemProperties;
 using Elastos::Droid::Webkit::Webview::Chromium::AndroidWebview::AwBrowserProcess;
 using Elastos::Droid::Webkit::Webview::Chromium::AndroidWebview::AwContentsStatics;
 using Elastos::Droid::Webkit::Webview::Chromium::AndroidWebview::AwResource;
@@ -64,6 +63,7 @@ using Elastos::Droid::Webkit::IWebViewFactory;
 using Elastos::Droid::Webkit::Webview::Chromium::FileChooserParamsAdapter;
 using Elastos::Droid::Webkit::Webview::Chromium::ResourceRewriter;
 using Elastos::Droid::Webkit::Webview::Chromium::WebViewChromium;
+using Elastos::Droid::Webkit::Webview::Chromium::EIID_IWebViewChromiumFactoryProvider;
 using Elastos::Core::AutoLock;
 using Elastos::Core::CSystem;
 using Elastos::Core::EIID_IRunnable;
@@ -238,7 +238,7 @@ const String WebViewChromiumFactoryProvider::CHROMIUM_PREFS_NAME("WebViewChromiu
 const String WebViewChromiumFactoryProvider::VERSION_CODE_PREF("lastVersionCodeUsed");
 const String WebViewChromiumFactoryProvider::COMMAND_LINE_FILE("/data/local/tmp/webview-command-line");
 
-CAR_INTERFACE_IMPL(WebViewChromiumFactoryProvider, Object, IWebViewFactoryProvider)
+CAR_INTERFACE_IMPL_2(WebViewChromiumFactoryProvider, Object, IWebViewFactoryProvider, IWebViewChromiumFactoryProvider)
 
 WebViewChromiumFactoryProvider::WebViewChromiumFactoryProvider()
     : mStarted(FALSE)
@@ -623,7 +623,9 @@ ECode WebViewChromiumFactoryProvider::InitTraceEvent()
 
     SyncATraceState();
     AutoPtr<IRunnable> runnable = new InnerSyncATraceStateRunnable();
-    return SystemProperties::AddChangeCallback(runnable);
+    AutoPtr<ISystemProperties> systemProperty;
+    CSystemProperties::AcquireSingleton((ISystemProperties**)&systemProperty);
+    return systemProperty->AddChangeCallback(runnable);
 }
 
 ECode WebViewChromiumFactoryProvider::SyncATraceState()
@@ -633,7 +635,9 @@ ECode WebViewChromiumFactoryProvider::SyncATraceState()
     // TraceEvent.setATraceEnabled((enabledFlags & Trace.TRACE_TAG_WEBVIEW) != 0);
 
     Int64 enabledFlags = 0;
-    SystemProperties::GetInt64(String("debug.atrace.tags.enableflags"), 0, &enabledFlags);
+    AutoPtr<ISystemProperties> systemProperty;
+    CSystemProperties::AcquireSingleton((ISystemProperties**)&systemProperty);
+    systemProperty->GetInt64(String("debug.atrace.tags.enableflags"), 0, &enabledFlags);
     TraceEvent::SetATraceEnabled((enabledFlags /*& Trace.TRACE_TAG_WEBVIEW*/) != 0);
     return NOERROR;
 }

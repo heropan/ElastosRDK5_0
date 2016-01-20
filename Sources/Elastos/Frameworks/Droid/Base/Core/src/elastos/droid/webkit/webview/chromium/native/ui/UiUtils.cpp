@@ -1,11 +1,9 @@
 
 #include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.Utility.h"
 #include "Elastos.Droid.View.h"
-#include "elastos/droid/graphics/CBitmapHelper.h"
-#include "elastos/droid/graphics/CCanvas.h"
-#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/UiUtils.h"
 #include "elastos/core/Math.h"
 

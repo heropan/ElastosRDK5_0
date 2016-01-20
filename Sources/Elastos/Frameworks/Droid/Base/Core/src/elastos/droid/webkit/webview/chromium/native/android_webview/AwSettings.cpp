@@ -1,13 +1,12 @@
 
 #include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.Provider.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/AwSettings.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/api/AwSettings_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/android_webview/AwResource.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ThreadUtils.h"
-#include "elastos/droid/os/CMessageHelper.h"
 #include "elastos/droid/os/Process.h"
-#include "elastos/droid/provider/CSettingsSystem.h"
 #include "elastos/droid/Manifest.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>

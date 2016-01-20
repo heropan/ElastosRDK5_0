@@ -4,6 +4,7 @@
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Media.h"
 #include "Elastos.Droid.View.h"
+#include "elastos/droid/hardware/CHardwareCameraSize.h"
 #include "elastos/droid/hardware/HardwareCamera.h"
 //#include "elastos/droid/app/CActivityThread.h"
 #include "elastos/droid/text/TextUtils.h"
@@ -905,12 +906,19 @@ ECode HardwareCamera::Face::GetMouth(
 
 CAR_INTERFACE_IMPL(HardwareCamera::Size, Object, ICameraSize);
 
-HardwareCamera::Size::Size(
+HardwareCamera::Size::Size()
+    : mWidth(0)
+    , mHeight(0)
+{
+}
+
+ECode HardwareCamera::Size::constructor(
     /* [in] */ Int32 w,
     /* [in] */ Int32 h)
-    : mWidth(w)
-    , mHeight(h)
 {
+    mWidth = w;
+    mHeight = h;
+    return NOERROR;
 }
 
 ECode HardwareCamera::Size::Equals(
@@ -1318,7 +1326,8 @@ ECode HardwareCamera::Parameters::GetJpegThumbnailSize(
     GetInt(KEY_JPEG_THUMBNAIL_WIDTH, &w);
     GetInt(KEY_JPEG_THUMBNAIL_HEIGHT, &h);
 
-    AutoPtr<ICameraSize> _size = new Size(w, h);
+    AutoPtr<ICameraSize> _size;
+    CHardwareCameraSize::New(w, h, (ICameraSize**)&_size);
     *size = _size;
     REFCOUNT_ADD(*size);
     return NOERROR;
@@ -2356,8 +2365,10 @@ AutoPtr<ICameraSize> HardwareCamera::Parameters::StrToSize(
     if (pos != -1) {
         String width = str.Substring(0, pos);
         String height = str.Substring(pos + 1);
-        return new Size(
-            StringUtils::ParseInt32(width), StringUtils::ParseInt32(height));
+
+        AutoPtr<ICameraSize> result;
+        CHardwareCameraSize::New(StringUtils::ParseInt32(width), StringUtils::ParseInt32(height), (ICameraSize**)&result);
+        return result;
     }
 
     // Log.e(TAG, "Invalid size parameter string=" + str);

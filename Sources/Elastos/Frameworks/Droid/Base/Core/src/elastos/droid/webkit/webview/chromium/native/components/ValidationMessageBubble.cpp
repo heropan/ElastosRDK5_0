@@ -1,6 +1,6 @@
 
-#include "elastos/droid/graphics/CPoint.h"
-#include "elastos/droid/graphics/CRectF.h"
+#include <Elastos.Droid.Graphics.h>
+#include <Elastos.Droid.Widget.h>
 #include "elastos/droid/text/TextUtils.h"
 #include "elastos/droid/view/View.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ApiCompatibilityUtils.h"
@@ -8,7 +8,6 @@
 #include "elastos/droid/webkit/webview/chromium/native/components/api/ValidationMessageBubble_dec.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/browser/RenderCoordinates.h"
 #include "elastos/droid/webkit/webview/chromium/native/content/R_Content.h"
-#include "elastos/droid/widget/CPopupWindow.h"
 //#include "elastos/droid/widget/CRelativeLayoutLayoutParams.h"
 #include <elastos/utility/logging/Logger.h>
 

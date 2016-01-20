@@ -1,8 +1,8 @@
 
 #include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.Utility.h"
 #include "Elastos.Droid.View.h"
-#include "elastos/droid/graphics/CPixelFormat.h"
 #include "elastos/droid/os/Build.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/gfx/DeviceDisplayInfo.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/api/DeviceDisplayInfo_dec.h"
@@ -100,8 +100,9 @@ Int32 DeviceDisplayInfo::GetBitsPerPixel()
     AutoPtr<IPixelFormat> info;
     CPixelFormat::AcquireSingleton((IPixelFormat**)&info);
     info->GetPixelFormatInfo(format, info);
-    CPixelFormat* infoTmp = (CPixelFormat*)info.Get();
-    return infoTmp->mBitsPerPixel;
+    Int32 bitsPerPixel = 0;
+    info->GetBitsPerPixel(&bitsPerPixel);
+    return bitsPerPixel;
 }
 
 Int32 DeviceDisplayInfo::GetBitsPerComponent()

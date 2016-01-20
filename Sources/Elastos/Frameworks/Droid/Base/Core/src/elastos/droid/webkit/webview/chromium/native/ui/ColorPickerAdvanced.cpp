@@ -1,7 +1,7 @@
 
 #include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Graphics.h"
 #include "Elastos.Droid.View.h"
-#include "elastos/droid/graphics/CColor.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/ColorPickerAdvanced.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/R_Ui.h"
 #include "elastos/core/Math.h"

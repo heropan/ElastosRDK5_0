@@ -9,6 +9,8 @@
 #include "elastos/droid/webkit/webview/chromium/ContentSettingsAdapter.h"
 #include "elastos/droid/webkit/webview/chromium/DrawGLFunctor.h"
 #include "elastos/droid/webkit/webview/chromium/WebViewContentsClientAdapter.h"
+#include "elastos/droid/webkit/webview/chromium/WebViewChromiumFactoryProvider.h"
+#include <Elastos.Droid.Webkit.h>
 #include "elastos/utility/concurrent/FutureTask.h"
 
 using Elastos::Droid::Content::IContextWrapper;
@@ -49,6 +51,7 @@ using Elastos::Droid::Webkit::IWebViewProviderViewDelegate;
 using Elastos::Droid::Webkit::Webview::Chromium::ContentSettingsAdapter;
 using Elastos::Droid::Webkit::Webview::Chromium::DrawGLFunctor;
 using Elastos::Droid::Webkit::Webview::Chromium::WebViewContentsClientAdapter;
+using Elastos::Droid::Webkit::Webview::Chromium::IWebViewChromiumFactoryProvider;
 using Elastos::Core::IClassLoader;
 using Elastos::Core::IInteger32;
 using Elastos::Core::IRunnable;

@@ -1,8 +1,8 @@
 
 #include "Elastos.Droid.Content.h"
+#include "Elastos.Droid.Os.h"
+#include "Elastos.Droid.View.h"
 #include "elastos/droid/os/Build.h"
-#include "elastos/droid/os/CHandler.h"
-#include "elastos/droid/view/CChoreographerHelper.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/TraceEvent.h"
 #include "elastos/droid/webkit/webview/chromium/native/ui/VSyncMonitor.h"
 

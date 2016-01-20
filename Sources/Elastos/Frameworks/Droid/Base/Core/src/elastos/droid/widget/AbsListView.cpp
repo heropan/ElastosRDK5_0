@@ -22,6 +22,7 @@
 #include "elastos/droid/view/MotionEvent.h"
 #include "elastos/droid/view/LayoutInflater.h"
 #include "elastos/droid/view/ViewConfiguration.h"
+#include "elastos/droid/graphics/CRect.h"
 #include "elastos/droid/R.h"
 #include <elastos/core/CoreUtils.h>
 #include <elastos/core/Math.h>
@@ -39,6 +40,7 @@ using Elastos::Droid::Graphics::Drawable::ITransitionDrawable;
 using Elastos::Droid::Graphics::Drawable::EIID_ITransitionDrawable;
 using Elastos::Droid::Graphics::Drawable::IDrawableCallback;
 using Elastos::Droid::Graphics::Drawable::EIID_IDrawableCallback;
+using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Os::IStrictMode;
 // using Elastos::Droid::Os::CStrictMode;
 using Elastos::Droid::Os::Build;
@@ -1481,10 +1483,14 @@ void AbsListView::PositionScroller::ScrollToVisible(
     Int32 childCount;
     mHost->GetChildCount(&childCount);
     Int32 lastPos = firstPos + childCount - 1;
-    Int32 paddedTop = mHost->mListPadding->mTop;
+
+    Int32 topTmp = 0, bottomTmp = 0;
+    mHost->mListPadding->GetTop(&topTmp);
+    mHost->mListPadding->GetBottom(&bottomTmp);
+    Int32 paddedTop = topTmp;
     Int32 height;
     mHost->GetHeight(&height);
-    Int32 paddedBottom = height - mHost->mListPadding->mBottom;
+    Int32 paddedBottom = height - bottomTmp;
 
     if (targetPos < firstPos || targetPos > lastPos) {
         Logger::W("AbsListView", "scrollToVisible called with targetPos %d  not visible [%d, %d].",
@@ -1572,8 +1578,11 @@ ECode AbsListView::PositionScroller::Run()
                 Int32 lastViewTop;
                 lastView->GetTop(&lastViewTop);
                 Int32 lastViewPixelsShowing = listHeight - lastViewTop;
+
+                Int32 bottomTmp = 0;
+                mHost->mListPadding->GetBottom(&bottomTmp);
                 Int32 extraScroll = lastPos < mHost->mItemCount - 1
-                    ? Elastos::Core::Math::Max(mHost->mListPadding->mBottom, mExtraScroll) : mHost->mListPadding->mBottom;
+                    ? Elastos::Core::Math::Max(bottomTmp, mExtraScroll) : bottomTmp;
 
                 mHost->SmoothScrollBy(
                         lastViewHeight - lastViewPixelsShowing + extraScroll, mScrollDuration);
@@ -1609,7 +1618,10 @@ ECode AbsListView::PositionScroller::Run()
                 nextView->GetHeight(&nextViewHeight);
                 Int32 nextViewTop;
                 nextView->GetTop(&nextViewTop);
-                Int32 extraScroll = Elastos::Core::Math::Max(mHost->mListPadding->mBottom, mExtraScroll);
+
+                Int32 bottomTmp = 0;
+                mHost->mListPadding->GetBottom(&bottomTmp);
+                Int32 extraScroll = Elastos::Core::Math::Max(bottomTmp, mExtraScroll);
                 if (nextPos < mBoundPos) {
                     mHost->SmoothScrollBy(
                             Elastos::Core::Math::Max(0, nextViewHeight + nextViewTop - extraScroll),
@@ -1638,8 +1650,11 @@ ECode AbsListView::PositionScroller::Run()
                 }
                 Int32 firstViewTop;
                 firstView->GetTop(&firstViewTop);
+
+                Int32 topTmp = 0;
+                mHost->mListPadding->GetTop(&topTmp);
                 Int32 extraScroll = firstPos > 0
-                        ? Elastos::Core::Math::Max(mExtraScroll, mHost->mListPadding->mTop) : mHost->mListPadding->mTop;
+                        ? Elastos::Core::Math::Max(mExtraScroll, topTmp) : topTmp;
 
                 mHost->SmoothScrollBy(
                         firstViewTop - extraScroll, mScrollDuration, TRUE);
@@ -1673,7 +1688,10 @@ ECode AbsListView::PositionScroller::Run()
                 Int32 lastViewTop;
                 lastView->GetTop(&lastViewTop);
                 Int32 lastViewPixelsShowing = listHeight - lastViewTop;
-                Int32 extraScroll = Elastos::Core::Math::Max(mHost->mListPadding->mTop, mExtraScroll);
+
+                Int32 topTmp = 0;
+                mHost->mListPadding->GetTop(&topTmp);
+                Int32 extraScroll = Elastos::Core::Math::Max(topTmp, mExtraScroll);
                 mLastSeenPos = lastPos;
                 if (lastPos > mBoundPos) {
                     mHost->SmoothScrollBy(
@@ -2738,8 +2756,8 @@ AbsListView::AbsListView()
     , mLastHandledItemCount(0)
     , mIsDetaching(FALSE)
 {
-    CRect::NewByFriend((CRect**)&mSelectorRect);
-    CRect::NewByFriend((CRect**)&mListPadding);
+    CRect::New((IRect**)&mSelectorRect);
+    CRect::New((IRect**)&mListPadding);
     mRecycler = new RecycleBin(this);
     mIsScrap = ArrayOf<Boolean>::Alloc(1);
     mScrollOffset = ArrayOf<Int32>::Alloc(2);
@@ -3303,7 +3321,10 @@ Boolean AbsListView::ContentFits()
     Int32 height;
     GetHeight(&height);
 
-    return (childTop >= mListPadding->mTop && childBottom <= height - mListPadding->mBottom);
+    Int32 topTmp = 0, bottomTmp = 0;
+    mListPadding->GetTop(&topTmp);
+    mListPadding->GetBottom(&bottomTmp);
+    return (childTop >= topTmp && childBottom <= height - bottomTmp);
 }
 
 ECode AbsListView::SetFastScrollEnabled(
@@ -3594,7 +3615,11 @@ ECode AbsListView::PerformAccessibilityAction(
             if ((IsEnabled(&result), result) && (pos < count - 1)) {
                 Int32 h;
                 GetHeight(&h);
-                Int32 viewportHeight = h - mListPadding->mTop - mListPadding->mBottom;
+
+                Int32 topTmp = 0, bottomTmp = 0;
+                mListPadding->GetTop(&topTmp);
+                mListPadding->GetBottom(&bottomTmp);
+                Int32 viewportHeight = h - topTmp - bottomTmp;
                 SmoothScrollBy(viewportHeight, PositionScroller::SCROLL_DURATION);
                 *res = TRUE;
                 return NOERROR;
@@ -3606,7 +3631,11 @@ ECode AbsListView::PerformAccessibilityAction(
             if ((IsEnabled(&result), result) && mFirstPosition > 0) {
                 Int32 h;
                 GetHeight(&h);
-                Int32 viewportHeight = h - mListPadding->mTop - mListPadding->mBottom;
+
+                Int32 topTmp = 0, bottomTmp = 0;
+                mListPadding->GetTop(&topTmp);
+                mListPadding->GetBottom(&bottomTmp);
+                Int32 viewportHeight = h - topTmp - bottomTmp;
                 SmoothScrollBy(-viewportHeight, PositionScroller::SCROLL_DURATION);
                 *res = TRUE;
                 return NOERROR;
@@ -4324,7 +4353,10 @@ Boolean AbsListView::CanScrollUp()
             GetChildAt(0, (IView**)&view);
             Int32 top;
             view->GetTop(&top);
-            canScrollUp = top < mListPadding->mTop;
+
+            Int32 topTmp = 0;
+            mListPadding->GetTop(&topTmp);
+            canScrollUp = topTmp < top;
         }
     }
 
@@ -4346,7 +4378,10 @@ Boolean AbsListView::CanScrollDown()
         GetChildAt(count - 1, (IView**)&view);
         Int32 bottom;
         view->GetBottom(&bottom);
-        canScrollDown = bottom > mBottom - mListPadding->mBottom;
+
+        Int32 bottomTmp = 0;
+        mListPadding->GetBottom(&bottomTmp);
+        canScrollDown = bottomTmp > mBottom - bottom;
     }
 
     return canScrollDown;
@@ -4371,8 +4406,7 @@ ECode AbsListView::GetListPaddingTop(
     /* [out] */ Int32* top)
 {
     VALIDATE_NOT_NULL(top);
-    *top = mListPadding->mTop;
-
+    mListPadding->GetTop(top);
     return NOERROR;
 }
 
@@ -4380,8 +4414,7 @@ ECode AbsListView::GetListPaddingBottom(
     /* [out] */ Int32* bottom)
 {
     VALIDATE_NOT_NULL(bottom);
-    *bottom = mListPadding->mBottom;
-
+    mListPadding->GetBottom(bottom);
     return NOERROR;
 }
 
@@ -4389,8 +4422,7 @@ ECode AbsListView::GetListPaddingLeft(
     /* [out] */ Int32* left)
 {
     VALIDATE_NOT_NULL(left);
-    *left = mListPadding->mLeft;
-
+    mListPadding->GetLeft(left);
     return NOERROR;
 }
 
@@ -4398,8 +4430,7 @@ ECode AbsListView::GetListPaddingRight(
     /* [out] */ Int32* right)
 {
     VALIDATE_NOT_NULL(right);
-    *right = mListPadding->mRight;
-
+    mListPadding->GetRight(right);
     return NOERROR;
 }
 
@@ -5988,7 +6019,11 @@ void AbsListView::OnTouchUp(
                 ev->GetY(&y);
                 Int32 width;
                 GetWidth(&width);
-                Boolean inList = x > mListPadding->mLeft && x < width - mListPadding->mRight;
+
+                Int32 leftTmp = 0, rightTmp = 0;
+                mListPadding->GetLeft(&leftTmp);
+                mListPadding->GetRight(&rightTmp);
+                Boolean inList = x > leftTmp && x < width - rightTmp;
                 Boolean hasFocusable;
                 if (inList && (child->HasFocusable(&hasFocusable), !hasFocusable)) {
                     if (mPerformClick == NULL) {
@@ -6064,10 +6099,13 @@ void AbsListView::OnTouchUp(
                 Int32 lastChildBottom;
                 view->GetBottom(&lastChildBottom);
 
-                Int32 contentTop = mListPadding->mTop;
+                Int32 topTmp = 0, bottomTmp = 0;
+                mListPadding->GetTop(&topTmp);
+                mListPadding->GetBottom(&bottomTmp);
+                Int32 contentTop = topTmp;
                 Int32 height;
                 GetHeight(&height);
-                Int32 contentBottom = height - mListPadding->mBottom;
+                Int32 contentBottom = height - bottomTmp;
                 if (mFirstPosition == 0 && firstChildTop >= contentTop &&
                         mFirstPosition + childCount < mItemCount &&
                         lastChildBottom <= height - contentBottom) {
@@ -6883,7 +6921,7 @@ ECode AbsListView::CanScrollList(
     }
 
     const Int32 firstPosition = mFirstPosition;
-    const AutoPtr<CRect> listPadding = mListPadding;
+    const AutoPtr<CRect> listPadding = (CRect*)mListPadding.Get();
     if (direction > 0) {
         AutoPtr<IView> view;
         GetChildAt(childCount - 1, (IView**)&view);
@@ -6929,9 +6967,12 @@ Boolean AbsListView::TrackMotionScroll(
     // there is no effective padding.
     Int32 effectivePaddingTop = 0;
     Int32 effectivePaddingBottom = 0;
+    Int32 topTmp = 0, bottomTmp = 0;
+    mListPadding->GetTop(&topTmp);
+    mListPadding->GetBottom(&bottomTmp);
     if ((mGroupFlags & ViewGroup::CLIP_TO_PADDING_MASK) == ViewGroup::CLIP_TO_PADDING_MASK) {
-        effectivePaddingTop = mListPadding->mTop;
-        effectivePaddingBottom = mListPadding->mBottom;
+        effectivePaddingTop = topTmp;
+        effectivePaddingBottom = bottomTmp;
     }
 
      // FIXME account for grid vertical spacing too?
@@ -6960,23 +7001,23 @@ Boolean AbsListView::TrackMotionScroll(
 
     // Update our guesses for where the first and last views are
     if (firstPosition == 0) {
-        mFirstPositionDistanceGuess = firstTop - mListPadding->mTop;
+        mFirstPositionDistanceGuess = firstTop - topTmp;
     }
     else {
         mFirstPositionDistanceGuess += incrementalDeltaY;
     }
 
     if (firstPosition + childCount == mItemCount) {
-        mLastPositionDistanceGuess = lastBottom + mListPadding->mBottom;
+        mLastPositionDistanceGuess = lastBottom + bottomTmp;
     }
     else {
         mLastPositionDistanceGuess += incrementalDeltaY;
     }
 
     Boolean cannotScrollDown = (firstPosition == 0 &&
-            firstTop >= mListPadding->mTop && incrementalDeltaY >= 0);
+            firstTop >= topTmp && incrementalDeltaY >= 0);
     Boolean cannotScrollUp = (firstPosition + childCount == mItemCount &&
-            lastBottom <= h - mListPadding->mBottom && incrementalDeltaY <= 0);
+            lastBottom <= h - bottomTmp && incrementalDeltaY <= 0);
 
     if (cannotScrollDown || cannotScrollUp) {
         return incrementalDeltaY != 0;
@@ -6998,7 +7039,7 @@ Boolean AbsListView::TrackMotionScroll(
     if (down) {
         Int32 top = -incrementalDeltaY;
         if ((mGroupFlags & ViewGroup::CLIP_TO_PADDING_MASK) == ViewGroup::CLIP_TO_PADDING_MASK) {
-            top += mListPadding->mTop;
+            top += topTmp;
         }
         for (Int32 i = 0; i < childCount; i++) {
             AutoPtr<IView> child;
@@ -7028,7 +7069,7 @@ Boolean AbsListView::TrackMotionScroll(
         GetHeight(&height);
         Int32 bottom = height - incrementalDeltaY;
         if ((mGroupFlags & ViewGroup::CLIP_TO_PADDING_MASK) == ViewGroup::CLIP_TO_PADDING_MASK) {
-            bottom -= mListPadding->mBottom;
+            bottom -= bottomTmp;
         }
         for (Int32 i = childCount - 1; i >= 0; i--) {
             AutoPtr<IView> child;
@@ -7197,8 +7238,12 @@ Boolean AbsListView::ResurrectSelection()
 
     Int32 selectedTop = 0;
     Int32 selectedPos;
-    Int32 childrenTop = mListPadding->mTop;
-    Int32 childrenBottom = mBottom - mTop - mListPadding->mBottom;
+
+    Int32 topTmp = 0, bottomTmp = 0;
+    mListPadding->GetTop(&topTmp);
+    mListPadding->GetBottom(&bottomTmp);
+    Int32 childrenTop = topTmp;
+    Int32 childrenBottom = mBottom - mTop - bottomTmp;
     Int32 firstPosition = mFirstPosition;
     Int32 toPosition = mResurrectToPosition;
     Boolean down = TRUE;
@@ -8239,7 +8284,10 @@ ECode AbsListView::SetSelectionFromTop(
 
     if (position >= 0) {
         mLayoutMode = LAYOUT_SPECIFIC;
-        mSpecificTop = mListPadding->mTop + y;
+
+        Int32 topTmp = 0;
+        mListPadding->GetTop(&topTmp);
+        mSpecificTop = topTmp + y;
 
         if (mNeedSync) {
             mSyncPosition = position;

@@ -1,13 +1,17 @@
 
+#include <Elastos.Droid.Content.h>
+#include <Elastos.Droid.Webkit.h>
+#include <Elastos.Droid.Net.h>
+#include <Elastos.Droid.Graphics.h>
 #include <Elastos.CoreLibrary.IO.h>
 #include "Elastos.Droid.Provider.h"
-#include "elastos/droid/content/CIntentHelper.h"
-#include "elastos/droid/graphics/CBitmapFactory.h"
-#include "elastos/droid/graphics/CCanvas.h"
-#include "elastos/droid/graphics/CPicture.h"
-#include "elastos/droid/net/CUriHelper.h"
-#include "elastos/droid/net/http/CErrorStrings.h"
-#include "elastos/droid/webkit/CJsDialogHelper.h"
+//#include "elastos/droid/content/CIntentHelper.h"
+//#include "elastos/droid/graphics/CBitmapFactory.h"
+//#include "elastos/droid/graphics/CCanvas.h"
+//#include "elastos/droid/graphics/CPicture.h"
+//#include "elastos/droid/net/CUriHelper.h"
+//#include "elastos/droid/net/http/CErrorStrings.h"
+//#include "elastos/droid/webkit/CJsDialogHelper.h"
 #include "elastos/droid/webkit/DebugFlags.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/ThreadUtils.h"
 #include "elastos/droid/webkit/webview/chromium/native/base/TraceEvent.h"

@@ -4,7 +4,6 @@
 #include "Elastos.Droid.Database.h"
 #include "Elastos.Droid.Provider.h"
 #include "elastos/droid/net/Uri.h"
-#include "elastos/droid/provider/CContactsContractProfile.h"
 #include "elastos/droid/webkit/webview/chromium/native/components/PersonalAutofillPopulator.h"
 #include "elastos/droid/webkit/webview/chromium/native/components/api/PersonalAutofillPopulator_dec.h"
 #include <elastos/utility/logging/Logger.h>
