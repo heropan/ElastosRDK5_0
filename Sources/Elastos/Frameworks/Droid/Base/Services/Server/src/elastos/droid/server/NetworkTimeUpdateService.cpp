@@ -1,35 +1,50 @@
-#include "NetworkTimeUpdateService.h"
-#include "elastos/droid/os/SystemClock.h"
+
+#include "elastos/droid/server/NetworkTimeUpdateService.h"
+#include <Elastos.Droid.App.h>
+#include <Elastos.Droid.Internal.h>
+#include <Elastos.Droid.Provider.h>
+#include <Elastos.Droid.Utility.h>
+#include <cutils/log.h>
+#include <elastos/core/Math.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/droid/R.h>
+#include <elastos/droid/net/ReturnOutValue.h>
+#include <elastos/droid/net/Uri.h>
+#include <elastos/droid/os/Build.h>
+#include <elastos/droid/os/SystemClock.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>
-#include <elastos/core/StringBuilder.h>
-#include <elastos/core/Math.h>
 
-using Elastos::Droid::Database::IContentObserver;
-using Elastos::Droid::Database::EIID_IContentObserver;
-using Elastos::Droid::Provider::CSettingsGlobal;
-using Elastos::Droid::Provider::ISettingsGlobal;
-using Elastos::Droid::App::IPendingIntentHelper;
+using Elastos::Core::CSystem;
+using Elastos::Core::ISystem;
+using Elastos::Core::Math;
+using Elastos::Core::StringBuilder;
+using Elastos::Droid::App::CPendingIntent;
 using Elastos::Droid::App::CPendingIntentHelper;
-using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::App::IPendingIntentHelper;
 using Elastos::Droid::Content::CIntent;
-using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::IBroadcastReceiver;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Database::EIID_IContentObserver;
+using Elastos::Droid::Database::IContentObserver;
 using Elastos::Droid::Internal::Telephony::ITelephonyIntents;
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Net::INetworkInfo;
 using Elastos::Droid::Net::IConnectivityManager;
-using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Net::INetwork;
+using Elastos::Droid::Net::INetworkInfo;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::CHandlerThread;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Provider::CSettingsGlobal;
+using Elastos::Droid::Provider::ISettingsGlobal;
+using Elastos::Droid::R;
+using Elastos::Droid::Utility::CNtpTrustedTimeHelper;
 using Elastos::Droid::Utility::INtpTrustedTime;
 using Elastos::Droid::Utility::INtpTrustedTimeHelper;
-using Elastos::Droid::Utility::CNtpTrustedTimeHelper;
-using Elastos::Core::StringBuilder;
-using Elastos::Core::ISystem;
-using Elastos::Core::CSystem;
-using Elastos::Core::Math;
+using Elastos::Utility::ISet;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
 
@@ -37,26 +52,13 @@ namespace Elastos {
 namespace Droid {
 namespace Server {
 
-const String NetworkTimeUpdateService::TAG("NetworkTimeUpdateService");
-const Boolean NetworkTimeUpdateService::DBG = FALSE;
-
-const Int32 NetworkTimeUpdateService::EVENT_AUTO_TIME_CHANGED;
-const Int32 NetworkTimeUpdateService::EVENT_POLL_NETWORK_TIME;
-const Int32 NetworkTimeUpdateService::EVENT_NETWORK_CONNECTED;
-const Int64 NetworkTimeUpdateService::POLLING_INTERVAL_MS = 24L * 60 * 60 * 1000; // 24 hrs
-const Int64 NetworkTimeUpdateService::POLLING_INTERVAL_SHORTER_MS = 60 * 1000L; // 60 seconds
-const Int32 NetworkTimeUpdateService::TRY_AGAIN_TIMES_MAX;
-const Int32 NetworkTimeUpdateService::TIME_ERROR_THRESHOLD_MS;
-
-const String NetworkTimeUpdateService::ACTION_POLL("com.android.server.NetworkTimeUpdateService.action.POLL");
-
-Int32 NetworkTimeUpdateService::POLL_REQUEST = 0;
-const Int64 NetworkTimeUpdateService::NOT_SET = -1;
-
+//=============================================================================
+// NetworkTimeUpdateService
+//=============================================================================
 NetworkTimeUpdateService::MyHandler::MyHandler(
     /* [in] */ ILooper* l,
     /* [in] */ NetworkTimeUpdateService* host)
-    : HandlerBase(l)
+    : Handler(l)
     , mHost(host)
 {}
 
@@ -75,14 +77,36 @@ ECode NetworkTimeUpdateService::MyHandler::HandleMessage(
     return NOERROR;
 }
 
-NetworkTimeUpdateService::NetworkTimeUpdateService(
-    /* [in] */ IContext *context)
-    : mContext(context)
-    , mNitzTimeSetTime(NOT_SET)
+//=============================================================================
+// NetworkTimeUpdateService
+//=============================================================================
+const String NetworkTimeUpdateService::TAG("NetworkTimeUpdateService");
+const Boolean NetworkTimeUpdateService::DBG = FALSE;
+
+const Int32 NetworkTimeUpdateService::EVENT_AUTO_TIME_CHANGED;
+const Int32 NetworkTimeUpdateService::EVENT_POLL_NETWORK_TIME;
+const Int32 NetworkTimeUpdateService::EVENT_NETWORK_CONNECTED;
+
+const String NetworkTimeUpdateService::ACTION_POLL("com.android.server.NetworkTimeUpdateService.action.POLL");
+
+Int32 NetworkTimeUpdateService::POLL_REQUEST = 0;
+const Int64 NetworkTimeUpdateService::NOT_SET = -1;
+
+NetworkTimeUpdateService::NetworkTimeUpdateService()
+    : mNitzTimeSetTime(NOT_SET)
     , mNitzZoneSetTime(NOT_SET)
     , mLastNtpFetchTime(NOT_SET)
+    , mPollingIntervalMs(0)
+    , mPollingIntervalShorterMs(0)
+    , mTryAgainTimesMax(0)
+    , mTimeErrorThresholdMs(0)
     , mTryAgainCounter(0)
+{}
+
+ECode NetworkTimeUpdateService::constructor(
+    /* [in] */ IContext *context)
 {
+    mContext = context;
     AutoPtr<INtpTrustedTimeHelper> helper;
     CNtpTrustedTimeHelper::AcquireSingleton((INtpTrustedTimeHelper**)&helper);
     helper->GetInstance(context, (INtpTrustedTime**)&mTime);
@@ -95,6 +119,20 @@ NetworkTimeUpdateService::NetworkTimeUpdateService(
     AutoPtr<IPendingIntentHelper> piHelper;
     CPendingIntentHelper::AcquireSingleton((IPendingIntentHelper**)&piHelper);
     piHelper->GetBroadcast(mContext, POLL_REQUEST, pollIntent, 0, (IPendingIntent**)&mPendingPollIntent);
+
+    Int32 tmp;
+    Ptr(mContext)->Func(mContext->GetResources)->GetInteger(
+            R::integer::config_ntpPollingInterval, &tmp);
+    mPollingIntervalMs = tmp;
+    Ptr(mContext)->Func(mContext->GetResources)->GetInteger(
+            R::integer::config_ntpPollingIntervalShorter, &tmp);
+    mPollingIntervalShorterMs = tmp;
+    Ptr(mContext)->Func(mContext->GetResources)->GetInteger(
+            R::integer::config_ntpRetry, &mTryAgainTimesMax);
+    Ptr(mContext)->Func(mContext->GetResources)->GetInteger(
+            R::integer::config_ntpThreshold, &mTimeErrorThresholdMs);
+
+    return NOERROR;
 }
 
 ECode NetworkTimeUpdateService::SendMessage(
@@ -106,16 +144,17 @@ ECode NetworkTimeUpdateService::SendMessage(
     return mHandler->SendMessage(msg, &result);
 }
 
-ECode NetworkTimeUpdateService::SystemReady()
+ECode NetworkTimeUpdateService::SystemRunning()
 {
     RegisterForTelephonyIntents();
     RegisterForAlarms();
     RegisterForConnectivityIntents();
 
-    CHandlerThread::New(TAG, (IHandlerThread**)&mThread);
-    mThread->Start();
+    AutoPtr<IHandlerThread> thread;
+    CHandlerThread::New(TAG, (IHandlerThread**)&thread);
+    IThread::Probe(thread)->Start();
     AutoPtr<ILooper> looper;
-    mThread->GetLooper((ILooper**)&looper);
+    thread->GetLooper((ILooper**)&looper);
     mHandler = new MyHandler(looper, this);
 
     // Check the network time on the new thread
@@ -147,10 +186,10 @@ void NetworkTimeUpdateService::OnPollNetworkTime(
     if (!IsAutomaticTimeRequested()) return;
 
     Int64 refTime = SystemClock::GetElapsedRealtime();
-    // If NITZ time was received less than POLLING_INTERVAL_MS time ago,
+    // If NITZ time was received less than mPollingIntervalMs time ago,
     // no need to sync to NTP.
-    if (mNitzTimeSetTime != NOT_SET && refTime - mNitzTimeSetTime < POLLING_INTERVAL_MS) {
-        ResetAlarm(POLLING_INTERVAL_MS);
+    if (mNitzTimeSetTime != NOT_SET && refTime - mNitzTimeSetTime < mPollingIntervalMs) {
+        ResetAlarm(mPollingIntervalMs);
         return;
     }
 
@@ -166,7 +205,7 @@ void NetworkTimeUpdateService::OnPollNetworkTime(
     }
 
     // Get the NTP time
-    if (mLastNtpFetchTime == NOT_SET || refTime >= mLastNtpFetchTime + POLLING_INTERVAL_MS
+    if (mLastNtpFetchTime == NOT_SET || refTime >= mLastNtpFetchTime + mPollingIntervalMs
             || event == EVENT_AUTO_TIME_CHANGED) {
         if (DBG)
             Logger::D(TAG, "Before Ntp fetch");
@@ -174,24 +213,24 @@ void NetworkTimeUpdateService::OnPollNetworkTime(
         // force refresh NTP cache when outdated
         Int64 cacheAge = 0;
         mTime->GetCacheAge(&cacheAge);
-        if (cacheAge >= POLLING_INTERVAL_MS) {
+        if (cacheAge >= mPollingIntervalMs) {
            Boolean isForceRefreshed;
            mTime->ForceRefresh(&isForceRefreshed);
         }
 
         // only update when NTP time is fresh
         mTime->GetCacheAge(&cacheAge);
-        if (cacheAge < POLLING_INTERVAL_MS) {
+        if (cacheAge < mPollingIntervalMs) {
             Int64 ntp = 0;
             mTime->GetCurrentTimeMillis(&ntp);
             mTryAgainCounter = 0;
             // If the clock is more than N seconds off or this is the first time it's been
             // fetched since boot, set the current time.
-            if (Math::Abs(ntp - currentTime) > TIME_ERROR_THRESHOLD_MS
+            if (Math::Abs(ntp - currentTime) > mTimeErrorThresholdMs
                     || mLastNtpFetchTime == NOT_SET) {
                 // Set the system time
                 if (DBG && mLastNtpFetchTime == NOT_SET
-                        && Math::Abs(ntp - currentTime) <= TIME_ERROR_THRESHOLD_MS) {
+                        && Math::Abs(ntp - currentTime) <= mTimeErrorThresholdMs) {
                     StringBuilder builder("For initial setup, rtc = ");
                     builder += currentTime;
                     Logger::D(TAG, builder.ToString());
@@ -217,17 +256,17 @@ void NetworkTimeUpdateService::OnPollNetworkTime(
         } else {
             // Try again shortly
             mTryAgainCounter++;
-            if (mTryAgainCounter <= TRY_AGAIN_TIMES_MAX) {
-                ResetAlarm(POLLING_INTERVAL_SHORTER_MS);
+            if (mTryAgainTimesMax < 0 || mTryAgainCounter <= mTryAgainTimesMax) {
+                ResetAlarm(mPollingIntervalShorterMs);
             } else {
                 // Try much later
                 mTryAgainCounter = 0;
-                ResetAlarm(POLLING_INTERVAL_MS);
+                ResetAlarm(mPollingIntervalMs);
             }
             return;
         }
     }
-    ResetAlarm(POLLING_INTERVAL_MS);
+    ResetAlarm(mPollingIntervalMs);
 }
 
 void NetworkTimeUpdateService::RegisterForAlarms()

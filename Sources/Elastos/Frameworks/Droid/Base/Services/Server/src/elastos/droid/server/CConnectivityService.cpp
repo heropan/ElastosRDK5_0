@@ -3775,15 +3775,14 @@ void CConnectivityService::SetLockdownTracker(
     }
 
     //try {
-    Boolean bval;
     if (tracker != NULL) {
-        mNetd->SetFirewallEnabled(TRUE, &bval);
+        mNetd->SetFirewallEnabled(TRUE);
         mNetd->SetFirewallInterfaceRule(String("lo"), TRUE);
         mLockdownTracker = tracker;
         mLockdownTracker->Init();
     }
     else {
-        mNetd->SetFirewallEnabled(FALSE, &bval);
+        mNetd->SetFirewallEnabled(FALSE);
     }
     //} catch (RemoteException e) {
         // ignored; NMS lives inside system_server
