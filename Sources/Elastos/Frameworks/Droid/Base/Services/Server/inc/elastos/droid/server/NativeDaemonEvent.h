@@ -74,4 +74,6 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
+DEFINE_CONVERSION_FOR(Elastos::Droid::Server::NativeDaemonEvent, IInterface)
+
 #endif //__ELASTOS_DROID_SERVER_NATIVEDAEMONEVENT_H__

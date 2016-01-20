@@ -1,26 +1,34 @@
 #ifndef __ELASTOS_DROID_SERVER_NETWORKTIMEUPDATESERVICE_H__
 #define __ELASTOS_DROID_SERVER_NETWORKTIMEUPDATESERVICE_H__
 
-#include "elastos/droid/ext/frameworkext.h"
-#include "elastos/droid/os/HandlerBase.h"
-#include "elastos/droid/database/ContentObserver.h"
-#include "elastos/droid/content/BroadcastReceiver.h"
+#include <elastos/core/Thread.h>
+#include <elastos/droid/content/BroadcastReceiver.h>
+#include <elastos/droid/database/ContentObserver.h>
+#include <elastos/droid/ext/frameworkext.h>
+#include <elastos/droid/net/http/Request.h>
+#include <elastos/droid/os/Handler.h>
+#include <elastos/droid/os/Looper.h>
 
-using Elastos::Droid::Utility::ITrustedTime;
-using Elastos::Droid::Os::HandlerBase;
-using Elastos::Droid::Os::IHandlerThread;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::IIntent;
-using Elastos::Droid::Content::BroadcastReceiver;
+using Elastos::Core::Thread;
 using Elastos::Droid::App::IAlarmManager;
 using Elastos::Droid::App::IPendingIntent;
+using Elastos::Droid::Content::BroadcastReceiver;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Database::ContentObserver;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IHandlerThread;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Os::Looper;
+using Elastos::Droid::Utility::ITrustedTime;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 
-class NetworkTimeUpdateService : public ElRefBase
+class NetworkTimeUpdateService
 {
 private:
     class NitzReceiver : public BroadcastReceiver
@@ -115,7 +123,7 @@ private:
 
     /** Handler to do the network accesses on */
     class MyHandler
-        : public HandlerBase
+        : public Handler
     {
     public:
         MyHandler(
@@ -129,11 +137,13 @@ private:
     };
 
 public:
-    NetworkTimeUpdateService(
+    NetworkTimeUpdateService();
+
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
     /** Initialize the receivers and initiate the first NTP request */
-    CARAPI SystemReady();
+    CARAPI SystemRunning();
 
 private:
     CARAPI_(void) RegisterForTelephonyIntents();
@@ -171,15 +181,6 @@ private:
     static const Int32 EVENT_POLL_NETWORK_TIME = 2;
     static const Int32 EVENT_NETWORK_CONNECTED = 3;
 
-    /** Normal polling frequency */
-    static const Int64 POLLING_INTERVAL_MS; // 24 hrs
-    /** Try-again polling interval, in case the network request failed */
-    static const Int64 POLLING_INTERVAL_SHORTER_MS; // 60 seconds
-    /** Number of times to try again */
-    static const Int32 TRY_AGAIN_TIMES_MAX = 3;
-    /** If the time difference is greater than this threshold, then update the time. */
-    static const Int32 TIME_ERROR_THRESHOLD_MS = 5 * 1000;
-
     static const String ACTION_POLL;
     static Int32 POLL_REQUEST;
 
@@ -193,12 +194,20 @@ private:
 
     // NTP lookup is done on this thread and handler
     AutoPtr<MyHandler> mHandler;
-    AutoPtr<IHandlerThread> mThread;
     AutoPtr<IAlarmManager> mAlarmManager;
     AutoPtr<IPendingIntent> mPendingPollIntent;
     AutoPtr<SettingsObserver> mSettingsObserver;
     // The last time that we successfully fetched the NTP time.
     Int64 mLastNtpFetchTime;
+
+    // Normal polling frequency
+    Int64 mPollingIntervalMs;
+    // Try-again polling interval, in case the network request failed
+    Int64 mPollingIntervalShorterMs;
+    // Number of times to try again
+    Int32 mTryAgainTimesMax;
+    // If the time difference is greater than this threshold, then update the time.
+    Int32 mTimeErrorThresholdMs;
     // Keeps track of how many quick attempts were made to fetch NTP time.
     // During bootup, the network may not have been up yet, or it's taking time for the
     // connection to happen.
