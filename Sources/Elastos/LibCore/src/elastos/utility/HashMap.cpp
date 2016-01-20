@@ -1093,7 +1093,7 @@ ECode HashMap::EntryIterator::GetNext(
     VALIDATE_NOT_NULL(object)
 
     AutoPtr<HashMapEntry> outhash = NextEntry();
-    *object = IIterator::Probe(outhash.Get());
+    *object = (IMapEntry*)outhash.Get();
     REFCOUNT_ADD(*object)
     return NOERROR;
 }
