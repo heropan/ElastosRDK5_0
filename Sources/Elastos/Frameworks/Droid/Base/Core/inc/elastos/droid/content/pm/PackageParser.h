@@ -887,7 +887,7 @@ public:
         /* [in] */ const String& encodedPublicKey,
         /* [out] */ IPublicKey** key);
 
-    CARAPI_(Int32) GetParseError();
+    static CARAPI_(Int32) GetParseError();
 
 private:
     static CARAPI_(Boolean) IsApkPath(
@@ -1272,7 +1272,7 @@ private:
     static const Int32 SDK_VERSION;
     static const AutoPtr< ArrayOf<String> > SDK_CODENAMES;
 
-    Int32 mParseError;
+    static Int32 sParseError;
 
     static Boolean sCompatibilityModeEnabled;
 

@@ -1,6 +1,5 @@
 
-#include "PreferredComponent.h"
-#include "util/XmlUtils.h"
+#include "elastos/droid/server/pm/PreferredComponent.h"
 #include "elastos/droid/internal/utility/XmlUtils.h"
 #include <elastos/utility/logging/Slogger.h>
 
@@ -9,7 +8,7 @@ using Elastos::Droid::Content::CComponentNameHelper;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::Pm::IResolveInfo;
 using Elastos::Droid::Content::Pm::IActivityInfo;
-using Elastos::Droid::Utility::XmlUtils;
+using Elastos::Droid::Internal::Utility::XmlUtils;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::StringUtils;

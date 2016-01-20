@@ -4,11 +4,13 @@
 
 #include "_Elastos_Droid_Server_Pm_CPackageInstallerSession.h"
 #include "elastos/droid/server/pm/CPackageInstallerService.h"
+// #include "Elastos.Droid.Os.h"
 #include <Elastos.CoreLibrary.Utility.Concurrent.h>
 
 using Elastos::Droid::Content::Pm::IIPackageInstallerSession;
 using Elastos::Droid::Os::IHandlerCallback;
 using Elastos::Droid::Os::IFileBridge;
+using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 
 namespace Elastos {
@@ -24,13 +26,13 @@ CarClass(CPackageInstallerSession)
     , public IBinder
 {
 private:
-    class HandlerCallBack
+    class MyHandlerCallBack
         : public Object
         , public IHandlerCallback
     {
     public:
-        HandlerCallBack(
-            /* [in] */ CPackageInstallerSession* host);
+        MyHandlerCallBack(
+            /* [in] */ CPackageInstallerSession* host)
             : mHost(host)
         {}
 
@@ -80,7 +82,7 @@ public:
         /* [in] */ Float progress);
 
     CARAPI GetNames(
-        /* [out, callee] */ ArrayOf<String>* names);
+        /* [out, callee] */ ArrayOf<String>** names);
 
     CARAPI OpenWrite(
         /* [in] */ const String& name,
@@ -114,7 +116,7 @@ private:
      * until someone actively works with the session.
      */
     CARAPI ResolveStageDir(
-        /* [out] */ IFile* dir);
+        /* [out] */ IFile** dir);
 
     CARAPI_(void) ComputeProgressLocked(
         /* [in] */ Boolean forcePublish);
@@ -266,7 +268,7 @@ private:
 
     AutoPtr<IHandlerCallback> mHandlerCallback;
 
-    Int32 mErrorCode;
+    static Int32 sErrorCode;
 
     friend class HandlerCallBack;
     friend class CLocalObserver;

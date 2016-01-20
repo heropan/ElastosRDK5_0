@@ -1,6 +1,8 @@
 #ifndef __ELASTOS_DROID_SERVER_INTENTRESOLVER_H__
 #define __ELASTOS_DROID_SERVER_INTENTRESOLVER_H__
 
+#include <Elastos.Droid.Content.h>
+#include <Elastos.Droid.Net.h>
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.Droid.Os.h"
 #include <elastos/utility/etl/HashSet.h>

@@ -6,6 +6,7 @@
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Net.h"
 #include "Elastos.Droid.Os.h"
+#include "elastos/droid/content/pm/PackageParser.h"
 #include "elastos/droid/internal/content/CPackageHelper.h"
 #include "elastos/droid/internal/content/CNativeLibraryHelper.h"
 #include "elastos/droid/internal/content/CNativeLibraryHelperHandle.h"
@@ -18,6 +19,7 @@
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 
+using Elastos::Droid::Content::Pm::PackageParser;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::Content::Pm::IPackageManager;
 using Elastos::Droid::Content::Pm::IPackageInfo;
@@ -684,14 +686,14 @@ ECode CPackageHelper::ResolveInstallLocation(
 }
 
 ECode CPackageHelper::CalculateInstalledSize(
-    /* [in] */ IPackageLite* pkg,
+    /* [in] */ Handle64 pkg,
     /* [in] */ Boolean isForwardLocked,
     /* [in] */ const String& abiOverride,
     /* [out] */ Int64* size)
 {
     VALIDATE_NOT_NULL(size)
     AutoPtr<INativeLibraryHelperHandle> handle;
-    CNativeLibraryHelperHandle::Create(pkg, (INativeLibraryHelperHandle**)&handle);
+    CNativeLibraryHelperHandle::CreatePackage(pkg, (INativeLibraryHelperHandle**)&handle);
     ECode ec = CalculateInstalledSize(pkg, handle, isForwardLocked, abiOverride, size);
     AutoPtr<IIoUtils> ioUtils;
     ASSERT_SUCCEEDED(CIoUtils::AcquireSingleton((IIoUtils**)&ioUtils));
@@ -700,7 +702,7 @@ ECode CPackageHelper::CalculateInstalledSize(
 }
 
 ECode CPackageHelper::CalculateInstalledSize(
-    /* [in] */ IPackageLite* pkg,
+    /* [in] */ Handle64 pkg,
     /* [in] */ INativeLibraryHelperHandle* handle,
     /* [in] */ Boolean isForwardLocked,
     /* [in] */ const String& abiOverride,
@@ -710,8 +712,8 @@ ECode CPackageHelper::CalculateInstalledSize(
     *sizeBytes = 0;
 
     // Include raw APKs, and possibly unpacked resources
-    assert(0 && "TODO: PackageLite is not implemented");
-    AutoPtr<List<String> > codePaths;// = pkg->GetAllCodePaths();
+    AutoPtr<PackageParser::PackageLite> lite = (PackageParser::PackageLite*)pkg;
+    AutoPtr<List<String> > codePaths = lite->GetAllCodePaths();
     List<String>::Iterator iter = codePaths->Begin();
     for (; iter != codePaths->End(); ++iter) {
         AutoPtr<IFile> codeFile;

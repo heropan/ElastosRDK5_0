@@ -98,6 +98,24 @@ public:
 
     class InternalCallback : public Object
     {
+    private:
+        class SessionFinishedRunnable : public Runnable
+        {
+        public:
+            SessionFinishedRunnable(
+                /* [in] */ CPackageInstallerService* host,
+                /* [in] */ CPackageInstallerSession* session)
+                : mHost(host)
+                , mSession(session)
+            {}
+
+            CARAPI Run();
+
+        private:
+            CPackageInstallerService* mHost;
+            CPackageInstallerSession* mSession;
+        };
+
     public:
         InternalCallback(
             /* [in] */ CPackageInstallerService* host)
@@ -159,29 +177,9 @@ private:
 
     class Callbacks : public Handler
     {
-    private:
-        class SessionFinishedRunnable : public Runnable
-        {
-        public:
-            SessionFinishedRunnable(
-                /* [in] */ CPackageInstallerService* host,
-                /* [in] */ CPackageInstallerSession* session)
-                : mHost(host)
-                , mSession(session)
-            {}
-
-            CARAPI Run();
-
-        private:
-            CPackageInstallerService* mHost;
-            CPackageInstallerSession* mSession;
-        };
-
     public:
         Callbacks(
-            /* [in] */ ILooper* looper)
-            : Handler(looper)
-        {}
+            /* [in] */ ILooper* looper);
 
         CARAPI_(void) Register(
             /* [in] */ IPackageInstallerCallback* callback,
@@ -229,6 +227,9 @@ private:
         static const Int32 MSG_SESSION_FINISHED = 5;
 
         AutoPtr<IRemoteCallbackList> mCallbacks;
+
+        friend class InternalCallback;
+        friend class CPackageInstallerService;
     };
 
 public:
@@ -312,11 +313,13 @@ public:
         /* [in] */ Boolean accepted);
 
 private:
+    static CARAPI_(AutoPtr<IFilenameFilter>) InitStageFilter();
+
     CARAPI_(void) ReadSessionsLocked();
 
     CARAPI ReadSessionLocked(
         /* [in] */ IXmlPullParser* in,
-        /* [out] */ CPackageInstallerSession* session);
+        /* [out] */ CPackageInstallerSession** session);
 
     CARAPI_(void) WriteSessionsLocked();
 

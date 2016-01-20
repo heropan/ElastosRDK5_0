@@ -3,7 +3,6 @@ module
 {
     using interface Elastos.IO.IFile;
     interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Content.Pm.IPackageLite;
     interface Elastos.Droid.Os.Storage.IMountService;
 
     namespace Elastos {
@@ -122,13 +121,13 @@ module
             [out] Int32* result);
 
         CalculateInstalledSize(
-            [in] IPackageLite* pkg,
+            [in] Handle64 pkg,
             [in] Boolean isForwardLocked,
             [in] String abiOverride,
             [out] Int64* size);
 
         CalculateInstalledSize(
-            [in] IPackageLite* pkg,
+            [in] Handle64 pkg,
             [in] INativeLibraryHelperHandle* handle,
             [in] Boolean isForwardLocked,
             [in] String abiOverride,

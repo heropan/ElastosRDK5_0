@@ -74,6 +74,8 @@ using Elastos::Droid::Content::Pm::IPackageInfoLite;
 using Elastos::Droid::Content::Pm::IIPackageMoveObserver;
 using Elastos::Droid::Content::Pm::IKeySet;
 using Elastos::Droid::Content::Pm::PackageParser;
+using Elastos::Droid::Content::Pm::IPackageInstallerSessionParams;
+using Elastos::Droid::Content::Pm::IIPackageInstaller;
 using Elastos::Droid::Internal::App::IIMediaContainerService;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::Runnable;
@@ -87,6 +89,7 @@ using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IHandlerThread;
 using Elastos::Droid::Text::Format::IDateUtils;
 using Elastos::Droid::Utility::ISparseArray;
+using Elastos::Droid::Utility::IAtomicFile;
 
 namespace Elastos {
 namespace Droid {
@@ -1562,6 +1565,24 @@ public:
         /* [in] */ Int32 uid,
         /* [out] */ Int32* result);
 
+    /**
+     * Checks if the request is from the system or an app that has INTERACT_ACROSS_USERS
+     * or INTERACT_ACROSS_USERS_FULL permissions, if the userid is not for the caller.
+     * @param checkShell TODO(yamasani):
+     * @param message the message to log on security exception
+     */
+    CARAPI EnforceCrossUserPermission(
+        /* [in] */ Int32 callingUid,
+        /* [in] */ Int32 userId,
+        /* [in] */ Boolean requireFullPermission,
+        /* [in] */ Boolean checkShell,
+        /* [in] */ const String& message);
+
+    CARAPI EnforceShellRestriction(
+        /* [in] */ const String& restriction,
+        /* [in] */ Int32 callingUid,
+        /* [in] */ Int32 userHandle);
+
     static CARAPI_(Boolean) CompareStrings(
         /* [in] */ ICharSequence* s1,
         /* [in] */ ICharSequence* s2);
@@ -2099,7 +2120,7 @@ public:
 
     // protected void dump(FileDescriptor fd, PrintWriter pw, String[] args)
 
-    CARAPI_(String) GetEncryptKey();
+    static CARAPI_(String) GetEncryptKey();
 
     CARAPI UpdateExternalMediaStatus(
         /* [in] */ Boolean mediaStatus,
@@ -2173,24 +2194,6 @@ private:
     CARAPI CheckValidCaller(
         /* [in] */ Int32 uid,
         /* [in] */ Int32 userId);
-
-    /**
-     * Checks if the request is from the system or an app that has INTERACT_ACROSS_USERS
-     * or INTERACT_ACROSS_USERS_FULL permissions, if the userid is not for the caller.
-     * @param checkShell TODO(yamasani):
-     * @param message the message to log on security exception
-     */
-    CARAPI EnforceCrossUserPermission(
-        /* [in] */ Int32 callingUid,
-        /* [in] */ Int32 userId,
-        /* [in] */ Boolean requireFullPermission,
-        /* [in] */ Boolean checkShell,
-        /* [in] */ const String& message);
-
-    CARAPI EnforceShellRestriction(
-        /* [in] */ const String& restriction,
-        /* [in] */ Int32 callingUid,
-        /* [in] */ Int32 userHandle);
 
     CARAPI_(AutoPtr<BasePermission>) FindPermissionTreeLP(
         /* [in] */ const String& permName);

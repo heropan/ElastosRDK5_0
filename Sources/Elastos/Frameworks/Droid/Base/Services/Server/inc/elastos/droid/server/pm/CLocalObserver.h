@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_PM_CLOCALOBSERVER_H__
 
 #include "_Elastos_Droid_Server_Pm_CLocalObserver.h"
-#include "pm/CPackageInstallerSession.h"
+#include "elastos/droid/server/pm/CPackageInstallerSession.h"
 
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IBinder;
