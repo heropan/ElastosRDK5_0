@@ -55,6 +55,7 @@ module
     merge("os/SystemProperties.car");
     merge("os/SystemService.car");
     merge("os/Trace.car");
+    merge("os/UEventObserver.car");
     merge("os/UserHandle.car");
     merge("os/UserManager.car");
     merge("os/Vibrator.car");

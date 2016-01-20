@@ -766,7 +766,7 @@ CPhoneWindowManager::HDMIUEventObserver::HDMIUEventObserver(
 }
 
 ECode CPhoneWindowManager::HDMIUEventObserver::OnUEvent(
-    /* [in] */ UEvent* event)
+    /* [in] */ IUEvent* event)
 {
     mHost->SetHdmiPlugged(event->Get(String("SWITCH_STATE")).Equals("1"));
     return NOERROR;

@@ -6,15 +6,14 @@
 #include <elastos/droid/os/Handler.h>
 
 using Elastos::Droid::Content::BroadcastReceiver;
+using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Os::IEnvironment;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::IMessage;
-using Elastos::Droid::Os::SystemProperties;
-using Elastos::Droid::Utility::Slogger;
 
 using Elastos::IO::IFile;
 using Elastos::IO::IFileOutputStream;

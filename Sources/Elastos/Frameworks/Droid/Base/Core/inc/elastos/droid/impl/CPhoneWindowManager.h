@@ -348,7 +348,7 @@ private:
 
         // @Override
         CARAPI OnUEvent(
-            /* [in] */ UEvent* event);
+            /* [in] */ IUEvent* event);
 
     private:
         CPhoneWindowManager* mHost;

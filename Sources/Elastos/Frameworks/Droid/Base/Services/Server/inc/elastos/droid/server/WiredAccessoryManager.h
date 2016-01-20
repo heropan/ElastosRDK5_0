@@ -84,7 +84,7 @@ public:
         CARAPI_(void) Init();
 
         CARAPI_(void) OnUEvent(
-            /* [in] */ UEventObserver::UEvent* event);
+            /* [in] */ IUEvent* event);
 
     private:
         CARAPI_(AutoPtr< List<AutoPtr<UEventInfo> > >) MakeObservedUEventList();

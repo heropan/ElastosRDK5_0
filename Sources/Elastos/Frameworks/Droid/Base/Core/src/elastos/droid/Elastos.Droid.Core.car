@@ -163,7 +163,10 @@ module
     merge("../../../car/elastos/droid/keystore.car");
     }
 
-    //merge("../../../car/elastos/droid/bluetooth.car");
+    submodule Elastos.Droid.Bluetooth {
+    merge("../../../car/elastos/droid/bluetooth.car");
+    }
+
     //merge("../../../car/elastos/droid/menu1.car");
     //merge("../../../car/elastos/droid/menu2.car");
     //merge("../../../car/elastos/droid/app/ResolverActivity.car");

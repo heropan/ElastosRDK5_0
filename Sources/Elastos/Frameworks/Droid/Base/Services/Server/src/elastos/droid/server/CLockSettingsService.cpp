@@ -578,7 +578,7 @@ void CLockSettingsService::WriteFile(
     if (hash == NULL || hash->GetLength() == 0) {
         raf->SetLength(0);
     } else {
-        raf->WriteBytes(*hash, 0, hash->GetLength());
+        raf->Write(hash, 0, hash->GetLength());
     }
     raf->Close();
     // } catch (IOException ioe) {

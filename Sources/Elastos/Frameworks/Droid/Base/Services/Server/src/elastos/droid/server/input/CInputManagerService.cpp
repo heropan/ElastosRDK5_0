@@ -1696,17 +1696,17 @@ ECode CInputManagerService::Dump(
     Int32 result;
     FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::permission::DUMP, &result));
     if (result != IPackageManager::PERMISSION_GRANTED) {
-        pw->PrintStringln(
+        pw->Println(
             String("Permission Denial: can't dump InputManager from from pid=")
             + StringUtils::Int32ToString(Binder::GetCallingPid())
             + ", uid=" + StringUtils::Int32ToString(Binder::GetCallingUid()));
         return NOERROR;
     }
 
-    pw->PrintStringln(String("INPUT MANAGER (dumpsys input)\n"));
+    pw->Println(String("INPUT MANAGER (dumpsys input)\n"));
     String dumpStr = NativeDump();
     if (!dumpStr.IsNull()) {
-        pw->PrintStringln(dumpStr);
+        pw->Println(dumpStr);
     }
 
     return NOERROR;

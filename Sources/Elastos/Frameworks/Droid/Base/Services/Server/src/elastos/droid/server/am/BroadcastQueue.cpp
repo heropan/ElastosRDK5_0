@@ -1297,14 +1297,14 @@ Boolean BroadcastQueue::DumpLocked(
                 }
                 needSep = TRUE;
                 printed = TRUE;
-                pw->PrintStringln(String("  Active broadcasts [") + mQueueName + "]:");
+                pw->Println(String("  Active broadcasts [") + mQueueName + "]:");
             }
             StringBuilder sb("  Active Broadcast ");
             sb += mQueueName;
             sb += " #";
             sb += i;
             sb += ":";
-            pw->PrintStringln(sb.ToString());
+            pw->Println(sb.ToString());
             br->Dump(pw, String("    "));
         }
         printed = FALSE;
@@ -1321,14 +1321,14 @@ Boolean BroadcastQueue::DumpLocked(
                 }
                 needSep = TRUE;
                 printed = TRUE;
-                pw->PrintStringln(String("  Active ordered broadcasts [") + mQueueName + "]:");
+                pw->Println(String("  Active ordered broadcasts [") + mQueueName + "]:");
             }
             StringBuilder sb("  Active Ordered Broadcast ");
             sb += mQueueName;
             sb += " #";
             sb += i;
             sb += ":";
-            pw->PrintStringln(sb.ToString());
+            pw->Println(sb.ToString());
             br->Dump(pw, String("    "));
         }
         if (dumpPackage.IsNull() || (mPendingBroadcast != NULL
@@ -1336,12 +1336,12 @@ Boolean BroadcastQueue::DumpLocked(
             if (needSep) {
                 pw->Println();
             }
-            pw->PrintStringln(String("  Pending broadcast [") + mQueueName + "]:");
+            pw->Println(String("  Pending broadcast [") + mQueueName + "]:");
             if (mPendingBroadcast != NULL) {
                 mPendingBroadcast->Dump(pw, String("    "));
             }
             else {
-                pw->PrintStringln(String("    (null)"));
+                pw->Println(String("    (null)"));
             }
             needSep = TRUE;
         }
@@ -1362,13 +1362,13 @@ Boolean BroadcastQueue::DumpLocked(
                 pw->Println();
             }
             needSep = TRUE;
-            pw->PrintStringln(String("  Historical broadcasts [") + mQueueName + "]:");
+            pw->Println(String("  Historical broadcasts [") + mQueueName + "]:");
             printed = TRUE;
         }
         if (dumpAll) {
             pw->PrintString(String("  Historical Broadcast ") + mQueueName + " #");
             pw->PrintInt32(i);
-            pw->PrintStringln(String(":"));
+            pw->Println(String(":"));
             r->Dump(pw, String("    "));
         }
         else {
@@ -1379,7 +1379,7 @@ Boolean BroadcastQueue::DumpLocked(
             pw->PrintString(String("    "));
             String intentStr;
             r->mIntent->ToShortString(FALSE, TRUE, TRUE, FALSE, &intentStr);
-            pw->PrintStringln(intentStr);
+            pw->Println(intentStr);
             AutoPtr<IComponentName> name;
             r->mIntent->GetComponent((IComponentName**)&name);
             if (r->mTargetComp != NULL && r->mTargetComp != name) {
@@ -1394,7 +1394,7 @@ Boolean BroadcastQueue::DumpLocked(
                 pw->PrintString(String("    extras: "));
                 String bundleStr;
                 bundle->ToString(&bundleStr);
-                pw->PrintStringln(bundleStr);
+                pw->Println(bundleStr);
             }
         }
     }
@@ -1414,11 +1414,11 @@ Boolean BroadcastQueue::DumpLocked(
                     pw->Println();
                 }
                 needSep = TRUE;
-                pw->PrintStringln(String("  Historical broadcasts summary [") + mQueueName + "]:");
+                pw->Println(String("  Historical broadcasts summary [") + mQueueName + "]:");
                 printed = TRUE;
             }
             if (!dumpAll && i >= 50) {
-                pw->PrintStringln(String("  ..."));
+                pw->Println(String("  ..."));
                 break;
             }
             pw->PrintString(String("  #"));
@@ -1426,14 +1426,14 @@ Boolean BroadcastQueue::DumpLocked(
             pw->PrintString(String(": "));
             String iStr;
             intent->ToShortString(FALSE, TRUE, TRUE, FALSE, &iStr);
-            pw->PrintStringln(iStr);
+            pw->Println(iStr);
             AutoPtr<IBundle> bundle;
             intent->GetExtras((IBundle**)&bundle);
             if (bundle != NULL) {
                 pw->PrintString(String("    extras: "));
                 String bundleStr;
                 bundle->ToString(&bundleStr);
-                pw->PrintStringln(bundleStr);
+                pw->Println(bundleStr);
             }
         }
     }

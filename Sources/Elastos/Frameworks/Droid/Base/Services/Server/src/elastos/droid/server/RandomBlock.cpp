@@ -2,21 +2,22 @@
 #include <Elastos.CoreLibrary.IO.h>
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::IO::IDataOutput;
 using Elastos::IO::CFileInputStream;
 using Elastos::IO::CRandomAccessFile;
-using Elastos::Droid::Utility::Logging::Slogger;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 
-static const String RandomBlock::TAG("RandomBlock");
-static const Boolean RandomBlock::DEBUG = FALSE;
-static const Int32 RandomBlock::BLOCK_SIZE = 512;
+const String RandomBlock::TAG("RandomBlock");
+const Boolean RandomBlock::DEBUG = FALSE;
+const Int32 RandomBlock::BLOCK_SIZE = 512;
 
 RandomBlock::RandomBlock()
 {
-    mBlock = ArrayOf<Byte>:Alloc(BLOCK_SIZE);
+    mBlock = ArrayOf<Byte>::Alloc(BLOCK_SIZE);
 }
 
 ECode RandomBlock::FromFile(
@@ -28,7 +29,7 @@ ECode RandomBlock::FromFile(
 
     if (DEBUG) Slogger::V(TAG, "reading from file %s", filename.string());
     AutoPtr<IInputStream> stream;
-    CFileInputStream::(filename, (IInputStream**)&stream);
+    CFileInputStream::New(filename, (IInputStream**)&stream);
     ECode ec = FromStream(stream, block);
     Close(ICloseable::Probe(stream));
     return ec;
@@ -44,7 +45,7 @@ ECode RandomBlock::FromStream(
     AutoPtr<RandomBlock> retval = new RandomBlock();
     Int32 total = 0, result;
     while(total < BLOCK_SIZE) {
-        FAIL_RETURN(in->Read(retval->mBlock, total, BLOCK_SIZE - total, &result);
+        FAIL_RETURN(in->Read(retval->mBlock, total, BLOCK_SIZE - total, &result))
         if (result == -1) {
             return E_EOF_EXCEPTION;
         }
@@ -63,7 +64,7 @@ ECode RandomBlock::ToFile(
     if (DEBUG) Slogger::V(TAG, "writing to file %s", filename.string());
     AutoPtr<IRandomAccessFile> out;
     CRandomAccessFile::New(filename, String(sync ? "rws" : "rw"), (IRandomAccessFile**)&out);
-    FAIL_RETURN(ToDataOut(out))
+    FAIL_RETURN(ToDataOut(IDataOutput::Probe(out)))
     TruncateIfPossible(out);
     Close(ICloseable::Probe(out));
 }

@@ -81,6 +81,7 @@ module
     using interface Elastos.Droid.Os.IIUserManager;
     using interface Elastos.Droid.Os.IIPowerManager;
     using interface Elastos.Droid.Os.IIHardwareService;
+    using interface Elastos.Droid.Os.IIUpdateLock;
     using interface Elastos.Droid.Os.IISchedulingPolicyService;
     using interface Elastos.Droid.Os.IINetworkManagementService;
     using interface Elastos.Droid.Os.IPermissionController;
@@ -91,7 +92,6 @@ module
     using interface Elastos.Droid.Content.IIIntentSender;
     using interface Elastos.Droid.Content.IIntent;
     using interface Elastos.Droid.Content.IISyncContext;
-
     using interface Elastos.Droid.Content.IISyncStatusObserver;
     using interface Elastos.Droid.Content.IIntentReceiver;
     using interface Elastos.Droid.Content.IServiceConnection;
@@ -106,8 +106,11 @@ module
     using interface Elastos.Droid.Hardware.Display.IIDisplayManager;
     using interface Elastos.Droid.Internal.App.IIProcessStats;
     using interface Elastos.Droid.Internal.Os.IIParcelFileDescriptorFactory;
+    using interface Elastos.Droid.Internal.Os.IIDropBoxManagerService;
     using interface Elastos.Droid.Internal.StatusBar.IIStatusBarService;
     using interface Elastos.Droid.Internal.TextService.IITextServicesManager;
+    using interface Elastos.Droid.Location.IICountryDetector;
+    using interface Elastos.Droid.Bluetooth.IIBluetoothManager;
     using interface Elastos.Droid.Media.Projection.IIMediaProjectionCallback;
     using interface Elastos.Droid.Net.IIConnectivityManager;
     using interface Elastos.Droid.Net.IINetworkManagementEventObserver;
@@ -166,6 +169,117 @@ module
         interface IINsdManager;
     }
 
+    class CSerialService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IISerialManager;
+        interface IBinder;
+    }
+
+    //class CBluetoothManagerService {
+    //    constructor(
+    //        [in] IContext* ctx);
+
+    //    interface IIBluetoothManager;
+    //    interface IBinder;
+    //}
+
+    class CDiskStatsService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IBinder;
+    }
+
+    class CUpdateLockService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IIUpdateLock;
+        interface IBinder;
+    }
+
+    class CSamplingProfilerService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IBinder;
+    }
+
+    class CCountryDetectorService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IICountryDetector;
+        interface IBinder;
+        interface IRunnable;
+    }
+
+    class CCommonTimeManagementService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IBinder;
+    }
+
+    class CCommonTimeManagementServiceIfaceObserver {
+        constructor(
+            [in] IBinder* commonTimeManagementService);
+
+        interface IINetworkManagementEventObserver;
+        interface IBinder;
+    }
+
+    class CDropBoxManagerService {
+        constructor(
+            [in] IContext* ctx,
+            [in] IFile* path);
+
+        interface IIDropBoxManagerService;
+        interface IBinder;
+    }
+
+    singleton class CSystemServer {
+        interface ISystemServer;
+    }
+
+    class CNetworkPolicyListener {
+        constructor(
+            [in] IIConnectivityManager* connectivityService);
+
+        interface IINetworkPolicyListener;
+        interface IBinder;
+    }
+
+    class CDataActivityObserver {
+        constructor(
+            [in] IIConnectivityManager* connectivityService);
+
+        interface IINetworkManagementEventObserver;
+        interface IBinder;
+    }
+
+    [local]
+    class CConnectivityService {
+        constructor(
+            [in] IContext* ctx,
+            [in] IINetworkManagementService* netManager,
+            [in] IINetworkStatsService* statsService,
+            [in] IINetworkPolicyManager* policyManager);
+
+        interface IIConnectivityManager;
+        interface IBinder;
+    }
+
+    class CTextServicesManagerService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IITextServicesManager;
+        interface IBinder;
+    }
+
 //     class CBootReceiver {
 //         interface IBroadcastReceiver;
 //     }
@@ -179,107 +293,12 @@ module
 //         interface IBroadcastReceiver;
 //     }
 
-    class CSerialService {
-        constructor(
-            [in] IContext* ctx);
-
-        interface IISerialManager;
-        interface IBinder;
-    }
-
-//     [local]
-//     class CDisplayManagerServiceAw {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IIPowerManager* pm);
-
-//         interface IIDisplayManagerAw;
-//         interface IBinder;
-//     }
-
-//     [local]
-//     class CAlarmManagerService {
-//         constructor(
-//             [in] IContext* ctx);
-
-//         interface IIAlarmManager;
-//         interface IBinder;
-//     }
-
-//     [local]
-//     class CBackupManagerService {
-//         constructor(
-//             [in] IContext* ctx);
-
-//         interface IIBackupManager;
-//         interface IBinder;
-//     }
-
-//     class CSystemBackupAgent {
-//         interface IBackupAgentHelper;
-//     }
-
-//     [local]
-//     class CActiveRestoreSession {
-//         constructor(
-//             [in] String packageName,
-//             [in] String transport,
-//             [in] Handle32 host);
-
-//         interface IIRestoreSession;
-//         interface IBinder;
-//     }
-
-//     [local]
-//     class CDiskStatsService {
-//         constructor(
-//             [in] IContext* ctx);
-
-//         interface IBinder;
-//     }
-
-//     [local]
-//     class CUpdateLockService {
-//         constructor(
-//             [in] IContext* ctx);
-
-//         interface IIUpdateLock;
-//         interface IBinder;
-//     }
-
-//     [local]
-//     class CSamplingProfilerService {
-//         constructor(
-//             [in] IContext* ctx);
-
-//         interface IBinder;
-//     }
-
-//     [local]
-//     class CCountryDetectorService {
-//         constructor(
-//             [in] IContext* ctx);
-
-//         interface IICountryDetector;
-//         interface IBinder;
-//         interface IRunnable;
-//     }
-
 //     [local]
 //     class CEthernetService {
 //         constructor(
 //             [in] IContext* ctx);
 
 //         interface IIEthernetManager;
-//     }
-
-//     [local]
-//     class CCommonTimeManagementService
-//     {
-//         constructor(
-//             [in] IContext* ctx);
-
-//         interface IBinder;
 //     }
 
 //     // [local]
@@ -329,12 +348,45 @@ module
 //     }
 
 //     [local]
-//     class CDropBoxManagerService {
+//     class CDisplayManagerServiceAw {
 //         constructor(
 //             [in] IContext* ctx,
-//             [in] IFile* path);
+//             [in] IIPowerManager* pm);
 
-//         interface IDropBoxManagerService;
+//         interface IIDisplayManagerAw;
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CAlarmManagerService {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         interface IIAlarmManager;
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CBackupManagerService {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         interface IIBackupManager;
+//         interface IBinder;
+//     }
+
+//     class CSystemBackupAgent {
+//         interface IBackupAgentHelper;
+//     }
+
+//     [local]
+//     class CActiveRestoreSession {
+//         constructor(
+//             [in] String packageName,
+//             [in] String transport,
+//             [in] Handle32 host);
+
+//         interface IIRestoreSession;
 //         interface IBinder;
 //     }
 
@@ -620,38 +672,6 @@ module
 //     } // Wm
 
 
-        singleton class CSystemServer {
-            interface ISystemServer;
-        }
-
-        class CNetworkPolicyListener {
-            constructor(
-                [in] IIConnectivityManager* connectivityService);
-
-            interface IINetworkPolicyListener;
-            interface IBinder;
-        }
-
-        class CDataActivityObserver {
-            constructor(
-                [in] IIConnectivityManager* connectivityService);
-
-            interface IINetworkManagementEventObserver;
-            interface IBinder;
-        }
-
-        [local]
-        class CConnectivityService {
-            constructor(
-                [in] IContext* ctx,
-                [in] IINetworkManagementService* netManager,
-                [in] IINetworkStatsService* statsService,
-                [in] IINetworkPolicyManager* policyManager);
-
-            interface IIConnectivityManager;
-            interface IBinder;
-        }
-
 //     [local]
 //     class CMountService {
 //         constructor(
@@ -668,15 +688,6 @@ module
 //         interface IRecognitionManagerService;
 //         interface IBinder;
 //     }
-
-
-    class CTextServicesManagerService {
-        constructor(
-            [in] IContext* ctx);
-
-        interface IITextServicesManager;
-        interface IBinder;
-    }
 
 //     [local]
 //     class CPrivacySettingsManagerService {

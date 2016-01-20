@@ -1,25 +1,28 @@
-
 #include "elastos/droid/server/NetworkTimeUpdateService.h"
-#include <Elastos.Droid.App.h>
-#include <Elastos.Droid.Internal.h>
-#include <Elastos.Droid.Provider.h>
-#include <Elastos.Droid.Utility.h>
-#include <cutils/log.h>
-#include <elastos/core/Math.h>
+#include "elastos/droid/os/SystemClock.h"
 #include <elastos/core/StringBuilder.h>
-#include <elastos/droid/R.h>
-#include <elastos/droid/net/ReturnOutValue.h>
-#include <elastos/droid/net/Uri.h>
-#include <elastos/droid/os/Build.h>
-#include <elastos/droid/os/SystemClock.h>
+#include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>
+#include <Elastos.Droid.Os.h>
+#include <Elastos.Droid.App.h>
+#include <Elastos.Droid.Content.h>
+#include <Elastos.Droid.Net.h>
+#include <Elastos.Droid.Provider.h>
+#include <Elastos.Droid.Database.h>
+#include <Elastos.Droid.Utility.h>
+#include <Elastos.Droid.Internal.h>
+#include <Elastos.CoreLibrary.Utility.h>
 
-using Elastos::Core::CSystem;
-using Elastos::Core::ISystem;
-using Elastos::Core::Math;
-using Elastos::Core::StringBuilder;
-using Elastos::Droid::App::CPendingIntent;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::CHandlerThread;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Database::IContentObserver;
+using Elastos::Droid::Database::EIID_IContentObserver;
+using Elastos::Droid::Provider::CSettingsGlobal;
+using Elastos::Droid::Provider::ISettingsGlobal;
+using Elastos::Droid::App::IPendingIntentHelper;
 using Elastos::Droid::App::CPendingIntentHelper;
 using Elastos::Droid::App::IPendingIntentHelper;
 using Elastos::Droid::Content::CIntent;
@@ -31,20 +34,14 @@ using Elastos::Droid::Database::EIID_IContentObserver;
 using Elastos::Droid::Database::IContentObserver;
 using Elastos::Droid::Internal::Telephony::ITelephonyIntents;
 using Elastos::Droid::Net::IConnectivityManager;
-using Elastos::Droid::Net::INetwork;
-using Elastos::Droid::Net::INetworkInfo;
-using Elastos::Droid::Net::IUri;
-using Elastos::Droid::Os::Build;
-using Elastos::Droid::Os::CHandler;
-using Elastos::Droid::Os::CHandlerThread;
-using Elastos::Droid::Os::SystemClock;
-using Elastos::Droid::Provider::CSettingsGlobal;
-using Elastos::Droid::Provider::ISettingsGlobal;
-using Elastos::Droid::R;
-using Elastos::Droid::Utility::CNtpTrustedTimeHelper;
 using Elastos::Droid::Utility::INtpTrustedTime;
 using Elastos::Droid::Utility::INtpTrustedTimeHelper;
-using Elastos::Utility::ISet;
+using Elastos::Droid::Utility::CNtpTrustedTimeHelper;
+using Elastos::Core::StringBuilder;
+using Elastos::Core::ISystem;
+using Elastos::Core::CSystem;
+using Elastos::Core::IThread;
+using Elastos::Core::Math;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
 
@@ -77,24 +74,11 @@ ECode NetworkTimeUpdateService::MyHandler::HandleMessage(
     return NOERROR;
 }
 
-//=============================================================================
-// NetworkTimeUpdateService
-//=============================================================================
-const String NetworkTimeUpdateService::TAG("NetworkTimeUpdateService");
-const Boolean NetworkTimeUpdateService::DBG = FALSE;
-
-const Int32 NetworkTimeUpdateService::EVENT_AUTO_TIME_CHANGED;
-const Int32 NetworkTimeUpdateService::EVENT_POLL_NETWORK_TIME;
-const Int32 NetworkTimeUpdateService::EVENT_NETWORK_CONNECTED;
-
-const String NetworkTimeUpdateService::ACTION_POLL("com.android.server.NetworkTimeUpdateService.action.POLL");
-
-Int32 NetworkTimeUpdateService::POLL_REQUEST = 0;
-const Int64 NetworkTimeUpdateService::NOT_SET = -1;
-
-NetworkTimeUpdateService::NetworkTimeUpdateService()
+NetworkTimeUpdateService::NetworkTimeUpdateService(
+    /* [in] */ IContext *context)
     : mNitzTimeSetTime(NOT_SET)
     , mNitzZoneSetTime(NOT_SET)
+    , mContext(context)
     , mLastNtpFetchTime(NOT_SET)
     , mPollingIntervalMs(0)
     , mPollingIntervalShorterMs(0)
@@ -150,9 +134,10 @@ ECode NetworkTimeUpdateService::SystemRunning()
     RegisterForAlarms();
     RegisterForConnectivityIntents();
 
-    AutoPtr<IHandlerThread> thread;
+    AutoPtr<IThread> thread
     CHandlerThread::New(TAG, (IHandlerThread**)&thread);
-    IThread::Probe(thread)->Start();
+    thread->Start();
+
     AutoPtr<ILooper> looper;
     thread->GetLooper((ILooper**)&looper);
     mHandler = new MyHandler(looper, this);
@@ -314,7 +299,7 @@ Boolean NetworkTimeUpdateService::IsAutomaticTimeRequested()
 //====================================================================
 NetworkTimeUpdateService::NitzReceiver::NitzReceiver(
     /* [in] */ NetworkTimeUpdateService* owner)
-    : mOwner(owner)
+    : mHost(owner)
 {
 }
 
@@ -325,9 +310,9 @@ ECode NetworkTimeUpdateService::NitzReceiver::OnReceive(
     String action;
     intent->GetAction(&action);
     if (ITelephonyIntents::ACTION_NETWORK_SET_TIME.Equals(action)) {
-        mOwner->mNitzTimeSetTime = SystemClock::GetElapsedRealtime();
+        mHost->mNitzTimeSetTime = SystemClock::GetElapsedRealtime();
     } else if (ITelephonyIntents::ACTION_NETWORK_SET_TIMEZONE.Equals(action)) {
-        mOwner->mNitzZoneSetTime = SystemClock::GetElapsedRealtime();
+        mHost->mNitzZoneSetTime = SystemClock::GetElapsedRealtime();
     }
     return NOERROR;
 }
@@ -338,7 +323,7 @@ ECode NetworkTimeUpdateService::NitzReceiver::OnReceive(
 //====================================================================
 NetworkTimeUpdateService::ConnectivityReceiver::ConnectivityReceiver(
     /* [in] */ NetworkTimeUpdateService* owner)
-    : mOwner(owner)
+    : mHost(owner)
 {
 }
 
@@ -363,7 +348,7 @@ ECode NetworkTimeUpdateService::ConnectivityReceiver::OnReceive(
             if (state == Elastos::Droid::Net::NetworkInfoState_CONNECTED &&
                     (type == IConnectivityManager::TYPE_WIFI ||
                         type == IConnectivityManager::TYPE_ETHERNET) ) {
-                mOwner->SendMessage(EVENT_NETWORK_CONNECTED);
+                mHost->SendMessage(EVENT_NETWORK_CONNECTED);
                 //mHandler.obtainMessage(EVENT_NETWORK_CONNECTED).sendToTarget();
             }
         }
@@ -382,7 +367,7 @@ NetworkTimeUpdateService::SettingsObserver::SettingsObserver(
 {
     mHandler = handler;
     mMsg = msg;
-    mOwner = owner;
+    mHost = owner;
     //ContentObserver(handler);
 }
 
@@ -412,7 +397,7 @@ ECode NetworkTimeUpdateService::SettingsObserver::OnChange(
 //====================================================================
 NetworkTimeUpdateService::MyReceiver::MyReceiver(
     /* [in] */ NetworkTimeUpdateService* owner)
-    : mOwner(owner)
+    : mHost(owner)
 {
 }
 
@@ -420,7 +405,7 @@ ECode NetworkTimeUpdateService::MyReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
-    return mOwner->SendMessage(EVENT_POLL_NETWORK_TIME);
+    return mHost->SendMessage(EVENT_POLL_NETWORK_TIME);
 }
 
 }//namespace Server

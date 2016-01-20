@@ -1,6 +1,4 @@
-
-#include "elastos/droid/ext/frameworkdef.h"
-#include "NativeDaemonEvent.h"
+#include "elastos/droid/server/NativeDaemonEvent.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/etl/List.h>
 

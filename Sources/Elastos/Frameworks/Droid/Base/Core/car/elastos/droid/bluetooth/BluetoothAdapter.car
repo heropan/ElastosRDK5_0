@@ -7,6 +7,8 @@ module
     using interface Elastos.Droid.Content.IContext;
 
     interface Elastos.Droid.Bluetooth.IBluetoothServerSocket;
+    interface Elastos.Droid.Bluetooth.IBluetoothProfile;
+    interface Elastos.Droid.Bluetooth.IBluetoothProfileServiceListener;
     interface Elastos.Droid.Bluetooth.IIBluetoothStateChangeCallback;
 
     namespace Elastos {

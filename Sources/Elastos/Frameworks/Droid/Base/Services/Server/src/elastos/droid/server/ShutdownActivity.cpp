@@ -2,11 +2,12 @@
 #include "elastos/droid/server/ShutdownActivity.h"
 #include "elastos/droid/os/ServiceManager.h"
 #include <elastos/utility/logging/Slogger.h>
+#include <Elastos.Droid.Os.h>
 
-using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::ServiceManager;
 using Elastos::Droid::Os::IPowerManager;
 using Elastos::Droid::Os::IIPowerManager;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {

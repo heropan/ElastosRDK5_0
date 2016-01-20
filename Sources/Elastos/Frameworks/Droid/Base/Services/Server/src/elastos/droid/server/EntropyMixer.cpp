@@ -1,13 +1,22 @@
 #include <elastos/droid/server/EntropyMixer.h>
-#include <elastos/droid/server/RandomBlo.h>
+#include <elastos/droid/server/RandomBlock.h>
 #include <elastos/droid/os/Environment.h>
+#include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
+#include <Elastos.Droid.Os.h>
+#include <Elastos.Droid.Content.h>
+#include <Elastos.Droid.Content.h>
 #include <Elastos.CoreLibrary.IO.h>
 
+using Elastos::Droid::Os::ISystemProperties;
+using Elastos::Droid::Os::CSystemProperties;
 using Elastos::Droid::Os::Environment;
 using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
+using Elastos::Core::StringBuilder;
+using Elastos::IO::IOutputStream;
 using Elastos::IO::CFile;
 using Elastos::IO::CFileOutputStream;
 using Elastos::IO::CPrintWriter;
@@ -35,11 +44,11 @@ static Int64 InitSTART_NANOTIME()
     return value;
 }
 
-static const String EntropyMixer::TAG("EntropyMixer");
-static const Int32 EntropyMixer::ENTROPY_WHAT = 1;
-static const Int32 EntropyMixer::ENTROPY_WRITE_PERIOD = 3 * 60 * 60 * 1000;  // 3 hrs
-static const Int64 EntropyMixer::START_TIME = InitSTART_TIME();
-static const Int64 EntropyMixer::START_NANOTIME = InitSTART_NANOTIME();
+const String EntropyMixer::TAG("EntropyMixer");
+const Int32 EntropyMixer::ENTROPY_WHAT = 1;
+const Int32 EntropyMixer::ENTROPY_WRITE_PERIOD = 3 * 60 * 60 * 1000;  // 3 hrs
+const Int64 EntropyMixer::START_TIME = InitSTART_TIME();
+const Int64 EntropyMixer::START_NANOTIME = InitSTART_NANOTIME();
 
 //============================================================
 // EntropyMixer::MyHandler
@@ -50,7 +59,7 @@ EntropyMixer::MyHandler::MyHandler(
 {}
 
 //@Override
-ECode EntropyMixer::MyHandlerHandleMessage(
+ECode EntropyMixer::MyHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
     Int32 what;
@@ -91,7 +100,10 @@ CAR_INTERFACE_IMPL(EntropyMixer, Object, IBinder)
 EntropyMixer::EntropyMixer(
     /* [in] */ IContext* context)
 {
-    Init(context, GetSystemDir() + "/entropy.dat", "/dev/urandom", "/dev/hw_random");
+    StringBuilder sb(GetSystemDir());
+    sb += "/entropy.dat";
+    Init(context, sb.ToString(),
+        String("/dev/urandom"), String("/dev/hw_random"));
 }
 
 EntropyMixer::EntropyMixer(
@@ -100,7 +112,7 @@ EntropyMixer::EntropyMixer(
     /* [in] */ const String& randomDevice,
     /* [in] */ const String& hwRandomDevice)
 {
-    Init(context, entropyFile, randomDevice, hwRandomDevice)l
+    Init(context, entropyFile, randomDevice, hwRandomDevice);
 }
 
 ECode EntropyMixer::Init(
@@ -124,7 +136,7 @@ ECode EntropyMixer::Init(
 
     mRandomDevice = randomDevice;
     mHwRandomDevice = hwRandomDevice;
-    mEntropyFile = eEntropyFile;
+    mEntropyFile = entropyFile;
     LoadInitialEntropy();
     AddDeviceSpecificEntropy();
     AddHwRandomEntropy();
@@ -199,8 +211,8 @@ void EntropyMixer::AddDeviceSpecificEntropy()
     ec = CPrintWriter::New(os, (IPrintWriter**)&out);
     FAIL_GOTO(ec, _Exit_)
 
-    out->Println("Copyright (C) 2009 The Android Open Source Project");
-    out->Println("All Your Randomness Are Belong To Us");
+    out->Println(String("Copyright (C) 2009 The Android Open Source Project"));
+    out->Println(String("All Your Randomness Are Belong To Us"));
     out->Println(START_TIME);
     out->Println(START_NANOTIME);
 
@@ -220,10 +232,8 @@ void EntropyMixer::AddDeviceSpecificEntropy()
     out->Println(str);
     systemProp->Get(String("ro.build.fingerprint"), &str);
     out->Println(str);
-    systemProp->Get(String(), &str);
-    out->Println(str);
 
-    system->GetNanoTime(&value);
+    system->GetCurrentTimeMillis(&value);
     out->Println(value);
     system->GetNanoTime(&value);
     out->Println(value);
@@ -234,7 +244,7 @@ _Exit_:
     }
 
     if (out != NULL) {
-        ICloseable::Probe(out)::Close();
+        ICloseable::Probe(out)->Close();
     }
 }
 
@@ -261,7 +271,8 @@ String EntropyMixer::GetSystemDir()
     AutoPtr<IFile> dataDir = Environment::GetDataDirectory();
     AutoPtr<IFile> systemDir;
     CFile::New(dataDir, String("system"), (IFile**)&systemDir);
-    systemDir->Mkdirs();
+    Boolean bval;
+    systemDir->Mkdirs(&bval);
     return Object::ToString(systemDir);
 }
 

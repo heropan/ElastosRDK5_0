@@ -54,6 +54,7 @@ EXPORT_HEADERS += elastos/droid/net/NetworkAgent.h
 
 EXPORT_HEADERS += elastos/droid/os/Build.h
 EXPORT_HEADERS += elastos/droid/os/Environment.h
+EXPORT_HEADERS += elastos/droid/os/TokenWatcher.h
 //EXPORT_HEADERS += elastos/droid/os/NativeMessageQueue.h
 EXPORT_HEADERS += elastos/droid/os/Handler.h
 EXPORT_HEADERS += elastos/droid/os/HandlerThread.h

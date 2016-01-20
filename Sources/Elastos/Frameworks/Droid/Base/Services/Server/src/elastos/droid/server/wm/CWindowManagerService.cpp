@@ -12836,16 +12836,16 @@ void CWindowManagerService::SaveANRStateLocked(
     dfh->GetInstance((IDateFormat**)&format);
     String dStr;
     format->FormatDate(date, &dStr);
-    pw->PrintStringln(String("  ANR time: ") + dStr);
+    pw->Println(String("  ANR time: ") + dStr);
     if (appWindowToken != NULL) {
-        pw->PrintStringln(String("  Application at fault: ") + appWindowToken->mStringName);
+        pw->Println(String("  Application at fault: ") + appWindowToken->mStringName);
     }
     if (windowState != NULL) {
         AutoPtr<ICharSequence> title;
         windowState->mAttrs->GetTitle((ICharSequence**)&title);
         String tcs;
         title->ToString(&tcs);
-        pw->PrintStringln(String("  Window at fault: ") + tcs);
+        pw->Println(String("  Window at fault: ") + tcs);
     }
     if (!reason.IsNull()) {
         pw->Println(String("  Reason: ") + reason);

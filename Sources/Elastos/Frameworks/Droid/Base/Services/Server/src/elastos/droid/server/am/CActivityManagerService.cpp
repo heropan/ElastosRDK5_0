@@ -15184,7 +15184,7 @@ ECode CActivityManagerService::Dump(
         sb += Binder::GetCallingUid();
         sb += " without permission ";
         sb += "Elastos::Droid::Manifest::permission::DUMP";
-        pw->PrintStringln(sb.ToString());
+        pw->Println(sb.ToString());
         return NOERROR;
     }
 
@@ -15206,31 +15206,31 @@ ECode CActivityManagerService::Dump(
             dumpClient = TRUE;
         }
         else if (CString("-h").Equals(opt)) {
-            pw->PrintStringln(String("Activity manager dump options:"));
-            pw->PrintStringln(String("  [-a] [-c] [-h] [cmd] ..."));
-            pw->PrintStringln(String("  cmd may be one of:"));
-            pw->PrintStringln(String("    a[ctivities]: activity stack state"));
-            pw->PrintStringln(String("    b[roadcasts] [PACKAGE_NAME] [history [-s]]: broadcast state"));
-            pw->PrintStringln(String("    i[ntents] [PACKAGE_NAME]: pending intent state"));
-            pw->PrintStringln(String("    p[rocesses] [PACKAGE_NAME]: process state"));
-            pw->PrintStringln(String("    o[om]: out of memory management"));
-            pw->PrintStringln(String("    prov[iders] [COMP_SPEC ...]: content provider state"));
-            pw->PrintStringln(String("    provider [COMP_SPEC]: provider client-side state"));
-            pw->PrintStringln(String("    s[ervices] [COMP_SPEC ...]: service state"));
-            pw->PrintStringln(String("    service [COMP_SPEC]: service client-side state"));
-            pw->PrintStringln(String("    package [PACKAGE_NAME]: all state related to given package"));
-            pw->PrintStringln(String("    all: dump all activities"));
-            pw->PrintStringln(String("    top: dump the top activity"));
-            pw->PrintStringln(String("  cmd may also be a COMP_SPEC to dump activities."));
-            pw->PrintStringln(String("  COMP_SPEC may be a component name (com.foo/.myApp),"));
-            pw->PrintStringln(String("    a partial substring in a component name, a"));
-            pw->PrintStringln(String("    hex object identifier."));
-            pw->PrintStringln(String("  -a: include all available server state."));
-            pw->PrintStringln(String("  -c: include client state."));
+            pw->Println(String("Activity manager dump options:"));
+            pw->Println(String("  [-a] [-c] [-h] [cmd] ..."));
+            pw->Println(String("  cmd may be one of:"));
+            pw->Println(String("    a[ctivities]: activity stack state"));
+            pw->Println(String("    b[roadcasts] [PACKAGE_NAME] [history [-s]]: broadcast state"));
+            pw->Println(String("    i[ntents] [PACKAGE_NAME]: pending intent state"));
+            pw->Println(String("    p[rocesses] [PACKAGE_NAME]: process state"));
+            pw->Println(String("    o[om]: out of memory management"));
+            pw->Println(String("    prov[iders] [COMP_SPEC ...]: content provider state"));
+            pw->Println(String("    provider [COMP_SPEC]: provider client-side state"));
+            pw->Println(String("    s[ervices] [COMP_SPEC ...]: service state"));
+            pw->Println(String("    service [COMP_SPEC]: service client-side state"));
+            pw->Println(String("    package [PACKAGE_NAME]: all state related to given package"));
+            pw->Println(String("    all: dump all activities"));
+            pw->Println(String("    top: dump the top activity"));
+            pw->Println(String("  cmd may also be a COMP_SPEC to dump activities."));
+            pw->Println(String("  COMP_SPEC may be a component name (com.foo/.myApp),"));
+            pw->Println(String("    a partial substring in a component name, a"));
+            pw->Println(String("    hex object identifier."));
+            pw->Println(String("  -a: include all available server state."));
+            pw->Println(String("  -c: include client state."));
             return NOERROR;
         }
         else {
-            pw->PrintStringln(String("Unknown argument: ") + opt + "; use -h for help");
+            pw->Println(String("Unknown argument: ") + opt + "; use -h for help");
         }
     }
 
@@ -15318,8 +15318,8 @@ ECode CActivityManagerService::Dump(
                 if (args->GetLength() > 2) newArgs->Copy(args, opti, args->GetLength() - opti);
             }
             if (!DumpProvider(fd, pw, name, newArgs, 0, dumpAll)) {
-                pw->PrintStringln(String("No providers match: ") + name);
-                pw->PrintStringln(String("Use -h for help."));
+                pw->Println(String("No providers match: ") + name);
+                pw->Println(String("Use -h for help."));
             }
         }
         else if (CString("providers").Equals(cmd) || CString("prov").Equals(cmd)) {
@@ -15340,15 +15340,15 @@ ECode CActivityManagerService::Dump(
                 if (args->GetLength() > 2) newArgs->Copy(args, opti, args->GetLength() - opti);
             }
             if (!mServices->DumpService(fd, pw, name, newArgs, 0, dumpAll)) {
-                pw->PrintStringln(String("No services match: ") + name);
-                pw->PrintStringln(String("Use -h for help."));
+                pw->Println(String("No services match: ") + name);
+                pw->Println(String("Use -h for help."));
             }
         }
         else if (CString("package").Equals(cmd)) {
             AutoPtr<ArrayOf<String> > newArgs;
             if (opti >= args->GetLength()) {
-                pw->PrintStringln(String("package: no package name specified"));
-                pw->PrintStringln(String("Use -h for help."));
+                pw->Println(String("package: no package name specified"));
+                pw->Println(String("Use -h for help."));
             }
             else {
                 dumpPackage = (*args)[opti];
@@ -15367,8 +15367,8 @@ ECode CActivityManagerService::Dump(
         else {
             // Dumping a single activity?
             if (!DumpActivity(fd, pw, cmd, args, opti, dumpAll)) {
-                pw->PrintStringln(String("Bad activity command, or no activities match: ") + cmd);
-                pw->PrintStringln(String("Use -h for help."));
+                pw->Println(String("Bad activity command, or no activities match: ") + cmd);
+                pw->Println(String("Use -h for help."));
             }
         }
         if (!more) {
@@ -15383,38 +15383,38 @@ ECode CActivityManagerService::Dump(
         Boolean needSep;
         needSep = DumpPendingIntentsLocked(fd, pw, args, opti, dumpAll, dumpPackage);
         if (needSep) {
-            pw->PrintStringln(String(" "));
+            pw->Println(String(" "));
         }
         if (dumpAll) {
-            pw->PrintStringln(String("-------------------------------------------------------------------------------"));
+            pw->Println(String("-------------------------------------------------------------------------------"));
         }
         needSep = DumpBroadcastsLocked(fd, pw, args, opti, dumpAll, dumpPackage);
         if (needSep) {
-            pw->PrintStringln(String(" "));
+            pw->Println(String(" "));
         }
         if (dumpAll) {
-            pw->PrintStringln(String("-------------------------------------------------------------------------------"));
+            pw->Println(String("-------------------------------------------------------------------------------"));
         }
         needSep = DumpProvidersLocked(fd, pw, args, opti, dumpAll, dumpPackage);
         if (needSep) {
-            pw->PrintStringln(String(" "));
+            pw->Println(String(" "));
         }
         if (dumpAll) {
-            pw->PrintStringln(String("-------------------------------------------------------------------------------"));
+            pw->Println(String("-------------------------------------------------------------------------------"));
         }
         needSep = mServices->DumpServicesLocked(fd, pw, args, opti, dumpAll, dumpClient, dumpPackage);
         if (needSep) {
-            pw->PrintStringln(String(" "));
+            pw->Println(String(" "));
         }
         if (dumpAll) {
-            pw->PrintStringln(String("-------------------------------------------------------------------------------"));
+            pw->Println(String("-------------------------------------------------------------------------------"));
         }
         needSep = DumpActivitiesLocked(fd, pw, args, opti, dumpAll, dumpClient, dumpPackage);
         if (needSep) {
-            pw->PrintStringln(String(" "));
+            pw->Println(String(" "));
         }
         if (dumpAll) {
-            pw->PrintStringln(String("-------------------------------------------------------------------------------"));
+            pw->Println(String("-------------------------------------------------------------------------------"));
         }
         DumpProcessesLocked(fd, pw, args, opti, dumpAll, dumpPackage);
     }
@@ -15431,66 +15431,66 @@ Boolean CActivityManagerService::DumpActivitiesLocked(
     /* [in] */ Boolean dumpClient,
     /* [in] */ const String& dumpPackage)
 {
-    pw->PrintStringln(String("ACTIVITY MANAGER ACTIVITIES (dumpsys activity activities)"));
-    pw->PrintStringln(String("  Main stack:"));
+    pw->Println(String("ACTIVITY MANAGER ACTIVITIES (dumpsys activity activities)"));
+    pw->Println(String("  Main stack:"));
     DumpHistoryList(fd, pw, &mMainStack->mHistory, String("  "), String("Hist"), TRUE, !dumpAll, dumpClient,
             dumpPackage);
-    pw->PrintStringln(String(" "));
-    pw->PrintStringln(String("  Running activities (most recent first):"));
+    pw->Println(String(" "));
+    pw->Println(String("  Running activities (most recent first):"));
     DumpHistoryList(fd, pw, &mMainStack->mLRUActivities, String("  "), String("Run"), FALSE, !dumpAll, FALSE,
             dumpPackage);
     if (mMainStack->mWaitingVisibleActivities.Begin() != mMainStack->mWaitingVisibleActivities.End()) {
-        pw->PrintStringln(String(" "));
-        pw->PrintStringln(String("  Activities waiting for another to become visible:"));
+        pw->Println(String(" "));
+        pw->Println(String("  Activities waiting for another to become visible:"));
         DumpHistoryList(fd, pw, &mMainStack->mWaitingVisibleActivities, String("  "), String("Wait"), FALSE,
                 !dumpAll, FALSE, dumpPackage);
     }
     if (mMainStack->mStoppingActivities.Begin() != mMainStack->mStoppingActivities.End()) {
-        pw->PrintStringln(String(" "));
-        pw->PrintStringln(String("  Activities waiting to stop:"));
+        pw->Println(String(" "));
+        pw->Println(String("  Activities waiting to stop:"));
         DumpHistoryList(fd, pw, &mMainStack->mStoppingActivities, String("  "), String("Stop"), FALSE,
                 !dumpAll, FALSE, dumpPackage);
     }
     if (mMainStack->mGoingToSleepActivities.Begin() != mMainStack->mGoingToSleepActivities.End()) {
-        pw->PrintStringln(String(" "));
-        pw->PrintStringln(String("  Activities waiting to sleep:"));
+        pw->Println(String(" "));
+        pw->Println(String("  Activities waiting to sleep:"));
         DumpHistoryList(fd, pw, &mMainStack->mGoingToSleepActivities, String("  "), String("Sleep"), FALSE,
                 !dumpAll, FALSE, dumpPackage);
     }
     if (mMainStack->mFinishingActivities.Begin() != mMainStack->mFinishingActivities.End()) {
-        pw->PrintStringln(String(" "));
-        pw->PrintStringln(String("  Activities waiting to finish:"));
+        pw->Println(String(" "));
+        pw->Println(String("  Activities waiting to finish:"));
         DumpHistoryList(fd, pw, &mMainStack->mFinishingActivities, String("  "), String("Fin"), FALSE,
                 !dumpAll, FALSE, dumpPackage);
     }
 
-    pw->PrintStringln(String(" "));
+    pw->Println(String(" "));
     if (mMainStack->mPausingActivity != NULL) {
         String pauseString;
         mMainStack->mPausingActivity->ToString(&pauseString);
-        pw->PrintStringln(String("  mPausingActivity: ") + pauseString);
+        pw->Println(String("  mPausingActivity: ") + pauseString);
     }
     String resumeString;
     mMainStack->mResumedActivity->ToString(&resumeString);
-    pw->PrintStringln(String("  mResumedActivity: ") + resumeString);
+    pw->Println(String("  mResumedActivity: ") + resumeString);
     String focusedString;
     mFocusedActivity->ToString(&focusedString);
-    pw->PrintStringln(String("  mFocusedActivity: ") + focusedString);
+    pw->Println(String("  mFocusedActivity: ") + focusedString);
     if (dumpAll) {
         String lastString;
         mMainStack->mLastPausedActivity->ToString(&lastString);
-        pw->PrintStringln(String("  mLastPausedActivity: ") + lastString);
+        pw->Println(String("  mLastPausedActivity: ") + lastString);
         StringBuilder sb("  mSleepTimeout: ");
         sb += mMainStack->mSleepTimeout;
-        pw->PrintStringln(sb.ToString());
+        pw->Println(sb.ToString());
         StringBuilder sb1("  mDismissKeyguardOnNextActivity: ");
         sb1 += mMainStack->mDismissKeyguardOnNextActivity;
-        pw->PrintStringln(sb1.ToString());
+        pw->Println(sb1.ToString());
     }
 
     if (mRecentTasks->Begin() != mRecentTasks->End()) {
         pw->Println();
-        pw->PrintStringln(String("  Recent tasks:"));
+        pw->Println(String("  Recent tasks:"));
 
         List< AutoPtr<TaskRecord> >::Iterator it;
         Int32 i = 0;
@@ -15516,10 +15516,10 @@ Boolean CActivityManagerService::DumpActivitiesLocked(
     }
 
     if (dumpAll) {
-        pw->PrintStringln(String(" "));
+        pw->Println(String(" "));
         StringBuilder sb("  mCurTask: ");
         sb += mCurTask;
-        pw->PrintStringln(sb.ToString());
+        pw->Println(sb.ToString());
     }
 
     return TRUE;
@@ -15536,7 +15536,7 @@ Boolean CActivityManagerService::DumpProcessesLocked(
     Boolean needSep = FALSE;
     Int32 numPers = 0;
 
-    pw->PrintStringln(String("ACTIVITY MANAGER RUNNING PROCESSES (dumpsys activity processes)"));
+    pw->Println(String("ACTIVITY MANAGER RUNNING PROCESSES (dumpsys activity processes)"));
 
     if (dumpAll) {
         AutoPtr<HashMap<String, AutoPtr<HashMap<Int32, AutoPtr<ProcessRecord> > > > > map;
@@ -15553,7 +15553,7 @@ Boolean CActivityManagerService::DumpProcessesLocked(
                     continue;
                 }
                 if (!needSep) {
-                    pw->PrintStringln(String("  All known processes:"));
+                    pw->Println(String("  All known processes:"));
                     needSep = TRUE;
                 }
                 pw->PrintString(r->mPersistent ? String("  *PERS*") : String("  *APP*"));
@@ -15571,9 +15571,9 @@ Boolean CActivityManagerService::DumpProcessesLocked(
     }
 
     if (mIsolatedProcesses.Begin() != mIsolatedProcesses.End()) {
-        if (needSep) pw->PrintStringln(String(" "));
+        if (needSep) pw->Println(String(" "));
         needSep = TRUE;
-        pw->PrintStringln(String("  Isolated process list (sorted by uid):"));
+        pw->Println(String("  Isolated process list (sorted by uid):"));
         HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it;
         Int32 i = 0;
         for (it = mIsolatedProcesses.Begin(); it != mIsolatedProcesses.End(); ++it, ++i) {
@@ -15585,14 +15585,14 @@ Boolean CActivityManagerService::DumpProcessesLocked(
             }
             String s;
             s.AppendFormat("%sIsolated #%2d: %s", i, r->ToString().string());
-            pw->PrintStringln(s);
+            pw->Println(s);
         }
     }
 
     if (mLruProcesses.Begin() != mLruProcesses.End()) {
-        if (needSep) pw->PrintStringln(String(" "));
+        if (needSep) pw->Println(String(" "));
         needSep = TRUE;
-        pw->PrintStringln(String("  Process LRU list (sorted by oom_adj):"));
+        pw->Println(String("  Process LRU list (sorted by oom_adj):"));
         DumpProcessOomList(pw, this, &mLruProcesses, String("    "),
                 String("Proc"), String("PERS"), FALSE, dumpPackage);
         needSep = TRUE;
@@ -15611,9 +15611,9 @@ Boolean CActivityManagerService::DumpProcessesLocked(
                     continue;
                 }
                 if (!printed) {
-                    if (needSep) pw->PrintStringln(String(" "));
+                    if (needSep) pw->Println(String(" "));
                     needSep = TRUE;
-                    pw->PrintStringln(String("  PID mappings:"));
+                    pw->Println(String("  PID mappings:"));
                     printed = TRUE;
                 }
                 pw->PrintString(String("    PID #"));
@@ -15642,9 +15642,9 @@ Boolean CActivityManagerService::DumpProcessesLocked(
                     continue;
                 }
                 if (!printed) {
-                    if (needSep) pw->PrintStringln(String(" "));
+                    if (needSep) pw->Println(String(" "));
                     needSep = TRUE;
-                    pw->PrintStringln(String("  Foreground Processes:"));
+                    pw->Println(String("  Foreground Processes:"));
                     printed = TRUE;
                 }
                 pw->PrintString(String("    PID #"));
@@ -15656,25 +15656,25 @@ Boolean CActivityManagerService::DumpProcessesLocked(
     }
 
     if (mPersistentStartingProcesses.Begin() != mPersistentStartingProcesses.End()) {
-        if (needSep) pw->PrintStringln(String(" "));
+        if (needSep) pw->Println(String(" "));
         needSep = TRUE;
-        pw->PrintStringln(String("  Persisent processes that are starting:"));
+        pw->Println(String("  Persisent processes that are starting:"));
         DumpProcessList(pw, this, &mPersistentStartingProcesses, String("    "),
                 String("Starting Norm"), String("Restarting PERS"), dumpPackage);
     }
 
     if (mRemovedProcesses.Begin() != mRemovedProcesses.End()) {
-        if (needSep) pw->PrintStringln(String(" "));
+        if (needSep) pw->Println(String(" "));
         needSep = TRUE;
-        pw->PrintStringln(String("  Processes that are being removed:"));
+        pw->Println(String("  Processes that are being removed:"));
         DumpProcessList(pw, this, &mRemovedProcesses, String("    "),
                 String("Removed Norm"), String("Removed PERS"), dumpPackage);
     }
 
     if (!mProcessesOnHold.IsEmpty()) {
-        if (needSep) pw->PrintStringln(String(" "));
+        if (needSep) pw->Println(String(" "));
         needSep = TRUE;
-        pw->PrintStringln(String("  Processes that are on old until the system is ready:"));
+        pw->Println(String("  Processes that are on old until the system is ready:"));
         DumpProcessList(pw, this, &mProcessesOnHold, String("    "),
                 String("OnHold Norm"), String("OnHold PERS"), dumpPackage);
     }
@@ -15699,9 +15699,9 @@ Boolean CActivityManagerService::DumpProcessesLocked(
                     continue;
                 }
                 if (!printed) {
-                    if (needSep) pw->PrintStringln(String(" "));
+                    if (needSep) pw->Println(String(" "));
                     needSep = TRUE;
-                    pw->PrintStringln(String("  Time since processes crashed:"));
+                    pw->Println(String("  Time since processes crashed:"));
                     printed = TRUE;
                 }
                 pw->PrintString(String("    Process "));
@@ -15710,7 +15710,7 @@ Boolean CActivityManagerService::DumpProcessesLocked(
                 pw->PrintInt32(puid);
                 pw->PrintString(String(": last crashed "));
                 TimeUtils::FormatDuration(now - uidsIt->mSecond, pw);
-                pw->PrintStringln(String(" ago"));
+                pw->Println(String(" ago"));
             }
         }
     }
@@ -15732,9 +15732,9 @@ Boolean CActivityManagerService::DumpProcessesLocked(
                     continue;
                 }
                 if (!printed) {
-                    if (needSep) pw->PrintStringln(String(" "));
+                    if (needSep) pw->Println(String(" "));
                     needSep = TRUE;
-                    pw->PrintStringln(String("  Bad processes:"));
+                    pw->Println(String("  Bad processes:"));
                 }
                 pw->PrintString(String("    Bad process "));
                 pw->PrintString(pname);
@@ -15747,7 +15747,7 @@ Boolean CActivityManagerService::DumpProcessesLocked(
     }
 
     pw->Println();
-    pw->PrintStringln(String("  mStartedUsers:"));
+    pw->Println(String("  mStartedUsers:"));
     HashMap<Int32, AutoPtr<UserStartedState> >::Iterator uIt;
     for (uIt = mStartedUsers.Begin(); uIt != mStartedUsers.End(); ++uIt) {
         AutoPtr<UserStartedState> uss = uIt->mSecond;
@@ -15763,41 +15763,41 @@ Boolean CActivityManagerService::DumpProcessesLocked(
         pw->PrintString(String(", "));
         pw->PrintInt32((*mStartedUserArray)[i]);
     }
-    pw->PrintStringln(String("]"));
+    pw->Println(String("]"));
     pw->PrintString(String("  mUserLru: ["));
     List<Int32>::Iterator userIt;
     for (userIt = mUserLru.Begin(); userIt != mUserLru.End(); ++userIt) {
         pw->PrintString(String(", "));
         pw->Print(*userIt);
     }
-    pw->PrintStringln(String("]"));
+    pw->Println(String("]"));
     if (dumpAll) {
         pw->PrintString(String("  mStartedUserArray: "));
         StringBuilder sb;
         for (Int32 i = 0; i < mStartedUserArray->GetLength(); ++i) {
             sb += (*mStartedUserArray)[i];
         }
-        pw->PrintStringln(sb.ToString());
+        pw->Println(sb.ToString());
     }
 
-    pw->PrintStringln(String("  mHomeProcess: ") + (mHomeProcess != NULL ? mHomeProcess->ToString() : "NULL"));
-    pw->PrintStringln(String("  mPreviousProcess: ") + (mPreviousProcess != NULL ? mPreviousProcess->ToString() : "NULL"));
+    pw->Println(String("  mHomeProcess: ") + (mHomeProcess != NULL ? mHomeProcess->ToString() : "NULL"));
+    pw->Println(String("  mPreviousProcess: ") + (mPreviousProcess != NULL ? mPreviousProcess->ToString() : "NULL"));
     if (dumpAll) {
         StringBuilder sb(128);
         sb.Append("  mPreviousProcessVisibleTime: ");
         TimeUtils::FormatDuration(mPreviousProcessVisibleTime, sb);
-        pw->PrintStringln(sb.ToString());
+        pw->Println(sb.ToString());
     }
     if (mHeavyWeightProcess != NULL) {
-        pw->PrintStringln(String("  mHeavyWeightProcess: ") + mHeavyWeightProcess->ToString());
+        pw->Println(String("  mHeavyWeightProcess: ") + mHeavyWeightProcess->ToString());
     }
     String configString;
     mConfiguration->ToString(&configString);
-    pw->PrintStringln(String("  mConfiguration: ") + configString);
+    pw->Println(String("  mConfiguration: ") + configString);
     if (dumpAll) {
         StringBuilder sb("  mConfigWillChange: ");
         sb += mMainStack->mConfigWillChange;
-        pw->PrintStringln(sb.ToString());
+        pw->Println(sb.ToString());
         HashMap<String, Int32>& packages = mCompatModePackages->GetPackages();
         if (packages.Begin() != packages.End()) {
             Boolean printed = FALSE;
@@ -15809,7 +15809,7 @@ Boolean CActivityManagerService::DumpProcessesLocked(
                     continue;
                 }
                 if (!printed) {
-                    pw->PrintStringln(String("  mScreenCompatPackages:"));
+                    pw->Println(String("  mScreenCompatPackages:"));
                     printed = TRUE;
                 }
                 pw->PrintString(String("    "));
@@ -15827,12 +15827,12 @@ Boolean CActivityManagerService::DumpProcessesLocked(
         sb += mWentToSleep;
         sb += " mLockScreenShown ";
         sb += mLockScreenShown;
-        pw->PrintStringln(sb.ToString());
+        pw->Println(sb.ToString());
     }
     if (mShuttingDown) {
         StringBuilder sb("  mShuttingDown=");
         sb += mShuttingDown;
-        pw->PrintStringln(sb.ToString());
+        pw->Println(sb.ToString());
     }
     if (!mDebugApp.IsNull() || !mOrigDebugApp.IsNull() || mDebugTransient
             || mOrigWaitForDebugger) {
@@ -15841,66 +15841,66 @@ Boolean CActivityManagerService::DumpProcessesLocked(
         sb += mDebugTransient;
         sb += " mOrigWaitForDebugger=";
         sb += mOrigWaitForDebugger;
-        pw->PrintStringln(sb.ToString());
+        pw->Println(sb.ToString());
     }
     if (!mOpenGlTraceApp.IsNull()) {
-        pw->PrintStringln(String("  mOpenGlTraceApp=") + mOpenGlTraceApp);
+        pw->Println(String("  mOpenGlTraceApp=") + mOpenGlTraceApp);
     }
     if (!mProfileApp.IsNull() || mProfileProc != NULL || !mProfileFile.IsNull()
             || mProfileFd != NULL) {
-        pw->PrintStringln(String("  mProfileApp=") + mProfileApp + " mProfileProc=" + mProfileProc->ToString());
+        pw->Println(String("  mProfileApp=") + mProfileApp + " mProfileProc=" + mProfileProc->ToString());
         StringBuilder sb("  mProfileFile=");
         sb += mProfileFile + " mProfileFd=";
         sb += mProfileFd;
-        pw->PrintStringln(sb.ToString());
+        pw->Println(sb.ToString());
         StringBuilder sb1("  mProfileType=");
         sb1 += mProfileType;
         sb1 += " mAutoStopProfiler=";
         sb1 += mAutoStopProfiler;
-        pw->PrintStringln(sb1.ToString());
+        pw->Println(sb1.ToString());
     }
     if (mAlwaysFinishActivities || mController != NULL) {
         StringBuilder sb("  mAlwaysFinishActivities=");
         sb += mAlwaysFinishActivities;
         sb += " mController=";
         sb += mController;
-        pw->PrintStringln(sb.ToString());
+        pw->Println(sb.ToString());
     }
     if (dumpAll) {
         StringBuilder sb("  Total persistent processes: ");
         sb += numPers;
-        pw->PrintStringln(sb.ToString());
+        pw->Println(sb.ToString());
         StringBuilder sb1("  mStartRunning=");
         sb1 += mStartRunning;
         sb1 += " mProcessesReady=";
         sb1 += mProcessesReady;
         sb1 += " mSystemReady=";
         sb1 += mSystemReady;
-        pw->PrintStringln(sb1.ToString());
+        pw->Println(sb1.ToString());
         StringBuilder sb2("  mBooting=");
         sb2 += mBooting;
         sb2 += " mBooted=";
         sb2 += mBooted;
         sb2 += " mFactoryTest=";
         sb2 += mFactoryTest;
-        pw->PrintStringln(sb2.ToString());
+        pw->Println(sb2.ToString());
         pw->PrintString(String("  mLastPowerCheckRealtime="));
         TimeUtils::FormatDuration(mLastPowerCheckRealtime, pw);
-        pw->PrintStringln(String(""));
+        pw->Println(String(""));
         pw->PrintString(String("  mLastPowerCheckUptime="));
         TimeUtils::FormatDuration(mLastPowerCheckUptime, pw);
-        pw->PrintStringln(String(""));
+        pw->Println(String(""));
         StringBuilder sb3("  mGoingToSleep=");
         sb3 += mMainStack->mGoingToSleep;
-        pw->PrintStringln(sb3.ToString());
+        pw->Println(sb3.ToString());
         StringBuilder sb4("  mLaunchingActivity=");
         sb4 += mMainStack->mLaunchingActivity;
-        pw->PrintStringln(sb4.ToString());
+        pw->Println(sb4.ToString());
         StringBuilder sb5("  mAdjSeq=");
         sb5 += mAdjSeq;
         sb5 += " mLruSeq=";
         sb5 += mLruSeq;
-        pw->PrintStringln(sb5.ToString());
+        pw->Println(sb5.ToString());
         StringBuilder sb6("  mNumNonHiddenProcs=");
         sb6 += mNumNonHiddenProcs;
         sb6 += " mNumHiddenProcs=";
@@ -15909,7 +15909,7 @@ Boolean CActivityManagerService::DumpProcessesLocked(
         sb6 += mNumServiceProcs;
         sb6 += " mNewNumServiceProcs=";
         sb6 += mNewNumServiceProcs;
-        pw->PrintStringln(sb6.ToString());
+        pw->Println(sb6.ToString());
     }
 
     return TRUE;
@@ -15936,9 +15936,9 @@ Boolean CActivityManagerService::DumpProcessesToGc(
                 continue;
             }
             if (!printed) {
-                if (needSep) pw->PrintStringln(String(" "));
+                if (needSep) pw->Println(String(" "));
                 needSep = TRUE;
-                pw->PrintStringln(String("  Processes that are waiting to GC:"));
+                pw->Println(String("  Processes that are waiting to GC:"));
                 printed = TRUE;
             }
             pw->PrintString(String("    Process "));
@@ -15949,7 +15949,7 @@ Boolean CActivityManagerService::DumpProcessesToGc(
             pw->PrintInt64(now - proc->mLastRequestedGc);
             pw->PrintString(String(" ms ago, last lowMem="));
             pw->PrintInt64(now - proc->mLastLowMemory);
-            pw->PrintStringln(String(" ms ago"));
+            pw->Println(String(" ms ago"));
 
         }
     }
@@ -15966,9 +15966,9 @@ Boolean CActivityManagerService::DumpOomLocked(
     Boolean needSep = FALSE;
 
     if (mLruProcesses.Begin() != mLruProcesses.End()) {
-        if (needSep) pw->PrintStringln(String(" "));
+        if (needSep) pw->Println(String(" "));
         needSep = TRUE;
-        pw->PrintStringln(String("  OOM levels:"));
+        pw->Println(String("  OOM levels:"));
         pw->PrintString(String("    SYSTEM_ADJ: "));
         pw->PrintInt32ln(ProcessList::SYSTEM_ADJ);
         pw->PrintString(String("    PERSISTENT_PROC_ADJ: "));
@@ -15996,9 +15996,9 @@ Boolean CActivityManagerService::DumpOomLocked(
         pw->PrintString(String("    CACHED_APP_MAX_ADJ: "));
         pw->PrintInt32ln(ProcessList::HIDDEN_APP_MAX_ADJ);
 
-        if (needSep) pw->PrintStringln(String(" "));
+        if (needSep) pw->Println(String(" "));
         needSep = TRUE;
-        pw->PrintStringln(String("  Process OOM control:"));
+        pw->Println(String("  Process OOM control:"));
         DumpProcessOomList(pw, this, &mLruProcesses, String("    "),
                 String("Proc"), String("PERS"), TRUE, String(NULL));
         needSep = TRUE;
@@ -16007,10 +16007,10 @@ Boolean CActivityManagerService::DumpOomLocked(
     needSep = DumpProcessesToGc(fd, pw, args, opti, needSep, dumpAll, String(NULL));
 
     pw->Println();
-    pw->PrintStringln(String("  mHomeProcess: ") + mHomeProcess->ToString());
-    pw->PrintStringln(String("  mPreviousProcess: ") + mPreviousProcess->ToString());
+    pw->Println(String("  mHomeProcess: ") + mHomeProcess->ToString());
+    pw->Println(String("  mPreviousProcess: ") + mPreviousProcess->ToString());
     if (mHeavyWeightProcess != NULL) {
-        pw->PrintStringln(String("  mHeavyWeightProcess: ") + mHeavyWeightProcess->ToString());
+        pw->Println(String("  mHeavyWeightProcess: ") + mHeavyWeightProcess->ToString());
     }
 
     return TRUE;
@@ -16124,7 +16124,7 @@ ECode CActivityManagerService::DumpActivity(
         pw->PrintInt32((Int32)r);
         pw->PrintString(String(" pid="));
         if (r->mApp != NULL) pw->PrintInt32ln(r->mApp->mPid);
-        else pw->PrintStringln(String("(not running)"));
+        else pw->Println(String("(not running)"));
         if (dumpAll) {
             r->Dump(pw, innerPrefix);
         }
@@ -16172,7 +16172,7 @@ Boolean CActivityManagerService::DumpBroadcastsLocked(
         newDumpPackage = NULL;
     }
 
-    pw->PrintStringln(String("ACTIVITY MANAGER BROADCAST STATE (dumpsys activity broadcasts)"));
+    pw->Println(String("ACTIVITY MANAGER BROADCAST STATE (dumpsys activity broadcasts)"));
     if (!onlyHistory && dumpAll) {
         if (mRegisteredReceivers.Begin() != mRegisteredReceivers.End()) {
             Boolean printed = FALSE;
@@ -16186,7 +16186,7 @@ Boolean CActivityManagerService::DumpBroadcastsLocked(
                     continue;
                 }
                 if (!printed) {
-                    pw->PrintStringln(String("  Registered Receivers:"));
+                    pw->Println(String("  Registered Receivers:"));
                     needSep = TRUE;
                     printed = TRUE;
                 }
@@ -16220,7 +16220,7 @@ Boolean CActivityManagerService::DumpBroadcastsLocked(
             needSep = TRUE;
             pw->PrintString(String("  Sticky broadcasts for user "));
             pw->PrintInt32(it->mFirst);
-            pw->PrintStringln(String(":"));
+            pw->Println(String(":"));
             AutoPtr<StringBuilder> sb = new StringBuilder(128);
             AutoPtr<StringIntentMap> ent = it->mSecond;
             typename StringIntentMap::Iterator entIt;
@@ -16228,7 +16228,7 @@ Boolean CActivityManagerService::DumpBroadcastsLocked(
                 pw->PrintString(String("  * Sticky action "));
                 pw->PrintString(entIt->mFirst);
                 if (dumpAll) {
-                    pw->PrintStringln(String(":"));
+                    pw->Println(String(":"));
                     AutoPtr<StringIntentList> intents = entIt->mSecond;
                     List< AutoPtr<IIntent> >::Iterator intentsIt;
                     for (intentsIt = intents->Begin(); intentsIt != intents->End(); ++intentsIt) {
@@ -16236,19 +16236,19 @@ Boolean CActivityManagerService::DumpBroadcastsLocked(
                         sb->Append("    Intent: ");
                         String str;
                         (*intentsIt)->ToShortString((IStringBuilder*)sb->Probe(EIID_IStringBuilder), FALSE, TRUE, FALSE, FALSE);
-                        pw->PrintStringln(sb->ToString());
+                        pw->Println(sb->ToString());
                         AutoPtr<IBundle> bundle;
                         (*intentsIt)->GetExtras((IBundle**)&bundle);
                         if (bundle != NULL) {
                             pw->PrintString(String("      "));
                             String bStr;
                             bundle->ToString(&bStr);
-                            pw->PrintStringln(bStr);
+                            pw->Println(bStr);
                         }
                     }
                 }
                 else {
-                    pw->PrintStringln(String(""));
+                    pw->Println(String(""));
                 }
             }
         }
@@ -16262,9 +16262,9 @@ Boolean CActivityManagerService::DumpBroadcastsLocked(
             sb += queue->mQueueName;
             sb += "]=";
             sb += queue->mBroadcastsScheduled;
-            pw->PrintStringln(sb.ToString());
+            pw->Println(sb.ToString());
         }
-        pw->PrintStringln(String("  mHandler:"));
+        pw->Println(String("  mHandler:"));
 //         mHandler.dump(new PrintWriterPrinter(pw), "    ");
         needSep = TRUE;
     }
@@ -16285,7 +16285,7 @@ Boolean CActivityManagerService::DumpProvidersLocked(
     AutoPtr<ItemMatcher> matcher = new ItemMatcher();
     matcher->Build(args, opti);
 
-    pw->PrintStringln(String("ACTIVITY MANAGER CONTENT PROVIDERS (dumpsys activity providers)"));
+    pw->Println(String("ACTIVITY MANAGER CONTENT PROVIDERS (dumpsys activity providers)"));
 
 //     mProviderMap.dumpProvidersLocked(pw, dumpAll);
 
@@ -16301,9 +16301,9 @@ Boolean CActivityManagerService::DumpProvidersLocked(
                 continue;
             }
             if (!printed) {
-                if (needSep) pw->PrintStringln(String(" "));
+                if (needSep) pw->Println(String(" "));
                 needSep = TRUE;
-                pw->PrintStringln(String("  Launching content providers:"));
+                pw->Println(String("  Launching content providers:"));
                 printed = TRUE;
             }
             pw->PrintString(String("  Launching #"));
@@ -16316,7 +16316,8 @@ Boolean CActivityManagerService::DumpProvidersLocked(
     if (!mGrantedUriPermissions.IsEmpty()) {
         if (needSep) pw->Println();
         needSep = TRUE;
-        pw->PrintStringln(String("Granted Uri Permissions:"));
+
+        pw->Println(String("Granted Uri Permissions:"));
         GrantUriPermissionMapMap::Iterator it = mGrantedUriPermissions.Begin();
         GrantUriPermissionMap::Iterator pIt;
         for (; it != mGrantedUriPermissions.End(); ++it) {
@@ -16324,7 +16325,7 @@ Boolean CActivityManagerService::DumpProvidersLocked(
             AutoPtr<GrantUriPermissionMap> perms = it->mSecond;
             pw->PrintString(String("  * UID "));
             pw->PrintInt32(uid);
-            pw->PrintStringln(String(" holds:"));
+            pw->Println(String(" holds:"));
             for (pIt = perms->Begin(); pIt != perms->End(); ++pIt) {
                 AutoPtr<UriPermission> perm = pIt->mSecond;
                 pw->PrintString(String("    "));
@@ -16364,7 +16365,7 @@ Boolean CActivityManagerService::DumpPendingIntentsLocked(
                 continue;
             }
             if (!printed) {
-                pw->PrintStringln(String("ACTIVITY MANAGER PENDING INTENTS (dumpsys activity intents)"));
+                pw->Println(String("ACTIVITY MANAGER PENDING INTENTS (dumpsys activity intents)"));
                 printed = TRUE;
             }
             needSep = TRUE;
@@ -16411,7 +16412,7 @@ ECode CActivityManagerService::DumpHistoryList(
         }
         const Boolean full = !brief && (complete || !r->IsInHistory());
         if (needNL) {
-            pw->PrintStringln(String(" "));
+            pw->Println(String(" "));
             needNL = FALSE;
         }
         if (lastTask != r->mTask) {
@@ -16430,7 +16431,7 @@ ECode CActivityManagerService::DumpHistoryList(
                     pw->PrintString(String("  "));
                     String inStr;
                     lastTask->mIntent->ToInsecureStringWithClip(&inStr);
-                    pw->PrintStringln(inStr);
+                    pw->Println(inStr);
                 }
             }
         }
@@ -16449,7 +16450,7 @@ ECode CActivityManagerService::DumpHistoryList(
             pw->PrintString(innerPrefix);
             String inStr;
             r->mIntent->ToInsecureStringWithClip(&inStr);
-            pw->PrintStringln(inStr);
+            pw->Println(inStr);
             if (r->mApp != NULL) {
                 pw->PrintString(innerPrefix);
                 pw->PrintObjectln((IInterface*)r->mApp);
@@ -16518,7 +16519,7 @@ Int32 CActivityManagerService::DumpProcessList(
         s.AppendFormat("%s%s #%2d: %s",
                 prefix.string(), (r->mPersistent ? persistentLabel.string() : normalLabel.string()),
                 i, r->ToString().string());
-        pw->PrintStringln(s);
+        pw->Println(s);
         if (r->mPersistent) {
             numPers++;
         }
@@ -16566,7 +16567,7 @@ AutoPtr<List<AutoPtr<ProcessRecord> > > CActivityManagerService::CollectProcesse
                 }
             }
             if (procs->Begin() == procs->End()) {
-                pw->PrintStringln(String("No process found for: ") + (*args)[start]);
+                pw->Println(String("No process found for: ") + (*args)[start]);
                 return NULL;
             }
         }
@@ -16589,12 +16590,12 @@ ECode CActivityManagerService::DumpGraphicsHardwareUsage(
 
     Int64 uptime = SystemClock::GetUptimeMillis();
     Int64 realtime = SystemClock::GetElapsedRealtime();
-    pw->PrintStringln(String("Applications Graphics Acceleration Info:"));
+    pw->Println(String("Applications Graphics Acceleration Info:"));
     StringBuilder sb("Uptime: ");
     sb += uptime;
     sb += " Realtime: ";
     sb += realtime;
-    pw->PrintStringln(sb.ToString());
+    pw->Println(sb.ToString());
 
     List<AutoPtr<ProcessRecord> >::ReverseIterator rit;
     for (rit = procs->RBegin(); rit != procs->REnd(); ++rit) {
@@ -16605,7 +16606,7 @@ ECode CActivityManagerService::DumpGraphicsHardwareUsage(
             sb += " [";
             sb += r->mProcessName;
             sb += "] **";
-            pw->PrintStringln(sb.ToString());
+            pw->Println(sb.ToString());
             IFlushable::Probe(pw)->Flush();
             // try {
             AutoPtr<TransferPipe> tp = new TransferPipe();
@@ -16640,7 +16641,7 @@ ECode CActivityManagerService::DumpDbInfo(
         return NOERROR;
     }
 
-    pw->PrintStringln(String("Applications Database Info:"));
+    pw->Println(String("Applications Database Info:"));
 
     List<AutoPtr<ProcessRecord> >::ReverseIterator rit;
     for (rit = procs->RBegin(); rit != procs->REnd(); ++rit) {
@@ -16651,7 +16652,7 @@ ECode CActivityManagerService::DumpDbInfo(
             sb += " [";
             sb += r->mProcessName;
             sb += "] **";
-            pw->PrintStringln(sb.ToString());
+            pw->Println(sb.ToString());
             IFlushable::Probe(pw)->Flush();
             // try {
             AutoPtr<TransferPipe> tp = new TransferPipe();
@@ -16718,7 +16719,7 @@ ECode CActivityManagerService::DumpMemItems(
         pw->PrintString(prefix);
         pw->PrintInt32(item->mPss);
         pw->PrintString(String(" kB: "));
-        pw->PrintStringln(item->mLabel);
+        pw->Println(item->mLabel);
         if (item->mSubitems != NULL) {
             DumpMemItems(pw, prefix + "           ", item->mSubitems, TRUE);
         }
@@ -16788,15 +16789,15 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
             oomOnly = TRUE;
         }
         else if (opt.Equals("-h")) {
-            pw->PrintStringln(String("meminfo dump options: [-a] [--oom] [process]"));
-            pw->PrintStringln(String("  -a: include all available information for each process."));
-            pw->PrintStringln(String("  --oom: only show processes organized by oom adj."));
-            pw->PrintStringln(String("If [process] is specified it can be the name or "));
-            pw->PrintStringln(String("pid of a specific process to dump."));
+            pw->Println(String("meminfo dump options: [-a] [--oom] [process]"));
+            pw->Println(String("  -a: include all available information for each process."));
+            pw->Println(String("  --oom: only show processes organized by oom adj."));
+            pw->Println(String("If [process] is specified it can be the name or "));
+            pw->Println(String("pid of a specific process to dump."));
             return NOERROR;
         }
         else {
-            pw->PrintStringln(String("Unknown argument: ") + opt + "; use -h for help");
+            pw->Println(String("Unknown argument: ") + opt + "; use -h for help");
         }
     }
 
@@ -16819,16 +16820,16 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
         sb += uptime;
         sb += ",";
         sb += realtime;
-        pw->PrintStringln(sb.ToString());
+        pw->Println(sb.ToString());
         IFlushable::Probe(pw)->Flush();
     }
     else {
-        pw->PrintStringln(String("Applications Memory Usage (kB):"));
+        pw->Println(String("Applications Memory Usage (kB):"));
         StringBuilder sb("Uptime: ");
         sb += uptime;
         sb += " Realtime: ";
         sb += realtime;
-        pw->PrintStringln(sb.ToString());
+        pw->Println(sb.ToString());
     }
 
     AutoPtr<ArrayOf<String> > innerArgs = ArrayOf<String>::Alloc(args->GetLength()-opti);
@@ -16857,7 +16858,7 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
                 sb += " [";
                 sb += r->mProcessName;
                 sb += "] **";
-                pw->PrintStringln(sb.ToString());
+                pw->Println(sb.ToString());
                 IFlushable::Probe(pw)->Flush();
             }
             AutoPtr<IDebugMemoryInfo> mi;
@@ -17018,22 +17019,22 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
 
         if (!brief && !oomOnly) {
             pw->Println();
-            pw->PrintStringln(String("Total PSS by process:"));
+            pw->Println(String("Total PSS by process:"));
             DumpMemItems(pw, String("  "), procMems, TRUE);
             pw->Println();
         }
-        pw->PrintStringln(String("Total PSS by OOM adjustment:"));
+        pw->Println(String("Total PSS by OOM adjustment:"));
         DumpMemItems(pw, String("  "), oomMems, FALSE);
         if (!oomOnly) {
             AutoPtr<IPrintWriter> out = categoryPw != NULL ? categoryPw : pw;
             out->Println();
-            out->PrintStringln(String("Total PSS by category:"));
+            out->Println(String("Total PSS by category:"));
             DumpMemItems(out, String("  "), catMems, TRUE);
         }
         pw->Println();
         pw->PrintString(String("Total PSS: "));
         pw->PrintInt64(totalPss);
-        pw->PrintStringln(String(" kB"));
+        pw->Println(String(" kB"));
         AutoPtr<ArrayOf<Int32> > SINGLE_LONG_FORMAT = ArrayOf<Int32>::Alloc(1);
         (*SINGLE_LONG_FORMAT)[0] = Process::PROC_SPACE_TERM | Process::PROC_OUT_LONG;
         AutoPtr<ArrayOf<Int64> > int64Out = ArrayOf<Int64>::Alloc(1);
@@ -17057,12 +17058,12 @@ ECode CActivityManagerService::DumpApplicationMemoryUsage(
         pw->PrintInt64(sharing);
         pw->PrintString(String(" kB saved from shared "));
         pw->PrintInt64(shared);
-        pw->PrintStringln(String(" kB"));
+        pw->Println(String(" kB"));
         pw->PrintString(String("           "));
         pw->PrintInt64(unshared);
         pw->PrintString(String(" kB unshared; "));
         pw->PrintInt64(voltile);
-        pw->PrintStringln(String(" kB volatile"));
+        pw->Println(String(" kB volatile"));
     }
     return NOERROR;
 }

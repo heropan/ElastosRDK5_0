@@ -217,7 +217,7 @@ ECode CBatteryService::SendIntentRunnable::Run()
 // CBatteryService::PowerSupplyObserver
 //=====================================================================
 void CBatteryService::PowerSupplyObserver::OnUEvent(
-    /* [in] */ UEventObserver::UEvent* event)
+    /* [in] */ IUEvent* event)
 {
     AutoLock Lock(mHost->mLock);
     mHost->UpdateLocked();
@@ -228,7 +228,7 @@ void CBatteryService::PowerSupplyObserver::OnUEvent(
 // CBatteryService::InvalidChargerObserver
 //=====================================================================
 void CBatteryService::InvalidChargerObserver::OnUEvent(
-    /* [in] */ UEventObserver::UEvent* event)
+    /* [in] */ IUEvent* event)
 {
     String result = event->Get(String("SWITCH_STATE"));
     Int32 invalidCharger = CString("1").Equals(result) ? 1 : 0;

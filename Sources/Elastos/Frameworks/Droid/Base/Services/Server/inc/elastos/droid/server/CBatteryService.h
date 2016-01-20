@@ -56,7 +56,7 @@ private:
         {}
 
         CARAPI_(void) OnUEvent(
-            /* [in] */ UEventObserver::UEvent* event);
+            /* [in] */ IUEvent* event);
 
     private:
         CBatteryService* mHost;
@@ -71,7 +71,7 @@ private:
         {}
 
         CARAPI_(void) OnUEvent(
-            /* [in] */ UEventObserver::UEvent* event);
+            /* [in] */ IUEvent* event);
 
     private:
         CBatteryService* mHost;

@@ -5,9 +5,6 @@ EXPORT_ALL_SYMBOLS=1
 
 C_DEFINES += -DDROID_SERVER
 
-#IMPORTS = Elastos.CoreLibrary.eco
-#IMPORTS = Elastos.Droid.Core.eco
-
 VPATH := $(MAKEDIR)/../../../../../../Core/src/elastos/droid/
 
 include $(MAKEDIR)/../../../../../../../sources.inc
@@ -22,6 +19,7 @@ INCLUDES += $(PREBUILD_INC)/hardware
 INCLUDES += $(PREBUILD_INC)/surfaceFlinger
 
 SOURCES = Elastos.Droid.Server.car
+SOURCES += server.cpp
 SOURCES += AttributeCache.cpp
 SOURCES += CSystemServer.cpp
 SOURCES += SystemService.cpp
@@ -35,18 +33,26 @@ SOURCES += ServiceWatcher.cpp
 SOURCES += SystemConfig.cpp
 SOURCES += MasterClearReceiver.cpp
 SOURCES += Watchdog.cpp
-SOURCES += CNetworkPolicyListener.cpp
-SOURCES += CDataActivityObserver.cpp
+SOURCES += NetworkTimeUpdateService.cpp
+#SOURCES += CBluetoothManagerService.cpp
+SOURCES += CCommonTimeManagementService.cpp
 SOURCES += CConnectivityService.cpp
+SOURCES += CCountryDetectorService.cpp
+SOURCES += CDataActivityObserver.cpp
+SOURCES += CDiskStatsService.cpp
+SOURCES += CDropBoxManagerService.cpp
+SOURCES += CNetworkPolicyListener.cpp
+SOURCES += CSamplingProfilerService.cpp
 SOURCES += CSerialService.cpp
 SOURCES += CTextServicesManagerService.cpp
-
-#SOURCES += EntropyMixer.cpp
-#SOURCES += NativeDaemonEvent.cpp
-#SOURCES += RandomBlock.cpp
-#SOURCES += RandomBlock.cpp
-#SOURCES += ShutdownActivity.cpp
-#SOURCES += WiredAccessoryManager.cpp
+SOURCES += CUpdateLockService.cpp
+SOURCES += EntropyMixer.cpp
+SOURCES += NativeDaemonEvent.cpp
+SOURCES += RandomBlock.cpp
+SOURCES += ShutdownActivity.cpp
+SOURCES += TwilightCalculator.cpp
+#SOURCES += WiredAccessoryManager.cpp  //needs CInputManagerService
+#SOURCES += DockObserver.cpp
 
 #=========================================
 # TODO
@@ -56,13 +62,13 @@ SOURCES += CTextServicesManagerService.cpp
 #SOURCES += CBootReceiver.cpp
 SOURCES += BrickReceiver.cpp
 #SOURCES += CaptivePortalTracker.cpp
-#SOURCES += CDiskStatsService.cpp
-#SOURCES += CUpdateLockService.cpp
-#SOURCES += CSamplingProfilerService.cpp
-#SOURCES += CCountryDetectorService.cpp
+
 #SOURCES += CEthernetService.cpp
 #SOURCES += CLocationManagerService.cpp
+<<<<<<< HEAD
 #SOURCES += CCommonTimeManagementService.cpp
+=======
+>>>>>>> update server root dir. update bluetooth cars.
 #SOURCES += CClipboardService.cpp
 #SOURCES += TwilightCalculator.cpp
 #SOURCES += CVibratorService.cpp
@@ -70,7 +76,11 @@ SOURCES += BrickReceiver.cpp
 #SOURCES += CDeviceStorageMonitorService.cpp
 #SOURCES += CUiModeManagerService.cpp
 #SOURCES += CBatteryService.cpp
+<<<<<<< HEAD
 #SOURCES += CDropBoxManagerService.cpp
+=======
+#SOURCES += CNsdService.cpp
+>>>>>>> update server root dir. update bluetooth cars.
 #SOURCES += CThrottleService.cpp
 #SOURCES += CWallpaperManagerService.cpp
 #SOURCES += CWMSWallpaperConnection.cpp

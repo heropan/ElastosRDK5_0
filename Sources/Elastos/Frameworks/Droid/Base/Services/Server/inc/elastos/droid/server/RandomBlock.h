@@ -29,7 +29,7 @@ public:
         /* [in] */ Boolean sync);
 
 private:
-    CARAPI FromStream(
+    static CARAPI FromStream(
         /* [in] */ IInputStream* in,
         /* [out] */ RandomBlock** block);
 

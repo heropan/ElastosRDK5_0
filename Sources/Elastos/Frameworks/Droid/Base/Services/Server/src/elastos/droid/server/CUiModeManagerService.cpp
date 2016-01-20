@@ -766,12 +766,12 @@ ECode CUiModeManagerService::UpdateComputedNightModeLocked()
 //         sb += Binder::GetCallingPid();
 //         sb += ", uid=";
 //         sb += Binder::GetCallingUid();
-//         pw->PrintStringln(sb.Substring(0, sb.GetLength()));
+//         pw->Println(sb.Substring(0, sb.GetLength()));
 //         return NULL;
 //     }
 
 //     AutoLock(mLock);
-//     pw->PrintStringln(String("Current UI Mode Service state:"));
+//     pw->Println(String("Current UI Mode Service state:"));
 //     pw->PrintString(String("  mDockState="));
 //     pw->PrintInt32(mDockState);
 //     pw->PrintString(String(" mLastBroadcastState="));

@@ -1,27 +1,24 @@
 #ifndef __ELASTOS_DROID_SERVER_NETWORKTIMEUPDATESERVICE_H__
 #define __ELASTOS_DROID_SERVER_NETWORKTIMEUPDATESERVICE_H__
 
-#include <elastos/core/Thread.h>
-#include <elastos/droid/content/BroadcastReceiver.h>
-#include <elastos/droid/database/ContentObserver.h>
-#include <elastos/droid/ext/frameworkext.h>
-#include <elastos/droid/net/http/Request.h>
-#include <elastos/droid/os/Handler.h>
-#include <elastos/droid/os/Looper.h>
 
-using Elastos::Core::Thread;
+#include "elastos/droid/ext/frameworkext.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/database/ContentObserver.h"
+#include "elastos/droid/content/BroadcastReceiver.h"
+
+
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IHandlerThread;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::App::IAlarmManager;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Database::ContentObserver;
-using Elastos::Droid::Os::Handler;
-using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::Os::IHandlerThread;
-using Elastos::Droid::Os::ILooper;
-using Elastos::Droid::Os::IMessage;
-using Elastos::Droid::Os::Looper;
 using Elastos::Droid::Utility::ITrustedTime;
 
 namespace Elastos {
@@ -29,6 +26,7 @@ namespace Droid {
 namespace Server {
 
 class NetworkTimeUpdateService
+    : public Object
 {
 private:
     class NitzReceiver : public BroadcastReceiver
@@ -50,11 +48,12 @@ private:
             return NOERROR;
         }
     private:
-        NetworkTimeUpdateService* mOwner;
+        NetworkTimeUpdateService* mHost;
     };
 
     /** Receiver for ConnectivityManager events */
-    class ConnectivityReceiver : public BroadcastReceiver
+    class ConnectivityReceiver
+        : public BroadcastReceiver
     {
     public:
         ConnectivityReceiver(
@@ -74,11 +73,12 @@ private:
             return NOERROR;
         }
     private:
-        NetworkTimeUpdateService* mOwner;
+        NetworkTimeUpdateService* mHost;
     };
 
     /** Observer to watch for changes to the AUTO_TIME setting */
-    class SettingsObserver : public ContentObserver
+    class SettingsObserver
+        : public ContentObserver
     {
     public:
         SettingsObserver(
@@ -96,10 +96,11 @@ private:
     private:
         Int32 mMsg;
         AutoPtr<IHandler> mHandler;
-        NetworkTimeUpdateService* mOwner;
+        NetworkTimeUpdateService* mHost;
     };
 
-    class MyReceiver : public BroadcastReceiver
+    class MyReceiver
+        : public BroadcastReceiver
     {
     public:
         MyReceiver(
@@ -118,7 +119,7 @@ private:
             return NOERROR;
         }
     private:
-        NetworkTimeUpdateService* mOwner;
+        NetworkTimeUpdateService* mHost;
     };
 
     /** Handler to do the network accesses on */

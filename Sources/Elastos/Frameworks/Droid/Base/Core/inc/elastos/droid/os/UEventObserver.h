@@ -7,10 +7,13 @@
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
+#include "Elastos.Droid.Os.h"
 
 using Elastos::Core::Thread;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
+using Elastos::Droid::Os::IUEvent;
+using Elastos::Droid::Os::IUEventObserver;
 
 namespace Elastos {
 namespace Droid {
@@ -35,25 +38,40 @@ namespace Os {
 */
 class ECO_PUBLIC UEventObserver
     : public Object
+    , public IUEventObserver
 {
 public:
     /**
      * Representation of a UEvent.
      */
-    class UEvent : public Object
+    class UEvent
+        : public Object
+        , public IUEvent
     {
     public:
+        CAR_INTERFACE_DECL()
+
         UEvent(
             /* [in] */ const String& message);
 
         CARAPI_(String) Get(
             /* [in] */ const String& key);
 
+        CARAPI Get(
+            /* [in] */ const String& key,
+            /* [out] */ String* str);
+
+        CARAPI Get(
+            /* [in] */ const String& key,
+            /* [in] */ const String& defaultValue,
+            /* [out] */ String* str);
+
         CARAPI_(String) Get(
             /* [in] */ const String& key,
             /* [in] */ const String& defaultValue);
 
-        CARAPI_(String) ToString();
+        CARAPI ToString(
+            /* [out] */ String* str);
 
     private:
         // collection of key=value pairs parsed from the uevent message
@@ -94,6 +112,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     virtual ~UEventObserver();
 
     /**
@@ -120,14 +140,14 @@ public:
      * This process's UEvent thread will never call onUEvent() on this
      * UEventObserver after this call. Repeated calls have no effect.
      */
-    CARAPI_(void) StopObserving();
+    CARAPI StopObserving();
 
     /**
      * Subclasses of UEventObserver should override this method to handle
      * UEvents.
      */
     virtual CARAPI OnUEvent(
-        /* [in] */ UEvent* event) = 0;
+        /* [in] */ IUEvent* event) = 0;
 
 private:
     ECO_LOCAL static CARAPI NativeSetup();

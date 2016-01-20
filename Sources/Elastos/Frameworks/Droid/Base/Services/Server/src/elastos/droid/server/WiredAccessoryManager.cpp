@@ -1,5 +1,5 @@
 
-#include "WiredAccessoryManager.h"
+#include "elastos/droid/server/WiredAccessoryManager.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/os/Looper.h"
 #include "elastos/droid/os/Handler.h"
@@ -7,7 +7,12 @@
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/logging/Slogger.h>
+#include <Elastos.Droid.Os.h>
+#include <Elastos.Droid.View.h>
+#include <Elastos.Droid.Content.h>
+#include <Elastos.CoreLibrary.IO.h>
 
+using Elastos::Droid::R;
 using Elastos::Droid::Os::Looper;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::View::IInputDevice;
@@ -247,7 +252,7 @@ WiredAccessoryManager::WiredAccessoryObserver::MakeObservedUEventList()
 
 // @Override
 void WiredAccessoryManager::WiredAccessoryObserver::OnUEvent(
-    /* [in] */ UEventObserver::UEvent* event)
+    /* [in] */ IUEvent* event)
 {
     if (mHost->LOG) Slogger::V(mHost->TAG, "Headset UEVENT: %s", event->ToString().string());
 

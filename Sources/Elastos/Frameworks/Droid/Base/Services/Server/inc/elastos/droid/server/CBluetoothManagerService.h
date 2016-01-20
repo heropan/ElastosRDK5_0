@@ -3,96 +3,135 @@
 #define __ELASTOS_DROID_SERVER_CBLUETOOTHMANAGERSERVICE_H__
 
 #include "_Elastos_Droid_Server_CBluetoothManagerService.h"
+#include <elastos/droid/content/BroadcastReceiver.h>
 #include <elastos/core/Thread.h>
-#include "elastos/droid/os/HandlerBase.h"
+#include "elastos/droid/os/Handler.h"
+#include "elastos/droid/os/Runnable.h"
+#include <Elastos.Droid.Bluetooth.h>
+#include <Elastos.Droid.Os.h>
 
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::Runnable;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Os::IRemoteCallbackList;
+using Elastos::Droid::Content::BroadcastReceiver;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Content::IServiceConnection;
+using Elastos::Droid::Bluetooth::IIBluetooth;
+using Elastos::Droid::Bluetooth::IIBluetoothGatt;
+using Elastos::Droid::Bluetooth::IIBluetoothCallback;
+using Elastos::Droid::Bluetooth::IIBluetoothManager;
+using Elastos::Droid::Bluetooth::IIBluetoothManagerCallback;
+using Elastos::Droid::Bluetooth::IIBluetoothStateChangeCallback;
 using Elastos::Core::IThread;
 using Elastos::Core::Thread;
-using Elastos::Droid::Os::HandlerBase;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 
 CarClass(CBluetoothManagerService)
+    , public Object
+    , public IIBluetoothManager
+    , public IBinder
 {
 private:
-    class BluetoothServiceConnection// implements ServiceConnection
+    class BluetoothServiceConnection
+        : public Object
+        , public IServiceConnection
     {
     public:
-        BluetoothServiceConnection(
-            /* [in] */ CBluetoothManagerService* owner);
+        CAR_INTERFACE_DECL()
 
-        void SetGetNameAddressOnly(Boolean getOnly);
+        BluetoothServiceConnection(
+            /* [in] */ CBluetoothManagerService* host);
+
+        void SetGetNameAddressOnly(
+            /* [in] */ Boolean getOnly);
 
         Boolean IsGetNameAddressOnly();
 
-        void OnServiceConnected(ComponentName className, IBinder service);
+        CARAPI OnServiceConnected(
+            /* [in] */ IComponentName* className,
+            /* [in] */ IBinder* service);
 
-        void OnServiceDisconnected(ComponentName className);
+        CARAPI OnServiceDisconnected(
+            /* [in] */ IComponentName* className);
 
     private:
-        CBluetoothManagerService* mOwner;
+        CBluetoothManagerService* mHost;
         Boolean mGetNameAddressOnly;
     };
 
-    class BluetoothHandler : public HandlerBase
+    class BluetoothHandler
+        : public Handler
     {
     friend class CBluetoothManagerService;
     public:
         BluetoothHandler(
             /* [in] */ ILooper* looper,
-            /* [in] */ CBluetoothManagerService* owner);
+            /* [in] */ CBluetoothManagerService* host);
 
         CARAPI HandleMessage(
             /* [in] */ IMessage* msg);
 
     private:
-        CBluetoothManagerService* mOwner;
+        CBluetoothManagerService* mHost;
          AutoPtr<IHandler> mHandler;
     };
 
-    class MyRunnable : public Runnable
+    class MyRunnable
+        : public Runnable
     {
     public:
         MyRunnable(
-            /* [in] */ CBluetoothManagerService* owner);
+            /* [in] */ CBluetoothManagerService* host);
 
         CARAPI Run();
 
     private:
-        CBluetoothManagerService* mOwner;
+        CBluetoothManagerService* mHost;
     };
 
-    class MyIBluetoothCallback : public IBluetoothCallback
+    class MyBluetoothCallback
+        : public Object
+        , public IIBluetoothCallback
     {
     public:
-        MyIBluetoothCallback(
-            /* [in] */ CBluetoothManagerService* owner);
+        CAR_INTERFACE_DECL()
+
+        MyBluetoothCallback(
+            /* [in] */ CBluetoothManagerService* host);
 
         CARAPI OnBluetoothStateChange();
 
     private:
-        CBluetoothManagerService* mOwner;
+        CBluetoothManagerService* mHost;
     };
 
-    class MyRunnableEx : public Runnable
+    class MyRunnableEx
+        : public Runnable
     {
     public:
-        MyRunnable(
-            /* [in] */ CBluetoothManagerService* owner);
+        MyRunnableEx(
+            /* [in] */ CBluetoothManagerService* host);
 
         CARAPI Run();
 
     private:
-        CBluetoothManagerService* mOwner;
+        CBluetoothManagerService* mHost;
     };
 
-    class MyBroadcastReceiver : public BroadcastReceiver
+    class MyBroadcastReceiver
+        : public BroadcastReceiver
     {
     public:
         MyBroadcastReceiver(
-            /* [in] */ CBluetoothManagerService* owner);
+            /* [in] */ CBluetoothManagerService* host);
 
         //@Override
         CARAPI OnReceive(
@@ -108,28 +147,29 @@ private:
             return NOERROR;
         }
     private:
-        CBluetoothManagerService* mOwner;
+        CBluetoothManagerService* mHost;
     };
 
-    class BTtimerRunnable : public Runnable {
+    class BTtimerRunnable
+        : public Runnable
+    {
     public:
         BTtimerRunnable(
-            /* [in] */ CBluetoothManagerService* owner);
+            /* [in] */ CBluetoothManagerService* host);
 
-        virtual CARAPI Run()
-        {
-            if (mState == BluetoothAdapter.STATE_ON) {
-                if (DBG) Log.d(TAG, "10s is passed , get rx count again");
-                mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_GET_RX_COUNT,
-                               0, 0));
-                mDelayedHandler.postDelayed(this, 10 * 1000);
-            }
-        }
+        virtual CARAPI Run();
 
     private:
-        CBluetoothManagerService* mOwner;
-    }
+        CBluetoothManagerService* mHost;
+    };
 public:
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CBluetoothManagerService();
+
     CARAPI constructor(
         /* [in] */ IContext* context);
 
@@ -138,13 +178,13 @@ public:
         /* [out] */ IIBluetooth** result);
 
     CARAPI UnregisterAdapter(
-        /* [in] */ IIBluetoothManagerCallback callback);
+        /* [in] */ IIBluetoothManagerCallback* callback);
 
     CARAPI RegisterStateChangeCallback(
-        /* [in] */ IIBluetoothStateChangeCallback callback);
+        /* [in] */ IIBluetoothStateChangeCallback* callback);
 
     CARAPI UnregisterStateChangeCallback(
-        /* [in] */ IIBluetoothStateChangeCallback callback);
+        /* [in] */ IIBluetoothStateChangeCallback* callback);
 
     CARAPI IsEnabled(
         /* [out] */ Boolean* result);
@@ -169,6 +209,11 @@ public:
     CARAPI GetName(
         /* [out] */ String* result);
 
+    CARAPI GetBluetoothGatt(
+        /* [out] */ IIBluetoothGatt** bg);
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 private:
     CARAPI_(void) RegisterForAirplaneMode(
         /* [in] */ IIntentFilter* filter);
@@ -200,6 +245,12 @@ private:
     CARAPI_(void) HandleEnable(
         /* [in] */ Boolean quietMode);
 
+    CARAPI_(Boolean) DoBind(
+        /* [in] */ IIntent* intent,
+        /* [in] */ IServiceConnection* conn,
+        /* [in] */ Int32 flags,
+        /* [in] */ IUserHandle* user);
+
     CARAPI_(void) HandleDisable();
 
     CARAPI_(Boolean) CheckIfCallerIsForegroundUser();
@@ -218,6 +269,8 @@ private:
         /* [in] */ Boolean quietMode);
 
     CARAPI_(Boolean) CanUnbindBluetoothService();
+
+    CARAPI_(void) RecoverBluetoothServiceFromError();
 
 private:
     static const String BLUETOOTH_ADMIN_PERM;
@@ -267,9 +320,10 @@ private:
     String mAddress;
     String mName;
     AutoPtr<IContentResolver> mContentResolver;
-    RemoteCallbackList<IBluetoothManagerCallback> mCallbacks;
-    RemoteCallbackList<IBluetoothStateChangeCallback> mStateChangeCallbacks;
+    AutoPtr<IRemoteCallbackList> mCallbacks; // RemoteCallbackList<IBluetoothManagerCallback>
+    AutoPtr<IRemoteCallbackList> mStateChangeCallbacks; // RemoteCallbackList<IBluetoothStateChangeCallback>
     AutoPtr<IIBluetooth> mBluetooth;
+    AutoPtr<IIBluetoothGatt> mBluetoothGatt;
     Boolean mBinding;
     Boolean mUnbinding;
     // used inside handler thread
@@ -283,16 +337,15 @@ private:
     // used inside handler thread
     Boolean mEnable;
     Int32 mState;
-    AutoPtr<IHandlerThread> mThread;
-    BluetoothHandler* mHandler;
-    BluetoothServiceConnection* mConnection;// = new BluetoothServiceConnection();
-    MyRunnable* mBTShutDown;
-    MyIBluetoothCallback* mBluetoothCallback;
-    MyRunnableEx* mBTtimer;
-    MyBroadcastReceiver* mReceiver;
-    Object mReceiverLock;
+    AutoPtr<BluetoothHandler> mHandler;
+    AutoPtr<BluetoothServiceConnection> mConnection;// = new BluetoothServiceConnection();
+    AutoPtr<MyRunnable> mBTShutDown;
+    AutoPtr<MyBluetoothCallback> mBluetoothCallback;
+    AutoPtr<MyRunnableEx> mBTtimer;
+    AutoPtr<MyBroadcastReceiver> mReceiver;
+    Int32 mErrorRecoveryRetryCounter;
+    Int32 mSystemUiUid;
 
-    Object mConnectionLock;
 };
 
 } // namespace Server

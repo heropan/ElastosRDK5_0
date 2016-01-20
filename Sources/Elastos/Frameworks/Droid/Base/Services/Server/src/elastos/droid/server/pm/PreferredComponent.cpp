@@ -282,7 +282,7 @@ void PreferredComponent::Dump(
     out->Println(mAlways);
     if (mSetComponents != NULL) {
         out->PrintString(prefix);
-        out->PrintStringln("  Selected from:");
+        out->Println("  Selected from:");
         for (Int32 i = 0; i < mSetComponents->GetLength(); i++) {
             out->Print(prefix);
             out->Print("    ");
