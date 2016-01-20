@@ -1,10 +1,14 @@
-#include "CEGL14Helper.h"
-#include "CEGL14.h"
+#include "elastos/droid/opengl/CEGL14Helper.h"
+#include "elastos/droid/opengl/CEGL14.h"
 #include "elastos/droid/ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Opengl {
+
+CAR_INTERFACE_IMPL(CEGL14Helper, Singleton, IEGL14Helper)
+
+CAR_SINGLETON_IMPL(CEGL14Helper)
 
 ECode CEGL14Helper::GetNoContext(
     /* [out] */ IEGLContext** cxt)

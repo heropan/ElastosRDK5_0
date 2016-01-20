@@ -26,6 +26,9 @@ class DirectByteBuffer
     friend class ReadOnlyDirectByteBuffer;
 
 public:
+    CARAPI GetPrimitiveArray(
+        /* [out] */ Handle64* arrayHandle);
+
     CARAPI Get(
         /* [out] */ ArrayOf<Byte>* dst,
         /* [in] */ Int32 dstOffset,

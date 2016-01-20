@@ -1,6 +1,10 @@
 
-#include "CMatrixGL.h"
+#include "elastos/droid/opengl/CMatrix.h"
+
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/Math.h>
+
+using Elastos::Core::AutoLock;
 
 namespace Elastos {
 namespace Droid {
@@ -8,8 +12,8 @@ namespace Opengl {
 
 #define I(_i, _j) ((_j)+ 4*(_i))
 
-AutoPtr<ArrayOf<Float> > CMatrixGL::sTemp= ArrayOf<Float>::Alloc(32);
-Mutex CMatrixGL::sLock;
+AutoPtr<ArrayOf<Float> > CMatrix::sTemp= ArrayOf<Float>::Alloc(32);
+Object CMatrix::sLock;
 
 static
 void multiplyMM(Float* r, const Float* lhs, const Float* rhs)
@@ -35,7 +39,7 @@ void multiplyMM(Float* r, const Float* lhs, const Float* rhs)
 }
 
 
-ECode CMatrixGL::MultiplyMM(
+ECode CMatrix::MultiplyMM(
     /* [in] */ ArrayOf<Float>* result_ref,
     /* [in] */ Int32 resultOffset,
     /* [in] */ ArrayOf<Float>* lhs_ref,
@@ -80,7 +84,11 @@ void multiplyMV(Float* r, const Float* lhs, const Float* rhs)
     mx4transform(rhs[0], rhs[1], rhs[2], rhs[3], lhs, r);
 }
 
-ECode CMatrixGL::MultiplyMV(
+CAR_INTERFACE_IMPL(CMatrix, Singleton, IMatrix)
+
+CAR_SINGLETON_IMPL(CMatrix)
+
+ECode CMatrix::MultiplyMV(
     /* [in] */ ArrayOf<Float>* result_ref,
     /* [in] */ Int32 resultOffset,
     /* [in] */ ArrayOf<Float>* lhs_ref,
@@ -110,7 +118,7 @@ ECode CMatrixGL::MultiplyMV(
     return NOERROR;
 }
 
-ECode CMatrixGL::TransposeM(
+ECode CMatrix::TransposeM(
     /* [in] */ ArrayOf<Float>* mTrans,
     /* [in] */ Int32 mTransOffset,
     /* [in] */ ArrayOf<Float>* m,
@@ -126,7 +134,7 @@ ECode CMatrixGL::TransposeM(
     return NOERROR;
 }
 
-ECode CMatrixGL::InvertM(
+ECode CMatrix::InvertM(
     /* [in] */ ArrayOf<Float>* mInv,
     /* [in] */ Int32 mInvOffset,
     /* [in] */ ArrayOf<Float>* m,
@@ -255,7 +263,7 @@ ECode CMatrixGL::InvertM(
     return NOERROR;
 }
 
-ECode CMatrixGL::OrthoM(
+ECode CMatrix::OrthoM(
     /* [in] */ ArrayOf<Float>* m,
     /* [in] */ Int32 mOffset,
     /* [in] */ Float left,
@@ -303,7 +311,7 @@ ECode CMatrixGL::OrthoM(
     return NOERROR;
 }
 
-ECode CMatrixGL::FrustumM(
+ECode CMatrix::FrustumM(
     /* [in] */ ArrayOf<Float>* m,
     /* [in] */ Int32 offset,
     /* [in] */ Float left,
@@ -356,7 +364,7 @@ ECode CMatrixGL::FrustumM(
     return NOERROR;
 }
 
-ECode CMatrixGL::PerspectiveM(
+ECode CMatrix::PerspectiveM(
     /* [in] */ ArrayOf<Float>* m,
     /* [in] */ Int32 offset,
     /* [in] */ Float fovy,
@@ -364,7 +372,7 @@ ECode CMatrixGL::PerspectiveM(
     /* [in] */ Float zNear,
     /* [in] */ Float zFar)
 {
-    Float f = 1.0f / (Float) Elastos::Core::Math::Tan(fovy * (Elastos::Core::Math::DOUBLE_PI / 360.0));
+    Float f = 1.0f / (Float) Elastos::Core::Math::Tan(fovy * (Elastos::Core::Math::PI / 360.0));
     Float rangeReciprocal = 1.0f / (zNear - zFar);
 
     (*m)[offset + 0] = f / aspect;
@@ -389,7 +397,7 @@ ECode CMatrixGL::PerspectiveM(
     return NOERROR;
 }
 
-Float CMatrixGL::Length(
+Float CMatrix::Length(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float z)
@@ -397,7 +405,7 @@ Float CMatrixGL::Length(
     return (Float) Elastos::Core::Math::Sqrt(x * x + y * y + z * z);
 }
 
-ECode CMatrixGL::Length(
+ECode CMatrix::Length(
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float z,
@@ -407,7 +415,7 @@ ECode CMatrixGL::Length(
     return NOERROR;
 }
 
-ECode CMatrixGL::SetIdentityM(
+ECode CMatrix::SetIdentityM(
     /* [in] */ ArrayOf<Float>* sm,
     /* [in] */ Int32 smOffset)
 {
@@ -420,7 +428,7 @@ ECode CMatrixGL::SetIdentityM(
     return NOERROR;
 }
 
-ECode CMatrixGL::ScaleM(
+ECode CMatrix::ScaleM(
     /* [in] */ ArrayOf<Float>* sm,
     /* [in] */ Int32 smOffset,
     /* [in] */ ArrayOf<Float>* m,
@@ -440,7 +448,7 @@ ECode CMatrixGL::ScaleM(
     return NOERROR;
 }
 
-ECode CMatrixGL::ScaleM(
+ECode CMatrix::ScaleM(
     /* [in] */ ArrayOf<Float>* m,
     /* [in] */ Int32 mOffset,
     /* [in] */ Float x,
@@ -456,7 +464,7 @@ ECode CMatrixGL::ScaleM(
     return NOERROR;
 }
 
-ECode CMatrixGL::TranslateM(
+ECode CMatrix::TranslateM(
     /* [in] */ ArrayOf<Float>* tm,
     /* [in] */ Int32 tmOffset,
     /* [in] */ ArrayOf<Float>* m,
@@ -477,7 +485,7 @@ ECode CMatrixGL::TranslateM(
     return NOERROR;
 }
 
-ECode CMatrixGL::TranslateM(
+ECode CMatrix::TranslateM(
     /* [in] */ ArrayOf<Float>* m,
     /* [in] */ Int32 mOffset,
     /* [in] */ Float x,
@@ -491,7 +499,7 @@ ECode CMatrixGL::TranslateM(
     return NOERROR;
 }
 
-ECode CMatrixGL::RotateM(
+ECode CMatrix::RotateM(
     /* [in] */ ArrayOf<Float>* rm,
     /* [in] */ Int32 rmOffset,
     /* [in] */ ArrayOf<Float>* m,
@@ -509,7 +517,7 @@ ECode CMatrixGL::RotateM(
     return NOERROR;
 }
 
-ECode CMatrixGL::RotateM(
+ECode CMatrix::RotateM(
     /* [in] */ ArrayOf<Float>* m,
     /* [in] */ Int32 mOffset,
     /* [in] */ Float a,
@@ -526,7 +534,7 @@ ECode CMatrixGL::RotateM(
     return NOERROR;
 }
 
-ECode CMatrixGL::SetRotateM(
+ECode CMatrix::SetRotateM(
     /* [in] */ ArrayOf<Float>* rm,
     /* [in] */ Int32 rmOffset,
     /* [in] */ Float a,
@@ -541,7 +549,7 @@ ECode CMatrixGL::SetRotateM(
     (*rm)[rmOffset + 13]= 0;
     (*rm)[rmOffset + 14]= 0;
     (*rm)[rmOffset + 15]= 1;
-    a *= (Float) (Elastos::Core::Math::DOUBLE_PI / 180.0f);
+    a *= (Float) (Elastos::Core::Math::PI / 180.0f);
     Float s = (Float) Elastos::Core::Math::Sin(a);
     Float c = (Float) Elastos::Core::Math::Cos(a);
     if (1.0f == x && 0.0f == y && 0.0f == z) {
@@ -590,16 +598,16 @@ ECode CMatrixGL::SetRotateM(
     return NOERROR;
 }
 
-ECode CMatrixGL::SetRotateEulerM(
+ECode CMatrix::SetRotateEulerM(
     /* [in] */ ArrayOf<Float>* rm,
     /* [in] */ Int32 rmOffset,
     /* [in] */ Float x,
     /* [in] */ Float y,
     /* [in] */ Float z)
 {
-    x *= (Float) (Elastos::Core::Math::DOUBLE_PI / 180.0f);
-    y *= (Float) (Elastos::Core::Math::DOUBLE_PI / 180.0f);
-    z *= (Float) (Elastos::Core::Math::DOUBLE_PI / 180.0f);
+    x *= (Float) (Elastos::Core::Math::PI / 180.0f);
+    y *= (Float) (Elastos::Core::Math::PI / 180.0f);
+    z *= (Float) (Elastos::Core::Math::PI / 180.0f);
     Float cx = (Float) Elastos::Core::Math::Cos(x);
     Float sx = (Float) Elastos::Core::Math::Sin(x);
     Float cy = (Float) Elastos::Core::Math::Cos(y);
@@ -631,7 +639,7 @@ ECode CMatrixGL::SetRotateEulerM(
     return NOERROR;
 }
 
-ECode CMatrixGL::SetLookAtM(
+ECode CMatrix::SetLookAtM(
     /* [in] */ ArrayOf<Float>* rm,
     /* [in] */ Int32 rmOffset,
     /* [in] */ Float  eyeX,

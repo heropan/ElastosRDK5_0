@@ -69,6 +69,21 @@ ECode DirectByteBuffer::constructor(
     return NOERROR;
 }
 
+ECode DirectByteBuffer::GetPrimitiveArray(
+    /* [out] */ Handle64* arrayHandle)
+{
+    AutoPtr<ArrayOf<Byte> > arrayTmp;
+    GetArray((ArrayOf<Byte>**)&arrayTmp);
+    if (arrayTmp == NULL)
+    {
+        *arrayHandle = 0;
+        return NOERROR;
+    }
+    Byte* primitiveArray = arrayTmp->GetPayload();
+    *arrayHandle = reinterpret_cast<Handle64>(primitiveArray);
+    return NOERROR;
+}
+
 ECode DirectByteBuffer::Get(
     /* [out] */ ArrayOf<Byte>* dst,
     /* [in] */ Int32 dstOffset,
@@ -390,6 +405,7 @@ ECode DirectByteBuffer::ProtectedArray(
     }
     *array = arr;
     REFCOUNT_ADD(*array);
+
     return NOERROR;
 }
 

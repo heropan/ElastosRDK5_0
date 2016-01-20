@@ -1,9 +1,12 @@
 
-#ifndef __ELASTOS_DROID_OPENGL_CMATRIXGL_H__
-#define __ELASTOS_DROID_OPENGL_CMATRIXGL_H__
+#ifndef __ELASTOS_DROID_OPENGL_CMATRIX_H__
+#define __ELASTOS_DROID_OPENGL_CMATRIX_H__
 
-#include "_Elastos_Droid_Opengl_CMatrixGL.h"
-#include "elastos/Mutex.h"
+#include "Elastos.Droid.Opengl.h"
+#include "_Elastos_Droid_Opengl_CMatrix.h"
+#include <elastos/core/Singleton.h>
+
+using Elastos::Core::Singleton;
 
 namespace Elastos {
 namespace Droid {
@@ -67,9 +70,14 @@ private:
     Int32 mMinSize;
 };
 
-CarClass(CMatrixGL)
+CarClass(CMatrix)
+    , public Singleton
+    , public IMatrix
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     CARAPI MultiplyMM(
         /* [in] */ ArrayOf<Float>* result,
@@ -216,7 +224,6 @@ public:
         /* [in] */ Float upY,
         /* [in] */ Float upZ);
 
-
 private:
     CARAPI_(Float) Length(
         /* [in] */ Float x,
@@ -232,4 +239,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_OPENGL_CMATRIXGL_H__
+#endif // __ELASTOS_DROID_OPENGL_CMATRIX_H__

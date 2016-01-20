@@ -29,6 +29,9 @@ public:
         /* [in] */ Int32 capacity,
         /* [in] */ ICharSequence* chseq);
 
+    CARAPI GetPrimitiveArray(
+        /* [out] */ Handle64* arrayHandle);
+
     static CARAPI Copy(
         /* [in] */ CharSequenceAdapter* other,
         /* [out] */ CharSequenceAdapter** buffer);
@@ -107,9 +110,6 @@ public:
         /* [out] */ String* str);
 public:
     AutoPtr<ICharSequence> mSequence;
-
-private:
-    AutoPtr<ArrayOf<Char32> > mArrayTemp;
 };
 
 } // namespace IO
