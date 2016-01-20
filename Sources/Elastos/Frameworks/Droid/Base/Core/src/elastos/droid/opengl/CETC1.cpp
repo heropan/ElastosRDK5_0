@@ -1,5 +1,6 @@
 
-#include "CETC1.h"
+#include "elastos/droid/opengl/CETC1.h"
+
 #include "utils/misc.h"
 #include <math.h>
 #include <stdio.h>
@@ -10,17 +11,20 @@
 #include <skia/core/SkBitmap.h>
 #include <gl.h>
 #include <ETC1/etc1.h>
-#include "poly.h"
 #include <elastos/utility/logging/Slogger.h>
 
 #define LOGD(msg) SLOGGERD("CETC1", msg)
 
-using Elastos::IO::INIOAccessHelper;
-using Elastos::IO::CNIOAccessHelper;
+using Elastos::IO::INIOAccess;
+using Elastos::IO::CNIOAccess;
 
 namespace Elastos {
 namespace Droid {
 namespace Opengl {
+
+CAR_INTERFACE_IMPL(CETC1, Singleton, IETC1)
+
+CAR_SINGLETON_IMPL(CETC1)
 
 ECode CETC1::GetPointer(
     /* [in] */ Elastos::IO::IBuffer* buffer,
@@ -37,8 +41,8 @@ ECode CETC1::GetPointer(
     buffer->GetElementSizeShift(&elementSizeShift);
     *remaining = (limit - position) << elementSizeShift;
 
-    AutoPtr<INIOAccessHelper> helper;
-    CNIOAccessHelper::AcquireSingleton((INIOAccessHelper**)&helper);
+    AutoPtr<INIOAccess> helper;
+    CNIOAccess::AcquireSingleton((INIOAccess**)&helper);
 
     helper->GetBasePointer(buffer, &pointer);
     if (pointer != 0L) {

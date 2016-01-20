@@ -1,28 +1,39 @@
-#include "gles/CEGLImpl.h"
-#include "gles/CEGLConfigImpl.h"
-#include "gles/CEGL10Helper.h"
+#include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.View.h"
 
-#include <EGL/egl_display.h>
+#include "elastos/droid/graphics/CSurfaceTexture.h"
+#include "elastos/droid/view/Surface.h"
+#include "elastos/droid/opengl/gles/CEGLImpl.h"
+#include "elastos/droid/opengl/gles/CEGLConfigImpl.h"
+#include "elastos/droid/opengl/gles/CEGL10Helper.h"
+
+#include <elastos/utility/logging/Slogger.h>
+
+#include <opengl/EGL/egl_display.h>
 #include <EGL/egl.h>
 #include <GLES/gl.h>
 
-#include <gui/SurfaceTexture.h>
-#include <gui/SurfaceTextureClient.h>
+#include <gui/GLConsumer.h>
 
 #include <skia/core/SkBitmap.h>
 #include <skia/core/SkPixelRef.h>
 #include <ui/ANativeObjectBase.h>
-#include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/AutoLock.h>
 
-using Elastosx::Microedition::Khronos::egl::IEGL10;
-using Elastosx::Microedition::Khronos::egl::IEGL11;
-using Elastosx::Microedition::Khronos::egl::IEGL10Helper;
+using Elastosx::Microedition::Khronos::Egl::EIID_IEGL;
+using Elastosx::Microedition::Khronos::Egl::IEGL10;
+using Elastosx::Microedition::Khronos::Egl::EIID_IEGL10;
+using Elastosx::Microedition::Khronos::Egl::IEGL11;
+using Elastosx::Microedition::Khronos::Egl::EIID_IEGL11;
+using Elastosx::Microedition::Khronos::Egl::IEGL10Helper;
+using Elastosx::Microedition::Khronos::Egl::EIID_IEGL10Helper;
 using Elastos::Droid::Graphics::IBitmap;
+using Elastos::Droid::Graphics::ISurfaceTexture;
+using Elastos::Droid::Graphics::CSurfaceTexture;
 using Elastos::Droid::View::ISurface;
 using Elastos::Droid::View::ISurfaceView;
 using Elastos::Droid::View::ISurfaceHolder;
-using Elastos::Droid::Graphics::ISurfaceTexture;
+using Elastos::Core::AutoLock;
 
 namespace Elastos {
 namespace Droid {
@@ -31,19 +42,19 @@ namespace Gles {
 
 static const Int32 gNull_attrib_base[] = {EGL_NONE};
 
-static inline EGLDisplay getDisplay(Elastosx::Microedition::Khronos::egl::IEGLDisplay* o) {
+static inline EGLDisplay getDisplay(Elastosx::Microedition::Khronos::Egl::IEGLDisplay* o) {
     if (!o) return EGL_NO_DISPLAY;
     return (EGLDisplay)(((CEGLDisplayImpl*)o)->GetEGLDisplay());
 }
-static inline EGLSurface getSurface(Elastosx::Microedition::Khronos::egl::IEGLSurface* o) {
+static inline EGLSurface getSurface(Elastosx::Microedition::Khronos::Egl::IEGLSurface* o) {
     if (!o) return EGL_NO_SURFACE;
     return (EGLSurface)(((CEGLSurfaceImpl*)o)->GetEGLSurface());
 }
-static inline EGLContext getContext(Elastosx::Microedition::Khronos::egl::IEGLContext* o) {
+static inline EGLContext getContext(Elastosx::Microedition::Khronos::Egl::IEGLContext* o) {
     if (!o) return EGL_NO_CONTEXT;
     return (EGLContext)(((CEGLContextImpl*)o)->GetEGLContext());
 }
-static inline EGLConfig getConfig(Elastosx::Microedition::Khronos::egl::IEGLConfig* o) {
+static inline EGLConfig getConfig(Elastosx::Microedition::Khronos::Egl::IEGLConfig* o) {
     if (!o) return 0;
     return (EGLConfig)(((CEGLConfigImpl*)o)->GetEGLConfig());
 }
@@ -69,16 +80,22 @@ static Boolean validAttribList(ArrayOf<Int32>* attrib_list) {
     return item == EGL_NONE;
 }
 
-static android::PixelFormat convertPixelFormat(SkBitmap::Config format)
+static android::PixelFormat convertPixelFormat(SkColorType format)
 {
     switch (format) {
-    case SkBitmap::kARGB_8888_Config:   return android::PIXEL_FORMAT_RGBA_8888;
-    case SkBitmap::kARGB_4444_Config:   return android::PIXEL_FORMAT_RGBA_4444;
-    case SkBitmap::kRGB_565_Config:     return android::PIXEL_FORMAT_RGB_565;
-    case SkBitmap::kA8_Config:          return android::PIXEL_FORMAT_A_8;
+    case kN32_SkColorType:   return android::PIXEL_FORMAT_RGBA_8888;
+    case kARGB_4444_SkColorType:   return android::PIXEL_FORMAT_RGBA_4444;
+    case kRGB_565_SkColorType:     return android::PIXEL_FORMAT_RGB_565;
     default:                            return android::PIXEL_FORMAT_NONE;
     }
 }
+static inline Boolean EglBoolToJBool(EGLBoolean eglBool) {
+    return eglBool == EGL_TRUE ? TRUE : FALSE;
+}
+
+CAR_INTERFACE_IMPL_2(CEGLImpl, Object, IEGL10, IEGL)
+
+CAR_OBJECT_IMPL(CEGLImpl)
 
 ECode CEGLImpl::constructor()
 {
@@ -88,7 +105,7 @@ ECode CEGLImpl::constructor()
     return NOERROR;
 }
 
-ECode CEGLImpl::eglChooseConfig(
+ECode CEGLImpl::EglChooseConfig(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ ArrayOf<Int32>* attrib_list,
     /* [in] */ ArrayOf<XIEGLConfig*>* configs,
@@ -104,7 +121,7 @@ ECode CEGLImpl::eglChooseConfig(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     EGLDisplay dpy = getDisplay(display);
-    Boolean success = FALSE;
+    EGLBoolean success = EGL_FALSE;
 
     if (configs == NULL) {
         config_size = 0;
@@ -122,15 +139,15 @@ ECode CEGLImpl::eglChooseConfig(
     if (success && configs!=NULL) {
         for (Int32 i=0 ; i<num ; i++) {
             AutoPtr<XIEGLConfig> obj;
-            CEGLConfigImpl::New((Int32)nativeConfigs[i], (XIEGLConfig**)&obj);
+            CEGLConfigImpl::New((Int64)nativeConfigs[i], (XIEGLConfig**)&obj);
             configs->Set(i, obj);
         }
     }
-    *result = success;
+    *result = EglBoolToJBool(success);
     return NOERROR;
 }
 
-ECode CEGLImpl::eglCopyBuffers(
+ECode CEGLImpl::EglCopyBuffers(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLSurface* surface,
     /* [in] */ IInterface* native_pixmap,
@@ -145,7 +162,7 @@ ECode CEGLImpl::eglCopyBuffers(
     return NOERROR;
 }
 
-ECode CEGLImpl::eglCreateContext(
+ECode CEGLImpl::EglCreateContext(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLConfig* config,
     /* [in] */ XIEGLContext* share_context,
@@ -162,7 +179,7 @@ ECode CEGLImpl::eglCreateContext(
     EGLContext shr = getContext(share_context);
     Int32* base = beginNativeAttribList(attrib_list);
     EGLContext ctx = eglCreateContext(dpy, cnf, shr, base);
-    Int32 eglContextId = (Int32)ctx;
+    Int64 eglContextId = (Int64)ctx;
     if (eglContextId == 0) {
         AutoPtr<IEGL10Helper> helper;
         CEGL10Helper::AcquireSingleton((IEGL10Helper**)&helper);
@@ -176,7 +193,7 @@ ECode CEGLImpl::eglCreateContext(
     return NOERROR;
 }
 
-ECode CEGLImpl::eglCreatePbufferSurface(
+ECode CEGLImpl::EglCreatePbufferSurface(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLConfig* config,
     /* [in] */ ArrayOf<Int32>* attrib_list,
@@ -191,7 +208,7 @@ ECode CEGLImpl::eglCreatePbufferSurface(
     EGLConfig  cnf = getConfig(config);
     Int32* base = beginNativeAttribList(attrib_list);
     EGLSurface sur = eglCreatePbufferSurface(dpy, cnf, base);
-    Int32 eglSurfaceId =(Int32)sur;
+    Int64 eglSurfaceId =(Int64)sur;
     if (eglSurfaceId == 0) {
         AutoPtr<IEGL10Helper> helper;
         CEGL10Helper::AcquireSingleton((IEGL10Helper**)&helper);
@@ -205,7 +222,7 @@ ECode CEGLImpl::eglCreatePbufferSurface(
     return NOERROR;
 }
 
-ECode CEGLImpl::eglCreatePixmapSurface(
+ECode CEGLImpl::EglCreatePixmapSurface(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLConfig* config,
     /* [in] */ IInterface* native_pixmap,
@@ -226,7 +243,7 @@ ECode CEGLImpl::eglCreatePixmapSurface(
     SkBitmap const * nativeBitmap = NULL;
     if (IBitmap::Probe(native_pixmap) != NULL) {
         AutoPtr<IBitmap> bt = IBitmap::Probe(native_pixmap);
-        Handle32 nbt;
+        Handle64 nbt;
         bt->GetNativeBitmap(&nbt);
         nativeBitmap = (SkBitmap const *)nbt;
     }
@@ -244,15 +261,15 @@ ECode CEGLImpl::eglCreatePixmapSurface(
     pixmap.width  = nativeBitmap->width();
     pixmap.height = nativeBitmap->height();
     pixmap.stride = nativeBitmap->rowBytes() / nativeBitmap->bytesPerPixel();
-    pixmap.format = convertPixelFormat(nativeBitmap->config());
+    pixmap.format = convertPixelFormat(nativeBitmap->colorType());
     pixmap.data   = (uint8_t*)ref->pixels();
 
     base = beginNativeAttribList(attrib_list);
     EGLSurface sur = eglCreatePixmapSurface(dpy, cnf, &pixmap, base);
 
     if (sur != EGL_NO_SURFACE) {
-        out_sur->mEGLSurface = (Int32)sur;
-        out_sur->mNativePixelRef = (Int32)ref;
+        out_sur->mEGLSurface = (Int64)sur;
+        out_sur->mNativePixelRef = (Int64)ref;
     } else {
         ref->unlockPixels();
         SkSafeUnref(ref);
@@ -272,7 +289,7 @@ ECode CEGLImpl::eglCreatePixmapSurface(
     return NOERROR;
 }
 
-ECode CEGLImpl::eglCreateWindowSurface(
+ECode CEGLImpl::EglCreateWindowSurface(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLConfig* config,
     /* [in] */ IInterface* native_window,
@@ -292,7 +309,7 @@ ECode CEGLImpl::eglCreateWindowSurface(
         sur = ISurface::Probe(native_window);
     }
 
-    Int32 eglSurfaceId;
+    Int64 eglSurfaceId;
     if (sur != NULL) {
         FAIL_RETURN(_eglCreateWindowSurface(display, config, sur, attrib_list, &eglSurfaceId));
     } else if (ISurfaceTexture::Probe(native_window) != NULL) {
@@ -316,7 +333,7 @@ ECode CEGLImpl::eglCreateWindowSurface(
     return NOERROR;
 }
 
-ECode CEGLImpl::eglDestroyContext(
+ECode CEGLImpl::EglDestroyContext(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLContext* context,
     /* [out] */ Boolean* result)
@@ -327,11 +344,11 @@ ECode CEGLImpl::eglDestroyContext(
     }
     EGLDisplay dpy = getDisplay(display);
     EGLContext ctx = getContext(context);
-    *result = eglDestroyContext(dpy, ctx);
+    *result = EglBoolToJBool(eglDestroyContext(dpy, ctx));
     return NOERROR;
 }
 
-ECode CEGLImpl::eglDestroySurface(
+ECode CEGLImpl::EglDestroySurface(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLSurface* surface,
     /* [out] */ Boolean* result)
@@ -350,11 +367,11 @@ ECode CEGLImpl::eglDestroySurface(
             SkSafeUnref(ref);
         }
     }
-    *result = eglDestroySurface(dpy, sur);
+    *result = EglBoolToJBool(eglDestroySurface(dpy, sur));
     return NOERROR;
 }
 
-ECode CEGLImpl::eglGetConfigAttrib(
+ECode CEGLImpl::EglGetConfigAttrib(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLConfig* config,
     /* [in] */ Int32 attribute,
@@ -368,17 +385,17 @@ ECode CEGLImpl::eglGetConfigAttrib(
     }
     EGLDisplay dpy = getDisplay(display);
     EGLContext cnf = getConfig(config);
-    Boolean success = FALSE;
+    EGLBoolean success = EGL_FALSE;
     Int32 localValue;
     success = eglGetConfigAttrib(dpy, cnf, attribute, &localValue);
     if (success) {
        (*value)[0] = localValue;
     }
-    *result = success;
+    *result = EglBoolToJBool(success);
     return NOERROR;
 }
 
-ECode CEGLImpl::eglGetConfigs(
+ECode CEGLImpl::EglGetConfigs(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ ArrayOf<XIEGLConfig*>* configs,
     /* [in] */ Int32 config_size,
@@ -391,7 +408,7 @@ ECode CEGLImpl::eglGetConfigs(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     EGLDisplay dpy = getDisplay(display);
-    Boolean success = FALSE;
+    EGLBoolean success = EGL_FALSE;
     if (configs == NULL) {
         config_size = 0;
     }
@@ -404,18 +421,18 @@ ECode CEGLImpl::eglGetConfigs(
     if (success && configs) {
         for (Int32 i=0; i < num; i++) {
             AutoPtr<XIEGLConfig> cfg;
-            CEGLConfigImpl::New((Int32)nativeConfigs[i], (XIEGLConfig**)&cfg);
+            CEGLConfigImpl::New(reinterpret_cast<Int64>(nativeConfigs[i]), (XIEGLConfig**)&cfg);
             configs->Set(i, cfg);
         }
     }
-    *result = success;
+    *result = EglBoolToJBool(success);
     return NOERROR;
 }
 
-ECode CEGLImpl::eglGetCurrentContext(
+ECode CEGLImpl::EglGetCurrentContext(
     /* [out] */ XIEGLContext** context)
 {
-    Int32 value = (Int32)eglGetCurrentContext();
+    Int64 value = reinterpret_cast<Int64>(eglGetCurrentContext());
     if (value == 0) {
         AutoPtr<IEGL10Helper> helper;
         CEGL10Helper::AcquireSingleton((IEGL10Helper**)&helper);
@@ -434,10 +451,10 @@ ECode CEGLImpl::eglGetCurrentContext(
     return NOERROR;
 }
 
-ECode CEGLImpl::eglGetCurrentDisplay(
+ECode CEGLImpl::EglGetCurrentDisplay(
     /* [out] */ XIEGLDisplay** display)
 {
-    Int32 value = (Int32)eglGetCurrentDisplay();
+    Int64 value = reinterpret_cast<Int64>(eglGetCurrentDisplay());
     if (value == 0) {
         AutoPtr<IEGL10Helper> helper;
         CEGL10Helper::AcquireSingleton((IEGL10Helper**)&helper);
@@ -456,7 +473,7 @@ ECode CEGLImpl::eglGetCurrentDisplay(
     return NOERROR;
 }
 
-ECode CEGLImpl::eglGetCurrentSurface(
+ECode CEGLImpl::EglGetCurrentSurface(
     /* [in] */ Int32 readdraw,
     /* [out] */ XIEGLSurface** surface)
 {
@@ -470,7 +487,7 @@ ECode CEGLImpl::eglGetCurrentSurface(
         REFCOUNT_ADD(*surface)
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    Int32 value = (Int32)eglGetCurrentSurface(readdraw);
+    Int64 value = reinterpret_cast<Int64>(eglGetCurrentSurface(readdraw));
     if (value == 0) {
         *surface = noSurface;
         REFCOUNT_ADD(*surface)
@@ -485,11 +502,11 @@ ECode CEGLImpl::eglGetCurrentSurface(
     return NOERROR;
 }
 
-ECode CEGLImpl::eglGetDisplay(
+ECode CEGLImpl::EglGetDisplay(
     /* [in] */ IInterface* native_display,
     /* [out] */ XIEGLDisplay** display)
 {
-    Int32 value = (Int32)eglGetDisplay(EGL_DEFAULT_DISPLAY);
+    Int64 value = (Int64)eglGetDisplay(EGL_DEFAULT_DISPLAY);
     if (value == 0) {
         AutoPtr<IEGL10Helper> helper;
         CEGL10Helper::AcquireSingleton((IEGL10Helper**)&helper);
@@ -508,7 +525,7 @@ ECode CEGLImpl::eglGetDisplay(
     return NOERROR;
 }
 
-ECode CEGLImpl::eglGetError(
+ECode CEGLImpl::EglGetError(
     /* [out] */ Int32* eRst)
 {
     EGLint error = eglGetError();
@@ -516,7 +533,7 @@ ECode CEGLImpl::eglGetError(
     return NOERROR;
 }
 
-ECode CEGLImpl::eglInitialize(
+ECode CEGLImpl::EglInitialize(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ ArrayOf<Int32>* major_minor,
     /* [out] */ Boolean* result)
@@ -528,7 +545,7 @@ ECode CEGLImpl::eglInitialize(
     }
 
     EGLDisplay dpy = getDisplay(display);
-    Boolean success = eglInitialize(dpy, NULL, NULL);
+    EGLBoolean success = eglInitialize(dpy, NULL, NULL);
     if (success && major_minor) {
         Int32 len = major_minor->GetLength();
         if (len) {
@@ -538,11 +555,11 @@ ECode CEGLImpl::eglInitialize(
             if (len >= 2) base[1] = 0;
         }
     }
-    *result = success;
+    *result = EglBoolToJBool(success);
     return NOERROR;
 }
 
-ECode CEGLImpl::eglMakeCurrent(
+ECode CEGLImpl::EglMakeCurrent(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLSurface* draw,
     /* [in] */ XIEGLSurface* read,
@@ -557,11 +574,11 @@ ECode CEGLImpl::eglMakeCurrent(
     EGLSurface sdr = getSurface(draw);
     EGLSurface srd = getSurface(read);
     EGLContext ctx = getContext(context);
-    *result = eglMakeCurrent(dpy, sdr, srd, ctx);
+    *result = EglBoolToJBool(eglMakeCurrent(dpy, sdr, srd, ctx));
     return NOERROR;
 }
 
-ECode CEGLImpl::eglQueryContext(
+ECode CEGLImpl::EglQueryContext(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLContext* context,
     /* [in] */ Int32 attribute,
@@ -575,17 +592,17 @@ ECode CEGLImpl::eglQueryContext(
     }
     EGLDisplay dpy = getDisplay(display);
     EGLContext ctx = getContext(context);
-    Boolean success = FALSE;
+    EGLBoolean success = EGL_FALSE;
     Int32 len = value->GetLength();
     if (len) {
         Int32* base = value->GetPayload();
         success = eglQueryContext(dpy, ctx, attribute, base);
     }
-    *result = success;
+    *result = EglBoolToJBool(success);
     return NOERROR;
 }
 
-ECode CEGLImpl::eglQueryString(
+ECode CEGLImpl::EglQueryString(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ Int32 name,
     /* [out] */ String* str)
@@ -600,7 +617,7 @@ ECode CEGLImpl::eglQueryString(
     return NOERROR;
 }
 
-ECode CEGLImpl::eglQuerySurface(
+ECode CEGLImpl::EglQuerySurface(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLSurface* surface,
     /* [in] */ Int32 attribute,
@@ -615,25 +632,25 @@ ECode CEGLImpl::eglQuerySurface(
     EGLDisplay dpy = getDisplay(display);
     EGLContext sur = getSurface(surface);
 
-    Boolean success = FALSE;
+    EGLBoolean success = EGL_FALSE;
     Int32 len = value->GetLength();
     if (len) {
         Int32* base = value->GetPayload();
         success = eglQuerySurface(dpy, sur, attribute, base);
     }
-    *result = success;
+    *result = EglBoolToJBool(success);
     return NOERROR;
 }
 
 /** @hide **/
-ECode CEGLImpl::eglReleaseThread(
+ECode CEGLImpl::EglReleaseThread(
     /* [out] */ Boolean* result)
 {
-    *result = eglReleaseThread();
+    *result = EglBoolToJBool(eglReleaseThread());
     return NOERROR;
 }
 
-ECode CEGLImpl::eglSwapBuffers(
+ECode CEGLImpl::EglSwapBuffers(
     /* [in] */ XIEGLDisplay* display,
     /* [in] */ XIEGLSurface* surface,
     /* [out] */ Boolean* result)
@@ -644,11 +661,11 @@ ECode CEGLImpl::eglSwapBuffers(
     }
     EGLDisplay dpy = getDisplay(display);
     EGLSurface sur = getSurface(surface);
-    *result = eglSwapBuffers(dpy, sur);
+    *result = EglBoolToJBool(eglSwapBuffers(dpy, sur));
     return NOERROR;
 }
 
-ECode CEGLImpl::eglTerminate(
+ECode CEGLImpl::EglTerminate(
     /* [in] */ XIEGLDisplay* display,
     /* [out] */ Boolean* result)
 {
@@ -657,23 +674,23 @@ ECode CEGLImpl::eglTerminate(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     EGLDisplay dpy = getDisplay(display);
-    *result = eglTerminate(dpy);
+    *result = EglBoolToJBool(eglTerminate(dpy));
     return NOERROR;
 }
 
-ECode CEGLImpl::eglWaitGL(
+ECode CEGLImpl::EglWaitGL(
     /* [out] */ Boolean* result)
 {
-    *result = eglWaitGL();
+    *result = EglBoolToJBool(eglWaitGL());
     return NOERROR;
 }
 
-ECode CEGLImpl::eglWaitNative(
+ECode CEGLImpl::EglWaitNative(
     /* [in] */ Int32 engine,
     /* [in] */ IInterface* bindTarget,
     /* [out] */ Boolean* result)
 {
-    *result = eglWaitNative(engine);
+    *result = EglBoolToJBool(eglWaitNative(engine));
     return NOERROR;
 }
 
@@ -688,34 +705,18 @@ Int32 CEGLImpl::GetInitCount(
 android::sp<ANativeWindow> CEGLImpl::SurfaceGetNativeWindow(
     /* [in] */ IInterface* surfaceObj)
 {
-    AutoPtr<ISurface> surface = ISurface::Probe(surfaceObj);
+    ISurface* surface = ISurface::Probe(surfaceObj);
     if (surface == NULL) {
         SLOGGERE("CEGLImpl", "CEGLImpl::SurfaceGetNativeWindow")
         return NULL;
     }
-    Handle32 tmp;
-    surface->GetSurface(&tmp);
-    android::sp<android::Surface> result =reinterpret_cast<android::Surface*>(tmp);
-    if (result == NULL) {
-        /*
-         * if this method is called from the WindowManager's process, it means
-         * the client is is not remote, and therefore is allowed to have
-         * a Surface (data), so we create it here.
-         * If we don't have a SurfaceControl, it means we're in a different
-         * process.
-         */
-        surface->GetNativeSurfaceControl(&tmp);
-        android::SurfaceControl* const control = reinterpret_cast<android::SurfaceControl*>(tmp);
-        if (control) {
-            result = control->getSurface();
-            if (result != NULL) {
-                result->incStrong(surfaceObj);
-                surface->SetSurface(reinterpret_cast<Handle32>(result.get()));
-            }
-        }
+    android::sp<android::Surface> sur;
+    Elastos::Droid::View::Surface* surfaceImpl = (Elastos::Droid::View::Surface*)surface;
+    {
+        AutoLock lock(*surfaceImpl);
+        sur = reinterpret_cast<android::Surface *>(surfaceImpl->mNativeObject);
     }
-
-    return result;
+    return sur;
 }
 
 ECode CEGLImpl::_eglCreateWindowSurface(
@@ -723,7 +724,7 @@ ECode CEGLImpl::_eglCreateWindowSurface(
     /* [in] */ XIEGLConfig* config,
     /* [in] */ IInterface* native_window,
     /* [in] */ ArrayOf<Int32>* attrib_list,
-    /* [out] */ Int32* rst)
+    /* [out] */ Int64* rst)
 {
     if (display == NULL || config == NULL
         || !validAttribList(attrib_list)) {
@@ -749,7 +750,7 @@ not_valid_surface:
 
     Int32* base = beginNativeAttribList(attrib_list);
     EGLSurface sur = eglCreateWindowSurface(dpy, cnf, window.get(), base);
-    *rst = (Int32)sur;
+    *rst = (Int64)sur;
     return NOERROR;
 }
 
@@ -759,7 +760,7 @@ ECode CEGLImpl::_eglCreateWindowSurfaceTexture(
     /* [in] */ XIEGLConfig* config,
     /* [in] */ IInterface* native_window,
     /* [in] */ ArrayOf<Int32>* attrib_list,
-    /* [out] */ Int32* rst)
+    /* [out] */ Int64* rst)
 {
     if (display == NULL || config == NULL
         || !validAttribList(attrib_list)) {
@@ -776,17 +777,17 @@ not_valid_surface:
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Int32 surTexture;
-    (ISurfaceTexture::Probe(native_window))->GetSurfaceTexture(&surTexture);
-    android::sp<android::SurfaceTexture> surfaceTexture((android::SurfaceTexture*)surTexture);
+    AutoPtr<ISurfaceTexture> nw = ISurfaceTexture::Probe(native_window);
+    CSurfaceTexture* stImpl = (CSurfaceTexture*)nw.Get();
+    android::sp<android::IGraphicBufferProducer> producer((android::IGraphicBufferProducer*)stImpl->mProducer);
 
-    window = new android::SurfaceTextureClient(surfaceTexture);
+    window = new android::Surface(producer, true);
     if (window == NULL)
         goto not_valid_surface;
 
     Int32* base = beginNativeAttribList(attrib_list);
     EGLSurface sur = eglCreateWindowSurface(dpy, cnf, window.get(), base);
-    *rst = (Int32)sur;
+    *rst = (Int64)sur;
     return NOERROR;
 }
 

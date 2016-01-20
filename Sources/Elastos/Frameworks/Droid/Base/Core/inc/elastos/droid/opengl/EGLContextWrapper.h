@@ -2,7 +2,8 @@
 #ifndef __ELASTOS_DROID_OPENGL_EGLCONTEXTC_H__
 #define __ELASTOS_DROID_OPENGL_EGLCONTEXTC_H__
 
-#include "EGLObjectHandle.h"
+#include "Elastos.Droid.Opengl.h"
+#include "elastos/droid/opengl/EGLObjectHandle.h"
 
 namespace Elastos {
 namespace Droid {
@@ -10,28 +11,12 @@ namespace Opengl {
 
 class CEGL14;
 
-class EGLContextC
+class EGLContextWrapper
     : public EGLObjectHandle
     , public IEGLContext
-    , public ElRefBase
 {
 public:
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface* object,
-        /* [out] */ InterfaceID* iid);
-
-    CARAPI GetHandle(
-        /* [out] */ Int32* handle);
-
-    CARAPI GetHashCode(
-        /* [out] */ Int32* code);
+    CAR_INTERFACE_DECL()
 
     CARAPI Equals(
         /* [in] */ IInterface* o,
@@ -39,11 +24,11 @@ public:
 
 private:
     static CARAPI_(AutoPtr<IEGLContext>) CreateInstance(
-        /* [in] */ Int32 handle);
+        /* [in] */ Int64 handle);
 
 private:
-    EGLContextC(
-        /* [in] */ Int32 handle);
+    EGLContextWrapper(
+        /* [in] */ Int64 handle);
 
     friend class CEGL14;
 };

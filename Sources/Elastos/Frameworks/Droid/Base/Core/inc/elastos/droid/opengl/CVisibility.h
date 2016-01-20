@@ -1,9 +1,10 @@
 
-#ifndef __ELASTOS_DROID_OPENGL_CVISIBILITYGL_H__
-#define __ELASTOS_DROID_OPENGL_CVISIBILITYGL_H__
+#ifndef __ELASTOS_DROID_OPENGL_CVISIBILITY_H__
+#define __ELASTOS_DROID_OPENGL_CVISIBILITY_H__
 
-#include "_Elastos_Droid_Opengl_CVisibilityGL.h"
-#include "CMatrixGL.h"
+#include "Elastos.Droid.Opengl.h"
+#include "_Elastos_Droid_Opengl_CVisibility.h"
+#include "elastos/droid/opengl/CMatrix.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -32,9 +33,14 @@ private:
     void* mData;
 };
 
-CarClass(CVisibilityGL)
+CarClass(CVisibility)
+     , public Singleton
+     , public IVisibility
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     CARAPI VisibilityTest(
         /* [in] */ ArrayOf<Float>* ws,
@@ -74,4 +80,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_OPENGL_CVISIBILITYGL_H__
+#endif // __ELASTOS_DROID_OPENGL_CVISIBILITY_H__

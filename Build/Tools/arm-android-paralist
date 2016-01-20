@@ -285,8 +285,8 @@
 #> Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/systemui
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/appwidget
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/wifidisplay
-#- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/opengl
-#- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/opengl/gles
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/opengl/gles
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/opengl
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/inputmethods/pinyinIME
 #- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/swextend/gpio
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/sax

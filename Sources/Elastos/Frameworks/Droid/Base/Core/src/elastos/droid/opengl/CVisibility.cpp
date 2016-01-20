@@ -1,7 +1,7 @@
 
-#include "CVisibilityGL.h"
-#include "CMatrixGL.h"
-#include "Poly.h"
+#include "elastos/droid/opengl/CVisibility.h"
+#include "elastos/droid/opengl/CMatrix.h"
+#include "elastos/droid/opengl/Poly.h"
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
 
@@ -175,7 +175,11 @@ int visibilityTest(float* pWS, float* pPositions, int positionsLength,
     return result;
 }
 
-ECode CVisibilityGL::VisibilityTest(
+CAR_INTERFACE_IMPL(CVisibility, Singleton, IVisibility)
+
+CAR_SINGLETON_IMPL(CVisibility)
+
+ECode CVisibility::VisibilityTest(
     /* [in] */ ArrayOf<Float>* ws_ref,
     /* [in] */ Int32 wsOffset,
     /* [in] */ ArrayOf<Float>* positions_ref,
@@ -204,7 +208,7 @@ ECode CVisibilityGL::VisibilityTest(
 
     if (indices.mLength < indexCount) {
         *rst = -1;
-        SLOGGERE("CVisibilityGL", "ength < offset + indexCount")
+        SLOGGERE("CVisibility", "ength < offset + indexCount")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -218,7 +222,7 @@ ECode CVisibilityGL::VisibilityTest(
     return NOERROR;
 }
 
-ECode CVisibilityGL::FrustumCullSpheres(
+ECode CVisibility::FrustumCullSpheres(
     /* [in] */ ArrayOf<Float>* mvp_ref,
     /* [in] */ Int32 mvpOffset,
     /* [in] */ ArrayOf<Float>* spheres_ref,
@@ -270,7 +274,7 @@ ECode CVisibilityGL::FrustumCullSpheres(
     return NOERROR;
 }
 
-ECode CVisibilityGL::ComputeBoundingSphere(
+ECode CVisibility::ComputeBoundingSphere(
     /* [in] */ ArrayOf<Float>* positions_ref,
     /* [in] */ Int32 positionsOffset,
     /* [in] */ Int32 positionsCount,
@@ -293,7 +297,7 @@ ECode CVisibilityGL::ComputeBoundingSphere(
     sphere.Bind();
 
     if ( positionsCount < 1 ) {
-        SLOGGERE("CVisibilityGL", "positionsCount < 1")
+        SLOGGERE("CVisibility", "positionsCount < 1")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
