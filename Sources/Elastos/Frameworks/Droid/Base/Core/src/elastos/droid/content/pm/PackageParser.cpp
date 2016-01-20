@@ -1416,7 +1416,7 @@ ECode PackageParser::ParsePackageLite(
     /* [in] */ IFile* packageFile,
     /* [in] */ Int32 flags,
     /* [in] */ ArrayOf<Byte>* readBuffer,
-    /* [out] */ IPackageLite** pkgLite)
+    /* [out] */ PackageLite** pkgLite)
 {
     VALIDATE_NOT_NULL(pkgLite)
     Boolean isDir;
@@ -1432,14 +1432,14 @@ ECode PackageParser::ParseMonolithicPackageLite(
     /* [in] */ IFile* packageFile,
     /* [in] */ Int32 flags,
     /* [in] */ ArrayOf<Byte>* readBuffer,
-    /* [out] */ IPackageLite** pkgLite)
+    /* [out] */ PackageLite** pkgLite)
 {
     AutoPtr< ApkLite > baseApk;
     FAIL_RETURN(ParseApkLite(packageFile, flags, readBuffer, (ApkLite**)&baseApk))
 
     String packagePath;
     packageFile->GetAbsolutePath(&packagePath);
-    AutoPtr<IPackageLite> pl = new PackageLite(packagePath, baseApk, NULL, NULL);
+    AutoPtr<PackageLite> pl = new PackageLite(packagePath, baseApk, NULL, NULL);
     *pkgLite = pl;
     REFCOUNT_ADD(*pkgLite)
     return NOERROR;
@@ -1449,7 +1449,7 @@ ECode PackageParser::ParseClusterPackageLite(
     /* [in] */ IFile* packageDir,
     /* [in] */ Int32 flags,
     /* [in] */ ArrayOf<Byte>* readBuffer,
-    /* [out] */ IPackageLite** pkgLite)
+    /* [out] */ PackageLite** pkgLite)
 {
     VALIDATE_NOT_NULL(pkgLite)
     *pkgLite = NULL;
@@ -1571,7 +1571,7 @@ ECode PackageParser::ParseClusterPackageLite(
     String codePath;
     packageDir->GetAbsolutePath(&codePath);
 
-    AutoPtr<IPackageLite> r = new PackageLite(codePath, baseApk, names, codePaths);
+    AutoPtr<PackageLite> r = new PackageLite(codePath, baseApk, names, codePaths);
     *pkgLite = r;
     REFCOUNT_ADD(*pkgLite)
     return NOERROR;
@@ -1602,8 +1602,8 @@ ECode PackageParser::ParseClusterPackage(
     VALIDATE_NOT_NULL(pkgLite)
     *pkgLite = NULL;
 
-    AutoPtr<IPackageLite> obj;
-    FAIL_RETURN(ParseClusterPackageLite(packageDir, 0, readBuffer, (IPackageLite**)&obj))
+    AutoPtr<PackageLite> obj;
+    FAIL_RETURN(ParseClusterPackageLite(packageDir, 0, readBuffer, (PackageLite**)&obj))
     PackageLite* lite = (PackageLite*)obj.Get();
     if (mOnlyCoreApps && !lite->mCoreApp) {
         // throw new PackageParserException(INSTALL_PARSE_FAILED_MANIFEST_MALFORMED,
@@ -1688,8 +1688,8 @@ ECode PackageParser::ParseMonolithicPackage(
     AutoPtr<IIoUtils> ioUtils;
     CIoUtils::AcquireSingleton((IIoUtils**)&ioUtils);
     if (mOnlyCoreApps) {
-        AutoPtr<IPackageLite> obj;
-        ParseMonolithicPackageLite(apkFile, flags, readBuffer, (IPackageLite**)&obj);
+        AutoPtr<PackageLite> obj;
+        ParseMonolithicPackageLite(apkFile, flags, readBuffer, (PackageLite**)&obj);
         PackageLite* lite = (PackageLite*)obj.Get();
         if (!lite->mCoreApp) {
             // throw new PackageParserException(INSTALL_PARSE_FAILED_MANIFEST_MALFORMED,

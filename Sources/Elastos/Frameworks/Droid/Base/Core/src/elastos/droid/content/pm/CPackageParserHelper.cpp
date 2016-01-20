@@ -27,7 +27,10 @@ ECode CPackageParserHelper::ParsePackageLite(
 {
     VALIDATE_NOT_NULL(res)
     AutoPtr< ArrayOf<Byte> > readBuffer = ArrayOf<Byte>::Alloc(PackageParser::CERTIFICATE_BUFFER_SIZE);
-    PackageParser::ParsePackageLite(packageFile, flags, readBuffer, res);
+    AutoPtr<PackageParser::PackageLite> lite;
+    FAIL_RETURN(PackageParser::ParsePackageLite(packageFile, flags, readBuffer, (PackageParser::PackageLite**)&lite))
+    *res = (IPackageLite*)lite;
+    REFCOUNT_ADD(*res)
     return NOERROR;
 }
 

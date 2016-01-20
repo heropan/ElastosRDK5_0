@@ -743,7 +743,7 @@ public:
         /* [in] */ IFile* packageFile,
         /* [in] */ Int32 flags,
         /* [in] */ ArrayOf<Byte>* readBuffer,
-        /* [out] */ IPackageLite** pkgLite);
+        /* [out] */ PackageLite** pkgLite);
 
     /**
      * Parse the package at the given location. Automatically detects if the
@@ -921,13 +921,13 @@ private:
         /* [in] */ IFile* packageFile,
         /* [in] */ Int32 flags,
         /* [in] */ ArrayOf<Byte>* readBuffer,
-        /* [out] */ IPackageLite** pkgLite);
+        /* [out] */ PackageLite** pkgLite);
 
     static CARAPI ParseClusterPackageLite(
         /* [in] */ IFile* packageFile,
         /* [in] */ Int32 flags,
         /* [in] */ ArrayOf<Byte>* readBuffer,
-        /* [out] */ IPackageLite** pkgLite);
+        /* [out] */ PackageLite** pkgLite);
 
     /**
      * Parse all APKs contained in the given directory, treating them as a
