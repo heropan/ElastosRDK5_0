@@ -6,7 +6,6 @@
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Droid::Os::ISystemClock;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Utility::ILog;
 

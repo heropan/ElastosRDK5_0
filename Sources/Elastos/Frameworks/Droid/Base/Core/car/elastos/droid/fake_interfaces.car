@@ -92,13 +92,6 @@ module
 
     }}} // Elastos.Droid.Keyguard
 
-    namespace Elastos {
-    namespace Droid {
-    namespace Content {
-    namespace Pm {
-        interface IPackageLite {}
-    }}}} // Elastos.Droid.Content.Pm
-
     namespace Org {
     namespace Conscrypt {
         interface IPSKKeyManager {}
@@ -163,14 +156,6 @@ module
         interface IThreadSafeClientConnManager {}
 
     }}}}}} // Org.Apache.Http.Impl.Conn.Tsccm
-
-    namespace Elastos {
-    namespace Droid {
-    namespace Os {
-
-        interface ISystemClock {}
-
-    }}} // Elastos.Droid.Os
 
     namespace Com {
     namespace Squareup {

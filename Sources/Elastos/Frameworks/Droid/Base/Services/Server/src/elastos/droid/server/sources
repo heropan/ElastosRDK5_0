@@ -42,6 +42,9 @@ SOURCES += CDataActivityObserver.cpp
 SOURCES += CDiskStatsService.cpp
 SOURCES += CDropBoxManagerService.cpp
 SOURCES += CNetworkPolicyListener.cpp
+SOURCES += CNetworkManagementService.cpp
+SOURCES += CNetworkScoreService.cpp
+SOURCES += CNsdService.cpp
 SOURCES += CSamplingProfilerService.cpp
 SOURCES += CSerialService.cpp
 SOURCES += CTextServicesManagerService.cpp
@@ -53,6 +56,7 @@ SOURCES += ShutdownActivity.cpp
 SOURCES += TwilightCalculator.cpp
 #SOURCES += WiredAccessoryManager.cpp  //needs CInputManagerService
 #SOURCES += DockObserver.cpp
+SOURCES += BrickReceiver.cpp
 
 #=========================================
 # TODO
@@ -60,37 +64,13 @@ SOURCES += TwilightCalculator.cpp
 
 #SOURCES += CAlarmManagerService.cpp
 #SOURCES += CBootReceiver.cpp
-SOURCES += BrickReceiver.cpp
 #SOURCES += CaptivePortalTracker.cpp
-
-#SOURCES += CEthernetService.cpp
-#SOURCES += CLocationManagerService.cpp
-<<<<<<< HEAD
-#SOURCES += CCommonTimeManagementService.cpp
-=======
->>>>>>> update server root dir. update bluetooth cars.
-#SOURCES += CClipboardService.cpp
-#SOURCES += TwilightCalculator.cpp
-#SOURCES += CVibratorService.cpp
-#SOURCES += CRecognitionManagerService.cpp
-#SOURCES += CDeviceStorageMonitorService.cpp
-#SOURCES += CUiModeManagerService.cpp
-#SOURCES += CBatteryService.cpp
-<<<<<<< HEAD
-#SOURCES += CDropBoxManagerService.cpp
-=======
-#SOURCES += CNsdService.cpp
->>>>>>> update server root dir. update bluetooth cars.
 #SOURCES += CThrottleService.cpp
 #SOURCES += CWallpaperManagerService.cpp
 #SOURCES += CWMSWallpaperConnection.cpp
 #SOURCES += CWMSUserSwitchObserver.cpp
 #SOURCES += NativeDaemonConnector.cpp
 #SOURCES += NetworkManagementSocketTagger.cpp
-SOURCES += CNetworkManagementService.cpp
-SOURCES += CNetworkScoreService.cpp
-SOURCES += NetworkTimeUpdateService.cpp
-SOURCES += CNsdService.cpp
 #SOURCES += CMountService.cpp
 #SOURCES += AppWidgetServiceImpl.cpp
 #SOURCES += CAppWidgetService.cpp

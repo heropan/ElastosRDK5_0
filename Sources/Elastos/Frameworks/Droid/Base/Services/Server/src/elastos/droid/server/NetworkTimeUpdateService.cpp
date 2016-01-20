@@ -1,5 +1,6 @@
 #include "elastos/droid/server/NetworkTimeUpdateService.h"
-#include "elastos/droid/os/SystemClock.h"
+#include <elastos/droid/os/SystemClock.h>
+#include <elastos/droid/R.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
@@ -14,6 +15,7 @@
 #include <Elastos.Droid.Internal.h>
 #include <Elastos.CoreLibrary.Utility.h>
 
+using Elastos::Droid::R;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::Os::CHandlerThread;
@@ -25,6 +27,7 @@ using Elastos::Droid::Provider::ISettingsGlobal;
 using Elastos::Droid::App::IPendingIntentHelper;
 using Elastos::Droid::App::CPendingIntentHelper;
 using Elastos::Droid::App::IPendingIntentHelper;
+using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::IBroadcastReceiver;
@@ -34,6 +37,7 @@ using Elastos::Droid::Database::EIID_IContentObserver;
 using Elastos::Droid::Database::IContentObserver;
 using Elastos::Droid::Internal::Telephony::ITelephonyIntents;
 using Elastos::Droid::Net::IConnectivityManager;
+using Elastos::Droid::Net::INetworkInfo;
 using Elastos::Droid::Utility::INtpTrustedTime;
 using Elastos::Droid::Utility::INtpTrustedTimeHelper;
 using Elastos::Droid::Utility::CNtpTrustedTimeHelper;
@@ -74,11 +78,9 @@ ECode NetworkTimeUpdateService::MyHandler::HandleMessage(
     return NOERROR;
 }
 
-NetworkTimeUpdateService::NetworkTimeUpdateService(
-    /* [in] */ IContext *context)
+NetworkTimeUpdateService::NetworkTimeUpdateService()
     : mNitzTimeSetTime(NOT_SET)
     , mNitzZoneSetTime(NOT_SET)
-    , mContext(context)
     , mLastNtpFetchTime(NOT_SET)
     , mPollingIntervalMs(0)
     , mPollingIntervalShorterMs(0)
@@ -104,17 +106,16 @@ ECode NetworkTimeUpdateService::constructor(
     CPendingIntentHelper::AcquireSingleton((IPendingIntentHelper**)&piHelper);
     piHelper->GetBroadcast(mContext, POLL_REQUEST, pollIntent, 0, (IPendingIntent**)&mPendingPollIntent);
 
+    AutoPtr<IResources> res;
+    mContext->GetResources((IResources**)&res);
+
     Int32 tmp;
-    Ptr(mContext)->Func(mContext->GetResources)->GetInteger(
-            R::integer::config_ntpPollingInterval, &tmp);
+    res->GetInteger(R::integer::config_ntpPollingInterval, &tmp);
     mPollingIntervalMs = tmp;
-    Ptr(mContext)->Func(mContext->GetResources)->GetInteger(
-            R::integer::config_ntpPollingIntervalShorter, &tmp);
+    res->GetInteger(R::integer::config_ntpPollingIntervalShorter, &tmp);
     mPollingIntervalShorterMs = tmp;
-    Ptr(mContext)->Func(mContext->GetResources)->GetInteger(
-            R::integer::config_ntpRetry, &mTryAgainTimesMax);
-    Ptr(mContext)->Func(mContext->GetResources)->GetInteger(
-            R::integer::config_ntpThreshold, &mTimeErrorThresholdMs);
+    res->GetInteger(R::integer::config_ntpRetry, &mTryAgainTimesMax);
+    res->GetInteger(R::integer::config_ntpThreshold, &mTimeErrorThresholdMs);
 
     return NOERROR;
 }
@@ -134,9 +135,9 @@ ECode NetworkTimeUpdateService::SystemRunning()
     RegisterForAlarms();
     RegisterForConnectivityIntents();
 
-    AutoPtr<IThread> thread
+    AutoPtr<IHandlerThread> thread;
     CHandlerThread::New(TAG, (IHandlerThread**)&thread);
-    thread->Start();
+    IThread::Probe(thread)->Start();
 
     AutoPtr<ILooper> looper;
     thread->GetLooper((ILooper**)&looper);
@@ -177,7 +178,6 @@ void NetworkTimeUpdateService::OnPollNetworkTime(
         ResetAlarm(mPollingIntervalMs);
         return;
     }
-
 
     AutoPtr<ISystem> system;
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
