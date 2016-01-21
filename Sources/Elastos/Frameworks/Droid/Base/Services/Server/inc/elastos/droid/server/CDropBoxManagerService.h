@@ -29,11 +29,6 @@ using Elastos::IO::IFile;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::Set;
 
-_ETL_NAMESPACE_BEGIN
-const RBTreeColorType S_RBTreeRed = FALSE;
-const RBTreeColorType S_RBTreeBlack = TRUE;
-_ETL_NAMESPACE_END
-
 namespace Elastos {
 namespace Droid {
 namespace Server {

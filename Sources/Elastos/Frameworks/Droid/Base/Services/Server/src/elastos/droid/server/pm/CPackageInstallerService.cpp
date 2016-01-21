@@ -21,12 +21,6 @@
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/etl/Set.h>
 
-_ETL_NAMESPACE_BEGIN
-const RBTreeColorType S_RBTreeRed = FALSE;
-const RBTreeColorType S_RBTreeBlack = TRUE;
-_ETL_NAMESPACE_END
-
-
 using Elastos::Droid::App::IActivityManager;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::Pm::IPackageInstallerSessionParams;
