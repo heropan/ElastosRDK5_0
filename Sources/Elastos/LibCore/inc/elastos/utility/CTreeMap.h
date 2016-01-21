@@ -481,6 +481,7 @@ public:
      */
     class BoundedMap
         : public AbstractMap
+        , public ISortedMap
         , public INavigableMap
         , public ISerializable
     {
