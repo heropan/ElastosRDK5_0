@@ -23,7 +23,7 @@ CarClass(CParcelFileDescriptorFactory)
     , public IBinder
 {
 public:
-    constructor(
+    CARAPI constructor(
       /* [in] */ IFile* codeFile);
 
     CAR_INTERFACE_DECL()
@@ -34,6 +34,9 @@ public:
         /* [in] */ const String& name,
         /* [in] */ Int32 mode,
         /* [out] */ IParcelFileDescriptor** pfd);
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 
 private:
     AutoPtr<IFile> mCodeFile;

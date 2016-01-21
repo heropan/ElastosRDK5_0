@@ -3,26 +3,38 @@
 #define __ELASTOS_DROID_CONTENT_PM_PACKAGEPARSER_H__
 
 #include "elastos/droid/ext/frameworkext.h"
+#include "Elastos.Droid.Utility.h"
 #include "elastos/droid/content/IntentFilter.h"
 #include "elastos/droid/content/pm/PackageUserState.h"
+#include "elastos/droid/os/Build.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashSet.h>
+#ifdef DROID_CORE
+#include "elastos/droid/content/CComponentName.h"
+#include "elastos/droid/content/CComponentNameHelper.h"
+#endif
 
 using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::CComponentName;
+using Elastos::Droid::Content::IComponentNameHelper;
+using Elastos::Droid::Content::CComponentNameHelper;
+using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Content::Res::IAssetManager;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::Build;
 using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Utility::IArraySet;
 using Elastos::Droid::Utility::IArrayMap;
-
+using Elastos::Droid::Utility::ITypedValue;
 using Elastos::Core::IComparator;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
+using Elastos::Core::CString;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashSet;
 using Elastos::IO::IFile;
@@ -59,7 +71,7 @@ typedef ArrayOf< AutoPtr< ArrayOf<ICertificate*> > > ICertificateArray2;
  *
  * @hide
  */
-class PackageParser
+class ECO_PUBLIC PackageParser
     : public Object
 {
 public:
@@ -1297,6 +1309,190 @@ private:
 
     // static AtomicReference<byte[]> sBuffer = new AtomicReference<byte[]>();
 };
+
+//=================================================================
+// PackageParser::Component
+//=================================================================
+template <typename II>
+PackageParser::Component<II>::Component(
+    /* [in] */ Package* owner)
+    : mOwner(owner)
+{}
+
+template <typename II>
+PackageParser::Component<II>::Component(
+    /* [in] */ ParsePackageItemArgs* args,
+    /* [in, out] */ IPackageItemInfo* outInfo)
+{
+    Init(args, outInfo);
+}
+
+template <typename II>
+void PackageParser::Component<II>::Init(
+    /* [in] */ ParsePackageItemArgs* args,
+    /* [in, out] */ IPackageItemInfo* outInfo)
+{
+    mOwner = args->mOwner;
+    String name;
+    ECode ec = args->mSa->GetNonConfigurationString(args->mNameRes, 0, &name);
+    if (FAILED(ec) || name.IsNull()) {
+        mClassName = NULL;
+        // (*args->mOutError)[0] = (const char*)(StringBuffer(args->mTag)
+        //         + " does not specify android:name");
+        return;
+    }
+
+    String pkgName;
+    IPackageItemInfo::Probe(mOwner->mApplicationInfo)->GetPackageName(&pkgName);
+    String className = BuildClassName(pkgName, name, args->mOutError);
+    outInfo->SetName(className);
+    if (className.IsNull()) {
+        mClassName = NULL;
+        // (*args->mOutError)[0] = (const char*)(StringBuffer(args->mTag)
+        //         + " does not specify android:name");
+        return;
+    }
+
+    mClassName = className;
+
+    Int32 iconVal;
+    args->mSa->GetResourceId(args->mIconRes, 0, &iconVal);
+    if (iconVal != 0) {
+        outInfo->SetIcon(iconVal);
+        outInfo->SetNonLocalizedLabel(NULL);
+    }
+
+    Int32 logoVal;
+    args->mSa->GetResourceId(args->mLogoRes, 0, &logoVal);
+    if (logoVal != 0) {
+        outInfo->SetLogo(logoVal);
+    }
+
+    Int32 bannerVal;
+    args->mSa->GetResourceId(args->mBannerRes, 0, &bannerVal);
+    if (bannerVal != 0) {
+        outInfo->SetBanner(bannerVal);
+    }
+
+    AutoPtr<ITypedValue> v;
+    args->mSa->PeekValue(args->mLabelRes, (ITypedValue**)&v);
+    Int32 resId;
+    if (v != NULL && (v->GetResourceId(&resId), outInfo->SetLabelRes(resId), (resId == 0))) {
+        AutoPtr<ICharSequence> nonLocalizedLabel;
+        v->CoerceToString((ICharSequence**)&nonLocalizedLabel);
+        outInfo->SetNonLocalizedLabel(nonLocalizedLabel);
+    }
+
+    outInfo->SetPackageName(mOwner->mPackageName);
+}
+
+template <typename II>
+PackageParser::Component<II>::Component(
+    /* [in] */ ParseComponentArgs* args,
+    /* [in] */ IComponentInfo* outInfo)
+{
+    Init(args, (IPackageItemInfo*)outInfo);
+    if (!(*args->mOutError)[0].IsNull()) {
+        return;
+    }
+
+    if (args->mProcessRes != 0) {
+        AutoPtr<ICharSequence> pname;
+        Int32 targetSdkVersion;
+        mOwner->mApplicationInfo->GetTargetSdkVersion(&targetSdkVersion);
+        if (targetSdkVersion >= Build::VERSION_CODES::FROYO) {
+            String sname;
+            args->mSa->GetNonConfigurationString(args->mProcessRes,
+                IConfiguration::NATIVE_CONFIG_VERSION, &sname);
+            CString::New(sname, (ICharSequence**)&pname);
+        }
+        else {
+            // Some older apps have been seen to use a resource reference
+            // here that on older builds was ignored (with a warning).  We
+            // need to continue to do this for them so they don't break.
+            String sname;
+            args->mSa->GetNonResourceString(args->mProcessRes, &sname);
+            CString::New(sname, (ICharSequence**)&pname);
+        }
+        String appPackageName;
+        String appProcName;
+        IPackageItemInfo::Probe(mOwner->mApplicationInfo)->GetPackageName(&appPackageName);
+        mOwner->mApplicationInfo->GetProcessName(&appProcName);
+        String procName = BuildProcessName(appPackageName, appProcName, pname, args->mFlags,
+                args->mSepProcesses, args->mOutError);
+        outInfo->SetProcessName(procName);
+    }
+
+    if (args->mDescriptionRes != 0) {
+        Int32 descRes;
+        args->mSa->GetResourceId(args->mDescriptionRes, 0, &descRes);
+        outInfo->SetDescriptionRes(descRes);
+    }
+
+    Boolean enabled;
+    args->mSa->GetBoolean(args->mEnabledRes, TRUE, &enabled);
+    outInfo->SetEnabled(enabled);
+}
+
+template <typename II>
+PackageParser::Component<II>::Component(
+    /* [in] */ Component<II>* clone)
+{
+    mOwner = clone->mOwner;
+    Copy(clone->mIntents.Begin(), clone->mIntents.End(), mIntents.Begin());
+    mClassName = clone->mClassName;
+    mComponentName = clone->mComponentName;
+    mComponentShortName = clone->mComponentShortName;
+}
+
+template <typename II>
+PackageParser::Component<II>::~Component()
+{
+}
+
+template <typename II>
+AutoPtr<IComponentName> PackageParser::Component<II>::GetComponentName()
+{
+    if (mComponentName != NULL) {
+        return mComponentName;
+    }
+    if (!mClassName.IsNull()) {
+        String pname;
+        IPackageItemInfo::Probe(mOwner->mApplicationInfo)->GetPackageName(&pname);
+        CComponentName::New(pname, mClassName, (IComponentName**)&mComponentName);
+    }
+    return mComponentName;
+}
+
+template <typename II>
+void PackageParser::Component<II>::AppendComponentShortName(
+    /* [in] */ StringBuilder* sb)
+{
+    String pname;
+    IPackageItemInfo::Probe(mOwner->mApplicationInfo)->GetPackageName(&pname);
+    AutoPtr<IComponentNameHelper> helper;
+    CComponentNameHelper::AcquireSingleton((IComponentNameHelper**)&helper);
+    helper->AppendShortString(sb, pname, mClassName);
+}
+
+template <typename II>
+void PackageParser::Component<II>::PrintComponentShortName(
+    /* [in] */ IPrintWriter* pw)
+{
+    String pname;
+    IPackageItemInfo::Probe(mOwner->mApplicationInfo)->GetPackageName(&pname);
+    AutoPtr<IComponentNameHelper> helper;
+    CComponentNameHelper::AcquireSingleton((IComponentNameHelper**)&helper);
+    helper->PrintShortString(pw, pname, mClassName);
+}
+
+template <typename II>
+void PackageParser::Component<II>::SetPackageName(
+    /* [in] */ const String& PackageName)
+{
+    mComponentName = NULL;
+    mComponentShortName = NULL;
+}
 
 } // namespace Pm
 } // namespace Content

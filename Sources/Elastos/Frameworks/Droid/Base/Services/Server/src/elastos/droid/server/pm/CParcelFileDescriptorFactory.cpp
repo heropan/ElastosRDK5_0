@@ -67,6 +67,13 @@ ECode CParcelFileDescriptorFactory::Open(
     // }
 }
 
+ECode CParcelFileDescriptorFactory::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str);
+    return Object::ToString(str);
+}
+
 } // namespace Pm
 } // namespace Server
 } // namespace Droid

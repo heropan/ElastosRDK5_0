@@ -205,6 +205,10 @@ const String CUserManagerService::TAG_VALUE("value");
 const String CUserManagerService::ATTR_KEY("key");
 const String CUserManagerService::ATTR_VALUE_TYPE("type");
 const String CUserManagerService::ATTR_MULTIPLE("m");
+const String CUserManagerService::ATTR_TYPE_STRING_ARRAY("sa");
+const String CUserManagerService::ATTR_TYPE_STRING("s");
+const String CUserManagerService::ATTR_TYPE_BOOLEAN("b");
+const String CUserManagerService::ATTR_TYPE_INTEGER("i");
 const String CUserManagerService::USER_INFO_DIR("system/users"); //"system" + File.separator + "users";
 const String CUserManagerService::USER_LIST_FILENAME("userlist.xml");
 const String CUserManagerService::USER_PHOTO_FILENAME("photo.png");
@@ -1523,6 +1527,25 @@ void CUserManagerService::CleanAppRestrictionsForPackage(
     }
 }
 
+ECode CUserManagerService::CreateProfileForUser(
+    /* [in] */ const String& name,
+    /* [in] */ Int32 flags,
+    /* [in] */ Int32 userId,
+    /* [out] */ IUserInfo** userInfo)
+{
+    VALIDATE_NOT_NULL(userInfo)
+    *userInfo = NULL;
+
+    FAIL_RETURN(CheckManageUsersPermission(String("Only the system can create users")))
+    if (userId != IUserHandle::USER_OWNER) {
+        Slogger::W(LOG_TAG, "Only user owner can have profiles");
+        return NOERROR;
+    }
+    *userInfo = CreateUserInternal(name, flags, userId);
+    REFCOUNT_ADD(*userInfo)
+    return NOERROR;
+}
+
 ECode CUserManagerService::CreateUser(
     /* [in] */ const String& name,
     /* [in] */ Int32 flags,
@@ -2479,6 +2502,13 @@ String CUserManagerService::RestrictionsFileNameToPackage(
 {
     return fileName.Substring(RESTRICTIONS_FILE_PREFIX.GetLength(),
             (Int32)(fileName.GetLength() - XML_SUFFIX.GetLength()));
+}
+
+ECode CUserManagerService::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    return Object::ToString(str);
 }
 
 // @Override

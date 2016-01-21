@@ -3,6 +3,8 @@
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "Elastos.CoreLibrary.External.h"
+#include "Elastos.CoreLibrary.IO.h"
+#include "Elastos.Droid.Internal.h"
 #include "_Elastos_Droid_Server_Pm_CUserManagerService.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/os/Runnable.h"
@@ -218,6 +220,12 @@ public:
     CARAPI_(AutoPtr< ArrayOf<Int32> >) GetUserIds();
 
     CARAPI_(AutoPtr< ArrayOf<Int32> >) GetUserIdsLPr();
+
+    CARAPI CreateProfileForUser(
+        /* [in] */ const String& name,
+        /* [in] */ Int32 flags,
+        /* [in] */ Int32 userHandle,
+        /* [out] */ IUserInfo** userInfo);
 
     // @Override
     CARAPI CreateUser(
@@ -481,6 +489,9 @@ private:
 
     CARAPI_(String) RestrictionsFileNameToPackage(
         /* [in] */ const String& fileName);
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 
 private:
     static const String TAG;

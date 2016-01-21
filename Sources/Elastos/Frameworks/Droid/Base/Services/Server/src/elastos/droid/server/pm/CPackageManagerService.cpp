@@ -4,7 +4,6 @@
 #include "elastos/droid/server/pm/PackageSetting.h"
 #include "elastos/droid/server/pm/SELinuxMMAC.h"
 #include "elastos/droid/server/pm/CParcelFileDescriptorFactory.h"
-#include "elastos/droid/server/pm/PackageVerificationState.h"
 #include "elastos/droid/server/pm/CPackageInstallObserver2.h"
 #include "elastos/droid/server/SystemConfig.h"
 #include "elastos/droid/server/ServiceThread.h"
@@ -22,7 +21,6 @@
 #include "elastos/droid/os/Binder.h"
 #include "elastos/droid/os/Handler.h"
 #include "elastos/droid/os/Environment.h"
-#include "elastos/droid/net/Uri.h"
 #include "elastos/droid/system/OsConstants.h"
 #include "elastos/droid/system/Os.h"
 #include "elastos/droid/text/TextUtils.h"
@@ -126,7 +124,8 @@ using Elastos::Droid::Os::Storage::IMountService;
 using Elastos::Droid::Os::Storage::IStorageManagerHelper;
 // using Elastos::Droid::Os::Storage::CStorageManagerHelper;
 using Elastos::Droid::Os::Storage::IStorageManager;
-using Elastos::Droid::Net::Uri;
+using Elastos::Droid::Net::IUriHelper;
+using Elastos::Droid::Net::CUriHelper;
 using Elastos::Droid::Utility::CDisplayMetrics;
 using Elastos::Droid::Utility::Xml;
 using Elastos::Droid::Utility::CSparseArray;
@@ -180,6 +179,7 @@ using Elastos::Utility::CArrayList;
 using Elastos::Utility::ICollections;
 using Elastos::Utility::CCollections;
 using Elastos::Utility::Objects;
+using Elastos::Utility::ICollection;
 using Elastos::Utility::Concurrent::Atomic::CAtomicInteger64;
 using Elastos::Utility::Concurrent::Atomic::CAtomicBoolean;
 using Elastos::Utility::Logging::Slogger;
@@ -1040,7 +1040,9 @@ void CPackageManagerService::PackageHandler::DoHandleMessage(
             if ((state != NULL) && !state->TimeoutExtended()) {
                 AutoPtr<InstallArgs> args = state->GetInstallArgs();
                 AutoPtr<IUri> originUri;
-                Uri::FromFile(args->mOrigin->mResolvedFile, (IUri**)&originUri);
+                AutoPtr<IUriHelper> uriHelper;
+                CUriHelper::AcquireSingleton((IUriHelper**)&uriHelper);
+                uriHelper->FromFile(args->mOrigin->mResolvedFile, (IUri**)&originUri);
 
                 Slogger::I(TAG, "Verification timed out for %p", originUri.Get());
                 mHost->mPendingVerification.Erase(it);
@@ -1095,7 +1097,9 @@ void CPackageManagerService::PackageHandler::DoHandleMessage(
 
                 AutoPtr<InstallArgs> args = state->GetInstallArgs();
                 AutoPtr<IUri> originUri;
-                Uri::FromFile(args->mOrigin->mResolvedFile, (IUri**)&originUri);
+                AutoPtr<IUriHelper> uriHelper;
+                CUriHelper::AcquireSingleton((IUriHelper**)&uriHelper);
+                uriHelper->FromFile(args->mOrigin->mResolvedFile, (IUri**)&originUri);
 
                 Int32 ret;
                 if (state->IsInstallAllowed()) {
@@ -1370,7 +1374,7 @@ AutoPtr<IResolveInfo> CPackageManagerService::ActivityIntentResolver::NewResult(
 void CPackageManagerService::ActivityIntentResolver::SortResults(
     /* [in] */ List<AutoPtr<IResolveInfo> >* results)
 {
-//      Collections.sort(results, mResolvePrioritySorter);
+//      Collections.sort(results, sResolvePrioritySorter);
 }
 
 void CPackageManagerService::ActivityIntentResolver::DumpFilter(
@@ -1613,7 +1617,7 @@ AutoPtr<IResolveInfo> CPackageManagerService::ServiceIntentResolver::NewResult(
 void CPackageManagerService::ServiceIntentResolver::SortResults(
     /* [in] */ List< AutoPtr<IResolveInfo> >* results)
 {
-//      Collections.sort(results, mResolvePrioritySorter);
+//      Collections.sort(results, sResolvePrioritySorter);
 }
 
 void CPackageManagerService::ServiceIntentResolver::DumpFilter(
@@ -1855,7 +1859,7 @@ AutoPtr<IResolveInfo> CPackageManagerService::ProviderIntentResolver::NewResult(
 void CPackageManagerService::ProviderIntentResolver::SortResults(
     /* [in] */ List< AutoPtr<IResolveInfo> >* results)
 {
-    // Collections.sort(results, mResolvePrioritySorter);
+    // Collections.sort(results, sResolvePrioritySorter);
 }
 
 void CPackageManagerService::ProviderIntentResolver::DumpFilter(
@@ -2200,10 +2204,10 @@ void CPackageManagerService::MeasureParams::HandleServiceError()
 
 
 //==============================================================================
-//                  CPackageManagerService::OriginInfo
+//                  OriginInfo
 //==============================================================================
 
-CPackageManagerService::OriginInfo::OriginInfo(
+OriginInfo::OriginInfo(
     /* [in] */ IFile* file,
     /* [in] */ const String& cid,
     /* [in] */ Boolean staged,
@@ -2229,30 +2233,30 @@ CPackageManagerService::OriginInfo::OriginInfo(
     }
 }
 
-AutoPtr<CPackageManagerService::OriginInfo> CPackageManagerService::OriginInfo::FromNothing()
+AutoPtr<OriginInfo> OriginInfo::FromNothing()
 {
     return new OriginInfo(NULL, String(NULL), FALSE, FALSE);
 }
 
-AutoPtr<CPackageManagerService::OriginInfo> CPackageManagerService::OriginInfo::FromUntrustedFile(
+AutoPtr<OriginInfo> OriginInfo::FromUntrustedFile(
     /* [in] */ IFile* file)
 {
     return new OriginInfo(file, String(NULL), FALSE, FALSE);
 }
 
-AutoPtr<CPackageManagerService::OriginInfo> CPackageManagerService::OriginInfo::FromExistingFile(
+AutoPtr<OriginInfo> OriginInfo::FromExistingFile(
     /* [in] */ IFile* file)
 {
     return new OriginInfo(file, String(NULL), FALSE, TRUE);
 }
 
-AutoPtr<CPackageManagerService::OriginInfo> CPackageManagerService::OriginInfo::FromStagedFile(
+AutoPtr<OriginInfo> OriginInfo::FromStagedFile(
     /* [in] */ IFile* file)
 {
     return new OriginInfo(file, String(NULL), TRUE, FALSE);
 }
 
-AutoPtr<CPackageManagerService::OriginInfo> CPackageManagerService::OriginInfo::FromStagedContainer(
+AutoPtr<OriginInfo> OriginInfo::FromStagedContainer(
     /* [in] */ const String& cid)
 {
     return new OriginInfo(NULL, cid, TRUE, FALSE);
@@ -2550,7 +2554,9 @@ ECode CPackageManagerService::InstallParams::HandleStartCopy()
             AutoPtr<IFile> f;
             CFile::New(mOrigin->mResolvedPath, (IFile**)&f);
             AutoPtr<IUri> u;
-            Uri::FromFile(f, (IUri**)&u);
+            AutoPtr<IUriHelper> uriHelper;
+            CUriHelper::AcquireSingleton((IUriHelper**)&uriHelper);
+            uriHelper->FromFile(f, (IUri**)&u);
             verification->SetDataAndType(u, CPackageManagerService::PACKAGE_MIME_TYPE);
             verification->AddFlags(IIntent::FLAG_GRANT_READ_URI_PERMISSION);
 
@@ -2714,10 +2720,10 @@ Boolean CPackageManagerService::InstallParams::IsForwardLocked()
 
 
 //==============================================================================
-//                  CPackageManagerService::InstallArgs
+//                  InstallArgs
 //==============================================================================
 
-CPackageManagerService::InstallArgs::InstallArgs(
+InstallArgs::InstallArgs(
     /* [in] */ OriginInfo* origin,
     /* [in] */ IIPackageInstallObserver2* observer,
     /* [in] */ Int32 installFlags,
@@ -2747,7 +2753,7 @@ CPackageManagerService::InstallArgs::InstallArgs(
     // }
 }
 
-void CPackageManagerService::InstallArgs::Init(
+void InstallArgs::Init(
     /* [in] */ OriginInfo* origin,
     /* [in] */ IIPackageInstallObserver2* observer,
     /* [in] */ Int32 installFlags,
@@ -2776,25 +2782,30 @@ void CPackageManagerService::InstallArgs::Init(
     // }
 }
 
-Int32 CPackageManagerService::InstallArgs::DoPreCopy()
+Int32 InstallArgs::DoPreCopy()
 {
     return IPackageManager::INSTALL_SUCCEEDED;
 }
 
-Int32 CPackageManagerService::InstallArgs::DoPostCopy(
+Int32 InstallArgs::DoPostCopy(
     /* [in] */ Int32 uid)
 {
     return IPackageManager::INSTALL_SUCCEEDED;
 }
 
-Boolean CPackageManagerService::InstallArgs::IsFwdLocked()
+Boolean InstallArgs::IsFwdLocked()
 {
     return (mInstallFlags & IPackageManager::INSTALL_FORWARD_LOCK) != 0;
 }
 
-AutoPtr<IUserHandle> CPackageManagerService::InstallArgs::GetUser()
+AutoPtr<IUserHandle> InstallArgs::GetUser()
 {
     return mUser;
+}
+
+Boolean InstallArgs::IsExternal()
+{
+    return (mInstallFlags & IPackageManager::INSTALL_EXTERNAL) != 0;
 }
 
 
@@ -4045,13 +4056,13 @@ AutoPtr<IComparator> CPackageManagerService::InitResolvePrioritySorter()
 {
     return (IComparator*)new CPackageManagerService::ResolvePrioritySorter();
 }
-static AutoPtr<IComparator> mResolvePrioritySorter = CPackageManagerService::InitResolvePrioritySorter();
+AutoPtr<IComparator> CPackageManagerService::sResolvePrioritySorter = CPackageManagerService::InitResolvePrioritySorter();
 
 AutoPtr<IComparator> CPackageManagerService::InitProviderInitOrderSorter()
 {
     return (IComparator*)new CPackageManagerService::ProviderInitOrderSorter();
 }
-static AutoPtr<IComparator> mProviderInitOrderSorter = CPackageManagerService::InitProviderInitOrderSorter();
+AutoPtr<IComparator> CPackageManagerService::sProviderInitOrderSorter = CPackageManagerService::InitProviderInitOrderSorter();
 const String CPackageManagerService::SD_ENCRYPTION_KEYSTORE_NAME("AppsOnSD");
 const String CPackageManagerService::SD_ENCRYPTION_ALGORITHM("AES");
 
@@ -4180,7 +4191,7 @@ void CPackageManagerService::GetDefaultDisplayMetrics(
 
 ECode CPackageManagerService::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ Handle32 installer,
+    /* [in] */ Handle64 installer,
     /* [in] */ Boolean factoryTest,
     /* [in] */ Boolean onlyCore)
 {
@@ -7387,7 +7398,7 @@ ECode CPackageManagerService::QueryIntentActivities(
                 list->Add(resolveInfo);
                 AutoPtr<ICollections> cols;
                 CCollections::AcquireSingleton((ICollections**)&cols);
-                cols->Sort(list, mResolvePrioritySorter);
+                cols->Sort(list, sResolvePrioritySorter);
             }
             *infos = list;
             return NOERROR;
@@ -8403,7 +8414,7 @@ ECode CPackageManagerService::QueryContentProviders(
     if (finalList != NULL) {
         AutoPtr<ICollections> cols;
         CCollections::AcquireSingleton((ICollections**)&cols);
-        cols->Sort(IList::Probe(finalList), mProviderInitOrderSorter);
+        cols->Sort(IList::Probe(finalList), sProviderInitOrderSorter);
     }
 
     *providers = IList::Probe(finalList);
@@ -12571,8 +12582,12 @@ void CPackageManagerService::SendPackageBroadcast(
         Int32 length = userIds->GetLength();
         for (Int32 i = 0; i < length; i++) {
             Int32 id = (*userIds)[i];
-            AutoPtr<IUri> uri = !pkg.IsNull() ? (Uri::FromParts(
-                    String("package"), pkg, String(NULL), (IUri**)&uri), uri) : NULL;
+            AutoPtr<IUri> uri;
+            if (!pkg.IsNull()) {
+                AutoPtr<IUriHelper> uriHelper;
+                CUriHelper::AcquireSingleton((IUriHelper**)&uriHelper);
+                uriHelper->FromParts(String("package"), pkg, String(NULL), (IUri**)&uri);
+            }
             AutoPtr<IIntent> intent;
             CIntent::New(action, uri, (IIntent**)&intent);
             if (extras != NULL) {
@@ -13457,7 +13472,7 @@ Boolean CPackageManagerService::InstallForwardLocked(
     return (installFlags & IPackageManager::INSTALL_FORWARD_LOCK) != 0;
 }
 
-AutoPtr<CPackageManagerService::InstallArgs> CPackageManagerService::CreateInstallArgs(
+AutoPtr<InstallArgs> CPackageManagerService::CreateInstallArgs(
     /* [in] */ InstallParams* params)
 {
     if (InstallOnSd(params->mInstallFlags) || params->IsForwardLocked()) {
@@ -13468,7 +13483,7 @@ AutoPtr<CPackageManagerService::InstallArgs> CPackageManagerService::CreateInsta
     }
 }
 
-AutoPtr<CPackageManagerService::InstallArgs> CPackageManagerService::CreateInstallArgsForExisting(
+AutoPtr<InstallArgs> CPackageManagerService::CreateInstallArgsForExisting(
     /* [in] */ Int32 installFlags,
     /* [in] */ const String& codePath,
     /* [in] */ const String& resourcePath,
@@ -16908,7 +16923,7 @@ ECode CPackageManagerService::MovePackage(
     }
 
     AutoPtr<IIPackageInstallObserver2> installObserver;
-    CPackageInstallObserver2::New((IIPackageManager*)this, observer, (IIPackageInstallObserver2**)&installObserver);
+    CPackageInstallObserver2::New((IIPackageManager*)this, observer, packageName, (IIPackageInstallObserver2**)&installObserver);
 
     // Treat a move like reinstalling an existing app, which ensures that we
     // process everythign uniformly, like unpacking native libraries.
@@ -17025,10 +17040,20 @@ void CPackageManagerService::RemoveUnusedPackagesLILPw(
     }
 }
 
+void CPackageManagerService::CreateNewUserLILPw(
+    /* [in] */ Int32 userHandle,
+    /* [in] */ IFile* path)
+{
+    if (mInstaller != NULL) {
+        mInstaller->CreateUserConfig(userHandle);
+        mSettings->CreateNewUserLILPw(this, mInstaller, userHandle, path);
+    }
+}
+
 ECode CPackageManagerService::GetVerifierDeviceIdentity(
     /* [out] */ IVerifierDeviceIdentity** identity)
 {
-    VALIDATE_NOT_NULL(identity);
+    VALIDATE_NOT_NULL(identity)
     *identity = NULL;
 
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
@@ -17274,6 +17299,13 @@ ECode CPackageManagerService::IsPackageSignedByKeySetExactly(
         *result = FALSE;
     }
     return NOERROR;
+}
+
+ECode CPackageManagerService::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str);
+    return Object::ToString(str);
 }
 
 } // namespace Pm

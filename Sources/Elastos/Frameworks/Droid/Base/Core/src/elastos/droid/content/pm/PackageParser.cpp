@@ -22,11 +22,8 @@
 #include "elastos/droid/content/pm/CVerifierInfo.h"
 #include "elastos/droid/content/res/CAssetManager.h"
 #include "elastos/droid/content/res/CResources.h"
-#include "elastos/droid/content/res/CConfiguration.h"
-#include "elastos/droid/content/CComponentName.h"
 #include "elastos/droid/os/CBundle.h"
 #include "elastos/droid/os/CPatternMatcher.h"
-#include "elastos/droid/os/Build.h"
 #include "elastos/droid/os/UserHandle.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/utility/CArraySet.h"
@@ -36,7 +33,6 @@
 #include "elastos/droid/internal/utility/XmlUtils.h"
 #include "elastos/droid/R.h"
 #include "elastos/droid/Manifest.h"
-
 #include <elastos/core/CoreUtils.h>
 #include <elastos/utility/Arrays.h>
 #include <elastos/utility/logging/Logger.h>
@@ -45,9 +41,7 @@
 using Elastos::Droid::Content::Res::IAssetManager;
 using Elastos::Droid::Content::Res::CAssetManager;
 using Elastos::Droid::Content::Res::IConfiguration;
-using Elastos::Droid::Content::Res::CConfiguration;
 using Elastos::Droid::Content::Res::CResources;
-using Elastos::Droid::Os::Build;
 using Elastos::Droid::Os::UserHandle;
 using Elastos::Droid::Os::CPatternMatcher;
 using Elastos::Droid::Os::CBundle;
@@ -537,187 +531,6 @@ AutoPtr<List<String> > PackageParser::Package::GetAllCodePathsExcludingResourceO
 
     return paths;
 }
-
-//=================================================================
-// PackageParser::Component
-//=================================================================
-template <typename II>
-PackageParser::Component<II>::Component(
-    /* [in] */ Package* owner)
-    : mOwner(owner)
-{}
-
-template <typename II>
-PackageParser::Component<II>::Component(
-    /* [in] */ ParsePackageItemArgs* args,
-    /* [in, out] */ IPackageItemInfo* outInfo)
-{
-    Init(args, outInfo);
-}
-
-template <typename II>
-void PackageParser::Component<II>::Init(
-    /* [in] */ ParsePackageItemArgs* args,
-    /* [in, out] */ IPackageItemInfo* outInfo)
-{
-    mOwner = args->mOwner;
-    String name;
-    ECode ec = args->mSa->GetNonConfigurationString(args->mNameRes, 0, &name);
-    if (FAILED(ec) || name.IsNull()) {
-        mClassName = NULL;
-        // (*args->mOutError)[0] = (const char*)(StringBuffer(args->mTag)
-        //         + " does not specify android:name");
-        return;
-    }
-
-    String pkgName;
-    IPackageItemInfo::Probe(mOwner->mApplicationInfo)->GetPackageName(&pkgName);
-    String className = BuildClassName(pkgName, name, args->mOutError);
-    outInfo->SetName(className);
-    if (className.IsNull()) {
-        mClassName = NULL;
-        // (*args->mOutError)[0] = (const char*)(StringBuffer(args->mTag)
-        //         + " does not specify android:name");
-        return;
-    }
-
-    mClassName = className;
-
-    Int32 iconVal;
-    args->mSa->GetResourceId(args->mIconRes, 0, &iconVal);
-    if (iconVal != 0) {
-        outInfo->SetIcon(iconVal);
-        outInfo->SetNonLocalizedLabel(NULL);
-    }
-
-    Int32 logoVal;
-    args->mSa->GetResourceId(args->mLogoRes, 0, &logoVal);
-    if (logoVal != 0) {
-        outInfo->SetLogo(logoVal);
-    }
-
-    Int32 bannerVal;
-    args->mSa->GetResourceId(args->mBannerRes, 0, &bannerVal);
-    if (bannerVal != 0) {
-        outInfo->SetBanner(bannerVal);
-    }
-
-    AutoPtr<ITypedValue> v;
-    args->mSa->PeekValue(args->mLabelRes, (ITypedValue**)&v);
-    Int32 resId;
-    if (v != NULL && (v->GetResourceId(&resId), outInfo->SetLabelRes(resId), (resId == 0))) {
-        AutoPtr<ICharSequence> nonLocalizedLabel;
-        v->CoerceToString((ICharSequence**)&nonLocalizedLabel);
-        outInfo->SetNonLocalizedLabel(nonLocalizedLabel);
-    }
-
-    outInfo->SetPackageName(mOwner->mPackageName);
-}
-
-template <typename II>
-PackageParser::Component<II>::Component(
-    /* [in] */ ParseComponentArgs* args,
-    /* [in] */ IComponentInfo* outInfo)
-{
-    Init(args, (IPackageItemInfo*)outInfo);
-    if (!(*args->mOutError)[0].IsNull()) {
-        return;
-    }
-
-    if (args->mProcessRes != 0) {
-        AutoPtr<ICharSequence> pname;
-        Int32 targetSdkVersion;
-        mOwner->mApplicationInfo->GetTargetSdkVersion(&targetSdkVersion);
-        if (targetSdkVersion >= Build::VERSION_CODES::FROYO) {
-            String sname;
-            args->mSa->GetNonConfigurationString(args->mProcessRes,
-                CConfiguration::NATIVE_CONFIG_VERSION, &sname);
-            CString::New(sname, (ICharSequence**)&pname);
-        }
-        else {
-            // Some older apps have been seen to use a resource reference
-            // here that on older builds was ignored (with a warning).  We
-            // need to continue to do this for them so they don't break.
-            String sname;
-            args->mSa->GetNonResourceString(args->mProcessRes, &sname);
-            CString::New(sname, (ICharSequence**)&pname);
-        }
-        String appPackageName;
-        String appProcName;
-        IPackageItemInfo::Probe(mOwner->mApplicationInfo)->GetPackageName(&appPackageName);
-        mOwner->mApplicationInfo->GetProcessName(&appProcName);
-        String procName = BuildProcessName(appPackageName, appProcName, pname, args->mFlags,
-                args->mSepProcesses, args->mOutError);
-        outInfo->SetProcessName(procName);
-    }
-
-    if (args->mDescriptionRes != 0) {
-        Int32 descRes;
-        args->mSa->GetResourceId(args->mDescriptionRes, 0, &descRes);
-        outInfo->SetDescriptionRes(descRes);
-    }
-
-    Boolean enabled;
-    args->mSa->GetBoolean(args->mEnabledRes, TRUE, &enabled);
-    outInfo->SetEnabled(enabled);
-}
-
-template <typename II>
-PackageParser::Component<II>::Component(
-    /* [in] */ Component<II>* clone)
-{
-    mOwner = clone->mOwner;
-    Copy(clone->mIntents.Begin(), clone->mIntents.End(), mIntents.Begin());
-    mClassName = clone->mClassName;
-    mComponentName = clone->mComponentName;
-    mComponentShortName = clone->mComponentShortName;
-}
-
-template <typename II>
-PackageParser::Component<II>::~Component()
-{
-}
-
-template <typename II>
-AutoPtr<IComponentName> PackageParser::Component<II>::GetComponentName()
-{
-    if (mComponentName != NULL) {
-        return mComponentName;
-    }
-    if (!mClassName.IsNull()) {
-        String pname;
-        IPackageItemInfo::Probe(mOwner->mApplicationInfo)->GetPackageName(&pname);
-        CComponentName::New(pname, mClassName, (IComponentName**)&mComponentName);
-    }
-    return mComponentName;
-}
-
-template <typename II>
-void PackageParser::Component<II>::AppendComponentShortName(
-    /* [in] */ StringBuilder* sb)
-{
-    String pname;
-    IPackageItemInfo::Probe(mOwner->mApplicationInfo)->GetPackageName(&pname);
-    CComponentName::AppendShortString(sb, pname, mClassName);
-}
-
-template <typename II>
-void PackageParser::Component<II>::PrintComponentShortName(
-    /* [in] */ IPrintWriter* pw)
-{
-    String pname;
-    IPackageItemInfo::Probe(mOwner->mApplicationInfo)->GetPackageName(&pname);
-    CComponentName::PrintShortString(pw, pname, mClassName);
-}
-
-template <typename II>
-void PackageParser::Component<II>::SetPackageName(
-    /* [in] */ const String& PackageName)
-{
-    mComponentName = NULL;
-    mComponentShortName = NULL;
-}
-
 
 PackageParser::Permission::Permission(
     /* [in] */ Package* owner)
@@ -4065,7 +3878,7 @@ Boolean PackageParser::ParseBaseApplication(
     String name;
     sa->GetNonConfigurationString(
         R::styleable::AndroidManifestApplication_name,
-        CConfiguration::NATIVE_CONFIG_VERSION, &name);
+        IConfiguration::NATIVE_CONFIG_VERSION, &name);
     if (!name.IsNull()) {
         String clsName = BuildClassName(pkgName, name, outError);
         ai->SetClassName(clsName);
@@ -4079,7 +3892,7 @@ Boolean PackageParser::ParseBaseApplication(
     String manageSpaceActivity;
     sa->GetNonConfigurationString(
         R::styleable::AndroidManifestApplication_manageSpaceActivity,
-        CConfiguration::NATIVE_CONFIG_VERSION,
+        IConfiguration::NATIVE_CONFIG_VERSION,
         &manageSpaceActivity);
     if (!manageSpaceActivity.IsNull()) {
         String name = BuildClassName(pkgName, manageSpaceActivity, outError);
@@ -4293,7 +4106,7 @@ Boolean PackageParser::ParseBaseApplication(
     String str;
     sa->GetNonConfigurationString(
         R::styleable::AndroidManifestApplication_permission,
-        CConfiguration::NATIVE_CONFIG_VERSION, &str);
+        IConfiguration::NATIVE_CONFIG_VERSION, &str);
     ai->SetPermission((!str.IsNullOrEmpty()) ? str : String(NULL));
 
     Int32 ownerSdkVersion;
@@ -4319,7 +4132,7 @@ Boolean PackageParser::ParseBaseApplication(
         if (ownerSdkVersion >= Build::VERSION_CODES::FROYO) {
             sa->GetNonConfigurationString(
                 R::styleable::AndroidManifestApplication_process,
-                CConfiguration::NATIVE_CONFIG_VERSION, &pname);
+                IConfiguration::NATIVE_CONFIG_VERSION, &pname);
         }
         else {
             // Some older apps have been seen to use a resource reference
@@ -4861,7 +4674,7 @@ AutoPtr<PackageParser::Activity> PackageParser::ParseActivity(
     String parentName;
     sa->GetNonConfigurationString(
         R::styleable::AndroidManifestActivity_parentActivityName,
-        CConfiguration::NATIVE_CONFIG_VERSION, &parentName);
+        IConfiguration::NATIVE_CONFIG_VERSION, &parentName);
     if (!parentName.IsNull()) {
         String packageName;
         pii->GetPackageName(&packageName);
@@ -4879,7 +4692,7 @@ AutoPtr<PackageParser::Activity> PackageParser::ParseActivity(
     String str;
     sa->GetNonConfigurationString(
         R::styleable::AndroidManifestActivity_permission,
-        CConfiguration::NATIVE_CONFIG_VERSION, &str);
+        IConfiguration::NATIVE_CONFIG_VERSION, &str);
     if (str.IsNull()) {
         String perm;
         owner->mApplicationInfo->GetPermission(&perm);
@@ -4891,7 +4704,7 @@ AutoPtr<PackageParser::Activity> PackageParser::ParseActivity(
 
     sa->GetNonConfigurationString(
         R::styleable::AndroidManifestActivity_taskAffinity,
-        CConfiguration::NATIVE_CONFIG_VERSION, &str);
+        IConfiguration::NATIVE_CONFIG_VERSION, &str);
     AutoPtr<ICharSequence> cStr;
     CString::New(str, (ICharSequence**)&cStr);
     String ownerPName, ownerTaskAffinity;
@@ -5231,7 +5044,7 @@ AutoPtr<PackageParser::Activity> PackageParser::ParseActivityAlias(
     String targetActivity;
     sa->GetNonConfigurationString(
         R::styleable::AndroidManifestActivityAlias_targetActivity,
-        CConfiguration::NATIVE_CONFIG_VERSION, &targetActivity);
+        IConfiguration::NATIVE_CONFIG_VERSION, &targetActivity);
     if (targetActivity.IsNull()) {
         (*outError)[0] = "<activity-alias> does not specify android:targetActivity";
         sa->Recycle();
@@ -5336,7 +5149,7 @@ AutoPtr<PackageParser::Activity> PackageParser::ParseActivityAlias(
     String parentName;
     sa->GetNonConfigurationString(
             R::styleable::AndroidManifestActivityAlias_parentActivityName,
-            CConfiguration::NATIVE_CONFIG_VERSION, &parentName);
+            IConfiguration::NATIVE_CONFIG_VERSION, &parentName);
     if (!parentName.IsNull()) {
         String packageName;
         IPackageItemInfo::Probe(a->mInfo)->GetPackageName(&packageName);
@@ -6602,8 +6415,8 @@ AutoPtr<IApplicationInfo> PackageParser::GenerateApplicationInfo(
     return ai;
 }
 
-AutoPtr<IApplicationInfo> GenerateApplicationInfo(
-    /* [in] */ ApplicationInfo* ai,
+AutoPtr<IApplicationInfo> PackageParser::GenerateApplicationInfo(
+    /* [in] */ IApplicationInfo* ai,
     /* [in] */ Int32 flags,
     /* [in] */ PackageUserState* state,
     /* [in] */ Int32 userId)

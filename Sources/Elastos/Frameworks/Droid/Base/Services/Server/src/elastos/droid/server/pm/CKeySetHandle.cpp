@@ -8,7 +8,7 @@ namespace Pm {
 
 CAR_OBJECT_IMPL(CKeySetHandle)
 
-CARAPI CKeySetHandle::constructor()
+ECode CKeySetHandle::constructor()
 {
     return NOERROR;
 }

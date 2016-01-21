@@ -11,14 +11,6 @@ DEFINE_OBJECT_HASH_FUNC_FOR(IInterface)
 DEFINE_OBJECT_HASH_FUNC_FOR(IWeakReference)
 
 //
-// LibCore::IO
-//
-#ifdef HASH_FOR_IO
-#include "Elastos.CoreLibrary.IO.h"
-DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::IO::IFile)
-#endif
-
-//
 // Accounts
 //
 #ifdef HASH_FOR_ACCOUNTS

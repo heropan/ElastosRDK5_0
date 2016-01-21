@@ -78,6 +78,13 @@ ECode CPackageInstallObserver2::OnPackageInstalled(
     return NOERROR;
 }
 
+ECode CPackageInstallObserver2::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str);
+    return Object::ToString(str);
+}
+
 } // namespace Pm
 } // namespace Server
 } // namespace Droid
