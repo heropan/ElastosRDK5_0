@@ -1,29 +1,39 @@
 #include "elastos/droid/server/DockObserver.h"
 #include "elastos/droid/os/SystemClock.h"
 #include "elastos/droid/os/UserHandle.h"
+#include <elastos/core/AutoLock.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Slogger.h>
 #include <Elastos.Droid.Os.h>
 #include <Elastos.Droid.Content.h>
 #include <Elastos.Droid.Net.h>
-#include <Elastos.Droid.Meida.h>
+#include <Elastos.Droid.Media.h>
 #include <Elastos.Droid.Provider.h>
+#include <Elastos.CoreLibrary.IO.h>
 
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::UserHandle;
 using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Media::IRingtoneManagerHelper;
-using Elastos::Droid::Media::CRingtoneManagerHelper;
+// using Elastos::Droid::Media::CRingtoneManagerHelper;
 using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Net::CUriHelper;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Provider::ISettingsGlobal;
 using Elastos::Droid::Provider::CSettingsGlobal;
+using Elastos::Core::StringUtils;
+using Elastos::Core::StringBuilder;
+using Elastos::IO::CFileReader;
+using Elastos::IO::IReader;
+using Elastos::IO::ICloseable;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 
 const String DockObserver::TAG("DockObserver");
-
 const String DockObserver::DOCK_UEVENT_MATCH("DEVPATH=/devices/virtual/switch/dock");
 const String DockObserver::DOCK_STATE_PATH("/sys/class/switch/dock/state");
 
@@ -92,6 +102,14 @@ ECode DockObserver::BinderService::Dump(
     return NOERROR;
 }
 
+ECode DockObserver::BinderService::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = "DockObserver::BinderService";
+    return NOERROR;
+}
+
 //===================================================================
 // DockObserver::MyHandler
 //===================================================================
@@ -132,12 +150,11 @@ ECode DockObserver::MyUEventObserver::OnUEvent(
     //     Slog.v(TAG, "Dock UEVENT: " + event.toString());
     // }
 
-
-    AutoLock lock(mHost->mLock)
+    AutoLock lock(mHost->mLock);
     String str;
     event->Get(String("SWITCH_STATE"), &str);
     Int32 ival;
-    ECode ec = StringUtils::Parse(str, &ival)
+    ECode ec = StringUtils::Parse(str, &ival);
     if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
         Slogger::E("DockObserver", "Could not parse switch state from event %s",
             Object::ToString(event).string());
@@ -184,8 +201,9 @@ ECode DockObserver::constructor(
 //@Override
 ECode DockObserver::OnStart()
 {
-    AutoPtr<IBinder> service = new BinderService(this);
-    return PublishBinderService(TAG, service);
+    AutoPtr<IBinder> service = (IBinder*)new BinderService();
+    PublishBinderService(TAG, service);
+    return NOERROR;
 }
 
 //@Override
@@ -217,17 +235,17 @@ ECode DockObserver::Init()
         ECode ec = CFileReader::New(DOCK_STATE_PATH, (IFileReader**)&file);
         FAIL_GOTO(ec, _EXIT_)
 
-        ec = file->Read(buffer, 0, 1024, &len);
+        ec = IReader::Probe(file)->Read(buffer, 0, 1024, &len);
         FAIL_GOTO(ec, _EXIT_)
 
-        str = String(buffer, 0, len).Trim();
+        str = String(*buffer, 0, len);
+        str = str.Trim();
         ival = StringUtils::ParseInt32(str);
         SetActualDockStateLocked(ival);
         mPreviousDockState = mActualDockState;
 
-
 _EXIT_:
-        file->Close();
+        ICloseable::Probe(file)->Close();
 
         if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
             Slogger::W(TAG, "This kernel does not have dock station support");
@@ -266,7 +284,8 @@ ECode DockObserver::SetDockStateLocked(
 ECode DockObserver::UpdateLocked()
 {
     mWakeLock->AcquireLock();
-    return mHandler->SendEmptyMessage(MSG_DOCK_STATE_CHANGED);
+    Boolean bval;
+    return mHandler->SendEmptyMessage(MSG_DOCK_STATE_CHANGED, &bval);
 }
 
 ECode DockObserver::HandleDockStateChange()
@@ -295,7 +314,7 @@ ECode DockObserver::HandleDockStateChange()
         AutoPtr<IIntent> intent;
         CIntent::New(IIntent::ACTION_DOCK_EVENT, (IIntent**)&intent);
         intent->AddFlags(IIntent::FLAG_RECEIVER_REPLACE_PENDING);
-        intent-PutExtra(IIntent::EXTRA_DOCK_STATE, mReportedDockState);
+        intent->PutExtra(IIntent::EXTRA_DOCK_STATE, mReportedDockState);
 
         // Play a sound to provide feedback to confirm dock connection.
         // Particularly useful for flaky contact pins...
@@ -336,7 +355,8 @@ ECode DockObserver::HandleDockStateChange()
                     if (soundUri != NULL) {
                         AutoPtr<IRingtone> sfx;
                         AutoPtr<IRingtoneManagerHelper> rmh;
-                        CRingtoneManagerHelper::AcquireSingleton((IRingtoneManagerHelper**)&rmh);
+                        assert(0 && "TODO");
+                        // CRingtoneManagerHelper::AcquireSingleton((IRingtoneManagerHelper**)&rmh);
                         rmh->GetRingtone(context, soundUri, (IRingtone**)&sfx);
                         if (sfx != NULL) {
                             sfx->SetStreamType(IAudioManager::STREAM_SYSTEM);

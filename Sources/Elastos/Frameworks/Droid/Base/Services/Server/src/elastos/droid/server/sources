@@ -19,6 +19,13 @@ INCLUDES += $(PREBUILD_INC)/hardware
 INCLUDES += $(PREBUILD_INC)/surfaceFlinger
 
 SOURCES = Elastos.Droid.Server.car
+SOURCES += Elastos.Droid.Core.cpp
+SOURCES += Elastos.CoreLibrary.cpp
+
+# TODO: Add ECO_PUBLIC to R.h and Manifest.h
+SOURCES += R.cpp
+SOURCES += Manifest.cpp
+
 SOURCES += server.cpp
 SOURCES += AttributeCache.cpp
 SOURCES += CSystemServer.cpp
@@ -34,7 +41,7 @@ SOURCES += SystemConfig.cpp
 SOURCES += MasterClearReceiver.cpp
 SOURCES += Watchdog.cpp
 SOURCES += NetworkTimeUpdateService.cpp
-#SOURCES += CBluetoothManagerService.cpp
+SOURCES += CBluetoothManagerService.cpp
 SOURCES += CCommonTimeManagementService.cpp
 SOURCES += CConnectivityService.cpp
 SOURCES += CCountryDetectorService.cpp
@@ -48,6 +55,7 @@ SOURCES += CNsdService.cpp
 SOURCES += CSamplingProfilerService.cpp
 SOURCES += CSerialService.cpp
 SOURCES += CTextServicesManagerService.cpp
+#SOURCES += CUiModeManagerService.cpp
 SOURCES += CUpdateLockService.cpp
 SOURCES += EntropyMixer.cpp
 SOURCES += NativeDaemonEvent.cpp
@@ -55,7 +63,7 @@ SOURCES += RandomBlock.cpp
 SOURCES += ShutdownActivity.cpp
 SOURCES += TwilightCalculator.cpp
 #SOURCES += WiredAccessoryManager.cpp  //needs CInputManagerService
-#SOURCES += DockObserver.cpp
+SOURCES += DockObserver.cpp
 SOURCES += BrickReceiver.cpp
 
 #=========================================
@@ -81,11 +89,6 @@ SOURCES += BrickReceiver.cpp
 #SOURCES += CZigbeeService.cpp
 #SOURCES += CKortideRemoteService.cpp
 
-# TODO: Add ECO_PUBLIC to R.h and Manifest.h
-SOURCES += R.cpp
-SOURCES += Manifest.cpp
-SOURCES += Elastos.Droid.Core.cpp
-SOURCES += Elastos.CoreLibrary.cpp
 
 ELASTOS_LIBS += am/am.lib
 ELASTOS_LIBS += clipboard/clipboard.lib

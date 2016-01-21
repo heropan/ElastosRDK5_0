@@ -111,6 +111,7 @@ module
     using interface Elastos.Droid.Internal.TextService.IITextServicesManager;
     using interface Elastos.Droid.Location.IICountryDetector;
     using interface Elastos.Droid.Bluetooth.IIBluetoothManager;
+    using interface Elastos.Droid.Bluetooth.IIBluetoothCallback;
     using interface Elastos.Droid.Media.Projection.IIMediaProjectionCallback;
     using interface Elastos.Droid.Net.IIConnectivityManager;
     using interface Elastos.Droid.Net.IINetworkManagementEventObserver;
@@ -177,13 +178,21 @@ module
         interface IBinder;
     }
 
-    //class CBluetoothManagerService {
-    //    constructor(
-    //        [in] IContext* ctx);
+    class CBluetoothManagerService {
+        constructor(
+            [in] IContext* ctx);
 
-    //    interface IIBluetoothManager;
-    //    interface IBinder;
-    //}
+        interface IIBluetoothManager;
+        interface IBinder;
+    }
+
+    class CBluetoothManagerServiceBluetoothCallback {
+        constructor(
+            [in] IIBluetoothManager* bluetoothManager);
+
+        interface IIBluetoothCallback;
+        interface IBinder;
+    }
 
     class CDiskStatsService {
         constructor(

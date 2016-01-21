@@ -303,9 +303,7 @@ module
             /**
              * Broadcast Action: The local Bluetooth adapter has finished the device
              * discovery process.
-             * <p>Requires android.Manifest.permission#BLUETOOTH to receive.
-             *
-             * @sa android.Manifest.permission#BLUETOOTH
+             * <p>Requires {@link android.Manifest.permission#BLUETOOTH} to receive.
              */
             //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
             const String ACTION_DISCOVERY_FINISHED = "android.bluetooth.adapter.action.DISCOVERY_FINISHED";

@@ -39,6 +39,31 @@ CarClass(CBluetoothManagerService)
     , public IIBluetoothManager
     , public IBinder
 {
+public:
+    class BluetoothCallback
+        : public Object
+        , public IIBluetoothCallback
+        , public IBinder
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        BluetoothCallback();
+
+        CARAPI constructor(
+            /* [in] */ IIBluetoothManager* bm);
+
+        CARAPI OnBluetoothStateChange(
+            /* [in] */ Int32 prevState,
+            /* [in] */ Int32 newState);
+
+        CARAPI ToString(
+            /* [out] */ String* str);
+
+    private:
+        CBluetoothManagerService* mHost;
+    };
+
 private:
     class BluetoothServiceConnection
         : public Object
@@ -84,48 +109,6 @@ private:
          AutoPtr<IHandler> mHandler;
     };
 
-    class MyRunnable
-        : public Runnable
-    {
-    public:
-        MyRunnable(
-            /* [in] */ CBluetoothManagerService* host);
-
-        CARAPI Run();
-
-    private:
-        CBluetoothManagerService* mHost;
-    };
-
-    class MyBluetoothCallback
-        : public Object
-        , public IIBluetoothCallback
-    {
-    public:
-        CAR_INTERFACE_DECL()
-
-        MyBluetoothCallback(
-            /* [in] */ CBluetoothManagerService* host);
-
-        CARAPI OnBluetoothStateChange();
-
-    private:
-        CBluetoothManagerService* mHost;
-    };
-
-    class MyRunnableEx
-        : public Runnable
-    {
-    public:
-        MyRunnableEx(
-            /* [in] */ CBluetoothManagerService* host);
-
-        CARAPI Run();
-
-    private:
-        CBluetoothManagerService* mHost;
-    };
-
     class MyBroadcastReceiver
         : public BroadcastReceiver
     {
@@ -150,18 +133,6 @@ private:
         CBluetoothManagerService* mHost;
     };
 
-    class BTtimerRunnable
-        : public Runnable
-    {
-    public:
-        BTtimerRunnable(
-            /* [in] */ CBluetoothManagerService* host);
-
-        virtual CARAPI Run();
-
-    private:
-        CBluetoothManagerService* mHost;
-    };
 public:
 
     CAR_INTERFACE_DECL()
@@ -214,6 +185,7 @@ public:
 
     CARAPI ToString(
         /* [out] */ String* str);
+
 private:
     CARAPI_(void) RegisterForAirplaneMode(
         /* [in] */ IIntentFilter* filter);
@@ -284,6 +256,8 @@ private:
     static const Int32 TIMEOUT_SAVE_MS;// = 500; //Maximum msec to wait for a save
     //Maximum msec to wait for service restart
     static const Int32 SERVICE_RESTART_TIME_MS;// = 200;
+    //Maximum msec to wait for restart due to error
+    static const Int32 ERROR_RESTART_TIME_MS;// = 3000;
     //Maximum msec to delay MESSAGE_USER_SWITCHED
     static const Int32 USER_SWITCHED_TIME_MS;// = 200;
 
@@ -303,6 +277,7 @@ private:
     static const Int32 MESSAGE_SAVE_NAME_AND_ADDRESS;//=201;
     static const Int32 MESSAGE_USER_SWITCHED;// = 300;
     static const Int32 MAX_SAVE_RETRIES;//=3;
+    static const Int32 MAX_ERROR_RESTART_RETRIES;//=6;
     // Bluetooth persisted setting is off
     static const Int32 BLUETOOTH_OFF;//=0;
     // Bluetooth persisted setting is on
@@ -312,6 +287,9 @@ private:
     // but Airplane mode will affect Bluetooth state at start up
     // and Airplane mode will have higher priority.
     static const Int32 BLUETOOTH_ON_AIRPLANE;//=2;
+
+    static const Int32 SERVICE_IBLUETOOTH;
+    static const Int32 SERVICE_IBLUETOOTHGATT;
 
     AutoPtr<IContext> mContext;
 
@@ -337,14 +315,15 @@ private:
     // used inside handler thread
     Boolean mEnable;
     Int32 mState;
+
     AutoPtr<BluetoothHandler> mHandler;
-    AutoPtr<BluetoothServiceConnection> mConnection;// = new BluetoothServiceConnection();
-    AutoPtr<MyRunnable> mBTShutDown;
-    AutoPtr<MyBluetoothCallback> mBluetoothCallback;
-    AutoPtr<MyRunnableEx> mBTtimer;
-    AutoPtr<MyBroadcastReceiver> mReceiver;
     Int32 mErrorRecoveryRetryCounter;
     Int32 mSystemUiUid;
+
+    AutoPtr<BluetoothServiceConnection> mConnection;// = new BluetoothServiceConnection();
+    AutoPtr<IIBluetoothCallback> mBluetoothCallback;
+    AutoPtr<MyBroadcastReceiver> mReceiver;
+
 
 };
 

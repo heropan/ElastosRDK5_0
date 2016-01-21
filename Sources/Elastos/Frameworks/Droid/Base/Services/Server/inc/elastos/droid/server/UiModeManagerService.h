@@ -1,30 +1,72 @@
 
-#ifndef __ELASTOS_DROID_SERVER_CUIMODEMANAGERSERVICE_H__
-#define __ELASTOS_DROID_SERVER_CUIMODEMANAGERSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_UIMODEMANAGERSERVICE_H__
+#define __ELASTOS_DROID_SERVER_UIMODEMANAGERSERVICE_H__
 
-#include "_Elastos_Droid_Server_CUiModeManagerService.h"
+#include "_Elastos.Droid.Server.h"
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
-#include "TwilightService.h"
+#include "elastos/droid/server/SystemService.h"
 
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IPowerManager;
+using Elastos::Droid::Os::IPowerManagerWakeLock;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::Res::IConfiguration;
-using Elastos::Droid::Server::TwilightService;
+using Elastos::Droid::App::IIUiModeManager;
 using Elastos::Droid::App::INotificationManager;
 using Elastos::Droid::App::IStatusBarManager;
-using Elastos::Droid::Os::IHandler;
-using Elastos::Droid::Os::IPowerManager;
-using Elastos::Droid::Os::IPowerManagerWakeLock;
-
+using Elastos::Droid::Server::SystemService;
+using Elastos::Droid::Server::Twilight::ITwilightState;
+using Elastos::Droid::Server::Twilight::ITwilightListener;
+using Elastos::Droid::Server::Twilight::ITwilightManager;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 
-CarClass(CUiModeManagerService)
+class UiModeManagerService
+    : public SystemService
 {
+public:
+    class BinderService
+        : public Object
+        , public IIUiModeManager
+        , public IBinder
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        CARAPI constructor(
+            /* [in] */ ISystemService* umm);
+
+        //@Override // Binder call
+        CARAPI DisableCarMode(
+            /* [in] */ Int32 flags);
+
+        //@Override // Binder call
+        CARAPI EnableCarMode(
+            /* [in] */ Int32 flags);
+
+        //@Override // Binder call
+        CARAPI GetCurrentModeType(
+            /* [out] */ Int32 *type);
+
+        //@Override // Binder call
+        CARAPI SetNightMode(
+            /* [in] */ Int32 mode);
+
+        //@Override // Binder call
+        CARAPI GetNightMode(
+            /* [out] */ Int32 *mode);
+
+        CARAPI ToString(
+            /* [out] */ String* result);
+    private:
+        UiModeManagerService* mHost;
+    };
+
 private:
     // The broadcast receiver which receives the result of the ordered broadcast sent when
     // the dock state changes. The original ordered broadcast is sent with an initial result
@@ -35,7 +77,7 @@ private:
     {
     public:
         ResultReceiver(
-            /* [in] */ CUiModeManagerService* host);
+            /* [in] */ UiModeManagerService* host);
 
         //@Override
         CARAPI OnReceive(
@@ -46,12 +88,12 @@ private:
             /* [out] */ String* info)
         {
             VALIDATE_NOT_NULL(info);
-            *info = String("CUiModeManagerService::ResultReceiver: ");
+            *info = String("UiModeManagerService::ResultReceiver: ");
             (*info).AppendFormat("%p", this);
             return NOERROR;
         }
     private:
-        AutoPtr<CUiModeManagerService> mHost;
+        AutoPtr<UiModeManagerService> mHost;
     };
 
     class DockModeReceiver
@@ -59,7 +101,7 @@ private:
     {
     public:
         DockModeReceiver(
-            /* [in] */ CUiModeManagerService* host);
+            /* [in] */ UiModeManagerService* host);
 
         //@Override
         CARAPI OnReceive(
@@ -70,12 +112,12 @@ private:
             /* [out] */ String* info)
         {
             VALIDATE_NOT_NULL(info);
-            *info = String("CUiModeManagerService::DockModeReceiver: ");
+            *info = String("UiModeManagerService::DockModeReceiver: ");
             (*info).AppendFormat("%p", this);
             return NOERROR;
         }
     private:
-        AutoPtr<CUiModeManagerService> mHost;
+        AutoPtr<UiModeManagerService> mHost;
     };
 
     class BatteryReceiver
@@ -83,7 +125,7 @@ private:
     {
     public:
         BatteryReceiver(
-            /* [in] */ CUiModeManagerService* host);
+            /* [in] */ UiModeManagerService* host);
 
         //@Override
         CARAPI OnReceive(
@@ -94,83 +136,57 @@ private:
             /* [out] */ String* info)
         {
             VALIDATE_NOT_NULL(info);
-            *info = String("CUiModeManagerService::BatteryReceiver: ");
+            *info = String("UiModeManagerService::BatteryReceiver: ");
             (*info).AppendFormat("%p", this);
             return NOERROR;
         }
     private:
-        AutoPtr<CUiModeManagerService> mHost;
+        AutoPtr<UiModeManagerService> mHost;
     };
 
-    class _TwilightListener
-        : public ElRefBase
-        , public TwilightService::ITwilightListener
+    class MyTwilightListener
+        : public Object
+        , public ITwilightListener
     {
     public:
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
+        CAR_INTERFACE_DECL()
 
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* object,
-            /* [out] */ InterfaceID* iid);
-
-        _TwilightListener(
-            /* [in] */ CUiModeManagerService* host);
+        MyTwilightListener(
+            /* [in] */ UiModeManagerService* host);
 
         //@Override
         CARAPI OnTwilightStateChanged();
 
     private:
-        AutoPtr<CUiModeManagerService> mHost;
+        AutoPtr<UiModeManagerService> mHost;
     };
 
-
 public:
-    CUiModeManagerService();
+    CAR_INTERFACE_DECL()
+
+    UiModeManagerService();
 
     CARAPI constructor(
-        /* [in] */ IContext *context,
-        /* [in] */ Handle32 twilight);
+        /* [in] */ IContext *context;
 
-    //@Override // Binder call
-    CARAPI DisableCarMode(
-        /* [in] */ Int32 flags);
-
-    //@Override // Binder call
-    CARAPI EnableCarMode(
-        /* [in] */ Int32 flags);
-
-    //@Override // Binder call
-    CARAPI GetCurrentModeType(
-        /* [out] */ Int32 *type);
-
-    //@Override // Binder call
-    CARAPI SetNightMode(
-        /* [in] */ Int32 mode);
-
-    //@Override // Binder call
-    CARAPI GetNightMode(
-        /* [out] */ Int32 *mode);
+    CARAPI OnStart();
 
     CARAPI ToString(
         /* [out] */ String* result);
 
-    CARAPI SystemReady();
+    CARAPI OnBootPhase(
+        /* [in] */ Int32 phase);
 
-protected:
+private:
     static CARAPI_(AutoPtr<IIntent>) BuildHomeIntent(
         /* [in] */ const String& category);
 
-private:
     CARAPI IsDoingNightModeLocked(
         /* [out] */ Boolean *isDoingNightModeLocked);
 
     CARAPI SetCarModeLocked(
-        /* [in] */ Boolean enabled);
+        /* [in] */ Boolean enabled,
+        /* [in] */ Int32 flags);
 
     CARAPI UpdateDockState(
         /* [in] */ Int32 newState);
@@ -208,24 +224,22 @@ private:
     static const Boolean ENABLE_LAUNCH_CAR_DOCK_APP;
     static const Boolean ENABLE_LAUNCH_DESK_DOCK_APP;
 
-    AutoPtr<IContext> mContext;
-    AutoPtr<TwilightService> mTwilightService;
-    AutoPtr<IHandler> mHandler;
-
     Object mLock;
-
     Int32 mDockState;
-    Int32 mLastBroadcastState;
 
+    Int32 mLastBroadcastState;
     Int32 mNightMode;
+
     Boolean mCarModeEnabled;
     Boolean mCharging;
     Int32 mDefaultUiModeType;
     Boolean mCarModeKeepsScreenOn;
     Boolean mDeskModeKeepsScreenOn;
     Boolean mTelevision;
+    Boolean mWatch;
 
     Boolean mComputedNightMode;
+    Int32 mCarModeEnableFlags;
     Int32 mCurUiMode;
     Int32 mSetUiMode;
 
@@ -234,11 +248,13 @@ private:
 
     Boolean mSystemReady;
 
+    AutoPtr<IHandler> mHandler;
+
+    AutoPtr<ITwilightManager> mTwilightManager;
     AutoPtr<INotificationManager> mNotificationManager;
 
     AutoPtr<IStatusBarManager> mStatusBarManager;
 
-    AutoPtr<IPowerManager> mPowerManager;
     AutoPtr<IPowerManagerWakeLock> mWakeLock;
 
     AutoPtr<ResultReceiver> mResultReceiver;
@@ -247,7 +263,9 @@ private:
 
     AutoPtr<BatteryReceiver> mBatteryReceiver;
 
-    AutoPtr<_TwilightListener> mTwilightListener;
+    AutoPtr<ITwilightListener> mTwilightListener;
+
+    AutoPtr<IIUiModeManager> mService;
 
 };
 
@@ -255,4 +273,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif //__ELASTOS_DROID_SERVER_CUIMODEMANAGERSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_UIMODEMANAGERSERVICE_H__

@@ -3,6 +3,7 @@
 
 #include <elastos/droid/os/UEventObserver.h>
 #include <elastos/droid/os/Handler.h>
+#include "elastos/droid/server/SystemService.h"
 
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IContext;
@@ -48,6 +49,9 @@ private:
             /* [in] */ IFileDescriptor* fd,
             /* [in] */ IPrintWriter* pw,
             /* [in] */ ArrayOf<String>* args);
+
+        CARAPI ToString(
+            /* [out] */ String* str);
     };
 
     class MyHandler
@@ -68,7 +72,7 @@ private:
         : public UEventObserver
     {
     public:
-        MyHandler(
+        MyUEventObserver(
             /* [in] */ DockObserver* host);
 
         //@Override
@@ -85,10 +89,10 @@ public:
         /* [in] */ IContext* context);
 
     //@Override
-    CARAPPI OnStart();
+    CARAPI OnStart();
 
     //@Override
-    CARAPPI OnBootPhase(
+    CARAPI OnBootPhase(
         /* [in] */ Int32 phase);
 
 private:
