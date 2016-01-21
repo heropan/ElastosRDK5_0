@@ -1,5 +1,6 @@
 
 #include "elastos/droid/packages/systemui/CSystemUIApplication.h"
+#include "elastos/droid/packages/systemui/SystemUI.h"
 #include "elastos/droid/packages/systemui/Utils.h"
 #include "Elastos.Droid.Os.h"
 #include "R.h"
@@ -11,7 +12,7 @@ using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Os::CSystemProperties;
 using Elastos::Droid::Os::ISystemProperties;
-using Elastos::Utility::CHashMap;
+// using Elastos::Utility::CHashMap;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -69,7 +70,8 @@ CSystemUIApplication::CSystemUIApplication()
     SERVICES->Set(6, clsInfo);
 
     mServices = ArrayOf<ISystemUI*>::Alloc(SERVICES->GetLength());
-    CHashMap::New((IMap**)&mComponents);
+    // CHashMap::New((IMap**)&mComponents);
+    mComponents = new HashMap<InterfaceID, AutoPtr<IInterface> >();
 }
 
 ECode CSystemUIApplication::OnCreate()
@@ -122,7 +124,7 @@ ECode CSystemUIApplication::StartServicesIfNeeded()
         mServices->Set(i, ISystemUI::Probe(object));
 
         (*mServices)[i]->SetContext(THIS_PROBE(IContext));
-        (*mServices)[i]->SetComponents(mComponents);
+        ((SystemUI*)(*mServices)[i])->SetComponents(mComponents);
         if (DEBUG) Logger::D(TAG, "running: %p", object.Get());
         (*mServices)[i]->Start();
 
@@ -146,12 +148,14 @@ ECode CSystemUIApplication::OnConfigurationChanged(
     return NOERROR;
 }
 
-AutoPtr<IInterface> CSystemUIApplication::GetComponent(
-    /* [in] */ IClassInfo* interfaceType)
+ECode CSystemUIApplication::GetComponent(
+    /* [in] */ const InterfaceID& interfaceType,
+    /* [out] */ IInterface** obj)
 {
-    AutoPtr<IInterface> obj;
-    mComponents->Get(interfaceType, (IInterface**)&obj);
-    return obj;
+    VALIDATE_NOT_NULL(obj);
+    *obj = (*mComponents)[interfaceType];
+    REFCOUNT_ADD(*obj);
+    return NOERROR;
 }
 
 ECode CSystemUIApplication::GetServices(

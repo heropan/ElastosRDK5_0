@@ -23,7 +23,6 @@ module
 
     //doze
     merge("../../../../../car/elastos/droid/doze/DozeHost.car");
-    merge("../../../../../car/elastos/droid/doze/DozeLog.car");
     merge("../../../../../car/elastos/droid/doze/DozeService.car");
 
     //egg
@@ -304,12 +303,14 @@ module
     using interface Elastos.Droid.View.IKeyEventCallback;
     using interface Elastos.Droid.View.IViewOnCreateContextMenuListener;
     using interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener;
-    using interface Elastos.Droid.Packages.SystemUI.StatusBar.Policy.IBatteryStateChangeCallback;
-    using interface Elastos.Droid.Packages.SystemUI.StatusBar.Phone.ISystemUIDialog;
     using interface Elastos.Droid.Service.Dreams.IDreamService;
     using interface Elastos.Droid.Service.Wallpaper.IWallpaperService;
     using interface Elastos.Droid.Widget.IFrameLayout;
+    using interface Elastos.Droid.Widget.IImageView;
     using interface Elastos.Core.ICharSequence;
+    interface Elastos.Droid.Packages.SystemUI.StatusBar.IStatusBarPanel;
+    interface Elastos.Droid.Packages.SystemUI.StatusBar.Policy.IBatteryStateChangeCallback;
+    interface Elastos.Droid.Packages.SystemUI.StatusBar.Phone.ISystemUIDialog;
 
     namespace Elastos {
     namespace Droid {
@@ -349,15 +350,6 @@ module
         interface IComponentCallbacks2;
         interface IOnWindowDismissedCallback;
     }
-
-//    class CRecentsActivityOne {
-//        interface IActivity;
-//        interface IRecentsActivity;
-//    }
-
-//    class CRecentsPreloadReceiver {
-//        interface IBroadcastReceiver;
-//    }
 
     class CSystemUIService {
         interface ISystemUIService;
@@ -402,7 +394,7 @@ module
         interface IBroadcastReceiver;
     }
 
-   class CDessertCase {
+    class CDessertCase {
         interface IDessertCase;
         interface IActivity;
         interface IContext;
@@ -415,12 +407,18 @@ module
         interface IComponentCallbacks;
         interface IComponentCallbacks2;
         interface IOnWindowDismissedCallback;
-   }
+    }
 
-//    class CDessertCaseDream {
-//        interface IDessertCaseDream;
-//        interface IDreamService;
-//    }
+    class CDessertCaseDream {
+        interface IDessertCaseDream;
+        interface IDreamService;
+        interface IService;
+        interface IContext;
+        interface IContextWrapper;
+        interface IComponentCallbacks2;
+        interface IComponentCallbacks;
+        interface IWindowCallback;
+    }
 
     class CDessertCaseView {
         constructor(
@@ -498,38 +496,46 @@ module
         interface IOnWindowDismissedCallback;
     }
 
-//     [local]
-//     class CSearchPanelView {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs);
+    [local]
+    class CSearchPanelView {
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs,
-//             [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyle);
 
-//         interface ISearchPanelView;
-//         interface IViewParent;
-//         interface IViewManager;
-//         interface IDrawableCallback;
-//         interface IKeyEventCallback;
-//         interface IStatusBarPanel;
-//         interface IActivityOptionsOnAnimationStartedListener;
-//     }
+        interface ISearchPanelView;
+        interface IStatusBarPanel;
+        interface IFrameLayout;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
-//     [local]
-//     class CUniverseBackground {
-//         constructor(
-//             [in] IContext* ctx);
+    //===========================================================================
+    //                              Doze
+    //===========================================================================
+    namespace Doze {
+        class CDozeService {
+            constructor();
 
-//         interface IUniverseBackground;
-//         interface IViewParent;
-//         interface IViewManager;
-//         interface IDrawableCallback;
-//         interface IKeyEventCallback;
-//         interface IAccessibilityEventSource;
-//     }
+            interface IDozeService;
+            interface IDreamService;
+            interface IService;
+            interface IContext;
+            interface IContextWrapper;
+            interface IComponentCallbacks2;
+            interface IComponentCallbacks;
+            interface IWindowCallback;
+        }
+    } // namespace Doze
 
 //     //===========================================================================
 //     //                              Media
@@ -660,6 +666,108 @@ module
     //                              StatusBar
     //===========================================================================
     namespace StatusBar {
+        [local]
+        class CAlphaImageView {
+            constructor(
+                [in] IContext* ctx);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr,
+                [in] Int32 defStyleRes);
+
+            interface IAlphaImageView;
+            interface IImageView;
+            interface IView;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        [local]
+        class CAnimatedImageView {
+            constructor(
+                [in] IContext* ctx);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            interface IAnimatedImageView;
+            interface IImageView;
+            interface IView;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        [local]
+        class CAlphaOptimizedView {
+            constructor(
+                [in] IContext* ctx);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr,
+                [in] Int32 defStyleRes);
+
+            interface IAlphaOptimizedView;
+            interface IView;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
+        class CAlphaOptimizedFrameLayout {
+            constructor(
+                [in] IContext* ctx);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr);
+
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr,
+                [in] Int32 defStyleRes);
+
+            interface IAlphaOptimizedFrameLayout;
+            interface IFrameLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
+
 //     class CCommandQueue {
 //         constructor(
 //             [in] ICommandQueueCallbacks* cbs);

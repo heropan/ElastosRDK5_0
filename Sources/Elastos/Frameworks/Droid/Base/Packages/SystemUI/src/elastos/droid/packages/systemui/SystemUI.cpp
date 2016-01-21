@@ -35,22 +35,20 @@ ECode SystemUI::OnBootCompleted()
 }
 
 AutoPtr<IInterface> SystemUI::GetComponent(
-    /* [in] */ IClassInfo* interfaceType)
+    /* [in] */ InterfaceID interfaceType)
 {
     if (mComponents == NULL) {
         return NULL;
     }
-    AutoPtr<IInterface> obj;
-    mComponents->Get(interfaceType, (IInterface**)&obj);
-    return obj;
+    return (*mComponents)[interfaceType];
 }
 
 ECode SystemUI::PutComponent(
-    /* [in] */ IClassInfo* interfaceType,
+    /* [in] */ InterfaceID interfaceType,
     /* [in] */ IInterface* component)
 {
     if (mComponents != NULL) {
-        mComponents->Put(interfaceType, component);
+        (*mComponents)[interfaceType] = component;
     }
     return NOERROR;
 }
@@ -72,19 +70,15 @@ ECode SystemUI::GetContext(
 }
 
 ECode SystemUI::SetComponents(
-    /* [in] */ IMap* components)
+    /* [in] */ HashMap<InterfaceID, AutoPtr<IInterface> >* components)
 {
     mComponents = components;
     return NOERROR;
 }
 
-ECode SystemUI::GetComponents(
-    /* [out] */ IMap** components)
+AutoPtr<HashMap<InterfaceID, AutoPtr<IInterface> > > SystemUI::GetComponents()
 {
-    VALIDATE_NOT_NULL(components);
-    *components = mComponents;
-    REFCOUNT_ADD(*components);
-    return NOERROR;
+    return mComponents;
 }
 
 } // namespace SystemUI

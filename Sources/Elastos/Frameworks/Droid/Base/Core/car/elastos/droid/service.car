@@ -100,12 +100,13 @@ module
         class CDreamService {
             constructor();
 
+            interface IDreamService;
+            interface IService;
             interface IContext;
             interface IContextWrapper;
-            interface IService;
             interface IComponentCallbacks2;
+            interface IComponentCallbacks;
             interface IWindowCallback;
-            interface IDreamService;
         }
 
         singleton class CSandman {

@@ -1,23 +1,23 @@
 
-#ifndef __ELASTOS_DROID_SYSTEMUI_DOZE_CDOZELOG_H__
-#define __ELASTOS_DROID_SYSTEMUI_DOZE_CDOZELOG_H__
+#ifndef  __ELASTOS_DROID_PACKAGES_SYSTEMUI_DOZE_DOZELOG_H__
+#define  __ELASTOS_DROID_PACKAGES_SYSTEMUI_DOZE_DOZELOG_H__
 
-#include "_Elastos_Droid_Transition_CDozeLog.h"
-#include <elastos/core/Singleton.h>
+#include <elastos/droid/ext/frameworkext.h>
+#include "Elastos.CoreLibrary.Text.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Text::ISimpleDateFormat;
 using Elastos::Droid::Content::IContext;
-
-using Elastos::Core::Singleton;
+using Elastos::Core::Object;
 using Elastos::IO::IPrintWriter;
+using Elastos::Text::ISimpleDateFormat;
 
 namespace Elastos {
 namespace Droid {
-namespace Transition {
+namespace Packages {
+namespace SystemUI {
+namespace Doze {
 
-CarClass (CDozeLog)
-    , public Singleton
-    , public IDozeLog
+class DozeLog: public Object
 {
 private:
     class SummaryStats
@@ -34,73 +34,71 @@ private:
         Int32 mCount;
     };
 
-    class KeyguardUpdateMonitorCallback
+    class KeyguardUpdateMonitorCallback: public Object
     {
     public:
         KeyguardUpdateMonitorCallback();
 
-        CARAPI OnEmergencyCallAction();
+        void OnEmergencyCallAction();
 
-        CARAPI OnKeyguardBouncerChanged(
+        void OnKeyguardBouncerChanged(
             /* [in] */ Boolean bouncer);
 
-        CARAPI OnScreenTurnedOn();
+        void OnScreenTurnedOn();
 
-        CARAPI OnScreenTurnedOff(
+        void OnScreenTurnedOff(
             /* [in] */ Int32 why);
 
-        CARAPI OnKeyguardVisibilityChanged(
+        void OnKeyguardVisibilityChanged(
             /* [in] */ Boolean showing);
     };
 
 public:
-    CAR_SINGLETON_DECL()
-
-    CAR_INTERFACE_DECL()
-
-    CARAPI TracePickupPulse(
+    static CARAPI_(void) TracePickupPulse(
         /* [in] */ Boolean withinVibrationThreshold);
 
-    CARAPI TracePulseStart();
+    static CARAPI_(void) TracePulseStart();
 
-    CARAPI TracePulseFinish();
+    static CARAPI_(void) TracePulseFinish();
 
-    CARAPI TraceNotificationPulse(
+    static CARAPI_(void) TraceNotificationPulse(
         /* [in] */ Int64 instance);
 
-    CARAPI TraceDozing(
+    static CARAPI_(void) TraceDozing(
         /* [in] */ IContext* context,
         /* [in] */ Boolean dozing);
 
-    CARAPI TraceFling(
+    static CARAPI_(void) TraceFling(
         /* [in] */ Boolean expand,
         /* [in] */ Boolean aboveThreshold,
         /* [in] */ Boolean thresholdNeeded,
         /* [in] */ Boolean screenOnFromTouch);
 
-    CARAPI TraceEmergencyCall();
+    static CARAPI_(void) TraceEmergencyCall();
 
-    CARAPI TraceKeyguardBouncerChanged(
+    static CARAPI_(void) TraceKeyguardBouncerChanged(
         /* [in] */ Boolean showing);
 
-    CARAPI TraceScreenOn();
+    static CARAPI_(void) TraceScreenOn();
 
-    CARAPI TraceScreenOff(
+    static CARAPI_(void) TraceScreenOff(
         /* [in] */ Int32 why);
 
-    CARAPI TraceKeyguard(
+    static CARAPI_(void) TraceKeyguard(
         /* [in] */ Boolean showing);
 
-    CARAPI TraceProximityResult(
+    static CARAPI_(void) TraceProximityResult(
         /* [in] */ Boolean near,
         /* [in] */ Int64 millis);
 
-    CARAPI Dump(
+    static CARAPI_(void) Dump(
         /* [in] */ IPrintWriter* pw);
 
 private:
-    CARAPI Log(
+    static CARAPI_(void) Log(
         /* [in] */ const String& msg);
+
+    static CARAPI_(Boolean) InitStatic();
 
 private:
     static AutoPtr<KeyguardUpdateMonitorCallback> sKeyguardCallback;
@@ -126,10 +124,14 @@ private:
     static AutoPtr<SummaryStats> sEmergencyCallStats;
     static AutoPtr<SummaryStats> sProxNearStats;
     static AutoPtr<SummaryStats> sProxFarStats;
+    static Boolean sInit;
+    static Object sDozeLog;
 };
 
-} // namespace Transition
+} // namespace Doze
+} // namespace SystemUI
+} // namespace Packages
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_SYSTEMUI_DOZE_CDOZELOG_H__
+#endif // __ELASTOS_DROID_PACKAGES_SYSTEMUI_DOZE_DOZELOG_H__

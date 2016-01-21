@@ -3,13 +3,15 @@
 #define  __ELASTOS_DROID_PACKAGES_SYSTEMUI_CSYSTEMUIAPPLICATION_H__
 
 #include "_Elastos_Droid_Packages_SystemUI_CSystemUIApplication.h"
-#include "Elastos.CoreLibrary.Utility.h"
+// #include "Elastos.CoreLibrary.Utility.h"
 #include <elastos/droid/app/Application.h>
 #include <elastos/droid/content/BroadcastReceiver.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::App::Application;
 using Elastos::Droid::Content::BroadcastReceiver;
-using Elastos::Utility::IMap;
+// using Elastos::Utility::IMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -63,8 +65,9 @@ public:
         /* [in] */ IConfiguration* newConfig);
 
     // @SuppressWarnings("unchecked")
-    CARAPI_(AutoPtr<IInterface>) GetComponent(
-        /* [in] */ IClassInfo* interfaceType);
+    CARAPI GetComponent(
+        /* [in] */ const InterfaceID& interfaceType,
+        /* [out] */ IInterface** obj);
 
     CARAPI GetServices(
         /* [out, callee] */ ArrayOf<ISystemUI*>** services);
@@ -93,7 +96,8 @@ private:
     AutoPtr<ArrayOf<ISystemUI*> > mServices;
     Boolean mServicesStarted;
     Boolean mBootCompleted;
-    AutoPtr<IMap/*<Class<?>, Object*/> mComponents;
+    // AutoPtr<IMap/*<Class<?>, Object*/> mComponents;
+    AutoPtr<HashMap<InterfaceID, AutoPtr<IInterface> > > mComponents;
 };
 
 } // namespace SystemUI

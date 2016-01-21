@@ -2,10 +2,14 @@ TARGET_NAME = statusbar
 TARGET_TYPE = lib
 
 include $(MAKEDIR)/../../../../../../../../../sources.inc
+INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../../../../inc/
 
-#SOURCES = AnimatedImageView.cpp
-#SOURCES += CAnimatedImageView.cpp
+SOURCES += CAlphaImageView.cpp
+SOURCES += CAlphaOptimizedView.cpp
+SOURCES += CAlphaOptimizedFrameLayout.cpp
+SOURCES += AnimatedImageView.cpp
+SOURCES += CAnimatedImageView.cpp
 #SOURCES += BaseStatusBar.cpp
 #SOURCES += CCommandQueue.cpp
 #SOURCES += DelegateViewHelper.cpp

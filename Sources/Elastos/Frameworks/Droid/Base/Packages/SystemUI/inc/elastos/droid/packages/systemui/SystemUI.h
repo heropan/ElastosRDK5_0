@@ -3,15 +3,17 @@
 #define  __ELASTOS_DROID_PACKAGES_SYSTEMUI_SYSTEMUI_H__
 
 #include "_SystemUI.h"
-#include <elastos/droid/ext/frameworkext.h>
+#include "elastos/droid/packages/systemui/Utils.h"
 #include <elastos/core/Object.h>
+#include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Core::Object;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
-using Elastos::Utility::IMap;
+// using Elastos::Utility::IMap;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {
@@ -43,10 +45,10 @@ public:
 
     // @SuppressWarnings("unchecked")
     virtual CARAPI_(AutoPtr<IInterface>) GetComponent(
-        /* [in] */ IClassInfo* interfaceType);
+        /* [in] */ InterfaceID interfaceType);
 
     virtual CARAPI PutComponent(
-        /* [in] */ IClassInfo* interfaceType,
+        /* [in] */ InterfaceID interfaceType,
         /* [in] */ IInterface* component);
 
     virtual CARAPI SetContext(
@@ -56,14 +58,13 @@ public:
         /* [out] */ IContext** context);
 
     virtual CARAPI SetComponents(
-        /* [in] */ IMap* components);
+        /* [in] */ HashMap<InterfaceID, AutoPtr<IInterface> >* components);
 
-    virtual CARAPI GetComponents(
-        /* [out] */ IMap** components);
+    virtual AutoPtr<HashMap<InterfaceID, AutoPtr<IInterface> > > GetComponents();
 
 public:
     AutoPtr<IContext> mContext;
-    AutoPtr<IMap/*<Class<?>, Object*/> mComponents;
+    AutoPtr<HashMap<InterfaceID, AutoPtr<IInterface> > > mComponents;
 };
 
 } // namespace SystemUI
