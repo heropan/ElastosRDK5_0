@@ -182,6 +182,7 @@ module
     merge("../../../../../car/elastos/droid/statusbar/policy/LocationController.car");
     merge("../../../../../car/elastos/droid/statusbar/policy/MobileDataController.car");
     merge("../../../../../car/elastos/droid/statusbar/policy/NetworkController.car");
+    merge("../../../../../car/elastos/droid/statusbar/policy/NetworkControllerImpl.car");
     merge("../../../../../car/elastos/droid/statusbar/policy/NextAlarmController.car");
     merge("../../../../../car/elastos/droid/statusbar/policy/PreviewInflater.car");
     merge("../../../../../car/elastos/droid/statusbar/policy/RotationLockController.car");
@@ -268,6 +269,7 @@ module
     using interface Elastos.Droid.App.IApplication;
     using interface Elastos.Droid.App.IAlertDialog;
     using interface Elastos.Droid.App.IDialog;
+    using interface Elastos.Droid.App.INotification;
     using interface Elastos.Droid.App.IService;
     using interface Elastos.Droid.Content.IBroadcastReceiver;
     using interface Elastos.Droid.Content.IContext;
@@ -798,21 +800,6 @@ module
 //     }
 
 //     [local]
-//     class CAnimatedImageView {
-//         constructor(
-//             [in] IContext* ctx);
-
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs);
-
-//         interface IAnimatedImageView;
-//         interface IDrawableCallback;
-//         interface IKeyEventCallback;
-//         interface IAccessibilityEventSource;
-//     }
-
-//     [local]
 //     class CLatestItemView {
 //         constructor(
 //             [in] IContext* ctx,
@@ -826,23 +813,25 @@ module
 //         interface IAccessibilityEventSource;
 //     }
 
-//     [local, deprecated]
-//     class CStatusBarIconView {
+    [local, deprecated]
+    class CStatusBarIconView {
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] String attrs,
+            [in] INotification* notification);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] String attrs,
-//             [in] INotification* notification);
-
-//         interface IStatusBarIconView;
-//         interface IDrawableCallback;
-//         interface IKeyEventCallback;
-//         interface IAccessibilityEventSource;
-//     }
+        interface IStatusBarIconView;
+        interface IAnimatedImageView;
+        interface IImageView;
+        interface IView;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+    }
 
 //     [local]
 //     class CSignalClusterView {

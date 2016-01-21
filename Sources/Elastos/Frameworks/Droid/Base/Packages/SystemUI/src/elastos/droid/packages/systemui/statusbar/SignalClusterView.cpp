@@ -1,13 +1,14 @@
-#include "elastos/droid/systemui/statusbar/SignalClusterView.h"
-#include "elastos/droid/systemui/SystemUIR.h"
+
+#include "elastos/droid/packages/systemui/statusbar/SignalClusterView.h"
+#include "../R.h"
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CString;
-using Elastos::Droid::SystemUI::SystemUIR;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
+namespace Packages {
 namespace SystemUI {
 namespace StatusBar {
 
@@ -26,59 +27,26 @@ SignalClusterView::SignalClusterView()
     , mAirplaneIconId(0)
 {}
 
-SignalClusterView::SignalClusterView(
+ECode SignalClusterView::constructor(
     /* [in] */ IContext* context)
-    : LinearLayout(context, NULL)
-    , mWifiVisible(FALSE)
-    , mWifiStrengthId(0)
-    , mWifiActivityId(0)
-    , mMobileVisible(FALSE)
-    , mMobileStrengthId(0)
-    , mMobileActivityId(0)
-    , mMobileTypeId(0)
-    , mEthernetVisible(FALSE)
-    , mEthernetStateId(0)
-    , mEthernetActivityId(0)
-    , mIsAirplaneMode(FALSE)
-    , mAirplaneIconId(0)
-{}
+{
 
-SignalClusterView::SignalClusterView(
+}
+
+ECode SignalClusterView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
-    : LinearLayout(context, attrs)
-    , mWifiVisible(FALSE)
-    , mWifiStrengthId(0)
-    , mWifiActivityId(0)
-    , mMobileVisible(FALSE)
-    , mMobileStrengthId(0)
-    , mMobileActivityId(0)
-    , mMobileTypeId(0)
-    , mEthernetVisible(FALSE)
-    , mEthernetStateId(0)
-    , mEthernetActivityId(0)
-    , mIsAirplaneMode(FALSE)
-    , mAirplaneIconId(0)
-{}
+{
 
-SignalClusterView::SignalClusterView(
+}
+
+ECode SignalClusterView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle)
-    : LinearLayout(context, attrs, defStyle)
-    , mWifiVisible(FALSE)
-    , mWifiStrengthId(0)
-    , mWifiActivityId(0)
-    , mMobileVisible(FALSE)
-    , mMobileStrengthId(0)
-    , mMobileActivityId(0)
-    , mMobileTypeId(0)
-    , mEthernetVisible(FALSE)
-    , mEthernetStateId(0)
-    , mEthernetActivityId(0)
-    , mIsAirplaneMode(FALSE)
-    , mAirplaneIconId(0)
-{}
+{
+
+}
 
 ECode SignalClusterView::SetNetworkController(
     /* [in] */ INetworkController* nc)
@@ -87,7 +55,6 @@ ECode SignalClusterView::SetNetworkController(
     return NOERROR;
 }
 
-//@Override
 ECode SignalClusterView::OnAttachedToWindow()
 {
     LinearLayout::OnAttachedToWindow();
@@ -142,7 +109,6 @@ ECode SignalClusterView::OnAttachedToWindow()
     return NOERROR;
 }
 
-//@Override
 ECode SignalClusterView::OnDetachedFromWindow()
 {
     mWifiGroup      = NULL;
@@ -158,7 +124,6 @@ ECode SignalClusterView::OnDetachedFromWindow()
     return LinearLayout::OnDetachedFromWindow();
 }
 
-//@Override
 ECode SignalClusterView::SetWifiIndicators(
     /* [in] */ Boolean visible,
     /* [in] */ Int32 strengthIcon,
@@ -174,7 +139,6 @@ ECode SignalClusterView::SetWifiIndicators(
     return NOERROR;
 }
 
-//@Override
 ECode SignalClusterView::SetMobileDataIndicators(
     /* [in] */ Boolean visible,
     /* [in] */ Int32 strengthIcon,
@@ -194,7 +158,6 @@ ECode SignalClusterView::SetMobileDataIndicators(
     return NOERROR;
 }
 
-//@Override
 ECode SignalClusterView::SetEthernetIndicators(
     /* [in] */ Boolean visible,
     /* [in] */ Int32 strengthIcon,
@@ -210,7 +173,6 @@ ECode SignalClusterView::SetEthernetIndicators(
     return NOERROR;
 }
 
-//@Override
 ECode SignalClusterView::SetIsAirplaneMode(
     /* [in] */ Boolean is,
     /* [in] */ Int32 airplaneIcon)
@@ -222,7 +184,6 @@ ECode SignalClusterView::SetIsAirplaneMode(
     return NOERROR;
 }
 
-//@Override
 Boolean SignalClusterView::DispatchPopulateAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
@@ -250,8 +211,6 @@ Boolean SignalClusterView::DispatchPopulateAccessibilityEvent(
     return LinearLayout::DispatchPopulateAccessibilityEvent(event);
 }
 
-
-// Run after each indicator change.
 void SignalClusterView::Apply()
 {
     if (mWifiGroup == NULL) return;
@@ -321,7 +280,8 @@ void SignalClusterView::Apply()
             !(mWifiVisible || mEthernetVisible) ? IView::VISIBLE : IView::GONE);
 }
 
-}// namespace StatusBar
-}// namespace SystemUI
-}// namespace Droid
-}// namespace Elastos
+} // namespace StatusBar
+} // namespace SystemUI
+} // namespace Packages
+} // namespace Droid
+} // namespace Elastos

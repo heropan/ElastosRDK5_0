@@ -819,6 +819,12 @@ module
 
         Clone(
             [out] IInterface** result);
+
+        /**
+         * @hide
+         */
+        IsGroupChild(
+            [out] Boolean* result);
     }
 
     interface INotificationAction {

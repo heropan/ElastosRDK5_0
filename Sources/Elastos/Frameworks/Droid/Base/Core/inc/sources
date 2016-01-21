@@ -126,5 +126,6 @@ EXPORT_HEADERS += elastos/droid/view/WindowIdFocusObserver.h
 //EXPORT_HEADERS += elastos/droid/widget/Adapter.h
 //EXPORT_HEADERS += elastos/droid/widget/Filter.h
 //EXPORT_HEADERS += elastos/droid/widget/AdapterMacro.h
+EXPORT_HEADERS += elastos/droid/widget/LinearLayout.h
 EXPORT_HEADERS += elastos/droid/widget/FrameLayout.h
 EXPORT_HEADERS += elastos/droid/widget/ImageView.h

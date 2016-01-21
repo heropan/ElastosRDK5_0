@@ -100,6 +100,7 @@ using Elastos::Droid::SystemUI::Recent::IRecentTasksLoader;
 
 namespace Elastos {
 namespace Droid {
+namespace Packages {
 namespace SystemUI {
 namespace StatusBar {
 
@@ -1785,7 +1786,8 @@ Boolean BaseStatusBar::InKeyguardRestrictedInputMode()
     // return result;
 }
 
-}// namespace StatusBar
-}// namespace SystemUI
-}// namespace Droid
-}// namespace Elastos
+} // namespace StatusBar
+} // namespace SystemUI
+} // namespace Packages
+} // namespace Droid
+} // namespace Elastos

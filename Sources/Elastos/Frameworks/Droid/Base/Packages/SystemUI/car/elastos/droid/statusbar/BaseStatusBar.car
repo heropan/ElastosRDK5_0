@@ -41,7 +41,6 @@ module
      * interface Elastos.Droid.INotificationDataEnvironment
      */
     interface IBaseStatusBar {
-
         // Should match the value in PhoneWindowManager
         const String SYSTEM_DIALOG_REASON_RECENT_APPS = "recentapps";
 

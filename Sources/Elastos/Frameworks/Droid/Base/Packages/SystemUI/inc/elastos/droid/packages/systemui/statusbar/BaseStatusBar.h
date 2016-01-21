@@ -1,12 +1,13 @@
-#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_BASESTATUSBAR_H__
-#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_BASESTATUSBAR_H__
+
+#ifndef  __ELASTOS_DROID_PACKAGES_SYSTEMUI_STATUSBAR_BASESTATUSBAR_H__
+#define  __ELASTOS_DROID_PACKAGES_SYSTEMUI_STATUSBAR_BASESTATUSBAR_H__
 
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/database/ContentObserver.h"
 #include "elastos/droid/os/HandlerBase.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
-#include "elastos/droid/systemui/SystemUI.h"
-#include "elastos/droid/systemui/statusbar/NotificationData.h"
+#include "elastos/droid/packages/systemui/SystemUI.h"
+#include "elastos/droid/packages/systemui/statusbar/NotificationData.h"
 #include "elastos/droid/widget/RemoteViews.h"
 
 
@@ -38,9 +39,9 @@ using Elastos::Droid::StatusBar::IStatusBarNotification;
 using Elastos::Droid::SystemUI::StatusBar::Policy::INotificationRowLayout;
 using Elastos::Droid::SystemUI::StatusBar::Tablet::IStatusBarPanel;
 
-
 namespace Elastos {
 namespace Droid {
+namespace Packages {
 namespace SystemUI {
 namespace StatusBar {
 
@@ -525,9 +526,10 @@ private:
     Boolean mDeviceProvisioned;
 };
 
-}// namespace StatusBar
-}// namespace SystemUI
-}// namespace Droid
-}// namespace Elastos
+} // namespace StatusBar
+} // namespace SystemUI
+} // namespace Packages
+} // namespace Droid
+} // namespace Elastos
 
-#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_BASESTATUSBAR_H__
+#endif // __ELASTOS_DROID_PACKAGES_SYSTEMUI_STATUSBAR_BASESTATUSBAR_H__

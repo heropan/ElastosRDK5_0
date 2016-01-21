@@ -1,35 +1,41 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_SIGNALCLUSTERVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_SIGNALCLUSTERVIEW_H__
 
-#include "elastos/droid/os/Runnable.h"
-#include "elastos/droid/widget/LinearLayout.h"
+#include <elastos/droid/os/Runnable.h>
+#include <elastos/droid/widget/LinearLayout.h>
 
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::Widget::LinearLayout;
 using Elastos::Droid::Widget::IImageView;
-using Elastos::Droid::SystemUI::StatusBar::Policy::INetworkController;
+using Elastos::Droid::Packages::SystemUI::StatusBar::Policy::INetworkController;
+using Elastos::Droid::Packages::SystemUI::StatusBar::Policy::INetworkControllerImplSignalCluster;
+using Elastos::Droid::Packages::SystemUI::StatusBar::Policy::ISecurityControllerCallback;
 
 namespace Elastos {
 namespace Droid {
+namespace Packages {
 namespace SystemUI {
 namespace StatusBar {
 
-
-class SignalClusterView : public LinearLayout
+class SignalClusterView
+    : public LinearLayout
+    , public ISignalClusterView
+    , public INetworkControllerImplSignalCluster
+    , public ISecurityControllerCallback
 {
 public:
     SignalClusterView();
 
-    SignalClusterView(
+    CARAPI constructor(
         /* [in] */ IContext* context);
 
-    SignalClusterView(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    SignalClusterView(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyle);
@@ -116,10 +122,10 @@ private:
     AutoPtr<IView> mSpacer;
 };
 
-
-}// namespace StatusBar
-}// namespace SystemUI
-}// namespace Droid
-}// namespace Elastos
+} // namespace StatusBar
+} // namespace SystemUI
+} // namespace Packages
+} // namespace Droid
+} // namespace Elastos
 
 #endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_SIGNALCLUSTERVIEW_H__
