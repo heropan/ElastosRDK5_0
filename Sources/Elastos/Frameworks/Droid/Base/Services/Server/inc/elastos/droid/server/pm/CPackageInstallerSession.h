@@ -3,11 +3,14 @@
 #define __ELASTOS_DROID_SERVER_PM_CPACKAGEINSTALLERSESSION_H__
 
 #include "_Elastos_Droid_Server_Pm_CPackageInstallerSession.h"
-#include "elastos/droid/server/pm/CPackageInstallerService.h"
-// #include "Elastos.Droid.Os.h"
+#include "elastos/droid/server/pm/CPackageManagerService.h"
 #include <Elastos.CoreLibrary.Utility.Concurrent.h>
 
+using Elastos::Droid::Content::IIntentSender;
 using Elastos::Droid::Content::Pm::IIPackageInstallerSession;
+using Elastos::Droid::Content::Pm::IPackageInstallerSessionParams;
+using Elastos::Droid::Content::Pm::IPackageInstallerSessionInfo;
+using Elastos::Droid::Content::Pm::IIPackageInstallObserver2;
 using Elastos::Droid::Os::IHandlerCallback;
 using Elastos::Droid::Os::IFileBridge;
 using Elastos::Droid::Os::IParcelFileDescriptor;
@@ -19,6 +22,7 @@ namespace Server {
 namespace Pm {
 
 class CLocalObserver;
+class InternalCallback;
 
 CarClass(CPackageInstallerSession)
     , public Object
@@ -105,6 +109,9 @@ public:
         /* [in] */ IIntentSender* statusReceiver);
 
     CARAPI Abandon();
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 
 private:
     CARAPI AssertPreparedAndNotSealed(
@@ -205,7 +212,7 @@ private:
     // TODO: enforce INSTALL_ALLOW_TEST
     // TODO: enforce INSTALL_ALLOW_DOWNGRADE
 
-    AutoPtr<CPackageInstallerService::InternalCallback> mCallback;
+    AutoPtr<InternalCallback> mCallback;
     AutoPtr<IContext> mContext;
     AutoPtr<CPackageManagerService> mPm;
     AutoPtr<IHandler> mHandler;

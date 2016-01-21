@@ -9,6 +9,7 @@
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.Os.h"
 #include "Elastos.Droid.Graphics.h"
+#include <elastos/core/AutoLock.h>
 #include <Elastos.CoreLibrary.Utility.h>
 
 using Elastos::Droid::Content::IContext;
@@ -143,6 +144,9 @@ public:
         /* [in] */ IUserHandle* user,
         /* [out] */ Boolean* result);
 
+    CARAPI ToString(
+        /* [out] */ String* str);
+
 private:
     /**
      * Register a receiver to watch for package broadcasts
@@ -174,6 +178,7 @@ private:
     AutoPtr<IPackageManager> mPm;
     AutoPtr<IUserManager> mUm;
     AutoPtr<PackageCallbackList> mListeners;
+    Object mListenersLock;
 
     AutoPtr<MyPackageMonitor> mPackageMonitor;
 

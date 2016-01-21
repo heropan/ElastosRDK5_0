@@ -21,6 +21,12 @@
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/etl/Set.h>
 
+_ETL_NAMESPACE_BEGIN
+const RBTreeColorType S_RBTreeRed = FALSE;
+const RBTreeColorType S_RBTreeBlack = TRUE;
+_ETL_NAMESPACE_END
+
+
 using Elastos::Droid::App::IActivityManager;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::Pm::IPackageInstallerSessionParams;
@@ -363,10 +369,10 @@ void CPackageInstallerService::Callbacks::NotifySessionFinished(
 
 
 //==============================================================================
-//                  CPackageInstallerService::InternalCallback::SessionFinishedRunnable
+//                  InternalCallback::SessionFinishedRunnable
 //==============================================================================
 
-ECode CPackageInstallerService::InternalCallback::SessionFinishedRunnable::Run()
+ECode InternalCallback::SessionFinishedRunnable::Run()
 {
     Object& lock = mHost->mSessionsLock;
     synchronized (lock) {
@@ -386,31 +392,31 @@ ECode CPackageInstallerService::InternalCallback::SessionFinishedRunnable::Run()
 
 
 //==============================================================================
-//                  CPackageInstallerService::InternalCallback
+//                  InternalCallback
 //==============================================================================
 
-void CPackageInstallerService::InternalCallback::OnSessionBadgingChanged(
+void InternalCallback::OnSessionBadgingChanged(
     /* [in] */ CPackageInstallerSession* session)
 {
     mHost->mCallbacks->NotifySessionBadgingChanged(session->mSessionId, session->mUserId);
     mHost->WriteSessionsAsync();
 }
 
-void CPackageInstallerService::InternalCallback::OnSessionActiveChanged(
+void InternalCallback::OnSessionActiveChanged(
     /* [in] */ CPackageInstallerSession* session,
     /* [in] */ Boolean active)
 {
     mHost->mCallbacks->NotifySessionActiveChanged(session->mSessionId, session->mUserId, active);
 }
 
-void CPackageInstallerService::InternalCallback::OnSessionProgressChanged(
+void InternalCallback::OnSessionProgressChanged(
     /* [in] */ CPackageInstallerSession* session,
     /* [in] */ Float progress)
 {
     mHost->mCallbacks->NotifySessionProgressChanged(session->mSessionId, session->mUserId, progress);
 }
 
-void CPackageInstallerService::InternalCallback::OnSessionFinished(
+void InternalCallback::OnSessionFinished(
     /* [in] */ CPackageInstallerSession* session,
     /* [in] */ Boolean success)
 {
@@ -421,7 +427,7 @@ void CPackageInstallerService::InternalCallback::OnSessionFinished(
     mHost->mInstallHandler->Post(runnable, &result);
 }
 
-void CPackageInstallerService::InternalCallback::OnSessionPrepared(
+void InternalCallback::OnSessionPrepared(
     /* [in] */ CPackageInstallerSession* session)
 {
     // We prepared the destination to write into; we want to persist
@@ -429,7 +435,7 @@ void CPackageInstallerService::InternalCallback::OnSessionPrepared(
     mHost->WriteSessionsAsync();
 }
 
-void CPackageInstallerService::InternalCallback::OnSessionSealedBlocking(
+void InternalCallback::OnSessionSealedBlocking(
     /* [in] */ CPackageInstallerSession* session)
 {
     // It's very important that we block until we've recorded the
@@ -1499,6 +1505,13 @@ Boolean CPackageInstallerService::IsCallingUidOwner(
     else {
         return (session != NULL) && (callingUid == session->mInstallerUid);
     }
+}
+
+ECode CPackageInstallerService::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    return Object::ToString(str);
 }
 
 } // namespace Pm

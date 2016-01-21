@@ -25,7 +25,7 @@ public:
 
     CAR_OBJECT_DECL()
 
-    constructor(
+    CARAPI constructor(
         /* [in] */ IIPackageInstallerSession* host);
 
     CARAPI OnUserActionRequired(
@@ -36,6 +36,9 @@ public:
         /* [in] */ Int32 returnCode,
         /* [in] */ const String& msg,
         /* [in] */ IBundle* extras);
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 
 private:
     CPackageInstallerSession* mHost;

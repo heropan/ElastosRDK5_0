@@ -42,6 +42,13 @@ ECode CResourcesChangedReceiver::PerformReceive(
     return mOwner->mHandler->SendMessage(msg, &result);
 }
 
+ECode CResourcesChangedReceiver::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str);
+    return Object::ToString(str);
+}
+
 } // namespace Pm
 } // namespace Server
 } // namespace Droid

@@ -5,7 +5,7 @@
 #include "_Elastos_Droid_Content_CComponentName.h"
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::StringBuilder;
+using Elastos::Core::IStringBuilder;
 using Elastos::Core::ICloneable;
 using Elastos::Core::IComparable;
 using Elastos::IO::IPrintWriter;
@@ -156,7 +156,7 @@ public:
 
 public:
     static CARAPI AppendShortClassName(
-        /* [in] */ StringBuilder* sb,
+        /* [in] */ IStringBuilder* sb,
         /* [in] */ const String& packageName,
         /* [in] */ const String& className);
 
@@ -166,10 +166,10 @@ public:
         /* [in] */ const String& className);
 
     CARAPI AppendShortString(
-        /* [in] */ StringBuilder* sb);
+        /* [in] */ IStringBuilder* sb);
 
     static CARAPI AppendShortString(
-        /* [in] */ StringBuilder* sb,
+        /* [in] */ IStringBuilder* sb,
         /* [in] */ const String& packageName,
         /* [in] */ const String& className);
 

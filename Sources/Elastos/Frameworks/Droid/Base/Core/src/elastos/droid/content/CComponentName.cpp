@@ -3,6 +3,7 @@
 #include <Elastos.CoreLibrary.IO.h>
 #include "elastos/droid/content/CComponentName.h"
 
+using Elastos::Core::StringBuilder;
 using Elastos::IO::IWriter;
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::EIID_IComparable;
@@ -107,7 +108,7 @@ ECode CComponentName::GetShortClassName(
 }
 
 ECode CComponentName::AppendShortClassName(
-    /* [in] */ StringBuilder* sb,
+    /* [in] */ IStringBuilder* sb,
     /* [in] */ const String& packageName,
     /* [in] */ const String& className)
 {
@@ -163,13 +164,13 @@ ECode CComponentName::FlattenToShortString(
 }
 
 ECode CComponentName::AppendShortString(
-    /* [in] */ StringBuilder* sb)
+    /* [in] */ IStringBuilder* sb)
 {
     return AppendShortString(sb, mPackage, mClass);
 }
 
 ECode CComponentName::AppendShortString(
-    /* [in] */ StringBuilder* sb,
+    /* [in] */ IStringBuilder* sb,
     /* [in] */ const String& packageName,
     /* [in] */ const String& className)
 {

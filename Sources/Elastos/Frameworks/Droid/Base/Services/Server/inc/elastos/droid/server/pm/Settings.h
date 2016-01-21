@@ -13,6 +13,7 @@
 #include "elastos/droid/server/pm/PersistentPreferredIntentResolver.h"
 #include "elastos/droid/server/pm/CrossProfileIntentResolver.h"
 #include "elastos/droid/server/pm/KeySetManagerService.h"
+#include "elastos/droid/server/pm/PackageKeySetData.h"
 #include "elastos/droid/content/pm/PackageParser.h"
 #include <elastos/core/StringBuilder.h>
 

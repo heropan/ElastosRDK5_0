@@ -1,5 +1,6 @@
 
 #include "elastos/droid/server/pm/CPackageInstallerSession.h"
+#include "elastos/droid/server/pm/CPackageInstallerService.h"
 #include "elastos/droid/server/pm/CLocalObserver.h"
 #include "elastos/droid/internal/utility/ArrayUtils.h"
 #include "elastos/droid/os/FileUtils.h"
@@ -162,7 +163,7 @@ ECode CPackageInstallerSession::constructor(
     /* [in] */ Boolean prepared,
     /* [in] */ Boolean sealed)
 {
-    mCallback = (CPackageInstallerService::InternalCallback*)callback;
+    mCallback = (InternalCallback*)callback;
     mContext = context;
     mPm = (CPackageManagerService*)pm;
     CHandler::New(looper, mHandlerCallback, TRUE, (IHandler**)&mHandler);
@@ -1241,6 +1242,13 @@ void CPackageInstallerSession::DestroyInternal()
         Boolean result;
         helper->DestroySdDir(mStageCid, &result);
     }
+}
+
+ECode CPackageInstallerSession::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    return Object::ToString(str);
 }
 
 } // namespace Pm

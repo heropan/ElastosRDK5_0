@@ -40,6 +40,9 @@ public:
         /* [in] */ const String& msg,
         /* [in] */ IBundle* extras);
 
+    CARAPI ToString(
+        /* [out] */ String* str);
+
 private:
     CPackageManagerService* mHost;
     AutoPtr<IIPackageMoveObserver> mObserver;
