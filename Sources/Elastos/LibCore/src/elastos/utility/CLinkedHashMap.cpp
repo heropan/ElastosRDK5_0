@@ -12,6 +12,14 @@ namespace Utility {
 //==========================================================
 CAR_INTERFACE_IMPL(CLinkedHashMap, HashMap, ILinkedHashMap);
 
+CLinkedHashMap::~CLinkedHashMap()
+{
+    Clear();
+    // mHeader adds 2 refcount in LinkedEntry()
+    mHeader->Release();
+    mHeader->Release();
+}
+
 ECode CLinkedHashMap::constructor()
 {
     HashMap::constructor();

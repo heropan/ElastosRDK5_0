@@ -65,8 +65,10 @@ ECode HashSet::Add(
     /* [out] */ Boolean* modified)
 {
     VALIDATE_NOT_NULL(modified)
+    AutoPtr<IWeakReference> wr;
+    GetWeakReference((IWeakReference**)&wr);
     AutoPtr<IInterface> outface;
-    mBackingMap->Put(object, this->Probe(EIID_IInterface), (IInterface**)&outface);
+    mBackingMap->Put(object, wr, (IInterface**)&outface);
     *modified = outface == NULL;
     return NOERROR;
 }
@@ -166,8 +168,10 @@ ECode HashSet::ReadObject(
     for (Int32 i = elementCount; --i >= 0;) {
         AutoPtr<IInterface> key;
         // stream->ReadObject((IInterface**)&key);
+        AutoPtr<IWeakReference> wr;
+        GetWeakReference((IWeakReference**)&wr);
         AutoPtr<IInterface> outface;
-        mBackingMap->Put(key, this->Probe(EIID_IInterface), (IInterface**)&outface);
+        mBackingMap->Put(key, wr, (IInterface**)&outface);
     }
     return E_NOT_IMPLEMENTED;
 }
