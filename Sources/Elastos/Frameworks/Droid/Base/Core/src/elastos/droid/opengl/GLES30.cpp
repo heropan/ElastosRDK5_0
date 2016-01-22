@@ -1,6 +1,285 @@
 #include "Elastos.Droid.View.h"
 #include "elastos/droid/opengl/GLES30.h"
 
+#include <GLES3/gl3.h>
+#include <GLES3/gl3ext.h>
+#include <utils/misc.h>
+#include <elastos/utility/logging/Slogger.h>
+
+using Elastos::IO::CNIOAccess;
+using Elastos::IO::INIOAccess;
+
+/* special calls implemented in Android's GLES wrapper used to more
+ * efficiently bound-check passed arrays */
+extern "C" {
+#ifdef GL_VERSION_ES_CM_1_1
+GL_API void GL_APIENTRY glColorPointerBounds(GLint size, GLenum type, GLsizei stride,
+        const GLvoid *ptr, GLsizei count);
+GL_API void GL_APIENTRY glNormalPointerBounds(GLenum type, GLsizei stride,
+        const GLvoid *pointer, GLsizei count);
+GL_API void GL_APIENTRY glTexCoordPointerBounds(GLint size, GLenum type,
+        GLsizei stride, const GLvoid *pointer, GLsizei count);
+GL_API void GL_APIENTRY glVertexPointerBounds(GLint size, GLenum type,
+        GLsizei stride, const GLvoid *pointer, GLsizei count);
+GL_API void GL_APIENTRY glPointSizePointerOESBounds(GLenum type,
+        GLsizei stride, const GLvoid *pointer, GLsizei count);
+GL_API void GL_APIENTRY glMatrixIndexPointerOESBounds(GLint size, GLenum type,
+        GLsizei stride, const GLvoid *pointer, GLsizei count);
+GL_API void GL_APIENTRY glWeightPointerOESBounds(GLint size, GLenum type,
+        GLsizei stride, const GLvoid *pointer, GLsizei count);
+#endif
+#ifdef GL_ES_VERSION_2_0
+static void glVertexAttribPointerBounds(GLuint indx, GLint size, GLenum type,
+        GLboolean normalized, GLsizei stride, const GLvoid *pointer, GLsizei count) {
+    glVertexAttribPointer(indx, size, type, normalized, stride, pointer);
+}
+#endif
+#ifdef GL_ES_VERSION_3_0
+static void glVertexAttribIPointerBounds(GLuint indx, GLint size, GLenum type,
+        GLsizei stride, const GLvoid *pointer, GLsizei count) {
+    glVertexAttribIPointer(indx, size, type, stride, pointer);
+}
+#endif
+}
+
+static ECode GetPointer(
+    /* [in] */ IBuffer* buffer,
+    /* [in, out] */ Handle64* array,
+    /* [in, out] */ Int32* remaining,
+    /* [in, out] */ Int32* offset,
+    /* [out] */ Handle64* rst)
+{
+    Int32 position;
+    Int32 limit;
+    Int32 elementSizeShift;
+    Int64 pointer;
+    buffer->GetPosition(&position);
+    buffer->GetLimit(&limit);
+    buffer->GetElementSizeShift(&elementSizeShift);
+    *remaining = (limit - position) << elementSizeShift;
+
+    AutoPtr<INIOAccess> helper;
+    CNIOAccess::AcquireSingleton((INIOAccess**)&helper);
+
+    helper->GetBasePointer(buffer, &pointer);
+    if (pointer != 0L) {
+        *array = 0;
+        *rst = (Handle64)(pointer);
+        return NOERROR;
+    }
+
+    Boolean hasArray;
+    if (buffer->HasArray(&hasArray), hasArray) {
+        buffer->GetPrimitiveArray(array);
+    } else {
+        *array = 0;
+    }
+    helper->GetBaseArrayOffset(buffer, offset);
+
+    *rst = 0;
+    return NOERROR;
+}
+
+static ECode GetDirectBufferPointer(
+    /* [in] */ IBuffer* buffer,
+    /* [out] */ Handle64* result)
+{
+    Handle64 effectiveDirectAddress;
+    buffer->GetEffectiveDirectAddress(&effectiveDirectAddress);
+    if (effectiveDirectAddress != 0) {
+        Int32 position, elementSizeShift;
+        buffer->GetPosition(&position);
+        buffer->GetElementSizeShift(&elementSizeShift);
+        effectiveDirectAddress += (position << elementSizeShift);
+    } else {
+        SLOGGERD("GLES30", "GetDirectBufferPointer: Must use a native order direct Buffer")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    *result = effectiveDirectAddress;
+    return NOERROR;
+}
+
+// --------------------------------------------------------------------------
+
+/*
+ * returns the number of values glGet returns for a given pname.
+ *
+ * The code below is written such that pnames requiring only one values
+ * are the default (and are not explicitely tested for). This makes the
+ * checking code much shorter/readable/efficient.
+ *
+ * This means that unknown pnames (e.g.: extensions) will default to 1. If
+ * that unknown pname needs more than 1 value, then the validation check
+ * is incomplete and the app may crash if it passed the wrong number params.
+ */
+static int getNeededCount(GLint pname) {
+    int needed = 1;
+#ifdef GL_ES_VERSION_2_0
+    // GLES 2.x pnames
+    switch (pname) {
+        case GL_ALIASED_LINE_WIDTH_RANGE:
+        case GL_ALIASED_POINT_SIZE_RANGE:
+            needed = 2;
+            break;
+
+        case GL_BLEND_COLOR:
+        case GL_COLOR_CLEAR_VALUE:
+        case GL_COLOR_WRITEMASK:
+        case GL_SCISSOR_BOX:
+        case GL_VIEWPORT:
+            needed = 4;
+            break;
+
+        case GL_COMPRESSED_TEXTURE_FORMATS:
+            glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &needed);
+            break;
+
+        case GL_SHADER_BINARY_FORMATS:
+            glGetIntegerv(GL_NUM_SHADER_BINARY_FORMATS, &needed);
+            break;
+    }
+#endif
+
+#ifdef GL_VERSION_ES_CM_1_1
+    // GLES 1.x pnames
+    switch (pname) {
+        case GL_ALIASED_LINE_WIDTH_RANGE:
+        case GL_ALIASED_POINT_SIZE_RANGE:
+        case GL_DEPTH_RANGE:
+        case GL_SMOOTH_LINE_WIDTH_RANGE:
+        case GL_SMOOTH_POINT_SIZE_RANGE:
+            needed = 2;
+            break;
+
+        case GL_CURRENT_NORMAL:
+        case GL_POINT_DISTANCE_ATTENUATION:
+            needed = 3;
+            break;
+
+        case GL_COLOR_CLEAR_VALUE:
+        case GL_COLOR_WRITEMASK:
+        case GL_CURRENT_COLOR:
+        case GL_CURRENT_TEXTURE_COORDS:
+        case GL_FOG_COLOR:
+        case GL_LIGHT_MODEL_AMBIENT:
+        case GL_SCISSOR_BOX:
+        case GL_VIEWPORT:
+            needed = 4;
+            break;
+
+        case GL_MODELVIEW_MATRIX:
+        case GL_PROJECTION_MATRIX:
+        case GL_TEXTURE_MATRIX:
+            needed = 16;
+            break;
+
+        case GL_COMPRESSED_TEXTURE_FORMATS:
+            glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &needed);
+            break;
+    }
+#endif
+    return needed;
+}
+
+template <typename ATYPE, typename CTYPE, void GET(GLenum, CTYPE*)>
+static ECode
+get
+  (Int32 pname, ArrayOf<ATYPE>* params_ref, Int32 offset) {
+    Int32 _exception = 0;
+    ECode _exceptionType = NOERROR;
+    const char * _exceptionMessage;
+    CTYPE *params_base = (CTYPE *) 0;
+    Int32 _remaining;
+    CTYPE *params = (CTYPE *) 0;
+    Int32 _needed = 0;
+
+    if (!params_ref) {
+        _exception = 1;
+        _exceptionType = E_ILLEGAL_ARGUMENT_EXCEPTION;
+        _exceptionMessage = "params == null";
+        goto exit;
+    }
+    if (offset < 0) {
+        _exception = 1;
+        _exceptionType = E_ILLEGAL_ARGUMENT_EXCEPTION;
+        _exceptionMessage = "offset < 0";
+        goto exit;
+    }
+    _remaining = params_ref->GetLength() - offset;
+    _needed = getNeededCount(pname);
+    // if we didn't find this pname, we just assume the user passed
+    // an array of the right size -- this might happen with extensions
+    // or if we forget an enum here.
+    if (_remaining < _needed) {
+        _exception = 1;
+        _exceptionType = E_ILLEGAL_ARGUMENT_EXCEPTION;
+        _exceptionMessage = "length - offset < needed";
+        goto exit;
+    }
+    params_base = (CTYPE *)(params_ref->GetPayload());
+    params = params_base + offset;
+
+    GET(
+        (GLenum)pname,
+        (CTYPE *)params
+    );
+
+exit:
+    if (_exception) {
+        SLOGGERD("CGLES30", _exceptionMessage)
+    }
+    return _exceptionType;
+}
+
+
+template <typename CTYPE, void GET(GLenum, CTYPE*)>
+static ECode
+getarray
+  (Int32 pname, IBuffer* params_buf) {
+    Int32 _exception = 0;
+    ECode _exceptionType = NOERROR;
+    const char * _exceptionMessage;
+    Handle64 _array = (Handle64) 0;
+    Int32 _bufferOffset = (Int32) 0;
+    Int32 _remaining;
+    Handle64 data;
+    CTYPE *params = (CTYPE *) 0;
+    Int32 _needed = 0;
+
+    if (params_buf)
+    {
+        FAIL_RETURN(GetPointer(params_buf, &_array, &_remaining, &_bufferOffset, &data))
+        params = (CTYPE*)data;
+    }
+    _remaining /= sizeof(CTYPE);    // convert from bytes to item count
+    _needed = getNeededCount(pname);
+    // if we didn't find this pname, we just assume the user passed
+    // an array of the right size -- this might happen with extensions
+    // or if we forget an enum here.
+    if (_needed>0 && _remaining < _needed) {
+        _exception = 1;
+        _exceptionType = E_ILLEGAL_ARGUMENT_EXCEPTION;
+        _exceptionMessage = "remaining() < needed";
+        goto exit;
+    }
+
+    if (params_buf && params == NULL) {
+        char * _pBase = reinterpret_cast<char *>(_array);
+        params = (CTYPE *) (_pBase + _bufferOffset);
+    }
+
+    GET(
+        (GLenum)pname,
+        (CTYPE *)params
+    );
+
+exit:
+    if (_exception) {
+        SLOGGERD("CGLES30", _exceptionMessage)
+    }
+    return _exceptionType;
+}
+
 namespace Elastos {
 namespace Droid {
 namespace Opengl {
@@ -10,6 +289,9 @@ CAR_INTERFACE_IMPL(GLES30, GLES20, IGLES30)
 ECode GLES30::GlReadBuffer(
     /* [in] */ Int32 mode)
 {
+    glReadBuffer(
+        (GLenum)mode
+    );
     return NOERROR;
 }
 
@@ -21,8 +303,31 @@ ECode GLES30::GlDrawRangeElements(
     /* [in] */ Int32 end,
     /* [in] */ Int32 count,
     /* [in] */ Int32 type,
-    /* [in] */ IBuffer* indices)
+    /* [in] */ IBuffer* indices_buf)
 {
+    Handle64 _array = 0;
+    Int32 _bufferOffset = 0;
+    Int32 _remaining;
+    GLvoid *indices = (GLvoid *) 0;
+
+    if (indices_buf) {
+        Handle64 tmp;
+        FAIL_RETURN(GetPointer(indices_buf, &_array, &_remaining, &_bufferOffset, &tmp));
+        indices = (GLvoid *) tmp;
+    }
+    if (indices_buf && indices == NULL) {
+        char * _indicesBase = reinterpret_cast<char *>(_array);
+        indices = (GLvoid *) (_indicesBase + _bufferOffset);
+    }
+
+    glDrawRangeElements(
+        (GLenum)mode,
+        (GLuint)start,
+        (GLuint)end,
+        (GLsizei)count,
+        (GLenum)type,
+        (GLvoid *)indices
+    );
     return NOERROR;
 }
 

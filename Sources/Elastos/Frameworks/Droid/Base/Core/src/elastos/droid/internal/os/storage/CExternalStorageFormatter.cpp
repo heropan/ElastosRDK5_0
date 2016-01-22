@@ -62,7 +62,7 @@ CExternalStorageFormatter::MyThread::MyThread(
 ECode CExternalStorageFormatter::MyThread::Run()
 {
     Boolean success = FALSE;
-    AutoPtr<IMountService> mountService = mOwner->GetMountService();
+    AutoPtr<IIMountService> mountService = mOwner->GetMountService();
     Int32 res;
     if (FAILED(mountService->FormatVolume(mExtStoragePath, &res))) {
         AutoPtr<IToastHelper> toastHelper;
@@ -235,7 +235,7 @@ ECode CExternalStorageFormatter::OnBind(
 ECode CExternalStorageFormatter::OnCancel(
     /* [in] */ IDialogInterface* dialog)
 {
-    AutoPtr<IMountService> mountService = GetMountService();
+    AutoPtr<IIMountService> mountService = GetMountService();
     String extStoragePath;
     if (mStorageVolume == NULL)
         Environment::GetLegacyExternalStorageDirectory()->ToString(&extStoragePath);
@@ -284,7 +284,7 @@ void CExternalStorageFormatter::UpdateProgressState()
     if (Environment::MEDIA_MOUNTED.Equals(status)
         || Environment::MEDIA_MOUNTED_READ_ONLY.Equals(status)) {
         UpdateProgressDialog(R::string::progress_unmounting);
-        AutoPtr<IMountService> mountService = GetMountService();
+        AutoPtr<IIMountService> mountService = GetMountService();
         String extStoragePath;
         if (mStorageVolume == NULL)
             Environment::GetLegacyExternalStorageDirectory()->ToString(&extStoragePath);
@@ -300,7 +300,7 @@ void CExternalStorageFormatter::UpdateProgressState()
         || Environment::MEDIA_UNMOUNTED.Equals(status)
         || Environment::MEDIA_UNMOUNTABLE.Equals(status)) {
         UpdateProgressDialog(R::string::progress_erasing);
-        AutoPtr<IMountService> mountService = GetMountService();
+        AutoPtr<IIMountService> mountService = GetMountService();
         String extStoragePath;
         if (mStorageVolume == NULL)
             Environment::GetLegacyExternalStorageDirectory()->ToString(&extStoragePath);
@@ -313,7 +313,7 @@ void CExternalStorageFormatter::UpdateProgressState()
             thread->Start();
         }
         else {
-            Logger::W(TAG, "Unable to locate IMountService");
+            Logger::W(TAG, "Unable to locate IIMountService");
         }
     }
     else if (Environment::MEDIA_BAD_REMOVAL.Equals(status)) {
@@ -356,12 +356,12 @@ ECode CExternalStorageFormatter::UpdateProgressDialog(
     return NOERROR;
 }
 
-AutoPtr<IMountService> CExternalStorageFormatter::GetMountService()
+AutoPtr<IIMountService> CExternalStorageFormatter::GetMountService()
 {
     if (mMountService == NULL) {
         AutoPtr<IInterface> service = ServiceManager::GetService(String("mount"));
         if (service != NULL) {
-            mMountService = IMountService::Probe(service);
+            mMountService = IIMountService::Probe(service);
         }
         else {
             Logger::E(TAG, "Can't get mount service");

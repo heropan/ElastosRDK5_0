@@ -6,7 +6,7 @@
 #include <elastos/core/Singleton.h>
 
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Os::Storage::IMountService;
+using Elastos::Droid::Os::Storage::IIMountService;
 using Elastos::Core::Singleton;
 using Elastos::IO::IFile;
 using Elastos::Utility::Zip::IZipEntry;
@@ -28,7 +28,7 @@ public:
     CAR_SINGLETON_DECL()
 
     CARAPI GetMountService(
-        /* [out] */ IMountService** mountService);
+        /* [out] */ IIMountService** mountService);
 
     CARAPI CreateSdDir(
         /* [in] */ Int64 sizeBytes,

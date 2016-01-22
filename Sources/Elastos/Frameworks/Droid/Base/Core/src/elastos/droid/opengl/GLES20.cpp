@@ -14,32 +14,283 @@ using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Opengl::Gles::CEGL10Helper;
 using Elastosx::Microedition::Khronos::Egl::IEGL10Helper;
 using Elastos::Droid::View::ISurface;
-
 using Elastos::IO::CNIOAccess;
 using Elastos::IO::INIOAccess;
 
-namespace Elastos {
-namespace Droid {
-namespace Opengl {
-//begin a temporal workaroud for egl initialize
-AutoPtr<IEGL10> GLES20::mEgl;
-AutoPtr<XIEGLDisplay> GLES20::mEglDisplay;
-AutoPtr<XIEGLSurface> GLES20::mEglSurface;
-AutoPtr<XIEGLConfig> GLES20::mEglConfig;
-AutoPtr<XIEGLContext> GLES20::mEglContext;
-//end a temporal workaroud for egl initialize
-
-static int
-getNumCompressedTextureFormats() {
-    int numCompressedTextureFormats = 0;
-    glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &numCompressedTextureFormats);
-    return numCompressedTextureFormats;
-}
-
+/* special calls implemented in Android's GLES wrapper used to more
+ * efficiently bound-check passed arrays */
+extern "C" {
+#ifdef GL_VERSION_ES_CM_1_1
+GL_API void GL_APIENTRY glColorPointerBounds(GLint size, GLenum type, GLsizei stride,
+        const GLvoid *ptr, GLsizei count);
+GL_API void GL_APIENTRY glNormalPointerBounds(GLenum type, GLsizei stride,
+        const GLvoid *pointer, GLsizei count);
+GL_API void GL_APIENTRY glTexCoordPointerBounds(GLint size, GLenum type,
+        GLsizei stride, const GLvoid *pointer, GLsizei count);
+GL_API void GL_APIENTRY glVertexPointerBounds(GLint size, GLenum type,
+        GLsizei stride, const GLvoid *pointer, GLsizei count);
+GL_API void GL_APIENTRY glPointSizePointerOESBounds(GLenum type,
+        GLsizei stride, const GLvoid *pointer, GLsizei count);
+GL_API void GL_APIENTRY glMatrixIndexPointerOESBounds(GLint size, GLenum type,
+        GLsizei stride, const GLvoid *pointer, GLsizei count);
+GL_API void GL_APIENTRY glWeightPointerOESBounds(GLint size, GLenum type,
+        GLsizei stride, const GLvoid *pointer, GLsizei count);
+#endif
+#ifdef GL_ES_VERSION_2_0
 static void glVertexAttribPointerBounds(GLuint indx, GLint size, GLenum type,
         GLboolean normalized, GLsizei stride, const GLvoid *pointer, GLsizei count) {
     glVertexAttribPointer(indx, size, type, normalized, stride, pointer);
 }
+#endif
+#ifdef GL_ES_VERSION_3_0
+static void glVertexAttribIPointerBounds(GLuint indx, GLint size, GLenum type,
+        GLsizei stride, const GLvoid *pointer, GLsizei count) {
+    glVertexAttribIPointer(indx, size, type, stride, pointer);
+}
+#endif
+}
+
+static ECode GetPointer(
+    /* [in] */ IBuffer* buffer,
+    /* [in, out] */ Handle64* array,
+    /* [in, out] */ Int32* remaining,
+    /* [in, out] */ Int32* offset,
+    /* [out] */ Handle64* rst)
+{
+    Int32 position;
+    Int32 limit;
+    Int32 elementSizeShift;
+    Int64 pointer;
+    buffer->GetPosition(&position);
+    buffer->GetLimit(&limit);
+    buffer->GetElementSizeShift(&elementSizeShift);
+    *remaining = (limit - position) << elementSizeShift;
+
+    AutoPtr<INIOAccess> helper;
+    CNIOAccess::AcquireSingleton((INIOAccess**)&helper);
+
+    helper->GetBasePointer(buffer, &pointer);
+    if (pointer != 0L) {
+        *array = 0;
+        *rst = (Handle64)(pointer);
+        return NOERROR;
+    }
+
+    Boolean hasArray;
+    if (buffer->HasArray(&hasArray), hasArray) {
+        buffer->GetPrimitiveArray(array);
+    } else {
+        *array = 0;
+    }
+    helper->GetBaseArrayOffset(buffer, offset);
+
+    *rst = 0;
+    return NOERROR;
+}
+
+static ECode GetDirectBufferPointer(
+    /* [in] */ IBuffer* buffer,
+    /* [out] */ Handle64* result)
+{
+    Handle64 effectiveDirectAddress;
+    buffer->GetEffectiveDirectAddress(&effectiveDirectAddress);
+    if (effectiveDirectAddress != 0) {
+        Int32 position, elementSizeShift;
+        buffer->GetPosition(&position);
+        buffer->GetElementSizeShift(&elementSizeShift);
+        effectiveDirectAddress += (position << elementSizeShift);
+    } else {
+        SLOGGERD("GLES20", "GetDirectBufferPointer: Must use a native order direct Buffer")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    *result = effectiveDirectAddress;
+    return NOERROR;
+}
+
+// --------------------------------------------------------------------------
+
+/*
+ * returns the number of values glGet returns for a given pname.
+ *
+ * The code below is written such that pnames requiring only one values
+ * are the default (and are not explicitely tested for). This makes the
+ * checking code much shorter/readable/efficient.
+ *
+ * This means that unknown pnames (e.g.: extensions) will default to 1. If
+ * that unknown pname needs more than 1 value, then the validation check
+ * is incomplete and the app may crash if it passed the wrong number params.
+ */
+static int getNeededCount(GLint pname) {
+    int needed = 1;
+#ifdef GL_ES_VERSION_2_0
+    // GLES 2.x pnames
+    switch (pname) {
+        case GL_ALIASED_LINE_WIDTH_RANGE:
+        case GL_ALIASED_POINT_SIZE_RANGE:
+            needed = 2;
+            break;
+
+        case GL_BLEND_COLOR:
+        case GL_COLOR_CLEAR_VALUE:
+        case GL_COLOR_WRITEMASK:
+        case GL_SCISSOR_BOX:
+        case GL_VIEWPORT:
+            needed = 4;
+            break;
+
+        case GL_COMPRESSED_TEXTURE_FORMATS:
+            glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &needed);
+            break;
+
+        case GL_SHADER_BINARY_FORMATS:
+            glGetIntegerv(GL_NUM_SHADER_BINARY_FORMATS, &needed);
+            break;
+    }
+#endif
+
+#ifdef GL_VERSION_ES_CM_1_1
+    // GLES 1.x pnames
+    switch (pname) {
+        case GL_ALIASED_LINE_WIDTH_RANGE:
+        case GL_ALIASED_POINT_SIZE_RANGE:
+        case GL_DEPTH_RANGE:
+        case GL_SMOOTH_LINE_WIDTH_RANGE:
+        case GL_SMOOTH_POINT_SIZE_RANGE:
+            needed = 2;
+            break;
+
+        case GL_CURRENT_NORMAL:
+        case GL_POINT_DISTANCE_ATTENUATION:
+            needed = 3;
+            break;
+
+        case GL_COLOR_CLEAR_VALUE:
+        case GL_COLOR_WRITEMASK:
+        case GL_CURRENT_COLOR:
+        case GL_CURRENT_TEXTURE_COORDS:
+        case GL_FOG_COLOR:
+        case GL_LIGHT_MODEL_AMBIENT:
+        case GL_SCISSOR_BOX:
+        case GL_VIEWPORT:
+            needed = 4;
+            break;
+
+        case GL_MODELVIEW_MATRIX:
+        case GL_PROJECTION_MATRIX:
+        case GL_TEXTURE_MATRIX:
+            needed = 16;
+            break;
+
+        case GL_COMPRESSED_TEXTURE_FORMATS:
+            glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &needed);
+            break;
+    }
+#endif
+    return needed;
+}
+
+template <typename ATYPE, typename CTYPE, void GET(GLenum, CTYPE*)>
+static ECode
+get
+  (Int32 pname, ArrayOf<ATYPE>* params_ref, Int32 offset) {
+    Int32 _exception = 0;
+    ECode _exceptionType = NOERROR;
+    const char * _exceptionMessage;
+    CTYPE *params_base = (CTYPE *) 0;
+    Int32 _remaining;
+    CTYPE *params = (CTYPE *) 0;
+    Int32 _needed = 0;
+
+    if (!params_ref) {
+        _exception = 1;
+        _exceptionType = E_ILLEGAL_ARGUMENT_EXCEPTION;
+        _exceptionMessage = "params == null";
+        goto exit;
+    }
+    if (offset < 0) {
+        _exception = 1;
+        _exceptionType = E_ILLEGAL_ARGUMENT_EXCEPTION;
+        _exceptionMessage = "offset < 0";
+        goto exit;
+    }
+    _remaining = params_ref->GetLength() - offset;
+    _needed = getNeededCount(pname);
+    // if we didn't find this pname, we just assume the user passed
+    // an array of the right size -- this might happen with extensions
+    // or if we forget an enum here.
+    if (_remaining < _needed) {
+        _exception = 1;
+        _exceptionType = E_ILLEGAL_ARGUMENT_EXCEPTION;
+        _exceptionMessage = "length - offset < needed";
+        goto exit;
+    }
+    params_base = (CTYPE *)(params_ref->GetPayload());
+    params = params_base + offset;
+
+    GET(
+        (GLenum)pname,
+        (CTYPE *)params
+    );
+
+exit:
+    if (_exception) {
+        SLOGGERD("CGLES10", _exceptionMessage)
+    }
+    return _exceptionType;
+}
+
+
+template <typename CTYPE, void GET(GLenum, CTYPE*)>
+static ECode
+getarray
+  (Int32 pname, IBuffer* params_buf) {
+    Int32 _exception = 0;
+    ECode _exceptionType = NOERROR;
+    const char * _exceptionMessage;
+    Handle64 _array = (Handle64) 0;
+    Int32 _bufferOffset = (Int32) 0;
+    Int32 _remaining;
+    Handle64 data;
+    CTYPE *params = (CTYPE *) 0;
+    Int32 _needed = 0;
+
+    if (params_buf)
+    {
+        FAIL_RETURN(GetPointer(params_buf, &_array, &_remaining, &_bufferOffset, &data))
+        params = (CTYPE*)data;
+    }
+    _remaining /= sizeof(CTYPE);    // convert from bytes to item count
+    _needed = getNeededCount(pname);
+    // if we didn't find this pname, we just assume the user passed
+    // an array of the right size -- this might happen with extensions
+    // or if we forget an enum here.
+    if (_needed>0 && _remaining < _needed) {
+        _exception = 1;
+        _exceptionType = E_ILLEGAL_ARGUMENT_EXCEPTION;
+        _exceptionMessage = "remaining() < needed";
+        goto exit;
+    }
+
+    if (params_buf && params == NULL) {
+        char * _pBase = reinterpret_cast<char *>(_array);
+        params = (CTYPE *) (_pBase + _bufferOffset);
+    }
+
+    GET(
+        (GLenum)pname,
+        (CTYPE *)params
+    );
+
+exit:
+    if (_exception) {
+        SLOGGERD("CGLES10", _exceptionMessage)
+    }
+    return _exceptionType;
+}
+
+namespace Elastos {
+namespace Droid {
+namespace Opengl {
 
 CAR_INTERFACE_IMPL(GLES20, Singleton, IGLES20)
 
@@ -619,6 +870,11 @@ ECode GLES20::GlDeleteFramebuffers(
         SLOGGERD("GLES20", "GlDeleteFramebuffers: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = framebuffers_ref->GetLength() - offset;
+    if (_remaining < n) {
+        SLOGGERD("GLES20", "length - offset < n < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     framebuffers_base = (GLuint *) framebuffers_ref->GetPayload();
     framebuffers = framebuffers_base + offset;
 
@@ -643,6 +899,10 @@ ECode GLES20::GlDeleteFramebuffers(
     Handle64 tmp;
     FAIL_RETURN(GetPointer(IBuffer::Probe(framebuffers_buf), &_array, &_remaining, &_bufferOffset, &tmp));
     framebuffers = (GLuint *) tmp;
+    if (_remaining < n) {
+        SLOGGERD("GLES20", "remaining() < n < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     if (framebuffers == NULL) {
         char * _framebuffersBase = reinterpret_cast<char *>(_array);
         framebuffers = (GLuint *) (_framebuffersBase + _bufferOffset);
@@ -683,6 +943,11 @@ ECode GLES20::GlDeleteRenderbuffers(
         SLOGGERD("GLES20", "GlDeleteRenderbuffers: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = renderbuffers_ref->GetLength() - offset;
+    if (_remaining < n) {
+        SLOGGERD("GLES20", "length - offset < n < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     renderbuffers_base = (GLuint *) renderbuffers_ref->GetPayload();
     renderbuffers = renderbuffers_base + offset;
 
@@ -707,6 +972,10 @@ ECode GLES20::GlDeleteRenderbuffers(
     Handle64 tmp;
     FAIL_RETURN(GetPointer(IBuffer::Probe(renderbuffers_buf), &_array, &_remaining, &_bufferOffset, &tmp));
     renderbuffers = (GLuint *) tmp;
+    if (_remaining < n) {
+        SLOGGERD("GLES20", "remaining() < n < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     if (renderbuffers == NULL) {
         char * _renderbuffersBase = reinterpret_cast<char *>(_array);
         renderbuffers = (GLuint *) (_renderbuffersBase + _bufferOffset);
@@ -889,7 +1158,7 @@ ECode GLES20::GlDrawElements(
         (GLenum)mode,
         (GLsizei)count,
         (GLenum)type,
-        (const GLvoid *)offset
+        reinterpret_cast<GLvoid *>(offset)
     );
     return NOERROR;
 }
@@ -1105,6 +1374,11 @@ ECode GLES20::GlGenFramebuffers(
         SLOGGERD("GLES20", "GlGenFramebuffers: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = framebuffers_ref->GetLength() - offset;
+    if (_remaining < n) {
+        SLOGGERD("GLES20", "GlGenFramebuffers: length - offset < n < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     framebuffers_base = (GLuint *) framebuffers_ref->GetPayload();
     framebuffers = framebuffers_base + offset;
 
@@ -1127,7 +1401,11 @@ ECode GLES20::GlGenFramebuffers(
     GLuint *framebuffers = (GLuint *) 0;
 
     Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(framebuffers_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    FAIL_RETURN(GetPointer(IBuffer::Probe(framebuffers_buf), &_array, &_remaining, &_bufferOffset, &tmp))
+    if (_remaining < n) {
+        SLOGGERD("GLES20", "GlGenFramebuffers: remaining() < n < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     framebuffers = (GLuint *)tmp;
     if (framebuffers == NULL) {
         char * _framebuffersBase = reinterpret_cast<char *>(_array);
@@ -1158,6 +1436,11 @@ ECode GLES20::GlGenRenderbuffers(
         SLOGGERD("GLES20", "GlGenRenderbuffers: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = renderbuffers_ref->GetLength() - offset;
+    if (_remaining < n) {
+        SLOGGERD("GLES20", "GlGenRenderbuffers: length - offset < n < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     renderbuffers_base = (GLuint *) renderbuffers_ref->GetPayload();
     renderbuffers = renderbuffers_base + offset;
 
@@ -1182,6 +1465,10 @@ ECode GLES20::GlGenRenderbuffers(
     Handle64 tmp;
     FAIL_RETURN(GetPointer(IBuffer::Probe(renderbuffers_buf), &_array, &_remaining, &_bufferOffset, &tmp));
     renderbuffers = (GLuint *)tmp;
+    if (_remaining < n) {
+        SLOGGERD("GLES20", "GlGenRenderbuffers: remaining() < n < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     if (renderbuffers == NULL) {
         char * _renderbuffersBase = reinterpret_cast<char *>(_array);
         renderbuffers = (GLuint *) (_renderbuffersBase + _bufferOffset);
@@ -1332,7 +1619,7 @@ ECode GLES20::GlGetActiveAttrib(
         (GLsizei *)length,
         (GLint *)size,
         (GLenum *)type,
-        (char *)name
+        reinterpret_cast<char *>(name)
     );
     return NOERROR;
 }
@@ -1602,7 +1889,7 @@ ECode GLES20::GlGetActiveUniform(
         (GLsizei *)length,
         (GLint *)size,
         (GLenum *)type,
-        (char *)name
+        reinterpret_cast<char *>(name)
     );
     return NOERROR;
 }
@@ -1820,6 +2107,11 @@ ECode GLES20::GlGetAttachedShaders(
         SLOGGERD("GLES20", "GlGetAttachedShaders: countOffset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _countRemaining = count_ref->GetLength() - countOffset;
+    if (_countRemaining < 1) {
+        SLOGGERD("GLES20", "GlGetAttachedShaders: length - countOffset < 1 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     count_base = (GLsizei *) count_ref->GetPayload();
     count = count_base + countOffset;
 
@@ -1829,6 +2121,11 @@ ECode GLES20::GlGetAttachedShaders(
     }
     if (shadersOffset < 0) {
         SLOGGERD("GLES20", "GlGetAttachedShaders: shadersOffset < 0")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    Int32 _shadersRemaining = shaders_ref->GetLength() - shadersOffset;
+    if (_shadersRemaining < maxcount) {
+        SLOGGERD("GLES20", "GlGetAttachedShaders: length - shadersOffset < maxcount < needed")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     shaders_base = (GLuint *) shaders_ref->GetPayload();
@@ -1860,16 +2157,31 @@ ECode GLES20::GlGetAttachedShaders(
     Int32 _shadersRemaining;
     GLuint *shaders = (GLuint *) 0;
 
-    Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(count_buf), &_countArray, &_countRemaining, &_countBufferOffset, &tmp));
-    count = (GLsizei *) tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(shaders_buf), &_shadersArray, &_shadersRemaining, &_shadersBufferOffset, &tmp));
-    shaders = (GLuint *) tmp;
-    if (count == NULL) {
+    if (count_buf) {
+        Handle64 tmp;
+        FAIL_RETURN(GetPointer(IBuffer::Probe(count_buf), &_countArray, &_countRemaining, &_countBufferOffset, &tmp));
+        if (_countRemaining < 1) {
+            SLOGGERD("GLES20", "GlGetAttachedShaders: remaining() < 1 < needed")
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        count = (GLsizei *) tmp;
+    }
+
+    if (shaders_buf) {
+        Handle64 tmp;
+        FAIL_RETURN(GetPointer(IBuffer::Probe(shaders_buf), &_shadersArray, &_shadersRemaining, &_shadersBufferOffset, &tmp));
+        if (_shadersRemaining < maxcount) {
+            SLOGGERD("GLES20", "GlGetAttachedShaders: remaining() < maxcount < needed")
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        shaders = (GLuint *) tmp;
+    }
+
+    if (count_buf && count == NULL) {
         char * _countBase = reinterpret_cast<char *>(_countArray);
         count = (GLsizei *) (_countBase + _countBufferOffset);
     }
-    if (shaders == NULL) {
+    if (shaders_buf && shaders == NULL) {
         char * _shadersBase = reinterpret_cast<char *>(_shadersArray);
         shaders = (GLuint *) (_shadersBase + _shadersBufferOffset);
     }
@@ -1889,7 +2201,7 @@ ECode GLES20::GlGetAttribLocation(
     /* [in] */ const String& name,
     /* [out] */ Int32* rst)
 {
-    Int32 _returnValue = 0;
+    GLint _returnValue = 0;
     const char* _nativename = 0;
 
     if (!name) {
@@ -1914,24 +2226,7 @@ ECode GLES20::GlGetBooleanv(
     /* [in] */ ArrayOf<Boolean>* params_ref,
     /* [in] */ Int32 offset)
 {
-    GLboolean *params_base = (GLboolean *) 0;
-    GLboolean *params = (GLboolean *) 0;
-
-    if (!params_ref) {
-        SLOGGERD("GLES20", "GlGetBooleanv: params == null")
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    if (offset < 0) {
-        SLOGGERD("GLES20", "GlGetBooleanv: offset < 0")
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    params_base = (GLboolean *) params_ref->GetPayload();
-    params = params_base + offset;
-
-    glGetBooleanv(
-        (GLenum)pname,
-        (GLboolean *)params
-    );
+    get<Boolean, GLboolean, glGetBooleanv>(pname, params_ref, offset);
     return NOERROR;
 }
 
@@ -1941,22 +2236,7 @@ ECode GLES20::GlGetBooleanv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
 {
-    Handle64 _array = (Handle64) 0;
-    Int32 _bufferOffset = (Int32) 0;
-    Int32 _remaining;
-    GLboolean *params = (GLboolean *) 0;
-
-    Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(params_buf), &_array, &_remaining, &_bufferOffset, &tmp));
-    params =(GLboolean *) tmp;
-    if (params == NULL) {
-        char * _paramsBase = reinterpret_cast<char *>(_array);;
-        params = (GLboolean *) (_paramsBase + _bufferOffset);
-    }
-    glGetBooleanv(
-        (GLenum)pname,
-        (GLboolean *)params
-    );
+    getarray<GLboolean, glGetBooleanv>(pname, IBuffer::Probe(params_buf));
     return NOERROR;
 }
 
@@ -2045,24 +2325,7 @@ ECode GLES20::GlGetFloatv(
     /* [in] */ ArrayOf<Float>* params_ref,
     /* [in] */ Int32 offset)
 {
-    GLfloat *params_base = (GLfloat *) 0;
-    GLfloat *params = (GLfloat *) 0;
-
-    if (!params_ref) {
-        SLOGGERD("GLES20", "GlGetFloatv: params == null")
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    if (offset < 0) {
-        SLOGGERD("GLES20", "GlGetFloatv: offset < 0")
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    params_base = (GLfloat *) params_ref->GetPayload();
-    params = params_base + offset;
-
-    glGetFloatv(
-        (GLenum)pname,
-        (GLfloat *)params
-    );
+    get<Float, GLfloat, glGetFloatv>(pname, params_ref, offset);
     return NOERROR;
 }
 
@@ -2072,23 +2335,7 @@ ECode GLES20::GlGetFloatv(
     /* [in] */ Int32 pname,
     /* [in] */ IFloatBuffer* params_buf)
 {
-    Handle64 _array = (Handle64) 0;
-    Int32 _bufferOffset = (Int32) 0;
-    Int32 _remaining;
-    GLfloat *params = (GLfloat *) 0;
-
-    Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(params_buf), &_array, &_remaining, &_bufferOffset, &tmp));
-    params = (GLfloat *) tmp;
-    if (params == NULL) {
-        char * _paramsBase = reinterpret_cast<char *>(_array);
-        params = (GLfloat *) (_paramsBase + _bufferOffset);
-    }
-    glGetFloatv(
-        (GLenum)pname,
-        (GLfloat *)params
-    );
-
+    getarray<GLfloat, glGetFloatv>(pname, IBuffer::Probe(params_buf));
     return NOERROR;
 }
 
@@ -2162,362 +2409,7 @@ ECode GLES20::GlGetIntegerv(
     /* [in] */ ArrayOf<Int32>* params_ref,
     /* [in] */ Int32 offset)
 {
-    GLint *params_base = (GLint *) 0;
-    Int32 _remaining;
-    GLint *params = (GLint *) 0;
-
-    if (!params_ref) {
-        SLOGGERD("GLES20", "GlGetIntegerv: params == null")
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    if (offset < 0) {
-        SLOGGERD("GLES20", "GlGetIntegerv: offset < 0")
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    _remaining = params_ref->GetLength() - offset;
-    Int32 _needed;
-    switch (pname) {
-#if defined(GL_ALPHA_BITS)
-        case GL_ALPHA_BITS:
-#endif // defined(GL_ALPHA_BITS)
-#if defined(GL_ALPHA_TEST_FUNC)
-        case GL_ALPHA_TEST_FUNC:
-#endif // defined(GL_ALPHA_TEST_FUNC)
-#if defined(GL_ALPHA_TEST_REF)
-        case GL_ALPHA_TEST_REF:
-#endif // defined(GL_ALPHA_TEST_REF)
-#if defined(GL_BLEND_DST)
-        case GL_BLEND_DST:
-#endif // defined(GL_BLEND_DST)
-#if defined(GL_BLUE_BITS)
-        case GL_BLUE_BITS:
-#endif // defined(GL_BLUE_BITS)
-#if defined(GL_COLOR_ARRAY_BUFFER_BINDING)
-        case GL_COLOR_ARRAY_BUFFER_BINDING:
-#endif // defined(GL_COLOR_ARRAY_BUFFER_BINDING)
-#if defined(GL_COLOR_ARRAY_SIZE)
-        case GL_COLOR_ARRAY_SIZE:
-#endif // defined(GL_COLOR_ARRAY_SIZE)
-#if defined(GL_COLOR_ARRAY_STRIDE)
-        case GL_COLOR_ARRAY_STRIDE:
-#endif // defined(GL_COLOR_ARRAY_STRIDE)
-#if defined(GL_COLOR_ARRAY_TYPE)
-        case GL_COLOR_ARRAY_TYPE:
-#endif // defined(GL_COLOR_ARRAY_TYPE)
-#if defined(GL_CULL_FACE)
-        case GL_CULL_FACE:
-#endif // defined(GL_CULL_FACE)
-#if defined(GL_DEPTH_BITS)
-        case GL_DEPTH_BITS:
-#endif // defined(GL_DEPTH_BITS)
-#if defined(GL_DEPTH_CLEAR_VALUE)
-        case GL_DEPTH_CLEAR_VALUE:
-#endif // defined(GL_DEPTH_CLEAR_VALUE)
-#if defined(GL_DEPTH_FUNC)
-        case GL_DEPTH_FUNC:
-#endif // defined(GL_DEPTH_FUNC)
-#if defined(GL_DEPTH_WRITEMASK)
-        case GL_DEPTH_WRITEMASK:
-#endif // defined(GL_DEPTH_WRITEMASK)
-#if defined(GL_FOG_DENSITY)
-        case GL_FOG_DENSITY:
-#endif // defined(GL_FOG_DENSITY)
-#if defined(GL_FOG_END)
-        case GL_FOG_END:
-#endif // defined(GL_FOG_END)
-#if defined(GL_FOG_MODE)
-        case GL_FOG_MODE:
-#endif // defined(GL_FOG_MODE)
-#if defined(GL_FOG_START)
-        case GL_FOG_START:
-#endif // defined(GL_FOG_START)
-#if defined(GL_FRONT_FACE)
-        case GL_FRONT_FACE:
-#endif // defined(GL_FRONT_FACE)
-#if defined(GL_GREEN_BITS)
-        case GL_GREEN_BITS:
-#endif // defined(GL_GREEN_BITS)
-#if defined(GL_IMPLEMENTATION_COLOR_READ_FORMAT_OES)
-        case GL_IMPLEMENTATION_COLOR_READ_FORMAT_OES:
-#endif // defined(GL_IMPLEMENTATION_COLOR_READ_FORMAT_OES)
-#if defined(GL_IMPLEMENTATION_COLOR_READ_TYPE_OES)
-        case GL_IMPLEMENTATION_COLOR_READ_TYPE_OES:
-#endif // defined(GL_IMPLEMENTATION_COLOR_READ_TYPE_OES)
-#if defined(GL_LIGHT_MODEL_COLOR_CONTROL)
-        case GL_LIGHT_MODEL_COLOR_CONTROL:
-#endif // defined(GL_LIGHT_MODEL_COLOR_CONTROL)
-#if defined(GL_LIGHT_MODEL_LOCAL_VIEWER)
-        case GL_LIGHT_MODEL_LOCAL_VIEWER:
-#endif // defined(GL_LIGHT_MODEL_LOCAL_VIEWER)
-#if defined(GL_LIGHT_MODEL_TWO_SIDE)
-        case GL_LIGHT_MODEL_TWO_SIDE:
-#endif // defined(GL_LIGHT_MODEL_TWO_SIDE)
-#if defined(GL_LINE_SMOOTH_HINT)
-        case GL_LINE_SMOOTH_HINT:
-#endif // defined(GL_LINE_SMOOTH_HINT)
-#if defined(GL_LINE_WIDTH)
-        case GL_LINE_WIDTH:
-#endif // defined(GL_LINE_WIDTH)
-#if defined(GL_LOGIC_OP_MODE)
-        case GL_LOGIC_OP_MODE:
-#endif // defined(GL_LOGIC_OP_MODE)
-#if defined(GL_MATRIX_INDEX_ARRAY_BUFFER_BINDING_OES)
-        case GL_MATRIX_INDEX_ARRAY_BUFFER_BINDING_OES:
-#endif // defined(GL_MATRIX_INDEX_ARRAY_BUFFER_BINDING_OES)
-#if defined(GL_MATRIX_INDEX_ARRAY_SIZE_OES)
-        case GL_MATRIX_INDEX_ARRAY_SIZE_OES:
-#endif // defined(GL_MATRIX_INDEX_ARRAY_SIZE_OES)
-#if defined(GL_MATRIX_INDEX_ARRAY_STRIDE_OES)
-        case GL_MATRIX_INDEX_ARRAY_STRIDE_OES:
-#endif // defined(GL_MATRIX_INDEX_ARRAY_STRIDE_OES)
-#if defined(GL_MATRIX_INDEX_ARRAY_TYPE_OES)
-        case GL_MATRIX_INDEX_ARRAY_TYPE_OES:
-#endif // defined(GL_MATRIX_INDEX_ARRAY_TYPE_OES)
-#if defined(GL_MATRIX_MODE)
-        case GL_MATRIX_MODE:
-#endif // defined(GL_MATRIX_MODE)
-#if defined(GL_MAX_CLIP_PLANES)
-        case GL_MAX_CLIP_PLANES:
-#endif // defined(GL_MAX_CLIP_PLANES)
-#if defined(GL_MAX_ELEMENTS_INDICES)
-        case GL_MAX_ELEMENTS_INDICES:
-#endif // defined(GL_MAX_ELEMENTS_INDICES)
-#if defined(GL_MAX_ELEMENTS_VERTICES)
-        case GL_MAX_ELEMENTS_VERTICES:
-#endif // defined(GL_MAX_ELEMENTS_VERTICES)
-#if defined(GL_MAX_LIGHTS)
-        case GL_MAX_LIGHTS:
-#endif // defined(GL_MAX_LIGHTS)
-#if defined(GL_MAX_MODELVIEW_STACK_DEPTH)
-        case GL_MAX_MODELVIEW_STACK_DEPTH:
-#endif // defined(GL_MAX_MODELVIEW_STACK_DEPTH)
-#if defined(GL_MAX_PALETTE_MATRICES_OES)
-        case GL_MAX_PALETTE_MATRICES_OES:
-#endif // defined(GL_MAX_PALETTE_MATRICES_OES)
-#if defined(GL_MAX_PROJECTION_STACK_DEPTH)
-        case GL_MAX_PROJECTION_STACK_DEPTH:
-#endif // defined(GL_MAX_PROJECTION_STACK_DEPTH)
-#if defined(GL_MAX_TEXTURE_SIZE)
-        case GL_MAX_TEXTURE_SIZE:
-#endif // defined(GL_MAX_TEXTURE_SIZE)
-#if defined(GL_MAX_TEXTURE_STACK_DEPTH)
-        case GL_MAX_TEXTURE_STACK_DEPTH:
-#endif // defined(GL_MAX_TEXTURE_STACK_DEPTH)
-#if defined(GL_MAX_TEXTURE_UNITS)
-        case GL_MAX_TEXTURE_UNITS:
-#endif // defined(GL_MAX_TEXTURE_UNITS)
-#if defined(GL_MAX_VERTEX_UNITS_OES)
-        case GL_MAX_VERTEX_UNITS_OES:
-#endif // defined(GL_MAX_VERTEX_UNITS_OES)
-#if defined(GL_MODELVIEW_STACK_DEPTH)
-        case GL_MODELVIEW_STACK_DEPTH:
-#endif // defined(GL_MODELVIEW_STACK_DEPTH)
-#if defined(GL_NORMAL_ARRAY_BUFFER_BINDING)
-        case GL_NORMAL_ARRAY_BUFFER_BINDING:
-#endif // defined(GL_NORMAL_ARRAY_BUFFER_BINDING)
-#if defined(GL_NORMAL_ARRAY_STRIDE)
-        case GL_NORMAL_ARRAY_STRIDE:
-#endif // defined(GL_NORMAL_ARRAY_STRIDE)
-#if defined(GL_NORMAL_ARRAY_TYPE)
-        case GL_NORMAL_ARRAY_TYPE:
-#endif // defined(GL_NORMAL_ARRAY_TYPE)
-#if defined(GL_NUM_COMPRESSED_TEXTURE_FORMATS)
-        case GL_NUM_COMPRESSED_TEXTURE_FORMATS:
-#endif // defined(GL_NUM_COMPRESSED_TEXTURE_FORMATS)
-#if defined(GL_PACK_ALIGNMENT)
-        case GL_PACK_ALIGNMENT:
-#endif // defined(GL_PACK_ALIGNMENT)
-#if defined(GL_PERSPECTIVE_CORRECTION_HINT)
-        case GL_PERSPECTIVE_CORRECTION_HINT:
-#endif // defined(GL_PERSPECTIVE_CORRECTION_HINT)
-#if defined(GL_POINT_SIZE)
-        case GL_POINT_SIZE:
-#endif // defined(GL_POINT_SIZE)
-#if defined(GL_POINT_SIZE_ARRAY_BUFFER_BINDING_OES)
-        case GL_POINT_SIZE_ARRAY_BUFFER_BINDING_OES:
-#endif // defined(GL_POINT_SIZE_ARRAY_BUFFER_BINDING_OES)
-#if defined(GL_POINT_SIZE_ARRAY_STRIDE_OES)
-        case GL_POINT_SIZE_ARRAY_STRIDE_OES:
-#endif // defined(GL_POINT_SIZE_ARRAY_STRIDE_OES)
-#if defined(GL_POINT_SIZE_ARRAY_TYPE_OES)
-        case GL_POINT_SIZE_ARRAY_TYPE_OES:
-#endif // defined(GL_POINT_SIZE_ARRAY_TYPE_OES)
-#if defined(GL_POINT_SMOOTH_HINT)
-        case GL_POINT_SMOOTH_HINT:
-#endif // defined(GL_POINT_SMOOTH_HINT)
-#if defined(GL_POLYGON_OFFSET_FACTOR)
-        case GL_POLYGON_OFFSET_FACTOR:
-#endif // defined(GL_POLYGON_OFFSET_FACTOR)
-#if defined(GL_POLYGON_OFFSET_UNITS)
-        case GL_POLYGON_OFFSET_UNITS:
-#endif // defined(GL_POLYGON_OFFSET_UNITS)
-#if defined(GL_PROJECTION_STACK_DEPTH)
-        case GL_PROJECTION_STACK_DEPTH:
-#endif // defined(GL_PROJECTION_STACK_DEPTH)
-#if defined(GL_RED_BITS)
-        case GL_RED_BITS:
-#endif // defined(GL_RED_BITS)
-#if defined(GL_SHADE_MODEL)
-        case GL_SHADE_MODEL:
-#endif // defined(GL_SHADE_MODEL)
-#if defined(GL_STENCIL_BITS)
-        case GL_STENCIL_BITS:
-#endif // defined(GL_STENCIL_BITS)
-#if defined(GL_STENCIL_CLEAR_VALUE)
-        case GL_STENCIL_CLEAR_VALUE:
-#endif // defined(GL_STENCIL_CLEAR_VALUE)
-#if defined(GL_STENCIL_FAIL)
-        case GL_STENCIL_FAIL:
-#endif // defined(GL_STENCIL_FAIL)
-#if defined(GL_STENCIL_FUNC)
-        case GL_STENCIL_FUNC:
-#endif // defined(GL_STENCIL_FUNC)
-#if defined(GL_STENCIL_PASS_DEPTH_FAIL)
-        case GL_STENCIL_PASS_DEPTH_FAIL:
-#endif // defined(GL_STENCIL_PASS_DEPTH_FAIL)
-#if defined(GL_STENCIL_PASS_DEPTH_PASS)
-        case GL_STENCIL_PASS_DEPTH_PASS:
-#endif // defined(GL_STENCIL_PASS_DEPTH_PASS)
-#if defined(GL_STENCIL_REF)
-        case GL_STENCIL_REF:
-#endif // defined(GL_STENCIL_REF)
-#if defined(GL_STENCIL_VALUE_MASK)
-        case GL_STENCIL_VALUE_MASK:
-#endif // defined(GL_STENCIL_VALUE_MASK)
-#if defined(GL_STENCIL_WRITEMASK)
-        case GL_STENCIL_WRITEMASK:
-#endif // defined(GL_STENCIL_WRITEMASK)
-#if defined(GL_SUBPIXEL_BITS)
-        case GL_SUBPIXEL_BITS:
-#endif // defined(GL_SUBPIXEL_BITS)
-#if defined(GL_TEXTURE_BINDING_2D)
-        case GL_TEXTURE_BINDING_2D:
-#endif // defined(GL_TEXTURE_BINDING_2D)
-#if defined(GL_TEXTURE_COORD_ARRAY_BUFFER_BINDING)
-        case GL_TEXTURE_COORD_ARRAY_BUFFER_BINDING:
-#endif // defined(GL_TEXTURE_COORD_ARRAY_BUFFER_BINDING)
-#if defined(GL_TEXTURE_COORD_ARRAY_SIZE)
-        case GL_TEXTURE_COORD_ARRAY_SIZE:
-#endif // defined(GL_TEXTURE_COORD_ARRAY_SIZE)
-#if defined(GL_TEXTURE_COORD_ARRAY_STRIDE)
-        case GL_TEXTURE_COORD_ARRAY_STRIDE:
-#endif // defined(GL_TEXTURE_COORD_ARRAY_STRIDE)
-#if defined(GL_TEXTURE_COORD_ARRAY_TYPE)
-        case GL_TEXTURE_COORD_ARRAY_TYPE:
-#endif // defined(GL_TEXTURE_COORD_ARRAY_TYPE)
-#if defined(GL_TEXTURE_STACK_DEPTH)
-        case GL_TEXTURE_STACK_DEPTH:
-#endif // defined(GL_TEXTURE_STACK_DEPTH)
-#if defined(GL_UNPACK_ALIGNMENT)
-        case GL_UNPACK_ALIGNMENT:
-#endif // defined(GL_UNPACK_ALIGNMENT)
-#if defined(GL_VERTEX_ARRAY_BUFFER_BINDING)
-        case GL_VERTEX_ARRAY_BUFFER_BINDING:
-#endif // defined(GL_VERTEX_ARRAY_BUFFER_BINDING)
-#if defined(GL_VERTEX_ARRAY_SIZE)
-        case GL_VERTEX_ARRAY_SIZE:
-#endif // defined(GL_VERTEX_ARRAY_SIZE)
-#if defined(GL_VERTEX_ARRAY_STRIDE)
-        case GL_VERTEX_ARRAY_STRIDE:
-#endif // defined(GL_VERTEX_ARRAY_STRIDE)
-#if defined(GL_VERTEX_ARRAY_TYPE)
-        case GL_VERTEX_ARRAY_TYPE:
-#endif // defined(GL_VERTEX_ARRAY_TYPE)
-#if defined(GL_WEIGHT_ARRAY_BUFFER_BINDING_OES)
-        case GL_WEIGHT_ARRAY_BUFFER_BINDING_OES:
-#endif // defined(GL_WEIGHT_ARRAY_BUFFER_BINDING_OES)
-#if defined(GL_WEIGHT_ARRAY_SIZE_OES)
-        case GL_WEIGHT_ARRAY_SIZE_OES:
-#endif // defined(GL_WEIGHT_ARRAY_SIZE_OES)
-#if defined(GL_WEIGHT_ARRAY_STRIDE_OES)
-        case GL_WEIGHT_ARRAY_STRIDE_OES:
-#endif // defined(GL_WEIGHT_ARRAY_STRIDE_OES)
-#if defined(GL_WEIGHT_ARRAY_TYPE_OES)
-        case GL_WEIGHT_ARRAY_TYPE_OES:
-#endif // defined(GL_WEIGHT_ARRAY_TYPE_OES)
-            _needed = 1;
-            break;
-#if defined(GL_ALIASED_POINT_SIZE_RANGE)
-        case GL_ALIASED_POINT_SIZE_RANGE:
-#endif // defined(GL_ALIASED_POINT_SIZE_RANGE)
-#if defined(GL_ALIASED_LINE_WIDTH_RANGE)
-        case GL_ALIASED_LINE_WIDTH_RANGE:
-#endif // defined(GL_ALIASED_LINE_WIDTH_RANGE)
-#if defined(GL_DEPTH_RANGE)
-        case GL_DEPTH_RANGE:
-#endif // defined(GL_DEPTH_RANGE)
-#if defined(GL_MAX_VIEWPORT_DIMS)
-        case GL_MAX_VIEWPORT_DIMS:
-#endif // defined(GL_MAX_VIEWPORT_DIMS)
-#if defined(GL_SMOOTH_LINE_WIDTH_RANGE)
-        case GL_SMOOTH_LINE_WIDTH_RANGE:
-#endif // defined(GL_SMOOTH_LINE_WIDTH_RANGE)
-#if defined(GL_SMOOTH_POINT_SIZE_RANGE)
-        case GL_SMOOTH_POINT_SIZE_RANGE:
-#endif // defined(GL_SMOOTH_POINT_SIZE_RANGE)
-            _needed = 2;
-            break;
-#if defined(GL_COLOR_CLEAR_VALUE)
-        case GL_COLOR_CLEAR_VALUE:
-#endif // defined(GL_COLOR_CLEAR_VALUE)
-#if defined(GL_COLOR_WRITEMASK)
-        case GL_COLOR_WRITEMASK:
-#endif // defined(GL_COLOR_WRITEMASK)
-#if defined(GL_FOG_COLOR)
-        case GL_FOG_COLOR:
-#endif // defined(GL_FOG_COLOR)
-#if defined(GL_LIGHT_MODEL_AMBIENT)
-        case GL_LIGHT_MODEL_AMBIENT:
-#endif // defined(GL_LIGHT_MODEL_AMBIENT)
-#if defined(GL_SCISSOR_BOX)
-        case GL_SCISSOR_BOX:
-#endif // defined(GL_SCISSOR_BOX)
-#if defined(GL_VIEWPORT)
-        case GL_VIEWPORT:
-#endif // defined(GL_VIEWPORT)
-            _needed = 4;
-            break;
-#if defined(GL_MODELVIEW_MATRIX)
-        case GL_MODELVIEW_MATRIX:
-#endif // defined(GL_MODELVIEW_MATRIX)
-#if defined(GL_MODELVIEW_MATRIX_FLOAT_AS_INT_BITS_OES)
-        case GL_MODELVIEW_MATRIX_FLOAT_AS_INT_BITS_OES:
-#endif // defined(GL_MODELVIEW_MATRIX_FLOAT_AS_INT_BITS_OES)
-#if defined(GL_PROJECTION_MATRIX)
-        case GL_PROJECTION_MATRIX:
-#endif // defined(GL_PROJECTION_MATRIX)
-#if defined(GL_PROJECTION_MATRIX_FLOAT_AS_INT_BITS_OES)
-        case GL_PROJECTION_MATRIX_FLOAT_AS_INT_BITS_OES:
-#endif // defined(GL_PROJECTION_MATRIX_FLOAT_AS_INT_BITS_OES)
-#if defined(GL_TEXTURE_MATRIX)
-        case GL_TEXTURE_MATRIX:
-#endif // defined(GL_TEXTURE_MATRIX)
-#if defined(GL_TEXTURE_MATRIX_FLOAT_AS_INT_BITS_OES)
-        case GL_TEXTURE_MATRIX_FLOAT_AS_INT_BITS_OES:
-#endif // defined(GL_TEXTURE_MATRIX_FLOAT_AS_INT_BITS_OES)
-            _needed = 16;
-            break;
-#if defined(GL_COMPRESSED_TEXTURE_FORMATS)
-        case GL_COMPRESSED_TEXTURE_FORMATS:
-#endif // defined(GL_COMPRESSED_TEXTURE_FORMATS)
-            _needed = getNumCompressedTextureFormats();
-            break;
-        default:
-            _needed = 0;
-            break;
-    }
-    if (_remaining < _needed) {
-        SLOGGERD("GLES20", "GlGetIntegerv: length - offset < needed")
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    params_base = (GLint *) params_ref->GetPayload();
-    params = params_base + offset;
-
-    glGetIntegerv(
-        (GLenum)pname,
-        (GLint *)params
-    );
-
+    get<Int32, GLint, glGetIntegerv>(pname, params_ref, offset);
     return NOERROR;
 }
 
@@ -2527,358 +2419,7 @@ ECode GLES20::GlGetIntegerv(
     /* [in] */ Int32 pname,
     /* [in] */ IInt32Buffer* params_buf)
 {
-    Handle64 _array = (Handle64) 0;
-    Int32 _bufferOffset = (Int32) 0;
-    Int32 _remaining;
-    GLint *params = (GLint *) 0;
-
-    Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(params_buf), &_array, &_remaining, &_bufferOffset, &tmp));
-    params = (GLint *) tmp;
-    Int32 _needed;
-    switch (pname) {
-#if defined(GL_ALPHA_BITS)
-        case GL_ALPHA_BITS:
-#endif // defined(GL_ALPHA_BITS)
-#if defined(GL_ALPHA_TEST_FUNC)
-        case GL_ALPHA_TEST_FUNC:
-#endif // defined(GL_ALPHA_TEST_FUNC)
-#if defined(GL_ALPHA_TEST_REF)
-        case GL_ALPHA_TEST_REF:
-#endif // defined(GL_ALPHA_TEST_REF)
-#if defined(GL_BLEND_DST)
-        case GL_BLEND_DST:
-#endif // defined(GL_BLEND_DST)
-#if defined(GL_BLUE_BITS)
-        case GL_BLUE_BITS:
-#endif // defined(GL_BLUE_BITS)
-#if defined(GL_COLOR_ARRAY_BUFFER_BINDING)
-        case GL_COLOR_ARRAY_BUFFER_BINDING:
-#endif // defined(GL_COLOR_ARRAY_BUFFER_BINDING)
-#if defined(GL_COLOR_ARRAY_SIZE)
-        case GL_COLOR_ARRAY_SIZE:
-#endif // defined(GL_COLOR_ARRAY_SIZE)
-#if defined(GL_COLOR_ARRAY_STRIDE)
-        case GL_COLOR_ARRAY_STRIDE:
-#endif // defined(GL_COLOR_ARRAY_STRIDE)
-#if defined(GL_COLOR_ARRAY_TYPE)
-        case GL_COLOR_ARRAY_TYPE:
-#endif // defined(GL_COLOR_ARRAY_TYPE)
-#if defined(GL_CULL_FACE)
-        case GL_CULL_FACE:
-#endif // defined(GL_CULL_FACE)
-#if defined(GL_DEPTH_BITS)
-        case GL_DEPTH_BITS:
-#endif // defined(GL_DEPTH_BITS)
-#if defined(GL_DEPTH_CLEAR_VALUE)
-        case GL_DEPTH_CLEAR_VALUE:
-#endif // defined(GL_DEPTH_CLEAR_VALUE)
-#if defined(GL_DEPTH_FUNC)
-        case GL_DEPTH_FUNC:
-#endif // defined(GL_DEPTH_FUNC)
-#if defined(GL_DEPTH_WRITEMASK)
-        case GL_DEPTH_WRITEMASK:
-#endif // defined(GL_DEPTH_WRITEMASK)
-#if defined(GL_FOG_DENSITY)
-        case GL_FOG_DENSITY:
-#endif // defined(GL_FOG_DENSITY)
-#if defined(GL_FOG_END)
-        case GL_FOG_END:
-#endif // defined(GL_FOG_END)
-#if defined(GL_FOG_MODE)
-        case GL_FOG_MODE:
-#endif // defined(GL_FOG_MODE)
-#if defined(GL_FOG_START)
-        case GL_FOG_START:
-#endif // defined(GL_FOG_START)
-#if defined(GL_FRONT_FACE)
-        case GL_FRONT_FACE:
-#endif // defined(GL_FRONT_FACE)
-#if defined(GL_GREEN_BITS)
-        case GL_GREEN_BITS:
-#endif // defined(GL_GREEN_BITS)
-#if defined(GL_IMPLEMENTATION_COLOR_READ_FORMAT_OES)
-        case GL_IMPLEMENTATION_COLOR_READ_FORMAT_OES:
-#endif // defined(GL_IMPLEMENTATION_COLOR_READ_FORMAT_OES)
-#if defined(GL_IMPLEMENTATION_COLOR_READ_TYPE_OES)
-        case GL_IMPLEMENTATION_COLOR_READ_TYPE_OES:
-#endif // defined(GL_IMPLEMENTATION_COLOR_READ_TYPE_OES)
-#if defined(GL_LIGHT_MODEL_COLOR_CONTROL)
-        case GL_LIGHT_MODEL_COLOR_CONTROL:
-#endif // defined(GL_LIGHT_MODEL_COLOR_CONTROL)
-#if defined(GL_LIGHT_MODEL_LOCAL_VIEWER)
-        case GL_LIGHT_MODEL_LOCAL_VIEWER:
-#endif // defined(GL_LIGHT_MODEL_LOCAL_VIEWER)
-#if defined(GL_LIGHT_MODEL_TWO_SIDE)
-        case GL_LIGHT_MODEL_TWO_SIDE:
-#endif // defined(GL_LIGHT_MODEL_TWO_SIDE)
-#if defined(GL_LINE_SMOOTH_HINT)
-        case GL_LINE_SMOOTH_HINT:
-#endif // defined(GL_LINE_SMOOTH_HINT)
-#if defined(GL_LINE_WIDTH)
-        case GL_LINE_WIDTH:
-#endif // defined(GL_LINE_WIDTH)
-#if defined(GL_LOGIC_OP_MODE)
-        case GL_LOGIC_OP_MODE:
-#endif // defined(GL_LOGIC_OP_MODE)
-#if defined(GL_MATRIX_INDEX_ARRAY_BUFFER_BINDING_OES)
-        case GL_MATRIX_INDEX_ARRAY_BUFFER_BINDING_OES:
-#endif // defined(GL_MATRIX_INDEX_ARRAY_BUFFER_BINDING_OES)
-#if defined(GL_MATRIX_INDEX_ARRAY_SIZE_OES)
-        case GL_MATRIX_INDEX_ARRAY_SIZE_OES:
-#endif // defined(GL_MATRIX_INDEX_ARRAY_SIZE_OES)
-#if defined(GL_MATRIX_INDEX_ARRAY_STRIDE_OES)
-        case GL_MATRIX_INDEX_ARRAY_STRIDE_OES:
-#endif // defined(GL_MATRIX_INDEX_ARRAY_STRIDE_OES)
-#if defined(GL_MATRIX_INDEX_ARRAY_TYPE_OES)
-        case GL_MATRIX_INDEX_ARRAY_TYPE_OES:
-#endif // defined(GL_MATRIX_INDEX_ARRAY_TYPE_OES)
-#if defined(GL_MATRIX_MODE)
-        case GL_MATRIX_MODE:
-#endif // defined(GL_MATRIX_MODE)
-#if defined(GL_MAX_CLIP_PLANES)
-        case GL_MAX_CLIP_PLANES:
-#endif // defined(GL_MAX_CLIP_PLANES)
-#if defined(GL_MAX_ELEMENTS_INDICES)
-        case GL_MAX_ELEMENTS_INDICES:
-#endif // defined(GL_MAX_ELEMENTS_INDICES)
-#if defined(GL_MAX_ELEMENTS_VERTICES)
-        case GL_MAX_ELEMENTS_VERTICES:
-#endif // defined(GL_MAX_ELEMENTS_VERTICES)
-#if defined(GL_MAX_LIGHTS)
-        case GL_MAX_LIGHTS:
-#endif // defined(GL_MAX_LIGHTS)
-#if defined(GL_MAX_MODELVIEW_STACK_DEPTH)
-        case GL_MAX_MODELVIEW_STACK_DEPTH:
-#endif // defined(GL_MAX_MODELVIEW_STACK_DEPTH)
-#if defined(GL_MAX_PALETTE_MATRICES_OES)
-        case GL_MAX_PALETTE_MATRICES_OES:
-#endif // defined(GL_MAX_PALETTE_MATRICES_OES)
-#if defined(GL_MAX_PROJECTION_STACK_DEPTH)
-        case GL_MAX_PROJECTION_STACK_DEPTH:
-#endif // defined(GL_MAX_PROJECTION_STACK_DEPTH)
-#if defined(GL_MAX_TEXTURE_SIZE)
-        case GL_MAX_TEXTURE_SIZE:
-#endif // defined(GL_MAX_TEXTURE_SIZE)
-#if defined(GL_MAX_TEXTURE_STACK_DEPTH)
-        case GL_MAX_TEXTURE_STACK_DEPTH:
-#endif // defined(GL_MAX_TEXTURE_STACK_DEPTH)
-#if defined(GL_MAX_TEXTURE_UNITS)
-        case GL_MAX_TEXTURE_UNITS:
-#endif // defined(GL_MAX_TEXTURE_UNITS)
-#if defined(GL_MAX_VERTEX_UNITS_OES)
-        case GL_MAX_VERTEX_UNITS_OES:
-#endif // defined(GL_MAX_VERTEX_UNITS_OES)
-#if defined(GL_MODELVIEW_STACK_DEPTH)
-        case GL_MODELVIEW_STACK_DEPTH:
-#endif // defined(GL_MODELVIEW_STACK_DEPTH)
-#if defined(GL_NORMAL_ARRAY_BUFFER_BINDING)
-        case GL_NORMAL_ARRAY_BUFFER_BINDING:
-#endif // defined(GL_NORMAL_ARRAY_BUFFER_BINDING)
-#if defined(GL_NORMAL_ARRAY_STRIDE)
-        case GL_NORMAL_ARRAY_STRIDE:
-#endif // defined(GL_NORMAL_ARRAY_STRIDE)
-#if defined(GL_NORMAL_ARRAY_TYPE)
-        case GL_NORMAL_ARRAY_TYPE:
-#endif // defined(GL_NORMAL_ARRAY_TYPE)
-#if defined(GL_NUM_COMPRESSED_TEXTURE_FORMATS)
-        case GL_NUM_COMPRESSED_TEXTURE_FORMATS:
-#endif // defined(GL_NUM_COMPRESSED_TEXTURE_FORMATS)
-#if defined(GL_PACK_ALIGNMENT)
-        case GL_PACK_ALIGNMENT:
-#endif // defined(GL_PACK_ALIGNMENT)
-#if defined(GL_PERSPECTIVE_CORRECTION_HINT)
-        case GL_PERSPECTIVE_CORRECTION_HINT:
-#endif // defined(GL_PERSPECTIVE_CORRECTION_HINT)
-#if defined(GL_POINT_SIZE)
-        case GL_POINT_SIZE:
-#endif // defined(GL_POINT_SIZE)
-#if defined(GL_POINT_SIZE_ARRAY_BUFFER_BINDING_OES)
-        case GL_POINT_SIZE_ARRAY_BUFFER_BINDING_OES:
-#endif // defined(GL_POINT_SIZE_ARRAY_BUFFER_BINDING_OES)
-#if defined(GL_POINT_SIZE_ARRAY_STRIDE_OES)
-        case GL_POINT_SIZE_ARRAY_STRIDE_OES:
-#endif // defined(GL_POINT_SIZE_ARRAY_STRIDE_OES)
-#if defined(GL_POINT_SIZE_ARRAY_TYPE_OES)
-        case GL_POINT_SIZE_ARRAY_TYPE_OES:
-#endif // defined(GL_POINT_SIZE_ARRAY_TYPE_OES)
-#if defined(GL_POINT_SMOOTH_HINT)
-        case GL_POINT_SMOOTH_HINT:
-#endif // defined(GL_POINT_SMOOTH_HINT)
-#if defined(GL_POLYGON_OFFSET_FACTOR)
-        case GL_POLYGON_OFFSET_FACTOR:
-#endif // defined(GL_POLYGON_OFFSET_FACTOR)
-#if defined(GL_POLYGON_OFFSET_UNITS)
-        case GL_POLYGON_OFFSET_UNITS:
-#endif // defined(GL_POLYGON_OFFSET_UNITS)
-#if defined(GL_PROJECTION_STACK_DEPTH)
-        case GL_PROJECTION_STACK_DEPTH:
-#endif // defined(GL_PROJECTION_STACK_DEPTH)
-#if defined(GL_RED_BITS)
-        case GL_RED_BITS:
-#endif // defined(GL_RED_BITS)
-#if defined(GL_SHADE_MODEL)
-        case GL_SHADE_MODEL:
-#endif // defined(GL_SHADE_MODEL)
-#if defined(GL_STENCIL_BITS)
-        case GL_STENCIL_BITS:
-#endif // defined(GL_STENCIL_BITS)
-#if defined(GL_STENCIL_CLEAR_VALUE)
-        case GL_STENCIL_CLEAR_VALUE:
-#endif // defined(GL_STENCIL_CLEAR_VALUE)
-#if defined(GL_STENCIL_FAIL)
-        case GL_STENCIL_FAIL:
-#endif // defined(GL_STENCIL_FAIL)
-#if defined(GL_STENCIL_FUNC)
-        case GL_STENCIL_FUNC:
-#endif // defined(GL_STENCIL_FUNC)
-#if defined(GL_STENCIL_PASS_DEPTH_FAIL)
-        case GL_STENCIL_PASS_DEPTH_FAIL:
-#endif // defined(GL_STENCIL_PASS_DEPTH_FAIL)
-#if defined(GL_STENCIL_PASS_DEPTH_PASS)
-        case GL_STENCIL_PASS_DEPTH_PASS:
-#endif // defined(GL_STENCIL_PASS_DEPTH_PASS)
-#if defined(GL_STENCIL_REF)
-        case GL_STENCIL_REF:
-#endif // defined(GL_STENCIL_REF)
-#if defined(GL_STENCIL_VALUE_MASK)
-        case GL_STENCIL_VALUE_MASK:
-#endif // defined(GL_STENCIL_VALUE_MASK)
-#if defined(GL_STENCIL_WRITEMASK)
-        case GL_STENCIL_WRITEMASK:
-#endif // defined(GL_STENCIL_WRITEMASK)
-#if defined(GL_SUBPIXEL_BITS)
-        case GL_SUBPIXEL_BITS:
-#endif // defined(GL_SUBPIXEL_BITS)
-#if defined(GL_TEXTURE_BINDING_2D)
-        case GL_TEXTURE_BINDING_2D:
-#endif // defined(GL_TEXTURE_BINDING_2D)
-#if defined(GL_TEXTURE_COORD_ARRAY_BUFFER_BINDING)
-        case GL_TEXTURE_COORD_ARRAY_BUFFER_BINDING:
-#endif // defined(GL_TEXTURE_COORD_ARRAY_BUFFER_BINDING)
-#if defined(GL_TEXTURE_COORD_ARRAY_SIZE)
-        case GL_TEXTURE_COORD_ARRAY_SIZE:
-#endif // defined(GL_TEXTURE_COORD_ARRAY_SIZE)
-#if defined(GL_TEXTURE_COORD_ARRAY_STRIDE)
-        case GL_TEXTURE_COORD_ARRAY_STRIDE:
-#endif // defined(GL_TEXTURE_COORD_ARRAY_STRIDE)
-#if defined(GL_TEXTURE_COORD_ARRAY_TYPE)
-        case GL_TEXTURE_COORD_ARRAY_TYPE:
-#endif // defined(GL_TEXTURE_COORD_ARRAY_TYPE)
-#if defined(GL_TEXTURE_STACK_DEPTH)
-        case GL_TEXTURE_STACK_DEPTH:
-#endif // defined(GL_TEXTURE_STACK_DEPTH)
-#if defined(GL_UNPACK_ALIGNMENT)
-        case GL_UNPACK_ALIGNMENT:
-#endif // defined(GL_UNPACK_ALIGNMENT)
-#if defined(GL_VERTEX_ARRAY_BUFFER_BINDING)
-        case GL_VERTEX_ARRAY_BUFFER_BINDING:
-#endif // defined(GL_VERTEX_ARRAY_BUFFER_BINDING)
-#if defined(GL_VERTEX_ARRAY_SIZE)
-        case GL_VERTEX_ARRAY_SIZE:
-#endif // defined(GL_VERTEX_ARRAY_SIZE)
-#if defined(GL_VERTEX_ARRAY_STRIDE)
-        case GL_VERTEX_ARRAY_STRIDE:
-#endif // defined(GL_VERTEX_ARRAY_STRIDE)
-#if defined(GL_VERTEX_ARRAY_TYPE)
-        case GL_VERTEX_ARRAY_TYPE:
-#endif // defined(GL_VERTEX_ARRAY_TYPE)
-#if defined(GL_WEIGHT_ARRAY_BUFFER_BINDING_OES)
-        case GL_WEIGHT_ARRAY_BUFFER_BINDING_OES:
-#endif // defined(GL_WEIGHT_ARRAY_BUFFER_BINDING_OES)
-#if defined(GL_WEIGHT_ARRAY_SIZE_OES)
-        case GL_WEIGHT_ARRAY_SIZE_OES:
-#endif // defined(GL_WEIGHT_ARRAY_SIZE_OES)
-#if defined(GL_WEIGHT_ARRAY_STRIDE_OES)
-        case GL_WEIGHT_ARRAY_STRIDE_OES:
-#endif // defined(GL_WEIGHT_ARRAY_STRIDE_OES)
-#if defined(GL_WEIGHT_ARRAY_TYPE_OES)
-        case GL_WEIGHT_ARRAY_TYPE_OES:
-#endif // defined(GL_WEIGHT_ARRAY_TYPE_OES)
-            _needed = 1;
-            break;
-#if defined(GL_ALIASED_POINT_SIZE_RANGE)
-        case GL_ALIASED_POINT_SIZE_RANGE:
-#endif // defined(GL_ALIASED_POINT_SIZE_RANGE)
-#if defined(GL_ALIASED_LINE_WIDTH_RANGE)
-        case GL_ALIASED_LINE_WIDTH_RANGE:
-#endif // defined(GL_ALIASED_LINE_WIDTH_RANGE)
-#if defined(GL_DEPTH_RANGE)
-        case GL_DEPTH_RANGE:
-#endif // defined(GL_DEPTH_RANGE)
-#if defined(GL_MAX_VIEWPORT_DIMS)
-        case GL_MAX_VIEWPORT_DIMS:
-#endif // defined(GL_MAX_VIEWPORT_DIMS)
-#if defined(GL_SMOOTH_LINE_WIDTH_RANGE)
-        case GL_SMOOTH_LINE_WIDTH_RANGE:
-#endif // defined(GL_SMOOTH_LINE_WIDTH_RANGE)
-#if defined(GL_SMOOTH_POINT_SIZE_RANGE)
-        case GL_SMOOTH_POINT_SIZE_RANGE:
-#endif // defined(GL_SMOOTH_POINT_SIZE_RANGE)
-            _needed = 2;
-            break;
-#if defined(GL_COLOR_CLEAR_VALUE)
-        case GL_COLOR_CLEAR_VALUE:
-#endif // defined(GL_COLOR_CLEAR_VALUE)
-#if defined(GL_COLOR_WRITEMASK)
-        case GL_COLOR_WRITEMASK:
-#endif // defined(GL_COLOR_WRITEMASK)
-#if defined(GL_FOG_COLOR)
-        case GL_FOG_COLOR:
-#endif // defined(GL_FOG_COLOR)
-#if defined(GL_LIGHT_MODEL_AMBIENT)
-        case GL_LIGHT_MODEL_AMBIENT:
-#endif // defined(GL_LIGHT_MODEL_AMBIENT)
-#if defined(GL_SCISSOR_BOX)
-        case GL_SCISSOR_BOX:
-#endif // defined(GL_SCISSOR_BOX)
-#if defined(GL_VIEWPORT)
-        case GL_VIEWPORT:
-#endif // defined(GL_VIEWPORT)
-            _needed = 4;
-            break;
-#if defined(GL_MODELVIEW_MATRIX)
-        case GL_MODELVIEW_MATRIX:
-#endif // defined(GL_MODELVIEW_MATRIX)
-#if defined(GL_MODELVIEW_MATRIX_FLOAT_AS_INT_BITS_OES)
-        case GL_MODELVIEW_MATRIX_FLOAT_AS_INT_BITS_OES:
-#endif // defined(GL_MODELVIEW_MATRIX_FLOAT_AS_INT_BITS_OES)
-#if defined(GL_PROJECTION_MATRIX)
-        case GL_PROJECTION_MATRIX:
-#endif // defined(GL_PROJECTION_MATRIX)
-#if defined(GL_PROJECTION_MATRIX_FLOAT_AS_INT_BITS_OES)
-        case GL_PROJECTION_MATRIX_FLOAT_AS_INT_BITS_OES:
-#endif // defined(GL_PROJECTION_MATRIX_FLOAT_AS_INT_BITS_OES)
-#if defined(GL_TEXTURE_MATRIX)
-        case GL_TEXTURE_MATRIX:
-#endif // defined(GL_TEXTURE_MATRIX)
-#if defined(GL_TEXTURE_MATRIX_FLOAT_AS_INT_BITS_OES)
-        case GL_TEXTURE_MATRIX_FLOAT_AS_INT_BITS_OES:
-#endif // defined(GL_TEXTURE_MATRIX_FLOAT_AS_INT_BITS_OES)
-            _needed = 16;
-            break;
-#if defined(GL_COMPRESSED_TEXTURE_FORMATS)
-        case GL_COMPRESSED_TEXTURE_FORMATS:
-#endif // defined(GL_COMPRESSED_TEXTURE_FORMATS)
-            _needed = getNumCompressedTextureFormats();
-            break;
-        default:
-            _needed = 0;
-            break;
-    }
-    if (_remaining < _needed) {
-        SLOGGERD("GLES20", "GlGetIntegervEx: remaining() < needed")
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    if (params == NULL) {
-        char * _paramsBase = reinterpret_cast<char *>(_array);
-        params = (GLint *) (_paramsBase + _bufferOffset);
-    }
-    glGetIntegerv(
-        (GLenum)pname,
-        (GLint *)params
-    );
-
+    getarray<GLint, glGetIntegerv>(pname, IBuffer::Probe(params_buf));
     return NOERROR;
 }
 
@@ -2899,6 +2440,11 @@ ECode GLES20::GlGetProgramiv(
     }
     if (offset < 0) {
         SLOGGERD("GLES20", "GlGetProgramiv: offset < 0")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    Int32 _remaining = params_ref->GetLength() - offset;
+    if (_remaining < 1) {
+        SLOGGERD("GLES20", "GlGetProgramiv: length - offset < 1 < needed")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     params_base = (GLint *) params_ref->GetPayload();
@@ -2926,7 +2472,11 @@ ECode GLES20::GlGetProgramiv(
     GLint *params = (GLint *) 0;
 
     Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(params_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    FAIL_RETURN(GetPointer(IBuffer::Probe(params_buf), &_array, &_remaining, &_bufferOffset, &tmp))
+    if (_remaining < 1) {
+        SLOGGERD("GLES20", "GlGetProgramiv: _remaining < 1 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     params = (GLint *) tmp;
     if (params == NULL) {
         char * _paramsBase = reinterpret_cast<char *>(_array);;
@@ -2981,6 +2531,11 @@ ECode GLES20::GlGetRenderbufferParameteriv(
         SLOGGERD("GLES20", "GlGetRenderbufferParameteriv: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = params_ref->GetLength() - offset;
+    if (_remaining < 1) {
+        SLOGGERD("GLES20", "GlGetRenderbufferParameteriv: length - offset < 1 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     params_base = (GLint *) params_ref->GetPayload();
     params = params_base + offset;
 
@@ -3006,6 +2561,10 @@ ECode GLES20::GlGetRenderbufferParameteriv(
 
     Handle64 tmp;
     FAIL_RETURN(GetPointer(IBuffer::Probe(params_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    if (_remaining < 1) {
+        SLOGGERD("GLES20", "GlGetRenderbufferParameteriv: remaining() < 1 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     params = (GLint *) tmp;
     if (params == NULL) {
         char * _paramsBase = reinterpret_cast<char *>(_array);
@@ -3038,6 +2597,11 @@ ECode GLES20::GlGetShaderiv(
         SLOGGERD("GLES20", "GlGetShaderiv: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = params_ref->GetLength() - offset;
+    if (_remaining < 1) {
+        SLOGGERD("GLES20", "GlGetShaderiv: length - offset < 1 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     params_base = (GLint *) params_ref->GetPayload();
     params = params_base + offset;
 
@@ -3063,6 +2627,10 @@ ECode GLES20::GlGetShaderiv(
 
     Handle64 tmp;
     FAIL_RETURN(GetPointer(IBuffer::Probe(params_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    if (_remaining < 1) {
+        SLOGGERD("GLES20", "GlGetShaderiv: remaining() < 1 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     params = (GLint *) tmp;
     if (params == NULL) {
         char * _paramsBase = reinterpret_cast<char *>(_array);
@@ -3126,6 +2694,11 @@ ECode GLES20::GlGetShaderPrecisionFormat(
         SLOGGERD("GLES20", "GlGetShaderPrecisionFormat: rangeOffset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _rangeRemaining = range_ref->GetLength() - rangeOffset;
+    if (_rangeRemaining < 1) {
+        SLOGGERD("GLES20", "GlGetShaderPrecisionFormat: length - rangeOffset < 1 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     range_base = (GLint *) range_ref->GetPayload();
     range = range_base + rangeOffset;
 
@@ -3135,6 +2708,11 @@ ECode GLES20::GlGetShaderPrecisionFormat(
     }
     if (precisionOffset < 0) {
         SLOGGERD("GLES20", "GlGetShaderPrecisionFormat: precisionOffset < 0")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    Int32 _precisionRemaining = precision_ref->GetLength() - precisionOffset;
+    if (_precisionRemaining < 1) {
+        SLOGGERD("GLES20", "GlGetShaderPrecisionFormat: length - rangeOffset < 1 < needed")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     precision_base = (GLint *) precision_ref->GetPayload();
@@ -3167,9 +2745,17 @@ ECode GLES20::GlGetShaderPrecisionFormat(
     GLint *precision = (GLint *) 0;
 
     Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(range_buf), &_rangeArray, &_rangeRemaining, &_rangeBufferOffset, &tmp));
+    FAIL_RETURN(GetPointer(IBuffer::Probe(range_buf), &_rangeArray, &_rangeRemaining, &_rangeBufferOffset, &tmp))
+    if (_rangeRemaining < 1) {
+        SLOGGERD("GLES20", "GlGetShaderPrecisionFormat: remaining() < 1 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     range = (GLint *) tmp;
     FAIL_RETURN(GetPointer(IBuffer::Probe(precision_buf), &_precisionArray, &_precisionRemaining, &_precisionBufferOffset, &tmp));
+    if (_precisionRemaining < 1) {
+        SLOGGERD("GLES20", "GlGetShaderPrecisionFormat: remaining() < 1 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     precision = (GLint *) tmp;
     if (range == NULL) {
         char * _rangeBase = reinterpret_cast<char *>(_rangeArray);
@@ -3229,7 +2815,7 @@ ECode GLES20::GlGetShaderSource(
         (GLuint)shader,
         (GLsizei)bufsize,
         (GLsizei *)length,
-        (char *)source
+        reinterpret_cast<char *>(source)
     );
     return NOERROR;
 }
@@ -3453,6 +3039,11 @@ ECode GLES20::GlGetUniformfv(
         SLOGGERD("GLES20", "GlGetUniformfv: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = params_ref->GetLength() - offset;
+    if (_remaining < 1) {
+        SLOGGERD("GLES20", "GlGetUniformfv: length - offset < 1 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     params_base = (GLfloat *) params_ref->GetPayload();
     params = params_base + offset;
 
@@ -3478,6 +3069,10 @@ ECode GLES20::GlGetUniformfv(
 
     Handle64 tmp;
     FAIL_RETURN(GetPointer(IBuffer::Probe(params_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    if (_remaining < 1) {
+        SLOGGERD("GLES20", "GlGetUniformfv: remaining() < 1 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     params = (GLfloat *) tmp;
     if (params == NULL) {
         char * _paramsBase = reinterpret_cast<char *>(_array);
@@ -3510,6 +3105,11 @@ ECode GLES20::GlGetUniformiv(
         SLOGGERD("GLES20", "GlGetUniformiv: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = params_ref->GetLength() - offset;
+    if (_remaining < 1) {
+        SLOGGERD("GLES20", "GlGetUniformiv: length - offset < 1 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     params_base = (GLint *) params_ref->GetPayload();
     params = params_base + offset;
 
@@ -3534,7 +3134,11 @@ ECode GLES20::GlGetUniformiv(
     GLint *params = (GLint *) 0;
 
     Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(params_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    FAIL_RETURN(GetPointer(IBuffer::Probe(params_buf), &_array, &_remaining, &_bufferOffset, &tmp))
+    if (_remaining < 1) {
+        SLOGGERD("GLES20", "GlGetUniformiv: remaining() < 1 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     params = (GLint *) tmp;
     if (params == NULL) {
         char * _paramsBase = reinterpret_cast<char *>(_array);
@@ -3590,6 +3194,22 @@ ECode GLES20::GlGetVertexAttribfv(
         SLOGGERD("GLES20", "GlGetVertexAttribfv: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = params_ref->GetLength() - offset;
+    Int32 _needed;
+    switch (pname) {
+#if defined(GL_CURRENT_VERTEX_ATTRIB)
+        case GL_CURRENT_VERTEX_ATTRIB:
+#endif // defined(GL_CURRENT_VERTEX_ATTRIB)
+            _needed = 4;
+            break;
+        default:
+            _needed = 1;
+            break;
+    }
+    if (_remaining < _needed) {
+        SLOGGERD("GLES20", "GlGetVertexAttribfv: length - offset < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     params_base = (GLfloat *) params_ref->GetPayload();
     params = params_base + offset;
 
@@ -3614,7 +3234,22 @@ ECode GLES20::GlGetVertexAttribfv(
     GLfloat *params = (GLfloat *) 0;
 
     Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(params_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    FAIL_RETURN(GetPointer(IBuffer::Probe(params_buf), &_array, &_remaining, &_bufferOffset, &tmp))
+    Int32 _needed;
+    switch (pname) {
+#if defined(GL_CURRENT_VERTEX_ATTRIB)
+        case GL_CURRENT_VERTEX_ATTRIB:
+#endif // defined(GL_CURRENT_VERTEX_ATTRIB)
+            _needed = 4;
+            break;
+        default:
+            _needed = 1;
+            break;
+    }
+    if (_remaining < _needed) {
+        SLOGGERD("GLES20", "GlGetVertexAttribfv: remaining() < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     params = (GLfloat *) tmp;
     if (params == NULL) {
         char * _paramsBase = reinterpret_cast<char *>(_array);;
@@ -3647,6 +3282,22 @@ ECode GLES20::GlGetVertexAttribiv(
         SLOGGERD("GLES20", "GlGetVertexAttribiv: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = params_ref->GetLength() - offset;
+    Int32 _needed;
+    switch (pname) {
+#if defined(GL_CURRENT_VERTEX_ATTRIB)
+        case GL_CURRENT_VERTEX_ATTRIB:
+#endif // defined(GL_CURRENT_VERTEX_ATTRIB)
+            _needed = 4;
+            break;
+        default:
+            _needed = 1;
+            break;
+    }
+    if (_remaining < _needed) {
+        SLOGGERD("GLES20", "GlGetVertexAttribiv: length - offset < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     params_base = (GLint *) params_ref->GetPayload();
     params = params_base + offset;
 
@@ -3671,7 +3322,22 @@ ECode GLES20::GlGetVertexAttribiv(
     GLint *params = (GLint *) 0;
 
     Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(params_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    FAIL_RETURN(GetPointer(IBuffer::Probe(params_buf), &_array, &_remaining, &_bufferOffset, &tmp))
+    Int32 _needed;
+    switch (pname) {
+#if defined(GL_CURRENT_VERTEX_ATTRIB)
+        case GL_CURRENT_VERTEX_ATTRIB:
+#endif // defined(GL_CURRENT_VERTEX_ATTRIB)
+            _needed = 4;
+            break;
+        default:
+            _needed = 1;
+            break;
+    }
+    if (_remaining < _needed) {
+        SLOGGERD("GLES20", "GlGetVertexAttribiv: remaining() < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     params = (GLint *) tmp;
     if (params == NULL) {
         char * _paramsBase = reinterpret_cast<char *>(_array);
@@ -3965,7 +3631,11 @@ ECode GLES20::GlShaderBinary(
     shaders = shaders_base + offset;
 
     Handle64 tmp;
-    FAIL_RETURN(GetPointer(binary_buf, &_array, &_binaryRemaining, &_bufferOffset, &tmp));
+    FAIL_RETURN(GetPointer(binary_buf, &_array, &_binaryRemaining, &_bufferOffset, &tmp))
+    if (_binaryRemaining < length) {
+        SLOGGERD("GLES20", "GlShaderBinary: remaining() < length < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     binary = (GLvoid *) tmp;
     if (binary == NULL) {
         char * _binaryBase = reinterpret_cast<char *>(_array);;
@@ -4003,8 +3673,12 @@ ECode GLES20::GlShaderBinary(
 
     Handle64 tmp;
     FAIL_RETURN(GetPointer(IBuffer::Probe(shaders_buf), &_shadersArray, &_shadersRemaining, &_shadersBufferOffset, &tmp));
-    shaders = (GLuint *) tmp;
     FAIL_RETURN(GetPointer(binary_buf, &_binaryArray, &_binaryRemaining, &_binaryBufferOffset, &tmp));
+    if (_binaryRemaining < length) {
+        SLOGGERD("GLES20", "GlShaderBinary: remaining() < length < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    shaders = (GLuint *) tmp;
     binary = (GLvoid *) tmp;
     if (shaders == NULL) {
         char * _shadersBase = reinterpret_cast<char *>(_shadersArray);
@@ -4408,6 +4082,11 @@ ECode GLES20::GlUniform1fv(
         SLOGGERD("GLES20", "GlUniform1fv: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = v_ref->GetLength() - offset;
+    if (_remaining < count) {
+        SLOGGERD("GLES20", "GlUniform1fv: length - offset < count < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     v_base = (GLfloat *) v_ref->GetPayload();
     v = v_base + offset;
 
@@ -4432,7 +4111,11 @@ ECode GLES20::GlUniform1fv(
     GLfloat *v = (GLfloat *) 0;
 
     Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(v_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    FAIL_RETURN(GetPointer(IBuffer::Probe(v_buf), &_array, &_remaining, &_bufferOffset, &tmp))
+    if (_remaining < count) {
+        SLOGGERD("GLES20", "GlUniform1fv: remaining() < count < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     v = (GLfloat *) tmp;
     if (v == NULL) {
         char * _vBase = reinterpret_cast<char *>(_array);
@@ -4478,6 +4161,11 @@ ECode GLES20::GlUniform1iv(
         SLOGGERD("GLES20", "GlUniform1iv: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = v_ref->GetLength() - offset;
+    if (_remaining < count) {
+        SLOGGERD("GLES20", "GlUniform1iv: length - offset < count < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     v_base = (GLint *) v_ref->GetPayload();
     v = v_base + offset;
 
@@ -4503,6 +4191,10 @@ ECode GLES20::GlUniform1iv(
 
     Handle64 tmp;
     FAIL_RETURN(GetPointer(IBuffer::Probe(v_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    if (_remaining < count) {
+        SLOGGERD("GLES20", "GlUniform1iv: remaining() < count < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     v = (GLint *) tmp;
     if (v == NULL) {
         char * _vBase = reinterpret_cast<char *>(_array);
@@ -4550,6 +4242,11 @@ ECode GLES20::GlUniform2fv(
         SLOGGERD("GLES20", "GlUniform2fv: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = v_ref->GetLength() - offset;
+    if (_remaining < count*2) {
+        SLOGGERD("GLES20", "GlUniform2fv: length - offset < count*2 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     v_base = (GLfloat *) v_ref->GetPayload();
     v = v_base + offset;
 
@@ -4574,7 +4271,11 @@ ECode GLES20::GlUniform2fv(
     GLfloat *v = (GLfloat *) 0;
 
     Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(v_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    FAIL_RETURN(GetPointer(IBuffer::Probe(v_buf), &_array, &_remaining, &_bufferOffset, &tmp))
+    if (_remaining < count*2) {
+        SLOGGERD("GLES20", "GlUniform2fv: remaining() < count*2 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     v = (GLfloat *) tmp;
     if (v == NULL) {
         char * _vBase = reinterpret_cast<char *>(_array);
@@ -4622,6 +4323,11 @@ ECode GLES20::GlUniform2iv(
         SLOGGERD("GLES20", "GlUniform2iv: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = v_ref->GetLength() - offset;
+    if (_remaining < count*2) {
+        SLOGGERD("GLES20", "length - offset < count*2 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     v_base = (GLint *) v_ref->GetPayload();
     v = v_base + offset;
 
@@ -4647,6 +4353,10 @@ ECode GLES20::GlUniform2iv(
 
     Handle64 tmp;
     FAIL_RETURN(GetPointer(IBuffer::Probe(v_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    if (_remaining < count*2) {
+        SLOGGERD("GLES20", "remaining() < count*2 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     v = (GLint *) tmp;
     if (v == NULL) {
         char * _vBase = reinterpret_cast<char *>(_array);
@@ -4696,6 +4406,11 @@ ECode GLES20::GlUniform3fv(
         SLOGGERD("GLES20", "GlUniform3fv: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = v_ref->GetLength() - offset;
+    if (_remaining < count*3) {
+        SLOGGERD("GLES20", "GlUniform3fv: length - offset < count*3 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     v_base = (GLfloat *) v_ref->GetPayload();
     v = v_base + offset;
 
@@ -4720,7 +4435,11 @@ ECode GLES20::GlUniform3fv(
     GLfloat *v = (GLfloat *) 0;
 
     Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(v_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    FAIL_RETURN(GetPointer(IBuffer::Probe(v_buf), &_array, &_remaining, &_bufferOffset, &tmp))
+    if (_remaining < count*3) {
+        SLOGGERD("GLES20", "GlUniform3fv: remaining() < count*3 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     v = (GLfloat *) tmp;
     if (v == NULL) {
         char * _vBase = reinterpret_cast<char *>(_array);
@@ -4770,6 +4489,11 @@ ECode GLES20::GlUniform3iv(
         SLOGGERD("GLES20", "GlUniform3iv: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = v_ref->GetLength() - offset;
+    if (_remaining < count*3) {
+        SLOGGERD("GLES20", "GlUniform3iv: length - offset < count*3 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     v_base = (GLint *) v_ref->GetPayload();
     v = v_base + offset;
 
@@ -4794,7 +4518,11 @@ ECode GLES20::GlUniform3iv(
     GLint *v = (GLint *) 0;
 
     Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(v_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    FAIL_RETURN(GetPointer(IBuffer::Probe(v_buf), &_array, &_remaining, &_bufferOffset, &tmp))
+    if (_remaining < count*3) {
+        SLOGGERD("GLES20", "GlUniform3iv: remaining() < count*3 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     v = (GLint *) tmp;
     if (v == NULL) {
         char * _vBase = reinterpret_cast<char *>(_array);
@@ -4846,6 +4574,11 @@ ECode GLES20::GlUniform4fv(
         SLOGGERD("GLES20", "GlUniform4fv: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = v_ref->GetLength() - offset;
+    if (_remaining < count*4) {
+        SLOGGERD("GLES20", "GlUniform4fv: length - offset < count*4 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     v_base = (GLfloat *) v_ref->GetPayload();
     v = v_base + offset;
 
@@ -4870,7 +4603,11 @@ ECode GLES20::GlUniform4fv(
     GLfloat *v = (GLfloat *) 0;
 
     Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(v_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    FAIL_RETURN(GetPointer(IBuffer::Probe(v_buf), &_array, &_remaining, &_bufferOffset, &tmp))
+    if (_remaining < count*4) {
+        SLOGGERD("GLES20", "GlUniform4fv: remaining() < count*4 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     v = (GLfloat *) tmp;
     if (v == NULL) {
         char * _vBase = reinterpret_cast<char *>(_array);
@@ -4922,6 +4659,11 @@ ECode GLES20::GlUniform4iv(
         SLOGGERD("GLES20", "GlUniform4iv: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = v_ref->GetLength() - offset;
+    if (_remaining < count*4) {
+        SLOGGERD("GLES20", "GlUniform4iv: length - offset < count*4 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     v_base = (GLint *) v_ref->GetPayload();
     v = v_base + offset;
 
@@ -4946,7 +4688,11 @@ ECode GLES20::GlUniform4iv(
     GLint *v = (GLint *) 0;
 
     Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(v_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    FAIL_RETURN(GetPointer(IBuffer::Probe(v_buf), &_array, &_remaining, &_bufferOffset, &tmp))
+    if (_remaining < count*4) {
+        SLOGGERD("GLES20", "GlUniform4iv: remaining() < count*4 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     v = (GLint *) tmp;
     if (v == NULL) {
         char * _vBase = reinterpret_cast<char *>(_array);
@@ -4980,6 +4726,11 @@ ECode GLES20::GlUniformMatrix2fv(
         SLOGGERD("GLES20", "GlUniformMatrix2fv:: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = value_ref->GetLength() - offset;
+    if (_remaining < count*4) {
+        SLOGGERD("GLES20", "GlUniformMatrix2fv:: length - offset < count*4 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     value_base = (GLfloat *) value_ref->GetPayload();
     value = value_base + offset;
 
@@ -5006,7 +4757,11 @@ ECode GLES20::GlUniformMatrix2fv(
     GLfloat *value = (GLfloat *) 0;
 
     Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(value_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    FAIL_RETURN(GetPointer(IBuffer::Probe(value_buf), &_array, &_remaining, &_bufferOffset, &tmp))
+    if (_remaining < count*4) {
+        SLOGGERD("GLES20", "GlUniformMatrix2fv:: remaining() < count*4 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     value = (GLfloat *) tmp;
     if (value == NULL) {
         char * _valueBase = reinterpret_cast<char *>(_array);
@@ -5041,6 +4796,11 @@ ECode GLES20::GlUniformMatrix3fv(
         SLOGGERD("GLES20", "GlUniformMatrix3fv: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = value_ref->GetLength() - offset;
+    if (_remaining < count*9) {
+        SLOGGERD("GLES20", "GlUniformMatrix3fv: length - offset < count*9 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     value_base = (GLfloat *) value_ref->GetPayload();
     value = value_base + offset;
 
@@ -5068,7 +4828,11 @@ ECode GLES20::GlUniformMatrix3fv(
     GLfloat *value = (GLfloat *) 0;
 
     Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(value_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    FAIL_RETURN(GetPointer(IBuffer::Probe(value_buf), &_array, &_remaining, &_bufferOffset, &tmp))
+    if (_remaining < count*9) {
+        SLOGGERD("GLES20", "GlUniformMatrix3fv: remaining() < count*9 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     value = (GLfloat *) tmp;
     if (value == NULL) {
         char * _valueBase = reinterpret_cast<char *>(_array);
@@ -5103,6 +4867,11 @@ ECode GLES20::GlUniformMatrix4fv(
         SLOGGERD("GLES20", "GlUniformMatrix4fv: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = value_ref->GetLength() - offset;
+    if (_remaining < count*16) {
+        SLOGGERD("GLES20", "GlUniformMatrix4fv: length - offset < count*16 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     value_base = (GLfloat *) value_ref->GetPayload();
     value = value_base + offset;
 
@@ -5129,7 +4898,11 @@ ECode GLES20::GlUniformMatrix4fv(
     GLfloat *value = (GLfloat *) 0;
 
     Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(value_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    FAIL_RETURN(GetPointer(IBuffer::Probe(value_buf), &_array, &_remaining, &_bufferOffset, &tmp))
+    if (_remaining < count*16) {
+        SLOGGERD("GLES20", "GlUniformMatrix4fv: remaining() < count*16 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     value = (GLfloat *) tmp;
     if (value == NULL) {
         char * _valueBase = reinterpret_cast<char *>(_array);
@@ -5197,6 +4970,11 @@ ECode GLES20::GlVertexAttrib1fv(
         SLOGGERD("GLES20", "GlVertexAttrib1fv: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = values_ref->GetLength() - offset;
+    if (_remaining < 1) {
+        SLOGGERD("GLES20", "GlVertexAttrib1fv: length - offset < 1 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     values_base = (GLfloat *) values_ref->GetPayload();
     values = values_base + offset;
 
@@ -5219,7 +4997,11 @@ ECode GLES20::GlVertexAttrib1fv(
     GLfloat *values = (GLfloat *) 0;
 
     Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(values_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    FAIL_RETURN(GetPointer(IBuffer::Probe(values_buf), &_array, &_remaining, &_bufferOffset, &tmp))
+    if (_remaining < 1) {
+        SLOGGERD("GLES20", "GlVertexAttrib1fv: remaining() < 1 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     values = (GLfloat *) tmp;
     if (values == NULL) {
         char * _valuesBase = reinterpret_cast<char *>(_array);
@@ -5265,6 +5047,11 @@ ECode GLES20::GlVertexAttrib2fv(
         SLOGGERD("GLES20", "GlVertexAttrib2fv: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = values_ref->GetLength() - offset;
+    if (_remaining < 2) {
+        SLOGGERD("GLES20", "GlVertexAttrib2fv: length - offset < 2 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     values_base = (GLfloat *) values_ref->GetPayload();
     values = values_base + offset;
 
@@ -5287,7 +5074,11 @@ ECode GLES20::GlVertexAttrib2fv(
     GLfloat *values = (GLfloat *) 0;
 
     Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(values_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    FAIL_RETURN(GetPointer(IBuffer::Probe(values_buf), &_array, &_remaining, &_bufferOffset, &tmp))
+    if (_remaining < 2) {
+        SLOGGERD("GLES20", "GlVertexAttrib1fv: remaining() < 2 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     values = (GLfloat *) tmp;
     if (values == NULL) {
         char * _valuesBase = reinterpret_cast<char *>(_array);
@@ -5335,6 +5126,11 @@ ECode GLES20::GlVertexAttrib3fv(
         SLOGGERD("GLES20", "GlVertexAttrib3fv: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = values_ref->GetLength() - offset;
+    if (_remaining < 3) {
+        SLOGGERD("GLES20", "GlVertexAttrib2fv: length - offset < 3 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     values_base = (GLfloat *) values_ref->GetPayload();
     values = values_base + offset;
 
@@ -5357,7 +5153,11 @@ ECode GLES20::GlVertexAttrib3fv(
     GLfloat *values = (GLfloat *) 0;
 
     Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(values_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    FAIL_RETURN(GetPointer(IBuffer::Probe(values_buf), &_array, &_remaining, &_bufferOffset, &tmp))
+    if (_remaining < 3) {
+        SLOGGERD("GLES20", "GlVertexAttrib3fv: remaining() < 3 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     values = (GLfloat *) tmp;
     if (values == NULL) {
         char * _valuesBase = reinterpret_cast<char *>(_array);
@@ -5407,6 +5207,11 @@ ECode GLES20::GlVertexAttrib4fv(
         SLOGGERD("GLES20", "GlVertexAttrib4fv: offset < 0")
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    Int32 _remaining = values_ref->GetLength() - offset;
+    if (_remaining < 4) {
+        SLOGGERD("GLES20", "GlVertexAttrib4fv: length - offset < 4 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     values_base = (GLfloat *) values_ref->GetPayload();
     values = values_base + offset;
 
@@ -5429,7 +5234,11 @@ ECode GLES20::GlVertexAttrib4fv(
     GLfloat *values = (GLfloat *) 0;
 
     Handle64 tmp;
-    FAIL_RETURN(GetPointer(IBuffer::Probe(values_buf), &_array, &_remaining, &_bufferOffset, &tmp));
+    FAIL_RETURN(GetPointer(IBuffer::Probe(values_buf), &_array, &_remaining, &_bufferOffset, &tmp))
+    if (_remaining < 4) {
+        SLOGGERD("GLES20", "GlVertexAttrib4fv: remaining() < 4 < needed")
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
     values = (GLfloat *) tmp;
     if (values == NULL) {
         char * _valuesBase = reinterpret_cast<char *>(_array);
@@ -5460,7 +5269,7 @@ ECode GLES20::GlVertexAttribPointer(
         (GLenum)type,
         (GLboolean)normalized,
         (GLsizei)stride,
-        (const GLvoid *)offset
+        reinterpret_cast<GLvoid *>(offset)
     );
     return NOERROR;
 }
@@ -5533,168 +5342,7 @@ ECode GLES20::GlVertexAttribPointerBounds(
         (GLboolean)normalized,
         (GLsizei)stride,
         (GLvoid *)ptr,
-        (GLsizei)remaining
-    );
-    return NOERROR;
-}
-
-Int32 GLES20::GetNumCompressedTextureFormats() {
-    int numCompressedTextureFormats = 0;
-    glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &numCompressedTextureFormats);
-    return numCompressedTextureFormats;
-}
-
-
-ECode GLES20::GetDirectBufferPointer(
-    /* [in] */ IBuffer* buffer,
-    /* [out] */ Handle64* result)
-{
-    Handle64 effectiveDirectAddress;
-    buffer->GetEffectiveDirectAddress(&effectiveDirectAddress);
-    if (effectiveDirectAddress != 0) {
-        Int32 position, elementSizeShift;
-        buffer->GetPosition(&position);
-        buffer->GetElementSizeShift(&elementSizeShift);
-        effectiveDirectAddress += (position << elementSizeShift);
-    } else {
-        SLOGGERD("GLES20", "GetDirectBufferPointer: Must use a native order direct Buffer")
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    *result = effectiveDirectAddress;
-    return NOERROR;
-}
-
-ECode GLES20::GetPointer(
-    /* [in] */ IBuffer* buffer,
-    /* [in, out] */ Handle64* array,
-    /* [in, out] */ Int32* remaining,
-    /* [in, out] */ Int32* offset,
-    /* [out] */ Handle64* rst)
-{
-    Int32 position;
-    Int32 limit;
-    Int32 elementSizeShift;
-    Int64 pointer;
-    buffer->GetPosition(&position);
-    buffer->GetLimit(&limit);
-    buffer->GetElementSizeShift(&elementSizeShift);
-    *remaining = (limit - position) << elementSizeShift;
-
-    AutoPtr<INIOAccess> helper;
-    CNIOAccess::AcquireSingleton((INIOAccess**)&helper);
-
-    helper->GetBasePointer(buffer, &pointer);
-    if (pointer != 0L) {
-        *array = 0;
-        *rst = (Handle64)pointer;
-        return NOERROR;
-    }
-
-    Boolean hasArray;
-    if (buffer->HasArray(&hasArray), hasArray) {
-        buffer->GetPrimitiveArray(array);
-    } else {
-        *array = 0;
-    }
-    helper->GetBaseArrayOffset(buffer, offset);
-
-    *rst = 0;
-    return NOERROR;
-}
-
-ECode GLES20::InitGL(IInterface* surface)
-{
-    if (!mEgl)
-    {
-        Slogger::E("GLES20", "sur,ISurface:%p", surface);
-
-        mEgl = IEGL10::Probe(CEGLContextImpl::GetEGL());
-        mEgl->EglGetDisplay(NULL, (XIEGLDisplay**)&mEglDisplay);
-
-        AutoPtr<IEGL10Helper> egl10Helper;
-        CEGL10Helper::AcquireSingleton((IEGL10Helper**)&egl10Helper);
-        AutoPtr<XIEGLDisplay> noDisplay;
-        egl10Helper->GetNoDisplay((XIEGLDisplay**)&noDisplay);
-        if (mEglDisplay == noDisplay) {
-            Slogger::E("GLES20", "eglGetDisplay failed");
-            return E_RUNTIME_EXCEPTION;
-        }
-
-        AutoPtr<ArrayOf<Int32> > version = ArrayOf<Int32>::Alloc(2);
-        Boolean isInit;
-        mEgl->EglInitialize(mEglDisplay, version, &isInit);
-        if(!isInit) {
-            Slogger::E("GLES20", "eglInitialize failed");
-            return E_RUNTIME_EXCEPTION;
-        }
-
-        AutoPtr<ArrayOf<Int32> > num_config = ArrayOf<Int32>::Alloc(1);
-        Boolean eglChooseConfig;
-        AutoPtr<ArrayOf<XIEGLConfig*> > configs = ArrayOf<XIEGLConfig*>::Alloc(1);
-        AutoPtr<ArrayOf<Int32> > configSpec = ArrayOf<Int32>::Alloc(15);
-        (*configSpec)[0] = IEGL10::_EGL_RENDERABLE_TYPE;
-        (*configSpec)[1] = 4;
-        (*configSpec)[2] = IEGL10::_EGL_RED_SIZE;
-        (*configSpec)[3] = 8;
-        (*configSpec)[4] = IEGL10::_EGL_GREEN_SIZE;
-        (*configSpec)[5] = 8;
-        (*configSpec)[6] = IEGL10::_EGL_BLUE_SIZE;
-        (*configSpec)[7] = 8;
-        (*configSpec)[8] = IEGL10::_EGL_ALPHA_SIZE;
-        (*configSpec)[9] = 8;
-        (*configSpec)[10] = IEGL10::_EGL_DEPTH_SIZE;
-        (*configSpec)[11] = 0;
-        (*configSpec)[12] = IEGL10::_EGL_STENCIL_SIZE;
-        (*configSpec)[13] = 0;
-        (*configSpec)[14] = IEGL10::_EGL_NONE;
-
-        mEgl->EglChooseConfig(mEglDisplay, configSpec, configs, 1, num_config, &eglChooseConfig);
-        if (!eglChooseConfig) {
-            Slogger::E("GLES20", "eglChooseConfig failed");
-            return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        }
-
-        Int32 numConfigs = (*num_config)[0];
-
-        if (numConfigs <= 0) {
-            Slogger::E("GLES20", "No configs match configSpec");
-            return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        }
-
-        mEglConfig = (*configs)[0];
-        AutoPtr<ArrayOf<Int32> > attribs = ArrayOf<Int32>::Alloc(3);
-        (*attribs)[0] = 0x3098;
-        (*attribs)[1] = 2;
-        (*attribs)[2] = IEGL10::_EGL_NONE;
-
-        AutoPtr<XIEGLContext> noContext;
-        egl10Helper->GetNoContext((XIEGLContext**)&noContext);
-
-        mEgl->EglCreateContext(mEglDisplay, mEglConfig, noContext, attribs, (XIEGLContext**)&mEglContext);
-
-        if (mEglContext == NULL || mEglContext == noContext) {
-            mEglContext = NULL;
-            Slogger::E("GLES20", "can not get the context");
-            return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        }
-        Slogger::E("GLES20", "context, context:%p", mEglContext.Get());
-
-        ECode ec = mEgl->EglCreateWindowSurface(mEglDisplay, mEglConfig, ISurface::Probe(surface), NULL, (XIEGLSurface**)&mEglSurface);
-        if (ec != NOERROR) {
-            Slogger::E("GLES20", "eglCreateWindowSurface error");
-            return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        }
-
-        Boolean r;
-        mEgl->EglMakeCurrent(mEglDisplay, mEglSurface, mEglSurface, mEglContext, &r);
-        if(!r)
-        {
-            Slogger::E("GLES20", "MakeCurrent error");
-            return E_ILLEGAL_ARGUMENT_EXCEPTION;
-        }
-    }
-
-
+        (GLsizei)remaining);
     return NOERROR;
 }
 

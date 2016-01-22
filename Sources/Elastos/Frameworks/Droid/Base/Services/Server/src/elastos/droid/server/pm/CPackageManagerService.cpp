@@ -120,7 +120,7 @@ using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Os::IUserManager;
 using Elastos::Droid::Os::IUserHandleHelper;
 using Elastos::Droid::Os::CUserHandleHelper;
-using Elastos::Droid::Os::Storage::IMountService;
+using Elastos::Droid::Os::Storage::IIMountService;
 using Elastos::Droid::Os::Storage::IStorageManagerHelper;
 // using Elastos::Droid::Os::Storage::CStorageManagerHelper;
 using Elastos::Droid::Os::Storage::IStorageManager;
@@ -995,8 +995,8 @@ void CPackageManagerService::PackageHandler::DoHandleMessage(
                 if (CPackageManagerService::DEBUG_SD_INSTALL) Logger::I(TAG, "Invoking MountService call back");
                 AutoPtr<IPackageHelper> helper;
                 CPackageHelper::AcquireSingleton((IPackageHelper**)&helper);
-                AutoPtr<IMountService> service;
-                helper->GetMountService((IMountService**)&service);
+                AutoPtr<IIMountService> service;
+                helper->GetMountService((IIMountService**)&service);
                 service->FinishMediaUpdate();
                 // } catch (RemoteException e) {
                 //     Log.e(TAG, "MountService not running?");

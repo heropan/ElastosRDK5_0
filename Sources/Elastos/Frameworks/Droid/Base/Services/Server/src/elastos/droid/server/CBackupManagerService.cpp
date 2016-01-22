@@ -4594,7 +4594,7 @@ ECode CBackupManagerService::constructor(
     mContext->GetSystemService(IContext::ALARM_SERVICE, (IInterface**)&mAlarmManager);
     mContext->GetSystemService(IContext::POWER_SERVICE, (IInterface**)&mPowerManager);
     AutoPtr<IInterface> mountService = ServiceManager::GetService(String("mount"));
-    mMountService = IMountService::Probe(mountService);
+    mMountService = IIMountService::Probe(mountService);
 
     mBackupManagerBinder = IIBackupManager::Probe(this);
 
@@ -5266,7 +5266,7 @@ ECode CBackupManagerService::HasBackupPassword(
     // try {
     Int32 intResult;
     if (SUCCEEDED(mMountService->GetEncryptionState(&intResult))) {
-        *result= (intResult != IMountService::ENCRYPTION_STATE_NONE)
+        *result= (intResult != IIMountService::ENCRYPTION_STATE_NONE)
             || (!mPasswordHash.IsNullOrEmpty());
         return NOERROR;
     }
@@ -5505,7 +5505,7 @@ ECode CBackupManagerService::AcknowledgeFullBackupOrRestore(
                 // try {
                 Int32 result;
                 if (SUCCEEDED(mMountService->GetEncryptionState(&result))) {
-                    isEncrypted = (result != IMountService::ENCRYPTION_STATE_NONE);
+                    isEncrypted = (result != IIMountService::ENCRYPTION_STATE_NONE);
                     if (isEncrypted) Slogger::W(TAG, "Device is encrypted; forcing enc password");
                 }
                 else {
@@ -6238,7 +6238,7 @@ Boolean CBackupManagerService::PasswordMatchesSaved(
     Int32 result;
     ECode ec = mMountService->GetEncryptionState(&result);
     if (FAILED(ec)) return FALSE;
-    isEncrypted = (result != IMountService::ENCRYPTION_STATE_NONE);
+    isEncrypted = (result != IIMountService::ENCRYPTION_STATE_NONE);
     if (isEncrypted) {
         if (DEBUG) {
             Slogger::I(TAG, "Device encrypted; verifying against device data pw");

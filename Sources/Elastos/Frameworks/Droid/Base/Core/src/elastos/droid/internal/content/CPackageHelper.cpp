@@ -66,13 +66,13 @@ CAR_INTERFACE_IMPL(CPackageHelper, Singleton, IPackageHelper)
 CAR_SINGLETON_IMPL(CPackageHelper)
 
 ECode CPackageHelper::GetMountService(
-    /* [out] */ IMountService** mountService)
+    /* [out] */ IIMountService** mountService)
 {
     VALIDATE_NOT_NULL(mountService)
 
     AutoPtr<IInterface> obj = ServiceManager::GetService(String("mount"));
     if (obj != NULL) {
-        *mountService = IMountService::Probe(obj);
+        *mountService = IIMountService::Probe(obj);
         REFCOUNT_ADD(*mountService);
         return NOERROR;
     }
@@ -96,8 +96,8 @@ ECode CPackageHelper::CreateSdDir(
     // Round up to nearest MB, plus another MB for filesystem overhead
     const Int32 sizeMb = (Int32)((sizeBytes + ITrafficStats::MB_IN_BYTES) / ITrafficStats::MB_IN_BYTES) + 1;
     // try {
-    AutoPtr<IMountService> mountService;
-    if (FAILED(GetMountService((IMountService**)&mountService))) {
+    AutoPtr<IIMountService> mountService;
+    if (FAILED(GetMountService((IIMountService**)&mountService))) {
         Logger::E(TAG, "MountService running?");
         return NOERROR;
     }
@@ -140,8 +140,8 @@ ECode CPackageHelper::ResizeSdDir(
     *result = FALSE;
     // Round up to nearest MB, plus another MB for filesystem overhead
     const Int32 sizeMb = (Int32)((sizeBytes + ITrafficStats::MB_IN_BYTES) / ITrafficStats::MB_IN_BYTES) + 1;
-    AutoPtr<IMountService> mountService;
-    if (FAILED(GetMountService((IMountService**)&mountService))) {
+    AutoPtr<IIMountService> mountService;
+    if (FAILED(GetMountService((IIMountService**)&mountService))) {
         Logger::E(TAG, "MountService running?");
         return NOERROR;
     }
@@ -174,8 +174,8 @@ ECode CPackageHelper::MountSdDir(
     VALIDATE_NOT_NULL(dir)
     *dir = NULL;
     // try {
-    AutoPtr<IMountService> mountService;
-    if (FAILED(GetMountService((IMountService**)&mountService))) {
+    AutoPtr<IIMountService> mountService;
+    if (FAILED(GetMountService((IIMountService**)&mountService))) {
         Logger::E(TAG, "MountService running?");
         return NOERROR;
     }
@@ -206,8 +206,8 @@ ECode CPackageHelper::UnMountSdDir(
     VALIDATE_NOT_NULL(result)
     *result = FALSE;
     // try {
-    AutoPtr<IMountService> mountService;
-    if (FAILED(GetMountService((IMountService**)&mountService))) {
+    AutoPtr<IIMountService> mountService;
+    if (FAILED(GetMountService((IIMountService**)&mountService))) {
         Logger::E(TAG, "MountService running?");
         return NOERROR;
     }
@@ -235,8 +235,8 @@ ECode CPackageHelper::RenameSdDir(
     VALIDATE_NOT_NULL(result)
     *result = FALSE;
     // try {
-    AutoPtr<IMountService> mountService;
-    if (FAILED(GetMountService((IMountService**)&mountService))) {
+    AutoPtr<IIMountService> mountService;
+    if (FAILED(GetMountService((IIMountService**)&mountService))) {
         Logger::E(TAG, "Failed to rename %s to %s", oldId.string(), newId.string());
         return NOERROR;
     }
@@ -265,8 +265,8 @@ ECode CPackageHelper::GetSdDir(
     VALIDATE_NOT_NULL(dir)
     *dir = NULL;
     // try {
-    AutoPtr<IMountService> mountService;
-    if (FAILED(GetMountService((IMountService**)&mountService))) {
+    AutoPtr<IIMountService> mountService;
+    if (FAILED(GetMountService((IIMountService**)&mountService))) {
         Logger::E(TAG, "Failed to get container path for %s", cid.string());
         return NOERROR;
     }
@@ -289,8 +289,8 @@ ECode CPackageHelper::GetSdFilesystem(
     VALIDATE_NOT_NULL(fs)
     *fs = NULL;
     // try {
-    AutoPtr<IMountService> mountService;
-    if (FAILED(GetMountService((IMountService**)&mountService))) {
+    AutoPtr<IIMountService> mountService;
+    if (FAILED(GetMountService((IIMountService**)&mountService))) {
         Logger::E(TAG, "Failed to get container path for %s", cid.string());
         return NOERROR;
     }
@@ -313,8 +313,8 @@ ECode CPackageHelper::FinalizeSdDir(
     VALIDATE_NOT_NULL(result)
     *result = FALSE;
     // try {
-    AutoPtr<IMountService> mountService;
-    if (FAILED(GetMountService((IMountService**)&mountService))) {
+    AutoPtr<IIMountService> mountService;
+    if (FAILED(GetMountService((IIMountService**)&mountService))) {
         Logger::E(TAG, "Failed to finalize container %s", cid.string());
         return NOERROR;
     }
@@ -346,8 +346,8 @@ ECode CPackageHelper::DestroySdDir(
         Logger::I(TAG, "Forcibly destroying container %s", cid.string());
     }
 
-    AutoPtr<IMountService> mountService;
-    if (FAILED(GetMountService((IMountService**)&mountService))) {
+    AutoPtr<IIMountService> mountService;
+    if (FAILED(GetMountService((IIMountService**)&mountService))) {
         Logger::E(TAG, "Failed to destroy container %s", cid.string());
         return NOERROR;
     }
@@ -374,8 +374,8 @@ ECode CPackageHelper::GetSecureContainerList(
     VALIDATE_NOT_NULL(ids)
     *ids = NULL;
     // try {
-    AutoPtr<IMountService> mountService;
-    if (FAILED(GetMountService((IMountService**)&mountService))) {
+    AutoPtr<IIMountService> mountService;
+    if (FAILED(GetMountService((IIMountService**)&mountService))) {
         Logger::E(TAG, "Failed to get secure container list");
         return NOERROR;
     }
@@ -397,8 +397,8 @@ ECode CPackageHelper::IsContainerMounted(
     VALIDATE_NOT_NULL(result)
     *result = FALSE;
     // try {
-    AutoPtr<IMountService> mountService;
-    if (FAILED(GetMountService((IMountService**)&mountService))) {
+    AutoPtr<IIMountService> mountService;
+    if (FAILED(GetMountService((IIMountService**)&mountService))) {
         Logger::E(TAG, "Failed to find out if container %s mounted", cid.string());
         return NOERROR;
     }
@@ -535,8 +535,8 @@ ECode CPackageHelper::FixSdPermissions(
     VALIDATE_NOT_NULL(result)
     *result = FALSE;
     // try {
-    AutoPtr<IMountService> mountService;
-    if (FAILED(GetMountService((IMountService**)&mountService))) {
+    AutoPtr<IIMountService> mountService;
+    if (FAILED(GetMountService((IIMountService**)&mountService))) {
         Logger::E(TAG, "Failed to fixperms container %s", cid.string());
         return NOERROR;
     }

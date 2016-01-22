@@ -695,7 +695,7 @@ module
 //         constructor(
 //             [in] IContext* ctx);
 
-//         interface IMountService;
+//         interface IIMountService;
 //         interface INativeDaemonConnectorCallbacks;
 //     }
 

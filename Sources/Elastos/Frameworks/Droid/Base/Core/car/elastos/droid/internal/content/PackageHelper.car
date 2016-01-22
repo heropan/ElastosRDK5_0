@@ -3,7 +3,7 @@ module
 {
     using interface Elastos.IO.IFile;
     interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Os.Storage.IMountService;
+    interface Elastos.Droid.Os.Storage.IIMountService;
 
     namespace Elastos {
     namespace Droid {
@@ -33,7 +33,7 @@ module
         const Int32 APP_INSTALL_EXTERNAL = 2;
 
         GetMountService(
-            [out] IMountService** mountService);
+            [out] IIMountService** mountService);
 
         CreateSdDir(
             [in] Int64 sizeBytes,

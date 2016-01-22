@@ -1443,15 +1443,7 @@ public:
         /* [in] */ Int32 width,
         /* [in] */ Int32 height);
 
-    //a temporal workaroud for egl initialize
-    static ECode InitGL(IInterface* surface);
 private:
-    static CARAPI_(Int32) GetNumCompressedTextureFormats();
-
-    static CARAPI GetDirectBufferPointer(
-    /* [in] */ IBuffer* buffer,
-    /* [out] */ Handle64* result);
-
     CARAPI GlVertexAttribPointerBounds(
         /* [in] */ Int32 indx,
         /* [in] */ Int32 size,
@@ -1460,22 +1452,6 @@ private:
         /* [in] */ Int32 stride,
         /* [in] */ IBuffer* ptr,
         /* [in] */ Int32 remaining);
-
-    CARAPI GetPointer(
-        /* [in] */ IBuffer* buffer,
-        /* [in, out] */ Handle64* array,
-        /* [in, out] */ Int32* remaining,
-        /* [in, out] */ Int32* offset,
-        /* [out] */ Handle64* rst);
-
-    //begin a temporal workaroud for egl initialize
-    static AutoPtr<IEGL10> mEgl;
-    static AutoPtr<XIEGLDisplay> mEglDisplay;
-    static AutoPtr<XIEGLSurface> mEglSurface;
-    static AutoPtr<XIEGLConfig> mEglConfig;
-    static AutoPtr<XIEGLContext> mEglContext;
-    //end a temporal workaroud for egl initialize
-
 };
 
 } // namespace Opengl
