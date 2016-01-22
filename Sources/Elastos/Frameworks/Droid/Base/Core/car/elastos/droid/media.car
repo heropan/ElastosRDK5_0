@@ -172,6 +172,8 @@ module
     merge("media/VolumeProvider.car");
     merge("media/WebVttRenderer.car");
 
+    interface Elastos.Droid.App.IActivity;
+    interface Elastos.Droid.App.IPendingIntent;
     interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IIContentProvider;
@@ -192,6 +194,7 @@ module
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.Os.ILooper;
     interface Elastos.Droid.Os.IUserHandle;
     interface Elastos.Droid.Os.Storage.IStorageVolume;
     interface Elastos.Droid.Utility.IAttributeSet;
@@ -501,43 +504,6 @@ module
 ////          interface IMediaScannerClient;
 ////      }
 //
-//        // media/media/RemoteControlClient
-//        class CRemoteControlClient {
-//            constructor(
-//                [in] IPendingIntent* mediaButtonIntent);
-//
-//            constructor(
-//                [in] IPendingIntent* mediaButtonIntent,
-//                [in] ILooper* looper);
-//
-//            interface IRemoteControlClient;
-//        }
-//
-//        [local]
-//        class CRingtone {
-//            constructor(
-//                [in] IContext* ctx,
-//                [in] Boolean allowRemote);
-//
-//            interface IRingtone;
-//        }
-//
-//        // media/media/RingtoneManager
-//        [local]
-//        class CRingtoneManager {
-//            constructor(
-//                [in] IActivity* activity);
-//
-//            constructor(
-//                [in] IContext* ctx);
-//
-//            interface IRingtoneManager;
-//        }
-//
-//        singleton class CRingtoneManagerHelper {
-//            interface IRingtoneManagerHelper;
-//        }
-//
 //        // media/media/SoundPool
 //        class CSoundPool {
 //            constructor(
@@ -547,16 +513,6 @@ module
 //
 //            interface ISoundPool;
 //        }
-//
-//
-//        // media/media/TimeText
-//        class CTimedText {
-//            constructor(
-//                [in] IParcel* parcel);
-//
-//            interface ITimedText;
-//        }
-//
 //
 //        class CMediaCodec {
 //            constructor(
@@ -1630,6 +1586,52 @@ module
 
       //  interface IRemoteDisplayHelper;
     //}
+
+    singleton class CRatingHelper {
+        interface IRatingHelper;
+    }
+
+    [local]
+    class CRingtoneManager {
+        constructor(
+            [in] IActivity* activity);
+
+        constructor(
+            [in] IContext* ctx);
+
+        interface IRingtoneManager;
+    }
+
+    singleton class CRingtoneManagerHelper {
+        interface IRingtoneManagerHelper;
+    }
+
+    [local]
+    class CRingtone {
+        constructor(
+            [in] IContext* ctx,
+            [in] Boolean allowRemote);
+
+        interface IRingtone;
+    }
+
+    class CTimedText {
+        constructor(
+            [in] IParcel* parcel);
+
+        interface ITimedText;
+    }
+
+    class CRemoteControlClient {
+        constructor(
+            [in] IPendingIntent* mediaButtonIntent);
+
+        constructor(
+            [in] IPendingIntent* mediaButtonIntent,
+            [in] ILooper* looper);
+
+        interface IRemoteControlClient;
+    }
 
     } // namespace media
     } // namepsace Droid
