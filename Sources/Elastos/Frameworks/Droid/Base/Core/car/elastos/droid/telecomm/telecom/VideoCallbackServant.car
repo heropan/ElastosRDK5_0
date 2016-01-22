@@ -9,18 +9,6 @@ module
     namespace Telecomm {
     namespace Telecom {
 
-        /**
-         *  Encapsulates all audio states during a call.
-         *  @hide
-         *
-         * @Involve
-         * interface IParcelable
-         */
-        interface IAudioState {
-            GetStub(
-                [out] IIVideoCallback** res);
-        }
-
     } // namespace Telecom
     } // namespace Telecomm
     } // namespace Droid

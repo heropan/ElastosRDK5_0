@@ -31,7 +31,7 @@ module
     merge("telecomm/telecom/Response.car");
     merge("telecomm/telecom/TelecomManager.car");
     merge("telecomm/telecom/VideoCallImpl.car");
-    merge("telecomm/telecom/VideoCallbackServant.car");
+    // merge("telecomm/telecom/VideoCallbackServant.car");
     merge("telecomm/internal/IConnectionServiceAdapter.car");
     merge("telecomm/internal/IConnectionService.car");
     merge("telecomm/internal/IInCallAdapter.car");
