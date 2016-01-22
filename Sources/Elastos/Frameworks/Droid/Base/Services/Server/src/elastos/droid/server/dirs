@@ -6,6 +6,7 @@ DIRS += connectivity
 DIRS += content
 DIRS += display
 DIRS += dreams
+DIRS += input
 DIRS += lights
 DIRS += net
 DIRS += pm
@@ -18,7 +19,6 @@ DIRS += wallpaper
 
 
 #DIRS = accessibility
-#DIRS += input
 #DIRS += location
 #DIRS += usb
 #DIRS += wm

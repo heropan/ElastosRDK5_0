@@ -1,0 +1,43 @@
+module
+{
+    merge("InputManagerService.car");
+    merge("InputApplicationHandle.car");
+    merge("InputWindowHandle.car");
+
+    using interface Elastos.Droid.Content.IContext;
+    using interface Elastos.Droid.Hardware.Input.IIInputManager;
+    using interface Elastos.Droid.Os.IBinder;
+    using interface Elastos.Droid.View.IInputFilterHost;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+    namespace Input {
+
+    [local]
+    class CInputManagerService {
+        constructor();
+
+        constructor(
+            [in] IContext* context);
+
+        interface IInputManagerService;
+        interface IIInputManager;
+        interface IBinder;
+    }
+
+    class CIInputFilterHost {
+        constructor();
+
+        constructor(
+            [in] IIInputManager* parent);
+
+        interface IInputFilterHost;
+        interface IBinder;
+    }
+
+    } // Input
+    } // Server
+    } // Droid
+    } // Elastos
+}

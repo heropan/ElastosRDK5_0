@@ -29,6 +29,7 @@ module
     merge("display/OverlayDisplayWindow.car");
     merge("display/RampAnimator.car");
 
+    merge("input/input.car");
     merge("lights/LightsManager.car");
 
     merge("notification/DowntimeConditionProvider.car");

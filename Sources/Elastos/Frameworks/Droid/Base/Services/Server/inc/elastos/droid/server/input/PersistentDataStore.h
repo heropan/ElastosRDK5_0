@@ -1,138 +1,154 @@
+#ifndef __ELASTOS_DROID_Server_Input_PersistentDataStore_H__
+#define __ELASTOS_DROID_Server_Input_PersistentDataStore_H__
 
-#ifndef __ELASTOS_DROID_SERVER_INPUT_INPUT_PERSISTENTDATASTORE_H__
-#define __ELASTOS_DROID_SERVER_INPUT_INPUT_PERSISTENTDATASTORE_H__
-
-#include "elastos/droid/ext/frameworkext.h"
-#include <elastos/utility/etl/List.h>
-#include <elastos/utility/etl/HashSet.h>
+#include "_Elastos.Droid.Server.h"
+#include "elastos/core/Object.h"
 #include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Utility::Etl::List;
-using Elastos::Utility::Etl::HashSet;
+using Elastos::Droid::Hardware::Input::ITouchCalibration;
+using Elastos::Droid::Utility::IAtomicFile;
 using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::IArrayList;
 using Org::Xmlpull::V1::IXmlPullParser;
 using Org::Xmlpull::V1::IXmlSerializer;
-using Elastos::Droid::Utility::IAtomicFile;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Input {
 
-/**
- * Manages persistent state recorded by the input manager service as an XML file.
- * Caller must acquire lock on the data store before accessing it.
- *
- * File format:
- * <code>
- * &lt;input-mananger-state>
- *   &lt;input-devices>
- *     &lt;input-device descriptor="xxxxx" keyboard-layout="yyyyy" />
- *   &gt;input-devices>
- * &gt;/input-manager-state>
- * </code>
- */
-class PersistentDataStore : public ElRefBase
+class PersistentDataStore
+    : public Object
 {
-private:
-    class InputDeviceState : public ElRefBase
+public:
+
+    class InputDeviceState
+        : public Object
     {
     public:
-        CARAPI_(String) GetCurrentKeyboardLayout();
-
-        CARAPI_(Boolean) SetCurrentKeyboardLayout(
-            /* [in] */ const String& keyboardLayout);
-
-        CARAPI_(AutoPtr<ArrayOf<String> >) GetKeyboardLayouts();
-
-        CARAPI_(Boolean) AddKeyboardLayout(
-            /* [in] */ const String& keyboardLayout);
-
-        CARAPI_(Boolean) RemoveKeyboardLayout(
-            /* [in] */ const String& keyboardLayout);
-
-        CARAPI_(Boolean) SwitchKeyboardLayout(
-            /* [in] */ Int32 direction);
-
-        CARAPI_(Boolean) RemoveUninstalledKeyboardLayouts(
-            /* [in] */ const HashSet<String>& availableKeyboardLayouts);
-
-        CARAPI LoadFromXml(
-            /* [in] */ IXmlPullParser* parser);
-
-        CARAPI SaveToXml(
-            /* [in] */ IXmlSerializer* serializer);
+        static AutoPtr<ArrayOf<String> > CALIBRATION_NAME;
+        static ECode initThis;              // initialize this class's static member through initialize this variable
 
     private:
-        CARAPI_(void) UpdateCurrentKeyboardLayoutIfRemoved(
-            /* [in] */ const String& removedKeyboardLayout,
-            /* [in] */ List<String>::Iterator removedIter);
-
-    private:
+        AutoPtr<ArrayOf<ITouchCalibration*> > mTouchCalibration;
         String mCurrentKeyboardLayout;
-        List<String> mKeyboardLayouts;
+        AutoPtr<IArrayList> mKeyboardLayouts;
+
+    public:
+        InputDeviceState();
+
+        static CARAPI InitializeClass();
+
+        ITouchCalibration* GetTouchCalibration(Int32 surfaceRotation);
+
+        Boolean SetTouchCalibration(Int32 surfaceRotation, ITouchCalibration* calibration);
+
+        String GetCurrentKeyboardLayout();
+
+        Boolean SetCurrentKeyboardLayout(const String& keyboardLayout);
+
+        ArrayOf<ICharSequence*>* GetKeyboardLayouts();
+
+        Boolean AddKeyboardLayout(const String& keyboardLayout);
+
+        Boolean RemoveKeyboardLayout(const String& keyboardLayout);
+
+        void UpdateCurrentKeyboardLayoutIfRemoved(
+                const String& removedKeyboardLayout, Int32 removedIndex);
+
+        Boolean SwitchKeyboardLayout(Int32 direction);
+
+        Boolean RemoveUninstalledKeyboardLayouts(ArrayOf<String>* availableKeyboardLayouts);
+
+        // throws IOException, XmlPullParserException
+        CARAPI LoadFromXml(IXmlPullParser* parser);
+
+        // throws IOException
+        CARAPI SaveToXml(IXmlSerializer* serializer);
+
+        CARAPI SurfaceRotationToString(Int32 surfaceRotation, String* str);
+
+        CARAPI StringToSurfaceRotation(const String& str, Int32 *r);
     };
 
 public:
+
     PersistentDataStore();
 
-    CARAPI_(void) SaveIfNeeded();
+    CARAPI SaveIfNeeded();
 
-    CARAPI_(String) GetCurrentKeyboardLayout(
-        /* [in] */ const String& inputDeviceDescriptor);
-
-    CARAPI_(Boolean) SetCurrentKeyboardLayout(
+    CARAPI GetTouchCalibration(
         /* [in] */ const String& inputDeviceDescriptor,
-        /* [in] */ const String& keyboardLayoutDescriptor);
+        /* [in] */ Int32 surfaceRotation,
+        /* [out] */ ITouchCalibration** touchCalibration);
 
-    CARAPI_(AutoPtr<ArrayOf<String> >) GetKeyboardLayouts(
-        /* [in] */ const String& inputDeviceDescriptor);
-
-    CARAPI_(Boolean) AddKeyboardLayout(
+    CARAPI SetTouchCalibration(
         /* [in] */ const String& inputDeviceDescriptor,
-        /* [in] */ const String& keyboardLayoutDescriptor);
+        /* [in] */ Int32 surfaceRotation,
+        /* [in] */ ITouchCalibration* calibration,
+        /* [out] */ Boolean* setTouchCalibration);
 
-    CARAPI_(Boolean) RemoveKeyboardLayout(
+    CARAPI GetCurrentKeyboardLayout(
         /* [in] */ const String& inputDeviceDescriptor,
-        /* [in] */ const String& keyboardLayoutDescriptor);
+        /* [out] */ String* keyboardLayout);
 
-    CARAPI_(Boolean) SwitchKeyboardLayout(
+    CARAPI SetCurrentKeyboardLayout(
         /* [in] */ const String& inputDeviceDescriptor,
-        /* [in] */ Int32 direction);
+        /* [in] */ const String& keyboardLayoutDescriptor,
+        /* [out] */ Boolean* setIt);
 
-    CARAPI_(Boolean) RemoveUninstalledKeyboardLayouts(
-        /* [in] */ const HashSet<String>& availableKeyboardLayouts);
+    CARAPI GetKeyboardLayouts(
+        /* [in] */ const String& inputDeviceDescriptor,
+        /* [out] */ ArrayOf<ICharSequence*>** keyboardLayouts);
+
+    CARAPI AddKeyboardLayout(
+        /* [in] */ const String& inputDeviceDescriptor,
+        /* [in] */ const String& keyboardLayoutDescriptor,
+        /* [out] */ Boolean* addIt);
+
+    CARAPI RemoveKeyboardLayout(
+        /* [in] */ const String& inputDeviceDescriptor,
+        /* [in] */ const String& keyboardLayoutDescriptor,
+        /* [out] */ Boolean* removeIt);
+
+    CARAPI SwitchKeyboardLayout(
+        /* [in] */ const String& inputDeviceDescriptor,
+        /* [in] */ Int32 direction,
+        /* [out] */ Boolean* switchIt);
+
+    CARAPI RemoveUninstalledKeyboardLayouts(
+        /* [in] */ ArrayOf<String>* availableKeyboardLayouts,
+        /* [out] */ Boolean* removeIt);
 
 private:
-    CARAPI_(AutoPtr<InputDeviceState>) GetInputDeviceState(
+    InputDeviceState* GetInputDeviceState(
         /* [in] */ const String& inputDeviceDescriptor,
         /* [in] */ Boolean createIfAbsent);
 
-    CARAPI_(void) LoadIfNeeded();
+    void LoadIfNeeded();
 
-    CARAPI_(void) SetDirty();
+    void SetDirty();
 
-    CARAPI_(void) ClearState();
+    void ClearState();
 
-    CARAPI_(void) Load();
+    void Load();
 
-    CARAPI_(void) Save();
+    void Save();
 
-    CARAPI LoadFromXml(
-        /* [in] */ IXmlPullParser* parser);
+    // throws IOException, XmlPullParserException
+    ECode LoadFromXml(IXmlPullParser* parser);
 
-    CARAPI LoadInputDevicesFromXml(
-        /* [in] */ IXmlPullParser* parser);
+    // throws IOException, XmlPullParserException
+    ECode LoadInputDevicesFromXml(IXmlPullParser* parser);
 
-    CARAPI SaveToXml(
-        /* [in] */ IXmlSerializer* serializer);
-
-protected:
-    static const char* TAG;
+    //  throws IOException
+    ECode SaveToXml(IXmlSerializer* serializer);
 
 private:
+    static String TAG;          // = "InputManager";
+
     // Input device state by descriptor.
-    HashMap<String, AutoPtr<InputDeviceState> > mInputDevices;
+    AutoPtr<HashMap<String, AutoPtr<InputDeviceState> > > mInputDevices;
     AutoPtr<IAtomicFile> mAtomicFile;
 
     // True if the data has been loaded.
@@ -140,11 +156,14 @@ private:
 
     // True if there are changes to be saved.
     Boolean mDirty;
+
 };
 
-} // namespace Input
-} // namespace Server
-} // namespace Droid
-} // namespace Elastos
+} // Input
+} // Server
+} // Droid
+} // Elastos
 
-#endif //__ELASTOS_DROID_SERVER_INPUT_INPUT_PERSISTENTDATASTORE_H__
+#endif // __ELASTOS_DROID_Server_Input_PersistentDataStore_H__
+
+

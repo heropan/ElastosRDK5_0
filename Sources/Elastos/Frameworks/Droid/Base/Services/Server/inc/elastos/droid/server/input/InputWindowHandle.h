@@ -1,15 +1,15 @@
+#ifndef __ELASTOS_DROID_Server_Input_InputWindowHandle_H__
+#define __ELASTOS_DROID_Server_Input_InputWindowHandle_H__
 
-#ifndef __ELASTOS_DROID_SERVER_INPUT_INPUTWINDOWHANDLE_H__
-#define __ELASTOS_DROID_SERVER_INPUT_INPUTWINDOWHANDLE_H__
+#include "_Elastos.Droid.Server.h"
+#include "elastos/core/Object.h"
+#include "elastos/droid/server/input/InputApplicationHandle.h"
+#include "Elastos.Droid.View.h"
+#include "Elastos.Droid.Graphics.h"
 
-#include "elastos/droid/ext/frameworkext.h"
-#include "InputApplicationHandle.h"
-#include "NativeInputWindowHandle.h"
-#include <input/InputWindow.h>
-
-using Elastos::Droid::View::IWindowState;
-using Elastos::Droid::View::IInputChannel;
 using Elastos::Droid::Graphics::IRegion;
+using Elastos::Droid::Server::Input::IInputWindowHandle;
+using Elastos::Droid::View::IInputChannel;
 
 namespace Elastos {
 namespace Droid {
@@ -21,25 +21,30 @@ namespace Input {
  * Enables the native input dispatcher to refer indirectly to the window manager's window state.
  * @hide
  */
-class InputWindowHandle : public ElRefBase
+class InputWindowHandle
+    : public Object
+    , public IInputWindowHandle
 {
 public:
-    InputWindowHandle(
-        /* [in] */ InputApplicationHandle* inputApplicationHandle,
-        /* [in] */ IWindowState* windowState,
+    CAR_INTERFACE_DECL();
+
+    InputWindowHandle();
+
+    virtual ~InputWindowHandle();
+
+    CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ IInputApplicationHandle* inputApplicationHandle,
+        /* [in] */ IInterface* windowState,
         /* [in] */ Int32 displayId);
-
-    ~InputWindowHandle();
-
-    static CARAPI_(android::sp<android::InputWindowHandle>) GetHandle(
-        /* [in] */ InputWindowHandle* inputWindowHandleObj);
 
 public:
     // The input application handle.
-    AutoPtr<InputApplicationHandle> mInputApplicationHandle;
+    AutoPtr<IInputApplicationHandle> mInputApplicationHandle;
 
     // The window manager's window state.
-    IWindowState* mWindowState;
+    AutoPtr<IInterface> mWindowState;
 
     // The input channel associated with the window.
     AutoPtr<IInputChannel> mInputChannel;
@@ -49,23 +54,24 @@ public:
 
     // Window layout params attributes.  (WindowManager.LayoutParams)
     Int32 mLayoutParamsFlags;
+    Int32 mLayoutParamsPrivateFlags;
     Int32 mLayoutParamsType;
 
     // Dispatching timeout.
     Int64 mDispatchingTimeoutNanos;
 
     // Window frame.
-    Int32 mFrameLeft;
-    Int32 mFrameTop;
-    Int32 mFrameRight;
-    Int32 mFrameBottom;
+    Int64 mFrameLeft;
+    Int64 mFrameTop;
+    Int64 mFrameRight;
+    Int64 mFrameBottom;
 
     // Global scaling factor applied to touch events when they are dispatched
     // to the window
     Float mScaleFactor;
 
     // Window touchable region.
-    AutoPtr<IRegion> mTouchableRegion;
+    AutoPtr<IRegion> mTouchableRegion;       // = new Region();
 
     // Window is visible.
     Boolean mVisible;
@@ -98,12 +104,16 @@ public:
 private:
     // Pointer to the native input window handle.
     // This field is lazily initialized via JNI.
-    NativeInputWindowHandle* mNative;
+    //@SuppressWarnings("unused")
+    Int64 mPtr;
+
+private:
+    void NativeDispose();
 };
 
-} // namespace Input
-} // namespace Server
-} // namespace Droid
-} // namespace Elastos
+} // Input
+} // Server
+} // Droid
+} // Elastos
 
-#endif //__ELASTOS_DROID_SERVER_INPUT_INPUTWINDOWHANDLE_H__
+#endif // __ELASTOS_DROID_Server_Input_InputWindowHandle_H__

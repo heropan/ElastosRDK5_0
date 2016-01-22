@@ -96,6 +96,7 @@ ELASTOS_LIBS += connectivity/connectivity.lib
 ELASTOS_LIBS += content/content.lib
 ELASTOS_LIBS += display/display.lib
 ELASTOS_LIBS += dreams/dreams.lib
+ELASTOS_LIBS += input/input.lib
 ELASTOS_LIBS += lights/lights.lib
 ELASTOS_LIBS += net/net.lib
 #ELASTOS_LIBS += notification/notification.lib
@@ -106,7 +107,6 @@ ELASTOS_LIBS += statusbar/statusbar.lib
 ELASTOS_LIBS += twilight/twilight.lib
 ELASTOS_LIBS += wallpaper/wallpaper.lib
 
-#ELASTOS_LIBS += input/input.lib
 #ELASTOS_LIBS += location/location.lib
 #ELASTOS_LIBS += pm/pm.lib
 #ELASTOS_LIBS += usb/usb.lib
