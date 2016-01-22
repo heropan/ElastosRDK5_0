@@ -1,0 +1,28 @@
+
+module
+{
+
+    interface Elastos.Droid.Telecomm.Internal.IIVideoCallback;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Telecomm {
+    namespace Telecom {
+
+        /**
+         *  Encapsulates all audio states during a call.
+         *  @hide
+         *
+         * @Involve
+         * interface IParcelable
+         */
+        interface IAudioState {
+            GetStub(
+                [out] IIVideoCallback** res);
+        }
+
+    } // namespace Telecom
+    } // namespace Telecomm
+    } // namespace Droid
+    } // namespace Elastos
+}
