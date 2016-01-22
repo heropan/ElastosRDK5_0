@@ -89,6 +89,7 @@ module
     merge("../../../../../car/elastos/droid/statusbar/DragDownHelper.car");
     merge("../../../../../car/elastos/droid/statusbar/ExpandableNotificationRow.car");
     merge("../../../../../car/elastos/droid/statusbar/ExpandableView.car");
+    merge("../../../../../car/elastos/droid/statusbar/ExpandableOutlineView.car");
     merge("../../../../../car/elastos/droid/statusbar/FlingAnimationUtils.car");
     merge("../../../../../car/elastos/droid/statusbar/GestureRecorder.car");
     merge("../../../../../car/elastos/droid/statusbar/KeyguardAffordanceView.car");
@@ -286,6 +287,9 @@ module
     using interface Elastos.Droid.App.IActivity;
 //     using interface Elastos.Droid.App.INotification;
 //     using interface Elastos.Droid.App.IActivityOptionsOnAnimationStartedListener;
+    using interface Elastos.Droid.Internal.StatusBar.IIStatusBar;
+    using interface Elastos.Droid.Internal.StatusBar.IStatusBarIconList;
+    using interface Elastos.Droid.Os.IBinder;
     using interface Elastos.Droid.View.IView;
 //     using interface Elastos.Droid.View.IViewParent;
 //     using interface Elastos.Droid.View.IViewManager;
@@ -309,9 +313,12 @@ module
     using interface Elastos.Droid.Service.Wallpaper.IWallpaperService;
     using interface Elastos.Droid.Widget.IFrameLayout;
     using interface Elastos.Droid.Widget.IImageView;
+    using interface Elastos.Droid.Widget.ILinearLayout;
     using interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.Packages.SystemUI.StatusBar.IStatusBarPanel;
     interface Elastos.Droid.Packages.SystemUI.StatusBar.Policy.IBatteryStateChangeCallback;
+    interface Elastos.Droid.Packages.SystemUI.StatusBar.Policy.INetworkControllerImplSignalCluster;
+    interface Elastos.Droid.Packages.SystemUI.StatusBar.Policy.ISecurityControllerCallback;
     interface Elastos.Droid.Packages.SystemUI.StatusBar.Phone.ISystemUIDialog;
 
     namespace Elastos {
@@ -770,34 +777,45 @@ module
             interface IAccessibilityEventSource;
         }
 
-//     class CCommandQueue {
-//         constructor(
-//             [in] ICommandQueueCallbacks* cbs);
+        class CCommandQueue {
+            constructor(
+                [in] ICommandQueueCallbacks* cbs,
+                [in] IStatusBarIconList* list);
 
-//         interface ICommandQueue;
-//     }
+            interface ICommandQueue;
+            interface IIStatusBar;
+            interface IBinder;
+        }
 
-//     [local]
-//     class CRotationToggle {
-//         constructor(
-//             [in] IContext* ctx);
+        class CBackDropView {
+            constructor(
+                [in] IContext* ctx);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs);
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs,
-//             [in] Int32 defStyle);
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr);
 
-//         interface IRotationToggle;
-//         interface IDrawableCallback;
-//         interface IKeyEventCallback;
-//         interface IAccessibilityEventSource;
-//         interface IOnPreDrawListener;
-//         interface IRotationLockCallbacks;
-//     }
+            constructor(
+                [in] IContext* ctx,
+                [in] IAttributeSet* attrs,
+                [in] Int32 defStyleAttr,
+                [in] Int32 defStyleRes);
+
+            interface IBackDropView;
+            interface IFrameLayout;
+            interface IViewGroup;
+            interface IView;
+            interface IViewParent;
+            interface IViewManager;
+            interface IDrawableCallback;
+            interface IKeyEventCallback;
+            interface IAccessibilityEventSource;
+        }
 
 //     [local]
 //     class CLatestItemView {
@@ -833,28 +851,32 @@ module
         interface IAccessibilityEventSource;
     }
 
-//     [local]
-//     class CSignalClusterView {
-//         constructor(
-//             [in] IContext* ctx);
+    [local]
+    class CSignalClusterView {
+        constructor(
+            [in] IContext* ctx);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs);
 
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IAttributeSet* attrs,
-//             [in] Int32 defStyle);
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyle);
 
-//         interface ISignalClusterView;
-//         interface IViewParent;
-//         interface IViewManager;
-//         interface IDrawableCallback;
-//         interface IKeyEventCallback;
-//         interface IAccessibilityEventSource;
-//         interface INetworkControllerSignalCluster;
-//     }
+        interface ISignalClusterView;
+        interface ILinearLayout;
+        interface IViewGroup;
+        interface IView;
+        interface IViewParent;
+        interface IViewManager;
+        interface IDrawableCallback;
+        interface IKeyEventCallback;
+        interface IAccessibilityEventSource;
+        interface INetworkControllerImplSignalCluster;
+        interface ISecurityControllerCallback;
+    }
 
 
 //     //===========================================================================

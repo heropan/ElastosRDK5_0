@@ -1,7 +1,5 @@
 module
 {
-    using interface Elastos.Core.IRunnable;
-
     namespace Elastos {
     namespace Droid {
     namespace Packages {
@@ -9,21 +7,23 @@ module
     namespace StatusBar {
 
     /**
-     * A view who contains media artwork.
-     *
+     * Like {@link ExpandableView}, but setting an outline for the height and clipping.
+     */
+    /**
      * @Involve
-     * extends Elastos.Droid.Widget.IFrameLayout
+     * interface IExpandableView
+     * interface Elastos.Droid.Widget.IFrameLayout
      * extends Elastos.Droid.View.IView
      * extends Elastos.Droid.View.IViewGroup
+     *
      * interface Elastos.Droid.View.IViewParent
      * interface Elastos.Droid.View.IViewManager
      * interface Elastos.Droid.View.IKeyEventCallback
      * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
      * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
-    interface IBackDropView {
-        SetOnVisibilityChangedRunnable(
-            [in] IRunnable* runnable);
+    interface IExpandableOutlineView {
+
     }
 
     } // namespace StatusBar

@@ -1,7 +1,6 @@
 
 #include "elastos/droid/packages/systemui/statusbar/CAlphaImageView.h"
 
-
 namespace Elastos {
 namespace Droid {
 namespace Packages {

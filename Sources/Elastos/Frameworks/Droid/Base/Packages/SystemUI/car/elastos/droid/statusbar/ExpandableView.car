@@ -1,8 +1,7 @@
 module
 {
     using interface Elastos.Core.IRunnable;
-
-    interface Elastos.Droid.Graphics.IRect;
+    using interface Elastos.Droid.Graphics.IRect;
 
     namespace Elastos {
     namespace Droid {
@@ -17,26 +16,6 @@ module
      * interface IStackScrollerDecorView
      */
     interface IEmptyShadeView {
-
-    }
-
-    /**
-     * Like {@link ExpandableView}, but setting an outline for the height and clipping.
-     */
-    /**
-     * @Involve
-     * interface IExpandableView
-     * interface Elastos.Droid.Widget.IFrameLayout
-     * extends Elastos.Droid.View.IView
-     * extends Elastos.Droid.View.IViewGroup
-     *
-     * interface Elastos.Droid.View.IViewParent
-     * interface Elastos.Droid.View.IViewManager
-     * interface Elastos.Droid.View.IKeyEventCallback
-     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
-     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
-     */
-    interface IExpandableOutlineView {
 
     }
 
@@ -69,7 +48,6 @@ module
      * interface Elastos.Droid.Widget.IFrameLayout
      * extends Elastos.Droid.View.IView
      * extends Elastos.Droid.View.IViewGroup
-     *
      * interface Elastos.Droid.View.IViewParent
      * interface Elastos.Droid.View.IViewManager
      * interface Elastos.Droid.View.IKeyEventCallback
