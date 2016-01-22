@@ -132,6 +132,14 @@ SOURCES += CMediaScannerConnection.cpp
 SOURCES += CMediaScannerConnectionHelper.cpp
 #SOURCES += CRemoteDisplay.cpp
 #SOURCES += CRemoteDisplayHelper.cpp
+SOURCES += Rating.cpp
+SOURCES += CRingtone.cpp
+SOURCES += CRatingHelper.cpp
+SOURCES += CRingtoneManager.cpp
+SOURCES += CRingtoneManagerHelper.cpp
+SOURCES += CTimedText.cpp
+SOURCES += CRemoteControlClient.cpp
+
 
 SOURCES += media.cpp
 
@@ -205,13 +213,8 @@ SOURCES += media.cpp
 #SOURCES += CRouteGroup.cpp
 #SOURCES += CMediaScanner.cpp
 #SOURCES += CMediaScannerHelper.cpp
-#SOURCES += CRemoteControlClient.cpp
 #SOURCES += CResampleInputStream.cpp
-#SOURCES += CRingtone.cpp
-#SOURCES += CRingtoneManager.cpp
-#SOURCES += CRingtoneManagerHelper.cpp
 #SOURCES += CSoundPool.cpp
-#SOURCES += CTimedText.cpp
 #SOURCES += CCodecCapabilities.cpp
 #SOURCES += CCodecProfileLevel.cpp
 #SOURCES += Media_Utils.cpp
