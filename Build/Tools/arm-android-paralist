@@ -203,6 +203,7 @@
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware/camera2/dispatch
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware/camera2/legacy
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware/camera2/marshal
+- Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware/camera2/marshal/impl
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware/camera2/impl
 - Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware/camera2
 > Elastos/Frameworks/Droid/Base/Core/src/elastos/droid/hardware
