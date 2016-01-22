@@ -67,6 +67,7 @@ ECode RandomBlock::ToFile(
     FAIL_RETURN(ToDataOut(IDataOutput::Probe(out)))
     TruncateIfPossible(out);
     Close(ICloseable::Probe(out));
+    return NOERROR;
 }
 
 void RandomBlock::TruncateIfPossible(

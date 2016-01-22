@@ -636,7 +636,7 @@ module
             [in] Boolean enabled);
 
         SetActivityController(
-            [in] IActivityController* watcher);
+            [in] IIActivityController* watcher);
 
         EnterSafeMode();
 

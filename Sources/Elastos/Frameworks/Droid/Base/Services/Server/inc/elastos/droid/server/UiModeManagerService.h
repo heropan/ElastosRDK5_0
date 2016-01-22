@@ -6,8 +6,11 @@
 #include "elastos/droid/ext/frameworkext.h"
 #include "elastos/droid/content/BroadcastReceiver.h"
 #include "elastos/droid/server/SystemService.h"
+#include <Elastos.Droid.Os.h>
+#include <Elastos.Droid.App.h>
 
 using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IPowerManager;
 using Elastos::Droid::Os::IPowerManagerWakeLock;
 using Elastos::Droid::Content::IContext;
@@ -167,7 +170,7 @@ public:
     UiModeManagerService();
 
     CARAPI constructor(
-        /* [in] */ IContext *context;
+        /* [in] */ IContext *context);
 
     CARAPI OnStart();
 

@@ -21,7 +21,7 @@
 #include "elastos/droid/server/am/UserStartedState.h"
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Droid::App::IActivityController;
+using Elastos::Droid::App::IIActivityController;
 using Elastos::Droid::App::IApplicationThread;
 using Elastos::Droid::App::IApplicationErrorReportCrashInfo;
 using Elastos::Droid::App::IDialog;
@@ -225,7 +225,7 @@ public:
     static const Int32 POST_HEAVY_NOTIFICATION_MSG;
     AutoPtr<ActiveServices> mServices;
     AutoPtr<CProcessStatsService> mProcessStats;
-    AutoPtr<IActivityController> mController;
+    AutoPtr<IIActivityController> mController;
     Boolean mDidAppSwitch;
     Int64 mAppSwitchesAllowedTime;
     Int64 mPreviousProcessVisibleTime;
@@ -588,7 +588,7 @@ using Elastos::Droid::App::IActivityManagerMemoryInfo;
 using Elastos::Droid::App::IActivityManagerRunningAppProcessInfo;
 using Elastos::Droid::App::IActivityManagerProcessErrorStateInfo;
 using Elastos::Droid::App::IActivityThread;
-using Elastos::Droid::App::IActivityController;
+using Elastos::Droid::App::IIActivityController;
 using Elastos::Droid::App::IAlertDialog;
 using Elastos::Droid::App::IApplicationThread;
 using Elastos::Droid::App::IApplicationErrorReport;
@@ -2137,7 +2137,7 @@ public:
         /* [in] */ Boolean enabled);
 
     CARAPI SetActivityController(
-        /* [in] */ IActivityController* watcher);
+        /* [in] */ IIActivityController* watcher);
 
     CARAPI EnterSafeMode();
 
@@ -4416,7 +4416,7 @@ public:
     String mOrigDebugApp;
     Boolean mOrigWaitForDebugger;
     Boolean mAlwaysFinishActivities;
-    AutoPtr<IActivityController> mController;
+    AutoPtr<IIActivityController> mController;
     String mProfileApp;
     AutoPtr<ProcessRecord> mProfileProc;
     String mProfileFile;

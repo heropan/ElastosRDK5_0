@@ -1318,12 +1318,12 @@ ECode CMountService::OnEvent(
 
     if (DEBUG_EVENTS) {
         StringBuilder builder("OnEvent::");
-        builder.AppendCStr(" raw= ");
+        builder.Append(" raw= ");
         builder.AppendString(raw);
         //if (cooked != NULL) {
-        builder.AppendCStr(" cooked = " );
+        builder.Append(" cooked = " );
         for (Int32 i = 0; i < cooked.GetLength(); i++) {
-                builder.AppendCStr(" ");
+                builder.Append(" ");
                 builder.AppendString(cooked[i]);
         }
         //}

@@ -9659,7 +9659,7 @@ void CActivityManagerService::ReadGrantedUriPermissionsLocked()
             }
         }
     } while (0);
-    if (ec == E_FILE_NOT_FOUND_EXCEPTION) {
+    if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
         // Missing grants is okay
     }
     else if (FAILED(ec)) {
@@ -12700,7 +12700,7 @@ ECode CActivityManagerService::SetAlwaysFinish(
 }
 
 ECode CActivityManagerService::SetActivityController(
-    /* [in] */ IActivityController* controller)
+    /* [in] */ IIActivityController* controller)
 {
     FAIL_RETURN(EnforceCallingPermission(Elastos::Droid::Manifest::permission::SET_ACTIVITY_WATCHER,
             String("SetActivityController()")));

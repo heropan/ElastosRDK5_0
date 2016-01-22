@@ -3,13 +3,18 @@
 #define __ELASTOS_DROID_SERVER_CCERTBLACKLISTER_H__
 
 #include "_Elastos_Droid_Server_CCertBlacklister.h"
-#include "elastos/droid/database/ContentObserver.h"
-#include "elastos/droid/os/Binder.h"
+#include <elastos/droid/database/ContentObserver.h>
+#include <elastos/droid/os/Binder.h>
 #include <elastos/core/Thread.h>
+#include <Elastos.Droid.Content.h>
 
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Database::ContentObserver;
+using Elastos::Droid::Database::IContentObserver;
 using Elastos::Droid::Os::Binder;
 using Elastos::Core::Thread;
+using Elastos::IO::IFile;
 
 namespace Elastos {
 namespace Droid {
@@ -19,13 +24,20 @@ CarClass(CCertBlacklister)
     , public Binder
 {
 private:
-    class BlacklistObserver : public ContentObserver
+    class BlacklistObserver
+        : public ContentObserver
     {
     private:
-        class WriteBlacklistThread : public Thread
+        class WriteBlacklistThread
+            : public Thread
         {
         public:
+            WriteBlacklistThread(
+                /* [in] */ BlacklistObserver* host);
+
             CARAPI Run();
+        private:
+            BlacklistObserver* mHost;
         };
 
     public:
@@ -35,7 +47,8 @@ private:
             /* [in] */ const String& path,
             /* [in] */ IContentResolver* cr);
 
-        CARAPI OnChange(boolean selfChange);
+        CARAPI OnChange(
+            /* [in] */ Boolean selfChange);
 
         CARAPI_(String) GetValue();
 
@@ -46,29 +59,39 @@ private:
         String mKey;
         String mName;
         String mPath;
-        File mTmpDir;
+        AutoPtr<IFile> mTmpDir;
         AutoPtr<IContentResolver> mContentResolver;
     };
 
 public:
-    CARAPI OnReceive(
-        /* [in] */ IContext* context,
-        /* [in] */ IIntent* intent);
+    CAR_OBJECT_DECL()
+
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+private:
+    AutoPtr<IContentObserver> BuildPubkeyObserver(
+        /* [in] */ IContentResolver* cr);
+
+    AutoPtr<IContentObserver> BuildSerialObserver(
+        /* [in] */ IContentResolver* cr);
+
+    void RegisterObservers(
+        /* [in] */ IContentResolver* cr);
 
     CARAPI ToString(
         /* [out] */ String* info);
 
-public:
-    static const String PUBKEY_PATH = BLACKLIST_ROOT + "pubkey_blacklist.txt";
-    static const String SERIAL_PATH = BLACKLIST_ROOT + "serial_blacklist.txt";
-
-    static const String PUBKEY_BLACKLIST_KEY = "pubkey_blacklist";
-    static const String SERIAL_BLACKLIST_KEY = "serial_blacklist";
-
 private:
-    static const String TAG = "CertBlacklister";
+    static const String TAG;
+    static const String BLACKLIST_ROOT;
 
-    static const String BLACKLIST_ROOT = System.getenv("ANDROID_DATA") + "/misc/keychain/";
+public:
+    static const String PUBKEY_PATH;
+    static const String SERIAL_PATH;
+
+    static const String PUBKEY_BLACKLIST_KEY;
+    static const String SERIAL_BLACKLIST_KEY;
 };
 
 } // namespace Server

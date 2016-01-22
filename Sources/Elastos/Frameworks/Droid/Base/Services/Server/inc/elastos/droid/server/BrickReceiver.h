@@ -16,6 +16,9 @@ public:
     CARAPI OnReceive(
         /* [in] */ IContext *context,
         /* [in] */ IIntent *intent);
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 };
 
 } // Server

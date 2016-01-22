@@ -50,11 +50,6 @@ using Elastos::Utility::Zip::IGZIPOutputStream;
 using Elastos::Utility::Zip::CGZIPOutputStream;
 using Elastos::Utility::Logging::Slogger;
 
-_ETL_NAMESPACE_BEGIN
-const RBTreeColorType S_RBTreeRed = FALSE;
-const RBTreeColorType S_RBTreeBlack = TRUE;
-_ETL_NAMESPACE_END
-
 DEFINE_CONVERSION_FOR(Elastos::Droid::Server::CDropBoxManagerService::EntryFile, IInterface)
 
 namespace Elastos {

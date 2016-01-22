@@ -28,7 +28,7 @@ using Elastos::Droid::App::CActivityOptionsHelper;
 using Elastos::Droid::App::CResultInfo;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::App::IActivityContainer;
-using Elastos::Droid::App::IActivityController;
+using Elastos::Droid::App::IIActivityController;
 using Elastos::Droid::App::IActivityManager;
 using Elastos::Droid::App::IActivityManagerHelper;
 using Elastos::Droid::App::IActivityManagerRunningTaskInfo;
@@ -2955,7 +2955,7 @@ Boolean ActivityStack::NavigateUpToLocked(
         }
     }
 
-    AutoPtr<IActivityController> controller = mService->mController;
+    AutoPtr<IIActivityController> controller = mService->mController;
     if (controller != NULL) {
         AutoPtr<ActivityRecord> next = TopRunningActivityLocked(IBinder::Probe(srec->mAppToken), 0);
         if (next != NULL) {

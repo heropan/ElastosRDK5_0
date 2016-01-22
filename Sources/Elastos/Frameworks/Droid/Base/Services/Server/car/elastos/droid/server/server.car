@@ -6,6 +6,7 @@ module
     merge("SystemService.car");
     merge("SystemServiceManager.car");
     merge("Watchdog.car");
+    merge("NativeDaemonConnector.car");
 
     merge("am/ActivityRecord.car");
     merge("am/BroadcastFilter.car");
@@ -71,6 +72,7 @@ module
     using interface Elastos.Droid.App.IIActivityManager;
     using interface Elastos.Droid.App.IIAlarmManager;
     using interface Elastos.Droid.App.IIWallpaperManager;
+    using interface Elastos.Droid.App.IIUiModeManager;
     using interface Elastos.Droid.App.IStopUserCallback;
     using interface Elastos.Droid.App.IWallpaperInfo;
     using interface Elastos.Droid.Internal.App.IIBatteryStats;
@@ -79,6 +81,7 @@ module
     using interface Elastos.Droid.Os.IHandler;
     using interface Elastos.Droid.Os.ILooper;
     using interface Elastos.Droid.Os.ILowPowerModeListener;
+    using interface Elastos.Droid.Os.IIVibratorService;
     using interface Elastos.Droid.Os.IIUserManager;
     using interface Elastos.Droid.Os.IIPowerManager;
     using interface Elastos.Droid.Os.IIHardwareService;
@@ -290,6 +293,30 @@ module
         interface IBinder;
     }
 
+    class CUiModeManagerBinderService {
+        constructor(
+            [in] ISystemService* uiModeManagerService);
+
+        interface IIUiModeManager;
+        interface IBinder;
+    }
+
+    class CCertBlacklister {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IBinder;
+    }
+
+    [local]
+    class CVibratorService {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IIVibratorService;
+        interface IBinder;
+    }
+
 //     class CBootReceiver {
 //         interface IBroadcastReceiver;
 //     }
@@ -321,30 +348,11 @@ module
 //     // }
 
 //     [local]
-//     class CVibratorService {
-//         constructor(
-//             [in] IContext* ctx);
-
-//         interface IInputDeviceListener;
-//         interface IVibratorService;
-//         interface IBinder;
-//     }
-//     [local]
 //     class CDeviceStorageMonitorService {
 //         constructor(
 //             [in] IContext* ctx);
 //
 //         interface IDeviceStorageMonitorService;
-//         interface IBinder;
-//     }
-
-//     [local]
-//     class CUiModeManagerService {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] Handle32 twilight);
-
-//         interface IIUiModeManager;
 //         interface IBinder;
 //     }
 

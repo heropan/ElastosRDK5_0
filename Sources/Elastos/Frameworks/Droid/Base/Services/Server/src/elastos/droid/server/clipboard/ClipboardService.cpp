@@ -152,17 +152,18 @@ AutoPtr<ClipboardService::PerUserClipboard> ClipboardService::GetClipboard()
 AutoPtr<ClipboardService::PerUserClipboard> ClipboardService::GetClipboard(
     /* [in] */ Int32 userId)
 {
+    AutoPtr<PerUserClipboard> puc;
     synchronized(mClipboards) {
         AutoPtr<IInterface> obj;
         mClipboards->Get(userId, (IInterface**)&obj);
-        AutoPtr<PerUserClipboard> puc = (PerUserClipboard*)IObject::Probe(obj);
+        puc = (PerUserClipboard*)IObject::Probe(obj);
 
         if (puc == NULL) {
             puc = new PerUserClipboard(userId);
             mClipboards->Put(userId, (IObject*)puc);
         }
-        return puc;
     }
+    return puc;
 }
 
 void ClipboardService::RemoveClipboard(

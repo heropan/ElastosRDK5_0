@@ -42,6 +42,7 @@ SOURCES += MasterClearReceiver.cpp
 SOURCES += Watchdog.cpp
 SOURCES += NetworkTimeUpdateService.cpp
 SOURCES += CBluetoothManagerService.cpp
+SOURCES += CCertBlacklister.cpp
 SOURCES += CCommonTimeManagementService.cpp
 SOURCES += CConnectivityService.cpp
 SOURCES += CCountryDetectorService.cpp
@@ -52,19 +53,22 @@ SOURCES += CNetworkPolicyListener.cpp
 SOURCES += CNetworkManagementService.cpp
 SOURCES += CNetworkScoreService.cpp
 SOURCES += CNsdService.cpp
+SOURCES += CVibratorService.cpp
 SOURCES += CSamplingProfilerService.cpp
 SOURCES += CSerialService.cpp
 SOURCES += CTextServicesManagerService.cpp
-#SOURCES += CUiModeManagerService.cpp
+SOURCES += UiModeManagerService.cpp
 SOURCES += CUpdateLockService.cpp
+SOURCES += BrickReceiver.cpp
+SOURCES += DockObserver.cpp
 SOURCES += EntropyMixer.cpp
 SOURCES += NativeDaemonEvent.cpp
+SOURCES += NativeDaemonConnector.cpp
 SOURCES += RandomBlock.cpp
 SOURCES += ShutdownActivity.cpp
 SOURCES += TwilightCalculator.cpp
 #SOURCES += WiredAccessoryManager.cpp  //needs CInputManagerService
-SOURCES += DockObserver.cpp
-SOURCES += BrickReceiver.cpp
+
 
 #=========================================
 # TODO
@@ -77,7 +81,6 @@ SOURCES += BrickReceiver.cpp
 #SOURCES += CWallpaperManagerService.cpp
 #SOURCES += CWMSWallpaperConnection.cpp
 #SOURCES += CWMSUserSwitchObserver.cpp
-#SOURCES += NativeDaemonConnector.cpp
 #SOURCES += NetworkManagementSocketTagger.cpp
 #SOURCES += CMountService.cpp
 #SOURCES += AppWidgetServiceImpl.cpp

@@ -91,7 +91,7 @@ using Elastos::Droid::Os::CUserHandle;
 using Elastos::Droid::Os::Binder;
 using Elastos::Droid::Os::Environment;
 using Elastos::Droid::Os::FileUtils;
-using Elastos::Droid::Os::IVibratorService;
+using Elastos::Droid::Os::IIVibratorService;
 using Elastos::Droid::Os::ServiceManager;
 // using Elastos::Droid::Os::CDropBoxManager;
 using Elastos::Droid::Os::CUserManager;
@@ -2580,7 +2580,7 @@ ECode CContextImpl::GetSystemService(
     }
     else if (IContext::VIBRATOR_SERVICE.Equals(name)) {
         AutoLock lock(mCacheLock);
-        AutoPtr<IVibratorService> service = IVibratorService::Probe(ServiceManager::GetService(IContext::VIBRATOR_SERVICE).Get());
+        AutoPtr<IIVibratorService> service = IIVibratorService::Probe(ServiceManager::GetService(IContext::VIBRATOR_SERVICE).Get());
         mServiceCache[name] = service.Get();
         *object = service.Get();
         REFCOUNT_ADD(*object);

@@ -597,8 +597,8 @@ AutoPtr< List< AutoPtr<R> > > IntentResolver<F, R>::QueryIntent(
 //                ((intent.getFlags() & Intent.FLAG_DEBUG_LOG_RESOLUTION) != 0);
 
     // if (debug) Slog.v(
-    //         TAG, "Resolving type=" + resolvedType + " scheme=" + scheme
-    //         + " defaultOnly=" + defaultOnly + " userId=" + userId + " of " + intent);
+    //     TAG, "Resolving type=" + resolvedType + " scheme=" + scheme
+    //     + " defaultOnly=" + defaultOnly + " userId=" + userId + " of " + intent);
 
     AutoPtr< ArrayOf<F*> > firstTypeCut;
     AutoPtr< ArrayOf<F*> > secondTypeCut;

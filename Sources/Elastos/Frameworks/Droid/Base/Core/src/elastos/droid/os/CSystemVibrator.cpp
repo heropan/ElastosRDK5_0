@@ -24,7 +24,7 @@ CSystemVibrator::CSystemVibrator()
 ECode CSystemVibrator::constructor()
 {
     FAIL_RETURN(Vibrator::constructor())
-    mService = IVibratorService::Probe(ServiceManager::GetService(String("vibrator")).Get());
+    mService = IIVibratorService::Probe(ServiceManager::GetService(String("vibrator")).Get());
     return NOERROR;
 }
 
@@ -32,7 +32,7 @@ ECode CSystemVibrator::constructor(
     /* [in] */ IContext* context)
 {
     FAIL_RETURN(Vibrator::constructor(context))
-    mService = IVibratorService::Probe(ServiceManager::GetService(String("vibrator")).Get());
+    mService = IIVibratorService::Probe(ServiceManager::GetService(String("vibrator")).Get());
     return NOERROR;
 }
 

@@ -1,19 +1,21 @@
 
 #include "elastos/droid/server/UiModeManagerService.h"
 #include "elastos/droid/server/CUiModeManagerBinderService.h"
+#include <elastos/droid/R.h>
 #include <elastos/droid/os/Binder.h>
 #include <elastos/droid/os/UserHandle.h>
 #include <elastos/droid/provider/Settings.h>
 #include <elastos/droid/app/ActivityManagerNative.h>
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
-#include <Elastos.Droid.Os.h>
-#include <Elastos.Droid.App.h>
 #include <Elastos.Droid.Internal.h>
 #include <Elastos.Droid.Content.h>
 #include <Elastos.Droid.Provider.h>
 #include <Elastos.Droid.Service.h>
 
+using Elastos::Droid::R;
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Os::Binder;
 using Elastos::Droid::Os::UserHandle;
 using Elastos::Droid::Os::IUserHandle;
@@ -28,6 +30,8 @@ using Elastos::Droid::App::IActivityManager;
 using Elastos::Droid::App::IIActivityManager;
 using Elastos::Droid::App::IPendingIntentHelper;
 using Elastos::Droid::App::CPendingIntentHelper;
+using Elastos::Droid::App::CNotification;
+using Elastos::Droid::App::EIID_IIUiModeManager;
 using Elastos::Droid::Internal::App::ECLSID_CDisableCarModeActivity;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::IContentResolver;
@@ -42,6 +46,8 @@ using Elastos::Droid::Provider::ISettingsSecure;
 using Elastos::Droid::Provider::Settings;
 using Elastos::Droid::Service::Dreams::ISandman;
 using Elastos::Droid::Service::Dreams::CSandman;
+using Elastos::Droid::Server::Twilight::EIID_ITwilightListener;
+using Elastos::Droid::Server::Twilight::EIID_ITwilightManager;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
@@ -62,11 +68,13 @@ const Boolean UiModeManagerService::ENABLE_LAUNCH_DESK_DOCK_APP = TRUE;
 //==================================================================
 // UiModeManagerService::BinderService
 //==================================================================
+CAR_INTERFACE_IMPL_2(UiModeManagerService::BinderService, Object, IIUiModeManager, IBinder)
 
 ECode UiModeManagerService::BinderService::constructor(
     /* [in] */ ISystemService* umm)
 {
-    mHost = (UiModeManagerService)umm;
+    mHost = (UiModeManagerService*)umm;
+    return NOERROR;
 }
 
 ECode UiModeManagerService::BinderService::DisableCarMode(
@@ -162,7 +170,7 @@ ECode UiModeManagerService::BinderService::GetNightMode(
     /* [out] */ Int32 *mode)
 {
     VALIDATE_NOT_NULL(mode);
-    AutoLock Lock(mLock);
+    AutoLock Lock(mHost->mLock);
     *mode = mHost->mNightMode;
     return NOERROR;
 }
@@ -344,8 +352,7 @@ ECode UiModeManagerService::OnStart()
     AutoPtr<IContext> context;
     GetContext((IContext**)&context);
 
-    AutoPtr<IService> service;
-    GetLocalService(EIID_ITwilightManager, (IInterface**)&service);
+    AutoPtr<IInterface> service = GetLocalService(EIID_ITwilightManager);
     mTwilightManager = ITwilightManager::Probe(service);
 
     service = NULL;
@@ -353,17 +360,16 @@ ECode UiModeManagerService::OnStart()
     AutoPtr<IPowerManager> powerManager = IPowerManager::Probe(service);
     powerManager->NewWakeLock(IPowerManager::FULL_WAKE_LOCK, TAG, (IPowerManagerWakeLock**)&mWakeLock);
 
-
     AutoPtr<IIntentFilter> intentFilter;
     CIntentFilter::New(IIntent::ACTION_DOCK_EVENT, (IIntentFilter**)&intentFilter);
     AutoPtr<IIntent> intent;
-    mContext->RegisterReceiver((IBroadcastReceiver*)mDockModeReceiver,
+    context->RegisterReceiver((IBroadcastReceiver*)mDockModeReceiver,
         intentFilter, (IIntent**)&intent);
 
     intent = NULL;
     AutoPtr<IIntentFilter> intentFilter2;
     CIntentFilter::New(IIntent::ACTION_BATTERY_CHANGED, (IIntentFilter**)&intentFilter2);
-    mContext->RegisterReceiver((IBroadcastReceiver*)mBatteryReceiver,
+    context->RegisterReceiver((IBroadcastReceiver*)mBatteryReceiver,
         intentFilter2, (IIntent**)&intent);
 
     mConfiguration->SetToDefaults();
@@ -389,13 +395,13 @@ ECode UiModeManagerService::OnStart()
 
 
     AutoPtr<IContentResolver> resolver;
-    mContext->GetContentResolver((IContentResolver**)&resolver);
+    context->GetContentResolver((IContentResolver**)&resolver);
     Settings::Secure::GetInt32(resolver, ISettingsSecure::UI_NIGHT_MODE,
         IUiModeManager::MODE_NIGHT_AUTO, &mNightMode);
 
     mTwilightManager->RegisterListener(mTwilightListener, mHandler);
 
-    CUiModeManagerBinderService::New((IIUiModeManager**)&mService);
+    CUiModeManagerBinderService::New(this, (IIUiModeManager**)&mService);
     PublishBinderService(IContext::UI_MODE_SERVICE, IBinder::Probe(mService));
     return NOERROR;
 }
@@ -730,8 +736,9 @@ ECode UiModeManagerService::SendConfigurationAndStartDreamOrDockAppLocked(
             //try {
             AutoPtr<IIActivityManager> am = ActivityManagerNative::GetDefault();
             Int32 result;
+            String nullStr;
             am->StartActivityWithConfig(
-                   NULL, NULL, homeIntent, nullStr, NULL, nullStr, 0, 0,
+                   NULL, nullStr, homeIntent, nullStr, NULL, nullStr, 0, 0,
                     mConfiguration, NULL, IUserHandle::USER_CURRENT, &result);
             if (result >= IActivityManager::START_SUCCESS) {
                 dockAppStarted = TRUE;
@@ -818,10 +825,10 @@ ECode UiModeManagerService::AdjustStatusBarCarModeLocked()
 
             n->SetLatestEventInfo(context, strArg1, strArg2, pi);
 
-            mNotificationManager->NotifyAsUser(nullStr, 0x01040493, n, UserHandleALL);
+            mNotificationManager->NotifyAsUser(nullStr, R::string::car_mode_disable_notification_title, n, UserHandle::ALL);
         }
         else {
-            mNotificationManager->CancelAsUser(nullStr, 0x01040493, UserHandleALL);
+            mNotificationManager->CancelAsUser(nullStr, R::string::car_mode_disable_notification_title, UserHandle::ALL);
         }
     }
     return NOERROR;
@@ -841,11 +848,10 @@ ECode UiModeManagerService::UpdateTwilight()
 
 ECode UiModeManagerService::UpdateComputedNightModeLocked()
 {
-    AutoPtr<TwilightService::TwilightState> state;
-    mTwilightManager->GetCurrentState((TwilightService::TwilightState **)&state);
+    AutoPtr<ITwilightState> state;
+    mTwilightManager->GetCurrentState((ITwilightState **)&state);
     if (state != NULL) {
-        Boolean isNight = state->IsNight();
-        mComputedNightMode = isNight;
+        state->IsNight(&mComputedNightMode);
     }
     return NOERROR;
 }

@@ -889,7 +889,7 @@ _Exit_:
         mStatus = IBackupConstants::AGENT_ERROR;
         mHost->AddBackupTrace(String("agent SE"));
     }
-    if(ec == E_NAME_NOT_FOUND_EXCEPTION) {
+    if(ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
         Slogger::D(TAG, "Package does not exist; skipping");
         mHost->AddBackupTrace(String("no such package"));
         mStatus = IBackupConstants::AGENT_UNKNOWN;

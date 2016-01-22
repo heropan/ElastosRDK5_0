@@ -18,6 +18,14 @@ ECode BrickReceiver::OnReceive(
     return SystemService::Start(String("brick"));
 }
 
+ECode BrickReceiver::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str)
+    *str = "BrickReceiver";
+    return NOERROR;
+}
+
 } // Server
 } // Droid
 } // Elastos
