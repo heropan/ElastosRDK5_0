@@ -3,17 +3,16 @@
 
 #include "_Elastos.Droid.Server.h"
 #include "_Elastos_Droid_Server_Input_CInputManagerService.h"
+#include "Elastos.Droid.Utility.h"
+#include "Elastos.Droid.Text.h"
+#include "Elastos.CoreLibrary.Utility.h"
 #include "elastos/core/Object.h"
-//#include "elastos/droid/app/CPendingIntent.h"
+#include "elastos/droid/hardware/input/InputDeviceIdentifier.h"
 #include "elastos/droid/os/Handler.h"
+#include "elastos/droid/widget/Toast.h"
 #include "elastos/droid/server/input/PersistentDataStore.h"
 #include "elastos/droid/server/input/InputApplicationHandle.h"
 #include "elastos/droid/server/input/InputWindowHandle.h"
-#include "elastos/droid/hardware/input/InputDeviceIdentifier.h"
-#include "elastos/droid/widget/Toast.h"
-#include "Elastos.Droid.Utility.h"
-#include "Elastos.Droid.Text.h"
-#include <Elastos.CoreLibrary.Utility.h>
 
 using Elastos::Droid::App::INotificationManager;
 using Elastos::Droid::App::IPendingIntent;
@@ -61,28 +60,10 @@ namespace Input {
 CarClass(CInputManagerService)
     , public Object
     , public IIInputManager
+    , public IWatchdogMonitor
     , public IBinder
 {
-private:
-    /**
-     * Private handler for the input manager.
-     */
-    class InputManagerHandler
-        : public Handler
-    {
-    public:
-        InputManagerHandler(
-            /* [in] */ ILooper* looper,
-            /* [in] */ CInputManagerService* host);
-
-        //@Override
-        CARAPI HandleMessage(
-            /* [in] */ IMessage* msg);
-
-    private:
-        CInputManagerService* mHost;
-    };
-
+public:
     /**
      * Hosting interface for input filters to call back into the input manager.
      */
@@ -112,6 +93,26 @@ private:
 
     private:
         Boolean mDisconnected;
+        CInputManagerService* mHost;
+    };
+
+private:
+    /**
+     * Private handler for the input manager.
+     */
+    class InputManagerHandler
+        : public Handler
+    {
+    public:
+        InputManagerHandler(
+            /* [in] */ ILooper* looper,
+            /* [in] */ CInputManagerService* host);
+
+        //@Override
+        CARAPI HandleMessage(
+            /* [in] */ IMessage* msg);
+
+    private:
         CInputManagerService* mHost;
     };
 
@@ -519,7 +520,7 @@ private:
 
     // Must be called on handler.
     CARAPI_(void) DeliverInputDevicesChanged(
-        /* [in] */ ArrayOf<IInputDevice>* oldInputDevices);
+        /* [in] */ ArrayOf<IInputDevice*>* oldInputDevices);
 
     // Must be called on handler.
     CARAPI_(void) ShowMissingKeyboardLayoutNotification(
@@ -532,7 +533,7 @@ private:
     CARAPI_(void) UpdateKeyboardLayouts();
 
     static CARAPI_(Boolean) ContainsInputDeviceWithDescriptor(
-        /* [in] */ ArrayOf<IInputDevice>* inputDevices,
+        /* [in] */ ArrayOf<IInputDevice*>* inputDevices,
         /* [in] */ const String& descriptor);
 
     CARAPI_(void) VisitAllKeyboardLayouts(
@@ -555,7 +556,7 @@ private:
      */
     CARAPI GetLayoutDescriptor(
         /* [in] */ IInputDeviceIdentifier* identifier,
-        /* [out] */ String* layout);
+        /* [out] */ String* layoutDescriptor);
 
     // Must be called on handler.
     CARAPI_(void) HandleSwitchKeyboardLayout(
@@ -587,7 +588,7 @@ private:
 
     // Native callback.
     CARAPI_(void) NotifyInputDevicesChanged(
-        /* [in] */ ArrayOf<IInputDevice>* inputDevices);
+        /* [in] */ ArrayOf<IInputDevice*>* inputDevices);
 
     // Native callback.
     CARAPI_(void) NotifySwitch(
@@ -616,7 +617,7 @@ private:
         /* [in] */ Int32 policyFlags);
 
     // Native callback.
-    CARAPI_(Int32) InterceptKeyBeforeDispatching(
+    CARAPI_(Int64) InterceptKeyBeforeDispatching(
         /* [in] */ InputWindowHandle* focus,
         /* [in] */ IKeyEvent* event,
         /* [in] */ Int32 policyFlags);

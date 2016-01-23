@@ -8,7 +8,8 @@
 #include "Elastos.Droid.Internal.h"
 #include "Elastos.Droid.Utility.h"
 #include "Elastos.CoreLibrary.Extensions.h"
-#include "elastos/droid/internal/utility/XmlUtils.h"
+#include <elastos/droid/utility/Xml.h>
+#include <elastos/droid/internal/utility/XmlUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
 
@@ -16,8 +17,11 @@ using Elastos::Droid::Internal::Utility::CFastXmlSerializer;
 using Elastos::Droid::Internal::Utility::IFastXmlSerializer;
 using Elastos::Droid::Internal::Utility::XmlUtils;
 using Elastos::Droid::Utility::CAtomicFile;
-using Elastos::Droid::Hardware::Input::TouchCalibration;
+using Elastos::Droid::Utility::Xml;
 using Elastos::Droid::Hardware::Input::ITouchCalibration;
+using Elastos::Droid::Hardware::Input::CTouchCalibration;
+using Elastos::Droid::Hardware::Input::ITouchCalibrationHelper;
+using Elastos::Droid::Hardware::Input::CTouchCalibrationHelper;
 using Elastos::Droid::View::ISurface;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;

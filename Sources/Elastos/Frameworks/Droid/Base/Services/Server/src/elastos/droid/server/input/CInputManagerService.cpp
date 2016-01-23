@@ -1,98 +1,122 @@
-#include "elastos/droid/server/input/InputManagerService.h"
-#include <elastos/droid/server/LocalServices.h>
+#include "elastos/droid/server/input/CInputManagerService.h"
+#include "elastos/droid/server/DisplayThread.h"
+#include "elastos/droid/server/LocalServices.h"
+#include "elastos/droid/R.h"
+#include "Elastos.Droid.Core.Server.h"
 #include "Elastos.Droid.Internal.h"
 #include "Elastos.Droid.Content.h"
 #include "Elastos.Droid.View.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/AutoLock.h>
 //#include "elastos/droid/os/CHandler.h"
-#include "Elastos.Droid.Core.Server.h"
+//#include "elastos/droid/app/CPendingIntent.h"
 
-using Elastos::Droid::View::IDisplay;
-using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IResources;
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::View::IWindowManagerPolicy;
 using Elastos::Droid::Hardware::Input::IInputManager;
 using Elastos::Droid::Hardware::Input::EIID_IIInputManager;
-using Elastos::Droid::View::EIID_IInputFilterHost;
-using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::Hardware::Input::EIID_IInputManagerInternal;
+using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::CHandler;
+using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::Utility::CSparseArray;
+using Elastos::Droid::View::IDisplay;
+using Elastos::Droid::View::IWindowManagerPolicy;
+using Elastos::Droid::View::EIID_IIInputFilterHost;
+using Elastos::Droid::R;
+using Elastos::Core::IArrayOf;
+using Elastos::Utility::CArrayList;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Input {
 
-CAR_INTERFACE_IMPL_3(InputManagerService, Object, IIInputManager, IInputManagerService, IBinder);
-
-InputManagerService::InputManagerService()
+//==============================================================================
+//  CInputManagerService::InputManagerHandler
+//==============================================================================
+CInputManagerService::InputManagerHandler::InputManagerHandler(
+    /* [in] */ ILooper* looper,
+    /* [in] */ CInputManagerService* host)
+    : Handler(looper, NULL, TRUE/*async*/)
+    , mHost(host)
 {}
 
-InputManagerService::~InputManagerService()
-{}
-
-ECode InputManagerService::constructor()
+//@Override
+ECode CInputManagerService::InputManagerHandler::HandleMessage(
+    /* [in] */ IMessage* msg)
 {
+    Int32 what;
+    msg->GetWhat(&what);
+    switch (what) {
+        case MSG_DELIVER_INPUT_DEVICES_CHANGED:
+        {
+            AutoPtr<IInterface> obj;
+            msg->GetObj((IInterface**)&obj);
+            IArrayOf* array = IArrayOf::Probe(obj);
+            AutoPtr< ArrayOf<IInputDevice*> > inputDevices;
+            if (array != NULL) {
+                Int32 size;
+                array->GetLength(&size);
+                inputDevices = ArrayOf<IInputDevice*>::Alloc(size);
+                for (Int32 i = 0; i < size; i++) {
+                    AutoPtr<IInterface> inputDevice;
+                    array->Get(i, (IInterface**)&inputDevice);
+                    inputDevices->Set(i, IInputDevice::Probe(inputDevice));
+                }
+            }
+            mHost->DeliverInputDevicesChanged(inputDevices);
+            break;
+        }
+        case MSG_SWITCH_KEYBOARD_LAYOUT:
+        {
+            Int32 arg1, arg2;
+            msg->GetArg1(&arg1);
+            msg->GetArg2(&arg2);
+            mHost->HandleSwitchKeyboardLayout(arg1, arg2);
+            break;
+        }
+        case MSG_RELOAD_KEYBOARD_LAYOUTS:
+            mHost->ReloadKeyboardLayouts();
+            break;
+        case MSG_UPDATE_KEYBOARD_LAYOUTS:
+            mHost->UpdateKeyboardLayouts();
+            break;
+        case MSG_RELOAD_DEVICE_ALIASES:
+            mHost->ReloadDeviceAliases();
+            break;
+    }
     return NOERROR;
 }
 
-ECode InputManagerService::constructor(
-    /* [in] */ IContext* context)
-{
-    AutoPtr<IResources> resources;
-    AutoPtr<ILooper> looper;
-    AutoPtr<IMessageQueue> queue;
 
-    mContext = context;
-//    mHandler = new InputManagerHandler(DisplayThread.get().getLooper(), this);
+//==============================================================================
+//  CInputManagerService::InputFilterHost
+//==============================================================================
+CAR_INTERFACE_IMPL_2(CInputManagerService::InputFilterHost, Object, IIInputFilterHost, IBinder);
 
-    context->GetResources((IResources**)&resources);
-//    resources->GetBoolean(R.bool.config_useDevInputEventForAudioJack, &mUseDevInputEventForAudioJack);
-
-    Slogger::I(TAG, "Initializing input manager, mUseDevInputEventForAudioJack="
-            + mUseDevInputEventForAudioJack);
-    mHandler->GetLooper((ILooper**)&looper);
-    looper->GetQueue((IMessageQueue**)&queue);
-    mPtr = nativeInit(this, mContext, queue);
-
-//    LocalServices::AddService(InputManagerInternal.class, new LocalService());
-    return NOERROR;
-}
-
-
-/****************
- * InputManagerService::InputFilterHost::
- *************************************************************************************************/
-
-CAR_INTERFACE_IMPL_2(InputManagerService::InputFilterHost, Object, IInputFilterHost, IBinder);
-
-InputManagerService::InputFilterHost::InputFilterHost()
+CInputManagerService::InputFilterHost::InputFilterHost()
+    : mDisconnected(FALSE)
+    , mHost(NULL)
 {}
 
-InputManagerService::InputFilterHost::~InputFilterHost()
+CInputManagerService::InputFilterHost::~InputFilterHost()
 {}
 
-ECode InputManagerService::InputFilterHost::constructor()
+ECode CInputManagerService::InputFilterHost::constructor(
+    /* [in] */ IIInputManager* host)
 {
+    mHost = (CInputManagerService*)host;
     return NOERROR;
 }
 
-ECode InputManagerService::InputFilterHost::constructor(
-    /* [in] */ IIInputManager* parent)
-{
-    mHost = (InputManagerService*)parent;
-    return NOERROR;
-}
-
-ECode InputManagerService::InputFilterHost::DisconnectLocked()
+void CInputManagerService::InputFilterHost::DisconnectLocked()
 {
     mDisconnected = TRUE;
-    return NOERROR;
 }
 
-ECode InputManagerService::InputFilterHost::SendInputEvent(
+ECode CInputManagerService::InputFilterHost::SendInputEvent(
     /* [in] */ IInputEvent* event,
     /* [in] */ Int32 policyFlags)
 {
@@ -104,139 +128,27 @@ ECode InputManagerService::InputFilterHost::SendInputEvent(
     Object& lock = mHost->mInputFilterLock;
     synchronized (lock) {
         if (!mDisconnected) {
-            nativeInjectInputEvent(mHost->mPtr, event, IDisplay::DEFAULT_DISPLAY, 0, 0,
+            NativeInjectInputEvent(mHost->mPtr, event, IDisplay::DEFAULT_DISPLAY, 0, 0,
                     IInputManager::INJECT_INPUT_EVENT_MODE_ASYNC, 0,
                     policyFlags | IWindowManagerPolicy::FLAG_FILTERED);
         }
     }
-
     return NOERROR;
 }
 
-ECode InputManagerService::InputFilterHost::ToString(
+ECode CInputManagerService::InputFilterHost::ToString(
     /* [out] */ String* str)
 {
+    VALIDATE_NOT_NULL(str);
+    *str = "CInputManagerService::InputFilterHost";
     return NOERROR;
 }
 
 
-/****************
- * InputManagerService::VibratorToken::
- *************************************************************************************************/
-
-InputManagerService::VibratorToken::VibratorToken(
-    /* [in] */ Int32 deviceId,
-    /* [in] */ IBinder* token,
-    /* [in] */ Int32 tokenValue)
-{
-    mDeviceId = deviceId;
-    mToken = token;
-    mTokenValue = tokenValue;
-}
-
-//@Override
-ECode InputManagerService::VibratorToken::BinderDied()
-{
-    if (DEBUG) {
-        Slogger::D(TAG, "Vibrator token died.");
-    }
-//    OnVibratorTokenDied(this);
-    return NOERROR;
-}
-
-
-/****************
- * InputManagerService::LocalService::
- *************************************************************************************************/
-InputManagerService::LocalService::LocalService(
-    /* [in] */ InputManagerService* parent)
-    : mHost(parent)
-{}
-
-void InputManagerService::LocalService::SetDisplayViewports(
-    /* [in] */ IDisplayViewport* defaultViewport,
-    /* [in] */ IDisplayViewport* externalTouchViewport)
-{
-    mHost->SetDisplayViewportsInternal(defaultViewport, externalTouchViewport);
-}
-
-Boolean InputManagerService::LocalService::InjectInputEvent(
-    /* [in] */ IInputEvent* event,
-    /* [in] */ Int32 displayId,
-    /* [in] */ Int32 mode)
-{
-    return mHost->InjectInputEventInternal(event, IDisplay::DEFAULT_DISPLAY, mode);
-}
-
-void InputManagerService::LocalService::SetInteractive(
-    /* [in] */ Boolean interactive)
-{
-    mHost->nativeSetInteractive(mHost->mPtr, interactive);
-}
-
-
-/****************
- * InputManagerService::InputManagerHandler::
- *************************************************************************************************/
-
-InputManagerService::InputManagerHandler::InputManagerHandler(
-    /* [in] */ ILooper* looper,
-    /* [in] */ InputManagerService* parent)
-    : mHost(parent)
-
-{
-    CHandler::New(looper, NULL, TRUE /*async*/, (IHandler**)&superHandler);
-}
-
-//@Override
-ECode InputManagerService::InputManagerHandler::HandleMessage(
-    /* [in] */ IMessage* msg)
-{
-    Int32 what;
-
-    msg->GetWhat(&what);
-
-    switch (what) {
-        case MSG_DELIVER_INPUT_DEVICES_CHANGED:
-        {
-            AutoPtr<IInterface> obj;
-            msg->GetObj((IInterface**)&obj);
-
-            mHost->DeliverInputDevicesChanged(NULL/*obj*/);
-        }
-        break;
-
-        case MSG_SWITCH_KEYBOARD_LAYOUT:
-        {
-            Int32 arg1, arg2;
-
-            msg->GetArg1(&arg1);
-            msg->GetArg2(&arg2);
-
-            mHost->HandleSwitchKeyboardLayout(arg1, arg2);
-        }
-        break;
-
-        case MSG_RELOAD_KEYBOARD_LAYOUTS:
-            mHost->ReloadKeyboardLayouts();
-            break;
-        case MSG_UPDATE_KEYBOARD_LAYOUTS:
-            mHost->UpdateKeyboardLayouts();
-            break;
-        case MSG_RELOAD_DEVICE_ALIASES:
-            mHost->ReloadDeviceAliases();
-            break;
-    }
-
-    return NOERROR;
-}
-
-
-/****************
- * InputManagerService::KeyboardLayoutDescriptor::
- *************************************************************************************************/
-
-String InputManagerService::KeyboardLayoutDescriptor::Format(
+//==============================================================================
+//  CInputManagerService::KeyboardLayoutDescriptor
+//==============================================================================
+String CInputManagerService::KeyboardLayoutDescriptor::Format(
     /* [in] */ const String& packageName,
     /* [in] */ const String& receiverName,
     /* [in] */ const String& keyboardName)
@@ -244,8 +156,9 @@ String InputManagerService::KeyboardLayoutDescriptor::Format(
     return packageName + "/" + receiverName + "/" + keyboardName;
 }
 
-InputManagerService::KeyboardLayoutDescriptor* InputManagerService::KeyboardLayoutDescriptor::parse(
-            /* [in] */ const String& descriptor)
+AutoPtr<CInputManagerService::KeyboardLayoutDescriptor>
+CInputManagerService::KeyboardLayoutDescriptor::Parse(
+    /* [in] */ const String& descriptor)
 {
     Int32 pos = descriptor.IndexOf('/');
     if (pos < 0 || pos + 1 == descriptor.GetLength()) {
@@ -256,7 +169,7 @@ InputManagerService::KeyboardLayoutDescriptor* InputManagerService::KeyboardLayo
         return NULL;
     }
 
-    KeyboardLayoutDescriptor* result = new KeyboardLayoutDescriptor();
+    AutoPtr<KeyboardLayoutDescriptor> result = new KeyboardLayoutDescriptor();
     result->mPackageName = descriptor.Substring(0, pos);
     result->mReceiverName = descriptor.Substring(pos + 1, pos2);
     result->mKeyboardLayoutName = descriptor.Substring(pos2 + 1);
@@ -264,257 +177,431 @@ InputManagerService::KeyboardLayoutDescriptor* InputManagerService::KeyboardLayo
 }
 
 
-/****************
- * InputManagerService::InputDevicesChangedListenerRecord::
- *************************************************************************************************/
+//==============================================================================
+//  CInputManagerService::InputDevicesChangedListenerRecord
+//==============================================================================
+CAR_INTERFACE_IMPL(CInputManagerService::InputDevicesChangedListenerRecord, Object, IProxyDeathRecipient);
 
-InputManagerService::InputDevicesChangedListenerRecord::InputDevicesChangedListenerRecord(
+CInputManagerService::InputDevicesChangedListenerRecord::InputDevicesChangedListenerRecord(
     /* [in] */ Int32 pid,
     /* [in] */ IInputDevicesChangedListener* listener,
-    /* [in] */ InputManagerService* parent)
-    : mPid(pid), mListener(listener), mHost(parent)
+    /* [in] */ CInputManagerService* host)
+    : mPid(pid)
+    , mListener(listener)
+    , mHost(host)
 {}
 
 //@Override
-void InputManagerService::InputDevicesChangedListenerRecord::BinderDied()
+ECode CInputManagerService::InputDevicesChangedListenerRecord::BinderDied()
 {
     if (DEBUG) {
         Slogger::D(TAG, "Input devices changed listener for pid %d died.", mPid);
     }
     mHost->OnInputDevicesChangedListenerDied(mPid);
+    return NOERROR;
 }
 
-ECode InputManagerService::InputDevicesChangedListenerRecord::NotifyInputDevicesChanged(
+void CInputManagerService::InputDevicesChangedListenerRecord::NotifyInputDevicesChanged(
     /* [in] */ ArrayOf<Int32>* info)
 {
-    ECode ec;
-
-    ec = mListener->OnInputDevicesChanged(info);
+    ECode ec = mListener->OnInputDevicesChanged(info);
     if (FAILED(ec)) {
         Slogger::W(TAG, "Failed to notify process %d that input devices changed, assuming it died.", mPid);
         BinderDied();
-        return E_REMOTE_EXCEPTION;
     }
+}
 
+
+//==============================================================================
+//  CInputManagerService::VibratorToken
+//==============================================================================
+CAR_INTERFACE_IMPL(CInputManagerService::VibratorToken, Object, IProxyDeathRecipient);
+
+CInputManagerService::VibratorToken::VibratorToken(
+    /* [in] */ Int32 deviceId,
+    /* [in] */ IBinder* token,
+    /* [in] */ Int32 tokenValue,
+    /* [in] */ CInputManagerService* host)
+    : mDeviceId(deviceId)
+    , mToken(token)
+    , mTokenValue(tokenValue)
+    , mHost(host)
+{}
+
+//@Override
+ECode CInputManagerService::VibratorToken::BinderDied()
+{
+    if (DEBUG) {
+        Slogger::D(TAG, "Vibrator token died.");
+    }
+    mHost->OnVibratorTokenDied(this);
     return NOERROR;
 }
 
 
-/****************
- * InputManagerService::
- *************************************************************************************************/
+//==============================================================================
+//  CInputManagerService::LocalService
+//==============================================================================
+CAR_INTERFACE_IMPL(CInputManagerService::LocalService, Object, IInputManagerInternal);
 
-const String InputManagerService::TAG("InputManager");
-const String InputManagerService::EXCLUDED_DEVICES_PATH("etc/excluded-input-devices.xml");
+CInputManagerService::LocalService::LocalService(
+    /* [in] */ CInputManagerService* host)
+    : mHost(host)
+{}
+
+ECode CInputManagerService::LocalService::SetDisplayViewports(
+    /* [in] */ IDisplayViewport* defaultViewport,
+    /* [in] */ IDisplayViewport* externalTouchViewport)
+{
+    mHost->SetDisplayViewportsInternal(defaultViewport, externalTouchViewport);
+    return NOERROR;
+}
+
+ECode CInputManagerService::LocalService::InjectInputEvent(
+    /* [in] */ IInputEvent* event,
+    /* [in] */ Int32 displayId,
+    /* [in] */ Int32 mode,
+    /* [out] */ Boolean* result)
+{
+    return mHost->InjectInputEventInternal(event, displayId, mode, result);
+}
+
+ECode CInputManagerService::LocalService::SetInteractive(
+    /* [in] */ Boolean interactive)
+{
+    NativeSetInteractive(mHost->mPtr, interactive);
+    return NOERROR;
+}
+
+
+//==============================================================================
+//  CInputManagerService
+//==============================================================================
+const String CInputManagerService::TAG("InputManager");
+const Boolean CInputManagerService::DEBUG;
+const String CInputManagerService::EXCLUDED_DEVICES_PATH("etc/excluded-input-devices.xml");
+
+const Int32 CInputManagerService::MSG_DELIVER_INPUT_DEVICES_CHANGED;
+const Int32 CInputManagerService::MSG_SWITCH_KEYBOARD_LAYOUT;
+const Int32 CInputManagerService::MSG_RELOAD_KEYBOARD_LAYOUTS;
+const Int32 CInputManagerService::MSG_UPDATE_KEYBOARD_LAYOUTS;
+const Int32 CInputManagerService::MSG_RELOAD_DEVICE_ALIASES;
+
+const Int32 CInputManagerService::INPUT_EVENT_INJECTION_SUCCEEDED;
+const Int32 CInputManagerService::INPUT_EVENT_INJECTION_PERMISSION_DENIED;
+const Int32 CInputManagerService::INPUT_EVENT_INJECTION_FAILED;
+const Int32 CInputManagerService::INPUT_EVENT_INJECTION_TIMED_OUT;
+
+const Int32 CInputManagerService::INJECTION_TIMEOUT_MILLIS;
+const Int32 CInputManagerService::KEY_STATE_UNKNOWN;
+
+const Int32 CInputManagerService::KEY_STATE_UP;
+
+const Int32 CInputManagerService::KEY_STATE_DOWN;
+
+const Int32 CInputManagerService::KEY_STATE_VIRTUAL;
+
+const Int32 CInputManagerService::BTN_MOUSE;
+
+const Int32 CInputManagerService::SW_LID;
+
+const Int32 CInputManagerService::SW_KEYPAD_SLIDE;
+
+const Int32 CInputManagerService::SW_HEADPHONE_INSERT;
+
+const Int32 CInputManagerService::SW_MICROPHONE_INSERT;
+
+const Int32 CInputManagerService::SW_LINEOUT_INSERT;
+
+const Int32 CInputManagerService::SW_JACK_PHYSICAL_INSERT;
+
+const Int32 CInputManagerService::SW_CAMERA_LENS_COVER;
+
+const Int32 CInputManagerService::SW_LID_BIT;
+const Int32 CInputManagerService::SW_KEYPAD_SLIDE_BIT;
+const Int32 CInputManagerService::SW_HEADPHONE_INSERT_BIT;
+const Int32 CInputManagerService::SW_MICROPHONE_INSERT_BIT;
+const Int32 CInputManagerService::SW_LINEOUT_INSERT_BIT;
+const Int32 CInputManagerService::SW_JACK_PHYSICAL_INSERT_BIT;
+const Int32 CInputManagerService::SW_JACK_BITS;
+const Int32 CInputManagerService::SW_CAMERA_LENS_COVER_BIT;
+
+CAR_INTERFACE_IMPL_3(CInputManagerService, Object, IIInputManager, IWatchdogMonitor, IBinder);
+
+CInputManagerService::CInputManagerService()
+    : mPtr(0)
+    , mSystemReady(FALSE)
+    , mInputDevicesChangedPending(FALSE)
+    , mKeyboardLayoutNotificationShown(FALSE)
+    , mNextVibratorTokenValue(0)
+    , mUseDevInputEventForAudioJack(FALSE)
+{
+    mDataStore = new PersistentDataStore();
+    mInputDevices = ArrayOf<IInputDevice*>::Alloc(0);
+    CSparseArray::New((ISparseArray**)&mInputDevicesChangedListeners);
+    CArrayList::New((IArrayList**)&mTempInputDevicesChangedListenersToNotify);
+    CArrayList::New((IArrayList**)&mTempFullKeyboards);
+}
+
+CInputManagerService::~CInputManagerService()
+{}
+
+ECode CInputManagerService::constructor(
+    /* [in] */ IContext* context)
+{
+    mContext = context;
+    AutoPtr<ILooper> looper;
+    DisplayThread::Get()->GetLooper((ILooper**)&looper);
+    mHandler = new InputManagerHandler(looper, this);
+
+    AutoPtr<IResources> resources;
+    context->GetResources((IResources**)&resources);
+    resources->GetBoolean(R::bool_::config_useDevInputEventForAudioJack, &mUseDevInputEventForAudioJack);
+    Slogger::I(TAG, "Initializing input manager, mUseDevInputEventForAudioJack=%d",
+            mUseDevInputEventForAudioJack);
+    looper = NULL;
+    mHandler->GetLooper((ILooper**)&looper);
+    AutoPtr<IMessageQueue> queue;
+    looper->GetQueue((IMessageQueue**)&queue);
+    mPtr = NativeInit(this, mContext, queue);
+
+    LocalServices::AddService(EIID_IInputManagerInternal, (IInputManagerInternal*)new LocalService(this));
+    return NOERROR;
+}
 
 /**
  * these native functions come from ./frameworks/base/services/core/jni/com_android_server_input_InputManagerService.cpp
  */
-
-Int64 InputManagerService::nativeInit(
-    InputManagerService* service,
-    IContext* context,
-    IMessageQueue* messageQueue)
+Int64 CInputManagerService::NativeInit(
+    /* [in] */ CInputManagerService* service,
+    /* [in] */ IContext* context,
+    /* [in] */ IMessageQueue* messageQueue)
 {
-/*
-static jlong nativeInit(JNIEnv* env, jclass clazz,
-        jobject serviceObj, jobject contextObj, jobject messageQueueObj) {
-    sp<MessageQueue> messageQueue = android_os_MessageQueue_getMessageQueue(env, messageQueueObj);
-    if (messageQueue == NULL) {
-        jniThrowRuntimeException(env, "MessageQueue is not initialized.");
-        return 0;
-    }
-
-    NativeInputManager* im = new NativeInputManager(contextObj, serviceObj,
-            messageQueue->getLooper());
-    im->incStrong(0);
-    return reinterpret_cast<jlong>(im);
-}
-    NativeMessageQueue* nativeMQ;
-    Int64 messageQueue;
-
-    messageQueue->GetMPtr(&messageQueue);
-    if (messageQueue == NULL) {
-        //jniThrowRuntimeException(env, "MessageQueue is not initialized.");
-        return 0;
-    }
-
-    nativeMQ = reinterpret_cast<NativeMessageQueue*>(messageQueue);
-
-    NativeInputManager* im = new NativeInputManager(context, service, nativeMQ->GetLooper());
-*/
 }
 
-
-
-void InputManagerService::nativeStart(Int64 ptr)
-{
-/*
-    NativeInputManager* im = reinterpret_cast<NativeInputManager*>(ptr);
-
-    status_t result = im->getInputManager()->start();
-    if (result) {
-        jniThrowRuntimeException(env, "Input manager could not be started.");
-    }
-*/
-}
-
-void InputManagerService::nativeSetDisplayViewport(Int64 ptr, Boolean external,
-        Int32 displayId, Int32 rotation,
-        Int32 logicalLeft, Int32 logicalTop, Int32 logicalRight, Int32 logicalBottom,
-        Int32 physicalLeft, Int32 physicalTop, Int32 physicalRight, Int32 physicalBottom,
-        Int32 deviceWidth, Int32 deviceHeight)
+void CInputManagerService::NativeStart(
+    /* [in] */ Int64 ptr)
 {
 
 }
 
-Int32 InputManagerService::nativeGetScanCodeState(Int64 ptr,
-        Int32 deviceId, Int32 sourceMask, Int32 scanCode)
+void CInputManagerService::NativeSetDisplayViewport(
+    /* [in] */ Int64 ptr,
+    /* [in] */ Boolean external,
+    /* [in] */ Int32 displayId,
+    /* [in] */ Int32 rotation,
+    /* [in] */ Int32 logicalLeft,
+    /* [in] */ Int32 logicalTop,
+    /* [in] */ Int32 logicalRight,
+    /* [in] */ Int32 logicalBottom,
+    /* [in] */ Int32 physicalLeft,
+    /* [in] */ Int32 physicalTop,
+    /* [in] */ Int32 physicalRight,
+    /* [in] */ Int32 physicalBottom,
+    /* [in] */ Int32 deviceWidth,
+    /* [in] */ Int32 deviceHeight)
 {
 
 }
 
-Int32 InputManagerService::nativeGetKeyCodeState(Int64 ptr,
-        Int32 deviceId, Int32 sourceMask, Int32 keyCode)
+Int32 CInputManagerService::NativeGetScanCodeState(
+    /* [in] */ Int64 ptr,
+    /* [in] */ Int32 deviceId,
+    /* [in] */ Int32 sourceMask,
+    /* [in] */ Int32 scanCode)
 {
 
 }
 
-Int32 InputManagerService::nativeGetSwitchState(Int64 ptr,
-        Int32 deviceId, Int32 sourceMask, Int32 sw)
+Int32 CInputManagerService::NativeGetKeyCodeState(
+    /* [in] */ Int64 ptr,
+    /* [in] */ Int32 deviceId,
+    /* [in] */ Int32 sourceMask,
+    /* [in] */ Int32 keyCode)
 {
 
 }
 
-Boolean InputManagerService::nativeHasKeys(Int64 ptr,
-        Int32 deviceId, Int32 sourceMask, ArrayOf<Int32>* keyCodes, ArrayOf<Boolean> keyExists)
+Int32 CInputManagerService::NativeGetSwitchState(
+    /* [in] */ Int64 ptr,
+    /* [in] */ Int32 deviceId,
+    /* [in] */ Int32 sourceMask,
+    /* [in] */ Int32 sw)
 {
 
 }
 
-void InputManagerService::nativeRegisterInputChannel(Int64 ptr, IInputChannel* inputChannel,
-        InputWindowHandle* inputWindowHandle, Boolean monitor)
+Boolean CInputManagerService::NativeHasKeys(
+    /* [in] */ Int64 ptr,
+    /* [in] */ Int32 deviceId,
+    /* [in] */ Int32 sourceMask,
+    /* [in] */ ArrayOf<Int32>* keyCodes,
+    /* [in] */ ArrayOf<Boolean>* keyExists)
 {
 
 }
 
-void InputManagerService::nativeUnregisterInputChannel(Int64 ptr, IInputChannel* inputChannel)
+void CInputManagerService::NativeRegisterInputChannel(
+    /* [in] */ Int64 ptr,
+    /* [in] */ IInputChannel* inputChannel,
+    /* [in] */ InputWindowHandle* inputWindowHandle,
+    /* [in] */ Boolean monitor)
 {
 
 }
 
-void InputManagerService::nativeSetInputFilterEnabled(Int64 ptr, Boolean enable)
+void CInputManagerService::NativeUnregisterInputChannel(
+    /* [in] */ Int64 ptr,
+    /* [in] */ IInputChannel* inputChannel)
 {
 
 }
 
-Int32 InputManagerService::nativeInjectInputEvent(Int64 ptr, IInputEvent* event, Int32 displayId,
-        Int32 injectorPid, Int32 injectorUid, Int32 syncMode, Int32 timeoutMillis,
-        Int32 policyFlags)
+void CInputManagerService::NativeSetInputFilterEnabled(
+    /* [in] */ Int64 ptr,
+    /* [in] */ Boolean enable)
 {
 
 }
 
-void InputManagerService::nativeSetInputWindows(Int64 ptr, ArrayOf<InputWindowHandle> windowHandles)
+Int32 CInputManagerService::NativeInjectInputEvent(
+    /* [in] */ Int64 ptr,
+    /* [in] */ IInputEvent* event,
+    /* [in] */ Int32 displayId,
+    /* [in] */ Int32 injectorPid,
+    /* [in] */ Int32 injectorUid,
+    /* [in] */ Int32 syncMode,
+    /* [in] */ Int32 timeoutMillis,
+    /* [in] */ Int32 policyFlags)
 {
 
 }
 
-void InputManagerService::nativeSetInputDispatchMode(Int64 ptr, Boolean enabled, Boolean frozen)
+void CInputManagerService::NativeSetInputWindows(
+    /* [in] */ Int64 ptr,
+    /* [in] */ ArrayOf<InputWindowHandle*>* windowHandles)
 {
 
 }
 
-void InputManagerService::nativeSetSystemUiVisibility(Int64 ptr, Int32 visibility)
+void CInputManagerService::NativeSetInputDispatchMode(
+    /* [in] */ Int64 ptr,
+    /* [in] */ Boolean enabled,
+    /* [in] */ Boolean frozen)
 {
 
 }
 
-void InputManagerService::nativeSetFocusedApplication(Int64 ptr,
-        InputApplicationHandle* application)
+void CInputManagerService::NativeSetSystemUiVisibility(
+    /* [in] */ Int64 ptr,
+    /* [in] */ Int32 visibility)
 {
 
 }
 
-Boolean InputManagerService::nativeTransferTouchFocus(Int64 ptr,
-        IInputChannel* fromChannel, IInputChannel* toChannel)
+void CInputManagerService::NativeSetFocusedApplication(
+    /* [in] */ Int64 ptr,
+    /* [in] */ InputApplicationHandle* application)
 {
 
 }
 
-void InputManagerService::nativeSetPointerSpeed(Int64 ptr, Int32 speed)
+Boolean CInputManagerService::NativeTransferTouchFocus(
+    /* [in] */ Int64 ptr,
+    /* [in] */ IInputChannel* fromChannel,
+    /* [in] */ IInputChannel* toChannel)
 {
 
 }
 
-void InputManagerService::nativeSetShowTouches(Int64 ptr, Boolean enabled)
+void CInputManagerService::NativeSetPointerSpeed(
+    /* [in] */ Int64 ptr,
+    /* [in] */ Int32 speed)
 {
 
 }
 
-void InputManagerService::nativeSetInteractive(Int64 ptr, Boolean interactive)
+void CInputManagerService::NativeSetShowTouches(
+    /* [in] */ Int64 ptr,
+    /* [in] */ Boolean enabled)
 {
 
 }
 
-void InputManagerService::nativeReloadCalibration(Int64 ptr)
+void CInputManagerService::NativeSetInteractive(
+    /* [in] */ Int64 ptr,
+    /* [in] */ Boolean interactive)
 {
 
 }
 
-void InputManagerService::nativeVibrate(Int64 ptr, Int32 deviceId, ArrayOf<Int64>* pattern,
-        Int32 repeat, Int32 token)
+void CInputManagerService::NativeReloadCalibration(
+    /* [in] */ Int64 ptr)
 {
 
 }
 
-void InputManagerService::nativeCancelVibrate(Int64 ptr, Int32 deviceId, Int32 token)
+void CInputManagerService::NativeVibrate(
+    /* [in] */ Int64 ptr,
+    /* [in] */ Int32 deviceId,
+    /* [in] */ ArrayOf<Int64>* pattern,
+    /* [in] */ Int32 repeat,
+    /* [in] */ Int32 token)
 {
 
 }
 
-void InputManagerService::nativeReloadKeyboardLayouts(Int64 ptr)
+void CInputManagerService::NativeCancelVibrate(
+    /* [in] */ Int64 ptr,
+    /* [in] */ Int32 deviceId,
+    /* [in] */ Int32 token)
 {
 
 }
 
-void InputManagerService::nativeReloadDeviceAliases(Int64 ptr)
+void CInputManagerService::NativeReloadKeyboardLayouts(
+    /* [in] */ Int64 ptr)
 {
 
 }
 
-String InputManagerService::nativeDump(Int64 ptr)
+void CInputManagerService::NativeReloadDeviceAliases(
+    /* [in] */ Int64 ptr)
 {
 
 }
 
-void InputManagerService::nativeMonitor(Int64 ptr)
+String CInputManagerService::NativeDump(
+    /* [in] */ Int64 ptr)
+{
+
+}
+
+void CInputManagerService::NativeMonitor(
+    /* [in] */ Int64 ptr)
 {
 
 }
 
 
-ECode InputManagerService::SetWindowManagerCallbacks(
+void CInputManagerService::SetWindowManagerCallbacks(
     /* [in] */ IWindowManagerCallbacks* cbacks)
 {
 
 }
 
-ECode InputManagerService::SetWiredAccessoryCallbacks(
+void CInputManagerService::SetWiredAccessoryCallbacks(
     /* [in] */ IWiredAccessoryCallbacks* cbacks)
 {
-    return NOERROR;
 }
 
-ECode InputManagerService::Start()
+void CInputManagerService::Start()
 {
-    return NOERROR;
 }
 
 // TODO(BT) Pass in paramter for bluetooth system
-ECode InputManagerService::SystemRunning()
+void CInputManagerService::SystemRunning()
 {
-    return NOERROR;
 }
 
 /**
@@ -526,13 +613,11 @@ ECode InputManagerService::SystemRunning()
  * @param keyCode The key code to check.
  * @return The key state.
  */
-ECode InputManagerService::GetKeyCodeState(
+Int32 CInputManagerService::GetKeyCodeState(
     /* [in] */ Int32 deviceId,
     /* [in] */ Int32 sourceMask,
-    /* [in] */ Int32 keyCode,
-    /* [out] */ Int32 *ret)
+    /* [in] */ Int32 keyCode)
 {
-    return NOERROR;
 }
 
 /**
@@ -544,13 +629,11 @@ ECode InputManagerService::GetKeyCodeState(
  * @param scanCode The scan code to check.
  * @return The key state.
  */
-ECode InputManagerService::GetScanCodeState(
+Int32 CInputManagerService::GetScanCodeState(
     /* [in] */ Int32 deviceId,
     /* [in] */ Int32 sourceMask,
-    /* [in] */ Int32 scanCode,
-    /* [out] */ Int32 *ret)
+    /* [in] */ Int32 scanCode)
 {
-    return NOERROR;
 }
 
 /**
@@ -562,13 +645,11 @@ ECode InputManagerService::GetScanCodeState(
  * @param switchCode The switch code to check.
  * @return The switch state.
  */
-ECode InputManagerService::GetSwitchState(
+Int32 CInputManagerService::GetSwitchState(
     /* [in] */ Int32 deviceId,
     /* [in] */ Int32 sourceMask,
-    /* [in] */ Int32 switchCode,
-    /* [out] */ Int32 *ret)
+    /* [in] */ Int32 switchCode)
 {
-    return NOERROR;
 }
 
 /**
@@ -584,7 +665,7 @@ ECode InputManagerService::GetSwitchState(
  * @return True if the lookup was successful, false otherwise.
  */
 // @Override // Binder call
-ECode InputManagerService::HasKeys(
+ECode CInputManagerService::HasKeys(
     /* [in] */ Int32 deviceId,
     /* [in] */ Int32 sourceMask,
     /* [in] */ const ArrayOf<Int32>& keyCodes,
@@ -599,8 +680,8 @@ ECode InputManagerService::HasKeys(
  * @param inputChannelName The input channel name.
  * @return The input channel.
  */
-ECode InputManagerService::MonitorInput(
-    /* [in] */ String inputChannelName,
+ECode CInputManagerService::MonitorInput(
+    /* [in] */ const String& inputChannelName,
     /* [in] */ IInputChannel* ic)
 {
     return NOERROR;
@@ -612,7 +693,7 @@ ECode InputManagerService::MonitorInput(
  * @param inputWindowHandle The handle of the input window associated with the
  * input channel, or null if none.
  */
-ECode InputManagerService::RegisterInputChannel(
+ECode CInputManagerService::RegisterInputChannel(
     /* [in] */ IInputChannel* inputChannel,
     /* [in] */ InputWindowHandle* inputWindowHandle)
 {
@@ -623,7 +704,7 @@ ECode InputManagerService::RegisterInputChannel(
  * Unregisters an input channel.
  * @param inputChannel The input channel to unregister.
  */
-ECode InputManagerService::UnregisterInputChannel(
+ECode CInputManagerService::UnregisterInputChannel(
     /* [in] */ IInputChannel* inputChannel)
 {
     return NOERROR;
@@ -640,13 +721,13 @@ ECode InputManagerService::UnregisterInputChannel(
  *
  * @param filter The input filter, or null to remove the current filter.
  */
-ECode InputManagerService::SetInputFilter(
+void CInputManagerService::SetInputFilter(
     /* [in] */ IInputFilter* filter)
 {
     synchronized (mInputFilterLock) {
         IInputFilter* oldFilter = mInputFilter;
         if (oldFilter == filter) {
-            return NOERROR; // nothing to do
+            return; // nothing to do
         }
 
         if (oldFilter != NULL) {
@@ -671,13 +752,12 @@ ECode InputManagerService::SetInputFilter(
             //}
         }
 
-        nativeSetInputFilterEnabled(mPtr, filter != NULL);
+        NativeSetInputFilterEnabled(mPtr, filter != NULL);
     }
-    return NOERROR;
 }
 
 //// @Override // Binder call
-ECode InputManagerService::InjectInputEvent(
+ECode CInputManagerService::InjectInputEvent(
     /* [in] */ IInputEvent* event,
     /* [in] */ Int32 mode,
     /* [out] */ Boolean* injectIt)
@@ -691,7 +771,7 @@ ECode InputManagerService::InjectInputEvent(
  * @return The input device or null if not found.
  */
 //// @Override // Binder call
-ECode InputManagerService::GetInputDevice(
+ECode CInputManagerService::GetInputDevice(
     /* [in] */ Int32 deviceId,
     /* [out, callee] */ IInputDevice** inputDevice)
 {
@@ -703,7 +783,7 @@ ECode InputManagerService::GetInputDevice(
  * @return The input device ids.
  */
 //// @Override // Binder call
-ECode InputManagerService::GetInputDeviceIds(
+ECode CInputManagerService::GetInputDeviceIds(
     /* [out, callee] */ ArrayOf<Int32>** deviceIds)
 {
     return NOERROR;
@@ -713,21 +793,21 @@ ECode InputManagerService::GetInputDeviceIds(
  * Gets all input devices in the system.
  * @return The array of input devices.
  */
-ECode InputManagerService::GetInputDevices(
-    /* [out] */ ArrayOf<IInputDevice*>* inputDevices )
+ECode CInputManagerService::GetInputDevices(
+    /* [out, callee] */ ArrayOf<IInputDevice*>** inputDevices )
 {
     return NOERROR;
 }
 
 // @Override // Binder call
-ECode InputManagerService::RegisterInputDevicesChangedListener(
+ECode CInputManagerService::RegisterInputDevicesChangedListener(
     /* [in] */ IInputDevicesChangedListener* listener)
 {
     return NOERROR;
 }
 
 // @Override // Binder call & native callback
-ECode InputManagerService::GetTouchCalibrationForInputDevice(
+ECode CInputManagerService::GetTouchCalibrationForInputDevice(
     /* [in] */ const String& inputDeviceDescriptor,
     /* [in] */ Int32 surfaceRotation,
     /* [out] */ ITouchCalibration** inputDevice)
@@ -736,7 +816,7 @@ ECode InputManagerService::GetTouchCalibrationForInputDevice(
 }
 
 // @Override // Binder call
-ECode InputManagerService::SetTouchCalibrationForInputDevice(
+ECode CInputManagerService::SetTouchCalibrationForInputDevice(
     /* [in] */ const String& inputDeviceDescriptor,
     /* [in] */ Int32 surfaceRotation,
     /* [in] */ ITouchCalibration* calibration)
@@ -745,14 +825,14 @@ ECode InputManagerService::SetTouchCalibrationForInputDevice(
 }
 
 // @Override // Binder call
-ECode InputManagerService::GetKeyboardLayouts(
+ECode CInputManagerService::GetKeyboardLayouts(
     /* [out, callee] */ ArrayOf<IKeyboardLayout*>** kbLayouts)
 {
     return NOERROR;
 }
 
 // @Override // Binder call
-ECode InputManagerService::GetKeyboardLayout(
+ECode CInputManagerService::GetKeyboardLayout(
     /* [in] */ const String& keyboardLayoutDescriptor,
     /* [out, callee] */ IKeyboardLayout** kbLayout)
 {
@@ -760,7 +840,7 @@ ECode InputManagerService::GetKeyboardLayout(
 }
 
 // @Override // Binder call
-ECode InputManagerService::GetCurrentKeyboardLayoutForInputDevice(
+ECode CInputManagerService::GetCurrentKeyboardLayoutForInputDevice(
     /* [in] */ IInputDeviceIdentifier* identifier,
     /* [out, callee] */ String* kbLayout)
 {
@@ -768,7 +848,7 @@ ECode InputManagerService::GetCurrentKeyboardLayoutForInputDevice(
 }
 
 // @Override // Binder call
-ECode InputManagerService::SetCurrentKeyboardLayoutForInputDevice(
+ECode CInputManagerService::SetCurrentKeyboardLayoutForInputDevice(
     /* [in] */ IInputDeviceIdentifier* identifier,
     /* [in] */ const String& keyboardLayoutDescriptor)
 {
@@ -776,7 +856,7 @@ ECode InputManagerService::SetCurrentKeyboardLayoutForInputDevice(
 }
 
 // @Override // Binder call
-ECode InputManagerService::GetKeyboardLayoutsForInputDevice(
+ECode CInputManagerService::GetKeyboardLayoutsForInputDevice(
     /* [in] */ IInputDeviceIdentifier* identifier,
     /* [out, callee] */ ArrayOf<String>** kbLayouts)
 {
@@ -784,7 +864,7 @@ ECode InputManagerService::GetKeyboardLayoutsForInputDevice(
 }
 
 // @Override // Binder call
-ECode InputManagerService::AddKeyboardLayoutForInputDevice(
+ECode CInputManagerService::AddKeyboardLayoutForInputDevice(
     /* [in] */ IInputDeviceIdentifier* identifier,
     /* [in] */ const String& keyboardLayoutDescriptor)
 {
@@ -792,43 +872,38 @@ ECode InputManagerService::AddKeyboardLayoutForInputDevice(
 }
 
 // @Override // Binder call
-ECode InputManagerService::RemoveKeyboardLayoutForInputDevice(
+ECode CInputManagerService::RemoveKeyboardLayoutForInputDevice(
     /* [in] */ IInputDeviceIdentifier* identifier,
     /* [in] */ const String& keyboardLayoutDescriptor)
 {
     return NOERROR;
 }
 
-ECode InputManagerService::SwitchKeyboardLayout(
+void CInputManagerService::SwitchKeyboardLayout(
     /* [in] */ Int32 deviceId,
     /* [in] */ Int32 direction)
 {
-    return NOERROR;
 }
 
-ECode InputManagerService::SetInputWindows(
+void CInputManagerService::SetInputWindows(
     /* [in] */ ArrayOf<InputWindowHandle*> windowHandles)
 {
-    return NOERROR;
 }
 
-ECode InputManagerService::SetFocusedApplication(
+void CInputManagerService::SetFocusedApplication(
     /* [in] */ InputApplicationHandle* application)
 {
-    return NOERROR;
 }
 
-ECode InputManagerService::SetInputDispatchMode(
+void CInputManagerService::SetInputDispatchMode(
     /* [in] */ Boolean enabled,
     /* [in] */ Boolean frozen)
 {
-    return NOERROR;
 }
 
-ECode InputManagerService::SetSystemUiVisibility(
+void CInputManagerService::SetSystemUiVisibility(
     /* [in] */ Int32 visibility)
 {
-    return NOERROR;
 }
 
 /**
@@ -844,7 +919,7 @@ ECode InputManagerService::SetSystemUiVisibility(
  * @return True if the transfer was successful.  False if the window with the
  * specified channel did not actually have touch focus at the time of the request.
  */
-ECode InputManagerService::TransferTouchFocus(
+ECode CInputManagerService::TransferTouchFocus(
     /* [in] */ IInputChannel* fromChannel,
     /* [in] */ IInputChannel* toChannel,
     /* [out] */ Boolean* transferIt)
@@ -853,25 +928,23 @@ ECode InputManagerService::TransferTouchFocus(
 }
 
 // @Override // Binder call
-ECode InputManagerService::TryPointerSpeed(
+ECode CInputManagerService::TryPointerSpeed(
     /* [in] */ Int32 speed)
 {
     return NOERROR;
 }
 
-ECode InputManagerService::UpdatePointerSpeedFromSettings()
+void CInputManagerService::UpdatePointerSpeedFromSettings()
 {
-    return NOERROR;
 }
 
-ECode InputManagerService::UpdateShowTouchesFromSettings()
+void CInputManagerService::UpdateShowTouchesFromSettings()
 {
-    return NOERROR;
 }
 
 // Binder call
 // @Override
-ECode InputManagerService::Vibrate(
+ECode CInputManagerService::Vibrate(
     /* [in] */ Int32 deviceId,
     /* [in] */ const ArrayOf<Int64>& pattern,
     /* [in] */ Int32 repeat,
@@ -882,7 +955,7 @@ ECode InputManagerService::Vibrate(
 
 // Binder call
 // @Override
-ECode InputManagerService::CancelVibrate(
+ECode CInputManagerService::CancelVibrate(
     /* [in] */ Int32 deviceId,
     /* [in] */ IBinder* token)
 {
@@ -890,7 +963,7 @@ ECode InputManagerService::CancelVibrate(
 }
 
 // @Override
-ECode InputManagerService::Dump(
+ECode CInputManagerService::Dump(
     /* [in] */ IFileDescriptor* fd,
     /* [in] */ IPrintWriter* pw,
     /* [in] */ ArrayOf<String>* args)
@@ -900,96 +973,97 @@ ECode InputManagerService::Dump(
 
 // Called by the heartbeat to ensure locks are not held indefinitely (for deadlock detection).
 // @Override
-ECode InputManagerService::Monitor()
+ECode CInputManagerService::Monitor()
 {
     return NOERROR;
 }
 
-ECode InputManagerService::ToString(
+ECode CInputManagerService::ToString(
     /* [out] */ String* str)
 {
     return NOERROR;
 }
 
 
-void InputManagerService::ReloadKeyboardLayouts()
+void CInputManagerService::ReloadKeyboardLayouts()
 {
 
 }
 
-void InputManagerService::ReloadDeviceAliases()
+void CInputManagerService::ReloadDeviceAliases()
 {
 
 }
 
-void InputManagerService::SetDisplayViewportsInternal(
+void CInputManagerService::SetDisplayViewportsInternal(
     /* [in] */ IDisplayViewport* defaultViewport,
     /* [in] */ IDisplayViewport* externalTouchViewport)
 {
 }
 
-void InputManagerService::SetDisplayViewport(
+void CInputManagerService::SetDisplayViewport(
     /* [in] */ Boolean external,
     /* [in] */ IDisplayViewport* viewport)
 {
 }
 
-Boolean InputManagerService::InjectInputEventInternal(
+ECode CInputManagerService::InjectInputEventInternal(
     /* [in] */ IInputEvent* event,
     /* [in] */ Int32 displayId,
-    /* [in] */ Int32 mode)
+    /* [in] */ Int32 mode,
+    /* [out] */ Boolean* result)
 {
 }
 
-Boolean InputManagerService::OnInputDevicesChangedListenerDied(
+void CInputManagerService::OnInputDevicesChangedListenerDied(
     /* [in] */ Int32 pid)
 {
 }
 
 // Must be called on handler.
-Boolean InputManagerService::DeliverInputDevicesChanged(
-    /* [in] */ ArrayOf<IInputDevice>* oldInputDevices)
+void CInputManagerService::DeliverInputDevicesChanged(
+    /* [in] */ ArrayOf<IInputDevice*>* oldInputDevices)
 {
 }
 
 // Must be called on handler.
-void InputManagerService::ShowMissingKeyboardLayoutNotification(
+void CInputManagerService::ShowMissingKeyboardLayoutNotification(
     /* [in] */ IInputDevice* device)
 {
 }
 
 // Must be called on handler.
-void InputManagerService::HideMissingKeyboardLayoutNotification()
+void CInputManagerService::HideMissingKeyboardLayoutNotification()
 {
 }
 
 // Must be called on handler.
-void InputManagerService::UpdateKeyboardLayouts()
+void CInputManagerService::UpdateKeyboardLayouts()
 {
 }
 
-static Boolean ContainsInputDeviceWithDescriptor(
-    /* [in] */ ArrayOf<IInputDevice>* inputDevices,
-    /* [in] */ String descriptor)
+Boolean CInputManagerService::ContainsInputDeviceWithDescriptor(
+    /* [in] */ ArrayOf<IInputDevice*>* inputDevices,
+    /* [in] */ const String& descriptor)
 {
 }
 
 
-void InputManagerService::VisitAllKeyboardLayouts(
+void CInputManagerService::VisitAllKeyboardLayouts(
     /* [in] */ IKeyboardLayoutVisitor* visitor)
 {
 }
 
-void InputManagerService::VisitKeyboardLayout(
-    /* [in] */ String keyboardLayoutDescriptor,
+void CInputManagerService::VisitKeyboardLayout(
+    /* [in] */ const String& keyboardLayoutDescriptor,
     /* [in] */ IKeyboardLayoutVisitor* visitor)
 {
 }
 
-void InputManagerService::VisitKeyboardLayoutsInPackage(
+void CInputManagerService::VisitKeyboardLayoutsInPackage(
     /* [in] */ IPackageManager* pm,
     /* [in] */ IActivityInfo* receiver,
-    /* [in] */ String keyboardName,
+    /* [in] */ const String& keyboardName,
     /* [in] */ Int32 requestedPriority,
     /* [in] */ IKeyboardLayoutVisitor* visitor)
 {
@@ -999,70 +1073,71 @@ void InputManagerService::VisitKeyboardLayoutsInPackage(
  * Builds a layout descriptor for the vendor/product. This returns the
  * descriptor for ids that aren't useful (such as the default 0, 0).
  */
-String InputManagerService::GetLayoutDescriptor(
-    /* [in] */ IInputDeviceIdentifier* identifier)
+ECode CInputManagerService::GetLayoutDescriptor(
+    /* [in] */ IInputDeviceIdentifier* identifier,
+    /* [out] */ String* layoutDescriptor)
 {
 }
 
 // Must be called on handler.
-void InputManagerService::HandleSwitchKeyboardLayout(
+void CInputManagerService::HandleSwitchKeyboardLayout(
     /* [in] */ Int32 deviceId,
     /* [in] */ Int32 direction)
 {
 }
 
-void InputManagerService::SetPointerSpeedUnchecked(
+void CInputManagerService::SetPointerSpeedUnchecked(
     /* [in] */ Int32 speed)
 {
 }
 
-void InputManagerService::RegisterPointerSpeedSettingObserver()
+void CInputManagerService::RegisterPointerSpeedSettingObserver()
 {
 }
 
-Int32 InputManagerService::GetPointerSpeedSetting()
+Int32 CInputManagerService::GetPointerSpeedSetting()
 {
 }
 
-void InputManagerService::RegisterShowTouchesSettingObserver()
+void CInputManagerService::RegisterShowTouchesSettingObserver()
 {
 }
 
-Int32 InputManagerService::GetShowTouchesSetting(
+Int32 CInputManagerService::GetShowTouchesSetting(
     /* [in] */ Int32 defaultValue)
 {
 }
 
-void InputManagerService::OnVibratorTokenDied(
+void CInputManagerService::OnVibratorTokenDied(
     /* [in] */ VibratorToken* v)
 {
 }
 
-void InputManagerService::CancelVibrateIfNeeded(
+void CInputManagerService::CancelVibrateIfNeeded(
     /* [in] */ VibratorToken* v)
 {
 }
 
-Boolean InputManagerService::CheckCallingPermission(
-    /* [in] */ String permission,
-    /* [in] */ String func)
+Boolean CInputManagerService::CheckCallingPermission(
+    /* [in] */ const String& permission,
+    /* [in] */ const String& func)
 {
 }
 
 // Native callback.
-void InputManagerService::NotifyConfigurationChanged(
+void CInputManagerService::NotifyConfigurationChanged(
     /* [in] */ Int64 whenNanos)
 {
 }
 
 // Native callback.
-void InputManagerService::NotifyInputDevicesChanged(
-    /* [in] */ ArrayOf<IInputDevice>* inputDevices)
+void CInputManagerService::NotifyInputDevicesChanged(
+    /* [in] */ ArrayOf<IInputDevice*>* inputDevices)
 {
 }
 
 // Native callback.
-void InputManagerService::NotifySwitch(
+void CInputManagerService::NotifySwitch(
     /* [in] */ Int64 whenNanos,
     /* [in] */ Int32 switchValues,
     /* [in] */ Int32 switchMask)
@@ -1070,42 +1145,42 @@ void InputManagerService::NotifySwitch(
 }
 
 // Native callback.
-void InputManagerService::NotifyInputChannelBroken(
+void CInputManagerService::NotifyInputChannelBroken(
     /* [in] */ InputWindowHandle* inputWindowHandle)
 {
 }
 
 // Native callback.
-Int64 InputManagerService::NotifyANR(
+Int64 CInputManagerService::NotifyANR(
     /* [in] */ InputApplicationHandle* inputApplicationHandle,
     /* [in] */ InputWindowHandle* inputWindowHandle,
-    /* [in] */ String reason)
+    /* [in] */ const String& reason)
 {
 }
 
 // Native callback.
-Boolean InputManagerService::FilterInputEvent(
+Boolean CInputManagerService::FilterInputEvent(
     /* [in] */ IInputEvent* event,
     /* [in] */ Int32 policyFlags)
 {
 }
 
 // Native callback.
-Int32 InputManagerService::InterceptKeyBeforeQueueing(
+Int32 CInputManagerService::InterceptKeyBeforeQueueing(
     /* [in] */ IKeyEvent* event,
     /* [in] */ Int32 policyFlags)
 {
 }
 
 // Native callback.
-Int32 InputManagerService::InterceptMotionBeforeQueueingNonInteractive(
+Int32 CInputManagerService::InterceptMotionBeforeQueueingNonInteractive(
     /* [in] */ Int64 whenNanos,
     /* [in] */ Int32 policyFlags)
 {
 }
 
 // Native callback.
-Int64 InputManagerService::InterceptKeyBeforeDispatching(
+Int64 CInputManagerService::InterceptKeyBeforeDispatching(
     /* [in] */ InputWindowHandle* focus,
     /* [in] */ IKeyEvent* event,
     /* [in] */ Int32 policyFlags)
@@ -1113,7 +1188,7 @@ Int64 InputManagerService::InterceptKeyBeforeDispatching(
 }
 
 // Native callback.
-IKeyEvent* InputManagerService::DispatchUnhandledKey(
+AutoPtr<IKeyEvent> CInputManagerService::DispatchUnhandledKey(
     /* [in] */ InputWindowHandle* focus,
     /* [in] */ IKeyEvent* event,
     /* [in] */ Int32 policyFlags)
@@ -1122,71 +1197,71 @@ IKeyEvent* InputManagerService::DispatchUnhandledKey(
 }
 
 // Native callback.
-Boolean InputManagerService::CheckInjectEventsPermission(
+Boolean CInputManagerService::CheckInjectEventsPermission(
     /* [in] */ Int32 injectorPid,
     /* [in] */ Int32 injectorUid)
 {
 }
 
 // Native callback.
-Int32 InputManagerService::GetVirtualKeyQuietTimeMillis()
+Int32 CInputManagerService::GetVirtualKeyQuietTimeMillis()
 {
 }
 
 // Native callback.
-ArrayOf<String>* InputManagerService::GetExcludedDeviceNames()
+AutoPtr< ArrayOf<String> > CInputManagerService::GetExcludedDeviceNames()
 {
 }
 
 // Native callback.
-Int32 InputManagerService::GetKeyRepeatTimeout()
+Int32 CInputManagerService::GetKeyRepeatTimeout()
 {
 }
 
 // Native callback.
-Int32 InputManagerService::GetKeyRepeatDelay()
+Int32 CInputManagerService::GetKeyRepeatDelay()
 {
 }
 
 // Native callback.
-Int32 InputManagerService::GetHoverTapTimeout()
+Int32 CInputManagerService::GetHoverTapTimeout()
 {
 }
 
 // Native callback.
-Int32 InputManagerService::GetHoverTapSlop()
+Int32 CInputManagerService::GetHoverTapSlop()
 {
 }
 
 // Native callback.
-Int32 InputManagerService::GetDoubleTapTimeout()
+Int32 CInputManagerService::GetDoubleTapTimeout()
 {
 }
 
 // Native callback.
-Int32 InputManagerService::GetLongPressTimeout()
+Int32 CInputManagerService::GetLongPressTimeout()
 {
 }
 
 // Native callback.
-Int32 InputManagerService::GetPointerLayer()
+Int32 CInputManagerService::GetPointerLayer()
 {
 }
 
 // Native callback.
-IPointerIcon* InputManagerService::GetPointerIcon()
+AutoPtr<IPointerIcon> CInputManagerService::GetPointerIcon()
 {
 }
 
 // Native callback.
-ArrayOf<String>* InputManagerService::GetKeyboardLayoutOverlay(
+AutoPtr< ArrayOf<String> > CInputManagerService::GetKeyboardLayoutOverlay(
     /* [in] */ IInputDeviceIdentifier* identifier)
 {
 }
 
 // Native callback.
-String InputManagerService::GetDeviceAlias(
-    /* [in] */ String uniqueId)
+String CInputManagerService::GetDeviceAlias(
+    /* [in] */ const String& uniqueId)
 {
 }
 

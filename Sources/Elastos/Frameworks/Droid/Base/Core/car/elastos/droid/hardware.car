@@ -1481,6 +1481,25 @@ module
             interface IInputManagerHelper;
         }
 
+        class CTouchCalibration {
+            constructor();
+
+            constructor(
+                [in] Float xScale,
+                [in] Float xyMix,
+                [in] Float xOffset,
+                [in] Float yxMix,
+                [in] Float yScale,
+                [in] Float yOffset);
+
+            interface ITouchCalibration;
+            interface IParcelable;
+        }
+
+        singleton class CTouchCalibrationHelper {
+            interface ITouchCalibrationHelper;
+        }
+
     } // namespace Input
 
     namespace Soundtrigger {

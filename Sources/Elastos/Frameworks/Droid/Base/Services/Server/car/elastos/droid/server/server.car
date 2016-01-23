@@ -67,6 +67,7 @@ module
     // merge("search/Searchables.car");
 
     interface Elastos.Droid.Server.ISystemService;
+    interface Elastos.Droid.Server.IWatchdogMonitor;
     interface Elastos.Droid.Server.Wallpaper.IWallpaperConnection;
     interface Elastos.Droid.Server.Wallpaper.IWallpaperData;
     interface Elastos.Droid.Server.Wallpaper.IWallpaperManagerService;
@@ -1520,18 +1521,15 @@ module
 
     [local]
     class CInputManagerService {
-        constructor();
-
         constructor(
             [in] IContext* context);
 
         interface IIInputManager;
+        interface IWatchdogMonitor;
         interface IBinder;
     }
 
     class CIInputFilterHost {
-        constructor();
-
         constructor(
             [in] IIInputManager* parent);
 
