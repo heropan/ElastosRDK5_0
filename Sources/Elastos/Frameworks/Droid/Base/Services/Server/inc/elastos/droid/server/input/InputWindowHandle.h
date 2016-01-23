@@ -2,14 +2,14 @@
 #define __ELASTOS_DROID_Server_Input_InputWindowHandle_H__
 
 #include "_Elastos.Droid.Server.h"
-#include "elastos/core/Object.h"
-#include "elastos/droid/server/input/InputApplicationHandle.h"
 #include "Elastos.Droid.View.h"
 #include "Elastos.Droid.Graphics.h"
+#include "elastos/droid/server/input/InputApplicationHandle.h"
+#include "elastos/core/Object.h"
 
 using Elastos::Droid::Graphics::IRegion;
-using Elastos::Droid::Server::Input::IInputWindowHandle;
 using Elastos::Droid::View::IInputChannel;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -28,20 +28,19 @@ class InputWindowHandle
 public:
     CAR_INTERFACE_DECL();
 
-    InputWindowHandle();
-
-    virtual ~InputWindowHandle();
-
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ IInputApplicationHandle* inputApplicationHandle,
+    InputWindowHandle(
+        /* [in] */ InputApplicationHandle* inputApplicationHandle,
         /* [in] */ IInterface* windowState,
         /* [in] */ Int32 displayId);
 
+    virtual ~InputWindowHandle();
+
+private:
+    void NativeDispose();
+
 public:
     // The input application handle.
-    AutoPtr<IInputApplicationHandle> mInputApplicationHandle;
+    AutoPtr<InputApplicationHandle> mInputApplicationHandle;
 
     // The window manager's window state.
     AutoPtr<IInterface> mWindowState;
@@ -61,17 +60,17 @@ public:
     Int64 mDispatchingTimeoutNanos;
 
     // Window frame.
-    Int64 mFrameLeft;
-    Int64 mFrameTop;
-    Int64 mFrameRight;
-    Int64 mFrameBottom;
+    Int32 mFrameLeft;
+    Int32 mFrameTop;
+    Int32 mFrameRight;
+    Int32 mFrameBottom;
 
     // Global scaling factor applied to touch events when they are dispatched
     // to the window
     Float mScaleFactor;
 
     // Window touchable region.
-    AutoPtr<IRegion> mTouchableRegion;       // = new Region();
+    AutoPtr<IRegion> mTouchableRegion;
 
     // Window is visible.
     Boolean mVisible;
@@ -106,9 +105,6 @@ private:
     // This field is lazily initialized via JNI.
     //@SuppressWarnings("unused")
     Int64 mPtr;
-
-private:
-    void NativeDispose();
 };
 
 } // Input

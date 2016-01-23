@@ -1,5 +1,7 @@
 #include "elastos/droid/server/input/InputWindowHandle.h"
 
+using Elastos::Droid::Graphics::CRegion;
+
 namespace Elastos {
 namespace Droid {
 namespace Server {
@@ -7,33 +9,43 @@ namespace Input {
 
 CAR_INTERFACE_IMPL(InputWindowHandle, Object, IInputWindowHandle);
 
-InputWindowHandle::InputWindowHandle()
-{}
+InputWindowHandle::InputWindowHandle(
+    /* [in] */ InputApplicationHandle* inputApplicationHandle,
+    /* [in] */ IInterface* windowState,
+    /* [in] */ Int32 displayId)
+    : mInputApplicationHandle(inputApplicationHandle)
+    , mWindowState(windowState)
+    , mLayoutParamsFlags(0)
+    , mLayoutParamsPrivateFlags(0)
+    , mLayoutParamsType(0)
+    , mDispatchingTimeoutNanos(0)
+    , mFrameLeft(0)
+    , mFrameTop(0)
+    , mFrameRight(0)
+    , mFrameBottom(0)
+    , mScaleFactor(0)
+    , mVisible(FALSE)
+    , mCanReceiveKeys(FALSE)
+    , mHasFocus(FALSE)
+    , mHasWallpaper(FALSE)
+    , mPaused(FALSE)
+    , mLayer(0)
+    , mOwnerPid(0)
+    , mOwnerUid(0)
+    , mInputFeatures(0)
+    , mDisplayId(displayId)
+    , mPtr(0)
+{
+    CRegion::New((IRegion**)&mTouchableRegion);
+}
 
 InputWindowHandle::~InputWindowHandle()
 {
     //try {
-        NativeDispose();
+    NativeDispose();
     //} finally {
     //    super.finalize();
     //}
-}
-
-ECode InputWindowHandle::constructor()
-{
-    return NOERROR;
-}
-
-ECode InputWindowHandle::constructor(
-    /* [in] */ IInputApplicationHandle* inputApplicationHandle,
-    /* [in] */ IInterface* windowState,
-    /* [in] */ Int32 displayId)
-{
-    mInputApplicationHandle = inputApplicationHandle;
-    mWindowState = windowState;
-    mDisplayId = displayId;
-
-    return NOERROR;
 }
 
 void InputWindowHandle::NativeDispose()

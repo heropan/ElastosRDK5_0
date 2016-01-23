@@ -1,3 +1,4 @@
+
 #include "elastos/droid/server/input/InputApplicationHandle.h"
 
 namespace Elastos {
@@ -7,29 +8,20 @@ namespace Input {
 
 CAR_INTERFACE_IMPL(InputApplicationHandle, Object, IInputApplicationHandle);
 
-InputApplicationHandle::InputApplicationHandle()
+InputApplicationHandle::InputApplicationHandle(
+    /* [in] */ IInterface* appWindowToken)
+    : mPtr(0)
+    , mAppWindowToken(appWindowToken)
+    , mDispatchingTimeoutNanos(0)
 {}
 
 InputApplicationHandle::~InputApplicationHandle()
 {
     //try {
-        NativeDispose();
+    NativeDispose();
     //} finally {
     //    super.finalize();
     //}
-}
-
-ECode InputApplicationHandle::constructor()
-{
-    return NOERROR;
-}
-
-ECode InputApplicationHandle::constructor(
-    /* [in] */ IInterface* appWindowToken)
-{
-    mAppWindowToken = appWindowToken;
-
-    return NOERROR;
 }
 
 void InputApplicationHandle::NativeDispose()

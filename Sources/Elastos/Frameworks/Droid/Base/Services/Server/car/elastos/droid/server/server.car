@@ -30,7 +30,10 @@ module
     merge("display/OverlayDisplayWindow.car");
     merge("display/RampAnimator.car");
 
-    merge("input/input.car");
+    merge("input/InputManagerService.car");
+    merge("input/InputApplicationHandle.car");
+    merge("input/InputWindowHandle.car");
+
     merge("lights/LightsManager.car");
 
     merge("notification/DowntimeConditionProvider.car");
@@ -108,6 +111,7 @@ module
     using interface Elastos.Droid.Content.Pm.IPackageInstallerSessionParams;
     using interface Elastos.Droid.Hardware.IISerialManager;
     using interface Elastos.Droid.Hardware.Display.IIDisplayManager;
+    using interface Elastos.Droid.Hardware.Input.IIInputManager;
     using interface Elastos.Droid.Internal.App.IIProcessStats;
     using interface Elastos.Droid.Internal.Os.IIParcelFileDescriptorFactory;
     using interface Elastos.Droid.Internal.Os.IIDropBoxManagerService;
@@ -136,6 +140,7 @@ module
     using interface Elastos.Droid.Service.Wallpaper.IIWallpaperConnection;
     using interface Elastos.Droid.Utility.ITrustedTime;
     using interface Elastos.Droid.View.IApplicationToken;
+    using interface Elastos.Droid.View.IIInputFilterHost;
     using interface Elastos.Droid.View.IIWindowManager;
     using interface Elastos.Droid.Service.Dreams.IIDreamManager;
     using interface Elastos.Droid.Service.Wallpaper.IIWallpaperConnection;
@@ -503,22 +508,6 @@ module
 //     }
 
      } // namespace Am
-
-
-//     namespace Input {
-
-//     [local]
-//     class CInputManagerService {
-//         constructor(
-//             [in] IContext* ctx,
-//             [in] IHandler* handler);
-
-//         interface IIInputManager;
-//         interface IDisplayManagerServiceInputManagerFuncs;
-//         //interface IWatchdogMonitor;
-//     }
-
-//     } // namespace Input
 
 //     namespace Location {
 
@@ -1523,6 +1512,37 @@ module
     } // namespace Server
     } // namepsace Droid
     } // namespace Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Server {
+    namespace Input {
+
+    [local]
+    class CInputManagerService {
+        constructor();
+
+        constructor(
+            [in] IContext* context);
+
+        interface IIInputManager;
+        interface IBinder;
+    }
+
+    class CIInputFilterHost {
+        constructor();
+
+        constructor(
+            [in] IIInputManager* parent);
+
+        interface IIInputFilterHost;
+        interface IBinder;
+    }
+
+    } // Input
+    } // Server
+    } // Droid
+    } // Elastos
 
 //    namespace Elastos {
 //    namespace Droid {

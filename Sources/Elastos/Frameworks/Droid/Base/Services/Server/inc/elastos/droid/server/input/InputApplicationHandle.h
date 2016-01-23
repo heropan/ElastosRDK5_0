@@ -4,7 +4,7 @@
 #include "_Elastos.Droid.Server.h"
 #include "elastos/core/Object.h"
 
-using Elastos::Droid::Server::Input::IInputApplicationHandle;
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -18,14 +18,14 @@ class InputApplicationHandle
 public:
     CAR_INTERFACE_DECL();
 
-    InputApplicationHandle();
+    InputApplicationHandle(
+        /* [in] */ IInterface* appWindowToken);
 
     virtual ~InputApplicationHandle();
 
-    CARAPI constructor();
+private:
+    CARAPI_(void) NativeDispose();
 
-    CARAPI constructor(
-        /* [in] */ IInterface* appWindowToken);
 private:
     // Pointer to the native input application handle.
     // This field is lazily initialized via JNI.
@@ -40,9 +40,6 @@ private:
 
     // Dispatching timeout.
     Int64 mDispatchingTimeoutNanos;
-
-private:
-    void NativeDispose();
 };
 
 } // Input

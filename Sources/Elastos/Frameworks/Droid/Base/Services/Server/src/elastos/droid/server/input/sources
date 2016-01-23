@@ -9,8 +9,7 @@ C_DEFINES += -DDROID_SERVER
 include $(MAKEDIR)/../../../../../../../../sources.inc
 
 SOURCES = InputApplicationHandle.cpp
-SOURCES += InputManagerService.cpp
 SOURCES += InputWindowHandle.cpp
 SOURCES += PersistentDataStore.cpp
-SOURCES += CInputManagerService.cpp
-SOURCES += CIInputFilterHost.cpp
+#SOURCES += CIInputFilterHost.cpp
+#SOURCES += CInputManagerService.cpp
