@@ -1359,6 +1359,10 @@ module
         interface IParcelable;
     }
 
+    singleton class CMagnificationSpecHelper {
+        interface IMagnificationSpecHelper;
+    }
+
     class CViewTreeObserver {
         constructor();
 

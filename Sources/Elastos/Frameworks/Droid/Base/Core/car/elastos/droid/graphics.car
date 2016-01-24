@@ -920,6 +920,10 @@ module
         interface IParcelable;
     }
 
+    singleton class CRegionHelper {
+        interface IRegionHelper;
+    }
+
     class CRegionIterator {
         /**
          * Construct an iterator for all of the rectangles in a region. This

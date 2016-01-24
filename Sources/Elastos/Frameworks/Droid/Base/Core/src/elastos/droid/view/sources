@@ -176,6 +176,7 @@ SOURCES += CViewGroupOverlay.cpp
 SOURCES += ViewOutlineProvider.cpp
 SOURCES += CViewOutlineProviderHelper.cpp
 SOURCES += CMagnificationSpec.cpp
+SOURCES += CMagnificationSpecHelper.cpp
 SOURCES += CInputQueue.cpp
 SOURCES += OrientationEventListener.cpp
 SOURCES += OrientationListener.cpp

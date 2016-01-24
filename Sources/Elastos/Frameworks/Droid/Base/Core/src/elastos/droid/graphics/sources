@@ -90,6 +90,7 @@ SOURCES += CRect.cpp
 SOURCES += CRectHelper.cpp
 SOURCES += CRectF.cpp
 SOURCES += CRegion.cpp
+SOURCES += CRegionHelper.cpp
 SOURCES += CRegionIterator.cpp
 SOURCES += CSurfaceTexture.cpp
 SOURCES += CSumPathEffect.cpp

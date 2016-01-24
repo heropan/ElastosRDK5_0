@@ -269,6 +269,15 @@ module
             [out] Handle32* region);
     }
 
+    interface IRegionHelper {
+        Obtain(
+            [out] IRegion** region);
+
+        Obtain(
+            [in] IRegion* other,
+            [out] IRegion** region);
+    }
+
     } // namespace Graphics
     } // namespace Droid
     } // namespace Elastos
