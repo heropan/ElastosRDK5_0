@@ -906,7 +906,7 @@ public:
     CARAPI GlGetStringi(
         /* [in] */ Int32 name,
         /* [in] */ Int32 index,
-        /* [out] */ Boolean* result
+        /* [out] */ String* result
     );
 
     // C function void glCopyBufferSubData ( GLenum readTarget, GLenum writeTarget, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size )
