@@ -3,190 +3,138 @@
 #define __ELASTOS_DROID_SERVER_TRUST_TRUSTAGENTWRAPPER_H__
 
 #include "_Elastos.Droid.Server.h"
-#include "elastos/droid/ext/frameworkext.h"
-#include <elastos/core/Object.h>
+#include <Elastos.Droid.Service.h>
+#include <elastos/droid/content/BroadcastReceiver.h>
+#include <elastos/droid/ext/frameworkext.h>
+#include <elastos/droid/os/Handler.h>
+#include <elastos/droid/os/UserHandle.h>
+
+using Elastos::Core::ICharSequence;
+using Elastos::Droid::App::IAlarmManager;
+using Elastos::Droid::App::IPendingIntent;
+using Elastos::Droid::App::IService;
+using Elastos::Droid::Content::BroadcastReceiver;
+using Elastos::Droid::Content::IBroadcastReceiver;
+using Elastos::Droid::Content::IComponentName;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Content::IServiceConnection;
+using Elastos::Droid::Os::Handler;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::Os::IUserHandle;
+using Elastos::Droid::Os::UserHandle;
+using Elastos::Droid::Service::Trust::IITrustAgentService;
+using Elastos::Droid::Service::Trust::IITrustAgentServiceCallback;
+using Elastosx::Net::Ssl::ITrustManager;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Trust {
 
+class TrustManagerService;
 /**
  * A wrapper around a TrustAgentService interface. Coordinates communication between
  * TrustManager and the actual TrustAgent.
  */
 class TrustAgentWrapper
+    : public Object
 {
 private:
     class InnerSub_BroadcastReceiver
         : public BroadcastReceiver
     {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            ComponentName component = intent.getParcelableExtra(EXTRA_COMPONENT_NAME);
-            if (TRUST_EXPIRED_ACTION.equals(intent.getAction())
-                    && mName.equals(component)) {
-                mHandler.removeMessages(MSG_TRUST_TIMEOUT);
-                mHandler.sendEmptyMessage(MSG_TRUST_TIMEOUT);
-            }
-        }
+    public:
+        InnerSub_BroadcastReceiver(
+            /* [in] */ TrustAgentWrapper* host);
+
+        // @Override
+        CARAPI OnReceive(
+            /* [in] */ IContext* context,
+            /* [in] */ IIntent* intent);
+
+    private:
+        TrustAgentWrapper* mHost;
     };
 
     class InnerSub_Handler
         : public Handler
     {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MSG_GRANT_TRUST:
-                    if (!isConnected()) {
-                        Log.w(TAG, "Agent is not connected, cannot grant trust: "
-                                + mName.flattenToShortString());
-                        return;
-                    }
-                    mTrusted = true;
-                    mMessage = (CharSequence) msg.obj;
-                    boolean initiatedByUser = msg.arg1 != 0;
-                    long durationMs = msg.getData().getLong(DATA_DURATION);
-                    if (durationMs > 0) {
-                        final long duration;
-                        if (mMaximumTimeToLock != 0) {
-                            // Enforce DevicePolicyManager timeout.  This is here as a safeguard to
-                            // ensure trust agents are evaluating trust state at least as often as
-                            // the policy dictates. Admins that want more guarantees should be using
-                            // DevicePolicyManager#KEYGUARD_DISABLE_TRUST_AGENTS.
-                            duration = Math.min(durationMs, mMaximumTimeToLock);
-                            if (DEBUG) {
-                                Log.v(TAG, "DPM lock timeout in effect. Timeout adjusted from "
-                                    + durationMs + " to " + duration);
-                            }
-                        } else {
-                            duration = durationMs;
-                        }
-                        long expiration = SystemClock.elapsedRealtime() + duration;
-                        mAlarmPendingIntent = PendingIntent.getBroadcast(mContext, 0, mAlarmIntent,
-                                PendingIntent.FLAG_CANCEL_CURRENT);
-                        mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, expiration,
-                                mAlarmPendingIntent);
-                    }
-                    mTrustManagerService.mArchive.logGrantTrust(mUserId, mName,
-                            (mMessage != null ? mMessage.toString() : null),
-                            durationMs, initiatedByUser);
-                    mTrustManagerService.updateTrust(mUserId, initiatedByUser);
-                    break;
-                case MSG_TRUST_TIMEOUT:
-                    if (DEBUG) Slog.v(TAG, "Trust timed out : " + mName.flattenToShortString());
-                    mTrustManagerService.mArchive.logTrustTimeout(mUserId, mName);
-                    onTrustTimeout();
-                    // Fall through.
-                case MSG_REVOKE_TRUST:
-                    mTrusted = false;
-                    mMessage = null;
-                    mHandler.removeMessages(MSG_TRUST_TIMEOUT);
-                    if (msg.what == MSG_REVOKE_TRUST) {
-                        mTrustManagerService.mArchive.logRevokeTrust(mUserId, mName);
-                    }
-                    mTrustManagerService.updateTrust(mUserId, false);
-                    break;
-                case MSG_RESTART_TIMEOUT:
-                    unbind();
-                    mTrustManagerService.resetAgent(mName, mUserId);
-                    break;
-                case MSG_SET_TRUST_AGENT_FEATURES_COMPLETED:
-                    IBinder token = (IBinder) msg.obj;
-                    boolean result = msg.arg1 != 0;
-                    if (mSetTrustAgentFeaturesToken == token) {
-                        mSetTrustAgentFeaturesToken = null;
-                        if (mTrustDisabledByDpm && result) {
-                            if (DEBUG) Log.v(TAG, "Re-enabling agent because it acknowledged "
-                                    + "enabled features: " + mName);
-                            mTrustDisabledByDpm = false;
-                            mTrustManagerService.updateTrust(mUserId, false);
-                        }
-                    } else {
-                        if (DEBUG) Log.w(TAG, "Ignoring MSG_SET_TRUST_AGENT_FEATURES_COMPLETED "
-                                + "with obsolete token: " + mName);
-                    }
-                    break;
-                case MSG_MANAGING_TRUST:
-                    mManagingTrust = msg.arg1 != 0;
-                    if (!mManagingTrust) {
-                        mTrusted = false;
-                        mMessage = null;
-                    }
-                    mTrustManagerService.mArchive.logManagingTrust(mUserId, mName, mManagingTrust);
-                    mTrustManagerService.updateTrust(mUserId, false);
-                    break;
-            }
-        }
+    public:
+        InnerSub_Handler(
+            /* [in] */ TrustAgentWrapper* host);
+
+        // @Override
+        CARAPI HandleMessage(
+            /* [in] */ IMessage* msg);
+
+    private:
+        TrustAgentWrapper* mHost;
     };
 
     class InnerSub_ITrustAgentServiceCallback
         : public Object
         , public IITrustAgentServiceCallback
     {
-        @Override
-        public void grantTrust(CharSequence userMessage, long durationMs, boolean initiatedByUser) {
-            if (DEBUG) Slog.v(TAG, "enableTrust(" + userMessage + ", durationMs = " + durationMs
-                        + ", initiatedByUser = " + initiatedByUser + ")");
+    public:
+        CAR_INTERFACE_DECL()
 
-            Message msg = mHandler.obtainMessage(
-                    MSG_GRANT_TRUST, initiatedByUser ? 1 : 0, 0, userMessage);
-            msg.getData().putLong(DATA_DURATION, durationMs);
-            msg.sendToTarget();
-        }
+        InnerSub_ITrustAgentServiceCallback(
+            /* [in] */ TrustAgentWrapper* host);
 
-        @Override
-        public void revokeTrust() {
-            if (DEBUG) Slog.v(TAG, "revokeTrust()");
-            mHandler.sendEmptyMessage(MSG_REVOKE_TRUST);
-        }
+        // @Override
+        CARAPI GrantTrust(
+            /* [in] */ ICharSequence* userMessage,
+            /* [in] */ Int64 durationMs,
+            /* [in] */ Boolean initiatedByUser);
 
-        @Override
-        public void setManagingTrust(boolean managingTrust) {
-            if (DEBUG) Slog.v(TAG, "managingTrust()");
-            mHandler.obtainMessage(MSG_MANAGING_TRUST, managingTrust ? 1 : 0, 0).sendToTarget();
-        }
+        // @Override
+        CARAPI RevokeTrust();
 
-        @Override
-        public void onSetTrustAgentFeaturesEnabledCompleted(boolean result, IBinder token) {
-            if (DEBUG) Slog.v(TAG, "onSetTrustAgentFeaturesEnabledCompleted(result=" + result);
-            mHandler.obtainMessage(MSG_SET_TRUST_AGENT_FEATURES_COMPLETED,
-                    result ? 1 : 0, 0, token).sendToTarget();
-        }
+        // @Override
+        CARAPI SetManagingTrust(
+            /* [in] */ Boolean managingTrust);
+
+        // @Override
+        CARAPI OnSetTrustAgentFeaturesEnabledCompleted(
+            /* [in] */ Boolean result,
+            /* [in] */ IBinder* token);
+
+    private:
+        TrustAgentWrapper* mHost;
     };
 
     class InnerSub_ServiceConnection
-        : public ServiceConnection
+        : public Object
+        , public IServiceConnection
     {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            if (DEBUG) Log.v(TAG, "TrustAgent started : " + name.flattenToString());
-            mHandler.removeMessages(MSG_RESTART_TIMEOUT);
-            mTrustAgentService = ITrustAgentService.Stub.asInterface(service);
-            mTrustManagerService.mArchive.logAgentConnected(mUserId, name);
-            setCallback(mCallback);
-            updateDevicePolicyFeatures();
-        }
+    public:
+        CAR_INTERFACE_DECL()
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            if (DEBUG) Log.v(TAG, "TrustAgent disconnected : " + name.flattenToShortString());
-            mTrustAgentService = null;
-            mManagingTrust = false;
-            mSetTrustAgentFeaturesToken = null;
-            mTrustManagerService.mArchive.logAgentDied(mUserId, name);
-            mHandler.sendEmptyMessage(MSG_REVOKE_TRUST);
-            if (mBound) {
-                scheduleRestart();
-            }
-            // mTrustDisabledByDpm maintains state
-        }
+        InnerSub_ServiceConnection(
+            /* [in] */ TrustAgentWrapper* host);
+
+        // @Override
+        CARAPI OnServiceConnected(
+            /* [in] */ IComponentName* name,
+            /* [in] */ IBinder* service);
+
+        // @Override
+        CARAPI OnServiceDisconnected(
+            /* [in] */ IComponentName* name);
+
+    private:
+        TrustAgentWrapper* mHost;
     };
+
 public:
+    TrustAgentWrapper();
+
     CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ ITrustManagerService* trustManagerService,
+        /* [in] */ TrustManagerService* trustManagerService,
         /* [in] */ IIntent* intent,
         /* [in] */ IUserHandle* user);
 
@@ -196,6 +144,7 @@ public:
     CARAPI OnUnlockAttempt(
         /* [in] */ Boolean successful);
 
+    /* package */
     CARAPI UpdateDevicePolicyFeatures(
         /* [out] */ Boolean* result);
 
@@ -269,15 +218,15 @@ private:
      */
     static const String DATA_DURATION;
 
-    const ITrustManagerService* mTrustManagerService;
+    TrustManagerService* mTrustManagerService;
 
-    const Int32 mUserId;
+    Int32 mUserId;
 
-    const IContext* mContext;
+    AutoPtr<IContext> mContext;
 
-    const IComponentName* mName;
+    AutoPtr<IComponentName> mName;
 
-    IITrustAgentService* mTrustAgentService;
+    AutoPtr<IITrustAgentService> mTrustAgentService;
 
     Boolean mBound;
 
@@ -288,27 +237,27 @@ private:
     // Trust state
     Boolean mTrusted;
 
-    ICharSequence* mMessage;
+    AutoPtr<ICharSequence> mMessage;
 
     Boolean mTrustDisabledByDpm;
 
     Boolean mManagingTrust;
 
-    IIBinder* mSetTrustAgentFeaturesToken;
+    AutoPtr<IBinder> mSetTrustAgentFeaturesToken;
 
-    IAlarmManager* mAlarmManager;
+    AutoPtr<IAlarmManager> mAlarmManager;
 
-    const IIntent* mAlarmIntent;
+    AutoPtr<IIntent> mAlarmIntent;
 
-    IPendingIntent* mAlarmPendingIntent;
+    AutoPtr<IPendingIntent> mAlarmPendingIntent;
 
-    IBroadcastReceiver* mBroadcastReceiver;
+    AutoPtr<IBroadcastReceiver> mBroadcastReceiver;
 
-    IHandler* mHandler;
+    AutoPtr<IHandler> mHandler;
 
-    IITrustAgentServiceCallback* mCallback;
+    AutoPtr<IITrustAgentServiceCallback> mCallback;
 
-    IServiceConnection* mConnection;
+    AutoPtr<IServiceConnection> mConnection;
 };
 
 } // namespace Trust
