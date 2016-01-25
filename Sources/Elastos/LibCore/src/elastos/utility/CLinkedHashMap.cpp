@@ -16,8 +16,8 @@ CLinkedHashMap::~CLinkedHashMap()
 {
     Clear();
     // mHeader adds 2 refcount in LinkedEntry()
-    mHeader->Release();
-    mHeader->Release();
+    mHeader->mNxt = NULL;
+    mHeader->mPrv = NULL;
 }
 
 ECode CLinkedHashMap::constructor()
