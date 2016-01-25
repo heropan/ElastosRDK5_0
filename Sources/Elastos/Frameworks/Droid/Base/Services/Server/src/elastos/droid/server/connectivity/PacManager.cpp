@@ -157,7 +157,7 @@ ECode PacManager::ServiceConnection::OnServiceConnected(
     Object& lockObj = mHost->mProxyLock;
     synchronized(lockObj) {
         Logger::D("PacManager::ServiceConnection", "Adding service %s %s",
-            PacManager::PAC_SERVICE_NAME.string(), Object::ToString(binder).string());
+            PacManager::PAC_SERVICE_NAME.string(), TO_CSTR(binder));
 
         AutoPtr<IServiceManager> srvMrg;
         CServiceManager::AcquireSingleton((IServiceManager**)&srvMrg);

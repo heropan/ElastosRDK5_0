@@ -228,7 +228,7 @@ ECode DreamController::StartDream(
     ECode ec = mContext->BindServiceAsUser(intent, mCurrentDream,
         IContext::BIND_AUTO_CREATE, uh, &result);
     if (!result || (ec == (ECode)E_SECURITY_EXCEPTION)) {
-        Slogger::E(TAG, "Unable to bind dream service: %s", Object::ToString(intent).string());
+        Slogger::E(TAG, "Unable to bind dream service: %s", TO_CSTR(intent));
         StopDream(TRUE /*immediate*/);
         return NOERROR;
     }

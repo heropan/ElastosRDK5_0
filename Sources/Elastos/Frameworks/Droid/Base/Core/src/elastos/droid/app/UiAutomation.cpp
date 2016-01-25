@@ -376,7 +376,7 @@ ECode UiAutomation::InjectInputEvent(
     }
     // try {
         if (DEBUG) {
-            Logger::I(TAG, "Injecting: %s sync: %d", Object::ToString(event).string(), sync);
+            Logger::I(TAG, "Injecting: %s sync: %d", TO_CSTR(event), sync);
         }
         // Calling out without a lock held.
     ECode ec = mUiAutomationConnection->InjectInputEvent(event, sync, result);

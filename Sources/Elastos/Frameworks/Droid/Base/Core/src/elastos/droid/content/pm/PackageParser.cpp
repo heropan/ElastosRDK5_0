@@ -1301,7 +1301,7 @@ ECode PackageParser::ParseClusterPackageLite(
                     //         "Inconsistent package " + lite->mpackageName + " in " + file
                     //         + "; expected " + packageName);
                     Logger::E(TAG, "INSTALL_PARSE_FAILED_BAD_MANIFEST : Inconsistent package %s in %s; expected %s",
-                        lite->mPackageName.string(), Object::ToString(file).string(), packageName.string());
+                        lite->mPackageName.string(), TO_CSTR(file), packageName.string());
                     return E_PACKAGE_PARSER_EXCEPTION;
                 }
                 if (versionCode != lite->mVersionCode) {
@@ -1309,7 +1309,7 @@ ECode PackageParser::ParseClusterPackageLite(
                     //         "Inconsistent version " + lite->mversionCode + " in " + file
                     //         + "; expected " + versionCode);
                     Logger::E(TAG, "INSTALL_PARSE_FAILED_BAD_MANIFEST : Inconsistent version %d in %s; expected %d",
-                        lite->mVersionCode, Object::ToString(file).string(), versionCode);
+                        lite->mVersionCode, TO_CSTR(file), versionCode);
                     return E_PACKAGE_PARSER_EXCEPTION;
                 }
             }
@@ -1323,7 +1323,7 @@ ECode PackageParser::ParseClusterPackageLite(
                 //         "Split name " + lite->mSplitName
                 //         + " defined more than once; most recent was " + file);
                 Logger::E(TAG, "INSTALL_PARSE_FAILED_BAD_MANIFEST : Split name %s  defined more than once; most recent was %s",
-                    lite->mSplitName.string(), Object::ToString(file).string());
+                    lite->mSplitName.string(), TO_CSTR(file));
                 return E_PACKAGE_PARSER_EXCEPTION;
             }
         }
@@ -1335,7 +1335,7 @@ ECode PackageParser::ParseClusterPackageLite(
         // throw new PackageParserException(INSTALL_PARSE_FAILED_BAD_MANIFEST,
         //         "Missing base APK in " + packageDir);
         Logger::E(TAG, "INSTALL_PARSE_FAILED_BAD_MANIFEST : Missing base APK in  %s",
-            Object::ToString(packageDir).string());
+            TO_CSTR(packageDir));
         return E_PACKAGE_PARSER_EXCEPTION;
     }
 
@@ -1422,7 +1422,7 @@ ECode PackageParser::ParseClusterPackage(
         // throw new PackageParserException(INSTALL_PARSE_FAILED_MANIFEST_MALFORMED,
         //         "Not a coreApp: " + packageDir);
         Logger::E(TAG, "INSTALL_PARSE_FAILED_MANIFEST_MALFORMED : Not a coreApp: %s",
-            Object::ToString(packageDir).string());
+            TO_CSTR(packageDir));
         return E_PACKAGE_PARSER_EXCEPTION;
     }
 
@@ -1460,7 +1460,7 @@ ECode PackageParser::ParseClusterPackage(
         // throw new PackageParserException(INSTALL_PARSE_FAILED_NOT_APK,
         //         "Failed to parse base APK: " + baseApk);
         Logger::E(TAG, "INSTALL_PARSE_FAILED_NOT_APK: Failed to parse base APK: %s",
-            Object::ToString(baseApk).string());
+            TO_CSTR(baseApk));
         ec = E_PACKAGE_PARSER_EXCEPTION;
         goto _EXIT_;
     }
@@ -1508,7 +1508,7 @@ ECode PackageParser::ParseMonolithicPackage(
             // throw new PackageParserException(INSTALL_PARSE_FAILED_MANIFEST_MALFORMED,
             //         "Not a coreApp: " + apkFile);
             Logger::E(TAG, "INSTALL_PARSE_FAILED_MANIFEST_MALFORMED : Not a coreApp: %s",
-                Object::ToString(apkFile).string());
+                TO_CSTR(apkFile));
             return E_PACKAGE_PARSER_EXCEPTION;
         }
     }

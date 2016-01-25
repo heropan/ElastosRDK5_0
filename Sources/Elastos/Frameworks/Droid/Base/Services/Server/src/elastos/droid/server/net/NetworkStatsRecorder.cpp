@@ -347,7 +347,7 @@ void NetworkStatsRecorder::RecordSnapshotLocked(
     mLastSnapshot = snapshot;
 
     if (LOGV && Ptr(unknownIfaces)->Func(unknownIfaces->GetSize) > 0) {
-        Slogger::W(TAG, "unknown interfaces %s, ignoring those stats", Object::ToString(unknownIfaces).string());
+        Slogger::W(TAG, "unknown interfaces %s, ignoring those stats", TO_CSTR(unknownIfaces));
     }
 }
 

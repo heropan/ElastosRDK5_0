@@ -133,7 +133,7 @@ ECode Connection::Cancel()
     mActive = sSTATE_CANCEL_REQUESTED;
     CloseConnection();
     if (HttpLog::LOGV)
-        HttpLog::V("Connection.cancel(): connection closed %s", Object::ToString(mHost).string());
+        HttpLog::V("Connection.cancel(): connection closed %s", TO_CSTR(mHost));
     return NOERROR;
 }
 
@@ -186,7 +186,7 @@ ECode Connection::ProcessRequests(
                 /* Don't work on cancelled requests. */
                 if (((Request*)req.Get())->mCancelled) {
                     if (HttpLog::LOGV)
-                        HttpLog::V("processRequests(): skipping cancelled request %s", Object::ToString(req).string());
+                        HttpLog::V("processRequests(): skipping cancelled request %s", TO_CSTR(req));
                     ((Request*)req.Get())->Complete();
                     break;
                 }
@@ -270,7 +270,7 @@ ECode Connection::ProcessRequests(
 
                 req = (IRequest*)pipe.GetFront();
                 pipe.PopFront();
-                if (HttpLog::LOGV) HttpLog::V("processRequests() reading %s", Object::ToString(req).string());
+                if (HttpLog::LOGV) HttpLog::V("processRequests() reading %s", TO_CSTR(req));
 
                 ECode eResult = ((Request*)req.Get())->ReadResponse(mHttpClientConnection);
                 if (eResult == E_PARSE_EXCEPTION) {
@@ -299,7 +299,7 @@ ECode Connection::ProcessRequests(
                 }
                 if (!mCanPersist) {
                     if (HttpLog::LOGV)
-                        HttpLog::V("processRequests(): no persist, closing %s", Object::ToString(mHost).string());
+                        HttpLog::V("processRequests(): no persist, closing %s", TO_CSTR(mHost));
 
                     CloseConnection();
 
@@ -329,7 +329,7 @@ Boolean Connection::ClearPipe(
         for (itor = pipe.Begin(); itor != pipe.End(); itor++) {
             tReq = *itor;
             if (HttpLog::LOGV) HttpLog::V(
-                    "clearPipe() adding back %s %s", Object::ToString(mHost).string(), Object::ToString((IRequest*)tReq).string());
+                    "clearPipe() adding back %s %s", TO_CSTR(mHost), Object::ToString((IRequest*)tReq).string());
             mRequestFeeder->RequeueRequest(tReq);
             empty = FALSE;
         }
@@ -397,7 +397,7 @@ Boolean Connection::OpenHttpConnection(
 
     if (HttpLog::LOGV) {
         Int64 now2 = SystemClock::GetUptimeMillis();
-        HttpLog::V("Connection.openHttpConnection() %d %s", (now2 - now), Object::ToString(mHost).string());
+        HttpLog::V("Connection.openHttpConnection() %d %s", (now2 - now), TO_CSTR(mHost));
     }
 
     if (error == IEventHandler::OK) {
@@ -423,7 +423,7 @@ Boolean Connection::HttpFailure(
 
     if (HttpLog::LOGV)
         HttpLog::V("httpFailure() ******* %d count %d %s %s", e, ((Request*)req)->mFailCount,
-            Object::ToString(mHost).string(), Ptr(((Request*)req))->Func(((Request*)req)->GetUri).string());
+            TO_CSTR(mHost), Ptr(((Request*)req))->Func(((Request*)req)->GetUri).string());
 
     if (++((Request*)req)->mFailCount >= RETRY_REQUEST_LIMIT) {
         ret = FALSE;

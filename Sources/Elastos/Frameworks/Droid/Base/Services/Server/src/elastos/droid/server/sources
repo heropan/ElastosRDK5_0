@@ -56,6 +56,7 @@ SOURCES += CNsdService.cpp
 SOURCES += CVibratorService.cpp
 SOURCES += CSamplingProfilerService.cpp
 SOURCES += CSerialService.cpp
+SOURCES += CTelephonyRegistry.cpp
 SOURCES += CTextServicesManagerService.cpp
 SOURCES += UiModeManagerService.cpp
 SOURCES += CUpdateLockService.cpp

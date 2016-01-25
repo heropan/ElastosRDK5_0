@@ -3549,7 +3549,7 @@ ECode CActivityThread::HandleResumeActivity(
         }
         else if (!willBeVisible) {
             if (localLOGV) {
-                Slogger::V(TAG, "Launch %s mStartedActivity set", Object::ToString(r).string());
+                Slogger::V(TAG, "Launch %s mStartedActivity set", TO_CSTR(r));
             }
             r->mHideForNow = TRUE;
         }
@@ -3606,7 +3606,7 @@ ECode CActivityThread::HandleResumeActivity(
             r->mNextIdle = mNewActivities;
             mNewActivities = r;
             if (localLOGV)  {
-                Slogger::V(TAG, "Scheduling idle handler for %s", Object::ToString(r).string());
+                Slogger::V(TAG, "Scheduling idle handler for %s", TO_CSTR(r));
             }
             Looper::GetMyQueue()->AddIdleHandler(new Idler(this));
         }

@@ -506,7 +506,7 @@ ECode CDreamManagerService::FinishSelfInternal(
 {
     if (DEBUG) {
         Slogger::D(TAG, "Dream finished: %s, immediate=%d",
-            Object::ToString(token).string(), immediate);
+            TO_CSTR(token), immediate);
     }
 
     // Note that a dream finishing and self-terminating is not
@@ -567,7 +567,7 @@ ECode CDreamManagerService::StartDozingInternal(
 {
     if (DEBUG) {
         Slogger::D(TAG, "Dream requested to start dozing: %s, screenState=%d, screenBrightness=",
-            Object::ToString(token).string(),  screenState, screenBrightness);
+            TO_CSTR(token),  screenState, screenBrightness);
     }
 
     synchronized(mLock) {
@@ -589,7 +589,7 @@ ECode CDreamManagerService::StopDozingInternal(
 {
     if (DEBUG) {
         Slogger::D(TAG, "Dream requested to stop dozing: %s",
-            Object::ToString(token).string());
+            TO_CSTR(token));
     }
 
     synchronized(mLock) {
@@ -621,7 +621,7 @@ Boolean CDreamManagerService::ValidateDream(
     if (component == NULL) return FALSE;
     AutoPtr<IServiceInfo> serviceInfo = GetServiceInfo(component);
     if (serviceInfo == NULL) {
-        Slogger::W(TAG, "Dream %s does not exist", Object::ToString(component).string());
+        Slogger::W(TAG, "Dream %s does not exist", TO_CSTR(component));
         return FALSE;
     }
 
@@ -635,7 +635,7 @@ Boolean CDreamManagerService::ValidateDream(
     if (version >= Build::VERSION_CODES::LOLLIPOP && !Manifest::permission::BIND_DREAM_SERVICE.Equals(perm)) {
         Slogger::W(TAG, "Dream %s is not available because its manifest is missing the %s"
             " permission on the dream service declaration.",
-            Object::ToString(component).string(), Manifest::permission::BIND_DREAM_SERVICE.string());
+            TO_CSTR(component), Manifest::permission::BIND_DREAM_SERVICE.string());
         return FALSE;
     }
     return TRUE;

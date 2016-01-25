@@ -157,7 +157,7 @@ ECode DockObserver::MyUEventObserver::OnUEvent(
     ECode ec = StringUtils::Parse(str, &ival);
     if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
         Slogger::E("DockObserver", "Could not parse switch state from event %s",
-            Object::ToString(event).string());
+            TO_CSTR(event));
         ec = NOERROR;
     }
     else {
