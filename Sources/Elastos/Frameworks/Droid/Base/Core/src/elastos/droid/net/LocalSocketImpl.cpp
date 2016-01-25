@@ -1173,7 +1173,7 @@ ECode LocalSocketImpl::SetOption(
         boolValue = bv? 1 : 0;
     }
     else {
-        Logger::E("LocalSocketImpl", "bad value: %s", Object::ToString(value).string());
+        Logger::E("LocalSocketImpl", "bad value: %s", TO_CSTR(value));
         return E_IO_EXCEPTION;
     }
 

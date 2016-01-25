@@ -81,6 +81,13 @@ using namespace Elastos;
 #define TO_IINTERFACE(obj) ((obj) == NULL ? NULL : (obj)->Probe(EIID_IInterface))
 #endif
 
+#ifndef TO_STR
+#define TO_STR(obj) (Object::ToString(obj))
+#endif
+
+#ifndef TO_CSTR
+#define TO_CSTR(obj) (Object::ToString(obj).string())
+#endif
 
 #ifndef __UUNM_Elastos_CoreLibrary_DEFINED__
 #define __UUNM_Elastos_CoreLibrary_DEFINED__

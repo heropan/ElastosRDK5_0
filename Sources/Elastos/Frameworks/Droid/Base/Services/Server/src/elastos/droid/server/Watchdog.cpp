@@ -277,7 +277,7 @@ ECode Watchdog::RebootRequestReceiver::OnReceive(
     }
 
     Slogger::W("Watchdog::RebootRequestReceiver", "Unsupported ACTION_REBOOT broadcast: %s",
-        Object::ToString(intent).string());
+        TO_CSTR(intent));
     return NOERROR;
 }
 

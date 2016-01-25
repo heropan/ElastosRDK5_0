@@ -1377,7 +1377,7 @@ AutoPtr<INotification> CNotificationBuilder::Rebuild(
     ECode ec = context->CreateApplicationContext(applicationInfo,
         IContext::CONTEXT_RESTRICTED, (IContext**)&builderContext);
     if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
-        Logger::E(TAG, "ApplicationInfo %s not found", Object::ToString(applicationInfo).string());
+        Logger::E(TAG, "ApplicationInfo %s not found", TO_CSTR(applicationInfo));
         builderContext = context;  // try with our context
     }
 

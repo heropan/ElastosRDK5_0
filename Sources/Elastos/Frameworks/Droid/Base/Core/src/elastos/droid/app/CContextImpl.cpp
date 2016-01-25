@@ -1962,12 +1962,12 @@ ECode CContextImpl::ValidateServiceIntent(
         ai->GetTargetSdkVersion(&targetSdkVersion);
         if (targetSdkVersion >= Build::VERSION_CODES::LOLLIPOP) {
             Logger::E(TAG, "IllegalArgumentException : Service Intent must be explicit: %s",
-                Object::ToString(service).string());
+                TO_CSTR(service));
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         else {
             Logger::W(TAG, "Implicit intents with startService are not safe: %s",
-                Object::ToString(service).string()); //Debug.getCallers(2, 3));
+                TO_CSTR(service)); //Debug.getCallers(2, 3));
         }
     }
     return NOERROR;

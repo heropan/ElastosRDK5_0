@@ -398,7 +398,7 @@ CNetworkManagementService::InnerSub_PhoneStateListener::InnerSub_PhoneStateListe
 ECode CNetworkManagementService::InnerSub_PhoneStateListener::OnDataConnectionRealTimeInfoChanged(
     /* [in] */ IDataConnectionRealTimeInfo* dcRtInfo)
 {
-    if (DBG) Slogger::D(TAG, "onDataConnectionRealTimeInfoChanged: %s", Object::ToString(dcRtInfo).string());
+    if (DBG) Slogger::D(TAG, "onDataConnectionRealTimeInfoChanged: %s", TO_CSTR(dcRtInfo));
     mHost->NotifyInterfaceClassActivity(IConnectivityManager::TYPE_MOBILE,
             Ptr(dcRtInfo)->Func(dcRtInfo->GetDcPowerState), Ptr(dcRtInfo)->Func(dcRtInfo->GetTime), TRUE);
     return NOERROR;
@@ -2638,12 +2638,12 @@ ECode CNetworkManagementService::GetNetworkStatsTethering(
             if (FAILED(ec)) {
                 // } catch (NoSuchElementException e) {
                 if ((ECode)E_NO_SUCH_ELEMENT_EXCEPTION == ec) {
-                    Logger::E(TAG, "problem parsing tethering stats: %s", Object::ToString(event).string());
+                    Logger::E(TAG, "problem parsing tethering stats: %s", TO_CSTR(event));
                     return E_ILLEGAL_STATE_EXCEPTION;
                 }
                 // } catch (NumberFormatException e) {
                 else if ((ECode)E_NUMBER_FORMAT_EXCEPTION == ec) {
-                    Logger::E(TAG, "problem parsing tethering stats: %s", Object::ToString(event).string());
+                    Logger::E(TAG, "problem parsing tethering stats: %s", TO_CSTR(event));
                     return E_ILLEGAL_STATE_EXCEPTION;
                 }
                 else

@@ -1531,7 +1531,7 @@ void CNetworkPolicyManagerService::UpdateNetworkRulesLocked()
         }
 
         if (LOGD) {
-            Slogger::D(TAG, "applying policy %s to ifaces %s", Object::ToString(policy).string(), Object::ToString(ifaces).string());
+            Slogger::D(TAG, "applying policy %s to ifaces %s", TO_CSTR(policy), TO_CSTR(ifaces));
         }
 
         Int64 waringBytes;

@@ -638,7 +638,7 @@ ECode ContentProvider::OpenFile(
     VALIDATE_NOT_NULL(fileDescriptor)
     *fileDescriptor = NULL;
 
-    Logger::E(TAG, "No files supported by provider at %s", Object::ToString(uri).string());
+    Logger::E(TAG, "No files supported by provider at %s", TO_CSTR(uri));
     return E_FILE_NOT_FOUND_EXCEPTION;
 }
 

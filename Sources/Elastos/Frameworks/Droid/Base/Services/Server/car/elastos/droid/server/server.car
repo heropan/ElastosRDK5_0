@@ -120,6 +120,7 @@ module
     using interface Elastos.Droid.Internal.Os.IIDropBoxManagerService;
     using interface Elastos.Droid.Internal.StatusBar.IIStatusBarService;
     using interface Elastos.Droid.Internal.TextService.IITextServicesManager;
+    using interface Elastos.Droid.Internal.Telephony.IITelephonyRegistry;
     using interface Elastos.Droid.Location.IICountryDetector;
     using interface Elastos.Droid.Bluetooth.IIBluetoothManager;
     using interface Elastos.Droid.Bluetooth.IIBluetoothCallback;
@@ -281,7 +282,6 @@ module
         interface IBinder;
     }
 
-    [local]
     class CConnectivityService {
         constructor(
             [in] IContext* ctx,
@@ -316,12 +316,19 @@ module
         interface IBinder;
     }
 
-    [local]
     class CVibratorService {
         constructor(
             [in] IContext* ctx);
 
         interface IIVibratorService;
+        interface IBinder;
+    }
+
+    class CTelephonyRegistry {
+        constructor(
+            [in] IContext* ctx);
+
+        interface IITelephonyRegistry;
         interface IBinder;
     }
 

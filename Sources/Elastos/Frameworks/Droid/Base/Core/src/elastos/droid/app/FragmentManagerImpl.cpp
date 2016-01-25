@@ -301,7 +301,7 @@ ECode FragmentManagerImpl::PutFragment(
 //         throwException(new IllegalStateException("Fragment " + fragment
 //                 + " is not currently in the FragmentManager"));
         Logger::E(TAG, "%s is not currently in the FragmentManager",
-            Object::ToString(fragment).string());
+            TO_CSTR(fragment));
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     bundle->PutInt32(key, index);
@@ -347,7 +347,7 @@ ECode FragmentManagerImpl::SaveFragmentInstanceState(
     fragment->GetIndex(&index);
     if (index < 0) {
         Logger::E(TAG, "Fragment %s is not currently in the FragmentManager",
-            Object::ToString(fragment).string());
+            TO_CSTR(fragment));
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Int32 fstate;
@@ -1695,7 +1695,7 @@ ECode FragmentManagerImpl::PopBackStackState(
         AutoPtr<IBackStackRecordTransitionState> state, tmp;
         for (it = states.Begin(); it != states.End(); ++it, i++) {
             bsr = *it;
-            if (DEBUG) Logger::V(TAG, "Popping back stack state: %s", Object::ToString(bsr).string());
+            if (DEBUG) Logger::V(TAG, "Popping back stack state: %s", TO_CSTR(bsr));
             tmp = state;
             state = NULL;
             bsr->PopFromBackStack(i == size - 1, tmp, firstOutFragments, lastInFragments,
@@ -1967,7 +1967,7 @@ ECode FragmentManagerImpl::RestoreAllState(
             nonConfig->Get(i, (IInterface**)&data);
             f = IFragment::Probe(data);
             assert(f != NULL);
-            if (DEBUG) Logger::V(TAG, "restoreAllState: re-attaching retained %s", Object::ToString(f).string());
+            if (DEBUG) Logger::V(TAG, "restoreAllState: re-attaching retained %s", TO_CSTR(f));
             Int32 index = 0;
             f->GetIndex(&index);
             FragmentState* fs = (FragmentState*)(*fms->mActive)[index];
@@ -2005,7 +2005,7 @@ ECode FragmentManagerImpl::RestoreAllState(
             fs->Instantiate(mActivity, mParent, (IFragment**)&f);
             if (DEBUG)
                 Logger::V(TAG, "restoreAllState: active #%d: %s",
-                    i , Object::ToString(f).string());
+                    i , TO_CSTR(f));
             mActive.PushBack(f);
             // Now that the fragment is instantiated (or came from being
             // retained above), clear mInstance in case we end up re-restoring
@@ -2035,7 +2035,7 @@ ECode FragmentManagerImpl::RestoreAllState(
                     f->SetTarget(mActive[targetIndex]);
                 } else {
                     Logger::W(TAG, "Re-attaching retained fragment %s target no longer exists: %d",
-                        Object::ToString(f).string(), targetIndex);
+                        TO_CSTR(f), targetIndex);
                     f->SetTarget(NULL);
                 }
             }
@@ -2456,7 +2456,7 @@ ECode FragmentManagerImpl::OnCreateView(
     Fragment* f = (Fragment*)fragment.Get();
     if (FragmentManagerImpl::DEBUG)
         Logger::V(TAG, "onCreateView: id=0x%08x fname=%s existing=%s",
-            id, fname.string(), Object::ToString(fragment).string());
+            id, fname.string(), TO_CSTR(fragment));
     if (fragment == NULL) {
         Fragment::Instantiate(context, fname, (IFragment**)&fragment);
         Fragment* f = (Fragment*)fragment.Get();

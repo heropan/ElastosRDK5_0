@@ -1226,7 +1226,7 @@ Boolean CNsdService::RegisterService(
         String arg;
         // String.format(Locale.US, "%s=%s", key,
         //         recordValue != null ? new String(recordValue, "UTF_8") : "")
-        arg.AppendFormat("%s=%s", key.string(), recordValue != NULL ? Object::ToString(recordValue).string() : "");
+        arg.AppendFormat("%s=%s", key.string(), recordValue != NULL ? TO_CSTR(recordValue) : "");
         ECode ec;
         // TODO: Waiting for ICommand
         assert(0);

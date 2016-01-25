@@ -327,7 +327,7 @@ ECode CBluetoothManagerService::BluetoothHandler::HandleMessage(
             IIBluetoothManagerCallback* cb = IIBluetoothManagerCallback::Probe(obj);
             Boolean added;
             mHost->mCallbacks->Register(cb, &added);
-            Slogger::D(TAG,"Added callback: %s: %d", Object::ToString(cb).string(), added);
+            Slogger::D(TAG,"Added callback: %s: %d", TO_CSTR(cb), added);
             break;
         }
 
@@ -335,7 +335,7 @@ ECode CBluetoothManagerService::BluetoothHandler::HandleMessage(
             IIBluetoothManagerCallback* cb = IIBluetoothManagerCallback::Probe(obj);
             Boolean removed;
             mHost->mCallbacks->Unregister(cb, &removed);
-            Slogger::D(TAG,"Removed callback: %s: %d", Object::ToString(cb).string(), removed );
+            Slogger::D(TAG,"Removed callback: %s: %d", TO_CSTR(cb), removed );
             break;
         }
 
@@ -951,7 +951,7 @@ ECode CBluetoothManagerService::GetNameAndAddress()
 {
     if (DBG) {
        Slogger::D(TAG, "GetNameAndAddress(): %s mBinding=%d",
-            Object::ToString(mBluetooth).string(), mBinding);
+            TO_CSTR(mBluetooth), mBinding);
     }
     AutoPtr<IMessage> msg;
     mHandler->ObtainMessage(MESSAGE_GET_NAME_AND_ADDRESS, (IMessage**)&msg);
@@ -971,7 +971,7 @@ ECode CBluetoothManagerService::EnableNoAutoConnect(
 
     if (DBG) {
        Slogger::D(TAG, "EnableNoAutoConnect(): %s mBinding=%d",
-            Object::ToString(mBluetooth).string(), mBinding);
+            TO_CSTR(mBluetooth), mBinding);
     }
 
     Int32 callingAppId = UserHandle::GetAppId(Binder::GetCallingUid());
@@ -1009,7 +1009,7 @@ ECode CBluetoothManagerService::Enable(
 
     if (DBG) {
        Slogger::D(TAG, "Enable()(): %s mBinding=%d",
-            Object::ToString(mBluetooth).string(), mBinding);
+            TO_CSTR(mBluetooth), mBinding);
     }
 
     {
@@ -1045,7 +1045,7 @@ ECode CBluetoothManagerService::Disable(
 
     if (DBG) {
        Slogger::D(TAG,"Disable()(): %s mBinding=%d",
-            Object::ToString(mBluetooth).string(), mBinding);
+            TO_CSTR(mBluetooth), mBinding);
     }
 
     {
@@ -1068,7 +1068,7 @@ ECode CBluetoothManagerService::UnbindAndFinish()
 {
     if (DBG) {
        Slogger::D(TAG,"UnbindAndFinish(): %s mBinding=%d",
-            Object::ToString(mBluetooth).string(), mBinding);
+            TO_CSTR(mBluetooth), mBinding);
     }
 
     {
@@ -1273,7 +1273,7 @@ Boolean CBluetoothManagerService::DoBind(
     intent->SetComponent(comp);
     Boolean bval;
     if (comp == NULL || (mContext->BindServiceAsUser(intent, conn, flags, user, &bval), !bval)) {
-        Slogger::E(TAG, "Fail to bind to: %s", Object::ToString(intent).string());
+        Slogger::E(TAG, "Fail to bind to: %s", TO_CSTR(intent));
         return FALSE;
     }
     return TRUE;

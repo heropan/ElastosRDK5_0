@@ -564,7 +564,7 @@ void TwilightService::SetTwilightState(
     AutoLock lock(mLock);
     if (mTwilightState.Get() != state) {
         if (DEBUG) {
-            Slogger::D(TAG, "Twilight state changed: %s", Object::ToString(state).string());
+            Slogger::D(TAG, "Twilight state changed: %s", TO_CSTR(state));
         }
 
         mTwilightState = state;
