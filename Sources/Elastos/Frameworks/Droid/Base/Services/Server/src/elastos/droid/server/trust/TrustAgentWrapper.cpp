@@ -1,14 +1,278 @@
 
-#include "elastos/droid/server/net/TrustAgentWrapper.h"
+#include "elastos/droid/server/trust/TrustAgentWrapper.h"
+#include "elastos/droid/server/trust/TrustArchive.h"
+#include "elastos/droid/server/trust/TrustManagerService.h"
+#include <Elastos.CoreLibrary.Utility.h>
+#include <Elastos.Droid.App.h>
+#include <elastos/core/Math.h>
+#include <elastos/droid/Manifest.h>
+#include <elastos/droid/net/ReturnOutValue.h>
+#include <elastos/droid/os/Binder.h>
+#include <elastos/droid/os/SystemClock.h>
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/utility/logging/Slogger.h>
+
+using Elastos::Core::Math;
+using Elastos::Droid::App::Admin::IDevicePolicyManager;
+using Elastos::Droid::App::CPendingIntent;
+using Elastos::Droid::App::CPendingIntentHelper;
+using Elastos::Droid::App::IPendingIntentHelper;
+using Elastos::Droid::Content::CIntent;
+using Elastos::Droid::Content::CIntentFilter;
+using Elastos::Droid::Content::EIID_IServiceConnection;
+using Elastos::Droid::Content::IIntentFilter;
+using Elastos::Droid::Manifest;
+using Elastos::Droid::Net::CUriHelper;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Net::IUriHelper;
+using Elastos::Droid::Os::Binder;
+using Elastos::Droid::Os::CBinder;
+using Elastos::Droid::Os::CBundle;
+using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IPatternMatcher;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Service::Trust::EIID_IITrustAgentServiceCallback;
+using Elastos::Droid::Service::Trust::ITrustAgentService;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::IList;
+using Elastos::Utility::Logging::Logger;
+using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::Regex::IPattern;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 namespace Trust {
 
+//=============================================================================
+// TrustAgentWrapper::InnerSub_BroadcastReceiver
+//=============================================================================
+TrustAgentWrapper::InnerSub_BroadcastReceiver::InnerSub_BroadcastReceiver(
+    /* [in] */ TrustAgentWrapper* host)
+    : mHost(host)
+{}
+
+ECode TrustAgentWrapper::InnerSub_BroadcastReceiver::OnReceive(
+    /* [in] */ IContext* context,
+    /* [in] */ IIntent* intent)
+{
+    AutoPtr<IParcelable> parcel;
+    intent->GetParcelableExtra(EXTRA_COMPONENT_NAME, (IParcelable**)&parcel);
+    AutoPtr<IComponentName> component = IComponentName::Probe(parcel);
+    Boolean isEquals;
+    IObject::Probe(mHost->mName)->Equals(component, &isEquals);
+    if (mHost->TRUST_EXPIRED_ACTION.Equals(Ptr(intent)->Func(intent->GetAction)) && isEquals) {
+        mHost->mHandler->RemoveMessages(MSG_TRUST_TIMEOUT);
+        Boolean tmp;
+        mHost->mHandler->SendEmptyMessage(MSG_TRUST_TIMEOUT, &tmp);
+    }
+    return NOERROR;
+}
+
+//=============================================================================
+// TrustAgentWrapper::InnerSub_Handler
+//=============================================================================
+TrustAgentWrapper::InnerSub_Handler::InnerSub_Handler(
+    /* [in] */ TrustAgentWrapper* host)
+    : mHost(host)
+{}
+
+ECode TrustAgentWrapper::InnerSub_Handler::HandleMessage(
+    /* [in] */ IMessage* msg)
+{
+    Int32 what;
+    msg->GetWhat(&what);
+    if (what == TrustAgentWrapper::MSG_GRANT_TRUST) {
+        if (!Ptr(mHost)->Func(mHost->IsConnected)) {
+            Logger::W(TAG, "Agent is not connected, cannot grant trust: %s"
+                    , Ptr(mHost->mName)->Func(IComponentName::FlattenToShortString).string());
+            return NOERROR;
+        }
+        mHost->mTrusted = TRUE;
+        mHost->mMessage = ICharSequence::Probe(Ptr(msg)->Func(msg->GetObj));
+        Boolean initiatedByUser = Ptr(msg)->Func(msg->GetArg1) != 0;
+        Int64 durationMs;
+        Ptr(msg)->Func(msg->GetData)->GetInt64(DATA_DURATION, &durationMs);
+        if (durationMs > 0) {
+            Int64 duration;
+            if (mHost->mMaximumTimeToLock != 0) {
+                // Enforce DevicePolicyManager timeout.  This is here as a safeguard to
+                // ensure trust agents are evaluating trust state at least as often as
+                // the policy dictates. Admins that want more guarantees should be using
+                // DevicePolicyManager#KEYGUARD_DISABLE_TRUST_AGENTS.
+                duration = Elastos::Core::Math::Min(durationMs, mHost->mMaximumTimeToLock);
+                if (DEBUG) {
+                    Logger::V(TAG, "DPM lock timeout in effect. Timeout adjusted from %ld to %ld",
+                            durationMs, duration);
+                }
+            }
+            else {
+                duration = durationMs;
+            }
+            Int64 expiration = SystemClock::GetElapsedRealtime() + duration;
+            AutoPtr<IPendingIntentHelper> helper;
+            CPendingIntentHelper::AcquireSingleton((IPendingIntentHelper**)&helper);
+            helper->GetBroadcast(mHost->mContext, 0, mHost->mAlarmIntent,
+                    IPendingIntent::FLAG_CANCEL_CURRENT, (IPendingIntent**)&mHost->mAlarmPendingIntent);
+            mHost->mAlarmManager->Set(IAlarmManager::ELAPSED_REALTIME_WAKEUP, expiration,
+                    mHost->mAlarmPendingIntent);
+        }
+        mHost->mTrustManagerService->mArchive->LogGrantTrust(mHost->mUserId, mHost->mName,
+                (mHost->mMessage != NULL ? Object::ToString(mHost->mMessage) : String(NULL)),
+                durationMs, initiatedByUser);
+        mHost->mTrustManagerService->UpdateTrust(mHost->mUserId, initiatedByUser);
+    }
+    else if (what == TrustAgentWrapper::MSG_TRUST_TIMEOUT
+            || what == TrustAgentWrapper::MSG_REVOKE_TRUST) {
+        if (what == TrustAgentWrapper::MSG_TRUST_TIMEOUT) {
+            if (DEBUG) Slogger::V(TAG, "Trust timed out : %s", Ptr(mHost->mName)->Func(mHost->mName->FlattenToShortString).string());
+            mHost->mTrustManagerService->mArchive->LogTrustTimeout(mHost->mUserId, mHost->mName);
+            mHost->OnTrustTimeout();
+            // Fall through.
+        }
+        mHost->mTrusted = FALSE;
+        mHost->mMessage = NULL;
+        mHost->mHandler->RemoveMessages(TrustAgentWrapper::MSG_TRUST_TIMEOUT);
+        if (what == TrustAgentWrapper::MSG_REVOKE_TRUST) {
+            mHost->mTrustManagerService->mArchive->LogRevokeTrust(mHost->mUserId, mHost->mName);
+        }
+        mHost->mTrustManagerService->UpdateTrust(mHost->mUserId, FALSE);
+    }
+    else if (what == TrustAgentWrapper::MSG_RESTART_TIMEOUT) {
+        mHost->Unbind();
+        mHost->mTrustManagerService->ResetAgent(mHost->mName, mHost->mUserId);
+    }
+    else if (what == TrustAgentWrapper::MSG_SET_TRUST_AGENT_FEATURES_COMPLETED) {
+        AutoPtr<IBinder> token = IBinder::Probe(Ptr(msg)->Func(msg->GetObj));
+        Boolean result = Ptr(msg)->Func(msg->GetArg1) != 0;
+        if (mHost->mSetTrustAgentFeaturesToken == token) {
+            mHost->mSetTrustAgentFeaturesToken = NULL;
+            if (mHost->mTrustDisabledByDpm && result) {
+                if (DEBUG) Logger::V(TAG, "Re-enabling agent because it acknowledged "
+                        "enabled features: %s", Object::ToString(mHost->mName).string());
+                mHost->mTrustDisabledByDpm = FALSE;
+                mHost->mTrustManagerService->UpdateTrust(mHost->mUserId, FALSE);
+            }
+        }
+        else {
+            if (DEBUG) Logger::W(TAG, "Ignoring MSG_SET_TRUST_AGENT_FEATURES_COMPLETED "
+                    "with obsolete token: %s", Object::ToString(mHost->mName).string());
+        }
+    }
+    else if (what == TrustAgentWrapper::MSG_MANAGING_TRUST) {
+        mHost->mManagingTrust = Ptr(msg)->Func(msg->GetArg1) != 0;
+        if (!mHost->mManagingTrust) {
+            mHost->mTrusted = FALSE;
+            mHost->mMessage = NULL;
+        }
+        mHost->mTrustManagerService->mArchive->LogManagingTrust(mHost->mUserId, mHost->mName, mHost->mManagingTrust);
+        mHost->mTrustManagerService->UpdateTrust(mHost->mUserId, FALSE);
+    }
+    return NOERROR;
+}
+
+//=============================================================================
+// TrustAgentWrapper::InnerSub_ITrustAgentServiceCallback
+//=============================================================================
+CAR_INTERFACE_IMPL(TrustAgentWrapper::InnerSub_ITrustAgentServiceCallback, Object, IITrustAgentServiceCallback)
+
+TrustAgentWrapper::InnerSub_ITrustAgentServiceCallback::InnerSub_ITrustAgentServiceCallback(
+    /* [in] */ TrustAgentWrapper* host)
+    : mHost(host)
+{}
+
+ECode TrustAgentWrapper::InnerSub_ITrustAgentServiceCallback::GrantTrust(
+    /* [in] */ ICharSequence* userMessage,
+    /* [in] */ Int64 durationMs,
+    /* [in] */ Boolean initiatedByUser)
+{
+    if (DEBUG) Slogger::V(TAG, "enableTrust(%s, durationMs = %ld, initiatedByUser = %s" ")",
+            Object::ToString(userMessage).string(), durationMs, initiatedByUser ? "TRUE" : "FALSE");
+    AutoPtr<IMessage> msg;
+    mHost->mHandler->ObtainMessage(
+            MSG_GRANT_TRUST, initiatedByUser ? 1 : 0, 0, userMessage, (IMessage**)&msg);
+    Ptr(msg)->Func(msg->GetData)->PutInt64(DATA_DURATION, durationMs);
+    msg->SendToTarget();
+    return NOERROR;
+}
+
+ECode TrustAgentWrapper::InnerSub_ITrustAgentServiceCallback::RevokeTrust()
+{
+    if (DEBUG) Slogger::V(TAG, "revokeTrust()");
+    Boolean tmp;
+    mHost->mHandler->SendEmptyMessage(MSG_REVOKE_TRUST, &tmp);
+    return NOERROR;
+}
+
+ECode TrustAgentWrapper::InnerSub_ITrustAgentServiceCallback::SetManagingTrust(
+    /* [in] */ Boolean managingTrust)
+{
+    if (DEBUG) Slogger::V(TAG, "managingTrust()");
+    AutoPtr<IMessage> msg;
+    mHost->mHandler->ObtainMessage(MSG_MANAGING_TRUST, managingTrust ? 1 : 0, 0, (IMessage**)&msg);
+    msg->SendToTarget();
+    return NOERROR;
+}
+
+ECode TrustAgentWrapper::InnerSub_ITrustAgentServiceCallback::OnSetTrustAgentFeaturesEnabledCompleted(
+    /* [in] */ Boolean result,
+    /* [in] */ IBinder* token)
+{
+    if (DEBUG) Slogger::V(TAG, "onSetTrustAgentFeaturesEnabledCompleted(result=%s", result ? "TRUE" : "FALSE");
+    AutoPtr<IMessage> msg;
+    mHost->mHandler->ObtainMessage(MSG_SET_TRUST_AGENT_FEATURES_COMPLETED,
+            result ? 1 : 0, 0, token, (IMessage**)&msg);
+    msg->SendToTarget();
+    return NOERROR;
+}
+
+//=============================================================================
+// TrustAgentWrapper::InnerSub_ServiceConnection
+//=============================================================================
+CAR_INTERFACE_IMPL(TrustAgentWrapper::InnerSub_ServiceConnection, Object, IServiceConnection)
+
+TrustAgentWrapper::InnerSub_ServiceConnection::InnerSub_ServiceConnection(
+    /* [in] */ TrustAgentWrapper* host)
+    : mHost(host)
+{}
+
+ECode TrustAgentWrapper::InnerSub_ServiceConnection::OnServiceConnected(
+    /* [in] */ IComponentName* name,
+    /* [in] */ IBinder* service)
+{
+    if (DEBUG) Logger::V(TAG, "TrustAgent started : %s", Ptr(name)->Func(name->FlattenToString).string());
+    mHost->mHandler->RemoveMessages(MSG_RESTART_TIMEOUT);
+    mHost->mTrustAgentService = IITrustAgentService::Probe(service);
+    mHost->mTrustManagerService->mArchive->LogAgentConnected(mHost->mUserId, name);
+    mHost->SetCallback(mHost->mCallback);
+    Boolean tmp;
+    mHost->UpdateDevicePolicyFeatures(&tmp);
+    return NOERROR;
+}
+
+ECode TrustAgentWrapper::InnerSub_ServiceConnection::OnServiceDisconnected(
+    /* [in] */ IComponentName* name)
+{
+    if (DEBUG) Logger::V(TAG, "TrustAgent disconnected : %s", Ptr(name)->Func(name->FlattenToShortString).string());
+    mHost->mTrustAgentService = NULL;
+    mHost->mManagingTrust = FALSE;
+    mHost->mSetTrustAgentFeaturesToken = NULL;
+    mHost->mTrustManagerService->mArchive->LogAgentDied(mHost->mUserId, name);
+    Boolean tmp;
+    mHost->mHandler->SendEmptyMessage(MSG_REVOKE_TRUST, &tmp);
+    if (mHost->mBound) {
+        mHost->ScheduleRestart();
+    }
+    // mTrustDisabledByDpm maintains state
+    return NOERROR;
+}
+
+//=============================================================================
+// TrustAgentWrapper
+//=============================================================================
 const String TrustAgentWrapper::EXTRA_COMPONENT_NAME("componentName");
 const String TrustAgentWrapper::TRUST_EXPIRED_ACTION("android.server.trust.TRUST_EXPIRED_ACTION");
-const String TrustAgentWrapper::PERMISSION = android.Manifest.permission.PROVIDE_TRUST_AGENT;
+const String TrustAgentWrapper::PERMISSION = Manifest::permission::PROVIDE_TRUST_AGENT;
 const Boolean TrustAgentWrapper::DEBUG = FALSE;
 const String TrustAgentWrapper::TAG("TrustAgentWrapper");
 const Int32 TrustAgentWrapper::MSG_GRANT_TRUST = 1;
@@ -20,413 +284,258 @@ const Int32 TrustAgentWrapper::MSG_MANAGING_TRUST = 6;
 const Int64 TrustAgentWrapper::RESTART_TIMEOUT_MILLIS = 5 * 60000;
 const String TrustAgentWrapper::DATA_DURATION("duration");
 
-ECode TrustAgentWrapper::BroadcastReceiver(
-    /* [out] */ Inew** result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            ComponentName component = intent.getParcelableExtra(EXTRA_COMPONENT_NAME);
-            if (TRUST_EXPIRED_ACTION.equals(intent.getAction())
-                    && mName.equals(component)) {
-                mHandler.removeMessages(MSG_TRUST_TIMEOUT);
-                mHandler.sendEmptyMessage(MSG_TRUST_TIMEOUT);
-            }
-        }
-
-#endif
-}
-
-ECode TrustAgentWrapper::Handler(
-    /* [out] */ Inew** result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MSG_GRANT_TRUST:
-                    if (!isConnected()) {
-                        Log.w(TAG, "Agent is not connected, cannot grant trust: "
-                                + mName.flattenToShortString());
-                        return;
-                    }
-                    mTrusted = true;
-                    mMessage = (CharSequence) msg.obj;
-                    boolean initiatedByUser = msg.arg1 != 0;
-                    long durationMs = msg.getData().getLong(DATA_DURATION);
-                    if (durationMs > 0) {
-                        final long duration;
-                        if (mMaximumTimeToLock != 0) {
-                            // Enforce DevicePolicyManager timeout.  This is here as a safeguard to
-                            // ensure trust agents are evaluating trust state at least as often as
-                            // the policy dictates. Admins that want more guarantees should be using
-                            // DevicePolicyManager#KEYGUARD_DISABLE_TRUST_AGENTS.
-                            duration = Math.min(durationMs, mMaximumTimeToLock);
-                            if (DEBUG) {
-                                Log.v(TAG, "DPM lock timeout in effect. Timeout adjusted from "
-                                    + durationMs + " to " + duration);
-                            }
-                        } else {
-                            duration = durationMs;
-                        }
-                        long expiration = SystemClock.elapsedRealtime() + duration;
-                        mAlarmPendingIntent = PendingIntent.getBroadcast(mContext, 0, mAlarmIntent,
-                                PendingIntent.FLAG_CANCEL_CURRENT);
-                        mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, expiration,
-                                mAlarmPendingIntent);
-                    }
-                    mTrustManagerService.mArchive.logGrantTrust(mUserId, mName,
-                            (mMessage != null ? mMessage.toString() : null),
-                            durationMs, initiatedByUser);
-                    mTrustManagerService.updateTrust(mUserId, initiatedByUser);
-                    break;
-                case MSG_TRUST_TIMEOUT:
-                    if (DEBUG) Slog.v(TAG, "Trust timed out : " + mName.flattenToShortString());
-                    mTrustManagerService.mArchive.logTrustTimeout(mUserId, mName);
-                    onTrustTimeout();
-                    // Fall through.
-                case MSG_REVOKE_TRUST:
-                    mTrusted = false;
-                    mMessage = null;
-                    mHandler.removeMessages(MSG_TRUST_TIMEOUT);
-                    if (msg.what == MSG_REVOKE_TRUST) {
-                        mTrustManagerService.mArchive.logRevokeTrust(mUserId, mName);
-                    }
-                    mTrustManagerService.updateTrust(mUserId, false);
-                    break;
-                case MSG_RESTART_TIMEOUT:
-                    unbind();
-                    mTrustManagerService.resetAgent(mName, mUserId);
-                    break;
-                case MSG_SET_TRUST_AGENT_FEATURES_COMPLETED:
-                    IBinder token = (IBinder) msg.obj;
-                    boolean result = msg.arg1 != 0;
-                    if (mSetTrustAgentFeaturesToken == token) {
-                        mSetTrustAgentFeaturesToken = null;
-                        if (mTrustDisabledByDpm && result) {
-                            if (DEBUG) Log.v(TAG, "Re-enabling agent because it acknowledged "
-                                    + "enabled features: " + mName);
-                            mTrustDisabledByDpm = false;
-                            mTrustManagerService.updateTrust(mUserId, false);
-                        }
-                    } else {
-                        if (DEBUG) Log.w(TAG, "Ignoring MSG_SET_TRUST_AGENT_FEATURES_COMPLETED "
-                                + "with obsolete token: " + mName);
-                    }
-                    break;
-                case MSG_MANAGING_TRUST:
-                    mManagingTrust = msg.arg1 != 0;
-                    if (!mManagingTrust) {
-                        mTrusted = false;
-                        mMessage = null;
-                    }
-                    mTrustManagerService.mArchive.logManagingTrust(mUserId, mName, mManagingTrust);
-                    mTrustManagerService.updateTrust(mUserId, false);
-                    break;
-            }
-        }
-
-#endif
-}
-
-ECode TrustAgentWrapper::ITrustAgentServiceCallback.Stub(
-    /* [out] */ Inew** result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        @Override
-        public void grantTrust(CharSequence userMessage, long durationMs, boolean initiatedByUser) {
-            if (DEBUG) Slog.v(TAG, "enableTrust(" + userMessage + ", durationMs = " + durationMs
-                        + ", initiatedByUser = " + initiatedByUser + ")");
-            Message msg = mHandler.obtainMessage(
-                    MSG_GRANT_TRUST, initiatedByUser ? 1 : 0, 0, userMessage);
-            msg.getData().putLong(DATA_DURATION, durationMs);
-            msg.sendToTarget();
-        }
-        @Override
-        public void revokeTrust() {
-            if (DEBUG) Slog.v(TAG, "revokeTrust()");
-            mHandler.sendEmptyMessage(MSG_REVOKE_TRUST);
-        }
-        @Override
-        public void setManagingTrust(boolean managingTrust) {
-            if (DEBUG) Slog.v(TAG, "managingTrust()");
-            mHandler.obtainMessage(MSG_MANAGING_TRUST, managingTrust ? 1 : 0, 0).sendToTarget();
-        }
-        @Override
-        public void onSetTrustAgentFeaturesEnabledCompleted(boolean result, IBinder token) {
-            if (DEBUG) Slog.v(TAG, "onSetTrustAgentFeaturesEnabledCompleted(result=" + result);
-            mHandler.obtainMessage(MSG_SET_TRUST_AGENT_FEATURES_COMPLETED,
-                    result ? 1 : 0, 0, token).sendToTarget();
-        }
-
-#endif
-}
-
-ECode TrustAgentWrapper::ServiceConnection(
-    /* [out] */ Inew** result)
-{
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            if (DEBUG) Log.v(TAG, "TrustAgent started : " + name.flattenToString());
-            mHandler.removeMessages(MSG_RESTART_TIMEOUT);
-            mTrustAgentService = ITrustAgentService.Stub.asInterface(service);
-            mTrustManagerService.mArchive.logAgentConnected(mUserId, name);
-            setCallback(mCallback);
-            updateDevicePolicyFeatures();
-        }
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            if (DEBUG) Log.v(TAG, "TrustAgent disconnected : " + name.flattenToShortString());
-            mTrustAgentService = null;
-            mManagingTrust = false;
-            mSetTrustAgentFeaturesToken = null;
-            mTrustManagerService.mArchive.logAgentDied(mUserId, name);
-            mHandler.sendEmptyMessage(MSG_REVOKE_TRUST);
-            if (mBound) {
-                scheduleRestart();
-            }
-            // mTrustDisabledByDpm maintains state
-        }
-
-#endif
-}
+TrustAgentWrapper::TrustAgentWrapper()
+    : mUserId(0)
+    , mBound(FALSE)
+    , mScheduledRestartUptimeMillis(0)
+    , mMaximumTimeToLock(0)
+    , mTrusted(FALSE)
+    , mTrustDisabledByDpm(FALSE)
+    , mManagingTrust(FALSE)
+{}
 
 ECode TrustAgentWrapper::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ ITrustManagerService* trustManagerService,
+    /* [in] */ TrustManagerService* trustManagerService,
     /* [in] */ IIntent* intent,
     /* [in] */ IUserHandle* user)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mBroadcastReceiver = new InnerSub_BroadcastReceiver();
-        mHandler = new InnerSub_Handler();
-        mCallback = new InnerSub_InnerSub_ITrustAgentServiceCallback();
+    mBroadcastReceiver = new InnerSub_BroadcastReceiver(this);
+    mHandler = new InnerSub_Handler(this);
+    mCallback = new InnerSub_ITrustAgentServiceCallback(this);
 
-        mContext = context;
-        mTrustManagerService = trustManagerService;
-        mAlarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
-        mUserId = user.getIdentifier();
-        mName = intent.getComponent();
-        mAlarmIntent = new Intent(TRUST_EXPIRED_ACTION).putExtra(EXTRA_COMPONENT_NAME, mName);
-        mAlarmIntent.setData(Uri.parse(mAlarmIntent.toUri(Intent.URI_INTENT_SCHEME)));
-        mAlarmIntent.setPackage(context.getPackageName());
-        final IntentFilter alarmFilter = new IntentFilter(TRUST_EXPIRED_ACTION);
-        alarmFilter.addDataScheme(mAlarmIntent.getScheme());
-        final String pathUri = mAlarmIntent.toUri(Intent.URI_INTENT_SCHEME);
-        alarmFilter.addDataPath(pathUri, PatternMatcher.PATTERN_LITERAL);
-        mContext.registerReceiver(mBroadcastReceiver, alarmFilter, PERMISSION, null);
-        // Schedules a restart for when connecting times out. If the connection succeeds,
-        // the restart is canceled in mCallback's onConnected.
-        scheduleRestart();
-        mBound = context.bindServiceAsUser(intent, mConnection, Context.BIND_AUTO_CREATE, user);
-        if (!mBound) {
-            Log.e(TAG, "Can't bind to TrustAgent " + mName.flattenToShortString());
-        }
+    mContext = context;
+    mTrustManagerService = trustManagerService;
+    AutoPtr<IInterface> obj;
+    mContext->GetSystemService(IContext::ALARM_SERVICE, (IInterface**)&obj);
+    mAlarmManager = IAlarmManager::Probe(obj);
+    user->GetIdentifier(&mUserId);
+    intent->GetComponent((IComponentName**)&mName);
+    CIntent::New(TRUST_EXPIRED_ACTION, (IIntent**)&mAlarmIntent);
+    mAlarmIntent->PutExtra(EXTRA_COMPONENT_NAME, IParcelable::Probe(mName));
+    AutoPtr<IUriHelper> helper;
+    CUriHelper::AcquireSingleton((IUriHelper**)&helper);
+    String s;
+    mAlarmIntent->ToUri(IIntent::URI_INTENT_SCHEME, &s);
+    AutoPtr<IUri> uri;
+    helper->Parse(s, (IUri**)&uri);
+    mAlarmIntent->SetData(uri);
+    mAlarmIntent->SetPackage(Ptr(context)->Func(context->GetPackageName));
+    AutoPtr<IIntentFilter> alarmFilter;
+    CIntentFilter::New(TRUST_EXPIRED_ACTION, (IIntentFilter**)&alarmFilter);
+    alarmFilter->AddDataScheme(Ptr(mAlarmIntent)->Func(mAlarmIntent->GetScheme));
+    String pathUri;
+    mAlarmIntent->ToUri(IIntent::URI_INTENT_SCHEME, &pathUri);
+    alarmFilter->AddDataPath(pathUri, IPatternMatcher::PATTERN_LITERAL);
+    AutoPtr<IIntent> tmp;
+    mContext->RegisterReceiver(mBroadcastReceiver, alarmFilter, PERMISSION, NULL, (IIntent**)&tmp);
 
-#endif
+    // Schedules a restart for when connecting times out. If the connection succeeds,
+    // the restart is canceled in mCallback's onConnected.
+    ScheduleRestart();
+    context->BindServiceAsUser(intent, mConnection, IContext::BIND_AUTO_CREATE, user, &mBound);
+    if (!mBound) {
+        Logger::E(TAG, "Can't bind to TrustAgent %s", Ptr(mName)->Func(mName->FlattenToShortString).string());
+    }
+    return NOERROR;
 }
 
 ECode TrustAgentWrapper::OnError(
     /* [in] */ ECode ec)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        Slog.w(TAG , "Remote Exception", e);
-
-#endif
+    Slogger::W(TAG , "Remote Exception %d", ec);
+    return NOERROR;
 }
 
 ECode TrustAgentWrapper::OnTrustTimeout()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        try {
-            if (mTrustAgentService != null) mTrustAgentService.onTrustTimeout();
-        } catch (RemoteException e) {
-            onError(e);
-        }
-
-#endif
+    // try {
+    ECode ec;
+    if (mTrustAgentService != NULL) ec = mTrustAgentService->OnTrustTimeout();
+    // } catch (RemoteException e) {
+    if (FAILED(ec)) {
+        if ((ECode)E_REMOTE_EXCEPTION == ec)
+            OnError(ec);
+        else
+            return ec;
+    }
+    // }
+    return NOERROR;
 }
 
 ECode TrustAgentWrapper::OnUnlockAttempt(
     /* [in] */ Boolean successful)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        try {
-            if (mTrustAgentService != null) mTrustAgentService.onUnlockAttempt(successful);
-        } catch (RemoteException e) {
-            onError(e);
-        }
-
-#endif
+    // try {
+    ECode ec;
+    if (mTrustAgentService != NULL) ec = mTrustAgentService->OnUnlockAttempt(successful);
+    // } catch (RemoteException e) {
+    if (FAILED(ec)) {
+        if ((ECode)E_REMOTE_EXCEPTION == ec)
+            OnError(ec);
+        else
+            return ec;
+    }
+    // }
+    return NOERROR;
 }
 
 ECode TrustAgentWrapper::SetCallback(
     /* [in] */ IITrustAgentServiceCallback* callback)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        try {
-            if (mTrustAgentService != null) {
-                mTrustAgentService.setCallback(callback);
-            }
-        } catch (RemoteException e) {
-            onError(e);
-        }
-
-#endif
+    // try {
+    ECode ec;
+    if (mTrustAgentService != NULL) {
+        ec = mTrustAgentService->SetCallback(callback);
+    }
+    // } catch (RemoteException e) {
+    if (FAILED(ec)) {
+        if ((ECode)E_REMOTE_EXCEPTION == ec)
+            OnError(ec);
+        else
+            return ec;
+    }
+    // }
+    return NOERROR;
 }
 
 ECode TrustAgentWrapper::UpdateDevicePolicyFeatures(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        boolean trustDisabled = false;
-        if (DEBUG) Slog.v(TAG, "updateDevicePolicyFeatures(" + mName + ")");
-        try {
-            if (mTrustAgentService != null) {
-                DevicePolicyManager dpm =
-                    (DevicePolicyManager) mContext.getSystemService(Context.DEVICE_POLICY_SERVICE);
-                if ((dpm.getKeyguardDisabledFeatures(null)
-                        & DevicePolicyManager.KEYGUARD_DISABLE_TRUST_AGENTS) != 0) {
-                    List<String> features = dpm.getTrustAgentFeaturesEnabled(null, mName);
-                    trustDisabled = true;
-                    if (DEBUG) Slog.v(TAG, "Detected trust agents disabled. Features = "
-                            + features);
-                    if (features != null && features.size() > 0) {
-                        Bundle bundle = new Bundle();
-                        bundle.putStringArrayList(TrustAgentService.KEY_FEATURES,
-                                (ArrayList<String>)features);
-                        if (DEBUG) {
-                            Slog.v(TAG, "TrustAgent " + mName.flattenToShortString()
-                                    + " disabled until it acknowledges "+ features);
-                        }
-                        mSetTrustAgentFeaturesToken = new Binder();
-                        mTrustAgentService.setTrustAgentFeaturesEnabled(bundle,
-                                mSetTrustAgentFeaturesToken);
+    Boolean trustDisabled = FALSE;
+    if (DEBUG) Slogger::V(TAG, "updateDevicePolicyFeatures(%s)", Object::ToString(mName).string());
+    // try {
+    ECode ec;
+    do {
+        if (mTrustAgentService != NULL) {
+            AutoPtr<IInterface> obj;
+            ec = mContext->GetSystemService(IContext::DEVICE_POLICY_SERVICE, (IInterface**)&obj);
+            if (FAILED(ec)) break;
+            AutoPtr<IDevicePolicyManager> dpm = IDevicePolicyManager::Probe(obj);
+            Int32 feature;
+            ec = dpm->GetKeyguardDisabledFeatures(NULL, &feature);
+            if (FAILED(ec)) break;
+            if ((feature & IDevicePolicyManager::KEYGUARD_DISABLE_TRUST_AGENTS) != 0) {
+                AutoPtr<IList> features;
+                ec = dpm->GetTrustAgentFeaturesEnabled(NULL, mName, (IList**)&features);
+                if (FAILED(ec)) break;
+                trustDisabled = TRUE;
+                if (DEBUG) Slogger::V(TAG, "Detected trust agents disabled. Features = %s", Object::ToString(features).string());
+                if (features != NULL && Ptr(features)->Func(IList::GetSize) > 0) {
+                    AutoPtr<IBundle> bundle;
+                    CBundle::New((IBundle**)&bundle);
+                    ec = bundle->PutStringArrayList(ITrustAgentService::KEY_FEATURES,
+                            IArrayList::Probe(features));
+                    if (FAILED(ec)) break;
+                    if (DEBUG) {
+                        Slogger::V(TAG, "TrustAgent %s disabled until it acknowledges %s",
+                                Ptr(mName)->Func(mName->FlattenToShortString).string(), Object::ToString(features).string());
                     }
-                }
-                final long maxTimeToLock = dpm.getMaximumTimeToLock(null);
-                if (maxTimeToLock != mMaximumTimeToLock) {
-                    // If the timeout changes, cancel the alarm and send a timeout event to have
-                    // the agent re-evaluate trust.
-                    mMaximumTimeToLock = maxTimeToLock;
-                    if (mAlarmPendingIntent != null) {
-                        mAlarmManager.cancel(mAlarmPendingIntent);
-                        mAlarmPendingIntent = null;
-                        mHandler.sendEmptyMessage(MSG_TRUST_TIMEOUT);
-                    }
+                    CBinder::New((IBinder**)&mSetTrustAgentFeaturesToken);
+                    ec = mTrustAgentService->SetTrustAgentFeaturesEnabled(bundle,
+                            mSetTrustAgentFeaturesToken);
+                    if (FAILED(ec)) break;
                 }
             }
-        } catch (RemoteException e) {
-            onError(e);
+            Int64 maxTimeToLock;
+            ec = dpm->GetMaximumTimeToLock(NULL, &maxTimeToLock);
+            if (FAILED(ec)) break;
+            if (maxTimeToLock != mMaximumTimeToLock) {
+                // If the timeout changes, cancel the alarm and send a timeout event to have
+                // the agent re-evaluate trust.
+                mMaximumTimeToLock = maxTimeToLock;
+                if (mAlarmPendingIntent != NULL) {
+                    ec = mAlarmManager->Cancel(mAlarmPendingIntent);
+                    if (FAILED(ec)) break;
+                    mAlarmPendingIntent = NULL;
+                    Boolean tmp;
+                    ec = mHandler->SendEmptyMessage(MSG_TRUST_TIMEOUT, &tmp);
+                    if (FAILED(ec)) break;
+                }
+            }
         }
-        if (mTrustDisabledByDpm != trustDisabled) {
-            mTrustDisabledByDpm = trustDisabled;
-            mTrustManagerService.updateTrust(mUserId, false);
-        }
-        return trustDisabled;
-
-#endif
+    } while(FALSE);
+    // } catch (RemoteException e) {
+    if (FAILED(ec)) {
+        if ((ECode)E_REMOTE_EXCEPTION == ec)
+            OnError(ec);
+        else
+            return ec;
+    }
+    // }
+    if (mTrustDisabledByDpm != trustDisabled) {
+        mTrustDisabledByDpm = trustDisabled;
+        mTrustManagerService->UpdateTrust(mUserId, FALSE);
+    }
+    *result = trustDisabled;
+    return NOERROR;
 }
 
 ECode TrustAgentWrapper::IsTrusted(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mTrusted && mManagingTrust && !mTrustDisabledByDpm;
-
-#endif
+    *result = mTrusted && mManagingTrust && !mTrustDisabledByDpm;
+    return NOERROR;
 }
 
 ECode TrustAgentWrapper::IsManagingTrust(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mManagingTrust && !mTrustDisabledByDpm;
-
-#endif
+    *result = mManagingTrust && !mTrustDisabledByDpm;
+    return NOERROR;
 }
 
 ECode TrustAgentWrapper::GetMessage(
     /* [out] */ ICharSequence** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mMessage;
-
-#endif
+    FUNC_RETURN(mMessage);
 }
 
 ECode TrustAgentWrapper::Unbind()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        if (!mBound) {
-            return;
-        }
-        if (DEBUG) Log.v(TAG, "TrustAgent unbound : " + mName.flattenToShortString());
-        mTrustManagerService.mArchive.logAgentStopped(mUserId, mName);
-        mContext.unbindService(mConnection);
-        mBound = false;
-        mTrustAgentService = null;
-        mSetTrustAgentFeaturesToken = null;
-        mHandler.sendEmptyMessage(MSG_REVOKE_TRUST);
-        mHandler.removeMessages(MSG_RESTART_TIMEOUT);
-
-#endif
+    if (!mBound) {
+        return NOERROR;
+    }
+    if (DEBUG) Logger::V(TAG, "TrustAgent unbound : %s", Ptr(mName)->Func(mName->FlattenToShortString).string());
+    mTrustManagerService->mArchive->LogAgentStopped(mUserId, mName);
+    mContext->UnbindService(mConnection);
+    mBound = FALSE;
+    mTrustAgentService = NULL;
+    mSetTrustAgentFeaturesToken = NULL;
+    Boolean tmp;
+    mHandler->SendEmptyMessage(MSG_REVOKE_TRUST, &tmp);
+    mHandler->RemoveMessages(MSG_RESTART_TIMEOUT);
+    return NOERROR;
 }
 
 ECode TrustAgentWrapper::IsConnected(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mTrustAgentService != null;
-
-#endif
+    *result = mTrustAgentService != NULL;
+    return NOERROR;
 }
 
 ECode TrustAgentWrapper::IsBound(
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mBound;
-
-#endif
+    *result = mBound;
+    return NOERROR;
 }
 
 ECode TrustAgentWrapper::GetScheduledRestartUptimeMillis(
     /* [out] */ Int64* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        return mScheduledRestartUptimeMillis;
-
-#endif
+    *result = mScheduledRestartUptimeMillis;
+    return NOERROR;
 }
 
 ECode TrustAgentWrapper::ScheduleRestart()
 {
-    return E_NOT_IMPLEMENTED;
-#if 0 // TODO: Translate codes below
-        mHandler.removeMessages(MSG_RESTART_TIMEOUT);
-        mScheduledRestartUptimeMillis = SystemClock.uptimeMillis() + RESTART_TIMEOUT_MILLIS;
-        mHandler.sendEmptyMessageAtTime(MSG_RESTART_TIMEOUT, mScheduledRestartUptimeMillis);
-
-#endif
+    mHandler->RemoveMessages(MSG_RESTART_TIMEOUT);
+    mScheduledRestartUptimeMillis = SystemClock::GetUptimeMillis() + RESTART_TIMEOUT_MILLIS;
+    Boolean tmp;
+    mHandler->SendEmptyMessageAtTime(MSG_RESTART_TIMEOUT, mScheduledRestartUptimeMillis, &tmp);
+    return NOERROR;
 }
 
 } // namespace Trust

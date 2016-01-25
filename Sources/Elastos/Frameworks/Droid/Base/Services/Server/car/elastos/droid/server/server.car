@@ -51,6 +51,8 @@ module
 
     merge("statusbar/StatusBarManagerInternal.car");
 
+    merge("trust/TrustManagerService.car");
+
     merge("twilight/TwilightState.car");
     merge("twilight/TwilightManager.car");
     merge("twilight/TwilightListener.car");
