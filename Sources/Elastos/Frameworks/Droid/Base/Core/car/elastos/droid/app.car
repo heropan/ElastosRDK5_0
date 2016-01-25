@@ -69,7 +69,6 @@ module
     merge("app/OnActivityPausedListener.car");
     merge("app/PackageInstallObserver.car");
     merge("app/PackageDeleteObserver.car");
-    merge("app/PendingIntent.car");
     merge("app/Presentation.car");
     merge("app/ProfilerInfo.car");
     merge("app/ProgressDialog.car");

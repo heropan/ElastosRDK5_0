@@ -1927,8 +1927,7 @@ CClosedCaptionRenderer::ClosedCaptionTrack::ClosedCaptionTrack(
     /* [in] */ ClosedCaptionWidget* renderingWidget,
     /* [in] */ IMediaFormat* format)
 {
-// TODO: Need SubtitleTrack
-    // SubtitleTrack(format);
+    SubtitleTrack::constructor(format);
 
     mRenderingWidget = renderingWidget;
     mCCParser = new CCParser(renderingWidget);

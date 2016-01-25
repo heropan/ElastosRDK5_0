@@ -30,8 +30,7 @@ ECode FocusRequester::constructor(
     /* [in] */ IIAudioFocusDispatcher* afl,
     /* [in] */ IBinder* source,
     /* [in] */ const String& id,
-//TODO: Need MediaFocusControl::AudioFocusDeathHandler
-    // /* [in] */ AudioFocusDeathHandler* hdlr,
+    /* [in] */ IProxyDeathRecipient* hdlr,
     /* [in] */ const String& pn,
     /* [in] */ Int32 uid)
 {
@@ -39,8 +38,7 @@ ECode FocusRequester::constructor(
     mFocusDispatcher = afl;
     mSourceRef = source;
     mClientId = id;
-//TODO: Need MediaFocusControl::AudioFocusDeathHandler
-    // mDeathHandler = hdlr;
+    mDeathHandler = hdlr;
     mPackageName = pn;
     mCallingUid = uid;
     mFocusGainRequest = focusRequest;
@@ -127,15 +125,14 @@ ECode FocusRequester::Dump(
 ECode FocusRequester::ReleaseResources()
 {
     // try {
-//TODO: Need MediaFocusControl::AudioFocusDeathHandler
-    // if (mSourceRef != NULL && mDeathHandler != NULL) {
-    //     AutoPtr<IProxy> proxy = IProxy::Probe(mSourceRef);
-    //     if (proxy != NULL) {
-    //         Boolean b;
-    //         proxy->UnlinkToDeath(IProxyDeathRecipient::Probe(mDeathHandler), 0, &b);
-    //     }
-    //     mDeathHandler = NULL;
-    // }
+    if (mSourceRef != NULL && mDeathHandler != NULL) {
+        AutoPtr<IProxy> proxy = (IProxy*)mSourceRef->Probe(EIID_IProxy);
+        if (proxy != NULL) {
+            Boolean b;
+            proxy->UnlinkToDeath(mDeathHandler, 0, &b);
+        }
+        mDeathHandler = NULL;
+    }
     return NOERROR;
     // } catch (java.util.NoSuchElementException e) {
     //     Log.e(TAG, "FocusRequester.release() hit ", e);

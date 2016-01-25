@@ -7,11 +7,11 @@
 
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
+using Elastos::Utility::CCollections;
 using Elastos::Utility::ISet;
 using Elastos::Utility::IList;
 using Elastos::Utility::IMap;
-//TODO: Need Collections
-// using Elastos::Utility::Collections;
+using Elastos::Utility::ICollections;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::CIntent;
@@ -261,8 +261,9 @@ ECode CMediaBrowser::LoadChildrenRunnable::Run()
         // Logger::D(TAG, String("onLoadChildren for ") + mServiceComponent + " id=" + parentId);
     }
     if (data == NULL) {
-//TODO: Need Collections
-        // Collections::GetEmptyList((IList**)&data);
+        AutoPtr<ICollections> coll;
+        CCollections::AcquireSingleton((ICollections**)&coll);
+        coll->GetEmptyList((IList**)&data);
     }
 
     // Check that the subscription is still subscribed.
@@ -602,32 +603,6 @@ void CMediaBrowser::OnConnectionFailed(
     Boolean b;
     AutoPtr<ConnectionFailedRunnable> runnable = new ConnectionFailedRunnable(this, callback);
     mHandler->Post(runnable, &b);
-//TODO
-    // mHandler.post(new Runnable() {
-    //     @Override
-    //     public void run() {
-    //         Log.e(TAG, "onConnectFailed for " + mServiceComponent);
-
-    //         // Check to make sure there hasn't been a disconnect or a different
-    //         // ServiceConnection.
-    //         if (!isCurrent(callback, "onConnectFailed")) {
-    //             return;
-    //         }
-    //         // Don't allow them to call us twice.
-    //         if (mState != CONNECT_STATE_CONNECTING) {
-    //             Log.w(TAG, "onConnect from service while mState="
-    //                     + getStateLabel(mState) + "... ignoring");
-    //             return;
-    //         }
-
-    //         // Clean up
-    //         forceCloseConnection();
-
-    //         // Tell the app.
-    //         mCallback.onConnectionFailed();
-    //     }
-    // });
-
 }
 
 void CMediaBrowser::OnLoadChildren(
@@ -638,39 +613,6 @@ void CMediaBrowser::OnLoadChildren(
     Boolean b;
     AutoPtr<LoadChildrenRunnable> runnable = new LoadChildrenRunnable(this, callback, parentId, list);
     mHandler->Post(runnable, &b);
-//TODO
-    // mHandler.post(new Runnable() {
-    //     @Override
-    //     public void run() {
-    //         // Check that there hasn't been a disconnect or a different
-    //         // ServiceConnection.
-    //         if (!isCurrent(callback, "onLoadChildren")) {
-    //             return;
-    //         }
-
-    //         List<MediaItem> data = list.getList();
-    //         if (DBG) {
-    //             Log.d(TAG, "onLoadChildren for " + mServiceComponent + " id=" + parentId);
-    //         }
-    //         if (data == null) {
-    //             data = Collections.emptyList();
-    //         }
-
-    //         // Check that the subscription is still subscribed.
-    //         final Subscription subscription = mSubscriptions.get(parentId);
-    //         if (subscription == null) {
-    //             if (DBG) {
-    //                 Log.d(TAG, "onLoadChildren for id that isn't subscribed id="
-    //                         + parentId);
-    //             }
-    //             return;
-    //         }
-
-    //         // Tell the app.
-    //         subscription.callback.onChildrenLoaded(parentId, data);
-    //     }
-    // });
-
 }
 
 Boolean CMediaBrowser::IsCurrent(

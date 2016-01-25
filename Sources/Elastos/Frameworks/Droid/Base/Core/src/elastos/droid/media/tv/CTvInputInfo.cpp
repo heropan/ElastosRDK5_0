@@ -355,8 +355,7 @@ ECode CTvInputInfo::CreateTvInputInfo(
 {
     VALIDATE_NOT_NULL(result)
     Int32 addr;
-//TODO: Need IHdmiDeviceInfo
-    // hdmiDeviceInfo->GetPhysicalAddress(&addr);
+    hdmiDeviceInfo->GetPhysicalAddress(&addr);
     Boolean isConnectedToHdmiSwitch = (addr & 0x0FFF) != 0;
 
     AutoPtr<IServiceInfo> si;
@@ -574,9 +573,8 @@ String CTvInputInfo::GenerateInputIdForHdmiDevice(
     String str;
     name->FlattenToShortString(&str);
     Int32 addr, id;
-//TODO: Need IHdmiDeviceInfo
-    // deviceInfo->GetId(&id);
-    // deviceInfo->GetPhysicalAddress(&addr);
+    deviceInfo->GetId(&id);
+    deviceInfo->GetPhysicalAddress(&addr);
     return str + "/HDMI" + addr + id;
 }
 

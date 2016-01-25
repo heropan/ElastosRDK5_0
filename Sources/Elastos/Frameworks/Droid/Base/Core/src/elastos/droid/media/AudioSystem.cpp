@@ -278,10 +278,12 @@ ECode AudioSystem::GetDeviceConnectionState(
 }
 
 ECode AudioSystem::SetPhoneState(
-    /* [in] */ Int32 state)
+    /* [in] */ Int32 state,
+    /* [out] */ Int32* result)
 {
-    return CheckAudioSystemCommand(
+    *result = CheckAudioSystemCommand(
         android::AudioSystem::setPhoneState((audio_mode_t)state));
+    return NOERROR;
 }
 
 ECode AudioSystem::SetForceUse(

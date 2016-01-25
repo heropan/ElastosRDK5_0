@@ -75,9 +75,8 @@ CTvInputManagerSession::TvInputEventSender::TvInputEventSender(
     /* [in] */ ILooper* looper,
     /* [in] */ CTvInputManagerSession* host)
     : mHost(host)
-//TODO: Need InputEventSender
-    // : InputEventSender(inputChannel, looper)
 {
+    InputEventSender::constructor(inputChannel, looper);
 }
 
 ECode CTvInputManagerSession::TvInputEventSender::OnInputEventFinished(
@@ -605,8 +604,7 @@ Int32 CTvInputManagerSession::SendInputEventOnMainLooperLocked(
         Int32 seq;
         event->GetSequenceNumber(&seq);
         Boolean b;
-//TODO: Need InputEventSender
-        // mSender->SendInputEvent(seq, event, &b);
+        mSender->SendInputEvent(seq, event, &b);
         if (b) {
             mPendingEvents->Put(seq, (IInterface*)(IObject*)p);
             AutoPtr<IMessage> msg;
@@ -695,8 +693,7 @@ ECode CTvInputManagerSession::ReleaseInternal()
         if (mChannel != NULL) {
             if (mSender != NULL) {
                 FlushPendingEventsLocked();
-//TODO: Need InputEventSender
-                // mSender->Dispose();
+                mSender->Dispose();
                 mSender = NULL;
             }
             mChannel->Dispose();

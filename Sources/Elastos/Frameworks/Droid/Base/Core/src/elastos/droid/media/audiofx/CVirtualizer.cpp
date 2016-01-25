@@ -2,6 +2,8 @@
 #include <Elastos.CoreLibrary.Utility.h>
 #include "elastos/droid/media/audiofx/CVirtualizer.h"
 #include "elastos/droid/media/audiofx/CVirtualizerSettings.h"
+#include "elastos/droid/media/CAudioDevice.h"
+#include "elastos/droid/media/CAudioFormatHelper.h"
 #include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
 
@@ -157,11 +159,8 @@ ECode CVirtualizer::ForceVirtualizationMode(
     VALIDATE_NOT_NULL(result)
     // convert Java device type to internal representation
     Int32 deviceType = GetDeviceForModeForce(virtualizationMode);
-    AutoPtr<IAudioDeviceHelper> helper;
-//TODO: Need CAudioDeviceHelper
-    // CAudioDeviceHelper::AcquireSingleton((IAudioDeviceHelper**)&helper);
     Int32 internalDevice;
-    helper->ConvertDeviceTypeToInternalDevice(deviceType, &internalDevice);
+    CAudioDevice::ConvertDeviceTypeToInternalDevice(deviceType, &internalDevice);
 
     Int32 status;
     SetParameter(IVirtualizer::PARAM_FORCE_VIRTUALIZATION_MODE, internalDevice, &status);
@@ -194,11 +193,8 @@ ECode CVirtualizer::GetVirtualizationMode(
     Int32 status;
     GetParameter(IVirtualizer::PARAM_VIRTUALIZATION_MODE, value, &status);
     if (status >= 0) {
-        AutoPtr<IAudioDeviceHelper> helper;
-//TODO: Need CAudioDeviceHelper
-        // CAudioDeviceHelper::AcquireSingleton((IAudioDeviceHelper**)&helper);
         Int32 device;
-        helper->ConvertDeviceTypeToInternalDevice((*value)[0], &device);
+        CAudioDevice::ConvertDeviceTypeToInternalDevice((*value)[0], &device);
         *result = DeviceToMode(device);
         return NOERROR;
     } else if (status == IAudioEffect::ERROR_BAD_VALUE) {
@@ -272,8 +268,7 @@ ECode CVirtualizer::GetAnglesInt(
     Int32 channelMask = inputChannelMask == IAudioFormat::CHANNEL_OUT_DEFAULT ?
             IAudioFormat::CHANNEL_OUT_STEREO : inputChannelMask;
     AutoPtr<IAudioFormatHelper> afHelper;
-//TODO: Need CAudioFormatHelper
-    // CAudioFormatHelper::AcquireSingleton((IAudioFormatHelper**)&afHelper);
+    CAudioFormatHelper::AcquireSingleton((IAudioFormatHelper**)&afHelper);
     Int32 nbChannels;
     afHelper->ChannelCountFromOutChannelMask(channelMask, &nbChannels);
 
@@ -301,11 +296,8 @@ ECode CVirtualizer::GetAnglesInt(
     afHelper->ConvertChannelOutMaskToNativeMask(channelMask, &mask);
     paramsConverter->PutInt32(mask);
     // convert Java device type to internal representation
-    AutoPtr<IAudioDeviceHelper> adHelper;
-//TODO: Need CAudioDeviceHelper
-    // CAudioDeviceHelper::AcquireSingleton((IAudioDeviceHelper**)&adHelper);
     Int32 device;
-    adHelper->ConvertDeviceTypeToInternalDevice(deviceType, &device);
+    CAudioDevice::ConvertDeviceTypeToInternalDevice(deviceType, &device);
     paramsConverter->PutInt32(device);
     // allocate an array to store the results
     AutoPtr<ArrayOf<Byte> > paramArray = ArrayOf<Byte>::Alloc(nbChannels * 4/*int to byte*/ * 3/*for mask, azimuth, elevation*/);
