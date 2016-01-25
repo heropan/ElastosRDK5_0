@@ -126,6 +126,8 @@ private:
         , public IVolumeProviderCallback
     {
     public:
+        CAR_INTERFACE_DECL()
+
         VolumeProviderCallback(
             /* [in] */ CMediaSession* host)
             : mHost(host)

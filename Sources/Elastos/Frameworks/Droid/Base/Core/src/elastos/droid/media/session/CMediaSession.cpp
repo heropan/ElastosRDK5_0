@@ -191,6 +191,9 @@ ECode CMediaSession::CallbackMessageHandler::Post(
     return msg->SendToTarget();
 }
 
+CAR_INTERFACE_IMPL(CMediaSession::VolumeProviderCallback, Object,
+        IVolumeProviderCallback)
+
 ECode CMediaSession::VolumeProviderCallback::OnVolumeChanged(
     /* [in] */ IVolumeProvider* volumeProvider)
 {
