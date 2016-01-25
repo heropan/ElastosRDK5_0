@@ -14,26 +14,40 @@ module
     merge("bluetooth/le/ScanSettings.car");
     merge("bluetooth/le/TruncatedFilter.car");
 
-    //TODO bluetooth root dir need upgrade to Android 5.0
     merge("bluetooth/BluetoothA2dp.car");
+    merge("bluetooth/BluetoothA2dpSink.car");
     merge("bluetooth/BluetoothActivityEnergyInfo.car");
     merge("bluetooth/BluetoothAdapter.car");
     merge("bluetooth/BluetoothAssignedNumbers.car");
     merge("bluetooth/BluetoothAudioConfig.car");
+    merge("bluetooth/BluetoothAvrcp.car");
+    merge("bluetooth/BluetoothAvrcpController.car");
     merge("bluetooth/BluetoothClass.car");
     merge("bluetooth/BluetoothDevice.car");
     merge("bluetooth/BluetoothDevicePicker.car");
+    merge("bluetooth/BluetoothGattCallback.car");
+    merge("bluetooth/BluetoothGatt.car");
+    merge("bluetooth/BluetoothGattCharacteristic.car");
+    merge("bluetooth/BluetoothGattDescriptor.car");
+    merge("bluetooth/BluetoothGattServerCallback.car");
+    merge("bluetooth/BluetoothGattServer.car");
+    merge("bluetooth/BluetoothGattService.car");
     merge("bluetooth/BluetoothHeadset.car");
-    merge("bluetooth/BluetoothHealth.car");
+    merge("bluetooth/BluetoothHeadsetClientCall.car");
+    merge("bluetooth/BluetoothHeadsetClient.car");
     merge("bluetooth/BluetoothHealthAppConfiguration.car");
     merge("bluetooth/BluetoothHealthCallback.car");
+    merge("bluetooth/BluetoothHealth.car");
+    merge("bluetooth/BluetoothInputDevice.car");
+    merge("bluetooth/BluetoothManager.car");
+    merge("bluetooth/BluetoothMap.car");
+    merge("bluetooth/BluetoothMasInstance.car");
+    merge("bluetooth/BluetoothPan.car");
+    merge("bluetooth/BluetoothPbap.car");
     merge("bluetooth/BluetoothProfile.car");
     merge("bluetooth/BluetoothServerSocket.car");
     merge("bluetooth/BluetoothSocket.car");
-    merge("bluetooth/BluetoothTetheringDataTracker.car");
 
-    //upgrade to Android 5.0 already
-    //
     merge("bluetooth/IBluetooth.car");
     merge("bluetooth/IBluetoothA2dp.car");
     merge("bluetooth/IBluetoothA2dpSink.car");

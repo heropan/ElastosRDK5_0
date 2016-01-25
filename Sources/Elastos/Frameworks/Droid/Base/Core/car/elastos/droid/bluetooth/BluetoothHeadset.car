@@ -204,7 +204,7 @@ module
              * @sa #ACTION_VENDOR_SPECIFIC_HEADSET_EVENT
              */
             const String EXTRA_VENDOR_SPECIFIC_HEADSET_EVENT_ARGS =
-                    "android.bluetooth.headset.extra.VENDOR_SPECIFIC_HEADSET_EVENT_ARGS";
+                "android.bluetooth.headset.extra.VENDOR_SPECIFIC_HEADSET_EVENT_ARGS";
 
             /**
              * The intent category to be used with  #ACTION_VENDOR_SPECIFIC_HEADSET_EVENT
@@ -213,7 +213,12 @@ module
              * @sa #ACTION_VENDOR_SPECIFIC_HEADSET_EVENT
              */
             const String VENDOR_SPECIFIC_HEADSET_EVENT_COMPANY_ID_CATEGORY  =
-                    "android.bluetooth.headset.intent.category.companyid";
+                "android.bluetooth.headset.intent.category.companyid";
+
+            /**
+             * A vendor-specific command for unsolicited result code.
+             */
+            const String VENDOR_RESULT_CODE_COMMAND_ANDROID = "+ANDROID";
 
             /**
              * Headset state when SCO audio is connected.
@@ -284,8 +289,8 @@ module
              * @hide
              */
             Connect(
-                [in] IBluetoothDevice* device,
-                [out] Boolean* result);
+                    [in] IBluetoothDevice* device,
+                    [out] Boolean* result);
 
             /**
              * Initiate disconnection from a profile
@@ -300,7 +305,7 @@ module
              * will transition from #STATE_CONNECTED to
              * #STATE_DISCONNECTED. If the disconnect is initiated by the
              * host (local) device the state will transition from
-             * #STATE_CONNECTED} to state #STATE_DISCONNECTING to
+             * #STATE_CONNECTED to state #STATE_DISCONNECTING to
              * state #STATE_DISCONNECTED. The transition to
              * #STATE_DISCONNECTING can be used to distinguish between the
              * two scenarios.
@@ -322,8 +327,8 @@ module
              * @hide
              */
             Disconnect(
-                [in] IBluetoothDevice* device,
-                [out] Boolean* result);
+                    [in] IBluetoothDevice* device,
+                    [out] Boolean* result);
 
             /**
              * Set priority of the profile
@@ -344,9 +349,9 @@ module
              * @hide
              */
             SetPriority(
-                [in] IBluetoothDevice* device,
-                [in] Int32 priority,
-                [out] Boolean* result);
+                    [in] IBluetoothDevice* device,
+                    [in] Int32 priority,
+                    [out] Boolean* result);
 
             /**
              * Get the priority of the profile.
@@ -367,8 +372,8 @@ module
              * @hide
              */
             GetPriority(
-                [in] IBluetoothDevice* device,
-                [out] Int32* priority);
+                    [in] IBluetoothDevice* device,
+                    [out] Int32* priority);
 
             /**
              * Start Bluetooth voice recognition. This methods sends the voice
@@ -403,8 +408,8 @@ module
              *               or on error, true otherwise
              */
             StartVoiceRecognition(
-                [in] IBluetoothDevice* device,
-                [out] Boolean* result);
+                    [in] IBluetoothDevice* device,
+                    [out] Boolean* result);
 
             /**
              * Stop Bluetooth Voice Recognition mode, and shut down the
@@ -419,8 +424,8 @@ module
              *               or on error, true otherwise
              */
             StopVoiceRecognition(
-                [in] IBluetoothDevice* device,
-                [out] Boolean* result);
+                    [in] IBluetoothDevice* device,
+                    [out] Boolean* result);
 
             /**
              * Check if Bluetooth SCO audio is connected.
@@ -434,8 +439,8 @@ module
              *         false otherwise or on error
              */
             IsAudioConnected(
-                [in] IBluetoothDevice* device,
-                [out] Boolean* isConnected);
+                    [in] IBluetoothDevice* device,
+                    [out] Boolean* isConnected);
 
             /**
              * Get battery usage hint for Bluetooth Headset service.
@@ -452,8 +457,8 @@ module
              * @hide
              */
             GetBatteryUsageHint(
-                [in] IBluetoothDevice* device,
-                [out] Int32* batteryHint);
+                    [in] IBluetoothDevice* device,
+                    [out] Int32* batteryHint);
 
             /**
              * Accept the incoming connection.
@@ -462,16 +467,16 @@ module
              * @hide
              */
             AcceptIncomingConnect(
-                [in] IBluetoothDevice* device,
-                [out] Boolean* result);
+                    [in] IBluetoothDevice* device,
+                    [out] Boolean* result);
 
             /**
              * Reject the incoming connection.
              * @hide
              */
             RejectIncomingConnect(
-                [in] IBluetoothDevice* device,
-                [out] Boolean* result);
+                    [in] IBluetoothDevice* device,
+                    [out] Boolean* result);
 
             /**
              * Get the current audio state of the Headset.
@@ -480,8 +485,8 @@ module
              * @hide
              */
             GetAudioState(
-                [in] IBluetoothDevice* device,
-                [out] Int32* state);
+                    [in] IBluetoothDevice* device,
+                    [out] Int32* state);
 
             /**
              * Check if Bluetooth SCO audio is connected.
@@ -495,7 +500,7 @@ module
              * @hide
              */
             IsAudioOn(
-                [out] Boolean* isAudioOn);
+                    [out] Boolean* isAudioOn);
 
             /**
              * Initiates a connection of headset audio.
@@ -507,7 +512,7 @@ module
              * @hide
              */
             ConnectAudio(
-                [out] Boolean* result);
+                    [out] Boolean* result);
 
             /**
              * Initiates a disconnection of headset audio.
@@ -519,7 +524,7 @@ module
              * @hide
              */
             DisconnectAudio(
-                [out] Boolean* result);
+                    [out] Boolean* result);
 
             /**
              * Initiates a SCO channel connection with the headset (if connected).
@@ -533,8 +538,8 @@ module
              * @hide
              */
             StartScoUsingVirtualVoiceCall(
-                [in] IBluetoothDevice* device,
-                [out] Boolean* result);
+                    [in] IBluetoothDevice* device,
+                    [out] Boolean* result);
 
             /**
              * Terminates an ongoing SCO connection and the associated virtual
@@ -545,8 +550,8 @@ module
              * @hide
              */
             StopScoUsingVirtualVoiceCall(
-                [in] IBluetoothDevice* device,
-                [out] Boolean* result);
+                    [in] IBluetoothDevice* device,
+                    [out] Boolean* result);
 
             /**
              * Notify Headset of phone state change.
@@ -557,22 +562,11 @@ module
              * @hide
              */
             PhoneStateChanged(
-                [in] Int32 numActive,
-                [in] Int32 numHeld,
-                [in] Int32 callState,
-                [in] String number,
-                [in] Int32 type);
-
-            /**
-             * Notify Headset of phone roam state change.
-             * This is a backdoor for phone app to call BluetoothHeadset since
-             * there is currently not a good way to get roaming state change outside
-             * of phone app.
-             *
-             * @hide
-             */
-            RoamChanged(
-                [in] Boolean roaming);
+                    [in] Int32 numActive,
+                    [in] Int32 numHeld,
+                    [in] Int32 callState,
+                    [in] String number,
+                    [in] Int32 type);
 
             /**
              * Send Headset of CLCC response
@@ -580,13 +574,59 @@ module
              * @hide
              */
             ClccResponse(
-                [in] Int32 index,
-                [in] Int32 direction,
-                [in] Int32 status,
-                [in] Int32 mode,
-                [in] Boolean mpty,
-                [in] String number,
-                [in] Int32 type);
+                    [in] Int32 index,
+                    [in] Int32 direction,
+                    [in] Int32 status,
+                    [in] Int32 mode,
+                    [in] Boolean mpty,
+                    [in] String number,
+                    [in] Int32 type);
+
+            /**
+             * Sends a vendor-specific unsolicited result code to the headset.
+             *
+             * <p>The actual string to be sent is <code>command + ": " + arg</code>.
+             * For example, if {@code command} is {@link #VENDOR_RESULT_CODE_COMMAND_ANDROID} and {@code arg}
+             * is {@code "0"}, the string <code>"+ANDROID: 0"</code> will be sent.
+             *
+             * <p>Currently only {@link #VENDOR_RESULT_CODE_COMMAND_ANDROID} is allowed as {@code command}.
+             *
+             * <p>Requires {@link android.Manifest.permission#BLUETOOTH} permission.
+             *
+             * @param device Bluetooth headset.
+             * @param command A vendor-specific command.
+             * @param arg The argument that will be attached to the command.
+             * @return {@code false} if there is no headset connected, or if the command is not an allowed
+             *         vendor-specific unsolicited result code, or on error. {@code true} otherwise.
+             * @throws IllegalArgumentException if {@code command} is {@code null}.
+             */
+            SendVendorSpecificResultCode(
+                [in] IBluetoothDevice* device,
+                [in] String command,
+                [in] String arg,
+                [out] Boolean* result);
+
+            /**
+             * enable WBS codec setting.
+             *
+             * @return true if successful
+             *         false if there was some error such as
+             *               there is no connected headset
+             * @hide
+             */
+            EnableWBS(
+                [out] Boolean* result);
+
+            /**
+             * disable WBS codec settting. It set NBS codec.
+             *
+             * @return true if successful
+             *         false if there was some error such as
+             *               there is no connected headset
+             * @hide
+             */
+            DisableWBS(
+                [out] Boolean* result);
         }
 
     } // Bluetooth
