@@ -8,11 +8,13 @@ module
 
 
         /**
-         * Public API for controlling the Bluetooth Headset Service. This includes both Bluetooth Headset and Handsfree (v1.5) profiles.
+         * Public API for controlling the Bluetooth Headset Service.
+         * This includes both Bluetooth Headset and Handsfree (v1.5) profiles.
          * <p>
          * BluetoothHeadset is a proxy object for controlling the Bluetooth Headset Service via IPC.
          * <p>
-         * Use getProfileProxy(Context, BluetoothProfile.ServiceListener, int) to get the BluetoothHeadset proxy object. Use closeProfileProxy(int, BluetoothProfile) to close the service connection.
+         * Use getProfileProxy(Context, BluetoothProfile.ServiceListener, int) to get the BluetoothHeadset proxy object.
+         * Use closeProfileProxy(int, BluetoothProfile) to close the service connection.
          *
          * @sa getProfileProxy(Context, BluetoothProfile.ServiceListener, int)
          * @sa closeProfileProxy(int, BluetoothProfile)
@@ -289,8 +291,8 @@ module
              * @hide
              */
             Connect(
-                    [in] IBluetoothDevice* device,
-                    [out] Boolean* result);
+                [in] IBluetoothDevice* device,
+                [out] Boolean* result);
 
             /**
              * Initiate disconnection from a profile
@@ -327,8 +329,8 @@ module
              * @hide
              */
             Disconnect(
-                    [in] IBluetoothDevice* device,
-                    [out] Boolean* result);
+                [in] IBluetoothDevice* device,
+                [out] Boolean* result);
 
             /**
              * Set priority of the profile
@@ -349,9 +351,9 @@ module
              * @hide
              */
             SetPriority(
-                    [in] IBluetoothDevice* device,
-                    [in] Int32 priority,
-                    [out] Boolean* result);
+                [in] IBluetoothDevice* device,
+                [in] Int32 priority,
+                [out] Boolean* result);
 
             /**
              * Get the priority of the profile.
@@ -372,8 +374,8 @@ module
              * @hide
              */
             GetPriority(
-                    [in] IBluetoothDevice* device,
-                    [out] Int32* priority);
+                [in] IBluetoothDevice* device,
+                [out] Int32* priority);
 
             /**
              * Start Bluetooth voice recognition. This methods sends the voice
@@ -408,8 +410,8 @@ module
              *               or on error, true otherwise
              */
             StartVoiceRecognition(
-                    [in] IBluetoothDevice* device,
-                    [out] Boolean* result);
+                [in] IBluetoothDevice* device,
+                [out] Boolean* result);
 
             /**
              * Stop Bluetooth Voice Recognition mode, and shut down the
@@ -424,8 +426,8 @@ module
              *               or on error, true otherwise
              */
             StopVoiceRecognition(
-                    [in] IBluetoothDevice* device,
-                    [out] Boolean* result);
+                [in] IBluetoothDevice* device,
+                [out] Boolean* result);
 
             /**
              * Check if Bluetooth SCO audio is connected.
@@ -439,8 +441,8 @@ module
              *         false otherwise or on error
              */
             IsAudioConnected(
-                    [in] IBluetoothDevice* device,
-                    [out] Boolean* isConnected);
+                [in] IBluetoothDevice* device,
+                [out] Boolean* isConnected);
 
             /**
              * Get battery usage hint for Bluetooth Headset service.
@@ -457,8 +459,8 @@ module
              * @hide
              */
             GetBatteryUsageHint(
-                    [in] IBluetoothDevice* device,
-                    [out] Int32* batteryHint);
+                [in] IBluetoothDevice* device,
+                [out] Int32* batteryHint);
 
             /**
              * Accept the incoming connection.
@@ -467,16 +469,16 @@ module
              * @hide
              */
             AcceptIncomingConnect(
-                    [in] IBluetoothDevice* device,
-                    [out] Boolean* result);
+                [in] IBluetoothDevice* device,
+                [out] Boolean* result);
 
             /**
              * Reject the incoming connection.
              * @hide
              */
             RejectIncomingConnect(
-                    [in] IBluetoothDevice* device,
-                    [out] Boolean* result);
+                [in] IBluetoothDevice* device,
+                [out] Boolean* result);
 
             /**
              * Get the current audio state of the Headset.
@@ -485,8 +487,8 @@ module
              * @hide
              */
             GetAudioState(
-                    [in] IBluetoothDevice* device,
-                    [out] Int32* state);
+                [in] IBluetoothDevice* device,
+                [out] Int32* state);
 
             /**
              * Check if Bluetooth SCO audio is connected.
@@ -500,7 +502,7 @@ module
              * @hide
              */
             IsAudioOn(
-                    [out] Boolean* isAudioOn);
+                [out] Boolean* isAudioOn);
 
             /**
              * Initiates a connection of headset audio.
@@ -512,7 +514,7 @@ module
              * @hide
              */
             ConnectAudio(
-                    [out] Boolean* result);
+                [out] Boolean* result);
 
             /**
              * Initiates a disconnection of headset audio.
@@ -524,7 +526,7 @@ module
              * @hide
              */
             DisconnectAudio(
-                    [out] Boolean* result);
+                [out] Boolean* result);
 
             /**
              * Initiates a SCO channel connection with the headset (if connected).
@@ -538,8 +540,8 @@ module
              * @hide
              */
             StartScoUsingVirtualVoiceCall(
-                    [in] IBluetoothDevice* device,
-                    [out] Boolean* result);
+                [in] IBluetoothDevice* device,
+                [out] Boolean* result);
 
             /**
              * Terminates an ongoing SCO connection and the associated virtual
@@ -550,8 +552,8 @@ module
              * @hide
              */
             StopScoUsingVirtualVoiceCall(
-                    [in] IBluetoothDevice* device,
-                    [out] Boolean* result);
+                [in] IBluetoothDevice* device,
+                [out] Boolean* result);
 
             /**
              * Notify Headset of phone state change.
@@ -562,11 +564,11 @@ module
              * @hide
              */
             PhoneStateChanged(
-                    [in] Int32 numActive,
-                    [in] Int32 numHeld,
-                    [in] Int32 callState,
-                    [in] String number,
-                    [in] Int32 type);
+                [in] Int32 numActive,
+                [in] Int32 numHeld,
+                [in] Int32 callState,
+                [in] String number,
+                [in] Int32 type);
 
             /**
              * Send Headset of CLCC response
@@ -574,13 +576,13 @@ module
              * @hide
              */
             ClccResponse(
-                    [in] Int32 index,
-                    [in] Int32 direction,
-                    [in] Int32 status,
-                    [in] Int32 mode,
-                    [in] Boolean mpty,
-                    [in] String number,
-                    [in] Int32 type);
+                [in] Int32 index,
+                [in] Int32 direction,
+                [in] Int32 status,
+                [in] Int32 mode,
+                [in] Boolean mpty,
+                [in] String number,
+                [in] Int32 type);
 
             /**
              * Sends a vendor-specific unsolicited result code to the headset.
