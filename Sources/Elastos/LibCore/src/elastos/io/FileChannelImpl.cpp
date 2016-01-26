@@ -457,17 +457,14 @@ ECode FileChannelImpl::GetPosition(
 ECode FileChannelImpl::SetPosition(
     /* [in] */ Int64 newPosition)
 {
-    ECode ecRet;
-    ecRet = CheckOpen();
-    if(newPosition < 0)
+    FAIL_RETURN(CheckOpen());
+    if (newPosition < 0) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
     Int32 seek_cur = OsConstants::_SEEK_CUR;
     Int64 result = 0;
-    assert(NOERROR == ecRet);
-    ecRet = CLibcore::sOs->Lseek(mFd, newPosition, seek_cur, &result);
-    assert(NOERROR == ecRet);
-    return NOERROR;
+    return CLibcore::sOs->Lseek(mFd, newPosition, seek_cur, &result);
 }
 
 ECode FileChannelImpl::Read(
@@ -482,8 +479,9 @@ ECode FileChannelImpl::Read(
     /* [in] */ Int64 position,
     /* [out] */ Int32* number)
 {
-    if(position < 0)
+    if (position < 0) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
     return ReadImpl(buffer, position, number);
 }
@@ -881,7 +879,7 @@ ECode FileChannelImpl::CalculateTotalRemaining(
     VALIDATE_NOT_NULL(ret)
     *ret = 0;
 
-    Int32 count, i, remaining;
+    Int32 count = 0, i, remaining;
     Int32 LEN = offset + length;
     for (i = offset; i < LEN; ++i) {
         IBuffer::Probe((*buffers)[i])->GetRemaining(&remaining);

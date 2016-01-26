@@ -14,6 +14,8 @@ using namespace Elastos;
 
 #define ANDROID_SMP 1
 
+#define UNUSED(x) (void)(x)
+
 /*
  * TEMP_FAILURE_RETRY is defined by some, but not all, versions of
  * <unistd.h>. (Alas, it is not as standard as we'd hoped!) So, if it's
@@ -29,6 +31,15 @@ using namespace Elastos;
     _rc; })
 #endif
 
+#ifdef NDEBUG
+#ifndef ASSERT_TRUE
+#define ASSERT_TRUE(expr) \
+    do { \
+        Boolean assert_result_ = (Boolean)(expr); \
+        UNUSED(assert_result_); \
+    } while(0);
+#endif
+#else
 #ifndef ASSERT_TRUE
 #define ASSERT_TRUE(expr) \
     do { \
@@ -36,13 +47,24 @@ using namespace Elastos;
         assert(assert_result_); \
     } while(0);
 #endif
+#endif
 
+#ifdef NDEBUG
+#ifndef ASSERT_SUCCEEDED
+#define ASSERT_SUCCEEDED(expr) \
+   do { \
+       ECode assert_ec_ = expr; \
+       UNUSED(SUCCEEDED(assert_ec_)); \
+   } while(0);
+#endif
+#else
 #ifndef ASSERT_SUCCEEDED
 #define ASSERT_SUCCEEDED(expr) \
    do { \
        ECode assert_ec_ = expr; \
        assert(SUCCEEDED(assert_ec_)); \
    } while(0);
+#endif
 #endif
 
 #ifndef VALIDATE_NOT_NULL

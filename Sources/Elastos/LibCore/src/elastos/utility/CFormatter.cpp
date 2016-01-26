@@ -96,6 +96,7 @@ static Boolean InitTLS()
 {
     Int32 result = pthread_key_create(&CFormatter::sCachedDecimalFormat, CachedDecimalFormatDestructor);
     assert(result == 0);
+    UNUSED(result);
     return TRUE;
 }
 

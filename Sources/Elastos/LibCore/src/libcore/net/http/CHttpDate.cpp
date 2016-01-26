@@ -50,6 +50,7 @@ Boolean CHttpDate::InitTLS()
 {
     Int32 result = pthread_key_create(&key_tls, ThreadDestructor);
     assert(result == 0);
+    UNUSED(result);
     return TRUE;
 }
 

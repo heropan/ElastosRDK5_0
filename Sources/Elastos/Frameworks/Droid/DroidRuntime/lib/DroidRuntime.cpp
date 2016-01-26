@@ -1,5 +1,6 @@
 
 #include "DroidRuntime.h"
+#include <elastos/coredef.h>
 #include <elastos/utility/logging/Logger.h>
 #include <signal.h>
 #include <sys/stat.h>
@@ -183,6 +184,7 @@ static void BlockSignals()
     //sigaddset(&mask, SIGPIPE);
     cc = sigprocmask(SIG_BLOCK, &mask, NULL);
     assert(cc == 0);
+    UNUSED(cc);
 
 //    if (false) {
 //        /* TODO: save the old sigaction in a global */
