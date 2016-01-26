@@ -315,6 +315,7 @@ ECode CBitSet::Get(
             }
         }
     }
+    UNUSED(actualLen);
     return CBitSet::New(newBits, bs);
 }
 
@@ -836,7 +837,7 @@ ECode CBitSet::ValueOf(
     AutoPtr< ArrayOf<Int64> > longs = ArrayForBits(remaining * 8);
     Int32 i = 0;
     Int64 lvalue = 0;
-    while(remaining >= sizeof(Int64)) {
+    while (remaining >= sizeof(Int64)) {
         byteBuffer->GetInt64(&lvalue);
         (*longs)[i++] = lvalue;
         (IBuffer::Probe(byteBuffer))->GetRemaining(&remaining);

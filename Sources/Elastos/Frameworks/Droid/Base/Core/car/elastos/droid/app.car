@@ -781,6 +781,13 @@ module
         interface IActivityManagerHelper;
     }
 
+//    class CActivityManagerAppTask {
+//        constructor(
+//            [in] IIAppTask* task);
+//
+//        interface IActivityManagerAppTask;
+//    }
+
     class CActivityManagerStackInfo {
          constructor();
 

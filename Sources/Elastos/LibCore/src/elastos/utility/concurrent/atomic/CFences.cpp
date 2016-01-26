@@ -19,6 +19,7 @@ ECode CFences::OrderReads(
     VALIDATE_NOT_NULL(outface)
 
     Int32 ignore = sTheVolatile;
+    UNUSED(ignore);
     *outface = ref;
     REFCOUNT_ADD(*outface)
     return NOERROR;
