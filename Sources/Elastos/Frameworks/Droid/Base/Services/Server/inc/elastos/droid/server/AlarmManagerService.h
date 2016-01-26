@@ -1185,7 +1185,8 @@ public:
     }
 
     //@Override
-    CARAPI onStart() {
+    CARAPI onStart()
+    {
         mNativeData = init();
         mNextWakeup = mNextNonWakeup = 0;
 
@@ -1224,7 +1225,8 @@ public:
     }
 
     //@Override
-    protected void finalize() throws Throwable {
+    protected CARAPI Finalize()
+    {
         try {
             close(mNativeData);
         } finally {
@@ -1232,7 +1234,9 @@ public:
         }
     }
 
-    void SetTimeZoneImpl(String tz) {
+    void SetTimeZoneImpl(
+        /* [in] */ String tz)
+    {
         if (TextUtils->IsEmpty(tz)) {
             return;
         }
